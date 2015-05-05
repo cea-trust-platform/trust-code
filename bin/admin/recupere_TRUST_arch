@@ -31,7 +31,7 @@ done
 if [ ${#machine} = 0 ]
 then
    # Changement PL du 24/07/04, en tete les machines cibles PUIS les autres
-   machines=`liste_machines get_binary`" "`liste_machines cible`" "`liste_machines non`" "`liste_machines tache`" "`liste_machines pool`
+   machines=`liste_machines get_binary`" "`liste_machines cible`" "`liste_machines non`" "`liste_machines tache`
    liste="" # Pour avoir une liste unique:
    for machine in $machines
    do
@@ -274,7 +274,7 @@ do
 	   # Taux sequentiel:
 	   staux=`cat $PERF | $TRUST_Awk '/succes/ && (NF==2) {print $2;exit}'`
 	   # Taux parallele:
-	   ptaux=`cat $PERF | $TRUST_Awk '/succes/ && (NF==2) {t=$2} END {print t}'`
+	   [ "$MPI" != "" ] && ptaux=`cat $PERF | $TRUST_Awk '/succes/ && (NF==2) {t=$2} END {print t}'`
 	   # Taux total
 	   if [ "$staux" != "" ] && [ "$ptaux" != "" ] && [ "$ptaux" != 0 ]
 	   then
@@ -288,8 +288,9 @@ do
 	   fi 
 	   if [ "$machine_cible" = 1 ]
 	   then
-	      echo "provisoire "$portabilite" "$pourcent" "$file
+	      [ "$taux" != "$vide" ] && let nb_machine_cible=$nb_machine_cible+1
 	      portabilite=`echo $ECHO_OPTS "scale=3\n$portabilite+$pourcent" | bc -l`
+	      echo "provisoire "$portabilite" "$pourcent" "$nb_machine_cible" "$file
 	   fi
 	   # Est ce que tous les tests sont passes en version optimisee simple ?
 	   [ ${#comm} = 0 ] && [ ${#opt} != 0 ] && [ $opt = opt ] && [ ${#COL2} != 0 ] && [ $COL2 != $VERT ] && label_teste=0 
@@ -307,13 +308,14 @@ do
 	NOT="<TD $VERT>NOT</TD>"
 	[ "`grep 'Disabling MED' $CR`" != "" ] 		&& [ "`grep MED=KO $CR`" != "" ] 	&& MED=$NOT 	&& GMSH=$NOT	
 	[ "`grep 'Disabling PETSC' $CR`" != "" ] 	&& [ "`grep PETSC=KO $CR`" != "" ] 	&& PETSC=$NOT
-	[ "`grep 'Disabling VisIt' $CR`" != "" ] 	&& [ "`grep VisIt:OK $CR`" = "" ] 	&& VISIT=$NOT
+	[ "`grep 'Disabling Outils/VisIt' $CR`" != "" ] && [ "`grep VisIt:OK $CR`" = "" ] 	&& VISIT=$NOT
 	# On compte le nombre de machines cibles selon le type de tests
 	if [ "$machine_cible" = 1 ]
 	then
 	   [ "`grep BALTIK= $CR`" != "" ]  && let nb_machine_baltik_cible=$nb_machine_baltik_cible+1
+	   echo "provisoire baltik  "$portabilite_baltik" "$nb_machine_baltik_cible" "$file
 	   [ "`grep ATELIER= $CR`" != "" ] && let nb_machine_atelier_cible=$nb_machine_atelier_cible+1
-	   [ "$taux" != "$vide" ]                && let nb_machine_cible=$nb_machine_cible+1
+	   echo "provisoire Atelier "$portabilite_atelier" "$nb_machine_atelier_cible" "$file
 	fi
 	FIN="`$TRUST_Awk -v rouge=$ROUGE 'BEGIN {date="<TD>CR vide</TD>"} /Debut de la mise a jour/ {date="<TD "rouge">Bloque?</TD>"} /Fin du script/ {date="<TD>"$(NF-1)"</TD>"} END {print date}' $CR`"	
 	tests_html=$TRUST_ROOT/../$MODULE/exec/.tests_$EXEC.html
@@ -326,6 +328,7 @@ do
 	   let nb_machine_xprepro_cible=$nb_machine_xprepro_cible+1
 	   pourcent=`cat $PERF | awk 'BEGIN {s=0;n=0} /Xprepro:/ {n++} /Xprepro:/ && /OK/ {s++} END {if (n>0) print s/n;else print s}'`
 	   portabilite_xprepro=`echo $ECHO_OPTS "scale=3\n$portabilite_xprepro+$pourcent" | bc -l`
+	   echo "provisoire Xprepro "$portabilite_xprepro" "$pourcent" "$nb_machine_xprepro_cible" "$file
 	fi
 	CR=`basename $CR`
         echo "

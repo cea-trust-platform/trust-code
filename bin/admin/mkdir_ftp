@@ -9,6 +9,7 @@ then
    rep=`basename $nom`
    echo "  $nom on $TRUST_FTP is created"
    p="" && [ "`ftp -help 2>&1 | grep '\-p'`" != "" ] && p=p # Passive mode utile sur les machines virtuelles
+
    cat << ! | ftp -iv$p | $TRUST_Awk '/MKD command/ || /File exists/ {print $0}'
 open $TRUST_FTP
 cd ../..
@@ -16,6 +17,8 @@ cd $dir
 mkdir $rep
 chmod 755 $rep
 !
+
 else
    echo "  $nom on $TRUST_FTP already exists"
 fi
+

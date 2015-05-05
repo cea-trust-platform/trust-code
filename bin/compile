@@ -30,17 +30,6 @@ CHOIX_MAKE()
    fi
 }
 
-STAT_DISTCC()
-{
-   return # Car distcc.log peut etre ecrit par plusieurs compilations en meme temps...
-   if [ -f $DISTCC_LOG ]
-   then
-      echo "Number of files compiled with:"
-      grep 'exec on' $DISTCC_LOG | $TRUST_Awk '{print $4}' | sort | uniq -c | sort -nr | $TRUST_Awk '{print $2" \t"$1}'
-      rm -f $DISTCC_LOG
-   fi
-}
-
 make_tools()
 {
    CHOIX_MAKE simple
@@ -120,7 +109,6 @@ COMPIL_DYN=OFF
 [ $monodir = 0 ] && [ "$TRUST_SCM" = 1 ] && COMPIL_DYN=ON
 monodir=2
 
-rm -f $DISTCC_LOG
 rm -f $CCACHE_LOGFILE
 CLEAN="" && MESSAGE="Building" && [ "${1%clean}" != "$1" ] && CLEAN=clean && MESSAGE="Cleaning" && shift
 
@@ -328,7 +316,6 @@ then
          # Compilation normale
          $MAKE $CLEAN 1>>$COMPILE 2>&1
 	 error=$?
-	 [ "$CLEAN" = "" ] && STAT_DISTCC
 	 OK $error
 	 # Contournement de l'erreur sur certaines machines
 	 if [ $error != 0 ]
@@ -525,7 +512,6 @@ then
       fi
       $MAKE
       [ $? != 0 ] && echo 'Problem of compiling ->' && $MAKE
-      STAT_DISTCC
    else
       ########################
       # compile avec cmake ...
@@ -639,6 +625,6 @@ then
    # Le travail est deja fait mais on en profite pour rappeler le configure clean possible
    echo "---------------------------------------------------------------------------------"
    echo "To do a complete make clean, you should also clean all the the programs installed"
-   echo "during the configure task (OpenMPI, distcc/ccache,...). So run: ./configure -clean"
+   echo "during the configure task (OpenMPI, ccache,...). So run: ./configure -clean"
    echo "You would then run ./configure before the build with the make command."
 fi

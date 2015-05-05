@@ -1,1 +1,9 @@
-../ThHyd_C_SsMaille_Smago_VDF/verifie
+# Comparaison des sondes sequentielles et paralleles
+rm -f compare_sonde.log
+for file in `ls PAR*.son 2>/dev/null`
+do
+   if [ "`grep Temps $file`" != "" ]
+   then
+      compare_sonde ${file#PAR_} $file 1>>compare_sonde.log 2>&1 || exit -1
+   fi
+done

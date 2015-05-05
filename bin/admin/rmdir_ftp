@@ -22,6 +22,7 @@ repertoires=`find_directory $1`" "$1
 for repertoire in $repertoires
 do
    echo "Efface $repertoire sur $TRUST_FTP"
+
    cat << ! | ftp -iv 2>&1 | $TRUST_Awk '/MKD command/ || /File exists/ || /failed/ {print $0}'
 open $TRUST_FTP
 cd ../..
@@ -31,4 +32,6 @@ mdelete .*
 cd ..
 rmdir `basename $repertoire`
 !
+
 done
+

@@ -10,9 +10,12 @@ export SECRET=incoming/y2k01/TRUST
 
 if [ ${#1} = 0 ] || [ $1 != "-no_ftp" ]
 then
+
    ok=`cat << ! | ftp -iv | $TRUST_Awk 'BEGIN {ok=0} /Login successful/ {ok=1} END {print ok}'
 open $TRUST_FTP
-!`
+!
+`
+
    if [ $ok = 1 ]
    then
       echo "Connection to $TRUST_FTP OK."
@@ -31,3 +34,4 @@ open $TRUST_FTP
       fi
    done
 fi
+

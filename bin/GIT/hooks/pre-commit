@@ -108,7 +108,7 @@ done
 # Send if an alert is found:
 if [ -f $alert ]
 then
-   cat $alert # | mail_ -s\"[pre-commit] New changes on the branch $git_branch by user $who\" $TRUST_MAIL $TRUST_PROJECT_LEADER           
+   cat $alert # | mail_ -s\"[pre-commit] New changes on the branch $git_branch by user $who\" $TRUST_MAIL
 fi
 
 # Exit with no error:

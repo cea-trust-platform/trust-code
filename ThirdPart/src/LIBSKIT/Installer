@@ -14,7 +14,8 @@ cp patch/inout.f SPARSKIT2/INOUT/inout.f && echo SPARSKIT2/INOUT/inout.f patche
 # modification du makefile pour les options de compile
 cp patch/makefile SPARSKIT2/makefile && echo SPARSKIT2/makefile modifie
 # recuperation d'une modif de parms sur csort
-cp patch/unary.f SPARSKIT2/FORMATS/unary.f&& echo SPARSKIT2/FORMATS/unary.f patche
+# a priori integre donc on ne le fait plus
+#cp patch/unary.f SPARSKIT2/FORMATS/unary.f&& echo SPARSKIT2/FORMATS/unary.f patche
 
 
 cd SPARSKIT2

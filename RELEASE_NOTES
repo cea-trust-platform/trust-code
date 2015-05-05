@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.1_beta : Enhancements, modifications and corrected bugs since version 1.7.0 :
 --------------------------------------------------------------------------------------------------
+29/04/15 (TRUST) Bug fixed   : Fix display k-eps residues in .dt_ev file (at the same time as the other residues)
 24/04/15 (Kernel) Minor change: PETSc updated from 3.5.2 to 3.5.3
 15/04/15 (TRUST) Minor change: TRUST is configured to use now the v1.2.8.2 Bullxmpi library on CCRT clusters (v1.1.16.6 is decommissioned by hotline since last maintenance)
 15/04/15 (TRUST) Minor change: Ability to read 2 med files with sub-zones in the same datafile by renaming ssz.geo and ssz_par.geo in *_ssz.geo and *_ssz_par.geo (*=name of med domain)

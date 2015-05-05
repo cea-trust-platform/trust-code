@@ -182,6 +182,9 @@ int Schema_Temps_base::limpr() const
 
 void Schema_Temps_base::validateTimeStep()
 {
+  // Update the problem:
+  Probleme_base& problem=pb_base();
+  problem.mettre_a_jour(temps_courant_+dt_);
   if (je_suis_maitre())
     {
       Nom fichier(nom_du_cas());
@@ -218,9 +221,6 @@ void Schema_Temps_base::validateTimeStep()
             }
         }
     }
-  // Update the problem:
-  Probleme_base& problem=pb_base();
-  problem.mettre_a_jour(temps_courant_+dt_);
   // Update time scheme:
   mettre_a_jour();
 }

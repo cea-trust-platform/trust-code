@@ -176,6 +176,7 @@ echo "Call to "`echo ~`"/bin/backup_pc_tma.sh via crontab"
 echo "  See "`echo ~`"/bin/backup_pc_tma.log"
 # NB: Now via crontab
 #~/bin/backup_pc_tma.sh 1>~/bin/backup_pc_tma.log 2>&1
+grep -i error ~/bin/backup_pc_tma.log
 tail -n2 ~/bin/backup_pc_tma.log
 echo " "
 
@@ -439,7 +440,9 @@ echo "###############################################"
 	         # Travaux sur la vue Maintenance
 		 ################################
                  echo "Call to "$TRUST_ROOT"/bin/admin/checkin_patch.ct"
-		 $TRUST_ROOT/bin/admin/checkin_patch.ct
+                 echo "  See $REP_NUIT/checkin_patch.log"
+		 $TRUST_ROOT/bin/admin/checkin_patch.ct 1>$REP_NUIT/checkin_patch.log 2>&1
+		 [ -s $REP_NUIT/checkin_patch.log ] && cat $REP_NUIT/checkin_patch.log | mail_ -s\"[checkin_patch.ct] Changes in the $TRUST_VERSION patch branch\" $TRUST_MAIL $TRUST_PROJECT_LEADER
 		 #######################
 		 # Construction du patch
 		 #######################
@@ -1033,6 +1036,7 @@ echo "########################"
 echo "---> Begin at "`date '+%H:%M:%S'`
 echo "Analysis of $TRUST_ROOT/NUIT/NUIT.html file"
 grep "Portabilit" $TRUST_ROOT/NUIT/NUIT.html
+grep provisoire $REP_NUIT/recupere_TRUST_arch.log | grep -v Atelier
 echo " "
 ####################
 # Portabilite TRUST
@@ -1092,6 +1096,7 @@ echo "######################################"
 echo "---> Begin at "`date '+%H:%M:%S'`
 echo "Analysis of $TRUST_ROOT/NUIT/NUIT.html file"
 grep "Compilation" $TRUST_ROOT/NUIT/NUIT.html
+grep provisoire $REP_NUIT/recupere_TRUST_arch.log | grep Atelier
 make_atelier=`$TRUST_Awk '/Compilation atelier de/ && /TRUST/ {print $1}' $TRUST_ROOT/NUIT/NUIT.html`
 echo " "
 if [ "$make_atelier" = "1.000" ]
@@ -1553,6 +1558,8 @@ rm -f $listing
 )
 #
 [ "`date | $TRUST_Awk '{print $1}'`" = "Fri" ] && [ -f $TRUST_TMP/motcles ] && cat $TRUST_TMP/motcles | mail_ -s \"[lance_test_nuit] Tests coverage credoc\" $TRUST_MAIL
+error_log=`grep 'error Doxygen' $REP_NUIT/credoc.log`
+[ ${#error_log} != 0 ] && mail_ -s\"[check_include] Doxygen: Study of TRUST includes under `pwd`\" $TRUST_MAIL #$TRUST_PROJECT_LEADER
 #
 ##########
 # TGGCOV #

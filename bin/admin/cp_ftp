@@ -17,6 +17,7 @@ do
    echo "Copy of the $file file on ftp://$TRUST_FTP/$rep directory"
    mkdir_ftp $rep 1>/dev/null
    p="" && [ "`ftp -help 2>&1 | grep '\-p'`" != "" ] && p=p # Passive mode utile sur les machines virtuelles
+
    cat << ! | ftp -iv$p | grep 'Opening BINARY'
 open $TRUST_FTP
 lcd $dir
@@ -27,6 +28,8 @@ bin
 del $file
 put $file
 !
+
 done
 #On enleve:
 #chmod 644 $file
+

@@ -8,7 +8,7 @@ then
   ###########
   # MVAPICH #
   ###########
-  package=mvapich2-2.0b.tgz
+  package=mvapich2-2.1.tgz
   http=http://mvapich.cse.ohio-state.edu/download/mvapich2
   src=${package%.tgz}
   # /usr/include/infiniband/mad.h is important for performance. See:

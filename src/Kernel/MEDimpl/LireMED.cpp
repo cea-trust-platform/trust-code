@@ -1082,7 +1082,9 @@ int medliregeom(Nom& nom_fic,const Nom& nom_dom,const Nom& nom_dom_trio,int& dim
         // SFichier jdd("ssz.geo");
         // SFichier jdd_par("ssz_par.geo");
         SFichier jdd(nom_dom_trio + "_ssz.geo");
+	SFichier jdd_old("ssz.geo"); // je garde celui ci pour les anciens jdds
         SFichier jdd_par(nom_dom_trio + "_ssz_par.geo");
+        SFichier jdd_par_old("ssz_par.geo");
 
         Cerr<<"grp"<<list_group<<finl;
         int nb_elem=les_elems.dimension(0);
@@ -1113,9 +1115,15 @@ int medliregeom(Nom& nom_fic,const Nom& nom_dom,const Nom& nom_dom_trio,int& dim
                 jdd<<"export Sous_Zone "<<toto<<finl;;
                 jdd<<"Associer "<<toto <<" "<<nom_dom_trio<<finl;
                 jdd<<"Lire "<<toto <<" { "<<finl<<"fichier "<<file_ssz<<" \n }"<<finl;
+		jdd_old<<"export Sous_Zone "<<toto<<finl;;
+		jdd_old<<"Associer "<<toto <<" "<<nom_dom_trio<<finl;
+                jdd_old<<"Lire "<<toto <<" { "<<finl<<"fichier "<<file_ssz<<" \n }"<<finl;
                 jdd_par<<"export Sous_Zone "<<toto<<finl;;
                 jdd_par<<"Associer "<<toto <<" "<<nom_dom_trio<<finl;
                 jdd_par<<"Lire "<<toto <<" { "<<finl<<"fichier "<<toto<<".ssz  \n }"<<finl;
+                jdd_par_old<<"export Sous_Zone "<<toto<<finl;;
+                jdd_par_old<<"Associer "<<toto <<" "<<nom_dom_trio<<finl;
+                jdd_par_old<<"Lire "<<toto <<" { "<<finl<<"fichier "<<toto<<".ssz  \n }"<<finl;
                 SFichier f_ssz(file_ssz);
                 f_ssz<<has_one<<finl;
                 for (int el=0; el<nb_elem; el++)

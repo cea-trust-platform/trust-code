@@ -122,7 +122,8 @@ do
    fonction
    if [ -d $TRUST_ROOT/../.git ]
    then
-      git-ls-files                                                    | grep -v Hyd_C_V | grep -v Echangeur_3D | grep -v $filtre > $contenu
+      #git-ls-files                                                    | grep -v Hyd_C_V | grep -v Echangeur_3D | grep -v $filtre > $contenu
+      git-ls-files | grep -v $filtre > $contenu
       if [ $? != 0 ]
       then
 	 echo "Error !"

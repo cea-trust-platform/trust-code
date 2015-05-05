@@ -115,7 +115,9 @@ do
       ls_ftp $SECRET/exec/$arch | $TRUST_Awk -v arch=$arch '{gsub($9,"<A HREF="arch"/"$NF">"$NF"</A>",$0);print $0"<BR>"}'>> /tmp/index.html
    fi
 done
+
 cat $TRUST_ROOT/RELEASE_NOTES | $TRUST_Awk 'BEGIN {print "<UL>"} /Release notes/ {print "</UL><BR><B>"$0"</B><UL>"} !/Release notes/ && !/---/ {gsub($1,"<LI>"$1,$0);print $0"</LI>"}' >> $html/tmp/index.html
+
 cp_ftp /tmp/index.html $SECRET/exec
 
 #################################
@@ -135,3 +137,4 @@ do
       echo " KO Machine $cible non accessible pour synchronisation."
    fi
 done
+

@@ -160,12 +160,6 @@ liste()
       #liste=`\cd $ref;ls */*/[A-N]*.lml.gz 2>/dev/null;ls */*/[O-Z]*.lml.gz 2>/dev/null;ls */*/[a-n]*.lml.gz 2>/dev/null;ls */*/[o-z]*.lml.gz 2>/dev/null;ls */*/__*.lml.gz 2>/dev/null;ls */*/[0-9]*.lml.gz 2>/dev/null`
       liste=$testslist
    fi
-   # liste des cas trouve
-   rm -f $TRUST_ROOT/liste_cas0
-   for i in $liste
-   do
-      echo ${i} >> $TRUST_ROOT/liste_cas0
-   done
    # Important, pour retourner un code erreur 0 (liste=` ` retourne parfois un code erreur)
    code_erreur=0
 }
@@ -664,7 +658,12 @@ then
     then
        liste || exit -1
     fi
-    [ "$liste" = "" ] && echo "Aucun cas test trouve." && exit -1
+    # Verifier si liste non vide
+    [ "$liste" = "" ] && echo "Error: No test cases found." && exit -1
+    # Verifier si liste contient cas en double
+    fulllist=`echo $liste | xargs dirname | xargs basename -a`
+    uniqlist=`echo $liste | xargs dirname | xargs basename -a | sort -u`
+    [ ${#fulllist} != ${#uniqlist} ] && echo "Error: Test cases duplicate => Check that 2 test cases don't have the same name!" && exit -1
     k=0
     succes=0
     succes_par=0
@@ -774,6 +773,7 @@ then
 	then
 	   if [ "`grep -i petsc $REP/* 2>/dev/null`" != "" ]
 	   then
+              echo "Test $i skipped (no petsc)"
 	      i=""
            fi
 	fi
@@ -782,18 +782,22 @@ then
 	then
 	   if [ "`grep -i med $REP/* 2>/dev/null`" != "" ]
 	   then
+              echo "Test $i skipped (no MED)"
 	      i=""
            fi
 	fi
 	# Discard PARALLEL ONLY test case if no MPI capabilities
 	if [ "$TRUST_DISABLE_MPI" = 1 ]
 	then
+           iisa=$i
 	   [ "`grep -i 'PARALLEL ONLY' $REP/* 2>/dev/null`" != "" ] 	&& i=""
 	   [ "`grep -i ' spai ' $REP/* 2>/dev/null`" != "" ] 		&& i=""
 	   [ "`grep -i ' ilu ' $REP/* 2>/dev/null`" != "" ]		&& i=""
 	   [ "`grep -i hypre $REP/* 2>/dev/null`" != "" ]		&& i=""
 	   [ "`grep -i boomeramg $REP/* 2>/dev/null`" != "" ]		&& i=""
 	   [ "`grep -i Check_solver.sh $REP/* 2>/dev/null`" != "" ]	&& i=""
+           [ "$i" = "" ] &&  echo "Test $iisa skipped (no MPI)"
+
 	fi
 	[ $choix != "0" ] && [ ${choix#P_} = $choix ] && [ $choix != $k ] && [ $choix != "M" ] && i=""
 	if [ ${#i} != 0 ]
@@ -1289,8 +1293,6 @@ then
          [ "$dest" != "" ] && cat $message | grep -v ' ecarts |' | mail_ -s \"[lance_test] Unsuccesful no-regression tests on $HOST \(without warning\)\" $dest 
       fi
    fi
-   # Affichage en interne LMDL:
-   # [ ${#TRUST_SHARE} != 0 ] && echo "Nouveau: Un script \$TRUST_ROOT/bin/KSH/ecarts permet de comparer 2 binaires sur un cas test pour mieux quantifier les ecarts."
 fi
 rm -f $message
 
@@ -1328,7 +1330,7 @@ then
 	 echo $ECHO_OPTS "with the binary $exec :" | tee -a $TMP_MAIL
 	 echo $ECHO_OPTS $fiche | tee -a $TMP_MAIL
 	 echo $ECHO_OPTS "Fix the incorrect(s) data file(s) in the src directory or elsewhere.\n" | tee -a $TMP_MAIL
-	 [ "$dest" != "" ] && [ $HOST = $TRUST_HOST_ADMIN ] && cat $TMP_MAIL | mail_ -s\"[lance_test] Error detected on $HOST for $fiche form validation.\" $dest $TRUST_PROJECT_LEADER
+	 [ "$dest" != "" ] && [ $HOST = $TRUST_HOST_ADMIN ] && cat $TMP_MAIL | mail_ -s\"[lance_test] Error detected on $HOST for $fiche form validation.\" $dest
 	 rm -f -r $TMP_MAIL
       fi
    done
@@ -1368,7 +1370,7 @@ then
 	    echo $ECHO_OPTS "$TRUST_ROOT/Validation/Outils/Genere_courbe/Run src/*.prm" | tee -a $TMP_MAIL
 	 fi
 	 echo $ECHO_OPTS "\n" | tee -a $TMP_MAIL
-	 [ "$dest" != "" ] && [ $HOST = $TRUST_HOST_ADMIN ] && cat $TMP_MAIL | mail_ -s\"[lance_test] Change detected on $HOST for the $fiche form validation.\" $dest $TRUST_PROJECT_LEADER
+	 [ "$dest" != "" ] && [ $HOST = $TRUST_HOST_ADMIN ] && cat $TMP_MAIL | mail_ -s\"[lance_test] Change detected on $HOST for the $fiche form validation.\" $dest
 	 rm -f $TMP_MAIL
       fi
    done

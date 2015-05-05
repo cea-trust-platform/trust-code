@@ -28,7 +28,7 @@ then
 A tar file of all the changes is located here:
 $TRUST_HOST_ADMIN@$tar
 ==============================================" >> $log
-   cat $log | mail_ -s\"[checkin_patch.ct] Changes in the $TRUST_VERSION patch branch\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+   cat $log
    sleep 10
 fi
 rm -f $log

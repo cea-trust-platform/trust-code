@@ -35,3 +35,4 @@ else
    echo "Host $machine can't be accessed..."
 fi
 exit $err
+

@@ -223,7 +223,7 @@ export NUIT=0 && [ `date '+%H'` -ge 18 ] || [ `date '+%H'` -lt 8 ] && NUIT=1
 # Debut de la mise a jour #
 ###########################
 echo "----------------------------------------------------------"
-echo "Debut de la mise a jour sur $HOST le `date` ..."
+echo "Debut de la mise a jour sur $HOST le `date` (NUIT=$NUIT) ..."
 echo "----------------------------------------------------------"
 qui=`basename $HOME`
 too_much_tasks=`ps -u $qui 2>/dev/null | grep Version_test | wc -l | awk '{if ($0>40) print 1;else print 0}'`
@@ -511,7 +511,7 @@ do
    rm -f $ROOT/compile_*
    COMPILE=$ROOT/compile_$code$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD
 
-   echo "Compilation de $MODULE $TRUST_VERSION sur $HOST_BUILD"
+   echo "Compilation de $MODULE $TRUST_VERSION sur $HOST_BUILD a "`date '+%H:%M:%S'`
    echo "-----------------------------------------"
    cd $ROOT
 
@@ -612,7 +612,7 @@ do
       done
       OPT="_opt"
    fi
-   echo "Fin des compilations sur $HOST_BUILD" # Message important pour le run de Validation/Etudes 
+   echo "Fin des compilations sur $HOST_BUILD a "`date '+%H:%M:%S'` # Message important pour le run de Validation/Etudes 
    echo "-----------------------------------------"
    # Remplissage des caracteristiques de la machine :
    echo "hostname="$HOST_BUILD > $PERF
@@ -732,6 +732,8 @@ do
 	 # On lance les tests sur Xprepro
 	 ################################
 	 (
+	    echo "Lancement des tests sur Xprepro: "
+	    echo "---------------------------------"
 	    cd $TRUST_ROOT/Outils/PRE_3DVDF;
 	    # sdiff horriblement lent sur fsf, on passe par la machine les
 	    if [ $HOST = fsf ]
@@ -741,6 +743,7 @@ do
 	       # On ne fait pas sur vargas car cela bloque...
 	       [ $HOST != vargas ] && ./testfort2 >> $PERF
             fi
+	    grep -A 15 testfort2 $PERF
 	 )	 
  
 	 ######################################
@@ -785,6 +788,7 @@ do
 	 rm -f $CR_TESTS
 	 
 	 echo "Debut du lancement sur $HOST_BUILD des tests $MODULE avec `basename $lance_test_exec` a `date`..."
+	 echo "echo $NUM | lance_test $lance_test_exec"
 	 echo $NUM | lance_test $lance_test_exec 1>lance_test.log 2>&1
 	 echo "Fin du lancement sur $HOST_BUILD des tests $MODULE avec `basename $lance_test_exec` a `date`..."
 	 ################################
@@ -816,6 +820,7 @@ do
 	 ##########################################################
 	 if [ "`liste_machines "\-benchmark" | grep ^$HOST_BUILD"\."`" != "" ] && [ "`grep $HOST $TRUST_ROOT/bin/reprise_auto | grep Supported`" != "" ]
 	 then
+            echo "Test de reprise_auto a `date '+%H:%M:%S'`"
 	    log=$TRUST_ROOT/tests/Reference/Obstacle/test_reprise_auto.log
   	    cd $TRUST_ROOT/tests/Reference/Obstacle
 	    make_PAR.data Obstacle 1>$log 2>&1
@@ -843,6 +848,7 @@ do
 	 test_run_fiche=1
 	 if [ "$test_run_fiche" = 1 ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable" | grep ^$HOST_BUILD"\."`" = "" ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\cible" | grep ^$HOST_BUILD"\."`" != "" ]
 	 then
+            echo "Test de Run_fiche a `date '+%H:%M:%S'`"
 	    cd $TRUST_ROOT/Validation/Rapports_automatiques/Validant/pas_fini/Drag
 	    log=`pwd`/Run_fiche.log
 	    visit_erreur=`$TRUST_ROOT/Outils/VisIt/bin/visit -help 1>/dev/null 2>&1;echo $?`

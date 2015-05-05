@@ -54,7 +54,8 @@ then
       $TRUST_ROOT/bin/admin/analyze_includes.pl 2>&1 | tee `basename $log`
       rm -f DoxyDocs.pm
       cd -
-      cat $log | mail_ -s\"[check_include] Doxygen: Etude des includes TRUST sous `pwd`\" $TRUST_PROJECT_LEADER $TRUST_MAIL
+      cat $log
+      echo "error Doxygen: Etude des includes TRUST sous `pwd`"
    fi
 fi
 if [ "$1" = -fix ]

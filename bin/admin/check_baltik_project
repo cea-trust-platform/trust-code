@@ -23,8 +23,11 @@ then
    echo "Le Kernel a change de version et passe a la $TRUST_VERSION." >> $tmp
    echo "Il est peut etre temps de mettre a jour le projet baltik $PROJECT" >> $tmp
    echo "si celui ci a evolue." >> $tmp
-   cat $tmp | mail_ -s\"[check_baltik_project] Projet Baltik $PROJECT a mettre a jour?\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+   cat $tmp
+   echo "Projet Baltik $PROJECT a mettre a jour?"
    rm -f $tmp
+   echo "Projet Baltik $PROJECT KO"
+   exit -1
 fi
 
 # Lancement 
