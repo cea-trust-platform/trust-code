@@ -1,0 +1,29 @@
+#!/bin/bash
+# Recupere le fichier provenant de Mosaic :
+ORDRE=`cat $1`
+
+ETUDE_TRUST=`QUELLE_ETUDE.ihm`
+export ETUDE_TRUST
+if [ ! -f $ETUDE_TRUST/.NOM_DATA ]
+then
+   Erreur.ihm "Solve process not yet submitted !"
+else
+   cd $ETUDE_TRUST
+   # Ameliorer en copiant le fichier dans .ordre_IHM
+   echo $ORDRE > .ordre_IHM
+   if [ ! -f .pcs_Run_sonde ]
+   then
+      err=1
+#      Erreur.ihm "Problem: .pcs_Run_sonde file non-exitent !"
+   else
+      pcs=`cat .pcs_Run_sonde`
+      kill -15 $pcs 1>/dev/null 2>/dev/null
+      err=$?
+   fi
+   if [ $err != 0 ]
+   then
+      IHM=1
+      export IHM
+      $Dtterm $HautGauche_geometrie -title "Plot" -e Run_sonde `cat .NOM_DATA`
+   fi
+fi

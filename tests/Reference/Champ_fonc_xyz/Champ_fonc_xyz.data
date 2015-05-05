@@ -1,0 +1,105 @@
+# Thermohydraulique 2D #
+# PARALLEL OK #
+dimension 2
+Pb_hydraulique pb
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+	Pave canal
+		{
+		Origine 0. 0.
+		Longueurs 0.5 20
+		Nombre_de_Noeuds 3 21
+		}
+		{
+		Bord fond      Y = 0.        0. <= X <= 0.5
+		Bord periox    X = 0.        0. <= Y <= 20. 
+		Bord periox    X = 0.5       0. <= Y <= 20.
+		Bord devant    Y = 20.       0. <= X <= 0.5
+		} 
+
+}
+Trianguler_H dom
+Corriger_frontiere_periodique { domaine dom bord periox }
+# END MESH #
+
+# BEGIN PARTITION 
+Partition dom
+{
+        Partitionneur Metis { nb_parts 5 }
+        Larg_joint 2
+        Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	nb_pas_dt_max 2
+	tinit 0
+	tmax  1600.
+	dt_min 1.e-7
+	dt_max 100
+	facsec 0.5
+	seuil_statio 1.e-6
+}
+
+Fluide_Incompressible air
+Lire air
+{
+	mu Champ_fonc_xyz dom 1 1+y
+	rho Champ_Uniforme 1 1.
+}
+
+Champ_Uniforme gravite
+Lire gravite 2 0. 0.
+Associate air gravite
+
+
+Associate pb dom
+Associate pb sch
+Associate pb air
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard 
+	{ 	
+		projection_initiale 1
+		solveur_pression GCP { precond ssor { omega 1.6 } seuil 1.e-8 }
+		sources { source_Qdm Champ_Fonc_txyz dom 2 0. 0. }
+		convection { negligeable }
+		diffusion { } 
+		conditions_initiales 
+				{
+			 	vitesse Champ_fonc_txyz dom 2 ln(1+y) 0.
+				}
+		boundary_conditions 
+				{ 	
+				fond   paroi_fixe
+				devant frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 2 ln(1+y) 0
+				periox periodique 
+				}
+		traitement_particulier { Canal { dt_impr_moy_spat 500. } }
+}		
+		
+Postraitement
+	{
+		format lml Champs dt_post 1.e-1
+		{
+			pression elem
+		}
+	}
+
+}
+Solve pb
+Fin

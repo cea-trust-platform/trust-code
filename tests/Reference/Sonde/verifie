@@ -1,0 +1,8 @@
+#!/bin/bash
+err=0
+for sonde in ?_SONDE.son
+do
+   compare_sonde $sonde archive_$sonde
+   [ $? != 0 ] && err=1 && sdiff $sonde archive_$sonde
+done 1>verifie.log 2>&1
+exit $err

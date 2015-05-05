@@ -1,0 +1,18 @@
+#!/bin/bash
+
+[ "$UTILISE_APPACHE" = "1" ] && . $HOME/HTML/recharger_env
+# Checkout du fichier si Git
+
+fic=`extrait_nom $1`
+CHECKOUT $fic
+# Lien dans l'atelier:
+file=$rep_dev/`basename $fic`
+rm -f $file && ln -s -f $fic $file
+
+# Edition du fichier 
+execute.ksh "$EDITEUR $fic &"
+#ecrit_exec.ksh "#!/bin/bash\n\$EDITEUR $fic &"
+#kill -$SIG_EXEC `cat $HOME/.exec`
+
+# Regenere la page atelier :
+cree_Fichiers_atelier.html

@@ -1,0 +1,4 @@
+jdd=`pwd`
+jdd=`basename $jdd`
+compare_lata prepare.lml $jdd.lml 1>verifie.log 2>&1
+exit $?

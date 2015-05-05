@@ -1,0 +1,68 @@
+# Tests SousZone restriction/fonction #
+
+dimension 3
+# PARALLEL NOT #
+ 
+Domaine hexaedre
+
+
+Mailler hexaedre 
+{
+ 	Pave  Gauche
+		{
+		Origine 0. 0. 0.
+     		Nombre_de_Noeuds 25 41 5
+		Longueurs 0.6 1.0 1.0
+		}
+		{
+		Bord Gauche X = 0.   0.  <= Y <= 1.0  0.  <= Z <= 1.0
+		Bord Haut   Y = 1.0  0.  <= X <= 0.6  0.  <= Z <= 1.0
+
+		Bord Bas    Y = 0.   0.  <= X <= 0.6 0.  <= Z <= 1.0
+
+		Raccord local homogene Droit  X = 0.6  0. <= Y <= 1.0 0.  <= Z <= 1.0
+		Bord zo Z = 1.0  0.  <= X <= 0.6  0.  <= Y <= 1.0
+		Bord zo Z = 0.0  0.  <= X <= 0.6  0.  <= Y <= 1.0
+
+
+		} 
+}
+Sous_zone milieu 
+Associate milieu hexaedre
+Lire milieu
+{
+fonction_sous_zone ((z>0.25)_and_(z<0.75))
+}
+Sous_zone sous_zone_milieu
+Associate sous_zone_milieu hexaedre
+Lire sous_zone_milieu
+{
+restriction milieu
+fonction_sous_zone (((x-0.3)^2+(y-0.5)^2)<(0.25*0.25))
+}
+
+Sous_zone union 
+Associate union hexaedre
+Lire union
+{
+fonction_sous_zone (z>0.5)
+union sous_zone_milieu
+
+}
+
+
+
+postraiter_domaine { 
+		domaine  hexaedre 
+		fichier Kernel_Sous_Zone_Fonction.lata
+		format lata }
+postraiter_domaine { 
+		domaine  hexaedre 
+		fichier Kernel_Sous_Zone_Fonction.lml
+		format lml }
+fin
+
+
+
+
+

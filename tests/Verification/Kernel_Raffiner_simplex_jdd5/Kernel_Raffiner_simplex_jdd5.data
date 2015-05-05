@@ -1,0 +1,58 @@
+# PARALLEL NOT #
+
+dimension 3
+
+Domaine domain
+Read_file domain mesh.geom
+
+ecrire_fichier_formatte domain domain_0.geom
+
+/* orienter_simplexes domain */
+Raffiner_Simplexes domain
+
+ecrire_fichier domain domain_1.geom
+
+Raffiner_Simplexes domain
+ecrire_fichier domain domain_2.geom
+
+Raffiner_Simplexes domain
+ecrire_fichier domain domain_3.geom
+
+Raffiner_Simplexes domain
+ecrire_fichier domain domain_4.geom
+
+Raffiner_Simplexes domain
+ecrire_fichier domain domain_5.geom
+
+Domaine domain_0
+Domaine domain_1
+Domaine domain_2
+Domaine domain_3
+Domaine domain_4
+Domaine domain_5
+
+Read_file domain_0 domain_0.geom
+Read_file domain_1 domain_1.geom
+Read_file domain_2 domain_2.geom
+Read_file domain_3 domain_3.geom
+Read_file domain_4 domain_4.geom
+Read_file domain_5 domain_5.geom
+
+
+postraiter_domaine
+{
+   domaines 
+   { 
+      domain_0
+      domain_1
+      domain_2
+      domain_3
+      domain_4
+      domain_5
+   }
+   format lml 
+}
+analyse_angle domain_5 180
+analyse_angle domain_0 180
+discretiser_domaine domain_5
+End

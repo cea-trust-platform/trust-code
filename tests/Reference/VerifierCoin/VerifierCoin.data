@@ -1,0 +1,122 @@
+# Thermohydraulique VEF 2D couplee a conduction 2D #
+
+dimension 2
+Pb_Thermohydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Cavite1
+		{
+		Origine 0. 0.
+     		Nombre_de_Noeuds 5 5
+		Longueurs 1.0 1.0
+		}
+		{
+		Bord Gauche	X = 0.   0. <= Y <= 1.0
+		Bord Haut	Y = 1.0  0. <= X <= 1.0
+		Bord Bas	Y = 0.   0. <= X <= 1.0
+		Bord Droit	X = 1.0  0. <= Y <= 1.0
+		}
+}
+Trianguler dom
+VerifierCoin dom { Read_file VerifierCoin.decoupage_som }
+# END MESH #
+
+VEFPreP1B dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0.
+	tmax 1.2
+	dt_min 0.01
+	dt_max 0.01
+	dt_impr 0.01
+	dt_sauv 0.1
+	seuil_statio 1.e-8
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 1.85e-5
+	rho Champ_Uniforme 1 1.17
+	lambda Champ_Uniforme 1 0.0262 
+	Cp Champ_Uniforme 1 1006
+	beta_th Champ_Uniforme 1 3.41e-3
+}
+
+Champ_Uniforme gravite
+Lire gravite 2 0 -9.81
+
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond_nul
+			seuil 1.000000e-16 
+			impr
+		}
+		convection { muscl }
+		diffusion { }
+		sources { boussinesq_temperature { T0 5. } }
+		sources { boussinesq_temperature { T0 5. } }
+		conditions_initiales {
+			vitesse Champ_Uniforme 2 0. 0.
+			}
+		boundary_conditions {
+			Haut	paroi_fixe
+			Bas	paroi_fixe
+			Gauche	paroi_fixe
+			Droit	paroi_fixe
+		}
+	}
+	Convection_Diffusion_Temperature
+	{
+		diffusion { }
+		convection { muscl }
+		boundary_conditions 
+		{
+			Haut paroi_adiabatique
+			Bas paroi_adiabatique
+ 			Gauche paroi_temperature_imposee Champ_Front_Uniforme 1 10. 
+			Droit  paroi_temperature_imposee Champ_Front_Uniforme 1 0.  
+		}
+		conditions_initiales { Temperature Champ_Uniforme 1 5. }
+	}
+
+	Postraitement
+	{		
+		Sondes
+		{
+			sonde_V vitesse periode 0.01 segment 10 0.0005 0.005 0.0095 0.005
+			sonde_pression pression periode 0.01 points 1 0.0045 0.0045
+			sonde_vitesse vitesse periode 0.01 points 1 0.0045 0.0045
+			sonde_temp temperature periode 0.01 points 1 0.0045 0.0045
+			sonde_p pression periode 0.1 plan 10 10 0.0005 0.0005 0.0095 0.0005 0.0005 0.0095
+			sonde_circle temperature periode 0.01 circle 20 0.005 0.005 0.0045 0. 360.
+		}		
+		Champs dt_post 1.2
+		{
+			pression elem
+			vitesse elem
+			temperature elem
+			temperature som
+			vorticite elem
+		}
+	}
+}
+
+Solve pb
+Fin
+

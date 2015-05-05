@@ -1,0 +1,118 @@
+# Hydraulique 3D  #
+# PARALLEL OK 8 #
+dimension 3
+Pb_Hydraulique pb
+Domaine dom
+# BEGIN MESH #
+Mailler dom 
+{
+Pave Entree
+        {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 7 7 7
+        Longueurs 0.01 0.01 0.01
+        Facteurs 1.0 1.0 1.0
+        }
+        {
+        Bord Perio1   X = 0.    0. <= Y <=  0.01 0. <= Z <=  0.01 
+        Bord Perio2   X = 0.01  0. <= Y <=  0.01 0. <= Z <=  0.01  
+        Bord Haut     Y = 0.01  0. <= X <=  0.01 0. <= Z <=  0.01 
+        Bord Bas      Y = 0.    0. <= X <=  0.01 0. <= Z <=  0.01 
+        Bord Perio3   Z = 0.    0. <= X <=  0.01 0. <= Y <=  0.01
+        Bord Perio3   Z = 0.01  0. <= X <=  0.01 0. <= Y <=  0.01       
+        } 
+
+}
+
+Tetraedriser dom
+Corriger_frontiere_periodique { Domaine dom Bord Perio3 }
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 2 1 1 }
+	Larg_joint 2
+	Nom_Zones DOM
+	Periodique 1 Perio3
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+        tinit 0.
+        nb_pas_dt_max 20
+        tmax 1.
+        dt_min 1.e-10
+        dt_max 1.
+        dt_impr 1.e-10
+        dt_sauv 100
+        seuil_statio 1.e-8
+}
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 2
+	rho Champ_Uniforme 1 2
+}
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+Discretize pb dis
+Lire pb
+{
+        Navier_Stokes_standard
+        {
+                solveur_pression GCP { precond ssor { omega 1.65 } seuil 1.e-12 }
+                convection { negligeable }
+                diffusion { }
+                conditions_initiales 
+                {
+                        vitesse Champ_uniforme 3 0. 0. 0.
+                }
+                
+                boundary_conditions 
+                {
+                         Haut   frontiere_ouverte_vitesse_imposee 
+			         Champ_front_uniforme 3 0.01 0. 0.
+                         Bas    paroi_fixe
+                         Perio1 frontiere_ouverte_pression_imposee 
+			         Champ_front_uniforme 1 2.
+                         Perio2 frontiere_ouverte_pression_imposee 
+			         Champ_front_uniforme 1 2.
+			Perio3 periodique 
+
+                }                
+                
+        }
+Postraitement
+        {
+                Sondes       
+                {
+			sonde_pression pression periode 1.e-9 points 2 0.0005 0.0045 0.005 
+			                                               0.005 0.005 0.005
+			sonde_vitesse vitesse periode 1.e-9 points 5 0.0005 0.0049 0.005 
+			                                             0.0015 0.0049 0.005 
+			                                             0.0025 0.0049  0.005
+			                                             0.0035 0.0049 0.005 
+			                                             0.005 0.005 0.005
+		}
+                Champs dt_post 0.05
+		{ 
+			y_plus elem
+			vitesse 
+                        pression elem
+                        pression som
+		}
+        }
+
+}
+Solve pb
+Fin

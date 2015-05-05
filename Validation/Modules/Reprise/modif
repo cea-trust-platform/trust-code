@@ -1,0 +1,32 @@
+#!/bin/bash
+. $TRUST_ROOT/Outils/TRIOXDATA/IHMTRIO.sh 
+cas=`basename $1 .data`
+DIR=`dirname $0`
+[ "$DIR" = "" ] && DIR=`pwd`
+lan()
+{
+    triou $1 1>$1.out 2>$1.err
+}
+#rm -f *.lml
+if [ -f Rep_$cas.data ] && [ "$force" != 1 ] 
+then
+  echo "on utilise la sauvegarde (force!=1)"
+  cp Rep_$cas.data Reprise_$cas.data
+  gunzip -f *xyz.rep.gz
+else
+  echo " calcul de reference "
+  lan $cas 
+  cp $cas.lml .reference.lml
+  chmod +w $cas.data
+  grep -vi distance_paroi $cas.data > p.data
+  mv p.data $cas.data
+  python $DIR/decoup_data.py $cas.data xyz
+  status=$?
+  [ $status -ne 0 ] && echo $cas >> $DIR/pb_traduction
+  echo "premiere partie"
+  lan test_$cas 
+  cp test_$cas.dt_ev $cas.dt_ev
+  #echo "deuxieme partie "
+  #lan test2_$cas
+  #compare_lata $cas.lml test2_$cas.lml --dernier 
+fi

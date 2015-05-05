@@ -1,0 +1,66 @@
+#!/bin/bash
+# Script de creation des dependances depuis TOUS les includes
+pour_un_make_old()
+{
+echo $ECHO_OPTS "Includes = -I.\\"
+$TRUST_Awk  'BEGIN {deb=0} (deb==1)&&(NF>1) {print  $0} /# DO NOT DELETE/ {deb=1}' $1 | $TRUST_Awk -F: '{print $2}' | $TRUST_Awk '{for (i=1;i<NF+1;i++) print $i}'  | $TRUST_Awk -F/ '{ printf "\t-I";for (i=1;i<NF-1;i++) {printf $i;printf "/"} printf $(NF-1)"\\\n" }'| sort -u
+echo $ECHO_OPTS "\t-I."
+echo
+}
+
+pour_un_make()
+{
+echo $ECHO_OPTS "Includes = -I.\\"
+$TRUST_Awk -F/ '{if ($1!=".") { printf "\t-I";for (i=1;i<NF-1;i++) {printf $i;printf "/"} printf $(NF-1)"\\\n" }}' $1 | sort -u | grep -v MPI_ROOT
+echo $ECHO_OPTS "\t-I\$(MPI_ROOT)/include"
+echo
+}
+
+extr()
+{
+$TRUST_Awk  'BEGIN {deb=0} (deb==1)&&(NF>1) {print  $0} /# DO NOT DELETE/ {deb=1}' $1 | $TRUST_Awk -F: '{print $2}' | $TRUST_Awk '{for (i=1;i<NF+1;i++) print $i}'  | sort -u | grep \/
+}
+
+Includes=$*
+make_depend_TRUST -I. $Includes 1>/dev/null 2>/dev/null
+
+#CHECKOUT make.include
+LIB=`grep "Lib =" make.include`
+extr *akefile > make.include.test
+
+#1) Remplacement des chemins en dur par chemins avec $TRUST_ROOT :
+[ ! -f $TRUST_ROOT/include/.tmp ] && echo "Taper cree_include avant." && exit
+Makefile="make.include.test"
+#echo $ECHO_OPTS"sed...\c"
+sed -f $TRUST_ROOT/include/.tmp $Makefile > $Makefile".bak1"
+sed -f $TRUST_ROOT/include/.tmp1 $Makefile".bak1" > $Makefile".bak"
+#echo $ECHO_OPTS"ok"
+
+#3) Place en en tete les repertoires d'include:
+#Makefile=`ls ?akefile`
+pour_un_make $Makefile".bak"  > $Makefile
+echo $LIB >> $Makefile
+rm -f $Makefile".bak" $Makefile".bak1"
+make depend 1>/dev/null
+sort make.include > make.include.sort
+sort make.include.test > make.include.test.sort
+if [ "`diff make.include.sort make.include.test.sort`" != "" ]
+then
+   diff make.include.sort make.include.test.sort
+   echo make.include incorrect voir make.include.test
+
+   if [ "`diff make.include.sort make.include.test.sort | grep \>`" != "" ]
+   then
+      echo il manque des includes dans make.include
+      rm -f make.include.sort make.include.test.sort
+      exit -1  
+   else
+      echo "Il y a des include en trop dans `pwd`/make.include"
+      #CHECKOUT make.include
+      #mv make.include.test make.include
+   fi
+else
+   rm -f make.include.test
+fi
+rm make.include.sort make.include.test.sort
+#CHECKIN make.include 1>/dev/null 2>/dev/null

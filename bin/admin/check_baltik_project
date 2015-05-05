@@ -1,0 +1,73 @@
+#!/bin/bash
+# Script de mise a jour d'un projet Baltik compilant
+# avec un Kernel TRUST
+
+# Verification que l'environnement Kernel TRUST est initialise
+[ "$TRUST_ROOT" = "" ] || [ -d $TRUST_ROOT/ThHyd ] && echo "L'environnement d'un Kernel TRUST n'est pas initialise." && exit -1
+
+# Mise a jour de l'environnement Kernel
+ici=`pwd`
+cd $TRUST_ROOT
+source env/Init_TRUST
+cd $ici
+# Verification que le script est execute dans un projet Baltik
+[ ! -f project.cfg ] || [ ! -d src ] && echo "Vous n'etes pas dans un projet Baltik ici: `pwd`." && exit -1
+PROJECT=`$TRUST_Awk '/name/ {print $3;exit}' project.cfg`
+
+# Verification que la version a change
+if [ -f src/Version_kernel ] && [ $TRUST_VERSION != `cat src/Version_kernel` ]
+then
+   tmp=`mktemp_`
+   echo "Attention, le projet Baltik $PROJECT teste regulierement sous" > $tmp
+   echo "`pwd` est base sur le Kernel `cat src/Version_kernel`" >> $tmp
+   echo "Le Kernel a change de version et passe a la $TRUST_VERSION." >> $tmp
+   echo "Il est peut etre temps de mettre a jour le projet baltik $PROJECT" >> $tmp
+   echo "si celui ci a evolue." >> $tmp
+   cat $tmp | mail_ -s\"[check_baltik_project] Projet Baltik $PROJECT a mettre a jour?\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+   rm -f $tmp
+fi
+
+# Lancement 
+$TRUST_ROOT/bin/baltik/bin/baltik_build_configure || exit -1
+./configure || exit -1
+
+# Mise en READONLY des src des dependances
+dependencies=`$TRUST_Awk '/dependencies/ {while(getline!=EOF) {print $NF" "}}' project.cfg`
+for dependencie in $dependencies
+do
+   chmod 444 $dependencie/src/*
+done
+
+# Compilation
+echo "Compilation debug et test du projet $PROJECT..."
+make check_all_debug 
+if [ $? != 0 ]
+then
+   echo "****************************************************"
+   echo "Il faut mettre a jour le projet $PROJECT en allant sous src"
+   echo "Puis faire:"
+   echo "export rep_dev=\`pwd\`"
+   # Recuperation du numero de Version _beta ou _rcN
+   # echo "export TRUST_VERSION="`cd $TRUST_ROOT;cleartool lstype -kind lbtype -short | awk -F"." '(NF==3) && ($1=="v1") && !/beta/ {gsub("v","",$0);print $0}' | tail -1`
+   # Lancement du merge de Baltik avec le Kernel
+   echo "atelier_fusion_label.ct -auto"
+   echo "Puis refaire $0"
+   echo "***************************************************"
+   echo "Projet Baltik $PROJECT KO"
+   exit -1
+else
+   # On ajoute la verification optimisee valgrind si OpenMPI 1.2.9 seulement:
+   [ "`$Mpirun --version 2>&1 | grep 1.2.9`" != "" ] && export VALGRIND=1
+   make check_all_optim
+   if [ $? != 0 ]
+   then
+      echo "Error with valgrind on Baltik project $PROJECT"
+      echo "Projet Baltik $PROJECT KO"
+      unset VALGRIND
+      exit -1
+   else   
+      echo "Projet Baltik $PROJECT OK"
+      unset VALGRIND
+      exit 0
+   fi
+fi

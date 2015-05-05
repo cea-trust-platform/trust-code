@@ -1,0 +1,6 @@
+#!/bin/bash
+# On verifie que les maillages ASCII et BINAIRE sont identiques
+compare_lata Kernel_ICEM_ascii.lml Kernel_ICEM_binaire.lml || exit -1
+# On verifie que les maillages BINAIRE cleaned et ASCII sont identiques
+compare_lata Kernel_ICEM_ascii.lml Kernel_ICEM_binaire_cleaned.lml || exit -1
+

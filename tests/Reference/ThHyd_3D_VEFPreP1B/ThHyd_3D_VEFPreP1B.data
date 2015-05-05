@@ -1,0 +1,158 @@
+
+# Thermohydraulique 3D VEFPreP1B #
+# PARALLEL OK 5 #
+dimension 3    
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0.
+	tmax 1000000.
+        dt_min 1.e-9
+        dt_max 1.
+        dt_impr 0.1
+        dt_sauv 500.
+        seuil_statio 1.e-10
+	nb_pas_dt_max 20
+}
+
+Pb_Thermohydraulique pb
+
+Domaine dom_fluide
+# BEGIN MESH #
+Read_file dom_fluide cylindre1270_2.geom
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom_fluide
+{
+	Partitionneur metis { Nb_parts 2 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom_fluide
+END SCATTER #
+
+VEFPreP1B dis
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 2e-09
+	rho Champ_Uniforme 1 2
+        lambda Champ_Uniforme 1 0.02
+	Cp Champ_Uniforme 1 500
+        beta_th Champ_Uniforme 1 0.003
+}
+
+
+Champ_Uniforme gravite
+Lire gravite 3 0. -9.81 0.
+Associate fluide gravite
+
+Associate pb dom_fluide
+Associate pb fluide
+Associate pb sch
+Discretize pb dis
+
+# 3 domains (surfaces) are created #
+# We plane to calculate the mean temperature on this surfaces #
+Domaine outlet
+Domaine inlet
+Domaine plan
+# This surface is a plane #
+Extraire_plan
+{
+	domaine plan
+	probleme pb
+	epaisseur 0.1
+	origine 3 -0.03 -0.03 0.01
+	Point1 	3  0.03 -0.03 0.01
+	Point2 	3 -0.03  0.03 0.01  
+	via_extraire_surface
+}
+
+Lire pb
+{
+        Navier_Stokes_standard
+        {
+     		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-15
+		impr } 
+                convection { amont }
+                diffusion { }
+                sources { boussinesq_temperature { T0 410. } }
+                conditions_initiales {
+                        vitesse Champ_Uniforme 3 0. 0. 0.
+                        }
+                boundary_conditions {
+                        HAUT   paroi_fixe
+                        BAS    paroi_fixe
+                        DROIT  paroi_fixe
+                        GAUCH  paroi_fixe
+                }
+        }
+        Convection_Diffusion_Temperature
+        {
+                diffusion {  }
+                convection { amont }
+                boundary_conditions 
+                {	
+			HAUT   Paroi_flux_impose 		Champ_front_Uniforme 1 0.
+                        BAS    Paroi_flux_impose 		Champ_front_Uniforme 1 0.
+                        DROIT  Paroi_temperature_imposee 	Champ_Front_Uniforme 1 323.15 
+                        GAUCH  Paroi_flux_impose 		Champ_front_Uniforme 1 400.
+                }
+                conditions_initiales { Temperature Champ_fonc_xyz dom_fluide 1 538.911933+((323.150000-538.911933)/0.02)*((SQRT(x^2+y^2))-0.01) }
+        }
+        Postraitement
+        {	
+		Definition_champs
+		{
+			# The mean temperature on a plane inside the domain is calculated by an interpolation #
+			mean_temperature_plan 	Reduction_0D { methode moyenne source Interpolation { domaine plan localisation elem source RefChamp { Pb_champ pb temperature } } }
+			# The mean temperature on inlet and outlet boundaries are calculated with an extraction of the temperature field onto the boundaries # 
+			mean_temperature_outlet Reduction_0D { methode moyenne source Extraction { domaine outlet nom_frontiere DROIT methode champ_frontiere source RefChamp { Pb_champ pb temperature } } }
+			mean_temperature_inlet 	Reduction_0D { methode moyenne source Extraction { domaine inlet nom_frontiere GAUCH methode trace source RefChamp { Pb_champ pb temperature } } }
+			
+			# Calculation of minimal and maximal values of different fields #
+		   	pression_min 		Reduction_0D { methode min source Interpolation { localisation som source refChamp { Pb_champ pb pression } } }				
+		   	pression_max 		Reduction_0D { methode max source Interpolation { localisation som source refChamp { Pb_champ pb pression } } }						
+		   	pression_moy 		Reduction_0D { methode moyenne source Interpolation { localisation som source refChamp { Pb_champ pb pression } } }
+		   	temperature_moy 	Reduction_0D { methode moyenne source Interpolation { localisation som source refChamp { Pb_champ pb temperature } } }
+		   	vitesse_moy		Reduction_0D { methode moyenne source Interpolation { localisation som source refChamp { Pb_champ pb vitesse } } }
+		   	temperature_sum 	Reduction_0D { methode somme source Interpolation { localisation som source refChamp { Pb_champ pb temperature } } }
+			vitesse_sum		Reduction_0D { methode somme source Interpolation { localisation som source refChamp { Pb_champ pb vitesse } } }		   
+			
+		}
+                Sondes
+                { 
+			mean_temperature_plan 		mean_temperature_plan 	periode 0.001	numero_elem_sur_maitre 0
+			mean_temperature_outlet 	mean_temperature_outlet periode 0.001	numero_elem_sur_maitre 0
+			mean_temperature_inlet 		mean_temperature_inlet 	periode 0.001	numero_elem_sur_maitre 0
+			pression_moy 			pression_moy 		periode 1 	numero_elem_sur_maitre 0
+			temperature_moy 		temperature_moy		periode 1 	numero_elem_sur_maitre 0
+			vitesse_moy			vitesse_moy		periode 1 	numero_elem_sur_maitre 0
+			temperature_sum 		temperature_sum		periode 1 	numero_elem_sur_maitre 0
+			vitesse_sum			vitesse_sum		periode 1 	numero_elem_sur_maitre 0			
+                	T_FLUIDE1 			temperature 		periode 1 	segment 5 0.011 0. 0.005  0.029 0. 0.005 
+                	T_FLUIDE2 			temperature 		periode 1 	segment 5 0.011 0. 0.015  0.029 0. 0.015 
+			TEST1D_FLUIDE 			temperature 		periode 100 	segment 5 5.e-3 5.e-3 2.5e-2 5.e-3 4.5e-2 2.5e-2
+                }	
+                Champs dt_post 100.
+                {
+			pression som
+                        temperature elem
+			vitesse elem
+			pression_min
+			pression_max
+			pression_moy
+			energie_cinetique
+                }
+        }
+}
+
+Solve pb
+Fin

@@ -1,0 +1,202 @@
+Parameters {
+	Title "Test de raffiner_simplex"
+	Author "fauchet "
+	description On essaye en quadrangle, triangle, hexa et tetra
+	TestCase tri 2D
+	TestCase quad 2D
+	TestCase hexa 3D
+	TestCase tetra 3D
+	TestCase . quality_3D
+	TestCase . raf_iso
+	TestCase quad_vef 2D
+	TestCase hexa_vef 3D
+	TestCase . ver_diag  
+	Prerequisite Extract_histogram domain_5 quality_3D.out  > histo
+}
+Chapter {
+	Title "triangle"
+	# definition figure 0
+	Visu {
+		description "maillage original"
+		mesh tri/2D.lata initial_domain
+		operator no_axes
+		operator no_bounding_box
+		operator no_databaseinfo
+		operator_to_all no_legend
+		operator no_triad
+		width 7cm
+		nb_img_without_newline 2
+	}
+	# definition figure 1
+	Visu {
+		description "maillage final"
+		mesh tri/2D.lata final_domain
+		operator no_axes
+		operator no_bounding_box
+		operator no_databaseinfo
+		operator_to_all no_legend
+		operator no_triad
+		width 7cm
+	}
+}
+Chapter {
+	Title "quadrangle"
+	# definition figure 2
+	Visu {
+		description "maillage original"
+		mesh quad/2D.lata initial_domain
+		operator no_axes
+		operator no_bounding_box
+		operator no_databaseinfo
+		operator_to_all no_legend
+		operator no_triad
+		width 7cm
+		nb_img_without_newline 2
+	}
+	# definition figure 3
+	Visu {
+		description "maillage final"
+		mesh quad/2D.lata final_domain
+		operator no_axes
+		operator no_bounding_box
+		operator no_databaseinfo
+		operator_to_all no_legend
+		operator no_triad
+		width 7cm
+	}
+}
+Chapter {
+	Title "quadrangle_vef"
+	# definition figure 2
+	Visu {
+		description "maillage original"
+		mesh quad_vef/2D.lata initial_domain
+		operator no_axes
+		operator no_bounding_box
+		operator no_databaseinfo
+		operator_to_all no_legend
+		operator no_triad
+		width 7cm
+		nb_img_without_newline 2
+	}
+	# definition figure 3
+	Visu {
+		description "maillage final"
+		mesh quad_vef/2D.lata final_domain
+		operator no_axes
+		operator no_bounding_box
+		operator no_databaseinfo
+		operator_to_all no_legend
+		operator no_triad
+		width 7cm
+	}
+}
+Chapter {
+	Title "tetra"
+	# definition figure 4
+	Visu {
+		description "maillage original"
+		mesh tetra/3D.lata initial_domain
+		operator no_axes
+		operator no_bounding_box
+		operator no_databaseinfo
+		operator_to_all no_legend
+		operator no_triad
+		normal3d 0.489476 -0.789972 0.369266
+		up3d -0.417847 0.159205 0.89446
+		width 7cm
+		nb_img_without_newline 2
+	}
+	# definition figure 5
+	Visu {
+		description "maillage final"
+		mesh tetra/3D.lata final_domain
+		operator no_axes
+		operator no_bounding_box
+		operator no_databaseinfo
+		operator_to_all no_legend
+		operator no_triad
+		normal3d 0.489476 -0.789972 0.369266
+		up3d -0.417847 0.159205 0.89446
+		width 7cm
+	}
+}
+Chapter {
+	Title "hexa"
+	# definition figure 6
+	Visu {
+		description "maillage original"
+		mesh hexa/3D.lata initial_domain
+		operator no_axes
+		operator no_bounding_box
+		operator no_databaseinfo
+		operator_to_all no_legend
+		operator no_triad
+		normal3d 0.489476 -0.789972 0.369266
+		up3d -0.417847 0.159205 0.89446
+		width 7cm
+		nb_img_without_newline 2
+	}
+	# definition figure 7
+	Visu {
+		description "maillage final"
+		mesh hexa/3D.lata final_domain
+		operator no_axes
+		operator no_bounding_box
+		operator no_databaseinfo
+		operator_to_all no_legend
+		operator no_triad
+		normal3d 0.489476 -0.789972 0.369266
+		up3d -0.417847 0.159205 0.89446
+		width 7cm
+	}
+}
+Chapter {
+	Title "hexa_vef"
+	# definition figure 6
+	Visu {
+		description "maillage original"
+		mesh hexa_vef/3D.lata initial_domain
+		operator no_axes
+		operator no_bounding_box
+		operator no_databaseinfo
+		operator_to_all no_legend
+		operator no_triad
+		normal3d 0.489476 -0.789972 0.369266
+		up3d -0.417847 0.159205 0.89446
+		width 7cm
+		nb_img_without_newline 2
+	}
+	# definition figure 7
+	Visu {
+		description "maillage final"
+		mesh hexa_vef/3D.lata final_domain
+		operator no_axes
+		operator no_bounding_box
+		operator no_databaseinfo
+		operator_to_all no_legend
+		operator no_triad
+		normal3d 0.489476 -0.789972 0.369266
+		up3d -0.417847 0.159205 0.89446
+		width 7cm
+	}
+}
+Chapter {
+	Title Verification de la conservation du nombre de types de tetra.
+	description on prend un tetra que l'on raffine 5 fois. Au depart, l'angle max du tetra vaut 132 degres.
+	# definition figure 8
+	Figure {
+		Title_figure " "
+		labelX angle
+		labelY " "
+		legend under
+		Include_Description_Curves 0
+		width 12cm
+		Curve {
+			legend avec raffiner_simplexes
+			file histo
+			columns ($2+$5)/2 8
+			style boxes fill solid 0.3
+		}
+	}
+}

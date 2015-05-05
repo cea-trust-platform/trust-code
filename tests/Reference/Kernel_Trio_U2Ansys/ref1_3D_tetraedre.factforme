@@ -1,0 +1,7 @@
+3
+0  0.0151452  0.984855  
+0.0151452  0  0.984855  
+0.0488215  0.0488215  0.902357  
+
+# Facteurs de forme calcules avec la commande:
+# geom2ansys 3D_tetraedre.geom

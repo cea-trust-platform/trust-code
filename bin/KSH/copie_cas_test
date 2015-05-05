@@ -1,0 +1,290 @@
+#!/bin/bash
+# Script de copie d'un cas de la base de cas tests ($TRUST_ROOT/tests)
+# vers `pwd`/$1, repertoire courant
+# $1=Reference/VAHL_DAVIS
+# $2=/export/home/triou/git/Livraison/TRUST/tests
+[ "$1" = "" ] && echo "Usage: `basename $0` TEST [TRUST_TESTS]" && exit -1
+REP=$1
+ref=$TRUST_TESTS
+[ "$2" != "" ] && ref=$2
+# Si on ne trouve pas le cas test on le cherche sous $ref
+# le / apres $REP permet de suivre l eventuel lien
+if [ ! -d $ref/$REP/ ] 
+then
+    org=`pwd`;
+    [ ! -d $ref ] && echo "The directory $ref does not exist under the directory `pwd`" && exit 1
+    cd $ref
+    rep=`find . -type d -name $REP -print  -or -type l  -name $REP -print`
+    # Fiabilisation de copie_cas_test
+    [ "`echo $rep | wc -w`" -gt 1 ] && echo "Error, several test cases found: "$rep && exit 1
+    [ "$rep" = "" ] && echo "The test case $REP does not exist under directories of $ref" && exit 1
+    rep=`dirname $rep`
+    ref=$ref/$rep
+    cd $org
+fi
+#echo $ref
+[ ! -d $REP ] && mkdir -p $REP
+[ ! -d $ref/$REP/ ] && echo "The case $ref/$REP does not exist." && exit 1
+cd $REP
+[ $? != 0 ] && echo "Problem in copie_cas_test." && exit -1
+############################
+# Vide le repertoire courant
+############################
+rm -f * 2>/dev/null
+
+###############################################
+# Copie des fichiers dans le repertoire courant
+###############################################
+if [ "`element_gere_en_configuration.sh $ref/$REP`" = git ]
+then
+   files=`cd $ref/$REP;git-ls-files`
+else
+   # Cas ou les tests ne sont pas geres par Git
+   files=`cd $ref/$REP;find . -type f`
+fi
+# Copie des fichiers et on met les droits d'ecriture
+for file in $files
+do
+   rm -f $file && [ -s $ref/$REP/$file ] && cp -f $ref/$REP/$file .
+done
+chmod -R +w .
+# Gere les liens entre fichiers de differents repertoires
+# GF le / apres le REP permet de suivre les liens
+for file in `find $ref/$REP/ -type l`
+do
+   arrivee=`ls -l $file | $TRUST_Awk '{print $NF}'`
+   depart=`ls -l $file | $TRUST_Awk '{print $(NF-2)}'`
+   # Est ce que le fichier pointe est non vide ?
+   # Si oui on fait un lien absolu
+   if [ -s `dirname $depart`/$arrivee ]
+   then
+      ln -s -f `dirname $depart`/$arrivee `basename $depart`
+   else
+      # Sinon lien relatif
+      ln -s -f $arrivee `basename $depart`
+   fi
+done	
+
+#################################
+# Cas d'un cas test de validation
+#################################
+lien=lien_fiche_validation
+if [ -f $lien ]
+then
+   if [ ${#Rapports_auto_root} != 0 ]
+   then
+      jeu2=$Rapports_auto_root/`cat $lien`
+   else
+      jeu2=$TRUST_ROOT/`cat $lien`
+   fi
+   jeu=`echo $jeu2 | $TRUST_Awk -F'/build/' '{print $NF}'`
+   FICHE_ROOT=`echo $jeu2 | sed "s?/build/$jeu??"`
+   test=`pwd`
+   test=`basename $test`   
+   TMP_BUILD=`mktemp_ -d`
+   # Est ce que la fiche existe ?
+   if [ -d $FICHE_ROOT ]
+   then
+      # On fait un build pour verifier les jeux de donnees a passer $jeux
+      (
+      cd $FICHE_ROOT
+      prm=`\ls src/*.prm 2>/dev/null`
+      nombre_prm=`echo $prm | $TRUST_Awk '{print NF}'`
+      if [ $nombre_prm != 1 ]
+      then
+         echo "On doit avoir un seul fichier .prm par fiche de validation."
+	 echo "Or on en trouve $nombre_prm fichiers sous `pwd`!"
+	 rm -r -f $TMP_BUILD
+         exit -1
+      fi
+      # Ce build est fait sous le repertoire temporaire $TMP_BUILD:
+      rm -r -f $TMP_BUILD/build
+      # $TRUST_ROOT/Validation/Outils/Genere_courbe/Run $prm -dest $TMP_BUILD -not_run --get_cmd_to_run=yes 1>$TMP_BUILD/command
+      )
+      echo $ECHO_OPTS "Extracting test case...\c"
+      # jeux=`cat $TMP_BUILD/command 2>&1 | grep get_total_time | sed "s/\.perf/.data/g" | sed "s/get_total_time//" | sed "s/\.\///g"` 
+      jeux=`( cd $FICHE_ROOT;$TRUST_ROOT/Validation/Outils/Genere_courbe/scripts/get_list_cas_nr src/*prm -dest $TMP_BUILD)` 
+      echo "End."
+   else
+      jeux=""
+   fi
+   # Est ce que le jeu de donnees $jeu fait partie de la liste des jeux $jeux qui tournent encore ?
+   OK=0
+   for file in $jeux 
+   do
+      [ $file = $jeu ] && OK=1
+   done
+   if [ "$OK" = 0 ]
+   then
+      echo "Le cas test $test est obsolete car le jeu de donnees correspondant de"
+      echo "la fiche de validation $FICHE_ROOT n'existe plus."
+      #cd $TRUST_TESTS/Validation
+      #CHECKOUT . 1>/dev/null 2>&1
+      #cleartool rmname -force $test 1>/dev/null 2>&1
+      #echo "Le repertoire $test est efface."
+      # Pierre il est important de ne pas effacer automatiquement, car si une erreur se glisse dans un prm, on perd les references, meme si apres il recee le cas
+      echo "Si c'est bien le cas, le repertoire $test peut etre efface par:"
+      echo cd `pwd`";" cleartool rmname -force $test
+      rm -r -f $TMP_BUILD
+      exit -1
+   fi
+   jeu=$TMP_BUILD/build/$jeu
+   repertoire_jeu=`dirname $jeu`
+   for file in `cd $repertoire_jeu;\ls`
+   do
+      # On ne deplace pas certains fichiers: pas de .lml.gz
+      if [ -f $repertoire_jeu/$file ] && [ ${file%.lml.gz} = $file ]
+      then
+	 # Copie le .data en faisant attention aux liens relatifs dans le .data:
+	 if [ ${file%.data} != $file ]
+	 then
+	    relatifs=`$TRUST_Awk -v file=$file '// {avant=$0;if (gsub("\\\.\\\./","",$0)) print avant;print $0 > file}' $repertoire_jeu/$file`
+	    for relatif in $relatifs
+	    do
+	       [ -f $repertoire_jeu/$relatif ] && cp $repertoire_jeu/$relatif .
+	    done
+	 else
+	    cp $repertoire_jeu/$file .
+	 fi
+      fi
+      # On copie les repertoires
+      if [ -d $repertoire_jeu/$file ]
+      then
+	 cp -r $repertoire_jeu/$file .
+      fi 
+   done
+   # Renomme le .data et le modifie pour qqs pas de temps
+   old=`basename $jeu`
+   [ ! -f $old ] && echo "Erreur $old inexistant! Probleme dans la fiche de validation..." && exit -1
+   # Change le nombre de pas de temps a 3 au plus et eventuellement GCP -> CHOLESKY (si le solveur_pression est defini sur une seule ligne et si pas FT)
+   # Gauthier veut que l'on touche au minimum le jeu de donnees donc pas de changement GCP -> CHOLESKY
+   FT=0 && [ "`grep -i Probleme_FT_Disc_gen $old`" != "" ] && FT=1
+   nb_pas_dt_max=`$TRUST_Awk '/nb_pas_dt_max / && (NF==2) {print $2}' $old | head -1`
+   if [ "$nb_pas_dt_max" = "" ] || [ $nb_pas_dt_max -gt 3 ]
+   then
+      nb_pas_dt_max=3
+   fi
+   $TRUST_Awk -v FT=$FT -v nb_pas_dt_max=$nb_pas_dt_max '/tinit/ {print $0;print "\tnb_pas_dt_max "nb_pas_dt_max;getline}\
+    #(FT==0) && /solveur_pression/ && / [Gg][Cc][Pp] / && /seuil/ && /precond/ && /}/ {print "solveur_pression petsc cholesky { }";getline}\
+    !/nb_pas_dt_max/ {print $0}\
+   ' $old > $test.data
+   rm -f $old
+   # On n'est pas la pour tester le parallelisme donc:
+   #echo $ECHO_OPTS "1,$ s?PARALLEL OK ?PARALLEL NOT ?g\nw" | ed $test.data 1>/dev/null 2>&1
+   # Change le format en lml
+   echo $ECHO_OPTS "1,$ s?ormat[ \t]lata_v2?ormat lml?g\nw" | ed $test.data 1>/dev/null 2>&1
+   echo $ECHO_OPTS "1,$ s?ormat[ \t]lata?ormat lml?g\nw" | ed $test.data 1>/dev/null 2>&1
+   # Pas de postraitement aux faces (a ameliorer, cela devient trop complique):
+   echo $ECHO_OPTS "1,$ s/[ \t]temperature_physique[ \t]faces$//g\nw" | ed $test.data 1>/dev/null 2>&1
+   echo $ECHO_OPTS "1,$ s/[ \t]energie_cinetique[ \t]faces$//g\nw" | ed $test.data 1>/dev/null 2>&1
+   echo $ECHO_OPTS "1,$ s/[ \t]erreur_energie_cinetique[ \t]faces$//g\nw" | ed $test.data 1>/dev/null 2>&1
+   echo $ECHO_OPTS "1,$ s/[ \t]energie_cinetique_analytique[ \t]faces$//g\nw" | ed $test.data 1>/dev/null 2>&1
+   echo $ECHO_OPTS "1,$ s/[ \t]erreur_relative_energie_cinetique[ \t]faces$//g\nw" | ed $test.data 1>/dev/null 2>&1
+   echo $ECHO_OPTS "1,$ s/[ \t]erreur_relative_energie_cinetique[ \t]som$//g\nw" | ed $test.data 1>/dev/null 2>&1
+   echo $ECHO_OPTS "1,$ s/[ \t]faces$//g\nw" | ed $test.data 1>/dev/null 2>&1
+   # Suppression de tparoi:
+   echo $ECHO_OPTS "1,$ s/[ \t]tparoi$//g\nw" | ed $test.data 1>/dev/null 2>&1
+   # Pas de bruit comme CI
+   echo $ECHO_OPTS "1,$ s/ampli_bruit[ \t][0-9].[0-9]*/ampli_bruit 0.0/g\nw" | ed $test.data 1>/dev/null 2>&1
+   # on remplace # lata convert # par lata_to_other
+   echo $ECHO_OPTS "1,$ s/# lata convert #/Lata_to_other lml NOM_DU_CAS NOM_DU_CAS/g\nw" | ed $test.data 1>/dev/null 2>&1
+   # Met en gestion de configuration du .data si possible
+   # L'utilisateur possede le repertoire
+   #if [ $TRUST_LOGIN = `whoami` ]
+   # Nouveau 1.6.7, les cas tests sont crees dans 2 repertoires possibles: 
+   # -soit dans $TRUST_TESTS/Validation   si c'est une fiche sous Validation/Rapports_automatiques/Validant
+   # -soit dans $TRUST_TESTS/Verification si c'est une fiche sous Validation/Rapports_automatiques/Verification
+   if [ "`echo $FICHE_ROOT | grep /Validant/`" != "" ]
+   then
+      cible=$TRUST_TESTS/Validation/$test 
+   elif [ "`echo $FICHE_ROOT | grep /Verification/`" != "" ]
+   then
+      cible=$TRUST_TESTS/Verification/$test 
+   else
+      # Si on ne sait pas determiner, on met dans Validation...
+      # Exemple: Baltik
+      cible=$TRUST_TESTS/Validation/$test 
+      #echo "Cas non prevu pour $FICHE_ROOT dans copie_cas_test."
+      #exit -1
+   fi 
+   if [ -O $cible ] 
+   then
+      cible=$cible/$test.data
+      if [ ! -f $cible ] || [ "`diff $test.data $cible`" != "" ] 
+      then
+         DEST=`pwd`
+	 cd `dirname $cible`
+	 if [ ! -f $cible ] 
+	 then
+	    CHECKOUT . 1>/dev/null 2>&1
+	    touch $cible
+	    chmod +w $cible
+	    if [ "$TRUST_SCM" = 1 ] 
+	    then
+	       MKELEM `basename $cible` 1>mkelem.log 2>&1
+	       [ $? != 0 ] && echo "Echec when creating `basename $cible`" && cat mkelem.log && exit -1
+	    fi
+	 else
+	    msg="Changement du jeu de donnees $cible\n
+suite a une modification d'un jeu de donnees de la fiche de validation associee.\n
+Mise a jour du jeu de donnees seulement... A vous de voir pour le .lml.gz" 
+	    echo $ECHO_OPTS $msg
+	    touch $DEST/check_lml_gz	    
+	 fi
+	 CHECKOUT `basename $cible` 1>/dev/null 2>&1
+	 cd - 1>/dev/null 2>&1
+	 cat $test.data > $cible
+      fi
+   fi
+   rm -r -f $TMP_BUILD
+   # Execute l'equivalent du prepare 
+   rm -f prepare
+   if [ -f pre_run ]
+   then
+      mv pre_run prepare
+      chmod +x prepare
+      # On change certains jeux de donnees executes par le prepare #
+      for data in `ls *.data 2>/dev/null`
+      do
+	 [ "`grep '# nb_pas_dt_max 3 #' $data`" != "" ] && echo $ECHO_OPTS "1,$ s?# nb_pas_dt_max 3 #?nb_pas_dt_max 3?g\nw" | ed $data 1>/dev/null 2>&1
+      done   
+   fi
+fi	
+
+# Pre requis (script prepare)
+if [ -f ./prepare ]
+then
+   echo $ECHO_OPTS "Preparing test case...\c"
+   ./prepare 1>prepare.log 2>&1
+   if [ $? != 0 ]
+   then
+      echo "KO."
+      exit -1
+   else
+      echo "End."
+   fi
+fi
+
+# Mise a jour du lml.gz si cas test de validation modifie
+if [ -f $lien ] && [ -f check_lml_gz ]
+then
+   triou $test.data 1>$test.build 2>&1
+   if [ $? = 0 ]
+   then
+      gunzip -c $test.lml.gz > ref.lml
+      compare_lata ref.lml $test.lml
+      if [ $? != 0 ]
+      then
+         echo "Attention! La fiche de validation est modifiee et change la reference..."
+	 echo "Verifier votre fiche de validation (provisoire en attente)"
+      fi
+      # PL: on n'update plus automatiquement le lml.gz
+      #touch $TRUST_TMP/TRUST_DATA_CHANGE_LML
+      #(cd `dirname $cible`;CHECKOUT $test.lml.gz 1>/dev/null 2>&1)
+      #rm -f $TRUST_TMP/TRUST_DATA_CHANGE_LML
+      #gzip -c $test.lml > `dirname $cible`/$test.lml.gz
+   else
+      echo "Le cas $test n'a pas tourne! Verifier la fiche de validation associee."
+   fi
+fi
+

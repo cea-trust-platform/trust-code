@@ -1,0 +1,109 @@
+# Periodicite et lecture d'une CI dans un fichier #
+# PARALLEL OK #
+# Test du quick en periodique #
+dimension 2
+
+Pb_Hydraulique pb
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Cavite 
+		{
+		Origine 0. -7.
+     	Nombre_de_Noeuds 57 29
+		Longueurs 28. 14.
+		}
+		{
+		Bord Perio X = 0.  -7. <= Y <= 7.
+		Bord Haut  Y = 7.   0. <= X <= 28.
+		Bord Bas   Y = -7.  0. <= X <= 28.
+		Bord Perio X = 28. -7. <= Y <= 7.
+		}
+}
+
+# END MESH #
+# Echange_domcut tests sur un maillage periodique #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 1 2 }
+	Larg_joint 2
+	Nom_Zones dom
+	periodique 1 Perio
+	formatte
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+ScatterFormatte dom.Zones dom
+END SCATTER #
+
+VDF dis
+
+Runge_Kutta_ordre_3 sch
+Lire sch
+{
+	tinit 0
+    	tmax 30.
+	dt_min 0.2
+	dt_max 0.2
+	dt_impr 0.1
+	dt_sauv 100
+	seuil_statio 1.e-10
+}
+
+Fluide_Incompressible eau
+Lire eau
+{
+	mu Champ_Uniforme 1 0.002
+	rho Champ_Uniforme 1 2
+}
+Associate pb dom
+Associate pb sch
+Associate pb eau
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.650000 } 
+			seuil 1.000000e-12
+			impr 
+		}
+		diffusion { }
+                convection { quick }
+		conditions_initiales {
+			vitesse Champ_Don_lu dom 2 periodique.rep
+			}
+		boundary_conditions {
+			Perio periodique 
+			Haut Symetrie
+           		Bas Symetrie
+		}
+	}
+
+	Postraitement
+	{
+		Champs dt_post 100.
+		{
+			vitesse som
+                        pression elem
+                        vorticite som 
+		}
+                Sondes 
+                {
+			vitx_moyenne vitesse  periode 0.5 segment 57   0. 0.   28. 0.
+                        vit_sortie   vitesse  periode 0.5 segment 28   28. -7. 28. 7.
+                        vit_entree   vitesse  periode 0.5 segment 28   0. -7.   0. 7.
+                        sonde_p      pression periode 0.5 segment 56  0. 0.   28. 0.
+                }
+	}
+}
+
+Solve pb
+Fin

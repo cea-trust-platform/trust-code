@@ -1,0 +1,4 @@
+# Comparaison temps calcul P1 | P1Bulle
+cat P1.out P1.err | $TRUST_Awk '/Order of the matrix/ {inc=$NF} /Total time step/ {n++;t+=$5} END {print "Calcul P1: "inc" inconnues cpu/dt= "t/n" s"}'
+cat P1toP1Bulle.out P1toP1Bulle.err | $TRUST_Awk '/Order of the matrix/ {inc=$NF} /Total time step/ {n++;t+=$5} END {print "Calcul P1Bulle: "inc" inconnues cpu/dt= "t/n" s"}'
+

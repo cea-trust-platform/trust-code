@@ -1,0 +1,106 @@
+Parameters {
+	Title "verification ef_stab"
+	Description "Calculs menes en VEF laminaire"
+	Author "G.F."
+	TestCase "test_ef_stab" "test.data"
+	TestCase "test_ef_stab_ve" "test.data"
+	TestCase "test_ef_stab_old" "test.data"
+}
+
+Chapter {
+	Title "Profil de vitesse"
+	Description "Comparaison du profil de vitesse au profil de Poiseuille.  Voir data... "
+Figure {
+	Title "Trace du profil de u final "
+	Dimension 2
+	LabelX "m"
+	LabelY "m/s"
+	Curve {
+		legend "EF_stab { } "
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		file ./test_ef_stab/Moyennes_spatiales_vitesse_rho_mu_fin
+	Style linespoints
+		# TypeLigne 4
+		# TypePoints 4
+	}
+	Curve {
+		legend "EF_stab { volumes_etendues }"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		file ./test_ef_stab_ve/Moyennes_spatiales_vitesse_rho_mu_fin
+	Style linespoints
+		# TypeLigne 4
+		# TypePoints 4
+	}
+	Curve {
+		legend "EF_stab { old }"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		file ./test_ef_stab_old/Moyennes_spatiales_vitesse_rho_mu_fin
+	Style linespoints
+		# TypeLigne 4
+		# TypePoints 4
+	}
+	Curve {
+	        legend "analytique"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		file ./test_ef_stab/Moyennes_spatiales_vitesse_rho_mu_fin
+                 columns ($1) (1.5*($1)*(2-$1)) 
+		Style linespoints
+		# TypeLigne 2
+		# TypePoints 2
+	}
+}
+
+Figure {
+	Title "Pressure_gradient"
+	Dimension 2
+#	RangeX 0. 2.5
+	LabelX "s"
+	RangeY -0.1 0.2
+	LabelY ""
+	Curve {
+		legend "ef_stab { }"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		file test_ef_stab/test_Pressure_Gradient_pb_periox	
+
+		Style lines
+		# TypeLigne 4
+		# TypePoints 4
+	}
+	Curve {
+		legend "ef_stab { volumes_etendus } "
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		file test_ef_stab_ve/test_Pressure_Gradient_pb_periox	
+
+		Style lines
+		# TypeLigne 4
+		# TypePoints 4
+	}
+	Curve {
+		legend "ef_stab { old } "
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		file test_ef_stab_old/test_Pressure_Gradient_pb_periox	
+
+		Style lines
+		# TypeLigne 4
+		# TypePoints 4
+	}
+	Curve {
+	        legend "analytique"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+			file test_ef_stab/test_Pressure_Gradient_pb_periox
+		columns ($1) (0.03)	
+		Style lines
+		# TypeLigne 2
+		# TypePoints 2
+	}
+
+}
+}

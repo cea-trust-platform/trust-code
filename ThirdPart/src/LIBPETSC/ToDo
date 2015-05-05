@@ -1,0 +1,47 @@
+How to improve performances:
+-Look at http://www.mcs.anl.gov/petsc/documentation/faq.html
+-Test -pc_type_asm rather than default block jacobi (iterations scale a bit better)
+	-> GC/SSOR for instance
+-Base rule on number of unknowns per process (>number of cells per process) >10000-20000 according PETSc FAQ
+-Try binding (look advice PETSc and curie also...) Seems for lance_test -bind-socket  (decreases memory rate)
+-Try Bullxmpi option to reduce latency
+
+
+ToDo: PETSc 3.5
+-PETSC_DECIDE should work
+-Try pardiso on CCRT/callisto (faster than MUMPS?)
+-Try cholmod (fast seq cholesky with GPU support)
+
+Done:
+-petsc_decide=1 works now but slower than petsc_decide=0 (default)
+-Test MPI-3 with new pipelined solvers
+-Build PETSc with thread support
+-Try reordering procs in Decouper would reduce communications between near CPUs on the same nodes (google...) and use -bycore to fill nodes carefully
+
+GPU:
+Est ce que plusieurs GPU peut donner des bonnes perfs avec PEtsc ? 
+OUI si sur le calcul parallele sur CPU avait au moins 100000 mailles/CPUs.
+Dans ce cas la, decouper pour avoir 4 fois de CPUs utilises et faire un calcul 1GPU+1CPU.
+
+Sinon, essayer AMGX.
+Bien lire:
+https://lists.mcs.anl.gov/mailman/htdig/petsc-dev/2012-February/007538.html
+https://lists.mcs.anl.gov/mailman/htdig/petsc-dev/2013-June/012384.html
+
+Essayer ex2 pour avoir des bonnes performances en multigpu.
+
+aijcusp:
+http://www.mcs.anl.gov/petsc/petsc-dev/docs/manualpages/Mat/MATSEQAIJCUSPARSE.html
+Permet format ELL or DIA
+aijcusparse:
+http://www.mcs.anl.gov/petsc/petsc-dev/docs/manualpages/Mat/MATSEQAIJCUSPARSE.html
+Permet: format CSR, ELL, HYB  (ce dernier pemettrait +20% en performance)
+Voire + ici: https://lists.mcs.anl.gov/mailman/htdig/petsc-dev/2013-May/012079.html
+https://www.epcc.ed.ac.uk/sites/default/files/Dissertations/2010-2011/PramodKumbhar.pdf
+Il y'aurait aussi des preconditionneurs: ILU/ICC sur CPU
+https://lists.mcs.anl.gov/mailman/htdig/petsc-dev/2013-May/012077.html
+
+Comment utiliser le preconditionneur cusp sa amg ?
+
+Voir aussi:
+https://lists.mcs.anl.gov/mailman/htdig/petsc-dev/2012-February/007405.html 

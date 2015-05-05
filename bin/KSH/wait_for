@@ -1,0 +1,19 @@
+#!/bin/bash
+# Script qui attent la fin d'un process $1 pendant $2 secondes
+# Retourne -1 s'il bloque (et le tue)
+# Retourne 0 s'il finit 
+pcs=$1
+second=5 && [ "$2" != "" ] && second=$2
+s=0
+while [ "`kill -0 $pcs 2>/dev/null;echo $?`" = 0 ] && [ $s -le $second ]
+do
+   sleep 1
+   let s=$s+1
+done
+kill -9 $pcs 2>/dev/null
+if [ $? = 0 ]
+then
+   exit -1
+else
+   exit 0
+fi

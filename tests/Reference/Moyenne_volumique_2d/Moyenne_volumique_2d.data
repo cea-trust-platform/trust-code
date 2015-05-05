@@ -1,0 +1,137 @@
+# Thermohydraulique 2D + Moyenne volumique #
+# PARALLEL OK 4 #
+
+dimension 2
+domaine dom
+domaine dom_post
+
+# BEGIN MESH #
+Read_file dom poreux2d.geom
+mailler dom_post {
+        Pave pave1
+        {
+                origine 0. 0.
+                longueurs 1. 2. 
+                nombre_de_noeuds 21 41 
+        }
+        {
+		bord x X = 0. 0 <= Y <= 2. 
+		bord x X = 1. 0 <= Y <= 2. 
+		bord x Y = 0. 0 <= X <= 1. 
+		bord x Y = 2. 0 <= X <= 1. 
+	}
+}
+# END MESH #
+
+# BEGIN PARTITION 
+Partition dom {
+	partitionneur metis { Nb_parts 4 }
+	larg_joint 1
+	Nom_Zones dom
+}
+Partition dom_post {
+	partitionneur metis { Nb_parts 4 }
+	Nom_Zones dom_post
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones dom
+Scatter dom_post.Zones dom_post
+END SCATTER #
+
+Schema_Euler_Explicite sch
+Lire sch
+{
+	tinit 0.
+	tmax 0.
+	dt_min 1.e-8
+	dt_max 1e+3
+	dt_impr 1.
+	dt_sauv 0.1
+	seuil_statio 1.e-7
+        facsec 0.7
+	nb_pas_dt_max 1
+}
+
+Pb_Thermohydraulique pb
+
+VDF dis
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 0.05
+	rho Champ_Uniforme 1 1.
+	lambda Champ_Uniforme 1 0.05
+	Cp Champ_Uniforme 1 1.
+	beta_th Champ_Uniforme 1 0.0001
+}
+
+Associate pb dom
+Associate pb fluide
+Associate pb sch
+Discretize pb dis
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.500000 } 
+			seuil 1e-12 
+			impr 
+		}
+		diffusion { }
+		convection { amont }
+		conditions_initiales {
+			vitesse Champ_Uniforme 2 0. 0. 
+			}
+		boundary_conditions {
+			paroi symetrie
+			entree frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 2 0. 1. 
+			sortie frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
+			obstacle paroi_fixe
+		}
+	}
+	Convection_Diffusion_Temperature
+	{
+		diffusion { }
+		convection { amont }
+		boundary_conditions 
+		{
+			paroi symetrie
+			entree frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 0.
+			sortie frontiere_ouverte T_ext Champ_Front_Uniforme 1 0.
+			obstacle paroi_flux_impose Champ_Front_Uniforme 1 1.
+		}
+		conditions_initiales {
+			Temperature Champ_Fonc_xyz dom 1 y+(x>0.4)*(x<0.7)
+		}
+	}
+	Postraitement
+	{
+		format lata
+		Champs dt_post 0.1
+		{
+			temperature elem
+			pression elem
+			vitesse elem
+		}
+	}
+}
+Solve pb
+
+# prendre une marge sur la taille de la boite pour qu'il n'y ait pas #
+# d'ambiguite sur les elements a inclure ou non #
+Moyenne_volumique {
+	Nom_pb pb
+	Nom_domaine dom_post
+	Noms_champs 3 vitesse pression temperature
+	format_post      lml
+	nom_fichier_post NOM_DU_CAS
+	localisation     elem
+	fonction_filtre  { type boite demie-largeur 0.1001 }
+}
+
+Fin

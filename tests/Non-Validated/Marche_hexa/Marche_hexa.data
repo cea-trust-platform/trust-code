@@ -1,0 +1,143 @@
+# Hydraulique 3D maillage hexaedre turbulent K-Epsilon #
+# PARALLEL RUNS #
+
+dimension 3
+Pb_Hydraulique_Turbulent pb
+Domaine dom
+# BEGIN MESH #
+Read_file Marche3D.geo ;
+Transformer dom x y+x*x/900 z
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur metis { Nb_parts 2 }
+	Larg_joint 1
+	Nom_Zones DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+Read dis { P0 }
+
+schema_Euler_explicite sch
+Read sch
+{
+        tinit 0.
+        tmax 1.
+        dt_min 0.15
+        dt_max 0.15
+        dt_impr 0.15
+        dt_sauv 1.
+        seuil_statio 1.e-8
+        diffusion_implicite 1
+}
+
+
+Fluide_Incompressible fluide
+Read fluide
+{
+	mu Champ_Uniforme 1 5e-05
+	rho Champ_Uniforme 1 2
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Read pb
+{
+        Navier_Stokes_Turbulent
+        {
+                solveur_pression GCP { precond ssor { omega 1.5 } seuil 1e-11 impr }       
+                convection { amont }
+                diffusion { }
+                conditions_initiales {
+                        vitesse Champ_Uniforme 3  0. 0. 0.
+                        }
+                boundary_conditions {
+                         Bas1 Paroi_Fixe
+                         Haut1 Paroi_Fixe
+                         Haut2 Paroi_Fixe
+                         Haut3 Paroi_Fixe
+                         Bas2 Paroi_Fixe
+                         Gauche Paroi_Fixe
+                         Bas3 Paroi_Fixe
+                         Sud1 Paroi_Fixe 
+                         Nord1 Paroi_Fixe
+                         Sud2 Paroi_Fixe
+                         Nord2 Paroi_Fixe
+                         Sud3 Paroi_Fixe
+                         Nord3 Paroi_Fixe
+                         Sud4 Paroi_Fixe
+                         Nord4 Paroi_Fixe
+                         Sud5 Paroi_Fixe
+                         Nord5 Paroi_Fixe
+                         SortieBasse frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+                         SortieHaute frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+                         Entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 3  1. 0. 0.
+                }
+                modele_turbulence K_Epsilon {
+                        Transport_K_Epsilon {
+                         	convection { amont }
+                         	diffusion { }
+                         	sources { Source_Transport_K_Eps { C1_eps 1.44 C2_eps 1.92 }  }
+                         	boundary_conditions {
+                         		Bas1 Paroi
+                         		Haut1 Paroi
+                         		Haut2 Paroi
+                         		Haut3 Paroi
+                         		Bas2 Paroi
+                         		Gauche Paroi
+                         		Bas3 Paroi
+                         		Sud1 Paroi
+                         		Nord1 Paroi
+                         		Sud2 Paroi
+                         		Nord2 Paroi
+                         		Sud3 Paroi
+                         		Nord3 Paroi
+                        		Sud4 Paroi
+                         		Nord4 Paroi
+                         		Sud5 Paroi
+                         		Nord5 Paroi
+                                        Entree frontiere_ouverte_K_eps_impose Champ_Front_Uniforme 2 1.e-2 1.e-3
+                                        SortieBasse frontiere_ouverte K_EPS_EXT Champ_Front_Uniforme 2 0. 0.
+                                        SortieHaute frontiere_ouverte K_EPS_EXT Champ_Front_Uniforme 2 0. 0.
+                                }
+                                conditions_initiales {
+                                        k_Eps Champ_Uniforme 2 0. 0.
+                                }
+                         }
+                         turbulence_paroi loi_standard_hydr dt_impr_ustar 10.
+                }
+        }
+
+        Postraitement 
+        {
+                Sondes 
+                {
+                        sonde_pression pression periode 0.5 points 1 7.5 0.9 5.5
+                        sonde_vitesse vitesse periode 0.5 points 1 8.0 0.9 5.5
+                        sonde_visc viscosite_turbulente periode 0.5 points 1 7.5 0.9 5.5 
+                        sonde_k k periode 0.5 points 1 7.5 0.9 5.5
+                }
+                Champs dt_post 1.
+                {
+                       
+                        pression som
+                        vitesse som
+                        viscosite_turbulente som
+                        k som
+                }
+        }
+}
+
+Solve pb
+End

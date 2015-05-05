@@ -1,0 +1,39 @@
+#!/bin/bash
+# Script permettant de connaitre la liste des cas tests a repasser
+# pour une classe ou une mathode modifiee
+export PYTHONPATH=$TRUST_ROOT/bin/KSH:$PYTHONPATH
+[ "$*" = "" ] && echo "Usage: `basename $0` class|class::method" && exit -1
+echo "==================================================="
+echo "Looking for test coverage of class|method|function:"
+ff="'"$"'"
+list_methodes=list_methodes
+# Si pas de creation en local du fichier list_methodes alors on va sous Coverage
+rep_init=`pwd`
+[ ! -f $list_methodes ] && cd $TRUST_ROOT/doc/Coverage && [ ! -s list_methodes ] && echo "Fichier `pwd`/list_methodes vide ou non existant. Contacter le support TRUST" && exit -1
+warning=0 && [ $exec -nt $list_methodes ] && warning=1  
+# PATV vers Couv.py
+export PYTHONPATH=$TRUST_ROOT/bin/KSH:$PYTHONPATH
+for f in $*
+do
+  f2=" "$f
+  list_m=`grep " "$f $list_methodes | sed "s/$f2/$f/"| $TRUST_Awk 'BEGIN{print("python -c \"from Couv import test;")}{printf("test(#%s#);", $0)} END{print("\"")}'| sed s/#/\'/g`
+  #echo $list_m
+  eval $list_m
+done > $TRUST_TMP/out
+cd $rep_init
+cat $TRUST_TMP/out | grep -v CAS_liste
+cat $TRUST_TMP/out | grep CAS_liste | sed "s/PAR_//;s/DEC_//" | sort -u | sed "s/CAS_liste//" > liste_cas
+nb_cas=`wc -l liste_cas | $TRUST_Awk '{print $1}'`
+nb_fiches=`grep _jdd liste_cas | awk -F"_jdd" '{print $1}' | sort -u | wc -l`
+
+[ $warning = 1 ] && echo "Warning, the code test coverage is older than the code itself..."
+rm -f $TRUST_TMP/out
+if [ $nb_cas = 0 ]
+then
+   echo "The class|method|function $* is NOT covered by any test case!" && err=1
+else
+   echo "The class|method|function $* is covered by $nb_fiches validation forms and a total of $nb_cas test cases." && err=0
+   echo "You can run all the test cases with: echo liste_cas | lance_test"
+fi
+echo
+exit $err

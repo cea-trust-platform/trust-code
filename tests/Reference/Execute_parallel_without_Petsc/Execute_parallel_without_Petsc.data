@@ -1,0 +1,13 @@
+# Multi-parallel calculation #
+# PARALLEL ONLY 5 #
+
+# PAR_VAHL_DAVIS runs on 2 CPUs #
+# PAR_VAHL_DAVIS_VEF runs on 3 CPUs #
+# 5 CPUs is needed #
+Execute_parallel {
+  liste_cas 2 PAR_VAHL_DAVIS PAR_VAHL_DAVIS_VEF
+  nb_procs 2 2 3
+}
+
+system "ln -f -s PAR_VAHL_DAVIS.lml Execute_parallel_without_Petsc.lml"
+fin

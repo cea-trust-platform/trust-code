@@ -1,0 +1,128 @@
+# Cas avec une condition de symetrie non parallele aux axes en implicite #
+# PARALLEL OK #
+dimension 3
+
+Pb_hydraulique pb
+
+export domaine DOM
+
+# BEGIN MESH #
+Read_file DOM couronne_30.geom
+
+VerifierCoin DOM { }
+Reorienter_tetraedres DOM
+
+dilate DOM 0.001
+
+Sous_zone Z1
+Associate Z1 DOM
+Lire Z1 { Boite Origine -10. -10. -10. Cotes 100. 100. 100. }
+# END MESH #
+
+# BEGIN PARTITION
+Partition DOM
+{
+	Partitionneur Metis { Nb_parts 2 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones DOM
+END SCATTER #
+
+VEFPreP1B dis
+Schema_Euler_implicite sch
+Lire sch {
+	nb_pas_dt_max 10
+	tinit   0
+	tmax    2.
+	dt_min  1e-12
+	dt_max  1.
+	dt_impr 0.0001
+	dt_sauv 100.
+	seuil_statio 1e-10
+	facsec 1.
+	facsec_max 10.
+	solveur implicite { seuil_convergence_solveur 1e-12 }
+}
+
+
+Fluide_Incompressible liquide
+Lire liquide
+{
+	mu  Champ_Uniforme 1 0.001
+ 	rho Champ_Uniforme 1 1000.
+}
+
+
+Associate pb DOM
+Associate pb liquide
+
+
+Associate pb sch
+Discretize pb dis
+
+
+Lire pb
+{ 
+ Navier_Stokes_standard 
+ { 
+       solveur_pression Gcp { precond ssor { omega 1.5 } 
+                                             seuil 1.e-12
+					impr
+                            } 
+       convection { ef_stab { alpha 1. } }
+       diffusion  { }
+             
+
+       conditions_initiales { 
+       			    Vitesse champ_uniforme 3 0. 0. 0.
+       			    }
+       
+       
+       boundary_conditions {  
+				OUT frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 2 0 0							
+				IN frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.					
+				SYM1 symetrie
+				SYM2 frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 0 0 0
+				SYMH symetrie
+				SYMB symetrie
+                          } 
+			  
+   	             
+	 
+  }
+  
+
+Liste_postraitements
+{
+	Postraitement TEST
+	{
+		fichier Symetrie_Implicite
+		format lml
+		champs binaire dt_post 1.
+		{
+			vitesse elem
+		}
+	}
+	
+	Postraitement Sondes
+	{
+		Sondes
+		{
+			gradP_2 gradient_pression periode 0.5 segment 21 0.5 0. 0. 1. 0. 0.
+			vitesse_2 vitesse periode 0.5 segment 21 0.5 0. 0. 1. 0. 0.
+		}
+	}
+	
+}
+
+sauvegarde binaire couronne.sauv
+
+}
+
+Solve pb
+Fin

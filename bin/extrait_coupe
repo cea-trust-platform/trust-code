@@ -1,0 +1,76 @@
+#!/bin/bash
+usage()
+{
+  echo "Usage: "`basename $0` "DATA_FILE NOM_SONDE [temps]"
+}
+usage
+echo $1" "$2
+[ ${#1} = 0 ] && exit
+NOM=${1%.data}
+[ ! -f $NOM".data" ] && echo "$NOM.data fichier non existant." && exit
+
+DIR=`dirname $NOM`
+NOM=`basename $NOM`
+cd $DIR
+mkdir -p gnuplot
+echo | $TRUST_Awk -v NOM=$NOM -f $TRUST_AWK/Run_sonde_awk
+sonde=$NOM"_"$2.coupe
+
+courbe=`grep -l $sonde gnuplot/$NOM.courbe* | $TRUST_Awk -F: '{print $1}'| tail -1 `
+num=${courbe%.gnu}
+num=${num#gnuplot/$NOM.courbe}
+if [ "$courbe" = "" ]
+then
+   # est ce une sonde ?
+   sonde=$NOM"_"$2.son
+   courbe=`grep -l $sonde gnuplot/$NOM.courbe* | $TRUST_Awk -F: '{print $1}'| tail -1 `
+   echo "file is "$sonde
+fi
+[ "$courbe" = "" ] && echo "Mauvais nom de sonde car fichier $sonde non trouve !" &&exit
+
+if [ "$3" != "" ]
+then
+   temps=$3
+   marq=0
+else
+   temps=1e9
+   marq=1
+fi
+# nl : nombre de lignes du fichier.son a copier dans le fichier.coupe :
+nl=`$TRUST_Awk '(NR==2) {if ($1=="sonde") nl=0;
+                    if ($1=="segment") nl=1;
+		    if ($1=="plan") nl=-$4} END {print nl}' $courbe`
+
+if [ $nl != 0 ]
+then
+   # On recupere le nombre de points dans le cas d'un plan (segment alors nl=1):    
+   fic_son=${sonde%.coupe}.son
+   [ ! -s $fic_son ] && fic_son=${fic_son%.son}.plan
+   [ ! -s $fic_son ] && echo ${ficson%.plan}.son est nul && exit
+  
+   if [ $marq -eq 0 ]
+   then
+      fic=$sonde.$temps
+   else
+      fic=$sonde
+   fi
+   fic_son2=$fic_son.tmp
+	
+   if [ $nl -lt 0 ]
+   then
+      #echo "on a un plan"
+      $TRUST_Awk -v T=$temps 'BEGIN {Tt=-100} {if ($1=="TEMPS") {Tt=$2}; if (Tt<=T) {print $0}}' $fic_son > $fic_son2
+      nl=`echo $nl | $TRUST_Awk '{print -$1 }'`
+      # run_coupe oublie d'effacer pour un plan
+       rm -f $fic
+   else
+      # On cherche le temps le plus proche ...
+      $TRUST_Awk -v T=$temps 'BEGIN {last_ecart=10000000000} {if ($1=="#") {print $0} else { ecart=T-$1;if (ecart<0) { ecart=-ecart} ;if (ecart<last_ecart) {print $0;last_ecart=ecart}}}' $fic_son > $fic_son2
+   fi
+   tail -$nl $fic_son2 | $TRUST_Awk -v NOM=$NOM -v num=$num -v fic_coupe=$fic -f $TRUST_AWK/Run_coupe_awk
+   #rm $fic_son2
+   echo "Creation de $DIR/$fic"
+fi 
+rm -f gnuplot/$NOM.courbe*
+rm -f gnuplot/$NOM.menu
+rm -f gnuplot/$NOM.ordre

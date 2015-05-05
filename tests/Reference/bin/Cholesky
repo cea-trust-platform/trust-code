@@ -1,0 +1,10 @@
+#!/bin/bash
+# Change GCP/SSOR et Cholesky en GCP NPHypre/ILU
+sed "s? [gG][cC][pP]? Cholesky ?g
+s?{ omega [0-9]*.[0-9]* }??g
+s?{ omega -[0-9]*.[0-9]* }??g
+s?precond_nul??g
+s?precond??g
+s?seuil 1.[0-9]*e[-+][0-9]* ? ?g
+s?[sS][sS][oO][rR]??g
+" $1".data" > $2".data"

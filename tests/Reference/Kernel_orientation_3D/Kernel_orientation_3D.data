@@ -1,0 +1,44 @@
+# PARALLEL NOT #
+
+dimension 3
+
+Domaine domain
+
+Mailler domain 
+{
+   Pave Cavite1
+   {
+      Origine           0. 0. 0.
+      Nombre_de_Noeuds  3  3  3
+      Longueurs         1. 1. 1.
+   }
+   {
+      Bord Gauche   X = 0.0   0.0  <= Y <= 1.0   0.0  <= Z <= 1.0
+      Bord Derriere Y = 0.0   0.0  <= X <= 1.0   0.0  <= Z <= 1.0
+      Bord Bas      Z = 0.0   0.0  <= X <= 1.0   0.0  <= Y <= 1.0
+      Bord Droit    X = 1.0   0.0  <= Y <= 1.0   0.0  <= Z <= 1.0
+      Bord Devant   Y = 1.0   0.0  <= X <= 1.0   0.0  <= Z <= 1.0
+      Bord Haut     Z = 1.0   0.0  <= X <= 1.0   0.0  <= Y <= 1.0
+   } 
+}
+
+Tetraedriser_homogene_fin domain
+
+ecrire_fichier domain domain_0.geom
+
+Orienter_Simplexes domain
+Verifier_Simplexes domain
+ecrire_fichier domain domain_1.geom
+
+Domaine initial_domain
+Domaine final_domain
+
+Lire_Fichier initial_domain domain_0.geom
+Lire_Fichier final_domain   domain_1.geom
+
+postraiter_domaine {
+     domaines { initial_domain final_domain }
+     format lml 
+}
+
+FIN

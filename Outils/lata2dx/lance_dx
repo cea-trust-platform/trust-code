@@ -1,0 +1,22 @@
+#!/bin/bash
+echo "Usage: `basename $0` file[.net]"
+if [ ${#1} = 0 ]
+then
+   net=post_lata_generique.net
+else
+   net=${1%.net}.net
+fi
+echo "Using $net..."
+export DXMACROS=$TRUST_ROOT/Outils/lata2dx/
+if [ -f $net ] 
+then 
+	program=$net
+else
+	program=$TRUST_ROOT/Outils/lata2dx/$net
+fi
+if [ "`dx -version 2>/dev/null`" = "" ]
+then
+   echo "OpenDx is not installed. Please download it from http://www.opendx.org/index2.php and install it. Then try again."
+else
+   dx -memory 160 -program $program -image
+fi

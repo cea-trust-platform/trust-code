@@ -1,0 +1,29 @@
+#!/bin/bash
+cat $TRUST_ROOT/tests/Reference/upwind/upwind.geo > upwind.geo
+let i=-1
+rm -f ?_SONDE.son
+
+# On teste differentes periode de sonde
+# periode < dt_min
+# periode = dt_stab
+# periode > dt_max
+# periode > tmax
+for periode in 0.001 0.005 0.01 1
+do
+   let i=$i+1
+   echo $ECHO_OPTS "1,$ s?periode 0.01 ?periode $periode ?g\nw $i.data" | ed Sonde.data
+   triou $i
+done
+# On teste une reprise sans le .son
+triou Sonde
+let i=$i+1
+cat Sonde.data > $i.data
+echo $ECHO_OPTS "1,$ s?tinit 0?tinit 0.05?g\nw $i.data" | ed Sonde.data
+echo $ECHO_OPTS "1,$ s?sauvegarde ?reprise ?g\nw" | ed $i.data
+triou $i
+# On teste une reprise avec le .son
+let i=$i+1
+cat Sonde_SONDE.son > $i"_SONDE".son
+echo $ECHO_OPTS "1,$ s?tinit 0?tinit 0.05?g\nw $i.data" | ed Sonde.data
+echo $ECHO_OPTS "1,$ s?sauvegarde ?reprise ?g\nw" | ed $i.data
+triou $i

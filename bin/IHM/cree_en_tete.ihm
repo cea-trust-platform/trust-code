@@ -1,0 +1,10 @@
+#!/bin/bash
+notice=$TRUST_ROOT/doc/TRUST/User_Manual_TRUST.pdf
+echo "<!--NewPage-->
+<html>
+<head>
+<title> TRUST </title>
+</head>
+<body>
+<BODY BGCOLOR="#D0D5D9" TEXT="#23238E" LINK="#E47833" ALINK="#007FFF" VLINK="#007FFF">
+<a href=$notice>User's manual</a> | <a href=$TRUST_TESTS/Reference/index_keywords_tests.html>Keyword index</a> | <a HREF=mailto:$TRUST_MAIL?subject=ASSISTANCE_$HOST>Support</a>"

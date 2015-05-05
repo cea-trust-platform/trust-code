@@ -1,0 +1,5 @@
+#!/bin/bash
+#res=`grep -i mu $TRUST_TESTS/*/*/*.data | grep -i Champ_uniforme | awk -F\: '{print $1}'`
+# pb cela ajoute des cas tests plus valables ....
+cherche.ksh Schema_euler_implicite 1>/dev/null
+mv liste_cherche liste_cas

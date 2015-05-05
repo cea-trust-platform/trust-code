@@ -1,0 +1,142 @@
+# Two miscible fluids #
+dimension 2
+
+# Define a problem for one fluid #
+# Fraction of alcohol in water #
+Pb_hydraulique_concentration pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Cavite 
+		{
+		Origine 0. 0.
+		Nombre_de_Noeuds 11 11 
+		Longueurs 1. 1.
+		}
+		{
+		Bord Gauche X = 0. 0. <= Y <= 1.
+		Bord Haut   Y = 1. 0. <= X <= 1.
+		Bord Bas    Y = 0. 0. <= X <= 1.
+		Bord Droit  X = 1. 0. <= Y <= 1.
+		}
+}
+
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0
+	tmax 2.
+	dt_min 0.01
+	dt_max 0.01
+	dt_impr 0.01
+	dt_sauv 100
+	seuil_statio 1.e-8
+}
+
+# For alcohol rho=800kg/m3 #
+# For water rho=1000kg/m3 #
+# beta=1-800/1000=0.2 So change beta if alcohol density changes # 
+# Use a fraction dependant law: mu=mu(water)+(mu(alcohol)-mu(water))*C #
+# 2.e-3 is an example, not the real value! #
+Fluide_Incompressible water_alcohol
+Lire water_alcohol
+{
+	mu Champ_Fonc_tabule 1 concentration { 2 0 1 1.7e-3 2.e-3 } 
+	rho Champ_Uniforme 1 1000
+	beta_co Champ_Uniforme 1 0.2
+}
+
+# We need the diffusivity of alocol in water (0.1 is an example, not the real value!) #
+Constituant alcohol
+Lire alcohol
+{
+	coefficient_diffusion Champ_Uniforme 1 0.1
+}
+
+Champ_Uniforme gravite
+Lire gravite 2 0 -9.81
+
+Associate water_alcohol gravite
+Associate pb dom
+Associate pb sch
+Associate pb water_alcohol
+Associate pb alcohol
+
+Discretize pb dis
+
+# Define initial condition: rather down for alcohol (C=1) and rather up for water (C=0) #
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.5 } 
+			seuil 1.000000e-06 
+			impr 
+		}
+		convection { quick }
+		diffusion { }
+		conditions_initiales {
+			vitesse Champ_Uniforme 2 0. 0.
+		}
+		boundary_conditions {
+			Haut paroi_fixe
+			Droit paroi_fixe
+			Bas paroi_fixe
+			Gauche paroi_fixe
+		}
+		Sources { Boussinesq_concentration { C0 1 0. } }
+	}
+	Convection_diffusion_Concentration {
+		diffusion { }
+		convection { quick }
+		boundary_conditions {
+			Haut Paroi
+			Droit  Paroi
+			Gauche  Paroi
+			Bas  Paroi
+		}
+		conditions_initiales {
+			concentration champ_fonc_xyz dom 1 (x-y[0)
+		}
+	}
+
+	Postraitement
+	{
+		Sondes
+		{
+			sonde_pres pression periode 0.01 points 1 0.45 0.45
+			sonde_vit vitesse periode 0.01 points 1 0.4 0.45
+			sonde_conc concentration periode 0.01 points 1 0.55 0.45
+		}
+		format lml
+		Champs dt_post 0.1
+		{
+			viscosite_dynamique elem
+			vitesse elem
+			concentration elem
+		}
+	}
+}
+
+Solve pb
+Fin

@@ -1,0 +1,26 @@
+#!/bin/bash
+echo "Statistiques de communication :"
+echo "-------------------------------"
+echo "P \t #MAILLES \t #MSG \t SZ_MOY"
+_debut=0
+_fin=`ls *.Z* 2>/dev/null | wc -l`
+_cpt=$_debut
+
+while [ $_cpt -le $_fin ]
+do
+    #zones="DOM_*"$_cpt".Zones"
+    zones="*0"$_cpt".Zones"
+    stat="COMM*0"$_cpt".STAT"
+    if [ -f $stat ]
+    then
+#	head -7 $zones | tail -1 | awk '{print $1}' > .nbmailles
+#	grep NB_MSG $stat | awk '{print $3}' > .nb_msg
+#	grep SZ_MOY $stat | awk '{print $3}' > .sz_moy
+	nb_mailles=`head -7 $zones | tail -1 | awk '{print $1}'`
+	nb_msg=`grep NB_MSG $stat | awk '{print $3}'`
+	sz_moy=`grep SZ_MOY $stat | awk '{print $3}'`
+	echo $_cpt" \t "$nb_mailles" \t "$nb_msg" \t "$sz_moy
+    fi
+    _cpt=$(($_cpt+1))
+done
+echo "-------------------------------"

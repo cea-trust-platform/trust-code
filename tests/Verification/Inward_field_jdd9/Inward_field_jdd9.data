@@ -1,0 +1,153 @@
+# Test for Champ_front_normal fields #
+# PARALLEL OK #
+dimension 3
+Pb_Hydraulique pb
+Domaine dom
+# BEGIN MESH #
+Mesh dom
+{
+	Pave dom
+	{
+		Origine 0. 0. 0.
+		Nombre_de_Noeuds 4 4 4
+		Longueurs 1 1 1	
+	}
+	{
+		Bord Back      X = 0.0    0.00 <= Y <= 1.0     0.00 <= Z <= 1.0
+		Bord Front     X = 1.0    0.00 <= Y <= 1.0     0.00 <= Z <= 1.0
+		Bord Top       Y = 1.0    0.00 <= X <= 1.0     0.00 <= Z <= 1.0
+		Bord Bottom    Y = 0.0    0.00 <= X <= 1.0     0.00 <= Z <= 1.0 
+		Bord Right     Z = 1.0    0.00 <= X <= 1.0     0.00 <= Y <= 1.0
+		Bord Left      Z = 0.0    0.00 <= X <= 1.0     0.00 <= Y <= 1.0
+	}
+}
+/* tetra_here */
+/* rotation of angle theta : */
+/* x ->  x cos(theta) + y sin (theta) */
+/* y -> -x sin(theta) + y cos (theta) */
+/* Transformer_here */
+/* TransformerZ_here */
+
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 2 2 2 }
+	Nom_Zones DOM
+        Larg_joint 2
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER 
+Scatter DOM.Zones dom
+END SCATTER #
+
+vdf dis
+
+
+Domaine boundary_Bottom
+
+Schema_Euler_explicite sch
+Read sch
+{
+	tinit 0.0
+	nb_pas_dt_max 0
+	seuil_statio -1
+}
+
+Fluide_Incompressible fluide
+Read fluide
+{
+	mu Champ_Uniforme 1 0.05
+ 	rho Champ_Uniforme 1 1.2
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Read pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression petsc cholesky { }
+		convection { negligeable }
+		diffusion { }
+		conditions_initiales { vitesse champ_uniforme 3 0. 0. 0. }
+		boundary_conditions 
+		{
+		     Back paroi_fixe 
+		     Front paroi_fixe
+		     Left paroi_fixe 
+		     Right paroi_fixe
+		     Top frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0
+		     Bottom frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 1.0 }
+		}
+     	}
+	      
+	Postraitement
+	{
+	    format lml
+		Champs dt_post 0.0
+		{			
+			pression elem			
+			vitesse
+		}	
+	}
+	Postraitements
+	{
+	   volumic
+	   {
+	        format lml
+		Champs dt_post 0.0
+		{			
+			pression elem			
+			# vitesse som #
+			vitesse
+		}	
+	   }
+	   Champ_front_normal
+	   {
+	      format lml
+	      Domaine boundary_Bottom
+	      definition_champs
+	      {
+	         # velocity given by Trio on the boundary #
+	         velocity_trio Extraction { Domaine boundary_Bottom nom_frontiere Bottom methode trace source refChamp { Pb_champ pb vitesse } }
+		 # we know what is the vector shape on the boundary #
+		 true_vector  Transformation { methode vecteur expression 3 0. 1. 0. }
+
+		 # all this stuff is to compute error between velocity_trio and true_vector #
+ 		 true_vector_interp Interpolation { localisation elem  sources_reference { true_vector } }  
+		 velocity_X Transformation { methode composante numero 0 source refChamp { Pb_champ pb vitesse } localisation elem }
+		 velocity_Y Transformation { methode composante numero 1 source refChamp { Pb_champ pb vitesse } localisation elem }
+		 velocity_Z Transformation { methode composante numero 2 source refChamp { Pb_champ pb vitesse } localisation elem }
+		 true_velocity_X Transformation { methode composante numero 0 sources_reference { true_vector_interp } localisation elem }
+		 true_velocity_Y Transformation { methode composante numero 1 sources_reference { true_vector_interp } localisation elem }
+		 true_velocity_Z Transformation { methode composante numero 2 sources_reference { true_vector_interp } localisation elem }
+		 error_X transformation  { methode formule expression 1 true_velocity_X-velocity_X sources_reference { velocity_X , true_velocity_X } }
+		 error_Y transformation  { methode formule expression 1 true_velocity_Y-velocity_Y sources_reference { velocity_Y , true_velocity_Y } }
+		 error_Z transformation  { methode formule expression 1 true_velocity_Z-velocity_Z sources_reference { velocity_Z , true_velocity_Z } }
+
+		 error	transformation { methode vecteur expression 3 error_X error_Y error_Z sources_reference { error_X , error_Y , error_Z } }
+	  	 error_norm Transformation { methode norme source_reference error }
+
+              }
+	      champs dt_post 0.0
+	      {
+		 velocity_trio
+		 true_vector_interp
+		 error
+		 error_norm
+	      }
+	   }
+       }
+
+}
+
+Solve pb
+End

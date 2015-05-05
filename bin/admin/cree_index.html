@@ -1,0 +1,82 @@
+#!/bin/bash
+. connect_ftp 1>/dev/null 2>&1
+html=$TRUST_TMP/index.html
+test=0 && [ ${#1} != 0 ] && test=$1
+stable=`awk '/Release notes/ && !/beta/ {print $4;exit}' $TRUST_ROOT/RELEASE_NOTES`
+# Ne donne que la derniere version stable du site !!!
+stable=`ls_ftp $PUBLIC | $TRUST_Awk '/Version/ {gsub("Version","",$NF);v=$NF} END {print v}'`
+patch=`ls_ftp $PUBLIC/patch/Patch$stable.tar`
+patch_branch=patch_`echo $stable | awk '{gsub("\\\.","",$0);print $0}'`
+beta=`awk '/Release notes/ && /beta/ {print $4;exit}' $TRUST_ROOT/RELEASE_NOTES`
+######################################
+# Debut creation de la page index.html
+######################################
+release_date=`ls --full-time $WORKDIR/PORTAGE_$stable/linux/TRUST/exec/TRUST$COMM"_opt" 2>/dev/null | $TRUST_Awk '{print $6}'`
+[ ${#release_date} = 0 ] && release_date=`grep " "$stable" version released" $TRUST_ROOT/RELEASE_NOTES | $TRUST_Awk '{print $1}'`
+os_supported=`cat $TRUST_ROOT/bin/admin/liste.machines | $TRUST_Awk '/oui/ {print $1}'`
+package=`ls_ftp $PUBLIC/Version$stable | awk '/.tar/ {print $NF}'`
+echo "
+<HTML>
+<HEAD>
+   <META NAME="ROBOTS" CONTENT=\"NOINDEX, NOFOLLOW\">
+   <META NAME="ROBOTS" CONTENT=\"NOARCHIVE\">
+   <META HTTP-EQUIV=Content-Type CONTENT=text/html; charset=iso-8859-1>
+   <META NAME=GENERATOR CONTENT=Mozilla/4.05 [en] (X11; I; Linux 2.0.33 i586) [Netscape]>
+   <TITLE>TRUST Products Archive</TITLE>
+</HEAD>
+<BODY BGCOLOR=#FFFFFF>
+<IMG SRC=animation.gif HEIGHT=101 WIDTH=501>
+<BR>
+<TR><TD><B><FONT SIZE=+2>Welcome to the TRUST distribution site.</FONT></B>
+<BR><BR>Visit TRUST website at <A HREF=http://www-trio-u.cea.fr>http://www-trio-u.cea.fr</A></LI>
+<BR><BR>Help ? Question ? Contact TRUST support team at <A HREF=mailto:$TRUST_MAIL>$TRUST_MAIL</A>
+<BR>You can also subscribe to TRUST <A HREF=http://saxifrage:3500/wws/info/trio_u_annonces>user</A> or <A HREF=http://saxifrage:3500/wws/info/trio_u_dev>developer</A> mailing lists.</LI>
+<BR><BR><B>Download the latest available TRUST package $stable version ($release_date):</B> <A HREF=Version$stable/$package>$package</A>`[ "$patch" != "" ] && echo " and the latest installation patch <A HREF=patch/Patch$stable.tar>Patch$stable.tar</A>"`
+<LI>It contains the TRUST binaries (for "$os_supported"), tests and source files.
+<LI>The package size is ~890MB.
+<LI>See <A HREF=Version$stable/README_INSTALL>here</A> the requirements and how to install/build TRUST $stable stable version.
+<LI>On a cluster, to reach high parallel performances, it is recommended that the TRUST support team install/configure/build the code.  
+<LI>A file containing a key is also necessary to install TRUST. There is a new key for each new version. Ask this key at <A HREF=mailto:$TRUST_MAIL>$TRUST_MAIL</A>.<BR>
+<BR><B>Use TRUST on PC at CEA Saclay:</B>
+<pre>source /home/triou/env_triou_"$stable"_patch.sh</pre>
+<BR><B>Download TRUST with Git:</B>
+<LI>For CEA developers who have Git installed, you can get the sources of the latest $stable patched version and build the code with the following commands:<BR>
+<pre>git clone $TRUST_GIT_OFFICIAL</pre>
+<pre>cd trio_u/TRUST</pre>
+<pre>./configure # Configure </pre>
+<pre>source env/Init_TRUST # Initialize environment</pre>
+<pre>make optim # Build the code</pre>
+<pre>make debug # Optional: to build also a debug version</pre>
+<pre>make # Optional: to build also a semi-optimized version</pre>
+<LI>If you want to change now the code in a new branch:<BR>
+<pre>git checkout -b YourNewBranch</pre>
+<LI>Later, to update your work with the latest $stable patch:<BR>
+<pre>git pull origin $patch_branch</pre>
+<LI>If you want also to share your work with CEA developpers, once commited, you can run:<BR>
+<pre>git remote add shared $TRUST_GIT_SHARED</pre>
+<pre>git push shared YourNewBranch</pre>
+<BR><B>Version portability:</B>
+<BR>For this $stable release, TRUST has been succesfully built on several OS:
+">> $html
+cat $TRUST_ROOT/NUIT/os >> $html
+echo "<BR>And with several compilers:" >> $html
+cat $TRUST_ROOT/NUIT/CC >> $html
+echo "<BR>" >> $html
+cat $TRUST_ROOT/RELEASE_NOTES | $TRUST_Awk 'BEGIN {ok=0} /Release notes/ && !/beta/ {ok++;if (ok>1) exit;print "<BR><B>"$0"</B>"}' >> $html
+cat $TRUST_ROOT/RELEASE_NOTES | $TRUST_Awk 'BEGIN {ok=0} /Release notes/ && !/beta/ {ok++;if (ok>1) exit} !/Release notes/ && !/---/ && (ok==1) {gsub($1,"<BR><LI>",$0);print $0}' | sort -r >> $html
+
+echo "<BR><SMALL>Page updated at `date`" >> $html
+
+echo "
+</BODY>
+</HTML>" >> $html
+cp_ftp $TRUST_ROOT/bin/README_INSTALL $PUBLIC/Version$stable
+cp_ftp $TRUST_ROOT/bin/HTML/animation.gif $PUBLIC
+cp_ftp $TRUST_ROOT/bin/HTML/animation.gif $SECRET
+cp_ftp $html $PUBLIC
+# Interdiction des moteurs de recherche:
+echo "User-agent:*
+Disallow:/$PUBLIC/" > robots.txt
+cp_ftp robots.txt $PUBLIC
+#cp_ftp robots.txt $SECRET/Word
+rm -f $html

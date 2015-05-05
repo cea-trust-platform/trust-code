@@ -1,0 +1,32 @@
+Syntaxe du fichier trad_2:
+
+nom_anglais_de_la_classe nom_de_la_classe_mere nom_de_la_class_trio mode description
+
+mode:
+	-1 comme le pere
+	0 n'attend pas d'accolades, les noms des attributs ne servent pas a la lecture et a l'ecriture. ex Champ_Uniforme 3 0. 0. 0. 
+        1 attend des accolades, le nom des attributs servent a savoir ce qu'on lit. ex Lire sch { tinit 0. tmax 0. }
+	-2 comme 0 mais attend d'avoir discretiser pour ecrire la partie Lire
+	-3 comme 1 mais attend d'avoir discretiser pour ecrire la partie Lire.
+        Ex tous les problemes, il faut avoir discretiser pour les lire.
+
+Suivi de:
+attr mot_francais|mot_anglais type mot_anglais opt description
+	La classe a un attribut de nom mot_trio et de type type
+        Suivi de ref nom type, la classe peut etre associe a une classe de type type
+	opt: 0 non_optionnel 1 optionnel
+
+Cas particulier:
+	-deriv ne sert plus
+	-si le nom de la classe mere est listobj, la syntaxe est:
+nom_anglais_de_la_classe listobj nom_de_la_class_trio mode classe_type virgule description
+
+On cree alors une liste d'objets de type class_type, virgule (0 ou 1) indique si il faut une virgule (1) ou non (0) entre les objets.
+
+
+Type type des attributs:
+entier, floattant, chaine (soit un mot soit un bloc entre accolades ), rien , ref_toto (il attend soit un nom soit un pointeur vers un objet toto), list (list de double: nval val1 val2 ...)  listf (liste de double de taille dimension) , listentier listentierf (de taille dimension) et listchaine , listechainef
+suppress_param permet de supprimer l attr de la classe mere
+
+Dans description:
+NL1 NL2 retours a la ligne NL1 un seul (donc ok tooltip et pas tex) NL2 (deux NL ok tooltip et tex)

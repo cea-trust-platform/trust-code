@@ -1,0 +1,140 @@
+Parametres {
+	Titre "Convergence du calcul"
+	 
+	Castest  "amont_10" "cas.data"  
+	Castest  "muscl_10" "cas.data"  
+	Castest  "ef_stab_10" "cas.data"  
+	Castest  "amont_old_10" "cas.data"  
+	Castest  "centre_10" "cas.data"  	 
+	Castest  "amont_20" "cas.data"  jdd en annexe  
+	Castest  "muscl_20" "cas.data"  
+	Castest  "ef_stab_20" "cas.data"  
+	Castest  "amont_old_20" "cas.data"  
+	Castest  "centre_20" "cas.data"  	 
+	Castest  "amont_40" "cas.data"  
+	Castest  "muscl_40" "cas.data"  
+	Castest  "ef_stab_40" "cas.data"  
+	Castest  "amont_old_40" "cas.data"  
+	Castest  "centre_40" "cas.data"  	 
+	Castest  "amont_80" "cas.data"  
+	Castest  "muscl_80" "cas.data"  
+	Castest  "ef_stab_80" "cas.data"  
+	Castest  "amont_old_80" "cas.data"  
+	Castest  "centre_80" "cas.data"  	 
+	Castest  "amont_160" "cas.data"  
+	Castest  "muscl_160" "cas.data"  
+	Castest  "ef_stab_160" "cas.data"  
+	Castest  "amont_old_160" "cas.data"  
+	Castest  "centre_160" "cas.data"  	Auteur "GF "
+	InclureData 2
+	Prerequis "./extract_convergence"
+	Description "Cas test periodique, pour tester convergence en maillage des opérateurs de convection"
+}
+
+
+Chapitre {
+	titre Convergence en maillage en vitesse 
+	Figure {
+	labelx N
+	labely erreur max 
+	logx
+	logy
+	incluredesccourbes 0
+	width 12cm
+	titre "convergence de la convection vitesse en maillage "
+	 
+		courbe {
+		legende amont
+		fichier conv_glob_amont_qdm
+		  style linespoints
+		}
+		 
+		courbe {
+		legende muscl
+		fichier conv_glob_muscl_qdm
+		  style linespoints
+		}
+		 
+		courbe {
+		legende ef_stab
+		fichier conv_glob_ef_stab_qdm
+		  style linespoints
+		}
+		 
+		courbe {
+		legende amont_old
+		fichier conv_glob_amont_old_qdm
+		  style linespoints
+		}
+		 
+		courbe {
+		legende centre
+		fichier conv_glob_centre_qdm
+		  style linespoints
+		}
+		 
+		courbe {
+		legende N^-1 
+		fonction 1./x
+		  style lines
+		}
+		courbe {
+		legende N^-2 
+		fonction 1./x/x
+		  style lines
+		}
+	}			
+} 
+Chapitre {
+	titre Convergence en maillage scalaire 
+	Figure {
+	labelx N
+	labely erreur max 
+	logx
+	logy
+	incluredesccourbes 0
+	width 12cm
+	titre "convergence de la convection T en maillage "
+	 
+		courbe {
+		legende amont
+		fichier conv_glob_amont_T
+		  style linespoints
+		}
+		 
+		courbe {
+		legende muscl
+		fichier conv_glob_muscl_T
+		  style linespoints
+		}
+		 
+		courbe {
+		legende ef_stab
+		fichier conv_glob_ef_stab_T
+		  style linespoints
+		}
+		 
+		courbe {
+		legende amont_old
+		fichier conv_glob_amont_old_T
+		  style linespoints
+		}
+		 
+		courbe {
+		legende centre
+		fichier conv_glob_centre_T
+		  style linespoints
+		}
+		 
+	      courbe {
+		legende N^-1 
+		fonction 1./x
+		  style lines
+		}
+		courbe {
+		legende N^-2 
+		fonction 1./x/x
+		  style lines
+		}
+	}			
+} 

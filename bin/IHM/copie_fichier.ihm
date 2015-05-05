@@ -1,0 +1,84 @@
+#!/bin/bash
+FICHIER=$1
+FEDIT=1
+if [ ${#FICHIER} = 0 ] || [ ! -f $FICHIER ]
+then
+   echo "File $FICHIER is non-existent"
+   eval $FIN
+fi
+cd $ETUDE_TRUST
+if [ ${FICHIER%.GIBI} != $FICHIER ]
+then
+   type="VEF"
+   echo "Enter the name of the GIBI file (volum domains)?"
+   read NOM
+   if [ ${NOM%.GIBI} = $NOM ]
+   then
+      echo "Addition of suffix  .GIBI"
+      NOM=$NOM".GIBI"
+   fi
+elif [ ${FICHIER%.gibi} != $FICHIER ]
+then
+   type="VDF"
+   echo "Enter the name of the GIBI file (surface domains)?"
+   read NOM
+   if [ ${NOM%.gibi} = $NOM ]
+   then
+      echo "Addition of suffix .gibi"
+      NOM=$NOM".gibi"
+   fi
+elif [ ${FICHIER%.data} != $FICHIER ]
+then
+   echo "Enter the name of your data file ?"
+   read NOM
+   if [ ${NOM%.data} = $NOM ]
+   then
+      echo "Addition of suffix .data"
+     NOM=$NOM".data"
+   fi
+elif [ ${FICHIER%.geo} != $FICHIER ]
+then
+   echo "Enter the name of your mesh data file ?"
+   read NOM
+   if [ ${NOM%.geo} = $NOM ]
+   then
+      echo "Addition of suffix .geo"
+      NOM=$NOM".geo"
+   fi
+elif [ ${FICHIER%.geom} != $FICHIER ] || [ ${FICHIER%.geom.gz} != $FICHIER ]
+then
+   echo "Enter the name of your mesh data file ?"
+   read NOM
+   if [ ${NOM%.geom} = $NOM ]
+   then
+      echo "Addition of suffix .geom"
+      NOM=$NOM".geom"
+   fi
+   #FEDIT=0
+else
+   echo "Format non reconnu. Contacter le support TRUST"
+   exit
+fi
+
+echo "Copying the file in $ETUDE_TRUST"
+if [ -f $NOM ]
+then
+   cp $NOM $NOM.old
+fi
+if [ ${FICHIER%.gz} != $FICHIER ]
+then
+   gunzip -c $FICHIER > $NOM
+else
+   cp $FICHIER $NOM
+fi
+chmod u+w $NOM
+[ ${NOM%.data} != $NOM ] && [ "`grep -i 'format lata' $NOM`" = "" ] && echo $ECHO_OPTS "1,$ s?Champs dt_post?format lata Champs dt_post?g\nw" | ed $NOM 1>/dev/null 2>&1
+
+if [ $FEDIT = 1 ]
+then
+   # Edition du fichier :
+   no_exec=1
+   export no_exec
+   execute.ksh "$EDITEUR $ETUDE_TRUST/$NOM 1>/dev/null &" 1>/dev/null
+fi
+sleep 1

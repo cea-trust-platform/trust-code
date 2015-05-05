@@ -1,0 +1,291 @@
+# COPPEC_45 Pb thermohydraulique turbulent avec modele 2 couches #
+# PARALLEL OK #
+# calcul uniquement sur la zone chauffee ; mod…le k-epsilon standard #
+# condition limite vitesse entree = 1.84 m/s uniforme #
+# calcul du flux thermique avec 1 maille solide #
+# 1ere maille fluide a environ y+=30 #
+# 16/09/1999 #
+
+Dimension 2
+Schema_Euler_explicite sch
+Lire sch
+{
+	nb_pas_dt_max 10
+	tinit 0.0
+	tmax 1.
+	dt_max 10.0
+	dt_impr 0.01
+	seuil_statio 5.e-5
+        facsec 0.5
+}
+
+
+Pb_conduction pb_solide
+Pb_Thermohydraulique_Turbulent Coppec
+
+Domaine dom_solide
+Domaine dom_fluide
+
+# BEGIN MESH #
+Mailler dom_solide
+{
+	Pave Plaque_chaude
+		{
+		Origine 0. -0.001
+		Longueurs 7.5 0.001
+		Nombre_de_noeuds 26 2
+		}
+		{
+		Bord Gauche_plaque Y = -0.001  0.0 <= X <= 7.5
+		Bord Bas_plaque X = 0.  -0.001 <= Y <= 0.0
+		Bord Haut_plaque X = 7.5  -0.001 <= Y <= 0.0
+		Raccord local homogene Plaque_fluide Y = 0.0  0. <= X <= 7.5  
+		}
+}
+
+Mailler dom_fluide
+{
+	Pave zone_chauffee
+		{
+		Origine 0.0 0.0
+		Longueurs 7.5 0.007
+		Nombre_de_Noeuds 26 2
+		}
+		{
+		Raccord local homogene Plaque_fluide Y = 0.0  0. <= X <= 7.5
+		Bord Haut X = 7.5 0.0 <= Y <= 0.007
+		Bord Bas X = 0.0  0.0 <= Y <= 0.007
+		} ,
+		
+	Pave milieu
+		{
+		Origine 0.0 0.007
+		Longueurs 7.5 0.106
+		Nombre_de_noeuds 26 54
+		}
+		{
+		Bord Haut_milieu X = 7.5  0.007 <= Y <= 0.113
+		Bord Bas_milieu X = 0.0  0.007 <= Y <= 0.113
+		} ,
+		
+	Pave cote_froid
+		{
+		Origine 0.0 0.113
+		Longueurs 7.5 0.007
+		Nombre_de_noeuds 26 2
+		}
+		{
+		Bord Haut_froid X = 7.5  0.113 <= Y <= 0.12
+		Bord Bas_froid X = 0.0  0.113 <= Y <= 0.12
+		Bord Droit_froid Y = 0.12 0.0 <= X <= 7.5
+		}
+		
+}
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom_solide
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 2
+	Nom_Zones DOM1
+}
+Partition dom_fluide
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 2
+	Nom_Zones DOM2
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM1.Zones dom_solide
+Scatter DOM2.Zones dom_fluide
+END SCATTER #
+
+VDF dis
+
+Solide sol
+Lire sol
+{
+	rho champ_uniforme 1 2700.
+	lambda champ_uniforme 1 400.
+	Cp champ_uniforme 1 400.
+}
+
+Fluide_Incompressible air
+Lire air
+{
+	mu Champ_Fonc_Tabule 1 Temperature 
+		{
+		4
+		20 40 60 80
+		15.06e-6 16.96e-6 18.97e-6 21.09e-6
+		}
+	rho Champ_Uniforme 1 1.205
+	
+	lambda Champ_Fonc_Tabule 1 temperature
+		{
+		4
+		20 40 60 80
+		2.59e-2 2.76e-2 2.90e-2 3.05e-2
+		}
+	
+	Cp champ_Uniforme 1 1005
+	
+	Beta_th Champ_uniforme 1 3.19e-3
+}
+		
+Champ_Uniforme gravite
+Lire gravite 2 -9.81 0
+
+Associate air gravite
+Associate sol gravite
+
+Associate Coppec dom_fluide
+Associate Coppec air
+ 
+Associate pb_solide dom_solide
+Associate pb_solide sol
+
+Probleme_couple pbc
+Associate pbc Coppec
+Associate pbc pb_solide
+
+Associate pbc sch
+Discretize pbc dis
+
+Lire Coppec
+{
+	Navier_Stokes_Turbulent
+	{
+	solveur_pression cholesky { }
+	Convection { quick }
+	diffusion { }
+	sources { boussinesq_temperature { T0 21.0 }  }
+	conditions_initiales
+	{
+	vitesse Champ_uniforme 2 1.84 0.0
+	}
+	boundary_conditions 
+		{
+		Droit_froid paroi_fixe
+		Plaque_fluide paroi_fixe
+		Bas frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2 1.84 0.
+		Haut Frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.0
+		Bas_milieu frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2 1.84 0.
+		Haut_milieu Frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.0
+		Bas_froid frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2 1.84 0. 
+		Haut_froid Frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.0
+		}
+		
+	Modele_turbulence K_Epsilon_2_couches
+	{
+	Transport_K_KEpsilon
+		{
+		nb_couches 10 
+		convection { quick }
+		diffusion { }
+		boundary_conditions 
+			{
+			Plaque_fluide Paroi
+			Droit_froid Paroi
+			Bas frontiere_ouverte_K_Eps_impose Champ_Front_Uniforme 2 1.0e-2 4.e-2
+			Haut frontiere_ouverte K_EPS_EXT Champ_Front_Uniforme 2 0.0 0.0
+ 			Bas_milieu frontiere_ouverte_K_Eps_impose Champ_Front_Uniforme 2 1.0e-2 4.e-2
+			Haut_milieu frontiere_ouverte K_EPS_EXT Champ_Front_Uniforme 2 0.0 0.0
+			Bas_froid frontiere_ouverte_K_Eps_impose Champ_Front_Uniforme 2 1.0e-2 4.e-2
+			Haut_froid frontiere_ouverte K_EPS_EXT Champ_Front_Uniforme 2 0.0 0.0
+			}
+		conditions_initiales
+			{
+			k_eps Champ_Uniforme 2 1.e-2 4.e-2
+			}
+		}
+		Turbulence_paroi loi_paroi_2_couches dt_impr_ustar 0.001
+	}
+	}
+	
+	
+	Convection_Diffusion_Temperature_Turbulent
+	{
+	Convection { Quick }
+	diffusion { }
+	conditions_initiales
+	{
+	temperature Champ_uniforme 1 21.0
+	}
+	boundary_conditions 
+		{
+		Droit_froid paroi_temperature_imposee 
+		Champ_Front_Uniforme 1 21.0
+		Plaque_fluide paroi_contact pb_solide  Plaque_fluide
+		Bas frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 21.0
+		Haut Frontiere_ouverte T_ext  Champ_Front_Uniforme 1 21.0
+		Bas_milieu frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 21.0
+		Haut_milieu Frontiere_ouverte T_ext  Champ_Front_Uniforme 1 21.0
+		Bas_froid frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 21.0
+		Haut_froid Frontiere_ouverte T_ext  Champ_Front_Uniforme 1 21.0
+		}
+		
+	modele_turbulence Prandtl
+		{ turbulence_paroi loi_paroi_2_couches_scalaire
+		}
+		
+	}
+	
+
+Postraitement
+{
+	Sondes
+	{
+	Sonde_vitesse_sortie vitesse periode 0.01 point 1 6.247 0.1
+	}
+
+	
+	Champs dt_post 1.
+	{
+	vitesse som
+	temperature som
+	}
+}
+
+
+	
+}
+
+Lire pb_solide
+{
+	Conduction
+	{
+	diffusion { }
+	conditions_initiales { temperature champ_uniforme 1 51.0 }
+	boundary_conditions
+		{
+		Gauche_plaque paroi_temperature_imposee
+		Champ_Front_Uniforme 1 51.0
+		Bas_plaque  paroi_temperature_imposee
+		Champ_Front_Uniforme 1 51.0
+		Haut_plaque  paroi_temperature_imposee
+		Champ_Front_Uniforme 1 51.0
+		Plaque_fluide paroi_contact Coppec  Plaque_fluide
+		}
+	}
+
+	
+Postraitement
+{
+	Sondes
+	{
+		Sonde_temperature_plaque temperature periode 0.01 points 1 6.0 -0.0005
+	}
+	champs dt_post 1.
+	{
+		temperature som
+	}
+	
+}
+
+}
+Solve pbc

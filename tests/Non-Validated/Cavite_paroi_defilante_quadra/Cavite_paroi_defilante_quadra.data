@@ -1,0 +1,111 @@
+# Hydraulique 2D maillage quadrangle : Paroi defilante #
+# PARALLEL OK 4 #
+dimension 2
+Pb_Hydraulique pb
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+        Pave Cavite 
+                {
+                Origine 0. 0.
+                Nombre_de_Noeuds 11 11
+                Longueurs 0.01 0.01
+                }
+                {
+                Bord Gauche X = 0.  0. <= Y <= 0.01
+                Bord Haut Y = 0.01  0. <= X <= 0.01
+                Bord Bas Y = 0.     0. <= X <= 0.01
+                Bord Droit X = 0.01 0. <= Y <= 0.01
+                }
+}
+
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur metis { Nb_parts 2 }
+	Larg_joint 1
+	Nom_Zones DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPrep1B dis
+Read dis { P0 }
+
+Schema_Euler_explicite sch
+Read sch
+{
+        tinit 0.
+        tmax 1.2
+        dt_min 0.01
+        dt_max 0.01
+        dt_impr 0.01
+        dt_sauv 100
+        seuil_statio 1.e-8
+        facsec 1.0
+	diffusion_implicite 1
+	seuil_diffusion_implicite 1.e-12
+}
+
+Fluide_Incompressible fluide
+Read fluide
+{
+        mu Champ_Uniforme 1 1.85e-5
+        rho Champ_Uniforme 1 1.17
+}
+
+Champ_Uniforme gravite
+Read gravite 2 0 -9.81
+
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Read pb
+{
+        Navier_Stokes_standard
+        {
+                solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-16 impr }       
+                convection { Amont }
+                diffusion { }
+                conditions_initiales {
+                        vitesse Champ_Uniforme 2 0. 0.
+                        }
+                boundary_conditions {
+                        Haut paroi_defilante Champ_Front_Uniforme 2 0.01 0.
+                        Bas paroi_fixe
+                        Gauche paroi_fixe
+                        Droit paroi_fixe
+                }
+        }
+
+        Postraitement
+        {
+                Sondes
+                {
+                        sonde_vorticite vorticite periode 0.01 points 1 0.0045 0.0045
+                        sonde_pression pression periode 0.01 points 2 0.0005 0.0045 0.0045 0.0045
+                        sonde_vitesse vitesse periode 0.01 points 5 0.0005 0.004 0.0015 0.004 0.0025 0.004 0.0035 0.004 0.0045 0.004
+                }
+                Champs dt_post 0.1
+                {
+                        pression elem
+                        pression som
+                        vitesse elem
+                        vitesse som
+                        vorticite elem
+                }
+        }
+}
+
+Solve pb
+End

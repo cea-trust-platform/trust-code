@@ -1,0 +1,27 @@
+#!/bin/bash
+list=`cat *.val | grep " at " | grep -v "in use at exit" | grep -v "operator new" | $TRUST_Awk -F: '{print $2}' | $TRUST_Awk '{print $1}' | sort -u | grep -v _new | grep -v alloc`
+for mot in `echo $list` 
+do
+   if [ $mot != "in" ] && [ $mot != "(within" ] 
+   then
+      echo "-----------"
+      echo "Error:"`grep -B1 $mot *.val |  grep -v " at " | grep -v " by " | $TRUST_Awk -F"== " '{print $2}' | grep -v "errors in con" |sort -u|tail -1`
+      echo "Where:"`cat *.val | grep $mot | grep " at " | $TRUST_Awk -F": " '{print $2}' |awk '{print $1}' |sort -u|grep -v _new| grep -v alloc`
+      echo "Files:"`grep $mot *.val | grep " at "| $TRUST_Awk -F: '{print $1}'| sort -u`
+   fi
+done
+grep ERROR *.val | grep -v " 0 errors from 0 contexts" | awk '{print "Error: "$0}'
+grep ERROR *.val | grep -v " 0 errors from 0 contexts" | $TRUST_Awk -F\. '{print (" "$1" ")}' > caserror
+
+# Depuis la 1.6.2, on ne doit plus avoir AUCUN memory leak
+rm -r -f casmem
+touch casmem
+for file in *.val 
+do
+   if [ "`grep 'Memcheck:Leak' $file`" != "" ]
+   then
+      echo "*******************************************************"
+      echo "Cas $file :"
+      $TRUST_Awk '/LEAK SUMMARY/ {do {print $0} while (getline && $2!="ERROR")}' $file
+   fi
+done | tee -a casmem

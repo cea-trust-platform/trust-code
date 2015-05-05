@@ -1,0 +1,34 @@
+#!/bin/bash
+rm -f .tmp*
+for rep in `cat $TRUST_ROOT/env/rep.TRUST`
+do
+   for file in `cd $TRUST_ROOT/$rep;ls *.cpp`
+   do
+      fic=$TRUST_ROOT/$rep/$file
+      # Recupere le nom de la classe :
+      #html=${file%.cpp}.html
+      #html=`cat $fic | $TRUST_Awk -F"::" '/::readOn/ && (!ok) {print $1;ok=1}' | $TRUST_Awk '{print $NF}'`
+      #html=$html".html"
+      #cat $fic | grep -v "<<" | $TRUST_Awk -v file=$html -F"\"" '/::readOn/ || /::lire/ {ok=1;getline} /::/ {ok=0} (NF>2) && (ok) { print $2" "file" U"}' >> .tmp_mots_readon_lire
+      #cat $fic | $TRUST_Awk -v file=$html -F"\"" '/implemente_/ {ok=1} (NF>2) && (ok) { print $2" "file" D"} /)/ {ok=0}' >> .tmp_mots_implemente
+      echo $fic
+      cat $fic | $TRUST_Awk -F"\"" 'BEGIN {fic1=".tmp_mots_implemente";fic2=".tmp_mots_readon_lire"} /implemente_base/ || /implemente_instanciable/ {split($0,a,"(");split(a[2],b,",");class=b[1];while(NF!=3) getline;print $2" "class" D" >> fic1} /::readOn/ || /::lire/ {ok=1;if (class=="") {split($0,a,"::");n=split(a[1],b," ");class=b[n]};getline} /::/ {ok=0} (NF>2) && (ok) && !/<</ {if (class=="") print $0;print $2" "class" U" >> fic2}'
+   done
+done
+# On ordonne
+cat .tmp_mots_readon_lire | $TRUST_Awk '(NF==3) && !/{/ && !/}/ && !/\./ && !/\?\?/ {print $0}' | sort -u > mots_readon_lire
+cat .tmp_mots_implemente  | $TRUST_Awk '(NF==3) && !/{/ && !/}/ && !/\./ && !/\?\?/ {print $0}' | sort -u > mots_implemente 
+cat mots_readon_lire mots_implemente | sort -u > mots_cles
+echo >> mots_cles
+#
+# Sort l'index mots cles->classes
+#
+fichier=$TRUST_ROOT/doc/index_mots_cles_classe.html
+cree_en_tete.ihm > $fichier
+echo "<HR><H1>Index keywords->classes in TRUST</H1><HR><PRE>" >> $fichier
+cat mots_cles | $TRUST_Awk -v port=$PORT '(NR>9) {key=$1;print "<BR><A NAME="key"><B>"key"</B>"; while ($1==key) {print "\t<A HREF=http://localhost:"port"/index.cgi?"$2">"$2"</A>"i;getline} }' >> $fichier
+echo "</HTML>" >> $fichier
+#
+# Sort le fichier qui va s'appliquer sur les .data :
+#
+cat mots_cles | $TRUST_Awk '(NR>9) {key=$1;html=$2;ind=-1;while ($1==key) {getline;ind++};if (ind) print "s?"key" ?<A HREF=../../doc/index_mots_cles_classe.html#"key">"key"</A> ?g";else print "s?"key" ?<A HREF=../../doc/"html">"key"</A> ?g"}' > $TRUST_TMP/sed_mots_cles

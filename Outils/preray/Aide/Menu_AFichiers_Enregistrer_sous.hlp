@@ -1,0 +1,6 @@
+Type : menu
+Acces : Fichiers/Enregistrer sous ...
+
+Description :
+	Cette commande permet de sauvegarder sur disque le cas en cours, sous un nom different du cas ouvert. Attention : le cas courant prend le nouveau nom (c'est a dire que si la commande Enregistrer -simple- est utilisee, la sauvegarde sera faite sous ce nouveau nom).
+	De meme que pour l'enregistrement simple, une verification (et eventuellement une resolution des parametres non determines) est effectuee avant la sauvegarde, afin que les cas sauvegardes ne soient que des cas valides.

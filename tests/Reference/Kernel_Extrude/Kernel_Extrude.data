@@ -1,0 +1,18 @@
+# fichier de creation du canal par extrusion de la face perio #
+dimension 3
+
+Domaine dom
+Domaine canal
+Read_file dom domaineComplet.geom
+ExtrudeBord {
+	domaine_init dom
+	direction 0. 0. 0.0403
+	domaine_final canal
+	nom_bord entree
+	nb_tranches 5
+}
+RegroupeBord canal PERIO { devant derriere }
+
+Ecrire_fichier canal canal.geom
+# Postraitement du domaine canal au format lml binaire dans le fichier Extrude.lml #
+Postraiter_domaine { binaire 1 format lml domaine canal fichier Kernel_Extrude.lml }

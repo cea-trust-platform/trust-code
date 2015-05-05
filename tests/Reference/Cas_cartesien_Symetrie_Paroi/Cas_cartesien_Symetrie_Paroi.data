@@ -1,0 +1,106 @@
+# Hydraulique 2D avec CL arete symetrie-paroi  #
+# PARALLEL OK 8 #
+dimension 2
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0.           
+	tmax 100.
+	dt_min 0.00001 
+	dt_max 10000
+	dt_impr 10.     
+	dt_sauv 100000.  
+	seuil_statio 1.e-30
+	facsec 1. 
+}
+
+Pb_Hydraulique pb
+
+Domaine dom_pb
+# BEGIN MESH #
+Mailler dom_pb
+{
+      Pave cavite
+      {   
+            Origine 0. 0.
+	    Nombre_de_noeuds 11 41
+	    Longueurs 10. 40.
+      }
+      {   
+            Bord gauche X = 0. 0. <= Y <= 40.
+            Bord droite_haut X = 10. 10. <= Y <= 40.
+            Bord droite_bas  X = 10. 0. <= Y <= 10.
+            Bord haut Y = 40. 0. <= X <= 10.
+            Bord bas_ouvert  Y = 0. 0. <= X <= 3.
+            Bord bas_paroi  Y = 0.  3. <= X <= 10.
+      }
+}      
+
+# END MESH #
+# BEGIN PARTITION
+Partition dom_pb
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom_pb
+END SCATTER #
+
+VDF cubesregu
+
+Fluide_Incompressible eau
+Lire eau
+{
+	mu Champ_Uniforme 1 0.2
+	rho Champ_Uniforme 1 2
+	lambda Champ_Uniforme 1 2.853E-2          
+	Cp Champ_Uniforme 1 0.5
+        beta_th Champ_Uniforme 1 3.E-3     
+	      
+}
+
+Champ_Uniforme gravite
+Lire gravite 2 0.  -9.81
+Associate eau  gravite
+Associate pb dom_pb
+Associate pb  eau
+Associate pb sch
+Discretize pb cubesregu
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1e-13 }
+		convection { quick }
+		diffusion { }
+		conditions_initiales {
+			vitesse Champ_Uniforme 2 0. 0.
+			}
+		boundary_conditions {
+	          	bas_ouvert frontiere_ouverte_vitesse_imposee champ_front_uniforme 2 0. 1.
+                        bas_paroi paroi_fixe
+	          	haut frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.
+                        droite_haut paroi_fixe
+                        droite_bas symetrie
+                        gauche paroi_fixe
+		}
+        }
+	Postraitement
+	{
+                Champs dt_post 100000.
+		{
+		   pression elem
+		   vitesse som
+		}
+	}
+        Sauvegarde binaire pb.sauv
+}
+
+Solve pb
+fin

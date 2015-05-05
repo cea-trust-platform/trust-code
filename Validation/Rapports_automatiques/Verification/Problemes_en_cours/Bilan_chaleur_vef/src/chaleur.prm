@@ -1,0 +1,419 @@
+Parameters {
+	Title "2D Channel flow with imposed Twall and volumetric power"
+	Description "2D Channel flow with imposed wall temperature and imposed volumetric power for tests on extended volumes for the thermal equation."
+#	Pour inserer des equations, utiliser l'editeur LyX qui peut convertir les equations en LateX
+#       puis, on insere le resultat LateX dans ce file
+#	Description "$\Phi =100 W$
+#	Description "$\phi =100 W/m^2$
+#	Description "\latex_($\frac{ \partial ^2 T }{\partial y^2}=..$\latex_)"
+
+	Author "Simone Vandroux"
+# Maillage variable, schema EF_stab
+	TestCase "." "Canal_2D_grossier.data"
+	TestCase "." "Canal_2D.data"
+	TestCase "." "Canal_2D_fin.data"
+
+# Maiilage standard, schemas variables
+	TestCase "." "Canal_2D_amont.data"
+	TestCase "." "Canal_2D_muscl.data"
+	TestCase "." "Canal_2D_EF_stab.data"
+	TestCase "." "Canal_2D_negligeable.data"
+
+
+	VersionTrio_U "V1.5.4 + atelier volumes etendus"
+	ParametersTrio_U "Effect of the extended volumes for the diffusion terms and the mass terms of the heat conservation equation."
+	ParametersTrio_U "Effect of the mesh"
+	ParametersTrio_U "Effect of the thermal convection scheme"
+	ParametersTrio_U "Academic case with analytical solution"
+# Booleen pour l'inclusion ou non des jdds
+	IncludeData 0
+# Executables a lancer avant la generation des courbes
+	Prerequisite "./calcul_nb_mailles"
+}
+
+
+Chapter { 
+	Title " Test Description "
+	Description " \latex_(\textbf{Tested options}\latex_)"
+	Description " Type of flow:		      Thermohydraulic laminar 2D"
+	Description " Time scheme:                    Euler explicite"
+	Description " Convection schemes:             Amont, muscl, EF_stab {volumes_etendus}" 
+        Description " Discretization:                 VEFPreP1b"            
+        Description " Type of boundary conditions:    Momentum: periodic and symetry"
+        Description "                                 Energy: periodic and imposed temperature" 
+        Description " Type of fluid:                  properties of helium gas at 700°C           
+	Description " "
+	Description "\latex_(\textbf{Physical properties}\latex_)"
+	Description " The physical properties correspond to the properties of Helium at 700°C"
+	Description "\latex_($\rho = 4.40684\: kg.m^{-3}$\latex_)"
+	Description "\latex_($\mu$\latex_) = 4.46437e-05 Pa.s"
+	Description "\latex_($\lambda = 0.344964 \: W.m^{-1}.K^{-1}$\latex_)"
+	Description "Cp = 5193 J/kg/K"
+	Description "\latex_($\beta =  0.0014285714\:  K^{-1}$\latex_)"
+	Description "Pr =  0.67 "
+
+	Description "  "
+	Description "  "
+	Description "\latex_(\textbf{Boundary limits}\latex_) "
+	Description "  "
+	Description "Hydraulic: symetry at walls" 
+	Description "Energy: imposed temperature T=0 at walls, imposed volumetric power=1 in the calculation domain"
+	Description "  "
+	Description "\latex_(\textbf{Initial conditions}\latex_):
+	Description "  "
+	Description "For this periodic calculation, the exact temperature solution is a parabolic profile:"
+	Description "\latex_($T(y)=\frac{P}{\lambda}.\frac{y}{2}.(y-H)$\latex_) "
+        Description "It is imposed as an initial temperature profile. "
+	Description "  "
+	Description "\latex_(\textbf{Solving of equations}\latex_):"
+	Description "  "
+	Description "\latex_(\textbf{Equation Navier\_Stockes\_standard}\latex_):"
+
+        Description " Pressure solver: solveur_pression Gcp { precond ssor { omega 1.5 } seuil 1.e-10"
+        Description " Source term:   Canal_perio { bord periox }"  
+                
+	Description "\latex_(\textbf{Equation convection\_ diffusion\_temperature}\latex_):
+        Description "Sources term: Puissance_Thermique Champ_Uniforme 1 1
+
+# Trace du domaine #########################################
+Figure {
+         Title " geometry"
+         picture cas_test_3.jpg
+	}
+# Trace des differents maillages #########################################
+					
+	  
+Visu {
+	Title "Coarse mesh"
+#	Description "On trouvera ci dessous une vue des differents maillages utilises"
+        Width 6 cm
+	mesh ./Canal_2D_grossier.lata dom_pb2
+        pseudocolor ./Canal_2D_grossier.lata dom_pb2 TEMPERATURE ELEM
+    	blackvector ./Canal_2D_grossier.lata dom_pb2 VITESSE ELEM
+}
+Visu {
+	Title "Standard mesh"
+        Width 6 cm
+	mesh ./Canal_2D.lata dom_pb2
+        pseudocolor ./Canal_2D.lata dom_pb2 TEMPERATURE ELEM
+    	blackvector ./Canal_2D.lata dom_pb2 VITESSE ELEM
+}
+Visu {
+	Title "Refined mesh"
+        Width 6 cm
+	mesh ./Canal_2D_fin.lata dom_pb2
+        pseudocolor ./Canal_2D_fin.lata dom_pb2 TEMPERATURE ELEM
+    	blackvector ./Canal_2D_fin.lata dom_pb2 VITESSE ELEM
+}
+#  #########################################################################
+
+
+
+}
+
+
+Chapter {
+ 
+	Title " Effect of the extended volumes on the mass terms "
+	Description " The objective of the calculation is to test the energy conservation in the calculation domain"
+	Description " "
+	Description "The integration of the energy conservation equation on the calculation domain leads to the following equality:"
+	Description "Flux at the wall * Length of the wall = Imposed volumetric power * Domain Volume "
+	Description "The Heat flux at the wall is taken from the file Diffusion_chaleur.out"
+	Description "The volumetric power is imposed in the input data set"
+        Description " "
+        Description "This calculation is an 'academic' case, and is not supposed to have a real physical meaning."
+	Description " "
+	Description "The calculations without the extended volumes will have errors on the heat flux calculation, as the volume of the small cells next to the wall are not counted in the volume of the calculation domain. The more refined the mesh will be, the smaller this error will be."
+
+
+Figure {
+	Title "Heat flux as a function of time for various meshings"
+	Dimension 2
+	Description "The graph below shows the heat flux as a function of time for the various meshes studied. They are compared to the real power imposed in the input data set."
+        Description "The calculation stops when the calculation has reached a stationary sate."
+
+	LabelX "time (in s)"
+	LabelY "Heat flux at the wall (in W)"
+# Description des courbes
+	Include_Description_Curves 0
+	legend below title "legende"
+
+	Curve {
+		legend "-Flux bord coarse mesh"
+		origin "Trio_U"
+		Version "1.5.4"
+		file ./Canal_2D_grossier_pb2_Diffusion_chaleur.out
+		Style linespoints
+		columns ($1) (-$2)	
+	
+	}
+
+	Curve {
+		legend "-Flux bord standard mesh"
+		origin "Trio_U"
+		Version "1.5.4"
+		file ./Canal_2D_pb2_Diffusion_chaleur.out
+		Style linespoints
+		columns ($1) (-$2)	
+	
+	}
+
+	Curve {
+		legend "-Flux bord refined mesh"
+		origin "Trio_U"
+		Version "1.5.4"
+		file ./Canal_2D_fin_pb2_Diffusion_chaleur.out
+		Style linespoints
+		columns ($1) (-$2)	
+	
+	}
+	Curve {
+		legend "Total Power"
+		origin "Trio_U"
+		Version "1.5.4"
+		file ./Canal_2D_pb2_Puissance_Thermique.out
+		Style linespoints
+		columns ($1) ($2)	
+	}
+
+}
+
+Figure {
+	Title "Heat flux as a function of time for various thermal convective schemes"
+	Dimension 2
+	Description "The graph below shows the heat flux as a function of time for the various convective schemes studied. They are compared to the real power imposed in the input data set."
+        Description "The calculation stops when the calculation has reached a stationary sate."
+
+	LabelX "time (in s)"
+	LabelY "Heat flux at the wall (in W)"
+# Description des courbes
+	Include_Description_Curves 0
+	legend below title "legende"
+
+	Curve {
+		legend "-Flux_bord amont"
+		origin "Trio_U"
+		Version "1.5.4"
+		file ./Canal_2D_amont_pb2_Diffusion_chaleur.out
+		Style linespoints
+		columns ($1) (-$2)	
+	
+	}
+	Curve {
+		legend "-Flux bord muscl"
+		origin "Trio_U"
+		Version "1.5.4"
+		file ./Canal_2D_muscl_pb2_Diffusion_chaleur.out
+		Style linespoints
+		columns ($1) (-$2)	
+	
+	}
+	Curve {
+		legend "-Flux bord EF_stab"
+		origin "Trio_U"
+		Version "1.5.4"
+		file ./Canal_2D_EF_stab_pb2_Diffusion_chaleur.out
+#		Style linespoints
+		columns ($1) (-$2)	
+	
+	}
+
+	Curve {
+		legend "-Flux bord negligeable"
+		origin "Trio_U"
+		Version "1.5.4"
+		file ./Canal_2D_negligeable_pb2_Diffusion_chaleur.out
+		Style linespoints
+		columns ($1) (-$2)	
+	
+	}
+	Curve {
+		legend "Total Power"
+		origin "Trio_U"
+		Version "1.5.4"
+		file ./Canal_2D_amont_pb2_Puissance_Thermique.out
+		Style linespoints
+		columns ($1) ($2)	
+	}
+
+}
+
+# Trace du profil de temperature #########################################
+
+Figure {
+	Title "Temperature profile in the channel for various meshings"
+	Description "The graph below shows the temperature profiles in the channel for the various meshes studied. They are compared to the analytical solution."
+
+	LabelX "Height in the channel (in m)"
+	LabelY "Temperature (in T)"
+# Description des courbes
+	Include_Description_Curves 0
+	legend below title "legende"
+
+
+
+	dimension 2
+
+	Curve {
+		legend "coarse mesh"
+		origin "Trio_U"
+#	Style linespoints
+#		columns ($1) ($2)	
+		segment ./Canal_2D_grossier prof_sortie_T
+	}
+	Curve {
+		legend "standard mesh"
+		origin "Trio_U"
+#		Style linespoints
+#		columns ($1) ($2)	
+		segment ./Canal_2D prof_sortie_T
+	}
+	Curve {
+
+		legend "refined mesh"
+		origin "Trio_U"
+#		Style linespoints
+#		columns ($1) ($2)	
+		origin "Trio_U"
+		segment ./Canal_2D_fin prof_sortie_T
+	}
+
+	Curve {
+	legend "analytical solution"
+	fonction -1/0.344964*x/2.*(x-2)
+	}
+}
+Figure {
+	Title "Temperature profile in the channel"
+	Description "The graph below shows the temperature profiles in the channel for the various convective scheme studied. They are compared to the analytical solution."
+
+	LabelX "Height in the channel (in m)"
+	LabelY "Temperature (in T)"
+# Description des courbes
+	Include_Description_Curves 0
+	legend below title "legende"
+
+
+
+	dimension 2
+
+	Curve {
+		legend "amont"
+		origin "Trio_U"
+	Style linespoints
+#		columns ($1) ($2)	
+		segment ./Canal_2D_amont prof_sortie_T
+	}
+	Curve {
+		legend "muscl"
+		origin "Trio_U"
+#		Style linespoints
+#		columns ($1) ($2)	
+		segment ./Canal_2D_muscl prof_sortie_T
+	}
+
+	Curve {
+		legend "EF_stab"
+		origin "Trio_U"
+#		Style linespoints
+#		columns ($1) ($2)	
+		segment ./Canal_2D_EF_stab prof_sortie_T
+	}
+
+	Curve {
+
+		legend "negligeable"
+		origin "Trio_U"
+#		Style linespoints
+#		columns ($1) ($2)	
+		origin "Trio_U"
+		segment ./Canal_2D_negligeable prof_sortie_T
+	}
+
+	Curve {
+	legend "analytical solution"
+	fonction -1/0.344964*x/2.*(x-2)
+	}
+
+}
+
+
+# Erreur relative sur le flux de chaleur en fonction du maillage #########################################
+
+
+
+Figure {
+	dimension 2
+	Title "Relativ error on the heat flux function of the mesh refinment : curve"
+	LabelX "Number of cells in the mesh"
+	LabelY "Relativ error in %"
+# Description des courbes
+	Include_Description_Curves 0
+
+	Curve {
+		origin "Trio_U"
+		file fin_total
+#		style linespoints
+		columns ($1) ($2+10.)/(10.)*100
+		legend "Error"
+
+	}
+}
+
+Table {
+	Title "Relativ error on the heat flux function of the mesh refinment : Table"
+	nb_columns 2
+#	formula int((ref-val)*2/(ref+val)*10000)/100.
+#	label  u_tau  | erreur en %
+	label flux total en W | erreur en %
+	Include_Description_lines 0
+	line {	
+		file ./fin_Canal_2D_grossier.out
+		origin "Trio_U"
+		nb_columns_file 3
+		legend coarse mesh
+		columns ($2) ($2+10.)/(10.)*100
+	}
+	line {	
+		file ./fin_Canal_2D.out
+		origin "Trio_U"
+		nb_columns_file 3
+		legend standard mesh EF_stab
+		columns ($2) ($2+10.)/(10.)*100
+	}
+	line {	
+		file ./fin_Canal_2D_amont.out
+		origin "Trio_U"
+		nb_columns_file 3
+		legend standard mesh amont
+		columns ($2) ($2+10.)/(10.)*100
+	}
+	line {	
+		file ./fin_Canal_2D_muscl.out
+		origin "Trio_U"
+		nb_columns_file 3
+		legend standard mesh muscl
+		columns ($2) ($2+10.)/(10.)*100
+	}
+	line {	
+		file ./fin_Canal_2D_negligeable.out
+		origin "Trio_U"
+		nb_columns_file 3
+		legend standard mesh negligeable
+		columns ($2) ($2+10.)/(10.)*100
+	}
+	line {	
+		file ./fin_Canal_2D_fin.out
+		origin "Trio_U"
+		nb_columns_file 3
+		legend refined mesh
+		columns ($2) ($2+10.)/(10.)*100
+	}
+
+
+
+}
+
+}
+

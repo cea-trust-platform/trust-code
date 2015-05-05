@@ -1,0 +1,225 @@
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:	NOM_DU_FICHIER.h
+// Directory:	$TRUST_ROOT/NOM_DU_MODULE
+//
+// .NOM NOM_DE_LA_CLASSE : 
+// .ENTETE TRUST NOM_DU_MODULE
+// .LIBRAIRIE NOM_DE_LA_LIBRAIRIE
+// .FILE NOM_DU_FICHIER.h
+// .FILE NOM_DU_FICHIER.cpp
+// .DESCRIPTION  class NOM_DE_LA_CLASSE
+//
+// Decrire ici la classe NOM_DE_LA_CLASSE
+//
+//////////////////////////////////////////////////////////////////////////////
+
+#ifndef NOM_DU_FICHIER_inclus
+#define NOM_DU_FICHIER_inclus
+
+#include <Eqn_base.h>
+//
+// AJOUTER ICI LES INCLUDES POUR LES OPERATEURS ET LE MILIEU
+//
+// EXEMPLE :
+#include <OpDiff.h>
+#include <Ref_TYPE_DE_MILIEU.h>
+
+
+class NOM_DE_LA_CLASSE : public Equation_base
+{
+   
+declare_instanciable(NOM_DE_LA_CLASSE)
+   
+public:
+   
+     declare_base(Equation_base)
+      
+public :
+       
+   void associer_pb_base(const Probleme_base&);
+
+
+   void associer_milieu_base(const Milieu_base& );      
+   virtual Entree& lire(const Motcle&, Entree&);
+
+   const Operateur& operateur(int) const;
+   Operateur& operateur(int);
+   Operateur_Div& operateur_divergence();
+   const Operateur_Div& operateur_divergence() const;
+   Operateur_Grad& operateur_gradient();
+   const Operateur_Grad& operateur_gradient() const;
+   
+   
+   void completer();
+   void mettre_a_jour(double temps);
+      
+   int sauvegarder(Sortie&) const;
+   int reprendre(Entree&);  
+   
+   DoubleTab& derivee_en_temps_inco(DoubleTab& );
+   int preparer_calcul();          
+
+   
+   inline int nombre_d_operateurs() const;
+   inline const Operateur& operateur(int) const;
+   inline Operateur& operateur(int);
+   virtual int impr_pas_temps_operateur(int ,double , Sortie& ) const;
+   inline const Champ_Inc& inconnue() const;
+   inline Champ_Inc& inconnue(); 
+   inline void associer(const Milieu_base&);
+   inline const Milieu_base& milieu() const;
+   inline Milieu_base& milieu(); 
+   inline void associer_milieu_base(const TYPE_DE_MILIEU&);
+   inline const TYPE_DE_MILIEU& milieu() const;
+   inline TYPE_DE_MILIEU& milieu();  
+   
+   void discretiser();  
+   virtual int impr(Sortie& os) const;
+   int comprend_mot(const Motcle& ) const;
+   int comprend_champ(const Motcle& ) const;
+   int a_pour_Champ_Inc(const Motcle&, REF(Champ_base)& ) const;      
+   virtual const Motcle& domaine_application() const;
+    
+protected :
+   
+   REF(TYPE_DE_MILIEU) le_TYPE_DE_MILIEU;
+   Champ_Inc NOM_DE_L_INCONNUE;   
+//
+// AJOUTER ICI LES OPERATEURS
+// EXEMPLE :
+// Operateur_Diff terme_diffusif; 
+// 
+   
+};
+
+
+// Fonctions inline:
+
+// Description:
+// surcharge de la methode d'Equation_base.
+// renvoie le nombre d'operateurs.
+inline int NOM_DE_LA_CLASSE::nombre_d_operateurs() const
+{
+//
+// A MODIFIER
+//
+   return 0;
+}
+
+// Description:
+// surcharge de la methode d'Equation_base.
+// renvoie le ieme operateur.
+inline const Operateur& operateur(int i) const
+{
+   assert(i>=0);
+   assert(i<nombre_d_operateurs());
+//
+// A MODIFIER
+//
+   switch(i)
+   {
+      case(0): 
+	 {
+	    return operateur(i); // EXEMPLE return terme_diffusif;
+	    break:
+	 }
+      default :
+	 {
+	    Cerr << "ERREUR dans NOM_DE_LA_CLASSE::operateur(int i)" << finl;
+	    Cerr << "NOM_DE_LA_CLASSE ne possede pas " << i 
+	       << " operateurs mais " << nombre_d_operateurs() << finl;
+	    exit(-1);
+	 }
+   }
+}
+
+// Description:
+// surcharge de la methode d'Equation_base.
+// renvoie le ieme operateur.
+inline Operateur& NOM_DE_LA_CLASSE::operateur(int i)
+{
+   assert(i>=0);
+   assert(i<nombre_d_operateurs());
+//
+// A MODIFIER
+//
+   switch(i)
+   {
+      case(0): 
+	 {
+	    return operateur(i); // EXEMPLE return terme_diffusif;
+	    break:
+	 }
+      default :
+	 {
+	    Cerr << "ERREUR dans NOM_DE_LA_CLASSE::operateur(int i)" << finl;
+	    Cerr << "NOM_DE_LA_CLASSE ne possede pas " << i 
+	       << " operateurs mais " << nombre_d_operateurs() << finl;
+	    exit(-1);
+	 }
+   }
+}
+
+// Description:
+// association entre  NOM_DE_LA_CLASSE et TYPE_DE_MILIEU.
+// affecte le_TYPE_DE_MILIEU.
+inline void NOM_DE_LA_CLASSE::associer_milieu_base(const TYPE_DE_MILIEU& un_le_TYPE_DE_MILIEU)
+{
+   le_TYPE_DE_MILIEU = un_le_TYPE_DE_MILIEU;
+}
+
+// Description:
+// renvoie le TYPE_DE_MILIEU associe
+inline const TYPE_DE_MILIEU& le_TYPE_DE_MILIEU() const
+{
+   return le_TYPE_DE_MILIEU.valeur();
+}
+
+// Description:
+// renvoie la valeur de le_TYPE_DE_MILIEU.
+inline TYPE_DE_MILIEU& le_TYPE_DE_MILIEU()
+{
+   return le_TYPE_DE_MILIEU.valeur();
+}
+
+// Description:
+// association entre  NOM_DE_LA_CLASSE et TYPE_DE_MILIEU.
+// sort en erreur si l'argument n'est pas de type TYPE_DE_MILIEU.
+// affecte le_TYPE_DE_MILIEU.
+inline void NOM_DE_LA_CLASSE::associer(const Milieu_base& un_milieu)
+{
+   le_TYPE_DE_MILIEU = ref_cast(TYPE_DE_MILIEU, un_milieu);
+}
+
+// Description:
+// renvoie le TYPE_DE_MILIEU associe
+inline const Milieu_base& milieu() const
+{
+   return le_TYPE_DE_MILIEU.valeur();
+}
+
+// Description:
+// renvoie le TYPE_DE_MILIEU associe
+inline Milieu_base& milieu()
+{
+   return le_TYPE_DE_MILIEU.valeur();
+}
+
+// Description:
+// renvoie le champ inconnue.
+inline Champ_Inc& NOM_DE_LA_CLASSE::inconnue() 
+{
+   return NOM_DE_L_INCONNUE;
+}
+
+// Description:
+// renvoie le champ inconnue.
+inline const Champ_Inc& NOM_DE_LA_CLASSE::inconnue() const 
+{
+   return NOM_DE_L_INCONNUE;
+}
+
+#endif
+
+

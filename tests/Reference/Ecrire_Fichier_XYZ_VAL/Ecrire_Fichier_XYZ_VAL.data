@@ -1,0 +1,237 @@
+# PARALLEL RUNS #
+dimension 2
+Domaine dom_pbG
+Domaine dom_pbF1
+
+# BEGIN MESH #
+Mailler dom_pbG
+{
+        Pave dom
+                {
+                Origine -3. -3.
+                Nombre_de_Noeuds 9 25
+                Longueurs 2. 6.
+                }
+                {
+                bord Gauche X = -3.   -3. <= Y <= 3.
+                bord Haut   Y = 3  -3 <= X <= -1
+                bord Bas    Y = -3   -3 <= X <= -1
+                Raccord local homogene interface X = -1  -3 <= Y <= 3
+                }
+}
+
+Mailler dom_pbF1
+{
+        Pave domF
+                {
+	        Origine -1. -3.
+                Nombre_de_Noeuds 12 25
+                Longueurs 4. 6.
+                }
+                {
+                Raccord local homogene interface X = -1.   -3. <= Y <= 3.
+                bord HautF   Y = 3.  -1. <= X <= 3.
+                bord BasF    Y = -3.   -1 <= X <= 3.
+                bord DroiteF X = 3.     -3 <= Y <= 3
+                }
+}
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom_pbG
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 1
+	Nom_Zones DOM1
+}
+Partition dom_pbF1
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 1
+	Nom_Zones DOM2
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM1.Zones dom_pbG
+Scatter DOM2.Zones dom_pbF1
+END SCATTER #
+
+Pb_conduction pbG
+Pb_Thermohydraulique pbF1
+
+
+Runge_Kutta_ordre_3 schG
+
+
+Lire schG
+{
+        tinit 0.
+        tmax 2
+        dt_min 1.e-10
+        dt_max 1e3
+        dt_impr 1.
+        dt_sauv 1
+        seuil_statio 1.e-8
+        facsec 1.
+}
+
+
+
+VDF cubesregu
+
+Fluide_Incompressible eau
+Lire eau
+{
+        mu Champ_Uniforme 1 1.
+        rho Champ_Uniforme 1 1. 
+        lambda Champ_Uniforme 1 1.          
+        Cp Champ_Uniforme 1 1. 
+        beta_th Champ_Uniforme 1 .01    
+}
+
+
+Champ_Uniforme gravite
+Lire gravite 2 0.  -9.81
+Associate eau  gravite
+Associate pbF1 dom_pbF1
+Associate pbF1 eau   
+  
+Solide ceramique    
+Lire ceramique  
+{
+        rho Champ_Uniforme 1 1.
+        lambda Champ_Uniforme 1 1.    
+        Cp Champ_Uniforme 1 1.
+}
+
+Associate ceramique  gravite
+Associate pbG dom_pbG
+Associate pbG ceramique     
+
+
+Probleme_couple pbMG_global
+Associate pbMG_global pbF1 
+Associate pbMG_global pbG 
+Associate pbMG_global schG
+
+Discretize pbMG_global cubesregu
+
+
+
+
+Lire pbF1
+{
+ Navier_Stokes_standard
+        {
+                solveur_pression Cholesky {    }
+                convection { amont }
+                diffusion { }
+                sources { boussinesq_temperature { T0 20. } }
+                conditions_initiales {
+                        vitesse Champ_Uniforme 2 0. 0.
+                        }
+                boundary_conditions {
+                	DroiteF paroi_fixe
+                	HautF frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+                	BasF frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  0. 10.
+                        interface paroi_fixe
+                }
+        }
+        Convection_Diffusion_Temperature
+        {
+                diffusion { }
+                convection { amont }
+                conditions_initiales { Temperature Champ_Uniforme 1 20. }
+                boundary_conditions 
+                {
+                	HautF 		frontiere_ouverte T_ext Champ_front_Uniforme 1 20.
+                	BasF 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
+                	DroiteF 	paroi_adiabatique
+                        interface   	paroi_contact pbG interface
+                }
+	ecrire_fichier_xyz_valeur temperature 1  bords 2 interface BasF
+        }
+
+        Postraitement
+        {
+		format lml
+                Sondes
+                {
+                        sonde_V vitesse periode 0.01 segment 10 0. -3. 0. 3.
+                        sonde_pression pression periode 0.01 points 1 0. 0.
+                        sonde_vitesse vitesse periode 0.01 points 1 0. 0.
+                        sonde_temp temperature periode 0.01 points 1 0. 0.
+                        profil_temp_gaucheF    temperature periode 1   segment 100 -1 -3   -1.  3
+                        profil_temp_droit    temperature periode 1   segment 100 3 -3   3.  3
+                        profil_temp_milieu    temperature periode 1   segment 100 -1 0   3.  0
+                        sonde_moy_vitesse moyenne_vitesse periode 0.01 points 1 0. 0.
+                        sonde_moy_temp moyenne_temperature periode 0.01 Circle  100 0. 0. 0.5 -180 180
+			
+                }
+		
+                Champs dt_post 1
+                {
+                        pression elem   
+                        vitesse elem
+                        temperature som
+                }
+                Statistiques dt_post 1
+                {
+		  t_deb  0. t_fin 10
+		  
+                  moyenne vitesse
+                  ecart_type vitesse	
+                   moyenne temperature
+                  ecart_type temperature	
+               }
+        }       
+        sauvegarde formatte pbF.sauv
+}
+
+
+
+
+
+
+
+Lire pbG
+{
+        Conduction
+        {
+                diffusion { }
+                conditions_initiales {
+                        temperature Champ_Uniforme 1 30.
+                        }
+                sources {
+                       Puissance_Thermique Champ_uniforme 1 1E+04 
+                        }
+
+                boundary_conditions {
+                        Gauche          paroi_adiabatique
+                        Haut            paroi_adiabatique  			
+                        Bas             paroi_adiabatique 			
+                        interface      	paroi_contact pbF1 interface
+                }	  
+        }
+        Postraitement
+        {
+		format lml
+                Sondes
+                {
+                        sond_combustible_sortie    temperature periode 5.E-3   points   1 -0.003 1.4 
+                }
+                Champs dt_post 1
+                {
+                   temperature elem
+                }
+        }
+        sauvegarde formatte pbG.sauv
+
+}
+
+
+Solve pbMG_global
+Fin
+

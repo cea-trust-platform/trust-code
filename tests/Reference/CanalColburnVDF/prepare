@@ -1,0 +1,1 @@
+gunzip -c canal.geom.gz > canal.geom

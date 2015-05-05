@@ -1,0 +1,104 @@
+#!/bin/bash
+# Git supported
+########################################################
+# Script d'installation a distance d'une version par ssh
+########################################################
+ssh_command()
+{
+    # Le sh devant mise_a_jour_TRUST_arch est important sur titane!!
+    # Comprends pas pourquoi...
+    # Creation d'un fichier de commandes car probleme si le SHELL n'est pas bash 1> 2> pas reconnu
+    command=`mktemp_`$HOST # To avoid conflicts if several Installer_TRUST.ssh is run in SAME time
+    echo ". ~/.bashrc 1>/dev/null 2>&1" > $command
+    echo $* >> $command
+    scp -o "StrictHostKeyChecking no" -o ConnectTimeout=60 -o BatchMode=yes $command $log@$adr:~/command_$HOST 1>/dev/null 2>&1
+    rm -f $command
+    # Add -X ?
+    ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=60 -o BatchMode=yes $log@$adr -n 'chmod +x ./command_'$HOST';./command_'$HOST 2>/dev/null
+}
+echo "Usage: $0 machine version [-patch] [-compile]"
+adr=$1
+v=$2   
+[ ${#1} = 0 ] || [ ${#2} = 0 ] && echo "Erreur sur les parametres" && exit
+patch="" && [ "$3" = "-patch" ] && patch=Patch$v.tar && shift
+compile="" && [ "$3" = "-compile" ] && compile=1 && shift
+
+#[ "`liste_machines | grep $adr`" != $adr ] && echo "$adr non accessible par ssh..." && exit
+# Est ce que la version existe ?
+GRAVAGE=$WORKDIR/A_GRAVER_CD_TRUST
+file=TRUST-$v".tar" && [ ! -f $GRAVAGE/$file ] && echo "$GRAVAGE/$file inexistant." && exit
+keys=keys$v && [ ! -f $GRAVAGE/$keys ] && echo "$GRAVAGE/$keys inexistante." && exit
+rep_stable=TRUST-$v
+rep=$rep_stable`[ "$patch" != "" ] && echo _patch`
+log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`
+####################################
+# Copie du tar et de la cle par sftp
+####################################
+# Test si accessible
+ssh_ -o BatchMode=yes $log@$adr -n pwd 1>/dev/null 2>&1
+[ $? != 0 ] && echo "Machine $log@$adr non accessible" && exit -1
+
+# On va sur $WORKDIR si la variable est definie
+if [ "`ssh_ -o BatchMode=yes $log@$adr -n '. ./.profile 1>/dev/null 2>&1;[ ${#WORKDIR} != 0 ] && [ -d $WORKDIR ] && echo yes'`" = "yes" ]
+then
+   # New, if $WORKDIR is defined, then the PATH is changed:
+   # $HOME/TRUST-$v/machine -> $WORKDIR/TRUST-$v
+   machine=`echo $adr | $TRUST_Awk -F. '{print $1}'`
+   ssh_ -o BatchMode=yes $log@$adr -n '. ./.profile 1>/dev/null 2>&1;mkdir -p $WORKDIR/'$rep';rm -f '$rep' 1>/dev/null 2>&1;mkdir -p '$rep';rm -f '$rep'/'$machine';ln -s -f $WORKDIR/'$rep' '$rep'/'$machine''
+else
+   machine=""
+   ssh_ -o BatchMode=yes $log@$adr -n '. ./.profile 1>/dev/null 2>&1;mkdir -p '$rep''
+fi
+
+# On recupere WORKDIR car sur themis c'est important (l'environnement doit etre fait depuis /softs/Applications64/TRUST
+# et non depuis /home_ceres/Utilisateurs/mb124139)
+WORKDIR=`ssh_command 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
+rep_stable=$WORKDIR/$rep_stable
+rep=$WORKDIR/$rep
+
+echo "Installation a distance sur $adr a "`date '+%H:%M:%S'`
+#echo "
+#-lcd $GRAVAGE
+#-cd $rep
+#`[ "$patch" = "" ] && echo -mput $file`
+#`[ -f $GRAVAGE/$patch ] && echo -mput $patch`
+#`[ "$patch" = "" ] && echo -mput $keys`
+#" > $TRUST_TMP/ssh_com
+#sftp -o ConnectTimeout=60 -o BatchMode=yes -b $TRUST_TMP/ssh_com $log@$adr
+[ "$patch" = "" ] && scp -o ConnectTimeout=60 -o BatchMode=yes $GRAVAGE/$file $log@$adr:$rep/.
+[ -f $GRAVAGE/$patch ] && scp -o ConnectTimeout=60 -o BatchMode=yes $GRAVAGE/$patch $log@$adr:$rep/.
+[ "$patch" = "" ] && scp -o ConnectTimeout=60 -o BatchMode=yes $GRAVAGE/$keys $log@$adr:$rep/.
+####################################################
+# On lance l'installation si version patch ou stable
+####################################################
+if [ "$patch" != "" ]
+then
+   # Si c'est la premiere installation de la version patch
+   # on regarde si une version stable existe deja
+   stable_installee=`ssh_ -o BatchMode=yes $log@$adr -n '[ -f '$rep_stable'/TRUST/exec/TRUST_mpi_opt ] && echo 1'`
+   patch_installee=`ssh_ -o BatchMode=yes $log@$adr -n '[ -f '$rep'/TRUST/exec/TRUST_mpi_opt ] && echo 1'`
+   if [ "$patch_installee" != 1 ]
+   then
+      if [ "$stable_installee" = 1 ]
+      then
+         # Si oui on va la copier pour gagner du temps
+         echo "Copie de $rep_stable vers $rep..."
+         ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=60 -o BatchMode=yes $log@$adr -n 'cp -R '$rep_stable'/. '$rep'/. 2>/dev/null'
+      else
+         echo "Il faut deja installer une version stable sur $adr." && exit -1
+         #$TRUST_ROOT/bin/admin/Installer_TRUST.ssh $adr ?
+      fi
+   fi  
+   # Installation du patch sur la copie de la version stable (on n'efface pas les .o)
+   ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=60 -o BatchMode=yes $log@$adr -n '[ -f .profile ] && . ./.profile;
+	cd '$rep/TRUST/bin' && ./Installer_TRUST -patch
+   '
+else
+   # Installation d'une version stable (on efface les .o)
+   ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=60 -o BatchMode=yes $log@$adr -n '[ -f .profile ] && . ./.profile;
+   	cd '$rep';rm -r -f TRUST 2>/dev/null;
+  	tar xf '$file';printf '$rep'/'$keys'"\ny\n" | ./Installer_TRUST && rm -f * 2>/dev/null;
+   	[ '${#compile}' != 0 ] && cd TRUST && source env/Init_TRUST && OPT="" && monodir;
+   	find . -name '*'.o -exec rm -f {} \;
+   '
+fi

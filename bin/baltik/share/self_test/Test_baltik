@@ -1,0 +1,176 @@
+#!/bin/bash
+
+
+set -u 
+
+environnement_init()
+{
+	script=$0
+	bindir=`dirname $script`
+	cd $bindir
+	pwd
+}
+[ $TRUST_ARCH != linux ] && echo "Baltik non valide sur $TRUST_ARCH" && exit 0
+./Clean
+DIR=`environnement_init`
+cd $DIR
+BALTIK_BUILD_CONFIGURE_PATH=$DIR/../../bin
+
+
+# Optim ou debug ? debug par defaut
+#
+OPT=_opt
+[ ! -f $TRUST_LIB/TRUST${COMM}${OPT}.a ] && OPT=
+
+[ ! -f $TRUST_LIB/TRUST${COMM}${OPT}.a ] && echo "Pas de librairie trio_u trouve " && exit -1
+
+MODE=debug
+[ "$OPT" = "_opt" ] && MODE=optim
+
+
+
+# fonction de test d'un repertoire arg 1
+# test par rapport au status attendu arg 2 
+# en  retour 0 ok 
+# 1 si status different
+# arg2 status attendu
+#           0 ok
+#           1 compil ko 
+#           2 test  ko ( mais compil ok )
+test_basic()
+{
+ echo Test de $1 \(mode : $MODE \)
+ cd $1
+ status_tot=0
+ ${BALTIK_BUILD_CONFIGURE_PATH}/baltik_build_configure
+ ./configure >LOG_CONFIG 2>&1
+
+ make $MODE >LOG_COMP 2>&1
+ status=$?
+ if [ $status -ne 0 ]   
+ then
+   if [ $2 -ne 1 ]
+   then
+     echo pb avec la compile de $1
+     status_tot=1
+   fi
+ else
+   if [ $2 -eq 1 ]
+   then
+     echo pb avec la compile de $1, on attendait ko hors ok
+     status_tot=1	
+   fi
+ fi
+ if [ $status -eq 0 ]
+ then
+ CHECKMODE=$MODE
+ [ "$TESTVALGRIND" = "1" ] &&   CHECKMODE=${MODE}_valgrind  
+ make check_$CHECKMODE > LOG_RUN 2>&1
+ status=$?
+ if [ $status -ne  0 ] 
+ then 
+   if [ $2 -ne 2 ]
+   then
+     echo pb avec les tests de $1
+     status_tot=1
+   fi
+ else
+   if [ $2 -eq 2 ]
+   then		
+     echo pb avec $1 , cas tests paraissent ok, hors on attend ko
+     status_tot=1
+   fi
+ fi
+ fi
+ if [ $status_tot -eq 0 ]
+ then
+   make dist_clean 1>/dev/null
+   rm -f LOG_CONFIG LOG_RUN LOG_COMP
+ fi
+ cd ..
+ 
+ export status_tot
+
+}
+
+TESTVALGRIND=0
+
+# premier test tout est ok ( normalement )
+test_basic basic_ok 0
+status_basic_ok=$status_tot
+
+# deuxieme test  la compile ne marche pas
+test_basic basic_pb_compil 1
+status_basic_pb_compil=$status_tot
+
+# troisieme test la compile marche et pas les cas tests
+test_basic basic_pb_run 2
+status_basic_pb_run=$status_tot
+
+# quatrieme test : test des dependances entre projet
+test_basic basic_depend 0
+status_basic_depend=$status_tot
+
+# on teste valgrind sans valgrind OK, avec KO
+export TESTVALGRIND=0
+test_basic basic_erreur_valgrind 0
+status_valgrind=$status_tot
+export TESTVALGRIND=1 
+test_basic basic_erreur_valgrind 2
+export TESTVALGRIND=0
+[ $status_valgrind -eq 0 ] && status_valgrind=$status_tot
+
+
+# on efface le resultat des  runs d'avant
+rm -rf basic_rapport/tests/Reference/Validation/*_jdd*
+mkdir -p basic_rapport/tests/Reference/Validation
+TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS_SA=${TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS}
+export TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS=0
+
+test_basic basic_rapport 0
+status_basic_rapport=$status_tot
+
+# on efface le resultat des  runs d'avant
+git rm -f basic_rapport/tests/Reference/Validation/test_rapport_jdd1/lien_fiche_validation
+git rm -f  basic_rapport/tests/Reference/Validation/test_rapport_jdd1/test_rapport_jdd1.data
+git rm -f     basic_rapport/tests/Reference/Validation/test_rapport_jdd1/test_rapport_jdd1.lml.gz
+rm -rf basic_rapport/tests/Reference/Validation/*_jdd*
+export TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS=${TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS_SA}
+
+err=0 
+
+status_cppunit=0
+# test_cpp_unit attention modif des src
+test_basic cppunit_proj 0
+status_cppunit=$status_tot
+if [ $status_cppunit -ne 0 ] 
+then
+   err=7 && cat cppunit_proj/LOG_* 2>/dev/null
+fi
+
+# test dependance kernel
+voulu=1
+[ -f $TRUST_LIB/TRUST${COMM}_numeric_kernel${OPT}.a ]  && voulu=0
+test_basic basic_kernel $voulu 
+status_basic_kernel=$status_tot
+if [ $status_basic_kernel -ne 0 ] 
+then
+   err=8 && cat basic_kernel/LOG_* 2>/dev/null
+fi
+test_basic basic_kernel_faux 2
+status_basic_kernel_faux=$status_tot
+if [ $status_basic_kernel_faux -ne 0 ] 
+then
+   err=9 && cat basic_kernel_faux/LOG_* 2>/dev/null
+fi
+
+
+[ $status_basic_ok -ne 0 ] 		&& err=1 && cat basic_ok/LOG_* 2>/dev/null
+[ $status_basic_pb_compil -ne 0 ] 	&& err=2 && cat basic_pb_compil/LOG_* 2>/dev/null
+[ $status_basic_pb_run -ne 0 ] 		&& err=3 && cat basic_pb_run/LOG_* 2>/dev/null
+[ $status_basic_depend -ne 0 ] 		&& err=4 && cat basic_depend/LOG_* 2>/dev/null
+[ $status_basic_rapport -ne 0 ] 	&& err=5 && cat basic_rapport/LOG_* 2>/dev/null
+[ $status_valgrind -ne 0 ] && err=6 && cat basic_erreur_valgrind/LOG_* 2>/dev/null
+[ $err = 0 ] && echo "OK"
+[ $err != 0 ] && echo "KO"
+exit $err

@@ -1,0 +1,132 @@
+#!/bin/bash
+# Script pour decouper un maillage d'apres un jeu de donnees
+# si celui contient les balises
+OK_make_par ()
+{
+   if [ $1 = 0 ]
+   then
+      echo "End."
+   else
+      echo "Error."
+   fi
+}
+SUBSTITUE ()
+{
+   eps=`$TRUST_Awk '/seq faces/ {print $(NF-1)}' $NOM.data`
+   sed -e "s?fichier $NOM?fichier $1?g" \
+-e "s?seq faces $eps 0?seq faces $eps 1?g" $NOM.data > $1".data"
+   # Cholesky par Petsc est parallele 
+   if [ "`grep -i Cholesky $1.data | grep -vi precond_local | grep -vi Petsc`" != "" ]
+   then
+     sed -e "s? precond_local Cholesky {? precond_local Cholesky {?g" \
+-e "s? Cholesky {? GCP { precond ssor { omega 1.651 } seuil 1.e-10?g" \
+-e "s? cholesky {? GCP { precond ssor { omega 1.651 } seuil 1.e-10?g" $1.data > tmp.data
+     mv -f tmp.data $1.data
+   fi
+}
+
+[ ${#DEC} = 0 ] && echo "Usage: `basename $0` datafile [NB_CPUs]"
+NOM=${1%.data}
+[ ! -f $NOM.data ] && echo "$NOM.data not existent." && exit -1
+# To avoid dos files:
+dos2unix_ $NOM.data
+PAR_NOM=PAR_$NOM
+DEC_NOM=DEC_$NOM
+SEQ_NOM=SEQ_$NOM
+rm -f $DEC_NOM".Zones" $DEC_NOM".FACES" $SEQ_NOM".FACES" *.Racc 
+###################################
+# Creation du fichier $SEQ_NOM.data
+###################################
+SUBSTITUE $SEQ_NOM
+
+##########################
+# Creation du DEC_NOM.data
+##########################
+tmpdec=`mktemp_ `
+echo "
+s?# BEGIN PARTITION?# BEGIN PARTITION #?
+s?# DEBUT DECOUPAGE?# DEBUT DECOUPAGE #?
+s?END PARTITION #?# END PARTITION #?g
+s?FIN DECOUPAGE #?# FIN DECOUPAGE #?g
+" > $tmpdec
+
+if [ ${#2} != 0 ]
+then
+   NB_CPUS=$2
+   # regexp: * apparait 0,1 ou plusieurs fois
+   # regexp: \+ apparait 1 ou plusieurs fois
+   echo "
+s?[N,n][B,b]_[P,p][A,a][R,r][T,t][S,s][ \t]\+[0-9]\+?Nb_parts $NB_CPUS?
+s?[N,n][B,b]_[P,p][A,a][R,r][T,t][S,s]_[T,t][O,o][T,t][[ \t]\+[0-9]\+?Nb_parts_tot $NB_CPUS?
+s?[T,t][R,r][A,a][N,n][C,c][H,h][E,e][S,s][ \t]\+[0-9]\+[ \t]\+[0-9]\+?Tranches $NB_CPUS 1?
+s?[T,t][R,r][A,a][N,n][C,c][H,h][E,e][S,s][ \t]\+[0-9]\+[ \t]\+[0-9][ \t]\+[0-9]\+?Tranches 1 1 $NB_CPUS?
+" >> $tmpdec
+fi
+sed -f $tmpdec $NOM.data > $DEC_NOM.data
+rm -f $tmpdec
+# Desole Gauthier: seulement sur linux car ?i pas portable:
+[ $TRUST_ARCH = linux ] && echo $ECHO_OPTS "1,$ s?Nom_Zones?Nom_Zones?i\nw" | ed $DEC_NOM.data 1>/dev/null 2>&1
+
+# On cherche le nom des zones
+nom_zones=`grep -i Nom_Zones $DEC_NOM.data | $TRUST_Awk '{print $2}'`
+# On efface les .Zones precedantes
+for nom_zone in $nom_zones
+do
+   rm -f ${nom_zone}_*.Zones
+done
+[ "$3" = "no_exec" ] && exit -1
+[ ${#DEC} = 0 ] && echo $ECHO_OPTS "Wait for partitionning...\c"
+triou $DEC_NOM 1>$DEC_NOM.out 2>$DEC_NOM.err
+err=$?
+OK_make_par $err
+if [ "`grep -E 'La syntaxe du decoupeur a change apres la v1.5.2|The syntax of the splitter has changed after the v1.5.2.' $DEC_NOM.err`" != "" ]
+then
+   echo "Warning: Old syntax (<1.5.2) found for partitioning... Have a look to the $DEC_NOM.err file."
+   if [ $TRUST_LOGIN = triou ]
+   then
+      echo "You are triou : please update the data file syntax for partitioning to give the good example."
+      echo ".Zones files are deleted."
+      rm -f *Zones
+   fi
+fi
+
+# recherche du nombre de NB_CPUSesseurs
+NB_CPUS=""
+for nom_zone in $nom_zones
+do
+   NB_CPUS_ZONE=`\ls $nom_zone"_"????.Zones 2>/dev/null | wc -l | $TRUST_Awk '{print $1}'`
+   # Verification
+   [ "$NB_CPUS" != "" ] && [ "$NB_CPUS_ZONE" != "$NB_CPUS" ] && echo "Found $NB_CPUS_ZONE $nom_zone.Zones != $NB_CPUS zones." && exit -1 
+   NB_CPUS=$NB_CPUS_ZONE
+done
+# Creation du fichier $PAR_NOM.data
+SUBSTITUE $PAR_NOM
+sed -i \
+-e "s?# PARALLEL OK #?# PARALLEL ONLY ${NB_CPUS} #?" \
+-e "s?# BEGIN PARTITION #?# BEGIN PARTITION?" \
+-e "s?# DEBUT DECOUPAGE #?# DEBUT DECOUPAGE?" \
+-e "s?# END PARTITION #?END PARTITION #?g" \
+-e "s?# FIN DECOUPAGE #?FIN DECOUPAGE #?g" \
+-e "s?# BEGIN MESH #?# BEGIN MESH?" \
+-e "s?# DEBUT MAILLAGE #?# DEBUT MAILLAGE?" \
+-e "s?# END MESH #?END MESH #?g" \
+-e "s?# FIN MAILLAGE #?FIN MAILLAGE #?g" \
+-e "s?# BEGIN SCATTER?# BEGIN SCATTER #?" \
+-e "s?# DEBUT LECTURE?# DEBUT LECTURE #?" \
+-e "s?END SCATTER #?# END SCATTER #?g" \
+-e "s?FIN LECTURE #?# FIN LECTURE #?g" $PAR_NOM.data
+   
+if [ $err != 0 ]
+then
+   cat $DEC_NOM.err
+   echo $ECHO_OPTS "\n*****************************\nProblem with the partitioning."
+else
+   rm -f *.dbg
+   if [ ${#DEC} = 0 ]
+   then
+      echo $ECHO_OPTS "To run the parallel calculation on $NB_CPUS CPUs:"
+      echo $ECHO_OPTS "triou $PAR_NOM $NB_CPUS"
+      exit $NB_CPUS
+   fi
+fi
+

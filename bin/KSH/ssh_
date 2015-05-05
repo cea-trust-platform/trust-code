@@ -1,0 +1,5 @@
+#!/bin/bash
+ssh -o "StrictHostKeyChecking no" $* &
+$TRUST_ROOT/bin/KSH/wait_for $! 120
+wait $!
+exit $?

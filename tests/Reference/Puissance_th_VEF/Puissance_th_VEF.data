@@ -1,0 +1,121 @@
+# Conduction 2D VEF : Diverses conditions limites #
+# PARALLEL OK 4 #
+dimension 2
+
+Pb_conduction pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Cavite1
+ 	{
+		Origine 0. 0.
+		Nombre_de_Noeuds 3 3
+		Longueurs 1. 1.
+	}
+	{
+		Bord Gauche X = 0. 0. <= Y <= 1.
+		Bord Bas    Y = 0. 0. <= X <= 1.
+		Bord Droit  X = 1. 0. <= Y <= 1.
+	} ,
+	Pave Cavite2 
+ 	{
+		Origine 0. 1.
+		Nombre_de_Noeuds 3 5
+		Longueurs 1. 1.
+	}
+	{
+		Bord Gauche X = 0. 1. <= Y <= 2.
+		Bord Haut   Y = 2. 0. <= X <= 1.
+		Bord Droit  X = 1. 1. <= Y <= 2.
+	}
+} 
+
+trianguler dom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur metis { Nb_parts 2 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+
+Schema_Euler_implicite sch
+Lire sch
+{
+	tinit 0
+	tmax 10000
+	nb_pas_dt_max 1000
+	dt_min 1e-5
+	dt_start dt_calc
+	dt_max 100
+	dt_sauv 100
+	dt_impr 10
+	seuil_statio 1.e-12
+	facsec 1
+	max_iter_implicite 10
+	solveur simpler
+	{
+		seuil_convergence_implicite 1.e-6
+		seuil_convergence_solveur 1.e-8
+		solveur gmres { diag seuil 1.e-8 }
+	}
+}
+
+Solide sol
+Lire sol
+{
+	rho Champ_Uniforme 1 2
+	lambda Champ_Uniforme 1 0.01
+	Cp Champ_Uniforme 1 0.5
+}
+Associate pb dom
+Associate pb sch
+Associate pb sol
+
+Discretize pb dis
+
+Lire pb
+{
+	Conduction
+	{
+		diffusion { }
+		conditions_initiales {
+			temperature Champ_Uniforme 1 0. 
+			}
+		boundary_conditions {
+			Haut paroi_adiabatique
+			Bas paroi_temperature_imposee 
+			       Champ_Front_Uniforme 1 0
+			Droit paroi_temperature_imposee 
+			       Champ_Front_Uniforme 1 0
+			Gauche paroi_temperature_imposee 
+			       Champ_Front_Uniforme 1 0
+		}
+		sources {
+			Puissance_thermique champ_fonc_xyz dom 1 (y<1)
+		}
+	}
+
+	Postraitement
+	{
+		Champs dt_post 30.
+		{
+			temperature elem
+		}
+	}
+}
+
+Solve pb
+
+Fin

@@ -1,0 +1,5 @@
+#!/bin/bash
+file=`basename $1`
+file=`Find $file`
+vi $file
+echo $file

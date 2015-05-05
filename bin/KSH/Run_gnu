@@ -1,0 +1,100 @@
+#!/bin/bash
+#
+# Ce programme liste les courbes disponibles
+# permet a l'utilisateur de choisir la courbe
+# a superposer et lance l'ordre.
+   choix=$1
+   FIC_GNU=$2
+   ORDRE=$3
+# Efface le fichier d'ordre car sinon a la fin de Run_gnu
+# la courbe n'est pas affichee tout de suite !
+   echo $ECHO_OPTS ' ' > $ORDRE
+   ns=0
+   for fic_gnu in .*.gnu
+   do
+      type=`$TRUST_Awk '(NR==2) {print $1}' $fic_gnu`
+      if [ $type != "plan" ]
+      then
+         let ns=$ns+1
+	 if [ $ns = $choix ]
+	 then
+            title=`$TRUST_Awk '(NR==3) {print $0}' $fic_gnu`
+            plot=`tail -1 $fic_gnu`
+            fichier=`echo $ECHO_OPTS $plot | $TRUST_Awk -F"'" '/plot / {print $2}'`
+	    xlabel=`echo $ECHO_OPTS $plot | $TRUST_Awk -F"'" '/xlabel / {print $2}'`
+            ylabel=`echo $ECHO_OPTS $plot | $TRUST_Awk -F"'" '/ylabel / {print $2}'`
+	    using=`echo $ECHO_OPTS $plot | $TRUST_Awk -F"'" '/plot / {print $3}'`
+	    style=`echo $ECHO_OPTS $plot | $TRUST_Awk -F"'" '/plot / {print $5}'`
+#
+# Analyse par rapport a la courbe deja affichee :
+#
+	    TITLE=`$TRUST_Awk '(NR==3) {print $0}' $FIC_GNU`
+	    PLOT=`tail -1 $FIC_GNU`
+#	    echo $ECHO_OPTS $PLOT
+	    FICHIER=`echo $ECHO_OPTS $PLOT | $TRUST_Awk -F"'" '/plot / {print $2}'`
+	    XLABEL=`echo $ECHO_OPTS $PLOT | $TRUST_Awk -F"'" '/xlabel / {print $2}'`
+	    YLABEL=`echo $ECHO_OPTS $PLOT | $TRUST_Awk -F"'" '/ylabel / {print $2}'`
+	    USING=`echo $ECHO_OPTS $PLOT | $TRUST_Awk -F"'" '/plot / {print $3}'`
+	    STYLE=`echo $ECHO_OPTS $PLOT | $TRUST_Awk -F"'" '/plot / {print $5}'`
+#
+	    XL=`echo $ECHO_OPTS $XLABEL | $TRUST_Awk '{gsub(" ","",$0);print $0}'`
+	    xl=`echo $ECHO_OPTS $xlabel | $TRUST_Awk '{gsub(" ","",$0);print $0}'`
+            if [ $XL != $xl ]
+	    then
+	       echo $ECHO_OPTS "\nLegende abscisse differente:"
+	       echo $ECHO_OPTS "----------------------------"
+	       echo $ECHO_OPTS "Courbe deja affichee : "$XLABEL
+	       echo $ECHO_OPTS "Courbe a superposer  : "$xlabel
+	       echo $ECHO_OPTS "----------------------------"
+	       echo $ECHO_OPTS "Quelle legende mettre: \c"
+	       read choix
+	       if [ ${#choix} != 0 ]
+	       then
+	          XLABEL=$choix
+	       fi
+            fi
+	    YL=`echo $ECHO_OPTS $YLABEL | $TRUST_Awk '{gsub(" ","",$0);print $0}'`
+	    yl=`echo $ECHO_OPTS $ylabel | $TRUST_Awk '{gsub(" ","",$0);print $0}'`
+            if [ $YL != $yl ]
+	    then
+	       echo $ECHO_OPTS "\nLegende ordonnee differente:"
+	       echo $ECHO_OPTS "----------------------------"
+	       echo $ECHO_OPTS "Courbe deja affichee : "$YLABEL
+	       echo $ECHO_OPTS "Courbe a superposer  : "$ylabel
+	       echo $ECHO_OPTS "----------------------------"
+	       echo $ECHO_OPTS "Quelle legende mettre: \c"
+	       read choix
+	       if [ ${#choix} != 0 ]
+	       then
+	          YLABEL=$choix
+	       fi
+            fi
+	    TL=`echo $ECHO_OPTS $TITLE | $TRUST_Awk '{gsub(" ","",$0);print $0}'`
+	    tl=`echo $ECHO_OPTS $title | $TRUST_Awk '{gsub(" ","",$0);print $0}'`
+	    if [ $TL != $tl ]
+	    then
+	       echo $ECHO_OPTS "\nTitre superieur different:"
+	       echo $ECHO_OPTS "--------------------------"
+	       echo $ECHO_OPTS "Courbe deja affichee: "$TITLE
+	       echo $ECHO_OPTS "Courbe a superposer : "$title
+	       echo $ECHO_OPTS "----------------------------"
+	       echo $ECHO_OPTS "Quelle titre mettre : \c"
+	       read choix
+	       if [ ${#choix} != 0 ]
+	       then
+	          TITLE=$choix
+	       fi
+            fi
+	    echo $ECHO_OPTS "\nLegendes (traits) des courbes:"
+	    echo $ECHO_OPTS "------------------------------"
+	    echo $ECHO_OPTS "Courbe deja affichee: \c"
+	    read T
+	    echo $ECHO_OPTS "Courbe a superposer : \c"
+	    read t
+ 	    echo $ECHO_OPTS "set title '$TITLE'\nset xlabel '$XLABEL'\nset ylabel '$YLABEL'\nplot '$FICHIER' $USING'$T'$STYLE\nreplot '$fichier' $using'$t'$style" >> $ORDRE	    
+#            cat $ORDRE
+            break
+	 fi
+      fi
+   done
+   sleep 2

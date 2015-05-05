@@ -1,0 +1,5 @@
+#!/bin/bash
+# Change precond ssor { } en precond precond_local Cholesky { }
+sed "s?{ omega [0-9]*.[0-9]* }??g
+s?{ omega -[0-9]*.[0-9]* }??g
+s?[sS][sS][oO][rR]?precond_local cholesky { }?g" $1".data" > $2".data"

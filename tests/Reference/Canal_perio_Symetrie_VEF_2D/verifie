@@ -1,0 +1,40 @@
+message()
+{
+   [ $1 != $2 ] && echo $ECHO_OPTS "Error ($1!=$2) when checking:\n $msg" && err=1
+   [ $err = 1 ] && echo $msg
+}
+cas=`pwd`;cas=`basename $cas`
+err=0
+
+###########################################################################
+# On verifie que l'on le meme profil de vitesse avec la solution analytique
+###########################################################################
+tail -1 $cas\_SONDE_SOLUTION.son | sed "s? ?\n?g" > $cas.solution
+tail -1 $cas\_SONDE_VIT_TRANS.son  | sed "s? ?\n?g" > $cas.vitesse.tmp
+i=1
+nbligne=`wc -l $cas.vitesse.tmp | $TRUST_Awk '{print $1}'`
+head -$i $cas.vitesse.tmp | tail -1 >> $cas.vitesse
+i=2
+while ((i<=nbligne))
+do
+   head -$i $cas.vitesse.tmp | tail -1 >> $cas.vitesse
+   ((i=i+2))
+done
+rm -f $cas.vitesse.tmp
+
+nbligne_v=`wc -l $cas.vitesse | $TRUST_Awk '{print $1}'`
+nbligne_s=`wc -l $cas.solution | $TRUST_Awk '{print $1}'`
+msg='Nombre de valeur identique entre sonde '$cas'_SONDE_SOLUTION.son et '$cas'_SONDE_VITESSE.son';message $nbligne_v $nbligne_s
+i=3 # i commence a 3 car i1 = temps (identique), i2 point paroi (solution=0 alors que vitesse!=0)
+while ((i<=nbligne_v))
+do
+   solution=`head -$i $cas.solution | tail -1`
+   vitesse=`head -$i $cas.vitesse | tail -1`
+   ok=`head -$i $cas.vitesse | tail -1 | $TRUST_Awk -v solution=$solution '{if ( (solution*0.98<=$1) && ($1<=solution*1.02) ) print 1;else print 0}'`
+#   echo -n "$ok	" && head -$i $cas.vitesse | tail -1 | $TRUST_Awk -v "solution=$solution" '{print "solution-2%="solution*0.98"\tvitesse="$1*1"\tsolution+2%="solution*1.02}'
+   msg='Vitesse '$vitesse' proche a 2% de la solution analytique '$solution' dans '$cas'_SONDE_VITESSE.son';message $ok 1
+   ((i=i+1))
+done
+rm -f $cas.solution $cas.vitesse
+
+exit $err

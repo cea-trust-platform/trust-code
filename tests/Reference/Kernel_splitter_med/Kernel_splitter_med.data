@@ -1,0 +1,27 @@
+# test de la lecture de med parallele #
+# PARALLEL RUNS #
+dimension 2
+Domaine dom
+# BEGIN MESH #
+Read_file dom obstacle_vef.geom
+# END MESH #
+# BEGIN PARTITION
+ecrire_med  dom obst.med
+
+system "echo 'on essaye medsplitter --ndomains=2 --input-file=obst.med --meshname=dom --output-file=obst --create-boundary-faces --empty-groups --family-splitting'" 
+system "medsplitter --ndomains=2 --input-file=obst.med --meshname=dom --output-file=obst --create-boundary-faces --empty-groups --family-splitting" 
+
+system "touch bidon_0000.Zones bidon_0002.Zones" 
+fin
+astuce pour make_PAR
+Nom_Zones bidon
+END PARTITION #
+
+# BEGIN SCATTER 
+ScatterMED obst.med dom
+ END SCATTER #
+discretiser_domaine dom 
+
+postraiter_domaine { domaine dom format lata  }
+postraiter_domaine { domaine dom format lml }
+fin

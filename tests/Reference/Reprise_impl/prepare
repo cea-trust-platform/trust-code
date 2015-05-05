@@ -1,0 +1,9 @@
+[ "$TRUST_DISABLE_MPI" != 1 ] && make_PAR.data prepare
+triou prepare
+mv prepare.dt_ev Reprise_impl.dt_ev
+if [ "$TRUST_DISABLE_MPI" != 1 ]
+then
+   triou PAR_prepare 2
+   mv PAR_prepare.dt_ev PAR_Reprise_impl.dt_ev
+fi
+exit 0

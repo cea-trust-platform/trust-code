@@ -1,0 +1,14 @@
+# Updated version for 1.6.8 with more realistic test case
+# VDF -> quick scheme
+# VEF and VDF -> metis partitioning
+
+******************************************
+* Quick install for the bench (01/06/05) *
+******************************************
+To run the bench :
+./Run_bench
+
+To see in detail the results, look the .perf and .TU files.
+
+Got a problem ? Contact triou@cea.fr
+

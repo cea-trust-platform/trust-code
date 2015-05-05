@@ -1,0 +1,221 @@
+#Pmacro declareTrav(__Scalar__,__scalar__)
+#ifndef __Scalar__Trav_included
+#define __Scalar__Trav_included
+
+#include <__Scalar__Tab.h>
+
+//////////////////////////////////////////////////////////////////////////////
+// 
+// .DESCRIPTION 
+//            Tableau de travail a n entrees pour n<= 4
+//      C'est un __Scalar__Tab avec allocation dans un pool de memoire gere par
+//      la_memoire. L'allocation initiale est realisee avec alloc_temp_storage
+// .SECTION voir aussi 
+//     __Scalar__Tab Memoire
+//////////////////////////////////////////////////////////////////////////////
+class __Scalar__Trav : public __Scalar__Tab 
+{
+  Declare_instanciable_sans_constructeur_ni_destructeur(__Scalar__Trav);
+public: 
+  __Scalar__Trav();
+  __Scalar__Trav(int n);
+  __Scalar__Trav(int n1, int n2);
+  __Scalar__Trav(int n1, int n2, int n3);
+  __Scalar__Trav(int n1, int n2, int n3, int n4);
+
+  __Scalar__Trav(const __Scalar__Tab&);  // ATTENTION: non standard, voir la description !!!
+  __Scalar__Trav(const __Scalar__Vect&); // ATTENTION: non standard, voir la description !!!
+
+  // Constructeur par copie
+  __Scalar__Trav(const __Scalar__Trav&); // ATTENTION: non standard, voir la description !!!
+  // Operateurs copie
+  __Scalar__Trav& operator=(const __Scalar__Trav &);
+  __Scalar__Trav& operator=(const __Scalar__Tab  &);
+  __Scalar__Trav& operator=(const __Scalar__Vect  &);
+  __Scalar__Trav& operator=(__scalar__ d);
+
+};
+
+int __Scalar__Trav_test();
+
+#endif
+//__Scalar__TRAV_H
+#Pendmacro(declareTrav)
+#Pmacro implementeTrav(__Scalar__,__scalar__)
+#include <__Scalar__Trav.h>
+#include <math.h>
+
+Implemente_instanciable_sans_constructeur_ni_destructeur(__Scalar__Trav,"__Scalar__Trav",__Scalar__Tab);
+
+
+#define zero_double 0.
+#define zero_int 0
+// Description: Appel a __Scalar__Tab::printOn
+Sortie& __Scalar__Trav::printOn(Sortie& os) const 
+{
+  __Scalar__Tab::printOn(os);
+  return os;
+}
+
+// Description: Appel a __Scalar__Tab::readOn
+Entree& __Scalar__Trav::readOn(Entree& is)  
+{
+  __Scalar__Tab::readOn(is);
+  return is;
+}
+
+
+// Description: 
+__Scalar__Trav::__Scalar__Trav() 
+{
+  set_mem_storage(TEMP_STORAGE);
+}
+
+// Description: 
+__Scalar__Trav::__Scalar__Trav(int n) 
+{
+  set_mem_storage(TEMP_STORAGE);
+  resize(n);
+}
+
+// Description: 
+__Scalar__Trav::__Scalar__Trav(int n1, int n2) 
+
+
+{
+  set_mem_storage(TEMP_STORAGE);
+  resize(n1, n2);
+}
+
+
+// Description: 
+__Scalar__Trav::__Scalar__Trav(int n1, int n2, int n3) 
+{
+  set_mem_storage(TEMP_STORAGE);
+  resize(n1, n2, n3);
+}
+
+// Description: 
+__Scalar__Trav::__Scalar__Trav(int n1, int n2, int n3, int n4) 
+{
+  set_mem_storage(TEMP_STORAGE);
+  resize(n1, n2, n3, n4);
+}
+
+// Description: 
+//  ATTENTION: construit un tableau de meme taill et de meme structure
+//   (espaces virtuels), mais initialise avec ZERO !!!
+__Scalar__Trav::__Scalar__Trav(const __Scalar__Tab& tab)
+{
+  set_mem_storage(TEMP_STORAGE);
+  __Scalar__Tab::copy(tab, Array_base::NOCOPY_NOINIT);
+  __Scalar__Tab::operator=(zero___scalar__);
+}
+
+// Description:
+// Constructeur par copie
+//  ATTENTION: construit un tableau de meme taill et de meme structure
+//   (espaces virtuels), mais initialise avec ZERO !!!
+__Scalar__Trav::__Scalar__Trav(const __Scalar__Trav& tab):__Scalar__Tab()
+{
+  set_mem_storage(TEMP_STORAGE);
+  __Scalar__Tab::copy(tab, Array_base::NOCOPY_NOINIT);
+  __Scalar__Tab::operator=(zero___scalar__);
+}
+
+// Description:
+// Constructeur par copie
+//  ATTENTION: construit un tableau de meme taill et de meme structure
+//   (espaces virtuels), mais initialise avec ZERO !!!
+__Scalar__Trav::__Scalar__Trav(const __Scalar__Vect& tab)
+{
+  set_mem_storage(TEMP_STORAGE);
+  set_line_size_(tab.line_size());
+  __Scalar__Tab::resize(tab.size_array(), Array_base::NOCOPY_NOINIT);
+  set_md_vector(tab.get_md_vector());
+  __Scalar__Tab::operator=(zero___scalar__);
+}
+
+// Description:
+// Operateur copie (on ne veut pas l'operateur par defaut)
+__Scalar__Trav& __Scalar__Trav::operator=(const __Scalar__Trav & tab)
+{
+  __Scalar__Tab::operator=(tab);
+  return *this;
+}
+
+// Description:
+//  Operateur copie d'un tableau (copie structure ET contenu)
+__Scalar__Trav& __Scalar__Trav::operator=(const __Scalar__Tab & tab)
+{
+  // ATTENTION: note aux programmeurs
+  //  La declaration de cet operateur est indispensable, sinon
+  //   __Scalar__Tab b;
+  //   __Scalar__Trav a;
+  //   a = b
+  //  est traduit en
+  //   __Scalar__Trav tmp(b); // copie la structure mais met les valeurs a zero
+  //   a.operator=(tmp);
+  __Scalar__Tab::operator=(tab);
+  return *this;
+}
+// Description:
+//  Operateur copie d'un tableau (copie structure ET contenu)
+__Scalar__Trav& __Scalar__Trav::operator=(const __Scalar__Vect & tab)
+{
+  // ATTENTION: note aux programmeurs
+  //  La declaration de cet operateur est indispensable, sinon
+  //   __Scalar__Tab b;
+  //   __Scalar__Trav a;
+  //   a = b
+  //  est traduit en
+  //   __Scalar__Trav tmp(b); // copie la structure mais met les valeurs a zero
+  //   a.operator=(tmp);
+  __Scalar__Tab::operator=(tab);
+  return *this;
+}
+// Description:
+// Comme on surcharge l'operateur copie, il faut redefinir celui-la aussi.
+__Scalar__Trav& __Scalar__Trav::operator=(__scalar__ d)
+{
+  __Scalar__Tab::operator=(d);
+  return *this;
+}
+
+// Description: 
+// Precondition: 
+// Parametre: 
+//    Signification: 
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: 
+//    Signification: 
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+int __Scalar__Trav_test() 
+{
+  int j,i=1;
+  while(i){
+    Cout << "imput of i j (0 0 for => end)";
+    cin >> i >> j;
+    Cout << finl;
+    {
+      __Scalar__Trav x(i, j);
+      Cout << x.size()<< finl;
+    }
+  }
+  {
+    __Scalar__Tab y(10, 10, (__scalar__)1);
+    __Scalar__Trav x(y);
+    x(5,5) = (__scalar__)1;
+    __Scalar__Tab z(x);
+    Cout << z(5,5)<< " " << z(3,3) << finl;
+  }
+  return 1;
+}
+#undef zero_double 
+#undef zero_int 
+#Pendmacro(implementeTrav)

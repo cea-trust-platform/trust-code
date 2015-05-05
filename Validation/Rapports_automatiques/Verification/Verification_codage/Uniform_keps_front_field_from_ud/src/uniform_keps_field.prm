@@ -1,0 +1,78 @@
+Parameters {
+        Title "Check Champ_front_normal fields"
+	Description "This is to check the K-Eps uniform field obtained by given the initial velocity magnitude called U and the hydraulic diameter called D. With the assumption that the initial turbulence intensity is 5% and that the turbulence length scale l is given by 0.038 D, then  \latex_(K=$3/2 (u I)^2$\latex_) and \latex_(EPS=$C_{\mu}^{3/4} ~ k^{3/2} ~ l^{-1}$\latex_) "
+        Author "Stephane Veys"
+        TestCase . keps2Dvdf.data
+        TestCase . keps2Dvef.data
+        TestCase . keps3Dvdf.data
+        TestCase . keps3Dvef.data
+        TestCase . keps2Dvdf_initial.data
+        TestCase . keps2Dvef_initial.data
+        TestCase . keps3Dvdf_initial.data
+        TestCase . keps3Dvef_initial.data
+}
+Chapter {	
+	Title "Visualization of the K-Eps field on the boundary"
+	Description "First of all, the keps field must be constant. Then in this configuration we have U=1 and D=0.5 so we expect to have K=0.00375 and EPS=0.001986"
+	Visu {
+		Title "2D VDF discretization"
+		pseudocolor keps2Dvdf_ENTRANCE.lata boundary_entrance KEPS_0 ELEM
+		pseudocolor keps2Dvdf_ENTRANCE.lata boundary_entrance KEPS_1 ELEM
+		cycles 0
+		width 20cm
+	}
+	Visu {
+		Title "2D VEF discretization"
+		pseudocolor keps2Dvef_ENTRANCE.lata boundary_entrance KEPS_0 ELEM
+		pseudocolor keps2Dvef_ENTRANCE.lata boundary_entrance KEPS_1 ELEM
+		cycles 0
+		width 20cm
+	}
+	Visu {
+		Title "3D VDF discretization"
+		pseudocolor keps3Dvdf_ENTRANCE.lata boundary_entrance KEPS_0 ELEM
+		pseudocolor keps3Dvdf_ENTRANCE.lata boundary_entrance KEPS_1 ELEM
+		cycles 0
+		width 20cm
+	}
+	Visu {
+		Title "3D VEF discretization"
+		pseudocolor keps3Dvef_ENTRANCE.lata boundary_entrance KEPS_0 ELEM
+		pseudocolor keps3Dvef_ENTRANCE.lata boundary_entrance KEPS_1 ELEM
+		cycles 0
+		width 20cm
+	}
+}
+
+Chapter {	
+	Title "Visualization of the K-Eps initial field"
+	Description "In this configuration we have U=100 and D=1 so we expect to have K=37.5 and EPS=992.8893. but WARNING : the plotted result depends on the wall law strongly so on the wall we don't have these values for K and EPS. Note that is the wall law changes the values on walls will change independently of the initial K-Eps field."
+	Visu {
+		Title "2D VDF discretization"
+		pseudocolor keps2Dvdf_initial_VOLUMIC.lata dom K ELEM
+		pseudocolor keps2Dvdf_initial_VOLUMIC.lata dom EPS ELEM
+		cycles 0
+		width 17cm
+	}
+	Visu {
+		Title "2D VEF discretization"
+		pseudocolor keps2Dvef_initial_VOLUMIC.lata dom K ELEM
+		pseudocolor keps2Dvef_initial_VOLUMIC.lata dom EPS ELEM
+		cycles 0
+		width 20cm
+	}
+	Visu {
+		Title "3D VDF discretization"
+		pseudocolor keps3Dvdf_initial_VOLUMIC.lata dom K ELEM
+		pseudocolor keps3Dvdf_initial_VOLUMIC.lata dom EPS ELEM
+		cycles 0
+		width 20cm
+	}
+	Visu {
+		Title "3D VEF discretization"
+		pseudocolor keps3Dvef_initial_VOLUMIC.lata dom K ELEM
+		pseudocolor keps3Dvef_initial_VOLUMIC.lata dom EPS ELEM
+		cycles 0
+		width 20cm
+	}
+}

@@ -1,0 +1,6 @@
+#!/bin/bash
+echo "Elements: "`awk '/Lecture de / && /elements./ {n=$3} END {print n}' $1".err"`
+echo "Energie cinetique: "`awk '{e=$2} END {print e}' $1_EC*son`
+echo "Force de pression: "`awk '{f=0.5*($8-$5)} END {print f+1500*3.1415*0.01*0.002783}' $1"_pb_Force_pression.out"`
+echo "Couple de pression: "`awk '{c=0.5*($9-$6)} END {print c+1500*3.1415*0.001*0.002783}' $1"_pb_Force_pression_moment.out"`
+echo "Convergence: "`awk '{dt=$2;c=$4} END {print c/dt}' $1".dt_ev"`

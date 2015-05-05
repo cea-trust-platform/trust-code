@@ -1,0 +1,56 @@
+#!/bin/bash
+#########################################################
+# Script de lancement automatique des benchs           	#
+#########################################################
+# Christophe Calvin                                    	#
+# DEN/DTP/SMTH                                         	#
+# Christophe.Calvin@cea.fr                             	#
+#########################################################
+# Version 1.0                                          	#
+# Date : 07/07/2002                                    	#
+# Version 1.1             			       	#
+# Date : 29/01/2003 Modifie par Pierre Ledac (CS)      	#
+# Version 1.2					       	#
+# Date : 24/09/2004 					#
+# Version 1.3					       	#
+# Date : 12/04/2007 					#
+#########################################################
+
+#################################################
+# Verification de l'environnement TRUST
+#################################################
+echo "Verification de l'environnement TRUST "
+echo "Valeur de TRUST_ROOT : "$TRUST_ROOT
+echo "Valeur de l'executable par defaut : "$exec
+if [ ! -f $exec ]
+then
+   echo "ERREUR : l'executable TRUST \$exec=$exec n'existe pas"
+   exit
+fi
+
+#################################################
+# Generation des benchs
+#################################################
+ICI=$PWD
+echo "#################################"
+echo "# Lancement des benchmarks TRUST"
+echo "#################################"
+liste_nb_proc=`cat ./liste_nb_proc`
+for nb_proc in $liste_nb_proc
+do
+   echo ""
+   echo ""
+   echo "-------------------------------------------------"
+   echo "Lancement du bench $cas sur $nb_proc processeurs ..."
+   cd PAR$nb_proc
+   echo "# Script de calcul" > run
+   echo "cd $ICI/PAR$nb_proc" >> run
+   #echo "triou bench1-$nb_proc `[ $nb_proc != 1 ] && echo $nb_proc` 1>bench1-$nb_proc.out 2>bench1-$nb_proc.err" >> run
+   # Reduit le nombre de chances que l'on ne tourne pas sur les memes processeurs (frontale vs queue test)
+   echo "triou bench1-$nb_proc $nb_proc 1>bench1-$nb_proc.out 2>bench1-$nb_proc.err" >> run
+   echo "../ExtPerf bench1-$nb_proc.TU > RES1-$nb_proc.perf" >> run
+   echo "rm -f *.FACES *.ele *.meshtv *.dump *.sauv *.xyz intfile*" >> run
+   chmod +x run
+   ./run
+   cd ..
+done

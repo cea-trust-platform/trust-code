@@ -1,0 +1,28 @@
+#!/bin/bash
+ETUDE_TRUST=`QUELLE_ETUDE.ihm`
+export ETUDE_TRUST
+NOM=`cat $ETUDE_TRUST/.NOM_DATA`
+export NOM
+cd $ETUDE_TRUST
+if [ ! -f $NOM.stop ]
+then
+   echo $ECHO_OPTS "No process submitted !"
+   eval $FIN
+else
+   echo $ECHO_OPTS "In how many hours do you want "
+   echo $ECHO_OPTS "scheduling the stop $NOM solve process?"
+   echo $ECHO_OPTS "(enter the number of hours:)"
+   echo $ECHO_OPTS " "
+   echo $ECHO_OPTS "To stop without delay:  0 or Return."
+   echo $ECHO_OPTS "------------------------------------"
+   read h
+   if [ ${#h} = 0 ]
+   then
+      h=0
+   fi
+   echo $ECHO_OPTS "echo $ECHO_OPTS 1 > $ETUDE_TRUST/$NOM.stop;rm -f $ETUDE_TRUST/.ordre_IHM" | at now +$h hours 2> /dev/null
+   echo $ECHO_OPTS "**********************************"
+   echo $ECHO_OPTS "* Solve process stopped in $h hours ! *"
+   echo $ECHO_OPTS "**********************************"
+   sleep 2
+fi

@@ -1,0 +1,8 @@
+4
+0.443535  0.517448  0.0195067  0.0195102  
+0.977402  0  0.0113022  0.0112956  
+0.765262  0.234738  0  0  
+0.7654  0.2346  0  0  
+
+# Facteurs de forme calcules avec la commande:
+# geom2ansys 3D_axi.geom 2

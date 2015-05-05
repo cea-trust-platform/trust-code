@@ -1,0 +1,128 @@
+# 
+The following lines state:
+-the TYPE OF PROBLEM and its name 
+-the problem spatial dimension
+-the SPATIAL DOMAIN on which the problem will be solved and its corresponding MESH
+A common practice is to read the mesh in an existing file with extension ".geom" 
+#
+
+dimension 2
+
+Pb_hydraulique pb
+Domaine dom
+
+Read_file Obstacle.geo ;
+
+#   
+The following line defines the type of the SPATIAL DISCRETISATION
+#
+VDF ma_discretisation
+
+# 
+The following lines
+define the characteristics of the TIME DISCRETISATION scheme
+#
+Schema_Euler_explicite mon_schema
+Lire mon_schema
+{
+	tinit 0
+	tmax 5.0
+	dt_min 5.e-3
+	dt_max 5.e-3
+	dt_impr 5.e-3
+	dt_sauv 100
+	seuil_statio 1.e-8
+}
+
+# 
+The following lines define the PHYSICAL PROPERTIES of the solid or fluid medium
+for which the problem will be solved
+#
+Fluide_Incompressible milieu
+Lire milieu
+{
+	mu  Champ_Uniforme 1 1.85e-5
+	rho Champ_Uniforme 1 1.
+}
+
+# 
+The following lines define the ASSOCIATION of the previously defined OBJECTS 
+#
+Associate pb dom
+Associate pb mon_schema
+Associate pb milieu
+Discretize pb ma_discretisation
+
+# 
+The following lines define all the characteristics of the TYPE OF PROBLEM, this includes in particular: 
+-the types of equations that represent the physics of the problem (transportation equations)
+-the characteristics of the method for solving the pressure system if Navier Stokes equations are concerned
+-the BOUNDARY and INITIAL CONDITIONS of these equations
+-the information needed for POST-PROCESSING  
+-the information needed for job SAVE and RESTART 
+#
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.500000 } 
+			seuil 1.000000e-06 
+			impr 
+		}
+		convection { quick }
+		diffusion { }
+		conditions_initiales {
+			vitesse Champ_Uniforme 2 0. 0.
+			}
+		boundary_conditions {
+			Gauche paroi_fixe
+			Droit paroi_fixe
+			Bas2  paroi_fixe
+			Haut3  paroi_fixe
+			Haut1 symetrie
+			Bas1  symetrie
+			Haut2 symetrie
+			Bas3  symetrie
+		      	Bas4  symetrie
+			Haut4 symetrie
+			Sortie frontiere_ouverte_pression_imposee 
+			    Champ_front_Uniforme 1 0.
+			Entree frontiere_ouverte_vitesse_imposee 
+			    Champ_front_Uniforme 2 1. 0.
+		}
+
+	}
+
+	Postraitement
+	{
+		Sondes
+		{
+			sonde_pression pression periode 0.005 points 2 0.13 0.105 0.13 0.115
+			sonde_vitesse vitesse periode 0.005 points 2 0.14 0.105	0.14 0.115
+			sonde_vit vitesse periode 0.005 segment 22 0.14 0.0 0.14 0.22
+			sonde_P pression periode 0.01 plan 23 11 0.01 0.005 0.91 0.005 0.01 0.21
+			sonde_Pmoy Moyenne_pression periode 0.005 points 2 0.13 0.105 0.13 0.115
+			sonde_Pect Ecart_type_pression periode 0.005 points 2 0.13 0.105 0.13 0.115			
+		}
+		Champs dt_post 1.
+		{
+			pression elem
+			pression som
+			vitesse elem
+			vitesse som
+		}
+		Statistiques dt_post 1.
+		{
+			t_deb 1. t_fin 5.
+			moyenne vitesse
+			ecart_type vitesse
+			moyenne pression
+			ecart_type pression
+		}
+	}
+}
+# 
+The last lines launch the solving process and terminate the data file 
+#
+Solve pb

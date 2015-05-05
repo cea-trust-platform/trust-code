@@ -1,0 +1,95 @@
+#!/bin/bash
+verif()
+{
+cat /dev/null > $TRUST_TMP/st
+cat /dev/null > $TRUST_TMP/st2
+list_code="Triou"
+for code in $list_code
+do
+    rep=`cat $TRUST_ROOT/env/rep.TRUST`
+    base=$TRUST_ROOT
+    if [ "$code" = "Triou" ]
+    then
+	rep=`cat $TRUST_ENV/rep.TRUST`
+
+	base=$TRUST_ROOT
+    else
+	echo "problem code " 
+	exit
+    fi
+    listmot="instanciable base"
+    for dir in  $rep
+    do
+	for file in `ls $base/$dir/*.cpp`
+	do
+	    ins=""
+	    #echo $file
+	    for mot in $listmot
+	    do
+		res0=`grep mplemente_$mot $file | sed "s/ //g"`
+		if [ "$res0" != "" ] 
+		then
+		    for res1 in $res0
+		    do 
+			#echo $res1
+			ins=`echo $res1 | $TRUST_Awk -F\" '{print $2}'`
+			if [ "$ins" = "" ] 
+			then
+ 
+			    i=`grep -n mplemente_$mot $file | sed "s/ //g" | grep $res1 | $TRUST_Awk -F: '{print $1}'`
+			    if [ `echo $i | wc | $TRUST_Awk '{print $2}'` -gt 1 ]
+			    then 
+				echo "small problem with " $file" and " $res1
+				i=`echo $i | $TRUST_Awk '{print $NF}'`
+			    fi
+	     
+			    i=`expr $i + 1`
+			    res2=`head -$i $file| tail -1`
+			    # echo $res2
+			    res1=$res1" "$res2
+			    ins=`echo $res1 | $TRUST_Awk -F\" '{print $2}'`
+			    if [ "$ins" = "" ] 
+			    then
+				echo problem with $file
+			    fi
+			fi 
+
+			if  [ "$ins" != "" ] 
+			then 
+			    classe=`echo $res1 | $TRUST_Awk -F\, '{print $1}'| $TRUST_Awk -F\( '{print $2}'`
+			    echo " "$ins $classe `basename $file .cpp`.h >> $TRUST_TMP/st
+			fi
+		    done
+
+		else
+		    for type in ref liste deriv vect
+		    do
+			res1=`grep mplemente_$type $file`
+			if [ "$res1" != "" ] 
+			then
+			    classe=`echo $res1 | $TRUST_Awk -F\) '{print $1}'| $TRUST_Awk -F\( '{print $2}'`
+			    type2=$type
+			    [ "$type" = "deriv" ] && type2=der
+			    [ "$type" = "liste" ] && type2=list
+			    echo ${type}_$classe $type2$classe `basename $file .cpp`.h >> $TRUST_TMP/st2
+			fi
+		    done
+		fi
+	    done
+	done
+    done
+done
+echo "  Check unicity:"
+# GF ajout de -f pour ignorer majuscule minuscule
+sort -u -f $TRUST_TMP/st > $TRUST_TMP/stb
+$TRUST_Awk '{print $1 }'  $TRUST_TMP/stb | sort > $TRUST_TMP/st1
+sort -u  -f $TRUST_TMP/st1 > $TRUST_TMP/st2b
+diff $TRUST_TMP/st1 $TRUST_TMP/st2b | sort -u -f
+echo "  Update of $TRUST_ROOT/doc/.dico file"
+if [ "`diff $TRUST_TMP/stb $TRUST_ROOT/doc/.dico`" != "" ]
+then
+   CHECKOUT $TRUST_ROOT/doc/.dico 1>/dev/null 2>&1
+   mv -f $TRUST_TMP/stb $TRUST_ROOT/doc/.dico
+fi
+}
+verif $1

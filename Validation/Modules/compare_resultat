@@ -1,0 +1,82 @@
+#!/bin/bash
+org=res_test_ref
+new=$1
+rapport()
+{
+   file=$1
+   if [ "`grep Successful $file`" != "" ]
+   then
+     #stabilite=`$TRUST_Awk -F':' ' /Successful tests cases/ {print $2}' $file | $TRUST_Awk -F'/' 'BEGIN {ok=0;tot=0;} { ok=ok+$1; tot=tot+$2 } END { print (ok) }' `
+     # On ecarte tous les cas sensibles et on les place dans KO
+     $TRUST_Awk '/ OK / && !/possible sur/ {print $3"|"}' $file | sort > $file.OK
+     stabilite=`wc -l $file.OK | $TRUST_Awk '{print $1}'`
+     $TRUST_Awk '(!/ OK / || /possible sur/) && /\|/ && (NR>5) {n=($3=="ecarts"?4:3);print $n"|"}' $file | sort > $file.KO
+     echo $stabilite
+   else
+     echo 0
+   fi 
+}
+
+new_rap=`rapport $new`
+old_rap=`rapport $org`
+if [ $new_rap -lt $old_rap ]
+then
+   echo "################################################"
+   echo "Pb les resultats sont moins bons qu'avant       "
+   echo "nb cas succes avant $old_rap maintenant $new_rap"
+   echo "################################################"
+   log=`mktemp_`
+   diff $new.OK $org.OK | grep "<" | awk '{gsub("\\|","",$2);print $2}' > $log
+   if [ -s $log ]
+   then
+      echo "Nouveaux cas qui sont OK:"
+      echo "-------------------------"
+      cat $log;rm -f $log
+      echo "#########################"
+   fi
+   grep -f $org.OK $new.KO | awk '{gsub("\\|","",$1);print $1}' > $log
+   if [ -s $log ]
+   then
+      echo "Cas OK desormais KO:"
+      echo "--------------------"
+      cat $log;rm -f $log
+      echo "#########################"      
+   fi
+   grep -v -f $new.OK -f $new.KO $org.OK | awk '{gsub("\\|","",$1);print $1}' > $log
+   if [ -s $log ]
+   then
+      echo "Cas OK qui ont ete retires:"
+      echo "---------------------------"
+      cat $log;rm -f $log
+      echo "###########################"      
+   fi
+   grep -v -f $org.OK -f $org.KO $new.KO | awk '{gsub("\\|","",$1);print $1}' > $log
+   if [ -s $log ]
+   then
+      echo "Nouveaux cas qui sont KO:"
+      echo "-------------------------"
+      cat $log;rm -f $log
+      echo "#########################"      
+   fi
+   #rm -f $new.OK $org.OK $new.KO $org.KO 
+   echo "Voir sur la machine $HOST:"
+   echo `pwd`/$org
+   echo `pwd`/$new
+   module=`pwd`
+   module=`basename $module`
+   echo `pwd`/$module.log
+   rm -f $log
+   exit 1
+else
+   if [ $new_rap -gt $old_rap ]
+   then
+     echo "Les resultats sont meilleurs qu'avant" 
+     echo "nb cas succes avant $old_rap maintenant $new_rap"
+     echo "On change la reference"
+     CHECKOUT $org
+     cp $new $org
+   else
+     echo "taux de reussite identique $new_rap"
+   fi
+fi
+exit 0

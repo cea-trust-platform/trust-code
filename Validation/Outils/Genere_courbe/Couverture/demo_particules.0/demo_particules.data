@@ -1,0 +1,256 @@
+# Test de la transformation de bulles en particules (VDF) #
+# Les bulles dont le centre de gravite sont contenues #
+# dans la sous zone zone_transfo1 ou dont le diametre #
+# est inferieur a diametre_min sont supprimees #
+# PARALLEL OK 2 #
+
+dimension 3
+
+Probleme_FT_Disc_gen pb
+Domaine dom
+
+# DEBUT MAILLAGE #
+
+Mailler dom
+{
+	Pave Cavite 
+		{
+		Origine 0. 0. 0.
+     		Nombre_de_Noeuds 21 21 51
+		Longueurs 0.2 0.2 1.
+		}
+		{
+		Bord Gauche   X = 0.    0. <= Y <= 0.2  0. <= Z <= 1.
+		Bord Haut     Z = 1.    0. <= X <= 0.2  0. <= Y <= 0.2
+		Bord Bas      Z = 0.    0. <= X <= 0.2  0. <= Y <= 0.2
+		Bord Droit    X = 0.2   0. <= Y <= 0.2  0. <= Z <= 1.
+		Bord Avant    Y = 0.    0. <= X <= 0.2  0. <= Z <= 1.
+		Bord Arriere  Y = 0.2   0. <= X <= 0.2  0. <= Z <= 1.
+		
+		}
+}
+
+Sous_Zone zone_transfo1
+Associer zone_transfo1 dom
+Lire zone_transfo1 {
+   Boite
+     Origine 0.  0.  0.375
+     Cotes   0.2 0.2 0.375
+}
+
+
+# FIN MAILLAGE #
+
+# DEBUT DECOUPAGE
+Decouper dom
+{
+	Partitionneur tranche { tranches 2 1 1 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+FIN DECOUPAGE #
+
+# DEBUT LECTURE
+Scatter DOM.Zones dom
+Sous_Zone zone_transfo1
+Associer zone_transfo1 dom
+Lire  zone_transfo1 { Fichier zone_transfo1.ssz }
+FIN LECTURE #
+
+# Je choisis une discretisation #
+VDF ma_discretisation
+
+Schema_Euler_explicite mon_schema
+Lire mon_schema
+{
+	tinit 0.
+	tmax 1.
+	dt_min 0.001
+	dt_max 2.e-3
+	dt_impr 5.e-3
+	dt_sauv 100
+	seuil_statio 1.e-8
+	nb_pas_dt_max 5
+}
+
+
+Fluide_Incompressible liquide
+Lire liquide
+{
+	mu  Champ_Uniforme 1 0.282e-3
+ 	rho Champ_Uniforme 1 1000.
+}
+
+Fluide_Incompressible gaz
+Lire gaz
+{
+	mu  Champ_Uniforme 1 0.282e-3
+ 	rho Champ_Uniforme 1 100.
+}
+
+Fluide_Diphasique fluide
+Lire fluide
+{
+	fluide0 liquide
+	fluide1 gaz
+	sigma   constant 0.05
+}
+
+Champ_Uniforme gravite
+Lire gravite 3  0. 0. -9.81
+Associer fluide gravite
+
+Navier_Stokes_FT_Disc          hydraulique
+Transport_Interfaces_FT_Disc   interf
+Transport_Marqueur_FT	       marqueurs
+
+Associer pb hydraulique
+Associer pb interf
+Associer pb marqueurs
+
+Associer pb dom
+Associer pb mon_schema
+Associer pb fluide
+
+Discretiser pb ma_discretisation
+
+Lire pb
+{
+	hydraulique
+	{
+		modele_turbulence sous_maille_wale
+        	{
+           	  Cw 1.e-08
+          	  turbulence_paroi negligeable
+        	}
+		
+		solveur_pression GCP { 
+			precond ssor { omega 1.5 } 
+			seuil 1.0e-08
+			
+		}
+		convection { quick }
+		diffusion { }
+		conditions_initiales {
+			vitesse Champ_Uniforme 3 0. 0. 0.
+			}
+		equation_interfaces_proprietes_fluide interf
+		conditions_limites {
+			Gauche  paroi_fixe
+			Droit   paroi_fixe
+			Avant   paroi_fixe
+			Arriere paroi_fixe
+			Haut    Sortie_libre_rho_variable champ_front_uniforme 1 0.
+			Bas     frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 3 0. 0. 0.
+		}
+	       
+	}
+	
+	interf
+	{
+	 methode_transport vitesse_interpolee hydraulique
+	 conditions_initiales {
+		fonction z-0.75 ,
+		fonction ajout_phase1 -(x-0.12)^2-(y-0.1)^2-(z-0.4)^2+(0.08)^2 ,
+		fonction ajout_phase1 -(x-0.105)^2-(y-0.1)^2-(z-0.1)^2+(0.03)^2
+		
+         }
+       
+	 remaillage {
+		pas -1
+		pas_lissage -1
+	 }
+	
+	 conditions_limites
+	 {
+		Gauche  Paroi_FT_disc symetrie
+		Droit   Paroi_FT_disc symetrie 
+		Avant   Paroi_FT_disc symetrie
+		Arriere Paroi_FT_disc symetrie
+		Haut    Paroi_FT_disc symetrie 
+		Bas     Paroi_FT_disc symetrie 
+	 }
+	}
+        
+	marqueurs
+	{
+	 conditions_initiales {
+	        ensemble_points { } 
+		proprietes_particules { }
+		t_debut_integration 0.
+	}
+	 
+	conditions_limites
+	{
+		
+	}
+	 
+	
+	transformation_bulles
+	{
+	   localisation 1  zone_transfo1
+	   taille diametre_min 0.07
+	   interface interf
+	   
+	}
+	
+	phase_marquee 0
+        sources { }	
+	methode_transport vitesse_particules	
+	methode_couplage one_way_coupling 
+	}
+	
+	Postraitement
+	{
+		Sondes
+		{
+			sonde_pression_point pression periode 0.005 points 1 0.1 0.1 0.5
+			sonde_vit_point vitesse periode 0.005 points 1 0.09 0.11 0.5
+			sonde_vit_coupe vitesse periode 0.005 segment 20 0.09 0.11 0. 0.09 0.11 1.
+			sonde_densite_point densite_particules periode 0.005 points 1 0.09 0.11 0.75
+			sonde_densite_coupe densite_particules periode 0.005 segment 50 0.09 0.11 0. 0.09 0.11 1.
+						
+		}
+        	Format lml
+		Champs dt_post 0.001
+		{
+			pression elem
+			pression som
+			vitesse elem
+			vitesse som
+			densite_particules elem
+			volume_particules elem
+			gradient_pression elem
+			indicatrice_interf elem
+		}
+		
+	}
+liste_postraitements
+{	
+        Postraitement_ft_lata marqueurs
+        {
+                dt_post 0.001
+                nom_fichier marqueurs
+                print
+                champs sommets
+                {
+                        vitesse
+                }
+                interfaces marqueurs { champs sommets { vitesse volume diametre temperature masse_volumique } }
+        }
+	Postraitement_ft_lata interface
+        {
+                dt_post 0.001
+                nom_fichier interface
+                print
+                
+                interfaces interf { }
+        }	
+}
+
+}
+
+Resoudre pb
+Fin
+

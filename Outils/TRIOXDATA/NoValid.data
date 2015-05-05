@@ -1,0 +1,198 @@
+# Hydraulique 2D turbulent K-Eps #
+# PARALLEL OK 8 #
+dimension 2
+domaine dom 
+# BEGIN MESH #
+mailler dom 
+  {
+    pave Entree 
+      { 
+        Origine 0.0 1.0
+        longueurs 7.0 1.0
+        nombre_de_noeuds 8 6
+      }
+    
+      {
+        bord Entree  X = 0.0 1.0 <= Y <= 2.0
+        bord Haut1  Y = 2.0 0.0 <= X <= 7.0
+        bord Bas1  Y = 1.0 0.0 <= X <= 7.0
+      }
+    ,
+    pave Haut 
+      { 
+        Origine 7.0 1.0
+        longueurs 10.0 1.0
+        nombre_de_noeuds 11 6
+      }
+    
+      {
+        bord Haut2  Y = 2.0 7.0 <= X <= 17.0
+      }
+    ,
+    pave SHaute 
+      { 
+        Origine 17.0 1.0
+        longueurs 13.0 1.0
+        nombre_de_noeuds 14 6
+      }
+    
+      {
+        bord SortieHaute  X = 30.0 1.0 <= Y <= 2.0
+        bord Haut3  Y = 2.0 17.0 <= X <= 30.0
+      }
+    ,
+    pave Bas 
+      { 
+        Origine 7.0 0.0
+        longueurs 10.0 1.0
+        nombre_de_noeuds 11 6
+      }
+    
+      {
+        bord Bas2  Y = 0.0 7.0 <= X <= 17.0
+        bord Gauche  X = 7.0 0.0 <= Y <= 1.0
+      }
+    ,
+    pave SBasse 
+      { 
+        Origine 17.0 0.0
+        longueurs 13.0 1.0
+        nombre_de_noeuds 14 6
+      }
+    
+      {
+        bord SortieBasse  X = 30.0 0.0 <= Y <= 1.0
+        bord Bas3  Y = 0.0 17.0 <= X <= 30.0
+      }
+  }
+# END MESH #
+# BEGIN PARTITION 
+Decouper dom 
+  { 
+    Partitionneur tranche   { tranches 2 1   } 
+    Larg_joint 1 
+    Nom_Zones DOM 
+  } 
+Fin 
+END PARTITION #
+# BEGIN READ 
+Scatter DOM.Zones dom 
+END READ #
+vdf dis 
+schema_euler_explicite sch 
+Lire sch
+  { 
+    tinit 0.0
+    tmax 3.0
+    dt_min 0.01
+    dt_max 0.01
+    dt_sauv 1000.0
+    dt_impr 0.1
+    seuil_statio 1e-08
+  }
+fluide_incompressible fluide 
+Lire fluide
+  { 
+    mu champ_uniforme  1 3.7e-05
+    rho champ_uniforme  1 2.0
+  }
+pb_thermohydraulique_turbulent pb 
+Associer pb dom
+Associer pb sch
+Associer pb fluide
+discretiser pb dis
+Lire pb
+  { 
+    navier_stokes_turbulent 
+      { 
+        modele_turbulence k_epsilon 
+          { 
+            transport_k_epsilon 
+              { 
+                convection    { amont   } 
+                diffusion    {   } 
+                conditions_initiales 
+                  {
+                    k_Eps champ_uniforme  2 0.0 0.0
+                  }
+                conditions_limites 
+                  {
+                    Haut1 Paroi 
+                    Bas1 Paroi 
+                    Haut2 Paroi 
+                    Bas2 Paroi 
+                    Haut3 Paroi 
+                    Bas3 Paroi 
+                    Gauche Paroi 
+                    Entree frontiere_ouverte_k_eps_impose champ_front_uniforme  2 0.01 0.001
+                    SortieBasse frontiere_ouverte K_Eps_ext champ_front_uniforme  2 0.0 0.0
+                    SortieHaute frontiere_ouverte K_Eps_ext champ_front_uniforme  2 0.0 0.0
+                  }
+                sources 
+                  {
+                    source_transport_k_eps 
+                      { 
+                        c1_eps 1.44
+                        c2_eps 1.92
+                      }
+                  }
+              }
+            turbulence_paroi loi_standard_hydr 
+            dt_impr_ustar 10.0
+            eps_min 1e-15
+            prandtl_k 1.0
+            prandtl_eps 1.3
+          }
+        solveur_pression cholesky 
+          { 
+          }
+        convection    { Amont   } 
+        diffusion    {   } 
+        conditions_initiales 
+          {
+            vitesse champ_uniforme  2 0.0 0.0
+          }
+        conditions_limites 
+          {
+            Haut1 paroi_fixe 
+            Bas1 paroi_fixe 
+            Haut2 paroi_fixe 
+            Bas2 paroi_fixe 
+            Haut3 paroi_fixe 
+            Bas3 paroi_fixe 
+            Gauche paroi_fixe 
+            SortieBasse frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0
+            SortieHaute frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0
+            Entree frontiere_ouverte_vitesse_imposee champ_front_uniforme  2 1.0 0.0
+          }
+      }
+    postraitement 
+      { 
+        sondes 
+          {
+            sonde_vitesse vitesse periode 0.01 points 1  10.0 0.5
+            sonde_k k periode 0.01 points 1  9.5 0.5
+            sonde_eps eps periode 0.01 points 1  9.5 0.5
+            sonde_visc viscosite_turbulente periode 0.01 points 1  9.5 0.5
+            sonde_yplus y_plus periode 0.01 segment 9  7.5 0.01
+            16.5 0.01
+            sonde_vorticite vorticite periode 0.01 segment 9  7.5 0.01
+            16.5 0.01
+          }
+        champs  dt_post 20.0 
+          {
+            pression elem
+            pression som
+            vitesse elem
+            vitesse som
+            k elem
+            k som
+            eps elem
+            eps som
+            viscosite_turbulente elem
+            viscosite_turbulente som
+          }
+      }
+  }
+resoudre pb
+fin 

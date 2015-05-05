@@ -1,0 +1,14 @@
+gunzip -c cylindre.geom.gz > cylindre.geom
+
+second=`pwd`
+second=`basename $second`
+first=first
+# Run first calculation to create the matrix and save it
+# Suppress resume
+echo $ECHO_OPTS "1,$ s?resume_last_time binaire $first"_pb.sauv"??g\nw $first.data" | ed $second.data
+
+# Run sequential calculation:
+triou $first || exit -1
+mv $first"_Factored_Matrix".petsc $second"_Factored_Matrix".petsc
+
+

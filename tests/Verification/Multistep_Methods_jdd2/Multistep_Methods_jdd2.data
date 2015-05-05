@@ -1,0 +1,124 @@
+# PARALLEL OK #
+dimension 2
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+        {
+                Origine 0. 0.  
+                Nombre_de_Noeuds 91 29 
+                Longueurs 3. 1. 
+        }
+        {
+                Bord periox   X = 0.     0. <= Y <= 1. 
+                Bord periox   X = 3.     0. <= Y <= 1.  
+                Bord bas      Y = 0.     0. <= X <= 3.   
+                Bord haut     Y = 1.     0. <= X <= 3.   
+ 
+                }
+}
+
+Trianguler dom
+
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur metis { Nb_parts 2 }
+	Nom_Zones DOM
+	Periodique 1 periox
+        Larg_joint 2
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+Schema_Adams_Bashforth_order_2 sch
+Read sch
+{
+	tinit 0.
+	nb_pas_dt_max 3
+	tmax 2.
+	dt_min 5.e-5
+	dt_max 5.e-5
+	dt_impr 1.e-1
+	dt_sauv 500.
+        seuil_statio -1.e-8
+	facsec 1
+}
+Fluide_Incompressible fluide
+Read fluide
+{
+	mu Champ_Uniforme	1 2.84e-5
+	rho Champ_Uniforme	1 0.0976
+}
+Pb_hydraulique pb
+VEFPreP1b dis
+
+
+Champ_Uniforme gravite
+Read gravite 2 0 0  
+
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Read pb
+	{
+	Navier_Stokes_standard
+		{
+		solveur_pression petsc cholesky { }
+		convection { negligeable }
+		diffusion {  }
+		conditions_initiales
+			{
+			vitesse champ_fonc_xyz dom 2 y 0. 
+			}
+		sources { 
+			Source_Qdm Champ_fonc_xyz dom 2 0 1
+			}
+		boundary_conditions
+			{
+			periox   periodique 
+			bas  frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 2 0. 0.
+			haut frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 2 1. 0.	
+			}
+		}
+
+	Postraitement
+        	{       
+		Definition_champs
+		{
+			max_v Reduction_0D {
+				methode max
+				source Transformation {
+					methode formule expression 1 abs(v)
+					source Transformation { 
+						methode composante numero 1 
+						source refChamp { Pb_champ pb vitesse } 
+						nom_source v 
+					}
+				}
+			}
+		}
+		Sondes {
+			max_v max_v periode 0.001 numero_elem_sur_maitre 0
+		}
+		format lml
+		Champs dt_post 100.
+		{
+			vitesse elem
+			pression elem
+		}
+	} 
+}
+
+Solve pb
+

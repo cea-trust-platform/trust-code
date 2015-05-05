@@ -1,0 +1,13 @@
+#!/bin/bash
+# Amend commit with indented files if necessary:
+ppid=`ps -o ppid -p $$ | tail -1 | awk '{print $1}'`
+indent=/tmp/.indent$ppid
+if [ -s $indent ]
+then
+    elements=`awk '{print $1}' $indent`
+    rm -f $indent # Delete before commit !
+    git add $elements
+    git commit --amend -C HEAD --no-verify $elements
+fi
+rm -f $indent
+exit

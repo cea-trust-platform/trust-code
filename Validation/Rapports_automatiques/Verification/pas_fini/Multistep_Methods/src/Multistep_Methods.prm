@@ -1,0 +1,167 @@
+Parameters {
+	Title "Multistep methods (Adams Bashforth, Adams Moulton, Backward differentiation)"
+	Description ""
+	Author "Multistep methods implemented by T. FORTIN (CEA). Verification form written by P. LEDAC (CS)"
+	TestCase Implicit_Euler_Implicite test.data
+        TestCase Explicit_Adams_Bashforth_order_2 test.data
+	TestCase Explicit_Adams_Bashforth_order_3 test.data
+	TestCase SemiImplicit_Adams_Bashforth_order_2 test.data
+	TestCase SemiImplicit_Adams_Bashforth_order_3 test.data
+	TestCase Implicit_Adams_Moulton_order_2 test.data
+	TestCase Implicit_Adams_Moulton_order_3 test.data
+	TestCase Implicit_Backward_differentiation_order_2 test.data
+	TestCase Implicit_Backward_differentiation_order_3 test.data
+	IncludeData 2
+	VersionTrio_U "1.6.8"
+        ParametersTrio_U Equation solved : Laminar Navier Stokes
+        ParametersTrio_U Dimension : 2D        
+	ParametersTrio_U Discretization : VEFPreP1B
+        ParametersTrio_U Convection scheme: centre (order 2)
+	ParametersTrio_U Periodic boundary condition on left and right boundaries
+        ParametersTrio_U Imposed velocity on inlet boundary (0,0) at the bottom
+	ParametersTrio_U Imposed velocity on inlet boundary (1,0) at the top
+	ParametersTrio_U Momentum source term imposing U=(y,0) inside
+}
+Chapter {
+        Title "Geometry and mesh"
+	visu {
+                Title "Mesh"
+		Description "Channel Length 3m Height 1m"
+                mesh Implicit_Euler_Implicite/test.lata dom
+        }
+}
+Chapter {	
+	Figure {
+		Title "Convergence of the residuals"
+		Description "We plot the following curves to compare the convergence speed for each calculation."
+		LabelX "Time [s]"
+		LabelY "Residual max|dU/dt|"
+		LogY
+		# RangeY 0.0001 100.
+		Include_Description_Curves 0
+		Curve { 
+			legend "Implicit_Euler_Implicite"
+			Style lines
+			file Implicit_Euler_Implicite/test.dt_ev
+			columns $1 $4
+		}
+		Curve { 
+			legend "Explicit_Adams_Bashforth_order_2"
+			Style lines
+			file Explicit_Adams_Bashforth_order_2/test.dt_ev
+			columns $1 $4
+		}
+		Curve { 
+			legend "Explicit_Adams_Bashforth_order_3"
+			Style lines
+			file Explicit_Adams_Bashforth_order_3/test.dt_ev
+			columns $1 $4
+		}
+		Curve { 
+			legend "SemiImplicit_Adams_Bashforth_order_2"
+			Style lines
+			file SemiImplicit_Adams_Bashforth_order_2/test.dt_ev
+			columns $1 $4
+		}
+		Curve { 
+			legend "SemiImplicit_Adams_Bashforth_order_3"
+			Style lines
+			file SemiImplicit_Adams_Bashforth_order_3/test.dt_ev
+			columns $1 $4
+		}
+		Curve { 
+			legend "Implicit_Adams_Moulton_order_2"
+			Style lines
+			file Implicit_Adams_Moulton_order_2/test.dt_ev
+			columns $1 $4
+		}
+		Curve { 
+			legend "Implicit_Adams_Moulton_order_3"
+			Style lines
+			file Implicit_Adams_Moulton_order_3/test.dt_ev
+			columns $1 $4
+		}
+		Curve { 
+			legend "Implicit_Backward_differentiation_order_2"
+			Style lines
+			file Implicit_Backward_differentiation_order_2/test.dt_ev
+			columns $1 $4
+		}
+		Curve { 
+			legend "Implicit_Backward_differentiation_order_3"
+			Style lines
+			file Implicit_Backward_differentiation_order_3/test.dt_ev
+			columns $1 $4
+		}
+	}
+}	
+Chapter {
+        Title "Euler implicit (order 1) solution"
+	visu {
+	        Description "Pressure and velocity fields"
+                blackvector Implicit_Euler_Implicite/test.lata dom VITESSE ELEM
+		pseudocolor Implicit_Euler_Implicite/test.lata dom PRESSION ELEM
+        }
+}
+Chapter {	
+	Title "Numerical results"	
+	Table
+	{
+		Title "Maximal Y velocity (0 is the exact solution, so the lower the better)"
+		Description ""
+		nb_columns 2 
+		label Time | Max(abs(V)) 
+		line { 
+			legend "Implicit Euler (order 1)" 
+			file Implicit_Euler_Implicite/test_MAX_V.son 
+			last_line 
+		}
+		line { 
+			legend "Explicit Adams Bashforth (order 2)" 
+			file Explicit_Adams_Bashforth_order_2/test_MAX_V.son 
+			last_line 
+		}
+		line { 
+			legend "Explicit Adams Bashforth (order 3)" 
+			file Explicit_Adams_Bashforth_order_3/test_MAX_V.son 
+			last_line 
+		}
+		line { 
+			legend "Diffusion implicited Adams Bashforth (order 2)" 
+			file SemiImplicit_Adams_Bashforth_order_2/test_MAX_V.son 
+			last_line 
+		}
+		line { 
+			legend "Diffusion implicited Adams Bashforth (order 3)" 
+			file SemiImplicit_Adams_Bashforth_order_3/test_MAX_V.son 
+			last_line 
+		}
+		line { 
+			legend "Implicit Adams Moulton (order 2)" 
+			file Implicit_Adams_Moulton_order_2/test_MAX_V.son 
+			last_line 
+		}
+		line { 
+			legend "Implicit Adams Moulton (order 3)" 
+			file Implicit_Adams_Moulton_order_3/test_MAX_V.son 
+			last_line 
+		}
+		line { 
+			legend "Implicit backward differentiation (order 2)" 
+			file Implicit_Backward_differentiation_order_2/test_MAX_V.son 
+			last_line 
+		}
+		line { 
+			legend "Implicit backward differentiation (order 3)" 
+			file Implicit_Backward_differentiation_order_3/test_MAX_V.son 
+			last_line 
+		}		
+	}
+}
+Chapter {	
+	Title "Conclusion"
+	Description "The new 3rd order schemes gives better results than the new 2nd order schemes"
+	Description "which give better results than the alone implicit Euler scheme (order 1) available"
+	Description "in the previous Trio_U versions."
+}
+

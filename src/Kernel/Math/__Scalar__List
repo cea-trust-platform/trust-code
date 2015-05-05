@@ -1,0 +1,827 @@
+#Pmacro declareList(__Scalar__,__scalar__)
+#ifndef __Scalar__List_included
+#define __Scalar__List_included
+
+#Pif("__scalar__"=="double")
+#include <__Scalar__.h>
+#Pendif
+#Pif("__scalar__"=="int")
+#define IMAX 1000000000
+#Pendif
+#include <arch.h>
+class Sortie;
+class Entree;
+#include <__Scalar__ListElem.h>
+
+//////////////////////////////////////////////////////////////////////////////
+// 
+// .DESCRIPTION 
+//      Classe qui sert a representer une liste de reels __scalar__ 
+//      precision. On ne peut pas utiliser la classe container 
+//      List avec des objets du type __scalar__ car __scalar__ est un type
+//      predefini du C++ qui ne possede pas les fonctions exigees
+//      par List< >. 
+// .SECTION voir aussi 
+//////////////////////////////////////////////////////////////////////////////
+class __Scalar__List : public __Scalar__ListElem
+{
+   
+public :
+  friend class __Scalar__List_Curseur;
+
+  __Scalar__List(const __Scalar__List&);   
+  inline __Scalar__List();
+  Sortie& printOn(Sortie& os) const;
+  Entree& readOn(Entree& is);
+  int size() const;
+  int contient(__scalar__) const;
+  int rang(__scalar__) const;
+  __Scalar__ListElem& dernier() ;
+  const __Scalar__ListElem& dernier() const;
+  
+  __scalar__& operator[](int );
+  const __scalar__& operator[](int ) const;
+  __Scalar__List& add(__scalar__ ) ;
+  __Scalar__List& add_if_not(__scalar__ ) ;
+  __Scalar__List& operator=(const __Scalar__List& );  
+   
+  friend int operator == (const __Scalar__List& , const __Scalar__List& );
+  void suppr(__scalar__ );
+  void vide();
+  void calcule_min_max();
+
+private:
+  __Scalar__ListElem* dernier_;
+  __scalar__ min_data;
+  __scalar__ max_data;
+};
+
+//////////////////////////////////////////////////////////////////////////////
+// 
+// .DESCRIPTION 
+//      List_Curseur de reels __scalar__ precision
+// .SECTION voir aussi 
+//////////////////////////////////////////////////////////////////////////////
+class __Scalar__List_Curseur{
+public :
+  inline __Scalar__List_Curseur(const __Scalar__List& a_list);
+  inline __Scalar__List_Curseur(const __Scalar__ListElem& a_list);
+  inline operator int() const;
+  inline void operator++();
+  inline __scalar__ valeur() const;
+  inline __scalar__& valeur();
+  inline void operator=(const __Scalar__List& a_list);
+  inline const __Scalar__ListElem& list() const;
+  inline __Scalar__ListElem& list();
+  
+private :
+  __Scalar__ListElem* curseur;
+};
+
+// Description: 
+//    Construit une liste vide
+// Precondition: 
+// Parametre: 
+//    Signification: 
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: 
+//    Signification: 
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+
+inline __Scalar__List::__Scalar__List() :
+#Pif("__scalar__"=="double")
+  __Scalar__ListElem(),min_data(DMAXFLOAT),max_data(-DMAXFLOAT)
+#Pendif
+#Pif("__scalar__"=="int")
+  __Scalar__ListElem(),min_data(IMAX),max_data(-IMAX)
+#Pendif
+{ 
+  dernier_=this;
+}
+
+// Description: 
+//    Constructeur
+//    Construit une liste_curseur a partir d'une liste
+// Precondition: 
+// Parametre: const __Scalar__List& list
+//    Signification: la liste a utiliser
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: 
+//    Signification: 
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+inline __Scalar__List_Curseur::__Scalar__List_Curseur(const __Scalar__List& a_list) 
+  : curseur(&(__Scalar__ListElem&)a_list)
+{
+  if (a_list.est_vide())
+    curseur=0;
+}
+
+// Description: 
+//    Constructeur
+//    Construit une liste_curseur a partir d'une liste
+// Precondition: 
+// Parametre: const __Scalar__List& list
+//    Signification: la liste a utiliser
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: 
+//    Signification: 
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+inline __Scalar__List_Curseur::__Scalar__List_Curseur(const __Scalar__ListElem& a_list) 
+  : curseur(&(__Scalar__ListElem&)a_list)
+{
+  if (a_list.est_vide())
+    curseur=0;
+}
+
+// Description: 
+//    Teste si le curseur est non nul
+// Precondition: 
+// Parametre: 
+//    Signification: 
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: int
+//    Signification: 1 si le curseur est non nul, 0 si il est nul
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+inline __Scalar__List_Curseur::operator int() const
+{
+  return (curseur!=0);
+}
+
+
+// Description: 
+//    Avance le curseur dans la liste
+//    Si le curseur est sur le dernier element, il devient nul
+// Precondition: 
+// Parametre: 
+//    Signification: 
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: 
+//    Signification: 
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+inline void __Scalar__List_Curseur::operator++()
+{
+  if(curseur->est_dernier())
+    curseur=0;
+  else
+    curseur=&(curseur->suivant());
+}
+
+
+// Description: 
+//    retourne la valeur du curseur
+// Precondition: 
+// Parametre: 
+//    Signification: 
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: __scalar__
+//    Signification: valeur du curseur
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+inline __scalar__ __Scalar__List_Curseur::valeur() const
+{
+  return curseur->valeur();
+}
+
+
+// Description: 
+//    retourne la valeur du curseur
+// Precondition: 
+// Parametre: 
+//    Signification: 
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: __scalar__&
+//    Signification: valeur du curseur
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+inline __scalar__& __Scalar__List_Curseur::valeur()
+{
+  return curseur->valeur();
+}
+
+
+// Description: 
+//    Affectation d'une liste a une liste_curseur
+// Precondition: 
+// Parametre: const __Scalar__List& list
+//    Signification: la liste a affecter
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: 
+//    Signification: 
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+//    Mise a jour du curseur sur le premier element
+// Postcondition: 
+inline void __Scalar__List_Curseur::operator=(const __Scalar__List& a_list){
+  curseur=(&(__Scalar__ListElem&)a_list);
+  if (a_list.est_vide())
+    curseur=0;
+}
+
+
+// Description: 
+//    Retourne la liste associee a la liste_curseur
+// Precondition: 
+// Parametre: 
+//    Signification: 
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: const __Scalar__List&
+//    Signification: la liste associee
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+inline const __Scalar__ListElem& __Scalar__List_Curseur::list() const
+{
+  return *curseur;
+}
+
+
+// Description: 
+//    Retourne la liste associee a la liste_curseur
+// Precondition: 
+// Parametre: 
+//    Signification: 
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: __Scalar__List&
+//    Signification: la liste associee
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+inline __Scalar__ListElem& __Scalar__List_Curseur::list()
+{
+  return *curseur;
+}
+
+#endif // __Scalar__List_H
+#Pendmacro(declareList)
+#Pmacro implementeList(__Scalar__,__scalar__)
+#include <__Scalar__List.h>
+#include <Nom.h>
+
+// Description: 
+//     Ecriture d'une liste sur un flot de sortie
+//     les elements separes par des virgules figurent entre des accolades
+// Precondition: 
+// Parametre: Sortie& os
+//    Signification: le flot de sortie a utiliser
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: entree/sortie
+// Retour: Sortie&
+//    Signification: le flot d'entree modifie
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+Sortie& __Scalar__List::printOn(Sortie& os) const {
+  __Scalar__List_Curseur curseur(*this);
+  Nom accouverte = "{";
+  Nom accfermee = "}";
+  Nom virgule = ",";
+  os << accouverte << " " ;
+  while(curseur){
+    // if(est_dernier()) GF sinon on a une virgule de trop
+    if(curseur.list().est_dernier())
+      os << curseur.valeur() << " " ;
+    else
+      os << curseur.valeur() << " " << virgule << " " ;
+    ++curseur;
+  }
+  os << accfermee;
+  return os;
+}
+
+
+
+// Description: 
+//     Lecture d'une liste sur un flot d'entree
+//     les elements separes par des virgules figurent entre des accolades
+// Precondition: 
+// Parametre: Entree& is
+//    Signification: le flot d'entree a utiliser
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: entree/sortie
+// Retour: Entree& 
+//    Signification: le flot d'entree modifie
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+Entree& __Scalar__List::readOn(Entree& is)  {
+  Nom accouverte = "{";
+  Nom accfermee = "}";
+  Nom virgule = ",";
+  Nom nom;
+  __scalar__ t;
+  is >> nom;
+  assert(nom==accouverte);
+  while(nom != accfermee){
+    is >> t;
+    add(t);
+    is >> nom;
+    assert((nom==accfermee)||(nom==virgule));
+  }
+  return is ;
+}
+
+// Description: 
+//    Constructeur par copie
+// Precondition: 
+// Parametre: const __Scalar__List& list
+//    Signification: la liste a copier
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: 
+//    Signification: 
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+__Scalar__List::__Scalar__List(const __Scalar__List& a_list) : __Scalar__ListElem()
+{
+  if(a_list.est_vide() ){
+    suivant_=this;
+  }
+  else {
+    data=a_list.data;
+    min_data=a_list.min_data;
+    max_data=a_list.max_data;
+    dernier_=this;    
+    if(a_list.suivant_) {
+      __Scalar__ListElem* next = new __Scalar__ListElem(*a_list.suivant_); //Recursif !!
+      suivant_ = next;
+    }
+    else
+      suivant_ =0;
+  }
+}
+
+// Description: 
+//   Affectation
+//   Les elements sont copies
+// Precondition: 
+// Parametre: const __Scalar__List& list
+//    Signification: la liste a copier
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: __Scalar__List&
+//    Signification: *this
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+__Scalar__List& __Scalar__List::operator=(const __Scalar__List& a_list)
+{
+  if(a_list.est_vide()){
+    suivant_=this;
+  }
+  else {
+    vide();
+    __Scalar__List_Curseur curseur(a_list);   
+    while(curseur)
+      {
+        add(curseur.valeur());
+        ++curseur;
+      }
+  }
+  return *this;
+}
+
+// Description: 
+//     Renvoie le dernier element de la liste
+// Precondition: 
+// Parametre: 
+//    Signification: 
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: const __Scalar__List&
+//    Signification: le dernier element de la liste
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+const __Scalar__ListElem& __Scalar__List::dernier() const 
+{
+  return *dernier_; 
+  /*  if (est_dernier()) return *this;
+      __Scalar__List_Curseur curseur(*this);
+      while(curseur)
+      if (curseur.list().est_dernier()) break;
+      else ++curseur;
+      return curseur.list(); */
+}
+
+// Description: 
+//     Renvoie le dernier element de la liste
+// Precondition: 
+// Parametre: 
+//    Signification: 
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: __Scalar__List&
+//    Signification: le dernier element de la liste
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+__Scalar__ListElem& __Scalar__List::dernier()
+{
+  return *dernier_;
+  /*
+    if (est_dernier()) return *this;
+    __Scalar__List_Curseur curseur(*this);
+    while(curseur)
+    if (curseur.list().est_dernier()) break;
+    else ++curseur;
+    return curseur.list();
+  */
+}
+
+// Description: 
+//    insertion en queue
+// Precondition: 
+// Parametre: __scalar__ __scalar___to_add
+//    Signification: element a ajouter
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: __Scalar__List&
+//    Signification: *this
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+__Scalar__List& __Scalar__List::add(__scalar__ __scalar___to_add)
+{ 
+  if (__scalar___to_add<min_data)
+    min_data=__scalar___to_add;
+  if (__scalar___to_add>max_data)
+    max_data=__scalar___to_add;
+  if( est_vide()) {
+    data=__scalar___to_add;
+    suivant_=0;
+    return *this;
+  }
+  else{
+    if(est_dernier()){
+      __Scalar__ListElem* next=new __Scalar__ListElem(__scalar___to_add);
+      suivant_ = next; 
+      dernier_ = next; 
+    }
+    else 
+      {
+        dernier().add(__scalar___to_add);
+        dernier_ = &dernier_->suivant(); 
+      }    
+    return *this;
+  }
+}
+
+// Description: 
+//     Renvoie la taille de la liste
+//     Une liste vide est de taille nulle
+// Precondition: 
+// Parametre: 
+//    Signification: 
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: int
+//    Signification: nombre d'elements de la liste
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+int __Scalar__List::size() const {
+  if(est_vide())
+    return 0;
+  int i=0;
+  __Scalar__List_Curseur curseur(*this);
+  while(curseur)
+    {
+      ++i;
+      ++curseur;
+    }
+  return i;
+}         
+      
+// Description: 
+//     Ajout d'un element a la liste ssi il n'existe pas deja
+// Precondition: 
+// Parametre: __scalar__ x
+//    Signification: l'element a ajouter
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: __Scalar__List&
+//    Signification: *this
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+__Scalar__List& __Scalar__List::add_if_not(__scalar__ x) 
+{
+  if (!contient(x))
+    return add(x);
+  else
+    return *this;
+}
+
+
+// Description: 
+//     Verifie si un element appartient ou non a la liste
+// Precondition: 
+// Parametre: __scalar__ x
+//    Signification: L'element a rechercher
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: int
+//    Signification: 1 si la liste contient l'element, 0 sinon
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+int __Scalar__List::contient(__scalar__ x) const
+{
+  if(est_vide() || x>max_data || x<min_data)
+    return 0;
+  __Scalar__List_Curseur curseur(*this);
+  while(curseur)
+    {
+      if (curseur.valeur()==x)
+        return 1;
+      ++curseur;
+    }
+  return 0;
+}
+
+
+// Description: 
+//     renvoie le rang d'un element dans la liste
+//     si un element apparait plusieurs fois, renvoie le rang du premier.
+// Precondition: 
+// Parametre: int i
+//    Signification: L'element a rechercher
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: int
+//    Signification: le rang du premier element de la liste valant i,
+//     -1 si la liste ne contient pas i.
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+int __Scalar__List::rang(__scalar__ x) const
+{
+  if(est_vide() || x>max_data || x<min_data)
+    return -1;
+  int compteur=0;    
+  __Scalar__List_Curseur curseur(*this);
+  while(curseur)
+    {
+      if (curseur.valeur()==x)
+        return compteur;
+      ++compteur;
+      ++curseur;
+    }
+  return -1;
+}
+
+// Description: 
+//     Operateur d'acces au ieme int de la liste
+// Precondition: 
+// Parametre: int i
+//    Signification: l'indice de l'element a trouver
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: __scalar__&
+//    Signification: le ieme element de la liste
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+__scalar__& __Scalar__List::operator[](int i) 
+{
+  __Scalar__List_Curseur curseur(*this);
+  while(curseur && i--)
+    ++curseur;
+  if(i!=-1)
+    {
+      Cerr << "Overflow list " << finl;
+      Process::exit();
+    }
+  return curseur.valeur();
+}
+
+// Description: 
+//     Operateur d'acces au ieme int de la liste
+// Precondition: 
+// Parametre: int i
+//    Signification: l'indice de l'element a trouver
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: const __scalar__&
+//    Signification: le ieme element de la liste
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+const __scalar__& __Scalar__List::operator[](int i) const 
+{
+  __Scalar__List_Curseur curseur(*this);
+  while(curseur && i--)
+    ++curseur;
+  if(i!=-1)
+    {
+      Cerr << "Overflow list " << finl;
+      Process::exit();
+    }
+  return curseur.valeur();
+}
+
+// Description: 
+//     Operateur de comparaison de deux listes
+// Precondition: 
+// Parametre: const __Scalar__List& list1
+//    Signification: premiere liste a comparer
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Parametre: const __Scalar__List& list2
+//    Signification: seconde liste a comparer
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: int
+//    Signification: 1 si les listes sont egales, 0 sinon
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+int operator ==(const __Scalar__List& list1 , const __Scalar__List& list2)
+{
+  int retour=1;
+  if(list1.data != list2.data)
+    retour= 0;
+  if( (!list1.est_dernier()) && (list2.est_dernier()) )
+    retour= 0;
+  if( (list1.est_dernier()) && (!list2.est_dernier()) )
+    retour= 0;
+  if( (!list1.est_dernier()) && (!list2.est_dernier()) )
+    retour= (*list1.suivant_ == *list2.suivant_);
+  return retour;
+}
+
+// Description: 
+//     Supprime un element contenu dans la liste
+// Precondition: 
+// Parametre: __scalar__ obj
+//    Signification: l'element a supprimer de la liste
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: 
+//    Signification: 
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+void __Scalar__List::suppr(__scalar__ obj)
+{
+  if(valeur()==obj)
+    {
+      if(suivant_)
+        {
+          __Scalar__ListElem* next=suivant_;
+          suivant_=next->suivant_;
+          data=next->valeur();
+          next->suivant_=0;
+          delete next;
+        }
+      else 
+        {
+          suivant_=this;
+          dernier_=this;
+        }
+      calcule_min_max();                  
+      return;
+    }
+  __Scalar__List_Curseur curseur_pre=*this;
+  __Scalar__List_Curseur curseur=*suivant_;
+  while(curseur)
+    {
+      if(curseur.valeur()==obj) 
+        {
+          __Scalar__ListElem* next=&curseur_pre.list().suivant();
+          curseur_pre.list().suivant_=curseur.list().suivant_;
+          if (next->suivant_==0)
+            dernier_=&curseur_pre.list();          
+          else
+            next->suivant_=0;
+          delete next;
+          calcule_min_max();
+          return ;
+        }
+      ++curseur;
+      ++curseur_pre;
+    }
+  Cerr << "WARNING during deletion of an element in a list " << finl;
+  Cerr << "One has not found object == : " << obj << finl;
+}
+
+void __Scalar__List::calcule_min_max()
+{
+#Pif("__scalar__"=="double")
+  min_data=DMAXFLOAT;
+  max_data=-DMAXFLOAT;
+#Pendif
+#Pif("__scalar__"=="int")
+  min_data=IMAX;
+  max_data=-IMAX;
+#Pendif
+  __Scalar__List_Curseur curseur=*this;
+  while(curseur)
+    {
+      __scalar__ la_valeur=curseur.valeur();
+      if (la_valeur<min_data)
+        min_data=la_valeur;
+      if (la_valeur>max_data)
+        max_data=la_valeur;
+      ++curseur;
+    }
+}
+
+// Description: 
+//     Vide la liste
+// Precondition: 
+// Parametre: 
+//    Signification: 
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: 
+//    Signification: 
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+void __Scalar__List::vide()
+{
+  if (!est_vide()) 
+    if(suivant_) 
+      delete suivant_;
+  suivant_=this;
+  dernier_=this;
+  calcule_min_max();
+}
+#Pendmacro(implementeList)

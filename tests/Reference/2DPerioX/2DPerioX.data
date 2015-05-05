@@ -1,0 +1,132 @@
+# Hydraulique 2D VEF #
+# PARALLEL OK 4 #
+dimension 2
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+        {
+                Origine 0.  0. 
+                Nombre_de_Noeuds 5 5 
+                Longueurs 1 1 
+        }
+        {
+                Bord paroiX   X =  0.  0. <= Y <= 1.   
+                Bord paroiX   X =  1.  0. <= Y <= 1.   
+                Bord paroiY   Y =  0.  0. <= X <= 1.  
+                Bord paroiY   Y =  1.  0. <= X <= 1.  
+        }
+} 
+Trianguler_h dom
+Transformer dom
+x+4*x*(1-x)*y*(1-y)*(0.5-y)
+y+4*x*(1-x)*y*(1-y)*(0.5+x)
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur Tranche { tranches 2 1 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1b dis
+Lire dis { P0 P1 }
+
+Schema_Euler_Explicite sch
+Lire sch 
+{
+        tinit 0.
+        tmax 0.1
+        dt_min 1.e-6
+        dt_max 1.e-1
+	dt_start dt_calc
+        dt_impr 0.1
+        dt_sauv 20.
+        seuil_statio 1.e-2  
+        facsec 0.5
+}
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme	1 1.
+	rho Champ_Uniforme	1 1.
+}
+
+Pb_Hydraulique pb
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+Lire pb
+	{
+	Navier_Stokes_standard
+		{
+		dt_projection 1. 1.e-16
+		Solveur_Pression GCP {
+			precond ssor { omega 1.6 }
+			seuil 1.e-13 impr 
+		} 
+
+		solveur_bar Cholesky { }
+
+                convection { negligeable }
+                diffusion { }
+				
+                Sources { Source_Qdm Champ_fonc_xyz dom 2 x*(1-x) 0 }
+		conditions_initiales
+			{
+                        vitesse Champ_fonc_xyz dom 2 0. 0. 
+			}
+		boundary_conditions
+			{
+			paroiX paroi_fixe
+			paroiY periodique 
+			}
+	         }
+
+	Postraitements
+        	{
+		lata
+		{
+		fichier 2DPerioX
+		format lata  
+                Sondes
+                	{ 
+                        sonde_vit1 vitesse periode 0.01 points 1 0.5 0.5 
+                        sonde_pression pression periode 0.01 segment 10 0.5 0.0 0.5 1.0
+			}
+		Champs dt_post 2.
+			{
+			vitesse elem
+			vitesse som
+			pression elem
+			pression som
+			}
+		}
+		lml
+		{
+		fichier 2DPerioX
+		format lml  
+		Champs dt_post 2.
+			{
+			vitesse elem
+			vitesse som
+			pression elem
+			pression som
+			}
+		}		
+		}
+	}
+
+Solve pb
+Fin

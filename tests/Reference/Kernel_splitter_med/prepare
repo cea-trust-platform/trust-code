@@ -1,0 +1,4 @@
+#!/bin/bash
+gunzip -c obst1.med.gz > obst1.med
+gunzip -c obst2.med.gz > obst2.med
+gunzip -c obstacle_vef.geom.gz > obstacle_vef.geom  

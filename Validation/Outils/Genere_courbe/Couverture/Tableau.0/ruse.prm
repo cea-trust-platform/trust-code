@@ -1,0 +1,92 @@
+# ooo
+Parameters 
+{
+	Title "comment mettre un Table au milieu du texte et comment faire un paragraphe sans figure/tableau..."
+	Description "Calculs men\'es en VEF laminaire"
+	Author "G.F."
+	TestCase "test_ef_stab" "test.data"
+	TestCase "test_ef_stab" "test.data"
+}
+
+Chapter {
+	Title "texte venant du file essai.py"
+        description On lit un int read_value_in_file("int","essai") un double: read_value_in_file("val","essai") et du texte read_value_in_file("texte_es","essai")
+        description on ajoute maintenant le file essai.py avec essai et chaine en gras include_text_file("essai.py","essai","chaine") fin de l'inclusion 
+        description on ajoute maintenant le file essai.py sans mot en gras include_text_file("essai.py") fin de l'inclusion 
+}
+Chapter { 
+	Title "Paragraphe de texte"
+	Description "on n'a dans ce paragraphe que du texte en utilsant un Table vide via : \latex_( \\ Table \{ \\ \} \latex_)"
+	Table  
+{
+	Description " la suite du texte triokeyword(VDF VEF) "
+	Description sur plusieurs lines via l'utilisation de EOF <<EOF
+la suite du texte
+toujours la suite
+EOF
+	 }
+
+	
+} 
+Chapter {
+	Title "Profil de vitesse"
+	Description "Comparasion du profil de vitesse au profil de poiseuille.  voir data... "
+	Description "on met le Table ici "
+Table {
+	Title "essai de tableau"
+	description "encore un peu de texte"
+	nb_columns 4
+	label c1 truc| c2 | "c3 uuuuuu" | "tt"
+
+	line 
+	{
+	legend yyyyyy
+	file truc
+	origin "TRUST"
+	}
+	line {
+	legend ref
+	file toto
+	}
+	line { 
+	legend reuuuuuuf
+	display_line 0
+	file toto
+	}
+	line {
+	legend delta
+	difference delta yyyyyy ref
+	}
+	line {
+	legend ecart relatif 
+	difference ecart_relatif yyyyyy ref
+	alias ecart_relatif
+	}
+	line {
+	legend ecart relatif 
+	difference formula ecart_relatif ref int(v1*10000)/100.
+	}
+     }
+	Table 
+	{
+		description "la suite du texte" 
+		description "quelle ruse !!!!!!"
+	}
+}
+
+Chapter {
+	description "la suite du texte dans le Chapter suivant" 
+	description "quelle ruse !!!!!!"
+	Tableau_performance {
+
+	Include_Description_lines 1 
+}
+}
+Chapter 
+{ 
+	Title "le file prm correspondant"
+	description include_text_file("ruse.prm")
+}
+
+
+ 

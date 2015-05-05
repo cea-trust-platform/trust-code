@@ -1,0 +1,9 @@
+#!/bin/bash
+MALIB=$1
+l=`ls [a-z]*.o 2>/dev/null`
+[ ${#l} != 0 ] && ar cruv $MALIB $l
+l=`ls [A-M]*.o 2>/dev/null`
+[ ${#l} != 0 ] && ar cruv $MALIB $l
+l=`ls [N-Z]*.o 2>/dev/null`
+[ ${#l} != 0 ] && ar cruv $MALIB $l
+echo "$MALIB est a jour."

@@ -1,0 +1,8 @@
+#!/bin/bash
+# creation repertoire pour pouvoir verifier la lecture d'une geometrie med  
+# lors utilisation chemin relatif
+
+mkdir MESH
+cd MESH
+ln -s -f ../maillage.med geom.med
+cd ..

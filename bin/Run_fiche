@@ -1,0 +1,218 @@
+#!/bin/bash
+# Script documente de creation d'une fiche de validation
+help()
+{
+   echo "Usage: `basename $0` [-help] [-not_run] [-post_run] [-parallel_run] [-nb_pas_dt_max N] [-visit_np np] [-dest path_build] [-d text|figure_number] [-o name_rapport.pdf] [-xpdf] [-remote login@machine:PATH] [-exec binary_path] [-save]"
+   echo "Script to build a PDF report file from an automated validation test case (.prm file)." 
+   echo "-help                          : This description."
+   echo "-doc                           : Open the prm file documentation."
+   echo "-dest path_build               : Change the default build directory."   
+   echo "-not_run                       : Build the PDF report file without running the TRUST calculations and pre_run/post_run scripts."
+   echo "-post_run                      : As -not_run except it runs the post_run scripts."
+   echo "-parallel_run                  : Run/submit calculations in a parallel way (by default, calculations are run one after one)." 
+   echo "-nb_pas_dt_max N               : The test cases will be run on N time steps only."
+   echo "-visit_np np                   : Run VisIt on np cores (by default 1) when building the figures, which is faster on a very big mesh."
+   echo "-d text                        : The figures will not be re-generated and will reuse previous one, if any."
+   echo "-d figure_number               : Generates the figure_number figure without building the whole PDF report."
+   echo "-o name_report.pdf             : Change the default PDF report name 'rapport.pdf'"
+   echo "-xpdf                          : Open the PDF report file at the end of the build."
+   echo "-remote login@machine:PATH     : Copy the src directory on a remote machine (generally a cluster) under PATH directory and run there the build."
+   echo "-rsync login@machine:PATH      : Rsync only the needed files from the remote build directory in order to build locally the PDF report."
+   echo "-exec binary_path              : Location of the TRUST binary to use (by default given by $exec)."
+   echo "-compare path_build            : Build one PDF report which compares results from the default build directory and several ones specified by one or more -compare option."
+   echo "-archive                       : Build a preserve.tgz file containing all the need files from the build directory to compare later, PDF reports each other." 
+   echo "-save                          : If the build is processed remotely on a cluster, save the previous build in a different directory."
+   echo "-create                        : Build a minimal .prm with data files found in the src directory."
+   echo
+   echo "You could have a look at \$TRUST_ROOT/doc/TRUST/HowTo_Validation.pdf for the description of some (not all) of these options."
+   echo
+   $TRUST_ROOT/Validation/Outils/Genere_courbe/Run -help
+   echo
+   $TRUST_ROOT/Validation/Outils/Genere_courbe/src/genererCourbes.py --help
+}
+# On verifie que pdflatex est installe sur la machine
+pdflatex --version 1>/dev/null 2>&1
+[ $? != 0 ] && echo "WARNING! pdflatex is not available or installed. `basename $0` WILL NOT produce the PDF report. Install pdflatex on $HOST."
+
+options=""
+pdf=build/rapport.pdf
+save=""
+ici=`pwd`
+# Changement par defaut, on utilise -np 2 si parallele et MPI non natif ou sur certaines machines ou le parallelisme marche sur la frontale
+if [ "`echo $MPI_ROOT | grep TRUST`" != "" ] || [ $HOST = curie-ccrt ] || [ $HOST = airain ]
+then
+   visit_help=`$TRUST_ROOT/Outils/VisIt/bin/visit -help 2>&1`
+   [ $? = 0 ] && [ "`echo $visit_help | grep parallel`" != "" ] && export TRUST_VISIT_NP="-np 2"
+fi
+while [ "$1" != "" ]
+do
+   if [ "$1" = -help ]
+   then
+      help
+      exit 0
+   elif [ "$1" = -doc ]
+   then
+      $WEBBROWSER $TRUST_ROOT/Validation/Outils/Genere_courbe/doc/manuel.xhtml &
+      exit 0
+   elif [ "$1" = -dest ]
+   then
+      options=$options" "$1
+      shift
+      options=$options" "$1
+      pdf=$1/rapport.pdf
+      shift   
+   elif [ "$1" = -not_run ] || [ "$1" = -post_run ] || [ "$1" = -parallel_run ]
+   then
+      options=$options" "$1
+      shift
+   elif [ "$1" = -nb_pas_dt_max ]
+   then
+      options=$options" "$1
+      shift
+      options=$options" "$1
+      shift     
+   elif [ "$1" = -visit_np ]
+   then
+      shift
+      export TRUST_VISIT_NP="-np $1"
+      shift
+   elif [ "$1" = -o ]
+   then
+      options=$options" "$1
+      shift
+      options=$options" "$1
+      pdf=$1
+      shift     
+   elif [ "$1" = -xpdf ]
+   then
+      xpdf=$1
+      shift
+   elif [ "$1" = -remote ]
+   then
+      shift
+      remote=1
+      adr="`echo $1 | awk -F":" '{print $1}'`"
+      rep="`echo $1 | awk -F":" '{print $2}'`"
+      shift
+   elif [ "$1" = -rsync ]
+   then
+      shift
+      rsync=1
+      adr="`echo $1 | awk -F":" '{print $1}'`"
+      rep="`echo $1 | awk -F":" '{print $2}'`"
+      shift
+   elif [ "$1" = -exec ]
+   then
+      shift
+      binary=$1
+      shift
+   elif [ "$1" = -compare ]
+   then
+      shift
+      compare=$1
+      [ ! -d $compare ] && echo "Directory `pwd`/$compare not found!" && exit -1
+      [ "$compare" = ../build ] && echo "Specify another directory than $compare !" && exit -1
+      options=$options" --compare=$compare"
+      shift
+   elif [ "$1" = -save ]
+   then
+      save=1
+      shift
+   elif [ "$1" = -create ]
+   then
+      shift
+      if [ "`basename $ici`" = src ]
+      then
+         prm=`cd ..;basename $PWD`.prm
+      else
+         prm=`cd ../..;basename $PWD`.prm
+	 cd src
+      fi
+      datas=`ls *.data 2>/dev/null`
+      echo "Parameters {" > $prm
+      echo "	Title " >> $prm
+      echo "	Author `whoami`" >> $prm
+      for data in $datas
+      do
+         echo "	Testcase . ${data%.data}" >> $prm
+      done
+      echo "}" >> $prm
+      echo "Chapter {" >> $prm
+      echo "	Title Computer performance" >> $prm
+      echo "	Tableau_performance {" >> $prm
+      echo "	}" >> $prm
+      echo "}" >> $prm
+   else
+      options=$options" "$1
+      echo "=================================================="
+      echo "Warning! Option $1 not yet recognized by Run_fiche"
+      echo "Use $TRUST_ROOT/Validation/Outils/Genere_courbe/Run script instead."
+      echo "=================================================="
+      shift
+   fi
+done
+# Recherche du repertoire contenant la fiche
+[ "`basename $ici`" = src ] && cd ..
+if [ "$remote" = "" ]
+then
+   if [ "$rsync" = 1 ]
+   then   
+      echo "============================================================================="
+      echo "-> Updating files on $rep/build ..."
+      echo "============================================================================="
+      rep=$rep/`basename $PWD`
+      /usr/bin/rsync -vatHD --delete --exclude '*.sauv' --exclude '*.xyz' --exclude '*.Zones' --exclude '*.gz' --exclude '*.geom' --exclude '*.bin' --timeout=100  $adr:$rep/build .
+   fi
+   [ "$save" = 1 ] && echo "-save not implemented yet" && exit -1
+   [ "$binary" != "" ] && export exec=$binary
+   # Lancement en local de la commande creant la fiche avec les options
+   export prod=1 # On utilise les queues de production desormais
+   # Recherche de la fiche prm:
+   prm=`ls src/*.prm 2>/dev/null`
+   if [ "`echo $prm | wc -w`" != 1 ]
+   then
+      echo ".prm files found: $prm"
+      echo "There should be ONE .prm file in the src directory."
+      exit -1
+   fi
+   $TRUST_ROOT/Validation/Outils/Genere_courbe/Run $prm $options 2>&1 | tee Run.log
+   error=${PIPESTATUS[0]}
+   if [ "$error" != 0 ]
+   then
+      echo "Error, see Run.log"
+      exit -1
+   fi
+else
+   # Lancement en remote command de la fiche
+   # Copie de la fiche sur la machine distante
+   rep=$rep/`basename $PWD`
+   if [ "$save" = 1 ]
+   then
+      old=$rep.`echo $$`
+      echo "$adr:$rep deplace en $adr:$old"
+      ssh -X $adr -n 'mv -f '$rep $old' 2>/dev/null'
+   fi
+   ssh -X $adr -n 'mkdir -p '$rep'/src;chmod -R +w '$rep'/src'
+   #scp -r src/* $adr:$rep/src/.
+   echo "============================================================================="
+   echo "-> Updating files on $adr:$rep/src ..."
+   echo "============================================================================="
+   /usr/bin/rsync -vatHD --delete --cvs-exclude --timeout=100 src/* $adr:$rep/src/.
+   # Changement eventuel du binaire
+   [ "$binary" != "" ] && binary="export exec=$binary;"
+   # Lancement de la fichier sur la machine distante
+   ssh -X $adr -n '. ~/.bashrc;cd '$rep'/src;export prod=1;'$binary'Run_fiche '$options 2>&1 | tee Run.log
+   scp $adr:$rep/build/rapport.pdf .
+   pdf=`pwd`/rapport.pdf
+   echo "PDF report $adr:$rep/build/rapport.pdf copied here: $pdf"
+   echo "Run_fiche complete log is in this file: `pwd`/Run.log"
+fi
+# Affichage eventuel du PDF
+if [ "$xpdf" = "-xpdf" ]
+then
+   for app in xpdf kpdf evince okular
+   do
+      $app $pdf 1>/dev/null 2>&1 && break
+   done
+fi
+exit 0

@@ -1,0 +1,5 @@
+#!/bin/bash
+# Correction d'un comportement etrange sur un PC et une SGI au lancement
+# d'un xterm : LD_LIBRARY_PATH est mis a "" !!!
+[ ${#LD_LIBRARY_PATH} = 0 ] && LD_LIBRARY_PATH=$TRUST_LIB && export LD_LIBRARY_PATH
+sh $1 1>/dev/null 2>/dev/null

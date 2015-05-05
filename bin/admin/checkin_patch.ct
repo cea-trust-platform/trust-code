@@ -1,0 +1,75 @@
+#!/bin/bash
+# Etude de la vue Maintenance
+# Cherche tous les fichiers en checkout et envoie les differences au project leader pour validation
+checkin=1
+tar=$WORKDIR/A_GRAVER_CD_TRUST/Patch_checkout.tar
+rm -f $tar
+log=`mktemp_`
+cd $TRUST_ROOT/..
+# Attention git diff --name-only --exit-code donne seulement
+# le diff des fichiers not staged avec l'index d'ou la necessite
+# du HEAD:
+for file in `git diff --name-only --exit-code HEAD`
+do
+   tar rvf $tar $file 
+   checkin=0
+   echo "  Please validate the change in:"
+   echo $file 
+   git diff HEAD $file
+done 1>$log 2>&1 
+
+# Envoi d'un mail si des changements sont en cours
+if [ $checkin = 0 ]
+then
+   echo "  A tar file of all the changes is located here:"
+   echo $TRUST_HOST_ADMIN@$tar
+   echo "
+==============================================
+A tar file of all the changes is located here:
+$TRUST_HOST_ADMIN@$tar
+==============================================" >> $log
+   cat $log | mail_ -s\"[checkin_patch.ct] Changes in the $TRUST_VERSION patch branch\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+   sleep 10
+fi
+rm -f $log
+
+##################################################################################
+# Envoi d'un mail si tous les fichiers sont checkines et si RELEASE_NOTES a change
+##################################################################################
+if [ $checkin = 1 ]
+then
+   if [ ! -f $TRUST_ROOT/.RELEASE_NOTES ] || [ $TRUST_ROOT/RELEASE_NOTES -nt $TRUST_ROOT/.RELEASE_NOTES ]
+   then
+      touch $TRUST_ROOT/.RELEASE_NOTES
+      dest="trio_u_annonces@saxifrage.saclay.cea.fr trio_u_dev@saxifrage.saclay.cea.fr"
+      patch_branch=patch_`echo $TRUST_VERSION | awk '{gsub("\\\.","",$0);print $0}'`
+	  echo "  New TRUST v$TRUST_VERSION patch released"
+      mail_ -s \"[checking_patch.ct] WARNING! New TRUST v$TRUST_VERSION patch released: Ensure that git push official has been done manually...\" $TRUST_MAIL
+      mail_ -s \"New TRUST v$TRUST_VERSION patch released\" $dest << EOF
+`$TRUST_Awk '// {print $0} /-------/ {exit}' $TRUST_ROOT/RELEASE_NOTES`
+
+
+-For CEA developers using the TRUST Git repository, you can merge the patch with the command:
+cd \$TRUST_ROOT
+git pull origin $patch_branch
+Then rebuild the version with:
+./configure
+source env/Init_TRUST
+monodir
+
+-For users with a downloaded TRUST version, you can download, apply the patch and rebuild
+with the single command:
+cd \$TRUST_ROOT/bin
+./Installer_TRUST -patch
+
+
+TRUST ftp site: ftp://$TRUST_FTP/$PUBLIC/index.html
+Please, do not give the ftp address without permission.
+
+TRUST support team. mailto:$TRUST_MAIL
+
+To unsubscribe: Reply to that message.
+EOF
+   fi
+fi
+exit 0

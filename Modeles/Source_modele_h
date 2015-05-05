@@ -1,0 +1,47 @@
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:	NOM_DU_FICHIER.h
+// Directory:	$TRUST_ROOT/NOM_DU_MODULE
+//
+///////////////////////////////////////////////////////////////////////////////
+
+
+#ifndef NOM_DE_LA_CLASSE_inclus
+#define NOM_DE_LA_CLASSE_inclus
+
+// .NOM NOM_DE_LA_CLASSE 
+// .ENTETE TRUST NOM_DU_MODULE
+// .LIBRAIRIE NOM_DE_LA_LIBRAIRIE
+// .FILE NOM_DU_FICHIER.h
+// .FILE NOM_DU_FICHIER.cpp
+
+
+//
+// .DESCRIPTION class NOM_DE_LA_CLASSE
+//
+// .SECTION voir aussi
+
+#include <Source_base.h>
+#include <Ref_Zone_LA_DISCRETISATION.h>
+#include <RefZoneClLA_DISCRETISATION.h>
+class Probleme_base;
+
+// La classe derive de Source_base et peut etre d'un terme source 
+class NOM_DE_LA_CLASSE : public Source_base
+{
+   declare_instanciable(NOM_DE_LA_CLASSE) 
+      
+public : 
+   void associer_pb(const Probleme_base& );	   
+   DoubleTab& ajouter(DoubleTab& ) const;	   
+   DoubleTab& calculer(DoubleTab& ) const;
+   void mettre_a_jour(double );
+   
+protected :
+   
+   REF(Zone_LA_DISCRETISATION) la_zone_LA_DISCRETISATION;
+   REF(Zone_Cl_LA_DISCRETISATION) la_zone_Cl_LA_DISCRETISATION;   
+   void associer_zones(const Zone_dis& ,const Zone_Cl_dis& );
+   
+};
+#endif

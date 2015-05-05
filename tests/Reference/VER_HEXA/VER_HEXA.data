@@ -1,0 +1,79 @@
+# test si la maille a bien ete reordonne #
+# PARALLEL NOT #
+dimension 3
+
+Pb_conduction pb
+Domaine dom
+
+# BEGIN MESH #
+Read_file dom mod2o.geom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur metis { Nb_parts 2 }
+	Larg_joint 1
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+Lire dis { P0 }
+
+Schema_Euler_explicite sch
+Lire sch
+{
+        tinit 0
+        tmax 300.
+        dt_min 8.e-6
+        dt_max 0.1
+        dt_impr 0.00001
+        dt_sauv 100
+        seuil_statio 1.e-8
+	nb_pas_dt_max 1
+}
+
+Solide sol
+Lire sol
+{
+	rho Champ_Uniforme 1 2
+        lambda Champ_Uniforme 1 0.01
+	Cp Champ_Uniforme 1 0.5
+}
+Associate pb dom
+Associate pb sch
+Associate pb sol
+
+Discretize pb dis
+
+Lire pb
+{
+        Conduction
+        {
+                diffusion { }
+                conditions_initiales {
+                        temperature Champ_Uniforme 1 0. 
+                        }
+                boundary_conditions {
+                        defaut paroi_adiabatique
+                }
+        }
+
+        Postraitement
+        {
+                Champs dt_post 30.
+                {
+			temperature elem
+			temperature som
+                }
+        }
+}
+
+Solve pb
+
+Fin

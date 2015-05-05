@@ -1,0 +1,21 @@
+jdd=`pwd`
+jdd=`basename $jdd`
+# Creation d'un calcul de t=0 a t=0.2 pour une reprise de t=0.2 a t=1.2
+cp -f $jdd.data sauve.data
+echo $ECHO_OPTS "1,$ s?tinit 0.2?tinit 0.?g\nw" | ed sauve.data
+echo $ECHO_OPTS "1,$ s?tmax 1.2?tmax 0.2?g\nw" | ed sauve.data
+echo $ECHO_OPTS "1,$ s?reprise ?sauvegarde ?g\nw" | ed sauve.data
+if [ "$TRUST_DISABLE_MPI" != 1 ]
+then
+   make_PAR.data sauve
+   echo $ECHO_OPTS "1,$ s?sreprise?PAR_sreprise?g\nw" | ed PAR_sauve.data
+fi
+rm -f *out *son
+triou sauve
+[ "$TRUST_DISABLE_MPI" != 1 ] && triou PAR_sauve 2
+# On renomme certains fichiers
+for file in *out *son
+do
+   new_file=`echo $file | awk '{gsub("sauve","sreprise",$0);print $0}'`
+   mv $file $new_file
+done

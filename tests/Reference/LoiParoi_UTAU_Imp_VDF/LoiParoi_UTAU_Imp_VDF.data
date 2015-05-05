@@ -1,0 +1,124 @@
+# Hydraulique Turbulent 3D VEF : UTAU_IMP impose #
+# PARALLEL OK 8 #
+Dimension 3
+
+Option_VDF
+{
+   traitement_coins oui
+}
+export domaine dom_pb2 
+
+# BEGIN MESH #
+Mailler dom_pb2
+{
+Pave Cavite
+	{
+		Origine 0. 0 0.
+		Nombre_de_Noeuds 10 4 11
+		Longueurs 10 1 1
+
+	}
+	{
+		Bord entree  X = 0.            	0 <= Y <= 1          0. <= Z <= 1
+		Bord sortie  X = 10   	0 <= Y <= 1           0. <= Z <= 1
+		Bord paroi     Y = 0           	0. <= X <= 10   0. <= Z <= 1
+		Bord paroi    Y = 1           	0. <= X <= 10   0. <= Z <= 1
+                Bord devant  Z = 0.           	0. <= X <= 10   0 <= Y <= 1
+		Bord derriere  Z = 1 	0. <= X <= 10   0 <= Y <= 1
+		} 
+}
+# END MESH #
+# BEGIN PARTITION
+Partition dom_pb2
+{
+	Partitionneur tranche { tranches 2 1 1 }
+	Larg_joint 1
+	Nom_Zones dom_pb2
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom_pb2.Zones dom_pb2
+END SCATTER #
+
+
+Pb_hydraulique_turbulent  pbf
+
+
+
+
+schema_euler_explicite sch
+Lire sch
+{
+        tinit 0 
+        tmax 10.
+        dt_min 1.E-8
+        dt_max 10.
+        dt_impr 1
+        seuil_statio 1.e-6
+        facsec 1.
+}
+
+
+VDF cubes
+
+Fluide_Incompressible He
+Lire He
+{
+        mu Champ_Uniforme 1 4.46437e-05 
+        rho Champ_Uniforme 1 4.40684
+        lambda Champ_Uniforme 1 0.344964     
+        Cp Champ_Uniforme 1 5193.
+        beta_th Champ_Uniforme 1 0.0014285714
+}
+
+
+Associate pbf dom_pb2
+Associate pbf He     
+Associate pbf sch
+
+Discretize pbf cubes
+
+
+Lire pbf
+{
+        Navier_Stokes_turbulent
+        {
+                solveur_pression Cholesky { }
+		convection { amont }
+                diffusion {  }
+                conditions_initiales {
+                        vitesse Champ_Uniforme 3 2 0. 0.
+                        }
+                boundary_conditions {
+                        paroi             paroi_fixe
+                        entree frontiere_ouverte_vitesse_imposee champ_front_uniforme 3  2 0. 0.
+                        sortie    frontiere_ouverte_pression_imposee champ_front_uniforme 1  0. 
+			devant symetrie
+ 			derriere symetrie
+               }
+
+		modele_turbulence longueur_melange { 
+		        turbulence_paroi UTAU_IMP { diam_hydr Champ_uniforme 1 2 lambda_c 0.02  }
+				}
+        }
+
+        Postraitement {
+		format lml
+                Sondes
+                {
+                        coupe_He_V vitesse    periode 1.E-3   segment 10   0.05  2e-3 0.04 0.05 2e-3 0.76 
+                }
+                Champs dt_post 2
+                {
+                   vitesse elem
+                }
+        }
+        sauvegarde formatte pb2.sauv
+}
+
+Solve pbf
+Fin
+
+		        turbulence_paroi UTAU_IMP { u_tau Champ_uniforme 1 0.1 }

@@ -1,0 +1,52 @@
+#!/bin/bash
+# Creation d'un fichier differences en html :
+# $1 : titre 1
+# $2 : titre 2
+# $3 : fichier diff
+titre1=$1
+titre2=$2
+fichier_diff=$3
+fichier=$fichier_diff.html
+# Ecriture du fichier :
+echo $ECHO_OPTS "<!--NewPage-->
+<html>
+<head>
+<title>Differences entre deux fichiers :</title>
+</head>
+<body>
+<BODY BGCOLOR="#C5D5D5" TEXT="#23238E" LINK="#E47833" ALINK="#007FFF" VLINK="#007FFF">
+<a href=$TRUST_ROOT/doc/TRUST.html>TRUST </a> | <a href=$TRUST_ROOT/doc/index.html>Classes</a>
+<PRE>
+<HR>
+<h1>Differences entre deux fichiers :</h1>
+$titre1
+<b>$titre2</b>
+<HR>" > $fichier
+##################
+l=`wc -l $fichier_diff | $TRUST_Awk '{print $1}'`
+$TRUST_Awk -v l=$l '($1==">") { nom="<b>"
+                  while ($1==">") {
+		     print $0
+		     gsub("<"," < ",$0)
+		     gsub(">"," > ",$0)
+		     for (i=2;i<NF+1;i++) nom=nom" "$i
+		     nom=""
+                     getline
+		     if (NR==l) {exit}
+		  }
+		  print "</b><HR>" }
+      ($1=="<") { nom=""
+                  while ($1=="<") {
+		     gsub("<"," < ",$0)
+		     gsub(">"," > ",$0)
+                     for (i=2;i<NF+1;i++) nom=nom" "$i
+		     print nom
+		     nom=""
+                     getline
+		     if (NR==l) {exit}
+		  } 
+		} ' $fichier_diff >> $fichier
+echo $ECHO_OPTS "</body>
+</PRE>
+</html> " >> $fichier
+

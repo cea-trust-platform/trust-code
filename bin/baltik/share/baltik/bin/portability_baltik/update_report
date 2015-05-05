@@ -1,0 +1,16 @@
+#!/bin/bash
+DIR=`dirname $0`
+DIR=`(cd $DIR;pwd)`
+sh $DIR/../portability/build_report.sh $*
+while [ 1 ]
+do
+ll=`find . -name '*'.log -newer nuit_$1.html`
+if [ "$ll" != "" ]
+then
+sh $DIR/../portability/build_report.sh $*
+echo ok
+else
+echo no update
+fi
+sleep 5
+done

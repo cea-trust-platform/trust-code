@@ -1,0 +1,29 @@
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:        Corriger_frontiere_periodique.h
+// Directory:   $TRUST_ROOT/Kernel/Geometrie
+// Version:     /main/7
+//
+//////////////////////////////////////////////////////////////////////////////
+#ifndef Corriger_frontiere_periodique_included
+#define Corriger_frontiere_periodique_included
+#include <Interprete_geometrique_base.h>
+class Domaine;
+class ArrOfDouble;
+class DoubleTab;
+// .DESCRIPTION
+//  Cet interprete doit etre utilise en sequentiel (avant decoupage) si
+//  les sommets opposes d'un bord periodique ne sont pas parfaitement alignes.
+//  (cas de certains maillages tetra si le mailleur est trop contraint par la cao).
+//  Il tente de deplacer les sommets pour les aligner.
+class Corriger_frontiere_periodique : public Interprete_geometrique_base
+{
+  Declare_instanciable(Corriger_frontiere_periodique);
+public:
+  Entree& interpreter_(Entree& is);
+  static void corriger_coordonnees_sommets_perio(Domaine& dom,
+      const Nom& nom_bord,
+      const ArrOfDouble& vecteur_perio,
+      const Nom& nom_fichier_post);
+};
+#endif

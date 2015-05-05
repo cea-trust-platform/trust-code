@@ -1,0 +1,97 @@
+# TEST pression sortie fonction de u moyen #
+# PARALLEL OK 8 #
+
+dimension 3
+
+Pb_Hydraulique pb
+
+Domaine DOM_DOM
+# BEGIN MESH #
+Read_file DOM_DOM  trio_DOM_geo.geom
+VerifierCoin DOM_DOM { }
+# END MESH #
+# BEGIN PARTITION
+
+
+Partition DOM_DOM
+{
+        Partitionneur tranche { tranches 8 1 1 }
+        Larg_joint 2
+        Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+
+# BEGIN SCATTER 
+Scatter DOM.Zones DOM_DOM
+END SCATTER #
+
+
+
+
+VEFPreP1B dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+        tinit 0.0
+	nb_pas_dt_max 3
+        tmax  2
+        dt_start dt_fixe 1.e-5
+        dt_max 1.5
+        dt_impr 0.00001
+        dt_sauv 1000.
+        seuil_statio 1.e-8
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+        mu Champ_Uniforme 1 1.e-5
+        rho Champ_Uniforme 1 1
+}
+
+Associate pb DOM_DOM
+Associate pb sch
+Associate pb fluide
+lire dis { P0 P1 cl_pression_sommet_faible 0 changement_de_base_P1bulle 1 }
+Discretize pb dis
+Lire pb
+{
+        Navier_Stokes_standard
+        {
+                solveur_pression GCP { precond ssor { omega 1.65 } seuil 1.e-7 impr }
+                convection { muscl }
+                diffusion { }
+                conditions_initiales {
+                        vitesse Champ_Uniforme 3 0. 0.5 1
+                }
+                boundary_conditions {
+                        in frontiere_ouverte_vitesse_imposee
+                                champ_front_Uniforme 3 0. 0.5 0.0
+                        out1 frontiere_ouverte_pression_imposee
+                                Champ_front_uniforme 1  0
+                        out2 frontiere_ouverte_pression_imposee
+                                Champ_front_uniforme 1  1
+                        wall paroi_fixe
+                }
+        }
+        Postraitement
+        {
+                Format lml
+		# Le blocage etait avec vitesse som, disparaissait avec vitesse elem #
+		# Donc ne pas enlever vitesse som ! #
+                Champs dt_post 10.
+                       {
+                        vitesse som
+                       }
+        }
+Sauvegarde_simple binaire TEST_CL.sauv
+
+}
+
+Solve pb
+Fin
+
+

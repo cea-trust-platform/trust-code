@@ -1,0 +1,95 @@
+#!/bin/bash
+#export PYTHONPATH=$XDATA/../../TRIOU/build/lib/python2.2/site-packages/salome/:${PYTHONPATH}
+#pathtoadd=`find $TRIOU_ROOT_DIR -name triou.py -exec dirname {} \;`
+#echo $pathtoadd
+#export PYTHONPATH=${pathtoadd}:${PYTHONPATH}
+TMP=/tmp
+[ "$TRUST_TMP" != "" ] && TMP=$TRUST_TMP
+DIR=`dirname $0`
+DIR=`(cd $DIR; pwd)`
+. $DIR/IHMTRIO.sh
+org=`pwd`
+file=`dirname $1`/`basename $1 .data`.data
+[ ! -f $file ] && echo creation de $file && echo fin  > $file
+[ "`dirname $1`" = "." ] && file=$org"/"$file
+echo $file
+if [ "$2" != "" ]
+then 
+reedit=1
+else
+reedit=0
+cp $file $file.org
+chmod +w $file.org
+fi
+
+[ $reedit -eq 0 ] && cp $file $TMP
+cd $TMP
+filebase=`basename $file .data`
+file1=`basename $file`
+[ !  -f $file1 ] && touch $file1
+chmod +w $file1
+filepy=$filebase.py
+file2=$filebase.mod.data
+file3=$filebase.mod2.data
+rm __sa__.py*
+if [ $reedit -eq 0 ]
+    then 
+    rm $filepy*
+    python -c "from triou import *;list=read_file_data('$file1');write_file_data('$file2',list);write_file_python('$filepy',list)" ; [ $? -ne 0 ] && exit #1>/dev/null
+    fi
+
+
+#xdatagui --module=TRIOU $filepy
+# utilisation des nouvelles options 0.5.39
+xdatagui --module=TRIOU --with-splitter=no --without-menus=Preferences,Window,Modules,Tools,View $filepy
+
+
+time python -c "from __sa__ import *;from triou import write_file_data,read_file_data;write_file_data('$file3',list_instance);list=read_file_data('$file3')" 1>/dev/null; status=$?
+echo $status
+if [ $status -ne 0 ]
+then
+
+echo "You have make a mistake"
+diff $file2 $file3 | less
+#echo "on reedite OK?"
+#		read OK
+
+#		cp __sa__.py $filepy	
+#		cd $org
+#		echo $0 $* 1
+#		$0 $* 1
+#		cd $TMP
+fi
+res=`diff $file2 $file3`
+if [ "$res" != "" ]
+then
+	diff $file2 $file3
+	if [ $status -ne 0 ]
+	then
+
+		echo "You have make a mistake"
+	fi
+	echo "Do you accept the differences ? (y/n/R)"
+	read ok
+  	if [ "$ok" = "y" ] || [ "$ok" = "Y" ]
+	then
+	   cd $org
+	   cp $TMP/$file3 $file
+	   cd $TMP
+	else 
+           if [ "$ok" = "n" ] || [ "$ok" = "N" ]
+	   then
+	     exit
+	   else
+		echo "on reedite"
+		cp __sa__.py $filepy	
+		cd $org
+		echo $0 $* 1
+		$0 $* 1
+		cd $TMP
+	   fi
+        fi	
+else
+  echo "pas de difference"
+fi
+rm $file2 $file3 __sa__.py* $file1 $filepy

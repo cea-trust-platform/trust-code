@@ -1,0 +1,393 @@
+#!/bin/bash
+# Git supported
+# Dans la journee, pour forcer la compilation a distance
+# Desormais le mise_a_jour_TRUST_tar est appele si necessaire
+# depuis cette procedure
+ssh_command()
+{
+    # Le sh devant mise_a_jour_TRUST_arch est important sur titane!!
+    # Comprends pas pourquoi...
+    # Creation d'un fichier de commandes car probleme si le SHELL n'est pas bash 1> 2> pas reconnu
+    command=`mktemp_`
+    echo > $command
+    # Sur certaines machines un Killed by signal 1 empeche l'execution (supermuc par exemple)
+    [ $adr != supermuc.lrz.de ] && echo ". ~/.bashrc 1>/dev/null 2>&1" >> $command
+    echo $* >> $command
+    scp -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $command $log@$adr:~/command_$machine 1>/dev/null 2>&1
+    rm -f $command
+    # Add -X to have DISPLAY ?
+    ssh -X -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $log@$adr -n 'chmod +x ./command_'$machine';./command_'$machine 2>/dev/null
+}
+echo "Usage: `basename $0` [machine1 machine2 ...]"
+all=1 && [ ${#1} != 0 ] && all=0 && machines=$*
+
+# Teste la connection :
+[ ${#Version} = 0 ] && Version=Version_dev
+[ ${#Version} = 0 ] && echo "What version?" && exit
+. connect_ftp -no_ftp
+eval `/usr/bin/ssh-agent` 1>/dev/null 2>&1
+
+# Recupere le dipha sur $HOME/../fauchet
+ficdipha=$HOME/../fauchet/archdiphatar
+[ -f $ficdipha ] && cp $ficdipha $TRUST_ROOT/.
+echo "------------------------------------"
+# Ne marche pas : !!!
+#LISTE_TRUST_ROOT="keys "`cd $TRUST_ROOT;ls *.gz`
+LISTE_TRUST_ROOT="keys *.tar.gz"
+LISTE_DIPHA_ROOT="Diphasique.tar.gz lib.tar.gz"
+[ ${#DIPHA_ROOT} = 0 ] && DIPHA_ROOT=`dirname $TRUST_ROOT`/Diphasique && export DIPHA_ROOT
+
+liste_machines=$TRUST_ROOT/bin/admin/liste.machines
+##########################################################
+# Ajout automatique de nouvelles machines a liste.machines
+##########################################################
+if [ -d $TRUST_SHARE ]
+then
+   liste_pc=`cat $TRUST_SHARE/distcc/distcc* $TRUST_SHARE/distcc3/distcc* 2>/dev/null | awk -F/ '{print $1}' | sort -u`
+   liste=`liste_machines`
+   for pc in $liste_pc
+   do
+      adr=$pc.intra.cea.fr
+      # Si le PC n'est pas dans la liste des machines:
+      # Si le PC n'est pas la machine $TRUST_HOST_ADMIN
+      # Si le PC n'est pas darbon (supprimee de la liste...)
+      if [ $pc != $TRUST_HOST_ADMIN ] && [ "`echo $liste | grep $adr`" = "" ] && [ "$pc" != darbon ]
+      then
+         if [ "`ssh_ -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $adr -n pwd 1>/dev/null 2>&1;echo $?`" != 0 ]
+         then
+	    if [ "`ping_ $adr 1>/dev/null 2>&1;echo $?`" != 0 ]
+	    then
+	       echo "$adr not accessible"
+	       tmp=`mktemp_`
+	       for distcc in `ls $TRUST_SHARE/distcc/distcc* $TRUST_SHARE/distcc3/distcc* 2>/dev/null`
+	       do
+	          string=`grep $pc $distcc`
+	          if [ "$string" != "" ]
+		  then
+		     echo "$string suppressed to $distcc"
+		     cat $distcc | grep -vw $string > $tmp
+		     cat $tmp > $distcc    
+		  fi
+	       done
+	       rm -f $tmp
+	    else
+	       echo "$adr configure.ssh to do"
+	    fi
+	 else
+	    ssh_ -o ConnectTimeout=10 -o BatchMode=yes $adr -n 'mkdir -p ~/Version_test_'$pc'/TRUST;mkdir -p ~/Version_test_'$pc'/Diphasique'
+            [ "`grep $adr ~/.netrc`" = "" ] && echo $ECHO_OPTS "machine $adr \tlogin triou \tpassword triou0" >> ~/.netrc	
+	    CHECKOUT $liste_machines 1>/dev/null 2>&1
+	    # Mise en machine de reserve (pool)
+	    echo $ECHO_OPTS "linux\trsync_ssh\tpool\t$adr\t\t# " >> $liste_machines
+	    echo "$adr added to $liste_machines"
+	 fi
+      fi
+   done
+fi
+#####################################
+# Permutation des machines quelconques
+# appartenant au pool des PCs du labo
+#####################################
+if [ $all = 1 ]
+then
+   # On parcourt une premiere fois pour trouver les machines de reserves
+   # (pool) qui seraient operationnelles
+   liste_adr=`liste_machines pool`
+   pool=""
+   for adr in $liste_adr
+   do
+      machine=`echo $adr | awk -F"." '{print $1}'`
+      log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`   
+      if [ "$log" = "" ]
+      then
+         echo "KO $adr machine not reported in ~/.netrc"
+      else
+         size=`ssh_ -o ConnectTimeout=10 -o BatchMode=yes $log@$adr -n df -BG . 2>/dev/null | tail -1 | awk '{print $(NF-2)}'`
+	 # Doit etre accessible ($size!="") et avec assez de place disque > 5Go
+	 [ "$size" != "" ] && [ ${size%G} -ge 5 ] && pool=$pool$adr" "
+      fi
+   done
+   # On cherche les machines affectees a une tache mais non operationnelles
+   liste_adr=`liste_machines tache`
+   for adr in $liste_adr
+   do
+      machine=`echo $adr | awk -F"." '{print $1}'`
+      log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`   
+      if [ "$log" = "" ]
+      then
+         echo "KO $adr machine not reported in ~/.netrc"
+      else
+         size=`ssh_ -o ConnectTimeout=10 -o BatchMode=yes $log@$adr -n df -BG . 2>/dev/null | tail -1 | awk '{print $(NF-2)}'`
+	 if [ "$size" = "" ] || [ ${size%G} -lt 3 ]
+         then
+	    if [ "$size" = "" ]
+	    then
+	       message="KO $adr is not accessible and has an assigned task. Change machine."
+	    else
+	       message="KO $adr has only $size of disk space."
+	    fi	    
+	    # Plus de changement automatique de machines
+	    #if [ "$pool" = "" ]
+	    #then
+	    #   message=$message" mais n'est remplacee car le pool de machines remplacantes est vide!"
+	    #else
+	    #   new_adr=`echo $pool | awk '{print $1}'`
+	    #   message=$message" est remplacee par $new_adr"
+	    #   CHECKOUT $liste_machines 1>/dev/null 2>&1
+	    #   echo $ECHO_OPTS "1,$ s?$adr?new_adr?g\nw" | ed $liste_machines 1>/dev/null 2>&1
+	    #   echo $ECHO_OPTS "1,$ s?$new_adr?$adr?g\nw" | ed $liste_machines 1>/dev/null 2>&1
+	    #   echo $ECHO_OPTS "1,$ s?new_adr?$new_adr?g\nw" | ed $liste_machines 1>/dev/null 2>&1
+	    #   pool=${pool#$new_adr" "}
+	    #fi
+            echo $ECHO_OPTS $message
+	    echo $ECHO_OPTS $message | mail_ -s\"[envoie_TRUST_arch] Change in the machines of type cible\" $TRUST_MAIL    
+	 fi
+      fi
+   done  
+fi
+
+######################
+# Liste des machines #
+######################
+liste=`liste_machines`
+if [ $all = 1 ]
+then
+   liste_adr=$liste
+else
+   liste=`liste_machines`
+   for machine in $machines
+   do
+      reconnue=0
+      for adr in $liste
+      do 
+         [ $adr = $machine ] && liste_adr=$liste_adr" "$adr && reconnue=1 && break
+      done
+      [ $reconnue = 0 ] && echo "$machine not found in liste.machines..."
+   done
+fi
+
+# Determination si un repertoire a ete checkoute et donc
+# un fichier potentiellement renome ou efface (auquel cas on doit faire un delete)
+# On le faut aussi le samedi
+VOBS="Doc_TRUST Pre_Post_TRUST Tests_TRUST TRUST"
+if [ "$delete_version_machine_cible" = "" ]
+then
+   delete_version_machine_cible=0
+   if [ -d $TRUST_ROOT/../.git ]
+   then 
+      #if [ "`git log --since=1.days..HEAD --name-status | grep ^D | grep -v ^Date`" != "" ]
+      # Look for the last commit where at least on file was deleted:
+      last_commit=`git log --diff-filter=D | awk '/commit / {print substr($2,1,7)}' | head -1`
+      # Check if this commit is in the last day compared to the HEAD or if future commit contains deleted files:
+      if [ "`git log --since=1.days..HEAD --name-status | grep $last_commit`" != "" ] || [ "`git status --u=no | grep deleted:`" != "" ]
+      then
+         delete_version_machine_cible=1
+	 echo "Several files were moved or deleted in Git since yesterday then we must make a delete on remote machines." 
+      fi  
+   else
+      echo "Detection of a deleted file not implemented yet outside Git." 1>/dev/null 2>&1
+   fi
+fi
+# Versions distantes automatiquement effacees le vendredi/samedi
+[ "`date '+%u'`" = 5 ] && delete_version_machine_cible=1 && echo "We delete the version on the machines of type cible on Friday."
+[ "`date '+%u'`" = 6 ] && delete_version_machine_cible=1 && echo "We delete the version on the machines of type cible on Saturday."
+# Versions distantes ponctuellement effacees avec un "touch ~/delete_version_machine_cible"
+[ -f ~/delete_version_machine_cible ] && delete_version_machine_cible=1 && echo "We delete the version on the machines of type cible promptly." && rm -f ~/delete_version_machine_cible
+
+#########################
+# Boucle sur les machines
+#########################
+echo "------------------------------------"
+for adr in $liste_adr
+do
+   machine=`echo $adr | awk -F"." '{print $1}'`
+   version=Version_test_$machine
+   log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`      
+   if [ "$log" = "" ]
+   then
+      echo "KO $adr machine not reported in ~/.netrc"
+   # Les machines git_cron ne sont pas accessibles par ssh
+   elif [ "`liste_machines git_cron | grep $adr`" = "" ] && [ "`ssh_ -o ConnectTimeout=30 -o BatchMode=yes $log@$adr -n pwd 1>ssh_$adr.log 2>&1;echo $?`" != 0 ]
+   then
+      echo "KO $adr machine not accessible via ssh. See ssh_$adr.log" 
+   else
+      ##################################################
+      # Determination de WORKDIR si accessible par ssh #
+      ##################################################
+      if [ "`liste_machines git_cron | grep $adr`" = "" ]
+      then
+         WORKDIR=`ssh_command 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
+         echo "We have WORKDIR=$WORKDIR on host $adr"
+         [ "$WORKDIR" = "" ] && echo "KO $adr WORKDIR empty! See rsync_$adr.log" && echo "WORKDIR empty on $log@$adr" | mail_ -s\"[envoie_TRUST_arch] Configuration $machine KO\" $TRUST_MAIL
+      fi
+      ##########################################################################
+      # 4 modes supportes:
+      # git_cron  : git des sources depuis la machine et build lance par crontab 
+      # git_ssh   : git des sources depuis la machine et build lance par ssh 
+      # rsync_ssh : rsync des sources vers la machine et build lance par ssh
+      # sftp_ssh  : sftp des sources vers la machine et build lance par ssh 
+      # sinon     : scp des sources vers la machine et build lance par ssh 
+      ##########################################################################
+          
+      #################
+      # Mode git_cron #
+      #################
+      if [ "`liste_machines git_cron | grep $adr`" != "" ]
+      then
+         # Donc on ne fait rien:
+	 echo "Sources updated by Git on $log@$adr at "`date '+%H:%M:%S'`      
+	 echo "Launching the update by crontab on $log@$adr at "`date '+%H:%M:%S'`
+	 
+      ################
+      # Mode git_ssh #
+      ################ 
+      elif [ "`liste_machines git_ssh | grep $adr`" != "" ]
+      then
+	 echo "Sources updated by Git on $log@$adr:$WORKDIR/$version at "`date '+%H:%M:%S'` 
+	 # Si premiere installation:
+	 if [ "`ssh_ -o ConnectTimeout=10 -o BatchMode=yes $log@$adr -n ls $WORKDIR/$version/.git 1>/dev/null 2>&1;echo $?`" != 0 ]
+	 then
+	    ssh_command "git clone $TRUST_GIT_OFFICIAL $WORKDIR/$version;cd $WORKDIR/$version;git checkout -b master origin/master"
+	 fi
+	 ssh_command "cd $WORKDIR/$version/TRUST/bin/admin;./mise_a_jour_TRUST_arch -git 1>~/CR_$machine 2>&1" &     
+	 echo "Launching the update by ssh on $log@$adr at "`date '+%H:%M:%S'`   
+	 
+      ##################
+      # Mode rsync_ssh #
+      ##################
+      # On teste si rsync marche sinon on bascule sur le mode scp+ssh
+      elif [ "`liste_machines rsync_ssh | grep $adr`" != "" ] && [ "`rsync -e 'ssh -o StrictHostKeyChecking=no' --dirs --delete --dry-run $TRUST_ROOT/RELEASE_NOTES $log@$adr:/tmp 1>/dev/null 2>&1;echo $?`" = 0 ]
+      then
+	 if [ "$a_jour_TRUST_tar_gz_files" != 1 ]
+	 then
+	     echo " "
+	     echo "Searching for files to rsync..."
+	     a_jour_TRUST_tar_gz_files=1
+	     mise_a_jour_TRUST_tar -files_only
+	     # Creation du fichier pattern pour --include-from
+	     cd $TRUST_ROOT
+	     rm -f rsync_include_from
+	     for file in *tar.gz.files
+	     do
+	        VOB=${file%.tar.gz.files}
+		echo $VOB >> rsync_include_from
+		cat $file | awk -v VOB=$VOB '{print VOB"/"$0}' >> rsync_include_from
+	     done
+	     echo "$TRUST_ROOT/rsync_include_from updated."
+	     echo " "
+	 fi
+         # Creation eventuelle du repertoire:
+	 ssh_command '[ ! -d '$WORKDIR/$version'/TRUST ] && mkdir -p '$WORKDIR/$version'/TRUST'
+	 rsync_log=$TRUST_ROOT/rsync_$adr.log
+	 rm -f $rsync_log
+	 if [ "$delete_version_machine_cible" = 1 ]
+	 then
+	    # On fait en 2 passes (car sinon conflit possible)
+	    echo "Deleting $WORKDIR/$version on $log@$adr..."
+	    ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=30 -o BatchMode=yes $log@$adr -n 'cd '$WORKDIR/$version';mv -f TRUST trash;mkdir -p TRUST' 
+	    ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=30 -o BatchMode=yes $log@$adr -n 'rm -r -f '$WORKDIR/$version'/trash 1>/dev/null 2>&1' &    
+         fi
+	 echo "rsync of sources on $log@$adr:$WORKDIR/$version at "`date '+%H:%M:%S'`
+         for VOB in $VOBS
+	 do
+	    cd $TRUST_ROOT/../$VOB
+	    # -delete ne marche pas avec --files-from. A savoir. Voir: http://stackoverflow.com/questions/1813907/rsync-delete-files-from-list-dest-does-not-delete-unwanted-files
+	    rsync -e 'ssh -o StrictHostKeyChecking=no' --stats -aiHD --delete --files-from=$TRUST_ROOT/$VOB.tar.gz.files --timeout=1000 . $log@$adr:$WORKDIR/$version/$VOB
+	 done | grep -v "^\." 1>$rsync_log 2>&1 # On filtre pour n'avoir que les fichiers modifies/deleted remotely
+	 cd $TRUST_ROOT	 
+         # Creation eventuelle du lien:
+	 ssh_command '[ "$WORKDIR" != "" ] && [ "$WORKDIR" != "$HOME" ] && cd $HOME && rm -f '$version' && ln -s -f $WORKDIR/'$version' .'
+	 
+	 # Lancement par ssh:
+	 option=""
+	 if [ "$machine" = airain ] || [ "$machine" = curie-ccrt ]
+	 then
+	    # CR bugges sur CCRT, on debugge:
+	    option="sh -xv "
+            option=""
+	    # machine=$machine".bak" # Pourquoi CR_$machine est abime?
+         fi
+	 ssh_command "cd $WORKDIR/$version/TRUST/bin/admin;$option./mise_a_jour_TRUST_arch -rsync 1>~/CR_$machine 2>&1" &
+	 echo "Launching in background the update by ssh on $log@$adr at "`date '+%H:%M:%S'`
+
+      #################
+      # Mode sftp_ssh #
+      ################# 	 
+      elif [ "`liste_machines sftp_ssh | grep $adr`" != "" ]
+      then
+	 # Cas ou l'on efface la version
+	 if [ "$delete_version_machine_cible" = 1 ]
+	 then
+	    # On fait en 2 passes (car sinon conflit possible)
+	    echo "Deleting $WORKDIR/$version on $log@$adr..."
+	    ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $log@$adr -n 'cd '$WORKDIR/$version';mv -f TRUST trash;mkdir -p TRUST' 
+	    ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $log@$adr -n 'rm -r -f '$WORKDIR/$version'/trash 1>/dev/null 2>&1' &
+         fi
+	 
+	 # Construction des paquets si necessaire
+	 [ "$a_jour_TRUST_tar" != 1 ] && echo " " && mise_a_jour_TRUST_tar && echo " " && a_jour_TRUST_tar=1
+	 
+	 echo "Sending by sftp of sources on $log@$adr:$WORKDIR/$version at "`date '+%H:%M:%S'`
+	 echo "
+-cd $WORKDIR
+-mkdir $version
+-mkdir $version/TRUST   
+-cd $version/TRUST
+-lcd $TRUST_ROOT
+-rm *.tar.gz
+-mput keys
+-mput *.tar.gz
+-mkdir ../Diphasique
+-cd ../Diphasique
+-lcd $DIPHA_ROOT
+-rm *.tar.gz
+-mput *.tar.gz" > $TRUST_TMP/ssh_com
+          sftp -o ConnectTimeout=10 -o BatchMode=yes -b $TRUST_TMP/ssh_com $log@$adr 1>/dev/null 2>&1
+          # On coupe en deux car cd ou cd $HOME pas reconnu par sftp
+          echo " 
+-lcd $TRUST_ROOT/bin/admin
+-put mise_a_jour_TRUST_arch
+-put mise_a_jour_Dipha_arch
+-lcd $TRUST_TMP
+-chmod 755 mise_a_jour_TRUST_arch
+-chmod 755 mise_a_jour_Dipha_arch" > $TRUST_TMP/ssh_com
+         sftp -o ConnectTimeout=10 -o BatchMode=yes -b $TRUST_TMP/ssh_com $log@$adr 1>/dev/null 2>&1
+	 
+	 # Lancement par ssh
+         ssh_command "sh ./mise_a_jour_TRUST_arch -sftp 1>~/CR_$machine 2>&1" &
+	 echo "Launching in background the update by ssh on $log@$adr"
+
+      #################
+      # Mode scp_ssh #
+      ################# 	 
+      else
+	 # Cas ou l'on efface la version
+	 if [ "$delete_version_machine_cible" = 1 ]
+	 then
+	    # On fait en 2 passes (car sinon conflit possible)
+	    echo "Deleting $WORKDIR/$version on $log@$adr..."
+	    ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $log@$adr -n 'cd '$WORKDIR/$version';mv -f TRUST trash;mkdir -p TRUST' 
+	    ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $log@$adr -n 'rm -r -f '$WORKDIR/$version'/trash 1>/dev/null 2>&1' &
+         fi
+	 
+	 # Construction des paquets si necessaire
+	 [ "$a_jour_TRUST_tar" != 1 ] && echo " " && mise_a_jour_TRUST_tar && echo " " && a_jour_TRUST_tar=1
+	 
+	 echo "Sending by scp of sources on $log@$adr:$WORKDIR/$version at "`date '+%H:%M:%S'`
+	 ssh_command "cd $WORKDIR; mkdir $version; mkdir $version/TRUST;cd $version/TRUST; rm *.tar.gz; mkdir ../Diphasique; cd ../Diphasique; rm *.tar.gz"
+	 scp -o ConnectTimeout=10 -o BatchMode=yes $TRUST_ROOT/keys $log@$adr:$WORKDIR/$version/TRUST/.
+	 scp -o ConnectTimeout=10 -o BatchMode=yes $TRUST_ROOT/*.tar.gz $log@$adr:$WORKDIR/$version/TRUST/.
+	 scp -o ConnectTimeout=10 -o BatchMode=yes $DIPHA_ROOT/*.tar.gz $log@$adr:$WORKDIR/$version/Diphasique/.
+          # 
+	  scp -o ConnectTimeout=10 -o BatchMode=yes $TRUST_ROOT/bin/admin/mise_a_jour_TRUST_arch $log@$adr:~/.
+	  scp -o ConnectTimeout=10 -o BatchMode=yes $TRUST_ROOT/bin/admin/mise_a_jour_Dipha_arch $log@$adr:~/.
+	  ssh_command "cd ~; chmod 755 mise_a_jour_TRUST_arch; chmod 755 mise_a_jour_Dipha_arch"
+	 
+	 # Lancement par ssh
+         ssh_command "sh ./mise_a_jour_TRUST_arch -sftp 1>~/CR_$machine 2>&1" &
+	 echo "Launching in background the update by ssh on $log@$adr"
+      fi
+   fi
+   echo "------------------------------------"
+done
+eval `/usr/bin/ssh-agent -k` 1>/dev/null 2>&1

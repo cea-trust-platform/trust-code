@@ -1,0 +1,88 @@
+# Hydraulique 2D : Poiseuille 2D #
+# uc=DP/L/8.=0.125 m/s #
+# Or a cause de la premiere et derniere demi maille #
+# On trouve uc=0.125/0.95=0.131 #
+dimension 2
+
+Pb_hydraulique pb
+Domaine dom
+Mailler dom
+{
+        Pave Entree
+                {
+                Origine 0. 0.
+                Nombre_de_Noeuds 21 20
+                Longueurs 1 1
+                }
+                {
+                bord Entree X = 0.   0. <= Y <= 1.0
+                bord Haut   Y = 1.0  0. <= X <= 1.0
+                bord Bas    Y = 0.   0. <= X <= 1.0
+                bord Sortie X = 1.0  0. <= Y <= 1.0
+                }
+}
+VDF dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0
+	tmax 5000.
+	dt_min 0.0001
+	dt_max 1.0
+	dt_impr 0.0001
+	dt_sauv 100
+	seuil_statio 1.e-5
+}
+
+Fluide_Incompressible eau
+Lire eau
+{
+	mu Champ_Uniforme 1 1.
+	rho Champ_Uniforme 1 1.
+}
+
+Champ_Uniforme gravite
+Lire gravite 2 0 0
+Associate pb dom
+Associate pb sch
+Associate pb eau
+Discretize pb dis
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { precond ssor { omega 1.65 } seuil 1.e-16 impr }	
+		convection { amont }
+		diffusion { }
+		conditions_initiales {
+			vitesse Champ_Uniforme 2 0. 0.
+			}
+		boundary_conditions {
+			Haut paroi_fixe
+			Bas paroi_fixe
+			Sortie frontiere_ouverte_gradient_pression_impose Champ_Front_Uniforme 1 2
+			Entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2 1. 0.
+		}
+	}
+	Postraitement
+	{
+		Sondes
+		{
+		 seg_P pression periode 0.1 segment 20 0.025 0.5 0.975 0.5
+		 seg_U1 vitesse periode 0.1 segment 11 0. 0.5 1.0 0.5
+		 seg_U2 vitesse periode 0.1 segment 19 1.0 0.02631 1.0 0.9736
+		 sonde_pression pression periode 0.1 points 1 0.5 0.5
+		 sonde_vitesse  vitesse periode 0.1 points 1 0.5 0.5
+		}
+		Champs dt_post 1.0
+		{
+			pression elem
+			pression som
+			vitesse elem
+			vitesse som
+		}
+	}
+}
+Solve pb
+Fin

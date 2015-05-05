@@ -1,0 +1,85 @@
+# Lecture de plusieurs maillages 2D issus de Gambit/Fluent #
+dimension 2
+domaine dom1
+
+# Lecture du fichier Tgrid #
+lire_tgrid dom1 Test_2D_TRI.msh
+
+VEFPreP1B dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+ 	nb_pas_dt_max 2
+	tinit 0.
+	tmax 1200
+	dt_min 0.001
+	dt_max 1
+	dt_impr 0.01
+	dt_sauv 100
+	seuil_statio 1.e-3
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 1.85e-5
+	rho Champ_Uniforme 1 1.17
+	lambda Champ_Uniforme 1 0.0262 
+}
+
+Pb_Hydraulique pb1
+Associate pb1 dom1
+Associate pb1 fluide
+Associate pb1 sch
+Discretize pb1 dis
+
+Lire pb1
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression cholesky { }
+		convection { muscl }
+		diffusion { }
+		conditions_initiales {
+			vitesse Champ_Uniforme 2 1 0
+			}
+		boundary_conditions {
+			aiguille paroi_fixe
+			parois_basse frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2 1 0
+			parois_cotee paroi_fixe
+			parois_haute frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0
+			axe paroi_fixe
+		}
+	}
+
+	Postraitements
+	{
+		lata
+		{
+			format lata
+			fichier Lire_Tgrid_2D
+			Sondes
+			{
+				sonde_vit1 vitesse periode 0.01 point 1 0 0
+			}
+			Champs dt_post 0.01
+			{
+				pression elem
+				vitesse som
+			}
+		}
+		lml
+		{
+			format lml
+			fichier Lire_Tgrid_2D
+			Champs dt_post 0.01
+			{
+				pression elem
+				vitesse som
+			}
+		}		
+	}
+}
+Solve pb1
+Fin

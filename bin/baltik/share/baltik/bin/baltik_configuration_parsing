@@ -1,0 +1,23 @@
+#! /usr/bin/env sh
+# --
+# Author : Eli LAUCOIN (CEA)
+# --
+
+extract_section() {
+    cat "$1" |
+      sed 's/#.*//' | 
+        sed -n '/^ *$/!p' |
+          sed 's/ *[:=][ \t]*/:/' |
+            tr '[]' '\n ' |
+              sed 's/ *$//' |
+                sed -n "/^$2$/,/^$/ p" |
+                  grep -v "$2" |
+                    sed -n '/^ *$/!p'
+}
+
+extract_field() {
+    echo "$1" | 
+      sed -n "/$2/p" | 
+        cut -d : -f 2
+}
+

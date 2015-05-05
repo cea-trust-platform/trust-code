@@ -1,0 +1,6 @@
+#!/bin/bash
+cas=`basename $1 .data`
+awk 'BEGIN {IGNORECASE=1} !/solveur_pression/ {print $0}\
+/solveur_pression/ && /cholesky/ {print "solveur_pression petsc cholesky { impr }"}\
+' $cas.data > Petsc_Cholesky_$cas.data
+

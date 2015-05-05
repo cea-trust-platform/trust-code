@@ -1,0 +1,176 @@
+# ThermoHydraulique 3D turbulent : EF_stab k-eps #
+# PARALLEL OK #
+dimension 3
+domaine dom
+# BEGIN MESH #
+Read_file dom tranche.geom
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+        Partitionneur metis { Nb_parts 2 }
+        Larg_joint 2
+        Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+Pb_ThermoHydraulique_turbulent pb1
+
+Champ_Uniforme gravite
+
+Lire gravite 3  0. 0. -9.81 
+
+Fluide_Incompressible sodium
+
+Lire sodium
+{
+   mu 	   Champ_Uniforme 1 3.85e-4
+   lambda  Champ_Uniforme 1 77.
+   Cp      Champ_Uniforme 1 1324.
+   rho     Champ_Uniforme 1 890.
+   beta_th Champ_Uniforme 1 2.53E-4
+}
+
+Associate sodium gravite
+
+Associate pb1 dom
+Associate pb1 sodium
+
+Schema_Euler_explicite sch
+
+Lire sch
+{
+	nb_pas_dt_max 10
+ 	tinit 0.
+        tmax  0.15
+        dt_min 1.e-20
+        dt_max 1.e-1
+        dt_impr 1.e-2
+        dt_sauv 5.0
+        seuil_statio 1.e-13
+        facsec 1
+        diffusion_implicite 0
+}
+
+Associate pb1 sch
+VEFPreP1B dis
+Discretize pb1 dis
+
+Lire pb1
+{ 
+   Navier_Stokes_turbulent
+        {
+                solveur_pression Gcp 
+		{ 
+			precond ssor { omega 1.5 }
+                        seuil 1.e-10
+                }
+                convection { EF_stab { } }
+                diffusion { }
+		Sources { Boussinesq_temperature { T0 526. } }
+                boundary_conditions 
+		{ 		
+				adia		       paroi_fixe
+				sym		       Symetrie
+				entree_froide frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 3 0. 0. 1
+				entree_chaude frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 3 0. 0. 1
+				sorti frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.		
+		}
+		conditions_initiales  { vitesse Champ_Uniforme 3 0. 0. 0. }
+		Modele_turbulence K_epsilon
+		{
+			Transport_K_Epsilon 
+		       {
+		   	Diffusion { }
+		   	Convection { amont }
+				boundary_conditions 
+				{ 		  
+					adia			       paroi
+					sym	 		       Symetrie
+					entree_froide		frontiere_ouverte_K_eps_impose Champ_Front_Uniforme 2 0.002 0.001
+                          	        entree_chaude 		frontiere_ouverte_K_eps_impose Champ_Front_Uniforme 2 0.002 0.001
+					sorti			frontiere_ouverte K_EPS_EXT Champ_Front_Uniforme 2 0.002 0.001
+				  
+				  }
+				
+				conditions_initiales { k_eps Champ_Uniforme 2 0.002 0.001 }
+		    	}
+			
+		  	turbulence_paroi loi_standard_hydr eps_min 1.e-15
+		 			
+       		 }
+	}
+		
+ Convection_Diffusion_Temperature_turbulent
+        {
+                diffusion { }
+                convection { EF_stab {  } }
+                boundary_conditions
+                {
+			adia		                paroi_adiabatique
+			sym				symetrie
+ 			entree_froide  		Frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 472
+			entree_chaude  		Frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 545		
+			sorti	  		Frontiere_ouverte T_ext Champ_Front_Uniforme 1 545
+			
+		}
+		conditions_initiales { Temperature Champ_Uniforme 1 526. }
+                Modele_turbulence Prandtl
+                        { Turbulence_paroi loi_standard_hydr_scalaire 
+			}
+            
+        }
+        Postraitement  {
+
+                Sondes
+                {
+			 
+			 sonde_ptV_entreefroide    vitesse periode  0.1  point  1 0 0. 0.01
+			 sonde_ptV_entreechaude    vitesse periode  0.1  point  1 0.05 0. 0.75  
+			
+ 			 sonde_ptT_entreefroide    temperature periode  0.1  point  1 0 0. 0.01
+			 sonde_ptT_entreechaude    temperature periode  0.1  point  1 0.05 0. 0.75
+
+			 sonde_T_axe     temperature periode  0.1  segment 60  
+			 							   0. 0. 0. 
+										   0. 0. 0.23 
+			 sonde_T_04      temperature periode  0.1  segment 60  
+			 							   0. 0. 0.4 
+										   0.2 0. 0.4	       
+			 sonde_T_05      temperature periode  0.1  segment 60  
+			 							   0. 0. 0.5 
+										   0.2 0. 0.5
+			 sonde_T_06      temperature periode  0.1  segment 60  
+			 							   0. 0. 0.6 
+										   0.2 0. 0.6
+			 sonde_T_07      temperature periode  0.1  segment 60  
+			 							   0. 0. 0.7 
+										   0.2 0. 0.7	 							     
+              		 sonde_V_04      vitesse periode      0.1  segment 60  
+			 							   0. 0. 0.4
+										   0.2 0. 0.4
+		  }
+
+                Champs dt_post 0.1
+                {                   
+                   temperature elem
+		   vitesse elem		  
+		   K elem
+		   Eps elem
+		   Pression elem
+                }
+        
+
+}
+		sauvegarde xyz exemple.xyz
+
+}
+
+Solve pb1
+Fin

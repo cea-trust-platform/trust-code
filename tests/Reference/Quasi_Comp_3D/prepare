@@ -1,0 +1,4 @@
+for file in *.geom.gz
+do
+   gunzip -c $file > ${file%.gz}
+done

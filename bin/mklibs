@@ -1,0 +1,173 @@
+#!/bin/bash
+[ "$TRUST_ROOT" = "" ] && echo "TRUST environment not initialized." && exit -1
+
+cd $TRUST_ROOT
+########
+# PETSC
+#######
+PETSC="" 
+PETSC_LIB=$PETSC_ROOT/$TRUST_ARCH$OPT/lib
+petscmachineinfo=""
+if [ -d $PETSC_LIB ]
+then
+   cd $PETSC_LIB
+   if [ -f libpetsc.a ]
+   then
+      PETSC="-L\$(PETSC_ROOT)/\$(TRUST_ARCH)\$(OPT)/lib"
+      # -ldl pour Petsc 3.0.0 necessaire sur certaines machines avec GNU un peu ancien
+      PETSC=$PETSC" -lpetsc -ldl"
+      superlu=`ls libsuperlu_dist*.a 2>/dev/null` && superlu=${superlu#lib} && PETSC=$PETSC" -l${superlu%.a}"
+      [ -f libcmumps.a ] && PETSC=$PETSC" -lcmumps -ldmumps -lmumps_common -lsmumps -lzmumps -lpord"
+      [ -f libpastix.a ] && PETSC=$PETSC" -lpastix"
+      for lib in HYPRE scalapack blacs spai parms parmetis metis ptesmumps ptscotch ptscotcherr ptscotcherrexit ptscotchparmetis scotch scotcherr scotcherrexit  
+      do
+         [ -f lib$lib.a ] && PETSC=$PETSC" -l$lib"
+      done
+      [ -f libumfpack.a ] && PETSC=$PETSC" -lumfpack -lklu -lcholmod -lbtf -lccolamd -lcolamd -lcamd -lamd -lsuitesparseconfig -lrt"
+      # Le fichier suivant pourrait peut etre permettre de simplifier les choses precedantes:
+      # car desormais on l'utilise pour avoir le nombre des librairies BLAS optimisees et des librairies eventuelles CUDA
+      petscmachineinfo=$PETSC_ROOT/$TRUST_ARCH"_opt"/include/petscmachineinfo.h	
+      if [ -f $petscmachineinfo ]
+      then
+	 # CUDA trouve et qui fonctionne sur la machine (test fait dans $PETSC_ROOT/GPU)
+	 PETSC=$PETSC" `awk '/Using libraries/ && /cuda/ { for (i=1;i<=NF;i++) if (index($i,"cuda") || (index($i,"-lcu"))) libs=libs" "$i;} END {print libs}' $petscmachineinfo`"
+	 # X11 (avec une bidouille pour castor, pas capable de trouver sa librairie X11)
+	 if [ "`grep lX11 $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ]
+	 then
+            # Sur certaines machines X11 non trouve
+	    touch test.cpp
+	    if [ "`$TRUST_CC -o test test.cpp -lX11 2>&1 | grep X11 | grep find`" != "" ]
+	    then
+	       bits=64 && [ "`uname -m`" = i686 ] && bits=""
+	       L=`ls /usr/X11R6/lib$bits/libX11.a 2>/dev/null`
+	       L="-L"`dirname $L`" "
+            else
+	       L=""
+	    fi
+	    rm -f test.cpp	 
+            PETSC=$PETSC" "$L"-lX11"
+	 fi
+	 # PETSc without MPI:
+	 if [ "$TRUST_DISABLE_MPI" = 1 ]
+	 then
+            PETSC=$PETSC" -lmpiseq -lpthread"
+	 fi
+	 if [ "`grep lssl $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ]
+	 then
+	    PETSC=$PETSC" "$L"-lssl -lcrypto"
+	 fi
+      fi
+      # Bizarre sur supermuc, MUMPS switche sur gfortran:
+      # Ameliorer ?
+      [ $HOST = supermuc ] && PETSC=$PETSC" -lgfortran"
+      #PETSC="-L\$(PETSC_ROOT)/\$(TRUST_ARCH)\$(OPT)/lib "`awk '/Using libraries/ {for (i=1;i<=NF;i++) if (index($i,"-l")) print $i}' $petscmachineinfo`
+   fi
+   \cd - 1>/dev/null 2>&1
+else
+   #######
+   # METIS
+   #######
+   if [ -f $METIS_ROOT/lib/libmetis.a ]
+   then
+      METIS="-L\$(METIS_ROOT)/lib -lmetis"
+   else
+      METIS=""
+   fi
+fi
+
+#############
+# Lapack/Blas
+#############
+if [ "$TRUST_BLAS_LAPACK" = "" ]
+then
+    LAPACK="-L\$(TRUST_LIB)/src/LIBLAPACK -llapack -lblas"
+else
+    #LAPACK="\$(TRUST_BLAS_LAPACK)/liblapack.a \$(TRUST_BLAS_LAPACK)/libblas.a"
+    # Don't use static libraries cause problem when linking module for Baltik (not -fPIC compiled)
+    LAPACK="-L\$(TRUST_BLAS_LAPACK) -llapack -lblas"
+    # BLAS/LAPACK Intel (mkl) libraries have different names so try to find it thanks to PETSc
+    if [ "$petscmachineinfo" != "" ]
+    then
+       if [ "$MKLROOT" != "" ]
+       then
+          # Since Pastix has been added (threaded), with GNU compilers and MKL library, -lgomp should be added if found:
+          LAPACK=" `awk '/mkl/ { for (i=1;i<=NF;i++) if (index($i,"mkl") || ($i=="-lgomp")) libs=libs" "$i;} END {print libs}' $petscmachineinfo`"
+       fi
+    fi
+fi
+
+#####
+# MED
+#####
+MEDLDFLAGS=""
+if [ -f $TRUST_MED_ROOT/lib/libmed.a ] && [ -f $TRUST_MED_ROOT/lib/libhdf5.a ]
+then
+   # Cela devient complique pour trouve s'il faut ajouter -lz ou pas...
+   lz="" 
+   if [ -f $TRUST_MED_ROOT/bin/h5cc ]
+   then
+      # Meilleur moyen: si MED est compile on regarde dans h5cc
+      [ "`grep lz $TRUST_MED_ROOT/bin/h5cc`" != "" ] && lz="-lz "
+   else
+      # Sinon, on regarde si la librairie existe... Mais attention on ne verifie pas si elle est 32 ou 64 bits...
+      [ "`ls /usr/lib*/libz.a /lib/libz.so* 2>/dev/null`" != "" ] && lz="-lz "
+   fi
+   # Binaire 32 bits, pour ameliorer la portabilite:
+   if [ "`uname -m`" = i686 ] && [ "$lz" != "" ] && [ -f /usr/lib/libz.a ]
+   then
+      lz="/usr/lib/libz.a "
+   fi
+   MEDLDFLAGS="\$(TRUST_MED_ROOT)/lib/libmed.a \$(TRUST_MED_ROOT)/lib/libmedimport.a \$(TRUST_MED_ROOT)/lib/libmedC.a \$(TRUST_MED_ROOT)/lib/libhdf5.a $lz-lm -ldl"
+fi
+
+#################################################
+# Construction des fichiers $TRUST_ENV/make.lib?
+#################################################
+cd $TRUST_ENV
+for fic in make.libsl make.libso make.liba
+do   
+   suffixe=${fic#make.lib}
+   if [ $suffixe = a ]
+   then
+      echo $ECHO_OPTS "Libs = \$(LIB)\\" 	> $fic
+   else
+      echo $ECHO_OPTS "Libs = \\"		> $fic
+      # On ne se base plus sur le contenu de lib mais sur les make.include !
+      # C'est mieux en cas d'une lib en trop ou en moins.
+      END=hydturbspe
+      for rep in `cat $TRUST_ENV/rep.TRUST | grep -v MAIN`
+      do
+	 [ ! -f $TRUST_ROOT/$rep/make.include ] && echo "No make.include file find in $rep !" && exit -1
+	 NOM=`cat $TRUST_ROOT/$rep/make.include | $TRUST_Awk -F'/' '/Lib =/ {print $2}'`
+	 NOM=${NOM#lib}
+	 [ ${#NOM} = 0 ] && echo "No 'Lib =' in $rep/make.include !" && exit -1
+	 [ $NOM != $END ] && echo $ECHO_OPTS "\$(TRUST_LIB)/lib$NOM.$suffixe\\" >> $fic
+      done
+      # Problem seen on Ubuntu 13.x:
+      # We put the library given by END at the end:
+      if [ -f $TRUST_LIB/lib$END.$suffixe ]
+      then
+         echo $ECHO_OPTS "\$(TRUST_LIB)/lib$END.$suffixe\\" >> $fic
+      fi
+   fi
+   # NB: 1.5.6: MED est place APRES PETSC car seg fault sinon avec -lz si place avant la librairie lcudart !
+   echo $ECHO_OPTS "-L\$(TRUST_LIB) -lmfft -lmfft_c\\"				>> $fic
+   echo $ECHO_OPTS "-lskit $METIS -L\$(TRUST_LATAFILTER)/lib -llatafilter\\"	>> $fic
+   echo $ECHO_OPTS "-L\$(TRUST_ICOCOAPI)/lib -licocoapi\\"	>> $fic
+   [ "$PETSC" != "" ] && echo $ECHO_OPTS "$PETSC \\"				>> $fic
+   [ "$LAPACK" != "" ] && echo $ECHO_OPTS "$LAPACK \\"				>> $fic
+   [ "$TRUST_DISABLE_MED" != "1" ] && [ "$TRUST_DISABLE_MEDCOUPLING" != "1" ] && echo $ECHO_OPTS "-L\$(TRUST_MEDCOUPLING_ROOT)/lib -lParaMEDMEM \\" >> $fic
+   [ "$MEDLDFLAGS" != "" ] && echo $ECHO_OPTS "$MEDLDFLAGS "  		>> $fic
+   # Verification qu'une librairie n'est pas en double
+   a=`cat $fic | sort | uniq -c | grep -v 1`
+   if [ ${#a} != 0 ]
+   then
+      echo "Error. Several make.include have the same library: $a"
+      echo "You must fix it."
+      exit -1
+   fi
+   echo "$TRUST_ENV/$fic updated."
+done
+
+python -c "import sys;sys.path.insert(0,'$TRUST_ROOT/bin/KSH');from Createcmakefile import read_libs_from_makeliba;read_libs_from_makeliba()"
+

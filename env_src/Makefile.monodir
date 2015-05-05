@@ -1,0 +1,55 @@
+OPT=opt_compile
+include $(TRUST_ENV)/make.$(TRUST_ARCH_CC)$(OPT)
+include $(TRUST_ENV)/make.lib$(LIB_EXTENSION)
+include $(TRUST_ENV)/make.all_Includes.TRUST
+
+PROGRAM       = $(TRUST_ROOT)/exec/TRUST$(COMM)$(OPT)
+
+LIB = $(TRUST_LIB)/TRUST$(COMM)$(OPT).$(LIB_EXTENSION)
+
+Includes = -I../include $(all_Includes)
+  
+.SUFFIXES: .cpp .c .f .o
+.cpp.o:
+	@echo $< $(Defines); $(TRUST_CC) -c $< $(CppFlags)
+.c.o :
+	@echo $< $(Defines); $(TRUST_cc) -c $< $(ccFLAGS)
+.f.o:
+	@echo $< $(Defines); $(TRUST_F77) -c $< $(F77Flags)
+
+all:            $(PROGRAM)
+
+clean:
+	@find . -name '*'.o | xargs rm -f
+	@rm -f $(PROGRAM) $(LIB)
+depend:
+	@make_depend_TRUST $(Includes) $(SYSINC) $(SYSINC_DEP) $(Defines)
+depend_mini:
+	@make_depend_TRUST_mini $(Includes) $(SYSINC)  $(SYSINC_DEP) $(Defines)
+OBJS= 
+
+$(LIB):       $(OBJS)
+		@ar cruv $(LIB) [a-z]*.o
+		@ar cruv $(LIB) [A-F]*.o
+		@ar cruv $(LIB) [G-Q]*.o
+		@ar cruv $(LIB) [R-Z]*.o
+		@echo "$(LIB) est a jour."
+		
+$(PROGRAM):     $(OBJS) $(LIB) $(MAKEFILE)
+		@echo "Linking $(PROGRAM) ..."
+		@echo "Please wait ..."
+		@rm -f *.gcda *.gcov
+		@$(TRUST_CC) -o $(PROGRAM) $(Libs) $(SYSLIBS)
+		@echo "done"
+
+purify:		$(OBJS) $(LIB) $(MAKEFILE)
+		@echo "Linking $(PROGRAM).pure ..."
+		@echo "ca peut prendre un peu de temps ..."
+		@purify $(TRUST_CC) -o $(PROGRAM).pure $(Libs) $(SYSLIBS)
+		@echo "done"
+
+SRCS= 
+
+$(OBJS): $(TRUST_ENV)/make.$(TRUST_ARCH_CC)$(OPT)
+# DO NOT DELETE
+

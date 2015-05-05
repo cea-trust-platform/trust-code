@@ -1,0 +1,98 @@
+# Hydraulique 2D laminaire schema Quick #
+# PARALLEL RUNS #
+# Tres sensible en // #
+dimension 2
+Pb_hydraulique pb
+Domaine dom
+# BEGIN MESH #
+Read_file Orlansky.geo ;
+
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0
+	tmax 5.0
+	dt_min 5.e-3
+	dt_max 5.e-3
+	dt_impr 5.e-3
+	dt_sauv 100
+	seuil_statio 1.e-8
+}
+
+Fluide_Incompressible eau
+Lire eau
+{
+	mu Champ_Uniforme 1 3.7e-05
+	rho Champ_Uniforme 1 2
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb eau
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.500000 } 
+			seuil 1.000000e-06 
+			impr 
+		}
+		convection { quick }
+		diffusion { }
+		conditions_initiales {
+			vitesse Champ_Uniforme 2 0. 0.
+			}
+		boundary_conditions {
+			Paroi paroi_fixe
+			Sym symetrie
+			Pimp Frontiere_ouverte_Pression_imposee 
+				Champ_Front_Uniforme 1 0.
+			Sortie Frontiere_ouverte_Pression_imposee_Orlansky
+			Entree frontiere_ouverte_vitesse_imposee 
+			    Champ_front_Uniforme 2 1. 0.
+		}
+
+	}
+
+	Postraitement
+	{
+		Sondes
+		{
+			sonde_pression pression periode 0.01 points 2 0.13 0.105 0.13 0.115
+			sonde_vitesse vitesse periode 0.01 points 2 0.14 0.105	0.14 0.115
+			sonde_vit vitesse periode 0.01 segment 22 0.14 0.0 0.14 0.22
+			sonde_P pression periode 0.02 plan 23 11 0.01 0.005 0.91 0.005 0.01 0.21
+		}
+		Champs dt_post 3.
+		{
+			pression elem
+			pression som
+			vitesse elem
+			vitesse som
+		}
+	}
+}
+Solve pb
+Fin
+Fin

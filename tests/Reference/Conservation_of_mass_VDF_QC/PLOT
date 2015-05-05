@@ -1,0 +1,59 @@
+plot "Conservation_of_mass_VDF_QC_TEMPERATURE.son" w lp t "TRUST"
+set title "Temperature"
+set grid
+set xlabel 'Temps (s)'
+set ylabel 'Temperature (K)'
+set y2label "Erreur relative (%)"
+set y2tics
+set y2range [0:0.9]
+replot 1000*exp(x*x/60) w l t "Analytique"
+replot "Conservation_of_mass_VDF_QC_TEMPERATURE.son" using 1:((1000*exp($1*$1/60)-$2)*100/(1000*exp($1*$1/60))) axes x1y2 w l t "Erreur relative"
+!echo ""; echo "Press RETURN to next visualisation"
+pause -1
+plot "Conservation_of_mass_VDF_QC_RHO.son" w lp t "TRUST"
+set title "Rho"
+set grid
+set xlabel 'Temps (s)'
+set ylabel 'Rho (kg/m3)'
+unset yrange
+set y2label "Erreur relative (%)"
+set y2tics 0.2
+set y2range [0:2]
+replot 1*exp(-x*x/60) w l t "Analytique"
+replot "Conservation_of_mass_VDF_QC_RHO.son" using 1:(-(1*exp(-$1*$1/60)-$2)*100/exp(-$1*$1/60)) axes x1y2 w l t "Erreur relative"
+pause -1
+plot "Conservation_of_mass_VDF_QC_VITESSE.son" u 1:3 w lp t "TRUST"
+set title "Vitesse suivant Y"
+set grid
+set xlabel 'Temps (s)'
+set ylabel 'Uy (m/s)'
+set y2label "Erreur relative (%)"
+set y2tics 0.4
+set y2range [0:2]
+replot (x/30*1.) w l t "Analytique"
+replot "Conservation_of_mass_VDF_QC_VITESSE.son" using 1:(($1/30-$3)*100/($1/30)) axes x1y2 w l t "Erreur relative"
+pause -1
+plot "Conservation_of_mass_VDF_QC_PRESSION.son" w lp t "TRUST P sortie au face"
+set title "Pression suivant Y"
+set grid
+set xlabel 'Temps (s)'
+set ylabel 'Py (Pa)'
+set y2label "Erreur relative (%)"
+set y2tics 2
+set y2range [0:16]
+replot (1./60*(1+1./30*x*x))*1*exp(-x*x/60)*(1-0.55*0.55) w l t "Analytique"
+replot "Conservation_of_mass_VDF_QC_PRESSION.son" using 1:((((1./60*(1+1./30*$1*$1))*1*exp(-$1*$1/60)*(1-0.55*0.55))-$2)*100/((1./60*(1+1./30*$1*$1))*1*exp(-$1*$1/60)*(1-0.55*0.55))) axes x1y2 w l t "Erreur relative"
+pause -1
+plot "Conservation_of_mass_VDF_QC_pb_Th_Contrainte_visqueuse.out" u 1:7 w lp t "TRUST"
+set title "Contrainte Visqueuse"
+set grid
+set xlabel 'Temps (s)'
+set ylabel 'Contrainte Visqueuse (N)'
+set y2label "Erreur relative (%)"
+set y2tics 0.5
+set yrange [0:3.e-5]
+set y2range [0:3]
+replot (1./30*x)*0.00005 w l t "Analytique"
+replot "Conservation_of_mass_VDF_QC_pb_Th_Contrainte_visqueuse.out" using 1:(((1./30*$1)*0.00005-$7)*100/((1./30*$1)*0.00005)) axes x1y2 w l t "Erreur relative"
+!echo ""; echo "Press RETURN to stop the visualisation"
+pause -1

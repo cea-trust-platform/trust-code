@@ -1,0 +1,7 @@
+#!/bin/bash
+rm -rf basic_ok/tests/tests_basic_opt/basic_ok/Ecrire_fic_lml_mod
+rm -rf basic_ok/tests/Reference/basic_ok/Ecrire_fic_lml_mod
+rm -f */configure */LOG_CONFIG */LOG_RUN */LOG_COMP */README.BALTIK 
+rm -rf */local/ */build # */Version_kernel_from_trio
+rm -f basic_erreur_valgrind/liste_pb basic_kernel_faux/liste_pb basic_pb_run/liste_pb
+

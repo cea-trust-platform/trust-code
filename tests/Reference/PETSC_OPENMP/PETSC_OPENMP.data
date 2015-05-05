@@ -1,0 +1,88 @@
+# Hydraulique 3D Force de pression: D=1m U=1 m/s Re=200 #
+# PARALLEL OK 9 #
+
+dimension 3
+
+Pb_hydraulique pb
+Domaine dom
+
+# DEBUT MAILLAGE #
+Lire_fichier dom cylindre.geom
+VerifierCoin dom { }
+Dilate dom 1000
+# FIN MAILLAGE #
+
+# DEBUT DECOUPAGE
+Decouper dom
+{
+	Partitionneur metis { Nb_parts 2 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+FIN DECOUPAGE #
+
+# DEBUT LECTURE
+Scatter DOM.Zones dom
+FIN LECTURE #
+
+# Je choisis une discretisation #
+VEFPreP1B ma_discretisation
+
+Schema_Euler_explicite mon_schema
+Lire mon_schema
+{
+	nb_pas_dt_max 3
+	tinit 0
+	tmax 5.0
+	dt_min 1.e-3
+	dt_max 1.e-3
+	dt_impr 1.e-6
+	dt_sauv 100
+	seuil_statio 1.e-8
+
+}
+
+# Je definis un milieu #
+Fluide_Incompressible milieu
+Lire milieu
+{
+	mu  Champ_Uniforme 1 0.01
+	rho Champ_Uniforme 1 2.
+}
+
+Associer pb dom
+Associer pb mon_schema
+Associer pb milieu
+Discretiser pb ma_discretisation
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression Petsc GCP { precond ssor { omega 1.5 } seuil 1.e-6 impr }
+		convection { muscl }
+		diffusion { }
+		conditions_initiales {
+			vitesse Champ_Uniforme 3 1. 0. 0.
+			}
+		conditions_limites {
+			Cylindre paroi_fixe
+			Surfanz symetrie
+			Surfa  symetrie
+		      	Bas  symetrie
+			Haut symetrie
+			Sortie frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
+			Entree frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 3 1. 0. 0.
+		}
+
+	}
+	Postraitement
+	{
+	 Champs dt_post 10
+	 {
+	    pression som
+	 }
+	}
+}
+Resoudre pb

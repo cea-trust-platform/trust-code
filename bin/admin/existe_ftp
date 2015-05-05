@@ -1,0 +1,8 @@
+#!/bin/bash
+# Teste l'existable d'un repertoire sous $TRUST_FTP
+# Argument $1 nom du repertoire
+# Verifie si connecte...
+cat << ! | ftp -iv | $TRUST_Awk 'BEGIN {e=1} /No such file or directory/ || /Failed to change directory/ {e=0} END {print e}'
+open $TRUST_FTP
+cd $1
+!

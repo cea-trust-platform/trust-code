@@ -1,0 +1,88 @@
+# Hydraulique 2D laminaire avec "trou" dans le maillage #
+# PARALLEL OK 8 #
+dimension 2
+Pb_hydraulique pb
+Domaine dom
+# DEBUT MAILLAGE #
+Read_file upwind.geo ;
+
+# FIN MAILLAGE #
+# DEBUT DECOUPAGE
+Postraiter_domaine
+{
+   fichier mesh.lata
+   format lata
+   domaine dom
+}
+
+Partition dom
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 1
+	Nom_Zones DOM
+}
+Fin
+FIN DECOUPAGE #
+
+# DEBUT LECTURE
+Scatter DOM.Zones dom
+FIN LECTURE #
+
+VDF dis
+
+Schema_Adams_Bashforth_order_2 sch
+Lire sch
+{
+	tinit 0
+	tmax 2.5
+	facsec 0.5
+	diffusion_implicite 1
+}
+
+Fluide_Incompressible eau
+Lire eau
+{
+	mu Champ_Uniforme 1 3.7e-05
+	rho Champ_Uniforme 1 2
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb eau
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		parametre_equation parametre_diffusion_implicite { preconditionnement_diag 1 crank 1 }
+		solveur_pression petsc cholesky { }
+		convection { amont }
+		diffusion {  }
+		# Conditions initiales sur la vitesse #
+		conditions_initiales {
+			vitesse Champ_Uniforme 2 0. 0.
+			}
+		boundary_conditions {
+			Obstacle paroi_fixe
+			Symetrie symetrie
+			Sortie frontiere_ouverte_pression_imposee 
+			    Champ_front_Uniforme 1 0.
+			Entree frontiere_ouverte_vitesse_imposee 
+			     Champ_front_Uniforme 2  1. 0.
+		}
+	}
+
+	Postraitement
+	{
+		Format lml
+		Champs dt_post 1.3
+		{
+			pression elem
+			vitesse elem
+		}
+	}
+}
+Solve pb
+Fin

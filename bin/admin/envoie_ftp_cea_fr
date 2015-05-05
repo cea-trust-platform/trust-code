@@ -1,0 +1,137 @@
+#!/bin/bash
+#
+echo "
+<HTML>
+<HEAD>
+   <META NAME="ROBOTS" CONTENT=\"NOINDEX, NOFOLLOW\">
+   <META NAME="ROBOTS" CONTENT=\"NOARCHIVE\">
+   <META HTTP-EQUIV=Content-Type CONTENT=text/html; charset=iso-8859-1>
+   <META NAME=GENERATOR CONTENT=Mozilla/4.05 [en] (X11; I; Linux 2.0.33 i586) [Netscape]>
+   <TITLE>TRUST Products Archive</TITLE>
+</HEAD>
+<BODY BGCOLOR=#FFFFFF>
+<IMG SRC=../animation.gif HEIGHT=101 WIDTH=501>
+<BR>" > /tmp/index.html
+[ ${#Version} = 0 ] && echo "Quelle version?" && exit
+v=${Version#Version}
+version_arch=TRUST-$v".tar"
+keys="keys"$v
+PORTAGE=$WORKDIR/PORTAGE_$v
+GRAVAGE=$WORKDIR/A_GRAVER_CD_TRUST
+
+cd $TRUST_ENV
+# Teste la connection :
+. connect_ftp
+
+#########################################################################
+# Liste les architectures existantes et cree la version si compilation OK 
+#########################################################################
+
+# Teste l'existence du repertoire sinon cree :
+[ "$livraison" = 1 ] && mkdir_ftp $PUBLIC/$Version
+mkdir_ftp $SECRET/exec
+
+# On envoie la RELEASE_NOTES pour futures updates :
+[ "$livraison" = 1 ] && cp_ftp $TRUST_ROOT/RELEASE_NOTES $PUBLIC/exec
+
+# On envoie la couverture de tests:
+mkdir_ftp $SECRET/doc
+mkdir_ftp $SECRET/doc/Coverage
+cd $TRUST_ROOT/doc/Coverage
+cp_ftp *.html $SECRET/doc/Coverage
+mkdir_ftp $SECRET/doc/Coverage/html
+cp_ftp html/*.html $SECRET/doc/Coverage/html
+mkdir_ftp $SECRET/doc/Coverage/html/cpp.gcov
+cp_ftp html/cpp.gcov/*.gcov $SECRET/doc/Coverage/html/cpp.gcov
+# On envoie les pdfs
+cd $TRUST_ROOT/doc/TRUST
+cp_ftp *.pdf $SECRET/doc
+
+##########################################################################
+# Copie de la doc de /homelinux vers le repertoire de gravage si livraison
+##########################################################################
+if [ "$livraison" = 1 ]
+then
+   # README_INSTALL
+   rm -f $GRAVAGE/README_INSTALL
+   cp $TRUST_ROOT/bin/README_INSTALL $GRAVAGE/.
+   #######################
+   # Copie sur le site :
+   # Si version officielle
+   #######################
+   cp_ftp $GRAVAGE/$version_arch $PUBLIC/$Version	 
+else
+   ###############################
+   # Version beta alors on renomme
+   ###############################
+   v=${v%_beta}_beta
+   vbeta=$v"_build_"$DATE
+   cd $GRAVAGE
+   [ "$accord_admin" = 1 ] && v=${v%_beta} # Version demandee mais non sortie
+   for file in `ls TRUST-$v.*tar 2>/dev/null`
+   do
+      what=${file%.tar}
+      what=${what#TRUST-$v}
+      keys=keys$v${what#TRUST}
+      mv $file TRUST-$vbeta$what".tar"
+      mv $keys keys$vbeta$what
+   done
+   cd -
+fi
+rm -r -f $doc_tmp
+
+liste_arch=`\ls $PORTAGE`
+for arch in $liste_arch
+do
+   ####################################################
+   # Copie du binaire sur le site pour futurs updates :
+   ####################################################
+   mkdir_ftp $SECRET/exec/$arch
+   exec=`cd $PORTAGE/$arch/TRUST/exec;\ls TRUST_mpi* 2>/dev/null`
+   if [ ${#exec} != 0 ]
+   then
+      # Pour les versions beta le nom differe et on fait le menage
+      name_binary=$TRUST_TMP/$exec"_$v" 
+      if [ "$livraison" != 1 ]
+      then         
+         if [ "$accord_admin" = 0 ]
+	 then
+            name_binary=$TRUST_TMP/$exec
+	 else
+	    # Tout n'a pas marche on remet beta
+	    name_binary=$TRUST_TMP/$exec"_"$v"_beta_build_"$DATE
+	 fi
+      fi
+      # On ne fait plus le nettoyage car tous les 7 jours c'est efface sur $SECRET
+      #for beta_file in `ls_ftp $SECRET/exec/$arch/*beta*.gz | awk '{print $NF}'`
+      #do
+      #   rm_ftp $SECRET/exec/$arch/$beta_file
+      #done
+      cp $PORTAGE/$arch/TRUST/exec/$exec $name_binary
+      gzip -f $name_binary
+      cp_ftp $name_binary".gz" $SECRET/exec/$arch
+      rm -f $name_binary".gz"    
+      echo "<B>$arch</B><BR>" >> /tmp/index.html
+      ls_ftp $SECRET/exec/$arch | $TRUST_Awk -v arch=$arch '{gsub($9,"<A HREF="arch"/"$NF">"$NF"</A>",$0);print $0"<BR>"}'>> /tmp/index.html
+   fi
+done
+cat $TRUST_ROOT/RELEASE_NOTES | $TRUST_Awk 'BEGIN {print "<UL>"} /Release notes/ {print "</UL><BR><B>"$0"</B><UL>"} !/Release notes/ && !/---/ {gsub($1,"<LI>"$1,$0);print $0"</LI>"}' >> $html/tmp/index.html
+cp_ftp /tmp/index.html $SECRET/exec
+
+#################################
+# Copie sur une machine de Saclay
+#################################
+depot=/data/tmplgls/triou
+for machine in `liste_machines "\-rsync"`
+do
+   cible=$machine:$depot/.
+   ssh_ $machine -n 'ls $depot 1>/dev/null 2>&1'
+   if [ $? = 0 ]
+   then
+      echo "Debut synchronisation de $GRAVAGE avec $machine a `date '+%H:%M:%S'`" 
+      rsync -v -L --rsh=ssh --archive --delete --ignore-errors --timeout=100 --compress $GRAVAGE $cible
+      echo "Fin synchronisation de $GRAVAGE avec $machine a `date '+%H:%M:%S'`" 
+   else
+      echo " KO Machine $cible non accessible pour synchronisation."
+   fi
+done

@@ -1,0 +1,2 @@
+#!/bin/bash
+GEN "export TERM=xterm; top -b -n1 | grep Trio"

@@ -1,0 +1,224 @@
+# Thermohydraulique 2D couplee a conduction 2D #
+# PARALLEL NOT #
+dimension 2
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0.
+	tmax 300.
+	dt_min 0.001
+	dt_max 10.
+	dt_impr 0.001
+	dt_sauv 400.
+	seuil_statio 1.e-20
+}
+
+Pb_conduction pb1
+Pb_Thermohydraulique pb2
+
+Domaine dom_solide
+Domaine dom_fluide
+
+# BEGIN MESH #
+Mailler dom_solide
+{
+	Pave Cavite
+		{
+		Origine 0. 0.
+     		Nombre_de_Noeuds 11 11 
+		Longueurs 1.0 1.0
+		}
+		{
+		Raccord local homogene Gauche 	X = 0.   0.  <= Y <= 1.0
+		Bord Haut   			Y = 1.0  0.  <= X <= 1.0
+		Bord Bas    			Y = 0.   0.  <= X <= 1.0
+		Raccord local homogene Droit  	X = 1.0  0.  <= Y <= 1.0
+		}
+}
+
+Mailler dom_fluide
+{
+	Pave Cavite1
+		{
+		Origine -1 0
+		Nombre_de_Noeuds 11 11
+		Longueurs 1.0 1.0
+		}
+		{
+		Raccord local homogene Gauche  	X = 0. 	0. <= Y <= 1.0
+		Bord Entree1    		Y = 1.0 -1 <= X <= 0.
+		Bord Sortie1     		Y = 0. 	-1 <= X <= 0.
+		Bord Gauche1    		X = -1  0. <= Y <= 1.0
+		} ,
+	Pave Cavite2
+		{
+		Origine 1 0
+		Nombre_de_Noeuds 11 11
+		Longueurs 1 1
+		}
+		{
+		Raccord local homogene Droit	X = 1. 	0. <= Y <= 1.0
+		Bord Entree2    		Y = 1.0 1. <= X <= 2.
+		Bord Sortie2     		Y = 0.  1. <= X <= 2.
+		Bord Droit2    			X = 2.0 0. <= Y <= 1.0
+		}
+		
+}
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom_solide
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 1
+	Nom_Zones DOM1
+}
+Partition dom_fluide
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 1
+	Nom_Zones DOM2
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM1.Zones dom_solide
+Scatter DOM2.Zones dom_fluide
+END SCATTER #
+
+VDF dis
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 0.002
+	rho Champ_Uniforme 1 2
+	lambda Champ_Uniforme 1 1.0 
+	Cp Champ_Uniforme 1 500
+	beta_th Champ_Uniforme 1 0.0001
+}
+
+Solide sol
+Lire sol
+{
+	rho Champ_Uniforme 1 1000.
+	lambda Champ_Uniforme 1 250.    
+	Cp Champ_Uniforme 1 50
+}
+
+Champ_Uniforme gravite
+Lire gravite 2 0 -9.81
+Associate sol gravite
+Associate fluide gravite
+
+Associate pb1 dom_solide
+Associate pb1 sol
+
+Associate pb2 dom_fluide
+Associate pb2 fluide
+
+Probleme_Couple pbc
+Associate pbc pb1
+Associate pbc pb2
+Associate pbc sch
+Discretize pbc dis
+
+Lire pb1
+{
+	Conduction
+	{
+		Sources { puissance_thermique champ_fonc_xyz dom_solide 1 1000 }
+		diffusion { }
+		conditions_initiales {
+			temperature Champ_Uniforme 1 30.
+			}
+		boundary_conditions {
+
+			Haut 	paroi_adiabatique
+			Bas 	paroi_adiabatique
+		 	Droit 	paroi_contact pb2 Droit
+			Gauche 	paroi_contact pb2 Gauche
+		}
+	}
+	Postraitement
+	{
+		Sondes
+		{
+			sonde_temperature temperature periode 1. points 1 0.5 0.5
+		}
+		format lata
+		Champs dt_post 10.
+		{
+			temperature elem
+			temperature som
+		}
+	}
+}
+
+Lire pb2
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.500000 } 
+			seuil 1e-12 
+			impr 
+		}
+		convection { amont }
+		diffusion { }
+		sources { boussinesq_temperature { T0 20. } }
+		conditions_initiales {
+			vitesse Champ_Uniforme 2 0. 0.
+			}
+		boundary_conditions {
+			Entree1 	frontiere_ouverte_vitesse_imposee	Champ_front_Uniforme 2 0. -1
+			Entree2		frontiere_ouverte_vitesse_imposee	Champ_front_Uniforme 2 0. 1.
+			Sortie1 	frontiere_ouverte_pression_imposee	Champ_front_Uniforme 1 0.
+			Sortie2 	frontiere_ouverte_pression_imposee	Champ_front_Uniforme 1 0.
+			Droit 		paroi_fixe
+			Droit2		paroi_fixe
+			Gauche1	 	paroi_fixe
+			Gauche	 	paroi_fixe
+		}
+	}
+	Convection_Diffusion_Temperature
+	{
+		diffusion { }
+		convection { amont }
+		boundary_conditions 
+		{
+			Entree1 	frontiere_ouverte_temperature_imposee	Champ_front_Uniforme 1 20.
+			Entree2		frontiere_ouverte_temperature_imposee	Champ_front_Uniforme 1 20.
+			Sortie1 	frontiere_ouverte_temperature_imposee	Champ_front_Uniforme 1 20.
+			Sortie2 	frontiere_ouverte_temperature_imposee	Champ_front_Uniforme 1 20.
+			Droit 		paroi_contact pb1 Droit
+			Droit2		paroi_adiabatique
+			Gauche1	 	paroi_adiabatique
+			Gauche	 	paroi_contact pb1 Gauche
+		}
+		conditions_initiales { Temperature Champ_Uniforme 1 20. }
+	}
+	Postraitement
+	{
+		Sondes
+		{
+			sonde_pression 	pression 	periode 1. points 2 -0.5 0.5 1.5 0.5
+			sonde_vitesse 	vitesse 	periode 1. points 2 -0.5 0.5 1.5 0.5
+			sonde_tflu 	temperature 	periode 1. points 2 -0.5 0.5 1.5 0.5
+		}
+		format lata
+		Champs dt_post 10.
+		{
+			pression elem
+			pression som
+			vitesse elem
+			vitesse som
+			temperature elem
+			temperature som
+		}
+	}
+}
+Solve pbc
+Fin
+

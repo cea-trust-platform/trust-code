@@ -1,0 +1,123 @@
+#!/bin/ksh
+# Etat des noeuds sur machines de production
+#### Sorte de top sur tous les processeurs ####
+echo "Usage $0 [-top | -dump | -kill]"
+[ "$1" = -kill ] && echo "Attention, -kill va tuer tous vos processes de tous les noeuds de dom!" && echo "Taper return pour continuer." && read choix
+#########
+# tantale
+#########
+if [ $HOST = tantale ]
+then
+   i=0
+   while [ $i -lt 55 ]
+   do
+      let i=$i+1
+      echo tantale-0-$i
+      ssh tantale-0-$i 2>/dev/null -n '/usr/bin/top -b -n1 | grep " R " | grep -v PID | grep -v top'
+   done
+fi
+###############
+# nickel/chrome
+###############
+if [ $HOST = nickel ] || [ $HOST = chrome ]
+then
+   i=-1
+   while [ 1 ]
+   do
+      let i=$i+1
+      echo $HOST$i
+      if [ "$1" = -top ]
+      then 
+         rsh $HOST$i -n '/usr/local/sbin/top -d1 | grep "run " | grep -v kernel | grep -v top'
+         [ $? != 0 ] && break
+      elif [ "$1" = -dump ]
+      then
+         pids=`rsh $HOST$i -n ps -efl | grep TRUST_mpi|grep -v prun | grep -v grep | awk '{print $13"|"$4}'`
+         for pid in $pids
+         do
+            exec=`echo $pid | awk -F"|" '{print $1}'`
+            pid=`echo $pid | awk -F"|" '{print $2}'`
+            rsh $HOST$i -n 'echo "where\nquit" | dbx '$exec' -pid '$pid
+            [ $? != 0 ] && break
+         done
+      else
+         break
+      fi
+   done
+fi
+#########################
+# Etat sur dom des noeuds
+#########################
+moi=`whoami`
+if [ $HOST = dom ]
+then
+   if [ "$1" = -top ] || [ "$1" = -kill ]
+   then
+      a=0
+      echo "n MHz state"
+      while [ 1 ]
+      do
+         let a=$a+1
+         echo -e "dom$a \c"
+         if [ $a = 1 ]
+         then
+	    if [ "$1" = -top ]
+	    then
+               top -b -n1 | grep " R" | grep -v PID | grep -v top
+	    elif [ "$1" = -kill ]
+	    then
+	       ps -efl | grep mpi | grep ' '$moi' ' | grep -v grep | cut -c16-20 | xargs kill -9 2>/dev/null;ps -efl | grep mpi | grep ' '$moi' ' | grep -v grep
+	       err=$?               
+            fi	       
+         else
+	    if [ "$1" = -top ]
+	    then
+               rsh dom$a -n 'top -b -n1 | grep " R" | grep -v PID | grep -v top'
+	       err=$?
+	    elif [ "$1" = -kill ]
+	    then
+	       rsh dom$a -n "rm -f out;ps -efl | grep mpi | grep ' '$moi' ' | grep -v grep | cut -c16-20 | xargs kill -9 2>/dev/null;ps -efl | grep mpi | grep ' '$moi' ' | grep -v grep"
+	       err=$?               
+            fi
+	    [ $err != 0 ] && break 
+	 fi  	 
+	 echo
+      done
+   elif [ "$1" = -dump ]
+   then
+      a=0
+      while [ 1 ]
+      do
+         let a=$a+1
+         echo -e "dom$a \c"
+	 pids=`rsh $HOST$a -n ps -efl | grep $moi | grep TRUST_mpi| grep -v prun | grep -v grep | awk '/ R / {print $15"|"$4}'`
+         for pid in $pids
+         do
+            exec=`echo $pid | awk -F"|" '{print $1}'`
+	    # Trouver mieux:
+	    exec=~/Version_test_$HOST/TRUST/exec/TRUST_mpiscali
+            pid=`echo $pid | awk -F"|" '{print $2}'`
+            rsh $HOST$a -n 'echo where > .com | gdb -batch -x .com '$exec' '$pid | grep "#"
+            [ $? != 0 ] && break
+         done
+	 echo
+      done
+   else
+      a=0
+      echo "n MHz state"
+      while [ 1 ]
+      do
+         let a=$a+1
+         if [ $a = 1 ]
+         then
+            cpu=`cat /proc/cpuinfo | awk '/cpu MHz/ {print int($NF)}'`
+         else
+            err=`rsh dom$a -n echo 2>/dev/null;echo $?`
+            [ $err != 0 ] && break
+            cpu=`rsh dom$a -n 'cat /proc/cpuinfo' | awk '/cpu MHz/ {print int($NF)}'`
+         fi
+         state=`pbsnodes -a | awk -v n=dom$a '($1==n) {getline;print $NF}' | grep free`
+         echo $a" "$cpu" "$state
+      done | awk -v all=$all '(all=="-all") {print $0} (all!="-all") {if (cpu!=$2) {print cpu" "free;cpu=$2;free=0};if ($NF=="free") free++}'
+   fi
+fi

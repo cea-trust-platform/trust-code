@@ -1,0 +1,6 @@
+#!/bin/bash
+# Create pressure profiles:
+for cas in `ls *.data`
+do
+   extrait_coupe $cas SEGMENT_PRESSION || exit -1
+done

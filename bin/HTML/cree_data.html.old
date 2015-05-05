@@ -1,0 +1,5 @@
+#!/bin/bash
+data=$1
+echo "<HTML><PRE>" > $data.html
+sed -f $TRUST_TMP/sed_mots_cles $data >> $data.html
+echo "</HTML>" >> $data.html

@@ -1,0 +1,76 @@
+#!/bin/bash
+# variation du .out
+NOM=$1
+dat=$NOM.data
+fic=$NOM.out
+tmax=`cat $dat | $TRUST_Awk '/tmax/ {print $2}'`
+taille=`ls -la $fic | $TRUST_Awk '{print $5}'`
+# Boucle infinie
+while [ 1 ]
+do
+   sleep 1
+   t=`ls -la $fic | $TRUST_Awk '{print $5}'`
+   if [ $taille -lt $t ]
+   then
+      # Analyse de $fic
+      let delta=$taille-$t
+      taille=$t
+      chaine=`tail -c$delta $fic | $TRUST_Awk '/On traite/ {print $8;getline;print 1./$3;getline;print $3}'`
+      if [ ${#chaine} != 0 ]
+      then
+         if [ ${#top} = 0 ]
+	 then
+	    let top=`date '+%H'`*3600+`date '+%M'`*60+`date '+%S'`
+	    nop=`echo $ECHO_OPTS $chaine | cut -d" " -f1`
+	    echo $ECHO_OPTS $top
+	    echo $ECHO_OPTS $nop
+	 else
+	    echo $ECHO_OPTS $chaine
+	    let ndt=`date '+%H'`*3600+`date '+%M'`*60+`date '+%S'`-$top
+	    if [ $ndt -lt 0 ]
+	    then
+	    # Un jour est passe...
+	       let top=$top-86400
+	       let ndt=`date '+%H'`*3600+`date '+%M'`*60+`date '+%S'`-$top
+	    fi
+            let n=`echo $ECHO_OPTS $chaine | $TRUST_Awk '{print $(NF-2)}'`-$nop
+	    idt=`echo $ECHO_OPTS $chaine | $TRUST_Awk '{print $(NF-1)}'`
+	    t=`echo $ECHO_OPTS $chaine | $TRUST_Awk '{print $NF}'`
+	    echo $ECHO_OPTS $n $idt $t
+	    echo $ECHO_OPTS "("$tmax-$t")*"$idt"/"$n"*"$ndt
+	    sec=`echo $ECHO_OPTS "("$tmax-$t")*"$idt"/"$n"*"$ndt | bc -l`
+	    fin=""
+	    echo $ECHO_OPTS $sec
+	    h=`echo $ECHO_OPTS $sec"/3600" | bc`
+	    echo $ECHO_OPTS $h
+	    j=`echo $ECHO_OPTS $h"/24" | bc`
+	    echo $ECHO_OPTS $j
+	    h=`echo $ECHO_OPTS "("$h"-"$j"*24)/1" | bc`
+	    echo $ECHO_OPTS $h
+	    m=`echo $ECHO_OPTS "("$sec"-"$h"*3600)/60" | bc`
+	    s=`echo $ECHO_OPTS "("$sec"-"$h"*3600-"$m"*60)/1" | bc`
+	    if [ $j != "0" ]
+            then
+	       fin=$fin" "$j" j"
+	    fi	    
+	    if [ $h != "0" ] || [ $j != "0" ]
+	    then
+	       fin=$fin" "$h" h"
+	    fi
+	    if [ $m != "0" ] || [ $h != "0" ] || [ $j != "0" ]
+	    then
+	       fin=$fin" "$m" mn"
+	    fi
+	    fin=$fin" "$s" s"
+	    if [ $s -gt 0 ]
+	    then
+	       echo $ECHO_OPTS "Fin du calcul prevue dans :"$fin
+	    else
+	       s=0
+	       echo $ECHO_OPTS "Calcul fini."
+	    fi
+	    echo $ECHO_OPTS $fin > .fin_prevue
+	 fi
+      fi
+   fi
+done

@@ -1,0 +1,21 @@
+OPT=opt_compile
+# List of includes -I :
+include make.include
+include $(TRUST_ENV)/makefile
+
+all : $(Lib).$(LIB_EXTENSION)
+OBJS=
+
+$(Lib).$(SL_EXTENSION): $(OBJS) makefile
+	@$(MAKE) lib
+
+lib: $(OBJS) 
+	@if [ $(SHARE_LIBS) = 1 ];then echo "Please wait..."; \
+	$(ShLibFlag) -o $(Lib).$(SL_EXTENSION) $(OBJS);echo "$(Lib).$(SL_EXTENSION) is updated.";fi
+
+SRCS=
+
+HDRS=
+
+###
+# DO NOT DELETE

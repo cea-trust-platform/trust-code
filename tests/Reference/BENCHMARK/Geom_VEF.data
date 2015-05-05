@@ -1,0 +1,27 @@
+# Thermohydraulique 3D turbulent sous maille et Boussinesq #
+# fin  #
+dimension 3
+Pb_Thermohydraulique_Turbulent pb
+Domaine dom
+
+Mailler dom
+{
+        Pave Cavite 
+                {
+                Origine 0. 0. 0.
+                Nombre_de_Noeuds 15 15 15
+                Longueurs 10 10 3
+                }
+                {
+                Bord entree X = 0.    0. <= Y <= 10. 0. <= Z <= 3.
+                Bord paroi   Y = 10.  0. <= X <= 10. 0. <= Z <= 3.
+                Bord paroi    Y = 0.    0. <= X <= 10. 0. <= Z <= 3.
+                Bord sortie  X = 10.  0. <= Y <= 10. 0. <= Z <= 3.
+                Bord paroi    Z = 0.    0. <= X <= 10. 0. <= Y <= 10.
+                Bord paroi Z = 3. 0. <= X <= 10. 0. <= Y <= 10.
+                }
+}
+Dilate dom 1.e-3
+Tetraedriser_homogene dom
+Ecrire_fichier_bin dom dom.geom
+Fin

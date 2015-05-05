@@ -1,0 +1,94 @@
+TAILLES 3 53 53 53 
+RIEN 0 meshing
+MAIL_X_IRREG 5 xomin 0.5*L-Radius 1/reason MX+1 2 dx1
+MAIL_X_REG 4 0.5*L-Radius 0.5*L+Radius 2*MXR+1 MX+2 dx2
+MAIL_X_IRREG 5 0.5*L+Radius L reason MX+1 MX+2*MXR+2 dx3
+MAIL_Y_IRREG 5 yomin 0.5*L-Radius 1/reason MX+1 2 dy1
+MAIL_Y_REG 4 0.5*L-Radius 0.5*L+Radius 2*MXR+1 MX+2 dy2
+MAIL_Y_IRREG 5 0.5*L+Radius L reason MX+1 MX+2*MXR+2 dy3
+MAIL_Z_REG 4 zomin zomax nz-2 2 dz
+RIEN 0 filling up of the domain
+PARALAX 7 xomin xomax yomin yomax zomin zomax 1000 filling up of the domain
+RIEN 0 boundaries domain definition
+PARALAX 7 xomin-eps xomax+eps yomin-eps yomax+eps zomax zomax+eps -1000 back boundary
+PARALAX 7 xomin-eps xomax+eps yomin-eps yomax+eps zomin-eps zomin -1000 front boundary
+PARALAX 7 xomin-eps xomin yomin-eps yomax+eps zomin-eps zomax+eps -1000 left boundary
+PARALAX 7 xomax xomax+eps yomin-eps yomax+eps zomin-eps zomax+eps -1000 right boundary
+PARALAX 7 xomin-eps xomax+eps yomin-eps yomin zomin-eps zomax+eps -1000 bottom boundary
+PARALAX 7 xomin-eps xomax+eps yomax yomax+eps zomin-eps zomax+eps -1000 top boundary
+CYLAX 7 0.5*L 0.5*L Radius zomin-eps zomax+eps 3 -2000 Cylinder
+file maillage
+	real xomin,xomax,yomin,yomax,zomin,zomax,eps
+	real L, Radius, reason, up, down, goal, value
+	integer MXR,MX,it
+CCCCCCCCCCCCCC
+C	INPUT:
+CCCCCCCCCCCCCC
+C 	Size of the box
+	L=1
+C	Radius Cylinder
+	Radius=0.1
+C	Half number of cells for the cylinder
+	MXR=15
+C	The last input is nx,ny,nz the total numbers of
+C	cells plus 3 defined in the viewlist
+CCCCCCCCCCCCCCCCCC
+C
+C	We have the relations:
+C	1) 2*MX+2*MXR=nx-3 where MX is the number of cell at the left
+C	or at the right of the cylinder
+C	dx is the size of the cell into the cylinder
+C	2) dx=Radius/MXR
+C	We want the first cell outside the cylinder has also dx size
+C	So:
+C	3) dx+dx*r+dx*r^2+.....+dx^(MX-1)=L/2-R
+C	Where r is the geometric reason for the irregular mesh at the
+C	right of the cylinder
+C	We have then:
+C	1) MX=(nx-3)/2-MXR
+C	2) dx=Radius/MXR 
+C	3) dx*(r^MX-1)/(r-1)=L/2-Radius
+C	2) and 3) -> (r^MX-1)/(r-1)=MXR*(L/2/Radius-1)	
+	MX=(nx-3)/2-MXR
+	print*,"Number of cells at the left or right of the cylinder:",MX
+C	Calculation of the reason r
+	down=0
+	up=2
+	goal=MXR*(0.5*L/Radius-1)
+	it=0
+	DO WHILE (it<20) 
+	   it=it+1
+	   reason=0.5*(up+down)
+	   IF (reason==1) THEN
+	      value=MX
+	   ELSE
+	      value=(reason**MX-1)/(reason-1)
+	   END IF
+	   IF (value>goal) THEN
+	      up=reason
+	   ELSE IF (value<goal) THEN
+	      down=reason
+	   END IF
+	END DO
+	print*,"Reason found:",reason
+	
+C 	Coordinates of the box	
+	xomin=0
+	xomax=L
+	yomin=0
+	yomax=L
+	zomin=0
+	zomax=L
+C       eps is useful for thickness of the blocks featuring boundaries
+	eps=0.01
+
+        XM(1)=xomin-eps
+        XM(nx)=xomax+eps
+        YM(1)=yomin-eps
+        YM(ny)=yomax+eps
+        ZM(1)=zomin-eps
+        ZM(nz)=zomax+eps
+
+
+
+

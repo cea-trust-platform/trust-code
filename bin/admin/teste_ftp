@@ -1,0 +1,37 @@
+#!/bin/bash
+# teste_ftp ftp.cea.fr anonymous triou@cea.fr &
+
+ftp_cea_fr()
+{
+p="" && [ "`ftp -help 2>&1 | grep '\-p'`" != "" ] && p=p
+ftp -n$p $1 << EOF
+user $2 $3
+pwd
+EOF
+}
+machine=$1
+login=$2
+passwd=$3
+[ ${#1} = 0 ] || [ ${#2} = 0 ] || [ ${#3} = 0 ] && echo "Usage: $0 hostname login password" && exit
+# Teste l'etat de la machine avec un ping:
+ping=`$TRUST_ROOT/bin/admin/ping_ $machine 1>/dev/null 2>/dev/null`
+err=$?
+if [ $err = 0 ]
+then
+   # Si ok, alors teste par ftp
+   ftp_cea_fr $machine $login $passwd 1>/tmp/ftp.log 2>&1 &
+   sleep 2
+   kill -0 $! 2>/dev/null
+   ftp_non_bloque=$?
+   if [ $ftp_non_bloque = 0 ]
+   then
+      echo "Connection to $machine failed..." && kill -9 $!
+      err=1
+   else
+      echo "Connecting to $machine OK."
+      err=0
+   fi
+else
+   echo "Host $machine can't be accessed..."
+fi
+exit $err

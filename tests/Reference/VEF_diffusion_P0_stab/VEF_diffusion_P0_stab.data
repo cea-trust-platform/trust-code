@@ -1,0 +1,101 @@
+# Hydraulique 3D : test de l'operateur de diffusion stabilise #
+# Voir le fichier verifie pour les tests effectues #
+# PARALLEL OK 4 #
+
+dimension 3
+Pb_hydraulique pb
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+        Pave Entree
+                {
+                Origine 0. 0. 0.
+                Nombre_de_Noeuds  5 11 7
+                Longueurs 1. 1. 1.
+                }
+                {
+                bord Gauche X = 0.     0. <= Y <= 1.	0. <= Z <= 1.
+                bord Haut   Y = 1.     0. <= X <= 1.	0. <= Z <= 1.
+                bord Bas    Y = 0.     0. <= X <= 1.	0. <= Z <= 1.
+                bord Droite X = 1.     0. <= Y <= 1.	0. <= Z <= 1.
+		bord S0     Z = 0.     0. <= X <= 1.	0. <= Y <= 1.
+		bord S1     Z = 1.     0. <= X <= 1.	0. <= Y <= 1.
+                }
+}
+
+Tetraedriser_homogene dom
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 4 1 1 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPrep1b dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0
+	tmax 10.
+	dt_min 1.e-6
+	dt_max 0.1
+	dt_sauv 100
+	seuil_statio 1.e-5
+	nb_pas_dt_max 5
+}
+
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu  Champ_Uniforme 1 1.
+	rho Champ_Uniforme 1 1.
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		projection_initiale 0
+		solveur_pression GCP  { precond ssor { omega 1.6 } seuil 1e12 }
+		convection { negligeable }
+		diffusion { stab { standard 0 } }
+		conditions_initiales { vitesse Champ_fonc_xyz dom 3 x y z }
+		boundary_conditions
+		{
+			Haut 	frontiere_ouverte_vitesse_imposee Champ_Front_fonc_xyz 3 x y z
+			Bas  	frontiere_ouverte_vitesse_imposee Champ_Front_fonc_xyz 3 x y z
+			Gauche  frontiere_ouverte_vitesse_imposee Champ_Front_fonc_xyz 3 x y z
+			Droite 	frontiere_ouverte_vitesse_imposee Champ_Front_fonc_xyz 3 x y z
+			S0 	frontiere_ouverte_vitesse_imposee Champ_Front_fonc_xyz 3 x y z
+			S1 	frontiere_ouverte_vitesse_imposee Champ_Front_fonc_xyz 3 x y z
+		}
+	}
+	Postraitement
+	{
+		format lml
+		Champs dt_post 1.
+		{
+			vitesse		som
+		}
+	}
+}
+Solve pb
+Fin
+

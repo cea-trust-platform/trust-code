@@ -1,0 +1,60 @@
+dimension 3
+Pb_Hydraulique_Turbulent pb 
+Domaine dom 
+Scatter DOM.Zones dom 
+VEFPreP1B dis 
+
+ # Runge_Kutta_ordre_3 #
+schema_euler_explicite  sch 
+Lire sch 
+{ 
+        tinit 0.
+        tmax 2. 
+        dt_min 1.e-7 
+        dt_max 1.e-1 
+        dt_impr 0.0000001 
+        dt_sauv 0.5 
+        seuil_statio 1.e-8 
+        facsec 1.
+	nb_pas_dt_max 8 
+} 
+
+Fluide_Incompressible air 
+Lire air 
+{ 
+        mu Champ_Uniforme       1 2.21799454e-04
+        rho Champ_Uniforme      1 943.112976
+        lambda Champ_Uniforme   1 0.806537897
+        Cp Champ_Uniforme       1 4238.62106
+        beta_th Champ_Uniforme  1 8.6e-4
+} 
+
+Associate pb dom
+Associate pb sch 
+Associate pb air 
+
+Discretize pb dis 
+Lire pb 
+{ 
+ Navier_Stokes_Turbulent 
+ { 
+       solveur_pression petsc gcp { precond spai { } seuil 1.e-8 impr }
+       convection { muscl }
+       diffusion  {  }
+       conditions_initiales {  vitesse Champ_Uniforme 3  0. 0. 0. }
+       boundary_conditions {
+                   entree    Frontiere_ouverte_vitesse_imposee  Champ_front_fonc_xyz 3 0.1145*(2.44*LN((0.077-SQRT(x*x+y*y))*0.1145/2.35e-7)+5.1) 0. 0.
+                   sortie    Frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
+                   paroi     paroi_fixe
+                          }
+        Modele_turbulence Sous_maille_wale
+                        {
+                        Cw 0.5
+                        turbulence_paroi loi_standard_hydr
+                        dt_impr_ustar 0.1
+                        }
+}            
+} 
+EcritureLectureSpecial 0
+Solve pb 
+Fin 

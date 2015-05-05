@@ -1,0 +1,98 @@
+dimension 3
+Pb_Hydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+        {
+                Origine 0. 0. 0.
+                Nombre_de_Noeuds 3  3  3 
+                Longueurs 1. 1. 1.
+        }
+        {
+                Bord periox   X = 0.  0. <= Y <= 1.  0. <= Z <= 1. 
+                Bord periox   X = 1.  0. <= Y <= 1.  0. <= Z <= 1. 
+                Bord perioy   Y = 0.  0. <= X <= 1.  0. <= Z <= 1. 
+                Bord perioy   Y = 1.  0. <= X <= 1.  0. <= Z <= 1. 
+                Bord bas      Z = 0.  0. <= X <= 1.  0. <= Y <= 1.
+                Bord haut     Z = 1.  0. <= X <= 1.  0. <= Y <= 1.
+ 
+                }
+} 
+
+tetraedriser_homogene_fin dom
+Reordonner_Faces_Periodiques  dom periox
+Reordonner_Faces_Periodiques  dom perioy
+
+Sous_zone zone_tout
+Associate zone_tout dom
+Read zone_tout {
+          Boite
+          Origine  -5.  -5. -5.
+          Cotes   10. 10. 10. 
+          }
+
+
+VEFPreP1b dis
+
+Schema_Euler_explicite sch
+
+Read sch 
+{
+        tinit 0.
+        tmax 100.
+        dt_min 1.e-7
+        dt_max 1.e-1
+	dt_start dt_calc
+        dt_impr 0.001
+        dt_sauv 20.
+        seuil_statio 1.e-8  
+        facsec 0.5
+}
+
+Fluide_Incompressible fluide
+Read fluide
+{
+	mu Champ_Uniforme 1 4.
+	rho Champ_Uniforme 1 5.
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Read pb
+	{
+	Navier_Stokes_Standard
+		{
+                solveur_pression Gcp { precond ssor { omega 1.5 }
+                                        seuil 1.e-08
+                                        }
+                convection { negligeable }
+                diffusion  { negligeable }
+        	sources { Perte_charge_reguliere Longitudinale Z 2. A 1. B 1.  zone_tout }
+		conditions_initiales { vitesse Champ_fonc_xyz dom 3  0. 0. 1.95 }
+		boundary_conditions
+			{
+			periox periodique 
+			perioy periodique 
+            		haut   frontiere_ouverte_pression_imposee champ_front_fonc_xyz  1 1.
+            		bas    frontiere_ouverte_pression_imposee champ_front_fonc_xyz  1 2.
+			}
+ 	}
+	Postraitement
+        	{       
+                Sondes
+                {
+                 vit vitesse periode 0.5 point 1 0.5 0.5 0.5
+                }
+		}
+	}
+
+Solve pb
+End
+

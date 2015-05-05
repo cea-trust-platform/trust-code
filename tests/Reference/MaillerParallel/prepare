@@ -1,0 +1,17 @@
+triou prepare || exit -1
+
+# Verication que les domaines cree par Mailler et MaillerParallel en sequentiel sont identiques
+echo $ECHO_OPTS "1,$ s?dom2?dom?g\nw" | ed dom2.lml 1>/dev/null 2>&1
+#diff dom.geom dom2.geom || exit -1
+compare_lata dom.lml dom2.lml || exit -1
+# Ecriture des fichier Coord? pour le parallele
+nb_Coord=`head -3 dom.geom | tail -1 | $TRUST_Awk '{print $1}'`
+nb_ligne=`head -3 dom.geom | tail -1 | $TRUST_Awk '{print $1+4}'`
+
+X=`head -$nb_ligne dom.geom | tail -$nb_Coord | $TRUST_Awk '{print $1}'`
+Y=`head -$nb_ligne dom.geom | tail -$nb_Coord | $TRUST_Awk '{print $2}'`
+Z=`head -$nb_ligne dom.geom | tail -$nb_Coord | $TRUST_Awk '{print $3}'`
+
+echo "$X" > CoordX.dat
+echo "$Y" > CoordY.dat
+echo "$Z" > CoordZ.dat

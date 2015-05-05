@@ -1,0 +1,16 @@
+
+Mailler dom1
+{
+   Pave pave1 
+   	{ 
+		Origine 0. 0.
+		Longueurs 0.5 1.
+		Nombre_de_Noeuds 6 2
+   	}
+   	{
+      		Bord gauche X = 0. 0. <= Y <= 1.
+	 	Bord haut Y = 1. 0. <= X <= 0.5
+	 	Raccord local homogene droit X = 0.5 0. <= Y <= 1.
+	 	Bord bas Y = 0. 0. <= X <= 0.5
+   	} 
+}

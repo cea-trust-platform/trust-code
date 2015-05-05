@@ -1,0 +1,133 @@
+#!/bin/ksh
+#tar zxvf Cas_Couverture.tgz
+itot=0
+rm -rf cove cove/counts
+mkdir cove
+
+for dir in Tableau courbe Histo query demo_particules visu
+do 
+  [ ! -d ${dir}.0 ] && echo ${dir}.0 absent &&exit 1
+  rm -rf $dir
+  cp -r ${dir}.0 $dir
+done
+
+# si level =1 on verifie test_lu.prm
+level=1
+ok_only=0
+[ "$1" = "ok_only" ] && ok_only=1&& level=0&& shift
+export ok_only
+export level
+
+export PATH=${PATH}:../../scripts
+args=$*
+test_OK()
+{
+    if [ !  -f rapport.pdf ]
+	then
+	echo Probleme cas KO $itot
+	exit -1
+    fi
+    if [ $level -ne 0 ]
+	then
+	mv .tmp .tmpsa
+	python  ../../src/genererCourbes.py -p test_lu.prm -o rapport2.pdf 1>ver.log 2>&1
+	[ $? != 0 ] && echo "pb a la verif de test_lu" && exit -1
+	echo "fin de verif de test_lu"
+	diff -r .tmp .tmpsa
+	rm -f test_lu.prm
+    fi
+}
+test_KO()
+{
+    if [  -f rapport.pdf ]
+	then
+	echo Probleme cas pas KO $itot
+	exit -1
+    fi
+}
+test_cas_OK()
+{
+    let itot=$itot+1
+    echo debut cas $itot ":" $*
+    rm -rf .tmp .tmpsa
+    rm -f rapport.pdf test_lu.prm
+    python -m trace  -m -c -C ../cove -f ../cove/counts ../../src/genererCourbes.py -v $level $args $* 1> trace$itot.log 2>&1
+    test_OK
+    echo fin cas $itot ":" $*
+    mv rapport.pdf ../rapport$itot.pdf
+    
+}
+test_cas_KO()
+{
+    let itot=$itot+1
+    if [ $ok_only -ne 1 ]
+	then
+	echo debut cas $itot ":" $*
+	rm -f rapport.pdf
+	python -m trace  -m -c -C ../cove -f ../cove/counts ../../src/genererCourbes.py  $args $* 1> trace$itot.log 2>&1
+	test_KO
+	echo fin cas $itot ":" $*
+    fi
+    
+    rm -f rapport.pdf
+    
+}
+
+cd courbe
+test_cas_OK -p impl.prm 
+cp ../rapport$itot.pdf ../impl.pdf 
+test_cas_KO  impl2.prm 
+test_cas_KO -p impl2.prm
+test_cas_KO -p impl3.prm
+test_cas_KO -p impl2.prm -u
+# pas vraiment KO mais pas de rapport
+test_cas_KO -p impl.prm  --get_cmd_to_run=yes 
+test_cas_OK -p impl.prm -v 10
+# pas vraiment KO mais pas de rapport
+test_cas_KO -p impl.prm -h
+test_cas_OK -p impl.prm --compare=../courbe/
+# pas vraiment KO mais pas de rapport
+test_cas_KO -p impl.prm -d 1
+
+cd ../Tableau
+test_cas_OK -p tableau.prm -v 10
+cp ../rapport$itot.pdf ../tableau.pdf 
+test_cas_OK -p ruse.prm
+cp ../rapport$itot.pdf ../ruse.pdf 
+test_cas_OK -p tableau.prm  --compare=../Tableau/
+
+cd ../Histo
+test_cas_OK -p Histo.prm -v 10
+cp ../rapport$itot.pdf ../Histo.pdf 
+
+cd ../visu
+test_cas_OK -p visu.prm -v 10
+cp ../rapport$itot.pdf ../visu.pdf 
+test_cas_OK -p visu.prm --compare=../visu/
+
+cd ../demo_particules
+test_cas_OK -p demo_particules.prm -v 10
+cp ../rapport$itot.pdf ../demo_particules.pdf 
+test_cas_OK -p demo_particules.prm -v 10 --compare=../demo_particules/
+
+cd ../query
+test_cas_OK -p query.prm -v 10
+cp ../rapport$itot.pdf ../query.pdf 
+test_cas_OK -p query.prm -v 10 --compare=../query/
+
+if [ $ok_only -ne 1 ]
+then
+    cd ../cove
+    export PYTHONPATH=$TRUST_ROOT/Validation/Outils/Genere_courbe/Couverture/trace2html/lib/python2.7/site-packages/
+    # python setup.py install --prefix=$TRUST_ROOT/Validation/Outils/Genere_courbe/Couverture/trace2html
+    export PATH=$TRUST_ROOT/Validation/Outils/Genere_courbe/Couverture/trace2html/bin/:${PATH}
+    if [ "`which trace2html.py 2>/dev/null`" != "" ]
+	then
+
+	trace2html.py -f counts -o toto
+	konqueror toto/index.html&
+    fi
+fi
+
+cd ..
+

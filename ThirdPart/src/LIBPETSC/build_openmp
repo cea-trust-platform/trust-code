@@ -1,0 +1,7 @@
+# See http://www.mcs.anl.gov/petsc/petsc-dev/docs/installation.html#threads
+# See http://www.mcs.anl.gov/petsc/features/threads.html
+cd petsc-dev
+export PETSC_DIR=`pwd`
+# --with-openmp --with-mpi=0 ne marche pas mpi.mod non trouve au make ?
+./configure --with-debugging=no --with-clean=1 --with-threadcomm --with-pthreadclasses --with-openmp --with-mpi=1 --download-mpich=1 --download-fblaslapack=1 && make
+nedit configure.log

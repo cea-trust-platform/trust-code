@@ -1,0 +1,44 @@
+# Script de verification intensive du calcul des facteurs de forme #
+# Par Ansys via le script geom2ansys #
+# On compare les options 2 et 3 de geom2ansys #
+# L'option 2 est plus rapide, prend plus de place disque et elle est moins precise #
+# L'option 3 est plus lente, prend peu de place disque et elle est plus precise #
+# Verifie la presence d'Ansys (on quitte si pas installe)
+geom2ansys 1>/dev/null 2>&1
+[ $? != 0 ] && exit 0
+
+# Sinon on recherche tous les 3D geom VEF pas trop grands
+meshes=`find .. -name '*'.geom -size -500 -exec grep -l Tetraedre {} \;`
+
+# On copie ces maillages dans le repertoire
+rm -f *geom
+for mesh in $meshes
+do
+   cp -f $mesh . 1>/dev/null 2>&1
+done
+
+# On execute geom2ansys sur tous ces maillages avec toutes les options
+for mesh in *geom
+do
+   # On ne prend que les maillages ASCII
+   if [ "`file $mesh | grep -i ascii`" != "" ]
+   then
+      for option in 2 3
+      do
+         log=`basename $mesh`.log$option
+         echo $ECHO_OPTS "geom2ansys -no_warning `basename $mesh` $option ...\c"
+         geom2ansys -no_warning $mesh $option 1>$log 2>&1
+         [ $? != 0 ] && echo "KO! See $log" && exit -1
+         ff=${mesh%.geom}.factforme && [ -f $ff ] && mv $ff $ff$option
+      done
+      compare_sonde ${mesh%.geom}.factforme2 ${mesh%.geom}.factforme3 -seuil_erreur 1.e-3 1>compare_sonde.log 2>&1
+      if [ $? = 0 ]
+      then
+         echo "OK!"
+      else
+         echo "KO! Option 2 and 3 give very different results on ${mesh%.geom}! See compare_sonde.log" && exit -1
+      fi
+   fi
+done
+rm -f *geom
+exit 0

@@ -1,0 +1,157 @@
+# Hydraulique 2D laminaire avec maillage irregulier #
+# PARALLEL OK 8 #
+dimension 2
+
+Pb_hydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Entree 
+	{
+	Origine 0. 0.
+	Nombre_de_Noeuds 11 11
+	Longueurs 1.0 1.0
+	Facteurs 1.3 0.8
+	SYMX
+	}
+	{
+	Bord Entree Y = 0. 0. <= X <= 1.
+	Bord Ouest  X = 0. 0. <= Y <= 1.
+	Bord Est    X = 1. 0. <= Y <= 1.
+	} ,
+	Pave Char
+	{
+	Origine 0. 1.
+	Nombre_de_Noeuds 11 11
+	Longueurs 1.0 1.0
+	Facteurs 1.3 1.3
+	SYMX  SYMY
+	}
+	{
+	Bord Haut1  Y = 2. 0. <= X <= 1.
+	Bord Ouest1 X = 0. 1. <= Y <= 2.
+	} ,	
+	Pave Sortie
+	{
+	Origine 1. 1.
+	Nombre_de_Noeuds 11 11
+	Longueurs 1.0 1.0
+	Facteurs 1.2 1.3
+	SYMY	
+	}
+	{
+	Bord Sortie X = 2. 1. <= Y <= 2.
+	Bord Haut   Y = 2. 1. <= X <= 2.
+	Bord Bas    Y = 1. 1. <= X <= 2.
+	}
+}
+
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 1
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0
+	tmax 5.  
+	dt_min 0.00001
+	dt_max 10.     
+	dt_impr 0.00001
+	dt_sauv 100
+	seuil_statio 1e-8
+}
+
+Fluide_Incompressible eau
+Lire eau
+{
+	mu Champ_Uniforme 1 0.02
+	rho Champ_Uniforme 1 2
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb eau
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.5 } 
+			seuil 1.000000e-10 
+			impr 
+		}
+		convection { amont }
+		diffusion { }
+		conditions_initiales {
+		        vitesse Champ_Uniforme 2 0. 0.
+			}
+		boundary_conditions {
+			Haut paroi_fixe
+			Haut1 paroi_fixe
+			Bas paroi_fixe
+			Ouest1 paroi_fixe 
+			Ouest paroi_fixe
+			Est paroi_fixe
+			Sortie frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+			Entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  0. 1.
+                }
+	}
+
+	Postraitement
+	{
+		Sondes
+		{
+			sonde_pression pression periode 0.1 points 2 0.45 1.45 0.45 1.55
+			sonde_vitesse vitesse periode 0.1 points 1 9.44709226e-01 0.112030
+			segment_vitesse grav vitesse periode 0.1 segment 10 0. 1. 1. 1.0
+		}
+		
+		Definition_champs 
+		{
+		  gradient_pression_elem_dom  Interpolation {
+		 			localisation elem
+		 			source Gradient {
+		 		         source refChamp { Pb_champ pb pression } }
+		  
+		  }
+		  gradient_pression_som_dom  Interpolation {
+		 			localisation som
+		 			source Gradient {
+		 		         source refChamp { Pb_champ pb pression } }
+		  
+		  }  
+		}
+		
+		Champs dt_post 5.
+		{
+			pression elem
+			vitesse som
+			volume_maille elem
+			gradient_pression_elem_dom
+			gradient_pression_som_dom
+		}
+	}
+}
+
+Solve pb
+Fin
+

@@ -1,0 +1,7 @@
+# Verification que les 2 mots cles suivants sont equivalents:
+# Champ_Fonc_XYZ domaine 1 cste
+# Champ_uniforme 1 cste
+jdd=`pwd`
+jdd=`basename $jdd`
+sed "s?Champ_Fonc_XYZ dom?Champ_uniforme?g" $jdd.data > prepare.data
+triou prepare

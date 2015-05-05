@@ -1,0 +1,21 @@
+dimension 2
+
+Domaine dom
+
+Mailler dom
+{
+Pave Cavite
+        {
+                Origine 0.5 -0.5
+                Nombre_de_Noeuds 3 3
+                Longueurs 1. 1.
+        }
+	{
+	}
+} 
+transformer dom
+sqrt(x*x+y*y)*COS(Atan(y/x)+PI/3.)
+sqrt(x*x+y*y)*SIN(Atan(y/x)+PI/3.)
+
+Postraiter_domaine { format lata fichier dom.lata domaine dom }
+Fin

@@ -1,0 +1,40 @@
+#!/bin/bash
+# Script de lancement de la verification intensive de modules
+module=$1
+liste_cas=$2
+[ "$module" = "" ] || [ ! -d $module ] && echo "Module $module non choisi ou inexistant." && exit -1
+cd $module
+
+
+# Dans le cas ou l'on passe une liste de cas en parametre
+if [ "$2" != "" ]
+then
+   if [ -f ../$2 ]
+   then
+      cat ../$2 > liste_cas
+   else
+      echo $2 > liste_cas
+   fi 
+else
+   # Creation de la liste des cas tests
+   ./cree_liste_cas
+   [ ! -f liste_cas ] && echo "Fichier liste_cas non trouve. Erreur dans le script cree_liste_cas?" && exit -1
+fi
+
+# Creation d'un lance_test_modif particulier
+../fait_lance_test `pwd`
+[ -f ./fait_lance_test ] && ./fait_lance_test `pwd`
+
+# Menage:
+rm -r -f tests_TRUST*
+# Lancement des cas tests de verification
+echo "On lance les `wc -l liste_cas | awk '{print $1}'` cas..."
+echo liste_cas | ./lance_test_modif -nomail -efface $exec `pwd` 1>lance_out 2>&1 
+[ $? != 0 ] && echo "Fin de lance_test, voir le fichier `pwd`/lance_out"
+echo "Fin!"
+
+# Comparaison des resultats
+../compare_resultat .tests_`basename $exec` 1>compare_resultat.log 2>&1
+err=$?
+cat compare_resultat.log
+exit $err

@@ -1,0 +1,121 @@
+# Thermohydraulique 2D couplee a conduction 2D #
+# PARALLEL OK 8 #
+dimension 2
+Schema_Euler_explicite sch
+Read sch
+{
+	tinit 0.
+	nb_pas_dt_max 3
+	tmax 10.
+	dt_min 0.001
+	dt_max 10.
+	dt_impr 0.001
+	dt_sauv 400.
+	seuil_statio 1.e-20
+        diffusion_implicite 1
+/*        seuil_diffusion_implicite 1.e-8 */
+	impr_diffusion_implicite 1
+}
+
+Pb_conduction pb1
+
+Domaine dom_solide
+
+
+# BEGIN MESH #
+Mailler dom_solide
+{
+	Pave Cavite1
+		{
+		Origine 0. 0.
+     		Nombre_de_Noeuds 11 3 
+		Longueurs 1.0 1.0
+		}
+		{
+		Bord Gauche1 X = 0.   0.  <= Y <= 1.0
+		Bord Haut1   Y = 1.0  0.  <= X <= 1.
+		Bord Bas1    Y = 0.   0.  <= X <= 1.
+		Bord Droit1  X = 1.  0. <= Y <= 1.0
+		}
+}
+ trianguler_h dom_solide 
+
+transformer dom_solide x y*0.2
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom_solide
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 1
+	Nom_Zones DOM1
+}
+
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM1.Zones dom_solide
+
+END SCATTER #
+
+VEFPrep1b  dis
+
+Solide sol
+Read sol
+{
+	rho Champ_Uniforme 1 1000.
+	lambda Champ_Uniforme 1 250.    
+	Cp Champ_Uniforme 1 100.
+}
+
+
+
+Associate pb1 dom_solide
+Associate pb1 sol
+
+
+Associate pb1 sch
+Discretize pb1 dis
+
+Read pb1
+{
+	Conduction
+	{
+		diffusion { }
+		sources { puissance_thermique champ_fonc_xyz  dom_solide 1  1e5*x }	
+		conditions_initiales {
+			temperature Champ_Uniforme 1 0.
+			}
+		boundary_conditions {
+			Gauche1 paroi_temperature_imposee
+				Champ_Front_Uniforme 1 0.
+			Haut1 paroi_adiabatique
+			
+			Bas1 paroi_adiabatique
+		 	Droit1  paroi_temperature_imposee
+				Champ_Front_fonc_txyz 1 t
+		
+		}
+	}
+	
+	Postraitement
+	{
+	format lml
+		Sondes
+		{
+			sonde_tsol temperature periode 1. segment 10  
+				0. 0.1
+				1 .1
+		}
+		Champs dt_post 10.
+		{
+			temperature elem
+			temperature som
+		}
+	}
+	sauvegarde formatte solide.rep
+}
+
+Solve pb1
+End

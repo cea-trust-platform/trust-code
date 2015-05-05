@@ -1,0 +1,21 @@
+#!/bin/bash
+# Lancement de TRUST par clavier avec comme
+# argument le nom complet de l'executable :
+. Init_TRUST
+echo "Usage: `basename $0` [$exec]"
+if [ ${#1} = 0 ]
+then
+   EXEC_TRUST=$exec
+else
+   if [ ! -f $1 ]
+   then
+      echo $ECHO_OPTS "Votre executable est inexistant."
+      exit
+   else 
+      EXEC_TRUST=$1
+   fi
+fi
+export reprise=0
+LANG=C
+export LANG
+Run_sonde $EXEC_TRUST

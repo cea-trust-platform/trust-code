@@ -1,0 +1,7 @@
+[ ! -d Conservation_of_mass_VEF_QC ] && copie_cas_test Conservation_of_mass_VEF_QC
+[ ! -d Conservation_of_mass_VDF_QC ] && copie_cas_test Conservation_of_mass_VDF_QC
+
+[ ! -d Conserv_Masse_QC_rho_u ] && copie_cas_test Conserv_Masse_QC_rho_u
+[ ! -d Conserv_Masse_QC_rho_u_Piso ] && copie_cas_test Conserv_Masse_QC_rho_u_Piso
+cp post_run Conserv_Masse_QC_rho_u
+sed "s/Conserv_Masse_QC_rho_u/Conserv_Masse_QC_rho_u_Piso/g" post_run > Conserv_Masse_QC_rho_u_Piso/post_run

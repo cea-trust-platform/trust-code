@@ -1,0 +1,3 @@
+#!/bin/bash
+# Change GCP/SSOR et Cholesky en GCP NPHypre/ILU
+sed "s?[cC][hH][aA][mM][pP][sS] ? format meshtv Champs ?g" $1".data" > $2".data"

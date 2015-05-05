@@ -1,0 +1,581 @@
+(1 "TGrid 3D 3.5.4")
+
+(0 "Machine Config:")
+(4 (32 1 0 1 2 4 8 4 8 8 8))
+(2 3)
+(0 unstructured Delaunay grid
+   nodes:	(10 (id start end type) (x y z ...))
+   faces:	(13 (id start end type etype)
+		(v-0 v-1 .. v-n right-cell left-cell ...))
+   cells:	(12 (id start end type etype))
+)
+(10 (0 1 94 0))
+(13 (0 1 d5 0))
+(12 (0 1 36 0))
+(10 (1 67 94 1 3) (
+-1.701719999 4.692295074 0
+5.631484985 12.08382034 0
+12.96463013 4.761362076 0
+5.631392002 -2.630189896 0
+-20 -20 0
+-20 20 0
+30 -20 0
+30 20 0
+-20 -20 5
+-20 -10 0
+-20 0 0
+-20 10 0
+-20 20 5
+-7.499989986 -20 0
+5.000003815 -20 0
+17.5 -20 0
+30 -20 5
+30 10 0
+30 1.999999995e-06 0
+30 -9.999990463 0
+30 20 5
+-7.499989986 20 0
+5 20 0
+17.5 20 0
+10.83014011 -0.4303100109 0
+10.82264996 9.942333221 0
+0.4327749908 9.883957863 0
+0.4402230084 -0.4886800051 0
+5.631457806 12.08382034 5
+12.96463013 4.726811886 5
+5.631402016 -2.630189896 5
+-5.107850075 4.571835995 5
+-10.28040028 9.738529205 5
+-8.840450287 0.9480460286 5
+11.56373978 -13.79189968 5
+-1.094910026 -13.76739979 5
+5.440865993 -7.916110039 5
+5.239552021 -13.97659969 5
+-9.329429626 -9.184240341 5
+18.31364059 9.554260254 5
+-1.125380039 -7.905260086 5
+11.91415024 -8.001059532 5
+-4.960519791 8.110439301 5
+19.78483963 -9.449970245 5
+11.38342953 13.14002037 5
+19.73493004 -0.1166400015 5
+))
+(10 (3 1 66 2 3) (
+19.73493004 -0.1166400015 0
+11.38342953 13.14002037 0
+19.78483963 -9.449970245 0
+18.31364059 9.554260254 0
+-4.960519791 8.110439301 0
+-1.125380039 -7.905260086 0
+11.91415024 -8.001059532 0
+-1.094910026 -13.76739979 0
+-9.329429626 -9.184240341 0
+5.440865993 -7.916110039 0
+5.239552021 -13.97659969 0
+-8.840450287 0.9480460286 0
+11.56373978 -13.79189968 0
+10.82264996 -0.4887099862 0
+0.4327349961 -0.4302900136 0
+-10.28040028 9.738529205 0
+0.4327349961 -0.4302900136 5
+10.83014965 9.883930206 0
+-7.499989986 20 0
+10.83014965 9.883930206 5
+0.4402599931 9.942347527 0
+-7.499989986 20 5
+-5.107850075 4.571835995 0
+17.5 20 0
+17.5 20 5
+0.4402599931 9.942347527 5
+5 20 0
+10.82264996 -0.4887099862 5
+30 10 0
+30 1.999999995e-06 5
+30 10 5
+30 1.999999995e-06 0
+-7.499989986 -20 0
+30 -9.999990463 5
+5.000003815 -20 0
+5.000003815 -20 5
+-7.499989986 -20 5
+-20 -20 5
+-20 -20 0
+30 -9.999990463 0
+17.5 -20 0
+17.5 -20 5
+-20 0 5
+30 20 0
+-20 0 0
+-20 -10 5
+-20 -10 0
+30 20 5
+-20 10 5
+-20 10 0
+-20 20 0
+5 20 5
+5.631446838 12.08382034 5
+12.96463013 4.692261219 0
+5.631446838 12.08382034 0
+5.631412983 -2.630189896 0
+12.96463013 4.692261219 5
+5.631412983 -2.630189896 5
+-20 20 5
+-1.701719999 4.761386871 5
+-1.701719999 4.761386871 0
+30 -20 0
+30 -20 5
+18.31364059 9.554260254 10
+11.38342953 13.14002037 10
+19.73493004 -0.1166400015 10
+19.78483963 -9.449970245 10
+11.91415024 -8.001059532 10
+-4.960519791 8.110439301 10
+-5.107850075 4.571835995 10
+-10.28040028 9.738530159 10
+11.56373978 -13.79189968 10
+5.440866947 -7.916110039 10
+-8.840439796 0.9480460286 10
+5.239552021 -13.97659969 10
+-1.125380039 -7.905260086 10
+-1.094910026 -13.76739979 10
+-9.329429626 -9.184240341 10
+10.82264996 -0.4887099862 10
+0.4327360094 -0.4302900136 10
+0.4402599931 9.942349434 10
+10.83014965 9.88393116 10
+-7.499989986 20 10
+5 20 10
+17.5 20 10
+30 10 10
+30 1.999999995e-06 10
+30 -9.999990463 10
+-7.499989986 -20 10
+5.000003815 -20 10
+17.5 -20 10
+30 20 10
+-20 -10 10
+-20 0 10
+-20 10 10
+30 -20 10
+-20 -20 10
+-20 20 10
+12.96463013 4.692262173 10
+5.631445885 12.08382034 10
+-1.701719999 4.761385918 10
+5.631412983 -2.630189896 10
+))
+(13 (7 1 46 3 4) (
+4 18 2c 1d 0 24
+1 4 1d 20 0 2a
+18 4 2 1b 0 30
+20 28 3 1 0 32
+36 12 2 4 0 34
+4 1 e 36 0 2c
+3 28 3e 29 0 28
+21 9 6 8 0 4
+6 9 c f 0 c
+6 a b 8 0 12
+f 38 a 6 0 8
+13 1b 37 15 0 2e
+12 37 1b 2 0 36
+d 7 3 29 0 20
+b a 7 d 0 10
+7 a 38 e 0 22
+e 1 3 7 0 26
+15 5 10 13 0 16
+32 33 13 10 0 1a
+9 21 27 2f 0 2
+8 b 23 21 0 a
+17 c 10 5 0 18
+3d f c 17 0 1c
+5 15 3d 17 0 1e
+2f 2d c 9 0 6
+29 23 b d 0 14
+10 c 2d 32 0 e
+4f 66 49 44 0 21
+4c 49 66 50 0 7
+46 4a 50 65 0 1b
+46 65 51 45 0 1d
+51 64 54 53 0 2d
+41 54 64 52 0 35
+48 4b 5a 5b 0 13
+5b 43 44 48 0 1f
+48 44 49 4b 0 f
+63 4f 42 40 0 2b
+40 41 52 63 0 33
+56 5c 55 40 0 23
+5f 5e 4a 47 0 d
+4e 4a 5e 5d 0 5
+47 53 62 5f 0 19
+5b 60 58 43 0 27
+59 5a 4b 4d 0 9
+42 43 58 57 0 31
+57 56 40 42 0 29
+4d 4c 4e 59 0 3
+5d 61 59 4e 0 1
+44 43 42 4f 0 25
+50 4a 4e 4c 0 b
+45 47 4a 46 0 17
+54 41 40 55 0 2f
+53 47 45 51 0 15
+4d 4b 49 4c 0 11
+24 25 21 23 0 a
+2a 24 23 29 0 14
+5b 5a 24 2a 0 13
+5a 59 25 24 0 9
+25 26 27 21 0 2
+59 61 26 25 0 1
+3f 2a 29 3e 0 28
+60 5b 2a 3f 0 27
+34 19 18 1b 0 30
+19 30 2c 18 0 24
+16 34 1b 13 0 2e
+3b 16 13 33 0 1a
+53 54 34 16 0 2d
+62 53 16 3b 0 19
+55 5c 30 19 0 23
+54 55 19 34 0 2f
+))
+(13 (8 67 d5 2 4) (
+8e 1f 1d 4 24 2a
+19 8e 4 18 24 30
+1a 16 13 15 16 2e
+51 53 16 1a 15 2d
+16 34 35 1a 2e 2d
+16 87 91 1a 15 16
+87 16 13 10 1a 16
+53 47 87 16 15 19
+31 3b 16 87 1a 19
+1e 94 1 20 32 2a
+11 88 8d 8f b c
+11 88 c f c 1c
+50 4a 88 11 b 1b
+3c 11 88 86 1c 1b
+86 88 c 17 1c 18
+8d 88 c 9 6 c
+2b 88 c 2d e 6
+8d 88 2b 2e 5 6
+4a 5e 2b 88 5 d
+31 2b 88 87 d e
+88 87 10 c e 18
+4e 4a 88 8d 5 b
+4a 47 87 88 d 17
+4a 46 86 88 17 1b
+86 88 87 91 18 17
+8e 93 2 4 34 30
+94 8e 4 1 2c 2a
+39 8e 4 36 34 2c
+1c 90 7 e 26 22
+8e 94 1c 39 2c 2b
+4f 42 94 1c 2b 25
+1c 94 92 90 26 25
+94 1c e 1 26 2c
+90 8b 3a 1c 22 21
+44 4f 1c 90 21 25
+92 22 28 3 32 28
+66 49 8b 3a 21 7
+8f 11 f 6 c 8
+8a 8f 6 8 4 12
+8d 8f 6 9 c 4
+8f 8b a 6 8 12
+65 46 86 3c 1b 1d
+8e 19 30 1f 24 23
+19 8e 93 34 30 2f
+55 40 8e 19 23 2f
+93 34 1b 2 36 30
+34 35 37 1b 36 2e
+54 64 35 34 35 2d
+45 51 1a 91 15 1d
+91 1a 15 5 16 1e
+86 3c 1a 91 1d 1e
+90 89 d 7 20 10
+90 8b a 7 10 22
+92 90 7 3 20 26
+1e 1f 8e 94 29 2a
+94 92 22 1e 31 32
+57 42 94 1e 31 29
+8e 93 14 39 33 34
+93 14 12 2 34 36
+52 41 93 14 35 33
+14 35 34 93 36 35
+8a 8c 24 25 a 9
+89 8c 24 2a 13 14
+24 8c b 23 a 14
+4b 5a 24 8c 13 9
+8d 25 26 2e 2 1
+5b 48 89 2a 13 1f
+4b 48 89 8c f 13
+48 44 90 89 f 1f
+56 40 8e 1f 29 23
+40 63 39 8e 2b 33
+41 40 8e 93 2f 33
+42 40 8e 94 2b 29
+8f 8b 3a 11 7 8
+50 4c 8f 11 7 b
+8a 25 21 8 a 4
+8a 8c b 8 12 a
+8a 8f 8d 25 3 4
+4d 4c 8f 8a 3 11
+8a 8c 8b 8f 11 12
+4d 59 25 8a 9 3
+4b 4d 8a 8c 9 11
+89 2a 29 d 20 14
+89 8c b d 14 10
+2a 92 90 89 1f 20
+89 90 8b 8c f 10
+8d 25 21 9 4 2
+3c 86 17 3d 1c 1e
+91 86 17 5 1e 18
+43 58 22 92 31 27
+2a 3f 22 92 27 28
+8d 2e 2f 9 2 6
+4c 4e 8d 8f 3 b
+4c 49 8b 8f 7 11
+92 2a 29 3 28 20
+54 41 93 34 2f 35
+8b 8c b a 10 12
+3a 8b a 38 22 8
+4e 59 25 8d 3 1
+4e 5d 2e 8d 1 5
+92 94 1 3 26 32
+42 43 92 94 31 25
+5f 47 87 31 19 d
+5b 43 92 2a 1f 27
+43 44 90 92 1f 25
+49 4b 8c 8b f 11
+49 44 90 8b 21 f
+47 45 91 87 15 17
+46 45 91 86 17 1d
+87 31 32 10 e 1a
+91 87 10 5 18 16
+))
+(13 (4 47 4e 3 4) (
+1f 1e 20 1d 0 2a
+30 1f 1d 2c 0 24
+1e 22 28 20 0 32
+22 3f 3e 28 0 28
+57 58 22 1e 0 31
+56 57 1e 1f 0 29
+58 60 3f 22 0 27
+5c 56 1f 30 0 23
+))
+(13 (9 4f 5e 3 4) (
+66 4f 1c 3a 0 21
+4f 63 39 1c 0 2b
+3a 1c e 38 0 22
+1c 39 36 e 0 2c
+50 66 3a 11 0 7
+51 65 3c 1a 0 1d
+65 50 11 3c 0 1b
+64 51 1a 35 0 2d
+52 64 35 14 0 35
+1a 3c 3d 15 0 1e
+35 1a 15 37 0 2e
+39 14 12 36 0 34
+14 35 37 12 0 36
+63 52 14 39 0 33
+11 3a 38 f 0 8
+3c 11 f 3d 0 1c
+))
+(13 (b 5f 66 3 4) (
+26 2e 2f 27 0 2
+61 5d 2e 26 0 1
+5d 5e 2b 2e 0 5
+5e 5f 31 2b 0 d
+2e 2b 2d 2f 0 6
+2b 31 32 2d 0 e
+31 3b 33 32 0 1a
+5f 62 3b 31 0 19
+))
+(12 (6 1 36 1 4))
+
+(0 "Zone variables:")
+(45 (7 wall wall)())
+(45 (8 interior volume)())
+(45 (4 wall outlet)())
+(45 (9 wall cylindre)())
+(45 (11 wall inlet)())
+(45 (6 fluid volume)())
+
+(0 "Cortex variables:")
+(38 ((
+(gui-processing? #t)
+(view-list ((front ((5 0 167.01852) (5 0 5) (0 1 0) 64.807407 64.807407 "perspective") #(1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1)) (back ((5 0 -157.01852) (5 0 5) (0 1 0) 64.807407 64.807407 "perspective") #(1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1)) (right ((167.01852 0 5) (5 0 5) (0 1 0) 64.807407 64.807407 "perspective") #(1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1)) (left ((-157.01852 0 5) (5 0 5) (0 1 0) 64.807407 64.807407 "perspective") #(1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1)) (top ((5 162.01852 5) (5 0 5) (0 0 1) 64.807407 64.807407 "perspective") #(1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1)) (bottom ((5 -162.01852 5) (5 0 5) (0 0 -1) 64.807407 64.807407 "perspective") #(1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1)) (isometric ((-76.009445 114.56517 86.009445) (5 0 5) (0.5000056 0.7071116 -0.5000056) 64.807407 64.807407 "perspective") #(1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1))))
+(left-button-function mouse-rotate)
+(mouse-probes? #t)
+(lights-on? #t)
+(filled-grid? #t)
+(hidden-surfaces? #t)
+(axes/visible? #t)
+(cx-case-version (3 5 5)))))
+
+(0 "TGrid variables:")
+(60 (
+(meshsol/mesh/reflevel 4)
+(meshsol/mesh/vinit 2000)
+(circumsphere-tolerance 1e-07)
+(sliver-size 2.220446e-16)
+(include-sliver 1)
+(node-tolerance 0.33027618)
+(add-interior-nodes #f)
+(perturb-problem-nodes #f)
+(node-perturbation 0.1)
+(incremental-refinement? #f)
+(max-cell-size 247.97545)
+(max-cell-skew 0.85)
+(max-boundary-cell-skew 0.7)
+(boundary-cell-height 1)
+(min-boundary-closeness 0.85)
+(min-node-closeness 0.1)
+(min-swap-skew 0.4)
+(check-boundary-closeness #t)
+(node-shuffles 4)
+(node-must-reduce-skew #f)
+(node-insertion-method 2)
+(node-insertion-offset 0.01)
+(max-cells 0)
+(max-nodes 0)
+(skewness-method 0)
+(impose-cell-size #f)
+(prism/auto-separate-cell-zone? #f)
+(prism/check-quality? #t)
+(prism/direction-normal? #t)
+(prism/direction-vector (0 0 1))
+(prism/edge-smooth? #t)
+(prism/edge-swap? #t)
+(prism/edge-swap-angle 10)
+(prism/grow-individually? #f)
+(prism/growth ((default constant 1 1 1)))
+(prism/layers 1)
+(prism/max-allowable-skew 0.95)
+(prism/node-smooth? #f)
+(prism/node-smooth-angle 30)
+(prism/node-smooth-converged 0.0001)
+(prism/node-smooth-iter 100)
+(prism/node-smooth-max-ext 2)
+(prism/node-smooth-rings 5)
+(prism/normal-bisect-angle 70)
+(prism/normal-converge-locally? #f)
+(prism/normal-method surface-average)
+(prism/normal-smooth? #t)
+(prism/normal-smooth-angle 45)
+(prism/normal-smooth-converged 0.3)
+(prism/normal-smooth-iter 500)
+(prism/normal-surface-angle 30)
+(prism/offset-method uniform)
+(prism/offset-smooth? #t)
+(prism/offset-smooth-converged 0.01)
+(prism/offset-smooth-iter 100)
+(prism/offset-weight 1)
+(prism/orthogonal-layers 0)
+(prism/project? #t)
+(prism/project-adjacent-angle 45)
+(prism/project-converged 0.0001)
+(prism/project-iter 100)
+(prism/project-plane-angle 10)
+(prism/retriangulate-adjacent? #t)
+(prism/swap-smooth-layers 100)
+(prism/swap-smooth-skew 0.7)
+(prism/retriangulate-feature-angle 30)
+(pyramid/neighbor-angle 115)
+(pyramid/offset-distance 1)
+(pyramid/offset-method skewness)
+(pyramid/jiggle-height-factor 0)
+(pyramid/insert-angle 70)
+(pyramid/insert-tet? #t)
+(remesh/write-debug-file? #f)
+(remesh/refine-boundary? #t)
+(remesh/refine-interior? #t)
+(remesh/insert-original? #t)
+(remesh/swap-and-smooth? #t)
+(remesh/must-improve-skew? #t)
+(remesh/smooth-min-skew 0.2)
+(remesh/intersection-tolerance 0.1)
+(smooth/laplace/angle 15)
+(smooth/laplace/iterations 4)
+(smooth/laplace/relax 0.5)
+(smooth/laplace/converged 1e-06)
+(smooth/laplace/project? #t)
+(boundary/delete-nodes-after-faces? #t)
+(surfer/smoothing-iterations 5)
+(surfer/smoothing-relaxation 0.9)
+(surfer/swapping-iterations 1)
+(surfer/swapping-angle 10)
+(surfer/degree-iterations 10)
+(surfer/shape-tolerance 0.2)
+(surfer/grading 1.2)
+(surfer/selection-interval 1.2)
+(surfer/max-faces 1000000)
+(surfer/feature-angle 30)
+(surfer/lscale-method 1)
+(surfer/lean-and-mean 0)
+(surfer/surface-recovery 0)
+(mesh-origin (0 0 0))
+(edge-collapse/mid-point? #f)
+(edge-remesh/method 1)
+(edge-remesh/spacing (1 1))
+(edge-remesh/quadratic-recon? #f)
+(edge-projection/method 0)
+(edge-projection/direction (1 0 0))
+(edge-intersection/tolerance -1)
+(edge-intersection/delete-overlapped? #f)
+(edge-intersection/auto-remesh-loop? #f)
+(all-cells? #f)
+(all-faces? #t)
+(all-nodes? #t)
+(free? #f)
+(left-handed? #f)
+(multi? #f)
+(unmeshed? #f)
+(unused? #f)
+(marked? #f)
+(tagged? #f)
+(refine? #f)
+(boundary-cells? #f)
+(labels? #f)
+(circumcircles? #f)
+(normals? #f)
+(normal-scale 0.1)
+(face-quality ())
+(cell-quality ())
+(face-size ())
+(cell-size ())
+(draw-x-range ())
+(draw-y-range ())
+(draw-z-range ())
+(label-alignment "*")
+(label-font "sans serif")
+(label-scale 1)
+(node-size 0.25)
+(node-symbol "(*)")
+(xy/scale/percent/y? #f)
+(merge-tolerance 0.0033027618)
+(periodic-transform ())
+(non-fluid-default-cell-type dead)
+(spy-level 0)
+(progress-reports 2)
+(diagnostics #t)
+(verbosity-level 1)
+(domains ())
+(interrupt-check-interval 2)
+(auto/merge-free-nodes? #t)
+(auto/merge-free-nodes-args (#t #t))
+(auto/delete-unused-nodes? #t)
+(auto/create-pyramids? #t)
+(auto/create-prisms? #t)
+(auto/improve-surface-mesh? #t)
+(auto/improve-surface-mesh-args (() 10 0.75))
+(auto/delete-dead-zones? #f)
+(auto/init-trys 4)
+(auto/sort-boundary-faces? #t)
+(auto/sort-cells? #t)
+(auto/refine-boundary-cells? #t)
+(auto/refine-cells? #t)
+(auto/refine-levels 2)
+(auto/refine-cells-2d-args ((0.25 #f 0.45 #f 0.45 0.75)))
+(auto/refine-cells-3d-args ((0.75 #f 0.85 #f 0.85 0.85) (0.9 #t 0.9 #t 0.9 0.01) (0.7 #t 0.7 #t 0.75 0.5) (0.9 #t 0.9 #t 0.9 0.01) (0.6 #t 0.6 #t 0.75 0.5) (0.9 #t 0.9 #t 0.9 0.01) (0.5 #t 0.5 #t 0.75 0.5) (0.9 #t 0.9 #t 0.9 0.01) (0.4 #t 0.4 #t 0.75 0.5) (0.9 #t 0.9 #t 0.9 0.01) (0.3 #t 0.3 #t 0.75 0.5) (0.9 #t 0.9 #t 0.9 0.01) (0.2 #t 0.2 #t 0.75 0.5) (0.9 #t 0.9 #t 0.9 0.01) (0.1 #t 0.1 #t 0.75 0.5) (0.9 #t 0.9 #t 0.9 0.01) (0.01 #t 0.01 #t 0.75 0.5) (0.9 #t 0.9 #t 0.9 0.01)))
+(auto/smooth-mesh? #t)
+(auto/smooth-mesh-args (15 0.01))
+(auto/swap-faces? #t)
+(auto/remove-boundary-slivers? #t)
+(auto/remove-boundary-slivers-args (0.95 10))))

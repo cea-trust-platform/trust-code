@@ -1,0 +1,7 @@
+#!/bin/bash
+a=`ps -efl | grep TRUST_m | grep -v grep`
+if [ ${#a} != 0 ]
+then
+   ps -efl | grep TRUST_m | grep -v grep
+   ps -efl | grep TRUST_m | grep -v grep | awk '{print $4}' | xargs kill -9
+fi

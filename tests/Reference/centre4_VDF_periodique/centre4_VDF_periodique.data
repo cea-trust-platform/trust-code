@@ -1,0 +1,114 @@
+# Hydraulique 2D : plaque boundary layer parallele #
+# PARALLEL OK 8 #
+dimension 2
+Pb_Hydraulique pb
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Cavite 
+		{
+		Origine 0. 0.
+     		Nombre_de_Noeuds 85 18
+		Longueurs 0.1295 0.0015875
+		facteurs 1. 1.05
+		symx
+		}
+		{
+		Bord Gauche X = 0.        0. <= Y <= 0.0015875
+		Bord Perio   Y = 0.0015875 0. <= X <= 0.1295
+		Bord Perio   Y = 0.        0. <= X <= 0.1295
+		Bord Droit  X = 0.1295    0. <= Y <= 0.0015875
+		}
+}
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 2
+	Nom_Zones DOM
+	Periodique 1 Perio
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+Runge_Kutta_ordre_3 sch 
+# Schema_Euler_Explicite sch #
+Lire sch
+{
+	tinit 0.
+	tmax 0.02
+        nb_pas_dt_max 5
+	dt_min 1.e-6
+	dt_max 1.e-4
+	dt_impr 1.e-3
+	dt_sauv 0.1
+	seuil_statio 1.e-8
+	facsec 1.
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme  1 1.5e-5
+	rho Champ_Uniforme 1 2.
+}
+
+
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.700000 } 
+			seuil 1.000000e-15 
+			impr 
+		}
+		convection { centre4 }
+		diffusion { }
+		conditions_initiales {
+			vitesse Champ_Uniforme 2 30. 0.
+			}
+		boundary_conditions {
+Perio periodique 
+			Gauche frontiere_ouverte_vitesse_imposee
+			       Champ_Front_Uniforme 2 30. 0.
+			Droit frontiere_ouverte_pression_imposee
+                               Champ_front_Uniforme 1 0.
+		}
+	}
+
+	Postraitement
+	{
+		Sondes
+		{
+			sonde_pression pression periode 1.e-5 points 3 0.001 0.0004 0.07 0.0004 
+                        0.008 0.0004
+			sonde_vitesse  vitesse  periode 1.e-5 points 5 0.05 0.0004 0.06 0.0004 
+                                                           0.07 0.0004 0.08 0.0004 0.09 0.0004
+			seg_vitx vitesse periode 1.e-5 segment 50 0.00 0.0004 0.12 0.0004
+                        seg_prex pression periode 1.e-5 segment 50 0.00 0.0004 0.12 0.0004
+			seg_vity vitesse periode 1.e-5 segment 30 0.08 0.    0.08 0.0015875 
+		}
+		Champs dt_post 0.001
+		{
+			vitesse elem
+		}
+	}
+}
+
+Solve pb
+Fin
+

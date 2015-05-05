@@ -1,0 +1,2 @@
+#!/bin/bash
+[ "$*" != "" ] && cat $* | grep -v "#" | awk 'BEGIN {s=0;pb=0} {if ($4=="?") { pb=FNR}; s=s+$4} END {if (pb==0) {print s,"s",s/60,"m",s/3600,"h"} else { print (" erreur_calcul_"pb)}} ' > temps_total

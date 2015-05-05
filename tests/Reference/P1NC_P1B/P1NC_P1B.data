@@ -1,0 +1,96 @@
+# Hydraulique 3D VEF P1NC/P1B test cl Neumann #
+# PARALLEL OK #
+
+dimension 3
+
+Pb_Hydraulique pb
+
+Domaine dom
+# BEGIN MESH #
+Read_file dom tube_3D.geom 
+
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur metis { Nb_parts 2 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0.0
+        nb_pas_dt_max 5
+	tmax 0.0001
+	dt_min 1.e-6
+	dt_max 0.001
+	dt_impr 0.000001
+	dt_sauv 100
+	seuil_statio 1.e-10
+	facsec 1.0
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 0.002
+	rho Champ_Uniforme 1 2
+}
+
+
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { precond ssor { omega 1.65 } seuil 1.e-12 }
+		convection { amont }
+		diffusion { }
+		conditions_initiales 
+		        {
+			vitesse Champ_Uniforme 3 0.00 0.0 0.1
+			}
+		boundary_conditions {
+		        PAROI  paroi_fixe
+			ENTREE frontiere_ouverte_vitesse_imposee 
+			        Champ_Front_Uniforme 3 0.0 0.0 0.1
+			SORTIE frontiere_ouverte_pression_imposee 
+			        Champ_Front_Uniforme 1 0.0  
+		}
+	}
+
+	Postraitement
+	{
+		Sondes
+		{
+		   sonde_vit1 vitesse  periode 1.e-5 segment 10 0. 0. 0. 0. 0. 0.1
+		   sonde_vit2 vitesse  periode 1.e-5 segment 15 0. -0.01 0.08 0. 0.01 0.08
+	           sonde_pre1 pression periode 1.e-5 segment 10 0. 0.0 0. 0. 0.0 0.1
+		}
+		Champs dt_post 0.1
+		{		
+			vitesse
+	                pression	
+		}
+	}
+}
+
+Solve pb
+Fin
+
+

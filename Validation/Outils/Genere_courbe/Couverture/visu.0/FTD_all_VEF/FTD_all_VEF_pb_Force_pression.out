@@ -1,0 +1,6 @@
+# Impression sur les bords de l'equation Navier_Stokes_FT_Disc du probleme pb
+# Force de pression exercee par le fluide=Integrale(P*ndS) [N]
+# Bord:		paroi						bas						haut						Total
+# Temps		Fx		Fy		Fz		Fx		Fy		Fz		Fx		Fy		Fz
+1.000e-07 	0.000e+00 	0.000e+00 	0.000e+00 	0.000e+00 	0.000e+00 	0.000e+00 	0.000e+00 	0.000e+00 	0.000e+00
+2.264e-02 	0.000e+00 	0.000e+00 	0.000e+00 	0.000e+00 	0.000e+00 	0.000e+00 	0.000e+00 	0.000e+00 	0.000e+00

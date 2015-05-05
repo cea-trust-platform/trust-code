@@ -1,0 +1,6 @@
+# Impression sur les bords de l'equation Navier_Stokes_FT_Disc du probleme pb
+# Debit volumique=Integrale(u*ndS) [m3.s-1]
+# Bord:		paroi		bas		haut		Total
+# Temps						
+1.000e-07 	0.000e+00 	0.000e+00 	-2.587e-21 	-2.587e-21
+2.264e-02 	0.000e+00 	0.000e+00 	2.695e-20 	2.695e-20

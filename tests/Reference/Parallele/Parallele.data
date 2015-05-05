@@ -1,0 +1,107 @@
+# PARALLEL OK 4 #
+dimension 3
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+        {
+                Origine 0.  0. 0.
+                Nombre_de_Noeuds 5 5 5
+                Longueurs 1 1 1
+        }
+        {
+                Bord Gauche   X = 0.   0. <= Y <= 1.    0. <= Z <= 1.
+                Bord Droit  X = 1.  0. <= Y <= 1.   0. <= Z <= 1.
+                Bord paroiY   Y =  0.  0. <= X <= 1.  0. <= Z <= 1.
+                Bord paroiY   Y =  1.  0. <= X <= 1.  0. <= Z <= 1.
+                Bord Sud   Z =  0.  0. <= X <= 1.  0. <= Y <= 1.
+                Bord Nord   Z =  1.  0. <= X <= 1.   0. <= Y <= 1.
+        }
+} 
+Tetraedriser_homogene dom
+Transformer dom
+(x+4*x*(1-x)*y*(1-y)*z*(1-z)*(0.5-y))*(1+atan(x))
+y+4*x*(1-x)*y*(1-y)*z*(1-z)*(0.5+x)*(1+atan(y))
+tanh(z)/tanh(1)
+Corriger_frontiere_periodique { domaine dom bord paroiY }
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur Metis { nb_parts 9 }
+	Larg_joint 2
+	Nom_Zones DOM
+	periodique 1 paroiY
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1b dis
+
+Schema_Euler_Explicite sch
+Lire sch 
+{
+	nb_pas_dt_max 10
+        tinit 0.
+        tmax 0.1
+        dt_min 1.e-6
+        dt_max 1.e-1
+	dt_start dt_calc
+        dt_impr 0.1
+        dt_sauv 20.
+        seuil_statio 1.e-8  
+        facsec 0.5
+	diffusion_implicite 0
+}
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Fonc_xyz	dom 1 1+cos(x)*cos(y)*cos(z)  
+	rho Champ_Uniforme	1 1.
+}
+
+Pb_Hydraulique pb
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+Lire pb
+	{
+	Navier_Stokes_standard
+		{
+		Solveur_Pression petsc cholesky { }
+                convection { muscl }
+                diffusion  {  }
+                Sources { Source_Qdm Champ_fonc_txyz dom 3  sin(x*y*z+t) cos(x*y*z+t) tan(x*y*z+t) }
+		conditions_initiales { vitesse Champ_fonc_xyz dom 3  sin(x*y*z) cos(x*y*z) tan(x*y*z) }
+		boundary_conditions
+		{
+			Sud paroi_fixe
+			Nord Symetrie
+			Gauche Frontiere_ouverte_vitesse_imposee Champ_front_fonc_txyz 3 x+y+z+t x+y+z+t x+y+z+t   
+			Droit Frontiere_ouverte_pression_imposee Champ_front_fonc_txyz 1 x+y+z+t
+			paroiY periodique 
+		}
+	}
+
+
+	Postraitement
+	{
+		Champs dt_post 2.
+			{
+			pression elem
+			vitesse elem
+			viscosite_dynamique elem
+			}
+	}
+}
+Solve pb
+Fin

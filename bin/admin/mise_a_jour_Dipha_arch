@@ -1,0 +1,30 @@
+#!/bin/bash
+# Compilation d'une version diphasique
+# Souvent appele pr crontab donc :
+v=$HOST  
+export v
+GO=$HOME/GO_$HOST
+EN_COURS=$HOME/EN_COURS_$HOST
+[ ! -f $EN_COURS ] && exit
+
+dirdipha=$HOME/Version_Dipha_$v
+version=$HOME/Version_test_$v/TRUST
+export version
+cd $version
+source env/Init_TRUST
+[ ! -d $dirdipha ] && mkdir $dirdipha 
+cd $dirdipha
+[ -f archdiphatar ] && mv archdiphatar archdipha.tar
+
+if [ -f $version/archdiphatar ]
+then
+mv $version/archdiphatar archdipha.tar
+fi
+tar xf archdipha.tar
+rm -f archdipha.tar
+if [ -f connect_dipha ]
+then
+ksh ./connect_dipha
+else
+ksh ./teste_dipha
+fi

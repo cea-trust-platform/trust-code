@@ -1,0 +1,280 @@
+
+s? ParametresTRUST ? ParametersTRUST ?gi
+s? ParametresTRUST\t? ParametersTRUST\t?gi
+s? ParametresTRUST$? ParametersTRUST?gi
+s?\tParametresTRUST ?\tParametersTRUST ?gi
+s?\tParametresTRUST\t?\tParametersTRUST\t?gi
+s?\tParametresTRUST$?\tParametersTRUST?gi
+s?^ParametresTRUST ?ParametersTRUST ?gi
+s?^ParametresTRUST\t?ParametersTRUST\t?gi
+s?^ParametresTRUST$?ParametersTRUST?gi
+s? titre_figure ? Title_figure ?gi
+s? titre_figure\t? Title_figure\t?gi
+s? titre_figure$? Title_figure?gi
+s?\ttitre_figure ?\tTitle_figure ?gi
+s?\ttitre_figure\t?\tTitle_figure\t?gi
+s?\ttitre_figure$?\tTitle_figure?gi
+s?^titre_figure ?Title_figure ?gi
+s?^titre_figure\t?Title_figure\t?gi
+s?^titre_figure$?Title_figure?gi
+s? InclureDescCourbes ? Include_Description_Curves ?gi
+s? InclureDescCourbes\t? Include_Description_Curves\t?gi
+s? InclureDescCourbes$? Include_Description_Curves?gi
+s?\tInclureDescCourbes ?\tInclude_Description_Curves ?gi
+s?\tInclureDescCourbes\t?\tInclude_Description_Curves\t?gi
+s?\tInclureDescCourbes$?\tInclude_Description_Curves?gi
+s?^InclureDescCourbes ?Include_Description_Curves ?gi
+s?^InclureDescCourbes\t?Include_Description_Curves\t?gi
+s?^InclureDescCourbes$?Include_Description_Curves?gi
+s? Nb_colonnes_fichier ? nb_columns_file ?gi
+s? Nb_colonnes_fichier\t? nb_columns_file\t?gi
+s? Nb_colonnes_fichier$? nb_columns_file?gi
+s?\tNb_colonnes_fichier ?\tnb_columns_file ?gi
+s?\tNb_colonnes_fichier\t?\tnb_columns_file\t?gi
+s?\tNb_colonnes_fichier$?\tnb_columns_file?gi
+s?^Nb_colonnes_fichier ?nb_columns_file ?gi
+s?^Nb_colonnes_fichier\t?nb_columns_file\t?gi
+s?^Nb_colonnes_fichier$?nb_columns_file?gi
+s? nb_colonnes ? nb_columns ?gi
+s? nb_colonnes\t? nb_columns\t?gi
+s? nb_colonnes$? nb_columns?gi
+s?\tnb_colonnes ?\tnb_columns ?gi
+s?\tnb_colonnes\t?\tnb_columns\t?gi
+s?\tnb_colonnes$?\tnb_columns?gi
+s?^nb_colonnes ?nb_columns ?gi
+s?^nb_colonnes\t?nb_columns\t?gi
+s?^nb_colonnes$?nb_columns?gi
+s? InclureDescLignes ? Include_Description_lines ?gi
+s? InclureDescLignes\t? Include_Description_lines\t?gi
+s? InclureDescLignes$? Include_Description_lines?gi
+s?\tInclureDescLignes ?\tInclude_Description_lines ?gi
+s?\tInclureDescLignes\t?\tInclude_Description_lines\t?gi
+s?\tInclureDescLignes$?\tInclude_Description_lines?gi
+s?^InclureDescLignes ?Include_Description_lines ?gi
+s?^InclureDescLignes\t?Include_Description_lines\t?gi
+s?^InclureDescLignes$?Include_Description_lines?gi
+s? derniere_ligne ? last_line ?gi
+s? derniere_ligne\t? last_line\t?gi
+s? derniere_ligne$? last_line?gi
+s?\tderniere_ligne ?\tlast_line ?gi
+s?\tderniere_ligne\t?\tlast_line\t?gi
+s?\tderniere_ligne$?\tlast_line?gi
+s?^derniere_ligne ?last_line ?gi
+s?^derniere_ligne\t?last_line\t?gi
+s?^derniere_ligne$?last_line?gi
+s? afficher_ligne ? display_line ?gi
+s? afficher_ligne\t? display_line\t?gi
+s? afficher_ligne$? display_line?gi
+s?\tafficher_ligne ?\tdisplay_line ?gi
+s?\tafficher_ligne\t?\tdisplay_line\t?gi
+s?\tafficher_ligne$?\tdisplay_line?gi
+s?^afficher_ligne ?display_line ?gi
+s?^afficher_ligne\t?display_line\t?gi
+s?^afficher_ligne$?display_line?gi
+s? numero_premiere_ligne ? number_first_line ?gi
+s? numero_premiere_ligne\t? number_first_line\t?gi
+s? numero_premiere_ligne$? number_first_line?gi
+s?\tnumero_premiere_ligne ?\tnumber_first_line ?gi
+s?\tnumero_premiere_ligne\t?\tnumber_first_line\t?gi
+s?\tnumero_premiere_ligne$?\tnumber_first_line?gi
+s?^numero_premiere_ligne ?number_first_line ?gi
+s?^numero_premiere_ligne\t?number_first_line\t?gi
+s?^numero_premiere_ligne$?number_first_line?gi
+s? numero_derniere_ligne ? number_last_line ?gi
+s? numero_derniere_ligne\t? number_last_line\t?gi
+s? numero_derniere_ligne$? number_last_line?gi
+s?\tnumero_derniere_ligne ?\tnumber_last_line ?gi
+s?\tnumero_derniere_ligne\t?\tnumber_last_line\t?gi
+s?\tnumero_derniere_ligne$?\tnumber_last_line?gi
+s?^numero_derniere_ligne ?number_last_line ?gi
+s?^numero_derniere_ligne\t?number_last_line\t?gi
+s?^numero_derniere_ligne$?number_last_line?gi
+s? chapitre ? Chapter ?gi
+s? chapitre\t? Chapter\t?gi
+s? chapitre$? Chapter?gi
+s?\tchapitre ?\tChapter ?gi
+s?\tchapitre\t?\tChapter\t?gi
+s?\tchapitre$?\tChapter?gi
+s?^chapitre ?Chapter ?gi
+s?^chapitre\t?Chapter\t?gi
+s?^chapitre$?Chapter?gi
+s? parametres ? Parameters ?gi
+s? parametres\t? Parameters\t?gi
+s? parametres$? Parameters?gi
+s?\tparametres ?\tParameters ?gi
+s?\tparametres\t?\tParameters\t?gi
+s?\tparametres$?\tParameters?gi
+s?^parametres ?Parameters ?gi
+s?^parametres\t?Parameters\t?gi
+s?^parametres$?Parameters?gi
+s? castest ? TestCase ?gi
+s? castest\t? TestCase\t?gi
+s? castest$? TestCase?gi
+s?\tcastest ?\tTestCase ?gi
+s?\tcastest\t?\tTestCase\t?gi
+s?\tcastest$?\tTestCase?gi
+s?^castest ?TestCase ?gi
+s?^castest\t?TestCase\t?gi
+s?^castest$?TestCase?gi
+s? InclureData ? IncludeData ?gi
+s? InclureData\t? IncludeData\t?gi
+s? InclureData$? IncludeData?gi
+s?\tInclureData ?\tIncludeData ?gi
+s?\tInclureData\t?\tIncludeData\t?gi
+s?\tInclureData$?\tIncludeData?gi
+s?^InclureData ?IncludeData ?gi
+s?^InclureData\t?IncludeData\t?gi
+s?^InclureData$?IncludeData?gi
+s? PreRequis ? Prerequisite ?gi
+s? PreRequis\t? Prerequisite\t?gi
+s? PreRequis$? Prerequisite?gi
+s?\tPreRequis ?\tPrerequisite ?gi
+s?\tPreRequis\t?\tPrerequisite\t?gi
+s?\tPreRequis$?\tPrerequisite?gi
+s?^PreRequis ?Prerequisite ?gi
+s?^PreRequis\t?Prerequisite\t?gi
+s?^PreRequis$?Prerequisite?gi
+s? Auteur ? Author ?gi
+s? Auteur\t? Author\t?gi
+s? Auteur$? Author?gi
+s?\tAuteur ?\tAuthor ?gi
+s?\tAuteur\t?\tAuthor\t?gi
+s?\tAuteur$?\tAuthor?gi
+s?^Auteur ?Author ?gi
+s?^Auteur\t?Author\t?gi
+s?^Auteur$?Author?gi
+s? titre ? Title ?gi
+s? titre\t? Title\t?gi
+s? titre$? Title?gi
+s?\ttitre ?\tTitle ?gi
+s?\ttitre\t?\tTitle\t?gi
+s?\ttitre$?\tTitle?gi
+s?^titre ?Title ?gi
+s?^titre\t?Title\t?gi
+s?^titre$?Title?gi
+s? image ? picture ?gi
+s? image\t? picture\t?gi
+s? image$? picture?gi
+s?\timage ?\tpicture ?gi
+s?\timage\t?\tpicture\t?gi
+s?\timage$?\tpicture?gi
+s?^image ?picture ?gi
+s?^image\t?picture\t?gi
+s?^image$?picture?gi
+s? tableau ? Table ?gi
+s? tableau\t? Table\t?gi
+s? tableau$? Table?gi
+s?\ttableau ?\tTable ?gi
+s?\ttableau\t?\tTable\t?gi
+s?\ttableau$?\tTable?gi
+s?^tableau ?Table ?gi
+s?^tableau\t?Table\t?gi
+s?^tableau$?Table?gi
+s? courbe ? Curve ?gi
+s? courbe\t? Curve\t?gi
+s? courbe$? Curve?gi
+s?\tcourbe ?\tCurve ?gi
+s?\tcourbe\t?\tCurve\t?gi
+s?\tcourbe$?\tCurve?gi
+s?^courbe ?Curve ?gi
+s?^courbe\t?Curve\t?gi
+s?^courbe$?Curve?gi
+s? legende ? legend ?gi
+s? legende\t? legend\t?gi
+s? legende$? legend?gi
+s?\tlegende ?\tlegend ?gi
+s?\tlegende\t?\tlegend\t?gi
+s?\tlegende$?\tlegend?gi
+s?^legende ?legend ?gi
+s?^legende\t?legend\t?gi
+s?^legende$?legend?gi
+s? origine ? origin ?gi
+s? origine\t? origin\t?gi
+s? origine$? origin?gi
+s?\torigine ?\torigin ?gi
+s?\torigine\t?\torigin\t?gi
+s?\torigine$?\torigin?gi
+s?^origine ?origin ?gi
+s?^origine\t?origin\t?gi
+s?^origine$?origin?gi
+s? Colonnes ? columns ?gi
+s? Colonnes\t? columns\t?gi
+s? Colonnes$? columns?gi
+s?\tColonnes ?\tcolumns ?gi
+s?\tColonnes\t?\tcolumns\t?gi
+s?\tColonnes$?\tcolumns?gi
+s?^Colonnes ?columns ?gi
+s?^Colonnes\t?columns\t?gi
+s?^Colonnes$?columns?gi
+s? Axes ? Axis ?gi
+s? Axes\t? Axis\t?gi
+s? Axes$? Axis?gi
+s?\tAxes ?\tAxis ?gi
+s?\tAxes\t?\tAxis\t?gi
+s?\tAxes$?\tAxis?gi
+s?^Axes ?Axis ?gi
+s?^Axes\t?Axis\t?gi
+s?^Axes$?Axis?gi
+s? LargeurLigne ? linewidth ?gi
+s? LargeurLigne\t? linewidth\t?gi
+s? LargeurLigne$? linewidth?gi
+s?\tLargeurLigne ?\tlinewidth ?gi
+s?\tLargeurLigne\t?\tlinewidth\t?gi
+s?\tLargeurLigne$?\tlinewidth?gi
+s?^LargeurLigne ?linewidth ?gi
+s?^LargeurLigne\t?linewidth\t?gi
+s?^LargeurLigne$?linewidth?gi
+s? Isovaleurs ? Isovalues ?gi
+s? Isovaleurs\t? Isovalues\t?gi
+s? Isovaleurs$? Isovalues?gi
+s?\tIsovaleurs ?\tIsovalues ?gi
+s?\tIsovaleurs\t?\tIsovalues\t?gi
+s?\tIsovaleurs$?\tIsovalues?gi
+s?^Isovaleurs ?Isovalues ?gi
+s?^Isovaleurs\t?Isovalues\t?gi
+s?^Isovaleurs$?Isovalues?gi
+s? formule ? formula ?gi
+s? formule\t? formula\t?gi
+s? formule$? formula?gi
+s?\tformule ?\tformula ?gi
+s?\tformule\t?\tformula\t?gi
+s?\tformule$?\tformula?gi
+s?^formule ?formula ?gi
+s?^formule\t?formula\t?gi
+s?^formule$?formula?gi
+s? ligne ? line ?gi
+s? ligne\t? line\t?gi
+s? ligne$? line?gi
+s?\tligne ?\tline ?gi
+s?\tligne\t?\tline\t?gi
+s?\tligne$?\tline?gi
+s?^ligne ?line ?gi
+s?^ligne\t?line\t?gi
+s?^ligne$?line?gi
+s? lignes ? lines ?gi
+s? lignes\t? lines\t?gi
+s? lignes$? lines?gi
+s?\tlignes ?\tlines ?gi
+s?\tlignes\t?\tlines\t?gi
+s?\tlignes$?\tlines?gi
+s?^lignes ?lines ?gi
+s?^lignes\t?lines\t?gi
+s?^lignes$?lines?gi
+s? Fichier ? file ?gi
+s? Fichier\t? file\t?gi
+s? Fichier$? file?gi
+s?\tFichier ?\tfile ?gi
+s?\tFichier\t?\tfile\t?gi
+s?\tFichier$?\tfile?gi
+s?^Fichier ?file ?gi
+s?^Fichier\t?file\t?gi
+s?^Fichier$?file?gi
+s? valeurs ? values ?gi
+s? valeurs\t? values\t?gi
+s? valeurs$? values?gi
+s?\tvaleurs ?\tvalues ?gi
+s?\tvaleurs\t?\tvalues\t?gi
+s?\tvaleurs$?\tvalues?gi
+s?^valeurs ?values ?gi
+s?^valeurs\t?values\t?gi
+s?^valeurs$?values?gi

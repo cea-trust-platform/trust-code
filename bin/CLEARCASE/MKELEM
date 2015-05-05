@@ -1,0 +1,25 @@
+#!/bin/bash
+# Creation d'un element en gestion de configuration
+liste=$*
+for file in $liste
+do
+   if [ -f $file ] || [ -d $file ]
+   then
+      err=0
+      rep=`pwd`
+      cd `dirname $file`
+      filename=`basename $file`
+      git tag 1>/dev/null 2>&1
+      if [ $? = 0 ]
+      then
+         # Creation sous Git
+         git add $filename
+	 err=$?
+      fi
+      cd $rep
+      exit $err
+   else
+      echo "Element $file not found !"
+      exit -1
+   fi
+done

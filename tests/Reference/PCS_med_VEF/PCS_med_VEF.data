@@ -1,0 +1,117 @@
+# Perte_Charge_Singuliere MED 3D VEF #
+# PARALLEL RUNS #
+dimension 3
+Domaine dom
+
+Domaine interf
+Lire_MED short_family_names interf Ksing Ksing.med
+
+# BEGIN MESH #
+Lire_MED short_family_names dom Mesh_1 MeshCFD.med
+VerifierCoin dom { }
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur metis { Nb_parts 4 }
+    Larg_joint 2
+    Nom_Zones DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+
+Schema_Euler_Implicite sch
+Read sch
+{
+	nb_pas_dt_max 3
+	tinit 0
+	tmax 20.1
+	dt_min 1.e-10
+	dt_max 1.0
+	dt_start dt_fixe 0.001
+	dt_sauv 100000.
+	dt_impr 1.e-20
+	seuil_statio -1.
+    facsec 500.
+	solveur implicite
+	{
+		solveur gen { seuil 1e-8 impr solv_elem bicgstab precond ilu { type 2 filling 10 } }
+	}
+    no_check_disk_space
+}
+
+Fluide_Incompressible sodium
+Read sodium
+{
+    mu      Champ_Uniforme 1 .000245
+    rho     Champ_Uniforme 1 840.
+    lambda  Champ_Uniforme 1 66.
+    Cp      Champ_Uniforme 1 1270.
+    Beta_th Champ_Uniforme 1 0.000276
+}
+
+Champ_Uniforme gravity
+Read gravity 3 0 0 -9.81
+Associate sodium gravity
+
+Pb_thermohydraulique  pb
+Associate pb dom
+Associate pb sodium
+Associate pb sch
+Discretize pb dis
+
+Read pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression Petsc Cholesky  { }
+		convection { amont }
+		diffusion {  }
+  		conditions_initiales { vitesse Champ_Uniforme 3 0. 0. 0. }
+		sources
+        {
+        	Boussinesq_temperature { T0 470. verif_boussinesq 0 }
+		  , Perte_Charge_Singuliere KZ 0.5 { Surface interf }
+        }
+		boundary_conditions
+		{
+			Inlet    frontiere_ouverte_vitesse_imposee  Champ_Front_Uniforme 3 0. 0. 1.
+			Outlet	 frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 100000.
+			Adiab    symetrie
+		}
+	}
+	Convection_diffusion_temperature
+    {
+		convection { amont }
+		diffusion { }
+		conditions_initiales { temperature Champ_Uniforme 1 550. }
+		boundary_conditions
+		{
+			Inlet    frontiere_ouverte T_ext Champ_Front_Uniforme 1 400.
+			Outlet	 frontiere_ouverte T_ext Champ_Front_Uniforme 1 550.
+			Adiab	 paroi_adiabatique
+		}
+	}
+	Postraitement
+	{
+		format lml
+		Champs Binaire dt_post 1.
+		{
+			vitesse     som
+			vitesse     elem
+			pression_pa elem
+			temperature som
+		}
+	}
+}
+
+Solve pb
+ 
+End

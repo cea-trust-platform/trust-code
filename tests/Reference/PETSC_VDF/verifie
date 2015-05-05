@@ -1,0 +1,16 @@
+# Appel pour tester tous les solveurs sur le cas test
+Check_solver.sh -all
+err=$?
+if [ $err = 0 ]
+then
+   ranking=`ls -rt ranking.* | tail -1`
+   if [ "`grep parallele $ranking`" = "" ]
+   then
+      ./check_ranking `ls -rt ranking.* | tail -1` 291 2.e-5 34 0.045
+      err=$?
+   else
+      ./check_ranking `ls -rt ranking.* | tail -1` 335 2.e-5 65 0.070
+      err=$?
+   fi
+fi
+exit $err

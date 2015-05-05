@@ -1,0 +1,17 @@
+#!/bin/bash
+grep rate ref/res
+stat=$?
+grep rate ref/res | awk '{print $1}' |sed "s/DEC_//"| sort -u > cas_rate
+if [ "$1" != "" ]
+then
+	egrep "KeyError|pas compris" err2 | sort -u
+else
+grep read_val err | sed "s/read_val_spec/read_val/g" |sed "s/read_val //g" | sort -u > traces
+[ -s traces ] &&diff traces ../traces
+	egrep "KeyError|pas compris" err | sort -u
+fi
+echo "Nbre de cas a pb " `wc -l cas_rate`	
+no_stat=0
+[  $stat -eq 0  ]&& no_stat=1
+echo $no_stat
+exit $no_stat

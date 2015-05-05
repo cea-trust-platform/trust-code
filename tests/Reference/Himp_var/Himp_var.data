@@ -1,0 +1,135 @@
+# Thermohydraulique 2D : Conditions limites instationnaires #
+# PARALLEL OK 8 #
+dimension 3
+Pb_Thermohydraulique pb
+Domaine dom
+domaine bord
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Cavite 
+		{
+		Origine 0. 0. 0.
+     		Nombre_de_Noeuds 11 11 2
+		Longueurs 1. 1. 1
+		}
+		{
+		Bord Gauche X = 0.  0. <= Y <= 1. 0 <= Z <= 1
+		Bord Haut1 Y = 1.  0. <= X <= 0.5 0 <= Z <= 1
+		Bord Haut2 Y = 1.  0.5 <= X <= 1.0 0 <= Z <= 1 
+		Bord Bas Y = 0.     0. <= X <= 1. 0 <= Z <= 1 
+		Bord Droit X = 1. 0. <= Y <= 1. 0 <= Z <= 1
+		bord Haut1 Z = 0  0. <= X <= 1. 0. <= Y <= 1.
+			bord Haut1 Z = 1  0. <= X <= 1 0. <= Y <= 1
+		}
+}
+
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 2 1 1 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0.
+	tmax 2.0 
+	dt_min 0.001
+	dt_max 0.01
+	dt_impr 0.001
+	dt_sauv 100
+	seuil_statio 1.e-8
+nb_pas_dt_max 1
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 1.85e-5
+	rho Champ_Uniforme 1 1.
+	lambda Champ_Uniforme 1 0.0262 
+	Cp Champ_Uniforme 1 100
+	beta_th Champ_Uniforme 1 3.41e-3
+}
+
+
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.500000 } 
+			seuil 1e-16 
+			impr 
+		}
+		convection { Quick }
+		diffusion { }
+		sources {  }
+		conditions_initiales {
+			vitesse Champ_Uniforme 3 0 0. 0.
+			}
+		boundary_conditions {
+			Haut1 frontiere_ouverte_vitesse_imposee
+				Champ_front_uniforme 3 0 0 0 
+			Haut2 frontiere_ouverte_vitesse_imposee
+				Champ_front_uniforme 3 0 0 0 
+			Bas frontiere_ouverte_pression_imposee
+				Champ_front_Uniforme 1 0.
+			Gauche paroi_fixe
+			Droit paroi_fixe
+		}
+	}
+	Convection_Diffusion_Temperature
+	{
+		diffusion { }
+		convection { quick }
+		boundary_conditions 
+		{
+			Haut1 frontiere_ouverte_temperature_imposee
+				Champ_front_Uniforme 1 5.
+			Haut2 frontiere_ouverte_temperature_imposee
+				Champ_front_Uniforme 1 5.
+			Bas frontiere_ouverte T_ext
+				Champ_front_Uniforme 1 5.
+ 			Gauche paroi_echange_global_impose 
+			h_imp
+				 Champ_Front_fonction  1 temperature val*val 
+			T_ext champ_front_fonction  1 temperature 5
+			Droit  paroi_temperature_imposee 
+				 Champ_Front_Uniforme 1  0.
+		}
+		conditions_initiales { Temperature Champ_fonc_xyz dom 1 5.*(1+x)*(1+y) }
+	}
+
+	Postraitement
+	{
+	
+	
+		Champs dt_post 0.1
+		{
+			temperature elem
+		}
+	}
+}
+imprimer_flux dom { Gauche }
+Solve pb
+Fin
+Fin

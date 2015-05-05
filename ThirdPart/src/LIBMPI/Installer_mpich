@@ -1,0 +1,92 @@
+#!/bin/bash
+# Install MPICH (standard or Infiniband tuned version)
+
+if [ -f /usr/lib64/libibverbs.so ] && [ -f /usr/include/infiniband/verbs.h ] && [ -f /usr/include/infiniband/mad.h ] && [ $HOST != mezel2 ]
+then
+  # Find infiniband so prefer mvapich to mpich: 
+  echo $ECHO_OPTS "Detecting Infiniband. So installing mvapich...\c"
+  ###########
+  # MVAPICH #
+  ###########
+  package=mvapich2-2.0b.tgz
+  http=http://mvapich.cse.ohio-state.edu/download/mvapich2
+  src=${package%.tgz}
+  # /usr/include/infiniband/mad.h is important for performance. See:
+  # http://mailman.cse.ohio-state.edu/pipermail/mvapich-discuss/2013-June/004466.html
+  # So don't use --disable-mcast
+  option_configure="--enable-fast=all,O3" # --disable-fc produce an error: "...able to determine Fortran 90 KIND values for either address-sized integers or offset-sized integer"
+else
+  #########
+  # MPICH #
+  #########
+  version=3.0.4
+  package=mpich-$version.tar.gz
+  src=${package%.tar.gz}
+  http=http://www.mpich.org/static/downloads/$version
+  src=${package%.tar.gz}
+  # --enable-g=meminit,dbg,mem pour debugger MPICH avec valgrind (ce n'est pas ce que l'on veut)
+  # --enable-shared (pour utiliser le MPI wrapper de valgrind)
+  # http://lists.mcs.anl.gov/pipermail/mpich-discuss/2011-June/010273.html
+  # By default, --with-device=ch3:nemesis but slow if number of CPUs > number of cores: (example PAR_Cx 9)
+  # But ch3:sock much slower (latence and bandwith!) than OpenMPI when CPUs<=number of cores (example PAR_Bilans_VEF 2)!
+  # http://wiki.mpich.org/mpich/index.php/Frequently_Asked_Questions#Q:_Why_does_my_MPI_program_run_much_slower_when_I_use_more_processes.3F
+  # OK problem solved with --enable-yield=sched_yield which fixes the performance problem: https://svn.mcs.anl.gov/repos/mpi/mpich2/trunk/CHANGES
+  # --enable-g=dbg,meminit http://wiki.mpich.org/mpich/index.php/Support_for_Debugging_Memory_Allocation
+  # --enable-shared is added cause static MPICH library cause a crash during Cathare-TRUST couplings
+  option_configure="--enable-shared --enable-g=dbg,meminit --disable-fc --enable-fast=all,O3 --enable-yield=sched_yield"
+  # Try to build MPICH with valgrind include: Nothing is changed to avoid warnings with MPICH&Valgrind in //
+  #option_configure="--enable-g=meminit --disable-fc --enable-fast=all,O3 --enable-yield=sched_yield $CPPFLAGS"
+  #INCLUDE_VALGRIND=$TRUST_ROOT/exec/valgrind/include/valgrind && [ -d $INCLUDE_VALGRIND ] && option_configure=$option_configure" CPPFLAGS=-I$INCLUDE_VALGRIND"
+fi
+
+# Verification que le package present est bien valide (probleme rencontre lors d'un download incorrect)
+#[ "`file $package 2>&1 | grep gzip`" = "" ] && rm -f $package
+
+# On telecharge le package s'il n'est pas la
+[ ! -f $package ] && wget_ $http/$package
+
+install=`pwd`/mpich
+install=$MPI_ROOT
+if [ ! -d $install ] || [ $package -nt $install ] || [ ! -d $src ]
+then
+   gunzip -c $package | tar -xf -
+fi
+cd $src 
+
+###############################
+# Lancement de la configuration
+###############################
+export F77=$TRUST_F77_BASE
+export FC=$TRUST_F77_BASE
+export CC=$TRUST_cc_BASE
+export CXX=$TRUST_CC_BASE
+if [ "`uname -m`" = x86_64 ]
+then
+  # Ajout sinon message d'erreur a la compilation sur x86_64 avec un atelier:
+  # relocation R_X86_64_32 against `MPID_Keyval_mem' can not be used when making a shared object; recompile with -fPIC
+  export CXXFLAGS="-fPIC"
+  export CFLAGS="-fPIC"
+  # Ajout pour fortran aussi car sinon problemes avec VisIt
+  export FFLAGS="-fPIC"
+  export FCFLAGS="-fPIC"
+fi
+# La variable MV est definie a sta sur certaines machines et pose probleme:
+unset MV
+./configure --help 2>&1 1>../configure.help
+./configure --prefix=$install $option_configure || exit -1
+
+#############################
+# Lancement de la compilation
+#############################
+#$TRUST_MAKE || exit -1 # Semble ne pas marcher a verifier un jour...
+$TRUST_MAKE || exit -1 # Yes, parallel build supported since MPICH 1.5
+
+#######################
+# Fin de l'installation
+#######################
+make install || exit -1
+
+cd ..
+rm -r -f $src
+
+exit 0

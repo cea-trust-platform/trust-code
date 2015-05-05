@@ -1,0 +1,11 @@
+#!/bin/bash
+sed "s/tinit/nb_pas_dt_max 1 tinit/" conduc.data > petit.data 
+echo "{ " > pb_mul.data
+cat petit.data  | grep -v [fF]in >> pb_mul.data
+echo "}" >> pb_mul.data
+cat petit.data >> pb_mul.data
+
+triou pb_mul 2>  test.err 1> test.out
+status=$?
+[ $status -ne 0 ] && echo "Pb with $0 in "`pwd`
+exit $status

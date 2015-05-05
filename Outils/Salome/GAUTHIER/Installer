@@ -1,0 +1,36 @@
+#!/bin/bash
+if [ $1 != XDATA ]
+then
+. XDATA.sh
+fi
+rm -rf $1
+#. Prerequis_xdata/env_products.sh
+#tar zxvf $1.tgz
+mkdir $1
+cd $1
+#./build_configure
+mkdir build
+cd build
+$TRUST_ROOT/Outils/TRIOXDATA/$1/$1_SRC/configure --prefix=`pwd`/../dist
+make install
+cd ../..
+touch $1
+version=`python -c "from sys import version;print 'python'+version[0:3]"`
+if [ $1 = "XDATA" ]
+then
+   echo export PYTHONPATH=`pwd`/$1/dist/lib/$version/site-packages/xdata/:\${PYTHONPATH} > XDATA.sh
+   echo export PATH=\${PATH}:`pwd`/$1/dist/bin >> XDATA.sh
+   echo setenv PYTHONPATH `pwd`/$1/dist/lib/$version/site-packages/xdata/:\${PYTHONPATH} > XDATA.csh
+   echo setenv PATH \${PATH}:`pwd`/$1/dist/bin >> XDATA.csh
+   if [ "$KERNEL_ROOT_DIR" != "" ]
+   then
+	echo "export KERNEL_ROOT_DIR=$KERNEL_ROOT_DIR" >> XDATA.sh
+	echo "setenv KERNEL_ROOT_DIR $KERNEL_ROOT_DIR" >> XDATA.csh
+   fi	
+else
+#echo "." `pwd`/Prerequis_xdata/env_products.sh > IHM$1.sh
+echo . `pwd`/XDATA.sh > IHM$1.sh
+echo export $1_ROOT_DIR=`pwd`/$1/dist >>IHM$1.sh
+echo  export PYTHONPATH=`pwd`/$1/dist/lib/$version/site-packages/salome/:\${PYTHONPATH} >> IHM$1.sh
+echo export PATH=\${PATH}:`pwd`>> IHM$1.sh
+fi

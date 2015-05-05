@@ -1,0 +1,1174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>genererCourbes : Manuel utilisateur</title>
+<meta name="author" content=""/>
+<meta name="date" content="2008-02-05T17:38:23+0100"/>
+<meta name="copyright" content=""/>
+<meta name="keywords" content=""/>
+<meta name="description" content=""/>
+<meta name="ROBOTS" content="NOINDEX, NOFOLLOW"/>
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8"/>
+<link rel="Stylesheet" href="site.css" type="text/css" />
+</head>
+<body>
+<div class="entete">
+<img src="logo.png" width="69" height="69" alt="Logo CEA" style="float: left" />
+<div align="right" class="enTete">
+	<div id="titreDoc">User's manual</div>
+	<div id="versionDoc">Version: 010</div>
+	<div id="dateDoc">Date: 01/09/2014</div>
+</div>
+
+<span id="titre">Tool for automatic generation of validation files for TRUST</span>
+</div>
+
+<table cellpadding="0" cellspacing="0" border="2" width="80%" class="tableau" summary="Historique des modifications">
+	<caption class="titre">Historic of modifications</caption>
+	<tr class="enTeteTableau">
+		<th>Version</th>
+		<th>Date</th>
+		<th>Modification</th>
+	</tr>
+	<tr>
+                <td>00A</td>
+                <td>05/02/2008</td>
+                <td>Document creation</td>
+        </tr>
+
+	<tr>
+		<td>002</td>
+		<td>11/03/2008</td>
+		<td>New functionalities: Tableau, Visu (Cea)</td>
+	</tr>
+	<tr>
+		<td>003</td>
+		<td>11/07/2008</td>
+		<td>New functionalities: Parallel calculations launching (Cea)</td>
+	</tr>
+	<tr>
+		<td>004</td>
+		<td>23/12/2008</td>
+		<td>New functionalities: pseudocolor_with_opacity, Query, molecule, zoom2D, zomm3D , no_axes no_bounding_box dans Visu, derniere_ligne dans Ligne  (Cea)</td>
+	</tr>
+	<tr>
+		<td>005</td>
+		<td>17/04/2009</td>
+		<td>Translation in English (Cea)</td>
+	</tr>
+	<tr>
+		<td>006</td>
+		<td>17/11/2009</td>
+		<td>New functionalities: Lignes, nb_img_without_newline in Visu (Cea)</td>
+	</tr>
+	<tr>
+		<td>007</td>
+		<td>07/07/2010</td>
+		<td>New functionalities: multilines description, triokeyword, pseudocolor_with_range in Visu, titre_figure in Figure. Improvements: rangeX rangeY in Figure, error messages (Cea)</td>
+	</tr>
+	<tr>
+		<td>008</td>
+		<td>07/09/2010</td>
+		<td>New functionalities: Histogram, operators no_triad no_legend no_databaseinfo in Visu (Cea)</td>
+	</tr>
+	<tr>
+		<td>009</td>
+		<td>07/07/2011</td>
+		<td>New functionalities: read_value_in_file, nb_img_without_newline in Figure (Cea)</td>
+	</tr>
+	<tr>
+		<td>010</td>
+		<td>01/09/2012</td>
+		<td>Keywords in English now available (Cea)<br></br>New functionalities: include_text_file in description , and slice2d_x (y,z) in Visu</td>
+	</tr>
+	<tr>
+		<td>011</td>
+		<td>01/03/2014</td>
+		<td>New functionalities: transposed_display in Table, and direct fieldname in Visu</td>
+	</tr>
+	<tr>
+		<td>012</td>
+		<td>01/10/2014</td>
+		<td>New functionalities in Visu: clip operator, insertText, blackvector_with_nb and color for mesh</td>
+	</tr>
+</table>
+
+<h1>Introduction</h1>
+
+<h2>This document</h2>
+<p>This document is the User's manual of the tool  <b>genererCourbes</b>, a tool designed for automatic generation of
+validation reports for TRUST.</p>
+
+<h2>Aim of this tool</h2>
+<p>The aim of the tool  <b>genererCourbes</b>is to generate rapidly a validation file enabling to compare easily new calculation results to reference and/or previous calculations (from previous versions of the code for exemple).
+</p>
+
+<h2>Aim of this tool</h2>
+<p>Using the data given by the user, this tool is able to browse the calculation results of TRUST  and generate:</p>
+<ul>
+	<li>Curves, by using gnuplot,</li>
+	<li>A LateX file in which those curves are inserted,</li>
+	<li>A pdf file obtained from the compilation of the LateX file with pdflatex.</li>
+</ul>
+
+<h2>Required Configuration</h2>
+<p>In order to be able to use the tool <b>genererCourbes</b>, the following configuration is required&nbsp;:</p>
+<ul>
+	<li>A python interpretor <a href="http://www.python.org">Python</a>, version 2.3&nbsp;;</li>
+	<li>A setup of Latex and of the tool <a href="http://www.tug.org/applications/pdftex/">pdflatex</a> (usually delivered with the LateX distributions;) ;</li>
+	<li>A setup of the <a href="http://www.gnuplot.info">gnuplot</a> tool&nbsp;;</li>
+	<li>A setup Of TRUST (if use of the tool of extracting probes, see <a href="#paramCourbe">here</a>).</li>
+</ul>
+
+<h1>Use of <b>genererCourbes</b></h1>
+
+<h2 id="options">Command line</h2>
+<p>The tool <b>genererCourbes</b> can be used directly in command lines thanks to the following options&nbsp;:</p>
+<ul>
+	<li>Required options&nbsp;:
+	<ul>
+		<li>-p&nbsp;:name of the parameter file (see <a href="#ficParametres">below</a>)</li>
+	</ul></li>
+	<li>Facultative options&nbsp;:
+	<ul>
+		<li>-v&nbsp;: verbosity level of the tool&nbsp;;</li>
+		<li>-o&nbsp;: file name for the generated report (pdf file)&nbsp;;</li>
+		<li>-h&nbsp;: quick help on the tool.</li>
+	</ul></li>
+</ul>
+
+<h2 id="ficParametres">Parameter file</h2>
+<p>All the information necessary to the creation of the validation file are gathered in a parameter file. This file is structured and given as an option to the tool. 
+ (option <a href="#options">-p</a>).</p>
+<p>The parameter file is composed of two parts&nbsp;:</p>
+<ul>
+	<li>A bloc of <a href="#paramGeneraux">general parameters</a>&nbsp;;</li>
+	<li>A succession of blocs corresponding to  <a href="#paramChapitre">the chapters of the file.</a>.<br />
+	There is no limitation of the number of chapters.</li>
+</ul>
+<dl class="remark"><dt class="remark">NB</dt><dd class="remark">All the file names in the parameter file must be specified using either an absolute path or a path relativ to the position of the parameter file.</dd></dl>
+
+<h2>General syntax</h2>
+<p>The parameter file obeys to the following syntax rules:&nbsp;</p>
+<ul>
+	<li>The file is structured in blocks whith the following syntax:
+<pre>NameBloc {
+	... [parameters of the bloc] ...
+}</pre></li>
+	<li>The blocs contain parameters using the form  'keywords value':
+<pre>NameKeyword    Value</pre></li>
+	<li>The keywords can be&nbsp;:
+		<ul>
+			<li>unique&nbsp;: in this case, if the keyword is given several times, only its last occurence is taken into account.</li>
+			<li>multiple&nbsp;: in this case,the given information are concatenated.</li>
+		</ul>
+		The type of keyword depends on the keyword&nbsp;; it is specified for each keyword&nbsp;;</li>
+	<li>The value of a keyword can be&nbsp;:
+		<ul>
+			<li>a caracter string</li>
+			<li>one or more number(s) (integer, double)</li>
+		</ul>
+		The type of value depends on the keyword, it is specified for each considered keyword&nbsp;;</li>
+	<li>The order of the keywords does not matter&nbsp;;</li>
+	<li>The case of the keywords is not taken into account&nbsp;;</li>
+	<li>A comment line starts with a "#".</li>
+</ul>
+
+<h2 id="paramGeneraux">General parameters</h2>
+<p>There can be only one general parameter block. It is introduced by the keyword:</p>
+<pre>Parametres {
+	...
+}
+or
+Parameters {
+	...
+}
+</pre>
+
+<p>The general parameter block can contain the following parameters&nbsp;</p>
+<table cellpadding="5" cellspacing="0" border="2" width="80%" class="tableau" summary="Parametres generaux">
+	<caption>General parameters</caption>
+	<tr class="enTeteTableau">
+		<th>KeyWord</th>
+		<th>Duplicity</th>
+		<th>Value type</th>
+		<th>Mandatory</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td>Title|Titre</td>
+		<td>U</td>
+		<td>str</td>
+		<td>O</td>
+		<td class="desc">Title of the validation file</td>
+	</tr>
+	<tr>
+		<td>Author|Auteur</td>
+		<td>U</td>
+		<td>str</td>
+		<td>O</td>
+		<td class="desc">Name of the author of the file</td>
+	</tr>
+	<tr>
+		<td>Description</td>
+		<td>M</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">Description of the corresponding test case</td>
+	</tr>
+	<tr>
+		<td>TestCase|CasTest</td>
+		<td>M</td>
+		<td>dir cas [nb_proc] [ comment ]</td>
+		<td>O</td>
+		<td class="desc">List of the test cases launched for this file. For each test case, the following indications are specified: the relative directory where the test case can be found, the name of the case (with or without the extension .data), if necessary, the number of processors on which the test case must be run and a comment.</td>
+	</tr>
+	<tr>
+		<td>VersionTRUST</td>
+		<td>U</td>
+		<td>str</td>
+		<td>O</td>
+		<td class="desc">Number of the TRUST version used for the validation</td>
+	</tr>
+	<tr>
+		<td>ParametersTRUST<br></br>  |ParametresTRUST</td>
+		<td>M</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">List of the options tested in this validation file</td>
+	</tr>
+	<tr>
+		<td>Reference</td>
+		<td>M</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">Reference list (publications, books, ...) used for validation</td>
+	</tr>
+	<tr>
+		<td>Prerequisite|PreRequis</td>
+		<td>M</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">List of commands to launch before generating the pdf report</td>
+	</tr>
+	<tr>
+		<td>IncludeData|InclureData</td>
+		<td>U</td>
+		<td>0/1/2</td>
+		<td>F</td>
+		<td class="desc">Integer enabling the inclusion (1) or not (0) of the TRUST data files in the validation file. The default value is now 2. With this value, the data names having a comment are included.</td>
+	</tr>
+</table>
+
+<dl class="remark"><dt class="remark">NB</dt><dd class="remark">The keyword <em>Prerequisite|PreRequis</em> enables to launch commands before the report generation. This can be usefull to extract data before they are drawn in a graph for example.<br />
+The Value of the keyword must be a command which can be used as a command line</dd></dl>
+
+<dl class="remark"><dt class="remark">NB</dt><dd class="remark">To generate paragraphs during a description, it is enough to separate the description into several parts.<br /> 
+If the first description line terminates by  &lt;&lt;EOF, the lines below are added to description, until a line terminates by EOF.</dd></dl>
+<dl class="remark"><dt class="remark">NB</dt><dd class="remark">
+The caracters placed between  <b>\latex_</b>( and <b>\latex_</b>) are written as such in the TeX file (enables for example to write  \latex_( \input{titi} \latex_). </dd></dl>
+<dl class="remark"><dt class="remark">NB</dt><dd class="remark">In description, to mark a triou keyword, use <b>triokeyword</b>(VDF). </dd></dl>
+<dl class="remark"><dt class="remark">NB</dt><dd class="remark">In description, to insert results from a file use <b>read_value_in_file</b>("value","filename") (the value is read by python command: from filename import value). <br />Warning: the filename is the filename of the python file without .py. Don't forget the quotes.  </dd></dl>
+<dl class="remark"><dt class="remark">NB</dt><dd class="remark">In description, to insert a text file upse <b>include_text_file</b>(filename,keyword1,...,keywordn). The file filename will be included in the report, and the words keyword1...keywodn are highlighted.  </dd></dl>
+
+
+
+<h2 id="paramChapitre">Chapter parameters</h2>
+<p>A chapter has the meaning of a chapter to generate for the report file (a section).<br />
+It is composed of several <a href="#paramFigure">figures</a>, <a href="#paramTableau">tables</a> and <a href="#paramVisu">visus</a>.</p>
+<p>The parameter block of the chapter is introduced by the keyword:</p>
+<pre>Chapitre {
+	...
+}
+or
+Chapter {
+}
+</pre>
+
+<p>The chapter parameter block can contain the following parameters&nbsp;</p>
+<table cellpadding="5" cellspacing="0" border="2" width="80%" class="tableau" summary="Parametres de chapter">
+	<caption>Parameters for Chapter</caption>
+	<tr class="enTeteTableau">
+		<th>KeyWord</th>
+		<th>Duplicity</th>
+		<th>Value type</th>
+		<th>Mandatory</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td>Title|Titre</td>
+		<td>U</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">Title of the chapter</td>
+	</tr>
+	<tr>
+		<td>Description</td>
+		<td>M</td>
+		<td>str</td>
+		<td>O</td>
+		<td class="desc">Description of the chapter content</td>
+	</tr>
+	<tr>
+		<td>Figure</td>
+		<td>M</td>
+		<td>BLOC</td>
+		<td>F</td>
+		<td class="desc">Element of the list of <a href="#paramFigure">figures</a> included in the chapter</td>
+	</tr>
+	<tr>
+		<td>Table|Tableau</td>
+		<td>M</td>
+		<td>BLOC</td>
+		<td>F</td>
+		<td class="desc">Element of the list of <a href="#paramTableau">tables</a> included in the chapter</td>
+	</tr>
+	<tr>
+		<td>Visu</td>
+		<td>M</td>
+		<td>BLOC</td>
+		<td>F</td>
+		<td class="desc">Element of the list of <a href="#paramVisu">visus</a> included in the chapter</td>
+	</tr>
+</table>
+
+<h2 id="paramFigure">Parameters for figures</h2>
+<p>A figure is a picture obtained with &nbsp;:</p>
+<ul>
+	<li>inclusion of a file containing an external picture&nbsp;;</li>
+	<li>its generation via gnuplot as a function of given parameters.</li>
+</ul>
+<p>A parameter block for figures is introduced by the key word</p>
+<pre>Figure {
+	...
+}</pre>
+
+<p>The block parameter for figures can contain the following parameters:</p>
+<table cellpadding="5" cellspacing="0" border="2" width="80%" class="tableau" summary="Parametres de figure">
+	<caption>Figure parameters</caption>
+	<tr class="enTeteTableau">
+		<th>KeyWord</th>
+		<th>Duplicity</th>
+		<th>Value type</th>
+		<th>Mandatory</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td>Title|Titre</td>
+		<td>U</td>
+		<td>str</td>
+		<td>O</td>
+		<td class="desc">Title of the presented figure</td>
+	</tr>
+	<tr>
+		<td>Description</td>
+		<td>M</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">Description of the presented figure</td>
+	</tr>
+	
+	<tr>
+		<td>Width</td>
+		<td>U</td>
+		<td>[0-9]cm</td>
+		<td>F</td>
+		<td> class="Definition of the picture size in the report (by default 15 cm). If the size is negative or equal to 0cm, the picture is not included.</td>
+	</tr>
+	<tr>
+		<td>Picture|Image</td>
+		<td>U</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">Path of the picture to be included as a figure<br />
+			This option enables to include figures generated outside the tool (for exemple by a post processor).<br />
+			NB&nbsp;: Only the keywords <em>Title|Titre</em> and <em>Description</em> apply for an  <em>Picture|Image</em></td>
+	</tr>
+	<tr>
+		<td>Curve|Courbe</td>
+		<td>M</td>
+		<td>BLOC</td>
+		<td>F</td>
+		<td class="desc">Element of the <a href="#paramCourbe">curve</a> list to display in the picture</td>
+
+
+	</tr>
+	<tr>
+		<td>Dimension<a href="#gnuplot">*</a></td>
+		<td>U</td>
+		<td>2/3</td>
+		<td>F</td>
+		<td class="desc">Dimension of the graph to generate (2 by default)</td>
+	</tr>
+	<tr>
+		<td>RangeX<a href="#gnuplot">*</a></td>
+		<td>U</td>
+		<td>2 real/auto/auto real/real auto</td>
+		<td>F</td>
+		<td class="desc">X-coordinate range of the graph</td>
+	</tr>
+	<tr>
+		<td>RangeY<a href="#gnuplot">*</a></td>
+		<td>U</td>
+		<td>2 real/auto/auto real/real auto</td>
+		<td>F</td>
+		<td class="desc">Y-coordinate range of the graph</td>
+	</tr>
+	<tr>
+		<td>LogX<a href="#gnuplot">*</a></td>
+		<td>U</td>
+		<td></td>
+		<td>F</td>
+		<td class="desc">Activates the log scale for the X axis</td>
+	</tr>
+	<tr>
+		<td>LogY<a href="#gnuplot">*</a></td>
+		<td>U</td>
+		<td></td>
+		<td>F</td>
+		<td class="desc">Activates the log scale for the Y axis</td>
+	</tr>
+	
+	<tr>
+		<td>LabelX<a href="#gnuplot">*</a></td>
+		<td>U</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">Name of the X axis</td>
+	</tr>
+	<tr>
+		<td>LabelY<a href="#gnuplot">*</a></td>
+		<td>U</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">Name of the Y axis</td>
+	</tr>
+	<tr>
+		<td>PointSize<a href="#gnuplot">*</a></td>
+		<td>U</td>
+		<td>real</td>
+		<td>F</td>
+		<td class="desc">Point size</td>
+	</tr>
+	<tr>
+		<td>Legend|Legende<a href="#gnuplot">*</a></td>
+		<td>U</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">Parameters of the graph legend</td>
+	</tr>
+	<tr>
+		<td>nb_img_without_newline</td>
+		<td>U</td>
+		<td>nb</td>
+		<td>F</td>
+		<td class="desc"> nb images will be included before new line, be carreful with the width of the images.</td>
+	</tr>
+	<tr>
+		<td>Include_Description_Curves<br></br>|InclureDescCourbes</td>
+		<td>U</td>
+		<td>0/1</td>
+		<td>F</td>
+		<td class="desc">Booleen enabling the inclusion (1) or not (0) of the description of each curve after the graph</td>
+	</tr>
+</table>
+<p id="gnuplot">*&nbsp;: These options correspond to gnuplot options.</p>
+
+<h2 id="paramCourbe">Parameters for Curve|Courbe </h2>
+<p>A "Courbe" (Curve) is a an element of a figure plotted as gnuplot can do.</p>
+<p>A block of parameters for "curbe" is introduced by the keyword: </p>
+<pre>Courbe {
+	...
+}
+or
+Curve {
+	...
+}
+</pre>
+
+<p>The block of parameters for "courbes" can contain the following parameters: </p>
+<table cellpadding="5" cellspacing="0" border="2" width="80%" class="tableau" summary="Parametres de courbe">
+	<caption>Parameters for Curve</caption>
+	<tr class="enTeteTableau">
+		<th>KeyWord</th>
+		<th>Duplicity</th>
+		<th>Value type</th>
+		<th>Mandatory</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td>Description</td>
+		<td>M</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">Description of the curve. It is diplayed after the curve</td>
+	</tr>
+	<tr>
+		<td>Legend|Legende</td>
+		<td>U</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">Description of the curve displayed in the legend</td>
+	</tr>
+	<tr>
+		<td>Origin|Origine</td>
+		<td>U</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">Gives the origin of the plotted data (publication, previous calculation ...)</td>
+	</tr>
+	<tr>
+		<td>Version</td>
+		<td>U</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">Number of the TRUST code version if the curve is issued from a TRUST calculation</td>
+	</tr>
+	<tr>
+		<td><em>Type of curve</em></td>
+		<td>U</td>
+		<td>str</td>
+		<td>O</td>
+		<td class="desc">Parameters depending on the curve type: see below</td>
+	</tr>
+	<tr>
+		<td>Columns|Colonnes</td>
+		<td>U</td>
+		<td>str</td>
+		<td>O</td>
+		<td class="desc">Columns to use in the data file to generate the curves (parameter used in gnuplot)</td>
+	</tr>
+	<tr>
+		<td>Style</td>
+		<td>U</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">Plotting style of the curve (lines, points, ... recognized by gnuplot)</td>
+	</tr>
+	<tr>
+		<td>TypeLigne</td>
+		<td>U</td>
+		<td>int</td>
+		<td>F</td>
+		<td class="desc">Color of the curve</td>
+	</tr>
+	<tr>
+		<td>TypePoints</td>
+		<td>U</td>
+		<td>int</td>
+		<td>F</td>
+		<td class="desc">Point type of the curve</td>
+	</tr>
+	<tr>
+		<td>PointSize</td>
+		<td>U</td>
+		<td>int</td>
+		<td>F</td>
+		<td class="desc">Point size</td>
+	</tr>
+	<tr>
+		<td>Axis|Axes</td>
+		<td>U</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">Axis to use for the curve</td>
+	</tr>
+	<tr>
+		<td>Linewidth|LargeurLigne</td>
+		<td>U</td>
+		<td>int</td>
+		<td>F</td>
+		<td class="desc">Width of the curve</td>
+	</tr>
+</table>
+
+<p>A "courbe" can be of 5 different types&nbsp;:</p>
+<ul>
+	<li><em>Fonction</em>&nbsp;: the given function is plotted<br />
+		syntax&nbsp;: <em>Fonction  fonction</em></li>
+	<li><em>File|Fichier</em>&nbsp;: basic curve, plotted from a parameter file which name is given<br />
+		syntax&nbsp;: <em>File|Fichier  nomFichier.dat</em></li>
+	<li><em>Points</em>&nbsp;: curve generated by using the TRUST tool of probe extraction<br />
+		syntax&nbsp;: <em>Points  nomFichier.data NOMSONDE</em></li>
+	<li><em>Segment</em>&nbsp;: curve generated by using the TRUST tool of probe extraction<br />
+		syntax&nbsp;: <em>Segment  nomFichier.data NOMSONDE [ temps ]</em></li>
+	<li><em>Plan</em>&nbsp;: curve generated by using the TRUST tool of probe extraction<br />
+		syntax&nbsp;: <em>Plan  nomFichier.data NOMSONDE [ temps ]</em></li>
+</ul>
+
+<dl class="avert"><dt class="avert">Caution</dt><dd class="avert">If a figure contains the keyword <em>Curve|Courbe</em> and <em>Image</em>,
+this keyword will be ignored;.</dd></dl>
+
+<h2 id="paramVisu">Parameters for visus</h2>
+<p>A "visu" is a picture obtained by&nbsp;:</p>
+<ul>
+	<li>Its generation via visit depending on the given parameters.</li>
+</ul>
+<p>A block of "visu" parameters is introduced by the keyword;</p>
+<pre>Visu {
+	...
+}</pre>
+
+<p>The block of parameter for "visu" can contain the following parameters&nbsp;</p>
+<table cellpadding="5" cellspacing="0" border="2" width="80%" class="tableau" summary="Parametres de visu">
+	<caption>Visu parameters</caption>
+	<tr class="enTeteTableau">
+		<th>KeyWord</th>
+		<th>Duplicity</th>
+		<th>Value Type</th>
+		<th>Mandatory</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td>Title|Titre</td>
+		<td>U</td>
+		<td>str</td>
+		<td>O</td>
+		<td class="desc">Title of the presented visu</td>
+	</tr>
+	<tr>
+		<td>Description</td>
+		<td>M</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">Description of the presented visu</td>
+	</tr>
+	
+	<tr>
+		<td>Width</td>
+		<td>U</td>
+		<td>[0-9]cm</td>
+		<td>F</td>
+		<td class="desc">Definition of the picture size in the report (default 15 cm). If the size is negative or equals 0 cm, the picture is not included.</td>
+	</tr>
+	<tr>
+		<td>Origin|Origine</td>
+		<td>U</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">Gives the origin of the plotted data (publication, previous calculation,...)</td>
+	</tr>
+	<tr>
+		<td>Cycles</td>
+		<td>M</td>
+		<td>i1  ... in</td>
+		<td>F</td>
+		<td class="desc">The cycles (number of time step) where the picture must be plotted (starting at zero). It must be noted that -1 corresponds to the last time, -2 to the one before last ...</td>
+	</tr>
+	<tr>
+		<td>Mesh</td>
+		<td>M</td>
+		<td>file domain_name [black|red|green|blue] </td>
+		<td>F</td>
+		<td class="desc">The mesh of the calculation domain (domain_name) is plotted using the file file with the specified color</td>
+	</tr>
+	<tr>
+		<td>Vector</td>
+		<td>M</td>
+		<td>file domain_name variable position [scale] </td>
+		<td>F</td>
+		<td class="desc">The vector (variable) is plotted at the domain position (SOM/ELEM/FACES) from the domain domain_name from the file file</td> 
+	</tr>
+	<tr>
+		<td>BlackVector</td>
+		<td>M</td>
+		<td>file domain_name variable position [scale]</td>
+		<td>F</td>
+		<td class="desc">The vector (variable) is plotted in black at the domain position (SOM/ELEM/FACES) from the domain domain_name from the file file</td>
+	</tr>
+<tr>
+		<td>BlackVector_with_nb</td>
+		<td>M</td>
+		<td>file domain_name variable position nb_vectors [scale]</td>
+		<td>F</td>
+		<td class="desc">"nb_vectors" vectors of the fied "variable" are plotted in black at the domain position (SOM/ELEM/FACES) from the domain domain_name from the file file</td>
+	</tr>
+	<tr>
+		<td>Pseudocolor</td>
+		<td>M</td>
+		<td>file domain_name variable position</td>
+		<td>F</td>
+		<td class="desc">A 'pseudocolor' is plotted for the variable located at position (SOM/ELEM/FACES) of the domain domain_name from the file file</td>
+	</tr>
+	<tr>
+		<td>Pseudocolor_with_opacity</td>
+		<td>M</td>
+		<td>file domain_name variable position opacity</td>
+		<td>F</td>
+		<td class="desc">A 'pseudocolor' is plotted for the variable located at position (SOM/ELEM/FACES) of the domain domain_name from the file file, with a certain opacity</td>
+	</tr>
+	<tr>
+		<td>Pseudocolor_with_range</td>
+		<td>M</td>
+		<td>file domain_name variable position rmin rmax</td>
+		<td>F</td>
+		<td class="desc">A 'pseudocolor' is plotted for the variable located at position (SOM/ELEM/FACES) of the domain from the domain domain_name from the file file, with a clormap from rmin to rmax. rmin can be "min" or a float, rmax can be "max" or a float.</td>
+	</tr>
+	<tr>
+		<td>InsertText</td>
+		<td>M</td>
+		<td>ox oy oz text size</td>
+		<td>F</td>
+		<td class="desc">Inserts the text "text" at the position (ox oy oz) and in police size "size".</td>
+	</tr>
+	<tr>
+		<td>Isovalues|Isovaleurs</td>
+		<td>M</td>
+		<td>file domain_name variable position</td>
+		<td>F</td>
+		<td class="desc">Isovalues are plotted for the variable located at the position (SOM/ELEM/FACES) of the domain domain_name from the file file</td>
+	</tr>
+	<tr>
+		<td>Molecule</td>
+		<td>M</td>
+		<td>file domain_name variable position size</td>
+		<td>F</td>
+		<td class="desc">A molecule is plotted. It is colored by the variable located at the position (SOM/ELEM/FACES) of the domain domain_name from the file file with balls of fixed size</td>
+	</tr>
+	<tr>
+		<td>Histogram</td>
+		<td>M</td>
+		<td>file domain_name variable position vmin vmax numbins</td>
+		<td>F</td>
+		<td class="desc">A histogram is plotted. It uses the variable located at the position (SOM/ELEM/FACES) of the domain domain_name from the file file, using vmin vmax for xrange and numbins for number of bins. NB, vmin vmax can be MIN MAX.</td>
+	</tr>
+	<tr>
+		<td>Operator</td>
+		<td>M</td>
+		<td>type_operateur</td>
+		<td>F</td>
+		<td class="desc">Applies the operator of <a href="#paramOperator">type</a>  to the last plot.</td>
+	</tr>
+	<tr>
+		<td>Operator_to_all</td>
+		<td>M</td>
+		<td>type_operateur</td>
+		<td>F</td>
+		<td class="desc">Applies the operator of <a href="#paramOperator">type</a> to all the plots.</td>
+	</tr>
+	<tr>
+	         <td>Query</td>
+		<td>M</td>
+		<td>type_query file</td>
+		<td>F</td>
+		<td class="desc">Applies the query of <a href="#paramQuery">type</a> to the last plot and stores the result int a file file (under the format: time  result)</td>
+	</tr>
+	<tr>
+		<td>Normal3d</td>
+		<td>M</td>
+		<td>nx ny nz</td>
+		<td>F</td>
+		<td class="desc">Normal to the 3D view. nx ny nz correspond to  View normal (see View/3D view in visit).</td>
+	</tr>
+	<tr>
+		<td>Up3D</td>
+		<td>M</td>
+		<td>nx ny nz</td>
+		<td>F</td>
+		<td class="desc">Vertical vector in 3D. nx ny nz correspond to Up Vector (see View/3D view in visit).</td>
+	</tr>
+	<tr>
+		<td>zoom3D</td>
+		<td>M</td>
+		<td>px py scale</td>
+		<td>F</td>
+		<td class="desc">Enables to zoom in 3D,  px py correspond to Image pan and scale Image zoom (see View/3D view in visit). </td>
+	</tr>
+	<tr>
+		<td>zoom2D</td>
+		<td>M</td>
+		<td>xmin xmax ymin ymax</td>
+		<td>F</td>
+		<td class="desc">Enables ro zoom in 2D, the view will be between (xomoin,yomin) and (xomax yomax). xmin xmax ymin ymax correspond to Window (see View/2D view in visit). </td>
+	</tr>
+	<tr>
+		<td>UpAxis</td>
+		<td>M</td>
+		<td>nx ny nz</td>
+		<td>F</td>
+		<td class="desc">Direction of the projection for the 2D projection.</td>
+	</tr>
+	<tr>
+		<td>Instruction_visit</td>
+		<td>M</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">The instruction will be written as such in the python script for visit.</td>
+	</tr>
+	<tr>
+		<td>nb_img_without_newline</td>
+		<td>U</td>
+		<td>nb</td>
+		<td>F</td>
+		<td class="desc"> nb images will be included before new line, be carreful with the width of the images.</td>
+	</tr>
+	<tr>
+		<td>Include_Description_Curves<br></br>|InclureDescCourbes</td>
+		<td>U</td>
+		<td>0/1</td>
+		<td>F</td>
+		<td class="desc">Boolean not in use for the moment</td>
+	</tr>
+</table>
+
+<h2 id="paramOperator">Parameters for operators</h2>
+
+
+<p>An operator can be of different types&nbsp;:</p>
+<ul>
+	<li><em>Slice ox oy oz nx ny nz </em>&nbsp;: slice through the point (ox,oy,oz) in the direction direction (nx,ny,nz).</li>
+	<li><em>Slice2D ox oy oz nx ny nz </em>&nbsp;: slice through the point (ox,oy,oz) in the direction (nx,ny,nz) then projection in 2D. The direction of projection can be defined via UpAxis, (0,0,1) by default.</li>
+	<li><em>Slice2D_x ox oy oz </em>&nbsp;: slice through the point (ox,oy,oz) in the direction x then projection in 2D in direction (0,1,0).</li>
+	<li><em>Slice2D_y ox oy oz </em>&nbsp;: slice through the point (ox,oy,oz) in the direction y then projection in 2D in direction (0,0,1).</li>
+	<li><em>Slice2D_z ox oy oz </em>&nbsp;: slice through the point (ox,oy,oz) in the direction z then projection in 2D in direction (0,1,0).</li>
+	<li><em>ThreeSlice ox oy oz </em>&nbsp;: slice through the point (ox,oy,oz) in the 3 plans  (operator Threeslice de visit).</li>
+	<li><em>clip_1plane ox oy oz nx ny nz </em>&nbsp;: plots only the elements in the area defined by the plane passing by the point (ox oy oz) and which has the normal (nx ny nz). (Do not forget to inverse the normal, to plot the opposite part).</li>
+	<li><em>clip_2planes ox oy oz nx ny nz ox2 oy2 oz2 nx2 ny2 nz2 </em>&nbsp;: the same as "clip_1plane ox oy oz nx ny nz" but it combines two planes.</li>
+	<li><em>no_databaseinfo</em>&nbsp;: disables the plotting of the info about the database. </li>
+	<li><em>no_legend</em>&nbsp;: disables the plotting of the legend. </li>
+	<li><em>no_axes</em>&nbsp;: disables the plotting of the axis. </li>
+	<li><em>no_triad</em>&nbsp;: disables the plotting of the triad. </li>
+	<li><em>no_bounding_box</em>&nbsp;: disables the plotting of the bounding box. </li>	
+</ul>
+<h2 id="paramQuery">Parameters for Query</h2>
+
+
+<p> The different types are (mind the upper and lower case):&nbsp;:</p>
+<ul>
+	<li><em>Min </em>&nbsp;: Min.</li>
+	<li><em>Max </em>&nbsp;: Max.</li>
+	<li><em>Weighted_Variable_Sum </em>&nbsp;: weighted integral</li>
+	<li><em>Sum </em>&nbsp;: non weighted integral</li>
+</ul>
+
+<dl class="remark"><dt class="remark">NB</dt><dd class="remark">For the generations of figures via gnuplot and of visus via visit, the tool creates a directory .tmp in the current directory.
+<p>In this directory, you will find&nbsp;:</p>
+<ul>
+	<li>A file ficxxx.plot per figure, containing the instructions for the gnuplot figure generation&nbsp;;</li>
+	<li>A file ficxxx.png per figure, picture resulting from gnuplot, to include in the report&nbsp;;</li>
+	<li>A file visitxxx.py per visu, containing the instructions for the visit figure generation&nbsp;;</li>
+	<li>A file visitxxx_yyy.png par picture resulting from visit to include in the report&nbsp;;</li>
+	<li>The file latex and the files resulting from pdflatex (log, ...).</li>
+</ul>
+Besides, in the current directory, there is one visit_xxx.session file per visu (enabling to re-launch visit via visit -sessionfile).
+</dd></dl>
+
+<dl class="remark"><dt class="remark">NB</dt><dd class="remark">For the generations of visus of fields via visit, the arguments domain_name variable position could be replaced by the field_name directly.</dd></dl>
+
+<h2 id="paramTableau">Parameters for the tables (tableaux)</h2>
+<p>A table is obtained with&nbsp;:</p>
+<ul>
+	<li>A first line&nbsp;;</li>
+	<li>Further lines which generation depend on the parameters used. </li>
+</ul>
+<p>A parameter block for a table (tableau) is introduced by a keyword </p>
+<pre>Tableau {
+	...
+}
+or
+Table {
+	...
+}
+</pre>
+
+<p>The parameter block for Tables can contain the following parameters&nbsp;</p>
+<table cellpadding="5" cellspacing="0" border="2" width="80%" class="tableau" summary="Parametres de tableau">
+	<caption>Parameters for Table</caption>
+	<tr class="enTeteTableau">
+		<th>Keyword</th>
+		<th>Duplicity</th>
+		<th>Value type</th>
+		<th>Mandatory</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td>Title|Titre</td>
+		<td>U</td>
+		<td>str</td>
+		<td>O</td>
+		<td class="desc">Title of the presented table</td>
+	</tr>
+	<tr>
+		<td>Description</td>
+		<td>M</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">Description of the presented table</td>
+	</tr>
+	<tr>
+		<td>legend|legende</td>
+		<td>U</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">legend of the table</td>
+	</tr>	
+	<tr>
+		<td>nb_columns|nb_colonnes</td>
+		<td>U</td>
+		<td>int</td>
+		<td>O</td>
+		<td class="desc">Number of columns for the table (without the first column)</td>
+	</tr>	
+<tr>
+		<td>transposed_display</td>
+		<td>U</td>
+		<td></td>
+		<td>F</td>
+		<td class="desc">To display transposed tabe </td>
+	</tr>
+	<tr>
+		<td>label</td>
+		<td>U</td>
+		<td>str1 | str2</td>
+		<td>O</td>
+		<td class="desc">Label of the columns separated by |</td>
+	</tr>
+	<tr>
+		<td>formula|formule</td>
+		<td>U</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">Adds a column with the given experimental formula (as a function of ref and val)</td>
+	</tr>	
+	<tr>
+		<td>Line|Ligne</td>
+		<td>M</td>
+		<td>BLOC</td>
+		<td>F</td>
+		<td class="desc">Element of the list of <a href="#paramLigne">line</a> displayed in the table</td>
+	</tr>
+	<tr>
+		<td>Lines|Lignes</td>
+		<td>M</td>
+		<td>BLOC</td>
+		<td>F</td>
+		<td class="desc">Elements of the list <a href="#paramLignes">lines</a> displayed in the table</td>
+	</tr>
+
+	<tr>
+		<td>Include_Description_lines<br></br>|InclureDescLignes</td>
+		<td>U</td>
+		<td>0/1</td>
+		<td>F</td>
+		<td class="desc">Boolean enabling to include (1) or not (0) the description of each ligne after the table</td>
+	</tr>
+</table>
+
+<h2 id="paramLigne">Parameters for the line (ligne)</h2>
+<p>A line is an element of the table plotted with the possibilities of LateX</p>
+<p>A parameter block for the lines is introduced by the keyword</p>
+<pre>Ligne {
+	...
+}
+or
+Line {
+	...
+}
+</pre>
+
+<p>The parameter block for the line can contain the following parameters&nbsp;</p>
+<table cellpadding="5" cellspacing="0" border="2" width="80%" class="tableau" summary="Parametres de ligne">
+	<caption>Parameters for Line</caption>
+	<tr class="enTeteTableau">
+		<th>KeyWord</th>
+		<th>Duplicity</th>
+		<th>Value type</th>
+		<th>Mandatory</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td>Description</td>
+		<td>M</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">Description of the line to be displayed after the table</td>
+	</tr>
+	<tr>
+		<td>Legend|Legende</td>
+		<td>U</td>
+		<td>str</td>
+		<td>O</td>
+		<td class="desc">Name of the line</td>
+	</tr>
+		<tr>
+		<td>alias</td>
+		<td>U</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">Alias of the line name (useful for formulas)</td>
+	</tr>
+	<tr>
+		<td>Origin|Origine</td>
+		<td>U</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">Gives the origin of the data (publication, previous calculations, ...)</td>
+	</tr>
+	<tr>
+		<td>Version</td>
+		<td>U</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">TRUST version number if the line is obtained from a TRUST calculation</td>
+	</tr>
+	<tr>
+		<td>File|Fichier</td>
+		<td>U</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">Name of the file where the values are read</td>
+	</tr>
+	<tr>
+		<td>Nb_columns_file<br></br>|Nb_colonnes_fichier</td>
+		<td>U</td>
+		<td>int</td>
+		<td>F</td>
+		<td class="desc">Number of values to read if it is different from nb_columns|nb_colonnes</td>
+	</tr>
+	<tr>
+		<td>last_line|derniere_ligne</td>
+		<td>U</td>
+		<td>-</td>
+		<td>F</td>
+		<td class="desc">With this option, the last line of the file is read instead of the first one</td>
+	</tr>
+	<tr>
+		<td>values|valeurs</td>
+		<td>U</td>
+		<td>nb_columns real</td>
+		<td>F</td>
+		<td class="desc">Values to put in the table</td>
+	</tr>
+		<tr>
+		<td>display_line|afficher_ligne</td>
+		<td>U</td>
+		<td>O/1</td>
+		<td>F</td>
+		<td class="desc">Boolean: the line will be displayed (default) or not (if 0).</td>
+	</tr>
+	<tr>
+		<td>Columns|Colonnes</td>
+		<td>U</td>
+		<td>mot1 mot2 motN</td>
+		<td>F</td>
+		<td class="desc">enables to define operations. The syntax is similar to gnuplo $1+$2  adding ref.$1 to have the value of the first column of the line ref.</td>
+	</tr>
+	<tr>
+		<td>difference</td>
+		<td>U</td>
+		<td>BLOC</td>
+		<td>F</td>
+		<td class="desc">Enables standard operations on the line (see below)</td>
+	</tr>
+</table>
+
+<p>After 'difference' one of the following keywords is expected&nbsp;:</p>
+<ul>
+	<li><em>delta</em> nom1 nom2 &nbsp;: calculates the line with  nom2-nom1<br /></li>
+	<li><em>ecart_relatif</em> nom1 nom2 &nbsp;: calculates the line (nom2-nom1)/(nom1+nom2)*2<br /></li>
+	<li><em>formule</em> nom1 nom2 formule &nbsp;: calculates the line with the formula v1 will be replaced by the value of nom1 of the same column (the same for v2 with nom2)</li>
+</ul>
+
+
+<h2 id="paramLignes">Parameters for the lines (lignes)</h2>
+<p>A lines is  elements of the table plotted with the possibilities of LateX</p>
+<p>A parameter block for the lines is introduced by the keyword</p>
+<pre>Lignes {
+	...
+}
+or
+Lines {
+	...
+}
+</pre>
+
+This can be useful to insert multiple lines of a file into a table.
+The fisrt column of the file is supposed to be the legend of the line.
+ 
+
+<p>The parameter block for the lines can contain the following parameters&nbsp;</p>
+<table cellpadding="5" cellspacing="0" border="2" width="80%" class="tableau" summary="Parametres de ligne">
+	<caption>Parameters for Lines</caption>
+	<tr class="enTeteTableau">
+		<th>KeyWord</th>
+		<th>Duplicity</th>
+		<th>Value type</th>
+		<th>Mandatory</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td>Description</td>
+		<td>M</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">Description of the line to be displayed after the table</td>
+	</tr>
+	<tr>
+		<td>Origin|Origine</td>
+		<td>U</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">Gives the origin of the data (publication, previous calculations, ...)</td>
+	</tr>
+	<tr>
+		<td>File|Fichier</td>
+		<td>U</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">Name of the file where the values are read</td>
+	</tr>
+	<tr>
+		<td>nb_columns_file<br></br>|nb_colonnes_fichier</td>
+		<td>U</td>
+		<td>int</td>
+		<td>F</td>
+		<td class="desc">Number of values to read if it is different from nb_columns|nb_colonnes+1</td>
+	</tr>
+	<tr>
+		<td>number_first_line<br></br>|numero_premiere_ligne</td>
+		<td>U</td>
+		<td>int</td>
+		<td>F</td>
+		<td class="desc">The line number of the first line of file to insert in the table (1 by default). Nota, if n negative, -n is the number of the line from the end of the file (-1 represents the last line)</td>
+	</tr>
+	<tr>
+		<td>number_last_line<br></br>|numero_derniere_ligne</td>
+		<td>U</td>
+		<td>int</td>
+		<td>F</td>
+		<td class="desc">The line number of the last line of file to insert in the table (-1 by default). Nota, if n negative, -n is the number of the line from the end of the file (-1 represents the last line)</td>
+	</tr>
+	<tr>
+		<td>Columns|Colonnes</td>
+		<td>U</td>
+		<td>mot1 mot2 motN</td>
+		<td>F</td>
+		<td class="desc">enables to define operations. The syntax is similar to gnuplo $1+$2  adding ref.$1 to have the value of the first column of the line ref.</td>
+	</tr>
+</table>
+
+
+<h1>Exemples</h1>
+<p>Exemples for the use of the tool can below &nbsp;:</p>
+<ul>
+	<li>file <a href="exemples/validation_GrilleAubes.prm">parameters</a> et <a href="exemples/rapport_GrilleAubes.pdf">report</a></li>
+	<li>file <a href="exemples/validation_ImpingingJet.prm">parameters</a> et <a href="exemples/rapport_ImpingingJet.pdf">report</a></li>
+	<li>file using tables (tableau) <a href="exemples/tableau.prm">parameters</a> et <a href="exemples/tableau.pdf">report</a></li>
+	<li>file using 'visu' <a href="exemples/visu.prm">parameters</a> et <a href="exemples/visu.pdf">report</a></li>
+	<li>file using 'Figure' <a href="exemples/impl.prm">parameters</a> et <a href="exemples/impl.pdf">report</a></li>
+	<li>file using 'particules' <a href="exemples/demo_particules.prm">parameters</a> et <a href="exemples/demo_particules.pdf">report</a></li>
+	<li>file using tables inside text <a href="exemples/ruse.prm">parameters</a> et <a href="exemples/ruse.pdf">report</a></li>
+	<li>Histogram of angles of mesh <a href="exemples/Histo.prm">parameters</a> et <a href="exemples/Histo.pdf">report</a></li>
+</ul>
+
+
+
+
+<div class="piedPage">
+	<b>genererCourbes</b> -User's Manual
+</div>
+
+</body>
+</html>
+

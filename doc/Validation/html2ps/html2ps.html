@@ -1,0 +1,1485 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+             "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+<HEAD>
+<TITLE>Using html2ps</TITLE>
+<LINK REV=MADE HREF="mailto:&#x6a;&#x61;&#x6e;&#x40;&#x69;&#x74;&#x2e;&#x75;&#x75;&#x2e;&#x73;&#x65;">
+<META NAME="Author" CONTENT="Jan K&auml;rrman">
+<META NAME="Description"
+ CONTENT="html2ps - an HTML to PostScript converter written in Perl">
+<META NAME="Keywords" CONTENT="html2ps,HTML,PostScript,PDF,Convert,Conversion">
+<META NAME="Created" CONTENT="10 Dec 2005">
+<STYLE type="text/css">
+ body{ background: #ffffd0;  color: black; }
+</STYLE>
+</HEAD>
+<BODY LANG="en">
+
+<H1>Introduction</H1>
+<P>
+This document describes the Perl script
+<A HREF="http://user.it.uu.se/~jan/html2ps.html">html2ps</A> &ndash; an
+HTML to PostScript converter. The program is developed on a Unix system
+(Sun Solaris), but have also been reported working on other platforms,
+such as Windows, MS-DOS, VAX/VMS and MacIntosh.
+
+<P>
+First, do not get intimidated by the size of this document. At least
+on a Unix system with Perl installed, you should be able to convert a
+local text-only HTML file directly without doing any preparation at
+all. Just execute the script with the HTML file as parameter and
+direct the output to a file or a printer, for example:
+
+<PRE>
+   html2ps file.html &gt; file.ps
+</PRE>
+<P>
+or perhaps
+
+<PRE>
+   perl html2ps file.html &gt; file.ps
+</PRE>
+<P>
+There are several possibilities to control the appearance of the
+output. Starting with version 1.0 of html2ps, most of this is done
+via configuration files, and not with command line options only.
+A sample configuration file 'sample' is included with the html2ps
+distribution (used by the installation script to convert this
+document to postscript). You can take a look at this file to see
+an example of a configuration file.
+
+The command line options, and how to set their defaults using
+a configuration file, are described in the <A HREF="#OPTION">
+<CODE>option</CODE></A> block below.
+<P>
+Jean-Philippe Argaud has written a GUI
+(xhtml2ps) for html2ps. You can find this in the directory 'contrib'. Both
+html2ps and xhtml2ps comes with the GNU General Public License, see the file
+'COPYING' for details.
+<P>
+
+<H2>Mailing lists</H2>
+<P>
+There are two mailing lists for html2ps:
+
+<DL>
+<DT>html2ps-users
+<DD>A discussion list about html2ps. To subscribe to this list,
+send a mail to <A href="mailto:&#x68;&#x74;&#x6d;&#x6c;&#x32;&#x70;&#x73;&#x2d;&#x75;&#x73;&#x65;&#x72;&#x73;&#x2d;&#x72;&#x65;&#x71;&#x75;&#x65;&#x73;&#x74;&#x40;&#x6c;&#x69;&#x73;&#x74;&#x2e;&#x69;&#x74;&#x2e;&#x75;&#x75;&#x2e;&#x73;&#x65;">
+&#x68;&#x74;&#x6d;&#x6c;&#x32;&#x70;&#x73;&#x2d;&#x75;&#x73;&#x65;&#x72;&#x73;&#x2d;&#x72;&#x65;&#x71;&#x75;&#x65;&#x73;&#x74;&#x40;&#x6c;&#x69;&#x73;&#x74;&#x2e;&#x69;&#x74;&#x2e;&#x75;&#x75;&#x2e;&#x73;&#x65;</A> with the word 'subscribe' on the subject
+line. There is an <A href="https://mail.it.uu.se/wws/arc/html2ps-users">archive
+</A> of the discussion list available.
+
+<DT>html2ps-announce
+<DD>Only used by myself to announce new versions of the program etc.
+To subscribe to this list, send a mail to
+<A href="mailto:&#x68;&#x74;&#x6d;&#x6c;&#x32;&#x70;&#x73;&#x2d;&#x61;&#x6e;&#x6e;&#x6f;&#x75;&#x6e;&#x63;&#x65;&#x2d;&#x72;&#x65;&#x71;&#x75;&#x65;&#x73;&#x74;&#x40;&#x6c;&#x69;&#x73;&#x74;&#x2e;&#x69;&#x74;&#x2e;&#x75;&#x75;&#x2e;&#x73;&#x65;">
+&#x68;&#x74;&#x6d;&#x6c;&#x32;&#x70;&#x73;&#x2d;&#x61;&#x6e;&#x6e;&#x6f;&#x75;&#x6e;&#x63;&#x65;&#x2d;&#x72;&#x65;&#x71;&#x75;&#x65;&#x73;&#x74;&#x40;&#x6c;&#x69;&#x73;&#x74;&#x2e;&#x69;&#x74;&#x2e;&#x75;&#x75;&#x2e;&#x73;&#x65;</A> with the word 'subscribe' on
+the subject line. These announcements are also sent to the discussion
+list, so you need not subscribe to both lists.
+</DL>
+
+<H1>Installation</H1>
+
+<P>
+For certain tasks, such as rendering of inline images and retrieving
+remote documents, html2ps depends on other program packages. First
+of all, you should make sure that you have all the necessary software
+installed on your system. <A HREF="#SW">See below</A> where these
+packages can be found.
+<P>
+Since html2ps is written in Perl, you must of course have Perl installed,
+version 5 or later is required.
+<P>
+If you want to make use of the support for inline images, you must
+have one of the packages ImageMagick, pbmplus or netpbm installed. If
+you do not have ImageMagick (or if it is not installed with jpeg
+support), you can use djpeg from the jpegsrc distribution to handle
+jpeg images. The recommended image package is ImageMagick together
+with its Perl module interface PerlMagick.
+<P>
+To be able to convert remote documents directly without downloading them
+first, you must have have some program installed for this purpose. The
+best is to either use the Perl module library libwww-perl, but you can
+for example also use wget or lynx for this.
+<P>
+Ghostscript is also required to get full functionality (needed to generate
+DSC PostScript and cross references).
+
+<P>
+If you are on a Unix or Windows system, and have all necessary software
+installed, you can now execute the installation script 'install' to build
+a global configuration file, and install all files. On other platforms you
+will have to create a global configuration file manually, and insert its
+name into the html2ps script. This is described in next section.
+
+<H1>Configuration files</H1>
+<P>
+
+Configuration files are used for layout control, resource information
+etc. Normally, there should always exist a global configuration file.
+In this file one typically specify things like: what image conversion
+packages are available on the system, the default paper size, the default
+text fonts and sizes, etc.
+<P>
+For Unix and Windows systems, the installation script 'install' can be
+used to automatically build a global configuration file with all necessary
+definitions, and install all files. The files replaced by the installation
+are saved. If you for some reason are not satisfied with the new version:
+execute the script 'backout' to reinstall your earlier version.
+<P>
+On other systems, you will have to manually create a global
+configuration file, and insert the name of this file into the
+html2ps script (close to the beginning, the line starting with
+"<CODE>$globrc=</CODE>"). The configuration file should contain a
+<A HREF="#package"><CODE>package</CODE></A> block, and perhaps
+<A HREF="#paper"><CODE>paper</CODE></A> and
+<A HREF="#hyph"><CODE>hyphenation</CODE></A> blocks, described below.
+<P>
+Each user can then have a personal configuration file (by default
+$HOME/.html2psrc) that complements/overrides the definitions made in the
+global file. It is also possible to specify alternative files on the
+command line, using the -f option.
+
+<H2>File format</H2>
+<P>
+A configuration file can include other configuration files. This is done with:
+<PRE>
+   @import "<VAR>filename</VAR>";
+</PRE>
+<P>
+The rest of the configuration file consists of zero or more blocks.
+A block is given by a block name, followed by the block definition, as in:
+<PRE>
+   BODY {
+     font-size: 12pt;
+     font-family: Helvetica;
+     text-align: justify
+   }
+</PRE>
+<P>
+The block definition, enclosed by curly braces: { }, consists of
+key-value pairs and/or other blocks. A key-value pair consists of the key
+name followed by a colon, followed by the value. Blocks and key-value pairs
+are separated by semicolons. The semicolon may be omitted after a block.
+<P>
+Several blocks can share the same definition. The block names are then
+separated be commas, as in:
+<PRE>
+   H2, H4, H6 { font-style: italic }
+</PRE>
+<P>
+A comment in a configuration file starts with the characters
+"<CODE>/*</CODE>" and ends with "<CODE>*/</CODE>":
+<PRE>
+   @html2ps {
+     seq-number: 1;  /* Automatic numbering of headings */
+   }
+</PRE>
+
+<H3>Notations</H3>
+<P>
+Here are some definitions of terms used below:
+<DL>
+<DT>Flag:
+ <DD>A value of either 0 (absence, inactive etc) or 1 (presence, active etc).
+<DT>Absolute size:
+ <DD>A real number optionally followed by one of the following two-letter
+     unit identifiers: cm (centimeters), mm (millimeters), in (inches),
+     pt (points, 1pt = 1/72 inch), pc (picas, 1pc = 12pt). The default
+     unit is centimeters.
+<DT>Relative size:
+ <DD>A size relative to current fontsize. The default and currently only
+     recognized unit is em. One em equals the size of the current font.
+     The value should be given as a real number, optionally followed by 'em',
+     as in '0.25em'.
+<DT>Whitespace:
+ <DD>Any one of the characters: space, tab, newline, or carriage return.
+</DL>
+
+<H3>CSS2 blocks</H3>
+<P>
+All blocks, except one: the <A HREF="#html2ps"><CODE>@html2ps</CODE></A>
+block, coincides with a subset of the
+<A href="http://www.w3.org/TR/REC-CSS2/">
+Cascading Style Sheets, level 2 CSS2 Specification</A>.
+The following default settings for html2ps illustrate just about everything
+that currently can be used from the CSS2 specification:
+
+<PRE>
+   BODY {
+     font-family: Times;
+     font-size: 11pt;
+     text-align: left;
+     background: white;
+   }
+   
+   H1, H2, H3, H4, H5, H6 {
+     font-weight: bold;
+     margin-top: 0.8em;
+     margin-bottom: 0.5em;
+   }
+   H1 { font-size: 19pt }
+   H2 { font-size: 17pt }
+   H3 { font-size: 15pt }
+   H4 { font-size: 13pt }
+   H5 { font-size: 12pt }
+   H6 { font-size: 11pt }
+   
+   P, OL, UL, DL, BLOCKQUOTE, PRE {
+     margin-top: 1em;
+     margin-bottom: 1em;
+   }
+   
+   P {
+     line-height: 1.2em;
+     text-indent: 0;
+   }
+   
+   OL, UL, DD { margin-left: 2em }
+   
+   TT, KBD, PRE { font-family: Courier }
+   
+   PRE { font-size: 9pt }
+   
+   BLOCKQUOTE {
+     margin-left: 1em;
+     margin-right: 1em;
+   }
+   
+   ADDRESS {
+     margin-top: 0.5em;
+     margin-bottom: 0.5em;
+   }
+   
+   TABLE {
+     margin-top: 1.3em;
+     margin-bottom: 1em;
+   }
+   
+   DIV.noprint { display: none }
+   
+   DEL { text-decoration: line-through }
+   
+   A:link, HR { color: black }
+   
+   @page {
+     margin-left: 2.5cm;
+     margin-right: 2.5cm;
+     margin-top: 3cm;
+     margin-bottom: 3cm;
+   }
+</PRE>
+
+<P>
+
+<H3><A NAME="html2ps">The program specific block <CODE>@html2ps</CODE></A>
+ </H3><P> This block is used to specify parameters that are specific to
+  html2ps, and not covered by CSS2. The<CODE> @html2ps </CODE> block has
+  several sub-blocks and key-value pairs, these are described in this section.
+  
+  <H4><A NAME="package">The <CODE>package</CODE> block</A>
+   </H4><P> This block is used to specify which <A HREF="#SW">program
+   packages</A> are installed on the system. Typically, this is done in the
+   global configuration file.
+   <DL>
+    <DT> <CODE>PerlMagick</CODE>
+     <DD> A flag specifying whether the Perl module PerlMagick is installed
+      or not. The default is 0.
+    
+    <DT> <CODE>ImageMagick</CODE>
+     <DD> A flag specifying whether the ImageMagick package is installed
+      or not. The default is 0.
+    
+    <DT> <CODE>pbmplus</CODE>
+     <DD>A flag specifying whether the pbmplus package is installed
+      or not. The default is 0.
+    
+    <DT><CODE>netpbm</CODE>
+     <DD> A flag specifying whether the netpbm package is installed
+      or not. The default is 0.
+    
+    <DT><CODE>djpeg</CODE>
+     <DD> A flag specifying whether djpeg is installed or not.
+     The default is 0.
+    
+    <DT><CODE>Ghostscript</CODE>
+     <DD> A flag specifying whether Ghostscript is installed or not.
+     The default is 0.
+    
+    <DT><CODE>TeX</CODE>
+     <DD> A flag specifying whether the TeX package is installed or not.
+      The default is 0.
+    
+    <DT><CODE>dvips</CODE>
+     <DD> A flag specifying whether dvips is installed or not.
+      The default is 0.
+    
+    <DT><CODE>libwww-perl</CODE>
+     <DD> A flag specifying whether the Perl module library libwww-perl
+      is installed or not. The default is 0.
+    
+    <DT><CODE>geturl</CODE>
+     <DD>When neither of the Perl packages for retrieving remote documents
+      are available, it is possible to use some other program like wget or
+      lynx. This value should be set to a command that retrieves a document
+      <EM>with a complete MIME header</EM>, such as "<CODE>wget -s -q -O-</CODE>"
+      or "<CODE>lynx -source -mime_header</CODE>".
+    
+    <DT><CODE>check</CODE>
+     <DD> The name of a program used for syntax checking HTML documents.
+     No default, a good choice is weblint.
+    
+    <DT><CODE>path</CODE>
+     <DD> A colon separated list of directories where the executables from
+     the program packages are. It is only necessary to include directories
+     that are not in the PATH for a typical user.
+    
+  </DL>
+  
+  <H4><A NAME="paper">The <CODE>paper</CODE> block</A>
+   </H4><P>The paper size is defined in this block. The size can either be
+   given as one of the recognized paper types or by giving explicit values for
+   the paper height and width. As of version 1.0 beta2, one can also use the
+   <A href="http://www.w3.org/TR/REC-CSS2/page.html">@page</A> block in CSS2
+   for the paper size. The paper block is kept for backwards compatibility.
+   Also, one can only specify explicit dimensions in @page, not any paper
+   types by name.
+   <DL>
+    <DT><CODE>type</CODE>
+     <DD> Paper type, possible choices are: A0, A1, A2, A3, A4,...,A10,
+      B0, B1,...,B10, letter, legal, arche, archd, archc, archb, archa,
+      flsa, flse, halfletter, 11x17, and ledger (this set of paper types
+      is taken from Aladdin Ghostscript). The default is A4.
+    
+    <DT><CODE>height</CODE>
+     <DD> An absolute size specifying the paper height.
+    
+    <DT><CODE>width</CODE>
+     <DD> An absolute size specifying the paper width.
+    
+  </DL>
+  
+  <H4><A NAME="OPTION">The <CODE>option</CODE> block</A>
+   </H4><P>This block is used to set default values for the command line
+   options. The key in the key-value pair is the option name, in either its
+   long or short form.
+   <DL>
+    <DT><CODE>twoup </CODE>(on the command line:<CODE> -2 </CODE>or<CODE> --twoup</CODE>)
+     <DD> Two column (2-up) output. The default is one column per page.
+    
+    <DT><CODE>base </CODE>(on the command line:<CODE> -b<VAR> URL</VAR> </CODE>or<CODE> --base<VAR> URL</VAR></CODE>)
+     <DD> Use URL as a base to expand relative references for in-line
+     images. This is useful if you have downloaded a document to a local file.
+     The URL should then be the URL of the original document.
+    
+    <DT><CODE>check </CODE>(on the command line:<CODE> -c </CODE>or<CODE> --check</CODE>)
+     <DD> Check the syntax of the HTML file (using an external syntax
+     checker). The default is to not make a syntax check.
+    
+    <DT>
+     <CODE>toc </CODE>(on the command line:<CODE> -C<VAR> string</VAR> </CODE>or<CODE> --toc<VAR> string</VAR></CODE>)
+     <DD> Generate a table of contents (ToC). The value should be a string
+     consisting of one of the letters 'f', 'h', or 't', optionally combined
+     with the letter 'b':
+     <DL>
+      <DT style="display: compact">b
+      <DD>The ToC will be printed first. This requires that Ghostscript is
+       installed.
+      <DT style="display: compact">f
+      <DD>The ToC will be generated from the links in the converted document.
+      <DT style="display: compact">h
+      <DD>The ToC will be <A HREF="#TOC">generated from headings and
+       titles</A> in the converted documents. Note that if the document author
+       for some strange reason has chosen to use some other means to represent
+       the headings than the HTML elements H1,...,H6, you are out of luck!
+      <DT style="display: compact">t
+      <DD>The ToC will be generated from links having the attribute
+       <CODE>rev=TOC</CODE> in the converted document.
+     </DL>
+    
+    <DT><CODE>debug </CODE>(on the command line:<CODE> -d </CODE>or<CODE> --debug</CODE>)
+     <DD> Generate debugging information. You should always use this
+      option when reporting problems with html2ps.
+    
+    <DT><CODE>DSC </CODE>(on the command line:<CODE> -D </CODE>or<CODE> --DSC</CODE>)
+     <DD> Generate DSC compliant PostScript. This requires Ghostscript and
+      can take quite some time to do. Note that a PostScript file generated
+      with this option cannot be used as input to html2ps for reformatting
+      later.
+    
+    <DT><CODE>encoding </CODE>(on the command line:<CODE> -e<VAR> encoding</VAR> </CODE>or<CODE> --encoding<VAR> encoding</VAR></CODE>)
+     <DD> The document encoding. Currently recognized values are ISO-8859-1,
+      EUC-JP, SHIFT-JIS, and ISO-2022-JP (other EUC-xx encodings may also
+      work). The default is ISO-8859-1.
+    
+    <DT><CODE>rcfile </CODE>(on the command line:<CODE> -f<VAR> file[:file[:...]]</VAR> </CODE>or<CODE> --rcfile<VAR> file[:file[:...]]</VAR></CODE>)
+     <DD> A colon separated list of configuration file names to use
+      instead of the default personal configuration file $HOME/.html2psrc.
+      Definitions made in one file override definitions in previous files
+      (the last file in the list has highest precedence). An empty file
+      name (as in ':file', 'file1::file3', or 'file:') will expand to the
+      default personal file. The environment variable HTML2PSPATH is used
+      to specify the directories where to search for these files. (Note:
+      this is <EM>only</EM> supposed to be used on the command line, not
+      in a configuration file.)
+    
+    <DT><CODE>frame </CODE>(on the command line:<CODE> -F </CODE>or<CODE> --frame</CODE>)
+     <DD> Draw a frame around the text on each page. The default is
+     to not draw a frame.
+    
+    <DT><CODE>grayscale </CODE>(on the command line:<CODE> -g </CODE>or<CODE> --grayscale</CODE>)
+     <DD> Convert colour images to grayscale images. Note that the
+     PostScript file will be smaller when the images are converted to
+     grayscale. The default is to generate colour images.
+    
+    <DT><CODE>help </CODE>(on the command line:<CODE> -h </CODE>or<CODE> --help</CODE>)
+     <DD> Show usage information.
+    
+    <DT><CODE>hyphenate </CODE>(on the command line:<CODE> -H </CODE>or<CODE> --hyphenate</CODE>)
+     <DD> <A HREF="#HYPH">Hyphenate</A> the text. This requires TeX
+      hyphenation pattern files.
+    
+    <DT><CODE>scaleimage </CODE>(on the command line:<CODE> -i<VAR> num</VAR> </CODE>or<CODE> --scaleimage<VAR> num</VAR></CODE>)
+     <DD> Scale in-line images with a factor num.
+     The default is 1.
+    
+    <DT><CODE>cookie </CODE>(on the command line:<CODE> -k<VAR> file</VAR> </CODE>or<CODE> --cookie<VAR> file</VAR></CODE>)
+     <DD> Enable cookie support, using a netscape formatted cookie
+     file (requires libwww-perl).
+    
+    <DT><CODE>language </CODE>(on the command line:<CODE> -l<VAR> lang</VAR> </CODE>or<CODE> --language<VAR> lang</VAR></CODE>)
+     <DD> Specifies the language of the document
+     (overrides an eventual LANG attribute of the BODY element).
+     The language should be given according to
+     <A href="ftp://ftp.nordu.net/rfc/rfc1766.txt">RFC1766</A> and
+     <A href="http://www.w3.org/WAI/ER/IG/ert/iso639.htm">ISO 639</A>.
+    
+    <DT><CODE>landscape </CODE>(on the command line:<CODE> -L </CODE>or<CODE> --landscape</CODE>)
+     <DD> Generate code for printing in landscape mode. The default
+     is portrait mode.
+    
+    <DT><CODE>scalemath </CODE>(on the command line:<CODE> -m<VAR> num</VAR> </CODE>or<CODE> --scalemath<VAR> num</VAR></CODE>)
+     <DD> Scale mathematical formulas with a factor num.
+     The default is 1.
+    
+    <DT><CODE>mainchapter </CODE>(on the command line:<CODE> -M<VAR> num</VAR> </CODE>or<CODE> --mainchapter<VAR> num</VAR></CODE>)
+     <DD> Specifies the start number for automatic numbering of headings
+     (by setting the seq-number parameter), the default is 1.
+    
+    <DT><CODE>number </CODE>(on the command line:<CODE> -n </CODE>or<CODE> --number</CODE>)
+     <DD> Insert page numbers. The default is to not number the pages.
+    
+    <DT><CODE>startno </CODE>(on the command line:<CODE> -N<VAR> num</VAR> </CODE>or<CODE> --startno<VAR> num</VAR></CODE>)
+     <DD> Specifies the starting page number, the default is 1.
+    
+    <DT><CODE>output </CODE>(on the command line:<CODE> -o<VAR> file</VAR> </CODE>or<CODE> --output<VAR> file</VAR></CODE>)
+     <DD> Write the PostScript code to file. The default is
+     to write to standard output.
+    
+    <DT><CODE>original </CODE>(on the command line:<CODE> -O </CODE>or<CODE> --original</CODE>)
+     <DD> Use PostScript original images if they exist. For example, if a
+     document contains an image figure.gif, and an encapsulated PostScript
+     file named figure.ps exists in the same directory, that file will be
+     use instead. This only work for documents read as local files. Note:
+     if the PostScript file is large or contains bitmap images, this must
+     be combined with the -D option. In HTML 4.0 this can be achieved in a
+     much better way with:
+<PRE>
+   &lt;OBJECT data="figure.ps" type="application/postscript"&gt;
+    &lt;OBJECT data="figure.gif" type="image/gif"&gt;
+     &lt;PRE&gt;[Maybe some ASCII art for text browsers]&lt;/PRE&gt;
+    &lt;/OBJECT&gt;
+   &lt;/OBJECT&gt;
+</PRE>
+    
+    <DT><CODE>rootdir </CODE>(on the command line:<CODE> -r<VAR> path</VAR> </CODE>or<CODE> --rootdir<VAR> path</VAR></CODE>)
+     <DD> When a document is read from a local file, this value specifies
+     a base directory for resolving relative links starting with "/".
+     Typically, this should be the directory where your web server's home
+     page resides.
+    
+    <DT>
+     <CODE>xref </CODE>(on the command line:<CODE> -R </CODE>or<CODE> --xref</CODE>)
+     <DD> Insert <A HREF="#XREF">cross references</A> at every link to
+     within the set of converted documents.
+    
+    <DT><CODE>scaledoc </CODE>(on the command line:<CODE> -s<VAR> num</VAR> </CODE>or<CODE> --scaledoc<VAR> num</VAR></CODE>)
+     <DD> Scale the entire document with a factor num.
+     The default is 1.
+    
+    <DT><CODE>style </CODE>(on the command line:<CODE> -S<VAR> string</VAR> </CODE>or<CODE> --style<VAR> string</VAR></CODE>)
+     <DD> This option complements/overrides definitions made in the
+      configuration files. The string must follow the configuration
+      file syntax. (Note: this is <EM>only</EM> supposed to be used on the
+      command line, not in a configuration file.)
+    
+    <DT><CODE>titlepage </CODE>(on the command line:<CODE> -t </CODE>or<CODE> --titlepage</CODE>)
+     <DD> Generate a title page. The default is to not generate one.
+    
+    <DT><CODE>text </CODE>(on the command line:<CODE> -T </CODE>or<CODE> --text</CODE>)
+     <DD> Text mode, ignore images. The default is to include the images.
+    
+    <DT><CODE>underline </CODE>(on the command line:<CODE> -u </CODE>or<CODE> --underline</CODE>)
+     <DD> Underline text that constitutes a hypertext link. The default
+     is to not underline.
+    
+    <DT><CODE>colour </CODE>(on the command line:<CODE> -U </CODE>or<CODE> --colour</CODE>)
+     <DD> Produce colour output for text and background, when specified.
+     The default is black text on white background (mnemonic: coloUr ;-).
+    
+    <DT><CODE>version </CODE>(on the command line:<CODE> -v </CODE>or<CODE> --version</CODE>)
+     <DD> Print information about the current version of html2ps.
+    
+    <DT><CODE>web </CODE>(on the command line:<CODE> -W<VAR> string</VAR> </CODE>or<CODE> --web<VAR> string</VAR></CODE>)
+     <DD> Process a web of documents by recursively retrieve and convert
+      documents that are referenced with hyperlinks. When dealing with remote
+      documents it will of course be necessary to impose restrictions, to
+      avoid downloading the entire web... The value should be a string
+      consisting of one of the letters 'a', 'b', 'l', 'r', or 's', optionally
+      combined with a combination of the letters 'p', 'L', and a positive
+      integer:
+     <DL>
+      <DT style="display: compact">a
+      <DD>Follow all links.
+      <DT style="display: compact">b
+      <DD>Follow only links to within the same directory, or below, as the
+          start document.
+      <DT style="display: compact">l
+      <DD>Follow only links specified with
+          "<CODE>&lt;LINK rel=NEXT&gt;</CODE>" in the document.
+      <DT style="display: compact">p
+      <DD>Prompt for each remote document. This mode will automatically be
+          entered after the first 50 documents.
+      <DT style="display: compact">r
+      <DD>Follow only relative links.
+      <DT style="display: compact">s
+      <DD>Follow only links to within the same server as the start document.
+      <DT style="display: compact">L
+      <DD>With this option, the order in which the documents are processed will
+          be: first all top level documents, then the documents linked to from
+          these etc. For example, if the document A has links to B and C, and
+          B has a link to D, the order will be A&rarr;B&rarr;C&rarr;D.
+          By default, each document will be followed by the first document
+          it links to etc; so the default order for the example is
+          A&rarr;B&rarr;D&rarr;C.
+      <DT style="display: compact">#
+      <DD>A positive integer giving the number of recursive levels. The
+          default is 4 (when the option is present).
+     </DL>
+    
+    <DT><CODE>duplex </CODE>(on the command line:<CODE> -x<VAR> num</VAR> </CODE>or<CODE> --duplex<VAR> num</VAR></CODE>)
+     <DD>Generate postscript code for single or double sided printing.
+      No default, valid values are:
+     <DL>
+      <DT style="display: compact">0
+      <DD>Single sided.
+      <DT style="display: compact">1
+      <DD>Double sided.
+      <DT style="display: compact">2
+      <DD>Double sided, opposite page reversed (tumble mode).
+     </DL>
+    
+  </DL>
+  
+  
+  <H4>The <CODE>margin</CODE> block
+   </H4><P> This block is used to specify page margins. The left, right, top
+    and bottom margins, previously defined with this block, should now be
+    defined using the <A href="http://www.w3.org/TR/REC-CSS2/page.html">@page
+    </A> construction from CSS2.
+   <DL>
+    <DT><CODE>middle</CODE>
+     <DD> An absolute size for the distance between the columns when
+     printing two columns per page, default is 2cm.
+    
+  </DL>
+
+
+  <H4><A NAME="XREF">The <CODE>xref</CODE> block</A>
+   </H4><P> At every hyperlink (to within the set of converted documents)
+   it is possible to have a cross reference inserted. The <CODE>xref</CODE>
+   block is used to control this function.
+   <DL>
+    <DT><CODE>text</CODE>
+     <DD> This defines the cross reference text to be inserted; the symbol
+     $N will expand to the page number, default is "[p $N]".
+    
+    <DT><CODE>passes</CODE>
+     <DD> The number of passes used to insert the cross references.
+     Normally, only one pass is run. But since the insertion of the page
+     numbers may effect the page breaks, it might for large documents with
+     many links be necessary with more than one pass to get the cross
+     references right. The default is 1.
+    
+  </DL>
+  <H4><A NAME="quote">The <CODE>quote</CODE> block</A>
+   </H4><P> Language specific quotation marks are defined in this block.
+   These quotation marks are used with the HTML 4.01 element Q for short
+   quotations. Quotation marks are predefined for a few languages (English,
+   Swedish, Danish, Norwegian (also Nynorsk and Bokmål), Finnish, Spanish,
+   French, German and Italian). It is possible to define different quotation
+   marks for quotes within quotes.
+   <P>
+   A quotation mark is defined as a string, using the same encoding as the
+   converted document (normally ISO-8859-1), and/or with character entities.
+   Note that quotation mark characters for several languages are not
+   included in ISO-8859-1, and their corresponding character entities were
+   not been defined prior to HTML 4.0.
+   <P>
+   Quotation marks for a language can be defined explicitly in a sub-block
+   of the <CODE>quote</CODE> block. One can also identify the set of quotation
+   marks with another previously defined language, using a key-value pair.
+   The sub-block/key name should equal the language code as defined in
+   ISO 639. The language sub-block can have the following key-values:
+   <DL>
+   <DT><CODE>open</CODE>
+   <DD>The quote opening character(s).
+   <DT><CODE>close</CODE>
+   <DD>The quote closing character(s). If undefined, it will equal
+    <CODE>open</CODE>.
+   <DT><CODE>open2</CODE>
+   <DD>The quote opening character(s) for quotes within quotes. If undefined,
+    it will equal <CODE>open</CODE>.
+   <DT><CODE>close2</CODE>
+   <DD>The quote closing character(s) for quotes within quotes. If undefined,
+    it will equal <CODE>close</CODE>.
+   </DL>
+   <P>
+   Example: English and Spanish use the same set of quotation marks &ndash;
+   at least according to my book on typography. These (already known to
+   html2ps) are defined with:
+<PRE>
+   quote {
+     en {
+       open: "&amp;ldquo;";
+       close: "&amp;rdquo;";
+       open2: "`";
+       close2: "'";
+     }
+     es: en;
+   }
+</PRE>
+   
+  
+  <H4>
+   <A NAME="TOC">The <CODE>toc</CODE> block</A>
+   </H4><P>When a table of contents (ToC) is generated from document
+    headings and titles, the appearance is controlled by this block.
+    <DL>
+     <DT><CODE>heading</CODE>
+     <DD> A string with HTML code specifying a heading used on the first
+      ToC page.
+    
+    <DT><CODE>level</CODE>
+     <DD> The maximum heading level used for building the ToC. The
+     default is 6, which means that all headings will generate
+     ToC entries.
+    
+    <DT><CODE>indent</CODE>
+     <DD> The ToC entries are indented proportional to the corresponding
+     heading level. This value specifies the size of the indentation.
+     The default is 1em.
+    
+  </DL>
+  
+  <H4>The <CODE>titlepage</CODE> block
+   </H4><P> When a title page is generated, its appearance is controlled by
+    this block.
+    <DL>
+     <DT><CODE>content</CODE>
+     <DD> A string with HTML code specifying a heading used on the
+     title page, The default is
+     "<CODE>&lt;DIV align=center&gt;
+      &lt;H1&gt;&lt;BIG&gt;$T&lt;/BIG&gt;&lt;/H1&gt;
+      &lt;H2&gt;$[author]&lt;/H2&gt;&lt;/DIV&gt;</CODE>".
+    
+     <DT><CODE>margin-top</CODE>
+     <DD> The size of the top margin on the title page,
+     The default is 4cm.
+    
+  </DL>
+  
+  <H4>The <CODE>font</CODE> block
+   </H4><P> Currently, html2ps recognizes the fonts: Times,
+    New-Century-Schoolbook, Helvetica, Helvetica-Narrow, Palatino, Avantgarde,
+    Bookman, and Courier. To add a new font (family), choose a name (consisting
+    of letters, digits, hyphens, and underscores) for the font. Then define a
+    sub-block to the <CODE>font</CODE> block, with the same name as the chosen
+    font name. This block can contain two key-value pairs:
+    <DL>
+     <DT><CODE>names</CODE>
+     <DD>A string containing four PostScript font names, separated by
+      whitespace, corresponding to the font styles normal, italic, bold, and
+      bold-italic. If less than four names are given, the first is used for
+      the missing names. Note that PostScript font names are case sensitive.
+     <DT><CODE>files</CODE>
+     <DD>A string of four file names, separated by whitespace, for files
+      containing font definitions for the four font styles as specified above.
+    </DL>
+   <P>
+    Example: A font 'myfont' has its four font styles defined in local files.
+    To use this font in all tables in the converted documents, one can use
+    something like:
+<PRE>
+   TABLE { font-family: myfont }
+   
+   @html2ps {
+     font {
+       myfont {
+         names: "MyFont-Roman MyFont-Italic MyFont-Bold MyFont-BoldItalic";
+         files: "/x/y/myfr.pfa /x/y/myfi.pfa /x/y/myfb.pfa /x/y/myfbi.pfa";
+       }
+     }
+   }
+</PRE>
+   
+  
+  <H4><A NAME="hyph">The <CODE>hyphenation</CODE> block</A>
+   </H4><P>Hyphenation pattern files for different languages are specified
+    in sub-blocks within this block. The blocks names should equal the
+    language code as defined in ISO 639. These language blocks can contain
+    the following two key-values:
+   <DL>
+   <DT><CODE>file</CODE>
+   <DD>A hyphenation pattern file in TeX format for this language.
+   <DT><CODE>extfile</CODE>
+   <DD>A file containing a list of hyphenation exceptions for this language.
+    The exception file should contain words, separated by whitespaces, with
+    hyphens inserted where hyphenation is allowed, as in:
+    "<CODE>in-fra-struc-ture white-space</CODE>".
+   </DL>
+   <P>
+   For example, for English (with language code 'en') one can have a block
+   like:
+<PRE>
+       en {
+         file: "/opt/tex/lib/macros/hyphen.tex";
+         extfile: "/opt/tdb/lib/html2ps/enhyphext";
+       }
+</PRE>
+<P>
+   The <CODE>hyphenation</CODE> block itself can furthermore have these
+   key-values:
+   <DL>
+    <DT><CODE>min</CODE>
+     <DD>A positive integer defining the minimum number of letters a word
+      must contain to make it a candidate for hyphenation.
+      The default is 8.
+    
+    <DT><CODE>start</CODE>
+     <DD>A positive integer defining the minimum number of letters that
+      must precede the hyphen when a word is hyphenated.
+      The default is 4.
+    
+    <DT><CODE>end</CODE>
+     <DD>A positive integer defining the minimum number of letters that
+      must follow the hyphen when a word is hyphenated.
+      The default is 3.
+    
+    
+  </DL>
+  
+  <H4>The <CODE>header</CODE> block
+   </H4><P>This block is used to specify page headers. It is possible to
+   define left, center, and right headers. Different headers for odd and even
+   pages can be specified. Some symbols can be used that will expand to
+   document title, author, date etc. See <A href="#symbols">below</A>.
+   <DL>
+    <DT><CODE>left</CODE>
+     <DD>A left aligned header. If the <CODE>alternate</CODE> flag in this
+     block is set to 1, this will be the right header on even pages.
+    
+    <DT><CODE>center</CODE>
+     <DD>A centered header.
+    
+    <DT><CODE>right</CODE>
+     <DD>A right aligned header. If the <CODE>alternate</CODE> flag in this
+     block is set to 1, this will be the left header on even pages.
+    
+    <DT><CODE>odd-left</CODE>
+     <DD>A left aligned header on odd pages.
+    
+    <DT><CODE>odd-center</CODE>
+     <DD>A centered header on odd pages.
+    
+    <DT><CODE>odd-right</CODE>
+     <DD>A right aligned header on odd pages.
+    
+    <DT><CODE>even-left</CODE>
+     <DD>A left aligned header on even pages.
+    
+    <DT><CODE>even-center</CODE>
+     <DD>A centered header on even pages.
+    
+    <DT><CODE>even-right</CODE>
+     <DD>A right aligned header on even pages.
+    
+    <DT><CODE>font-family</CODE>
+     <DD> The font used for the header, default is Helvetica.
+    
+    <DT><CODE>font-size</CODE>
+     <DD> The font size for the header, default is 8pt.
+    
+    <DT><CODE>font-style</CODE>
+     <DD> The default is "normal".
+    
+    <DT><CODE>font-weight</CODE>
+     <DD> The default is "normal".
+    <DT><CODE>color</CODE>
+     <DD> The header color, default is black.
+    
+    <DT><CODE>alternate</CODE>
+     <DD> A flag indicating whether the headers given by the
+     <CODE>left</CODE> and <CODE>right</CODE> keys should change place on
+     even pages. Typically used for double sided printing.
+     The default is 1.
+    
+  </DL>
+  
+  <H4>The <CODE>footer</CODE> block
+   </H4><P>This block is used to specify page footers. It is possible to
+   define left, center, and right footers. Different footers for odd and even
+   pages can be specified. Some symbols can be used that will expand to
+   document title, author, date etc. See <A href="#symbols">below</A>.
+   <DL>
+    <DT><CODE>left</CODE>
+     <DD>A left aligned footer. If the <CODE>alternate</CODE> flag in
+     this block is set to 1, this will be the right footer on even pages.
+    
+    <DT><CODE>center</CODE>
+     <DD>A centered footer.
+    
+    <DT><CODE>right</CODE>
+     <DD>A right aligned footer. If the <CODE>alternate</CODE> flag in
+     this block is set to 1, this will be the left footer on even pages.
+    
+    <DT><CODE>odd-left</CODE>
+     <DD>A left aligned footer on odd pages.
+    
+    <DT><CODE>odd-center</CODE>
+     <DD>A centered footer on odd pages.
+    
+    <DT><CODE>odd-right</CODE>
+     <DD>A right aligned footer on odd pages.
+    
+    <DT><CODE>even-left</CODE>
+     <DD>A left aligned footer on even pages.
+    
+    <DT><CODE>even-center</CODE>
+     <DD>A centered footer on even pages.
+    
+    <DT><CODE>even-right</CODE>
+     <DD>A right aligned footer on even pages.
+    
+    <DT><CODE>font-family</CODE>
+     <DD> The font used for the footer, default is Helvetica.
+    
+    <DT><CODE>font-size</CODE>
+     <DD> The font size for the footer, default is 8pt.
+    
+    <DT><CODE>font-style</CODE>
+     <DD> The default is "normal".
+    
+    <DT><CODE>font-weight</CODE>
+     <DD> The default is "normal".
+    <DT><CODE>color</CODE>
+     <DD> The footer color, default is black.
+    
+    <DT><CODE>alternate</CODE>
+     <DD> A flag indicating whether the footers given by the
+     <CODE>left</CODE> and <CODE>right</CODE> keys should change place on
+     even pages. Typically used for double sided printing.
+     The default is 1.
+    
+  </DL>
+  <H4>The <CODE>frame</CODE> block
+   </H4><P>The appearance of the optional frame (drawn on each page) is
+   controlled by this block.
+   <DL>
+    <DT><CODE>width</CODE>
+     <DD> The width of the frame, default is 0.6pt.
+    
+    <DT><CODE>margin</CODE>
+     <DD> The size of the frame margin, default is 0.5cm.
+    
+    <DT><CODE>color</CODE>
+     <DD> The colour of the frame, default is black.
+    
+  </DL>
+  <H4>The <CODE>justify</CODE> block
+   </H4><P>This block specifies the maximum amount of extra space inserted
+    between words and letters when text justification is in effect.
+   <DL>
+    <DT><CODE>word</CODE>
+     <DD> Maximum amount of extra space inserted between words.
+      The default is 15pt.
+    
+    <DT><CODE>letter</CODE>
+     <DD> Maximum amount of extra space inserted between letters
+      within words. The default is 0pt.
+    
+  </DL>
+  <H4>The <CODE>draft</CODE> block
+   </H4><P>It is possible to have some text written in a large font diagonally
+   across each page. Typically this is a word, written in a very light colour,
+   indicating that the document is a draft.
+   <DL>
+    <DT><CODE>text</CODE>
+     <DD> The text to be printed, default is "DRAFT".
+    
+    <DT><CODE>print</CODE>
+     <DD> A flag specifying whether the draft text should be printed or not.
+     If unspecified, the draft text is printed when the document head contains
+     <CODE>&lt;META name="Status" content="Draft"&gt;</CODE>.
+    
+    <DT><CODE>dir</CODE>
+     <DD> Specifies print direction, 0=downwards, 1=upwards.
+    
+    <DT><CODE>font-family</CODE>
+     <DD> The default is Helvetica.
+    
+    <DT><CODE>font-style</CODE>
+     <DD> The default is "normal".
+    
+    <DT><CODE>font-weight</CODE>
+     <DD> The default is "bold".
+    
+    <DT><CODE>color</CODE>
+     <DD> The default is "F0F0F0".
+    
+  </DL>
+  
+  <H4>The <CODE>colour</CODE> block
+   </H4><P> The 16 standard colour names from HTML 4.01 (although their
+    use in HTML elements are now deprecated) are recognized by html2ps.
+    Use this block to extend this list of colours. This is done with
+    key-value pairs, where the key is the colour name, and the value is
+    the colour given as a hexadecimal RGB value, for example: "<CODE>brown:
+    A52A2A;</CODE>".
+   
+  <H4>Key-value pairs in the <CODE>@html2ps</CODE> block
+  </H4><DL><DT><CODE>html2psrc</CODE>
+   <DD>The name of the default personal configuration file.
+    The default is $HOME/.html2psrc.
+  
+  <DT><CODE>imgalt</CODE>
+   <DD>Specifies which text should be written as a replacement
+    for in-line images when the IMG element has no ALT attribute.
+    The default is <CODE>"[IMAGE]"</CODE>.
+  
+  <DT><CODE>datefmt</CODE>
+   <DD>The symbol $D can be used in page headers and footers to insert the
+    current date/time; the value of the <CODE>datefmt</CODE> key specifies the
+    format used. The syntax is the same as in the strftime(3) routine. The
+    default is <CODE>"%e %b %Y  %R"</CODE>, which gives a date
+    string like "10 Dec 2005  18:29".
+  
+  <DT><CODE>locale</CODE>
+   <DD>The locale (language code) used for formating language dependent
+    parts of the date/time in <CODE>datefmt</CODE>. If unspecified, the value
+    is taken from environment variables, see setlocale(3). No default.
+  
+  <DT><CODE>doc-sep</CODE>
+   <DD> A string of HTML code that will be inserted between the
+    documents when more than one are converted. The default is
+    <CODE>"&lt;!--NewPage--&gt;"</CODE>, which will cause
+    a page break. You may use (almost) any HTML code, for example
+    <CODE>"&lt;HR&gt;&lt;HR&gt;"</CODE> or
+    <CODE>"&lt;IMG src=...&gt;"</CODE>.
+  
+  <DT><CODE>ball-radius</CODE>
+   <DD> The radius, given as a relative size, of the balls used in
+    unordered lists. The default is 0.25em.
+  
+  <DT><CODE>numbstyle</CODE>
+   <DD>Page numbering style, 0=arabic, 1=roman. The default is 0.
+  
+  <DT><CODE>showurl</CODE>
+   <DD>When this flag is set to 1, the URL for external links are shown
+    within parentheses after the link. The default is 0.
+  
+  <DT><CODE>seq-number</CODE>
+   <DD>When this flag is set, the headings in the document will be
+    sequentially numbered: H1 headings will be numbered 1, 2,..., H2 headings
+    1.1, 1.2, etc. The starting number for H1 can be changed using the -M
+    (--mainchapter) option. The default is 0.
+  
+  <DT><CODE>extrapage</CODE>
+   <DD> A flag specifying whether an extra (empty) page should be printed,
+    when necessary, to ensure that the title page, the table of contents, and
+    the document itself will start on odd pages. This is typically
+    desirable for double sided printing. The default is 1.
+  
+  <DT><CODE>break-table</CODE>
+   <DD> A flag specifying if a table should be broken across two pages
+   when it does not fit on the current page, but it does on a page of its own.
+   The default is 0 (avoid breaking tables when possible).
+  
+  <DT><CODE>forms</CODE>
+   <DD> This flag is used to specify whether FORM elements in the document
+   should be processed or ignored. Some forms may be suitable for printing out
+   and be filled out (with a pen), others are not. The default is 1.
+  
+  <DT><CODE>textarea-data</CODE>
+   <DD>When a TEXTAREA element contains prefilled data, the text will be
+    used as labels if this flag is set, otherwise ignored. The default is
+   0.
+  
+  <DT><CODE>page-break</CODE>
+   <DD>Set this flag to 0 to suppress the normal behavior of generating
+    page breaks from the comment <CODE>&lt;!--NewPage--&gt;</CODE> etc, as
+    <A HREF="#PBR">specified below</A>. The default is 1.
+  
+  <DT><CODE>expand-acronyms</CODE>
+   <DD>A flag specifying whether acronyms, given by the ACRONYM element,
+    should be expanded or not. The default is 0.
+  
+  <DT><CODE>spoof</CODE>
+   <DD>Some web servers return different documents depending on which user
+    agent is used to retrieve the document. You can fool the web server that
+    a certain browser is used, by setting this value to the identification
+    used by the browser, such as "Mozilla/4.0". This only works if you are
+    using one of the Perl packages to retrieve remote documents.
+  
+  <DT><CODE>ssi</CODE>
+   <DD>When this flag is set, some Server Side Includes will be processed
+    when the document is read from a local file. Examples are
+    <CODE>&lt;!--#include file=...&gt;</CODE>,
+    <CODE>&lt;!--#echo var="LAST_MODIFIED"&gt;</CODE>,
+    <CODE>&lt;!--#config timefmt=...&gt;</CODE>. The default is 1.
+  
+  <DT><CODE>prefilled</CODE>
+   <DD>This flag controls whether the content of form elements should be
+   rendered or not. That is, when this flag is set, the content of TEXTAREA
+   elements, and the value of the value attribute of text INPUT elements will
+   be shown. Also, checked radio buttons and checkboxes will be marked.
+   The default is&nbsp;0.
+  
+</DL>
+
+
+<H4><A name="symbols">Symbols</A></H4>
+<P>
+The following symbols can be used on the title page, the page headers/footers,
+and in the heading for the table of contents:
+<P>Symbols of the form "<CODE>$[<VAR>name</VAR>]</CODE>"
+will expand to the value of the <CODE>content</CODE> attribute of
+<CODE>META</CODE> elements, having either of the attributes
+"<CODE>name=<VAR>name</VAR></CODE>" or
+"<CODE>http-equiv=<VAR>name</VAR></CODE>" (case insensitive string matching).
+For example, when a document containing:
+<PRE>
+   &lt;META name="expires" content="31 Dec 2006"&gt;
+</PRE>
+<P>
+is converted, using a configuration file with:
+<PRE>
+   footer { left: "Expires: $[expires]" }
+</PRE>
+<P>
+this left footer will be inserted:
+<PRE>
+   Expires: 31 Dec 2006
+</PRE>
+<P>
+In addition, these symbols are defined:
+<DL>
+ <DT style="display: compact"><CODE>$T</CODE>
+ <DD>Current document title.
+ <DT style="display: compact"><CODE>$A</CODE>
+ <DD>Author of current document, as specified with <CODE>&lt;META name="Author"
+     content="..."&gt;</CODE> in the document head.
+ <DT style="display: compact"><CODE>$U</CODE>
+ <DD>The URL, or file name, of current document.
+ <DT style="display: compact"><CODE>$N</CODE>
+ <DD>Page number.
+ <DT style="display: compact"><CODE>$H</CODE>
+ <DD>Current document heading (level 1-3).
+ <DT style="display: compact"><CODE>$D</CODE>
+ <DD>Current date/time. The format is given by the <CODE>datefmt</CODE> key.
+</DL>
+<P>
+So <CODE>$A</CODE> is equivalent to <CODE>$[author]</CODE>, but kept for
+backwards compatibility.
+<P>
+To avoid symbol expansion, precede the dollar sign with a backslash,
+as in "<CODE>\$T</CODE>".
+
+<H2>Some hints how to use configuration files</H2>
+<P>
+I imagine that a typical use of configuration files can be something
+along the following lines.
+<P>
+System specific definitions (e.g. specification of available program packages)
+and global defaults (paper type etc) are defined in the global configuration
+file.
+<P>
+If there is more than one user of the program on the system, each user can
+also have a personal configuration file with his/hers own personal preferences.
+(On a single user system one can use the global configuration file for this
+purpose as well.)
+<P>
+One may also develop a collection of configuration files for typical
+situations. These files are placed in a directory that is searched by html2ps
+(the search path is defined with the environment variable HTML2PSPATH).
+For example, to print a document as slides &ndash; in landscape mode, with
+large text in Helvetica, and a thick frame &ndash; one can create a
+configuration file, called 'slides' say, containing:
+<PRE>
+   @html2ps {
+     option {
+       landscape: 1;
+       frame: 1;
+     }
+     frame { width: 3pt }
+   }
+   BODY {
+     font-family: Helvetica;
+     font-size: 20pt;
+   }
+   H1 { font-size: 35pt }
+   H2 { font-size: 32pt }
+   H3 { font-size: 29pt }
+   H4 { font-size: 26pt }
+   H5 { font-size: 23pt }
+   H6 { font-size: 20pt }
+   PRE { font-size: 18pt }
+</PRE>
+<P>
+Then use the command:
+<PRE>
+   html2ps -f slides ...
+</PRE>
+<P>
+to convert the document. Note that with this command the file 'slides' is used
+<EM>instead</EM> of the personal configuration file. If you want both to
+be used, giving precedence to definitions made in the file 'slides', use
+the command:
+<PRE>
+   html2ps -f :slides ...
+</PRE>
+<P>
+(The page breaks between the slides can for example be generated by
+adding '<CODE>&lt;HR class=PAGE-BREAK&gt;</CODE>' to the HTML document.)
+<P>
+For features that are frequently turned on and off, and that cannot be
+controlled by command line options, it may be a good idea to create small
+configuration files as "building blocks". For example a file 'A4' for
+printing on A4 paper (if you have some other default paper type):
+<PRE>
+   @html2ps { paper { type: A4 } }
+</PRE>
+<P>
+and a file 'hnum' for automatic numbering of headings:
+<PRE>
+   @html2ps { seq-number: 1 }
+</PRE>
+<P>
+Combining this with the previous example: to convert a document for printing
+on A4 sized slides with all headings numbered, use the command:
+<PRE>
+   html2ps -f :slides:A4:hnum ...
+</PRE>
+
+
+
+
+<H1>Internationalization</H1>
+<P>
+There is not yet much support for internationalization, as specified in
+HTML 4.0. A few <A HREF="#ENC">character encodings</A>, other than the old
+default ISO-8859-1, are supported. The element <A HREF="#quote">Q</A> for short
+quotations is implemented (quotation marks are chosen based on current
+language). It is also possible to make language dependent
+<A HREF="#HYPH">hyphenation</A>, using hyphenation pattern files from
+the TeX distribution. The <CODE>lang</CODE> attribute (recognized for a
+few elements) is used to determine the language of the document, or for
+a particular section.
+
+<H2><A NAME="ENC">Document encodings</A></H2>
+<P>
+It is possible to convert documents using some other character encodings
+than the old default ISO-8859-1. Currently the Japanese encodings EUC-JP,
+SHIFT-JIS, and ISO-2022-JP (7-bit) are recognized. EUC encoded documents
+in other languages, such as Chinese (EUC-CN), and Korean (EUC-KR) will
+probably work as well. I have no such font available, so I have not been
+able to test this myself.
+<P>
+You must of course have access to PostScript fonts for these languages and
+encodings. For Japanese you can use the free
+<A HREF="ftp://ftp.ipl.t.u-tokyo.ac.jp/Font/">Wadalab fonts</A> and
+associated <A HREF="ftp://ftp.ipl.t.u-tokyo.ac.jp/Font/tools/">tools</A>.
+These fonts can be used together with Ghostscript to print on a printer
+that does not have such fonts.
+<P>
+Of the three Japanese encodings, EUC-JP works best with html2ps. The
+7-bit encoding ISO-2022-JP, found in several documents on the web, is
+a bad choice for HTML documents. This is because the encoding uses
+characters that have a special function in HTML, such as '&lt;'. Often
+this results in incorrect HTML code, and html2ps as well as browsers
+will of course have problems rendering these documents.
+<P>
+There is not yet any automatic detection of the encoding, this must be
+explicitly specified with the option -e, or in a configuration file.
+If you for example would like to convert a document with EUC-JP encoding,
+you can use a configuration file like:
+
+<PRE>
+   BODY { font-family: eucjp }
+   
+   @html2ps {
+     option {
+       encoding: "EUC-JP";
+     }
+     font {
+       eucjp {
+         names: "Ryumin-Light-EUC-H";
+       }
+     }
+   }
+</PRE>
+<P>
+The name <CODE>Ryumin-Light-EUC-H</CODE> should be changed into the
+PostScript font name for the font to be used, here with EUC-JP encoding.
+The name <CODE>eucjp</CODE> can be changed to something else, as long
+as it is the same in the <CODE>BODY</CODE> and <CODE>font</CODE> blocks.
+You may not (yet) use a font having vertical writing mode.
+<P>
+The support for Japanese has only recently been added, and so far only
+been tested by me. Unfortunately, I do not know any Japanese, and cannot
+verify that what comes out is correct. Also, the line breaking is probably
+not correctly done.
+<P>
+Please let me know if you are aware of any free PostScript fonts for Chinese,
+Korean, etc.
+
+
+<H2><A NAME="HYPH">Hyphenation</A></H2>
+<P>
+The character entity &amp;shy; can be used to explicitly specify
+possible hyphenation points.
+<P>
+It is also possible to get automatic hyphenation of the text. This requires
+hyphenation pattern files from the TeX distribution. A hyphenation pattern
+file for English is included with html2ps. Pattern files for other
+languages are available from CTAN archives, for example
+<A HREF="http://www.ctan.org/tex-archive/language/hyphenation/">here</A>.
+<P>
+The hyphenation patterns for words containing only ASCII characters
+should work correctly. But it may be problems with other words, since the
+authors of these hyphenation pattern files use different (but in TeX
+equivalent) syntax to represent non-ASCII characters.
+<P>
+Please note that although TeX hyphenation patterns are used, the algorithm
+used is not as sophisticated as in TeX. In fact, you should not expect TeX
+quality in <EM>any</EM> part of this program!
+
+<H1>Known bugs</H1>
+
+<P>
+(This is incomplete.)
+<P>
+The CELLSPACING attribute of the TABLE element is not implemented
+as described in the specification; instead the value of the CELLPADDING
+attribute is increased by half the value of CELLSPACING.
+<P>
+Rendering HTML tables well is a non-trivial task. For "real" tables,
+that is representation of tabular data, html2ps usually generates
+reasonably good output. When tables are used for layout purposes,
+the result varies from good to useless. This is because a table cell
+is never broken across pages. So if a table contains a cell with a
+lot of content, the entire table may have to be scaled down in size
+in order to make this cell fit on a single page. Sometimes this may
+even result in unreadable output.
+<P>
+Page breaks are occasionally done in bad places: for example directly
+after a (long) heading, and before the last line in a paragraph.
+
+
+<H1>Todo</H1>
+<P>
+Actually, what <EM>really</EM> needs to be done is a complete rewriting of
+the code. It started out as a small hack &ndash; originally a sed script
+&ndash; and has now grown substantially, but it is still a hack...
+It is quite unlikely that this rewriting will take place, though &ndash;
+at least not in the near future.
+<P>
+Better Support for style sheets. Currently, a small part of CSS2 is
+supported, but only in the form of personal style sheets (using
+configuration files); style information within HTML documents is ignored.
+<P>
+All new features added have made the script quite large, and significantly
+slower than earlier versions. I will try to find some way to speed it up
+somewhat.
+<P>
+I am grateful for all suggestions how to improve html2ps. In fact, many of
+the current features have been implemented after suggestions from other users.
+
+<H1>Miscellaneous</H1>
+<P>
+<H2>Environment variables</H2>
+<P>
+<DL>
+<DT>HTML2PSPATH
+<DD>This variable specifies the directories to search for
+configuration files. It should be a colon separated list of directory
+names. Use a dot '.' to denote the current directory. An empty directory
+name (as in ':dir', 'dir1::dir3', or 'dir:') will expand to the directory
+where the global configuration file is. The default value is '.:', that
+is: search the current directory first, and then the global one.
+</DL>
+
+
+<H2><A name="DSC">DSC compliance</A></H2>
+<P>
+By default html2ps produces PostScript code that is <EM>not</EM> DSC
+compliant. The practical implication of this is that it will not be possible
+to use the code with PostScript filters for n-up printing, reordering of
+pages, etc. It is also not possible to jump to a certain page directly
+in previewers such as Ghostview.
+<P>
+The advantage with the non-DSC code is that it can be 'reused' by html2ps:
+you can rebuild an already generated PostScript file using new command line
+options and configuration files. This is done by running html2ps with the
+new options, and with the old PostScript file as input. This can save a lot
+of time and bandwidth when converting remote documents.
+<P>
+It is possible to generate DSC compliant PostScript by using the
+option -D, but this requires that Ghostscript is installed, and it can
+take quite some time to do. Note: if you are producing PostScript files
+for others to download, it is <STRONG>strongly</STRONG> recommended that
+you generate DSC compliant code.
+
+
+<H2>Extensions</H2>
+<P>
+A few extensions to HTML 4.01 are recognized by html2ps:
+<UL>
+<LI>
+
+A <A NAME="PBR">page break</A> can be forced by including any of these in a
+document:
+<PRE>
+   &lt;HR class=PAGE-BREAK&gt;
+   
+   &lt;?page-break&gt;
+   
+   &lt;!--NewPage--&gt;
+</PRE>
+
+
+<LI>
+
+If you want html2ps to ignore certain parts of a document, use the
+following construction:
+<PRE>
+   &lt;DIV class=NOPRINT&gt;
+     This will not be printed...
+   &lt;/DIV&gt;
+</PRE>
+<P>
+This can be used to avoid getting navigation bars etc in the printout.
+
+<LI>
+
+The BANNER, FIG, and MATH elements from the expired HTML 3.0
+specification are also supported. Note that the support for MATH is
+far from complete, and requires that TeX and dvips are installed.
+
+</UL>
+
+
+<H2>Conversion to PDF</H2>
+<P>
+The PostScript code generated by html2ps contains calls to the
+<CODE>pdfmark</CODE> operator, that are instructions to a PostScript-to-PDF
+converter (such as version 5.0 or later of Aladdin Ghostscript, or Adobe
+Acrobat Distiller). These instructions generate hyperlinks in the PDF
+document, from the hyperlinks in the original HTML documents. A PDF outline
+entry, or bookmark, is also generated from the HTML headings.
+<P>
+By default the links in the PDF document will be represented by a box
+with a border. You may instead have the link text coloured, by for example
+specifying '<CODE>A:link { color: red }</CODE>' in a configuration file,
+and use the option -U when converting.
+
+
+<H2><A NAME="SW">Where to get other software</A></H2>
+<P>
+Here follow some addresses where one can obtain software used by html2ps.
+Several of these programs are available from many other program archives.
+Also note that not all packages are needed.
+<UL>
+<LI><A HREF="http://www.perl.org/">Perl</A>
+<LI><A HREF="http://www.imagemagick.org">ImageMagick and PerlMagick</A>
+<LI><A HREF="http://www.funet.fi/pub/graphics/packages/pbmplus/">pbmplus</A>
+<LI><A HREF="http://www.funet.fi/pub/graphics/packages/pbmplus/">netpbm</A>
+<LI><A HREF="ftp://ftp.uu.net/graphics/jpeg/">jpegsrc</A>
+<LI><A HREF="ftp://ftp.cs.tu-berlin.de/pub/net/www/weblint/">weblint</A>
+<LI><A HREF="http://www.linpro.no/lwp/">libwww-perl</A>
+<LI><A HREF="http://www.cs.wisc.edu/~ghost/index.html">Ghostscript</A>
+</UL>
+
+
+<H2>Reporting problems</H2>
+<P>
+Please note that html2ps comes with <EM>no</EM> support (this is unpaid
+work done on my spare time). However, I <EM>am</EM> interested in making
+the program as useful as possible, so do not hesitate to report any problems.
+But please carry out the following steps first:
+
+<OL>
+<LI>Check if your problem is listed in the
+    <A href="http://user.it.uu.se/~jan/html2ps-FAQ.html">FAQ</A>.
+<LI>Check that the HTML documents you are converting have correct
+    syntax &ndash; rendering valid documents is difficult enough, do
+    not expect <EM>anything</EM> from documents with invalid syntax.
+    To check the syntax, there are
+    <A HREF="http://validator.w3.org/">validation
+    services</A> available, and also online syntax checkers such as weblint.
+<LI>Execute html2ps with the option -d. This writes out debugging information
+    to the terminal, as well as to a file 'html2ps.dbg'.
+</OL>
+<P>
+If you, after inspecting the results from these steps, believe
+that there is a problem with html2ps; mail the content of the file
+'html2ps.dbg' together with a description of the problem to
+<A HREF="mailto:&#x68;&#x74;&#x6d;&#x6c;&#x32;&#x70;&#x73;&#x2d;&#x62;&#x75;&#x67;&#x73;&#x40;&#x69;&#x74;&#x2e;&#x75;&#x75;&#x2e;&#x73;&#x65;">&#x68;&#x74;&#x6d;&#x6c;&#x32;&#x70;&#x73;&#x2d;&#x62;&#x75;&#x67;&#x73;&#x40;&#x69;&#x74;&#x2e;&#x75;&#x75;&#x2e;&#x73;&#x65;</A>.
+If you fail to produce the file 'html2ps.dbg', instead please include as
+much details as possible: the version of html2ps, The Perl version, your
+platform, etc.
+<P>
+Please also include the HTML document, or a URL &ndash; preferably
+containing a minimal example illustrating the problem.
+
+<H2>Acknowledgments</H2>
+<P>
+There are several persons that have been helpful with the development
+of this program &ndash; by supplying patches, suggesting improvements,
+etc. I have most certainly forgot a few names; please forgive me if
+you are missing your name in this list: John Bowe, Neil Bowers,
+Reinhard Denner, Russell Locke, Thomas Mohr, Craig Oda, Dave Raggett,
+John Sinues, Larry W. Virden, and Chenxi Wang. My colleagues at the
+Department of Information Technology have also been a great help by
+testing the program.
+<P>
+<h2>If you like it</h2>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<p>
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="image" src="https://www.paypal.com/en_US/i/btn/x-click-but21.gif" name="submit" alt="Make a donation to &#x6a;&#x61;&#x6e;&#x40;&#x69;&#x74;&#x2e;&#x75;&#x75;&#x2e;&#x73;&#x65; at https://www.paypal.com">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----MIIG/QYJKoZIhvcNAQcEoIIG7jCCBuoCAQExggEwMIIBLAIBADCBlDCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20CAQAwDQYJKoZIhvcNAQEBBQAEgYBK1Qpyz/qqoDIrOHEhwm5LUj/bcDL38pOUs7y6zTBBAVqTKPEIWSCTMoUyGmfy7vYr6lhS/5AsbH/2b62eFnM6GpdHnH/rtfSaH76nXUj33kbyd68dPEKgHW1fuB23MzvW0iWYV7w4ubrAEwJWlbBqISPExT5b9IkIrnKqIiHGUDELMAkGBSsOAwIaBQAwewYJKoZIhvcNAQcBMBQGCCqGSIb3DQMHBAgIieSlB4bUxYBYseahiHaaWOm9lFLJdPmSy93Bz28fK5NFMJ5in6EeLBnKd5FRJfojprLV95kyLMP+ad+XW9rkTkwxSgUxNamNxUnKmVVjrer77pK5xc6AbCj1pgzuJxBj+aCCA4cwggODMIIC7KADAgECAgEAMA0GCSqGSIb3DQEBBQUAMIGOMQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExFjAUBgNVBAcTDU1vdW50YWluIFZpZXcxFDASBgNVBAoTC1BheVBhbCBJbmMuMRMwEQYDVQQLFApsaXZlX2NlcnRzMREwDwYDVQQDFAhsaXZlX2FwaTEcMBoGCSqGSIb3DQEJARYNcmVAcGF5cGFsLmNvbTAeFw0wNDAyMTMxMDEzMTVaFw0zNTAyMTMxMDEzMTVaMIGOMQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExFjAUBgNVBAcTDU1vdW50YWluIFZpZXcxFDASBgNVBAoTC1BheVBhbCBJbmMuMRMwEQYDVQQLFApsaXZlX2NlcnRzMREwDwYDVQQDFAhsaXZlX2FwaTEcMBoGCSqGSIb3DQEJARYNcmVAcGF5cGFsLmNvbTCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEAwUdO3fxEzEtcnI7ZKZL412XvZPugoni7i7D7prCe0AtaHTc97CYgm7NsAtJyxNLixmhLV8pyIEaiHXWAh8fPKW+R017+EmXrr9EaquPmsVvTywAAE1PMNOKqo2kl4Gxiz9zZqIajOm1fZGWcGS0f5JQ2kBqNbvbg2/Za+GJ/qwUCAwEAAaOB7jCB6zAdBgNVHQ4EFgQUlp98u8ZvF71ZP1LXChvsENZklGswgbsGA1UdIwSBszCBsIAUlp98u8ZvF71ZP1LXChvsENZklGuhgZSkgZEwgY4xCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDQTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEUMBIGA1UEChMLUGF5UGFsIEluYy4xEzARBgNVBAsUCmxpdmVfY2VydHMxETAPBgNVBAMUCGxpdmVfYXBpMRwwGgYJKoZIhvcNAQkBFg1yZUBwYXlwYWwuY29tggEAMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEFBQADgYEAgV86VpqAWuXvX6Oro4qJ1tYVIT5DgWpE692Ag422H7yRIr/9j/iKG4Thia/Oflx4TdL+IFJBAyPK9v6zZNZtBgPBynXb048hsP16l2vi0k5Q2JKiPDsEfBhGI+HnxLXEaUWAcVfCsQFvd2A1sxRr67ip5y2wwBelUecP3AjJ+YcxggGaMIIBlgIBATCBlDCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20CAQAwCQYFKw4DAhoFAKBdMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTA0MDczMTE3MTMxOFowIwYJKoZIhvcNAQkEMRYEFCrwBRbJfzgbC3nxzgKgo9DHMC/wMA0GCSqGSIb3DQEBAQUABIGAZOlMyH/KxMkHgOh9TsCIYW4ApXm76+cS2MCijktWnevMWdWWvbkolxaCsRmBwsG1WmAhZM8sA5tQ6KFKk6g/Mwx8tSdYM+PMGp04Ve+0qRubGQMH8Ahqv7XOG2MZZ3WAbw1/bidC2HB8XdTHua1+mTtwU0sxV/uHhI6qD6mxYXc=-----END PKCS7-----
+">
+</form>
+<hr>
+<ADDRESS>
+Jan K&auml;rrman<BR>
+Dept. of Information Technology<BR>
+Uppsala University<BR>
+Sweden<BR>
+<A HREF="mailto:&#x6a;&#x61;&#x6e;&#x40;&#x69;&#x74;&#x2e;&#x75;&#x75;&#x2e;&#x73;&#x65;">&#x6a;&#x61;&#x6e;&#x40;&#x69;&#x74;&#x2e;&#x75;&#x75;&#x2e;&#x73;&#x65;</A>
+</ADDRESS>
+</BODY>
+</HTML>
+

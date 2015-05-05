@@ -1,0 +1,124 @@
+# Hydraulique 2D VEF : Paroi defilante #
+# PARALLEL OK 8 #
+dimension 2
+Pb_thermohydraulique_turbulent pb
+Domaine dom
+# BEGIN MESH #
+Read_file dom keps_2D_VEF_Def.geom
+VerifierCoin dom { }
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur Metis { Nb_parts 2 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	nb_pas_dt_max 2
+	tinit 0.
+        tmax 2.
+	dt_min 1.e-6
+	dt_max 1.e-6
+	dt_impr 1.e-6
+	dt_sauv 20
+        seuil_statio 1.e-8
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 2e-5
+	rho Champ_Uniforme 1 1.
+	lambda Champ_Uniforme 1 0.1
+	cp Champ_Uniforme 1 2
+	beta_th Champ_Uniforme 1 0
+}
+
+Champ_Uniforme gravite
+Lire gravite 2 0 -9.81
+
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_turbulent
+	{
+		solveur_pression GCP { precond ssor { omega 1.6 } seuil 1.e-7 }
+		convection { muscl }
+		diffusion { }
+		conditions_initiales {
+		        vitesse Champ_Uniforme 2 0. 0.
+			}
+                boundary_conditions {
+			HAUT paroi_defilante Champ_Front_Uniforme 2 1. 0.
+			BAS paroi_fixe
+			EST paroi_fixe
+			OUEST paroi_fixe
+                }
+                modele_turbulence K_Epsilon {
+                        Transport_K_Epsilon 
+                        {
+                                convection { muscl }
+                                diffusion { }
+                                boundary_conditions {
+			        HAUT paroi
+			        BAS paroi
+			        EST paroi
+			        OUEST paroi
+                         }
+                         conditions_initiales {
+                                        k_Eps Champ_Uniforme 2 1 1
+                                }
+                         }
+                         turbulence_paroi loi_standard_hydr
+                } 
+	}
+        Convection_Diffusion_Temperature_Turbulent
+        {
+                diffusion { }
+                convection { muscl }
+                boundary_conditions
+                {
+                        HAUT paroi_adiabatique
+                        BAS paroi_adiabatique
+                        EST Paroi_temperature_imposee Champ_Front_Uniforme 1 10.
+                        OUEST Paroi_temperature_imposee Champ_Front_Uniforme 1 0
+                }
+                conditions_initiales { Temperature Champ_Uniforme 1 5. }
+		modele_turbulence prandtl {  turbulence_paroi loi_standard_hydr_scalaire }
+        }
+
+	Postraitement
+	{
+		format lata
+		Champs dt_post 2.
+		{
+			pression elem
+			vitesse som
+			viscosite_turbulente som
+			k som
+			eps som
+		}
+	}
+}
+
+Solve pb
+Fin

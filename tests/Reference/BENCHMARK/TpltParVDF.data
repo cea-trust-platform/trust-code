@@ -1,0 +1,86 @@
+# Thermohydraulique 2D turbulent sous maille et Boussinesq #
+dimension 3
+Pb_Thermohydraulique_Turbulent pb
+Domaine dom
+Scatter DOM.Zones dom
+      
+VDF dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0.
+	tmax 100
+	dt_min 1e-8
+	dt_max 10.    
+	dt_impr 1e-8
+	dt_sauv 100
+	seuil_statio 1.e-8
+	nb_pas_dt_max 20
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 1.85e-5
+	rho Champ_Uniforme 1 1.17
+	lambda Champ_Uniforme 1 0.0262 
+	Cp Champ_Uniforme 1 1006
+	beta_th Champ_Uniforme 1 3.41e-3
+}
+
+Champ_Uniforme gravite
+Lire gravite 3 0 -9.81 0
+
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_turbulent 
+	{
+		solveur_pression petsc gcp { precond spai { } seuil 1.e-12 impr }
+		convection { quick }
+		diffusion { }
+		sources { boussinesq_temperature { T0 5. } }
+		conditions_initiales {
+			vitesse Champ_Uniforme 3 0. 0. 0.
+			}
+		boundary_conditions {
+			Haut paroi_fixe
+			Bas paroi_fixe
+			Gauche paroi_fixe
+			Droit paroi_fixe
+			Sud Symetrie
+			Nord Symetrie
+		}
+		modele_turbulence sous_maille 
+		{
+			Turbulence_paroi loi_standard_hydr
+		}
+	}
+	Convection_Diffusion_Temperature_Turbulent
+	{
+		diffusion { }
+		convection { quick }
+		boundary_conditions 
+		{
+			Haut paroi_adiabatique
+			Bas paroi_adiabatique
+ 			Gauche paroi_echange_externe_impose T_ext Champ_Front_Uniforme 1 10. H_imp Champ_Front_Uniforme 1  1.e11
+			Droit paroi_echange_externe_impose T_ext Champ_Front_Uniforme 1 0.  H_imp Champ_Front_Uniforme 1  1.e11
+			Sud Symetrie
+			Nord Symetrie
+		}
+		conditions_initiales { Temperature Champ_Uniforme 1 5. }
+		modele_turbulence Prandtl { Turbulence_paroi loi_standard_hydr_scalaire }
+	}
+}
+# Plantage sur tantale a 4M de mailles sur 1,2,4 procs si .xyz ecrit donc on desactive: #
+EcritureLectureSpecial 0
+Solve pb
+Fin

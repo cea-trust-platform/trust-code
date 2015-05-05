@@ -1,0 +1,134 @@
+#!/bin/bash
+# Script d'installation
+install_OpenBlas()
+{
+   #########################
+   # Installation d'OpenBLAS
+   #########################
+   package=OpenBLAS-v$version_openblas.tar.gz
+   lib=libopenblas.a
+
+   # Installation
+   rm -r -f *-OpenBLAS-*
+   echo "Installation of $package..."
+   gunzip -f -c $package | tar -xf -
+   cd *-OpenBLAS-*
+   # Necessaire d'avoir le paquet lapack sinon il le telecharge par wget (impossible sur machine CCRT)
+   # OpenBlas 0.2.8 a Lapack 3.4.2 integre donc desormais inutile:
+   # ln -s -f ../lapack-$version_lapack.tgz .
+
+   # Attention, le multithreading peut faire tourner plus vite les BLAS dans la decomposition A=LU
+   # mais ensuite cela ralentit plus loin par exemple dans x=A-1.B donc on n'active pas.
+   # Voir les tests menes: http://dibona.intra.cea.fr:8090/trio_u/msg12569
+   USE_THREAD=0 # Multithreading desactive
+   #USE_THREAD=1 # Essai provisoire avec 0.2.8
+   # COMMON_OPT=`$TRUST_Awk '/ccFLAGS/  {gsub("ccFLAGS =" ,"",$0);o=$0} END {print o}' $TRUST_ROOT/env/make.$TRUST_ARCH_CC"_opt"`
+   # Modifier eventuellement Makefile.rule et/out Makefile.system pour utiliser FFLAGS et CFLAGS
+   # Compilation
+   # "Yes, using OpenMP is slower than using pthread." https://groups.google.com/forum/#!topic/openblas-users/kFdk7peukLA
+   $TRUST_MAKE USE_THREAD=$USE_THREAD CC=$TRUST_cc FC=$TRUST_F77 `grep USE_OPENMP= $TRUST_ROOT/lib/src/LIBPETSC/install` BINARY=64 NO_AFFINITY=1 NUM_THREADS=$TRUST_NB_PHYSICAL_CORES
+   if [ $? != 0 ]
+   then
+      make clean
+      # Compilation avec compilateurs de base sur castor car /usr/bin/mpif77 utilise mal l'option -S
+      $TRUST_MAKE USE_THREAD=$USE_THREAD CC=$TRUST_cc_BASE FC=$TRUST_F77_BASE
+   fi
+
+   # On copie la librairie si elle existe sinon on sort
+   if [ -f $lib ]
+   then
+      cp $lib ..
+      cd ..
+      # On efface les sources
+      rm -r -f *-OpenBLAS-*
+      # On fait des liens
+      ln -s -f $lib libblas.a
+      ln -s -f $lib liblapack.a
+   else
+      cd ..
+      rm -r -f *-OpenBLAS-*
+   fi  
+}
+install_NetLib()
+{
+   ##########################
+   # Install de LAPACK NetLib
+   ##########################
+   package=lapack-$version_lapack
+   if [ ! -f $package.tgz ]
+   then
+      # On telecharge le package si non livre
+      wget_ http://www.netlib.org/lapack/$package.tgz || exit -1
+   fi
+   echo "Installation of $package..."
+   gunzip -c $package.tgz > $package.tar
+   gunzip -f -c $package.tgz | tar -xf -
+   rm -f $package.tar
+   cd $package 
+
+   option=`$TRUST_Awk '/F77Flags/  {gsub("F77Flags =" ,"",$0);o=$0} END {print o}' $TRUST_ROOT/env/make.$TRUST_ARCH_CC"_opt"`
+   # Creation du make.inc
+   echo "
+   SHELL    = /bin/sh
+   PLAT     = 
+   FORTRAN  = $TRUST_F77
+   OPTS     = $option
+   DRVOPTS  = \$(OPTS)
+   NOOPT    = -g -O0 -fPIC
+   LOADER   = $TRUST_F77
+   LOADOPTS =
+   TIMER    = INT_CPU_TIME
+   ARCH     = ar
+   ARCHFLAGS= cr
+   RANLIB   = ranlib
+   BLASLIB  = ../../../libblas\$(PLAT).a
+   XBLASLIB =
+   LAPACKLIB= ../liblapack\$(PLAT).a
+   TMGLIB   = tmglib\$(PLAT).a
+   EIGSRCLIB= eigsrc\$(PLAT).a
+   LINSRCLIB= linsrc\$(PLAT).a" > make.inc
+
+   libs="blaslib lapacklib"
+   $TRUST_MAKE $libs || exit -1
+   cd ..
+   # On efface les sources (sauf sur portable)
+   [ "$HOST" != portable ] && rm -r -f $package
+}
+#########################
+# Debut de la procedure #
+#########################
+
+# recuperation des archives
+for file in `ls $TRUST_ROOT/externalpackages/lapack/*`
+do
+ln -sf $file .
+done
+# Nom des versions a upgrader:
+version_openblas=0.2.8
+# On utilise Lapack 3.1.1 si le compilateur fortran n'est pas f90 (auquel cas TRUST_USE_MUMPS=0)
+version_lapack=3.4.1 && [ "$TRUST_USE_MUMPS" != 1 ] && version_lapack=3.1.1
+
+# Sur 32 bits, OpenBLAS et GotoBlas font des erreurs valgrind sur ddot_k et daxpy_k
+# donc on utilise l'ancien LAPACK non optimise
+# PL: 28/01/2013 a revoir, car OpenBlas sur 32 bits booste quand meme pas mal
+# et c'est dommage de s'en priver...
+TRY_OPENBLAS=1 && [ "`uname -m`" != x86_64 ] && TRY_OPENBLAS=0
+# Non activated cause it seems it boost A=LU but x=A-1B is slower...
+# Cx test with 1.6.9_beta: BLAS (level)
+# 	DGEMM (3) DGEMV DTRSV (2)
+#           A=LU  x=A-1B
+# OpenBlas: 1.66s 0.037s
+# NetLib  : 2.87s 0.026s
+# So more benchmarking is needed !
+TRY_OPENBLAS=0 # Essai provisoire avec 0.2.8
+if [ "$TRY_OPENBLAS" = 1 ]
+then
+   # Parfois OpenBlas ne s'installe pas, on switche sur la version classique
+   install_OpenBlas
+   [ ! -f libopenblas.a ] && install_NetLib
+else
+   install_NetLib
+fi
+mkdir -p $TRUST_LIB/src/LIBLAPACK
+mv *.a $TRUST_LIB/src/LIBLAPACK
+exit 0

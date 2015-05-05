@@ -1,0 +1,15 @@
+#!/bin/bash
+#!/bin/bash
+DIR=`dirname $0`
+DIR=`(cd $DIR;pwd)`
+cp -r $TRUST_ROOT/Validation/Rapports_automatiques/conduction_couple .
+cd conduction_couple
+$DIR/Run src/impl.prm $*
+[ ! -f build/rapport.pdf ] && echo pb generation rapport 1 && exit 1
+# simulation de comparaison et ajout d'option
+cp -ar build build_old
+$DIR/Run src/impl.prm -not_run --compare="../build_old/" -o ../compare.pdf $*
+[ ! -f compare.pdf ] && echo pb generation rapport 2 && exit 2
+cd ..
+rm -rf conduction_couple
+

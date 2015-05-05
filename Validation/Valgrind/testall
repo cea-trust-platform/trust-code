@@ -1,0 +1,76 @@
+#!/bin/bash
+# Passage de tous les cas tests avec valgrind
+[ "$TRUST_ROOT" = "" ] && echo "Vous devez etre dans l'environnement TRUST" && exit
+
+# Les parametres suivants permettent de savoir si plusieurs machines travaillent ensemble:
+[ "$1" = -check_parallel ] && testval_option=$1 && shift
+MACHINE_VALGRIND=1 	&& [ "$1" != "" ] && MACHINE_VALGRIND=$1 && shift
+NB_MACHINES_VALGRIND=1 	&& [ "$1" != "" ] && NB_MACHINES_VALGRIND=$1 && shift
+
+# On cherche les cas tests en supprimant certains cas tests (mis dans BLACK_LIST avec la raison)
+BLACK_LIST=`mktemp_`
+echo Jet_impingement_on_a_hot_flat_plate_jdd1 	>> $BLACK_LIST	# Crash valgrind avec OpenMPI 1.2.9
+echo Jet_impingement_on_a_hot_flat_plate_jdd2 	>> $BLACK_LIST	# Idem
+echo les_Re395Pr071_T0Q_jdd5 			>> $BLACK_LIST  # Idem
+echo les_Re395Pr0025_T0Q_jdd5			>> $BLACK_LIST  # Idem
+echo ContractionTurbFlow_3D_VEF_jdd6 		>> $BLACK_LIST	# Idem
+echo ContractionTurbFlow_3D_VEF_jdd5		>> $BLACK_LIST  # Idem
+echo FTD_hanging_drop_jdd1 			>> $BLACK_LIST	# Utilisation de Xprepro qui ne marche pas si DISPLAY non fixe
+echo FTD_hanging_drop_jdd2			>> $BLACK_LIST	# Idem
+echo sloshing_jdd1				>> $BLACK_LIST	# Idem
+echo Two_Layers_Stratif_jdd1			>> $BLACK_LIST	# Bloque la nuit
+echo PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd19 >> $BLACK_LIST	# Idem
+
+find $TRUST_TESTS -follow -name '*.lml.gz' -exec basename {} .lml.gz \; | sort -u | awk '{print (" "$1" ")}' | grep -v -f $BLACK_LIST > TESTS_MINIMUM
+rm -f $BLACK_LIST
+
+# PL: Lancement sur plusieurs processeurs pour aller plus vite
+export NPROCS=`echo $TRUST_NB_PROCS/$NB_MACHINES_VALGRIND | bc`
+
+# On range les cas en fonction de la taille du lml.gz
+for cas in `cat TESTS_MINIMUM`
+do
+   ls -lart $TRUST_TESTS/*/$cas/$cas.lml.gz 2>/dev/null | $TRUST_Awk -v cas=$cas '{print $5" "cas}'
+done | sort -n | $TRUST_Awk '{print $NF}' > $TRUST_TMP/liste
+
+# Construction d'une liste de cas dans TEST1, TEST2,...TEST$NPROCS (1 fichier par processeur)
+let PROC=0
+let N=0
+rm -f TEST*
+for cas in `cat $TRUST_TMP/liste`
+do
+   # Permet de repartir les cas sur plusieurs machines
+   let N=$N+1 && [ $N -gt $NB_MACHINES_VALGRIND ] && N=1
+   if [ $N = $MACHINE_VALGRIND ]
+   then
+      let PROC=$PROC+1 && [ $PROC -gt $NPROCS ] && PROC=1
+      echo $cas >> TEST$PROC
+   fi
+done
+echo "Lancement de `cat TEST* | wc -l` cas sur $NPROCS processeurs..."
+
+# Lancement d'un cas particulier
+echo nul | ./testval
+
+# Lancement des cas sur NPROCS
+let N=0
+while [ $N -lt $NPROCS ]
+do
+   let N=$N+1
+   # On passe les cas tests par ordre alphabetique pour que les gros
+   # cas ne tournent pas ensemble a la fin
+   for cas in `sort TEST$N`
+   do
+      echo $cas | ./testval $testval_option -directory valgrind_prov$N
+   done &
+   p[$N]=$!
+done
+# Attente que les NPROCS aient fini le travail
+let N=0
+while [ $N -lt $NPROCS ]
+do
+   let N=$N+1
+   wait ${p[$N]}
+done
+rm -f STOP_TESTALL
+

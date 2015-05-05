@@ -1,0 +1,61 @@
+#!/bin/bash
+# Reconstruction des rapports depuis la boite mail en attendant
+# de gerer en configuration ?
+rm -f *.cpu
+#BENCH=`ls /work/triou/.thunderbird/vajr3qw6.default/Mail/*/BENCH`
+BENCH=`ls  ~/.thunderbird/n6ijsx63.default/Mail/*/BENCH`
+[ ! -f "$BENCH" ] && echo "Fichier $BENCH inexistant." && exit -1
+cp "$BENCH" .
+dos2unix_ BENCH
+cat BENCH | awk '/Subject: Bench_/ {gsub("Bench_","",$2);mac=$2;while(getline>0 && ($1!="Cas"));
+while(getline>0 && $1!="From") {print $0>"tmp";\
+	if ($1=="Calcul") { \
+		jour=$(NF-6);annee=substr($(NF-3),3,2);mois=$(NF-7);\
+		if (mois=="Jan") mois=1;\
+		if (mois=="Feb") mois=2;\
+		if (mois=="Mar") mois=3;\
+		if (mois=="Apr") mois=4;\
+		if (mois=="May") mois=5;\
+		if (mois=="Jun") mois=6;\
+		if (mois=="Jul") mois=7;\
+		if (mois=="Aug") mois=8;\
+		if (mois=="Sep") mois=9;\
+		if (mois=="Oct") mois=10;\
+		if (mois=="Nov") mois=11;\
+		if (mois=="Dec") mois=12;\
+		if (mois<10) mois="0"mois;\
+		if (jour<10) jour="0"jour;\
+		date=annee""mois""jour;\
+	};\
+}
+file=mac"_"date".cpu";\
+close("tmp");\
+system("mv tmp "file);\
+}'
+
+# Construction d'un fichier avec les performances par machine
+machines=`ls *_*.cpu | awk -F_ '{print $1}' | sort -u`
+sec_today=`date +'%s'`
+for machine in $machines
+do
+   log=$machine.cpu
+   # Ecriture en tete
+   echo $ECHO_OPTS "#Jours Date\c" > $log
+   for cas in VDF VEF
+   do
+      echo $ECHO_OPTS "   CPU1 EFF1  CPU2 EFF2  CPU4 EFF4\c" >> $log
+   done
+   echo >> $log
+   # Ecriture des temps
+   for cpu in $machine"_"*.cpu
+   do
+       date=${cpu#$machine"_"}
+       date=${date%.cpu}
+       # Conversion en secondes
+       sec_date=`date +'%s' -d $date` 
+       echo $sec_date" "$sec_today" "$date | awk '{printf("%4d  %s",($1-$2)/(3600*24),$3)}' >> $log
+       awk -F'|' '(NF==7) && !/nb_proc/ {printf(" %5.2f %3.2f",$2,$6)} (NF==0) {exit}' $cpu >> $log
+       echo >> $log
+   done  
+   echo "Creation de $log"
+done

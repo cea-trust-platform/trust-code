@@ -1,0 +1,177 @@
+# Test for Field_uniform_keps_from_ud fields #
+# PARALLEL OK #
+
+precisiongeom  1e-05
+dimension 2
+domaine dom 
+
+# BEGIN MESH #
+lire_fichier dom dom2D.geom
+
+/* tetra_here */
+/* rotation of angle theta : */
+/* x ->  x cos(theta) + y sin (theta) */
+/* y -> -x sin(theta) + y cos (theta) */
+/* Transformer_here */
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 2 2 }
+	Nom_Zones DOM
+        Larg_joint 2
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER 
+Scatter DOM.Zones dom
+END SCATTER #
+
+schema_euler_implicite sch 
+Lire sch
+  { 
+    solveur implicite 
+      { 
+        seuil_convergence_solveur 1e-10
+      }
+    tinit 0.0
+	nb_pas_dt_max 0
+    dt_min 0.1
+    dt_max 0.1
+    facsec 1000000000.0
+  }
+
+vdf dis 
+
+pb_thermohydraulique_turbulent pb 
+Associer pb dom
+Associer pb sch
+fluide_incompressible eau 
+champ_uniforme gravite 
+Lire gravite 2 0.0 0.0
+Associer eau gravite
+Lire eau
+  { 
+    beta_th champ_uniforme  1 0.0002
+    mu champ_uniforme  1 8.951e-05
+    rho champ_uniforme  1 725.735
+    cp champ_uniforme  1 5483.0
+    lambda champ_uniforme  1 0.02495
+  }
+Associer pb eau
+discretiser pb dis
+Lire pb
+  { 
+    navier_stokes_turbulent 
+      { 
+        modele_turbulence k_epsilon 
+          { 
+            transport_k_epsilon 
+              { 
+                convection    { amont 
+                  }
+                diffusion    {   }
+                conditions_initiales    {  k_Eps Field_uniform_keps_from_ud { U 100 D 1 } }
+                conditions_limites 
+                  {
+                    1 frontiere_ouverte_k_eps_impose Boundary_field_uniform_keps_from_ud { U 100 D 1 }
+                    2 Paroi
+                    3 Paroi
+                    4 Paroi
+                    6 Paroi
+                    7 Paroi
+                    5 frontiere_ouverte_k_eps_impose Boundary_field_uniform_keps_from_ud { U 100 D 1 }
+                  }
+              }
+            turbulence_paroi loi_standard_hydr 
+            eps_min 1e-15
+          }
+        solveur_pression gcp 
+          { 
+            precond ssor 
+              { 
+                omega 1.5
+              }
+            seuil 1e-14
+            impr 
+          }
+        convection    { amont 
+          }
+        diffusion    {   }
+        conditions_initiales    {  vitesse champ_fonc_xyz dom 2 0 0 }
+        conditions_limites 
+          {
+            1 frontiere_ouverte_vitesse_imposee champ_front_uniforme  2 1.0 0.0
+            2 paroi_fixe 
+            3 paroi_fixe 
+            4 paroi_fixe 
+            6 paroi_fixe 
+            7 paroi_fixe 
+            5 frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0
+          }
+      }
+    convection_diffusion_temperature_turbulent 
+      { 
+        modele_turbulence prandtl 
+          { 
+            turbulence_paroi loi_standard_hydr_scalaire 
+          }
+        convection    { amont }
+        diffusion    {   }
+        conditions_initiales    {  temperature champ_fonc_xyz dom 1 20 }
+        conditions_limites 
+          {
+            1 frontiere_ouverte_temperature_imposee champ_front_uniforme  1 300.0
+            2 paroi_adiabatique 
+            3 paroi_adiabatique 
+            4 paroi_adiabatique 
+            6 paroi_adiabatique 
+            7 paroi_adiabatique 
+            5 frontiere_ouverte T_ext champ_front_uniforme  1 20.0
+          }
+      }
+
+      Postraitement
+      { 
+	    format lml
+        champs  dt_post 0.1 
+        {
+           	vitesse elem
+           	vitesse som
+           	pression elem
+           	pression som
+           	temperature elem
+           	temperature som
+           	k elem
+           	k som
+           	eps elem
+           	eps som
+	    }
+	  }
+
+      Postraitements
+      { 
+      	volumic	
+      	{
+	    format lml
+            champs  dt_post 0.1 
+            {
+            	vitesse elem
+           	vitesse som
+           	pression elem
+            	pression som
+            	temperature elem
+            	temperature som
+            	k elem
+            	k som
+            	eps elem
+            	eps som
+	    }
+	}
+	
+      }
+}
+resoudre pb
+fin 

@@ -1,0 +1,55 @@
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:	NOM_DU_FICHIER.cpp
+// Directory:	$TRUST_ROOT/NOM_DU_MODULE
+//
+//////////////////////////////////////////////////////////////////////////////
+
+#include <NOM_DU_FICHIER.h>
+
+
+implemente_instanciable(NOM_DE_LA_CLASSE,
+                        "NOM_DE_LA_CLASSE",
+                        Probleme_base)
+
+// printOn et readOn 
+
+Sortie& NOM_DE_LA_CLASSE::printOn(Sortie& s ) const 
+{
+   return s << que_suis_je() << "\n";
+}
+
+Entree& NOM_DE_LA_CLASSE::readOn(Entree& is ) 
+{
+   Cerr << "Lecture de l'equation de NOM_DE_LA_CLASSE" << finl;
+   Probleme_base::readOn(is);
+//
+// VERIFIER ICI QU'ON A BIEN TOUT LU;  
+//
+   return is;
+}
+
+
+// Description:
+// renvoie 1
+// TYPE_EQUATION
+int NOM_DE_LA_CLASSE::nombre_d_equations() const
+{
+   return 1;
+}
+
+// Description:
+// renvoie l' equation de type Conduction si i=0
+const Equation_base& NOM_DE_LA_CLASSE::equation(int i) const
+{
+   assert (i==0);
+     return NOM_DE_L_EQUATION;
+}
+
+// Description:
+// renvoie l' equation de type Conduction si i=0
+Equation_base& NOM_DE_LA_CLASSE::equation(int i)
+{
+   assert (i==0);
+     return NOM_DE_L_EQUATION;
+}   

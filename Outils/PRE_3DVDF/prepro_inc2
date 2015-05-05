@@ -1,0 +1,1122 @@
+#include "defineh_inc"
+#define NMAPRO 100
+#define VALINDFOR dVALINDFOR
+C
+C************************************************************************
+C NOMBRE DE BORD
+C****************
+C
+#define NNBOR dNNBOR
+C
+C NOMBRE DE PROBLEME
+C*********************
+C
+#define NNPRB dNNPRB
+C
+C NUMERO DE L'ORDRE DE L'INDICE DU PROBLEME A TRAITER
+C ***************************************************
+C   A NE PAS MODIFIER !!!!!!!!!!!!!!!!!!!
+C   -----------------
+C   GERER ITERATIVEMENT ( de 1 a NNPRB) PAR LE SCRIPT exec_prepro 
+C****************************************************************
+C
+#define IIPB VALEUR_DU_PB
+C
+C************************************************************************
+C LE PROBLEME EST INCLUS DANS UN PAVE  ===> INDICE 0
+C EAU                                  ===> INDICE 1000
+C ACIER                                ===> INDICE 2000
+C LES LIMITES :             entree     ===> INDICE -1000
+C                           sortie     ===> INDICE -2000
+C************************************************************************
+C
+#define NSRAC dNSRAC
+	CHARACTER*11 NOMRAC(NNPRB,NSRAC,NSRAC)
+	COMMON /RAC/ INDSRAC(NIMAX-1,NJMAX-1,NKMAX-1),
+     1 NUMFACRAC(NNPRB,NSRAC,NSRAC),NOMRAC
+	CHARACTER*30 NOMCL(NNBOR)
+	COMMON /NOMCL/NOMCL
+      COMMON /INPB/ NUMPB(NNPRB),NUMCL(NNBOR)
+      
+     
+C************************************************************************
+C
+C IL EST MODELE DANS UN PAVE
+C
+      COMMON /MODEL/ INDMAIL(NIMAX-1,NJMAX-1,NKMAX-1)     
+     1,XM(NIMAX),YM(NJMAX),ZM(NKMAX)
+      DATA NUMPB/dNUMPB/
+#include "numcl.h"  
+C********************************
+	CALL INITIALISESOUSRAC
+c	print *,'ici',nomrac
+C  on affecte les noms des bords
+	CALL AFFECTE_NOM
+	do i=1,NNBOR
+	print *,NOMCL(I),'rt'
+	enddo
+C****************************************************************
+C INDFOR=1 : raccord local ; INDFOR=2 raccord distant
+C   
+      INDFOR=VALINDFOR        
+C
+C****************************************************************
+C ACCES AU MODEL
+      PRINT *,'ACCES AU MODELE'
+      IMAX=NIMAX 
+      JMAX=NJMAX 
+      KMAX=NKMAX
+      OPEN(UNIT=1,FILE='model.xi',FORM='FORMATTED')
+      READ(1,*)XM
+      CLOSE(1)
+      OPEN(UNIT=1,FILE='model.yi',FORM='FORMATTED')
+      READ(1,*)YM
+      CLOSE(1)
+      OPEN(UNIT=1,FILE='model.zi',FORM='FORMATTED')
+      READ(1,*)ZM
+      CLOSE(1)
+      OPEN(UNIT=1,FILE='model.val',FORM='UNFORMATTED')
+      READ(1)INDMAIL
+      CLOSE(1)
+C
+C constante a ne pas modifier
+      NUM1 = NNPRB + NNBOR
+      NUM2 = NNPRB + NNBOR + 1
+C
+
+C    ON VERIFIE QUE LES MAILLES DE BORD NE SONT PAS DES PBS
+	do i=1,IMAX-1,IMAX-2
+	   do j=1,JMAX-1
+	      do k=1,KMAX-1
+		if (indmail(i,j,k).ge.1000) then
+	          print *,'PROBLEM WITH THE MESH',I,J,K,' indmail', 
+     &            'of a pb ',INDMAIL(i,j,k)
+	          STOP 
+	        endif
+	      enddo
+	   enddo
+	enddo
+	do i=1,IMAX-1
+	   do j=1,JMAX-1,JMAX-2
+	      do k=1,KMAX-1
+		if (indmail(i,j,k).ge.1000) then
+	          print *,'PROBLEM WITH THE MESH',I,J,K,' indmail', 
+     &            'of a pb ',INDMAIL(i,j,k)
+	          STOP 
+	        endif
+	      enddo
+	   enddo
+	enddo
+	do i=1,IMAX-1
+	   do j=1,JMAX-1
+	      do k=1,KMAX-1,KMAX-2
+		if (indmail(i,j,k).ge.1000) then
+	          print *,'PROBLEM WITH THE MESH',I,J,K,' indmail' ,
+     &            'of a pb ',INDMAIL(i,j,k)
+	          STOP 
+	        endif
+	      enddo
+	   enddo
+	enddo
+C NOEUDS ET MAILLES DU PROBLEME      
+      PRINT *,'NOEUDS ET MAILLES DU PROBLEME'
+      PRINT *,'****************************************'
+      CALL GEOMAIL(IIPB,IMAX,JMAX,KMAX)
+      call flush_cond
+C BORDS ET RACCORDS DU PROBLEME 
+      PRINT *,'BORDS ET RACCORDS DU PROBLEME'
+      PRINT *,'****************************************'
+      CALL GEOBORD(IIPB,IMAX,JMAX,KMAX,NUM1,NUM2)
+      call flush_cond
+C constant
+C constante a ne pas modifier
+      NUM1 = NNPRB + NNBOR
+      NUM2 = NNPRB + NNBOR + 5
+C  
+C ECRITURE DU FICHIER GEOM POUR LE PROBLEME       
+      PRINT *,'ECRITURE DU FICHIER GEOM'
+      PRINT *,'****************************************'	
+	call flush_cond
+      CALL ECRIGEO(IIPB,NUM1,NUM2,INDFOR)
+	call flush_cond
+ 	CALL DECPB(IIPB,IMAX,JMAX,KMAX)	
+      print *,'OK ',IIPB
+      STOP  
+      END
+
+C************************************************************************
+
+      SUBROUTINE GEOMAIL (NPB,IMAX,JMAX,KMAX)
+
+C************************************************************************
+
+      COMMON /INPB/ NUMPB(NNPRB),NUMCL(NNBOR)
+      COMMON /MODEL/ INDMAIL(NIMAX-1,NJMAX-1,NKMAX-1)       
+     1,XM(NIMAX),YM(NJMAX),ZM(NKMAX) 
+      COMMON /NUMS/ NUMSAB((NIMAX+1)*(NJMAX+1)*(NKMAX+1))          
+      COMMON /NUMEL/ NBMASZ(1000),NBMAIL,NBSOM
+      COMMON /C1/ INDFAV(NIMAX,NJMAX,NKMAX)        
+      COMMON /C3/              
+     1          INDSOM(NIMAX,NJMAX,NKMAX)
+      COMMON /C2/ NUMSZ(NIMAX*NJMAX*NKMAX)
+      DIMENSION PUI(1000)
+      CHARACTER*12 NOMFIC(20)
+
+      PRINT *,' ON MAILLE LE PROBLEME ',NPB, ' ET SES SOUS ZONES '
+      NBP=NUMPB(NPB)
+      PRINT *,' INDICE NBP ',NBP
+
+C OUVERTURE DES FICHIERS
+        NOMFIC(1)='Maille_Prob'
+        OPEN(UNIT=1,FILE=NOMFIC(1),FORM='UNFORMATTED')
+        NOMFIC(2)='Coordo_Prob'
+        OPEN(UNIT=2,FILE=NOMFIC(2),FORM='UNFORMATTED')
+
+C INITIALISATIONS DES COMPTEURS
+      NBMAIL=0
+      NBSOT=0
+      DO N=1,1000
+        NBMASZ(N)=0
+      ENDDO
+C   ON BALAYE LE PAVE 1              
+      DO I=1,IMAX
+      DO J=1,JMAX
+      DO K=1,KMAX
+         INDSOM(I,J,K)=-1
+         INDFAV(I,J,K)=0
+      ENDDO
+      ENDDO
+      ENDDO
+      DO N=1,IMAX+1*JMAX+1*KMAX+1
+         NUMSAB(N)=0
+      ENDDO
+      DO N=1,IMAX*JMAX*KMAX
+         NUMSZ(N)=0
+      ENDDO
+
+C AFFECTATION DES PUI
+      DO N=1,1000
+         PUI(N)=N*100.
+      ENDDo
+
+C ON RANGE LES ELEMENTS DANS DES FICHIERS A CONCATENER APRES.
+C DANS UN .GEOM
+C
+      DO I=2,IMAX-1
+      DO J=2,JMAX-1
+      DO K=2,KMAX-1
+         IF(INDMAIL(I,J,K).EQ.NBP.OR.(INDMAIL(I,J,K)/1000)*1000.EQ.NBP)
+     1  THEN
+           NBMAIL=NBMAIL+1
+           IF(INDMAIL(I,J,K).GT.NBP) THEN 
+              N=INDMAIL(I,J,K)-NBP
+              NBMASZ(N)=NBMASZ(N)+1
+C ON RANGE DANS UN TABLEAU AU RANG NUMERO DE
+C L ELEMENT DANS LE PROBLEME
+C L INDICE DE LA SOUS ZONE
+              NUMSZ(NBMAIL)=N                 
+           ENDIF
+C NOUVELLES FACES 
+C FACE OUEST NOUVELLE ?
+         IF(INDFAV(I,J,K).NE.1) THEN
+           INDFAV(I,J,K)=1
+C NOUVEAUX SOMMETS BAS SUD ?
+        IF(INDSOM(I,J,K).EQ.-1) THEN
+           NBSOM=NBSOM+1
+           INDSOM(I,J,K)=NBSOM-1
+c           INDSOV(I,J,K)=1
+          WRITE(2) XM(I),YM(J),ZM(K)                      
+          NUMSAB(I+J*IMAX+K*IMAX*JMAX)=NBSOM-1
+        ENDIF
+C NOUVEAUX SOMMETS HAUT SUD ?
+        IF(INDSOM(I,J,K+1).EQ.-1) THEN
+           NBSOM=NBSOM+1
+           INDSOM(I,J,K+1)=NBSOM-1
+c           INDSOV(I,J,K+1)=1
+          WRITE(2) XM(I),YM(J),ZM(K+1)                      
+          NUMSAB(I+J*IMAX+(K+1)*IMAX*JMAX)=NBSOM-1
+        ENDIF
+C NOUVEAUX SOMMETS BAS NORD?
+        IF(INDSOM(I,J+1,K).EQ.-1) THEN
+           NBSOM=NBSOM+1
+           INDSOM(I,J+1,K)=NBSOM-1
+c           INDSOV(I,J+1,K)=1
+          WRITE(2) XM(I),YM(J+1),ZM(K)                      
+          NUMSAB(I+(J+1)*IMAX+K*IMAX*JMAX)=NBSOM-1
+        ENDIF
+C NOUVEAUX SOMMETS HAUT NORD ?
+        IF(INDSOM(I,J+1,K+1).EQ.-1) THEN
+           NBSOM=NBSOM+1
+           INDSOM(I,J+1,K+1)=NBSOM-1
+c           INDSOV(I,J+1,K+1)=1
+          WRITE(2) XM(I),YM(J+1),ZM(K+1)                      
+          NUMSAB(I+(J+1)*IMAX+(K+1)*IMAX*JMAX)=NBSOM-1
+        ENDIF
+C TRAITEMENT DE LA FACE EST
+        ENDIF
+C FACE EST NOUVELLE ?
+         IF(INDFAV(I+1,J,K).NE.1) THEN
+           INDFAV(I+1,J,K)=1
+C NOUVEAUX SOMMETS BAS SUD ?
+        IF(INDSOM(I+1,J,K).EQ.-1) THEN
+           NBSOM=NBSOM+1
+           INDSOM(I+1,J,K)=NBSOM-1
+c           INDSOV(I+1,J,K)=1
+          WRITE(2) XM(I+1),YM(J),ZM(K)                      
+          NUMSAB(I+1+J*IMAX+K*IMAX*JMAX)=NBSOM-1
+        ENDIF
+C NOUVEAUX SOMMETS HAUT SUD ?
+        IF(INDSOM(I+1,J,K+1).EQ.-1) THEN
+           NBSOM=NBSOM+1
+           INDSOM(I+1,J,K+1)=NBSOM-1
+c           INDSOV(I+1,J,K+1)=1
+          WRITE(2) XM(I+1),YM(J),ZM(K+1)                      
+          NUMSAB(I+1+J*IMAX+(K+1)*IMAX*JMAX)=NBSOM-1
+        ENDIF
+C NOUVEAUX SOMMETS BAS NORD?
+        IF(INDSOM(I+1,J+1,K).EQ.-1) THEN
+           NBSOM=NBSOM+1
+           INDSOM(I+1,J+1,K)=NBSOM-1
+c           INDSOV(I+1,J+1,K)=1
+          WRITE(2) XM(I+1),YM(J+1),ZM(K)                      
+          NUMSAB(I+1+(J+1)*IMAX+K*IMAX*JMAX)=NBSOM-1
+        ENDIF
+C NOUVEAUX SOMMETS HAUT NORD ?
+        IF(INDSOM(I+1,J+1,K+1).EQ.-1) THEN
+           NBSOM=NBSOM+1
+           INDSOM(I+1,J+1,K+1)=NBSOM-1
+c           INDSOV(I+1,J+1,K+1)=1
+          WRITE(2) XM(I+1),YM(J+1),ZM(K+1)                      
+          NUMSAB(I+1+(J+1)*IMAX+(K+1)*IMAX*JMAX)=NBSOM-1
+        ENDIF
+      WRITE(1) INDSOM(I,J,K),INDSOM(I+1,J,K)
+     1             ,INDSOM(I,J+1,K),INDSOM(I+1,J+1,K)
+     1             ,INDSOM(I,J,K+1),INDSOM(I+1,J,K+1)
+     1             ,INDSOM(I,J+1,K+1),INDSOM(I+1,J+1,K+1)
+      ENDIF
+      ENDIF
+      ENDDO
+      ENDDO
+      ENDDO
+      CLOSE(1)
+      CLOSE(2)
+	print 103,NBP,NBSOM,NBMAIL
+      OPEN(UNIT=99,FILE='Recapitul_Pb1',FORM='FORMATTED')
+      WRITE(99,103) NBP,NBSOM,NBMAIL
+      WRITE(99,102) (NBMASZ(N),N=1,1000)     
+      CLOSE(99)
+           OPEN(UNIT=1,FILE='Suz_def_pb',FORM='FORMATTED')
+	   OPEN(UNIT=11,FILE='Def_Suz_def_pb',FORM='FORMATTED')
+      DO N=1,1000
+         IF(NBMASZ(N).NE.0) THEN
+           NSZ=NPB*1000+N
+	   WRITE(11,114) NSZ,NSZ,NPB
+           WRITE(1,104) NSZ,NBMASZ(N)
+           DO M=1,NBMAIL
+c              IF(NUMSZ(M).EQ.N) WRITE(1,105) M-1
+              IF(NUMSZ(M).EQ.N) WRITE(1,*) M-1
+           ENDDO
+           WRITE(1,106)
+         ENDIF
+      ENDDO
+	WRITE(11,115) NPB
+      CLOSE(1)
+      CLOSE(11)
+C 
+C
+  102 FORMAT (20I11)
+  103 FORMAT('NPB',I11,'     NBSOM ',I11,'     NBMAIL',I11,
+     1 /,' NBMASZI ')         
+  104 FORMAT (
+     1  'Lire Suz',I4.4,/,
+     1  '{ liste ',I11)
+  114 FORMAT ('Sous_Zone Suz',I4.4,/,
+     1  'Associer Suz',I4.4,' dom_pb',I1)
+  115   FORMAT ('Lire_fichier Suz_def_pb',I1,' ;')
+  105 FORMAT (I11)
+  106 FORMAT ('}')
+  107 FORMAT (2I11)
+  108 FORMAT (2I12) 
+ 1234 CONTINUE
+      RETURN
+      END
+
+C***********************************************************************
+
+      SUBROUTINE GEOBORD (NPB,IMAX,JMAX,KMAX,ITEMP1,ITEMP2)
+
+C***********************************************************************
+C
+C renseignement: 
+C                  ITEMP1 = NNPRB + NNBOR
+C                  ITEMP2 = NNPRB + NNBOR + 1
+C
+	CHARACTER*11 NOMRAC(NNPRB,NSRAC,NSRAC)
+	COMMON/RAC/INDSRAC(NIMAX-1,NJMAX-1,NKMAX-1),
+     1 NUMFACRAC(NNPRB,NSRAC,NSRAC),NOMRAC
+      COMMON /INPB/ NUMPB(NNPRB),NUMCL(NNBOR)
+      COMMON /MODEL/ INDMAIL(NIMAX-1,NJMAX-1,NKMAX-1)
+     1,XM(NIMAX),YM(NJMAX),ZM(NKMAX) 
+      COMMON /NUMS/ NUMSAB((NIMAX+1)*(NJMAX+1)*(NKMAX+1))
+      DIMENSION NBFAC(ITEMP1)
+      CHARACTER*14 NOMFIC(ITEMP2),CCBORD,CCRACO
+      CCBORD='Bord'
+      CCRACO='Raccord'
+C---------------------- fichiers Bord i
+      DO I=1,NNBOR
+      open(unit=99,file='fic_tmp')
+      IF (I.LT.10) THEN
+        write(99,66) CCBORD,I
+	           ELSE
+	if (I.lt.100) then
+        write(99,67) CCBORD,I
+	else
+	write(99,70) CCBORD,I
+	endif
+      ENDIF
+      rewind(99)
+      IF (I.LT.10) THEN
+       read (99,68) NOMFIC(I)
+	           ELSE
+	if (I.lt.100) then
+       read (99,69) NOMFIC(I)
+	else
+	read (99,71) NOMFIC(I)
+	endif
+      ENDIF
+      close(99)
+C	print *,'nom',NOMFIC(I),'gr'
+      ENDDO
+   66 FORMAT(A4,I1.0)
+   67 FORMAT(A4,I2.0)
+   68 FORMAT(A5)
+   69 FORMAT(A6)
+   70 FORMAT(A4,I3.0)
+   71 FORMAT(A7)
+C---------------------- fichiers Raccord i
+      DO I=1,NNPRB
+      open(unit=99,file='fic_tmp')
+      IF (I.LT.10) THEN
+        write(99,76) CCRACO,I
+	           ELSE
+        write(99,77) CCRACO,I
+      ENDIF
+      rewind(99)
+      IF (I.LT.10) THEN
+       read (99,78) NOMFIC(I+NNBOR)
+	           ELSE
+       read (99,79) NOMFIC(I+NNBOR)
+      ENDIF
+      close(99)
+      ENDDO
+   76 FORMAT(A7,I1.0)
+   77 FORMAT(A7,I2.0)
+   78 FORMAT(A8)
+   79 FORMAT(A9)
+C********************************************
+      NOMFIC(ITEMP2)='Recapitu_Fac'
+      DO I=1,(NNPRB + NNBOR)  
+         NBFAC(I)=0
+      ENDDO
+C
+      PRINT *,' ON BORDE LE PROBLEME ',NPB
+      NBP=NUMPB(NPB)
+      PRINT *,' INDICE NBP ',NBP
+      NBP=NBP/1000
+	ITEMP = NNPRB + NNBOR + 1
+        OPEN(UNIT=20,FILE=NOMFIC(ITEMP),FORM='FORMATTED')
+C BOUCLE SUR LES BORDS
+C************************************************************
+      DO N=1,NNBOR
+         NVOI=NUMCL(N)
+      PRINT *,'BORD VOISIN ',NVOI
+	call flush_cond
+c         NVOI=NVOI/1000
+C OUVERTURE DES FICHIERS
+C
+        OPEN(UNIT=1,FILE=NOMFIC(N),FORM='UNFORMATTED')
+        
+C      
+C BOUCLE SUR LES FACES
+C FACES NORMALES A 0X
+      DO I=1,IMAX-2
+      DO J=2,JMAX-2
+      DO K=2,KMAX-2
+        NPB1=INDMAIL(I,J,K)/1000
+        NPB2=INDMAIL(I+1,J,K)/1000
+	INPB1=INDMAIL(I,J,K)
+	INPB2=INDMAIL(I+1,J,K)
+C 
+        IF((NPB1.EQ.NBP.AND.INPB2.EQ.NVOI).OR.
+     1     (NPB2.EQ.NBP.AND.INPB1.EQ.NVOI)) THEN 
+          WRITE(1) 
+     1    NUMSAB((I+1)+J*IMAX+K*IMAX*JMAX)
+     1   ,NUMSAB((I+1)+(J+1)*IMAX+K*IMAX*JMAX)
+     1   ,NUMSAB((I+1)+J*IMAX+(K+1)*IMAX*JMAX)
+     1   ,NUMSAB((I+1)+(J+1)*IMAX+(K+1)*IMAX*JMAX)
+          NBFAC(N)=NBFAC(N)+1
+        ENDIF
+      ENDDO
+      ENDDO
+      ENDDO
+C
+C FACES NORMALES A 0Y
+      DO I=2,IMAX-2
+      DO J=1,JMAX-2
+      DO K=2,KMAX-2
+        NPB1=INDMAIL(I,J,K)/1000
+        NPB2=INDMAIL(I,J+1,K)/1000
+	INPB1=INDMAIL(I,J,K)
+	INPB2=INDMAIL(I,J+1,K)
+        IF((NPB1.EQ.NBP.AND.INPB2.EQ.NVOI).OR.
+     1     (NPB2.EQ.NBP.AND.INPB1.EQ.NVOI)) THEN 
+             WRITE(1) 
+     1       NUMSAB(I+(J+1)*IMAX+K*IMAX*JMAX)
+     1      ,NUMSAB((I+1)+(J+1)*IMAX+K*IMAX*JMAX)
+     1      ,NUMSAB(I+(J+1)*IMAX+(K+1)*IMAX*JMAX)
+     1      ,NUMSAB((I+1)+(J+1)*IMAX+(K+1)*IMAX*JMAX)
+             NBFAC(N)=NBFAC(N)+1
+           ENDIF
+      ENDDO
+      ENDDO
+      ENDDO
+C
+C FACES NORMALES A 0Z
+      DO I=2,IMAX-2 
+      DO J=2,JMAX-2
+      DO K=1,KMAX-2
+        NPB1=INDMAIL(I,J,K)/1000
+        NPB2=INDMAIL(I,J,K+1)/1000
+	INPB1=INDMAIL(I,J,K)
+	INPB2=INDMAIL(I,J,K+1)
+
+        IF((NPB1.EQ.NBP.AND.INPB2.EQ.NVOI).OR.
+     1     (NPB2.EQ.NBP.AND.INPB1.EQ.NVOI)) THEN 
+             WRITE(1) 
+     1       NUMSAB(I+J*IMAX+(K+1)*IMAX*JMAX)
+     1      ,NUMSAB((I+1)+J*IMAX+(K+1)*IMAX*JMAX)
+     1      ,NUMSAB(I+(J+1)*IMAX+(K+1)*IMAX*JMAX)
+     1      ,NUMSAB((I+1)+(J+1)*IMAX+(K+1)*IMAX*JMAX)
+             NBFAC(N)=NBFAC(N)+1
+           ENDIF
+      ENDDO
+      ENDDO
+      ENDDO
+C
+C
+      CLOSE(1)
+C
+C COMPLEMENT DU RECAPITULATIF
+         WRITE(20,200) N,NBFAC(N)
+C
+      ENDDO
+C
+
+C BOUCLE SUR LES RACCORDS
+C****************************************************************
+      DO N=1,NNPRB
+         NVOI=NUMPB(N)
+      PRINT *,'RACCORD AVEC',NVOI
+	call flush_cond
+         NVOI=NVOI/1000
+C
+         IF(NVOI.NE.NBP) THEN
+C
+C OUVERTURE DES FICHIERS
+        OPEN(UNIT=1,FILE=NOMFIC(N+NNBOR),FORM='UNFORMATTED')
+	if (dNSRAC.eq.1) then
+c       on n a pas de sous rac
+	print *,'on n a pas de sous raccord' ,NOMRAC(nvoi,1,1)
+	open(25,file=NOMRAC(nvoi,1,1),FORM='UNFORMATTED')
+	endif
+C       
+C BOUCLE SUR LES FACES
+C
+C FACES NORMALES A 0X
+      DO I=2,IMAX-2
+      DO J=2,JMAX-2
+      DO K=2,KMAX-2
+        NPB1=INDMAIL(I,J,K)/1000
+        NPB2=INDMAIL(I+1,J,K)/1000
+C 
+        IF((NPB1.EQ.NBP.AND.NPB2.EQ.NVOI).OR.
+     1     (NPB2.EQ.NBP.AND.NPB1.EQ.NVOI)) THEN 
+          WRITE(1) 
+     1    NUMSAB((I+1)+J*IMAX+K*IMAX*JMAX)
+     1   ,NUMSAB((I+1)+(J+1)*IMAX+K*IMAX*JMAX)
+     1   ,NUMSAB((I+1)+J*IMAX+(K+1)*IMAX*JMAX)
+     1   ,NUMSAB((I+1)+(J+1)*IMAX+(K+1)*IMAX*JMAX)
+          NBFAC(N+NNBOR)=NBFAC(N+NNBOR)+1
+	if (NPB1.EQ.NBP) then
+	  CALL SOUSRAC(NVOI,I,J,K,I+1,J,K
+     1   ,NUMSAB((I+1)+J*IMAX+K*IMAX*JMAX)
+     1   ,NUMSAB((I+1)+(J+1)*IMAX+K*IMAX*JMAX)
+     1   ,NUMSAB((I+1)+J*IMAX+(K+1)*IMAX*JMAX)
+     1   ,NUMSAB((I+1)+(J+1)*IMAX+(K+1)*IMAX*JMAX))
+	else
+	 CALL SOUSRAC(NVOI,I+1,J,K,I,J,K
+     1   ,NUMSAB((I+1)+J*IMAX+K*IMAX*JMAX)
+     1   ,NUMSAB((I+1)+(J+1)*IMAX+K*IMAX*JMAX)
+     1   ,NUMSAB((I+1)+J*IMAX+(K+1)*IMAX*JMAX)
+     1   ,NUMSAB((I+1)+(J+1)*IMAX+(K+1)*IMAX*JMAX))
+	endif
+        ENDIF
+      ENDDO
+      ENDDO
+      ENDDO
+C
+C FACES NORMALES A 0Y
+      DO I=2,IMAX-2
+      DO J=2,JMAX-2
+      DO K=2,KMAX-2
+        NPB1=INDMAIL(I,J,K)/1000
+        NPB2=INDMAIL(I,J+1,K)/1000
+        IF((NPB1.EQ.NBP.AND.NPB2.EQ.NVOI).OR.
+     1     (NPB2.EQ.NBP.AND.NPB1.EQ.NVOI)) THEN 
+             WRITE(1) 
+     1       NUMSAB(I+(J+1)*IMAX+K*IMAX*JMAX)
+     1      ,NUMSAB((I+1)+(J+1)*IMAX+K*IMAX*JMAX)
+     1      ,NUMSAB(I+(J+1)*IMAX+(K+1)*IMAX*JMAX)
+     1      ,NUMSAB((I+1)+(J+1)*IMAX+(K+1)*IMAX*JMAX)
+             NBFAC(N+NNBOR)=NBFAC(N+NNBOR)+1
+	if (NPB1.EQ.NBP) then
+	 CALL SOUSRAC(NVOI,I,J,K,I,J+1,K
+     1      ,NUMSAB(I+(J+1)*IMAX+K*IMAX*JMAX)
+     1      ,NUMSAB((I+1)+(J+1)*IMAX+K*IMAX*JMAX)
+     1      ,NUMSAB(I+(J+1)*IMAX+(K+1)*IMAX*JMAX)
+     1      ,NUMSAB((I+1)+(J+1)*IMAX+(K+1)*IMAX*JMAX))
+	else
+	CALL SOUSRAC(NVOI,I,J+1,K,I,J,K
+     1      ,NUMSAB(I+(J+1)*IMAX+K*IMAX*JMAX)
+     1      ,NUMSAB((I+1)+(J+1)*IMAX+K*IMAX*JMAX)
+     1      ,NUMSAB(I+(J+1)*IMAX+(K+1)*IMAX*JMAX)
+     1      ,NUMSAB((I+1)+(J+1)*IMAX+(K+1)*IMAX*JMAX))
+	endif
+           ENDIF
+      ENDDO
+      ENDDO
+      ENDDO
+C
+C FACES NORMALES A 0Z
+      DO I=2,IMAX-2
+      DO J=2,JMAX-2
+      DO K=2,KMAX-2
+        NPB1=INDMAIL(I,J,K)/1000
+        NPB2=INDMAIL(I,J,K+1)/1000
+        IF((NPB1.EQ.NBP.AND.NPB2.EQ.NVOI).OR.
+     1     (NPB2.EQ.NBP.AND.NPB1.EQ.NVOI)) THEN 
+             WRITE(1) 
+     1       NUMSAB(I+J*IMAX+(K+1)*IMAX*JMAX)
+     1      ,NUMSAB((I+1)+J*IMAX+(K+1)*IMAX*JMAX)
+     1      ,NUMSAB(I+(J+1)*IMAX+(K+1)*IMAX*JMAX)
+     1      ,NUMSAB((I+1)+(J+1)*IMAX+(K+1)*IMAX*JMAX)
+             NBFAC(N+NNBOR)=NBFAC(N+NNBOR)+1
+	if (NPB1.EQ.NBP) then
+	 CALL SOUSRAC(NVOI,I,J,K,I,J,K+1
+     1      ,NUMSAB(I+J*IMAX+(K+1)*IMAX*JMAX)
+     1      ,NUMSAB((I+1)+J*IMAX+(K+1)*IMAX*JMAX)
+     1      ,NUMSAB(I+(J+1)*IMAX+(K+1)*IMAX*JMAX)
+     1      ,NUMSAB((I+1)+(J+1)*IMAX+(K+1)*IMAX*JMAX))
+	else
+	CALL SOUSRAC(NVOI,I,J,K+1,I,J,K
+     1      ,NUMSAB(I+J*IMAX+(K+1)*IMAX*JMAX)
+     1      ,NUMSAB((I+1)+J*IMAX+(K+1)*IMAX*JMAX)
+     1      ,NUMSAB(I+(J+1)*IMAX+(K+1)*IMAX*JMAX)
+     1      ,NUMSAB((I+1)+(J+1)*IMAX+(K+1)*IMAX*JMAX))
+	endif
+           ENDIF
+      ENDDO
+      ENDDO
+      ENDDO
+C
+      CLOSE(1)
+	if (dNSRAC.eq.1) then
+	close(25)
+       endif
+C
+C COMPLEMENT DU RECAPITULATIF
+         WRITE(20,201) N+NNBOR,NBFAC(N+NNBOR)
+      ELSE
+         WRITE(20,201) N+NNBOR,NBFAC(N+NNBOR)
+      ENDIF
+C
+      ENDDO
+C
+C
+      CLOSE(20)
+  200 FORMAT(' BORD ENTRE PROBLEME TRAITE ',I4,
+     1' ET PB VOISIN ',I11,' FACETTES')
+  201 FORMAT(' RACCORD ENTRE PROBLEME TRAITE ',I4,
+     1' ET PB VOISIN ',I11,' FACETTES')
+      RETURN
+      END
+
+C****************************************************************************
+      SUBROUTINE ECRIGEO(NPB,ITEMP1,ITEMP2,INDFOR)
+
+C****************************************************************************
+C
+C renseignement: 
+C                  ITEMP1 = NNPRB + NNBOR
+C                  ITEMP2 = NNPRB + NNBOR + 5
+C      
+      DIMENSION NBFAC(ITEMP1)      
+      COMMON /NUMEL/ NBMASZ(1000),NBMAIL,NBSOM
+      COMMON /INPB/ NUMPB(NNPRB),NUMCL(NNBOR)
+        CHARACTER*30 NOMCL(NNBOR)	
+      COMMON /NOMCL/ NOMCL
+	CHARACTER*14 NOMFIC(ITEMP2),CCBORD,CCRACO
+	CHARACTER*11 NOMRAC(NNPRB,NSRAC,NSRAC),NOMRACI
+	COMMON/RAC/INDSRAC(NIMAX-1,NJMAX-1,NKMAX-1),
+     1 NUMFACRAC(NNPRB,NSRAC,NSRAC),NOMRAC
+      CCBORD='Bord'
+      CCRACO='Raccord'
+C---------------------- fichiers Bord i
+      DO I=1,NNBOR
+      open(unit=99,file='fic_tmp')
+      IF (I.LT.10) THEN
+        write(99,66) CCBORD,I
+	           ELSE
+        if (I.lt.100) then
+        write(99,67) CCBORD,I
+	else
+	write(99,70) CCBORD,I
+	endif
+      ENDIF
+      rewind(99)
+      IF (I.LT.10) THEN
+       read (99,68) NOMFIC(I)
+	           ELSE
+       if (I.lt.100) then
+       read (99,69) NOMFIC(I)
+	else
+	read (99,71) NOMFIC(I)
+	endif
+      ENDIF
+      close(99)
+      ENDDO
+   66 FORMAT(A4,I1.0)
+   67 FORMAT(A4,I2.0)
+   68 FORMAT(A5)
+   69 FORMAT(A6)
+   70 FORMAT(A4,I3.0)
+   71 FORMAT(A7)
+C---------------------- fichiers Raccord i
+      DO I=1,NNPRB
+      open(unit=99,file='fic_tmp')
+      IF (I.LT.10) THEN
+        write(99,76) CCRACO,I
+	           ELSE
+        write(99,77) CCRACO,I
+      ENDIF
+      rewind(99)
+      IF (I.LT.10) THEN
+       read (99,78) NOMFIC(I+NNBOR)
+	           ELSE
+       read (99,79) NOMFIC(I+NNBOR)
+      ENDIF
+      close(99)
+      ENDDO
+   76 FORMAT(A7,I1.0)
+   77 FORMAT(A7,I2.0)
+   78 FORMAT(A8)
+   79 FORMAT(A9)
+C****************************************
+      NOMFIC(NNPRB + NNBOR + 1)='Recapitu_Fac'
+      NOMFIC(NNPRB + NNBOR + 2)='Pb.geom'  
+      NOMFIC(NNPRB + NNBOR + 3)='Maille_Prob'
+      NOMFIC(NNPRB + NNBOR + 4)='Coordo_Prob'
+      NOMFIC(NNPRB + NNBOR + 5)='Pb.geos'  
+      ITEMP1 = NNPRB + NNBOR + 2
+      OPEN(UNIT=1,FILE=NOMFIC(ITEMP1),FORM='FORMATTED')  
+      ITEMP1 = NNPRB + NNBOR + 5
+      OPEN(UNIT=11,FILE=NOMFIC(ITEMP1),FORM='FORMATTED')
+
+C NOEUDS 
+        PRINT *,'NOEUDS'
+	call flush_cond
+        WRITE(1,100) NPB,2,NBSOM,3,NBSOM*3
+        WRITE(11,100) NPB,2,NBSOM,3,NBSOM*3
+	ITEMP1 = NNPRB + NNBOR + 4
+        OPEN(UNIT=2,FILE=NOMFIC(ITEMP1),FORM='UNFORMATTED')
+        DO N=1,NBSOM     
+          READ(2) X,Y,Z
+          WRITE(1,200) X,Y,Z
+          IF(N.LE.3) WRITE(11,200) X,Y,Z
+        ENDDO
+        CLOSE(2)
+C MAILLES
+        PRINT *,'MAILLES'
+	call flush_cond
+        WRITE(1,101) NPB,2,NBMAIL,8,NBMAIL*8
+        WRITE(11,101) NPB,2,NBMAIL,8,NBMAIL*8
+	ITEMP1 = NNPRB + NNBOR + 3
+        OPEN(UNIT=2,FILE=NOMFIC(ITEMP1),FORM='UNFORMATTED')
+        DO N=1,NBMAIL
+          READ(2) I1,I2,I3,I4,I5,I6,I7,I8
+C          WRITE(1,300) I1,I2,I3,I4,I5,I6,I7,I8
+          WRITE(1,*) I1,I2,I3,I4,I5,I6,I7,I8
+          IF(N.LE.3) WRITE(11,*) I1,I2,I3,I4,I5,I6,I7,I8
+        ENDDO
+        CLOSE(2)
+
+C FACES
+	ITEMP1 = NNPRB + NNBOR + 1
+        OPEN(UNIT=20,FILE=NOMFIC(ITEMP1),FORM='FORMATTED')
+      DO J=1,NNBOR        
+         READ(20,222) JB,NBFAC(J)
+      PRINT *,'  BORD ',J,'  NB FACES ',NBFAC(J),' INDMAT ',NUMCL(J)
+	call flush_cond
+      ENDDO
+      DO J=(NNBOR + 1),(NNBOR + NNPRB)        
+         READ(20,201) JB,NBFAC(J)
+	 PRINT *, '  RACCORD ',J-NNBOR,'  NB FACES ',NBFAC(J)
+	call flush_cond
+      ENDDO
+      CLOSE(20)
+  222 FORMAT(28x,I4,14x,I11,9x)
+  201 FORMAT(31x,I4,14x,I11,9x)
+C BOUCLE SUR LES BORDS                      
+        NBOR=0
+        DO N=1,NNBOR                  
+           IF((NBFAC(N).NE.0).and.(NOMCL(N).ne.'no_write')) THEN
+             PRINT *,NOMCL(N),  ' INDMAT ',NUMCL(N)
+	     call flush_cond
+             NBOR=NBOR+1
+             IF(NBOR.EQ.1) THEN             
+c	       WRITE(1,102) N,2,NBFAC(N),4,NBFAC(N)*4
+c               WRITE(11,102) N,2,NBFAC(N),4,NBFAC(N)*4
+
+               WRITE(1,112) NOMCL(N),2,NBFAC(N),4,NBFAC(N)*4
+               WRITE(11,112) NOMCL(N),2,NBFAC(N),4,NBFAC(N)*4
+               OPEN(UNIT=2,FILE=NOMFIC(N),FORM='UNFORMATTED')
+               DO M=1,NBFAC(N)
+                 READ(2) I1,I2,I3,I4
+                 WRITE(1,300) I1,I2,I3,I4
+                 IF(M.LE.3) WRITE(11,300) I1,I2,I3,I4
+               ENDDO
+               CLOSE(2)
+                           ELSE
+c	      WRITE(1,104) N,2,NBFAC(N),4,NBFAC(N)*4	
+c               WRITE(11,104) N,2,NBFAC(N),4,NBFAC(N)*4
+               WRITE(1,114) NOMCL(N),2,NBFAC(N),4,NBFAC(N)*4
+               WRITE(11,114) NOMCL(N),2,NBFAC(N),4,NBFAC(N)*4
+               OPEN(UNIT=2,FILE=NOMFIC(N),FORM='UNFORMATTED')
+               DO M=1,NBFAC(N)
+                 READ(2) I1,I2,I3,I4
+                 WRITE(1,300) I1,I2,I3,I4
+                 IF(M.LE.3) WRITE(11,300) I1,I2,I3,I4
+               ENDDO
+               CLOSE(2)
+             ENDIF
+             WRITE(1,103) 2,NBFAC(N),2,NBFAC(N)*2
+             WRITE(11,103) 2,NBFAC(N),2,NBFAC(N)*2
+             DO M=1,NBFAC(N)
+               WRITE(1,203)
+               IF(M.LE.3) WRITE(11,203)
+             ENDDO
+          ENDIF
+        ENDDO
+        IF(NBOR.EQ.0) THEN
+          WRITE(1,133)
+          WRITE(11,133)
+	else 
+	  write(1,299)
+	  write(11,299)
+        ENDIF
+C   ecriture des joints
+	WRITE(1,133)
+        WRITE(11,133)	
+C BOUCLE SUR LES RACCORDS                   
+        NRAC=0
+        DO NVOI=1,NNPRB
+	NFACRACVOI=0
+	do indice1=1,NSRAC
+	do indice2=1,NSRAC
+	  NBFACR=NUMFACRAC(NVOI,indice1,indice2)
+	  NFACRACVOI= NFACRACVOI+NBFACR
+	   NOMRACI=NOMRAC(NVOI,indice1,indice2)                 
+           IF(NBFACR.NE.0) THEN
+             PRINT *,NOMRACI, ' ',NBFACR
+             call flush_cond
+             NRAC=NRAC+1 
+             IF(NRAC.EQ.1) THEN
+c               WRITE(1,301)
+c               WRITE(11,301)
+               IF(INDFOR.EQ.1) THEN
+                 WRITE(1,302) NOMRACI,2,NBFACR,4,NBFACR*4
+                 WRITE(11,302) NOMRACI,2,NBFACR,4,NBFACR*4
+               ELSE                             
+                 WRITE(1,502) NOMRACI,2,NBFACR,4,NBFACR*4
+                 WRITE(11,502) NOMRACI,2,NBFACR,4,NBFACR*4
+               ENDIF
+               OPEN(UNIT=2,FILE=NOMRACI,FORM='UNFORMATTED')
+               DO M=1,NBFACR
+                 READ(2) I1,I2,I3,I4
+                 WRITE(1,300) I1,I2,I3,I4
+                 IF(M.LE.3) WRITE(11,300) I1,I2,I3,I4
+               ENDDO
+               CLOSE(2)
+                           ELSE
+               IF(INDFOR.EQ.1) THEN
+                 WRITE(1,304) NOMRACI,2,NBFACR,4,NBFACR*4
+                 WRITE(11,304) NOMRACI,2,NBFACR,4,NBFACR*4
+               ELSE                             
+                 WRITE(1,504) NOMRACI,2,NBFACR,4,NBFACR*4
+                 WRITE(11,504) NOMRACI,2,NBFACR,4,NBFACR*4
+               ENDIF
+               OPEN(UNIT=2,FILE=NOMRACI,FORM='UNFORMATTED')
+               DO M=1,NBFACR
+                 READ(2) I1,I2,I3,I4
+c                 WRITE(1,300) I1,I2,I3,I4
+                 WRITE(1,*) I1,I2,I3,I4
+                 IF(M.LE.3) WRITE(11,*) I1,I2,I3,I4
+               ENDDO
+               CLOSE(2)
+             ENDIF
+             WRITE(1,103) 2,NBFACR,2,NBFACR*2
+             WRITE(11,103) 2,NBFACR,2,NBFACR*2
+             DO M=1,NBFACR
+               WRITE(1,203)
+               IF(M.LE.3) WRITE(11,203)
+             ENDDO
+	     IF(INDFOR.EQ.2) THEN
+	       WRITE(1,204)
+               WRITE(11,204)
+	     ENDIF	
+	    ENDIF
+	ENDDO
+	enddo
+	if (NFACRACVOI.ne.NBFAC(NNBOR+NVOI)) then
+c	if (1.eq.1) then
+	   print *,'Problem of connector with neighbour ',NVOI
+	   print *, 'FACES number of connector ',NBFAC(NNBOR+NVOI)
+	   print *, 'FACES number of sub-connector ',NFACRACVOI
+	stop   
+	endif
+	enddo
+        IF(NRAC.EQ.0) THEN
+          WRITE(1,307)
+          WRITE(11,307)
+        ELSE
+
+          WRITE(1,306)
+          WRITE(11,306)
+	ENDIF
+      CLOSE(1)
+      CLOSE(11)
+      RETURN
+  100 FORMAT('dom_pb',I1,/,I11,/,2I11,/,/,I11)
+  101 FORMAT(/,'  {',/,'pb',I1,/,'Hexaedre',/,/,
+     1I11/,2I11,/ /,I11)
+  102 FORMAT(/,'  {'/,'bord',I1,/,'QUADRANGLE_3D',/,
+     1I11/,2I11,/ /,I11)
+  112 FORMAT(/,'  {'/,A,/,'QUADRANGLE_3D',/,
+     1I11/,2I11,/ /,I11)
+  103 FORMAT(/,I11,/,2I11,/,/,I11)
+  104 FORMAT(/,'        ,',/,'bord',I1,/,'QUADRANGLE_3D',/,
+     1I11/,2I11,/ /,I11)
+  114 FORMAT(/,'        ,',/,A,/,'QUADRANGLE_3D',/,
+     1I11/,2I11,/ /,I11)
+  106 FORMAT(/,'  }',/,'  vide',/,
+     1  '  vide',/,'  vide',/,'  }',/,'  vide')
+  133 FORMAT('   vide')
+  200 FORMAT(3E16.8)
+  203 FORMAT('-1 -1')
+  204 FORMAT('0')
+  299 FORMAT(/,' } ')
+  301 FORMAT(' vide',/,' vide')
+  302 FORMAT(/,'  {'/,'Raccord_local_homogene ',A
+     1,/,'QUADRANGLE_3D',/,
+     1I11/,2I11,/ /,I11)
+  304 FORMAT(/,'        ,',/,'Raccord_local_homogene ',
+     1 A,/,'QUADRANGLE_3D',/,
+     1 I11/,2I11,/ /,I11)
+  502 FORMAT(/,'  {'/,'Raccord_distant_homogene ',A
+     1,/,'QUADRANGLE_3D',/,
+     1I11/,2I11,/ /,I11)
+  504 FORMAT(/,'        ,',/,'Raccord_distant_homogene ',
+     1 A,/,'QUADRANGLE_3D',/,
+     1I11/,2I11,/ /,I11)
+  306 FORMAT(/,'  }',/,'  vide',/,
+     1  '  }',/,'  vide')
+  307 FORMAT(
+     1  ' vide',/,' vide',/, '  }',/,'  vide')
+  300 FORMAT(8I10)   
+      END
+
+	SUBROUTINE AFFECTE_NOM
+      CHARACTER*30 NOMCL(NNBOR)	
+      COMMON /NOMCL/ NOMCL
+	open(unit=99,file='../nomsbord',FORM='FORMATTED')
+	do i=1,NNBOR
+	read(99,100) NOMCL(i)
+	if (NOMCL(i).eq.'cl_pas_nomme')  then
+	   print *,'       '
+	   print *,' pb with the name of boundary condition',i
+	   print *,' meshing creation is stopped'
+	   print *,'       '
+	   stop
+	endif
+	enddo
+  100  format(A)
+	close(99)
+	end
+
+	SUBROUTINE INITIALISESOUSRAC
+	CHARACTER*11 NOMRAC(NNPRB,NSRAC,NSRAC)
+	COMMON/RAC/INDSRAC(NIMAX-1,NJMAX-1,NKMAX-1),
+     1 NUMFACRAC(NNPRB,NSRAC,NSRAC),NOMRAC
+
+C      Pour l instant on force NUMSRAC(i)=i-1
+	OPEN(UNIT=1,FILE='model.rac',FORM='UNFORMATTED')
+C	OPEN(UNIT=1,FILE='model.val',FORM='UNFORMATTED')
+	
+        READ(1)INDSRAC
+        CLOSE(1)
+
+	do i=1,NIMAX-1
+	do j=1,NJMAX-1
+	do k=1,NKMAX-1
+c	  if (indsrac(i,j,k).ne.0) print *,'v',i,j,k,indsrac(i,j,k)
+	  INDSRAC(i,j,k)=INDSRAC(i,j,k)-(INDSRAC(i,j,k)/1000)*1000
+c	  if (indsrac(i,j,k).ne.0) print *,i,j,k,indsrac(i,j,k)
+	enddo
+	enddo
+	enddo
+	do i=1,NNPRB
+	ipbmin=min(IIPB,I)
+	ipbmax=max(IIPB,I)
+	if (i.eq.ipbmax) then
+c	print *,ipbmax
+	do j=1,NSRAC
+	do k=1,NSRAC
+	NUMFACRAC(i,j,k)=0
+	write(NOMRAC(i,j,k),'(a2,i4,a1,i4)') 
+     1   'r_',ipbmin*1000+j-1,'_',ipbmax*1000+k-1
+ 
+	enddo
+	enddo
+	else
+c	 il faut inverser j k
+	do j=1,NSRAC
+	do k=1,NSRAC
+	NUMFACRAC(i,j,k)=0
+	write(NOMRAC(i,j,k),'(a2,i4,a1,i4)') 
+     1   'r_',ipbmin*1000+k-1,'_',ipbmax*1000+j-1
+ 
+	enddo
+	enddo
+	endif
+	enddo
+c	print *,nomrac
+	END
+
+	SUBROUTINE SOUSRAC2(nvoi,io,jo,ko,i1,j1,
+     1        k1,is1,is2,is3,is4)
+	END
+	SUBROUTINE SOUSRAC(nvoi,io,jo,ko,i1,j1,
+     1        k1,is1,is2,is3,is4)
+	
+	CHARACTER*11 NOMRAC(NNPRB,NSRAC,NSRAC)
+	COMMON/RAC/INDSRAC(NIMAX-1,NJMAX-1,NKMAX-1),
+     1 NUMFACRAC(NNPRB,NSRAC,NSRAC),NOMRAC
+c	STOP 'SOUSRCAR'
+	if (dNSRAC.eq.1) then	
+	write(25) is1,is2,is3,is4
+	NUMFACRAC(nvoi,1,1)=
+     1           NUMFACRAC(nvoi,1,1)+1
+	else
+        indice1=INDSRAC(io,jo,ko)+1
+	indice2=INDSRAC(i1,j1,k1)+1
+
+	open(25,file=NOMRAC(nvoi,indice1,indice2),
+     1  ACCESS='APPEND',FORM='UNFORMATTED')
+c     1  status='old',ACCESS='APPEND',FORM='UNFORMATTED')
+	write(25) is1,is2,is3,is4
+	close(25)
+	NUMFACRAC(nvoi,indice1,indice2)=
+     1           NUMFACRAC(nvoi,indice1,indice2)+1
+	endif
+	end
+
+C************************************************************************
+
+      SUBROUTINE DECPB (NPB,IMAX,JMAX,KMAX)
+
+C************************************************************************
+
+      COMMON /INPB/ NUMPB(NNPRB),NUMCL(NNBOR)
+      COMMON /MODEL/ INDMAIL(NIMAX-1,NJMAX-1,NKMAX-1)       
+     1,XM(NIMAX),YM(NJMAX),ZM(NKMAX) 
+      COMMON /NUMS/ NUMSAB((NIMAX+1)*(NJMAX+1)*(NKMAX+1))          
+      COMMON /NUMEL/ NBMASZ(1000),NBMAIL,NBSOM
+      COMMON /C1/ INDFAV(NIMAX,NJMAX,NKMAX)        
+      COMMON /C3/              
+     1          INDSOM(NIMAX,NJMAX,NKMAX)
+      COMMON /C2/ NUMSZ(NIMAX*NJMAX*NKMAX)
+      DIMENSION PUI(1000)
+      CHARACTER*12 NOMFIC(20)
+	CHARACTER*8 FICDEC	
+      write(FICDEC,'(a3,i1,a4)') 'DEC',NPB,'.dec'
+      NBP=NUMPB(NPB)
+C    ON s occupe du decoupage !!!
+#ifdef DECOUPAGE
+	if (VALINDFOR.ne.2) then
+	    print *,'prepro with distant connector must be used!!!'
+	endif
+c	print *,'on genere DEC.dec pour ',NPRODEC, 'processeurs'
+	OPEN(UNIT=1,FILE='model.dec',FORM='UNFORMATTED')
+      READ(1)INDMAIL
+      CLOSE(1)
+c   on a pris soin de stocker le nombre de process
+	NPRODEC=INDMAIL(1,1,1)
+		print *,'on genere DEC.dec pour ',NPRODEC, 'processeurs'
+	NBMAIL=0
+      DO I=2,IMAX-2
+      DO J=2,JMAX-2
+      DO K=2,KMAX-2
+         IF(INDMAIL(I,J,K).EQ.NBP.OR.(INDMAIL(I,J,K)/1000)*1000.EQ.NBP)
+     1  THEN
+           NBMAIL=NBMAIL+1
+           IF(INDMAIL(I,J,K).GT.NBP) THEN 
+              N=INDMAIL(I,J,K)-NBP
+c              NBMASZ(N)=NBMASZ(N)+1
+C ON RANGE DANS UN TABLEAU AU RANG NUMERO DE
+C L ELEMENT DANS LE PROBLEME
+C L INDICE DE LA SOUS ZONE
+              NUMSZ(NBMAIL)=N                 
+           ENDIF
+	ENDIF
+	ENDDO
+	ENDDO
+	ENDDO
+           OPEN(UNIT=1,FILE=FICDEC,FORM='FORMATTED')
+c      WRITE(1,107) NPRODEC,NBMAIL
+      WRITE(1,107) NBMAIL
+      DO M=1,NBMAIL
+c         WRITE(1,108) M-1,NUMSZ(M)-1
+         WRITE(1,*) NUMSZ(M)-1
+      ENDDO
+      CLOSE(1)
+#endif
+  102 FORMAT (20I11)
+  103 FORMAT('NPB',I11,'     NBSOM ',I11,'     NBMAIL',I11,
+     1 /,' NBMASZI ')         
+  104 FORMAT ('Export Sous_Zone Suz',I4.4,/,
+     1  'Associer Suz',I4.4,' dom_pb',I1,/,
+     1  'Lire Suz',I4.4,/,
+     1  '{ liste ',I11)
+  105 FORMAT (I11)
+  106 FORMAT ('}')
+  107 FORMAT (I11)
+  108 FORMAT (I12) 
+ 1234 CONTINUE
+      RETURN
+      END
+C routine pour flusher
+        subroutine flush_cond
+#ifdef FLUSHOK
+        call flush(6)
+#endif
+        end

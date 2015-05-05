@@ -1,0 +1,15 @@
+#!/bin/bash
+[ "$UTILISE_APPACHE" = "1" ] && . $HOME/HTML/recharger_env
+# Copie du fichier dans l'atelier :
+
+fic=`extrait_nom $1`
+file=$rep_dev/`basename $fic`
+cp $fic $file && chmod 744 $file
+
+# Execute l'ordre
+execute.ksh "$EDITEUR $file &"
+#ecrit_exec.ksh "#!/bin/bash\n\$EDITEUR $file &"
+
+
+# Regenere la page atelier :
+cree_Fichiers_atelier.html

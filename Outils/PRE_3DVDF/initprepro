@@ -1,0 +1,46 @@
+#!/bin/bash
+
+prep()
+{
+
+base=`dirname $0`
+dirmodel=$1
+dirprepro=$1/../prepro
+if [ "`basename $dirmodel`" != "model" ]
+then
+ok=0
+
+#exit 0
+else
+       # on nettoie pour eviter des pbs a l'execution
+           for file in $base/appel.h $base/appelrac.h $base/appeldec.h $base/defineh_inc $base/model.h $base/maillage  $base/routinesupp $base/other.h
+	do
+	  [ -f $file ] && rm -f $file && echo $file
+	done
+	#cp $base/model_inc2 $1
+	#cp $base/otherh_inc2  $1
+	#cp  $base/modelh_inc2 $1 
+	if [ ! -d $dirprepro ] 
+	then
+	 mkdir $dirprepro
+	fi
+	#cp $base/prepro_inc2 $dirprepro
+fi
+}
+#set -xv
+#echo $0 $*
+base=`dirname $0`
+dirmodel=$1
+dirprepro=$1/../prepro
+#[ "$1" = "." ] && dirmodel=`pwd`&& echo $pwd
+dirmodel=`(cd $dirmodel; pwd)`
+if [ "`basename $dirmodel`" != "model" ]
+then
+set -xv
+echo "$1 does not seem to be a model directory"
+
+echo "initprepro is not started. It usually creates ../prepro
+and copy some files"
+else
+prep $dirmodel  2>/dev/null
+fi

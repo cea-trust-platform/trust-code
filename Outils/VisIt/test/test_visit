@@ -1,0 +1,95 @@
+#!/bin/bash
+test_visit=0 # Too much problems now for 1.7.0...
+if [ "$test_visit" = 1 ]
+then
+   # Teste que le format Visit+Lata fonctionne
+   # Initialisation environnement TRUST pour mise a jour de PYTHON_PATH sinon probleme avec ALLIANCES
+   source $TRUST_ROOT/env/Init_TRUST 1>/dev/null 2>&1
+
+   # Plantage OpenMPI sur thor car TRUST_TMP est sur un montage NFS
+   [ $HOST = thor ] && TRUST_TMP=/tmp
+
+   tmp_visit=`mktemp_ -d`
+   cd $tmp_visit
+   [ ! -f $TRUST_ROOT/Outils/VisIt/test/test.tar.gz ] && echo "test.tar.gz not found!" && exit -1
+   gunzip -f -c $TRUST_ROOT/Outils/VisIt/test/test.tar.gz | tar -xf -
+   lata=`ls -rt *.lata`
+   echo $ECHO_OPTS "quit()" > quit.py
+   echo "OpenDatabase(\"$lata\", 0)
+   quit()" > lata.py
+   visit=$TRUST_ROOT/Outils/VisIt/bin/visit
+
+   # Pour eviter un blocage avec Alliances
+   traceback=`ls $TRUST_ROOT/Outils/VisIt/*/*/lib/python/lib/python*/traceback.py 2>/dev/null | head -1`
+   [ "$traceback" != "" ] && export PYTHONPATH=`dirname $traceback`:$PYTHONPATH
+
+   #####################################################
+   # Loop: sequential test than parallel test of VisIt #
+   #####################################################
+   tests=sequential
+   if [ "${MPI_ROOT#$TRUST_ROOT}" != "$MPI_ROOT" ] && [ "`ls $TRUST_ROOT/Outils/VisIt/current/*/bin/engine_par 2>/dev/null`" != "" ]
+   then
+      tests=$tests" parallel"
+   fi
+   for test in $tests
+   do
+      timeout=120
+      np="" && [ $test = parallel ] && np="-np 2"
+      # -noconfig evite de charger le fichier de configuration du login
+      # et permet ainsi d'eviter un blocage potentiel si le fichier est mal configure 
+      # Filtrage des problemes de display
+      ($visit $np -debug 5 -cli -nowin -noconfig -s quit.py 2>&1 | grep -iv display 1>visit.log;echo $? > err) &
+      wait_for $! $timeout
+      if [ $? != 0 ]
+      then
+	 echo "VisIt has blocked on the test and has been killed after $timeout seconds. See `pwd`/visit.log" 
+	 exit -1
+      elif [ "`cat err 2>/dev/null`" = 0 ] && [ "`grep abnormally visit.log`" = "" ] && [ "`grep -i error visit.log`" = "" ]
+      then
+	 echo "VisIt $test installation is OK."
+      else
+	 echo "Problem when running VisIt. See $tmp_visit/visit.log"
+	 echo "and VisIt debug files *.vlog under $tmp_visit." 
+	 if [ "`grep SIGSEGV $tmp_visit/*.5.vlog 2>/dev/null`" != "" ] && [ "$test" = parallel ]
+	 then
+            echo "It seems that on some platforms, parallel VisIt built with OpenMPI crashes."
+	    echo "It you REALLY need a parallel version of VisIt then contact"
+	    echo "TRUST support and consider rebuilding TRUST with MPICH." 
+	 fi
+	 exit -1
+      fi
+   done
+
+   #####################################
+   # Test of VisIt reading a LATA file #
+   #####################################
+   # check_visit is important to know if DISPLAY is available !
+   # If it fails, -win CAN'T be used and the test of VisIt fails
+   options=-nowin && $TRUST_ROOT/Outils/VisIt/check_visit 1>/dev/null 2>&1 && options=$options" -win"
+   for option in $options
+   do
+      rm -f err
+      ($visit -debug 5 -cli `[ "$option" = -nowin ] && echo $option` -noconfig -s lata.py 2>&1 | grep -iv display 1>lata.log;echo $? > err) &
+      wait_for $! $timeout
+      if [ $? != 0 ]
+      then
+	 echo "VisIt has blocked on the LATA test with $option option and has been killed after $timeout seconds. See `pwd`/lata.log" 
+	 exit -1
+      elif [ "`cat err 2>/dev/null`" != 0 ] || [ "`grep 'invalid file' lata.log 2>/dev/null`" != "" ] || [ "`grep abnormally lata.log 2>/dev/null`" != "" ] || [ "`grep -i error visit.log 2>/dev/null`" != "" ]
+      then
+	 echo "VisIt does not read a lata file with $option option for the plateform:"
+	 uname -a
+	 echo "Compiler used for the LATA plugin: "`$TRUST_cc -v 2>&1 | grep version`
+	 echo "Compiler used to build VisIt: "
+	 find $TRUST_ROOT/Outils/VisIt -follow -name '*'lataDatabase'*'.so | xargs rm -f
+	 echo "See $tmp_visit/lata.log"
+	 echo "and VisIt debug files *.vlog under $tmp_visit." 
+	 exit -1
+      else
+	 echo "VisIt + LATA plugin are OK with $option option."
+      fi
+   done
+   rm -r -f $tmp_visit
+fi
+echo > $TRUST_ROOT/Outils/VisIt/test/ok
+exit 0

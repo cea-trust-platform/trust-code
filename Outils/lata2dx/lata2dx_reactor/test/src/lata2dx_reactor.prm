@@ -1,0 +1,174 @@
+Parametres {
+	Titre "Validation Lata2dx_reactor"
+	Description "This rapport contains three validation test cases: "
+	Description ""
+	Description "- the first includes the creation and the visualisation with VisIt of one new scalar component defined at the sommets, "
+	Description "- the second contains the creation and the visualisation with VisIt of three new components: two scalar (one defined at the elements, the other on faces) and one vector component defined on faces, "
+	Description "- the third includes the creation and the visualisation with VisIt of one new vector component from one vector field et one scalar field existing defined at the elements"
+	Description ""
+	Description "For each test cas a new scalar field REACTORS_NUMBERS defined at the elements is also created and visualisated. This field is built after the reactors definition in criterions.txt"
+	Auteur "Fedorenko V"
+	VersionTRUST "1.6.1"
+}
+
+Chapitre {
+	Titre "The first test cas"
+	Description "The creation and the visualisation with VisIt of one new scalar field defined at the sommets"
+	Visu {
+		titre "Mesh"
+		Description "Geometry of domain"
+        	Width 7 cm
+		mesh first_test/new_post.lata dom
+        	Normal3d 0.5 0.5 0.5
+	}
+	Visu {
+		titre "Scalar Passive"
+		Description "The new scalar field defined at the sommets. This is difference between two concentrations defined at the sommets : C1-C2"
+		cycles -1
+		pseudocolor first_test/new_post.lata dom PASSIVE_SCALAR SOM
+		mesh first_test/new_post.lata dom
+        	Normal3d 0.5 0.5 0.5
+		Width 7cm
+        }
+	Visu {
+		titre "Reactors Numbers"
+		Description "The new scalar field defined at the elements. This field is built after the reactors definition : the first reactor for pressure from -100 kPa to 0 Pa, and the second reactor for pressure from 0 Pa to 100 kPa"
+		cycles -1
+		pseudocolor first_test/new_post.lata dom REACTORS_NUMBERS ELEM
+		mesh first_test/new_post.lata dom
+        	Normal3d 0.5 0.5 0.5
+		Width 7cm
+        }
+}
+
+Chapitre {
+	Titre "The second test cas"
+	Description "The creation and the visualisation with VisIt of three new components: two scalar (one defined at the elements, the other on faces) and one vector component defined on faces"
+	Visu {
+		titre "Mesh"
+		Description "Geometry of domain"
+        	Width 7 cm
+		mesh second_test/new_post.lata dom
+        	Normal3d 0.5 0.5 0.5
+	}
+	Visu {
+		titre "Scalar exemple"
+		Description "The new scalar field defined at the elements. It is obtained from field Pressure (defined at the elements) divided by 1000"
+		cycles -1
+		pseudocolor second_test/new_post.lata dom EXEMPLE_SCALAIRE ELEM
+		mesh second_test/new_post.lata dom
+        	Normal3d 0.5 0.5 0.5
+		Width 7cm
+        }
+	Visu {
+		titre "Scalar exemple 2"
+		Description "The new scalar field defined on faces. This is sum of three concentrations defined on faces : C1+C2+C3"
+		cycles -1
+		pseudocolor second_test/new_post.lata dom_dual EXEMPLE_SCALAIRE2 FACES
+		mesh second_test/new_post.lata dom
+        	Normal3d 0.5 0.5 0.5
+		Width 7cm
+        }
+	Visu {
+		titre "Vector exemple"
+		Description "The new vector field defined on faces. This new vector is equal to {2x+1, 3y+2, 4z+3} where {x,y,z} is the speed vector"
+		cycles -1
+		vector second_test/new_post.lata dom_dual EXEMPLE_VECTOR FACES
+		mesh second_test/new_post.lata dom
+        	Normal3d 0.5 0.5 0.5
+		Width 7cm
+        }
+	Visu {
+		titre "Vector exemple. Projection on x"
+		Description "The new vector field defined on faces. Projection on x"
+		cycles -1
+		pseudocolor second_test/new_post.lata dom_dual EXEMPLE_VECTOR_X FACES
+		mesh second_test/new_post.lata dom
+        	Normal3d 0.5 0.5 0.5
+		Width 7cm
+        }
+	Visu {
+		titre "Vector exemple. Projection on y"
+		Description "The new vector field defined on faces. Projection on y"
+		cycles -1
+		pseudocolor second_test/new_post.lata dom_dual EXEMPLE_VECTOR_Y FACES
+		mesh second_test/new_post.lata dom
+        	Normal3d 0.5 0.5 0.5
+		Width 7cm
+        }
+	Visu {
+		titre "Vector exemple. Projection on z"
+		Description "The new vector field defined on faces. Projection on z"
+		cycles -1
+		pseudocolor second_test/new_post.lata dom_dual EXEMPLE_VECTOR_Z FACES
+		mesh second_test/new_post.lata dom
+        	Normal3d 0.5 0.5 0.5
+		Width 7cm
+        }
+	Visu {
+		titre "Reactors Numbers"
+		Description "The new scalar field defined at the elements. This field is built after the reactors definition : the first reactor for pressure from -100 kPa to 0 Pa, and the second reactor for pressure from 0 Pa to 100 kPa"
+		cycles -1
+		pseudocolor second_test/new_post.lata dom REACTORS_NUMBERS ELEM
+		mesh second_test/new_post.lata dom
+        	Normal3d 0.5 0.5 0.5
+		Width 7cm
+        }
+}
+
+Chapitre {
+	Titre "The third test cas"
+	Description "The creation and the visualisation with VisIt of one new vector component from one vector field et one scalar field existing defined at the elements"
+	Visu {
+		titre "Mesh"
+		Description "Geometry of domain"
+        	Width 7 cm
+		mesh third_test/new_post.lata dom
+        	Normal3d 0.5 0.5 0.5
+	}
+	Visu {
+		titre "Speed Indicatrice"
+		Description "The new vector field defined at the elements. Each component of speed vector is multiplied with indicatrice"
+		cycles -1
+		vector third_test/new_post.lata dom VITESSE_IND ELEM
+		mesh third_test/new_post.lata dom
+        	Normal3d 0.5 0.5 0.5
+		Width 7cm
+        }
+	Visu {
+		titre "Speed Indicatrice. Projection on x"
+		Description "The new vector field defined at the elements. X component of speed vector is multiplied with indicatrice"
+		cycles -1
+		pseudocolor third_test/new_post.lata dom VITESSE_IND_X ELEM
+		mesh third_test/new_post.lata dom
+        	Normal3d 0.5 0.5 0.5
+		Width 7cm
+        }
+	Visu {
+		titre "Speed Indicatrice. Projection on y"
+		Description "The new vector field defined at the elements. Y component of speed vector is multiplied with indicatrice"
+		cycles -1
+		pseudocolor third_test/new_post.lata dom VITESSE_IND_Y ELEM
+		mesh third_test/new_post.lata dom
+        	Normal3d 0.5 0.5 0.5
+		Width 7cm
+        }
+	Visu {
+		titre "Speed Indicatrice. Projection on z"
+		Description "The new vector field defined at the elements. Z component of speed vector is multiplied with indicatrice"
+		cycles -1
+		pseudocolor third_test/new_post.lata dom VITESSE_IND_Z ELEM
+		mesh third_test/new_post.lata dom
+        	Normal3d 0.5 0.5 0.5
+		Width 7cm
+        }
+	Visu {
+		titre "Reactors Numbers"
+		Description "The new scalar field defined at the elements. This field is built after the reactors definition : the first reactor for pressure from -100 kPa to 0 Pa, the second reactor for pressure from 0 Pa to 10 Pa, the third reactor for pressure from 10 Pa to 100 Pa, and the fourth reactor for pressure from 100 Pa to 100 kPa"
+		cycles -1
+		pseudocolor third_test/new_post.lata dom REACTORS_NUMBERS ELEM
+		mesh third_test/new_post.lata dom
+        	Normal3d 0.5 0.5 0.5
+		Width 7cm
+        }
+}

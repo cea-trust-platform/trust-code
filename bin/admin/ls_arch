@@ -1,0 +1,44 @@
+#!/bin/bash
+echo "------------------------------------"
+kill=0 && [ "$1" = -kill ] && kill=1 && shift
+adresses=`liste_machines` && [ "$*" != "" ] && adresses=$*
+for adr in $adresses
+do
+   HOST=`echo $adr | awk -F"." '{print $1}'`
+   EN_COURS=EN_COURS_$HOST
+   version=Version_test_$HOST
+   echo $ECHO_OPTS `date '+%H:%M:%S'`" "$adr" \t\c"
+   echo "
+-pwd
+#ls $EN_COURS
+#rm $EN_COURS
+-cd $version/TRUST/exec
+-ls -l
+" > $TRUST_TMP/ssh_com
+   log=`awk -v adr=$adr '($2==adr) {print $4}' $HOME/.netrc | head -1`
+   sftp_ -o StrictHostKeyChecking=no -o ConnectTimeout=10 -o BatchMode=yes -b $TRUST_TMP/ssh_com $log@$adr 1>ls_arch.log 2>&1  
+   #nedit ls_arch.log
+   err=$?
+   if [ $err = 255 ]
+   then
+      echo "Connection hangs..."
+   else
+      cat ls_arch.log | awk 'BEGIN {ETAT="No connection";ok=0} /CR_/ && (NF==9) {ETAT="Compile en cours..."} /rwx/ && (ok==0) {ok=1;ETAT="Ok"} / TRUST/ {ETAT=ETAT" "$NF} END {print ETAT}'      		  		  
+      #[ $err = 0 ] && [ "`grep 'No route' ls_arch.log`" = "" ] && ssh_ $log@$adr -n 'rm -f ~/Version_test*/compile*'
+      #configure.ssh $log@$adr
+      rapport=`mktemp_`
+      ssh_ $log@$adr -n "ps -efl | grep mise_a_jour_TRUST_arch | grep -v grep | grep -v kill" 1>$rapport 2>/dev/null
+      if [ -s $rapport ]
+      then
+         echo "mise_a_jour_TRUST_arch is running on $adr ! May be it is time to do: ls_arch -kill $adr "
+      fi
+      rm -f $rapport
+      if [ $kill = 1 ]
+      then
+         echo "Killing mise_a_jour_TRUST_arch processes..."
+         ssh_ $log@$adr -n "cd $version/TRUST/bin/admin;./mise_a_jour_TRUST_arch -kill"
+      fi
+      #ssh_ $log@$adr -n '[ `ls /net 2>/dev/null | grep dibona` != "" ] && [ ! -d /net/dibona/users ] && echo Rebooter'
+   fi
+   rm ls_arch.log
+done

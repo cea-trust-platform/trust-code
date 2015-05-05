@@ -1,0 +1,6 @@
+#!/bin/bash
+datas=`ls $1/*.data 2>/dev/null`
+[ ${#datas} != 0 ] && echo $ECHO_OPTS "`basename $1`\t \c"
+#nom=`dirname $1`
+#nom=`basename $nom`
+#echo $ECHO_OPTS $nom"\t \c"

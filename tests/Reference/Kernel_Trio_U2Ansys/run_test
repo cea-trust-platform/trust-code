@@ -1,0 +1,65 @@
+#!/bin/bash
+OK()
+{
+   if [ $1 = 0 ]
+   then 
+      echo "OK"
+   elif [ ! -f $ff ]
+   then
+      err=1
+      echo "*** Error ***"
+   else
+      err=1
+      echo "*** Ecarts ***"
+      $TRUST_Awk '(NF==1) {n[++fic]=$1;l=0}\
+(NF==n[fic]) {l++;for (c=1;c<NF+1;c++) f[fic,l,c]=$c}\
+END {\
+  for (l=1;l<n[1]+1;l++){\
+    for (c=1;c<n[1]+1;c++) {\
+      a=(f[1,l,c]-f[2,l,c])/(f[1,l,c]+f[2,l,c]+1.e-9)*100;\
+      if (a>m) m=a;\
+      if (-a>m) m=-a;\
+      ch=ch" "a" %"
+    }\
+    print ch;ch=""\
+  }\
+  print "Ecart max : "m" %"\
+}' $ff $2
+   fi
+}
+Ansys=`ls -rt /ansys_inc/.  2>/dev/null | grep ansys[0-9][0-9] | tail -1`
+[ ${#Ansys} = 0 ] && echo "Ansys n'est pas installe sur votre machine." && exit 0
+err=0
+for file in `ls *.geom`
+do
+   ff=${file%.geom}.factforme
+   fr=${file%.geom}.facesrayo
+   if [ -f ref1_$ff ] && [ -f ref_$fr ]
+   then
+   	echo "------------"
+   	echo $ECHO_OPTS $file
+   	echo "------------"   
+   	echo "Methode 1:"
+   	echo $ECHO_OPTS "Facteurs de forme: \c"
+   	rm -f $ff $fr
+   	geom2ansys -no_warning $file 1>/dev/null
+   	ok1=`diff -b $ff ref1_$ff 2>&1`
+   	OK ${#ok1} ref1_$ff
+   	echo $ECHO_OPTS "Emissivites: \c"
+   	ok2=`diff -b $fr ref_$fr 2>&1`
+   	OK ${#ok2}
+   fi
+   if [ -f ref2_$ff ] && [ -f ref_$fr ]
+   then	
+   	echo "Methode 2:"
+   	echo $ECHO_OPTS "Facteurs de forme: \c"
+   	rm -f $ff $fr
+   	geom2ansys -no_warning $file 2 1>/dev/null
+   	ok3=`diff -b $ff ref2_$ff 2>&1`
+   	OK ${#ok3} ref2_$ff 
+   	echo $ECHO_OPTS "Emissivites: \c"
+   	ok4=`diff -b $fr ref_$fr 2>&1`
+   	OK ${#ok4}
+   fi
+done
+exit $err

@@ -1,0 +1,115 @@
+Parameters {
+	Title "Test de la visu"
+	Description "Rapport utilisant visit"
+	Author "G.F."
+	TestCase FTD_all_VEF FTD_all_VEF.data
+}
+
+Chapter {
+	Title "FT"
+	Description " test visu "
+visu {
+	Title "test slice2d"
+	description "on trace le maillage et indicatrice"
+	description "et on fait une coupe 2D"
+	mesh FTD_all_VEF/post1.lata DOM
+	pseudocolor_with_range  FTD_all_VEF/post1.lata DOM INDICATRICE_INTERF ELEM Min 0.5
+        vector FTD_all_VEF/post1.lata DOM VITESSE ELEM 
+	operator_to_all slice2d 0. 0.02 0.  0. 1. 0 
+      #	mesh FTD_all_VEF/post2.lata INTERFACES
+}
+visu {
+	Title "test slice2d ans upxis"
+	description "on trace le maillage et indicatrice"
+	description "et on fait une coupe 2D"
+	mesh FTD_all_VEF/post1.lata DOM
+	pseudocolor_with_range  FTD_all_VEF/post1.lata DOM INDICATRICE_INTERF ELEM Min 0.5
+        vector FTD_all_VEF/post1.lata DOM VITESSE ELEM 
+	operator_to_all slice2d 0. 0.02 0.  0. 1. 0 
+        upaxis 1. 0. 0.
+}
+visu {
+	Title "test slice2d_y"
+	description "on trace le maillage et indicatrice"
+	description "et on fait une coupe 2D"
+	mesh FTD_all_VEF/post1.lata DOM
+	pseudocolor_with_range  FTD_all_VEF/post1.lata DOM INDICATRICE_INTERF ELEM Min 0.5
+        vector FTD_all_VEF/post1.lata DOM VITESSE ELEM 
+	operator_to_all slice2d_y 0. 0.02 0. 
+      #	mesh FTD_all_VEF/post2.lata INTERFACES
+}
+visu {
+	Title "test slice"
+	mesh FTD_all_VEF/post1.lata DOM
+	pseudocolor FTD_all_VEF/post1.lata DOM INDICATRICE_INTERF ELEM
+        vector FTD_all_VEF/post1.lata DOM VITESSE ELEM 0.1
+        blackvector FTD_all_VEF/post1.lata DOM VITESSE ELEM 0.05
+	operator_to_all slice 0. 0.02 0. 0. 1. 0 
+      #	mesh FTD_all_VEF/post2.lata INTERFACES
+	operator_to_all no_legend
+	operator no_databaseinfo
+	operator no_triad
+	operator no_axes
+}
+
+
+visu {
+	Title "test slice sur le pseudocolor"
+	mesh FTD_all_VEF/post1.lata INTERFACES
+	pseudocolor FTD_all_VEF/post1.lata DOM INDICATRICE_INTERF ELEM
+	operator slice 0. 0.02 0. 0. -1. 0 
+	operator no_axes
+	operator no_bounding_box
+	normal3D -0.5 0.7 0.4
+	up3D 0.2 -0.3 0.9
+      }
+visu {
+	Title "test multi cycles"
+description une line bien bien longue pour voir si cela va se decouper ou non.......................
+	instruction_visit print "test"
+	width 7cm
+	mesh FTD_all_VEF/post1.lata INTERFACES
+	pseudocolor FTD_all_VEF/post1.lata DOM INDICATRICE_INTERF ELEM
+	operator threeslice 0.02 0.02 0.02
+	normal3D -0.5 0.7 0.4
+	up3D 0.2 -0.3 0.9
+	cycles 2 -1
+	nb_img_without_newline 2
+      }
+      
+}
+
+
+
+
+
+Chapter {
+	Title "NEW sept 2014"
+	
+visu {
+	Title "test clip_1plane"
+	description "on trace le maillage et indicatrice"
+	description "et on fait un clip"
+	mesh FTD_all_VEF/post1.lata DOM red
+	pseudocolor_with_opacity  FTD_all_VEF/post1.lata INDICATRICE_INTERF_ELEM_DOM 0.5
+        blackvector_with_nb FTD_all_VEF/post1.lata  VITESSE_ELEM_DOM 30 10. 
+	operator_to_all clip_1plane 0.02 0.02 0. 0. 1. 0.
+      	normal3D -0.5 0.7 0.4
+	up3D 0.2 -0.3 0.9
+}
+
+visu {
+	Title "test clip_1plane"
+	description "on trace le maillage et indicatrice"
+	description "et on fait une clip_2planes"
+	mesh FTD_all_VEF/post1.lata DOM blue
+	pseudocolor_with_opacity  FTD_all_VEF/post1.lata INDICATRICE_INTERF_ELEM_DOM 0.5
+        blackvector_with_nb FTD_all_VEF/post1.lata  VITESSE_ELEM_DOM 30 10.
+	operator_to_all clip_2planes 0.02 0.02 0. 0. 1. 0.  0.02 0.02 0. -1. 0. 0. 
+      	normal3D -0.5 0.7 0.4 
+	up3D 0.2 -0.3 0.9
+
+	insertText 0.02 0.01 0.04 0.03 voila un point
+	insertText 0.02 0.01 0.03 0.02 voila un autre
+}
+}

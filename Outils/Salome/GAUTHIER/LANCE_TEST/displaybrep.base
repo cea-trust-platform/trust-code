@@ -1,0 +1,23 @@
+#!/bin/bash
+dir=`dirname $0`
+OCC=CASCADE_ROOT
+dir=`dirname $OCC`
+org=`pwd`
+#cd $dir
+#pwd
+export INSTALL_ROOT=$dir
+export INST_ROOT=$dir
+. $OCC/env_OpenCascade.sh
+. $OCC/../tcltk-*/env_tcltk.sh
+
+#cd $org
+echo mu4 >testc
+echo pload ALL >> testc
+for file2 in $*
+do
+file=`echo $file2 | sed "s?.brep??"`
+echo restore $file.brep $file >> testc
+echo fit >>testc
+[ `basename $0` != "displaybrep" ] &&echo checkshape $file >>testc
+done
+cat testc | $OCC/lin/bin/DRAWEXE

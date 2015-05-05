@@ -1,0 +1,12 @@
+#!/bin/bash
+[ "$1" != "" ] && rep_dev=$1
+[ "$rep_dev" = "" ] && rep_dev=`pwd`
+export rep_dev
+name=TRUST
+[ "$DIPHA_ROOT" != "" ] && name=dipha
+export exec=$rep_dev/exec/${name}${COMM}
+export exec_opt=$rep_dev/exec_opt/${name}${COMM}_opt
+export exec_optd=$rep_dev/exec_opt/${name}${COMM}_opt_dyn
+export execd=$rep_dev/exec/${name}${COMM}_dyn
+export LD_LIBRARY_PATH=$rep_dev/exec_prof_opt:$rep_dev/exec:$rep_dev/exec_opt:${LD_LIBRARY_PATH}
+xterm -T "atelier $rep_dev" &

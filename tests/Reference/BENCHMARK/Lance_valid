@@ -1,0 +1,37 @@
+#!/bin/bash
+WHERE=$PWD
+#clear
+export ECHO_OPTS="" && [ "`uname -s`" = Linux ] && ECHO_OPTS="-e"
+# Analyse des resultats
+nb_procs=`cat ./liste_nb_proc`
+pas_fini=1
+while [ $pas_fini = 1 ]
+do
+   # Pour eviter l'accumulation de plusieurs runs lances :
+   [ ! -d $TRUST_TESTS/Reference/BENCHMARK ] && exit
+   pas_fini=0
+   for nb_proc in $nb_procs 
+   do
+      [ ! -f PAR$nb_proc/RES1-$nb_proc.perf ] && pas_fini=1 && sleep 2
+   done
+done
+# Pour attendre la fin des ecritures
+sleep 20
+err=PAR$nb_proc/bench1-$nb_proc.err
+echo $ECHO_OPTS "#################################################"
+echo "Calcul parallele TRUST `awk '/version :/ {print $NF}' $err 2>/dev/null` `date` sur $HOST :"
+echo $ECHO_OPTS "------------------------------------------------------------------------------------"
+echo $ECHO_OPTS "nb_proc\t| cpu(s) dt\t| ngcp \t| cpu(s) igcp\t| speed up\t| efficacite\t|"
+echo $ECHO_OPTS "------------------------------------------------------------------------------------"
+for nb_proc in $nb_procs
+do
+   time=`awk '/un pas de temps :/ {print $NF}' PAR$nb_proc/RES1-$nb_proc.perf`
+   [ $nb_proc = 1 ] && seq=$time
+   s=`echo $ECHO_OPTS scale=3"\n"$seq/$time | bc -l`
+   e=`echo $ECHO_OPTS scale=3"\n"$seq/$time/$nb_proc | bc -l`
+   n=`awk '/Nombre moyen iterations GCP:/ {print $NF}' PAR$nb_proc/RES1-$nb_proc.perf`
+   it=`awk '/Temps moyen iteration GCP:/ {print $NF}' PAR$nb_proc/RES1-$nb_proc.perf`
+   echo $ECHO_OPTS "$nb_proc\t| $time\t| $n\t| $it\t| $s\t\t| $e\t\t|"
+done
+rm -f PAR*/*.lml
+

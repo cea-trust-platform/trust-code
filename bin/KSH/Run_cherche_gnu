@@ -1,0 +1,82 @@
+#!/bin/bash
+#
+# Ce programme recherche les courbes disponibles
+# Fichier .courbe??.gnu de la courbe affichee :
+FIC_GNU=$1
+NOM=$2
+REP="."
+echo $ECHO_OPTS "\nRecherche des courbes disponibles:"
+echo $ECHO_OPTS "------------------------------------"
+echo $ECHO_OPTS "Return - Dans le repertoire present."
+echo $ECHO_OPTS "Nom    - Dans le repertoire Nom."
+echo $ECHO_OPTS "------------------------------------"
+read dir
+echo $ECHO_OPTS "Attente possible..."
+if [ ${#dir} = 0 ]
+then
+   dir=$REP
+else
+   echo $ECHO_OPTS "Recherche..."
+   OK=`find $HOME -name $dir -type d -print`
+   if [ ${#OK} = 0 ] 
+   then
+      echo $ECHO_OPTS "Repertoire non trouve."
+      exit
+   else
+      dir=$OK
+   fi
+fi
+# Recherche des courbes :
+cd $dir
+let ns=0
+gnu=`ls gnuplot/$NOM.*.gnu 2>/dev/null`
+if [ ${#gnu} != 0 ]
+then
+   if [ ${#IHM} != 0 ] && [ $IHM = 1 ]
+   then
+      echo $ECHO_OPTS "<h2>Courbes disponibles</h2>" >> $FIC_GNU.html
+   fi
+   fichier1="rien"
+   cas1="rien"
+   for fic_gnu in gnuplot/$NOM.*.gnu
+   do
+      type=`$TRUST_Awk '(NR==2) {print $1}' $fic_gnu`
+      if [ $type != "plan" ]
+      then
+         let ns=$ns+1
+         plot=`tail -1 $fic_gnu`
+# Extraction du nom du fichier des valeurs a lire:
+         fichier=`echo $ECHO_OPTS $plot | $TRUST_Awk -F"'" '/plot / {print $2}'`
+	 cas=`echo $ECHO_OPTS $fichier | $TRUST_Awk -F"_" '{print $1}'`
+	 cas=`echo $ECHO_OPTS $plot | $TRUST_Awk -F"'" '/Case / {print $4}' | $TRUST_Awk '{print $2}'`
+         champ=`echo $ECHO_OPTS $plot | $TRUST_Awk '/ylabel/ {print $4}'`
+	 title=`$TRUST_Awk '(NR==3) {print $0}' $fic_gnu`
+#         if [ $fichier != $fichier1 ]
+	 if [ $cas != $cas1 ]
+         then
+	    if [ ${#IHM} = 0 ] || [ $IHM != 1 ]
+	    then
+#	       echo $ECHO_OPTS "Fichier "$fichier
+	       echo $ECHO_OPTS "Cas "$cas    
+	    else
+#	       echo $ECHO_OPTS "Fichier "$fichier >> $FIC_GNU.html
+	       echo $ECHO_OPTS "Cas "$cas >> $FIC_GNU.html
+	    fi
+#	    fichier1=$fichier
+	    cas1=$cas
+         fi
+	 if [ ${#IHM} = 0 ] || [ $IHM != 1 ]
+	 then
+            echo $ECHO_OPTS "  "$ns"-"$champ"  "$title
+	 else
+	    echo $ECHO_OPTS "\t<a href=http://localhost:$PORT/ordre.cg?$ns>$champ"  "$title</a>" >> $FIC_GNU.html
+#    echo $ECHO_OPTS "<a href=$fic_gnu>$champ"  "$title</a>" >> $FIC_GNU.html
+	 fi	 
+      fi
+   done
+fi
+if [ ${#IHM} != 0 ] && [ $IHM = 1 ]
+then
+   echo $ECHO_OPTS "</body>
+</html> " >> $FIC_GNU.html
+fi

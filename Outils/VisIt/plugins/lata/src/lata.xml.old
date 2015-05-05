@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+  <Plugin name="lata" type="database" label="lata import file" version="1.0" enabled="true" mdspecificcode="false" onlyengine="false" noengine="false" dbtype="MTMD" haswriter="true" hasoptions="false">
+    <CXXFLAGS>
+      -g -Wall
+    </CXXFLAGS>
+    <Extensions>
+      lml
+      lata
+    </Extensions>
+    <Files components="M">
+
+      avtlataWriter.C
+      avtlataFileFormat.C
+         LataDB.C
+         LataFilter.C
+         LataStructures.C
+         Lata_tools.C
+         LmlReader.C
+         OpenDXWriter.C
+         OperatorBoundary.C
+         OperatorDualMesh.C
+         OperatorReconnect.C
+         OperatorRegularize.C
+         Rebuild_virtual_layer.C
+         UserFields.C
+         ArrOfBit.C
+         ArrOfDouble.C
+         ArrOfFloat.C
+         ArrOfInt.C
+         Connectivite_som_elem.C
+         Motcle.C
+         Octree_Double.C
+         Octree_Int.C
+         Static_Int_Lists.C
+    </Files>
+    <Files components="E">
+      avtlataWriter.C
+      avtlataFileFormat.C
+         LataDB.C
+         LataFilter.C
+         LataStructures.C
+         Lata_tools.C
+         LmlReader.C
+         OpenDXWriter.C
+         OperatorBoundary.C
+         OperatorDualMesh.C
+         OperatorReconnect.C
+         OperatorRegularize.C
+         Rebuild_virtual_layer.C
+         UserFields.C
+         ArrOfBit.C
+         ArrOfDouble.C
+         ArrOfFloat.C
+         ArrOfInt.C
+         Connectivite_som_elem.C
+         Motcle.C
+         Octree_Double.C
+         Octree_Int.C
+         Static_Int_Lists.C
+    </Files>
+    <Attribute name="" purpose="" persistent="true" exportAPI="" exportInclude="">
+    </Attribute>
+  </Plugin>

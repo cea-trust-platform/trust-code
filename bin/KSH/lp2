@@ -1,0 +1,21 @@
+#!/bin/bash
+echo "Usage: lp2 -show fichier [taille_fonte] [nombre_colonnes]"
+[ ${#1} = 0 ] && exit
+show=0 && [ "$1" = -show ] && show=1 && shift
+file=$TRUST_TMP/`basename $1`
+[ ! -f $1 ] && echo $1 non existant ! && exit
+cp $1 $file
+chmod 775 $file
+# Cas des fichiers postcript:
+[ ${file%.ps} != $file ] && xpp $file && exit
+#  -Ssetpapertray:2
+taille_fonte=6 && [ ${#2} != 0 ] && taille_fonte=$2
+nombre_colonnes=2 && [ ${#3} != 0 ] && nombre_colonnes=$3
+enscript -p $file".ps" -Ssetpapertray:1 -J `pwd`/$1 -E --color --margins=20:20:20:20 --font=Courier$taille_fonte --header=$2 -$nombre_colonnes"Gr" $file
+echo -e "1,$ s?$TRUST_TMP?`pwd`?g\nw" | ed $file".ps"
+[ $show = 1 ] && display $file".ps"
+#lp $1 $file".ps"
+# xpp mieux que lp
+lp -dhp4600_556 $file".ps"
+#xpp $file".ps"
+#rm -f $file $file".ps"

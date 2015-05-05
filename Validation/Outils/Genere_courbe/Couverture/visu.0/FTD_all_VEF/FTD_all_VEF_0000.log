@@ -1,0 +1,1184 @@
+interprete 1 --> #
+interprete 1 --> dimension
+interprete 1 --> 3
+interprete 1 --> Probleme_FT_Disc_gen
+interprete 1 --> pb
+interprete 1 --> Domaine
+interprete 1 --> DOM
+interprete 1 --> Mailler
+interprete 1 --> DOM
+interprete 1 --> {
+interprete 1 --> Pave
+interprete 1 --> pave1
+interprete 1 --> {
+interprete 1 --> origine
+interprete 1 --> 0.
+interprete 1 --> 0.
+interprete 1 --> 0.
+interprete 1 --> longueurs
+interprete 1 --> 0.04
+interprete 1 --> 0.04
+interprete 1 --> 0.06
+interprete 1 --> nombre_de_noeuds
+interprete 1 --> 5
+interprete 1 --> 5
+interprete 1 --> 7
+interprete 1 --> }
+interprete 1 --> {
+interprete 1 --> bord
+interprete 1 --> paroi
+interprete 1 --> X
+interprete 1 --> =
+interprete 1 --> 0.
+interprete 1 --> 0.
+interprete 1 --> <=
+interprete 1 --> Y
+interprete 1 --> <=
+interprete 1 --> 0.04
+interprete 1 --> 0.
+interprete 1 --> <=
+interprete 1 --> Z
+interprete 1 --> <=
+interprete 1 --> 0.06
+interprete 1 --> bord
+interprete 1 --> paroi
+interprete 1 --> X
+interprete 1 --> =
+interprete 1 --> 0.04
+interprete 1 --> 0.
+interprete 1 --> <=
+interprete 1 --> Y
+interprete 1 --> <=
+interprete 1 --> 0.04
+interprete 1 --> 0.
+interprete 1 --> <=
+interprete 1 --> Z
+interprete 1 --> <=
+interprete 1 --> 0.06
+interprete 1 --> bord
+interprete 1 --> paroi
+interprete 1 --> Y
+interprete 1 --> =
+interprete 1 --> 0.
+interprete 1 --> 0.
+interprete 1 --> <=
+interprete 1 --> X
+interprete 1 --> <=
+interprete 1 --> 0.04
+interprete 1 --> 0.
+interprete 1 --> <=
+interprete 1 --> Z
+interprete 1 --> <=
+interprete 1 --> 0.06
+interprete 1 --> bord
+interprete 1 --> paroi
+interprete 1 --> Y
+interprete 1 --> =
+interprete 1 --> 0.04
+interprete 1 --> 0.
+interprete 1 --> <=
+interprete 1 --> X
+interprete 1 --> <=
+interprete 1 --> 0.04
+interprete 1 --> 0.
+interprete 1 --> <=
+interprete 1 --> Z
+interprete 1 --> <=
+interprete 1 --> 0.06
+interprete 1 --> bord
+interprete 1 --> bas
+interprete 1 --> Z
+interprete 1 --> =
+interprete 1 --> 0.
+interprete 1 --> 0.
+interprete 1 --> <=
+interprete 1 --> X
+interprete 1 --> <=
+interprete 1 --> 0.04
+interprete 1 --> 0.
+interprete 1 --> <=
+interprete 1 --> Y
+interprete 1 --> <=
+interprete 1 --> 0.04
+interprete 1 --> bord
+interprete 1 --> haut
+interprete 1 --> Z
+interprete 1 --> =
+interprete 1 --> 0.06
+interprete 1 --> 0.
+interprete 1 --> <=
+interprete 1 --> X
+interprete 1 --> <=
+interprete 1 --> 0.04
+interprete 1 --> 0.
+interprete 1 --> <=
+interprete 1 --> Y
+interprete 1 --> <=
+interprete 1 --> 0.04
+interprete 1 --> }
+interprete 1 --> }
+interprete 1 --> Tetraedriser_homogene_fin
+interprete 1 --> DOM
+interprete 1 --> Reorienter_tetraedres
+interprete 1 --> DOM
+interprete 1 --> #
+interprete 1 --> #
+interprete 1 --> #
+interprete 1 --> VEFPreP1B
+interprete 1 --> dis
+interprete 1 --> Schema_Euler_explicite
+interprete 1 --> sch
+interprete 1 --> Lire
+interprete 1 --> sch
+interprete 1 --> {
+interprete 1 --> tinit
+interprete 1 --> 0.
+interprete 1 --> tmax
+interprete 1 --> 0.1
+interprete 1 --> dt_min
+interprete 1 --> 1.e-7
+interprete 1 --> dt_max
+interprete 1 --> 0.5e-2
+interprete 1 --> dt_impr
+interprete 1 --> 10.
+interprete 1 --> dt_sauv
+interprete 1 --> 100
+interprete 1 --> seuil_statio
+interprete 1 --> -1
+interprete 1 --> nb_pas_dt_max
+interprete 1 --> 10
+interprete 1 --> }
+interprete 1 --> Fluide_Incompressible
+interprete 1 --> liquide
+interprete 1 --> Lire
+interprete 1 --> liquide
+interprete 1 --> {
+interprete 1 --> mu
+interprete 1 --> Champ_Uniforme
+interprete 1 --> 1
+interprete 1 --> 0.282e-3
+interprete 1 --> rho
+interprete 1 --> Champ_Uniforme
+interprete 1 --> 1
+interprete 1 --> 1000.
+interprete 1 --> }
+interprete 1 --> Fluide_Incompressible
+interprete 1 --> gaz
+interprete 1 --> Lire
+interprete 1 --> gaz
+interprete 1 --> {
+interprete 1 --> mu
+interprete 1 --> Champ_Uniforme
+interprete 1 --> 1
+interprete 1 --> 0.282e-3
+interprete 1 --> rho
+interprete 1 --> Champ_Uniforme
+interprete 1 --> 1
+interprete 1 --> 100.
+interprete 1 --> }
+interprete 1 --> Fluide_Diphasique
+interprete 1 --> fluide
+interprete 1 --> Lire
+interprete 1 --> fluide
+interprete 1 --> {
+interprete 1 --> fluide0
+interprete 1 --> liquide
+interprete 1 --> fluide1
+interprete 1 --> gaz
+interprete 1 --> sigma
+interprete 1 --> constant
+interprete 1 --> 0.05
+interprete 1 --> }
+interprete 1 --> Constituant
+interprete 1 --> constituant
+interprete 1 --> Lire
+interprete 1 --> constituant
+interprete 1 --> {
+interprete 1 --> diffusivite
+interprete 1 --> Champ_Uniforme
+interprete 1 --> 1
+interprete 1 --> 1e-6
+interprete 1 --> }
+interprete 1 --> Champ_Uniforme
+interprete 1 --> gravite
+interprete 1 --> Lire
+interprete 1 --> gravite
+interprete 1 --> 3
+interprete 1 --> 0.
+interprete 1 --> 0.
+interprete 1 --> -9.81
+interprete 1 --> Associer
+interprete 1 --> fluide
+interprete 1 --> gravite
+interprete 1 --> Navier_Stokes_FT_Disc
+interprete 1 --> hydraulique
+interprete 1 --> Transport_Interfaces_FT_Disc
+interprete 1 --> interf
+interprete 1 --> Transport_Interfaces_FT_Disc
+interprete 1 --> body
+interprete 1 --> Convection_Diffusion_Concentration
+interprete 1 --> concentration
+interprete 1 --> Associer
+interprete 1 --> pb
+interprete 1 --> hydraulique
+interprete 1 --> Associer
+interprete 1 --> pb
+interprete 1 --> interf
+interprete 1 --> Associer
+interprete 1 --> pb
+interprete 1 --> body
+interprete 1 --> Associer
+interprete 1 --> pb
+interprete 1 --> concentration
+interprete 1 --> Associer
+interprete 1 --> pb
+interprete 1 --> DOM
+interprete 1 --> Associer
+interprete 1 --> pb
+interprete 1 --> sch
+interprete 1 --> Associer
+interprete 1 --> pb
+interprete 1 --> fluide
+interprete 1 --> Associer
+interprete 1 --> pb
+interprete 1 --> constituant
+interprete 1 --> Discretiser
+interprete 1 --> pb
+interprete 1 --> dis
+interprete 1 --> Lire
+interprete 1 --> pb
+interprete 1 --> {
+interprete 1 --> hydraulique
+interprete 1 --> {
+interprete 1 --> modele_turbulence
+interprete 1 --> sous_maille_wale
+interprete 1 --> {
+interprete 1 --> Cw
+interprete 1 --> 1.e-16
+interprete 1 --> turbulence_paroi
+interprete 1 --> negligeable
+interprete 1 --> }
+interprete 1 --> solveur_pression
+interprete 1 --> GCP
+interprete 1 --> {
+interprete 1 --> precond
+interprete 1 --> ssor
+interprete 1 --> {
+interprete 1 --> omega
+interprete 1 --> 1.5
+interprete 1 --> }
+interprete 1 --> seuil
+interprete 1 --> 1.e-20
+interprete 1 --> impr
+interprete 1 --> }
+interprete 1 --> convection
+interprete 1 --> {
+interprete 1 --> muscl
+interprete 1 --> }
+interprete 1 --> diffusion
+interprete 1 --> {
+interprete 1 --> }
+interprete 1 --> conditions_initiales
+interprete 1 --> {
+interprete 1 --> vitesse
+interprete 1 --> champ_uniforme
+interprete 1 --> 3
+interprete 1 --> 0.
+interprete 1 --> 0.
+interprete 1 --> 0.
+interprete 1 --> }
+interprete 1 --> equation_interfaces_proprietes_fluide
+interprete 1 --> interf
+interprete 1 --> equation_interfaces_vitesse_imposee
+interprete 1 --> body
+interprete 1 --> conditions_limites
+interprete 1 --> {
+interprete 1 --> haut
+interprete 1 --> Sortie_libre_rho_variable
+interprete 1 --> champ_front_uniforme
+interprete 1 --> 1
+interprete 1 --> 0.
+interprete 1 --> paroi
+interprete 1 --> paroi_fixe
+interprete 1 --> bas
+interprete 1 --> paroi_fixe
+interprete 1 --> }
+interprete 1 --> }
+interprete 1 --> interf
+interprete 1 --> {
+interprete 1 --> methode_transport
+interprete 1 --> vitesse_interpolee
+interprete 1 --> hydraulique
+interprete 1 --> conditions_initiales
+interprete 1 --> {
+interprete 1 --> fonction
+interprete 1 --> z-0.031
+interprete 1 --> ,
+interprete 1 --> fonction
+interprete 1 --> ajout_phase1
+interprete 1 --> -((x-0.02)^2+(y-0.02)^2+(z-0.015)^2-(0.01)^2)
+interprete 1 --> }
+interprete 1 --> iterations_correction_volume
+interprete 1 --> 1
+interprete 1 --> n_iterations_distance
+interprete 1 --> 2
+interprete 1 --> remaillage
+interprete 1 --> {
+interprete 1 --> pas
+interprete 1 --> 0.000001
+interprete 1 --> nb_iter_remaillage
+interprete 1 --> 1
+interprete 1 --> critere_arete
+interprete 1 --> 0.35
+interprete 1 --> critere_remaillage
+interprete 1 --> 0.2
+interprete 1 --> pas_lissage
+interprete 1 --> 0.0000001
+interprete 1 --> lissage_courbure_iterations
+interprete 1 --> 3
+interprete 1 --> lissage_courbure_coeff
+interprete 1 --> -0.1
+interprete 1 --> nb_iter_barycentrage
+interprete 1 --> 3
+interprete 1 --> relax_barycentrage
+interprete 1 --> 1
+interprete 1 --> critere_longueur_fixe
+interprete 1 --> 0.003
+interprete 1 --> nb_iter_correction_volume
+interprete 1 --> 3
+interprete 1 --> seuil_dvolume_residuel
+interprete 1 --> 1e-12
+interprete 1 --> }
+interprete 1 --> collisions
+interprete 1 --> {
+interprete 1 --> active
+interprete 1 --> juric_pour_tout
+interprete 1 --> type_remaillage
+interprete 1 --> Juric
+interprete 1 --> {
+interprete 1 --> source_isovaleur
+interprete 1 --> indicatrice
+interprete 1 --> }
+interprete 1 --> }
+interprete 1 --> conditions_limites
+interprete 1 --> {
+interprete 1 --> paroi
+interprete 1 --> Paroi_FT_disc
+interprete 1 --> symetrie
+interprete 1 --> haut
+interprete 1 --> Paroi_FT_disc
+interprete 1 --> symetrie
+interprete 1 --> bas
+interprete 1 --> Paroi_FT_disc
+interprete 1 --> symetrie
+interprete 1 --> }
+interprete 1 --> }
+interprete 1 --> body
+interprete 1 --> {
+interprete 1 --> conditions_initiales
+interprete 1 --> {
+interprete 1 --> fonction
+interprete 1 --> -(((x-0.02))^2+((y-0.02)/0.6)^2+((z-0.04)/0.6)^2-(0.015^2)
+interprete 1 --> }
+interprete 1 --> remaillage
+interprete 1 --> {
+interprete 1 --> pas
+interprete 1 --> 1e8
+interprete 1 --> nb_iter_remaillage
+interprete 1 --> 5
+interprete 1 --> critere_arete
+interprete 1 --> 0.5
+interprete 1 --> critere_remaillage
+interprete 1 --> 0.2
+interprete 1 --> pas_lissage
+interprete 1 --> -1
+interprete 1 --> lissage_courbure_iterations
+interprete 1 --> 4
+interprete 1 --> lissage_courbure_coeff
+interprete 1 --> -0.1
+interprete 1 --> nb_iter_barycentrage
+interprete 1 --> 4
+interprete 1 --> relax_barycentrage
+interprete 1 --> 1
+interprete 1 --> facteur_longueur_ideale
+interprete 1 --> 1
+interprete 1 --> }
+interprete 1 --> conditions_limites
+interprete 1 --> {
+interprete 1 --> haut
+interprete 1 --> Paroi_FT_disc
+interprete 1 --> symetrie
+interprete 1 --> paroi
+interprete 1 --> Paroi_FT_disc
+interprete 1 --> symetrie
+interprete 1 --> bas
+interprete 1 --> Paroi_FT_disc
+interprete 1 --> symetrie
+interprete 1 --> }
+interprete 1 --> methode_transport
+interprete 1 --> vitesse_imposee
+interprete 1 --> -(y-0.02)*10
+interprete 1 --> (x-0.02)*10
+interprete 1 --> 0.
+interprete 1 --> }
+interprete 1 --> concentration
+interprete 1 --> {
+interprete 1 --> diffusion
+interprete 1 --> {
+interprete 1 --> negligeable
+interprete 1 --> }
+interprete 1 --> convection
+interprete 1 --> {
+interprete 1 --> muscl
+interprete 1 --> }
+interprete 1 --> conditions_initiales
+interprete 1 --> {
+interprete 1 --> concentration
+interprete 1 --> champ_fonc_xyz
+interprete 1 --> DOM
+interprete 1 --> 1
+interprete 1 --> EXP(-((x-0.02)^2+(y-0.02)^2+(z-0.03)^2)/0.03^2)
+interprete 1 --> }
+interprete 1 --> conditions_limites
+interprete 1 --> {
+interprete 1 --> haut
+interprete 1 --> frontiere_ouverte
+interprete 1 --> C_ext
+interprete 1 --> Champ_Front_Uniforme
+interprete 1 --> 1
+interprete 1 --> 0.
+interprete 1 --> paroi
+interprete 1 --> paroi
+interprete 1 --> bas
+interprete 1 --> paroi
+interprete 1 --> }
+interprete 1 --> }
+interprete 1 --> Postraitement
+interprete 1 --> {
+interprete 1 --> champs
+interprete 1 --> dt_post
+interprete 1 --> 0.05
+interprete 1 --> {
+interprete 1 --> indicatrice_interf
+interprete 1 --> concentration
+interprete 1 --> }
+interprete 1 --> }
+interprete 1 --> liste_postraitements
+interprete 1 --> {
+interprete 1 --> Postraitement_ft_lata
+interprete 1 --> post1
+interprete 1 --> {
+interprete 1 --> dt_post
+interprete 1 --> 0.005
+interprete 1 --> nom_fichier
+interprete 1 --> post1
+interprete 1 --> format
+interprete 1 --> binaire
+interprete 1 --> print
+interprete 1 --> champs
+interprete 1 --> sommets
+interprete 1 --> {
+interprete 1 --> vitesse
+interprete 1 --> }
+interprete 1 --> champs
+interprete 1 --> elements
+interprete 1 --> {
+interprete 1 --> distance_interface_elem_interf
+interprete 1 --> distance_interface_elem_body
+interprete 1 --> indicatrice_interf
+interprete 1 --> pression
+interprete 1 --> concentration
+interprete 1 --> vitesse
+interprete 1 --> }
+interprete 1 --> interfaces
+interprete 1 --> interf
+interprete 1 --> {
+interprete 1 --> champs
+interprete 1 --> sommets
+interprete 1 --> {
+interprete 1 --> courbure
+interprete 1 --> }
+interprete 1 --> champs
+interprete 1 --> sommets
+interprete 1 --> {
+interprete 1 --> pe
+interprete 1 --> }
+interprete 1 --> champs
+interprete 1 --> elements
+interprete 1 --> {
+interprete 1 --> pe
+interprete 1 --> }
+interprete 1 --> }
+interprete 1 --> }
+interprete 1 --> Postraitement_ft_lata
+interprete 1 --> post2
+interprete 1 --> {
+interprete 1 --> dt_post
+interprete 1 --> 0.005
+interprete 1 --> nom_fichier
+interprete 1 --> post2
+interprete 1 --> format
+interprete 1 --> binaire
+interprete 1 --> print
+interprete 1 --> interfaces
+interprete 1 --> body
+interprete 1 --> {
+interprete 1 --> champs
+interprete 1 --> sommets
+interprete 1 --> {
+interprete 1 --> pe
+interprete 1 --> }
+interprete 1 --> }
+interprete 1 --> }
+interprete 1 --> }
+interprete 1 --> }
+interprete 1 --> Resoudre
+interprete 1 --> pb
+interprete 1 --> Fin
+interprete 1 --> #
+interprete 1 --> dimension
+ajout de l'objet de type Dimension de numero 124 et de nom _Un_IntErprEtE_76
+destruction de _Un_IntErprEtE_76
+objet(_Un_IntErprEtE_76) :  de type Dimension de nom neant de numero 124
+interprete 1 --> Probleme_FT_Disc_gen
+ajout de l'objet de type Probleme_FT_Disc_gen de numero 132 et de nom pb
+interprete 1 --> Domaine
+ajout de l'objet de type Domaine de numero 141 et de nom DOM
+interprete 1 --> Mailler
+ajout de l'objet de type Mailler de numero 168 et de nom _Un_IntErprEtE_76
+objet(DOM) :  de type Domaine de nom DOM de numero 141
+objet(DOM) :  de type Domaine de nom DOM de numero 141
+objet(DOM) :  de type Domaine de nom DOM de numero 141
+Zone::fixer_premieres_faces_frontiere()
+destruction de _Un_IntErprEtE_76
+objet(_Un_IntErprEtE_76) :  de type Mailler de nom neant de numero 168
+interprete 1 --> Tetraedriser_homogene_fin
+ajout de l'objet de type Tetraedriser_homogene_fin de numero 174 et de nom _Un_IntErprEtE_76
+objet(DOM) :  de type Domaine de nom DOM de numero 141
+objet(DOM) :  de type Domaine de nom DOM de numero 141
+objet(DOM) :  de type Domaine de nom DOM de numero 141
+Octree: niveau=1 nb_elem=1050
+destruction de _Un_IntErprEtE_76
+objet(_Un_IntErprEtE_76) :  de type Tetraedriser_homogene_fin de nom neant de numero 174
+interprete 1 --> Reorienter_tetraedres
+ajout de l'objet de type Reorienter_tetraedres de numero 180 et de nom _Un_IntErprEtE_76
+objet(DOM) :  de type Domaine de nom DOM de numero 141
+objet(DOM) :  de type Domaine de nom DOM de numero 141
+objet(DOM) :  de type Domaine de nom DOM de numero 141
+destruction de _Un_IntErprEtE_76
+objet(_Un_IntErprEtE_76) :  de type Reorienter_tetraedres de nom neant de numero 180
+interprete 1 --> #
+interprete 1 --> #
+interprete 1 --> #
+interprete 1 --> VEFPreP1B
+ajout de l'objet de type VEFPreP1B de numero 173 et de nom dis
+interprete 1 --> Schema_Euler_explicite
+ajout de l'objet de type Schema_Euler_explicite de numero 168 et de nom sch
+interprete 1 --> Lire
+ajout de l'objet de type Lire de numero 590 et de nom _Un_IntErprEtE_76
+objet(sch) :  de type Schema_Euler_explicite de nom neant de numero 168
+destruction de _Un_IntErprEtE_76
+objet(_Un_IntErprEtE_76) :  de type Lire de nom neant de numero 590
+interprete 1 --> Fluide_Incompressible
+ajout de l'objet de type Fluide_Incompressible de numero 581 et de nom liquide
+interprete 1 --> Lire
+ajout de l'objet de type Lire de numero 661 et de nom _Un_IntErprEtE_76
+objet(liquide) :  de type Fluide_Incompressible de nom neant de numero 581
+destruction de _Un_IntErprEtE_76
+objet(_Un_IntErprEtE_76) :  de type Lire de nom neant de numero 661
+interprete 1 --> Fluide_Incompressible
+ajout de l'objet de type Fluide_Incompressible de numero 665 et de nom gaz
+interprete 1 --> Lire
+ajout de l'objet de type Lire de numero 222 et de nom _Un_IntErprEtE_76
+objet(gaz) :  de type Fluide_Incompressible de nom neant de numero 665
+destruction de _Un_IntErprEtE_76
+objet(_Un_IntErprEtE_76) :  de type Lire de nom neant de numero 222
+interprete 1 --> Fluide_Diphasique
+ajout de l'objet de type Fluide_Diphasique de numero 196 et de nom fluide
+interprete 1 --> Lire
+ajout de l'objet de type Lire de numero 266 et de nom _Un_IntErprEtE_76
+objet(fluide) :  de type Fluide_Diphasique de nom neant de numero 196
+objet(liquide) :  de type Fluide_Incompressible de nom neant de numero 581
+objet(gaz) :  de type Fluide_Incompressible de nom neant de numero 665
+destruction de _Un_IntErprEtE_76
+objet(_Un_IntErprEtE_76) :  de type Lire de nom neant de numero 266
+interprete 1 --> Constituant
+ajout de l'objet de type Constituant de numero 264 et de nom constituant
+interprete 1 --> Lire
+ajout de l'objet de type Lire de numero 323 et de nom _Un_IntErprEtE_76
+objet(constituant) :  de type Constituant de nom neant de numero 264
+destruction de _Un_IntErprEtE_76
+objet(_Un_IntErprEtE_76) :  de type Lire de nom neant de numero 323
+interprete 1 --> Champ_Uniforme
+ajout de l'objet de type Champ_Uniforme de numero 351 et de nom gravite
+interprete 1 --> Lire
+ajout de l'objet de type Lire de numero 286 et de nom _Un_IntErprEtE_76
+objet(gravite) :  de type Champ_Uniforme de nom gravite de numero 351
+destruction de _Un_IntErprEtE_76
+objet(_Un_IntErprEtE_76) :  de type Lire de nom neant de numero 286
+interprete 1 --> Associer
+ajout de l'objet de type Associer de numero 359 et de nom _Un_IntErprEtE_76
+objet(fluide) :  de type Fluide_Diphasique de nom neant de numero 196
+objet(gravite) :  de type Champ_Uniforme de nom gravite de numero 351
+destruction de _Un_IntErprEtE_76
+objet(_Un_IntErprEtE_76) :  de type Associer de nom neant de numero 359
+interprete 1 --> Navier_Stokes_FT_Disc
+ajout de l'objet de type Navier_Stokes_FT_Disc de numero 348 et de nom hydraulique
+interprete 1 --> Transport_Interfaces_FT_Disc
+ajout de l'objet de type Transport_Interfaces_FT_Disc de numero 905 et de nom interf
+interprete 1 --> Transport_Interfaces_FT_Disc
+ajout de l'objet de type Transport_Interfaces_FT_Disc de numero 1159 et de nom body
+interprete 1 --> Convection_Diffusion_Concentration
+ajout de l'objet de type Convection_Diffusion_Concentration de numero 1411 et de nom concentration
+interprete 1 --> Associer
+ajout de l'objet de type Associer de numero 1464 et de nom _Un_IntErprEtE_76
+objet(pb) :  de type Probleme_FT_Disc_gen de nom pb de numero 132
+objet(hydraulique) :  de type Navier_Stokes_FT_Disc de nom hydraulique de numero 348
+destruction de _Un_IntErprEtE_76
+objet(_Un_IntErprEtE_76) :  de type Associer de nom neant de numero 1464
+interprete 1 --> Associer
+ajout de l'objet de type Associer de numero 1469 et de nom _Un_IntErprEtE_76
+objet(pb) :  de type Probleme_FT_Disc_gen de nom pb de numero 132
+objet(interf) :  de type Transport_Interfaces_FT_Disc de nom interf de numero 905
+destruction de _Un_IntErprEtE_76
+objet(_Un_IntErprEtE_76) :  de type Associer de nom neant de numero 1469
+interprete 1 --> Associer
+ajout de l'objet de type Associer de numero 1474 et de nom _Un_IntErprEtE_76
+objet(pb) :  de type Probleme_FT_Disc_gen de nom pb de numero 132
+objet(body) :  de type Transport_Interfaces_FT_Disc de nom body de numero 1159
+destruction de _Un_IntErprEtE_76
+objet(_Un_IntErprEtE_76) :  de type Associer de nom neant de numero 1474
+interprete 1 --> Associer
+ajout de l'objet de type Associer de numero 1468 et de nom _Un_IntErprEtE_76
+objet(pb) :  de type Probleme_FT_Disc_gen de nom pb de numero 132
+objet(concentration) :  de type Convection_Diffusion_Concentration de nom concentration de numero 1411
+destruction de _Un_IntErprEtE_76
+objet(_Un_IntErprEtE_76) :  de type Associer de nom neant de numero 1468
+interprete 1 --> Associer
+ajout de l'objet de type Associer de numero 1473 et de nom _Un_IntErprEtE_76
+objet(pb) :  de type Probleme_FT_Disc_gen de nom pb de numero 132
+objet(DOM) :  de type Domaine de nom DOM de numero 141
+destruction de _Un_IntErprEtE_76
+objet(_Un_IntErprEtE_76) :  de type Associer de nom neant de numero 1473
+interprete 1 --> Associer
+ajout de l'objet de type Associer de numero 1467 et de nom _Un_IntErprEtE_76
+objet(pb) :  de type Probleme_FT_Disc_gen de nom pb de numero 132
+objet(sch) :  de type Schema_Euler_explicite de nom neant de numero 168
+destruction de _Un_IntErprEtE_76
+objet(_Un_IntErprEtE_76) :  de type Associer de nom neant de numero 1467
+interprete 1 --> Associer
+ajout de l'objet de type Associer de numero 1471 et de nom _Un_IntErprEtE_76
+objet(pb) :  de type Probleme_FT_Disc_gen de nom pb de numero 132
+objet(fluide) :  de type Fluide_Diphasique de nom neant de numero 196
+destruction de _Un_IntErprEtE_76
+objet(_Un_IntErprEtE_76) :  de type Associer de nom neant de numero 1471
+interprete 1 --> Associer
+ajout de l'objet de type Associer de numero 1465 et de nom _Un_IntErprEtE_76
+objet(pb) :  de type Probleme_FT_Disc_gen de nom pb de numero 132
+objet(constituant) :  de type Constituant de nom neant de numero 264
+destruction de _Un_IntErprEtE_76
+objet(_Un_IntErprEtE_76) :  de type Associer de nom neant de numero 1465
+interprete 1 --> Discretiser
+ajout de l'objet de type Discretiser de numero 1470 et de nom _Un_IntErprEtE_76
+objet(pb) :  de type Probleme_FT_Disc_gen de nom pb de numero 132
+objet(dis) :  de type VEFPreP1B de nom neant de numero 173
+Scatter::calculer_espace_distant type_item=2
+ Nouveaux joints crees : (ArrOfInt) 0
+
+Discretisation d'un Champ_Inc par VEFPreP1B : nom=vitesse directive=VITESSE type=Champ_P1NC unite=m/s nb_comp=3 nb_ddl=9728 temps=0
+Discretisation d'un Champ_Inc par VEFPreP1B : nom=vitesse directive=VITESSE type=Champ_P1NC unite=m/s nb_comp=3 nb_ddl=9728 temps=0
+Discretisation d'un Champ_Inc par VEFPreP1B : nom=pression directive=PRESSION type=Champ_P1_isoP1Bulle unite=Pa.m3/kg nb_comp=1 nb_ddl=5661 temps=0
+Discretisation d'un Champ_Inc par VEFPreP1B : nom=pression_pa directive=PRESSION type=Champ_P1_isoP1Bulle unite=Pa nb_comp=1 nb_ddl=5661 temps=0
+Discretisation d'un Champ_Inc par VEFPreP1B : nom=divergence_U directive=DIVERGENCE_VITESSE type=Champ_P1_isoP1Bulle unite=m3/s nb_comp=1 nb_ddl=5661 temps=0
+Discretisation d'un Champ_Inc par VEFPreP1B : nom=gradient_pression directive=GRADIENT_PRESSION type=Champ_P1NC unite=m/s2 nb_comp=3 nb_ddl=9728 temps=0
+Discretisation d'un Champ_Don par VEFPreP1B : nom=diffusivite directive=CHAMP_ELEM type=Champ_Fonc_P0_VEF unite=m^2/s nb_comp=1 nb_ddl=4608 temps=0
+Discretisation d'un Champ_Don par VEFPreP1B : nom=viscosite_dynamique directive=CHAMP_ELEM type=Champ_Fonc_P0_VEF unite=kg/m.s nb_comp=1 nb_ddl=4608 temps=0
+Discretisation d'un Champ_Fonc par VEFPreP1B : nom=masse_volumique_elem directive=CHAMP_ELEM type=Champ_Fonc_P0_VEF unite=kg/m3 nb_comp=1 nb_ddl=4608 temps=0
+Discretisation d'un Champ_Fonc par VEFPreP1B : nom=masse_volumique_vnodes directive=VITESSE type=Champ_Fonc_P1NC unite=kg/m3 nb_comp=1 nb_ddl=9728 temps=0
+Discretisation d'un Champ_Fonc par VEFPreP1B : nom=second_membre_projection directive=PRESSION type=Champ_Fonc_P1_isoP1Bulle unite= nb_comp=1 nb_ddl=5661 temps=0
+Discretisation d'un Champ_Fonc par VEFPreP1B : nom=gradient_pression directive=VITESSE type=Champ_Fonc_P1NC unite= nb_comp=3 nb_ddl=9728 temps=0
+Discretisation d'un Champ_Fonc par VEFPreP1B : nom=derivee_u_etoile directive=VITESSE type=Champ_Fonc_P1NC unite= nb_comp=3 nb_ddl=9728 temps=0
+Discretisation d'un Champ_Fonc par VEFPreP1B : nom=terme_diffusion_vitesse directive=VITESSE type=Champ_Fonc_P1NC unite= nb_comp=3 nb_ddl=9728 temps=0
+Discretisation d'un Champ_Fonc par VEFPreP1B : nom=terme_convection_vitesse directive=VITESSE type=Champ_Fonc_P1NC unite= nb_comp=3 nb_ddl=9728 temps=0
+Discretisation d'un Champ_Fonc par VEFPreP1B : nom=terme_source_vitesse directive=VITESSE type=Champ_Fonc_P1NC unite= nb_comp=3 nb_ddl=9728 temps=0
+Discretisation d'un Champ_Fonc par VEFPreP1B : nom=terme_source_interfaces directive=VITESSE type=Champ_Fonc_P1NC unite= nb_comp=3 nb_ddl=9728 temps=0
+Discretisation d'un Champ_Fonc par VEFPreP1B : nom=indicatrice_p1b directive=PRESSION type=Champ_Fonc_P1_isoP1Bulle unite= nb_comp=1 nb_ddl=5661 temps=0
+Discretisation d'un Champ_Fonc par VEFPreP1B : nom=gradient_indicatrice directive=VITESSE type=Champ_Fonc_P1NC unite= nb_comp=3 nb_ddl=9728 temps=0
+Discretisation d'un Champ_Fonc par VEFPreP1B : nom=potentiel_faces directive=VITESSE type=Champ_Fonc_P1NC unite= nb_comp=1 nb_ddl=9728 temps=0
+Discretisation d'un Champ_Fonc par VEFPreP1B : nom=potentiel_elements directive=CHAMP_ELEM type=Champ_Fonc_P0_VEF unite= nb_comp=1 nb_ddl=4608 temps=0
+Discretisation d'un Champ_Inc par VEFPreP1B : nom=vitesse_delta_interface directive=VITESSE type=Champ_P1NC unite=m/s nb_comp=3 nb_ddl=9728 temps=0
+Discretisation d'un Champ_Fonc par VEFPreP1B : nom=pression_laplacien_d directive=PRESSION type=Champ_Fonc_P1_isoP1Bulle unite= nb_comp=1 nb_ddl=5661 temps=0
+Discretisation d'un Champ_Fonc par VEFPreP1B : nom=temperature_mpoint directive=TEMPERATURE type=Champ_Fonc_P1NC unite= nb_comp=1 nb_ddl=9728 temps=0
+Discretisation d'un Champ_Inc par VEFPreP1B : nom=INDICATRICE_interf directive=CHAMP_ELEM type=Champ_P0_VEF unite=- nb_comp=1 nb_ddl=4608 temps=0
+Discretisation d'un Champ_Inc par VEFPreP1B : nom=INDICATRICE_CACHE_interf directive=CHAMP_ELEM type=Champ_P0_VEF unite=- nb_comp=1 nb_ddl=4608 temps=0
+Discretisation d'un Champ_Inc par VEFPreP1B : nom=VITESSE_FILTREE_interf directive=VITESSE type=Champ_P1NC unite=m/s nb_comp=3 nb_ddl=9728 temps=0
+Discretisation d'un Champ_Fonc par VEFPreP1B : nom=DISTANCE_INTERFACE_ELEM_interf directive=CHAMP_ELEM type=Champ_Fonc_P0_VEF unite=m nb_comp=1 nb_ddl=4608 temps=0
+Discretisation d'un Champ_Fonc par VEFPreP1B : nom=NORMALE_INTERFACE_interf directive=CHAMP_ELEM type=Champ_Fonc_P0_VEF unite=- nb_comp=3 nb_ddl=4608 temps=0
+Discretisation d'un Champ_Inc par VEFPreP1B : nom=INDICATRICE_body directive=CHAMP_ELEM type=Champ_P0_VEF unite=- nb_comp=1 nb_ddl=4608 temps=0
+Discretisation d'un Champ_Inc par VEFPreP1B : nom=INDICATRICE_CACHE_body directive=CHAMP_ELEM type=Champ_P0_VEF unite=- nb_comp=1 nb_ddl=4608 temps=0
+Discretisation d'un Champ_Inc par VEFPreP1B : nom=VITESSE_FILTREE_body directive=VITESSE type=Champ_P1NC unite=m/s nb_comp=3 nb_ddl=9728 temps=0
+Discretisation d'un Champ_Fonc par VEFPreP1B : nom=DISTANCE_INTERFACE_ELEM_body directive=CHAMP_ELEM type=Champ_Fonc_P0_VEF unite=m nb_comp=1 nb_ddl=4608 temps=0
+Discretisation d'un Champ_Fonc par VEFPreP1B : nom=NORMALE_INTERFACE_body directive=CHAMP_ELEM type=Champ_Fonc_P0_VEF unite=- nb_comp=3 nb_ddl=4608 temps=0
+Discretisation d'un Champ_Inc par VEFPreP1B : nom=concentration directive=TEMPERATURE type=Champ_P1NC unite=% nb_comp=1 nb_ddl=9728 temps=0
+destruction de _Un_IntErprEtE_76
+objet(_Un_IntErprEtE_76) :  de type Discretiser de nom neant de numero 1470
+interprete 1 --> Lire
+ajout de l'objet de type Lire de numero 1464 et de nom _Un_IntErprEtE_76
+objet(pb) :  de type Probleme_FT_Disc_gen de nom pb de numero 132
+Discretisation d'un Champ_Fonc par VEFPreP1B : nom=viscosite_turbulente directive=CHAMP_ELEM type=Champ_Fonc_P0_VEF unite=m2/s nb_comp=1 nb_ddl=4608 temps=0
+Discretisation d'un Champ_Fonc par VEFPreP1B : nom=K directive=CHAMP_ELEM type=Champ_Fonc_P0_VEF unite=m2/s2 nb_comp=1 nb_ddl=4608 temps=0
+Marching_Cubes::construire_iso
+ 512 facettes, 289 noeuds, Marching_Cubes::construire_iso
+ 368 facettes, 186 noeuds, Marching_Cubes::construire_iso
+ 496 facettes, 250 noeuds, objet(DOM) :  de type Domaine de nom DOM de numero 141
+objet(DOM) :  de type Domaine de nom DOM de numero 141
+destruction de _Un_IntErprEtE_76
+objet(_Un_IntErprEtE_76) :  de type Lire de nom neant de numero 1464
+interprete 1 --> Resoudre
+ajout de l'objet de type Resoudre de numero 1475 et de nom _Un_IntErprEtE_76
+objet(pb) :  de type Probleme_FT_Disc_gen de nom pb de numero 132
+Zone_VEF::Modifier_pour_Cl
+ Zone_VF::marquer_faces_double_contrib
+ nombre de faces echangees : 0 (total 0)
+ comptage erreurs_grossieres=0
+FIN Parcours_interface::parcourir
+Facettes de surface nulle : 16
+2 faces ne contribuent pas a la matrice de pression.
+Transport_Interfaces_FT_Disc::preparer_calcul
+Remaillage_FT::a_remailler = 1
+Remaillage_FT::iterer_remaillage_interface
+Remaillage_FT::marquer_aretes drap=-1 iter=0  nb_som=475
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=0  nb_som=475
+Remaillage_FT::marquer_aretes drap=-1 iter=1  nb_som=475
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=1  nb_som=475
+Remaillage_FT::marquer_aretes drap=-1 iter=2  nb_som=475
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=2  nb_som=475
+Remaillage_FT::marquer_aretes drap=-1 iter=3  nb_som=475
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=3  nb_som=475
+Remaillage_FT::supprimer_doublons_facettes
+Facettes de surface nulle : 520
+Facettes de surface nulle : 520
+Facettes de surface nulle : 520
+Facettes de surface nulle : 520
+Facettes de surface nulle : 520
+Remaillage_FT::diviser_grandes_aretes 0  nb_som=199
+ Compteur = 0
+Remaillage_FT::marquer_aretes drap=1 iter=4  nb_som=199
+FIN Remaillage_FT::marquer_aretes drap=1 iter=4  nb_som=491
+FIN Remaillage_FT::diviser_grandes_aretes 0  nb_som=491
+Remaillage_FT::nettoyer_maillage nb_fa7=918
+FIN Remaillage_FT::nettoyer_maillage nb_fa7=918
+ nombre de faces echangees : 0 (total 0)
+ comptage erreurs_grossieres=0
+FIN Parcours_interface::parcourir
+Topologie_Maillage_FT::test_collision_facettes
+ Couples de facettes testes : 8170
+ Collision detectee : 0
+Transport_Interfaces_FT_Disc::preparer_calcul
+Remaillage_FT::a_remailler = 1
+Remaillage_FT::iterer_remaillage_interface
+Remaillage_FT::marquer_aretes drap=-1 iter=5  nb_som=250
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=5  nb_som=250
+Remaillage_FT::marquer_aretes drap=-1 iter=6  nb_som=250
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=6  nb_som=250
+Remaillage_FT::marquer_aretes drap=-1 iter=7  nb_som=250
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=7  nb_som=250
+Remaillage_FT::marquer_aretes drap=-1 iter=8  nb_som=250
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=8  nb_som=250
+Remaillage_FT::marquer_aretes drap=-1 iter=9  nb_som=250
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=9  nb_som=250
+Remaillage_FT::supprimer_doublons_facettes
+Facettes de surface nulle : 250
+Facettes de surface nulle : 250
+Facettes de surface nulle : 250
+Facettes de surface nulle : 250
+Facettes de surface nulle : 250
+Remaillage_FT::diviser_grandes_aretes 0  nb_som=125
+ Compteur = 1
+Remaillage_FT::marquer_aretes drap=1 iter=10  nb_som=125
+FIN Remaillage_FT::marquer_aretes drap=1 iter=10  nb_som=133
+FIN Remaillage_FT::diviser_grandes_aretes 0  nb_som=133
+Remaillage_FT::iterer_remaillage_interface
+Remaillage_FT::marquer_aretes drap=-1 iter=11  nb_som=133
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=11  nb_som=133
+Remaillage_FT::marquer_aretes drap=-1 iter=12  nb_som=133
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=12  nb_som=133
+Remaillage_FT::marquer_aretes drap=-1 iter=13  nb_som=133
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=13  nb_som=133
+Remaillage_FT::supprimer_doublons_facettes
+Facettes de surface nulle : 22
+Facettes de surface nulle : 22
+Facettes de surface nulle : 22
+Facettes de surface nulle : 22
+Facettes de surface nulle : 22
+Remaillage_FT::diviser_grandes_aretes 0  nb_som=122
+ Compteur = 2
+Remaillage_FT::marquer_aretes drap=1 iter=14  nb_som=122
+FIN Remaillage_FT::marquer_aretes drap=1 iter=14  nb_som=122
+FIN Remaillage_FT::diviser_grandes_aretes 0  nb_som=122
+Remaillage_FT::iterer_remaillage_interface
+Remaillage_FT::marquer_aretes drap=-1 iter=15  nb_som=122
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=15  nb_som=122
+Remaillage_FT::supprimer_doublons_facettes
+Remaillage_FT::diviser_grandes_aretes 0  nb_som=122
+ Compteur = 3
+Remaillage_FT::marquer_aretes drap=1 iter=16  nb_som=122
+FIN Remaillage_FT::marquer_aretes drap=1 iter=16  nb_som=122
+FIN Remaillage_FT::diviser_grandes_aretes 0  nb_som=122
+Remaillage_FT::iterer_remaillage_interface
+Remaillage_FT::marquer_aretes drap=-1 iter=17  nb_som=122
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=17  nb_som=122
+Remaillage_FT::supprimer_doublons_facettes
+Remaillage_FT::diviser_grandes_aretes 0  nb_som=122
+ Compteur = 4
+Remaillage_FT::marquer_aretes drap=1 iter=18  nb_som=122
+FIN Remaillage_FT::marquer_aretes drap=1 iter=18  nb_som=122
+FIN Remaillage_FT::diviser_grandes_aretes 0  nb_som=122
+Remaillage_FT::iterer_remaillage_interface
+Remaillage_FT::marquer_aretes drap=-1 iter=19  nb_som=122
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=19  nb_som=122
+Remaillage_FT::supprimer_doublons_facettes
+Remaillage_FT::diviser_grandes_aretes 0  nb_som=122
+ Compteur = 5
+Remaillage_FT::marquer_aretes drap=1 iter=20  nb_som=122
+FIN Remaillage_FT::marquer_aretes drap=1 iter=20  nb_som=122
+FIN Remaillage_FT::diviser_grandes_aretes 0  nb_som=122
+Remaillage_FT::nettoyer_maillage nb_fa7=240
+FIN Remaillage_FT::nettoyer_maillage nb_fa7=240
+ nombre de faces echangees : 0 (total 0)
+ comptage erreurs_grossieres=0
+FIN Parcours_interface::parcourir
+2 faces ne contribuent pas a la matrice de pression.
+Transport_Interfaces_FT_Disc::mettre_a_jour temps= 1e-07
+Remaillage_FT::a_remailler = 0
+Remaillage_FT::a_lisser = 0
+ nombre de faces echangees : 0 (total 0)
+ comptage erreurs_grossieres=0
+FIN Parcours_interface::parcourir
+Topologie_Maillage_FT::test_collision_facettes
+ Couples de facettes testes : 8177
+ Collision detectee : 0
+Transport_Interfaces_FT_Disc::mettre_a_jour temps= 1e-07
+ nombre de faces echangees : 0 (total 0)
+ comptage erreurs_grossieres=0
+FIN Parcours_interface::parcourir
+Remaillage_FT::a_remailler = 0
+Remaillage_FT::a_lisser = 0
+2 faces ne contribuent pas a la matrice de pression.
+Transport_Interfaces_FT_Disc::mettre_a_jour temps= 0.0050001
+Remaillage_FT::a_remailler = 0
+Remaillage_FT::a_lisser = 1
+Remaillage_FT::nettoyer_maillage nb_fa7=918
+FIN Remaillage_FT::nettoyer_maillage nb_fa7=918
+ nombre de faces echangees : 0 (total 0)
+ comptage erreurs_grossieres=0
+FIN Parcours_interface::parcourir
+Topologie_Maillage_FT::test_collision_facettes
+ Couples de facettes testes : 8216
+ Collision detectee : 0
+Transport_Interfaces_FT_Disc::mettre_a_jour temps= 0.0050001
+ nombre de faces echangees : 0 (total 0)
+ comptage erreurs_grossieres=0
+FIN Parcours_interface::parcourir
+Remaillage_FT::a_remailler = 0
+Remaillage_FT::a_lisser = 0
+2 faces ne contribuent pas a la matrice de pression.
+Transport_Interfaces_FT_Disc::mettre_a_jour temps= 0.00697282632531204
+Remaillage_FT::a_remailler = 1
+Remaillage_FT::iterer_remaillage_interface
+Remaillage_FT::marquer_aretes drap=-1 iter=21  nb_som=491
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=21  nb_som=491
+Remaillage_FT::marquer_aretes drap=-1 iter=22  nb_som=491
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=22  nb_som=491
+Remaillage_FT::marquer_aretes drap=-1 iter=23  nb_som=491
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=23  nb_som=491
+Remaillage_FT::supprimer_doublons_facettes
+Facettes de surface nulle : 180
+Facettes de surface nulle : 180
+Facettes de surface nulle : 180
+Facettes de surface nulle : 180
+Facettes de surface nulle : 180
+Remaillage_FT::diviser_grandes_aretes 0.0050001  nb_som=398
+ Compteur = 6
+Remaillage_FT::marquer_aretes drap=1 iter=24  nb_som=398
+FIN Remaillage_FT::marquer_aretes drap=1 iter=24  nb_som=416
+FIN Remaillage_FT::diviser_grandes_aretes 0.0050001  nb_som=416
+Remaillage_FT::nettoyer_maillage nb_fa7=770
+FIN Remaillage_FT::nettoyer_maillage nb_fa7=770
+ nombre de faces echangees : 0 (total 0)
+ comptage erreurs_grossieres=0
+FIN Parcours_interface::parcourir
+Topologie_Maillage_FT::test_collision_facettes
+ Couples de facettes testes : 6220
+ Collision detectee : 0
+Transport_Interfaces_FT_Disc::mettre_a_jour temps= 0.00697282632531204
+ nombre de faces echangees : 0 (total 0)
+ comptage erreurs_grossieres=0
+FIN Parcours_interface::parcourir
+Remaillage_FT::a_remailler = 0
+Remaillage_FT::a_lisser = 0
+2 faces ne contribuent pas a la matrice de pression.
+Transport_Interfaces_FT_Disc::mettre_a_jour temps= 0.01014399533931483
+Remaillage_FT::a_remailler = 1
+Remaillage_FT::iterer_remaillage_interface
+Remaillage_FT::marquer_aretes drap=-1 iter=25  nb_som=416
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=25  nb_som=416
+Remaillage_FT::marquer_aretes drap=-1 iter=26  nb_som=416
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=26  nb_som=416
+Remaillage_FT::supprimer_doublons_facettes
+Facettes de surface nulle : 34
+Facettes de surface nulle : 34
+Facettes de surface nulle : 34
+Facettes de surface nulle : 34
+Facettes de surface nulle : 34
+Remaillage_FT::diviser_grandes_aretes 0.00697282632531204  nb_som=397
+ Compteur = 7
+Remaillage_FT::marquer_aretes drap=1 iter=27  nb_som=397
+FIN Remaillage_FT::marquer_aretes drap=1 iter=27  nb_som=405
+FIN Remaillage_FT::diviser_grandes_aretes 0.00697282632531204  nb_som=405
+Remaillage_FT::nettoyer_maillage nb_fa7=748
+FIN Remaillage_FT::nettoyer_maillage nb_fa7=748
+ nombre de faces echangees : 0 (total 0)
+ comptage erreurs_grossieres=0
+FIN Parcours_interface::parcourir
+Topologie_Maillage_FT::test_collision_facettes
+ Couples de facettes testes : 6010
+ Collision detectee : 0
+Transport_Interfaces_FT_Disc::mettre_a_jour temps= 0.01014399533931483
+ nombre de faces echangees : 0 (total 0)
+ comptage erreurs_grossieres=0
+FIN Parcours_interface::parcourir
+Remaillage_FT::a_remailler = 0
+Remaillage_FT::a_lisser = 0
+2 faces ne contribuent pas a la matrice de pression.
+Transport_Interfaces_FT_Disc::mettre_a_jour temps= 0.0124666646157117
+Remaillage_FT::a_remailler = 1
+Remaillage_FT::iterer_remaillage_interface
+Remaillage_FT::marquer_aretes drap=-1 iter=28  nb_som=405
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=28  nb_som=405
+Remaillage_FT::marquer_aretes drap=-1 iter=29  nb_som=405
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=29  nb_som=405
+Remaillage_FT::marquer_aretes drap=-1 iter=30  nb_som=405
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=30  nb_som=405
+Remaillage_FT::supprimer_doublons_facettes
+Facettes de surface nulle : 13
+Facettes de surface nulle : 13
+Facettes de surface nulle : 13
+Facettes de surface nulle : 13
+Facettes de surface nulle : 13
+Remaillage_FT::diviser_grandes_aretes 0.01014399533931483  nb_som=396
+ Compteur = 8
+Remaillage_FT::marquer_aretes drap=1 iter=31  nb_som=396
+FIN Remaillage_FT::marquer_aretes drap=1 iter=31  nb_som=402
+FIN Remaillage_FT::diviser_grandes_aretes 0.01014399533931483  nb_som=402
+Remaillage_FT::nettoyer_maillage nb_fa7=743
+FIN Remaillage_FT::nettoyer_maillage nb_fa7=743
+ nombre de faces echangees : 0 (total 0)
+ comptage erreurs_grossieres=0
+FIN Parcours_interface::parcourir
+Topologie_Maillage_FT::test_collision_facettes
+ Couples de facettes testes : 5907
+ Collision detectee : 0
+Transport_Interfaces_FT_Disc::mettre_a_jour temps= 0.0124666646157117
+ nombre de faces echangees : 0 (total 0)
+ comptage erreurs_grossieres=0
+FIN Parcours_interface::parcourir
+Remaillage_FT::a_remailler = 0
+Remaillage_FT::a_lisser = 0
+2 faces ne contribuent pas a la matrice de pression.
+Transport_Interfaces_FT_Disc::mettre_a_jour temps= 0.01522385118665321
+Remaillage_FT::a_remailler = 1
+Remaillage_FT::iterer_remaillage_interface
+Remaillage_FT::marquer_aretes drap=-1 iter=32  nb_som=402
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=32  nb_som=402
+Remaillage_FT::marquer_aretes drap=-1 iter=33  nb_som=402
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=33  nb_som=402
+Remaillage_FT::supprimer_doublons_facettes
+Facettes de surface nulle : 8
+Facettes de surface nulle : 8
+Facettes de surface nulle : 8
+Facettes de surface nulle : 8
+Facettes de surface nulle : 8
+Remaillage_FT::diviser_grandes_aretes 0.0124666646157117  nb_som=396
+ Compteur = 9
+Remaillage_FT::marquer_aretes drap=1 iter=34  nb_som=396
+FIN Remaillage_FT::marquer_aretes drap=1 iter=34  nb_som=406
+FIN Remaillage_FT::diviser_grandes_aretes 0.0124666646157117  nb_som=406
+Remaillage_FT::nettoyer_maillage nb_fa7=751
+FIN Remaillage_FT::nettoyer_maillage nb_fa7=751
+ nombre de faces echangees : 0 (total 0)
+ comptage erreurs_grossieres=0
+FIN Parcours_interface::parcourir
+Topologie_Maillage_FT::test_collision_facettes
+ Couples de facettes testes : 6011
+ Collision detectee : 0
+Transport_Interfaces_FT_Disc::mettre_a_jour temps= 0.01522385118665321
+ nombre de faces echangees : 0 (total 0)
+ comptage erreurs_grossieres=0
+FIN Parcours_interface::parcourir
+Remaillage_FT::a_remailler = 0
+Remaillage_FT::a_lisser = 0
+2 faces ne contribuent pas a la matrice de pression.
+Transport_Interfaces_FT_Disc::mettre_a_jour temps= 0.0174480476194102
+Remaillage_FT::a_remailler = 1
+Remaillage_FT::iterer_remaillage_interface
+Remaillage_FT::marquer_aretes drap=-1 iter=35  nb_som=406
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=35  nb_som=406
+Remaillage_FT::marquer_aretes drap=-1 iter=36  nb_som=406
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=36  nb_som=406
+Remaillage_FT::marquer_aretes drap=-1 iter=37  nb_som=406
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=37  nb_som=406
+Remaillage_FT::supprimer_doublons_facettes
+Facettes de surface nulle : 12
+Facettes de surface nulle : 12
+Facettes de surface nulle : 12
+Facettes de surface nulle : 12
+Facettes de surface nulle : 12
+Remaillage_FT::diviser_grandes_aretes 0.01522385118665321  nb_som=398
+ Compteur = 10
+Remaillage_FT::marquer_aretes drap=1 iter=38  nb_som=398
+FIN Remaillage_FT::marquer_aretes drap=1 iter=38  nb_som=404
+FIN Remaillage_FT::diviser_grandes_aretes 0.01522385118665321  nb_som=404
+Remaillage_FT::nettoyer_maillage nb_fa7=747
+FIN Remaillage_FT::nettoyer_maillage nb_fa7=747
+ nombre de faces echangees : 0 (total 0)
+ comptage erreurs_grossieres=0
+FIN Parcours_interface::parcourir
+Topologie_Maillage_FT::test_collision_facettes
+ Couples de facettes testes : 6035
+ Collision detectee : 0
+Transport_Interfaces_FT_Disc::mettre_a_jour temps= 0.0174480476194102
+ nombre de faces echangees : 0 (total 0)
+ comptage erreurs_grossieres=0
+FIN Parcours_interface::parcourir
+Remaillage_FT::a_remailler = 0
+Remaillage_FT::a_lisser = 0
+2 faces ne contribuent pas a la matrice de pression.
+Transport_Interfaces_FT_Disc::mettre_a_jour temps= 0.01937122029718171
+Remaillage_FT::a_remailler = 1
+Remaillage_FT::iterer_remaillage_interface
+Remaillage_FT::marquer_aretes drap=-1 iter=39  nb_som=404
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=39  nb_som=404
+Remaillage_FT::marquer_aretes drap=-1 iter=40  nb_som=404
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=40  nb_som=404
+Remaillage_FT::supprimer_doublons_facettes
+Facettes de surface nulle : 10
+Facettes de surface nulle : 10
+Facettes de surface nulle : 10
+Facettes de surface nulle : 10
+Facettes de surface nulle : 10
+Remaillage_FT::diviser_grandes_aretes 0.0174480476194102  nb_som=397
+ Compteur = 11
+Remaillage_FT::marquer_aretes drap=1 iter=41  nb_som=397
+FIN Remaillage_FT::marquer_aretes drap=1 iter=41  nb_som=404
+FIN Remaillage_FT::diviser_grandes_aretes 0.0174480476194102  nb_som=404
+Remaillage_FT::nettoyer_maillage nb_fa7=747
+FIN Remaillage_FT::nettoyer_maillage nb_fa7=747
+ nombre de faces echangees : 0 (total 0)
+ comptage erreurs_grossieres=0
+FIN Parcours_interface::parcourir
+Topologie_Maillage_FT::test_collision_facettes
+ Couples de facettes testes : 5975
+ Collision detectee : 0
+Transport_Interfaces_FT_Disc::mettre_a_jour temps= 0.01937122029718171
+ nombre de faces echangees : 0 (total 0)
+ comptage erreurs_grossieres=0
+FIN Parcours_interface::parcourir
+Remaillage_FT::a_remailler = 0
+Remaillage_FT::a_lisser = 0
+2 faces ne contribuent pas a la matrice de pression.
+Transport_Interfaces_FT_Disc::mettre_a_jour temps= 0.02108441418900692
+Remaillage_FT::a_remailler = 1
+Remaillage_FT::iterer_remaillage_interface
+Remaillage_FT::marquer_aretes drap=-1 iter=42  nb_som=404
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=42  nb_som=404
+Remaillage_FT::marquer_aretes drap=-1 iter=43  nb_som=404
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=43  nb_som=404
+Remaillage_FT::supprimer_doublons_facettes
+Facettes de surface nulle : 12
+Facettes de surface nulle : 12
+Facettes de surface nulle : 12
+Facettes de surface nulle : 12
+Facettes de surface nulle : 12
+Remaillage_FT::diviser_grandes_aretes 0.01937122029718171  nb_som=396
+ Compteur = 12
+Remaillage_FT::marquer_aretes drap=1 iter=44  nb_som=396
+FIN Remaillage_FT::marquer_aretes drap=1 iter=44  nb_som=400
+FIN Remaillage_FT::diviser_grandes_aretes 0.01937122029718171  nb_som=400
+Remaillage_FT::nettoyer_maillage nb_fa7=739
+FIN Remaillage_FT::nettoyer_maillage nb_fa7=739
+ nombre de faces echangees : 0 (total 0)
+ comptage erreurs_grossieres=0
+FIN Parcours_interface::parcourir
+Topologie_Maillage_FT::test_collision_facettes
+ Couples de facettes testes : 5890
+ Collision detectee : 0
+Transport_Interfaces_FT_Disc::mettre_a_jour temps= 0.02108441418900692
+ nombre de faces echangees : 0 (total 0)
+ comptage erreurs_grossieres=0
+FIN Parcours_interface::parcourir
+Remaillage_FT::a_remailler = 0
+Remaillage_FT::a_lisser = 0
+2 faces ne contribuent pas a la matrice de pression.
+Transport_Interfaces_FT_Disc::mettre_a_jour temps= 0.02263774017054876
+Remaillage_FT::a_remailler = 1
+Remaillage_FT::iterer_remaillage_interface
+Remaillage_FT::marquer_aretes drap=-1 iter=45  nb_som=400
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=45  nb_som=400
+Remaillage_FT::marquer_aretes drap=-1 iter=46  nb_som=400
+FIN Remaillage_FT::marquer_aretes drap=-1 iter=46  nb_som=400
+Remaillage_FT::supprimer_doublons_facettes
+Facettes de surface nulle : 8
+Facettes de surface nulle : 8
+Facettes de surface nulle : 8
+Facettes de surface nulle : 8
+Facettes de surface nulle : 8
+Remaillage_FT::diviser_grandes_aretes 0.02108441418900692  nb_som=394
+ Compteur = 13
+Remaillage_FT::marquer_aretes drap=1 iter=47  nb_som=394
+FIN Remaillage_FT::marquer_aretes drap=1 iter=47  nb_som=399
+FIN Remaillage_FT::diviser_grandes_aretes 0.02108441418900692  nb_som=399
+Remaillage_FT::nettoyer_maillage nb_fa7=737
+FIN Remaillage_FT::nettoyer_maillage nb_fa7=737
+ nombre de faces echangees : 0 (total 0)
+ comptage erreurs_grossieres=0
+FIN Parcours_interface::parcourir
+Topologie_Maillage_FT::test_collision_facettes
+ Couples de facettes testes : 5908
+ Collision detectee : 0
+Transport_Interfaces_FT_Disc::mettre_a_jour temps= 0.02263774017054876
+ nombre de faces echangees : 0 (total 0)
+ comptage erreurs_grossieres=0
+FIN Parcours_interface::parcourir
+Remaillage_FT::a_remailler = 0
+Remaillage_FT::a_lisser = 0
+destruction de _Un_IntErprEtE_76
+objet(_Un_IntErprEtE_76) :  de type Resoudre de nom neant de numero 1475
+interprete 1 --> Fin
+destruction de concentration
+objet(concentration) :  de type Convection_Diffusion_Concentration de nom concentration de numero 1411
+destruction de body
+objet(body) :  de type Transport_Interfaces_FT_Disc de nom body de numero 1159
+destruction de interf
+objet(interf) :  de type Transport_Interfaces_FT_Disc de nom interf de numero 905
+destruction de hydraulique
+objet(hydraulique) :  de type Navier_Stokes_FT_Disc de nom hydraulique de numero 339
+destruction de gravite
+objet(gravite) :  de type Champ_Uniforme de nom gravite de numero 342
+destruction de constituant
+objet(constituant) :  de type Constituant de nom neant de numero 255
+destruction de fluide
+objet(fluide) :  de type Fluide_Diphasique de nom neant de numero 187
+destruction de gaz
+objet(gaz) :  de type Fluide_Incompressible de nom neant de numero 656
+destruction de liquide
+objet(liquide) :  de type Fluide_Incompressible de nom neant de numero 572
+destruction de sch
+objet(sch) :  de type Schema_Euler_explicite de nom neant de numero 159
+destruction de dis
+objet(dis) :  de type VEFPreP1B de nom neant de numero 164
+destruction de DOM
+objet(DOM) :  de type Domaine de nom DOM de numero 132
+destruction de pb
+objet(pb) :  de type Probleme_FT_Disc_gen de nom pb de numero 123
+Arret du process 0

@@ -1,0 +1,18 @@
+jdd=ChFrontLu_gen_file.data
+cp -f $TRUST_ROOT/tests/Reference/ChFrontLu_gen_file/*.geom .
+cp -f $TRUST_ROOT/tests/Reference/ChFrontLu_gen_file/$jdd .
+chmod +w $jdd
+echo $ECHO_OPTS "1,$ s?nb_pas_dt_max 10?nb_pas_dt_max 1?g\nw" | ed $jdd
+[ "$TRUST_DISABLE_MPI" != 1 ] && make_PAR.data $jdd
+# On lance un calcul en sequentiel et parallele pour generer
+# un .dat en sequentiel et un .dat en parallele pour tester
+# la reprise
+triou $jdd
+# Renomme un fichier .dat
+mv `ls -rt pb_VITESSE_PERIO*dat | tail -1` pb_VITESSE_PERIO.dat
+if [ "$TRUST_DISABLE_MPI" != 1 ]
+then
+   triou PAR_$jdd 2
+fi
+# Renomme un fichier .dat
+mv `ls -rt pb_K_EPS_PERIO*dat | tail -1` pb_K_EPS_PERIO.dat

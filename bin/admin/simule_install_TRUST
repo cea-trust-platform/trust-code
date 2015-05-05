@@ -1,0 +1,50 @@
+#!/bin/bash
+# Test d'installation d'une version specifie par parametre
+echo "Usage: `basename $0` package.tar [-remote hostname]"
+if [ ${#1} != 0 ] && [ -f $1 ]
+then
+   if [ ${1#/} != $1 ]
+   then
+      version_arch=$1		# Chemin absolu
+   else
+      version_arch=`pwd`/$1	# Chemin relatif
+   fi
+   paquet=`basename $version_arch`
+   keys=keys${paquet#TRUST-}
+   keys=`dirname $version_arch`/${keys%.tar}
+   [ ! -f $keys ] && echo "$keys key not found." && exit -1
+else
+   exit -1
+fi
+
+machine=localhost && [ "$2" = "-remote" ] && [ "$3" != "" ] && machine=$3
+cible=/tmp/simule_install_${paquet%.tar}
+ssh_ $machine -n pwd
+if [ $? = 0 ]
+then
+  echo "Begin of the installation simulation of $version_arch at "`date '+%H:%M:%S'` on $machine:$cible
+  # Add -X to ssh ?
+  ssh -o ConnectTimeout=10 -o BatchMode=yes $machine -n 'rm -r -f '$cible';mkdir '$cible''
+  scp -o ConnectTimeout=10 -o BatchMode=yes $version_arch $keys $machine:$cible/.
+  ssh -o ConnectTimeout=10 -o BatchMode=yes $machine -n '
+  cd '$cible';
+  tar xf '$paquet';
+  rm -f '$paquet';
+  printf `pwd`/`basename '$keys'`"\ny\nn" | ./Installer_TRUST 1>'$cible'/../Installer_TRUST.log 2>&1;
+  if [ $? = 0 ]
+  then
+     echo "Installation OK!"
+     rm -r -f '$cible'
+     exit 0
+  else
+     echo "Installation KO! See '$cible'/../Installer_TRUST.log"
+     exit 1
+  fi;
+'
+  erreur=$?
+  echo "End of the installation simulation of $version_arch at "`date '+%H:%M:%S'` on $machine:$cible
+else
+  echo "Installation KO! $machine not accessible for the installation simulation of $version_arch..."
+  exit 1
+fi
+exit $erreur

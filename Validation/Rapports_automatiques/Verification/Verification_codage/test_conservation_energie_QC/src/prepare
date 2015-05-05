@@ -1,0 +1,11 @@
+#!/bin/bash
+
+for methode in ancien divuT_moins_Tdivu divrhouT_moins_Tdivrhou
+do
+ for dis in vdf vef
+   do
+   mkdir -p ${dis}_$methode
+   sed "s/divrhouT_moins_Tdivrhou/$methode/" test_conservation_energie_${dis}.data > ${dis}_${methode}/test.data
+   echo CasTest ${dis}_$methode test.data
+ done
+done

@@ -1,0 +1,4 @@
+jdd=`pwd`
+jdd=`basename $jdd`
+# On doit trouver la vitesse au stationnaire identique a 0.005%
+compare_sonde $jdd"_VITESSE.son" explicite"_VITESSE.son" -type statio -seuil_erreur 0.005 1>compare_sonde.log 2>&1

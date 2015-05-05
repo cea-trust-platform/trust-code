@@ -1,0 +1,30 @@
+#!/bin/sh
+ref=$1
+new=$2
+
+ref=rapport.pdf
+new=tableau.pdf
+
+ 
+ref=`dirname $ref`/`basename $ref .pdf`
+new=`dirname $new`/`basename $new .pdf`
+
+rm -f ${new}_oo*jpeg ${ref}_oo*jpeg
+convert $ref.pdf ${ref}_oo.jpeg
+convert $new.pdf ${new}_oo.jpeg
+ko=0
+for file in `ls ${ref}_oo*jpeg`
+  do
+  f2=`echo $file | sed "s?$ref?$new?"`
+  if [ "`diff $file $f2`" = "" ]
+      then
+      echo compare $file OK
+      rm -f $file $f2
+  else
+      ko=1
+      difffile=`echo $file | sed "s?_oo?_diff?"`
+      echo compare $file K0 : voir $difffile
+      compare $file $f2 $difffile
+  fi
+done
+exit $ko

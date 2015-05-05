@@ -1,0 +1,8 @@
+#!/bin/bash
+# Change GCP/SSOR et Cholesky en GCP NPHypre/ILU
+sed "s? [gG][cC][pP]? NPHypre ?g
+s?{ omega [0-9]*.[0-9]* }??g
+s?{ omega -[0-9]*.[0-9]* }??g
+s?precond?solver NP_CG NP_ILU 1?g
+s?[sS][sS][oO][rR]??g
+s?cholesky {?NPHypre { seuil 1.000000e-15 solver NP_CG NP_ILU 1 ?g" $1".data" > $2".data"

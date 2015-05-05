@@ -1,0 +1,16 @@
+#!/bin/bash
+# Procedure pour tracer les echange_espace_virtuel sur un cas test passe en argument
+jdd=$1
+echo "break Probleme_U::run
+run $jdd
+break MD_Vector_tools::echange_espace_virtuel(DoubleVect&, MD_Vector_tools::Operations_echange)
+cont
+delete 2
+break 100
+while 1
+  cont
+  where 10
+end" > options
+
+echo "Please wait..."
+/usr/bin/gdb -batch -x options ${exec%_opt} 2>&1 | grep "#4" | grep -v "check_espace_virtuel_vect" | awk '{n++;print n" "$0}'

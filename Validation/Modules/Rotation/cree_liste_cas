@@ -1,0 +1,15 @@
+#!/bin/bash
+cherche.ksh postraitement 1>/dev/null
+mv liste_cherche liste
+
+rm -f black_list
+# Mot cles qui ne marchent pas encore pour le script Python modif.py:
+for keyword in postraitements liste_postraitements champ_init_canal_sinal champ_front_recyclage
+do
+   cherche.ksh $keyword 1>/dev/null
+   cat liste_cherche >> black_list
+done
+
+# On filtre:
+grep -v -f black_list liste | grep -v Poreux_VEF > liste_cas
+exit

@@ -1,0 +1,13 @@
+#!/bin/bash
+#set -xv
+dir=$PWD
+sub=`echo $dir|sed "s?$TRUST_ROOT?.?"`
+# [ "$TRUST_SCM" = "1" ] && OPT=_semi_opt && echo compile_semi_opt 
+
+MonoDir=$TRUST_ROOT/MonoDir$COMM$OPT	
+cd $MonoDir/$sub
+make; status=$? 
+
+cd -
+exit $status
+ 

@@ -1,0 +1,57 @@
+#!/bin/bash
+Gmsh=$1
+ETUDE_TRUST=`QUELLE_ETUDE.ihm`
+export ETUDE_TRUST
+cd $ETUDE_TRUST
+geos=`ls *.geo 2>/dev/null`
+if [ ${#geos} != 0 ]
+then
+   echo "Files .geo found:"
+   echo "-----------------"
+   for geo in `ls *.geo 2>/dev/null`
+   do
+      [ "`grep -i mailler $geo`" = "" ] && echo $geo
+   done
+   echo "-----------------"
+   echo $ECHO_OPTS "Choose (or press return to start a new geometry): \c"
+   read geo
+   geo=${geo%.geo}
+   [ ${#geo} = 0 ] && geo=new
+else
+   geo=`cat $ETUDE_TRUST/.NOM_DATA`
+fi
+msh=$ETUDE_TRUST/$geo".msh"
+geo=$ETUDE_TRUST/$geo".geo"
+touch $geo
+Gmsh="$Gmsh $geo -o $msh -format msh"
+echo "Running $Gmsh ..."
+( $Gmsh ; [ $? != 0 ] && echo $ECHO_OPTS "\nIf the error message is \"Insufficient GL support\", it is because of your screen or because OpenGL libraries are not installed. Please check and if necessary install OpenGl free replacement located in http://mesa3d.sourceforge.net" ) &
+proc=$!
+
+# Attend la creation de fichiers .msh
+while [ "`kill -0 $proc 2>/dev/null;echo $?`" = 0 ]
+do
+   while [ "`find . -name '*'.msh -newer $geo`" = "" ]
+   do
+      if [ "`kill -0 $proc 2>/dev/null;echo $?`" = 0 ]
+      then
+         sleep 1
+      else
+         eval $FIN
+      fi
+   done
+   msh=`find . -name '*'.msh -newer $geo`
+   touch $geo
+   msh=`basename $msh`
+   echo "$msh file saved."
+   echo "Do you wish to convert $msh or another .msh file into TRUST format (y/n) ?"
+   read a
+   if [ ${#a} != 0 ] && [ $a = y ] 
+   then
+      gmsh2geom
+      geom=`find . -name '*'.geom -newer $geo`
+      echo "`basename $geom` converted from $msh."
+      echo "Tips: To use the converter with a command line, run: gmsh2geom"
+   fi
+done
+eval $FIN

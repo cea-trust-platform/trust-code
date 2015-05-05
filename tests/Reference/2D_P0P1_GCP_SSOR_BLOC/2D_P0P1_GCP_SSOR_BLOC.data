@@ -1,0 +1,134 @@
+# Cas test 2D VEF pour tester GCP/ssor_bloc #
+# PARALLEL OK 8 #
+dimension 2
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+        {
+                Origine                        0.  0.
+                Nombre_de_Noeuds              21   21
+                Longueurs                      1   1
+        }
+        {
+                Bord perio      X = 0.   0. <= Y <= 1.  
+                Bord perio      X = 1.   0. <= Y <= 1.   
+                Bord perioy      Y = 0.   0. <= X <= 1.  
+                Bord perioy      Y = 1.   0. <= X <= 1. 
+        }
+} 
+Trianguler_h dom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur Tranche { tranches 2 2 }
+	periodique 2 perio perioy
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1b dis
+Lire dis { P0 P1 }
+
+Schema_Euler_Explicite sch
+Lire sch 
+{
+	nb_pas_dt_max 3
+        tinit 0.
+        tmax  0.05
+        dt_min 1.e-5
+        dt_max 1.e-3
+	dt_start dt_calc
+        dt_impr 0.1
+        dt_sauv 20.
+        seuil_statio 1.e-10
+        facsec 0.5
+}
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme	1 1.
+	rho Champ_Uniforme	1 1.
+}
+
+Pb_Hydraulique pb
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+# Debog pb seq faces 1.e-6 0 #
+Lire pb
+	{
+	Navier_Stokes_standard
+		{
+		Solveur_Pression GCP {
+			seuil 1.e-8 impr	
+			precond ssor_bloc 
+			{ 
+			 	 precond1 PrecondSolv Cholesky { } alpha_1 1
+				 precond0 PrecondSolv Cholesky { } alpha_0 1
+			}
+		}
+
+                Sources { Source_Qdm_lambdaup { lambda 0.01 lambda_min 1.e-10 lambda_max 0.1 ubar_umprim_cible 10 } }
+
+                convection { negligeable }
+                diffusion  { }
+				
+                Sources { Source_Qdm Champ_fonc_xyz dom 2 x*y x*x*y*y  } 
+		conditions_initiales
+			{
+                        vitesse Champ_fonc_xyz dom 2 1000*x -1000*y
+			}
+		boundary_conditions
+			{
+			perioy periodique 
+			perio periodique 
+			}
+	         }
+
+	Postraitements
+	{
+		lml
+        	{  
+		fichier 2D_P0P1_GCP_SSOR_BLOC   
+		format lml 
+                Sondes
+                	{ 
+                        sonde_vit1  vitesse periode 0.0001 points 1 0.5 0.5
+                        sonde_vit2  vitesse periode 0.0001 segment 21 0.5 0. 0.5 1.
+			plan_vitesse vitesse periode 0.0001 plan 21 21 0.1 0.1 0.9 0.1 0.1 0.9
+			}
+		Champs dt_post 0.001
+			{
+			vitesse som
+			pression som
+			}
+		}
+		lata
+		{
+		fichier 2D_P0P1_GCP_SSOR_BLOC  
+		format lata
+		Champs dt_post 0.001
+			{
+			vitesse som
+			pression som
+			pression elem
+			}
+		
+		}
+	}
+}
+Solve pb
+Fin

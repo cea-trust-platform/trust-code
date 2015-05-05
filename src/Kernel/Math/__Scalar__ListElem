@@ -1,0 +1,336 @@
+#Pmacro declareList(__Scalar__,__scalar__)
+#ifndef __Scalar__ListElem_included
+#define __Scalar__ListElem_included
+
+#Pif("__scalar__"=="double")
+#include <__Scalar__.h>
+#Pendif
+#Pif("__scalar__"=="int")
+#define IMAX 1000000000
+#Pendif
+#include <arch.h>
+class Sortie;
+class Entree;
+
+//////////////////////////////////////////////////////////////////////////////
+// 
+// .DESCRIPTION 
+//      Classe qui sert a representer une liste de reels __scalar__ 
+//      precision. On ne peut pas utiliser la classe container 
+//      List avec des objets du type __scalar__ car __scalar__ est un type
+//      predefini du C++ qui ne possede pas les fonctions exigees
+//      par List< >. 
+// .SECTION voir aussi 
+//////////////////////////////////////////////////////////////////////////////
+
+class __Scalar__List;
+class __Scalar__ListElem 
+{
+   
+public :
+  friend class __Scalar__List;
+  inline __Scalar__ListElem();
+  inline __Scalar__ListElem(const __scalar__ x);
+  __Scalar__ListElem(const __Scalar__ListElem&);
+  ~__Scalar__ListElem();
+  inline __Scalar__ListElem& suivant();
+  inline const __Scalar__ListElem& suivant() const;
+  inline int est_vide() const;
+  inline int est_dernier() const;
+  inline __scalar__& valeur();
+  inline __scalar__ valeur() const;
+  __Scalar__ListElem& add(__scalar__ ) ;
+  friend int operator == (const __Scalar__ListElem& , const __Scalar__ListElem& );
+   
+protected:
+ 
+  __scalar__ data;
+  __Scalar__ListElem* suivant_;
+};
+
+// Description: 
+//     Construit une liste vide.
+// Precondition: 
+// Parametre: 
+//    Signification: 
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: 
+//    Signification: 
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+inline __Scalar__ListElem::__Scalar__ListElem()
+{
+  suivant_=this;
+}
+
+// Description: 
+//     Construit le singleton (x).
+// Precondition: 
+// Parametre: const __scalar__ x
+//    Signification: element de la liste
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: 
+//    Signification: 
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+inline __Scalar__ListElem::__Scalar__ListElem(const __scalar__ x) : data(x), suivant_(0)
+{} 
+
+// Description: 
+//     renvoie 1 si la liste est vide
+//     renvoie 0 sinon.
+// Precondition: 
+// Parametre: 
+//    Signification: 
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: int
+//    Signification: 1 si la liste est vide, 0 sinon
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+inline int __Scalar__ListElem::est_vide() const
+{
+  return suivant_==this;
+}
+
+
+// Description: 
+//     renvoie 1 si il n'y a pas de suivant
+//     renvoie 0 sinon.
+// Precondition: 
+// Parametre: 
+//    Signification: 
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: int
+//    Signification: 1 si il n'y a pas de suivant, 0 sinon
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+inline int __Scalar__ListElem::est_dernier() const
+{
+  return ((est_vide()) || (suivant_==0) );
+}   
+
+
+// Description: 
+//     renvoie le reel __scalar__ precision.
+// Precondition: 
+// Parametre: 
+//    Signification: 
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: __scalar__&
+//    Signification: 
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+inline __scalar__& __Scalar__ListElem::valeur() 
+{
+  return data;
+}  
+
+
+// Description: 
+//     renvoie le reel __scalar__ precision.
+// Precondition: 
+// Parametre: 
+//    Signification: 
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: __scalar__&
+//    Signification: 
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+inline __scalar__ __Scalar__ListElem::valeur() const
+{
+  return data;
+}
+
+
+// Description: 
+//     renvoie le suivant.
+// Precondition: 
+// Parametre: 
+//    Signification: 
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: const __Scalar__List&
+//    Signification: liste sur l'element suivant
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+inline const __Scalar__ListElem& __Scalar__ListElem::suivant() const
+{
+  return *suivant_;
+}
+
+
+// Description: 
+//     renvoie le suivant.
+// Precondition: 
+// Parametre: 
+//    Signification: 
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: __Scalar__List&
+//    Signification: liste sur l'element suivant
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+inline __Scalar__ListElem& __Scalar__ListElem::suivant()
+{
+  return *suivant_;
+}
+
+#endif // __Scalar__List_H
+#Pendmacro(declareList)
+#Pmacro implementeList(__Scalar__,__scalar__)
+#include <__Scalar__List.h>
+#include <Nom.h>
+
+// Description: 
+//    Constructeur par copie
+// Precondition: 
+// Parametre: const __Scalar__ListElem& list
+//    Signification: la liste a copier
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: 
+//    Signification: 
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+__Scalar__ListElem::__Scalar__ListElem(const __Scalar__ListElem& list) 
+{
+  if(list.est_vide() ){
+    suivant_=this;
+  }
+  else {
+    data=list.data;
+    if(list.suivant_) {
+      __Scalar__ListElem* next = new __Scalar__ListElem(*list.suivant_); //Recursif !!
+      suivant_ = next;
+    }
+    else
+      suivant_ =0;
+  }
+}
+
+// Description: 
+//    destructeur
+// Precondition: 
+// Parametre: 
+//    Signification: 
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: 
+//    Signification: 
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+__Scalar__ListElem:: ~__Scalar__ListElem()
+{
+  // Cout << "Destruction de __Scalar__List" << finl;
+  if (est_vide())
+    suivant_=0;
+  if(suivant_) 
+    {
+      // On ne garde pas la version delete suivant_ car sinon on est limite par le nombre d'appel recursif possible
+      // delete suivant_;
+      __Scalar__ListElem *poignee, *pr;
+      pr=suivant_;
+      suivant_=0;
+      while(pr)
+        {
+          poignee=pr->suivant_;
+          pr->suivant_=0;
+          delete pr ;
+          pr=poignee;
+        }
+    }
+
+}
+
+// Description: 
+//    insertion en queue
+// Precondition: 
+// Parametre: int __scalar___to_add
+//    Signification: element a ajouter
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: __Scalar___ListElem&
+//    Signification: *this
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+__Scalar__ListElem& __Scalar__ListElem::add(__scalar__ __scalar___to_add) 
+{  
+  assert(est_dernier());
+  __Scalar__ListElem* next=new __Scalar__ListElem(__scalar___to_add);
+  suivant_ = next; 
+  return *this;
+}      
+
+// Description: 
+//     Operateur de comparaison de deux listes
+// Precondition: 
+// Parametre: const __Scalar__List& list1
+//    Signification: premiere liste a comparer
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Parametre: const __Scalar__List& list2
+//    Signification: seconde liste a comparer
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: int
+//    Signification: 1 si les listes sont egales, 0 sinon
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+int operator ==(const __Scalar__ListElem& list1 , const __Scalar__ListElem& list2)
+{
+  int retour=1;
+  if(list1.data != list2.data)
+    retour= 0;
+  if( (!list1.est_dernier()) && (list2.est_dernier()) )
+    retour= 0;
+  if( (list1.est_dernier()) && (!list2.est_dernier()) )
+    retour= 0;
+  if( (!list1.est_dernier()) && (!list2.est_dernier()) )
+    retour= (*list1.suivant_ == *list2.suivant_);
+  return retour;
+}
+
+#Pendmacro(implementeList)

@@ -1,0 +1,6 @@
+GEOM dom type_elem=TRIANGLE
+GEOM dom_boundaries_Axe type_elem=SEGMENT
+GEOM dom_boundaries_Entree type_elem=SEGMENT
+GEOM dom_boundaries_Forme type_elem=SEGMENT
+GEOM dom_boundaries_Haut type_elem=SEGMENT
+GEOM dom_boundaries_Sortie type_elem=SEGMENT

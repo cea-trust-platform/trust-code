@@ -1,0 +1,689 @@
+Mon Oct 15 22:50:24 CEST 2012 : Test results with the version dated Oct 15 22:49
+/work/triou/Version_test_simplon/TRUST/exec/TRUST_mpi_semi_opt
+ ------------------------------------------------------------------------------------------
+| START  | END    | CPU | NP | SPU | NDT |  GCP | ELEM | MEM  | PLOTS | STATE | NAME       
+ ------------------------------------------------------------------------------------------
+|22:50:29|22:50:29|...0s|..1.|.....|....0|....62|...168|..43Mo|.......| OK    |3D_P0P1Pa_perio 
+|22:50:34|22:50:35|...1s|..1.|.....|....2|...181|..3375|..53Mo|.......| OK    |CANAL_QC_Timposees_dt293K_VDF_impl 
+|22:50:35|22:50:37|...2s|..4.|0.923|....2|...351|..3375|.181Mo|....8/8| OK    |PAR_CANAL_QC_Timposees_dt293K_VDF_impl 
+|22:50:40|22:50:44|...4s|..1.|.....|....5|...919|..3375|..33Mo|.......| OK    |CANAL_QC_Timposees_dt293K_VDF_segsol 
+|22:50:44|22:50:48|...4s|..4.|0.924|....5|..1707|..3375|.150Mo|....8/8| OK    |PAR_CANAL_QC_Timposees_dt293K_VDF_segsol 
+|22:50:51|22:51:01|..10s|..1.|.....|....2|..6182|..5120|..93Mo|.......| OK    |CANAL_QC_Timposees_dt293K_VEF_impl 
+|22:51:01|22:51:08|...7s|..4.|1.791|....2|..6946|..5120|.229Mo|....8/8| OK    |PAR_CANAL_QC_Timposees_dt293K_VEF_impl 
+|22:51:11|22:51:22|..11s|..1.|.....|....2|..6919|..5120|..83Mo|.......| OK    |CANAL_QC_Turb_Timposees_dt293K_VEF_impl 
+|22:51:22|22:51:30|...8s|..4.|1.782|....2|..7891|..5120|.216Mo|....8/8| OK    |PAR_CANAL_QC_Turb_Timposees_dt293K_VEF_impl 
+|22:51:33|22:51:55|..22s|..1.|.....|....0|...386|.95976|.206Mo|.......| OK    |ChFrontLu 
+|22:51:58|22:52:53|..55s|..1.|.....|...10|...241|.10976|..64Mo|.......| OK    |ChFrontLu_gen_file 
+|22:52:53|22:53:28|..35s|..2.|1.646|...10|...288|.10976|..88Mo|....3/4| OK    |PAR_ChFrontLu_gen_file 
+|22:53:30|22:53:32|...2s|..1.|.....|....1|....63|..1477|..38Mo|.......| OK    |Champ_Don_lu_CCM 
+|22:53:34|22:53:35|...1s|..1.|.....|....3|.....0|...400|..45Mo|.......| OK    |Combinaison_champ 
+|22:53:38|22:53:39|...1s|..1.|.....|....2|....29|..1920|..42Mo|.......| OK    |Conduite_lm_prdt_var 
+|22:53:41|22:53:42|...1s|..1.|.....|...10|...190|.....4|..30Mo|.......| OK    |Conserv_Masse_QC_rho_u_Piso 
+|22:53:42|22:53:43|...1s|..2.|0.580|...10|...208|.....4|..78Mo|....6/6| OK    |PAR_Conserv_Masse_QC_rho_u_Piso 
+|22:53:46|22:53:49|...3s|..1.|.....|...12|.12876|...400|..31Mo|.......| OK    |Constituants_VEF_impl 
+|22:53:49|22:53:52|...3s|..2.|1.023|...12|.14194|...400|..72Mo|..10/10| OK    |PAR_Constituants_VEF_impl 
+|22:53:55|22:54:01|...6s|..1.|.....|....4|..5831|...400|..28Mo|.......| OK    |Constituants_VEF_segsol 
+|22:54:01|22:54:06|...5s|..2.|1.274|....4|..6340|...400|..84Mo|..10/10| OK    |PAR_Constituants_VEF_segsol 
+|22:54:09|22:54:13|...4s|..1.|.....|...25|.20154|...400|..30Mo|.......| OK    |Constituants_VEF_turb_impl 
+|22:54:13|22:54:18|...5s|..2.|1.016|...25|.22004|...400|..78Mo|....8/8| OK    |PAR_Constituants_VEF_turb_impl 
+|22:54:21|22:54:33|..12s|..1.|.....|...26|.49156|.....4|..45Mo|.......| OK    |Couplage_VEF_segsol 
+|22:54:38|22:56:21|.103s|..1.|.....|....1|..1070|.40769|.152Mo|.......| OK    |Cx_impl 
+|22:56:24|22:56:26|...2s|..1.|.....|...57|.10257|...400|..41Mo|.......| OK    |Def_VEF_impl 
+|22:56:26|22:56:29|...3s|..3.|1.133|...57|.10874|...400|.119Mo|....7/7| OK    |PAR_Def_VEF_impl 
+|22:56:33|22:57:15|..42s|..1.|.....|....4|...678|.40769|.120Mo|.......| OK    |Hyd_Cx_impl 
+|22:57:15|22:57:40|..25s|..2.|1.764|....4|...824|.40769|.167Mo|....5/6| OK    |PAR_Hyd_Cx_impl 
+|22:57:44|22:58:25|..41s|..1.|.....|....4|...925|.40769|.136Mo|.......| OK    |Hyd_Cx_segsol 
+|22:58:26|22:58:51|..25s|..2.|1.745|....4|..1126|.40769|.192Mo|....6/6| OK    |PAR_Hyd_Cx_segsol 
+|22:58:55|22:59:17|..22s|..1.|.....|....1|...327|.40769|.154Mo|.......| OK    |Hyd_Turb_Cx_segsol 
+|22:59:17|22:59:31|..14s|..2.|1.814|....1|...396|.40769|.244Mo|....6/6| OK    |PAR_Hyd_Turb_Cx_segsol 
+|22:59:39|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Impinging_jet ATTENTION En parallele plantage possible sur ce cas...
+|22:59:43|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |PAR_Impinging_jet ATTENTION En parallele plantage possible sur ce cas...
+|22:59:50|22:59:55|...5s|..1.|.....|....3|...407|..2160|..58Mo|.......| OK    |Min_Max_Champ_Paroi 
+|22:59:59|22:59:59|...0s|..1.|.....|...10|....14|...200|..45Mo|.......| UNINIT |OpDiffP1B_mixte_scalaire_implicite_2D
+|23:00:00|23:00:01|...1s|..4.|.....|...10|....14|...200|.139Mo|....1/1| UNINIT |PAR_OpDiffP1B_mixte_scalaire_implicite_2D
+|23:00:07|23:00:08|...1s|..1.|.....|....4|...873|...320|..37Mo|.......| UNINIT |OpDiffP1B_mixte_vitesse_implicite_3D
+|23:00:11|23:00:47|..36s|..1.|.....|....4|..1141|.40769|.249Mo|.......| OK    |PETSC_CUDA 
+|23:00:47|23:01:11|..24s|..2.|1.652|....4|..1318|.40769|.317Mo|....6/6| OK    |PAR_PETSC_CUDA 
+|23:01:14|23:01:25|..11s|..1.|.....|....2|..2054|..2598|..90Mo|.......| OK    |PETSC_Quasi_Comp_Coupl_keps_VEF_impl_GMRES 
+|23:01:26|23:01:39|..13s|..2.|0.912|....2|..2255|..2598|.114Mo|....8/8| OK    |PAR_PETSC_Quasi_Comp_Coupl_keps_VEF_impl_GMRES 
+|23:01:42|23:01:45|...3s|..1.|.....|..257|.53225|...100|..37Mo|.......| OK    |P_out_var_impl 
+|23:01:46|23:01:52|...6s|..2.|0.662|..257|.61679|...100|..66Mo|....8/8| OK    |PAR_P_out_var_impl 
+|23:01:55|23:01:55|...0s|..1.|.....|....3|...436|...300|..47Mo|.......| OK    |Perte_Charge_Anisotrope_QC_VEF 
+|23:01:55|23:01:57|...2s|..2.|1.653|....3|...475|...300|..71Mo|....8/9| OK    |PAR_Perte_Charge_Anisotrope_QC_VEF 
+|23:02:00|23:02:00|...0s|..1.|.....|....3|...439|...300|..27Mo|.......| OK    |Perte_Charge_Circulaire_QC_VEF 
+|23:02:00|23:02:02|...2s|..2.|1.640|....3|...476|...300|..51Mo|....8/9| OK    |PAR_Perte_Charge_Circulaire_QC_VEF 
+|23:02:05|23:02:07|...2s|..1.|.....|....5|...785|...756|..53Mo|.......| OK    |Perte_Charge_QC_VEF 
+|23:02:10|23:02:17|...7s|..1.|.....|...64|.41777|...400|..43Mo|.......| OK    |Piso 
+|23:02:20|23:02:21|...1s|..1.|.....|...76|....76|....64|..35Mo|.......| OK    |Piso_VDF_perio 
+|23:02:24|23:02:25|...1s|..1.|.....|....6|..2530|...380|..33Mo|.......| OK    |Poiseuille_VDF_segsol 
+|23:02:25|23:02:28|...3s|..2.|1.082|....6|..3041|...380|..88Mo|....8/8| OK    |PAR_Poiseuille_VDF_segsol 
+|23:02:31|23:02:32|...1s|..1.|.....|...35|...266|....40|..42Mo|.......| OK    |Poiseuille_VEF_impl 
+|23:02:32|23:02:33|...1s|..2.|0.679|...35|...265|....40|..64Mo|....7/8| OK    |PAR_Poiseuille_VEF_impl 
+|23:02:36|23:02:37|...1s|..1.|.....|...35|...248|....40|..49Mo|.......| OK    |Poiseuille_VEF_segsol 
+|23:02:37|23:02:39|...2s|..2.|0.683|...35|...248|....40|..70Mo|....7/8| OK    |PAR_Poiseuille_VEF_segsol 
+|23:02:42|23:02:49|...7s|..1.|.....|...76|.46650|...560|..23Mo|.......| OK    |Poreux_VEF_Poiseuille 
+|23:02:49|23:02:57|...8s|..2.|1.104|...76|.52154|...560|..74Mo|....5/8| OK    |PAR_Poreux_VEF_Poiseuille 
+|23:03:00|23:03:18|..18s|..1.|.....|....2|..1645|.14435|..76Mo|.......| OK    |Post_Stat 
+|23:03:21|23:03:21|...0s|..1.|.....|...96|...149|....24|..18Mo|.......| OK    |Puissance_th_VEF 
+|23:03:21|23:03:23|...2s|..2.|0.508|...96|...149|....24|..79Mo|....2/2| OK    |PAR_Puissance_th_VEF 
+|23:03:26|23:03:32|...6s|..1.|.....|...20|..2069|..3375|..29Mo|.......| OK    |QC_Turb_VDF_diff_impl ATTENTION 1 ecart possible sur ce cas...
+|23:03:32|23:03:38|...6s|..4.|1.529|...20|..3049|..3375|.184Mo|....8/8| OK    |PAR_QC_Turb_VDF_diff_impl ATTENTION 1 ecart possible sur ce cas...
+|23:03:41|23:04:23|..42s|..1.|.....|...20|.12818|..5120|..40Mo|.......| OK    |QC_Turb_VEF_diff_impl 
+|23:04:23|23:04:55|..32s|..4.|1.398|...20|.16049|..5120|.194Mo|....6/8| OK    |PAR_QC_Turb_VEF_diff_impl 
+|23:04:58|23:05:03|...5s|..1.|.....|...20|..1753|..3375|..30Mo|.......| OK    |QC_VDF_diff_impl 
+|23:05:03|23:05:10|...7s|..4.|1.046|...20|..2722|..3375|.162Mo|....8/8| OK    |PAR_QC_VDF_diff_impl 
+|23:05:13|23:05:49|..36s|..1.|.....|...20|.12819|..5120|..55Mo|.......| OK    |QC_VEF_diff_impl 
+|23:05:49|23:06:15|..26s|..4.|1.507|...20|.16064|..5120|.153Mo|....6/8| OK    |PAR_QC_VEF_diff_impl 
+|23:06:18|23:06:36|..18s|..1.|.....|....2|..2912|..2598|..50Mo|.......| OK    |Quasi_Comp_Coupl_Sous_Maille_VEF_impl 
+|23:06:36|23:06:49|..13s|..2.|1.482|....2|..3272|..2598|.120Mo|....8/8| OK    |PAR_Quasi_Comp_Coupl_Sous_Maille_VEF_impl 
+|23:06:52|23:07:15|..23s|..1.|.....|....2|..1742|..2598|..37Mo|.......| OK    |Quasi_Comp_Coupl_keps_VEF_impl 
+|23:07:15|23:07:33|..18s|..2.|1.412|....2|..1862|..2598|.124Mo|....8/8| OK    |PAR_Quasi_Comp_Coupl_keps_VEF_impl 
+|23:07:36|23:07:48|..12s|..1.|.....|...10|..2234|..5126|..38Mo|.......| OK    |Quasi_Comp_Obst_GP_VEF_Turb_impl 
+|23:07:48|23:07:56|...8s|..2.|1.799|...10|..2630|..5126|..82Mo|....7/9| OK    |PAR_Quasi_Comp_Obst_GP_VEF_Turb_impl 
+|23:07:59|23:08:12|..13s|..1.|.....|....5|..1547|..5126|..38Mo|.......| OK    |Quasi_Comp_Obst_GP_VEF_Turb_segsol 
+|23:08:12|23:08:21|...9s|..2.|1.751|....5|..1824|..5126|..79Mo|....8/9| OK    |PAR_Quasi_Comp_Obst_GP_VEF_Turb_segsol 
+|23:08:24|23:08:25|...1s|..1.|.....|...30|..8215|...100|..40Mo|.......| OK    |Quasi_DivRhoUT_moins_TDivRhoU 
+|23:08:25|23:08:27|...2s|..2.|0.556|...30|..9191|...100|..70Mo|....4/4| OK    |PAR_Quasi_DivRhoUT_moins_TDivRhoU 
+|23:08:41|23:08:52|..11s|..1.|.....|....2|..1259|.14435|..60Mo|.......| OK    |Reprise_Statistiques_Definition_Champs ATTENTION 3 ecarts possible sur ce cas...
+|23:08:55|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Reprise_grossier_fin
+|23:08:55|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |PAR_Reprise_grossier_fin
+|23:09:07|23:09:08|...1s|..1.|.....|....3|..1045|...400|..20Mo|.......| OK    |Reprise_impl 
+|23:09:08|23:09:10|...2s|..2.|1.507|....3|..1152|...400|..68Mo|....4/7| OK    |PAR_Reprise_impl 
+|23:09:13|23:09:14|...1s|..1.|.....|..116|.....0|...400|..29Mo|.......| OK    |Solveur_Lineaire_std_VDF 
+|23:09:16|23:09:18|...2s|..1.|.....|..233|.....0|...400|..39Mo|.......| OK    |Solveur_Lineaire_std_VEF 
+|23:09:20|23:09:21|...1s|..1.|.....|....3|...255|...240|..32Mo|.......| OK    |SymetrieSomVitesseParallele 
+|23:09:21|23:09:22|...1s|..4.|0.639|....3|...312|...240|.155Mo|....3/3| OK    |PAR_SymetrieSomVitesseParallele 
+|23:09:26|23:09:42|..16s|..1.|.....|...10|..1646|..8707|..57Mo|.......| OK    |Symetrie_Implicite 
+|23:09:42|23:09:53|..11s|..2.|1.633|...10|..1927|..8707|.106Mo|....6/6| OK    |PAR_Symetrie_Implicite 
+|23:09:56|23:10:23|..27s|..1.|.....|....1|..1260|.27252|.197Mo|.......| OK    |TBLE_VEF_KEPS_3D 
+|23:10:27|23:10:29|...2s|..1.|.....|...10|..4394|..1060|..55Mo|.......| OK    |ThHyd_keps_VEF_impl 
+|23:10:29|23:10:32|...3s|..2.|1.424|...10|..4850|..1060|..88Mo|..10/10| OK    |PAR_ThHyd_keps_VEF_impl 
+|23:10:36|23:10:49|..13s|..1.|.....|....3|.20405|..1060|..38Mo|.......| OK    |ThHyd_keps_VEF_segsol 
+|23:10:49|23:11:00|..11s|..2.|1.434|....3|.22617|..1060|..99Mo|..10/10| OK    |PAR_ThHyd_keps_VEF_segsol 
+|23:11:03|23:11:35|..32s|..1.|.....|...10|.30205|..4426|..36Mo|.......| OK    |UNCERT_impl 
+|23:11:40|23:11:40|...0s|..1.|.....|...21|...822|....18|..36Mo|.......| OK    |U_in_var_impl 
+|23:11:40|23:11:42|...2s|..2.|0.575|...21|...987|....18|..82Mo|..15/17| OK    |PAR_U_in_var_impl 
+|23:11:45|23:11:46|...1s|..1.|.....|...21|..5101|...180|..26Mo|.......| OK    |U_in_var_impl_vef 
+|23:11:46|23:11:48|...2s|..2.|0.869|...21|..5863|...180|..97Mo|....7/8| OK    |PAR_U_in_var_impl_vef 
+|23:11:51|23:11:52|...1s|..1.|.....|...21|..4194|...180|..49Mo|.......| OK    |U_in_var_impl_vef_QC 
+|23:11:52|23:11:54|...2s|..2.|0.705|...21|..4267|...180|..86Mo|....8/9| OK    |PAR_U_in_var_impl_vef_QC 
+|23:11:57|23:12:06|...9s|..1.|.....|..365|.57769|...180|..46Mo|.......| OK    |U_in_var_segsol_vef_QC 
+|23:12:06|23:12:18|..12s|..2.|0.852|..365|.62597|...180|..68Mo|....8/9| OK    |PAR_U_in_var_segsol_vef_QC 
+|23:12:21|23:12:27|...6s|..1.|.....|..175|.16380|...400|..48Mo|.......| OK    |VAHL_DAVIS_VEFPreP1B_impl 
+|23:12:27|23:12:36|...9s|..2.|0.873|..175|.17305|...400|..76Mo|...4/13| OK    |PAR_VAHL_DAVIS_VEFPreP1B_impl 
+|23:12:39|23:12:51|..12s|..1.|.....|..177|.31876|...400|..49Mo|.......| OK    |VAHL_DAVIS_VEFPreP1B_segsol 
+|23:12:51|23:13:02|..11s|..2.|1.226|..177|.35155|...400|..70Mo|...8/13| OK    |PAR_VAHL_DAVIS_VEFPreP1B_segsol 
+|23:13:05|23:13:06|...1s|..1.|.....|..113|..3039|...100|..37Mo|.......| OK    |VAHL_DAVIS_impl 
+|23:13:07|23:13:09|...2s|..2.|0.710|..113|..3039|...100|..71Mo|..10/10| OK    |PAR_VAHL_DAVIS_impl 
+|23:13:12|23:13:13|...1s|..1.|.....|...50|..3308|...100|..28Mo|.......| OK    |VAHL_DAVIS_segsol 
+|23:13:13|23:13:16|...3s|..2.|0.743|...50|..3310|...100|..72Mo|..10/10| OK    |PAR_VAHL_DAVIS_segsol 
+|23:13:19|23:13:20|...1s|..1.|.....|...99|...750|.....3|..37Mo|.......| OK    |cond_coup_fictif_vdf_impl 
+|23:13:20|23:13:22|...2s|..2.|0.558|...99|...750|.....3|..55Mo|..14/14| OK    |PAR_cond_coup_fictif_vdf_impl 
+|23:13:25|23:13:31|...6s|..1.|.....|.1912|..5564|.....4|..34Mo|.......| OK    |cond_coup_fictif_vef_impl 
+|23:13:32|23:13:44|..12s|..2.|0.569|.1912|..5564|.....4|..83Mo|..12/14| OK    |PAR_cond_coup_fictif_vef_impl 
+|23:13:47|23:13:55|...8s|..1.|.....|..216|.18076|.....3|..33Mo|.......| OK    |cond_couple_vdf_impl 
+|23:13:55|23:14:12|..17s|..2.|0.422|..216|.18076|.....3|..75Mo|..12/12| OK    |PAR_cond_couple_vdf_impl 
+|23:14:16|23:14:37|..21s|..1.|.....|...32|.49812|.....4|..32Mo|.......| OK    |cond_couple_vef_impl 
+|23:14:38|23:15:30|..52s|..2.|0.415|...32|.49812|.....4|.100Mo|..12/14| OK    |PAR_cond_couple_vef_impl 
+|23:15:33|23:15:46|..13s|..1.|.....|..367|...617|..1364|..29Mo|.......| OK    |cond_vef_impl ATTENTION 1 ecart possible sur ce cas...
+|23:15:49|23:15:50|...1s|..1.|.....|...40|..7128|....51|..35Mo|.......| OK    |docond_impl 
+|23:15:50|23:15:53|...3s|..2.|0.486|...40|..8291|....51|..75Mo|..12/12| OK    |PAR_docond_impl 
+|23:15:56|23:16:00|...4s|..1.|.....|...40|.21296|....51|..29Mo|.......| OK    |docond_segsol 
+|23:16:00|23:16:08|...8s|..2.|0.591|...40|.24584|....51|..74Mo|..12/12| OK    |PAR_docond_segsol 
+|23:16:11|23:16:25|..14s|..1.|.....|..250|.37091|..1012|..50Mo|.......| OK    |sans_impl 
+|23:16:25|23:16:35|..10s|..2.|1.421|..250|.39023|..1012|..87Mo|....6/6| OK    |PAR_sans_impl 
+|23:16:39|23:16:39|...0s|..1.|.....|....3|..2075|...224|..27Mo|.......| OK    |Abort_timestep_jdd1 
+|23:16:39|23:16:41|...2s|..2.|.....|....3|..2247|...224|..96Mo|..14/15| OK    |PAR_Abort_timestep_jdd1 
+|23:16:45|23:16:49|...4s|..1.|.....|....3|..7568|..1792|..45Mo|.......| OK    |Abort_timestep_jdd2 
+|23:16:49|23:16:53|...4s|..2.|.....|....3|..8527|..1792|..82Mo|..13/15| OK    |PAR_Abort_timestep_jdd2 
+|23:16:57|23:16:58|...1s|..1.|.....|....3|..1504|..2944|..38Mo|.......| OK    |Backward_Facing_Step_impl_jdd1 
+|23:17:01|23:17:04|...3s|..1.|.....|....3|..1384|..2944|..50Mo|.......| OK    |Backward_Facing_Step_impl_jdd10 
+|23:17:07|23:17:09|...2s|..1.|.....|....3|..2244|..2944|..33Mo|.......| OK    |Backward_Facing_Step_impl_jdd11 
+|23:17:12|23:17:16|...4s|..1.|.....|....3|..4704|..2944|..35Mo|.......| OK    |Backward_Facing_Step_impl_jdd2 
+|23:17:20|23:17:21|...1s|..1.|.....|....3|..1359|..2944|..38Mo|.......| OK    |Backward_Facing_Step_impl_jdd3 
+|23:17:25|23:17:26|...1s|..1.|.....|....3|..1384|..2944|..55Mo|.......| OK    |Backward_Facing_Step_impl_jdd4 
+|23:17:29|23:17:33|...4s|..1.|.....|....3|..4704|..2944|..50Mo|.......| OK    |Backward_Facing_Step_impl_jdd5 
+|23:17:36|23:17:38|...2s|..1.|.....|....3|..1359|..2944|..32Mo|.......| OK    |Backward_Facing_Step_impl_jdd6 
+|23:17:41|23:17:43|...2s|..1.|.....|....3|..1384|..2944|..38Mo|.......| OK    |Backward_Facing_Step_impl_jdd7 
+|23:17:46|23:17:48|...2s|..1.|.....|....3|..1384|..2944|..53Mo|.......| OK    |Backward_Facing_Step_impl_jdd8 
+|23:17:51|23:17:53|...2s|..1.|.....|....3|..1383|..2944|..45Mo|.......| OK    |Backward_Facing_Step_impl_jdd9 
+|23:17:57|23:19:10|..73s|..1.|.....|....3|..3433|.65856|.149Mo|.......| OK    |CHANNEL_LES_VEF_RE_TAU_1110_jdd1 ATTENTION 1 ecarts possible sur ce cas...
+|23:19:14|23:20:27|..73s|..1.|.....|....3|..3433|.65856|.156Mo|.......| OK    |CHANNEL_LES_VEF_RE_TAU_1110_jdd2 ATTENTION 1 ecarts possible sur ce cas...
+|23:20:31|23:21:57|..86s|..1.|.....|....3|..3657|.65856|.180Mo|.......| OK    |CHANNEL_LES_VEF_RE_TAU_1110_jdd3 ATTENTION 1 ecarts possible sur ce cas...
+|23:22:00|23:23:34|..94s|..1.|.....|....3|...742|.65856|.194Mo|.......| OK    |CHANNEL_LES_VEF_RE_TAU_1110_jdd4 ATTENTION 1 ecarts possible sur ce cas...
+|23:23:39|23:24:05|..26s|..1.|.....|....3|...929|.13552|..75Mo|.......| OK    |ChannelKEps_CLboitePerio_entree_jdd1 ATTENTION 1 ecart possible sur ce cas...
+|23:24:08|23:24:09|...1s|..1.|.....|....3|...120|...960|..37Mo|.......| OK    |ChannelML3DVEF_fNydxdz_jdd1 ATTENTION 1 ecart possible sur ce cas...
+|23:24:12|23:24:17|...5s|..1.|.....|....3|...303|..3840|..46Mo|.......| OK    |ChannelML3DVEF_fNydxdz_jdd10 ATTENTION 1 ecart possible sur ce cas...
+|23:24:20|23:24:24|...4s|..1.|.....|....3|...647|..3840|..35Mo|.......| OK    |ChannelML3DVEF_fNydxdz_jdd11 ATTENTION 1 ecart possible sur ce cas...
+|23:24:27|23:24:32|...5s|..1.|.....|....3|..1205|..3840|..38Mo|.......| OK    |ChannelML3DVEF_fNydxdz_jdd12 ATTENTION 1 ecart possible sur ce cas...
+|23:24:35|23:24:39|...4s|..1.|.....|....3|...906|..3840|..30Mo|.......| OK    |ChannelML3DVEF_fNydxdz_jdd13 ATTENTION 1 ecart possible sur ce cas...
+|23:24:43|23:24:47|...4s|..1.|.....|....3|..1177|..3840|..40Mo|.......| OK    |ChannelML3DVEF_fNydxdz_jdd14 ATTENTION 1 ecart possible sur ce cas...
+|23:24:50|23:24:55|...5s|..1.|.....|....3|..1204|..3840|..56Mo|.......| OK    |ChannelML3DVEF_fNydxdz_jdd15 ATTENTION 1 ecart possible sur ce cas...
+|23:24:58|23:25:04|...6s|..1.|.....|....3|..5490|..3840|..33Mo|.......| OK    |ChannelML3DVEF_fNydxdz_jdd16 ATTENTION 1 ecart possible sur ce cas...
+|23:25:07|23:25:12|...5s|..1.|.....|....3|..3219|..3840|..44Mo|.......| OK    |ChannelML3DVEF_fNydxdz_jdd17 ATTENTION 1 ecart possible sur ce cas...
+|23:25:15|23:25:22|...7s|..1.|.....|....3|..7003|..3840|..38Mo|.......| OK    |ChannelML3DVEF_fNydxdz_jdd18 ATTENTION 1 ecart possible sur ce cas... ATTENTION 1 ecart possible sur ce cas...
+|23:25:25|23:25:28|...3s|..1.|.....|....3|...217|..2348|..48Mo|.......| OK    |ChannelML3DVEF_fNydxdz_jdd19 ATTENTION 1 ecart possible sur ce cas...
+|23:25:31|23:25:32|...1s|..1.|.....|....3|...510|...960|..52Mo|.......| OK    |ChannelML3DVEF_fNydxdz_jdd2 ATTENTION 1 ecart possible sur ce cas...
+|23:25:35|23:25:38|...3s|..1.|.....|....3|...733|..2348|..53Mo|.......| OK    |ChannelML3DVEF_fNydxdz_jdd20 ATTENTION 1 ecart possible sur ce cas...
+|23:25:41|23:25:43|...2s|..1.|.....|....3|...222|..2431|..39Mo|.......| OK    |ChannelML3DVEF_fNydxdz_jdd21 ATTENTION 1 ecart possible sur ce cas...
+|23:25:46|23:25:49|...3s|..1.|.....|....3|...248|..2600|..42Mo|.......| OK    |ChannelML3DVEF_fNydxdz_jdd22 ATTENTION 1 ecart possible sur ce cas...
+|23:25:52|23:25:55|...3s|..1.|.....|....3|...891|..2600|..43Mo|.......| OK    |ChannelML3DVEF_fNydxdz_jdd23 ATTENTION 1 ecart possible sur ce cas...
+|23:25:58|23:27:47|.109s|..1.|.....|....3|..2563|.47405|.161Mo|.......| OK    |ChannelML3DVEF_fNydxdz_jdd24 ATTENTION 1 ecart possible sur ce cas...
+|23:27:50|23:27:52|...2s|..1.|.....|....3|..1158|...960|..45Mo|.......| OK    |ChannelML3DVEF_fNydxdz_jdd3 ATTENTION 1 ecart possible sur ce cas...
+|23:27:55|23:27:56|...1s|..1.|.....|....3|...399|...960|..42Mo|.......| OK    |ChannelML3DVEF_fNydxdz_jdd4 ATTENTION 1 ecart possible sur ce cas...
+|23:27:59|23:28:00|...1s|..1.|.....|....3|...441|...960|..43Mo|.......| OK    |ChannelML3DVEF_fNydxdz_jdd5 ATTENTION 1 ecart possible sur ce cas...
+|23:28:03|23:28:04|...1s|..1.|.....|....3|...581|...960|..31Mo|.......| OK    |ChannelML3DVEF_fNydxdz_jdd6 ATTENTION 1 ecart possible sur ce cas...
+|23:28:07|23:28:09|...2s|..1.|.....|....3|..3323|...960|..47Mo|.......| OK    |ChannelML3DVEF_fNydxdz_jdd7 ATTENTION 1 ecart possible sur ce cas...
+|23:28:12|23:28:13|...1s|..1.|.....|....3|..2255|...960|..43Mo|.......| OK    |ChannelML3DVEF_fNydxdz_jdd8 ATTENTION 1 ecart possible sur ce cas...
+|23:28:16|23:28:18|...2s|..1.|.....|....3|..3301|...960|..48Mo|.......| OK    |ChannelML3DVEF_fNydxdz_jdd9 ATTENTION 1 ecart possible sur ce cas...
+|23:28:21|23:28:22|...1s|..1.|.....|....3|...202|...480|..51Mo|.......| OK    |ChannelMLPerio3DVEF_fRe_jdd1 
+|23:28:25|23:28:26|...1s|..1.|.....|....3|...211|...480|..22Mo|.......| OK    |ChannelMLPerio3DVEF_fRe_jdd10 
+|23:28:29|23:28:29|...0s|..1.|.....|....3|...212|...480|..39Mo|.......| OK    |ChannelMLPerio3DVEF_fRe_jdd11 
+|23:28:32|23:28:33|...1s|..1.|.....|....3|...214|...480|..43Mo|.......| OK    |ChannelMLPerio3DVEF_fRe_jdd12 
+|23:28:36|23:28:37|...1s|..1.|.....|....3|...208|...480|..37Mo|.......| OK    |ChannelMLPerio3DVEF_fRe_jdd2 
+|23:28:40|23:28:41|...1s|..1.|.....|....3|...210|...480|..49Mo|.......| OK    |ChannelMLPerio3DVEF_fRe_jdd3 
+|23:28:44|23:28:44|...0s|..1.|.....|....3|...211|...480|..41Mo|.......| OK    |ChannelMLPerio3DVEF_fRe_jdd4 
+|23:28:48|23:28:48|...0s|..1.|.....|....3|...212|...480|..32Mo|.......| OK    |ChannelMLPerio3DVEF_fRe_jdd5 
+|23:28:51|23:28:52|...1s|..1.|.....|....3|...214|...480|..25Mo|.......| OK    |ChannelMLPerio3DVEF_fRe_jdd6 
+|23:28:55|23:28:56|...1s|..1.|.....|....3|...202|...480|..40Mo|.......| OK    |ChannelMLPerio3DVEF_fRe_jdd7 
+|23:28:59|23:28:59|...0s|..1.|.....|....3|...208|...480|..30Mo|.......| OK    |ChannelMLPerio3DVEF_fRe_jdd8 
+|23:29:03|23:29:03|...0s|..1.|.....|....3|...210|...480|..51Mo|.......| OK    |ChannelMLPerio3DVEF_fRe_jdd9 
+|23:29:06|23:29:10|...4s|..1.|.....|....3|...324|..3840|..47Mo|.......| OK    |ChannelMLPerio3DVEF_fRe_tetrafin_jdd1 
+|23:29:13|23:29:17|...4s|..1.|.....|....3|...335|..3840|..37Mo|.......| OK    |ChannelMLPerio3DVEF_fRe_tetrafin_jdd10 
+|23:29:20|23:29:24|...4s|..1.|.....|....3|...338|..3840|..48Mo|.......| OK    |ChannelMLPerio3DVEF_fRe_tetrafin_jdd11 
+|23:29:27|23:29:31|...4s|..1.|.....|....3|...339|..3840|..54Mo|.......| OK    |ChannelMLPerio3DVEF_fRe_tetrafin_jdd12 
+|23:29:34|23:29:38|...4s|..1.|.....|....3|...330|..3840|..41Mo|.......| OK    |ChannelMLPerio3DVEF_fRe_tetrafin_jdd2 
+|23:29:41|23:29:45|...4s|..1.|.....|....3|...333|..3840|..49Mo|.......| OK    |ChannelMLPerio3DVEF_fRe_tetrafin_jdd3 
+|23:29:48|23:29:51|...3s|..1.|.....|....3|...335|..3840|..59Mo|.......| OK    |ChannelMLPerio3DVEF_fRe_tetrafin_jdd4 
+|23:29:55|23:29:59|...4s|..1.|.....|....3|...338|..3840|..30Mo|.......| OK    |ChannelMLPerio3DVEF_fRe_tetrafin_jdd5 
+|23:30:02|23:30:05|...3s|..1.|.....|....3|...339|..3840|..39Mo|.......| OK    |ChannelMLPerio3DVEF_fRe_tetrafin_jdd6 
+|23:30:09|23:30:12|...3s|..1.|.....|....3|...324|..3840|..46Mo|.......| OK    |ChannelMLPerio3DVEF_fRe_tetrafin_jdd7 
+|23:30:15|23:30:19|...4s|..1.|.....|....3|...330|..3840|..55Mo|.......| OK    |ChannelMLPerio3DVEF_fRe_tetrafin_jdd8 
+|23:30:22|23:30:26|...4s|..1.|.....|....3|...333|..3840|..30Mo|.......| OK    |ChannelMLPerio3DVEF_fRe_tetrafin_jdd9 
+|23:30:29|23:30:29|...0s|..1.|.....|....3|...209|...160|..48Mo|.......| OK    |ChannelPerio2DVEF_fNy_jdd1 
+|23:30:32|23:30:33|...1s|..1.|.....|....3|...259|...320|..45Mo|.......| OK    |ChannelPerio2DVEF_fNy_jdd2 
+|23:30:35|23:30:36|...1s|..1.|.....|....3|...447|...640|..51Mo|.......| OK    |ChannelPerio2DVEF_fNy_jdd3 
+|23:30:39|23:30:39|...0s|..1.|.....|....3|...201|....80|..28Mo|.......| OK    |ChannelPerio2DVEF_fNy_jdd4 
+|23:30:42|23:30:42|...0s|..1.|.....|....3|...208|...160|..42Mo|.......| OK    |ChannelPerio2DVEF_fNy_jdd5 
+|23:30:45|23:30:46|...1s|..1.|.....|....3|...251|...320|..46Mo|.......| OK    |ChannelPerio2DVEF_fNy_jdd6 
+|23:30:49|23:30:49|...0s|..1.|.....|....3|...448|...640|..45Mo|.......| OK    |ChannelPerio2DVEF_fNy_jdd7 
+|23:30:52|23:30:52|...0s|..1.|.....|....3|...203|....80|..37Mo|.......| OK    |ChannelPerio2DVEF_fNy_jdd8 
+|23:30:55|23:31:00|...5s|..1.|.....|....3|...124|..2214|..49Mo|.......| OK    |Channel_T1_T2_incompressible_jdd1 
+|23:31:03|23:31:07|...4s|..1.|.....|....3|...245|..2214|..58Mo|.......| OK    |Channel_T1_T2_incompressible_jdd2 
+|23:31:11|23:31:15|...4s|..1.|.....|....3|...325|..2214|..27Mo|.......| OK    |Channel_T1_T2_incompressible_jdd3 
+|23:31:18|23:31:22|...4s|..1.|.....|....3|....56|..1536|..25Mo|.......| OK    |Channel_T1_T2_incompressible_jdd4 
+|23:31:25|23:31:37|..12s|..1.|.....|....3|....52|..5184|..66Mo|.......| OK    |Channel_T1_T2_incompressible_jdd5 
+|23:31:40|23:31:42|...2s|..1.|.....|....3|...119|...960|..43Mo|.......| OK    |Channelkeps3DVEF_fNydxdz_jdd1 ATTENTION 1 ecart possible sur ce cas...
+|23:31:45|23:31:50|...5s|..1.|.....|....3|...282|..3840|..34Mo|.......| OK    |Channelkeps3DVEF_fNydxdz_jdd10 ATTENTION 1 ecart possible sur ce cas...
+|23:31:53|23:31:58|...5s|..1.|.....|....3|...570|..3840|..48Mo|.......| OK    |Channelkeps3DVEF_fNydxdz_jdd11 ATTENTION 1 ecart possible sur ce cas...
+|23:32:02|23:32:08|...6s|..1.|.....|....3|..1016|..3840|..38Mo|.......| OK    |Channelkeps3DVEF_fNydxdz_jdd12 ATTENTION 1 ecart possible sur ce cas...
+|23:32:11|23:32:17|...6s|..1.|.....|....3|...611|..3840|..48Mo|.......| OK    |Channelkeps3DVEF_fNydxdz_jdd13 ATTENTION 1 ecart possible sur ce cas...
+|23:32:20|23:32:25|...5s|..1.|.....|....3|...743|..3840|..39Mo|.......| OK    |Channelkeps3DVEF_fNydxdz_jdd14 ATTENTION 1 ecart possible sur ce cas...
+|23:32:28|23:32:34|...6s|..1.|.....|....3|...644|..3840|..35Mo|.......| OK    |Channelkeps3DVEF_fNydxdz_jdd15 ATTENTION 1 ecart possible sur ce cas...
+|23:32:37|23:32:45|...8s|..1.|.....|....3|..4280|..3840|..54Mo|.......| OK    |Channelkeps3DVEF_fNydxdz_jdd16 ATTENTION 1 ecart possible sur ce cas...
+|23:32:48|23:32:54|...6s|..1.|.....|....3|..2283|..3840|..59Mo|.......| OK    |Channelkeps3DVEF_fNydxdz_jdd17 ATTENTION 1 ecart possible sur ce cas...
+|23:32:58|23:33:06|...8s|..1.|.....|....3|..5129|..3840|..41Mo|.......| OK    |Channelkeps3DVEF_fNydxdz_jdd18 ATTENTION 1 ecart possible sur ce cas... ATTENTION 1 ecart possible sur ce cas...
+|23:33:09|23:33:12|...3s|..1.|.....|....3|...203|..2348|..28Mo|.......| OK    |Channelkeps3DVEF_fNydxdz_jdd19 ATTENTION 1 ecart possible sur ce cas...
+|23:33:15|23:33:17|...2s|..1.|.....|....3|...498|...960|..42Mo|.......| OK    |Channelkeps3DVEF_fNydxdz_jdd2 ATTENTION 1 ecart possible sur ce cas...
+|23:33:20|23:33:23|...3s|..1.|.....|....3|...614|..2348|..37Mo|.......| OK    |Channelkeps3DVEF_fNydxdz_jdd20 ATTENTION 1 ecart possible sur ce cas...
+|23:33:26|23:33:30|...4s|..1.|.....|....3|...209|..2431|..41Mo|.......| OK    |Channelkeps3DVEF_fNydxdz_jdd21 ATTENTION 1 ecart possible sur ce cas...
+|23:33:33|23:33:36|...3s|..1.|.....|....3|...237|..2600|..50Mo|.......| OK    |Channelkeps3DVEF_fNydxdz_jdd22 ATTENTION 1 ecart possible sur ce cas...
+|23:33:39|23:33:43|...4s|..1.|.....|....3|...803|..2600|..44Mo|.......| OK    |Channelkeps3DVEF_fNydxdz_jdd23 ATTENTION 1 ecart possible sur ce cas...
+|23:33:48|23:35:56|.128s|..1.|.....|....3|..2519|.47405|.170Mo|.......| OK    |Channelkeps3DVEF_fNydxdz_jdd24 ATTENTION 1 ecart possible sur ce cas...
+|23:35:59|23:36:01|...2s|..1.|.....|....3|..1078|...960|..37Mo|.......| OK    |Channelkeps3DVEF_fNydxdz_jdd3 ATTENTION 1 ecart possible sur ce cas...
+|23:36:04|23:36:06|...2s|..1.|.....|....3|...399|...960|..50Mo|.......| OK    |Channelkeps3DVEF_fNydxdz_jdd4 ATTENTION 1 ecart possible sur ce cas...
+|23:36:09|23:36:11|...2s|..1.|.....|....3|...439|...960|..49Mo|.......| OK    |Channelkeps3DVEF_fNydxdz_jdd5 ATTENTION 1 ecart possible sur ce cas...
+|23:36:14|23:36:15|...1s|..1.|.....|....3|...568|...960|..33Mo|.......| OK    |Channelkeps3DVEF_fNydxdz_jdd6 ATTENTION 1 ecart possible sur ce cas...
+|23:36:19|23:36:21|...2s|..1.|.....|....3|..3168|...960|..52Mo|.......| OK    |Channelkeps3DVEF_fNydxdz_jdd7 ATTENTION 1 ecart possible sur ce cas...
+|23:36:24|23:36:26|...2s|..1.|.....|....3|..2075|...960|..29Mo|.......| OK    |Channelkeps3DVEF_fNydxdz_jdd8 ATTENTION 1 ecart possible sur ce cas...
+|23:36:29|23:36:31|...2s|..1.|.....|....3|..3090|...960|..30Mo|.......| OK    |Channelkeps3DVEF_fNydxdz_jdd9 ATTENTION 1 ecart possible sur ce cas...
+|23:36:34|23:36:35|...1s|..1.|.....|....3|...169|...480|..34Mo|.......| OK    |ChannelkepsPerio3DVEF_fRe_jdd1 
+|23:36:38|23:36:39|...1s|..1.|.....|....3|...191|...480|..49Mo|.......| OK    |ChannelkepsPerio3DVEF_fRe_jdd10 
+|23:36:42|23:36:43|...1s|..1.|.....|....3|...194|...480|..33Mo|.......| OK    |ChannelkepsPerio3DVEF_fRe_jdd11 
+|23:36:46|23:36:46|...0s|..1.|.....|....3|...197|...480|..48Mo|.......| OK    |ChannelkepsPerio3DVEF_fRe_jdd12 
+|23:36:50|23:36:50|...0s|..1.|.....|....3|...176|...480|..51Mo|.......| OK    |ChannelkepsPerio3DVEF_fRe_jdd2 
+|23:36:53|23:36:54|...1s|..1.|.....|....3|...188|...480|..28Mo|.......| OK    |ChannelkepsPerio3DVEF_fRe_jdd3 
+|23:36:57|23:36:58|...1s|..1.|.....|....3|...191|...480|..41Mo|.......| OK    |ChannelkepsPerio3DVEF_fRe_jdd4 
+|23:37:01|23:37:02|...1s|..1.|.....|....3|...194|...480|..24Mo|.......| OK    |ChannelkepsPerio3DVEF_fRe_jdd5 
+|23:37:05|23:37:06|...1s|..1.|.....|....3|...197|...480|..45Mo|.......| OK    |ChannelkepsPerio3DVEF_fRe_jdd6 
+|23:37:09|23:37:10|...1s|..1.|.....|....3|...169|...480|..32Mo|.......| OK    |ChannelkepsPerio3DVEF_fRe_jdd7 
+|23:37:13|23:37:14|...1s|..1.|.....|....3|...176|...480|..23Mo|.......| OK    |ChannelkepsPerio3DVEF_fRe_jdd8 
+|23:37:17|23:37:18|...1s|..1.|.....|....3|...188|...480|..20Mo|.......| OK    |ChannelkepsPerio3DVEF_fRe_jdd9 
+|23:37:21|23:37:25|...4s|..1.|.....|....3|...233|..3840|..32Mo|.......| OK    |ChannelkepsPerio3DVEF_fRe_tetrafin_jdd1 
+|23:37:28|23:37:32|...4s|..1.|.....|....3|...278|..3840|..56Mo|.......| OK    |ChannelkepsPerio3DVEF_fRe_tetrafin_jdd10 
+|23:37:35|23:37:39|...4s|..1.|.....|....3|...285|..3840|..58Mo|.......| OK    |ChannelkepsPerio3DVEF_fRe_tetrafin_jdd11 
+|23:37:43|23:37:47|...4s|..1.|.....|....3|...289|..3840|..38Mo|.......| OK    |ChannelkepsPerio3DVEF_fRe_tetrafin_jdd12 
+|23:37:50|23:37:54|...4s|..1.|.....|....3|...246|..3840|..50Mo|.......| OK    |ChannelkepsPerio3DVEF_fRe_tetrafin_jdd2 
+|23:37:57|23:38:01|...4s|..1.|.....|....3|...272|..3840|..40Mo|.......| OK    |ChannelkepsPerio3DVEF_fRe_tetrafin_jdd3 
+|23:38:04|23:38:09|...5s|..1.|.....|....3|...278|..3840|..40Mo|.......| OK    |ChannelkepsPerio3DVEF_fRe_tetrafin_jdd4 
+|23:38:12|23:38:16|...4s|..1.|.....|....3|...285|..3840|..61Mo|.......| OK    |ChannelkepsPerio3DVEF_fRe_tetrafin_jdd5 
+|23:38:19|23:38:23|...4s|..1.|.....|....3|...289|..3840|..40Mo|.......| OK    |ChannelkepsPerio3DVEF_fRe_tetrafin_jdd6 
+|23:38:26|23:38:30|...4s|..1.|.....|....3|...233|..3840|..52Mo|.......| OK    |ChannelkepsPerio3DVEF_fRe_tetrafin_jdd7 
+|23:38:33|23:38:37|...4s|..1.|.....|....3|...246|..3840|..31Mo|.......| OK    |ChannelkepsPerio3DVEF_fRe_tetrafin_jdd8 
+|23:38:41|23:38:45|...4s|..1.|.....|....3|...272|..3840|..61Mo|.......| OK    |ChannelkepsPerio3DVEF_fRe_tetrafin_jdd9 
+|23:38:50|23:38:51|...1s|..1.|.....|....3|...142|...684|..25Mo|.......| OK    |ContractionTurbFlow_3D_VEF_jdd1 
+|23:38:57|23:38:59|...2s|..1.|.....|....3|...225|..1260|..43Mo|.......| OK    |ContractionTurbFlow_3D_VEF_jdd2 
+|23:39:05|23:39:25|..20s|..1.|.....|....3|..3435|.29026|.288Mo|.......| OK    |ContractionTurbFlow_3D_VEF_jdd3 ATTENTION 6 ecarts possible sur ce cas...
+|23:39:32|23:39:52|..20s|..1.|.....|....3|..3435|.29026|.262Mo|.......| OK    |ContractionTurbFlow_3D_VEF_jdd4 ATTENTION 6 ecarts possible sur ce cas...
+|23:40:00|23:42:43|.163s|..1.|.....|....3|..5252|107851|.906Mo|.......| OK    |ContractionTurbFlow_3D_VEF_jdd5 ATTENTION 6 ecarts possible sur ce cas...
+|23:42:51|23:45:39|.168s|..1.|.....|....3|..5252|107851|.921Mo|.......| OK    |ContractionTurbFlow_3D_VEF_jdd6 ATTENTION 6 ecarts possible sur ce cas...
+|23:45:48|23:45:54|...6s|..1.|.....|....3|...407|..2160|..56Mo|.......| OK    |Conv_Heated_pipe_wall_temp_jdd1 
+|23:45:57|23:46:06|...9s|..1.|.....|....3|...691|..3308|..43Mo|.......| OK    |Conv_Heated_pipe_wall_temp_jdd10 
+|23:46:09|23:46:18|...9s|..1.|.....|....3|...691|..3308|..36Mo|.......| OK    |Conv_Heated_pipe_wall_temp_jdd11 
+|23:46:23|23:46:30|...7s|..1.|.....|....3|...681|..3308|..34Mo|.......| OK    |Conv_Heated_pipe_wall_temp_jdd12 
+|23:46:34|23:46:39|...5s|..1.|.....|....3|...867|..3308|..38Mo|.......| OK    |Conv_Heated_pipe_wall_temp_jdd13 
+|23:46:42|23:46:48|...6s|..1.|.....|....3|...867|..3308|..60Mo|.......| OK    |Conv_Heated_pipe_wall_temp_jdd14 
+|23:46:51|23:46:56|...5s|..1.|.....|....3|...407|..2160|..53Mo|.......| OK    |Conv_Heated_pipe_wall_temp_jdd2 
+|23:47:00|23:47:05|...5s|..1.|.....|....3|...406|..2160|..58Mo|.......| OK    |Conv_Heated_pipe_wall_temp_jdd3 
+|23:47:09|23:47:13|...4s|..1.|.....|....3|...696|..2160|..53Mo|.......| OK    |Conv_Heated_pipe_wall_temp_jdd4 
+|23:47:17|23:47:21|...4s|..1.|.....|....3|...696|..2160|..47Mo|.......| OK    |Conv_Heated_pipe_wall_temp_jdd5 
+|23:47:25|23:47:29|...4s|..1.|.....|....3|...696|..2160|..33Mo|.......| OK    |Conv_Heated_pipe_wall_temp_jdd6 
+|23:47:32|23:47:34|...2s|..1.|.....|....3|...165|...576|..45Mo|.......| OK    |Conv_Heated_pipe_wall_temp_jdd7 
+|23:47:38|23:47:39|...1s|..1.|.....|....3|...165|...576|..31Mo|.......| OK    |Conv_Heated_pipe_wall_temp_jdd8 
+|23:47:43|23:47:44|...1s|..1.|.....|....3|...159|...576|..24Mo|.......| OK    |Conv_Heated_pipe_wall_temp_jdd9 
+|23:47:49|23:55:40|.471s|..1.|.....|....3|.15970|.97200|.375Mo|.......| OK    |Conv_Pipe_InOut_jdd1 
+|23:55:45|00:03:49|.484s|..1.|.....|....3|.15970|.97200|.347Mo|.......| OK    |Conv_Pipe_InOut_jdd2 
+|00:03:54|00:11:28|.454s|..1.|.....|....3|.15721|.97200|.362Mo|.......| OK    |Conv_Pipe_InOut_jdd3 
+|00:11:31|00:11:37|...6s|..1.|.....|....3|..1246|..2160|..55Mo|.......| OK    |Conv_Pipe_Perio_Impl_jdd1 
+|00:11:40|00:11:45|...5s|..1.|.....|....3|..1246|..2160|..41Mo|.......| OK    |Conv_Pipe_Perio_Impl_jdd2 
+|00:11:49|00:11:54|...5s|..1.|.....|....3|..1208|..2160|..40Mo|.......| OK    |Conv_Pipe_Perio_Impl_jdd3 
+|00:11:57|00:12:00|...3s|..1.|.....|....3|...888|..6084|..35Mo|.......| OK    |Convection_Vahl_Davis_jdd10 
+|00:12:03|00:12:04|...1s|..1.|.....|....3|...484|..1444|..28Mo|.......| OK    |Convection_Vahl_Davis_jdd3 
+|00:12:07|00:12:09|...2s|..1.|.....|....3|...484|..1444|..45Mo|.......| OK    |Convection_Vahl_Davis_jdd4 
+|00:12:12|00:12:13|...1s|..1.|.....|....3|...484|..1444|..44Mo|.......| OK    |Convection_Vahl_Davis_jdd5 
+|00:12:16|00:12:17|...1s|..1.|.....|....3|...484|..1444|..34Mo|.......| OK    |Convection_Vahl_Davis_jdd6 
+|00:12:20|00:12:22|...2s|..1.|.....|....3|...888|..6084|..28Mo|.......| OK    |Convection_Vahl_Davis_jdd7 
+|00:12:26|00:12:28|...2s|..1.|.....|....3|...888|..6084|..59Mo|.......| OK    |Convection_Vahl_Davis_jdd8 
+|00:12:31|00:12:34|...3s|..1.|.....|....3|...888|..6084|..53Mo|.......| OK    |Convection_Vahl_Davis_jdd9 
+|00:12:37|00:12:42|...5s|..1.|.....|..334|.28889|...256|..29Mo|.......| OK    |ConvergenceTaylorGreenWithDiffusion_jdd10 
+|00:12:46|00:12:46|...0s|..1.|.....|...11|..1716|...256|..36Mo|.......| OK    |ConvergenceTaylorGreenWithDiffusion_jdd9 
+|00:12:50|00:14:17|..87s|..1.|.....|....3|..1630|.27727|..98Mo|.......| OK    |Couche_Limite_Atmospherique_jdd1 
+|00:14:20|00:15:52|..92s|..1.|.....|....3|..1630|.27727|.109Mo|.......| OK    |Couche_Limite_Atmospherique_jdd2 
+|00:15:55|00:17:25|..90s|..1.|.....|....3|..1630|.27727|.124Mo|.......| OK    |Couche_Limite_Atmospherique_jdd3 
+|00:17:28|00:17:30|...2s|..1.|.....|....3|..4489|...160|..26Mo|.......| OK    |Couplage_Implicite_Instationnaire_jdd1 
+|00:17:34|00:17:52|..18s|..1.|.....|....3|..1732|..2598|..55Mo|.......| OK    |Coupled_plane_channel_VEF_jdd1 
+|00:17:56|00:20:31|.155s|..1.|.....|....3|..3687|.42964|.184Mo|.......| OK    |Cube_Atmo_jdd1 
+|00:20:36|00:23:46|.190s|..1.|.....|....3|..3682|.42964|.185Mo|.......| OK    |Cube_Atmo_jdd2 
+|00:23:51|00:26:47|.176s|..1.|.....|....3|..3579|.55183|.194Mo|.......| OK    |Cube_Atmo_jdd3 
+|00:26:52|00:30:40|.228s|..1.|.....|....3|..3283|.55183|.235Mo|.......| OK    |Cube_Atmo_jdd4 
+|00:30:45|00:30:46|...1s|..1.|.....|....3|...719|...901|..34Mo|.......| OK    |Drag_jdd1 
+|00:30:49|00:30:50|...1s|..1.|.....|....3|...696|...837|..44Mo|.......| OK    |Drag_jdd10 
+|00:30:53|00:30:54|...1s|..1.|.....|....3|...689|...834|..35Mo|.......| OK    |Drag_jdd11 
+|00:30:56|00:30:57|...1s|..1.|.....|....3|...665|...834|..51Mo|.......| OK    |Drag_jdd12 
+|00:31:00|00:31:01|...1s|..1.|.....|....3|...698|...901|..30Mo|.......| OK    |Drag_jdd2 
+|00:31:04|00:31:04|...0s|..1.|.....|....3|...683|...846|..27Mo|.......| OK    |Drag_jdd3 
+|00:31:07|00:31:08|...1s|..1.|.....|....3|...662|...846|..46Mo|.......| OK    |Drag_jdd4 
+|00:31:11|00:31:12|...1s|..1.|.....|....3|...686|...745|..31Mo|.......| OK    |Drag_jdd5 
+|00:31:16|00:31:16|...0s|..1.|.....|....3|...667|...745|..37Mo|.......| OK    |Drag_jdd6 
+|00:31:19|00:31:20|...1s|..1.|.....|....3|...746|...848|..40Mo|.......| OK    |Drag_jdd7 
+|00:31:23|00:31:24|...1s|..1.|.....|....3|...737|...848|..20Mo|.......| OK    |Drag_jdd8 
+|00:31:27|00:31:28|...1s|..1.|.....|....3|...709|...837|..44Mo|.......| OK    |Drag_jdd9 
+|00:31:31|00:31:46|..15s|..1.|.....|....3|...351|.11829|..83Mo|.......| OK    |EsthairNoWire_jdd1 
+|00:31:49|00:32:04|..15s|..1.|.....|....3|...324|.11829|..61Mo|.......| OK    |EsthairNoWire_jdd2 
+|00:32:07|00:32:21|..14s|..1.|.....|....3|...315|.11829|..74Mo|.......| OK    |EsthairNoWire_jdd3 
+|00:32:24|00:32:32|...8s|..1.|.....|....3|...245|..6444|..49Mo|.......| OK    |EsthairNoWire_jdd4 
+|00:32:35|00:32:39|...4s|..1.|.....|....3|...176|..3114|..30Mo|.......| OK    |EsthairNoWire_jdd5 
+|00:32:45|00:33:15|..30s|..1.|.....|....3|..2268|.10855|..88Mo|.......| OK    |Heated_Backward_Facing_Step_2D_jdd2 
+|00:33:19|00:33:41|..22s|..1.|.....|....3|..1967|.10855|..76Mo|.......| OK    |Heated_Backward_Facing_Step_2D_jdd3 
+|00:33:45|00:34:00|..15s|..1.|.....|....3|..1607|.11385|..63Mo|.......| OK    |Heated_floor_k_eps_jdd1 
+|00:34:04|00:34:18|..14s|..1.|.....|....3|..1607|.11385|..79Mo|.......| OK    |Heated_floor_k_eps_jdd2 
+|00:34:22|00:34:24|...2s|..1.|.....|....3|...688|..6400|..46Mo|.......| OK    |INEEL_VEF_QC_jdd1 
+|00:34:27|00:34:30|...3s|..1.|.....|....3|...685|..6400|..41Mo|.......| OK    |INEEL_VEF_QC_jdd2 
+|00:34:33|00:34:36|...3s|..1.|.....|....3|...692|..6400|..42Mo|.......| OK    |INEEL_VEF_QC_jdd3 
+|00:34:39|00:34:41|...2s|..1.|.....|....3|...691|..6400|..51Mo|.......| OK    |INEEL_VEF_QC_jdd4 
+|00:34:45|00:35:16|..31s|..1.|.....|....3|..5575|.19200|..92Mo|.......| OK    |INEEL_VEF_QC_jdd5 
+|00:35:20|00:35:45|..25s|..1.|.....|....3|..3754|.19200|.106Mo|.......| OK    |INEEL_VEF_QC_jdd6 
+|00:35:49|00:36:14|..25s|..1.|.....|....3|..4132|.19200|..90Mo|.......| OK    |INEEL_VEF_QC_jdd7 
+|00:36:18|00:36:48|..30s|..1.|.....|....3|..5616|.19200|.108Mo|.......| OK    |INEEL_VEF_QC_jdd8 
+|00:37:01|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Jet_impingement_on_a_hot_flat_plate_jdd1 ATTENTION 2 ecarts possible sur ce cas...
+|00:37:17|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Jet_impingement_on_a_hot_flat_plate_jdd2 ATTENTION 2 ecarts possible sur ce cas...
+|00:37:24|00:37:26|...2s|..1.|.....|....3|...169|...960|..52Mo|.......| OK    |KEps_Meshing_VEF_jdd1 ATTENTION 1 ecart possible sur ce cas...
+|00:37:29|00:37:34|...5s|..1.|.....|....3|...373|..3840|..35Mo|.......| OK    |KEps_Meshing_VEF_jdd10 ATTENTION 1 ecart possible sur ce cas...
+|00:37:37|00:37:44|...7s|..1.|.....|....3|...957|..3840|..63Mo|.......| OK    |KEps_Meshing_VEF_jdd11 ATTENTION 1 ecart possible sur ce cas...
+|00:37:47|00:37:54|...7s|..1.|.....|....3|..1835|..3840|..35Mo|.......| OK    |KEps_Meshing_VEF_jdd12 ATTENTION 1 ecart possible sur ce cas...
+|00:37:57|00:38:03|...6s|..1.|.....|....3|..1217|..3840|..42Mo|.......| OK    |KEps_Meshing_VEF_jdd13 ATTENTION 1 ecart possible sur ce cas...
+|00:38:06|00:38:12|...6s|..1.|.....|....3|..1385|..3840|..53Mo|.......| OK    |KEps_Meshing_VEF_jdd14 ATTENTION 1 ecart possible sur ce cas...
+|00:38:15|00:38:21|...6s|..1.|.....|....3|..1558|..3840|..54Mo|.......| OK    |KEps_Meshing_VEF_jdd15 ATTENTION 1 ecart possible sur ce cas...
+|00:38:24|00:38:34|..10s|..1.|.....|....3|..7792|..3840|..43Mo|.......| OK    |KEps_Meshing_VEF_jdd16 ATTENTION 1 ecart possible sur ce cas...
+|00:38:37|00:38:44|...7s|..1.|.....|....3|..4716|..3840|..31Mo|.......| OK    |KEps_Meshing_VEF_jdd17 ATTENTION 1 ecart possible sur ce cas...
+|00:38:47|00:38:57|..10s|..1.|.....|....3|..9845|..3840|..52Mo|.......| OK    |KEps_Meshing_VEF_jdd18 ATTENTION 1 ecart possible sur ce cas... ATTENTION 1 ecart possible sur ce cas...
+|00:39:01|00:39:23|..22s|..1.|.....|....3|...382|.11735|..87Mo|.......| OK    |KEps_Meshing_VEF_jdd19 ATTENTION 1 ecart possible sur ce cas...
+|00:39:26|00:39:27|...1s|..1.|.....|....3|...779|...960|..46Mo|.......| OK    |KEps_Meshing_VEF_jdd2 ATTENTION 1 ecart possible sur ce cas...
+|00:39:31|00:39:54|..23s|..1.|.....|....3|..1213|.11735|..59Mo|.......| OK    |KEps_Meshing_VEF_jdd20 ATTENTION 1 ecart possible sur ce cas...
+|00:39:57|00:40:22|..25s|..1.|.....|....3|...415|.14143|..66Mo|.......| OK    |KEps_Meshing_VEF_jdd21 ATTENTION 1 ecart possible sur ce cas...
+|00:40:26|00:40:53|..27s|..1.|.....|....3|...441|.16551|..89Mo|.......| OK    |KEps_Meshing_VEF_jdd22 ATTENTION 1 ecart possible sur ce cas...
+|00:40:56|00:41:27|..31s|..1.|.....|....3|..1415|.16551|..85Mo|.......| OK    |KEps_Meshing_VEF_jdd23 ATTENTION 1 ecart possible sur ce cas...
+|00:41:30|00:41:32|...2s|..1.|.....|....3|..1743|...960|..43Mo|.......| OK    |KEps_Meshing_VEF_jdd3 ATTENTION 1 ecart possible sur ce cas...
+|00:41:35|00:41:37|...2s|..1.|.....|....3|...497|...960|..24Mo|.......| OK    |KEps_Meshing_VEF_jdd4 ATTENTION 1 ecart possible sur ce cas...
+|00:41:40|00:41:41|...1s|..1.|.....|....3|...601|...960|..54Mo|.......| OK    |KEps_Meshing_VEF_jdd5 ATTENTION 1 ecart possible sur ce cas...
+|00:41:44|00:41:46|...2s|..1.|.....|....3|...773|...960|..53Mo|.......| OK    |KEps_Meshing_VEF_jdd6 ATTENTION 1 ecart possible sur ce cas...
+|00:41:49|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |KEps_Meshing_VEF_jdd7 ATTENTION 1 ecart possible sur ce cas...
+|00:41:53|00:41:55|...2s|..1.|.....|....3|..3517|...960|..43Mo|.......| OK    |KEps_Meshing_VEF_jdd8 ATTENTION 1 ecart possible sur ce cas...
+|00:41:58|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |KEps_Meshing_VEF_jdd9 ATTENTION 1 ecart possible sur ce cas...
+|00:42:51|00:46:48|.237s|..1.|.....|....3|..7303|.36644|.128Mo|.......| OK    |OBI_diffuser_VEF_k_eps_jdd1 ATTENTION 3 ecarts possible sur ce cas...
+|00:46:56|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |OBI_diffuser_VEF_k_eps_jdd2 ATTENTION 3 ecarts possible sur ce cas...
+|00:47:03|00:47:03|...0s|..1.|.....|....2|...175|...300|..49Mo|.......| OK    |Perte_Charge_Circulaire_VEF_jdd1 
+|00:47:03|00:47:05|...2s|..2.|1.111|....2|...192|...300|..61Mo|....6/7| OK    |PAR_Perte_Charge_Circulaire_VEF_jdd1 
+|00:47:08|00:47:08|...0s|..1.|.....|....2|...173|...300|..48Mo|.......| OK    |Perte_Charge_Circulaire_VEF_jdd2 
+|00:47:08|00:47:10|...2s|..2.|1.237|....2|...191|...300|..90Mo|....6/7| OK    |PAR_Perte_Charge_Circulaire_VEF_jdd2 
+|00:47:14|00:47:14|...0s|..1.|.....|....2|...175|...300|..36Mo|.......| OK    |Perte_Charge_Circulaire_VEF_jdd3 
+|00:47:14|00:47:15|...1s|..2.|1.165|....2|...192|...300|..58Mo|....6/7| OK    |PAR_Perte_Charge_Circulaire_VEF_jdd3 
+|00:47:19|00:47:19|...0s|..1.|.....|....2|...174|...300|..40Mo|.......| OK    |Perte_Charge_Circulaire_VEF_jdd4 
+|00:47:19|00:47:20|...1s|..2.|1.191|....2|...192|...300|..65Mo|....6/7| OK    |PAR_Perte_Charge_Circulaire_VEF_jdd4 
+|00:47:24|00:47:25|...1s|..1.|.....|....3|...150|...600|..36Mo|.......| OK    |PoiseuilleInOut2DVDFVEF_prismes_jdd1 
+|00:47:28|00:47:31|...3s|..1.|.....|....3|..1439|..3474|..32Mo|.......| OK    |PoiseuilleInOut2DVDFVEF_prismes_jdd10 
+|00:47:34|00:47:34|...0s|..1.|.....|....3|...150|...600|..35Mo|.......| OK    |PoiseuilleInOut2DVDFVEF_prismes_jdd2 
+|00:47:37|00:47:40|...3s|..1.|.....|....3|...992|..3474|..38Mo|.......| OK    |PoiseuilleInOut2DVDFVEF_prismes_jdd3 
+|00:47:43|00:47:45|...2s|..1.|.....|....3|...992|..3474|..56Mo|.......| OK    |PoiseuilleInOut2DVDFVEF_prismes_jdd4 
+|00:47:49|00:47:51|...2s|..1.|.....|....3|...992|..3474|..27Mo|.......| OK    |PoiseuilleInOut2DVDFVEF_prismes_jdd5 
+|00:47:54|00:47:54|...0s|..1.|.....|....3|...228|...600|..42Mo|.......| OK    |PoiseuilleInOut2DVDFVEF_prismes_jdd6 
+|00:47:57|00:47:58|...1s|..1.|.....|....3|...228|...600|..18Mo|.......| OK    |PoiseuilleInOut2DVDFVEF_prismes_jdd7 
+|00:48:01|00:48:04|...3s|..1.|.....|....3|..1439|..3474|..57Mo|.......| OK    |PoiseuilleInOut2DVDFVEF_prismes_jdd8 
+|00:48:07|00:48:10|...3s|..1.|.....|....3|..1439|..3474|..47Mo|.......| OK    |PoiseuilleInOut2DVDFVEF_prismes_jdd9 
+|00:48:13|00:48:13|...0s|..1.|.....|....3|...150|...600|..29Mo|.......| OK    |PoiseuilleInOut2DVDFVEF_trianfin_jdd1 
+|00:48:16|00:48:19|...3s|..1.|.....|....3|..1606|..4800|..56Mo|.......| OK    |PoiseuilleInOut2DVDFVEF_trianfin_jdd10 
+|00:48:22|00:48:22|...0s|..1.|.....|....3|...150|...600|..20Mo|.......| OK    |PoiseuilleInOut2DVDFVEF_trianfin_jdd2 
+|00:48:25|00:48:27|...2s|..1.|.....|....3|..1001|..4800|..49Mo|.......| OK    |PoiseuilleInOut2DVDFVEF_trianfin_jdd3 
+|00:48:31|00:48:32|...1s|..1.|.....|....3|..1001|..4800|..28Mo|.......| OK    |PoiseuilleInOut2DVDFVEF_trianfin_jdd4 
+|00:48:36|00:48:38|...2s|..1.|.....|....3|..1001|..4800|..41Mo|.......| OK    |PoiseuilleInOut2DVDFVEF_trianfin_jdd5 
+|00:48:41|00:48:41|...0s|..1.|.....|....3|...228|...600|..46Mo|.......| OK    |PoiseuilleInOut2DVDFVEF_trianfin_jdd6 
+|00:48:44|00:48:44|...0s|..1.|.....|....3|...228|...600|..49Mo|.......| OK    |PoiseuilleInOut2DVDFVEF_trianfin_jdd7 
+|00:48:48|00:48:50|...2s|..1.|.....|....3|..1606|..4800|..25Mo|.......| OK    |PoiseuilleInOut2DVDFVEF_trianfin_jdd8 
+|00:48:53|00:48:56|...3s|..1.|.....|....3|..1606|..4800|..47Mo|.......| OK    |PoiseuilleInOut2DVDFVEF_trianfin_jdd9 
+|00:48:59|00:49:00|...1s|..1.|.....|....3|...150|...600|..34Mo|.......| OK    |PoiseuilleInOutVDFVEF_jdd1 
+|00:49:03|00:49:04|...1s|..1.|.....|....3|..1295|..2400|..35Mo|.......| OK    |PoiseuilleInOutVDFVEF_jdd10 
+|00:49:07|00:49:07|...0s|..1.|.....|....3|...150|...600|..43Mo|.......| OK    |PoiseuilleInOutVDFVEF_jdd2 
+|00:49:10|00:49:11|...1s|..1.|.....|....3|...623|..1200|..25Mo|.......| OK    |PoiseuilleInOutVDFVEF_jdd3 
+|00:49:14|00:49:15|...1s|..1.|.....|....3|...623|..1200|..50Mo|.......| OK    |PoiseuilleInOutVDFVEF_jdd4 
+|00:49:18|00:49:18|...0s|..1.|.....|....3|...623|..1200|..50Mo|.......| OK    |PoiseuilleInOutVDFVEF_jdd5 
+|00:49:21|00:49:22|...1s|..1.|.....|....3|...228|...600|..34Mo|.......| OK    |PoiseuilleInOutVDFVEF_jdd6 
+|00:49:25|00:49:25|...0s|..1.|.....|....3|...228|...600|..35Mo|.......| OK    |PoiseuilleInOutVDFVEF_jdd7 
+|00:49:28|00:49:30|...2s|..1.|.....|....3|..1295|..2400|..35Mo|.......| OK    |PoiseuilleInOutVDFVEF_jdd8 
+|00:49:33|00:49:34|...1s|..1.|.....|....3|..1295|..2400|..43Mo|.......| OK    |PoiseuilleInOutVDFVEF_jdd9 
+|00:49:37|00:49:37|...0s|..1.|.....|....3|....34|.....6|..26Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_jdd1 
+|00:49:41|00:49:41|...0s|..1.|.....|....3|...220|...384|..24Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_jdd10 
+|00:49:44|00:49:44|...0s|..1.|.....|....3|...220|...384|..50Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_jdd11 
+|00:49:47|00:49:47|...0s|..1.|.....|....3|...220|...384|..48Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_jdd12 
+|00:49:50|00:49:51|...1s|..1.|.....|....3|...435|..1536|..50Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_jdd13 
+|00:49:54|00:49:55|...1s|..1.|.....|....3|...435|..1536|..20Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_jdd14 
+|00:49:57|00:49:58|...1s|..1.|.....|....3|...435|..1536|..45Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_jdd15 
+|00:50:01|00:50:03|...2s|..1.|.....|....3|...625|..6144|..27Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_jdd16 
+|00:50:06|00:50:08|...2s|..1.|.....|....3|...625|..6144|..33Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_jdd17 
+|00:50:11|00:50:13|...2s|..1.|.....|....3|...625|..6144|..58Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_jdd18 
+|00:50:17|00:50:26|...9s|..1.|.....|....3|..1208|.24576|..57Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_jdd19 
+|00:50:30|00:50:30|...0s|..1.|.....|....3|....34|.....6|..38Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_jdd2 
+|00:50:34|00:51:41|..67s|..1.|.....|....3|..2328|.98304|.161Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_jdd20 
+|00:51:44|00:51:44|...0s|..1.|.....|....3|....34|.....6|..43Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_jdd3 
+|00:51:47|00:51:47|...0s|..1.|.....|....3|....65|....24|..36Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_jdd4 
+|00:51:50|00:51:51|...1s|..1.|.....|....3|....65|....24|..41Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_jdd5 
+|00:51:54|00:51:54|...0s|..1.|.....|....3|....65|....24|..40Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_jdd6 
+|00:51:57|00:51:57|...0s|..1.|.....|....3|...116|....96|..41Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_jdd7 
+|00:52:00|00:52:01|...1s|..1.|.....|....3|...116|....96|..23Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_jdd8 
+|00:52:03|00:52:04|...1s|..1.|.....|....3|...116|....96|..34Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_jdd9 
+|00:52:07|00:52:09|...2s|..1.|.....|....3|...614|..6144|..52Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_trianfin_jdd1 
+|00:52:12|00:52:12|...0s|..1.|.....|....3|....51|....24|..47Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_trianfin_jdd10 
+|00:52:15|00:52:15|...0s|..1.|.....|....3|....89|....96|..49Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_trianfin_jdd11 
+|00:52:18|00:52:19|...1s|..1.|.....|....3|....89|....96|..49Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_trianfin_jdd12 
+|00:52:22|00:52:22|...0s|..1.|.....|....3|....89|....96|..37Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_trianfin_jdd13 
+|00:52:25|00:52:25|...0s|..1.|.....|....3|...161|...384|..48Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_trianfin_jdd14 
+|00:52:28|00:52:29|...1s|..1.|.....|....3|...161|...384|..33Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_trianfin_jdd15 
+|00:52:31|00:52:32|...1s|..1.|.....|....3|...161|...384|..48Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_trianfin_jdd16 
+|00:52:35|00:52:35|...0s|..1.|.....|....3|...318|..1536|..32Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_trianfin_jdd17 
+|00:52:38|00:52:39|...1s|..1.|.....|....3|...318|..1536|..41Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_trianfin_jdd18 
+|00:52:42|00:52:42|...0s|..1.|.....|....3|...318|..1536|..29Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_trianfin_jdd19 
+|00:52:45|00:52:47|...2s|..1.|.....|....3|...614|..6144|..40Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_trianfin_jdd2 
+|00:52:51|00:52:53|...2s|..1.|.....|....3|...614|..6144|..44Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_trianfin_jdd3 
+|00:52:56|00:53:05|...9s|..1.|.....|....3|..1184|.24576|..54Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_trianfin_jdd4 
+|00:53:08|00:53:17|...9s|..1.|.....|....3|..1184|.24576|..68Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_trianfin_jdd5 
+|00:53:21|00:53:30|...9s|..1.|.....|....3|..1184|.24576|..55Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_trianfin_jdd6 
+|00:53:34|00:54:31|..57s|..1.|.....|....3|..2046|.98304|.170Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_trianfin_jdd7 
+|00:54:34|00:54:34|...0s|..1.|.....|....3|....51|....24|..49Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_trianfin_jdd8 
+|00:54:37|00:54:37|...0s|..1.|.....|....3|....51|....24|..49Mo|.......| OK    |PoiseuillePerio2DVEF_fNcells_trianfin_jdd9 
+|00:54:42|00:54:44|...2s|..1.|.....|....3|...406|..2785|..41Mo|.......| OK    |PoiseuillePerio2DVEF_prismes_jdd1 
+|00:54:47|00:54:49|...2s|..1.|.....|....3|...406|..2785|..48Mo|.......| OK    |PoiseuillePerio2DVEF_prismes_jdd2 
+|00:54:52|00:54:55|...3s|..1.|.....|....3|...406|..2785|..57Mo|.......| OK    |PoiseuillePerio2DVEF_prismes_jdd3 
+|00:54:58|00:54:58|...0s|..1.|.....|....3|.....8|...160|..34Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_jdd1 ATTENTION 1 ecarts possible sur ce cas...
+|00:55:01|00:55:03|...2s|..1.|.....|....3|.....8|..1920|..47Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_jdd10 ATTENTION 1 ecarts possible sur ce cas...
+|00:55:06|00:55:07|...1s|..1.|.....|....3|.....8|..1920|..35Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_jdd11 ATTENTION 1 ecarts possible sur ce cas...
+|00:55:10|00:55:12|...2s|..1.|.....|....3|....10|..1920|..47Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_jdd12 ATTENTION 1 ecarts possible sur ce cas...
+|00:55:15|00:55:16|...1s|..1.|.....|....3|....11|..1920|..29Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_jdd13 ATTENTION 1 ecarts possible sur ce cas...
+|00:55:19|00:55:21|...2s|..1.|.....|....3|....11|..1920|..49Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_jdd14 ATTENTION 1 ecarts possible sur ce cas...
+|00:55:24|00:55:26|...2s|..1.|.....|....3|.....8|..1920|..57Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_jdd15 ATTENTION 1 ecarts possible sur ce cas...
+|00:55:29|00:55:30|...1s|..1.|.....|....3|.....8|..1920|..57Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_jdd16 ATTENTION 1 ecarts possible sur ce cas...
+|00:55:33|00:55:35|...2s|..1.|.....|....3|.....8|..1920|..33Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_jdd17 ATTENTION 1 ecarts possible sur ce cas...
+|00:55:38|00:55:39|...1s|..1.|.....|....3|.....8|..1920|..48Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_jdd18 ATTENTION 1 ecarts possible sur ce cas...
+|00:55:42|00:55:44|...2s|..1.|.....|....3|....10|..1920|..32Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_jdd19 ATTENTION 1 ecarts possible sur ce cas...
+|00:55:47|00:55:47|...0s|..1.|.....|....3|.....8|...160|..20Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_jdd2 ATTENTION 1 ecarts possible sur ce cas...
+|00:55:50|00:55:52|...2s|..1.|.....|....3|....11|..1920|..34Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_jdd20 ATTENTION 1 ecarts possible sur ce cas...
+|00:55:55|00:55:57|...2s|..1.|.....|....3|....11|..1920|..26Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_jdd21 ATTENTION 1 ecarts possible sur ce cas...
+|00:56:00|00:56:01|...1s|..1.|.....|....3|.....8|..1920|..46Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_jdd22 ATTENTION 1 ecarts possible sur ce cas...
+|00:56:04|00:56:06|...2s|..1.|.....|....3|.....8|..1920|..57Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_jdd23 ATTENTION 1 ecarts possible sur ce cas...
+|00:56:09|00:56:10|...1s|..1.|.....|....3|.....8|..1920|..54Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_jdd24 ATTENTION 1 ecarts possible sur ce cas...
+|00:56:13|00:56:15|...2s|..1.|.....|....3|.....8|..1920|..40Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_jdd25 ATTENTION 1 ecarts possible sur ce cas...
+|00:56:18|00:56:19|...1s|..1.|.....|....3|....10|..1920|..30Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_jdd26 ATTENTION 1 ecarts possible sur ce cas...
+|00:56:22|00:56:24|...2s|..1.|.....|....3|....11|..1920|..44Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_jdd27 ATTENTION 1 ecarts possible sur ce cas...
+|00:56:27|00:56:29|...2s|..1.|.....|....3|....11|..1920|..40Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_jdd28 ATTENTION 1 ecarts possible sur ce cas...
+|00:56:32|00:56:32|...0s|..1.|.....|....3|....11|...160|..48Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_jdd3 ATTENTION 1 ecarts possible sur ce cas...
+|00:56:35|00:56:35|...0s|..1.|.....|....3|....11|...160|..36Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_jdd4 ATTENTION 1 ecarts possible sur ce cas...
+|00:56:38|00:56:38|...0s|..1.|.....|....3|....11|...160|..43Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_jdd5 ATTENTION 1 ecarts possible sur ce cas...
+|00:56:41|00:56:42|...1s|..1.|.....|....3|....11|...160|..20Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_jdd6 ATTENTION 1 ecarts possible sur ce cas...
+|00:56:45|00:56:45|...0s|..1.|.....|....3|....11|...160|..24Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_jdd7 ATTENTION 1 ecarts possible sur ce cas...
+|00:56:48|00:56:49|...1s|..1.|.....|....3|.....8|..1920|..53Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_jdd8 ATTENTION 1 ecarts possible sur ce cas...
+|00:56:52|00:56:54|...2s|..1.|.....|....3|.....8|..1920|..35Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_jdd9 ATTENTION 1 ecarts possible sur ce cas...
+|00:56:58|00:56:58|...0s|..1.|.....|....3|.....8|...160|..37Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_prismes_jdd1 
+|00:57:01|00:57:37|..36s|..1.|.....|....3|.....8|.29313|.173Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_prismes_jdd10 
+|00:57:41|00:58:16|..35s|..1.|.....|....3|.....8|.29313|.174Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_prismes_jdd11 
+|00:58:22|00:59:00|..38s|..1.|.....|....3|.....8|.29313|.170Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_prismes_jdd12 
+|00:59:03|00:59:39|..36s|..1.|.....|....3|.....8|.29313|.191Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_prismes_jdd13 
+|00:59:42|01:00:18|..36s|..1.|.....|....3|.....8|.29313|.190Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_prismes_jdd14 
+|01:00:22|01:00:59|..37s|..1.|.....|....3|.....8|.29313|.182Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_prismes_jdd15 
+|01:01:02|01:01:38|..36s|..1.|.....|....3|.....8|.29313|.171Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_prismes_jdd16 
+|01:01:42|01:02:18|..36s|..1.|.....|....3|.....8|.29313|.181Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_prismes_jdd17 
+|01:02:21|01:02:57|..36s|..1.|.....|....3|.....8|.29313|.190Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_prismes_jdd18 
+|01:03:01|01:03:37|..36s|..1.|.....|....3|.....8|.29313|.162Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_prismes_jdd19 
+|01:03:41|01:03:41|...0s|..1.|.....|....3|.....8|...160|..31Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_prismes_jdd2 
+|01:03:44|01:04:20|..36s|..1.|.....|....3|.....8|.29313|.170Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_prismes_jdd20 
+|01:04:23|01:05:00|..37s|..1.|.....|....3|.....8|.29313|.188Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_prismes_jdd21 
+|01:05:03|01:05:41|..38s|..1.|.....|....3|.....8|.29313|.162Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_prismes_jdd22 
+|01:05:44|01:06:20|..36s|..1.|.....|....3|.....8|.29313|.185Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_prismes_jdd23 
+|01:06:24|01:07:01|..37s|..1.|.....|....3|.....8|.29313|.165Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_prismes_jdd24 
+|01:07:04|01:07:42|..38s|..1.|.....|....3|.....8|.29313|.161Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_prismes_jdd25 
+|01:07:46|01:08:22|..36s|..1.|.....|....3|.....8|.29313|.174Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_prismes_jdd26 
+|01:08:25|01:09:01|..36s|..1.|.....|....3|.....8|.29313|.167Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_prismes_jdd27 
+|01:09:05|01:09:43|..38s|..1.|.....|....3|.....8|.29313|.174Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_prismes_jdd28 
+|01:09:46|01:09:46|...0s|..1.|.....|....3|....11|...160|..39Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_prismes_jdd3 
+|01:09:49|01:09:50|...1s|..1.|.....|....3|....11|...160|..28Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_prismes_jdd4 
+|01:09:53|01:09:53|...0s|..1.|.....|....3|....11|...160|..25Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_prismes_jdd5 
+|01:09:56|01:09:57|...1s|..1.|.....|....3|....11|...160|..48Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_prismes_jdd6 
+|01:10:00|01:10:00|...0s|..1.|.....|....3|....11|...160|..46Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_prismes_jdd7 
+|01:10:03|01:10:39|..36s|..1.|.....|....3|.....8|.29313|.168Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_prismes_jdd8 
+|01:10:43|01:11:19|..36s|..1.|.....|....3|.....8|.29313|.189Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_prismes_jdd9 
+|01:11:22|01:11:22|...0s|..1.|.....|....3|.....8|...160|..39Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd1 ATTENTION 1 ecarts possible sur ce cas...
+|01:11:25|01:11:37|..12s|..1.|.....|....3|.....8|.15360|..89Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd10 
+|01:11:40|01:11:53|..13s|..1.|.....|....3|.....8|.15360|.102Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd11 
+|01:11:57|01:12:09|..12s|..1.|.....|....3|.....8|.15360|.105Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd12 
+|01:12:12|01:12:25|..13s|..1.|.....|....3|.....8|.15360|.104Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd13 
+|01:12:28|01:12:42|..14s|..1.|.....|....3|....11|.15360|..87Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd14 
+|01:12:45|01:12:57|..12s|..1.|.....|....3|.....8|.15360|..88Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd15 
+|01:13:00|01:13:12|..12s|..1.|.....|....3|.....8|.15360|.107Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd16 
+|01:13:15|01:13:27|..12s|..1.|.....|....3|.....8|.15360|.116Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd17 
+|01:13:31|01:13:43|..12s|..1.|.....|....3|.....8|.15360|..90Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd18 
+|01:13:46|01:13:59|..13s|..1.|.....|....3|.....8|.15360|..88Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd19 
+|01:14:02|01:14:02|...0s|..1.|.....|....3|.....8|...160|..37Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd2 ATTENTION 1 ecarts possible sur ce cas...
+|01:14:06|01:14:18|..12s|..1.|.....|....3|.....8|.15360|..92Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd20 
+|01:14:21|01:14:35|..14s|..1.|.....|....3|....11|.15360|..96Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd21 
+|01:14:38|01:14:50|..12s|..1.|.....|....3|.....8|.15360|.101Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd22 
+|01:14:53|01:15:05|..12s|..1.|.....|....3|.....8|.15360|.108Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd23 
+|01:15:08|01:15:20|..12s|..1.|.....|....3|.....8|.15360|.108Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd24 
+|01:15:23|01:15:36|..13s|..1.|.....|....3|.....8|.15360|..92Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd25 
+|01:15:39|01:15:51|..12s|..1.|.....|....3|.....8|.15360|..97Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd26 
+|01:15:54|01:16:06|..12s|..1.|.....|....3|.....8|.15360|..97Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd27 
+|01:16:09|01:16:23|..14s|..1.|.....|....3|....11|.15360|.105Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd28 
+|01:16:26|01:16:26|...0s|..1.|.....|....3|....11|...160|..30Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd3 ATTENTION 1 ecarts possible sur ce cas...
+|01:16:29|01:16:29|...0s|..1.|.....|....3|....11|...160|..50Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd4 ATTENTION 1 ecarts possible sur ce cas...
+|01:16:32|01:16:33|...1s|..1.|.....|....3|....11|...160|..31Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd5 ATTENTION 1 ecarts possible sur ce cas...
+|01:16:36|01:16:36|...0s|..1.|.....|....3|....11|...160|..42Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd6 ATTENTION 1 ecarts possible sur ce cas...
+|01:16:39|01:16:39|...0s|..1.|.....|....3|....11|...160|..29Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd7 ATTENTION 1 ecarts possible sur ce cas...
+|01:16:42|01:16:55|..13s|..1.|.....|....3|.....8|.15360|..86Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd8 
+|01:16:58|01:17:11|..13s|..1.|.....|....3|.....8|.15360|..95Mo|.......| OK    |PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd9 
+|01:17:13|01:17:15|...2s|..1.|.....|....3|...170|..1536|..42Mo|.......| OK    |Poiseuille_3D_Channel_jdd1 
+|01:17:18|01:17:21|...3s|..1.|.....|....3|...267|..3072|..49Mo|.......| OK    |Poiseuille_3D_Channel_jdd2 
+|01:17:24|01:17:28|...4s|..1.|.....|....3|...360|..4608|..35Mo|.......| OK    |Poiseuille_3D_Channel_jdd3 
+|01:17:30|01:17:34|...4s|..1.|.....|....3|...360|..4608|..61Mo|.......| OK    |Poiseuille_3D_Channel_jdd4 
+|01:17:39|01:20:03|.144s|..1.|.....|....3|..2838|126560|.318Mo|.......| OK    |Poiseuille_Pipe_Velocity_jdd1 
+|01:20:09|01:22:32|.143s|..1.|.....|....3|..2838|126560|.311Mo|.......| OK    |Poiseuille_Pipe_Velocity_jdd2 
+|01:22:36|01:24:51|.135s|..1.|.....|....3|..2835|126560|.289Mo|.......| OK    |Poiseuille_Pipe_Velocity_jdd3 
+|01:24:55|01:27:19|.144s|..1.|.....|....3|..2838|126560|.321Mo|.......| OK    |Poiseuille_Pipe_Velocity_jdd4 
+|01:27:23|01:27:23|...0s|..1.|.....|....3|..2353|...560|..47Mo|.......| OK    |Poreux_VEF_jdd7 
+|01:27:23|01:27:25|...2s|..2.|1.235|....3|..2557|...560|..81Mo|....5/8| OK    |PAR_Poreux_VEF_jdd7 
+|01:27:29|01:27:29|...0s|..1.|.....|....3|....62|.....4|..27Mo|.......| OK    |QC_d_rho_dt_jdd4 
+|01:27:29|01:27:30|...1s|..2.|0.637|....3|....66|.....4|..60Mo|....6/6| OK    |PAR_QC_d_rho_dt_jdd4 
+|01:27:34|01:27:37|...3s|..1.|.....|....3|.....6|..5884|..42Mo|.......| OK    |Radiation_jdd10 
+|01:27:40|01:27:41|...1s|..1.|.....|....3|....26|....20|..28Mo|.......| OK    |Radiation_jdd2 
+|01:27:44|01:27:44|...0s|..1.|.....|....3|...203|....80|..32Mo|.......| OK    |Radiation_jdd4 
+|01:27:48|01:27:48|...0s|..1.|.....|....3|....15|...100|..29Mo|.......| OK    |Radiation_jdd5 
+|01:27:51|01:28:00|...9s|..1.|.....|....3|...418|..1958|..26Mo|.......| OK    |Radiation_jdd6 
+|01:28:05|01:28:05|...0s|..1.|.....|....3|.....6|...125|..37Mo|.......| OK    |Radiation_jdd7 
+|01:28:10|01:28:13|...3s|..1.|.....|....3|.....7|..5000|..52Mo|.......| OK    |Radiation_jdd8 
+|01:28:17|01:28:17|...0s|..1.|.....|....3|...140|...672|..23Mo|.......| OK    |ThermalCoupling_LaminarFlow_VEF_jdd1 
+|01:28:21|01:28:22|...1s|..1.|.....|....3|...140|...672|..32Mo|.......| OK    |ThermalCoupling_LaminarFlow_VEF_jdd2 
+|01:28:25|01:28:27|...2s|..1.|.....|....3|...112|..1578|..55Mo|.......| OK    |ThermalCoupling_TurbulentFlow_VEF_jdd2 
+|01:28:30|01:28:34|...4s|..1.|.....|....3|..1640|..2968|..36Mo|.......| OK    |Thermal_stratification_flow_jdd1 
+|01:28:37|01:28:40|...3s|..1.|.....|....3|..1640|..2968|..57Mo|.......| OK    |Thermal_stratification_flow_jdd2 
+|01:28:43|01:29:43|..60s|..1.|.....|....3|..2441|.27252|.143Mo|.......| OK    |Thermal_stratification_flow_jdd3 
+|01:29:47|01:30:51|..64s|..1.|.....|....3|..2442|.27252|.158Mo|.......| OK    |Thermal_stratification_flow_jdd4 
+|01:30:56|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Tube_turb_perio_EF_stab_jdd1 ATTENTION 1 ecarts possible sur ce cas...
+|01:31:16|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Tube_turb_perio_muscl_jdd1
+|01:31:35|01:32:24|..49s|..1.|.....|....3|...774|.72692|.402Mo|.......| OK    |Turbulent_Simple_water_jet_jdd1 ATTENTION 1 ecarts possible sur ce cas...
+|01:32:28|01:33:17|..49s|..1.|.....|....3|...773|.72692|.447Mo|.......| OK    |Turbulent_Simple_water_jet_jdd2 ATTENTION 1 ecarts possible sur ce cas...
+|01:33:22|01:34:12|..50s|..1.|.....|....3|...795|.72692|.402Mo|.......| OK    |Turbulent_Simple_water_jet_jdd3 ATTENTION 1 ecarts possible sur ce cas...
+|01:34:16|01:35:07|..51s|..1.|.....|....3|...788|.72692|.414Mo|.......| OK    |Turbulent_Simple_water_jet_jdd4 ATTENTION 1 ecarts possible sur ce cas...
+|01:35:12|01:35:17|...5s|..1.|.....|....3|..3597|..7200|..46Mo|.......| OK    |Two_Layers_Stratif_impl_jdd1 
+|01:35:20|01:35:29|...9s|..1.|.....|....3|..5440|..7200|..46Mo|.......| OK    |Two_Layers_Stratif_impl_jdd10 
+|01:35:33|01:35:38|...5s|..1.|.....|....3|..3661|..7200|..59Mo|.......| OK    |Two_Layers_Stratif_impl_jdd11 
+|01:35:41|01:35:56|..15s|..1.|.....|....3|.10521|..7200|..64Mo|.......| OK    |Two_Layers_Stratif_impl_jdd12 
+|01:35:59|01:36:06|...7s|..1.|.....|....3|..3557|..7200|..50Mo|.......| OK    |Two_Layers_Stratif_impl_jdd13 
+|01:36:10|01:36:17|...7s|..1.|.....|....3|..3508|..7200|..44Mo|.......| OK    |Two_Layers_Stratif_impl_jdd14 
+|01:36:20|01:36:35|..15s|..1.|.....|....3|.10521|..7200|..59Mo|.......| OK    |Two_Layers_Stratif_impl_jdd15 
+|01:36:39|01:36:46|...7s|..1.|.....|....3|..3557|..7200|..50Mo|.......| OK    |Two_Layers_Stratif_impl_jdd16 
+|01:36:49|01:36:56|...7s|..1.|.....|....3|..3508|..7200|..36Mo|.......| OK    |Two_Layers_Stratif_impl_jdd17 
+|01:36:59|01:37:07|...8s|..1.|.....|....3|..3508|..7200|..48Mo|.......| OK    |Two_Layers_Stratif_impl_jdd18 
+|01:37:10|01:37:17|...7s|..1.|.....|....3|..3479|..7200|..55Mo|.......| OK    |Two_Layers_Stratif_impl_jdd19 
+|01:37:20|01:37:35|..15s|..1.|.....|....3|.10231|..7200|..53Mo|.......| OK    |Two_Layers_Stratif_impl_jdd2 
+|01:37:38|01:37:47|...9s|..1.|.....|....3|..5754|..7200|..60Mo|.......| OK    |Two_Layers_Stratif_impl_jdd20 
+|01:37:51|01:37:57|...6s|..1.|.....|....3|..3544|..7200|..53Mo|.......| OK    |Two_Layers_Stratif_impl_jdd3 
+|01:38:01|01:38:08|...7s|..1.|.....|....3|..3504|..7200|..52Mo|.......| OK    |Two_Layers_Stratif_impl_jdd4 
+|01:38:11|01:38:27|..16s|..1.|.....|....3|.10231|..7200|..33Mo|.......| OK    |Two_Layers_Stratif_impl_jdd5 
+|01:38:30|01:38:36|...6s|..1.|.....|....3|..3544|..7200|..58Mo|.......| OK    |Two_Layers_Stratif_impl_jdd6 
+|01:38:40|01:38:47|...7s|..1.|.....|....3|..3504|..7200|..49Mo|.......| OK    |Two_Layers_Stratif_impl_jdd7 
+|01:38:51|01:38:58|...7s|..1.|.....|....3|..3498|..7200|..51Mo|.......| OK    |Two_Layers_Stratif_impl_jdd8 
+|01:39:01|01:39:08|...7s|..1.|.....|....3|..3506|..7200|..41Mo|.......| OK    |Two_Layers_Stratif_impl_jdd9 
+|01:39:11|01:39:27|..16s|..1.|.....|....3|.10231|..7200|..34Mo|.......| OK    |Two_Layers_Stratif_jdd1 
+|01:39:30|01:39:45|..15s|..1.|.....|....3|.10231|..7200|..55Mo|.......| OK    |Two_Layers_Stratif_jdd2 
+|01:39:48|01:39:52|...4s|..1.|.....|....3|..3828|..7000|..40Mo|.......| OK    |Two_Layers_Stratif_jdd3 
+|01:39:56|01:40:12|..16s|..1.|.....|....3|.10521|..7200|..61Mo|.......| OK    |Two_Layers_Stratif_jdd4 
+|01:40:15|01:40:30|..15s|..1.|.....|....3|.10521|..7200|..45Mo|.......| OK    |Two_Layers_Stratif_jdd5 
+|01:40:33|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Two_Layers_Stratif_jdd6
+|01:40:37|01:40:39|...2s|..1.|.....|....3|...809|..6400|..54Mo|.......| OK    |VAHL_DAVIS_impl_jdd1 
+|01:40:39|01:40:41|...2s|..2.|1.407|....3|...950|..6400|..80Mo|..12/13| OK    |PAR_VAHL_DAVIS_impl_jdd1 
+|01:40:45|01:40:48|...3s|..1.|.....|....3|...637|..6400|..52Mo|.......| OK    |VAHL_DAVIS_impl_jdd10 
+|01:40:48|01:40:51|...3s|..2.|1.762|....3|...724|..6400|..96Mo|..11/13| OK    |PAR_VAHL_DAVIS_impl_jdd10 
+|01:40:54|01:40:57|...3s|..1.|.....|....3|..1220|..6400|..38Mo|.......| OK    |VAHL_DAVIS_impl_jdd11 
+|01:40:57|01:41:01|...4s|..2.|1.687|....3|..1391|..6400|.106Mo|..11/13| OK    |PAR_VAHL_DAVIS_impl_jdd11 
+|01:41:04|01:41:05|...1s|..1.|.....|....3|...204|.10000|..38Mo|.......| OK    |VAHL_DAVIS_impl_jdd12 
+|01:41:05|01:41:08|...3s|..2.|1.280|....3|...286|.10000|..96Mo|..13/13| OK    |PAR_VAHL_DAVIS_impl_jdd12 
+|01:41:11|01:41:14|...3s|..1.|.....|....3|...480|.10000|..58Mo|.......| OK    |VAHL_DAVIS_impl_jdd13 
+|01:41:14|01:41:17|...3s|..2.|1.568|....3|...595|.10000|..61Mo|..13/13| OK    |PAR_VAHL_DAVIS_impl_jdd13 
+|01:41:20|01:41:22|...2s|..1.|.....|....3|...143|.10000|..50Mo|.......| OK    |VAHL_DAVIS_impl_jdd14 
+|01:41:22|01:41:25|...3s|..2.|1.731|....3|...177|.10000|..88Mo|..13/13| OK    |PAR_VAHL_DAVIS_impl_jdd14 
+|01:41:28|01:41:30|...2s|..1.|.....|....3|...144|.10000|..36Mo|.......| OK    |VAHL_DAVIS_impl_jdd15 
+|01:41:30|01:41:32|...2s|..2.|1.753|....3|...179|.10000|..85Mo|..13/13| OK    |PAR_VAHL_DAVIS_impl_jdd15 
+|01:41:37|01:41:39|...2s|..1.|.....|....3|...480|.10000|..32Mo|.......| OK    |VAHL_DAVIS_impl_jdd16 
+|01:41:39|01:41:42|...3s|..2.|1.611|....3|...595|.10000|..90Mo|..13/13| OK    |PAR_VAHL_DAVIS_impl_jdd16 
+|01:41:46|01:41:48|...2s|..1.|.....|....3|...143|.10000|..57Mo|.......| OK    |VAHL_DAVIS_impl_jdd17 
+|01:41:48|01:41:50|...2s|..2.|1.758|....3|...177|.10000|..80Mo|..13/13| OK    |PAR_VAHL_DAVIS_impl_jdd17 
+|01:41:54|01:41:55|...1s|..1.|.....|....3|...144|.10000|..47Mo|.......| OK    |VAHL_DAVIS_impl_jdd18 
+|01:41:55|01:41:58|...3s|..2.|1.813|....3|...180|.10000|..59Mo|..13/13| OK    |PAR_VAHL_DAVIS_impl_jdd18 
+|01:42:02|01:42:05|...3s|..1.|.....|....3|...144|.10000|..30Mo|.......| OK    |VAHL_DAVIS_impl_jdd19 
+|01:42:05|01:42:07|...2s|..2.|1.804|....3|...179|.10000|..85Mo|..13/13| OK    |PAR_VAHL_DAVIS_impl_jdd19 
+|01:42:11|01:42:16|...5s|..1.|.....|....3|..2131|..6400|..41Mo|.......| OK    |VAHL_DAVIS_impl_jdd2 
+|01:42:16|01:42:20|...4s|..2.|1.600|....3|..2456|..6400|..95Mo|..10/13| OK    |PAR_VAHL_DAVIS_impl_jdd2 
+|01:42:24|01:42:26|...2s|..1.|.....|....3|...144|.10000|..41Mo|.......| OK    |VAHL_DAVIS_impl_jdd20 
+|01:42:26|01:42:28|...2s|..2.|1.742|....3|...180|.10000|..89Mo|..13/13| OK    |PAR_VAHL_DAVIS_impl_jdd20 
+|01:42:33|01:42:35|...2s|..1.|.....|....3|...144|.10000|..34Mo|.......| OK    |VAHL_DAVIS_impl_jdd21 
+|01:42:35|01:42:37|...2s|..2.|1.945|....3|...180|.10000|..86Mo|..13/13| OK    |PAR_VAHL_DAVIS_impl_jdd21 
+|01:42:41|01:42:42|...1s|..1.|.....|....3|...273|.10000|..44Mo|.......| OK    |VAHL_DAVIS_impl_jdd22 
+|01:42:43|01:42:45|...2s|..2.|1.578|....3|...341|.10000|..83Mo|..13/13| OK    |PAR_VAHL_DAVIS_impl_jdd22 
+|01:42:49|01:42:52|...3s|..1.|.....|....3|...634|..6400|..53Mo|.......| OK    |VAHL_DAVIS_impl_jdd3 
+|01:42:52|01:42:54|...2s|..2.|1.657|....3|...742|..6400|..89Mo|..10/13| OK    |PAR_VAHL_DAVIS_impl_jdd3 
+|01:42:58|01:43:01|...3s|..1.|.....|....3|...636|..6400|..29Mo|.......| OK    |VAHL_DAVIS_impl_jdd4 
+|01:43:01|01:43:04|...3s|..2.|1.805|....3|...723|..6400|..83Mo|..11/13| OK    |PAR_VAHL_DAVIS_impl_jdd4 
+|01:43:07|01:43:12|...5s|..1.|.....|....3|..2131|..6400|..45Mo|.......| OK    |VAHL_DAVIS_impl_jdd5 
+|01:43:12|01:43:17|...5s|..2.|1.599|....3|..2456|..6400|.105Mo|..10/13| OK    |PAR_VAHL_DAVIS_impl_jdd5 
+|01:43:20|01:43:23|...3s|..1.|.....|....3|...634|..6400|..60Mo|.......| OK    |VAHL_DAVIS_impl_jdd6 
+|01:43:23|01:43:25|...2s|..2.|1.536|....3|...742|..6400|..94Mo|..10/13| OK    |PAR_VAHL_DAVIS_impl_jdd6 
+|01:43:29|01:43:32|...3s|..1.|.....|....3|...637|..6400|..46Mo|.......| OK    |VAHL_DAVIS_impl_jdd7 
+|01:43:32|01:43:35|...3s|..2.|1.662|....3|...724|..6400|..92Mo|..11/13| OK    |PAR_VAHL_DAVIS_impl_jdd7 
+|01:43:38|01:43:41|...3s|..1.|.....|....3|...636|..6400|..30Mo|.......| OK    |VAHL_DAVIS_impl_jdd8 
+|01:43:41|01:43:44|...3s|..2.|1.645|....3|...723|..6400|..93Mo|..11/13| OK    |PAR_VAHL_DAVIS_impl_jdd8 
+|01:43:47|01:43:50|...3s|..1.|.....|....3|...637|..6400|..45Mo|.......| OK    |VAHL_DAVIS_impl_jdd9 
+|01:43:50|01:43:53|...3s|..2.|1.663|....3|...724|..6400|..94Mo|..11/13| OK    |PAR_VAHL_DAVIS_impl_jdd9 
+|01:43:57|01:43:57|...0s|..1.|.....|....3|....63|....16|..39Mo|.......| OK    |Verification_flux_implicite_jdd2 
+|01:43:57|01:43:58|...1s|..2.|0.588|....3|....67|....16|..68Mo|..11/11| OK    |PAR_Verification_flux_implicite_jdd2 
+|01:44:02|01:44:02|...0s|..1.|.....|....3|....17|...576|..25Mo|.......| OK    |conduction_T_oscillant_jdd1 
+|01:44:05|01:44:05|...0s|..1.|.....|....3|.....0|...576|..31Mo|.......| OK    |conduction_T_oscillant_jdd2 
+|01:44:09|01:44:09|...0s|..1.|.....|....3|.....0|...576|..26Mo|.......| OK    |conduction_T_oscillant_jdd3 
+|01:44:12|01:44:12|...0s|..1.|.....|....3|....12|...576|..50Mo|.......| OK    |conduction_T_oscillant_jdd4 
+|01:44:15|01:44:16|...1s|..1.|.....|....3|....24|..1492|..45Mo|.......| OK    |conduction_T_oscillant_jdd5 
+|01:44:19|01:44:21|...2s|..1.|.....|....3|....11|..4800|..40Mo|.......| OK    |conduction_T_oscillant_jdd6 
+|01:44:24|01:45:29|..65s|..1.|.....|....3|.....5|129600|.141Mo|.......| OK    |conduction_T_oscillant_jdd7 
+|01:45:34|01:45:34|...0s|..1.|.....|....3|....24|.....3|..20Mo|.......| OK    |conduction_couple_jdd1 
+|01:45:34|01:45:35|...1s|..2.|0.518|....3|....24|.....3|..77Mo|..14/14| OK    |PAR_conduction_couple_jdd1 
+|01:45:39|01:45:39|...0s|..1.|.....|....3|.....6|.....4|..35Mo|.......| OK    |conduction_couple_jdd2 
+|01:45:39|01:45:41|...2s|..2.|0.613|....3|.....6|.....4|..89Mo|..12/14| OK    |PAR_conduction_couple_jdd2 
+|01:45:44|01:45:45|...1s|..1.|.....|....3|...120|.....3|..49Mo|.......| OK    |conduction_couple_jdd3 
+|01:45:45|01:45:46|...1s|..2.|0.515|....3|...120|.....3|..74Mo|..12/12| OK    |PAR_conduction_couple_jdd3 
+|01:45:50|01:45:53|...3s|..1.|.....|....3|..5123|.....4|..41Mo|.......| OK    |conduction_couple_jdd4 
+|01:45:53|01:45:59|...6s|..2.|0.400|....3|..5123|.....4|..52Mo|..12/14| OK    |PAR_conduction_couple_jdd4 
+|01:46:04|01:48:21|.137s|..1.|.....|....3|..1515|.65923|.207Mo|.......| OK    |expansion_2D_axi_3D_VEF_circular_jdd10 
+|01:48:27|01:50:36|.129s|..1.|.....|....3|..1440|.65923|.200Mo|.......| OK    |expansion_2D_axi_3D_VEF_circular_jdd6 
+|01:50:42|01:53:04|.142s|..1.|.....|....3|..1474|.65923|.208Mo|.......| OK    |expansion_2D_axi_3D_VEF_circular_jdd7 
+|01:53:08|01:55:27|.139s|..1.|.....|....3|..1497|.65923|.207Mo|.......| OK    |expansion_2D_axi_3D_VEF_circular_jdd8 
+|01:55:32|01:57:50|.138s|..1.|.....|....3|..1507|.65923|.211Mo|.......| OK    |expansion_2D_axi_3D_VEF_circular_jdd9 
+|01:57:54|01:59:36|.102s|..1.|.....|....3|..3854|.51840|.177Mo|.......| OK    |expansion_3D_VDF_VEF_jdd10 
+|01:59:40|02:01:19|..99s|..1.|.....|....3|..3718|.51840|.179Mo|.......| OK    |expansion_3D_VDF_VEF_jdd6 
+|02:01:24|02:03:10|.106s|..1.|.....|....3|..3782|.51840|.170Mo|.......| OK    |expansion_3D_VDF_VEF_jdd7 
+|02:03:16|02:04:56|.100s|..1.|.....|....3|..3718|.51840|.179Mo|.......| OK    |expansion_3D_VDF_VEF_jdd8 
+|02:05:00|02:06:41|.101s|..1.|.....|....3|..3839|.51840|.175Mo|.......| OK    |expansion_3D_VDF_VEF_jdd9 
+|02:06:47|02:07:08|..21s|..1.|.....|....3|..1232|.32928|.109Mo|.......| OK    |les_Re395Pr0025_T0Q_jdd2 
+|02:07:13|02:07:56|..43s|..1.|.....|....3|...399|.32928|.139Mo|.......| OK    |les_Re395Pr0025_T0Q_jdd3 
+|02:08:01|02:08:40|..39s|..1.|.....|....3|...393|.32928|.120Mo|.......| OK    |les_Re395Pr0025_T0Q_jdd4 
+|02:08:45|02:10:19|..94s|..1.|.....|....3|..1641|.67362|1068|.......| OK    |les_Re395Pr0025_T0Q_jdd5 
+|02:10:24|02:11:06|..42s|..1.|.....|....3|...399|.32928|.133Mo|.......| OK    |les_Re395Pr0025_T0Q_jdd6 
+|02:11:10|02:11:23|..13s|..1.|.....|....3|...395|.12960|..83Mo|.......| OK    |les_Re395Pr0025_ToQ_couple_jdd2 
+|02:11:27|02:11:41|..14s|..1.|.....|....3|...374|.12960|..85Mo|.......| OK    |les_Re395Pr0025_ToQ_couple_jdd3 
+|02:11:45|02:11:53|...8s|..1.|.....|....3|...845|.12960|..61Mo|.......| OK    |les_Re395Pr0025_ToQ_couple_jdd4 
+|02:11:58|02:12:14|..16s|..1.|.....|....3|..1865|.22176|..67Mo|.......| OK    |les_Re395Pr071_T0Q_jdd2 
+|02:12:18|02:12:43|..25s|..1.|.....|....3|...590|.22176|..95Mo|.......| OK    |les_Re395Pr071_T0Q_jdd3 
+|02:12:47|02:13:12|..25s|..1.|.....|....3|...590|.22176|.116Mo|.......| OK    |les_Re395Pr071_T0Q_jdd4 
+|02:13:18|02:15:06|.108s|..1.|.....|....3|..1669|.67362|1177|.......| OK    |les_Re395Pr071_T0Q_jdd5 
+|02:15:09|02:15:09|...0s|..1.|.....|....3|..1024|...100|..40Mo|.......| OK    |test_conservation_energie_QC_jdd1 
+|02:15:12|02:15:12|...0s|..1.|.....|....3|..1024|...100|..40Mo|.......| OK    |test_conservation_energie_QC_jdd2 
+|02:15:15|02:15:15|...0s|..1.|.....|....3|..1131|...100|..24Mo|.......| OK    |test_conservation_energie_QC_jdd3 
+|02:15:18|02:15:19|...1s|..1.|.....|....3|..5932|...400|..50Mo|.......| OK    |test_conservation_energie_QC_jdd4 
+|02:15:22|02:15:23|...1s|..1.|.....|....3|..5935|...400|..25Mo|.......| OK    |test_conservation_energie_QC_jdd5 
+|02:15:25|02:15:26|...1s|..1.|.....|....3|..5934|...400|..33Mo|.......| OK    |test_conservation_energie_QC_jdd6 
+|02:15:30|02:15:31|...1s|..1.|.....|....3|...444|..1088|..24Mo|.......| OK    |tubeY_jdd1 
+|02:15:31|02:15:32|...1s|..2.|1.725|....3|...465|..1088|..88Mo|..21/21| OK    |PAR_tubeY_jdd1 
+|02:15:36|02:15:38|...2s|..1.|.....|....3|..1891|..1088|..53Mo|.......| OK    |tubeY_jdd2 
+|02:15:38|02:15:40|...2s|..2.|1.799|....3|..1975|..1088|..62Mo|..21/21| OK    |PAR_tubeY_jdd2 
+|02:15:43|02:16:14|..31s|..1.|.....|....3|..1007|..2400|..34Mo|.......| OK    |wl_vef_coupling_jdd2 
+|02:16:18|02:16:55|..37s|..1.|.....|....3|..1007|..2400|..40Mo|.......| OK    |wl_vef_coupling_jdd4 
+ -----------------------------------------------------------------------------------------
+
+Successful tests cases :572/584
+
+Successful tests cases in parallel mode :89/92
+
+
+664 test cases run in 10245 s ( 16 s/test), so less than 3 hours

@@ -1,0 +1,72 @@
+#!/bin/bash
+plugin=$1
+prepsrc=0
+if [ -z "$TRUST_ROOT" ]
+then
+	if [ -z "$LATASRC" ]
+	then
+	ROOT=`pwd`/../..
+	echo "Not in triou environment. Rootdir=$ROOT"
+	LATASRC=$ROOT/lata2dx
+	local=$ROOT/bin
+	else	
+	 prepsrc=1
+	 local=`which visit`
+	 local=`dirname $local`
+	fi
+
+else
+	ROOT=$TRUST_ROOT
+       	echo "TRUST environment found. Rootdir=$ROOT"
+	LATASRC=$ROOT/Outils/lata2dx/lata2dx
+	local=$ROOT/Outils/VisIt/bin
+
+fi
+
+
+echo "Checking for lata2dx sources in $LATASRC"	
+if [ ! -d $LATASRC/commun_triou ]
+    then
+    echo "Error: lata2dx source tree not found"
+    exit
+fi
+
+# On ne recompile le plugin que si un des sources est plus recent
+update=1
+
+
+echo "On va recompiler le plugin $plugin..."
+rm -r -f build_paraview
+ 
+echo Creating build_paraview directory
+mkdir -p build_paraview
+cp CMakeLists.txt.para build_paraview/CMakeLists.txt
+cd build_paraview
+echo Creating symlink to source files
+if [ -d ../../plugin_visit ]
+    then
+    ln -s ../../plugin_visit/src/avtlataFileFormat.* .
+else
+    ln -s ../src/avtlataFileFormat.* .
+fi
+for i in $LATASRC/commun_triou/*.cpp $LATASRC/triou_compat/*.cpp
+  do
+  ln -s $i `basename $i .cpp`.C
+done
+for i in $LATASRC/commun_triou/*.h $LATASRC/triou_compat/*.h
+  do
+  ln -s $i `basename $i`
+done
+
+
+if [ $prepsrc -eq 1 ] 
+    then
+    
+    echo "fin preparation, makefile non modifie" && exit 0
+fi
+      
+cmake .
+
+make
+cd ..
+echo "you have to mv "`\ls -rt build_paraview/*.so` "in PV_PLUGIN_PATH ($PV_PLUGIN_PATH)" 

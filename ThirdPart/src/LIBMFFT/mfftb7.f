@@ -1,0 +1,52 @@
+      SUBROUTINE MFFTB7(C,FAC)
+*
+*   PURPOSE:
+*       ELEMENTARY COOLEY-TUKEY RADIX 3 STEP APPLIED TO A VECTOR-OF
+*       2-VECTORS-OF-COMPLEX C[IMS,NM [IVS,NV [IES,NE]]].
+*       SEE REF.[1] FOR NOTATIONS.
+*       THIS ROUTINE CAN BE USED ONLY BY ROUTINE MFFTIM, WHICH CONTROLS
+*       ITS OPERATION THROUGH THE MFFTPA COMMON
+*
+*   DUMMY ARGUMENTS :
+*
+*   C   ARRAY BEING FOURIER  TRANSFORMED
+*   FAC PHASE FACTORS, PREPARED BY MFFTP; NOT MODIFIED IN OUTPUT
+*
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      COMMON /MFFTPA/  IMS,IVS,IES,NM,NV,NE,MX,LX,MLIM,MSTEP,LLIM,LSTEP,
+     $ NUSTEP,IVLIM,ILIM,MD2LIM,LD2LIM
+      INTEGER NUSTEP
+      DOUBLE COMPLEX C(0:NUSTEP-1,0:2),FAC(0:*)
+      DOUBLE COMPLEX T0,T1,T2,F1,F2
+      REAL *8 SIN60
+      PARAMETER ( SIN60 =  8.6602540378443864E-1)
+*..  LAM>0
+          LAMF=MX
+          DO 100 LAM=LSTEP,LLIM,LSTEP
+            F1=FAC(LAMF)
+            F2=FAC(LAMF*2)
+            DO 90 MU=LAM,LAM+MLIM,MSTEP
+              DO 80 IV=MU,MU+IVLIM,IVS
+              DO 80 I=IV,IV+ILIM,IES
+                T0=C(I,1)*F1+C(I,2)*F2
+                T2=(C(I,1)*F1-C(I,2)*F2)*SIN60
+                T1=C(I,0)-0.5*T0
+                C(I,0)=C(I,0)+T0
+                C(I,1)=(T1+DCMPLX(-DIMAG(T2),DREAL(T2)))
+                C(I,2)=(T1-DCMPLX(-DIMAG(T2),DREAL(T2)))
+80            CONTINUE
+90          CONTINUE
+            LAMF=LAMF+MX
+100       CONTINUE
+          DO 92 MU=0,MLIM,MSTEP
+            DO 82 IV=MU,MU+IVLIM,IVS
+            DO 82 I=IV,IV+ILIM,IES
+                T0=C(I,1)+C(I,2)
+                T2=(C(I,1)-C(I,2))*SIN60
+                T1=C(I,0)-0.5*T0
+                C(I,0)=C(I,0)+T0
+                C(I,1)=(T1+DCMPLX(-DIMAG(T2),DREAL(T2)))
+                C(I,2)=(T1-DCMPLX(-DIMAG(T2),DREAL(T2)))
+82          CONTINUE
+92        CONTINUE
+      END

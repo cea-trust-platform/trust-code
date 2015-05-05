@@ -1,0 +1,39 @@
+# PARALLEL OK #
+dimension 2
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+        {
+                Origine 0. 0.  
+                Nombre_de_Noeuds 91 29 
+                Longueurs 3. 1. 
+        }
+        {
+                Bord periox   X = 0.     0. <= Y <= 1. 
+                Bord periox   X = 3.     0. <= Y <= 1.  
+                Bord bas      Y = 0.     0. <= X <= 3.   
+                Bord haut     Y = 1.     0. <= X <= 3.   
+ 
+                }
+}
+
+Trianguler dom
+
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur metis { Nb_parts 2 }
+	Nom_Zones DOM
+	Periodique 1 periox
+        Larg_joint 2
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #

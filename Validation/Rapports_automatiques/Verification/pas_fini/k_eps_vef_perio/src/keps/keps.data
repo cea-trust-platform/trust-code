@@ -1,0 +1,124 @@
+
+dimension 3
+
+Domaine dom0
+
+Mailler dom0
+{
+        Pave bloc
+                {
+                Origine 0 0  0 
+                Nombre_de_Noeuds 4 9 3
+                Longueurs 0.75 2. 0.5
+                }
+                {
+                   Bord bas     Y = 0.  0. <= X <= 0.75   0. <= Z <= 0.5
+                   Bord haut     Y = 2.  0. <= X <= 0.75   0. <= Z <= 0.5
+                   Bord perio    X = 0.  0. <= Y <= 2. 0. <= Z <= 0.5
+                   Bord perio    X = 0.75  0. <= Y <= 2. 0. <= Z <= 0.5
+		Bord perioz Z = 0 	0. <= X <= 0.75 	0. <= Y <= 2.0 
+		Bord perioz Z = 0.5 	0. <= X <= 0.75 	0. <= Y <= 2.0	
+             }
+}
+Pb_Hydraulique_Turbulent pb 
+VEFPreP1b dis 
+Tetraedriser_homogene_compact dom0 
+
+Reordonner_faces_periodiques dom0 perio
+Reordonner_faces_periodiques dom0 perioz
+Schema_euler_explicite sch
+Read sch 
+{ 
+        tinit 0.
+ 
+
+        tmax 10.4607
+        dt_min 1.e-6
+        dt_max 1.e-3
+        dt_impr 0.1 
+        dt_sauv 0.5 
+        seuil_statio 1.e-4 
+        facsec 0.5
+} 
+
+Fluide_Incompressible air 
+Read air 
+{ 
+        mu Champ_Uniforme 1 0.00257 
+        rho Champ_Uniforme 1 1. 
+} 
+
+Associate pb dom0
+Associate pb sch 
+Associate pb air 
+
+Discretize pb dis 
+
+Read pb 
+{ 
+ Navier_Stokes_Turbulent 
+ { 
+       solveur_pression Cholesky { }
+	solveur_bar Gcp { precond ssor { omega 1.5 } seuil 1.e-6 }
+
+       convection { negligeable }
+       diffusion  {  }
+       conditions_initiales {  vitesse Champ_Fonc_xyz dom0 3 80*y*(2-y) 0. 0. }
+       boundary_conditions { 
+                   perio  periodique 
+		   perioz periodique 
+		   bas    paroi_fixe 
+		   haut paroi_fixe
+                          } 
+Sources
+{
+ Canal_perio { bord perio  }  
+
+}
+       modele_turbulence K_Epsilon
+      { Transport_K_Epsilon {      
+                             convection { negligeable }
+                             diffusion { }
+			     Sources { source_transport_k_eps { C1_eps 1.44 C2_eps 1.92 } }
+                             boundary_conditions {
+                                                perio periodique  
+						perioz periodique  
+						bas  paroi
+						haut paroi
+                                                }
+                             conditions_initiales { k_eps Champ_Uniforme 2 0.1 0.1 }
+                            }
+        turbulence_paroi loi_standard_hydr dt_impr_ustar 0.1 nut_max 1.
+       } 
+ traitement_particulier { canal {
+                debut_stat 0.5  
+                dt_impr_moy_spat 1.e-1 } }
+
+}            
+
+ Postraitement 
+         { 
+	 format lata
+           
+            Champs dt_post 0.1
+            { 
+             vitesse elem
+	     k elem
+	     eps elem
+	     viscosite_turbulente elem
+             pression elem
+            } 
+        } 
+} 
+Solve pb 
+End
+
+Champ_Fonc_xyz dom0 2 y*(2-y) 0. 
+Champ_Uniforme 2 20. 0. 
+Champ_front_fonc_xyz dom0 2 y*(2-y) 0.
+			     Sources { source_transport_k_eps { C1_eps 1.44 C2_eps 1.92 } }
+  Canal_perio { direction_ecoulement 0 u_etoile 0. coeff 1. }  
+source_transport_k_eps { C1_eps 1.44 C2_eps 1.92 }
+	solveur_bar Gcp { precond ssor { omega 1.5 } seuil 1.e-12 }
+       solveur_pression  gcp  { precond ssor { omega 1.5 } seuil 1.e-6 impr }
+  Canal_perio { direction_ecoulement 0 u_etoile 0. coeff 1. }  

@@ -1,0 +1,142 @@
+#!/bin/bash
+[ "$UTILISE_APPACHE" = "1" ] && . $HOME/HTML/recharger_env
+ORDRE=$1
+[ "$UTILISE_APPACHE" = "1" ] && ORDRE=$QUERY_STRING
+. $TRUST_ROOT/bin/CGI/cg $ORDRE
+#echo $args
+. $TRUST_ROOT/bin/CGI/entete
+
+ETUDE_TRUST=`QUELLE_ETUDE.ihm`
+export ETUDE_TRUST
+cd $ETUDE_TRUST
+NOMETUDE=`basename $ETUDE_TRUST`
+#On efface le fichier gnuplot
+rm -f $TRUST_TMP/gnu
+cree_en_tete.ihm
+# Ca marche mieux avec frames[2] au lieu de DOWN !!!
+# document.STAT.submit('toto');
+#   document.STAT.submit(url);  
+#parent.DOWN.location.replace(\"http://localhost:2974/ordre.cg?4\");
+#    document.STAT.target=top.frames[2].name;
+#var err;
+#    err=parent.DOWN.location.replace(\"http://localhost:2974/ordre.cg?4\");
+#    alert(err);
+#    return false;
+    
+echo "<SCRIPT LANGUAGE=\"JavaScript\">
+<!--
+function sub()
+{
+    parent.DOWN.document.write(\"toto\");
+    document.STAT.target=\"DOWN\";
+    return true;
+}
+//-->
+</SCRIPT>
+<PRE><HR><h1>Plot statistical calculations for study $NOMETUDE</h1><HR><FORM NAME=\"STAT\"  ACTION=\"http://localhost:$PORT/gnuplot.cg\" onSubmit=\"return sub();\" TARGET=DOWN>"
+re=""
+rm -f $ETUDE_TRUST/.stat*gnu
+n=0
+for arg in $args
+do
+   num=${arg#stat}
+   if [ $num != $arg ] && [ ${arg%plot\"} = $arg ]
+   then
+      let n=$n+1
+      txt=`echo $arg | $TRUST_Awk -F'=' '{print $2}'` 
+      num=${num%=$txt}
+      courbe=$ETUDE_TRUST/.courbe$num".gnu"
+      type=`echo $txt | $TRUST_Awk -F'(' '{print $1}'`
+      var=${txt#$type\(};type=${type#\"};var=${var%\)\"};leg=$type"("$var")"
+      
+      # On ajoute la variable correl pour pouvoir traiter avec les statistiques 
+      # une correlation Temperature/Vitesse
+      correl=""
+      if [ $var = "utheta" ] || [ $var = "vtheta" ] || [ $var = "wtheta" ]
+      then
+         correl="-correl"
+      fi
+
+      [ $var = X ] && var=sca
+      [ "`grep segment $courbe`" != "" ] && type=pro_$type
+      ficson=`tail -1 $courbe | $TRUST_Awk -F"'" '/plot/ && /.son/ {print $8} /plot/ && /.coupe/ {gsub("\\.coupe",".son",$6);print $6}'`
+      # Executer en supprimant le echo
+      statistic -tmin $tmin -tmax $tmax -$type -$var $correl $ficson 1>$TRUST_TMP/err$num 2>&1
+      if [ "`grep Utilisation $TRUST_TMP/err$num`" != "" ]
+      then
+         err="Error!"
+      else
+         err="Ok!"
+      fi
+      echo statistic -tmin $tmin -tmax $tmax -$type -$var $correl $ficson ":" $err "See <a href=file:$TRUST_TMP/err$num>output</a>"
+      [ $err = "Error!" ] && exit
+      gnu=$ETUDE_TRUST/.stat$num".gnu"
+      cas="Case "`cat $ETUDE_TRUST/.NOM_DATA`
+      var=_$var && [ $var = _sca ] && var=""
+      a=`cat $courbe`
+      echo $ECHO_OPTS $a | $TRUST_Awk -v re=$re -v fic=$type$var -v leg=$leg -v cas="$cas" ' ! /ylabel/ && ! /plot / {print $0} \
+      /ylabel/ {print $0} \
+      /plot / { gsub("plot",re"plot",$0); \
+      gsub("\\.son","."fic,$0); \
+      gsub("\\.coupe","."fic,$0); \
+      gsub(cas,leg,$0); \
+      print $0}' > $gnu
+      re=re
+   fi
+done
+echo "<table BORDER COLS=5  BGCOLOR=#FFFF99 NOSAVE><tr><td>Choose</td><td>Calculation</td><td>Title</td><td>Y-Label</td><td>X-Label</td></tr>"
+
+for gnu in `ls $ETUDE_TRUST/.stat*.gnu 2>/dev/null`
+do
+   num=${gnu#$ETUDE_TRUST/.stat};num=${num%.gnu}
+   title="`$TRUST_Awk -F"\'" '/title / {print $2}' $gnu`"
+   xlabel=`$TRUST_Awk -F"\'" '/xlabel / {print $2}' $gnu`
+   ylabel=`$TRUST_Awk -F"\'" '/ylabel / {print $2}' $gnu`
+   t=`$TRUST_Awk -F"\'" '/plot / {print $4}' $gnu` 
+   plot=`$TRUST_Awk '/plot / {print $2}' $gnu`" using "`$TRUST_Awk '/plot / {print $4}' $gnu`
+   # Si une seule courbe
+   if [ $n -eq 1 ]
+   then
+      echo "<tr>\
+ <td><input type="checkbox" name="plot" value=\"$plot\" checked></td>\
+ <td><input type="text" name="legende" size=10 value=\"$t\"></td>\
+ <td><input type="text" name="title" size=20 value=\"$title\"></td>\
+ <td><input type="text" name="ylabel" size=20 value=\"$ylabel\"></td>\
+ <td><input type="text" name="xlabel" size=10 value=\"$xlabel\"></td></tr>"
+   else
+      echo "<tr>\
+      <td><input type="checkbox" name="plot" value=\"$plot\"></td>\
+      <td><input type="text" name="legende" size=10 value=\"$t\"></td>\
+      <td>$title</td>\
+      <td>$ylabel</td>\
+      <td>$xlabel</td></tr>"
+   fi
+done
+
+# Si plusieurs courbes
+[ $n -ne 1 ] && echo "<tr>\
+ <td>       </td>\
+ <td>       </td>\
+ <td><input type="text" name="title" size=20 value=""></td>\
+ <td><input type="text" name="ylabel" size=20 value=""></td>\
+ <td><input type="text" name="xlabel" size=10 value=""></td></tr>"
+
+echo "</table>
+Output <select name=sortie><option selected>screen<option>printer<option>postcript</select>Style <select name=with><option selected>line+point<option>line<option>point</select>Grid <select name=grid><option selected>yes<option>no</select>Y <select name=y><option selected>nolog<option>log</select>X <select name=x><option selected>nolog<option>log</select>
+Choose one or more calculations then <input type=\"submit\" value=\"Plot\" ></FORM><HR></body></html>"
+#\"alert('jo');\"
+#http://localhost:$PORT/gnuplot.cg
+#onClick=\"javascript:void(parent.DOWN.location.replace('http://localhost:$PORT/gnuplot.cg'));\"
+
+#<HTML><BODY><SCRIPT TYPE="text/javascript">
+#<!--
+#function subm(url)
+#{
+#  document.STAT.action=url;
+#  //document.STAT.target=parent.DOWN;
+#  // parent.DOWN.document.write(\"url\");
+#  document.STAT.submit();
+#  // document.STAT.target=parent.DOWN.location;
+#}
+#//-->
+#</SCRIPT>

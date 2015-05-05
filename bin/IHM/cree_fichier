@@ -1,0 +1,80 @@
+#!/bin/bash
+# Creation d'un fichier a partir d'un modele :
+# $1=nom du fichier modele
+# $2=nom du type du fichier
+
+liste_suffixe="h cpp f"
+FICHIER=$1
+TYPE=$2
+NOM=`basename $FICHIER .modele`
+rep_modeles=$TRUST_ROOT/../Doc_TRUST/Modeles
+cd $rep_dev
+rm -f .change
+touch .change
+nligne=`wc -l $FICHIER | $TRUST_Awk '{print $1}'`
+n=1
+while [ $nligne != $n ]
+do
+   let n=$n+1
+   message=`$TRUST_Awk -v n=$n '(NR==n) {print $0}' $FICHIER`
+   nom=""
+   let n=$n+1
+   nom=`$TRUST_Awk -v n=$n '(NR==n) {print $0}' $FICHIER`
+   if [ $nom = "NOM_DU_MODULE" ]
+   then
+      echo $ECHO_OPTS $message"\n$TRUST_ROOT/\c"
+      read choix
+      NOM_DU_MODULE=$choix
+   elif [ $nom = "NOM_DU_FICHIER" ]
+   then
+      echo $message
+      read choix
+      NOM_DU_FICHIER=$choix
+      for suffixe in $liste_suffixe
+      do
+         NOM_DU_FICHIER=${NOM_DU_FICHIER%.$suffixe}
+	 choix=$NOM_DU_FICHIER
+      done
+   elif [ $nom = "NOM_DE_LA_LIBRAIRIE" ]
+   then
+      if [ ! -d $TRUST_ROOT/$NOM_DU_MODULE ]
+      then
+         Erreur.ihm "Module $NOM_DU_MODULE inexistant !"
+         exit
+      else
+         NOM_DE_LA_LIBRAIRIE=`$TRUST_Awk -F/ '/Lib/ && /TRUST_LIB/ {print $2}' $TRUST_ROOT/$NOM_DU_MODULE/*akefile`
+         choix=$NOM_DE_LA_LIBRAIRIE
+      fi
+   else
+      echo $message
+      read choix
+   fi
+# Preparation des modifications a
+# apporter dans le fichier modele :
+   choix=`echo $choix | $TRUST_Awk '{gsub("/","\\\/",$0);print $0}'`
+   echo "s?$nom?$choix?g">>.change
+done
+
+# Existence et copie des fichiers :
+for suffixe in $liste_suffixe
+do
+   if [ -f $rep_dev/$NOM_DU_FICHIER.$suffixe ]
+   then
+      echo "Fichier $NOM_DU_FICHIER.$suffixe deja existant !"
+   else
+      if [ -f $rep_modeles/$NOM"_modele_$suffixe" ]
+      then
+         cp $rep_modeles/$NOM"_modele_$suffixe" $rep_dev/$NOM_DU_FICHIER.$suffixe
+         sleep 2
+	 sed -f .change $rep_dev/$NOM_DU_FICHIER.$suffixe
+         echo $ECHO_OPTS "\nCreation de $NOM_DU_FICHIER.$suffixe"
+         nohup $EDITEUR $NOM_DU_FICHIER.$suffixe 1>/dev/null &
+      fi
+   fi
+done
+#rm -f .change
+
+# Cree la page de la liste des fichiers de l'atelier :
+nohup cree_Fichiers_atelier.html 1>/dev/null 2>/dev/null &
+#eval $FIN
+sleep 3

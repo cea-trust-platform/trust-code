@@ -1,0 +1,122 @@
+=======================================================
+TRIOU component: Release Notes
+(updated for version 0.2.0)
+=======================================================
+
+Contens of this document:
+
+1. Introduction
+2. Implementation and packaging
+3. Installation guide
+4. User's guide.
+5. XDATA 0.5.2 patch
+
+=======================================================
+1. Introduction.
+=======================================================
+
+This document refers to the contractual delivery L2.1-19.
+
+=======================================================
+2. Implementation and packaging.
+=======================================================
+
+TRIOU component is a preprocessor module for Trio-U solver.
+TRIOU component is developed using Python language and XDATA package.
+TRIOU component version 0.2.0 requires PAL/SALOME 2.1.0 or higher and XDATA 0.5.2 (patched).
+
+TRIOU component is delivered as sources package:
+    TRIOU_SRC:               configuration files, release notes;
+    TRIOU_SRC/src:           source files, resources;
+    TRIOU_SRC/bin:           Trio-U solver executable.
+
+=======================================================
+3. Installation guide.
+=======================================================
+
+Before installing of TRIOU component, make sure that PAL/SALOME 2.1.0 and XDATA 0.5.2 (patched) are correctly installed on your station.
+
+3.1. Set up environment properly:
+     
+     >> source <your_SALOME_install_dir>/env_products.csh
+     >> setenv TRIOU_ROOT_DIR <your_TRIOU_install_dir>
+     >> setenv PYTHONPATH <your_XDATA_install_dir>/lib/python2.2/site-packages/xdata:${PYTHONPATH}
+
+3.2. Make and install the module:
+     >> mkdir TRIOU_BUILD
+     >> cd TRIOU_BUILD
+     >> ../TRIOU_SRC/build_configure
+     >> ../TRIOU_SRC/configure --prefix=<your_TRIOU_install_dir>
+     >> make
+     >> make install
+
+     This will make and install the TRIOU module to <your_TRIOU_install_dir> directory.
+
+3.3. Add the following line to your ~/.salome_2.1.0/salome.launch (<modules-list> section):
+
+    <module name="TRIOU"/>
+
+    Note: the file ~/.salome_2.1.0/salome.launch is created in your home directory automaticaly during the first launch of PAL/SALOME v2.1.0. It contains default SALOME launch options. You can also find the default salome.launch file in the <your_KERNEL_install_dir>/bin/salome directory.
+
+======================================================
+4. User's guide.
+=======================================================
+
+4.1. Launch SALOME.
+
+4.1.1. Set up the environment if you have not done it yet (see paragraphs 3.1 and 3.2 for details).
+4.1.2. Launch SALOME, for example:
+
+     >> runSalome --module=MED,VISU,TRIOU --gui
+
+     This will launch SALOME desktop. TRIOU component button should appear in the desktop's components toolbar.
+
+4.2. Activate TRIOU module.
+
+4.2.1. Select TRIOU item in the components combo-box or press the corresponding button on the components toolbar.
+
+4.3. Create a problem. 
+
+4.3.1. Creating of TRIOU objects is available via "object_u ..." menu tree.
+4.3.2. It is possible to import python file with problem description via "File -> Import" menu command.
+4.3.2. There is also a possibility to import external data file (*.data). To do this, use 'File -> Import data file" menu command.
+
+4.4. Launch solver.
+
+4.4.1. Choose "Solver -> Execute" menu command. This will open "Solver Control" dialog box. 
+The dialog box allows to select as input for solver calculations either study contents or external data file.
+Additionally you can select working directory where calculations should be performed (by default a temporary one is created in the '/tmp' directory).
+To launch the calculations press "Start" button. It is possible to pause/resume and stop calculations. 
+After finishing of the calculations MED files which are produced by the solver (if there are any) are automatically published in the study by using of Post-Pro (VISU) module. If Post-Pro module is not found or some errors occur, the corresponding message box is shown.
+The "Close" button stops the calculations and closes the dialog box. If "Auto close after finishing" check-box is switched on, the dialog box is closed automatically after finishing of calculations.
+4.4.2. It is possible to launch several calculations for example, for different studies, or for different input files. For doing this, just open several "Solver Control" dialog boxes. But in this case, please make sure that you do not use the same working directory for the calculations. You can do it by using default option (field "Working directory" should be clear).
+
+4.5. Preferences.
+
+4.5.1. Solver path.
+You can change the path to solver executable by using of the "Preferences -> TRIOU -> Solver executable" main menu command.
+
+4.6. Export study contents.
+XDATA provides a way to export the contents of the study to the external python file. Use "File -> Export" menu command for this.
+
+4.7. Export data file.
+It is possible to export the study contents to the external data file which can be then used as input for the solver. The main menu command "File -> Export data file" can be used for this.
+
+=======================================================
+5. XDATA 0.5.2 patch
+=======================================================
+
+The following files were modified in the original XDATA 0.5.2:
+
+5.1. adm/unix/make_end.am
+        - a step for compiling of Qt resources (string and images: *.po) has been added;
+	- uncomment the step to produce <MODULE>_shared_modules.py file.
+
+5.2. src/XDATA/xitempy.py
+	- a bug fixed: it is impossible to add more than one separator to the popup menu.
+
+5.3. src/XDATA2SALOME/xdata2salome.py
+	- improvement implemented: it is necessary to have a possibility to call XDATA-based module's customized 'setSettings()' method to set module-specific settings (e.g. default preferences for the module). The global 'setSettings()' method is modified: if python file <COMPONENT>_xdata.py defines custom 'setSettings()' method it is called also;
+	- improvement implemented: provide version information for the component (modify writeCatalog() method to put version number to <MODULE>Catalog.xml file);
+	- modify the step of creation of <MODULE>_shared_modules.py file - it should import XDATA_CORBA iterface also.
+   

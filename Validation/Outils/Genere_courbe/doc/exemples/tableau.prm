@@ -1,0 +1,191 @@
+Parameters {
+	Title "v\'erification des tableaux"
+	Description "Calculs men\'es en VEF laminaire"
+	Author "G.F."
+	TestCase "test_ef_stab" "test.data"
+	TestCase "test_ef_stab_ve" "test.data"
+}
+
+Chapter {
+	Title "Profil de vitesse"
+	Description "Comparasion du profil de vitesse au profil de poiseuille.  voir data... triokeyword(VDF) triokeyword(amont muscl)"
+Table {
+	Title "essai de tableau"
+	nb_columns 4
+	label c1 truc| c2 | "c3 uuuuuu" | "tt"
+
+	line {
+	legend yyyyyy
+	file truc
+	origin "TRUST"
+	}
+	line {
+	legend ref
+	file toto
+	origin ""
+	}
+	line {
+	legend reuuuuuuf
+	display_line 0
+	file toto
+	origin a
+	}
+	line {
+	legend delta
+	difference delta yyyyyy ref
+	origin y
+	}
+	line {
+	legend ecart relatif 
+	difference ecart_relatif yyyyyy ref
+	alias ecart_relatif
+	origin y
+	}
+	line {
+	legend ecart relatif 
+	difference formula ecart_relatif ref int(v1*10000)/100.
+	origin y
+	}
+}
+}
+Chapter { 
+	Title "force de pression"
+Table {
+	Title "Erreur final sur Pressure_gradient"
+	Description "coucou   "
+	Description "coucou  bis "
+	legend toto
+	nb_columns 2
+	label pressure_gradient_final| erreur relative en % 
+	
+	line {
+		legend esp\'er\'ee
+		origin "analytique"
+		values 0.03 0.
+	}
+	line {
+		legend "ef_stab {  } "
+		origin "TRUST"
+		Version "1.5.3-beta_build_180907"
+		file test_ef_stab/Pressure_Gradient_pb_tail	
+	}
+	line {
+		legend "ef_stab { volumes_etendus } "
+		origin "TRUST"
+		Version "1.5.3-beta_build_180907"
+		file test_ef_stab_ve/Pressure_Gradient_pb_tail	
+	}
+	line {
+		legend "ef_stab { old } "
+		origin "TRUST"
+		Version "1.5.3-beta_build_180907"
+		file test_ef_stab_old/Pressure_Gradient_pb_tail	
+
+	}
+
+}
+Table {
+	Title "essai tableur"
+	nb_columns 3
+	label  u_tau  | erreur en % | delta
+	line {
+		legend theorie
+		Version "1.5.3-beta_build_180907"
+		file ./bon
+		nb_columns_file 2
+		columns ($2) rien rien
+		alias ref	
+		origin y
+		
+	}
+	line {
+		legend calcul
+		origin "TRUST"
+		Version "1.5.3-beta_build_180907"
+		nb_columns_file 3
+		last_line
+		file ./test_ef_stab/Pressure_Gradient_pb
+	        columns ($2) int((ref.$1-$2)*2/(ref.$1+$2)*10000)/100. ($2-ref.$1)
+	}
+	line {
+		legend calcul
+		origin "TRUST"
+		Version "1.5.3-beta_build_180907"
+		nb_columns_file 2
+		file ./test_ef_stab/Pressure_Gradient_pb_tail
+	        columns ($1) int((ref.$1-$1)*2/(ref.$1+$1)*10000)/100. ($1-ref.$1)
+	}
+	}
+Table {
+	Title "essai_formule"
+	nb_columns 1
+	formula int((ref-val)*2/(ref+val)*10000)/100.
+	Include_Description_lines 1
+	label  u_tau  | erreur en %
+	line {
+		legend "theorie"
+		Version "1.5.3-beta_build_180907"
+		file ./bon
+		description "resultat ok"
+		description "enfin ..."
+		origin y
+	}
+	line {
+		legend "calcul"
+		origin "TRUST"
+		Version "1.5.3-beta_build_180907"
+		file ./test_ef_stab/Pressure_Gradient_pb_tail
+	}
+	}
+
+Table {
+	Title "essai_lignes"
+	nb_columns 2
+	transposed_display 0
+
+	label  u_tau  | erreur en %
+	lines { 
+	file bon_tail
+	number_first_line -3
+	 number_last_line -2
+	nb_columns_file 3
+	columns $1 $2 $3
+	}	
+
+}
+Table {
+	Title "essai_lignes"
+	nb_columns 2
+	transposed_display 1
+	label  u_tau  | erreur en %
+	lines { 
+	file bon_tail
+	number_first_line -3
+	 number_last_line -2
+	nb_columns_file 3
+	columns $1 $2 $3
+	}	
+
+}
+
+Table {
+	Title "essai_lignes"
+	nb_columns 2	
+	label  u_tau  | erreur en %
+		line {
+		legend "calcul"
+		file ./test_ef_stab/Pressure_Gradient_pb_tail
+	}
+
+
+	lines { 
+	file bon_tail
+	number_first_line 3
+	}	
+	lines { 
+	file bon_tail
+	number_last_line 1
+	}		
+}
+}
+ 

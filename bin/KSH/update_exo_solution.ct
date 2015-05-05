@@ -1,0 +1,39 @@
+#!/bin/bash
+# Script pour mettre a jour une vue sur un exercice ou sa solution
+# Liste les labels
+echo "Usage: `basename $0` [exo] [solution]"
+choix=rien && [ "$1" != "" ] && choix=$1
+[ "$TRUST_ROOT" = "" ] && echo "Variable TRUST_ROOT non definie." && exit
+cd $TRUST_ROOT
+while [ ${choix#exo} = $choix ] && [ ${choix#solution} = $choix ]
+do
+   echo "Liste des exercices et de leurs solutions:"
+   labels=`cleartool lstype -kind lbtype -short | grep -x -e exo[0-9] -e solution[0-9] -e solution[0-9].[0-9]`
+   echo "------------------------------------------"
+   for label in $labels
+   do
+      echo $label
+   done
+   echo "------------------------------------------"
+   echo "Quel est votre choix?"
+   read choix
+done
+# Si c'est un nouvel exo, on detruit la branche et on la refait
+if [ ${choix#exo} != $choix ]
+then
+   # On ne travaille que dans la VOB TRUST
+   echo "Fichiers de la branche $branche uncheckoutes..."
+   cleartool lscheckout -recurse -short -cview | xargs cleartool unco -rm
+   branche=`cleartool catcs | awk -F"/" '/LATEST/ && !/mkbranch/ {print $2}'`
+   echo "Branche $branche detruite..."
+   cleartool rmtype -rmall -force brtype:$branche
+   echo "Branche $branche recreee..."
+   cleartool mkbrtype -nc $branche
+fi
+
+# label actuel
+tmp=$TRUST_TMP/config_spec
+cleartool catcs | awk -v label=$choix '/ exo/ || / solution/ {print $1" "$2" "label" "$4" "$5;getline} // {print $0}' > $tmp
+echo "Mise a jour de la vue. Attendre..."
+#cat $tmp
+cleartool setcs $tmp

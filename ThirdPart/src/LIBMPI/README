@@ -1,0 +1,60 @@
+30/10/2013: Added MPICH 3
+OpenMPI based implementations: Sun, Bullx MPI
+MPICH   based implementations: IBM, Cray, Intel MPI, MVAPICH
+
+MPICH 3.0 has a major interest for the non-blocking collective operation for pipelined 
+iterative methods of PETSc: 
+https://www.ieeetcsc.org/activities/blog/user_defined_nonblocking_collectives_must_make_progress
+
+By default, MPICH 3 is using Hydra as process manager.
+
+performances ? May be slow if several CPUs asked ?
+hydra OK!
+gdb OK!
+valgrind OK!
+
+Previous comments are obsolete:
+-----------------------------------------
+Version 1.4.3 7/08/2003
+Pour utiliser ssh, il faut configurer ssh
+pour ne pas prendre prompter le password:
+-----------------------------------------
+cd $HOME
+ssh-keygen -t dsa
+cp .ssh/id_dsa.pub .ssh/authorized_keys2
+eval `ssh-agent`
+ssh-add .ssh/id_dsa
+
+Et la commande "ssh `hostname` -n ls"
+
+Il semble qu'il faille reinstaller mpich suite
+a ca avec -rsh=ssh dans le configure. Le test
+sous $MPI_ROOT/examples marche alors:
+
+$Mpirun -np 2 ./cpi
+
+TRUST ne marche toujours pas en // apres ces
+changements, il faut recompiler egalement.
+
+Pour faire marcher plusieurs PCs en cluster,
+il faut egalement creer un fichier machines.linux
+contenant le nom des machines (hostname) voire
+le numero IP de ces machines s'il n'y a pas de
+serveur de noms de machines (faire ping `hostname`
+pour connaitre le numero IP de la machine).
+Il faut egalement pouvoir faire un ssh de toutes
+vers toutes les machines sans password. Pour
+cela copier les lignes de $HOME/.ssh/authorized_keys2
+dans tous les comptes de toutes les machines du
+cluster de PCs. Faire aussi chmod 700 .ssh
+
+Il semble qu'il faille ajouter dans le .bashrc
+la commande :
+eval `ssh-agent`;ssh-add .ssh/id_dsa
+Car a chaque deconnection, le ssh-agent tombe...
+Pas sur... 
+Voir http://linux.moomoocamp.net/article.php?num_article=5
+-------------------------------------------
+Version 1.2.1 5/09/2000
+# Problemes possibles:
+Sur les dernieres Linux, mettre -rsh=ssh et installer le paquet ssh (root)

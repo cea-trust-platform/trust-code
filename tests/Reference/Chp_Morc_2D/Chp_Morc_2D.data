@@ -1,0 +1,191 @@
+# Thermohydraulique 2D : Champs par morceaux #
+# PARALLEL OK 8 #
+dimension 2
+Pb_Thermohydraulique pb
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Cavite 
+		{
+		Origine 0. 0.
+     		Nombre_de_Noeuds 11 11
+		Longueurs 0.01 0.01
+		}
+		{
+		Bord Gauche X = 0.  0. <= Y <= 0.01
+		Bord Haut Y = 0.01  0. <= X <= 0.01
+		Bord Bas Y = 0.     0. <= X <= 0.01
+		Bord Droit X = 0.01 0. <= Y <= 0.01
+		}
+}
+
+Sous_Zone zone1
+Associate zone1 dom
+Lire zone1 {
+   Rectangle
+      Origine 0. 0.
+      Cotes 0.005 0.01 }
+      
+Sous_Zone zone2
+Associate zone2 dom
+Lire zone2 {
+   Rectangle
+      Origine 0.005 0.
+      Cotes 0.005 0.01 }
+Sous_Zone zone3
+Associate zone3 dom
+Lire zone3 {
+   Rectangle
+      Origine 0.007 0.002
+      Cotes   0.001 0.001 }
+
+Sous_Zone zone4
+Associate zone4 dom
+Lire zone4 {
+   Rectangle
+      Origine 0.002 0.007
+      Cotes   0.001 0.001 }
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 1 2 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+
+Sous_Zone zone1
+Associate zone1 dom
+Lire zone1 {
+   Rectangle
+      Origine 0. 0.
+      Cotes 0.005 0.01 }
+      
+Sous_Zone zone2
+Associate zone2 dom
+Lire zone2 {
+   Rectangle
+      Origine 0.005 0.
+      Cotes 0.005 0.01 }
+
+Sous_Zone zone3
+Associate zone3 dom
+Lire zone3 { Fichier zone3.ssz }
+Sous_Zone zone4
+Associate zone4 dom
+Lire zone4 { Fichier zone4.ssz }
+END SCATTER #
+
+VDF dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0.
+	tmax 1.2
+	dt_min 0.001
+	dt_max 0.001
+	dt_impr 0.001
+	dt_sauv 100
+	seuil_statio 1.e-8
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 1.85e-5
+	rho Champ_Uniforme 1 1.17
+	lambda Champ_Uniforme 1 0.0262 
+	Cp Champ_Uniforme 1 1006
+	beta_th Champ_Uniforme 1 3.41e-3
+}
+
+Champ_Uniforme gravite
+Lire gravite 2 0 -9.81
+
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.5 } 
+			seuil 1.e-10
+			impr 
+		}
+		convection { Quick }
+		diffusion { }
+		sources { boussinesq_temperature { T0 5. } }
+		conditions_initiales {
+			vitesse Champ_Uniforme_Morceaux dom 2
+			{
+				defaut 0. 0.
+				zone1 0. -0.01
+				zone2 0.  0.01
+			}
+		}
+		boundary_conditions {
+			Haut paroi_fixe
+			Bas paroi_fixe
+			Gauche paroi_fixe
+			Droit paroi_fixe
+		}
+	}
+	Convection_Diffusion_Temperature
+	{
+		diffusion { }
+		convection { quick }
+		sources {
+			Puissance_thermique Valeur_totale_sur_volume dom 1
+				{ defaut 0. zone3 0.1 }
+		}
+		boundary_conditions 
+		{
+			Haut paroi_adiabatique
+			Bas paroi_adiabatique
+ 			Gauche paroi_temperature_imposee  Champ_Front_Uniforme 1 0. 
+			Droit  paroi_temperature_imposee  Champ_Front_Uniforme 1 0.  
+		}
+		conditions_initiales {
+			Temperature Champ_Uniforme_Morceaux dom 1
+				{ defaut 0. zone4 10. }
+		}
+	}
+
+	Postraitement
+	{
+		Sondes
+		{
+		   sonde_V vitesse periode 0.01 segment 10 0.0005 0.005 0.0095 0.005
+			sonde_pression pression periode 0.01 points 1 0.0045 0.0045
+			sonde_vitesse vitesse periode 0.01 points 2 0.0025 0.005 0.0075 0.005
+			sonde_temp temperature periode 0.01 points 2 0.0075 0.0025 0.0025 0.0075
+		}
+		Champs dt_post 0.7
+		{
+			pression elem
+			pression som
+			vitesse elem
+			vitesse som
+			temperature elem
+			temperature som
+		}
+	}
+}
+
+Solve pb
+Fin
+

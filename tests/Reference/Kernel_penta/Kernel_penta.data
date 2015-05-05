@@ -1,0 +1,19 @@
+# test si le penta peut etre discretise lu/ecrit en MED #
+# PARALLEL NOT #
+dimension 3
+
+Domaine dom
+
+# BEGIN MESH #
+Read_file dom mod2.geom
+discretiser_domaine dom
+postraiter_domaine { domaine dom format lml fichier dom.lml }
+
+postraiter_domaine { domaine dom format lata fichier dom.lata }
+ecrire_med dom dom.med
+lire_med dom dom dom.med
+ecrire_fichier dom mod.geom
+discretiser_domaine dom
+postraiter_domaine { domaine dom format lml fichier Kernel_penta.lml }
+
+fin

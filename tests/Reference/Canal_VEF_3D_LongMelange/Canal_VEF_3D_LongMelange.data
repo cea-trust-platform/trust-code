@@ -1,0 +1,136 @@
+# SIMULATION D UN CANAL PLAN 3D avec modele Longueur de melange #
+# PARALLEL OK 8 #
+# Tests du modele Longueur de Melange et de la procedure de calcul du frottement parietal (ParoiVEFHyd.cpp) #
+
+dimension 3
+Pb_Hydraulique_Turbulent pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+        {
+                Origine 0. 0. 0.
+                Nombre_de_Noeuds 12  6  12
+                Longueurs 10. 2.  10
+        }
+        {
+                Bord periox   X = 0.  0. <= Y <= 2.   0. <= Z <= 10.
+                Bord periox   X = 10. 0. <= Y <= 2.   0. <= Z <= 10.
+                Bord bas      Y = 0.  0. <= X <= 10.  0. <= Z <= 10.
+                Bord haut     Y = 2.  0. <= X <= 10.  0. <= Z <= 10.
+                Bord perioz   Z = 0.  0. <= X <= 10.  0. <= Y <= 2.
+                Bord perioz   Z = 10. 0. <= X <= 10.  0. <= Y <= 2.
+ 
+                }
+} 
+
+Tetraedriser_homogene dom
+Corriger_frontiere_periodique { Domaine dom Bord periox }
+Corriger_frontiere_periodique { Domaine dom Bord perioz }
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 1 2 1 }
+	Nom_Zones DOM
+	Periodique 2 periox perioz
+        Larg_joint 2
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1b dis
+Lire dis { P1 }
+
+Sch_CN_EX_iteratif sch
+
+Lire sch 
+{
+        tinit 0.
+        tmax 20.
+        nb_pas_dt_max 10
+        dt_min 1.e-7
+        dt_max 1.e-1
+	dt_start dt_calc
+        dt_impr 0.001
+        dt_sauv 20.
+        seuil_statio 1.e-8  
+        facsec 1.
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 0.00514
+	rho Champ_Uniforme 1 2
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Lire pb
+	{
+	Navier_Stokes_Turbulent
+		{
+                solveur_pression Gcp { precond ssor { omega 1.5 }
+                                        seuil 1.e-08 impr
+                                        }
+		solveur_bar Gcp { precond ssor { omega 1.5 } seuil 1.e-12 impr } 
+
+                convection { EF defaut_bar }
+                diffusion  { standard  defaut_bar }
+                Sources { Source_Qdm_lambdaup { lambda 2. } }
+                Sources
+                        {
+                        Canal_perio { bord periox }
+                        }
+		conditions_initiales
+			{
+                        vitesse Champ_fonc_xyz dom 3  -20. 0. 0. 
+			}
+		boundary_conditions
+			{
+			periox periodique 
+			perioz periodique 
+			haut     paroi_fixe
+			bas      paroi_fixe
+			}
+		Modele_turbulence Longueur_melange
+			{
+			turbulence_paroi loi_standard_hydr
+                        dt_impr_ustar 1.
+                        canalx 2.
+			}
+ 	}
+
+	Postraitement
+        	{       
+                Sondes
+                	{ 
+                        sonde_vit  vitesse periode 0.0001 segment 50	5. 0. 5.   5. 2. 5.
+			sonde_visc_turb  viscosite_turbulente periode 0.0001 segment 50	5. 0. 5.   5. 2. 5.
+			}
+		Champs dt_post 2.
+			{
+			vitesse elem
+			vitesse som
+			viscosite_turbulente elem
+			viscosite_turbulente som
+			pression elem
+			pression som
+			}
+		}
+	}
+
+Solve pb
+Fin
+

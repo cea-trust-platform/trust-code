@@ -1,0 +1,216 @@
+# Hydraulique 3D Force de pression: D=1m U=1 m/s Re=200 #
+# PARALLEL OK 9 #
+
+dimension 3
+Pb_Thermohydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Read_file dom cylindre.geom
+VerifierCoin dom { }
+Dilate dom 1000
+RegroupeBord dom Box { Surfanz Bas Haut Surfa }
+OrienteFacesBord dom
+# END MESH #
+
+# On fait sur 9 procs pour verifier la non regression de la FA408 #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur metis { Nb_parts 9 }
+	Ecrire_decoupage Cx.metis
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+# Je choisis une discretisation #
+VEFPreP1B ma_discretisation
+
+Schema_Euler_explicite mon_schema
+Lire mon_schema
+{
+	nb_pas_dt_max 10
+	tinit 0
+	tmax 5.0
+	dt_min 1.e-6
+	dt_max 1.e-6
+	dt_impr 1.e-6
+	dt_sauv 100
+	seuil_statio 1.e-8
+	periode_sauvegarde_securite_en_heures 12
+}
+
+# A fluid is defined #
+Fluide_Incompressible milieu
+Lire milieu
+{
+	mu  Champ_Uniforme 1 0.01
+	rho Champ_Uniforme 1 2.
+        lambda Champ_Uniforme 1 2
+        Cp Champ_Uniforme 1 100.
+        beta_th Champ_Uniforme 1 0.	
+}
+
+Associate pb dom
+Associate pb mon_schema
+Associate pb milieu
+Discretize pb ma_discretisation
+
+# We take a ring of the cylindre between z=-2 and z=-1 #
+Domaine ring
+Extraire_surface { Domaine ring Probleme pb Condition_faces (z+2)*(z+1)*(x^2+y^2-0.51)>0 avec_certains_bords 1 Cylindre }
+# Postraiter_domaine { domaine ring format lata fichier ring } #
+
+Domaine Entree
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression Petsc Cholesky { impr }
+		convection { muscl }
+		diffusion { }
+		conditions_initiales {
+			vitesse Champ_Uniforme 3 1. 0. 0.
+		}
+		boundary_conditions {
+			Cylindre 	paroi_fixe
+			Box  		symetrie
+			Sortie 		frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
+			Entree 		frontiere_ouverte_vitesse_imposee  Champ_front_Uniforme 3 1. 0. 0.
+		}
+	}
+        Convection_Diffusion_Temperature
+        {
+                diffusion { }
+                convection { muscl }
+                boundary_conditions
+                {
+			Cylindre 	paroi_temperature_imposee Champ_front_Uniforme 1 30.
+			Box 		symetrie
+			Sortie 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
+			Entree 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
+                }
+                conditions_initiales { Temperature Champ_Uniforme 1 20. }
+        }
+	Postraitements
+	{
+		lml
+		{
+			format lml fichier Cx
+			Definition_champs
+			{
+				pressure_inlet Reduction_0D { methode moyenne 
+					source Extraction { domaine Entree nom_frontiere Entree 
+						source Interpolation { domaine dom localisation elem 
+							source RefChamp { Pb_champ pb pression } 
+						}
+                                        }
+                                }
+			}
+			Sondes
+			{
+				sonde_pression 	pression_pa 	periode 0.005 	circle 11 0. 0. 0. 2 0.7 0. 360.
+				sonde_vitesse 	vitesse 	periode 0.005 	point 1 0.7 0. 0.
+				pressure_inlet 	pressure_inlet 	periode 1 	numero_elem_sur_maitre 0
+			}
+			Champs dt_post 1.
+			{ 
+				pression_pa elem
+				pression_pa som
+			}
+			Statistiques dt_post 1.
+			{
+			    	t_deb 0. t_fin 10.
+			    	Moyenne vitesse elem
+			}
+		}
+		lata
+		{
+			format lata fichier Cx
+			Definition_champs
+			{
+				# Calculate viscous force on the ring #
+				FVx Reduction_0D { 
+					methode somme source Interpolation { 
+						domaine ring localisation elem source Morceau_equation {
+							type operateur numero 0 option flux_bords compo 0 source refChamp { Pb_champ pb vitesse }
+						}
+					}
+				}
+				FVy Reduction_0D { 
+					methode somme source Interpolation { 
+						domaine ring localisation elem source Morceau_equation {
+							type operateur numero 0 option flux_bords compo 1 source refChamp { Pb_champ pb vitesse }
+						}
+					}
+				}
+				FVz Reduction_0D { 
+					methode somme source Interpolation { 
+						domaine ring localisation elem source Morceau_equation {
+							type operateur numero 0 option flux_bords compo 2 source refChamp { Pb_champ pb vitesse }
+						}
+					}
+				}
+				# Calculate pressure force on the ring #
+				FPx Reduction_0D { 
+					methode somme source Interpolation { 
+						domaine ring localisation elem source Morceau_equation {
+							type operateur numero 2 option flux_bords compo 0 source refChamp { Pb_champ pb vitesse }
+						}
+					}
+				}
+				FPy Reduction_0D { 
+					methode somme source Interpolation { 
+						domaine ring localisation elem source Morceau_equation {
+							type operateur numero 2 option flux_bords compo 1 source refChamp { Pb_champ pb vitesse }
+						}
+					}
+				}
+				FPz Reduction_0D { 
+					methode somme source Interpolation { 
+						domaine ring localisation elem source Morceau_equation {
+							type operateur numero 2 option flux_bords compo 2 source refChamp { Pb_champ pb vitesse }
+						}
+					}
+				}
+				# Calculate pressure force on the cylinder (new feature, boundary domain are usable everywhere in the data file) #				
+                                FPx_cylinder Reduction_0D {
+                                        methode somme source Interpolation {
+                                                domaine dom_boundaries_Cylindre localisation elem source Morceau_equation {
+                                                        type operateur numero 2 option flux_bords compo 0 source refChamp { Pb_champ pb vitesse }
+                                                }
+                                        }
+				} 
+			}
+			Sondes
+			{
+				FVx FVx periode 0.005 numero_elem_sur_maitre 0
+				FVy FVy periode 0.005 numero_elem_sur_maitre 0
+				FVz FVz periode 0.005 numero_elem_sur_maitre 0
+				FPx FPx periode 0.005 numero_elem_sur_maitre 0
+				FPy FPy periode 0.005 numero_elem_sur_maitre 0
+				FPz FPz periode 0.005 numero_elem_sur_maitre 0		
+				FPx_cylinder FPx_cylinder periode 0.005 numero_elem_sur_maitre 0 		
+			}
+			Champs dt_post 1.
+			{ 
+				pression_pa elem
+				pression_pa som
+			}
+			Statistiques dt_post 1.
+			{
+			    	t_deb 0. t_fin 10.
+			    	Moyenne vitesse elem
+			}
+		}	
+	}
+	sauvegarde_simple binaire Cx.sauv
+}
+Imprimer_flux dom { Cylindre }
+Solve pb

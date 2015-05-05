@@ -1,0 +1,128 @@
+# Hydraulique 2D : Poiseuille 2D #
+# PARALLEL NOT #
+# lance_test 3 ecarts #
+
+dimension 2
+Pb_hydraulique pb
+Domaine post
+Mailler post
+{
+	Pave Cavite 
+		{
+		Origine -2 -0.5
+     		Nombre_de_Noeuds 81 81
+		Longueurs 3.5 2
+		}
+		{
+		Bord Gauche X = -2. -0.5 <= Y <= 1.5
+		Bord Droit X = 1.5 -0.5 <= Y <= 1.5
+		Bord Haut Y = 1.5 -2. <= X <= 1.5
+		Bord Bas Y = -0.5 -2 <= X <= 1.5
+		}
+}
+
+Domaine_ALE dom
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Cavite 
+		{
+		Origine 0. 0.
+     		Nombre_de_Noeuds 11 11
+		Longueurs 1 1
+		}
+		{
+		Bord Gauche X = 0. 0. <= Y <= 1
+		Bord Droit X = 1 0. <= Y <= 1
+		Bord Haut Y = 1 0. <= X <= 1
+		Bord Bas Y = 0. 0. <= X <= 1
+		}
+}
+Trianguler_H dom
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+        PMETIS
+        Nb_parts 2
+        Larg_joint 1
+        Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+Imposer_vit_bords_ALE dom
+{
+	2
+	Gauche Champ_front_ALE 2 120*0.3*SIN(6.28*y)*COS(20*t) 0.
+	Bas Champ_front_ALE 2 0 0.
+}
+
+VEFPreP1B dis
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0.
+	tmax 4.
+	nb_pas_dt_max 10
+	dt_min 1.e-15
+	dt_max 1.e-2
+	dt_impr 0.0001
+	dt_sauv 0.01
+	seuil_statio -1.e-5
+}
+
+Fluide_Incompressible eau
+Lire eau
+{
+        mu Champ_Uniforme 1 1.
+        rho Champ_Uniforme 1 1.
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb eau
+Discretize pb dis
+Lire pb
+{
+        Navier_Stokes_standard
+        {
+                solveur_pression GCP { 
+                        precond ssor { omega 1.650000 } 
+                        seuil 1.000000e-10 impr
+                         
+                }
+                convection { ALE { amont } }
+                diffusion { }
+                conditions_initiales {
+                        vitesse Champ_Fonc_xyz dom 2 0. 0.
+                        }
+                boundary_conditions {
+                        Haut Paroi_fixe
+                        Bas Paroi_fixe
+                        Gauche frontiere_ouverte_vitesse_imposee Champ_front_ALE 2 20*0.3*SIN(6.28*y)*COS(20*t) 0.
+                        Droit frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0
+                }
+        }
+        Postraitement
+        {
+		
+                Sondes
+                {
+		seg_U vitesse periode 0.001 segment 11 0.75 0 0.75 1
+                }
+		format lml
+		Champs dt_post 0.0001
+                {
+                        pression elem
+                        vitesse elem
+                }
+        }
+}
+Solve pb
+Ecrire_Fichier dom dom.geom

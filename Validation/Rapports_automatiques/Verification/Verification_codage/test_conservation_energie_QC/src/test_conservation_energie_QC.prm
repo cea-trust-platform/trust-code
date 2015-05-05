@@ -1,0 +1,89 @@
+Parameters {
+	Title "verification option conservation energie en QC"
+	Description "Calculs menes en VDF et VEF"
+	Author "G.F."
+	TestCase vdf_ancien test.data
+	TestCase vdf_divuT_moins_Tdivu test.data
+	TestCase vdf_divrhouT_moins_Tdivrhou test.data
+	TestCase vef_ancien test.data
+	TestCase vef_divuT_moins_Tdivu test.data
+	TestCase vef_divrhouT_moins_Tdivrhou test.data
+
+}
+
+Chapter {
+
+	Title "Bilan de Convection de chaleur en vef"
+Table {
+	nb_columns 4
+	label in1|in2|out|somme/3*in1
+	line {
+	legend "theorie"
+	origin "referene"
+	values 1752637500.0 3505275000.0 -5257912500.0 0.0
+	}
+	line {
+	nb_columns_file 6
+	last_line
+	file vef_divrhouT_moins_Tdivrhou/test_pb_plenum_Convection_chaleur.out
+	legend  vef_divrhouT_moins_Tdivrhou
+	columns $2 $3 $4 ($2+$3+$4)/(3*$1)
+	}
+	line {
+	nb_columns_file 6
+	last_line
+	file vef_ancien/test_pb_plenum_Convection_chaleur.out
+	legend  vef_ancien
+	columns $2 $3 $4 ($2+$3+$4)/(3*$2)
+	}
+	line {
+	nb_columns_file 6
+	last_line
+	file vef_divuT_moins_Tdivu/test_pb_plenum_Convection_chaleur.out
+	legend  vef_divuT_moins_Tdivu
+	columns $2 $3 $4 ($2+$3+$4)/(3*$2)
+	}
+	}
+
+}
+Chapter {
+
+	Title "Bilan de Convection de chaleur en vdf"
+Table {
+	nb_columns 4
+	label in1|in2|out|somme/3*in1
+	line {
+	legend "theorie"
+	origin "referene"
+	values 1752637500.0 3505275000.0 -5257912500.0 0.0
+	}
+	line {
+	nb_columns_file 6
+	last_line
+	file vdf_divrhouT_moins_Tdivrhou/test_pb_plenum_Convection_chaleur.out
+	legend  vdf_divrhouT_moins_Tdivrhou
+	columns $2 $3 $4 ($2+$3+$4)/(3*$2)
+	}
+	line {
+	nb_columns_file 6
+	last_line
+	file vdf_ancien/test_pb_plenum_Convection_chaleur.out
+	legend  vdf_ancien
+	columns $2 $3 $4 ($2+$3+$4)/(3*$2)
+	}
+	line {
+	nb_columns_file 6
+	last_line
+	file vdf_divuT_moins_Tdivu/test_pb_plenum_Convection_chaleur.out
+	legend  vdf_divuT_moins_Tdivu
+	columns $2 $3 $4 ($2+$3+$4)/(3*$2)
+	}
+	}
+
+}
+Chapter {
+   Title "Computer performance"
+	Tableau_performance {
+	}
+}
+

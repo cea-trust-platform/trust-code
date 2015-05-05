@@ -1,0 +1,75 @@
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:	NOM_DU_FICHIER.cpp
+// Directory:	$TRUST_ROOT/NOM_DU_MODULE
+//
+//////////////////////////////////////////////////////////////////////////////
+
+#include <NOM_DU_FICHIER.h>
+#include <TYPE_ZONE_DIS.h>
+
+implemente_instanciable(NOM_DE_LA_CLASSE,
+                        "NOM_DE_LA_CLASSE",
+                        Champ_Inc_base)
+
+// printOn et readOn 
+
+Sortie& NOM_DE_LA_CLASSE::printOn(Sortie& s ) const 
+{
+   return s << que_suis_je() << "\n";
+}
+
+Entree& NOM_DE_LA_CLASSE::readOn(Entree& is ) 
+{
+  lire_donnees(is) ;
+  return is ;
+}
+
+
+const Zone_dis_base& NOM_DE_LA_CLASSE::zone_dis_base() const
+{
+  return LA_ZONE_DIS.valeur();
+}
+
+const Zone_dis_base& NOM_DE_LA_CLASSE::associer_zone_dis_base(const Zone_dis_base& zone_dis_base)
+{ 
+   LA_ZONE_DIS = ref_cast(TYPE_ZONE_DIS,zone_dis_base) ;
+   return zone_dis_base;
+}
+   
+DoubleTab& NOM_DE_LA_CLASSE::remplir_coord_noeuds(DoubleTab& x) const
+{
+  // A CODER  
+  return x;
+}
+
+//int NOM_DE_LA_CLASSE::postraiter_lml(Sortie& ,const Motcle& ) const
+//{
+//  ;
+//}
+
+//int NOM_DE_LA_CLASSE::postraiter_lml(Sortie& , int ,const Motcle& loc_post) const
+//{
+//   const DoubleTab& val = valeurs();
+//   const TYPE_ZONE_DIS& ZONE_DIS = LA_ZONE_DIS.valeur();
+//
+//   if (loc_post == Motcle("som" ))
+//   {
+//      // CODER ICI L'ECRITURE DU CHAMP RECALCULE AUX SOMMETS
+//      //
+//   }
+//   if (loc_post == Motcle("elem" ))
+//   {
+//      // CODER ICI L'ECRITURE DU CHAMP PROJETE SUR
+//      // UN CHAMP CONSTANT PAR ELEMENT
+//   }
+//
+//   return 1;
+//
+//}
+
+// CERTAINS CHAMPS ONT BESOIN DE SURCHARGER fixer_nb_valeurs_nodales() 
+// int NOM_DE_LA_CLASSE::fixer_nb_valeurs_nodales(int )
+// {
+//   ;
+// }

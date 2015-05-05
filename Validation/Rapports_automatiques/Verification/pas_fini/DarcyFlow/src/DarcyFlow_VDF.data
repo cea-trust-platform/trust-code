@@ -1,0 +1,92 @@
+# Darcy/Forcheimer source terms #
+# PARALLEL OK 8 #
+
+dimension 3
+Pb_hydraulique pb
+domaine dom
+
+# BEGIN MESH #
+Read_file dom conic_Pb1.geom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur metis { Nb_parts 2 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+Schema_Euler_explicite sch
+Read sch
+{
+        tinit 0.0
+        tmax 10
+        dt_min 0.0001
+        dt_max 0.0001
+        dt_impr 1.e-20
+        dt_sauv 100
+        seuil_statio 1.e-10
+}
+
+Fluide_Incompressible fluide
+Read fluide
+{
+        mu Champ_Uniforme 1 1.33e-5
+        rho Champ_Uniforme 1 1.293
+        lambda Champ_Uniforme 1 0.0271 
+        Cp Champ_Uniforme 1 1006.8
+        beta_th Champ_Uniforme 1 3.23e-3
+}
+
+Champ_Uniforme gravite
+Read gravite 3 0 -9.81 0.
+
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+Discretize pb dis
+
+# Solve dU/dt=-grad(P*)-nu.U/K-Cf.U.|U|/sqrt(K1) #
+Read pb
+{
+        Navier_Stokes_standard
+        {
+		solveur_pression petsc Cholesky { }
+		convection { negligeable }
+		diffusion { negligeable }
+		sources { 
+			Darcy { porosite 0.4 modele_K ErgunDarcy { diametre 1.5e-3 } } ,
+			Forchheimer { porosite 0.4 Cf 1. modele_K ErgunForchheimer { diametre 1.5e-3 } }
+		}	 
+		conditions_initiales {
+			vitesse Champ_Uniforme 3 0.0 0.2 0.0
+               	}
+                boundary_conditions {
+			Entree frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 0.0 0.2 0.0
+			Sortie frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.0
+			Bord paroi_fixe
+                }
+        }
+        Postraitement
+        {
+                Sondes
+                {
+			sonde_vitesse 		nodes 	vitesse periode 0.0001 point 1 0.08 0.10 0.08 
+                        segment_pression 	grav	pression_pa periode 0.0001 segment 50 0.08 0.05 0.08 0.08 0.20 0.08
+                }
+                format lata Champs dt_post 0.1
+                {
+                        pression_pa elem
+                }
+        }
+}
+Solve pb
+End

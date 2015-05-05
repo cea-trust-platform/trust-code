@@ -1,0 +1,2 @@
+#!/bin/bash
+[ ! -f in_out.geom ] && triou geom

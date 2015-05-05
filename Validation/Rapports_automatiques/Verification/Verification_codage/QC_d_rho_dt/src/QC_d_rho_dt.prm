@@ -1,0 +1,389 @@
+Parameters {
+	Title "verification drho/dt en QC"
+	Description "Calculs menes en VDF et VEF laminaire"
+	Author "G.F."
+	TestCase "Conservation_of_mass_VDF_QC" "Conservation_of_mass_VDF_QC.data"
+	TestCase "Conservation_of_mass_VEF_QC" "Conservation_of_mass_VEF_QC.data"
+	TestCase "Conserv_Masse_QC_rho_u" "Conserv_Masse_QC_rho_u.data"
+	TestCase "Conserv_Masse_QC_rho_u_Piso" "Conserv_Masse_QC_rho_u_Piso.data"
+}
+
+Chapter {
+	Title "Evolution de la temperature"
+	Description "voir fiche de validation Conservation_of_mass_QC"
+Figure {
+	Title "Temperature"
+	Dimension 2
+	LabelX "Temps (s)"
+	LabelY "Temperature (K)"
+	Curve {
+		legend "VDF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		file ./Conservation_of_mass_VDF_QC/Conservation_of_mass_VDF_QC_TEMPERATURE.son 
+	Style linespoints
+	}
+	Curve {
+		legend "VEF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		file ./Conservation_of_mass_VEF_QC/Conservation_of_mass_VEF_QC_TEMPERATURE.son 
+	Style linespoints
+	}
+	Curve {
+		legend "Analytique"
+		origin "Analytique"
+		file ./Conservation_of_mass_VDF_QC/Conservation_of_mass_VDF_QC_TEMPERATURE.son 
+		columns $1 1000*exp($1*$1/60)
+	Style linespoints
+	}
+}
+Figure {
+	Title "Erreur sur la Temperature"
+	Dimension 2
+	LabelX "Temps (s)"
+	LabelY "Erreur relative (%)"
+	Curve {
+		legend "VDF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		file ./Conservation_of_mass_VDF_QC/Conservation_of_mass_VDF_QC_TEMPERATURE.son 
+	       columns $1 ((1000*exp($1*$1/60)-$2)*100/(1000*exp($1*$1/60)))
+	Style linespoints
+	}
+	Curve {
+		legend "VEF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		file ./Conservation_of_mass_VEF_QC/Conservation_of_mass_VEF_QC_TEMPERATURE.son 
+		columns $1 ((1000*exp($1*$1/60)-$2)*100/(1000*exp($1*$1/60)))	
+	Style linespoints
+	}
+
+}
+
+}
+Chapter {
+	Title "Evolution de la masse volumique"
+	Description "voir fiche de validation Conservation_of_mass_QC"
+Figure {
+	Title "rho"
+	Dimension 2
+	LabelX "Temps (s)"
+	LabelY "Rho (kg/m3)"
+	Curve {
+		legend "VDF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		file ./Conservation_of_mass_VDF_QC/Conservation_of_mass_VDF_QC_RHO.son 
+	Style linespoints
+	}
+	Curve {
+		legend "VEF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		file ./Conservation_of_mass_VEF_QC/Conservation_of_mass_VEF_QC_RHO.son 
+	Style linespoints
+	}
+	Curve {
+		legend "Analytique"
+		origin "Analytique"
+		file ./Conservation_of_mass_VDF_QC/Conservation_of_mass_VDF_QC_RHO.son 
+		columns $1 exp(-$1*$1/60)
+	Style linespoints
+	}
+}
+Figure {
+	Title "Erreur sur rho"
+	Dimension 2
+	LabelX "Temps (s)"
+	LabelY "Erreur relative (%)"
+	Curve {
+		legend "VDF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		file ./Conservation_of_mass_VDF_QC/Conservation_of_mass_VDF_QC_RHO.son 
+	       columns $1 (-(1*exp(-$1*$1/60)-$2)*100/exp(-$1*$1/60))
+	Style linespoints
+	}
+	Curve {
+		legend "VEF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		file ./Conservation_of_mass_VEF_QC/Conservation_of_mass_VEF_QC_RHO.son 
+		columns $1 (-(1*exp(-$1*$1/60)-$2)*100/exp(-$1*$1/60))
+	Style linespoints
+	}
+
+}
+
+}
+
+Chapter {
+	Title "Evolution de vitesse verticale"
+	Description "voir fiche de validation Conservation_of_mass_QC"
+Figure {
+	Title "vitesse suivant y"
+	Dimension 2
+	LabelX "Temps (s)"
+	LabelY "Uy (m/s)"
+	Curve {
+		legend "VDF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		file ./Conservation_of_mass_VDF_QC/Conservation_of_mass_VDF_QC_VITESSE.son 
+		columns $1 $3
+	Style linespoints
+	}
+	Curve {
+		legend "VEF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		file ./Conservation_of_mass_VEF_QC/Conservation_of_mass_VEF_QC_VITESSE.son 
+		columns $1 $3
+	Style linespoints
+	}
+	Curve {
+		legend "Analytique"
+		origin "Analytique"
+		file ./Conservation_of_mass_VDF_QC/Conservation_of_mass_VDF_QC_VITESSE.son 
+		columns $1 ($1/30.)
+	Style linespoints
+	}
+}
+Figure {
+	Title "Erreur sur la vitesse verticale"
+	Dimension 2
+	LabelX "Temps (s)"
+	LabelY "Erreur relative (%)"
+	Curve {
+		legend "VDF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		file ./Conservation_of_mass_VDF_QC/Conservation_of_mass_VDF_QC_VITESSE.son 
+	       columns $1 (($1/30-$3)*100/($1/30))
+	Style linespoints
+	}
+	Curve {
+		legend "VEF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		file ./Conservation_of_mass_VEF_QC/Conservation_of_mass_VEF_QC_VITESSE.son 
+		columns $1 (($1/30-$3)*100/($1/30))
+	Style linespoints
+	}
+
+}
+
+}
+
+Chapter {
+	Title "Evolution de la pression"
+	Description "voir fiche de validation Conservation_of_mass_QC"
+Figure {
+	Title "Pression de sortie"
+	Dimension 2
+	LabelX "Temps (s)"
+	LabelY "P (Pa)"
+	Curve {
+		legend "VDF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		file ./Conservation_of_mass_VDF_QC/Conservation_of_mass_VDF_QC_PRESSION.son 
+	Style linespoints
+	}
+	Curve {
+		legend "VEF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		file ./Conservation_of_mass_VEF_QC/Conservation_of_mass_VEF_QC_PRESSION.son 
+	Style linespoints
+	}
+	Curve {
+		legend "Analytique pour VDF"
+		origin "Analytique"
+		file ./Conservation_of_mass_VDF_QC/Conservation_of_mass_VDF_QC_PRESSION.son 
+		columns $1 (1./60*(1+1./30*$1*$1))*1*exp(-$1*$1/60)*(1-0.55*0.55)
+	Style linespoints
+	}
+	Curve {
+		legend "Analytique pour VEF"
+		origin "Analytique"
+		file ./Conservation_of_mass_VDF_QC/Conservation_of_mass_VDF_QC_PRESSION.son 
+		columns $1 (1./60*(1+1./30*$1*$1))*1*exp(-$1*$1/60)*(1-0.5*0.5)
+	Style linespoints
+	}
+}
+Figure {
+	Title "Erreur sur P"
+	Dimension 2
+	LabelX "Temps (s)"
+	LabelY "Erreur relative (%)"
+	rangeX 1 16
+	Curve {
+		legend "VDF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		file ./Conservation_of_mass_VDF_QC/Conservation_of_mass_VDF_QC_PRESSION.son 
+	       columns $1 ((((1./60*(1+1./30*$1*$1))*1*exp(-$1*$1/60)*(1-0.55*0.55))-$2)*100/((1./60*(1+1./30*$1*$1))*1*exp(-$1*$1/60)*(1-0.55*0.55)))
+	Style linespoints
+	}
+	Curve {
+		legend "VEF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		file ./Conservation_of_mass_VEF_QC/Conservation_of_mass_VEF_QC_PRESSION.son 
+		columns $1 ((((1./60*(1+1./30*$1*$1))*1*exp(-$1*$1/60)*(1-0.5*0.5))-$2)*100/((1./60*(1+1./30*$1*$1))*1*exp(-$1*$1/60)*(1-0.5*0.5)))
+	Style linespoints
+	}
+
+}
+
+}
+
+Chapter {
+	Title "Profil de pression a t=10s"
+	Description "voir fiche de validation Conservation_of_mass_QC"
+Figure {
+	Title "Pression de sortie"
+	Dimension 2
+	LabelX "Y (m)"
+	LabelY "P (Pa)"
+	Curve {
+		legend "VDF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		segment ./Conservation_of_mass_VDF_QC/Conservation_of_mass_VDF_QC sonde_p 10.
+	Style linespoints
+	}
+	Curve {
+		legend "VEF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		segment ./Conservation_of_mass_VEF_QC/Conservation_of_mass_VEF_QC sonde_p 10. 
+	Style linespoints
+	}
+	Curve {
+		legend "Analytique"
+		origin "Analytique"
+		segment ./Conservation_of_mass_VDF_QC/Conservation_of_mass_VDF_QC sonde_p 10.
+		columns $1 (1./60*(1+1./30*10.*10.))*1*exp(-10.*10./60)*(1-$1*$1)
+	Style linespoints
+	}
+}
+Figure {
+	Title "Erreur sur P"
+	Dimension 2
+	LabelX "Temps (s)"
+	LabelY "Erreur relative (%)"
+	rangeY 0 20
+	Description "La pression ne marche pas bien. Pourquoi ? La solution analytique est elle juste ?"
+	Curve {
+		legend "VDF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		segment ./Conservation_of_mass_VDF_QC/Conservation_of_mass_VDF_QC sonde_p 10.
+		columns $1 ((1./60*(1+1./30*10.*10.))*1*exp(-10.*10./60)*(1-$1*$1)-$2)/((1./60*(1+1./30*10.*10.))*1*exp(-10.*10./60)*(1-$1*$1))*100
+	      
+	Style linespoints
+	}
+	Curve {
+		legend "VEF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+	segment ./Conservation_of_mass_VEF_QC/Conservation_of_mass_VEF_QC sonde_p 10.
+		#Colonnes $1 ((1./60*(1+1./30*10.*10.))*1*exp(-10.*10./60)*(1-$1*$1)-$2)/((1./60*(1+1./30*10.*10.))*1*exp(-10.*10./60)*(1-$1*$1))*100
+	         columns $1 $1
+	Style linespoints
+	}
+
+}
+}
+Chapter {
+	Title "Verification de la conservation de masse avec debit impose"
+	figure {
+	Title "Evolution de rho_moyen"
+	dimension 2
+	LabelX "Temps (s)"
+	LabelY "rho (kg/m3)"
+	Curve {
+	legend "rho_moyen"
+		origin "Trio_U"
+	file Conserv_Masse_QC_rho_u/evol_glob
+	columns $1 $3
+	style linespoints
+	}
+	Curve {
+	legend "rho_moyen en Piso"
+	origin "Trio_U"
+	file Conserv_Masse_QC_rho_u_Piso/evol_glob
+	columns $1 $3
+	style linespoints
+	}
+	Curve {
+	legend "analytique a t_n"
+	file Conserv_Masse_QC_rho_u_Piso/evol_glob
+	columns $1 (0.833834+0.1*$1*(100*$1-9))
+	style linespoints
+	} 
+	Curve {
+	legend "analytique a t_n-1"
+	file Conserv_Masse_QC_rho_u_Piso/evol_glob
+	columns $1 (0.833834+(0.1*$1-0.001)*(100*$1-10))
+	style linespoints
+	} 
+	Curve {
+	legend "analytique a t_n-1/2 (moyenne des precedents)"
+	file Conserv_Masse_QC_rho_u_Piso/evol_glob
+	columns $1 ((0.833834+0.1*$1*(100*$1-9))+(0.833834+(0.1*$1-0.001)*(100*$1-10)))/2
+	style linespoints
+	} 	
+}
+figure {
+	Title "Evolution du debit"
+	dimension 2
+	LabelX "Temps (s)"
+	LabelY "Q (kg/s)"
+	Curve {
+	legend "rho_moyen"
+		origin "Trio_U"
+	file Conserv_Masse_QC_rho_u/Conserv_Masse_QC_rho_u_pb_Debit.out
+	columns $1 $4
+	style linespoints
+	}
+	Curve {
+	legend "rho_moyen en piso"
+	origin "Trio_U"
+	file Conserv_Masse_QC_rho_u_Piso/Conserv_Masse_QC_rho_u_Piso_pb_Debit.out
+	columns $1 $4
+	style linespoints
+	}
+	Curve {
+	legend "analytique"
+	file Conserv_Masse_QC_rho_u_Piso/evol_glob
+	columns $1 (-(20*$1-1))
+	style lines
+	} 	
+}
+figure {
+	Title "Bilan de masse par maille"
+	dimension 2
+	LabelX "Pas de temps"
+	LabelY "Erreur (kg/s)"
+	Curve {
+	legend "Bilan de masse par maille"
+		origin "Trio_U"
+	file Conserv_Masse_QC_rho_u/cons_mass.out
+	columns $1 $2
+	style linespoints
+	}
+	Curve {
+	legend "Bilan de masse par maille en Piso"
+		origin "Trio_U"
+	file Conserv_Masse_QC_rho_u_Piso/cons_mass.out
+	columns $1 $2
+	style linespoints
+	}
+}
+}
+

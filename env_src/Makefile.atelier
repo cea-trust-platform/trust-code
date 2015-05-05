@@ -1,0 +1,92 @@
+OPT=opt_compile
+include $(TRUST_ENV)/make.$(TRUST_ARCH_CC)$(OPT)
+include $(TRUST_ENV)/make.lib$(LIB_EXTENSION)
+include $(TRUST_ENV)/make.all_Includes.TRUST
+  
+# Surcharge de Libs pour l'atelier 
+# Ajoutez vos librairies a la suite
+LIB = $(TRUST_LIB)/TRUST$(COMM)$(OPT).a
+#LD=$(TRUST_CC) $(CppFlags)
+LD=$(TRUST_CC)
+LD3=$(TRUST_CC) -static $(CppFlags)
+Libs2= $(rep_dev)/exec${OPT}/libatelier${OPT}.$(SL_EXTENSION) $(Libs)
+include make.include.atelier
+#Includes = -I. -I$(DIPHA_ROOT)/include $(all_Includes)
+
+PROGRAM       = TRUST$(COMM)$(OPT)
+PROGRAM2       = TRUST$(COMM)$(OPT)_dyn
+PROGRAM3       = TRUST$(COMM)$(OPT)_st
+
+MODULE		=_TRUSTModule$(OPT).$(SL_EXTENSION) 
+MALIB = TRUST$(COMM)$(OPT).$(LIB_EXTENSION)
+
+.SUFFIXES: .cpp .C .c .f .o
+.cpp.o:
+	@echo $< $(Defines); $(TRUST_CC) -c $< $(CppFlags)
+.C.o:
+	@echo $< $(Defines); $(TRUST_cc) -c $< $(ccFLAGS)
+.c.o:
+	@echo $< $(Defines); $(TRUST_cc) -c $< $(ccFLAGS)
+.f.o:
+	@echo $< $(Defines); $(TRUST_F77) -c $< $(F77Flags)
+
+all:            $(PROGRAM)
+lib:	$(Lib).$(SL_EXTENSION)
+dyn:	$(PROGRAM2)
+stat:	$(PROGRAM3)
+clean:
+	@rm -f $(OBJS) $(MALIB) $(PROGRAM) $(PROGRAM2) $(PROGRAM3) 
+depend_trio:
+	@make_depend_TRUST $(Includes) $(SYSINC) $(SYSINC_DEP) $(Defines)
+# GF maintenant on ne supprime plus rien des dependances dans les ateliers
+depend:
+	@cree_info_atelier.sh 
+	@make_depend_TRUST system_include $(Includes) $(SYSINC) $(SYSINC_DEP) $(Defines)
+
+OBJS= 
+
+$(MALIB):       $(OBJS)
+		@if [ $(TRUST_ARCH) = RS6000 ] && [ -f $(TRUST_LIB)/$(LIB) ];then \
+		cp -f $(TRUST_LIB)/$(LIB) $(MALIB);fi
+		@cree_MALIB $(MALIB)
+
+$(PROGRAM):     $(LIB) $(MALIB) $(MAKEFILE)
+		@echo "Linking $(PROGRAM) ..."
+		@echo "Please wait ..."
+		@if [ ! -f $(MALIB) ] || [ "`ar -t $(MALIB)`" = "" ];then \
+		$(LD) -o $(PROGRAM) $(Libs) $(SYSLIBS);else \
+		$(LD) -o $(PROGRAM) $(LINK_MALIB) $(Libs) $(SYSLIBS);fi
+		@echo "done"
+
+$(PROGRAM3):    $(LIB) $(MALIB) $(MAKEFILE)
+		@echo "Linking $(PROGRAM3) ..."
+		@echo "ca peut prendre un peu de temps ..."
+		@if [ ! -f $(MALIB) ] || [ "`ar -t $(MALIB)`" = "" ];then \
+		$(LD3) -o $(PROGRAM3) $(Libs) $(SYSLIBS);else \
+		$(LD3) -o $(PROGRAM3) $(LINK_MALIB) $(Libs) $(SYSLIBS);fi
+		@echo "done"
+
+$(Lib).$(SL_EXTENSION):	$(OBJS)
+	@echo "ca peut prendre un peu de temps ..."
+	@$(ShLibFlag) -o $(Lib).$(SL_EXTENSION) $(OBJS)
+	@echo "$(Lib).$(SL_EXTENSION) est a jour"
+
+$(PROGRAM2):	lib $(MAKEFILE)
+	@touch  $(PROGRAM2)
+	@rm $(PROGRAM2)
+	@echo "Linking $(PROGRAM2) ..."
+	@echo "ca peut prendre un peu de temps ..."
+	@if [ ! -f $(MALIB) ] || [ "`ar -t $(MALIB)`" = "" ];then \
+	$(LD) -o $(PROGRAM2) $(Libs2) $(SYSLIBS);else \
+	$(LD) -o $(PROGRAM2) $(Libs2)  $(SYSLIBS);fi
+	@echo "done"
+$(MODULE): $(OBJS) 
+	@echo "Linking $(MODULE)"
+	@$(ShLibFlag) $(OBJS) $(TRUST_LIB)/TRUST${COMM}${OPT}.a -o $@ $(Libs)  $(SYSLIBS)
+	@echo "done"
+module: $(MODULE)
+
+SRCS=
+
+$(OBJS): $(TRUST_ENV)/make.$(TRUST_ARCH_CC)$(OPT)
+# DO NOT DELETE

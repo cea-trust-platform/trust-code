@@ -1,0 +1,426 @@
+#!/bin/bash
+#set -xv
+avec_xterm=1
+[ "$1" = "-no_xterm" ] && avec_xterm=0 && shift
+base_prep()
+{
+#set -xv
+# usage pwd nom_du_cas flag (flag=1 raccord local flag=2 raccord distant)
+#echo "ici2 $BASE"
+CPPOPT="-I. -I$1"
+dir="."
+[ "$1" != "" ] && dir=$1/../prepro
+cd $dir
+echo `pwd`
+echo $1 $2
+$BASE/info.cl $1 $2 1> infobord 
+$BASE/info.cl $1 $2
+[ "`uname -s`" = "Linux" ] && CPPOPT="-I. -I$1 -traditional" 
+[ "$FLUSHOK" = "1" ] && CPPOPT="$CPPOPT -DFLUSHOK"
+ln -s ../model/avs/model.xi .
+ln -s ../model/avs/model.yi .
+ln -s ../model/avs/model.zi .
+ln -s ../model/avs/model.val .
+#if [ ! -f ../model/avs/model.rac ]
+#then
+#    
+#cpp -P $CPPOPT -DVALEUR_DU_PB=$num -DdNNPRB=$totpb -DdNNBOR=$totcl -DdNUMPB=$listpb -DdNUMCL=$listcl $BASE/convert.F > convert.f
+#f77 convert.f -o convert
+#convert
+#rm convert convert.f
+#else
+    ln -s ../model//avs/model.rac .
+if [ -f ../model/avs/model.dec ]
+then
+ln -s ../model/avs/model.dec .
+CPPOPT2=$CPPOPT 
+CPPOPT="$CPPOPT  -DDECOUPAGE"
+echo $CPPOPT
+else
+echo "pas de decoupage"
+touch model.dec
+rm model.dec
+touch model.dec
+fi
+
+#fi
+#if [ ! -f 'prepro_inc2' ]
+# then
+#  echo ' **     Fichier prepo_inc2 abscent    **'
+#  exit
+#fi
+if [ ! -f 'model.zi' ]
+ then
+  echo ' **     File model.zi not found    **'
+  echo ' **         STOP  RUNING        **'
+  exit
+fi
+if [ ! -f 'model.xi' ]
+ then
+  echo ' **     File model.xi not found    **'
+  echo ' **         STOP  RUNING        **'
+  exit
+fi
+if [ ! -f 'model.yi' ]
+ then
+  echo ' **     File model.yi not found    **'
+  echo ' **         STOP  RUNING        **'
+  exit
+fi
+if [ ! -f 'model.val' ]
+ then
+  echo ' **     File model.val not found    **'
+  echo ' **         STOP  RUNING         **'
+  exit
+fi
+if [ ! -f 'model.rac' ]
+ then
+  echo ' **     File model.rac not found    **'
+  echo ' **         STOP  RUNING         **'
+  exit
+fi
+if [ -x 'prepro' ]
+ then
+  rm prepro prepro.exe
+fi
+if [ -f 'prepro.f' ]
+ then
+  rm prepro.f
+fi
+if [ -f 'prepro.o' ]
+ then
+  rm prepro.o
+fi
+if [ -d 'Probleme1' ]
+then
+    echo "destruction des repertoires Probleme*"
+    rm -r -f Probleme*
+fi
+# lecture de appel.h pour recupere le nombre de pb et les cl
+listind2="`grep "INDMAT=" $1/appel.h | $TRUST_Awk -F= '{print $2}' | sort -n -u`" 
+
+listind="`grep "INDMAT=" $1/appel.h | $TRUST_Awk -F= '{if ($2 <0)  {print ($2)}  else {  print ( $2-$2%1000 ) }}'|sort -n -u`"
+
+#echo ici $listind;exit
+
+totpb=0
+totcl=1
+listpb=""
+listcl=""
+for i in $listind 
+do
+    if  [ $i -gt 0 ]
+	then
+	 # ind d'un pb
+	 totpb="` expr $totpb + 1`"
+	 listpb="$listpb,$i"
+	else
+	 [ $i -ne  0 ]  && totcl="` expr $totcl + 1`"
+	 listcl="$listcl$i,"
+	fi
+done
+listpb="`echo $listpb | sed "s/,//"`"
+listcl="${listcl}0"
+listcl=`echo ${listcl} | sed "s/,0,0/,0/"`
+echo "nb de pbs $totpb ; pbs: $listpb"
+listcl=`grep "Bord " infobord | $TRUST_Awk -F, '{ {print ($(NF-1),",")}}'`
+listcl=`echo ${listcl}inut | sed "s/ //g" | sed "s/,inut//"`
+totclold=$totcl
+#totcl=`echo $listcl | $TRUST_Awk -F, '{print (NF)}'`
+#cp infobord infobord.old
+totcl=`cat infobord | grep "Bord " | wc -l | $TRUST_Awk '{print $1}'`
+echo "nb de bord $totcl ; cls: $listcl"
+
+#echo $listcl | $TRUST_Awk -F, 'BEGIN {printf("%s","       DATA NUMCL/\n     s ")}{for (i=1;i<NF;i++) {printf("%s,",$i);if (i%7==0) printf("\n     s ");};print $NF}' >numcl.h
+#xemacs infobord
+cat infobord | $TRUST_Awk -v ncl=$totcl -F, 'BEGIN {i=0;printf("%s","       DATA NUMCL/\n     s ")} /Bord / {i++;if ((i==ncl) ) printf("%s",$2);else printf("%s ,",$2);if (i%7==0) printf("\n     s ");}
+END {printf("\n")}' >numcl.h
+echo "     s /" >> numcl.h
+
+#exit
+# RECUPERATION DU NOM DES BORDS....
+grep  "Bord " infobord | $TRUST_Awk -F, '{if ($NF!="") {print $NF} else {print  "cl_pas_nomme"}}'  > nomsbord
+if [ "`grep cl_pas_nomme nomsbord`" != "" ]
+then
+	echo 
+	echo  "!!!!!!!!!!!!!!!!!!!!!!!"
+	echo "WARNING At least one boundary has not been named"
+	echo "Geometry cannot be readen by TRUST"
+	echo  "!!!!!!!!!!!!!!!!!!!!!!!"
+	echo 
+	#exit
+fi
+
+test_coupe_2D=0
+test_coupe_Axi2D=0
+[ "`grep coupe_2D nomsbord`" = "coupe_2D" ] && test_coupe_2D=1
+[ "`grep coupe_Axi2D nomsbord`" = "coupe_Axi2D" ] && test_coupe_Axi2D=1
+
+# RECUPERATION DE LA VALEUR NNPRB (prepro_inc)
+#grep '#define NNPRB' prepro_inc2 > tmp
+#totpb=`$TRUST_Awk '{print $3}' tmp`
+#rm tmp
+#deinition de NSRAC
+nsrac=10
+res2=`grep INDMAT= $1/appelrac.h | wc -l| $TRUST_Awk '{print ($1+1)}'`
+#echo $nsrac "a"$res2"b"
+if [ $res2 -gt $nsrac ]
+then
+    nsrac=$res2
+fi
+nsrac=$res2
+echo "nb max de sous raccord:"$nsrac! 
+# ITERATION SUR LES PROBLEMES DE 1 A NNPRB (prepro_inc)
+num=1
+#echo $listpb
+listpbsa=$listpb
+listpbsa=$listpb
+ntot2=`echo $listpb | $TRUST_Awk -F\, '{print $NF/1000}'`
+if [ $totpb != $ntot2 ]
+then 
+echo
+echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+echo "WARNING: problems are adding since the problems have not succesive number" 
+totpb=$ntot2
+listpbtest=1000
+itest=2
+
+while [ $itest -le $totpb ]
+do
+listpbtest=$listpbtest","$itest"000"
+let itest=$itest+1
+done
+
+echo "WARNING old problems list "$listpb
+listpb=$listpbtest
+echo "WARNING new problems list "$listpb
+echo
+fi
+#exit 
+# On definit des variables a l'exterieur de la boucle sur les problemes car la variable F77 est modifiee sur RS6000
+XLF=0 && [ "$TRUST_ARCH" = RS6000 ] && XLF=1
+F90=0 && [ "`basename $TRUST_F77_BASE`" = f90 ] && F90=1
+GFORT=0 && [ "`basename $TRUST_F77_BASE`" = gfortran ] && GFORT=1
+
+while [ $num -le $totpb ]
+do
+# on teste si le pb est a traite ou si il est rajoute
+#
+    if [ -d 'Probleme'$num ]
+        then
+         echo '   ****************************************'
+         echo '   ** ECRASEMENT DU REPERTOIRE Probleme'$num' **'
+         echo '   ****************************************'
+         rm -rf Probleme$num
+      fi
+   te=`echo $listpbsa | grep $num"000"  `
+   #echo $num $te
+    [ "$te" = "" ] &&   num=`expr $num + 1` && continue
+   echo 
+   echo '                 ***************************************'
+   echo '                 ** TRAITEMENT DU PROBLEME NUMERO '$num'  **'
+   echo '                 ***************************************'  
+   #cp prepro_inc2 prepro_sauv
+   #sed -e 's/VALEUR_DU_PB/'$num'/' prepro_inc2 > tmp
+   #mv tmp prepro_inc2
+   cpp -P $CPPOPT -DVALEUR_DU_PB=$num -DdNNPRB=$totpb -DdNNBOR=$totcl -DdNUMPB=$listpb  -DdNSRAC=$nsrac -DdVALINDFOR=$3 $BASE/prepro_inc2 > prepro.f
+   # Pour xlf, pb de portabilite, on supprime ACCESS='APPEND' car ecrit a la suite par defaut
+   [ $XLF = 1 ] &&  echo $ECHO_OPTS "1,$ s?ACCESS='APPEND',?POSITION='APPEND',?g\nw" | ed prepro.f 1>/dev/null 2>&1
+
+   # Pour gfortran, pb de portabilite, on remplace ACCESS='APPEND' 
+   [ $GFORT = 1 ] && echo $ECHO_OPTS "1,$ s?ACCESS='APPEND',?POSITION='APPEND',?g\nw" | ed prepro.f 1>/dev/null 2>&1
+   if [ -f 'prepro.f' ]
+   then
+      if [ ${#TRUST_ENV} != 0 ]
+      then
+         # Environnement TRUST
+         cp $BASE/Xprepro_makefile .
+	 # On modifie le Makefile pour fortran 90 en rajoutant -lc_r
+	 chmod +w Xprepro_makefile
+	 if [ $F90 = 1 ]
+	 then
+	    if [ $TRUST_ARCH = HPPA_11 ]
+	    then
+	   	# Le +noppu est pour le _ en 64bits des appels fortran
+	   	# le -lnsl est pour les unsatisfied symbols xdr...
+	       echo $ECHO_OPTS "1,$ s?-o?+noppu -lnsl -o?g\nw" | ed Xprepro_makefile 1>/dev/null 2>&1
+	    else
+	       echo $ECHO_OPTS "1,$ s?-o?-lc_r -o?g\nw" | ed Xprepro_makefile 1>/dev/null 2>&1
+	    fi
+	 fi
+         if [ $TRUST_ARCH = linux ]
+         then	 
+	    # Pb avec linux: si optimise alors erreur due au cos->dcos ?
+            BITS=`uname -m`
+   	    mcmodel=""
+	    if [ "$BITS" != "${BITS%64}" ]
+	    then
+	       # Test de l'option de compilation suivante
+	       # Voir http://coding.derkeiler.com/Archive/Fortran/comp.lang.fortran/2009-02/msg00978.html
+	       mcmodel="-mcmodel=medium"
+	       echo $ECHO_OPTS "\c
+      program main
+      integer*8 it,two
+      parameter(it=1073741824,two=2)
+      complex foo(it*two-1)
+      foo(10)=1.
+      end      " > mcmodel.f
+	       $TRUST_F77 $mcmodel -o mcmodel mcmodel.f 1>/dev/null 2>&1
+	       [ $? != 0 ] && mcmodel=""
+	       rm -f mcmodel.f
+	    fi
+            # Probleme avec ifort sur de gros cas (voir http://mitgcm.org/pipermail/mitgcm-support/2005-October/003505.html)
+            [ ${TRUST_F77_BASE%ifort} != $TRUST_F77_BASE ] && F77Flags=$F77Flags" -i_dynamic"		     
+	    make prepro -f Xprepro_makefile F77Flags="$mcmodel $F77Flags" 
+	 else
+	    make prepro -f Xprepro_makefile
+	 fi
+         rm -f Xprepro_makefile
+      else
+         # Hors TRUST
+         f77 prepro.f -o prepro
+      fi
+   fi
+   if [ -x 'prepro' ]
+    then
+      rm -f prepro.f prepro.o 
+      
+      mkdir Probleme$num
+      cp infobord Probleme$num/.
+      ln -s ../../model/avs/model.dec Probleme$num/.
+      ln -s ../../model/avs/model.val Probleme$num/.
+      ln -s ../../model/avs/model.rac Probleme$num/.
+      ln -s ../../model/avs/model.zi Probleme$num/.
+      ln -s ../../model/avs/model.yi Probleme$num/.
+      ln -s ../../model/avs/model.xi Probleme$num/.
+      mv prepro* Probleme$num/.
+      echo '   ****************************************'
+      echo '   ** LANCEMENT DU PREPRO SOUS Probleme'$num' **'
+      echo '   ****************************************'
+      cd Probleme$num
+      
+      ./prepro
+      
+      rm fic_tmp prepro* model.val model.zi model.yi model.xi model.rac model.dec
+      rm -f Bord* Coordo_Prob Maille_Prob Raccord* Recapitu_Fac Recapitul_Pb1 r_*_*
+      mv Pb.geos Pb$num.geos
+      mv Pb.geom Pb$num.geom
+      mv Def_Suz_def_pb Def_Suz_def_pb$num
+      mv Suz_def_pb Suz_def_pb$num
+      mv infobord infobord$num
+      cd ..
+    else 
+     echo "problem during compilation"
+     f77 -C -g prepro.f -o prepro 1>.log.out 2>.log.out
+     cat .log.out
+     rm .log.out
+
+   fi
+   num=`expr $num + 1`
+   #mv prepro_sauv prepro_inc2
+done
+
+echo 
+echo '*********************************************************************'
+if [ -d 'Probleme1' ]
+  then
+    echo '**  PREPARATION DU REPERTOIRE DE TRANSFORMATION DES GEOM EN GEOBIN **'
+    echo '**                                                                 **'
+    if [ -d 'trans_geom' ]
+     then
+       echo '**     Ecrasement du repertoire trans_geom precedent                **'
+       rm -rf trans_geom
+    fi
+    mkdir trans_geom
+	echo "# transformation des geom en geobin #">trans_geom/trans_geom.data 
+	echo "dimension 3" >> trans_geom/trans_geom.data
+	cat $BASE/test.data > trans_geom/test.data
+	[ $test_coupe_2D = 1 ] || [ $test_coupe_Axi2D = 1 ] && echo "# extraction du domaine 2D #">trans_geom/3Dto2D.data && echo "dimension 3">>trans_geom/3Dto2D.data
+
+    comt=1
+    truc=`pwd`
+    for i in Probleme*
+     do
+     comt=${i#Probleme}
+     #echo Probleme $i
+     # ln -s -s $truc/$i/Pb$comt.geom trans_geom/Pb$comt.geom
+     # cp $truc/$i/Pb$comt.geos trans_geom/Pb$comt.geos
+	ln  -s $truc/$i/* trans_geom/.
+	[ ! -s $truc/$i/Suz_def_pb$comt ] && rm trans_geom/Def_Suz_def_pb$comt
+	 echo "Domaine dom_pb$comt ">> trans_geom/trans_geom.data  
+	 echo "Lire_fichier dom_pb$comt Pb$comt.geom" >> trans_geom/trans_geom.data  
+	 echo "Ecrire_fichier_bin dom_pb$comt Pb$comt.geobin" >> trans_geom/trans_geom.data  
+	  [ "$GEOMED" != "" ] && echo "Reordonner dom_pb$comt">>trans_geom/trans_geom.data && echo "EcrMED dom_pb$comt `basename $2 .prep`.med">>trans_geom/trans_geom.data  
+	 
+         echo "Pb_Hydraulique pb$comt" >> trans_geom/test.data
+	 echo "Associer pb$comt dom_pb$comt" >> trans_geom/test.data
+	 echo "Associer pb$comt sch" >> trans_geom/test.data
+	 echo "Fluide_Incompressible fluide$comt" >> trans_geom/test.data
+	 echo "Lire fluide$comt { mu Champ_Uniforme 1 1.85e-5 rho Champ_Uniforme 1 1. }" >> trans_geom/test.data
+	 echo "Associer pb$comt fluide$comt" >> trans_geom/test.data
+	 echo "Discretiser pb$comt dis" >> trans_geom/test.data
+
+	 if [ $test_coupe_2D = 1 ] || [ $test_coupe_Axi2D = 1 ]
+	 then
+	   srt=trans_geom/3Dto2D.data
+	   echo "Domaine dom_pb$comt ">> $srt
+	   echo "Lire_fichier dom_pb$comt Pb$comt.geom" >>$srt
+	   if [ $test_coupe_2D = 1 ]
+	   then
+	   echo "Extract_2D_from_3D dom_pb$comt coupe_2D  dom_$comt" >>$srt
+	    echo "Ecrire_fichier dom_$comt Pb${comt}_2D.geom" >> $srt
+	   else
+	   echo "Extract_2Daxi_from_3D dom_pb$comt coupe_Axi2D  dom_$comt" >> $srt
+	    echo "Ecrire_fichier dom_$comt Pb${comt}_2DAxi.geom" >> $srt
+	   fi
+	 fi
+	 
+       comt=`expr $comt + 1`
+     done
+     sz=`ls trans_geom/Def_Suz_def_pb* 2>/dev/null`
+     [ ${#sz} != 0 ] && cat trans_geom/Def_Suz_def_pb* >> trans_geom/trans_geom.data
+     cat trans_geom/trans_geom.data trans_geom/test.data >  trans_geom/p.data
+     mv  trans_geom/p.data trans_geom/test.data
+     echo '**        Liens crees sous le repertoire trans_geom                **'
+     echo '**                                                                 **'
+     if [ $test_coupe_2D = 1 ] || [ $test_coupe_Axi2D = 1 ]
+     then
+	 echo $BASE/iTriou 3Dto2D $truc/trans_geom
+ 	 $BASE/iTriou 3Dto2D $truc
+     else
+	 echo $BASE/iTriou test $truc/trans_geom
+ 	 $BASE/iTriou test $truc
+     fi
+     [ "$GEOMED" != "" ] && $BASE/iTriou trans_geom $truc
+fi
+echo '**                   TRAITEMENT TERMINE                            **'
+echo '*********************************************************************'
+echo 
+echo `pwd`
+rm model.xi 
+rm model.yi 
+rm model.zi 
+rm model.val
+rm model.rac
+rm model.dec 
+rm infobord
+rm numcl.h
+}
+echo $0 $*
+BASE=`dirname $0`
+export BASE
+base_prep $*   1> $1/prep.out 2>&1 &
+proc1=$!
+sleep 2
+[ "$Xterm" = "" ] && Xterm=xterm 
+if [ $avec_xterm -eq 1 ]
+then 
+ $Xterm -e tail -f $1/prep.out &
+ proc2=$!
+ wait $proc1 &&  kill -9  $proc2
+else
+ wait $proc1
+fi
+
+cat $1/prep.out
+echo ok

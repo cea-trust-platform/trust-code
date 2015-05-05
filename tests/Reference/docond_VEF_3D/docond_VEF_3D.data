@@ -1,0 +1,370 @@
+# Thermohydraulique 3D couplee a conduction 3D #
+# PARALLEL OK #
+dimension 3
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0.
+	tmax 5.
+	dt_min 1.e-6
+	dt_max 1.e-1
+	dt_impr 1.
+	dt_sauv 20.
+	seuil_statio 1.e-8
+	nb_pas_dt_max 50000
+}
+
+Pb_conduction pb1
+Pb_Thermohydraulique pb2
+
+Domaine dom_solide
+Domaine dom_fluide
+
+# BEGIN MESH #
+Mailler dom_solide
+{
+	Pave Cavite1
+		{
+		Origine 0. 0. 0.
+     		Nombre_de_Noeuds 4 11 4
+		Longueurs 0.3 1.0 1.
+		}
+		{
+		Bord paroi_a_40 			X = 0.   0.  <= Y <= 1.0  0. <= Z <= 1.
+		Bord paroi_a_20   			Y = 1.0  0.  <= X <= 0.3  0. <= Z <= 1.
+		Bord paroi_a_40    			Y = 0.   0.  <= X <= 0.3  0. <= Z <= 1.
+		Raccord local homogene Paroi_echange1  	X = 0.3  0.3 <= Y <= 1.0  0. <= Z <= 1.
+		Bord Devant1 				Z = 0. 0. <= X <= 0.3  0. <= Y <= 1.
+		Bord Derriere1 				Z = 1. 0. <= X <= 0.3  0. <= Y <= 1.
+		} ,
+	Pave Cavite2
+		{
+		Origine 0.3 0. 0.
+		Nombre_de_Noeuds 8 4 4
+		Longueurs 0.7 0.3 1.
+		}
+		{
+		Raccord local homogene Paroi_echange1   Y = 0.3  0.3 <= X <= 1.0  0. <= Z <= 1.
+		Bord paroi_a_40    			Y = 0.   0.3 <= X <= 1.0  0. <= Z <= 1.
+		Bord paroi_a_20  			X = 1.0  0.  <= Y <= 0.3  0. <= Z <= 1.
+		Bord Devant2 				Z = 0. 0.3 <= X <= 1.0  0. <= Y <= 0.3
+		Bord Derriere2 				Z = 1. 0.3 <= X <= 1.0  0. <= Y <= 0.3
+		}
+}
+
+Mailler dom_fluide
+{
+	Pave Cavite3
+		{
+		Origine 0.3 0.3 0
+		Nombre_de_Noeuds 8 8 4
+		Longueurs 0.7 0.7 1.
+		}
+		{
+		Raccord local homogene Paroi_echange2   X = 0.3  0.3 <= Y <= 1.0  0. <= Z <= 1.
+		Bord Entree    				Y = 1.0  0.3 <= X <= 0.7  0. <= Z <= 1.
+		Bord Paroi     				Y = 1.0  0.7 <= X <= 1.0  0. <= Z <= 1.
+		Raccord local homogene Paroi_echange2   Y = 0.3  0.3 <= X <= 1.0  0. <= Z <= 1.
+		Bord Sortie    				X = 1.0  0.3 <= Y <= 0.7  0. <= Z <= 1.
+		Bord Paroi				X = 1.0  0.7 <= Y <= 1.0  0. <= Z <= 1.
+		Bord Devant3   				Z = 0. 0.3 <= X <= 1. 0.3 <= Y <= 1.0
+		Bord Derriere3 				Z = 1. 0.3 <= X <= 1. 0.3 <= Y <= 1.0
+		}
+}
+
+Tetraedriser_homogene_compact dom_solide
+Tetraedriser_homogene_compact dom_fluide
+
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom_solide
+{
+	Partitionneur metis { Nb_parts 2 }
+	Larg_joint 1
+	Nom_Zones DOM1
+}
+Partition dom_fluide
+{
+	Partitionneur metis { Nb_parts 2 }
+	Larg_joint 2
+	Nom_Zones DOM2
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM1.Zones dom_solide
+Scatter DOM2.Zones dom_fluide
+END SCATTER #
+
+VEFPreP1b dis
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 0.0018
+	rho Champ_Uniforme 1  10400
+	lambda Champ_Uniforme 1 10.09
+	Cp Champ_Uniforme 1 146.5
+	beta_th Champ_Uniforme 1 0.
+}
+
+Solide sol
+Lire sol
+{
+	rho Champ_Uniforme 1 7800.
+	lambda Champ_Uniforme 1 28.8
+	Cp Champ_Uniforme 1 562.69
+}
+
+Champ_Uniforme gravite
+Lire gravite 3 0 0 -9.81
+Associate sol gravite
+Associate fluide gravite
+
+Associate pb1 dom_solide
+Associate pb1 sol
+
+Associate pb2 dom_fluide
+Associate pb2 fluide
+
+Probleme_Couple pbc
+Associate pbc pb1
+Associate pbc pb2
+Associate pbc sch
+Discretize pbc dis
+
+Lire pb1
+{
+	Conduction
+	{
+		diffusion { }
+		sources { Puissance_Thermique champ_uniforme 1 1000 }
+		conditions_initiales {
+			temperature Champ_Uniforme 1 30.
+			}
+		boundary_conditions {
+			paroi_a_40 paroi_temperature_imposee 
+                               	Champ_Front_Uniforme 1 40.
+			paroi_a_20 paroi_temperature_imposee 
+                               	Champ_Front_Uniforme 1 20.
+		 	Paroi_echange1 paroi_contact pb2 Paroi_echange2
+			Devant1 Paroi_temperature_imposee Champ_Front_Uniforme 1 40.
+			Derriere1 Paroi_temperature_imposee Champ_Front_Uniforme 1 40.
+			Devant2 Paroi_temperature_imposee Champ_Front_Uniforme 1 40.
+			Derriere2 Paroi_temperature_imposee Champ_Front_Uniforme 1 40.
+		}
+	}
+	Postraitement
+	{
+		Sondes
+		{
+			sonde_tsol temperature periode 1. points 2 
+				0.15 0.55 0.5
+				0.55 0.15 0.5
+			sonde_segs temperature periode 5. segment 10 
+			        0. 0.75 0.5 0.3 0.75 0.5
+
+
+		}
+		
+		Champs dt_post 20.
+		{
+			temperature elem
+			temperature som
+		}
+	}
+	sauvegarde formatte solide.rep
+}
+
+Lire pb2
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.5 } 
+			seuil 1.e-12
+			impr 
+		}
+		convection { amont }
+		diffusion { }
+		sources { boussinesq_temperature { T0 30. } }
+		conditions_initiales {
+			vitesse Champ_Uniforme 3 0. 0. 0.
+			}
+		boundary_conditions {
+			Entree frontiere_ouverte_vitesse_imposee
+				Champ_front_Uniforme 3 0. -0.01 0.
+			Sortie frontiere_ouverte_vitesse_imposee
+				Champ_front_Uniforme 3 0.01 0. 0.
+			Paroi	paroi_fixe
+			Paroi_echange2 paroi_fixe
+			Devant3 paroi_fixe
+			Derriere3 paroi_fixe
+		}
+	}
+	Convection_Diffusion_Temperature
+	{
+		diffusion { }
+		convection { amont }
+		sources { Puissance_Thermique champ_uniforme 1 100 }
+		boundary_conditions 
+		{
+			Entree frontiere_ouverte_temperature_imposee
+				Champ_front_Uniforme 1 20.
+			Sortie frontiere_ouverte_temperature_imposee
+				Champ_front_Uniforme 1 20.
+			Paroi_echange2 paroi_contact pb1 Paroi_echange1
+			Paroi paroi_temperature_imposee 
+                               Champ_Front_Uniforme 1 20.
+
+			Devant3 Paroi_temperature_imposee Champ_Front_Uniforme 1 20.
+			Derriere3 Paroi_temperature_imposee Champ_Front_Uniforme 1 20.
+		}
+		conditions_initiales { Temperature Champ_Uniforme 1 30. }
+	}
+	Postraitement
+	{
+		Sondes
+		{
+			sonde_pression pression periode 1. points 1
+				0.55 0.55 0.5
+			sonde_vitesse vitesse periode 1. points 1
+				0.55 0.55 0.5
+			sonde_tflu temperature periode 1. points 1
+				0.55 0.55 0.5
+			sonde_segf temperature periode 5. segment 10 
+			        0.3 0.75 0.5 1.0 0.75 0.5
+		}
+		Definition_champs 
+		{
+		V_MEL Interpolation { localisation elem
+				 source
+			 refChamp { Pb_champ pb2 vitesse }
+					}
+	       V_MELX transformation  { methode composante numero 0 nom_source V_MEL1 sources_reference { V_MEL } }
+		V_MELY transformation  { methode composante numero 1 nom_source V_MEL1 sources_reference { V_MEL } }
+		V_MELZ transformation  { methode composante numero 2 nom_source V_MEL1 sources_reference { V_MEL } }
+
+		V_MEL_BIS Transformation {
+		        methode vecteur 
+	               expression 3 V_MEL1B V_MELY V_MELZ  
+		       sources {  transformation  { methode composante numero 0 nom_source V_MEL1B sources_reference { V_MEL } } }
+		sources_reference { v_mely  , v_melz  }
+	        /* sources_reference { v_mel }   on ajoute v_mel qui ne sert pas pour verifier que l'on ne perd pas les autres */
+	}
+	
+		 pscal_vit_gradT Transformation {
+		  	methode produit_scalaire
+			sources {
+			 Interpolation {
+			 localisation elem
+			  source refChamp { Pb_champ pb2 vitesse } } ,
+			  Gradient {
+		            source refChamp { Pb_champ pb2 temperature } }
+			}
+		    }  	
+		 pscal_vit_vit_elem Transformation {
+		  	methode produit_scalaire
+			sources {
+			 refChamp { Pb_champ pb2 vitesse }  ,
+			 refChamp { Pb_champ pb2 vitesse } 
+			}
+			localisation elem
+		    }
+		   pscal_vit_vit_elem_interp Transformation {
+		  	methode produit_scalaire
+			sources {
+			 Interpolation {
+			 localisation elem
+			  source refChamp { Pb_champ pb2 vitesse } } ,
+			 Interpolation {
+			 localisation elem
+			  source refChamp { Pb_champ pb2 vitesse } }
+			}
+		    }
+		      
+		  pscal_vit_vit_som Transformation {
+		  	methode produit_scalaire
+			sources {
+			 refChamp { Pb_champ pb2 vitesse }  ,
+			 refChamp { Pb_champ pb2 vitesse } 
+			}
+			localisation som
+		    }
+		         
+		  pscal_vit_vit_faces Transformation {
+		        methode produit_scalaire
+			sources {
+			 refChamp { Pb_champ pb2 vitesse }  ,
+			 refChamp { Pb_champ pb2 vitesse } 
+			}
+			localisation faces
+		    }
+		    
+		     
+		    
+		 gradT  Gradient {
+		            source refChamp { Pb_champ pb2 temperature } }
+			    
+		 norme_transfo_gradT  Transformation {
+		  	methode norme
+			sources_reference { gradT } 
+		    }
+		 vecteur_unitairex  Transformation { methode vecteur expression 3 1. 0. 0. }
+		 vecteur_transfo  Transformation { methode vecteur expression 3 x 1. t }
+		 vecteur_source_elem  Transformation { methode vecteur expression 3 temperature_natif_dom_fluide
+		 								pression_natif_dom_fluide 
+										z
+		 					          sources
+							     	  { 
+							      	   refChamp { Pb_champ pb2 temperature } ,
+							      	   refChamp { Pb_champ pb2 pression }
+							     	  }
+							          localisation elem	
+							        }
+		 compo_vitessex  Transformation { methode composante numero 0 
+		 					    source refChamp { Pb_champ pb2 vitesse }
+							    localisation faces	
+							   }
+							   
+		 compo_vitessex_elem	Interpolation {
+			 		localisation elem
+			  		sources_reference { compo_vitessex  } }
+		 compo_graTy Transformation { methode composante numero 1 
+		 					    sources_reference { gradT } 
+							   }
+		 		
+							   
+		}
+		
+		Format lml
+		Champs dt_post 20.
+		{
+			pression
+			pression elem 
+			vitesse
+			vitesse elem 
+			temperature
+			temperature elem
+			gradT
+			norme_transfo_gradT
+			pscal_vit_gradT
+			pscal_vit_vit_elem
+			pscal_vit_vit_elem_interp
+			vecteur_unitairex elem
+			vecteur_transfo elem
+			vecteur_source_elem
+			compo_vitessex_elem
+			compo_graTy
+
+			v_mel
+			v_mel_bis
+		}
+	}
+	sauvegarde formatte fluide.rep
+}
+
+Solve pbc
+Fin
+

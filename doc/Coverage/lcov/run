@@ -1,0 +1,53 @@
+lcov=$1
+root=$TRUST_ROOT/doc/Coverage/lcov
+mkdir -p html
+cd html
+monodir=$TRUST_ROOT/MonoDir$COMM
+###################
+# Lancement de lcov
+###################
+$root/$lcov/bin/lcov --directory $monodir --capture --output-file tmp.info || exit -1
+
+###############################################
+# Suppression de certains includes (systeme...)
+###############################################
+$root/$lcov/bin/lcov --remove tmp.info \
+	/usr/include/sys/* \
+	/usr/include/c++/*/* \
+	/usr/include/c++/*/*/* \
+	/usr/include/c++/*/*/*/* \
+	/*/*/*/TRUST/lib/src/LIBLATAFILTER/include/* \
+	/*/*/*/TRUST/lib/src/LIBPETSC/*/include/* \
+	-o app.info || exit -1
+
+#########################################################
+# Modification pour avoir l'arborescence classique TRUST
+#########################################################
+sed_file=`mktemp_`
+for rep in `cat $TRUST_ROOT/env/rep.TRUST`
+do
+   for file in `cd $TRUST_ROOT/$rep;ls *.cpp *.h *.f 2>/dev/null`
+   do
+      dir=""
+      if [ -f $monodir/include/$file ]
+      then
+         dir=include
+      elif [ -f $monodir/src/$file ]
+      then 
+         dir=src
+      fi
+      if [ "$dir" != "" ]
+      then
+         cherche=`echo $monodir/$dir/$file | awk '{gsub("/","\\\/",$0);print $0}'`
+	 remplace=`echo $TRUST_ROOT/${rep#./}/$file | awk '{gsub("/","\\\/",$0);print $0}'`
+         echo "s/$cherche$/$remplace/" >> $sed_file 
+      fi
+   done
+done
+sed -f $sed_file app.info > tmp.info 
+rm -f $sed_file
+################################################
+# Lancement de la creation de la couverture HTML
+################################################
+$root/$lcov/bin/genhtml tmp.info || exit -1
+			

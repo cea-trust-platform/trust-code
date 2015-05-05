@@ -1,0 +1,156 @@
+# Hydraulique 2D turbulent avec transport constituant et schema quick #
+# PARALLEL OK 8 #
+
+dimension 2
+Pb_hydraulique_concentration_turbulent pb1 
+Domaine dom1
+# BEGIN MESH #
+Mailler dom1
+{
+        Pave Entree 
+        {
+        Origine 0. 0.
+        Nombre_de_Noeuds 13 6
+        Longueurs 0.92 0.22
+        }
+        {
+        Bord Entree X = 0. 0. <= Y <= 0.22
+        Bord Wall1 Y = 0.22 0. <= X <= 0.92
+        Bord Wall2 Y = 0. 0. <= X <= 0.92
+        Bord Sortie X = 0.92 0. <= Y <= 0.22
+        }
+}
+
+# END MESH #
+# BEGIN PARTITION
+Partition dom1
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom1
+END SCATTER #
+
+VDF dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0.
+	tmax 0.25
+	dt_min 0.001
+	dt_max 0.001
+        nb_pas_dt_max 2
+	dt_impr 0.001
+	dt_sauv 100
+	seuil_statio 1.e-8
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 3.7e-05
+	rho Champ_Uniforme 1 2
+	beta_co Champ_Uniforme 1 0.
+}
+Champ_Uniforme gravite
+Lire gravite 2 0. -9.81
+
+
+Constituant c1
+Lire c1
+{
+coefficient_diffusion Champ_Uniforme 1 0.02
+}
+Associate fluide gravite
+Associate pb1 dom1
+Associate pb1 sch
+Associate pb1 fluide
+Associate pb1 c1
+Discretize pb1 dis
+
+Lire pb1
+{
+	Navier_Stokes_Turbulent
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.500000 } 
+			seuil 1.000000e-06 
+			impr 
+		}
+		convection { amont }
+		diffusion { }
+		conditions_initiales {
+			vitesse Champ_Uniforme 2 0. 0.
+			}
+		boundary_conditions {
+		
+			Wall1 paroi_fixe
+			Wall2 paroi_fixe
+			Sortie frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+			Entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  3. 0.
+			
+		}
+	
+
+	 modele_turbulence K_Epsilon {
+                        Transport_K_Epsilon 
+                        {
+                                convection { amont }
+                                diffusion { }
+                                boundary_conditions {
+                	         	Wall1 Paroi
+					Wall2 Paroi
+                                        Entree frontiere_ouverte_K_eps_impose Champ_Front_Uniforme 2 0. 0.
+                                       	Sortie frontiere_ouverte K_EPS_EXT Champ_Front_Uniforme 2 0. 0.
+                                       	
+                                }
+                                conditions_initiales {
+                                        k_Eps Champ_Uniforme 2 0. 0.
+                                }
+                         }
+                         turbulence_paroi loi_standard_hydr
+                } 
+
+ 	 }
+	
+	Convection_diffusion_Concentration_Turbulent {
+		diffusion { }
+		convection { quick }
+		boundary_conditions {
+			Wall1 Paroi
+			Wall2 Paroi
+			Entree frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
+			Sortie frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+		
+                } 
+ 
+              
+		Modele_Turbulence Schmidt {  turbulence_paroi loi_standard_hydr_scalaire }
+		conditions_initiales {
+			concentration Champ_Uniforme 1 0.
+		}
+		
+	}
+	Postraitement
+	{
+		Sondes
+		{
+			sonde_pression pression periode 0.001 segment 12 0.13 0.11 0.13 0.22
+			sonde_vitesse vitesse periode 0.001 segment 12 0.13 0.11 0.13 0.22
+		}
+		Champs dt_post 0.1
+		{
+			pression elem
+			concentration elem
+		}
+	}
+
+}
+Solve pb1
+Fin

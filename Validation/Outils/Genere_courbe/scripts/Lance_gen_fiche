@@ -1,0 +1,153 @@
+#!/bin/bash
+[ "$TRUST_ROOT" = "" ] && echo TRUST_ROOT not_set && exit
+DIR=`dirname $0`
+GENERE_COURBE=`(cd $DIR/../; pwd)`
+
+if [ ${#Rapports_auto_root} = 0 ]
+    then
+    Rapports_auto_root=$TRUST_ROOT
+    export Rapports_auto_root
+else
+    echo "Use of $Rapports_auto_root directory for validation insteed of \$TRUST_ROOT"
+fi
+
+get_list_prm_from_Times()
+{
+file=$1
+list=""
+for cas in `awk '{print $NF}' $file`
+do
+cadt=`find $Rapports_auto_root/Validation/Rapports_automatiques -name $cas -follow`
+list=$list" "$cadt
+done
+echo $list
+}
+get_list_prm()
+{
+    for dir in `find $Rapports_auto_root/Validation/Rapports_automatiques -name '*.prm' -follow  | grep '/src/'`
+      do
+      cas=`dirname $dir`
+      if [ "`basename $cas`" != "src" ]
+	  then
+	  echo "$dir bizarre!!!!"
+      else
+	  echo `dirname $cas`
+      fi
+    done
+
+    
+}
+
+genere_fiche()
+{
+    run=1
+    cd $org
+    dir=$1
+    prm=`ls $dir/src/*.prm`
+    cas=`basename $dir`
+    if [ $concurent -eq 0 ] ||  [ ! -d BUILD/$cas ]
+	then
+	[ ! -d BUILD ] && echo `pwd` pas de build && exit 
+        echo $cas non existant on lance la generation de la fiche $dir
+        pwd
+	# GF le / apres dir est important pour ne pas copier le lien
+	# le -L pour copier les liens en tant que fichier 
+	cp -rL $dir/ BUILD
+	chmod -R +w  BUILD/$cas
+	cd BUILD/$cas
+	${GENERE_COURBE}/Run $prm  $OPTIONS_PRM #  -not_run
+	if [ ! -f build/rapport.pdf ]
+	    then
+	    echo pb avec le rapport $dir
+	else
+	    cp build/rapport.pdf $org/archives/$cas.pdf
+	    ${GENERE_COURBE}/Run $prm -archive
+	    status=$?
+	    [ $status -ne 0 ] && echo "pb avec Run_archive $dir"
+	    mv preserve.tgz $org/archives/$cas.tgz
+	fi
+	cd $org
+    else
+	echo BUILD/$dir existe and mode concurrent, on ne lance pas la fiche
+    fi
+}
+
+
+mkdir -p BUILD archives
+org=`pwd`
+
+concurent=0
+[ "$1" = "-concurent" ] && concurent=1 && shift
+liste_prm=`get_list_prm`
+[ "$1" = "-from-Times" ] && shift && file=$1 && shift&& liste_prm=`get_list_prm_from_Times $file` 
+[ "$*" != "" ] && echo on passe les cas precises && liste_prm="$@"
+echo $liste_prm
+echo " cas en double ? "
+for dir in $liste_prm
+  do
+  echo `basename $dir`
+done  | uniq -d
+[ "$liste_prm" = "" ] && echo pas de prm && exit 1
+run=0
+echo  on lance d abord les rapports non existants
+for dir in $liste_prm
+do
+  # prm=`ls src/*.prm`
+  cas=`basename $dir`
+
+  if [ ! -f $org/archives/$cas.pdf ] || [ ! -f  $org/archives/$cas.tgz ]
+      then
+  
+      genere_fiche $dir
+  fi
+done
+
+echo  on lance ensuite les cas ou les rappports sont plus vieux que le src
+for dir in $liste_prm
+do
+  # prm=`ls src/*.prm`
+  cas=`basename $dir`
+  if [  -f $org/archives/$cas.pdf ]
+      then
+      te=`find $dir/src -newer $org/archives/$cas.pdf -type f`
+      if [ "$te" != "" ]
+	  then
+	  echo $cas.pdf plus vieux que $te , on lance la generation de la fiche $dir
+	  genere_fiche $dir
+      fi
+  fi
+done
+
+echo  on lance ensuite les cas ou les rappports sont plus vieux que $exec
+for dir in $liste_prm
+do
+  # prm=`ls src/*.prm`
+  cas=`basename $dir`
+  if [  -f $org/archives/$cas.pdf ]
+      then
+      if [ $org/archives/$cas.pdf -ot $exec ]
+	  then 
+	  echo $cas.pdf plus vieux que $exec , on lance la generation de la fiche $dir
+	  genere_fiche $dir
+      fi
+  fi
+done
+exit
+echo "FIN $0"
+if [ $run -ne 0 ] ||  [ $concurent -eq 1 ]
+    then
+    exit
+fi
+echo  sinon on renomme la fiche la plus vieille pour la regenerer
+cd archives
+older=`ls -t *.pdf | tail -1`
+cmd="mv -f $older $older.sa"
+echo $cmd
+eval $cmd
+cd $org
+if [ $concurent -eq 0 ]
+    then
+    sh $0
+else
+    sh $0 -concurent
+fi

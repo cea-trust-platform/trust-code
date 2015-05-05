@@ -1,0 +1,187 @@
+Parameters {
+	Title "Wall law validation for VEF discretization (3)"
+	Description "Turbulent flow in a plane channel with bottom an up walls at uniform fixed temperature T1 with account for a uniform heat release"
+	Author "M. Elmo"
+	TestCase "wl_Re_2E4" "wl_Re_2E4.data"
+	TestCase "wl_Re_1E5" "wl_Re_1E5.data"
+	TestCase "wl_Re_5E5" "wl_Re_5E5.data"
+	TestCase "wl_Pr_03"  "wl_Pr_03.data"
+	TestCase "wl_Pr_10"  "wl_Pr_10.data"
+}
+
+Chapter {
+	Title "Case of different Reynolds numbers (Re=2E4; Re=1E5; Re=5E5)"
+	Description "See validation paper Wall_law_VEF_validation_3"
+Figure {
+	Title "Time evolution of temperature at the point (2.5;0.5;0.5)"
+	Dimension 2
+	RangeX 0. 3000
+	LabelX "Time (s)"
+	LabelY "Temperature (K)"
+	Curve {
+		legend "Re=2E4"
+		origin "Trio_U"
+		Version "1.5.4"
+		file ./wl_Re_2E4/wl_Re_2E4_SONDE_TEMP_MIL_M.son
+	Style lines
+	}
+	Curve {
+		legend "Re=1E5"
+		origin "Trio_U"
+		Version "1.5.4"
+		file ./wl_Re_1E5/wl_Re_1E5_SONDE_TEMP_MIL_M.son
+	Style lines
+	}
+	Curve {
+		legend "Re=5E5"
+		origin "Trio_U"
+		Version "1.5.4"
+		file ./wl_Re_5E5/wl_Re_5E5_SONDE_TEMP_MIL_M.son
+	Style lines
+	}
+	
+}
+
+Figure {
+	Title "Velocity profiles (u component) for section x=2.1"
+	Dimension 2
+	RangeY 0. 1.5
+	LabelX "y (m)"
+	LabelY "u/u(t=0) "
+	Curve {
+		legend "Re=2E4"
+		origin "Trio_U"
+		Version "1.5.4"
+		segment ./wl_Re_2E4/wl_Re_2E4 sonde_seg_vit_mil_dec 8201
+		columns $1 $2/0.33333
+	Style lines
+	}
+	Curve {
+		legend "Re=1E5"
+		origin "Trio_U"
+		Version "1.5.4"
+		segment ./wl_Re_1E5/wl_Re_1E5 sonde_seg_vit_mil_dec 1750
+		columns $1 $2/1.66665
+	Style points
+	#TypePoint 2
+	}
+	Curve {
+		legend "Re=5E5"
+		origin "Trio_U"
+		Version "1.5.4"
+		segment ./wl_Re_5E5/wl_Re_5E5 sonde_seg_vit_mil_dec 726
+		columns $1 $2/8.33325
+	Style lines
+	}
+}
+
+Figure {
+	Title "Temperature profiles for section x=2.1"
+	Dimension 2
+	RangeY 500. 500.3
+	LabelX "y (m)"
+	LabelY "Temperature (K)"
+	Curve {
+		legend "Re=2E4"
+		origin "Trio_U"
+		Version "1.5.4"
+		segment ./wl_Re_2E4/wl_Re_2E4  sonde_seg_temp_milx_dec 8201
+	Style lines
+	}
+	Curve {
+		legend "Re=1E5"
+		origin "Trio_U"
+		Version "1.5.4"
+		segment ./wl_Re_1E5/wl_Re_1E5  sonde_seg_temp_milx_dec 1750
+	Style points
+	#TypePoint 2
+	}
+	Curve {
+		legend "Re=5E5"
+		origin "Trio_U"
+		Version "1.5.4"
+		segment ./wl_Re_5E5/wl_Re_5E5  sonde_seg_temp_milx_dec 726
+	Style lines
+	}
+}
+
+Table {
+	Title "Nusselt number, bulk temperature, diffusive flux at the boundary and y0 for three Reynolds numbers"
+	nb_columns 5
+	label  "Flux at the wall (W)" | "Tb(K)" | "Nu(alpha)" | "Nu(calculation)" | "y0"
+	line {
+	legend Re=2e4
+	origin "Trio_U v1.5.4"
+	file ./wl_Re_2E4/val_out
+	}
+	line {
+	legend Re=1e5
+	origin "Trio_U v1.5.4"
+	file ./wl_Re_1E5/val_out
+	}
+	line {
+	legend Re=5e5
+	origin "Trio_U v1.5.4"
+	file ./wl_Re_5E5/val_out
+	}
+}
+
+}
+
+Chapter {
+	Title "Case of different Prandtl numbers (Pr=0.3; Pr=1; Pr=10)"
+	Description "See validation paper Wall_law_VEF_validation_3"
+
+
+Figure {
+	Title "Temperature profiles for section x=2.1"
+	Dimension 2
+	RangeY 500. 501.
+	LabelX "y (m)"
+	LabelY "Temperature (K)"
+	Curve {
+		legend "Pr=0.3"
+		origin "Trio_U"
+		Version "1.5.4"
+		segment ./wl_Pr_03/wl_Pr_03  sonde_seg_temp_milx_dec 8138
+	Style lines
+	}
+	Curve {
+		legend "Pr=1"
+		origin "Trio_U"
+		Version "1.5.4"
+		segment ./wl_Re_2E4/wl_Re_2E4  sonde_seg_temp_milx_dec 8201
+	Style points
+	#TypePoint 2
+	}
+	Curve {
+		legend "Pr=10"
+		origin "Trio_U"
+		Version "1.5.4"
+		segment ./wl_Pr_10/wl_Pr_10  sonde_seg_temp_milx_dec 13709
+	Style lines
+	}
+}
+
+Table {
+	Title "Nusselt number, bulk temperature, diffusive flux at the boundary and y0 for three Prandtl numbers"
+	nb_columns 5
+	label  "Flux at the wall (W)" | "Tb(K)" | "Nu(alpha)" | "Nu(calculation)" | "y0"
+	line {
+	legend Pr=0.3
+	origin "Trio_U v1.5.4"
+	file ./wl_Pr_03/val_out
+	}
+	line {
+	legend Pr=1
+	origin "Trio_U v1.5.4"
+	file ./wl_Re_2E4/val_out
+	}
+	line {
+	legend Pr=10
+	origin "Trio_U v1.5.4"
+	file ./wl_Pr_10/val_out
+	}
+}
+
+}

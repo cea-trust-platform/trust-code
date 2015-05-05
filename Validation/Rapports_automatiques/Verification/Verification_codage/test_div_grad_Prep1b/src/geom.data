@@ -1,0 +1,151 @@
+# ecriture d un geom fait de triangle pafait #
+dimension 2
+Domaine dom
+domaine mil
+domaine droite
+
+Mailler dom
+{
+	Pave Entree
+		{
+		Origine 0. 0.
+		Nombre_de_Noeuds 2 11
+		Longueurs 1. 1.
+		}
+		{
+		Bord gauche X = 0. 0. <= Y <= 1	
+		Bord droite X = 1. 0. <= Y <= 1 
+		Bord Haut  Y = 1. 0. <= X <= 1.
+		Bord Bas   Y = 0. 0. <= X <= 1.
+		} 
+}
+
+
+trianguler dom
+
+
+
+ecrire_fichier_bin dom base.geom
+Read_file_binary mil base.geom
+Read_file_binary droite base.geom
+supprime_bord dom { droite }
+
+supprime_bord mil { gauche droite }
+supprime_bord droite { gauche }
+
+ecrire_fichier_bin mil mil.geom
+
+
+
+
+
+
+{
+domaine m2
+Read_file_binary m2 mil.geom
+transformer m2 x+1 y
+mailler mil { epsilon 1e-4 , domain m2 }
+
+ecrire_fichier_bin mil mil.geom
+}
+
+
+
+{
+domaine m2
+Read_file_binary m2 mil.geom
+transformer m2 x+2 y
+mailler mil { epsilon 1e-4 , domain m2 }
+
+ecrire_fichier_bin mil mil.geom
+}
+
+
+
+{
+domaine m2
+Read_file_binary m2 mil.geom
+transformer m2 x+4 y
+mailler mil { epsilon 1e-4 , domain m2 }
+
+ecrire_fichier_bin mil mil.geom
+}
+
+
+
+{
+domaine m2
+Read_file_binary m2 mil.geom
+transformer m2 x+8 y
+mailler mil { epsilon 1e-4 , domain m2 }
+
+ecrire_fichier_bin mil mil.geom
+}
+
+
+
+{
+domaine m2
+Read_file_binary m2 mil.geom
+transformer m2 x+16 y
+mailler mil { epsilon 1e-4 , domain m2 }
+
+ecrire_fichier_bin mil mil.geom
+}
+
+
+
+{
+domaine m2
+Read_file_binary m2 mil.geom
+transformer m2 x+32 y
+mailler mil { epsilon 1e-4 , domain m2 }
+
+ecrire_fichier_bin mil mil.geom
+}
+
+
+transformer droite x+1*2*2*2*2*2*2 y
+transformer dom x-1 y
+mailler dom { epsilon 1e-4 , domain mil }
+mailler dom { epsilon 1e-4 , domain droite }
+
+
+
+
+ecrire_fichier_bin dom dom.geom
+
+
+Read_file_binary dom dom.geom
+
+Transformer dom x+0.5*abs(sin(pi*y*(11-1)/2.)) y
+Transformer dom x*2./sqrt(3.)/(11-1)  y
+
+dilate dom 2.
+ecrire_fichier_bin dom in_out.geom
+
+
+
+postraiter_domaine { domaine dom format lata fichier in_out }
+
+Read_file_binary dom dom.geom
+
+Regroupebord dom perio { gauche droite }
+Corriger_frontiere_periodique
+	{ 
+		domaine dom
+		bord perio
+		/* direction 2 .34641016151377545870e-1 0 */
+	}
+
+Transformer dom x+0.5*abs(sin(pi*y*(11-1)/2.)) y
+Transformer dom x*2./sqrt(3.)/(11-1)  y
+
+dilate dom 2.
+ecrire_fichier_bin dom perio.geom
+
+
+
+postraiter_domaine { domaine dom format lata fichier perio }
+
+End

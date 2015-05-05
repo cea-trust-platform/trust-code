@@ -1,0 +1,33 @@
+#!/bin/sh
+
+cree_syno()
+{
+    # On chrche les synonymes dans la hierarchie
+    #triou existepas 2>/dev/null 1>/dev/null
+    # Pour eviter des blocages sur machine jade:
+	exec=$1
+    $exec existepas 2>/dev/null 1>/dev/null
+    listsyno=`grep "<=>" hierarchie.dump| sed "s/ <=> /%/"`
+    rm -f *dump existepas.log
+    echo -n "synonyme={ 'end':'fin',"
+    for syn in $listsyno
+      do
+      #syn2=`echo $syn|awk '{print $2}' `
+      mottrio=`echo $syn | awk -F\% '{print tolower($2) }'`
+      new=`echo $syn | awk -F\% '{print tolower($1)}'`	
+      echo -n \"$new"\":\""$mottrio"\"",
+    done
+    echo "}" 
+}
+cree_syno $* > syno_tmp
+status=$?
+[ $status -ne 0 ] && echo $0 pb generation de syno_tmp && exit 2
+if [ "`diff syno.py syno_tmp 2>&1`" != "" ]
+then
+ mv syno_tmp syno.py
+ echo syno.py genere
+else
+ rm syno_tmp
+fi
+exit 0
+

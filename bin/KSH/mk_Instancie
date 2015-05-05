@@ -1,0 +1,90 @@
+#!/bin/bash
+# Script pour creer les fichiers d'instanciation dans un repertoire des sources de TRUST
+# Appele a chaque make depend dans un repertoire
+en_tete()
+{
+   echo "//
+// Warning : DO NOT EDIT !
+// To update this file, run: make depend
+//
+#include <verifie_pere.h>"
+}
+tmp=`mktemp_ -d`
+org=`pwd`
+# On ne cree pas de fichier instancie dans le MAIN et les ateliers ou il y'a pourtant un make.include 
+if [ -f make.include ] && [ "`basename $org`" != MAIN ] && [ ${org#$rep_dev} = $org ]
+then
+#######################
+# Repertoire non MAIN #
+#######################
+   ROOT=$org
+   while [ "`basename $ROOT`" != "`basename $TRUST_ROOT`" ]
+   do
+      ROOT=`dirname $ROOT`
+   done
+   # Construit le nom de la fonction instancie: instancie_rep_rep_rep
+   name=instancie`echo ${org#$ROOT} | sed "s?/?_?g" | sed "s/\.//g"`  
+    
+   # Liste les .h du repertoire
+   files=`ls *.h | grep -v __Scalar__ | sort 2>/dev/null`
+   
+   # Rien a faire si pas de .h ou si pas de declare_instanciable dans les .h
+   # On efface meme le fichier d'instanciation au cas ou il aurait existe
+   [ ${#files} = 0 ] || [ "`grep eclare_instanciable $files`" = "" ] && rm -f $name.cpp && rm -r -f $tmp && exit
+   
+   # Ajout de toto.h pour avoir en sortie du grep file: match
+   files=$files" toto.h"
+   
+   # On extrait les lignes declare_instanciable
+   grep eclare_instanciable $files 2>/dev/null | grep -v class_name | grep -v "//" | grep -v "\\\\" | grep -v ArrOf_Scala | grep -v Scalar_T | grep -v Diff_VDF_proto | sed "s?:? ?g" | sed "s?(? ?g" | sed "s?)? ?g" | sed "s?,? ?g" | $TRUST_Awk '{print $1" "$3}' > $tmp/declare_instanciable
+   
+   # On construit le fichier instancie.cpp provisoire
+   en_tete > $tmp/$name.cpp
+   $TRUST_Awk '{print ("#include <"$1">")}' $tmp/declare_instanciable | sort -u >> $tmp/$name.cpp
+   echo "void "$name"() {" >> $tmp/$name.cpp
+   echo "Cerr << \"${name#instancie_}\" << finl;" >> $tmp/$name.cpp 
+   $TRUST_Awk '{print ($2,"inst"FNR";verifie_pere(inst"FNR");")}' $tmp/declare_instanciable >> $tmp/$name.cpp
+   echo "}" >> $tmp/$name.cpp
+
+   # S'il est different, on le change
+   if [ ! -f $name.cpp ] || [ "`diff $name.cpp $tmp/$name.cpp`" != "" ]
+   then
+      echo "Fichier $name modifie:"
+      [ -f $name.cpp ]  && diff $name.cpp $tmp/$name.cpp
+      cat $tmp/$name.cpp > $name.cpp
+      # le touch est important pour recompiler mon_main !!!!!
+      touch $TRUST_ROOT/src/MAIN/instancie_appel.h
+   fi
+elif [ "`basename $org`" = MAIN ] && [ -f make.include ]
+then
+###################
+# Repertoire MAIN #
+###################
+   en_tete > $tmp/instancie_appel.h
+   en_tete > $tmp/instancie_appel_c.h
+   for dir in `cat $TRUST_ENV/rep.TRUST`
+   do
+      # Construit le nom de la fonction instancie: instancie_rep_rep_rep
+      name=instancie`echo $dir | sed "s?/?_?g" | sed "s/\.//"`  
+      if [ -f $TRUST_ROOT/$dir/$name.cpp ]
+      then
+         # Ajout dans le fichier cree sous MAIN
+         echo void $name"();" >> $tmp/instancie_appel.h
+         echo $name"();" >> $tmp/instancie_appel_c.h
+      fi
+   done
+
+   if [ ! -f instancie_appel.h ] || [ "`diff instancie_appel.h $tmp/instancie_appel.h`" != "" ]
+   then
+      echo "Fichier instancie_appel.h modifie:"
+      [ -f instancie_appel.h ] && diff instancie_appel.h $tmp/instancie_appel.h
+      cat $tmp/instancie_appel.h > instancie_appel.h
+   fi
+   if [ ! -f instancie_appel_c.h ] || [ "`diff instancie_appel_c.h $tmp/instancie_appel_c.h`" != "" ]
+   then
+      echo "Fichier instancie_appel_c.h modifie:"
+      [ -f instancie_appel_c.h ] && diff instancie_appel_c.h $tmp/instancie_appel_c.h
+      cat $tmp/instancie_appel_c.h > instancie_appel_c.h
+   fi
+fi
+rm -r -f $tmp

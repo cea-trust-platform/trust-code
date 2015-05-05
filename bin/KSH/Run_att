@@ -1,0 +1,18 @@
+#!/bin/bash
+# Boucle d'attente tant que les deux tailles des fichiers fic1 et fic2 ne bougent pas :
+fic1=$1
+fic2=$2
+taille1=0
+taille2=0
+if [ -f $fic1 ]
+then
+   taille1=`ls -la $fic1 | $TRUST_Awk '{print $5}'`
+fi
+if [ -f $fic2 ]
+then
+   taille2=`ls -la $fic2 | $TRUST_Awk '{print $5}'`
+fi
+while [ "`ls -la $fic1 | $TRUST_Awk '{print $5}'`" = $taille1 ] && [ "`ls -la $fic2 | $TRUST_Awk '{print $5}'`" = $taille2 ] 
+do
+   sleep 1
+done

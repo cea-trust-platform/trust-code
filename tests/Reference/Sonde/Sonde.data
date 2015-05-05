@@ -1,0 +1,96 @@
+# Verification de l'ecriture dans les fichiers sondes (voir verifie/prepare) #
+# PARALLEL OK 8 #
+dimension 2
+Pb_hydraulique pb
+Domaine dom
+# BEGIN MESH #
+Read_file upwind.geo ;
+
+# END MESH #
+# BEGIN PARTITION
+Postraiter_domaine
+{
+   fichier mesh.lata
+   format lata
+   domaine dom
+}
+
+Partition dom
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 1
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	nb_pas_dt_max 10
+	tinit 0
+	tmax 2.5
+	dt_min 0.005
+	dt_max 0.005
+	dt_impr 0.005
+	dt_sauv 1
+	seuil_statio 1.e-8
+}
+
+Fluide_Incompressible eau
+Lire eau
+{
+	mu Champ_Uniforme 1 3.7e-05
+	rho Champ_Uniforme 1 2
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb eau
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.5 } 
+			seuil 1.e-8
+		}
+		convection { amont }
+		diffusion {  }
+		conditions_initiales {
+			vitesse Champ_Uniforme 2 0. 0.
+			}
+		boundary_conditions {
+			Obstacle paroi_fixe
+			Symetrie symetrie
+			Sortie frontiere_ouverte_pression_imposee 
+			    Champ_front_Uniforme 1 0.
+			Entree frontiere_ouverte_vitesse_imposee 
+			     Champ_front_Uniforme 2  1. 0.
+		}
+	}
+
+	Postraitement
+	{
+		Sondes
+		{
+			sonde pression periode 0.01 points 2 0.13 0.105 0.13 0.115
+		}
+		Champs dt_post 1
+		{
+			pression elem
+		}
+	}
+	sauvegarde formatte sonde.sauv
+}
+Solve pb
+Fin

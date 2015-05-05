@@ -1,0 +1,204 @@
+#! /usr/bin/env sh
+# --
+# Author : Eli LAUCOIN (CEA)
+# --
+
+baltik_environnement_error() {
+    echo "-----------------------------------------"
+    echo "ERROR : undefined variable BALTIK_ROOT   "
+    echo ""
+    echo "Please, install BALTIK and run :         "
+    echo "  source /path/to/BALTIK/bin/baltik_init "
+    echo "-----------------------------------------"
+    echo ""
+    exit 1
+}
+
+baltik_environnement_init()
+{
+	script=$0
+	bindir=`dirname $script`
+	cd `dirname $bindir`
+	pwd
+}
+
+# initialisation de l'etat de la variable BALTIK_ROOT
+BALTIK_ROOT=`baltik_environnement_init`
+# verification de l'etat de la variable BALTIK_ROOT
+if [ ${#BALTIK_ROOT} = 0 ]
+then
+    baltik_environnement_error
+fi
+
+
+# chargement des fonctions d'affichage des messages d'erreur
+. ${BALTIK_ROOT}/bin/baltik_errors
+
+# chargement des fonctions d'analyse d'un fichier de configuration
+. ${BALTIK_ROOT}/bin/baltik_configuration_parsing
+
+# chargement des fonctions de correspondance nom variable OPT
+. ${BALTIK_ROOT}/bin/baltik_OPT_management
+
+# chargement des fonctions de gestion des dependances
+. ${BALTIK_ROOT}/bin/baltik_dependencies_management
+
+
+# verification/chargement de trio_u
+. ${BALTIK_ROOT}/bin/baltik_check_init_triou
+
+# verification de l'etat de la variable TRUST_ROOT
+if [ ${#TRUST_ROOT} = 0 ]
+then
+    triou_environnement_error
+fi
+
+# initialisation des variables utiles
+project_directory=`pwd`
+project_directory_name=`basename ${project_directory}`
+
+
+if [ "$1" = "-compute_dependencies" ]
+    then
+   # set -xv
+    shift
+    project_configuration_file="${project_directory}/project.cfg"
+    project_description=`extract_section "$project_configuration_file" description`
+    project_name=`extract_field "$project_description" name`
+    dependencies_file=`mktemp_ `
+    rm -f $dependencies_file;touch $dependencies_file
+    trap "exit 1" HUP INT PIPE QUIT TERM
+    trap "rm -f $dependencies_file" EXIT
+
+    # initialisation des dependances
+    dependencies="${project_name}:${project_directory}:${project_directory};"
+
+    # ajout recursif des dependances
+    add_dependencies "$dependencies_file" "$dependencies"
+#    echo OK
+    # verification de la coherence des chemins
+    check_dependencies "$dependencies_file"
+
+    distrib_path=""
+    while read name path
+      do
+      echo $name $path
+      distrib_path=${distrib_path}" "$name:$path
+      
+    done < $dependencies_file
+    echo "on appelle " $0 $* $distrib_path
+    
+    $0 $* $distrib_path
+    exit $?
+fi
+directory_for_tar=${project_directory}
+if [ "$1" = "-directory_for_tar" ]
+    then
+    directory_for_tar=$2
+    mkdir -p ${directory_for_tar}
+    shift
+    shift
+fi
+
+Gestion_conf=0
+option=""
+if [ "$1" = "-clearcase" ]
+    then
+    Gestion_conf=1
+    option="-clearcase"
+    shift
+fi
+
+has_subproject=0
+for l_sub_project in $*
+  do
+  #echo ${project_directory}
+  # echo ${BALTIK_ROOT}
+  sub_project=`echo $l_sub_project | awk -F: '{print $2}'`
+  p_sub_project=`echo $l_sub_project | awk -F: '{print $1}'`
+  if [ $sub_project != ${project_directory} ] 
+      then
+      has_subproject=1
+      mkdir -p $project_directory/archives_dependencies
+      echo creation of archive $sub_project
+      cd $sub_project
+      out=`$0 -directory_for_tar $project_directory $option`
+      #echo $ECHO_OPTS $out
+      archive=`echo $out| awk '{print $NF}'`
+      cmd="cp $archive $project_directory/archives_dependencies/${p_sub_project}.tar.gz"
+      link=`ls -l $archive | awk '{print $NF}'`
+      eval $cmd
+      rm $archive $link
+      # echo $cmd
+      #
+      cd $project_directory
+  fi
+done
+
+
+date_format=`date +%Y_%m_%d.%H.%M`
+project_tar_name="${directory_for_tar}/${project_directory_name}-${date_format}.tar"
+project_tar_name_link="${directory_for_tar}/${project_directory_name}.tar.gz"
+
+project_configuration_file="${project_directory}/project.cfg"
+if  [ ! -e $project_configuration_file ] || [ ! -f $project_configuration_file ] 
+then
+    no_configuration_file_error "$project_directory=$"
+fi
+
+
+
+
+project_configuration_file="${project_directory_name}/project.cfg"
+project_tests="${project_directory_name}/tests/Reference"
+
+project_src="${project_directory_name}/src"
+
+project_archives="${project_directory_name}/archives"
+project_archives_dependencies="${project_directory_name}/archives_dependencies"
+project_baltik="${project_directory_name}/baltik"
+project_share="${project_directory_name}/share"
+cd ..
+
+list_save="$project_src ${project_configuration_file}"
+
+[ -e $project_tests ] && list_save="$list_save $project_tests "
+[ -e $project_baltik ] && list_save="$list_save $project_baltik "
+
+[ -e $project_share ] && list_save="$list_save $project_share "
+
+[ -e $project_archives ] && list_save="$list_save $project_archives "
+
+# echo $has_subproject $*
+list_save_subp=""
+[ $has_subproject -eq 1 ] && [ -e ${project_archives_dependencies} ] && list_save_subp="$project_archives_dependencies "
+
+export list_save; # echo "iiiiiiii" $list_save 
+#;xterm ; exit
+if [ $Gestion_conf -eq 1 ]
+then 
+    # echo "clearcase"
+    list_save=""
+    cleartool find ${project_directory_name} -type f -nxn -print| grep -v "lost+found" | xargs tar rfh ${project_tar_name}
+    # on  ajoute les liens qui ne pointent  pas vers des repertoires ...
+    for dir in `cleartool find ${project_directory_name} -type l -nxn -print  | grep -v "lost+found"`
+      do
+      [ !  -d $dir ] && tar rfh  ${project_tar_name} $dir
+      done
+    [ "$list_save_subp" != "" ] && tar rfh ${project_tar_name} ${list_save_subp}
+    gzip ${project_tar_name}
+    rm -f ${project_tar_name}
+else
+    cmd="tar zcfh ${project_tar_name}.gz ${list_save} ${list_save_subp}"
+    echo "$cmd"
+    eval $cmd
+fi
+
+cd ${project_directory_name}
+
+ln -sf ${project_tar_name}.gz ${project_tar_name_link}
+
+echo "Done."
+echo "Distribution file is  : ${project_tar_name}.gz"
+echo "Link file is : ${project_tar_name_link}"
+echo ""

@@ -1,0 +1,31 @@
+ 
+Lire pb1
+{
+   Conduction
+   {
+      diffusion {  }	
+      conditions_initiales {
+         temperature Champ_Uniforme 1 30
+      }	
+      conditions_limites {
+         gauche paroi_echange_externe_impose 
+	       T_ext Champ_Front_Uniforme 1 40.
+	       H_imp Champ_Front_Uniforme 1 1.e10         
+         droit Paroi_Echange_contact_VDF pb2 gauche temperature 100.
+         haut symetrie 
+         bas symetrie
+      }
+   }
+   Postraitement
+   {
+   Sondes	      
+   {
+     sonde_temp1 temperature periode 0.01 segment 5 0. 0.5 0.5 0.5   
+   }
+    Champs dt_post 1.
+   {
+      temperature elem
+      temperature som
+      }
+   }
+}

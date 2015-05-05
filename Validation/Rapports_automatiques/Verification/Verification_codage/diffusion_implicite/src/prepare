@@ -1,0 +1,18 @@
+#!/bin/bash
+
+#preparation VDF/VEF
+
+cp  docond_diff_impl.data VDF_diff_impl.data
+sed "s/# END MESH/trianguler_h dom_fluide trianguler_h dom_solide # END MESH/; s/VDF/VEFPrep1b/;s/seuil 1.e-14/seuil 1.e-10/ "  docond_diff_impl.data >VEF_diff_impl.data
+
+
+# preparation explicite; cranck et sans diag
+for dis in VDF VEF 
+do
+  sed "s/diffusion_implicite 1/diffusion_implicite 0/" ${dis}_diff_impl.data > ${dis}_expl.data
+  sed "s/preconditionnement_diag 1/preconditionnement_diag 0/"  ${dis}_diff_impl.data > ${dis}_diff_impl_non_precond.data 
+  sed "s/crank 0/crank 1/"  ${dis}_diff_impl.data > ${dis}_crank.data
+  
+done
+sed "s/diffusion_implicite 1/diffusion_implicite 0/" solide.data > solide_explicite.data
+

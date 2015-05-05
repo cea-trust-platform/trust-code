@@ -1,0 +1,14 @@
+#!/bin/bash
+# On prend tous les cas VEF
+cherche.ksh VEFPrep1b 1>/dev/null
+mv liste_cherche liste_VEF
+
+# On cherche tous les cas porosites ou porosites_champ pour ne pas les passer
+cherche.ksh porosites
+mv liste_cherche f1
+cherche.ksh porosites_champ
+cat liste_cherche f1 | sort -u > black_list
+
+# Certains cas bloquent comme Cx_impl,... donc on les enleve aussi:
+grep -v -f black_list liste_VEF | grep -v ^Cx_impl | grep -iv segsol | grep -v Reprise_impl > liste_cas
+exit

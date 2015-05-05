@@ -1,0 +1,129 @@
+Parameters {
+	Title "verification du post plan et de l'integration "
+	Description "Calculs menes en VEF "
+	Author "G.F."
+	TestCase "." "Extrait_plan.data"
+	IncludeData 1
+}
+
+Chapter {
+	Title "vitesse sur la plan 1"
+	Description "...."
+
+
+	visu {
+                Title "vitesse plan 1"
+                description "on trace la vitesse"
+                mesh ./plan.lata plan
+                vector ./plan.lata plan VITESSE ELEM
+
+		normal3D -0.805131 -0.522205 0.281188
+        	up3D 0.179055 0.237966 0.954626
+        }	
+	visu {
+                Title "vitesse plan bas"
+                description "on trace la vitesse"
+                mesh ./plan_in.lata plan_in
+                vector ./plan_in.lata plan_in VITESSE ELEM
+
+		normal3D -0.805131 -0.522205 0.281188
+        	up3D 0.179055 0.237966 0.954626
+        }
+	visu {
+                Title "vitesse plan haut"
+                description "on trace la vitesse"
+                mesh ./plan_qcq.lata plan_qcq
+                vector ./plan_qcq.lata plan_qcq VITESSE ELEM
+
+		normal3D -0.805131 -0.522205 0.281188
+        	up3D 0.179055 0.237966 0.954626
+        }
+	visu {
+                Title "vitesse surface quelconque"
+                description "on trace la vitesse"
+                mesh ./surface_qcq.lata surface_qcq
+                vector ./surface_qcq.lata surface_qcq VITESSE ELEM
+
+		normal3D -0.457146 -0.884298 0.0950492
+        	up3D 0.324745 -0.066471 0.943463
+        }
+	Table {
+		Title "Verification de l'integrale du debit"
+		nb_columns 1
+	label  debit total
+	line {
+		legend theorie
+		values 2.e-5
+		alias ref
+	}
+	line {
+		legend calcul dans le plan incline
+		origin "TRUST"
+		alias calcul
+		nb_columns_file 3
+		last_line
+		file ./test_1
+		columns $2*$3
+	}
+		line {
+		legend calcul en bas
+		origin "TRUST"
+		nb_columns_file 3
+		last_line
+		file ./test_1b
+		columns $2*$3
+	}
+		line {
+		legend calcul en haut
+		origin "TRUST"
+		nb_columns_file 3
+		last_line
+		file ./test_1c
+		columns $2*$3
+	}
+	line {
+		legend ecart_relatif
+		alias erreur
+		origin "TRUST"
+		difference ecart_relatif calcul ref
+		display_line 0	
+	}
+	 line {
+        	legend "erreur en %"
+		alias err_bis
+	        difference formula   erreur ref int(v1*10000)/100.
+        }	
+	line {
+        	legend "au milieu"
+		origin "TRUST"
+		nb_columns_file 3
+		last_line
+		file ./surf_1c
+		columns $2*$3
+	        
+        }
+
+	}
+	Figure {
+	Title "Trace du debit suivant z"
+	       Dimension 2
+        LabelX "z"
+        LabelY "debit"
+        
+        width 7cm
+        	
+        Curve {
+                legend "20 tranches"
+                origin "TRUST"
+                file ./test_20
+                Style linespoints
+                }
+        Curve {
+                legend "100 tranches"
+                origin "TRUST"
+                file ./test_100
+                Style linespoints
+                }
+
+	}
+}

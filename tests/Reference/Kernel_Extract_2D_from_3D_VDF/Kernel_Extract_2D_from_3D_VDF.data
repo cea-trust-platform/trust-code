@@ -1,0 +1,26 @@
+# Test Extract_2D_from_3D in VDF #
+dimension 3
+
+# Domaine 3D #
+domaine dom
+
+# BEGIN MESH #
+Read_file M3DLAM.geo ;
+
+# Domaine 2D #
+domaine dom2D
+
+# Extraction d'une surface 2D #
+Extract_2D_from_3D dom Entree dom2D
+
+dimension 2
+Postraiter_domaine { domaine dom2D fichier Kernel_Extract_2D_from_3D_VDF.lata format lata }
+Postraiter_domaine { domaine dom2D fichier Kernel_Extract_2D_from_3D_VDF.lml format lml }
+
+dimension 3
+# Extraction d'une surface 2DAxi #
+domaine dom2Daxi
+Extract_2Daxi_from_3D dom Entree dom2Daxi
+dimension 2
+Postraiter_domaine { domaine dom2Daxi fichier Kernel_Extract_2D_from_3D_VDF.lata format lata }
+

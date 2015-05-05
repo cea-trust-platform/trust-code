@@ -1,0 +1,23 @@
+message()
+{
+   [ $1 != $2 ] && echo $ECHO_OPTS "Error ($1!=$2) when checking: $msg" && err=1
+}
+if [ "$1" != "" ]
+then
+   jdd=$1
+else
+   jdd=`pwd`;jdd=`basename $jdd`
+fi
+err=0
+
+son=$jdd"_MOYENNE_VITESSE.son"
+val=`tail -1 $son | $TRUST_Awk '{print 1.*$2}'`
+msg="Moyenne sur la vitesse dans $son";message $val 1 # On doit avoir Moy(U)=1
+
+son=$jdd"_ECART_TYPE_VITESSE.son"
+val=`tail -1 $son | $TRUST_Awk '{print 1.*$2}'`
+msg="Ecart type sur la vitesse dans $son";message $val 0.707107 # On doit avoir Ect(U)=sqrt(2)/2
+
+exit $err
+
+

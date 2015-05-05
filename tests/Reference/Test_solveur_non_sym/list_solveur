@@ -1,0 +1,6 @@
+ solveur gen { seuil 1e-10  impr  solv_elem bicgstab precond ilu { type 2 filling 10 } }
+ solveur gen { seuil 1e-10  impr  solv_elem bicgstab precond ilu { type 2 filling 20 } }
+ solveur gen { seuil 1e-10  impr  solv_elem bicgstab }
+ solveur gen { seuil 1e-10  impr  solv_elem gmres }
+ solveur gen { seuil 1e-10  impr  solv_elem gmres precond ilu { type 2 filling 20 } }
+ solveur gmres { diag seuil 1e-10  impr }

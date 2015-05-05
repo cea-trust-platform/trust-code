@@ -1,0 +1,156 @@
+sed "s/\/\* discretization_here \*\//vdf dis/" inward_field_3D.data > inward_field_VDF_3D_Back.data
+
+sed "s/Back frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 1.0 }/Back frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/
+     s/Front frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/Front frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 1.0 }/
+     s/Domaine boundary_Back/Domaine boundary_Front/; s/nom_frontiere Back/nom_frontiere Front/
+     s/methode vecteur expression 3 1. 0. 0./methode vecteur expression 3 -1. 0. 0./" inward_field_VDF_3D_Back.data > inward_field_VDF_3D_Front.data
+
+sed "s/Front frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 1.0 }/Front paroi_fixe/
+     s/Back frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/Back paroi_fixe /
+     s/Left paroi_fixe/Left frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 1.0 }/
+     s/Right paroi_fixe/Right frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/
+     s/Domaine boundary_Front/Domaine boundary_Left/; s/nom_frontiere Front/nom_frontiere Left/
+     s/nom_frontiere Front/nom_frontiere Left/; s/methode vecteur expression 3 -1. 0. 0./methode vecteur expression 3 0. 0. 1./ " inward_field_VDF_3D_Front.data > inward_field_VDF_3D_Left.data
+
+sed "s/Left frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 1.0 }/Left frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/
+     s/Right frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/Right frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 1.0 }/
+     s/Domaine boundary_Left/Domaine boundary_Right/; s/nom_frontiere Left/nom_frontiere Right/
+     s/methode vecteur expression 3 0. 0. 1./methode vecteur expression 3 0. 0. -1./" inward_field_VDF_3D_Left.data > inward_field_VDF_3D_Right.data
+
+sed "s/Right frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 1.0 }/Right paroi_fixe/
+     s/Left frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/Left paroi_fixe /
+     s/Top paroi_fixe/Top frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 5.0 }/
+     s/Bottom paroi_fixe/Bottom frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/
+     s/Domaine boundary_Right/Domaine boundary_Top/; s/nom_frontiere Right/nom_frontiere Top/
+     s/methode vecteur expression 3 0. 0. -1./methode vecteur expression 3 0. -5. 0./" inward_field_VDF_3D_Right.data > inward_field_VDF_3D_Top.data
+
+sed "s/Top frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 5.0 }/Top frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/
+     s/Bottom frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/Bottom frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 1.0 }/
+     s/Domaine boundary_Top/Domaine boundary_Bottom/
+     s/nom_frontiere Top/nom_frontiere Bottom/
+     s/methode vecteur expression 3 0. -5. 0./methode vecteur expression 3 0. 1. 0./" inward_field_VDF_3D_Top.data > inward_field_VDF_3D_Bottom.data
+
+
+
+
+sed "s/vdf dis/ VEFPreP1B dis/
+     s/\/\* tetra_here \*\// tetraedriser_homogene_compact dom/ 
+     s/\/\* Transformer_here \*\//Transformer dom x*cos(pi\/4)+y*sin(pi\/4) -x*sin(pi\/4)+y*cos(pi\/4) z/
+     s/\/\* TransformerZ_here \*\//Transformer dom x*cos(pi\/4)+z*sin(pi\/4) y -x*sin(pi\/4)+z*cos(pi\/4)/
+     s/Top paroi_fixe/Top Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 1.\/2 -sqrt(1.\/2) -1.\/2/ 
+     s/Bottom paroi_fixe/Bottom Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 1.\/2 -sqrt(1.\/2) -1.\/2/
+     s/Left paroi_fixe/Left Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 1.\/2 -sqrt(1.\/2) -1.\/2/ 
+     s/Right paroi_fixe/Right Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 1.\/2 -sqrt(1.\/2) -1.\/2/
+     s/methode vecteur expression 3 1. 0. 0./methode vecteur expression 3 1.\/2 -sqrt(1.\/2) -1.\/2/" inward_field_VDF_3D_Back.data > inward_field_VEF_3D_Back.data
+
+sed "s/Back frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 1.0 }/Back frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/
+     s/Front frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/Front frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 1.0 }/
+     s/Domaine boundary_Back/Domaine boundary_Front/; s/nom_frontiere Back/nom_frontiere Front/
+     s/Top Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 1.\/2 -sqrt(1.\/2) -1.\/2/Top Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 -1.\/2 sqrt(1.\/2) 1.\/2/ 
+     s/Bottom Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 1.\/2 -sqrt(1.\/2) -1.\/2/Bottom Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 -1.\/2 sqrt(1.\/2) 1.\/2/
+     s/Left Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 1.\/2 -sqrt(1.\/2) -1.\/2/Left Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 -1.\/2 sqrt(1.\/2) 1.\/2/
+     s/Right Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 1.\/2 -sqrt(1.\/2) -1.\/2/Right Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 -1.\/2 sqrt(1.\/2) 1.\/2/
+     s/methode vecteur expression 3 1.\/2 -sqrt(1.\/2) -1.\/2/methode vecteur expression 3 -1.\/2 sqrt(1.\/2) 1.\/2/" inward_field_VEF_3D_Back.data > inward_field_VEF_3D_Front.data
+
+sed "s/Front frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 1.0 }/Front Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 sqrt(1.\/2) 0 sqrt(1.\/2)/
+     s/Back frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/Back Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 sqrt(1.\/2) 0 sqrt(1.\/2)/
+     s/Left Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 -1.\/2 sqrt(1.\/2) 1.\/2/Left frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 1.0 }/
+     s/Right Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 -1.\/2 sqrt(1.\/2) 1.\/2/Right frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/
+     s/Top Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 -1.\/2 sqrt(1.\/2) 1.\/2/Top Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 sqrt(1.\/2) 0 sqrt(1.\/2)/
+     s/Bottom Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 -1.\/2 sqrt(1.\/2) 1.\/2/Bottom Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 sqrt(1.\/2) 0 sqrt(1.\/2)/
+     s/Domaine boundary_Front/Domaine boundary_Left/
+     s/nom_frontiere Front/nom_frontiere Left/
+     s/methode vecteur expression 3 -1.\/2 sqrt(1.\/2) 1.\/2/methode vecteur expression 3 sqrt(1.\/2) 0 sqrt(1.\/2)/" inward_field_VEF_3D_Front.data > inward_field_VEF_3D_Left.data
+
+sed "s/Left frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 1.0 }/Left frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/
+     s/Right frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/Right frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 1.0 }/
+     s/Top Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 sqrt(1.\/2) 0 sqrt(1.\/2)/Top Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 -sqrt(1.\/2) 0 -sqrt(1.\/2)/
+     s/Bottom Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 sqrt(1.\/2) 0 sqrt(1.\/2)/Bottom Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 -sqrt(1.\/2) 0 -sqrt(1.\/2)/
+     s/Back Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 sqrt(1.\/2) 0 sqrt(1.\/2)/Back Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 -sqrt(1.\/2) 0 -sqrt(1.\/2)/
+     s/Front Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 sqrt(1.\/2) 0 sqrt(1.\/2)/Front Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 -sqrt(1.\/2) 0 -sqrt(1.\/2)/
+     s/Domaine boundary_Left/Domaine boundary_Right/; s/nom_frontiere Left/nom_frontiere Right/
+     s/methode vecteur expression 3 sqrt(1.\/2) 0 sqrt(1.\/2)/methode vecteur expression 3 -sqrt(1.\/2) 0 -sqrt(1.\/2)/" inward_field_VEF_3D_Left.data > inward_field_VEF_3D_Right.data
+
+sed "s/Right frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 1.0 }/Right Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 -5.\/2 -5*sqrt(1.\/2) 5.\/2/
+     s/Left frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/Left Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 -5.\/2 -5*sqrt(1.\/2) 5.\/2/
+     s/Back Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 -sqrt(1.\/2) 0 -sqrt(1.\/2)/Back Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 -5.\/2 -5*sqrt(1.\/2) 5.\/2/
+     s/Front Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 -sqrt(1.\/2) 0 -sqrt(1.\/2)/Front Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 -5.\/2 -5*sqrt(1.\/2) 5.\/2/
+     s/Top Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 -sqrt(1.\/2) 0 -sqrt(1.\/2)/Top frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 5.0 }/
+     s/Bottom Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 -sqrt(1.\/2) 0 -sqrt(1.\/2)/Bottom frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/
+     s/Domaine boundary_Right/Domaine boundary_Top/; s/nom_frontiere Right/nom_frontiere Top/
+     s/methode vecteur expression 3 -sqrt(1.\/2) 0 -sqrt(1.\/2)/methode vecteur expression 3 -5.\/2 -5*sqrt(1.\/2) 5.\/2/" inward_field_VEF_3D_Right.data > inward_field_VEF_3D_Top.data
+
+
+sed "s/Top frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 5.0 }/Top frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/
+     s/Bottom frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/Bottom frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 1.0 }/
+     s/Right Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 -5.\/2 -5\*sqrt(1.\/2) 5.\/2/Right Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 1.\/2 sqrt(1.\/2) -1.\/2/
+     s/Left Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 -5.\/2 -5\*sqrt(1.\/2) 5.\/2/Left Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 1.\/2 sqrt(1.\/2) -1.\/2/
+     s/Back Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 -5.\/2 -5\*sqrt(1.\/2) 5.\/2/Back Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 1.\/2 sqrt(1.\/2) -1.\/2/
+     s/Front Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 -5.\/2 -5\*sqrt(1.\/2) 5.\/2/Front Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 3 1.\/2 sqrt(1.\/2) -1.\/2/
+     s/Domaine boundary_Top/Domaine boundary_Bottom/; s/nom_frontiere Top/nom_frontiere Bottom/; s/nom_frontiere Top/nom_frontiere Bottom/
+     s/methode vecteur expression 3 -5.\/2 -5\*sqrt(1.\/2) 5.\/2/methode vecteur expression 3 1.\/2 sqrt(1.\/2) -1.\/2/" inward_field_VEF_3D_Top.data > inward_field_VEF_3D_Bottom.data
+
+
+
+
+sed "s/\/\* discretization_here \*\//vdf dis/" inward_field_2D.data > inward_field_VDF_2D_Left.data
+
+sed "s/Left frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 1.0 }/Left frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/
+     s/Right frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/Right frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 1.0 }/
+     s/Domaine boundary_Left/Domaine boundary_Right/
+     s/nom_frontiere Left/nom_frontiere Right/
+     s/methode vecteur expression 2 1. 0./methode vecteur expression 2 -1. 0./" inward_field_VDF_2D_Left.data > inward_field_VDF_2D_Right.data
+
+sed "s/Left frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/Left paroi_fixe/
+     s/Right frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 1.0 }/Right paroi_fixe/
+     s/Top paroi_fixe/Top frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 5.0 }/
+     s/Bottom paroi_fixe/Bottom frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/
+     s/Domaine boundary_Right/Domaine boundary_Top/
+     s/nom_frontiere Right/nom_frontiere Top/
+     s/methode vecteur expression 2 -1. 0./methode vecteur expression 2 0. -5./" inward_field_VDF_2D_Right.data > inward_field_VDF_2D_Top.data
+
+sed "s/Top frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 5.0 }/Top frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/
+     s/Bottom frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/Bottom frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 1.0 }/
+     s/Domaine boundary_Top/Domaine boundary_Bottom/; s/nom_frontiere Top/nom_frontiere Bottom/
+     s/methode vecteur expression 2 0. -5./methode vecteur expression 2 0. 1./" inward_field_VDF_2D_Top.data > inward_field_VDF_2D_Bottom.data
+
+
+
+
+sed "s/vdf dis/VEFPreP1B dis/
+     s/\/\* tetra_here \*\//Trianguler_H dom/
+     s/\/\* Transformer_here \*\//Transformer dom x*cos(pi\/4)+y*sin(pi\/4) -x*sin(pi\/4)+y*cos(pi\/4)/ 
+     s/methode vecteur expression 2 1. 0./methode vecteur expression 2 1.\/sqrt(2) -1.\/sqrt(2)/ 
+     s/Top paroi_fixe/Top Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 2 1.\/sqrt(2) -1.\/sqrt(2)/ 
+     s/Bottom paroi_fixe/Bottom Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 2 1.\/sqrt(2) -1.\/sqrt(2)/"   inward_field_VDF_2D_Left.data > inward_field_VEF_2D_Left.data
+
+sed "s/Left frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 1.0 }/Left frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/
+     s/Right frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/Right frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 1.0 }/
+     s/Domaine boundary_Left/Domaine boundary_Right/
+     s/nom_frontiere Left/nom_frontiere Right/
+     s/Top Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 2 1.\/sqrt(2) -1.\/sqrt(2)/Top Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 2 -1.\/sqrt(2) 1.\/sqrt(2)/ 
+     s/Bottom Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 2 1.\/sqrt(2) -1.\/sqrt(2)/Bottom Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 2 -1.\/sqrt(2) 1.\/sqrt(2)/
+     s/methode vecteur expression 2 1.\/sqrt(2) -1.\/sqrt(2)/methode vecteur expression 2 -1.\/sqrt(2) 1.\/sqrt(2)/" inward_field_VEF_2D_Left.data > inward_field_VEF_2D_Right.data
+
+sed "s/Left frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/Left Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 2 -sqrt(12.5) -sqrt(12.5)/
+     s/Right frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 1.0 }/Right Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 2 -sqrt(12.5) -sqrt(12.5)/
+     s/Top Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 2 -1.\/sqrt(2) 1.\/sqrt(2)/Top frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 5.0 }/
+     s/Bottom Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 2 -1.\/sqrt(2) 1.\/sqrt(2)/Bottom frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/
+     s/Domaine boundary_Right/Domaine boundary_Top/
+     s/nom_frontiere Right/nom_frontiere Top/
+     s/methode vecteur expression 2 -1.\/sqrt(2) 1.\/sqrt(2)/methode vecteur expression 2 -sqrt(12.5) -sqrt(12.5)/" inward_field_VEF_2D_Right.data > inward_field_VEF_2D_Top.data
+
+sed "s/Top frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 5.0 }/Top frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/
+     s/Bottom frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0/Bottom frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 1.0 }/
+     s/Domaine boundary_Top/Domaine boundary_Bottom/
+     s/nom_frontiere Top/nom_frontiere Bottom/
+     s/Left Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 2 -sqrt(12.5) -sqrt(12.5)/Left Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 2 sqrt(0.5) sqrt(0.5)/ 
+     s/Right Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 2 -sqrt(12.5) -sqrt(12.5)/Right Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 2 sqrt(0.5) sqrt(0.5)/
+     s/methode vecteur expression 2 -sqrt(12.5) -sqrt(12.5)/methode vecteur expression 2 sqrt(0.5) sqrt(0.5)/" inward_field_VEF_2D_Top.data > inward_field_VEF_2D_Bottom.data
+
+
+
+
+
+
+

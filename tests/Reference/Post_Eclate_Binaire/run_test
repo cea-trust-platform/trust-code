@@ -1,0 +1,4 @@
+#!/bin/bash
+$exec
+f77 -o lit lit_lata_binaire.f
+./lit

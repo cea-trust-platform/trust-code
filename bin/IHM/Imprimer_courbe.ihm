@@ -1,0 +1,23 @@
+#!/bin/bash
+# Impression de la courbe :
+ETUDE_TRUST=`QUELLE_ETUDE.ihm`
+export ETUDE_TRUST
+cd $ETUDE_TRUST
+if [ ${#IMPRESSION} = 0 ]
+then
+   echo "Variable IMPRESSION empty :"
+   echo "Printer not defined."
+else
+   echo $ECHO_OPTS "------------------------------------------"
+   echo $ECHO_OPTS "STUDY:"$ETUDE_TRUST
+   echo $ECHO_OPTS "------------------------------------------"
+   echo $ECHO_OPTS "Please enter the curve number to print:"
+   read num
+   if [ -f $NOM ]
+   then
+      eval $IMPRESSION $NOM
+   else
+      echo $ECHO_OPTS "File $NOM does not exist."
+   fi
+fi
+sleep 1

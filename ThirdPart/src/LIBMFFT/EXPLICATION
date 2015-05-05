@@ -1,0 +1,2 @@
+Routines permettant les calculs de fft, utilisees pour le calcul des spectres turbulent.
+La precision a ete changee : nous sommes en double precision (sources modifies!)

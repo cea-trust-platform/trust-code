@@ -1,0 +1,363 @@
+\documentclass[a4paper,10pt,dvips]{article}
+% Pour pouvoir taper les accents dans le code source
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+\usepackage{times}
+% Extension postscript
+%\usepackage[pdftex]{graphicx}
+\usepackage[dvips]{graphicx}
+\usepackage{color}
+\usepackage{subfigure}
+\usepackage{array}
+\usepackage[hmargin={3cm,3cm},vmargin={1cm,1cm}]{geometry}
+
+% Pour encadrer des formules (ex : $\boxed{truc=\theta}$)
+% et caracteres supplementaires (gras)
+\usepackage{amsmath}
+% Fontes pour ensemble des reels
+\usepackage{amsfonts}
+% definition de Beqnarray
+%\usepackage{fancybox}
+% Francisation du document
+%\usepackage{babel}
+
+%usepackage[backref,pdftex,colorlinks = true,urlcolor = black,linkcolor = black,anchorcolor = black,citecolor = black]{hyperref}
+
+% Macros diverses
+\begin{document}
+
+\newcommand{\opendx}[0]{\textit{OpenDX} }
+\newcommand{\triou}[0]{\textit{Trio-U} }
+
+\title{TRIO-U documentation: Tutorial for OpenDX}
+\author{Benoit MATHIEU}
+\maketitle
+
+\section{Introduction}
+
+\opendx is a powerful open source data visualization software.
+The software and other useful ressources can be found on
+\hbox{http://www.opendx.org}.
+
+If the software is properly installed (let us assume that
+it sits on \textsf{\$DXROOT/}), then you will find
+the hypertext documentation in \textsf{\$DXROOT/dx/html/allguide.htm}.
+We suggest that you first look at this documentation. There
+is a quick overview and a tutorial for you to get familiar with
+the concepts and interface of the software.
+
+If you already worked with the~\textit{AVS} software, you will
+see that the philosophy of these softwares are quite similar.
+
+In the beginning, you will not need to know much about programming
+in~\opendx. \triou comes with several programs for
+basic visualisation of your numerical simulations. Once you are
+familiar with the graphical interface and concepts, you will
+probably want to enhance your visualisations. It will be time
+for you to look closer at the programs. \opendx is very flexible
+and allows many operations on data, including statistics and
+offers many different ways to represent datasets. We encourage
+you to explore the possibilities of the software, since a better
+visualisation often decreases the time you need to analyse the
+results.
+
+\section{Installation}
+
+This tutorial, the \textsf{lata\_dx\_filter} tool and the \opendx
+programs are located in the
+\textsf{vobs/Pre\_Post\_Trio\_U/Outils/lata2dx/} directory.
+
+We assume that you have a proper \triou view installed,
+which has support for \opendx (the \textsf{lata2dx} directory
+should be present). We also assume that you have \opendx installed
+and present in the \textsf{\$PATH} variable.
+(it should run by simply typing \textsf{dx} in a terminal).
+
+You will first need to compile the \textsf{lata\_dx\_filter} tool.
+Within the \triou environment, open a terminal window, enter the
+\textsf{lata2dx} directory and type make. This will compile a small
+executable file and place it together with some script files in the
+\textsf{\$TRIO\_U\_ROOT/exec} directory.
+
+You are now ready to start some visualizations.
+
+\section{Quick start}
+
+We will select an example data file, modify it to output the data
+in \textsf{lata} format, run the simulation and view the results
+with \opendx.
+
+First, start \triou. Create a new study and copy the datafile
+\textsf{Cavite\_paroi\_defilante\_quadra.data} found in the
+\textsf{Test\_reference/Cavite\_paroi\_defilante\_quadra} directory.
+Run it \textit{as is} if you want to be sure that \triou is properly
+working.
+
+Then edit the datafile and  change the \textsf{Postraitement} entry:
+\vspace{1em}
+
+{
+\centering
+\begin{tabular}{c|c}
+original entry & new entry \\
+\hline\\ 
+\begin{minipage}{6cm}
+\begin{verbatim}
+Champs dt_post 0.1
+{
+  pression elem
+  pression som
+  vitesse elem
+  vitesse som
+  vorticite elem
+}
+\end{verbatim}
+\end{minipage}
+&
+\begin{minipage}{6cm}
+\begin{verbatim}
+format lata
+Champs dt_post 0.1
+{
+  pression elem
+  pression som
+  vitesse elem
+  vitesse som
+  vorticite elem
+}
+\end{verbatim}
+\end{minipage}
+\end{tabular}
+\par
+}
+\vspace{1em}
+
+You just have to add one line containing \textsf{format lata}. Then you
+can run the simulation. The simulation should complete within a few minutes.
+
+We will now launch \opendx to view the data. Open a terminal window in your
+study and type the following command line: \textsf{lance\_dx~simple\_importer~\&}.
+\opendx displays an image window and a control panel which has been designed
+for basic \triou usage.
+
+Whenever a problem happens, you will see a message window popup
+describing the error and the program window will show you where the program
+crashed. If this happens, you probably made a mistake in manipulating
+\opendx and you won't need to look into the code. Close these two
+windows, select \textsf{reset} in the \textsf{connection} menu and
+start again.
+
+Click on the right of the \textsf{Import lata file} box (the three dots).
+In the filter box, change \textsf{*.dx} to \textsf{*.lata} and press enter.
+You should now see the lata file (\textsf{your\_study.lata})in the selection box.
+Select it and click ok. Make sure that the \textsf{quad} box is checked
+and the \textsf{binary} box is unchecked in the control panel.
+Now, open the \textsf{execute} menu in the image window and select 
+\textsf{execute on change}. The program will run and the display will be
+updated every time you change a display parameter. Now we need to adjust
+the scaling for the computational domain to fit in the window.
+In the \textsf{options} menu, select \textsf{reset}.
+We can see the boundary of the computational domain. To see the mesh,
+select \textsf{show connections} in the control panel.
+
+In this basic control panel, you will find two types of
+representations for field data (velocity, temperature and so on...).
+One is a solid color field, and the other is a glyph (spheres of
+varying size for scalar data and vectors for vector data).  Tick the
+\textsf{Show color field} box. This will update the \textsf{Selection}
+box and select a default field for display (eg. \textsf{positions},
+which is of no use for us). Scroll in the selection box and draw the
+\textsf{PRESSION\_ELEM} field, which represents the pressure at the
+center of the elements. As you can see, \opendx shows a color field
+which is constant on each mesh element. If you select
+\textsf{PRESSION\_SOM} instead (which represents the pressure at the
+mesh nodes), \opendx interpolates the data and shows a bilinear field
+on each element.
+
+The colorbar on the right shows the amplitude and color correspondance.
+\opendx automaticaly adjusts the colormap to match the minimum and maximum
+value of the field.
+
+The other representation is called glyph in \opendx. Tick the
+corresponding box (always do this first for the selection box to show
+the correct values), and choose \textsf{PRESSION\_ELEM} in the
+selection box. \opendx draws a sphere in the center of each element,
+the diameter being a linear function of the pressure. If you select
+\textsf{PRESSION\_SOM}, the sphere are drawn on the mesh nodes. Now,
+select \textsf{VITESSE\_SOM}. You see the velocity field! The scaling
+is also automaticaly
+ chosen to fit the currently displayed data. Fixing
+the scaling manually requires a more complete panel or some
+programming from you.
+
+We displayed the first timestep (just one step after initialisation).
+To explore the time evolution, select \textsf{sequencer} in the \textsf{execute}
+menu. This small VCR like panel allows you to navigate through the timesteps
+(it's time to look at the online documentation, chapter~2, tutorial~I,
+using the sequencer). If you reach the end of the simulation, hit the
+stop button and select the correct field again...
+
+\section{Visualizing front tracking results}
+
+The first step consists in setting up the \triou to output the data in
+\textsf{lata} format. Here is for example the postprocessing part of a data file:
+
+\begin{verbatim}
+        Postraitement
+        {
+                format lata
+                Champs binaire dt_post 5.e-4
+                {
+                        masse_volumique elem
+                        indicatrice elem
+                        pression elem
+                        vitesse som
+                        temperature elem
+                }
+                Interfaces dt_post 5.e-4
+                {
+                        couleur
+                        vitesse
+                        force_tension
+                        debit_massique
+                        temperature
+                }
+        }
+\end{verbatim}
+
+The \textsf{binary} keyword in \textsf{champs} also holds for the interfaces.
+Available keyword for the interfaces are listed above. If no keyword is given,
+only the interfaces nodes and connectivity is output.
+
+Once the simulation has been run, it's time to visualize the results.
+There is a dedicated program to visualize front tracking simulations.
+The program will be launched with \textsf{lance\_dx front\_tracking\_complet}.
+As usual, be sure to check the element type and binary mode before executing,
+or a (recoverable) error will occur.
+
+The panel has the usual color field and glyph sections to visualize the
+traditional fields. Color field and glyph scaling can be imposed to
+have the same amplitude for all timesteps. For the color field, the minimum
+and maximum value will be given. For the velocity field, the scaling gives
+the length of a vector representing a velocity of~1~ms$^-1$ (if the domain
+is~1~mm wide and the velocity is~0.1~mms$^-1$, then the vector will have a
+length of 1/10th of the domain width).
+
+Besides, there is a dedicated section for interfaces. A black line represents
+the interfaces, and glyphs can be drawn to represent the interface nodes.
+Velocity, surface tension and other data can also be represented with
+glyphs. 
+
+The last section allows you to save all images in the specified directory
+(do not forget the trailing~\textbf{/}). Image resolution can be chosen
+among standard values. Then, every time the program executes to display
+an image, a copy is written to disk. The image filename is built using the
+timestep number. 
+
+\section{Important notices}
+
+\opendx uses a data cache to conserve recently displayed data. This has two
+consequences. First, the default setting of using~80\% of the memory can
+lead to some trouble even for small data sets. The laucher that we provide
+with \triou (\textsf{lance\_dx}) therefore sets the upper limit of memory usage to~160~MB for
+\opendx. In some cases you will need more memory. If \opendx complains,
+you will have to do the following:
+\begin{itemize}
+\item{\textsf{connection->disconnect from server, yes}}
+\item{\textsf{connection->start server, options}}
+\item{Type in the memory you want \opendx to allocate, in megabytes}
+\item{\textsf{ok, connect}}
+\end{itemize}
+The other consequence is that if you visualize data while the simulation is still
+running and you reach the last timestep, \opendx will refuse to go to the
+next timestep, even if it has been saved to disk by \triou. \opendx remembers in
+the fact that loading this timestep failed, and will not try again.
+You will have to clear the cache (\textsf{connection->reset server}), and restart
+execution (\textsf{execute->execute on change}).
+
+The same applies if you restart a simulation. You will have to cleanup the directory
+before to remove all \textsf{lata} files (we provide the script \textsf{clean\_trio\_data}
+which will remove all files in the current directory but \textsf{.data}, 
+\textsf{.net}, \textsf{.cfg}, \textsf{.mesh}, \textsf{.prep} and \textsf{.geom}. Be
+careful, think twice before running this script). Then don't forget to reset the server
+or you might see the results of the previous simulation. The more memory you
+give to \opendx, the more data it will keep in the cache. This can be handy
+because \opendx will be able to redisplay very quickly images that were recently
+computed.
+
+For the optimized \opendx programs to work properly, all the postprocessing data
+must be output at the same time (same \textsf{dt\_post} for fields and interfaces).
+
+If you get bored of the program window and message window popping up every time
+you reach the end of the simulation, you can disable this in the options menu
+of the message windows (just uncheck all options). Remember to check these
+options again to solve problems.
+
+The front tracking visualization program won't work if you didn't add the
+\textsf{Interfaces} section to the postprocessing options of the \triou
+datafile.
+
+\subsection{Other programs}
+
+\triou also comes with other programs dedicated to some specific visualizations.
+Most of them will have to be adapted to fit you needs.
+
+\textsf{lance\_dx front\_tracking\_couple} will launch a program suitable
+for vizualisation of coupled front-tracking problems with a fluid,
+interfaces and a wall having temperature. For this program to work
+``as is'', the domain names in the \triou data file must be
+\textsf{dom} and \textsf{dom\_solide} respectively for the fluid and
+the wall.
+
+\textsf{front\_tracking\_3d} allows easy 3d visualizations. It allows to
+cut the domain with up to three planes along each direction and to
+move the cut planes. Also, interfaces are represented with their
+nodes, a wire mesh or a triangular shaded patch with optional
+transparency.
+
+Front\_tracking networks can automatically export rendered images.
+Choose a destination directory in the control panel, tick the
+\textsf{save images} box and choose an image resolution.  Every
+rendered image will be saved with the following printf style
+format:~\textsf{''img\%05d.tiff''}, where~\%d is the timestep number
+(first timestep is number~0). After having activated this feature,
+doing \textsf{options->reset} in the image window will resize the
+window to the selected image resolution for you to check the aspect
+ratio.
+
+\textsf{front\_tracking\_multi} illustrates how to display different simulations
+simultaneously on the same image (to compare simulation schemes for example).
+\textsf{dtpost} must be constant, otherwise the displayed time won't match.
+
+\textsf{front\_tracking\_stream} illustrates how to draw streamlines.
+Origins of the streamlines are manually placed (\textsf{image
+  window->options->view conttrol}, mode=cursors, then double click on
+the image to place or remove a point).
+
+\textsf{front\_tracking\_glyph} illustrates how to display figures on
+the interface nodes for debugging purposes.
+
+Feel free to modify the networks. 
+
+\section{Implementation details}
+
+The front tracking method is expected to be used heavily and on large
+datasets. The visualization tools are therefore optimized for speed.
+The main optimization consists in only loading the fields necessary
+for the currently rendered image.  The fixed mesh geometry and the
+first timestep with all components are imported once only and stay in
+\opendx's cache. Then we take advandage of one feature of the
+lata\_dx\_filter tool, which allows to import some specified field data
+only, and not the geometry. The newly read field data is merged with
+the previously read geometry with the \textsf{replace} tools in the network.
+This allows a speedup of a factor~5 or more (yes, it will increase your
+productivity!).
+
+FAQ: sauvegarde
+\section{Frequently asked questions}
+\subsubsection{How do I save images to files}
+\textsf{Image window>File>Save image}. Select image format, file name
+and output resolution (tick \textsf{allow rerendering}).
+
+
+\end{document}

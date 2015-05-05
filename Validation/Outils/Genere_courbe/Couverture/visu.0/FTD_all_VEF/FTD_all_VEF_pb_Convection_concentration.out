@@ -1,0 +1,6 @@
+# Impression sur les bords de l'equation Convection_Diffusion_Concentration du probleme pb
+# Flux convectif de concentration=Integrale(-C*u*ndS)[m3.Mol.s-1]
+# Bord:		paroi		bas		haut		Total
+# Temps						
+1.000e-07 	 	0.000e+00 	 	0.000e+00 	 	0.000e+00 	 	0.000e+00
+2.264e-02 	 	-1.749e-07 	 	-9.267e-09 	 	-6.601e-07 	 	-8.442e-07

@@ -1,0 +1,5 @@
+This directory contains files that can be compiled in TRUST or in lata2dx
+(source code is strictly identical).
+They might use classes which are not common (ArrOfDouble, Entree, Octree, ...) but
+which provide the same functionalities. Compatibility classes for lata2dx
+are located in ../triou_compat/

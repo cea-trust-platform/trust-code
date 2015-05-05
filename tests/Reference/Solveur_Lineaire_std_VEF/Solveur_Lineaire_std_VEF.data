@@ -1,0 +1,100 @@
+# Probleme de Conduction 2D VEF avec utilisation du solveur Solveur_lineaire_std #
+# PARALLEL NOT #
+dimension 2
+Pb_Conduction pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom 
+{
+	Pave Entree
+		{
+		Origine 0. 0.
+		Nombre_de_Noeuds 11 11
+		Longueurs 1 1
+		}
+		{
+		bord Haut	Y = 1.	0. <= X <= 1.
+		bord Bas	Y = 0.	0. <= X <= 1.
+		bord Gauche	X = 0.	0. <= Y <= 1.
+		bord Droite	X = 1.	0. <= Y <= 1.
+		}
+}
+Trianguler_H dom
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 1
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+
+Schema_Euler_implicite sch
+Lire sch
+{
+	tinit	0.
+        tmax	1.
+	dt_min	1.e-5
+	dt_max	100
+	dt_impr	1.
+	dt_sauv	1.
+        seuil_statio 1.e-10
+        Solveur	Solveur_lineaire_std
+	{
+		Solveur Gmres { }
+	}
+}
+
+Solide sol
+Lire sol 
+{
+	rho	Champ_Uniforme 1 1.
+	lambda	Champ_Uniforme 1 0.1
+	Cp	Champ_Uniforme 1 0.1
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb sol
+
+Discretize pb dis
+
+Lire pb
+{
+    Conduction
+    {
+	diffusion { }
+	conditions_initiales { temperature Champ_Uniforme 1 0. }
+	boundary_conditions
+	{
+		Haut	paroi_adiabatique
+		Bas	paroi_adiabatique
+		Gauche	paroi_temperature_imposee Champ_Front_Uniforme 1 1.
+		Droite	paroi_temperature_imposee Champ_Front_Uniforme 1 0.
+	}
+    }
+    Postraitement
+    {
+	Sondes
+	{
+		sonde_T temperature periode 1.e-5 point 1	0. 0.5
+	}
+	Champs dt_post 0.1
+	{
+              	temperature elem
+	}
+    }
+}
+
+Solve pb
+Fin

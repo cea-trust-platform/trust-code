@@ -1,0 +1,644 @@
+#!/bin/bash
+# Compilation multi-repertoire et multi-plateforme de TRUST
+# OK
+find_()
+{
+   (
+   find . -maxdepth 1 -name '*'.$1 2>/dev/null 
+   if [ $? != 0 ] # maxdepth non supporte
+   then
+      \ls [A-N]*.$1 2>/dev/null
+      \ls [O-Z]*.$1 2>/dev/null
+      \ls [a-z]*.$1 2>/dev/null
+   fi
+   ) | sed s/\\\.\\\///g
+}
+OK()
+{
+   new_time=`date "+%s"`
+   e="error" && [ $1 = 0 ] && e="OK"
+   echo $e" "`echo $new_time $time| awk '// {time=$1-$2;mn=int(time/60);s=time%60;if (time>0) print "in "mn"mn"s"s"}'`
+   time=$new_time
+}
+
+CHOIX_MAKE()
+{
+   MAKE=make
+   if [ ${#CLEAN} = 0 ] && [ $1 = "multiple" ]
+   then
+      [ "$MAKE_NB_CPUS" != 0 ] && MAKE=$TRUST_MAKE
+   fi
+}
+
+STAT_DISTCC()
+{
+   return # Car distcc.log peut etre ecrit par plusieurs compilations en meme temps...
+   if [ -f $DISTCC_LOG ]
+   then
+      echo "Number of files compiled with:"
+      grep 'exec on' $DISTCC_LOG | $TRUST_Awk '{print $4}' | sort | uniq -c | sort -nr | $TRUST_Awk '{print $2" \t"$1}'
+      rm -f $DISTCC_LOG
+   fi
+}
+
+make_tools()
+{
+   CHOIX_MAKE simple
+   echo "==========================="
+   echo "$MESSAGE tools and plugins:"
+   echo "==========================="
+   reps="Outils/lance_test_seq_par Outils/cppcheck Outils/triou2doxygen Outils/lata2dx Outils/Slotting Outils/TRIOXDATA Outils/doxygen  doc/Coverage doc"
+   [ "$TRUST_DISABLE_VALGRIND" != 1 ] && reps=$reps" Outils/valgrind"
+   [ "$TRUST_DISABLE_GNUPLOT" != 1 ] && reps=$reps" Outils/gnuplot"
+   [ "$TRUST_DISABLE_MED" = 0 ] && [ "$TRUST_DISABLE_GMSH" != 1 ] && reps=$reps" Outils/Gmsh"
+   [ "$TRUST_WITHOUT_VISIT" != 1 ] && reps=$reps" Outils/VisIt"
+   err_tool=0
+   for rep in $reps
+   do
+      if [ -d $TRUST_ROOT/$rep ] && [ "`ls $TRUST_ROOT/$rep/*akefile 2>/dev/null`" != "" ]
+      then
+	 \cd $TRUST_ROOT/$rep && echo $ECHO_OPTS $rep":\c " && $MAKE $CLEAN 1>>$COMPILE 2>&1
+	 err=$?
+	 OK $err
+	 if [ $err != 0 ]
+         then
+            if [ $rep = Outils/TRIOXDATA ] && [ "$CLEAN" = clean ]
+            then
+               # Pour les exceptions
+               err_tool=$err_tool
+            else
+               err_tool=1
+            fi
+         fi
+      fi
+   done
+   [ "$err_tool" = 1 ] && echo "A tool failed to build. Contact TRUST support." && exit -1
+}
+
+make_jade_batch()
+{
+   ############################################################
+   # Lancement en batch sur cette machine de la commande make #
+   ############################################################
+   echo "#PBS -N make
+#PBS -l select=8:ncpus=8:mpiprocs=1
+#PBS -l walltime=02:00:00
+cd $TRUST_ROOT
+#source env/Init_TRUST
+cd \$PBS_O_WORKDIR
+export HOST=jade
+export TRUST_MAKE=\"make -j8\"
+make 1>make.log 2>&1" > sub_file
+   id=`cat sub_file | qsub | $TRUST_Awk -F . '{print $1}'`
+   echo > make.log
+   tail -f make.log &
+   pcs=$!
+   echo "make submitted by qsub. Wait..."
+   while [ "`qstat -a | grep $id`" != "" ]
+   do
+      sleep 3
+   done
+   kill -9 $pcs
+   rm -f sub_file
+   cat make.log
+}
+
+###################
+# DEBUT DU SCRIPT #
+###################
+[ "$TRUST_ROOT" = "" ] && echo "Error. TRUST_ROOT is empty. Initialize TRUST environment." && exit -1 
+
+# Options
+depend=0
+[ $# = 1 ] && [ $1 = "depend" ] && depend=1
+[ $# = 2 ] && [ $2 = "depend" ] && depend=1
+monodir=0 && [ $# -gt 0 ] && [ $1 = "monodir" ] && monodir=2
+[ $# -gt 0 ] && [ $1 = "monodir_cmake" ] && monodir=2
+# OPT="_semi_opt" if using an SCM <=> Developer version
+COMPIL_DYN=OFF
+# [ $monodir = 0 ] && [ "$TRUST_SCM" = 1 ] && OPT="_semi_opt" &&  COMPIL_DYN=ON
+[ $monodir = 0 ] && [ "$TRUST_SCM" = 1 ] && COMPIL_DYN=ON
+monodir=2
+
+rm -f $DISTCC_LOG
+rm -f $CCACHE_LOGFILE
+CLEAN="" && MESSAGE="Building" && [ "${1%clean}" != "$1" ] && CLEAN=clean && MESSAGE="Cleaning" && shift
+
+# Creation eventuelle des repertoires exec et lib :
+[ ! -d $TRUST_ROOT/exec ] && mkdir $TRUST_ROOT/exec
+[ ! -d $TRUST_ROOT/lib ] && mkdir $TRUST_ROOT/lib
+ 
+COMPILE=$TRUST_ROOT/compile_TRUST$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD".log"
+echo>$COMPILE
+
+# Nettoyage/Reconstruction des outils uniquement
+if [ "$1" = tools ]
+then
+   MESSAGE="Cleaning"
+   CLEAN=clean
+   make_tools 
+   MESSAGE="Compiling"
+   CLEAN=""
+   make_tools 
+   exit 0
+fi
+
+# On verifie qu'un fichier d'environnement existe
+if [ ! -f $TRUST_ENV/make.$TRUST_ARCH_CC$OPT ]
+then
+   cd $TRUST_ENV
+   new_file=make.$TRUST_ARCH_CC$OPT
+   echo "Warning ! OPT=$OPT is first used."
+   echo "You should change/validate a new environment file $new_file"
+   echo "Then save and exit to build the code."
+   for file in `ls make.$TRUST_ARCH_CC* | sort -nr`
+   do
+      if [ "${new_file#$file}" != "$new_file" ]
+      then
+          cp $file $new_file
+	  echo "$file seems the good template for $new_file"
+	  break
+      fi         
+   done
+   $EDITEUR $new_file
+   cd -
+fi
+\cd $TRUST_ROOT
+
+[ ${#TRUST_F77} = 0 ] && echo "No fortran compiler defined in $TRUST_F77 variable." && exit -1
+[ ${#TRUST_CC} = 0 ] && echo "No C++ compiler defined in $TRUST_CC variable." && exit -1
+
+echo "$MESSAGE of version : $TRUST_ROOT"
+echo "For arch : $TRUST_ARCH_CC"
+echo "\$OPT=$OPT"
+echo "\$COMM=$COMM"
+
+################################
+# Creation des librairies LIB...
+################################
+# 13/05/05 : encore des pbs pour faire make -j 2 dans MED, Makefile mal faits ?
+CHOIX_MAKE simple
+echo "==================="
+echo "$MESSAGE libraries:"
+echo "==================="
+LIBS=$TRUST_ROOT/ThirdPart/src
+if [ -d $LIBS ]
+then
+   \cd $LIBS
+   err=0  
+   # On compile METIS si PETSC desactive
+   if [ "$TRUST_DISABLE_PETSC" = 1 ]
+   then
+      LIBMETIS=LIBMETIS
+   else
+      LIBMETIS=""
+   fi
+   reps="LIBMFFT LIBMFFT_C LIBSKIT LIBLATAFILTER LIBICOCOAPI $LIBMETIS `[ ${#TRUST_BLAS_LAPACK} = 0 ] && echo LIBLAPACK` `[ "$TRUST_DISABLE_PETSC" = 0 ] && echo LIBPETSC` `[ "$TRUST_DISABLE_MED" = 0 ] && echo LIBMED` LIBMEDCOUPLING"
+   time=`date "+%s"`
+   for rep in $reps
+   do
+      if [ -d $rep ]
+      then
+         # On compile TOUTES les librairies en optimise:
+         \cd $rep
+	 echo $ECHO_OPTS $rep":\c "
+	 OLD_OPT=$OPT
+	 OPT="_opt"
+	 if [ "$CLEAN" = "" ] && [ $rep = LIBPETSC ] && [ $HOST = jade_desactive ]
+	 then
+	    # Probleme sur jade avec la librairie PETSc en interactif 
+	    make_jade_batch 1>>$COMPILE 2>&1
+	    err=$?
+	 else
+   	    $MAKE $CLEAN 1>>$COMPILE 2>&1
+	    err=$?
+	 fi
+	 OPT=$OLD_OPT
+         OK $err
+         if [ $err != 0 ]
+	 then
+	    if [ -f $exec ]
+	    then
+	       echo $ECHO_OPTS "-> $exec is deleted."
+	       rm -f $exec
+	    fi 
+	    echo "Contact TRUST support."
+	    exit -1
+	 fi
+         \cd ..
+      fi
+   done
+   # Pas tres propre (MED 2.3.6 n'a plus les memes includes or le make depend des sources TRUST
+   # est fait avant l'installation de MED). En toute rigueur, toutes les librairies devraient etre
+   # construites dans le configure avant le make depend). Ou bien le compile devrait faire make
+   # depend systematiquement
+   #if [ "`grep med_win_dll.h $TRUST_ROOT/src/Kernel/MEDimpl/makefile`" != "" ]
+   #then
+   #   (cd $TRUST_ROOT/src/Kernel/MEDimpl;make depend)
+   #fi
+fi
+if [ $monodir = 0 ]
+then
+   #######################
+   # Compilation de TRUST
+   #######################
+   \cd $TRUST_ROOT
+   repertoires=$TRUST_ROOT/env/rep.TRUST
+   [ ! -f $repertoires ] && mkrep=`ls $TRUST_ROOT/bin/mkrep* 2>/dev/null` && $mkrep
+   echo "=============="
+   echo "$MESSAGE code:"
+   echo "=============="
+   for dir in `cat $repertoires`
+   do 
+   #
+   # Pour MAIN (en dernier dans rep.TRUST) on cree le fichier
+   # make.lib? avec la commande mklibs
+   #
+      [ `basename $dir` = MAIN ] && mklibs=`ls $TRUST_ROOT/bin/mklibs* 2>/dev/null` && $mklibs 1>/dev/null
+      \cd $dir
+      CHOIX_MAKE multiple 
+      [ ! -f ?akefile ] && fait_makefile=`ls $TRUST_ROOT/bin/fait_makefile* 2>/dev/null` && $fait_makefile $dir 2>/dev/null
+      echo $ECHO_OPTS "$dir ... \c" 
+   #
+   # Verification du nom de la librairie qui doit etre de la forme lib...
+   #
+      if [ `basename $dir` != MAIN ]
+      then
+         LIB=`grep 'Lib =' make.include | awk -F'/' '{print $2}'`
+         if [ $LIB = ${LIB#lib} ]
+         then
+            echo "Library name in makefile of $dir is not correct."
+            exit -1
+         fi
+      fi
+   #
+   # Cas ou cree les dependances :
+   #
+      [ $depend = 1 ] && $MAKE depend 1>/dev/null 2>/dev/null   
+   #   
+   # Verification des sources si l'on compile
+   #
+      if [ "$CLEAN" = "" ]
+      then
+         $TRUST_ROOT/bin/KSH/check_sources.sh || exit -1 
+      fi     
+   #
+   # Compilation selon les machines
+   #
+      err=0 
+      if [ "`basename $dir`" = MAIN ] && [ $SHARE_LIBS = 0 ]
+      then
+         # make -j incompatible avec LIB_EXTENSION
+         CHOIX_MAKE simple
+         if [ "`$TRUST_ROOT/bin/admin/liste_machines get_binary | grep ^$HOST"\."`" != "" ]
+         then
+	    # 20/06/05: Executable semi-statique avec extension a tout linux
+	    # On veut libstdc++ statique seulement et -Bstatic -lstdc++ -Bdynamic ne
+	    # marche pas car le linker rajoute -lstdc++ a la suite de Bdynamic !
+	    # Voir: http://www.upl.cs.wisc.edu/~psilord/blog/
+	    # On fait donc un link en deux passes:
+	    TMP_make=`mktemp_`
+	    $MAKE $CLEAN LIB_EXTENSION="a" LD="$TRUST_CC -v" 2>&1 | grep collect > $TMP_make
+	    chmod +x $TMP_make
+	    echo $ECHO_OPTS "1,$ s?-lstdc++?-Bstatic -lstdc++ -Bdynamic?g\nw" | ed $TMP_make 1>/dev/null 2>&1
+	    # On augmente la portabilite pour que cela tourne sur plateforme avec gfortran/g77:
+	    echo $ECHO_OPTS "1,$ s?-lgfortran?-Bstatic -lgfortran -Bdynamic?g\nw" | ed $TMP_make 1>/dev/null 2>&1
+	    $TMP_make
+	    error=$?
+	    OK $error
+	    rm -f $TMP_make
+	    # 21/10/04: On ne compile plus avec -static car plante en sequentiel
+	    # au demarrage du calcul (MPI_Init?) : p0_5138:  p4_error: interrupt SIGSEGV: 11)
+            # $MAKE LD="$TRUST_CC -static" LIB_EXTENSION="a" 2>&1 | tee -a $COMPILE
+         else
+            $MAKE $CLEAN LIB_EXTENSION="a" 1>>$COMPILE 2>&1
+	    error=$?
+	    OK $error	
+	    [ $error != 0 ] && $MAKE $CLEAN LIB_EXTENSION="a" # On refait pour avoir le message d'erreur
+         fi
+      else
+         if [ "`basename $dir`" = MAIN ]
+	 then
+	    # Pour eviter le plantage bizarre:
+	    # mon_main.o: invalid string offset 1583611904 >= 6057 for section `.strtab'
+	    CHOIX_MAKE simple
+	 else
+	    CHOIX_MAKE multiple
+	 fi
+         # Compilation normale
+         $MAKE $CLEAN 1>>$COMPILE 2>&1
+	 error=$?
+	 [ "$CLEAN" = "" ] && STAT_DISTCC
+	 OK $error
+	 # Contournement de l'erreur sur certaines machines
+	 if [ $error != 0 ]
+	 then
+            if [ $TRUST_ARCH_CC = linux_icpc ]
+	    then
+	       # Plusieurs fichiers ne compilent pas en optimise avec icpc, on repasse en debug
+               while [ "`tail -6 $COMPILE | $TRUST_Awk '/ internal error/ || / Out of memory asking for / {print 1}'`" != "" ]
+               do
+        	  object=`tail -2 $COMPILE | $TRUST_Awk '/\.cpp/ {gsub("\\.cpp",".o",$4);print $4}'`
+        	  (OPT="";echo $MAKE $object;$MAKE $object)
+        	  $MAKE 1>>$COMPILE 2>&1
+        	  error=$?
+               done
+               # Probleme aleatoire sur jade
+	       while [ "`tail -6 $COMPILE | $TRUST_Awk '/t fork process/ {print 1}'`" != "" ]
+               do
+        	  $MAKE 1>>$COMPILE 2>&1
+        	  error=$?
+               done	    
+	    fi     
+	 fi 
+	 [ $error != 0 ] && $MAKE $CLEAN # On refait pour avoir le message d'erreur
+      fi
+      # Erreur!
+      if [ $error != 0 ]
+      then
+         echo $ECHO_OPTS `pwd`':\nCompiling error -> See file '$COMPILE
+	 if [ -f $exec ]
+	 then
+	    echo $ECHO_OPTS "-> $exec is deleted."
+	    rm -f $exec
+	 fi 
+	 exit -1
+      fi
+      #
+      # Verifie le bon etat des .o crees (.o vides ou autre)
+      #
+      for file in `ls *.cpp *.f *.c 2>/dev/null`
+      do
+         i=${file%.cpp};i=${i%.f};i=${i%.c};o=$i.o
+         [ -f $o ] && [ ! -s $o ] && echo "$dir/$file badly compiled then the .o file is deleted..." && rm -f $o && err=1
+      done
+      [ $err = 1 ] && exit -1
+      \cd $TRUST_ROOT
+   done
+elif [ "$CLEAN" == "" ]
+then
+#####################
+# Compilation monodir
+#####################
+   # On fait le mklibs   
+   mklibs=`ls $TRUST_ROOT/bin/mklibs* 2>/dev/null` && $mklibs 
+   [ ${#MonoDir} = 0 ] && MonoDir=$TRUST_ROOT/MonoDir$COMM$OPT
+   echo "Build with COMM=\"$COMM\" and OPT=\"$OPT\" under the directory $MonoDir"
+   [ ${#TRUST_ROOT} = 0 ] && echo "TRUST_ROOT variable is not defined !" && exit
+
+   # Creation de ce qui n'existe peut etre pas :
+   [ ! -d $TRUST_ROOT/exec ] && mkdir $TRUST_ROOT/exec
+   [ ! -d $TRUST_LIB ] && mkdir $TRUST_LIB
+   # Creation des repertoires si necessaire
+   [ ! -d $MonoDir ] && mkdir $MonoDir
+   \cd $MonoDir
+   [ ! -d src ] && mkdir src
+
+   if [ $monodir -eq 1 ]
+   then
+      [ ! -d include ] && mkdir include
+      #######################################################################################
+      # Menage (si on efface des fichiers alors depend=1 car on doit recreer les dependances)
+      #######################################################################################
+      \cd src
+      archive=$TRUST_LIB/TRUST$COMM$OPT.a
+      #############################################################
+      # On supprime les objets .o qui n'ont pas de fichiers sources
+      #############################################################
+      echo "Suppress objects without source file..."
+      files=`\ls [A-N]*.o 2>/dev/null`
+      files=$files" "`\ls [O-Z]*.o [a-z]*.o 2>/dev/null`
+      for objet in $files
+      do
+	 [ ! -f ${objet%.o}.cpp ] && [ ! -f ${objet%.o}.f ] && [ ! -f ${objet%.o}.c ] && echo "$objet is suppressed from archive..." && rm -f $objet && ar d $archive $objet && depend=1
+      done   
+      ############################################################################
+      # On supprime les fichiers sources qui pointent dans le vide et leurs objets
+      ############################################################################
+      echo "Suppress broken links to source file..."
+      files=`\ls [A-N]*.cpp *.f *.c 2>/dev/null`
+      files=$files" "`\ls [O-Z]*.cpp [a-z]*.cpp 2>/dev/null`
+      for file in $files
+      do
+	 if [ ! -f $file ]
+	 then
+            rm -f $file
+	    objet=$file
+	    objet=${objet%.cpp}
+	    objet=${objet%.c}
+	    objet=${objet%.f}
+	    objet=$objet".o"
+            rm -f $objet
+	    ar d $archive $objet
+	    depend=1
+	 fi
+      done
+      #################################################
+      # On supprime les fichiers objets de la librairie
+      #################################################
+      echo "Suppress objects from the library..."
+      objets=`ar tf $archive 2>/dev/null`
+      for objet in $objets
+      do
+         [ ! -f $objet ] && ar d $archive $objet
+      done      
+      \cd ../include
+      #############################################################
+      # On supprime les fichiers includes qui pointent dans le vide
+      #############################################################
+      echo "Suppress broken links to include file..."
+      files=`\ls [A-N]*.h 2>/dev/null`
+      files=$files" "`\ls [O-Z]*.h [a-z]*.h 2>/dev/null`
+      for file in $files
+      do
+	 [ ! -f $file ] && rm -f $file && depend=1
+      done
+
+      \cd  ..
+      \cd $TRUST_ROOT
+      cree_include=0
+      ##########################################
+      # On met a jour les liens vers les sources
+      ##########################################
+      echo "Update links to files..."
+      for dir in `cat $TRUST_ENV/rep.TRUST`
+      do
+         dir=${dir#./}
+	 \cd $dir
+	 makefile=`\ls *akefile 2>/dev/null`
+	 cpp=`find_ cpp`
+	 if [ ${#makefile} != 0 ] && [ ${#cpp} != 0 ]
+	 then
+            echo $dir 
+	    # Verifie les sources
+	    $TRUST_ROOT/bin/KSH/check_sources.sh || exit -1
+            # Met a jour le fichier instancie (mk_Instancie a reporter dans check.sh? au lieu de make depend ?)
+            mk_Instancie
+            # Recherche des fichiers de $dir
+	    includes=`find_ h`
+	    sources=$cpp" "`find_ f`" "`find_ c`
+	    # Includes
+	    cd $MonoDir/include
+            for file in $includes
+            do
+	        relative_path=../../$dir/$file
+        	if [ "`ls -l $file 2>/dev/null | awk '{print $NF}'`" != $relative_path ]
+		then
+		   ln -f -s $relative_path .
+		   depend=1
+		   [ ! -h $TRUST_ROOT/include/$file ] && cree_include=1
+		fi
+            done
+            # Sources
+	    cd $MonoDir/src
+            for file in $sources
+            do
+	       relative_path=../../$dir/$file
+               if [ "`ls -l $file 2>/dev/null | awk '{print $NF}'`" != $relative_path ]
+	       then
+	          ln -f -s $relative_path .
+		  depend=1
+	       fi
+            done
+            \cd $TRUST_ROOT
+	 fi
+      done
+      # Mise a jour du repertoire $TRUST_ROOT/include
+      [ $cree_include = 1 ] && cree_include
+
+      \cd $MonoDir/src
+      CHOIX_MAKE multiple
+      # Copie d'un makefile si pas a jour
+      Makefile=$TRUST_ROOT/env/Makefile.monodir
+      if [ ! -s Makefile ] || [ $Makefile -nt Makefile ]
+      then
+	 opt=$OPT
+	 echo "Makefile updated."
+	 sed "s/opt_compile/$opt/" $Makefile > Makefile
+	 chmod 755 Makefile
+	 depend=1
+      fi
+      if [ $depend = 1 ]; then
+	 echo "Dependencies created."
+	 $MAKE depend
+	 echo "Compiling..."
+      fi
+      $MAKE
+      [ $? != 0 ] && echo 'Problem of compiling ->' && $MAKE
+      STAT_DISTCC
+   else
+      ########################
+      # compile avec cmake ...
+      ########################
+      \cd $TRUST_ROOT
+      cree_include=0
+      ##########################################
+      # On met a jour les fichiers CMakelist.txt
+      ##########################################
+      #echo "Verify mk_Instancie"
+      list_make=""
+       # GF a priori plus necessaire de faire mk_Instancie
+      #for dir in `cat $TRUST_ENV/rep.TRUST`
+      for dir in bidon 
+      do
+	 list_make=$list_make" "$dir/make.include
+	 makefile=`\ls $dir/*akefile $dir/make.include 2>/dev/null`
+	 lcpp=`\ls $dir/*.cpp 2>/dev/null`
+	 if [ ${#makefile} != 0 ] && [ ${#lcpp} != 0 ]
+	    then
+	  #  echo $dir 
+	    \cd $dir ;
+	    # Verifie les sources
+	   # $TRUST_ROOT/bin/KSH/check_sources.sh;[ $? != 0 ] && exit
+	    # Met a jour le fichier instancie (mk_Instancie a reporter dans check.sh? au lieu de make depend ?)
+	    mk_Instancie
+	    \cd $TRUST_ROOT
+	 fi
+      done
+      python $TRUST_ROOT/bin/KSH/Createcmakefile.py
+      MonoDir_base=${MonoDir%$OPT}
+      opt=$OPT
+      [ "$opt" = "" ] && opt="_debug"      
+      [ "${cibles}" = "" ] && cibles=$opt     
+      for opt in ${cibles}
+      do
+	 MODE_SPECIAL=""
+	 opt2=${opt#standard_kernel}
+	 [ $opt2 != $opt ] && MODE_SPECIAL=-Dkernel=standard && opt=$opt2
+	 opt2=${opt#micro_kernel}
+	 [ $opt2 != $opt ] && MODE_SPECIAL=-Dkernel=micro && opt=$opt2
+	 opt2=${opt#numeric_kernel}
+	 [ $opt2 != $opt ] && MODE_SPECIAL=-Dkernel=numeric && opt=$opt2
+	 # on regarde si opt commence par _ sinon on le rajoute
+	 opt2=${opt#_}
+	 [ "${opt2}" = "$opt" ] && opt="_"$opt 
+         MonoDir=${MonoDir_base}$opt
+	 [ "$opt" = "_debug" ] && MonoDir=${MonoDir_base}
+	 mkdir -p $MonoDir/src
+	 \cd $MonoDir/src || exit -1
+         case $opt in
+          _opt) build_type="Release" ;;
+          _debug) build_type="Debug" ;;
+          _opt_pg) build_type="Profil" ;;
+          _opt_gcov)  build_type=Coverage ;;
+          _semi_opt) build_type="semi_opt";;
+          _opt_avx)  build_type="Release_avx";;
+	  *) echo $opt not for cmake in $0;  exit -1 ;;
+         esac;
+
+         CHOIX_MAKE multiple
+         [ $depend = 1 ] && rm -f CMakeCache.txt
+
+         cmake $TRUST_ROOT/src -DCMAKE_INSTALL_PREFIX=$TRUST_ROOT -DCMAKE_BUILD_TYPE=$build_type -Ukernel $MODE_SPECIAL -DCOMPIL_DYN=${COMPIL_DYN}
+
+         [ $? != 0 ] && echo 'Problem of configuring ' && exit -1
+
+         $MAKE 
+         status=$?
+         if [ $status != 0 ] 
+         then
+	    echo 'Problem of compiling ->' 
+	    $MAKE 
+	    exit -1
+	    break
+         fi
+      done
+   fi
+   echo "END"
+fi
+#
+# Pour HP et realiser un executable share lib portable (SHLIB_PATH) :
+#
+[ ${TRUST_ARCH#HPPA} != $TRUST_ARCH ] && [ -f $TRUST_ROOT/exec/TRUST$COMM$OPT ] && chatr -B immediate -B nonfatal +s enable $TRUST_ROOT/exec/TRUST$COMM$OPT 1>/dev/null
+
+############################
+# Creation des outils TRUST
+############################
+make_tools
+
+################################
+# Nettoyage MonoDir et atelier #
+################################
+if [ "$CLEAN" != "" ]
+then
+   \cd $TRUST_ROOT
+   # GF il ne faut pas effacer exec ici, sinon le configure risque de planter
+   rm -rf lib/  include/ MonoDir*
+   # Atelier
+   if [ -d $rep_dev ]
+   then
+      \cd $rep_dev
+      for rep_exec in `ls $rep_dev | grep exec`
+      do
+         \cd $rep_dev/$rep_exec
+         make clean
+         \cd -
+      done
+      \cd -
+   fi
+   # Le travail est deja fait mais on en profite pour rappeler le configure clean possible
+   echo "---------------------------------------------------------------------------------"
+   echo "To do a complete make clean, you should also clean all the the programs installed"
+   echo "during the configure task (OpenMPI, distcc/ccache,...). So run: ./configure -clean"
+   echo "You would then run ./configure before the build with the make command."
+fi

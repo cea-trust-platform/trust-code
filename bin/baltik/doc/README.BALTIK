@@ -1,0 +1,231 @@
+
+-------------------------------
+1. What is baltik
+2. Informations
+3. What is a baltik project ?
+4. The project.cfg file
+5. The '[description]' mandatory section
+6. build_configure step
+7. configure step
+8. compilation
+9. tests
+10. '[dependencies]' optionnal section
+11. '[prerequisiteNN]' optionnal section
+
+-------------------------------
+
+
+==================================================
+1. What is baltik ?
+==================================================
+
+Baltik is an acronym for "Building AppLications using TRUST Kernels"
+or "Building Applications Linked with Trio-U Kernels". The goal is
+to give a full compilation framework for applications build with
+TRUST Kernels (micro, numeric, standard) or with the whole TRUST
+code. 
+
+
+==================================================
+2. Informations
+==================================================
+
+A diffusion list is dedicated to baltik framework. You can subscribe
+by sending a mail to 
+
+  sympa@saxifrage.saclay.cea.fr
+
+with subject :
+ 
+  SUB baltik
+
+
+==================================================
+3. What is a baltik project
+==================================================
+
+A baltik project is a 'project.cfg' file (mandatory),
+a set of sources (optionnal) and a set of tests (optionnal).
+
+The sources must be in a 'src' directory. Of course, your
+sources can be in many sub-directories in the 'src' one.
+The suffixes of the sources recognized by baltik are
+".h", ".cpp", ".f" and ".c". If sources are present, they
+can be compiled to create a new executable (please refer
+to the compilation section in this file for more informations).
+
+The tests must be in the 'tests/Reference' directory.
+If they are present, they can be launched for non regression
+(please refer to the tests section of this document for more
+information).
+
+A very small exemple of a project is given as a template
+in the baltik_root_dir/templates directory. To use
+it, just copy the basic directory (cp -r) somewhere you
+have write permissions.
+
+
+==================================================
+4. The project.cfg file
+==================================================
+
+Every project using BALTIK compilation scheme should have a
+'project.cfg' file at its root. This configuration file is used by 
+the framework to get informations about the project itself, and its 
+dependencies on other BALTIK projects. 
+
+A 'project.cfg' file has a very simple structure. Basically,
+it consists of several sections. Each section is made of a header,
+and a list of entries. A section header has the following format :
+"[section_name]". An entry has the following format :
+"entry_name : entry_data" or "entry_name = entry_data". 
+This is an example of a valid section :
+
+[toto]
+foo = bar
+baz : buz
+
+Any blank line in 'project.cfg' will be ignored. Furthermore,
+it is possible to add comments. Any comment start with a '#'
+(sharp) symbol, and continues until the end of the line, as in
+bash or python programming. This is an example of a valid commented 
+section :
+
+[toto] # section name
+foo : far # a first entry
+     
+#a second entry
+baz : buz
+
+
+==================================================
+5. The '[description]' mandatory section
+==================================================
+
+A 'project.cfg' file must contain a section called
+'[description]'. This section is used to store informations 
+about the project itself (name, author, version, copyright, etc.).
+
+The '[description]' section has a mandatory entry, called 'name'.
+This entry gives the name of the project. For portability reasons,
+whitespaces in project names should be avoided.
+
+The '[description]' section can have an entry called 'executable'.
+This entry gives the name of the executable built by BALTIK. If
+absent, the project's name will be used. 
+
+The '[description]' section can have an entry called 'kernel'.
+This entry gives the name of the library used to built the
+executable. If absent, the whole TRUST library will be used.
+The value for the 'kernel' entry (if present) must be one of 'micro',
+'numeric', or 'standard'.
+
+
+==================================================
+6. build_configure step
+==================================================
+
+Once the 'project.cfg' file is ok, you can run the
+'baltik_build_configure' facility. This tool just checks that there is
+a project.cfg file, adds a configure file in the project and copies
+the README.BALTIK (this file) in the project. 
+
+
+==================================================
+7. configure step
+==================================================
+
+The './configure' command parses and checks the 'project.cfg' file
+then constructs the Makefile with various targets which allows to
+compile, test and clean the project. 
+
+Just type 'make' to see the available targets for your project.
+
+
+==================================================
+8. compilation
+==================================================
+
+The main useful targets are 'debug' and 'optim'. Use one of the to
+compile your project depending if you have compiled your TRUST
+kernels in debug or optimized mode. Other targets such as 'gcov' and
+'prof' will be discussed later in a future version of this document.
+
+
+==================================================
+9. tests
+==================================================
+
+The main useful targets are 'check_all_debug' and 'check_all_optim'.
+
+
+==================================================
+10. '[dependencies]' optionnal section
+==================================================
+
+If the project depends on other BALTIK project, there should be a
+'[dependencies]' section in its configuration file. This section
+should list the dependencies of the project, using the following entry
+format :
+
+'dependency_name : /path/to/dependency'
+
+In this entry, '/path/to/dependency' must be a valid absolute path,
+and it must correspond to a directory containing a valid BALTIK
+configuration file. The 'dependency_name' must match the name of
+the project located at '/path/to/dependency'. 
+
+
+-----------------------
+Recursive dependencies:
+-----------------------
+
+As any project can depend on another one, BALTIK imports recursively all the
+dependencies of the project.
+
+CAUTION : Up to now BALTIK can't afford cyclic dependencies, so be careful when
+          specifying your project's dependencies !
+
+CAUTION : A project in a dependence hierarchy can be referenced by several
+          other projects in the same hierarchy, as in the following case :
+
+                     common_dependency
+                           |
+          +----------------+----------------+
+          |                                 |
+ first_dependency                   second_dependency
+          |                                 |
+          +----------------+----------------+
+                           |
+                      final_project
+
+Here, final_project depends on first_dependency and second_dependency, which in
+turn both depends on common_dependency. Such a situation is perfectly legal in
+BALTIK framework 
+
+Note that the '[dependencies]' section of final_project's configuration need
+not refer to common_dependency, since the configuration files of both
+first_dependency and second_dependency do.  
+
+CAUTION : the 'common_dependency' entries in first_dependency's configuration
+          file and second_dependency's configuration file should be strictly
+          identical.
+
+
+-----------------------
+Conflicting files
+-----------------------
+
+During configuration, BALTIK will gather all the source files of the project
+and its dependencies in the same directory. Consequently, BALTIK will complain
+if two or more of theses files share the same name.
+
+
+==================================================
+11. '[prerequisiteNN]' optionnal section
+==================================================
+
+This section will be discussed in a future version of this document.
+
+
+

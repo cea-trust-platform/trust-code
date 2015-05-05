@@ -1,0 +1,100 @@
+#!/bin/bash
+
+file_org=$1
+dest=$2
+
+
+genere_rotate_dom()
+{
+echo "
+def rotate(x,y,z,cosa,sina):
+	xx=cosa*x-sina*y
+	yy=sina*x+cosa*y
+	zz=z
+	return xx,yy,zz
+def test_cas(file,angle,nl):
+	f=open(file)
+	from math import cos,sin,asin
+	ang=angle*asin(1)/90;
+	
+	cosa=cos(ang)
+	sina=sin(ang)
+	a=f.readline()
+	marq=eval(a.split()[0])
+	print marq
+	finisom=0
+	for i in range(nl-1):
+		a=f.readline()
+		if finisom:
+			print a
+		else:
+			x=eval(a.split()[0])
+			if (x==marq):
+				print a
+				finisom=1
+			else:
+				y=eval(a.split()[1])
+				try:
+				 z=eval(a.split()[2])
+				 xx,yy,zz=rotate(x,y,z,cosa,sina)
+				 print xx,yy,zz
+				except:
+				 z=0
+				 xx,yy,zz=rotate(x,y,z,cosa,sina)
+				 print xx,yy
+				pass
+			pass
+		pass
+	
+if __name__ == '__main__':
+	import sys
+        test_cas(sys.argv[1],eval(sys.argv[2]),eval(sys.argv[3]))
+        pass
+
+"
+
+}
+
+
+# genere_rotate > rotate.py
+genere_rotate_dom > rotate_dom.py
+lata=$1
+reference=$2
+angle=$3
+
+for dom in `grep "CHAMP SOMMETS" $lata | awk '{print $3}'`
+do
+rm rot_$dom
+jj=`wc -l $dom | awk -F: '{print $1}'`
+python rotate_dom.py $dom $angle $jj > rot_$dom
+done
+sed "s/$lata/rot_$lata/g" $lata > rot_$lata
+
+
+for vitesse in `ls $lata.vitess* $lata.VITESS* 2>/dev/null`
+do
+echo $vitesse
+nl=`wc -l $vitesse | awk -F: '{print $1}'`
+python rotate_dom.py $vitesse $angle $nl >rot_$vitesse
+done
+for file in `ls $lata.*`
+do
+[ ! -f rot_$file ] && ln -s $file rot_$file
+done
+echo ok
+
+ref_lml=`basename $reference .lata`.lml
+lml=`basename $lata .lata`.lml
+echo "dimension 2
+lata_to_other lml $reference `basename $reference .lata` " > ref_lml.data
+
+echo "dimension 2
+lata_to_other lml rot_$lata  rot_`basename $lata .lata`" > rot_lml.data
+
+lan()
+{
+time $exec $1 1>$1.out 2>$1.err
+}
+lan ref_lml
+lan rot_lml
+compare_lata $ref_lml  rot_$lml

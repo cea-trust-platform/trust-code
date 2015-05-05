@@ -1,0 +1,24 @@
+#!/bin/bash
+# Argument $1 : fichier a editer sinon propose la liste
+nom=$1
+ETUDE_TRUST=`QUELLE_ETUDE.ihm`
+export ETUDE_TRUST
+cd $ETUDE_TRUST
+if [ ${#nom} != 0 ]
+then
+   data=`cat $nom`.data
+   nohup $EDITEUR $data 1>/dev/null 2>/dev/null &
+   sleep 4
+else
+   echo $ECHO_OPTS "------------------------------------------"
+   echo $ECHO_OPTS "STUDY:"$ETUDE_TRUST
+   echo $ECHO_OPTS "------------------------------------------"
+   ls $ETUDE_TRUST
+   echo $ECHO_OPTS "------------------------------------------"
+   echo $ECHO_OPTS "Please enter the filename for editing:"
+   read NOM
+   #nohup $EDITEUR $NOM 1>/dev/null 2>/dev/null &
+   no_exec=1
+   export no_exec
+   execute.ksh "$EDITEUR $ETUDE_TRUST/$NOM 1>/dev/null 2>/dev/null &"
+fi

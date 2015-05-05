@@ -1,0 +1,13 @@
+#!/bin/bash
+# usage ViC nom_de_la_classe|nom_utilisateur|ou comme Vi   [ cpp ] [ -no_vi ]
+# par defaut il ouvre plutot le .h
+er=`grep -i " $1 " $TRUST_ROOT/doc/.dico | awk '{print $3}'`
+[ "$er" == "" ] && er=`grep -i " $1\.h" $TRUST_ROOT/doc/.dico | $TRUST_Awk '{print $3}'`
+[ "$er" == "" ] && er=$1
+[ "$2" == "cpp" ] && er=`echo $er | sed "s/\.h/.cpp/"`
+if [ "$3" = -no_vi ]
+then
+   Find $er 
+else
+   Vi $er
+fi

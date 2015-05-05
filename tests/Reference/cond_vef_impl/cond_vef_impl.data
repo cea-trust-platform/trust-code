@@ -1,0 +1,154 @@
+# Thermohydraulique 3D VDF couplee a conduction 2D avec rayonnement de paroi #
+# PARALLEL RUNS #
+# lance_test 1 ecart #
+dimension 2    
+  schema_euler_implicite sch 
+# Runge_Kutta_ordre_3 sch #
+Runge_Kutta_Rationnel_ordre_2 sch2
+Lire sch
+{
+        tinit 0.
+        tmax 30
+        dt_min 1.e-9
+	dt_start dt_calc
+	
+        dt_impr 10.
+        dt_sauv 500.
+        seuil_statio 1.e-5
+	diffusion_implicite 0
+	facsec 1000.
+	facsec_max 1000.
+	solveur simpler
+	{
+		no_qdm
+		seuil_convergence_solveur 1e-12
+		seuil_convergence_implicite 1e-6
+	}
+}
+
+Pb_Thermohydraulique pb2
+
+Domaine dom_solide
+Domaine dom_fluide
+# BEGIN MESH #
+Mailler dom_fluide
+{
+        Pave Cavite
+                {
+                Origine 0. 0.
+                Nombre_de_Noeuds 32 12
+                Longueurs 0.05 0.05
+                }
+                {
+                Raccord local homogene Gauche   X = 0.    0. <= Y <= 0.05 
+                Bord Droit    			X = 0.05  0. <= Y <= 0.05
+                Bord Bas                        Y = 0.    0. <= X <= 0.05
+                Bord Haut                       Y = 0.05  0. <= X <= 0.05
+                }
+}
+
+Trianguler_h dom_fluide
+
+
+
+
+# END MESH #
+
+# BEGIN PARTITION
+
+Partition dom_fluide
+{
+	Partitionneur metis { Nb_parts 2 }
+	Larg_joint 2
+	Nom_Zones DOM2
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM2.Zones dom_fluide
+END SCATTER #
+
+VeFPrep1B dis
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+        mu Champ_Uniforme 1 0.001
+        rho Champ_Uniforme 1 1.
+        lambda Champ_Uniforme 1 1.
+        Cp Champ_Uniforme 1 1000.
+        beta_th Champ_Uniforme 1 0.
+}
+
+
+Associate pb2 dom_fluide
+Associate pb2 fluide
+
+Associate pb2 sch
+Discretize pb2 dis
+
+
+Lire pb2
+{
+        Navier_Stokes_standard
+        {
+                
+      solveur_pression gcp  { precond ssor { omega -2 } SEUIl 1e10 }       
+                convection { negligeable }
+                diffusion { negligeable }
+                
+                conditions_initiales {
+                        vitesse Champ_Uniforme 2 0. 0.
+                        }
+                boundary_conditions {
+                        Droit paroi_fixe
+                        Haut paroi_fixe
+                        Gauche  paroi_fixe
+                        Bas paroi_fixe
+                }
+        }
+        Convection_Diffusion_Temperature
+        {
+                diffusion { }
+                convection { negligeable }
+                boundary_conditions 
+                {	
+		 	Gauche Paroi_temperature_imposee
+                              Champ_Front_uniforme 1 0.
+                        Haut Paroi_adiabatique
+                        Droit paroi_flux_impose Champ_Front_uniforme 1 400
+                        Bas Paroi_ADIABATIQUE
+                }
+                conditions_initiales { Temperature champ_fonc_xyz dom_fluide 1 (18.31179308*SIN(31.4159264*x)*EXP(-0.986904404*0)+400.*x) }
+        }
+        Postraitement
+        {
+               Definition_champs {
+  			erreur Transformation {
+				methode formule expression 1 temperature-(18.31179308*SIN(31.4159264*x)*EXP(-0.986904404*t)+400.*x)
+					source refChamp {
+					Pb_Champ pb2 temperature nom_source temperature 
+				}
+			localisation elem
+			} 
+  		} 
+		format lml
+                Champs dt_post 1.
+                {
+		
+	 
+			erreur elem
+                        temperature elem
+			
+                }
+	  Sondes
+                { 
+			erreur erreur periode 2.e-3 points 1 0.025 0.025
+			T temperature periode 2.e-3 points 1 0.025 0.025
+                }
+        }
+}
+
+Solve pb2
+Fin

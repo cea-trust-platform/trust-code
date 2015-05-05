@@ -1,0 +1,3 @@
+#!/bin/bash
+fic=$TRUST_ROOT/$1 && [ ${fic%.} != $fic ] && fic=${fic%.}
+echo $fic

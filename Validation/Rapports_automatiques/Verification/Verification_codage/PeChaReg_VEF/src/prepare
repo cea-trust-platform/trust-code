@@ -1,0 +1,4 @@
+#!/bin/bash
+cd 3D_sym_inout
+sed "s/Read pb/Porosites_champ pb champ_uniforme 1 0.5 Read pb/" test.data > test_poreux.data
+sed "s?# marqueur #?transformer dom (x+y)/sqrt(2) (x-y)/sqrt(2) z transformer dom x (y+z)/sqrt(2) (y-z)/sqrt(2) transformer dom  (x+z)/sqrt(2) y (x-z)/sqrt(2)?" test.data > test_rotation.data

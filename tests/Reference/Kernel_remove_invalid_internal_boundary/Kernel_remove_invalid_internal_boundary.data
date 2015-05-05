@@ -1,0 +1,36 @@
+# Test Remove_Invalid_Internal_Boundaries et que Champ_fonc_med ne touche pas aux sous_zones #
+# PARALLEL OK #
+dimension 2
+
+Domaine domain 
+
+# BEGIN MESH #
+Lire_med family_names_from_group_names domain COUPLEX1 data.med
+Read_file domain_ssz.geo ;
+Remove_Invalid_Internal_Boundaries domain
+# END MESH #
+
+# BEGIN PARTITION 
+Partition domain
+{
+   Partitionneur metis
+   {
+      nb_parts 2
+   } 
+   Larg_joint 1
+   Nom_Zones DOM 
+} 
+Fin 
+END PARTITION #
+
+# BEGIN SCATTER 
+Scatter DOM.Zones domain
+Read_file domain_ssz_par.geo ;
+END SCATTER #
+
+Champ_Fonc_MED field
+Lire field last_time data.med COUPLEX1 HEAD elem 0.0
+
+discretiser_domaine domain
+postraiter_domaine { domaine domain format lml ecrire_frontiere 0 }
+FIN

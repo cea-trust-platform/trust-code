@@ -1,0 +1,133 @@
+# Cas test pour verifier le calcul du pas de temps de stabilite #
+# de convection en milieu poreux # 
+# PARALLEL RUNS #
+
+dimension 2
+Domaine dom
+
+
+# BEGIN MESH #
+
+Mailler dom
+{
+Pave Cavite
+        {
+                Origine 0. 0.
+                Nombre_de_Noeuds 9 5
+                Longueurs 2 1.
+        }
+        {
+		Bord entree  X = 0.            0. <= Y <= 1 
+		Bord sortie  X = 2.            0. <= Y <= 1 
+		Bord paroi   Y = 0.            0. <= X <= 2 
+		Bord paroi   Y = 1.            0. <= X <= 2 
+        }
+}
+
+
+Sous_zone interface
+Associate interface dom
+Lire interface {
+          Rectangle
+          Origine 0.8  0
+          Cotes   0.4  1
+          }
+
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+        Partitionneur tranche { tranches 2 1 }
+        Larg_joint 1
+        Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+Sous_Zone  interface
+Associate interface dom
+Lire interface { Fichier interface.ssz }
+END SCATTER #
+
+
+VDF dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0
+	tmax 100000
+	dt_min 1.e-6
+	dt_start dt_calc
+	dt_max 1.0
+	dt_sauv 100
+	dt_impr 0.2
+	facsec 1.
+	seuil_statio 1.e-10
+	
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+       mu Champ_Uniforme 1 1.
+       rho Champ_Uniforme 1 40
+       lambda Champ_Uniforme 1 10
+       Cp champ_Uniforme 1 1000
+}
+
+
+Pb_hydraulique pb
+Associate pb dom
+Associate pb fluide
+Associate pb sch
+Discretize pb dis
+
+porosites_champ pb champ_fonc_xyz dom 1 0.2
+Lire pb
+{
+        Navier_Stokes_standard
+        {
+                projection_initiale 1
+                solveur_pression GCP  { precond ssor { omega 1.5 } seuil 1e-12 impr }
+                convection { amont }
+                diffusion { }
+                sources {
+                        Perte_Charge_Singuliere KX 0.5 {  X = 1 interface  }
+                        }
+                conditions_initiales {
+                        vitesse Champ_Uniforme 2 0. 0.
+                        }
+                boundary_conditions {
+                        entree  frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2 1. 0.
+                        sortie  frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+                        paroi   paroi_fixe
+                }
+        }
+        Postraitement
+        {		
+		Definition_champs {
+			erreur_pression_pa Transformation {
+				methode formule expression 1 pression_pa-(x<1.)*1/4
+				source refChamp {
+					Pb_Champ pb pression_pa nom_source pression_pa 
+				}
+			} 
+  		}
+                format lml
+                Champs dt_post 1000
+                {
+                        erreur_pression_pa elem
+			pression_pa elem
+                        vitesse elem
+                        porosite_volumique elem
+                }
+        }
+}
+Solve pb
+Fin
+

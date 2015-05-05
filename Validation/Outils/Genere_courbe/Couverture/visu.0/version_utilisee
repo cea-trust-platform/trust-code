@@ -1,0 +1,17 @@
+Construction de la memoire 
+Fin Construction memoire 
+Localisation etude: /home/fauchet/visit/test/build
+Warning : version of Numerical Platon compiled without trace facilities
+Nom du cas ver
+ code : /users/crolles/fauchet/fauchet_153/vobs/TRUST/exec/TRUST_mpich_opt
+ version : 1.5.3 
+ build : 260907 
+Debut construction du process 0
+Fin construction du groupe current
+[0]=/home/fauchet/visit/test/build/ver.log
+Vous traitez le cas ver
+Debut de l'execution 
+On parcourt le jeu de donnees sans l'interpreter...
+On interprete le jeu de donnees...
+Fin de l'execution
+Arret des processes.

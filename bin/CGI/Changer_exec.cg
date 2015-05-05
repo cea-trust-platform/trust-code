@@ -1,0 +1,24 @@
+#!/bin/bash
+
+[ "$UTILISE_APPACHE" = "1" ] && . $HOME/HTML/recharger_env
+# Pour recuperer les variables complexes:
+
+ORDRE=$1
+[ "$UTILISE_APPACHE" = "1" ] && ORDRE=$QUERY_STRING
+. $TRUST_ROOT/bin/CGI/cg $ORDRE
+
+EXEC=$path
+if [ ${#EXEC} = 0 ] || [ ! -f $EXEC ]
+then
+   $TRUST_ROOT/bin/CGI/entete
+   echo $ECHO_OPTS "<B>Error</B>: The executable <B>$EXEC</B> does not exist !"
+   $TRUST_ROOT/form/Changer_exec.ksh
+   cat $TRUST_TMP/change.html
+else
+   $TRUST_ROOT/bin/CGI/entete
+   echo $ECHO_OPTS "New executable:"$EXEC
+   echo $ECHO_OPTS $EXEC > $TRUST_TMP/.EXEC_TRUST
+   sleep 1
+   echo "<HTML><script>window.close()</script></HTML>"
+fi
+

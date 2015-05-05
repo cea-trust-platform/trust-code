@@ -1,0 +1,122 @@
+# SIMULATION D UN CANAL PLAN 3D avec modele Longueur de melange #
+# PARALLEL OK 8 #
+# Tests du modele Longueur de Melange en VDF #
+
+dimension 3
+Pb_Hydraulique_Turbulent pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+        {
+                Origine 0. 0. 0.
+                Nombre_de_Noeuds 11  11  4
+                Longueurs 10. 2.  10
+        }
+        {
+                Bord in   X = 0.  0. <= Y <= 2.   0. <= Z <= 10.
+                Bord out   X = 10. 0. <= Y <= 2.   0. <= Z <= 10.
+                Bord bas      Y = 0.  0. <= X <= 10.  0. <= Z <= 10.
+                Bord haut     Y = 2.  0. <= X <= 10.  0. <= Z <= 10.
+                Bord perioz   Z = 0.  0. <= X <= 10.  0. <= Y <= 2.
+                Bord perioz   Z = 10. 0. <= X <= 10.  0. <= Y <= 2.
+ 
+                }
+} 
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 2 1 1 }
+	Larg_joint 1
+	Nom_Zones DOM
+	Periodique 1 perioz
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+
+Sch_CN_EX_iteratif sch
+Lire sch 
+{
+        tinit 0.
+        tmax 20.
+        nb_pas_dt_max 1
+        dt_min 1.e-5
+        dt_max 1.e-1
+	dt_start dt_calc
+        dt_impr 0.001
+        dt_sauv 20.
+        seuil_statio 1.e-8  
+        facsec 1.
+        
+}
+
+
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 0.00514
+	rho Champ_Uniforme 1 2
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Lire pb
+	{
+	Navier_Stokes_Turbulent
+		{
+                solveur_pression Gcp { precond ssor { omega 1.5 }
+                                        seuil 1.e-08
+                                     } 
+
+                convection { amont }
+                diffusion  { }
+		conditions_initiales
+			{
+                        vitesse Champ_fonc_xyz dom 3  20. 0. 0. 
+			}
+		boundary_conditions
+			{
+			in frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 1 0  0
+			out frontiere_ouverte_pression_imposee champ_front_uniforme 1  0
+			perioz periodique 
+			haut     paroi_fixe
+			bas      paroi_fixe
+			}
+		Modele_turbulence Longueur_Melange
+			{
+			turbulence_paroi loi_standard_hydr
+                        dt_impr_ustar 1.
+			}
+                         
+	}
+
+	Postraitement
+	{
+        	format lata  
+			
+		Champs dt_post 2.
+			{
+			vitesse elem
+			viscosite_turbulente elem
+			viscosite_turbulente som
+			pression elem
+			}
+		}
+	}
+
+Solve pb
+Fin

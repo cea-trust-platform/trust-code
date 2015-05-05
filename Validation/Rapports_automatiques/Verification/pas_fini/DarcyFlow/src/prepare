@@ -1,0 +1,9 @@
+gunzip -c conic_Pb1.geom.gz > conic_Pb1.geom
+# Generate VEF files from the VDF files
+for VDF in *VDF.data
+do
+   VEF=${VDF%_VDF.data}_VEF.data
+   cp -f $VDF $VEF
+   sed -i "1,$ s?conic_Pb1.geom?conic_Pb1.geom\nTetraedriser dom VerifierCoin dom { }?g" $VEF
+   sed -i "1,$ s?VDF dis?VEFPreP1B dis?g" $VEF
+done

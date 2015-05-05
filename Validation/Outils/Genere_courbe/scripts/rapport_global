@@ -1,0 +1,105 @@
+#!/bin/bash
+cd $1
+ref=`pwd`
+archives=`ls *.tgz`
+archives_ok=`for arc in $archives ; do [ -f ${arc%.tgz}.pdf ] && echo ${arc}; done`
+echo $archives_ok
+
+mkdir -p build_prov
+cd build_prov
+echo > dirs.tex
+for arc in $archives_ok
+  do
+  cas=${arc%.tgz}
+  mkdir -p $cas
+  cd $cas
+  tar zxf $ref/$arc
+#   titre=`echo $cas |awk -F_ '{printf("%s",$1);for (i=2;i<=NF;i++) printf("\\\_%s",$i); }'`
+  fiche=`echo $cas |awk -F_ '{printf("%s",$1);for (i=2;i<=NF;i++) printf("\\\_%s",$i); }'`
+  titre=`grep title preserve/.tmp/fic.tex| sed 's/\\\\title//' `
+  cd -
+  echo "\chapter{$titre}
+  fiche $fiche
+\def\orig{./$cas/preserve}
+\input{\orig/.tmp/corps}" >>dirs.tex
+done
+
+
+
+
+gen_maitre()
+{
+cat <<EOF
+% This file was generated automaticaly with the genererCources.py script
+\documentclass[10pt,twoside,a4paper]{report}
+\usepackage[ascii]{}
+% \usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+% \usepackage[french]{babel}
+\usepackage{amsmath,amssymb,amsfonts,textcomp}
+\usepackage{color}
+% \usepackage{calc}
+% \usepackage{hyperref}
+% \hypersetup{colorlinks=true, linkcolor=blue, filecolor=blue, pagecolor=blue, urlcolor=blue}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+% \usepackage[pdfpagemode=FullScreen,bookmarksopen=true,bookmarks=true]{hyperref}
+\usepackage[pdfstartview=FitH,bookmarksopen=true,bookmarks=true]{hyperref}
+
+% \usepackage{verbatim}
+%\usepackage{moreverb}
+\usepackage{listings}
+
+\setlength\hoffset{0cm}
+\setlength\voffset{0cm}
+\setlength\oddsidemargin{0cm}
+\setlength\evensidemargin{0cm}
+\setlength\topmargin{0cm}
+\setlength\headheight{1cm}
+\setlength\headsep{0.2cm}
+\setlength\marginparsep{0cm}
+\setlength\marginparwidth{0cm}
+\setlength\footskip{2cm}
+\setlength\textwidth{16cm}
+\setlength{\parindent}{0pt}
+
+% Style page
+\renewcommand{\sectionmark}[1]{\markboth{#1}{#1}}
+\pagestyle{fancy}
+\lhead{\leftmark\\\\ \rightmark}
+\chead{}
+\rhead{}
+%\lfoot{\textit{Genere automatiquement avec genererCourbe.py, v0.1.}}
+\lfoot{\textit{Rapport global}}
+\cfoot{}
+\rfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\title{verification cas tests type genepi}
+\author{G.F.}
+%\date{04/03/2008}
+
+\makeindex
+
+% Debut document
+\begin{document}
+\tableofcontents
+
+\input{dirs}
+
+
+% Fin du document
+\end{document}
+EOF
+}
+
+
+gen_maitre > fic.tex
+
+
+
+pdflatex fic.tex;
+pdflatex fic.tex;
+
+  

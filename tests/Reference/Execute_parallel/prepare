@@ -1,0 +1,18 @@
+rm -f *VAHL*lml
+make_PAR.data VAHL_DAVIS
+make_PAR.data VAHL_DAVIS_VEF 3
+triou seq || exit -1
+[ ! -f VAHL_DAVIS.lml ] && exit 1
+rm -f *VAHL*lml
+triou seq_seq 2 || exit -1
+[ ! -f VAHL_DAVIS.lml ] && exit 1
+[ ! -f VAHL_DAVIS_VEF.lml ] && exit 2
+
+rm -f *VAHL*lml
+triou par_par 4
+[ ! -f PAR_VAHL_DAVIS.lml ] && exit 1
+# Normalement PAR_VAHL_DAVIS_VEF a plante mais VAHL_DAVIS a continue
+# On teste donc cela:
+[ -f PAR_VAHL_DAVIS_VEF.lml ] && exit 2
+rm -f *VAHL*lml
+exit 0 # C'est pas propre car il semble que parfois les calculs precedents finissent mal...

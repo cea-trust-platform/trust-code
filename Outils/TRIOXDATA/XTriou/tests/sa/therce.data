@@ -1,0 +1,273 @@
+# Thermohydraulique 2D couplee a conduction 2D  #
+# PARALLEL RUNS  #
+dimension  3
+schema_euler_explicite sch 
+Lire sch { 
+tinit 0.0
+tmax 300.0
+dt_min 0.001
+dt_max 10.0
+dt_sauv 400.0
+dt_impr 0.001
+seuil_statio 1e-20
+ }
+
+domaine dom_pb1
+domaine dom_pb2
+domaine dom_pb3
+domaine dom_pb4
+
+# BEGIN MESH #
+lire_fichier dom_pb1 therce_Pb1.geom
+lire_fichier dom_pb2 therce_Pb2.geom
+lire_fichier dom_pb3 therce_Pb3.geom
+lire_fichier dom_pb4 therce_Pb4.geom
+# END MESH #
+
+# BEGIN PARTITION
+Decouper dom_pb1
+{
+   PMetis
+   Nb_parts 2
+   Larg_joint 1
+   Nom_Zones DOM1
+}
+Decouper dom_pb2
+{
+   PMetis
+   Nb_parts 2
+   Larg_joint 1
+   Nom_Zones DOM2
+}
+Decouper dom_pb3
+{
+   PMetis
+   Nb_parts 2
+   Larg_joint 1
+   Nom_Zones DOM3
+}
+Decouper dom_pb4
+{
+   PMetis
+   Nb_parts 2
+   Larg_joint 1
+   Nom_Zones DOM4
+}
+Fin
+END PARTITION #
+
+# BEGIN READ
+Scatter DOM1.Zones dom_pb1
+Scatter DOM2.Zones dom_pb2
+Scatter DOM3.Zones dom_pb3
+Scatter DOM4.Zones dom_pb4
+END READ #
+
+# Boundaries name :
+/users/crolles/fauchet/MODEL/therce/model therce.prep
+Bord 1 : refroidi, -1000,refroidi
+Bord 2 : defaut, 0,defaut
+#
+
+
+
+vdf dis 
+champ_uniforme gravite 
+Lire gravite  2 0 -9.81
+solide acier 
+Associer acier gravite
+Lire acier { 
+rho champ_uniforme   1 1000.0
+
+cp champ_uniforme   1 100.0
+
+lambda champ_uniforme   1 250.0
+
+ }
+
+solide colis 
+Associer colis gravite
+Lire colis { 
+rho champ_uniforme   1 1000.0
+
+cp champ_uniforme   1 100.0
+
+lambda champ_uniforme   1 250.0
+
+ }
+
+solide beton 
+Associer beton gravite
+Lire beton { 
+rho champ_uniforme   1 1000.0
+
+cp champ_uniforme   1 100.0
+
+lambda champ_uniforme   1 250.0
+
+ }
+
+
+
+
+fluide_incompressible fluide 
+Associer fluide gravite
+Lire fluide { 
+beta_th champ_uniforme   1 0.0001
+
+mu champ_uniforme   1 0.001
+
+rho champ_uniforme   1 1.0
+
+cp champ_uniforme   1 1000.0
+
+lambda champ_uniforme   1 1.0
+
+ }
+pb_conduction pb_acier 
+Associer pb_acier dom_pb2
+Associer pb_acier acier
+pb_thermohydraulique pb_fluide 
+Associer pb_fluide dom_pb1
+Associer pb_fluide fluide
+pb_conduction pb_colis 
+Associer pb_colis dom_pb4
+Associer pb_colis colis
+
+
+ pb_conduction pb_beton	 
+Associer pb_beton dom_pb3
+Associer pb_beton beton
+
+probleme_couple pbc 
+Associer pbc pb_acier
+Associer pbc pb_fluide
+Associer pbc pb_colis
+Associer pbc pb_beton
+Associer pbc sch
+
+discretiser  pbc dis
+Lire pb_colis { 
+conduction  { 
+diffusion { } 
+conditions_initiales {
+       temperature champ_uniforme   1 30.0
+
+}
+conditions_limites {
+       Droit paroi_adiabatique 
+
+       Rac paroi_echange_contact_vdf  pb_fluide Rac Temperature 10000000000.0
+
+}
+ }
+
+postraitement   { 
+champs   dt_post 10.0 { temperature elem temperature som } 
+
+ }
+
+ }
+Lire pb_fluide { 
+navier_stokes_standard  { 
+solveur_pression gcp  { precond ssor { omega 1.500000 } seuil 1.000000e-14 impr } 
+
+convection { amont } 
+diffusion { } 
+conditions_initiales {
+       vitesse champ_uniforme   2 0.0 0.0
+
+}
+conditions_limites {
+       Droit paroi_fixe 
+
+       Rac paroi_fixe 
+
+}
+sources {
+     boussinesq_temperature  { 
+t0 30.0
+ }
+}
+ }
+
+convection_diffusion_temperature  { 
+convection { amont } 
+diffusion { } 
+conditions_initiales {
+       Temperature champ_uniforme   1 30.0
+
+}
+conditions_limites {
+       Entree frontiere_ouverte_temperature_imposee  champ_front_uniforme   1 20.0
+
+
+       Sortie frontiere_ouverte_temperature_imposee  champ_front_uniforme   1 20.0
+
+
+       Droit1 paroi_echange_contact_vdf  pb_acier Droit1 temperature 10000000000.0
+
+       Haut3 paroi_echange_externe_impose  H_imp champ_front_uniforme   1 10000000000.0
+ T_ext champ_front_uniforme   1 20.0
+
+
+       Haut2 paroi_echange_contact_vdf  pb_acier Haut2 temperature 10000000000.0
+
+       Droit2 paroi_echange_externe_impose  H_imp champ_front_uniforme   1 10000000000.0
+ T_ext champ_front_uniforme   1 20.0
+
+
+}
+ }
+
+postraitement   { 
+champs   dt_post 10.0 { pression elem pression som vitesse elem vitesse som temperature elem temperature som } 
+
+ }
+
+ }
+Lire pb_acier { 
+conduction  { 
+diffusion { } 
+conditions_initiales {
+       temperature champ_uniforme   1 30.0
+
+}
+conditions_limites {
+       Droit paroi_adiabatique 
+
+       Rac paroi_echange_contact_vdf  pb_fluide Rac Temperature 10000000000.0
+
+}
+ }
+
+postraitement   { 
+champs   dt_post 10.0 { temperature elem temperature som } 
+
+ }
+
+ }
+
+Lire pb_beton { 
+conduction  { 
+diffusion { } 
+conditions_initiales {
+       temperature champ_uniforme   1 30.0
+
+}
+conditions_limites {
+       Droit paroi_adiabatique 
+
+       Rac paroi_echange_contact_vdf  pb_fluide Rac Temperature 10000000000.0
+
+}
+ }
+
+postraitement   { 
+champs   dt_post 10.0 { temperature elem temperature som } 
+
+ }
+
+ }
+resoudre  pbc
+fin fin

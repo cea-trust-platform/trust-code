@@ -1,0 +1,217 @@
+# SIMULATION D UN CANAL 3D   #
+# PARALLEL NOT #
+
+dimension 3
+Pb_ThermoHydraulique_turbulent pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+	{
+		Origine 0. 0. 0.
+		Nombre_de_Noeuds 16 3 3
+		Longueurs 5. 1. 1.
+	}
+	{
+		Bord periox  X = 0.            	0. <= Y <= 1.    0. <= Z <= 1.        
+		Bord periox  X = 5	        0. <= Y <= 1.    0. <= Z <= 1.
+		Bord bas     Y = 0.            	0. <= X <= 5.    0. <= Z <= 1.    
+		Bord haut    Y = 1.           	0. <= X <= 5.    0. <= Z <= 1.
+	        Bord perioz  Z = 0.            	0. <= X <= 5.    0. <= Y <= 1.
+		Bord perioz  Z = 1.            	0. <= X <= 5.    0. <= Y <= 1.
+	}
+}
+
+Tetraedriser_homogene dom
+Reordonner_Faces_Periodiques dom periox
+Reordonner_Faces_Periodiques dom perioz
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 2 2 1 }
+	Larg_joint 1
+	Nom_Zones DOM
+	Periodique 1 periox
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+
+Schema_Euler_explicite sch
+Read sch
+{
+	tinit 0.
+	nb_pas_dt_max 3
+	tmax 100000
+	dt_min 1.e-7
+	dt_max 100.
+	dt_impr 100
+	dt_sauv 20000
+	seuil_statio 1.e-6
+	facsec 0.5
+	precision_impr 6 
+}
+
+Fluide_Incompressible fluide
+Read fluide
+{
+	mu Champ_Uniforme 	1 1.e-4
+ 	rho Champ_Uniforme 	1 6.
+        lambda Champ_Uniforme	1 4.e-2
+	Cp Champ_Uniforme	1 4000.
+	beta_th Champ_Uniforme	1 0.
+}
+
+Champ_Uniforme gravite
+Read gravite 3 0. -9.81 0.
+Associate fluide gravite
+
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Read pb
+{
+	Navier_Stokes_Turbulent
+	{
+		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-12 }	
+		convection { muscl }
+		diffusion { }
+		Sources
+		 {
+		  Canal_perio { bord periox }
+		 }
+		conditions_initiales { vitesse champ_uniforme 3 0.33333 0. 0. }
+		boundary_conditions 
+		 {
+                     periox  periodique 
+	             haut  paroi_fixe
+	             bas  paroi_fixe
+		     perioz periodique 
+		 }
+		 Modele_turbulence K_Epsilon
+		  {
+		     Transport_K_Epsilon
+			{      
+				convection { amont }
+				diffusion { }
+				boundary_conditions {
+                		   periox  periodique 
+                       		   haut     paroi
+				   bas      paroi
+				   perioz periodique 
+		      		}
+			   	conditions_initiales { k_eps Champ_Uniforme 2 5.e-4 1.e-5 }
+			}
+		     turbulence_paroi loi_standard_hydr dt_impr_ustar 1000
+		  }
+		 
+       }
+       
+       Convection_Diffusion_Temperature_Turbulent
+	{
+		diffusion { }
+		convection { muscl }
+		sources { Puissance_thermique Champ_Uniforme 1 10. }
+		boundary_conditions 
+		 {
+			periox periodique 
+			perioz periodique 
+ 			haut   Paroi_temperature_imposee Champ_Front_Uniforme 1 500
+			bas    Paroi_temperature_imposee Champ_Front_Uniforme 1 500
+			    
+		 }
+		conditions_initiales { Temperature Champ_uniforme 1 500  }
+		Modele_turbulence Prandtl { turbulence_paroi loi_standard_hydr_scalaire dt_impr_nusselt 1000 }
+	}
+	      
+	Postraitement
+	{
+	     Sondes
+	      {
+	           sonde_pression nodes pression periode 100 points 1 2.5 0.5 0.5
+		   sonde_vit_mil_b nodes vitesse periode 100 points 1  2.5 0.1 0.5
+		   sonde_vit_mil_m nodes vitesse periode 100 points 1  2.5 0.5 0.5
+		   sonde_vit_mil_h nodes vitesse periode 100 points 1  2.5 0.9 0.5
+		   
+		   sonde_seg_vit_ent nodes vitesse periode 100 segment 30  0.1 0.0 0.5 0.1 1. 0.5
+		   sonde_seg_vit_mil_dec nodes vitesse periode 100 segment 30  2.1 0.0 0.5 2.1 1. 0.5
+		   sonde_seg_vit_sor nodes vitesse periode 100 segment 30  0. 0.5 0.5 5. 0.5 0.5 
+		   
+		   
+		   sonde_temp_ent_b nodes temperature periode 100 points 1  0.1 0.1 0.5
+		   sonde_temp_ent_m nodes temperature periode 100 points 1  0.1 0.5 0.5
+		   sonde_temp_ent_h nodes temperature periode 100 points 1  0.1 0.9 0.5
+		   sonde_temp_mil_b nodes temperature periode 100 points 1  2.5 0.1 0.5
+		   sonde_temp_mil_m nodes temperature periode 100 points 1  2.5 0.5 0.5
+		   sonde_temp_mil_h nodes temperature periode 100 points 1  2.5 0.9 0.5
+		   sonde_temp_sor_b nodes temperature periode 100 points 1  4.9 0.1 0.5
+		   sonde_temp_sor_m nodes temperature periode 100 points 1  4.9 0.5 0.5
+		   sonde_temp_sor_h nodes temperature periode 100 points 1  4.9 0.9 0.5
+		   sonde_seg_temp_ent nodes temperature periode 100 segment 30  0.1 0.0 0.5 0.1 1. 0.5
+		   sonde_seg_temp_milx nodes temperature periode 100 segment 30  2.5 0.0 0.5 2.5 1. 0.5 
+		   sonde_seg_temp_milx_dec nodes temperature periode 100 segment 30  2.1 0.0 0.5 2.1 1. 0.5 
+		   sonde_seg_temp_sor nodes temperature periode 100 segment 30  4.9 0.0 0.5 4.9 1. 0.5 
+		   
+		   sonde_seg_temp_bas nodes temperature periode 100 segment 30  0. 0.1 0.5 5. 0.1 0.5
+		   sonde_seg_temp_mily nodes temperature periode 100 segment 30 0. 0.5 0.5 5. 0.5 0.5 
+		   sonde_seg_temp_haut nodes temperature periode 100 segment 30  0. 0.9 0.5 5. 0.9 0.5
+		   
+	      }
+	     Format lml
+	     Champs dt_post 100
+	      {			
+		   pression elem
+		   pression som
+		   vitesse elem		
+		   vitesse som
+		   temperature som
+		   temperature elem
+		   viscosite_turbulente som
+		   viscosite_turbulente elem
+		   diffusivite_turbulente elem
+		   diffusivite_turbulente som
+		   k elem
+		   k som
+		   eps elem
+		   eps som
+	      }
+	}
+	
+}
+
+Solve pb
+End
+
+Modele_turbulence K_Epsilon
+		  {
+		     Transport_K_Epsilon
+			{      
+				convection { amont }
+				diffusion { }
+				boundary_conditions {
+                		   periox  periodique 
+                       		   haut     paroi
+				   bas      paroi
+				   perioz periodique 
+		      		}
+			   	conditions_initiales { k_eps Champ_Uniforme 2 5.e-4 1.e-5 }
+			}
+		     turbulence_paroi loi_standard_hydr dt_impr_ustar 1000
+		  }
+		  
+entree   frontiere_ouverte_k_eps_impose champ_front_uniforme 2 1.e-2 1.e-1
+sortie   frontiere_ouverte K_EPS_EXT champ_front_uniforme 2 1.e-2 1.e-1
+
+sources { Puissance_thermique Champ_Uniforme 1 10. }
+reprise formatte LP_K_EPS_pb.sauv

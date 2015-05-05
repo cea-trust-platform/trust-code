@@ -1,0 +1,16 @@
+# Script de validation des resultats
+rm -f verifie.log
+for dis in VEF VDF
+do
+   jdd=`pwd`
+   jdd=`basename $jdd`
+   [ $dis = VDF ] && jdd=$dis"_"$jdd
+   for CAS in SEQ PAR
+   do
+      [ $CAS = PAR ] && [ -f PAR_$jdd".son" ] && jdd=PAR_$jdd
+      # On verifie que les champs de concentration et de temperature sont identiques
+      compare_sonde `ls $jdd"_"*son` 1>>verifie.log 2>&1
+      [ $? != 0 ] && echo "Ecart temperature-concentration en $dis" && exit -1
+   done
+done
+exit 0

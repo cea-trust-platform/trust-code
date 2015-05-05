@@ -1,0 +1,9 @@
+classe Instanciable
+Donner un nom a la nouvelle classe derivee d'Objet_U et instanciable:
+NOM_DE_LA_CLASSE
+Donner un nom aux fichiers (sans suffixe): 
+NOM_DU_FICHIER
+Entrer le nom du module de ce fichier:
+NOM_DU_MODULE
+Entrer le nom de la librairie:
+NOM_DE_LA_LIBRAIRIE

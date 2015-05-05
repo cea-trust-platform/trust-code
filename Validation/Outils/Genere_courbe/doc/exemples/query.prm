@@ -1,0 +1,85 @@
+Parameters {
+Author G.F.
+Title essai de query
+}
+Chapter {
+Title "essai de delta p"
+description "petite image"
+visu {
+pseudocolor Poreux_VEF_3D.lml  dom PRESSION ELEM
+operator slice2D 0 0 0 1 0 0
+query Weighted_Variable_Sum  pression_min 
+width 3cm
+}
+}
+Chapter {
+description pas d'image
+visu {
+pseudocolor Poreux_VEF_3D.lml  dom PRESSION ELEM
+operator slice2D 0.5 0 0 1 0 0
+Query Weighted_Variable_Sum  pression_min_mil
+width -1cm 
+}
+visu {
+
+
+instruction_visit DefineScalarExpression("PRESSION2_ELEM_dom","PRESSION_ELEM_dom*PRESSION_ELEM_dom")
+pseudocolor Poreux_VEF_3D.lml  dom PRESSION2 ELEM
+operator slice2D 0.5 0 0 1 0 0
+Query Weighted_Variable_Sum  pression2_min_mil
+width -1cm 
+}
+Table {
+Title "tableaux"
+description "standard"
+
+nb_columns 1
+label "delta_p" 
+line {
+	nb_columns_file 2
+	file pression_min
+	columns $2
+	legend p_e
+}
+line {
+	nb_columns_file 2
+	file pression_min_mil
+	columns $2
+	legend pm
+}
+line { 
+	values 0
+	columns (pm.$1-p_e.$1)
+	
+	legend calcul
+	}
+
+}
+Table {
+
+description "joli"
+nb_columns 1
+label "delta_p"
+
+line {
+	nb_columns_file 2
+	file pression_min
+	columns $2
+	display_line 0
+	legend p_e
+}
+line {
+	nb_columns_file 2
+	file pression_min_mil
+	columns $2
+	display_line 0	
+	legend pm
+}
+line { 
+	values 0
+	columns (pm.$1-p_e.$1)	
+	legend calcul
+	}
+
+}
+}

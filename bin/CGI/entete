@@ -1,0 +1,3 @@
+#!/bin/bash
+[ "$UTILISE_APPACHE" = "1" ] && echo $ECHO_OPTS "Content-type: text/html\n"
+

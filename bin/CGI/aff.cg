@@ -1,0 +1,12 @@
+#!/bin/bash
+[ -f $HOME/HTML/recharger_env ] && [ "$UTILISE_APPACHE" = "1" ] && . $HOME/HTML/recharger_env
+IHM=1
+export IHM
+ETUDE_TRUST=`QUELLE_ETUDE.ihm`
+export ETUDE_TRUST 
+
+cd $ETUDE_TRUST
+pcs=`cat .pcs_Run_sonde 1>/dev/null 2>/dev/null`
+kill -15 $pcs 1>/dev/null 2>/dev/null
+err=$?
+[ $err != 0 ] && Run_sonde `cat .NOM_DATA` 0 0

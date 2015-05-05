@@ -1,0 +1,6 @@
+#!/bin/bash
+cat << ! | ftp -iv | grep 'Opening BINARY'
+open $TRUST_FTP
+cd ../..
+rename $1 $2
+!

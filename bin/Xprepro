@@ -1,0 +1,42 @@
+#!/bin/bash
+# Run VDF preprocessor avec argument test
+# Initialise l'environnement TRUST
+echo "Usage: `basename $0` [file.prep]"
+. ${0%/Xprepro}/Init_TRUST
+
+if [ "$1" = -gui ]
+then
+    ETUDE_TRUST=`QUELLE_ETUDE.ihm 2>/dev/null`
+    export ETUDE_TRUST
+    \cd $ETUDE_TRUST
+    NOM_DATA=$ETUDE_TRUST/.NOM_DATA
+    NOMCAS=`cat $NOM_DATA 2>/dev/null`
+    [ ! -d model ] && mkdir model 2>/dev/null
+    \cd model 
+    [ -f defaut.prep ] && chmod 775 defaut.prep
+elif [ ${#1} != 0 ] && prep=$1 && [ -f $prep ]
+then
+    [ ! -d model ] && mkdir model 2>/dev/null
+    \cd model
+    ln -s -f ../$prep $prep
+    [ -f defaut.prep ] && chmod 775 defaut.prep
+else
+    [ ! -d model ] && mkdir model 2>/dev/null
+    \cd model
+fi
+echo "---------------------------------------------"
+echo "Repertoire d'etude :"`pwd`
+echo "---------------------------------------------"
+echo
+xprepro=$TRUST_ROOT/Outils/PRE_3DVDF/xprepro
+if [ -f $xprepro ]
+then
+   if [ "$prep" != "" ] && [ -f $prep ]
+   then
+      $xprepro $prep
+   else
+      $xprepro
+   fi
+else
+   Erreur.ihm "xprepro not available!\nSend a mail to $TRUST_MAIL"
+fi

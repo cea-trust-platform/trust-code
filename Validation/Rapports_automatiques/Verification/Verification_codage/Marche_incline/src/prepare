@@ -1,0 +1,12 @@
+#!/bin/bash
+[ ! -d Marche_incline ] && copie_cas_test Marche_incline
+cd Marche_incline
+rm -f verifie
+for cas in Marche Marche_y Marche_incline
+do
+sed "s/Champs dt/format lata Champs formatte dt/" $cas.data | sed "s/pression elem/vitesse elem pression elem/"  > p ;
+mv p $cas.data
+done
+cp ../post_run .
+ 
+

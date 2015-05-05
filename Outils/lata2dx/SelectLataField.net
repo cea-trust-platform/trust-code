@@ -1,0 +1,320 @@
+//
+// time: Mon Sep  6 10:32:11 2004
+//
+// version: 3.1.2 (format), 4.1.0 (DX)
+//
+//
+// Begin MDF
+// MODULE SelectLataField
+// CATEGORY Macros
+// INPUT imported; group or series or value list or string list; (none);  
+// INPUT domain; integer or integer list or string or string list; (none);  
+// INPUT component; string; (no default);  
+// INPUT element_select_criteria; string or string list; (no default);  
+// INPUT element_selection_toggle; value list or field or string or string list; (no default);  
+// OUTPUT field; object;  
+// OUTPUT uncropped; field; 
+// End MDF
+// workspace: width = 567, height = 1471
+// layout: snap = 0, width = 50, height = 50, align = NN
+//
+macro SelectLataField(
+ imported
+,domain
+,component
+,element_select_criteria
+,element_selection_toggle
+) -> (
+ field
+,uncropped
+) {
+    // 
+    // node Input[2]: x = 229, y = 55, inputs = 0, label = Input
+    // parameter: position = 2, name = 'domain', value = ' ', descriptive = 0, description = ' ', required = 1, visible = 1
+    //
+SelectLataField_Input_2_out_1 = domain;
+    // 
+    // node Input[3]: x = 305, y = 54, inputs = 0, label = Input
+    // parameter: position = 3, name = 'component', value = '(no default)', descriptive = 1, description = ' ', required = 0, visible = 1
+    //
+SelectLataField_Input_3_out_1 = component;
+    // 
+    // node Compute[16]: x = 247, y = 154, inputs = 3, label = Compute
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "(strstr($0,'_dual')==0 && strstr($0,'_nc')==0 && strstr($1,'_FACES')!=0)?2:1"
+    // expression: value = (strstr(a,'_dual')==0 && strstr(a,'_nc')==0 && strstr(b,'_FACES')!=0)?2:1
+    // name[2]: value = a
+    // name[3]: value = b
+    //
+SelectLataField_Compute_16_out_1 = 
+    Compute(
+    "(strstr($0,'_dual')==0 && strstr($0,'_nc')==0 && strstr($1,'_FACES')!=0)?2:1",
+    SelectLataField_Input_2_out_1,
+    SelectLataField_Input_3_out_1
+    ) [instance: 16, cache: 1];
+    // 
+    // node Input[1]: x = 130, y = 57, inputs = 0, label = Input
+    // parameter: position = 1, name = 'imported', value = ' ', descriptive = 0, description = ' ', required = 1, visible = 1
+    //
+SelectLataField_Input_1_out_1 = imported;
+    // 
+    // node Select[5]: x = 167, y = 151, inputs = 3, label = Select
+    //
+SelectLataField_Select_5_out_1 = 
+    Select(
+    SelectLataField_Input_1_out_1,
+    SelectLataField_Input_2_out_1,
+    NULL
+    ) [instance: 5, cache: 1];
+    // 
+    // node Replace[3]: x = 390, y = 225, inputs = 4, label = Replace
+    // input[3]: defaulting = 0, visible = 1, type = 32, value = "lata_faces"
+    // input[4]: defaulting = 0, visible = 1, type = 32, value = "connections"
+    //
+SelectLataField_Replace_3_out_1 = 
+    Replace(
+    SelectLataField_Select_5_out_1,
+    SelectLataField_Select_5_out_1,
+    "lata_faces",
+    "connections"
+    ) [instance: 3, cache: 1];
+    // 
+    // node Extract[1]: x = 421, y = 306, inputs = 2, label = Extract
+    // input[2]: defaulting = 1, visible = 1, type = 32, value = "connections"
+    //
+SelectLataField_Extract_1_out_1 = 
+    Extract(
+    SelectLataField_Replace_3_out_1,
+    SelectLataField_Input_3_out_1
+    ) [instance: 1, cache: 1];
+    // 
+    // node Options[1]: x = 402, y = 387, inputs = 5, label = Options
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "dep"
+    // input[3]: defaulting = 0, visible = 1, type = 32, value = "connections"
+    //
+SelectLataField_Options_1_out_1 = 
+    Options(
+    SelectLataField_Extract_1_out_1,
+    "dep",
+    "connections",
+    NULL,
+    NULL
+    ) [instance: 1, cache: 1];
+    // 
+    // node Replace[4]: x = 349, y = 476, inputs = 4, label = Replace
+    //
+SelectLataField_Replace_4_out_1 = 
+    Replace(
+    SelectLataField_Options_1_out_1,
+    SelectLataField_Replace_3_out_1,
+    NULL,
+    SelectLataField_Input_3_out_1
+    ) [instance: 4, cache: 1];
+    // 
+    // node Switch[5]: x = 214, y = 567, inputs = 3, label = Switch
+    //
+SelectLataField_Switch_5_out_1 = 
+    Switch(
+    SelectLataField_Compute_16_out_1,
+    SelectLataField_Select_5_out_1,
+    SelectLataField_Replace_4_out_1
+    ) [instance: 5, cache: 1];
+    // 
+    // node Mark[11]: x = 268, y = 647, inputs = 2, label = Mark
+    //
+SelectLataField_Mark_11_out_1 = 
+    Mark(
+    SelectLataField_Switch_5_out_1,
+    SelectLataField_Input_3_out_1
+    ) [instance: 11, cache: 1];
+    // 
+    // node Mark[10]: x = 192, y = 732, inputs = 2, label = Mark
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "positions"
+    //
+SelectLataField_Mark_10_out_1 = 
+    Mark(
+    SelectLataField_Mark_11_out_1,
+    "positions"
+    ) [instance: 10, cache: 1];
+    // 
+    // node Post[4]: x = 192, y = 807, inputs = 2, label = Post
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "connections"
+    //
+SelectLataField_Post_4_out_1 = 
+    Post(
+    SelectLataField_Mark_10_out_1,
+    "connections"
+    ) [instance: 4, cache: 1];
+    // 
+    // node Compute[11]: x = 150, y = 894, inputs = 2, label = Compute
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "$0.x"
+    // expression: value = a.x
+    // name[2]: value = a
+    //
+SelectLataField_Compute_11_out_1 = 
+    Compute(
+    "$0.x",
+    SelectLataField_Post_4_out_1
+    ) [instance: 11, cache: 1];
+    // 
+    // node Compute[12]: x = 224, y = 896, inputs = 2, label = Compute
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "$0.y"
+    // expression: value = a.y
+    // name[2]: value = a
+    //
+SelectLataField_Compute_12_out_1 = 
+    Compute(
+    "$0.y",
+    SelectLataField_Post_4_out_1
+    ) [instance: 12, cache: 1];
+    // 
+    // node Compute[13]: x = 298, y = 895, inputs = 2, label = Compute
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "$0.z"
+    // expression: value = a.z
+    // name[2]: value = a
+    //
+SelectLataField_Compute_13_out_1 = 
+    Compute(
+    "$0.z",
+    SelectLataField_Post_4_out_1
+    ) [instance: 13, cache: 1];
+    // 
+    // node Input[5]: x = 24, y = 1153, inputs = 0, label = Input
+    // parameter: position = 5, name = 'element_selection_toggle', value = '(no default)', descriptive = 1, description = ' ', required = 0, visible = 1
+    //
+SelectLataField_Input_5_out_1 = element_selection_toggle;
+    // 
+    // node Compute[17]: x = 38, y = 1242, inputs = 3, label = Compute
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "$0?1:2"
+    // expression: value = a?1:2
+    // name[2]: value = a
+    // name[3]: value = b
+    //
+SelectLataField_Compute_17_out_1 = 
+    Compute(
+    "$0?1:2",
+    SelectLataField_Input_5_out_1,
+    NULL
+    ) [instance: 17, cache: 1];
+    // 
+    // node Input[4]: x = 26, y = 890, inputs = 0, label = Input
+    // parameter: position = 4, name = 'element_select_criteria', value = '(no default)', descriptive = 1, description = ' ', required = 0, visible = 1
+    //
+SelectLataField_Input_4_out_1 = element_select_criteria;
+    // 
+    // node Post[5]: x = 377, y = 894, inputs = 2, label = Post
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "connections"
+    //
+SelectLataField_Post_5_out_1 = 
+    Post(
+    SelectLataField_Mark_11_out_1,
+    "connections"
+    ) [instance: 5, cache: 1];
+    // 
+    // node Compute2[1]: x = 138, y = 986, inputs = 9, label = Compute2
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "x"
+    // input[4]: defaulting = 0, visible = 1, type = 32, value = "y"
+    // input[6]: defaulting = 0, visible = 1, type = 32, value = "z"
+    // input[8]: defaulting = 0, visible = 1, type = 32, value = "v"
+    //
+SelectLataField_Compute2_1_out_1 = 
+    Compute2(
+    SelectLataField_Input_4_out_1,
+    "x",
+    SelectLataField_Compute_11_out_1,
+    "y",
+    SelectLataField_Compute_12_out_1,
+    "z",
+    SelectLataField_Compute_13_out_1,
+    "v",
+    SelectLataField_Post_5_out_1
+    ) [instance: 1, cache: 1];
+    // 
+    // node Unmark[1]: x = 426, y = 982, inputs = 2, label = Unmark
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "glou"
+    //
+SelectLataField_Unmark_1_out_1 = 
+    Unmark(
+    SelectLataField_Mark_11_out_1,
+    "glou"
+    ) [instance: 1, cache: 1];
+    // 
+    // node Replace[2]: x = 218, y = 1074, inputs = 4, label = Replace
+    //
+SelectLataField_Replace_2_out_1 = 
+    Replace(
+    SelectLataField_Compute2_1_out_1,
+    SelectLataField_Unmark_1_out_1,
+    NULL,
+    NULL
+    ) [instance: 2, cache: 1];
+    // 
+    // node Include[5]: x = 183, y = 1148, inputs = 6, label = Include
+    // input[2]: defaulting = 0, visible = 1, type = 5, value = 0.5
+    //
+SelectLataField_Include_5_out_1 = 
+    Include(
+    SelectLataField_Replace_2_out_1,
+    0.5,
+    NULL,
+    NULL,
+    NULL,
+    NULL
+    ) [instance: 5, cache: 1];
+    // 
+    // node Replace[5]: x = 217, y = 1218, inputs = 4, label = Replace
+    // input[3]: defaulting = 0, visible = 1, type = 32, value = "glou"
+    //
+SelectLataField_Replace_5_out_1 = 
+    Replace(
+    SelectLataField_Include_5_out_1,
+    SelectLataField_Include_5_out_1,
+    "glou",
+    NULL
+    ) [instance: 5, cache: 1];
+    // 
+    // node Switch[2]: x = 204, y = 1315, inputs = 3, label = Switch
+    //
+SelectLataField_Switch_2_out_1 = 
+    Switch(
+    SelectLataField_Compute_17_out_1,
+    SelectLataField_Replace_5_out_1,
+    SelectLataField_Mark_11_out_1
+    ) [instance: 2, cache: 1];
+    // 
+    // node Output[1]: x = 216, y = 1409, inputs = 1, label = Output
+    // parameter: position = 1, name = 'field', value = ' ', descriptive = 0, description = ' ', required = 0, visible = 1
+    //
+field = SelectLataField_Switch_2_out_1;
+    // 
+    // node Output[2]: x = 512, y = 1406, inputs = 1, label = Output
+    // parameter: position = 2, name = 'uncropped', value = '(NULL)', descriptive = 1, description = ' ', required = 0, visible = 1
+    //
+uncropped = SelectLataField_Mark_11_out_1;
+// network: end of macro body
+}
+SelectLataField_Input_2_out_1 = NULL;
+SelectLataField_Input_3_out_1 = NULL;
+SelectLataField_Compute_16_out_1 = NULL;
+SelectLataField_Input_1_out_1 = NULL;
+SelectLataField_Select_5_out_1 = NULL;
+SelectLataField_Replace_3_out_1 = NULL;
+SelectLataField_Extract_1_out_1 = NULL;
+SelectLataField_Options_1_out_1 = NULL;
+SelectLataField_Replace_4_out_1 = NULL;
+SelectLataField_Switch_5_out_1 = NULL;
+SelectLataField_Mark_11_out_1 = NULL;
+SelectLataField_Mark_10_out_1 = NULL;
+SelectLataField_Post_4_out_1 = NULL;
+SelectLataField_Compute_11_out_1 = NULL;
+SelectLataField_Compute_12_out_1 = NULL;
+SelectLataField_Compute_13_out_1 = NULL;
+SelectLataField_Input_5_out_1 = NULL;
+SelectLataField_Compute_17_out_1 = NULL;
+SelectLataField_Input_4_out_1 = NULL;
+SelectLataField_Post_5_out_1 = NULL;
+SelectLataField_Compute2_1_out_1 = NULL;
+SelectLataField_Unmark_1_out_1 = NULL;
+SelectLataField_Replace_2_out_1 = NULL;
+SelectLataField_Include_5_out_1 = NULL;
+SelectLataField_Replace_5_out_1 = NULL;
+SelectLataField_Switch_2_out_1 = NULL;

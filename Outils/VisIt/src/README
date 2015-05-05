@@ -1,0 +1,14 @@
+06/12/2013:
+----------
+If Qt is found, Qt and MesaLib is not necessary. Download ?
+wget http://portal.nersc.gov/svn/visit/trunk/third_party/MesaLib-7.10.2.tar.gz
+wget http://portal.nersc.gov/svn/visit/trunk/third_party/qt-everywhere-opensource-src-4.8.3.tar.gz
+
+19/10/2012:
+----------
+Paquet initial:
+220388303 2012-10-17 14:35 qt-everywhere-opensource-src-4.7.4.tar.gz
+Expurge de la doc:
+74882452 2012-10-19 15:19 qt-everywhere-opensource-src-4.7.4.tar.gz
+Puis des repertoires demos et examples:
+53953707 Apr  3 11:35 qt-everywhere-opensource-src-4.7.4.tar.gz

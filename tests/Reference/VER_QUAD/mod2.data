@@ -1,0 +1,7 @@
+dimension 2
+domaine dom
+Read_file  dom mod2b.geom
+reordonner dom
+ecrire_fichier_formatte dom mod2o.geom
+fin
+

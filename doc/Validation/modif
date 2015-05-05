@@ -1,0 +1,35 @@
+#!/bin/bash
+SUBSTITUE ()
+{
+   #eps=`$TRUST_Awk '/seq faces/ {print $(NF-1)}' $NOM.data`
+   #sed -e "s?fichier $NOM?fichier $1?g"  $NOM.data > $1".data"
+    cat  $NOM.data > $1".data"
+   if [ "`grep -i Cholesky $1.data | grep -vi precond_local`" != "" ]
+   then
+     sed -e "s? precond_local Cholesky {? precond_local Cholesky {?g" \
+         -e "s? Cholesky {? GCP { precond ssor { omega 1.651 } seuil 1.e-12?g" \
+         -e "s? cholesky {? GCP { precond ssor { omega 1.651 } seuil 1.e-12?g" $1.data > tmp.data
+     mv -f tmp.data $1.data
+   fi
+}
+
+NETTOYAGE ()
+{
+grep -i "distance_paroi" mod_$cas.data > nettoyage.out
+dom=`$TRUST_Awk '{if (($1=="distance_paroi") && ($2!="elem") && ($2!="som")) dom=$2;} END {print dom}' nettoyage.out`
+rm -f $dom"_Wall_length.xyz" $dom"_Wall_length_formatted.xyz"
+rm -f nettoyage.out
+}
+
+cas=`basename $1 .data`
+NOM=$cas
+SUBSTITUE seq
+mv seq.data $cas.data
+. $TRUST_ROOT/Outils/TRIOXDATA/IHMTRIO.sh 
+export PYTHONPATH=`dirname $0`:$PYTHONPATH
+python `dirname $0`/modif.py $cas  >modif.log
+grep Info modif.log
+$exec mod_$cas  1>boussi.out 2>&1
+[ ! -f mod_$cas.lml ] && [ -f $cas.lml ] && mv $cas.lml  mod_$cas.lml
+[ -s mod_$cas.lml ] && cp mod_$cas.lml .reference.lml
+NETTOYAGE $cas

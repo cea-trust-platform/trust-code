@@ -1,0 +1,117 @@
+# Hydraulique 2D : Condition limite de gradient pression impose pour la version VEFPreP1B #
+# PARALLEL OK #
+dimension 2
+Pb_Hydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Cavite 
+		{
+		Origine 0. 0.
+     		Nombre_de_Noeuds 10 10
+		Longueurs 1 1
+		facteurs 1.0 1.0
+		symx
+		symy
+		}
+		{
+		Bord Gauche X = 0.  0. <= Y <= 1
+		Bord Haut   Y = 1   0. <= X <= 1
+		Bord Bas    Y = 0.  0. <= X <= 1
+		Bord Droit  X = 1   0. <= Y <= 1
+		}
+}
+Trianguler dom
+
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur metis { Nb_parts 2 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+
+
+Schema_Euler_Explicite sch
+Lire sch
+{
+	tinit 0.
+	tmax 5.
+	dt_min 1.e-5
+	dt_max 1.
+	dt_impr 1.e-10
+	dt_sauv 0.1
+	seuil_statio 1.e-10
+	facsec 1.
+	Nb_pas_dt_max 10
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 2
+	rho Champ_Uniforme 1 2
+}
+
+
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression Gcp { precond ssor { omega 1.5 }
+                                       seuil 1.e-10
+                                       impr
+                                     } 
+		convection { negligeable }
+		diffusion {  }
+		conditions_initiales {
+			vitesse  Champ_Uniforme 2 0.0 0.
+			}
+		boundary_conditions {
+			Haut symetrie
+			Bas  Frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2 0.0 0.
+			Gauche frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0
+			Droit  frontiere_ouverte_gradient_pression_impose_VEFPreP1B Champ_front_uniforme 1 -1.0
+		}
+	}
+
+	Postraitement
+	{
+		Sondes
+		{
+			sonde_pression pression periode 1.e-5 points 2 0.05 0.5 
+			                                               0.5 0.5
+			sonde_vitesse vitesse periode 1.e-5 points 5 0.05 0.5 
+			                                             0.15 0.5 
+			                                             0.25 0.5 
+			                                             0.35 0.5 
+			                                             0.5 0.5
+			sonde_vit3 vitesse  periode 1.e-5 points 4 0.05 0.5 0.5 0.75 0.75 0.5 0.25 0.5
+		}
+		Champs dt_post 5
+		{ 
+			vitesse 
+                        pression elem
+			pression som
+		}
+	}
+}
+
+Solve pb
+Fin

@@ -1,0 +1,10 @@
+# test du prepro #
+VDF dis
+schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0
+	dt_min 0.01
+	dt_max 0.01
+}
+

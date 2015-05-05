@@ -1,0 +1,191 @@
+# test perte_charge_circuaire_vef #
+# PARALLEL OK #
+dimension 2
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom {
+	Pave Cavite {
+		Origine 0 0
+     		Nombre_de_Noeuds 16 6
+		Longueurs 30. 10.
+	} {
+		Bord Haut Y = 10   0 <= X <= 30
+		Bord Bas Y = 0     0 <= X <= 30
+		Bord Entree X = 0 0 <= Y <= 10
+		Bord Sortie X = 30  0 <= Y <= 10
+	}
+}
+Trianguler_H dom
+
+Sous_Zone zone1
+Associate zone1 dom
+Read zone1 {
+   Rectangle
+      Origine 0 0
+      Cotes   30 10
+}
+
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+Sous_Zone  zone1
+Associate zone1 dom
+Read zone1 { Fichier zone1.ssz }
+END SCATTER #
+
+
+# Le schema en temps #
+Schema_Euler_explicite sch
+Read sch {
+	tinit   0
+	nb_pas_dt_max 3
+	tmax    10.
+	dt_min  1e-12
+	dt_max  1
+	dt_impr 1
+	dt_sauv 100
+	seuil_statio 1e-10
+}
+Schema_Euler_implicite sch_impl
+Read sch_impl {
+	tinit   0
+	nb_pas_dt_max 3
+	tmax    10.
+	dt_min  1e-12
+	dt_max  1
+	dt_impr 1
+	dt_sauv 100
+	seuil_statio 1e-10
+	solveur implicite { seuil_convergence_solveur 1e-3 }
+}
+
+VEFPreP1B dis
+
+# Le Fluide #
+Fluide_Incompressible eau
+Read eau {
+	mu Champ_Uniforme 1 0.001
+	rho Champ_Uniforme 1 1000
+}
+
+
+# Le Probleme #
+Pb_hydraulique pb
+
+Associate pb dom
+Associate pb sch_impl
+Associate pb eau
+Discretize pb dis
+
+
+
+
+Read pb {
+
+	Navier_Stokes_standard {
+		methode_calcul_pression_initiale avec_sources	
+		solveur_pression GCP {
+			precond ssor { omega 1.5 }
+			seuil 1.e-10
+		}
+		
+		Sources {
+			Perte_charge_circulaire {
+				diam_hydr champ_uniforme 1 0.01
+				diam_hydr_ortho champ_uniforme 1 0.02
+				lambda 96/Re_tot*0+1.*(Re_long)^(-0.25)
+				lambda_ortho 96/Re_tot*0+2.*(Re_ortho)^(-0.27)
+				sous_zone zone1
+				direction champ_uniforme 2 1 0
+			}
+		}
+		
+		convection { amont }
+		diffusion { }
+		conditions_initiales {
+			vitesse Champ_Uniforme 2 0 0
+		}
+		
+		boundary_conditions {
+			Haut   symetrie
+			Bas    symetrie
+			Entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2 1. 0.
+			Sortie frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.
+		}
+
+	}
+
+	Postraitement {
+	    Definition_champs {
+	min_gradient Reduction_0D { methode min
+		source refChamp { pb_champ pb gradient_pression  }
+		}
+	}
+		sondes 
+		{  
+		   min_gradient min_gradient periode 1.e-9 numero_elem_sur_maitre 0
+		   sonde_vitesse vitesse periode 0.1 point 1 15 5
+		     sonde_gradient_pression gradient_pression periode 0.1 point 1 15 5	
+		}
+		Champs dt_post 1 {
+			pression_pa elem
+			pression elem
+			vitesse elem
+			gradient_pressionX elem
+		}
+	}
+}
+
+Solve pb
+
+End
+
+
+
+
+
+Autres exemples :
+
+
+
+			Perte_charge_directionnelle {
+				diam_hydr champ_uniforme 1 0.02
+				lambda 96/Re
+				sous_zone zone1
+				direction champ_uniforme 2 1 1
+			}
+
+
+			Perte_charge_isotrope {
+				diam_hydr champ_uniforme 1 0.1
+				lambda 64/Re
+			}
+
+
+			Perte_charge_isotrope {
+				diam_hydr champ_uniforme 1 0.1
+				lambda 96/Re
+				sous_zone zone1
+			}
+
+
+			Perte_charge_anisotrope {
+				diam_hydr champ_uniforme 1 0.01
+				lambda_ortho 64/Re
+				lambda 64/Re
+				sous_zone zone1
+				direction champ_uniforme 2 1 1
+			}
+

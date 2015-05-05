@@ -1,0 +1,80 @@
+<!--NewPage-->
+<html>
+<head>
+<title>Trio Unitaire </title>
+</head>
+<body>
+<BODY BGCOLOR=#C5D5D5 TEXT=#23238E LINK=#E47833 ALINK=#007FFF VLINK=#007FFF>
+<a href=TRUST.html>TRUST</a> | <a HREF=mailto:triou@cea.fr>Assistance</a>
+<PRE>
+<HR><h1>Problemes corriges avec Insure++</h1><HR>
+
+25/01/99 OpDiftVDFmEl.cpp
+-------------------------
+
+MESSAGE:
+
+??
+
+CORRECTION:
+	     if(les_coords(num_som[1],co)>les_coords(num_som[3],co))
+	      c[1][3][co]=les_coords(num_som[1],co)-les_coords(num_som[3],co);
+	    else
+	      c[3][1][co]=les_coords(num_som[3],co)-les_coords(num_som[1],co);
+ 
+Devient:
+	     if(les_coords(num_som[1],co)>les_coords(num_som[3],co))
+	      c[1][3][co]=les_coords(num_som[1],co)-les_coords(num_som[3],co);
+	    else
+	      c[1][3][co]=les_coords(num_som[3],co)-les_coords(num_som[1],co);
+ 
+
+18/01/99 OpDiftVDFmEl.cpp 
+-------------------------
+
+MESSAGE:
+
+  Insure++: Instrumented "OpDiftVDFmEl.cpp" on meije, pid=20281  [1 tot.]
+  Reading uninitialized memory: h_imp
+>>           h_total_inv = 1/h_imp + e/dv_diffusivite(k)
+
+CORRECTION:
+  if (i != -1) 
+    {
+      for (k=0; k<flux.size(); k++)
+	{  
+	  h_total_inv = 1/h_imp + e/dv_diffusivite(k);
+          h_imp = la_cl.h_imp(face-num1,k);
+	  flux(k) = la_cl.T_ext(face-num1,k) *surface(face)/h_total_inv;
+	}
+    }
+  else 
+    {
+      for (k=0; k<flux.size(); k++) 
+	{
+	  h_total_inv = 1/h_imp + e/dv_diffusivite(k);
+	  flux(k) =  - la_cl.T_ext(face-num1,k)*surface(face)/h_total_inv;
+	}
+    }
+Devient:
+  if (i != -1) 
+    {
+      for (k=0; k<flux.size(); k++)
+	{
+          h_imp = la_cl.h_imp(face-num1,k);  
+	  h_total_inv = 1/h_imp + e/dv_diffusivite(k);
+	  flux(k) = la_cl.T_ext(face-num1,k) *surface(face)/h_total_inv;
+	}
+    }
+  else 
+    {
+      for (k=0; k<flux.size(); k++) 
+	{
+          h_imp = la_cl.h_imp(face-num1,k);  
+	  h_total_inv = 1/h_imp + e/dv_diffusivite(k);
+	  flux(k) =  - la_cl.T_ext(face-num1,k)*surface(face)/h_total_inv;
+	}
+    }
+<HR>
+</body>
+</html> 

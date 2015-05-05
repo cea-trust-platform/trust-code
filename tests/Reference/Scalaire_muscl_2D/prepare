@@ -1,0 +1,12 @@
+jdd=Scalaire_muscl_2D
+for scheme in amont ef_stab muscl_new muscl_old muscl3 generic_muscl
+do
+   file=Scalaire_$scheme"_2D"
+   keyword=$scheme
+   [ $scheme = muscl3 ] && keyword="muscl3 { }"
+   [ $scheme = ef_stab ] && keyword="ef_stab { }"
+   [ $scheme = generic_muscl ] && keyword="generic muscl minmod 3 1"
+   echo $ECHO_OPTS "1,$ s?$jdd?$file?g\nw $file.data" | ed $jdd.data
+   echo $ECHO_OPTS "1,$ s? muscl ? $keyword ?g\nw" | ed $file.data
+   triou $file 1>$file.out 2>$file.err || exit -1
+done

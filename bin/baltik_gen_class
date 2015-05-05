@@ -1,0 +1,17 @@
+#! /usr/bin/env sh
+
+# --
+# Author : EL (CEA)
+# --
+
+# This scripts calls baltik_gen_class.py in BALTIK mode
+# so that it can build skeletons for BALTIK projects classes.
+
+# loading installed python if it exists
+if [ -f $TRUST_ROOT/exec/python/env.sh ]
+then
+    echo "Initializing Python..."
+    source $TRUST_ROOT/exec/python/env.sh
+fi
+
+python $TRUST_ROOT/bin/baltik_gen_class.py "$@"

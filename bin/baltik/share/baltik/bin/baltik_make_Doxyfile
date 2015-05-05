@@ -1,0 +1,109 @@
+#!/bin/bash
+# pour le passage des commentaires en commentaires doxy
+[ "$project_directory" = "" ] && echo project_directory not set && exit 1
+# a priori 8 differences avec make_Doxyfile
+prepare_sources()
+{
+   echo $ECHO_OPTS "Preparing sources in $TRUST_TMP/TRUST_dox...\c"
+   dirs=`cat $TRUST_ROOT/env/rep.TRUST`
+   rm -r -f $TRUST_TMP/TRUST_dox   
+   mkdir -p $TRUST_TMP/TRUST_dox 
+   cd $TRUST_TMP/TRUST_dox
+
+   mkdir baltik
+   cd baltik
+   for file in `ls $project_directory/build/src/*.cpp  $project_directory/build/src/*.h`
+     do 
+     $TRUST_ROOT/Outils/triou2doxygen/triou2doxygen $file > `basename $file `
+   done
+   
+   cd $TRUST_TMP/TRUST_dox
+   for dir in $dirs
+   do
+      mkdir -p $dir
+      cd $dir
+      for file in `ls $TRUST_ROOT/$dir/*.cpp $TRUST_ROOT/$dir/*.h`
+      do
+	if	[ ! -f $TRUST_TMP/TRUST_dox/baltik/`basename $file` ] 
+	    then
+         $TRUST_ROOT/Outils/triou2doxygen/triou2doxygen $file > `basename $file`
+	else
+	    echo $file modifie par le projet baltik
+	fi
+      done
+      cd $TRUST_TMP/TRUST_dox
+   done
+   echo "OK"
+}
+
+cree_index_main()
+{
+   org=html/classes.html
+   file_new=html/classes.html.tmp
+   tmpf=$TRUST_TMP/class.html
+   cp $org $file_new
+   ligne=""
+   for lettre in A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+   do
+      sed "s?class=\"ah\">&nbsp;&nbsp;$lettre?class=\"ah\">\&nbsp;\&nbsp;<a name=\"$lettre\">$lettre</a><a href=\"#A\"> index </a>?" $file_new > $tmpf
+      if [ "`diff $file_new $tmpf`" != "" ]
+      then
+         ligne=""$ligne"<a href=\"#"$lettre"\">"$lettre"</a>  "
+      fi
+      mv $tmpf $file_new
+   done 
+   #diff class.html titi.class.html
+   #echo $ligne
+   sed "s?TRUST Compound Index</h1>?TRUST Compound Index</h1>$ligne?" $file_new > $tmpf
+   mv $tmpf $org
+   rm -f $file_new
+}
+# Script de creation de la doc HTML Doxygen
+#if [ "$TRUST_LOGIN" != `whoami` ]
+# on ne verifie pas que le user est TRUST_LOGIN dans les projets baltik
+if  [ 0 -eq 1 ]
+then
+   echo "You don't have rights to recreate the documentation."
+else
+   [ "$GUI" = 1 ] && echo "Please wait (do not close this window)..."
+   cat $TRUST_ROOT/bin/KSH/Doxyfile > $TRUST_TMP/Doxyfile
+   # Construction de la liste des repertoires
+   ch=`cat $TRUST_ROOT/env/rep.TRUST | $TRUST_Awk '{gsub("\\\./","",$1);ch=ch"$(TRUST_TMP)/TRUST_dox/"$1" "} END {print ch " $(TRUST_TMP)/TRUST_dox/baltik/"}'`
+   echo "Changing $TRUST_TMP/Doxyfile..."
+   echo $ECHO_OPTS "1,$ s?INPUT                  =?INPUT                  = $ch?g\nw" | ed $TRUST_TMP/Doxyfile 1>/dev/null 2>&1 || exit -1
+   echo $ECHO_OPTS "1,$ s?PROJECT_NUMBER         =?PROJECT_NUMBER         = $TRUST_VERSION?g\nw" | ed $TRUST_TMP/Doxyfile 1>/dev/null 2>&1 || exit -1
+   # Attention depuis quelques versions INCLUDE_PATH = $(TRUST_ROOT)/include ne marche pas...
+   echo $ECHO_OPTS "1,$ s?INCLUDE_PATH           =?INCLUDE_PATH           = $ch?g\nw" | ed $TRUST_TMP/Doxyfile 1>/dev/null 2>&1 || exit -1
+   Defines=`$TRUST_Awk -F "Defines =" '{gsub("-D","",$2);print $2;exit}' $TRUST_ENV/make.$TRUST_ARCH_CC`
+   [ "`grep __PETSCKSP_H $PETSC_ROOT/$TRUST_ARCH/include/petscksp.h 2>/dev/null`" != "" ] && Defines=$Defines" __PETSCKSP_H"
+   echo $ECHO_OPTS "1,$ s?PREDEFINED             =?PREDEFINED             = $Defines?g\nw" | ed $TRUST_TMP/Doxyfile 1>/dev/null 2>&1 || exit -1
+   #################################
+   # Parsing particulier des sources
+   #################################
+   prepare_sources
+   ######################
+   # Lancement de Doxygen
+   ######################
+   (cd $project_directory/build/;
+   rm -r -f html
+   ######################
+   # Lancement de doxygen
+   ######################
+   # Suppression de $TRUST_ROOT/include dans EXCLUDE et INCLUDE du fichier
+   # Doxyfile car fait atteindre plus de 500Mo en RAM   
+   doxygen=`ls -rt $TRUST_ROOT/Outils/doxygen/doxygen*/bin/doxygen`
+   echo $ECHO_OPTS "Running doxygen `$doxygen --version` (output in `pwd`/doxygen.out|err)...\c" | tee doxygen.out
+   $doxygen $TRUST_TMP/Doxyfile 1>>doxygen.out 2>doxygen.err || exit -1
+   # On cree l'index si le fichier suivant existe:
+   [ -f html/classes.html ] && cree_index_main
+   exit 
+   # creation du dico classes fichier dans $TRUST_ROOT/doc
+   ########################################################
+   verifie_instanciable
+   echo "OK Documentation at $TRUST_ROOT/doc/html/index.html finished !"      
+   )      
+   # On cree le bouton pour regenerer la doc
+   echo $ECHO_OPTS "1,$ s?<p>?<p><form METHOD=Change ACTION=$TRUST_ROOT/form/make_Doxyfile.ksh\?><input type=submit value=Generate>  Recreate the TRUST documentation with Doxygen.</form>?g\nw" | ed $TRUST_ROOT/doc/html/index.html 1>/dev/null 2>&1
+fi
+[ "$GUI" = 1 ] && eval $FIN
+exit 0

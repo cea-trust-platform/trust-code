@@ -1,0 +1,104 @@
+Parametres {
+	Titre "Tests de vérification"
+	Description "Dans cette fiche de tests, deux cas-tests ont été dévéloppés pour une vérification qualitative des dévéloppements d'une équation de convection-diffusion." 
+	IncludeData 0
+	
+	Auteur "A. MEKKAS"
+	CasTest "cas-test1" "cas-test1.data"
+	CasTest "cas-test2" "cas-test2.data"
+}
+
+Chapitre {
+	Titre "Cas-test 1"
+	Description "Ce premier cas-test vise à vérifier la solution d'une équation de convection-diffusion sur un domaine 2D \latex_($[0,0.04]\times[0,0.04]$\latex_) pour une vitesse de convection constante, un coefficent de diffusion constant et des conditions aux limites périodiques:" 
+        Description "\latex_(\begin{itemize} \item $\overrightarrow{V}(\overrightarrow{X},t)=(1,1)$, \item $D(\overrightarrow{X},t)=0.0005$. \end{itemize}\latex_)"
+Table {
+	titre "Concentration"
+	description "Les figures ci-dessous représentent la concentration à l'instant initial et à l'instant \latex_($t=0.02$\latex_). La figure représentant la solution à \latex_($t=0.02$\latex_) montre la bonne prise en compte de la vitesse de convection, de la diffusion de la concentration initiale et des conditions aux limites périodiques."
+	description 
+	description 
+}
+Visu {
+	Width 7cm
+	mesh cas-test1/cas-test1.lata dom
+	pseudocolor cas-test1/cas-test1.lata dom CONCENTRATION ELEM 
+	cycles 0 350
+        # MultiVisu 1 #
+        nb_img_without_newline 2
+}
+
+Table  {
+	titre "Vitesse de convection et coefficient de diffusion"
+	description "Les figures ci-dessous représentent la vitesse de convection et le coeffcient de diffusion à l'instant initial. Ces figures montrent la bonne prise en compte de la vitesse de convection et du coefficient de diffusion. Ceci vérifie également que le rajout de la vitesse de convection en tant que variable post-traitable est bien pris en compte."
+	description 
+}
+Visu {
+        vector cas-test1/cas-test1.lata dom VITESSE_CONVECTION ELEM
+	Width 7cm
+	cycles 0
+        nb_img_without_newline 2
+}
+
+Visu {
+	pseudocolor cas-test1/cas-test1.lata dom COEFFICIENT_DIFFUSION ELEM 
+	Width 7cm
+	cycles 0
+}
+
+}
+
+Chapitre {
+	Titre "Cas-test 2"
+	Description "Le deuxieme cas-test vise à vérifier la solution d'une équation de convection-diffusion sur un domaine 2D \latex_($[0,1]\times[0,1]$\latex_) pour une vitesse de convection variable en temps et en espace et un coefficient de diffusion nul:"
+	Description "\latex_(\begin{itemize} \item $\overrightarrow{V}(\overrightarrow{X},t)=(-2\sin(\pi x)^2\sin(\pi y)\cos(\pi y)\cos(t\frac{\pi}{2}), 2\sin(\pi y)^2\sin(\pi x)\cos(\pi x)\cos(t\frac{\pi}{2}))$, \item $D(\overrightarrow{X},t)=0$. \end{itemize}\latex_)"
+
+Table {
+	titre "Concentration"
+	description "Les figures ci-dessous représentent la concentration à l'instant initial et à l'instant \latex_($t=1.2049$\latex_)."
+	description 
+	description 
+}
+
+Visu {
+	Width 7cm
+	mesh cas-test2/cas-test2.lata dom
+	pseudocolor cas-test2/cas-test2.lata dom CONCENTRATION ELEM 
+	cycles 0 88
+        nb_img_without_newline 2
+}
+
+Table {
+	titre "Vitesse de convection"
+	description "Les figures ci-dessous représentent la vitesse de convection à l'instant initial et à l'instant \latex_($t=1.2049$\latex_). La figure représentant la solution à \latex_($t=1.2049$\latex_) montre la bonne prise en compte d'une vitesse de convection variable en temps et en espace. En effet, Les figures ci-dessous mettent en évidence le changement de signe à l'instant \latex_($t=1.2049$\latex_) d\latex_(\^u\latex_) au changement de signe du terme \latex_($\cos(t\frac{\pi}{2})$\latex_)."
+	description 
+	description 
+}
+
+Visu {
+	Width 7cm
+        vector cas-test2/cas-test2.lata dom VITESSE_CONVECTION ELEM
+	cycles 0 88
+        nb_img_without_newline 2
+}
+
+}
+Chapitre {
+	Titre "Fichier prm"
+	Description \latex_(\label{prm}\latex_)
+	Description include_text_file(fiche.prm)
+}
+
+Chapter {
+	Title Data Files
+	Table {
+	titre cas-test1
+	Description \latex_(\label{cas1}\latex_)
+	Description include_text_file(cas-test1/cas-test1.data)
+	}
+	Table {
+	titre cas-test2
+	Description \latex_(\label{cas2}\latex_)
+	Description include_text_file(cas-test2/cas-test2.data)
+	}
+	
+}

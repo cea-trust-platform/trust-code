@@ -1,0 +1,23 @@
+#!/bin/bash
+q=""
+u=""
+while [ "$1" != "" ]
+do
+   if [ "$1" = -u ]
+   then
+      # User
+      shift
+      u="-u $1"
+      shift
+   elif [ "$1" = -a ]
+   then
+      # Nothing
+      shift
+   else
+      # Queue
+      q="-q $1"
+      shift
+   fi
+done
+ccc_mpp -H $u $q | awk '(NF>1) {if ($7=="RUN") state="RUNNING";else state="WAITING";print "job "substr($12,1,12)" \t"$3" \t"$1" \t"state}'
+echo "WARNING: qstat on $HOST is a TRUST wrapper of the ccc_mpp command. Use last command or ccc_mpstat to see more details."

@@ -1,0 +1,78 @@
+#!/bin/bash
+gnuplot=$1
+gd=gd-2.0.36RC1.tar.gz
+
+# recuperation des packages
+
+for file in `ls $TRUST_ROOT/externalpackages/gnuplot/*`
+do
+  ln -sf $file .
+done
+
+let i=0
+for package in $gd $gnuplot
+do
+   echo "***************************************"
+   echo "Trying to install ${package%.tar.gz}..."
+   echo "***************************************"
+   let i=$i+1
+   gunzip -c $package > ${package%.gz}
+   tar xf ${package%.gz}
+   rm -f ${package%.gz}
+   cd ${package%.tar.gz}
+   if [ $i = 1 ]
+   then
+      ./configure --prefix=`pwd`/../gd 2>&1 | tee gd.log
+      # Echec (PNG&ZLIB non ou mal installes sur la machine)
+      if [ "`grep 'libpng is required' gd.log`" != "" ]
+      then
+         GD=`pwd`
+         cd ..
+         PNG=`pwd`/png
+         ZLIB=`pwd`/zlib
+         # Installation de zlib
+         package=zlib-1.2.5.tar.gz
+         echo "***************************************"
+         echo "Trying to install ${package%.tar.gz}..."
+         echo "***************************************"
+         gunzip -c $package > ${package%.gz};tar xf ${package%.gz};rm -f ${package%.gz};cd ${package%.tar.gz}
+         ./configure --prefix=$ZLIB || exit -1
+	 $TRUST_MAKE || exit -1
+	 make install || exit -1
+         cd .. && rm -r -f ${package%.tar.gz}
+        
+         # Installation de png
+         package=libpng-1.5.6.tar.gz
+         echo "***************************************"
+         echo "Trying to install ${package%.tar.gz}..."
+         echo "***************************************"
+         gunzip -c $package > ${package%.gz};tar xf ${package%.gz};rm -f ${package%.gz};cd ${package%.tar.gz}
+         export CFLAGS="-I$ZLIB/include"
+         export LDFLAGS="-L$ZLIB/lib"
+         ./configure --prefix=$PNG || exit -1
+	 $TRUST_MAKE || exit -1
+	 make install || exit -1
+         cd .. && rm -r -f ${package%.tar.gz}
+
+         # Reconfiguration de gd avec PNG&ZLIB installes
+         cd $GD
+	 package=$gd
+         echo "***************************************"
+         echo "Trying to install ${package%.tar.gz}..."
+         echo "***************************************"
+         export CFLAGS="-I$PNG/include -I$ZLIB/include"
+         export LDFLAGS="-L$ZLIB/lib"
+         ./configure --prefix=`pwd`/../gd --with-png=$PNG || exit -1
+      fi
+   else
+      # Probleme sur kata en crontab, lib64 pas trouve
+      XLIB="" && [ -d /usr/X11R6/lib64 ] && XLIB="--x-lib=/usr/X11R6/lib64" 
+      # --without-tutorial car plantage sur is209003 pour un probleme Latex 
+      # --without-lisp-files car plantage sur VRH797979.intra.cea.fr car emacs mal installe
+      ./configure --prefix=$TRUST_ROOT/exec/gnuplot --without-lua  --without-lisp-files --without-tutorial --with-readline=builtin --with-gd=`pwd`/../gd $XLIB || exit -1
+   fi
+   $TRUST_MAKE || exit -1
+   make install || exit -1
+   cd ..
+   rm -r -f ${package%.tar.gz}
+done

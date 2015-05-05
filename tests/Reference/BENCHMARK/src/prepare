@@ -1,0 +1,52 @@
+#!/bin/bash
+reps=`cd ..;ls -rt PAR*/run | awk -F/ '{print $1}'`
+rm -f *.su *.include
+for dis in VDF VEF
+do
+   for rep in $reps
+   do
+      n=${rep#PAR}
+      out=$dis".su"
+      cpu=$dis".cpu"
+      TU=../$rep/bench1-$n".TU_"$dis
+      
+      time_step[$n]=`awk '/Secondes / && /pas de temps/ {print $NF}' $TU`
+      speed_up=`echo "scale=2;${time_step[1]}/${time_step[$n]}" | bc -l`
+      echo $ECHO_OPTS $n" \t"${time_step[$n]}" \t"$speed_up >> $out
+      let i=0
+      string=$n" \t${time_step[$n]}"
+      for dont in `awk '/Dont / && !/marqueur/ {print $3}' $TU`
+      do
+         let i=$i+1
+	 if [ $n = 1 ]
+	 then
+	    [ $i = 1 ] && en_tete="N \tTotal"
+	    en_tete=$en_tete" \t"$dont
+	 fi
+	 time=`grep $dont $TU | awk -v dont=$dont '/Dont / {if (gsub("%","",$4)) print $3;else print $4}'`
+	 string=$string" \t"$time
+      done
+      [ $n = 1 ] && echo $ECHO_OPTS $en_tete > $cpu
+      echo $ECHO_OPTS $string >> $cpu
+   done
+   # Necessite gnuplot 4.4 pour les iterations avec for
+   echo "set title \"Cpu composition\"
+set key invert reverse Left outside
+set yrange [0:100]
+set ylabel \"% of total\"
+unset ytics
+set grid y
+set border 3
+set style data histograms
+set style histogram rowstacked
+set style fill solid border -1
+set boxwidth 0.75
+set term png
+set output \"$dis.png\"
+plot '$dis.cpu' using (100.*\$3/\$2):xtic(1) title column(3), \
+  for [i=4:$i+2] '' using (100.*column(i)/column(2)) title column(i) 
+" > plot
+   gnuplot plot 
+done
+awk '/#include / {system("cat "$2)} !/#include / {print $0}' src.prm > tmp
+mv -f tmp src.prm

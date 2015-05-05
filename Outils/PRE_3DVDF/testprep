@@ -1,0 +1,14 @@
+#!/bin/bash
+DIR=`dirname $0`
+DIR=`(cd $DIR; pwd)`
+cp test.tar.Z prov.tar.Z
+uncompress prov.tar.Z
+tar xvf prov.tar
+rm -f prov.tar
+cd  $DIR/test/model
+rm maillageplan
+
+$DIR/xprepro plan.prep
+echo "executer testfin apres avoir fait model prepro"
+cd $DIR
+

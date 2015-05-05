@@ -1,0 +1,17 @@
+TRUST Version1.4.9 06/2005
+demo_particules
+TRUST
+Geometrie dom marqueurs.lata.dom
+Format=ascii
+nb_som_tot=22491
+type_elem=HEXAEDRE
+nb_elem_tot=20000
+TEMPS 0.00000000e+00
+Champ VITESSE marqueurs.lata.VITESSE.SOM.dom.pb.0.000000
+Champ PARTICULES marqueurs.lata.PARTICULES.dom.pb.0.0000000000
+TEMPS 1.00000000e-03
+Champ VITESSE marqueurs.lata.VITESSE.SOM.dom.pb.0.001000
+Champ PARTICULES marqueurs.lata.PARTICULES.dom.pb.0.0010000000
+TEMPS 3.00000000e-03
+Champ VITESSE marqueurs.lata.VITESSE.SOM.dom.pb.0.003000
+Champ PARTICULES marqueurs.lata.PARTICULES.dom.pb.0.0030000000

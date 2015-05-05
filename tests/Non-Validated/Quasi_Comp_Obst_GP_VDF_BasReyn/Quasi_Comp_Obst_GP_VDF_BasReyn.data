@@ -1,0 +1,254 @@
+# ThermoHydraulique 2D : obstacle quasi compressible gaz parfait VDF turbulent bas Reynolds #
+# PARALLEL RUNS #
+# lance_test 1 ecarts #
+dimension 2
+Pb_Thermohydraulique_Turbulent_QC pb
+Domaine dom
+# BEGIN MESH #
+Mailler dom 
+{
+	Pave EntreeB
+		{
+		Origine 0. 0.
+		Nombre_de_Noeuds 31 21
+		facteurs .95 .9
+		Longueurs 0.8 0.35
+		}
+		{
+		bord Entree X = 0.    0. <= Y <= 0.35
+		bord Bas1   Y = 0.    0. <= X <= 0.8
+		} ,
+	Pave EntreeM
+		{
+		Origine 0. 0.35
+		Nombre_de_Noeuds 31 10
+		facteurs .95 1.
+		Longueurs 0.8 0.1
+		}
+		{
+		bord Entree X = 0.  0.35 <= Y <= 0.45
+		bord Droit  X = 0.8 0.35 <= Y <= 0.45
+		} ,
+	Pave EntreeH
+		{
+		Origine 0. 0.45
+		Nombre_de_Noeuds 31 21
+		facteurs .95 1.1
+		Longueurs 0.8 0.35
+		}
+		{
+		bord Entree X = 0.  0.45 <= Y <= 0.8
+		bord Haut1  Y = 0.8   0. <= X <= 0.8
+		} ,
+
+	Pave Haut
+		{
+		Origine 0.8 0.45
+		Nombre_de_Noeuds 10 21
+		facteurs 1. 1.1
+		Longueurs 0.1 0.35
+		}
+		{
+		bord Haut2 Y = 0.8  0.8 <= X <= 0.9
+		bord Bas2  Y = 0.45 0.8 <= X <= 0.9
+		} ,
+
+	Pave Bas
+		{
+		Origine 0.8 0.
+		Nombre_de_Noeuds 10 21
+		facteurs 1. .9
+		Longueurs 0.1 0.35
+		}
+		{
+		bord Bas3  Y = 0.   0.8 <= X <= 0.9
+		bord Haut3 Y = 0.35 0.8 <= X <= 0.9
+		} ,
+
+	Pave SortieB
+		{
+		Origine 0.9 0.
+		Nombre_de_Noeuds 56 21
+		facteurs 1.05 .9
+		Longueurs 1.4 0.35
+		}
+		{
+		bord Sortie X = 2.3   0. <= Y <= 0.35
+		bord Bas4   Y = 0.   0.9 <= X <= 2.3
+		} ,
+	Pave SortieM
+		{
+		Origine 0.9 0.35
+		Nombre_de_Noeuds 56 10
+		facteurs 1.05 1.
+		Longueurs 1.4 0.1
+		}
+		{
+		bord Sortie X = 2.3 0.35 <= Y <= 0.45
+		bord Gauche X = 0.9 0.35 <= Y <= 0.45
+		} ,
+	Pave SortieH
+		{
+		Origine 0.9 0.45
+		Nombre_de_Noeuds 56 21
+		facteurs 1.05 1.1
+		Longueurs 1.4 0.35
+		}
+		{
+		bord Sortie X = 2.3 0.45 <= Y <= 0.8
+		bord Haut4  Y = 0.8  0.9 <= X <= 2.3
+		}
+}
+
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 1
+	Nom_Zones DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+
+Schema_Euler_explicite sch
+Read sch
+{
+	tinit 0
+	tmax 20.0
+	nb_pas_dt_max 100
+	dt_min 5.e-7
+	dt_max 5.
+	dt_impr 5.e-7
+	dt_sauv 100.
+	seuil_statio 1.e-8
+}
+
+Fluide_Quasi_Compressible fluide
+Read fluide
+{
+	mu Champ_Uniforme 1 1.85e-5
+	pression 81385.5334
+        lambda Champ_Uniforme 1 0.0262
+        loi_etat gaz_parfait {
+                Prandtl 0.71034351145038165942
+                Cp 1006.
+                gamma 1.4
+        }
+	Traitement_pth constant
+}
+
+Champ_Uniforme gravite
+Read gravite 2 0 -9.81
+
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Read pb
+{
+	Navier_Stokes_Turbulent_QC
+	{
+		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-9 }	
+		convection { amont }
+		diffusion { }
+		conditions_initiales {
+			vitesse Champ_Uniforme 2 0. 0.
+			}
+		boundary_conditions {
+			Gauche paroi_fixe
+			Droit paroi_fixe
+			Bas2  paroi_fixe
+			Haut3  paroi_fixe
+			Haut1 symetrie
+			Bas1  symetrie
+			Haut2 symetrie
+			Bas3  symetrie
+		      	Bas4  symetrie
+			Haut4 symetrie
+			Sortie frontiere_ouverte_gradient_pression_impose Champ_Front_Uniforme 1 0.
+			Entree frontiere_ouverte_vitesse_imposee 
+			    Champ_front_Uniforme 2 .1 0.
+		}
+
+                modele_turbulence k_epsilon_Bas_Reynolds {
+                        transport_k_epsilon_Bas_Reynolds {
+                                convection { amont }
+                                diffusion { }
+                                boundary_conditions {
+                                        Gauche paroi_fixe
+                                        Droit  paroi_fixe
+                                        Bas2   paroi_fixe
+                                        Haut3  paroi_fixe
+                                        Haut1  symetrie
+                                        Bas1   symetrie
+                                        Haut2  symetrie
+                                        Bas3   symetrie
+                                        Bas4   symetrie
+                                        Haut4  symetrie
+                                        Sortie frontiere_ouverte k_eps_ext Champ_Front_Uniforme 2 0. 0.
+                                        Entree frontiere_ouverte_k_eps_impose Champ_front_Uniforme 2 1.e-6 1.e-8
+                                }
+                                conditions_initiales {
+                                        k_eps Champ_Uniforme 2 1.e-6 1.e-8
+                                }
+                        }
+                        Modele_Fonc_Bas_Reynolds Jones_Launder { }
+			Turbulence_paroi negligeable
+                }
+	}
+        Convection_Diffusion_Chaleur_Turbulent_QC
+        {
+                diffusion { }
+                convection { amont }
+                boundary_conditions 
+                {
+			Gauche paroi_adiabatique
+			Droit  paroi_adiabatique
+			Bas2   paroi_adiabatique
+			Haut3  paroi_temperature_imposee Champ_Front_Uniforme 1 323.15 
+			Haut1  paroi_adiabatique
+			Bas1   paroi_adiabatique
+			Haut2  paroi_adiabatique
+			Bas3   paroi_adiabatique
+		      	Bas4   paroi_adiabatique
+			Haut4  paroi_adiabatique
+                        Sortie frontiere_ouverte T_ext Champ_Front_Uniforme 1 283.15
+                        Entree frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 283.15
+                }
+                conditions_initiales { Temperature Champ_Uniforme 1 283.15 }
+                modele_turbulence Prandtl { Turbulence_paroi negligeable_scalaire }
+		
+        }
+
+	Postraitement
+	{
+		Sondes {
+                        vitesse vitesse periode 0.001 point 1 1.0 0.4
+                        temperature temperature periode 0.001 point 1 1.0 0.4
+			viscosite_turbulente viscosite_turbulente periode 0.001 point 1 1.0 0.4
+                }
+
+		Champs dt_post 10.
+		{
+			pression som
+			vitesse som
+			temperature som
+                        k som
+                        eps som
+                        viscosite_turbulente som
+			masse_volumique som
+		}
+	}
+}
+Solve pb
+End

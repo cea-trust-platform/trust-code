@@ -1,0 +1,1177 @@
+#!/bin/bash
+# Lancement de TRUST par clavier avec comme argument 
+# le nom du jeu de donnees et le nombre de processeurs
+# Possibilite de fixer des noeuds en specifiant un fichier machinefile
+# Variables d'environnements qui influencent le script: 
+# exec (fixe au chemin global de l'executable a utiliser)
+# bigmem (fixee a 1 elle permet de lancer en batch sur des noeuds a 4Go de tantale)
+# node (fixee a 1 elle permet d'utiliser tous les processeurs d'un noeud)
+# prod (fixee a 1 elle permet d'utiliser la queue de production)
+# Chargement d'un environnement eventuel contenu dans ld_env.sh
+if [ -f ld_env.sh ]
+then
+   . ./ld_env.sh
+fi
+
+qsub_interactif()
+{   
+   # Provisoire qsub ne marche pas donc on lance direct:
+   id=`cat $sub_file | qsub | $TRUST_Awk -F . '{print $1}'`
+   # Attente de la fin du job
+   while [ "`qstat -a | grep $id`" != "" ]
+   do
+      sleep 3
+   done
+}
+bsub_interactif()
+{
+   # Provisoire bsub -I desactive sur argent donc on lance direct:
+   id=`cat $sub_file | bsub | $TRUST_Awk '{gsub("<","",$2);gsub(">","",$2);print $2}'`
+   # Attente de la fin du job
+   while [ "`qstat -a | grep $id`" != "" ]
+   do
+      sleep 3
+   done
+}
+sbatch_interactif()
+{
+   # Submit the job and returns the id:
+   err=1
+   while [ "$err" = 1 ]
+   do
+      id=`sbatch $sub_file 2>&1`
+      err=$?
+      # Wait if several jobs launched
+      if [ $err = 1 ]
+      then
+         if [ "`echo $id | grep 'Job violates accounting'`" != "" ]
+         then
+	    echo "Waiting, cause several jobs submitted:"
+	    squeue -u $me -p $queue
+	    sleep 60
+	 else
+	    # Unknown error
+            echo $id && exit -1 
+	 fi
+      fi     
+   done
+   id=`echo $id | $TRUST_Awk '/Submitted batch/ {print $NF}'`
+   echo "Job $id submitted."
+   echo "Waiting the end of the job $id..."
+   while [ "`squeue -h -j $id 2>/dev/null`" != "" ]
+   do
+      sleep 3
+   done
+}
+# Sur les dernieres machines du CCRT on utilise desormais un wrapper ccc_msub (au lieu de qsub, bsub,...) 
+# Il faut aussi utiliser ccc_mdel au lieu de qdel et ccc_mstat au lieu de qstat...
+ccc_msub_interactif()
+{
+   # Submit the job and returns the id:
+   err=1
+   while [ "$err" = 1 ]
+   do
+      id=`ccc_msub $sub_file 2>&1`
+      err=$?
+      # Wait if several jobs launched
+      if [ $err = 1 ]
+      then
+         if [ "`echo $id | grep 'Job violates accounting'`" != "" ]
+         then
+	    echo "Waiting, cause several jobs submitted:"
+	    qstat -u $me $queue
+	    sleep 60
+	 else
+	    # Unknown error
+            echo $id && exit -1 
+	 fi
+      fi     
+   done
+   id=`echo $id | $TRUST_Awk '/Session/ {print $4}'`
+   echo "Job $id submitted."
+   echo "Waiting the end of the job $id..."
+   while [ "`qstat -u $me | grep $id`" != "" ]
+   do
+      sleep 3
+   done
+}
+
+help()
+{
+   echo "Usage: `basename $0` [option] datafile [nb_cpus] [1>file.out] [2>file.err]"
+   echo "Where option may be:"
+   echo "-help|-h               : List options."
+   echo "-doc                   : Access to TRUST user's manual."
+   echo "-index                 : Access to TRUST ressources index."
+   echo "-clean                 : Clean the current directory from all the generated files by TRUST."
+   echo "-monitor               : Run and monitor the progress of the TRUST calculation."
+   echo "-probes                : Monitor the TRUST calculation only."
+   echo "-mesh                  : Visualize the mesh(es) contained in the data file."
+   echo "-copy                  : Copy the test case datafile from the TRUST database under the present directory."
+   echo "-check all|testcase|function|class|method::class : Check the non regression of all the test cases or a single test case or a list of tests cases covering a function, a class or a class method."   
+   echo "-c n                   : Use n cores per task for a parallel calculation."
+   echo "-create_sub_file       : Create a submission file only."
+   echo "-prod                  : Create a submission file and submit the job on the main production class."
+   [ "$PETSC_HAVE_CUDA" = 1 ] && echo "-gpu                   : Create a submission file and submit the job on production class with GPU cards."			: 
+   echo "-bigmem                : Create a submission file and submit the job on the big memory production class."
+   echo "-queue queue           : Create a submission file with the specified queue and submit the job." 
+   echo "-valgrind              : Run under valgrind."
+   echo "-valgrind_strict       : Run under valgrind with no suppressions."
+   echo "-gdb                   : Run under gdb debugger."
+   echo "-prm                   : Write a prm file and generate the corresponding pdf file in the build directory."
+   echo "-journal=0..9          : Select journal .log level (0=disable, 9=maximum verbosity)."
+   [ -d /ccc ] && echo "-ipm                   : Use ipm to report MPI statistics."
+
+   echo "If no option is given, create a submission file and submit the job on the test class."
+   exit 0
+}
+[ "$exec" = "" ] && echo "Error: the variable \$exec containing TRUST binary path is undefined." && exit -1
+[ ! -f $exec ] && echo "Error: the binary pointed by the variable \$exec=$exec does NOT exist." && exit -1  
+binary=$exec
+ici=`pwd`   
+me=`whoami`
+soumission=999
+queue_choisie=""
+cpu=""
+sub=""
+copy=""
+mesh=""
+monitor=""
+probes=""
+mail=""
+gdb=""
+prm=""
+USE_MPIRUN=0
+[ "$prod" = "" ] && prod=0
+
+####################
+# Loop for options #
+####################
+supported_option=1
+while [ "$supported_option" = 1 ]
+do
+   if [ "$1" = "" ] || [ "$1" = -help ] || [ "$1" = -h ]
+   then
+      help
+      exit 0
+   elif [ "$1" = "-doc" ]
+   then
+      doc=$TRUST_ROOT/doc/TRUST/User_Manual_TRUST.pdf
+      if [ -f $doc ]
+      then
+	 for app in xpdf kpdf evince okular
+	 do
+            $app $doc 1>/dev/null 2>&1 && exit 0
+	 done
+	 echo "No PDF reader found!"
+	 exit -1
+      else
+	 echo "$doc not found!" 
+	 exit -1
+      fi
+   elif [ "$1" = "-index" ]
+   then
+      ($WEBBROWSER $TRUST_ROOT/index.html &) && exit 0  
+   elif [ "$1" = "-copy" ]
+   then
+      copy=1
+   elif [ "$1" = "-mesh" ]
+   then
+      mesh=1
+   elif [ "$1" = "-c" ]
+   then
+      shift && core_per_task=$1
+   elif [ "$1" = "-monitor" ]
+   then
+      monitor=1
+   elif [ "$1" = "-probes" ]
+   then
+      probes=1
+   elif [ "$1" = "-create_sub_file" ]
+   then
+      create_sub_file=1 && prod=1 && mail=1
+   elif [ "$1" = "-queue" ]
+   then
+      shift && queue_choisie=$1
+   elif [ "$1" = "-prod" ]
+   then
+      prod=1
+   elif [ "$1" = "-gpu" ]
+   then
+      gpu=1
+   elif [ "$1" = "-bigmem" ]
+   then
+      bigmem=1
+   elif [ "$1" = "-ipm" ]
+   then
+      ipm=1
+   elif [ "$1" = "-valgrind" ]
+   then 
+      VALGRIND=1
+   elif [ "$1" = "-valgrind_strict" ]
+   then
+      VALGRIND_STRICT=1
+   elif [ "$1" = "-gdb" ]
+   then
+      gdb=gdb && mpirun_options="-gdb"
+   elif [ "$1" = "-prm" ]
+   then
+      prm=1 
+   elif [ "$1" = "-check" ]
+   then
+      shift
+      if [ "$1" = "" ]
+      then
+	 help
+      elif [ "$1" = all ]
+      then
+	 # All test cases
+	 option=0 
+      # elif [ "`ls $TRUST_TESTS/*/$1/$1.lml.gz 2>/dev/null`" != "" ]
+      elif [ "`find $TRUST_TESTS/ -follow -name $1.lml.gz -print 2>/dev/null`" != "" ]
+      then
+	 # Single test case
+	 option=$1   
+      else
+	 # Test cases covering a method::class
+	 Qui $1 || exit -1
+	 option=liste_cas
+      fi
+      echo $option | lance_test
+      exit $?
+   elif [ "$1" = "-clean" ]
+   then
+      for ext in lata son out lml dt_ev TU log stop err xyz sauv dump face out_err
+      do 
+	 echo "rm *.$ext files."
+	 rm -f *.$ext
+      done
+      echo "rm *.lata.* core.* err.* out.*"
+      rm -f *.lata.* core.* err.* out.*
+      exit 0
+   else
+      # Unknown option
+      supported_option=0
+   fi 
+   # Option is known, jump to next
+   [ "$supported_option" = 1 ] && shift
+done
+
+############
+# Filename #
+############
+NOM=`basename $ici` && [ ${#1} != 0 ] && NOM=$1 && NOM=${NOM%.data} && shift
+
+###############
+# CPU numbers #
+###############
+export NB_PROCS=1 && [ ${#1} != 0 ] && [ ${1#-} = $1 ] && NB_PROCS=$1 && USE_MPIRUN=1 && shift
+
+#################
+# PETSc options #
+#################
+[ "$PETSC_OPTIONS" = "" ] && PETSC_OPTIONS=$*
+if [ "`echo $PETSC_OPTIONS | grep -i cusp`" != "" ]
+then
+   gpu=1 # Activate also GPU option if some gpu option is passed through the command line option:
+fi
+
+###########################################
+# Lancement en interactif avec monitoring #
+###########################################
+if [ "$monitor" = 1 ]
+then
+   Run_sonde $binary $NOM
+   exit $?
+fi
+########################
+# Monitoring seulement #
+########################
+if [ "$probes" = 1 ]
+then
+   Run_sonde $NOM
+   exit $?
+fi
+
+#################
+# Visu maillage #
+#################
+if [ "$mesh" = 1 ]
+then
+   Check_maillage.ksh $NOM
+   exit $?
+fi
+
+#####################
+# Generate pdf file #
+#####################
+if [ "$prm" = 1 ]
+then
+   create_basic_prm_from_lata.sh $NOM
+   exit $?
+fi
+
+################
+# Copy a study #
+################
+if [ "$copy" = 1 ]
+then
+   echo "Try to extract $NOM test case from TRUST database..."
+   copie_cas_test $NOM
+   err=$?
+   echo "Directory `pwd`/$NOM created with files inside:"
+   ls $NOM
+   exit $err
+fi
+
+############
+# VALGRIND #
+############
+if [ "$VALGRIND" = "1" ] || [ "$VALGRIND_STRICT" = "1" ] || [ "$VALGRIND_GDB" = "1" ]
+then
+    val=`which valgrind`    
+    suppressions=""
+    if [ "$VALGRIND_STRICT" != "1" ]
+    then
+        suppressions="--gen-suppressions=all"
+	if [ "`$Mpirun --version 2>&1 | grep 1.2.9`" != "" ]
+	then
+	   # Ajout de suppressions supplementaires pour OpenMPI 1.2.9
+	   cat $TRUST_ROOT/Outils/valgrind/suppressions_openmpi_129 $TRUST_ROOT/Outils/valgrind/suppressions > $TRUST_TMP/suppressions
+	   suppressions=$suppressions" --suppressions=$TRUST_TMP/suppressions"
+	else
+	   suppressions=$suppressions" --suppressions=$TRUST_ROOT/Outils/valgrind/suppressions"
+	fi
+    fi
+    if [ "$gdb" != "" ] || [ "$VALGRIND_GDB" = "1" ]
+    then
+       monodir=$TRUST_ROOT/`ls -rt $TRUST_ROOT | grep MonoDir | tail -1`
+       XTERM="/usr/bin/xterm -e"
+       ATTACH="--extra-debuginfo-path=$monodir/src --db-attach=yes --db-command=\'/usr/bin/gdb --readnow --directory $monodir/src --directory $monodir/include -nw %f %p\'"
+       gdb=""
+       log_file=""
+    fi
+    if [ "$VALGRIND_LOG_FILE" = 1 ]
+    then
+       # Call from testval:
+       log_file="--log-file=tmp_log%p" 
+    else
+       # Too slow in testval:
+       more_info_but_slower="--track-origins=yes"
+    fi
+    #  more_info_but_slower=""      # --track-origins=yes"
+    # GF sinon on a des erreurs au demarrage de mpi
+    [ $NB_PROCS -ge 2 ] && log_file="--log-file=tmp_log%p" 
+    #  log_file="--log-file=tmp_log%p" 
+    # Still reachable only checked for OpenMPI 1.2.9: 
+    if [ "`$Mpirun --version | grep 1.2.9`" != "" ]
+    then
+       reachable=yes
+    else
+       reachable=yes
+       # Cause MPI_irecv, a table is allocated but not freed, see 4.8.6 in https://wiki.uiowa.edu/download/attachments/109785161/Valgrind-Quick-Start.pdf?version=1&modificationDate=1385057441990&api=v2
+    fi
+    exec="$XTERM $val --error-exitcode=1 --leak-check=full --show-leak-kinds=all --errors-for-leak-kinds=all   --show-reachable=$reachable --num-callers=15 $log_file $more_info_but_slower $suppressions $ATTACH $binary"
+fi
+
+###############################################
+# Utilisation de Petsc dans le jeu de donnees ?
+###############################################
+USE_PETSC=0
+if [ -f $NOM.data ]
+then 
+   # To avoid dos problems:
+   dos2unix_ $NOM.data
+   USE_PETSC=`$TRUST_Awk 'BEGIN {IGNORECASE=1;use_petsc=0} \
+                            // {n=split($0,a,"#")-1;if (n>0) dieses+=n} \
+                            /^fin/ && (dieses%2==0) && (NF==1) {exit} \
+                            / petsc / || / petsc_gpu / || / optimal / {use_petsc=1;exit}
+	                    END {print use_petsc}' $NOM.data`
+   USE_PETSC_GPU=`$TRUST_Awk 'BEGIN {IGNORECASE=1;use_petsc_gpu=0} \
+                            // {n=split($0,a,"#")-1;if (n>0) dieses+=n} \
+                            /^fin/ && (dieses%2==0) && (NF==1) {exit} \
+                            / petsc_gpu / {use_petsc_gpu=1;exit}
+	                    END {print use_petsc_gpu}' $NOM.data`
+fi
+if [ $PETSC_HAVE_CUDA = 1 ] && [ $USE_PETSC = 1 ]
+then
+   gpu=1
+fi
+
+######################
+# Selon les machines #
+######################
+if [ $HOST = imhotep ]
+then
+   soumission=1
+   queue=dev
+   sub=LSF
+elif [ $HOST = usrint ] || [ $HOST = borsuk ]
+then
+   queue=short && [ "$prod" = 1 ] && queue=long
+   soumission=1
+   sub=PBS
+   nodes=`echo "1+($NB_PROCS-1)/32" | bc`
+   if [ $NB_PROCS -gt 1 ]
+   then
+      ppn_asked=64
+   else
+      ppn_asked=$NB_PROCS
+   fi
+   ppn_used=`echo "1+($NB_PROCS-1)/$nodes" | bc`
+elif [ $HOST = nickel ] || [ $HOST = chrome ]
+then
+   soumission=2 && [ "$prod" = 1 ] && soumission=1
+   queue=test32 && [ $NB_PROCS -gt 32 ] && queue=test64
+   sub=LSF
+elif [ $HOST = platine ]
+then
+   soumission=2 && [ "$prod" = 1 ] && soumission=1
+   # Pour pouvoir passer des parametres Petsc, on sort le srun de $TRUST_ROOT/bin/mpirun comme pour titane/cesium:
+   mpirun=$mpirun"srun -n $NB_PROCS"
+   cpu="00:30"
+   if [ "$prod" = 1 ]
+   then
+      if [ $NB_PROCS -le 1 ]
+      then
+         cpu="100:00"
+	 queue=monolong
+      elif [ $NB_PROCS -le 64 ]
+      then
+         cpu="48:00"
+	 queue=prod64
+      else
+         cpu="24:00"
+	 queue=prod511
+      fi
+   fi
+   # Variable d'environnement bigmem (128Go disponible)
+   ram="" && [ "$bigmem" = 1 ] && ram="128000000" && soumission=1   
+   sub=LSF
+elif [ $HOST = curie-ccrt ] || [ $HOST = airain ]
+then
+   soumission=2
+   #mpirun="mpirun -n $NB_PROCS" ne marche pas au dela de 32 procs ?
+   mpirun="ccc_mprun -n $NB_PROCS"
+   [ "`basename $MPI_ROOT`" = mpich ] && mpirun="$Mpirun -np $NB_PROCS" # Try support of MVAPICH...
+   # On selectionne la queue la moins occupee
+   # On attend de voir, certains plantages sur standard
+   #queue=`ccc_mpinfo | awk '/up/ {if ($10>free) {free=$10;queue=$1}} END {print queue}'`
+   # On force la queue standard (processeurs@2.27Ghz au lieu de 1.00Ghz sur la xlarge)
+   queue=standard
+   if [ $HOST = airain ] && [ "`id -g`" = 50003 ] # groupe DEN
+   then
+      # Partition ivybridge sur airain (fin 2013, accessible a DEN, 7180 cores)
+      queue=ivybridge
+      [ "$NB_PROCS" -gt 2048 ] && echo "$NB_PROCS cores is too high for $HOST:" && ccc_mqinfo && exit -1
+   fi
+   # Select hybrid partition for GPU calculation
+   if [ "$gpu" = 1 ]
+   then
+      soumission=1
+      queue=hybrid
+      # Change automatically core_per_task to optimize GPU use (1 CPU <-> 1 GPU for PETSc) if $core_per_task is not defined
+      if [ "$USE_PETSC_GPU" = 1 ] && [ "$core_per_task" = 1 ]
+      then
+         [ $HOST = curie-ccrt ] && core_per_task=4
+	 [ $HOST = airain ] && core_per_task=8
+	 echo "You are using PETSc GPU solvers on $HOST. core_per_task is changed automatically"
+	 echo "to $core_per_task to use CPU per GPU for optimal performances."
+      fi
+   fi
+   if [ "$prod" = 1 ]
+   then
+      qos=normal
+      cpu=86400 # 24 heures
+   elif [ "$bigmem" = 1 ]
+   then
+      soumission=1
+      qos=normal
+      cpu=86400 
+      # -M ram with ram>4000 is not supported anymore (06/2014)
+      # ram=64000 # 64 GB asked
+      # So we use now n cores for one task to have 4*n GB per task
+      core_per_task=16 # To have 64GB per task
+   else
+      # Priorite superieure avec test si pas plus de 8 nodes (2*8 cores)
+      qos=test && [ "$NB_PROCS" -gt 128 ] && qos=normal
+      cpu=1800 # 30mn
+   fi
+   sub=CCC
+elif [ $HOST = titane ]
+then
+   soumission=2 && queue="test" && cpu="00:30"
+   [ "$prod" = 1 ] && soumission=1
+   mpirun="mpirun -np $NB_PROCS"
+   
+   if [ $NB_PROCS -ge $soumission ]
+   then
+      # Test si quota epuise
+      check_quota=1
+      quota_epuise=0 && [ "$check_quota" = 1 ] && quota_epuise=1 && echo $ECHO_OPTS "#MSUB -q test\npwd" > teste_quota && ccc_msub teste_quota 1>teste_quota.log 2>&1 && quota_epuise=0
+      rm -f teste_quota*
+      # Determination de la queue et du cpu
+      if [ "$prod" = 1 ]
+      then
+	 if [ $NB_PROCS -le 1 ]
+	 then
+            cpu="48:00"
+            queue=mono && [ $quota_epuise = 1 ] && queue=monoext
+	 elif [ $NB_PROCS -le 512 ]
+	 then
+            cpu="24:00"
+	    queue=prod
+	    if [ $quota_epuise = 1 ]
+	    then
+	       if [ $NB_PROCS -ge 65 ]
+	       then
+	          queue=prodext 
+	       else
+	          queue=prod64ext 
+	       fi
+	    fi
+	    # On utilisera la queue prod(64)ext si moins chargee
+	    if [ $NB_PROCS -ge 65 ]
+	    then
+	       [ "`qstat -a | awk -v std=prod -v ext=prodext '($1==std";") {getline;priority_std=$1/($3+1)} ($1==ext";") {getline;priority_ext=$1/($3+1)} END {print (priority_ext>priority_std)}'`" = 1 ] && queue=prodext
+            else
+     	       [ "`qstat -a | awk -v std=prod -v ext=prod64ext '($1==std";") {getline;priority_std=$1/($3+1)} ($1==ext";") {getline;priority_ext=$1/($3+1)} END {print (priority_ext>priority_std)}'`" = 1 ] && queue=prod64ext
+	    fi
+	    # On utilisera la queue longprodext si moins chargee et si plus de 96 processeurs
+	    if [ $NB_PROCS -ge 96 ] && [ "`qstat -a | awk -v std=$queue -v ext=longprodext '($1==std";") {getline;priority_std=$1/($3+1)} ($1==ext";") {getline;priority_ext=$1/($3+1)} END {print (priority_ext>priority_std)}'`" = 1 ]
+	    then
+	       queue=longprodext
+	       cpu="72:00"
+	    fi	 
+	 else
+            cpu="24:00"
+	    queue=bigprod && [ $quota_epuise = 1 ] && queue=bigprodext 
+	 fi
+      else
+	 # 30 mn sur la queue test (<=256 procs)
+	 cpu="00:30"
+	 # Je force la queue test car sur cesium il envoie sur prod meme en fixant cpu=00:30
+	 queue=test 
+	 # Et on utilisera la queue testext si moins de 128 procs et si semble plus libre... Ou si quota epuise
+	 if [ $quota_epuise = 1 ]
+	 then
+            queue=testext
+	 else
+            if [ $NB_PROCS -le 128 ] && [ "`qstat -u $me testext 2>&1 | grep $me | wc -l`" = "0" ] && [ "`class | awk -v std=test -v ext=testp '($1==std) {priority_std=$6/($5+1)} ($1==ext) {priority_ext=$6/($5+1)} END {print (priority_ext>priority_std)}'`" = 1 ]
+            then
+               queue=testext  
+            fi
+	 fi
+      fi
+      echo "Less loaded queue detected: "$queue
+   fi
+   sub=CCC
+elif [ $HOST = cesium ]
+then
+   # 30 mn sur la queue test (<=256 procs)
+   soumission=2 && queue="test" && cpu="1800"
+   [ "$prod" = 1 ] && soumission=1 && queue="prod" && cpu="86400"   
+   mpirun=$mpirun"mpirun -np $NB_PROCS"
+   # 8 processus par noeud si possible donc calcul du nombre de noeuds:
+   noeuds=`echo $NB_PROCS | awk '{print int($1/8)+($1%8!=0?1:0)}'`
+   sub=CCC
+elif [ $HOST = tantale ]
+then
+   soumission=2 && [ "$prod" = 1 ] && soumission=1
+   cpu="00:30" && [ "$prod" = 1 ] && cpu="24:00"
+   # Variable d'environnement bigmem
+   ram="" && [ "$bigmem" = 1 ] && ram="4000000" && soumission=1
+   sub=LSF
+elif [ $HOST = paradis ]
+then
+   soumission=2 && [ "$prod" = 1 ] && soumission=1
+   machinefile="-hostfile \$TMP/machines"
+   sub=LSF # En fait SGE mais LSF simule
+elif [ $HOST = castor ]
+then
+   soumission=2 && queue=all.q 
+   [ "$prod" = 1 ] && soumission=1 && queue=test
+   machinefile="-machinefile \$TMP/machines"
+   reseau="mpivoltaire $NB_PROCS"
+   sub=SGE 
+   exec="/opt/Sge/mpi/preexec.sh $binary" # Pour forcer le process a rester sur le meme coeur et a utiliser que son bank memoire -> optimal pour les performances
+elif [ $HOST = callisto ]
+then
+   soumission=2 && [ "$prod" = 1 ] && soumission=1
+   # sacctmgr list qos format=Name,Priority,MaxSubmit,MaxWall,MaxNodes :      
+   # Name   Priority MaxSubmit     MaxWall MaxNodes 
+   #---------- ---------- --------- ----------- -------- 
+   # normal         20            2-00:00:00       20 
+   #   test         40         2    01:00:00        2 
+   #   long         10           14-00:00:00       10 
+   cpu=60 && qos=test				# Qos test   1 hour (2 nodes max=20 CPUs)	Priority 40
+   if [ "$prod" = 1 ] || [ $NB_PROCS -gt 20 ]
+   then
+      cores_per_node=20
+      if [ "`echo $NB_PROCS | awk -v n=$cores_per_node '{print $1%n}'`" != 0 ]
+      then
+         echo "=================================================================================================================="
+         echo "Warning: the allocated nodes of $cores_per_node cores will not be shared with other jobs (--exclusive option used)"
+	 echo "so please try to fill the allocated nodes by partitioning your mesh with multiple of $cores_per_node."
+	 echo "=================================================================================================================="
+      fi
+      if [ "$NB_PROCS" -gt 200 ]
+      then
+         qos=normal && cpu=2880 		# Qos normal 2 days (20 nodes max=400 CPUs)	Priority 20
+      else
+         qos=long && cpu=20160   		# Qos long  14 days (10 nodes max=200 CPUs)	Priority 10
+      fi
+      qos=normal && cpu=2880 # By default, cause qos long is a small priority
+   fi
+   # Partition:
+   queue=slim 					# 40*2*10=800 cores  6.4Go/core, 128GO/node
+   if [ "$bigmem" = 1 ]
+   then
+      queue=large 				# 16*2*10=320 cores 12.8Go/core, 256Go/node
+      queue=fat 				#  2*4*6 =48  cores 21.3Go/core, 512Go/node
+   fi
+   #project=stmf
+   if [ "`basename $Mpirun`" = srun ]
+   then
+      # Slurm srun support
+      mpirun="srun -n $NB_PROCS"
+   fi
+   # 01/07/2014: Regression when using mpirun with openmpi (very bad performance *3) so:
+   # srun for everyone (even if it is slightly slower, binding ?)
+   #mpirun="srun --cpu_bind=verbose,cores -n $NB_PROCS"
+   mpirun="srun"
+   sub=SLURM
+elif [ $HOST = eris ]
+then
+   export SGE_ROOT=/product_local/sge
+   export PATH=/product_local/sge/bin/lx24-amd64:$PATH # qsub non trouve 
+   balise="#$ -S /bin/bash"
+   #soumission=2 && queue=express_par
+   #[ "$prod" = 1 ] && soumission=1 && queue=prod_par && [ $NB_PROCS = 1 ] && queue=prod_seq
+   # Changement car constate le 07/06/2012, seule prod_par fonctionne
+   soumission=2 && queue=prod_par
+   [ "$prod" = 1 ] && soumission=1 && queue=prod_par
+   reseau="openmpi $NB_PROCS"
+   sub=SGE 
+elif [ $HOST = ceres ] || [ $HOST = themis ]
+then
+   soumission=2 && [ "$prod" = 1 ] && soumission=1
+   # La queue a change sur ceres/themis
+   #queue=Appli64bits
+   queue=Prod64
+   # On doit prendre un multiple de 4 sur cette machine
+   let n=0
+   while [ $n -lt $NB_PROCS ]
+   do
+      let n=$n+4
+   done
+   # Le MPI a change aussi:
+   #machinefile="-machinefile \$TMP/machines"
+   #reseau="mpich $n"
+   reseau="ompi $n"
+   sub=SGE  
+   exec="$TRUST_ROOT/bin/KSH/preexec.sh $binary" # Idem que pour castor, cela marche sur les machines a reseau Infiniband
+elif [ $HOST = ceres2 ]
+then
+   soumission=2 && [ "$prod" = 1 ] && soumission=1
+   # sacctmgr list qos format=Name,Priority,MaxSubmit,MaxWall,MaxNodes :
+   #      Name   Priority MaxSubmit     MaxWall MaxNodes
+   #---------- ---------- --------- ----------- --------
+   #    normal          0
+   cpu=60 && qos=normal         # Qos normal  1 hour (?? nodes max=??? CPUs)    Priority ??
+   cpu=2880 && qos=normal       # Qos normal  2 days (?? nodes max=??? CPUs)    Priority ??
+   # sinfo :
+   #PARTITION    AVAIL  TIMELIMIT  NODES  STATE NODELIST
+   #prod*           up   infinite     10   idle ceres[231-240]
+   #prod_E5-2680    up   infinite     10   idle ceres[231-240]
+   #gpu             up   infinite      1   idle ceres241
+   #visu            up   infinite      1   idle ceres2-visu
+   queue=prod
+   if [ "`basename $Mpirun`" = srun ]
+   then
+      # Slurm srun support
+      mpirun="srun -n $NB_PROCS"
+   else
+      mpirun="mpirun -np $NB_PROCS"
+   fi
+   sub=SLURM
+elif [ $HOST = mezel ]
+then
+   soumission=2 && [ "$prod" = 1 ] && soumission=1
+   machinefile="-machinefile \$TMP/machines"
+   # 28/07/2010: Ajout de la queue rapide express.q sur mezel
+   queue=express.q && [ "$prod" = 1 ] && queue=all.q
+   reseau="mpi_ib $NB_PROCS"
+   sub=SGE
+elif [ $HOST = mezel2 ]
+then
+   soumission=2 && [ "$prod" = 1 ] && soumission=1
+   # Queues:
+   # express.q 1 heure max
+   # all.q     7 jours max
+   # 128 processeurs max
+   # 34*(2*6 cores et  64Go)=408 cores
+   # 4*(4*12 cores et 256Go)=192 cores
+   queue=express.q && [ "$prod" = 1 ] && queue=all.q
+   reseau="mpi_ib $NB_PROCS"
+   # Provisoire car express.q semble ne pas marcher...
+   queue=all.q    
+   sub=SGE
+elif [ $HOST = supermuc ]
+then
+   soumission=2 && [ "$prod" = 1 ] && soumission=1
+   # Queues:
+   # test    (Max:  2h,1 run,  512 cores)
+   # general (Max: 48h,- run, 8192 cores)
+   # large   (Max: 48h,- run,32768 cores)
+   cpu="02:00:00" && queue=test && [ "$prod" = 1 ] && cpu="48:00:00" && queue=general && [ $NB_PROCS -gt 8192 ] && queue=large
+   mpirun=poe
+   sub=POE # Parallel Operating Environment
+elif [ $HOST = zahir ] || [ $HOST = zeus ] || [ $HOST = vargas ]
+then
+   soumission=9 && [ "$prod" = 1 ] && soumission=1
+   sub=LSF
+elif [ $HOST = jade ]
+then
+   cpu="02:00:00" && [ "$prod" = 1 ] && cpu="24:00:00"
+   soumission=2 && [ "$prod" = 1 ] && soumission=1
+   sub=PBS
+    # 08/11/2011 : PETSc rame si l'on prend les 8 cores d'un noeud donc on baisse a 2 (1 process par processeur)
+   USED_CORES_PER_NODE=8 && [ $USE_PETSC = 1 ] && USED_CORES_PER_NODE=2
+   # select=$NB_PROCS:ncpus=1:mpiprocs=1 pour prendre qu'un coeur par noeud
+   # select=$NB_PROCS:ncpus=8:mpiprocs=1 pour prendre toute la memoire 
+   if [ "$bigmem" = 1 ]
+   then
+      select=$NB_PROCS	# NB_PROCS noeuds
+      ncpus=8		# 8 coeurs
+      mpiprocs=1	# 1 process mpi/noeud
+   elif [ "`echo $NB_PROCS | awk -v n=$USED_CORES_PER_NODE '{print $1%n}'`" = 0 ]
+   then
+      # NB_PROCS multiple de $USED_CORES_PER_NODE
+      select=`echo $NB_PROCS | awk -v n=$USED_CORES_PER_NODE '{print $1/n}'`
+      ncpus=$USED_CORES_PER_NODE 	# Nb coeurs
+      mpiprocs=$USED_CORES_PER_NODE	# Nb process mpi/noeud
+   else
+      if [ $NB_PROCS -lt $USED_CORES_PER_NODE ]
+      then
+         select=1 		 # 1 noeud
+         ncpus=$NB_PROCS	 # NB_PROCS coeurs
+         mpiprocs=$NB_PROCS      # NB_PROCS processes MPI
+      else
+         select=$NB_PROCS	 # NB_PROCS noeuds
+	 ncpus=1 		 # 1 coeur
+	 mpiprocs=1		 # 1 process mpi/noeud
+      fi
+   fi
+   # Ne pas prendre mpirun ou /opt/sgi/mpt/mpt-2.02/bin/mpirun mais mpiexec
+   # Car sinon performances nulles > 8 processeurs
+   export mpirun="mpiexec" # Pas installe sur la frontale
+elif [ $HOST = occigen ]
+then
+   soumission=2 && [ "$prod" = 1 ] && soumission=1
+   cpu=120  # 5 days
+   cpu=24   # 1 day
+   # core_per_task=1
+   ram=120GB    # large memory nodes with 128Go of RAM
+   ram=60GB     # small memory nodes with  64Go of RAM
+   tasks_per_node=24 # 24 cores per node
+   nnodes=`echo "$NB_PROCS/$tasks_per_node+1" | bc`
+   if [ "`basename $Mpirun`" = srun ]
+   then
+      # Slurm srun support
+      mpirun="srun -n $NB_PROCS"
+   else
+      mpirun="mpirun -np $NB_PROCS"
+   fi
+   # srun Run a parallel job on cluster managed by SLURM
+   # option --mpi Identify the type of MPI to be used : pmi2 load the library lib/slurm/mpi_pmi2.so
+   # option -K = --kill-on-bad-exit 0|1
+   # option --resv-ports Reserve communication ports for this job. Used for OpenMPI. 
+   # mpirun="srun --mpi=pmi2 -K1 --resv-ports -n $NB_PROCS"
+   mpirun="srun --mpi=pmi2 -K1 --resv-ports -n \$SLURM_NTASKS"
+   sub=SLURM
+elif [ $HOST = mars ]
+then
+    # Support de mars envoye par Eli Laucoin:
+    soumission=2 && [ "$prod" = 1 ] && soumission=1
+    sub=SGE
+    machinefile=""
+    if [ $NB_PROCS -ge $soumission ]
+    then
+	reseau="ompi ${NB_PROCS}"
+	if [ "x_${CPUTIME}_x" != "x__x" ]
+	then
+	    cputime=${CPUTIME}
+	    cputime_value=`echo ${CPUTIME} | $TRUST_Awk -F : '{ print ($1*60+$2)*60+$3 }'`
+	    queue="prod_par"
+
+	    if [ ${cputime_value} -lt 1800 ] && [ ${NB_PROCS} -lt 20 ]
+	    then
+		queue="express_par"
+	    fi
+
+	    if [ ${cputime_value} -gt 86400 ] && [ ${cputime_value} -lt 1296000 ] && [ ${NB_PROCS} -lt 30 ]
+	    then
+		queue="long"
+	    fi
+	else
+	    queue="prod_par"
+	fi
+    else
+	if [ "x_${CPUTIME}_x" != "x__x" ]
+	then
+	    cputime=${CPUTIME}
+	    cputime_value=`echo ${CPUTIME} | $TRUST_Awk -F : '{ print ($1*60+$2)*60+$3 }'`
+	    queue="exclusive"
+	    if [ $cputime_value -lt 1296000 ]
+	    then
+		queue="long"
+	    fi
+	    if [ $cputime_value -lt 86400 ]
+	    then
+		queue="prod_seq"
+	    fi
+	    if [ $cputime_value -lt 7200 ]
+	    then
+		queue="express_seq"
+	    fi
+	else
+	    queue="prod_seq"
+	fi
+    fi
+fi
+
+######################################
+# Check the datafile with VerifData on 
+# clusters with job scheduling if exec
+# is a TRUST binary
+######################################
+if [ $soumission != 999 ] && [ ${binary#TRUST} != $binary ] && [ "`VerifData 1>/dev/null 2>&1;echo $?`" = 0 ]
+then
+   echo $ECHO_OPTS "Checking the syntax of the data file before submitting the job...\c"
+   VerifData $NOM.data 1>/dev/null 2>&1
+   if [ $? != 0 ]
+   then
+       echo KO
+       echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+       echo "Check your data file. Syntax error detected:"
+       echo "============================================"
+       VerifData $NOM.data
+       exit -1
+   else
+       echo OK
+   fi
+fi
+
+# En sequentiel, si l'utilisateur n'a pas force l'utilisation de MPI_RUN et 
+# si le Kernel est compile avec MPI_INIT_NEEDS_MPIRUN, alors on utilise mpi_run sauf si
+# on est sur de ne pas utiliser un solveur PETSC ou OPTIMAL dans le jeu de donnees
+if  [ $NB_PROCS = 1 ] && [ $USE_MPIRUN = 0 ]
+then
+   petsc_for_kernel=$PETSC_ROOT/$TRUST_ARCH/include/petsc_for_kernel.h
+   if [ ! -f $petsc_for_kernel ] || [ "`grep 'define MPI_INIT_NEEDS_MPIRUN' $petsc_for_kernel 2>/dev/null`" != "" ]
+   then
+      if [ -f $NOM.data ]
+      then
+	 USE_MPIRUN=$USE_PETSC
+      else
+	 USE_MPIRUN=1
+      fi
+   fi
+fi
+
+# Si l'on a un gestionnaire de batch (soumission!=999a et que USE_MPIRUN est mis avec NB_PROCS=1, alors soumission est mis a 1
+[ $soumission != 999 ] && [ $NB_PROCS = 1 ] && [ $USE_MPIRUN = 1 ] && soumission=1
+
+# Pour eviter un message d'erreur semget depuis la compilation de MPICH en shared memory
+# on vide la table des semaphores (voir la raison dans lib/src/LIBMPI/Installer_mpich)
+# Attention! cleanipcs tue les tous les processes paralleles en cours utilisant cette table donc les calculs TRUST!
+# C'est pourquoi on fait un test sur les mpirun tournant...
+[ -f $MPI_ROOT/sbin/cleanipcs ] && [ "`ps -fl -U $me | grep 'mpirun ' | grep TRUST_mpich | grep -v grep | grep -v $$`" = "" ] && $MPI_ROOT/sbin/cleanipcs
+
+# Surcharge de la queue
+[ "$queue_choisie" != "" ] && queue=$queue_choisie 
+[ "$queue" != "" ] && echo "Partition $queue selected."
+
+###############################
+# Soumission batch interactif #
+###############################
+sub_file=.sub_file_$NOM
+if [ "$create_sub_file" ]
+then
+   sub_file=sub_file && [ -f sub_file ] && mv -f sub_file sub_file.old
+   echo "***************************************************"
+   echo "Submission file $sub_file created but not submitted."
+   echo "You can modify it, then submit the job with the command:"
+fi
+rm -f $sub_file
+if [ $NB_PROCS -ge $soumission ]
+then
+   ###########################################
+   # En test du sub_file selon le gestionnaire 
+   ###########################################
+   case $sub in
+   	SLURM)
+		echo "#!/bin/sh"					>> $sub_file	# Shell
+		echo "#SBATCH -J $NOM" 					>> $sub_file	# Job name
+		[ "$queue" != "" ] && echo "#SBATCH -p $queue"		>> $sub_file	# Partition
+		[ "$qos" != "" ] && echo "#SBATCH --qos=$qos"		>> $sub_file	# Quality of service
+		echo "#SBATCH -t $cpu"					>> $sub_file	# Time in minutes
+		echo "#SBATCH -o myjob.%j.o"				>> $sub_file	# Output log
+		echo "#SBATCH -e myjob.%j.e"				>> $sub_file	# Error log
+		[ "$project" != "" ] && echo "#SBATCH -A $project"	>> $sub_file	# Account
+		echo "#SBATCH -n $NB_PROCS"				>> $sub_file	# Number of tasks
+		[ "$nnodes" != "" ] && echo "#SBATCH -N $nnodes"        >> $sub_file    # Number of nodes
+		[ "$core_per_task" != "" ] && echo "#SBATCH -c $core_per_task"	>> $sub_file	# Number of cores per task	
+		[ "$qos" != test ] && echo "#SBATCH --exclusive"	>> $sub_file	# Exclusive use of nodes during production run	
+		[ "$ram" != "" ] && echo "#SBATCH --mem=$ram"           >> $sub_file    # Real memory required per node in MegaBytes
+		;;
+   	POE)	echo "#!/bin/bash" 					>> $sub_file
+		echo "#@ job_name = $NOM"				>> $sub_file
+		echo "#@ job_type = parallel"				>> $sub_file
+		echo "#@ wall_clock_limit = $cpu"			>> $sub_file
+		echo "#@ class = $queue" 				>> $sub_file
+		echo "#@ network.MPI = sn_all,,us"			>> $sub_file
+		echo "#@ total_tasks = $NB_PROCS"			>> $sub_file
+		[ "$core_per_task" != "" ] 	&& echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
+		echo "#@ node = `echo "1+($NB_PROCS-1)/16" | bc`"	>> $sub_file 	# ceil($NB_PROCS/16)
+		echo "#@ output = job\$(jobid).out"			>> $sub_file
+		echo "#@ error = job\$(jobid).err"			>> $sub_file
+		echo "#@ initialdir = $ici"				>> $sub_file
+		echo "#@ node_topology = island"			>> $sub_file
+		echo "#@ island_count = `echo "1+($NB_PROCS-1)/8192" | bc`" 	>> $sub_file	#  ceil($NB_PROCS/8192)
+		echo "#@ energy_policy_tag = NONE"			>> $sub_file
+		echo "#@ queue"						>> $sub_file
+		[ $HOST = supermuc ] && echo "export MP_COLLECTIVE_OFFLOAD=yes # Improve drastically allreduce performances on $HOST. Contact TRUST support" >> $sub_file
+		;;		
+   	LSF) 	echo "#BSUB -J $NOM
+#BSUB -n $NB_PROCS
+#BSUB -o out.%J
+#BSUB -e err.%J" >> $sub_file
+		[ "$core_per_task" != "" ] 	&& echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
+		[ ${#mail} != 0 ] 		&& echo "#BSUB -B -N" 		>> $sub_file
+      		[ ${#queue} != 0 ] 		&& echo "#BSUB -q $queue" 	>> $sub_file
+      		[ ${#cpu} != 0 ]		&& echo "#BSUB -W $cpu" 	>> $sub_file      		
+      		[ ${#ram} != 0 ] 		&& echo "#BSUB -M $ram" 	>> $sub_file
+      		[ ${#node} != 0 ] 		&& echo "#BSUB -ext \"SLURM[mincpus=4]\"" 	>> $sub_file	
+		if [ $HOST = paradis ]
+		then
+		   echo "cd $ici" >> $sub_file # Verrue en enlever un jour...
+		else
+		   echo "cd \$LS_SUBCWD" >> $sub_file
+		fi
+ 		;;
+	CCC)	echo "#!/bin/bash" 				>> $sub_file 
+		echo "#MSUB -r $NOM" 				>> $sub_file 
+		[ ${#noeuds} != 0 ] && echo "#MSUB -N $noeuds" 	>> $sub_file 
+		echo "#MSUB -n $NB_PROCS" 			>> $sub_file 
+      		if [ ${#cpu} != 0 ]
+		then
+		   if [ "`echo $cpu | grep :`" != "" ]
+		   then
+		      # Exprime en HH:MM:SS
+		      echo "#BSUB -W $cpu" 			>> $sub_file 
+                   else
+		      # Exprime en SSSSS
+		      echo "#MSUB -T $cpu" 			>> $sub_file 
+		   fi
+		fi 
+		if [ "$core_per_task" != "" ]
+		then
+		   echo "#MSUB -c $core_per_task" 		>> $sub_file 
+		fi
+		# RAM
+		[ "$ram" != "" ] && echo "#MSUB -M $ram" 	>> $sub_file 
+		# Ajout projet
+		project=`ccc_myproject 2>/dev/null | $TRUST_Awk '/project/ {print $4;exit}'`
+		if [ "$project" != "" ]
+		then
+		   echo "#MSUB -A $project" 			>> $sub_file 
+		fi
+		# Prevent from restart:
+		echo "#MSUB -E \"--no-requeue\""                >> $sub_file
+		[ ${#qos} != 0 ]   && echo "#MSUB -Q $qos"	>> $sub_file 
+		[ ${#queue} != 0 ] && echo "#MSUB -q $queue"	>> $sub_file     	
+		echo "#MSUB -o out.%J"				>> $sub_file
+		echo "#MSUB -e err.%J" 				>> $sub_file
+		echo "cd \$BRIDGE_MSUB_PWD" 			>> $sub_file
+ 		;;
+	SGE) 	echo "#$ -N $NOM"				>> $sub_file
+		[ "$reseau" != "" ] && echo "#$ -pe $reseau"	>> $sub_file
+		echo "#$ -cwd" 					>> $sub_file
+		echo "#$ -S /bin/bash"				>> $sub_file
+		[ "$balise" != "" ]	&& echo $balise		>> $sub_file
+		[ "$mail" != "" ] 	&& echo "#$ -m be" 	>> $sub_file
+      		[ "$queue" != "" ] 	&& echo "#$ -q $queue" 	>> $sub_file
+		[ "$core_per_task" != "" ] 	&& echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
+		echo "cd \$SGE_CWD_PATH" 			>> $sub_file
+		;;
+	NQS) 	echo "#QSUB -r $NOM
+#QSUB -lt $cpu
+#QSUB -n $NB_PROCS" >> $sub_file
+		[ "$core_per_task" != "" ] 	&& echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
+                echo "cd $ici" >> $sub_file
+		;;
+	PBS) 	echo "#PBS -N `echo $NOM | cut -c 1-15`
+#PBS -o out.log
+#PBS -e err.log
+#PBS -l select=$select:ncpus=$ncpus:mpiprocs=$mpiprocs
+#PBS -l walltime=$cpu" >> $sub_file
+		[ "$core_per_task" != "" ] 	&& echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
+		[ "$ram" != "" ] && echo "#PBS -l mem=$ram" >> $sub_file
+		echo "cd \$PBS_O_WORKDIR" >> $sub_file
+		if [ $HOST = usrint ] || [ $HOST = borsuk ]
+           	then
+		   echo "module load mvapich2 gcc" 		>> $sub_file
+		   echo "module load triou" 			>> $sub_file
+		   echo "module load cis-tools/0.1" 		>> $sub_file
+                   echo "eval \$(affinity-calculator -m mixed -o mvapich2 -p $ppn_used)" >> $sub_file
+                fi
+		;;
+	*) echo "sub=$sub non prevu." && exit -1
+		;;
+   esac	   
+   #######
+   # IPM #
+   #######
+   if [ "$ipm" = 1 ]
+   then
+      echo "module load ipm" 				>> $sub_file
+      echo "export LD_PRELOAD=\$IPM_ROOT/lib/libipm.so" >> $sub_file
+   fi
+   ##########
+   # VAMPIR #
+   ##########
+   if [ "$VAMPIRTRACE_ROOT" != "" ]
+   then
+      echo "export VT_IOTRACE=yes" 	>> $sub_file
+      echo "export VT_MAX_FLUSHES=0" 	>> $sub_file
+   fi
+   ######################
+   # Commandes de calculs
+   ######################
+   [ $HOST = titane ] && echo "unset OMPI_MCA_orte_process_binding # Fix regression performance on titane for GCP solvers" >> $sub_file
+   echo "[ -f ld_env.sh ] && . ./ld_env.sh # To load an environment file if necessary" >> $sub_file
+   if [ "$create_sub_file" = 1 ]
+   then
+      OUTPUT=$NOM
+   else
+      # En interactif OUTPUT=.$NOM et non OUTPUT=$NOM car sinon conflit avec lance_test (triou NOM 1>$NOM.out 2>$NOM.err)
+      # et blocage possible sur castor avec Baltik par exemple !!!
+      OUTPUT=.$NOM   
+   fi
+   if [ $NB_PROCS = 1 ] && [ $USE_MPIRUN = 0 ]
+   then
+      echo "$exec $NOM $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
+   else
+      if [ "$mpirun" != "" ]
+      then
+         if [ $HOST = occigen ]
+         then
+            echo "$mpirun $machinefile $exec $NOM \$SLURM_NTASKS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
+         else
+            echo "$mpirun $machinefile $exec $NOM $NB_PROCS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
+         fi
+      else
+         echo "$TRUST_ROOT/bin/mpirun -np $NB_PROCS $machinefile $exec $NOM $NB_PROCS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
+      fi
+   fi   
+   #######
+   # IPM #
+   #######
+   if [ "$ipm" = 1 ]
+   then
+      echo "report=\`ls -rt triou.*.*.0 | tail -1\`" >> $sub_file
+      echo "ipm_parse -full \$report 1>>$OUTPUT.out 2>>$OUTPUT.err" >> $sub_file
+      echo "ipm_parse -html \$report" >> $sub_file
+   fi   
+   if [ "$create_sub_file" ]
+   then
+      case $sub in
+        SLURM) echo "sbatch $sub_file";;
+      	POE) echo "llsubmit $sub_file";;
+      	LSF) echo "bsub < $sub_file";;
+	CCC) echo "ccc_msub $sub_file";;
+	SGE) echo "qsub $sub_file";;
+	NQS) echo "qsub $sub_file";;
+	PBS) echo "qsub $sub_file";;
+      esac
+      echo "***************************************************"
+      exit
+   fi
+   if [ "`type qstat 1>/dev/null 2>&1;echo $?`" != 0 ]
+   then
+      # Commande qstat non trouvee, elle est necessaire pour la suite
+      echo "No command qstat found for listing jobs..."
+      qstat
+      exit -1
+   fi   
+   ##############################################
+   # Soumission du sub_file selon le gestionnaire 
+   ##############################################
+   case $sub in
+   	SLURM)	sbatch_interactif;;
+   	POE) 	llsubmit -s $sub_file;;
+   	LSF) case $HOST in	
+		argent)		bsub_interactif;;	# Provisoire
+		platine)	bsub_interactif;;	# Provisoire
+		tantale)	tantale;;		# Provisoire
+		*) 		cat $sub_file | bsub -I;;
+	     esac;;
+	CCC) 	ccc_msub_interactif;;
+	SGE) 	qsub -S /bin/bash -sync yes $sub_file;;
+	NQS) 	qsub -I $sub_file;;
+	PBS) 	qsub_interactif;;
+   esac	
+   err=$?   
+   [ $err = 0 ] && rm -f $sub_file
+   # On envoit $OUTPUT.out et $OUTPUT.err vers les bonnes sorties afin que "triou jdd 1>jdd.out 2>jdd.err" envoie ce qu'il faut dans jdd.out et jdd.err
+   # A cause de platine (permission denied), on utilise plutot les chemins pointes /proc/self/fd/1 et 2
+   [ -f $OUTPUT.out ] && cat $OUTPUT.out >> "/proc/self/fd/1" #cat $OUTPUT.out > "/dev/stdout"
+   [ -f $OUTPUT.err ] && cat $OUTPUT.err >> "/proc/self/fd/2" #cat $OUTPUT.err > "/dev/stderr"
+   # Check for TRUST calculation only (cause coupled MC2 calculation DO NOT produce this message for example):
+   if [ "`grep 'Executable: ' $OUTPUT.err 2>/dev/null`" != "" ] && [ "`grep 'Arret des processes.' $OUTPUT.err`" = "" ]
+   then
+      err=1
+   fi
+   # Try to detect crashes (if it is not a TRUST binary, example PETSc test case)
+   if [ "`grep 'invalid device function' $OUTPUT.err`" != "" ] || [ "`grep 'Signal: Aborted' $OUTPUT.err`" != "" ]
+   then
+      err=1
+   fi
+   exit $err
+else
+   [ "$core_per_task" != "" ] 	&& echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
+   if [ $NB_PROCS = 1 ] && [ $USE_MPIRUN = 0 ]
+   then
+      ###############################
+      # Calcul direct en sequentiel #
+      ############################### 
+      run="$gdb $exec $NOM $PETSC_OPTIONS" 
+   else
+      ##############################
+      # Calcul direct en parallele #
+      ##############################     
+      run="$TRUST_ROOT/bin/mpirun `[ "$gdb" != "" ] && echo -gdb` -np $NB_PROCS $exec $NOM $NB_PROCS $PETSC_OPTIONS"
+   fi
+   if [ "$create_sub_file" ]
+   then
+      echo $run > $sub_file
+      chmod +x $sub_file
+      echo "./$sub_file"  
+      echo "***************************************************"
+      exit
+   fi
+   eval $run
+   err=$?
+fi
+
+[ "$log_file" != "" ] && sleep 1 && cat $(ls -rt tmp_log* | tail -$NB_PROCS) 
+# Traitement special pour vargas qui renvoie 128 depuis llsubmit
+if [ $HOST = vargas ] && [ "$err" = 128 ]
+then
+   exit 0
+else
+   exit $err
+fi
+

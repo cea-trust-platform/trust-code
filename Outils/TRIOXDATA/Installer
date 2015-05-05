@@ -1,0 +1,60 @@
+#!/bin/bash
+# On n'installe que pour Linux
+#./Installer.old $* 
+#exit
+[ $TRUST_ARCH != "linux" ] && exit
+if [ $1 = "TRIOU" ]
+then
+. ./XDATA.sh
+fi
+rm -rf $1/dist $1/build
+#tar zxf $1.tgz
+chmod -R +w $1
+if [ $1 = "TRIOU" ]
+then
+   cp -f XTriou/triou.py  XTriou/menu/menu_*.py TRIOU/TRIOU_SRC/src/.
+else
+  if [ $1 = "XDATA" ]
+  then
+  mkdir -p XDATA
+  cd XDATA
+  tar zxvf $TRUST_ROOT/externalpackages/xdata-0.9.10.tar.gz
+  # mkdir XDATA_SRC
+  mv xdata-0.9.10  XDATA_SRC
+  cd XDATA_SRC
+  tar zxvf ../../modif_xdata_0.9.10.tgz 
+  cd ../..
+ [ "$2" = "" ] && ( cd XTriou; make clean)   
+ fi
+fi
+cd $1/$1_SRC
+#./build_configure
+cd ..
+mkdir build
+cd build
+#../$1_SRC/configure --prefix=`pwd`/../dist
+cmake ../$1_SRC -DCMAKE_INSTALL_PREFIX=`pwd`/../dist
+
+make install || exit -1
+cd ../..
+touch $1
+version=`python -c "from sys import version;print 'python'+version[0:3]"`
+if [ $1 = "XDATA" ]
+then
+   echo export PYTHONPATH=`pwd`/$1/dist/lib/$version/site-packages/xdata/:\${PYTHONPATH} > XDATA.sh
+   echo export PATH=\${PATH}:`pwd`/$1/dist/bin >> XDATA.sh
+   if [ "$KERNEL_ROOT_DIR" != "" ]
+   then
+	echo "export KERNEL_ROOT_DIR=$KERNEL_ROOT_DIR" >> XDATA.sh
+   fi	
+else
+   fileout=IHMTRIO.sh
+    [ $1 != "TRIOU" ] && fileout=IHM_$1.sh
+       
+   echo . `pwd`/XDATA.sh > ${fileout}
+   echo export TRIOU_ROOT_DIR=`pwd`/TRIOU/dist >>${fileout}
+   echo export PYTHONPATH=`pwd`/$1/dist/lib/$version/site-packages/salome/:\${PYTHONPATH} >> ${fileout}
+   echo export PATH=\${PATH}:`pwd`>> ${fileout}
+   chmod +x ${fileout}
+fi
+chmod -R +w $1

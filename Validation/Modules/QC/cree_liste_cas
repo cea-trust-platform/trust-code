@@ -1,0 +1,51 @@
+#!/bin/bash
+   CREE_LISTS_KO()
+   {
+      echo "Creation de la liste des cas KO"
+      cat /dev/null > List_pbs_connus
+      for mot in probleme_ft_disc_gen Schema_Predictor_Corrector Schema_Crank_Nicholson Echangeur bidim_axi constituant fluide_ostwald Sch_CN_iteratif Sch_CN_EX_iteratif
+      do
+         echo "cherche.ksh $mot"
+         cherche.ksh $mot
+         if [ -s liste_cherche ]
+         then
+            cat liste_cherche >> List_pbs_connus
+         fi
+         rm -f out liste_cherche
+      done
+      for cas in `grep "diffusion_implicite 1" $TRUST_ROOT/tests/*/*/*.data | grep -v seuil | awk -F: '{print $1}'`
+      do
+        # echo `basename $cas .data` >> List_pbs_connus
+	echo "Nouveaux cas " $cas
+      done
+      
+      # Ce cas bloque en parallele
+      #echo "Pb_couples" >> List_pbs_connus
+
+      sort -u  List_pbs_connus  > List_pbs_connus.tmp
+      mv -f List_pbs_connus.tmp List_pbs_connus
+   #   sed "s/QC_//" liste_rate  | grep -v -f List_pbs_connus
+      echo ""
+   }
+
+   CREE_LISTS()
+   {
+      CREE_LISTS_KO
+      echo "Creation de la liste des cas OK"
+      echo "cherche.ksh navier_stokes_standard"
+      cherche.ksh navier_stokes_standard
+      grep -v -f List_pbs_connus liste_cherche > Liste_lam
+      echo "cherche.ksh navier_stokes_turbulent"
+      cherche.ksh navier_stokes_turbulent
+      grep -v -f List_pbs_connus liste_cherche > Liste_turb
+      cat Liste_lam Liste_turb > liste_cherche
+      rm -f Liste_lam Liste_turb List_pbs_connus
+      echo ""
+   }
+   # Utilise des scripts situes ailleurs:
+   ln -s -f $TRUST_ROOT/doc/Validation/modif.py .
+   ln -s -f $TRUST_ROOT/doc/Validation/modif .
+   echo "Recherche de tous les cas tests modifiables en QC"
+   echo ""
+   CREE_LISTS
+   cp liste_cherche liste_cas

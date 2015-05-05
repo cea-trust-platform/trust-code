@@ -1,0 +1,3 @@
+#!/bin/bash
+cherche.ksh vitesse temperature 1>/dev/null
+mv liste_cherche liste_cas

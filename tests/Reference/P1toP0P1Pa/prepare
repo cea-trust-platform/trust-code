@@ -1,0 +1,11 @@
+gunzip -c cylindre.geom.gz > cylindre.geom
+# Preparation du calcul P1
+jdd=`pwd`
+jdd=`basename $jdd`
+echo
+$TRUST_Awk ' \
+/Lire dis { P0 P1 Pa }/ {print "Lire dis { P1 }";getline} \
+/Champ_Fonc_reprise/ {print "vitesse Champ_Uniforme 3 1 0 0";getline} \
+// {print $0} \
+' $jdd.data > P1.data
+triou P1 1>P1.out 2>P1.err

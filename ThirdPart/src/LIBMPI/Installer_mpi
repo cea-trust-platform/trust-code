@@ -1,0 +1,29 @@
+#!/bin/bash
+# Script d'installation d'une implementation MPI
+if [ ${#TRUST_ARCH} = 0 ]
+then
+   echo "TRUST_ARCH variable not defined."
+   echo "Initialize TRUST environment."
+   exit -1
+fi
+
+################################################################
+# On n'installe que si MPI natif n'a pas ete trouve par ailleurs
+################################################################
+#[ -f $MPI_ROOT/include/mpi.h ] && exit 0
+
+for file in `ls $TRUST_ROOT/externalpackages/MPI/*`
+do
+  ln -sf $file .
+done
+if [ "`basename $MPI_ROOT`" = openmpi ]
+then
+   ./Installer_openmpi || exit -1
+elif [ "`basename $MPI_ROOT`" = mpich ]
+then
+   ./Installer_mpich || exit -1
+else
+   echo "$MPI_ROOT not supported yet."
+   exit -1
+fi
+exit 0

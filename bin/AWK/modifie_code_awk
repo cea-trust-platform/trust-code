@@ -1,0 +1,7 @@
+BEGIN {desc=0 }
+	/Description/||/DESCRIPTION/ { ;c="";desc=1 ; gsub("Description:","!") ;gsub(".DESCRIPTION","!",$0);gsub("// !","//!",$0);c=$0; getline;n=0; while ($1=="//") { n=n+1;gsub("//","",$0);gsub("\n","",c); c=c""$0;getline }
+	 if (c=="//!") {c="// Description:";};print c; for (i=0;i<n;i++) print "//"}
+	!(/Description/ || /DESCRIPTION/) { 
+	 if (($1!="//")&&(NF>1)) { gsub("//","//!<",$0); }
+	print $0 }
+	 

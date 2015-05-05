@@ -1,0 +1,3 @@
+
+lata2dx PAR_Canal.lata writelata_master=Ghost.lata compute_virtual_elements 
+sed "s/verbosity=/load_virtual_elements verbosity=/" -i Ghost.lata

@@ -1,0 +1,213 @@
+# ThermoHydraulique 3D : conduite chauffee quasi compressible gaz parfait VDF turbulent #
+# PARALLEL OK 8 #
+dimension 3
+
+Pb_Thermohydraulique_Turbulent_QC_fraction_massique pb
+
+Domaine dom
+# BEGIN MESH #
+Mailler dom 
+{
+        Pave Entree
+                {
+                Origine 0. 0. 0.
+                Nombre_de_Noeuds 61 16 16
+                Longueurs .125 .0015 .0105
+                }
+                {
+                bord Avant   Y = 0.      0. <= X <= 0.125  0. <= Z <= 0.0105
+                bord Arriere Y = 0.0015  0. <= X <= 0.125  0. <= Z <= 0.0105
+                bord Bas     Z = 0.      0. <= X <= 0.125  0. <= Y <= 0.0015
+                bord Haut    Z = 0.0105  0. <= X <= 0.125  0. <= Y <= 0.0015
+                bord Gauche  X = 0.      0. <= Y <= 0.0015  0. <= Z <= 0.0105
+                bord Droite  X = 0.125   0. <= Y <= 0.0015  0. <= Z <= 0.0105
+                }
+}
+
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 2 1 1 }
+	Larg_joint 1
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+        tinit 0
+        tmax .2
+        nb_pas_dt_max 10
+        dt_min 1.e-9
+        dt_max 5.
+        dt_impr 1.e-7
+        dt_sauv 100
+        seuil_statio 1.e-8
+	facsec 0.25
+}
+
+Fluide_Quasi_Compressible fluide
+Lire fluide
+{
+        pression 140000.	
+        loi_etat Melange_gaz_parfait {
+                Prandtl 0.71034351145038165942
+                Sc 0.8
+        }
+	traitement_pth constant
+}
+
+Champ_Uniforme gravite
+Lire gravite 3 0. 0. -9.81
+
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+# Debog pb seq faces 1.e-6 0 #
+Lire pb
+{
+        Navier_Stokes_Turbulent_QC
+        {
+                solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-6 impr }        
+                convection { amont }
+                diffusion { }
+                conditions_initiales {
+                        vitesse Champ_Uniforme 3 .1 0. 0.
+                        }
+                boundary_conditions {
+                        Avant   paroi_fixe
+                        Arriere paroi_fixe
+                        Gauche  frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 3 .1 0. 0.
+                        Droite  Frontiere_ouverte_Gradient_Pression_impose Champ_front_Uniforme 1 0.
+                        Bas     paroi_fixe
+                        Haut    paroi_fixe
+                }
+
+                modele_turbulence k_epsilon {
+                        transport_k_epsilon {
+                                convection { amont }
+                                diffusion { }
+                                boundary_conditions {
+		                        Avant   paroi
+                		        Arriere paroi
+		                        Gauche  frontiere_ouverte_k_eps_impose Champ_front_Uniforme 2 1e-4 2e-4
+		                        Droite  frontiere_ouverte k_eps_ext Champ_Front_Uniforme 2 1e-4 2e-4
+		                        Bas     paroi
+		                        Haut    paroi
+                                }
+                                conditions_initiales {
+                                        k_eps Champ_Uniforme 2 1e-4 2e-4
+                                }
+                        }
+                        turbulence_paroi loi_standard_hydr
+                }
+        }
+        Convection_Diffusion_Chaleur_Turbulent_QC
+        {
+                diffusion { }
+                convection { amont }
+                boundary_conditions 
+                {
+                        Bas     paroi_temperature_imposee Champ_Front_Uniforme 1 773. 
+                        Haut    paroi_temperature_imposee Champ_Front_Uniforme 1  323. 
+                        Avant   paroi_temperature_imposee Champ_Front_Fonc_XYZ 1 (323*Z+773*(0.0105-Z))/0.0105
+                        Arriere paroi_temperature_imposee Champ_Front_Fonc_XYZ 1 (323*Z+773*(0.0105-Z))/0.0105
+                        Gauche  frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 303.
+                        Droite  frontiere_ouverte T_ext Champ_Front_Uniforme 1 303.
+                }
+                conditions_initiales { Temperature Champ_Uniforme 1 303. }
+                modele_turbulence Prandtl { turbulence_paroi loi_standard_hydr_scalaire }
+        }
+
+	Equations_Scalaires_Passifs
+	{
+	 Convection_Diffusion_fraction_massique_Turbulent_QC {
+	  
+			diffusion { }
+			convection { amont }
+			boundary_conditions {
+		  	Bas paroi
+			Haut paroi
+			Avant paroi
+			Arriere paroi
+                        Droite Frontiere_ouverte_fraction_massique_imposee Champ_Front_Uniforme 1 0.
+                        Gauche Frontiere_ouverte_fraction_massique_imposee Champ_Front_Uniforme 1 1.
+				
+			}
+			conditions_initiales {
+				fraction_massique0 Champ_Uniforme 1 0.5
+			}
+			modele_turbulence Schmidt { turbulence_paroi negligeable_scalaire }
+			
+			espece {
+			  mu Champ_Uniforme 1 1.85e-5
+			  lambda Champ_Uniforme 1 0.0262
+			  Cp Champ_Uniforme 1 1006
+			  Masse_molaire 0.02892544732		  
+			}
+			
+			
+		}
+		
+	  Convection_Diffusion_fraction_massique_Turbulent_QC {
+	  
+			diffusion { }
+			convection { amont }
+			boundary_conditions {
+		  	Bas paroi
+			Haut paroi
+			Avant paroi
+			Arriere paroi
+                        Droite Frontiere_ouverte_fraction_massique_imposee Champ_Front_Uniforme 1 1.
+                        Gauche Frontiere_ouverte_fraction_massique_imposee Champ_Front_Uniforme 1 0.
+				
+			}
+			conditions_initiales {
+				fraction_massique1 Champ_Uniforme 1 0.5
+			}
+			modele_turbulence Schmidt { turbulence_paroi negligeable_scalaire }
+			
+			espece {
+			  mu Champ_Uniforme 1 1.4e-5
+			  lambda Champ_Uniforme 1 0.029
+			  Cp Champ_Uniforme 1 1000
+			  Masse_molaire 0.029099		  
+			}
+			
+			
+		}	
+	}
+
+        Postraitement
+        {
+		Sondes {
+			vitesse vitesse periode 0.0001 point 1 0.06 0.00075 0.005
+			temperature temperature periode 0.0001 point 1 0.06 0.00075 0.005
+			masse_volumique masse_volumique periode 0.0001 point 1 0.06 0.00075 0.005
+			viscosite_turbulente viscosite_turbulente periode 0.0001 point 1 0.06 0.00075 0.005
+		}
+                Champs dt_post 10.
+                {
+			fraction_massique0 som
+			fraction_massique1 som
+                        vitesse som
+                        temperature som
+                        viscosite_turbulente som
+                }
+        }
+}
+Solve pb
+Fin
+

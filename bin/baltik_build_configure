@@ -1,0 +1,17 @@
+#! /usr/bin/env sh
+# --
+# Author : GF (CEA)
+# --
+# on appelle baltik_build_conigure_real situe dans ./bin/share/bamtik/bin
+
+baltik_environnement_init()
+{
+	script=$0
+	bindir=`dirname $script`
+	cd $bindir/baltik
+	pwd
+}
+
+# initialisation de l'etat de la variable BALTIK_ROOT
+BALTIK_ROOT=`baltik_environnement_init`
+$BALTIK_ROOT/share/baltik/bin/baltik_build_configure_real $*

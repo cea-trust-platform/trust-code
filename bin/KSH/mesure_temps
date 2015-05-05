@@ -1,0 +1,29 @@
+#!/bin/bash
+# Boucle d'attente tant que la taille du fichier .out ne bouge pas :
+ficout=$1
+tmax=$2
+if [ $ficout = ${ficout%.out} ]
+then
+   ficout=$ficout".out"
+fi
+if [ ! -f $ficout ]
+then
+   Erreur.ihm "Fichier $ficout inexistant !"
+   exit
+fi
+taille=`ls -la $ficout | $TRUST_Awk '{print $5}'`
+
+while [ 1 ]
+do
+
+   t=$taille
+   while [ $t -le $taille ]
+   do
+      sleep 1
+      t=`ls -la $ficout | $TRUST_Awk '{print $5}'`
+   done
+   let delta=$t-$taille
+   taille=$t
+   # Derniere partie du fichier :
+   tail -c$delta $ficout | $TRUST_Awk '/Temps/ {print $0} /dt =/ {print $0}'
+done

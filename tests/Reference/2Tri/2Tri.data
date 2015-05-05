@@ -1,0 +1,102 @@
+# Hydraulique 3D VEF P1NC/P1B sur 2 triangles #
+# PARALLEL OK 6 #
+dimension 2
+Pb_Hydraulique pb
+
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+        {
+                Origine 0. 0.
+                Nombre_de_Noeuds 4 4
+                Longueurs 0.1 0.1
+        }
+        {
+                Bord Entree      X = 0.          0. <= Y <= 0.1
+                Bord Sortie      X = 0.1         0. <= Y <= 0.1
+                Bord Paroi        Y = 0.          0. <= X <= 0.1
+                Bord Paroi       Y = 0.1         0. <= X <= 0.1
+        }
+}
+Trianguler_H dom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur Metis { Nb_pArts  3  }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+Lire dis { P0 P1 }
+
+Schema_euler_explicite sch
+Lire sch
+{
+	nb_pas_dt_max 3
+	tinit 0.0
+	tmax 0.05
+	dt_min 1.e-5
+	dt_max 0.01
+	dt_impr 1.e-6
+	dt_sauv 100
+	seuil_statio 1.e-10
+	facsec 1.0
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 2e-05
+	rho Champ_Uniforme 1 2
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+# Debog pb seq faces 1.e-6 0 #
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.5 }
+			seuil 1.000000e-10 
+			impr 
+		}
+		convection { EF_stab { alpha 0.2 } }
+		diffusion { }
+		conditions_initiales
+		        {
+			vitesse Champ_Uniforme 2 0. 0.
+			}
+		boundary_conditions {
+		        Paroi paroi_fixe
+			Entree frontiere_ouverte_vitesse_imposee champ_front_uniforme 2 1 0
+			Sortie frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
+		}
+	}
+
+	Postraitement
+	{
+		Champs dt_post 0.01
+		{
+			vitesse
+	                pression	
+		}
+	}
+}
+
+Solve pb
+Fin

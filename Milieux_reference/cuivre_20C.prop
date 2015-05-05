@@ -1,0 +1,5 @@
+{
+   rho     Champ_Uniforme 1 8954
+   lambda  Champ_Uniforme 1 383.
+   Cp      Champ_Uniforme 1 383.1
+}

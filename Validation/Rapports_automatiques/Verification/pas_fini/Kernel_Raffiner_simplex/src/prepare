@@ -1,0 +1,19 @@
+mkdir -p quad
+grep -v trianguler 2D.data > quad/2D.data
+mkdir -p quad_vef
+sed "s/trianguler_h domain/transformer domain x*(1+y) y/"  2D.data > quad_vef/2D.data
+
+mkdir -p  tri
+cp 2D.data tri
+
+mkdir -p hexa
+grep -v tetra 3D.data > hexa/3D.data
+
+mkdir -p hexa_vef
+sed "s/tetraedriser_homogene domain/transformer domain x*(1+y) y z*(1+y)/" 3D.data > hexa_vef/3D.data
+
+mkdir -p tetra
+cp 3D.data tetra
+
+sed "s/Raffiner_Simplexes/Raffiner_isotrope/g" quality_3D.data > raf_iso.data
+

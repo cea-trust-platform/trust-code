@@ -1,0 +1,18 @@
+Fluide_Incompressible eau
+Lire eau
+{
+       mu Champ_Uniforme 1 1.85e-2
+       rho Champ_Uniforme 1 1.
+       rho Champ_Uniforme 1 2.
+}
+Champ_Uniforme gravite
+ Lire gravite 3 0. 0. -9.81
+associer eau gravite 
+
+
+solv_gcp solv
+lire solv {
+seuil 1e-10
+precond_nul
+
+}

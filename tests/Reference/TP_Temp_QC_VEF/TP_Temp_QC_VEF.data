@@ -1,0 +1,101 @@
+# Thermohydraulique 2D VEF #
+dimension 2
+pb_thermohydraulique_qc pb
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Plaques
+	{
+	Origine 0. 0.
+	Nombre_de_Noeuds 10 4
+	Longueurs 1. 1.
+	}
+	{
+	Bord Gauche X = 0.  0. <= Y <= 1.
+	Bord Droit  X = 1.  0. <= Y <= 1.
+	Bord Bas    Y = 0.  0. <= X <= 1.  
+	Bord Haut   Y = 1.  0. <= X <= 1.  
+	}	
+}
+Trianguler_H dom
+
+VEFPreP1B dis
+schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0.
+	tmax 1.
+	dt_min 1.e-7
+	dt_max 0.1
+	dt_impr 1.e-7
+	dt_sauv 100.
+	seuil_statio 1.e-8
+}
+
+fluide_quasi_compressible helium
+Lire helium
+  {
+        mu      Champ_Fonc_fonction     1 temperature   3.95e-7*val^0.687
+        lambda  Champ_Fonc_fonction     1 temperature   2.774e-3*val^0.701
+        pression   7092750.
+        loi_etat gaz_parfait
+        {
+                Prandtl   0.673
+                Cp        5193.
+                gamma     1.666
+        }
+        Traitement_Pth          constant
+        Traitement_rho_gravite  moins_rho_moyen
+  }
+
+Associate pb dom
+Associate pb sch
+Associate pb helium
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_qc
+	{
+                solveur_pression Gcp { precond ssor { omega 1.5 } seuil 1.e-8  }
+		convection { EF_stab { TdivU } } # Test of TdivU, see documentation #
+		diffusion { }	
+		conditions_initiales { vitesse Champ_Uniforme 2 1. 0. }		
+		boundary_conditions 
+		{
+			 Bas Symetrie
+			 Haut Symetrie
+			 Droit frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+			 Gauche frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2 1. 0.
+		}
+		Traitement_particulier { temperature { Bord Droit Direction 0  } }
+	}
+	Convection_diffusion_chaleur_qc
+	{
+		convection { EF_stab { } }
+		diffusion { }		
+		boundary_conditions
+		{
+		Bas Paroi_flux_impose Champ_front_Uniforme 1 1.e6
+		Haut Paroi_flux_impose Champ_front_Uniforme 1 1e6
+                Droit frontiere_ouverte T_ext champ_front_uniforme  1 500.0
+		Gauche Frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 100.
+		}		
+		conditions_initiales { temperature Champ_Uniforme 1 100. }
+	}
+		
+	Postraitement 
+	{
+		Champs dt_post 10.
+		{
+			pression 
+			vitesse 
+			temperature
+		}
+	}
+}
+
+Solve pb
+Fin

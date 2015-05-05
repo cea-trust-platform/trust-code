@@ -1,0 +1,120 @@
+# Thermohydraulique 3D : Couplage Boussinesq et schema quick #
+# PARALLEL ONLY 2 #
+dimension 3
+Pb_Thermohydraulique pb
+Domaine dom
+
+MaillerParallel
+{
+	domain			dom
+	nb_nodes		3 11 11 11
+	splitting		3 2 1 1
+	ghost_thickness		2
+	file_coord_x		CoordX.dat
+	function_coord_y	y*0.01
+	function_coord_z	z*0.01
+	perio_z
+	boundary_xmin		Gauche
+	boundary_xmax		Droit
+	boundary_ymin		Bas
+	boundary_ymax		Haut
+	boundary_zmin		PerioZ
+}
+
+VDF dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0.
+	tmax 1.2
+	dt_min 0.001
+	dt_max 0.01
+	dt_impr 0.01
+	dt_sauv 0.1
+	seuil_statio 1.e-8
+	precision_impr 8
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 1.85e-5
+	rho Champ_Uniforme 1 1.17
+	lambda Champ_Uniforme 1 0.0262 
+	Cp Champ_Uniforme 1 1006
+	beta_th Champ_Uniforme 1 3.41e-3
+}
+
+Champ_Uniforme gravite
+Lire gravite 3 0 -9.81 0.
+
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond_nul
+			seuil 1.000000e-16 
+			impr
+		}
+		convection { quick }
+		diffusion { }
+		sources { boussinesq_temperature { T0 5. } }
+		sources { Canal_perio { bord PerioZ } }
+		conditions_initiales {
+			vitesse Champ_Uniforme 3 0. 0. 0.005
+			}
+		boundary_conditions {
+			Haut paroi_fixe
+			Bas paroi_fixe
+			Gauche paroi_fixe
+			Droit paroi_fixe
+			PerioZ periodique
+		}
+	}
+	Convection_Diffusion_Temperature
+	{
+		diffusion { }
+		convection { quick }
+		boundary_conditions 
+		{
+			Haut paroi_adiabatique
+			Bas paroi_adiabatique
+ 			Gauche paroi_temperature_imposee Champ_Front_Uniforme 1 10. 
+			Droit  paroi_temperature_imposee Champ_Front_Uniforme 1 0.  
+			PerioZ periodique
+		}
+		conditions_initiales { Temperature Champ_Uniforme 1 5. }
+	}
+
+	Postraitement
+	{		
+		Sondes
+		{
+			sonde_V vitesse periode 0.01 segment 10 0.0005 0.005 0.005 0.0095 0.005 0.005
+			sonde_pression pression periode 0.01 points 1 0.0045 0.0045 0.005
+			sonde_vitesse vitesse periode 0.01 points 1 0.0045 0.0045 0.005
+			sonde_temp temperature periode 0.01 points 1 0.0045 0.0045 0.005
+			sonde_p pression periode 0.1 plan 10 10 0.0005 0.0005 0.005 0.0095 0.0005 0.005 0.0005 0.0095 0.005
+			sonde_V2 vitesse periode 0.01 segmentpoints 5 0.005 0.0075 0.005 3.01661665e-03 6.52190357e-03 0.005 0.0025 0.005 0.005 3.01661665e-03 3.47809643e-03 0.005 0.005 0.0025 0.005
+		}	
+		format lml
+		Champs dt_post 0.1
+		{
+			pression elem
+			vitesse elem
+			temperature elem
+		}
+	}
+}
+
+Solve pb
+Fin

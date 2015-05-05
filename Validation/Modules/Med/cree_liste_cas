@@ -1,0 +1,3 @@
+#!/bin/bash
+cherche.ksh dimension >/dev/null
+mv liste_cherche liste_cas

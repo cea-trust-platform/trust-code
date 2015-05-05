@@ -1,0 +1,113 @@
+#!/bin/bash
+#####################################################
+# Verification de l'en tete de fichiers source TRUST
+#####################################################
+# Ce script est appele en:
+# checkout (postop):
+# 1) Verifie l'entete
+# 2) Change le numero de version: /main/branche/.../numero -> /main/branche/.../numero/CHECKEDOUT
+# checkin (preop):
+# 1) Verifie l'entete et annulle s'il n'y a pas d'autres changements que la version
+# 2) Change le numero de version: /main/branche/.../numero/CHECKEDOUT -> /main/branche/.../nouveau_numero
+#
+cd $TRUST_ROOT
+file=$CLEARCASE_PN && [ "$file" = "" ] && file=$1
+if [ "$file" = "" ]
+then
+   echo "Non execute depuis un trigger ou avec un nom de fichier en 1er parametre."
+   exit -1
+fi
+# Si c'est un repertoire, on quitte
+[ -d $file ] && exit 0
+[ ! -f $file ] && echo "$file not found. Give an absolute path." && exit -1
+
+#######################################################
+# On ne verifie que les fichiers sources .cpp ou .h C++
+# appartenant a un repertoire TRUST pour le moment
+#######################################################
+if [ ${file%.cpp} = $file ] && [ ${file%.h} = $file ]
+then
+   exit 0
+fi
+# Les includes .h FORTRAN ne sont pas traites
+# Ils doivent etre detectes par une balise INCLUDE_FORTRAN:
+if [ ${file%.h} != $file ] && [ "`grep INCLUDE_FORTRAN $file`" != "" ]
+then
+   exit 0
+fi
+rep=`dirname $file`
+if [ ! -f $rep/make.include ]
+then
+   exit 0
+else
+   # Les fichiers instancie ne sont pas traites
+   if [ "`grep 'Warning : DO NOT EDIT' $file`" != "" ]
+   then
+      exit 0
+   fi
+fi
+
+ROOT=$rep
+while [ "`basename $ROOT`" != "`basename $TRUST_ROOT`" ]
+do
+   ROOT=`dirname $ROOT`
+done
+rep=${rep#$ROOT}
+
+# We keep the version
+version=`$TRUST_Awk '/\/\/ Version: / {print $3}' $file`
+
+if [ "$TRUST_TMP" = "" ]
+then
+   source env/Init_TRUST 1>/dev/null 2>&1
+fi
+
+# Si file est un fichier non vide, on met a jour l'en tete
+if [ -f $file ] && [ -s $file ]
+then
+   tmp_file=`mktemp_`
+   ###########################################
+   # On place l'en tete en supprimant l'ancien
+   ###########################################
+   echo "//////////////////////////////////////////////////////////////////////////////
+//
+// File:        `basename $file`
+// Directory:   \$TRUST_ROOT$rep
+// Version:     $version
+//
+//////////////////////////////////////////////////////////////////////////////" > $tmp_file
+$TRUST_Awk 'BEGIN {en_tete=1}
+(en_tete) {
+   i=0;
+   while (i<2 && ((substr($0,1,2)=="* ")||(substr($0,2,3)=="***")))
+   {
+      if (substr($0,2,3)=="***") i++;
+      getline;
+   }
+   i=0;
+   while (i<2 && substr($0,1,2)=="//")
+   {
+      if (substr($0,1,10)=="//////////") i++;
+      getline;
+   }
+   en_tete=0;
+}
+!(en_tete) {print $0}
+' $file >> $tmp_file
+   # on ajoute la license
+$TRUST_ROOT/bin/CLEARCASE/check_license_in_file.sh --mode c -add $tmp_file || exit -1
+   if [ "`diff $tmp_file $file`" != "" ]
+   then
+      mv -f $tmp_file $file
+      echo entete $file updated
+   else
+      rm -f $tmp_file
+   fi
+   # Verification qu'il y'a bien un seul en tete
+   if [ "`grep -e '[ ]*File:' -e '[ ]*Directory:' -e '[ ]*Version: ' $file | wc -l | $TRUST_Awk '{print $1}'`" != 3 ]
+   then
+      echo "Probleme en tete. Contacter le support TRUST."
+      exit -1
+   fi
+fi
+exit 0

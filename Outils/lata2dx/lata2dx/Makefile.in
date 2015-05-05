@@ -1,0 +1,57 @@
+# make = static stripped optimized
+# make dynamic =  dynamic stripped optimised
+# make debug = static not stripped not optimised with debug info
+include $(TRUST_ENV)/make.$(TRUST_ARCH_CC)
+
+SRCS=ArrOfBit.cpp ArrOfDouble.cpp ArrOfFloat.cpp ArrOfInt.cpp Connectivite_som_elem.cpp LataDB.cpp LataFilter.cpp LataStructures.cpp LataV1_field_definitions.cpp LataWriter.cpp Lata_tools.cpp LmlReader.cpp Motcle.cpp Octree_Double.cpp Octree_Int.cpp OpenDXWriter.cpp OperatorBoundary.cpp OperatorDualMesh.cpp OperatorFacesMesh.cpp OperatorReconnect.cpp OperatorRegularize.cpp Rebuild_virtual_layer.cpp Static_Int_Lists.cpp UserFields.cpp
+OBJECTS=$(SRCS:.cpp=.o)
+
+INCDIRS        	= -I .
+
+CXX		= $(TRUST_CC)
+CXXFLAGSOPT	= -O3 -DNDEBUG $(INCDIRS)
+CXXFLAGSDEBUG	= -g $(INCDIRS)
+
+LD		= $(TRUST_CC)
+LDFLAGSOPT	= -O3 -DNDEBUG $(LIBDIRS)
+LDFLAGSDEBUG	= -g $(INCDIRS)
+
+SOFLAGS		= -shared
+
+all: staticopt
+
+staticopt: CXXFLAGS=$(CXXFLAGSOPT)
+staticopt: LDFLAGS=$(LDFLAGSOPT)
+staticopt: depend lata2dx compare_lata
+
+debug: CXXFLAGS=$(CXXFLAGSDEBUG)
+debug: LDFLAGS=$(LDFLAGSDEBUG)
+debug: depend lata2dx compare_lata
+
+dynamic: CXXFLAGS=$(CXXFLAGSOPT)
+dynamic: LDFLAGS=$(LDFLAGSOPT)
+dynamic: liblata.so lata2dx.o
+	$(LD) $(LDFLAGS) lata2dx.o -llata -o lata2dx
+	strip liblata.so
+	strip lata2dx
+depend:
+	@makedepend -- $(INCDIRS) $(SYSINC_DEP) -- $(SRCS) compare_lata.cpp lata2dx.cpp
+
+lata2dx: $(OBJECTS) lata2dx.o
+	$(LD) $(LDFLAGS) lata2dx.o $(OBJECTS) -o $@
+
+compare_lata: $(OBJECTS) compare_lata.o
+	$(LD) $(LDFLAGS) compare_lata.o $(OBJECTS) -o $@
+
+liblata.so: lata.o
+	$(LD) $(SOFLAGS) $(LDFLAGS) lata.o -o $@
+
+.PHONY: clean
+clean:
+	rm -f *.o lata2dx liblata.so *~ core compare_lata
+
+.SUFFIXES : .cpp
+
+%.o: %.cpp 
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+# DO NOT DELETE

@@ -1,0 +1,139 @@
+# ThermoHydraulique 2D : obstacle quasi compressible gaz parfait VEF turbulent #
+# PARALLEL OK 4 #
+dimension 2
+Pb_Thermohydraulique_Turbulent_QC pb
+Domaine dom
+# BEGIN MESH #
+Read_file dom obstacle_vef.geom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur Metis { Nb_parts 2 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+
+Schema_Euler_implicite sch
+Lire sch
+{
+	tinit 0
+	tmax 15.0
+	nb_pas_dt_max 10
+	facsec 1.
+	dt_min 1.e-6
+	dt_max 5.
+	dt_impr 1.e-6
+	dt_sauv 100
+	seuil_statio 1.e-8
+	solveur piso { seuil_convergence_solveur 1e-9 
+		       seuil_convergence_implicite 1e-3
+	             }
+}
+
+Fluide_Quasi_Compressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 1.85e-5
+        pression 81385.5334
+        lambda Champ_Uniforme 1 0.0273691
+        loi_etat gaz_parfait {
+                Prandtl 0.68000043845066149295
+                Cp 1006.
+                gamma 1.4
+        }
+        traitement_pth constant
+}
+
+Champ_Uniforme gravite
+Lire gravite 2 0 -9.81
+
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_Turbulent_QC
+	{
+		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-9 }	
+		convection { muscl }
+		diffusion { }
+		conditions_initiales {
+			vitesse Champ_Uniforme 2 0. 0.
+			}
+		boundary_conditions {
+                        Paroi      symetrie
+                        Obstacle   paroi_fixe
+                        Obstacle_T paroi_fixe
+                        Sortie frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
+                        Entree frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 2 .25 0.
+		}
+
+                modele_turbulence k_epsilon {
+                        transport_k_epsilon {
+				parametre_equation parametre_implicite { resolution_explicite }
+                                convection { muscl }
+                                diffusion { }
+                                boundary_conditions {
+		                        Paroi      symetrie
+                		        Obstacle   paroi
+		                        Obstacle_T paroi
+                                        Sortie frontiere_ouverte k_eps_ext Champ_Front_Uniforme 2 6e-4 0.3e-4
+                                        Entree frontiere_ouverte_k_eps_impose Champ_front_Uniforme 2 6e-4 0.3e-4
+                                }
+                                conditions_initiales {
+                                        k_eps Champ_Uniforme 2 6e-4 0.3e-4
+                                }
+                        }
+                        turbulence_paroi loi_standard_hydr
+                }
+	}
+        Convection_Diffusion_Chaleur_Turbulent_QC
+        {
+                diffusion { }
+                convection { muscl }
+                boundary_conditions 
+                {
+                        Paroi      paroi_adiabatique
+                        Obstacle   paroi_adiabatique
+                        Obstacle_T Paroi_temperature_imposee Champ_Front_Uniforme 1 323.15
+                        Sortie frontiere_ouverte T_ext Champ_Front_Uniforme 1 283.15
+                        Entree frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 283.15
+                }
+                conditions_initiales { Temperature Champ_Uniforme 1 283.15 }
+                modele_turbulence Prandtl { turbulence_paroi loi_standard_hydr_scalaire }
+        }
+
+	Postraitement
+	{
+               Sondes {
+                        vitesse vitesse periode 0.001 point 1 0.15 0.1
+                        temperature temperature periode 0.001 point 1 0.15 0.1
+                        viscosite_turbulente viscosite_turbulente periode 0.001 point 1 0.15 0.1
+                }
+		Champs dt_post 10.
+		{
+			vitesse som
+			temperature som
+                        k som
+                        eps som
+                        viscosite_turbulente som
+			masse_volumique som
+		}
+	}
+}
+Solve pb
+Fin
+traitement_pth constant

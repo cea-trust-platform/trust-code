@@ -1,0 +1,41 @@
+#!/bin/bash
+
+echo $1
+org=$1
+org=${org#JDD_}
+echo $org
+file=b$org
+sed "s/}/ }/g" $org > $file
+cas=`basename $org .data`
+#. /users/crolles/salome/fauchet/test/env_min.sh
+DIR=`dirname $0`
+DIR=`cd $DIR;pwd`
+#. $TRUST_ROOT/Outils/TRIOXDATA/IHMTRIO.sh 
+. $DIR/../IHMTRIO.sh 
+#export PYTHONPATH=$HOME/XDATA/test:$PYTHONPATH
+echo from test_cas import "*" > trad.py
+echo "test_cas('b$cas')" >> trad.py
+m=`basename $org .data`
+python trad.py >/dev/null
+test=$?
+#[ $test != 0 ] && echo $cas trad rate 
+if [ 1 -eq 2 ]
+then
+  sed "s/$cas.meshtv/JDD_$cas.meshtv/g" test3_$file >JDD_$org 
+  [ $test == 0 ] && echo $cas trad ok
+  if [ "`grep "fichier $cas" JDD_$org | grep -v _fichier`" != "" ]
+  then
+    sed "s/fichier $cas/fichier JDD_$cas/g" JDD_$org >prov
+    mv prov JDD_$org 
+  fi
+else
+  # on stoke le nouveau jdd dans l'ancien (en particulier pour les scripts verif
+  mv $org $org.org
+  mv test3_$file $org
+fi
+[ $test == 0 ]  && exit
+#python trad.py 
+echo $cas trad semi rate
+
+#diff JDD_$file $file 
+exit

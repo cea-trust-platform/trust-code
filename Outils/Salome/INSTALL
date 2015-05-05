@@ -1,0 +1,21 @@
+#!/bin/bash
+DIR=`dirname $0`
+DIR=`(cd $DIR; pwd)`
+echo usage WHERE_INSTALL SALOME_ROOT
+WHERE_INSTALL=$1
+mkdir -p $1
+SALOME_ROOT=$2
+cd $WHERE_INSTALL
+. $SALOME_ROOT/env_products.sh
+cp -r $DIR/GAUTHIER . 
+cd GAUTHIER
+sh compil
+sh Installer XDATA
+sh Installer TRIOU
+sh Installer DICO
+sh place
+cd LANCE_TEST
+sed "s?WHERE_INSTALL?${WHERE_INSTALL}/GAUTHIER/?" environ.sh.base | sed "s?SALOME_ROOT_DIR?${SALOME_ROOT}?"    > environ.sh
+sed "s?CASCADE_ROOT?${CASROOT}/?" displaybrep.base    > displaybrep
+chmod +x displaybrep
+

@@ -1,0 +1,14 @@
+mkdir org
+mkdir new
+cp src/* org
+
+cd new
+cp ../org/lata.xml .
+xml2plugin lata.xml
+cd ..
+for file in `ls org/* new/*`
+do
+grep -v "//  Creation:" $file > $file.p
+mv $file.p $file
+done
+comp_dir org new

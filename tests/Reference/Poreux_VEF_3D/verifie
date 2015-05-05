@@ -1,0 +1,9 @@
+# le debit massique et le debit volumique qui doivent differer de rho
+jdd=`pwd`;jdd=`basename $jdd`
+nbpasdt=`wc -l $jdd.dt_ev | $TRUST_Awk '{print $1}'`
+if [ $nbpasdt -ne 2 ]
+then
+  echo $nbpasdt "lignes dans dt_ev au lieu de 2 " >verifie.log
+  exit -1
+fi
+exit 0

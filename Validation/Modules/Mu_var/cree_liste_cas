@@ -1,0 +1,13 @@
+#!/bin/bash
+# On cherche les cas thermohydrauliques
+cherche.ksh mu lambda cp 1>/dev/null
+
+for cas in `cat liste_cherche`
+do
+   file=`ls $TRUST_TESTS/*/$cas/$cas.data`
+   # On ne garde que les cas VDF avec mu Champ_uniforme
+   if [ "`grep -i mu $file | grep -i Champ_uniforme`" != "" ]
+   then
+      [ "`grep -i vdf $file`" = "" ] && echo `basename $cas`
+   fi
+done | sort -u > liste_cas

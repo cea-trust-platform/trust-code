@@ -1,0 +1,120 @@
+Parameters {
+	Title "Test de la diffusion implicite"
+	Author "fauchet "
+	description "On regarde si au cours du temps le flux du solide vers le fluide compense celui du fluide vers le solide"	
+	TestCase . VDF_expl
+	TestCase . VDF_diff_impl
+	TestCase . VDF_crank
+	TestCase . VDF_diff_impl_non_precond
+	TestCase . VEF_expl
+	TestCase . VEF_diff_impl
+	TestCase . VEF_crank
+	TestCase . VEF_diff_impl_non_precond
+	TestCase . solide
+	TestCase . solide_explicite
+}
+Chapter {
+	Title Evolution de la temperature en (0.55,0.55) en VDF
+
+	Figure
+	{
+	Title " "
+	labelx time
+	labely °
+	
+
+	Description les 4 courbes vont elles vers la meme solution ?
+	
+	Description 	Remarque le non precond fait moins d'iterations
+	Include_Description_Curves 0
+	legend bottom
+	Curve {
+	file VDF_expl_SONDE_TFLU.son 
+	legend explicite 
+	style lines
+	}
+	Curve {
+	file VDF_diff_impl_SONDE_TFLU.son 
+	legend diffusion_implicite 
+	style lines
+	}
+	Curve {
+	file VDF_crank_SONDE_TFLU.son 
+	legend diffusion_implicite crank
+	style lines
+	}
+	Curve {
+	file VDF_diff_impl_non_precond_SONDE_TFLU.son 
+	legend diffusion_implicite  non preconditionne
+	style lines
+	}
+}
+}
+Chapter {
+	Title Evolution de la temperature en (0.55,0.55) en VEF
+
+	Figure
+	{
+	Title " "
+	labelx time
+	labely °
+	
+
+	Description les 4 courbes vont elles vers la meme solution ?
+	
+	Description 	Remarque le non precond fait moins d'iterations
+	Include_Description_Curves 0
+	legend bottom
+	Curve {
+	file VEF_expl_SONDE_TFLU.son 
+	legend explicite 
+	style lines
+	}
+	Curve {
+	file VEF_diff_impl_SONDE_TFLU.son 
+	legend diffusion_implicite 
+	style lines
+	}
+	Curve {
+	file VEF_crank_SONDE_TFLU.son 
+	legend diffusion_implicite crank
+	style lines
+	}
+	Curve {
+	file VEF_diff_impl_non_precond_SONDE_TFLU.son 
+	legend diffusion_implicite  non preconditionne
+	style lines
+	}
+}
+}
+Chapter {
+	Title "Cas de conduction analytique"
+
+	Description solution of the problem : T(x,t)=x*t
+	Figure {
+	     labelx x
+	    labely °
+	       Include_Description_Curves 0
+          Curve {
+              style linespoints
+		segment solide SONDE_TSOL 10.
+	       legende diffusion implicite
+		}	
+          Curve {
+              style linespoints
+		segment solide_explicite SONDE_TSOL 10.
+	       legende diffusion explicite
+		}	
+          Curve {
+              style lines
+		fonction 10*x
+	       legende solution analytique
+		origine analytique
+		}	
+}
+}
+Chapter {
+        Title "Computer performance"
+        tableau_performance {
+        }
+}

@@ -1,0 +1,7 @@
+Type : menu
+Acces : Facteurs de Forme/Resoudre xxx
+
+Description :
+	Cette commande permet de resoudre les inconnues, notees xxx, de la matrice des facteurs de forme. Elle utilise pour cela les conditions de symetrie et de completude : si, au cours du calcul, l'une de ces deux condition n'est pas verifiee, le calcul s'arrete, et un message d'erreur localisant le probleme s'affiche.
+
+	Par ailleurs, sous certaines configurations (nombres d'inconnues trop importantes, ou disposition des xxx bloquante) il se peut que la resolution ne soit pas complete : il faut alors rajouter des coefficients a la matrice avant de pouvoir relancer la calcul.

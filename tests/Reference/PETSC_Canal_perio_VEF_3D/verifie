@@ -1,0 +1,9 @@
+# Comparaison des resultats #
+for file in *.ref
+do
+   if [ -f ${file%.ref} ]
+   then
+      compare_sonde $file ${file%.ref} 1>compare_sonde.log 2>&1 || exit -1
+   fi
+done
+exit 0

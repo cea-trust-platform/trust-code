@@ -1,0 +1,9 @@
+#!/bin/bash
+echo fin > ver.data
+OUT=version_utilisee
+#echo creation de $OUT
+$exec ver 1>ver.out 2>$OUT
+echo 
+echo "-> Binary and version used:"
+egrep "code|version : " $OUT | awk '{print("-> "$NF)}' | head -2
+rm -f ver.TU ver.out ver_0000.log ver.data

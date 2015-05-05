@@ -1,0 +1,274 @@
+<!--NewPage-->
+<html>
+<head>
+<title>TRUST </title>
+</head>
+<body>
+<BODY BGCOLOR=#C5D5D5 TEXT=#23238E LINK=#E47833 ALINK=#007FFF VLINK=#007FFF>
+<a href=TRUST.html>TRUST</a> | <a HREF=mailto:triou@cea.fr>Support</a><br>
+<PRE>
+<HR>
+<h1> TRUST mesh file example  </h1>
+<HR>
+<a href=../Tests_reference/geom/geom.lml.gif><img src=../Tests_reference/geom/geom.lml.gif.fin></a> Click on icon to maximize 
+<B>To enclose a file exemple.geom in a TRUST data file, 
+you will use following method :</B>
+
+<I>domaine ENVEL
+Lire_fichier ENVEL exemple.geom</I>
+
+<B> To visualise this mesh,
+ you have to transform it into a .lml file, 
+ using following instructions.
+ Then start up TRUST and post-process the file exemple.lml :</B>
+
+
+<I>Ecrire_fic_lml ENVEL exemple.lml</I>
+
+
+<B>Description of file exemple.geom :</B>
+<HR>
+ ENVEL   	<- Domain name
+ 2		<- Number of values to be read
+ 60 3		<- Number of nodes and size
+ 180		<- Number of values to be read
+ .0 .0 .0	<- List of X,Y,Z coordinates nodes.
+ .0 .0 .5
+ .0 .0 1.0
+ .0 .0 1.5
+ .0 .0 2.0
+ .0 .0 2.5
+ .0 .0 3.0
+ .0 .5 .0
+ .0 .5 .5 
+ .0 .5 1.0
+ .0 .5 1.5
+ .0 .5 2.0
+ .0 .5 2.5
+ .0 .5 3.0
+ .0 1.0 .0
+ .0 1.0 .5
+ .0 1.0 1.0
+ .0 1.0 1.5
+ .0 1.0 2.0
+ .0 1.0 2.5
+ .0 1.0 3.0
+ .5 .0 .0
+ .5 .0 .5
+ .5 .0 1.0
+ .5 .0 1.5
+ .5 .0 2.0
+ .5 .0 2.5
+ .5 .0 3.0
+ .5 .5 .0
+ .5 .5 .5
+ .5 .5 1.0
+ .5 .5 1.5
+ .5 .5 2.0
+ .5 .5 2.5
+ .5 .5 3.0
+ .5 1.0 .0
+ .5 1.0 .5
+ .5 1.0 1.0
+ .5 1.0 1.5
+ .5 1.0 2.0
+ .5 1.0 2.5
+ .5 1.0 3.0
+ 1.0 .0 .0
+ 1.0 .0 .5
+ 1.0 .0 1.0
+ 1.0 .0 1.5
+ 1.0 .0 2.0
+ 1.0 .0 2.5
+ 1.0 .5 .0
+ 1.0 .5 .5
+ 1.0 .5 1.0
+ 1.0 .5 1.5
+ 1.0 .5 2.0
+ 1.0 .5 2.5
+ 1.0 1.0 .0
+ 1.0 1.0 .5
+ 1.0 1.0 1.0
+ 1.0 1.0 1.5
+ 1.0 1.0 2.0
+ 1.0 1.0 2.5
+
+ {		<- Beginning of the domain zones definition 
+ VOLUME1        <- Zone name
+ Hexaedre       <- Element type (HEXAEDRAL,TETRAEDRAL,RECTANGLE,TRIANGLE)
+ 2		<- Number of values to be read
+ 22 8		<- Number of meshes and number of nodes for each mesh
+ 176		<- Number of values to be read
+ 0 1 7 8 21 22 28 29 <- List of nodes for each mesh
+ 1 2 8 9 22 23 29 30 <- Note: the start of the nodes numbering is 0
+ 2 3 9 10 23 24 30 31
+ 3 4 10 11 24 25 31 32
+ 4 5 11 12 25 26 32 33
+ 5 6 12 13 26 27 33 34
+ 7 8 14 15 28 29 35 36
+ 8 9 15 16 29 30 36 37
+ 9 10 16 17 30 31 37 38
+ 10 11 17 18 31 32 38 39
+ 11 12 18 19 32 33 39 40
+ 12 13 19 20 33 34 40 41
+ 21 22 28 29 42 43 48 49
+ 22 23 29 30 43 44 49 50
+ 23 24 30 31 44 45 50 51
+ 24 25 31 32 45 46 51 52
+ 25 26 32 33 46 47 52 53
+ 28 29 35 36 48 49 54 55
+ 29 30 36 37 49 50 55 56
+ 30 31 37 38 50 51 56 57
+ 31 32 38 39 51 52 57 58
+ 32 33 39 40 52 53 58 59
+
+ {		<- Start of definition of the boundary 
+ LAT		<- Boundary name 
+ QUADRANGLE_3D	<- Boundaries elements type:(QUADRANGLE_3D,TRIANGLE_3D,SEGMENT_2D)
+ 2		<- Number of values to be read
+ 32 4		<- Number of boundary faces and number of nodes per face
+ 128		<- Number of values to be read
+ 0 1 7 8	<- List of each boundary face nodes
+ 0 7 21 28
+ 1 2 8 9
+ 2 3 9 10
+ 3 4 10 11
+ 4 5 11 12
+ 5 6 12 13
+ 26 27 33 34
+ 6 13 27 34
+ 7 8 14 15
+ 7 14 28 35
+ 8 9 15 16
+ 9 10 16 17
+ 10 11 17 18
+ 11 12 18 19
+ 12 13 19 20
+ 33 34 40 41
+ 13 20 34 41
+ 42 43 48 49
+ 21 28 42 48
+ 43 44 49 50
+ 44 45 50 51
+ 45 46 51 52
+ 46 47 52 53
+ 26 33 47 53
+ 48 49 54 55
+ 28 35 48 54
+ 49 50 55 56
+ 50 51 56 57
+ 51 52 57 58
+ 52 53 58 59
+ 33 40 53 59
+
+ 2		<- Number of values to be read
+ 32 2		<- Number of boundary  faces and number of nodes for each face
+ 64		<- Number of values to be read
+ -1 -1		<- Meshes numbers of each side of the boundary
+ -1 -1		<- Necessary even it is not yet used by TRUST
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+
+ ,		<- Comma: necessary to separate the boundaries definition
+ NOR                 
+ QUADRANGLE_3D
+ 2
+ 11 4
+ 44
+ 14 15 35 36
+ 15 16 36 37
+ 16 17 37 38
+ 17 18 38 39
+ 18 19 39 40
+ 19 20 40 41
+ 35 36 54 55
+ 36 37 55 56
+ 37 38 56 57
+ 38 39 57 58
+ 39 40 58 59
+
+ 2
+ 11 2
+ 22
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+
+ ,
+ SUD                 
+ QUADRANGLE_3D
+ 2
+ 11 4
+ 44
+ 0 1 21 22
+ 1 2 22 23
+ 2 3 23 24
+ 3 4 24 25
+ 4 5 25 26
+ 5 6 26 27
+ 21 22 42 43
+ 22 23 43 44
+ 23 24 44 45
+ 24 25 45 46
+ 25 26 46 47
+
+ 2
+ 11 2
+ 22
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+ -1 -1
+
+ }		<- End of the boundary zone definition
+ vide		<- Necessary even it is not yet used by TRUST
+ vide		<- Idem
+ vide		<- Idem
+ }		<- End of the domain zones definition
+ vide		<- Idem
+<HR>
+</body>
+</html> 

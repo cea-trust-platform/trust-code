@@ -1,0 +1,16 @@
+#!/bin/bash
+#export PYTHONPATH=$XDATA/../../TRIOU/build/lib/python2.2/site-packages/salome/:${PYTHONPATH}
+#pathtoadd=`find $TRIOU_ROOT_DIR -name triou.py -exec dirname {} \;`
+#echo $pathtoadd
+#export PYTHONPATH=${pathtoadd}:${PYTHONPATH}
+DIR=`dirname $0`
+DIR=`(cd $DIR; pwd)`
+. $DIR/IHMTRIO.sh
+org=`pwd`
+file=`dirname $1`/`basename $1 .data`.data
+[ "`dirname $1`" = "." ] && file=$org"/"$file
+echo $file
+export TRACE=ON
+    python -c "from triou import *;list=read_file_data('$file');verify_all(list);"
+
+

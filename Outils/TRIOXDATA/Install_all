@@ -1,0 +1,2 @@
+#!/bin/bash
+. ./XDATA.sh;cd XTriou;make doc;make update_xd

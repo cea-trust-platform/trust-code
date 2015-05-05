@@ -1,0 +1,3 @@
+#!/bin/bash
+gunzip  ref.med.gz 
+compare_lata ref.med crit_0000.med

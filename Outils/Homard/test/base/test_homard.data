@@ -1,0 +1,32 @@
+dimension 3
+
+Domaine dom
+Mailler dom
+{
+	Pave Entree 
+	{
+	Origine 0. 0. 0
+	Nombre_de_Noeuds 10 10 10
+	Longueurs 1.0 1.0 1.
+ 	}
+	{
+	Bord Entree1 Y = 0. 0. <= X <= 1 0. <= Z <= 1.
+	Bord Entree2 Y = 1. 0. <= X <= 1. 0. <= Z <= 1.
+	Bord Ouest  X = 0. 0. <= Y <= 1. 0. <= Z <= 1.
+	Bord Est    X = 1. 0. <= Y <= 1. 0. <= Z <= 1.
+	Bord Devant  Z = 0. 0. <= X <= 1. 0. <= Y <= 1.
+	Bord Derriere    Z = 1. 0. <= X <= 1. 0. <= Y <= 1.
+	} 
+}
+
+tetraedriser_homogene dom
+
+ecrire_fichier dom dom.geom
+
+Champ_Fonc_xyz fct
+Lire fct dom 1 2-(x*x+y*y)
+
+Ecrire_Champ_MED dom fct crit.med 
+
+Fin
+Lire fct dom 1 1

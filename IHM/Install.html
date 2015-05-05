@@ -1,0 +1,44 @@
+<!--NewPage-->
+<html>
+<head>
+<title>Trio Unitaire </title>
+</head>
+<body>
+<BODY BGCOLOR="#C0D9D9" TEXT="#23238E" LINK="#E47833" ALINK="#007FFF" VLINK="#007FFF">
+<A HREF="../doc/TRUST.html"> TRUST </A> <br>
+<PRE>
+<HR>
+<h1>					TRIO Unitaire </h1>
+<HR>
+<BR>
+<h2> Installation : </h2>
+<HR>
+<FORM  METHOD="Installation" ACTION="../form/Instal.ksh?">
+Votre Nom: <input type="text" name="Nom" size=30 value="anonyme">
+Votre Departement: <input type="text" name="Departement" size=30 value="DTP">
+Votre Labo: <input type="text" name="Labo" size=30 value="LMTL">
+<input type="radio" name="Version" value="OPTIMISE"> OPTIMISE
+<input type="radio" name="Version" value="DEBUG"> DEBUG
+Doc :
+<input type="radio" name="Doc" value="OUI"> OUI
+<input type="radio" name="Doc" value="NON"> NON
+Manuel :
+<input type="radio" name="Man" value="OUI"> OUI
+<input type="radio" name="Man" value="NON"> NON
+   Machine :
+<select name><option selected> HP_UX 
+   <option> SUN 
+   <option> SGI 
+   <option> WIN95 
+   <option> RS6000 
+   </select>
+   Librairie :
+<select name><option selected> Partagee .so
+   <option> Partagee .sl
+   <option> Statique .a 
+   </select>
+<input type="submit" value="Instal">
+</FORM>
+<HR>
+</body>
+</html>

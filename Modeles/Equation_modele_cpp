@@ -1,0 +1,146 @@
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:	NOM_DU_FICHIER.cpp
+// Directory:	$TRUST_ROOT/NOM_DU_MODULE
+//
+//////////////////////////////////////////////////////////////////////////////
+
+#include <NOM_DU_FICHIER.h>
+#include <Motcle.h>
+//
+// AJOUTER ICI LES INCLUDES POUR LE MILIEU
+//
+// EXEMPLE :
+#include <TYPE_DE_MILIEU.h>
+#include <Discretisation_NOM_DU_MODULE.h>
+
+implemente_instanciable(NOM_DE_LA_CLASSE,
+                        "NOM_DE_LA_CLASSE",
+                        Equation_base)
+
+// printOn et readOn 
+
+Sortie& NOM_DE_LA_CLASSE::printOn(Sortie& s ) const 
+{
+// ON NE SAIT PAS IMPRIMER UNE EQUATION.
+   return s << que_suis_je() << "\n";
+}
+
+Entree& NOM_DE_LA_CLASSE::readOn(Entree& is ) 
+{
+   Cerr << "Lecture de l'equation de NOM_DE_LA_CLASSE" << finl;
+   Equation_base::readOn(is);
+//
+// VERIFIER ICI QU'ON A BIEN TOUT LU;  
+//
+   return is;
+}
+
+int NOM_DE_LA_CLASSE::impr_pas_temps_operateur(int i,double dt, 
+                                               Sortie& os) const
+{
+// 
+// A MODIFIER :
+//
+   switch(i)
+   {
+      case 0:
+	 {
+	    os << "   pas de temps de NOM_DE_L_OPERATEUR(0) : " << dt << finl;
+	    break;
+	 }
+      default :
+	 break;
+   }
+   return 1;
+}
+
+Entree& NOM_DE_LA_CLASSE::lire(const Motcle& mot, Entree& is)
+{
+//
+// A MODIFIER SELON LE BESOIN.
+//
+   Motcles les_motcles(1); 
+   {
+      les_motcles[0]="NOM_DE_L_OPERATEUR";
+   }
+   int rang=les_motcles.search(mot);
+   switch(rang)
+   {
+      case(-1)
+	 {
+	    Cerr << "Erreur a la lecture des donnees de l'equation de NOM_DE_LA_CLASSE " << finl;
+	    Cerr << "On ne comprend pas le mot " << mot << finl;
+	    Cerr << "Les mots compris sont " << les_motcles << finl;
+	    exit(-1);
+	    break;
+	 }
+      case(0)
+	 {
+	    Cerr << "Lecture de l'operateur de NOM_DE_L_OPERATEUR " << finl;
+	    Cerr << "et typage: ";
+	    is >> NOM_DE_L_OPERATEUR; // A COMPLETER EVENTUELLEMENT.
+	 }
+   }
+   return is;
+}
+
+void NOM_DE_LA_CLASSE::discretiser()
+{
+//
+// A MODIFIER SELON LE BESOIN.
+//
+   const Discretisation_NOM_DU_MODULE& dis=ref_cast(Discretisation_NOM_DU_MODULE, discretisation());
+   Cerr << "Discretisation de l'equation de NOM_DE_LA_CLASSE" << finl;
+   dis.NOM_DE_L_INCONNUE(schema_temps(), zone_dis(), NOM_DE_L_INCONNUE);
+   dis.proprietes_physiques_milieu(zone_dis(), le_TYPE_DE_MILIEU(),NOM_DE_L_INCONNUE);
+   Equation_base::discretiser();
+   Cerr << "NOM_DE_LA_CLASSE a bien ete discretisee." << finl;
+}
+
+int NOM_DE_LA_CLASSE::comprend_mot(const Motcle& mot) const
+{
+//
+// A MODIFIER SELON LE BESOIN.
+//
+   return comprend_champ(mot);
+}
+
+int NOM_DE_LA_CLASSE::comprend_champ(const Motcle& mot) const
+{
+//
+// A MODIFIER SELON LE BESOIN.
+//
+   if (mot == Motcle("NOM_DE_L_INCONNUE"))
+      return 1;
+   else 
+      return 0;
+}
+
+int NOM_DE_LA_CLASSE::a_pour_Champ_Inc(const Motcle& mot, REF(Champ_base)& ch_ref) const
+{
+//
+// A MODIFIER SELON LE BESOIN.
+//
+  int ok = 0;
+  if (mot == Motcle("NOM_DE_L_INCONNUE")) 
+  {
+      ch_ref = NOM_DE_L_INCONNUE.valeur();
+      ok = 1;
+   }
+  return ok;
+}
+
+// Description:
+// quelques impressions.
+int NOM_DE_LA_CLASSE::impr(Sortie& os) const
+{ 
+//
+// A MODIFIER SELON LE BESOIN.
+//
+   os << "-------------------------------------------------------------------"<< finl;
+   NOM_DE_L_OPERATEUR.impr(os);
+   os << "-------------------------------------------------------------------"<< finl;
+   
+   return 1;
+}

@@ -1,0 +1,55 @@
+#!/bin/bash
+. ./XDATA.sh
+cd XTriou
+make test_ref_trace >/dev/null
+trad=$?
+if [ $trad -ne 0 ] 
+  then
+    echo " cas rate a la traduction"
+    cat tests/cas_rate
+  fi
+
+cd ..
+cd test_complet
+./fait_lance_test
+export PAR_F=0
+echo 0  | ./lance_test_modif -nomail $exec `pwd` 1>lance_out 2>&1
+name=`basename $exec`
+#cat .tests_${name}
+if [ -s tests_${name}/liste ] 
+then
+	# on va tester les cas a pb (reel)
+	mkdir -p ref
+	cp tests_${name}/liste .
+        echo liste | lance_test $exec `pwd`/ref 1>lance_out_ref 2>&1
+	sed "s/'/ /g"  ref/tests_${name}/liste >  ref/tests_${name}/liste_c
+	mv ref/tests_${name}/liste_c ref/tests_${name}/liste
+	if [ "`diff tests_${name}/liste ref/tests_${name}/liste`" != "" ]
+	then
+	  echo 
+	  echo " cas rate a l'execution" 
+	  cat tests_${name}/liste
+	  echo 
+	  echo "cas tests a pb en standard "
+	  cat ref/tests_${name}/liste
+	  echo 
+	  echo "difference "
+	  diff tests_${name}/liste ref/tests_${name}/liste
+	  echo
+	  grep -v CHANNEL_LES_VEF_RE_TAU_1110_jdd tests_${name}/liste | grep -v Execute_parallel >liste_mod
+	  
+	  if [ "`diff liste_mod ref/tests_${name}/liste`" != "" ]
+	      then
+	      echo "difference bloquante"
+	      diff liste_mod ref/tests_${name}/liste
+	      echo
+	      echo "Validation XDATA=KO" 
+	      exit -1
+	  else
+	      echo on accepte ces differences
+	  fi
+        fi 
+	rm -rf ref
+fi
+[ $trad -ne 0 ] && echo "Validation XDATA=KO" && exit -1
+echo "Validation XDATA=OK" && exit 0

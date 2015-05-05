@@ -1,0 +1,43 @@
+#
+# filename: customlauncher
+# description: Experimental environment setup customlauncher example.
+#
+# notes: 
+# 1) Replace `your_env.sh' with the path to your desired env script. 
+# 2) Install `customlauncher' next to `internallauncher' in visit/<ver>/bin/ dir
+#
+# (Requires VisIt 2.6.x or later.)
+#
+ 
+import subprocess
+import os
+  
+class SiteSpecificLauncher(MainLauncher):
+    def __init__(self):
+        super(SiteSpecificLauncher, self).__init__()
+ 
+    def Customize(self):
+        if 0:
+           # Loading TRUST environment... Slow ?
+           p = subprocess.Popen(["-c", "source TRUST_ROOT/env/Init_TRUST 1>/dev/null 2>&1 && env " ],
+                                stdin=subprocess.PIPE,
+                                stdout=subprocess.PIPE,
+                                shell=True )
+           env_lines = p.communicate()[0].split("\n")
+           # remove empty pairs
+           env_lines = [ e.strip() for e in env_lines if e.count("=") > 0]
+           # parse pairs
+           env_pairs = [ (e[:e.find("=")],e[e.find("=")+1:]) for e in env_lines]
+           for k,v in env_pairs:
+               SETENV(k,v)
+	else:
+           # Minimal TRUST environment
+	   # For qsub wrapper:
+           SETENV("PATH", self.joinpaths([GETENV("PATH"), "TRUST_ROOT/bin"]))
+	   # For mpirun/mpiexec:
+	   SETENV("PATH", self.joinpaths([GETENV("PATH"), "MPI_ROOT/bin"])) 
+	   # For MPI libraries:
+           SETENV("LD_LIBRARY_PATH", self.joinpaths([GETENV("LD_LIBRARY_PATH"), "MPI_ROOT/lib"]))
+# Launcher creation function
+def createlauncher():
+    return SiteSpecificLauncher()

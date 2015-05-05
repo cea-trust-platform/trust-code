@@ -1,0 +1,48 @@
+#!/bin/bash
+#file=$1
+file='wl_Re_1E5_pb_Diffusion_chaleur.out'
+file_conv='wl_Re_1E5_pb_Convection_chaleur.out'
+file_debit='wl_Re_1E5_pb_Debit.out'
+file_Nusselt='wl_Re_1E5_pb_Nusselt.face'
+file_ustar='wl_Re_1E5_pb_Ustar.face'
+
+nc_bas=`awk '(NR==3)  {if ($3=="bas") nc_bas=2;
+             	       if ($4=="bas") nc_bas=3;
+              	       if ($5=="bas") nc_bas=4
+	      	       if ($6=="bas") nc_bas=5;
+	      	       if ($7=="bas") nc_bas=6;} END {print nc_bas}' $file`
+	       
+nc_haut=`awk '(NR==3) {if ($3=="haut") nc_haut=2;
+               	       if ($4=="haut") nc_haut=3;
+               	       if ($5=="haut") nc_haut=4
+	               if ($6=="haut") nc_haut=5;
+	       	       if ($7=="haut") nc_haut=6;} END {print nc_haut}' $file`
+		       
+nc_conv=3
+nc_debit=3
+nc_Nu=7
+nc_ustar=11
+lambda=0.4 
+temp=500.
+rhocp=24000.
+nu=0.16667e-4
+Nu_analytic=392
+deq=0.0833
+
+val_bas=`awk -v nc_bas=$nc_bas ' END{print $nc_bas}' $file`
+echo $val_bas > val_bas_out
+
+val_haut=`awk -v nc_haut=$nc_haut ' END{print $nc_haut}' $file` 
+echo $val_haut > val_haut_out
+
+val_conv=`awk -v nc_conv=$nc_conv ' END{print $nc_conv}' $file_conv`
+val_deb=`awk -v nc_debit=$nc_debit ' END{print $nc_debit}' $file_debit`
+
+awk -v nc_ustar=$nc_ustar ' { if ($nc_ustar!="") print $nc_ustar}' $file_ustar > ustar.out
+ustar=`awk  ' END {print $1}' ustar.out`
+
+Tb=`awk "BEGIN{print $val_conv/($rhocp*$val_deb)}"`
+Nu=`awk "BEGIN{print (($val_haut/5.)*2.)/($lambda*($temp-$Tb))}"`
+y0=`awk "BEGIN{print ($deq*$ustar)/$nu}"`
+
+echo $val_bas $Tb $Nu_analytic $Nu $y0 > val_out

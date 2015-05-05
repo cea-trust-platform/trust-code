@@ -1,0 +1,5 @@
+dimension 2
+Domaine carre
+Lire_MED family_names_from_group_names carre Gmsh2D Gmsh2D.med
+Discretiser_domaine carre
+Fin

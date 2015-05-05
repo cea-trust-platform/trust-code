@@ -1,0 +1,53 @@
+#!/bin/bash
+[ "`echo $* | grep key`" != "" ] && exit 0
+xdpyinfo=`\ls /usr/bin/xdpyinfo /usr/bin/X11/xdpyinfo 2>/dev/null | head -1`
+if [ "$xdpyinfo" != "" ]
+then
+   result=`$xdpyinfo 2>/dev/null`
+   # Bloque parfois sur sitre:
+   #result=`$xdpyinfo 2>/dev/null` &
+   #$TRUST_ROOT/bin/KSH/wait_for $! 1
+   # La commande existe
+   if [ "$result" = "" ]
+   then
+      # Affichage pas possible, DISPLAY ?
+      echo "DISPLAY not set?"
+      exit -1
+   elif [ "`echo $result | grep -i glx`" = "" ]
+   then
+      echo "Add GLX extension on your X server because VisIt can't run without it." && exit -1
+   fi
+fi 
+# Eventuellement test de l'acceleration Graphique
+#[ "`glxinfo 2>&1 | awk '/direct rendering:/ {print $NF}'`" = No ] && echo "Rendering non active." && exit
+# Test de performances avec glxgears 300->2000 FPS
+
+# Avertissement si une version parallele est possible
+echo "########################################################################################"
+if [ "`ls $TRUST_ROOT/Outils/VisIt/current/*/bin/engine_par 2>/dev/null`" != "" ]
+then
+   if [ "`grep $HOST $TRUST_ROOT/Outils/VisIt/*.xml 2>/dev/null`" != "" ]
+   then
+      echo "This version of VisIt is parallel on $HOST"
+   elif [ "$1" != "-np" ]
+   then
+      echo "You could run a parallel version of VisIt on $HOST with the command: visit -np $TRUST_NB_PROCS $*"
+   fi
+elif [ "$1" = "-np" ]
+then
+   echo "WARNING: You can't use -np with this SEQUENTIAL version of VisIt."
+fi
+echo "You can now visualize data on some remote host with menu File->Select/Open file...->Host" 
+echo "For that, your login on remote host should be configured in order that your local and remote TRUST versions match:"
+echo "ssh selected_host -n 'echo \$TRUST_VERSION' should return something like $TRUST_VERSION"
+echo "Else initialize TRUST v$TRUST_VERSION environment on the remote host by changing your ~/.profile file."
+echo "If you get the message: can't open master pty: /dev/ttyTfcan't open slave pty: -1"
+echo "Then relaunch visit with the -nopty option."
+echo "########################################################################################"
+# Creer eventuellement un script visit avec analyse du probleme
+# echo "export LIBGL_ALWAYS_INDIRECT=1 # To avoid VisIt crashes on $HOST"
+
+# Chargement environnement Python TRUST si necessaire
+# [ -f $TRUST_ROOT/exec/python/env.sh ] && source $TRUST_ROOT/exec/python/env.sh
+
+exit 0

@@ -1,0 +1,81 @@
+#!/bin/bash
+# Script de creation des dependances depuis seulement les includes du makefile
+mini=0 && [ "`basename $0`" = "make_depend_TRUST_mini" ] && mini=1
+system_include=0 && [ "$1" = "system_include" ] && shift && system_include=1
+Includes=$*
+
+#########################################################
+# Mise a jour des fichiers instancie de chaque repertoire
+#########################################################
+# En attendant de pouvoir les supprimer un jour (voir DE080)
+# GF ajout d'un test pour ne pas cree de fichier instancie dans les ateliers
+ici=`pwd`
+if [ "$ici" != "$rep_dev/exec_opt" ] && [ "$ici" != "$rep_dev/exec" ]
+then
+   mk_Instancie
+fi
+
+if [ "$mini" = "1" ]
+then
+   mkmf_mini_ $Includes  2>&1 | grep -v "non-portable whitespace"
+else
+   mkmf_ $Includes 2>&1 | grep -v "non-portable whitespace"
+fi
+
+if [ $system_include -eq 1 ] 
+then
+   # le .bak est cree aussi par le makedepend
+   rm -f ?akefile.bak
+   exit 0
+fi
+#######################################
+# Remplacement par les variables ROOT #
+#######################################
+# Remplacement de ed par sed car pb sur DECalpha si trop de lignes dans le Makefile atelier
+# Remplacement des chemins en dur par des variables d'environnement afin de rendre les makefile portables
+# Pour PETSC, MED et MPICH on ne garde que pestcksp.h, med++.h et mpi.h...
+tmp=`mktemp_`
+echo "s?$TRUST_LATAFILTER/include/?\$(TRUST_LATAFILTER)/include/?g">>$tmp
+echo "s?$TRUST_ICOCOAPI/include/?\$(TRUST_ICOCOAPI)/include/?g">>$tmp
+
+# NB: l'espace devant /include dans: ? /include? est necessaire pour contourner un probleme sur HP
+echo "s?$PETSC_ROOT/$TRUST_ARCH$OPT/include/petsc_for_kernel.h?\$(PETSC_ROOT)/\$(TRUST_ARCH)\$(OPT)/include/petsc_for_kernel.h?g">>$tmp
+echo "s?$PETSC_ROOT/$TRUST_ARCH$OPT/include/petscksp.h?\$(PETSC_ROOT)/\$(TRUST_ARCH)\$(OPT)/include/petscksp.h?g">>$tmp
+echo "s?$METIS_ROOT/include/metis.h?\$(METIS_ROOT)/include/metis.h?g">>$tmp
+
+echo "s?$PETSC_ROOT? /include/?g">>$tmp
+echo "s?$METIS_ROOT? /include/?g">>$tmp
+
+echo "s?$TRUST_MED_ROOT/include/med?\$(TRUST_MED_ROOT)/include/med?g">>$tmp
+echo "s?$TRUST_MED_ROOT? /include/?g">>$tmp
+
+echo "s?$TRUST_MEDCOUPLING_ROOT/include?\$(TRUST_MEDCOUPLING_ROOT)/include?g">>$tmp
+
+echo "s?$MPI_INCLUDE/mpi.h?\$(MPI_INCLUDE)/mpi.h?g">>$tmp
+echo "s?$MPI_INCLUDE? /include/?g">>$tmp
+
+echo "s?$TRUST_ROOT?\$(TRUST_ROOT)?g">>$tmp
+###################################################
+# Suppression des includes machine avec une regex #
+###################################################
+echo "s? /[^ ]*? ?g">>$tmp
+Makefile=`ls ?akefile`
+sed -f $tmp $Makefile > $Makefile".bak"
+
+# Reduit la taille du Makefile (certaines lignes ont:
+# objet.o: 
+# objet.o:
+# objet.o: objet.h
+# ...
+$TRUST_Awk '!/.o: / || !(NF==1) {print $0}' $Makefile".bak" > $Makefile
+
+# Menage
+rm -f $tmp $Makefile".bak"
+
+# To detect strange bug since 1.6.7
+if [ ! -s $Makefile ]
+then
+   echo "$Makefile not created or empty !"
+   ls -lart $Makefile
+   exit -1
+fi 

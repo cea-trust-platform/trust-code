@@ -1,0 +1,32 @@
+#!/bin/bash
+# Premiers arguments : fichiers d'un meme repertoire !
+# Dernier argument : repertoire de destination sur le site !
+liste=$*
+plus="";files=""
+for i in $liste
+do
+   [ ${#plus} != 0 ] && files=$files" "`basename $plus` && dir=`dirname $plus`
+   plus=$i
+done
+rep=$plus
+mkdir_ftp $SECRET 1>/dev/null
+for file in $files
+do
+   # Ajout du del car parfois impossible de copier
+   # il met une erreur en disant fichier not found !
+   echo "Copy of the $file file on ftp://$TRUST_FTP/$rep directory"
+   mkdir_ftp $rep 1>/dev/null
+   p="" && [ "`ftp -help 2>&1 | grep '\-p'`" != "" ] && p=p # Passive mode utile sur les machines virtuelles
+   cat << ! | ftp -iv$p | grep 'Opening BINARY'
+open $TRUST_FTP
+lcd $dir
+cd ../..
+epsv
+cd $rep
+bin
+del $file
+put $file
+!
+done
+#On enleve:
+#chmod 644 $file

@@ -1,0 +1,6 @@
+#!/bin/bash
+sftp $* &
+$TRUST_ROOT/bin/KSH/wait_for $! 10
+
+
+

@@ -1,0 +1,191 @@
+#! /usr/bin/env sh
+# --
+# Author : GF (CEA)
+# --
+
+baltik_environnement_error() {
+    echo "-----------------------------------------"
+    echo "ERROR : undefined variable BALTIK_ROOT   "
+    echo ""
+    echo "Please, install BALTIK and run :         "
+    echo "  source /path/to/BALTIK/bin/baltik_init "
+    echo "-----------------------------------------"
+    echo ""
+    exit 1
+}
+
+baltik_environnement_init()
+{
+	script=$0
+	bindir=`dirname $script`
+	cd `dirname $bindir`
+	pwd
+}
+
+# initialisation de l'etat de la variable BALTIK_ROOT
+BALTIK_ROOT=`baltik_environnement_init`
+# verification de l'etat de la variable BALTIK_ROOT
+if [ "${BALTIK_ROOT}" = "" ]
+then
+    baltik_environnement_error
+fi
+
+
+# chargement des fonctions d'affichage des messages d'erreur
+. ${BALTIK_ROOT}/bin/baltik_errors
+
+# chargement des fonctions d'analyse d'un fichier de configuration
+. ${BALTIK_ROOT}/bin/baltik_configuration_parsing
+
+# chargement des fonctions de correspondance nom variable OPT
+. ${BALTIK_ROOT}/bin/baltik_OPT_management
+
+# chargement des fonctions de gestion des dependances
+. ${BALTIK_ROOT}/bin/baltik_dependencies_management
+
+
+# initialisation des variables utiles
+project_directory=`pwd`
+
+project_build_directory="${project_directory}/build/src"
+if [ ! -e $project_build_directory ]
+then
+    no_build_directory_error "$project_directory"
+fi
+
+project_configuration_file="${project_directory}/project.cfg"
+if  [ ! -e $project_configuration_file ] || [ ! -f $project_configuration_file ] 
+then
+    no_configuration_file_error "$project_directory=$"
+fi
+
+project_description=`extract_section "$project_configuration_file" description`
+
+project_executable_name=`extract_executable_name ${project_description}`
+
+project_name=`extract_field "$project_description" name`
+
+
+cd ${project_directory}
+
+install_dir=${project_directory}/install
+[ "$1" != "" ] && install_dir=$1 
+
+# installation des .h
+mkdir -p ${install_dir}
+install_dir=`cd ${install_dir};pwd`
+
+echo "Installation in " ${install_dir}
+
+chmod -R +w ${install_dir}
+mkdir -p ${install_dir}/include
+cp ${project_build_directory}/*.h ${install_dir}/include
+
+
+if [ 0 -eq 1 ]
+then
+# installation des sources
+mkdir -p ${install_dir}/src
+cp ${project_build_directory}/*.cpp ${project_build_directory}/*.c ${project_build_directory}/*.f ${install_dir}/src
+
+# creation dans makefile pour pouvoir faire les dependances...
+
+rep_dev=${install_dir}/src
+export rep_dev
+includes_add="-I../../include"
+export includes_add
+add_dependencies_to_makefile $rep_dev/make.include.atelier
+env PATH=$BALTIK_ROOT/bin:${PATH} Makeatelier.sccs NO_IHM 2 depend 1>/dev/null
+cp $rep_dev/exec_opt/Makefile $rep_dev
+rm -rf $rep_dev/exec_opt/ $rep_dev/.Fichiers_atelier.html
+
+
+# crearion du fichier instancie base sur mk_Instancie...
+instancie_name=instancie_${project_name}
+ cd ${install_dir}/include 
+ # Liste les .h du repertoire
+ files=`ls *.h | sort 2>/dev/null`
+
+ # Ajout de toto.h pour avoir en sortie du grep file: match
+   files=$files" toto.h"
+
+   # On extrait les lignes declare_instanciable
+   grep declare_instanciable $files 2>/dev/null | grep -v "//" | grep -v "\\\\" | grep -v SolvSuperLu | grep -v ArrOf_Scala | grep -v Scalar_T | grep -v Diff_VDF_proto | sed "s?:? ?g" | sed "s?(? ?g" | sed "s?)? ?g" | sed "s?,? ?g" | $TRUST_Awk '{print $1" "$3}' > declare_instanciable
+
+   # On construit le fichier instancie.cpp provisoire
+   echo "#include <verifie_pere.h> "> ${instancie_name}.cpp
+   $TRUST_Awk '{print ("#include <"$1">")}' declare_instanciable >> ${instancie_name}.cpp
+   echo "void "${instancie_name}"() {" >> ${instancie_name}.cpp
+#   echo "if (Process::je_suis_maitre()) Cerr << \"${instancie_name#instancie_}\" << finl;" >> ${instancie_name}.cpp
+   $TRUST_Awk '($2=="Solv_NPHypre") {print "#ifdef NP_"} {print ($2,"inst"FNR";verifie_pere(inst"FNR");")} ($2=="Solv_NPHypre") {print "#endif"}' declare_instanciable >> ${instancie_name}.cpp
+   echo "}" >> ${instancie_name}.cpp
+
+   rm declare_instanciable
+
+fi
+cd ${project_directory}
+#installation des librairies
+mkdir -p ${install_dir}/lib
+for file in `ls  ${project_build_directory}/exec*/*.a`   
+do
+ proj=${project_name}
+ libname=lib`basename $file | sed "s/TRUST$COMM/$proj/"`
+ cp $file  ${install_dir}/lib/${libname}
+done
+for file in `ls  ${project_build_directory}/exec*/*.so`   
+do
+ proj=${project_name}
+ libname=`basename $file `
+ cp $file  ${install_dir}/lib/${libname}
+done
+#installation des binaires
+mkdir -p ${install_dir}/bin
+for file in `ls  ${project_directory}/${project_executable_name}*`
+do
+ cp $file  ${install_dir}/bin/.
+done
+
+# la fin...
+
+mkdir -p ${install_dir}/share
+# mv ${install_dir}/include/${instancie_name}.cpp ${install_dir}/share
+
+cp ${project_build_directory}/prerequis.sh ${install_dir}/share
+cp ${project_build_directory}/rep_add.sh ${install_dir}/share 2>/dev/null
+
+cp -ar   ${project_directory}/share/* ${install_dir}/share
+cp -ar   ${project_directory}/local  ${install_dir}
+grep -v project_directory ${project_build_directory}/make.include.atelier | sed "s?${project_directory}?${install_dir}?g" >  ${install_dir}/make.include.atelier
+grep -v project_directory ${project_build_directory}/cmake.deps | sed "s?${project_directory}?${install_dir}?g" >  ${install_dir}/cmake.deps
+chmod -R +w ${install_dir}
+ sed "s?-O?\"yy\" =?" ${project_directory}//share/bin/create_Makefile | grep -v build= | sed 's?# balise?build=\${project_directory};bindir=\${bindir}/bin;include_p=\${project_directory}/include?;s?exec\\$(OPT)?lib?g'  >   ${install_dir}/share/bin/create_Makefile
+
+# modification des configure
+
+cd ${install_dir}
+for f in `find share -name 'configure*' | xargs grep -l "sh ../../bin/create"`
+do
+ sed "s?sh ../../bin/create_Makefile?[ \"\$project_directory\" = \"\" ] \&\& echo project_directory not set \&\& exit 1\nsh \${project_directory}/share/bin/create_Makefile?" $f > p
+ mv p $f	
+ chmod +x $f
+done
+cd -
+
+# creation de env.sh
+echo "#!/bin/bash
+TRUST_ROOT=$TRUST_ROOT
+export TRUST_ROOT
+
+cd \$TRUST_ROOT
+source env/Init_TRUST
+cd -
+
+project_directory=${install_dir}
+export project_directory
+echo project_directory=\$project_directory
+
+
+" > ${install_dir}/env.sh
+
+###
+echo procedure $0 non encore validee 

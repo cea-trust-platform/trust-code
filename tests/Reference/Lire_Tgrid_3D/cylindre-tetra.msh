@@ -1,0 +1,863 @@
+(1 "TGrid 3D 3.5.4")
+
+(0 "Machine Config:")
+(4 (32 1 0 1 2 4 8 4 8 8 8))
+(2 3)
+(0 unstructured Delaunay grid
+   nodes:	(10 (id start end type) (x y z ...))
+   faces:	(13 (id start end type etype)
+		(v-0 v-1 .. v-n right-cell left-cell ...))
+   cells:	(12 (id start end type etype))
+)
+(10 (0 1 5e 0))
+(13 (0 1 227 0))
+(12 (0 1 ea 0))
+(10 (1 1 53 2 3) (
+-4.671050072 -2.149240017 10
+30 1.999999995e-06 0
+5.631484985 12.08382034 0
+-9.689780235 12.78345966 9.999999046
+-7.499989986 20 0
+-20 -20 0
+-11.78339958 1.023465037 0
+-7.499989986 20 10
+30 20 10
+9.657532692 -9.37664032 0
+0.4327749908 9.883957863 0
+-20 -10 10
+0.8595719934 -0.8464699984 4.173357964
+-20 20 5
+5.000003815 -20 0
+11.20730972 -0.06191999838 5.8313241
+-11.48130035 0.9334359765 10
+30 10 0
+-1.701719999 4.692295074 0
+9.947541237 -9.144439697 10
+30 10 10
+-20 -20 10
+-6.07945013 -9.506219864 0
+5 20 10
+30 20 0
+-7.139460087 5.747395039 0
+10.82264996 -0.4887099862 10
+-20 0 10
+-1.701719999 4.726840973 5
+-20 -20 5
+-7.499989986 -20 0
+9.809961319 10.74736977 4.291450024
+-3.306999922 -11.39840031 10
+-7.499989986 -20 10
+12.96463013 4.692262173 10
+-6.930049896 5.720033169 10
+30 1.999999995e-06 10
+-20 20 10
+-11.77709961 -6.768340111 0
+17.5 20 10
+30 -20 10
+-14.76620007 8.250080109 0
+10.83014965 9.88393116 10
+-20 10 10
+19.99957085 6.777528763 0
+0.4402230084 -0.4886800051 0
+-20 10 0
+12.96463013 4.726811886 5
+-11.23820019 -7.092299938 10
+5.000003815 -20 10
+5.631445885 12.08382034 10
+2.086946011 -7.599020004 10
+30 -9.999990463 10
+5.631392002 -2.630189896 0
+20.0072403 6.752163887 10
+17.5 20 0
+30 -20 0
+-5.378540039 -2.072449923 0
+0.4402599931 9.942349434 10
+5.631404877 -2.630189896 6.666666031
+18.70635986 -4.038269997 0
+10.83014011 -0.4303100109 0
+-20 0 0
+-0.5078200102 8.779984474 5.997906208
+30 20 5
+17.5 -20 10
+-1.701719999 4.761385918 10
+-14.66969967 8.232546806 10
+30 -9.999990463 0
+12.96463013 4.761362076 0
+18.72636986 -4.010290146 10
+5 20 0
+-20 20 0
+0.25850299 -9.158149719 0
+0.4327360094 -0.4302900136 10
+5.631398201 -2.630189896 3.333333015
+-9.778670311 12.77307034 0
+10.82264996 9.942333221 0
+-20 -10 0
+5.631457806 12.08382034 5
+30 -20 5
+17.5 -20 0
+5.631412983 -2.630189896 10
+))
+(10 (6 54 5e 1 3) (
+-14.84829044 10.34105015 5.497447491
+10.40382038 15.2734503 4.950532096
+-3.733162403 -6.912273407 6.096568108
+2.292213606 -8.578195473 4.855604664
+-0.9429696202 15.23206329 6.22049284
+-10.60744801 15.77600637 5
+-15.18434334 3.661806107 5.131463528
+1.396134377 -12.34683895 5.577853203
+-14.89450395 10.81876576 4.993765532
+16.07496643 11.10435295 3.753979683
+-7.170908928 1.392013311 5.275666714
+))
+(13 (2 1 70 3 3) (
+3b 43 24 3e 0
+43 4b 1 75 0
+1a 13 b 2b 0
+2f 2a 4d 4 0
+4 44 2c 3 0
+3a 2e 13 45 0
+34 4b 53 6b 0
+1 24 43 7d 0
+1 4b 34 7c 0
+48 3 4e 2 0
+2b 33 18 1 0
+13 1a 3a dc 0
+4e 46 2d 34 0
+37 23 2b a1 0
+18 33 3b d 0
+b 3 48 37 0
+53 1b 14 41 0
+a 3e 36 35 0
+17 3a 27 7b 0
+53 14 34 59 0
+7 3a 1a ea 0
+36 2e 4a ae 0
+24 1 11 e5 0
+3a 17 4a e0 0
+2a 1a 4d 5f 0
+1a 2a 7 be 0
+4 24 44 54 0
+11 44 24 b1 0
+47 1b 23 2f 0
+46 3e 3d 2e 0
+7 27 3a 7a 0
+4a 2e 3a 40 0
+2a 2f 3f 89 0
+1c 2c 44 87 0
+1 31 11 84 0
+34 21 1 8e 0
+3f 7 2a dd 0
+51 39 52 1c 0
+42 29 51 1e 0
+41 9 28 1f 0
+38 19 41 1d 0
+8 26 e b 0
+e 49 5 a 0
+1f 6 1e 1a 0
+1e 16 22 1b 0
+4a a 36 d8 0
+1f 17 27 13 0
+24 4 3b 62 0
+27 7 3f 26 0
+b 4d 1a 9f 0
+44 11 1c d6 0
+4a 17 1f 2a 0
+31 1 21 a7 0
+1c 11 31 85 0
+47 14 1b 56 0
+23 37 47 5b 0
+3d 2d 46 5c 0
+3e a 3d 86 0
+21 34 32 27 0
+3b 4 8 11 0
+5 4d b 9e 0
+3f 4f 27 a3 0
+31 21 22 50 0
+31 c 1c a2 0
+26 8 4 66 0
+4d 5 49 69 0
+34 14 32 48 0
+37 15 25 ab 0
+2 12 2d ad 0
+f a 4a ca 0
+4d 49 2f a0 0
+2c 26 4 9b 0
+32 22 21 9d 0
+47 25 35 a9 0
+45 2 3d a8 0
+2d 38 4e c 0
+2b 28 37 c8 0
+25 47 37 b6 0
+2d 3d 2 b9 0
+27 4f 1f 55 0
+22 c 31 16 0
+18 8 5 8 0
+5 48 18 9 0
+32 f 1f 9c 0
+1f 22 32 9d 0
+42 52 f b3 0
+f 32 42 b4 0
+52 42 51 4a 0
+28 18 48 7 0
+48 38 28 6 0
+41 28 38 b0 0
+28 9 15 1f 0
+12 19 38 1d 0
+e 5 8 17 0
+22 1f 1e cb 0
+4f 6 1f 1a 0
+22 16 c 1b 0
+52 39 45 1c 0
+35 29 42 1e 0
+3b 8 18 e 0
+4e 38 48 6f 0
+48 5 b cf 0
+18 28 2b 78 0
+a f 52 b3 0
+42 14 47 67 0
+1f f 4a b2 0
+42 32 14 bf 0
+3d a 52 71 0
+38 2d 12 14 0
+15 37 28 4b 0
+45 3d 52 98 0
+42 47 35 9a 0
+))
+(13 (3 71 7a 3 3) (
+e 26 2c 31 0
+2f 49 e 32 0
+c 16 1e 1b 0
+1e 6 4f 1a 0
+e 2c 2f c6 0
+1e 4f c 3b 0
+3f 2f 2c 28 0
+4f 3f 1c a3 0
+2c 1c 3f 29 0
+1c c 4f a2 0
+))
+(13 (4 7b 84 3 3) (
+15 9 41 1f 0
+41 19 12 1d 0
+45 39 51 1c 0
+51 29 35 1e 0
+35 25 2 a9 0
+2 45 35 a8 0
+25 15 12 ab 0
+12 2 25 ac 0
+41 12 15 d0 0
+51 35 45 49 0
+))
+(13 (5 85 a6 3 3) (
+d 4c 3c 81 0
+2e 36 4c 21 0
+1b 53 3c 41 0
+3c 53 4b 6b 0
+4c 36 3e 35 0
+3c 4c 10 5 0
+40 1d 43 68 0
+4c d 2e 2d 0
+3 50 20 94 0
+20 50 33 61 0
+43 3b 40 3e 0
+23 1b 10 2f 0
+13 2e d 45 0
+20 4e 3 4d 0
+10 1b 3c 4c 0
+10 30 23 19 0
+1d 40 b 42 0
+30 46 4e c3 0
+4b 43 1d 75 0
+2b 23 30 3d 0
+b 13 1d 2b 0
+3e 46 30 2e 0
+3b 33 50 d 0
+50 3 b 3f 0
+50 40 3b d5 0
+30 10 3e 3c 0
+4e 20 30 da 0
+d 1d 13 8d 0
+4b d 3c 88 0
+33 2b 20 c9 0
+3e 10 4c 5e 0
+1d d 4b a6 0
+30 20 2b df 0
+b 40 50 e4 0
+))
+(13 (a a7 227 2 3) (
+31 1f 27 13 55
+31 1c 27 af 85
+31 27 17 13 7b
+3a 31 27 7b 3a
+31 27 11 4e 85
+3d 10 a c7 86
+3e 3d 10 86 3c
+24 1a 1d 90 2c
+40 24 4 bd 62
+40 24 1a 2c bd
+40 1a 1d 2c 42
+1d 1a 13 76 2b
+40 24 3b 62 3e
+43 40 24 3e 68
+40 1d 24 2c 68
+43 1d 24 68 7d
+24 4 1a 7f bd
+46 30 3d 5c 2e
+3e 30 3d 2e 3c
+3d 10 30 3c 57
+37 2d 30 de 95
+47 2d 30 95 96
+47 30 3d 57 96
+3d 2d 30 96 5c
+47 10 30 57 19
+47 30 23 5b 19
+47 30 37 95 5b
+37 23 30 5b 65
+47 23 10 2f 19
+47 1b 10 56 2f
+1b 14 10 56 4c
+47 3d 14 c0 67
+47 3d 10 57 c0
+47 14 10 c0 56
+3d 14 10 c7 c0
+47 37 2d 95 b7
+37 2 2d ad b7
+47 3d 2 aa b9
+47 2 2d b7 b9
+47 3d 2d b9 96
+3a d 2e 45 24
+1d d 1 c5 a6
+4b 1 1d a6 75
+43 1 1d 75 7d
+4b d 1 a6 6a
+14 10 a cc c7
+4c a 14 e3 cc
+4c 3c 14 5 f
+4c 14 10 5 cc
+3c 14 10 4c 5
+4c 36 a 44 35
+4c 3e a 35 5e
+4c 10 a 5e cc
+3e 10 a 86 5e
+4d 40 b 93 9f
+40 b 1a 9f 42
+4d 1a 40 bb 9f
+4d 4 1a bb 80
+40 4 1a bd bb
+4d 40 4 bb d2
+46 2d 30 5c c2
+50 18 33 8f d
+4b 3c 34 46 6b
+53 3c 34 6b 59
+3c 34 14 59 d1
+53 14 3c 41 59
+3c 1b 14 4c 41
+40 4 3b 58 62
+37 12 2d 22 ad
+15 28 41 cd 1f
+31 1e 1f cb db
+22 31 1e 16 cb
+22 c 1e 1b 16
+21 1f 17 a4 51
+22 1f 31 50 cb
+31 1f 17 51 13
+31 17 21 51 25
+47 2 37 b6 b7
+25 2 37 ac b6
+37 2 12 ac ad
+25 12 37 ab ac
+15 12 37 23 ab
+32 a f 63 b4
+32 14 a 70 bf
+32 42 a bf b4
+22 21 1f 50 9d
+47 42 3d 9a 67
+35 3d 47 aa 9a
+35 47 2 aa a9
+25 47 2 a9 b6
+38 12 41 92 1d
+48 18 50 d4 e7
+48 3 50 79 91
+4f 31 1e db 3b
+31 c 1e 16 3b
+4f 27 31 55 af
+4f 31 c 3b a2
+4f 1f 1e 1a db
+4f 27 1c af a3
+3f 1c 27 6c a3
+42 a f b4 b3
+3d 14 a 73 c7
+52 42 a b3 71
+42 14 a bf 73
+42 3d 14 67 73
+52 42 3d 71 99
+35 42 3d 99 9a
+52 3d 35 98 99
+35 3d 45 98 a8
+52 35 42 4a 99
+35 42 51 1e 4a
+52 51 35 4a 49
+52 45 35 49 98
+52 51 45 49 1c
+55 48 38 6f 6
+55 38 28 e2 6
+55 28 48 7 6
+55 4e 38 7e 6f
+55 48 4e 2 6f
+55 20 4e 5d 4d
+55 4e 3 2 4d
+55 3 20 94 4d
+55 48 3 91 2
+55 3 50 91 94
+55 50 20 61 94
+55 50 48 91 d4
+55 48 18 7 d4
+55 18 50 8f d4
+55 50 33 8f 61
+55 33 20 c9 61
+55 18 33 1 8f
+55 33 2b 1 c9
+55 2b 20 97 c9
+55 18 2b 78 1
+55 28 2b b5 78
+55 18 28 7 78
+56 4a 17 e0 8a
+56 17 21 25 39
+56 4a 3a 10 e0
+56 3a d 47 e6
+56 3a 17 43 e0
+56 1 4b 6a 7c
+56 4b 34 6e 7c
+56 34 1 8e 7c
+56 4b d 6a c4
+56 d 1 6a d3
+56 1 31 a7 8c
+56 31 3a 43 33
+56 17 31 43 25
+56 34 21 e9 8e
+56 21 1 a7 8e
+56 21 31 25 a7
+57 4a a 18 d8
+57 a 36 44 d8
+57 36 4a ae d8
+57 4c 36 21 44
+57 a 4c e3 44
+57 4c d 81 2d
+57 d 2e 24 2d
+57 2e 4c 21 2d
+57 2e 36 ae 21
+57 2e 4a 40 ae
+57 3a d 24 47
+57 2e 3a 24 40
+57 3a 4a 10 40
+57 56 3a 10 47
+57 d 56 c4 47
+57 56 4a 74 10
+57 4c 3c f 81
+57 3c d 88 81
+57 3c 14 f d1
+57 14 a e3 36
+57 3c 34 d1 46
+57 34 14 d1 30
+57 4b 3c 88 46
+57 34 4b 6e 46
+57 4b d c4 88
+57 56 4b c4 6e
+57 34 56 8b 6e
+58 18 8 e 8
+58 8 5 d9 8
+58 5 18 9 8
+58 8 4 11 d7
+58 40 4 d2 58
+58 4 3b 11 58
+58 3b 40 d5 58
+58 8 3b e 11
+58 4d 4 20 d2
+58 5 4d b8 9e
+58 4d 40 d2 93
+58 4d b 93 9e
+58 b 5 cf 9e
+58 40 b e4 93
+58 48 5 9 cf
+58 b 48 37 cf
+58 40 50 d5 e4
+58 50 b 3f e4
+58 48 18 e7 9
+58 18 50 e7 ba
+58 50 48 e7 79
+58 3b 50 ba d5
+58 3b 18 e ba
+58 50 3 79 3f
+58 3 b 37 3f
+58 3 48 79 37
+59 e 5 a 17
+59 5 8 d9 17
+59 8 e b 17
+59 e 49 53 a
+59 49 5 69 a
+59 4d 5 b8 69
+59 49 4d 64 69
+59 26 8 b 66
+59 8 4 d7 66
+59 4 26 60 66
+59 26 e 52 b
+59 58 8 d7 d9
+59 5 58 b8 d9
+59 4 58 d7 20
+59 4d 58 20 b8
+59 4d 4 15 20
+5a 11 44 d6 b1
+5a 44 24 5a b1
+5a 24 11 a5 b1
+5a 24 1a e1 83
+5a 1a 7 be c1
+5a 1a 2a 6d be
+5a 2a 7 dd be
+5a 3f 7 26 dd
+5a 2a 3f 89 dd
+5a 2a 2f 77 89
+5a 2f 3f 28 89
+5a 2f 2c bc 28
+5a 2c 3f 29 28
+5a 2c 1c 87 29
+5a 1c 3f 6c 29
+5a 1c 27 4f 6c
+5a 27 3f 26 6c
+5a 27 7 12 26
+5a 27 11 4f 72
+5a 1c 11 d6 4f
+5a 2c 44 82 87
+5a 44 1c d6 87
+5b 21 34 e9 27
+5b 34 32 48 27
+5b 32 21 38 27
+5b 32 f 63 9c
+5b f 1f b2 9c
+5b 1f 32 38 9c
+5b 21 1f 38 a4
+5b 32 a 70 63
+5b a f ca 63
+5b 32 14 48 70
+5b 14 a 36 70
+5b 57 14 36 30
+5b a 57 36 18
+5b 34 14 30 48
+5b 57 34 30 8b
+5b a 4a 18 ca
+5b 4a f b2 ca
+5b 57 4a 74 18
+5b 4a 1f 2a b2
+5b 1f 17 2a a4
+5b 17 21 39 a4
+5b 4a 17 8a 2a
+5b 56 17 39 8a
+5b 21 56 39 e9
+5b 56 4a 8a 74
+5b 57 56 8b 74
+5b 56 34 8b e9
+2 35 3d a8 aa
+57 4c 14 e3 f
+3d 42 a 71 73
+1c 4f 31 a2 af
+3a d 13 e8 45
+1a b 1d 2b 42
+50 18 3b d ba
+31 21 1f 51 50
+31 4f 1f db 55
+3a 31 17 43 7b
+11 1c 27 85 4f
+32 21 1f 9d 38
+5c 2f 2a 77 4
+5c 2a 4d 5f 4
+5c 4d 2f a0 4
+5c 5a 2a 6d 77
+5c 2f 5a bc 77
+5c 5a 1a e1 6d
+5c 1a 2a 5f 6d
+5c 5a 24 5a e1
+5c 24 1a 7f e1
+5c 24 4 54 7f
+5c 4 1a 80 7f
+5c 4d 4 80 15
+5c 1a 4d 80 5f
+5c 59 4d 64 15
+5c 4 59 60 15
+5c 59 49 53 64
+5c 49 4d a0 64
+5c 59 e 52 53
+5c e 49 32 53
+5c 2f 49 a0 32
+5c e 2f c6 32
+5c 4 44 54 3
+5c 44 2c 82 3
+5c 2c 4 9b 3
+5c 2c 26 31 9b
+5c 26 4 60 9b
+5c 26 59 52 60
+5c 26 e 31 52
+5c 2c e c6 31
+5c 2c 2f bc c6
+5c 2c 5a 82 bc
+5c 44 5a 5a 82
+5c 44 24 54 5a
+5d 2b 28 b5 c8
+5d 28 37 4b c8
+5d 37 2b a1 c8
+5d 55 28 e2 b5
+5d 2b 55 97 b5
+5d 2b 20 df 97
+5d 20 55 5d 97
+5d 30 20 da df
+5d 2b 30 3d df
+5d 37 2d 22 de
+5d 2d 30 c2 de
+5d 30 37 65 de
+5d 4e 20 5d da
+5d 30 4e c3 da
+5d 4e 55 7e 5d
+5d 2d 38 14 c
+5d 38 4e 7e c
+5d 4e 2d 34 c
+5d 38 55 e2 7e
+5d 46 2d c2 34
+5d 30 46 c2 c3
+5d 46 4e 34 c3
+5d 2b 23 a1 3d
+5d 23 30 65 3d
+5d 37 23 65 a1
+5d 38 28 b0 e2
+5d 41 28 cd b0
+5d 38 41 92 b0
+5d 2d 12 22 14
+5d 12 38 92 14
+5d 12 41 d0 92
+5d 37 12 23 22
+5d 15 12 d0 23
+5d 37 15 4b 23
+5d 15 41 cd d0
+5d 28 15 cd 4b
+5e 1d d 8d c5
+5e d 1 d3 c5
+5e 1 1d ce c5
+5e 3a d e6 e8
+5e 56 d d3 e6
+5e 1 56 d3 8c
+5e 56 3a e6 33
+5e 56 31 33 8c
+5e 31 3a 33 3a
+5e 1 31 8c 84
+5e 31 11 4e 84
+5e 11 1 e5 84
+5e 31 27 3a 4e
+5e 27 11 72 4e
+5e 27 3a 3a 7a
+5e 7 27 12 7a
+5e 3a 7 ea 7a
+5e 24 1 ce e5
+5e 11 24 a5 e5
+5e 1d 24 ce 90
+5e 3a 1a dc ea
+5e 1a 7 c1 ea
+5e 5a 7 12 c1
+5e 11 5a 72 a5
+5e 5a 1a c1 83
+5e 5a 24 83 a5
+5e 24 1a 83 90
+5e 1d 1a 90 76
+5e 1a 13 dc 76
+5e 13 1d 8d 76
+5e 3a 13 e8 dc
+5e 5a 27 72 12
+13 5e d 8d e8
+24 1 1d 7d ce
+))
+(12 (9 1 ea 1 2))
+
+(0 "Zone variables:")
+(45 (2 wall wall_lateral)())
+(45 (3 wall inlet)())
+(45 (4 wall outlet)())
+(45 (5 wall cylindre)())
+(45 (10 interior interior-10)())
+(45 (9 fluid fluid-9)())
+
+(0 "Cortex variables:")
+(38 ((
+(gui-processing? #t)
+(view-list ((front ((5 0 167.01852) (5 0 5) (0 1 0) 64.807407 64.807407 "perspective") #(1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1)) (back ((5 0 -157.01852) (5 0 5) (0 1 0) 64.807407 64.807407 "perspective") #(1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1)) (right ((167.01852 0 5) (5 0 5) (0 1 0) 64.807407 64.807407 "perspective") #(1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1)) (left ((-157.01852 0 5) (5 0 5) (0 1 0) 64.807407 64.807407 "perspective") #(1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1)) (top ((5 162.01852 5) (5 0 5) (0 0 1) 64.807407 64.807407 "perspective") #(1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1)) (bottom ((5 -162.01852 5) (5 0 5) (0 0 -1) 64.807407 64.807407 "perspective") #(1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1)) (isometric ((-76.009445 114.56517 86.009445) (5 0 5) (0.5000056 0.7071116 -0.5000056) 64.807407 64.807407 "perspective") #(1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1))))
+(left-button-function mouse-rotate)
+(mouse-probes? #t)
+(hidden-surfaces? #t)
+(axes/visible? #t)
+(cx-case-version (3 5 5)))))
+
+(0 "TGrid variables:")
+(60 (
+(meshsol/mesh/reflevel 4)
+(meshsol/mesh/vinit 2000)
+(circumsphere-tolerance 1e-07)
+(sliver-size 2.220446e-16)
+(include-sliver 1)
+(node-tolerance 0.3333333)
+(add-interior-nodes #f)
+(perturb-problem-nodes #f)
+(node-perturbation 0.1)
+(incremental-refinement? #f)
+(max-cell-size 486.04439)
+(max-cell-skew 0.9)
+(max-boundary-cell-skew 0.9)
+(boundary-cell-height 1)
+(min-boundary-closeness 0.01)
+(min-node-closeness 0.1)
+(min-swap-skew 0.4)
+(check-boundary-closeness #t)
+(node-shuffles 4)
+(node-must-reduce-skew #t)
+(node-insertion-method 2)
+(node-insertion-offset 0.01)
+(max-cells 0)
+(max-nodes 0)
+(skewness-method 0)
+(impose-cell-size #f)
+(prism/auto-separate-cell-zone? #f)
+(prism/check-quality? #t)
+(prism/direction-normal? #t)
+(prism/direction-vector (0 0 1))
+(prism/edge-smooth? #t)
+(prism/edge-swap? #t)
+(prism/edge-swap-angle 10)
+(prism/grow-individually? #f)
+(prism/growth ((default constant 1 1 1)))
+(prism/layers 1)
+(prism/max-allowable-skew 0.95)
+(prism/node-smooth? #f)
+(prism/node-smooth-angle 30)
+(prism/node-smooth-converged 0.0001)
+(prism/node-smooth-iter 100)
+(prism/node-smooth-max-ext 2)
+(prism/node-smooth-rings 5)
+(prism/normal-bisect-angle 70)
+(prism/normal-converge-locally? #f)
+(prism/normal-method surface-average)
+(prism/normal-smooth? #t)
+(prism/normal-smooth-angle 45)
+(prism/normal-smooth-converged 0.3)
+(prism/normal-smooth-iter 500)
+(prism/normal-surface-angle 30)
+(prism/offset-method uniform)
+(prism/offset-smooth? #t)
+(prism/offset-smooth-converged 0.01)
+(prism/offset-smooth-iter 100)
+(prism/offset-weight 1)
+(prism/orthogonal-layers 0)
+(prism/project? #t)
+(prism/project-adjacent-angle 45)
+(prism/project-converged 0.0001)
+(prism/project-iter 100)
+(prism/project-plane-angle 10)
+(prism/retriangulate-adjacent? #t)
+(prism/swap-smooth-layers 100)
+(prism/swap-smooth-skew 0.7)
+(prism/retriangulate-feature-angle 30)
+(pyramid/neighbor-angle 115)
+(pyramid/offset-distance 1)
+(pyramid/offset-method skewness)
+(pyramid/jiggle-height-factor 0)
+(pyramid/insert-angle 70)
+(pyramid/insert-tet? #t)
+(remesh/write-debug-file? #f)
+(remesh/refine-boundary? #t)
+(remesh/refine-interior? #t)
+(remesh/insert-original? #t)
+(remesh/swap-and-smooth? #t)
+(remesh/must-improve-skew? #t)
+(remesh/smooth-min-skew 0.2)
+(remesh/intersection-tolerance 0.1)
+(smooth/laplace/angle 15)
+(smooth/laplace/iterations 4)
+(smooth/laplace/relax 0.5)
+(smooth/laplace/converged 1e-06)
+(smooth/laplace/project? #t)
+(boundary/delete-nodes-after-faces? #t)
+(surfer/smoothing-iterations 5)
+(surfer/smoothing-relaxation 0.9)
+(surfer/swapping-iterations 1)
+(surfer/swapping-angle 10)
+(surfer/degree-iterations 10)
+(surfer/shape-tolerance 0.2)
+(surfer/grading 1.2)
+(surfer/selection-interval 1.2)
+(surfer/max-faces 1000000)
+(surfer/feature-angle 30)
+(surfer/lscale-method 1)
+(surfer/lean-and-mean 0)
+(surfer/surface-recovery 0)
+(mesh-origin (0 0 0))
+(edge-collapse/mid-point? #f)
+(edge-remesh/method 1)
+(edge-remesh/spacing (1 1))
+(edge-remesh/quadratic-recon? #f)
+(edge-projection/method 0)
+(edge-projection/direction (1 0 0))
+(edge-intersection/tolerance -1)
+(edge-intersection/delete-overlapped? #f)
+(edge-intersection/auto-remesh-loop? #f)
+(all-cells? #f)
+(all-faces? #t)
+(all-nodes? #t)
+(free? #f)
+(left-handed? #f)
+(multi? #f)
+(unmeshed? #f)
+(unused? #f)
+(marked? #f)
+(tagged? #f)
+(refine? #f)
+(boundary-cells? #f)
+(labels? #f)
+(circumcircles? #f)
+(normals? #f)
+(normal-scale 0.1)
+(face-quality ())
+(cell-quality ())
+(face-size ())
+(cell-size ())
+(draw-x-range ())
+(draw-y-range ())
+(draw-z-range ())
+(label-alignment "*")
+(label-font "sans serif")
+(label-scale 1)
+(node-size 0.25)
+(node-symbol "(*)")
+(xy/scale/percent/y? #f)
+(merge-tolerance 0.003333333)
+(periodic-transform ())
+(non-fluid-default-cell-type dead)
+(spy-level 0)
+(progress-reports 2)
+(diagnostics #t)
+(verbosity-level 1)
+(domains ())
+(interrupt-check-interval 2)
+(auto/merge-free-nodes? #t)
+(auto/merge-free-nodes-args (#t #t))
+(auto/delete-unused-nodes? #t)
+(auto/create-pyramids? #t)
+(auto/create-prisms? #t)
+(auto/improve-surface-mesh? #t)
+(auto/improve-surface-mesh-args (() 10 0.75))
+(auto/delete-dead-zones? #f)
+(auto/init-trys 4)
+(auto/sort-boundary-faces? #t)
+(auto/sort-cells? #t)
+(auto/refine-boundary-cells? #t)
+(auto/refine-cells? #t)
+(auto/refine-levels 2)
+(auto/refine-cells-2d-args ((0.25 #f 0.45 #f 0.45 0.75)))
+(auto/refine-cells-3d-args ((0.75 #f 0.85 #f 0.85 0.85) (0.9 #t 0.9 #t 0.9 0.01) (0.7 #t 0.7 #t 0.75 0.5) (0.9 #t 0.9 #t 0.9 0.01) (0.6 #t 0.6 #t 0.75 0.5) (0.9 #t 0.9 #t 0.9 0.01) (0.5 #t 0.5 #t 0.75 0.5) (0.9 #t 0.9 #t 0.9 0.01) (0.4 #t 0.4 #t 0.75 0.5) (0.9 #t 0.9 #t 0.9 0.01) (0.3 #t 0.3 #t 0.75 0.5) (0.9 #t 0.9 #t 0.9 0.01) (0.2 #t 0.2 #t 0.75 0.5) (0.9 #t 0.9 #t 0.9 0.01) (0.1 #t 0.1 #t 0.75 0.5) (0.9 #t 0.9 #t 0.9 0.01) (0.01 #t 0.01 #t 0.75 0.5) (0.9 #t 0.9 #t 0.9 0.01)))
+(auto/smooth-mesh? #t)
+(auto/smooth-mesh-args (15 0.01))
+(auto/swap-faces? #t)
+(auto/remove-boundary-slivers? #t)
+(auto/remove-boundary-slivers-args (0.95 10))))

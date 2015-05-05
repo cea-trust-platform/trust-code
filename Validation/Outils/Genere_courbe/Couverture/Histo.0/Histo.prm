@@ -1,0 +1,99 @@
+Parameters {
+	Title "Test Histogram"
+	Description "Rapport utilisant visit et gnuplot"
+	Author "G.F."
+	TestCase . maillage.data
+	IncludeData 1
+	Prerequisite "Extract_histogram dom maillage.err  > histo" 
+	Prerequisite "Extract_histogram dom maillage.out  > histo2" 
+}
+
+
+Chapter {
+
+
+
+Figure 
+{
+	Title histogram with figure and style boxes fill solid 0.3
+	Title_figure " "
+	dimension 2
+	Include_Description_Curves 0
+	width 12cm
+	labelx angle
+	labely " "
+	legend under
+	Curve 
+	{
+	file histo
+	style boxes fill solid 0.3
+	columns ($2+$4)/2 6
+	}	
+}
+visu {
+	Title histogram with visit
+         histogram dom.lata dom mesh_quality/LargestAngle ELEM  60 180 12
+	operator no_databaseinfo
+	width 12cm
+}
+Figure 
+{
+	Title histogram with figure
+	Title_figure " "
+	dimension 2
+	Include_Description_Curves 0
+	width 12cm
+	labelx angle
+	labely % de maille
+	legend under
+	Curve 
+	{
+	file histo
+	style boxes
+	columns ($2+$4)/2 9
+	}	
+}
+Figure
+{
+	Title histogram with figure en analyse_angle dom 36
+	Title_figure " "
+	dimension 2
+	Include_Description_Curves 0
+	width 12cm
+	labelx angle
+	labely % de maille
+	legend under
+	Curve 
+	{
+	file histo2
+	style boxes
+	columns ($2+$4)/2 9
+	}	
+}
+
+Figure
+{
+	Title histogram with figure en analyse_angle dom 36 en log 
+	Title_figure " "
+	dimension 2
+	Include_Description_Curves 0
+	width 12cm
+	labelx angle
+	labely % de maille
+	logy
+	legend under
+	Curve 
+	{
+	file histo2
+	style boxes
+	columns ($2+$4)/2 9
+	}	
+}
+
+
+
+
+}
+
+
+

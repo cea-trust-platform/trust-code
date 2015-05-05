@@ -1,0 +1,210 @@
+# Thermohydraulique 2D avec modele K-Epsilon V2 #
+# PARALLEL NOT #
+dimension 2
+Pb_thermohydraulique_Turbulent pb
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Entree
+		{
+		Origine 0. 2.
+		Longueurs 7 8
+		Nombre_de_Noeuds 41 31
+		}
+		{
+		Bord haut      Y = 10.    0. <= X <= 7
+		Bord entree    X = 0.       2. <= Y <= 10.
+		} ,
+
+	Pave Entree_bas
+		{
+		Origine 0. 0.
+		Longueurs 7 2
+		Nombre_de_Noeuds 41 11
+		}
+		{
+		Bord entree    X = 0.       0. <= Y <= 2.
+		Bord bas    Y = 0.       0. <= X <= 7.
+		Bord obst   X = 7.	0. <= Y <= 2.
+		} ,
+			
+	Pave Milieu
+		{
+		Origine 7. 2.
+		Longueurs 2 8
+		Nombre_de_Noeuds 21 31
+		}
+		{
+		Bord haut      Y = 10.    7. <= X <= 9.
+		Bord obst	Y = 2.  7. <= X <= 9.
+		} ,
+				
+	Pave Sortie 
+		{
+		Origine 9. 2.
+		Longueurs 7. 8.
+		Nombre_de_Noeuds 41 31
+		}
+		{
+		Bord haut      Y = 10.    9. <= X <= 16.
+		Bord sortie      X = 16.    2. <= Y <= 10
+		} ,
+
+	Pave Sortie_bas 
+		{
+		Origine 9. 0.
+		Longueurs 7. 2.
+		Nombre_de_Noeuds 41 11
+		}
+		{
+		Bord bas      Y = 0.    9. <= X <= 16.
+		Bord sortie      X = 16.    0. <= Y <= 2.
+		Bord obst   X = 9. 	0. <= Y <= 2.
+		} 
+}
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 1
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0.
+	tmax  5.
+	dt_min 0.2
+	dt_max 0.2
+	dt_impr 0.1
+	dt_sauv 30.
+	seuil_statio 1.e-15
+}
+
+Fluide_Incompressible air
+Lire air
+{
+	mu Champ_Uniforme 1 1.906e-5
+	rho Champ_Uniforme 1 1.124
+	lambda Champ_Uniforme 1 0.0271 
+	Cp Champ_Uniforme 1 1006.8
+	beta_th Champ_Uniforme 1 3.23e-3
+}
+
+Champ_Uniforme gravite
+Lire gravite 2 0 -9.81
+
+#
+ associations d'objets au probleme et
+ schema de discretisation spatiale 
+#
+Associate air gravite
+Associate pb dom
+Associate pb sch
+Associate pb air
+
+VDF dis
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_turbulent 
+	{ 	dt_projection 20 1.e-10
+		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-10 }	
+		sources { boussinesq_temperature { T0 20. } }
+		convection { Amont }
+		diffusion { }
+		conditions_initiales {
+			 	vitesse Champ_Uniforme 2 .1 0. }
+		boundary_conditions { 	
+				haut  paroi_fixe 
+				bas  paroi_fixe
+				obst  paroi_fixe
+				entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  .1 0.
+				sortie frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.		
+		}
+		modele_turbulence K_Epsilon_V2 { 
+                        Transport_K_Epsilon_V2
+                        {      
+                                convection { amont }
+                                diffusion { }
+                                boundary_conditions {
+                                        bas   paroi_fixe  
+                                        haut  paroi_fixe 
+                                        obst  paroi_fixe 
+                                        
+                                        entree frontiere_ouverte_K_eps_impose Champ_Front_Uniforme 2 1.e-2 1.e-3
+                                        sortie frontiere_ouverte K_EPS_EXT Champ_Front_Uniforme 2 0. 0.
+                                        }
+                                conditions_initiales { k_eps Champ_Uniforme 2 1.e-3 1.e-3 }
+                        }
+                        Transport_V2
+                        {      
+                                convection { amont }
+                                diffusion { }
+                                boundary_conditions {
+                                        bas   paroi 
+                                        haut  paroi
+                                        obst  paroi
+                                        
+                                        entree frontiere_ouverte_V2_impose Champ_Front_Uniforme 1 1.e-3
+                                        sortie frontiere_ouverte V2_EXT Champ_Front_Uniforme 1 0.
+                                        }
+                                conditions_initiales { V2 Champ_Uniforme 1 1.e-6 }
+                        }
+                        EqnF22 
+                                {
+                                Solveur Gmres { }
+                                }
+				
+                        Turbulence_paroi negligeable
+                } 
+	}
+
+        Convection_Diffusion_Temperature_Turbulent {
+                diffusion { }
+                convection { amont }
+                boundary_conditions {
+			bas   paroi_temperature_imposee Champ_Front_Uniforme 1 150. 
+			haut   paroi_adiabatique
+ 			obst   paroi_temperature_imposee Champ_Front_Uniforme 1 150.
+ 			entree  Frontiere_ouverte T_ext Champ_Front_Uniforme 1 20.  
+			sortie Frontiere_ouverte T_ext Champ_Front_Uniforme 1 20. 
+		}
+		conditions_initiales { Temperature Champ_Uniforme 1 20. }
+                Modele_Turbulence Prandtl { Turbulence_paroi negligeable_scalaire }
+ 		}
+
+
+Postraitement
+	{
+		Sondes
+		{
+			sonde_vit1 vitesse periode 1 segment 51 0.5 2. 0.5 10. 
+                        sonde_vitesse vitesse periode 1 point 1   0.10 2. 
+		
+		}	
+		Champs dt_post 5
+		{
+			vitesse elem
+			vitesse som
+			temperature elem
+			k elem
+                        eps elem
+                        viscosite_turbulente elem
+		}
+	}
+}
+Solve pb
+Fin
+

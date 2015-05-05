@@ -1,0 +1,6 @@
+I am not the author of this code, so these comments have a disclaimer.
+An interesting bug with the code as it is was brought to light by
+Alan Aronoff who used the existing Makefile to compile the code.  For
+both HP-UX and SGI he found errors on the 27th line of mffta4.  The
+code was compiled with the -C option.  It seems that this error is
+not at all relevant, so I have removed this option from the Makefile.

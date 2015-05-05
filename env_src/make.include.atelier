@@ -1,0 +1,7 @@
+include $(TRUST_ENV)/make.all_Includes.TRUST
+
+# Surcharge de Libs pour l'atelier
+# Ajoutez vos librairies a la suite
+
+Includes = -I.  $(all_Includes)
+Lib = libatelier${OPT}

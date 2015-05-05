@@ -1,0 +1,24 @@
+#!/bin/bash
+# Find a graphical diff tool for Git:
+if [ "$#" != 7 ]
+then
+   echo "Same usage than git diff. Example: xdiff.git branch1...branch2, xdiff.git HEAD file, xdiff.git HEAD"
+   [ "$1" = "" ] && exit 0 
+   # Run git diff with xdiff.git as GIT_EXTERNAL_DIFF
+   env GIT_EXTERNAL_DIFF=$0 git diff $*
+else
+   # 7 parameters: it is the output of git diff with GIT_EXTERNAL_DIFF specified:
+   # Find a graphical diff tool: 
+   tools="/usr/bin/tkdiff /usr/atria/bin/xcleardiff /usr/bin/kdiff3 /usr/bin/gvimdiff"
+   for diff_tool in $tools
+   do
+      [ -f $diff_tool ] && break
+   done
+   if [ "$diff_tool" = "" ]
+   then
+      echo "No graphical diff tool found in the list: $tools !" && exit -1
+   else
+      $diff_tool "$2" "$5"
+      exit 0 # Important
+   fi
+fi

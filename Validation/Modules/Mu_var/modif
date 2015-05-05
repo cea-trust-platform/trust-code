@@ -1,0 +1,17 @@
+#!/bin/ksh
+
+#ksh cas_cond "type_pb like '%thermo%' and type_pb not like '%rayo%' and type_pb not like '%QC%'"
+
+
+
+
+
+file=$1
+cp $file es.data
+chmod +w es.data
+awk   ' BEGIN { IGNORECASE=1}  /mu/  {j=-1;for (i=1;i<NF+1;i++){if ($i=="Champ_Uniforme")  {j=i }};if (j!=-1) { for (i=1;i<j;i++) { printf("%s ",$i)};printf("Champ_Fonc_Tabule 1 Temperature { 2 10 20 %e %e  }\n ",$(j+2),$(j+2)) } else { print $0 }}  !/mu/ {print $0}' $file > es.data
+#mv $file org_$file
+#mv es.data $file
+mv es.data Mu_var_$file
+diff Mu_var_$file $file 
+exit

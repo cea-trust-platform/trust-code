@@ -1,0 +1,162 @@
+#!/bin/bash
+# Simule "tggcov -R summary_all file"
+# Ameliorer se baser sur tggcov --annotate pour generer
+# des rapports plus fiables...
+HTML_ROOT=$TRUST_ROOT/doc/Coverage/html
+cd $HTML_ROOT
+if [ "$1" != -short ]
+then
+   echo $ECHO_OPTS "`basename $0`" "$*
+Usage: `basename $0` [-html] | [-short] [-file file|all] [-module all|module [-directory]] [-directory all|directory [-file]]
+Reports code coverage of the whole code, a file, or a module.
+Warning: Lines beginning by a comment or containing Cerr or exit are not counted.
+Please wait...
+-------------------------------------------------
+%Lines tested \ttested/total \t\tComponent:"
+else
+   shift
+fi
+if [ "$1" = -html ]
+then
+   # Si publie sur ftp pour cacher:
+   NO_ROBOT="<html><head><META NAME="ROBOTS" CONTENT=\"NOINDEX, NOFOLLOW\"><META NAME="ROBOTS" CONTENT=\"NOARCHIVE\"></head><pre>" 
+   # Cree un rapport index.html
+   export html=1   
+   echo "$NO_ROBOT<pre>" 		1> index.html
+   $0 					1>>index.html	# Code complet	
+   $0 -short -module all 		1>>index.html 	# Suivi des modules
+   # Repertoires par module (eg: VDF.html)
+   for module in `cat $TRUST_ROOT/env/rep.TRUST | awk -F/ '{print $2}' | sort -u`
+   do
+      echo "$NO_ROBOT<pre>" 		1>$module.html
+      echo $0 -module $module -directory ...
+      $0 -module $module -directory 	1>>$module.html
+   done
+   # Ajouts des fichiers par repertoire
+   for directory in `cat $TRUST_ROOT/env/rep.TRUST`
+   do
+      directory=${directory#./}
+      dir=`echo $directory | $TRUST_Awk '{gsub("/","_",$0);print $0}'`
+      # -short si on est au niveau d'un module:
+      if [ "`echo $directory | $TRUST_Awk -F/ '{print NF}'`" = 1 ]
+      then
+         short="-short" 
+      else
+         short=""
+	 echo "$NO_ROBOT<pre>" 			1>$dir.html
+      fi
+      echo $0 $short -directory $directory -file ...
+      $0 $short -directory $directory -file 	1>>$dir.html
+   done 
+   echo "HTML report `pwd`/index.html created."
+   exit
+fi
+type=$1
+nom=$2
+file=$TRUST_TMP/file
+rm -r -f $TRUST_TMP/file
+if [ "$type" = "" ]
+then
+# Code complet
+   find $HTML_ROOT/cpp.gcov/. -name '*'.gcov | xargs cat > $file
+   what="Code TRUST"
+# Fichier
+elif [ "$type" = -file ]
+then
+   if [ "$nom" = all ]
+   then
+      for gcov in `cd $HTML_ROOT/cpp.gcov;find * -name '*'.gcov`
+      do
+         $0 -short -file ${gcov%.gcov}
+      done | sort -n
+      exit 0
+   else
+      cat $HTML_ROOT/cpp.gcov/$nom".gcov" > $file
+      if [ "$html" = 1 ]
+      then
+         what="File <A HREF=cpp.gcov/${nom#./}.gcov>${nom#./}</A>"
+      else
+         what="File ${nom#./}"
+      fi
+   fi
+# Repertoire
+elif [ "$type" = -directory ]
+then
+   if [ "$nom" = all ]
+   then
+      for directory in `cat $TRUST_ROOT/env/rep.TRUST`
+      do
+         $0 -short -directory ${directory#./}
+      done | sort -n   
+      exit
+   elif [ "$3" = -file ]
+   then
+      # Taux du repertoire complet
+      # $0 -short -directory $nom
+      # Taux des fichiers du repertoire
+      for file in `cd $HTML_ROOT/cpp.gcov;find . -name '*'.gcov -exec grep -li TRUST_ROOT/$nom$ {} \;`
+      do
+         $0 -short -file ${file%.gcov}
+      done | sort -n
+      exit      
+   else
+      find $HTML_ROOT/cpp.gcov/. -name '*'.gcov -exec grep -li TRUST_ROOT/$nom$ {} \; | xargs cat > $file
+      if [ "$html" = 1 ]
+      then
+         what="Directory <A HREF=`echo $nom | $TRUST_Awk '{gsub("/","_",$0);print $0}'`.html>$nom</A>"
+      else
+         what="Directory $nom"
+      fi
+   fi
+# Module
+elif [ "$type" = -module ]
+then
+   if [ "$nom" = all ]
+   then
+      for module in `cat $TRUST_ROOT/env/rep.TRUST | awk -F/ '{print $2}' | sort -u`
+      do
+         $0 -short -module $module
+      done | sort -n
+      exit
+   elif [ "$3" = -directory ]
+   then
+      # Taux du module complet
+      $0 -short -module $nom
+      # Taux des sous repertoires du module
+      for directory in `grep -e \\\./$nom/ -e \\\./$nom$ $TRUST_ROOT/env/rep.TRUST`
+      do
+         $0 -short -directory ${directory#./}
+      done | sort -n
+      exit
+   else
+      find $HTML_ROOT/cpp.gcov/. -name '*'.gcov -exec grep -li TRUST_ROOT/$nom {} \; | xargs cat > $file
+      if [ "$html" = 1 ]
+      then
+         what="Module <A HREF=$nom.html>$nom</A>"
+      else
+         what="Module $nom"
+      fi
+   fi
+fi
+
+# Donne le taux de couverture (lignes) en supprimant les lignes contenant:
+# Cerr
+# exit
+# Implemente_
+# Lignes vides
+# Ligne avec /*EOF*/
+# Ligne avec un seul caractere }
+[ -s $file ] && cat $file | awk -v what="$what" -F: 'BEGIN {not_tested=0;line=0} 
+($1!="        -") && !/Cerr/ && !/exit/ && !/Implemente_/ && ($3!="") && ($3!="/*EOF*/") {
+  gsub(" ","",$3);
+  gsub("\t","",$3);
+  if ($3!="}") { line++;if ($1=="    #####") not_tested++}; 
+}
+END {
+  tested=line-not_tested;
+  percent=(line>0?tested/line*100:0);
+  printf("%.2f",percent);
+  if (tested>0) printf(" \t\t%6.i/%i",tested,line);
+  else printf(" \t\t     0/%i",line);
+  print " \t\t"what
+}'

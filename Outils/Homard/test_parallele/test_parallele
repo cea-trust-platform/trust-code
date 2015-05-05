@@ -1,0 +1,23 @@
+#!/bin/bash
+
+copie_cas_test Canal_VEF_3D_SCOTTI
+cp suite.data Canal_VEF_3D_SCOTTI
+gunzip -c org.lml.gz > Canal_VEF_3D_SCOTTI/org.lml
+cd Canal_VEF_3D_SCOTTI
+make_PAR.data Canal_VEF_3D_SCOTTI
+triou PAR_Canal_VEF_3D_SCOTTI 2
+
+# on a cree le fichier xyz en // on le relit en sequzntiel et on ecrit 
+# un fichier_med
+triou suite
+
+# on a cree le fichier med on lance homard
+#../../lance_homard suite_0000.med dom VISCOSITE_TURBULENTE_ELEM_dom 0.2
+../../lance_homard suite_0000.med dom VISCOSITE_TURBULENTE 0.2
+
+# on cree un lml
+echo "postraiter_domaine { domaine raff_dom format lml fichier test_para.lml } ">> transf_med.data
+triou transf_med
+
+compare_lata org.lml test_para.lml
+

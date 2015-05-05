@@ -1,0 +1,98 @@
+#!/bin/bash
+#set -xv
+echo "debut de la lecture de $1 sortie dans /tmp/file1"
+rm -f /tmp/file1
+file=$1
+ligne="TAILLES 3 "
+ligne=""$ligne" `grep define $file|grep NIMAX | awk '{printf ($3)}'` `grep define $file|grep NJMAX | awk '{printf ($3)}'` `grep define $file|grep NKMAX | awk '{printf ($3)}'` tailles"
+res="`echo $ligne| awk '{print NF}'`"
+if [ "$res" != "6" ] 
+    then
+     ligne="TAILLES 3 "
+     ligne=""$ligne" `grep define defineh_inc|grep NIMAX | awk '{printf ($3)}'` `grep define $file|grep NJMAX | awk '{printf ($3)}'` `grep define $file|grep NKMAX | awk '{printf ($3)}'` tailles"
+     res="`echo $ligne| awk '{print NF}'`"
+    if [ "$res" != "6" ] 
+    then
+    ligne="TAILLES 3 0 0 0 tailles"
+    fi
+   fi
+echo $ligne > /tmp/file1
+
+les_call0=/tmp/les_call0$USER
+les_call=/tmp/les_call$USER
+les_affect=/tmp/les_affect$USER
+les_comments=/tmp/les_comments$USER
+# le awk sert a remplacer les tab pare des espaces et rajoute un espace au debut
+#grep -in call $1 |sed "s?:? ?" | sed "s/(/ /" | sed "s?,? ?g" | sed "s?)? ?" | awk -F\\t '{printf(" ");for (i=0;i<NF;i++) printf ($(i+1)" ");printf("\n")}'| sed "s/  / /g"  > $les_call
+grep -in call $1 |sed "s?:? ?" | sed "s/(/ /" | sed "s?,? ?g"  | awk -F\\t '{printf(" ");for (i=0;i<NF;i++) printf ($(i+1)" ");printf("\n")}'| sed "s/  / /g" > $les_call0
+lescall="`awk '{print $1}' $les_call0`"
+rm $les_call
+# on verifie que tout se passe bien : presence de 
+# ou on ajoute la ligne d'apres
+for i in $lescall
+do
+ligne=`grep " $i " $les_call0`
+res="`echo $ligne | grep \)`"
+ij=$i
+while [ "$res" = "" ]
+do
+ij=`expr $ij + 1`
+
+ligne2=`head -$ij $1 |tail -1|awk '{for (i=2;i<=NF;i++) print($i" ")}'`
+ligne=""$ligne""$ligne2
+res="`echo $ligne | grep \)`"
+done
+echo $ligne >> $les_call
+done
+mv $les_call $les_call0
+sed "s?:? ?" $les_call0 | sed "s/(/ /" | sed "s?,? ?g" | sed "s?)? ?" | awk -F\\t '{printf(" ");for (i=0;i<NF;i++) printf ($(i+1)" ");printf("\n")}'| sed "s/  / /g"  > $les_call
+
+#more $les_call
+grep -in "\=" $1 | sed "s?:? ?" | awk -F\\t '{printf(" ");for (i=0;i<NF;i++) printf ($(i+1)" ");printf("\n")}'|sed "s?=? ?" | sed "s/  / /g" > $les_affect
+grep -in "c" $1 | sed "s?:? ?" | awk '{if (($2=="c")||($2=="C")) {print $0}}'| sed "s/\*/STAr/g" >$les_comments
+
+#echo $lescall
+iprev=0
+for i in $lescall
+do
+ligne=`grep " $i " $les_call`
+l=`echo $ligne | awk '{print $1}'`
+[ $l != $i ] && echo "pb dans "$0 "avec "$ligne
+#echo $l 
+rout=`echo $ligne | awk '{print $3}'`
+nargs=`echo $ligne | awk '{print NF-3}'`
+sortie="$rout $nargs"
+args=`echo $ligne | awk '{for (i= 4;i<=NF;i++) print $i}'`
+#echo $rout $nargs $args
+# on recupere la valeur des arguments
+for arg in $args
+do
+ok=1
+imax=$i
+var=$arg
+#on boucle pour obtenir une valeur positive
+while [ $ok != 0 ]
+do
+res=`awk -v imax=$imax -v var=$var '{if (($1<=imax) && ($2==var)) {print ($1,$3)}}' $les_affect | tail -1`
+if [ "$res" != "" ]
+then
+val=`echo $res | awk '{print $2}'`
+var=$val
+imax=`echo $res | awk '{print $1}'`
+else
+ok=0
+fi
+done
+sortie=""$sortie" "$val
+done
+# on recupere les commentaires
+res2=`awk -v iprev=$iprev -v ic=$i '{if (($1>iprev)&&($1<ic)) {for (i=3;i<=NF;i++) printf ($i" ");printf("\n")}}' $les_comments`
+
+sortie=""$sortie" "$res2
+#echo $sortie
+echo $sortie >> /tmp/file1
+iprev=$i
+done
+sed "s/STAr/\*/g" /tmp/file1 > /tmp/file2
+mv /tmp/file2 /tmp/file1
+echo "fin de la lecture de $1"

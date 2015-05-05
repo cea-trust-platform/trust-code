@@ -1,0 +1,343 @@
+*Vect::*Vect(const ArrOf*)
+  Le constructeur par copie a partir d'un object de classe mere a ete retire.
+  J'ai trouve comme ca plusieurs endroits ou on fait expres une copie du vecteur pour
+  pouvoir le passer en parametre (typiquement, passer un ArrOfInt a valeur_aux_elems !!!)
+  Cela pourrait avoir des consequences sur les autres codes aussi.
+  Contournement: 
+    - si c'est un objet temporaire, remplacer localement l'ArrOf* qui est passe en parametre part un *Vect,
+    - sinon creer un IntVect tmp; tmp.copy(source); et appeler la methode avec tmp, cela reproduit le
+      comportement du code existant
+    - changer le prototype des methodes qui sont appelees (pour valeur_aux_elems il faudrait le faire
+      mais on verra plus tard).
+
+readOn et printOn():
+  Le readOn lit toujours un tableau sequentiel, afin de garantir la symetrie du readOn et du printOn,
+  l'impression de tableaux ayant une structure parallele est maintenant interdite. Il faut passer
+  par lit() et ecrit()
+
+lit() et ecrit():
+  L'ecriture de la structure parallele dans les fichiers de reprise ne sert a rien en pratique.
+  a la lecture, je reste compatible avec la version precedente (structure ignoree)
+  a l'ecriture, j'ecris les valeurs suivi d'un marqueur indiquant que la structure parallele n'est plus ecrite
+  Attention, lit a maintenant pour precondition par defaut que la structure parallele et la taille
+  du tableau doit deja etre initialisee avant l'appel (on verifie que le tableau lu a bien la taille 
+  du tableau actuel). Ceci permet d'eviter qu'on se trompe de tableau ou qu'on relise un calcul fait avec
+  une epaisseur de joint differente par exemple... 
+  Certains appels a lit() servent a avancer dans le fichier de reprise. La spec de lit() permet ce cas
+  particulier: si le tableau est initialement vide (taille nulle et pas de structure parallele), alors
+  on relit la taille dans le fichier et on resize le tableau, sinon on verifie que la taille est deja la bonne.
+  Donc, sauf codage tres bizarre, il n'y aura rien a changer dans le code suite a cette modif. En cas de
+  plantage des reprises: si c'est un tableau sans structure parallele qu'on relit, faire un reset() du tableau
+  avant d'appeler lit(), sinon "Houston, on a un probleme..."
+
+IntVect::adopter() 
+  A ete supprime. A remplacer par ref_data()
+  Les methodes pour faire pointer un tableau sur un autre ont ete largement etoffees et securisees
+   ref() -> recupere egalement la structure parallele du tableau 
+   ref_data(), ref_array() -> creent des tableaux sans structure parallele, mais possibilite
+     de pointer sur une sous-partie d'un tableau
+   ref_tab() -> fait pointer sur une sous-partie d'un tableau multidimensionnel en recuperant
+     les dimensions(i) du tableau pour i>=1
+   Attention: la methode ref_array() permet maintenant d'adopter une sous-partie d'un tableau
+    en gerant proprement un compteur de references: l'utilisation de ref_data() devrait maintenant
+    etre extremement reduite dans le code ! (cette methode ne permet aucun controle de la gestion
+    memoire, a eviter absolument)
+
+DoubleVect::inject()
+  A ete supprime. A remplacer par inject_array()
+  Question sur la spec: le commentaire dit "ajoute a la fin", en pratique, copie au debut!
+  DONC: partout ou inject() est utilise, verifier avant de remplacer par inject_array() que 
+        c'est bien ce qu'on veut faire
+
+Changement des signatures -> beaucoup de fonctions renvoient void au lieu de xxx_Vect & ou xxx_Tab &,
+  permet de ne pas avoir a les surcharger systematiquement et permet de rendre certaines virtuelles 
+  (ref(), ref_array() et ref_data(), c'est important pour initialiser correctement toutes les structures !)
+  Leger inconvenient pour ceux qui utilisent la valeur de retour de ces fonctions (a priori juste une
+   petite reecriture de la ligne car la valeur de retour est *this...)
+
+Restrictions sur de nombreuses routines (a cause de bugs possibles, voire garantis si on ne les met pas)
+A priori, l'impact sur le code existant est tres reduit et la ou ca plante c'est qu'il y a vraiment
+des questions a se poser !!!
+  resize(), operator=(), ref()
+  L'appel est interdit si le tableau change de taille ou de structure et si on appelle une
+   methode qui ne correspond pas au type effectif de l'objet
+   (exemple: appel a DoubleVect::resize(n) sur un objet de type DoubleTab -> bug garanti)
+  operator= refuse la copie si le tableau destination a deja une structure parallele et si ce n'est
+    pas la meme que celle du tableau source.
+
+Nouvelles optimisations possibles grace a resize()
+ Les methodes resize(...) prennent maintenant un argument optionnel supplementaire Resize_Option
+ qui permet d'optimiser le code:
+   - COPY_INIT: comportement par defaut identique au comportement actuel : copie des valeurs de l'ancien tableau,
+     initialisation des nouvelles valeurs a zero.
+   - COPY_NOINIT: copie des valeurs existantes, nouvelles valeurs non initialisees
+   - NOCOPY_NOINIT: oubli des valeurs existantes, nouvelles valeurs non initialisees
+ Pour creer un tableau non initialise, faire DoubleTab toto; toto.resize(ni, nj, ArrOfDouble::NOCOPY_NOINIT);
+ (l'enum est dans ArrOf, je vais peut-etre le mettre a l'exterieur pour alleger)
+ Ces optimisations peuvent faire gagner pas mal de temps si on remplit le tableau de toutes facons juste apres.
+ Elles permettent aussi de detecter des "trous" dans les algorithmes:
+ En debug, si on choisit de ne pas initialiser le tableau, une valeur invalide est mise dans toutes les
+ nouvelles cases (MAXINT en entier, 1e38 en double). 
+ En optimise, valgrind plantera sur les cases non initialisees s'il s'agit d'une zone de memoire fraichement 
+ allouee (sans smart_resize)
+
+La methode copy() prend un argument optionnel Resize_Options qui permet de lui faire faire un truc tres pratique:
+  copier la structure du vecteur (dimensions et structure parallele)
+
+Suppression de toutes les operations qui renvoient de IntVect par valeurs: ca plombe les performances et on ne
+se rend pas toujours compte de ce que cela fait.
+
+Suppression des operator< et operator> entre IntVect
+
+Changement de specification en vue pour operator+= operator-= etc... ils ne feront l'operation que sur l'espace reel.
+
+Preconditionneurs: j'ajoute un parametre optionnel pour demander ou pas de faire l'echange espace virtuel sur le
+ resultat, par defaut on le fait. Je modifie le reinit() pour donner une info de plus: a-t-on modifie la structure
+ de la matrice ou seulement les coefficients.
+
+Creation des champs: attention: toutes les methodes creer_espace_distant sont supprimees, le code correspondant doit etre
+mis dans fixer_nb_valeurs_nodales (utiliser les methodes creer_tableau_sommets, elements etc)
+
+
+
+Debog.cpp: entierement reecrit. Attention: pour debogger un tableau il faut maintenant qu'il porte un descripteur
+ parallele reconnu par Debog (sommets, elements, faces, aretes, etc)
+
+Mat_Morse.cpp
+ J'ai vire le test sur les structures (nbstruct <= 1) qui faisait exit de toutes facons.
+ (j'en ai profite pour optimiser le codage du produit matrice vecteur, pas forcement un
+  gros impact car nos matrices sont morse_sym)
+
+Mat_Morse_Sym.cpp
+ On pourrai encore optimiser un peu utilisant des pointeur++ plutot que pointeur[i]
+ Sinon pas de modif importante (un assert sur structure retire)
+
+Plein de fichiers:
+ Suppression de "structure().... identificateur() = "trucmachin.nom_du_champ"
+
+OpDiffRotRot.cpp
+ Pourquoi est-ce que  "nb_valeurs_nodales = zvef.nb_elem() + zvef.nb_som() -1;" ???
+
+P_MG_base.cpp
+ Ouh la la, c'est le bazar, j'ai tout desactive et mis un gros exit() !!!
+ A voir plus tard.
+P_MG.h
+ #if 0 sur cree_structure_blabla
+
+Precond_local.cpp
+ "c'est une connerie" (dixit Gauthier)
+ Bon, il y a des cas tests de non regression.
+ Pour l'instant je desactive avec un gros exit()
+
+SolvNP.cpp
+ Factorisation de la partie "compression/renumerotation sequentielle de la matrice"
+ Factorisation des procedures de compression/decompression des vecteurs pour NP
+ Un peu d'optimisation au passage
+ Faut-il prevoire le cas ou les vecteurs n'ont pas de structure parallele ?
+  (valide uniquement si nproc==1)
+
+Champ_som_lu_VDF.cpp
+ ArrOfInt devient IntVect a cause du prototype de valeur_aux_elems et de la suppression du constructeur
+ par copie ArrOf -> Vect 
+
+Zone.cpp
+ Utilisation de resize_tab() dans chercher_elements()
+
+Fluide_Quasi_Comp.cpp
+ A finir: calcul des moyennes volumiques, pour l'instant exit()
+
+Hexaedre.cpp
+ Conversion implicite en IntVect pour rien, retire
+
+LoiParoiHybride_VDF.cpp
+ Utilisation toolbox pour creer un tableau distribue
+
+Zone_VF.h
+ Ajout des methodes pour avoir les descripteurs faces, aretes et faces de bord
+ (faut-il mettre celui-la dans la Zone plutot ?)
+
+Mod_Jones_Launder_VDF.cpp
+ Factorisation tableau distribue des faces
+ ATTENTION: bug possible corrige ici: echange espace virtuel echangera aussi les faces communes
+  (pas d'items communs declares dans la version d'origine !!!)
+
+Modele_Rayonnement_Milieu_Transparent.cpp
+ Perfs: creation implicite d'un IntVect corrigee (changement de l'api de DoubleTab::inverse_LU
+ pour prendre un ArrOfInt)
+
+N_S.cpp N_S.h
+ Suppression de la methode resoudre_pression
+ C'est du debog, je remplacerai tout ce mecanisme par les nouveaux outils save_matrix_vector / compare_matrix_vector
+
+Nom.cpp
+ ZUT, j'avais corrige le bug de Nom dans cette vue... et reecrit de trois trucs... 
+ a prendre... ou a laisser.
+
+OpConvVEFFa.cpp
+ Factorisation de la creation du tableau distribue.
+ Pareil: modif possible ici car on a declare les faces communes (pas fait precedemment)
+
+OpDifbarprim.cpp
+ Petite modif d'ecriture depuis que operator+= revoie void.
+
+OpVEFFaCentre_old.cpp
+ Idem que OpConvVEFFa.cpp
+ Factorisation de la creation du tableau distribue.
+ Pareil: modif possible ici car on a declare les faces communes (pas fait precedemment)
+OpVEFFaMuscl_old.cpp
+ Pareil
+OpVEF_kschemas.cpp
+ Pareil (champ aux elements=>le codage etait deja correct)
+OpVEF_kschemas_centre.cpp
+ Pareil (champ aux elements=>le codage etait deja correct)
+ParoiVDF_TBLE_LRM.cpp
+ J'ai factorise mais j'ai mis un gros exit (je n'ai pas compris si le tableau contient deja des valeurs ou pas)
+ParoiVDFebcm.cpp
+ pareil
+ParoiVDFhydbase.cpp
+ pareil
+
+ParoiVEFhyd.cpp
+  Ah, il y a un DEBOG suspect sur un tableau sans descripteur... ca va planter le debog, a tous les coups
+
+Periodic.cpp
+ Encore une conversion implicite en IntVect...
+ !!!! ce code devrait etre repris a la lumiere de la nouvelle spec sur les faces periodiques
+Polyedre.cpp
+ Conversion implicite en IntVect dans un assert... pas grave.
+
+Quadri_VEF.cpp
+ Factorisation creation espace distant
+Rectangle.cpp
+ Encore une conversion implicite en IntVect
+
+
+Roue.cpp
+ reset_tab() devient reset()
+
+SolvGen.cpp
+  J'ai rien compris mais ca doit faire la meme chose qu'avant avec un ref_array() au lieu de adopter()
+  (bon exemple tiens...)
+
+SolvSSOR.cpp
+  remplace le test par "if nproc==1" ????
+
+SolvMGVEF.cpp
+  code desactive et non mis a jour dans un bout jamais execute.
+
+Hyd_SGE_SMAGO_DYN_VDF.cpp
+  Remplace Scatter::creer_tableau...
+  Supprime model_coeff qui est une ref sur coeff_field, reprend la ref a chaque fois (plus clair)
+
+Extraire_surface.cpp
+  remplace creer_tableau_distribue
+Mod_Jones_Launder_VEF.cpp
+  idem
+OpDiftVEFFa.cpp
+  idem
+OpDiftstandardVEFFa.cpp
+  idem
+PrecondA.cpp
+  remplacement des ref_data par la classe DoubleTab_Parts
+Reordonner_faces_periodiques.cpp
+  changement prototype "construire_espace_virtuel_traduction"
+Remailleur_Collision_FT_Thomas.cpp
+  remplace Scatter::creer_tableau_distribue
+Scal_SGE_DYN_VDF.cpp
+  idem
+SolvDiag.cpp
+  Desactive pour l'instant: EXIT
+SolvGCPNS.cpp
+  remplace Scatter::creer_tableau_distribue
+  NOTE: optimisable avec DoubleTab_parts pour eviter les copies et creations de tableaux
+SolvMGVEF.cpp
+  remplace Scatter::creer_tableau_distribue
+  NOTE: optimisable avec DoubleTab_parts pour eviter les copies et creations de tableaux
+Solv_iteratif.cpp
+  DESACTIVE le solv_iteratif::save_matrice_secmem_conditionnel
+SolvOptimal.cpp
+  DESACTIVE
+Sonde.cpp
+  min(ArrOfInt &) -> min_array(...) dans un assert
+SouCorVDFFa.cpp
+  remplace ajout_espace_distant()
+SouKEpsVDFEl.cpp
+  idem
+SouKEps_V2_VDFEl.cpp
+  idem
+Sou_inc_th_VDFFa.o
+  idem
+Sou_inc_VDFFa.cpp
+  idem
+Sou_inc_VDFFa.o
+  remplace Scatter::creer_tableau_distribue
+Tetra_VEF.cpp
+  remplace ajout_espace_distant()
+Trait_part_NS_THI.cpp
+  remplace code pour calcul du nombre d'items sequentiels
+Trait_part_NS_THI_VEF.cpp
+  mis a jour iso-resultat mais FAUX (ne tient pas compte des volumes ni de la periodicite)
+Trait_part_NS_THI_VEF.cpp
+  factorisation
+Trait_part_NS_THI_new.cpp
+  factorisation
+Transport_Interfaces_FT_Disc.cpp
+  factorisation
+Tri_VEF.cpp
+  factorisation
+VEFdiscr.cpp
+  retire structure.nom() =
+ZVEFP1B.cpp
+  Scatter::creer_tableau_distribue -> Domaine::creer_tableau_sommets
+  petite correction min->min_array et bug possible si domaine vide
+OpConvVefCenP1.cpp
+  Optimisation suite a suppression des methodes de calcul avec retour par valeur dans les tableaux
+OpVEF_DI_L2.cpp
+  Idem
+pVEF_kschemas.cpp
+  Idem
+OpVEF_kschemas_centre.cpp
+ Idem
+P_MG_base.cpp
+ Code desactive (de toutes facons il y a un gros exit() juste derriere)
+SolvGCPNS.cpp
+ M.a.j pour operations vecteurs
+Source_Neutronique.cpp
+ Idem
+Trait_part_NS_Profils.cpp
+ Gros bug trouve suite a la suppression de operator<(IntVect&,IntVect&)
+OpDifbarprim.cpp
+ Modif nom methode + correction du calcul de h_carre dans Zone_VF -> mp_min pour parallele
+Postraiter_domaine.cpp
+ min->min_array
+Porosites_champ.cpp
+ idem
+Periodic.cpp
+ idem
+Champ_Face3.cpp
+ corrige algo non parallele
+C_D_Turb_frac_mass_QC.cpp
+C_D_frac_mass_QC.cpp
+Eqn_base.cpp
+EvSCVEFFa.h
+Leap_frog.cpp
+Loi_horaire.cpp
+N_S.cpp
+Operateur.cpp
+Paroi_DWF_hyd_VDF.cpp
+RK3_FT.cpp
+SouConPhase_field.cpp
+SouDCVDF_NS.cpp
+SouLDCVDF.cpp
+SouLDCVDF_NS.cpp
+ retire DoubleTab operator*(DoubleTab &, DoubleTab &)
+
+Eqn_base.cpp
+ retire echange_espace_virtuel pour Debog
+N_S_QC_impl.cpp
+ astuces bizarre Debog retirees
+OpDiffRotRot.cpp
+ encore un test bizarre pour Debog sur vorticite
+Sch_Tps_base.cpp
+ je vire le truc pour la RAM, ca n'a rien a faire ici faut le mettre autre part
+

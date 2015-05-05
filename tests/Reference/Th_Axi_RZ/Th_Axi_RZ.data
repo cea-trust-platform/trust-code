@@ -1,0 +1,108 @@
+# Thermique axisymetrique R,Z : diffusion dans un cylindre d'aluminium #
+# PARALLEL OK 8 #
+
+dimension 2 
+Bidim_Axi
+Pb_conduction pb
+
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom 
+{
+Pave fpt4
+        {    
+        Origine   0.  0.   
+        Longueurs 0.1 0.1
+        Nombre_de_Noeuds 21 21
+        }
+        {
+        Bord Gauche    X = 0        0. <= Y <= 0.1
+        Bord Droit     X = 0.1     0. <= Y <= 0.1
+        Bord Bas       Y = 0.       0. <= X <= 0.1 
+        Bord Haut      Y = 0.1      0. <= X <= 0.1
+        } 
+
+}
+
+
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 1
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+
+schema_Euler_explicite sch
+
+Lire sch
+{
+        tinit 0.
+        tmax 10.
+        dt_min  1.e-13
+        dt_max  1.e-3
+        dt_impr 1.e-2
+        dt_sauv 10.
+        seuil_statio 1.e-80
+}
+
+Solide sol
+Lire sol
+{
+        rho     Champ_Uniforme    1  2700.  
+        lambda  Champ_Uniforme    1  221.   
+        Cp      Champ_Uniforme    1  920.
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb sol
+
+Discretize pb dis
+
+Lire pb
+{
+   
+    Conduction
+    {
+        diffusion { }
+        boundary_conditions 
+        {
+             Droit  Paroi_flux_impose Champ_Front_Uniforme 1 250.
+             Gauche Symetrie
+             Haut   Symetrie
+             Bas    Symetrie
+
+        }
+        conditions_initiales { 	Temperature Champ_Uniforme 1 0. }
+    }
+
+
+    Postraitement 
+    {
+        Sondes 
+        {
+                segment_T  temperature periode 4.e-2   point 1 0.05  0.05
+		segment_T1 temperature periode 4.e-2 segment 24 0.05 0. 0.05 0.1
+                segment_T2 temperature periode 4.e-2 segment 10 0. 0.05 0.1 0.05 
+		
+        }       
+        Champs dt_post 3.   
+        {
+                temperature elem
+        }
+   }
+}
+
+Solve pb
+Fin

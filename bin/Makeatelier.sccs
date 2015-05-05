@@ -1,0 +1,401 @@
+#!/bin/bash
+# Script de creation/mise a jour d'un atelier
+choix=$1
+IHM=1
+[ "$choix" = "NO_IHM" ] && IHM=0 && shift
+choix=$1
+version=$TRUST_ROOT
+echo $ECHO_OPTS "-----------------------------------------------------"
+echo "TRUST_ROOT="$version
+echo "rep_dev="$rep_dev
+if [ ${#choix} = 0 ]
+then
+   echo $ECHO_OPTS "-------------------------------------------------------------------------------------------------"
+
+   echo $ECHO_OPTS "-2- produce the $OPT executable in \$rep_dev/exec$OPT directories with cmake "
+   echo $ECHO_OPTS "-1- produce the $OPT executable in \$rep_dev/exec$OPT directories"
+   echo $ECHO_OPTS "0- produce the debug and optimized executables in \$rep_dev/exec and \$rep_dev/exec_opt directories"
+   echo $ECHO_OPTS "1- produce the debug executable in \$rep_dev/exec directory"
+   echo $ECHO_OPTS "2- produce the optimized executable in \$rep_dev/exec_opt directory"
+   echo $ECHO_OPTS "3- produce the optimized profile executable in \$rep_dev/exec_opt_pg directory"
+   echo $ECHO_OPTS "4- produce the semi-optimized executable in \$rep_dev/exec_semi_opt directory"
+   echo $ECHO_OPTS "-------------------------------------------------------------------------------------------------"
+   read choix
+fi
+[ ${#rep_dev} = 0 ] && echo "Environment variable rep_dev empty. Fill it with the path of your atelier directory." && exit
+[ ${#version} = 0 ] && echo "Environment variable TRUST_ROOT empty. Please, initialize your TRUST environment." && exit
+if [ ! -d $version ]
+then
+   echo $ECHO_OPTS "The version $version does not exist."
+   exit
+fi
+[ ! -d $rep_dev ] && mkdir $rep_dev
+cd $rep_dev
+opt_spec=""
+[ "$PROGRAM" != "" ] && opt_spec="env PROGRAM=$PROGRAM"
+echo $ECHO_OPTS "all:\n\t@export rep_dev=\`pwd\`;[ ! -d $TRUST_ROOT/bin ] && echo && echo "Version $TRUST_ROOT non installee." && echo && exit;cd $TRUST_ROOT/bin;. ./Init_TRUST;echo ${choix} | ${opt_spec} Makeatelier.sccs\n\ntest:\n\t@export rep_dev=\`pwd\`;[ ! -d $TRUST_ROOT/bin ] && echo && echo "Version $TRUST_ROOT non installee." && echo && exit;cd $TRUST_ROOT/bin;. ./Init_TRUST;lance_test $rep_dev/exec/TRUST$COMM $rep_dev/exec\n\ninit:\n\t@export rep_dev=\`pwd\`;[ ! -d $TRUST_ROOT/bin ] && echo && echo "Version $TRUST_ROOT non installee." && echo && exit;cd $TRUST_ROOT/bin;. ./Init_TRUST;cd $rep_dev;initatelier" > Makefile
+
+if [ -f $rep_dev/exec/.pcs_compile ]
+then
+   pcs=`cat $rep_dev/exec/.pcs_compile`
+   if [ $choix = 0 ] || [ $choix = 1 ]
+   then
+      kill -9 $pcs 1>/dev/null 2>/dev/null
+   fi
+fi
+if [ -f $rep_dev/exec_opt/.pcs_compile ]
+then
+   pcs=`cat $rep_dev/exec_opt/.pcs_compile`
+   if [ $choix = 0 ] || [ $choix = 2 ]
+   then
+      kill -9 $pcs 1>/dev/null 2>/dev/null
+   fi
+fi
+if [ -f $rep_dev/exec_opt_pg/.pcs_compile ]
+then
+   pcs=`cat $rep_dev/exec_opt_pg/.pcs_compile`
+   if [ $choix = 3 ]
+   then
+      kill -9 $pcs 1>/dev/null 2>/dev/null
+   fi
+fi
+case $choix in
+   -2) liste_rep_exec=$rep_dev/exec$OPT;IHM=0;;
+   -1) liste_rep_exec=$rep_dev/exec$OPT;;
+   0) liste_rep_exec=$rep_dev/exec" "$rep_dev/exec_opt;;
+   1) liste_rep_exec=$rep_dev/exec;;
+   2) liste_rep_exec=$rep_dev/exec_opt;;
+   3) liste_rep_exec=$rep_dev/exec_opt_pg;;
+   4) liste_rep_exec=$rep_dev/exec_semi_opt;;
+   *) echo $ECHO_OPTS "Erreur dans le choix $choix.";exit;;
+esac
+
+################
+# Debut boucle #
+################
+status_tot=0
+for rep_exec in $liste_rep_exec
+do
+echo "Compiling in $rep_exec..."
+# Si le repertoire n'existe pas on le cree :
+[ ! -d $rep_exec ] && mkdir $rep_exec && echo $ECHO_OPTS "Directory "`basename $rep_exec`" created."
+# Prend la bonne option de compilation :
+OPT=`basename $rep_exec`
+OPT=${OPT#exec}
+if [ $choix -ne -2 ]
+then
+if [ ! -f $rep_exec/Makefile ] || [ $TRUST_ROOT/env/Makefile.atelier -nt $rep_exec/Makefile ] || [ ! -f $rep_exec/make.include.atelier ]
+then
+   nom=`basename $rep_exec`
+   echo $ECHO_OPTS "A new Makefile is copied."
+   #cp $TRUST_ROOT"/env/Makefile."$nom $rep_exec/Makefile
+   sed "s/opt_compile/$OPT/" $TRUST_ROOT/env/Makefile.atelier > $rep_exec/Makefile
+   chmod 755 $rep_exec/Makefile
+   # Pour portabilite sur RS6000-AIX:
+   [ $TRUST_ARCH = RS6000 ] && echo $ECHO_OPTS "1,$ s?LIB = \$(TRUST_LIB)/TRUST?LIB = TRUST?g\nw" | ed $rep_exec/Makefile 1>/dev/null 2>&1
+   cp $TRUST_ROOT/env/make.include.atelier $rep_exec/.
+   chmod 755 $rep_exec/make.include.atelier
+   [ -f $rep_dev/make.include.atelier ] && cp $rep_dev/make.include.atelier $rep_exec/make.include.atelier
+   # Refait les dependances apres copie d'un makefile !
+   cd $rep_exec && make depend
+   cd $rep_dev
+   #echo "Create links in \$TRUST_ROOT/include of all the include files..." && cree_include
+fi
+[ -f $rep_dev/make.include.atelier ] && cp $rep_dev/make.include.atelier $rep_exec/make.include.atelier
+[ ! -d $TRUST_ROOT/include ] && echo "Links in \$TRUST_ROOT/include are NECESSARY!" && echo "TRUST administrator MUST run the 'cree_include' command." && eval $FIN && exit
+# Prend la bonne option de compilation :
+OPT=`basename $rep_exec`
+OPT=${OPT#exec}
+makedepend=0
+#
+# On fait le menage des liens inexistants dans $rep_exec :
+# Partie utile ?
+#
+cd $rep_exec
+# On met -l pour aussi attraper les liens qui pointent dans le vide !!!
+# GF meme sans le -l je vois les fichiers qui pointent dans le vide
+files=`\ls  *.h *.cpp *.c *.f 2>/dev/null `
+for file in $files
+do
+   [ ! -f $file ] && rm -f $file && makedepend=1
+done  
+#
+# On verifie la coherence des fichier .*.h
+# Si le fichier n'existe plus dans $rep_dev
+# on doit effacer tous les fichiers touches par cet include !
+liste_include_modifiee=0
+for file in `cd $rep_exec;ls .*.h 2>/dev/null`
+do
+   [ ! -f ../${file#.} ] && cat $file | xargs rm -f && rm -f $file && liste_include_modifiee=1
+done   
+# .$h     : fichier contenant la liste des .cpp touches par le fichier $h
+for file in `cd $rep_dev;ls *.h *.cpp 2>/dev/null`
+do
+   # On renomme les fichiers identiques a la version standard et on previent
+   # 21/05/07: On ne renomme que si c'est un fichier include
+   file_standard=`Find $file`
+   if [ ${file%.h} != $file ] && [ ${#file_standard} != 0 ] && [ "`diff $file_standard $rep_dev/$file`" = "" ]
+   then
+      echo "Le fichier $file est renomme car identique a la version standard de TRUST"
+      mv $rep_dev/$file $rep_dev/$file"_est_identique_a_la_version_standard"
+   else
+     [ ${file%.h} != $file ] && [ ! -f $rep_exec/.$file ] && touch $rep_exec/.$file && liste_include_modifiee=1
+   fi
+done   
+cd $rep_dev
+liste_include=$rep_exec/.liste_include
+ls *.h 2>/dev/null > $liste_include
+
+#
+# On fait le menage des .o inutiles :
+# Partie utile ?
+#
+MALIB=$rep_exec/TRUST$COMM$OPT.$LIB_EXTENSION
+for fich in `ls $rep_exec/*.o 2>/dev/null`
+do
+   fich=${fich%.o}
+   if [ ! -f $fich.cpp ] && [ ! -f $fich.f ]
+   then
+      rm -f $fich.o
+      if [ -f $MALIB ]
+      then
+         ar -df $MALIB `basename $fich.o`
+      fi
+      makedepend=1
+      # Correction PL suite remarque GF: 
+      # A.h modifie implique creation lien A.cpp
+      # Puis copie de A.cpp dans l'atelier
+      # Puis on retire A.cpp de l'atelier
+      # le .o est bien retire , mais il ne voit plus qu'il doit refaire le lien A.cpp 
+      # Donc il faut refaire la creation des liens avec:  
+      liste_include_modifiee=1
+   fi
+done
+#
+# On se deplace dans $rep_dev :
+#
+fi
+# on fait la verification meme avec cmake
+cd $rep_dev
+sources=""
+liste_suffixe="h c cpp f"
+for suffixe in $liste_suffixe
+do
+  sources=$sources" "`ls *.$suffixe 2>/dev/null`
+done
+#
+# Creation de $rep_dev/.liste_sources_atelier liste des fichiers
+# de l'atelier. Puis creation des liens dans exec ou exec_opt :
+#
+echo $ECHO_OPTS "" > .liste_sources_atelier
+warning=0
+error=0
+for liste in $sources
+do
+   nom=`basename $liste`
+   echo $ECHO_OPTS $nom >> .liste_sources_atelier
+   [ $choix -ne -2 ] && rm -f $rep_exec/$nom && ln -s -f $rep_dev/$nom $rep_exec/$nom
+   # Verification Version
+   # ref=`Find $liste`
+   # GF plus de verification de numero
+   ref=""
+   if [ "$ref" != "" ]
+   then
+      if [ "`grep '\/\/ Version:' $liste`" = "" ]
+      then
+         warning=1
+         echo $ECHO_OPTS "\n***** WARNING: Le fichier $liste de votre atelier ne semble pas venir de la version $TRUST_ROOT"
+      elif [ "`grep '\/\/ Version:' $ref | grep CHECKEDOUT@@`" != "" ]
+      then
+         warning=1
+         echo $ECHO_OPTS "\n***** WARNING: Le fichier $liste de votre atelier est en CHECKOUT"
+      elif [ "`grep '\/\/ Version:' $liste`" != "`grep '\/\/ Version:' $ref`" ]
+      then
+         warning=1
+	 error=1
+	 MESSAGE="WARNING" && [ "$MAKEATELIER_SEVERITY" = 1 ] && MESSAGE="ERROR"
+         echo $ECHO_OPTS "\n***** $MESSAGE: La version du fichier $liste de votre atelier ("`$TRUST_Awk '/\/\/ Version:/ {print $NF}' $liste`") differe de"
+	 echo $ECHO_OPTS "***** $MESSAGE: celle de la version standard \$TRUST_ROOT${ref#$TRUST_ROOT/.} ("`$TRUST_Awk '/\/\/ Version:/ {print $NF}' $ref`")"
+      fi
+   fi
+done
+if [ $warning = 1 ]
+then
+   echo "=============================================================================="
+   echo "ATTENTION: La consequence des warnings precedents est que votre atelier" 
+   echo "n'est PAS A JOUR par rapport a la version standard sous \$TRUST_ROOT"
+   echo "Le binaire de votre atelier ainsi construit:"
+   echo "Au mieux, n'utilisera pas les fonctionnalites nouvelles ou corrections de bug."
+   echo "Au pire, ne fonctionnera pas ou donnera des resultats errones."
+   echo "=============================================================================="
+   if [ "$MAKEATELIER_SEVERITY" = 1 ] && [ $error = 1 ]
+   then
+      echo "Erreur a cause des warnings precedents."
+      echo "Vous pouvez utiliser le script atelier_update.ct pour mettre a jour les sources"
+      echo "de votre atelier ou projet Baltik par rapport a la version"
+      echo $TRUST_ROOT
+      exit -1
+   fi
+fi
+if [ $choix -ne -2 ]
+then
+#
+# .liste_sources_atelier est un fichier dans $rep_dev qui contient
+# la liste des sources de l'atelier
+# $rep_exec contient egalement un fichier .liste_sources_atelier qui
+# est la liste des sources de l'atelier a la compilation precedente
+# S'ils different alors on doit refaire un make depend du makefile :
+#
+makedepend=1
+if [ -f $rep_exec/.liste_sources_atelier ]
+then
+   if [ "`cat .liste_sources_atelier`" = "`cat $rep_exec/.liste_sources_atelier`" ]
+   then
+      makedepend=0
+   fi
+fi
+mv -f .liste_sources_atelier $rep_exec/.liste_sources_atelier
+#
+# Attention pour le moment, seuls
+# les fichiers include h sont pris
+# en compte. 
+#
+# On se deplace dans $rep_exec 
+cd $rep_exec
+
+# Recherche dans chaque repertoire des fichiers touches par la modification des .h
+if [ $liste_include_modifiee = 1 ]
+then
+   cd $version
+   if [ ! -f $TRUST_ENV/rep.TRUST ]
+   then
+      mkrep >> /dev/null
+   fi
+   if [ 0 -eq 1 ]
+   then
+   # GF ajout du repertoire LIBLATAFILTER car la librairie depend du noyau
+   for dir in `cat $TRUST_ENV/rep.TRUST` lib/src/LIBLATAFILTER/build
+   do
+   if [ -f $dir/makefile ] || [ -f $dir/Makefile ]
+   then
+      cd $dir
+      ficpp=`$TRUST_Awk -v rep=$rep_exec -v fich=$liste_include -f $TRUST_AWK/rech.awk *akefile`
+      if [ ${#ficpp} != 0 ]
+      then
+	 echo $ECHO_OPTS "----------------------------------------------------------------"
+	 echo $ECHO_OPTS "Files re-compiled (cause they depend on modified include files):"
+	 echo $ECHO_OPTS "----------------------------------------------------------------"
+         for cpp in $ficpp
+         do 
+	    echo $ECHO_OPTS "\t"$cpp
+	    if [ ! -f $rep_exec/$cpp ]
+	    then
+	       # Creation d'un lien avec le fichier cpp afin de modifier le Makefile
+	       # seulement si ce fichier n'est pas deja dans l'atelier
+	       rm -f $rep_exec/$cpp && ln -s -f $version/$dir/$cpp $rep_exec/$cpp
+	    fi
+         done | sort -u
+      fi
+   fi
+   cd $version
+   done
+   else
+       filedeps=`Cherchefileatelier.py $(ls $rep_dev/*.{h,c,cpp} 2>/dev/null)`
+       for file in `echo $filedeps|sed "s/;//g"`
+	 do
+	 ln -s -f $file $rep_exec/
+	 done
+   fi
+   # Renomme les .prov (astuce pour eviter les ctrl-c intempestifs):
+   listeprov=`ls $rep_exec/.*.prov 2>/dev/null`
+   for ff in $listeprov
+   do
+      mv -f $ff ${ff%.prov}
+   done
+   # Pour verifier que l'on a pas oublie un .cpp dans un fichier .*.h
+   # Comparer le nombre de fichier cpp dans le fichier .*.h
+   # et celui donne par grep '*.h' MonoDir/src/Makefile | wc -l
+fi
+
+# Cree la liste des fichiers de l'atelier :
+(cd $rep_dev;cree_Fichiers_atelier.html) &
+
+cd $rep_exec
+if [ $makedepend = 1 ]
+then
+   # Mise a jour du Makefile de l'atelier
+   echo $ECHO_OPTS "------------------------------------"
+   echo $ECHO_OPTS "The development makefile is updated "
+   echo $ECHO_OPTS "------------------------------------"
+   make depend
+fi
+# Test si le compilateur existe !
+   if [ ${#TRUST_CC} = 0 ]
+then
+   echo
+      echo "Variable \$TRUST_CC is empty !"
+   echo "You need a C++ compiler to use `basename $0`"
+   echo "Please install a C++ compiler."
+   exit
+fi
+else
+cd $rep_dev
+#cree_info_atelier.sh
+python $TRUST_ROOT/bin/KSH/Createcmakefile.py -atelier
+cd $rep_exec
+switchopt=$OPT
+[ "$switchopt" = "" ] && switchopt="debug"
+case $switchopt in
+         _opt) build_type="Release" ;;
+         _opt_avx) build_type="Release_avx" ;;
+         debug) build_type="Debug" ;;
+         _opt_pg) build_type="Profil" ;;
+         _opt_gcov)  build_type=Coverage ;;
+         _semi_opt) build_type="semi_opt";; 
+	 *) echo $opt not for cmake in $0;  exit -1 ;;
+      esac;
+
+
+cmake .. -DCMAKE_BUILD_TYPE=$build_type  ${TRUST_ATELIER_CMAKE_FLGAS}
+# xterm
+fi
+echo $ECHO_OPTS "-----------------------"
+echo $ECHO_OPTS "Submit compilation in : "
+echo $ECHO_OPTS " $rep_exec"
+echo $ECHO_OPTS "-----------------------"
+[ "$1" != "" ] && shift # Car shift plante sur AIX si $1 vide
+$TRUST_MAKE $*
+status=$? ; [ $status -ne 0 ] && status_tot=$status
+done
+##############
+# Fin boucle #
+##############
+# On efface des fichiers bizarres
+rm -f mkmfa?????
+if [ $IHM -eq 1 ]
+then
+   echo $ECHO_OPTS "\n---------------------------------"
+   echo $ECHO_OPTS "End of compilation, press return."
+   echo $ECHO_OPTS "---------------------------------"
+   # Met le numero du process dans le fichier .pcs_compile :
+   case $choix in
+      -1) echo $ECHO_OPTS $$ > $rep_dev/exec$OPT/.pcs_compile;;
+      0) echo $ECHO_OPTS $$ > $rep_dev/exec/.pcs_compile;echo $ECHO_OPTS $? > $rep_dev/exec_opt/.pcs_compile;;
+      1) echo $ECHO_OPTS $$ > $rep_dev/exec/.pcs_compile;;
+      2) echo $ECHO_OPTS $$ > $rep_dev/exec_opt/.pcs_compile;;
+      3) echo $ECHO_OPTS $$ > $rep_dev/exec_opt_pg/.pcs_compile;;
+      4) echo $ECHO_OPTS $$ > $rep_dev/exec_semi_opt/.pcs_compile;;
+      *) echo $ECHO_OPTS "Error $choix is not correct.";exit;;
+   esac
+   read bidon
+   case $choix in
+      -1) rm -f $rep_dev/exec$OPT/.pcs_compile;;
+      0) rm -f $rep_dev/exec/.pcs_compile;rm -f $rep_dev/exec_opt/.pcs_compile;;
+      1) rm -f $rep_dev/exec/.pcs_compile;;
+      2) rm -f $rep_dev/exec_opt/.pcs_compile;;
+      3) rm -f $rep_dev/exec_opt_pg/.pcs_compile;;
+      4) rm -f $rep_dev/exec_semi_opt/.pcs_compile;;
+      *) echo $ECHO_OPTS "Error $choix is not correct.";exit;;
+   esac
+fi
+exit $status_tot

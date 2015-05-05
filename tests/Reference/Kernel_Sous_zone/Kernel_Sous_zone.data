@@ -1,0 +1,74 @@
+# Test Sous zones #
+# PARALLEL OK #
+dimension 2
+domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+	Pave pave1
+	{
+		origine 	  0.    0.
+		longueurs 	  1     0.5
+		nombre_de_noeuds  11    6
+	}
+	{
+		bord b_ALE X =  0.   	  0 <= Y <= 0.5
+		bord b_ALE X =  1         0 <= Y <= 0.5
+		bord paroi Y =  0.   	  0 <= X <= 0.4
+		bord paroi Y =  0.   	0.6 <= X <= 1
+		bord b_ALE Y =  0.5   	  0 <= X <= 1
+	} , 
+
+	Pave pave2
+	{
+		origine 	  0.4   -0.5
+		longueurs 	  0.2    0.5
+		nombre_de_noeuds  3      6
+	}
+	{
+		bord paroi X =  0.4    -0.5 <= Y <= 0.
+		bord paroi X =  0.6    -0.5 <= Y <= 0.
+		bord bas   Y =  -0.5   	0.4 <= X <= 0.6
+	} 
+}
+
+transformer dom
+x
+y-0.5
+
+trianguler_H dom
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur Tranche { tranches 2 2 }
+	Larg_joint 2
+	Nom_Zones dom
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
+
+Sous_Zone zone0
+Associate zone0 dom
+Lire zone0 { Couronne  Origine  1.0  0. ri 0. re 0.2 }
+
+Sous_Zone zone1
+Associate zone1 dom
+Lire zone1 { Fonction_sous_zone (x-1.)^2+y^2<0.2 }
+
+Sous_Zone zone2
+Associate zone2 dom
+Lire zone2 { Segment Origine 1.0 0. cotes 0. 0.2 }
+
+Discretiser_domaine dom
+
+Postraiter_domaine { domaine dom format lml }
+
+fin
+

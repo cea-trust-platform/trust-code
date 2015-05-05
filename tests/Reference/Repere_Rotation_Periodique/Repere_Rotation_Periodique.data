@@ -1,0 +1,102 @@
+# Canal 3D periodique avec un terme source pour la rotation du domaine #
+# PARALLEL OK 8 #
+
+dimension 3
+
+Pb_hydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Read_file dom cylindre.geom
+VerifierCoin dom { }
+Dilate dom 1000
+RegroupeBord dom periox { Entree Sortie }
+Reordonner_faces_periodiques dom periox
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur metis { Nb_parts 2 }
+	Larg_joint 2
+	Nom_Zones DOM
+	Periodique 1 periox
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+# Je choisis une discretisation #
+VEFPreP1B dis
+
+Schema_Euler_explicite mon_schema
+Lire mon_schema
+{
+	nb_pas_dt_max 1
+	tinit 0
+	tmax 100
+	dt_min 0.0036
+	dt_max 1.e6
+	dt_impr 1.e-6
+	dt_sauv 100
+	seuil_statio 1.e-8
+}
+
+# Je definis un milieu #
+Fluide_Incompressible milieu
+Lire milieu
+{
+	mu  Champ_Uniforme 1 0.01
+	rho Champ_Uniforme 1 2.
+}
+
+Associate pb dom
+Associate pb mon_schema
+Associate pb milieu
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.5 } 
+			seuil 1.e-6
+			impr 
+		}
+		convection { muscl }
+		diffusion { }
+		sources
+		{
+			Acceleration { option entrainement_seul omega Champ_fonc_t 3 0 0 1 domegadt champ_fonc_t 3 0 0 0 centre_rotation champ_fonc_t 3 0 0 -1.5 }
+		}
+		conditions_initiales {
+			vitesse Champ_Fonc_xyz dom 3 cos(x) sin(y) cos(x)*sin(y)
+			}
+		boundary_conditions {
+			Surfa 		symetrie
+			Surfanz 	symetrie
+			periox 		periodique 
+		      	Bas  		symetrie
+			Haut 		symetrie
+			Cylindre 	symetrie	
+			
+		}
+	}
+	Postraitement
+	{
+	       Sondes
+	       {
+		       	sonde_pression pression_pa periode 0.005 circle 11 0. 0. 0. 2 0.7 0. 360.
+		       	sonde_vitesse vitesse periode 0.005 point 1 0.7 0. 0.
+	       }
+		Champs dt_post 1.
+	       { 	
+  	          	pression som
+	       }
+	}
+}
+Solve pb

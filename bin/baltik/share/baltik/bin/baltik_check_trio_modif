@@ -1,0 +1,22 @@
+#!/bin/bash  
+
+# Permet de stoker les sources de trio modifiees par le projet
+# util pour le portage 
+org=`mktemp_ -d `
+for f in `ls build/src/*.{cpp,h,f}| grep -v info_atelier`
+do
+  f2=`Find $(basename $f)`
+ [ "$f2" != "" ] &&  cp $f2 $org; 
+done
+
+diff -r $org share/kernel_official_sources 2>&1 1>/dev/null
+status=$?
+if [ $status -ne 0 ]
+then
+    rm -rf org
+    mv $org org
+    diff -r org share/kernel_official_sources
+else
+    rm -rf $org
+fi
+exit $status

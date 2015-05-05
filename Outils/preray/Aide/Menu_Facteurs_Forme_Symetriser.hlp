@@ -1,0 +1,10 @@
+Type : menu
+Acces : Facteurs de Forme/Symetriser
+
+Description :
+	Cette commande permet de completer la matrice des facteurs de forme, en utilisant la relation suivante :
+	Fij = Sj/Si.Fji.
+
+	Un coefficient ij valide pourra donner le coefficient ji, a condition que ce dernier soit precedemment mis a xxx. Si ce n'est pas le cas, et que les deux valeurs ne verfifient pas la condition donnee ci-dessus, une erreur est affichee.
+
+	Il existe une commande locale de symetrisation : lorsque le curseur est positionne dans une case ij du tableau, taper <Return> remplacera la valeur de la case ji par la valeur "symetrique" de celle en ij (meme si la case cible contient autre chose que xxx : ici on sait quelle est la case source, contrairement a la symetrisation globale).

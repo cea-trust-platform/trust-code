@@ -1,0 +1,12 @@
+#!/bin/bash
+# Modifie le cas test pour postraiter au format MED puis convertit le fichier MED en LML
+
+file=$1
+cp $file es.data
+chmod +w es.data
+cas=`basename $file .data`
+# On ajoute format med aux champs postraites et ce qu'il faut pour convertir le fichier MED en LML
+sed "s?^[ \t]*Champs ?format med Champs ?gi;s?format lml Champs?format med Champs?gi" $file | awk -v file=$cas ' BEGIN { IGNORECASE=1 } { print $0 }; /Resoudre/ {print ("Lire_fichier postmed.data ;");}; '   >es.data
+mv es.data Med_$file
+diff Med_$file $file 
+exit

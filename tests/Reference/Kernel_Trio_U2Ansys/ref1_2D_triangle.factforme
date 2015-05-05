@@ -1,0 +1,8 @@
+4
+0  0.2925  0.2925  0.415  
+0.2925  0  0.415  0.2925  
+0.2925  0.415  0  0.2925  
+0.415  0.2925  0.2925  0  
+
+# Facteurs de forme calcules avec la commande:
+# geom2ansys 2D_triangle.geom

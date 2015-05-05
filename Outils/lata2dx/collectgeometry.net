@@ -1,0 +1,137 @@
+//
+// time: Mon Oct 18 08:41:06 2004
+//
+// version: 3.1.2 (format), 4.1.0 (DX)
+//
+//
+// Begin MDF
+// MODULE collectgeometry
+// CATEGORY Macros
+// INPUT geometry; object; (none); Field containing positions and connections
+// INPUT Data_fields; field; (none); Field containing interesting data fields
+// OUTPUT Field; object;  
+// End MDF
+// workspace: width = 435, height = 628
+// layout: snap = 0, width = 50, height = 50, align = NN
+//
+macro collectgeometry(
+ geometry
+,Data_fields
+) -> (
+ Field
+) {
+    // 
+    // node Input[2]: x = 224, y = 59, inputs = 0, label = Input
+    // parameter: position = 2, name = 'Data_fields', value = '(none)', descriptive = 1, description = 'Field containing interesting data fields', required = 1, visible = 1
+    //
+collectgeometry_Input_2_out_1 = Data_fields;
+    // 
+    // node Remove[3]: x = 270, y = 135, inputs = 2, label = Remove
+    // input[2]: defaulting = 0, visible = 1, type = 16777248, value = {"positions","connections"}
+    //
+collectgeometry_Remove_3_out_1 = 
+    Remove(
+    collectgeometry_Input_2_out_1,
+    {"positions","connections"}
+    ) [instance: 3, cache: 1];
+    // 
+    // node Inquire[1]: x = 265, y = 215, inputs = 3, label = Inquire
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "component names"
+    //
+collectgeometry_Inquire_1_out_1 = 
+    Inquire(
+    collectgeometry_Remove_3_out_1,
+    "component names",
+    NULL
+    ) [instance: 1, cache: 1];
+    // 
+    // node ForEachMember[1]: x = 241, y = 289, inputs = 1, label = ForEachMember
+    //
+collectgeometry_ForEachMember_1_out_1,
+collectgeometry_ForEachMember_1_out_2,
+collectgeometry_ForEachMember_1_out_3 = 
+    ForEachMember(
+    collectgeometry_Inquire_1_out_1
+    ) [instance: 1, cache: 1];
+    // 
+    // node Compute[21]: x = 106, y = 151, inputs = 3, label = Compute
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "$0==0"
+    // expression: value = a==0
+    // name[2]: value = a
+    // name[3]: value = b
+    //
+collectgeometry_Compute_21_out_1 = 
+    Compute(
+    "$0==0",
+    collectgeometry_ForEachMember_1_out_2,
+    NULL
+    ) [instance: 21, cache: 1];
+    // 
+    // node Echo[1]: x = 387, y = 383, inputs = 2, label = Echo
+    //
+    Echo(
+    collectgeometry_ForEachMember_1_out_1,
+    NULL
+    ) [instance: 1, cache: 1];
+    // 
+    // node Input[1]: x = 57, y = 60, inputs = 0, label = Input
+    // parameter: position = 1, name = 'geometry', value = '(none)', descriptive = 1, description = 'Field containing positions and connections', required = 1, visible = 1
+    //
+collectgeometry_Input_1_out_1 = geometry;
+    // 
+    // node GetLocal[1]: x = 80, y = 297, inputs = 3, label = GetLocal
+    // input[2]: defaulting = 1, visible = 1, type = 3, value = 0
+    //
+collectgeometry_GetLocal_1_out_1,
+collectgeometry_GetLocal_1_out_2 = 
+    GetLocal(
+    collectgeometry_Input_1_out_1,
+    collectgeometry_Compute_21_out_1,
+    NULL
+    ) [instance: 1, cache: 1];
+    // 
+    // node Replace[1]: x = 200, y = 391, inputs = 4, label = Replace
+    //
+collectgeometry_Replace_1_out_1 = 
+    Replace(
+    collectgeometry_Input_2_out_1,
+    collectgeometry_GetLocal_1_out_1,
+    collectgeometry_ForEachMember_1_out_1,
+    collectgeometry_ForEachMember_1_out_1
+    ) [instance: 1, cache: 1];
+    // 
+    // node Route[1]: x = 329, y = 477, inputs = 2, outputs = 2, label = Route
+    //
+collectgeometry_Route_1_out_1,
+collectgeometry_Route_1_out_2 = 
+    Route(
+    collectgeometry_ForEachMember_1_out_3,
+    collectgeometry_Replace_1_out_1
+    ) [instance: 1, cache: 1];
+    // 
+    // node Output[1]: x = 314, y = 566, inputs = 1, label = Output
+    // parameter: position = 1, name = 'Field', value = ' ', descriptive = 0, description = ' ', required = 0, visible = 1
+    //
+Field = collectgeometry_Route_1_out_1;
+    // 
+    // node SetLocal[1]: x = 81, y = 474, inputs = 3, label = SetLocal
+    //
+    SetLocal(
+    collectgeometry_Replace_1_out_1,
+    collectgeometry_GetLocal_1_out_2,
+    NULL
+    ) [instance: 1, cache: 1];
+// network: end of macro body
+}
+collectgeometry_Input_2_out_1 = NULL;
+collectgeometry_Remove_3_out_1 = NULL;
+collectgeometry_Inquire_1_out_1 = NULL;
+collectgeometry_ForEachMember_1_out_1 = NULL;
+collectgeometry_ForEachMember_1_out_2 = NULL;
+collectgeometry_ForEachMember_1_out_3 = NULL;
+collectgeometry_Compute_21_out_1 = NULL;
+collectgeometry_Input_1_out_1 = NULL;
+collectgeometry_GetLocal_1_out_1 = NULL;
+collectgeometry_GetLocal_1_out_2 = NULL;
+collectgeometry_Replace_1_out_1 = NULL;
+collectgeometry_Route_1_out_1 = NULL;

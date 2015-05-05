@@ -1,0 +1,5 @@
+Type : menu
+Acces : Facteurs de Forme/Initialiser
+
+Description :
+	Cette commande reinitialise la matrice des facteurs de forme : les coefficients sont mis a xxx. Une confirmation est demandee a l'utilisateur.

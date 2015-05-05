@@ -1,0 +1,10 @@
+#!/bin/bash
+python test.py >cmds
+sh cmds  > resb
+sort -u resb > res
+pb=0
+[ "`grep pb res`" != "" ] && pb=1
+li=`cat res | wc -l `
+[ $li != 8 ] && pb=1
+[ $pb = 1 ] && echo un pb a eu lieu ou trop de sol && rm mod2o.geom
+exit $pb

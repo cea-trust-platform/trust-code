@@ -1,0 +1,189 @@
+# Jeu de donnees test de extraire_plan #
+# PARALLEL OK #
+dimension 3
+domaine dom 
+# BEGIN MESH #
+Read_file dom FLUI_geo.geom
+dilate dom 0.001
+verifiercoin dom { }
+# END MESH #
+# BEGIN PARTITION 
+Partition dom 
+  { 
+    
+    Partitionneur metis   { nb_parts 2   } 
+    Larg_joint 2
+    Nom_Zones DOM 
+  } 
+Fin 
+END PARTITION #
+# BEGIN SCATTER 
+Scatter DOM.Zones dom 
+END SCATTER #
+vefprep1b dis 
+schema_euler_explicite sch 
+Lire sch
+  { 
+    tinit 0.0
+    dt_min 1e-06
+    nb_pas_dt_max 2
+    dt_impr 0.0001
+    dt_start dt_calc
+    seuil_statio 0.001
+  }
+fluide_incompressible fluide 
+Lire fluide
+  { 
+    mu champ_uniforme  1 0.00054613
+    rho champ_uniforme  1 987.888
+  }
+pb_hydraulique pb 
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+Discretize pb dis
+postraiter_domaine 
+  { 
+    format lata
+    fichier geom.lata
+    domaine dom
+  }
+domaine sous_domaine 
+extraire_domaine 
+  { 
+    domaine sous_domaine
+    probleme pb
+    condition_elements (x>y)
+  }
+domaine surface 
+extraire_surface 
+  { 
+    domaine surface
+    probleme pb
+    condition_elements (1)
+	   condition_faces (z<1e-6)
+   avec_certains_bords 1 IN
+  }
+
+Lire pb
+  { 
+    navier_stokes_standard 
+      { 
+        solveur_pression gcp 
+          { 
+            precond ssor 
+              { 
+                omega 1.55
+              }
+            seuil 1e-12
+            impr 
+          }
+        convection    { amont   } 
+        diffusion    {   } 
+        conditions_initiales 
+          {
+            vitesse champ_uniforme  3 0.0 0.0 0.3
+          }
+        boundary_conditions 
+          {
+            IN frontiere_ouverte_vitesse_imposee champ_front_uniforme  3 0.0 0.0 0.1
+            OUT frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0
+            PAR paroi_fixe 
+          }
+      }
+    postraitement 
+      { 
+       
+        
+        definition_champs 
+          {
+            vitesse_sous Interpolation 
+              { 
+                localisation elem
+                domaine sous_domaine
+                source refChamp 
+                  { 
+                    pb_champ  pb vitesse
+                  }
+              }
+            vitesse_min Reduction_0D 
+              { 
+                methode Min
+                source refChamp 
+                  { 
+                    pb_champ  pb vitesse
+                  }
+              }
+            vitesse_min_sous Reduction_0D 
+              { 
+                methode min
+                sources_reference { vitesse_sous } 
+              }
+            vitesse_surface Interpolation 
+              { 
+                localisation elem
+                domaine surface
+                source refChamp 
+                  { 
+                    pb_champ  pb vitesse
+                  }
+              }
+	   vitesse_max_surface Reduction_0D 
+              { 
+                methode max
+                sources_reference { vitesse_surface } 
+              }	
+          }
+
+    sondes 
+          {
+            Sonde1 vitesse_min_sous periode 1e-6 numero_elem_sur_maitre 1
+            Sonde2 vitesse_min periode 1e-6  numero_elem_sur_maitre 1
+            
+            Sonde3 vitesse_sous periode 0.01 points 1  0.001 0.001 0.001
+	    sonde4 vitesse_max_surface periode 1e-6 numero_elem_sur_maitre 1
+            
+          }
+	 domaine sous_domaine
+    
+        champs  dt_post 50.0 
+          {
+            vitesse elem
+	    vitesse_min_sous
+          }
+      }
+    postraitements 
+      {
+        sous_domaine 
+          { 
+            domaine sous_domaine
+            format lata
+            champs  dt_post 50.0 
+              {
+                pression elem
+                vitesse elem
+	
+              
+              }
+            fichier sous_domaine
+          }
+        surface 
+	{
+	 domaine surface
+            format lata
+            champs  dt_post 50.0 
+              {
+               
+                vitesse elem
+	
+              
+              }
+	}	
+	verif { format lata champs dt_post 50. { vitesse faces } }
+      }
+  }
+Solve pb
+# afin de ne faire cela qu en sequentiel , le // est teste dans verifie #
+# BEGIN MESH #
+# END MESH #
+fin 

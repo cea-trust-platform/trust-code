@@ -1,0 +1,98 @@
+# Tests des solveurs NP sur un cas 3D avec pression imposee #
+# PARALLEL OK #
+dimension 3
+Pb_hydraulique pb
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Cavite 
+		{
+		Origine 0. 0. 0.
+     		Nombre_de_Noeuds 12 12 10
+		Longueurs 0.01 0.01 0.006
+		}
+		{
+		Bord Gauche X = 0.    0. <= Y <= 0.01 0. <= Z <= 0.006
+		Bord Haut   Y = 0.01  0. <= X <= 0.01 0. <= Z <= 0.006
+		Bord Bas    Y = 0.    0. <= X <= 0.01 0. <= Z <= 0.006
+		Bord Droit  X = 0.01  0. <= Y <= 0.01 0. <= Z <= 0.006
+		Bord Sud    Z = 0.    0. <= X <= 0.01 0. <= Y <= 0.01
+		Bord Nord   Z = 0.006 0. <= X <= 0.01 0. <= Y <= 0.01
+		}
+}
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 2 1 1 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	nb_pas_dt_max 3
+	tinit 0.
+	tmax 1.2
+	dt_min 1e-10
+	dt_max 1e10  
+        dt_impr -1
+	dt_sauv 100
+	seuil_statio 1.e-8
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 1.85e-5
+	rho Champ_Uniforme 1 1.17
+}
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_Standard
+	{
+  		solveur_pression GCP { 
+ 			seuil 1.e-12 precond ssor { omega 1.65 } impr }
+		convection { amont }
+		diffusion { }
+		conditions_initiales {
+			vitesse champ_fonc_xyz dom 3 y -x 0
+			}
+		boundary_conditions {
+			Haut paroi_fixe
+			Bas paroi_fixe
+			Gauche paroi_fixe
+			Droit paroi_fixe
+			Sud Symetrie
+			Nord Symetrie
+		}
+	}
+	Postraitement
+	{
+		format lml
+		Champs dt_post 0.1
+		{
+			vitesse elem
+		}
+	}
+}
+
+Solve pb
+Fin
+

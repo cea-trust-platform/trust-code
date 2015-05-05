@@ -1,0 +1,53 @@
+#!/bin/bash
+# Installation de valgrind
+OK()
+{
+   if [ $1 = 0 ]
+   then
+      echo $ECHO_OPTS "OK!"
+   else
+      echo $ECHO_OPTS "Error !"
+   fi
+}
+# 3.9.0 valgrind do not build on castor (old gcc 3.4.6)
+version=$1 && [ "$HOST" = castor ] && version=3.8.1
+CC=""
+AWK=""
+[ "$TRUST_ARCH" != linux ] && echo "valgrind installed on Linux only." && exit
+valgrind=$TRUST_ROOT/externalpackages/valgrind-$version".tar.bz2"
+  [ ! -f $valgrind ] && echo $valgrind not found && exit -1 && wget_ http://valgrind.org/downloads/$valgrind
+# Command to bunzip2 and untar:
+bzip2 -cd $valgrind | tar xf -
+cd `ls | grep valgrind- | grep -v tar`
+echo patching mpiwrap
+cp mpi/libmpiwrap.c mpi/libmpiwrap.c.org
+sed 's?before(\"Finalize\");?before(\"Finalize\");if (sReqs) { free(sReqs); sReqs=0; }?' -i mpi/libmpiwrap.c
+diff mpi/libmpiwrap.c.org mpi/libmpiwrap.c
+[ $? -eq 0 ] && echo erreur patch&& exit
+./configure -help 1>../configure.help 2>&1
+./configure --with-mpicc=$TRUST_cc --prefix=$TRUST_ROOT/exec/valgrind
+$TRUST_MAKE || exit -1
+make install || exit -1
+# Check the MPI wrapper is installed for a TRUST MPI version
+if [ "$MPI_ROOT" != "" ] && [ "`\ls $TRUST_ROOT/exec/valgrind/lib/valgrind/libmpiwrap*.so 2>/dev/null`" = "" ]
+then
+   echo "MPI wrapper not built !"
+   exit -1
+fi
+make clean
+cd ..
+
+##################
+# Test de valgrind
+##################
+echo $ECHO_OPTS "Test de valgrind $version:\c"
+tool="" && [ $version != 2.0.0 ] && tool="--tool=memcheck" 
+$TRUST_ROOT/exec/valgrind/bin/valgrind $tool ls
+err=$?
+if [ $err != 0 ]
+then
+   make clean 
+else
+   rm -r -f valgrind-?.?.?
+fi
+OK $err

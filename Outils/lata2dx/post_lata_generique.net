@@ -1,0 +1,5641 @@
+//
+// time: Fri Apr 13 16:05:47 2007
+//
+// version: 3.2.0 (format), 4.3.2 (DX)
+//
+//
+//
+// macro reference (direct): SelectLataField /homelinux/mathieu/vues/integration_ft/vobs/TRUST/Outils/lata2dx//SelectLataField.net
+include "SelectLataField.net"
+//
+// MODULE main
+// page assignment: Glyph	order=7, windowed=0, showing=0
+// page assignment: Interfaces	order=9, windowed=0, showing=0
+// page assignment: Isosurface	order=8, windowed=0, showing=0
+// page assignment: Mesh	order=10, windowed=0, showing=0
+// page assignment: SimpleShade	order=5, windowed=0, showing=0
+// page assignment: cut_planes	order=6, windowed=0, showing=0
+// page assignment: image	order=11, windowed=0, showing=0
+// page assignment: import	order=4, windowed=0, showing=1
+// page assignment: map_surface	order=3, windowed=0, showing=0
+// page assignment: multicompute	order=2, windowed=0, showing=0
+// workspace: width = 628, height = 966
+// layout: snap = 0, width = 50, height = 50, align = NN
+//
+macro main(
+) -> (
+) {
+    // 
+    // node FileSelector[1]: x = 67, y = 84, inputs = 0, label = FileSelector
+    // output[1]: visible = 1, type = 32, value = ""
+    // output[2]: visible = 1, type = 32, value = ""
+    // page group: import
+    //
+    // 
+    // node Compute[20]: x = 33, y = 165, inputs = 2, label = Compute
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "strlen($0)==0?1:2"
+    // page group: import
+    // expression: value = strlen(a)==0?1:2
+    // name[2]: value = a
+    //
+main_Compute_20_out_1 = 
+    Compute(
+    main_Compute_20_in_1,
+    main_FileSelector_1_out_1
+    ) [instance: 20, cache: 1];
+    // 
+    // node Route[4]: x = 107, y = 236, inputs = 2, outputs = 2, label = Route
+    // page group: import
+    //
+main_Route_4_out_1,
+main_Route_4_out_2 = 
+    Route(
+    main_Compute_20_out_1,
+    main_FileSelector_1_out_1
+    ) [instance: 4, cache: 1];
+    // 
+    // node Integer[3]: x = 157, y = 388, inputs = 11, label = Integer
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Integer_3"
+    // input[3]: defaulting = 0, visible = 0, type = 1, value = 0 
+    // input[5]: defaulting = 1, visible = 0, type = 1, value = 0
+    // input[6]: defaulting = 1, visible = 0, type = 1, value = 9
+    // input[7]: defaulting = 1, visible = 0, type = 5, value = 1.0
+    // input[9]: defaulting = 1, visible = 0, type = 1, value = 0
+    // output[1]: visible = 1, type = 1, value = 0 
+    // page group: import
+    //
+    // 
+    // node Format[6]: x = 232, y = 75, inputs = 3, label = Format
+    // input[1]: defaulting = 0, visible = 1, type = 32, value = "!lata_get_nb_timesteps.sh %s"
+    // page group: import
+    //
+main_Format_6_out_1 = 
+    Format(
+    main_Format_6_in_1,
+    main_Route_4_out_2,
+    main_Format_6_in_3
+    ) [instance: 6, cache: 1];
+    // 
+    // node Import[2]: x = 234, y = 145, inputs = 6, label = Import
+    // input[1]: defaulting = 1, visible = 1, type = 32, value = "(none)"
+    // input[3]: defaulting = 0, visible = 1, type = 32, value = "dx"
+    // page group: import
+    //
+main_Import_2_out_1 = 
+    Import(
+    main_Format_6_out_1,
+    main_Import_2_in_2,
+    main_Import_2_in_3,
+    main_Import_2_in_4,
+    main_Import_2_in_5,
+    main_Import_2_in_6
+    ) [instance: 2, cache: 1];
+    // 
+    // node Select[18]: x = 249, y = 215, inputs = 3, label = Select
+    // page group: import
+    //
+main_Select_18_out_1 = 
+    Select(
+    main_Import_2_out_1,
+    main_Select_18_in_2,
+    main_Select_18_in_3
+    ) [instance: 18, cache: 1];
+    // 
+    // node Compute[21]: x = 238, y = 285, inputs = 3, label = Compute
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "$0-1"
+    // page group: import
+    // expression: value = a-1
+    // name[2]: value = a
+    // name[3]: value = b
+    //
+main_Compute_21_out_1 = 
+    Compute(
+    main_Compute_21_in_1,
+    main_Select_18_out_1,
+    main_Compute_21_in_3
+    ) [instance: 21, cache: 1];
+    // 
+    // node Sequencer[1]: x = 229, y = 384, inputs = 7, label = Sequencer
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Sequencer_1"
+    // input[4]: defaulting = 0, visible = 1, type = 1, value = 0
+    // input[5]: defaulting = 1, visible = 1, type = 1, value = 100
+    // input[6]: defaulting = 1, visible = 0, type = 1, value = 1
+    // input[7]: defaulting = 0, visible = 0, type = 16777217, value = { 0 100 1 0 100 1 }
+    // page group: import
+    // vcr[1]: min = 0, max = 100, beg = 0, end = 100, cur = 0, inc = 1, loop = off, step = off, pal = off
+    // window: position = (0.0000,0.1508), size = 0.1750x0.0700
+    //
+    main_Sequencer_1_in_3 = @frame;
+main_Sequencer_1_out_1[cache: 2] = 
+    Sequencer(
+    main_Sequencer_1_in_1,
+    main_Sequencer_1_in_2,
+    main_Sequencer_1_in_3,
+    main_Sequencer_1_in_4,
+    main_Compute_21_out_1,
+    main_Sequencer_1_in_6,
+    main_Sequencer_1_in_7
+    ) [instance: 1, cache: 1];
+    // 
+    // node String[6]: x = 332, y = 374, inputs = 0, label = String
+    // output[1]: visible = 1, type = 32, value = ""
+    // page group: import
+    //
+    // 
+    // node Format[1]: x = 173, y = 480, inputs = 5, label = Format
+    // input[1]: defaulting = 0, visible = 1, type = 32, value = "!lata2dx %s forcegroup verbosity=%d timestep=%d %s"
+    // input[3]: defaulting = 1, visible = 1, type = 16777245, value = {100}
+    // page group: import
+    //
+main_Format_1_out_1[cache: 0] = 
+    Format(
+    main_Format_1_in_1,
+    main_Route_4_out_2,
+    main_Integer_3_out_1,
+    main_Sequencer_1_out_1,
+    main_String_6_out_1
+    ) [instance: 1, cache: 1];
+    // 
+    // node Import[1]: x = 208, y = 550, inputs = 6, label = Import
+    // input[1]: defaulting = 1, visible = 1, type = 32, value = "a.dx"
+    // input[2]: visible = 0
+    // input[3]: defaulting = 0, visible = 0, type = 32, value = "dx"
+    // page group: import
+    //
+main_Import_1_out_1[cache: 0] = 
+    Import(
+    main_Format_1_out_1,
+    main_Import_1_in_2,
+    main_Import_1_in_3,
+    main_Import_1_in_4,
+    main_Import_1_in_5,
+    main_Import_1_in_6
+    ) [instance: 1, cache: 1];
+    // 
+    // node Select[7]: x = 282, y = 662, inputs = 3, label = Select
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "INTERFACES"
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 1
+    // page group: import
+    //
+main_Select_7_out_1 = 
+    Select(
+    main_Import_1_out_1,
+    main_Select_7_in_2,
+    main_Select_7_in_3
+    ) [instance: 7, cache: 1];
+    // 
+    // node Transmitter[23]: x = 271, y = 737, inputs = 1, label = imported0
+    // page group: import
+    //
+imported0 = main_Select_7_out_1;
+    // 
+    // node Receiver[34]: x = 95, y = 7, inputs = 1, label = imported0
+    // page group: multicompute
+    //
+main_Receiver_34_out_1[cache: 0] = imported0;
+    // 
+    // node Selector[26]: x = 168, y = 81, inputs = 7, label = Selector
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Selector_26"
+    // input[2]: defaulting = 0, visible = 0, type = 32, value = "DOM" 
+    // input[3]: defaulting = 0, visible = 0, type = 29, value = 0 
+    // input[4]: defaulting = 1, visible = 1, type = 16777248, value = {"DOM" }
+    // input[5]: defaulting = 1, visible = 0, type = 16777245, value = {0  }
+    // output[1]: visible = 1, type = 29, value = 0 
+    // output[2]: visible = 1, type = 32, value = "DOM" 
+    // page group: multicompute
+    //
+main_Selector_26_out_1[cache: 2],
+main_Selector_26_out_2[cache: 2] = 
+    Selector(
+    main_Selector_26_in_1,
+    main_Selector_26_in_2,
+    main_Selector_26_in_3,
+    main_Receiver_34_out_1,
+    main_Selector_26_in_5,
+    main_Selector_26_in_6,
+    main_Selector_26_in_7
+    ) [instance: 26, cache: 1];
+    // 
+    // node Select[21]: x = 491, y = 467, inputs = 3, label = Select
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 1
+    // page group: multicompute
+    //
+main_Select_21_out_1 = 
+    Select(
+    main_Receiver_34_out_1,
+    main_Selector_26_out_2,
+    main_Select_21_in_3
+    ) [instance: 21, cache: 1];
+    // 
+    // node String[15]: x = 24, y = 472, inputs = 0, label = String
+    // output[1]: visible = 1, type = 32, value = "mag(a)"
+    // page group: multicompute
+    //
+    // 
+    // node Select[20]: x = 142, y = 161, inputs = 3, label = Select
+    // page group: multicompute
+    //
+main_Select_20_out_1[cache: 0] = 
+    Select(
+    main_Receiver_34_out_1,
+    main_Selector_26_out_2,
+    main_Select_20_in_3
+    ) [instance: 20, cache: 1];
+    // 
+    // node Inquire[14]: x = 155, y = 224, inputs = 3, label = Inquire
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "component names"
+    // page group: multicompute
+    //
+main_Inquire_14_out_1 = 
+    Inquire(
+    main_Select_20_out_1,
+    main_Inquire_14_in_2,
+    main_Inquire_14_in_3
+    ) [instance: 14, cache: 1];
+    // 
+    // node Selector[27]: x = 128, y = 297, inputs = 7, label = Selector
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Selector_27"
+    // input[2]: defaulting = 0, visible = 0, type = 32, value = "positions" 
+    // input[3]: defaulting = 0, visible = 0, type = 29, value = 0 
+    // input[4]: defaulting = 1, visible = 1, type = 16777248, value = {"positions" "connections" "domain" "TIME" "INDICATRICE_INTERF_ELEM" "TEMPERATURE_MPOINT_ELEM" "neighbors" "box" }
+    // input[5]: defaulting = 1, visible = 0, type = 16777245, value = {0  1  2  3  4  5  6  7  }
+    // output[1]: visible = 1, type = 29, value = 0 
+    // output[2]: visible = 1, type = 32, value = "positions" 
+    // page group: multicompute
+    //
+main_Selector_27_out_1[cache: 2],
+main_Selector_27_out_2[cache: 2] = 
+    Selector(
+    main_Selector_27_in_1,
+    main_Selector_27_in_2,
+    main_Selector_27_in_3,
+    main_Inquire_14_out_1,
+    main_Selector_27_in_5,
+    main_Selector_27_in_6,
+    main_Selector_27_in_7
+    ) [instance: 27, cache: 1];
+    // 
+    // node SelectLataField[8]: x = 104, y = 380, inputs = 5, label = SelectLataField
+    // input[4]: defaulting = 0, visible = 1, type = 32, value = ""
+    // input[5]: defaulting = 0, visible = 1, type = 16777245, value = {0}
+    // page group: multicompute
+    //
+main_SelectLataField_8_out_1[cache: 0],
+main_SelectLataField_8_out_2 = 
+    SelectLataField(
+    main_Receiver_34_out_1,
+    main_Selector_26_out_2,
+    main_Selector_27_out_2,
+    main_SelectLataField_8_in_4,
+    main_SelectLataField_8_in_5
+    ) [instance: 8, cache: 1];
+    // 
+    // node Selector[30]: x = 23, y = 386, inputs = 7, label = Selector
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Selector_30"
+    // input[2]: defaulting = 0, visible = 0, type = 32, value = "connections" 
+    // input[3]: defaulting = 0, visible = 0, type = 29, value = 1 
+    // input[4]: defaulting = 0, visible = 1, type = 16777248, value = { "positions" "connections" }
+    // input[5]: defaulting = 1, visible = 0, type = 16777245, value = { 0 1 }
+    // output[1]: visible = 1, type = 29, value = 1 
+    // output[2]: visible = 1, type = 32, value = "connections" 
+    // page group: multicompute
+    //
+main_Selector_30_out_1[cache: 2],
+main_Selector_30_out_2[cache: 2] = 
+    Selector(
+    main_Selector_30_in_1,
+    main_Selector_30_in_2,
+    main_Selector_30_in_3,
+    main_Selector_30_in_4,
+    main_Selector_30_in_5,
+    main_Selector_30_in_6,
+    main_Selector_30_in_7
+    ) [instance: 30, cache: 1];
+    // 
+    // node Post[8]: x = 122, y = 467, inputs = 2, label = Post
+    // page group: multicompute
+    //
+main_Post_8_out_1 = 
+    Post(
+    main_SelectLataField_8_out_1,
+    main_Selector_30_out_2
+    ) [instance: 8, cache: 1];
+    // 
+    // node Selector[28]: x = 257, y = 297, inputs = 7, label = Selector
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Selector_28"
+    // input[2]: defaulting = 0, visible = 0, type = 32, value = "positions" 
+    // input[3]: defaulting = 0, visible = 0, type = 29, value = 0 
+    // input[4]: defaulting = 1, visible = 1, type = 16777248, value = {"positions" "connections" "domain" "TIME" "INDICATRICE_INTERF_ELEM" "TEMPERATURE_MPOINT_ELEM" "neighbors" "box" }
+    // input[5]: defaulting = 1, visible = 0, type = 16777245, value = {0  1  2  3  4  5  6  7  }
+    // output[1]: visible = 1, type = 29, value = 0 
+    // output[2]: visible = 1, type = 32, value = "positions" 
+    // page group: multicompute
+    //
+main_Selector_28_out_1[cache: 2],
+main_Selector_28_out_2[cache: 2] = 
+    Selector(
+    main_Selector_28_in_1,
+    main_Selector_28_in_2,
+    main_Selector_28_in_3,
+    main_Inquire_14_out_1,
+    main_Selector_28_in_5,
+    main_Selector_28_in_6,
+    main_Selector_28_in_7
+    ) [instance: 28, cache: 1];
+    // 
+    // node SelectLataField[9]: x = 231, y = 380, inputs = 5, label = SelectLataField
+    // input[4]: defaulting = 0, visible = 1, type = 32, value = ""
+    // input[5]: defaulting = 0, visible = 1, type = 16777245, value = {0}
+    // page group: multicompute
+    //
+main_SelectLataField_9_out_1[cache: 0],
+main_SelectLataField_9_out_2 = 
+    SelectLataField(
+    main_Receiver_34_out_1,
+    main_Selector_26_out_2,
+    main_Selector_28_out_2,
+    main_SelectLataField_9_in_4,
+    main_SelectLataField_9_in_5
+    ) [instance: 9, cache: 1];
+    // 
+    // node Post[9]: x = 239, y = 469, inputs = 2, label = Post
+    // page group: multicompute
+    //
+main_Post_9_out_1 = 
+    Post(
+    main_SelectLataField_9_out_1,
+    main_Selector_30_out_2
+    ) [instance: 9, cache: 1];
+    // 
+    // node Selector[29]: x = 381, y = 298, inputs = 7, label = Selector
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Selector_29"
+    // input[2]: defaulting = 0, visible = 0, type = 32, value = "positions" 
+    // input[3]: defaulting = 0, visible = 0, type = 29, value = 0 
+    // input[4]: defaulting = 1, visible = 1, type = 16777248, value = {"positions" "connections" "domain" "TIME" "INDICATRICE_INTERF_ELEM" "TEMPERATURE_MPOINT_ELEM" "neighbors" "box" }
+    // input[5]: defaulting = 1, visible = 0, type = 16777245, value = {0  1  2  3  4  5  6  7  }
+    // output[1]: visible = 1, type = 29, value = 0 
+    // output[2]: visible = 1, type = 32, value = "positions" 
+    // page group: multicompute
+    //
+main_Selector_29_out_1[cache: 2],
+main_Selector_29_out_2[cache: 2] = 
+    Selector(
+    main_Selector_29_in_1,
+    main_Selector_29_in_2,
+    main_Selector_29_in_3,
+    main_Inquire_14_out_1,
+    main_Selector_29_in_5,
+    main_Selector_29_in_6,
+    main_Selector_29_in_7
+    ) [instance: 29, cache: 1];
+    // 
+    // node SelectLataField[10]: x = 357, y = 381, inputs = 5, label = SelectLataField
+    // input[4]: defaulting = 0, visible = 1, type = 32, value = ""
+    // input[5]: defaulting = 0, visible = 1, type = 16777245, value = {0}
+    // page group: multicompute
+    //
+main_SelectLataField_10_out_1[cache: 0],
+main_SelectLataField_10_out_2 = 
+    SelectLataField(
+    main_Receiver_34_out_1,
+    main_Selector_26_out_2,
+    main_Selector_29_out_2,
+    main_SelectLataField_10_in_4,
+    main_SelectLataField_10_in_5
+    ) [instance: 10, cache: 1];
+    // 
+    // node Post[10]: x = 372, y = 467, inputs = 2, label = Post
+    // page group: multicompute
+    //
+main_Post_10_out_1 = 
+    Post(
+    main_SelectLataField_10_out_1,
+    main_Selector_30_out_2
+    ) [instance: 10, cache: 1];
+    // 
+    // node Compute2[5]: x = 137, y = 546, inputs = 7, label = Compute2
+    // page group: multicompute
+    //
+main_Compute2_5_out_1 = 
+    Compute2(
+    main_String_15_out_1,
+    main_Compute2_5_in_2,
+    main_Post_8_out_1,
+    main_Compute2_5_in_4,
+    main_Post_9_out_1,
+    main_Compute2_5_in_6,
+    main_Post_10_out_1
+    ) [instance: 5, cache: 1];
+    // 
+    // node Unmark[3]: x = 193, y = 614, inputs = 2, label = Unmark
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "multicompute"
+    // page group: multicompute
+    //
+main_Unmark_3_out_1 = 
+    Unmark(
+    main_Compute2_5_out_1,
+    main_Unmark_3_in_2
+    ) [instance: 3, cache: 1];
+    // 
+    // node Append[1]: x = 296, y = 699, inputs = 5, label = Append
+    // page group: multicompute
+    //
+main_Append_1_out_1 = 
+    Append(
+    main_Select_21_out_1,
+    main_Unmark_3_out_1,
+    main_Selector_26_out_2,
+    main_Append_1_in_4,
+    main_Append_1_in_5
+    ) [instance: 1, cache: 1];
+    // 
+    // node Toggle[14]: x = 22, y = 6, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_14"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 0
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 1, visible = 1, type = 29, value = 0
+    // output[1]: visible = 1, type = 29, value = 0
+    // page group: cut_planes
+    // toggle : 0
+    //
+    // 
+    // node Toggle[48]: x = 200, y = 702, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_48"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value =  1  
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 0, visible = 1, type = 29, value =  2  
+    // input[5]: defaulting = 0, visible = 1, type = 29, value =  1  
+    // output[1]: visible = 1, type = 29, value =  1  
+    // page group: multicompute
+    // toggle : 0
+    //
+main_Toggle_48_out_1[cache: 2] = 
+    Toggle(
+    main_Toggle_48_in_1,
+    main_Toggle_48_in_2,
+    main_Toggle_48_in_3,
+    main_Toggle_48_in_4,
+    main_Toggle_48_in_5,
+    main_Toggle_48_in_6
+    ) [instance: 48, cache: 1];
+    // 
+    // node Switch[30]: x = 296, y = 780, inputs = 3, label = Switch
+    // page group: multicompute
+    //
+main_Switch_30_out_1 = 
+    Switch(
+    main_Toggle_48_out_1,
+    main_Receiver_34_out_1,
+    main_Append_1_out_1
+    ) [instance: 30, cache: 1];
+    // 
+    // node Transmitter[1]: x = 302, y = 851, inputs = 1, label = imported
+    // page group: multicompute
+    //
+imported = main_Switch_30_out_1;
+    // 
+    // node Receiver[16]: x = 136, y = 5, inputs = 1, label = imported
+    // page group: cut_planes
+    //
+main_Receiver_16_out_1[cache: 0] = imported;
+    // 
+    // node Route[6]: x = 100, y = 78, inputs = 2, outputs = 2, label = Route
+    // page group: cut_planes
+    //
+main_Route_6_out_1[cache: 0],
+main_Route_6_out_2 = 
+    Route(
+    main_Toggle_14_out_1,
+    main_Receiver_16_out_1
+    ) [instance: 6, cache: 1];
+    // 
+    // node Selector[11]: x = 171, y = 168, inputs = 7, label = Selector
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Selector_11"
+    // input[2]: defaulting = 0, visible = 0, type = 32, value = "DOM" 
+    // input[3]: defaulting = 0, visible = 0, type = 29, value = 0 
+    // input[4]: defaulting = 1, visible = 1, type = 16777248, value = {"DOM" }
+    // input[5]: defaulting = 1, visible = 0, type = 16777245, value = {0  }
+    // output[1]: visible = 1, type = 29, value = 0 
+    // output[2]: visible = 1, type = 32, value = "DOM" 
+    // page group: cut_planes
+    //
+main_Selector_11_out_1[cache: 2],
+main_Selector_11_out_2[cache: 2] = 
+    Selector(
+    main_Selector_11_in_1,
+    main_Selector_11_in_2,
+    main_Selector_11_in_3,
+    main_Receiver_16_out_1,
+    main_Selector_11_in_5,
+    main_Selector_11_in_6,
+    main_Selector_11_in_7
+    ) [instance: 11, cache: 1];
+    // 
+    // node Select[8]: x = 154, y = 257, inputs = 3, label = Select
+    // page group: cut_planes
+    //
+main_Select_8_out_1[cache: 0] = 
+    Select(
+    main_Receiver_16_out_1,
+    main_Selector_11_out_2,
+    main_Select_8_in_3
+    ) [instance: 8, cache: 1];
+    // 
+    // node Inquire[4]: x = 150, y = 334, inputs = 3, label = Inquire
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "component names"
+    // page group: cut_planes
+    //
+main_Inquire_4_out_1 = 
+    Inquire(
+    main_Select_8_out_1,
+    main_Inquire_4_in_2,
+    main_Inquire_4_in_3
+    ) [instance: 4, cache: 1];
+    // 
+    // node Selector[12]: x = 154, y = 409, inputs = 7, label = Selector
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Selector_12"
+    // input[2]: defaulting = 0, visible = 0, type = 32, value = "positions" 
+    // input[3]: defaulting = 0, visible = 0, type = 29, value = 0 
+    // input[4]: defaulting = 1, visible = 1, type = 16777248, value = {"positions" "connections" "domain" "TIME" "INDICATRICE_INTERF_ELEM" "TEMPERATURE_MPOINT_ELEM" "neighbors" "box" }
+    // input[5]: defaulting = 1, visible = 0, type = 16777245, value = {0  1  2  3  4  5  6  7  }
+    // output[1]: visible = 1, type = 29, value = 0 
+    // output[2]: visible = 1, type = 32, value = "positions" 
+    // page group: cut_planes
+    //
+main_Selector_12_out_1[cache: 2],
+main_Selector_12_out_2[cache: 2] = 
+    Selector(
+    main_Selector_12_in_1,
+    main_Selector_12_in_2,
+    main_Selector_12_in_3,
+    main_Inquire_4_out_1,
+    main_Selector_12_in_5,
+    main_Selector_12_in_6,
+    main_Selector_12_in_7
+    ) [instance: 12, cache: 1];
+    // 
+    // node String[4]: x = 231, y = 407, inputs = 0, label = String
+    // output[1]: visible = 1, type = 32, value = "v>-10"
+    // page group: cut_planes
+    //
+    // 
+    // node Toggle[9]: x = 291, y = 409, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_9"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 0
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 1, visible = 1, type = 29, value = 0
+    // output[1]: visible = 1, type = 29, value = 0
+    // page group: cut_planes
+    // toggle : 0
+    //
+    // 
+    // node SelectLataField[2]: x = 142, y = 527, inputs = 5, label = SelectLataField
+    // page group: cut_planes
+    //
+main_SelectLataField_2_out_1,
+main_SelectLataField_2_out_2[cache: 0] = 
+    SelectLataField(
+    main_Route_6_out_1,
+    main_Selector_11_out_2,
+    main_Selector_12_out_2,
+    main_String_4_out_1,
+    main_Toggle_9_out_1
+    ) [instance: 2, cache: 1];
+    // 
+    // node Extract[2]: x = 96, y = 627, inputs = 2, label = Extract
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "connections"
+    // page group: cut_planes
+    //
+main_Extract_2_out_1[cache: 0] = 
+    Extract(
+    main_SelectLataField_2_out_1,
+    main_Extract_2_in_2
+    ) [instance: 2, cache: 1];
+    // 
+    // node Attribute[2]: x = 72, y = 716, inputs = 2, label = Attribute
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "element type"
+    // page group: cut_planes
+    //
+main_Attribute_2_out_1 = 
+    Attribute(
+    main_Extract_2_out_1,
+    main_Attribute_2_in_2
+    ) [instance: 2, cache: 1];
+    // 
+    // node Toggle[12]: x = 130, y = 1075, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_12"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value =  1  
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 0, visible = 1, type = 29, value =  2  
+    // input[5]: defaulting = 0, visible = 1, type = 29, value =  1  
+    // output[1]: visible = 1, type = 29, value =  1  
+    // page group: SimpleShade
+    // toggle : 0
+    //
+main_Toggle_12_out_1[cache: 2] = 
+    Toggle(
+    main_Toggle_12_in_1,
+    main_Toggle_12_in_2,
+    main_Toggle_12_in_3,
+    main_Toggle_12_in_4,
+    main_Toggle_12_in_5,
+    main_Toggle_12_in_6
+    ) [instance: 12, cache: 1];
+    // 
+    // node Toggle[24]: x = 39, y = 673, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_24"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value =  2  
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 1
+    // input[4]: defaulting = 0, visible = 1, type = 29, value =  2  
+    // input[5]: defaulting = 0, visible = 1, type = 29, value =  1  
+    // output[1]: visible = 1, type = 29, value =  2  
+    // page group: SimpleShade
+    // toggle : 1
+    //
+main_Toggle_24_out_1[cache: 2] = 
+    Toggle(
+    main_Toggle_24_in_1,
+    main_Toggle_24_in_2,
+    main_Toggle_24_in_3,
+    main_Toggle_24_in_4,
+    main_Toggle_24_in_5,
+    main_Toggle_24_in_6
+    ) [instance: 24, cache: 1];
+    // 
+    // node String[13]: x = 19, y = 473, inputs = 0, label = String
+    // output[1]: visible = 1, type = 32, value = "v"
+    // page group: SimpleShade
+    //
+    // 
+    // node Receiver[19]: x = 46, y = 14, inputs = 1, label = imported
+    // page group: SimpleShade
+    //
+main_Receiver_19_out_1[cache: 0] = imported;
+    // 
+    // node Selector[13]: x = 108, y = 123, inputs = 7, label = Selector
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Selector_13"
+    // input[2]: defaulting = 0, visible = 0, type = 32, value = "DOM" 
+    // input[3]: defaulting = 0, visible = 0, type = 29, value = 0 
+    // input[4]: defaulting = 1, visible = 1, type = 16777248, value = {"DOM" }
+    // input[5]: defaulting = 1, visible = 0, type = 16777245, value = {0  }
+    // output[1]: visible = 1, type = 29, value = 0 
+    // output[2]: visible = 1, type = 32, value = "DOM" 
+    // page group: SimpleShade
+    //
+main_Selector_13_out_1[cache: 2],
+main_Selector_13_out_2[cache: 2] = 
+    Selector(
+    main_Selector_13_in_1,
+    main_Selector_13_in_2,
+    main_Selector_13_in_3,
+    main_Receiver_19_out_1,
+    main_Selector_13_in_5,
+    main_Selector_13_in_6,
+    main_Selector_13_in_7
+    ) [instance: 13, cache: 1];
+    // 
+    // node Select[9]: x = 89, y = 210, inputs = 3, label = Select
+    // page group: SimpleShade
+    //
+main_Select_9_out_1[cache: 0] = 
+    Select(
+    main_Receiver_19_out_1,
+    main_Selector_13_out_2,
+    main_Select_9_in_3
+    ) [instance: 9, cache: 1];
+    // 
+    // node Inquire[5]: x = 101, y = 278, inputs = 3, label = Inquire
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "component names"
+    // page group: SimpleShade
+    //
+main_Inquire_5_out_1 = 
+    Inquire(
+    main_Select_9_out_1,
+    main_Inquire_5_in_2,
+    main_Inquire_5_in_3
+    ) [instance: 5, cache: 1];
+    // 
+    // node Selector[14]: x = 105, y = 353, inputs = 7, label = Selector
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Selector_14"
+    // input[2]: defaulting = 0, visible = 0, type = 32, value = "positions" 
+    // input[3]: defaulting = 0, visible = 0, type = 29, value = 0 
+    // input[4]: defaulting = 1, visible = 1, type = 16777248, value = {"positions" "connections" "domain" "TIME" "INDICATRICE_INTERF_ELEM" "TEMPERATURE_MPOINT_ELEM" "neighbors" "box" }
+    // input[5]: defaulting = 1, visible = 0, type = 16777245, value = {0  1  2  3  4  5  6  7  }
+    // output[1]: visible = 1, type = 29, value = 0 
+    // output[2]: visible = 1, type = 32, value = "positions" 
+    // page group: SimpleShade
+    //
+main_Selector_14_out_1[cache: 2],
+main_Selector_14_out_2[cache: 2] = 
+    Selector(
+    main_Selector_14_in_1,
+    main_Selector_14_in_2,
+    main_Selector_14_in_3,
+    main_Inquire_5_out_1,
+    main_Selector_14_in_5,
+    main_Selector_14_in_6,
+    main_Selector_14_in_7
+    ) [instance: 14, cache: 1];
+    // 
+    // node String[5]: x = 182, y = 351, inputs = 0, label = String
+    // output[1]: visible = 1, type = 32, value = "mag(v)>0.0008"
+    // page group: SimpleShade
+    //
+    // 
+    // node Toggle[10]: x = 242, y = 353, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_10"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 0
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 1, visible = 1, type = 29, value = 0
+    // output[1]: visible = 1, type = 29, value = 0
+    // page group: SimpleShade
+    // toggle : 0
+    //
+    // 
+    // node SelectLataField[3]: x = 93, y = 471, inputs = 5, label = SelectLataField
+    // page group: SimpleShade
+    //
+main_SelectLataField_3_out_1[cache: 0],
+main_SelectLataField_3_out_2 = 
+    SelectLataField(
+    main_Receiver_19_out_1,
+    main_Selector_13_out_2,
+    main_Selector_14_out_2,
+    main_String_5_out_1,
+    main_Toggle_10_out_1
+    ) [instance: 3, cache: 1];
+    // 
+    // node Compute2[3]: x = 46, y = 556, inputs = 5, label = Compute2
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "v"
+    // input[3]: defaulting = 1, visible = 1, type = 16777248, value = {"v"}
+    // page group: SimpleShade
+    //
+main_Compute2_3_out_1 = 
+    Compute2(
+    main_String_13_out_1,
+    main_Compute2_3_in_2,
+    main_SelectLataField_3_out_1,
+    main_Compute2_3_in_4,
+    main_Compute2_3_in_5
+    ) [instance: 3, cache: 1];
+    // 
+    // node ShowBoundary[2]: x = 153, y = 685, inputs = 2, label = ShowBoundary
+    // page group: SimpleShade
+    //
+main_ShowBoundary_2_out_1 = 
+    ShowBoundary(
+    main_Compute2_3_out_1,
+    main_ShowBoundary_2_in_2
+    ) [instance: 2, cache: 1];
+    // 
+    // node Switch[15]: x = 100, y = 758, inputs = 3, label = Switch
+    // page group: SimpleShade
+    //
+main_Switch_15_out_1 = 
+    Switch(
+    main_Toggle_24_out_1,
+    main_Compute2_3_out_1,
+    main_ShowBoundary_2_out_1
+    ) [instance: 15, cache: 1];
+    // 
+    // node Shade[10]: x = 123, y = 846, inputs = 8, label = Shade
+    // input[3]: defaulting = 0, visible = 1, type = 32, value = "faceted"
+    // page group: SimpleShade
+    //
+main_Shade_10_out_1 = 
+    Shade(
+    main_Switch_15_out_1,
+    main_Shade_10_in_2,
+    main_Shade_10_in_3,
+    main_Shade_10_in_4,
+    main_Shade_10_in_5,
+    main_Shade_10_in_6,
+    main_Shade_10_in_7,
+    main_Shade_10_in_8
+    ) [instance: 10, cache: 1];
+    // 
+    // node Toggle[37]: x = 313, y = 444, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_37"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 1
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 1
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 0, visible = 1, type = 29, value =  2  
+    // output[1]: visible = 1, type = 29, value = 1
+    // page group: SimpleShade
+    // toggle : 1
+    //
+main_Toggle_37_out_1[cache: 2] = 
+    Toggle(
+    main_Toggle_37_in_1,
+    main_Toggle_37_in_2,
+    main_Toggle_37_in_3,
+    main_Toggle_37_in_4,
+    main_Toggle_37_in_5,
+    main_Toggle_37_in_6
+    ) [instance: 37, cache: 1];
+    // 
+    // node Compute2[4]: x = 182, y = 557, inputs = 5, label = Compute2
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "v"
+    // input[3]: defaulting = 1, visible = 1, type = 16777248, value = {"v"}
+    // page group: SimpleShade
+    //
+main_Compute2_4_out_1 = 
+    Compute2(
+    main_String_13_out_1,
+    main_Compute2_4_in_2,
+    main_SelectLataField_3_out_2,
+    main_Compute2_4_in_4,
+    main_Compute2_4_in_5
+    ) [instance: 4, cache: 1];
+    // 
+    // node Switch[24]: x = 290, y = 668, inputs = 3, label = Switch
+    // page group: SimpleShade
+    //
+main_Switch_24_out_1 = 
+    Switch(
+    main_Toggle_37_out_1,
+    main_Compute2_4_out_1,
+    main_Switch_24_in_3
+    ) [instance: 24, cache: 1];
+    // 
+    // node Colormap[8]: x = 295, y = 783, inputs = 19, label = Colormap
+    // input[1]: defaulting = 0, visible = 0, type = 16777224, value = { [0.0 0.6666667] [1.0 0.0] }
+    // input[2]: defaulting = 0, visible = 0, type = 16777224, value = { [0.0 1.0] [1.0 1.0] }
+    // input[3]: defaulting = 0, visible = 0, type = 16777224, value = { [0.0 1.0] [1.0 1.0] }
+    // input[4]: defaulting = 0, visible = 0, type = 16777224, value = { [0.0 1.0] [1.0 1.0] }
+    // input[5]: defaulting = 0, visible = 0, type = 32, value = "Colormap_8"
+    // input[7]: defaulting = 1, visible = 0, type = 5, value = 0.0
+    // input[8]: defaulting = 1, visible = 0, type = 5, value = 100.0
+    // input[9]: defaulting = 1, visible = 0, type = 1, value = 20
+    // input[12]: defaulting = 0, visible = 0, type = 16777221, value = { 0.0 100.0 }
+    // input[17]: defaulting = 0, visible = 0, type = 5, value = 0.0
+    // input[18]: defaulting = 0, visible = 0, type = 5, value = 0.0
+    // input[19]: defaulting = 0, visible = 0, type = 32, value = "Simple shade colormap"
+    // page group: SimpleShade
+    // Colormap: title = Simple shade colormap
+    // window: position = (0.0188,0.4892), size = 0.4300x0.3750
+    //
+main_Colormap_8_out_1[cache: 2],
+main_Colormap_8_out_2[cache: 2] = 
+    Colormap(
+    main_Colormap_8_in_1,
+    main_Colormap_8_in_2,
+    main_Colormap_8_in_3,
+    main_Colormap_8_in_4,
+    main_Colormap_8_in_5,
+    main_Switch_24_out_1,
+    main_Colormap_8_in_7,
+    main_Colormap_8_in_8,
+    main_Colormap_8_in_9,
+    main_Colormap_8_in_10,
+    main_Colormap_8_in_11,
+    main_Colormap_8_in_12,
+    main_Colormap_8_in_13,
+    main_Colormap_8_in_14,
+    main_Colormap_8_in_15,
+    main_Colormap_8_in_16,
+    main_Colormap_8_in_17,
+    main_Colormap_8_in_18,
+    main_Colormap_8_in_19
+    ) [instance: 8, cache: 1];
+    // 
+    // node Color[21]: x = 201, y = 926, inputs = 5, label = Color
+    // page group: SimpleShade
+    //
+main_Color_21_out_1 = 
+    Color(
+    main_Shade_10_out_1,
+    main_Colormap_8_out_1,
+    main_Colormap_8_out_2,
+    main_Color_21_in_4,
+    main_Color_21_in_5
+    ) [instance: 21, cache: 1];
+    // 
+    // node Options[2]: x = 203, y = 1006, inputs = 5, label = Options
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "color multiplier"
+    // input[3]: defaulting = 0, visible = 1, type = 29, value = 1
+    // page group: SimpleShade
+    //
+main_Options_2_out_1 = 
+    Options(
+    main_Color_21_out_1,
+    main_Options_2_in_2,
+    main_Options_2_in_3,
+    main_Options_2_in_4,
+    main_Options_2_in_5
+    ) [instance: 2, cache: 1];
+    // 
+    // node Toggle[44]: x = 334, y = 920, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_44"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 1
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 1
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 0, visible = 1, type = 29, value =  2  
+    // output[1]: visible = 1, type = 29, value = 1
+    // page group: SimpleShade
+    // toggle : 1
+    //
+main_Toggle_44_out_1[cache: 2] = 
+    Toggle(
+    main_Toggle_44_in_1,
+    main_Toggle_44_in_2,
+    main_Toggle_44_in_3,
+    main_Toggle_44_in_4,
+    main_Toggle_44_in_5,
+    main_Toggle_44_in_6
+    ) [instance: 44, cache: 1];
+    // 
+    // node ColorBar[4]: x = 413, y = 921, inputs = 16, label = ColorBar
+    // input[3]: defaulting = 0, visible = 1, type = 8, value = [200 15]
+    // page group: SimpleShade
+    //
+main_ColorBar_4_out_1 = 
+    ColorBar(
+    main_Colormap_8_out_1,
+    main_ColorBar_4_in_2,
+    main_ColorBar_4_in_3,
+    main_ColorBar_4_in_4,
+    main_ColorBar_4_in_5,
+    main_ColorBar_4_in_6,
+    main_ColorBar_4_in_7,
+    main_ColorBar_4_in_8,
+    main_ColorBar_4_in_9,
+    main_ColorBar_4_in_10,
+    main_ColorBar_4_in_11,
+    main_ColorBar_4_in_12,
+    main_ColorBar_4_in_13,
+    main_ColorBar_4_in_14,
+    main_ColorBar_4_in_15,
+    main_ColorBar_4_in_16
+    ) [instance: 4, cache: 1];
+    // 
+    // node Switch[29]: x = 367, y = 1008, inputs = 3, label = Switch
+    // page group: SimpleShade
+    //
+main_Switch_29_out_1 = 
+    Switch(
+    main_Toggle_44_out_1,
+    main_ColorBar_4_out_1,
+    main_Switch_29_in_3
+    ) [instance: 29, cache: 1];
+    // 
+    // node Collect[10]: x = 278, y = 1081, inputs = 2, label = Collect
+    // page group: SimpleShade
+    //
+main_Collect_10_out_1 = 
+    Collect(
+    main_Options_2_out_1,
+    main_Switch_29_out_1
+    ) [instance: 10, cache: 1];
+    // 
+    // node Switch[9]: x = 180, y = 1150, inputs = 3, label = Switch
+    // page group: SimpleShade
+    //
+main_Switch_9_out_1 = 
+    Switch(
+    main_Toggle_12_out_1,
+    main_Switch_9_in_2,
+    main_Collect_10_out_1
+    ) [instance: 9, cache: 1];
+    // 
+    // node Transmitter[12]: x = 169, y = 1220, inputs = 1, label = simple_shade
+    // page group: SimpleShade
+    //
+simple_shade = main_Switch_9_out_1;
+    // 
+    // node Receiver[20]: x = 17, y = 31, inputs = 1, label = simple_shade
+    // page group: image
+    //
+main_Receiver_20_out_1[cache: 0] = simple_shade;
+    // 
+    // node Compute[17]: x = 89, y = 800, inputs = 3, label = Compute
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "(!$1)?0:(((strcmp($0,'triangles')==0)||(strcmp($0,'lines')==0))?1:2)"
+    // page group: cut_planes
+    // expression: value = (!b)?0:(((strcmp(a,'triangles')==0)||(strcmp(a,'lines')==0))?1:2)
+    // name[2]: value = a
+    // name[3]: value = b
+    //
+main_Compute_17_out_1 = 
+    Compute(
+    main_Compute_17_in_1,
+    main_Attribute_2_out_1,
+    main_Toggle_14_out_1
+    ) [instance: 17, cache: 1];
+    // 
+    // node Caption[1]: x = 573, y = 969, inputs = 9, label = Caption
+    // input[1]: defaulting = 0, visible = 1, type = 32, value = "cut planes cannot be drawn for selected field"
+    // page group: cut_planes
+    //
+main_Caption_1_out_1 = 
+    Caption(
+    main_Caption_1_in_1,
+    main_Caption_1_in_2,
+    main_Caption_1_in_3,
+    main_Caption_1_in_4,
+    main_Caption_1_in_5,
+    main_Caption_1_in_6,
+    main_Caption_1_in_7,
+    main_Caption_1_in_8,
+    main_Caption_1_in_9
+    ) [instance: 1, cache: 1];
+    // 
+    // node String[8]: x = 365, y = 99, inputs = 0, label = String
+    // output[1]: visible = 1, type = 32, value = "v"
+    // page group: cut_planes
+    //
+    // 
+    // node Route[2]: x = 196, y = 910, inputs = 2, outputs = 2, label = Route
+    // page group: cut_planes
+    //
+main_Route_2_out_1[cache: 0],
+main_Route_2_out_2 = 
+    Route(
+    main_Compute_17_out_1,
+    main_SelectLataField_2_out_1
+    ) [instance: 2, cache: 1];
+    // 
+    // node Transmitter[9]: x = 156, y = 990, inputs = 1, label = field_choice_cut_plane
+    // page group: cut_planes
+    //
+field_choice_cut_plane = main_Route_2_out_2;
+    // 
+    // node Receiver[10]: x = 426, y = 98, inputs = 1, label = field_choice_cut_plane
+    // page group: cut_planes
+    //
+main_Receiver_10_out_1[cache: 0] = field_choice_cut_plane;
+    // 
+    // node Compute2[2]: x = 404, y = 178, inputs = 5, label = Compute2
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "v"
+    // input[3]: defaulting = 1, visible = 1, type = 16777248, value = {"v"}
+    // page group: cut_planes
+    //
+main_Compute2_2_out_1 = 
+    Compute2(
+    main_String_8_out_1,
+    main_Compute2_2_in_2,
+    main_Receiver_10_out_1,
+    main_Compute2_2_in_4,
+    main_Compute2_2_in_5
+    ) [instance: 2, cache: 1];
+    // 
+    // node Vector[4]: x = 799, y = 92, inputs = 11, label = Vector
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Vector_4"
+    // input[3]: defaulting = 0, visible = 0, type = 8, value = [ 0 1e-05 0 ]
+    // input[5]: defaulting = 1, visible = 0, type = 8, value = [ -1000000.0 -1000000.0 -1000000.0 ]
+    // input[6]: defaulting = 1, visible = 0, type = 8, value = [ 1000000.0 1000000.0 1000000.0 ]
+    // input[7]: defaulting = 1, visible = 0, type = 8, value = [       1        1        1]
+    // input[9]: defaulting = 1, visible = 0, type = 8, value = [ 5.0 5.0 5.0 ]
+    // output[1]: visible = 1, type = 8, value = [ 0 1e-05 0 ]
+    // page group: cut_planes
+    //
+    // 
+    // node Vector[2]: x = 645, y = 175, inputs = 11, label = Vector
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Vector_2"
+    // input[3]: defaulting = 0, visible = 0, type = 8, value = [ 0 0.00042 0 ]
+    // input[5]: defaulting = 1, visible = 0, type = 8, value = [ -1000000.0 -1000000.0 -1000000.0 ]
+    // input[6]: defaulting = 1, visible = 0, type = 8, value = [ 1000000.0 1000000.0 1000000.0 ]
+    // input[7]: defaulting = 1, visible = 1, type = 8, value = [       1        1        1]
+    // input[9]: defaulting = 1, visible = 0, type = 8, value = [ 5.0 5.0 5.0 ]
+    // output[1]: visible = 1, type = 8, value = [ 0 0.00042 0 ]
+    // page group: cut_planes
+    //
+main_Vector_2_out_1[cache: 2] = 
+    Vector(
+    main_Vector_2_in_1,
+    main_Vector_2_in_2,
+    main_Vector_2_in_3,
+    main_Vector_2_in_4,
+    main_Vector_2_in_5,
+    main_Vector_2_in_6,
+    main_Vector_4_out_1,
+    main_Vector_2_in_8,
+    main_Vector_2_in_9,
+    main_Vector_2_in_10,
+    main_Vector_2_in_11
+    ) [instance: 2, cache: 1];
+    // 
+    // node Integer[4]: x = 529, y = 457, inputs = 11, label = Integer
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Integer_4"
+    // input[3]: defaulting = 0, visible = 0, type = 1, value = 0
+    // input[5]: defaulting = 1, visible = 0, type = 1, value = 0
+    // input[6]: defaulting = 1, visible = 0, type = 1, value = 0
+    // input[7]: defaulting = 1, visible = 0, type = 5, value = 1.0
+    // input[9]: defaulting = 1, visible = 0, type = 1, value = 0
+    // output[1]: visible = 1, type = 1, value = 0
+    // page group: import
+    //
+    // 
+    // node Transmitter[3]: x = 485, y = 535, inputs = 1, label = sequencer_cut_plane
+    // page group: import
+    //
+sequencer_cut_plane = main_Integer_4_out_1;
+    // 
+    // node Receiver[7]: x = 642, y = 97, inputs = 1, label = sequencer_cut_plane
+    // page group: cut_planes
+    //
+main_Receiver_7_out_1[cache: 0] = sequencer_cut_plane;
+    // 
+    // node Compute[14]: x = 684, y = 246, inputs = 4, label = Compute
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "$0+$1*$2"
+    // page group: cut_planes
+    // expression: value = a+b*c
+    // name[2]: value = a
+    // name[3]: value = b
+    // name[4]: value = c
+    //
+main_Compute_14_out_1 = 
+    Compute(
+    main_Compute_14_in_1,
+    main_Vector_2_out_1,
+    main_Receiver_7_out_1,
+    main_Vector_4_out_1
+    ) [instance: 14, cache: 1];
+    // 
+    // node MapToPlane[1]: x = 531, y = 442, inputs = 3, label = MapToPlane
+    // input[2]: defaulting = 1, visible = 1, type = 8, value = [0.02,0.02,0.02]
+    // page group: cut_planes
+    //
+main_MapToPlane_1_out_1[cache: 0] = 
+    MapToPlane(
+    main_Compute2_2_out_1,
+    main_Compute_14_out_1,
+    main_Vector_4_out_1
+    ) [instance: 1, cache: 1];
+    // 
+    // node Color[14]: x = 544, y = 529, inputs = 5, label = Color
+    // input[2]: defaulting = 1, visible = 1, type = 32, value = "Red"
+    // page group: cut_planes
+    //
+main_Color_14_out_1 = 
+    Color(
+    main_MapToPlane_1_out_1,
+    main_Color_14_in_2,
+    main_Color_14_in_3,
+    main_Color_14_in_4,
+    main_Color_14_in_5
+    ) [instance: 14, cache: 1];
+    // 
+    // node Toggle[6]: x = 683, y = 488, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_6"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 0
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 1, visible = 1, type = 29, value = 0
+    // output[1]: visible = 1, type = 29, value = 0
+    // page group: cut_planes
+    // toggle : 0
+    //
+    // 
+    // node Scalar[1]: x = 874, y = 176, inputs = 11, label = Scalar
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Scalar_1"
+    // input[3]: defaulting = 0, visible = 0, type = 5, value = 1.0 
+    // input[5]: defaulting = 1, visible = 0, type = 5, value = 0.0
+    // input[6]: defaulting = 1, visible = 0, type = 5, value = 10.0
+    // input[7]: defaulting = 1, visible = 0, type = 5, value = 1.0
+    // input[9]: defaulting = 1, visible = 0, type = 1, value = 1
+    // output[1]: visible = 1, type = 5, value = 1.0 
+    // page group: cut_planes
+    //
+    // 
+    // node Compute[7]: x = 768, y = 332, inputs = 4, label = Compute
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "$0+$1*$2"
+    // page group: cut_planes
+    // expression: value = a+b*c
+    // name[2]: value = a
+    // name[3]: value = b
+    // name[4]: value = c
+    //
+main_Compute_7_out_1 = 
+    Compute(
+    main_Compute_7_in_1,
+    main_Compute_14_out_1,
+    main_Vector_4_out_1,
+    main_Scalar_1_out_1
+    ) [instance: 7, cache: 1];
+    // 
+    // node MapToPlane[4]: x = 737, y = 414, inputs = 3, label = MapToPlane
+    // input[2]: defaulting = 1, visible = 1, type = 8, value = [0.02,0.02,0.02]
+    // page group: cut_planes
+    //
+main_MapToPlane_4_out_1[cache: 0] = 
+    MapToPlane(
+    main_Compute2_2_out_1,
+    main_Compute_7_out_1,
+    main_Vector_4_out_1
+    ) [instance: 4, cache: 1];
+    // 
+    // node Color[12]: x = 746, y = 488, inputs = 5, label = Color
+    // input[2]: defaulting = 1, visible = 1, type = 32, value = "Green"
+    // input[3]: defaulting = 0, visible = 1, type = 5, value = 0.6
+    // page group: cut_planes
+    //
+main_Color_12_out_1 = 
+    Color(
+    main_MapToPlane_4_out_1,
+    main_Color_12_in_2,
+    main_Color_12_in_3,
+    main_Color_12_in_4,
+    main_Color_12_in_5
+    ) [instance: 12, cache: 1];
+    // 
+    // node Compute[8]: x = 872, y = 331, inputs = 4, label = Compute
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "$0+2*$1*$2"
+    // page group: cut_planes
+    // expression: value = a+2*b*c
+    // name[2]: value = a
+    // name[3]: value = b
+    // name[4]: value = c
+    //
+main_Compute_8_out_1 = 
+    Compute(
+    main_Compute_8_in_1,
+    main_Compute_14_out_1,
+    main_Vector_4_out_1,
+    main_Scalar_1_out_1
+    ) [instance: 8, cache: 1];
+    // 
+    // node MapToPlane[5]: x = 861, y = 410, inputs = 3, label = MapToPlane
+    // input[2]: defaulting = 1, visible = 1, type = 8, value = [0.02,0.02,0.02]
+    // page group: cut_planes
+    //
+main_MapToPlane_5_out_1[cache: 0] = 
+    MapToPlane(
+    main_Compute2_2_out_1,
+    main_Compute_8_out_1,
+    main_Vector_4_out_1
+    ) [instance: 5, cache: 1];
+    // 
+    // node Color[13]: x = 856, y = 490, inputs = 5, label = Color
+    // input[2]: defaulting = 1, visible = 1, type = 32, value = "Blue"
+    // input[3]: defaulting = 0, visible = 1, type = 5, value = 0.4
+    // page group: cut_planes
+    //
+main_Color_13_out_1 = 
+    Color(
+    main_MapToPlane_5_out_1,
+    main_Color_13_in_2,
+    main_Color_13_in_3,
+    main_Color_13_in_4,
+    main_Color_13_in_5
+    ) [instance: 13, cache: 1];
+    // 
+    // node Collect[6]: x = 810, y = 562, inputs = 2, label = Collect
+    // page group: cut_planes
+    //
+main_Collect_6_out_1 = 
+    Collect(
+    main_Color_12_out_1,
+    main_Color_13_out_1
+    ) [instance: 6, cache: 1];
+    // 
+    // node Switch[6]: x = 759, y = 640, inputs = 3, label = Switch
+    // page group: cut_planes
+    //
+main_Switch_6_out_1 = 
+    Switch(
+    main_Toggle_6_out_1,
+    main_Collect_6_out_1,
+    main_Switch_6_in_3
+    ) [instance: 6, cache: 1];
+    // 
+    // node Collect[4]: x = 514, y = 727, inputs = 3, label = Collect
+    // page group: cut_planes
+    //
+main_Collect_4_out_1[cache: 0] = 
+    Collect(
+    main_Color_14_out_1,
+    main_Switch_6_out_1,
+    main_Collect_4_in_3
+    ) [instance: 4, cache: 1];
+    // 
+    // node Shade[6]: x = 549, y = 820, inputs = 8, label = Shade
+    // input[2]: defaulting = 0, visible = 1, type = 3, value = 0
+    // input[3]: defaulting = 0, visible = 1, type = 32, value = "faceted"
+    // page group: cut_planes
+    //
+main_Shade_6_out_1 = 
+    Shade(
+    main_Collect_4_out_1,
+    main_Shade_6_in_2,
+    main_Shade_6_in_3,
+    main_Shade_6_in_4,
+    main_Shade_6_in_5,
+    main_Shade_6_in_6,
+    main_Shade_6_in_7,
+    main_Shade_6_in_8
+    ) [instance: 6, cache: 1];
+    // 
+    // node Toggle[34]: x = 383, y = 556, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_34"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 1
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 1
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 0, visible = 1, type = 29, value =  2  
+    // input[6]: defaulting = 0, visible = 0, type = 32, value = "Auto scale"
+    // output[1]: visible = 1, type = 29, value = 1
+    // page group: cut_planes
+    // toggle : 1
+    //
+main_Toggle_34_out_1[cache: 2] = 
+    Toggle(
+    main_Toggle_34_in_1,
+    main_Toggle_34_in_2,
+    main_Toggle_34_in_3,
+    main_Toggle_34_in_4,
+    main_Toggle_34_in_5,
+    main_Toggle_34_in_6
+    ) [instance: 34, cache: 1];
+    // 
+    // node Switch[22]: x = 413, y = 632, inputs = 3, label = Switch
+    // page group: cut_planes
+    //
+main_Switch_22_out_1 = 
+    Switch(
+    main_Toggle_34_out_1,
+    main_Compute2_2_out_1,
+    main_Switch_22_in_3
+    ) [instance: 22, cache: 1];
+    // 
+    // node Colormap[9]: x = 674, y = 721, inputs = 19, label = Colormap
+    // input[1]: defaulting = 0, visible = 0, type = 16777224, value = { [0.0 0.6666667] [1.0 0.0] }
+    // input[2]: defaulting = 0, visible = 0, type = 16777224, value = { [0.0 1.0] [1.0 1.0] }
+    // input[3]: defaulting = 0, visible = 0, type = 16777224, value = { [0.0 1.0] [1.0 1.0] }
+    // input[4]: defaulting = 0, visible = 0, type = 16777224, value = { [0.0 1.0] [1.0 1.0] }
+    // input[5]: defaulting = 0, visible = 0, type = 32, value = "Colormap_9"
+    // input[7]: defaulting = 1, visible = 0, type = 5, value = 0.05303115
+    // input[8]: defaulting = 1, visible = 0, type = 5, value = 0.058520339
+    // input[9]: defaulting = 1, visible = 0, type = 1, value = 20
+    // input[12]: defaulting = 0, visible = 0, type = 16777221, value = { 0.05303115 0.058520339 }
+    // input[17]: defaulting = 0, visible = 0, type = 5, value = 0.05303115
+    // input[18]: defaulting = 0, visible = 0, type = 5, value = 0.058520339
+    // input[19]: defaulting = 0, visible = 0, type = 32, value = "Cutplane colormap"
+    // page group: cut_planes
+    // Colormap: title = Cutplane colormap
+    // window: position = (0.1981,0.0775), size = 0.4062x0.3750
+    //
+main_Colormap_9_out_1[cache: 2],
+main_Colormap_9_out_2[cache: 2] = 
+    Colormap(
+    main_Colormap_9_in_1,
+    main_Colormap_9_in_2,
+    main_Colormap_9_in_3,
+    main_Colormap_9_in_4,
+    main_Colormap_9_in_5,
+    main_Switch_22_out_1,
+    main_Colormap_9_in_7,
+    main_Colormap_9_in_8,
+    main_Colormap_9_in_9,
+    main_Colormap_9_in_10,
+    main_Colormap_9_in_11,
+    main_Colormap_9_in_12,
+    main_Colormap_9_in_13,
+    main_Colormap_9_in_14,
+    main_Colormap_9_in_15,
+    main_Colormap_9_in_16,
+    main_Colormap_9_in_17,
+    main_Colormap_9_in_18,
+    main_Colormap_9_in_19
+    ) [instance: 9, cache: 1];
+    // 
+    // node Color[20]: x = 608, y = 896, inputs = 5, label = Color
+    // input[3]: defaulting = 1, visible = 1, type = 5, value = 0.4
+    // page group: cut_planes
+    //
+main_Color_20_out_1 = 
+    Color(
+    main_Shade_6_out_1,
+    main_Colormap_9_out_1,
+    main_Colormap_9_out_2,
+    main_Color_20_in_4,
+    main_Color_20_in_5
+    ) [instance: 20, cache: 1];
+    // 
+    // node Toggle[15]: x = 687, y = 817, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_15"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 1
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 1
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 1, visible = 1, type = 29, value = 0
+    // output[1]: visible = 1, type = 29, value = 1
+    // page group: cut_planes
+    // toggle : 1
+    //
+    // 
+    // node ColorBar[2]: x = 747, y = 817, inputs = 16, label = ColorBar
+    // input[2]: visible = 0
+    // input[3]: defaulting = 0, visible = 0, type = 8, value = [200 15]
+    // input[4]: visible = 0
+    // input[16]: defaulting = 0, visible = 0, type = 1, value = 8
+    // page group: cut_planes
+    //
+main_ColorBar_2_out_1 = 
+    ColorBar(
+    main_Colormap_9_out_1,
+    main_ColorBar_2_in_2,
+    main_ColorBar_2_in_3,
+    main_ColorBar_2_in_4,
+    main_ColorBar_2_in_5,
+    main_ColorBar_2_in_6,
+    main_ColorBar_2_in_7,
+    main_Selector_12_out_2,
+    main_ColorBar_2_in_9,
+    main_ColorBar_2_in_10,
+    main_ColorBar_2_in_11,
+    main_ColorBar_2_in_12,
+    main_ColorBar_2_in_13,
+    main_ColorBar_2_in_14,
+    main_ColorBar_2_in_15,
+    main_ColorBar_2_in_16
+    ) [instance: 2, cache: 1];
+    // 
+    // node Switch[10]: x = 717, y = 894, inputs = 3, label = Switch
+    // page group: cut_planes
+    //
+main_Switch_10_out_1 = 
+    Switch(
+    main_Toggle_15_out_1,
+    main_ColorBar_2_out_1,
+    main_Switch_10_in_3
+    ) [instance: 10, cache: 1];
+    // 
+    // node Collect[8]: x = 655, y = 968, inputs = 2, label = Collect
+    // page group: cut_planes
+    //
+main_Collect_8_out_1 = 
+    Collect(
+    main_Color_20_out_1,
+    main_Switch_10_out_1
+    ) [instance: 8, cache: 1];
+    // 
+    // node Switch[8]: x = 558, y = 1040, inputs = 3, label = Switch
+    // page group: cut_planes
+    //
+main_Switch_8_out_1 = 
+    Switch(
+    main_Compute_17_out_1,
+    main_Caption_1_out_1,
+    main_Collect_8_out_1
+    ) [instance: 8, cache: 1];
+    // 
+    // node Transmitter[4]: x = 556, y = 1106, inputs = 1, label = cut_planes
+    // page group: cut_planes
+    //
+cut_planes = main_Switch_8_out_1;
+    // 
+    // node Receiver[8]: x = 75, y = 96, inputs = 1, label = cut_planes
+    // page group: image
+    //
+main_Receiver_8_out_1[cache: 0] = cut_planes;
+    // 
+    // node Toggle[18]: x = 113, y = 775, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_18"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value =  1  
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 0, visible = 1, type = 29, value =  2  
+    // input[5]: defaulting = 0, visible = 1, type = 29, value =  1  
+    // output[1]: visible = 1, type = 29, value =  1  
+    // page group: Glyph
+    // toggle : 0
+    //
+main_Toggle_18_out_1[cache: 2] = 
+    Toggle(
+    main_Toggle_18_in_1,
+    main_Toggle_18_in_2,
+    main_Toggle_18_in_3,
+    main_Toggle_18_in_4,
+    main_Toggle_18_in_5,
+    main_Toggle_18_in_6
+    ) [instance: 18, cache: 1];
+    // 
+    // node Selector[19]: x = 126, y = 559, inputs = 7, label = Selector
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Selector_19"
+    // input[2]: defaulting = 0, visible = 0, type = 32, value = "speedy" 
+    // input[3]: defaulting = 0, visible = 0, type = 29, value = 1 
+    // input[4]: defaulting = 0, visible = 1, type = 16777248, value = {"standard" "speedy" "text" }
+    // input[5]: defaulting = 1, visible = 0, type = 16777245, value = {0  1  2  }
+    // output[1]: visible = 1, type = 29, value = 1 
+    // output[2]: visible = 1, type = 32, value = "speedy" 
+    // page group: Glyph
+    //
+main_Selector_19_out_1[cache: 2],
+main_Selector_19_out_2[cache: 2] = 
+    Selector(
+    main_Selector_19_in_1,
+    main_Selector_19_in_2,
+    main_Selector_19_in_3,
+    main_Selector_19_in_4,
+    main_Selector_19_in_5,
+    main_Selector_19_in_6,
+    main_Selector_19_in_7
+    ) [instance: 19, cache: 1];
+    // 
+    // node Compute[19]: x = 89, y = 641, inputs = 3, label = Compute
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "strcmp($0,'text')!=0?1:2"
+    // page group: Glyph
+    // expression: value = strcmp(a,'text')!=0?1:2
+    // name[2]: value = a
+    // name[3]: value = b
+    //
+main_Compute_19_out_1 = 
+    Compute(
+    main_Compute_19_in_1,
+    main_Selector_19_out_2,
+    main_Compute_19_in_3
+    ) [instance: 19, cache: 1];
+    // 
+    // node Receiver[21]: x = 81, y = 27, inputs = 1, label = imported
+    // page group: Glyph
+    //
+main_Receiver_21_out_1[cache: 0] = imported;
+    // 
+    // node Selector[15]: x = 143, y = 136, inputs = 7, label = Selector
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Selector_15"
+    // input[2]: defaulting = 0, visible = 0, type = 32, value = "DOM" 
+    // input[3]: defaulting = 0, visible = 0, type = 29, value = 0 
+    // input[4]: defaulting = 1, visible = 1, type = 16777248, value = {"DOM" }
+    // input[5]: defaulting = 1, visible = 0, type = 16777245, value = {0  }
+    // output[1]: visible = 1, type = 29, value = 0 
+    // output[2]: visible = 1, type = 32, value = "DOM" 
+    // page group: Glyph
+    //
+main_Selector_15_out_1[cache: 2],
+main_Selector_15_out_2[cache: 2] = 
+    Selector(
+    main_Selector_15_in_1,
+    main_Selector_15_in_2,
+    main_Selector_15_in_3,
+    main_Receiver_21_out_1,
+    main_Selector_15_in_5,
+    main_Selector_15_in_6,
+    main_Selector_15_in_7
+    ) [instance: 15, cache: 1];
+    // 
+    // node Select[10]: x = 124, y = 223, inputs = 3, label = Select
+    // page group: Glyph
+    //
+main_Select_10_out_1[cache: 0] = 
+    Select(
+    main_Receiver_21_out_1,
+    main_Selector_15_out_2,
+    main_Select_10_in_3
+    ) [instance: 10, cache: 1];
+    // 
+    // node Inquire[6]: x = 136, y = 291, inputs = 3, label = Inquire
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "component names"
+    // page group: Glyph
+    //
+main_Inquire_6_out_1 = 
+    Inquire(
+    main_Select_10_out_1,
+    main_Inquire_6_in_2,
+    main_Inquire_6_in_3
+    ) [instance: 6, cache: 1];
+    // 
+    // node Selector[16]: x = 140, y = 366, inputs = 7, label = Selector
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Selector_16"
+    // input[2]: defaulting = 0, visible = 0, type = 32, value = "positions" 
+    // input[3]: defaulting = 0, visible = 0, type = 29, value = 0 
+    // input[4]: defaulting = 1, visible = 1, type = 16777248, value = {"positions" "connections" "domain" "TIME" "INDICATRICE_INTERF_ELEM" "TEMPERATURE_MPOINT_ELEM" "neighbors" "box" }
+    // input[5]: defaulting = 1, visible = 0, type = 16777245, value = {0  1  2  3  4  5  6  7  }
+    // output[1]: visible = 1, type = 29, value = 0 
+    // output[2]: visible = 1, type = 32, value = "positions" 
+    // page group: Glyph
+    //
+main_Selector_16_out_1[cache: 2],
+main_Selector_16_out_2[cache: 2] = 
+    Selector(
+    main_Selector_16_in_1,
+    main_Selector_16_in_2,
+    main_Selector_16_in_3,
+    main_Inquire_6_out_1,
+    main_Selector_16_in_5,
+    main_Selector_16_in_6,
+    main_Selector_16_in_7
+    ) [instance: 16, cache: 1];
+    // 
+    // node String[7]: x = 217, y = 364, inputs = 0, label = String
+    // output[1]: visible = 1, type = 32, value = "mag(v)>10"
+    // page group: Glyph
+    //
+    // 
+    // node Toggle[16]: x = 277, y = 366, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_16"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 0
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 1, visible = 1, type = 29, value = 0
+    // output[1]: visible = 1, type = 29, value = 0
+    // page group: Glyph
+    // toggle : 0
+    //
+    // 
+    // node SelectLataField[4]: x = 162, y = 482, inputs = 5, label = SelectLataField
+    // page group: Glyph
+    //
+main_SelectLataField_4_out_1[cache: 0],
+main_SelectLataField_4_out_2 = 
+    SelectLataField(
+    main_Receiver_21_out_1,
+    main_Selector_15_out_2,
+    main_Selector_16_out_2,
+    main_String_7_out_1,
+    main_Toggle_16_out_1
+    ) [instance: 4, cache: 1];
+    // 
+    // node Toggle[36]: x = 368, y = 106, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_36"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 1
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 1
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 0, visible = 1, type = 29, value =  2  
+    // output[1]: visible = 1, type = 29, value = 1
+    // page group: Glyph
+    // toggle : 1
+    //
+main_Toggle_36_out_1[cache: 2] = 
+    Toggle(
+    main_Toggle_36_in_1,
+    main_Toggle_36_in_2,
+    main_Toggle_36_in_3,
+    main_Toggle_36_in_4,
+    main_Toggle_36_in_5,
+    main_Toggle_36_in_6
+    ) [instance: 36, cache: 1];
+    // 
+    // node Switch[23]: x = 386, y = 203, inputs = 3, label = Switch
+    // page group: Glyph
+    //
+main_Switch_23_out_1 = 
+    Switch(
+    main_Toggle_36_out_1,
+    main_SelectLataField_4_out_1,
+    main_Switch_23_in_3
+    ) [instance: 23, cache: 1];
+    // 
+    // node Colormap[10]: x = 408, y = 302, inputs = 19, label = Colormap
+    // input[1]: defaulting = 0, visible = 0, type = 16777224, value = { [0.0 0.6666667] [1.0 0.0] }
+    // input[2]: defaulting = 0, visible = 0, type = 16777224, value = { [0.0 1.0] [1.0 1.0] }
+    // input[3]: defaulting = 0, visible = 0, type = 16777224, value = { [0.0 1.0] [1.0 1.0] }
+    // input[4]: defaulting = 0, visible = 0, type = 16777224, value = { [0.0 1.0] [1.0 1.0] }
+    // input[5]: defaulting = 0, visible = 0, type = 32, value = "Colormap_10"
+    // input[7]: defaulting = 1, visible = 1, type = 5, value = 0.0
+    // input[8]: defaulting = 1, visible = 1, type = 5, value = 100.0
+    // input[9]: defaulting = 1, visible = 1, type = 1, value = 20
+    // input[12]: defaulting = 0, visible = 0, type = 16777221, value = { 0.0 100.0 }
+    // input[17]: defaulting = 0, visible = 0, type = 5, value = -22.215178
+    // input[18]: defaulting = 0, visible = 0, type = 5, value = -22.200598
+    // input[19]: defaulting = 0, visible = 1, type = 32, value = "Glyph colormap"
+    // page group: Glyph
+    // Colormap: title = Glyph colormap
+    // window: position = (0.0106,0.5658), size = 0.4062x0.3750
+    //
+main_Colormap_10_out_1[cache: 2],
+main_Colormap_10_out_2[cache: 2] = 
+    Colormap(
+    main_Colormap_10_in_1,
+    main_Colormap_10_in_2,
+    main_Colormap_10_in_3,
+    main_Colormap_10_in_4,
+    main_Colormap_10_in_5,
+    main_Switch_23_out_1,
+    main_Colormap_10_in_7,
+    main_Colormap_10_in_8,
+    main_Colormap_10_in_9,
+    main_Colormap_10_in_10,
+    main_Colormap_10_in_11,
+    main_Colormap_10_in_12,
+    main_Colormap_10_in_13,
+    main_Colormap_10_in_14,
+    main_Colormap_10_in_15,
+    main_Colormap_10_in_16,
+    main_Colormap_10_in_17,
+    main_Colormap_10_in_18,
+    main_Colormap_10_in_19
+    ) [instance: 10, cache: 1];
+    // 
+    // node Mark[14]: x = 456, y = 395, inputs = 2, label = Mark
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "positions"
+    // page group: Glyph
+    //
+main_Mark_14_out_1 = 
+    Mark(
+    main_Colormap_10_out_1,
+    main_Mark_14_in_2
+    ) [instance: 14, cache: 1];
+    // 
+    // node Statistics[1]: x = 420, y = 485, inputs = 1, label = Statistics
+    // page group: Glyph
+    //
+main_Statistics_1_out_1,
+main_Statistics_1_out_2,
+main_Statistics_1_out_3,
+main_Statistics_1_out_4,
+main_Statistics_1_out_5 = 
+    Statistics(
+    main_Mark_14_out_1
+    ) [instance: 1, cache: 1];
+    // 
+    // node Glyph[2]: x = 200, y = 635, inputs = 7, label = Glyph
+    // input[2]: defaulting = 1, visible = 1, type = 32, value = "spiffy"
+    // input[3]: visible = 0
+    // input[4]: visible = 0
+    // input[5]: visible = 0
+    // input[6]: visible = 1
+    // input[7]: visible = 1
+    // page group: Glyph
+    //
+main_Glyph_2_out_1 = 
+    Glyph(
+    main_SelectLataField_4_out_1,
+    main_Selector_19_out_2,
+    main_Glyph_2_in_3,
+    main_Glyph_2_in_4,
+    main_Glyph_2_in_5,
+    main_Statistics_1_out_4,
+    main_Statistics_1_out_5
+    ) [instance: 2, cache: 1];
+    // 
+    // node Color[22]: x = 266, y = 704, inputs = 5, label = Color
+    // page group: Glyph
+    //
+main_Color_22_out_1 = 
+    Color(
+    main_Glyph_2_out_1,
+    main_Colormap_10_out_1,
+    main_Colormap_10_out_2,
+    main_Color_22_in_4,
+    main_Color_22_in_5
+    ) [instance: 22, cache: 1];
+    // 
+    // node Switch[18]: x = 193, y = 777, inputs = 3, label = Switch
+    // page group: Glyph
+    //
+main_Switch_18_out_1 = 
+    Switch(
+    main_Compute_19_out_1,
+    main_Color_22_out_1,
+    main_Glyph_2_out_1
+    ) [instance: 18, cache: 1];
+    // 
+    // node Switch[11]: x = 151, y = 845, inputs = 3, label = Switch
+    // page group: Glyph
+    //
+main_Switch_11_out_1 = 
+    Switch(
+    main_Toggle_18_out_1,
+    main_Switch_11_in_2,
+    main_Switch_18_out_1
+    ) [instance: 11, cache: 1];
+    // 
+    // node Transmitter[13]: x = 169, y = 919, inputs = 1, label = glyph
+    // page group: Glyph
+    //
+glyph = main_Switch_11_out_1;
+    // 
+    // node Receiver[22]: x = 147, y = 31, inputs = 1, label = glyph
+    // page group: image
+    //
+main_Receiver_22_out_1[cache: 0] = glyph;
+    // 
+    // node Toggle[19]: x = 68, y = 187, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_19"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 0
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 1, visible = 1, type = 29, value = 0
+    // output[1]: visible = 1, type = 29, value = 0
+    // page group: Interfaces
+    // toggle : 0
+    //
+    // 
+    // node Toggle[49]: x = 21, y = 630, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_49"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value =  1  
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 0, visible = 1, type = 29, value =  2  
+    // input[5]: defaulting = 0, visible = 1, type = 29, value =  1  
+    // output[1]: visible = 1, type = 29, value =  1  
+    // page group: map_surface
+    // toggle : 0
+    //
+main_Toggle_49_out_1[cache: 2] = 
+    Toggle(
+    main_Toggle_49_in_1,
+    main_Toggle_49_in_2,
+    main_Toggle_49_in_3,
+    main_Toggle_49_in_4,
+    main_Toggle_49_in_5,
+    main_Toggle_49_in_6
+    ) [instance: 49, cache: 1];
+    // 
+    // node Inquire[12]: x = 127, y = 651, inputs = 3, label = Inquire
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "has member"
+    // input[3]: defaulting = 0, visible = 1, type = 32, value = "INTERFACES"
+    // page group: import
+    //
+main_Inquire_12_out_1 = 
+    Inquire(
+    main_Import_1_out_1,
+    main_Inquire_12_in_2,
+    main_Inquire_12_in_3
+    ) [instance: 12, cache: 1];
+    // 
+    // node Route[7]: x = 189, y = 722, inputs = 2, outputs = 2, label = Route
+    // page group: import
+    //
+main_Route_7_out_1,
+main_Route_7_out_2 = 
+    Route(
+    main_Inquire_12_out_1,
+    main_Import_1_out_1
+    ) [instance: 7, cache: 1];
+    // 
+    // node Select[6]: x = 190, y = 799, inputs = 3, label = Select
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "INTERFACES"
+    // page group: import
+    //
+main_Select_6_out_1 = 
+    Select(
+    main_Route_7_out_1,
+    main_Select_6_in_2,
+    main_Select_6_in_3
+    ) [instance: 6, cache: 1];
+    // 
+    // node Transmitter[7]: x = 181, y = 871, inputs = 1, label = interfaces
+    // page group: import
+    //
+interfaces = main_Select_6_out_1;
+    // 
+    // node Receiver[32]: x = 15, y = 477, inputs = 1, label = interfaces
+    // page group: map_surface
+    //
+main_Receiver_32_out_1[cache: 0] = interfaces;
+    // 
+    // node Receiver[31]: x = 55, y = 25, inputs = 1, label = imported
+    // page group: map_surface
+    //
+main_Receiver_31_out_1[cache: 0] = imported;
+    // 
+    // node Selector[24]: x = 116, y = 101, inputs = 7, label = Selector
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Selector_24"
+    // input[2]: defaulting = 0, visible = 0, type = 32, value = "DOM" 
+    // input[3]: defaulting = 0, visible = 0, type = 29, value = 0 
+    // input[4]: defaulting = 1, visible = 1, type = 16777248, value = {"DOM" }
+    // input[5]: defaulting = 1, visible = 0, type = 16777245, value = {0  }
+    // output[1]: visible = 1, type = 29, value = 0 
+    // output[2]: visible = 1, type = 32, value = "DOM" 
+    // page group: map_surface
+    //
+main_Selector_24_out_1[cache: 2],
+main_Selector_24_out_2[cache: 2] = 
+    Selector(
+    main_Selector_24_in_1,
+    main_Selector_24_in_2,
+    main_Selector_24_in_3,
+    main_Receiver_31_out_1,
+    main_Selector_24_in_5,
+    main_Selector_24_in_6,
+    main_Selector_24_in_7
+    ) [instance: 24, cache: 1];
+    // 
+    // node Select[19]: x = 96, y = 176, inputs = 3, label = Select
+    // page group: map_surface
+    //
+main_Select_19_out_1[cache: 0] = 
+    Select(
+    main_Receiver_31_out_1,
+    main_Selector_24_out_2,
+    main_Select_19_in_3
+    ) [instance: 19, cache: 1];
+    // 
+    // node Inquire[13]: x = 106, y = 244, inputs = 3, label = Inquire
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "component names"
+    // page group: map_surface
+    //
+main_Inquire_13_out_1 = 
+    Inquire(
+    main_Select_19_out_1,
+    main_Inquire_13_in_2,
+    main_Inquire_13_in_3
+    ) [instance: 13, cache: 1];
+    // 
+    // node Selector[25]: x = 110, y = 311, inputs = 7, label = Selector
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Selector_25"
+    // input[2]: defaulting = 0, visible = 0, type = 32, value = "TEMPERATURE_MPOINT_ELEM" 
+    // input[3]: defaulting = 0, visible = 0, type = 29, value = 5 
+    // input[4]: defaulting = 1, visible = 1, type = 16777248, value = {"positions" "connections" "domain" "TIME" "INDICATRICE_INTERF_ELEM" "TEMPERATURE_MPOINT_ELEM" "neighbors" "box" }
+    // input[5]: defaulting = 1, visible = 0, type = 16777245, value = {0  1  2  3  4  5  6  7  }
+    // output[1]: visible = 1, type = 29, value = 5 
+    // output[2]: visible = 1, type = 32, value = "TEMPERATURE_MPOINT_ELEM" 
+    // page group: map_surface
+    //
+main_Selector_25_out_1[cache: 2],
+main_Selector_25_out_2[cache: 2] = 
+    Selector(
+    main_Selector_25_in_1,
+    main_Selector_25_in_2,
+    main_Selector_25_in_3,
+    main_Inquire_13_out_1,
+    main_Selector_25_in_5,
+    main_Selector_25_in_6,
+    main_Selector_25_in_7
+    ) [instance: 25, cache: 1];
+    // 
+    // node Mark[15]: x = 60, y = 394, inputs = 2, label = Mark
+    // page group: map_surface
+    //
+main_Mark_15_out_1 = 
+    Mark(
+    main_Select_19_out_1,
+    main_Selector_25_out_2
+    ) [instance: 15, cache: 1];
+    // 
+    // node Post[7]: x = 93, y = 475, inputs = 2, label = Post
+    // page group: map_surface
+    //
+main_Post_7_out_1 = 
+    Post(
+    main_Mark_15_out_1,
+    main_Post_7_in_2
+    ) [instance: 7, cache: 1];
+    // 
+    // node Map[1]: x = 59, y = 556, inputs = 4, label = Map
+    // page group: map_surface
+    //
+main_Map_1_out_1 = 
+    Map(
+    main_Receiver_32_out_1,
+    main_Post_7_out_1,
+    main_Map_1_in_3,
+    main_Map_1_in_4
+    ) [instance: 1, cache: 1];
+    // 
+    // node Unmark[2]: x = 131, y = 631, inputs = 2, label = Unmark
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "MAPPED_FIELD"
+    // page group: map_surface
+    //
+main_Unmark_2_out_1 = 
+    Unmark(
+    main_Map_1_out_1,
+    main_Unmark_2_in_2
+    ) [instance: 2, cache: 1];
+    // 
+    // node Switch[31]: x = 81, y = 711, inputs = 3, label = Switch
+    // page group: map_surface
+    //
+main_Switch_31_out_1 = 
+    Switch(
+    main_Toggle_49_out_1,
+    main_Receiver_32_out_1,
+    main_Unmark_2_out_1
+    ) [instance: 31, cache: 1];
+    // 
+    // node Transmitter[21]: x = 80, y = 789, inputs = 1, label = interf_map
+    // page group: map_surface
+    //
+interf_map = main_Switch_31_out_1;
+    // 
+    // node Receiver[33]: x = 322, y = 5, inputs = 1, label = interf_map
+    // page group: Interfaces
+    //
+main_Receiver_33_out_1[cache: 0] = interf_map;
+    // 
+    // node ShowConnections[2]: x = 108, y = 104, inputs = 1, label = ShowConnections
+    // page group: Interfaces
+    //
+main_ShowConnections_2_out_1[cache: 0] = 
+    ShowConnections(
+    main_Receiver_33_out_1
+    ) [instance: 2, cache: 1];
+    // 
+    // node Color[19]: x = 140, y = 189, inputs = 5, label = Color
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "white"
+    // page group: Interfaces
+    //
+main_Color_19_out_1 = 
+    Color(
+    main_ShowConnections_2_out_1,
+    main_Color_19_in_2,
+    main_Color_19_in_3,
+    main_Color_19_in_4,
+    main_Color_19_in_5
+    ) [instance: 19, cache: 1];
+    // 
+    // node Switch[12]: x = 121, y = 283, inputs = 3, label = Switch
+    // page group: Interfaces
+    //
+main_Switch_12_out_1 = 
+    Switch(
+    main_Toggle_19_out_1,
+    main_Color_19_out_1,
+    main_Switch_12_in_3
+    ) [instance: 12, cache: 1];
+    // 
+    // node Toggle[20]: x = 251, y = 508, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_20"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 0
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 1, visible = 1, type = 29, value = 0
+    // output[1]: visible = 1, type = 29, value = 0
+    // page group: Interfaces
+    // toggle : 0
+    //
+    // 
+    // node Inquire[7]: x = 354, y = 96, inputs = 3, label = Inquire
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "component names"
+    // page group: Interfaces
+    //
+main_Inquire_7_out_1 = 
+    Inquire(
+    main_Receiver_33_out_1,
+    main_Inquire_7_in_2,
+    main_Inquire_7_in_3
+    ) [instance: 7, cache: 1];
+    // 
+    // node Selector[17]: x = 357, y = 166, inputs = 7, label = Selector
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Selector_17"
+    // input[2]: defaulting = 0, visible = 0, type = 32, value = "positions" 
+    // input[3]: defaulting = 0, visible = 0, type = 29, value = 0 
+    // input[4]: defaulting = 1, visible = 1, type = 16777248, value = {"positions" "connections" "domain" "TIME" "COURBURE_SOM" "neighbors" "box" }
+    // input[5]: defaulting = 1, visible = 0, type = 16777245, value = {0  1  2  3  4  5  6  }
+    // output[1]: visible = 1, type = 29, value = 0 
+    // output[2]: visible = 1, type = 32, value = "positions" 
+    // page group: Interfaces
+    //
+main_Selector_17_out_1[cache: 2],
+main_Selector_17_out_2[cache: 2] = 
+    Selector(
+    main_Selector_17_in_1,
+    main_Selector_17_in_2,
+    main_Selector_17_in_3,
+    main_Inquire_7_out_1,
+    main_Selector_17_in_5,
+    main_Selector_17_in_6,
+    main_Selector_17_in_7
+    ) [instance: 17, cache: 1];
+    // 
+    // node Mark[12]: x = 315, y = 243, inputs = 2, label = Mark
+    // input[2]: defaulting = 1, visible = 1, type = 32, value = "COURBURE_SOM"
+    // page group: Interfaces
+    //
+main_Mark_12_out_1 = 
+    Mark(
+    main_Receiver_33_out_1,
+    main_Selector_17_out_2
+    ) [instance: 12, cache: 1];
+    // 
+    // node Colormap[11]: x = 371, y = 324, inputs = 19, label = Colormap
+    // input[1]: defaulting = 0, visible = 0, type = 16777224, value = { [0.0 0.6666667] [1.0 0.0] }
+    // input[2]: defaulting = 0, visible = 0, type = 16777224, value = { [0.0 1.0] [1.0 1.0] }
+    // input[3]: defaulting = 0, visible = 0, type = 16777224, value = { [0.0 1.0] [1.0 1.0] }
+    // input[4]: defaulting = 0, visible = 0, type = 16777224, value = { [0.0 1.0] [1.0 1.0] }
+    // input[5]: defaulting = 0, visible = 0, type = 32, value = "Colormap_11"
+    // input[7]: defaulting = 1, visible = 0, type = 5, value = 0.0
+    // input[8]: defaulting = 1, visible = 0, type = 5, value = 100.0
+    // input[9]: defaulting = 1, visible = 0, type = 1, value = 20
+    // input[12]: defaulting = 0, visible = 0, type = 16777221, value = { 0.0 100.0 }
+    // input[17]: defaulting = 0, visible = 0, type = 5, value = 0.00074513361
+    // input[18]: defaulting = 0, visible = 0, type = 5, value = 0.00084895798
+    // input[19]: defaulting = 0, visible = 0, type = 32, value = "Interfaces color field"
+    // page group: Interfaces
+    // Colormap: title = Interfaces color field
+    // window: position = (0.0000,0.5458), size = 0.4300x0.3750
+    //
+main_Colormap_11_out_1[cache: 2],
+main_Colormap_11_out_2[cache: 2] = 
+    Colormap(
+    main_Colormap_11_in_1,
+    main_Colormap_11_in_2,
+    main_Colormap_11_in_3,
+    main_Colormap_11_in_4,
+    main_Colormap_11_in_5,
+    main_Mark_12_out_1,
+    main_Colormap_11_in_7,
+    main_Colormap_11_in_8,
+    main_Colormap_11_in_9,
+    main_Colormap_11_in_10,
+    main_Colormap_11_in_11,
+    main_Colormap_11_in_12,
+    main_Colormap_11_in_13,
+    main_Colormap_11_in_14,
+    main_Colormap_11_in_15,
+    main_Colormap_11_in_16,
+    main_Colormap_11_in_17,
+    main_Colormap_11_in_18,
+    main_Colormap_11_in_19
+    ) [instance: 11, cache: 1];
+    // 
+    // node Color[23]: x = 301, y = 414, inputs = 5, label = Color
+    // page group: Interfaces
+    //
+main_Color_23_out_1[cache: 0] = 
+    Color(
+    main_Mark_12_out_1,
+    main_Colormap_11_out_1,
+    main_Colormap_11_out_2,
+    main_Color_23_in_4,
+    main_Color_23_in_5
+    ) [instance: 23, cache: 1];
+    // 
+    // node Shade[9]: x = 318, y = 505, inputs = 8, label = Shade
+    // input[3]: defaulting = 0, visible = 1, type = 32, value = "faceted"
+    // page group: Interfaces
+    //
+main_Shade_9_out_1 = 
+    Shade(
+    main_Color_23_out_1,
+    main_Shade_9_in_2,
+    main_Shade_9_in_3,
+    main_Shade_9_in_4,
+    main_Shade_9_in_5,
+    main_Shade_9_in_6,
+    main_Shade_9_in_7,
+    main_Shade_9_in_8
+    ) [instance: 9, cache: 1];
+    // 
+    // node Switch[13]: x = 292, y = 598, inputs = 3, label = Switch
+    // page group: Interfaces
+    //
+main_Switch_13_out_1 = 
+    Switch(
+    main_Toggle_20_out_1,
+    main_Shade_9_out_1,
+    main_Switch_13_in_3
+    ) [instance: 13, cache: 1];
+    // 
+    // node Toggle[21]: x = 444, y = 592, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_21"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 0
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 1, visible = 1, type = 29, value = 0
+    // output[1]: visible = 1, type = 29, value = 0
+    // page group: Interfaces
+    // toggle : 0
+    //
+    // 
+    // node Inquire[8]: x = 580, y = 92, inputs = 3, label = Inquire
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "component names"
+    // page group: Interfaces
+    //
+main_Inquire_8_out_1 = 
+    Inquire(
+    main_Receiver_33_out_1,
+    main_Inquire_8_in_2,
+    main_Inquire_8_in_3
+    ) [instance: 8, cache: 1];
+    // 
+    // node Selector[18]: x = 582, y = 165, inputs = 7, label = Selector
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Selector_18"
+    // input[2]: defaulting = 0, visible = 0, type = 32, value = "positions" 
+    // input[3]: defaulting = 0, visible = 0, type = 29, value = 0 
+    // input[4]: defaulting = 1, visible = 1, type = 16777248, value = {"positions" "connections" "domain" "TIME" "COURBURE_SOM" "neighbors" "box" }
+    // input[5]: defaulting = 1, visible = 0, type = 16777245, value = {0  1  2  3  4  5  6  }
+    // output[1]: visible = 1, type = 29, value = 0 
+    // output[2]: visible = 1, type = 32, value = "positions" 
+    // page group: Interfaces
+    //
+main_Selector_18_out_1[cache: 2],
+main_Selector_18_out_2[cache: 2] = 
+    Selector(
+    main_Selector_18_in_1,
+    main_Selector_18_in_2,
+    main_Selector_18_in_3,
+    main_Inquire_8_out_1,
+    main_Selector_18_in_5,
+    main_Selector_18_in_6,
+    main_Selector_18_in_7
+    ) [instance: 18, cache: 1];
+    // 
+    // node Mark[13]: x = 550, y = 253, inputs = 2, label = Mark
+    // input[2]: defaulting = 1, visible = 1, type = 32, value = "COURBURE_SOM"
+    // page group: Interfaces
+    //
+main_Mark_13_out_1 = 
+    Mark(
+    main_Receiver_33_out_1,
+    main_Selector_18_out_2
+    ) [instance: 13, cache: 1];
+    // 
+    // node Colormap[12]: x = 596, y = 323, inputs = 19, label = Colormap
+    // input[1]: defaulting = 0, visible = 0, type = 16777224, value = { [0.0 0.666667] [1.0 0.0] }
+    // input[2]: defaulting = 0, visible = 0, type = 16777224, value = { [0.0 1.0] [1.0 1.0] }
+    // input[3]: defaulting = 0, visible = 0, type = 16777224, value = { [0.0 1.0] [1.0 1.0] }
+    // input[4]: defaulting = 0, visible = 0, type = 16777224, value = { [0.0 1.0] [1.0 1.0] }
+    // input[5]: defaulting = 0, visible = 0, type = 32, value = "Colormap_12"
+    // input[7]: defaulting = 1, visible = 0, type = 5, value = -197.40446
+    // input[8]: defaulting = 1, visible = 0, type = 5, value = 16.645681
+    // input[9]: defaulting = 1, visible = 0, type = 1, value = 20
+    // input[12]: defaulting = 0, visible = 0, type = 16777221, value = { -197.40446 16.645681 }
+    // input[17]: defaulting = 0, visible = 0, type = 5, value = -197.40446
+    // input[18]: defaulting = 0, visible = 0, type = 5, value = 16.645681
+    // input[19]: defaulting = 0, visible = 0, type = 32, value = "Interfaces glyph"
+    // page group: Interfaces
+    // Colormap: title = Interfaces glyph
+    // window: position = (0.0319,0.5342), size = 0.4300x0.3750
+    //
+main_Colormap_12_out_1[cache: 2],
+main_Colormap_12_out_2[cache: 2] = 
+    Colormap(
+    main_Colormap_12_in_1,
+    main_Colormap_12_in_2,
+    main_Colormap_12_in_3,
+    main_Colormap_12_in_4,
+    main_Colormap_12_in_5,
+    main_Mark_13_out_1,
+    main_Colormap_12_in_7,
+    main_Colormap_12_in_8,
+    main_Colormap_12_in_9,
+    main_Colormap_12_in_10,
+    main_Colormap_12_in_11,
+    main_Colormap_12_in_12,
+    main_Colormap_12_in_13,
+    main_Colormap_12_in_14,
+    main_Colormap_12_in_15,
+    main_Colormap_12_in_16,
+    main_Colormap_12_in_17,
+    main_Colormap_12_in_18,
+    main_Colormap_12_in_19
+    ) [instance: 12, cache: 1];
+    // 
+    // node Color[24]: x = 521, y = 433, inputs = 5, label = Color
+    // page group: Interfaces
+    //
+main_Color_24_out_1[cache: 0] = 
+    Color(
+    main_Mark_13_out_1,
+    main_Colormap_12_out_1,
+    main_Colormap_12_out_2,
+    main_Color_24_in_4,
+    main_Color_24_in_5
+    ) [instance: 24, cache: 1];
+    // 
+    // node Glyph[3]: x = 498, y = 506, inputs = 7, label = Glyph
+    // page group: Interfaces
+    //
+main_Glyph_3_out_1 = 
+    Glyph(
+    main_Color_24_out_1,
+    main_Glyph_3_in_2,
+    main_Glyph_3_in_3,
+    main_Glyph_3_in_4,
+    main_Glyph_3_in_5,
+    main_Glyph_3_in_6,
+    main_Glyph_3_in_7
+    ) [instance: 3, cache: 1];
+    // 
+    // node ColorBar[3]: x = 629, y = 505, inputs = 16, label = ColorBar
+    // input[2]: visible = 0
+    // input[3]: defaulting = 0, visible = 0, type = 8, value = [200 20]
+    // input[4]: visible = 0
+    // input[8]: defaulting = 1, visible = 1, type = 32, value = "Interf. field"
+    // page group: Interfaces
+    //
+main_ColorBar_3_out_1 = 
+    ColorBar(
+    main_Colormap_12_out_1,
+    main_ColorBar_3_in_2,
+    main_ColorBar_3_in_3,
+    main_ColorBar_3_in_4,
+    main_ColorBar_3_in_5,
+    main_ColorBar_3_in_6,
+    main_ColorBar_3_in_7,
+    main_Selector_18_out_2,
+    main_ColorBar_3_in_9,
+    main_ColorBar_3_in_10,
+    main_ColorBar_3_in_11,
+    main_ColorBar_3_in_12,
+    main_ColorBar_3_in_13,
+    main_ColorBar_3_in_14,
+    main_ColorBar_3_in_15,
+    main_ColorBar_3_in_16
+    ) [instance: 3, cache: 1];
+    // 
+    // node Collect[9]: x = 579, y = 583, inputs = 2, label = Collect
+    // page group: Interfaces
+    //
+main_Collect_9_out_1 = 
+    Collect(
+    main_Glyph_3_out_1,
+    main_ColorBar_3_out_1
+    ) [instance: 9, cache: 1];
+    // 
+    // node Switch[14]: x = 503, y = 669, inputs = 3, label = Switch
+    // page group: Interfaces
+    //
+main_Switch_14_out_1 = 
+    Switch(
+    main_Toggle_21_out_1,
+    main_Collect_9_out_1,
+    main_Switch_14_in_3
+    ) [instance: 14, cache: 1];
+    // 
+    // node Collect[7]: x = 240, y = 755, inputs = 3, label = Collect
+    // page group: Interfaces
+    //
+main_Collect_7_out_1 = 
+    Collect(
+    main_Switch_12_out_1,
+    main_Switch_13_out_1,
+    main_Switch_14_out_1
+    ) [instance: 7, cache: 1];
+    // 
+    // node Transmitter[14]: x = 226, y = 832, inputs = 1, label = interfaces_img
+    // page group: Interfaces
+    //
+interfaces_img = main_Collect_7_out_1;
+    // 
+    // node Receiver[23]: x = 177, y = 99, inputs = 1, label = interfaces_img
+    // page group: image
+    //
+main_Receiver_23_out_1[cache: 0] = interfaces_img;
+    // 
+    // node Caption[2]: x = 51, y = 490, inputs = 9, label = Caption
+    // input[1]: defaulting = 0, visible = 1, type = 32, value = "No lata file selected (MAIN panel)"
+    // page group: import
+    //
+main_Caption_2_out_1 = 
+    Caption(
+    main_Caption_2_in_1,
+    main_Caption_2_in_2,
+    main_Caption_2_in_3,
+    main_Caption_2_in_4,
+    main_Caption_2_in_5,
+    main_Caption_2_in_6,
+    main_Caption_2_in_7,
+    main_Caption_2_in_8,
+    main_Caption_2_in_9
+    ) [instance: 2, cache: 1];
+    // 
+    // node Route[5]: x = 23, y = 571, inputs = 2, outputs = 2, label = Route
+    // page group: import
+    //
+main_Route_5_out_1,
+main_Route_5_out_2 = 
+    Route(
+    main_Compute_20_out_1,
+    main_Caption_2_out_1
+    ) [instance: 5, cache: 1];
+    // 
+    // node Transmitter[15]: x = 20, y = 666, inputs = 1, label = Info_msg_lata
+    // page group: import
+    //
+Info_msg_lata = main_Route_5_out_1;
+    // 
+    // node Receiver[24]: x = 244, y = 23, inputs = 1, label = Info_msg_lata
+    // page group: image
+    //
+main_Receiver_24_out_1[cache: 0] = Info_msg_lata;
+    // 
+    // node Toggle[32]: x = 421, y = 325, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_32"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value =  1  
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 0, visible = 1, type = 29, value =  2  
+    // input[5]: defaulting = 0, visible = 1, type = 29, value =  1  
+    // output[1]: visible = 1, type = 29, value =  1  
+    // page group: Isosurface
+    // toggle : 0
+    //
+main_Toggle_32_out_1[cache: 2] = 
+    Toggle(
+    main_Toggle_32_in_1,
+    main_Toggle_32_in_2,
+    main_Toggle_32_in_3,
+    main_Toggle_32_in_4,
+    main_Toggle_32_in_5,
+    main_Toggle_32_in_6
+    ) [instance: 32, cache: 1];
+    // 
+    // node Receiver[25]: x = 127, y = 18, inputs = 1, label = imported
+    // page group: Isosurface
+    //
+main_Receiver_25_out_1[cache: 0] = imported;
+    // 
+    // node Selector[20]: x = 189, y = 127, inputs = 7, label = Selector
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Selector_20"
+    // input[2]: defaulting = 0, visible = 0, type = 32, value = "DOM" 
+    // input[3]: defaulting = 0, visible = 0, type = 29, value = 0 
+    // input[4]: defaulting = 1, visible = 1, type = 16777248, value = {"DOM" }
+    // input[5]: defaulting = 1, visible = 0, type = 16777245, value = {0  }
+    // output[1]: visible = 1, type = 29, value = 0 
+    // output[2]: visible = 1, type = 32, value = "DOM" 
+    // page group: Isosurface
+    //
+main_Selector_20_out_1[cache: 2],
+main_Selector_20_out_2[cache: 2] = 
+    Selector(
+    main_Selector_20_in_1,
+    main_Selector_20_in_2,
+    main_Selector_20_in_3,
+    main_Receiver_25_out_1,
+    main_Selector_20_in_5,
+    main_Selector_20_in_6,
+    main_Selector_20_in_7
+    ) [instance: 20, cache: 1];
+    // 
+    // node Select[11]: x = 170, y = 214, inputs = 3, label = Select
+    // page group: Isosurface
+    //
+main_Select_11_out_1[cache: 0] = 
+    Select(
+    main_Receiver_25_out_1,
+    main_Selector_20_out_2,
+    main_Select_11_in_3
+    ) [instance: 11, cache: 1];
+    // 
+    // node Inquire[9]: x = 182, y = 282, inputs = 3, label = Inquire
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "component names"
+    // page group: Isosurface
+    //
+main_Inquire_9_out_1 = 
+    Inquire(
+    main_Select_11_out_1,
+    main_Inquire_9_in_2,
+    main_Inquire_9_in_3
+    ) [instance: 9, cache: 1];
+    // 
+    // node Selector[21]: x = 186, y = 357, inputs = 7, label = Selector
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Selector_21"
+    // input[2]: defaulting = 0, visible = 0, type = 32, value = "positions" 
+    // input[3]: defaulting = 0, visible = 0, type = 29, value = 0 
+    // input[4]: defaulting = 1, visible = 1, type = 16777248, value = {"positions" "connections" "domain" "TIME" "INDICATRICE_INTERF_ELEM" "TEMPERATURE_MPOINT_ELEM" "neighbors" "box" }
+    // input[5]: defaulting = 1, visible = 0, type = 16777245, value = {0  1  2  3  4  5  6  7  }
+    // output[1]: visible = 1, type = 29, value = 0 
+    // output[2]: visible = 1, type = 32, value = "positions" 
+    // page group: Isosurface
+    //
+main_Selector_21_out_1[cache: 2],
+main_Selector_21_out_2[cache: 2] = 
+    Selector(
+    main_Selector_21_in_1,
+    main_Selector_21_in_2,
+    main_Selector_21_in_3,
+    main_Inquire_9_out_1,
+    main_Selector_21_in_5,
+    main_Selector_21_in_6,
+    main_Selector_21_in_7
+    ) [instance: 21, cache: 1];
+    // 
+    // node String[9]: x = 263, y = 355, inputs = 0, label = String
+    // output[1]: visible = 1, type = 32, value = "v>-10&&x>0.02"
+    // page group: Isosurface
+    //
+    // 
+    // node Toggle[30]: x = 323, y = 357, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_30"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 0
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 1, visible = 1, type = 29, value = 0
+    // output[1]: visible = 1, type = 29, value = 0
+    // page group: Isosurface
+    // toggle : 0
+    //
+    // 
+    // node SelectLataField[5]: x = 174, y = 475, inputs = 5, label = SelectLataField
+    // page group: Isosurface
+    //
+main_SelectLataField_5_out_1[cache: 0],
+main_SelectLataField_5_out_2 = 
+    SelectLataField(
+    main_Receiver_25_out_1,
+    main_Selector_20_out_2,
+    main_Selector_21_out_2,
+    main_String_9_out_1,
+    main_Toggle_30_out_1
+    ) [instance: 5, cache: 1];
+    // 
+    // node Post[6]: x = 434, y = 41, inputs = 2, label = Post
+    // page group: Isosurface
+    //
+main_Post_6_out_1 = 
+    Post(
+    main_SelectLataField_5_out_1,
+    main_Post_6_in_2
+    ) [instance: 6, cache: 1];
+    // 
+    // node ScalarList[1]: x = 503, y = 39, inputs = 11, label = ScalarList
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "ScalarList_1"
+    // input[3]: defaulting = 0, visible = 0, type = 16777221, value = { 0.0 }
+    // input[5]: defaulting = 1, visible = 0, type = 5, value = -1000000.0
+    // input[6]: defaulting = 1, visible = 0, type = 5, value = 1000000.0
+    // input[7]: defaulting = 1, visible = 0, type = 5, value = 1.0
+    // input[9]: defaulting = 1, visible = 0, type = 1, value = 5
+    // output[1]: visible = 1, type = 16777221, value = { 0.0 }
+    // page group: Isosurface
+    //
+    // 
+    // node Isosurface[1]: x = 453, y = 136, inputs = 6, label = Isosurface
+    // page group: Isosurface
+    //
+main_Isosurface_1_out_1 = 
+    Isosurface(
+    main_Post_6_out_1,
+    main_ScalarList_1_out_1,
+    main_Isosurface_1_in_3,
+    main_Isosurface_1_in_4,
+    main_Isosurface_1_in_5,
+    main_Isosurface_1_in_6
+    ) [instance: 1, cache: 1];
+    // 
+    // node Shade[11]: x = 463, y = 236, inputs = 8, label = Shade
+    // input[3]: defaulting = 0, visible = 1, type = 32, value = "smooth"
+    // page group: Isosurface
+    //
+main_Shade_11_out_1 = 
+    Shade(
+    main_Isosurface_1_out_1,
+    main_Shade_11_in_2,
+    main_Shade_11_in_3,
+    main_Shade_11_in_4,
+    main_Shade_11_in_5,
+    main_Shade_11_in_6,
+    main_Shade_11_in_7,
+    main_Shade_11_in_8
+    ) [instance: 11, cache: 1];
+    // 
+    // node Toggle[33]: x = 595, y = 37, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_33"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 1
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 1
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 1, visible = 1, type = 29, value = 0
+    // input[6]: defaulting = 0, visible = 0, type = 32, value = "Auto scale"
+    // output[1]: visible = 1, type = 29, value = 1
+    // page group: Isosurface
+    // toggle : 1
+    //
+main_Toggle_33_out_1[cache: 2] = 
+    Toggle(
+    main_Toggle_33_in_1,
+    main_Toggle_33_in_2,
+    main_Toggle_33_in_3,
+    main_Toggle_33_in_4,
+    main_Toggle_33_in_5,
+    main_Toggle_33_in_6
+    ) [instance: 33, cache: 1];
+    // 
+    // node Switch[21]: x = 588, y = 138, inputs = 3, label = Switch
+    // page group: Isosurface
+    //
+main_Switch_21_out_1 = 
+    Switch(
+    main_Toggle_33_out_1,
+    main_SelectLataField_5_out_2,
+    main_Switch_21_in_3
+    ) [instance: 21, cache: 1];
+    // 
+    // node Colormap[13]: x = 584, y = 234, inputs = 19, label = Colormap
+    // input[1]: defaulting = 0, visible = 0, type = 16777224, value = { [0.0 0.6666667] }
+    // input[2]: defaulting = 0, visible = 0, type = 16777224, value = { [0.0 0.25263158] }
+    // input[3]: defaulting = 0, visible = 0, type = 16777224, value = { [0.0 1.0] [1.0 1.0] }
+    // input[4]: defaulting = 0, visible = 0, type = 16777224, value = { [0.0 0.57303371] }
+    // input[5]: defaulting = 0, visible = 0, type = 32, value = "Colormap_13"
+    // input[7]: defaulting = 1, visible = 0, type = 5, value = -1.1e+30
+    // input[8]: defaulting = 1, visible = 0, type = 5, value = 0.011108874
+    // input[9]: defaulting = 1, visible = 0, type = 1, value = 20
+    // input[12]: defaulting = 0, visible = 0, type = 16777221, value = { -1.1e+30 0.011108874 }
+    // input[17]: defaulting = 0, visible = 0, type = 5, value = -1.1e+30
+    // input[18]: defaulting = 0, visible = 0, type = 5, value = 0.011108874
+    // input[19]: defaulting = 0, visible = 0, type = 32, value = "Isosurface colormap"
+    // page group: Isosurface
+    // Colormap: title = Isosurface colormap
+    // window: position = (0.0781,0.2592), size = 0.4062x0.3750
+    //
+main_Colormap_13_out_1[cache: 2],
+main_Colormap_13_out_2[cache: 2] = 
+    Colormap(
+    main_Colormap_13_in_1,
+    main_Colormap_13_in_2,
+    main_Colormap_13_in_3,
+    main_Colormap_13_in_4,
+    main_Colormap_13_in_5,
+    main_Switch_21_out_1,
+    main_Colormap_13_in_7,
+    main_Colormap_13_in_8,
+    main_Colormap_13_in_9,
+    main_Colormap_13_in_10,
+    main_Colormap_13_in_11,
+    main_Colormap_13_in_12,
+    main_Colormap_13_in_13,
+    main_Colormap_13_in_14,
+    main_Colormap_13_in_15,
+    main_Colormap_13_in_16,
+    main_Colormap_13_in_17,
+    main_Colormap_13_in_18,
+    main_Colormap_13_in_19
+    ) [instance: 13, cache: 1];
+    // 
+    // node Color[25]: x = 490, y = 327, inputs = 5, label = Color
+    // page group: Isosurface
+    //
+main_Color_25_out_1 = 
+    Color(
+    main_Shade_11_out_1,
+    main_Colormap_13_out_1,
+    main_Colormap_13_out_2,
+    main_Color_25_in_4,
+    main_Color_25_in_5
+    ) [instance: 25, cache: 1];
+    // 
+    // node Switch[20]: x = 459, y = 408, inputs = 3, label = Switch
+    // page group: Isosurface
+    //
+main_Switch_20_out_1 = 
+    Switch(
+    main_Toggle_32_out_1,
+    main_Switch_20_in_2,
+    main_Color_25_out_1
+    ) [instance: 20, cache: 1];
+    // 
+    // node Transmitter[16]: x = 459, y = 484, inputs = 1, label = Isosurface
+    // page group: Isosurface
+    //
+Isosurface = main_Switch_20_out_1;
+    // 
+    // node Receiver[26]: x = 304, y = 102, inputs = 1, label = Isosurface
+    // page group: image
+    //
+main_Receiver_26_out_1[cache: 0] = Isosurface;
+    // 
+    // node Toggle[40]: x = 458, y = 313, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_40"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value =  2  
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 1
+    // input[4]: defaulting = 0, visible = 1, type = 29, value =  2  
+    // input[5]: defaulting = 0, visible = 1, type = 29, value =  1  
+    // output[1]: visible = 1, type = 29, value =  2  
+    // page group: Mesh
+    // toggle : 1
+    //
+main_Toggle_40_out_1[cache: 2] = 
+    Toggle(
+    main_Toggle_40_in_1,
+    main_Toggle_40_in_2,
+    main_Toggle_40_in_3,
+    main_Toggle_40_in_4,
+    main_Toggle_40_in_5,
+    main_Toggle_40_in_6
+    ) [instance: 40, cache: 1];
+    // 
+    // node Toggle[41]: x = 472, y = 65, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_41"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value =  2  
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 1
+    // input[4]: defaulting = 0, visible = 1, type = 29, value =  2  
+    // input[5]: defaulting = 0, visible = 1, type = 29, value =  1  
+    // output[1]: visible = 1, type = 29, value =  2  
+    // page group: Mesh
+    // toggle : 1
+    //
+main_Toggle_41_out_1[cache: 2] = 
+    Toggle(
+    main_Toggle_41_in_1,
+    main_Toggle_41_in_2,
+    main_Toggle_41_in_3,
+    main_Toggle_41_in_4,
+    main_Toggle_41_in_5,
+    main_Toggle_41_in_6
+    ) [instance: 41, cache: 1];
+    // 
+    // node Receiver[28]: x = 92, y = 19, inputs = 1, label = imported
+    // page group: Mesh
+    //
+main_Receiver_28_out_1[cache: 0] = imported;
+    // 
+    // node Selector[22]: x = 154, y = 128, inputs = 7, label = Selector
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Selector_22"
+    // input[2]: defaulting = 0, visible = 0, type = 32, value = "DOM" 
+    // input[3]: defaulting = 0, visible = 0, type = 29, value = 0 
+    // input[4]: defaulting = 1, visible = 1, type = 16777248, value = {"DOM" }
+    // input[5]: defaulting = 1, visible = 0, type = 16777245, value = {0  }
+    // output[1]: visible = 1, type = 29, value = 0 
+    // output[2]: visible = 1, type = 32, value = "DOM" 
+    // page group: Mesh
+    //
+main_Selector_22_out_1[cache: 2],
+main_Selector_22_out_2[cache: 2] = 
+    Selector(
+    main_Selector_22_in_1,
+    main_Selector_22_in_2,
+    main_Selector_22_in_3,
+    main_Receiver_28_out_1,
+    main_Selector_22_in_5,
+    main_Selector_22_in_6,
+    main_Selector_22_in_7
+    ) [instance: 22, cache: 1];
+    // 
+    // node Select[15]: x = 135, y = 215, inputs = 3, label = Select
+    // page group: Mesh
+    //
+main_Select_15_out_1[cache: 0] = 
+    Select(
+    main_Receiver_28_out_1,
+    main_Selector_22_out_2,
+    main_Select_15_in_3
+    ) [instance: 15, cache: 1];
+    // 
+    // node Inquire[11]: x = 147, y = 283, inputs = 3, label = Inquire
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "component names"
+    // page group: Mesh
+    //
+main_Inquire_11_out_1 = 
+    Inquire(
+    main_Select_15_out_1,
+    main_Inquire_11_in_2,
+    main_Inquire_11_in_3
+    ) [instance: 11, cache: 1];
+    // 
+    // node Selector[23]: x = 152, y = 358, inputs = 7, label = Selector
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Selector_23"
+    // input[2]: defaulting = 0, visible = 0, type = 32, value = "positions" 
+    // input[3]: defaulting = 0, visible = 0, type = 29, value = 0 
+    // input[4]: defaulting = 1, visible = 1, type = 16777248, value = {"positions" "connections" "domain" "TIME" "INDICATRICE_INTERF_ELEM" "TEMPERATURE_MPOINT_ELEM" "neighbors" "box" }
+    // input[5]: defaulting = 1, visible = 0, type = 16777245, value = {0  1  2  3  4  5  6  7  }
+    // output[1]: visible = 1, type = 29, value = 0 
+    // output[2]: visible = 1, type = 32, value = "positions" 
+    // page group: Mesh
+    //
+main_Selector_23_out_1[cache: 2],
+main_Selector_23_out_2[cache: 2] = 
+    Selector(
+    main_Selector_23_in_1,
+    main_Selector_23_in_2,
+    main_Selector_23_in_3,
+    main_Inquire_11_out_1,
+    main_Selector_23_in_5,
+    main_Selector_23_in_6,
+    main_Selector_23_in_7
+    ) [instance: 23, cache: 1];
+    // 
+    // node String[12]: x = 228, y = 356, inputs = 0, label = String
+    // output[1]: visible = 1, type = 32, value = "x>0&&x<0.1"
+    // page group: Mesh
+    //
+    // 
+    // node Toggle[39]: x = 288, y = 358, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_39"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 0
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 1, visible = 1, type = 29, value = 0
+    // output[1]: visible = 1, type = 29, value = 0
+    // page group: Mesh
+    // toggle : 0
+    //
+    // 
+    // node SelectLataField[6]: x = 142, y = 462, inputs = 5, label = SelectLataField
+    // page group: Mesh
+    //
+main_SelectLataField_6_out_1[cache: 0],
+main_SelectLataField_6_out_2 = 
+    SelectLataField(
+    main_Receiver_28_out_1,
+    main_Selector_22_out_2,
+    main_Selector_23_out_2,
+    main_String_12_out_1,
+    main_Toggle_39_out_1
+    ) [instance: 6, cache: 1];
+    // 
+    // node ShowBoundary[3]: x = 548, y = 58, inputs = 2, label = ShowBoundary
+    // page group: Mesh
+    //
+main_ShowBoundary_3_out_1 = 
+    ShowBoundary(
+    main_SelectLataField_6_out_1,
+    main_ShowBoundary_3_in_2
+    ) [instance: 3, cache: 1];
+    // 
+    // node Switch[28]: x = 545, y = 154, inputs = 3, label = Switch
+    // page group: Mesh
+    //
+main_Switch_28_out_1 = 
+    Switch(
+    main_Toggle_41_out_1,
+    main_SelectLataField_6_out_1,
+    main_ShowBoundary_3_out_1
+    ) [instance: 28, cache: 1];
+    // 
+    // node ShowConnections[3]: x = 515, y = 241, inputs = 1, label = ShowConnections
+    // page group: Mesh
+    //
+main_ShowConnections_3_out_1 = 
+    ShowConnections(
+    main_Switch_28_out_1
+    ) [instance: 3, cache: 1];
+    // 
+    // node Color[26]: x = 543, y = 315, inputs = 5, label = Color
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "white"
+    // page group: Mesh
+    //
+main_Color_26_out_1 = 
+    Color(
+    main_ShowConnections_3_out_1,
+    main_Color_26_in_2,
+    main_Color_26_in_3,
+    main_Color_26_in_4,
+    main_Color_26_in_5
+    ) [instance: 26, cache: 1];
+    // 
+    // node Switch[27]: x = 509, y = 398, inputs = 3, label = Switch
+    // page group: Mesh
+    //
+main_Switch_27_out_1 = 
+    Switch(
+    main_Toggle_40_out_1,
+    main_Switch_27_in_2,
+    main_Color_26_out_1
+    ) [instance: 27, cache: 1];
+    // 
+    // node Transmitter[19]: x = 532, y = 474, inputs = 1, label = mesh
+    // page group: Mesh
+    //
+mesh = main_Switch_27_out_1;
+    // 
+    // node Receiver[29]: x = 384, y = 28, inputs = 1, label = mesh
+    // page group: image
+    //
+main_Receiver_29_out_1[cache: 0] = mesh;
+    // 
+    // node Select[16]: x = 385, y = 663, inputs = 3, label = Select
+    // input[2]: defaulting = 0, visible = 1, type = 1, value = 0
+    // page group: import
+    //
+main_Select_16_out_1 = 
+    Select(
+    main_Import_1_out_1,
+    main_Select_16_in_2,
+    main_Select_16_in_3
+    ) [instance: 16, cache: 1];
+    // 
+    // node Extract[3]: x = 388, y = 748, inputs = 2, label = Extract
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "TIME"
+    // page group: import
+    //
+main_Extract_3_out_1 = 
+    Extract(
+    main_Select_16_out_1,
+    main_Extract_3_in_2
+    ) [instance: 3, cache: 1];
+    // 
+    // node Select[17]: x = 403, y = 831, inputs = 3, label = Select
+    // page group: import
+    //
+main_Select_17_out_1 = 
+    Select(
+    main_Extract_3_out_1,
+    main_Select_17_in_2,
+    main_Select_17_in_3
+    ) [instance: 17, cache: 1];
+    // 
+    // node Transmitter[20]: x = 381, y = 904, inputs = 1, label = physical_time
+    // page group: import
+    //
+physical_time = main_Select_17_out_1;
+    // 
+    // node Receiver[30]: x = 446, y = 24, inputs = 1, label = physical_time
+    // page group: image
+    //
+main_Receiver_30_out_1[cache: 0] = physical_time;
+    // 
+    // node Format[5]: x = 458, y = 103, inputs = 3, label = Format
+    // input[1]: defaulting = 0, visible = 1, type = 32, value = "time: %f"
+    // page group: image
+    //
+main_Format_5_out_1 = 
+    Format(
+    main_Format_5_in_1,
+    main_Receiver_30_out_1,
+    main_Format_5_in_3
+    ) [instance: 5, cache: 1];
+    // 
+    // node Caption[3]: x = 453, y = 190, inputs = 9, label = Caption
+    // page group: image
+    //
+main_Caption_3_out_1 = 
+    Caption(
+    main_Format_5_out_1,
+    main_Caption_3_in_2,
+    main_Caption_3_in_3,
+    main_Caption_3_in_4,
+    main_Caption_3_in_5,
+    main_Caption_3_in_6,
+    main_Caption_3_in_7,
+    main_Caption_3_in_8,
+    main_Caption_3_in_9
+    ) [instance: 3, cache: 1];
+    // 
+    // node Collect[5]: x = 131, y = 315, inputs = 8, label = Collect
+    // page group: image
+    //
+main_Collect_5_out_1 = 
+    Collect(
+    main_Receiver_20_out_1,
+    main_Receiver_8_out_1,
+    main_Receiver_22_out_1,
+    main_Receiver_23_out_1,
+    main_Receiver_24_out_1,
+    main_Receiver_26_out_1,
+    main_Receiver_29_out_1,
+    main_Caption_3_out_1
+    ) [instance: 5, cache: 1];
+    // 
+    // node Integer[6]: x = 81, y = 401, inputs = 11, label = Integer
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Integer_6"
+    // input[3]: defaulting = 0, visible = 0, type = 1, value = 400
+    // input[5]: defaulting = 1, visible = 0, type = 1, value = -1000000
+    // input[6]: defaulting = 1, visible = 0, type = 1, value = 1000000
+    // input[7]: defaulting = 1, visible = 0, type = 5, value = 1.0
+    // input[9]: defaulting = 1, visible = 0, type = 1, value = 0
+    // output[1]: visible = 1, type = 1, value = 400
+    // page group: image
+    //
+    // 
+    // node AutoCamera[1]: x = 39, y = 491, inputs = 9, label = AutoCamera
+    // input[2]: visible = 0
+    // input[4]: visible = 1
+    // page group: image
+    //
+main_AutoCamera_1_out_1 = 
+    AutoCamera(
+    main_Collect_5_out_1,
+    main_AutoCamera_1_in_2,
+    main_AutoCamera_1_in_3,
+    main_Integer_6_out_1,
+    main_AutoCamera_1_in_5,
+    main_AutoCamera_1_in_6,
+    main_AutoCamera_1_in_7,
+    main_AutoCamera_1_in_8,
+    main_AutoCamera_1_in_9
+    ) [instance: 1, cache: 1];
+    // 
+    // node Receiver[35]: x = 339, y = 23, inputs = 1, label = imported
+    // page group: map_surface
+    //
+main_Receiver_35_out_1[cache: 0] = imported;
+    // 
+    // node Selector[31]: x = 395, y = 96, inputs = 7, label = Selector
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Selector_31"
+    // input[2]: defaulting = 0, visible = 0, type = 32, value = "DOM" 
+    // input[3]: defaulting = 0, visible = 0, type = 29, value = 0 
+    // input[4]: defaulting = 1, visible = 1, type = 16777248, value = {"DOM" }
+    // input[5]: defaulting = 1, visible = 0, type = 16777245, value = {0  }
+    // output[1]: visible = 1, type = 29, value = 0 
+    // output[2]: visible = 1, type = 32, value = "DOM" 
+    // page group: map_surface
+    //
+main_Selector_31_out_1[cache: 2],
+main_Selector_31_out_2[cache: 2] = 
+    Selector(
+    main_Selector_31_in_1,
+    main_Selector_31_in_2,
+    main_Selector_31_in_3,
+    main_Receiver_35_out_1,
+    main_Selector_31_in_5,
+    main_Selector_31_in_6,
+    main_Selector_31_in_7
+    ) [instance: 31, cache: 1];
+    // 
+    // node Select[22]: x = 362, y = 182, inputs = 3, label = Select
+    // page group: map_surface
+    //
+main_Select_22_out_1[cache: 0] = 
+    Select(
+    main_Receiver_35_out_1,
+    main_Selector_31_out_2,
+    main_Select_22_in_3
+    ) [instance: 22, cache: 1];
+    // 
+    // node Inquire[16]: x = 406, y = 255, inputs = 3, label = Inquire
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "component names"
+    // page group: map_surface
+    //
+main_Inquire_16_out_1 = 
+    Inquire(
+    main_Select_22_out_1,
+    main_Inquire_16_in_2,
+    main_Inquire_16_in_3
+    ) [instance: 16, cache: 1];
+    // 
+    // node Selector[32]: x = 411, y = 321, inputs = 7, label = Selector
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Selector_32"
+    // input[2]: defaulting = 0, visible = 0, type = 32, value = "INDICATRICE_INTERF_ELEM" 
+    // input[3]: defaulting = 0, visible = 0, type = 29, value = 4 
+    // input[4]: defaulting = 1, visible = 1, type = 16777248, value = {"positions" "connections" "domain" "TIME" "INDICATRICE_INTERF_ELEM" "TEMPERATURE_MPOINT_ELEM" "neighbors" "box" }
+    // input[5]: defaulting = 1, visible = 0, type = 16777245, value = {0  1  2  3  4  5  6  7  }
+    // output[1]: visible = 1, type = 29, value = 4 
+    // output[2]: visible = 1, type = 32, value = "INDICATRICE_INTERF_ELEM" 
+    // page group: map_surface
+    //
+main_Selector_32_out_1[cache: 2],
+main_Selector_32_out_2[cache: 2] = 
+    Selector(
+    main_Selector_32_in_1,
+    main_Selector_32_in_2,
+    main_Selector_32_in_3,
+    main_Inquire_16_out_1,
+    main_Selector_32_in_5,
+    main_Selector_32_in_6,
+    main_Selector_32_in_7
+    ) [instance: 32, cache: 1];
+    // 
+    // node Mark[16]: x = 386, y = 403, inputs = 2, label = Mark
+    // page group: map_surface
+    //
+main_Mark_16_out_1 = 
+    Mark(
+    main_Select_22_out_1,
+    main_Selector_32_out_2
+    ) [instance: 16, cache: 1];
+    // 
+    // node Post[11]: x = 366, y = 506, inputs = 2, label = Post
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "connections"
+    // page group: map_surface
+    //
+main_Post_11_out_1 = 
+    Post(
+    main_Mark_16_out_1,
+    main_Post_11_in_2
+    ) [instance: 11, cache: 1];
+    // 
+    // node Measure[3]: x = 444, y = 504, inputs = 2, label = Measure
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "element"
+    // page group: map_surface
+    //
+main_Measure_3_out_1 = 
+    Measure(
+    main_Mark_16_out_1,
+    main_Measure_3_in_2
+    ) [instance: 3, cache: 1];
+    // 
+    // node Compute[23]: x = 423, y = 599, inputs = 3, label = Compute
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "$0*$1"
+    // page group: map_surface
+    // expression: value = a*b
+    // name[2]: value = a
+    // name[3]: value = b
+    //
+main_Compute_23_out_1 = 
+    Compute(
+    main_Compute_23_in_1,
+    main_Post_11_out_1,
+    main_Measure_3_out_1
+    ) [instance: 23, cache: 1];
+    // 
+    // node Statistics[2]: x = 385, y = 669, inputs = 1, label = Statistics
+    // page group: map_surface
+    //
+main_Statistics_2_out_1,
+main_Statistics_2_out_2,
+main_Statistics_2_out_3,
+main_Statistics_2_out_4,
+main_Statistics_2_out_5 = 
+    Statistics(
+    main_Compute_23_out_1
+    ) [instance: 2, cache: 1];
+    // 
+    // node Inquire[15]: x = 515, y = 600, inputs = 3, label = Inquire
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "connection counts"
+    // page group: map_surface
+    //
+main_Inquire_15_out_1 = 
+    Inquire(
+    main_Measure_3_out_1,
+    main_Inquire_15_in_2,
+    main_Inquire_15_in_3
+    ) [instance: 15, cache: 1];
+    // 
+    // node Compute[22]: x = 512, y = 749, inputs = 3, label = Compute
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "$0*$1"
+    // page group: map_surface
+    // expression: value = a*b
+    // name[2]: value = a
+    // name[3]: value = b
+    //
+main_Compute_22_out_1 = 
+    Compute(
+    main_Compute_22_in_1,
+    main_Statistics_2_out_1,
+    main_Inquire_15_out_1
+    ) [instance: 22, cache: 1];
+    // 
+    // node Transmitter[24]: x = 605, y = 606, inputs = 1, label = map_plane
+    // page group: cut_planes
+    //
+map_plane = main_MapToPlane_1_out_1;
+    // 
+    // node Receiver[37]: x = 767, y = 24, inputs = 1, label = map_plane
+    // page group: map_surface
+    //
+main_Receiver_37_out_1[cache: 0] = map_plane;
+    // 
+    // node Post[12]: x = 692, y = 124, inputs = 2, label = Post
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "connections"
+    // page group: map_surface
+    //
+main_Post_12_out_1 = 
+    Post(
+    main_Receiver_37_out_1,
+    main_Post_12_in_2
+    ) [instance: 12, cache: 1];
+    // 
+    // node Measure[4]: x = 799, y = 124, inputs = 2, label = Measure
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "element"
+    // page group: map_surface
+    //
+main_Measure_4_out_1 = 
+    Measure(
+    main_Receiver_37_out_1,
+    main_Measure_4_in_2
+    ) [instance: 4, cache: 1];
+    // 
+    // node Compute[24]: x = 749, y = 217, inputs = 3, label = Compute
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "$0*$1"
+    // page group: map_surface
+    // expression: value = a*b
+    // name[2]: value = a
+    // name[3]: value = b
+    //
+main_Compute_24_out_1 = 
+    Compute(
+    main_Compute_24_in_1,
+    main_Post_12_out_1,
+    main_Measure_4_out_1
+    ) [instance: 24, cache: 1];
+    // 
+    // node Statistics[4]: x = 711, y = 287, inputs = 1, label = Statistics
+    // page group: map_surface
+    //
+main_Statistics_4_out_1,
+main_Statistics_4_out_2,
+main_Statistics_4_out_3,
+main_Statistics_4_out_4,
+main_Statistics_4_out_5 = 
+    Statistics(
+    main_Compute_24_out_1
+    ) [instance: 4, cache: 1];
+    // 
+    // node Inquire[17]: x = 841, y = 218, inputs = 3, label = Inquire
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "connection counts"
+    // page group: map_surface
+    //
+main_Inquire_17_out_1 = 
+    Inquire(
+    main_Measure_4_out_1,
+    main_Inquire_17_in_2,
+    main_Inquire_17_in_3
+    ) [instance: 17, cache: 1];
+    // 
+    // node Compute[25]: x = 779, y = 371, inputs = 3, label = Compute
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "$0*$1"
+    // page group: map_surface
+    // expression: value = a*b
+    // name[2]: value = a
+    // name[3]: value = b
+    //
+main_Compute_25_out_1 = 
+    Compute(
+    main_Compute_25_in_1,
+    main_Statistics_4_out_1,
+    main_Inquire_17_out_1
+    ) [instance: 25, cache: 1];
+    // 
+    // node Toggle[52]: x = 972, y = 374, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_52"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 0
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 1, visible = 1, type = 29, value = 0
+    // output[1]: visible = 1, type = 29, value = 0
+    // page group: map_surface
+    // toggle : 0
+    //
+    // 
+    // node Transmitter[25]: x = 230, y = 321, inputs = 1, label = interface_colorfield
+    // page group: Interfaces
+    //
+interface_colorfield = main_Mark_12_out_1;
+    // 
+    // node Receiver[39]: x = 1036, y = 373, inputs = 1, label = interface_colorfield
+    // page group: map_surface
+    //
+main_Receiver_39_out_1[cache: 0] = interface_colorfield;
+    // 
+    // node Route[11]: x = 994, y = 456, inputs = 2, outputs = 2, label = Route
+    // page group: map_surface
+    //
+main_Route_11_out_1,
+main_Route_11_out_2 = 
+    Route(
+    main_Toggle_52_out_1,
+    main_Receiver_39_out_1
+    ) [instance: 11, cache: 1];
+    // 
+    // node Post[13]: x = 941, y = 568, inputs = 2, label = Post
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "connections"
+    // page group: map_surface
+    //
+main_Post_13_out_1 = 
+    Post(
+    main_Route_11_out_1,
+    main_Post_13_in_2
+    ) [instance: 13, cache: 1];
+    // 
+    // node Measure[7]: x = 1019, y = 566, inputs = 2, label = Measure
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "element"
+    // page group: map_surface
+    //
+main_Measure_7_out_1 = 
+    Measure(
+    main_Route_11_out_1,
+    main_Measure_7_in_2
+    ) [instance: 7, cache: 1];
+    // 
+    // node Compute[26]: x = 998, y = 661, inputs = 3, label = Compute
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "$0*$1"
+    // page group: map_surface
+    // expression: value = a*b
+    // name[2]: value = a
+    // name[3]: value = b
+    //
+main_Compute_26_out_1 = 
+    Compute(
+    main_Compute_26_in_1,
+    main_Post_13_out_1,
+    main_Measure_7_out_1
+    ) [instance: 26, cache: 1];
+    // 
+    // node Statistics[5]: x = 960, y = 731, inputs = 1, label = Statistics
+    // page group: map_surface
+    //
+main_Statistics_5_out_1,
+main_Statistics_5_out_2,
+main_Statistics_5_out_3,
+main_Statistics_5_out_4,
+main_Statistics_5_out_5 = 
+    Statistics(
+    main_Compute_26_out_1
+    ) [instance: 5, cache: 1];
+    // 
+    // node Inquire[18]: x = 1090, y = 662, inputs = 3, label = Inquire
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "connection counts"
+    // page group: map_surface
+    //
+main_Inquire_18_out_1 = 
+    Inquire(
+    main_Measure_7_out_1,
+    main_Inquire_18_in_2,
+    main_Inquire_18_in_3
+    ) [instance: 18, cache: 1];
+    // 
+    // node Compute[27]: x = 1033, y = 815, inputs = 3, label = Compute
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "$0*$1"
+    // page group: map_surface
+    // expression: value = a*b
+    // name[2]: value = a
+    // name[3]: value = b
+    //
+main_Compute_27_out_1 = 
+    Compute(
+    main_Compute_27_in_1,
+    main_Statistics_5_out_1,
+    main_Inquire_18_out_1
+    ) [instance: 27, cache: 1];
+    // 
+    // node String[11]: x = 234, y = 395, inputs = 0, label = String
+    // output[1]: visible = 1, type = 32, value = "/tmp/ebull_2sites_%04d.tiff"
+    // page group: image
+    //
+    // 
+    // node Transmitter[18]: x = 308, y = 480, inputs = 1, label = image_number
+    // page group: import
+    //
+image_number = main_Sequencer_1_out_1;
+    // 
+    // node Receiver[27]: x = 307, y = 394, inputs = 1, label = image_number
+    // page group: image
+    //
+main_Receiver_27_out_1[cache: 0] = image_number;
+    // 
+    // node Format[4]: x = 263, y = 490, inputs = 3, label = Format
+    // page group: image
+    //
+main_Format_4_out_1 = 
+    Format(
+    main_String_11_out_1,
+    main_Receiver_27_out_1,
+    main_Format_4_in_3
+    ) [instance: 4, cache: 1];
+    // 
+    // node Format[7]: x = 404, y = 440, inputs = 3, label = Format
+    // input[1]: defaulting = 0, visible = 1, type = 32, value = "Shade component: %s"
+    // page group: SimpleShade
+    //
+main_Format_7_out_1 = 
+    Format(
+    main_Format_7_in_1,
+    main_Selector_14_out_2,
+    main_Format_7_in_3
+    ) [instance: 7, cache: 1];
+    // 
+    // node Format[8]: x = 260, y = 604, inputs = 3, label = Format
+    // input[1]: defaulting = 0, visible = 1, type = 32, value = "CutPlane component: %s"
+    // page group: cut_planes
+    //
+main_Format_8_out_1 = 
+    Format(
+    main_Format_8_in_1,
+    main_Selector_12_out_2,
+    main_Format_8_in_3
+    ) [instance: 8, cache: 1];
+    // 
+    // node Format[9]: x = 37, y = 434, inputs = 3, label = Format
+    // input[1]: defaulting = 0, visible = 1, type = 32, value = "Glyph component: %s"
+    // page group: Glyph
+    //
+main_Format_9_out_1 = 
+    Format(
+    main_Format_9_in_1,
+    main_Selector_16_out_2,
+    main_Format_9_in_3
+    ) [instance: 9, cache: 1];
+    // 
+    // node Format[10]: x = 30, y = 438, inputs = 3, label = Format
+    // input[1]: defaulting = 0, visible = 1, type = 32, value = "Isosurface component: %s"
+    // page group: Isosurface
+    //
+main_Format_10_out_1 = 
+    Format(
+    main_Format_10_in_1,
+    main_Selector_21_out_2,
+    main_Format_10_in_3
+    ) [instance: 10, cache: 1];
+    // 
+    // node Format[11]: x = 735, y = 260, inputs = 3, label = Format
+    // input[1]: defaulting = 0, visible = 1, type = 32, value = "Interfaces selection: %s %s"
+    // page group: Interfaces
+    //
+main_Format_11_out_1 = 
+    Format(
+    main_Format_11_in_1,
+    main_Selector_17_out_2,
+    main_Selector_18_out_2
+    ) [instance: 11, cache: 1];
+    // 
+    // node Format[12]: x = 19, y = 457, inputs = 3, label = Format
+    // input[1]: defaulting = 0, visible = 1, type = 32, value = "Mesh selection: %s"
+    // page group: Mesh
+    //
+main_Format_12_out_1 = 
+    Format(
+    main_Format_12_in_1,
+    main_Selector_23_out_2,
+    main_Format_12_in_3
+    ) [instance: 12, cache: 1];
+    // 
+    // node Format[13]: x = 159, y = 400, inputs = 3, label = Format
+    // input[1]: defaulting = 0, visible = 1, type = 32, value = "Map surface: %s"
+    // page group: map_surface
+    //
+main_Format_13_out_1 = 
+    Format(
+    main_Format_13_in_1,
+    main_Selector_25_out_2,
+    main_Format_13_in_3
+    ) [instance: 13, cache: 1];
+    // 
+    // node Format[14]: x = 581, y = 386, inputs = 4, label = Format
+    // input[1]: defaulting = 0, visible = 1, type = 32, value = "Multicompute: %s %s %s"
+    // page group: multicompute
+    //
+main_Format_14_out_1 = 
+    Format(
+    main_Format_14_in_1,
+    main_Selector_27_out_2,
+    main_Selector_28_out_2,
+    main_Selector_29_out_2
+    ) [instance: 14, cache: 1];
+    // 
+    // node Receiver[36]: x = 391, y = 752, inputs = 1, label = physical_time
+    // page group: map_surface
+    //
+main_Receiver_36_out_1[cache: 0] = physical_time;
+    // 
+    // node Measure[5]: x = 610, y = 510, inputs = 2, label = Measure
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "volume"
+    // page group: map_surface
+    //
+main_Measure_5_out_1 = 
+    Measure(
+    main_Mark_16_out_1,
+    main_Measure_5_in_2
+    ) [instance: 5, cache: 1];
+    // 
+    // node Toggle[50]: x = 682, y = 385, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_50"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value =  1  
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 0, visible = 1, type = 29, value =  2  
+    // input[5]: defaulting = 0, visible = 1, type = 29, value =  1  
+    // output[1]: visible = 1, type = 29, value =  1  
+    // page group: map_surface
+    // toggle : 0
+    //
+main_Toggle_50_out_1[cache: 2] = 
+    Toggle(
+    main_Toggle_50_in_1,
+    main_Toggle_50_in_2,
+    main_Toggle_50_in_3,
+    main_Toggle_50_in_4,
+    main_Toggle_50_in_5,
+    main_Toggle_50_in_6
+    ) [instance: 50, cache: 1];
+    // 
+    // node Switch[32]: x = 744, y = 466, inputs = 3, label = Switch
+    // input[2]: defaulting = 0, visible = 1, type = 67108863, value = 0
+    // page group: map_surface
+    //
+main_Switch_32_out_1 = 
+    Switch(
+    main_Toggle_50_out_1,
+    main_Switch_32_in_2,
+    main_Compute_25_out_1
+    ) [instance: 32, cache: 1];
+    // 
+    // node Measure[6]: x = 934, y = 125, inputs = 2, label = Measure
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "area"
+    // page group: map_surface
+    //
+main_Measure_6_out_1 = 
+    Measure(
+    main_Receiver_37_out_1,
+    main_Measure_6_in_2
+    ) [instance: 6, cache: 1];
+    // 
+    // node Switch[33]: x = 866, y = 462, inputs = 3, label = Switch
+    // input[2]: defaulting = 0, visible = 1, type = 67108863, value = 0
+    // page group: map_surface
+    //
+main_Switch_33_out_1 = 
+    Switch(
+    main_Toggle_50_out_1,
+    main_Switch_33_in_2,
+    main_Measure_6_out_1
+    ) [instance: 33, cache: 1];
+    // 
+    // node String[16]: x = 704, y = 738, inputs = 0, label = String
+    // output[1]: visible = 1, type = 32, value = "/tmp/dx_average.txt"
+    // page group: map_surface
+    //
+    // 
+    // node Format[15]: x = 496, y = 844, inputs = 7, label = Format
+    // input[1]: defaulting = 0, visible = 1, type = 32, value = "echo %12g %12g %12g %12g %12g >>%s"
+    // page group: map_surface
+    //
+main_Format_15_out_1 = 
+    Format(
+    main_Format_15_in_1,
+    main_Receiver_36_out_1,
+    main_Compute_22_out_1,
+    main_Measure_5_out_1,
+    main_Switch_32_out_1,
+    main_Switch_33_out_1,
+    main_String_16_out_1
+    ) [instance: 15, cache: 1];
+    // 
+    // node Receiver[38]: x = 927, y = 814, inputs = 1, label = physical_time
+    // page group: map_surface
+    //
+main_Receiver_38_out_1[cache: 0] = physical_time;
+    // 
+    // node Measure[8]: x = 1144, y = 566, inputs = 2, label = Measure
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "area"
+    // page group: map_surface
+    //
+main_Measure_8_out_1 = 
+    Measure(
+    main_Route_11_out_1,
+    main_Measure_8_in_2
+    ) [instance: 8, cache: 1];
+    // 
+    // node String[17]: x = 1186, y = 816, inputs = 0, label = String
+    // output[1]: visible = 1, type = 32, value = "/tmp/surface_integral.txt"
+    // page group: map_surface
+    //
+    // 
+    // node Format[16]: x = 1007, y = 903, inputs = 5, label = Format
+    // input[1]: defaulting = 0, visible = 1, type = 32, value = "echo %12g %12g %12g>>%s"
+    // page group: map_surface
+    //
+main_Format_16_out_1 = 
+    Format(
+    main_Format_16_in_1,
+    main_Receiver_38_out_1,
+    main_Compute_27_out_1,
+    main_Measure_8_out_1,
+    main_String_17_out_1
+    ) [instance: 16, cache: 1];
+    // 
+    // node Image[2]: x = 150, y = 613, inputs = 49, label = Image
+    // input[1]: defaulting = 0, visible = 0, type = 67108863, value = "Image_2"
+    // input[4]: defaulting = 0, visible = 0, type = 1, value = 1
+    // input[5]: defaulting = 0, visible = 0, type = 8, value = [0.000500709 0.000483282 0.000388453]
+    // input[6]: defaulting = 0, visible = 0, type = 8, value = [0.000500709 0.000483282 0.000839691]
+    // input[7]: defaulting = 0, visible = 0, type = 5, value = 0.000241818
+    // input[8]: defaulting = 0, visible = 0, type = 1, value = 424
+    // input[9]: defaulting = 0, visible = 0, type = 5, value = 0.76533
+    // input[10]: defaulting = 0, visible = 0, type = 8, value = [0 1 0]
+    // input[11]: defaulting = 1, visible = 0, type = 5, value = 30.0
+    // input[12]: defaulting = 0, visible = 0, type = 1, value = 0
+    // input[14]: defaulting = 0, visible = 0, type = 1, value = 1
+    // input[15]: defaulting = 1, visible = 0, type = 32, value = "none"
+    // input[16]: defaulting = 1, visible = 0, type = 32, value = "none"
+    // input[17]: defaulting = 1, visible = 0, type = 1, value = 1
+    // input[18]: defaulting = 1, visible = 0, type = 1, value = 1
+    // input[19]: defaulting = 0, visible = 0, type = 1, value = 0
+    // input[20]: visible = 1
+    // input[22]: defaulting = 0, visible = 0, type = 32, value = "black"
+    // input[23]: defaulting = 0, visible = 0, type = 5, value = 1.0
+    // input[25]: defaulting = 1, visible = 1, type = 32, value = "/tmp/ebull_2sites_0100.tiff"
+    // input[26]: defaulting = 0, visible = 0, type = 32, value = "tiff"
+    // input[27]: defaulting = 0, visible = 0, type = 1, value = 1280
+    // input[28]: defaulting = 0, visible = 0, type = 5, value = 0.8
+    // input[29]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[41]: defaulting = 0, visible = 0, type = 32, value = "panzoom"
+    // page group: image
+    // depth: value = 24
+    // window: position = (0.3738,0.0000), size = 0.2738x0.3075
+    // internal caching: 1
+    //
+main_Image_2_out_1[cache: 0],
+main_Image_2_out_2[cache: 0],
+main_Image_2_out_3[cache: 0] = 
+    Image(
+    main_Image_2_in_1,
+    main_Collect_5_out_1,
+    main_Image_2_in_3,
+    main_Image_2_in_4,
+    main_Image_2_in_5,
+    main_Image_2_in_6,
+    main_Image_2_in_7,
+    main_Image_2_in_8,
+    main_Image_2_in_9,
+    main_Image_2_in_10,
+    main_Image_2_in_11,
+    main_Image_2_in_12,
+    main_Image_2_in_13,
+    main_Image_2_in_14,
+    main_Image_2_in_15,
+    main_Image_2_in_16,
+    main_Image_2_in_17,
+    main_Image_2_in_18,
+    main_Image_2_in_19,
+    main_AutoCamera_1_out_1,
+    main_Image_2_in_21,
+    main_Image_2_in_22,
+    main_Image_2_in_23,
+    main_Image_2_in_24,
+    main_Format_4_out_1,
+    main_Image_2_in_26,
+    main_Image_2_in_27,
+    main_Image_2_in_28,
+    main_Image_2_in_29,
+    main_Image_2_in_30,
+    main_Image_2_in_31,
+    main_Image_2_in_32,
+    main_Image_2_in_33,
+    main_Image_2_in_34,
+    main_Image_2_in_35,
+    main_Image_2_in_36,
+    main_Image_2_in_37,
+    main_Image_2_in_38,
+    main_Image_2_in_39,
+    main_Image_2_in_40,
+    main_Image_2_in_41,
+    main_Image_2_in_42,
+    main_Image_2_in_43,
+    main_Image_2_in_44,
+    main_Image_2_in_45,
+    main_Image_2_in_46,
+    main_Image_2_in_47,
+    main_Image_2_in_48,
+    main_Image_2_in_49
+    ) [instance: 2, cache: 1];
+    // 
+    // node Toggle[11]: x = 517, y = 91, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_11"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 0
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 1, visible = 1, type = 29, value = 0
+    // output[1]: visible = 1, type = 29, value = 0
+    // page group: SimpleShade
+    // toggle : 0
+    //
+    // 
+    // node ManageColormapEditor[2]: x = 458, y = 178, inputs = 3, label = ManageColormapEditor
+    // input[1]: defaulting = 0, visible = 1, type = 16777248, value = {"Simple shade colormap"}
+    // page group: SimpleShade
+    //
+    ManageColormapEditor(
+    main_ManageColormapEditor_2_in_1,
+    main_Toggle_11_out_1,
+    main_ManageColormapEditor_2_in_3
+    ) [instance: 2, cache: 1];
+    // 
+    // node Toggle[13]: x = 963, y = 830, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_13"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 0
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 1, visible = 1, type = 29, value = 0
+    // output[1]: visible = 1, type = 29, value = 0
+    // page group: cut_planes
+    // toggle : 0
+    //
+    // 
+    // node ManageColormapEditor[3]: x = 904, y = 923, inputs = 3, label = ManageColormapEditor
+    // input[1]: defaulting = 0, visible = 1, type = 16777248, value = {"Cutplane colormap"}
+    // page group: cut_planes
+    //
+    ManageColormapEditor(
+    main_ManageColormapEditor_3_in_1,
+    main_Toggle_13_out_1,
+    main_ManageColormapEditor_3_in_3
+    ) [instance: 3, cache: 1];
+    // 
+    // node Toggle[17]: x = 707, y = 32, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_17"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 0
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 1, visible = 1, type = 29, value = 0
+    // output[1]: visible = 1, type = 29, value = 0
+    // page group: Glyph
+    // toggle : 0
+    //
+    // 
+    // node ManageColormapEditor[4]: x = 650, y = 124, inputs = 3, label = ManageColormapEditor
+    // input[1]: defaulting = 0, visible = 1, type = 16777248, value = {"Glyph colormap"}
+    // page group: Glyph
+    //
+    ManageColormapEditor(
+    main_ManageColormapEditor_4_in_1,
+    main_Toggle_17_out_1,
+    main_ManageColormapEditor_4_in_3
+    ) [instance: 4, cache: 1];
+    // 
+    // node Toggle[22]: x = 882, y = 90, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_22"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 0
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 1, visible = 1, type = 29, value = 0
+    // output[1]: visible = 1, type = 29, value = 0
+    // page group: Interfaces
+    // toggle : 0
+    //
+    // 
+    // node ManageColormapEditor[5]: x = 823, y = 177, inputs = 3, label = ManageColormapEditor
+    // input[1]: defaulting = 0, visible = 1, type = 16777248, value = {"Interfaces color field"}
+    // page group: Interfaces
+    //
+    ManageColormapEditor(
+    main_ManageColormapEditor_5_in_1,
+    main_Toggle_22_out_1,
+    main_ManageColormapEditor_5_in_3
+    ) [instance: 5, cache: 1];
+    // 
+    // node Toggle[23]: x = 884, y = 289, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_23"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 0
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 1, visible = 1, type = 29, value = 0
+    // output[1]: visible = 1, type = 29, value = 0
+    // page group: Interfaces
+    // toggle : 0
+    //
+    // 
+    // node ManageColormapEditor[6]: x = 851, y = 387, inputs = 3, label = ManageColormapEditor
+    // input[1]: defaulting = 0, visible = 1, type = 16777248, value = {"Interfaces glyph"}
+    // page group: Interfaces
+    //
+    ManageColormapEditor(
+    main_ManageColormapEditor_6_in_1,
+    main_Toggle_23_out_1,
+    main_ManageColormapEditor_6_in_3
+    ) [instance: 6, cache: 1];
+    // 
+    // node Toggle[31]: x = 679, y = 394, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_31"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 0
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 1, visible = 1, type = 29, value = 0
+    // output[1]: visible = 1, type = 29, value = 0
+    // page group: Isosurface
+    // toggle : 0
+    //
+    // 
+    // node ManageColormapEditor[7]: x = 620, y = 481, inputs = 3, label = ManageColormapEditor
+    // input[1]: defaulting = 0, visible = 1, type = 16777248, value = {"Isosurface colormap"}
+    // page group: Isosurface
+    //
+    ManageColormapEditor(
+    main_ManageColormapEditor_7_in_1,
+    main_Toggle_31_out_1,
+    main_ManageColormapEditor_7_in_3
+    ) [instance: 7, cache: 1];
+    // 
+    // node Toggle[26]: x = 665, y = 41, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_26"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 0
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 1, visible = 1, type = 29, value = 0
+    // output[1]: visible = 1, type = 29, value = 0
+    // page group: image
+    // toggle : 0
+    //
+    // 
+    // node ManageControlPanel[1]: x = 574, y = 119, inputs = 2, label = ManageControlPanel
+    // input[1]: defaulting = 0, visible = 1, type = 16777248, value = {"Cut planes"}
+    // page group: image
+    //
+    ManageControlPanel(
+    main_ManageControlPanel_1_in_1,
+    main_Toggle_26_out_1
+    ) [instance: 1, cache: 1];
+    // 
+    // node Toggle[25]: x = 669, y = 193, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_25"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 0
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 1, visible = 1, type = 29, value = 0
+    // output[1]: visible = 1, type = 29, value = 0
+    // page group: image
+    // toggle : 0
+    //
+    // 
+    // node ManageControlPanel[2]: x = 580, y = 271, inputs = 2, label = ManageControlPanel
+    // input[1]: defaulting = 0, visible = 1, type = 16777248, value = {"Simple shade"}
+    // page group: image
+    //
+    ManageControlPanel(
+    main_ManageControlPanel_2_in_1,
+    main_Toggle_25_out_1
+    ) [instance: 2, cache: 1];
+    // 
+    // node Toggle[27]: x = 668, y = 340, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_27"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 0
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 1, visible = 1, type = 29, value = 0
+    // output[1]: visible = 1, type = 29, value = 0
+    // page group: image
+    // toggle : 0
+    //
+    // 
+    // node ManageControlPanel[3]: x = 580, y = 411, inputs = 2, label = ManageControlPanel
+    // input[1]: defaulting = 0, visible = 1, type = 16777248, value = {"Glyph"}
+    // page group: image
+    //
+    ManageControlPanel(
+    main_ManageControlPanel_3_in_1,
+    main_Toggle_27_out_1
+    ) [instance: 3, cache: 1];
+    // 
+    // node Toggle[28]: x = 669, y = 485, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_28"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 0
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 1, visible = 1, type = 29, value = 0
+    // output[1]: visible = 1, type = 29, value = 0
+    // page group: image
+    // toggle : 0
+    //
+    // 
+    // node ManageControlPanel[4]: x = 581, y = 559, inputs = 2, label = ManageControlPanel
+    // input[1]: defaulting = 0, visible = 1, type = 16777248, value = {"Interfaces"}
+    // page group: image
+    //
+    ManageControlPanel(
+    main_ManageControlPanel_4_in_1,
+    main_Toggle_28_out_1
+    ) [instance: 4, cache: 1];
+    // 
+    // node Toggle[35]: x = 861, y = 42, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_35"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 0
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 1, visible = 1, type = 29, value = 0
+    // output[1]: visible = 1, type = 29, value = 0
+    // page group: image
+    // toggle : 0
+    //
+    // 
+    // node ManageControlPanel[5]: x = 780, y = 117, inputs = 2, label = ManageControlPanel
+    // input[1]: defaulting = 0, visible = 1, type = 16777248, value = {"Isosurface"}
+    // page group: image
+    //
+    ManageControlPanel(
+    main_ManageControlPanel_5_in_1,
+    main_Toggle_35_out_1
+    ) [instance: 5, cache: 1];
+    // 
+    // node Toggle[43]: x = 870, y = 197, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_43"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 0
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 1, visible = 1, type = 29, value = 0
+    // output[1]: visible = 1, type = 29, value = 0
+    // page group: image
+    // toggle : 0
+    //
+    // 
+    // node ManageControlPanel[6]: x = 782, y = 271, inputs = 2, label = ManageControlPanel
+    // input[1]: defaulting = 0, visible = 1, type = 16777248, value = {"Mesh"}
+    // page group: image
+    //
+    ManageControlPanel(
+    main_ManageControlPanel_6_in_1,
+    main_Toggle_43_out_1
+    ) [instance: 6, cache: 1];
+    // 
+    // node Toggle[45]: x = 871, y = 334, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_45"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 0
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 1, visible = 1, type = 29, value = 0
+    // output[1]: visible = 1, type = 29, value = 0
+    // page group: image
+    // toggle : 0
+    //
+    // 
+    // node ManageControlPanel[7]: x = 783, y = 408, inputs = 2, label = ManageControlPanel
+    // input[1]: defaulting = 0, visible = 1, type = 16777248, value = {"Save images"}
+    // page group: image
+    //
+    ManageControlPanel(
+    main_ManageControlPanel_7_in_1,
+    main_Toggle_45_out_1
+    ) [instance: 7, cache: 1];
+    // 
+    // node Toggle[47]: x = 867, y = 498, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_47"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value = 0
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 1, visible = 1, type = 29, value = 1
+    // input[5]: defaulting = 1, visible = 1, type = 29, value = 0
+    // output[1]: visible = 1, type = 29, value = 0
+    // page group: image
+    // toggle : 0
+    //
+    // 
+    // node ManageControlPanel[8]: x = 778, y = 572, inputs = 2, label = ManageControlPanel
+    // input[1]: defaulting = 0, visible = 1, type = 16777248, value = {"Front-tracking tools"}
+    // page group: image
+    //
+    ManageControlPanel(
+    main_ManageControlPanel_8_in_1,
+    main_Toggle_47_out_1
+    ) [instance: 8, cache: 1];
+    // 
+    // node Message[1]: x = 428, y = 519, inputs = 3, label = Message
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "message"
+    // input[3]: defaulting = 0, visible = 1, type = 3, value = 0
+    // page group: SimpleShade
+    //
+    Message(
+    main_Format_7_out_1,
+    main_Message_1_in_2,
+    main_Message_1_in_3
+    ) [instance: 1, cache: 1];
+    // 
+    // node Message[2]: x = 284, y = 683, inputs = 3, label = Message
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "message"
+    // input[3]: defaulting = 0, visible = 1, type = 3, value = 0
+    // page group: cut_planes
+    //
+    Message(
+    main_Format_8_out_1,
+    main_Message_2_in_2,
+    main_Message_2_in_3
+    ) [instance: 2, cache: 1];
+    // 
+    // node Message[3]: x = 35, y = 504, inputs = 3, label = Message
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "message"
+    // input[3]: defaulting = 0, visible = 1, type = 3, value = 0
+    // page group: Glyph
+    //
+    Message(
+    main_Format_9_out_1,
+    main_Message_3_in_2,
+    main_Message_3_in_3
+    ) [instance: 3, cache: 1];
+    // 
+    // node Message[4]: x = 54, y = 517, inputs = 3, label = Message
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "message"
+    // input[3]: defaulting = 0, visible = 1, type = 3, value = 0
+    // page group: Isosurface
+    //
+    Message(
+    main_Format_10_out_1,
+    main_Message_4_in_2,
+    main_Message_4_in_3
+    ) [instance: 4, cache: 1];
+    // 
+    // node Message[5]: x = 759, y = 339, inputs = 3, label = Message
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "message"
+    // input[3]: defaulting = 0, visible = 1, type = 3, value = 0
+    // page group: Interfaces
+    //
+    Message(
+    main_Format_11_out_1,
+    main_Message_5_in_2,
+    main_Message_5_in_3
+    ) [instance: 5, cache: 1];
+    // 
+    // node Message[6]: x = 42, y = 536, inputs = 3, label = Message
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "message"
+    // input[3]: defaulting = 0, visible = 1, type = 3, value = 0
+    // page group: Mesh
+    //
+    Message(
+    main_Format_12_out_1,
+    main_Message_6_in_2,
+    main_Message_6_in_3
+    ) [instance: 6, cache: 1];
+    // 
+    // node Message[7]: x = 152, y = 475, inputs = 3, label = Message
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "message"
+    // input[3]: defaulting = 0, visible = 1, type = 3, value = 0
+    // page group: map_surface
+    //
+    Message(
+    main_Format_13_out_1,
+    main_Message_7_in_2,
+    main_Message_7_in_3
+    ) [instance: 7, cache: 1];
+    // 
+    // node Message[8]: x = 594, y = 463, inputs = 3, label = Message
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "message"
+    // input[3]: defaulting = 0, visible = 1, type = 3, value = 0
+    // page group: multicompute
+    //
+    Message(
+    main_Format_14_out_1,
+    main_Message_8_in_2,
+    main_Message_8_in_3
+    ) [instance: 8, cache: 1];
+    // 
+    // node Receiver[14]: x = 187, y = 2, inputs = 1, label = interfaces
+    // page group: Interfaces
+    //
+main_Receiver_14_out_1[cache: 0] = interfaces;
+    // 
+    // node Toggle[51]: x = 392, y = 847, inputs = 6, label = Toggle
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "Toggle_51"
+    // input[2]: defaulting = 0, visible = 0, type = 29, value =  1  
+    // input[3]: defaulting = 0, visible = 0, type = 3, value = 0
+    // input[4]: defaulting = 0, visible = 1, type = 29, value =  2  
+    // input[5]: defaulting = 0, visible = 1, type = 29, value =  1  
+    // output[1]: visible = 1, type = 29, value =  1  
+    // page group: map_surface
+    // toggle : 0
+    //
+main_Toggle_51_out_1[cache: 2] = 
+    Toggle(
+    main_Toggle_51_in_1,
+    main_Toggle_51_in_2,
+    main_Toggle_51_in_3,
+    main_Toggle_51_in_4,
+    main_Toggle_51_in_5,
+    main_Toggle_51_in_6
+    ) [instance: 51, cache: 1];
+    // 
+    // node Route[9]: x = 545, y = 929, inputs = 2, outputs = 2, label = Route
+    // page group: map_surface
+    //
+main_Route_9_out_1,
+main_Route_9_out_2 = 
+    Route(
+    main_Toggle_51_out_1,
+    main_Format_15_out_1
+    ) [instance: 9, cache: 1];
+    // 
+    // node System[1]: x = 541, y = 1010, inputs = 1, label = System
+    // page group: map_surface
+    //
+    System(
+    main_Route_9_out_2
+    ) [instance: 1, cache: 1];
+    // 
+    // node System[3]: x = 1025, y = 988, inputs = 1, label = System
+    // page group: map_surface
+    //
+    System(
+    main_Format_16_out_1
+    ) [instance: 3, cache: 1];
+// network: end of macro body
+CacheScene(main_Image_2_in_1, main_Image_2_out_1, main_Image_2_out_2);
+}
+main_FileSelector_1_out_1 = "";
+main_Compute_20_in_1 = "strlen($0)==0?1:2";
+main_Compute_20_out_1 = NULL;
+main_Route_4_out_2 = NULL;
+main_Integer_3_in_1 = "Integer_3";
+main_Integer_3_in_2 = NULL;
+main_Integer_3_in_3 = 0 ;
+main_Integer_3_in_4 = NULL;
+main_Integer_3_in_5 = NULL;
+main_Integer_3_in_6 = NULL;
+main_Integer_3_in_7 = NULL;
+main_Integer_3_in_8 = NULL;
+main_Integer_3_in_9 = NULL;
+main_Integer_3_in_10 = NULL;
+main_Integer_3_in_11 = NULL;
+main_Integer_3_out_1 = 0 ;
+main_Format_6_in_1 = "!lata_get_nb_timesteps.sh %s";
+main_Format_6_in_3 = NULL;
+main_Format_6_out_1 = NULL;
+main_Import_2_in_2 = NULL;
+main_Import_2_in_3 = "dx";
+main_Import_2_in_4 = NULL;
+main_Import_2_in_5 = NULL;
+main_Import_2_in_6 = NULL;
+main_Import_2_out_1 = NULL;
+main_Select_18_in_2 = NULL;
+main_Select_18_in_3 = NULL;
+main_Select_18_out_1 = NULL;
+main_Compute_21_in_1 = "$0-1";
+main_Compute_21_in_3 = NULL;
+main_Compute_21_out_1 = NULL;
+main_Sequencer_1_in_1 = "Sequencer_1";
+main_Sequencer_1_in_2 = NULL;
+main_Sequencer_1_in_3 = NULL;
+main_Sequencer_1_in_4 = 0;
+main_Sequencer_1_in_6 = NULL;
+main_Sequencer_1_in_7 = { 0 100 1 0 100 1 };
+main_Sequencer_1_out_1 = NULL;
+
+@startframe = 0;
+@nextframe  = @startframe;
+@endframe   = 100;
+@deltaframe = 1;
+main_String_6_out_1 = "";
+main_Format_1_in_1 = "!lata2dx %s forcegroup verbosity=%d timestep=%d %s";
+main_Format_1_out_1 = NULL;
+main_Import_1_in_2 = NULL;
+main_Import_1_in_3 = "dx";
+main_Import_1_in_4 = NULL;
+main_Import_1_in_5 = NULL;
+main_Import_1_in_6 = NULL;
+main_Import_1_out_1 = NULL;
+main_Select_7_in_2 = "INTERFACES";
+main_Select_7_in_3 = 1;
+main_Select_7_out_1 = NULL;
+main_Transmitter_23_out_1 = NULL;
+main_Receiver_34_out_1 = NULL;
+main_Selector_26_in_1 = "Selector_26";
+main_Selector_26_in_2 = "DOM" ;
+main_Selector_26_in_3 = 0 ;
+main_Selector_26_in_5 = NULL;
+main_Selector_26_in_6 = NULL;
+main_Selector_26_in_7 = NULL;
+main_Selector_26_out_2 = "DOM" ;
+main_Select_21_in_3 = 1;
+main_Select_21_out_1 = NULL;
+main_String_15_out_1 = "mag(a)";
+main_Select_20_in_3 = NULL;
+main_Select_20_out_1 = NULL;
+main_Inquire_14_in_2 = "component names";
+main_Inquire_14_in_3 = NULL;
+main_Inquire_14_out_1 = NULL;
+main_Selector_27_in_1 = "Selector_27";
+main_Selector_27_in_2 = "positions" ;
+main_Selector_27_in_3 = 0 ;
+main_Selector_27_in_5 = NULL;
+main_Selector_27_in_6 = NULL;
+main_Selector_27_in_7 = NULL;
+main_Selector_27_out_2 = "positions" ;
+main_SelectLataField_8_in_4 = "";
+main_SelectLataField_8_in_5 = {0};
+main_SelectLataField_8_out_1 = NULL;
+main_Selector_30_in_1 = "Selector_30";
+main_Selector_30_in_2 = "connections" ;
+main_Selector_30_in_3 = 1 ;
+main_Selector_30_in_4 = { "positions" "connections" };
+main_Selector_30_in_5 = NULL;
+main_Selector_30_in_6 = NULL;
+main_Selector_30_in_7 = NULL;
+main_Selector_30_out_2 = "connections" ;
+main_Post_8_out_1 = NULL;
+main_Selector_28_in_1 = "Selector_28";
+main_Selector_28_in_2 = "positions" ;
+main_Selector_28_in_3 = 0 ;
+main_Selector_28_in_5 = NULL;
+main_Selector_28_in_6 = NULL;
+main_Selector_28_in_7 = NULL;
+main_Selector_28_out_2 = "positions" ;
+main_SelectLataField_9_in_4 = "";
+main_SelectLataField_9_in_5 = {0};
+main_SelectLataField_9_out_1 = NULL;
+main_Post_9_out_1 = NULL;
+main_Selector_29_in_1 = "Selector_29";
+main_Selector_29_in_2 = "positions" ;
+main_Selector_29_in_3 = 0 ;
+main_Selector_29_in_5 = NULL;
+main_Selector_29_in_6 = NULL;
+main_Selector_29_in_7 = NULL;
+main_Selector_29_out_2 = "positions" ;
+main_SelectLataField_10_in_4 = "";
+main_SelectLataField_10_in_5 = {0};
+main_SelectLataField_10_out_1 = NULL;
+main_Post_10_out_1 = NULL;
+main_Compute2_5_in_2 = NULL;
+main_Compute2_5_in_4 = NULL;
+main_Compute2_5_in_6 = NULL;
+main_Compute2_5_out_1 = NULL;
+main_Unmark_3_in_2 = "multicompute";
+main_Unmark_3_out_1 = NULL;
+main_Append_1_in_4 = NULL;
+main_Append_1_in_5 = NULL;
+main_Append_1_out_1 = NULL;
+main_Toggle_14_in_1 = "Toggle_14";
+main_Toggle_14_in_2 = 0;
+main_Toggle_14_in_3 = 0;
+main_Toggle_14_in_4 = NULL;
+main_Toggle_14_in_5 = NULL;
+main_Toggle_14_in_6 = NULL;
+main_Toggle_14_out_1 = 0;
+main_Toggle_48_in_1 = "Toggle_48";
+main_Toggle_48_in_2 =  1  ;
+main_Toggle_48_in_3 = 0;
+main_Toggle_48_in_4 =  2  ;
+main_Toggle_48_in_5 =  1  ;
+main_Toggle_48_in_6 = NULL;
+main_Toggle_48_out_1 =  1  ;
+main_Switch_30_out_1 = NULL;
+main_Transmitter_1_out_1 = NULL;
+main_Receiver_16_out_1 = NULL;
+main_Route_6_out_1 = NULL;
+main_Selector_11_in_1 = "Selector_11";
+main_Selector_11_in_2 = "DOM" ;
+main_Selector_11_in_3 = 0 ;
+main_Selector_11_in_5 = NULL;
+main_Selector_11_in_6 = NULL;
+main_Selector_11_in_7 = NULL;
+main_Selector_11_out_2 = "DOM" ;
+main_Select_8_in_3 = NULL;
+main_Select_8_out_1 = NULL;
+main_Inquire_4_in_2 = "component names";
+main_Inquire_4_in_3 = NULL;
+main_Inquire_4_out_1 = NULL;
+main_Selector_12_in_1 = "Selector_12";
+main_Selector_12_in_2 = "positions" ;
+main_Selector_12_in_3 = 0 ;
+main_Selector_12_in_5 = NULL;
+main_Selector_12_in_6 = NULL;
+main_Selector_12_in_7 = NULL;
+main_Selector_12_out_2 = "positions" ;
+main_String_4_out_1 = "v>-10";
+main_Toggle_9_in_1 = "Toggle_9";
+main_Toggle_9_in_2 = 0;
+main_Toggle_9_in_3 = 0;
+main_Toggle_9_in_4 = NULL;
+main_Toggle_9_in_5 = NULL;
+main_Toggle_9_in_6 = NULL;
+main_Toggle_9_out_1 = 0;
+main_SelectLataField_2_out_1 = NULL;
+main_Extract_2_in_2 = "connections";
+main_Extract_2_out_1 = NULL;
+main_Attribute_2_in_2 = "element type";
+main_Attribute_2_out_1 = NULL;
+main_Toggle_12_in_1 = "Toggle_12";
+main_Toggle_12_in_2 =  1  ;
+main_Toggle_12_in_3 = 0;
+main_Toggle_12_in_4 =  2  ;
+main_Toggle_12_in_5 =  1  ;
+main_Toggle_12_in_6 = NULL;
+main_Toggle_12_out_1 =  1  ;
+main_Toggle_24_in_1 = "Toggle_24";
+main_Toggle_24_in_2 =  2  ;
+main_Toggle_24_in_3 = 1;
+main_Toggle_24_in_4 =  2  ;
+main_Toggle_24_in_5 =  1  ;
+main_Toggle_24_in_6 = NULL;
+main_Toggle_24_out_1 =  2  ;
+main_String_13_out_1 = "v";
+main_Receiver_19_out_1 = NULL;
+main_Selector_13_in_1 = "Selector_13";
+main_Selector_13_in_2 = "DOM" ;
+main_Selector_13_in_3 = 0 ;
+main_Selector_13_in_5 = NULL;
+main_Selector_13_in_6 = NULL;
+main_Selector_13_in_7 = NULL;
+main_Selector_13_out_2 = "DOM" ;
+main_Select_9_in_3 = NULL;
+main_Select_9_out_1 = NULL;
+main_Inquire_5_in_2 = "component names";
+main_Inquire_5_in_3 = NULL;
+main_Inquire_5_out_1 = NULL;
+main_Selector_14_in_1 = "Selector_14";
+main_Selector_14_in_2 = "positions" ;
+main_Selector_14_in_3 = 0 ;
+main_Selector_14_in_5 = NULL;
+main_Selector_14_in_6 = NULL;
+main_Selector_14_in_7 = NULL;
+main_Selector_14_out_2 = "positions" ;
+main_String_5_out_1 = "mag(v)>0.0008";
+main_Toggle_10_in_1 = "Toggle_10";
+main_Toggle_10_in_2 = 0;
+main_Toggle_10_in_3 = 0;
+main_Toggle_10_in_4 = NULL;
+main_Toggle_10_in_5 = NULL;
+main_Toggle_10_in_6 = NULL;
+main_Toggle_10_out_1 = 0;
+main_SelectLataField_3_out_1 = NULL;
+main_SelectLataField_3_out_2 = NULL;
+main_Compute2_3_in_2 = "v";
+main_Compute2_3_in_4 = NULL;
+main_Compute2_3_in_5 = NULL;
+main_Compute2_3_out_1 = NULL;
+main_ShowBoundary_2_in_2 = NULL;
+main_ShowBoundary_2_out_1 = NULL;
+main_Switch_15_out_1 = NULL;
+main_Shade_10_in_2 = NULL;
+main_Shade_10_in_3 = "faceted";
+main_Shade_10_in_4 = NULL;
+main_Shade_10_in_5 = NULL;
+main_Shade_10_in_6 = NULL;
+main_Shade_10_in_7 = NULL;
+main_Shade_10_in_8 = NULL;
+main_Shade_10_out_1 = NULL;
+main_Toggle_37_in_1 = "Toggle_37";
+main_Toggle_37_in_2 = 1;
+main_Toggle_37_in_3 = 1;
+main_Toggle_37_in_4 = NULL;
+main_Toggle_37_in_5 =  2  ;
+main_Toggle_37_in_6 = NULL;
+main_Toggle_37_out_1 = 1;
+main_Compute2_4_in_2 = "v";
+main_Compute2_4_in_4 = NULL;
+main_Compute2_4_in_5 = NULL;
+main_Compute2_4_out_1 = NULL;
+main_Switch_24_in_3 = NULL;
+main_Switch_24_out_1 = NULL;
+main_Colormap_8_in_1 = { [0.0 0.6666667] [1.0 0.0] };
+main_Colormap_8_in_2 = { [0.0 1.0] [1.0 1.0] };
+main_Colormap_8_in_3 = { [0.0 1.0] [1.0 1.0] };
+main_Colormap_8_in_4 = { [0.0 1.0] [1.0 1.0] };
+main_Colormap_8_in_5 = "Colormap_8";
+main_Colormap_8_in_7 = NULL;
+main_Colormap_8_in_8 = NULL;
+main_Colormap_8_in_9 = NULL;
+main_Colormap_8_in_10 = NULL;
+main_Colormap_8_in_11 = NULL;
+main_Colormap_8_in_12 = { 0.0 100.0 };
+main_Colormap_8_in_13 = NULL;
+main_Colormap_8_in_14 = NULL;
+main_Colormap_8_in_15 = NULL;
+main_Colormap_8_in_16 = NULL;
+main_Colormap_8_in_17 = 0.0;
+main_Colormap_8_in_18 = 0.0;
+main_Colormap_8_in_19 = "Simple shade colormap";
+main_Colormap_8_out_1 = NULL;
+main_Colormap_8_out_2 = NULL;
+main_Color_21_in_4 = NULL;
+main_Color_21_in_5 = NULL;
+main_Color_21_out_1 = NULL;
+main_Options_2_in_2 = "color multiplier";
+main_Options_2_in_3 = 1;
+main_Options_2_in_4 = NULL;
+main_Options_2_in_5 = NULL;
+main_Options_2_out_1 = NULL;
+main_Toggle_44_in_1 = "Toggle_44";
+main_Toggle_44_in_2 = 1;
+main_Toggle_44_in_3 = 1;
+main_Toggle_44_in_4 = NULL;
+main_Toggle_44_in_5 =  2  ;
+main_Toggle_44_in_6 = NULL;
+main_Toggle_44_out_1 = 1;
+main_ColorBar_4_in_2 = NULL;
+main_ColorBar_4_in_3 = [200 15];
+main_ColorBar_4_in_4 = NULL;
+main_ColorBar_4_in_5 = NULL;
+main_ColorBar_4_in_6 = NULL;
+main_ColorBar_4_in_7 = NULL;
+main_ColorBar_4_in_8 = NULL;
+main_ColorBar_4_in_9 = NULL;
+main_ColorBar_4_in_10 = NULL;
+main_ColorBar_4_in_11 = NULL;
+main_ColorBar_4_in_12 = NULL;
+main_ColorBar_4_in_13 = NULL;
+main_ColorBar_4_in_14 = NULL;
+main_ColorBar_4_in_15 = NULL;
+main_ColorBar_4_in_16 = NULL;
+main_ColorBar_4_out_1 = NULL;
+main_Switch_29_in_3 = NULL;
+main_Switch_29_out_1 = NULL;
+main_Collect_10_out_1 = NULL;
+main_Switch_9_in_2 = NULL;
+main_Switch_9_out_1 = NULL;
+main_Transmitter_12_out_1 = NULL;
+main_Receiver_20_out_1 = NULL;
+main_Compute_17_in_1 = "(!$1)?0:(((strcmp($0,'triangles')==0)||(strcmp($0,'lines')==0))?1:2)";
+main_Compute_17_out_1 = NULL;
+main_Caption_1_in_1 = "cut planes cannot be drawn for selected field";
+main_Caption_1_in_2 = NULL;
+main_Caption_1_in_3 = NULL;
+main_Caption_1_in_4 = NULL;
+main_Caption_1_in_5 = NULL;
+main_Caption_1_in_6 = NULL;
+main_Caption_1_in_7 = NULL;
+main_Caption_1_in_8 = NULL;
+main_Caption_1_in_9 = NULL;
+main_Caption_1_out_1 = NULL;
+main_String_8_out_1 = "v";
+main_Route_2_out_2 = NULL;
+main_Transmitter_9_out_1 = NULL;
+main_Receiver_10_out_1 = NULL;
+main_Compute2_2_in_2 = "v";
+main_Compute2_2_in_4 = NULL;
+main_Compute2_2_in_5 = NULL;
+main_Compute2_2_out_1 = NULL;
+main_Vector_4_in_1 = "Vector_4";
+main_Vector_4_in_2 = NULL;
+main_Vector_4_in_3 = [ 0 1e-05 0 ];
+main_Vector_4_in_4 = NULL;
+main_Vector_4_in_5 = NULL;
+main_Vector_4_in_6 = NULL;
+main_Vector_4_in_7 = NULL;
+main_Vector_4_in_8 = NULL;
+main_Vector_4_in_9 = NULL;
+main_Vector_4_in_10 = NULL;
+main_Vector_4_in_11 = NULL;
+main_Vector_4_out_1 = [ 0 1e-05 0 ];
+main_Vector_2_in_1 = "Vector_2";
+main_Vector_2_in_2 = NULL;
+main_Vector_2_in_3 = [ 0 0.00042 0 ];
+main_Vector_2_in_4 = NULL;
+main_Vector_2_in_5 = NULL;
+main_Vector_2_in_6 = NULL;
+main_Vector_2_in_8 = NULL;
+main_Vector_2_in_9 = NULL;
+main_Vector_2_in_10 = NULL;
+main_Vector_2_in_11 = NULL;
+main_Vector_2_out_1 = [ 0 0.00042 0 ];
+main_Integer_4_in_1 = "Integer_4";
+main_Integer_4_in_2 = NULL;
+main_Integer_4_in_3 = 0;
+main_Integer_4_in_4 = NULL;
+main_Integer_4_in_5 = NULL;
+main_Integer_4_in_6 = NULL;
+main_Integer_4_in_7 = NULL;
+main_Integer_4_in_8 = NULL;
+main_Integer_4_in_9 = NULL;
+main_Integer_4_in_10 = NULL;
+main_Integer_4_in_11 = NULL;
+main_Integer_4_out_1 = 0;
+main_Transmitter_3_out_1 = NULL;
+main_Receiver_7_out_1 = NULL;
+main_Compute_14_in_1 = "$0+$1*$2";
+main_Compute_14_out_1 = NULL;
+main_MapToPlane_1_out_1 = NULL;
+main_Color_14_in_2 = NULL;
+main_Color_14_in_3 = NULL;
+main_Color_14_in_4 = NULL;
+main_Color_14_in_5 = NULL;
+main_Color_14_out_1 = NULL;
+main_Toggle_6_in_1 = "Toggle_6";
+main_Toggle_6_in_2 = 0;
+main_Toggle_6_in_3 = 0;
+main_Toggle_6_in_4 = NULL;
+main_Toggle_6_in_5 = NULL;
+main_Toggle_6_in_6 = NULL;
+main_Toggle_6_out_1 = 0;
+main_Scalar_1_in_1 = "Scalar_1";
+main_Scalar_1_in_2 = NULL;
+main_Scalar_1_in_3 = 1.0 ;
+main_Scalar_1_in_4 = NULL;
+main_Scalar_1_in_5 = NULL;
+main_Scalar_1_in_6 = NULL;
+main_Scalar_1_in_7 = NULL;
+main_Scalar_1_in_8 = NULL;
+main_Scalar_1_in_9 = NULL;
+main_Scalar_1_in_10 = NULL;
+main_Scalar_1_in_11 = NULL;
+main_Scalar_1_out_1 = 1.0 ;
+main_Compute_7_in_1 = "$0+$1*$2";
+main_Compute_7_out_1 = NULL;
+main_MapToPlane_4_out_1 = NULL;
+main_Color_12_in_2 = NULL;
+main_Color_12_in_3 = 0.6;
+main_Color_12_in_4 = NULL;
+main_Color_12_in_5 = NULL;
+main_Color_12_out_1 = NULL;
+main_Compute_8_in_1 = "$0+2*$1*$2";
+main_Compute_8_out_1 = NULL;
+main_MapToPlane_5_out_1 = NULL;
+main_Color_13_in_2 = NULL;
+main_Color_13_in_3 = 0.4;
+main_Color_13_in_4 = NULL;
+main_Color_13_in_5 = NULL;
+main_Color_13_out_1 = NULL;
+main_Collect_6_out_1 = NULL;
+main_Switch_6_in_3 = NULL;
+main_Switch_6_out_1 = NULL;
+main_Collect_4_in_3 = NULL;
+main_Collect_4_out_1 = NULL;
+main_Shade_6_in_2 = 0;
+main_Shade_6_in_3 = "faceted";
+main_Shade_6_in_4 = NULL;
+main_Shade_6_in_5 = NULL;
+main_Shade_6_in_6 = NULL;
+main_Shade_6_in_7 = NULL;
+main_Shade_6_in_8 = NULL;
+main_Shade_6_out_1 = NULL;
+main_Toggle_34_in_1 = "Toggle_34";
+main_Toggle_34_in_2 = 1;
+main_Toggle_34_in_3 = 1;
+main_Toggle_34_in_4 = NULL;
+main_Toggle_34_in_5 =  2  ;
+main_Toggle_34_in_6 = "Auto scale";
+main_Toggle_34_out_1 = 1;
+main_Switch_22_in_3 = NULL;
+main_Switch_22_out_1 = NULL;
+main_Colormap_9_in_1 = { [0.0 0.6666667] [1.0 0.0] };
+main_Colormap_9_in_2 = { [0.0 1.0] [1.0 1.0] };
+main_Colormap_9_in_3 = { [0.0 1.0] [1.0 1.0] };
+main_Colormap_9_in_4 = { [0.0 1.0] [1.0 1.0] };
+main_Colormap_9_in_5 = "Colormap_9";
+main_Colormap_9_in_7 = NULL;
+main_Colormap_9_in_8 = NULL;
+main_Colormap_9_in_9 = NULL;
+main_Colormap_9_in_10 = NULL;
+main_Colormap_9_in_11 = NULL;
+main_Colormap_9_in_12 = { 0.05303115 0.058520339 };
+main_Colormap_9_in_13 = NULL;
+main_Colormap_9_in_14 = NULL;
+main_Colormap_9_in_15 = NULL;
+main_Colormap_9_in_16 = NULL;
+main_Colormap_9_in_17 = 0.05303115;
+main_Colormap_9_in_18 = 0.058520339;
+main_Colormap_9_in_19 = "Cutplane colormap";
+main_Colormap_9_out_1 = NULL;
+main_Colormap_9_out_2 = NULL;
+main_Color_20_in_4 = NULL;
+main_Color_20_in_5 = NULL;
+main_Color_20_out_1 = NULL;
+main_Toggle_15_in_1 = "Toggle_15";
+main_Toggle_15_in_2 = 1;
+main_Toggle_15_in_3 = 1;
+main_Toggle_15_in_4 = NULL;
+main_Toggle_15_in_5 = NULL;
+main_Toggle_15_in_6 = NULL;
+main_Toggle_15_out_1 = 1;
+main_ColorBar_2_in_2 = NULL;
+main_ColorBar_2_in_3 = [200 15];
+main_ColorBar_2_in_4 = NULL;
+main_ColorBar_2_in_5 = NULL;
+main_ColorBar_2_in_6 = NULL;
+main_ColorBar_2_in_7 = NULL;
+main_ColorBar_2_in_9 = NULL;
+main_ColorBar_2_in_10 = NULL;
+main_ColorBar_2_in_11 = NULL;
+main_ColorBar_2_in_12 = NULL;
+main_ColorBar_2_in_13 = NULL;
+main_ColorBar_2_in_14 = NULL;
+main_ColorBar_2_in_15 = NULL;
+main_ColorBar_2_in_16 = 8;
+main_ColorBar_2_out_1 = NULL;
+main_Switch_10_in_3 = NULL;
+main_Switch_10_out_1 = NULL;
+main_Collect_8_out_1 = NULL;
+main_Switch_8_out_1 = NULL;
+main_Transmitter_4_out_1 = NULL;
+main_Receiver_8_out_1 = NULL;
+main_Toggle_18_in_1 = "Toggle_18";
+main_Toggle_18_in_2 =  1  ;
+main_Toggle_18_in_3 = 0;
+main_Toggle_18_in_4 =  2  ;
+main_Toggle_18_in_5 =  1  ;
+main_Toggle_18_in_6 = NULL;
+main_Toggle_18_out_1 =  1  ;
+main_Selector_19_in_1 = "Selector_19";
+main_Selector_19_in_2 = "speedy" ;
+main_Selector_19_in_3 = 1 ;
+main_Selector_19_in_4 = {"standard" "speedy" "text" };
+main_Selector_19_in_5 = NULL;
+main_Selector_19_in_6 = NULL;
+main_Selector_19_in_7 = NULL;
+main_Selector_19_out_2 = "speedy" ;
+main_Compute_19_in_1 = "strcmp($0,'text')!=0?1:2";
+main_Compute_19_in_3 = NULL;
+main_Compute_19_out_1 = NULL;
+main_Receiver_21_out_1 = NULL;
+main_Selector_15_in_1 = "Selector_15";
+main_Selector_15_in_2 = "DOM" ;
+main_Selector_15_in_3 = 0 ;
+main_Selector_15_in_5 = NULL;
+main_Selector_15_in_6 = NULL;
+main_Selector_15_in_7 = NULL;
+main_Selector_15_out_2 = "DOM" ;
+main_Select_10_in_3 = NULL;
+main_Select_10_out_1 = NULL;
+main_Inquire_6_in_2 = "component names";
+main_Inquire_6_in_3 = NULL;
+main_Inquire_6_out_1 = NULL;
+main_Selector_16_in_1 = "Selector_16";
+main_Selector_16_in_2 = "positions" ;
+main_Selector_16_in_3 = 0 ;
+main_Selector_16_in_5 = NULL;
+main_Selector_16_in_6 = NULL;
+main_Selector_16_in_7 = NULL;
+main_Selector_16_out_2 = "positions" ;
+main_String_7_out_1 = "mag(v)>10";
+main_Toggle_16_in_1 = "Toggle_16";
+main_Toggle_16_in_2 = 0;
+main_Toggle_16_in_3 = 0;
+main_Toggle_16_in_4 = NULL;
+main_Toggle_16_in_5 = NULL;
+main_Toggle_16_in_6 = NULL;
+main_Toggle_16_out_1 = 0;
+main_SelectLataField_4_out_1 = NULL;
+main_Toggle_36_in_1 = "Toggle_36";
+main_Toggle_36_in_2 = 1;
+main_Toggle_36_in_3 = 1;
+main_Toggle_36_in_4 = NULL;
+main_Toggle_36_in_5 =  2  ;
+main_Toggle_36_in_6 = NULL;
+main_Toggle_36_out_1 = 1;
+main_Switch_23_in_3 = NULL;
+main_Switch_23_out_1 = NULL;
+main_Colormap_10_in_1 = { [0.0 0.6666667] [1.0 0.0] };
+main_Colormap_10_in_2 = { [0.0 1.0] [1.0 1.0] };
+main_Colormap_10_in_3 = { [0.0 1.0] [1.0 1.0] };
+main_Colormap_10_in_4 = { [0.0 1.0] [1.0 1.0] };
+main_Colormap_10_in_5 = "Colormap_10";
+main_Colormap_10_in_7 = NULL;
+main_Colormap_10_in_8 = NULL;
+main_Colormap_10_in_9 = NULL;
+main_Colormap_10_in_10 = NULL;
+main_Colormap_10_in_11 = NULL;
+main_Colormap_10_in_12 = { 0.0 100.0 };
+main_Colormap_10_in_13 = NULL;
+main_Colormap_10_in_14 = NULL;
+main_Colormap_10_in_15 = NULL;
+main_Colormap_10_in_16 = NULL;
+main_Colormap_10_in_17 = -22.215178;
+main_Colormap_10_in_18 = -22.200598;
+main_Colormap_10_in_19 = "Glyph colormap";
+main_Colormap_10_out_1 = NULL;
+main_Colormap_10_out_2 = NULL;
+main_Mark_14_in_2 = "positions";
+main_Mark_14_out_1 = NULL;
+main_Statistics_1_out_4 = NULL;
+main_Statistics_1_out_5 = NULL;
+main_Glyph_2_in_3 = NULL;
+main_Glyph_2_in_4 = NULL;
+main_Glyph_2_in_5 = NULL;
+main_Glyph_2_out_1 = NULL;
+main_Color_22_in_4 = NULL;
+main_Color_22_in_5 = NULL;
+main_Color_22_out_1 = NULL;
+main_Switch_18_out_1 = NULL;
+main_Switch_11_in_2 = NULL;
+main_Switch_11_out_1 = NULL;
+main_Transmitter_13_out_1 = NULL;
+main_Receiver_22_out_1 = NULL;
+main_Toggle_19_in_1 = "Toggle_19";
+main_Toggle_19_in_2 = 0;
+main_Toggle_19_in_3 = 0;
+main_Toggle_19_in_4 = NULL;
+main_Toggle_19_in_5 = NULL;
+main_Toggle_19_in_6 = NULL;
+main_Toggle_19_out_1 = 0;
+main_Toggle_49_in_1 = "Toggle_49";
+main_Toggle_49_in_2 =  1  ;
+main_Toggle_49_in_3 = 0;
+main_Toggle_49_in_4 =  2  ;
+main_Toggle_49_in_5 =  1  ;
+main_Toggle_49_in_6 = NULL;
+main_Toggle_49_out_1 =  1  ;
+main_Inquire_12_in_2 = "has member";
+main_Inquire_12_in_3 = "INTERFACES";
+main_Inquire_12_out_1 = NULL;
+main_Route_7_out_1 = NULL;
+main_Select_6_in_2 = "INTERFACES";
+main_Select_6_in_3 = NULL;
+main_Select_6_out_1 = NULL;
+main_Transmitter_7_out_1 = NULL;
+main_Receiver_32_out_1 = NULL;
+main_Receiver_31_out_1 = NULL;
+main_Selector_24_in_1 = "Selector_24";
+main_Selector_24_in_2 = "DOM" ;
+main_Selector_24_in_3 = 0 ;
+main_Selector_24_in_5 = NULL;
+main_Selector_24_in_6 = NULL;
+main_Selector_24_in_7 = NULL;
+main_Selector_24_out_2 = "DOM" ;
+main_Select_19_in_3 = NULL;
+main_Select_19_out_1 = NULL;
+main_Inquire_13_in_2 = "component names";
+main_Inquire_13_in_3 = NULL;
+main_Inquire_13_out_1 = NULL;
+main_Selector_25_in_1 = "Selector_25";
+main_Selector_25_in_2 = "TEMPERATURE_MPOINT_ELEM" ;
+main_Selector_25_in_3 = 5 ;
+main_Selector_25_in_5 = NULL;
+main_Selector_25_in_6 = NULL;
+main_Selector_25_in_7 = NULL;
+main_Selector_25_out_2 = "TEMPERATURE_MPOINT_ELEM" ;
+main_Mark_15_out_1 = NULL;
+main_Post_7_in_2 = NULL;
+main_Post_7_out_1 = NULL;
+main_Map_1_in_3 = NULL;
+main_Map_1_in_4 = NULL;
+main_Map_1_out_1 = NULL;
+main_Unmark_2_in_2 = "MAPPED_FIELD";
+main_Unmark_2_out_1 = NULL;
+main_Switch_31_out_1 = NULL;
+main_Transmitter_21_out_1 = NULL;
+main_Receiver_33_out_1 = NULL;
+main_ShowConnections_2_out_1 = NULL;
+main_Color_19_in_2 = "white";
+main_Color_19_in_3 = NULL;
+main_Color_19_in_4 = NULL;
+main_Color_19_in_5 = NULL;
+main_Color_19_out_1 = NULL;
+main_Switch_12_in_3 = NULL;
+main_Switch_12_out_1 = NULL;
+main_Toggle_20_in_1 = "Toggle_20";
+main_Toggle_20_in_2 = 0;
+main_Toggle_20_in_3 = 0;
+main_Toggle_20_in_4 = NULL;
+main_Toggle_20_in_5 = NULL;
+main_Toggle_20_in_6 = NULL;
+main_Toggle_20_out_1 = 0;
+main_Inquire_7_in_2 = "component names";
+main_Inquire_7_in_3 = NULL;
+main_Inquire_7_out_1 = NULL;
+main_Selector_17_in_1 = "Selector_17";
+main_Selector_17_in_2 = "positions" ;
+main_Selector_17_in_3 = 0 ;
+main_Selector_17_in_5 = NULL;
+main_Selector_17_in_6 = NULL;
+main_Selector_17_in_7 = NULL;
+main_Selector_17_out_2 = "positions" ;
+main_Mark_12_out_1 = NULL;
+main_Colormap_11_in_1 = { [0.0 0.6666667] [1.0 0.0] };
+main_Colormap_11_in_2 = { [0.0 1.0] [1.0 1.0] };
+main_Colormap_11_in_3 = { [0.0 1.0] [1.0 1.0] };
+main_Colormap_11_in_4 = { [0.0 1.0] [1.0 1.0] };
+main_Colormap_11_in_5 = "Colormap_11";
+main_Colormap_11_in_7 = NULL;
+main_Colormap_11_in_8 = NULL;
+main_Colormap_11_in_9 = NULL;
+main_Colormap_11_in_10 = NULL;
+main_Colormap_11_in_11 = NULL;
+main_Colormap_11_in_12 = { 0.0 100.0 };
+main_Colormap_11_in_13 = NULL;
+main_Colormap_11_in_14 = NULL;
+main_Colormap_11_in_15 = NULL;
+main_Colormap_11_in_16 = NULL;
+main_Colormap_11_in_17 = 0.00074513361;
+main_Colormap_11_in_18 = 0.00084895798;
+main_Colormap_11_in_19 = "Interfaces color field";
+main_Colormap_11_out_1 = NULL;
+main_Colormap_11_out_2 = NULL;
+main_Color_23_in_4 = NULL;
+main_Color_23_in_5 = NULL;
+main_Color_23_out_1 = NULL;
+main_Shade_9_in_2 = NULL;
+main_Shade_9_in_3 = "faceted";
+main_Shade_9_in_4 = NULL;
+main_Shade_9_in_5 = NULL;
+main_Shade_9_in_6 = NULL;
+main_Shade_9_in_7 = NULL;
+main_Shade_9_in_8 = NULL;
+main_Shade_9_out_1 = NULL;
+main_Switch_13_in_3 = NULL;
+main_Switch_13_out_1 = NULL;
+main_Toggle_21_in_1 = "Toggle_21";
+main_Toggle_21_in_2 = 0;
+main_Toggle_21_in_3 = 0;
+main_Toggle_21_in_4 = NULL;
+main_Toggle_21_in_5 = NULL;
+main_Toggle_21_in_6 = NULL;
+main_Toggle_21_out_1 = 0;
+main_Inquire_8_in_2 = "component names";
+main_Inquire_8_in_3 = NULL;
+main_Inquire_8_out_1 = NULL;
+main_Selector_18_in_1 = "Selector_18";
+main_Selector_18_in_2 = "positions" ;
+main_Selector_18_in_3 = 0 ;
+main_Selector_18_in_5 = NULL;
+main_Selector_18_in_6 = NULL;
+main_Selector_18_in_7 = NULL;
+main_Selector_18_out_2 = "positions" ;
+main_Mark_13_out_1 = NULL;
+main_Colormap_12_in_1 = { [0.0 0.666667] [1.0 0.0] };
+main_Colormap_12_in_2 = { [0.0 1.0] [1.0 1.0] };
+main_Colormap_12_in_3 = { [0.0 1.0] [1.0 1.0] };
+main_Colormap_12_in_4 = { [0.0 1.0] [1.0 1.0] };
+main_Colormap_12_in_5 = "Colormap_12";
+main_Colormap_12_in_7 = NULL;
+main_Colormap_12_in_8 = NULL;
+main_Colormap_12_in_9 = NULL;
+main_Colormap_12_in_10 = NULL;
+main_Colormap_12_in_11 = NULL;
+main_Colormap_12_in_12 = { -197.40446 16.645681 };
+main_Colormap_12_in_13 = NULL;
+main_Colormap_12_in_14 = NULL;
+main_Colormap_12_in_15 = NULL;
+main_Colormap_12_in_16 = NULL;
+main_Colormap_12_in_17 = -197.40446;
+main_Colormap_12_in_18 = 16.645681;
+main_Colormap_12_in_19 = "Interfaces glyph";
+main_Colormap_12_out_1 = NULL;
+main_Colormap_12_out_2 = NULL;
+main_Color_24_in_4 = NULL;
+main_Color_24_in_5 = NULL;
+main_Color_24_out_1 = NULL;
+main_Glyph_3_in_2 = NULL;
+main_Glyph_3_in_3 = NULL;
+main_Glyph_3_in_4 = NULL;
+main_Glyph_3_in_5 = NULL;
+main_Glyph_3_in_6 = NULL;
+main_Glyph_3_in_7 = NULL;
+main_Glyph_3_out_1 = NULL;
+main_ColorBar_3_in_2 = NULL;
+main_ColorBar_3_in_3 = [200 20];
+main_ColorBar_3_in_4 = NULL;
+main_ColorBar_3_in_5 = NULL;
+main_ColorBar_3_in_6 = NULL;
+main_ColorBar_3_in_7 = NULL;
+main_ColorBar_3_in_9 = NULL;
+main_ColorBar_3_in_10 = NULL;
+main_ColorBar_3_in_11 = NULL;
+main_ColorBar_3_in_12 = NULL;
+main_ColorBar_3_in_13 = NULL;
+main_ColorBar_3_in_14 = NULL;
+main_ColorBar_3_in_15 = NULL;
+main_ColorBar_3_in_16 = NULL;
+main_ColorBar_3_out_1 = NULL;
+main_Collect_9_out_1 = NULL;
+main_Switch_14_in_3 = NULL;
+main_Switch_14_out_1 = NULL;
+main_Collect_7_out_1 = NULL;
+main_Transmitter_14_out_1 = NULL;
+main_Receiver_23_out_1 = NULL;
+main_Caption_2_in_1 = "No lata file selected (MAIN panel)";
+main_Caption_2_in_2 = NULL;
+main_Caption_2_in_3 = NULL;
+main_Caption_2_in_4 = NULL;
+main_Caption_2_in_5 = NULL;
+main_Caption_2_in_6 = NULL;
+main_Caption_2_in_7 = NULL;
+main_Caption_2_in_8 = NULL;
+main_Caption_2_in_9 = NULL;
+main_Caption_2_out_1 = NULL;
+main_Route_5_out_1 = NULL;
+main_Transmitter_15_out_1 = NULL;
+main_Receiver_24_out_1 = NULL;
+main_Toggle_32_in_1 = "Toggle_32";
+main_Toggle_32_in_2 =  1  ;
+main_Toggle_32_in_3 = 0;
+main_Toggle_32_in_4 =  2  ;
+main_Toggle_32_in_5 =  1  ;
+main_Toggle_32_in_6 = NULL;
+main_Toggle_32_out_1 =  1  ;
+main_Receiver_25_out_1 = NULL;
+main_Selector_20_in_1 = "Selector_20";
+main_Selector_20_in_2 = "DOM" ;
+main_Selector_20_in_3 = 0 ;
+main_Selector_20_in_5 = NULL;
+main_Selector_20_in_6 = NULL;
+main_Selector_20_in_7 = NULL;
+main_Selector_20_out_2 = "DOM" ;
+main_Select_11_in_3 = NULL;
+main_Select_11_out_1 = NULL;
+main_Inquire_9_in_2 = "component names";
+main_Inquire_9_in_3 = NULL;
+main_Inquire_9_out_1 = NULL;
+main_Selector_21_in_1 = "Selector_21";
+main_Selector_21_in_2 = "positions" ;
+main_Selector_21_in_3 = 0 ;
+main_Selector_21_in_5 = NULL;
+main_Selector_21_in_6 = NULL;
+main_Selector_21_in_7 = NULL;
+main_Selector_21_out_2 = "positions" ;
+main_String_9_out_1 = "v>-10&&x>0.02";
+main_Toggle_30_in_1 = "Toggle_30";
+main_Toggle_30_in_2 = 0;
+main_Toggle_30_in_3 = 0;
+main_Toggle_30_in_4 = NULL;
+main_Toggle_30_in_5 = NULL;
+main_Toggle_30_in_6 = NULL;
+main_Toggle_30_out_1 = 0;
+main_SelectLataField_5_out_1 = NULL;
+main_SelectLataField_5_out_2 = NULL;
+main_Post_6_in_2 = NULL;
+main_Post_6_out_1 = NULL;
+main_ScalarList_1_in_1 = "ScalarList_1";
+main_ScalarList_1_in_2 = NULL;
+main_ScalarList_1_in_3 = { 0.0 };
+main_ScalarList_1_in_4 = NULL;
+main_ScalarList_1_in_5 = NULL;
+main_ScalarList_1_in_6 = NULL;
+main_ScalarList_1_in_7 = NULL;
+main_ScalarList_1_in_8 = NULL;
+main_ScalarList_1_in_9 = NULL;
+main_ScalarList_1_in_10 = NULL;
+main_ScalarList_1_in_11 = NULL;
+main_ScalarList_1_out_1 = { 0.0 };
+main_Isosurface_1_in_3 = NULL;
+main_Isosurface_1_in_4 = NULL;
+main_Isosurface_1_in_5 = NULL;
+main_Isosurface_1_in_6 = NULL;
+main_Isosurface_1_out_1 = NULL;
+main_Shade_11_in_2 = NULL;
+main_Shade_11_in_3 = "smooth";
+main_Shade_11_in_4 = NULL;
+main_Shade_11_in_5 = NULL;
+main_Shade_11_in_6 = NULL;
+main_Shade_11_in_7 = NULL;
+main_Shade_11_in_8 = NULL;
+main_Shade_11_out_1 = NULL;
+main_Toggle_33_in_1 = "Toggle_33";
+main_Toggle_33_in_2 = 1;
+main_Toggle_33_in_3 = 1;
+main_Toggle_33_in_4 = NULL;
+main_Toggle_33_in_5 = NULL;
+main_Toggle_33_in_6 = "Auto scale";
+main_Toggle_33_out_1 = 1;
+main_Switch_21_in_3 = NULL;
+main_Switch_21_out_1 = NULL;
+main_Colormap_13_in_1 = { [0.0 0.6666667] };
+main_Colormap_13_in_2 = { [0.0 0.25263158] };
+main_Colormap_13_in_3 = { [0.0 1.0] [1.0 1.0] };
+main_Colormap_13_in_4 = { [0.0 0.57303371] };
+main_Colormap_13_in_5 = "Colormap_13";
+main_Colormap_13_in_7 = NULL;
+main_Colormap_13_in_8 = NULL;
+main_Colormap_13_in_9 = NULL;
+main_Colormap_13_in_10 = NULL;
+main_Colormap_13_in_11 = NULL;
+main_Colormap_13_in_12 = { -1.1e+30 0.011108874 };
+main_Colormap_13_in_13 = NULL;
+main_Colormap_13_in_14 = NULL;
+main_Colormap_13_in_15 = NULL;
+main_Colormap_13_in_16 = NULL;
+main_Colormap_13_in_17 = -1.1e+30;
+main_Colormap_13_in_18 = 0.011108874;
+main_Colormap_13_in_19 = "Isosurface colormap";
+main_Colormap_13_out_1 = NULL;
+main_Colormap_13_out_2 = NULL;
+main_Color_25_in_4 = NULL;
+main_Color_25_in_5 = NULL;
+main_Color_25_out_1 = NULL;
+main_Switch_20_in_2 = NULL;
+main_Switch_20_out_1 = NULL;
+main_Transmitter_16_out_1 = NULL;
+main_Receiver_26_out_1 = NULL;
+main_Toggle_40_in_1 = "Toggle_40";
+main_Toggle_40_in_2 =  2  ;
+main_Toggle_40_in_3 = 1;
+main_Toggle_40_in_4 =  2  ;
+main_Toggle_40_in_5 =  1  ;
+main_Toggle_40_in_6 = NULL;
+main_Toggle_40_out_1 =  2  ;
+main_Toggle_41_in_1 = "Toggle_41";
+main_Toggle_41_in_2 =  2  ;
+main_Toggle_41_in_3 = 1;
+main_Toggle_41_in_4 =  2  ;
+main_Toggle_41_in_5 =  1  ;
+main_Toggle_41_in_6 = NULL;
+main_Toggle_41_out_1 =  2  ;
+main_Receiver_28_out_1 = NULL;
+main_Selector_22_in_1 = "Selector_22";
+main_Selector_22_in_2 = "DOM" ;
+main_Selector_22_in_3 = 0 ;
+main_Selector_22_in_5 = NULL;
+main_Selector_22_in_6 = NULL;
+main_Selector_22_in_7 = NULL;
+main_Selector_22_out_2 = "DOM" ;
+main_Select_15_in_3 = NULL;
+main_Select_15_out_1 = NULL;
+main_Inquire_11_in_2 = "component names";
+main_Inquire_11_in_3 = NULL;
+main_Inquire_11_out_1 = NULL;
+main_Selector_23_in_1 = "Selector_23";
+main_Selector_23_in_2 = "positions" ;
+main_Selector_23_in_3 = 0 ;
+main_Selector_23_in_5 = NULL;
+main_Selector_23_in_6 = NULL;
+main_Selector_23_in_7 = NULL;
+main_Selector_23_out_2 = "positions" ;
+main_String_12_out_1 = "x>0&&x<0.1";
+main_Toggle_39_in_1 = "Toggle_39";
+main_Toggle_39_in_2 = 0;
+main_Toggle_39_in_3 = 0;
+main_Toggle_39_in_4 = NULL;
+main_Toggle_39_in_5 = NULL;
+main_Toggle_39_in_6 = NULL;
+main_Toggle_39_out_1 = 0;
+main_SelectLataField_6_out_1 = NULL;
+main_ShowBoundary_3_in_2 = NULL;
+main_ShowBoundary_3_out_1 = NULL;
+main_Switch_28_out_1 = NULL;
+main_ShowConnections_3_out_1 = NULL;
+main_Color_26_in_2 = "white";
+main_Color_26_in_3 = NULL;
+main_Color_26_in_4 = NULL;
+main_Color_26_in_5 = NULL;
+main_Color_26_out_1 = NULL;
+main_Switch_27_in_2 = NULL;
+main_Switch_27_out_1 = NULL;
+main_Transmitter_19_out_1 = NULL;
+main_Receiver_29_out_1 = NULL;
+main_Select_16_in_2 = 0;
+main_Select_16_in_3 = NULL;
+main_Select_16_out_1 = NULL;
+main_Extract_3_in_2 = "TIME";
+main_Extract_3_out_1 = NULL;
+main_Select_17_in_2 = NULL;
+main_Select_17_in_3 = NULL;
+main_Select_17_out_1 = NULL;
+main_Transmitter_20_out_1 = NULL;
+main_Receiver_30_out_1 = NULL;
+main_Format_5_in_1 = "time: %f";
+main_Format_5_in_3 = NULL;
+main_Format_5_out_1 = NULL;
+main_Caption_3_in_2 = NULL;
+main_Caption_3_in_3 = NULL;
+main_Caption_3_in_4 = NULL;
+main_Caption_3_in_5 = NULL;
+main_Caption_3_in_6 = NULL;
+main_Caption_3_in_7 = NULL;
+main_Caption_3_in_8 = NULL;
+main_Caption_3_in_9 = NULL;
+main_Caption_3_out_1 = NULL;
+main_Collect_5_out_1 = NULL;
+main_Integer_6_in_1 = "Integer_6";
+main_Integer_6_in_2 = NULL;
+main_Integer_6_in_3 = 400;
+main_Integer_6_in_4 = NULL;
+main_Integer_6_in_5 = NULL;
+main_Integer_6_in_6 = NULL;
+main_Integer_6_in_7 = NULL;
+main_Integer_6_in_8 = NULL;
+main_Integer_6_in_9 = NULL;
+main_Integer_6_in_10 = NULL;
+main_Integer_6_in_11 = NULL;
+main_Integer_6_out_1 = 400;
+main_AutoCamera_1_in_2 = NULL;
+main_AutoCamera_1_in_3 = NULL;
+main_AutoCamera_1_in_5 = NULL;
+main_AutoCamera_1_in_6 = NULL;
+main_AutoCamera_1_in_7 = NULL;
+main_AutoCamera_1_in_8 = NULL;
+main_AutoCamera_1_in_9 = NULL;
+main_AutoCamera_1_out_1 = NULL;
+main_Receiver_35_out_1 = NULL;
+main_Selector_31_in_1 = "Selector_31";
+main_Selector_31_in_2 = "DOM" ;
+main_Selector_31_in_3 = 0 ;
+main_Selector_31_in_5 = NULL;
+main_Selector_31_in_6 = NULL;
+main_Selector_31_in_7 = NULL;
+main_Selector_31_out_2 = "DOM" ;
+main_Select_22_in_3 = NULL;
+main_Select_22_out_1 = NULL;
+main_Inquire_16_in_2 = "component names";
+main_Inquire_16_in_3 = NULL;
+main_Inquire_16_out_1 = NULL;
+main_Selector_32_in_1 = "Selector_32";
+main_Selector_32_in_2 = "INDICATRICE_INTERF_ELEM" ;
+main_Selector_32_in_3 = 4 ;
+main_Selector_32_in_5 = NULL;
+main_Selector_32_in_6 = NULL;
+main_Selector_32_in_7 = NULL;
+main_Selector_32_out_2 = "INDICATRICE_INTERF_ELEM" ;
+main_Mark_16_out_1 = NULL;
+main_Post_11_in_2 = "connections";
+main_Post_11_out_1 = NULL;
+main_Measure_3_in_2 = "element";
+main_Measure_3_out_1 = NULL;
+main_Compute_23_in_1 = "$0*$1";
+main_Compute_23_out_1 = NULL;
+main_Statistics_2_out_1 = NULL;
+main_Inquire_15_in_2 = "connection counts";
+main_Inquire_15_in_3 = NULL;
+main_Inquire_15_out_1 = NULL;
+main_Compute_22_in_1 = "$0*$1";
+main_Compute_22_out_1 = NULL;
+main_Transmitter_24_out_1 = NULL;
+main_Receiver_37_out_1 = NULL;
+main_Post_12_in_2 = "connections";
+main_Post_12_out_1 = NULL;
+main_Measure_4_in_2 = "element";
+main_Measure_4_out_1 = NULL;
+main_Compute_24_in_1 = "$0*$1";
+main_Compute_24_out_1 = NULL;
+main_Statistics_4_out_1 = NULL;
+main_Inquire_17_in_2 = "connection counts";
+main_Inquire_17_in_3 = NULL;
+main_Inquire_17_out_1 = NULL;
+main_Compute_25_in_1 = "$0*$1";
+main_Compute_25_out_1 = NULL;
+main_Toggle_52_in_1 = "Toggle_52";
+main_Toggle_52_in_2 = 0;
+main_Toggle_52_in_3 = 0;
+main_Toggle_52_in_4 = NULL;
+main_Toggle_52_in_5 = NULL;
+main_Toggle_52_in_6 = NULL;
+main_Toggle_52_out_1 = 0;
+main_Transmitter_25_out_1 = NULL;
+main_Receiver_39_out_1 = NULL;
+main_Route_11_out_1 = NULL;
+main_Post_13_in_2 = "connections";
+main_Post_13_out_1 = NULL;
+main_Measure_7_in_2 = "element";
+main_Measure_7_out_1 = NULL;
+main_Compute_26_in_1 = "$0*$1";
+main_Compute_26_out_1 = NULL;
+main_Statistics_5_out_1 = NULL;
+main_Inquire_18_in_2 = "connection counts";
+main_Inquire_18_in_3 = NULL;
+main_Inquire_18_out_1 = NULL;
+main_Compute_27_in_1 = "$0*$1";
+main_Compute_27_out_1 = NULL;
+main_String_11_out_1 = "/tmp/ebull_2sites_%04d.tiff";
+main_Transmitter_18_out_1 = NULL;
+main_Receiver_27_out_1 = NULL;
+main_Format_4_in_3 = NULL;
+main_Format_4_out_1 = NULL;
+main_Format_7_in_1 = "Shade component: %s";
+main_Format_7_in_3 = NULL;
+main_Format_7_out_1 = NULL;
+main_Format_8_in_1 = "CutPlane component: %s";
+main_Format_8_in_3 = NULL;
+main_Format_8_out_1 = NULL;
+main_Format_9_in_1 = "Glyph component: %s";
+main_Format_9_in_3 = NULL;
+main_Format_9_out_1 = NULL;
+main_Format_10_in_1 = "Isosurface component: %s";
+main_Format_10_in_3 = NULL;
+main_Format_10_out_1 = NULL;
+main_Format_11_in_1 = "Interfaces selection: %s %s";
+main_Format_11_out_1 = NULL;
+main_Format_12_in_1 = "Mesh selection: %s";
+main_Format_12_in_3 = NULL;
+main_Format_12_out_1 = NULL;
+main_Format_13_in_1 = "Map surface: %s";
+main_Format_13_in_3 = NULL;
+main_Format_13_out_1 = NULL;
+main_Format_14_in_1 = "Multicompute: %s %s %s";
+main_Format_14_out_1 = NULL;
+main_Receiver_36_out_1 = NULL;
+main_Measure_5_in_2 = "volume";
+main_Measure_5_out_1 = NULL;
+main_Toggle_50_in_1 = "Toggle_50";
+main_Toggle_50_in_2 =  1  ;
+main_Toggle_50_in_3 = 0;
+main_Toggle_50_in_4 =  2  ;
+main_Toggle_50_in_5 =  1  ;
+main_Toggle_50_in_6 = NULL;
+main_Toggle_50_out_1 =  1  ;
+main_Switch_32_in_2 = 0;
+main_Switch_32_out_1 = NULL;
+main_Measure_6_in_2 = "area";
+main_Measure_6_out_1 = NULL;
+main_Switch_33_in_2 = 0;
+main_Switch_33_out_1 = NULL;
+main_String_16_out_1 = "/tmp/dx_average.txt";
+main_Format_15_in_1 = "echo %12g %12g %12g %12g %12g >>%s";
+main_Format_15_out_1 = NULL;
+main_Receiver_38_out_1 = NULL;
+main_Measure_8_in_2 = "area";
+main_Measure_8_out_1 = NULL;
+main_String_17_out_1 = "/tmp/surface_integral.txt";
+main_Format_16_in_1 = "echo %12g %12g %12g>>%s";
+main_Format_16_out_1 = NULL;
+macro Image(
+        id,
+        object,
+        where,
+        useVector,
+        to,
+        from,
+        width,
+        resolution,
+        aspect,
+        up,
+        viewAngle,
+        perspective,
+        options,
+        buttonState = 1,
+        buttonUpApprox = "none",
+        buttonDownApprox = "none",
+        buttonUpDensity = 1,
+        buttonDownDensity = 1,
+        renderMode = 0,
+        defaultCamera,
+        reset,
+        backgroundColor,
+        throttle,
+        RECenable = 0,
+        RECfile,
+        RECformat,
+        RECresolution,
+        RECaspect,
+        AAenable = 0,
+        AAlabels,
+        AAticks,
+        AAcorners,
+        AAframe,
+        AAadjust,
+        AAcursor,
+        AAgrid,
+        AAcolors,
+        AAannotation,
+        AAlabelscale,
+        AAfont,
+        interactionMode,
+        title,
+        AAxTickLocs,
+        AAyTickLocs,
+        AAzTickLocs,
+        AAxTickLabels,
+        AAyTickLabels,
+        AAzTickLabels,
+        webOptions) -> (
+        object,
+        camera,
+        where)
+{
+    ImageMessage(
+        id,
+        backgroundColor,
+        throttle,
+        RECenable,
+        RECfile,
+        RECformat,
+        RECresolution,
+        RECaspect,
+        AAenable,
+        AAlabels,
+        AAticks,
+        AAcorners,
+        AAframe,
+        AAadjust,
+        AAcursor,
+        AAgrid,
+        AAcolors,
+        AAannotation,
+        AAlabelscale,
+        AAfont,
+        AAxTickLocs,
+        AAyTickLocs,
+        AAzTickLocs,
+        AAxTickLabels,
+        AAyTickLabels,
+        AAzTickLabels,
+        interactionMode,
+        title,
+        renderMode,
+        buttonUpApprox,
+        buttonDownApprox,
+        buttonUpDensity,
+        buttonDownDensity) [instance: 1, cache: 1];
+    autoCamera =
+        AutoCamera(
+            object,
+            "front",
+            object,
+            resolution,
+            aspect,
+            [0,1,0],
+            perspective,
+            viewAngle,
+            backgroundColor) [instance: 1, cache: 1];
+    realCamera =
+        Camera(
+            to,
+            from,
+            width,
+            resolution,
+            aspect,
+            up,
+            perspective,
+            viewAngle,
+            backgroundColor) [instance: 1, cache: 1];
+    coloredDefaultCamera = 
+	 UpdateCamera(defaultCamera,
+            background=backgroundColor) [instance: 1, cache: 1];
+    nullDefaultCamera =
+        Inquire(defaultCamera,
+            "is null + 1") [instance: 1, cache: 1];
+    resetCamera =
+        Switch(
+            nullDefaultCamera,
+            coloredDefaultCamera,
+            autoCamera) [instance: 1, cache: 1];
+    resetNull = 
+        Inquire(
+            reset,
+            "is null + 1") [instance: 2, cache: 1];
+    reset =
+        Switch(
+            resetNull,
+            reset,
+            0) [instance: 2, cache: 1];
+    whichCamera =
+        Compute(
+            "($0 != 0 || $1 == 0) ? 1 : 2",
+            reset,
+            useVector) [instance: 1, cache: 1];
+    camera = Switch(
+            whichCamera,
+            resetCamera,
+            realCamera) [instance: 3, cache: 1];
+    AAobject =
+        AutoAxes(
+            object,
+            camera,
+            AAlabels,
+            AAticks,
+            AAcorners,
+            AAframe,
+            AAadjust,
+            AAcursor,
+            AAgrid,
+            AAcolors,
+            AAannotation,
+            AAlabelscale,
+            AAfont,
+            AAxTickLocs,
+            AAyTickLocs,
+            AAzTickLocs,
+            AAxTickLabels,
+            AAyTickLabels,
+            AAzTickLabels) [instance: 1, cache: 1];
+    switchAAenable = Compute("$0+1",
+	     AAenable) [instance: 2, cache: 1];
+    object = Switch(
+	     switchAAenable,
+	     object,
+	     AAobject) [instance:4, cache: 1];
+    SWapproximation_options =
+        Switch(
+            buttonState,
+            buttonUpApprox,
+            buttonDownApprox) [instance: 5, cache: 1];
+    SWdensity_options =
+        Switch(
+            buttonState,
+            buttonUpDensity,
+            buttonDownDensity) [instance: 6, cache: 1];
+    HWapproximation_options =
+        Format(
+            "%s,%s",
+            buttonDownApprox,
+            buttonUpApprox) [instance: 1, cache: 1];
+    HWdensity_options =
+        Format(
+            "%d,%d",
+            buttonDownDensity,
+            buttonUpDensity) [instance: 2, cache: 1];
+    switchRenderMode = Compute(
+	     "$0+1",
+	     renderMode) [instance: 3, cache: 1];
+    approximation_options = Switch(
+	     switchRenderMode,
+            SWapproximation_options,
+	     HWapproximation_options) [instance: 7, cache: 1];
+    density_options = Switch(
+	     switchRenderMode,
+            SWdensity_options,
+            HWdensity_options) [instance: 8, cache: 1];
+    renderModeString = Switch(
+            switchRenderMode,
+            "software",
+            "hardware")[instance: 9, cache: 1];
+    object_tag = Inquire(
+            object,
+            "object tag")[instance: 3, cache: 1];
+    annoted_object =
+        Options(
+            object,
+            "send boxes",
+            0,
+            "cache",
+            1,
+            "object tag",
+            object_tag,
+            "ddcamera",
+            whichCamera,
+            "rendering approximation",
+            approximation_options,
+            "render every",
+            density_options,
+            "button state",
+            buttonState,
+            "rendering mode",
+            renderModeString) [instance: 1, cache: 1];
+    RECresNull =
+        Inquire(
+            RECresolution,
+            "is null + 1") [instance: 4, cache: 1];
+    ImageResolution =
+        Inquire(
+            camera,
+            "camera resolution") [instance: 5, cache: 1];
+    RECresolution =
+        Switch(
+            RECresNull,
+            RECresolution,
+            ImageResolution) [instance: 10, cache: 1];
+    RECaspectNull =
+        Inquire(
+            RECaspect,
+            "is null + 1") [instance: 6, cache: 1];
+    ImageAspect =
+        Inquire(
+            camera,
+            "camera aspect") [instance: 7, cache: 1];
+    RECaspect =
+        Switch(
+            RECaspectNull,
+            RECaspect,
+            ImageAspect) [instance: 11, cache: 1];
+    switchRECenable = Compute(
+          "$0 == 0 ? 1 : (($2 == $3) && ($4 == $5)) ? ($1 == 1 ? 2 : 3) : 4",
+            RECenable,
+            switchRenderMode,
+            RECresolution,
+            ImageResolution,
+            RECaspect,
+	     ImageAspect) [instance: 4, cache: 1];
+    NoRECobject, RECNoRerenderObject, RECNoRerHW, RECRerenderObject = Route(switchRECenable, annoted_object);
+    Display(
+        NoRECobject,
+        camera,
+        where,
+        throttle) [instance: 1, cache: 1];
+    image =
+        Render(
+            RECNoRerenderObject,
+            camera) [instance: 1, cache: 1];
+    Display(
+        image,
+        NULL,
+        where,
+        throttle) [instance: 2, cache: 1];
+    WriteImage(
+        image,
+        RECfile,
+        RECformat) [instance: 1, cache: 1];
+    rec_where = Display(
+        RECNoRerHW,
+        camera,
+        where,
+        throttle) [instance: 1, cache: 0];
+    rec_image = ReadImageWindow(
+        rec_where) [instance: 1, cache: 1];
+    WriteImage(
+        rec_image,
+        RECfile,
+        RECformat) [instance: 1, cache: 1];
+    RECupdateCamera =
+	UpdateCamera(
+	    camera,
+	    resolution=RECresolution,
+	    aspect=RECaspect) [instance: 2, cache: 1];
+    Display(
+        RECRerenderObject,
+        camera,
+        where,
+        throttle) [instance: 1, cache: 1];
+    RECRerenderObject =
+	ScaleScreen(
+	    RECRerenderObject,
+	    NULL,
+	    RECresolution,
+	    camera) [instance: 1, cache: 1];
+    image =
+        Render(
+            RECRerenderObject,
+            RECupdateCamera) [instance: 2, cache: 1];
+    WriteImage(
+        image,
+        RECfile,
+        RECformat) [instance: 2, cache: 1];
+}
+main_Image_2_in_1 = "Image_2";
+main_Image_2_in_3 = "X24,,";
+main_Image_2_in_4 = 1;
+main_Image_2_in_5 = [0.000500709 0.000483282 0.000388453];
+main_Image_2_in_6 = [0.000500709 0.000483282 0.000839691];
+main_Image_2_in_7 = 0.000241818;
+main_Image_2_in_8 = 424;
+main_Image_2_in_9 = 0.76533;
+main_Image_2_in_10 = [0 1 0];
+main_Image_2_in_11 = NULL;
+main_Image_2_in_12 = 0;
+main_Image_2_in_13 = NULL;
+main_Image_2_in_14 = 1;
+main_Image_2_in_15 = NULL;
+main_Image_2_in_16 = NULL;
+main_Image_2_in_17 = NULL;
+main_Image_2_in_18 = NULL;
+main_Image_2_in_19 = 0;
+main_Image_2_in_21 = NULL;
+main_Image_2_in_22 = "black";
+main_Image_2_in_23 = 1.0;
+main_Image_2_in_26 = "tiff";
+main_Image_2_in_27 = 1280;
+main_Image_2_in_28 = 0.8;
+main_Image_2_in_29 = 0;
+main_Image_2_in_30 = NULL;
+main_Image_2_in_31 = NULL;
+main_Image_2_in_32 = NULL;
+main_Image_2_in_33 = NULL;
+main_Image_2_in_34 = NULL;
+main_Image_2_in_35 = NULL;
+main_Image_2_in_36 = NULL;
+main_Image_2_in_37 = NULL;
+main_Image_2_in_38 = NULL;
+main_Image_2_in_39 = NULL;
+main_Image_2_in_40 = NULL;
+main_Image_2_in_41 = "panzoom";
+main_Image_2_in_42 = NULL;
+main_Image_2_in_43 = NULL;
+main_Image_2_in_44 = NULL;
+main_Image_2_in_45 = NULL;
+main_Image_2_in_46 = NULL;
+main_Image_2_in_47 = NULL;
+main_Image_2_in_48 = NULL;
+main_Image_2_in_49 = NULL;
+main_Toggle_11_in_1 = "Toggle_11";
+main_Toggle_11_in_2 = 0;
+main_Toggle_11_in_3 = 0;
+main_Toggle_11_in_4 = NULL;
+main_Toggle_11_in_5 = NULL;
+main_Toggle_11_in_6 = NULL;
+main_Toggle_11_out_1 = 0;
+main_ManageColormapEditor_2_in_1 = {"Simple shade colormap"};
+main_ManageColormapEditor_2_in_3 = NULL;
+main_Toggle_13_in_1 = "Toggle_13";
+main_Toggle_13_in_2 = 0;
+main_Toggle_13_in_3 = 0;
+main_Toggle_13_in_4 = NULL;
+main_Toggle_13_in_5 = NULL;
+main_Toggle_13_in_6 = NULL;
+main_Toggle_13_out_1 = 0;
+main_ManageColormapEditor_3_in_1 = {"Cutplane colormap"};
+main_ManageColormapEditor_3_in_3 = NULL;
+main_Toggle_17_in_1 = "Toggle_17";
+main_Toggle_17_in_2 = 0;
+main_Toggle_17_in_3 = 0;
+main_Toggle_17_in_4 = NULL;
+main_Toggle_17_in_5 = NULL;
+main_Toggle_17_in_6 = NULL;
+main_Toggle_17_out_1 = 0;
+main_ManageColormapEditor_4_in_1 = {"Glyph colormap"};
+main_ManageColormapEditor_4_in_3 = NULL;
+main_Toggle_22_in_1 = "Toggle_22";
+main_Toggle_22_in_2 = 0;
+main_Toggle_22_in_3 = 0;
+main_Toggle_22_in_4 = NULL;
+main_Toggle_22_in_5 = NULL;
+main_Toggle_22_in_6 = NULL;
+main_Toggle_22_out_1 = 0;
+main_ManageColormapEditor_5_in_1 = {"Interfaces color field"};
+main_ManageColormapEditor_5_in_3 = NULL;
+main_Toggle_23_in_1 = "Toggle_23";
+main_Toggle_23_in_2 = 0;
+main_Toggle_23_in_3 = 0;
+main_Toggle_23_in_4 = NULL;
+main_Toggle_23_in_5 = NULL;
+main_Toggle_23_in_6 = NULL;
+main_Toggle_23_out_1 = 0;
+main_ManageColormapEditor_6_in_1 = {"Interfaces glyph"};
+main_ManageColormapEditor_6_in_3 = NULL;
+main_Toggle_31_in_1 = "Toggle_31";
+main_Toggle_31_in_2 = 0;
+main_Toggle_31_in_3 = 0;
+main_Toggle_31_in_4 = NULL;
+main_Toggle_31_in_5 = NULL;
+main_Toggle_31_in_6 = NULL;
+main_Toggle_31_out_1 = 0;
+main_ManageColormapEditor_7_in_1 = {"Isosurface colormap"};
+main_ManageColormapEditor_7_in_3 = NULL;
+main_Toggle_26_in_1 = "Toggle_26";
+main_Toggle_26_in_2 = 0;
+main_Toggle_26_in_3 = 0;
+main_Toggle_26_in_4 = NULL;
+main_Toggle_26_in_5 = NULL;
+main_Toggle_26_in_6 = NULL;
+main_Toggle_26_out_1 = 0;
+main_ManageControlPanel_1_in_1 = {"Cut planes"};
+main_Toggle_25_in_1 = "Toggle_25";
+main_Toggle_25_in_2 = 0;
+main_Toggle_25_in_3 = 0;
+main_Toggle_25_in_4 = NULL;
+main_Toggle_25_in_5 = NULL;
+main_Toggle_25_in_6 = NULL;
+main_Toggle_25_out_1 = 0;
+main_ManageControlPanel_2_in_1 = {"Simple shade"};
+main_Toggle_27_in_1 = "Toggle_27";
+main_Toggle_27_in_2 = 0;
+main_Toggle_27_in_3 = 0;
+main_Toggle_27_in_4 = NULL;
+main_Toggle_27_in_5 = NULL;
+main_Toggle_27_in_6 = NULL;
+main_Toggle_27_out_1 = 0;
+main_ManageControlPanel_3_in_1 = {"Glyph"};
+main_Toggle_28_in_1 = "Toggle_28";
+main_Toggle_28_in_2 = 0;
+main_Toggle_28_in_3 = 0;
+main_Toggle_28_in_4 = NULL;
+main_Toggle_28_in_5 = NULL;
+main_Toggle_28_in_6 = NULL;
+main_Toggle_28_out_1 = 0;
+main_ManageControlPanel_4_in_1 = {"Interfaces"};
+main_Toggle_35_in_1 = "Toggle_35";
+main_Toggle_35_in_2 = 0;
+main_Toggle_35_in_3 = 0;
+main_Toggle_35_in_4 = NULL;
+main_Toggle_35_in_5 = NULL;
+main_Toggle_35_in_6 = NULL;
+main_Toggle_35_out_1 = 0;
+main_ManageControlPanel_5_in_1 = {"Isosurface"};
+main_Toggle_43_in_1 = "Toggle_43";
+main_Toggle_43_in_2 = 0;
+main_Toggle_43_in_3 = 0;
+main_Toggle_43_in_4 = NULL;
+main_Toggle_43_in_5 = NULL;
+main_Toggle_43_in_6 = NULL;
+main_Toggle_43_out_1 = 0;
+main_ManageControlPanel_6_in_1 = {"Mesh"};
+main_Toggle_45_in_1 = "Toggle_45";
+main_Toggle_45_in_2 = 0;
+main_Toggle_45_in_3 = 0;
+main_Toggle_45_in_4 = NULL;
+main_Toggle_45_in_5 = NULL;
+main_Toggle_45_in_6 = NULL;
+main_Toggle_45_out_1 = 0;
+main_ManageControlPanel_7_in_1 = {"Save images"};
+main_Toggle_47_in_1 = "Toggle_47";
+main_Toggle_47_in_2 = 0;
+main_Toggle_47_in_3 = 0;
+main_Toggle_47_in_4 = NULL;
+main_Toggle_47_in_5 = NULL;
+main_Toggle_47_in_6 = NULL;
+main_Toggle_47_out_1 = 0;
+main_ManageControlPanel_8_in_1 = {"Front-tracking tools"};
+main_Message_1_in_2 = "message";
+main_Message_1_in_3 = 0;
+main_Message_2_in_2 = "message";
+main_Message_2_in_3 = 0;
+main_Message_3_in_2 = "message";
+main_Message_3_in_3 = 0;
+main_Message_4_in_2 = "message";
+main_Message_4_in_3 = 0;
+main_Message_5_in_2 = "message";
+main_Message_5_in_3 = 0;
+main_Message_6_in_2 = "message";
+main_Message_6_in_3 = 0;
+main_Message_7_in_2 = "message";
+main_Message_7_in_3 = 0;
+main_Message_8_in_2 = "message";
+main_Message_8_in_3 = 0;
+main_Toggle_51_in_1 = "Toggle_51";
+main_Toggle_51_in_2 =  1  ;
+main_Toggle_51_in_3 = 0;
+main_Toggle_51_in_4 =  2  ;
+main_Toggle_51_in_5 =  1  ;
+main_Toggle_51_in_6 = NULL;
+main_Toggle_51_out_1 =  1  ;
+main_Route_9_out_2 = NULL;
+Executive("product version 4 3 2");
+$sync
+
+sequence main();
+play;

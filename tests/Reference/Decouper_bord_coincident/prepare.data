@@ -1,0 +1,154 @@
+dimension 2
+Pb_Thermohydraulique 	pb_fluide
+Pb_Conduction		pb_solide
+Domaine dom_solide
+Domaine dom_fluide
+# BEGIN MESH #
+Mailler dom_solide
+{
+	Pave Cavite 
+		{
+		Origine 0. 0.
+     		Nombre_de_Noeuds 3 3
+		Longueurs 1 1
+		}
+		{
+		Bord Gauche 	X = 0.  	0. <= Y <= 1
+		Bord Haut 	Y = 1  		0. <= X <= 1
+		Bord Bas 	Y = 0.     	0. <= X <= 1
+		Bord Droit 	X = 1 		0. <= Y <= 1
+		}
+}
+Trianguler_H dom_solide
+Ecrire_fichier dom_solide dom_solide.geom
+
+Mailler dom_fluide
+{
+	Pave Cavite 
+		{
+		Origine 0. 1.
+     		Nombre_de_Noeuds 5 5
+		Longueurs 1 1
+		}
+		{
+		Bord Gauche 	X = 0.  	1. <= Y <= 2
+		Bord Haut 	Y = 2  		0. <= X <= 1
+		Bord Bas 	Y = 1.     	0. <= X <= 1
+		Bord Droit 	X = 1 		1. <= Y <= 2
+		}
+}
+Trianguler_H dom_fluide
+Ecrire_fichier dom_fluide dom_fluide.geom
+# END MESH #
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0.
+	tmax 30.
+	dt_min 0.001
+	dt_max 10.
+	dt_impr 0.1
+	dt_sauv 400.
+	seuil_statio 1.e-20
+	diffusion_implicite 1
+}
+
+VEFPreP1B dis
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 0.002
+	rho Champ_Uniforme 1 2.
+	lambda Champ_Uniforme 1 2.0
+	Cp Champ_Uniforme 1 1000.
+	beta_th Champ_Uniforme 1 0.0001
+}
+
+Solide sol
+Lire sol
+{
+	rho Champ_Uniforme 1 1000.
+	lambda Champ_Uniforme 1 250.    
+	Cp Champ_Uniforme 1 100.
+}
+
+Champ_Uniforme gravite
+Lire gravite 2 0 -9.81
+Associate sol gravite
+Associate fluide gravite
+
+Associate pb_solide dom_solide
+Associate pb_solide sol
+
+Associate pb_fluide dom_fluide
+Associate pb_fluide fluide
+
+Probleme_Couple pbc
+Associate pbc pb_solide
+Associate pbc pb_fluide
+Associate pbc sch
+Discretize pbc dis
+
+Lire pb_solide
+{
+	Conduction
+	{
+		diffusion { }
+		conditions_initiales {
+			temperature Champ_Uniforme 1 30.
+			}
+		boundary_conditions {
+			Gauche	paroi_temperature_imposee Champ_Front_Uniforme 1 40.
+			Droit 	paroi_temperature_imposee Champ_Front_Uniforme 1 40.
+			Bas 	paroi_temperature_imposee Champ_Front_Uniforme 1 20.
+		 	Haut 	paroi_contact pb_fluide Bas
+		}
+	}
+	Postraitement
+	{
+	}
+}
+
+Lire pb_fluide
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.500000 } 
+			seuil 1.000000e-14 
+			impr 
+		}
+		convection { amont }
+		diffusion { }
+		sources { boussinesq_temperature { T0 30. } }
+		conditions_initiales {
+			vitesse Champ_Uniforme 2 0. 0.
+			}
+		boundary_conditions {
+			Gauche 	paroi_fixe
+			Droit 	paroi_fixe
+			Bas	paroi_fixe
+			Haut	paroi_fixe
+		}
+	}
+	Convection_Diffusion_Temperature
+	{
+		diffusion { }
+		convection { amont }
+		boundary_conditions 
+		{
+			Gauche	paroi_temperature_imposee Champ_Front_Uniforme 1 40.
+			Droit 	paroi_temperature_imposee Champ_Front_Uniforme 1 40.
+			Haut 	paroi_temperature_imposee Champ_Front_Uniforme 1 20.
+		 	Bas 	paroi_contact pb_solide Haut
+		}
+		conditions_initiales { Temperature Champ_Uniforme 1 30. }
+	}
+	Postraitement
+	{
+	}
+}
+Solve pbc
+Fin

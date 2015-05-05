@@ -1,0 +1,233 @@
+BEGIN {
+     premier_fichier=1
+     message=""
+     nerr=-1
+     nc=0
+     xmax=0
+     ymax=0
+     zmax=0
+     emax=0
+}
+
+/TRUST/ {
+     k=0
+     debut=1
+     getline
+     getline
+     getline
+     getline
+     if (premier_fichier) nsommU=$3
+     else
+	if (nsommU != $3) message="Different number of nodes."
+
+     ecrit()
+
+     for (i=1; i<nsommU+1; i++) {
+        getline
+	if (premier_fichier) {
+           xu[i]=$1
+	   yu[i]=$2
+	   zu[i]=$3
+	   if (abs($1)>=xmax) xmax=abs($1)
+	   if (abs($2)>=ymax) ymax=abs($2)
+	   if (abs($3)>=zmax) zmax=abs($3)
+	}
+	else
+	   if ( ecart(xu[i],$1,xmax) ||
+ 	        ecart(yu[i],$2,ymax) ||
+	        ecart(zu[i],$3,zmax) ) message="Different coordinates nodes."
+     } 
+     ecrit()
+     getline
+     getline
+     getline
+     getline
+     if (premier_fichier) nelemU=$1
+     else
+        if (nelemU != $1) message="Different number of meshes."
+
+     for (i=1; i<nelemU+1; i++) {
+        getline
+	if (premier_fichier) {
+           pu1[i]=$2
+	   pu2[i]=$9
+	}
+	else
+	   if ( pu1[i] != $2 ||
+		pu2[i] != $9 ) message="Nodes of meshes are different."
+     }
+     ecrit()
+     getline
+}
+
+/TEMPS/ {
+  k++
+  if (premier_fichier)
+     temps[k]=$2
+  else
+     temps2[k]=$2
+}
+
+/CHAMPMAILLE/ || /CHAMPPOINT/ {
+#
+# CHAMPMAILLE  temperature_elem_dom_solide     Topologie_Cavite1Cavite2     0.00000000e+00  
+# temperature_elem_dom_solide     1    K     
+#     type0   100
+# 1    0.00000000e+00  
+# 2    0.00000000e+00  
+# 3    0.00000000e+00  
+#
+      champ=$2
+      tps=$4
+      getline
+      if (champ!=$1) print "Probleme pour "champ" temps:"tps
+      if (premier_fichier) {
+#
+# 1er fichier : Fichier a comparer.
+#
+         if ( temps[k] != tps ) {
+            message="Incoherence sur les instants dans le fichier a comparer:"tps","temps[k]
+         }
+         else
+         {
+	    if (k==1) {
+	       chp[nc]=champ
+	       valm[nc]=0
+	       nc++
+	    }
+	    if (NF==3) { getline ; ne=$2 }
+	    else if (NF==5) ne=$5
+	    ic=0
+	    while (chp[ic]!=champ && ic<nc) ic++
+	    if (ic==nc) {message="Probleme nom pour "champ" temps:"tps;break}
+            for (n=1; n<ne+1; n++) {
+               getline
+	       if ($1 != n) {message="Probleme numeros pour "champ" temps:"tps;break}
+	       for (compo=0;compo<NF-1;compo++)
+	       {
+	          val[k,n,ic,compo]=$(compo+2)
+	          if (abs($(compo+2))>=valm[ic]) valm[ic]=abs($(compo+2))
+	       }
+
+#		message="valm =	"valm[ic]
+#		ecrit()
+#		message="le champ est "chp[ic]
+#	        ecrit()
+            }
+	
+	    # Nouveau pour eviter les problemes sur vecteur elem
+	    # On synchronise les valm des composantes du vecteur elem
+	    if (match(champ,"Y_elem"))
+	    {
+	       if (valm[ic-1]>valm[ic])
+	          valm[ic]=valm[ic-1];
+	       else
+                  valm[ic-1]=valm[ic];
+	    }
+	    if (match(champ,"Z_elem"))
+	    {
+	       if (valm[ic-1]>valm[ic])
+	          valm[ic]=valm[ic-1];
+	       else
+                  valm[ic-1]=valm[ic];
+	       if (valm[ic-2]>valm[ic])
+	          valm[ic]=valm[ic-2];
+	       else
+                  valm[ic-2]=valm[ic];
+	       if (valm[ic-2]>valm[ic-1])
+	          valm[ic-1]=valm[ic-2];
+	       else
+                  valm[ic-2]=valm[ic-1];		  		  
+	    }
+	 }
+      }
+      else {
+#
+# 2eme fichier : Fichier de comparaison.
+#
+         em=0
+         err_temps=abs((temps2[k]-temps[k])/(temps2[k]+temps[k]+1.e-30));
+       	 if ( temps2[k] != tps ) 
+	 {
+	    message="Incoherence sur les instants dans le fichier de comparaison:"tps","temps2[k]
+	 }
+	 else if ( err_temps > 1.e-6 ) 
+	 {
+	    message="Instants differents entre les deux fichier:"temps[k]","temps2[k]
+	 }
+	 else
+	 {
+	    if (NF==3) { getline ; ne=$2 }
+	    else if (NF==5) ne=$5
+	    ic=0
+    	    while (chp[ic]!=champ && ic<nc) ic++
+	    {
+#	      message="la valeur du max pour le champ "champ" est "valm[ic]
+#              ecrit()
+
+	      if (ic==nc) {message="Probleme pour "champ". Pas le meme nom? temps:"tps}
+              for (n=1; n<ne+1; n++) {
+	         getline
+	         if ($1 != n) {message="Probleme numeros pour "champ" temps:"tps;break}
+	         for (compo=0;compo<NF-1;compo++)
+		  if (ecart($(compo+2),val[k,n,ic,compo],valm[ic])) {
+		    if (abs(err)>=em) em=err   
+		    message="Ecarts pour "chp[ic]" au temps:"tps" Erreur max:"em
+		  }
+#   	      message="la valeur du max pour le champ "champ" est "valm[ic]
+#       	      ecrit()
+              }
+	   }
+	 }
+      }
+      ecrit()
+}
+
+/FIN/ {
+       if (premier_fichier) premier_fichier=0
+}
+
+END {
+       if (!premier_fichier)
+       {
+          nerr++
+	  print "Number of differences :",nerr
+	  print "Maximal relative error encountered :",emax
+       }
+       if (nerr == -1) print "Trio-U stops. May be a .lml file empty or keyword FIN not found inside."
+       # Horrible :
+       if (nerr==255) nerr=nerr+1
+       exit nerr
+}
+
+function abs(x)
+{
+     return x*(2*(x>0)-1)
+}
+
+function ecart(x,y,ymax)
+{
+     flag=1
+     err=0
+     if (ymax!=0) err = abs((x-y)/ymax)
+# Erreur relative : en %, multiplier par 100.
+     if (ymax==0 || err <= 0.00001) flag=0;
+#	if (flag==1) print "ymax", ymax
+#     else print "Erreur relative (0 a 10e-5):"err
+      if (abs(err)>=emax) emax=err   
+#     if (x+y == 0) flag=0
+#     else 
+#	if (abs((x-y)/(x+y)) <= 0.0001) {
+#	flag=0;}
+#        else print x","y
+     return flag
+}
+
+function ecrit()
+{
+     if (message) {
+	nerr++
+	print message
+        message=""
+     }
+}

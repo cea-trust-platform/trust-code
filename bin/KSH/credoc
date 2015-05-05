@@ -1,0 +1,200 @@
+#!/bin/bash
+##################################################################
+# Creation des sources html par Doxygen sous $TRUST_ROOT/doc/html
+##################################################################
+doxygen()
+{
+   rm -r -f $TRUST_ROOT/doc/doxygen.*
+   make_Doxyfile
+   echo "Fin Doxygen a `date '+%H:%M:%S'`";
+   # Verification des includes avec Doxygen (fait uniquement le vendredi soir)
+   if [ "`date '+%u'`" = 5 ]
+   then
+      cd $TRUST_ROOT/MonoDir$COMM;
+      (check_include 1>check_include.log 2>&1;echo "Fin check_include a `date '+%H:%M:%S'`")&
+   fi
+} 
+
+
+
+##############################################################################
+# Nouveau : ajout cree des liens entre la liste des mots cles et les cas tests
+##############################################################################
+tests()
+{
+keywords=$TRUST_ROOT/doc/TRUST/Keywords.txt
+tests=$TRUST_ROOT/doc/TRUST/Tests.txt
+rm -f $tests $TRUST_TMP/motcles
+html=$TRUST_TESTS/Reference/index_keywords_tests.html.tmp
+echo "<html>
+<table BORDER=1 CELLSPACING=1 CELLPADDING=1 cols=4>
+<tr valign=top>
+<td WIDTH=40%><b>Keywords</b></td>
+<td WIDTH=20%><b>Test case 1</b></td>
+<td WIDTH=20%><b>Test case 2</b></td>
+<td WIDTH=20%><b>Test case 3</b></td>
+</tr>" > $html
+cd $TRUST_TESTS/Reference
+for keyword in `$TRUST_Awk -F"|" '{print $1" "$2}' $keywords`
+do
+   echo "<tr valign=top>
+<td WIDTH=40%><FONT Size=-1><b>$keyword</b></FONT></td>" >> $html
+   # Cherche dans les jeux de donnees
+   # D'abord ceux avec PARALLEL@OK et $keyword
+   cherche.ksh PARALLEL@OK $keyword 1>/dev/null 2>&1
+   # Cherche ensuite parmi tous les cas tests si aucun jeu de donnees trouve
+   [ ! -f $TRUST_TESTS/Reference/liste_cherche ] && cherche.ksh $keyword 1>/dev/null 2>&1
+   if [ -f $TRUST_TESTS/Reference/liste_cherche ]
+   then
+      # Ecriture dans le fichier .txt et dans un fichier html
+      ligne=$keyword"\t\t\t\t\t"
+      for test in `$TRUST_Awk '{print length()" "$1}' $TRUST_TESTS/Reference/liste_cherche | sort -n | head -3 | $TRUST_Awk '{print $2}'`
+      do
+          ligne=$ligne" "$test
+	  echo "<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#$test TARGET=p>$test</A></FONT></td>" >> $html
+      done
+      echo $ECHO_OPTS $ligne >> $tests
+   else
+      # Previent qu'il n'y a pas de cas test pour un mot cle !
+      echo "Le mot cle $keyword n'a aucun cas test !" >> $TRUST_TMP/motcles
+   fi
+   echo "</tr>" >> $html
+done
+echo "Fin index mots cles a `date '+%H:%M:%S'`"
+echo "</html>" >> $html
+CHECKOUT ${html%.tmp} 1>/dev/null 2>&1
+if [ "`diff $html ${html%.tmp}`" != "" ]
+then
+   mv -f $html ${html%.tmp}
+else
+   rm -f $html
+fi
+}
+
+ihm()
+{
+   ###################################################
+   # Creation de certains fichiers du repertoire IHM :
+   ###################################################
+   # Le fichier des cas tests de reference :
+   cree_References.html
+   # Le fichier des caracteristiques des milieux :
+   cree_Milieux.html
+   # On ne supporte plus GIBI depuis la 1.6.7:
+   # Le fichier des maillages VDF GIBI disponible :
+   # cree_Maillages_VDF.html
+   # Le fichier des maillages VEF GIBI disponible :
+   # cree_Maillages_VEF.html
+}
+
+pdf_par_office()
+{
+##########################
+# Creation de fichiers PDF
+##########################
+# Attention configurer la sortie pdf par defaut avec : /usr/lib/openoffice/spadmin
+# Repondre non a la question les liens doivent t'ils etre actives
+# Modification Cyril MALOD le 10-10-2006 : Plus de question ne doit etre posee !
+# Modification Cyril MALOD le 26-08-2008 : passage a OpenOffice 2.0
+# Modification Pierre LEDAC le 05-03-2013 : passage a OpenOffice 3.6 et format Word/PowerPoint abandonnes
+# Desormais toute la documentaion est au format ODP et ODT
+ooffice=/usr/bin/soffice
+formats="odp odt" # Formats supportes
+echo "Start converting documents in pdf format at `date '+%H:%M:%S'`"
+if [ -f $ooffice ]
+then
+   tmp=`mktemp_ -d`
+   cd $tmp
+   for fichier in `ls -rt $TRUST_ROOT/doc/TRUST/*.od* 2>/dev/null`
+   do
+      pdf=$fichier
+      for format in $formats
+      do
+	 pdf=${pdf%.$format}
+      done
+      pdf=`basename $pdf`".pdf"
+      pdf_livre=$TRUST_ROOT/doc/TRUST/$pdf
+      if [ ${#fichier} != 0 ] && [ $fichier -nt $pdf_livre ]
+      then
+         echo "$fichier found ..." 
+	 $ooffice -display localhost:20.0 --headless --convert-to pdf $fichier
+	 if [ ! -f $pdf ]
+	 then
+	    echo "Fail to create the $pdf file from $fichier"
+	    echo "See `pwd`/ooffice.log"
+	 else
+	    if [ ! -f $pdf_livre ]
+	    then
+	       mv -f $pdf $pdf_livre     
+	       CHECKOUT `dirname $pdf_livre` 2>/dev/null
+	       MKELEM $pdf_livre
+	    elif [ "`diff $pdf $pdf_livre`" != "" ]
+            then
+               CHECKOUT $pdf_livre 1>/dev/null 2>&1
+               mv -f $pdf $pdf_livre     
+            fi
+	    echo "$pdf_livre updated."
+	 fi
+      fi
+   done
+   cd -
+   rm -r -f $tmp
+fi
+echo "End Pdf at `date '+%H:%M:%S'`"
+}
+
+pdf_par_xdata()
+{
+#####################################
+# Creation de la future documentation
+#####################################
+   # Initialisation environnement XData
+   cd $TRUST_ROOT/Outils/TRIOXDATA
+   . ./XDATA.sh
+   cd XTriou
+   # Nettoyage
+   make clean
+   # Creation de triou.py
+   make
+   # Verification sur 5 cas tests
+   make test
+   # Verification sur tous les cas tests
+   # make test_ref
+   # Creation de la doc PDF et LATEX
+   make doc
+   cd -
+}
+
+###################
+# Debut du script #
+###################
+echo "Debut credoc a `date '+%H:%M:%S'`"
+if [ "$1" = -pdf ]
+then
+   pdf_par_office
+elif [ "$1" = -pdf_par_xdata ]
+then
+   pdf_par_xdata
+elif [ "$1" = -tests ]
+then
+   tests 
+else
+   echo "####################################################"
+   echo "# Begin doxygen at `date '+%H:%M:%S'`"
+   doxygen
+   echo "####################################################"
+   echo "# Begin ihm at `date '+%H:%M:%S'`"
+   ihm
+   echo "####################################################"
+   echo "# Begin pdf_par_office at `date '+%H:%M:%S'`"
+   pdf_par_office
+   echo "####################################################"
+   echo "# Begin pdf_par_xdata at `date '+%H:%M:%S'`"
+   pdf_par_xdata
+   echo "####################################################"
+   echo "# Begin tests at `date '+%H:%M:%S'`"
+   # On lance en batch car tests est lent (a optimiser)
+   tests &
+fi
+echo "Fin credoc a `date '+%H:%M:%S'`"
+

@@ -1,0 +1,80 @@
+# To print a TRUST DoubleVect, use: dump name_of_array
+define dump
+ set $dima = $arg0.size_array_
+ printf "%8d \n", $dima
+ set $i = 0
+ while $i < $dima
+    # IntVect
+    if *($arg0.info_obj.n) == 73
+    printf "[%10d]= %10d \n", $i, $arg0.data_[$i++]
+    end
+    # DoubleVect
+    if *($arg0.info_obj.n) == 68
+    printf "[%10d]= %16.12f \n", $i, $arg0.data_[$i++]
+    end
+ end
+end
+
+# To print a TRUST DoubleTab, use: dumptab name_of_array
+define dumptab
+ set $dimb = $arg0.nb_dim()
+ set $dima = $arg0.dimension_tot(0)
+ printf "%8d %8d\n", $dima, $dimb
+ set $i = 0
+ while $i < $dima
+    set $j = 0
+    while $j < $dimb
+       printf "%16.12f ", $arg0.data_[$i*$dimb+$j++]
+    end
+    printf "\n"
+    set $i = $i+1
+ end
+end 
+# To print a TRUST IntTab, use: dumpinttab name_of_array
+define dumpinttab
+ set $dimb = $arg0.nb_dim()
+ set $dima = $arg0.dimension_tot(0)
+ printf "%8d %8d\n", $dima, $dimb
+ set $i = 0
+ while $i < $dima
+    set $j = 0
+    while $j < $dimb
+       printf "%10d ", $arg0.data_[$i*$dimb+$j++]
+    end
+    printf "\n"
+    set $i = $i+1
+ end
+end
+# To print a TRUST IntVect, use: dumpint name_of_array
+define dumpint
+ set $dima = $arg0.size_array_
+ printf "%8d\n", $dima
+ set $i = 0
+ while $i < $dima
+    printf "[%10d]= %10d\n", $i, $arg0.data_[$i++]
+ end
+end
+define ptab
+ set $j = $arg0.dimension_tot(1) * $arg1
+ set $i = 0
+ while $i < $arg0.dimension_tot(1)
+    printf "%16.12 ", $arg0.data_[+$i++]
+ end
+ printf "\n"
+end
+define pinttab
+ set $j = $arg0.dimension_tot(1) * $arg1
+ set $i = 0
+ while $i < $arg0.dimension_tot(1)
+    printf "%10d ", $arg0.data_[$j+$i++]
+ end
+ printf "\n"
+end
+define parray
+  printf "%16.12\n", $arg0.data_[$arg1]
+end
+define pintarray
+  printf "%10d\n", $arg0.data_[$arg1]
+end
+# To print a value of a TRUST array tab(i,j), use: print tab.operator(i,j)
+break exit

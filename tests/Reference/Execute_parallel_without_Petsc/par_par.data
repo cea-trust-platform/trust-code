@@ -1,0 +1,5 @@
+# Cas test multi-parallele avec Execute_parallel #
+Execute_parallel {
+  liste_cas 2 PAR_VAHL_DAVIS PAR_VAHL_DAVIS_VEF
+  nb_procs 2 2 2
+}

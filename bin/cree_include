@@ -1,0 +1,42 @@
+#!/bin/bash
+# Depuis 11/01 les includes hors gestion de conf
+# Creation d'un sous repertoire contenant un lien vers tous les includes
+[ "$TRUST_ROOT" = "" ] && echo "Initialize TRUST environment" && exit -1
+echo "Updating $TRUST_ROOT/include directory..."
+# Creation de ce qui n'existe peut etre pas :
+cd $TRUST_ROOT
+INC=$TRUST_ROOT/include && [ ! -d $INC ] && mkdir $INC 2>/dev/null
+cd $INC
+mkdir -p $INC/backward
+# Ouverture de $INC
+echo "s?$MPI_INCLUDE/mpi\.h?\$(MPI_INCLUDE)/mpi\.h?g">.tmp
+echo "s?$METIS_ROOT/include/metis\.h?\$(METIS_ROOT)/include/metis\.h?g">>.tmp
+echo "s?$TRUST_LATAFILTER/include/?\$(TRUST_LATAFILTER)/include/?g">>.tmp
+echo "s?$TRUST_ICOCOAPI/include/?\$(TRUST_ICOCOAPI)/include/?g">>.tmp
+echo "s?$TRUST_MED_ROOT/include/?\$(TRUST_MED_ROOT)/include/?g">>.tmp
+echo "s?$TRUST_MEDCOUPLING_ROOT/include/?\$(TRUST_MEDCOUPLING_ROOT)/include/?g">>.tmp
+echo > .tmp1
+num=""
+for dir in `cat $TRUST_ENV/rep.TRUST`
+do
+   dir=${dir#./}
+   lh=`cd $TRUST_ROOT/$dir;ls *.h 2>/dev/null`
+   if [ ${#lh} != 0 ]
+   then
+      [ "`cat .tmp$num | wc -l`" -gt 900 ] && num=1
+      for file in $lh
+      do
+         ff=${file%.h}
+         echo "s?include/$ff\.h?$dir/$ff\.h?g" >> .tmp$num
+         if [ ! -L $file ] || [ "`ls -la $file | $TRUST_Awk '{print $NF}'`" != "../$dir/$file" ]
+         then
+            ln -s -f ../$dir/$file $file 2>/dev/null        
+         fi
+      done
+   fi
+done
+# Supprime les liens inutiles
+for file in `find . -name '*'.h -print`
+do
+   [ ! -f $file ] && rm -f $file
+done

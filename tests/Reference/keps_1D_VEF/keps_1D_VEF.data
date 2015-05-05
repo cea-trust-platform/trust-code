@@ -1,0 +1,135 @@
+# Hydraulique 2D VEF #
+# PARALLEL OK 8 #
+dimension 2
+Pb_hydraulique_turbulent pb
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Cavite 
+ 	{
+		Origine 0. 0.
+		Nombre_de_Noeuds 21  2 
+		Longueurs 10. 1.
+	}
+	{
+		Bord Gauche X = 0. 0. <= Y <= 1.
+		Bord Haut   Y = 1. 0. <= X <= 10.
+		Bord Bas    Y = 0. 0. <= X <= 10.
+		Bord Droit  X = 10. 0. <= Y <= 1.
+	}
+}
+Trianguler_H dom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur metis { Nb_parts 2 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0.
+	tmax 20.
+	dt_min 0.000001
+	dt_max 1.0
+	dt_impr 0.0001
+	dt_sauv 100
+	seuil_statio 1.e-8
+	facsec 0.2
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 0.02
+	rho Champ_Uniforme 1 2
+}
+
+Champ_Uniforme gravite
+Lire gravite 2 0 -9.81
+
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_turbulent
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.650000 } 
+			seuil 1.000000e-08 
+			impr 
+		}
+		convection { muscl }
+		diffusion { }
+		conditions_initiales {
+			vitesse champ_uniforme 2 10. 0.
+			}
+		boundary_conditions {
+			Gauche frontiere_ouverte_vitesse_imposee 
+			Champ_Front_Uniforme 2 10. 0.0
+			Droit frontiere_ouverte_vitesse_imposee
+			Champ_Front_Uniforme 2 10. 0.0
+			Haut symetrie
+			Bas symetrie
+		}
+                modele_turbulence K_Epsilon {
+                        Transport_K_Epsilon 
+                        {
+                                convection { amont }
+                                diffusion { negligeable }
+                                boundary_conditions {
+			Gauche frontiere_ouverte_K_eps_impose 
+			Champ_Front_Uniforme 2 5. 11.25
+			Droit frontiere_ouverte K_EPS_EXT Champ_Front_Uniforme 2 0. 0.
+			Haut symetrie
+			Bas symetrie
+                                }
+                                conditions_initiales {
+                                        k_Eps Champ_Uniforme 2 5. 11.25
+                                }
+                         }
+                         turbulence_paroi loi_standard_hydr eps_min 1.e-15
+                } 
+	}
+
+	Postraitement
+	{
+		Sondes
+		{
+			sonde_vitesse vitesse periode 0.1 segment 21 0. 0.5 10. 0.5
+			s1 k periode 0.1 point 1 5. 0.5
+			s2 eps periode 0.1 point 1 5. 0.5
+			sonde_k k periode 0.1 segment 21 0. 0.5 10. 0.5
+			sonde_eps eps periode 0.1 segment 21 0. 0.5 10. 0.5
+			sonde_nut viscosite_turbulente periode 0.1 segment 20 0.25 0.5 9.75 0.5
+			sonde_eps1 eps periode 0.1 point 1 0.25 0.0
+		}
+		Champs dt_post 1.0
+		{
+			vitesse som
+			viscosite_turbulente elem
+			viscosite_turbulente som
+			k som
+			eps som
+		}
+	}
+}
+Solve pb
+Fin

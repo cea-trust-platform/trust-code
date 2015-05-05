@@ -1,0 +1,12 @@
+#!/bin/bash
+[ "$UTILISE_APPACHE" = "1" ] && . $HOME/HTML/recharger_env
+. $TRUST_ROOT/bin/CGI//entete
+
+ETUDE_TRUST=`QUELLE_ETUDE.ihm`
+export ETUDE_TRUST
+fichier=`cat $ETUDE_TRUST/.NOM_DATA`
+cd $ETUDE_TRUST
+ 
+. $TRUST_ROOT/bin/HTML/cree_data.html $fichier.data
+
+cat $fichier.html | sed "s?PORT?$PORT?g"

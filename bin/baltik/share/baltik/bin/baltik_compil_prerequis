@@ -1,0 +1,130 @@
+#!/bin/bash
+#set -xv
+echo usage $0 nom_du_prerequis archive.tgz prog_test.cpp destination
+echo "ou cans set environnement variable like includes_add librairies_add "
+
+nom_prerequis=$1
+archive=$2
+prog_test=$3
+destination=$4
+
+baltik_environnement_error() {
+    echo "-----------------------------------------"
+    echo "ERROR : undefined variable BALTIK_ROOT   "
+    echo ""
+    echo "Please, install BALTIK and run :         "
+    echo "  source /path/to/BALTIK/bin/baltik_init "
+    echo "-----------------------------------------"
+    echo ""
+    exit 1
+}
+
+baltik_environnement_init()
+{
+        script=$0
+        bindir=`dirname $script`
+        cd `dirname $bindir`
+        pwd
+}
+
+# initialisation de l'etat de la variable BALTIK_ROOT
+BALTIK_ROOT=`baltik_environnement_init`
+# verification de l'etat de la variable BALTIK_ROOT
+if [ ${#BALTIK_ROOT} = 0 ]
+then
+    baltik_environnement_error
+fi
+
+
+# chargement des fonctions de gestion des dependances
+. ${BALTIK_ROOT}/bin/baltik_dependencies_management
+
+
+
+
+test_execution()
+{
+	test_dep=test_dep_$nom_prerequis
+        mkdir $test_dep
+	cd $test_dep
+	[ ! -f $prog_test ] && echo $prog_test doesnt exist&& exit 1
+	cp $prog_test .
+	add_dependencies_to_makefile make.include.atelier
+	rep_dev=`pwd`
+	export rep_dev
+	comp_old=0 
+	[ "$TRUST_ATELIER_CMAKE" = "0" ] && comp_old=1
+	if [ $comp_old -eq  1 ] 
+	    then
+	env PATH=$BALTIK_ROOT/bin:${PATH} Makeatelier.sccs NO_IHM 2 depend
+	cd exec_opt
+	make PROGRAM=../../test_prog #LIB=
+	#$CC -o test_prog $prog_test $includes_add $librairies_add
+	status=$?
+	else
+	    rm -f exec_opt/CMakeCache.txt
+	    env OPT=_opt PATH=$BALTIK_ROOT/bin:${PATH} PROGRAM=`pwd`/../test_prog Makeatelier.sccs  -2 exe
+	
+	# make PROGRAM=../../test_prog #LIB=
+	# $CC -o test_prog $prog_test $includes_add $librairies_add
+	status=$?
+	cd exec_opt
+	fi
+	cd ../..
+	if [ $status -eq  0 ] 
+	then
+	 LDD=`grep LD_LIBRARY_PATH $test_dep/make.include.atelier  | sed "s/#//"`
+	 eval $LDD 
+	 rm -rf $test_dep
+	 ./test_prog_opt
+	 status=$?
+        fi
+	
+	status_tot=$status 
+	export status_tot
+        rm -f ./test_prog_opt
+}
+
+install_arch()
+{
+   arch=$1
+   dir=$2
+   name=$3
+   mkdir prov
+   cd prov
+   [ ! -f $1 ] && echo $1 doesnt exist && exit 1
+   gunzip -c $1 > prov$3.tar
+   tar xf prov$3.tar
+   cd  $3
+   DIR=`pwd`
+   $DIR/configure --prefix=$dir --disable-shared --enable-static 
+   make
+   make install	
+   status=$?
+   cd ../..
+   [ $status -eq 0 ] && [ "$DEBUG_COMPIL" = "" ] && rm -rf prov
+   echo "To keep the prov dir, set DEBUG_COMPIL to 1"
+   status_tot=$status
+   export status_tot
+}
+
+### on ajoute des chemins par defaut
+
+
+###   on regarde si on peut faire le test
+test_execution 
+
+echo $status_tot
+
+
+
+[ $status_tot -eq 0 ] && exit 0
+
+## on tente l'installation
+install_arch $archive $destination $nom_prerequis
+
+## on regarde si on peut faire le test
+test_execution 
+echo "status test a la fin " $status_tot
+
+exit $status_tot

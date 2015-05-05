@@ -1,0 +1,220 @@
+Parameters {
+        Title "Check Champ_front_normal fields"
+	Description "This is to check the keywork Boundary_field_inward using both VEF and VDF discretizations. We want to check that vectors are those we expect."  
+        Author "Stephane Veys"
+        TestCase . inward_field_VDF_2D_Left.data
+        TestCase . inward_field_VDF_2D_Right.data
+        TestCase . inward_field_VDF_2D_Top.data
+        TestCase . inward_field_VDF_2D_Bottom.data
+        TestCase . inward_field_VEF_2D_Left.data
+        TestCase . inward_field_VEF_2D_Right.data
+        TestCase . inward_field_VEF_2D_Top.data
+        TestCase . inward_field_VEF_2D_Bottom.data
+        TestCase . inward_field_VDF_3D_Bottom.data
+        TestCase . inward_field_VDF_3D_Right.data
+        TestCase . inward_field_VDF_3D_Top.data
+        TestCase . inward_field_VDF_3D_Left.data
+        TestCase . inward_field_VDF_3D_Back.data
+        TestCase . inward_field_VDF_3D_Front.data
+        TestCase . inward_field_VEF_3D_Bottom.data
+        TestCase . inward_field_VEF_3D_Right.data
+        TestCase . inward_field_VEF_3D_Top.data
+        TestCase . inward_field_VEF_3D_Left.data
+        TestCase . inward_field_VEF_3D_Back.data
+        TestCase . inward_field_VEF_3D_Front.data
+
+}
+Chapter {	
+	Title "Visualization of the normal fields on the boundaries"
+	Visu {
+		Title "2D VDF discretization"
+		Description "inward fields imposed on all boundaries"
+		operator_to_all no_databaseinfo
+		operator_to_all no_legend
+		blackVector inward_field_VDF_2D_Left_CHAMP_FRONT_NORMAL.lata boundary_Left VELOCITY_TRIO ELEM
+		cycles 0
+		width 12cm
+		mesh inward_field_VDF_2D_Left_VOLUMIC.lata dom
+		blackVector inward_field_VDF_2D_Right_CHAMP_FRONT_NORMAL.lata boundary_Right VELOCITY_TRIO ELEM
+		blackVector inward_field_VDF_2D_Top_CHAMP_FRONT_NORMAL.lata boundary_Top VELOCITY_TRIO ELEM
+		blackVector inward_field_VDF_2D_Bottom_CHAMP_FRONT_NORMAL.lata boundary_Bottom VELOCITY_TRIO ELEM
+
+	}
+	Visu {
+		Title "2D VEF discretization"
+		Description "inward fields imposed on all boundaries"
+		operator_to_all no_databaseinfo
+		operator_to_all no_legend
+		blackVector inward_field_VEF_2D_Left_CHAMP_FRONT_NORMAL.lata boundary_Left VELOCITY_TRIO ELEM
+		cycles 0
+		width 12cm
+		mesh inward_field_VEF_2D_Left_VOLUMIC.lata dom
+		blackVector inward_field_VEF_2D_Right_CHAMP_FRONT_NORMAL.lata boundary_Right VELOCITY_TRIO ELEM
+		blackVector inward_field_VEF_2D_Top_CHAMP_FRONT_NORMAL.lata boundary_Top VELOCITY_TRIO ELEM
+		blackVector inward_field_VEF_2D_Bottom_CHAMP_FRONT_NORMAL.lata boundary_Bottom VELOCITY_TRIO ELEM
+	}
+
+
+	Visu {
+		Title "3D VDF discretization"
+		Description "inward fields imposed on all boundaries"
+		operator_to_all no_databaseinfo
+		operator_to_all no_legend
+		blackVector inward_field_VDF_3D_Back_CHAMP_FRONT_NORMAL.lata boundary_Back VELOCITY_TRIO ELEM
+		cycles 0
+		width 12cm
+		mesh inward_field_VDF_3D_Left_VOLUMIC.lata dom
+		blackVector inward_field_VDF_3D_Front_CHAMP_FRONT_NORMAL.lata boundary_Front VELOCITY_TRIO ELEM
+		blackVector inward_field_VDF_3D_Left_CHAMP_FRONT_NORMAL.lata boundary_Left VELOCITY_TRIO ELEM
+		blackVector inward_field_VDF_3D_Right_CHAMP_FRONT_NORMAL.lata boundary_Right VELOCITY_TRIO ELEM
+		blackVector inward_field_VDF_3D_Top_CHAMP_FRONT_NORMAL.lata boundary_Top VELOCITY_TRIO ELEM
+		blackVector inward_field_VDF_3D_Bottom_CHAMP_FRONT_NORMAL.lata boundary_Bottom VELOCITY_TRIO ELEM
+	}
+
+
+	Visu {
+		Title "3D VEF discretization"
+		Description "inward fields imposed on boundaries Back and Front"
+		operator_to_all no_databaseinfo
+		operator_to_all no_legend
+		blackVector inward_field_VEF_3D_Back_CHAMP_FRONT_NORMAL.lata boundary_Back VELOCITY_TRIO ELEM
+		cycles 0
+		width 12cm
+		blackVector inward_field_VEF_3D_Front_CHAMP_FRONT_NORMAL.lata boundary_Front VELOCITY_TRIO ELEM
+		mesh inward_field_VEF_3D_Back_CHAMP_FRONT_NORMAL.lata boundary_Back
+		mesh inward_field_VEF_3D_Front_CHAMP_FRONT_NORMAL.lata boundary_Front
+	}
+
+	Visu {
+		Title "3D VEF discretization"
+		Description "inward fields imposed on boundaries Top and Bottom"
+		operator_to_all no_databaseinfo
+		operator_to_all no_legend
+		blackVector inward_field_VEF_3D_Top_CHAMP_FRONT_NORMAL.lata boundary_Top VELOCITY_TRIO ELEM
+		cycles 0
+		width 12cm
+		blackVector inward_field_VEF_3D_Bottom_CHAMP_FRONT_NORMAL.lata boundary_Bottom VELOCITY_TRIO ELEM
+		mesh inward_field_VEF_3D_Top_CHAMP_FRONT_NORMAL.lata boundary_Top
+		mesh inward_field_VEF_3D_Bottom_CHAMP_FRONT_NORMAL.lata boundary_Bottom
+	}
+	Visu {
+		Title "3D VEF discretization"
+		Description "inward fields imposed on boundaries Left and Right"
+		operator_to_all no_databaseinfo
+		operator_to_all no_legend
+		blackVector inward_field_VEF_3D_Right_CHAMP_FRONT_NORMAL.lata boundary_Right VELOCITY_TRIO ELEM
+		cycles 0
+		width 12cm
+		blackVector inward_field_VEF_3D_Left_CHAMP_FRONT_NORMAL.lata boundary_Left VELOCITY_TRIO ELEM
+		mesh inward_field_VEF_3D_Right_CHAMP_FRONT_NORMAL.lata boundary_Right
+		mesh inward_field_VEF_3D_Left_CHAMP_FRONT_NORMAL.lata boundary_Left
+	}
+}
+Chapter {
+	Title "Check norms"
+	Description "In this chapter we now check that we respect the norm given by users. If the histogram is empty then there is a problem because it means that we have an error > 1e-12 with the norms. On the contrary if the histogram is full that means we have no error, so it is ok."
+	Visu {
+	     Title Error on the norm of the field on LEFT boundary (2D VDF)
+             histogram inward_field_VDF_2D_Left_CHAMP_FRONT_NORMAL.lata  boundary_Left ERROR_NORM ELEM 0 1e-12 1
+	     width 5cm
+ 	}
+	Visu {
+	     Title Error on the norm of the field on RIGHT boundary  (2D VDF)
+             histogram inward_field_VDF_2D_Right_CHAMP_FRONT_NORMAL.lata  boundary_Right ERROR_NORM ELEM 0 1e-12 1
+	     width 5cm
+	}
+	Visu {
+	     Title Error on the norm of the field on TOP boundary  (2D VDF)
+             histogram inward_field_VDF_2D_Top_CHAMP_FRONT_NORMAL.lata  boundary_Top ERROR_NORM ELEM 0 1e-12 1
+	     width 5cm
+	}
+	Visu {
+	     Title Error on the norm of the field on BOTTOM boundary  (2D VDF)
+             histogram inward_field_VDF_2D_Bottom_CHAMP_FRONT_NORMAL.lata  boundary_Bottom ERROR_NORM ELEM 0 1e-12 1
+	     width 5cm
+	}
+
+	Visu {
+	     Title Error on the norm of the field on LEFT boundary (2D VEF)
+             histogram inward_field_VEF_2D_Left_CHAMP_FRONT_NORMAL.lata  boundary_Left ERROR_NORM ELEM 0 1e-12 1
+	     width 5cm
+ 	}
+	Visu {
+	     Title Error on the norm of the field on RIGHT boundary  (2D VEF)
+             histogram inward_field_VEF_2D_Right_CHAMP_FRONT_NORMAL.lata  boundary_Right ERROR_NORM ELEM 0 1e-12 1
+	     width 5cm
+	}
+	Visu {
+	     Title Error on the norm of the field on TOP boundary  (2D VEF)
+             histogram inward_field_VEF_2D_Top_CHAMP_FRONT_NORMAL.lata  boundary_Top ERROR_NORM ELEM 0 1e-12 1
+	     width 5cm
+	}
+	Visu {
+	     Title Error on the norm of the field on BOTTOM boundary  (2D VEF)
+             histogram inward_field_VEF_2D_Bottom_CHAMP_FRONT_NORMAL.lata  boundary_Bottom ERROR_NORM ELEM 0 1e-12 1
+	     width 5cm
+	}
+	Visu {
+	     Title Error on the norm of the field on BOTTOM boundary  (3D VDF)
+             histogram inward_field_VDF_3D_Bottom_CHAMP_FRONT_NORMAL.lata  boundary_Bottom ERROR_NORM ELEM 0 1e-12 1
+	     width 5cm
+	}
+	Visu {
+	     Title Error on the norm of the field on TOP boundary  (3D VDF)
+             histogram inward_field_VDF_3D_Top_CHAMP_FRONT_NORMAL.lata  boundary_Top ERROR_NORM ELEM 0 1e-12 1
+	     width 5cm
+	}
+	Visu {
+	     Title Error on the norm of the field on LEFT boundary  (3D VDF)
+             histogram inward_field_VDF_3D_Left_CHAMP_FRONT_NORMAL.lata  boundary_Left ERROR_NORM ELEM 0 1e-12 1
+	     width 5cm
+	}
+	Visu {
+	     Title Error on the norm of the field on RIGHT boundary  (3D VDF)
+             histogram inward_field_VDF_3D_Right_CHAMP_FRONT_NORMAL.lata  boundary_Right ERROR_NORM ELEM 0 1e-12 1
+	     width 5cm
+	}
+	Visu {
+	     Title Error on the norm of the field on BACK boundary  (3D VDF)
+             histogram inward_field_VDF_3D_Back_CHAMP_FRONT_NORMAL.lata  boundary_Back ERROR_NORM ELEM 0 1e-12 1
+	     width 5cm
+	}
+	Visu {
+	     Title Error on the norm of the field on FRONT boundary  (3D VDF)
+             histogram inward_field_VDF_3D_Front_CHAMP_FRONT_NORMAL.lata  boundary_Front ERROR_NORM ELEM 0 1e-12 1
+	     width 5cm
+	}
+
+	Visu {
+	     Title Error on the norm of the field on BOTTOM boundary  (3D VEF)
+             histogram inward_field_VEF_3D_Bottom_CHAMP_FRONT_NORMAL.lata  boundary_Bottom ERROR_NORM ELEM 0 1e-12 1
+	     width 5cm
+	}
+	Visu {
+	     Title Error on the norm of the field on TOP boundary  (3D VEF)
+             histogram inward_field_VEF_3D_Top_CHAMP_FRONT_NORMAL.lata  boundary_Top ERROR_NORM ELEM 0 1e-12 1
+	     width 5cm
+	}
+	Visu {
+	     Title Error on the norm of the field on LEFT boundary  (3D VEF)
+             histogram inward_field_VEF_3D_Left_CHAMP_FRONT_NORMAL.lata  boundary_Left ERROR_NORM ELEM 0 1e-12 1
+	     width 5cm
+	}
+	Visu {
+	     Title Error on the norm of the field on RIGHT boundary  (3D VEF)
+             histogram inward_field_VEF_3D_Right_CHAMP_FRONT_NORMAL.lata  boundary_Right ERROR_NORM ELEM 0 1e-12 1
+	     width 5cm
+	}
+	Visu {
+	     Title Error on the norm of the field on BACK boundary  (3D VEF)
+             histogram inward_field_VEF_3D_Back_CHAMP_FRONT_NORMAL.lata  boundary_Back ERROR_NORM ELEM 0 1e-12 1
+	     width 5cm
+	}
+	Visu {
+	     Title Error on the norm of the field on FRONT boundary  (3D VEF)
+             histogram inward_field_VEF_3D_Front_CHAMP_FRONT_NORMAL.lata  boundary_Front ERROR_NORM ELEM 0 1e-12 1
+	     width 5cm
+	}
+}
+
+

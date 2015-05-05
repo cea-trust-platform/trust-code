@@ -1,0 +1,76 @@
+#!/bin/bash
+#
+# Cree la page HTML du suivi des flux sur les bords du probleme :
+#
+ETUDE_TRUST=`QUELLE_ETUDE.ihm`
+export ETUDE_TRUST
+NOMETUDE=`echo $ECHO_OPTS $ETUDE_TRUST | $TRUST_Awk '{n=split($0,a,"/");print a[n]}'`
+NOM_DATA=$ETUDE_TRUST/.NOM_DATA
+# On quitte si le nom du cas n'existe pas
+[ ! -f $NOM_DATA ] && exit
+NOMCAS=`cat $NOM_DATA`
+
+cd $ETUDE_TRUST
+fichier=$ETUDE_TRUST/.Liste.bord.html
+[ ! -f gnuplot/$NOMCAS.sous_menu3 ] && exit
+Conv=`wc -l .sous_menu3 | $TRUST_Awk '{print $1+1}'`
+Flux=$1
+Pb=$2
+#######################
+# Ecriture du fichier :
+#######################
+cree_en_tete.ihm > $fichier
+echo $ECHO_OPTS "<SCRIPT LANGUAGE="JavaScript">
+<!--
+parent.DOWN.location.replace('file:$HOME');
+function viewer(url)
+{
+var aff=window.open (url,'aff','location=yes,toolbar=yes,directories=no,menubar=yes,resizable=yes,scrollbars=yes,status=yes,width=640,height=800');
+aff.focus();
+}" >> $fichier
+if [ $Conv != 1 ]
+then
+   echo $ECHO_OPTS "function go_to(url)" >> $fichier
+   echo $ECHO_OPTS "{" >> $fichier
+   echo $ECHO_OPTS "void(parent.DOWN.location.replace(\"http://localhost:$PORT/ordre.cg?$Conv\"));" >> $fichier
+   echo $ECHO_OPTS "location.href=url;" >> $fichier
+   echo $ECHO_OPTS "}" >> $fichier
+else
+   echo $ECHO_OPTS "window.setInterval(\"location.reload(true)\",1000);" >> $fichier
+fi
+echo $ECHO_OPTS "//-->
+</SCRIPT>" >> $fichier
+if [ ${#Flux} != 0 ] && [ ${#Pb} != 0 ]
+then
+echo $ECHO_OPTS "<PRE>
+<HR><h1> Study $NOMETUDE: $Flux on problem $Pb</h1><HR><FORM METHOD="Stop" ACTION="$TRUST_ROOT/form/Stopper.ksh?"><input type="submit" value="Stop">\t   Stop solve process</FORM>\c" >> $fichier
+else
+echo $ECHO_OPTS "<PRE>
+<HR><h1> Study $NOMETUDE: </h1><HR><FORM METHOD="Stop" ACTION="$TRUST_ROOT/form/Stopper.ksh?"><input type="submit" value="Stop">\t   Stop solve process</FORM>\c" >> $fichier
+fi
+# <FORM METHOD="Print" ACTION="$TRUST_ROOT/form/Imprimer_courbe.ksh?"><input type="submit" value="Print">\tPrint a curve</FORM>
+#<h3>Courbes disponibles :</h3>" > $fichier
+# Lecture du nom du cas:
+NOM=`cat $ETUDE_TRUST/.NOM_DATA`
+export NOM
+REP=$TRUST_ROOT/../Doc_TRUST/IHM
+
+js="javascript:void(parent.DOWN.location.replace(\"http://localhost:$PORT/ordre.cg"
+
+if [ $Conv = 1 ]
+then
+   echo $ECHO_OPTS "<h1>Please wait...</h1>" >> $fichier
+else
+   echo $ECHO_OPTS "<HR><a href=javascript:go_to(\"$ETUDE_TRUST/.Liste.flux.html\")><img src="$REP/Probe.gif" >"Back to Boundary fluxes"</a> $href" >> $fichier
+############################
+# Creation des icones des bords
+############################
+   cat gnuplot/$NOMCAS.sous_menu3 | $TRUST_Awk -v cg=$js -v ETUDE=$ETUDE_TRUST -v REP=$REP -v html=$fichier -v lpnb=${#IMPRESSION} -v lpcou=${#IMPRESSION_COLOR} '{i++;image=REP"/Residu.gif";image1=REP"/Probe1.gif";
+   com="";for (j=2;j<NF+1;j++) com=com" "$j;
+   im="<a href="cg"?"i"\"))><img src="image" ></a> ";
+   im=im"<a href="cg"?-"i"\"))><img src="image1" ></a> ";
+   print "<HR>Boundary : "$1""com"\n"im >> html}'
+   echo $ECHO_OPTS "</body>"  >> $fichier
+   echo $ECHO_OPTS "</html> " >> $fichier
+fi
+

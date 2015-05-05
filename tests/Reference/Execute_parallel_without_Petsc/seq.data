@@ -1,0 +1,5 @@
+# Cas test sequentiel avec Execute_parallel #
+Execute_parallel {
+  liste_cas 1 VAHL_DAVIS
+  nb_procs 1 1
+}

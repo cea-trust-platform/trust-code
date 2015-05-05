@@ -1,0 +1,17 @@
+nom_du_domaine domaine
+
+dimension 3
+
+nombre_de_zones_physiques_detectees 7
+
+nom_et_numero_de_la_zone MAILLAGE_VOLUMIQUE 100
+
+presence_de_raccords n
+
+nom_et_numero_des_bords 
+bas 27
+est 32
+haut 31
+avant 30
+arriere 28
+ouest 29

@@ -1,0 +1,22 @@
+REP=`pwd`
+tar zxvf SHELL.tgz
+  cd SHELL/
+   rm -rf SHELLCOMPO_BUILD/* SHELLCOMPO_INSTALL/*
+	mkdir  SHELLCOMPO_BUILD/
+       cd SHELLCOMPO_BUILD/
+     ${REP}/SHELL/SHELLCOMPO_SRC/build_configure
+     ${REP}/SHELL/SHELLCOMPO_SRC/configure --prefix=${REP}/SHELL/SHELLCOMPO_INSTALL
+make 
+make install
+[ $? -eq 0 ] && cd .. && rm -rf SHELLCOMPO_BUILD/
+cd ..
+tar zxvf DISTRIBUTOR.tgz
+cd DISTRIBUTOR/
+ rm -rf DISTRIBUTOR_BUILD/* DISTRIBUTOR_INSTALL/*
+mkdir  DISTRIBUTOR_BUILD
+      cd DISTRIBUTOR_BUILD/
+      ${REP}/DISTRIBUTOR/DISTRIBUTOR_SRC//build_configure
+    ${REP}/DISTRIBUTOR/DISTRIBUTOR_SRC/configure --prefix=${REP}/DISTRIBUTOR/DISTRIBUTOR_INSTALL
+make 
+make install
+[ $? -eq 0 ] && cd .. && rm -rf DISTRIBUTOR_BUILD/

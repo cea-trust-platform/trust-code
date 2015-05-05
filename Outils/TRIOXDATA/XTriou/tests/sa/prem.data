@@ -1,0 +1,39 @@
+# petit test #
+
+Dimension 2
+bidim_axi
+Domaine dom
+Bidim_axi
+Mailler dom
+{
+	Pave Cavite 
+		{
+		Origine 0.01 0.
+     		Nombre_de_Noeuds 2 101
+		Longueurs 0.02 1
+		}
+		{
+		Bord Externe X = 0.03 0. <= Y <= 1.
+		Bord Interne X = 0.01 0. <= Y <= 1.
+		Bord Infini_Bas  Y = 0.  0.01 <= X <= 0.03
+		Bord Infini_Haut Y = 1.  0.01 <= X <= 0.03
+		}
+}
+Ecrire_fichier dom 2D_axi_RZ.geom
+Schema_euler_explicite sch
+  Lire sch
+{
+    tinit 0.
+	tmax 300.
+nb_pas_dt_max 3
+
+} 
+Champ_uniforme g
+lire g 2 0 1
+
+Fluide_Incompressible eau
+Lire eau
+{
+       mu Champ_Uniforme 1 1.85e-2
+       rho Champ_Uniforme 1 1.
+}

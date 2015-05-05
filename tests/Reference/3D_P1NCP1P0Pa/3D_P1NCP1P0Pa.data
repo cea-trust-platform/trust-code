@@ -1,0 +1,130 @@
+# Hydraulique 3D VEF P1NCP1P0Pa #
+# PARALLEL OK #
+dimension 3
+
+Pb_Hydraulique pb
+
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+        {
+                Origine 0. 0. 0.
+                Nombre_de_Noeuds 3 3 5
+                Longueurs 0.1 0.1 0.1
+        }
+        {
+                Bord PAROI   	X = 0.   	0. <= Y <= 0.1   	0. <= Z <= 0.1
+                Bord PAROI  	X = 0.1  	0. <= Y <= 0.1   	0. <= Z <= 0.1
+                Bord PAROI   	Y = 0.  	0. <= X <= 0.1  	0. <= Z <= 0.1
+                Bord PAROI   	Y = 0.1  	0. <= X <= 0.1  	0. <= Z <= 0.1
+                Bord ENTREE  	Z = 0.  	0. <= X <= 0.1   	0. <= Y <= 0.1
+                Bord SORTIE  	Z = 0.1 	0. <= X <= 0.1		0. <= Y <= 0.1
+        }
+}
+Tetraedriser_homogene dom
+
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur Metis { Nb_parts 2 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+Lire dis { P0 P1 Pa }
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	nb_pas_dt_max 3
+	tinit 0.0
+	tmax 0.25
+	dt_min 1.e-6
+	dt_max 0.001
+	dt_impr 0.000001
+	dt_sauv 100
+	seuil_statio 1.e-10
+	diffusion_implicite 1
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 0.002
+	rho Champ_Uniforme 1 2
+}
+
+
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+Debog pb seq faces 1.e-6 0
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { precond ssor { omega 1.65 } seuil 1.e-10 impr }
+		convection { amont }
+		diffusion { }
+		conditions_initiales 
+		        {
+			vitesse Champ_Uniforme 3 0.00 0.0 0.1
+			}
+		boundary_conditions {
+		        PAROI  paroi_fixe
+			ENTREE frontiere_ouverte_vitesse_imposee 
+			        Champ_Front_Uniforme 3 0.0 0.0 0.1
+			SORTIE frontiere_ouverte_pression_imposee 
+			        Champ_Front_Uniforme 1 0.0  
+		}
+	}
+
+	Postraitements
+	{
+	lata
+	{
+		Sondes
+		{
+		   sonde_vitesse vitesse periode 1.e-5 point 1 0.05 0.05 0.05
+		}
+		format lata
+		fichier 3D_P1NCP1P0Pa
+		Champs dt_post 0.0001
+		{		
+			vitesse elem
+			vitesse som
+	                pression elem
+			pression som
+		}
+	}
+	lml
+	{
+		format lml
+		fichier 3D_P1NCP1P0Pa
+		Champs dt_post 0.0001
+		{		
+			vitesse elem
+			vitesse som
+	                pression elem
+			pression som
+		}
+	}	
+	}
+}
+
+Solve pb
+Fin
+
+

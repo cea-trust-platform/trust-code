@@ -1,0 +1,5 @@
+# Flux should match between virole_CC and virole_IA
+datafile=`pwd`
+datafile=`basename $datafile`
+[ -f PAR_$datafile.dt_ev ] && datafile=PAR_$datafile
+tail -1 $datafile"_pb_Diffusion_chaleur.out" | $TRUST_Awk '{exit ($7+$8!=0 ? 1 : 0)}'

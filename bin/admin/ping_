@@ -1,0 +1,14 @@
+#!/bin/bash
+# ping
+HOST=$1
+arch=`uname -s`
+case $arch in
+   HP-UX)	/etc/ping $HOST -n 1 2>/dev/null;;
+   IRIX*)	/usr/etc/ping -c 1 $HOST 2>/dev/null;;
+   SunOS)	#/usr/sbin/ping -s $HOST 2>/dev/null
+   ;;
+   AIX) 	/etc/ping -c 1 $HOST 2>/dev/null;;
+   OSF1) 	/usr/sbin/ping -c 1 $HOST 2>/dev/null;;
+   Linux)	/bin/ping $HOST -c 1 2>/dev/null;;
+   *) 		ping $HOST -c 1 2>/dev/null;;
+esac

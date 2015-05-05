@@ -1,0 +1,9 @@
+#!/bin/bash
+file='wl_linear_pb_Diffusion_chaleur.out'
+
+nc_bas=4      
+nc_haut=5
+
+val_bas=`awk -v nc_bas=$nc_bas ' END{print $nc_bas}' $file`
+val_haut=`awk -v nc_haut=$nc_haut ' END{print $nc_haut}' $file` 
+echo $val_bas $val_haut > val_wl_out

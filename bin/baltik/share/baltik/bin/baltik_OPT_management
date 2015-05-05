@@ -1,0 +1,74 @@
+#! /usr/bin/env sh
+# --
+# Author : Eli LAUCOIN (CEA)
+# --
+
+# chargement des fonctions d'affichage des messages d'erreur
+. ${BALTIK_ROOT}/bin/baltik_errors
+
+.  ${BALTIK_ROOT}/bin/baltik_configuration_parsing
+
+extract_executable_name()
+{
+    project_desciption=$1
+    project_executable_name=`extract_field "$project_description" executable`
+    if [ "${project_executable_name}"  = "" ]
+	then
+	project_executable_name=`extract_field "$project_description" name`
+	if [ "${project_executable_name}" = "" ]
+	    then
+	    undefined_project_name_error "$project_configuration_file"
+	fi
+    fi
+    echo "${project_executable_name}"
+}
+      
+list_type()
+{
+    echo debug optim gcov prof optim_avx optim_valgrind
+}
+human_name_from_name()
+{
+ name=$1
+ human=$name
+ [ $name = "optim" ] && human="optimized"
+ [ $name = "optim_avx" ] && human="optimized with avx"
+ [ $name = "optim_valgrind" ] && human="optimized with valgrind"
+ [ $name = "gcov" ] && human="coverage"
+ [ $name = "prof" ] && human="profile"
+ echo $human 
+	 
+}
+triou_opt_from_name()
+{
+ name=$1
+ ok=0
+ OPT="error"
+ list=`list_type`
+ case $1 in
+    debug)
+        OPT=""
+        ;;
+
+    optim)
+        OPT="_opt"
+        ;;
+    optim_avx)
+        OPT="_opt_avx"
+        ;;
+    optim_valgrind)
+        OPT="_opt"
+        ;;
+    prof)
+    	OPT="_opt_pg"
+	;;
+    gcov)
+   	OPT="_opt_gcov" 
+	;;
+    *)
+        echo "invalid_compilation_argument $1 $list"
+	exit 1
+        ;;
+esac
+echo $OPT
+}

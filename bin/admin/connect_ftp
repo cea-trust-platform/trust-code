@@ -1,0 +1,33 @@
+#!/bin/bash
+# Initialise la connection (compte,passwd) :
+# Fonctionne en 2 modes:
+# Avec ou sans connection ftp
+
+# Repertoire public :
+export PUBLIC=pub/TRUST/a87pour
+# Repertoire secret :
+export SECRET=incoming/y2k01/TRUST
+
+if [ ${#1} = 0 ] || [ $1 != "-no_ftp" ]
+then
+   ok=`cat << ! | ftp -iv | $TRUST_Awk 'BEGIN {ok=0} /Login successful/ {ok=1} END {print ok}'
+open $TRUST_FTP
+!`
+   if [ $ok = 1 ]
+   then
+      echo "Connection to $TRUST_FTP OK."
+   else
+      echo "Connection to $TRUST_FTP unsuccessful !"
+   #   exit
+   fi
+   for DIR in $SECRET $PUBLIC
+   do
+      if [ "`existe_ftp $DIR`" = 1 ]
+      then
+	 echo "Existence of ftp://$TRUST_FTP/$DIR directory" 
+      else
+	 echo "Creation of ftp://$TRUST_FTP/$DIR directory"
+	 mkdir_ftp $DIR
+      fi
+   done
+fi

@@ -1,0 +1,132 @@
+BEGIN {
+##################################
+# num : numero de la fenetre
+# fic_coupe : nom du fichier de la coupe
+##################################
+segment=0
+plan=0
+fic_gnu="gnuplot/"NOM".courbe"num".gnu"
+if (NOM=="")
+{
+   print "Error when calling Run_coupe_awk"
+   print "NOM should be given."
+   exit -1
+}
+getline < fic_gnu
+nomfic=$1
+getline < fic_gnu
+###########
+# Segment #
+###########
+if ($1=="segment") {
+   segment=1
+   np=$2
+# On recupere le titre :
+   getline < fic_gnu
+   title=$0
+# On recupere les abscisses de la premiere ligne :
+   for (i=0;i<np;i++) {
+     getline < fic_gnu
+     s[i+1]=$1
+   }
+}
+########
+# Plan #
+########
+if ($1=="plan") {
+   plan=1
+   np1=$2;np2=$3;np=np1*np2;
+# On recupere le titre :
+   getline < fic_gnu
+   title=$0
+# On recupere les abscisses de la premiere ligne :
+   for (i=0;i<np1;i++) {
+      getline < fic_gnu
+      s1[i+1]=$1
+   }
+   for (i=0;i<np2;i++) {
+      getline < fic_gnu
+      s2[i+1]=$1
+   }
+}
+##################################
+# Ecriture dans le fichier coupe :
+##################################
+###########
+# Segment #
+###########
+if (segment) {
+   print "" > fic_coupe
+   getline
+   temps=$1
+   nv=NF-1
+   for (i=1;i<nv+1;i++)
+      v[i]=$(i+1)
+# Regarde combien de composantes :
+   comp=int(nv/np)
+   j=1
+   for (i=1;i<np+1;i++) {
+      if (comp==1) {
+	 print s[i],v[j] >> fic_coupe
+	 j+=1
+      }
+      if (comp==2) {
+	 print s[i],v[j],v[j+1] >> fic_coupe
+	 j+=2
+      }
+      if (comp==3) {
+	 print s[i],v[j],v[j+1],v[j+2] >> fic_coupe
+         j+=3
+      }
+     if (comp>3)
+	{
+	printf("%f",s[i])>>fic_coupe
+	for (ii=0;ii<comp;ii++)
+			printf(" %e",v[j+ii])>>fic_coupe
+		printf("\n")>>fic_coupe
+	j+=comp;
+	}	
+   }
+}
+########
+# Plan #
+########
+else if (plan) {
+   print "" > fic_coupe
+   getline
+   while ($1!="TEMPS") getline
+   temps=$2
+   getline;getline
+# Regarde combien de composantes :
+   comp=$2
+   if (nv==3) getline
+   getline
+   j=0
+   for (i=1;i<np1+1;i++) {
+      for (k=1;k<np2+1;k++) {
+         getline
+         if (NF!=comp+1) break;
+         if (comp==1)
+	    print s1[i],s2[k],$2 >> fic_coupe
+         else 
+            if (comp==2)
+	       print s1[i],s2[k],$2,$3 >> fic_coupe
+            else
+               if (comp==3)
+	          print s1[i],s2[k],$2,$3,$4 >> fic_coupe
+		else
+			{
+			printf("%f",s1[i],s2[k])>>fic_coupe
+			for (ii=0;ii<comp;ii++)
+				printf(" %e",$(ii+1))>>fic_coupe
+			printf("\n")>>fic_coupe
+
+	}		
+      }
+      print "" >> fic_coupe
+      if (NF!=comp+1) break;
+   }  
+}
+fic="gnuplot/"NOM".ordre"num
+printf "\nset title '%s Temps:%.4f s'\n",title,temps >> fic
+}

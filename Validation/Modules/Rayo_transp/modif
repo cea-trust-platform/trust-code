@@ -1,0 +1,99 @@
+#!/bin/bash
+
+#ksh cas_cond "type_pb like '%thermo%' and type_pb not like '%rayo%' and type_pb not like '%QC%'"
+
+
+file=$1
+#cp $file org_$file
+cp $file es.data
+chmod +w es.data
+echo 2 2  bidon1 1 0. bidon2 1 0. > bidon.facesrayo
+echo 2  0.5 0.5  0.5 0.5  > bidon.factforme
+ligne="`grep -i Probleme_couple $file`"
+pbc1=` echo $ligne  |  awk  '  { print $2  }' `
+if [ "$ligne" = "" ] 
+then
+echo on transforme en pb couple
+pbc1=pbc1
+ligne="`egrep -i 'discretiser|discretize' $file`"
+nompb=`echo $ligne  |  awk  '  { print $2  }' `
+ligneb=`echo $ligne  |sed "s/$nompb/pbc1/"`
+sch=`egrep -i 'associer|associate' $file    |  grep $nompb  | grep sch|awk '{print $NF}'`
+ligne2="Pb_Couple_Rayonnement  $pbc1   Modele_Rayonnement_Milieu_Transparent modr   Associer $pbc1 modr  Lire modr {  fichier_face_rayo bidon.facesrayo fichier_fij bidon.factforme fichier_matrice bidon.mat_ray_inv relaxation 0  } associer pbc1 $nompb associer pbc1 $sch "$ligneb
+sed "s/$ligne/$ligne2/" es.data > es2.data
+#set -xv
+ligne="`egrep -i 'associer|associate' es.data    |  grep $nompb  | grep sch`"
+ligne2="associer pbc1 $sch"
+sed "s/$ligne//" es2.data > es.data
+ligne="`grep -i resoudre_qcomp es.data `"
+if [ "$ligne" != "" ]
+then
+sed "s/$ligne/resoudre_qcomp pbc1/" es.data >es2.data
+else
+ligne="`egrep -i 'resoudre|solve ' es.data `"
+sed "s/$ligne/resoudre pbc1/" es.data >es2.data
+fi
+#mv es2.data Rayo_$file
+#exit
+else
+	ligne2="Pb_Couple_Rayonnement  $pbc1 Modele_Rayonnement_Milieu_Transparent modr   Associer $pbc1 modr  Lire modr {  fichier_face_rayo bidon.facesrayo fichier_fij bidon.factforme fichier_matrice bidon.mat_ray_inv relaxation 0 }"
+echo $ligne2
+sed "s/$ligne/$ligne2/" es.data > es2.data
+fi
+if [ "`grep VDF $file `" != "" ] 
+then 
+disc=VDF
+else
+disc=VEF
+fi
+echo "on cherche les cond_lims thermiques"
+egrep -vi 'resoudre|solve ' es2.data > es.data
+$exec es 1>out 2>err
+grep "pas rayonnante" err > err2 
+ grep -B1 -i rayo_transp es.log| grep "Reading the boundary condition" | awk '{print $NF}' | sort -u > err2
+
+nclt=` wc -l err2 |  awk ' { print $1 } '` 
+grep -vi "> periodique" err2     | grep -vi "> symetrie" > err2b
+ncl=` wc -l err2b |  awk ' { print $1 } '` 
+echo $ncl $nclt
+[ $ncl = 0 ] && echo transformation ratee $1 && exit
+echo  "on transforme le jdd"
+awk -v ncl=$ncl -v nclt=$nclt  ' BEGIN { IGNORECASE=1; print(nclt,ncl)}  /periodique/||/symetrie/ { print ($1,1.,-1.) } !/periodique/&&!/symetrie/ {print ($1,1.,0.)  }  '  err2 > bidon.facesrayo
+#awk -v ncl=$ncl   ' BEGIN {  print(ncl)}  {for(i=0;i<ncl;i++)  {printf ("%f ",1./ncl) };printf ("\n") }'  err2 >  bidon.factforme
+awk -v ncl=$nclt  ' BEGIN {  print(ncl)}  {for(i=1;i<FNR;i++)  {printf ("%f ",0.5/ncl) };printf (" 0.5 ") ;for(i=FNR+1;i<ncl+1;i++)  {printf ("%f ",0.5/ncl) }; printf ("\n");}'  err2 >  bidon.factforme; 
+
+rm bidon.mat_ray_inv
+mv es2.data Rayo_transp_$file
+[ -f verifie ] && mv verifie verifie.org
+echo "[ ! -f `basename $file .data`_Flux_radiatif.out ] && echo \"pas de flux\" && exit 1" > verifie
+chmod +x verifie
+[ -f verifie.org ] && echo ./verifie.org >> verifie
+echo "exit 0">> verifie
+
+exit
+sed "s/Champ_front_contact_VEF/Champ_front_contact_rayo_transp_VEF/i
+s/Paroi_temperature_imposee/Paroi_temperature_imposee_rayo_transp/i
+   s/paroi_echange_contact_VDF/Echange_contact_Rayo_transp_sans_relax_VDF/i" es2.data > es3.data
+m=`awk 'BEGIN {i=0;m=-1} /Conduction/ {i=i+1} /Navier/ {i=i+1;m=i} {print($0) >i} END {print m}' es3.data`
+cat 0 1 2 > p
+[ "`diff p es3.data`" != "" ] && echo "pb au decoupage" && exit
+
+
+sed "s/frontiere_ouverte_temperature_imposee/Frontiere_Ouverte_temperature_imposee_Rayo_transp/i
+    s/Paroi_flux_impose/Paroi_flux_impose_Rayo_transp_$disc/i
+    s/paroi_adiabatique/Paroi_flux_impose_Rayo_transp_$disc champ_front_uniforme 1 0/i
+  s/frontiere_ouverte t_ext/Frontiere_Ouverte_Rayo_transp t_ext/i
+s/Champ_front_contact_VEF/Champ_front_contact_rayo_transp_VEF/i
+   s/paroi_echange_contact_VDF/Echange_contact_Rayo_transp_sans_relax_VDF/i
+   s/paroi_echange_externe_impose/Paroi_Echange_externe_impose_rayo_transp/i" $m > bis
+if [ $m = 1 ]
+then
+ cat 0 bis 2 > $file
+else
+cat 0 1 bis >$file
+fi
+echo "ok"
+rm -f es2* es.data err2 err2b err  out dt_ev 0 1 2 bis p
+
+
+#exit

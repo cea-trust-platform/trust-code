@@ -1,0 +1,118 @@
+# Thermohydraulique 2D VEF avec terme source en TdivU #
+# PARALLEL OK #
+dimension 2
+Pb_Thermohydraulique pb
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Plaques
+	{
+	Origine -0.5 -0.5
+	Nombre_de_Noeuds 11 11
+	Longueurs 1. 1.
+	}
+	{
+	Bord periox  X = -0.5     -0.5 <= Y <= 0.5
+	Bord periox  X =  0.5     -0.5 <= Y <= 0.5
+	Bord perioy  Y = -0.5     -0.5 <= X <= 0.5  
+	Bord perioy  Y =  0.5     -0.5 <= X <= 0.5  
+	}	
+}
+Trianguler_H dom
+
+# END MESH #
+# BEGIN PARTITION
+Sous_Zone processeur_0
+Associate processeur_0 dom
+Lire processeur_0
+{
+      Rectangle
+      Origine -0.25 -0.5
+      Cotes   0.5 1.
+}
+
+Partition dom
+{
+	Partitionneur sous_zones { sous_zones 1 processeur_0 }
+	Larg_joint 2
+	Nom_Zones nom_zone
+	Periodique 2 periox perioy
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter nom_zone.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0.
+	tmax 0.01
+	dt_min 1.e-7
+	dt_max 0.1
+	dt_impr 1.e-7
+	dt_sauv 100.
+	seuil_statio 1.e-8
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 1.
+	rho Champ_Uniforme 1 1000.
+	lambda Champ_Uniforme 1 1.
+	Cp Champ_Uniforme 1 1000.
+	beta_th Champ_Uniforme 1 1.e-6
+
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_Standard
+	{
+		equation_non_resolue t]0
+		solveur_pression petsc cholesky { }
+		convection { amont }
+		diffusion { }	
+		conditions_initiales { vitesse Champ_fonc_xyz dom 2 2.*(1+COS(2.*3.14159*x)) 2.*(1+COS(2.*3.14159*y)) }		
+		boundary_conditions 
+		{
+			periox periodique 
+			perioy periodique 
+		}
+	}
+	Convection_diffusion_temperature
+	{
+		convection { amont }
+		diffusion { negligeable }		
+                Sources { Source_Th_TdivU }
+		boundary_conditions
+		{
+			periox periodique 
+			perioy periodique 
+		}		
+		conditions_initiales { temperature Champ_Uniforme 1 10. }
+	}
+		
+	Postraitement 
+	{
+		Champs dt_post 0.001
+		{
+			vitesse elem 
+			temperature elem 
+		}
+	}
+}
+
+Solve pb
+Fin

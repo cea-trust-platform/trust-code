@@ -1,0 +1,25 @@
+#!/bin/sh
+# --
+# Copyright (C) CEA, EDF
+# Author : Erwan ADAM (CEA)
+# --
+
+sourceXDataBuildConfigure() {
+    python -c 'import xdata' &> /dev/null
+    if test $? != 0 ; then
+	echo "-------------------------------------------------"
+	echo "ERROR: xdata python module not found"
+	echo "Please, install xdata and set your PYTHONPATH ..."
+	echo "-------------------------------------------------"
+ 	exit 1
+    fi
+    pycmd=''
+    pycmd=$pycmd'import xdata ; '
+    pycmd=$pycmd'print xdata.getInstallationDirectory() ; '
+    XDATADIR='`python -c "'$pycmd'"`'
+    echo "XDATADIR: $XDATADIR"
+    source `python -c "$pycmd"`/share/xdata/salome/build_configure
+    return
+}
+
+sourceXDataBuildConfigure

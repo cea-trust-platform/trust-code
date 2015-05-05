@@ -1,0 +1,3575 @@
+Parameters {
+	Title "Lot 4 : Grille d'aubes de compresseur"
+	Description "Validation de TRUST sur une grille d'aubes de compresseur."
+	Description "Grandeurs caracteritisques :"
+	Description "-corde (c) = 12.725cm"
+	Description "-pas d'aube (s) = 7.62cm"
+	Description "-angle de calage = 14.4°"
+
+	VersionTRUST "1.5.4_beta build 051007"
+
+	ParametersTRUST Dimension : 2D
+	ParametersTRUST Discretisation : VEFPre1B
+	ParametersTRUST Modele de turbulence : kEpsilon
+	ParametersTRUST Convection QDM : EF_Stab
+	ParametersTRUST Convection kEpsilon : EF_Stab
+	ParametersTRUST Lois de Paroi : standard \& TBLE
+
+	TestCase "./CasNominal/0CalculGrossier/2CalculEFStab/aube.data"     "angle d'attaque 40°, loi de paroi standard, maillage grossier."
+	TestCase "./CasNominal/1CalculFin/2CalculEFStab/aube.data"          "angle d'attaque 40°, loi de paroi standard, maillage fin."
+	TestCase "./CasNominal/1CalculFin/3CalculTBLE/aube.data"            "angle d'attaque 40°, loi de paroi TBLE, maillage fin."
+	TestCase "./CasHorsNominal/0CalculGrossier/2CalculEFStab/aube.data" "angle d'attaque 46°, loi de paroi standard, maillage grossier."
+	TestCase "./CasHorsNominal/1CalculFin/2CalculEFStab/aube.data"      "angle d'attaque 46°, loi de paroi standard, maillage grossier."
+
+	Reference "1. 'Viscous flow in controlled diffusion compressor cascade with increasing indidence', Y. Elazar, R.P. Shreeve, Journal of turbomachinery, april 1990, vol. 112, pp 256-266."
+	Reference "2. 'Computational prediction of flow around highly loaded compressors-cascade blades with non-linear eddy viscosity models', W.L. Chen, F.S. Lien, M.A. Leschziner, Internation journal of heat and fluid flow 19 (1998), pp307-319."
+	Reference "3. 'One- and two-equation turbulence models for the prediction of complex cascade flows using unstructured grids', D.G. Koubogiannis, A.N. Athanasiadis, K.C. Giannakoglou, Computers \& fluids 32 (2003), pp403-430."
+	Reference "4. 'A mapping of the viscous flow behaviour in a controlled diffusion compressor cascade using laser doppler velocimetry and preliminary evaluation of codes for the prediction of stall.', Y. Elazar, Naval Postgraduate School thesis, March 1988."
+
+	Author "G. ETIEVENT"
+	IncludeData 0
+	Prerequisite "python calculerPertePression.py"
+	Prerequisite "python projeterSondesVitesses.py"
+}
+
+#########################################################################################################################
+#  CAS NOMINAL
+#
+
+Chapter {
+	Title "Cas nominal"
+	Description "Angle d'attaque : 40°"
+	Description "Nombre de Reynolds : 740000 (soit une vitesse d'entree : 66.8220 56.0703, norme = 87.2299).
+	#########################################################################################################################
+	# CP
+	Figure {
+		Title "Cp sur l'aube"
+		Description "Cp=(P-Pref)/(0.5*rho*Uref\^2)"
+		Dimension 2
+		RangeX 0. 1.
+		LabelX "x/c"
+		RangeY -2. 2.
+		LabelY "-Cp (adim)"
+		PointSize 0.5
+		legend below title "Legende"
+		Curve {
+			legend "Reference"
+			origin "[2], fig 3a, p311"
+			Version ""
+			file ./Reference/Chen_Cp_40.csv
+			columns 1 2
+			Style linespoints
+			TypeLigne 1
+			TypePoints 2
+		}
+		#Courbe {
+		#	legend "CL paroi"
+		#	origin "TRUST"
+		#	Version "1.5.4beta051007"
+		#	file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/pb_PRESSION_paroi_0.007910.dat
+		#	columns ($1/0.12725) ((-($3-0.84e5))/(0.5*7609.5))
+		#	Style points
+		#	TypeLigne 2
+		#	TypePoints -1
+		#}
+		Curve {
+			legend "PS - G"
+			Description "Pressure side - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Points ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDEPSP
+			columns ($1/0.12725) ((-($3-0.84e5))/(0.5*7609.5))
+			Style linespoints
+			TypeLigne 3
+			TypePoints 6
+		}
+		Curve {
+			legend "SS - G"
+			Description "Suction side - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Points ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDESSP
+			columns ($1/0.12725) ((-($3-0.84e5))/(0.5*7609.5))
+			Style linespoints
+			TypeLigne 3
+			TypePoints 4
+		}
+		Curve {
+			legend "PS - F"
+			Description "Pressure side - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Points ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDEPSP
+			columns ($1/0.12725) ((-($3-0.84e5))/(0.5*7609.5))
+			Style linespoints
+			TypeLigne 2
+			TypePoints 6
+		}
+		Curve {
+			legend "SS - F"
+			Description "Suction side - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Points ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDESSP
+			columns ($1/0.12725) ((-($3-0.84e5))/(0.5*7609.5))
+			Style linespoints
+			TypeLigne 2
+			TypePoints 4
+		}
+		Curve {
+			legend "PS - F TBLE"
+			Description "Pressure side - Maillage fin, loi de paroi TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Points ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDEPSP
+			columns ($1/0.12725) ((-($3-0.84e5))/(0.5*7609.5))
+			Style linespoints
+			TypeLigne 4
+			TypePoints 6
+		}
+		Curve {
+			legend "SS - F TBLE"
+			Description "Suction side - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Points ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDESSP
+			columns ($1/0.12725) ((-($3-0.84e5))/(0.5*7609.5))
+			Style linespoints
+			TypeLigne 4
+			TypePoints 4
+		}
+	}
+	#########################################################################################################################
+	# u, v Extrados
+	#
+	Figure {
+		Title "Vitesse tangente sur l'aube - Extrados"
+		Description "Trace de u/Uref, pour les sondes 2 a 15 sur l'extrados de l'aube (Suction Side)"
+		Description "Remarque : les courbes sont decalees de 0.25 a chaque sonde."
+		Dimension 2
+		#RangeX 0. 4.5
+		LabelX "u/U"
+		RangeY 0. 0.2
+		LabelY "d/c"
+		PointSize 0.5
+		legend Sans
+		Include_Description_Curves 0
+		Curve {
+			legend "Reference"
+			origin "[4], fig 37a, p90"
+			Version ""
+			file ./Reference/Scan_TheseElazar_uvI_40_uExtra.csv
+			columns 1 2
+			Style linespoints
+			TypeLigne 1
+			TypePoints 2
+		}
+		#------------------ GROSSIER ------------------
+		#Courbe {
+		#	legend "u G"
+		#	Description "u/U - Maillage grossier"
+		#	origin "TRUST"
+		#	Version "1.5.4beta051007"
+		#	file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDESS02V.projete
+		#	columns ($2/87.23) ($1/0.12725)
+		#	Style linespoints
+		#	TypeLigne 3
+		#	TypePoints 2
+		#}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDESS03V.projete
+			columns ($2/87.23+0.25*0) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDESS04V.projete
+			columns ($2/87.23+0.25*1) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDESS05V.projete
+			columns ($2/87.23+0.25*2) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDESS06V.projete
+			columns ($2/87.23+0.25*3) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDESS07V.projete
+			columns ($2/87.23+0.25*4) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDESS08V.projete
+			columns ($2/87.23+0.25*5) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDESS09V.projete
+			columns ($2/87.23+0.25*6) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDESS10V.projete
+			columns ($2/87.23+0.25*7) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDESS11V.projete
+			columns ($2/87.23+0.25*8) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDESS12V.projete
+			columns ($2/87.23+0.25*9) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDESS13V.projete
+			columns ($2/87.23+0.25*10) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDESS14V.projete
+			columns ($2/87.23+0.25*11) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDESS15V.projete
+			columns ($2/87.23+0.25*12) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		#------------------ FIN ------------------
+		#Courbe {
+		#	legend "u F"
+		#	Description "u/U - Maillage fin"
+		#	origin "TRUST"
+		#	Version "1.5.4beta051007"
+		#	file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDESS02V.projete
+		#	columns ($2/87.23) ($1/0.12725)
+		#	Style linespoints
+		#	TypeLigne 2
+		#	TypePoints 2
+		#}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDESS03V.projete
+			columns ($2/87.23+0.25*0) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDESS04V.projete
+			columns ($2/87.23+0.25*1) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDESS05V.projete
+			columns ($2/87.23+0.25*2) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDESS06V.projete
+			columns ($2/87.23+0.25*3) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDESS07V.projete
+			columns ($2/87.23+0.25*4) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDESS08V.projete
+			columns ($2/87.23+0.25*5) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDESS09V.projete
+			columns ($2/87.23+0.25*6) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDESS10V.projete
+			columns ($2/87.23+0.25*7) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDESS11V.projete
+			columns ($2/87.23+0.25*8) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDESS12V.projete
+			columns ($2/87.23+0.25*9) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDESS13V.projete
+			columns ($2/87.23+0.25*10) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDESS14V.projete
+			columns ($2/87.23+0.25*11) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDESS15V.projete
+			columns ($2/87.23+0.25*12) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		#------------------ FIN + TBLE ------------------
+		#Courbe {
+		#	legend "u F"
+		#	Description "u/U - Maillage fin - TBLE"
+		#	origin "TRUST"
+		#	Version "1.5.4beta051007"
+		#	file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDESS02V.projete
+		#	columns ($2/87.23) ($1/0.12725)
+		#	Style linespoints
+		#	TypeLigne 4
+		#	TypePoints 2
+		#}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDESS03V.projete
+			columns ($2/87.23+0.25*0) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDESS04V.projete
+			columns ($2/87.23+0.25*1) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDESS05V.projete
+			columns ($2/87.23+0.25*2) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDESS06V.projete
+			columns ($2/87.23+0.25*3) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDESS07V.projete
+			columns ($2/87.23+0.25*4) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDESS08V.projete
+			columns ($2/87.23+0.25*5) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDESS09V.projete
+			columns ($2/87.23+0.25*6) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDESS10V.projete
+			columns ($2/87.23+0.25*7) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDESS11V.projete
+			columns ($2/87.23+0.25*8) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDESS12V.projete
+			columns ($2/87.23+0.25*9) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDESS13V.projete
+			columns ($2/87.23+0.25*10) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDESS14V.projete
+			columns ($2/87.23+0.25*11) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDESS15V.projete
+			columns ($2/87.23+0.25*12) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+	}
+
+	Figure {
+		Title "Vitesse normale sur l'aube - Extrados"
+		Description "Trace de v/Uref, pour les sondes 2 a 15 sur l'extrados de l'aube (Suction Side)"
+		Description "Remarque : les courbes sont decalees de 0.25 a chaque sonde."
+		Dimension 2
+		#RangeX -0.5 4.
+		LabelX "u/U"
+		RangeY 0. 0.2
+		LabelY "d/c"
+		PointSize 0.5
+		legend Sans
+		Include_Description_Curves 0
+		Curve {
+			legend "Reference"
+			origin "[4], fig 37b, p91"
+			Version ""
+			file ./Reference/Scan_TheseElazar_uvI_40_vExtra.csv
+			columns 1 2
+			Style linespoints
+			TypeLigne 1
+			TypePoints 2
+		}
+		#------------------ GROSSIER ------------------
+		#Courbe {
+		#	legend "v G"
+		#	Description "v/U - Maillage grossier"
+		#	origin "TRUST"
+		#	Version "1.5.4beta051007"
+		#	file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDESS02V.projete
+		#	columns ($3/87.23) ($1/0.12725)
+		#	Style linespoints
+		#	TypeLigne 3
+		#	TypePoints 2
+		#}
+		Curve {
+			legend "v G"
+			Description "v/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDESS03V.projete
+			columns ($3/87.23+0.25*0) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "v G"
+			Description "v/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDESS04V.projete
+			columns ($3/87.23+0.25*1) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "v G"
+			Description "v/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDESS05V.projete
+			columns ($3/87.23+0.25*2) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "v G"
+			Description "v/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDESS06V.projete
+			columns ($3/87.23+0.25*3) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "v G"
+			Description "v/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDESS07V.projete
+			columns ($3/87.23+0.25*4) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "v G"
+			Description "v/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDESS08V.projete
+			columns ($3/87.23+0.25*5) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "v G"
+			Description "v/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDESS09V.projete
+			columns ($3/87.23+0.25*6) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "v G"
+			Description "v/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDESS10V.projete
+			columns ($3/87.23+0.25*7) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "v G"
+			Description "v/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDESS11V.projete
+			columns ($3/87.23+0.25*8) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "v G"
+			Description "v/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDESS12V.projete
+			columns ($3/87.23+0.25*9) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "v G"
+			Description "v/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDESS13V.projete
+			columns ($3/87.23+0.25*10) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "v G"
+			Description "v/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDESS14V.projete
+			columns ($3/87.23+0.25*11) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "v G"
+			Description "v/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDESS15V.projete
+			columns ($3/87.23+0.25*12) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		#------------------ FIN ------------------
+		#Courbe {
+		#	legend "v F"
+		#	Description "v/U - Maillage fin"
+		#	origin "TRUST"
+		#	Version "1.5.4beta051007"
+		#	file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDESS02V.projete
+		#	columns ($3/87.23) ($1/0.12725)
+		#	Style linespoints
+		#	TypeLigne 2
+		#	TypePoints 2
+		#}
+		Curve {
+			legend "v F"
+			Description "v/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDESS03V.projete
+			columns ($3/87.23+0.25*0) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "v F"
+			Description "v/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDESS04V.projete
+			columns ($3/87.23+0.25*1) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "v F"
+			Description "v/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDESS05V.projete
+			columns ($3/87.23+0.25*2) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "v F"
+			Description "v/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDESS06V.projete
+			columns ($3/87.23+0.25*3) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "v F"
+			Description "v/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDESS07V.projete
+			columns ($3/87.23+0.25*4) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "v F"
+			Description "v/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDESS08V.projete
+			columns ($3/87.23+0.25*5) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "v F"
+			Description "v/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDESS09V.projete
+			columns ($3/87.23+0.25*6) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "v F"
+			Description "v/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDESS10V.projete
+			columns ($3/87.23+0.25*7) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "v F"
+			Description "v/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDESS11V.projete
+			columns ($3/87.23+0.25*8) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "v F"
+			Description "v/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDESS12V.projete
+			columns ($3/87.23+0.25*9) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "v F"
+			Description "v/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDESS13V.projete
+			columns ($3/87.23+0.25*10) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "v F"
+			Description "v/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDESS14V.projete
+			columns ($3/87.23+0.25*11) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "v F"
+			Description "v/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDESS15V.projete
+			columns ($3/87.23+0.25*12) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		#------------------ FIN + TBLE ------------------
+		#Courbe {
+		#	legend "v F"
+		#	Description "v/U - Maillage fin - TBLE"
+		#	origin "TRUST"
+		#	Version "1.5.4beta051007"
+		#	file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDESS02V.projete
+		#	columns ($3/87.23) ($1/0.12725)
+		#	Style linespoints
+		#	TypeLigne 4
+		#	TypePoints 2
+		#}
+		Curve {
+			legend "v F"
+			Description "v/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDESS03V.projete
+			columns ($3/87.23+0.25*0) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "v F"
+			Description "v/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDESS04V.projete
+			columns ($3/87.23+0.25*1) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "v F"
+			Description "v/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDESS05V.projete
+			columns ($3/87.23+0.25*2) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "v F"
+			Description "v/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDESS06V.projete
+			columns ($3/87.23+0.25*3) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "v F"
+			Description "v/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDESS07V.projete
+			columns ($3/87.23+0.25*4) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "v F"
+			Description "v/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDESS08V.projete
+			columns ($3/87.23+0.25*5) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "v F"
+			Description "v/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDESS09V.projete
+			columns ($3/87.23+0.25*6) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "v F"
+			Description "v/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDESS10V.projete
+			columns ($3/87.23+0.25*7) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "v F"
+			Description "v/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDESS11V.projete
+			columns ($3/87.23+0.25*8) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "v F"
+			Description "v/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDESS12V.projete
+			columns ($3/87.23+0.25*9) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "v F"
+			Description "v/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDESS13V.projete
+			columns ($3/87.23+0.25*10) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "v F"
+			Description "v/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDESS14V.projete
+			columns ($3/87.23+0.25*11) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "v F"
+			Description "v/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDESS15V.projete
+			columns ($3/87.23+0.25*12) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+	}
+
+	Figure {
+		Title "Intensite turbulente sur l'aube - Extrados"
+		Description "Trace de u'/Uref, pour les sondes 2 a 15 sur l'extrados de l'aube (Suction Side)"
+		Description "u' = sqrt(2/3 k)"
+		Description "Remarque : les courbes sont decalees de 0.25 a chaque sonde."
+		Dimension 2
+		#RangeX -0.5 4.
+		LabelX "u/U"
+		RangeY 0. 0.2
+		LabelY "d/c"
+		PointSize 0.5
+		legend Sans
+		Include_Description_Curves 0
+		#Courbe {
+		#	legend "Reference"
+		#	origin "[2], fig 3a, p311"
+		#	Version ""
+		#	file ./Reference/Chen_Cp_40.csv
+		#	columns 1 2
+		#	Style linespoints
+		#	TypeLigne 2
+		#	TypePoints 2
+		#}
+		#------------------ GROSSIER ------------------
+		#Courbe {
+		#	legend "u' G"
+		#	Description "u'/U - Maillage grossier"
+		#	origin "TRUST"
+		#	Version "1.5.4beta051007"
+		#	Segment ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDESS02K
+		#	columns (sqrt(2./3.*$2)/87.23) ($1/0.12725)
+		#	Style linespoints
+		#	TypeLigne 3
+		#	TypePoints 2
+		#}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDESS03K
+			columns (sqrt(2./3.*$2)/87.23+0.25*1) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDESS04K
+			columns (sqrt(2./3.*$2)/87.23+0.25*2) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDESS05K
+			columns (sqrt(2./3.*$2)/87.23+0.25*3) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDESS06K
+			columns (sqrt(2./3.*$2)/87.23+0.25*4) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDESS07K
+			columns (sqrt(2./3.*$2)/87.23+0.25*5) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDESS08K
+			columns (sqrt(2./3.*$2)/87.23+0.25*6) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDESS09K
+			columns (sqrt(2./3.*$2)/87.23+0.25*7) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDESS10K
+			columns (sqrt(2./3.*$2)/87.23+0.25*8) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDESS11K
+			columns (sqrt(2./3.*$2)/87.23+0.25*9) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDESS12K
+			columns (sqrt(2./3.*$2)/87.23+0.25*10) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDESS13K
+			columns (sqrt(2./3.*$2)/87.23+0.25*11) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDESS14K
+			columns (sqrt(2./3.*$2)/87.23+0.25*12) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDESS15K
+			columns (sqrt(2./3.*$2)/87.23+0.25*13) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		#------------------ FIN ------------------
+		#Courbe {
+		#	legend "u' G"
+		#	Description "u'/U - Maillage fin"
+		#	origin "TRUST"
+		#	Version "1.5.4beta051007"
+		#	Segment ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDESS02K
+		#	columns (sqrt(2./3.*$2)/87.23) ($1/0.12725)
+		#	Style linespoints
+		#	TypeLigne 2
+		#	TypePoints 2
+		#}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDESS03K
+			columns (sqrt(2./3.*$2)/87.23+0.25*1) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDESS04K
+			columns (sqrt(2./3.*$2)/87.23+0.25*2) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDESS05K
+			columns (sqrt(2./3.*$2)/87.23+0.25*3) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDESS06K
+			columns (sqrt(2./3.*$2)/87.23+0.25*4) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDESS07K
+			columns (sqrt(2./3.*$2)/87.23+0.25*5) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDESS08K
+			columns (sqrt(2./3.*$2)/87.23+0.25*6) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDESS09K
+			columns (sqrt(2./3.*$2)/87.23+0.25*7) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDESS10K
+			columns (sqrt(2./3.*$2)/87.23+0.25*8) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDESS11K
+			columns (sqrt(2./3.*$2)/87.23+0.25*9) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDESS12K
+			columns (sqrt(2./3.*$2)/87.23+0.25*10) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDESS13K
+			columns (sqrt(2./3.*$2)/87.23+0.25*11) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDESS14K
+			columns (sqrt(2./3.*$2)/87.23+0.25*12) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDESS15K
+			columns (sqrt(2./3.*$2)/87.23+0.25*13) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		#------------------ FIN + TBLE ------------------
+		#Courbe {
+		#	legend "u' G"
+		#	Description "u'/U - Maillage fin - TBLE"
+		#	origin "TRUST"
+		#	Version "1.5.4beta051007"
+		#	Segment ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDESS02K
+		#	columns (sqrt(2./3.*$2)/87.23) ($1/0.12725)
+		#	Style linespoints
+		#	TypeLigne 4
+		#	TypePoints 2
+		#}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDESS03K
+			columns (sqrt(2./3.*$2)/87.23+0.25*1) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDESS04K
+			columns (sqrt(2./3.*$2)/87.23+0.25*2) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDESS05K
+			columns (sqrt(2./3.*$2)/87.23+0.25*3) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDESS06K
+			columns (sqrt(2./3.*$2)/87.23+0.25*4) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDESS07K
+			columns (sqrt(2./3.*$2)/87.23+0.25*5) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDESS08K
+			columns (sqrt(2./3.*$2)/87.23+0.25*6) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDESS09K
+			columns (sqrt(2./3.*$2)/87.23+0.25*7) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDESS10K
+			columns (sqrt(2./3.*$2)/87.23+0.25*8) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDESS11K
+			columns (sqrt(2./3.*$2)/87.23+0.25*9) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDESS12K
+			columns (sqrt(2./3.*$2)/87.23+0.25*10) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDESS13K
+			columns (sqrt(2./3.*$2)/87.23+0.25*11) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDESS14K
+			columns (sqrt(2./3.*$2)/87.23+0.25*12) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDESS15K
+			columns (sqrt(2./3.*$2)/87.23+0.25*13) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+	}
+
+	#########################################################################################################################
+	# u, v Intrados
+	#
+	Figure {
+		Title "Vitesse tangente sur l'aube - Intrados"
+		Description "Trace de u/Uref, pour les sondes 2 a 15 sur l'intrados de l'aube (Pressure Side)"
+		Description "Remarque : les courbes sont decalees de 0.25 a chaque sonde."
+		Dimension 2
+		#RangeX 0. 5.
+		LabelX "u/U"
+		RangeY 0. 0.2
+		LabelY "d/c"
+		PointSize 0.5
+		legend Sans
+		Include_Description_Curves 0
+		#Courbe {
+		#	legend "Reference"
+		#	origin "[4], fig 47a, p114"
+		#	Version ""
+		#	file ./Reference/Scan_TheseElazar_uvI_40_uIntra.csv
+		#	columns ($1+0.75) 2
+		#	Style linespoints
+		#	TypeLigne 1
+		#	TypePoints 2
+		#}
+		#------------------ GROSSIER ------------------
+		#Courbe {
+		#	legend "u G"
+		#	Description "u/U - Maillage grossier"
+		#	origin "TRUST"
+		#	Version "1.5.4beta051007"
+		#	file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDEPS02V.projete
+		#	columns ($2/87.23) ($1/0.12725)
+		#	Style linespoints
+		#	TypeLigne 3
+		#	TypePoints 2
+		#}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDEPS03V.projete
+			columns ($2/87.23+0.25*0) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDEPS04V.projete
+			columns ($2/87.23+0.25*1) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDEPS05V.projete
+			columns ($2/87.23+0.25*2) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDEPS06V.projete
+			columns ($2/87.23+0.25*3) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDEPS07V.projete
+			columns ($2/87.23+0.25*4) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDEPS08V.projete
+			columns ($2/87.23+0.25*5) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDEPS09V.projete
+			columns ($2/87.23+0.25*6) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDEPS10V.projete
+			columns ($2/87.23+0.25*7) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDEPS11V.projete
+			columns ($2/87.23+0.25*8) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDEPS12V.projete
+			columns ($2/87.23+0.25*9) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDEPS13V.projete
+			columns ($2/87.23+0.25*10) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDEPS14V.projete
+			columns ($2/87.23+0.25*11) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDEPS15V.projete
+			columns ($2/87.23+0.25*12) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		#------------------ FIN ------------------
+		#Courbe {
+		#	legend "u F"
+		#	Description "u/U - Maillage fin"
+		#	origin "TRUST"
+		#	Version "1.5.4beta051007"
+		#	file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDEPS02V.projete
+		#	columns ($2/87.23) ($1/0.12725)
+		#	Style linespoints
+		#	TypeLigne 2
+		#	TypePoints 2
+		#}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDEPS03V.projete
+			columns ($2/87.23+0.25*0) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDEPS04V.projete
+			columns ($2/87.23+0.25*1) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDEPS05V.projete
+			columns ($2/87.23+0.25*2) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDEPS06V.projete
+			columns ($2/87.23+0.25*3) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDEPS07V.projete
+			columns ($2/87.23+0.25*4) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDEPS08V.projete
+			columns ($2/87.23+0.25*5) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDEPS09V.projete
+			columns ($2/87.23+0.25*6) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDEPS10V.projete
+			columns ($2/87.23+0.25*7) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDEPS11V.projete
+			columns ($2/87.23+0.25*8) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDEPS12V.projete
+			columns ($2/87.23+0.25*9) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDEPS13V.projete
+			columns ($2/87.23+0.25*10) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDEPS14V.projete
+			columns ($2/87.23+0.25*11) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDEPS15V.projete
+			columns ($2/87.23+0.25*12) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		#------------------ FIN  + TBLE------------------
+		#Courbe {
+		#	legend "u F"
+		#	Description "u/U - Maillage fin - TBLE"
+		#	origin "TRUST"
+		#	Version "1.5.4beta051007"
+		#	file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDEPS02V.projete
+		#	columns ($2/87.23) ($1/0.12725)
+		#	Style linespoints
+		#	TypeLigne 4
+		#	TypePoints 2
+		#}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDEPS03V.projete
+			columns ($2/87.23+0.25*0) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDEPS04V.projete
+			columns ($2/87.23+0.25*1) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDEPS05V.projete
+			columns ($2/87.23+0.25*2) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDEPS06V.projete
+			columns ($2/87.23+0.25*3) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDEPS07V.projete
+			columns ($2/87.23+0.25*4) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDEPS08V.projete
+			columns ($2/87.23+0.25*5) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDEPS09V.projete
+			columns ($2/87.23+0.25*6) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDEPS10V.projete
+			columns ($2/87.23+0.25*7) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDEPS11V.projete
+			columns ($2/87.23+0.25*8) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDEPS12V.projete
+			columns ($2/87.23+0.25*9) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDEPS13V.projete
+			columns ($2/87.23+0.25*10) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDEPS14V.projete
+			columns ($2/87.23+0.25*11) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDEPS15V.projete
+			columns ($2/87.23+0.25*12) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+	}
+
+	Figure {
+		Title "Vitesse normale sur l'aube - Intrados"
+		Description "Trace de u/Uref, pour les sondes 2 a 15 sur l'intrados de l'aube (Pressure Side)"
+		Description "Remarque : les courbes sont decalees de 0.25 a chaque sonde."
+		Dimension 2
+		#RangeX -0.5 4.
+		LabelX "u/U"
+		RangeY 0. 0.2
+		LabelY "d/c"
+		PointSize 0.5
+		legend Sans
+		Include_Description_Curves 0
+		#Courbe {
+		#	legend "Reference"
+		#	origin "[2], fig 3a, p311"
+		#	Version ""
+		#	file ./Reference/Chen_Cp_40.csv
+		#	columns 1 2
+		#	Style linespoints
+		#	TypeLigne 2
+		#	TypePoints 2
+		#}
+		#------------------ GROSSIER ------------------
+		#Courbe {
+		#	legend "u G"
+		#	Description "u/U - Maillage grossier"
+		#	origin "TRUST"
+		#	Version "1.5.4beta051007"
+		#	file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDEPS02V.projete
+		#	columns ($3/87.23) ($1/0.12725)
+		#	Style linespoints
+		#	TypeLigne 3
+		#	TypePoints 2
+		#}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDEPS03V.projete
+			columns ($3/87.23+0.25*0) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDEPS04V.projete
+			columns ($3/87.23+0.25*1) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDEPS05V.projete
+			columns ($3/87.23+0.25*2) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDEPS06V.projete
+			columns ($3/87.23+0.25*3) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDEPS07V.projete
+			columns ($3/87.23+0.25*4) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDEPS08V.projete
+			columns ($3/87.23+0.25*5) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDEPS09V.projete
+			columns ($3/87.23+0.25*6) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDEPS10V.projete
+			columns ($3/87.23+0.25*7) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDEPS11V.projete
+			columns ($3/87.23+0.25*8) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDEPS12V.projete
+			columns ($3/87.23+0.25*9) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDEPS13V.projete
+			columns ($3/87.23+0.25*10) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDEPS14V.projete
+			columns ($3/87.23+0.25*11) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube_SONDEPS15V.projete
+			columns ($3/87.23+0.25*12) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		#------------------ FIN ------------------
+		#Courbe {
+		#	legend "u F"
+		#	Description "u/U - Maillage fin"
+		#	origin "TRUST"
+		#	Version "1.5.4beta051007"
+		#	file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDEPS02V.projete
+		#	columns ($3/87.23) ($1/0.12725)
+		#	Style linespoints
+		#	TypeLigne 2
+		#	TypePoints 2
+		#}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDEPS03V.projete
+			columns ($3/87.23+0.25*0) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDEPS04V.projete
+			columns ($3/87.23+0.25*1) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDEPS05V.projete
+			columns ($3/87.23+0.25*2) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDEPS06V.projete
+			columns ($3/87.23+0.25*3) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDEPS07V.projete
+			columns ($3/87.23+0.25*4) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDEPS08V.projete
+			columns ($3/87.23+0.25*5) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDEPS09V.projete
+			columns ($3/87.23+0.25*6) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDEPS10V.projete
+			columns ($3/87.23+0.25*7) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDEPS11V.projete
+			columns ($3/87.23+0.25*8) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDEPS12V.projete
+			columns ($3/87.23+0.25*9) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDEPS13V.projete
+			columns ($3/87.23+0.25*10) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDEPS14V.projete
+			columns ($3/87.23+0.25*11) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube_SONDEPS15V.projete
+			columns ($3/87.23+0.25*12) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		#------------------ FIN + TBLE ------------------
+		#Courbe {
+		#	legend "u F"
+		#	Description "u/U - Maillage fin - TBLE"
+		#	origin "TRUST"
+		#	Version "1.5.4beta051007"
+		#	file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDEPS02V.projete
+		#	columns ($3/87.23) ($1/0.12725)
+		#	Style linespoints
+		#	TypeLigne 4
+		#	TypePoints 2
+		#}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDEPS03V.projete
+			columns ($3/87.23+0.25*0) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDEPS04V.projete
+			columns ($3/87.23+0.25*1) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDEPS05V.projete
+			columns ($3/87.23+0.25*2) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDEPS06V.projete
+			columns ($3/87.23+0.25*3) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDEPS07V.projete
+			columns ($3/87.23+0.25*4) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDEPS08V.projete
+			columns ($3/87.23+0.25*5) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDEPS09V.projete
+			columns ($3/87.23+0.25*6) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDEPS10V.projete
+			columns ($3/87.23+0.25*7) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDEPS11V.projete
+			columns ($3/87.23+0.25*8) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDEPS12V.projete
+			columns ($3/87.23+0.25*9) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDEPS13V.projete
+			columns ($3/87.23+0.25*10) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDEPS14V.projete
+			columns ($3/87.23+0.25*11) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube_SONDEPS15V.projete
+			columns ($3/87.23+0.25*12) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+	}
+
+	Figure {
+		Title "Intensite turbulente sur l'aube - Intrados"
+		Description "Trace de u'/Uref, pour les sondes 2 a 15 sur l'intrados de l'aube (Pressure Side)"
+		Description "u' = sqrt(2/3 k)"
+		Description "Remarque : les courbes sont decalees de 0.25 a chaque sonde."
+		Dimension 2
+		#RangeX -0.5 4.
+		LabelX "u/U"
+		RangeY 0. 0.2
+		LabelY "d/c"
+		PointSize 0.5
+		legend Sans
+		Include_Description_Curves 0
+		#Courbe {
+		#	legend "Reference"
+		#	origin "[2], fig 3a, p311"
+		#	Version ""
+		#	file ./Reference/Chen_Cp_40.csv
+		#	columns 1 2
+		#	Style linespoints
+		#	TypeLigne 2
+		#	TypePoints 2
+		#}
+		#------------------ GROSSIER ------------------
+		#Courbe {
+		#	legend "u' G"
+		#	Description "u'/U - Maillage grossier"
+		#	origin "TRUST"
+		#	Version "1.5.4beta051007"
+		#	Segment ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDEPS02K
+		#	columns (sqrt(2./3.*$2)/87.23) ($1/0.12725)
+		#	Style linespoints
+		#	TypeLigne 3
+		#	TypePoints 2
+		#}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDEPS03K
+			columns (sqrt(2./3.*$2)/87.23+0.25*0) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDEPS04K
+			columns (sqrt(2./3.*$2)/87.23+0.25*1) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDEPS05K
+			columns (sqrt(2./3.*$2)/87.23+0.25*2) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDEPS06K
+			columns (sqrt(2./3.*$2)/87.23+0.25*3) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDEPS07K
+			columns (sqrt(2./3.*$2)/87.23+0.25*4) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDEPS08K
+			columns (sqrt(2./3.*$2)/87.23+0.25*5) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDEPS09K
+			columns (sqrt(2./3.*$2)/87.23+0.25*6) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDEPS10K
+			columns (sqrt(2./3.*$2)/87.23+0.25*7) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDEPS11K
+			columns (sqrt(2./3.*$2)/87.23+0.25*8) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDEPS12K
+			columns (sqrt(2./3.*$2)/87.23+0.25*9) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDEPS13K
+			columns (sqrt(2./3.*$2)/87.23+0.25*10) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDEPS14K
+			columns (sqrt(2./3.*$2)/87.23+0.25*11) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "u' G"
+			Description "u'/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDEPS15K
+			columns (sqrt(2./3.*$2)/87.23+0.25*12) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		#------------------ FIN ------------------
+		#Courbe {
+		#	legend "u' F"
+		#	Description "u'/U - Maillage fin"
+		#	origin "TRUST"
+		#	Version "1.5.4beta051007"
+		#	Segment ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDEPS02K
+		#	columns (sqrt(2./3.*$2)/87.23) ($1/0.12725)
+		#	Style linespoints
+		#	TypeLigne 2
+		#	TypePoints 2
+		#}
+		Curve {
+			legend "u' F"
+			Description "u'/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDEPS03K
+			columns (sqrt(2./3.*$2)/87.23+0.25*0) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u' F"
+			Description "u'/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDEPS04K
+			columns (sqrt(2./3.*$2)/87.23+0.25*1) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u' F"
+			Description "u'/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDEPS05K
+			columns (sqrt(2./3.*$2)/87.23+0.25*2) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u' F"
+			Description "u'/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDEPS06K
+			columns (sqrt(2./3.*$2)/87.23+0.25*3) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u' F"
+			Description "u'/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDEPS07K
+			columns (sqrt(2./3.*$2)/87.23+0.25*4) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u' F"
+			Description "u'/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDEPS08K
+			columns (sqrt(2./3.*$2)/87.23+0.25*5) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u' F"
+			Description "u'/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDEPS09K
+			columns (sqrt(2./3.*$2)/87.23+0.25*6) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u' F"
+			Description "u'/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDEPS10K
+			columns (sqrt(2./3.*$2)/87.23+0.25*7) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u' F"
+			Description "u'/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDEPS11K
+			columns (sqrt(2./3.*$2)/87.23+0.25*8) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u' F"
+			Description "u'/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDEPS12K
+			columns (sqrt(2./3.*$2)/87.23+0.25*9) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u' F"
+			Description "u'/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDEPS13K
+			columns (sqrt(2./3.*$2)/87.23+0.25*10) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u' F"
+			Description "u'/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDEPS14K
+			columns (sqrt(2./3.*$2)/87.23+0.25*11) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "u' F"
+			Description "u'/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDEPS15K
+			columns (sqrt(2./3.*$2)/87.23+0.25*12) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		#------------------ FIN + TBLE ------------------
+		#Courbe {
+		#	legend "u' F"
+		#	Description "u'/U - Maillage fin - TBLE"
+		#	origin "TRUST"
+		#	Version "1.5.4beta051007"
+		#	Segment ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDEPS02K
+		#	columns (sqrt(2./3.*$2)/87.23) ($1/0.12725)
+		#	Style linespoints
+		#	TypeLigne 4
+		#	TypePoints 2
+		#}
+		Curve {
+			legend "u' F"
+			Description "u'/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDEPS03K
+			columns (sqrt(2./3.*$2)/87.23+0.25*0) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u' F"
+			Description "u'/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDEPS04K
+			columns (sqrt(2./3.*$2)/87.23+0.25*1) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u' F"
+			Description "u'/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDEPS05K
+			columns (sqrt(2./3.*$2)/87.23+0.25*2) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u' F"
+			Description "u'/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDEPS06K
+			columns (sqrt(2./3.*$2)/87.23+0.25*3) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u' F"
+			Description "u'/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDEPS07K
+			columns (sqrt(2./3.*$2)/87.23+0.25*4) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u' F"
+			Description "u'/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDEPS08K
+			columns (sqrt(2./3.*$2)/87.23+0.25*5) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u' F"
+			Description "u'/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDEPS09K
+			columns (sqrt(2./3.*$2)/87.23+0.25*6) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u' F"
+			Description "u'/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDEPS10K
+			columns (sqrt(2./3.*$2)/87.23+0.25*7) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u' F"
+			Description "u'/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDEPS11K
+			columns (sqrt(2./3.*$2)/87.23+0.25*8) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u' F"
+			Description "u'/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDEPS12K
+			columns (sqrt(2./3.*$2)/87.23+0.25*9) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u' F"
+			Description "u'/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDEPS13K
+			columns (sqrt(2./3.*$2)/87.23+0.25*10) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u' F"
+			Description "u'/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDEPS14K
+			columns (sqrt(2./3.*$2)/87.23+0.25*11) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+		Curve {
+			legend "u' F"
+			Description "u'/U - Maillage fin - TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDEPS15K
+			columns (sqrt(2./3.*$2)/87.23+0.25*12) ($1/0.12725)
+			Style linespoints
+			TypeLigne 4
+			TypePoints 2
+		}
+	}
+
+
+	#########################################################################################################################
+	# Vitesses en sortie : fuite + 0.66cm
+	#
+	Figure {
+		Title "Vitesse, x = fuite + 0.66cm"
+		Dimension 2
+		RangeX 0. 0.08
+		LabelX "y"
+		RangeY 0. 1.
+		LabelY "U/Uref (adim)"
+		PointSize 0.5
+		legend below title "Legende"
+		Curve {
+			legend "Reference"
+			origin "[2], fig 5a, p312"
+			Version ""
+			file ./Reference/Chen_Usortie_40_0.66.csv
+			columns ($2*2.54/100+0.051) 1
+			Style points
+			TypeLigne 1
+			TypePoints 6
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDESORTIEV0.66
+			columns 1 (sqrt($2*$2+$3*$3)/87.23)
+			Style lines
+			TypeLigne 3
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDESORTIEV0.66
+			columns 1 (sqrt($2*$2+$3*$3)/87.23)
+			Style lines
+			TypeLigne 2
+		}
+		Curve {
+			legend "u F - TBLE"
+			Description "u/U - Maillage fin, loi de paroi TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDESORTIEV0.66
+			columns 1 (sqrt($2*$2+$3*$3)/87.23)
+			Style lines
+			TypeLigne 4
+		}
+	}
+	#########################################################################################################################
+	# Vitesses en sortie : fuite + 2.70cm
+	#
+	Figure {
+		Title "Vitesse, x = fuite + 2.70cm"
+		Dimension 2
+		RangeX 0. 0.08
+		LabelX "y"
+		RangeY 0. 1.
+		LabelY "U/Uref (adim)"
+		PointSize 0.5
+		legend below title "Legende"
+		Curve {
+			legend "Reference"
+			origin "[2], fig 5b, p312"
+			Version ""
+			file ./Reference/Chen_Usortie_40_2.7.csv
+			columns ($2*2.54/100+0.051) 1
+			Style points
+			TypeLigne 1
+			TypePoints 6
+		}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDESORTIEV2.70
+			columns 1 (sqrt($2*$2+$3*$3)/87.23)
+			Style lines
+			TypeLigne 3
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDESORTIEV2.70
+			columns 1 (sqrt($2*$2+$3*$3)/87.23)
+			Style lines
+			TypeLigne 2
+		}
+		Curve {
+			legend "u F - TBLE"
+			Description "u/U - Maillage fin, loi de paroi TBLE"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasNominal/1CalculFin/3CalculTBLE/ReprisePost/aube.data SONDESORTIEV2.70
+			columns 1 (sqrt($2*$2+$3*$3)/87.23)
+			Style lines
+			TypeLigne 4
+		}
+	}
+}
+
+
+#########################################################################################################################
+#
+# CAS HORS NOMINAL
+#
+
+Chapter {
+	Title "Cas hors nominal"
+	Description "Angle d'attaque : 46°"
+	Description "Nombre de Reynolds : 700000 (soit une vitesse d'entree : 57.3196 59.3561, norme = 82.5147).
+	Figure {
+		Title "Cp sur l'aube"
+		Description "Cp=(P-Pref)/(0.5*rho*Uref\^2)"
+		Dimension 2
+		RangeX 0. 1.
+		LabelX "x/c"
+		RangeY -2. 2.
+		LabelY "-Cp (adim)"
+		PointSize 0.5
+		legend below title "Legende"
+		Curve {
+			legend "Reference"
+			origin "[2], fig 3a, p311"
+			Version ""
+			file ./Reference/Chen_Cp_46.csv
+			columns 1 2
+			Style linespoints
+			TypeLigne 1
+			TypePoints 2
+		}
+		#Courbe {
+		#	legend "PS - F"
+		#	origin "TRUST"
+		#	Version "1.5.4beta051007"
+		#	Points ./0CalculGrossier/2ReprisePost/aube.data SONDEPSP
+		#	columns ($1/0.12725) ((-($3-0.84e5))/(0.5*7609.5))
+		#	Style linespoints
+		#	TypeLigne 2
+		#	TypePoints 6
+		#}
+		Curve {
+			legend "PS - G"
+			Description "Pressure side - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Points ./CasHorsNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDEPSP
+			columns ($1/0.12725) ((-($3-0.84e5))/(0.5*6808.7))
+			Style linespoints
+			TypeLigne 3
+			TypePoints 6
+		}
+		Curve {
+			legend "SS - G"
+			Description "Suction side - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Points ./CasHorsNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDESSP
+			columns ($1/0.12725) ((-($3-0.84e5))/(0.5*6808.7))
+			Style linespoints
+			TypeLigne 3
+			TypePoints 4
+		}
+		Curve {
+			legend "PS - F"
+			Description "Pressure side - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Points ./CasHorsNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDEPSP
+			columns ($1/0.12725) ((-($3-0.84e5))/(0.5*6808.7))
+			Style linespoints
+			TypeLigne 2
+			TypePoints 6
+		}
+		Curve {
+			legend "SS - F"
+			Description "Suction side - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Points ./CasHorsNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDESSP
+			columns ($1/0.12725) ((-($3-0.84e5))/(0.5*6808.7))
+			Style linespoints
+			TypeLigne 2
+			TypePoints 4
+		}
+	}
+	Figure {
+		Title "Vitesse, fluctuation de vitesse et intensite turbulente sur l'aube - Sonde 2"
+		Description "I = u'/U"
+		Description "u' = sqrt(2/3 k)"
+		Dimension 2
+		RangeX 0. 1.
+		LabelX "u/U  v/U  u'/U"
+		RangeY 0. 0.2
+		LabelY "d/c"
+		PointSize 0.5
+		legend below title "Legende"
+		#Courbe {
+		#	legend "Reference"
+		#	origin "[2], fig 3a, p311"
+		#	Version ""
+		#	file ./Reference/Chen_Cp_40.csv
+		#	columns 1 2
+		#	Style linespoints
+		#	TypeLigne 2
+		#	TypePoints 2
+		#}
+		Curve {
+			legend "u G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasHorsNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDEPS02V
+			columns ($2/87.23) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+		Curve {
+			legend "v G"
+			Description "v/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasHorsNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDEPS02V
+			columns ($3/87.23) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 6
+		}
+		Curve {
+			legend "u' G"
+			Description "I=u'/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasHorsNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDEPS02K
+			columns (sqrt(2./3.*$2)/87.23) ($1/0.12725)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 4
+			Axis x2y2
+		}
+		Curve {
+			legend "u F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasHorsNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDEPS02V
+			columns ($2/87.23) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "v F"
+			Description "v/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasHorsNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDEPS02V
+			columns ($3/87.23) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 6
+		}
+		Curve {
+			legend "u' F"
+			Description "I=u'/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasHorsNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDEPS02K
+			columns (sqrt(2./3.*$2)/87.23) ($1/0.12725)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 4
+			Axis x2y2
+		}
+	}
+	Figure {
+		Title "Vitesse, x = fuite + 0.66cm"
+		Dimension 2
+		RangeX 0. 0.08
+		LabelX "y"
+		RangeY 0. 1.
+		LabelY "U/Uref (adim)"
+		PointSize 0.5
+		legend below title "Legende"
+		Curve {
+			legend "Reference"
+			origin "[2], fig 5a, p312"
+			Version ""
+			file ./Reference/Chen_Usortie_46_0.66.csv
+			columns ($2*2.54/100+0.051) 1
+			Style points
+			TypeLigne 1
+			TypePoints 6
+		}
+		Curve {
+			legend "G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasHorsNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDESORTIEV0.66
+			columns 1 (sqrt($2*$2+$3*$3)/87.23)
+			Style lines
+			TypeLigne 3
+		}
+		Curve {
+			legend "F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasHorsNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDESORTIEV0.66
+			columns 1 (sqrt($2*$2+$3*$3)/87.23)
+			Style lines
+			TypeLigne 2
+		}
+	}
+	Figure {
+		Title "Vitesse, x = fuite + 2.70cm"
+		Dimension 2
+		RangeX 0. 0.08
+		LabelX "y"
+		RangeY 0. 1.
+		LabelY "U/Uref (adim)"
+		PointSize 0.5
+		legend below title "Legende"
+		Curve {
+			legend "Reference"
+			origin "[2], fig 5b, p312"
+			Version ""
+			file ./Reference/Chen_Usortie_46_2.7.csv
+			columns ($2*2.54/100+0.051) 1
+			Style points
+			TypeLigne 1
+			TypePoints 6
+		}
+		Curve {
+			legend "G"
+			Description "u/U - Maillage grossier"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasHorsNominal/0CalculGrossier/2CalculEFStab/ReprisePost/aube.data SONDESORTIEV2.70
+			columns 1 (sqrt($2*$2+$3*$3)/87.23)
+			Style lines
+			TypeLigne 3
+		}
+		Curve {
+			legend "F"
+			Description "u/U - Maillage fin"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			Segment ./CasHorsNominal/1CalculFin/2CalculEFStab/ReprisePost/aube.data SONDESORTIEV2.70
+			columns 1 (sqrt($2*$2+$3*$3)/87.23)
+			Style lines
+			TypeLigne 2
+		}
+	}
+}
+
+Chapter {
+	Title "Grandeurs communes"
+	Description "Verification des grandeurs calculees pour l'ensemble des cas etudies :"
+	Figure {
+		Title "Coefficient global de perte de pression totale (w)"
+		Description "Le coefficient global de perte de pression totale est donne par"
+		Description "w = (Pe-Ps)/(Pe-Pdyn)."
+		Dimension 2
+		RangeX 20 50
+		LabelX "Angle d'attaque, en degres"
+		#RangeY 0. 0.15
+		LabelY "w"
+		PointSize 0.5
+		legend below title "Legende"
+		Curve {
+			legend "Reference"
+			origin "Chen, fig 9, p315"
+			Version ""
+			file ./Reference/Chen_CoeffPertePression.csv
+			columns 1 2
+			Style linespoints
+			TypeLigne 1
+			TypePoints 2
+		}
+		Curve {
+			legend "G Sortie"
+			Description "w - Maillage grossier X=Sortie"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file pertePression.data
+			columns 1 ($2)
+			Style points
+			TypeLigne 3
+			TypePoints 4
+		}
+		Curve {
+			legend "G 0.66cm"
+			Description "w - Maillage grossier X=0.66cm"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file pertePression.data
+			columns 1 ($3)
+			Style points
+			TypeLigne 3
+			TypePoints 5
+		}
+		Curve {
+			legend "G 2.70cm"
+			Description "w - Maillage grossier X=2.70cm"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file pertePression.data
+			columns 1 ($4)
+			Style points
+			TypeLigne 3
+			TypePoints 6
+		}
+		Curve {
+			legend "F Sortie"
+			Description "w - Maillage fin X=Sortie"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file pertePression.data
+			columns 1 ($5)
+			Style points
+			TypeLigne 2
+			TypePoints 4
+		}
+		Curve {
+			legend "F 0.66cm"
+			Description "w - Maillage fin X=0.66cm"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file pertePression.data
+			columns 1 ($6)
+			Style points
+			TypeLigne 2
+			TypePoints 5
+		}
+		Curve {
+			legend "F 2.70cm"
+			Description "w - Maillage fin X=2.70cm"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file pertePression.data
+			columns 1 ($7)
+			Style points
+			TypeLigne 2
+			TypePoints 6
+		}
+		Curve {
+			legend "F - TBLE Sortie"
+			Description "w - Maillage fin X=Sortie"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file pertePression.data
+			columns 1 ($8)
+			Style points
+			TypeLigne 4
+			TypePoints 4
+		}
+		Curve {
+			legend "F - TBLE 0.66cm"
+			Description "w - Maillage fin X=0.66cm"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file pertePression.data
+			columns 1 ($9)
+			Style points
+			TypeLigne 4
+			TypePoints 5
+		}
+		Curve {
+			legend "F - TBLE 2.70cm"
+			Description "w - Maillage fin X=2.70cm"
+			origin "TRUST"
+			Version "1.5.4beta051007"
+			file pertePression.data
+			columns 1 ($10)
+			Style points
+			TypeLigne 4
+			TypePoints 6
+		}
+	}
+}
+

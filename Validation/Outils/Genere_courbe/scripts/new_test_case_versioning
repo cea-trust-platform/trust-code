@@ -1,0 +1,23 @@
+#!/bin/bash
+case=$1
+
+dist=$2
+[ $# -ne 2 ] && echo usage $0 case dir_to_install
+[ "$case" != "`basename $case`" ] && echo pb with $case && exit 1
+[ ! -d $case/src ]&& echo pb $case/src doenst exit && exit  1
+[ ! -d $dist ] && echo  $dist doesnt exist && exit 1
+#[ -d $dist/$case ] && echo le cas existe deja && exit 1
+echo "CHECKOUT $dist
+ cleartool mkdir -nc $dist/$case
+cleartool mkdir -nc $dist/$case/src
+
+for dir in \`(cd $case/src; find . -type d )\`
+ do 
+ cleartool mkdir -nc $dist/$case/src/\$dir
+done
+for file in \`(cd $case/src; find . -type f -not -name '*'~ )\`
+do
+   cp $case/src/\$file $dist/$case/src/\$file
+   cleartool mkelem -nc $dist/$case/src/\$file	
+done
+"

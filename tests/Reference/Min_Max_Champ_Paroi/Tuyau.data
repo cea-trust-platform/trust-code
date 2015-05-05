@@ -1,0 +1,123 @@
+# Ecoulement 3D dans un Tuyau a section circulaire #
+# PARALLEL OK #
+
+dimension 3
+Pb_Hydraulique_Turbulent pb1
+Domaine dom01234 
+
+# BEGIN MESH #
+Domaine dom0
+Domaine dom1
+Domaine dom2
+Domaine dom3
+Domaine dom4
+
+Mailler dom0
+{
+        Pave bloc
+                {
+                Origine -0.5 -0.5 0.
+                Nombre_de_Noeuds 4 4 2
+                Longueurs 1. 1. 1.
+                }
+                {
+                Bord sortie   Z = 0.  -0.5 <= X <= 0.5  -0.5 <= Y <= 0.5
+                Bord sortie   Z = 1.  -0.5 <= X <= 0.5  -0.5 <= Y <= 0.5
+                }
+}
+
+tetraedriser_homogene_fin dom0
+
+Mailler dom1
+{
+        Pave bloc
+                {
+                Origine -0.785398163 0.5 0.
+                Nombre_de_Noeuds    4 4 2
+                Longueurs  1.570796326 1. 1.
+                facteurs 1. 0.7 1.
+                }
+                {
+                Bord sortie   Z = 0.  -0.785398163 <= X <= 0.785398163   0.5 <= Y <= 1.5
+                Bord sortie   Z = 1.  -0.785398163 <= X <= 0.785398163   0.5 <= Y <= 1.5
+                Bord paroi    Y = 1.5 -0.785398163 <= X <= 0.785398163   0.  <= Z <= 1.
+                }
+}
+
+tetraedriser_homogene_fin dom1
+Transformer dom1
+ (y>0.5)*((COS(x)-0.5)*(y-0.5)+0.5)+(y<0.5001)*0.5
+ ((SIN(x)-(-0.5+(x+0.785398163)/1.570796326))*(y-0.5)+(-0.5+(x+0.785398163)/1.570796326))
+ z
+Ecrire_Fichier dom1 dom1.geom
+
+Read_file dom2 dom1.geom
+Read_file dom3 dom1.geom
+Read_file dom4 dom1.geom
+
+Transformer dom2
+ -y
+ x
+ z
+Transformer dom3
+ y
+ -x
+ z
+Transformer dom4
+ -x
+ -y
+ z
+
+{
+Domaine dom01 
+Mailler dom01
+        {  epsilon 1.e-2 ,
+                domain dom0 ,
+                domain dom1
+                }
+Ecrire_fichier dom01 dom01.geom
+}
+
+{
+Domaine dom01 
+Read_file dom01 dom01.geom
+Domaine dom012 
+Mailler dom012
+        {  epsilon 1.e-2 ,
+                domain dom01 ,
+                domain dom2
+                }
+Ecrire_fichier dom012 dom012.geom
+}
+
+{
+Domaine dom012 
+Read_file dom012 dom012.geom
+Domaine dom0123 
+Mailler dom0123
+        {  epsilon 1.e-2 ,
+                domain dom012 ,
+                domain dom3
+                }
+Ecrire_fichier dom0123 dom0123.geom
+}
+
+{
+Domaine dom0123 
+Read_file dom0123 dom0123.geom
+Domaine dom01234
+Mailler dom01234
+        {  epsilon 1.e-2 ,
+                domain dom0123 ,
+                domain dom4
+                }
+Ecrire_fichier dom01234 dom01234.geom
+}
+
+Read_file dom01234 dom01234.geom
+# END MESH #
+
+VEFPreP1B dis
+
+Fin 
+

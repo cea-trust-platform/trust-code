@@ -1,0 +1,19 @@
+#!/bin/bash
+mkdir prov
+cd prov
+cp ../Installer .
+cp ../XDATA.tgz ../TRIOU.tgz .
+chmod +w *
+ln -s ../XTriou .
+for module in XDATA TRIOU
+do
+    ./Installer $module PASCLEAN
+
+    diff -r --brief $module/dist ../$module/dist | grep -v pyc | grep -v pyo
+    echo "OK ?"
+    read ok   
+    
+cd ..
+tar zcf prov/$module.tgz $module/${module}_SRC
+cd prov
+done

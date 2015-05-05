@@ -1,0 +1,6 @@
+#!/bin/bash
+cherche.ksh solveur_pression@gcp 1>/dev/null
+#echo 2Cubes > liste_cherche
+# On filtre les cas tests qui bloquent:
+cat liste_cherche | grep -v Reprise_impl | grep -v ThHyd_keps_VEF_segsol > liste_cas
+rm -f liste_cherche

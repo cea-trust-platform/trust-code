@@ -1,0 +1,16 @@
+#!/bin/bash
+# Installation de gmake
+Gmake=$1
+[ "$Gmake" = "" ] && echo "Gmake non trouve ici: "`pwd` && exit
+Gmake=${Gmake%.tar.gz}
+gunzip -f -c $TRUST_ROOT/externalpackages/$Gmake.tar.gz | tar -xf -
+rm -f $Gmake.tar
+cd $Gmake
+./configure --prefix=$TRUST_ROOT/exec/gmake 1>../gmake.log 2>&1
+make 1>>../gmake.log 2>&1
+make install 1>>../gmake.log 2>&1
+cd ..
+rm -r -f $Gmake
+# Creation d'un lien make->gmake
+cd $TRUST_ROOT/exec/gmake/bin
+[ -f make ] && ln -s -f make gmake

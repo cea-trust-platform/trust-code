@@ -1,0 +1,114 @@
+#!/bin/bash
+echo "Comparaison de resultats avec 2 executables sur un cas test de non regression."
+echo "Commande a lancer dans un repertoire contenant un .data sous $TRUST_TESTS/Reference"
+echo "Usage: `basename $0` path_old_binary path_new_binary [file.data]"
+if [ ${#1} != 0 ] && [ ${#2} != 0 ]
+then
+   path_old_binary=$1
+   shift
+   path_new_binary=$1
+   shift
+else
+   exit
+fi
+
+if [ "$1" != "" ]
+then
+   rep=${1%.data}
+else
+   rep=`pwd` 
+   rep=`basename $rep`
+fi
+shift
+
+[ ! -f $rep.data ] && exit
+# Est ce un calcul parallele ?
+NB_PROCS="" && [ "`grep '# BEGIN SCATTER #' $rep.data`" != "" ] && NB_PROCS=`ls *Zones | wc -l`
+
+# Lancement du 1er calcul  
+cp -f $rep.data old.data
+chmod +w old.data
+rm -f old.out_err old.lata old*.son
+
+
+echo -e "1,$ s?fichier $rep?fichier old?g\nw" | ed old.data 1>/dev/null 2>&1
+echo "1er calcul en cours..."
+export exec=$path_old_binary
+triou old $NB_PROCS 1>old.out_err 2>&1
+[ $? != 0 ] && echo "Echec 1er calcul." && exit
+[ -f Performance.TU ] && mv -f Performance.TU old.TU
+
+# Lancement du 2eme calcul
+cp -f $rep.data new.data
+chmod +w new.data
+rm -f new.out_err new.lata new*.son
+echo -e "1,$ s?fichier $rep?fichier new?g\nw" | ed new.data 1>/dev/null 2>&1
+
+echo "2eme calcul en cours..."
+export exec=$path_new_binary
+triou new $NB_PROCS 1>new.out_err 2>&1
+[ $? != 0 ] && echo "Echec 2eme calcul." && exit
+[ -f Performance.TU ] && mv -f Performance.TU new.TU
+
+echo
+if [ -f old.lml ] && [ -f new.lml ]
+then
+   # Comparaison des fichiers .out et .son et .lml, si erreur on continue
+   ecarts=0
+   compare_lata old.lml new.lml || ecarts=1
+   if [ $ecarts = 0 ]
+   then
+      for file in `ls old*.out old*.son 2>/dev/null`
+      do
+         compare_sonde $file new${file#old} 1>/dev/null 2>&1
+	 if [ $? != 0 ]
+	 then
+	    echo "Differences found in $file !" && ecarts=1
+	    compare_sonde $file new${file#old}
+	 fi
+      done
+      [ $ecarts = 0 ] && exit 0
+   fi
+   echo
+fi
+
+# Comparaison des sondes
+for son in `ls old*.son 2>/dev/null`
+do
+   if [ "`grep Temps $son`" != "" ]
+   then
+      nb_col=`tail -1 $son | $TRUST_Awk '{print NF}'`
+      col=2
+      nom_sonde=${son#old_}
+      nom_sonde=${nom_sonde%.son}
+      coupe=`extrait_coupe old $nom_sonde | $TRUST_Awk '/Creation de/ {print $3}'` 
+      coupe=${coupe#./}
+      if [ ${#coupe} = 0 ]
+      then
+         while [ $col -le $nb_col ]
+         do
+            echo $son using 1:$col
+            echo $ECHO_OPTS 'plot "'$son'" using 1:'$col',"new'${son#old}'" using 1:'$col' with linesp\n!read a' > .sonde
+            gnuplot .sonde
+	    let col=$col+1
+         done
+      else
+         extrait_coupe new $nom_sonde
+         echo $coupe
+         echo $ECHO_OPTS 'plot "'$coupe'","new'${coupe#old}'" with linesp\n!read a' > .segment
+         gnuplot .segment
+      fi
+   fi
+done
+
+# Comparaison des .out .err
+sdiff -w 150 old.out_err new.out_err > out_err
+$EDITEUR out_err
+
+# Comparaison des performances
+sdiff old.TU new.TU > TU
+$EDITEUR TU
+
+# Comparaison visit
+[ -f new.lata ] && visit -o new.lata
+[ -f new.lml ] && visit -o new.lml

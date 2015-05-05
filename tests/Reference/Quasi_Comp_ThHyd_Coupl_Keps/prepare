@@ -1,0 +1,3 @@
+gunzip -c plaque_Pb1.geom.gz > plaque_Pb1.geom
+gunzip -c plaque_Pb2.geom.gz > plaque_Pb2.geom
+gunzip -c plaque_Pb3.geom.gz > plaque_Pb3.geom

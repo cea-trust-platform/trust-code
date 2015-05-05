@@ -1,0 +1,74 @@
+#!/bin/bash
+
+org=`pwd`
+DIR=`dirname $0`
+DIR=`cd $DIR; pwd`
+
+sh $DIR/portability_baltik/gen_tar_for_distrib.sh
+sh $DIR/portability_baltik/GO_all.sh $*
+
+exit
+gen_script()
+{
+echo "echo hello
+# au cas ou 
+# GCC 4.3.2
+REP=/work/triou/Product/gcc_dist
+if [ -d \$REP ]
+then
+echo on utilise \$REP comme compilo
+export PATH=\$REP/bin:\$PATH
+export LD_LIBRARY_PATH=\$REP/lib:\$LD_LIBRARY_PATH
+fi
+org=\`pwd\`
+proj=`basename $1 .tar.gz`
+tar zxf `basename $1`
+cd $3
+source env/Init_TRUST
+cd \$org
+chmod -R +w baltik \$proj
+cd \$proj
+\$org/baltik/bin/baltik_build_configure 2>&1 | tee config.log
+./configure  2>&1 | tee -a config.log
+echo on retire les fichiers inutils pas fait par baltik | tee -a config.log
+env rep_dev=\$org/\$proj/build/src DIFF NET | grep -v cree   | tee -a config.log
+
+make optim | tee make.log
+make check_all_optim 
+status=\$?
+if [ 0 -eq 1 ]
+#if [ \$status -eq 2 ] 
+  then
+   echo "on lance les tests des dependances"
+   make check_deps_optim 
+   status=\$?
+  fi
+if [ \$status -eq 0 ] 
+then
+   echo \$proj OK on $2
+   # Si OK on l'installe:
+   make install   
+   exit 0
+else
+  echo \$proj K0 on $2
+   exit 1
+fi
+" > script.sh 
+
+}
+ 
+echo usage $0 baltik_archive user@host TRUST_ROOT_sur_host chemin_pour_test
+
+[ $# -ne 4 ] && echo $# arguments instead of  4 &&exit 1
+
+[ !  -f $1 ] && echo $1 doesnt exist && exit 1
+ssh $2 "[  -d  $3 ]" 
+[ $? -ne 0 ] &&  echo $3 doesnt exit on $2&&  exit 1
+ssh $2 mkdir -p $4
+[ $? -ne 0 ]  && echo creation of $4 on $2 impossible &&exit 1
+gen_script $*
+
+scp script.sh $1 $2:$4
+scp -r $TRUST_ROOT/bin/baltik  $2:$4
+proj=`basename $1 .tar.gz`
+ssh $2 "cd $4; sh script.sh | tee $proj/makechek.log "

@@ -1,0 +1,167 @@
+# Test 3D VEF pour verifier la non regression d'une face non trouvee dans la construction de la loi de paroi #
+# PARALLEL OK #
+dimension 3
+
+Domaine dom
+# BEGIN MESH # 
+Read_file dom 35046.geom
+# END MESH #
+
+Pb_thermohydraulique_turbulent_QC pb_plenum
+VEFPreP1B dis
+
+# BEGIN PARTITION 
+Partition dom
+{
+	partitionneur Metis
+	{ Nb_parts 2 } 
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER  
+Scatter DOM.Zones dom
+END SCATTER #
+
+Schema_Euler_explicite sch 
+Lire sch 
+{ 
+   nb_pas_dt_max 1
+   tinit 0.
+   tmax 50.
+   dt_min 1.e-6
+   dt_max 1.e-1 
+   dt_impr 1.e-6 
+   dt_sauv 2.
+   seuil_statio 1.e-8 
+} 
+
+Champ_Uniforme gravite
+Lire gravite 3  0.  0. -9.81
+
+Fluide_Quasi_Compressible heliumQC_plenum
+# Coefficients Sutherland recuperes chez stagiaire Berthoux : a creuser #
+# Traitement Pth constant a creuser #
+# beta=1/T #
+Lire heliumQC_plenum
+{ 
+        pression 7000000.
+        Sutherland mu0 1.6E-5 T0 273.15 Slambda 235. C 235.
+        loi_etat gaz_parfait {
+          Prandtl 0.67
+          Cp 5193.
+          gamma 1.666
+         }
+        traitement_pth constant
+}
+
+Associate heliumQC_plenum gravite
+Associate pb_plenum dom
+Associate pb_plenum sch 
+Associate pb_plenum heliumQC_plenum
+Discretize pb_plenum dis 
+
+Lire pb_plenum { 
+ Navier_Stokes_turbulent_QC 
+ { 
+    solveur_pression Gcp {
+      precond ssor { omega 1.5 } 
+      seuil 1.e-4 impr
+    }
+    convection { amont }
+    diffusion { }   
+    conditions_initiales { vitesse champ_uniforme 3 0. 0. 0. }
+    boundary_conditions {
+      cl_par_int paroi_fixe
+      cl_par_ext_dhr paroi_fixe
+      cl_DHR1 paroi_fixe
+      cl_DHR2 paroi_fixe
+      cl_DHR3 paroi_fixe
+      cl_IHX1 frontiere_ouverte_vitesse_imposee champ_front_fonc_xyz 3 -42.8633981 0. 0.
+      cl_IHX2 frontiere_ouverte_vitesse_imposee champ_front_fonc_xyz 3 +21.4358031 -37.1256112 0.
+      cl_IHX3 frontiere_ouverte_pression_imposee champ_front_uniforme 1  6.98e+06
+      cl_coeur frontiere_ouverte_vitesse_imposee champ_front_fonc_xyz 3 0. 0. ((SQRT(x*x+y*y)<0.493)*(19.54)+(SQRT(x*x+y*y)<0.854)*(SQRT(x*x+y*y)>0.493)*(19.10)+(SQRT(x*x+y*y)<1.208)*(SQRT(x*x+y*y)>0.854)*(18.28)+(SQRT(x*x+y*y)<1.395)*(SQRT(x*x+y*y)>1.208)*(17.02)+(SQRT(x*x+y*y)<1.586)*(SQRT(x*x+y*y)>1.395)*(18.78)+(SQRT(x*x+y*y)<1.824)*(SQRT(x*x+y*y)>1.586)*(15.13)+(SQRT(x*x+y*y)<3.2)*(SQRT(x*x+y*y)>1.824)*(0.917)+(SQRT(x*x+y*y)>3.2)*(0.))
+    }
+
+    modele_turbulence K_epsilon
+      {
+        transport_k_epsilon 
+          {
+            convection { amont }
+            diffusion { }
+            conditions_initiales { k_eps Champ_uniforme 2 50. 100. }
+            boundary_conditions {
+	       cl_par_int paroi
+	       cl_par_ext_dhr paroi
+	       cl_DHR1 paroi
+	       cl_DHR2 paroi
+	       cl_DHR3 paroi
+	       cl_IHX1 frontiere_ouverte_K_eps_impose champ_front_uniforme 2 50. 100.
+	       cl_IHX2 frontiere_ouverte_K_eps_impose champ_front_uniforme 2 50. 100.
+	       cl_IHX3 frontiere_ouverte_K_eps_impose champ_front_uniforme 2 50. 100.
+	       cl_coeur frontiere_ouverte K_eps_ext champ_front_uniforme 2 50. 100.              
+
+            }
+          }
+        turbulence_paroi loi_standard_hydr              
+        }
+    } 
+
+  Convection_Diffusion_Chaleur_Turbulent_QC
+    {
+    
+
+    convection { amont }
+
+    diffusion { }
+
+    Modele_turbulence Prandtl
+     {
+     turbulence_paroi negligeable_scalaire
+     }
+
+
+    conditions_initiales { Temperature  champ_uniforme 1 673. }
+
+    boundary_conditions {
+      cl_par_int Paroi_adiabatique
+      cl_par_ext_dhr Paroi_echange_externe_impose H_imp champ_front_uniforme 1 27.45 T_ext champ_front_uniforme 1 363.15
+      cl_DHR1  Paroi_adiabatique
+      cl_DHR2  Paroi_adiabatique 
+      cl_DHR3  Paroi_adiabatique
+      cl_IHX1 frontiere_ouverte_temperature_imposee champ_front_uniforme 1 673. 
+      cl_IHX2 frontiere_ouverte_temperature_imposee champ_front_uniforme 1 673. 
+      cl_IHX3 frontiere_ouverte_temperature_imposee champ_front_uniforme 1 673. 
+      cl_coeur   frontiere_ouverte T_ext Champ_Front_Uniforme 1 673.         
+    }
+  }
+
+  Postraitement {
+
+       Sondes {
+	point_vit0        vitesse       periode 1.e-4  point 1     0.    0.     0.4
+	point_vit1        vitesse       periode 1.e-4  point 1     0.    0.     1.5
+	point_vit2        vitesse       periode 1.e-4  point 1     0.    0.     3.2
+				       				   
+	point_temperature0 temperature  periode 1.e-4  point 1     0.    0.     0.4
+	point_temperature1 temperature  periode 1.e-4  point 1     0.    0.     1.5
+	point_temperature2 temperature  periode 1.e-4  point 1     0.    0.     3.2
+
+ 	coupe_Vvert0      vitesse    	periode 0.001 segment 100  0. 0. 0.      0. 0. 3.2
+ 	coupe_Tvert0      temperature  	periode 0.001 segment 100  0. 0. 0.      0. 0. 3.2
+
+      }
+      format lata
+      Champs dt_post 0.5 {
+	pression_pa elem
+	vitesse elem
+	temperature elem
+	vitesse faces
+      }
+    }
+}
+
+Solve pb_plenum
+Fin

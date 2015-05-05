@@ -1,0 +1,7 @@
+#!/bin/bash
+# Copie du fichier dans l'atelier :
+[ "$UTILISE_APPACHE" = "1" ] && . $HOME/HTML/recharger_env
+fic=`extrait_nom $1` 
+# Execute l'ordre
+execute.ksh "$EDITEUR $fic &"
+#ecrit_exec.ksh "#!/bin/bash\n\$EDITEUR $fic &"

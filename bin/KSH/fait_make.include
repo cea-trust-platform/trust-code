@@ -1,0 +1,77 @@
+#!/bin/bash
+#Refait l'ensemble des makefile de TRUST en share libs
+echo "Ne plus utiliser..."
+exit
+[ ${#TRUST_ROOT} = 0 ] && echo "TRUST_ROOT non initialise." && exit
+dirs=`cat $TRUST_ENV/rep.TRUST`
+if [ ${#1} != 0 ] 
+then
+ dirs=$1
+else
+
+echo "Lien dans \$TRUST_ROOT/include de tous les includes..."
+cree_include
+fi
+cd $TRUST_ROOT
+trace=$TRUST_ROOT/.fait_makefile
+rm -f $trace && touch $trace
+
+for dir in $dirs
+do
+      cd $dir
+      b=`basename $dir`
+      if [ $b != MAIN ]
+      then
+         CHECKOUT make.include 1>/dev/null
+         #cp $TRUST_ROOT/bin/makefile .
+	 cp $TRUST_ROOT/env/makefile.rep makefile
+	 echo "Lib = \$(TRUST_LIB)/" > make.include
+         LIB=""
+         for file in *.h
+         do
+	    LIB=`cat $file | $TRUST_Awk '/.LIBRAIRIE/ {if ($NF!=".LIBRAIRIE") {print $NF;exit}}'`
+            if [ ${#LIB} != 0 ]
+            then
+               break
+            fi
+         done
+         if [ ${#LIB} = 0 ]
+         then
+            echo Pas de nom de librairie trouve dans les .h de $dir
+         fi
+         if [ "`grep $LIB'|' $trace`" != "" ]
+         then
+            echo "!!!!!!!!!!!!!!!!!"
+            echo "Gros probleme $LIB existe deja dans un autre repertoire !!"
+            echo "!!!!!!!!!!!!!!!!!"
+         fi
+         echo $ECHO_OPTS "Librairie:$LIB \tpour $dir"
+         for file in *.h
+         do
+            LIBA=`cat $file | $TRUST_Awk '/.LIBRAIRIE/ {if ($NF!=".LIBRAIRIE") {print $NF;exit}}'`
+            if [  ${#LIBA} != 0 ] && [ $LIB != $LIBA ]
+            then
+               echo "!!!"
+               echo "Librairie du fichier $file : $LIBA au lieu de $LIB"
+               echo "!!!"
+            fi
+         done
+         echo $LIB'|' >> $trace
+         sed -e "s?Lib = \$(TRUST_LIB)\/?Lib = \$(TRUST_LIB)\/"$LIB"?g" make.include > make.include.tmp && mv make.include.tmp make.include
+	 err=$?
+         make all_depend 
+	 [ $? != 0 ] && echo "ERREUR!"
+	 CHECKIN make.include 1>/dev/null
+
+      elif [ "`basename $dir`" = MAIN ] 
+      then
+         echo $dir
+         cp $TRUST_ROOT/env/Makefile.MAIN Makefile
+	 echo > make.include
+         make all_depend 1>/dev/null 2>/dev/null
+	 [ $? != 0 ] && echo "ERREUR!"         
+	 CHECKIN make.include 1>/dev/null
+      fi
+   cd $TRUST_ROOT
+done
+rm -f $trace

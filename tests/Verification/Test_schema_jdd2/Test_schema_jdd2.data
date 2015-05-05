@@ -1,0 +1,362 @@
+# SIMULATION D'UNE BOITE 2D VEF EN THERMOHYDRAULIQUE COMPRESSIBLE #
+
+dimension 2
+
+
+
+Domaine dom1
+Domaine dom2
+Domaine dom3
+Domaine dom4
+
+# BEGIN MESH #
+Mailler dom1
+{
+	Pave Cavite
+		{
+		Origine 0. 0.
+		Nombre_de_Noeuds 2 2
+		Longueurs  1. 1.
+		}
+		{
+		Bord Gauche	X = 0.	0. <= Y <= 1.
+		Bord Droit	X = 1.	0. <= Y <= 1.
+		Bord Bas	Y = 0.	0. <= X <= 1.
+		Bord Haut	Y = 1.	0. <= X <= 1.
+		}
+}
+Mailler dom2
+{
+	Pave Cavite
+		{
+		Origine 0. 0.
+		Nombre_de_Noeuds 2 2
+		Longueurs  1. 1.
+		}
+		{
+		Bord Gauche	X = 0.	0. <= Y <= 1.
+		Bord Droit	X = 1.	0. <= Y <= 1.
+		Bord Bas	Y = 0.	0. <= X <= 1.
+		Bord Haut	Y = 1.	0. <= X <= 1.
+		}
+}
+Mailler dom3
+{
+	Pave Cavite
+		{
+		Origine 0. 0.
+		Nombre_de_Noeuds 2 2
+		Longueurs  1. 1.
+		}
+		{
+		Bord Gauche	X = 0.	0. <= Y <= 1.
+		Bord Droit	X = 1.	0. <= Y <= 1.
+		Bord Bas	Y = 0.	0. <= X <= 1.
+		Bord Haut	Y = 1.	0. <= X <= 1.
+		}
+}
+Mailler dom4
+{
+	Pave Cavite
+		{
+		Origine 0. 0.
+		Nombre_de_Noeuds 2 2
+		Longueurs  1. 1.
+		}
+		{
+		Bord Gauche	X = 0.	0. <= Y <= 1.
+		Bord Droit	X = 1.	0. <= Y <= 1.
+		Bord Bas	Y = 0.	0. <= X <= 1.
+		Bord Haut	Y = 1.	0. <= X <= 1.
+		}
+}
+# END MESH #
+
+VDF dis
+
+
+Pb_conduction pb_1
+schema_euler_explicite sch_1
+Read sch_1
+{
+	tinit	0.
+	nb_pas_dt_max 3
+	tmax	15.
+	dt_min	1.e-10
+	dt_max 1.e-1
+	dt_impr	1.
+	dt_sauv	15.
+        seuil_statio 1.e-12
+}
+
+Solide solide_1
+Read solide_1
+{
+	rho champ_uniforme 1  1
+	cp  champ_uniforme 1 1
+	lambda champ_uniforme 1 0.01 
+}
+
+
+Associate pb_1 dom1
+Associate pb_1 solide_1
+
+
+
+ 
+
+#  #
+Pb_conduction pb_2
+runge_kutta_rationnel_ordre_2 sch_2
+Read sch_2
+{
+	tinit	0.
+	nb_pas_dt_max 3
+	tmax	15.
+	dt_min	1.e-10
+	dt_max 1.e-1
+	dt_impr	1.
+	dt_sauv	15.
+        seuil_statio 1.e-12
+}
+
+Solide solide_2
+Read solide_2
+{
+	rho champ_uniforme 1  1
+	cp  champ_uniforme 1 1
+	lambda champ_uniforme 1 0.01 
+}
+
+
+Associate pb_2 dom2
+Associate pb_2 solide_2
+
+
+Pb_conduction pb_3
+runge_kutta_ordre_3 sch_3
+Read sch_3
+{
+	tinit	0.
+	nb_pas_dt_max 3
+	tmax	15.
+	dt_min	1.e-10
+	dt_max 1.e-1
+	dt_impr	1.
+	dt_sauv	15.
+        seuil_statio 1.e-12
+}
+
+Solide solide_3
+Read solide_3
+{
+	rho champ_uniforme 1  1
+	cp  champ_uniforme 1 1
+	lambda champ_uniforme 1 0.01 
+}
+
+
+Associate pb_3 dom3
+Associate pb_3 solide_3
+
+
+Pb_conduction pb_4
+runge_kutta_ordre_4_D3P sch_4
+Read sch_4
+{
+	tinit	0.
+	nb_pas_dt_max 3
+	tmax	15.
+	dt_min	1.e-10
+	dt_max 1.e-1
+	dt_impr	1.
+	dt_sauv	15.
+        seuil_statio 1.e-12
+}
+
+Solide solide_4
+Read solide_4
+{
+	rho champ_uniforme 1  1
+	cp  champ_uniforme 1 1
+	lambda champ_uniforme 1 0.01 
+}
+
+
+Associate pb_4 dom4
+Associate pb_4 solide_4
+
+
+
+Associate pb_1 sch_1
+Associate pb_2 sch_2
+Associate pb_3 sch_3
+Associate pb_4 sch_4
+
+Discretize pb_1 dis
+Discretize pb_2 dis
+Discretize pb_3 dis
+Discretize pb_4 dis
+
+Read pb_1
+{
+
+	Conduction
+	{
+		diffusion { } 
+		
+		boundary_conditions 
+		{
+			Haut		paroi_echange_global_impose h_imp champ_front_uniforme 1 1 t_ext  Champ_Front_Uniforme 1 50.
+			Bas		Symetrie
+			Gauche		Symetrie
+			Droit		Symetrie
+		}
+		conditions_initiales { Temperature Champ_Uniforme 1 100. }
+	}
+
+	Postraitement
+        {       
+		Definition_champs {
+			erreur_temp Transformation {
+				methode formule expression 1 abs(temp/(50+50*exp(-t))-1)
+					source refChamp {
+					Pb_Champ pb_1 temperature nom_source temp 
+					}
+				} 
+    		} 
+                Sondes
+		{
+			temperature_pb_1		grav	temperature	periode 1.e-6 point   1  0.45 0.95
+			erreur_temperature_pb_1	grav	erreur_temp	periode 1.e-6 point   1  0.45 0.95
+		}
+		Champs dt_post 1.
+		{
+			temperature	elem
+			erreur_temp	elem
+		}
+	}
+}
+Read pb_2
+{
+
+	Conduction
+	{
+		diffusion { }	
+		
+		boundary_conditions 
+		{
+			Haut		paroi_echange_global_impose h_imp champ_front_uniforme 1 1 t_ext  Champ_Front_Uniforme 1 50.
+			Bas		Symetrie
+			Gauche		Symetrie
+			Droit		Symetrie
+		}
+		conditions_initiales { Temperature Champ_Uniforme 1 100. }
+	}
+
+	Postraitement
+        {       
+		Definition_champs {
+			erreur_temp Transformation {
+				methode formule expression 1 abs(temp/(50+50*exp(-t))-1)
+					source refChamp {
+					Pb_Champ pb_2 temperature nom_source temp 
+					}
+				} 
+    		} 
+                Sondes
+		{
+			temperature_pb_2		grav	temperature	periode 1.e-6 point   1  0.45 0.95
+			erreur_temperature_pb_2	grav	erreur_temp	periode 1.e-6 point   1  0.45 0.95
+		}
+		Champs dt_post 1.
+		{
+			temperature	elem
+			erreur_temp	elem
+		}
+	}
+}
+Read pb_3
+{
+
+	Conduction
+	{
+		diffusion { }	
+		
+		boundary_conditions 
+		{
+			Haut		paroi_echange_global_impose h_imp champ_front_uniforme 1 1 t_ext  Champ_Front_Uniforme 1 50.
+			Bas		Symetrie
+			Gauche		Symetrie
+			Droit		Symetrie
+		}
+		conditions_initiales { Temperature Champ_Uniforme 1 100. }
+	}
+
+	Postraitement
+        {       
+		Definition_champs {
+			erreur_temp Transformation {
+				methode formule expression 1 abs(temp/(50+50*exp(-t))-1)
+					source refChamp {
+					Pb_Champ pb_3 temperature nom_source temp 
+					}
+				} 
+    		} 
+                Sondes
+		{
+			temperature_pb_3		grav	temperature	periode 1.e-6 point   1  0.45 0.95
+			erreur_temperature_pb_3	grav	erreur_temp	periode 1.e-6 point   1  0.45 0.95
+		}
+		Champs dt_post 1.
+		{
+			temperature	elem
+			erreur_temp	elem
+		}
+	}
+}
+Read pb_4
+{
+
+	Conduction
+	{
+		diffusion { }	
+		
+		boundary_conditions 
+		{
+			Haut		paroi_echange_global_impose h_imp champ_front_uniforme 1 1 t_ext  Champ_Front_Uniforme 1 50.
+			Bas		Symetrie
+			Gauche		Symetrie
+			Droit		Symetrie
+		}
+		conditions_initiales { Temperature Champ_Uniforme 1 100. }
+	}
+
+	Postraitement
+        {       	
+	        Definition_champs {
+			erreur_temp Transformation {
+				methode formule expression 1 abs(temp/(50+50*exp(-t))-1)
+					source refChamp {
+					Pb_Champ pb_4 temperature nom_source temp 
+					}
+				} 
+    		} 
+                Sondes
+		{
+			temperature_pb_4		grav	temperature	periode 1.e-6 point   1  0.45 0.95
+			erreur_temperature_pb_4	grav	erreur_temp	periode 1.e-6 point   1  0.45 0.95
+		}
+		Champs dt_post 1.
+		{
+			temperature	elem
+			erreur_temp	elem
+		}
+	}
+}
+
+Solve pb_1
+Solve pb_2
+Solve pb_3
+Solve pb_4
+End

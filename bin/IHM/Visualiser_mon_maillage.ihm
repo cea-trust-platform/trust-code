@@ -1,0 +1,22 @@
+#!/bin/bash
+xterm
+NOMINFO=$1
+#echo $ECHO_OPTS $NOMINFO
+
+ETUDE_TRUST=`QUELLE_ETUDE.ihm`
+export ETUDE_TRUST
+cd $ETUDE_TRUST
+# Recupere le fichier provenant de Mosaic :
+NOMGEOM=`head -1 $NOMINFO`
+dim=`cat $NOMINFO | $TRUST_Awk '/VDF/ || /VEF/ {if ($2=="3D") print "3";else if ($2=="2D") print "2"}'`
+#echo $ECHO_OPTS "dimension du cas:"$dim
+if [ ! -f $NOMGEOM ]
+then
+   echo $ECHO_OPTS "Fichier $NOMGEOM inexistant ou pas d'en tete dans le fichier $NOMINFO."
+   eval $FIN
+fi
+echo $ECHO_OPTS "Dimension $dim
+Domaine dom
+Lire_fichier dom $NOMGEOM" > $NOMGEOM.data
+Check_maillage.ksh $NOMGEOM.data
+

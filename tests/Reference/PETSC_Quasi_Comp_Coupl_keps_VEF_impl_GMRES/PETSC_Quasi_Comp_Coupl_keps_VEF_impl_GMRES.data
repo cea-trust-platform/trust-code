@@ -1,0 +1,202 @@
+# SIMULATION RNR_G :  3D VEF EN THERMOHYDRAULIQUE QUASI-COMPRESSIBLE #
+# COUPLE A UN SOLIDE AVEC DEGAGEMENT DE PUISSANCE #
+# PARALLEL OK 3 #
+
+Dimension 3
+
+Pb_Thermohydraulique_turbulent_QC pb_Th
+Pb_Conduction pb_C
+
+Domaine dom_solide
+Domaine dom_fluide
+
+# BEGIN MESH #
+Read_file dom_fluide Canal_plan_couple_fluide_x100.geom
+Transformer dom_fluide z y 100*x
+Read_file dom_solide Canal_plan_couple_solide_x100.geom
+Transformer dom_solide z y 100*x
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom_fluide
+{
+	Partitionneur tranche { tranches 1 1 2 }
+	Larg_joint 2
+	Nom_Zones DOM1
+}
+Partition dom_solide
+{
+	Partitionneur tranche { tranches 1 1 2 }
+	Larg_joint 1
+	Nom_Zones DOM2
+}
+
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM2.Zones dom_solide
+Scatter DOM1.Zones dom_fluide
+END SCATTER #
+
+VEFPreP1B dis
+
+Schema_Euler_Implicite sch
+Lire sch
+{
+	tinit	0.
+	tmax	0.01
+	facsec		10.e2
+	facsec_max	50.e2
+	dt_start	dt_calc
+	nb_pas_dt_max 2
+	dt_min	1.e-10
+	dt_max	1.e-1
+	dt_impr	1.e-10
+	dt_sauv	1.e-4
+        seuil_statio 1.e-8
+	solveur piso
+	{
+	   solveur Petsc GMRES { seuil 1.e-12 precond ilu { level 2 } impr }
+	   seuil_convergence_solveur	1.e-5 
+	   seuil_convergence_implicite	1.e-1
+	}
+}
+
+Fluide_Quasi_Compressible fluide
+Lire fluide
+{
+	mu	Champ_Fonc_fonction	1 temperature	3.95e-7*val^0.687
+	lambda	Champ_Fonc_fonction	1 temperature	2.774e-3*val^0.701
+        pression   7092750.
+	loi_etat gaz_parfait
+	{
+                Prandtl   0.673
+                Cp        5193.
+                gamma     1.666
+	}
+	Traitement_Pth		constant
+	Traitement_rho_gravite	moins_rho_moyen
+}
+
+Solide solide
+Lire solide
+{
+	rho	Champ_Uniforme		1		8000.
+	lambda  Champ_Fonc_Fonction	1 temperature	(val<773)*(273+(17.5-(0.00565*val)+(0.00000814*val*val)))+(val>773)*(273+(12.76+(0.00871*val)-(0.00000188*val*val)))
+	Cp	Champ_Uniforme		1		15.94725320000089e-2
+}
+
+Champ_Uniforme gravite
+Lire gravite 3 0 0 -9.81
+
+Associate fluide gravite
+Associate solide gravite
+
+Associate pb_Th dom_fluide
+Associate pb_Th fluide
+
+Associate pb_C dom_solide
+Associate pb_C solide
+
+Probleme_Couple pbc
+
+Associate pbc pb_Th
+Associate pbc pb_C
+Associate pbc sch
+
+Discretize pbc dis
+
+# Debog pb_C seq faces 1.e-5 0 #
+
+Lire pb_Th
+{
+	Navier_Stokes_turbulent_QC
+	{
+     		solveur_pression GCP { precond ssor { omega 1.651 } seuil 1.e-11 } 
+		convection { muscl }
+		diffusion { }
+		conditions_initiales { vitesse champ_uniforme 3 0. 0. 80. }
+		boundary_conditions
+		{
+			Entree		frontiere_ouverte_vitesse_imposee	Champ_Front_Uniforme 3 0. 0. 80.
+			Sortie		frontiere_ouverte_pression_imposee	Champ_Front_Uniforme 1 0.
+			Symmetry	Symetrie
+			Haut		Paroi_fixe
+			Bas		Paroi_fixe
+		}
+                Modele_turbulence K_Epsilon
+		{
+			Transport_K_Epsilon 
+			{
+				parametre_equation parametre_implicite { resolution_explicite }
+				convection { amont }
+                                diffusion { }
+                                boundary_conditions
+				{
+					Entree		frontiere_ouverte_k_eps_impose	Champ_Front_Uniforme 2 302. 6.61e6
+					Sortie		frontiere_ouverte k_eps_EXT	Champ_Front_Uniforme 2 302. 6.61e6 
+					Symmetry	Symetrie
+					Haut		Paroi
+					Bas		Paroi
+				}
+                                conditions_initiales { k_Eps Champ_Uniforme 2 302. 6.61e6 }
+			}
+			turbulence_paroi loi_standard_hydr dt_impr_ustar 1.e-2
+		}
+	}
+
+	Convection_Diffusion_Chaleur_Turbulent_QC
+	{
+		diffusion { }
+		convection { muscl }
+		boundary_conditions 
+		{
+			Entree		frontiere_ouverte_temperature_imposee	Champ_Front_Uniforme 1 673.
+			Sortie		frontiere_ouverte 	T_ext		Champ_Front_Uniforme 1 773.
+			Symmetry	Symetrie
+			Haut		paroi_contact pb_C Haut
+			Bas		paroi_contact pb_C Bas
+		}
+		conditions_initiales { Temperature Champ_Uniforme 1 673. }
+		Modele_turbulence Prandtl
+		{   
+                        Turbulence_paroi loi_standard_hydr_scalaire  dt_impr_nusselt 1.e-2
+ 		}
+	}
+
+	Postraitement
+        {       
+                Champs dt_post 0.01
+		{
+		  vitesse		elem
+		}
+	}
+}
+
+Lire pb_C
+{
+	Conduction
+	{
+		diffusion { }
+                sources { Puissance_Thermique champ_uniforme 1 163626000 }
+		conditions_initiales { temperature Champ_Uniforme 1 673. }
+		boundary_conditions
+		{
+			Wall_bas	paroi_adiabatique
+			Wall_haut	paroi_adiabatique
+			Haut		paroi_contact pb_Th Haut
+			Bas		paroi_contact pb_Th Bas
+		}
+	}
+	Postraitement
+	{
+		Champs dt_post 0.01
+		{
+		  temperature		elem
+		}
+	}
+}
+
+Solve pbc
+Fin

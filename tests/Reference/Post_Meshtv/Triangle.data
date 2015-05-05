@@ -1,0 +1,110 @@
+# Thermohydraulique 2D VEF Boussinesq #
+dimension 2
+Pb_Thermohydraulique pb
+Domaine dom
+Mailler dom
+{
+	Pave Cavite 
+		{
+		Origine 0. 0.
+     		Nombre_de_Noeuds 11 11
+		Longueurs 0.01 0.01
+		}
+		{
+		Bord Gauche X = 0.  0. <= Y <= 0.01
+		Bord Haut Y = 0.01  0. <= X <= 0.01
+		Bord Bas Y = 0.     0. <= X <= 0.01
+		Bord Droit X = 0.01 0. <= Y <= 0.01
+		}
+}
+
+Trianguler_H dom
+VEFPreP1B dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0.
+	tmax 0.02
+	dt_min 0.0001
+	dt_max 0.001
+	dt_impr 0.001
+	dt_sauv 100
+	seuil_statio 1.e-8
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 1.85e-5
+	rho Champ_Uniforme 1 1.17
+	lambda Champ_Uniforme 1 0.0262 
+	Cp Champ_Uniforme 1 1006
+	beta_th Champ_Uniforme 1 3.41e-3
+}
+
+Champ_Uniforme gravite
+Lire gravite 2 0 -9.81
+
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-6 impr }	
+		convection { Amont }
+		diffusion { }
+		sources { boussinesq_temperature { T0 5. } }
+		conditions_initiales {
+			vitesse Champ_Uniforme 2 0. 0.
+			}
+		boundary_conditions {
+			Haut paroi_fixe
+			Bas paroi_fixe
+			Gauche paroi_fixe
+			Droit paroi_fixe
+		}
+	}
+	Convection_Diffusion_Temperature
+	{
+		diffusion { }
+		convection { amont }
+		boundary_conditions 
+		{
+			Haut paroi_adiabatique
+			Bas paroi_adiabatique
+ 			Gauche Paroi_temperature_imposee Champ_Front_Uniforme 1 10.
+			Droit Paroi_temperature_imposee Champ_Front_Uniforme 1 0
+		}
+		conditions_initiales { Temperature Champ_Uniforme 1 5. }
+	}
+
+	Postraitement
+	{
+		Sondes
+		{
+			sonde_pression pression periode 0.01 points 1 0.0045 0.0045
+			sonde_vitesse vitesse periode 0.01 segment 10 0.0005 0.005 0.0095 0.005
+			sonde_vit vitesse periode 0.01 segment 11 0.0005 0. 0.0005 0.01
+			sonde_temp temperature periode 0.01 segment 21 0. 0.0055 0.01 0.0055
+		}
+		format lml
+		fichier ../Post_Meshtv/Triangle
+		Champs dt_post 0.01
+		{
+			vitesse elem
+			pression elem
+			pression som
+			temperature som
+		}
+	}
+}
+
+Solve pb
+Fin

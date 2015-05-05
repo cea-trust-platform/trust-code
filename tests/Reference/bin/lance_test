@@ -1,0 +1,9 @@
+#!/bin/bash
+echo "Usage: $0 nom_du_fichier_de_substitution [nom_du_cas]"
+SUFFIXE=$1 && [ "$SUFFIXE" = "" ] && echo "Usage: $0 file" && exit
+DIR=`dirname $0` 
+[ "$DIR" = "." ] && DIR=`pwd`
+sed "s?#BALISE_MODULE?ksh $DIR/$SUFFIXE \$NOM $SUFFIXE"_"\${NOM} ; NOM=$SUFFIXE"_"\${NOM}?" $TRUST_ROOT/bin/lance_test  > $DIR/.lance_test
+chmod +x $DIR/.lance_test
+NUM=0 && [ ${#2} != 0 ] && NUM=$2
+echo $NUM | $DIR/.lance_test

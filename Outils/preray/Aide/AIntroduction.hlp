@@ -1,0 +1,25 @@
+Type : Manuel
+
+INTRODUCTION
+------------
+
+	Cette interface graphique fait partie du module de rayonnement 3D simplifie de TRUST. Elle permet de manipuler les facteurs de forme des differentes faces rayonnantes d'un systeme, et genere des fichiers lisibles directement par TRUST.
+
+EXÉCUTION
+---------
+
+Sous UNIX:
+	L'interface peut se lancer "a vide" a l'aide de la commande 
+
+  > trio_ray &
+
+et la fenetre s'ouvrira vide, attendant que l'utilisateur ouvre un fichier contenant les noms et les surfaces des faces rayonnantes.
+
+	Une autre possibilite est d'initialiser l'interface directement avec un fichier de donnees, avec la commande
+
+  > trio_ray toto.facesrayo &
+
+la fenetre s'ouvrant alors avec toutes les donnees concernant le cas "toto". Si le fichier ".facesrayo" n'existe pas, une erreur est generee, et l'interface est stoppee.
+
+Sous WINDOWS :
+	Il suffit de double-cliquer sur l'icone "trio_rayo.tcl", l'interface s'ouvrant a vide.

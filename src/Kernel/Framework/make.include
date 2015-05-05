@@ -1,0 +1,21 @@
+Includes = -I. -I$(TRUST_ROOT)/include/backward\
+  -I$(TRUST_ICOCOAPI)/include\
+  -I$(SILO_ROOT)/include\
+  -I$(TRUST_LATAFILTER)/include\
+  -I$(TRUST_ROOT)/src/Kernel/Champs\
+  -I$(TRUST_ROOT)/src/Kernel/Champs_dis\
+  -I$(TRUST_ROOT)/src/Kernel/Cond_Lim\
+  -I$(TRUST_ROOT)/src/Kernel/Geometrie\
+  -I$(TRUST_ROOT)/src/Kernel/ICoCo\
+  -I$(TRUST_ROOT)/src/Kernel/Math/Matrices\
+  -I$(TRUST_ROOT)/src/Kernel/Math/SolvSys\
+  -I$(TRUST_ROOT)/src/Kernel/Math\
+  -I$(TRUST_ROOT)/src/Kernel/Schemas_Temps\
+  -I$(TRUST_ROOT)/src/Kernel/Solveurs\
+  -I$(TRUST_ROOT)/src/Kernel/Statistiques_temps\
+  -I$(TRUST_ROOT)/src/Kernel/Utilitaires\
+  -I$(TRUST_ROOT)/src/Kernel/VF/Zones\
+   -I$(TRUST_ROOT)/src/Kernel/VF/Champs\
+  
+
+  Lib = $(TRUST_LIB)/libnoyau

@@ -1,0 +1,107 @@
+# Conduction 2D VEF : Diverses conditions limites #
+# PARALLEL OK 8 #
+dimension 2
+
+Pb_conduction pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Cavite 
+ 	{
+		Origine 0. 0.
+		Nombre_de_Noeuds 11 11 
+		Longueurs 1. 1.
+	}
+	{
+		Bord Gauche X = 0. 0. <= Y <= 1.
+		Bord Haut   Y = 1. 0. <= X <= 1.
+		Bord Bas    Y = 0. 0. <= X <= 1.
+		Bord Droit  X = 1. 0. <= Y <= 1.
+	}
+} 
+
+trianguler dom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur metis { Nb_parts 2 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0
+	tmax 300.
+	dt_min 0.00001
+	dt_max 0.1
+	dt_impr 0.1
+	dt_sauv 100
+	seuil_statio 1.e-8
+	facsec 0.9375
+}
+
+Solide sol
+Lire sol
+{
+	rho Champ_Uniforme 1 2
+	lambda Champ_Uniforme 1 0.01
+	Cp Champ_Uniforme 1 0.5
+}
+Associate pb dom
+Associate pb sch
+Associate pb sol
+
+Discretize pb dis
+
+Lire pb
+{
+	Conduction
+	{
+		diffusion { }
+		conditions_initiales {
+			temperature Champ_Uniforme 1 0. 
+			}
+		boundary_conditions {
+			Haut paroi_adiabatique
+			Bas paroi_temperature_imposee
+			       Champ_Front_Uniforme 1 5.
+			Droit paroi_flux_impose  
+			      Champ_Front_Uniforme 1 0.1
+			Gauche paroi_temperature_imposee 
+			       Champ_Front_Uniforme 1 0
+		}
+	}
+
+	Postraitement
+	{
+		Sondes
+		{
+			sonde_T temperature periode 5. points 1 0.45 0.45
+			sonde_T1 temperature periode 5. segment 21 0. 0.45 1. 0.45
+			sonde_T2 temperature periode 5. segment 21 0.45 0. 0.45 1.
+		}
+		Format lml
+		Champs dt_post 30.
+		{
+			temperature som
+			pas_de_temps
+		}
+	}
+}
+
+Solve pb
+
+Fin

@@ -1,0 +1,37 @@
+#!/bin/bash
+file=res
+file2=".tests_"`basename $exec`
+npar=`grep PAR_ $file | wc -l`
+npar_ok=`grep PAR_ $file | grep OK |wc -l`
+n=` grep -v PAR_ $file | wc -l`
+#n=` grep Mo res  | grep -v PAR  | wc -l`
+
+n_ok=`grep OK $file |grep -v PAR_ | wc -l `
+
+cat $file > $file2
+echo >> $file2
+echo Successful tests cases : ${n_ok}/${n} >> $file2
+echo >> $file2
+echo Successful tests cases in parallel mode : ${npar_ok}/${npar} >> $file2
+#echo $npar $npar_ok $n $n_ok
+grep -v OK $file | sed "s/PAR_//g"| awk -F\| '{print $NF}'   | sort -u > liste_rate
+cat $file2
+
+n2=`cat liste_distante | wc -l `
+
+if [ $n != ${n2} ]
+then
+nm=$n2
+let nm=$nm-$n
+echo il manque $nm  "cas tests (ils seront rajoutes au fichier liste_rate) "
+grep -v PAR_ res | grep "|" | awk -F\| '{print $NF}' | awk '{print $1}' > lp
+for cas in `cat  liste_distante`
+do
+ok=0
+for cas2 in `cat lp`
+do
+[ $cas == $cas2 ] && ok=1 && break
+done
+[ $ok == 0 ] &&  echo $cas pas trouve && echo $cas >> liste_rate
+done 
+fi

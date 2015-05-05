@@ -1,0 +1,346 @@
+Parameters {
+	Title "Lot 2 : Jet impactant une plaque chaufee"
+	Description "Validation de TRUST sur le cas du jet impactant."
+	Description "Grandeurs caracteritisques :"
+	Description "-diametre du jet (D) = 0.0403m"
+	Description "-hauteur du jet (L) = 2*D"
+	Description "-nombre de Reynolds = 23000"
+	Description "-temperature du jet (Tj) = 293K"
+	Description "-temperature de la plaque (Tw) = 314.9K"
+
+	VersionTRUST "1.5.4_beta build 051007"
+
+	ParametersTRUST Dimension : 3D
+	ParametersTRUST Discretisation : VEFPre1B
+	ParametersTRUST Modele de turbulence : kEpsilon
+	ParametersTRUST Convection QDM : EF_Stab
+	ParametersTRUST Convection kEpsilon : Amont
+	ParametersTRUST Lois de Paroi : standard
+
+	TestCase "./calcul_EF_Stab"     "./6DomaineComplet_calculsEFStab/impingingJet.data"
+
+	Reference "1. 'An experimental study of entertainment effects on the heat transfer from a flat surface to a heated circular impinging jet', J. Baughn, A. Hechanova, X. Yan, Journal of heat transfer 113, pp.1023-1025. cited in"
+	Reference "2. 'Heat transfer predictions using advanced two-equation turbulence models', W. Vieser, T. Esch, F. Menter, CFX validation report, CFX-VAL10/0602, 2002."
+
+	Author "G. ETIEVENT"
+	IncludeData 0
+
+	Prerequisite "python calculerNusselt.py"
+	Prerequisite "python calculerUstar.py"
+}
+
+Chapter {
+	Title "Profils de l'ecoulement en entree"
+	Figure {
+		Title "Profil de vitesse"
+		Description "Profil de la vitesse axiale en entree, calcule par le canal periodique."
+		Description "(trace des points (r,U) au centre des faces de bord)"
+		Dimension 2
+		RangeX 0. 0.5
+		LabelX "r/D"
+		RangeY -12. 0.
+		LabelY "Vz"
+		PointSize 0.5
+		legend off
+		Curve {
+			legend "Profil Vz"
+			origin "TRUST"
+			Version "1.5.4beta"
+			file ./5DomaineComplet_calculsAmont/pb_VITESSE_PERIO_0.726767.dat
+			columns sqrt($1*$1+$2*$2)/0.0403 6
+			Style points
+			TypeLigne 1
+			TypePoints 2
+		}
+	}
+	Figure {
+		Title "Profil de k"
+		Description "Profil du parametre turbulent k en entree, calcule par le canal periodique."
+		Description "(trace des points (r,k) au centre des faces de bord)"
+		Dimension 2
+		RangeX 0. 0.5
+		LabelX "r/D"
+		RangeY 0. 1.
+		LabelY "k"
+		PointSize 0.5
+		legend off
+		Curve {
+			legend "Profil k"
+			origin "TRUST"
+			Version "1.5.4beta"
+			file ./5DomaineComplet_calculsAmont/pb_K_EPS_PERIO_0.726767.dat
+			columns sqrt($1*$1+$2*$2)/0.0403 4
+			Style points
+			TypeLigne 1
+			TypePoints 2
+		}
+	}
+	Figure {
+		Title "Profil de epsilon"
+		Description "Profil du parametre turbulent epsilon en entree, calcule par le canal periodique."
+		Description "(trace des points (r,Eps) au centre des faces de bord)"
+		Dimension 2
+		RangeX 0. 0.5
+		LabelX "r/D"
+		RangeY 0. 200.
+		LabelY "Epsilon"
+		PointSize 0.5
+		legend off
+		Curve {
+			legend "Profil k-Eps"
+			origin "TRUST"
+			Version "1.5.4beta"
+			file ./5DomaineComplet_calculsAmont/pb_K_EPS_PERIO_0.726767.dat
+			columns sqrt($1*$1+$2*$2)/0.0403 5
+			Style points
+			TypeLigne 1
+			TypePoints 2
+		}
+	}
+}
+
+Chapter {
+	Title "Resultats"
+	Description "Nombre de Reynolds : 23000 (soit une vitesse moyenne d'entree : U = 0. 0. -8.561)."
+	Description "Le flux d'entree est genere par un calcul prealable sur un canal periodique."
+	#########################################################################################################################
+	Figure {
+		Title "Nombre de Nusselt"
+		Description "Formule: Nu=h(x) D/lambda"
+		Description "Trace a partir du coefficient d'echange h(x) ecrit par TRUST dans le file impingingJet_pb_Nusselt.face"
+		Description "(mot cle Imprimer_flux maillage { paroi })"
+		Dimension 2
+		RangeX 0. 5.5
+		LabelX "r/D"
+		RangeY 0. 200.
+		LabelY "Nu"
+		PointSize 0.5
+		legend below title "Legende"
+		Curve {
+			legend "Baughn et al. 1991"
+			origin "[1], fig 29, p50"
+			Version ""
+			file ./Reference/references_Nu_Baughn1991.csv
+			columns 1 2
+			Style linespoints
+			TypeLigne 1
+			TypePoints 2
+		}
+		Curve {
+			legend "k-Epsilon ref."
+			origin "[1], fig 29, p50"
+			Version ""
+			file ./Reference/references_Nu_KEpsRef.csv
+			columns 1 2
+			Style linespoints
+			TypeLigne 3
+			TypePoints 4
+		}
+		Curve {
+			legend "Calcul"
+			origin "TRUST"
+			Version "1.5.4beta"
+			file ./fichier_NusseltMoy.plot
+			columns $3/0.0403 7
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+	}
+	Figure {
+		Title "Comparaison Nu, y+ et u*"
+		Description "Trace sur la meme Curve de :"
+		Description "-Nombre de Nusselt local"
+		Description "-y+"
+		Description "-u* (*100 pour l'affichage)"
+		Dimension 2
+		RangeX 0. 5.5
+		LabelX "r/D"
+		RangeY 0. 125.
+		LabelY "Nu, y+, u*"
+		PointSize 0.5
+		legend below title "Legende"
+		Curve {
+			legend "Nombre de Nusselt local"
+			origin "TRUST"
+			Version "1.5.4beta"
+			file ./fichier_NusseltMoy.plot
+			columns $3/0.0403 7
+			Style linespoints
+			TypeLigne 1
+			TypePoints 2
+		}
+		Curve {
+			legend "y+"
+			origin "TRUST"
+			Version "1.5.4beta"
+			file ./fichier_UstarMoy.plot
+			columns $3/0.0403 5
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+		Curve {
+			legend "100.u*"
+			origin "TRUST"
+			Version "1.5.4beta"
+			file ./fichier_UstarMoy.plot
+			columns $3/0.0403 ($7*100.)
+			Style linespoints
+			TypeLigne 3
+			TypePoints 2
+		}
+	}
+	#########################################################################################################################
+	Figure {
+		Title "Vitesse a r/D=0.5"
+		Description "Vitesse en fonction de la distance a la plaque, a r/D=0.5"
+		Description "D'apres une sonde 'segment' de TRUST, place sur le rayon a Pi/2 du bord."
+		Dimension 2
+		#RangeX 0. 0.4
+		LabelX "y/D"
+		#RangeY 0. 1.2
+		LabelY "u/U"
+		PointSize 0.5
+		legend below title "Legende"
+		Curve {
+			legend "Experimental"
+			origin "[1], fig 30, p51"
+			Version ""
+			file ./Reference/references_U05.csv
+			columns 1 2
+			Style linespoints
+			TypeLigne 1
+			TypePoints 2
+		}
+		Curve {
+			legend "k-Epsilon ref."
+			origin "[1], fig 30, p51"
+			Version ""
+			file ./Reference/references_U05_KEpsRef.csv
+			columns 1 2
+			Style linespoints
+			TypeLigne 3
+			TypePoints 4
+		}
+		Curve {
+			legend "Calcul"
+			origin "TRUST (Castor)"
+			Version "v1.5.4beta"
+			Segment 6ReprisePost/impingingJet.data SONDE_V0.5
+			columns (($1+2*0.0403)/0.0403) (sqrt($2*$2+$3*$3+$4*$4)/8.56)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+	}
+	#########################################################################################################################
+	Figure {
+		Title "Vitesse a r/D=1.0"
+		Description "Vitesse en fonction de la distance a la plaque, a r/D=1.0"
+		Description "D'apres une sonde 'segment' de TRUST, place sur le rayon a Pi/2 du bord."
+		Dimension 2
+		#RangeX 0. 0.4
+		LabelX "y/D"
+		#RangeY 0. 1.2
+		LabelY "u/U"
+		PointSize 0.5
+		legend below title "Legende"
+		Curve {
+			legend "Experimental"
+			origin "[1], fig 31, p51"
+			Version ""
+			file ./Reference/references_U10.csv
+			columns 1 2
+			Style linespoints
+			TypeLigne 1
+			TypePoints 2
+		}
+		Curve {
+			legend "k-Epsilon ref."
+			origin "[1], fig 31, p51"
+			Version ""
+			file ./Reference/references_U10_KEpsRef.csv
+			columns 1 2
+			Style linespoints
+			TypeLigne 3
+			TypePoints 4
+		}
+		Curve {
+			legend "Calcul"
+			origin "TRUST (Castor)"
+			Version "v1.5.4beta"
+			Segment 6ReprisePost/impingingJet.data SONDE_V1.0
+			columns (($1+2*0.0403)/0.0403) (sqrt($2*$2+$3*$3+$4*$4)/8.56)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+	}
+	#########################################################################################################################
+	Figure {
+		Title "Vitesse a r/D=2.5"
+		Description "Vitesse en fonction de la distance a la plaque, a r/D=2.5"
+		Description "D'apres une sonde 'segment' de TRUST, place sur le rayon a Pi/2 du bord."
+		Dimension 2
+		#RangeX 0. 0.4
+		LabelX "y/D"
+		#RangeY 0. 1.2
+		LabelY "u/U"
+		PointSize 0.5
+		legend below title "Legende"
+		Curve {
+			legend "Experimental"
+			origin "[1], fig 32, p52"
+			Version ""
+			file ./Reference/references_U25.csv
+			columns 1 2
+			Style linespoints
+			TypeLigne 1
+			TypePoints 2
+		}
+		Curve {
+			legend "k-Epsilon ref."
+			origin "[1], fig 32, p52"
+			Version ""
+			file ./Reference/references_U25_KEpsRef.csv
+			columns 1 2
+			Style linespoints
+			TypeLigne 3
+			TypePoints 4
+		}
+		Curve {
+			legend "Calcul"
+			origin "TRUST (Castor)"
+			Version "v1.5.4beta"
+			Segment 6ReprisePost/impingingJet.data SONDE_V2.5
+			columns (($1+2*0.0403)/0.0403) (sqrt($2*$2+$3*$3+$4*$4)/8.56)
+			Style linespoints
+			TypeLigne 2
+			TypePoints 2
+		}
+	}
+}
+
+
+Chapter {
+	Title "Cas L/D=2 - Axisymetrie"
+	Description "Verification de l'axisymetrie du calcul"
+	Figure {
+		Title "Vitesse radiale a la paroi (z/2D=0%)"
+		picture ./6ReprisePost/vitesseRadiale_CoupeParoi00.png
+	}
+	Figure {
+		Title "Vitesse axiale a la paroi (z/2D=15%)"
+		picture ./6ReprisePost/vitesseAxiale_CoupeParoi15.png
+	}
+	Figure {
+		Title "Vitesse axiale a la paroi (z/2D=35%)"
+		picture ./6ReprisePost/vitesseAxiale_CoupeParoi35.png
+	}
+	Figure {
+		Title "Vitesse axiale a la paroi (z/2D=95%)"
+		picture ./6ReprisePost/vitesseAxiale_CoupeParoi95.png
+	}
+}
+

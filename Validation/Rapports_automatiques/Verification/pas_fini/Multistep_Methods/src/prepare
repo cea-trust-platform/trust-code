@@ -1,0 +1,37 @@
+#!/bin/bash
+# Prepare data files
+
+# List of time schemes which are tested:
+time_schemes="
+Euler_Implicite
+Adams_Bashforth_order_2 
+Adams_Bashforth_order_3 
+Adams_Moulton_order_2 
+Adams_Moulton_order_3
+Backward_differentiation_order_2 
+Backward_differentiation_order_3
+"
+
+# Loop on time scheme:
+for time_scheme in $time_schemes
+do
+   if [ ${time_scheme#Adams_Bashforth} != $time_scheme ]
+   then
+      kinds="Explicit SemiImplicit"
+   else
+      kinds="Implicit"
+   fi
+   for kind in $kinds
+   do
+       dir=$kind"_"$time_scheme
+       mkdir -p $dir
+       cd $dir
+       cat ../mesh.data 		> 	test.data
+       echo "Schema_$time_scheme sch"	>>	test.data
+       cat ../$kind.data 		>> 	test.data
+       cat ../template.data 		>> 	test.data
+       [ "$kind" = "SemiImplicit" ] && echo $ECHO_OPTS "1,$ s?diffusion {?Parametre_equation Parametre_diffusion_implicite { crank 1 } diffusion {?g\nw" | ed test.data 1>/dev/null 2>&1
+       ln -s -f ../post_run .
+       cd ..
+   done
+done 

@@ -1,0 +1,454 @@
+# Shell Run_sonde_awk :
+# Analyse le .data pour renvoyer les sondes et les segments au shell Run_sonde
+# Creation des fichier .courbe.gnu contenant les caracteristiques de chaque courbe
+# Creation d'un fichier gnuplot/$NOM.menu pour l'affichage du menu
+#
+BEGIN {
+ns=0
+ks=0
+fin=0
+resoudre=0
+while (mot()!="dimension" || (dim=int(mot()))<1 || dim>3) {}
+}
+# Pour detecter la fin du fichier .data:
+(ligne_contient("resoudre")) 		{resoudre=1}
+(ligne_contient("fin") && resoudre) 	{fin=1}
+
+# Analyse des sondes
+(ligne_contient("sondes") && !fin) {
+   # NOM = nom du cas.
+   NOM=FILENAME
+   sub("\\.data","",NOM)
+   t="Case "NOM
+   if (mot()!="{") {
+      print "Mauvaise lecture de la sonde : } non trouve."
+      exit
+   }
+
+   while ((nom[ns]=mot())!="}") {
+      fichier_son[ns]=NOM"_"toupper(nom[ns])".son"
+      print fichier_son[ns] > ".liste_fichier_son"
+      champ[ns]=mot();
+      # Nouveau 1.4.8, option chsom, nodes, grav inseree eventuellement apres le nom de fichier
+      if (champ[ns]=="chsom" || champ[ns]=="nodes" || champ[ns]=="grav")
+         champ[ns]=mot();
+      if (mot()!="periode") {
+         print "Periode de la sonde non trouvee."
+         exit
+      }
+      dt[ns]=mot();
+      type[ns]=mot();  
+      # Bug pour SGI si on ne met pas int !!!!!
+      np[ns]=int(mot());
+      
+      if (type[ns]=="points" || type[ns]=="point" || type[ns]=="segmentpoints") {
+          for (ip=0;ip<np[ns];ip++)
+             for (ic=0;ic<dim;ic++) {
+	         coord[ip,ic]=mot()
+             }
+      }
+      else if (type[ns]=="segment") {
+         for (ic=0;ic<dim;ic++)
+            coord[0,ic]=1.*mot();
+         for (ic=0;ic<dim;ic++)
+            coord[np[ns]-1,ic]=1.*mot();
+         for (ic=0;ic<dim;ic++)
+            delta[ic]=(coord[np[ns]-1,ic]-coord[0,ic])/(np[ns]-1)
+         for (ip=1;ip<np[ns]-1;ip++)
+            for (ic=0;ic<dim;ic++)
+   	       coord[ip,ic]=coord[0,ic]+delta[ic]*ip;	
+      }
+      else if ( type[ns]=="segmentxdx"  ) {
+         for (ic=0;ic<dim;ic++)
+            coord[0,ic]=1.*mot();
+         for (ic=0;ic<dim;ic++)
+            coord[np[ns]-1,ic]=1.*mot();
+         for (ic=0;ic<dim;ic++)
+            delta[ic]=(coord[np[ns]-1,ic])/(np[ns]-1)
+         for (ip=1;ip<np[ns];ip++)
+            for (ic=0;ic<dim;ic++)
+   	       coord[ip,ic]=coord[0,ic]+delta[ic]*ip;
+      }
+
+      else if (type[ns]=="plan") {
+         np1[ns]=np[ns];
+         # np2[ns]=mot(); ne marche pas sur SGI,Linux !
+         np2[ns]=int(mot());
+         np[ns]=np1[ns]*np2[ns];
+         for (ic=0;ic<dim;ic++)
+            coord[0,ic]=1.*mot();
+         for (ic=0;ic<dim;ic++)
+            coord[np1[ns]-1,ic]=1.*mot();
+         for (ic=0;ic<dim;ic++)
+            coord[(np2[ns]-1)*np1[ns],ic]=1.*mot();
+         for (ic=0;ic<dim;ic++)
+            delta1[ic]=(coord[np1[ns]-1,ic]-coord[0,ic])/(np1[ns]-1)
+         for (ic=0;ic<dim;ic++)
+            delta2[ic]=(coord[(np2[ns]-1)*np1[ns],ic]-coord[0,ic])/(np2[ns]-1)
+         for (jp=0;jp<np2[ns];jp++)
+            for (ip=0;ip<np1[ns];ip++)
+               for (ic=0;ic<dim;ic++)
+   	           coord[ip+jp*np1[ns],ic]=coord[0,ic]+delta1[ic]*ip+delta2[ic]*jp;
+      }
+      else if (type[ns]=="planxdxdy") {
+         np1[ns]=np[ns];
+         # np2[ns]=mot(); ne marche pas sur SGI,Linux !
+         np2[ns]=int(mot());
+         np[ns]=np1[ns]*np2[ns];
+         for (ic=0;ic<dim;ic++)
+            coord[0,ic]=1.*mot();
+         for (ic=0;ic<dim;ic++)
+            coord[np1[ns]-1,ic]=1.*mot();
+         for (ic=0;ic<dim;ic++)
+            coord[(np2[ns]-1)*np1[ns],ic]=1.*mot();
+         for (ic=0;ic<dim;ic++)
+            delta1[ic]=(coord[np1[ns]-1,ic])/(np1[ns]-1)
+         for (ic=0;ic<dim;ic++)
+            delta2[ic]=(coord[(np2[ns]-1)*np1[ns],ic])/(np2[ns]-1)
+         for (jp=0;jp<np2[ns];jp++)
+            for (ip=0;ip<np1[ns];ip++)
+               for (ic=0;ic<dim;ic++)
+   	           coord[ip+jp*np1[ns],ic]=coord[0,ic]+delta1[ic]*ip+delta2[ic]*jp;
+      }
+      else if (type[ns]=="circle") {
+         circle[ns]="(x,y";
+	 if (dim==3) circle[ns]=circle[ns]",z";
+	 circle[ns]=circle[ns]",r)=";
+         circle[ns]=circle[ns]"("mot()","mot();
+	 if (dim==3) {circle[ns]=circle[ns]","mot();bidon=mot();}
+	 circle[ns]=circle[ns]","mot()")";
+	 angle_depart[ns]=1.*mot();angle_arrivee[ns]=1.*mot();
+      }
+      else {
+         print "Type de sondes inconnue:"type[ns]
+         exit
+      }
+      # Nouveau: lecture de l'entete du fichier fichier_son pour trouver les positions exactes des sondes
+      # Cela necessite toutefois que les fichiers sondes existent sinon on prend les positions du jeu de donnees
+      if ((type[ns]=="points") || (type[ns]=="point") || (type[ns]=="segment") || (type[ns]=="segmentpoints") || (type[ns]=="segmentxdx") || (type[ns]=="circle"))
+      {
+         FILE2=fichier_son[ns]
+	 NFSA=NF
+	 SALIGNE=$0
+	 getline < FILE2
+	 # ERRNO=="0" signifie pas d'erreur d'ouverture du fichier FILE2
+	 if (ERRNO=="0")
+	 {
+	    # On continue a lire le fichier sonde FILE2
+ 	    getline < FILE2	
+ 	    np[ns]=(NF-2)/2./dim
+	    for (ip=0;ip<np[ns];ip++)
+               for (ic=0;ic<dim;ic++)
+   	          coord[ip,ic]=$(4+ip*dim*2+ic*2);
+	 }
+	 NF=NFSA
+	 $0=SALIGNE
+      }
+
+#
+# Unites :
+#
+      unite="[?]"
+      if (champ[ns]=="pression") {champ[ns]="pressure";unite="[Pa.m3.kg-1]"}
+      if (champ[ns]=="pression_pa") {champ[ns]="pressure";unite="[Pa]"}
+      if (champ[ns]=="vitesse") {champ[ns]="velocity";unite="[m/s]"}
+      if (champ[ns]=="gradient_pression") {champ[ns]="pressure_gradient";unite="[Pa.m2.kg-1]"}
+      if (champ[ns]=="moyenne_vitesse") {champ[ns]="mean_velocity";unite="[m/s]"}
+      if (champ[ns]=="temperature") {champ[ns]="temperature";unite="[°C]"}
+      if (champ[ns]=="vorticite") {champ[ns]="vorticity";unite="[s-1]"}
+      if (champ[ns]=="k") {champ[ns]="k";unite="[m2/s2]"}
+      if (champ[ns]=="viscosite_turbulente") {champ[ns]="turbulent_viscosity";unite="[m2/s]"}
+      if (champ[ns]=="eps") {champ[ns]="eps";unite="[m2/s3]"}
+      if (champ[ns]=="enthalpie") {champ[ns]="enthalpy";unite="[m2/s2]"}
+      if (champ[ns]=="masse_volumique") {champ[ns]="density";unite="[kg/m3]"}
+      if (champ[ns]=="masse_x") {champ[ns]="mass_x";unite="[kg/m2/s]"}
+      if (champ[ns]=="masse_y") {champ[ns]="mass_y";unite="[kg/m2/s]"}
+      if (champ[ns]=="masse_z") {champ[ns]="mass_z";unite="[kg/m2/s]"}
+      if (champ[ns]=="variance_temperature") {unite="[°C2]"}
+      if (champ[ns]=="taux_dissipation_temperature") {unite="[°C2/s]"}
+      if (champ[ns]=="flux_chaleur_turbulente") {champ[ns]="turbulent_heat_flux";unite="[m°C/s]"}
+      if (champ[ns]=="qdm") {champ[ns]="momentum";unite="[kg/m2/s]"}
+      if (champ[ns]=="irradiance") {champ[ns]="irradiancy";unite="[W/m2]"}
+#
+# Scalaire ou vecteur (exception vorticite en dim 2):
+#
+      if (champ[ns]=="velocity" || champ[ns]=="pressure_gradient" || champ[ns]=="mean_velocity" || champ[ns]=="vitesse_vapeur" || champ[ns]=="vitesse_liquide" || champ[ns]=="turbulent_heat_flux" || ( champ[ns]=="vorticity" && dim==3 ) || champ[ns]=="momentum") {
+         compo=dim
+         comp[0]="_X"
+         comp[1]="_Y"
+         comp[2]="_Z"
+      }
+      else if (champ[ns]=="correlation_vitesse_temperature")
+      {
+	 compo=dim
+	 comp[0]="_U_T"
+	 comp[1]="_V_T"
+	 comp[2]="_W_T"
+      }
+      else if (champ[ns]=="correlation_vitesse_vitesse")
+      {
+	 compo=dim*dim
+	 for (i=0;i<dim;i++) {
+            for (j=0;j<dim;j++) {
+	       comp[(i)*dim+j]="_"(i+1)""(j+1)
+	    }
+         }
+
+      }
+      else {
+         compo=1
+         comp[0]=""
+      }
+#
+# Type de sondes, points , segment ou plan :
+#
+      champ[ns]=toupper(champ[ns]);
+###############
+# Sonde point :
+###############
+      if (type[ns]=="points" || type[ns]=="point") {
+         for (ip=0;ip<np[ns];ip++) {
+            for (i=0;i<compo;i++) {
+               ks++
+               fichier[ks]=fichier_son[ns]
+               xlabel[ks]="Time [s]"
+               ylabel[ks]=champ[ns]comp[i]" "unite
+               colonne=2+ip*compo+i
+               using[ks]="1:"colonne
+               if (dim==2) title[ks]=sprintf("Probe at (x,y)=(%g,%g)",coord[ip,0],coord[ip,1])
+               if (dim==3) title[ks]=sprintf("Probe at (x,y,z)=(%g,%g,%g)",coord[ip,0],coord[ip,1],coord[ip,2]) 
+               menu[ks]=champ[ns]comp[i]"\t"title[ks]
+# Ecrit dans le fichier .nom.gnu certaines caracteristiques :
+               cip=ip+1
+               fic_gnu[ks]="gnuplot/"NOM".courbe"ks".gnu"
+	       en_tete="."fichier[ks]
+	       sub("\\.son","",en_tete)
+	       en_tete=en_tete""comp[i]".gnu"
+	       # Modif pour fichier .gnu
+	       #print en_tete > fic_gnu[ks]
+	       print fic_gnu[ks] > fic_gnu[ks]
+               print "sonde "np[ns] >> fic_gnu[ks]
+	       print title[ks] >> fic_gnu[ks]
+               print "set title '"title[ks]"'\\nset xlabel '"xlabel[ks]"'\\nset ylabel ' "ylabel[ks]"'\\nplot '"fichier[ks]"' using "using[ks]" t'"t"' with linesp\\n" >> fic_gnu[ks]
+            }         
+         }
+      }
+################
+# Sonde circle :
+################
+      if (type[ns]=="circle") {
+         for (ip=0;ip<np[ns];ip++)
+	    abs[ip]=angle_depart[ns]+(angle_arrivee[ns]-angle_depart[ns])*ip/(np[ns]-1);
+	 abscisse="teta"  
+         fic=NOM"_"toupper(nom[ns])".coupe"
+#
+         for (i=0;i<compo;i++) {
+            ks++
+            fichier[ks]=fic
+            xlabel[ks]=abscisse" [°]"
+            ylabel[ks]=champ[ns]comp[i]" "unite
+            colonne=2+i
+            using[ks]="1:"colonne
+	    # le sprintf permet d'avoir un affichage plus joli
+            title[ks]=sprintf("Profile circle %s between teta=%g° and teta=%g°",circle[ns],angle_depart[ns],angle_arrivee[ns])           
+            setxra[ks]="set xra["angle_depart[ns]":"angle_arrivee[ns]"]"
+            menu[ks]=champ[ns]comp[i]"\t"title[ks]
+	    
+# Ecrit dans le fichier .nom.gnu certaines caracteristiques :
+            fic_gnu[ks]="gnuplot/"NOM".courbe"ks".gnu"
+	    en_tete="."fichier[ks]
+	    sub("\\.coupe","",en_tete)
+	    en_tete=en_tete""comp[i]".gnu"
+	    # Modif pour fichier .gnu
+	    #print en_tete > fic_gnu[ks]
+	    print fic_gnu[ks] > fic_gnu[ks]
+            print "segment "np[ns] >> fic_gnu[ks]
+	    print title[ks] >> fic_gnu[ks]
+            for (ip=0;ip<np[ns];ip++) 
+               print abs[ip] >> fic_gnu[ks]	    
+            print setxra[ks]"\\nset xlabel '"xlabel[ks]"'\\nset ylabel ' "ylabel[ks]"'\\nplot '"fichier[ks]"' using "using[ks]" t'"t"' with linesp\\n" >> fic_gnu[ks]
+         }
+      }
+##################
+# Sondes segment :
+##################      
+      if (type[ns]=="segment" || type[ns]=="segmentpoints" || type[ns]=="segmentxdx") {
+         Xmin=coord[0,0];
+         Ymin=coord[0,1];
+         Xmax=coord[np[ns]-1,0];
+         Ymax=coord[np[ns]-1,1];
+	 if (dim==3) {
+            Zmin=coord[0,2];
+            Zmax=coord[np[ns]-1,2];
+	 }
+         xa=Xmax-Xmin;
+         ya=Ymax-Ymin;
+         if (dim==3) za=Zmax-Zmin;
+         for (ip=0;ip<np[ns];ip++) {
+            xabs=coord[ip,0]-Xmin;
+            yabs=coord[ip,1]-Ymin;
+            if (dim==2) {
+               if (xa==0) {abs[ip]=coord[ip,1];abscisse="y"}
+               else
+	       {
+	          if (ya==0) {abs[ip]=coord[ip,0];abscisse="x"} 
+                  else {abs[ip]=(xa*xabs+ya*yabs)/sqrt(xa*xa+ya*ya);abscisse=""} 
+               }
+	    }                    
+            if (dim==3) {
+               zabs=coord[ip,2]-Zmin;
+               if (xa==0 && ya==0) {abs[ip]=coord[ip,2];abscisse="z"}
+               else
+	       { 
+	          if (xa==0 && za==0) {abs[ip]=coord[ip,1];abscisse="y"}
+                  else
+		  {
+		     if (ya==0 && za==0) {abs[ip]=coord[ip,0];abscisse="x"}
+                     else {abs[ip]=(xa*xabs+ya*yabs+za*zabs)/sqrt(xa*xa+ya*ya+za*za);abscisse=""}
+                  }
+               }
+            }
+         }
+         fic=NOM"_"toupper(nom[ns])".coupe"
+#
+         for (i=0;i<compo;i++) {
+            ks++
+            fichier[ks]=fic
+            xlabel[ks]=abscisse" [m]"
+            ylabel[ks]=champ[ns]comp[i]" "unite
+            colonne=2+i
+            using[ks]="1:"colonne
+	    # le sprintf permet d'avoir un affichage plus joli
+            if (dim==2) title[ks]=sprintf("Profile line between (x,y)=(%g,%g) and (x,y)=(%g,%g)",coord[0,0],coord[0,1],coord[np[ns]-1,0],coord[np[ns]-1,1])           
+	    if (dim==3) title[ks]=sprintf("Profile line between (x,y,z)=(%g,%g,%g) and (x,y,z)=(%g,%g,%g)",coord[0,0],coord[0,1],coord[0,2],coord[np[ns]-1,0],coord[np[ns]-1,1],coord[np[ns]-1,2])
+            setxra[ks]="set xra["abs[0]":"abs[np[ns]-1]"]"
+            menu[ks]=champ[ns]comp[i]"\t"title[ks]
+	    
+# Ecrit dans le fichier .nom.gnu certaines caracteristiques :
+            fic_gnu[ks]="gnuplot/"NOM".courbe"ks".gnu"
+	    en_tete="."fichier[ks]
+	    sub("\\.coupe","",en_tete)
+	    en_tete=en_tete""comp[i]".gnu"
+	    # Modif pour fichier .gnu
+	    #print en_tete > fic_gnu[ks]
+	    print fic_gnu[ks] > fic_gnu[ks]
+            print "segment "np[ns] >> fic_gnu[ks]
+	    print title[ks] >> fic_gnu[ks]
+            for (ip=0;ip<np[ns];ip++) 
+               print abs[ip] >> fic_gnu[ks]	    
+            print setxra[ks]"\\nset xlabel '"xlabel[ks]"'\\nset ylabel ' "ylabel[ks]"'\\nplot '"fichier[ks]"' using "using[ks]" t'"t"' with linesp\\n" >> fic_gnu[ks]
+         }
+      }
+##############
+# Sonde plan :
+##############
+      if (type[ns]=="plan" ||type[ns]=="planxdxdy" ) {
+         xa1=coord[np1[ns]-1,0]-coord[0,0];
+         ya1=coord[np1[ns]-1,1]-coord[0,1];
+         if (dim==3) za1=coord[np1[ns]-1,2]-coord[0,2];
+         xa2=coord[(np2[ns]-1)*np1[ns],0]-coord[0,0];
+         ya2=coord[(np2[ns]-1)*np1[ns],1]-coord[0,1];
+         if (dim==3) za2=coord[(np2[ns]-1)*np1[ns],2]-coord[0,2];
+         for (ip=0;ip<np1[ns];ip++) {
+            xabs=coord[ip,0]-coord[0,0];
+            yabs=coord[ip,1]-coord[0,1];
+            if (dim==2) {
+               if (xa1==0) {abs1[ip]=coord[ip,1];abscisse1="y"}
+               else { if (ya1==0) {abs1[ip]=coord[ip,0];abscisse1="x"} 
+                      else {abs1[ip]=sqrt(xabs*xabs+yabs*yabs);abscisse1=""} 
+                    }
+            }                    
+            if (dim==3) {
+               zabs=coord[ip,2]-coord[0,2];
+               if (xa1==0 && ya1==0) {abs1[ip]=coord[ip,2];abscisse1="z"}
+               else { if (xa1==0 && za1==0) {abs1[ip]=coord[ip,1];abscisse1="y"}
+                      else { if (ya1==0 && za1==0) {abs1[ip]=coord[ip,0];abscisse1="x"}
+                             else {abs1[ip]=sqrt(xabs*xabs+yabs*yabs+zabs*zabs);abscisse1=""}
+                           }
+                    }
+            }
+         }
+         for (jp=0;jp<np2[ns];jp++) {
+            ip=jp*np1[ns];
+            xabs=coord[ip,0]-coord[0,0];
+            yabs=coord[ip,1]-coord[0,1];
+            if (dim==2) {
+               if (xa2==0) {abs2[jp]=coord[ip,1];abscisse2="y"}
+               else { if (ya2==0) {abs2[jp]=coord[ip,0];abscisse2="x"} 
+                      else {abs2[jp]=sqrt(xabs*xabs+yabs*yabs);abscisse2=""} 
+                    }
+            }                    
+            if (dim==3) {
+               zabs=coord[ip,2]-coord[0,2];
+               if (xa2==0 && ya2==0) {abs2[jp]=coord[ip,2];abscisse2="z"}
+               else { if (xa2==0 && za2==0) {abs2[jp]=coord[ip,1];abscisse2="y"}
+                      else { if (ya2==0 && za2==0) {abs2[jp]=coord[ip,0];abscisse2="x"}
+                             else {abs2[jp]=sqrt(xabs*xabs+yabs*yabs+zabs*zabs);abscisse2=""}
+                           }
+                    }
+            }
+         }
+         fic=NOM"_"toupper(nom[ns])".coupe"
+#
+         for (i=0;i<compo;i++) {
+            ks++
+            fichier[ks]=fic
+            xlabel[ks]=abscisse1" [m]"
+            ylabel[ks]=abscisse2" [m]"
+            zlabel[ks]=champ[ns]comp[i]" "unite
+            colonne=3+i
+            using[ks]="1:2:"colonne
+            if (dim==2) title[ks]="Cross section (x,y)=("coord[0,0]","coord[0,1]"),(x,y)=("coord[np1[ns]-1,0]","coord[np1[ns]-1,1]") and (x,y)=("coord[(np2[ns]-1)*np1[ns],0]","coord[(np2[ns]-1)*np1[ns],1]")"
+            if (dim==3) title[ks]="Cross section (x,y,z)=("coord[0,0]","coord[0,1]","coord[0,2]"),(x,y,z)=("coord[np1[ns]-1,0]","coord[np1[ns]-1,1]","coord[np1[ns]-1,2]") and (x,y,z)=("coord[(np2[ns]-1)*np1[ns],0]","coord[(np2[ns]-1)*np1[ns],1]","coord[(np2[ns]-1)*np1[ns],2]")"
+            setxra[ks]="set xra["abs1[0]":"abs1[np1[ns]-1]"]"
+            setyra[ks]="set yra["abs2[0]":"abs2[np2[ns]-1]"]"
+            menu[ks]=champ[ns]comp[i]"\t"title[ks]
+# Ecrit dans le fichier .nom.gnu certaines caracteristiques :
+            fic_gnu[ks]="gnuplot/"NOM".courbe"ks".gnu"
+	    en_tete="."fichier[ks]
+	    sub("\\.coupe","",en_tete)
+	    en_tete=en_tete""comp[i]".gnu"
+	    # Modif pour fichier .gnu
+	    #print en_tete > fic_gnu[ks]
+	    print fic_gnu[ks] > fic_gnu[ks]
+            print "plan "np1[ns],np2[ns],2*np1[ns]*np2[ns]+5 >> fic_gnu[ks]
+	    print title[ks] >> fic_gnu[ks]
+            for (ip=0;ip<np1[ns];ip++)
+               print abs1[ip] >> fic_gnu[ks]
+            for (ip=0;ip<np2[ns];ip++)
+               print abs2[ip] >> fic_gnu[ks]
+            print setyra[ks]"\\n"setxra[ks]"\\nset param\\nset contour\\nset cntrparam bspline\\nset cntrparam levels 10\\nset xlabel '"xlabel[ks]"'\\nset ylabel '"ylabel[ks]"'\\nset zlabel ' "zlabel[ks]"'\\nsplot '"fichier[ks]"' using "using[ks]" t'"t"' with lines\\n" >> fic_gnu[ks]
+            # \\nset view 0,0,1,1 pour la projection uniquement sinon :
+            # \\nset view 60,30,1,1
+         }
+      }
+      ns++
+   }
+}
+
+END {
+   fic_menu="gnuplot/"NOM".menu"
+   for (k=1;k<ks+1;k++)
+      print k"-"menu[k] > fic_menu
+}
+
+function mot()
+{
+   mot_ind++
+   if (mot_ind>NF) {
+      getline;
+      while (NF==0) getline;
+      mot_ind=1
+   }
+#   print NF,tolower($mot_ind)
+return tolower($mot_ind);
+}
+
+function ligne_contient(nom)
+{
+mot_ind=0
+for (i=1;i<NF+1;i++)
+   if (mot()==nom) return 1
+return 0
+}
+

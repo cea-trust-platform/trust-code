@@ -1,0 +1,16 @@
+Read sch
+{
+	tinit 0.
+	tmax 2.
+	dt_min 5.e-5
+	dt_max 5.e-5
+	dt_impr 1.e-1
+	dt_sauv 500.
+        seuil_statio -1.e-8
+        nb_pas_dt_max 3000
+	facsec 1
+        Solveur implicite
+           {
+                solveur gmres { diag seuil 1.e-10 nb_it_max 5 impr }
+           }
+}

@@ -1,0 +1,13 @@
+Parameters {
+        Title "verification of validation"
+        Description "Hello world"
+        Author "G.F."
+        TestCase . Hello.data
+        }
+
+Chapter {
+Title "Hello.out" 
+Description include_text_file("Hello.out","Hello","world")
+	
+
+}

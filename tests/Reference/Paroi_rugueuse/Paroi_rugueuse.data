@@ -1,0 +1,122 @@
+# SIMULATION D UN CANAL PLAN 3D EN LM #
+# EN THERMOHYDRAULIQUE : Hypothese de Boussinesq et schema de convection variable #
+# PARALLEL OK #
+dimension 3
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+	{
+                Origine 0. 0. 0.
+                Nombre_de_Noeuds 5 7 5
+                Longueurs 10. 2.  10
+	}
+	{
+                Bord periox   X = 0.  0. <= Y <= 2.   0. <= Z <= 10.
+                Bord periox   X = 10. 0. <= Y <= 2.   0. <= Z <= 10.
+                Bord bas      Y = 0.  0. <= X <= 10.  0. <= Z <= 10.
+                Bord haut     Y = 2.  0. <= X <= 10.  0. <= Z <= 10.
+                Bord perioz   Z = 0.  0. <= X <= 10.  0. <= Y <= 2.
+                Bord perioz   Z = 10. 0. <= X <= 10.  0. <= Y <= 2.
+ 
+	}
+} 
+
+Tetraedriser_homogene_compact dom
+Corriger_frontiere_periodique { Domaine dom Bord periox }
+Corriger_frontiere_periodique { Domaine dom Bord perioz }
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+        Partitionneur Metis { nb_parts 3 }
+        Larg_joint 2
+	periodique 2 periox perioz
+        Nom_Zones dom
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
+
+Pb_Hydraulique_Turbulent pb
+VEFPreP1b dis
+
+Sch_CN_EX_iteratif sch
+Lire sch 
+{
+        tinit 0.
+	nb_pas_dt_max 3
+        tmax 35.
+        dt_min 1.e-7
+        dt_max 2.e-1
+        dt_impr 1.
+        dt_sauv 55.
+        dt_start dt_calc
+        seuil_statio 1.e-8  
+        facsec 1.
+        facsec_max 4 
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme	1 2.84e-5
+	rho Champ_Uniforme	1 0.0976
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Lire pb
+	{
+	Navier_Stokes_Turbulent
+		{
+                solveur_pression Gcp { precond ssor { omega 1.5 }
+                                        seuil 1.e-08
+                                        }
+                convection { muscl }
+                diffusion  {  }
+                Sources
+                        {
+                        Canal_perio { bord periox }
+                        }
+		conditions_initiales
+			{
+                        vitesse Champ_fonc_xyz dom 3  -3*y*y+6*y 0. 0. 
+			}
+		boundary_conditions
+			{
+			periox   periodique 
+			perioz   periodique
+			haut     paroi_fixe
+			bas      paroi_rugueuse { erugu 12. }
+			}
+		Modele_turbulence Longueur_Melange
+			{
+			turbulence_paroi loi_standard_hydr
+                        canalx 2.
+			}
+	}
+	Postraitement
+        	{       
+                format lml
+		Champs dt_post 15.
+			{
+			vitesse elem
+			viscosite_turbulente elem
+			pression elem
+                        y_plus elem
+			}
+		}
+	}
+EcritureLectureSpecial 0
+Solve pb
+Fin

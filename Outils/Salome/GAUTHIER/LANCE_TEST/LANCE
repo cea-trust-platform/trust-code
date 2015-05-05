@@ -1,0 +1,16 @@
+#!/bin/bash
+echo $exec sera utilise
+if [ "`ldd $exec | grep Trio`" != "" ]
+then
+	echo $exec n est pas statique
+	echo DESOLE
+	exit
+fi
+export PATH=`dirname $0`:${PATH}
+[ "$PAS_BATCH" = "" ] && flag=1
+. `dirname $0`/INIT $1 $flag
+`dirname $0`/SAL3.sh $flag
+echo "resultat dans "
+analyse_res 
+echo "Tapez RECUP pour recuperer les repertoires tests"
+echo "Tapez NETTOIE pour nettoyer les machines (ssh rm -rf /tmp/user_test)"

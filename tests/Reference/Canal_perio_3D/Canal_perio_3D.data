@@ -1,0 +1,137 @@
+# source heat canal_perio #
+# PARALLEL RUNS #
+Dimension 3
+Pb_thermohydraulique_turbulent pbF
+
+Domaine DOM_DOM
+
+# BEGIN MESH #
+Read_file DOM_DOM trio_TEST_geo.bin
+VerifierCoin DOM_DOM { }
+Regroupebord DOM_DOM PERY { Y00 Y01 }
+Regroupebord DOM_DOM PERX { X00 X01 }
+Regroupebord DOM_DOM PERZ { IN OUT }
+Regroupebord DOM_DOM  WALL { PIN WIRE }
+Corriger_frontiere_periodique { domaine DOM_DOM bord PERY direction 3  0. 0.012 0.  } 
+Corriger_frontiere_periodique { domaine DOM_DOM bord PERZ direction 3  0. 0. 0.012  } 
+Corriger_frontiere_periodique { domaine DOM_DOM bord PERX direction 3  0.012 0. 0.  } 
+# END MESH #
+
+# BEGIN PARTITION
+Partition DOM_DOM {
+        Partitionneur Metis { kmetis nb_parts 2 }   
+        Larg_joint 2                   
+        Nom_Zones DOM                      
+        periodique 3 PERX PERY PERZ
+}
+fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones DOM_DOM
+END SCATTER #
+
+VEFPreP1B dis
+
+lire dis { P0 P1 changement_de_base_P1bulle 1 CL_pression_sommet_faible 0 modif_div_face_dirichlet 1 }
+
+# implicit scheme #
+Schema_Euler_implicite sch
+Lire sch
+{
+	nb_pas_dt_max 5
+	tinit 0
+	dt_sauv 1 
+	dt_impr 1.e-8 
+	facsec 30
+	facsec_max 30
+	solveur implicite {
+		solveur gmres { diag nb_it_max 5 seuil 1.e-20 impr }
+	}
+}
+
+
+
+# So here, change water to sodium caracteristics #
+Fluide_Incompressible Na
+Lire Na
+{
+        mu  Champ_Uniforme 1 2.7e-4 	# Uniform dynamic viscosity #
+        rho Champ_Uniforme 1 838.	# Uniform density #
+        lambda Champ_Uniforme 1 68.18 
+        Cp Champ_Uniforme 1 1268.15 
+	beta_th champ_uniforme 1 0.0002
+}
+Champ_Uniforme gravite
+Lire gravite 3 0 0 -9.81
+Associate Na gravite
+ 
+# Association between TRUST objects #
+Associate pbF DOM_DOM
+Associate pbF Na
+Associate pbF sch
+Discretize pbF dis
+
+Lire pbF
+{
+   Navier_Stokes_turbulent
+        {
+		solveur_pression petsc cholesky { }  
+		# On this test case, alpha 0.2 diverges #
+                convection { ef_stab { alpha 0.5 } }
+
+                diffusion { }
+                boundary_conditions
+                {
+                                WALL paroi_fixe
+                                PERX periodique
+				PERY periodique
+				PERZ periodique				
+                }		
+                conditions_initiales  { vitesse Champ_Uniforme 3 0. 0.0 5 } 
+		sources { canal_perio { bord PERZ } }
+			
+                # Modele_turbulence sous_maille { turbulence_paroi loi_standard_hydr } #
+		Modele_turbulence K_Epsilon
+                {
+                        Transport_K_Epsilon
+			{
+				convection { ef_stab { } }	
+				diffusion { }
+				sources { Source_Transport_K_Eps_anisotherme { C1_eps 1.44 C2_eps 1.92 } }		
+				boundary_conditions {
+					WALL paroi
+                                	PERX periodique
+					PERY periodique
+					PERZ periodique
+				}
+				conditions_initiales { k_Eps champ_uniforme 2 3.75e-3 0.02296 }	
+			}
+			turbulence_paroi loi_standard_hydr 		
+                 }
+        }
+	Convection_Diffusion_Temperature_turbulent
+        {
+                diffusion {  }
+                convection { EF_stab { } }
+                conditions_initiales { Temperature Champ_Uniforme 1 400 }
+                boundary_conditions {
+				WALL paroi_flux_impose champ_front_uniforme 1 1.e8
+                                PERX periodique
+				PERY periodique
+				PERZ periodique
+				 
+                                   }
+		sources { canal_perio { bord PERZ } }
+                Modele_Turbulence Prandtl { Turbulence_paroi loi_standard_hydr_scalaire }
+        } 
+	# Post processing #
+        Postraitement
+        {
+                format lml
+                champs dt_post 0.05 { vitesse elem }
+      }
+}
+
+Solve pbF
+Fin

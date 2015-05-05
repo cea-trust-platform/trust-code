@@ -1,0 +1,679 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% $Id: docDM2SvB.tex,v 1.1 2010/06/21 12:50:44 aq Exp $
+%% $Author: aq $
+%% $Date: 2010/06/21 12:50:44 $
+%% $Revision: 1.1 $
+%% $State: Exp $
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\documentclass[11pt,a4paper,lmec,nt,article,french]{docDM2S}  
+\documentclass[11pt,a4paper,french]{article}
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc} 
+\usepackage{pdfpages}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{amsmath} 
+\usepackage[section]{placeins} % pour utiliser \FloatBarrier
+\usepackage{lscape}
+\usepackage{subfigure}      %
+
+
+\setlength\hoffset{0cm}
+\setlength\voffset{0cm}
+\setlength\oddsidemargin{0cm}
+\setlength\evensidemargin{0cm}
+\setlength\topmargin{0cm}
+\setlength\headheight{1cm}
+\setlength\headsep{0.2cm}
+\setlength\marginparsep{0cm}
+\setlength\marginparwidth{0cm}
+\setlength\footskip{2cm}
+\setlength\textwidth{16cm}
+\setlength{\parindent}{0pt}
+
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\lstset{ %
+  basicstyle=\ttfamily,
+  backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+%  basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+  breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+  breaklines=true,                 % sets automatic line breaking
+  captionpos=b,                    % sets the caption-position to bottom
+  commentstyle=\color{mygreen},    % comment style
+  deletekeywords={...},            % if you want to delete keywords from the given language
+  escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+  extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+  frame=single,                    % adds a frame around the code
+  keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+  keywordstyle=\color{blue},       % keyword style
+  language=c++,                 % the language of the code
+  morekeywords={*,...},            % if you want to add more keywords to the set
+  numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+  numbersep=5pt,                   % how far the line-numbers are from the code
+  numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+  rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+  showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+  showstringspaces=false,          % underline spaces within strings only
+  showtabs=false,                  % show tabs within strings adding particular underscores
+  stepnumber=2,                    % the step between two line-numbers. If it's 1, each line will be numbered
+  stringstyle=\color{mymauve},     % string literal style
+  tabsize=2,                       % sets default tabsize to 2 spaces
+  title=\lstname,                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+\lstdefinestyle{Bash}
+{language=bash,
+keywordstyle=\color{blue},
+basicstyle=\ttfamily,
+}
+
+
+% Raccourcis
+\newcommand{\flicaIV}{FLICA4\xspace}
+\newcommand{\affillmec}{DEN/DANS/DM2S/STMF/LMEC}
+\newcommand{\affillatf}{DEN/DANS/DM2S/STMF/LATF}
+\newcommand{\affillgls}{DEN/DANS/DM2S/STMF/LGLS}
+
+%% ____________________________________________________________
+%% |                                                            |
+%% |  Modèles de documents de catégorie B avec LaTeX: docDM2S  |
+%% |____________________________________________________________|
+
+
+\begin{document} 
+\renewcommand{\labelitemi}{$\bullet$}
+\title{Tutoriel de réalisation d'une application \texttt{BALTIK} basée sur le logiciel \texttt{\textbf{TRIO\_U}}}
+
+\maketitle
+\section { résumé}
+Ce tutoriel a comme objectif de décrire la démarche à suivre pour la réalisatiion d'une application \texttt{BALTIK} sur la base du logiciel \texttt{\textbf{TRIO\_U}}.
+%
+Pour ce faire, on choisit à titre d'exercice une équation de convection-diffusion comme problème mathématique à résoudre. Dans cette équation, la vitesse de convection et le coefficient de diffusion sont des données utilisateur.\\ \\
+%
+On décrit en particulier les spécifications des développements à réaliser et on donne quelques recommandations pour résoudre cette équation de convection-diffusion.\\ \\
+%
+Les développements sont ensuite décrits et réalisés dans un environnement proposé par le logiciel \texttt{\textbf{TRIO\_U}} appelé application \texttt{BALTIK}. La mise en place de cet environnement est également décrit.\\ \\
+%
+Deux tests de vérification des développements et de non-régression sont enfin réalisés en utilisant les outils proposés par le logiciel \texttt{\textbf{TRIO\_U}} (\texttt{genererCourbes}, \texttt{make check\_optim}).
+%
+
+
+
+
+
+\newpage
+
+
+\section{Introduction}
+Ce tutoriel a comme objectif de décrire la démarche à suivre pour la réalisation d'une application \texttt{BALTIK} sur la base du logiciel \texttt{\textbf{TRIO\_U}}. 
+Pour ce faire, on choisit à titre d'exercice l'équation de convection-diffusion (\ref{eq_con_diff}) comme problème mathématique à résoudre:
+
+\begin{align}
+\frac{\partial c}{\partial t}+\nabla\cdot(\overrightarrow{V}c)+\nabla\cdot(D\nabla c)=0 \textrm{ sur } \Omega=[a,b]\times[c,d] \label{eq_con_diff} \\
+\textrm{conditions aux limites périodiques} \nonumber
+\end{align}
+
+$c(\overrightarrow{X},t)$ : variable d'intérêt (la concentration d'une espèce, la température,...),
+
+$\overrightarrow{V}(\overrightarrow{X},t)$ : vitesse de convection de la variable $c$ (donnée utilisateur),
+
+$D(\overrightarrow{X},t)$ : coefficient de diffusion de la variable $c$  (donnée utilisateur),
+
+$a$, $b$, $c$ et $d$ : les bornes du domaine de calcul en deux dimensions.
+
+
+\
+
+La discrétisation en espace et en temps de l'équation (\ref{eq_con_diff}) sera réalisée avec les schémas numériques disponibles dans le logiciel \texttt{\textbf{TRIO\_U}} \cite{BIB_03}.
+
+\
+
+Dans la section \ref{spec}, nous décrivons les spécifications des développements à réaliser et nous donnons quelques recommandations pour résoudre l'équation (\ref{eq_con_diff}).
+
+\
+
+Les développements spécifiés dans la section \ref{spec} sont décrits dans la section \ref{dev}. Ces développements seront réalisés dans un environnement proposé par le logiciel \texttt{\textbf{TRIO\_U}} appelé application \texttt{BALTIK}. La mise en place de cet environnement sera décrit dans cette même section \ref{dev}.
+
+\
+
+La section \ref{tests} sera consacrée à la réalisés deux tests de vérification des développements et de non-régression en utilisant les outils proposés par le logiciel \texttt{\textbf{TRIO\_U}} (\texttt{genererCourbes}, \texttt{make check\_optim}).
+
+\section{Spécification}\label{spec}
+
+\subsection{Notions}
+\begin{itemize}
+ \item \underline{Notion de problème} : le rôle d'un problème est la résolution sur un domaine des équations qui composent le problème. 
+Un schéma de discrétisation en temps ainsi qu'un schéma de discrétisation en espace lui sont associés.
+
+ \
+ 
+ \item \underline{Notion d'équation} : le rôle d'une équation est le calcul d'un ou plusieurs champs compte tenu des choix suivants:
+ \begin{itemize}
+  \item un schéma de discrétisation en temps,
+  \item un schéma de discrétisation en espace,
+  \item des conditions aux limites,
+  \item des termes sources et des opérateurs.
+ \end{itemize}
+Une équation est portée par un problème et possède une référence qui permet de remonter au problème qui la porte.
+
+\
+
+ \item \underline{Notion d'opérateur} : les opérateurs sont des parties d'une équation. Parmi les opérateurs les plus utilisés, on cite les opérateurs de convection
+ et de diffusion.
+  
+ \item \underline{Notion de milieu} : Description du milieu fluide ou solide qu'on modélise. Le Milieu est associé au problème et aux équations. Parmi les propriétés qui caractérisent le milieu, on a:
+ \begin{itemize}
+ \item la masse volumique,
+ \item la diffusivité,
+ \item la conductivité,
+ \item la capacité calorifique, 
+ \item la variation de la masse volumique en fonction de la température (dilatabilité).
+ \end{itemize}
+
+\end{itemize}
+
+%Ces notions peuvent être représsont représentées sous.
+
+%\begin{figure}[!h]
+%\begin{center}
+%   \includegraphics[width=9cm]{voca.pdf}
+%   \caption{Notion de problème dans le logiciel \texttt{\textbf{TRIO\_U}}}
+%\end{center}
+%\label{voca}
+%\end{figure}
+%\FloatBarrier
+
+\
+
+Dans notre cas, le problème qu'on souhaite résoudre comprend une seule équation (\ref{eq_con_diff}). Cette équation est composée de:
+\begin{itemize}
+ \item un terme instationnaire $\frac{\partial c}{\partial t}$,
+ \item un opérateur de convection $\nabla\cdot(\overrightarrow{V}c)$,
+ \item un opérateur de diffusion $\nabla\cdot(D\nabla c)$,
+ \item un terme source ou puit $f=0$.
+\end{itemize}
+
+\subsection{Jeu de données - analyse des besoins}\label{jdd}
+
+Dans le cadre des développements des applications basées sur le logiciel \texttt{\textbf{TRIO\_U}}, il est recommandé de commencer les spécifications par écrire le jeu de données. 
+La recommandation précédente est liée au fait que les mots clés du jeu données du logiciel \texttt{\textbf{TRIO\_U}} correspondent à des objets (classes) C++ et donc commencer par le jeu de données sert, d'une part, à se mettre dans la position d'un utilisateur et, d'autre part, à définir les objets (problème, équation(s), ...) à spécifier et à développer. 
+
+\
+
+Nous décrivons ci-dessous les parties de jeu de données spécifiques à notre problème:
+
+\begin{itemize}
+\item \underline{\textbf{Déclaration du problème}}
+
+On notera ce nouveau problème \texttt{Probleme\_Convection\_Diffusion}
+\lstinputlisting[language=C++,title=déclaration du problème,emph={Probleme_Convection_Diffusion},emphstyle={\color{blue}}]{jdd_pb.data}
+ 
+ 
+\item \underline{\textbf{Déclaration de l'équation de convection-diffusion}}
+
+On notera cette nouvelle équation \texttt{Convection\_Diffusion}. 
+Cette équation est composée de deux opérateurs (convection et diffusion), des conditions initiales et des conditions aux limites   
+\lstinputlisting[language=C++,title=déclaration de l'équation,emph={Convection_Diffusion},emphstyle={\color{blue}}]{jdd_equation.data}
+
+\item \underline{\textbf{Données utilisateur}}
+
+Pour l'équation (\ref{eq_con_diff}), la vitesse de convection $\overrightarrow{V}(\overrightarrow{X},t)$ et le coefficient de diffusion $D(\overrightarrow{X},t)$ sont donnés par l'utilisateur. 
+Dans les pratiques des développements \texttt{\textbf{TRIO\_U}}, ces paramètres doivent être associés à un objet (équation, problème, ....) du jeu de données. on notera ces paramètres \texttt{coefficient\_diffusion} et
+\texttt{vitesse\_convection}.
+\lstinputlisting[language=C++,title=paramètres d'entrées,emph={vitesse_convection,coefficient_diffusion},emphstyle={\color{blue}}]{jdd_constituant_interm.data}
+
+
+\item \underline{\textbf{Post-traitements}}
+
+Il nous semble intéressant de post-traiter la variable d'intérêt $c$, la vitesse de convection $\overrightarrow{V}(\overrightarrow{X},t)$ et le coefficient de diffusion $D(\overrightarrow{X},t)$.
+Le bloc de post-traitement de ces variables se présente sous la forme suivante:
+\lstinputlisting[language=C++,title=déclaration du champs à post-traiter,emph={vitesse_convection,coefficient_diffusion,Concentration},emphstyle={\color{blue}}]{jdd_post.data}
+
+\end{itemize}
+
+
+\subsection{Fonctionnalités \texttt{\textbf{TRIO\_U}}}
+Il est fortement recommandé d'utiliser au maximum les fonctionnalités existantes dans le logiciel \texttt{\textbf{TRIO\_U}} et d'éviter de dupliquer les lignes de codes. 
+Ceci permet, d'une part, de minimiser le temps de développement de l'application et, d'autre part, de profiter des fonctionnalités couvertes par les tests du logiciel \texttt{\textbf{TRIO\_U}}. 
+
+\
+
+L'identification des fonctionnalités peut se faire via la documentation doxygen du logiciel \texttt{\textbf{TRIO\_U}}. 
+Nous faisons ci-dessous cet exercice d'identification par rapport à nos besoins (\ref{jdd}).
+
+\
+
+\begin{itemize}
+ \item \underline{\textbf{problème}}
+ 
+En analysant le graphe doxygen de la classe \texttt{Probleme\_base} (cf. figure~\ref{pb_base}), aucun problème nous parait proche de nos besoins (\ref{jdd}).   
+
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=18cm]{classProbleme__base.png}
+   \caption{classe Probleme\_base}
+   \label{pb_base}
+\end{center}
+\end{figure}
+\FloatBarrier
+
+\
+
+ \item \underline{\textbf{équation de convection-diffusion}}
+ 
+En analysant le graphe doxygen de la classe \texttt{Equation\_base} (cf. figure~\ref{eq_base}), on constante qu'il existe une équation de type convection-diffusion nommée \texttt{Convection\_Diffusion\_std} (cf. figure~\ref{conv_diff_std}). 
+C'est une classe de base pour l'équation de transport d'un scalaire en régime laminaire et elle porte une référence au champ de la vitesse transportante \cite{BIB_01}. 
+Cette classe d'équation est abstraite pure et donc non instanciable. L'implémentation de cette classe n'est pas complète et elle sert de base à d'autres classes dérivées (héritées).  
+
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=10cm]{classEquation__base.png}
+   \caption{classe \texttt{Equation\_base}}
+   \label{eq_base}
+\end{center}
+\end{figure}
+\FloatBarrier
+
+\
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=18cm]{convection_diffusion_std.png}
+   \caption{classe \texttt{Convection\_Diffusion\_std}}
+   \label{conv_diff_std}
+\end{center}
+\end{figure}
+\FloatBarrier
+
+\
+
+En se basant sur le graphe doxygen de la classe \texttt{Convection\_Diffusion\_Concentration} (cf. figure~\ref{eq_cd_std_conc}), la classe \texttt{Convection\_Diffusion\_Concentration} fille (dérivée) de la classe \texttt{Convection\_Diffusion\_std}
+parait très proche de l'équation (\ref{eq_con_diff}). Cette classe est un cas particulier de \texttt{Convection\_Diffusion\_std} pour le transport d'un ou plusieurs constituants \cite{BIB_01}.
+
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=17cm]{classConvection__Diffusion__Concentration.png}
+   \caption{classe Convection\_Diffusion\_Concentration}
+   \label{eq_cd_std_conc}
+\end{center}
+\end{figure}
+\FloatBarrier
+
+Les spécificités de l'équation \texttt{Convection\_Diffusion\_Concentration} sont \cite{BIB_01}:
+\begin{itemize}
+ \item coefficient de diffusion \cite{BIB_02}: ce coefficient constitue une propriété d'un constituant associé à cette équation. Cette propriété est donnée par l'utilisateur
+dans le jeu de données de la manière suivante: 
+\lstinputlisting[language=C++,title=déclaration du constituant standard \texttt{\textbf{TRIO\_U}},emph={coefficient_diffusion},emphstyle={\color{blue}}]{jdd_constituant_std.data}
+
+ \item vitesse de convection \cite{BIB_01}: cette vitesse est obtenue par la méthode \texttt{vitesse\_pour\_transport} qui récupéré cette vitesse à partir de l'équation du problème qui la porte. En effet, dans une utilisation standard du logiciel \texttt{\textbf{TRIO\_U}}, cette vitesse de convection est
+ obtenue par l'équation de l'hydraulique Navier-Stokes.
+\end{itemize}
+
+\end{itemize}
+
+\subsection{Fonctionnalités spécifiques}
+
+L'analyse des fonctionnalités du logiciel \texttt{\textbf{TRIO\_U}} dans la section précédente a permis d'identifier une équation \texttt{Convection\_Diffusion\_Concentration} très proche de l'équation (\ref{eq_con_diff}) avec
+un coefficient de diffusion donné par l'utilisateur à travers un constituant. Nous faisons donc le choix d'utiliser cette équation comme base pour développer
+une nouvelle équation qu'on notera \texttt{Convection\_Diffusion}. A cette équation, on associe un nouveau constituant \texttt{Constituant\_Avec\_Vitesse} basé sur l'ancien en lui rajoutant comme propriété la vitesse de convection.
+
+\
+
+La nouvelle classe de constituant \texttt{Constituant\_Avec\_Vitesse} sera appelée dans le jeu de données de la manière suivante:
+
+\lstinputlisting[language=C++,title=déclaration du constituant spécifique à l'application \texttt{BALTIK},emph={Constituant_Avec_Vitesse,vitesse_convection},emphstyle={\color{blue}}]{jdd_constituant.data}
+
+%\
+
+%Ces nouvelles fonctionnalités peuvent être représenter sous la forme suivante:
+
+
+
+
+%Vue les éléments 
+%précédents (notion de problème, équation et opérateur), on a besoin d'avoir un nouveau problème qu'on notera {\color{blue}Probleme\_Convection\_Diffusion}. 
+
+%Ce problème sera contitué d'une seule équation qu'on notera {\color{blue}Convection\_Diffusion}
+
+%Il est recommandé de commencer d'écrire le jeu de données qu'on souhaite 
+
+
+
+\section{Développements}\label{dev}
+
+
+\subsection{Environnement de développement : Application \texttt{BALTIK}}
+
+Un environnement de développement Application \texttt{BALTIK} est mis à disposition pour les applications reposant, soit sur le logiciel \texttt{\textbf{TRIO\_U}} soit, sur son noyau
+numérique « Kernel » soit sur une autre application \texttt{BALTIK}. Cet environnement permet une gestion de compilation de ces applications (sources spécifiques)
+ainsi que les sources modifiées et/ou rajoutées du logiciel \texttt{\textbf{TRIO\_U}}.
+Dans ce cadre, une application est constituée :
+\begin{itemize}
+\item du noyau numérique « Kernel » ou du logiciel \texttt{\textbf{TRIO\_U}} ou d'une autre application \texttt{BALTIK}, 
+\item des sources spécifiques à l'application.
+\end{itemize}
+\smallskip{}
+
+En pratique, les sources spécifiques à l'application sont rassemblées dans un répertoire de travail appelé \texttt{src}\footnote{L'emplacement du répertoire \texttt{src} dans l'arborescence de l'application \texttt{BALTIK} est indiqué dans la section \ref{configBALTIK}}, celui-ci est compilé suivant le processus classique de compilation du logiciel \texttt{\textbf{TRIO\_U}}. On peut inclure à cette application des sources du « Kernel » ou de \texttt{\textbf{TRIO\_U}}
+que l'on souhaite modifier par rapport à leurs versions standards.
+
+
+\subsubsection{Création et configuration de l'application \texttt{BALTIK}}\label{configBALTIK}
+
+La création d'une application \texttt{BALTIK} consiste à créer un répertoire qui prend le nom de cette application (\texttt{convection\_diffusion} par exemple).
+
+\begin{lstlisting}[style=Bash]
+$ mkdir convection_diffusion
+\end{lstlisting}
+
+La mise en place d'une application \texttt{BALTIK} se traduit par la création dans le répertoire \texttt{convection\_diffusion} d'un fichier de configuration project.cfg.
+
+\lstinputlisting[language=C++,emph={convection_diffusion,MEKKAS,convection_diffusion_exe},emphstyle={\color{blue}}]{project.cfg}
+
+Dans ce fichier de configuration, seul le nom de l'application est obligatoire. En revanche, il existe un certain nombre de paramètres optionnels tels que
+l'auteur, le nom de l'exécutable à générer, etc.   
+
+\
+
+Pour configurer notre application \texttt{BALTIK}, il faut exécuter les instructions sivantes: 
+
+\begin{itemize}
+ \item initialisation de l'environnement du logiciel:
+\begin{lstlisting}[style=Bash]
+$ cd convection_diffusion
+$ mkdir src
+
+src est le répertoire contenant soit des sources modifiées du logiciel 
+TRUST soit du Kernel TRUST soit des sources supplémentaires spécifiques 
+à notre application. 
+\end{lstlisting}
+\item configuration de l'application \texttt{BALTIK}:
+\begin{lstlisting}[style=Bash]
+$ source $TRUST_ROOT/bin/Init_TRUST
+$ cd convection_diffusion
+$ baltik_build_configure
+La variable d'environnement $TRUST_ROOT est le chemin où le logiciel 
+TRUST est installé.
+La première instruction sert à initialiser l'environnement TRUST.
+La deuxième instruction génère un fichier configure. Il est important de 
+noter que cette instruction doit être exécuter dans le répertoire
+convection_diffusion.   
+\end{lstlisting}
+\end{itemize}
+
+\subsubsection{Compilation de l'application \texttt{BALTIK}}
+La compilation de notre application \texttt{BALTIK} est assez standard. En effet, la génération du fichier \texttt{Makefile} se fait via l'exécution dans le répertoire \texttt{convection\_diffusion} de l'instruction suivante:
+\begin{lstlisting}[style=Bash]
+$ cd convection_diffusion
+$ ./configure
+
+Il est important de noter que lors du rajout de nouvelles sources dans 
+le répertoire src, il est impératif de re-exécuter cette instruction
+pour mettre à jour le fichier Makefile.
+\end{lstlisting}
+
+Une fois le fichier Makefile généré, deux modes de compilation de l'application \texttt{BALTIK} sont possibles:
+\begin{itemize}
+\item compilation en mode debug:
+\begin{lstlisting}[style=Bash]
+$ cd convection_diffusion
+$ make debug
+\end{lstlisting}
+
+\item compilation en mode optimisé:
+\begin{lstlisting}[style=Bash]
+$ cd convection_diffusion
+$ make optim
+\end{lstlisting}
+\end{itemize}
+
+\subsection{Développements}
+\subsection{Classe constituant \texttt{Constituant\_Avec\_Vitesse}}
+Comme spécifié dans la section \ref{spec}, les paramètres utilisateurs vitesse de convection et coefficient de diffusion sont attribués à la nouvelle classe de constituant \texttt{Constituant\_Avec\_Vitesse} basée
+(héritage) sur la classe \texttt{Constituant} du logiciel \texttt{\textbf{TRIO\_U}}. La spécificité de cette nouvelle classe est que cette dernière possède un champ de vitesse de convection du constituant.
+
+\
+
+Le traitement de cet attribut supplémentaire nécessite les actions suivantes:
+\begin{enumerate}
+ \item le rajout d'attributs:
+\begin{itemize}
+\item \texttt{C}: il contiendra le contenu du \texttt{vitesse\_convection} du jeu de données (cf. section~\ref{spec}).
+\item \texttt{vitesse\_transport}: il contiendra la vitesse de convection discrétisée.
+\item \texttt{champs\_compris\_}: il contiendra les champs post-traitables.
+\end{itemize}
+
+ \item la surcharge des méthodes suivantes\footnote{Seules les fonctionnalités spécifiques de la nouvelle classe \texttt{Constituant\_Avec\_Vitesse} sont décrites.}:
+
+\begin{itemize}
+\item \texttt{initialiser}: évaluer la vitesse de convection en espace au temps initial. 
+
+\item \texttt{set\_param}: affecter le contenu de \texttt{vitesse\_convection} du jeu de données (cf. section~\ref{spec}) à l'attribut \texttt{C} de cette classe.
+
+\item \texttt{mettre\_a\_jour}: évaluer la vitesse de convection en espace au temps courant. 
+
+\item \texttt{discrétiser}: discrétise la vitesse de convection à partir de la vitesse de convection donné par l'utilisateur.
+
+\item \texttt{get\_champ} et \texttt{get\_noms\_champs\_postraitables}: rendre la vitesse de convection discrétisée post-traitable à partir du jeu de données.
+
+\end{itemize}
+
+ \item le développement de nouvelles méthodes:
+\begin{itemize}
+\item \texttt{vit\_convection\_constituant}: renvoie l'attribut contenant la vitesse de convection non discrète.
+
+\item \texttt{vitesse\_pour\_transport}: renvoie la vitesse de convection discrétisée sur les faces du maillage.
+\end{itemize}
+
+ \item le développement des méthodes \texttt{printOn} et \texttt{readOn}: la classe \texttt{Constituant\_Avec\_Vitesse} est utilisable dans le jeu de données et donc instantiable.
+ Pour déclarer ce type de classe, il suffit d'utiliser la macro \texttt{Declare\_instanciable}. Dans cette macro, on déclare les entêtes des méthodes \texttt{printOn} et \texttt{readOn} qui
+ sont nécessaires à la lecture des objets sur les flux d'entrée (jeu de données) et l'écriture des objets sur les flux de sortie. 
+
+\end{enumerate}
+
+\subsubsection{Fichier entête}\label{header_Constituant}
+\lstinputlisting[language=C++]{Constituant_Avec_Vitesse.h}
+
+\subsubsection{Fichier source}
+Il est à noter que dans le fichier source, qui contient le corps des méthodes définies dans le fichier entête, la macro \texttt{Implemente\_instanciable} sert, d'une part, à définir 
+le mot clé utilisable dans le jeu données pour représenter la classe \texttt{Constituant\_Avec\_Vitesse} et, d'autre part, la classe mère de de \texttt{Constituant\_Avec\_Vitesse}.
+Dans notre cas, on choisit le nom de la classe \texttt{Constituant\_Avec\_Vitesse} comme mot clé dans le jeu de données.
+\lstinputlisting[language=C++]{Constituant_Avec_Vitesse.cpp}
+
+\subsection{Classe équation \texttt{Convection\_Diffusion}}
+
+La spécificité de cette nouvelle classe d'équation \texttt{Convection\_Diffusion} par rapport à la classe de base \texttt{Convection\_Diffusion\_Concentration} (\ref{spec}) est
+que la classe \texttt{Convection\_Diffusion} possède une référence sur la nouvelle classe de constituant \texttt{Constituant\_Avec\_Vitesse} et que la vitesse de convection est donnée par cette dernière classe et non pas donnée par une résolution d'une équation de l'hydraulique Navier-Stokes.
+
+\
+
+Le traitement de cette nouvelle référence nécessite les actions suivantes:
+
+\begin{enumerate}
+ \item le rajout de la référence \texttt{le\_constituant}. Pour ce faire, il est nécessaire d'implémenter les deux sources ci-dessous. Cette technique, non standard C++, est utilisée dans
+ le logiciel \texttt{\textbf{TRIO\_U}} pour éviter aux développeurs de manipuler des pointeurs qui peuvent être source des fuites mémoires. 
+ 
+\lstinputlisting[language=C++]{Ref_Constituant_Avec_Vitesse.h}
+
+\lstinputlisting[language=C++]{Ref_Constituant_Avec_Vitesse.cpp}
+
+ \item la surcharge des méthodes suivantes \footnote{Seul les fonctionnalités spécifiques de la nouvelle classe \texttt{Convection\_Diffusion} sont décrites.}:
+  \begin{itemize}
+\item \texttt{associer\_milieu\_base}: associer le milieu à l'équation de convection diffusion et plus précisément associer le  nouveau constituant \texttt{Constituant\_Avec\_Vitesse} 
+à l'équation.
+\item  \texttt{associer\_constituant}: associer le constituant à l'équation \texttt{Convection\_Diffusion}. Cette méthode est appelée par la méthode précédente \texttt{associer\_milieu\_base}.
+\item \texttt{lire\_motcle\_non\_standard}: lire les mots clé non standard du jeu de données tel que \texttt{convection} pour associer la vitesse de convection à l'équation de convection diffusion
+\end{itemize}
+\item le développement des méthodes \texttt{printOn} et \texttt{readOn}.
+\end{enumerate}
+
+
+\subsubsection{Fichier entête}
+\lstinputlisting[language=C++]{Eq_Conv_Diff.h}
+
+
+\subsubsection{Fichier source}
+\lstinputlisting[language=C++]{Eq_Conv_Diff.cpp}
+
+\subsection{Classe Problème \texttt{Probleme\_Convection\_Diffusion}}
+Dans la section \ref{spec} dédiée à la spécification, aucun problème n'a été identifié pour servir de base au nouveau problème \texttt{Probleme\_Convection\_Diffusion}. Nous 
+prenons donc la classe abstraite pure \texttt{Probleme\_base} comme classe de base (mère) pour la nouvelle classe \texttt{Probleme\_Convection\_Diffusion}.
+
+Pour utiliser cette nouvelle classe de problème \texttt{Probleme\_Convection\_Diffusion}, il faut:
+\begin{enumerate}
+ \item rajouter l'attribut \texttt{eq\_conv\_diff} qui représente l'équation de convection-diffusion (\ref{eq_con_diff}).
+
+ \item compléter l'implémentation de la classe \texttt{Probleme\_base} en développant les méthodes suivantes:
+ \begin{itemize}
+  \item \texttt{nombre\_d\_equations}: renvoie le nombre d'équation qui compose ce problème. Dans notre cas c'est une seule équation.
+  \item \texttt{equation}: renvoie l'attribut contenant l'équation de convection-diffusion (\texttt{eq\_conv\_diff}).
+ \end{itemize}
+
+ \item surcharger la méthode \texttt{associer\_milieu\_base} pour associer le milieu à l'équation de convection de diffusion \texttt{eq\_conv\_diff}.
+
+ \item le développement des méthodes \texttt{printOn} et \texttt{readOn}.
+
+\end{enumerate}
+
+\subsubsection{Fichier entête}
+\lstinputlisting[language=C++]{Pb_Conv_Diff.h}
+
+\subsubsection{Fichier source}
+\lstinputlisting[language=C++]{Pb_Conv_Diff.cpp}
+
+\section{Processus de vérification des développements}\label{tests}
+Dans cette section, nous présentons:
+\begin{itemize}
+\item la mise en place des tests de vérification,
+\item la génération automatique d'un rapport de vérification des développements via l'outil de génération \texttt{\textbf{genererCourbes}},
+\item la vérification de la non-régression.
+\end{itemize}
+
+\subsection{Mise en place des tests de vérification}
+La mise en place des tests de vérification consiste à créer:
+\begin{itemize}
+\item un répertoire pour chaque test de vérification,
+\begin{lstlisting}[style=Bash]
+$ cd convection_diffusion
+$ mkdir -p share/Validation/Rapports_automatiques/Cas-tests/src/cas-test1
+$ mkdir -p share/Validation/Rapports_automatiques/Cas-tests/src/cas-test2
+
+Cas-tests est le répertoire contenant les tests de vérification.
+cas-test1 est le répertoire contenant le premier cas de vérification.
+cas-test2 est le répertoire contenant le deuxième cas de vérification.
+\end{lstlisting}
+
+\item un fichier \texttt{PRM} dans le répertoire \texttt{convection\_diffusion/share/Validation}
+\texttt{/Rapports\_automatiques/Cas-tests/src} qui sert à générer automatiquement un rapport de vérification (section \ref{rapport_auto}). Ce fichier \texttt{PRM} est présenté dans la section \ref{prm}.
+\item un jeu de donnée pour chaque test de vérification (sections \ref{cas1} et \ref{cas2}).
+\end{itemize}
+
+
+\subsection{Génération de rapport de vérification}
+La génération consiste à exécuter la commande \texttt{make validation} dans le répertoire \texttt{convection\_diffusion}. Dans ce même répertoire, l'exécution de cette commande générera le rapport de vérification \texttt{validation.pdf}. Ce rapport est inclus dans cette note technique à la section \ref{rapport_auto}. 
+
+\subsection{Vérification de la non-régression}
+Pour utiliser les tests mis en place précédemment dans le rapport de vérification comme des tests de non-régression, il suffit de:
+\begin{itemize}
+\item créer un répertoire qui contiendra les résultats de référence dans le répertoire \texttt{convection\_diffusion}:
+\begin{lstlisting}[style=Bash]
+$ cd convection_diffusion
+$ mkdir -p tests/Reference/Validation
+\end{lstlisting}
+\item lancement des tests et vérification de la non-régression en exécutant la commande \texttt{make check\_optim} dans le répertoire \texttt{convection\_diffusion}. Le résultat de cette commande est illustré dans la figure (cf. figure~\ref{tnr}). Cette figure montre que les résultats en séquentiel et en parallèle ne présentent aucune régression.
+
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=12cm]{tnr.png}
+   \caption{Résultats des tests de non-régression}
+\end{center}
+\label{tnr}
+\end{figure}
+\FloatBarrier
+\end{itemize}  
+
+
+\section{Rapport de vérification}\label{rapport_auto}
+\def\orig{preserve}
+\input{corps.tex}
+%\includepdf[pages=-]{validation.pdf}
+
+%Dans cette section, deux cas-tests ont été développés pour une vérification qualitative des développements spécifiés précédemment. 
+%Les jeux de donnés utilisés pour les deux cas-tests sont en annexes \ref{annexe_cas_test_1} et \ref{annexe_cas_test_2}.
+
+%\subsection{Cas-test1}\label{cas_test_1}
+%Ce premier cas-test vise à vérifier la solution de l'équation (\ref{eq_con_diff}) où:
+%\begin{itemize}
+% \item $[a,b]=[0,0.04]$ et $[c,d]=[0,0.04]$,
+% \item $\overrightarrow{V}(\overrightarrow{X},t)=(1,1)$,
+% \item $D(\overrightarrow{X},t)=0.0005$.
+%\end{itemize}
+%
+%\
+%
+%\begin{figure}[!ht]
+% \centering
+%   \subfigure[Concentration à t=0]{\includegraphics[height=6.5cm]{visit0000.png}}
+%   \subfigure[Concentration à t=$t_1$]{\includegraphics[height=6.5cm]{visit0001.png}}
+%   \subfigure[coefficient de diffusion t=$t_1$]{\includegraphics[height=6.5cm]{visit0002.png}}
+%   \subfigure[coefficient de convection t=$t_1$]{\includegraphics[height=6.5cm]{visit0003.png}}
+% \caption{Resultats du cas-test1} \label{fig:1}
+% \end{figure}
+%\FloatBarrier
+
+%\subsection{Cas-test2}\label{cas_test_2}
+%Le deuxième cas-test vise à vérifier la solution de l'équation (\ref{eq_con_diff}) où:
+%\begin{itemize}
+% \item $[a,b]=[0,1]$ et $[c,d]=[0,1]$,
+% \item $\overrightarrow{V}(\overrightarrow{X},t)=(-2\sin(\pi x)^2\sin(\pi y)\cos(\pi y)\cos(t\frac{\pi}{2}), 2\sin(\pi y)^2\sin(\pi x)\cos(\pi x)\cos(t\frac{\pi}{2}))$,
+% \item $D(\overrightarrow{X},t)=0$.
+%\end{itemize}
+
+%\
+
+%\begin{figure}[!ht]
+% \centering
+%   \subfigure[Concentration à t=0]{\includegraphics[height=6.5cm]{visit0004.png}}
+%   \subfigure[Concentration à t=$t_1=1.2$]{\includegraphics[height=6.5cm]{visit0007.png}}
+%   \subfigure[coefficient de convection t=0]{\includegraphics[height=6.5cm]{visit0005.png}}
+%   \subfigure[coefficient de convection t=$t_1=1.2$]{\includegraphics[height=6.5cm]{visit0006.png}}
+% \caption{Resultats du cas-test2} \label{fig:2}
+% \end{figure}
+%\FloatBarrier
+
+\section{Conclusion}
+Dans ce tutoriel, nous avons décrit à travers la résolution d'une équation de convection-diffusion les aspects suivants:
+\begin{itemize}
+ \item l'environnement de développement du logiciel \texttt{\textbf{TRIO\_U}} en réalisant une nouvelle application \texttt{BALTIK},
+  
+ \item la démarche de spécifications et de développements. Dans cette démarche, il est nécessaire de réaliser des choix techniques tels que l'association de la vitesse de convection à un constituant et non pas à l'équation ou problème).
+ Ces choix ne sont ni uniques ni meilleurs que d'autres. Il est à noter que le but principal de ce tutoriel est de présenter une démarche accompagnée de ces propres choix
+ techniques en donnant quelques recommandations ou méthodologies à suivre lors de sa phase de spécification.
+  
+ \item la mise en place des tests de non-régression et la génération automatique d'un rapport de vérification des développement via des outils proposés par le logiciel \texttt{\textbf{TRIO\_U}}.
+\end{itemize}
+
+
+%\clearpage
+%\appendix
+%===================================
+%\section{Cas-test1}\label{annexe_cas_test_1}
+%\lstinputlisting[language=C++,title=jeu de donnés cas-test 1]{cas1.dat}
+
+%\clearpage
+%\section{Cas-test2}\label{annexe_cas_test_2}
+%\lstinputlisting[language=C++,title=jeu de donnés cas-test 2]{cas2.dat}
+
+
+\addcontentsline{toc}{section}{Bibliographie}
+\newpage
+\bibliographystyle{plain}
+\bibliography{baltik}
+%\bibliographystyle{unsrt}
+%\bibliographystyle{abbrvnat-fr-simpl}
+
+% \appendix
+% \include{annexes}
+\end{document}

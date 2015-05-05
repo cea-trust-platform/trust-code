@@ -1,0 +1,48 @@
+#!/bin/bash
+#set -xv
+page=`basename $1 .data`
+page=`dirname $1`/$page.html
+if [ ! -f $page ] || [ $page -ot $1 ] || [ "$2" = "force" ]
+then 
+   echo > $TRUST_TMP/mots
+   awk '{print (" "$0" ")}' $1 | sed "s?	?    ?g" > $TRUST_TMP/prov.data
+for mot in `cat $TRUST_TMP/prov.data`
+do
+   echo $mot
+done | sort -u | $TRUST_Awk '!/\./ {print (" "$0" ")}' > $TRUST_TMP/mots
+cat /dev/null > $TRUST_TMP/sedfile
+cat /dev/null > $TRUST_TMP/sedfile0
+cpt=10000
+dico=`extrait_nom doc/.dico`
+[ ! -f $dico ] && exit
+# Cree un dico avec les minuscules
+# On peut eventuellement le gerer sous Git
+$TRUST_Awk '{print " "tolower($1)" "tolower($2)" "$2}' $dico > $TRUST_TMP/dico2
+# Cree mots en minuscules:
+$TRUST_Awk '{print tolower($0)}' $TRUST_TMP/mots > $TRUST_TMP/mots2
+# Reduit encore la taille du dico
+grep -f $TRUST_TMP/mots2 $TRUST_TMP/dico2 > $TRUST_TMP/dico
+dico=$TRUST_TMP/dico
+# Reduit la taille des fichiers mots:
+$TRUST_Awk '{print $1"\n"$2}' $TRUST_TMP/dico | sort -u > $TRUST_TMP/dico3
+grep -i -f $TRUST_TMP/dico3 $TRUST_TMP/mots > $TRUST_TMP/mots2
+for mot in `cat $TRUST_TMP/mots2`
+do
+   class=`$TRUST_Awk -v mot=$mot 'BEGIN {mot=tolower(mot)} (mot==$1 || mot==$2) {gsub("_","__",$3);print $3}' $dico`
+   #class=`grep -i $mot $dico | $TRUST_Awk '{print $3}'`
+   if [ ${#class} != 0 ]
+   then
+      let cpt=$cpt-1
+      equiv="mot"$cpt
+      echo "s? $mot ?$equiv?g" >> $TRUST_TMP/sedfile0
+      #expr="s?"$equiv"?<A HREF=file://"$TRUST_ROOT"/doc/html/class"$class".html> "$mot"</A> ?g" 
+      #echo "s?$mot ?$equiv?g" >> $TRUST_TMP/sedfile0
+      expr="s?"$equiv"?<A HREF=http://localhost:$PORT/index.cg\?class"$class".html> "$mot"</A> ?g" 
+      echo $expr >> $TRUST_TMP/sedfile
+fi
+done
+echo $ECHO_OPTS "<HTML> \n <HEAD> \n     <TITLE>data</TITLE></HEAD> <BODY>\n# "$1" #\n" > es2.html
+sed -f $TRUST_TMP/sedfile0 $TRUST_TMP/prov.data | sed "s?	?    ?g"| sed "s? ?\&nbsp; ?g" |  sed -f $TRUST_TMP/sedfile |awk '{print ($0 "<br>")}'     >>es2.html
+echo "</BODY></HTML>" >> es2.html
+mv es2.html $page
+fi

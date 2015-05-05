@@ -1,0 +1,18 @@
+#!/bin/bash
+
+ETUDE_TRUST=`QUELLE_ETUDE.ihm`
+export ETUDE_TRUST
+NOM=`cat $ETUDE_TRUST/.NOM_DATA`
+export NOM
+cd $ETUDE_TRUST
+if [ ! -f $NOM.stop ]
+then
+   echo $ECHO_OPTS "No solve process submitted !"
+   eval $FIN
+else
+   echo $ECHO_OPTS "*********************"
+   echo $ECHO_OPTS "* Process stopped ! *"
+   echo $ECHO_OPTS "*********************"
+   echo $ECHO_OPTS "S" > .ordre_IHM
+   sleep 1
+fi

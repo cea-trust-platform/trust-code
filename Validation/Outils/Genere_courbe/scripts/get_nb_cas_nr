@@ -1,0 +1,7 @@
+#!/bin/bash
+DIR=`dirname $0`
+DIR=`(cd $DIR;pwd)`
+mot=liste_cas_nr
+
+
+$DIR/../Run $* -get_nb_cas_nr | grep $mot | sed "s/$mot //" | wc -w

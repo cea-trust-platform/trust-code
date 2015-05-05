@@ -1,0 +1,128 @@
+# Hydraulique 3D VEF P1NC/P1B #
+# PARALLEL OK 3 #
+dimension 3
+Pb_Hydraulique pb
+
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+        {
+                Origine 0. 0. 0.
+                Nombre_de_Noeuds 3 3 2
+                Longueurs 1 1 1
+        }
+        {
+                Bord entree   	X = 0.   0. <= Y <= 1.   0. <= Z <= 1
+                Bord sortie  	X = 1.  0. <= Y <= 1.   0. <= Z <= 1
+                Bord paroi   	Y =  0.  0. <= X <= 1.  0. <= Z <= 1
+                Bord paroi   	Y =  1.  0. <= X <= 1.  0. <= Z <= 1
+                Bord paroi  	Z = 0.  0. <= X <= 1.   0. <= Y <= 1.
+                Bord paroi  	Z = 1 0. <= X <= 1.   0. <= Y <= 1.
+        }
+}
+Tetraedriser_homogene dom
+VerifierCoin dom { }
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur Tranche { tranches 1 2 1 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+Lire dis { P0 P1 Pa }
+schema_Euler_explicite sch
+Lire sch
+{
+	nb_pas_dt_max 3
+	tinit 0.0
+	tmax 0.05
+	dt_min 1.e-5
+	dt_max 0.01
+	dt_impr 1.e-6
+	dt_sauv 100
+	seuil_statio 1.e-10
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 2e-05
+	rho Champ_Uniforme 1 2
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+Debog pb seq faces 1.e-9 0
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.65 } 
+			seuil 1.e-8
+			impr 
+		}
+		Sources { Source_Qdm Champ_fonc_xyz dom 3 x*y y*z x*y*z }
+
+		convection { EF_stab { alpha 0.2 } }
+		diffusion { }
+		conditions_initiales
+		        {
+			vitesse Champ_Uniforme 3 1. 0. 0.
+			}
+		boundary_conditions {
+		        paroi paroi_fixe
+			entree frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 1. 0. 0.
+			sortie frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.
+		}
+	}
+
+Postraitements
+{
+	lml
+	{ 
+		Sondes
+		{
+		  sonde_vit1 vitesse periode 1.e-6 segment 20 0. 0.06 0. 0. 0.06 0.06
+		  sonde_vit2 vitesse periode 1.e-6 segment  6 0. 0.05 0.04 0. 0.0653 0.04
+		  sonde_pression pression periode 1.e-6 segment 6 0. 0. 0. 1. 1. 1.
+		}
+		format lml
+		fichier 2Cubes
+		Champs dt_post 0.01
+		{
+			vitesse elem
+			pression som
+			pression elem	
+		}
+	}
+	lata
+	{ 
+		format lata
+		fichier 2Cubes
+		Champs dt_post 0.01
+		{
+			vitesse elem
+			pression som
+			pression elem
+		}
+	}
+}
+}
+
+Solve pb
+Fin

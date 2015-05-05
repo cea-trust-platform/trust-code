@@ -1,0 +1,68 @@
+Parametres {
+	Titre "Basic parallel benchmarking"
+	#Reference "See data files into \$TRUST_ROOT/tests/Reference/BENCHMARK directory"
+}
+Chapitre {
+	Tableau {
+           	Description "\latex_(\newpage\latex_)"
+        }
+}
+Chapitre {
+	Titre "VDF results"
+	Figure {
+		Titre_figure "Parallel speed up"
+                Width 13cm
+		LabelX "Number of CPUs"
+		LabelY "Speed Up"
+		InclureDescCourbes 0
+		Courbe { 
+			Legende "Ideal"
+			Style lines
+			Fichier VDF.su
+			colonnes $1 $1
+		}
+		Courbe { 
+			Legende "TRUST"
+			Style linespoints
+			Fichier VDF.su
+			colonnes $1 $3
+		}	
+	}
+	Figure {                
+		Titre_figure "Relative composition of time step CPU"
+		Width 13cm
+ 		Image VDF.png 
+	}
+}
+Chapitre {
+	Tableau {
+           	Description "\latex_(\newpage\latex_)"
+        }
+}
+Chapitre {
+	Titre "VEF results"
+	Figure {
+		Titre_figure "Parallel speed up"
+                Width 13cm
+		LabelX "Number of CPUs"
+		LabelY "Speed Up"
+		InclureDescCourbes 0
+		Courbe { 
+			Legende "Ideal"
+			Style lines
+			Fichier VEF.su
+			colonnes $1 $1
+		}
+		Courbe { 
+			Legende "TRUST"
+			Style linespoints
+			Fichier VEF.su
+			colonnes $1 $3
+		}	
+	}
+	Figure {                
+		Titre_figure "Relative composition of time step CPU"
+		Width 13cm
+ 		Image VEF.png 
+	}
+}

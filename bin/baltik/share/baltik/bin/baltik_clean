@@ -1,0 +1,127 @@
+#! /usr/bin/env sh
+# --
+# Author : Eli LAUCOIN (CEA)
+# --
+
+baltik_environnement_error() {
+    echo "-----------------------------------------"
+    echo "ERROR : undefined variable BALTIK_ROOT   "
+    echo ""
+    echo "Please, install BALTIK and run :         "
+    echo "  source /path/to/BALTIK/bin/baltik_init "
+    echo "-----------------------------------------"
+    echo ""
+    exit 1
+}
+
+baltik_environnement_init()
+{
+	script=$0
+	bindir=`dirname $script`
+	cd `dirname $bindir`
+	pwd
+}
+
+# initialisation de l'etat de la variable BALTIK_ROOT
+BALTIK_ROOT=`baltik_environnement_init`
+# verification de l'etat de la variable BALTIK_ROOT
+if [ "${BALTIK_ROOT}" = "" ]
+then
+    baltik_environnement_error
+fi
+
+
+# chargement des fonctions d'affichage des messages d'erreur
+. ${BALTIK_ROOT}/bin/baltik_errors
+
+# chargement des fonctions d'analyse d'un fichier de configuration
+. ${BALTIK_ROOT}/bin/baltik_configuration_parsing
+
+# chargement des fonctions de correspondance nom variable OPT
+. ${BALTIK_ROOT}/bin/baltik_OPT_management
+
+# verification/chargement de trio_u
+. ${BALTIK_ROOT}/bin/baltik_check_init_triou
+
+# verification de l'etat de la variable TRUST_ROOT
+if [ "${TRUST_ROOT}"  = "" ]
+then
+    triou_environnement_error
+fi
+ALL=0
+[ "$1" = "dist" ] && ALL=1
+# initialisation des variables utiles
+project_directory=`pwd`
+
+project_configuration_file="${project_directory}/project.cfg"
+if  [ ! -e $project_configuration_file ] || [ ! -f $project_configuration_file ] 
+then
+    no_configuration_file_error "$project_directory=$"
+fi
+
+project_description=`extract_section "$project_configuration_file" description`
+
+project_executable_name=`extract_executable_name ${project_description}`
+
+project_makefile="${project_directory}/Makefile"
+
+
+project_build_directory="${project_directory}/build"
+project_test_directory="${project_directory}/build/tests"
+
+
+# suppression du repertoire de compilation
+rm -rf $project_build_directory
+
+# suppression du makefile
+rm -rf $project_makefile
+
+# suppression des fichiers de sauvegarde inutiles
+find . -name "*~" | xargs rm -f
+
+
+# suppression des fichiers generes par les tests
+if [ -d $project_test_directory ]
+then
+   cd $project_test_directory
+   #find . -maxdepth 1 -type d -name "*_?D" -prune | grep -v cas_expo_trans_2D | xargs rm -rf
+   #find . -type f -name "*log" -exec rm -rf {} \;
+   #find . -type f -name "*~" -exec rm -rf {} \;
+   #find . -type f -name "*.pyc" -exec rm -rf {} \;
+fi
+
+
+# destruction des liens dans deps et all
+#rm -rf  $project_test_directory/deps  $project_test_directory/all  $project_test_directory/share/all/Validation/Rapports_automatiques $project_test_directory/share/deps/Validation/Rapports_automatiques
+#rmdir  $project_test_directory/share/deps/Validation   $project_test_directory/share/deps $project_test_directory/share/all/Validation  $project_test_directory/share/all 2>/dev/null
+
+#rmdir $project_test_directory/share 2>/dev/null
+ 
+for type in `list_type`
+do
+  OPT=`triou_opt_from_name $type`
+  [ $? != 0 ] && eval $OPT
+  export OPT
+
+  project_type_executable_name="${project_directory}/${project_executable_name}${OPT}"
+  project_type_report_file="${project_test_directory}/.tests_${project_executable_name}${OPT}"
+  project_type_report_directory="${project_test_directory}/tests_${project_executable_name}${OPT}"
+
+  project_type_html_report="${project_directory}/.tests_${project_executable_name}${OPT}.html"
+
+  # suppression de l'executable
+  rm -rf  $project_type_executable_name
+
+
+  cd $project_directory
+  rm -rf $project_type_report_file
+  rm -rf $project_type_report_directory
+  rm -rf $project_type_html_report
+  rm -f ${project_test_directory}/lance_test_out 
+done
+if [ $ALL -eq 1 ]
+    then
+    rm -f ${project_directory}/README.BALTIK
+    rm -f ${project_directory}/configure
+    rm -rf ${project_directory}/local
+fi

@@ -1,0 +1,124 @@
+# Cas test 3D VEF pour tester GCP/ssor_bloc #
+# PARALLEL OK 8 #
+dimension 3
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+        {
+                Origine                        0.  0.  0.
+                Nombre_de_Noeuds               5   5   5
+                Longueurs                      1   1   1
+        }
+        {
+                Bord periox     X = 0.   0. <= Y <= 1. 0. <= Z <= 1.  
+                Bord periox     X = 1.   0. <= Y <= 1. 0. <= Z <= 1.
+                Bord perioy     Y = 0.   0. <= X <= 1. 0. <= Z <= 1.  
+                Bord perioy     Y = 1.   0. <= X <= 1. 0. <= Z <= 1. 
+                Bord perioz     Z = 0.   0. <= X <= 1. 0. <= Y <= 1.  
+                Bord perioz     Z = 1.   0. <= X <= 1. 0. <= Y <= 1. 
+        }
+}
+Tetraedriser_homogene dom
+Corriger_frontiere_periodique { domaine dom bord periox }
+Corriger_frontiere_periodique { domaine dom bord perioy }
+Corriger_frontiere_periodique { domaine dom bord perioz }
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur Tranche { tranches 1 1 2 }
+	periodique 3 periox perioy perioz
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1b dis
+Lire dis { P0 P1 }
+Schema_Euler_Explicite sch
+Lire sch 
+{
+	nb_pas_dt_max 2
+        tinit 0.
+        tmax 0.005
+        dt_min 1.e-6
+        dt_max 1.e-3
+	dt_start dt_calc
+        dt_impr 0.1
+        dt_sauv 20.
+        seuil_statio 1.e-10
+        facsec 0.25
+}
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme	1 1.
+	rho Champ_Uniforme	1 1.
+}
+
+Pb_Hydraulique pb
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+#
+		Solveur_Pression GCP {
+			seuil 1.e-12 impr	
+			precond ssor 
+			{ 
+			 	 omega 1.65
+		 	}
+		 }		 
+#
+Discretize pb dis
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		Solveur_Pression GCP {
+			seuil 1.e-8 impr	
+			precond ssor_bloc 
+			{ 
+			 	 precond1 PrecondSolv Cholesky { } alpha_1 1
+				 precond0 PrecondSolv Cholesky { } alpha_0 1
+				 preconda PrecondSolv Cholesky { } alpha_a 1
+		 	}
+		}
+                Sources { Source_Qdm Champ_fonc_xyz dom 3 x*y*z 2*x*y*z 3*x*y*z }
+                convection { negligeable }
+                diffusion  { }
+				
+		conditions_initiales
+			{
+                        vitesse Champ_fonc_xyz dom 3  
+			     100*x
+			     100*y
+			     -200*z
+			}
+		boundary_conditions
+			{
+			perioy periodique 
+			periox periodique 
+			perioz periodique 
+			}
+	}
+
+	Postraitement
+        {     
+		format lml
+		Champs dt_post 0.001
+			{
+			vitesse som
+			pression som
+			}
+	}
+}
+Solve pb
+Fin

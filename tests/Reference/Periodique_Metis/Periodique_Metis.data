@@ -1,0 +1,108 @@
+# Test du mot cle Periodique_1Proc #
+# PARALLEL OK 3 #
+
+dimension 3
+Pb_Hydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+	{
+		Origine 0. 0. 0.
+		Nombre_de_Noeuds 11 5 5
+		Longueurs 6.283185307 2. 2.
+	}
+	{
+		Bord periox  X = 0.            		0. <= Y <= 2.0           0. <= Z <= 2.
+		Bord periox  X = 6.283185307            0. <= Y <= 2.0           0. <= Z <= 2. 
+		Bord bas     Y = 0.            		0. <= X <= 6.283185307            0. <= Z <= 2.
+		Bord haut    Y = 2.            		0. <= X <= 6.283185307            0. <= Z <= 2.
+                Bord perioz  Z = 0.            		0. <= X <= 6.283185307            0. <= Y <= 2.0
+		Bord perioz  Z = 2.            		0. <= X <= 6.283185307            0. <= Y <= 2.0   	
+		}
+}
+
+Tetraedriser_homogene_fin dom
+
+Corriger_frontiere_periodique { Domaine dom Bord periox }
+Corriger_frontiere_periodique { Domaine dom Bord perioz }
+
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur metis { Nb_parts 3 }
+	Larg_joint 2
+	Nom_Zones DOM
+	Periodique 2 periox perioz
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	nb_pas_dt_max 0
+	tinit 0.
+	tmax 10.
+	dt_min 4.e-4
+	dt_max 1.e-1
+	dt_impr 0.00001
+	dt_sauv 1.5
+	seuil_statio 1.e-8
+}
+
+Fluide_Incompressible air
+Lire air
+{
+	mu Champ_Uniforme 1 1.0
+ 	rho Champ_Uniforme 1 1.0
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb air
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { precond ssor { omega 1.2 } seuil 1.e-12 impr }	
+		convection { negligeable  }
+		diffusion { }
+		conditions_initiales {
+			vitesse champ_init_canal_sinal 3 { Ucent 0.5 h 1.0 ampli_bruit 0. ampli_sin 0. omega 2. }
+			}
+		sources { Canal_perio { bord periox } }
+		boundary_conditions {
+			periox  periodique 
+			perioz periodique 
+			haut  paroi_fixe
+	                bas  paroi_fixe		
+		}
+     }
+	      
+	Postraitement
+	{
+	     Sondes
+	     	{
+	           	sonde_pression pression periode 0.001 points 1 0.05 0.15 1. 
+	        }
+		Champs dt_post 4.0
+		{			
+			pression elem			
+		}
+	}
+}
+Solve pb
+Fin

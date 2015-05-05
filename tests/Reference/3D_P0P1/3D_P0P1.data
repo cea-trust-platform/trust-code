@@ -1,0 +1,136 @@
+# Cas test 3D VEF hydraulique qui teste toutes les conditions limites hydrauliques #
+# PARALLEL OK 6 #
+dimension 3
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+        {
+                Origine 0. 0. 0.
+                Nombre_de_Noeuds 5 5 5
+                Longueurs 1 1 1
+        }
+        {
+                Bord entree   	X = 0.   	0. <= Y <= 1.    	0. <= Z <= 1.
+                Bord sortie  	X = 1.  	0. <= Y <= 1.   	0. <= Z <= 1.
+                Bord paroiY   	Y =  0.  	0. <= X <= 1.  		0. <= Z <= 1.
+                Bord paroiY   	Y =  1.  	0. <= X <= 1.  		0. <= Z <= 1.
+                Bord symetrie   Z =  0.  	0. <= X <= 1.  		0. <= Y <= 1.
+                Bord paroi   	Z =  1.  	0. <= X <= 1.   	0. <= Y <= 1.
+        }
+} 
+Tetraedriser_homogene dom
+Transformer dom
+x+4*x*(1-x)*y*(1-y)*z*(1-z)*(0.5-y)
+y+4*x*(1-x)*y*(1-y)*z*(1-z)*(0.5+x)
+z
+Corriger_frontiere_periodique { domaine dom bord paroiY }
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur Tranche { tranches 2 1 2 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1b dis
+Lire dis { P0 P1 }
+
+Schema_Euler_Explicite sch
+Lire sch 
+{
+	nb_pas_dt_max 4
+        tinit 0.
+        tmax 0.1
+        dt_min 1.e-6
+        dt_max 1.e-1
+	dt_start dt_calc
+        dt_impr 0.1
+        dt_sauv 20.
+        seuil_statio 1.e-8  
+        facsec 0.5
+}
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme	1 1.
+	rho Champ_Uniforme	1 1.
+}
+
+Pb_Hydraulique pb
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+Lire pb
+	{
+	Navier_Stokes_standard
+		{
+		Solveur_Pression GCP { 
+			precond ssor { omega 1.6 }
+			seuil 1.e-11 impr 
+		} 
+		solveur_bar Cholesky { }
+
+                convection { muscl }
+                diffusion  {  }
+				
+                Sources { Source_Qdm Champ_fonc_xyz dom 3  x*(1-y)*z x*y*z x*y*z
+                        }
+		conditions_initiales
+			{
+                        vitesse Champ_fonc_xyz dom 3  0.  0. 0.
+			}
+		boundary_conditions
+			{
+			entree frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 0. 0. 0.
+			sortie frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.
+			symetrie symetrie
+			paroi paroi_fixe
+			paroiY periodique 
+			}
+	         }
+
+
+	Postraitements
+	{
+		lml
+        	{
+		fichier 3D_P0P1
+		format lml  
+                Sondes
+                	{ 
+                        sonde_vit1  vitesse periode 0.01 points 1 0.5 0.5 0.5 
+			sonde_pression pression periode 0.01 segment 10 0. 0.5 0.5  1. 0.5 0.5
+			}
+		Champs dt_post 2.
+			{
+			pression elem
+			pression som
+			}
+		}
+		lata
+		{
+		fichier 3D_P0P1
+		format lata  
+		Champs dt_post 2.
+			{
+			pression elem
+			pression som
+			}		
+		}
+	}
+}
+Solve pb
+Fin

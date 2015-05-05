@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+  <Plugin name="sonde" type="database" label="sonde import file" version="1.0" enabled="true" mdspecificcode="false" engspecificcode="false" onlyengine="false" noengine="false" dbtype="MTSD" haswriter="false" hasoptions="false" specifiedFilenames="false">
+    <CXXFLAGS>
+      -O2
+      -DNDEBUG
+      -Wall
+      -Wno-deprecated
+    </CXXFLAGS>
+    <FilePatterns>
+      *.son
+    </FilePatterns>
+    <Files components="M">
+      avtsondeFileFormat.C
+    </Files>
+    <Files components="E">
+      avtsondeFileFormat.C
+    </Files>
+    <Attribute name="" purpose="" persistent="true" keyframe="true" exportAPI="" exportInclude="">
+    </Attribute>
+  </Plugin>

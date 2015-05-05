@@ -1,0 +1,140 @@
+# Conduction 2D : Sources de puissance totale #
+# Dans le cas ou la puissance P_def est imposee sur la partie #
+# par defaut du domaine et la puisannce P_i sur la sous zone i #
+# la puissance en sortie doit etre P_def+somme_i P_i quel que #
+# soit le volume du domaine # 
+# PARALLEL OK #
+dimension 2
+
+Pb_conduction pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Cavite 
+ 	{
+		Origine 0. 0.
+		Nombre_de_Noeuds 21 17
+		Longueurs 1. 0.8
+	}
+	{
+		Bord periox  X = 0.  0. <= Y <= 0.8
+		Bord Haut    Y = 0.8 0. <= X <= 1.
+		Bord Bas     Y = 0.  0. <= X <= 1.
+		Bord periox  X = 1.  0. <= Y <= 0.8
+	}
+} 
+Sous_Zone zone1
+Associate zone1 dom
+Lire zone1 {
+    Rectangle
+      Origine 0.4 0.
+      Cotes   0.2 0.8 }
+      
+Sous_Zone zone2
+Associate zone2 dom
+Lire zone2 {
+    Rectangle
+      Origine 0.7 0.
+      Cotes   0.3 0.4 }
+
+Sous_Zone zone3
+Associate zone3 dom
+Lire zone3 {
+    Rectangle
+      Origine 0.75 0.4
+      Cotes   0.25 0.4 }    
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 1 2 }
+	Larg_joint 1
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+Sous_Zone zone1
+Associate zone1 dom
+Lire zone1 { Fichier zone1.ssz }
+Sous_Zone zone2
+Associate zone2 dom
+Lire zone2 { Fichier zone2.ssz }
+Sous_Zone zone3
+Associate zone3 dom
+Lire zone3 { Fichier zone3.ssz }
+END SCATTER #
+
+VDF dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0
+	tmax 0.4
+	dt_min 0.0001
+	dt_max 10.
+	dt_impr 0.0001
+	dt_sauv 100
+	seuil_statio 1.e-8
+	facsec 0.5
+}
+
+Solide sol
+Lire sol
+{
+	rho Champ_Uniforme 1 2
+	lambda Champ_Uniforme 1 2.
+	Cp Champ_Uniforme 1 0.5
+}
+Associate pb dom
+Associate pb sch
+Associate pb sol
+
+Discretize pb dis
+
+Lire pb
+{
+	Conduction
+	{
+		diffusion { }
+		sources {
+			Puissance_thermique Valeur_totale_sur_volume dom 1
+				{ defaut 100 zone1 50 zone2 10 zone3 5 }
+		}
+		conditions_initiales {
+			temperature Champ_Uniforme 1 0. 
+			}
+		boundary_conditions {
+			Haut paroi_adiabatique
+			Bas paroi_adiabatique
+			periox  periodique 
+		}
+	}
+
+	Postraitement
+	{
+		Sondes
+		{
+			sonde temperature periode 0.01 segment 10 0.05 0.5 0.95 0.5
+		}
+		
+		Champs dt_post 0.1
+		{
+			temperature elem
+			temperature som
+		}
+	}
+}
+
+Solve pb
+Ecrire sol    
+Fin
+Droit  paroi_temperature_imposee Champ_Front_Uniforme 1 1.
+Gauche  paroi_temperature_imposee Champ_Front_Uniforme 1 0.
+

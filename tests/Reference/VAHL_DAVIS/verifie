@@ -1,0 +1,67 @@
+# Verification des flux sur le bord Gauche du domaine
+
+message()
+{
+   [ $1 != $2 ] && echo $ECHO_OPTS "Error ($1!=$2) when checking:\n $msg" && err=1
+   [ "$debog" != "" ] && echo $msg
+}
+jdd=`pwd`
+jdd=`basename $jdd`
+debog=$1
+
+max="`cat VAHL_DAVIS_DIFFT_GAUCHE.son | wc -l`"
+let i=4
+while [ $i -lt $max ]
+do
+let i=$i+1
+# Recuperation des flux sur le bord Gauche (obtenus par impression)
+
+debit_imp=`awk -v l=$i 'NR==l{ print }' $jdd"_pb_Debit.out" | $TRUST_Awk '{print $2}'`
+fluxdiff_U_imp=`awk -v l=$i 'NR==l{ print }' $jdd"_pb_Contrainte_visqueuse.out" | $TRUST_Awk '{print $2}'`
+fluxdiff_V_imp=`awk -v l=$i 'NR==l{ print }' $jdd"_pb_Contrainte_visqueuse.out" | $TRUST_Awk '{print $3}'`
+fluxconv_U_imp=`awk -v l=$i 'NR==l{ print }' $jdd"_pb_Convection_qdm.out" | $TRUST_Awk '{print $2}'`
+fluxconv_V_imp=`awk -v l=$i 'NR==l{ print }' $jdd"_pb_Convection_qdm.out" | $TRUST_Awk '{print $3}'`
+fluxdiff_T_imp=`awk -v l=$i 'NR==l{ print }' $jdd"_pb_Diffusion_chaleur.out" | $TRUST_Awk '{print $2}'`
+fluxconv_T_imp=`awk -v l=$i 'NR==l{ print }' $jdd"_pb_Convection_chaleur.out" | $TRUST_Awk '{print $2}'`
+
+# Recuperation des flux sur le bord Gauche (obtenus par postraitement)
+
+let j=$i+1
+debit_post=`awk -v l=$i 'NR==l{ print }' $jdd"_DEBIT_GAUCHE.son" | $TRUST_Awk '{print $2}'`
+fluxdiff_U_post=`awk -v l=$j 'NR==l{ print }' $jdd"_DIFFUX_GAUCHE.son" | $TRUST_Awk '{print $2}'`
+fluxdiff_V_post=`awk -v l=$j 'NR==l{ print }' $jdd"_DIFFUY_GAUCHE.son" | $TRUST_Awk '{print $2}'`
+fluxconv_U_post=`awk -v l=$j 'NR==l{ print }' $jdd"_CONVX_GAUCHE.son" | $TRUST_Awk '{print $2}'`
+fluxconv_V_post=`awk -v l=$j 'NR==l{ print }' $jdd"_CONVY_GAUCHE.son" | $TRUST_Awk '{print $2}'`
+fluxdiff_T_post=`awk -v l=$j 'NR==l{ print }' $jdd"_DIFFT_GAUCHE.son" | $TRUST_Awk '{print $2}'`
+fluxconv_T_post=`awk -v l=$j 'NR==l{ print }' $jdd"_CONVT_GAUCHE.son" | $TRUST_Awk '{print $2}'`
+
+# On verifie que les valeurs des flux sont les memes
+err=`echo $debit_imp $debit_post | $TRUST_Awk '{diff=$1-$2 ; if (diff<-0.00000001 || diff>0.00000001) print 1;else print 0}'`
+msg="Verification du debit";message $err 0
+exit $err
+
+err=`echo $fluxdiff_U_imp $fluxdiff_U_post | $TRUST_Awk '{diff=$1-$2 ; if (diff<-0.00000001 || diff>0.00000001) print 1;else print 0}'`
+msg="Verification du flux diffusif pour la composante U";message $err 0
+exit $err
+
+err=`echo $fluxdiff_V_imp $fluxdiff_V_post | $TRUST_Awk '{diff=$1-$2 ; if (diff<-0.00000001 || diff>0.00000001) print 1;else print 0}'`
+msg="Verification du flux diffusif pour la composante V";message $err 0
+exit $err
+
+err=`echo $fluxconv_U_imp $fluxconv_U_post | $TRUST_Awk '{diff=$1-$2 ; if (diff<-0.00000001 || diff>0.00000001) print 1;else print 0}'`
+msg="Verification du flux convectif pour la composante U";message $err 0
+exit $err
+
+err=`echo $fluxconv_V_imp $fluxconv_V_post | $TRUST_Awk '{diff=$1-$2 ; if (diff<-0.00000001 || diff>0.00000001) print 1;else print 0}'`
+msg="Verification du flux convectif pour la composante V";message $err 0
+exit $err
+
+err=`echo $fluxdiff_T_imp $fluxdiff_T_post | $TRUST_Awk '{diff=$1-$2 ; if (diff<-0.00000001 || diff>0.00000001) print 1;else print 0}'`
+msg="Verification du flux diffusif de temperature";message $err 0
+exit $err
+
+err=`echo $fluxconv_T_imp $fluxconv_T_post | $TRUST_Awk '{diff=$1-$2 ; if (diff<-0.00000001 || diff>0.00000001) print 1;else print 0}'`
+msg="Verification du flux convectif de temperature";message $err 0
+exit $err
+
+done

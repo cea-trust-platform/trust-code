@@ -1,0 +1,35 @@
+TAILLES 3 4 4 4 
+RIEN 0 meshing
+MAIL_X_REG 4 xomin xomax nx-2 2 dx
+MAIL_Y_REG 4 yomin yomax ny-2 2 dy
+MAIL_Z_REG 4 zomin zomax nz-2 2 dz
+RIEN 0 filling up of the domain
+PARALAX 7 xomin xomax yomin yomax zomin zomax ? filling up of the domain
+RIEN 0 boundaries domain definition
+PARALAX 7 xomin-eps xomax+eps yomin-eps yomax+eps zomax zomax+eps ? back boundary
+PARALAX 7 xomin-eps xomax+eps yomin-eps yomax+eps zomin-eps zomin ? front boundary
+PARALAX 7 xomin-eps xomin yomin-eps yomax+eps zomin-eps zomax+eps ? left boundary
+PARALAX 7 xomax xomax+eps yomin-eps yomax+eps zomin-eps zomax+eps ? right boundary
+PARALAX 7 xomin-eps xomax+eps yomin-eps yomin zomin-eps zomax+eps ? bottom boundary
+PARALAX 7 xomin-eps xomax+eps yomax yomax+eps zomin-eps zomax+eps ? top boundary
+file maillage
+	real xomin,xomax,yomin,yomax,zomin,zomax,eps
+C       Extremal sizes of the meshing
+	xomin=?
+	xomax=?
+	yomin=?
+	yomax=?
+	zomin=?
+	zomax=?
+C       eps is useful for thickness of the blocks featuring boundaries
+	eps=0.01
+
+        XM(1)=xomin-eps
+        XM(nx)=xomax+eps
+        YM(1)=yomin-eps
+        YM(ny)=yomax+eps
+        ZM(1)=zomin-eps
+        ZM(nz)=zomax+eps
+
+
+

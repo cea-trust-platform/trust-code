@@ -1,0 +1,34 @@
+#!/bin/bash
+fichier=$TRUST_ROOT/../Doc_TRUST/IHM/.Milieux.html
+# Ecriture du fichier :
+cree_en_tete.ihm > $fichier
+echo "<PRE><HR><h1>Physical caracteristics of some fluids and solids</h1><HR>" >> $fichier
+cd $TRUST_ROOT/doc
+for fic in ../../Doc_TRUST/Milieux_reference/*.prop
+do
+   REP=`dirname $fic`
+   NOM=`basename $fic`
+   NOM=${NOM%.prop}
+   com=$NOM
+   if [ -f $REP/.$NOM.prop ]
+   then
+      com=`head -1 $REP/.$NOM.prop`
+   fi
+   if [ -f $REP/$NOM.gif ]
+   then
+      echo $ECHO_OPTS "<a href="$REP/$NOM.prop"><img src="$REP/$NOM.gif">$com</a>" >> $fichier
+   else
+      echo $ECHO_OPTS "<a href="$REP/$NOM.prop">$com</a>" >> $fichier
+   fi
+   echo $ECHO_OPTS "<HR>" >> $fichier
+done
+echo $ECHO_OPTS "</body>
+</html> " >> $fichier
+milieu=$TRUST_ROOT/../Doc_TRUST/IHM/Milieux.html
+if [ "`diff $fichier $milieu`" != "" ]
+then
+   CHECKOUT $milieu
+   cat $fichier>$milieu
+   CHECKIN $milieu
+fi
+rm $fichier

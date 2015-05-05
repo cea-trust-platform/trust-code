@@ -1,0 +1,9 @@
+#!/bin/bash
+echo "Nedit all (git) modified sources (or files with -all)" 
+echo "Usage: `basename $0` [-all]"
+if [ "$1" = -all ]
+then
+   git status --u=no | awk '/modified:/ {print $3}' | xargs nedit
+else
+   git status --u=no | awk '/modified:/ && /src/ {print $3}' | xargs nedit
+fi

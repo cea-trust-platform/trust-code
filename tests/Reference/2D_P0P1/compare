@@ -1,0 +1,28 @@
+cd $TRUST_TMP
+if [ "$1" != -post ]
+then
+   for cas in 2D_P0P1 2D_P0 2D_P1
+   do
+      cp $TRUST_ROOT/tests/Reference/$cas/$cas.data .
+      triou $cas
+   done
+fi
+rm -f .gnuplot
+for champ in PRESSION VITESSE
+do
+   for cas in 2D_P0P1 2D_P0 2D_P1
+   do
+      if [ $cas = 2D_P0P1 ]
+      then
+	 echo $ECHO_OPTS "set data style linesp\nplot \c" > .$champ
+      else
+	 echo $ECHO_OPTS ",\c" >> .$champ
+      fi
+      tail -1 $cas.dt_ev
+      extrait_coupe $cas SONDE_$champ
+      echo $ECHO_OPTS "'$cas"_SONDE_$champ.coupe"' t'$cas'\c" >> .$champ
+   done
+   echo $ECHO_OPTS "\n!read a" >> .$champ
+   gnuplot .$champ
+   cat .$champ
+done

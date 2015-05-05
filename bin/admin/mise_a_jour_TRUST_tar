@@ -1,0 +1,141 @@
+#!/bin/bash
+# Git supported
+tar_()
+{
+   # On enleve les repertoires en ne prenant que les liens
+   # et les fichiers. Attention c'est different de [ ! -d ]
+   # car certains liens sont aussi des repertoires...
+   contenu_files=`mktemp_`
+   for item in `cat $2`
+   do
+      if [ -f $item ] || [ -h $item ]
+      then
+         echo $item >> $contenu_files
+      fi
+   done
+   cat $contenu_files | xargs tar rf $1
+   rm -f $contenu_files
+}
+gzip_()
+{
+   gzip -f $1
+   if [ $crypt = 1 ]
+   then
+      echo "$1.gz package is crypted..."
+      # on passe par uuencode
+      tmp=`mktemp_`
+      uuencode $1.gz $1.gz > $tmp
+      head -2 $tmp | tail -1 > $TRUST_ROOT/.cle_$1.gz
+      option=c && [ -f $TRUST_ROOT/keys ] && option=r
+      (cd $TRUST_ROOT;tar f$option keys .cle_$1.gz)
+      # On utilise Awk
+      cat $tmp | $TRUST_Awk '(NR!=2) {print $0}' | uudecode
+      rm -f $tmp
+      # On n'efface pas la cle car utilise ensuite par cree_Version_TRUST
+      #rm -f $TRUST_ROOT/.cle_$1.gz
+      #   echo $1
+      #   file *gz
+      # On n'utilise pas crypte car pas present sur Linux... IBM ?
+      # crypt $PASSWD_TRUST < $VOB.tar.gz > gzip_$VOB.tar.gz
+   fi
+}
+check_key_()
+{
+# Verifie si les cles sont la
+   tmp1=`mktemp_`
+   tmp2=`mktemp_`
+   cle=`dirname $keys`/.cle_$1
+   [ ! -f $cle ] && echo "Invalid keys in $keys." && exit
+   uuencode $1 $1 > $tmp1
+   head -1 $tmp1 > $tmp2
+   cat $cle >> $tmp2
+   cat $tmp1 | $TRUST_Awk '(NR>1) {print $0}' >> $tmp2
+   rm -f $tmp1
+   uudecode $tmp2
+   rm -f $tmp2
+}
+fonction()
+{
+   contenu=$VOB.tar.gz.files
+   if [ $files_only = 1 ]
+   then
+      echo "Creation of $contenu only"
+   else
+      echo "Creation of $VOB.tar.gz (See $contenu)"
+   fi
+}
+
+echo "Usage: `basename $0` [-src_only] [-without_test_validation] [-files_only]"
+echo `basename $0` $*
+
+rm -f $TRUST_ROOT/keys
+rm -f $TRUST_ROOT/*.tar.gz
+###################################################
+# Creation du fichier .tar des composants de TRUST
+###################################################
+src_only=0 && [ "$1" = "-src_only" ] && src_only=1
+files_only=0 && [ "$1" = "-files_only" ] && files_only=1
+without_test_validation=0 && [ "$1" = "-without_test_validation" ] && without_test_validation=1
+[ "$crypt" != 0 ] && crypt=1
+
+##############
+# VOB TRUST #
+##############
+cd $TRUST_ROOT
+VOB="TRUST"
+fonction
+if [ -d $TRUST_ROOT/../.git ]
+then
+   git-ls-files > $contenu
+   if [ $? != 0 ]
+   then
+      echo "Error !"
+      exit -1
+   fi
+else
+   echo "Error, no Git."
+   exit -1
+fi
+date > $TRUST_ROOT/.DATE # Marquage de la version
+echo ./.DATE >> $contenu
+# Ajoute les fichiers d'instanciation (prives desormais)
+for dir in `cat env/rep.TRUST`
+do
+   ls $dir/instancie*.cpp $dir/instancie*.h >> $contenu 2>/dev/null
+done
+sleep 1
+if [ $files_only = 0 ]
+then
+   tar_ $VOB.tar $contenu
+   gzip_ $VOB.tar
+fi
+[ $src_only = 1 ] && exit
+
+##################
+# VOBs restantes #
+##################
+filtre="je_ne_filtre_rien_du_tout" && [ "$without_test_validation" = 1 ] && filtre="tests/Validation"
+VOBS="Tests_TRUST Doc_TRUST Pre_Post_TRUST"
+for VOB in $VOBS
+do
+   cd $TRUST_ROOT/../$VOB
+   fonction
+   if [ -d $TRUST_ROOT/../.git ]
+   then
+      git-ls-files                                                    | grep -v Hyd_C_V | grep -v Echangeur_3D | grep -v $filtre > $contenu
+      if [ $? != 0 ]
+      then
+	 echo "Error !"
+	 exit -1
+      fi
+   else
+      echo "Error, no Git."
+      exit -1
+   fi
+   if [ $files_only = 0 ]
+   then
+      tar_ $VOB.tar $contenu
+      gzip_ $VOB.tar
+   fi
+   mv $VOB.tar.gz* $TRUST_ROOT
+done

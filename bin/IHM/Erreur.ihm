@@ -1,0 +1,3 @@
+#!/bin/bash
+[ ${#title} = 0 ] && title="ERROR!"
+$Xterm $Petite_geometrie -title $title -e erreur.ksh $*

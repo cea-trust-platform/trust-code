@@ -1,0 +1,7 @@
+TRUST reference tests
+State of parallel: 5 levels
+OK: runs and matchs sequential
+RUNS: runs and differs form sequential
+BLOCKS: runs but stops without quiting
+STOPS: runs, stops, and quit before end
+NOT: not parallelized

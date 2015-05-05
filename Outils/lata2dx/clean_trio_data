@@ -1,0 +1,8 @@
+#!/bin/bash
+# This script cleans up a TRUST directory.
+# It will remove every files in the current directory (not descending in the subdirectories),
+# but for TRUST .data files and networks.
+# It allows to clean large directories rather quickly.
+# Workaround for the limitation of argument number of the rm command.
+find . -maxdepth 1 -type f ! -name "*.data" ! -name "*.net" ! -name "*.cfg" ! -name "*.mesh" ! -name "*.prep" ! -name "*.geom" >/tmp/rmfilelist.tmp
+awk '{a=a " \"" $0 "\""; if (FNR%100==0) {system("rm -f" a); a=""}}END{system("rm -f" a)}' /tmp/rmfilelist.tmp

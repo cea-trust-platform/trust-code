@@ -1,0 +1,107 @@
+# Hydraulique 2D VEF K-Eps Bi-cylindres avec loi de paroi #
+# Cylindre ext : #
+# Cylindre interieur : #
+dimension 2
+Pb_hydraulique_turbulent pb
+Domaine dom
+Read_file dom RT.geom
+VEF dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0.
+	tmax 20.0
+	dt_min 0.00001
+	dt_max 0.1
+	dt_impr 0.0001
+	dt_sauv 100
+	seuil_statio 1.e-8
+	facsec 0.5
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 1e-4
+	rho Champ_Uniforme 1 1.
+}
+Sous_Zone zone1
+Associate zone1 dom
+Lire zone1
+{
+   Rectangle
+   Origine -1. -0.1
+   Cotes 0.2 0.2
+}
+
+Champ_Uniforme gravite
+Lire gravite 2 0 -9.81
+
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_turbulent
+	{
+		solveur_pression GCP { precond ssor { omega 1.65 } seuil 1.e-8 impr }	
+		convection { muscl }
+		diffusion { }
+		conditions_initiales {
+			vitesse tourbillon
+			}
+		boundary_conditions {
+			CERCLE symetrie
+			INTER frontiere_ouverte_vitesse_imposee
+			champ_front_calc pb INTER vitesse
+		}
+                modele_turbulence K_Epsilon {
+                        Transport_K_Epsilon 
+                        {
+                                convection { amont }
+                                diffusion { negligeable }
+                                boundary_conditions {
+                                        CERCLE 	frontiere_ouverte_K_eps_impose 
+					Champ_Front_Uniforme 2 0.1 0.01
+                                        INTER symetrie
+                                }
+                                conditions_initiales {
+                                        k_Eps Champ_Uniforme_Morceaux dom 2
+					    { defaut 0. 0 zone1 0.1 0.01 }
+                                }
+                         }
+                         turbulence_paroi loi_standard_hydr
+                } 
+	}
+
+	Postraitement
+	{
+		Sondes
+		{
+		s1 k periode 0.0001 point 3 -1.494 -0.077 -1.442 -0.103 -1.39 -0.128
+		s2 eps periode 0.0001 point 3 -1.494 -0.077 -1.442 -0.103 -1.39 -0.128
+		s3 vitesse periode 0.0001 point 3 -1.494 -0.077 -1.442 -0.103 -1.39 -0.128
+			plan_k k periode 0.0001 plan 20 20 -1.5 -1.5 1.5 -1.5 -1.5 1.5
+			plan_eps eps periode 0.0001 plan 20 20 -1.5 -1.5 1.5 -1.5 -1.5 1.5
+			plan_nut viscosite_turbulente periode 0.0001 plan 20 20 -1.5 -1.5 1.5 -1.5 -1.5 1.5
+		}
+		Champs dt_post 0.1
+		{
+			pression elem
+			pression som
+			vitesse som
+			viscosite_turbulente elem
+			viscosite_turbulente som
+			k som
+			eps som
+		}
+	}
+}
+
+Solve pb
+Fin

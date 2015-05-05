@@ -1,0 +1,130 @@
+# Hydraulique 2D VEF #
+# PARALLEL OK #
+dimension 2
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+        {
+                Origine 0.  0. 
+                Nombre_de_Noeuds 11 11
+                Longueurs 1 1 
+        }
+        {
+                Bord paroi   	X = 0.   	0. <= Y <= 1.   
+                Bord paroi  	X = 1.  	0. <= Y <= 1.   
+                Bord paroi   	Y = 0.  	0. <= X <= 1.  
+                Bord paroi   	Y = 1.  	0. <= X <= 1.  
+        }
+} 
+Trianguler_h dom
+Transformer dom
+x+x*(1-x)*y*(1-y)*(0.5-y)
+y+x*(1-x)*y*(1-y)*(0.5+x)
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur Tranche { tranches 2 1 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1b dis
+Lire dis { P0 P1 }
+
+Schema_Euler_Explicite sch
+Lire sch 
+{
+        tinit 0.
+        tmax 1.
+        dt_min 1.e-6
+        dt_max 1.e-2
+	dt_start dt_calc
+        dt_impr 0.1
+        dt_sauv 20.
+        seuil_statio 1.e-8  
+        facsec 0.5
+}
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme	1 1.e-3
+	rho Champ_Uniforme	1 1.
+}
+
+Pb_Hydraulique pb
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+Lire pb
+	{
+	Navier_Stokes_standard
+		{
+		dt_projection 1. 1.e-12
+
+		Solveur_Pression GCP { precond ssor { omega 1.5 } 
+			seuil 1.e-12 impr 
+		} 
+
+		solveur_bar Cholesky { }
+
+                convection { EF filtrer_resu 0 antisym 0 transporte_bar 0 transportant_bar 0  }
+                diffusion  { negligeable }
+			
+		conditions_initiales
+			{
+                        vitesse Champ_fonc_xyz dom 2  x-0.5 0.5-y
+			}
+		boundary_conditions
+			{
+			paroi Frontiere_Ouverte_Vitesse_Imposee 
+				Champ_front_fonc_xyz 2 x-0.5 0.5-y
+			}
+	         }
+
+	Postraitements
+        	{
+		lml
+		{
+		fichier Tourbillon2DConv
+		format lml  
+                Sondes
+                	{ 
+                        sonde_vit1  vitesse periode 0.01 points 1 0.5 0.5 
+			}
+		Champs dt_post 2.
+			{
+			vitesse elem
+			vitesse som
+			pression elem
+			pression som
+			}
+		}
+		lata
+		{
+		fichier Tourbillon2DConv
+		format lata
+		Champs dt_post 2.
+			{
+			vitesse elem
+			vitesse som
+			pression elem
+			pression som
+			}
+		}
+		}		
+	}
+
+Solve pb
+Fin

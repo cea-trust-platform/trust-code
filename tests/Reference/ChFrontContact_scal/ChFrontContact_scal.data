@@ -1,0 +1,251 @@
+# Hydraulique_concentration 2D couple a Hydraulique_concentration 2D #
+# Test de la condition limite de contact en VEF pour un champ de concentration #
+# PARALLEL OK 8 #
+dimension 2
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0.
+	tmax 0.1
+	dt_min 0.001
+	dt_max 10.
+	dt_impr 0.001
+	dt_sauv 400.
+	seuil_statio 1.e-20
+}
+
+Pb_hydraulique_concentration pb1
+Pb_hydraulique_concentration pb2
+
+Domaine dom_fluide1
+Domaine dom_fluide2
+
+# BEGIN MESH #
+Mailler dom_fluide1
+{
+	Pave Cavite1
+		{
+		Origine 0. 0.
+     		Nombre_de_Noeuds 11 11
+		Longueurs 1. 1.
+		}
+		{
+		Bord Gauche1 X = 0.   0. <= Y <= 1.
+		Bord Haut1   Y = 1.   0. <= X <= 0.7
+		Bord Haut_sortie   Y = 1.   0.7 <= X <= 1.
+		Bord Bas1    Y = 0.   0. <= X <= 1.
+		Raccord local homogene Droit1  X = 1.  0. <= Y <= 1.
+		}
+}
+
+Mailler dom_fluide2
+{
+	Pave Cavite2
+		{
+		Origine 1. 0.
+		Nombre_de_Noeuds 11 11
+		Longueurs 1. 1.
+		}
+		{
+		Raccord local homogene Droit1 X = 1.  0. <= Y <= 1.
+		Bord Entree    Y = 1.  1. <= X <= 1.3
+		Bord Haut2     Y = 1.  1.3 <= X <= 2.
+		Bord Sortie    X = 2.  0. <= Y <= 0.4
+		Bord Droit2    X = 2.  0.4 <= Y <= 1.0
+		Bord Bas2      Y = 0.  1. <= X <= 2.
+		}
+}
+
+Trianguler_H dom_fluide1
+Trianguler_H dom_fluide2
+
+Postraiter_domaine { domaines { dom_fluide1 dom_fluide2 } fichier domaines.lata
+format lata }
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom_fluide1
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 2
+	Nom_Zones DOM1
+}
+Partition dom_fluide2
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 2
+	Nom_Zones DOM2
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM1.Zones dom_fluide1
+Scatter DOM2.Zones dom_fluide2
+END SCATTER #
+
+VEFPreP1b dis
+
+Fluide_Incompressible fluide1
+Lire fluide1
+{
+	mu Champ_Uniforme 1 0.004
+	rho Champ_Uniforme 1 8.
+}
+
+Fluide_Incompressible fluide2
+Lire fluide2
+{
+	mu Champ_Uniforme 1 0.002
+	rho Champ_Uniforme 1 2
+}
+
+Constituant particule1
+Lire particule1
+{
+ coefficient_diffusion Champ_Uniforme 1 0.03
+}
+
+Constituant particule2
+Lire particule2
+{
+ coefficient_diffusion Champ_Uniforme 1 0.03
+}
+
+
+Champ_Uniforme gravite
+Lire gravite 2 0 -9.81
+Associate fluide1 gravite
+Associate fluide2 gravite
+
+Associate pb1 dom_fluide1
+Associate pb1 fluide1 
+Associate pb1 particule1
+
+Associate pb2 dom_fluide2
+Associate pb2 fluide2
+Associate pb2 particule2
+
+Probleme_Couple pbc
+Associate pbc pb1
+Associate pbc pb2
+Associate pbc sch
+Discretize pbc dis
+
+Lire pb1
+{
+	Navier_Stokes_standard
+	{
+	 	solveur_pression GCP { 
+			precond ssor { omega 1.5 } 
+			seuil 1.e-10
+			impr 
+		}
+		convection { muscl }
+		diffusion { }
+		conditions_initiales {
+			vitesse Champ_Uniforme 2 2. 0.
+		}
+		boundary_conditions {
+			Gauche1 frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2 1. 0.
+			Haut1   paroi_fixe
+			Haut_sortie frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
+			Bas1    paroi_fixe
+			Droit1  paroi_fixe
+		}
+		
+	}
+	Convection_diffusion_Concentration {
+	
+		diffusion { }
+		convection { muscl }
+		
+		conditions_initiales {
+			concentration Champ_Uniforme 1 1.
+		}
+		boundary_conditions {
+		     Gauche1 frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 1.
+		     Haut1   paroi
+		     Haut_sortie frontiere_ouverte C_ext Champ_Front_Uniforme 1 1.
+		     Bas1    paroi
+		     Droit1  paroi_contact pb2 Droit1
+		}
+	}
+	
+	Postraitement
+	{
+		Sondes
+		{
+		 sonde_conc_fluide1 concentration periode 1. points 1 0.45 0.55
+		}
+		
+		Champs dt_post 0.1
+		{
+		   vitesse elem
+		   pression elem
+		   concentration elem
+		}
+	}
+}
+
+Lire pb2
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.5 } 
+			seuil 1.e-12
+			impr 
+		}
+		convection { muscl }
+		diffusion { }
+		conditions_initiales {
+			vitesse Champ_Uniforme 2 0. 0.
+			}
+		boundary_conditions {
+		     Entree frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 2 0. -0.2
+		     Haut2  paroi_fixe
+		     Sortie frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
+		     Droit2 paroi_fixe
+		     Bas2   paroi_fixe
+		     Droit1 paroi_fixe
+		}
+	}
+	
+	Convection_diffusion_Concentration {
+	
+		diffusion { }
+		convection { muscl }
+		
+		conditions_initiales {
+		     concentration Champ_Uniforme 1 0.
+		}
+		boundary_conditions {
+		     Entree frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+		     Haut2  paroi
+		     Sortie frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+		     Droit2 paroi
+		     Bas2   paroi
+		     Droit1 paroi_contact pb1 Droit1
+		}
+	}
+	
+	Postraitement
+	{
+		Sondes
+		{
+		    sonde_conc_fluide2 concentration periode 1. points 1 1.55 0.55
+		}
+		
+		Champs dt_post 0.1
+		{
+			pression elem
+			vitesse elem
+			concentration elem
+		}
+	}
+}
+Solve pbc
+Fin
+
+Sources { source_Constituant Champ_fonc_xyz dom 1 2*x*y }

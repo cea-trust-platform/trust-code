@@ -1,0 +1,33 @@
+# Inacheve
+#  Analyse le fichier GIBI
+BEGIN {
+   while (mot()!="dime") {}
+   if (ligne_contient("dime")) while (mot()!="dime") {}
+   dimension=mot()
+   print "Dimension du maillage GIBI:"dimension
+   while (mot()!="elem") {}
+}
+
+END {
+
+}
+
+function mot()
+{
+   mot_ind++
+   if (mot_ind>NF) {
+      getline
+      while (NF==0) getline
+      mot_ind=1
+   }
+#   print NF,tolower($mot_ind)
+return tolower($mot_ind);
+}
+
+function ligne_contient(nom)
+{
+mot_ind=0
+for (i=1;i<NF+1;i++)
+   if (mot()==nom) return 1
+return 0
+}

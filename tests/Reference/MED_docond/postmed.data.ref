@@ -1,0 +1,34 @@
+{ 
+Dimension 2 
+Pbc_MED pbmed 
+Lire pbmed 
+{ 
+MED_docond.med dom_solide 
+{ 
+Postraitement 
+{ 
+Champs dt_post 1e-9 
+{ 
+TEMPERATURE_ELEM ELEM 
+TEMPERATURE_SOM SOM 
+} 
+} 
+} 
+, 
+MED_docond.med dom_fluide 
+{ 
+Postraitement 
+{ 
+Champs dt_post 1e-9 
+{ 
+PRESSION_ELEM ELEM 
+PRESSION_SOM SOM 
+VITESSE_ELEM ELEM 
+VITESSE_SOM SOM 
+TEMPERATURE_ELEM ELEM 
+TEMPERATURE_SOM SOM 
+} 
+} 
+} 
+} 
+} 

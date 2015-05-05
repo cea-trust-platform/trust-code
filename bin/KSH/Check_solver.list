@@ -1,0 +1,105 @@
+####################################
+# Solveurs matrices non symetriques:
+####################################
+
+# Solveur Optimal
+let i=$i+1;solver[$i]="Optimal        { seuil $seuil impr }"        						;sym[$i]=0                  	
+
+# GMRES DIAG/ILU
+let i=$i+1;solver[$i]="Petsc GMRES    { seuil $seuil precond DIAG { } impr }"							;rank[$i]=4;
+#let i=$i+1;solver[$i]="Petsc GMRES    { seuil $seuil precond ILU { level 1 } impr }"	
+#let i=$i+1;solver[$i]="Petsc GMRES    { seuil $seuil precond PILUT { level 20 epsilon 0.01 } impr }"	
+
+# BICGSTAB
+let i=$i+1;solver[$i]="Petsc CLI { -ksp_type bcgs -pc_type sor -ksp_atol $seuil }"	
+let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond ILU { level 0 } impr }"
+let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond BLOCK_JACOBI_ICC { level 1 } impr }"				
+let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond BLOCK_JACOBI_ICC { level 1 ordering rcm } impr }"			;rank[$i]=1;
+let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond DIAG { } impr }"							;rank[$i]=3;
+#let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond ILU { level 1 } impr }"	
+let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond SSOR { omega 1 } impr }"	# EISENSTAT ne marche pas 3.0.0 mais OK avec 3.1.0
+let i=$i+1;solver[$i]="Petsc CLI { -ksp_type bcgs -pc_type hypre -pc_hypre_type pilut -pc_hypre_pilut_factorrowsize 20 -pc_hypre_pilut_tol 0.01 -ksp_atol $seuil }"	;
+#let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond PILUT { level 20 epsilon 0.01 } impr }"	
+let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond SPAI { level 2 epsilon 0.2 } impr }"	
+
+# iBCGSTAB+BLOCK_JACOBI_ICC
+let i=$i+1;solver[$i]="Petsc IBICGSTAB { seuil $seuil precond BLOCK_JACOBI_ICC { level 1 } impr }"				;rank[$i]=2;
+
+# Reference TRUST GMRES+DIAG
+let i=$i+1;solver[$i]="Gmres          { seuil $seuil diag controle_residu 1 impr }"				;sym[$i]=0	;rank[$i]=5;
+
+################################
+# Solveurs matrices symetriques:
+################################
+# References TRUST (GC+SSOR - Cholesky)
+let i=$i+1;solver[$i]="GCP            { seuil $seuil precond ssor { omega 1.65 } impr }"			;sym[$i]=1	;rank[$i]=1;
+# Marche pas en VEF:
+#let i=$i+1;solver[$i]="GCP            { optimized seuil $seuil precond ssor { omega 1.65 } impr }"		;sym[$i]=1	
+
+# Solveur Optimal
+let i=$i+1;solver[$i]="Optimal        { seuil $seuil impr }"        						;sym[$i]=1                  	
+
+# Cholesky Mumps (Fonctionne en non symetrique mais aucun interet pour TRUST)
+let i=$i+1;solver[$i]="Petsc Cholesky { impr }"									;sym[$i]=1 	;rank[$i]=3;
+let i=$i+1;solver[$i]="Petsc Cholesky { ordering metis impr }"							;sym[$i]=1 	;rank[$i]=4;
+let i=$i+1;solver[$i]="Petsc Cholesky { ordering scotch impr }"							;sym[$i]=1 	;rank[$i]=5;
+let i=$i+1;solver[$i]="Petsc Cholesky { ordering parmetis impr }"				;par[$i]=1	;sym[$i]=1 	;rank[$i]=6;
+let i=$i+1;solver[$i]="Petsc Cholesky { ordering pt-scotch impr }"				;par[$i]=1	;sym[$i]=1 	;rank[$i]=7;
+let i=$i+1;solver[$i]="Petsc Cholesky_out_of_core { impr }"							;sym[$i]=1 
+let i=$i+1;solver[$i]="Petsc Cholesky_SuperLU { impr }"								;sym[$i]=1 
+#if [ $exec = $exec_opt ] # Pastix crashes in debug...
+#then
+# Crash also in optimized when feenableexcept activated
+#   let i=$i+1;solver[$i]="Petsc Cholesky_Pastix { impr }"							;sym[$i]=1 
+#fi
+let i=$i+1;solver[$i]="Petsc Cholesky_Umfpack { impr }"						;par[$i]=0	;sym[$i]=1 
+let i=$i+1;solver[$i]="Petsc Cholesky_Lapack { impr }"						;par[$i]=0	;sym[$i]=1 
+
+# GC + SSOR / EISENSTAT / ASM 
+let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond SSOR { omega 1.65 } impr }"			;sym[$i]=1	;rank[$i]=2;
+let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond EISENSTAT { omega 1.65 } impr }"			;sym[$i]=1	# OK avec 3.1.0 mais apporte rien
+
+# GC / ASM ILU(0)
+let i=$i+1;solver[$i]="Petsc CLI      { -ksp_type cg -pc_type asm -ksp_atol $seuil }"				;sym[$i]=1	
+
+# GC / ASM SOR
+# Impossible d'arriver a faire converger ASM mieux que BJACOBI, bizarre, niter augmente si pc_asm_overlap augmente
+# Marche mieux avec ICC(1) voir le cas PAR_Cx 2 (reduit le nombre d'iterations mais bjacobi_icc(1) toujours le plus rapide)
+let i=$i+1;solver[$i]="Petsc CLI      { -ksp_type cg -pc_type asm -sub_pc_type sor -sub_pc_sor_omega 1.65 -pc_asm_overlap 0 -ksp_atol $seuil }"	;sym[$i]=1 # Identique a SSOR
+
+# GC / ASM SOR
+# Impossible d'arriver a faire converger ASM mieux que BJACOBI, bizarre, niter augmente si pc_asm_overlap augmente
+# Marche mieux avec ICC(1) voir le cas PAR_Cx 2 (reduit le nombre d'iterations mais bjacobi_icc(1) toujours le plus rapide)
+let i=$i+1;solver[$i]="Petsc CLI      { -ksp_type cg -pc_type asm -sub_pc_type sor -sub_pc_sor_omega 1.65 -pc_asm_overlap 0 -ksp_atol $seuil }"	;sym[$i]=1 # Identique a SSOR
+
+# CG + ILU HYPRE
+let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond ILU { level 1 } impr }"				;sym[$i]=1	# Hypre decevant, on prend ILU petsc meilleur
+
+# CG + BLOCK JACOBI ILU PETSC
+let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond BLOCK_JACOBI_ICC { level 1 } impr }"		;sym[$i]=1	;rank[$i]=8;		
+
+# GC + SPAI
+let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond SPAI { level 2 epsilon 0.2 } impr }"		;sym[$i]=1	
+
+# GC + BOOMERAMG
+let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond BOOMERAMG { } impr }"				;sym[$i]=1	
+
+##########################
+# Solveurs tested on GPU #
+##########################
+let i=$i+1;solver[$i]="Petsc     GCP  { seuil $seuil precond SSOR { omega 1.6 } impr }"				;gpu[$i]=1	;sym[$i]=1
+let i=$i+1;solver[$i]="Petsc     GCP  { seuil $seuil precond DIAG { } impr }"					;gpu[$i]=1	;sym[$i]=1
+# cusparse and hyb format seems the fastest (confirmed on curie) and according to: https://www.epcc.ed.ac.uk/sites/default/files/Dissertations/2010-2011/PramodKumbhar.pdf
+let i=$i+1;solver[$i]="Petsc_GPU CLI  { -ksp_type cg -pc_type jacobi -mat_type aijcusparse -mat_cusparse_storage_format hyb -mat_cusparse_mult_storage_format hyb -ksp_atol $seuil }"	;gpu[$i]=1	;sym[$i]=1
+let i=$i+1;solver[$i]="Petsc_GPU CLI  { -ksp_type cg -pc_type jacobi -mat_type aijcusparse -mat_cusparse_storage_format ell -mat_cusparse_mult_storage_format ell -ksp_atol $seuil }"	;gpu[$i]=1	;sym[$i]=1
+let i=$i+1;solver[$i]="Petsc_GPU CLI  { -ksp_type cg -pc_type jacobi -mat_type aijcusparse 									  -ksp_atol $seuil }"	;gpu[$i]=1	;sym[$i]=1 
+# cusp format and try with ell and dia format (crashes with ell_matrix fill-in would exceed maximum tolerance)
+#let i=$i+1;solver[$i]="Petsc_GPU CLI  { -ksp_type cg -pc_type jacobi -mat_type aijcusp -mat_cusp_storage_format dia -mat_cusp_mult_storage_format dia -ksp_atol $seuil }"		;gpu[$i]=1	;sym[$i]=1
+#let i=$i+1;solver[$i]="Petsc_GPU CLI  { -ksp_type cg -pc_type jacobi -mat_type aijcusp -mat_cusp_storage_format ell -mat_cusp_mult_storage_format ell -ksp_atol $seuil }"		;gpu[$i]=1	;sym[$i]=1
+let i=$i+1;solver[$i]="Petsc_GPU GCP  { seuil $seuil precond DIAG { } impr }"					;gpu[$i]=1	;sym[$i]=1
+#let i=$i+1;solver[$i]="Petsc_GPU CLI  { -ksp_type cg -pc_type bjacobi -sub_pc_type ilu -ksp_atol $seuil }"	;gpu[$i]=1	;sym[$i]=1 	;par[$i]=0 # Bug submitted to PETSc ?
+#let i=$i+1;solver[$i]="Petsc_GPU CLI  { -ksp_type cg -pc_type asm -sub_pc_type ilu -ksp_atol $seuil }"		;gpu[$i]=1	;sym[$i]=1 	;par[$i]=0 # Bug submitted to PETSc ?
+let i=$i+1;solver[$i]="Petsc_GPU CLI  { -ksp_type cg -pc_type sacusp -ksp_atol $seuil }"			;gpu[$i]=1	;sym[$i]=1	;par[$i]=0
+let i=$i+1;solver[$i]="Petsc_GPU CLI  { -ksp_type cg -pc_type ainvcusp -ksp_atol $seuil }"			;gpu[$i]=1	;sym[$i]=1	;par[$i]=0
+let i=$i+1;solver[$i]="Petsc_GPU CLI  { -ksp_type cg -pc_type sacusppoly -ksp_atol $seuil }"			;gpu[$i]=1	;sym[$i]=1	;par[$i]=0
+let i=$i+1;solver[$i]="Petsc_GPU BICGSTAB { seuil $seuil precond DIAG { } impr }"				;gpu[$i]=1	;sym[$i]=1

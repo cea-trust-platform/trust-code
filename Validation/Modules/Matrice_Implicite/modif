@@ -1,0 +1,39 @@
+#!/bin/bash
+SUBSTITUE ()
+{
+   
+   #eps=`$TRUST_Awk '/seq faces/ {print $(NF-1)}' $NOM.data`
+   #sed -e "s?fichier $NOM?fichier $1?g"  $NOM.data > $1".data"
+    cat  $NOM.data > $1".data"
+   if [ "`grep -i Cholesky $1.data | grep -vi precond_local`" != "" ]
+   then
+
+     sed -e "s? precond_local Cholesky {? precond_local Cholesky {?g" \
+         -e "s? Cholesky {? GCP { precond ssor { omega 1.651 } seuil 1.e-12?g" \
+         -e "s? cholesky {? GCP { precond ssor { omega 1.651 } seuil 1.e-12?g" $1.data > tmp.data
+     mv -f tmp.data $1.data
+   fi
+}
+
+
+# rmeplacement cholesky et ef_stab { alpha 1 }
+cas=`basename $1 .data`
+NOM=$cas
+SUBSTITUE seq
+sed -e "s?ef_stab { alpha 1.0 }?amont?" seq.data > $cas.data
+echo "iiiiiiiiiiiiii" $1
+cas=`basename $1 .data`
+
+
+. $TRUST_ROOT/Outils/TRIOXDATA/IHMTRIO.sh 
+export PYTHONPATH=`dirname $0`:$PYTHONPATH
+
+# on va mettre des operateurs lineaires: amont et diffusion {}
+# de plus on demande a la fin du run de dezippe la reference
+# tout ce que l'on teste est que les operateurs sont bien implicites
+python `dirname $0`/modif.py $cas  >modif.log
+#mv $1 org_$1
+
+[ -f verifie ] && mv verifie verifie.org
+
+mv mod_$1 Matrice_Implicite_$1

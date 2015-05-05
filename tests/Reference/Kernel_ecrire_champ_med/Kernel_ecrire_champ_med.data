@@ -1,0 +1,38 @@
+# Cas pour tester la lecture d un fichier med avec short_family_names #
+dimension 3
+domaine dom 
+# BEGIN MESH #
+# Lecture du maillage genere par salome voir cas Lire_unv #
+# Kernel_med_shorty #
+# test de ecrire_champ_med #
+lire_med short_family_names dom essai ess.med
+ecrire_fichier dom ess.geom
+discretiser_domaine dom
+champ_fonc_xyz fct 
+Lire fct dom 1 2-(x*x+y*y)
+ecrire_champ_med dom fct crit.med
+pbc_med pbmed2
+Lire pbmed2
+  {
+    crit.med dom 
+      { 
+        postraitement 
+          { 
+            format lata
+            champs  dt_post 1e-09   {  fct elem  }
+          }
+      }
+  }
+pbc_med pbmed 
+Lire pbmed 
+  {
+    crit.med dom 
+      { 
+        postraitement 
+          { 
+            champs  dt_post 1e-09   {   fct elem }
+          }
+      }
+  }
+# END MESH #
+fin 

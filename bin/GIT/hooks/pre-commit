@@ -1,0 +1,115 @@
+#!/bin/bash -xv
+clean_exit()
+{
+   rm -f $elements $alert
+   if [ $1 != 0 ]
+   then
+      rm -f $indent
+      echo "-> Error detected by TRUST for git commit."
+   fi
+   exit $1
+}
+# Source TRUST
+source TRUST/env/Init_TRUST 1>/dev/null 2>&1
+
+# Detect against:
+if git-rev-parse --verify HEAD 1>/dev/null 2>&1
+then
+   against=HEAD
+else
+   against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
+fi 
+
+git_branch=`git branch | awk '(NF==2) {print $2}'`
+who=`whoami`
+
+ppid=`ps -o ppid -p $$ | tail -1 | awk '{print $1}'`
+if [ "$ppid" = "" ]
+then
+   echo "Error ppid=$ppid"
+   clean_exit -1
+fi
+elements=/tmp/file$$       && rm -f $elements
+alert=/tmp/alert$$         && rm -f $alert
+indent=/tmp/.indent$ppid   && rm -f $indent
+
+# Build the list of elements being commited:
+#git-diff-index --name-only -M --cached $against -- > $elements
+# Build the list of elements being commited (and not deleted):
+git diff --name-status --cached $against -- | grep -v ^D > $elements
+
+# Loop on elements:
+for element in `cat $elements | awk '{print $NF}'`
+do
+   file=`basename $element`
+   directory=`dirname $element`
+   directory_up=`dirname $directory`
+   if [ $file = make.include ]
+   then
+      ################################
+      # Alert if make.include changed:
+      ################################
+      echo $ECHO_OPTS "-> File $element is changed:\n`git-diff -M --cached $against -- $element`" >> $alert
+   elif [ ${file%.cpp} != $file ] || [ ${file%.h} != $file ]
+   then
+      #############################
+      # Alert if new source element
+      #############################
+      if [ "`git diff --name-status --cached $against -- $element | cut -c1`" = "A" ]
+      then
+	 echo $ECHO_OPTS "-> File $element is created:\n" >> $alert
+	 cat $element >> $alert
+      fi
+      ###############################
+      # Check if provisoire is found:
+      ###############################
+      if [ "`grep -i provisoire $element`" != "" ]
+      then
+	 echo "**********************************************************************"
+	 echo "Le fichier $element contient le mot 'provisoire'"
+	 echo "On suppose qu'il faille donc modifier quelque chose avant de commiter."
+	 echo "**********************************************************************"
+	 clean_exit -1
+      fi         
+   fi
+   
+   ###################
+   # Indents the code:
+   ###################
+   indent_file.sh $element | tee -a $indent
+   
+   #########################
+   # Translates of prm file:
+   #########################
+   if [ ${element%.prm} != $element ]
+   then
+      # Traduction en anglais des balises en francais dans les fiches de validation (.prm)
+      translator=$TRUST_ROOT/Validation/Outils/Genere_courbe/scripts/translate_prm.sh
+      # On se limite a la presence de la balise CasTest pour lancer la traduction:
+      if [ -f $translator ] && [ "`grep -i castest $element`" != "" ]
+      then 
+         $translator $CLEARCASE_PN
+      fi
+   fi
+   
+   ############################
+   # Check the +x permissions #
+   ############################
+   for bit in o g
+   do
+      scripts=`find $element -perm -u+x ! -perm /$bit+x -exec ls {} \;`
+      for script in $scripts
+      do 
+         chmod $bit+x $script
+      done
+   done
+done
+
+# Send if an alert is found:
+if [ -f $alert ]
+then
+   cat $alert # | mail_ -s\"[pre-commit] New changes on the branch $git_branch by user $who\" $TRUST_MAIL $TRUST_PROJECT_LEADER           
+fi
+
+# Exit with no error:
+clean_exit 0

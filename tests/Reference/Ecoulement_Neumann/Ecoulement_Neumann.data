@@ -1,0 +1,89 @@
+# Test de la condition de pression de sortie en VEF : le cas test diverge si elle est mal implementee (ex: 1.5.4) #
+dimension 2
+Pb_Hydraulique pb
+Domaine dom
+
+Read_file dom dom.geom
+
+VEFPreP1b dis
+# La CL de pression est imposee de facon faible car sinon le calcul diverge #
+Lire dis { P0 P1 changement_de_base_P1Bulle 1 cl_pression_sommet_faible 1 }
+Schema_Euler_explicite sch
+Lire sch 
+{
+        tinit 0.
+        tmax 2.
+        dt_min 1.e-7
+        dt_max 1.e-1
+	dt_start dt_calc
+        dt_impr 0.001
+        dt_sauv 20.
+        seuil_statio 1.e-12
+        facsec 0.5
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+        mu Champ_Uniforme 1  3.465e-05
+        rho Champ_Uniforme 1 4.9433
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Lire pb
+	{
+	Navier_Stokes_standard
+		{
+                solveur_pression GCP {
+                        precond ssor { omega 1.5 }
+                        seuil 1.e-8
+                }
+                convection { EF_stab { volumes_etendus } }
+                diffusion  { negligeable }
+		conditions_initiales
+			{
+                        vitesse Champ_fonc_xyz dom 2  0. 0. 
+			}
+		boundary_conditions
+			{
+			cl_13 frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz  2 -1.5 -2.598  
+			cl_12 frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+			cl_14 frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0. 
+			cl_15	paroi_fixe
+			}
+	}
+
+	Postraitements
+        {
+	     lata {
+		     fichier Ecoulement_Neumann
+		     format lata
+		     Champs dt_post 1.e-1
+		     {
+			     vitesse elem
+			     pression elem
+			     pression som
+		     }
+	     }
+	     lml {
+		     fichier Ecoulement_Neumann
+		     format lml
+		     Champs dt_post 1.e-1
+		     {
+			     vitesse elem
+			     pression elem
+			     pression som
+		     }
+	     }
+	}
+}
+
+Solve pb
+Fin
+
+

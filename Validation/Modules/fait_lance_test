@@ -1,0 +1,6 @@
+#!/bin/bash
+DIR=$1
+MOD=`basename $DIR`
+MOD=${MOD%/}
+sed "s?#BALISE_MODULE? ksh $DIR/modif \$NOM.data ; mv \$NOM.data org_\$NOM.data; mv ${MOD}_\$NOM.data \$NOM.data; [ -f $DIR/env_special ] \&\& echo environnement special \&\& . $DIR/env_special? " $TRUST_ROOT/bin/lance_test  > $DIR/lance_test_modif
+chmod +x $DIR/lance_test_modif

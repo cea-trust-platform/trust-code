@@ -1,0 +1,35 @@
+Parameters {
+        Title "v\'erification des tableaux"
+        Description "Calculs men\'es en VEF laminaire"
+        Author "G.F."
+        TestCase "test_ef_stab" "test.data"
+        TestCase "test_ef_stab_ve" "test.data"
+}
+
+Chapter {
+Visu
+{
+molecule marqueurs.lata PARTICULES VITESSE_X som 0.003
+normal3D 0 -1 0
+Up3D 0 0 1
+pseudocolor_with_opacity marqueurs.lata dom VITESSE_X SOM 1e-4
+zoom3D 0. 0 0.9
+}
+Visu
+{
+molecule marqueurs.lata PARTICULES VITESSE_X som 0.003
+normal3D 0 -1 0
+up3D 0 0 1
+zoom3D -0.016835 -0.470385 8
+}
+
+Visu
+{
+pseudocolor marqueurs.lata dom VITESSE_X SOM 
+operator slice2d 0 0 0 0 -1  0 
+
+zoom2d -0.00458616 0.195179 0.818883 0.998824
+}
+
+
+}

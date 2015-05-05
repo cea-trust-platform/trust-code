@@ -1,0 +1,8 @@
+# Create .xyz files in sequential:
+triou keps_2D_VEF_Def || exit -1
+if [ "$TRUST_DISABLE_MPI" != 1 ]
+then
+   # Build also .sauv files in parallel:
+   make_PAR.data keps_2D_VEF_Def
+   triou PAR_keps_2D_VEF_Def 2 || exit -1
+fi

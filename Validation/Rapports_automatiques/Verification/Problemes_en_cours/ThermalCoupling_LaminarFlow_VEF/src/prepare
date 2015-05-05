@@ -1,0 +1,30 @@
+#!/bin/bash
+
+########################################################################
+##  The maximal velocity Umax must be written in the laminar.awk file ##
+########################################################################
+
+mkdir TrioU
+
+
+cd ./TrioU
+mkdir alpha_02 
+mkdir alpha_1
+cd ..
+
+###### maillage trioU
+cd ./TrioU
+for dir in ./alpha_02 ./alpha_1
+do
+cd $dir
+cp ../../laminar.awk ../../post_run ../../laminar_coupled_pb.data .
+cd ..
+done
+cd ..
+
+# modification du alpha en thermique
+cd ./TrioU/alpha_02
+sed "s/convection { EF_STAB { alpha 1. } }/convection { EF_STAB { alpha 0.2 } }/" laminar_coupled_pb.data > modifie.data ; mv modifie.data laminar_coupled_pb.data
+cd ../..
+
+

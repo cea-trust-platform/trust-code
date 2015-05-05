@@ -1,0 +1,143 @@
+# Exemple d'utilisation de Paroi_Echange_contact_Correlation_VEF avec Rayonnement #
+# PARALLEL OK #
+# Visualisation des domaines :
+   --------------------------------------------------
+   | epaisseur=5cm      dom2           T=500°K     | Conduction
+   --------------------------------------------------
+                     |    longueur=1m
+                     |
+   epaisseur=1 cm    |  echange uniquement radiatif (Nu=0)
+                     |
+                     V
+   --------------------------------------------------
+   | epaisseur=5cm      dom1           T=300°K      | Conduction
+   --------------------------------------------------
+#
+
+dimension 3
+domaine assemblage
+
+# BEGIN MESH #
+Read_file assemblage Assemblage.geom
+sous_zone dom1
+Associate dom1 assemblage
+Read_file dom1 SSZ.ssz
+# END MESH #
+
+
+# --------- PARALLELISATION --------- #
+# BEGIN PARTITION
+Partition assemblage
+{
+	Partitionneur tranche { tranches 1 1 2 }
+	Larg_joint 1
+	Nom_Zones Assemblage
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter Assemblage.Zones assemblage
+Sous_Zone dom1
+Associate dom1 assemblage
+Lire dom1 { Fichier dom1.ssz }
+END SCATTER #
+
+
+# --------- DEFINITION DES PROBLEMES --------- #
+# CONDUCTION #
+Pb_conduction pb_conduction
+
+# --------- DISCRETISATION --------- #
+VEFPreP1B dis
+Lire dis { P0 }
+
+# --------- DEFINITION DU SOLIDE --------- #
+Solide verre
+Lire verre
+{
+        rho Champ_Uniforme 1 2500.
+        lambda Champ_Uniforme 1 1.35
+        Cp Champ_Uniforme 1 720
+}
+
+# --------- SCHEMA EN TEMPS --------- #
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0 
+        tmax 10000.	
+        dt_min 1.E-8
+        dt_max 1.
+	dt_impr 10000
+        dt_sauv 10000
+        seuil_statio 1.e-6
+        facsec 1.
+}
+
+# --------- ASSOCIATION --------- #
+Associate pb_conduction assemblage
+Associate pb_conduction verre
+Associate pb_conduction sch
+
+Discretize pb_conduction dis
+
+# --------- LECTURE DES CONDITIONS DE CALCUL CONDUCTION --------- #
+Lire pb_conduction
+{
+	Conduction
+	{
+		diffusion { }
+                conditions_initiales { Temperature Champ_uniforme_morceaux assemblage 1 { defaut 500. dom1 300 } }
+		boundary_conditions {
+				Bord_Rayonnant Paroi_Echange_contact_Correlation_VEF
+				{
+				 dir 2
+				 Tinf 400
+				 Tsup 300
+				 lambda 0.0262
+				 rho 1.225
+				 Cp 1000
+				 dt_impr 1000
+				 mu 0.0000185
+				 debit -1.225
+				 Dh 0.01
+				 N 2
+				 surface 0.1 
+				 Nu 0
+				 xinf 0
+				 xsup 1
+				 emissivite_pour_rayonnement_entre_deux_plaques_quasi_infinies 0.9
+				}
+
+				B1       paroi_temperature_imposee Champ_Front_Uniforme 1 300.
+				H2	 paroi_temperature_imposee Champ_Front_Uniforme 1 500.
+				D1	 paroi_adiabatique
+				D2	 paroi_adiabatique
+				G1	 paroi_adiabatique
+				G2       paroi_adiabatique
+				devant   paroi_adiabatique
+				derriere paroi_adiabatique
+		}
+	}
+        Postraitement
+        {
+		Sondes
+		{
+			sonde_B   temperature periode 10 points 1 0.5 0.00 0.5
+			sonde_I_B temperature periode 10 points 1 0.5 0.05 0.5
+			sonde_I_H temperature periode 10 points 1 0.5 0.06 0.5
+			sonde_H   temperature periode 10 points 1 0.5 0.11 0.5
+		}
+                Champs  dt_post 1000.
+                {
+                   temperature elem
+                   temperature som
+                }	
+	}
+}
+
+# --------- LANCEMENT DU CALCUL --------- #
+Solve pb_conduction
+
+Fin

@@ -1,0 +1,62 @@
+#!/bin/bash
+echo DEBUT de la verif des resultats
+errtot=0
+#diff -r testref/prepro test/prepro
+for file in `ls testref/prepro/trans_geom/*.data testref/prepro/trans_geom/Suz_de*`
+do
+   echo $file 
+   file_ref=test/prepro/trans_geom/`basename $file`
+   # GF on ne compare plus direment les fichiers pour eviter les pbs des blancs...
+   for f in $file $file_ref
+   do
+    $TRUST_Awk '{for (i=1;i<=NF;i++) {printf("%s ",$i)};printf("\n");}' $f > $f.p
+   done 
+   diff $f.p $file_ref.p
+   err=$?
+   if [ $err -ne 0 ]
+   then 
+      echo "Problem with $file"
+      errtot=1
+   fi
+done
+# Pour les infobord probleme de la premiere ligne
+for file in `ls testref/prepro/trans_geom/infobord[1-9]`
+do
+   echo $file 
+   fic=test/prepro/trans_geom/`basename $file`
+   # PL: On s'accroche bien fort a la chaise : tail +2 non portable sur mars (Linux) !
+   #tail +2 $file > $file.tmp
+   #tail +2 $fic > $fic.tmp
+   tail -`wc -l $file | awk '{print $1-1}'` $file > $file.tmp
+   tail -`wc -l $fic | awk '{print $1-1}'` $fic > $fic.tmp   
+   diff $file.tmp $fic.tmp
+   err=$?
+   if [ $err -ne 0 ]
+   then 
+      echo "Problem with $file"
+      errtot=1
+   fi
+done
+# On compare des nombres avec une certaine precision dans le .geo
+for file in `ls testref/prepro/trans_geom/*.geo 2>/dev/null`
+do
+   echo $file 
+   fic=`basename $file`
+#   err=`sdiff $file test/prepro/trans_geom/$fic | awk 'BEGIN {err=0} /\|/ {a=($1+$2+$3);b=($5+$6+$7);e=0;if (a+b>0) {e=(a-b)/(a+b)}; if(e>1.e-5 || e<-1.e-5) {err=1}} END {print err}'`
+# GF on change le test !!
+# a devient norme du premier point 
+# b celle du second
+# si norm(1)<1e-5 
+#    si norm(2)>1e-5 erreur
+# sinon dabs(norm_a-norm-b)/norm_a > 1e-4 erreur 
+# 
+ err=`sdiff $file test/prepro/trans_geom/$fic | awk 'BEGIN {err=0} /\|/ {a=($1*$1+$2*$2+$3*$3);b=($5*$5+$6*$6+$7*$7);e=0;if (a<1e-5) { if (b>1e-5) { err=1 }} else  {e=(a-b)/(a)}; if(e>1.e-4 || e<-1.e-4) {err=1}} END {print err}'`
+   [ ! -f test/prepro/trans_geom/$fic ] && err=1
+   if [ $err -ne 0 ]
+   then 
+      echo "Problem with $file"
+      errtot=1
+   fi
+done
+exit $errtot
+

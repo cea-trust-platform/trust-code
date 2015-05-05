@@ -1,0 +1,187 @@
+# SIMULATION D'UN CANAL PLAN 3D VEF EN THERMOHYDRAULIQUE #
+# Imcompressible, proprietes physiques constantes #
+# PARALLEL OK #
+dimension 3
+
+Pb_Thermohydraulique_turbulent pb
+
+Domaine dom
+
+# BEGIN MESH #
+Lire_Tgrid dom Canal_plan_bi_periodique_M1.msh
+Corriger_frontiere_periodique { Domaine dom Bord Periox }
+Corriger_frontiere_periodique { Domaine dom Bord Perioz }
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur Tranche { Tranches 2 1 1 }
+	Larg_joint 2
+	Nom_Zones DOM
+	periodique 2 Periox Perioz
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	nb_pas_dt_max 10
+	tinit	0.
+	tmax	1.
+	dt_start dt_min
+	dt_min	1.e-9
+	dt_max	1.e-1
+	dt_impr	1.e-5
+	dt_sauv	0.1
+        seuil_statio 1.e-8
+}
+
+Fluide_incompressible fluide
+Lire fluide
+{
+	mu	Champ_Fonc_fonction	1 temperature	3.95e-7*val^0.687
+	rho	Champ_Uniforme		1		3.824
+	lambda	Champ_Fonc_fonction	1 temperature	2.774e-3*val^0.701
+	Cp	Champ_Uniforme		1		5193.
+        beta_th	Champ_Uniforme		1		0.
+}
+
+Champ_Uniforme gravite
+Lire gravite 3 0 0 0
+
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+# Debog pb seq faces 1.e-6 0 #
+Lire pb
+{
+	Navier_Stokes_turbulent
+	{
+		solveur_pression petsc cholesky { }
+		convection { muscl_new }
+		diffusion { }
+		Sources { Boussinesq_temperature { T0 873. } }
+		Sources { Canal_perio { bord Periox } }
+		conditions_initiales { vitesse champ_uniforme 3 80. 0. 0. }
+		boundary_conditions
+		{
+			Periox	periodique 
+			Perioz	periodique 
+			Bas	Paroi_fixe
+			Haut	Paroi_fixe
+		}
+                Modele_turbulence K_Epsilon
+		{
+			Transport_K_Epsilon 
+			{
+				convection { muscl_new }
+                                diffusion { }
+                                boundary_conditions
+				{
+					Periox	periodique 
+					Perioz	periodique 
+					Bas	Paroi
+					Haut	Paroi
+				}
+                                conditions_initiales { k_Eps Champ_Uniforme 2 1222. 5341560. }
+			}
+			turbulence_paroi loi_standard_hydr dt_impr_ustar 0.01
+		}
+		 Ecrire_fichier_xyz_valeur vitesse 100. bords 1 Haut
+		 Ecrire_fichier_xyz_valeur k_eps 100. bords 1 Haut	
+	}
+
+	Convection_Diffusion_Temperature_turbulent
+	{
+		diffusion { }
+		convection { muscl_new }
+		boundary_conditions 
+		{
+			Periox	periodique 
+			Perioz	periodique 
+			Bas	paroi_temperature_imposee Champ_Front_Uniforme 1 673.
+			Haut	paroi_temperature_imposee Champ_Front_Uniforme 1 1073.
+		}
+		conditions_initiales { Temperature Champ_Uniforme 1 873. }
+		Modele_turbulence Prandtl
+		{   
+                        Turbulence_paroi loi_standard_hydr_scalaire  dt_impr_nusselt 0.01                
+ 		}
+	}
+
+	Postraitement
+        {       
+		Sondes
+                {
+			sonde_vitesse_x0	vitesse		periode 0.0001 segment 10  0. 0. 0.001		0. 0.004 0.001
+			sonde_vitesse_x1	vitesse		periode 0.0001 segment 10  0.001 0. 0.001	0.001 0.004 0.001
+			sonde_temperature_x0	temperature	periode 0.0001 segment 10  0. 0. 0.001		0. 0.004 0.001
+			sonde_temperature_x1	temperature	periode 0.0001 segment 10  0.001 0. 0.001	0.001 0.004 0.001
+			sonde_y_plus_x0		y_plus		periode 0.0001 segment 10  0. 0. 0.001		0. 0.004 0.001
+			sonde_y_plus_x1		y_plus		periode 0.0001 segment 10  0.001 0. 0.001	0.001 0.004 0.001
+		}
+		Champs dt_post 0.01
+		{
+			pression elem
+			vitesse elem
+			temperature elem
+                        y_plus elem
+			k elem
+			eps elem
+		}
+	}
+}
+
+Solve pb 
+Fin
+
+		Traitement_particulier
+		{
+			Canal
+			{
+				dt_impr_moy_spat 0.03
+				dt_impr_moy_temp 0.03
+				debut_stat       0.01
+				fin_stat          400.
+			}
+		}
+
+
+
+
+# MAILLAGE TEMPORAIRE #
+# BEGIN MESH #
+Mailler dom
+	{
+	Pave Cavite
+		{
+		Origine 0. 0. 0.
+		Nombre_de_Noeuds 9 9 5
+		Longueurs  0.004 0.004 0.002
+		}
+		{
+		Bord Periox   X = 0.	 0. <= Y <= 0.004  0. <= Z <= 0.002
+		Bord Periox   X = 0.004	 0. <= Y <= 0.004  0. <= Z <= 0.002
+		Bord Perioz   Z = 0.	 0. <= X <= 0.004  0. <= Y <= 0.004
+		Bord Perioz   Z = 0.002	 0. <= X <= 0.004  0. <= Y <= 0.004
+		Bord Bas      Y = 0.	 0. <= X <= 0.004  0. <= Z <= 0.002
+		Bord Haut     Y = 0.004	 0. <= X <= 0.004  0. <= Z <= 0.002
+		}
+	}
+
+Tetraedriser_par_prisme dom
+# END MESH #
+
+
+

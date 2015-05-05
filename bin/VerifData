@@ -1,0 +1,8 @@
+#!/bin/bash
+# Lancement de TRUST XData
+echo "Usage: `basename $0` file.data"
+REP=`pwd`
+if [ -f $REP/$* ]
+then
+   (cd $TRUST_ROOT/Outils/TRIOXDATA;./VerifData $REP/$*)
+fi

@@ -1,0 +1,73 @@
+#!/bin/bash
+# Compilation par -ftest-coverage -fprofile-arcs: genere des fichiers .gcno
+# A l'execution, genere un fichier .gcda
+mon_ana()
+{
+   file=$1
+   file=${file%.gcov}
+   filec=$file.gcov
+   nl=`grep -v "\-:" $filec | grep -v "blocks executed " | wc -l`
+   nnt=`grep "####:"  $filec | wc -l`
+   nntm=`grep "####:" $filec | grep -v "Cerr"| grep -v "exit(-1)" | grep -v assert | wc -l`
+   #echo $nl $nnt $nntm
+   p=`echo "scale=1;100-100*$nnt/$nl" | bc -l`
+   pm=`echo "scale=1;100-100*$nntm/$nl" | bc -l`
+   #runs=`$TRUST_Awk -F: '/Runs/ {print $4}' $filec`
+   runs=`$TRUST_Awk 'BEGIN {max=10000;n=max} /called / && !/_GLOBAL__/ && !/__tcf_/ {if ($4!=0 && $4<n) n=$4} END {if (n==max) n=0;print n}' $filec`
+   ok=`echo "scale=1;(0.01*$pm)^$runs*100" | bc -l`
+   echo $ECHO_OPTS $p"\t "$pm"\t "$runs"\t "$ok"\t "$file
+}
+tout()
+{
+   echo "# Taux de couverture en ligne de code par fichier"
+   echo "# T1: Taux brut"
+   echo "# T2: Taux corrige (instructions Cerr, exit, assert,... non comptes)"
+   echo "# N : Nombre de cas tests qui utilisent des lignes de code de cette classe"
+   echo "# OK: T2^N critere de qualite de couverture de la classe"
+   echo $ECHO_OPTS "T1(%)\t T2(%)\t N\t OK\t File"
+   for file in `ls *.cpp.gcov` 
+   do 
+      #echo $file
+      mon_ana $file
+   done
+}
+#rep=$TRUST_ROOT/MonoDir$COMM"_opt_gcov"/src
+#[ ! -d $rep ] && echo 'Script utilisable uniquement avec une version compilee avec OPT="_opt_gcov"' && exit -1
+#cd $TRUST_ROOT/MonoDir$COMM"_opt_gcov"/src
+[ "$GCOV_PREFIX" = "" ] && echo GCOV_PREFIX not set && exit 1
+
+
+cd `dirname $GCOV_PREFIX`
+trace=`basename  $GCOV_PREFIX`"/"
+dirs=`find  $trace -type d`
+
+rm -rf ana
+mkdir ana
+cd ana
+for dir in $dirs
+do
+[ "`ls  ../$dir/*.gcda 2>/dev/null`" =  "" ] && continue
+srcdir=`echo $dir| sed "s/trace//"` 
+ln -s ../$dir/*.gcda .
+ln -s /$srcdir/*.gcno .
+
+done
+
+
+
+
+last=`ls -rt *.gcda | tail -1`
+file=$TRUST_ROOT/doc/Coverage/cpp.gcov.tar.gz
+if [ ! -f $file ] || [ $last -nt $file ]
+then
+   echo "Analyse par gcov..."
+   rm -f gcov_out gcov_err
+   gcov *.gcno 1>gcov_out 2>gcov_err
+   CHECKOUT $file
+   tar cfz $file *.gcov
+   echo "$file updated"
+fi
+
+echo "Analyse de la couverture..."
+tout 1>monana_out 2>&1
+echo "File `pwd`/monana_out created." 

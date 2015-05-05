@@ -1,0 +1,5 @@
+#!/bin/bash
+DIR=`dirname $0` 
+DIR=`(cd $DIR; pwd)`
+sed "s?#BALISE_MODULE?ksh $DIR/modif \$NOM.data ; ?" $TRUST_ROOT/bin/lance_test  > $DIR/lance_test_modif
+chmod +x $DIR/lance_test_modif

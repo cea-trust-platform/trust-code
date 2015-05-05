@@ -1,0 +1,74 @@
+# Tests ecriture/lecture de differents type de maillages MED en 3D #
+
+dimension 3
+# PARALLEL NOT #
+{
+Domaine hexaedre
+Domaine tetra
+Domaine hexaedre_vef
+
+
+Mailler hexaedre 
+{
+ 	Pave  Gauche
+		{
+		Origine 0. 0. 0.
+     		Nombre_de_Noeuds 4 4 4
+		Longueurs 0.3 1.0 1.0
+		}
+		{
+		Bord Gauche X = 0.   0.  <= Y <= 1.0  0.  <= Z <= 1.0
+		Bord Haut   Y = 1.0  0.  <= X <= 0.3  0.  <= Z <= 1.0
+
+		Bord Bas    Y = 0.   0.  <= X <= 0.3 0.  <= Z <= 1.0
+
+		Raccord local homogene Droit  X = 0.3  0. <= Y <= 1.0 0.  <= Z <= 1.0
+		Bord zo Z = 1.0  0.  <= X <= 0.3  0.  <= Y <= 1.0
+		Bord zo Z = 0.0  0.  <= X <= 0.3  0.  <= Y <= 1.0
+
+
+		} 
+}
+
+ecrire_fichier hexaedre hexaedre.geom
+
+ecrire_med hexaedre hexaedre.med
+
+Read_file tetra hexaedre.geom
+Tetraedriser_homogene tetra
+ecrire_med tetra tetra.med
+
+Read_file hexaedre_vef hexaedre.geom
+Transformer hexaedre_vef x*(1+y) y z
+ecrire_med hexaedre_vef hexaedre_vef.med
+
+# on recree le fichier lml reference ? 
+#
+postraiter_domaine { domaine hexaedre fichier new_reference.lml format lml }
+postraiter_domaine { 
+		domaines { hexaedre tetra hexaedre_vef } 
+		fichier new_reference.lml 
+		format lml }
+
+}
+
+Domaine hexaedre
+Domaine tetra
+Domaine hexaedre_vef
+lire_med hexaedre hexaedre hexaedre.med
+lire_med tetra tetra tetra.med
+lire_med hexaedre_vef hexaedre_vef hexaedre_vef.med
+postraiter_domaine { 
+		domaines { hexaedre tetra hexaedre_vef } 
+		fichier Kernel_GEOM_MED_3D.lata
+		format lata }
+postraiter_domaine { 
+		domaines { hexaedre tetra hexaedre_vef } 
+		fichier Kernel_GEOM_MED_3D.lml
+		format lml }
+fin
+
+
+
+
+

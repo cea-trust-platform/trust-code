@@ -1,0 +1,2 @@
+source `dirname $0`/environ.sh
+killSalome.py

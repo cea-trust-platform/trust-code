@@ -1,0 +1,39 @@
+#!/bin/bash
+CLEARTOOL="cleartool"
+for file in  $1
+do
+   file2=""$2/$file
+   res=`$CLEARTOOL ls $file2 2>/dev/null` 
+   if [ "$res" = "" ]
+   then
+      CHECKOUT $2
+      echo elt a creer $file
+      cp $file $2
+      MKELEM $file2
+      #CHECKIN $file2
+   else
+      if [ "$res" = "$2/$file" ]
+      then
+	 #echo elt existe mais n est pas en gestion $file
+	 $MKELEM  -c "essai" $file2
+	 #CHECKIN $file2
+      fi
+      #echo elmt existe et est en gestion de conf $file
+      if [ "`basename $0`" = "install_un_fichier_doc" ]
+      then
+	 grep -v generated $file | grep -v "Derni&egrave;re modification" > /tmp/file
+	 grep  -v generated $file2 | grep -v "Derni&egrave;re modification"> /tmp/file2
+	 res2="`diff /tmp/file /tmp/file2`" 
+	 rm -f  /tmp/file /tmp/file2
+      else
+	 res2="`diff $file $file2`"
+      fi
+      if [ "$res2" != "" ]
+      then
+	 CHECKOUT $file2
+	 echo $file modifie
+	 cp $file $file2
+	 #CHECKIN $file2
+      fi
+   fi
+done

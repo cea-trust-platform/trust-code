@@ -1,0 +1,43 @@
+# Creation de domaines a partir de sous_zone #
+# PARALLEL NOT #
+dimension 3  
+domaine dom
+
+# BEGIN MESH #
+Lire_Med dom all all.med
+/* Creation de sous zones */
+Read_file dom_ssz.geo ;
+# END MESH #
+
+# BEGIN PARTITION 
+Partition dom
+{
+   Partitionneur metis
+   {
+      nb_parts 2
+   } 
+   Larg_joint 1
+   Nom_Zones DOM 
+} 
+Fin 
+END PARTITION #
+
+# BEGIN SCATTER 
+Scatter DOM.Zones dom
+Read_file dom_ssz_par.geo ;
+END SCATTER #
+
+# Creation de domaines #
+domaine new1
+Create_domain_from_sous_zone { domaine_final new1 par_sous_zone G_3D_93 domaine_init dom }
+domaine new2
+Create_domain_from_sous_zone { domaine_final new2 par_sous_zone G_3D_91 domaine_init dom }
+domaine new3
+Create_domain_from_sous_zone { domaine_final new3 par_sous_zone G_3D_2 domaine_init dom }
+
+discretiser_domaine new1
+discretiser_domaine new2
+discretiser_domaine new3
+postraiter_domaine { domaines { new1 new2 new3 }  format lml }
+
+fin

@@ -1,0 +1,12 @@
+#!/bin/bash
+DIR=`dirname $0`
+DIR=`(cd $DIR;pwd)`
+mot=liste_cas_nr
+if [ "$1" = "-exclu" ]
+then
+   shift
+   mot=not_in_nr
+   echo cases not taken account for nr
+fi
+
+$DIR/../Run $* -get_list_cas_nr | grep $mot | sed "s/$mot //"

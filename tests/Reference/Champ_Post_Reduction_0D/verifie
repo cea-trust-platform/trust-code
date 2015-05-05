@@ -1,0 +1,20 @@
+message()
+{
+   [ $1 != $2 ] && echo $ECHO_OPTS "Error ($1!=$2) when checking:\n $msg" && err=1 && echo $msg
+}
+jdd=`pwd`;jdd=`basename $jdd`
+err=0
+####################################
+# Comparaison des sondes entre elles
+####################################
+mean_temperature_som=`tail -1 $jdd\_SONDE_MEAN_TEMPERATURE_SOM.son | $TRUST_Awk '{print $NF}' | $TRUST_Awk '{if ($1<0) print -$1;else print $1}'`
+mean_temperature_elem=`tail -1 $jdd\_SONDE_MEAN_TEMPERATURE_ELEM.son | $TRUST_Awk '{print $NF}' | $TRUST_Awk '{if ($1<0) print -$1;else print $1}'`
+mean_temperature_face=`tail -1 $jdd\_SONDE_MEAN_TEMPERATURE_FACE.son | $TRUST_Awk '{print $NF}' | $TRUST_Awk '{if ($1<0) print -$1;else print $1}'`
+ok=`$TRUST_Awk -v som=$mean_temperature_som -v elem=$mean_temperature_elem 'BEGIN{if ((elem-som)<1e-8 && (som-elem)<1e-8) print 1;else print 0}'`
+msg='Ponderations aux sommets et aux elements proches a 1.e-8 pres';message $ok 1
+ok=`$TRUST_Awk -v som=$mean_temperature_som -v face=$mean_temperature_face 'BEGIN{if ((face-som)<1e-8 && (som-face)<1e-8) print 1;else print 0}'`
+msg='Ponderations aux sommets et aux faces proches a 1.e-8 pres';message $ok 1
+ok=`$TRUST_Awk -v elem=$mean_temperature_som -v face=$mean_temperature_face 'BEGIN{if ((face-elem)<1e-8 && (elem-face)<1e-8) print 1;else print 0}'`
+msg='Ponderations aux elements et aux faces proches a 1.e-8 pres';message $ok 1
+
+exit $err

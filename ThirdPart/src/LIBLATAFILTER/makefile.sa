@@ -1,0 +1,24 @@
+# List of includes -I :
+Includes = -I.\
+	-I$(TRUST_ROOT)/src/Kernel/Geometrie\
+	-I$(TRUST_ROOT)/src/Kernel/Math\
+	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
+	-I$(MPI_ROOT)/include
+
+include $(TRUST_ENV)/makefile
+
+OBJS=
+
+LIB=$(TRUST_LATAFILTER)/lib/liblatafilter.a
+all: $(LIB)
+$(LIB) : $(OBJS) 
+	@ar cruv $(LIB) $(OBJS) 
+	@touch $(LIB)
+	@echo "$(LIB) is updated".
+
+SRCS=
+
+HDRS=
+
+###
+# DO NOT DELETE

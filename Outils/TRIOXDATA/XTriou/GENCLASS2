@@ -1,0 +1,118 @@
+#!/bin/bash
+gen_class()
+{
+class=$1
+ch1=`awk -v class=$class '{
+if ($1==class) { 
+    name_trio=$3
+    if (name_trio=="nul") { name_trio=""}
+    if ($2=="deriv")
+    {
+    descr=$6;for (j=7;j<=NF;j++) {descr=descr" "$j;};
+ print ("gen_class(name_trio=quote"name_trio"quote,name=quote"$1"quote,pere=quote"$2"quote,readacc="$4",type=quote"$5"quote,descr=quote"descr"quote,list_mot=[") 
+    }   
+else
+    if ($2=="listobj")
+     {
+    descr=$7;for (j=8;j<=NF;j++) {descr=descr" "$j;};
+ print ("gen_class(name_trio=quote"name_trio"quote,name=quote"$1"quote,pere=quote"$2"quote,readacc="$4",class_type=quote"$5"quote,virgule=quote"$6"quote,descr=quote"descr"quote,list_mot=[") 
+    }   
+else
+     {
+	descr=$5;for (j=6;j<=NF;j++) {descr=descr" "$j;};
+	print ("gen_class(name_trio=quote"name_trio"quote,name=quote"$1"quote,pere=quote"$2"quote,readacc="$4",descr=quote"descr"quote,list_mot=[")
+    }
+    
+    getline;
+    while ($1=="attr")
+    {
+	print ("[quote"$4"quote,quote"$3"quote,quote"$2"quote")
+	if (NF>4) { print(","$5) }
+		   
+	if (NF>5)
+	    {
+		descr=$6;for (j=7;j<=NF;j++) {descr=descr" "$j;}
+		print (",quote"descr"quote")
+	    }
+	
+        print("],")
+	getline
+	}
+	print ("],list_ref=[")
+ while ($1=="ref")
+    {
+	print("[quote"$2"quote,quote"$3"quote],")
+	getline
+	}	
+	print ("]);")
+ }
+
+}' TRAD_2 | sed "s?quote?'?g"`
+#ch2=`awk -v class=$class '{if ($1==class) {print ("[quote"$4"quote,quote"$3"quote,quote"$2"quote],")}}' TYPES_1  | sed "s?quote?'?g"`
+#ch2=$ch2"],list_ref=["
+#ch2=`echo $ch2 | sed "s?],]?]]?"`
+
+#ch3=`awk -v class=$class '{if ($1==class) {print ("[quote"$2"quote,quote"$3"quote],")}}' LISTREF_1  | sed "s?quote?'?g"`
+#ch3=$ch3"])"
+#ch3=`echo $ch3 | sed "s?],]?]]?"`
+echo $ch1 
+}
+
+traite_TYPE1()
+{
+cat /dev/null > sedfile
+#awk '{if ($1!=$3) {print ("s? "$1" ? "$3" ?g")}}' TRAD_1 >> sedfile
+#cat /dev/null > sedfile2
+awk '{if (($1!="attr")&&($1!="ref")&&($3!="nul")&&($1!=$3)) {print ($3","$1)}}' TRAD_2 > sedfile2
+for f in `cat sedfile2`
+do
+mot_trio=`echo $f | awk -F, '{print $1}'`
+mot_angl=`echo $f | awk -F, '{print $2}'`
+#echo "ici ", $mot_trio,$mot_angl
+awk  -v trio=$mot_trio -v angl=$mot_angl '{ligne=$0;
+  if (($1!="attr")&&($1!="ref")) { ti=" "trio" ";an=" "angl" ";if ($2==trio) {gsub(ti,an); print ("s?"ligne"?"$0"?") }}
+else if (($1=="attr")||($1=="ref")) { ti=" "trio;an=" "angl;if ($3==trio) {gsub(ti,an); print ("s?"ligne"?"$0"?")   }}
+}' TRAD_2 >> sedfile
+done
+if [ -s sedfile ]
+then 
+cat sedfile
+sort -u sedfile > sedprov
+mv sedprov sedfile 
+echo "des modifs sont necessaires dans TRAD_2 a cause du passage en anglais"
+echo "on cree TRAD_2.mod par sed -f sedfile TRAD_2"
+sed -f sedfile TRAD_2 > TRAD_2.mod
+exit -1
+fi
+#sed -f sedfile2 TYPES_1 > TYPES
+#sed -f sedfile TYPES > TYPES_1
+}
+
+
+cat /dev/null > gencl.py
+echo "#!/usr/bin/python
+# -*- coding: latin-1 -*-" > gencl.py
+
+traite_TYPE1
+
+#more sedfile
+#more sedfile2
+#exit
+
+if [ "$1" != "" ]
+then
+cls=$*
+else
+cls=`awk '{if (($1!="attr")&&($1!="ref")) {print $1}}' TRAD_2`
+echo $cls
+fi
+for cl in $cls
+do
+#echo $cl
+gen_class $cl >> gencl.py
+done
+sed "s/; gen_class/;\ngen_class/" gencl.py > gencles.py
+python sort_gen_cl.py
+status=$?
+[ $status -ne 0 ] && exit 1
+echo gencl.py genere

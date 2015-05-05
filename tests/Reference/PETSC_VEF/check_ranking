@@ -1,0 +1,24 @@
+#!/bin/bash
+# Verifie:
+# Le temps cpu 
+# La somme des convergences
+# La RAM max
+file=$1
+its_max=$2
+res_max=$3
+delta_ram_max=$4
+cpu_max=$5
+check=0 && [ "$HOST" = "$TRUST_HOST_ADMIN" ] && check=1
+[ ! -f $file ] && exit -1
+$TRUST_Awk -v its_max=$its_max -v res_max=$res_max -v delta_ram_max=$delta_ram_max -v cpu_max=$cpu_max -v check=$check 'BEGIN {min_ram=100000} \
+/OK/ {its+=$3;if ($4>res) res=$4;if ($5>max_ram) max_ram=$5;if ($5<min_ram) min_ram=$5;cpu+=$1;} \
+END { \
+#print its" "res" "ram_min" "ram_max; \
+if (check) print "cpu total: "cpu" (Reference sur PC $TRUST_HOST_ADMIN semi optimise avec Petsc 3.5.x): "cpu_max; \
+err=0; \
+if (check && its>its_max) {print "Nombre iterations trop eleve ("its">"its_max") sur un ou plusieurs solveurs...";err=1} \
+if (res>res_max) {print "Residu final obtenu trop eleve ("res">"res_max") sur un ou plusieurs solveur...";err=1} \
+if (check && max_ram-min_ram>delta_ram_max) {print "RAM occupee trop elevee ("max_ram">"delta_ram_max+min_ram") sur un ou plusieurs solveur...";err=1} \
+if (check && cpu>cpu_max) {print "CPU trop eleve ("cpu">"cpu_max") sur un ou plusieurs solveurs...";err=1;} \
+exit err}' $file
+exit $?

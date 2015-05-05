@@ -1,0 +1,3 @@
+#!/bin/bash
+rm -f Moyennes_spatiales_vitesse_rho_mu_fin
+ln -s `ls -rt Moyennes_spatiales_vitesse_rho_mu_* | tail -1` Moyennes_spatiales_vitesse_rho_mu_fin 

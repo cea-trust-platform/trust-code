@@ -1,0 +1,21 @@
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:	NOM_DU_FICHIER.cpp
+// Directory:	$TRUST_ROOT/NOM_DU_MODULE
+//
+//////////////////////////////////////////////////////////////////////////////
+
+#include <NOM_DU_FICHIER.h>
+#include <Motcle.h>
+//
+// printOn et readOn 
+
+Sortie& NOM_DE_LA_CLASSE::printOn(Sortie& s ) const 
+{
+   return s;
+}
+
+Entree& NOM_DE_LA_CLASSE::readOn(Entree& is ) 
+{
+   return is;
+}

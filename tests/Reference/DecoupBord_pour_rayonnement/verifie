@@ -1,0 +1,2 @@
+gunzip -c DecoupBord_pour_rayonnement2 > ref2.lml
+compare_lata ref2.lml DecoupBord_pour_rayonnement2.lml

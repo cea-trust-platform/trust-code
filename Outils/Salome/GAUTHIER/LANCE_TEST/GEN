@@ -1,0 +1,23 @@
+#!/bin/bash
+DIST_LANCE="localhost"
+for host in  $DISTCC_HOSTS
+do
+	if [ "$host" = "crolles" ]
+	then
+		echo pas de compte trio sur $host
+		break
+	fi
+ if [ "$host" != localhost ]
+then
+	name="triou@"$host
+	#name="fauchet@"$host
+	DIST_LANCE=$DIST_LANCE","$name
+fi
+done
+for host in `echo $DIST_LANCE| awk -F\, '{for (i=1;i<=NF;i++) {print $i}}'`
+do
+echo sur $host
+#ssh $host "export TERM=xterm; top -b -n1 -u \$USER"
+cmd="ssh "$host" \""$*"\""
+eval $cmd
+done

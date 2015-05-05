@@ -1,0 +1,433 @@
+#!/bin/bash
+# Recuperation des rapports sur les machines distantes
+[ ${#TRUST_ROOT} = 0 ] && echo "Vous n'etes pas dans l'environnement TRUST: La variable TRUST_ROOT est vide." && exit
+export DIPHA_ROOT=`dirname $TRUST_ROOT`/Diphasique
+
+machine="" && [ ${#1} != 0 ] && machine=$1
+[ ${#Version} = 0 ] && echo "\$Version vide !" && exit
+[ ${v%beta} != $v ] && [ ${#DATE} = 0 ] && echo "\$DATE vide !" && exit
+v=${Version#Version}
+PORTAGE=$WORKDIR/PORTAGE_$v
+rm -r -f $PORTAGE
+mkdir -p $PORTAGE 2>/dev/null
+# Teste la connection :
+. connect_ftp -no_ftp
+
+#####################################
+# Nouveau, on complete la liste avec 
+# les machines trouvees dans le depot
+#####################################
+for HOST in `ls_ftp $SECRET/../CR/CR_* 2>/dev/null | $TRUST_Awk '{gsub("CR_","",$NF);print $NF}'`
+do
+   if [ "`liste_machines | $TRUST_Awk -F. '{print $1}' | grep -w $HOST`" = "" ]
+   then
+      CHECKOUT $TRUST_ROOT/bin/admin/liste.machines 1>/dev/null 2>&1
+      adr=$HOST
+      echo $ECHO_OPTS "linux\tgit_cron\tnon\t$adr\t\t\t\t# Machine de reserve" >> $TRUST_ROOT/bin/admin/liste.machines
+      echo "$adr ajoute a $TRUST_ROOT/bin/admin/liste.machines"   
+   fi
+done
+
+if [ ${#machine} = 0 ]
+then
+   # Changement PL du 24/07/04, en tete les machines cibles PUIS les autres
+   machines=`liste_machines get_binary`" "`liste_machines cible`" "`liste_machines non`" "`liste_machines tache`" "`liste_machines pool`
+   liste="" # Pour avoir une liste unique:
+   for machine in $machines
+   do
+      [ "`echo $liste | grep $machine`" = "" ] && liste=$liste" "$machine    
+   done
+else
+   liste=$machine
+fi
+
+###############################
+# Creation du rapport NUIT.html
+###############################
+[ ! -d $TRUST_ROOT/NUIT ] && mkdir $TRUST_ROOT/NUIT
+NUIT=$TRUST_ROOT/NUIT/NUIT.html
+NUIT_DIPHA=$TRUST_ROOT/NUIT/NUIT_dipha.html
+echo > $NUIT
+################################
+# Debut boucle sur les modules #
+################################
+MODULES="TRUST Diphasique"
+MODULES="TRUST"
+for MODULE in $MODULES
+do
+   # Creation des repertoires
+   exec=$PORTAGE/$TRUST_ARCH/$MODULE/exec
+   mkdir -p $exec   
+   portabilite=0;nb_machine_cible=0
+   portabilite_xprepro=0;nb_machine_xprepro_cible=0
+   portabilite_baltik=0;nb_machine_baltik_cible=0   
+   portabilite_atelier=0;nb_machine_atelier_cible=0
+   echo "
+<HTML>
+<HEAD>
+   <META NAME="ROBOTS" CONTENT=\"NOINDEX, NOFOLLOW\">
+   <META NAME="ROBOTS" CONTENT=\"NOARCHIVE\">
+<TITLE>$MODULE Results compilation</TITLE>
+</HEAD>
+<BODY>
+<CENTER><B><FONT SIZE=+1>$MODULE $TRUST_VERSION build the `date '+%d/%m/%y'`</FONT></B>$vide</CENTER>
+<TABLE BORDER WIDTH="100%" NOSAVE style=\"font-size:12px;\" border 1> 
+<TR>
+<TD>Target</TD>
+<TD>Cores</TD>
+<TD>RAM</TD>
+<TD>Cache</TD>
+<TD>Freq</TD>
+<TD>End</TD>
+<TD>OS</TD>
+<TD>Model</TD>
+<TD>CC</TD>
+<TD>MPI</TD>
+<TD>Size</TD>
+<TD>Build</TD>
+<TD>Med</TD>
+<TD>Petsc</TD>
+<TD>Gmsh</TD>
+<TD>VisIt</TD>
+<TD>lata2dx</TD>
+<TD>Baltik</TD>
+<TD>Ate</TD>
+<TD>Xpr</TD>
+<TD>Tests</TD>
+<TD>CPU_3D</TD>
+</TR>" >> $NUIT
+   
+   #########################
+   # Parcours chaque machine
+   #########################
+   rm -f /tmp/os /tmp/CC
+   for adr in $liste
+   do
+      version=Version_test_`echo $adr | awk -F'.' '{print $1}'`
+      ROOT=$version/$MODULE
+      log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`
+      recupere_exec=0	# C'est une machine dont on recupere les binaires
+      machine_cible=0	# C'est une machine sur laquelle le code doit compiler
+      # Appel pour remplir recupere_exec et ftp et TRUST_ARCH
+      . liste_machines $adr recupere_exec
+      . liste_machines $adr TRUST_ARCH
+      . liste_machines $adr machine_cible
+      [ "$machine_cible" = "" ] && machine_cible=0
+      # Une machine sur laquelle on recupere un exec EST AUSSI une machine cible
+      [ "$recupere_exec" = 1 ] && machine_cible=1
+      # Definition de quelques variables
+      HOST=${version#Version_test_}
+      CR=CR_$HOST
+      TD="<TD>"`[ "$machine_cible" = 1 ] && echo "<B>"`
+      FTD=`[ "$machine_cible" = 1 ] && echo "</B>"`"</TD>"
+      vide="&nbsp;"
+      echo "*********************************************************************"
+      echo "* Recuperation sur $adr a `date`"
+      echo "*********************************************************************"
+      REP_NUIT=$TRUST_ROOT/../$MODULE/NUIT && [ ! -d $REP_NUIT ] && mkdir $REP_NUIT 2>/dev/null
+      # Recuperation des CR selon le mode
+      if [ "`liste_machines git_cron | grep $adr`" != "" ]
+      then
+         cd $REP_NUIT
+	 rm -f $CR* compile_*_$HOST.log PERF_*_$HOST
+	 # Bizarre wget se base sur ~/.netrc pour se logger sur public
+         wget_ ftp://$TRUST_FTP/../../$SECRET/../CR/$CR 			1>/dev/null 2>&1			
+         wget_ ftp://$TRUST_FTP/../../$SECRET/../CR/compile_*_$HOST.log	1>/dev/null 2>&1
+         wget_ ftp://$TRUST_FTP/../../$SECRET/../CR/PERF_*_$HOST		1>/dev/null 2>&1	
+	 [ ! -f $CR ] && echo "$CR non recupere."
+	 COMPILE_LOG=`ls compile_*_$HOST.log 2>/dev/null` && [ "$COMPILE_LOG" = "" ] && echo "Pas de rapport de compilation recupere."
+	 PERF_LOG=`ls PERF_*_$HOST 2>/dev/null` && [ "$PERF_LOG" = "" ] && echo "Pas de rapport de performance recupere."
+	 
+	 # On efface les rapports sur le depot
+	 for file in $CR $COMPILE_LOG $PERF_LOG
+	 do
+	    rm_ftp $SECRET/../CR/$file
+	 done
+         cd - 1>/dev/null 2>&1
+      else
+         ssh_ $log@$adr -n pwd
+	 if [ $? != 0 ]
+	 then
+	    echo "$adr non accessible..."
+	 else
+            # Connection sur machine interne par ssh
+#            echo "
+#-lcd $REP_NUIT
+#-mget $CR
+#-rm $CR
+#-cd $ROOT
+#-mget compile_*
+#-rm compile_*
+#-mget PERF_*
+#-rm PERF_*
+#" > $TRUST_TMP/ssh_com
+	    log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`
+	    #sftp -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o BatchMode=yes -b $TRUST_TMP/ssh_com $log@$adr 
+            scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o BatchMode=yes $log@$adr:$CR $REP_NUIT/.
+            ssh_ $log@$adr -n "rm $CR"
+            scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o BatchMode=yes $log@$adr:$ROOT/compile_* $REP_NUIT/. 
+            ssh_ $log@$adr -n "rm $ROOT/compile_*" 
+            scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o BatchMode=yes $log@$adr:$ROOT/PERF_* $REP_NUIT/.
+            ssh_ $log@$adr -n "rm $ROOT/PERF_*" 
+	    # New, mise_a_jour_TRUST_arch is killed:
+	    ls_arch -kill $adr >> $REP_NUIT/$CR
+	 fi
+      fi    	
+      sleep 1	  		  
+      mac=`echo $adr | $TRUST_Awk -F"." '{print $1}'`
+      PERF=`ls $REP_NUIT/PERF_*_opt_"$TRUST_ARCH"_"$HOST" 2>/dev/null`
+      # Test moins severe pour recuperer un executable OK ou ecarts 
+      if [ ${#PERF} != 0 ] && [ -f $PERF ]
+      then
+         echo "Etude du rapport `basename $PERF` ..."
+         if [ "`grep OK $PERF`" = "" ] && [ "`grep ecarts $PERF`" = "" ]
+         then
+            echo "Pas de cas test passe. Rien n'est recupere."
+         else
+            echo "Nouvel executable pour $MODULE teste avec succes pour $TRUST_ARCH sur $HOST !"
+            if [ $recupere_exec = 0 ] || [ ${#binaire} = 0 ]
+            then
+               echo "Mais libs et executables non recuperes..."
+            else
+               echo "Recuperation des libs et executables..."
+	       (cd $exec;rm -f *)
+               ssh_ $log@$adr -n pwd
+	       if [ $? != 0 ]
+	       then
+	          echo "$adr non accessible..."
+	       else	       
+                  # Connection interne par ssh
+#                  echo "
+#-cd $ROOT/exec
+#-lcd $exec
+#-pwd
+#-get exec.tar.gz
+#" > $TRUST_TMP/ssh_com
+                  log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`
+                  #sftp -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o BatchMode=yes -b $TRUST_TMP/ssh_com $log@$adr 
+                  scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o BatchMode=yes $log@$adr:$ROOT/exec/exec.tar.gz $exec/.   		  		  
+	          (cd $exec;gunzip -f exec.tar.gz;tar xf exec.tar;rm -f exec.tar)
+	          # Si version beta on renomme avec la date et le numero de version
+	          if [ ${v%beta} != $v ]
+	          then
+	             name_binary=`ls $exec/TRUST_mpi* 2>/dev/null`
+		     mv $name_binary $name_binary"_"$v"_build_"$DATE
+	          fi
+	       fi
+	    fi
+	 fi
+      else
+         echo "Pas de rapport PERF de $MODULE sur $HOST KO!"
+	 ls $REP_NUIT/PERF_*_opt_"$TRUST_ARCH"_"$HOST"
+      fi
+      #############################
+      # Machine eteinte (pas de CR)
+      #############################
+      run=1
+      if [ ! -f $REP_NUIT/$CR ]
+      then
+         run=0
+         echo "Le `date`, la machine $HOST est eteinte ou inaccessible, ou sa crontab ne fonctionne pas ou n'est pas activee." > $REP_NUIT/$CR
+      elif [ ! -s $REP_NUIT/$CR ]
+      then
+         run=0
+         echo "La mise a jour n'a pas demarre sur $HOST" > $REP_NUIT/$CR
+      fi
+      cd $TRUST_ROOT/../$MODULE
+      NUIT2=$NUIT
+      file=""
+      # On ne prend que les compile opt
+      logs=`cd $REP_NUIT;ls -rt compile_*_opt_$TRUST_ARCH"_"$HOST.log 2>/dev/null | grep -v _semi_opt | grep -v _avx | grep -v gcov | grep -v _pg_`
+      for file in $logs
+      do
+	#HOST=`echo ${file%.log} | $TRUST_Awk -F"_" '{print $NF}'`
+	CR=$REP_NUIT/$CR
+	TRUST_ARCH_CC=`$TRUST_Awk '/TRUST_ARCH_CC=/ {sub("TRUST_ARCH_CC=","",$6);print $6;exit}' $CR`
+	arch=`echo ${file%.log} | $TRUST_Awk -F"_" '{print $(NF-1)}'`
+	opt=`echo $file | $TRUST_Awk -F"_" 'BEGIN {opt=""} /insure/ {opt="insure"} /opt/ {opt="opt"} END {print opt}'`
+	MPI=`$TRUST_Awk '/MPI=/ {gsub("MPI=","",$0);print $0}' $CR`
+	NOM=${file#compile_}
+	NOM=${NOM%.log}
+	PERF=$REP_NUIT/PERF_$NOM
+	EXEC=${NOM%_$HOST}
+	EXEC=${EXEC%_$arch}
+	host="";os="";rel="";mod="";taille="";type="";cpu=""
+	BLANC="BGCOLOR=#FEFEFE";ROUGE="BGCOLOR=#C42111";VERT="BGCOLOR=3D\"#E47833\""
+	comp="Echec";COL1=$ROUGE
+	COL2="";taux=$vide
+	COL3="";ptaux=""	
+	if [ ${#PERF} != 0 ] && [ -f $PERF ]
+	then
+	   host=`	$TRUST_Awk -F"=" '/hostname=/ {print $2}' $PERF` && [ $host != $HOST ] && echo "Probleme : $host != $HOST"
+	   os=`		$TRUST_Awk -F"=" '/os=/       {print $2}' $PERF`
+	   rel=`	$TRUST_Awk -F"=" '/release=/  {print $2}' $PERF`
+	   mod=`	$TRUST_Awk -F"=" '/model=/    {print $2}' $PERF`
+	   nb_procs=`	$TRUST_Awk -F"=" '/nb_procs=/ {print $2}' $PERF`
+	   ram=`	$TRUST_Awk -F"=" '/ram=/      {print $2}' $PERF`
+	   cache=`	$TRUST_Awk -F"=" '/cache=/    {print $2}' $PERF`
+	   freq=`	$TRUST_Awk -F"=" '/freq=/     {print $2}' $PERF`
+	   
+	   TRUST_CC=`echo $TRUST_ARCH_CC | $TRUST_Awk -F'_' '{print $NF}'` && CC_PERF=`cat $PERF | $TRUST_Awk '/CC / {print $2" "$3}'` && [ "$CC_PERF" != "" ] && TRUST_CC=$CC_PERF
+	   taille=`cat $PERF | $TRUST_Awk '/taille/ {print $2"Mo"}'`
+	   [ ${#taille} != 0 ] && comp="Succes" && COL1=$VERT && type=`cat $PERF | $TRUST_Awk '/taille/ {print $3}'`
+	   cpu=`cat $PERF | grep "Mo|" | $TRUST_Awk -F"|" '/cpu_3D / && !/PAR_/ && !/NP/{print $4}'`
+	   # Taux sequentiel:
+	   staux=`cat $PERF | $TRUST_Awk '/succes/ && (NF==2) {print $2;exit}'`
+	   # Taux parallele:
+	   ptaux=`cat $PERF | $TRUST_Awk '/succes/ && (NF==2) {t=$2} END {print t}'`
+	   # Taux total
+	   if [ "$staux" != "" ] && [ "$ptaux" != "" ] && [ "$ptaux" != 0 ]
+	   then
+	      taux=`echo $staux/$ptaux | $TRUST_Awk -F/ '{print $1+$3"/"$2+$4}'`
+	      pourcent=`echo $ECHO_OPTS "scale=3\n$taux" | bc -l`
+	      COL2="" && [ "$pourcent" = "1.000" ] && COL2=$VERT
+	      [ "`echo $pourcent | $TRUST_Awk '{print $1<0.95}'`" = 1 ] && COL2=$ROUGE
+	   else
+	      pourcent=0
+	      COL2=$ROUGE      
+	   fi 
+	   if [ "$machine_cible" = 1 ]
+	   then
+	      echo "provisoire "$portabilite" "$pourcent" "$file
+	      portabilite=`echo $ECHO_OPTS "scale=3\n$portabilite+$pourcent" | bc -l`
+	   fi
+	   # Est ce que tous les tests sont passes en version optimisee simple ?
+	   [ ${#comm} = 0 ] && [ ${#opt} != 0 ] && [ $opt = opt ] && [ ${#COL2} != 0 ] && [ $COL2 != $VERT ] && label_teste=0 
+	fi
+	STRICT="<TD`[ $comp = Succes ] && echo " $ROUGE"`>KO</TD>"
+	COOL="<TD>KO</TD>"
+	PETSC=$COOL 	&& [ "`grep PETSC=OK $CR`" != "" ] 	&& PETSC="<TD $VERT>OK</TD>"
+	GMSH=$COOL 	&& [ "`grep Gmsh:OK $CR`" != "" ] 	&& GMSH="<TD $VERT>OK</TD>"
+	VISIT=$STRICT 	&& [ "`grep VisIt:OK $CR`" != "" ] 	&& RUN=`$TRUST_Awk -F= '/VisIt=/ {print $2}' $CR` && VISIT="<TD `[ $RUN = PAR ] && echo $VERT`>$RUN</TD>"
+	LATA2DX=$STRICT && [ "`grep lata2dx:OK $CR`" != "" ] 	&& LATA2DX="<TD $VERT>OK</TD>"
+	MED=$STRICT 	&& [ "`grep MED=OK $CR`" != "" ] 	&& MED="<TD $VERT>OK</TD>"
+	BALTIK=$STRICT 	&& [ "`grep BALTIK=OK $CR`" != "" ] 	&& BALTIK="<TD $VERT>OK</TD>" 	&& [ "$machine_cible" = 1 ] && let portabilite_baltik=$portabilite_baltik+1
+	ATELIER=$STRICT && [ "`grep ATELIER=OK $CR`" != "" ] 	&& ATELIER="<TD $VERT>OK</TD>"	&& [ "$machine_cible" = 1 ] && let portabilite_atelier=$portabilite_atelier+1
+	# Si certains elements sont disabled au configure:
+	NOT="<TD $VERT>NOT</TD>"
+	[ "`grep 'Disabling MED' $CR`" != "" ] 		&& [ "`grep MED=KO $CR`" != "" ] 	&& MED=$NOT 	&& GMSH=$NOT	
+	[ "`grep 'Disabling PETSC' $CR`" != "" ] 	&& [ "`grep PETSC=KO $CR`" != "" ] 	&& PETSC=$NOT
+	[ "`grep 'Disabling VisIt' $CR`" != "" ] 	&& [ "`grep VisIt:OK $CR`" = "" ] 	&& VISIT=$NOT
+	# On compte le nombre de machines cibles selon le type de tests
+	if [ "$machine_cible" = 1 ]
+	then
+	   [ "`grep BALTIK= $CR`" != "" ]  && let nb_machine_baltik_cible=$nb_machine_baltik_cible+1
+	   [ "`grep ATELIER= $CR`" != "" ] && let nb_machine_atelier_cible=$nb_machine_atelier_cible+1
+	   [ "$taux" != "$vide" ]                && let nb_machine_cible=$nb_machine_cible+1
+	fi
+	FIN="`$TRUST_Awk -v rouge=$ROUGE 'BEGIN {date="<TD>CR vide</TD>"} /Debut de la mise a jour/ {date="<TD "rouge">Bloque?</TD>"} /Fin du script/ {date="<TD>"$(NF-1)"</TD>"} END {print date}' $CR`"	
+	tests_html=$TRUST_ROOT/../$MODULE/exec/.tests_$EXEC.html
+	[ $HOST != $TRUST_HOST_ADMIN ] && tests_html=$PERF
+	TAUX_XPREPRO=`cat $PERF | awk 'BEGIN {s=0;r=0} /Xprepro:/ {r++} /Xprepro:/ && /OK/ {s++} END {print s"/"r}'`
+	COULEUR=$ROUGE && [ "`echo $TAUX_XPREPRO | bc`" = 1 ] && COULEUR=$VERT
+	XPREPRO="<TD $COULEUR>$TAUX_XPREPRO</TD>"
+	if [ "$machine_cible" = 1 ] && [ "`grep Xprepro: $PERF`" != "" ]
+	then
+	   let nb_machine_xprepro_cible=$nb_machine_xprepro_cible+1
+	   pourcent=`cat $PERF | awk 'BEGIN {s=0;n=0} /Xprepro:/ {n++} /Xprepro:/ && /OK/ {s++} END {if (n>0) print s/n;else print s}'`
+	   portabilite_xprepro=`echo $ECHO_OPTS "scale=3\n$portabilite_xprepro+$pourcent" | bc -l`
+	fi
+	CR=`basename $CR`
+        echo "
+<TR>
+$TD<A HREF="$CR">$HOST</A>$FTD
+$TD$nb_procs$FTD
+$TD$ram$FTD
+$TD$cache$FTD
+$TD$freq$FTD
+$FIN
+$TD$os$FTD
+$TD$mod$FTD
+$TD$TRUST_CC$FTD
+$TD$MPI$FTD
+$TD$taille$FTD
+<TD $COL1><A HREF="compile_$NOM.log">$comp</A>$FTD
+$MED
+$PETSC
+$GMSH
+$VISIT
+$LATA2DX
+$BALTIK
+$ATELIER
+$XPREPRO
+<TD $COL2><A HREF="`basename $tests_html`">$taux</A>$FTD
+$TD$cpu$FTD
+</TR>" >> $NUIT2
+      echo "<BR><LI>"$os >> /tmp/os
+      echo "<BR><LI>"$TRUST_CC >> /tmp/CC
+      done
+      if [ ${#file} = 0 ]
+      then
+        # CR non vide et pas de logs -> le configure a echoue
+        TD_CR=$TD && [ $run = 1 ] && TD_CR="<TD $ROUGE>"
+        echo "
+<TR>
+$TD_CR<A HREF="$CR">$HOST</A>$FTD
+<TD>$vide</TD>
+<TD>$vide</TD>
+<TD>$vide</TD>
+<TD>$vide</TD>
+<TD>$vide</TD>
+<TD>$vide</TD>
+<TD>$vide</TD>
+<TD>$vide</TD>
+<TD>$vide</TD>
+<TD>$vide</TD>
+<TD>$vide</TD>
+<TD>$vide</TD>
+<TD>$vide</TD>
+<TD>$vide</TD>
+<TD>$vide</TD>
+<TD>$vide</TD>
+<TD>$vide</TD>
+<TD>$vide</TD>
+</TR>" >> $NUIT2
+     fi
+   done
+   sort -u /tmp/os > $TRUST_ROOT/NUIT/os
+   sort -u /tmp/CC > $TRUST_ROOT/NUIT/CC
+   rm -f /tmp/os /tmp/CC
+   echo "
+</TABLE>
+<TD></TD>
+</TR>
+</TABLE>" >> $NUIT2
+   ###############################################
+   # Calcul de la portabilite du code et affichage
+   ###############################################
+   [ "$nb_machine_xprepro_cible" != 0 ] && portabilite_xprepro=`echo $ECHO_OPTS "scale=3\n$portabilite_xprepro/$nb_machine_xprepro_cible" | bc -l`
+   [ "$nb_machine_atelier_cible" != 0 ] && portabilite_atelier=`echo $ECHO_OPTS "scale=3\n$portabilite_atelier/$nb_machine_atelier_cible" | bc -l`
+   [ "$nb_machine_baltik_cible"  != 0 ] && portabilite_baltik=` echo $ECHO_OPTS "scale=3\n$portabilite_baltik/$nb_machine_baltik_cible" | bc -l`
+   [ "$nb_machine_cible" != 0 ]         && portabilite=`echo $ECHO_OPTS "scale=3\n$portabilite/$nb_machine_cible" | bc -l`
+   
+   #limite=`echo $ECHO_OPTS "scale=3\n1-1/2/$nb_machine_cible" | bc -l`
+   limite=0.99
+   mes=`echo $portabilite | $TRUST_Awk -v limite=$limite '{if ($1>limite) print "Version portable qui peut etre livree si elle est stable."}'`
+
+   echo "$portabilite : Portabilite de $MODULE (>$limite). $mes<BR>" >> $NUIT2
+   echo "$portabilite_atelier : Compilation atelier de $MODULE<BR>" >> $NUIT2
+   echo "$portabilite_xprepro : Portabilite de Xprepro avec $MODULE<BR>" >> $NUIT2
+   echo "$portabilite_baltik : Portabilite de Baltik avec $MODULE<BR>" >> $NUIT2
+done
+
+echo "</CENTER>
+</BODY>
+</HTML>" >> $NUIT2
+#########################
+# Copie sur $TRUST_FTP #
+#########################
+[ "$1" != "" ] && exit
+. connect_ftp
+cd $TRUST_ROOT/NUIT
+mkdir_ftp $SECRET/NUIT
+cp_ftp $NUIT $SECRET/NUIT
+cd $TRUST_ROOT/exec
+cp_ftp .tests* $SECRET/NUIT
+cd $REP_NUIT
+cp_ftp compile_* PERF_* CR_* $SECRET/NUIT
+NUIT=ftp://$TRUST_FTP/$SECRET/NUIT/`basename $NUIT`
+cd $TRUST_ROOT 
+##############################
+# Fin boucle sur les modules #
+##############################
+[ ${#binaire} = 0 ] && $WEBBROWSER $NUIT

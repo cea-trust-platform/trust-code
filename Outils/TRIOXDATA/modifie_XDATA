@@ -1,0 +1,10 @@
+#!/bin/bash
+rm -rf prov2
+mkdir -p prov2/XDATA/XDATA_SRC
+cp $1  prov2/XDATA/XDATA_SRC
+cd prov2/XDATA/XDATA_SRC 
+tar zxvf $1
+mv xda*/* .
+rm `basename $1`
+cd ../../
+tar zcvf ../XDATA.tgz XDATA

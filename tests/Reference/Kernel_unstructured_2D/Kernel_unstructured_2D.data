@@ -1,0 +1,25 @@
+# PARALLEL NOT #
+
+dimension 2
+
+Domaine domain
+Lire_Fichier domain mesh.geom
+
+ecrire_fichier domain domain_0.geom
+
+Raffiner_Simplexes domain
+Raffiner_Simplexes domain
+ecrire_fichier domain domain_1.geom
+
+Domaine initial_domain
+Domaine final_domain
+
+Lire_Fichier initial_domain domain_0.geom
+Lire_Fichier final_domain   domain_1.geom
+
+postraiter_domaine {
+     domaines { initial_domain final_domain }
+     format lml 
+}
+
+FIN

@@ -1,0 +1,214 @@
+# Hydraulique 2D turbulent k-eps avec transport constituant et schema quick et bridage viscosite #
+# PARALLEL OK 8 #
+dimension 2
+Pb_Thermohydraulique_concentration_Turbulent pb1 
+Domaine dom1
+
+# BEGIN MESH #
+Mailler dom1
+{
+        Pave Entree 
+        {
+        Origine 0. 0.
+        Nombre_de_Noeuds 13 6
+        Longueurs 0.92 0.22
+        }
+        {
+        Bord Entree X = 0. 0. <= Y <= 0.22
+        Bord Wall1 Y = 0.22 0. <= X <= 0.92
+        Bord Wall2 Y = 0. 0. <= X <= 0.92
+        Bord Sortie X = 0.92 0. <= Y <= 0.22
+        }
+}
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom1
+{
+	Partitionneur metis { Nb_parts 2 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom1
+END SCATTER #
+
+VDF dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+        tinit 0.
+        tmax 0.25
+        dt_min 1.e-5
+        dt_max 1.
+        nb_pas_dt_max 100
+        dt_impr 1.e-5
+        dt_sauv 100
+        seuil_statio 1.e-8
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 3.7e-05
+	rho Champ_Uniforme 1 2
+        beta_co Champ_Uniforme 1 0.
+        lambda Champ_Uniforme 1 0.0262
+	Cp Champ_Uniforme 1 0.5
+        beta_th Champ_Uniforme 1 0.
+}
+Champ_Uniforme gravite
+Lire gravite 2 0. -9.81
+
+
+Constituant c1
+Lire c1
+{
+coefficient_diffusion Champ_Uniforme 1 0.02
+}
+Associate fluide gravite
+Associate pb1 dom1
+Associate pb1 sch
+Associate pb1 fluide
+Associate pb1 c1
+Discretize pb1 dis
+
+Lire pb1
+{
+        Navier_Stokes_Turbulent
+        {
+                solveur_pression GCP { 
+                        precond ssor { omega 1.500000 } 
+                        seuil 1.000000e-10
+                        impr 
+                }
+                convection { amont }
+                diffusion { }
+                conditions_initiales {
+                        vitesse Champ_Uniforme 2 0. 0.
+                        }
+                boundary_conditions {
+                
+                        Wall1 paroi_fixe
+                        Wall2 paroi_fixe
+                        Sortie frontiere_ouverte_pression_imposee
+								Champ_Front_Uniforme 1 0.
+                        Entree frontiere_ouverte_vitesse_imposee
+								Champ_Front_Uniforme 2  3. 0.
+                }
+
+         modele_turbulence K_Epsilon {
+                        Transport_K_Epsilon 
+                        {
+                                convection { amont }
+                                diffusion { }
+                                boundary_conditions {
+                                        Wall1 Paroi
+                                        Wall2 Paroi
+                                        Entree frontiere_ouverte_K_eps_impose
+												Champ_Front_Uniforme 2 10. 1.
+                                        Sortie frontiere_ouverte K_EPS_EXT
+												Champ_Front_Uniforme 2 10. 1.
+                                }
+                                conditions_initiales {
+                                        k_Eps Champ_Uniforme 2 10. 1.
+                                }
+                         }
+                         Correction_visco_turb_pour_controle_pas_de_temps_parametre 1
+                         turbulence_paroi loi_standard_hydr
+                } 
+
+         }
+        
+        Convection_Diffusion_Temperature_Turbulent {
+                diffusion { }
+                convection { quick }
+                boundary_conditions {
+                        Wall1 paroi_adiabatique
+                        Wall2 paroi_adiabatique
+                        Entree frontiere_ouverte_temperature_imposee
+							Champ_Front_Uniforme 1 1.
+                        Sortie frontiere_ouverte T_Ext Champ_Front_Uniforme 1 1.
+                }
+                Modele_Turbulence Prandtl { turbulence_paroi loi_standard_hydr_scalaire Prdt 0.9+0.1*(x>1) dt_impr_nusselt 1.e-4 }
+                conditions_initiales {
+                        temperature Champ_Uniforme 1 1.
+                }
+
+        }
+
+                
+        Convection_diffusion_Concentration_Turbulent {
+                diffusion { }
+                convection { quick }
+                boundary_conditions {
+                        Wall1 Paroi
+                        Wall2 Paroi
+                        Entree frontiere_ouverte_concentration_imposee
+							Champ_Front_Uniforme 1 0.
+                        Sortie frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+                } 
+              
+                Modele_Turbulence Schmidt { turbulence_paroi loi_standard_hydr_scalaire ScTurb 0.7 }
+                conditions_initiales {
+                        concentration Champ_Uniforme 1 0.
+                }
+                
+        }
+        Postraitement
+        {
+                Sondes
+                {
+                        sonde_pression pression periode 0.001 segment 12 0.13 0.11 0.13 0.22
+                        sonde_vitesse vitesse periode 0.001 segment 12 0.13 0.11 0.13 0.22
+			sonde_moy_conc_t1 Moyenne_concentration_som_dom1_t1 periode 0.001 points 1 0.2 0.1
+			sonde_moy_conc_t2 Moyenne_concentration_som_dom1_t2 periode 0.001 points 1 0.2 0.1
+                }
+		
+		Definition_champs
+		{
+		 Moyenne_Moyenne_concentration_natif_dom1 Moyenne
+		  	 {
+		    	  t_deb 0. t_fin 0.12
+  	            	  source Moyenne { nom_source Moyenne_natif t_deb 0. t_fin 0.011
+			       source refChamp { Pb_champ pb1 concentration } 
+			  }  
+		   	 }
+		Moyenne_concentration_som_dom1_t1 Interpolation {
+		  	localisation som
+			source Moyenne
+		  	 {
+		    	  t_deb 0. t_fin 0.12
+  	            	  source refChamp { Pb_champ pb1 concentration }   
+		   	 }
+		  }
+		  Moyenne_concentration_som_dom1_t2 Interpolation {
+		  	localisation som
+			source Moyenne
+		  	 {
+		    	  t_deb 0. t_fin 0.12
+  	            	  source refChamp { Pb_champ pb1 concentration }   
+		   	 }
+		  }	 
+		  
+		}
+		
+                Champs dt_post 0.05
+                {
+                        pression elem
+                        concentration elem
+                        corr_visco_turb elem
+			Moyenne_Moyenne_concentration_natif_dom1
+			Moyenne_concentration_som_dom1_t1
+			Moyenne_concentration_som_dom1_t2
+                }
+		
+        }
+
+}
+Solve pb1
+Fin

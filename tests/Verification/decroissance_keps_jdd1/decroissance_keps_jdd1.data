@@ -1,0 +1,113 @@
+# Hydraulique 2D turbulent K-Eps #
+# PARALLEL NOT #
+dimension 2
+Pb_Hydraulique_Turbulent pb
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Entree
+		{
+		Origine 0. 0.
+		Nombre_de_Noeuds 2 2
+		Longueurs 1. 1.
+		}
+		{
+		Bord sym X = 0. 0. <= Y <= 1.
+		Bord sym X = 1. 0. <= Y <= 1.
+		Bord sym Y = 0. 0. <= X <= 1.
+		Bord sym Y = 1. 0. <= X <= 1.
+		} 
+}
+
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 1
+	Nom_Zones DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+/* schema_Euler_explicite sch */
+Runge_Kutta_ordre_3 sch
+Read sch
+{
+	tinit 0
+	nb_pas_dt_max 3
+	tmax 32.
+	dt_min 0.01
+	dt_max 0.01
+	dt_impr 0.1
+	dt_sauv 1000.
+	seuil_statio 1.e-8
+}
+Fluide_Incompressible fluide
+Read fluide
+{
+	mu Champ_Uniforme 1 3.7e-05
+	rho Champ_Uniforme 1 2
+}
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+Discretize pb dis
+Read pb
+{
+	Navier_Stokes_turbulent
+	{
+		solveur_pression  gcp { precond ssor { omega 1.6 } seuil 1e15 }
+		convection { negligeable }
+		diffusion { negligeable }
+		conditions_initiales {
+			vitesse Champ_Uniforme 2 0. 0.
+			}
+		boundary_conditions {
+			 sym symetrie
+		}
+		modele_turbulence K_Epsilon {
+       			Transport_K_Epsilon 
+			{
+			   	convection { negligeable }
+				diffusion { negligeable }
+				sources { Source_Transport_K_Eps { C1_eps 1.44 C2_eps 1.92 } }
+				boundary_conditions {
+				sym symetrie
+			   	}
+			   	conditions_initiales {
+			      		k_Eps Champ_fonc_xyz dom  2 1 1./(1.92-1.)
+			  	}
+			 }
+			 Prandtl_K 1
+			 Prandtl_Eps 1.3
+			 turbulence_paroi loi_standard_hydr dt_impr_ustar 10. eps_min 1.e-15
+		} 
+	}
+Postraitement 
+{
+	Sondes 
+	{
+		sonde_vitesse vitesse periode 0.01 points 1 0.5 0.5
+		sonde_k k periode 0.01 points 1 0.5 0.5
+		sonde_eps eps periode 0.01 points 1 0.5 0.5
+		sonde_visc viscosite_turbulente periode 0.01 points 1 0.5 0.5
+	}
+	Champs dt_post 200.
+	{
+			vitesse elem
+			k elem
+			eps som
+			viscosite_turbulente elem
+	}
+}
+}
+Solve pb
+End
+End

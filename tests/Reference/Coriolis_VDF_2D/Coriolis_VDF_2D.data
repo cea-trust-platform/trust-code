@@ -1,0 +1,107 @@
+# Test concernant la force de Coriolis en 2D VDF #
+# PARALLEL OK 8 #
+dimension 2
+Domaine dom
+Pb_Hydraulique pb
+
+# BEGIN MESH #
+Mailler dom
+{
+        Pave Cavite 
+                {
+                Origine 0. 0.
+                Nombre_de_Noeuds 41 41
+                Longueurs 10. 10.
+                }
+                {
+                Bord Gauche  X = 0.       0. <= Y <= 10.
+                Bord Haut    Y = 10.	  0. <= X <= 10. 
+                Bord Bas    Y = 0.       0. <= X <= 10.
+                Bord Droite  X = 10.  	  0. <= Y <= 10.
+                }
+}
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 1
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+Runge_Kutta_ordre_3 sch
+Lire sch
+{
+        tinit 0.
+        tmax 10. 
+        dt_min 5.e-7
+        dt_max 5.e-2
+        dt_impr 1.e-5 
+        dt_sauv 100
+        seuil_statio 1.e-6
+        diffusion_implicite 0
+}
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 2
+	rho Champ_Uniforme 1 2
+}
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+Discretize pb dis 
+Lire pb
+{
+        Navier_Stokes_standard
+        {
+               solveur_pression Gcp { precond ssor 
+					{ omega 1.5 }
+                                      seuil 1.e-8
+                                      impr
+                                    }   	   
+                convection { 
+                           negligeable
+                           }
+                diffusion { negligeable }
+		sources { Coriolis { omega 2 5. } }
+                conditions_initiales { 
+                        vitesse champ_uniforme 2 10. 0.
+                        }
+                boundary_conditions {
+			Bas Frontiere_ouverte_vitesse_imposee champ_front_uniforme 2 10. 0.
+			Haut Frontiere_ouverte_vitesse_imposee champ_front_uniforme 2 10. 0.
+			Gauche Frontiere_ouverte_vitesse_imposee champ_front_uniforme 2 10. 0.
+			Droite Frontiere_ouverte_vitesse_imposee champ_front_uniforme 2 10. 0.
+
+                }
+        }
+        Postraitement
+        {
+                Sondes
+                {
+                        sonde_vitx     vitesse          periode 0.0001  segment 41  0. 3.1415927   6.2831853  3.1415927  
+                        sonde_vity     vitesse          periode 0.0001  segment 41  3.1415927  0.  3.1415927  6.2831853  
+                        sonde_prex     pression         periode 0.0001  segment 41  0. 3.1415927   6.2831853  3.1415927  
+                        sonde_prey     pression         periode 0.0001  segment 41  0.  0.         6.2831853  6.2831853  
+                }
+                Champs dt_post 0.5
+                {
+                    vitesse elem
+                    vitesse som
+                    pression elem
+                    pression som
+               }
+                
+                
+        }
+}
+Solve pb
+Fin

@@ -1,0 +1,13 @@
+#!/bin/bash
+n=100
+while [ $n -gt "-1" ]
+do
+   echo $ECHO_OPTS $n > "ordre"$n".IHM"
+   echo $ECHO_OPTS "I"$n > "ordreI"$n".IHM"
+   echo $ECHO_OPTS "i"$n > "ordrei"$n".IHM"
+   echo $ECHO_OPTS "&"$n > "ordreet"$n".IHM"
+   echo $ECHO_OPTS "+"$n > "ordreplus"$n".IHM"
+   echo $ECHO_OPTS "-"$n > "ordre-"$n".IHM"
+   let n=$n-1
+   
+done

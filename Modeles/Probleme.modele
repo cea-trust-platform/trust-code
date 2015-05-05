@@ -1,0 +1,13 @@
+classe Probleme
+Donner un nom au nouveau probleme:
+NOM_DE_LA_CLASSE
+Donner le type d'equation de ce probleme:
+TYPE_EQUATION
+Donner un nom a cette equation:
+NOM_DE_L_EQUATION
+Donner un nom aux fichiers (sans suffixe):
+NOM_DU_FICHIER
+Entrer le nom du module de ce fichier:
+NOM_DU_MODULE
+Entrer le nom de la librairie:
+NOM_DE_LA_LIBRAIRIE

@@ -1,0 +1,6 @@
+Type : menu
+Acces : Fichiers/Enregistrer
+
+Description :
+	Cette commande permet de sauvegarder sur disque le cas en cours, si une modification a ete apportee.
+	Avant la sauvegarde, une verification (et eventuellement une resolution des parametres non determines) est effectuee, afin que les cas sauvegardes ne soient que des cas valides.

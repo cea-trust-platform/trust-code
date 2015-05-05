@@ -1,0 +1,90 @@
+# Hydraulique 2D Axi #
+# PARALLEL NOT #
+dimension 2
+Axi
+Pb_Hydraulique pb
+Domaine dom
+# BEGIN MESH #
+Read_file Hyd_Axi.geo ;
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 1
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+Schema_Euler_explicite sch
+Fluide_Incompressible eau
+
+Lire sch
+{
+	tinit 0
+	tmax 50. 
+	dt_min 0.1
+	dt_max 0.1
+	dt_impr 0.1
+	dt_sauv 100
+	seuil_statio 1.e-8
+	facsec 1.
+}
+Lire eau
+{
+	mu Champ_Uniforme 1 0.037
+	rho Champ_Uniforme 1 2
+}
+Associate pb dom
+Associate pb sch
+Associate pb eau
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.500000 } 
+			seuil 1.000000e-08 
+			impr 
+		}
+		convection { amont }
+		diffusion {  }
+		conditions_initiales {
+			vitesse Champ_Uniforme 2 0. 0.
+			}
+		boundary_conditions {
+			PetitArc Paroi_fixe 
+			GrandArc Paroi_defilante Champ_Front_Uniforme 2 0. 1.
+		}
+	}
+
+	Postraitement
+	{
+		Sondes
+		{
+			sonde_pression pression periode 1 points 1 1.45 0.
+			sonde_vitesse vitesse periode 1 points 3 1.45 1 1.45 3 1.45 5
+		}
+
+		Champs dt_post 5
+		{
+			vitesse elem
+			vitesse som
+			pression elem
+			pression som
+		}
+	}
+}
+
+Solve pb
+Fin
+Fin

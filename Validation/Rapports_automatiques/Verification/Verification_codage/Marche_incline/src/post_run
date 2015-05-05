@@ -1,0 +1,8 @@
+#!/bin/bash
+[ ! -f Marche_incline.lata ] && exit
+sh ../Rotate_lata Marche_y.lata Marche.lata -90 | grep "Maximal relative" | awk '{print $NF}' >erreur
+sh ../Rotate_lata Marche_incline.lata Marche.lata -45 |   grep "Maximal relative"| awk '{print $NF}'   >>erreur
+
+get_execution_time Marche > TU
+get_execution_time Marche_y >> TU
+get_execution_time Marche_incline >> TU

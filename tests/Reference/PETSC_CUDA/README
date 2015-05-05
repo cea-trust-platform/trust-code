@@ -1,0 +1,116 @@
+-curie/airain config differente (plus de CPU par GPU sur airain que sur curie) -mais performance sur 1CPU+1GPU identiques...
+-Pas de gain releve encore en mappant CPU et GPU sur curie avec "triou -c 4"
+-Test de plusieurs preconditionneurs CUSP, plus efficaces que diag/jacobi, mais au final plus lent sur 1 CPU
+
+
+Test on curie (30/07/14):
+
+Running test case on cpu with 1 core (gcp { precond diag { } seuil 1.e-6 impr }): cpu_PETSC_CUDA -log_summary -ksp_view -help ... OK
+Running test case on gpu with 1 core (gcp { precond diag { } seuil 1.e-6 impr }): gpu_PETSC_CUDA -log_summary -ksp_view -help ... OK
+Number of differences : 0
+Maximal relative error encountered : 7.71290e-08
+===============================
+TRUST test case (    49221 cells):
+===============================
+                        CPU  vs GPU
+         ------------------------------------
+		        Time[s] Time[s] Ratio 
+        KspSolve        3.554   1.256   *2.8
+         Routine %Time	MFlop/s	MFlop/s	Ratio 
+   MatCUSPCopyTo 0% 	0 	0 	*0.0
+         MatMult 77% 	996 	4597 	*4.6
+         MatView 0% 	0 	0 	*0.0
+         VecAXPY 5% 	2335 	4518 	*1.9
+         VecAYPX 4% 	1731 	4392 	*2.5
+ VecCUSPCopyFrom 0% 	0 	0 	*0.0
+   VecCUSPCopyTo 0% 	0 	0 	*0.0
+         VecCopy 0% 	0 	0 	*0.0
+         VecNorm 2% 	3139 	1859 	*0.6
+VecPointwiseMult 4% 	763 	2112 	*2.8
+          VecSet 0% 	0 	0 	*0.0
+         VecTDot 5% 	2709 	1697 	*0.6
+Checking some test results...End.
+Running parallel calculation on 2 cpus...End.
+Running test case on cpu with 2 core (gcp { precond diag { } seuil 1.e-6 impr }): cpu_PAR_PETSC_CUDA -log_summary -ksp_view -help ... OK
+Running test case on gpu with 2 core (gcp { precond diag { } seuil 1.e-6 impr }): gpu_PAR_PETSC_CUDA -log_summary -ksp_view -help ... OK
+Number of differences : 0
+Maximal relative error encountered : 7.71290e-08
+===============================
+TRUST test case (    49221 cells):
+===============================
+                        CPU  vs GPU
+         ------------------------------------
+		        Time[s] Time[s] Ratio 
+        KspSolve        2.104   1.470   *1.4
+         Routine %Time	MFlop/s	MFlop/s	Ratio 
+   MatCUSPCopyTo 1% 	0 	0 	*0.0
+         MatMult 74% 	1705 	3926 	*2.3
+         MatView 1% 	0 	0 	*0.0
+         VecAXPY 5% 	4149 	4982 	*1.2
+         VecAYPX 3% 	3448 	3288 	*1.0
+ VecCUSPCopyFrom 0% 	0 	0 	*0.0
+   VecCUSPCopyTo 3% 	0 	0 	*0.0
+         VecCopy 0% 	0 	0 	*0.0
+ VecCopyFromSome 30% 	0 	0 	*0.0
+         VecNorm 2% 	4997 	1410 	*0.3
+VecPointwiseMult 4% 	1364 	2132 	*1.6
+ VecScatterBegin 1% 	0 	0 	*0.0
+   VecScatterEnd 2% 	0 	0 	*0.0
+          VecSet 0% 	0 	0 	*0.0
+         VecTDot 6% 	2953 	1412 	*0.5
+
+
+Test on airain (30/07/14):
+Running test case on cpu with 1 core (gcp { precond diag { } seuil 1.e-6 impr }): cpu_PETSC_CUDA -log_summary -ksp_view -help ... OK
+Running test case on gpu with 1 core (gcp { precond diag { } seuil 1.e-6 impr }): gpu_PETSC_CUDA -log_summary -ksp_view -help ... OK
+Number of differences : 0
+Maximal relative error encountered : 3.85645e-08
+===============================
+TRUST test case (    49221 cells):
+===============================
+                        CPU  vs GPU
+         ------------------------------------
+                        Time[s] Time[s] Ratio 
+        KspSolve        3.786   1.391   *2.7
+         Routine %Time  MFlop/s MFlop/s Ratio 
+   MatCUSPCopyTo 1%     0       0       *0.0
+         MatMult 78%    944     4657    *4.9
+         MatView 0%     0       0       *0.0
+         VecAXPY 6%     2129    4120    *1.9
+         VecAYPX 4%     1563    2812    *1.8
+ VecCUSPCopyFrom 0%     0       0       *0.0
+   VecCUSPCopyTo 0%     0       0       *0.0
+         VecCopy 0%     0       0       *0.0
+         VecNorm 2%     3626    1453    *0.4
+VecPointwiseMult 4%     732     1785    *2.4
+          VecSet 0%     0       0       *0.0
+         VecTDot 5%     2495    1371    *0.5
+Checking some test results...End.
+Running parallel calculation on 2 cpus...End.
+Running test case on cpu with 2 core (gcp { precond diag { } seuil 1.e-6 impr }): cpu_PAR_PETSC_CUDA -log_summary -ksp_view -help ... OK
+Running test case on gpu with 2 core (gcp { precond diag { } seuil 1.e-6 impr }): gpu_PAR_PETSC_CUDA -log_summary -ksp_view -help ... OK
+Number of differences : 0
+Maximal relative error encountered : 7.71290e-08
+===============================
+TRUST test case (    49221 cells):
+===============================
+                        CPU  vs GPU
+         ------------------------------------
+                        Time[s] Time[s] Ratio 
+        KspSolve        2.259   1.623   *1.4
+         Routine %Time  MFlop/s MFlop/s Ratio 
+   MatCUSPCopyTo 1%     0       0       *0.0
+         MatMult 75%    1591    4107    *2.6
+         MatView 1%     0       0       *0.0
+         VecAXPY 5%     4190    4428    *1.1
+         VecAYPX 3%     3108    2234    *0.7
+ VecCUSPCopyFrom 0%     0       0       *0.0
+   VecCUSPCopyTo 2%     0       0       *0.0
+         VecCopy 0%     0       0       *0.0
+ VecCopyFromSome 22%    0       0       *0.0
+         VecNorm 2%     5973    1142    *0.2
+VecPointwiseMult 3%     1414    1385    *1.0
+ VecScatterBegin 2%     0       0       *0.0
+   VecScatterEnd 2%     0       0       *0.0
+          VecSet 0%     0       0       *0.0
+         VecTDot 6%     2880    1172    *0.4

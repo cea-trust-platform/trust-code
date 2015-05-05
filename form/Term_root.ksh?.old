@@ -1,0 +1,10 @@
+#!/bin/bash
+cd $TRUST_ROOT
+# Bizarre sur une Sun, xterm depuis netscape ne marche pas
+# a cause du test sur MA_VUE...
+if [ ${MA_VUE:=vide} != "vide" ]
+then
+   $Dtterm $DroitCentre_geometrie 60x25-0+210 -title "Vue: $MA_VUE"
+else
+   $Dtterm $DroitCentre_geometrie -title "Terminal TRUST" &
+fi

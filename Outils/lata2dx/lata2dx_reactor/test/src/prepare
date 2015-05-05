@@ -1,0 +1,75 @@
+echo "Testing lata2dx_reactor..."
+# Decompression des donnees
+tar xfz data.tgz
+# Copie des references
+mv flux.txt reference_flux.txt
+mv reactors_data.txt reference_reactors_data.txt
+# Compilation si necessaire
+ROOT=$TRUST_ROOT/Outils/lata2dx/lata2dx_reactor
+lata2dx_reactor=$ROOT/build/lata2dx_reactor
+([ ! -f $lata2dx_reactor ] && echo "$lata2dx_reactor non compile!" && exit -1)
+# Specification du temps necessaire
+$lata2dx_reactor post.lata timestep=2
+[ $? != 0 ] && echo "Erreur dans execution de lata2dx_reactor !" && exit -1
+diff flux.txt reference_flux.txt
+[ $? != 0 ] && echo "Ecarts dans flux.txt !!" && exit -1
+# Test moins strict car ecarts sur le dernier chiffre sur x86_64:
+#diff reactors_data.txt reference_reactors_data.txt
+grep -v Values reactors_data.txt > tmp1
+grep -v Values reference_reactors_data.txt > tmp2
+diff tmp1 tmp2
+[ $? != 0 ] && echo "Ecarts dans reactors_data.txt !!" && exit -1
+if [ ! -f new_post.lata ]
+then
+   echo "new_post.lata inexistant!"
+   exit -1
+fi
+rm -f tmp1 tmp2
+# On deplace dans first_test
+mkdir -p first_test
+mv new_post* first_test/.
+
+# 2eme cas test
+tar xfz data2.tgz
+# Specification du temps necessaire
+$lata2dx_reactor post.lata timestep=2
+[ $? != 0 ] && echo "Erreur dans execution de lata2dx_reactor !" && exit -1
+diff flux.txt reference_flux.txt
+[ $? != 0 ] && echo "Ecarts dans flux.txt !!" && exit -1
+if [ ! -f new_post.lata ]
+then
+   echo "new_post.lata inexistant!"
+   exit -1
+fi
+mkdir -p second_test
+mv new_post* second_test/.
+
+# 3eme cas test
+tar xfz data3.tgz
+# Specification du temps necessaire
+$lata2dx_reactor post.lata timestep=2
+[ $? != 0 ] && echo "Erreur dans execution de lata2dx_reactor !" && exit -1
+if [ ! -f new_post.lata ]
+then
+   echo "new_post.lata inexistant!"
+   exit -1
+fi
+mkdir -p third_test
+mv new_post* third_test/.
+
+# 4eme cas test
+tar xfz data4.tgz
+# Specification du temps necessaire
+$lata2dx_reactor post.lata timestep=2
+[ $? != 0 ] && echo "Erreur dans execution de lata2dx_reactor !" && exit -1
+if [ ! -f new_post.lata ]
+then
+   echo "new_post.lata inexistant!"
+   exit -1
+fi
+mkdir -p fourth_test
+mv new_post* fourth_test/.
+# Clean
+rm -r -f fourth_test third_test second_test first_test
+rm -f *.txt *.lata*
+exit 0

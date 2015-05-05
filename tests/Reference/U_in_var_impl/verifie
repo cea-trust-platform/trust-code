@@ -1,0 +1,7 @@
+cas=U_in_var_impl
+if [ ! -f PAR_$cas.lml ]
+then
+   compare_lata $cas"_ICoCo".lml $cas.lml 1>compare_lata.log 2>&1
+else
+   compare_lata PAR_$cas"_ICoCo".lml PAR_$cas.lml 1>compare_lata.log 2>&1
+fi

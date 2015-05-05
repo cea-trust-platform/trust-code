@@ -1,0 +1,29 @@
+Type : Manuel
+
+DESCRIPTION DES FICHIERS DE DONNÉES
+
+FICHIER .facesrayo
+------------------
+
+	Ce fichier, texte, contient les noms et les surfaces des faces rayonnantes du systeme etudie. Il a la structure suivante :
+
+nombre_de_faces_rayonnantes
+nom_face1 surface_face1 emissivite_face1
+nom_face2 surface_face2 emissivite_face2
+...
+
+Il peut soit etre cree apres avoir ouvert un cas en lisant une geometrie de TRUST (fichier .geo ou .data), soit etre ecrit directement par l'utilisateur (dans un editeur classique, vi ou Emacs par exemple), auquel cas, il sera possible de rouvrir le cas en lisant ce fichier.
+
+FICHIER .factforme
+------------------
+
+	Ce fichier est le resultat : il contient la matrice des facteurs de forme generee par l'interface. Il a la structure suivante :
+
+nombre_de_faces_rayonnantes
+ligne_des_coefficients_face1
+ligne_des_coefficients_face2
+...
+
+	Si ce fichier n'existe pas lors du chargement du cas, la matrice est initialisee vide (0 et xxx), sinon, les coefficients sont lus dans ce fichier.
+
+Note : dans ce fichier, "nombre_de_faces_rayonnantes" est present en debut par securite.

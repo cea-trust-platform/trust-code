@@ -1,0 +1,7 @@
+#!/bin/bash
+cas=`basename $1 .data`
+cp org_${cas}.data ${cas}.data 
+ksh `dirname $0`/modif ${cas}
+$exec QC_${cas} 1>QC.out 2>&1
+[ ! -f QC_$cas.lml ] && [ -f $cas.lml ] && mv $cas.lml  QC_$cas.lml
+compare_lata QC_$cas.lml mod_$cas.lml

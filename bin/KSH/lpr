@@ -1,0 +1,18 @@
+#!/bin/bash
+# lpr -Pprinter file 
+# lpr -P printer file
+if [ $# = 3 ]
+then
+   file=$3
+   printer=$2
+elif [ $# = 2 ]
+then
+   file=$2
+   printer=${1#-P}
+fi
+if [ $TRUST_ARCH = linux ]
+then
+   /usr/bin/lpr -P$printer $file
+else
+   lp -d$printer $file
+fi

@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# recuperation des packages
+
+for file in `ls $TRUST_ROOT/externalpackages/tcl_tk/*`
+do
+  ln -sf $file .
+done
+
+# Installation of Tcl/Tk
+if [ ! -f /usr/include/X11/Xlib.h ]
+then
+   echo "X includes not found." 
+   echo "Install it. May be with:"
+   echo "sudo apt-get install libx11-dev"
+   exit -1
+fi
+packages="tcl$2-src.tar.gz tk$2-src.tar.gz"
+for package in $packages
+do
+   echo "Trying to install ${package%-src.tar.gz}..."
+   gunzip -c $package > ${package%.gz}
+   tar xf ${package%.gz}
+   cd ${package%-src.tar.gz}/unix
+   export CC=""
+   ./configure --exec-prefix=$1/exec/tcl_tk --prefix=$1/exec/tcl_tk;
+   $TRUST_MAKE || exit -1
+   make install || exit -1
+   cd -
+   rm -f ${package%.gz}
+done
+# On efface les sources
+for package in $packages
+do
+   rm -r -f ${package%-src.tar.gz}
+done
+cd $1/exec/tcl_tk/bin
+rm -f wish
+ln -s -f `\ls wish*` wish
+cd - 
+
+	
+
+

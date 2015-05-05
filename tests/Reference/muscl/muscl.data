@@ -1,0 +1,139 @@
+# Thermohydraulique 2D VEF schema muscl #
+# PARALLEL OK 8 #
+# test du schema muscl #
+# test de l'interprete tourbillon #
+# test de l'interprete chapeau #
+dimension 2
+Pb_Thermohydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Read_file dom muscl.geom
+VerifierCoin dom { }
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur metis { Nb_parts 2 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0.
+	nb_pas_dt_max 5
+	tmax 10.
+	dt_min 0.0001
+	dt_max 1.
+	dt_impr 0.01
+	dt_sauv 100
+	seuil_statio 1.e-8
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 1.85e-5
+	rho Champ_Uniforme 1 1.17
+	lambda Champ_Uniforme 1 0.0262 
+	Cp Champ_Uniforme 1 1006
+	beta_th Champ_Uniforme 1 0
+}
+
+Champ_Uniforme gravite
+Lire gravite 2 0 -9.81
+
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		equation_non_resolue 1
+		solveur_pression petsc cholesky { }
+		convection { muscl }
+		diffusion { }
+		conditions_initiales {
+			vitesse champ_fonc_xyz dom 2 y -x
+			}
+		boundary_conditions {
+			HAUT paroi_fixe
+			BAS paroi_fixe
+			OUEST paroi_fixe
+			EST paroi_fixe
+		}
+	}
+	Convection_Diffusion_Temperature
+	{
+		diffusion { negligeable }
+		convection { generic muscl vanleer 2 }
+		boundary_conditions 
+		{
+			HAUT paroi_adiabatique
+			BAS paroi_adiabatique
+ 			OUEST paroi_adiabatique
+			EST paroi_adiabatique
+		}
+		conditions_initiales {
+			temperature champ_fonc_xyz dom 1 cos(sqrt(x^2+(y+0.6)^2)/0.25)*(sqrt(x^2+(y+0.6)^2)<0.25)
+
+		}
+	}
+
+	Postraitement
+	{
+		Sondes
+		{
+			sonde_vit vitesse periode 0.01 point 1 0. -0.6
+			sonde_tempH temperature periode 0.01 segment 11 -1.5 -0.6 1.5 -0.6
+			sonde_tempV temperature periode 0.01 segment 11 0 -1.5 0. 1.5
+			sonde_temp temperature periode 0.1 plan 21 21 -1.5 -1.5 1.5 -1.5 -1.5 1.5
+			sonde_t temperature periode 0.01 point 1 0. -0.6
+		}
+		
+		Definition_champs 
+		{
+		  gradient_pression_elem_dom  Interpolation {
+		 			localisation elem
+		 			source Gradient {
+		 		         source refChamp { Pb_champ pb pression } }
+		  
+		 }
+		  gradient_temperature_elem_dom  Interpolation {
+		 			localisation elem
+		 			source Gradient {
+		 		         source refChamp { Pb_champ pb temperature } }
+		  
+		 }
+		}
+		
+		Champs dt_post 6.
+		{
+			pression elem
+			vitesse som
+			temperature som
+			volume_maille elem
+			gradient_pression_elem_dom
+			gradient_temperature_elem_dom
+		}
+	}
+}
+
+Solve pb
+Fin
+Fin

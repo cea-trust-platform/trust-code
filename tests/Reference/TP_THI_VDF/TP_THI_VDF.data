@@ -1,0 +1,115 @@
+# Boite 3D avec periodicite dans les trois directions : suite du calcul #
+# PARALLEL OK #
+dimension 3
+
+Pb_hydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Entree 
+	{
+	Origine 0. 0. 0.
+	Nombre_de_Noeuds 9 9 9 
+	Longueurs 6.283185307 6.283185307 6.283185307
+	}
+	{
+	Bord periox X = 0. 0. <= Y <= 6.283185307 0. <= Z <= 6.283185307 
+	Bord periox X = 6.283185307 0. <= Y <= 6.283185307 0. <= Z <= 6.283185307 
+	Bord perioy Y = 0. 0. <= X <= 6.283185307 0. <= Z <= 6.283185307 
+	Bord perioy Y = 6.283185307 0. <= X <= 6.283185307 0. <= Z <= 6.283185307 
+	Bord perioz Z = 0. 0. <= X <= 6.283185307 0. <= Y <= 6.283185307 
+	Bord perioz Z = 6.283185307 0. <= X <= 6.283185307 0. <= Y <= 6.283185307 	
+
+	}
+}
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 2 2 2 }
+	Larg_joint 1
+	Nom_Zones DOM
+	Periodique 3 periox perioy perioz
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+Runge_Kutta_ordre_3 sch
+Lire sch
+{
+	tinit 0.
+	tmax 2.0
+	dt_min 0.00001
+	dt_max 0.1
+	dt_impr 0.01
+	dt_sauv 100
+	seuil_statio 1.e-8
+	nb_pas_dt_max 5
+}
+
+Fluide_Incompressible air
+Lire air
+{
+	mu Champ_Uniforme 1 2e-20
+	rho Champ_Uniforme 1 2
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb air
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+
+	{
+		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-8 impr }
+		convection { Centre }
+		diffusion {  }
+		conditions_initiales {                 
+				vitesse Champ_som_lu_VDF dom 3 1e-8 ./champ_k2_8
+			}
+		boundary_conditions {
+periox periodique 
+perioy periodique 
+perioz periodique 
+			
+		}
+					
+		Traitement_particulier { THI { init_Ec 1 val_Ec 1.5 facon_init 0
+						calc_spectre 1
+						} }		
+
+        }
+	Postraitement
+	{
+		Sondes
+		{
+			sonde_pression pression periode 0.001 points 1 3.14 3.14 3.14
+		        sonde_pressionprx pression periode 0.001 Segment 20   0. 3.375 3.375    6.28 3.375 3.375
+		        sonde_vitesseprx vitesse periode 0.001 Segment 20     0. 3.375 3.375    6.28 3.375 3.375
+		}
+		Champs dt_post 5.
+		{
+			pression som			
+			vitesse som	
+			vorticite som		
+			pression elem			
+			vitesse elem	
+			vorticite elem		
+		}
+	}
+}
+
+Solve pb
+Fin
+

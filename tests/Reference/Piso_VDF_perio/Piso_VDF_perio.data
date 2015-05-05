@@ -1,0 +1,106 @@
+# ThermoHydraulique 3D : canal quasi compressible gaz parfait VDF turbulent #
+dimension 3
+Pb_hydraulique pb
+
+Domaine dom
+Mailler dom
+{
+	Pave Cavite
+	{
+	Origine 0. 0. 0.
+	Nombre_de_Noeuds 5 5 5
+	Longueurs  1 1 1
+	}
+	{
+	Bord perioX   	X = 0.          0. <= Y <= 1     	0. <= Z <= 1
+	Bord perioX   	X = 1    	0. <= Y <= 1     	0. <= Z <= 1
+	Bord perioZ   	Z = 0.          0. <= X <= 1     	0. <= Y <= 1
+	Bord perioZ   	Z = 1    	0. <= X <= 1    	0. <= Y <= 1
+	Bord bas      	Y = 0.          0. <= X <= 1     	0. <= Z <= 1
+	Bord haut    	Y = 1    	0. <= X <= 1     	0. <= Z <= 1
+	}
+}
+VDF dis
+
+Schema_Euler_implicite implicite
+Lire implicite
+{
+        tinit 0.
+        tmax 50.
+        dt_min 1.e-11
+        dt_max 5.
+        dt_impr 1.e-7
+        dt_sauv 0.05
+        seuil_statio 1.e-5
+	facsec 1
+	facsec_max 20
+	Solveur 
+        Piso
+	{
+	     seuil_convergence_solveur 1.e-6
+	}
+}
+
+Schema_Euler_explicite explicite
+Lire explicite
+{
+        tinit 0.
+        tmax 50.
+        dt_min 1.e-11
+        dt_max 5.
+        dt_impr 1.e-7
+        dt_sauv 0.05
+        seuil_statio 1.e-5
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+        mu Champ_uniforme 1 2
+	rho champ_uniforme 1 0.5        
+}
+
+
+Associate pb dom
+Associate pb implicite
+Associate pb fluide
+Discretize pb dis
+
+Lire pb
+{
+        Navier_Stokes_standard
+        {
+                solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-9 impr }        
+                convection { amont }
+                diffusion { }
+                Sources 
+		{ 
+			Canal_perio { bord perioX } 
+		}	
+		conditions_initiales 
+		{
+                        vitesse champ_uniforme 3 1 0 0
+                }
+                boundary_conditions 
+		{
+                        perioX 		periodique 
+			perioZ		periodique 
+			haut     	paroi_fixe
+			bas      	paroi_fixe
+                }
+	}
+	Postraitement
+	{
+		Sondes
+		{
+			vitesse vitesse periode 1.e-11 point 1 0.5 0.5 0.5
+			pression pression periode 1.e-11 point 1 0.5 0.5 0.5
+		}
+		champs dt_post 10
+		{
+			vitesse
+		}
+	}
+}
+Solve pb
+Fin

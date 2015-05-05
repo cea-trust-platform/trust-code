@@ -1,0 +1,36 @@
+TAILLES 3 51 51 51 
+RIEN 0 maillage
+MAIL_X_REG 4 xomin xomax nx-2 2 dx
+MAIL_Y_REG 4 yomin yomax ny-2 2 dy
+MAIL_Z_REG 4 zomin zomax nz-2 2 dz
+RIEN 0 remplissage du domaine
+PARALAX 7 xomin xomax yomin yomax zomin zomax -1000 paroi
+RIEN 0 definition des bords du doamine
+PARALAX 7 xomin xomax yomin/e yomax/e zomin/e zomax/e 1000 X
+PARALAX 7 xomin/e xomax/e yomin yomax zomin/e zomax/e 1000 Y
+PARALAX 7 xomin/e xomax/e yomin/e yomax/e zomin zomax 1000 Z
+PARALAX 7 xomin/e*0.75 xomax/e*0.75 yomin/e*0.75 yomax/e*0.75 zomin/e*0.75 zomax/e*0.75 -2000 entree
+PARALAX 7 xomin-eps xomin yomin-eps yomax+eps zomin-eps zomax+eps -3000 gauche
+PARALAX 7 xomax xomax+eps yomin-eps yomax+eps zomin-eps zomax+eps -4000 droit
+PARALAX 7 xomin-eps xomax+eps yomax yomax+eps zomin-eps zomax+eps -5000 haut
+PARALAX 7 xomin-eps xomax+eps yomin-eps yomin zomin-eps zomax+eps -6000 bas
+COUPE2D 3 0. 3 -9000 coupe_2D
+file maillage
+	real xomin,xomax,yomin,yomax,zomin,zomax,eps,e
+	xomin=-1.2
+	xomax=1.2
+	yomin=-1.2
+	yomax=1.2
+	zomin=-1.2
+	zomax=1.2
+	eps=0.01
+	e=5.
+
+        XM(1)=xomin-eps
+        XM(nx)=xomax+eps
+        YM(1)=yomin-eps
+        YM(ny)=yomax+eps
+        ZM(1)=zomin-eps
+        ZM(nz)=zomax+eps
+
+

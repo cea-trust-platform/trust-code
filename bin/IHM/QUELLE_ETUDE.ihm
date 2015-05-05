@@ -1,0 +1,21 @@
+#!/bin/bash
+cat $HOME/.ETUDE_TRUST
+#
+# Portage :
+# Dec	iaaaaghaa.ksh   4 lettres + ?? + .nom du suffixe pcs 6368
+# Sun	kcaa06005.????? 4 lettres + PID browser + .nom du suffixe
+# Hp    kcaa06005.????? Idem
+# Ibm	??
+# Sgi	??
+#
+#MO347ECC220025AB1.ksh hp netscape
+#MO347ECC3F0035AB1.ksh
+#MO347ECC530045AB1.ksh 23217
+
+#MO347ECDB10001955.ksh dec
+#MO347ECDC30011955.ksh
+#MO347ECDCE0021955.ksh 6485
+
+#MO347EE82500428C0.ksh Sun
+#MO347EEE6A00528C0.ksh
+#MO347EEE7800628C0.ksh

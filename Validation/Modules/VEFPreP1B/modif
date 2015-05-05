@@ -1,0 +1,9 @@
+#!/bin/bash
+cas=`basename $1 .data`
+echo $ECHO_OPTS "1,$ s?VEFPreP1B dis?VEFPreP1B dis Lire dis { P0 P1 changement_de_base_P1Bulle 1 Cl_pression_sommet_faible 1 Modif_div_face_dirichlet 1 }?g\nw VEFPreP1B_$cas.data" | ed $cas.data 1>/dev/null 2>&1
+if [ "`grep -i 'solveur_pression cholesky' VEFPreP1B_$cas.data`" != "" ]
+then
+   echo $ECHO_OPTS "1,$ s?solveur_pression ?solveur_pression petsc ?g\nw" | ed VEFPreP1B_$cas.data 1>/dev/null 2>&1
+fi
+[ $? != 0 ] && exit -1
+exit 0

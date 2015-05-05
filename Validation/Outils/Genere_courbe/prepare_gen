@@ -1,0 +1,52 @@
+#!/bin/bash
+org=$1
+[ "$org" = "" ] && org="."
+mkdir -p build
+# option -L est importante pour copier les liens en fichier
+echo $ECHO_OPTS "========================================================"
+echo $ECHO_OPTS "-> Copy src directory files to the build directory... \c"
+rsync -rL $org/src/* build
+echo OK
+echo $ECHO_OPTS "========================================================"
+# Si ClearCase ne copie que les elements en gestion de configuration
+# donc retire les fichiers view_only
+(cd $org/src;cleartool ls 1>/dev/null 2>&1)
+not_conf=$?
+# GF rajout d'un test pour voir si le repertoire est en gestion de conf
+if [ $not_conf -eq 0 ]
+then
+   filesconf=`(cd $org/src;cleartool ls |grep Rule 2>/dev/null) `
+   [ "$filesconf" = "" ] && not_conf=1
+fi
+if [ $not_conf -eq 0 ]
+then
+   files=`cd $org/src;cleartool ls -recurse -view_only * | grep -v Rule:`
+   for file in $files
+   do
+      echo "The $org/src/$file file is not copied into the build directory because is not registered by ClearCase under the src directory."
+      rm -r -f build/$file
+   done
+fi
+cd build
+
+chmod -R +w *
+if [ -f prepare ]
+then
+   echo $ECHO_OPTS "==============================================="
+   echo $ECHO_OPTS "-> Run script prepare in the build directory..."
+   echo $ECHO_OPTS "==============================================="
+   chmod +x prepare
+   # Detection pour empecher que le script triou, make_PAR.data ou $exec soit utilise dans le prepare
+   warning=1
+   if [ "`grep ' triou ' ./prepare`" != "" ] || [ "`grep ' \$exec ' ./prepare`" != "" ] || [ "`grep ' make_PAR.data ' ./prepare`" != "" ]
+   then
+      echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" 
+      echo "You should not run a calculation or partition a mesh in the prepare script."
+      echo "Use pre_run scripts instead for this task."
+      echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+      [ "$warning" = 0 ] && exit -1
+   fi
+   ./prepare || exit -1
+fi
+chmod -R +w *
+exit 0

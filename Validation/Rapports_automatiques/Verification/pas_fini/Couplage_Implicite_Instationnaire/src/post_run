@@ -1,0 +1,92 @@
+#!/bin/bash
+print()
+{
+   string=$1
+   file=$2
+   error=`awk "BEGIN {print 100*($triou-$theorie)/$theorie}"`
+   echo "$string= $theorie (theory) $triou (Trio_U) $error % (Error)"
+   #echo "# $string Theory Trio_U Error[%]" > $file
+   echo $theorie" "$triou" "$error > $file
+}
+
+jdd=test.data
+# tmax
+tmax=`		grep -i " tmax "	$jdd | head -1 | awk '{print $2}'`
+# fluid physical properties 
+rho_fluide=`	grep -i " rho "		$jdd | head -1 | awk '{print $4}'`
+mu=`		grep -i " mu " 		$jdd | head -1 | awk '{print $4}'`
+Cp_fluide=`	grep -i " cp " 		$jdd | head -1 | awk '{print $4}'`
+beta=`		grep -i " beta_th "  	$jdd | head -1 | awk '{print $4}'`
+lambda_fluide=`	grep -i " lambda "	$jdd | head -1 | awk '{print $4}'`
+# solid physical properties
+lambda_solide=`	grep -i " lambda "	$jdd | tail -1 | awk '{print $4}'`
+rho_solide=`	grep -i " rho "		$jdd | tail -1 | awk '{print $4}'`
+Cp_solide=`	grep -i " cp "  	$jdd | tail -1 | awk '{print $4}'`
+# mean velocity
+U=`		grep -i " vitesse " $jdd | head -1 | awk '{print $8}'`
+# volume thermal power
+q=`		grep -i " puissance_thermique " $jdd | head -1 | awk '{print $6}'`
+
+echo $rho_fluide > rho_f.dat
+echo $mu > mu_f.dat
+echo $lambda_fluide > lambda_fluide.dat
+echo $Cp_fluide > cp_f.dat
+echo $beta > beta_f.dat
+echo $rho_solide > rho_solide.dat
+echo $Cp_solide > cp_solide.dat
+echo $lambda_solide > lambda_solide.dat
+
+echo $U > mean_velocity.dat
+echo $q > puissance_volumique.dat
+
+# geometrical dimensions 
+r1=0.8
+r2=1
+L=0.2
+l=0.2
+S=`awk "BEGIN {print $L*$l}"` # Surface d'echange fluide-solide
+echo "Contact_area[m2]= "$S
+volume_solide=`awk "BEGIN {print $l*($r2-$r1)*$L}"`
+echo "Solid volume[m3]= "$volume_solide
+volume_fluide=`awk "BEGIN {print $l*$r1*$L}"`
+echo "Fluid volume[m3]= "$volume_fluide
+
+debit=`         	awk '{print $3}' test_pb_fluide_Debit.out 		| tail -1`
+flux_chaleur=`  	awk '{print $3}' test_pb_fluide_Convection_chaleur.out 	| tail -1`
+flux_paroi_fluide=`    	awk '{print $6}' test_pb_fluide_Diffusion_chaleur.out 	| tail -1`
+flux_paroi_solide=`    	awk '{print -$6}' test_pb_solide_Diffusion_chaleur.out 	| tail -1`
+if [ `awk "BEGIN {if (($flux_paroi_fluide-$flux_paroi_fluide)/$flux_paroi_fluide>0.01) print 1;else print 0}"` = 1 ]
+then
+   echo "Error: Heat flux DO NOT match."
+   exit -1
+fi
+
+#####################
+# Pente d'evolution #
+#####################
+# Solution analytique
+theorie=`awk "BEGIN {print $q/($rho_solide*$Cp_solide+$rho_fluide*$Cp_fluide*$volume_fluide/$volume_solide)}"`
+dT_sur_dt_solide=`awk '{print $12}' test.dt_ev | tail -1`
+triou=$dT_sur_dt_solide
+print "dT/dt(solid)[°C/s]" pente_solide.txt
+
+dT_sur_dt_fluide=`awk '{print $11}' test.dt_ev | tail -1`
+triou=$dT_sur_dt_fluide
+print "dT/dt(fluid)[°C/s]" pente_fluide.txt
+
+##########
+# Bilans #
+##########
+# Solution analytique
+theorie=`awk "BEGIN {print $q*$rho_fluide*$Cp_fluide/($rho_solide*$Cp_solide/$volume_fluide+$rho_fluide*$Cp_fluide/$volume_solide)}"`
+echo "0      $theorie" >  solution_heat_flux.txt
+echo "$tmax $theorie" >>  solution_heat_flux.txt
+
+triou=`awk "BEGIN {print ($q-$rho_solide*$Cp_solide*$dT_sur_dt_solide)*$volume_solide}"`
+print "Heat in the solid)=(q-rho(solid)*Cp(solid)*dT/dt(solid))*vol(solid)[W]" solid_heat_volume.txt
+triou=$flux_paroi_solide
+print  "Heat flux(solid->)[W]" solid_heat_flux.txt
+triou=$flux_paroi_fluide
+print "Heat flux(->fluid)[W]" fluid_heat_flux.txt
+triou=`awk "BEGIN {print $rho_fluide*$Cp_fluide*$dT_sur_dt_fluide*$volume_fluide}"`
+print "Heat in the fluid=rho(fluid)*Cp(fluid)*dT/dt(fluid)*vol(fluid)[W]" fluid_heat_volume.txt

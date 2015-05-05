@@ -1,0 +1,132 @@
+# ThermoHydraulique 3D : poreux #
+# PARALLEL OK #
+# la pression doit caloir 0 -1.5 0 la temperature=constante #
+# de plus le staionnaire doit etre trouve tres vite #
+dimension 3
+Pb_thermohydraulique pb
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+        Pave Entree
+                {
+                Origine 0. 0. 0.
+                Nombre_de_Noeuds 21 3  3
+                Longueurs 1 1 1
+                }
+                {
+                bord Entree X = 0.   0. <= Y <= 1.0  0. <= Z <= 1.0
+                bord Haut   Y = 1.0  0. <= X <= 1.0  0. <= Z <= 1.0
+                bord Bas    Y = 0.   0. <= X <= 1.0 0. <= Z <= 1.0
+                bord Sortie X = 1.0  0. <= Y <= 1.0  0. <= Z <= 1.0
+                bord Haut   Z = 1.0  0. <= X <= 1.0  0. <= Y <= 1.0
+                bord Bas    Z = 0.   0. <= X <= 1.0 0. <= Y <= 1.0
+
+                }
+}
+tetraedriser dom
+VerifierCoin dom { }
+
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur Metis { Nb_parts 2 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VeFprep1b dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0
+	tmax 5000.
+	dt_min 0.000001
+	dt_start dt_calc
+	dt_max 1.0
+	dt_sauv 100
+	seuil_statio 1.e-4
+}
+
+Fluide_Incompressible eau
+Lire eau
+{
+	mu Champ_Uniforme 1 1.
+	rho Champ_Uniforme 1 1.
+	cp Champ_uniforme 1 1000.
+	lambda champ_uniforme 1 10.
+	beta_th champ_uniforme 1 0.
+}
+
+Champ_Uniforme gravite
+Lire gravite 2 0 0
+Associate pb dom
+Associate pb sch
+Associate pb eau
+Discretize pb dis
+# Debog pb seq faces 1.e-6 0 #
+porosites_champ pb champ_fonc_xyz dom 1 1-0.5*(x>0.2)*(x<0.8)
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP  { precond ssor { omega 1.5 } seuil 1e-08 }
+
+		convection { amont }
+		diffusion { }
+		conditions_initiales {
+			vitesse Champ_Uniforme 3 1. 0. 0.
+			}
+		boundary_conditions {
+			Haut symetrie
+			Bas symetrie
+			Entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 3 1. 0. 0.
+			Sortie frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+		}
+	}
+	Convection_diffusion_temperature
+        {
+		convection { amont }
+		diffusion { }
+		conditions_initiales {
+			temperature Champ_Uniforme 1 1. 
+			}
+		boundary_conditions {
+			Haut symetrie
+			Bas symetrie
+			Entree frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 1.
+			Sortie frontiere_ouverte T_ext Champ_Front_Uniforme 1 1.
+		}
+	}
+	Postraitement
+	{
+		Sondes
+		{
+		 seg_P pression periode 0.1 segment 20 0.025 0.5 0.5 0.975 0.5 0.5
+		 seg_U1 vitesse periode 0.1 segment 11 0. 0.5 0.5 1.0 0.5 0.5
+		 seg_U2 vitesse periode 0.1 segment 19 1.0 0.02631 0.5 1.0 0.9736 0.5
+		 sonde_pression pression periode 0.1 points 1 0.5 0.5 0.5
+		 sonde_vitesse  vitesse periode 0.1 points 1 0.5 0.5 0.5
+		}
+	format lml
+		Champs dt_post 1.0
+		{
+			pression elem
+			vitesse elem
+			temperature elem
+			porosite_volumique elem
+		}
+	}
+}
+Solve pb
+Fin
+Fin
+Entree frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 1.

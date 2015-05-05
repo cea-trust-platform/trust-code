@@ -1,0 +1,2 @@
+grep "kg/s" Conserv_Masse_QC_rho_u.out | awk '{print FNR " " $4}' > cons_mass.out
+

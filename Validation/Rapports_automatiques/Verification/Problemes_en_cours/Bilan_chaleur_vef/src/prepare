@@ -1,0 +1,12 @@
+#!/bin/bash
+# Maillage variable pour schema EF_stab
+sed "s/Nombre_de_Noeuds 5 5/Nombre_de_Noeuds 3 3/" Canal_2D.data > Canal_2D_grossier.data 
+sed "s/Nombre_de_Noeuds 5 5/Nombre_de_Noeuds 5 5/" Canal_2D.data > Canal_2D_standard.data 
+sed "s/Nombre_de_Noeuds 5 5/Nombre_de_Noeuds 7 7/" Canal_2D.data > Canal_2D_fin.data 
+#
+# schema variable pour maillage standard
+sed "s/convection { EF_stab { volumes_etendus }  }/convection { amont }/" Canal_2D.data > Canal_2D_amont.data 
+sed "s/convection { EF_stab { volumes_etendus }  }/convection { muscl }/" Canal_2D.data > Canal_2D_muscl.data 
+sed "s/convection { EF_stab { volumes_etendus }  }/convection { EF_stab { volumes_etendus } }/" Canal_2D.data > Canal_2D_EF_stab.data 
+sed "s/convection { EF_stab { volumes_etendus }  }/convection { negligeable }/" Canal_2D.data > Canal_2D_negligeable.data 
+                

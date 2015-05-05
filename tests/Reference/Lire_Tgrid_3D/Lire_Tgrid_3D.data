@@ -1,0 +1,163 @@
+# Lecture de plusieurs maillages issus de Fluent #
+dimension 3
+
+# Lecture du premier fichier Tgrid #
+domaine dom1
+lire_tgrid dom1 cylindre-tetra.msh
+
+# lecture du second fichier Tgrid #
+domaine dom2
+lire_tgrid dom2 cylindre-hexa.msh
+
+# lecture d un fichier issu de Gambit (export Fluent) #
+domaine dom3
+lire_tgrid dom3 export_fluent_from_gambit.msh.gz
+
+# lecture d un 3eme fichier Tgrid #
+# domaine dom4
+lire_tgrid dom4 pl_sym_sym3_tgrid_modified.msh.gz #
+
+# On tetraedrise le maillage hexa #
+# car TRUST ne supporte pas le calcul #
+# sur des maillages hexas #
+Precisiongeom 1.e-5
+tetraedriser_homogene_compact dom2
+VerifierCoin dom1 { }
+
+VEFPreP1B dis
+Schema_Euler_explicite sch
+Lire sch
+{
+ 	nb_pas_dt_max 2
+	tinit 0.
+	tmax 1200
+	dt_min 0.001
+	dt_max 1
+	dt_impr 0.01
+	dt_sauv 100
+	seuil_statio 1.e-3
+}
+
+Fluide_Incompressible fluide1
+Lire fluide1
+{
+	mu Champ_Uniforme 1 1.85e-5
+	rho Champ_Uniforme 1 1.17
+	lambda Champ_Uniforme 1 0.0262 
+}
+
+Fluide_Incompressible fluide2
+Lire fluide2
+{
+	mu Champ_Uniforme 1 1.85e-5
+	rho Champ_Uniforme 1 1.17
+	lambda Champ_Uniforme 1 0.0262 
+}
+
+Pb_Hydraulique pb1
+Pb_Hydraulique pb2
+Associate pb1 dom1
+Associate pb2 dom2
+Associate pb1 fluide1
+Associate pb2 fluide2
+
+Probleme_Couple pbc
+Associate pbc pb1
+Associate pbc pb2
+Associate pbc sch
+Discretize pbc dis
+
+Lire pb1
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { precond ssor { omega 1.65 } seuil 1.e-12 }
+		convection { muscl }
+		diffusion { }
+		conditions_initiales {
+			vitesse Champ_Uniforme 3 0 0 0
+			}
+		boundary_conditions {
+			wall_lateral paroi_fixe
+			inlet frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 3 1 0 0 
+			outlet frontiere_ouverte_pression_imposee Champ_Front_Uniforme  1 0
+			cylindre paroi_fixe 
+		}
+	}
+
+	Postraitements
+	{
+		lata
+		{
+			format lata
+			fichier Lire_Tgrid_3D
+			Sondes
+			{
+				sonde_vit1 vitesse periode 0.01 point 1 0 0 0
+			}
+			Champs dt_post 0.01
+			{
+				pression elem
+				vitesse som
+			}
+		}
+		lml
+		{
+			format lml
+			fichier Lire_Tgrid_3D
+			Champs dt_post 0.01
+			{
+				pression elem
+				vitesse som
+			}
+		}		
+	}
+}
+Lire pb2
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { precond ssor { omega 1.65 } seuil 1.e-12 }
+		convection { muscl }
+		diffusion { }
+		conditions_initiales {
+			vitesse Champ_Uniforme 3 0 0 0
+			}
+		boundary_conditions {
+			wall paroi_fixe
+			inlet frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 3 1 0 0
+			outlet frontiere_ouverte_pression_imposee Champ_Front_Uniforme  1 0
+			cylindre paroi_fixe 
+		}
+	}
+
+	Postraitements
+	{
+		lata
+		{
+			format lata
+			fichier Lire_Tgrid_3D
+			Sondes
+			{
+				sonde_vit2 vitesse periode 0.01 point 1 0 0 0
+			}
+			Champs dt_post 0.01
+			{
+				pression elem
+				vitesse som
+			}
+		}
+		lml
+		{
+			format lml
+			fichier Lire_Tgrid_3D
+			Champs dt_post 0.01
+			{
+				pression elem
+				vitesse som
+			}
+		}		
+	}
+}
+Solve pbc
+Fin

@@ -1,0 +1,13 @@
+#!/bin/bash
+echo $0 $*
+[ "`basename $1`" != "model" ] && exit
+rm -r -f avs
+files=`ls | grep -v \.prep | grep -v maillage. `
+rm -f $files
+files=`ls`
+echo "Il reste $files"
+if [ -d  ../prepro ]
+then
+cd ../prepro
+rm -r -f trans_geom Probleme* nomsbord
+fi

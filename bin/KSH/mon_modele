@@ -1,0 +1,19 @@
+#!/bin/bash
+# Creation d'un fichier a partir d'un modele :
+
+rep_modeles=$TRUST_ROOT/../Doc_TRUST/Modeles
+
+# Recupere le nom du modele :
+modele=`$TRUST_Awk '(NR==1) {print $2}' $1`
+if [ ${#modele} = 0 ]
+then
+   modele=class
+fi
+type=`$TRUST_Awk '(NR==1) {print $1}' $1`
+if [ ! -f $rep_modeles/$modele.modele ]
+then
+   Erreur.ihm "Fichier $modele.modele inexistant ou en-tete de ce fichier fausse."
+else
+   $Dtterm $HautGauche_geometrie -title "Creation d'une classe $modele" -e cree_fichier $rep_modeles/$modele.modele $type
+fi
+

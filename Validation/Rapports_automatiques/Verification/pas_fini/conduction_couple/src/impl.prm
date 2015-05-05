@@ -1,0 +1,383 @@
+Parameters {
+	Title "Conduction couplee implicite"
+	Description "Calculs menes en VDF/VEF avec/sans paroi fictive"
+	Author "G.F."
+	TestCase "cond_coup_fictif_vdf_impl" "cond_coup_fictif_vdf_impl.data"
+	TestCase "cond_coup_fictif_vef_impl" "cond_coup_fictif_vef_impl.data"
+        TestCase "cond_couple_vef_impl" "cond_couple_vef_impl.data"
+	TestCase "cond_couple_vdf_impl" "cond_couple_vdf_impl.data"
+	# Prerequisite "cd ../PROFILS_STRATIF/STABLE_Maillage_un/impl/; ls " 
+}
+
+Chapter {
+	Title "sans paroi fictive"
+	Description "Probleme couple solide/fluide en implicite. La solution est comparee a la solution analytique au cours du temps. La solution analytique n'existe que pour une famille particuliere de values de conductivite."  
+Figure {
+	Title "Trace de l erreur  au cours du temps"
+	Dimension 2
+#	RangeX 0. 2.5
+	LabelX "s"
+#	RangeY 0. 2.
+#	LabelY "Y/h"
+	Curve {
+		legend "VDF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		file ./cond_couple_vdf_impl/cond_couple_vdf_impl_ERREUR.son
+	#	columns ($2/0.05) ($1/0.1)
+		Style linespoints
+		# TypeLigne 4
+		# TypePoints 4
+	}
+	Curve {
+	        legend "VEF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		file ./cond_couple_vef_impl/cond_couple_vef_impl_ERREUR.son		
+		Style linespoints
+		# TypeLigne 2
+		# TypePoints 2
+	}
+}
+
+Figure {
+	Title "Trace du profil de T dans le fluide a t=0.5 et t=2.5"
+	Dimension 2
+#	RangeX 0. 2.5
+	LabelX "x"
+#	RangeY 0. 2.
+	LabelY "°"
+	Curve {
+		legend "VDF t=0.5"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		segment ./cond_couple_vdf_impl/cond_couple_vdf_impl T_FLUIDE 0.5
+	#	columns ($2/0.05) ($1/0.1)
+		Style linespoints
+		# TypeLigne 4
+		# TypePoints 4
+	}
+	Curve {
+	        legend "VEF t=0.5"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		segment ./cond_couple_vef_impl/cond_couple_vef_impl T_FLUIDE 0.5
+		Style linespoints
+		# TypeLigne 2
+		# TypePoints 2
+	}
+
+	Curve {
+		legend "Solution ananlytique t=0.5"
+		origin "calcul"
+		Version "1.5.3-beta_build_180907"
+		segment ./cond_couple_vef_impl/cond_couple_vef_impl T_FLUIDE 0.5
+		columns ($1) ((18.31179308*sin(30.79992798*$1-1.539996399)*exp(-0.9486355639*0.5)+20.00-400.*$1))
+		Style linespoints
+		# TypeLigne 6
+		# TypePoints 6
+	}
+
+
+	Curve {
+		legend "VDF t=2.5"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		segment ./cond_couple_vdf_impl/cond_couple_vdf_impl T_FLUIDE 2.5
+	#	columns ($2/0.05) ($1/0.1)
+		Style linespoints
+		# TypeLigne 4
+		# TypePoints 4
+	}
+	Curve {
+	        legend "VEF t=2.5"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		segment ./cond_couple_vef_impl/cond_couple_vef_impl T_FLUIDE 2.5
+		Style linespoints
+		#  TypeLigne 2
+		# TypePoints 2
+	}
+
+	Curve {
+		legend "Solution ananlytique t=2.5"
+		origin "calcul"
+		Version "1.5.3-beta_build_180907"
+		segment ./cond_couple_vef_impl/cond_couple_vef_impl T_FLUIDE 2.5
+		columns ($1) ((18.31179308*sin(30.79992798*$1-1.539996399)*exp(-0.9486355639*2.5)+20.00-400.*$1))
+		Style linespoints
+		# TypeLigne 6
+		# TypePoints 6
+	}
+}
+
+Figure {
+	Title "Trace du profil de T dans le solide a t=0.5 et t=2.5"
+	Dimension 2
+#	RangeX 0. 2.5
+	LabelX "x"
+#	RangeY 0. 2.
+	LabelY "°"
+	Curve {
+		legend "VDF t=0.5"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		segment ./cond_couple_vdf_impl/cond_couple_vdf_impl T_SOLIDE_GAUCHE 0.5
+	#	columns ($2/0.05) ($1/0.1)
+		Style linespoints
+		# TypeLigne 4
+		# TypePoints 4
+	}
+	Curve {
+	        legend "VEF t=0.5"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		segment ./cond_couple_vef_impl/cond_couple_vef_impl T_SOLIDE_GAUCHE 0.5
+		Style linespoints
+		# TypeLigne 2
+		# TypePoints 2
+	}
+
+	Curve {
+		legend "Solution ananlytique t=0.5"
+		origin "calcul"
+		Version "1.5.3-beta_build_180907"
+		segment ./cond_couple_vef_impl/cond_couple_vef_impl T_SOLIDE_GAUCHE 0.5
+		columns ($1) (-18.31179308*cos(3.079992798*$1+.3079992798e-1)*exp(-0.9486355639*0.5)+20.00-40.*$1)   
+		Style linespoints
+		# TypeLigne 6
+		# TypePoints 6
+	}
+
+	Curve {
+		legend "VDF t=2.5"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		segment ./cond_couple_vdf_impl/cond_couple_vdf_impl T_SOLIDE_GAUCHE 2.5
+	#	columns ($2/0.05) ($1/0.1)
+		Style linespoints
+		# TypeLigne 4
+		# TypePoints 4
+	}
+	Curve {
+	        legend "VEF t=2.5"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		segment ./cond_couple_vef_impl/cond_couple_vef_impl T_SOLIDE_GAUCHE 2.5
+		Style linespoints
+		#  TypeLigne 2
+		# TypePoints 2
+	}
+
+	Curve {
+		legend "Solution ananlytique t=2.5"
+		origin "calcul"
+		Version "1.5.3-beta_build_180907"
+		segment ./cond_couple_vef_impl/cond_couple_vef_impl T_SOLIDE_GAUCHE 2.5
+		columns ($1) (-18.31179308*cos(3.079992798*$1+.3079992798e-1)*exp(-0.9486355639*2.5)+20.00-40.*$1)   
+		Style linespoints
+		# TypeLigne 6
+		# TypePoints 6
+	}
+}
+Figure {
+	Title "Trace du profil de T au stationnaire"
+	Dimension 2
+#	RangeX 0. 2.5
+	LabelX "x"
+#	RangeY 0. 2.
+	LabelY "°"
+	Curve {
+		legend "VDF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		segment ./cond_couple_vdf_impl/cond_couple_vdf_impl T_SOLIDE_GAUCHE 
+	#	columns ($2/0.05) ($1/0.1)
+		Style linespoints
+		# TypeLigne 4
+		# TypePoints 4
+	}
+	Curve {
+	        legend "VEF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		segment ./cond_couple_vef_impl/cond_couple_vef_impl T_SOLIDE_GAUCHE
+		Style linespoints
+		# TypeLigne 2
+		# TypePoints 2
+	}
+
+	Curve {
+		legend "Solution ananlytique "
+		origin "calcul"
+		Version "1.5.3-beta_build_180907"
+		segment ./cond_couple_vef_impl/cond_couple_vef_impl T_SOLIDE_GAUCHE 
+		columns ($1) (20.00-40.*$1)   
+		Style linespoints
+		# TypeLigne 6
+		# TypePoints 6
+	}
+
+
+	Curve {
+		legend "VDF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		segment ./cond_couple_vdf_impl/cond_couple_vdf_impl T_FLUIDE 
+	#	columns ($2/0.05) ($1/0.1)
+		Style linespoints
+		# TypeLigne 4
+		# TypePoints 4
+	}
+	Curve {
+	        legend "VEF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		segment ./cond_couple_vef_impl/cond_couple_vef_impl T_FLUIDE 
+		Style linespoints
+		#  TypeLigne 2
+		# TypePoints 2
+	}
+
+	Curve {
+		legend "Solution ananlytique"
+		origin "calcul"
+		Version "1.5.3-beta_build_180907"
+		segment ./cond_couple_vef_impl/cond_couple_vef_impl T_FLUIDE
+		columns ($1) ((20.00-400.*$1))
+		Style linespoints
+		# TypeLigne 6
+		# TypePoints 6
+	}
+}
+}
+Chapter {
+	Title "avec paroi fictive"
+	Description " A refaire Caracteristique : T1>T2 \\ Maillage1 : 14 400 mailles, Y+ ~= 12 \\ Maillage2 :  9 000 mailles, Y+ ~= 44 \\ Maillage3 :  10 080 mailles, Y+ ~= 43.75"
+
+Figure {
+	Title "Trace du profil de T au stationnaire"
+	Dimension 2
+#	RangeX 0. 2.5
+	LabelX "x"
+#	RangeY 0. 2.
+	LabelY "°"
+	Curve {
+		legend "VDF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		segment ./cond_coup_fictif_vdf_impl/cond_coup_fictif_vdf_impl T_SOLIDE_GAUCHE 
+	#	columns ($2/0.05) ($1/0.1)
+		Style linespoints
+		# TypeLigne 4
+		# TypePoints 4
+	}
+	Curve {
+	        legend "VEF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		segment ./cond_coup_fictif_vef_impl/cond_coup_fictif_vef_impl T_SOLIDE_GAUCHE
+		Style linespoints
+		# TypeLigne 2
+		# TypePoints 2
+	}
+
+	Curve {
+		legend "Solution ananlytique "
+		origin "calcul"
+		Version "1.5.3-beta_build_180907"
+		segment ./cond_coup_fictif_vef_impl/cond_coup_fictif_vef_impl T_SOLIDE_GAUCHE 
+		columns ($1) (28.00-40.*$1)   
+		Style linespoints
+		# TypeLigne 6
+		# TypePoints 6
+	}
+
+
+	Curve {
+		legend "VDF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		segment ./cond_coup_fictif_vdf_impl/cond_coup_fictif_vdf_impl T_FLUIDE 
+	#	columns ($2/0.05) ($1/0.1)
+		Style linespoints
+		# TypeLigne 4
+		# TypePoints 4
+	}
+	Curve {
+	        legend "VEF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		segment ./cond_coup_fictif_vef_impl/cond_coup_fictif_vef_impl T_FLUIDE 
+		Style linespoints
+		#  TypeLigne 2
+		# TypePoints 2
+	}
+
+	Curve {
+		legend "Solution ananlytique"
+		origin "calcul"
+		Version "1.5.3-beta_build_180907"
+		segment ./cond_coup_fictif_vef_impl/cond_coup_fictif_vef_impl T_FLUIDE
+		columns ($1) ((20.00-400.*$1))
+		Style linespoints
+		# TypeLigne 6
+		# TypePoints 6
+	}
+}
+Figure {
+	Title "Trace de l'erreur T-Tana  au stationnaire"
+	Dimension 2
+#	RangeX 0. 2.5
+	LabelX "x"
+#	RangeY 0. 2.
+	LabelY "°"
+	Curve {
+		legend "VDF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		segment ./cond_coup_fictif_vdf_impl/cond_coup_fictif_vdf_impl ERREUR_S 
+	#	columns ($2/0.05) ($1/0.1)
+		Style linespoints
+		# TypeLigne 4
+		# TypePoints 4
+	}
+	Curve {
+	        legend "VEF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		segment ./cond_coup_fictif_vef_impl/cond_coup_fictif_vef_impl ERREUR_S
+		Style linespoints
+		# TypeLigne 2
+		# TypePoints 2
+	}
+
+
+
+	Curve {
+		legend "VDF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		segment ./cond_coup_fictif_vdf_impl/cond_coup_fictif_vdf_impl ERREUR_F 
+	#	columns ($2/0.05) ($1/0.1)
+		Style linespoints
+		# TypeLigne 4
+		# TypePoints 4
+	}
+	Curve {
+	        legend "VEF"
+		origin "Trio_U"
+		Version "1.5.3-beta_build_180907"
+		segment ./cond_coup_fictif_vef_impl/cond_coup_fictif_vef_impl ERREUR_F 
+		Style linespoints
+		#  TypeLigne 2
+		# TypePoints 2
+	}
+
+}
+}
+
+
+
+
+

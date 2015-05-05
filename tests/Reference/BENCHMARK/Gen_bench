@@ -1,0 +1,102 @@
+#!/bin/bash
+WHERE=$PWD
+echo "#################################################"
+echo " Preparation des benchmarks TRUST"
+echo " "
+if [ ! -f $exec ]
+then
+   echo "ERREUR : l'executable TRUST \$exec=$exec n'existe pas"
+   exit
+fi
+
+echo "-------------------------------------------------"
+echo "Creation de la geometrie ..."
+triou Geom 1>Geom.out 2>Geom.err
+
+# Sequential
+mkdir -p PAR1
+cd PAR1
+cat ../TpltPar.data > bench1-1.data
+ECHO_OPTS="" && [ "`uname -s`" = Linux ]  && ECHO_OPTS="-e"
+echo $ECHO_OPTS "1,$ s?Scatter DOM.Zones dom?Lire_fichier_bin dom dom.geom?g\nw" | ed ./bench1-1.data 1>/dev/null 2>&1
+ln -s -f ../dom.geom .
+cd ..
+
+# Partition
+mkdir -p DEC
+cd DEC
+cat ../TpltDec.data > TpltDec.data 
+ln -s -f  ../dom.geom .
+
+# Parallel
+cd ..
+liste_nb_proc=`cat ./liste_nb_proc`
+for nb_proc in $liste_nb_proc
+do
+   if [ $nb_proc != 1 ]
+   then
+      	echo " "
+      	echo "-------------------------------------------------"
+      	echo "Creation des donnees pour $nb_proc processeurs"
+      	cd $WHERE/DEC
+	
+	if [ "`grep -i tranches TpltDec.data`" = "" ]
+	then
+	   # Metis
+	   sed "s/nb_parts n/nb_parts $nb_proc/g" TpltDec.data > dec$nb_proc.data
+	else
+	   # Tranches: determination de nx ny nz
+	   is2D=0
+	   [ "`grep dimension TpltDec.data | awk '{print $2}'`" = "2" ] && is2D=1
+	   nloc=1
+	   np=1
+	   while [ $np -le $nb_proc ]
+	   do
+             if [ $is2D -eq 1 ]
+	     then
+	       let np=$np*4
+	     else
+	       let np=$np*8
+	     fi
+	       let nloc=$nloc*2
+	   done
+	   let nloc=$nloc/2
+	   if [ $is2D -eq 1 ]
+	   then
+	     let np=$np/4
+	   else
+	       let np=$np/8
+	   fi
+	   nx=$nloc
+	   ny=$nloc
+	   if [ $is2D -eq 1 ]
+	   then
+	    nz=1
+	   else
+	     nz=$nloc
+	   fi
+	   let rap=$nb_proc/$np	
+	   [ $rap -ge 2 ] && let nx=$nx*2
+	   [ $rap -ge 4  ] && let ny=$ny*2
+	   let es=$nx*$ny*$nz	
+	   [  $es -ne $nb_proc ] && echo "inconsistance nx ny nz et nb_proc" $nx $ny $nz $nb_proc "(is2D "$is2D")" && exit -1
+	   sed "s/nx/$nx/g" TpltDec.data | sed "s/ny/$ny/g" | sed "s/nz/$nz/g" | sed "s/nb_proc/$nb_proc/g" > dec$nb_proc.data
+        fi
+	
+        # Partition (-bigmem?)
+	triou dec$nb_proc 1>dec.out 2>dec.err
+
+        # Number of nodes
+	dis=VDF && [ "`grep VEFPreP1B ../TpltPar.data`" != "" ] && dis=VEFPreP1B
+	[ $nb_proc = 2 ] && $TRUST_Awk -v dis=$dis -F: '/Number of elements:/ {i+=$2} /Number of nodes:/ && (dis=="VEFPreP1B") {i+=$2} END {print "Cas "dis" ("i" inconnues en pression)"}' dec.err >>$WHERE/par
+	cd ..
+	mkdir -p PAR$nb_proc
+	cat TpltPar.data > PAR$nb_proc/bench1-$nb_proc.data
+	# On deplace les .Zones dans le repertoire de calcul
+	mv DEC/*.Zones PAR$nb_proc/.
+   fi
+done
+
+# On efface les rapports de PERF
+# car sinon probleme possible d'une nuit a l'autre
+rm -f */*.perf

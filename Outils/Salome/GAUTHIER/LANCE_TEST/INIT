@@ -1,0 +1,83 @@
+#!/bin/bash
+DIST_LANCE="localhost"
+user=${USER}_test
+EXEC="/tmp/"$user"/"`basename $exec`
+LANCE="/tmp/"$user"/lance_test_0 "
+
+echo "#!/bin/bash" > NETTOIE
+echo "#!/bin/bash" > RECUP
+echo '[ -d `pwd`"/tests_"`basename  $exec` ] && echo "on efface l ancien repertoire ?(n/y)" && read ok ; echo $ok; [ "$ok" == "y" ] &&  rm -rf `pwd`"/tests_"`basename  $exec`'  >> RECUP
+echo mkdir -p "\`pwd\`/tests_"`basename  $exec` >> RECUP
+for host in  `echo $DISTCC_HOSTS| awk '{for (i=1;i<=NF;i++) {print $i}}' | sort -u`
+do
+	if [ "$host" = "crolles" ]
+	then
+		echo pas de compte trio sur $host
+	else
+ if [ "$host" != localhost ]
+then
+	name="triou@"$host
+	#name=$host
+if [ "$2" != "" ]
+then
+	`dirname $0`/configure.ssh.GF $name
+	ssh $name "ls Version_test_$host/TRUST/bin/Init_TRUST"
+	res=$?
+
+	if [ $res -eq 0 ] 
+	then
+		DIST_LANCE=$DIST_LANCE","$name
+	ssh $name rm -rf "/tmp/"$user
+	ssh $name mkdir -p "/tmp/"$user/Tests_reference
+        scp $exec $name:$EXEC
+	scp $TRUST_ROOT/bin/lance_test $name:$LANCE 
+	ssh $name ls /tmp/$user
+	echo "echo recuperation des resultats de "$name>> RECUP
+	echo "scp  "$name":/tmp/"$user"/prov_out  \`pwd\`/prov_out_"$host >> RECUP
+	echo "scp -r "$name":/tmp/"$user"/tests_"`basename $exec`"  \`pwd\`" >> RECUP
+        fi
+	fi
+
+else
+	name=$host
+if [ "$2" != "" ]
+then
+	rm -rf "/tmp/"$user
+	mkdir -p "/tmp/"$user/Tests_reference
+	ln -s $exec $EXEC
+	ln -s $TRUST_ROOT/bin/lance_test $LANCE
+	[ ! -d $HOME/Version_test_localhost ] && mkdir $HOME/Version_test_localhost
+	[ -L $HOME/Version_test_localhost/TRUST ] && rm -f $HOME/Version_test_localhost/TRUST
+	ln -s $TRUST_ROOT $HOME/Version_test_localhost/TRUST
+fi
+	echo "mv /tmp/"$user"/tests_"`basename $exec`"/* \`pwd\`/tests_"`basename  $exec` >> RECUP
+	echo "mv /tmp/"$user"/prov_out \`pwd\`/prov_out_"$host >> RECUP
+
+fi
+echo "#!/bin/bash" > tmp_init
+
+echo "cd \$HOME/Version_test_$host/TRUST/" >> tmp_init
+
+echo ". bin/Init_TRUST 1>/dev/null" >> tmp_init
+echo "export Reference_dir=/tmp/"$user"/" >> tmp_init
+echo "export TRUST_TESTS=/tmp/"$user"/" >> tmp_init
+echo "cd /tmp/"$user >> tmp_init
+[ "$PAR_F" != "" ] && echo "export PAR_F=$PAR_F" >> tmp_init
+scp tmp_init $name:/tmp/$user/INIT_TRIO
+echo ssh $name rm -rf /tmp/$user >> NETTOIE
+fi
+done
+rm tmp_init
+#echo "MACHINES:" $DIST_LANCE
+export DIST_LANCE
+echo export DIST_LANCE=$DIST_LANCE
+cat /dev/null >liste_instructions
+awk '{print $1}' $1  | sort -u>.liste
+for cas in `cat .liste`
+do
+cmd="cd /tmp/"$user" ;. INIT_TRIO ;echo "$cas" | nice -9 "$LANCE" -nomail "$EXEC" /tmp/"$user" >> prov_out; cat .tests_"`basename $EXEC`" | grep "$cas
+echo \"$cmd\" >> liste_instructions
+done
+echo "cp liste_rate \`pwd\`/tests_"`basename  $exec`"/liste" >> RECUP
+echo "rm -f RECUP TEST.py TEST.xml liste_instructions ">> NETTOIE
+chmod +x RECUP NETTOIE

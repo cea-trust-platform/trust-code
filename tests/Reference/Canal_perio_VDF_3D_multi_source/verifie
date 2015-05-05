@@ -1,0 +1,42 @@
+# Verification de la sauvegarde-reprise correcte pour le terme source Canal_perio
+# On verifie que le fichier Channel_Flow_Rate_pb_repr est bien relu
+# On verifie que le fichier Channel_Flow_Rate est le meme qu'un calcul avec sauvegarde-reprise
+(
+jdd=`pwd`
+jdd=`basename $jdd`
+bords=`$TRUST_Awk '($2=="periodique") {print $1}' $jdd.data`
+[ "$bords" = "" ] && exit -1
+
+cp -f $jdd.data sauvegarde_reprise.data
+chmod +w sauvegarde_reprise.data
+echo $ECHO_OPTS "1,$ s?tmax 0.08?tmax 0.04?g\nw" | ed sauvegarde_reprise.data
+
+# Premiere partie du calcul 
+if [ ! -f PAR_$jdd.dt_ev ]
+then
+    triou sauvegarde_reprise
+else
+   make_PAR.data sauvegarde_reprise
+   triou PAR_sauvegarde_reprise `ls *Zones | wc -l`
+fi
+# Deuxieme partie du calcul (reprise)
+echo $ECHO_OPTS "1,$ s?tinit 0.0?tinit 0.04?g\nw" | ed sauvegarde_reprise.data
+echo $ECHO_OPTS "1,$ s?tmax 0.04?tmax 0.08?g\nw"  | ed sauvegarde_reprise.data
+echo $ECHO_OPTS "1,$ s?sauvegarde ?reprise ?g\nw" | ed sauvegarde_reprise.data
+
+if [ ! -f PAR_$jdd.dt_ev ]
+then
+   triou sauvegarde_reprise
+   for bord in $bords
+   do
+      compare_sonde $jdd"_Channel_Flow_Rate_pb_$bord" sauvegarde_reprise_Channel_Flow_Rate_pb_$bord || exit -1
+   done
+else
+   make_PAR.data sauvegarde_reprise
+   triou PAR_sauvegarde_reprise `ls *Zones | wc -l`
+   for bord in $bords
+   do  
+      compare_sonde PAR_$jdd"_Channel_Flow_Rate_pb_$bord" PAR_sauvegarde_reprise_Channel_Flow_Rate_pb_$bord || exit -1
+   done
+fi
+) 1>>verifie.log 2>&1

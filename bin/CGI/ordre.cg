@@ -1,0 +1,36 @@
+#!/bin/bash
+
+[ "$UTILISE_APPACHE" = "1" ] && . $HOME/HTML/recharger_env
+ORDRE=$1
+[ "$UTILISE_APPACHE" = "1" ] && ORDRE=$QUERY_STRING
+ETUDE_TRUST=`QUELLE_ETUDE.ihm`
+export ETUDE_TRUST
+if [ ! -f $ETUDE_TRUST/.NOM_DATA ]
+then
+   $TRUST_ROOT/bin/CGI/Erreur.cg "No running process!"
+else
+   cd $ETUDE_TRUST
+   # Ameliorer en copiant le fichier dans .ordre_IHM
+   echo $ORDRE > .ordre_IHM
+   err=0
+   if [ ! -f .pcs_Run_sonde ]
+   then
+      err=1
+      #$TRUST_ROOT/bin/CGI/Erreur.cg "Warning:file .pcs_Run_sonde does not exist: Rerun your process !"
+   else
+      pcs=`cat .pcs_Run_sonde 2>/dev/null`
+      kill -15 $pcs 1>/dev/null 2>/dev/null
+      err=$?
+   fi
+   if [ $err != 0 ]
+   then
+      IHM=1
+      export IHM
+      execute.ksh "$Dtterm $HautGauche_geometrie -title "Solve" -e $TRUST_ROOT/bin/CGI/aff.cg 1>/dev/null 2>/dev/null &"
+   fi
+fi
+. $TRUST_ROOT/bin/CGI/entete
+# Pour ne pas mettre dans le cache !!!
+# Et eviter ainsi les icones inactives !
+echo "<HTML><HEAD><META HTTP-EQUIV=\"pragma\" CONTENT=\"no-cache\"></HEAD>"
+echo "$ORDRE</HTML>"

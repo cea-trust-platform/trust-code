@@ -1,0 +1,135 @@
+# Hydraulique 2D : perte de charge singuliere dans un convergent + poreux #
+# validation : DP = rho * (1/2) * K * (phi.U)^2 #
+# PARALLEL OK #
+
+dimension 2
+Domaine dom
+
+
+# BEGIN MESH #
+
+Mailler dom
+{
+Pave Cavite
+        {
+                Origine 0. 0.
+                Nombre_de_Noeuds 9 5
+                Longueurs 2 1.
+        }
+        {
+		Bord entree  X = 0.            0. <= Y <= 1 
+		Bord sortie  X = 2.            0. <= Y <= 1 
+		Bord paroi   Y = 0.            0. <= X <= 2 
+		Bord paroi   Y = 1.            0. <= X <= 2 
+        }
+}
+Trianguler_H dom
+
+Sous_zone z_interface
+Associate z_interface dom
+Lire z_interface {
+          Rectangle
+          Origine 0.9  0
+          Cotes   0.2  1
+          }
+
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+        Partitionneur tranche { tranches 2 1 }
+        Larg_joint 2
+        Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+Sous_Zone  z_interface
+Associate z_interface dom
+Lire z_interface { Fichier z_interface.ssz }
+END SCATTER #
+
+
+VeFprep1b dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0
+	tmax 2000.
+	dt_min 1.e-6
+	dt_start dt_calc
+	dt_max 1.0
+	dt_sauv 100
+	dt_impr 0.2
+	facsec 0.5
+	seuil_statio 1.e-10
+	nb_pas_dt_max 2
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+       mu Champ_Uniforme 1 1.
+       rho Champ_Uniforme 1 4
+}
+
+
+Pb_hydraulique pb
+Associate pb dom
+Associate pb fluide
+Associate pb sch
+Discretize pb dis
+
+porosites_champ pb champ_fonc_xyz dom 1 1.-0.5*(x<1.)
+Lire pb
+{
+        Navier_Stokes_standard
+        {
+                projection_initiale 1
+                solveur_pression GCP  { precond ssor { omega 1.5 } seuil 1e-8 impr }
+                convection { negligeable }
+                diffusion { negligeable }
+                sources {
+                        Perte_Charge_Singuliere KX 0.5 { X = 1 z_interface }
+                        }
+                conditions_initiales {
+                        vitesse Champ_Uniforme 2 0. 0.
+                        }
+                boundary_conditions {
+                        entree  frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2 1. 0.
+                        sortie  frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+                        paroi symetrie
+                }
+        }
+        Postraitement
+        {	
+		Definition_champs {
+			erreur_pression_pa Transformation {
+				methode formule expression 1 pression_pa-(x<1.)*1/4
+				source refChamp {
+					Pb_Champ pb pression_pa nom_source pression_pa 
+				}
+				localisation elem
+			} 
+  		}
+		Sondes {
+			vitesse vitesse periode 0.0001 point 1 1. 0.5
+		}
+                format lml
+                Champs dt_post 1.
+                {
+                        erreur_pression_pa elem
+			pression_pa elem
+                        vitesse elem
+                        porosite_volumique elem
+                }
+        }
+}
+
+Solve pb
+Fin

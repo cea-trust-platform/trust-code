@@ -1,0 +1,145 @@
+# Thermohydraulique 2D couplee a conduction 2D #
+# PARALLEL OK 8 #
+
+dimension 2
+
+Domaine dom1
+Domaine dom2
+
+# BEGIN MESH #
+Mailler dom1 {
+  Pave Cavite1 {
+    Origine 0 0
+    Nombre_de_Noeuds 5 5
+    Longueurs 1 1
+  }
+  {
+    Bord Gauche1 X = 0  0 <= Y <= 1
+    Bord Haut1   Y = 1  0 <= X <= 1
+    Bord Bas1    Y = 0  0 <= X <= 1
+    raccord local homogene Droit1  X = 1  0 <= Y <= 1
+  }
+}
+
+Mailler dom2 {
+  Pave Cavite2 {
+    Origine 1 0
+    Nombre_de_Noeuds 5 5
+    Longueurs 1 1
+  }
+  {
+    raccord local homogene Droit1   X = 1  0 <= Y <= 1
+    Bord Haut2     Y = 1  1 <= X <= 2
+    Bord Bas2      Y = 0  1 <= X <= 2
+    Bord Droit2    X = 2  0 <= Y <= 1
+  }
+}
+
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom1
+{
+	Partitionneur metis { Nb_parts 2 }
+	Larg_joint 1
+	Nom_Zones DOM1
+}
+Partition dom2
+{
+	Partitionneur metis { Nb_parts 2 }
+	Larg_joint 1
+	Nom_Zones DOM2
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM1.Zones dom1
+Scatter DOM2.Zones dom2
+END SCATTER #
+
+VDF dis
+
+Pb_conduction pb1
+Pb_conduction pb2
+
+Sch_CN_iteratif sch
+Lire sch {
+  tinit 0
+  nb_pas_dt_max 10
+  dt_start dt_calc
+  facsec_max 1.9
+  dt_impr 1
+  dt_sauv 1000
+}
+
+Solide sol1
+Lire sol1 {
+  rho Champ_Uniforme 1 10
+  lambda Champ_Uniforme 1 1 
+  Cp Champ_Uniforme 1 1000
+}
+
+Solide sol2
+Lire sol2 {
+  rho Champ_Uniforme 1 20
+  lambda Champ_Uniforme 1 1
+  Cp Champ_Uniforme 1 1000
+}
+
+Associate pb1 dom1
+Associate pb1 sol1
+
+Associate pb2 dom2
+Associate pb2 sol2
+
+Probleme_Couple pbc
+Associate pbc pb1
+Associate pbc pb2
+Associate pbc sch
+Discretize pbc dis
+
+Lire pb1 {
+  Conduction {
+    diffusion { }
+    conditions_initiales {
+      temperature Champ_Uniforme 1 0
+    }
+    boundary_conditions {
+      Gauche1 paroi_adiabatique
+      Haut1 paroi_adiabatique
+      Bas1 paroi_adiabatique
+      Droit1 Paroi_contact pb2 Droit1
+    }
+  }
+  Postraitement {
+    Champs dt_post 10 {
+      temperature elem
+    }
+  }
+  sauvegarde xyz pb1.xyz
+}
+
+Lire pb2 {
+  Conduction {
+    diffusion { }
+    conditions_initiales {
+      temperature Champ_Uniforme 1 30
+    }
+    boundary_conditions {
+      Droit1 Paroi_contact pb1 Droit1
+      Haut2 paroi_adiabatique
+      Bas2 paroi_adiabatique
+      Droit2 paroi_adiabatique
+    }
+  }
+  Postraitement {
+    Champs dt_post 10 {
+      temperature elem
+    }
+  }
+  sauvegarde xyz pb2.xyz
+}
+
+Solve pbc
+Fin

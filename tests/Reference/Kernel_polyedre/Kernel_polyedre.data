@@ -1,0 +1,12 @@
+dimension 3
+domaine dom
+Lire_med dom FluidMesh_1 NC_hexaedrons_fluidmesh_polyhedra.med
+Ecrire_fichier dom dom.geom
+Ecrire_med dom toto.med
+domaine dom2
+Lire_med dom2 dom toto.med
+Ecrire_fichier dom2 dom2.geom
+discretiser_domaine dom2
+Postraiter_domaine { domaine dom2 format lml }
+Postraiter_domaine { domaine dom2 format med }
+fin

@@ -1,0 +1,5 @@
+#!/bin/bash
+args=$1
+[ "$UTILISE_APPACHE" = "1" ] && . $HOME/HTML/recharger_env
+args=`echo $args | $TRUST_Awk -F"&" '{gsub("\\\+"," ",$0);n=split($0,a,"&");for (i=0;i<n;i++) print a[i+1]}'`
+echo "<html><body>"$args"</body></html>"

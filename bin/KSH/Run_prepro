@@ -1,0 +1,63 @@
+#!/bin/bash
+#----------------
+#env  pour PRE_TRIO
+#----------------
+. $TRUST_ENV/prepost.env
+
+# Modification des valeurs par defaut (ETUDES sur le compte triou) si un argument :
+NOM=$1
+if [ ${#NOM} = 0 ]
+then
+   ETUDE=""
+   if [ ! -d $PRE_TRIO/ETUDES ]
+   then
+      mkdir $PRE_TRIO/ETUDES
+   fi
+   if [ ! -d $PRE_TRIO/ETUDES/CAD ]
+   then
+      mkdir $PRE_TRIO/ETUDES/CAD
+   fi
+   $MAILLEUR_TRIO/exe/Trio
+else
+   ETUDE=`dirname $NOM`
+   if [ ! -d $ETUDE ]
+   then
+      echo "Le repertoire $ETUDE est inexistant."
+      eval $FIN
+   else
+      cd $ETUDE
+   fi
+   if [ ! -f $NOM.GCA ]
+   then
+      echo "Le fichier $NOM.GCA est inexistant."
+      eval $FIN
+   fi
+   STUDIES_DIR=$ETUDE/ETUDES_PREPRO
+   export STUDIES_DIR=$ETUDE/ETUDES_PREPRO
+   STUDIES_LIST=$STUDIES_DIR/liste_des_etudes
+   export STUDIES_LIST
+   USER_FILE=$HOME/.list_dir_user
+   export USER_FILE
+# Verification de l'existence du repertoire des etudes prepro
+   if [ ! -d $STUDIES_DIR ]
+   then
+      mkdir $STUDIES_DIR
+   fi
+# Verification de l'existence du repertoire de CAO
+   if [ ! -d $STUDIES_DIR/CAD ]
+   then
+      mkdir $STUDIES_DIR/CAD
+   fi
+# Test sur le nombre de caracteres a prevoir !!
+# Plus d'autres liens eventuels avec des noms limites 15 caracteres :
+   NOMGCA=`basename $NOM.GCA`
+   if [ ${#NOMGCA} -gt 15 ]
+   then
+      NOMGCA=`echo $NOMGCA | $TRUST_Awk '{print substr($1,1,11)}'`.GCA
+   fi
+   rm -f $STUDIES_DIR/CAD/$NOMGCA && ln -s -f $NOM.GCA $STUDIES_DIR/CAD/$NOMGCA
+# Lancement du PREPRO :
+   pretrio=$MAILLEUR_TRIO/exe/Trio
+   #   $Xterm $HautDroit_geometrie -title "PREPRO" -e $pretrio
+   $pretrio
+fi

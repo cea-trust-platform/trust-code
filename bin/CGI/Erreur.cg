@@ -1,0 +1,6 @@
+#!/bin/bash
+echo "<HTML><HEAD><META HTTP-EQUIV=\"pragma\" CONTENT=\"no-cache\"></HEAD>
+<SCRIPT LANGUAGE=JavaScript>
+alert('$1');
+</SCRIPT>
+</HTML>"

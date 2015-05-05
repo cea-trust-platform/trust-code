@@ -1,0 +1,45 @@
+#!/bin/bash
+# Simulation de la commande GNU mktemp
+# Usage mktemp_ [-d]
+if [ "$1" != "" ] && [ "$1" != "-d" ]
+then
+   echo "Option $1 non reconnu pour mktemp_"
+   exit -1
+fi
+# Est ce que mktemp -p fonctionne ?
+test=`mktemp -p $TRUST_TMP 2>/dev/null`
+if [ $? = 0 ]
+then
+   # Provisoire
+   debug=1 && [ "$HOST" != veymont ] && debug=0
+   debug=0
+   # Pour creer un item temporaire sous $TRUST_TMP et pas $TMPDIR par defaut
+   if [ $debug = 0 ]
+   then
+      (unset TMPDIR;mktemp $1 -p $TRUST_TMP)
+   else
+      a=`(unset TMPDIR;mktemp $1 -p $TRUST_TMP)`
+      echo $a
+      [ -d $a ] && ps -efl | awk -v pid=$PPID '($4==pid) {print $0}' > $a/parent
+      [ -f $a ] && ps -efl | awk -v pid=$PPID '($4==pid) {print $0}' > $TRUST_TMP/parent_`basename $a`
+   fi
+else
+   tmp=$TRUST_TMP/tmp.$$
+   while [ -f $tmp ] || [ -d $tmp ]
+   do
+      # Fichier ou repertoire deja existant, on incremente le numero
+      let num=$$+1
+      tmp=$TRUST_TMP/tmp.$num
+   done   
+   if [ "$1" = "-d" ]
+   then
+      mkdir $tmp 
+      chmod 700 $tmp
+   else
+      touch $tmp
+      chmod 600 $tmp
+   fi
+   echo $tmp
+fi
+rm -r -f $test
+

@@ -1,0 +1,222 @@
+#!/bin/bash
+# Script principal pour la generation d'un rapport automatique.
+# Utilisation:
+#  1) On suppose que le repertoire courant contient repertoire ./src
+#  2) Run ./src/fichier.prm [ -dest dir ] [ -not_run ] | [ -post_run ] | [ -suite_run ] [ -test_run ] [ -get_list_cas_nr ] [ -aprallel_run ] [ -nb_pas_dt_max N ] [ -archive ]
+#  3) Le script genere un rapport dans ./build/rapport.pdf
+
+
+usage()
+{
+echo  "Run ./src/fichier.prm [ -help ] [  -dest dir dir ] [ -not_run ] | [ -post_run ] | [ -suite_run ] [ -test_run ] [ -get_list_cas_nr ] [ -aprallel_run ] [ -nb_pas_dt_max N ] [ -archive ] $*"
+echo the other options are passed to genererCourbes.py
+exit 0
+}
+# Chargement de l'environnement Python si necessaire
+#Provisoire pour voir quelles machines ont besoin de python
+#[ -f $TRUST_ROOT/exec/python/env.sh ] && source $TRUST_ROOT/exec/python/env.sh
+
+# Pb latex si DEST est defini
+unset DEST
+
+DIR=`dirname $0`
+DIR=`(cd $DIR; pwd)`
+export PATH=${PATH}:$DIR/scripts
+
+prm=$1
+
+[ "$1" = "-help" ] && usage
+shift
+
+[ "$1" = "-help" ] && usage
+run=1
+parallel=0
+orig="."
+if [ "$1" = "-dest" ]
+then
+    orig=`pwd`
+    shift
+    dest=$1
+    shift
+    mkdir -p $dest
+    [ ! -d $dest ] && echo "-> Directory $dest does not exist!" && exit 1 
+    cd $dest
+fi
+[ "$1" = "-not_run" ] && run=0 && shift
+[ "$1" = "-post_run" ] && run=2 && suff=post&& shift
+[ "$1" = "-suite_run" ] && run=2 && suff=suite&& shift
+[ "$1" = "-test_run" ] && run=2 && suff=test&& shift
+[ "$1" = "-get_list_cas_nr" ] && run=-1 && shift
+[ "$1" = "-get_nb_cas_nr" ] && run=-2 && shift
+[ "$1" = "-parallel_run" ] && parallel=1 && shift
+[ "$1" = "-nb_pas_dt_max" ] && shift && NBPASMAX=$1 && shift
+prm=`basename $prm .prm`.prm
+if [ "$1" = "-archive" ] 
+then
+  sh $DIR/archive_resultat $prm
+  exit
+fi
+if [ ! -d $orig/src ]
+then
+    echo "-> Error! Directory src does not exist."
+    exit
+fi
+if [ ! -f "$orig/src/$prm" ]
+then
+    echo "-> Error! Report template file $prm does not exist."
+    exit
+fi
+
+
+# Copy content of src directory to build directory go to ./build directory and
+# execute "./prepare" script (if exists).
+# WARNING: prepare_gen is executed even if -not_run is given
+#  otherwise modifications of src/*.prm files won't be taken into account:
+if [ $run -ne -2 ]
+    then
+    $DIR/prepare_gen $orig || exit -1
+    if [ "$NBPASMAX" != "" ] 
+	then
+	echo "We modify .data to run only on $NBPASMAX time step"
+	for jdd in `find build -name '*'.data`
+	  do
+          mv $jdd $jdd.save
+	  # comme dans copie_cas_test sans le solveur 
+	    $TRUST_Awk -v NBPASMAX=$NBPASMAX '/tinit/ {print $0;print "\tnb_pas_dt_max", NBPASMAX ;getline}\
+   !/nb_pas_dt_max/ {print $0}\
+' $jdd.save > $jdd
+	done
+    fi
+    # dans le cas ou on copie le cas test on verifie que le prm est identique dans src et dans build (cas des prm generes par prepare)
+    if [ $run -eq -1 ]
+	then
+	modif=`diff $orig/src/*prm build/${prm}`
+	if [ "$modif" != "" ]
+	then 
+	    echo "-> Problem with $orig/src/*prm and build/${prm}" >/dev/stderr
+	    echo "-> There is a difference between the prm file in build directory and the prm file in the src directory." >/dev/stderr
+	    diff $orig/src/*prm build/${prm} >/dev/stderr
+	    mv build build_err
+	    exit -1    
+	fi
+    fi
+else
+# $DIR/prepare_gen $orig
+    mkdir -p build
+    cd build
+    ln -s $orig/src/* .
+    cd ..
+fi
+# If "run" requested, run triou testcases and PreRequis command found in the
+# header of the .prm file
+
+cd build
+if [ $run -eq 1 ]
+then
+  python $DIR/src/genererCourbes.py --get_cmd_to_run=yes  -p $prm $*   > cmds
+  get_version
+  echo "================================================"
+  echo "-> Running commands in the ./build/cmds file ..."
+  echo "================================================"
+  if [ "$parallel" = 0 ]
+  then
+     sh cmds
+  else
+     ########################
+     # En lancement parallele, on cree des fichiers de nom cmdsN.sh sans le post_run et un fichier post_run.sh contenant les commandes post_run faites sequentiellement
+     ########################
+     rm -f post_run.sh
+     nb_tasks=`echo | awk -F";" '/\( echo/ {\
+     n++;size=split($5,a," ");\
+     if (size==5) nb_cpus+=a[3];else nb_cpus++;\
+     cmds="cmds"n".sh";cmds_log="cmds"n".log";\
+     print $1";"$2";"$3";"$4";"$5") 1>"cmds_log" 2>&1" > cmds;\
+     print $1";"$3";"$6";"$7 >> "post_run.sh"}\
+     !/\( echo/ {print $0 >> "post_run.sh"}\
+     END {print n " calculations is run on a total of "nb_cpus" CPUs ..."}' cmds`
+     echo $nb_tasks
+     nb_cmds=`ls cmds*.sh 2>/dev/null | wc -l`
+     # On boucle et on execute chaque commande
+     processes=""
+     let n=1
+     for cmd in cmds*.sh 
+     do
+        sh ./$cmd &
+        processes=$processes" "$!
+	task[$n]=$!
+	let n=$n+1
+     done
+     while [ "$processes" != "" ]
+     do
+        for process in $processes
+        do
+	   if [ "`kill -0 $process 2>/dev/null;echo $?`" != 0 ]
+	   then
+	      # Recherche du calcul qui a fini:
+	      let i=1
+	      while [ ${task[$i]} != $process ] && [ $i -lt $n ]
+	      do
+	         let i=$i+1
+	      done
+	      log=cmds$i.log
+	      task=cmds$i.sh
+	      echo "Calculation $i has finished. See $log."
+              rm -f $task  
+	      processes=`echo $processes | sed "1,$ s?$process??g"`
+	   fi
+        done
+	sleep 1
+     done
+     # Lancement du post_run 
+     sh ./post_run.sh
+  fi
+fi
+if [ $run -eq 2 ]
+then
+  python $DIR/src/genererCourbes.py --get_cmd_to_run=${suff}_run  -p $prm $*   > cmds_${suff}
+#  get_version
+  echo "========================================================"
+  echo "-> Running commands in the ./build/cmds_${suff} file ..."
+  echo "========================================================"
+  sh cmds_${suff}
+fi
+
+if [ $run -le -1 ]
+then
+    list_tot=`python $DIR/src/genererCourbes.py -p $prm  --get_cmd_to_run=yes| grep get_total_time | sed "s/\.perf/.data/g" | sed "s/get_total_time//" | sed "s/\.\///g"  `
+    if [ -f liste_cas_exclu_nr ]
+	then
+	list_cas_nr="" 
+	for cas in $list_tot
+	  do
+	  if [ "`grep $cas liste_cas_exclu_nr`" = "" ]
+	      then
+	      list_cas_nr=${list_cas_nr}" "$cas
+	  else
+	      echo not_in_nr    $cas not in nr
+	  fi
+	done
+	echo "liste_cas_nr" $list_cas_nr 
+    else
+	echo "liste_cas_nr" $list_tot
+    fi
+    exit
+fi
+if [ $run -ne 0 ]
+then
+    if [ "`grep erreur_calcul temps_total`" != "" ]
+    then 
+	echo
+	echo 
+	cat temps_total
+	echo
+	echo
+	echo "-> Error in: python $DIR/src/genererCourbes.py -p $prm $*"
+	echo "-> Search and fix all the previous errors."
+	exit 1
+    fi
+fi
+echo "=============================="
+echo "-> Building PDF report file..."
+echo "=============================="
+python $DIR/src/genererCourbes.py -p $prm $*

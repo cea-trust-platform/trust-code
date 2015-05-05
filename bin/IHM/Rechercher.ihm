@@ -1,0 +1,67 @@
+#!/bin/bash
+
+cd $TRUST_ROOT
+echo $ECHO_OPTS "Enter matching pattern(possible blanks) to"
+echo $ECHO_OPTS "make a search in TRUST source files :"
+echo $ECHO_OPTS "-------------------------------------"
+read NOM
+fichier=$rep_dev/.Recherche.html
+# Ecriture du fichier :
+echo $ECHO_OPTS "<!--NewPage-->
+<html>
+<head>
+<title> Matching pattern</title>
+</head>
+<body>
+<SCRIPT Language=JavaScript>
+function view(url) {
+var i = new Image();
+i.src = url; }
+</SCRIPT>
+<BODY BGCOLOR="#C5D5D5" TEXT="#23238E" LINK="#E47833" ALINK="#007FFF" VLINK="#007FFF">
+<a href=$TRUST_ROOT/doc/TRUST.html>TRUST </a> | <a href=$rep_dev/.Atelier.html>Development</a> | <a href=$rep_dev/.Fichiers_atelier.html>Atelier</a><br>
+<PRE>
+<HR><h1>Matching pattern '$NOM' :</h1><HR>" > $fichier
+
+nb=0
+echo $ECHO_OPTS "\nWaiting for ...\c"
+ROOTS=$TRUST_ROOT
+[ ${#DIPHA_ROOT} != 0 ] && ROOTS=$DIPHA_ROOT" "$ROOTS
+for ROOT in $ROOTS
+do
+   [ $ROOT = $TRUST_ROOT ] && reps=$TRUST_ENV/rep.TRUST
+   [ ${#DIPHA_ROOT} != 0 ] && [ $ROOT = $DIPHA_ROOT ] && reps=$DIPHA_ENV/rep.dipha
+   for rep in `cat $reps`
+   do
+       dir=$ROOT/$rep
+       echo $ECHO_OPTS ".\c"
+       cd $dir
+       liste=`ls *.cpp 2>/dev/null`
+       liste=$liste" "`ls *.h 2>/dev/null`
+       for file in $liste
+       do
+          xx=`grep "$NOM" $file`
+          if [ "$xx" != "" ]
+          then
+             let nb=$nb+1
+             rep=${dir#$ROOT/.}
+echo $ECHO_OPTS "<h3><a href=javascript:view(\"http://localhost:$PORT/Edit.cg?$rep/$file.\") onMouseOver=\"status='Edit file on read-only mode.'\">Edit</a> | <A HREF=javascript:view(\"http://localhost:$PORT/Copy_atelier.cg?$rep/$file.\") onMouseOver=\"status='Copy file to modify into your $HOME/atelier directory.'\">Modify</a> | <A HREF=javascript:view(\"http://localhost:$PORT/Checkout.cg?$rep/$file.\") onMouseOver=\"status='Checkout file to modify it with Git.'\">Checkout</a>  File $file</h3>
+$xx
+<HR>" >> $fichier
+         fi
+      done
+   done
+done
+
+echo $ECHO_OPTS "</body>
+</html> " >> $fichier
+
+if [ $nb -gt 0 ]
+then
+   echo $ECHO_OPTS "\n"$nb" Occurrences found."
+   echo $ECHO_OPTS "Click on Result"
+else
+   echo $ECHO_OPTS "\nNo occurence found."
+fi
+sleep 3
+

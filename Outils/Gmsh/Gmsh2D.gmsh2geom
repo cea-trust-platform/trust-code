@@ -1,0 +1,16 @@
+nom_du_domaine domaine
+
+dimension 2
+
+calcul_en_bidim_axi n
+nombre_de_zones_physiques_detectees 5
+
+nom_et_numero_de_la_zone MAILLAGE_SURFACIQUE 6
+
+presence_de_raccords n
+
+nom_et_numero_des_bords 
+bas 1
+droit 2
+haut 3
+gauche 4

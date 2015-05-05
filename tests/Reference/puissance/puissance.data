@@ -1,0 +1,115 @@
+# Conduction 2D : Sources volumiques de puissance #
+# PARALLEL OK 8 #
+dimension 2
+
+Pb_conduction pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Cavite 
+ 	{
+		Origine 0. 0.
+		Nombre_de_Noeuds 25 2
+		Longueurs 1. 1.
+	}
+	{
+		Bord Gauche X = 0. 0. <= Y <= 1.
+		Bord Haut   Y = 1. 0. <= X <= 1.
+		Bord Bas    Y = 0. 0. <= X <= 1.
+		Bord Droit  X = 1. 0. <= Y <= 1.
+	}
+} 
+Sous_Zone zone1
+Associate zone1 dom
+Lire zone1 {
+    Rectangle
+      Origine 0.3333333 0.
+      Cotes   0.3333333 1. }
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 1
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+Sous_Zone zone1
+Associate zone1 dom
+Lire zone1 { Fichier zone1.ssz }
+END SCATTER #
+
+VDF dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0
+	tmax 0.4
+	dt_min 0.0001
+	dt_max 10.
+	dt_impr 0.0001
+	dt_sauv 100
+	seuil_statio 1.e-8
+	facsec 0.5
+}
+
+Solide sol
+Lire sol
+{
+	rho Champ_Uniforme 1 2
+	lambda Champ_Uniforme 1 2.
+	Cp Champ_Uniforme 1 0.5
+}
+Associate pb dom
+Associate pb sch
+Associate pb sol
+
+Discretize pb dis
+
+Lire pb
+{
+	Conduction
+	{
+		diffusion { }
+		sources {
+			Puissance_thermique Champ_Uniforme_Morceaux dom 1
+				{ defaut 0. zone1 6. }
+		}
+		conditions_initiales {
+			temperature Champ_Uniforme 1 0. 
+			}
+		boundary_conditions {
+			Haut paroi_adiabatique
+			Bas paroi_adiabatique
+			Droit  paroi_temperature_imposee
+			       Champ_Front_Uniforme 1 1.
+			Gauche  paroi_temperature_imposee 
+			       Champ_Front_Uniforme 1 0.
+		}
+	}
+
+	Postraitement
+	{
+		Sondes
+		{
+			sonde temperature periode 0.01 segment 10 0.05 0.5 0.95 0.5
+		}
+		Champs dt_post 0.01
+		{
+			temperature elem
+			temperature som
+		}
+	}
+}
+
+Solve pb
+Ecrire sol    
+Fin

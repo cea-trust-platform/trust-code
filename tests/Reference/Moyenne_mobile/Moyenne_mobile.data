@@ -1,0 +1,111 @@
+# Validation statistiques_en_serie #
+# PARALLEL OK #
+dimension 3
+Pb_Hydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+	{
+		Origine 0. 0. 0.
+		Nombre_de_Noeuds 5 10 5
+		Longueurs 6.283185307 2.0 3.141592653
+	}
+	{
+		Bord entree  X = 0.            0. <= Y <= 2.0           0. <= Z <= 3.141592653
+		Bord sortie  X = 6.283185307   0. <= Y <= 2.0           0. <= Z <= 3.141592653 
+		Bord perioy  Y = 0.            0. <= X <= 6.283185307   0. <= Z <= 3.141592653
+		Bord perioy  Y = 2.            0. <= X <= 6.283185307   0. <= Z <= 3.141592653
+                Bord perioz  Z = 0.            0. <= X <= 6.283185307   0. <= Y <= 2.0
+		Bord perioz  Z = 3.141592653   0. <= X <= 6.283185307   0. <= Y <= 2.0   	
+	}
+}
+Tetraedriser dom
+Corriger_frontiere_periodique { Domaine dom Bord perioy }
+Corriger_frontiere_periodique { Domaine dom Bord perioz }
+
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur Metis { Nb_parts 2 }
+	Larg_joint 2
+	Nom_Zones DOM
+	Periodique 2 perioy perioz
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+Runge_Kutta_ordre_3 sch
+Lire sch
+{
+        tinit 9.00
+	tmax 19.99
+	dt_max 0.05
+	dt_impr 1
+	dt_sauv 1
+}
+
+Fluide_Incompressible air
+Lire air
+{
+	mu Champ_Uniforme 1 0.01
+	rho Champ_Uniforme 1 1
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb air
+
+Discretize pb dis
+
+# On impose U(t)=1+cos(t*Pi) #
+# Donc Moy(U)(n*dt_integr)=1 et Ect(U)(n*dt_integr)=Sqr(2)/2 #
+Lire pb
+{
+	Navier_Stokes_Standard
+	{
+		solveur_pression petsc cholesky { }
+		convection { negligeable }
+		diffusion  { negligeable }
+		conditions_initiales {
+			vitesse champ_uniforme 3 0. 0. 0.
+		}
+		boundary_conditions {
+			entree  frontiere_ouverte_vitesse_imposee champ_front_fonc_txyz 3 1+cos(t*3.141592653) 0. 0. 
+			sortie  frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.
+			perioy  periodique 
+			perioz  periodique
+		}
+         }	      
+	Postraitement
+	{
+	     Sondes
+	        {
+	           	vitesse 		vitesse 		periode 0.01 points 1 3 1 1
+			moyenne_vitesse 	moyenne_vitesse		periode 0.01 points 1 3 1 1
+			ecart_type_vitesse 	ecart_type_vitesse	periode 0.01 points 1 3 1 1
+	        }
+		Champs dt_post 2
+		{
+			vitesse som
+		}
+		Statistiques_en_serie dt_integr 2
+		{
+			t_deb 0. t_fin 100.
+			moyenne 	vitesse 
+			ecart_type 	vitesse
+		} 
+	}
+	reprise formatte prepare.sauv
+}
+
+Solve pb
+Fin

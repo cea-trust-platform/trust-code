@@ -1,0 +1,159 @@
+# Verification de Reduction_0D #
+# Le cas test consiste a mettre un champ de temperature #
+# lineaire allant de 2000 a 0 entre x=0 et x=1      #
+# la moyenne ponderee doit toujours etre = 1000 (face, elem ou som) #
+# la moyenne non ponderee sera differente de 1000 si le maillage est fortement irregulier #
+# PARALLEL OK #
+dimension 2
+Pb_Thermohydraulique pb
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Cavite 
+		{
+		Origine 0. 0.
+     		Nombre_de_Noeuds 3 3
+		Longueurs 1. 1.
+		Facteurs 5. 5.
+		}
+		{
+		Bord Gauche	X = 0.	0. <= Y <= 1.
+		Bord Haut	Y = 1.	0. <= X <= 1.
+		Bord Bas	Y = 0.	0. <= X <= 1.
+		Bord Droit	X = 1.	0. <= Y <= 1.
+		}
+}
+Trianguler_H dom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+        Partitionneur metis { Nb_parts 2 }
+        Larg_joint 2
+        Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit	0.
+	tmax	1.
+	dt_min	0.00001
+	dt_max	1.
+	dt_impr	0.0001
+	dt_sauv	100
+	seuil_statio	1.e-8
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu	Champ_Uniforme 1 1.85e-5
+	rho	Champ_Uniforme 1 1.17
+	lambda	Champ_Uniforme 1 0.0262 
+	Cp	Champ_Uniforme 1 1006
+	beta_th	Champ_Uniforme 1 3.41e-3
+}
+
+Champ_Uniforme gravite
+Lire gravite 2 0 -9.81
+
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-12 impr }
+		projection_initiale 0
+		convection { amont }
+		diffusion { }
+		conditions_initiales { vitesse Champ_Uniforme 2 0. 0. }
+		boundary_conditions
+		{
+			Haut	symetrie
+			Bas	symetrie
+			Gauche	symetrie
+			Droit	symetrie
+		}
+	}
+	Convection_Diffusion_Temperature
+	{
+		diffusion { }
+		convection { amont }
+		boundary_conditions 
+		{
+			Haut	symetrie
+			Bas	symetrie
+ 			Gauche	symetrie
+			Droit	symetrie
+		}
+		conditions_initiales { Temperature Champ_fonc_xyz dom 1 2000.-2000*x }
+	}
+	Postraitement
+	{
+		Definition_champs 
+		{
+		  mean_temperature_elem_ponderee Reduction_0D
+		   {
+			methode moyenne_ponderee
+			source Interpolation
+			{
+				localisation elem
+				source refChamp { Pb_champ pb temperature }
+			}
+		   }	
+		  mean_temperature_som_ponderee Reduction_0D
+		   {
+			methode moyenne_ponderee
+			source Interpolation
+			{
+				localisation som
+				source refChamp { Pb_champ pb temperature }
+			}
+		   }	
+		  mean_temperature_face_ponderee Reduction_0D
+		   {
+			methode moyenne_ponderee
+			source refChamp { Pb_champ pb temperature }
+		   }	
+		  mean_temperature_pas_ponderee Reduction_0D
+		   {
+			methode moyenne
+			source refChamp { Pb_champ pb temperature }
+		   }	
+		}
+		Sondes
+		{
+			sonde_mean_temperature_elem mean_temperature_elem_ponderee periode 0.01 point 1 0.5 0.5
+			sonde_mean_temperature_som  mean_temperature_som_ponderee  periode 0.01 point 1 0.5 0.5
+			sonde_mean_temperature_face mean_temperature_face_ponderee periode 0.01 point 1 0.5 0.5
+			sonde_mean_temperature      mean_temperature_pas_ponderee  periode 0.01 point 1 0.5 0.5
+		}
+		Champs dt_post 0.01
+		{
+			temperature	elem
+			mean_temperature_elem_ponderee
+			mean_temperature_som_ponderee
+			mean_temperature_face_ponderee	elem
+			mean_temperature_pas_ponderee	elem
+		}
+	}
+}
+Solve pb
+Fin
+

@@ -1,0 +1,33 @@
+Parameters {
+	Title "verification k_eps vef"
+	Description "Calculs menes en periodique"
+	Author "G.F."
+	TestCase "Marche_incline" "Marche.data"
+	TestCase "Marche_incline" "Marche_y.data"
+	TestCase "Marche_incline" "Marche_incline.data"
+	#prerequis "./rotate_lml"
+}
+
+Chapter {
+
+	Title "Profil de vitesse"
+	Description " voir data... 
+Table {
+	nb_columns 2
+	label erreur marche_y|erreur marche_incline
+	line {
+	legend ""
+	origin "Trio_U"
+	file Marche_incline/erreur
+	}
+	}
+Table {
+	nb_columns 3
+	label "Marche|Marche_y|Marche_incline"
+	line {
+	legend "temps CPU(s)"
+	origin "Trio_U"
+	file Marche_incline/TU
+	}
+}
+}

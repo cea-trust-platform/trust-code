@@ -1,0 +1,53 @@
+dimension 3
+Pb_thermohydraulique pb
+export domaine DOM
+PrecisionGeom 7.e-7
+# BEGIN MESH #
+Read_file DOM trio_DOM_geo.geom
+VerifierCoin DOM { }
+
+Reorienter_tetraedres DOM
+Dilate  DOM 0.001
+
+
+domaine dom2
+extract_2d_from_3d DOM W7 dom2
+
+domaine dom3
+extract_2d_from_3d DOM W4 dom3
+
+domaine dom1
+extract_2d_from_3d DOM W2 dom1
+
+dimension 2
+extruder_en3 { domaine 3 dom1 dom2 dom3 nb_tranches 2 direction 0. 0. 0.05 }
+
+dimension 3
+
+transformer dom1 x z y
+transformer dom2 x z y
+transformer dom3 x z y
+
+transformer dom1 x y+0.085 z
+transformer dom2 x y+0.085 z
+transformer dom3 x y+0.085 z
+
+
+supprime_bord DOM { PLATE }
+
+
+domaine DOMF
+Mailler DOMF { domain DOM , domain dom1 , domain dom2 , domain dom3 }
+
+VerifierCoin DOMF { }
+Reorienter_tetraedres DOMF
+
+Postraiter_domaine { domaine DOMF format lml fichier Extract_2D_from_3D }
+
+# END MESH #
+
+# BEGIN PARTITION #
+
+Fin
+# END PARTITION #
+

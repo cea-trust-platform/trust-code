@@ -1,0 +1,17 @@
+# Appel pour tester tous les solveurs sur le cas test
+Check_solver.sh -all
+err=$?
+# Verification plus severe de la non regression sur TRUST_HOST_ADMIN
+if [ $err = 0 ] && [ $HOST = $TRUST_HOST_ADMIN ]
+then
+   ranking=`ls -rt ranking.* | tail -1`
+   if [ "`grep parallele $ranking`" = "" ]
+   then
+      ./check_ranking `ls -rt ranking.* | tail -1` 1657 2.e-7 34 0.30
+      err=$?
+   else
+      ./check_ranking `ls -rt ranking.* | tail -1` 1796 2.e-7 70 0.35
+      err=$?
+   fi
+fi
+exit $err

@@ -1,0 +1,551 @@
+#! /usr/bin/env sh
+# --
+# Author : Eli LAUCOIN (CEA)
+# --
+
+baltik_environnement_error() {
+    echo "-----------------------------------------"
+    echo "ERROR : undefined variable BALTIK_ROOT   "
+    echo ""
+    echo "Please, install BALTIK and run :         "
+    echo "  source /path/to/BALTIK/bin/baltik_init "
+    echo "-----------------------------------------"
+    echo ""
+    exit 1
+}
+
+baltik_environnement_init()
+{
+	script=$0
+	bindir=`dirname $script`
+	cd `dirname $bindir`
+	pwd
+}
+
+# initialisation de l'etat de la variable BALTIK_ROOT
+BALTIK_ROOT=`baltik_environnement_init`
+# verification de l'etat de la variable BALTIK_ROOT
+if [ "${BALTIK_ROOT}" = "" ]
+then
+    baltik_environnement_error
+fi
+
+# chargement des fonctions d'affichage des messages d'erreur
+. ${BALTIK_ROOT}/bin/baltik_errors
+
+# chargement des fonctions d'analyse d'un fichier de configuration
+. ${BALTIK_ROOT}/bin/baltik_configuration_parsing
+
+# chargement des fonctions de gestion des dependances
+. ${BALTIK_ROOT}/bin/baltik_dependencies_management
+
+# chargement des fonctions de correspondance nom variable OPT
+. ${BALTIK_ROOT}/bin/baltik_OPT_management
+
+
+# verification/chargement de trio_u
+. ${BALTIK_ROOT}/bin/baltik_check_init_triou
+
+
+# verification de l'etat de la variable TRUST_ROOT
+if [ "${TRUST_ROOT}" = "" ]
+then
+    triou_environnement_error
+fi
+
+echo "Initialisation ..."
+
+# verification de la presence d'un fichier de configuration
+project_directory=`pwd`
+project_configuration_file="${project_directory}/project.cfg"
+if  [ ! -e $project_configuration_file ] || [ ! -f $project_configuration_file ] 
+then
+    no_configuration_file_error "$project_directory=$"
+fi
+
+# extraction de la section de description du fichier de configuration
+project_description=`extract_section "$project_configuration_file" description`
+
+# extraction du nom du projet
+project_name=`extract_field "$project_description" name`
+
+# verification du nom du projet
+if [ "${project_name}" = "" ]
+then
+    undefined_project_name_error "$project_configuration_file"
+fi
+
+echo "Done."
+echo ""
+
+
+echo "Checking dependencies ..."
+
+# creation d'un fichier temporaire qui contiendra les dependances
+#mktemp: pas portable
+#dependencies_file=`mktemp $project_directory/dependencies.XXXXXXXXXXXXXXXX`
+dependencies_file=$project_directory/dependencies.tmp
+rm -f $dependencies_file;touch $dependencies_file
+trap "exit 1" HUP INT PIPE QUIT TERM
+trap "rm -f $dependencies_file" EXIT
+
+# initialisation des dependances
+dependencies="${project_name}:${project_directory}:${project_directory};"
+
+# ajout recursif des dependances
+add_dependencies "$dependencies_file" "$dependencies"
+
+# verification de la coherence des chemins
+check_dependencies "$dependencies_file"
+
+echo "Done."
+echo ""
+
+
+preconfigure=$project_directory/share/bin/pre_configure
+if [ -f $preconfigure ]
+then
+    echo "Executing $preconfigure"
+    $preconfigure
+    [ $? -ne 0 ] && echo "Error" && exit -1
+    echo "Done"
+    echo ""
+fi
+
+
+echo "Preparing sources ..."
+
+# initialisation du repertoire de construction
+project_build_directory="${project_directory}/build/src"
+rm -f $project_build_directory/* 
+
+rm -f $project_build_directory/*/CMakeCache.txt
+mkdir -p $project_build_directory
+
+# ajout des fichiers sources des differentes dependances
+while read name path
+do
+  echo "Adding source files from project $name"
+  sourcedir="$path/src"
+  for suf in h cpp f c hxx cxx
+    do
+    for sourcefile in `find  $sourcedir -follow -name "*."${suf}`
+      do
+	# filename=${sourcefile##*/}
+        filename=`basename ${sourcefile}`
+	linkfile="${project_build_directory}/${filename}"
+	if [ -e ${linkfile} ]
+	    then
+	    if [ ! ${linkfile} -ef ${sourcefile} ]
+		then
+		file_link=`ls -l ${project_build_directory}/${filename} | $TRUST_Awk '{print $NF}'`
+	      # on regarde si le source file  est dans un repertoire merged
+		dirsource=`dirname ${sourcefile}`
+		dirsource=`basename $dirsource`
+
+		if [ "$dirsource" = "merged" ]
+		    then
+		    # echo "linkfile" ${linkfile} ${file_link}
+		    # echo "source " ${sourcefile}
+		    echo "file merged ?"
+		    if [ ${sourcefile} -nt ${file_link} ]
+			then
+			echo "ok we replace ${file_link} with ${sourcefile}"
+			rm -f ${linkfile}
+			ln -s ${sourcefile} ${linkfile}
+		    else
+			echo "File in merged directory ${sourcefile} not newer that" ${file_link}
+			conflicting_files_error ${filename} ${file_link} ${sourcefile}
+		    fi
+		else
+	      # xterm
+		    conflicting_files_error ${filename} ${file_link} ${sourcefile}
+		fi
+          fi
+	else
+	    ln -s ${sourcefile} ${linkfile}
+        fi
+      done
+    done
+done < $dependencies_file
+
+echo "Done."
+echo ""
+
+echo "Verify father"
+
+father_description=`extract_section "$project_configuration_file" father_project`
+if [ "$father_description" != "" ]
+ then
+     father_name=`extract_field "$father_description" name`
+     father_location=`extract_field "$father_description" location`
+     if [ "${father_name}" = "" ] || [ "${father_location}" = "" ]
+       then
+	    echo "Error in definiton of prerequisite$number"
+	    exit 1
+       fi
+     father_location=`eval echo  $father_location` 
+     echo "father project : $father_name ($father_location)"
+     mkdir -p ${project_directory}/local
+     local_father_dir=${project_directory}/local/${father_name}
+     [ -h  ${local_father_dir} ] && rm ${local_father_dir}
+     cmd='ln -s  ${father_location}/install ${local_father_dir}'
+     echo "Ajouter des verifs de coherence name location..."
+     echo $cmd 
+     eval $cmd
+     # on recupere les prerequis du pere
+     source ${local_father_dir}/share/prerequis.sh
+
+     includes_add="${includes_add} -I${local_father_dir}/include"
+     librairies_add="-L${local_father_dir}/lib/ -l ${father_name}\${OPT} ${librairies_add}"
+     # on copie le instancie
+     cp ${local_father_dir}/share/instancie_${father_name}.cpp  ${project_build_directory}/.
+     chmod +w ${project_build_directory}/instancie_${father_name}.cpp
+     # rpertoire additionnel par encore parfait ...
+     tutu=`echo $TRUST_ROOT | awk -F\/ '{for (i=0;i<=NF;i++) {printf("../");}}'`
+    echo "rep_add=$tutu/${local_father_dir}/src" > rep_add.sh
+    echo "rep_add=${local_father_dir}/src" > rep_add.sh
+    echo "export rep_add" >>rep_add.sh
+    mv rep_add.sh ${project_build_directory}/.
+   
+ fi
+echo "Done"
+echo ""
+
+
+echo "Verify prerequies"
+[ "$includes_add" = "" ] && includes_add=""
+[ "$librairies_add" = "" ] && librairies_add=""
+cmake_flags="SET(libdeps \"\") %%"
+
+# extraction de la dependance kernel
+kernel_name=`extract_field "$project_description" kernel`
+[ "$kernel_name" != ""  ] && cmake_flags=$cmake_flags"  SET(kernel $kernel_name) %%" 
+
+# extraction des cpp_flags
+cpp_flags_name=`extract_field "$project_description" cpp_flags`
+[ "$cpp_flags_name" != ""  ] && cmake_flags=$cmake_flags"  SET(cpp_flags $cpp_flags_name) %%add_definitions(\${cpp_flags}) %% message(\"\${cpp_flags} added to CPP_FLAGS \")"
+
+if [ "$1" != "-noprerequis" ]
+then  
+total_path=""
+distrib_path=""
+while read name path
+do
+total_path=${total_path}" "$path
+distrib_path=${distrib_path}" "$name:$path
+echo "Verify prerequies project "$name
+project_directory_dep=$path
+project_dep_configuration_file=$path/project.cfg
+for number in `seq 1 20`
+do
+ # extraction de la section de description du fichier de configuration
+ prerequis_description=`extract_section "$project_dep_configuration_file" prerequisite$number`
+ if  [ "$prerequis_description" != "" ]
+ then
+    # extraction du nom du projet
+    prerequis_name=`extract_field "$prerequis_description" name`
+    echo $number prerequis found : $prerequis_name
+    prog_test=`extract_field "$prerequis_description" prog_test`
+    if [ "$prog_test" = "" ] || [ "$prerequis_name" = "" ]
+    then
+	    echo "Error in definiton of prerequisite$number"
+	    exit 1
+    fi
+    libraires_flag=`extract_field "$prerequis_description" librairies_flag`
+    includes_add="$includes_add -I${project_directory}/local/${prerequis_name}/include"
+    librairies_add="$librairies_add -L${project_directory}/local/${prerequis_name}/lib/ $libraires_flag"
+    export includes_add
+    export librairies_add
+    cmake_flags="$cmake_flags %% include_directories(${project_directory}/local/${prerequis_name}/include) "
+    for lib0 in  $libraires_flag
+    do
+       lib=`echo $lib0| sed "s?-l??"`
+       libs="lib${lib}.a"
+       [ "$lib" = "dl" ] && libs=""
+       cmake_flags="$cmake_flags %% find_library( ${lib} NAMES ${libs} ${lib} PATHS ${project_directory}/local/${prerequis_name}/lib ) %% set(libdeps  \${libdeps} \${${lib}} )"
+    done
+    export cmake_flags
+   
+    cd  ${project_build_directory}
+    arcdir=${project_directory_dep}/share/archives
+    file=${arcdir}/$prerequis_name.tar.gz
+    [ ! -f ${file} ] &&  arcdir=${project_directory_dep}/archives;file=${arcdir}/$prerequis_name.tar.gz
+    [ ! -f ${file} ] && echo $prerequis_name.tar.gz not found in ${project_directory_dep}/share/archives or in ${arcdir} && exit -2
+    ${BALTIK_ROOT}/bin/baltik_compil_prerequis $prerequis_name ${arcdir}//$prerequis_name.tar.gz  ${arcdir}/${prog_test} ${project_directory}/local/${prerequis_name} > ${project_build_directory}/$prerequis_name.LOG 2>&1
+    status=$?
+    if [ $status -ne 0 ]
+    then
+      echo "error with prerequisite ${prerequis_name}"
+      echo "see ${project_build_directory}/$prerequis_name.LOG"
+      rm -f $project_makefile
+      exit $status
+    fi
+    cd  ${project_directory}
+  fi
+done
+
+makefile=${project_build_directory}/make.include.atelier
+add_dependencies_to_makefile $makefile
+
+echo "includes_add=\"$includes_add\"" > ${project_build_directory}/prerequis.sh
+echo "librairies_add=\"$librairies_add\"" >> ${project_build_directory}/prerequis.sh
+done < $dependencies_file
+echo "Done."
+fi
+echo "project_directory =${project_directory} " >> $makefile
+
+echo ""
+file_version=${project_directory}/src/Version_kernel
+echo "Verify src/Version_kernel"
+file_version_test=${project_directory}/.Version_kernel
+echo $TRUST_VERSION > ${file_version_test}
+diff ${file_version} ${file_version_test} 
+status=$?
+if [ $status -ne 0 ]
+then
+   echo Version_kernel mis a jour
+   CHECKOUT ${file_version} 1>/dev/null 2>&1
+   cat ${file_version_test} > ${file_version}
+fi
+rm -f ${file_version_test}
+echo "Done"
+echo ""
+echo "Building Makefile ..."
+
+project_executable_name=`extract_executable_name ${project_description}`
+exec_optim=`pwd`"/"${project_executable_name}_opt
+exec_debug=`pwd`"/"${project_executable_name}
+
+project_makefile="${project_directory}/Makefile"
+if [ -e $project_makefile ]
+then
+    rm -f $project_makefile
+fi
+printf "# helplist of target\n"  >> $project_makefile
+printf "default: erreur\n" >> $project_makefile
+printf "# help help \t\t: to show this message\n">> $project_makefile
+printf "help:\n">> $project_makefile
+printf "\t@grep \"# help\" Makefile | grep -v Makefile |  sed \"s/# help//\"\n" >> $project_makefile
+printf "# help \n" >> $project_makefile
+
+printf "erreur: help\n" >> $project_makefile
+printf "\t@ exit 1 \n" >> $project_makefile
+printf "\n" >> $project_makefile
+
+list_cible=`list_type`
+for type in $list_cible
+do
+printf "# help check_$type \t: Running test suite in `human_name_from_name $type` mode \n" >>$project_makefile
+printf "check_$type : $type\n"                                  >> $project_makefile
+printf "\t@echo \"####################################\"\n"     >> $project_makefile
+printf "\t@echo \"# Running test suite in `human_name_from_name $type` mode #\"\n"     >> $project_makefile
+printf "\t@echo \"####################################\"\n"     >> $project_makefile
+printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check $type\n"               >> $project_makefile
+printf "\n"                                                     >> $project_makefile
+
+printf "# help check_deps_$type : Running dependencies test suite in `human_name_from_name $type` mode \n" >>$project_makefile
+printf "check_deps_$type : $type\n"                                  >> $project_makefile
+printf "\t@echo \"####################################\"\n"     >> $project_makefile
+printf "\t@echo \"# Running dependencies test suite in `human_name_from_name $type` mode #\"\n"     >> $project_makefile
+printf "\t@echo \"####################################\"\n"     >> $project_makefile
+printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check $type deps \n"               >> $project_makefile
+printf "\n"                                                     >> $project_makefile
+
+printf "# help check_trio_$type : Running trio test suite in `human_name_from_name $type` mode \n" >>$project_makefile
+printf "check_trio_$type : $type\n"                                  >> $project_makefile
+printf "\t@echo \"####################################\"\n"     >> $project_makefile
+printf "\t@echo \"# Running trio test suite in `human_name_from_name $type` mode #\"\n"     >> $project_makefile
+printf "\t@echo \"####################################\"\n"     >> $project_makefile
+printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check $type  trio \n"               >> $project_makefile
+printf "\n" >> $project_makefile
+
+printf "# help check_all_$type : Running all test suite in `human_name_from_name $type` mode \n" >>$project_makefile
+printf "check_all_$type : $type\n"                                  >> $project_makefile
+printf "\t@echo \"####################################\"\n"     >> $project_makefile
+printf "\t@echo \"# Running all test suite in `human_name_from_name $type` mode #\"\n"     >> $project_makefile
+printf "\t@echo \"####################################\"\n"     >> $project_makefile
+printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check $type all \n"               >> $project_makefile
+printf "\n" >> $project_makefile
+
+printf "# help check_last_pb_$type : Running last pb test suite in `human_name_from_name $type` mode \n" >>$project_makefile
+printf "check_last_pb_$type : $type\n"                                  >> $project_makefile
+printf "\t@echo \"####################################\"\n"     >> $project_makefile
+printf "\t@echo \"# Running last pb test suite in `human_name_from_name $type` mode #\"\n"     >> $project_makefile
+printf "\t@echo \"####################################\"\n"     >> $project_makefile
+printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check $type  last_pb \n"               >> $project_makefile
+printf "\n" >> $project_makefile
+#printf "check_deps_old_$type : $type\n"                                  >> $project_makefile
+#printf "\t@echo \"####################################\"\n"     >> $project_makefile
+#printf "\t@echo \"# Running test suite in `human_name_from_name $type` mode #\"\n"     >> $project_makefile
+#printf "\t@echo \"####################################\"\n"     >> $project_makefile
+#printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check $type $total_path  \n"               >> $project_makefile
+#printf "\n"  >> $project_makefile
+
+printf "# help $type \t\t: Compiling in `human_name_from_name $type` mode \n" >>  $project_makefile
+printf "$type : check_sources\n"  >> $project_makefile
+printf "\t@echo \"###########################\"\n"              >> $project_makefile
+printf "\t@echo \"# Compiling in `human_name_from_name $type` mode #\"\n"              >> $project_makefile
+printf "\t@echo \"###########################\"\n"              >> $project_makefile
+printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_build $type\n"               >> $project_makefile
+printf "\n"                                                     >> $project_makefile
+
+printf "# help module_$type \t\t: Compiling module in `human_name_from_name $type` mode \n" >>  $project_makefile
+printf "module_$type :\n"  >> $project_makefile
+printf "\t@echo \"###########################\"\n"              >> $project_makefile
+printf "\t@echo \"# Compiling in `human_name_from_name $type` mode #\"\n"              >> $project_makefile
+printf "\t@echo \"###########################\"\n"              >> $project_makefile
+printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_build module $type\n"               >> $project_makefile
+printf "\n"                                                     >> $project_makefile
+
+printf "# help \n" >> $project_makefile
+done
+printf "\n" 							>> $project_makefile
+printf "# help validation \t: Generate validation report\n">>$project_makefile
+printf "validation : optim\n"                                              >> $project_makefile
+printf "\t@echo \"########################\"\n"                 >> $project_makefile
+printf "\t@echo \"# Generate validation report #\"\n"                 >> $project_makefile
+printf "\t@echo \"########################\"\n"                 >> $project_makefile
+printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_validation\n"                     >> $project_makefile
+printf "\n"                                                     >> $project_makefile
+
+
+printf "# help check_sources_strict \t: check_sources with new rules\n">>$project_makefile
+printf "check_sources_strict :\n"                                              >> $project_makefile
+printf "\t@echo \"##################################\"\n"                 >> $project_makefile
+printf "\t@echo \"# check_sources with new rules   #\"\n"                 >> $project_makefile
+printf "\t@echo \"##################################\"\n"                 >> $project_makefile
+printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check_sources -check_file \n"                     >> $project_makefile
+printf "\n"                                                     >> $project_makefile
+
+printf "# help check_sources \t: check_sources\n">>$project_makefile
+printf "check_sources :\n"                                              >> $project_makefile
+printf "\t@echo \"########################\"\n"                 >> $project_makefile
+printf "\t@echo \"# check_sources        #\"\n"                 >> $project_makefile
+printf "\t@echo \"########################\"\n"                 >> $project_makefile
+printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check_sources || exit 0 \n"                     >> $project_makefile
+printf "\n"                                                     >> $project_makefile
+
+
+
+printf "# help clean \t\t: Cleaning environment \n">>$project_makefile
+printf "clean :\n"                                              >> $project_makefile
+printf "\t@echo \"########################\"\n"                 >> $project_makefile
+printf "\t@echo \"# Cleaning environment #\"\n"                 >> $project_makefile
+printf "\t@echo \"########################\"\n"                 >> $project_makefile
+printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_clean\n"                     >> $project_makefile
+printf "\n"                                                     >> $project_makefile
+printf "# help dist_clean \t\t: Cleaning completly environment \n">>$project_makefile
+printf "dist_clean :\n"                                              >> $project_makefile
+printf "\t@echo \"########################\"\n"                 >> $project_makefile
+printf "\t@echo \"# Cleaning completly environment #\"\n"                 >> $project_makefile
+printf "\t@echo \"########################\"\n"                 >> $project_makefile
+printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_clean dist\n"                     >> $project_makefile
+printf "\n"                                                     >> $project_makefile
+printf "# help distrib \t: Building distrib \n">>$project_makefile
+printf "distrib :\n"                                              >> $project_makefile
+printf "\t@echo \"########################\"\n"                 >> $project_makefile
+printf "\t@echo \"# Building distrib #\"\n"                 >> $project_makefile
+printf "\t@echo \"########################\"\n"                 >> $project_makefile
+printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_make_distrib $distrib_path\n"                     >> $project_makefile
+printf "\n"                                                     >> $project_makefile
+
+printf "# help distrib_clearcase \t: Building distrib from eleme,t in clearcase \n">>$project_makefile
+printf "distrib_clearcase :\n"                                              >> $project_makefile
+printf "\t@echo \"########################\"\n"                 >> $project_makefile
+printf "\t@echo \"# Building distrib_clearcase #\"\n"                 >> $project_makefile
+printf "\t@echo \"########################\"\n"                 >> $project_makefile
+printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_make_distrib -clearcase $distrib_path\n"                     >> $project_makefile
+printf "\n"                                                     >> $project_makefile
+
+printf "# help gui \t\t: Building gui \n" >> $project_makefile
+printf "gui :\n"                                              >> $project_makefile
+printf "\t@echo \"########################\"\n"                 >> $project_makefile
+printf "\t@echo \"# building gui         #\"\n"                 >> $project_makefile
+printf "\t@echo \"########################\"\n"                 >> $project_makefile
+printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_make_xdata\n"                >> $project_makefile
+printf "\n"                                                     >> $project_makefile
+
+printf "# help doxygen \t\t: Building doxygen documentation \n" >> $project_makefile
+printf "doxygen :\n"                                              >> $project_makefile
+printf "\t@echo \"###################################\"\n"                 >> $project_makefile
+printf "\t@echo \"# building doxygen documentation  #\"\n"                 >> $project_makefile
+printf "\t@echo \"###################################\"\n"                 >> $project_makefile
+printf "\t@env project_directory=${project_directory} $BALTIK_ROOT/bin/baltik_make_Doxyfile\n"                >> $project_makefile
+printf "\n"                                                     >> $project_makefile
+
+printf "install :\n"                                              >> $project_makefile
+printf "\t@echo \"########################\"\n"                 >> $project_makefile
+printf "\t@echo \"# Install              #\"\n"                 >> $project_makefile
+printf "\t@echo \"########################\"\n"                 >> $project_makefile
+printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_install `dirname $project_directory`\n"                     >> $project_makefile
+printf "\n"                                                     >> $project_makefile
+printf "# help terminal \t: open a xterm with TRUST_TESTS... \n" >> $project_makefile
+printf "terminal :\n" >> $project_makefile
+printf "\t source $TRUST_ROOT/env/Init_TRUST; env TRUST_TESTS=\`pwd\`/build/tests/all/  Rapports_auto_root=\`pwd\`/build/tests/share/all/ project_directory=\`pwd\` exec_optim=${exec_optim} exec=${exec_optim} exec_debug=$exec_debug xterm\n" >> $project_makefile
+
+phony=""
+for type in $list_cible
+do
+ phony="$phony check_$type $type"
+done
+printf ".PHONY : $phony validation clean distrib install gui terminal\n"   >> $project_makefile
+
+echo "Done."
+echo ""
+
+echo "Creating tests/deps and tests/all"
+mkdir -p ${project_directory}/build/tests/deps ${project_directory}/build/tests/all
+rm -rf  ${project_directory}/build/tests/deps/* ${project_directory}/build/tests/all/*
+mkdir -p ${project_directory}/build/tests/share/deps/Validation/Rapports_automatiques/
+mkdir -p ${project_directory}/build/tests/share/all/Validation/Rapports_automatiques/
+
+rm -f ${project_directory}/build/tests/share/Validation/Rapports_automatiques/*
+for  path in $total_path
+do
+  if [ $path != $project_directory ]
+      then
+      for dir in `ls $path/tests/Reference/ 2>/dev/null`
+	do
+	mkdir -p ${project_directory}/build/tests/deps/$dir
+	for cas in `ls $path/tests/Reference/$dir 2>/dev/null`
+	  do
+	  ln -sf $path/tests/Reference/$dir/$cas ${project_directory}/build/tests/deps/$dir/.
+	done
+      done
+      for dir in `ls $path/share/Validation/Rapports_automatiques// 2>/dev/null`
+	do
+	ln -sf $path//share/Validation/Rapports_automatiques/$dir ${project_directory}/build/tests/share/deps/Validation/Rapports_automatiques/.
+      done
+  fi
+done
+for  path in $total_path 
+do
+  for dir in `ls $path/tests/Reference/ 2>/dev/null`
+    do
+    mkdir -p ${project_directory}/build/tests/all/$dir
+    for cas in `ls $path/tests/Reference/$dir 2>/dev/null`
+      do
+      ln -sf $path/tests/Reference/$dir/$cas ${project_directory}/build/tests/all/$dir/.
+    done
+  done
+  for dir in `ls $path/share/Validation/Rapports_automatiques// 2>/dev/null`
+    do
+    ln -sf $path//share/Validation/Rapports_automatiques/$dir ${project_directory}/build/tests/share/all/Validation/Rapports_automatiques/.
+  done
+done
+
+
+echo "Done."
+echo ""
+
+
+postconfigure=$project_directory/share/bin/post_configure
+if [ -f $postconfigure ]
+then
+    echo "Executing $postconfigure"
+    $postconfigure
+    [ $? -ne 0 ] && echo "Error" && exit -1
+    echo "Done"
+fi
+

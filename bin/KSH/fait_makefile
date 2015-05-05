@@ -1,0 +1,30 @@
+#!/bin/bash
+#Refait l'ensemble des makefile de TRUST en share libs
+[ "$TRUST_ENV" = "" ] && echo "Initialize TRUST environment." && exit -1
+dirs=`cat $TRUST_ENV/rep.TRUST`
+[ ${#1} != 0 ] && dirs=$1
+cd $TRUST_ROOT
+trace=$TRUST_ROOT/.fait_makefile
+rm -f $trace && touch $trace
+
+# Semi opt if SCM version
+# [ "$TRUST_SCM" = 1 ] && OPT="_semi_opt"
+for dir in $dirs
+do
+   cd $dir 1>/dev/null 2>&1
+   b=`basename $dir`
+   echo $dir
+   if [ $b != MAIN ]
+   then
+      echo $ECHO_OPTS "1,$ s?opt_compile?$OPT?g\nw makefile" | ed $TRUST_ROOT/env/makefile.rep 1>/dev/null 2>&1
+      chmod gu+w makefile
+   elif [ $b = MAIN ]
+   then
+      echo $ECHO_OPTS "1,$ s?opt_compile?$OPT?g\nw Makefile" | ed $TRUST_ROOT/env/Makefile.MAIN 1>/dev/null 2>&1
+      chmod gu+w Makefile
+   fi
+   make -s depend 
+   [ $? != 0 ] && echo "ERROR!"
+   cd $TRUST_ROOT 1>/dev/null 2>&1
+done
+rm -f $trace

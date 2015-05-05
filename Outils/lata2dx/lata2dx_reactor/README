@@ -1,0 +1,54 @@
+*****************************
+* Documentation utilisateur *
+*****************************
+
+En entree:
+----------
+Outre les fichiers de resultats LATA du calcul, il y a trois fichiers a definir:
+
+- Le ficher component_builder.txt qui comme son nom l'indique permet de creer de nouvelles variables affichables par
+  VisIt.
+   
+- Le fichier criterions.txt qui permet de definir la facon dont on veut construire les reacteurs (a l'aide d'une
+  variable comme la concentration ou autre, une maniere purement geometrique et une maniere mixte non encore codee)
+   
+- Le fichier post_treatment.txt qui permet d'indiquer aux reacteurs quelles moyennes doivent etre calculees en leur sein 
+  Exemple : calcul de la concentration moyenne volumique dans l'ensemble des reacteurs construits
+  Remarque : on peut calculer des flux dans les reacteurs a l'aide de ce fichier, il ne restera qu'a coder 
+  la fonction d'affichage associee
+
+Exemple d'utilisation :
+-----------------------
+
+lata2dx_reactor post.lata timestep=2
+
+(ou post.lata est le fichier LATA maitre du calcul contenant les champs disponibles). Par defaut, cela va
+ecrire les nouveaux champs en format binaire. Si vous souhaitez les ecrire en format ASCII, il faut ajouter 
+une option asciiout dans la ligne de commande.
+
+Si le pas de temps (par exemple, timestep=2) n'est pas indique, vous verrez un message d'erreur:
+**************************************************
+Veuillez indiquer le pas de temps, s'il vous plait
+**************************************************
+
+Les noms des nouveaux champs commencent par new_post, vous verrez apres l'execution :
+
+1) Un autre fichier LATA maitre :
+   new_post.lata
+2) les fichiers decrivant le domain :
+   new_post.lata.ELEMENTS.dom new_post.lata.ELEM_FACES.dom new_post.lata.FACES.dom new_post.lata.SOMMETS.dom
+   (si le domain ne contient pas de faces, vous n'aurez pas new_post.lata.ELEM_FACES.dom ni new_post.lata.FACES.dom)
+3) vos nouveaux champs new_post.lata.dom_***.1 parmi lesquels :
+   a) les variables supplementaires specifiees dans le fichier component_builder.txt
+   b) le champ scalaire REACTORS_NUMBERS defini aux elements et construit selon la facon decrite dans le fichier criterions.txt
+
+Pour visualiser les nouveaux champs 3a) et 3b) avec VisIt, faire:
+
+visit -o new_post.lata
+
+Et ensuite dans VisIt selectionner un des menus:
+Plots->Pseudocolor pour tracer les champs scalaires
+Plots->Vector pour tracer les champs vecteurs
+Plots->Mesh pour tracer les maillages
+
+Puis tracer sur le fenetre de droite en cliquant sur le bouton Draw.

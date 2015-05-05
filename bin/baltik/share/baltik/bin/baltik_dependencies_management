@@ -1,0 +1,180 @@
+#! /usr/bin/env sh
+# --
+# Author : Eli LAUCOIN (CEA)
+# --
+
+# chargement des fonctions d'affichage des messages d'erreur
+. ${BALTIK_ROOT}/bin/baltik_errors
+add_dependencies() {
+    if [ $# = 2 ]
+    then
+        # dependency=${2%%;*}
+        dependency_org=`echo $2 | awk -F\; '{print $1}'`
+	dependency=`eval "echo $dependency_org"`
+        dependency_name=`echo $dependency | awk -F\: '{print $1}'`
+	dependency_tmp_path=`echo $dependency | awk -F\: '{print $2}'`
+	dependency_orig_path=`echo $dependency | awk -F\: '{print $3}'`
+	org=`pwd`
+	cd ${dependency_orig_path}
+	mkdir -p ${dependency_tmp_path}
+	dependency_path=`cd $dependency_tmp_path;pwd`
+	cd `dirname ${dependency_path}`
+	
+#	dependency_tmp_path=`cd $dependency_tmp_path;pwd`
+	dependency_dirname_path=`pwd`
+	if [ ! -f  `basename ${dependency_path}`/project.cfg ]
+	    then
+	    echo no directory `basename  ${dependency_tmp_path}` in  ${dependency_dirname_path}
+	    tar=$project_directory/archives_dependencies/${dependency_name}.tar.gz
+	    if [ ! -f $tar ]
+		then
+		echo $tar not found
+		tar=$project_directory/archives/`basename  ${dependency_tmp_path}`.tar.gz
+		echo we try with $tar
+		fi
+	    if [ -f $tar ]
+		then
+		echo Installation of ${dependency_path} with $tar 
+		tar zxf $tar  
+		chmod -R +w `basename  ${dependency_tmp_path}`
+		
+	    else
+		echo tar not found for ${dependency_dirname_path}
+		exit 1
+	    fi
+	fi
+	cd $org
+	# echo $dependency_dirname_path
+	dependency_path=`( cd ${dependency_orig_path}; cd ${dependency_tmp_path} ;pwd)`
+	#echo $dependency_path
+	#other_deps=${2#*;}
+	other_deps=`echo $2| sed "s?${dependency_org};??"`
+        echo "$dependency_name $dependency_path" >> $1
+
+        configfile="$dependency_path/project.cfg"
+        if [ ! -f $configfile ] 
+	then
+	    no_configuration_file_error "$dependency_path"
+	fi
+        
+        #verification du nom de la dependance
+        dependency_description=`extract_section "$configfile" description`
+        name=`extract_field "$dependency_description" name`
+        if [ $name != $dependency_name ]
+        then
+            invalid_dependency_name_error "$dependency_name" "$name"
+        fi
+ 
+        inherited_deps=`extract_section "$configfile" dependencies`
+        if [ -n "${inherited_deps}"  ] 
+        then
+	    new_deps=`echo "$inherited_deps" | awk -v RS="" '{ gsub ("\n",";"); print }'`
+	    new_deps="${new_deps};"
+	    new_deps=`echo $new_deps | sed "s?;?:${dependency_path};?g"`
+            new_deps="${new_deps}${other_deps}"
+        else
+            new_deps=$other_deps
+        fi
+        add_dependencies $1 $new_deps
+    fi
+}
+
+check_dependencies() {
+    # mktemps pas portable sur AIX
+    # tmp_file=`mktemp $project_directory/dependencies.tmp.XXXXXXXXXXXXXXXX`
+    tmp_file=$project_directory/dependencies.tmp.tmp
+    rm -f $tmp_file;touch $tmp_file
+    cat "$1" | sort -k2,2 | uniq | sort -k1,1 > $tmp_file
+    current_name=""
+    current_path=""
+    error="false"
+    while read name path
+      do
+      if [ "$name" = "$current_name" ] 
+          then
+          too_many_paths_error "$name" $path $current_path
+      fi
+      current_name=$name
+      current_path=$path
+    done < $tmp_file
+    rm -f $1
+    mv $tmp_file $1
+}
+# on recupere si il faut faire A+=b ou si il faut faire A=$A+b dans les makefile
+find_type_of_add_in_makefile()
+{
+ echo "A=\$(A) toto
+all:  \$(A)" > makefile_test_add
+ make -f makefile_test_add 2>/dev/null 1>/dev/null
+ status=$?
+ add_plus_egal=0
+ [ $status -ne 0 ] && add_plus_egal=1
+ rm makefile_test_add
+ export add_plus_egal
+}
+
+add_var_value_before()
+{
+ var=$1
+ shift
+ value=$*
+ if [ "$1" != "" ]
+ then
+   if [ $add_plus_egal -eq 0 ]
+   then
+ 	echo "$var=\$($var) $value"
+   else
+ 	echo "$var:=\$($var) $value"
+   fi
+ fi
+}
+
+add_var_value()
+{
+ var=$1
+ shift
+ value=$*
+ if [ "$1" != "" ]
+ then
+   if [ $add_plus_egal -eq 0 ]
+   then
+ 	echo "$var=$value \$($var)"
+   else
+ 	echo "$var:=$value \$($var)"
+   fi
+ fi
+}
+
+
+# add_dependencies to makefile
+# variables 
+#   Includes+= $includes_add 
+#   Libs+= $librairies_add 
+#   CppFlags+= $ccpflags_add 
+
+add_dependencies_to_makefile()
+{
+ file=$1
+ cp $TRUST_ENV/make.include.atelier $file
+ chmod 755 $file
+ if [ "`grep added_dependencies $file`" = "" ]
+ then
+        find_type_of_add_in_makefile
+	echo "# added_dependencies " >> $file
+	add_var_value Includes $includes_add >>$file
+	add_var_value Libs $librairies_add >>$file
+	# LEQUEL DES DEUX EST LE BON ???? provisoire
+	## # correcton on met d'abord le les ajouts
+	## echo $librairies_add | awk '{ for (i=1;i<=NF;i++) { if ($i=="-L")  { print ("# LD_LIBRARY_PATH="$(i+1)":${LD_LIBRARY_PATH}") } } }' >> $file
+	echo $librairies_add | awk '{ for (i=1;i<=NF;i++) { if ($i=="-L")  { print ("# LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:"$(i+1)) } } }' >> $file
+	# on ne sait pas si on veut ajouter avant ou apres 
+	# on fait les deux
+	add_var_value_before Libs $librairies_add >>$file
+	add_var_value CppFlags $ccpflags_add >>$file
+ fi
+
+ cmakefile=`echo $file| sed "s/make.include.atelier/cmake.deps/"`
+ echo $cmake_flags | sed "s/%%/\n/g" > $cmakefile
+  
+}
+

@@ -1,0 +1,223 @@
+# Thermohydraulique 3D couplage solide-fluide #
+# PARALLEL OK 8 #
+dimension 3
+Schema_Euler_explicite sch
+Lire sch
+{
+	nb_pas_dt_max 2
+	tinit 0.
+	tmax 1000. 
+	dt_min 1.E-4
+	dt_max 1.E-2
+        nb_pas_dt_max 1
+	dt_impr 1.
+	dt_sauv 1000.
+	seuil_statio 1.e-30
+	facsec 0.8
+}
+
+
+Pb_conduction pb1
+Pb_thermohydraulique  pb2
+
+Domaine dom_pb1
+Domaine dom_pb2
+
+# BEGIN MESH #
+Read_file dom_pb1 Pb1.geom
+Read_file dom_pb2 Pb2.geom
+Sous_Zone Suz1300
+Associate Suz1300 dom_pb1
+lire Suz1300 { Fichier Suz1300 }
+
+Sous_Zone Suz1600
+Associate Suz1600 dom_pb1
+lire Suz1600 { Fichier Suz1600 }
+
+Sous_Zone Suz1900
+Associate Suz1900 dom_pb1
+lire Suz1900 { Fichier Suz1900 }
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom_pb1
+{
+	Partitionneur Tranche { tranches 2 1 1 }
+	Larg_joint 1
+	Nom_Zones DOM1
+}
+Partition dom_pb2
+{
+	Partitionneur Tranche { tranches 2 1 1 }
+	Larg_joint 2
+	Nom_Zones DOM2
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM1.Zones dom_pb1
+Scatter DOM2.Zones dom_pb2
+Sous_Zone Suz1300
+Associate Suz1300 dom_pb1
+lire Suz1300 { Fichier Suz1300.ssz }
+
+Sous_Zone Suz1600
+Associate Suz1600 dom_pb1
+lire Suz1600 { Fichier Suz1600.ssz }
+
+Sous_Zone Suz1900
+Associate Suz1900 dom_pb1
+lire Suz1900 { Fichier Suz1900.ssz }
+END SCATTER #
+
+VDF cubesregu
+
+Fluide_Incompressible air
+Lire air
+{
+        mu Champ_Uniforme 1 2.3E-4  
+	rho Champ_Uniforme 1 .882
+	lambda Champ_Uniforme 1 3.4E-2     
+	Cp Champ_Uniforme 1 1014.
+        beta_th Champ_Uniforme 1 2.5E-3
+}
+
+Champ_Uniforme gravite
+Lire gravite 3 0. 0. -9.81
+Associate air gravite
+Associate pb2 dom_pb2
+Associate pb2 air  
+
+
+Solide acier    
+Lire acier  
+{
+	rho Champ_Uniforme 1 8000.
+	lambda Champ_Uniforme 1 20.     
+	Cp Champ_Uniforme 1 1.
+}
+
+
+Associate pb1 dom_pb1
+Associate pb1 acier     
+
+
+Probleme_Couple Conduccouplethermoh
+Associate Conduccouplethermoh pb1
+Associate Conduccouplethermoh pb2
+Associate Conduccouplethermoh sch
+Discretize Conduccouplethermoh cubesregu
+Debog pb2 seq faces 1.e-6 0
+
+Lire pb1
+{
+	Conduction
+	{
+		diffusion { }
+		conditions_initiales {
+			temperature Champ_Uniforme 1 20.
+			}
+                sources {
+                       Puissance_Thermique Champ_uniforme_Morceaux dom_pb1 1
+                          { defaut 0. Suz1300 2.68E+04
+                                      Suz1600 1.91E+04
+                                      Suz1900 1.56E+04 }
+                        }
+
+		boundary_conditions {
+                        bord1               paroi_adiabatique
+                        bord3               paroi_adiabatique
+                        bord4               symetrie              
+			raccord5             paroi_echange_contact_vdf  pb2 raccord5 temperature -4. 
+		}
+	}
+	Postraitement
+	{
+		Sondes
+		{
+			sonde_Tpuits        temperature periode 1.E-5   points 4
+                           .44  .01  2.
+                           .44  .01  5.
+                           .44  .01  8.
+                           .44  .01  11.
+		}
+		Champs dt_post 500.
+		{
+		   temperature elem
+		}
+	}
+        Sauvegarde binaire pb1.sauv
+
+}
+
+Lire pb2
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.500000 } 
+			seuil 1.000000e-07 
+			impr 
+		}
+		convection { quick }
+		diffusion { }
+		sources { boussinesq_temperature { T0 20. } }
+		conditions_initiales {
+			vitesse Champ_Uniforme 3 0. 0. 0.
+			}
+		boundary_conditions {
+                        bord1        paroi_fixe
+	          	bord2       frontiere_ouverte_gradient_pression_impose champ_front_uniforme 1  0.
+	          	bord4       symetrie                                                        
+                        raccord5     paroi_fixe
+		}
+
+	}
+
+	Convection_Diffusion_Temperature 
+	{
+		diffusion { }
+		convection { quick }
+		conditions_initiales {
+			temperature Champ_Uniforme 1 20.
+			}
+		boundary_conditions {
+                        bord1               paroi_adiabatique
+	          	bord2       frontiere_ouverte T_ext champ_front_uniforme 1 20.
+                        bord4       symetrie 
+			raccord5      paroi_echange_contact_vdf  pb1 raccord5     temperature -4. 
+                                   }
+	}
+	Postraitement {
+		Sondes
+		{
+			sonde_Vair         vitesse periode 1.E-5 points 4
+                        .46 .01  2. 
+                        .46 .01  5. 
+                        .46 .01  8. 
+                        .46 .01  11. 
+			sonde_Tairpui      temperature periode 1.E-5 points 4
+                        .46 .01  2. 
+                        .46 .01  5. 
+                        .46 .01  8. 
+                        .46 .01  11. 
+			sonde_Tairlib      temperature periode 1.E-5 points 4
+                        .84 .01  2. 
+                        .84 .01  5. 
+                        .84 .01  8. 
+                        .84 .01  11. 
+		}
+		Champs dt_post 500.
+		{
+                   vitesse elem
+		   temperature elem
+		}
+	}
+        Sauvegarde binaire pb2.sauv
+
+}
+
+
+Solve Conduccouplethermoh
+Fin

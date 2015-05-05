@@ -1,0 +1,10 @@
+#!/bin/bash
+# Trouver l'etude ou l'on se trouve
+geoms=`ls *.geom *.geo 2>/dev/null`
+if [ ${#geoms} = 0 ]
+then
+   export ETUDE_TRUST=`QUELLE_ETUDE.ihm`
+   cd $ETUDE_TRUST
+fi
+echo "Preray is in `pwd` directory."
+$TRUST_ROOT/Outils/preray/preray $*

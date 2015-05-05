@@ -1,0 +1,95 @@
+#!/bin/bash
+# Verifie si des binaires ne sont pas
+# disponibles et plus recents
+export no_verbose=0 && [ ${#1} != 0 ] && [ $1 = -no_verbose ] && no_verbose=1
+machine=$TRUST_FTP
+login=anonymous
+passwd=$TRUST_MAIL
+if [ $no_verbose = 0 ]
+then
+   teste_ftp $machine $login $passwd
+else
+   teste_ftp $machine $login $passwd 1>/dev/null 2>&1
+fi
+if [ $? = 0 ]
+then
+   rm -f $TRUST_TMP/versions
+   # Connection possible  
+   # Recuperation de $SECRET
+   . connect_ftp -no_ftp
+   # On ne prend pas les versions beta
+   ftp -n $machine 2>/dev/null << EOF | grep TRUST | grep -v beta > $TRUST_TMP/versions
+user $login $passwd
+cd $SECRET/exec/$TRUST_ARCH
+ls
+cd ..
+lcd $TRUST_TMP
+get RELEASE_NOTES
+EOF
+   # Pour tester :
+   # TRUST_VERSION=1.4.1
+   if [ ! -f $TRUST_TMP/versions ]
+   then
+      [ $no_verbose = 0 ] && eval $FIN
+      exit
+   fi
+   echo $TRUST_VERSION >> $TRUST_TMP/versions
+   #cat $TRUST_TMP/versions 
+   last_version=`cat $TRUST_TMP/versions | $TRUST_Awk -F'_opt_' '{gsub(".gz","",$NF);print $NF}' | sort -rn | head -1`
+   if [ $last_version != $TRUST_VERSION ] && [ ! -f $TRUST_TMP/NO_$last_version ]
+   then
+      $EDITEUR $TRUST_TMP/RELEASE_NOTES &
+      nom_exec=`cat $TRUST_TMP/versions | grep $last_version".gz" | $TRUST_Awk '{print $NF}'`
+      taille_exec=`cat $TRUST_TMP/versions | grep $last_version".gz" | $TRUST_Awk '{print int($4/1024/1024+1)}'`
+      # Il existe une version plus recente et elle n'a pas ete refusee
+      echo "--------------------------------------------------------------------"
+      echo "Version v$last_version is available (you have the v$TRUST_VERSION):"
+      echo "${nom_exec%.gz} (Size of the gzipped file: $taille_exec Mo)."
+      echo "Check the release notes to see the new features of v$last_version."
+      echo "Do you want to download the TRUST binary (y/n) ?"
+      read choix
+      choix=a$choix
+      if [ $choix = ay ] || [ $choix = aY ]
+      then
+         echo "Please wait. The download begins..."
+         # On teste si on peut le placer en $TRUST_ROOT/exec
+	 touch $TRUST_ROOT/exec/.tmp 2>/dev/null
+	 if [ $? = 0 ]
+	 then
+	    cible=$TRUST_ROOT/exec
+	 else
+	    cible=$rep_dev/exec_opt
+	    mkdir $rep_dev $cible 2>/dev/null
+	 fi
+         ftp -n $machine 2>/dev/null << EOF | grep TRUST > $TRUST_TMP/versions
+user $login $passwd
+cd $SECRET/exec/$TRUST_ARCH
+lcd $cible
+bin
+get $nom_exec
+EOF
+         gunzip -f $cible/$nom_exec
+	 nom_exec=${nom_exec%.gz}
+	 chmod +x $cible/$nom_exec
+	 if [ -f $cible/$nom_exec ] && [ "`$cible/$nom_exec 2>&1 | grep fichier`" != "" ]
+	 then
+	    echo "OK ! The binary $nom_exec is downloaded"
+	    echo "under $cible"
+	    echo "Use Change button to select it now."
+	    # On a update donc on le note
+	    touch $TRUST_TMP/NO_$last_version
+	 else
+	    echo "Error... Contact $TRUST_MAIL for support."
+	    [ $no_verbose = 0 ] && eval $FIN
+	    exit
+	 fi
+	 echo "The binary $nom_exec for $cible has been downloaded on $HOST." 2>/dev/null
+      else
+         # Refus d'updater on le note
+	 touch $TRUST_TMP/NO_$last_version
+      fi
+   else
+      [ $no_verbose = 0 ] && echo "No newly available version."
+   fi
+fi
+[ $no_verbose = 0 ] && eval $FIN

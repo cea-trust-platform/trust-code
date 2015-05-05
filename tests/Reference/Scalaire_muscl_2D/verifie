@@ -1,0 +1,14 @@
+# Verification des valeurs min et max de la temperature
+for extrema in MINIMALE MAXIMALE
+do
+   echo "*************************************************"
+   suffixe=_2D_TEMPERATURE_$extrema.son
+   for probe in `ls -rt Scalaire_*$suffixe`
+   do
+      scheme=`echo ${probe#Scalaire_}`
+      scheme=`echo ${scheme%$suffixe}`
+      [ $extrema = MINIMALE ] && DEBUT="SOUS" && value=`awk 'BEGIN {v=1} !/# / {if ($2<v) v=$2} END {printf("%3.2f\n",v*100)}' $probe`
+      [ $extrema = MAXIMALE ] && DEBUT="SUR" && value=`awk 'BEGIN {v=0} !/# / {if ($2>v) v=$2} END {printf("%3.2f\n",(v-1)*100)}' $probe`
+      echo $ECHO_OPTS "$DEBUT ESTIMATION DE LA TEMPERATURE $extrema POUR $scheme    \t: "$value "%"
+   done
+done

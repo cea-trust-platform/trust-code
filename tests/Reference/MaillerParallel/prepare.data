@@ -1,0 +1,45 @@
+dimension 3
+Pb_Thermohydraulique pb
+Domaine dom2
+
+Mailler dom2
+{
+	Pave dom2 
+		{
+		Origine 0. 0. 0.
+     		Nombre_de_Noeuds 11 11 11
+		Longueurs 0.01 0.01 0.01
+		}
+		{
+		Bord Gauche X = 0.   0. <= Y <= 0.01	0. <= Z <= 0.01
+		Bord Droit  X = 0.01 0. <= Y <= 0.01	0. <= Z <= 0.01
+		Bord Bas    Y = 0.   0. <= X <= 0.01	0. <= Z <= 0.01
+		Bord Haut   Y = 0.01 0. <= X <= 0.01	0. <= Z <= 0.01
+		Bord PerioZ Z = 0.   0. <= X <= 0.01	0. <= Y <= 0.01
+		Bord PerioZ Z = 0.01 0. <= X <= 0.01	0. <= Y <= 0.01
+		}
+}
+ecrire_fichier_formatte dom2 dom2.geom
+discretiser_domaine dom2
+postraiter_domaine { domaine dom2 fichier dom2.lml format lml }
+Domaine dom
+MaillerParallel
+{
+	domain			dom
+	nb_nodes		3 11 11 11
+	splitting		3 1 1 1
+	ghost_thickness		2
+	function_coord_x	x*0.01
+	function_coord_y	y*0.01
+	function_coord_z	z*0.01
+	perio_z
+	boundary_xmin		Gauche
+	boundary_xmax		Droit
+	boundary_ymin		Bas
+	boundary_ymax		Haut
+	boundary_zmin		PerioZ
+}
+ecrire_fichier_formatte dom dom.geom
+discretiser_domaine dom
+postraiter_domaine { domaine dom fichier dom.lml format lml }
+

@@ -1,0 +1,163 @@
+#!/bin/bash
+analyse()
+{
+   if [ "$err" = 0 ]
+   then
+     echo $ECHO_OPTS "$cas...OK"
+   else
+     # Error detected
+     if [ "`grep 'Arret des processes.' $cas.err`" = "" ]
+     then
+        # If it is a TRUST error:
+	echo $ECHO_OPTS "$cas...KO See $DEST/$cas.err"
+	mv $cas.out $cas.err $DEST
+	rm -f $DEST/$cas.val # .val deleted now (a test case SHOULD run to be valgrind interesting)
+     else
+        # If it is a Valgrind error:
+	if [ "`awk '/ERROR SUMMARY/ {errs+=$4} END {print errs}' $DEST/$cas.val`" != "0" ]
+	then
+           echo $ECHO_OPTS "$cas...Error See $DEST/$cas.val"
+	elif [ "`grep 'Memcheck:Leak' $DEST/$cas.val`" != "" ]
+	then
+	   echo $ECHO_OPTS "$cas...Leaks See $DEST/$cas.val"
+	else
+	   echo $ECHO_OPTS "$cas...Unknown error See $DEST/$cas.val"
+	fi
+     fi
+  fi
+}
+lan_ici()
+{
+   exec=$1
+   cas=$2
+   rm -f tmp_log*
+   export VALGRIND=1
+   export VALGRIND_LOG_FILE=1
+   if [ "$CALCUL" = "SEQ" ]
+   then
+      # Lancement en sequentiel
+      if [ "$gdb" != "" ]
+      then
+         triou $gdb $cas
+	 err=$?
+      else
+         triou $cas 1>$cas.out 2>$cas.err
+         err=$?
+	 cat tmp_log* > $DEST/$cas.val && analyse
+      fi
+   elif [ "$CALCUL" = "DEC" ]
+   then
+      # Decoupage
+      make_PAR.data $cas 1>DEC_$cas.make_PAR.data.log 2>&1
+      export NB_PROCS=$? && [ "$cas" = nul ] && export NB_PROCS=2 # Exception de nul
+      cas=DEC_$cas
+      err=0
+      [ "$gdb" = "" ] && cat tmp_log* > $DEST/$cas.val && analyse
+   elif [ "$CALCUL" = "PAR" ]
+   then
+      # Arrêt si MPICH 3.x car en // c'est a valider (erreurs bizarres annoncees pas vues avec OpenMPI 1.6 et OpenMPI 1.2.9)
+      #[ "`$Mpirun --version 2>&1 | grep mpich-3`" != "" ] && echo "MPICH 3.x and valgrind 3.9.0 works in parallel?" && exit -1
+      # Lancement en parallele
+      # See http://valgrind.org/docs/manual/mc-manual.html#mc-manual.mpiwrap
+      if [ "$NB_PROCS" != 0 ]
+      then
+         if [ "$gdb" != "" ]
+	 then
+	    triou $gdb $cas $NB_PROCS
+	    err=$?	    
+	 else
+	    triou $cas $NB_PROCS 1>$cas.out 2>$cas.err
+	    err=$?
+	    cat tmp_log* > $DEST/$cas.val && analyse
+	 fi
+      fi
+   fi
+}
+# Possibilite de stopper testall avec le fichier STOP_TESTALL
+[ -f STOP_TESTALL ] && echo "Stopping testall..." && exit 0
+[ "$1" = -help ] && echo "Usage: `basename $0` [-help] [-debug] [-gdb] [-check_parallel]" && shift && exit
+[ ${#TRUST_ROOT} = 0 ] && echo "Environnement TRUST non initialise." && exit -1
+# Lecture du cas
+read cas
+cas=`cd $TRUST_TESTS;ls */$cas/$cas.data 2>/dev/null`
+[ "$cas" = "" ] && echo $cas n existe pas && exit
+cas=`dirname $cas`
+[ "$cas" = "" ] && echo "Donner un nom du cas!" && exit -1
+
+# Default options:
+OPT="_opt"
+gdb=""
+check_parallel=""
+valgrind_prov=valgrind_prov0
+while [ "$1" != "" ]
+do
+  [ "$1" = "-debug" ] 		&& OPT=""
+  [ "$1" = "-gdb" ] 		&& gdb="-gdb"
+  [ "$1" = "-check_parallel" ] 	&& check_parallel=1
+  [ "$1" = "-directory" ]	&& shift && valgrind_prov=$1
+  shift
+done
+
+ROOT=$TRUST_ROOT
+export DEST=$ROOT/Validation/Valgrind
+export rep_dev=$TRUST_TMP/atelier
+
+[ "$cas" = "Reference/nul" ] && rm -r -f $rep_dev 1>/dev/null 2>&1 # On fait le menage
+mkdir -p $rep_dev
+cd $rep_dev
+lib=$TRUST_ROOT/lib/TRUST_mpi_opt.a
+export new=$rep_dev/exec${OPT}/TRUST${COMM}${OPT}
+# Creation d'un binaire modifie
+source_file=Schema_Temps_base.cpp
+source_file_from=`Find $source_file`
+if [ ! -f $source_file ] || [ $source_file_from -nt $source_file ] || [ ! -f $new ] || [ ! -f $lib ] || [ $lib -nt $new ]
+then
+   cp -f $source_file_from .
+   chmod +w $source_file
+   echo "Calcul $cas mene sur 2 pas de temps."   
+   echo $ECHO_OPTS "1,$ s?is >> nb_pas_dt_max_;?entier toto;is >> toto;if (toto<nb_pas_dt_max_) nb_pas_dt_max_=toto;?g\nw" | ed $source_file 2>/dev/null
+   echo $ECHO_OPTS "1,$ s?seuil_statio_ =?nb_pas_dt_max_ = 2;seuil_statio_ =?g\nw" | ed $source_file 2>/dev/null
+   [ ! -f $lib ] && cree_TRUST_opt_a
+   option=2 && [ "$OPT" = "" ] && option=1
+   echo \n | Makeatelier.sccs $option
+fi
+rep1=$rep_dev
+
+# A cause d'un bug incompressible dans MAIN
+# on fait le calcul toujours a la meme place
+# dans le repertoire $valgrind_prov
+rm -r -f $valgrind_prov 1>/dev/null 2>&1
+mkdir $valgrind_prov 2>/dev/null
+cd $valgrind_prov
+
+# Copie du cas test sous $valgrind_prov
+copie_cas_test $cas $ROOT/tests 1>/dev/null 2>&1
+cd $cas
+cas=`basename $cas`
+
+##################################################
+# Lancement du cas selon plusieurs modes possibles
+##################################################
+export NB_PROCS=`$TRUST_Awk '/PARALLEL ONLY/ {print $4}' $cas.data`
+if [ "$NB_PROCS" != "" ]
+then
+   # Lancement du cas en parallele seulement
+   export CALCUL=PAR && lan_ici $new $cas 
+else
+   # Lancement du cas en sequentiel
+   export CALCUL=SEQ && lan_ici $new $cas 
+   # Lancement du decoupage et eventuellement du parallele
+   if [ "`grep "PARALLEL OK" $cas.data`" != "" ]
+   then
+      export CALCUL=DEC && lan_ici $new $cas 
+      # Lancement du parallele, plusieurs cas bloquent sur moleson en //
+      # donc on ne lance que PAR_nul (strictement necessaire) + quelques autres petits cas //
+      if [ $cas = DEC_nul ] || [ $cas = DEC_upwind ] || [ $cas = DEC_SGE_3D_VEF ] || [ $cas = DEC_VAHL_DAVIS_VEF ] || [ "$check_parallel" = 1 ]
+      then
+         export CALCUL=PAR
+	 lan_ici $new PAR_${cas#DEC_}
+      fi
+   fi
+fi
+cd ../..
+rm -r -f $valgrind_prov 1>/dev/null 2>&1

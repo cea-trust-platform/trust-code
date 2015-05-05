@@ -1,0 +1,164 @@
+#! /usr/bin/env sh
+# --
+# Author : Eli LAUCOIN (CEA)
+# --
+
+baltik_environnement_error() {
+    echo "-----------------------------------------"
+    echo "ERROR : undefined variable BALTIK_ROOT   "
+    echo ""
+    echo "Please, install BALTIK and run :         "
+    echo "  source /path/to/BALTIK/bin/baltik_init "
+    echo "-----------------------------------------"
+    echo ""
+    exit 1
+}
+
+baltik_environnement_init()
+{
+    script=$0
+    bindir=`dirname $script`
+    cd `dirname $bindir`
+    pwd
+}
+
+# initialisation de l'etat de la variable BALTIK_ROOT
+BALTIK_ROOT=`baltik_environnement_init`
+# verification de l'etat de la variable BALTIK_ROOT
+if [ "${BALTIK_ROOT}" = "" ]
+    then
+    baltik_environnement_error
+fi
+
+
+# chargement des fonctions d'affichage des messages d'erreur
+. ${BALTIK_ROOT}/bin/baltik_errors
+
+# chargement des fonctions d'analyse d'un fichier de configuration
+. ${BALTIK_ROOT}/bin/baltik_configuration_parsing
+
+# chargement des fonctions de correspondance nom variable OPT
+. ${BALTIK_ROOT}/bin/baltik_OPT_management
+
+# chargement des fonctions de gestion des dependances
+# . ${BALTIK_ROOT}/bin/baltik_dependencies_management
+
+# verification/chargement de trio_u
+. ${BALTIK_ROOT}/bin/baltik_check_init_triou
+
+# verification de l'etat de la variable TRUST_ROOT
+if [ "${TRUST_ROOT}" = "" ]
+    then
+    triou_environnement_error
+fi
+module=0
+# test option module
+if [ "$1" = "module_from_OPT" ]
+ then
+    module=1
+    shift
+else
+[ "$1" = "module" ] && module=1 && shift
+# verification du nombre d'arguments
+if [ $# != 1 ]
+    then
+    number_of_compilation_arguments_error
+fi
+
+
+# recuperation des options de compilation
+OPT=`triou_opt_from_name $1`
+[ $? != 0 ] && eval $OPT
+export OPT
+fi
+# initialisation des variables utiles
+project_directory=`pwd`
+
+
+# Pour le make depend 
+BALTIK_PROJ_ROOT=${project_directory}
+export BALTIK_PROJ_ROOT
+#
+project_build_directory="${project_directory}/build/src"
+if [ ! -e $project_build_directory ]
+    then
+    no_build_directory_error "$project_directory"
+fi
+
+project_configuration_file="${project_directory}/project.cfg"
+if  [ ! -e $project_configuration_file ] || [ ! -f $project_configuration_file ] 
+    then
+    no_configuration_file_error "$project_directory=$"
+fi
+
+project_description=`extract_section "$project_configuration_file" description`
+
+project_executable_name_org=`extract_executable_name ${project_description}`
+
+project_executable_name_org="${project_directory}/${project_executable_name_org}"
+project_executable_name="${project_executable_name_org}${OPT}"
+
+compilation_directory="${project_build_directory}/exec${OPT}"
+compilation_result="${compilation_directory}/TRUST${COMM}${OPT}"
+
+
+
+# calcul des dependances Trio-U
+cd $project_build_directory
+rep_dev=$project_build_directory
+export rep_dev
+# on prend de preference le Makeatelier dans baltik
+# pour permettre de tenir au projet qqs versions
+
+comp_old=0
+# si Makefile existe on regarde comment il a ete fait 
+if [ -f Makefile ] 
+    then
+    TYPE=`grep Makeatelier.sccs Makefile|$TRUST_Awk -Fecho '{print $NF}'|  $TRUST_Awk '{print $1}'` 
+    [ $TYPE -eq -2 ] && comp_old=0
+    [ $TYPE -eq -1 ] && comp_old=1
+fi
+
+[ "$TRUST_ATELIER_CMAKE" = "0" ] && comp_old=1
+
+if [ $comp_old -eq 1 ]
+    then
+    echo "To build exe with cmake set variable TRUST_ATELIER_CMAKE to 1"
+    env PATH=$BALTIK_ROOT/bin:${PATH} Makeatelier.sccs NO_IHM -1 depend
+    status=$?
+
+    if [ $status != 0 ]
+	then
+	compilation_error
+    fi
+    
+
+    # compilation
+    cd $compilation_directory
+    if [ $module -eq 0 ]
+	then
+	$TRUST_MAKE PROGRAM=${project_executable_name}
+	status=$?
+    else
+	$TRUST_MAKE module
+	status=$?
+    fi
+else
+    echo "To build exe without cmake set variable TRUST_ATELIER_CMAKE to 0"
+    if [ $module -eq 0 ]
+	then
+	env PROGRAM=${project_executable_name_org} PATH=$BALTIK_ROOT/bin:${PATH} Makeatelier.sccs -2 exe
+	status=$?
+    else
+	env PROGRAM=${project_executable_name_org} PATH=$BALTIK_ROOT/bin:${PATH} Makeatelier.sccs -2 module
+	status=$?
+    fi
+fi
+if [ $status != 0 ]
+    then
+    compilation_error
+fi
+
+echo "Done."
+[ $module -eq 0 ] && echo "Executable is  : ${project_executable_name}"
+echo ""

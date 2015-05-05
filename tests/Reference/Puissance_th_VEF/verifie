@@ -1,0 +1,20 @@
+message()
+{
+   [ $1 != $2 ] && echo $ECHO_OPTS "Error ($Diffusion*$Surface+$Puissance*$Volume!=0) when checking:\n $msg" && err=1
+   [ $debog = 1 ] && echo $msg
+}
+jdd=`pwd`;jdd=`basename $jdd`
+debog=0 && [ "$1" = "-print" ] && debog=1
+err=0
+
+######################################################################
+# Comparaison Somme(flux diffusion * surface) + puissance * volume = 0
+######################################################################
+Diffusion_chaleur=`ls $jdd*pb_Diffusion_chaleur.out`
+Diffusion=`tail -1 $Diffusion_chaleur | $TRUST_Awk '{print $NF}'`
+Surface=1
+Puissance=1
+Volume=1
+ok=`$TRUST_Awk -v Diff=$Diffusion -v Surf=$Surface -v Pui=$Puissance -v Vol=$Volume 'BEGIN{if (Diff*Surf+Pui*Vol==0) print 1;else print 0}'`
+msg="Flux Diffusion * Surface + Puissance * Volume = 0 valide dans $Diffusion_chaleur";message $ok 1
+exit $err

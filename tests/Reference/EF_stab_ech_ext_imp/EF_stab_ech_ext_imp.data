@@ -1,0 +1,155 @@
+# Thermohydraulique 2D : test du schema EF_stab avec la CL paroi_echange_externe_impose #
+# PARALLEL OK #
+dimension 2
+Pb_Thermohydraulique pb
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+	Pave zone1 
+		{
+		Origine 0. 0.
+     		Nombre_de_Noeuds 26 9
+		Longueurs 0.220 0.060
+                facteurs 1.0200 1.0         
+		}
+		{
+		Bord Gauche1   X = 0.    0. <= Y <= 0.060
+		Bord Base      Y = 0.0   0. <= X <= 0.220
+		Bord Droite1   X = 0.220 0. <= Y <= 0.060
+		} ,
+		
+		Pave zone2 
+		{
+		Origine 0.0 0.060
+     		Nombre_de_Noeuds 26 16
+		Longueurs 0.220 0.160
+                facteurs 1.0200 1.0         
+		}
+		{
+		Bord Gauche2   X = 0.0   0.060 <= Y <= 0.220
+		Bord Haute     Y = 0.220 0.000 <= X <= 0.220
+		Bord Droite2   X = 0.220 0.060 <= Y <= 0.220
+		}
+}
+Trianguler_fin dom
+# END MESH #
+
+# BEGIN PARTITION 
+Partition dom
+{
+	Partitionneur metis { nb_parts 2 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0.
+	tmax 20.
+	dt_min 1.0e-8
+	dt_max .5
+	dt_impr 5.0
+	dt_sauv 5.0
+	seuil_statio 1.e-12
+}
+
+Fluide_Incompressible water
+Lire water
+{       
+        mu Champ_Uniforme 1 0.0008	 
+	rho Champ_Uniforme 1 995.0
+	lambda Champ_Uniforme 1 0.6
+        Cp Champ_Uniforme 1 4179.0
+	beta_th Champ_Uniforme 1 2.8e-4
+}
+
+Champ_Uniforme gravite
+Lire gravite 2  0. -9.81 
+
+Associate water gravite
+Associate pb dom
+Associate pb sch
+Associate pb water
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP
+		{ 
+			precond ssor { omega 1.500000 } 
+			seuil 1.000000e-12
+		}
+		convection { Ef_stab { TdivU } } # Test TdivU option, do not use without understanding the reason, see doc #
+		diffusion { }
+		sources { boussinesq_temperature { T0 26.0 } }
+		conditions_initiales { vitesse Champ_Uniforme 2 0. 0. }
+		boundary_conditions
+		{
+			Gauche1 symetrie  
+			Base paroi_fixe
+			Droite1 paroi_fixe
+			Gauche2 paroi_fixe  
+			Haute symetrie
+			Droite2 paroi_fixe 
+		}
+	}
+
+	Convection_Diffusion_Temperature
+	{
+		diffusion { }
+		convection { Ef_stab { } }
+		boundary_conditions 
+		{
+                        Gauche1 symetrie  
+			Base paroi_adiabatique
+			Droite1 paroi_adiabatique
+			Haute paroi_echange_externe_impose    H_imp Champ_Front_Uniforme 1  15.0        T_ext Champ_Front_Uniforme 1 30
+			Droite2 paroi_adiabatique 
+			Gauche2  paroi_flux_impose Champ_Front_Uniforme 1  3125.0
+		}
+		conditions_initiales { Temperature Champ_Uniforme 1 26. }
+	}
+
+	Postraitement
+	{
+		Sondes
+		{       
+			
+			sonde_temp1  temperature periode 10.0 point 1 0.025 0.125 
+                        sonde_temp2  temperature periode 10.0 point 1 0.100 0.125 
+			sonde_temp3  temperature periode 10.0 point 1 0.175 0.125 
+                        sonde_temp4  temperature periode 10.0 point 1 0.025 0.170 
+			sonde_temp5  temperature periode 10.0 point 1 0.100 0.170 
+			sonde_temp6  temperature periode 10.0 point 1 0.175 0.170 
+                        sonde_temp7  temperature periode 10.0 point 1 0.025 0.205 
+                        sonde_temp8  temperature periode 10.0 point 1 0.100 0.205 
+			sonde_temp9  temperature periode 10.0 point 1 0.175 0.205 
+                        sonde_Y_plus Y_plus periode 10.0 segment 10 0.000 0.025 0.00 .220 
+		}
+		Champs dt_post 20.0
+		{
+			pression elem
+			pression som
+			vitesse elem
+			vitesse som				
+			Y_plus
+			temperature elem
+			temperature som
+		}
+	}
+}
+Solve pb
+Fin

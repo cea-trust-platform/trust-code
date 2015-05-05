@@ -1,0 +1,25 @@
+#!/bin/bash
+#recuperation des donnees physiques
+
+python ../../../propertiesGeometry.py
+cp propertiesGeometry.dat ../../..
+##
+
+
+##renommage des derniers fichier Moyennes_spatiales_* en Moyennes_spatiales_*.last
+rm -f Moyennes_spatiales_*.last
+nomFics=`ls -rt Moyennes_spatiales_vitesse_rho_mu_*`
+for fic in $nomFics 
+do
+	cp $fic Moyennes_spatiales_vitesse_rho_mu.last
+done
+
+nomFics=`ls -rt Moyennes_spatiales_nut_*`
+for fic in $nomFics 
+do
+	cp $fic Moyennes_spatiales_nut.last
+done
+
+##
+python ../../../calculUF.py u_tau.dat `ls *Pressure_Gradient_pb_periox` Moyennes_spatiales_vitesse_rho_mu.last
+##

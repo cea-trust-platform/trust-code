@@ -1,0 +1,8 @@
+# Verification du fichier de decoupage sur veymont
+if [ $HOST = $TRUST_HOST_ADMIN ] && [ -f decoupage.metis ]
+then
+   diff Cx.metis decoupage.metis 1>/dev/null 2>&1
+   [ $? != 0 ] && echo "Metis partitionning has changed!" && exit -1
+fi 
+# Verification du nombre d'appels a echange_espace_virtuel par pas de temps
+exit `awk '/Nb echange_espace_virtuel/ {if ($NF<31) print 0;else print 1}' Cx.TU`

@@ -1,0 +1,4 @@
+# PARALLEL ONLY #
+make_PAR.data prepare
+triou PAR_prepare 2
+mv -f PAR_prepare_dom.ok_arete Reprise_xyz2_dom.ok_arete

@@ -1,0 +1,34 @@
+/////////////////////////////////////////////////////////////////////////////
+//
+// File:	NOM_DU_FICHIER.h
+// Directory:	$TRUST_ROOT/NOM_DU_MODULE
+//
+// .NOM NOM_DE_LA_CLASSE : 
+// .ENTETE TRUST NOM_DU_MODULE
+// .LIBRAIRIE NOM_DE_LA_LIBRAIRIE
+// .FILE NOM_DU_FICHIER.h
+// .FILE NOM_DU_FICHIER.cpp
+// .DESCRIPTION  class NOM_DE_LA_CLASSE
+//
+// Decrire ici la classe NOM_DE_LA_CLASSE
+//
+//////////////////////////////////////////////////////////////////////////////
+
+#ifndef NOM_DU_FICHIER_inclus
+#define NOM_DU_FICHIER_inclus
+
+#include <Objet_U.h>
+
+
+class NOM_DE_LA_CLASSE : public Objet_U
+{
+
+declare_base(NOM_DE_LA_CLASSE)
+ 
+};
+
+
+#endif
+
+
+

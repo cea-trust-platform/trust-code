@@ -1,0 +1,193 @@
+# Flow in plane channel and thermal hydraulic conditions with Reynolds=180 and Prandtl=0.025 #
+# RANS turbulence model with wall laws type Robin shifted wall #
+# PARALLEL OK #
+Dimension 3
+Pb_Thermohydraulique_Turbulent pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Cavite
+	{
+		Origine 0 0 0
+		Nombre_de_Noeuds 6 5 4
+		Longueurs 6.4 2 3.2
+		Facteurs 1 1 1
+	}
+	{
+		Bord PerioX	X = 0		0 <= Y <= 2	0 <= Z <= 3.2
+		Bord PerioX	X = 6.4		0 <= Y <= 2	0 <= Z <= 3.2
+		Bord PerioZ	Z = 0		0 <= X <= 6.4	0 <= Y <= 2
+		Bord PerioZ	Z = 3.2		0 <= X <= 6.4	0 <= Y <= 2
+		Bord Bas	Y = 0		0 <= X <= 6.4	0 <= Z <= 3.2
+		Bord Haut	Y = 2		0 <= X <= 6.4	0 <= Z <= 3.2
+	}
+}
+
+Tetraedriser_homogene_fin dom
+Reordonner_faces_periodiques dom PerioX
+Reordonner_faces_periodiques dom PerioZ
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+        Partitionneur metis { Nb_parts 3 }
+        Larg_joint 2
+	periodique 2 PerioX PerioZ
+        Nom_Zones DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1b dis
+
+Runge_Kutta_ordre_3 sch_RK3
+Read sch_RK3
+{
+	tinit 0
+	tmax 1
+	dt_start dt_calc
+	dt_min 1e-7
+	dt_max 1
+	dt_impr 5
+	dt_sauv 500
+	seuil_statio 1e-15
+	facsec 1
+	no_check_disk_space
+	periode_sauvegarde_securite_en_heures 11
+}
+
+Fluide_incompressible air
+Read air
+{
+	mu	champ_uniforme 1 2.84e-5
+ 	rho	champ_uniforme 1 0.011928
+	lambda	champ_uniforme 1 5.899248
+	Cp	champ_uniforme 1 5193
+	beta_th	champ_uniforme 1 1.9954e-3
+}
+
+Champ_uniforme gravite
+Read gravite 3 0 0 0
+
+Associate air gravite
+Associate pb dom
+Associate pb sch_RK3
+Associate pb air
+
+Discretize pb dis
+
+Read pb
+{
+	Navier_Stokes_turbulent
+	{
+		Solveur_pression	petsc Cholesky { }
+		Convection		{ EF_stab { volumes_etendus alpha 0.2 } }
+		Diffusion		{ }
+		Conditions_initiales	{ vitesse champ_init_canal_sinal 3 { Ucent 9.8945 h 1 ampli_sin 0 omega 1 ampli_bruit 0.0 } }
+		Boundary_conditions	{
+					PerioX	periodique
+					PerioZ	periodique
+					Haut	paroi_decalee_Robin { delta 0.083333 }
+					Bas	paroi_decalee_Robin { delta 0.083333 }
+					}
+		Modele_turbulence K_Epsilon {
+					Transport_K_Epsilon {
+						Convection { EF_stab { volumes_etendus alpha 1 } }
+						Diffusion  { }
+						Boundary_conditions {
+							PerioX	periodique
+							PerioZ	periodique
+							Haut	paroi
+							Bas	paroi
+							}
+						Conditions_initiales { k_Eps Champ_Uniforme 2 0.218 0.017 }
+						}
+					turbulence_paroi loi_standard_hydr
+					dt_impr_ustar 20
+					}
+		Traitement_particulier	{
+					canal	{
+						dt_impr_moy_spat 200
+						dt_impr_moy_temp 200
+						debut_stat 600
+						}
+					}
+		Sources			{ canal_perio { bord PerioX } }
+		Sources			{ source_Robin 2 Haut Bas 0.005 }
+	}
+
+	Convection_diffusion_temperature_turbulent
+	{
+		Convection		{ EF_stab { volumes_etendus alpha 1 } }
+		Diffusion		{ }
+		Conditions_initiales	{ temperature champ_fonc_xyz dom 1 0 }
+		Boundary_conditions	{
+					PerioX	periodique
+					PerioZ	periodique
+					Haut	paroi_decalee_Robin { delta 0.083333 }
+					Bas	paroi_decalee_Robin { delta 0.083333 }
+					}
+		Modele_turbulence Prandtl
+					{
+					turbulence_paroi loi_standard_hydr_scalaire
+					dt_impr_nusselt 20
+					}
+		Sources			{ puissance_thermique champ_uniforme 1 1 }
+		Sources			{ source_Robin_scalaire 2 Haut 0 Bas 0 0.005 }
+	}
+
+	Postraitement
+	{
+		Definition_champs	{
+					moyenne_vitesse		Moyenne { t_deb 600 t_fin 1000 source refChamp { Pb_champ pb vitesse } }
+					moyenne_temperature	Moyenne { t_deb 600 t_fin 1000 source refChamp { Pb_champ pb temperature } }
+					ecart_type_vitesse	Ecart_type { t_deb 600 t_fin 1000 source refChamp { Pb_champ pb vitesse } }
+					ecart_type_temperature	Ecart_type { t_deb 600 t_fin 1000 source refChamp { Pb_champ pb temperature } }
+					min_temperature		Reduction_0D { methode min source refChamp { Pb_champ pb temperature } }
+					max_temperature		Reduction_0D { methode max source refChamp { Pb_champ pb temperature } }
+					}
+		#
+		Sondes			{
+					sonde_vitesse			nodes	vitesse			periode 0.5 points 1 3.2 1 1.6
+					sonde_temperature		nodes	temperature		periode 0.5 points 1 3.2 1 1.6
+					sonde_moyenne_vitesse		nodes	moyenne_vitesse		periode 0.5 points 1 3.2 1 1.6
+					sonde_moyenne_temperature	nodes	moyenne_temperature	periode 0.5 points 1 3.2 1 1.6
+					sonde_ecart_type_vitesse	nodes	ecart_type_vitesse	periode 0.5 points 1 3.2 1 1.6
+					sonde_ecart_type_temperature	nodes	ecart_type_temperature	periode 0.5 points 1 3.2 1 1.6
+
+					coupe_vitesse			nodes	vitesse			periode 5 segment 9 0.213333 0 0.177778	0.213333 2 0.177778
+					coupe_temperature		nodes	temperature		periode 5 segment 9 0.213333 0 0.177778	0.213333 2 0.177778
+					coupe_moyenne_vitesse		nodes	moyenne_vitesse		periode 5 segment 9 0.213333 0 0.177778	0.213333 2 0.177778
+					coupe_moyenne_temperature	nodes	moyenne_temperature	periode 5 segment 9 0.213333 0 0.177778	0.213333 2 0.177778
+					coupe_ecart_type_vitesse	nodes	ecart_type_vitesse	periode 5 segment 9 0.213333 0 0.177778	0.213333 2 0.177778
+					coupe_ecart_type_temperature	nodes	ecart_type_temperature	periode 5 segment 9 0.213333 0 0.177778	0.213333 2 0.177778
+					}
+		#
+		Format lml
+		Champs dt_post 200	{
+					vitesse som
+					temperature som
+					min_temperature som
+					max_temperature som
+					}
+		Statistiques dt_post 200
+					{
+					t_deb 600 t_fin 1000
+					moyenne vitesse
+					moyenne temperature
+					ecart_type vitesse
+					ecart_type temperature
+					}
+	}
+	sauvegarde formatte pb.sauv
+}
+
+Solve pb
+End

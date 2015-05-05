@@ -1,0 +1,126 @@
+#!/bin/bash
+check_gl()
+{
+   echo "============"
+   echo "Checking GL:"
+   # On cree des liens si OpenGL partiellement installe 
+   export MISSING_GL=""
+   uname=`uname -m`
+   model="" && [ "$uname" = x86_64 ] && model=64
+   reps="/usr/X11R6/lib$model /usr/lib$model /usr/lib/$uname-linux-gnu/mesa /usr/lib/$uname-linux-gnu"
+   for rep in $reps
+   do
+      # libGL et libGLU servent a Gmsh
+      # libXext, libXrender serviront a VisIt (a reporter dans configurer_env?)
+      for lib in libGL libGLU libXext libXt libXrender
+      do
+	 if [ -f $rep/$lib.so.1 ] && [ ! -f $rep/$lib.so ]
+	 then
+            echo "$lib partially installed..."
+            (mkdir -p missing/lib;cd missing/lib;ln -s -f $rep/$lib.so.1 $lib.so)
+	    MISSING_GL="--x-libraries=$TRUST_ROOT/Outils/Gmsh/missing/lib --x-includes=$TRUST_ROOT/Outils/Gmsh/missing/include"
+	 fi
+	 if [ -f $rep/$lib.so.6 ] && [ ! -f $rep/$lib.so ]
+	 then
+            echo "$lib partially installed..."
+            (mkdir -p missing/lib;cd missing/lib;ln -s -f $rep/$lib.so.6 $lib.so)
+	 fi
+      done
+   done
+   echo "============"
+}
+
+#   archives
+
+for file in `ls $TRUST_ROOT/externalpackages/Gmsh/*`
+do
+ln -sf $file .
+done
+
+
+
+#########
+# Begin #
+#########
+check_gl
+[ "$1" = -check ] && exit 0
+
+########
+# FLTK #
+########
+if [ ! -d fltk ]
+then
+   fltk_version=1.3.2
+   fltk=fltk-$fltk_version-source.tar.gz
+   if [ ! -f $fltk ]
+   then
+      echo "Downloading $fltk..." 
+      wget_ http://www.fltk.org/tars/releases/$fltk || wget_ http://www.fltk.org/pub/fltk/$fltk_version/$fltk
+      if [ $? != 0 ]
+      then
+         echo "No Internet access. Install yourself Gmsh."
+	 exit 0
+      fi
+   fi
+   echo "Installing $fltk..." 
+   tar xfz $fltk
+   cd ${fltk%-source.tar.gz}
+   export CC=$TRUST_cc_BASE
+   env CFLAGS=-fPIC CXXFLAGS=-fPIC ./configure $MISSING_GL --enable-xdbe=no --prefix $TRUST_ROOT/Outils/Gmsh/fltk || exit -1
+   $TRUST_MAKE || exit -1
+   make install || exit -1 
+   cd ..
+   rm -r -f ${fltk%-source.tar.gz}
+fi
+FLTK_ROOT=`pwd`/fltk
+
+########
+# GMSH #
+########   
+version=gmsh-2.6.1-source.tgz
+if [ ! -f $version ]
+then
+   echo "Downloading $version..." 
+   wget_ http://geuz.org/gmsh/src/$version
+   if [ $? != 0 ]
+   then
+      echo "No Internet access. Install yourself Gmsh."
+      exit 0
+   fi      
+fi
+rm -r -f ${version%.tgz}
+echo "Install $version..." 
+tar mxfz $version
+cd ${version%.tgz}
+mkdir -p build
+cd build
+
+options=""
+if [ ${TRUST_F77_BASE%gfortran} != $TRUST_F77_BASE ]
+then
+   # Vu sur 2 machines de Saclay dont is213120:
+   # gfortran non trouve au link de Gmsh
+   # Sur castor, on desactive
+   [ $HOST != castor ] && options="-DCMAKE_CXX_LINK_FLAGS=-lgfortran"
+fi
+# Gmsh 2.6.1 is not compatible with PETSc>=3.5
+[ "$version" = gmsh-2.6.1-source.tgz ] && options=$options" -DENABLE_PETSC=0"
+# Build avec GUI (FLTK), et support MED,LAPACK
+[ "$MISSING_GL" != "" ] && MISSING_GL=$TRUST_ROOT/Outils/Gmsh/missing
+cmake $options -DENABLE_FLTK=1 -DENABLE_MED=1 \
+-DCMAKE_C_COMPILER=$TRUST_cc -DCMAKE_CXX_COMPILER=$TRUST_CC -DCMAKE_Fortran_COMPILER=$TRUST_F77 \
+-DCMAKE_INSTALL_PREFIX=$TRUST_ROOT/exec/gmsh \
+-DCMAKE_PREFIX_PATH="$TRUST_ROOT/lib/src/LIBMED/MED;$TRUST_ROOT/lib/src/LIBLAPACK;$FLTK_ROOT;$MISSING_GL" .. 2>&1 || exit -1
+
+# Hack Gmsh pour eviter le message penible: 
+# undefined reference to symbol '_gfortran_concat_string@@GFORTRAN_1.0'
+# Voir http://stackoverflow.com/questions/13247107/cmake-dso-linking
+echo $ECHO_OPTS "1,$ s?target_link_libraries(gmsh \${LINK_LIBRARIES})?target_link_libraries(gmsh \${LINK_LIBRARIES} gfortran)?g\nw" | ed ../CMakeLists.txt 1>/dev/null 2>&1
+[ $? != 0 ] && echo "Fail to change CMakeLists.txt. Contact TRUST support." && exit -1
+
+# Build and install
+$TRUST_MAKE || exit -1
+make install || exit -1
+cd ../.. 
+rm -r -f fltk ${version%.tgz}
+

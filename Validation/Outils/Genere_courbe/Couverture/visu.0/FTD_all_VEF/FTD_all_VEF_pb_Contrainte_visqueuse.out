@@ -1,0 +1,6 @@
+# Impression sur les bords de l'equation Navier_Stokes_FT_Disc du probleme pb
+# Contrainte visqueuse exercee par le fluide=Integrale(-mu*grad(u)*ndS) [N]
+# Bord:		paroi						bas						haut						Total
+# Temps		Fx		Fy		Fz		Fx		Fy		Fz		Fx		Fy		Fz
+1.000e-07 	 	0.000e+00 	0.000e+00 	0.000e+00 	 	0.000e+00 	0.000e+00 	0.000e+00 	 	0.000e+00 	0.000e+00 	0.000e+00 	 	0.000e+00 	0.000e+00 	0.000e+00
+2.264e-02 	 	3.684e-08 	8.843e-08 	-2.562e-05 	 	4.586e-10 	3.589e-08 	1.024e-08 	 	2.216e-09 	-4.259e-10 	-3.454e-09 	 	3.951e-08 	1.239e-07 	-2.562e-05

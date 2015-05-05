@@ -1,0 +1,14 @@
+dimension 3
+domaine DOM_DOM
+# Lecture d'un maillage ICEM binaire #
+Read_file DOM_DOM trio_DOM_geo.bin
+Postraiter_domaine { fichier Kernel_ICEM_binaire format lml domaine DOM_DOM }
+
+# Relecture du maillage ICEM binaire #
+Read_file DOM_DOM trio_DOM_geo.bin.cleaned
+Postraiter_domaine { fichier Kernel_ICEM_binaire_cleaned format lml domaine DOM_DOM }
+
+# Lecture du meme maillage ICEM mais en ASCII #
+Read_file DOM_DOM trio_DOM_geo.geom
+Postraiter_domaine { fichier Kernel_ICEM_ascii format lml domaine DOM_DOM }
+

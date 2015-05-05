@@ -1,0 +1,52 @@
+#!/bin/bash
+[ ${#TRUST_ROOT} = 0 ] && echo "Environnement TRUST non defini." && exit -1 
+echo $HOST_BUILD > Run_bench.log
+echo $exec > par
+[ -f EN_COURS ] && echo le bench tourne deja le fichier EN_COURS existe && exit
+touch EN_COURS
+
+# Par defaut, bench sur 512000 mailles
+NUMBER_CORES_TESTED="1 2 4" # (->128000 mailles/core)
+[ $TRUST_NB_PROCS -ge  8 ] && NUMBER_CORES_TESTED=$NUMBER_CORES_TESTED" 8"  # (->64000 mailles/core)
+[ $TRUST_NB_PROCS -ge 16 ] && NUMBER_CORES_TESTED=$NUMBER_CORES_TESTED" 16" # (->32000 mailles/core)
+echo $NUMBER_CORES_TESTED > liste_nb_proc   
+
+# Mais on peut modifier ces valeurs:
+#   # 4,000,000 mailles et de 1 a 64 procs !
+#   echo $ECHO_OPTS "1,$ s?81 81 81?161 161 161?g\nw" | ed Geom_VDF.data
+#   echo "1 2 4 8 16 32 64" > liste_nb_proc
+
+#############################
+
+rm -rf PAR[0-9]*
+listcas="VDF VEF"
+#listcas="VDF"
+for cas in $listcas
+do
+   export cas
+   echo " Cas "$cas
+   cp -f Geom_${cas}.data Geom.data
+   cp -f TpltPar${cas}.data TpltPar.data
+   cp -f TpltDec_${cas}.data TpltDec.data
+   ./Gen_bench;
+   ./Lance_bench;
+   ./Lance_valid resultats >>par
+   # Pour eviter l'accumulation de plusieurs runs lances :
+   [ ! -d $TRUST_TESTS/Reference/BENCHMARK ] && exit
+   # Sauve les rapports ${cas}
+   for file in `ls */*.TU */*.perf */*.out */*.err`
+   do
+      [ ${file%.TU} != $file ] && cat $file >> Run_bench.log
+      mv $file $file"_${cas}"
+   done
+done
+
+cat par
+rm -f EN_COURS
+cat par | mail_ -s "Bench_$HOST_BUILD" $TRUST_MAIL
+cat Run_bench.log | mail_ -s "Run_bench.log_$HOST_BUILD" $TRUST_MAIL
+# Creation d'un rapport PDF sur le speed up et la decomposition du temps CPU
+Run_fiche `[ "$NUIT" = "" ] && echo -xpdf`
+echo "************************************************"
+echo "A PDF file is created with speed up plots there:"
+echo "`pwd`/build/rapport.pdf with speed up plots."

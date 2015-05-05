@@ -1,0 +1,68 @@
+message()
+{
+   egal=`echo $1" "$2 | $TRUST_Awk '{a=$1-$2;if (a<0) a=-a;b=$1+$2;if (b<0) b=-b;if (b!=0) a=a/b;if (a<1e-7 || b<1.e-10) print 1;else print 0}'`
+   [ $egal = 0 ] && echo $ECHO_OPTS "Error ($1!=$2) when checking:\n $msg" && err=1
+   [ $debog = 1 ] && echo $msg
+}
+jdd=`pwd`;jdd=`basename $jdd`
+debog=0 && [ "$1" = "-print" ] && debog=1
+err=0
+
+################################
+# Comparaison lml entre IC et QC
+################################
+# Pour cela: gravite nulle, rho_constant_pour_debug doit etre utilise en QC, pression_pa au lieu de pression
+compare_lata $jdd.lml IC_$jdd.lml 1>compare_lata.log 2>&1
+err=$? && [ $err != 0 ] && echo $ECHO_OPTS "Error when comparing $jdd.lml IC_$jdd.lml files:" && cat compare_lata.log
+
+for cas in $jdd IC_$jdd
+do
+   ############################################################################################################
+   # On verifie que l'on trouve le bon flux impose dans le fichier Diffusion_chaleur.out egal a (S=0.01)*flux W
+   ############################################################################################################
+   # Dans le probleme thermohydraulique:
+   Diffusion_chaleur=`ls $cas*pb_Diffusion_chaleur.out`
+   flux=`grep -i Paroi_flux_impose $cas.data | $TRUST_Awk '/Haut/ {print $NF}'`
+   ok=`tail -1 $Diffusion_chaleur | $TRUST_Awk -v flux=$flux '{if ($3==flux*0.01) print 1;else print 0}'`
+   msg="Flux impose valide dans $Diffusion_chaleur";message $ok 1
+   # Dans le probleme de conduction:
+   Diffusion_chaleur=`ls $cas*pb_solide_Diffusion_chaleur.out`
+   flux=`grep -i Paroi_flux_impose $cas.data | $TRUST_Awk '/Bas/ {print $NF}'`
+   ok=`tail -1 $Diffusion_chaleur | $TRUST_Awk -v flux=$flux '{if ($3==flux*0.01) print 1;else print 0}'`
+   msg="Flux impose valide dans $Diffusion_chaleur";message $ok 1
+
+   #######################################################################
+   # On verifie que l'on egalite des flux de chaleur entre les 2 problemes
+   #######################################################################
+   flux1=`tail -1 $cas*pb_Diffusion_chaleur.out 	| $TRUST_Awk '{print -$5}'`
+   flux2=`tail -1 $cas*pb_solide_Diffusion_chaleur.out 	| $TRUST_Awk '{print $4}'`
+   ok=`echo $flux1 $flux2 | $TRUST_Awk '{if ($1*1.==$2*1.) print 1;else print 0}'`
+   msg="Egalite des flux valide dans `ls $cas*pb_Diffusion_chaleur.out` `ls $cas*pb_solide_Diffusion_chaleur.out`";message $ok 1
+done
+
+###################################################################
+# Fait des comparaisons QC-IC sur tous les flux au 1er pas de temps
+###################################################################
+for out in `ls $jdd"_"*.out $jdd"_"*_*.face 2>/dev/null | grep -v Force_pression`
+do
+   if [ $out != ${out%.face} ]
+   then
+      # Compare les Nusselts locaux et les Ustar chaque bords
+      [ $out = ${out%Ustar.face} ] && cat $out    | sed -e "/Temps/d" -e "/Bord/d" -e "/--/d" -e "/Face/d" -e "/^$/d" -e "/Nusselt/d" | $TRUST_Awk -F"|" '{print $(NF-1)}' > $out.qc.tmp
+      [ $out = ${out%Ustar.face} ] && cat IC_$out | sed -e "/Temps/d" -e "/Bord/d" -e "/--/d" -e "/Face/d" -e "/^$/d" -e "/Nusselt/d" | $TRUST_Awk -F"|" '{print $(NF-1)}' > $out.ic.tmp
+      [ $out = ${out%Nusselt.face} ] && col_ustar=`cat $out | grep "u\*" | head -1 | sed "s?|?\n?g" | grep -n "u\*" | $TRUST_Awk -F":" '{print $1}'`
+      [ $out = ${out%Nusselt.face} ] && cat $out    | sed -e "/Temps/d" -e "/Bord/d" -e "/--/d" -e "/Face/d" -e "/^$/d" -e "/Calcul/d" -e "/u\*/d" | $TRUST_Awk -F"|" '{print $'$col_ustar'}' > $out.qc.tmp
+      [ $out = ${out%Nusselt.face} ] && cat IC_$out | sed -e "/Temps/d" -e "/Bord/d" -e "/--/d" -e "/Face/d" -e "/^$/d" -e "/Calcul/d" -e "/u\*/d" | $TRUST_Awk -F"|" '{print $'$col_ustar'}' > $out.ic.tmp
+      delta=`sdiff -s -w 40 $out.qc.tmp $out.ic.tmp | $TRUST_Awk '{print $1" "$3}'`
+      rm -f $out.qc.tmp $out.ic.tmp
+      [ $out = ${out%Ustar.face} ]   && msg="Nusselt identique entre $out IC_$out" && message $delta
+      [ $out = ${out%Nusselt.face} ] && msg="Ustar identique entre $out IC_$out" && message $delta
+   else
+      # Compare le premier flux non nul en multipliant par rho si necessaire (sauf pour la pression ecarts non compris encore)
+      rho=1 && [ $out != ${out%_Debit.out} ] && rho=`grep -i 'rho ' IC_$jdd.data | head -1 | $TRUST_Awk '{print $NF}'`
+      qc=`$TRUST_Awk 		'!/#/ {col=2;while($col==0 && col<NF) col++;print $(col)*1.}' $out`
+      ic=`$TRUST_Awk -v rho=$rho 	'!/#/ {col=2;while($col==0 && col<NF) col++;print $(col)*rho}' IC_$out`
+      msg="Flux $ic identique entre $out IC_$out";message "$qc" "$ic"
+   fi
+done
+exit $err

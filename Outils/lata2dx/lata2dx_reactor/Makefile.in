@@ -1,0 +1,54 @@
+# make = static stripped optimized
+# make dynamic =  dynamic stripped optimised
+# make debug = static not stripped not optimised with debug info
+include $(TRUST_ENV)/make.$(TRUST_ARCH_CC)
+
+SRCS=$(wildcard *.cpp)
+OBJECTS=$(SRCS:.cpp=.o)
+
+INCDIRS        	= -I .
+
+CXX		= $(TRUST_CC)
+CXXFLAGSOPT	= -O3 -DNDEBUG $(INCDIRS)
+CXXFLAGSDEBUG	= -g $(INCDIRS)
+
+LD		= $(TRUST_CC)
+LDFLAGSOPT	= -O3 -DNDEBUG $(LIBDIRS)
+LDFLAGSDEBUG	= -g $(INCDIRS)
+
+SOFLAGS		= -shared
+
+all: staticopt
+
+staticopt: CXXFLAGS=$(CXXFLAGSOPT)
+staticopt: LDFLAGS=$(LDFLAGSOPT)
+staticopt: depend lata2dx_reactor
+
+debug: CXXFLAGS=$(CXXFLAGSDEBUG)
+debug: LDFLAGS=$(LDFLAGSDEBUG)
+debug: depend lata2dx_reactor
+
+dynamic: CXXFLAGS=$(CXXFLAGSOPT)
+dynamic: LDFLAGS=$(LDFLAGSOPT)
+dynamic: liblata.so lata2dx_reactor.o
+	$(LD) $(LDFLAGS) lata2dx_reactor.o -llata -o lata2dx_reactor
+	strip liblata.so
+	strip lata2dx_reactor
+depend:
+	@makedepend -- $(INCDIRS) $(SYSINC_DEP) -- $(SRCS)
+
+lata2dx_reactor: $(OBJECTS)
+	$(LD) $(LDFLAGS) $(OBJECTS) -o $@
+
+liblata.so: lata.o
+	$(LD) $(SOFLAGS) $(LDFLAGS) lata.o -o $@
+
+.PHONY: clean
+clean:
+	rm -f *.o lata2dx_reactor liblata.so *~ core
+
+.SUFFIXES : .cpp
+
+%.o: %.cpp 
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+# DO NOT DELETE

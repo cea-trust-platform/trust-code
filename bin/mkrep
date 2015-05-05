@@ -1,0 +1,44 @@
+#!/bin/bash
+[ "$TRUST_ROOT" = "" ] && echo "TRUST_ROOT not defined." && exit -1
+cd $TRUST_ROOT
+fichier=$TRUST_ENV/rep.TRUST
+fichier_tmp=`mktemp_`
+# Rajout de sort pour pouvoir avoir des fichiers rep.TRUST
+# absolument identiques sur toutes les machines et ainsi
+# eviter des messages de changement des fichiers instancie...
+# GF ajout de -f pour ignorer majuscule minuscule
+for dir in `find ./src/* -type d -print | sort -f 2>/dev/null`
+do
+   if [ $dir != "./src/MAIN" ] && [ -f $dir/make.include ]
+   then
+      #echo $dir
+      echo $ECHO_OPTS $dir >> $fichier_tmp
+   fi
+done
+#  la ligne suivante permet d'avoir un noyau minimal
+#echo "./src/Kernel/Utilitaires ./src/Kernel/Math" > $fichier_tmp
+#mv $fichier_tmp $fichier_tmp.sa ;grep Kernel $fichier_tmp.sa > $fichier_tmp; rm $fichier_tmp.sa
+# Ajout de MAIN a la fin:
+[ -d $TRUST_ROOT/src/MAIN ] && echo $ECHO_OPTS "./src/MAIN" >> $fichier_tmp
+
+# Si different du $fichier original, on checkout
+if [ ! -f $fichier ] || [ "`diff $fichier $fichier_tmp`" != "" ]
+then
+   CHECKOUT $fichier 1>/dev/null 2>&1
+   cat $fichier_tmp > $fichier
+   echo "$fichier updated."
+   # Mise a jour du fichier instancie de MAIN
+   # car modification des repertoires TRUST:
+   ([ -d $TRUST_ROOT/src/MAIN ] && cd $TRUST_ROOT/src/MAIN && mk_Instancie)
+else
+   echo "$fichier up to date."
+fi
+
+rm -f $fichier_tmp
+### creation d'un makefile global sur TRUST_ROOT
+makefile=$TRUST_ROOT/makefile.xemacs
+echo "include \$(TRUST_ENV)/makefile" > $makefile
+echo  SUBDIRS=`cat $TRUST_ENV/rep.TRUST` >> $makefile
+echo all: >> $makefile
+echo $ECHO_OPTS \\t "@for dir in \$(SUBDIRS); do (cd \$\$dir && \$(MAKE) $@) ; done" >> $makefile
+

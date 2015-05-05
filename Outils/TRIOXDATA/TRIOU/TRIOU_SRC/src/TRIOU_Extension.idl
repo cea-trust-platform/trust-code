@@ -1,0 +1,31 @@
+#ifndef TRIOU_EXTENSION_IDL
+#define TRIOU_EXTENSION_IDL
+
+#include "SALOMEDS.idl"
+
+module TRIOU_CORBA 
+{
+  enum Status
+  {
+    OK_STATUS,
+    OK_NO_MED_FILES,
+    OK_NO_VISU,
+    OK_WITH_ERRORS,
+    RUNNING,              
+    FAILED_TO_RUN,
+    FAILED_TO_PUBLISH
+  };
+  
+  interface Extension
+  {
+    long StartSolver(in SALOMEDS::Study theStudy, in string theInputFile, in string theSolverPath, in string theWorkingDir);
+    void StopSolver();
+    void PauseSolver();
+    void ContinueSolver();
+    boolean IsSolverRunning();
+    boolean IsSolverPaused();
+    Status GetStatus();
+  };
+};
+
+#endif

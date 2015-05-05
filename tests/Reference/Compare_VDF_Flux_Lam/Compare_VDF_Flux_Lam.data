@@ -1,0 +1,183 @@
+# ThermoHydraulique 2D : quasi compressible gaz parfait VEF #
+# Voir le fichier verifie pour les tests effectues #
+# PARALLEL OK 4 #
+dimension 2
+Pb_Thermohydraulique_QC pb
+Pb_conduction pb_solide
+Domaine dom
+Domaine dom_solide
+# BEGIN MESH #
+Mailler dom
+{
+        Pave Cavite
+                {
+                Origine 0. 0.01
+                Nombre_de_Noeuds 11 11
+                Longueurs 0.01 0.01
+                }
+                {
+                Bord Entree 			X = 0.  	0.01 <= Y <= 0.02
+                Bord Haut 			Y = 0.02  	0. <= X <= 0.01
+                Raccord local homogene 	Contact Y = 0.01     	0. <= X <= 0.01
+                Bord Sortie 			X = 0.01 	0.01 <= Y <= 0.02
+                }
+}
+Mailler dom_solide
+{
+        Pave Cavite
+                {
+                Origine 0. 0.
+                Nombre_de_Noeuds 11 11
+                Longueurs 0.01 0.01
+                }
+                {
+                Bord Cote 			X = 0.  	0. <= Y <= 0.01
+                Raccord local homogene 	Contact	Y = 0.01  	0. <= X <= 0.01
+                Bord Bas 			Y = 0.     	0. <= X <= 0.01
+                Bord Cote 			X = 0.01 	0. <= Y <= 0.01
+                }
+}
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur metis { Nb_parts 2 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Partition dom_solide
+{
+	Partitionneur metis { Nb_parts 2 }
+	Larg_joint 1
+	Nom_Zones DOM_SOLIDE
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+Scatter DOM_SOLIDE.Zones dom_solide
+END SCATTER #
+
+VDF dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0
+	tmax 15.0
+        nb_pas_dt_max 1
+	dt_min 5.e-5
+	dt_max 5.
+	dt_impr 5.e-5
+	dt_sauv 100
+	seuil_statio 1.e-8
+}
+
+Fluide_Quasi_Compressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 1.85e-5
+        pression 162684.57148045
+        lambda Champ_Uniforme 1 0.0262
+        loi_etat gaz_parfait {
+                Prandtl 0.71034351145038165942
+                Cp 1006.
+                gamma 1.4
+		rho_constant_pour_debug Champ_uniforme 1 2.
+        }
+	traitement_pth constant 
+}
+Solide sol
+Lire sol
+{
+        rho Champ_Uniforme 1 1000.
+        lambda Champ_Uniforme 1 250.
+        Cp Champ_Uniforme 1 100.
+}
+
+
+Champ_Uniforme gravite
+Lire gravite 2 0 0
+
+Associate sol gravite
+Associate fluide gravite
+
+Associate pb_solide dom_solide
+Associate pb_solide sol
+
+Associate pb dom
+Associate pb fluide
+
+Probleme_Couple pbc
+Associate pbc pb
+Associate pbc pb_solide
+Associate pbc sch
+Discretize pbc dis
+
+Lire pb
+{
+	Navier_Stokes_QC
+	{
+		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-9 }	
+		convection { quick } 
+		diffusion { }
+		conditions_initiales {
+			vitesse Champ_Uniforme 2 0. 0.
+			}
+		boundary_conditions {
+                        Contact   	paroi_fixe
+                        Haut 		paroi_fixe
+                        Sortie 		frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
+                        Entree 		frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 2 .1 0.
+		}
+
+	}
+        Convection_Diffusion_Chaleur_QC
+        {
+                diffusion { }
+                convection { quick }
+                boundary_conditions 
+                {
+                        Contact   	Paroi_contact pb_solide Contact
+                        Haut 		Paroi_flux_impose Champ_Front_Uniforme 1 200.
+                        Sortie 		frontiere_ouverte T_ext Champ_Front_Uniforme 1 283
+                        Entree  	frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 283
+                }
+                conditions_initiales { Temperature Champ_Uniforme 1 283 }
+        }
+
+	Postraitement
+	{
+		Champs dt_post 10.
+		{
+			pression_pa som
+			vitesse som
+			temperature som
+		}
+	}
+}
+Lire pb_solide
+{
+        Conduction
+        {
+                diffusion { }
+                conditions_initiales {
+                        temperature Champ_Uniforme 1 303.
+                        }
+                boundary_conditions {
+                        Cote 	Paroi_adiabatique
+			Bas 	Paroi_flux_impose Champ_Front_Uniforme 1 200.
+			Contact	Paroi_contact pb Contact
+                }
+        }
+        Postraitement
+        {
+                Champs dt_post 10.
+                {
+                        temperature som
+                }
+        }
+}
+Solve pbc
+Fin

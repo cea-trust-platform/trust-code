@@ -1,0 +1,133 @@
+# PARALLEL OK 3 #
+dimension 3
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+        {
+                Origine 0. 0. 0.
+                Nombre_de_Noeuds 5 5 5
+                Longueurs 1 1 1
+        }
+        {
+                Bord paroi   	X = 0. 	0. <= Y <= 1. 	0. <= Z <= 1
+                Bord Sortie  	X = 1.	0. <= Y <= 1. 	0. <= Z <= 1
+                Bord paroi   	Y =  0.	0. <= X <= 1.  	0. <= Z <= 1
+                Bord paroi   	Y =  1.	0. <= X <= 1.	0. <= Z <= 1
+                Bord paroi  	Z = 0. 	0. <= X <= 1.  	0. <= Y <= 1.
+                Bord paroi  	Z = 1 	0. <= X <= 1.  	0. <= Y <= 1.
+        }
+} 
+Tetraedriser_homogene dom
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur Metis { Nb_parts 2 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1b dis
+Lire dis { P0 P1 Pa }
+Schema_Euler_Explicite sch
+Lire sch 
+{
+	nb_pas_dt_max 2
+        tinit 0
+        tmax 0.1
+        dt_min 1.e-6
+        dt_max 10
+	dt_start dt_calc
+        dt_impr 0.1
+        dt_sauv 20.
+        seuil_statio 1.e-12
+        facsec 1.
+}
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme	1 1.
+	rho Champ_Uniforme	1 1.
+}
+
+Pb_Hydraulique pb
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+# Debog pb seq faces 1.e-6 0 #
+Lire pb
+{
+	Navier_Stokes_standard
+		{
+		dt_projection 1.e5 1.e-10
+
+		Solveur_Pression GCP { precond ssor { omega 1.6 } seuil 1.e-10 impr }
+
+                convection { negligeable }
+                diffusion  { negligeable }
+			
+                Sources { Source_Qdm Champ_fonc_xyz dom 3 2*x 0 0
+                        }
+		conditions_initiales
+			{
+                        vitesse Champ_fonc_xyz dom 3  0.  0. 0. 
+			}
+		boundary_conditions
+			{
+			paroi paroi_fixe
+			Sortie Frontiere_Ouverte_Pression_Imposee
+				Champ_Front_Uniforme 1 0
+			}
+	         }
+
+	Postraitements
+	{
+		lml
+        	{  
+                Sondes
+                	{ 
+			sonde_gradient_pression	gradient_pression periode 0.0001 segment 10 0. 0.5 0.5 1. 0.5 0.5
+			sonde_vitesse	vitesse	periode 0.0001	segment 10 0. 0.5 0.5 1. 0.5 0.5
+			sonde_pression	pression periode 0.0001 segment 10 0. 0.5 0.5 1. 0.5 0.5
+			}
+		format lml
+		fichier 3DPimp0X
+		Champs dt_post 0.1
+			{
+			pression elem
+			pression som
+			}
+		}
+		lata
+        	{  
+		format lata
+		fichier 3DPimp0X
+		Champs dt_post 0.1
+			{
+			vitesse elem
+			vitesse som
+			gradient_pression elem
+			gradient_pression som
+			divergence_U elem
+			divergence_U som
+			pression elem
+			pression som
+			}
+		}
+		
+	}
+}
+Solve pb
+Fin

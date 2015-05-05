@@ -1,0 +1,111 @@
+# Hydraulique 3D laminaire avec schema convection DI_L2 #
+# PARALLEL OK 5 #
+
+dimension 3 
+
+Pb_Hydraulique pb
+
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom {
+Pave tube
+        {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 6 6 16
+        Longueurs 0.01 0.01 0.10
+        }
+        {
+        Bord PAROI   X = 0.       0. <= Y <=  0.01  0. <= Z <=  0.10
+        Bord PAROI   X = 0.01     0. <= Y <=  0.01  0. <= Z <=  0.10
+        Bord SYMET   Y = 0.01     0. <= X <=  0.01  0. <= Z <=  0.10
+        Bord SYMET   Y = 0.       0. <= X <=  0.01  0. <= Z <=  0.10
+        Bord ENTREE  Z = 0.       0. <= X <=  0.01  0. <= Y <=  0.01
+        Bord SORTIE  Z = 0.10     0. <= X <=  0.01  0. <= Y <=  0.01       
+        } 
+
+}
+Tetraedriser_homogene dom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur metis { Nb_parts 2 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+
+schema_Euler_explicite sch
+
+Lire sch
+{
+	tinit   0.
+	tmax    2.0
+	nb_pas_dt_max 1
+	dt_min  0.0003
+	dt_max  0.0003
+	dt_impr 1.e-6
+	dt_sauv 10.
+	seuil_statio 1.e-8
+	diffusion_implicite 0
+
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1      1.85e-5
+	rho Champ_Uniforme 1     1.17
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Lire pb
+{
+    Navier_Stokes_standard
+    {
+	solveur_pression GCP {
+            precond ssor { omega 1.6 } seuil 1.e-12 impr
+        }
+	convection { DI_L2 }
+	diffusion { }
+	conditions_initiales {	vitesse Champ_Uniforme 3  0. 0. 0.2 }
+	boundary_conditions 
+	{
+	    PAROI  paroi_fixe
+	    SYMET  symetrie
+	    SORTIE frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+	    ENTREE frontiere_ouverte_vitesse_imposee  Champ_Front_Uniforme 3 0. 0.0 0.2
+	}
+     }
+     
+    Postraitement 
+    {
+	Sondes 
+	{
+	    pression pression    periode 1.e-6 points   1 0.005 0.005 0.2 
+	    vitesse_en_x3 vitesse periode 1.e-6 segment  19  0.0001 0.005 0.1
+	                                                    0.0099 0.005 0.1
+	}
+	Champs dt_post 0.2
+	{
+		vitesse 
+		pression
+	}
+   }
+}
+
+Solve pb
+Fin

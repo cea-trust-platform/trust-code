@@ -1,0 +1,148 @@
+#!/bin/bash
+echo $ECHO_OPTS "Please wait..."
+mini=0
+[ "`basename $0`" = "mkmf_mini_" ] && mini=1
+# Creation de la liste des sources et objets
+Flags=$*
+if [ -f Makefile ]
+then
+   makefile=Makefile
+elif [ -f makefile ]
+then
+   makefile=makefile
+else
+   echo $ECHO_OPTS "No makefile or Makefile found!"  
+   exit -1
+fi
+fichier=`mktemp_`
+SRCS=""
+suffixe="cpp c f"
+echo $ECHO_OPTS "\c" > $fichier
+for suf in $suffixe
+do
+   lsuf=`ls [A-N]*.$suf 2>/dev/null`
+   lsuf=$lsuf" "`ls [O-Z]*.$suf 2>/dev/null`
+   lsuf=$lsuf" "`ls [a-z]*.$suf 2>/dev/null`
+   # Reecriture de la recherche des fichiers car GROS BUG sur Mandrake 9.0
+   # ls [a-z]*.cpp ne marche pas, il sort les fichiers commencant aussi en majuscule !
+   # Bullshit. Ca explique pourquoi dans cherche.ksh les fichiers sont repetes en double
+   # En bref, dans tous les scripts avec [a-z]*.cpp, il y'a risque de bug.
+   for file in $lsuf
+   do
+       echo $ECHO_OPTS $file ${file%.$suf}.o 
+   done | sort -u >> $fichier
+done
+SRCS=`$TRUST_Awk '{print $1}' $fichier`
+
+# Nouveau, mise a jour du repertoire $TRUST_ROOT/include si necessaire
+if [ -f make.include ] && [ -f makefile ]
+then
+   cree_include=0
+   for include in `ls *.h 2>/dev/null`
+   do
+      [ ! -f $TRUST_ROOT/include/$include ] && cree_include=1 
+   done
+   [ $cree_include = 1 ] && cree_include
+fi
+  
+if [ "$mini" = "1" ] 
+then
+   sed "s?\.?\\\.?g" $TRUST_ENV/liste_fichiers_TRUST_nec| awk '{print (" ./"$1)}' >$TRUST_ENV/liste_fichiers_TRUST_nec2 
+   egrep -f $TRUST_ENV/liste_fichiers_TRUST_nec2 $fichier > $TRUST_TMP/$fichier.mod  
+   mv $TRUST_TMP/$fichier.mod $fichier
+   cp $fichier $TRUST_TMP/$fichier
+   cp $TRUST_TMP/$fichier.mod $fichier
+   SRCS=""
+   SRCS=`$TRUST_Awk '{print $1}' $fichier`
+fi
+
+makefile_tmp=`mktemp_`
+$TRUST_Awk -v fichier=$fichier 'BEGIN { n=0; \
+while (getline < fichier) {s[n,0]=$1;s[n,1]=$2;n++} } \
+!/SRCS/ && !/OBJS/ {print $0} \
+/DO NOT DELETE/ {print("\n"); exit} \
+/OBJS/ && !/\=/ {print $0} \
+/SRCS/ && /\=/ {if (n==0) print "SRCS="; \
+   else print "SRCS= \\"; \
+   while ($NF=="\\") getline; \
+   for (i=0;i<n-1;i++) print "\t"s[i,0]" \\"; \
+   if (n>0) print "\t"s[n-1,0]} \
+/OBJS/ && /\=/ {if (n==0) print "OBJS="; \
+   else print "OBJS= \\"; \
+   while ($NF=="\\") getline; \
+   for (i=0;i<n-1;i++) print "\t"s[i,1]" \\"; \
+   if (n>0) print "\t"s[n-1,1]}' $makefile > $makefile_tmp
+# cat et pas mv car mktemp ne suit pas le umask !
+chmod +w $makefile
+cat $makefile_tmp > $makefile
+rm -f $makefile_tmp $fichier
+# Creation des dependances
+if [ "$TRUST_ARCH" = "linux2" ]
+then
+   for file in $SRCS
+   do
+      fileo=`echo $file | awk -F\. '{print $1}'`.o
+      $TRUST_CC -M -MG $Flags $file | sed -e "s/$fileo://" | sed -e "s?\\\??g" | awk -v filo=$fileo '{printf ("%s:%s\n",filo,$0)}' >> $makefile
+   done
+else
+   ####################
+   # Algorithme usuel #
+   ####################
+   [ ${#TRUST_MD} = 0 ] && echo "TRUST_MD not defined! Initialize TRUST environment." && exit -1
+
+   # Valeur maximale de fichiers sources a prendre dans un makedepend:  
+   Maxfic_makedepend=200
+   # Historique:
+   # 03/10/05: Cette valeur passe de 50 a 25 pour la 1.5_beta a cause de Makefiles incomplets dans MonoDir avec le message: /usr/bin/X11/makedepend: error:  out of space: increase MAXFILES
+   # ??/??/??: Passage de 25 a 10
+   # 13/12/12: Augmentation de Maxfic_makedepend car makedepend 1.0.4 permet d'augmenter serieusement cette valeur ( -> makedepend bcp plus rapide
+   # 13/12/12: Valeur infinie pour ccmakedep
+   [ "`basename $TRUST_MD`" = ccmakedep ] && Maxfic_makedepend=100000
+   
+   append=""
+   # Mettre -v a TRUST_MD pour connaitre la commande execute avec ccmakedep
+   command="$TRUST_MD \$append -- $Flags -- \$files 2>&1 | grep -v 'awk:' | grep -v Appending;#[ \$? != 0 ] && echo 'Error with makedepend command...' && exit -1"
+   ##########################
+   # Boucle sur les sources #
+   ##########################
+   for file in $SRCS
+   do
+      files=$files" "$file
+      let n=$n+1
+      if [ $n = $Maxfic_makedepend ] # Voir le fichier IHM.env pour la valeur (si cela marche, Maxfic_makedepend plus grand possible est le plus rapide)
+      then
+	 eval $command
+	 append="-a"
+	 files=""
+	 let n=0
+      fi
+   done
+   eval $command
+   if [ "`basename $TRUST_MD`" = ccmakedep ]
+   then
+      # Balises generees par ccmakedep (bug?) a supprimer du makefile:
+      echo $ECHO_OPTS "1,$ s?<command-line>??g\n 1,$ s?<command??g\n 1,$ s?<ligne??g\n 1,$ s?<interne>??g\n 1,$ s?<built-in>??g\n w" | ed $makefile 1>/dev/null 2>&1
+      # <command -> vu sur castor 
+      # <ligne -> vu sur eris
+   fi
+fi
+
+if [ $TRUST_ARCH = linux ] && [ "`grep '\.c\.o:' $makefile`" != "" ]
+then
+   # -3 car peut etre ligne vide...
+   # makedepend bugge sur Linux :
+   #[ "`tail -3 $makefile | grep '\.c\.o:'`" != "" ] && sed -e "s?\.c\.o:?\.o:?g" $makefile > $makefile.tmp && mv $makefile.tmp $makefile
+   # C'est pas forcement les 3 dernieres lignes !
+   makefile_tmp=`mktemp_`
+   sed -e "s?\.c\.o:?\.o:?g" $makefile > $makefile_tmp
+   $TRUST_Awk '{if ($0==".o:") { print (".c.o:") }else {print $0 }}' $makefile_tmp > $makefile
+   rm -f $makefile_tmp
+fi
+
+# To detect strange bug since 1.6.7
+if [ ! -s $makefile ]
+then
+   echo "$makefile not created or empty !"
+   ls -lart $makefile
+   exit -1
+fi 

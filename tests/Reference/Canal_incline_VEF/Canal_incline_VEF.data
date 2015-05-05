@@ -1,0 +1,104 @@
+# SIMULATION D UN CANAL 3D   #
+# PARALLEL OK 8 #
+# Tests de l initialisation de la vitesse avec la classe champ_init_canal_sinal #
+
+dimension 2
+Pb_Hydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+	{
+		Origine 0. 0. 
+		Nombre_de_Noeuds 31 11
+		Longueurs 6.283185307 2. 
+	}
+	{
+		Bord periox  X = 0.            	0. <= Y <= 2.0          
+		Bord periox  X = 6.283185307	0. <= Y <= 2.0           
+		Bord bas     Y = 0.            	0. <= X <= 6.283185307           
+		Bord haut    Y = 2.           	0. <= X <= 6.283185307           
+		}
+}
+Trianguler_Fin dom
+Transformer dom x+1*y y
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 2 2 }
+	Nom_Zones DOM
+	Periodique 1 periox
+        Larg_joint 2
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0.0
+	dt_impr 1.e-7
+	tmax 0.08
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 0.05
+ 	rho Champ_Uniforme 1 1.2
+
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression petsc cholesky { }
+		convection { muscl }
+		diffusion { }
+		conditions_initiales {
+			vitesse champ_uniforme 2 1 0
+		}
+		sources { Canal_perio { bord periox } }
+		boundary_conditions {
+			periox 	periodique 
+			haut  	paroi_fixe
+	                bas  	paroi_fixe		
+		}
+     }
+	      
+	Postraitement
+	{
+	     Sondes
+	          {
+	           	sonde_pression pression periode 0.001 points 1 0.05 0.15  
+			sonde_vit40 vitesse periode 0.001 segment 20   2. 0.05   2. 1.95 
+			sonde_vit_x vitesse periode 0.001 segment 20   0.157 1.      6.123 1. 
+	        }
+		Champs dt_post 4.0
+		{			
+			pression som				
+	}
+
+
+	}
+   sauvegarde formatte canal.sauv
+}
+
+Solve pb
+Fin

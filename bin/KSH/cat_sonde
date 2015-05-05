@@ -1,0 +1,162 @@
+#!/bin/bash
+# Creation de l'archive des sondes
+# Dependant du script reprise_auto
+
+##############################################################################################
+# Path du repertoire courant
+PATH_SONDE=`pwd`
+
+##############################################################################################
+# Je cherche si le repertoire "ARCH_SON" existe
+if [ -d ARCH_SON ]
+then
+   # Si oui, je le montre et je mets efface a 1
+   echo ""
+   echo "Archive des sondes existantes : $PATH_SONDE/ARCH_SON"
+   efface=1
+else
+   # Si non, je le cree et je mets efface a 0
+   mkdir ARCH_SON
+   echo ""
+   echo "Creation Archive des sondes : $PATH_SONDE/ARCH_SON"
+   efface=0
+fi
+
+##############################################################################################
+# Je cherche tous les repertoires "SAUV-*" existant
+LIST_ARCH=`ls | grep 'SAUV-' | awk -F"SAUV-" '{print $2}' | awk -F"/" '{print $1}' | sort -g | awk '{print "SAUV-"$1}'` 
+#LIST_ARCH=`ls | grep 'SAUV-' | awk -F"SAUV-" '{print $2}' | sort -n | awk '{print "SAUV-"$1}'`
+NB_ARCH_NEW=`echo "$LIST_ARCH" | wc -l`
+
+##############################################################################################
+# Je cherche si le ficher "ARCH_SON/.LIST_ARCH" existe
+NB_ARCH=0
+if [ -f ARCH_SON/.LIST_ARCH ]
+then
+   # Si oui, je compte le nombre de ligne et j'enleve a LIST_ARCH ce nombre de ligne
+   # Je ne vois plus ainsi que les nouvelles archives
+   NB_ARCH=`cat $PATH_SONDE/ARCH_SON/.LIST_ARCH | wc -l`
+   ((NB_ARCH_NEW=NB_ARCH_NEW-NB_ARCH))
+   LIST_ARCH=`echo "$LIST_ARCH" | tail -$NB_ARCH_NEW`
+fi
+
+##############################################################################################
+# Je cherche s'il existe des archives 
+if [ "`ls | grep 'SAUV-'`" == "" ]
+then
+   # Si non, je le signale et si efface est a 0, j'efface le repertoire "ARCH_SON"
+   echo ""
+   echo "Aucune archive \"$PATH_SONDE/SAUV-*\" n'a ete trouvee !"
+   if (( efface == 0 ))
+   then
+      echo ""
+      echo "Le repertoire \"$PATH_SONDE/ARCH_SON\" est efface !"
+      rm -rf $PATH_SONDE/ARCH_SON
+   fi
+   echo ""
+   exit -1
+else
+   # Si oui, je regarde s'il y a de nouvelle archive
+   if (( NB_ARCH_NEW == 0 ))
+   then
+      echo ""
+      echo "Pas de nouvelle archive trouvee !"
+      echo ""
+      exit -1
+   fi
+   echo ""
+   echo -n "Liste des nouvelles archives trouvees : "
+   echo $LIST_ARCH
+   echo ""
+   echo "$LIST_ARCH" >> $PATH_SONDE/ARCH_SON/.LIST_ARCH
+fi
+
+##############################################################################################
+# Pour chaque nouvelle archive, 
+for arch in `echo "$LIST_ARCH"`
+do
+   # Si l'archive contient "son.tar.gz"
+   if [ -f $arch/son.tar.gz ]
+   then
+
+      # Je cree un repertoire temporaire et je detar l'archive
+      mkdir TMP_CAT_SONDE
+      cd TMP_CAT_SONDE
+      tar xfz ../$arch/son.tar.gz
+      cd ../
+
+      # Pour toutes les sondes trouvees,
+      for file in `ls TMP_CAT_SONDE/*.son | awk -F"/" '{print $2}'`
+      do
+
+         # Je regarde si elle existe deja.
+	 # Si elle existe, je mets a la suite le contenue du fichier,
+	 if [ -f ARCH_SON/$file ]
+         then
+#            echo "On complete ARCH_SON/$file"
+
+            # Je cherche le dernier temps de la sonde situee dans ARCH_SON
+	    last_time=`cat ARCH_SON/$file | grep -v "#" | tail -1 | awk '{print $1}'`
+            # Si le dernier temps n'existe pas, je mets "last_time=0"
+	    if [ "$last_time" == "" ]
+	    then
+	       last_time=0
+	    fi
+
+            # Je regarde si le nombre de ligne du fichier courant
+	    nb_ligne=`cat TMP_CAT_SONDE/$file | grep -v "#" | wc -l`
+            # S'il est non nul,
+	    if (( nb_ligne != 0 ))
+	    then
+	       i=1
+	       arret=0
+	       # Je parcours le fichier de temps en temps avec la variable "i" tant que le critere d'arret n'est pas trouve
+	       while (( arret == 0 ))
+	       do
+	          current_time=`cat TMP_CAT_SONDE/$file | grep -v "#" | head -$i | tail -1 | awk '{print $1}'`
+		  # Si "i" attient le nombre de ligne du fichier courant, j'arrete le process
+		  if (( i == nb_ligne ))
+		  then
+		     arret=1
+		     nb_ligne=0
+		     i=1
+		  fi
+		  
+		  # Je calcul la difference entre le temps courant et le dernier temps de la sonde situee dans ARCH_SON
+		  diff_time=`awk "BEGIN {printf (\"%1.9f\",$current_time - $last_time)}"`
+		  # Si la difference est positive, c'est que j'ai trouve le temps a partir duquel il faut ecrire
+		  # J'arrete alors le process
+		  if (( `echo "$diff_time < 0" | bc` == 0 ))
+		  then
+		     ((nb_ligne=nb_ligne-i+1))
+		     arret=1
+		  fi
+		  
+		  # J'incremente "i" pour passer a la ligne suivante
+		  ((i=i+1))
+	       done
+               
+	       # J'ecris la suite de ma sonde
+	       tail -$nb_ligne TMP_CAT_SONDE/$file >> ARCH_SON/$file
+	    fi
+         else
+	 # Sinon, je copie le fichier comme nouvelle sonde.
+#            echo "Creation de ARCH_SON/$file"
+            cp TMP_CAT_SONDE/$file ARCH_SON/$file
+         fi
+      done
+      
+      # Je fais le menage
+      rm -rf TMP_CAT_SONDE
+#      echo "$arch OK !"
+   # Sinon je signale que "son.tar.gz" n'existe pas.
+   else
+      echo "$arch/son.tar.gz non trouve !"
+      echo ""
+   fi
+done
+
+echo "Les fichiers sondes ont ete concatenes dans $PATH_SONDE/ARCH_SON..."
+echo ""
+
+#Fin

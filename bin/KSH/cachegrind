@@ -1,0 +1,23 @@
+#!/bin/bash
+echo "Usage: `basename $0` filename.data"
+[ "$*" = "" ] && exit
+valgrind --tool=cachegrind $exec $*
+out=`ls -rt cachegrind.out.* | tail -1`
+if [ -f $out ]
+then
+   echo "File $out detected..."
+   pid=${out#cachegrind.out.}
+   echo "File cache.$pid created"
+   # Ancienne syntaxe:
+   # echo $ECHO_OPTS "cg_annotate --$pid --auto=yes\c" > $TRUST_TMP/run
+   # Options possibles de rangement: --show=Ir,D2mr --sort=D2mr
+   echo $ECHO_OPTS "cg_annotate $out --show=DLmr,DLmw,ILmr,Ir --sort=DLmr --auto=yes --threshold=0.0001\c" > $TRUST_TMP/run
+   for rep in `cat $TRUST_ENV/rep.TRUST`
+   do
+      echo $ECHO_OPTS " -I\$TRUST_ROOT/${rep#./}\c" >> $TRUST_TMP/run
+   done
+   echo $ECHO_OPTS " 1>cache.$pid" >> $TRUST_TMP/run
+   chmod +x $TRUST_TMP/run
+   $TRUST_TMP/run
+   rm -f $TRUST_TMP/run
+fi

@@ -1,0 +1,15 @@
+export Sous_Zone centre
+Associer centre dom
+Lire centre { 
+fichier centre.ssz  
+ }
+export Sous_Zone global
+Associer global dom
+Lire global { 
+fichier global.ssz  
+ }
+export Sous_Zone bordure
+Associer bordure dom
+Lire bordure { 
+fichier bordure.ssz  
+ }

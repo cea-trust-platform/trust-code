@@ -1,0 +1,126 @@
+# PARALLEL OK 8 #
+# Test canal_perio source term on the equation energy #
+
+dimension 2
+Pb_thermoHydraulique pb
+Domaine dom
+# Volume=20 #
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Cavite
+	{
+		Origine 0. 0. 
+		Nombre_de_Noeuds 11 6
+		Longueurs 10 2 
+	}
+	{
+		Bord periox  X = 0.            	0. <= Y <= 2.0          
+		Bord periox  X = 10		0. <= Y <= 2.0           
+		Bord bas     Y = 0.            	0. <= X <= 10.0         
+		Bord haut    Y = 2.           	0. <= X <= 10.0           
+	}
+}
+Trianguler_Fin dom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 2 2 }
+	Nom_Zones DOM
+	Periodique 1 periox
+        Larg_joint 2
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0.0
+	tmax 10
+	dt_sauv 1.5
+	dt_impr 0.1
+	seuil_statio 1.e-4
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu	Champ_Uniforme 1 0.08
+	rho	Champ_Uniforme 1 1.205        
+	cp      champ_uniforme 1 1370.
+        beta_th champ_uniforme 1 2.74e-4
+        lambda  champ_uniforme 1 80.
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression petsc cholesky { }
+		convection { muscl }
+		diffusion { }
+		conditions_initiales { vitesse champ_uniforme 2 5. 0. }
+		sources { Canal_perio { bord periox } }  
+		boundary_conditions {
+                        periox periodique 
+			haut  paroi_fixe
+	                bas  paroi_fixe		
+		}
+     	}
+   	Convection_Diffusion_Temperature 
+	{
+		diffusion { }
+		convection { amont }
+		conditions_initiales { temperature Champ_uniforme 1 5. }	
+
+		# Automatic #
+		# Imposed heat flux=200*10=2000W # 
+		# Volume 20m3 #
+		sources { 
+		      # Puissance_thermique champ_uniforme 1 -100 #
+	              Canal_perio { bord periox }
+		      #  # 
+		}
+		
+		boundary_conditions {
+                        haut      Paroi_flux_impose Champ_Front_Uniforme 1 100.
+	          	bas       Paroi_flux_impose Champ_Front_Uniforme 1 100.         
+			periox 	  periodique
+                 }
+	}      
+	Postraitement
+	{
+		Definition_champs
+		{
+			temperature_moyenne  Reduction_0D { methode moyenne_ponderee source refChamp { pb_champ pb temperature } }
+			temperature_maximale Reduction_0D { methode max source refChamp { pb_champ pb temperature } }
+		}
+		Sondes {
+			temperature_moyenne  temperature_moyenne  periode 0.001 numero_elem_sur_maitre 0
+			temperature_maximale temperature_maximale periode 0.001 numero_elem_sur_maitre 0
+		}
+		format lml
+		Champs dt_post 1
+		{			
+			pression elem			
+			vitesse elem	
+			temperature elem	
+	        }
+	}
+}
+Solve pb
+Fin

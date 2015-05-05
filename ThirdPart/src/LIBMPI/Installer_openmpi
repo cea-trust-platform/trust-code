@@ -1,0 +1,83 @@
+#!/bin/bash
+# OpenMPI install script
+old_version=1.2.9
+default_version=1.6.4
+# Notice that PETSc 3.4.3 fails to build with OpenMPI 1.7.4...
+latest_version=1.8.3
+version=$default_version
+# Cas ou l'on force la version la plus recente:
+[ "$TRUST_FORCE_LATEST_OPENMPI" = 1 ] && version=$latest_version
+# Cas ou l'on force la vieille version
+[ "$TRUST_FORCE_OLD_OPENMPI" = 1 ] && version=$old_version
+# Cas ou la vieille version est encore necessaire (ex: binaire semi-statique)
+[ "`liste_machines get_binary | grep ^$HOST`" != "" ] && version=$old_version
+
+options=""
+# Ajout d'options pour des versions recentes d'OpenMPI:
+if [ $version != $old_version ]
+then
+   # --with-memory-manager=none evite les adress not mapped avec TRUST en share libs: important donc
+   options="--with-memory-manager=none --with-hwloc=internal --disable-libompitrace --disable-vt"
+   [ -f $TRUST_ROOT/exec/valgrind ] && options=$options" --with-valgrind=$TRUST_ROOT/exec/valgrind"
+fi
+# On disable diverses choses pour accelerer la compilation et reduire la taille de la libmpi.a
+options="--enable-static --disable-shared --disable-mpi-cxx --enable-mca-no-build=maffinity-libnuma "$options
+
+# Telechargement du package
+package=openmpi-$version.tar.gz
+if [ ! -f $package ]
+then
+   rep_version=`echo $version | $TRUST_Awk -F. '{print $1"."$2}'`
+   wget_ http://www.open-mpi.org/software/ompi/v$rep_version/downloads/$package || exit -1
+fi
+
+echo "Using $package on $HOST..."
+install=`pwd`/openmpi
+install=$MPI_ROOT
+src=${package%.tar.gz}
+if [ ! -d $install ] || [ $package -nt $install ] || [ ! -d $src ]
+then
+   gunzip -c $package | tar -xf -
+fi
+cd $src
+
+###############################
+# Lancement de la configuration
+###############################
+export CXX=$TRUST_CC_BASE
+export CC=$TRUST_cc_BASE
+export F77=$TRUST_F77_BASE
+export FC=$TRUST_F77_BASE
+if [ "`uname -m`" = x86_64 ]
+then
+  # Ajout sinon message d'erreur a la compilation sur x86_64 de valgrind avec mpicc !
+  # relocation R_X86_64_32S against `ompi_request_null' can not be used when making
+  # a shared object; recompile with -fPIC
+  # Peut etre a utiliser partout ?
+  export CXXFLAGS="-fPIC"
+  export CFLAGS="-fPIC"
+  export FFLAGS="-fPIC"
+  export FCFLAGS="-fPIC"
+fi
+# Configuration:
+./configure --help 2>&1 > ../configure.help
+if [ "`grep f77 ../configure.help`" != "" ]
+then
+   # A partir d'OpenMPI 1.7, mpif77 et mpif90 -> mpifort
+   options=$options" --with-wrapper-ldflags=-lmpi_f77"
+fi
+./configure --prefix=$install $options || exit -1
+
+#############################
+# Lancement de la compilation
+#############################
+$TRUST_MAKE || exit -1 
+
+#######################
+# Fin de l'installation
+#######################
+make install || exit -1
+cd ..
+rm -r -f $src
+
+exit 0

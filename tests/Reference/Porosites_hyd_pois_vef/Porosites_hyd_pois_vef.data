@@ -1,0 +1,122 @@
+# file lam_nodiff_reg.data #
+# PARALLEL OK 6 #
+dimension 2
+
+Pb_Hydraulique pb
+domaine dom_pb1
+
+# BEGIN MESH #
+Mailler dom_pb1
+{
+	Pave cube
+	{
+	Origine 0. 0.
+	Nombre_de_Noeuds 31 31
+	Longueurs 1. 1.
+	}
+	{
+	Bord entree X = 0.   0. <= Y <= 1.
+	Bord sortie X = 1.   0. <= Y <= 1. 
+	Bord haut   Y = 1.   0. <= X <= 1.
+	Bord bas    Y = 0.   0. <= X <= 1.
+	} 
+}
+
+trianguler_h dom_pb1
+Sous_zone Suz1001
+Associate Suz1001 dom_pb1
+Lire Suz1001
+{
+      rectangle
+      Origine 0.3 0.
+      Cotes 0.3 1.
+}
+# END MESH #
+# BEGIN PARTITION
+Partition dom_pb1
+{
+	Partitionneur metis { Nb_parts 2 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom_pb1
+Sous_Zone Suz1001
+Associate Suz1001 dom_pb1
+Lire Suz1001 { Fichier Suz1001.ssz }
+END SCATTER #
+
+VEFPreP1B dis
+schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0.
+	tmax 10.
+	dt_min 0.00000001
+	dt_max 0.01
+	dt_impr 1e-3
+	dt_sauv 0.5
+	seuil_statio 1.e-15
+	Nb_pas_dt_max 10
+	facsec 0.5
+}
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 2
+	rho Champ_Uniforme 1 2
+}
+
+Associate pb dom_pb1
+Associate pb sch
+Associate pb fluide
+Discretize pb dis
+
+Porosites_champ pb champ_uniforme_morceaux dom_pb1 1 { defaut 1 Suz1001 0.5 }
+Lire pb
+{
+	Navier_Stokes_standard      
+	{
+		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-8 impr }
+		convection { amont }
+
+		diffusion {  }
+		conditions_initiales {
+			vitesse Champ_Uniforme 2 0. 0.	
+			}
+		boundary_conditions {
+			bas paroi_fixe
+			haut paroi_fixe
+			sortie frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+			entree frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 2.
+		}
+	}
+	
+	
+Postraitement 
+{
+	Sondes 
+	{
+		pres pression   periode 1e-2  segment 20 0. 0.5  1. 0.5 
+		vit  vitesse    periode 1e-2  segment 20 0.5 0. 0.5  1.
+		vit_T vitesse    periode 1e-2  segment 20  0. 0.5  1. 0.5 
+	
+		
+
+	}
+	Champs dt_post 0.1
+	{
+			pression elem
+			vitesse elem                   
+			porosite_volumique elem			
+	}
+}
+
+
+}
+Solve pb
+Fin
+Fin

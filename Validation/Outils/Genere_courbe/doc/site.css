@@ -1,0 +1,164 @@
+body {
+	padding-left: 1cm;
+	padding-right: 1cm;
+	background-image: url(rc/backgroundAstek.jpg);
+	background-repeat: no-repeat;
+	background-position: top right;
+	background-attachment: fixed;
+}
+
+h1  {
+	margin-top: 1cm;
+	margin-left: -0.5cm;
+	font-size: 16pt;
+	font-weight: bold;
+	color: rgb(191,0,31);
+	background: rgb(156,186,49);
+	text-align: left;
+	top-margin: 0.5cm;
+	border-style: none none solid none;
+	border-color: rgb(191,0,31);
+	border-width: 0.1cm;
+}
+h2  {
+	margin-top: 1cm;
+	font-size : 16pt;
+	font-weight : bold;
+	color : rgb(191,0,31);
+	text-align : left;
+	top-margin: 0.5cm;
+	border-style: none none solid none;
+	border-color: rgb(191,0,31);
+	border-width: 0.02cm;
+}
+
+div.entete {
+	padding: 0.5cm 0.5cm 0.5cm 1cm;
+	background-image: url(rc/backgroundAstekr.jpg);
+	background-repeat: no-repeat;
+	background-position: top left;
+	background-attachment: fixed;
+	border-style: none none solid none;
+	border-width: 4;
+	border-color: rgb(0,165,206);
+}
+
+#titreDoc {
+	font-size : 16pt;
+	font-weight : bold;
+}
+#refDoc, #versionDoc, #dateDoc {
+	font-style : italic;
+}
+
+#titre {
+	display: block;
+	text-align: center;
+	font-size : 18pt;
+	font-weight : bold;
+	color:rgb(191,0,31);
+	margin-top: 0.5cm;
+}
+
+table {
+	text-align : center;
+	margin-left:auto;
+	margin-right:auto;
+	margin-bottom: 1cm;
+}
+th {
+	font-weight : bold;
+	background: rgb(156,186,49);
+}
+td.desc {
+	text-align: left;
+	padding-left: 0.3cm;
+}
+
+caption {
+	margin-left:auto;
+	margin-right:auto;
+}
+caption.titre {
+	margin-top: 1cm;
+	font-size : 14pt;
+	font-weight : bold;
+}
+
+ul {
+	list-style-image: url(rc/bullet.png);
+}
+
+img.in {
+	margin: 0.5cm 0.5cm 1cm 1cm;
+	display: block;
+}
+
+.boutons {
+	background: rgb(0,155,206);
+	color: white;
+	padding: 0.1cm 0.2cm 0.1cm 0.2cm;
+	border-style: solid;
+	border-width: 2;
+	border-color: rgb(50,185,256);
+	font-weight : bold;
+}
+
+.piedPage {
+	border-style: solid none none none;
+	border-width: 4;
+	border-color: rgb(0,165,206);
+	font-style : italic;
+	margin-top: 1cm;
+	padding-top: 0.2cm;
+	padding-bottom: 1cm;
+	background-image: url(rc/fond2.jpg);
+	background-repeat: repeat-x;
+	background-position: bottom left;
+	background-attachment: scroll;
+}
+
+.shortcut {
+	font-style: italic;
+}
+
+dl.remark {
+	background-image: url(rc/stock_dialog-info.png);
+	background-repeat: no-repeat;
+	background-position: top right;
+	background-attachment: scroll;
+	border-style: none none solid solid;
+	border-width: 0.05cm;
+	border-color: rgb(156,186,49);
+	background-color: rgb(236,255,210);
+	padding: 0.2cm;
+}
+dt.remark {
+	font-weight : bold;
+	color: rgb(156,186,49);
+	text-decoration: underline;
+}
+
+dl.avert {
+	background-image: url(rc/stock_dialog-warning.png);
+	background-repeat: no-repeat;
+	background-position: top right;
+	background-attachment: scroll;
+	border-style: none none solid solid;
+	border-width: 0.05cm;
+	border-color: rgb(191,0,31);
+	background-color: rgb(255,204,153);
+	padding: 0.2cm;
+}
+dt.avert {
+	font-weight : bold;
+	color: rgb(191,0,31);
+	text-decoration: underline;
+}
+
+pre {
+	background-color: rgb(220,220,220);
+	margin-left: 1cm;
+	padding: 0.2cm;
+}
+

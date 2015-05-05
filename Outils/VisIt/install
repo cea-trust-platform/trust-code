@@ -1,0 +1,333 @@
+#!/bin/bash
+installation_visit()
+{
+   if [ ! -f bin/visit ]
+   then   
+      echo "#########################################################"
+      echo "# Installation of VisIt $version_visit for $ARCH ...     "
+      echo "#########################################################"
+      # Securite on verifie que le visit_install va pas tourner sur lui meme et remplir le disque
+      [ `echo $ECHO_OPTS "1\n"` != 1 ] && echo "Problem in installation_visit" && exit -1
+      # Desormais le visit-install a le numero de version
+      echo $ECHO_OPTS "1\nn" | ./$visit_install $version_visit $ARCH `pwd` 1>visit-install.log 2>&1
+      [ $? != 0 ] && echo "Installation of VisIt failed. See `pwd`/visit-install.log" && exit -1
+      rm -f $package
+   fi
+   # Ajout en debut du script visit d'un appel a check_visit
+   # pour faire des verifications et ajouter des messages 
+   # pour les utilisateurs:
+   # 2.6.1 desormais le script est en shell pas en perl
+   # Le chargement de l'environnement personnel TRUST est fait pour contourner 
+   # le plantage VisIt sur certaines machines
+   # en activant eventuellement la variable LIBGL_ALWAYS_INDIRECT=1 
+   if [ "`grep 'exec perl' bin/visit`" != "" ]
+   then
+      echo $ECHO_OPTS "1,$ s?exec perl ?\${0%visit}/../check_visit \$\*;[ -f ~/.perso_trio_u.env ] \&\& . ~/.perso_trio_u.env;exec perl ?g\nw" | ed bin/visit 1>/dev/null 2>&1
+      [ $? != 0 ] && echo "The change of visit script failed." && exit -1  
+   else
+      # source ne marche pas en /bin/sh donc .
+      # Pour les versions 2.6.x, l'environnement Python doit etre charge
+      python_env=";" # && [ -f $TRUST_ROOT/exec/python/env.sh ] && python_env=";. $TRUST_ROOT/exec/python/env.sh"
+      echo $ECHO_OPTS "1,$ s?# Determine VisIt architecture?\${0%visit}/../check_visit \$\* 2\>/dev/null;[ -f ~/.perso_trio_u.env ] \&\& . ~/.perso_trio_u.env$python_env?g\nw" | ed bin/visit 1>/dev/null 2>&1
+      [ $? != 0 ] && echo "The change of visit script failed." && exit -1  
+   fi
+}
+
+# Definition de TMPDIR car utilise par Visit pour l'installation
+# Si faite par sudo et que TMPDIR vide, $HOME est pris ce qui cree des permission denied (cezanne30)
+# Donc on anticipe le probleme en fixant un TMPDIR qui marchera toujours:
+export TMPDIR=/tmp
+
+# Quit if $TRUST_WITHOUT_VISIT defined
+if [ "$TRUST_WITHOUT_VISIT" = 1 ]
+then
+   echo "TRUST_WITHOUT_VISIT=$TRUST_WITHOUT_VISIT so VisIt not installed."
+   exit 0
+fi
+if [ ${#TRUST_ROOT} = 0 ]
+then
+   echo "The TRUST_ROOT variable is not defined. Initialize TRUST environment."
+   exit -1
+fi
+
+echo "Usage: ./`basename $0` version [visit | plugins | check]"
+if [ "$1" = "" ] || [ "$2" = "" ]
+then
+   exit -1
+fi
+version=$1
+what=$2
+echo $version $what
+
+#########################
+# Changement de version #
+#########################
+# ToDo: remove if not necessary:
+if [ "$version" = 2_5_2 ]
+then
+   if [ $HOST = mezel2 ]
+   then
+      # Sur mezel2 car les versions download et build crashent depuis PC TMA
+      version=2_6_1
+   fi
+fi
+
+########################
+# Encore des variables #
+########################
+version_visit=`echo $version | $TRUST_Awk '{gsub("_",".",$1);print $1}'`
+export HTTPS="http://portal.nersc.gov/svn/visit/trunk/releases https://wci.llnl.gov/codes/visit"
+
+##############################
+# Script visit-install a jour?
+##############################
+visit_install=visit-install$version
+if [ ! -f $visit_install ]
+then
+   CHECKOUT . 1>/dev/null 2>&1
+   RM visit-install* 1>/dev/null 2>&1
+   DOWNLOADED=0
+   for HTTP in $HTTPS
+   do
+      if [ $DOWNLOADED = 0 ]
+      then
+         echo $ECHO_OPTS "Try to download $HTTP/$version_visit/$visit_install...\c"
+	 wget_ $HTTP/$version_visit/$visit_install 1>/dev/null 2>&1
+	 if [ $? = 0 ]
+	 then
+	    echo "OK"
+	    DOWNLOADED=1
+	 else
+	    echo "KO"
+	 fi
+      fi
+   done
+   [ $DOWNLOADED = 0 ] && echo "Fail to download $visit_install" && exit -1
+   chmod +x $visit_install  
+   MKELEM $visit_install 1>/dev/null 2>&1
+fi
+
+##################################
+# Definition de quelques variables
+##################################
+ARCH=`uname -s | awk '{print tolower($1)}'`
+# Pour Linux, on ajoute le type
+[ $ARCH = linux ] && ARCH=$ARCH"-"`uname -m`
+
+export package=visit$version.$ARCH.tar.gz
+if [ $what = visit ] 
+then
+   if [ ! -f $package ] && [ "$TRUST_DOWNLOAD_VISIT" != 1 ]
+   then
+      parallel="" && [ "$MPI_ROOT" != "" ] && parallel="parallel"
+      echo "#################################################"
+      echo "# Trying to build a $parallel version for VisIt..."
+      echo "#################################################"
+      cd src
+      ./build $package $parallel || TRUST_DOWNLOAD_VISIT=1 # La construction a echoue on telecharge une version sequentielle
+      cd - 1>/dev/null 2>&1	
+   fi
+   # Telechargement demande ou suite echec de construction (sauf si une configuration parallele existe
+   # auquel cas la construction parallele DOIT avoir fonctionne
+   if [ "$TRUST_DOWNLOAD_VISIT" = 1 ]
+   then
+      if [ "`grep parallel host_*$HOST.xml 2>/dev/null | grep true`" != "" ]
+      then
+         echo "Can't download a sequential version of VisIt on $HOST cause the file `ls host_*$HOST.xml`"
+	 echo "suppose VisIt should be parallel."
+	 exit -1
+      else
+	 if [ $version = 2_5_2 ]
+	 then
+            # Pour 2.5.2, rhel4 n'existe plus, choix possibles:
+	    # linux-rhel5
+	    # linux-x86_64-rhel5
+	    # linux-x86_64-rhel6
+	    # linux-x86_64-ubuntu11
+	    # linux-euclid
+	    rhel=rhel5 
+	    ARCH=linux-$rhel && [ "`uname -m`" = x86_64 ] && ARCH=linux-x86_64-$rhel
+	 elif [ $version = 2_8_2 ]
+	 then
+            # No 32bits version...
+            ARCH=linux-x86_64-rhel6
+	    #ARCH=linux-x86_64-ubuntu11
+	 else
+            echo "No ARCH defined yet for $version."
+	    exit -1
+	 fi
+	 package=visit$version.$ARCH.tar.gz
+	 rm -f $package
+	 DOWNLOADED=0
+	 for HTTP in $HTTPS
+	 do
+            if [ $DOWNLOADED = 0 ]
+	    then
+	       echo "Try to download $HTTP/$version_visit/$package..."
+	       wget_ $HTTP/$version_visit/$package 1>/dev/null 2>&1 && DOWNLOADED=1
+	    fi
+	 done
+	 [ $DOWNLOADED = 0 ] && echo "Fail to download $package" && exit -1
+      fi
+   fi  
+   #################
+   # Install VisIt #
+   #################
+   installation_visit   
+
+elif [ $what = plugins ]
+then   
+   #####################################################################
+   # Build plugins if the VisIt version is built and hence is parallel #
+   #####################################################################
+   if [ "`ls current/*/bin/engine_par 2>/dev/null`" != "" ]
+   then
+      # Add path to use VisIt cmake
+      export PATH=$TRUST_ROOT/Outils/VisIt/src/cmake-2.8.10.2/bin:$PATH
+      for plugin in `ls plugins/*/build_plugin 2>/dev/null`
+      do
+	 rep=`dirname $plugin`
+	 cd $rep 1>/dev/null 2>&1
+	 echo "#########################################"
+	 echo "# Building `basename $rep` plugin:"
+	 ./build_plugin || exit -1
+	 cd - 1>/dev/null 2>&1
+	 echo "#########################################" 
+      done
+   else
+      echo "##########################################################################################"
+      echo "Plugins not built cause VisIt version has not been rebuilt on the platform but downloaded."
+      echo "##########################################################################################"
+   fi   
+     
+elif [ $what = check ]
+then
+   ########################
+   # Update host profiles #
+   ########################
+   mkdir -p current/.visit/hosts
+   for xml in `ls current/.visit/hosts/*.xml 2>/dev/null`
+   do
+      xml=`basename $xml`
+      [ ! -f $xml ] && rm -f current/.visit/hosts/$xml && echo "current/.visit/hosts/$xml deleted."
+   done
+   for xml in `ls *.xml 2>/dev/null`
+   do
+      machine=`echo ${xml%.xml} | $TRUST_Awk -F_ '{print $NF}'`
+      # La premier ligne <Field name="host" definit le host en remote 
+      # La deuxieme ligne <Field name="host" definit le host en local
+      # Ainsi pour configurer VisIt sur Windows, il suffit de copier
+      # les .xml sous current/.visit/hosts la premiere ligne etant lue
+      # par defaut pour une connection vers les serveurs de calcul
+      # ATTENTION: VisIt n'aime pas les commentaires dans le xml:
+      # On en profite pour geler les remote hosts qui ne marchent pas en inserant un commentaire en debut de fichier
+      # On change egalement le chemin vers la version de VisIt si la version TRUST est de type stable ou beta
+      # La version TRUST sera toujours de type beta si on est sous la vue Livraison
+      ligne=1 && [ $machine = $HOST ] && ligne=2
+      if [ ${TRUST_VERSION%_beta} != $TRUST_VERSION ] || [ "$MA_VUE" = triou_admin ] || [ "`echo $TRUST_ROOT | grep Version_test_`" != "" ]
+      then
+         VERSION=Version_test_$machine
+      else
+         VERSION=TRUST-$TRUST_VERSION
+	 # Sur les machines du CCRT, desormais suivi par le nom de la machine
+	 if [ "`grep /ccc $xml`" != "" ]
+	 then
+	    VERSION=$VERSION/$machine
+	 fi
+      fi
+      $TRUST_Awk -v ligne=$ligne -v TRUST_VERSION=$VERSION '(ligne==2) && /<!--/ {getline} /"host"/ {n++;if (n==ligne) print $0} !/"host"/ {gsub("TRUST_VERSION",TRUST_VERSION,$0);print $0}' $xml > $xml.tmp
+      if [ ! -f current/.visit/hosts/$xml ] || [ "`diff $xml.tmp current/.visit/hosts/$xml`" != "" ]
+      then
+         echo "current/.visit/hosts/$xml updated."
+         mv -f $xml.tmp current/.visit/hosts/$xml
+	 if [ $HOST = $TRUST_HOST_ADMIN ] && [ "$3" = -update_for_test ]
+         then
+	    adr=`awk -F">" '/"host"/ {print $2}' $xml | awk -F"<" '{print $1}' | head -1`
+	    tmp=/tmp/remote.xml;$TRUST_Awk -v ligne=2 '(ligne==2) && /<!--/ {getline} /"host"/ {n++;if (n==ligne) print $0} !/"host"/ {print $0}' $xml > $tmp
+	    scp $tmp $adr:~/Version_test_$machine/TRUST/Outils/VisIt/current/.visit/hosts/$xml	 
+         fi
+      else
+         rm -f $xml.tmp
+      fi
+   done
+   ###############################################################
+   # Debut des corrections de scripts de visit (pour le parallele)
+   ###############################################################
+   file=current/bin/internallauncher
+   # Par defaut aucune machine ne supporte -l nodes=???:ppn=??? donc on hacke le fichier
+   if [ "`grep 'useppn = 0' $file`" = "" ]
+   then
+      echo $ECHO_OPTS "1,$ s?useppn = 1?useppn = 0?g\nw" | ed $file 1>/dev/null 2>&1
+      [ $? != 0 ] && echo "Error when hacking the file $file" && exit -1           
+   fi
+   # Les 2 modifications sont necessaires (useppn=0 ne suffit pas...)
+   if [ "`grep '#parcmd = parcmd + self.SetupPPN' $file`" = "" ]
+   then
+      echo $ECHO_OPTS "1,$ s? parcmd = parcmd + self.SetupPPN?#parcmd = parcmd + self.SetupPPN?g\nw" | ed $file 1>/dev/null 2>&1
+      [ $? != 0 ] && echo "Error when hacking the file $file" && exit -1   
+   fi
+   # On callisto, --ppn with sbatch/mpirun should also be deactivated cause unknown by mpirun
+   if [ "`grep '\-\-ppn' $file`" != "" ]
+   then
+      echo $ECHO_OPTS "1,$ s?\-\-ppn??g\nw" | ed $file 1>/dev/null 2>&1
+      [ $? != 0 ] && echo "Error when hacking the file $file" && exit -1      
+   fi
+   if [ "`grep 'str(ppn)' $file`" != "" ]
+   then
+      echo $ECHO_OPTS "1,$ s?str(ppn)?\"\"?g\nw" | ed $file 1>/dev/null 2>&1
+      [ $? != 0 ] && echo "Error when hacking the file $file" && exit -1      
+   fi
+   # On change la date (car pb sur castor/eris): Colon (':') not allowed in objectname.
+   if [ "`grep 'root, tuser, string.replace' $file`" = "" ]
+   then
+      echo $ECHO_OPTS "1,$ s?root, tuser, tdate?root, tuser, string.replace(tdate, \":\", \"-\")?g\nw" | ed $file 1>/dev/null 2>&1
+      [ $? != 0 ] && echo "Error when hacking the file $file" && exit -1   
+   fi
+   
+   ########################################################################
+   # Customize customlauncher for several tasks (called by internalauncher)
+   ########################################################################
+   # eg: Useful to load TRUST environment automatically for client/server mode -> users don't need anymore loading it
+   echo $ECHO_OPTS "1,$ s?TRUST_ROOT?$TRUST_ROOT?g\nw customlauncher.tmp" | ed customlauncher 1>/dev/null 2>&1
+   echo $ECHO_OPTS "1,$ s?MPI_ROOT?$MPI_ROOT?g\nw" | ed customlauncher.tmp 1>/dev/null 2>&1
+   if [ "`diff customlauncher customlauncher.tmp`" != "" ]
+   then
+      echo "current/bin/customlauncher updated."
+      mv -f customlauncher.tmp current/bin/customlauncher
+      chmod +x current/bin/customlauncher
+   else
+      rm -f customlauncher.tmp
+   fi
+   #############
+   # Run tests #
+   #############
+   cd $TRUST_ROOT/Outils/VisIt/test
+   ./test_visit
+   if [ $? != 0 ]
+   then
+      if [ "`ls $TRUST_ROOT/Outils/VisIt/current/*/bin/engine_par 2>/dev/null`" != "" ]
+      then
+	 echo "=========================================================================="
+	 echo "Parallel VisIt does NOT work so we try to download a sequential version..."
+	 echo "=========================================================================="
+	 cd $TRUST_ROOT/Outils/VisIt
+	 make clean
+	 export TRUST_DOWNLOAD_VISIT=1
+	 make
+	 exit $?
+      fi      
+   else
+      ####################################################
+      # Build of parallel VisIt is deleted if test is OK #
+      ####################################################
+      if [ "`ls $TRUST_ROOT/Outils/VisIt/current/*/bin/engine_par 2>/dev/null`" != "" ]
+      then
+	 cd $TRUST_ROOT/Outils/VisIt/src 
+	 ./build clean
+      fi      
+   fi
+else
+   echo "$what unknown."
+   exit -1
+fi
+exit 0

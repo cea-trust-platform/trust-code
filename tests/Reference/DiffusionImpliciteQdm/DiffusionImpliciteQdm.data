@@ -1,0 +1,116 @@
+# Diffusion implicite avec CL(t) variable et facsec=2 #
+# PARALLEL OK #
+dimension 2
+Pb_hydraulique pb
+domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+	Pave pave1
+	{
+		origine 	  0.    0.
+		longueurs 	  200  50.
+		nombre_de_noeuds  21    21
+	}
+	{
+		bord haut  Y =  50.   	  0 <= X <= 200
+		bord axe   X =  0.   	  0 <= Y <= 50.
+		bord paroi X =  200      0 <= Y <= 50
+		bord bas   Y =  0.   	  0 <= X <= 100
+		bord axe Y =  0.   	  100 <= X <= 200
+	} 
+}
+transformer dom
+x
+y-50
+
+dilate dom 1e-6
+
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+        Partitionneur metis { Nb_parts 2 }
+        Larg_joint 2
+        Nom_Zones DOM
+}
+Fin
+END PARTITION #
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	nb_pas_dt_max 3
+	tinit 0
+	tmax  0.13
+	dt_min 1e-8
+	dt_max 1e-3
+	dt_impr 1e-8
+	dt_sauv 100
+	seuil_statio -1
+	facsec 2
+	diffusion_implicite 1
+	seuil_diffusion_implicite 1e-20
+	impr_diffusion_implicite 0
+}
+
+Fluide_Incompressible liquide
+Lire liquide
+{
+	mu  Champ_Uniforme 1 1.e-3
+ 	rho Champ_Uniforme 1 1000.
+}
+
+Champ_Uniforme gravite
+Lire gravite 2 0. -9.81
+Associate liquide gravite
+
+Associate pb dom
+Associate pb sch
+Associate pb liquide
+
+Discretize pb dis
+
+Lire pb
+{
+     Navier_stokes_standard
+     {
+
+	    solveur_pression  petsc cholesky { }
+	    convection           { amont }
+	    diffusion            {  }
+	    conditions_initiales { vitesse champ_uniforme 2 0. 0. }
+	    boundary_conditions 	 { 
+	    				paroi symetrie
+					axe   symetrie
+	    				bas   frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.  	    				
+					haut  frontiere_ouverte_vitesse_imposee champ_front_fonc_txyz 2 0. t>0					
+				 }
+     }
+     Postraitement
+     {
+         Sondes
+         {
+                  sonde_vit_max vit_max periode 1.e-10  numero_elem_sur_maitre 0
+         }
+         definition_champs
+         {
+            	vit_max Interpolation { localisation elem source Reduction_0D { methode max source refChamp { Pb_champ pb vitesse }  } }
+         }
+	 format lml
+	 Champs dt_post 0.001
+	 {
+	 	divergence_u elem
+		vitesse elem
+	 }
+     }
+}
+
+Solve pb
+Fin

@@ -1,0 +1,122 @@
+# Hydraulique 2D : Paroi defilante #
+# PARALLEL OK #
+dimension 2
+Pb_Hydraulique pb
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Cavite 
+		{
+		Origine 0. 0.
+     		Nombre_de_Noeuds 11 11
+		Longueurs 0.01 0.01
+		facteurs 1.1 1.1
+		Symx Symy
+		}
+		{
+		Bord Gauche X = 0.  0. <= Y <= 0.01
+		Bord Haut Y = 0.01  0. <= X <= 0.01
+		Bord Bas Y = 0.     0. <= X <= 0.01
+		Bord Droit X = 0.01 0. <= Y <= 0.01
+		}
+}
+Trianguler_h dom
+
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur metis { Nb_parts 2 }
+	Larg_joint 2
+	Nom_Zones DOM 
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+
+VEFPreP1B dis
+
+Schema_Euler_Implicite sch
+Lire sch
+{
+	nb_pas_dt_max 3
+	tinit 2.425479e-02
+	tmax 1.
+	dt_min 0.00001
+	dt_max 100
+	dt_sauv 100
+	seuil_statio 1.e-7
+	facsec 10
+	max_iter_implicite 20
+	Solveur 
+           Simpler
+	   {
+		seuil_convergence_implicite 1.e-5
+		seuil_convergence_solveur 1.e-12
+	   }
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 1.e-5
+	rho Champ_Uniforme 1 1.
+}
+
+Champ_Uniforme gravite
+Lire gravite 2 0 -9.81
+
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+# Debog pb seq faces 1.e-6 0 #
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.500000 } 
+			seuil 1.e-8 
+		}
+		convection { amont }
+		diffusion { }
+		conditions_initiales {
+			vitesse Champ_Uniforme 2 1. 0.
+			}
+		boundary_conditions {
+			Haut paroi_defilante Champ_Front_Uniforme 2 1.0 0.
+			Bas paroi_fixe
+			Gauche paroi_fixe
+			Droit paroi_fixe
+		}
+	}
+
+	Postraitement
+	{
+		format lml
+		Sondes
+		{
+			sonde_vorticite vorticite periode 0.01 points 1 0.0045 0.0045
+			sonde_pression pression periode 0.01 points 2 0.0005 0.0045 0.0045 0.0045
+			sonde_vitesse vitesse periode 0.01 points 5 0.0005 0.004 0.0015 0.004 0.0025 0.004 0.0035 0.004 0.0045 0.004
+		}
+		Champs dt_post 0.1
+		{
+			vitesse 
+		}
+	}
+	reprise xyz prepare_pb.xyz
+}
+
+Solve pb
+
+
+

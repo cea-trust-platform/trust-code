@@ -1,0 +1,147 @@
+# Thermo-hydraulique 2D Axi R,Z avec frontieres ouvertes #
+# PARALLEL NOT #
+
+dimension 3 
+axi
+
+Pb_Thermohydraulique pb
+
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom 
+{
+Pave fpt4
+	{    
+	Origine   0.45 0. 2.
+	Longueurs 0.40 0.01 10.
+	Nombre_de_Noeuds 12 2 20
+	}
+	{
+        Bord Airli       X = .85        0. <= Y <= 0.01      2. <= Z <= 12.
+        Bord Puits       X = .45        0. <= Y <= 0.01      2. <= Z <= 12.
+	Bord Adhere_Haut Z = 2.       0.45 <= X <= 0.85     0. <= Y <= 0.01
+	Bord Adhere_Bas  Z = 12.      0.45 <= X <= 0.85     0. <= Y <= 0.01
+	Bord b1          Y = 0.       0.45 <= X <= 0.85     2. <= Z <= 12.
+	Bord b2          Y = 0.01      0.45 <= X <= 0.85     2. <= Z <= 12.        
+	} 
+
+}
+# ecrire_fic_lml dom toto.geom #
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 2 1 1 }
+	Larg_joint 1
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+
+schema_Euler_explicite sch
+
+Lire sch
+{
+	tinit 0.
+	tmax 30.
+	dt_min  1.e-2
+	dt_max  1.e-0
+	dt_impr 1.e-2
+        nb_pas_dt_max 50
+	dt_sauv 10000.
+	seuil_statio 1.e-80
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 4e-05
+	rho Champ_Uniforme 1 2
+	lambda  Champ_Uniforme    1  0.03   
+	Cp Champ_Uniforme 1 500
+	beta_th Champ_Uniforme    1  3.e-3
+}
+Champ_Uniforme gravite
+Lire gravite 3 0. 0. -9.81
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Lire pb
+{
+    Navier_Stokes_Standard
+    {
+		solveur_pression GCP { 
+			precond ssor { omega 1.500000 } 
+			seuil 1.000000e-18 
+			impr 
+		}
+	convection { amont }
+	diffusion { }
+	sources { boussinesq_temperature { T0 20. } }
+	conditions_initiales { vitesse Champ_Uniforme 3  0. 0.1 0. }
+	boundary_conditions 
+	{
+            Airli frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+            Puits paroi_fixe
+	    Adhere_Haut paroi_fixe
+ 	    Adhere_Bas paroi_fixe
+	    b1 symetrie
+            b2 symetrie
+	}
+     }
+
+    Convection_Diffusion_Temperature
+    {
+	diffusion { }
+	convection { amont }
+	boundary_conditions 
+	{
+	     Airli  Frontiere_ouverte T_ext Champ_Front_Uniforme 1 20.
+             Puits  paroi_temperature_imposee
+			Champ_Front_Uniforme 1 40.
+             Adhere_Haut paroi_temperature_imposee
+			Champ_Front_Uniforme 1 20.
+             Adhere_Bas paroi_temperature_imposee
+			Champ_Front_Uniforme 1 20.
+	    b1 symetrie
+            b2 symetrie
+
+	}
+	conditions_initiales { Temperature Champ_Uniforme 1 20. }
+    }
+
+
+    Postraitement 
+    {
+	Sondes 
+	{
+		segment_T  temperature periode 1.   point 1 0.6  0.5 6.0
+		segment_T1 temperature periode 1. segment 12 0.47 0.1 0.5 .47 .1 11.5
+  		segment_T2 temperature periode 1. segment 12 0.83 0.1 0.5 .83 .1 11.5 
+		segment_V1      vitesse periode 1 segment 12 0.85 0.1 0.5 .85 .1 11.5 
+		segment_V2      vitesse periode 1 segment 10 0.85 0.1 0.5 .85 1 0.5
+		segment_WH       vitesse periode 1 segment 12 0.47 0.1  0.5 .83 0.1  0.5
+		segment_WB       vitesse periode 1 segment 12 0.47 0.1 11.5 .83 0.1 11.5
+        }	
+	Champs dt_post 20.   
+	{
+		vitesse som
+		temperature elem
+	}
+   }
+}
+
+Solve pb
+Fin
+

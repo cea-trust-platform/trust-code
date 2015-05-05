@@ -1,0 +1,10 @@
+Parametres {
+	Titre "verification creation_fiche"
+
+	Auteur "G.F."
+	CasTest . Ecr_fic.data
+}
+
+Chapitre {
+	Titre "on ne fai rien ..."
+}

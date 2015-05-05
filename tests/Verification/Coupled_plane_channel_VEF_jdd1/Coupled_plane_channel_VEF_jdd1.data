@@ -1,0 +1,318 @@
+# SIMULATION D'UN CANAL PLAN 3D VEF EN THERMOHYDRAULIQUE QUASI-COMPRESSIBLE #
+# COUPLE A UN SOLIDE AVEC DEGAGEMENT DE PUISSANCE (1270 Watts) #
+
+dimension 3
+
+Pb_Thermohydraulique_turbulent_QC pb_Th
+Pb_Conduction pb_C
+
+Domaine dom_fluide
+Domaine dom_solide
+
+# BEGIN MESH #
+Read_file dom_fluide Canal_plan_couple_fluide_x100.geom
+Transformer dom_fluide 100*x y z
+Read_file dom_solide Canal_plan_couple_solide_x100.geom
+Transformer dom_solide 100*x y z
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom_solide
+{
+	Partitionneur Tranche { Tranches 2 1 1 }
+	Larg_joint 2
+	Nom_Zones DOM2
+}
+Partition dom_fluide
+{
+	Partitionneur Tranche { Tranches 2 1 1 }
+	Larg_joint 2
+	Nom_Zones DOM1
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM2.Zones dom_solide
+Scatter DOM1.Zones dom_fluide
+END SCATTER #
+
+VEFPreP1B dis
+
+Schema_Euler_Implicite sch
+Read sch
+{
+	tinit	0.
+	nb_pas_dt_max 3
+	tmax	0.015
+	facsec          10.e2
+	facsec_max      50.e2
+	dt_start	dt_calc
+	dt_min	1.e-10
+	dt_max	1.e-1
+	dt_impr	1.e-4
+	dt_sauv	1.e-4
+        seuil_statio 1.e-8
+	solveur piso
+	{
+	   solveur gmres { diag seuil 1e-06   controle_residu  1 }
+	   seuil_convergence_solveur	1.e-5 
+	   seuil_convergence_implicite	1.e-1
+	}
+}
+
+Fluide_Quasi_Compressible fluide
+Read fluide
+{
+	mu	Champ_Fonc_fonction	1 temperature	3.95e-7*val^0.687
+	lambda	Champ_Fonc_fonction	1 temperature	2.774e-3*val^0.701
+        pression   7092750.
+	loi_etat gaz_parfait
+	{
+                Prandtl   0.673
+                Cp        5193.
+                gamma     1.666
+	}
+	Traitement_Pth		constant
+	Traitement_rho_gravite	moins_rho_moyen
+}
+
+Solide solide
+Read solide
+{
+	rho	Champ_Uniforme		1		8000.
+	lambda  Champ_Fonc_Fonction	1 temperature	(val<773)*(273+(17.5-(0.00565*val)+(0.00000814*val*val)))+(val>773)*(273+(12.76+(0.00871*val)-(0.00000188*val*val)))
+	Cp	Champ_Uniforme		1		15.94725320000089e-2
+}
+
+Champ_Uniforme gravite
+Read gravite 3 -9.81 0 0
+
+Associate fluide gravite
+Associate solide gravite
+
+Associate pb_Th dom_fluide
+Associate pb_Th fluide
+
+Associate pb_C dom_solide
+Associate pb_C solide
+
+Probleme_Couple pbc
+
+Associate pbc pb_Th
+Associate pbc pb_C
+Associate pbc sch
+
+Discretize pbc dis
+
+Read pb_Th
+{
+	Navier_Stokes_turbulent_QC
+	{
+     		solveur_pression GCP { precond ssor { omega 1.651 } seuil 1.e-11 } 
+		convection { muscl }
+		diffusion { }
+		conditions_initiales { vitesse champ_uniforme 3 80. 0. 0. }
+		boundary_conditions
+		{
+			Entree		frontiere_ouverte_vitesse_imposee	Champ_Front_Uniforme 3 80. 0. 0.
+			Sortie		frontiere_ouverte_pression_imposee	Champ_Front_Uniforme 1 0.
+			Symmetry	Symetrie
+			Haut		Paroi_fixe
+			Bas		Paroi_fixe
+		}
+                Modele_turbulence K_Epsilon
+		{
+			Transport_K_Epsilon 
+			{
+				parametre_equation parametre_implicite { resolution_explicite }
+				convection { amont }
+                                diffusion { }
+                                boundary_conditions
+				{
+					Entree		frontiere_ouverte_k_eps_impose	Champ_Front_Uniforme 2 302. 6.61e6
+					Sortie		frontiere_ouverte k_eps_EXT	Champ_Front_Uniforme 2 302. 6.61e6 
+					Symmetry	Symetrie
+					Haut		Paroi
+					Bas		Paroi
+				}
+                                conditions_initiales { k_Eps Champ_Uniforme 2 302. 6.61e6 }
+			}
+			turbulence_paroi loi_standard_hydr dt_impr_ustar 1.e-2
+		}
+	}
+
+	Convection_Diffusion_Chaleur_Turbulent_QC
+	{
+		diffusion { }
+		convection { muscl }
+		boundary_conditions 
+		{
+			Entree		frontiere_ouverte_temperature_imposee	Champ_Front_Uniforme 1 673.
+			Sortie		frontiere_ouverte 	T_ext		Champ_Front_Uniforme 1 773.
+			Symmetry	Symetrie
+			Haut		paroi_contact pb_C Haut
+			Bas		paroi_contact pb_C Bas
+		}
+		conditions_initiales { Temperature Champ_Uniforme 1 673. }
+		Modele_turbulence Prandtl
+		{   
+                        Turbulence_paroi loi_standard_hydr_scalaire  dt_impr_nusselt 1.e-2
+ 		}
+	}
+
+	Postraitement
+        {       
+		Sondes
+                {
+		  sonde_pression			pression		periode 0.001 segment 50  0.025 0.0   0.00025  0.025 0.004 0.00025
+
+		  sonde_vitesse_canal		nodes	vitesse			periode 0.001 segment 50  0.0	0.002 0.001    0.462 0.002 0.001
+		  sonde_vitesse_entree		nodes	vitesse			periode 0.001 segment 50  0.0	0.0   0.001    0.0   0.004 0.001
+		  sonde_vitesse_1tiers		nodes	vitesse			periode 0.001 segment 50  0.154 0.0   0.00025  0.154 0.004 0.00025
+		  sonde_vitesse_2tiers		nodes	vitesse			periode 0.001 segment 50  0.308 0.0   0.00025  0.308 0.004 0.00025
+		  sonde_vitesse_sortie		nodes	vitesse			periode 0.001 segment 50  0.462 0.0   0.001    0.462 0.004 0.001
+		  plan_vitesse_sortie		nodes	vitesse			periode 0.001 plan 10 10  0.462 0.0   0.0      0.462 0.0   0.002       0.462 0.004 0.0
+
+		  sonde_temperature_canal	nodes	temperature		periode 0.001 segment 50  0.0	0.002 0.001    0.462 0.002 0.001
+		  sonde_temperature_entree	nodes	temperature		periode 0.001 segment 50  0.0	0.0   0.001    0.0   0.004 0.001
+		  sonde_temperature_1tiers 	nodes	temperature		periode 0.001 segment 50  0.154 0.0   0.00025  0.154 0.004 0.00025
+		  sonde_temperature_2tiers 	nodes	temperature		periode 0.001 segment 50  0.308 0.0   0.00025  0.308 0.004 0.00025
+		  sonde_temperature_sortie	nodes	temperature		periode 0.001 segment 50  0.462 0.0   0.001    0.462 0.004 0.001
+		  plan_temperature_sortie	nodes	temperature		periode 0.001 plan 10 10  0.462 0.0   0.0      0.462 0.0   0.002       0.462 0.004 0.0
+
+		  sonde_y_plus			nodes	y_plus			periode 0.001 segment 50  0.025 0.0   0.00025  0.025 0.004 0.00025
+		  sonde_k			nodes	k			periode 0.001 segment 50  0.025 0.0   0.00025  0.025 0.004 0.00025
+		  sonde_eps			nodes	eps			periode 0.001 segment 50  0.025 0.0   0.00025  0.025 0.004 0.00025
+		  sonde_visco_turb		nodes	viscosite_turbulente	periode 0.001 segment 50  0.462 0.0   0.00025  0.462 0.004 0.00025
+		}
+                format lml Champs dt_post 0.01
+		{
+		  pression		elem
+		  pression		som
+		  vitesse		elem
+		  vitesse		som
+		  temperature		elem
+		  temperature		som
+		  y_plus		elem
+		  y_plus		som
+		  Viscosite_turbulente	elem
+		  Viscosite_turbulente	som
+		  k			elem
+		  k			som
+		  eps			elem
+		  eps			som
+		}
+	}
+}
+
+Read pb_C
+{
+	Conduction
+	{
+		diffusion { }
+		sources { Puissance_Thermique champ_uniforme 1 163626000 }
+		conditions_initiales { temperature Champ_Uniforme 1 673. }
+		boundary_conditions
+		{
+			Wall_bas	paroi_adiabatique
+			Wall_haut	paroi_adiabatique
+			Haut		paroi_contact pb_Th Haut
+			Bas		paroi_contact pb_Th Bas
+		}
+	}
+	Postraitement
+	{
+		Sondes
+		{
+		  sonde_temperature_sol_entree	nodes	temperature		periode 0.001 segment 50  0.0	-0.004 0.001	       0.0   0.008 0.001
+		  sonde_temperature_sol_1tiers	nodes	temperature		periode 0.001 segment 50  0.154 -0.004 0.001	       0.154 0.008 0.001
+		  sonde_temperature_sol_2tiers	nodes	temperature		periode 0.001 segment 50  0.308 -0.004 0.001	       0.308 0.008 0.001
+		  sonde_temperature_sol_sortie	nodes	temperature		periode 0.001 segment 50  0.462 -0.004 0.001	       0.462 0.008 0.001
+		}
+		
+		format lml Champs dt_post 0.01
+		{
+		  temperature		elem
+		  temperature		som
+		}
+	}
+}
+
+Solve pbc
+End
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Mailler dom_fluide
+{
+	Pave Cavite
+		{
+		Origine 0. 0. 0.
+		Nombre_de_Noeuds 5 5 3
+		Longueurs  0.00462 0.004 0.002
+		}
+		{
+		Bord Entree   X = 0.	 	0. <= Y <= 0.004   0. <= Z <= 0.002
+		Bord Sortie   X = 0.00462	0. <= Y <= 0.004   0. <= Z <= 0.002
+		Bord Symmetry Z = 0.	 	0. <= X <= 0.00462 0. <= Y <= 0.004
+		Bord Symmetry Z = 0.002	 	0. <= X <= 0.00462 0. <= Y <= 0.004
+		Raccord local homogene Bas      Y = 0.	 	0. <= X <= 0.00462 0. <= Z <= 0.002
+		Raccord local homogene Haut     Y = 0.004 	0. <= X <= 0.00462 0. <= Z <= 0.002
+		}
+}
+Tetraedriser_homogene_fin dom_fluide
+Transformer dom_fluide 100*x y z
+
+Mailler dom_solide
+{
+	Pave Cavite_Bas
+		{
+		Origine 0. -0.0042 0.
+		Nombre_de_Noeuds 5 5 3
+		Longueurs  0.00462 0.0042 0.002
+		}
+		{
+		Bord Wall_bas X = 0.	 	-0.0042 <= Y <= 0.  0. <= Z <= 0.002
+		Bord Wall_bas X = 0.00462	-0.0042 <= Y <= 0.  0. <= Z <= 0.002
+		Bord Wall_bas Z = 0.	 	0. <= X <= 0.00462 -0.0042 <= Y <= 0.
+		Bord Wall_bas Z = 0.002	 	0. <= X <= 0.00462 -0.0042 <= Y <= 0.
+		Bord Wall_bas Y = -0.0042 	0. <= X <= 0.00462  0. <= Z <= 0.002
+		Raccord local homogene Bas      Y = 0. 		0. <= X <= 0.00462  0. <= Z <= 0.002
+		} ,
+	Pave Cavite_Haut
+		{
+		Origine 0. 0.004 0.
+		Nombre_de_Noeuds 5 5 3
+		Longueurs  0.00462 0.0042 0.002
+		}
+		{
+		Bord Wall_haut X = 0.	 	0.004 <= Y <= 0.0082  0. <= Z <= 0.002
+		Bord Wall_haut X = 0.00462	0.004 <= Y <= 0.0082  0. <= Z <= 0.002
+		Bord Wall_haut Z = 0.	 	0. <= X <= 0.00462    0.004 <= Y <= 0.0082
+		Bord Wall_haut Z = 0.002	0. <= X <= 0.00462    0.004 <= Y <= 0.0082
+		Raccord local homogene Haut Y = 0.004 	0. <= X <= 0.00462    0. <= Z <= 0.002
+		Bord Wall_haut Y = 0.0082	0. <= X <= 0.00462    0. <= Z <= 0.002
+		}
+}
+Tetraedriser_homogene_fin dom_solide
+Transformer dom_solide 100*x y z

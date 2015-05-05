@@ -1,0 +1,23 @@
+# Verification de l egalite entre le bilan de flux de diffusion sur les bords et la puissance totale degagee
+
+message()
+{
+   [ $1 != $2 ] && echo $ECHO_OPTS "Error ($1!=$2) when checking:\n $msg" && err=1
+   [ "$debog" != "" ] && echo $msg
+}
+jdd=`pwd`
+jdd=`basename $jdd`
+debog=$1
+
+# Recuperation de la puissance totale degagee dans le domaine (dans fichier d impression)
+source=`tail -1 $jdd"_pb_Puissance_Thermique.out" | $TRUST_Awk '{print $2}'`
+
+# Recuperation du bilan du flux de diffusion sur les bords (dans fichier d impression)
+fluxdiff=`tail -1 $jdd"_pb_Diffusion_chaleur.out" | $TRUST_Awk '{print $6}'`
+
+# On verifie que le flux diffusif est egal a la puissance degagee
+err=`echo $source $fluxdiff | $TRUST_Awk '{diff=$1+$2 ; if (diff<-0.00000001 || diff>0.00000001) print 1;else print 0}'`
+msg="Verification de l'egalite du flux diffusif et de la puissance degagee";message $err 0
+exit $err
+
+

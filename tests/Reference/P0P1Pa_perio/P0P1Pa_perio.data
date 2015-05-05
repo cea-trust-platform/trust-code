@@ -1,0 +1,121 @@
+# Test de decoupage 3D #
+# PARALLEL OK 3 #
+dimension 3
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+ Pave cube
+ {
+  origine  -2.e-3 -2.e-3 -1.e-3
+  longueurs 4.e-3  4.e-3  2.e-3
+  nombre_de_noeuds 3 3 3
+ }
+{
+ bord perioX X = -2.e-3 -2.e-3 <= Y <= 2.e-3 -1.e-3 <= Z <= 1.e-3
+ bord perioX X =  2.e-3 -2.e-3 <= Y <= 2.e-3 -1.e-3 <= Z <= 1.e-3
+ bord perioY Y =  2.e-3 -2.e-3 <= X <= 2.e-3 -1.e-3 <= Z <= 1.e-3
+ bord perioY Y = -2.e-3 -2.e-3 <= X <= 2.e-3 -1.e-3 <= Z <= 1.e-3
+ bord perioZ Z =  1.e-3 -2.e-3 <= X <= 2.e-3 -2.e-3 <= Y <= 2.e-3
+ bord perioZ Z = -1.e-3 -2.e-3 <= X <= 2.e-3 -2.e-3 <= Y <= 2.e-3
+}
+}
+Tetraedriser_homogene dom
+Corriger_frontiere_periodique { Domaine dom Bord perioY }
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+        Partitionneur Metis { Nb_parts 3 }
+        Larg_joint 2
+        Nom_Zones DOM
+	periodique 1 perioY
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+Lire dis { P0 P1 Pa }
+Schema_Euler_Explicite sch
+Fluide_Incompressible eau
+Pb_Hydraulique pb
+Lire sch
+{
+	tinit 0
+        tmax 0.3
+	dt_max 0.2
+	dt_impr 0.1
+	dt_sauv 100
+	seuil_statio 1.e-10
+	nb_pas_dt_max 3
+}
+
+Lire eau
+{
+	mu Champ_Uniforme 1 0.002
+	rho Champ_Uniforme 1 2
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb eau
+
+Discretize pb dis
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.6 }
+			seuil 1.000000e-15
+			impr 
+		}
+		diffusion {  }
+                convection { EF_stab { } }
+		conditions_initiales {
+			vitesse Champ_Uniforme 3 1. 1. 1.
+			}
+		boundary_conditions {
+			perioX Frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 1. 1. 1.
+			perioY periodique 
+			perioZ symetrie
+			}
+
+	}
+
+	Postraitements
+	{
+		lml
+		{
+			fichier P0P1Pa_perio
+			format lml
+			Champs dt_post 100.
+			{
+				vitesse elem
+                       		 pression elem
+			}
+                	Sondes 
+                	{
+				vitx_moyenne vitesse  periode 0.5 segment 20  1. 1. 1. 2. 2. 2.
+                	}
+		}
+		lata
+		{
+			fichier P0P1Pa_perio
+			format lata
+			Champs dt_post 100.
+			{
+				vitesse elem
+			}
+		}
+	}
+}
+
+Solve pb
+FIN

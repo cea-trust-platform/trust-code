@@ -1,0 +1,232 @@
+dimension 2
+Domaine dom1
+Domaine dom2
+Domaine dom3
+
+# ---------------------------------------- #
+# Generation des domaines 3D par extrusion #
+# ---------------------------------------- #
+
+Read_file dom1 dom1.geom
+Read_file dom2 dom2.geom
+Read_file dom3 dom3.geom
+
+dilate dom1 0.001
+dilate dom2 0.001
+dilate dom3 0.001
+
+Extruder_en3 { domaine 3 dom1 dom2 dom3 nb_tranches 15 direction 0 0 3. nom_cl_devant Entree nom_cl_derriere Sortie }
+
+Ecrire_fichier dom1 assemblage.geom
+Ecrire_fichier dom2 inter.geom
+Ecrire_fichier dom3 TH.geom
+
+
+# -------------------------------------------------- #
+# Calcul pour s'assurer de la conformite de maillage #
+# -------------------------------------------------- #
+
+Domaine dom
+Domaine dom_TH
+Domaine dom_IA
+
+Read_file dom assemblage.geom 
+Read_file dom_TH TH.geom 
+Read_file dom_IA inter.geom 
+VerifierCoin dom { }
+VerifierCoin dom_TH { }
+VerifierCoin dom_IA { }
+
+
+VeFprep1b dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0
+	tmax 2.
+	dt_min 1.e-6
+	dt_start dt_calc
+	dt_max 1.0
+	dt_sauv 100
+	dt_impr 0.2
+	seuil_statio 1.e-10
+	nb_pas_dt_max 2
+}
+
+Fluide_Incompressible sodium1
+Lire sodium1
+{
+       mu Champ_Uniforme 1 .000245
+       rho Champ_Uniforme 1 840.
+       lambda Champ_Uniforme 1 66.
+       Cp champ_Uniforme 1 1270.
+       Beta_th Champ_uniforme 1 0.000276
+}
+
+Fluide_Incompressible sodium3
+Lire sodium3
+{
+       mu Champ_Uniforme 1 .000245
+       rho Champ_Uniforme 1 840.
+       lambda Champ_Uniforme 1 66.
+       Cp champ_Uniforme 1 1270.
+       Beta_th Champ_uniforme 1 0.000276
+}
+
+Solide acier
+Lire acier
+{
+        rho     Champ_Uniforme 1 7800.
+        Cp      Champ_Uniforme 1 500.
+        lambda  Champ_Uniforme 1 16.
+}
+
+Champ_Uniforme gravite
+Lire gravite 3 0 0 0
+
+Pb_thermohydraulique pb1
+Associate pb1 dom
+Associate pb1 sodium1
+
+Pb_Conduction pb2
+Associate pb2 dom_TH
+Associate pb2 acier
+
+Pb_thermohydraulique pb3
+Associate pb3 dom_IA
+Associate pb3 sodium3
+
+
+Probleme_Couple pbc
+Associate pbc pb1
+Associate pbc pb2
+Associate pbc pb3
+Associate pbc sch
+Discretize pbc dis
+
+
+
+# Debog pb seq faces 1.e-6 0 #
+porosites_champ pb1 champ_fonc_xyz dom 1 1-(z>1)*(z<2)*0.74
+Lire pb1
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP  { precond ssor { omega 1.5 } seuil 1e-8 impr }
+		convection { amont }
+		diffusion { }
+                sources {
+                        Perte_charge_directionnelle {
+                                diam_hydr champ_uniforme 1 0.0036
+                                lambda 0.2/Re^(0.18)
+                                direction champ_uniforme 3 0. 0. 1.
+                                }
+                        }
+  		conditions_initiales {
+			vitesse Champ_Uniforme 3 0. 0. 1.
+			}
+		boundary_conditions {
+			Entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 3 0. 0. 1.
+			Sortie frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+			paroi symetrie
+		}
+	}
+	Convection_diffusion_temperature
+        {
+		convection { amont }
+		diffusion { }
+		conditions_initiales { temperature Champ_Uniforme 1 395. }
+                sources { Puissance_thermique Champ_fonc_xyz dom 1  (z>1)*(z<2)*226e6 }
+		boundary_conditions {
+			Entree frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 395.
+			Sortie frontiere_ouverte T_ext Champ_Front_Uniforme 1 550
+			paroi  paroi_contact pb2 paroi_int
+		}
+	}
+	Postraitement
+	{
+		Champs dt_post 1.
+		{
+			pression_pa elem
+			vitesse elem
+			temperature elem
+		}
+	}
+}
+
+Lire pb2
+{
+        Conduction
+                {
+                diffusion { }
+                Conditions_initiales { Temperature Champ_fonc_xyz dom_TH 1 395 }
+                boundary_conditions
+                        {
+			Entree frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 395.
+			Sortie frontiere_ouverte T_ext Champ_Front_Uniforme 1 450
+			paroi_int  paroi_contact pb1 paroi
+			paroi_ext  paroi_contact pb3 paroi
+                        }
+                }
+	Postraitement
+	{
+		Champs dt_post 1.
+		{
+			temperature elem
+		}
+	}
+}
+
+Lire pb3
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression Cholesky { }
+		convection { amont }
+		diffusion { }
+                sources {
+                        Perte_charge_directionnelle {
+                                diam_hydr champ_uniforme 1 0.006
+                                lambda 0.316/Re^(0.25)
+                                direction champ_uniforme 3 0. 0. 1.
+                                }
+                        }
+  		conditions_initiales {
+			vitesse Champ_Uniforme 3 1. 0. 0.
+			}
+		boundary_conditions {
+			Entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 3 0. 0. 5.94
+			Sortie frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+			paroi  symetrie
+			sym    symetrie
+		}
+	}
+	Convection_diffusion_temperature
+        {
+		convection { amont }
+		diffusion { }
+		conditions_initiales { temperature Champ_Uniforme 1 395. }
+		boundary_conditions {
+			Entree frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 395.
+			Sortie frontiere_ouverte T_ext Champ_Front_Uniforme 1 550
+			paroi  paroi_contact pb2 paroi_ext
+			sym    paroi_adiabatique
+		}
+	}
+	Postraitement
+	{
+		Champs dt_post 1.
+		{
+			pression_pa elem
+			vitesse elem
+			temperature elem
+		}
+	}
+}
+
+
+
+
+Solve pbc
+

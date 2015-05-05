@@ -1,0 +1,106 @@
+#!/bin/bash
+adr=$1
+[ ${#1} = 0 ] && echo "Usage: $0 login@machine [-p port]" && exit
+shift
+ssh_option=""
+scp_option=""
+if [ "$1" = -p ]
+then
+    shift 
+    port=$1
+    ssh_option="-p $port"
+    scp_option="-P $port"
+    shift
+fi
+HOST=`whoami`@`hostname`
+ECHO_OPTS="" && [ "`uname -s`" = Linux ] && ECHO_OPTS="-e"
+# 25/03/2013
+# Suite a des problemes avec Fedora 17/18
+# On reecrit/simplifie d'apres:
+# http://serverfault.com/questions/360625/ssh-without-password
+NEW_VERSION=1
+if [ $NEW_VERSION = 1 ]
+then
+   identity_file=~/.ssh/id_rsa.pub
+   if [ ! -f $identity_file ]
+   then
+      echo "Creating a new key for $HOST"
+      ssh-keygen -N "" -f ${identity_file%.pub}
+   fi
+   [ ! -f $identity_file ] && echo "Error when creating $identity_file!" && exit -1
+   # On verifie que le .ssh/authorized_keys contient bien le identity file
+   string=`cat $identity_file`
+   echo $ECHO_OPTS "ssh test on $adr :\c"
+   result=`ssh -o ConnectTimeout=10 $adr -n '[ -f .ssh/authorized_keys ] && cat .ssh/authorized_keys;exit 0' 2>/dev/null`
+   if [ $? != 0 ]
+   then
+      echo "Error. $adr can't be accessed."
+      exit 1
+   elif [ "`echo $result | grep "$string"`" = "" ]
+   then
+      echo "To configure the .ssh/authorized_keys file on $adr, please enter the password:"
+      ssh-copy-id $adr 1>/dev/null 
+      restorecon -R ~/.ssh
+   fi
+   ssh -o ConnectTimeout=10 $ssh_option $adr -n pwd 1>/dev/null 2>&1
+   if [ $? = 0 ]
+   then
+      echo "OK!"
+      exit 0
+   else
+      echo "Error. ssh configuration on $adr failed."
+      exit 1
+   fi
+else
+   [ ${#TRUST_TMP} = 0 ] && TRUST_TMP=$TMPDIR && [ ${#TMPDIR} = 0 ] && TRUST_TMP=/tmp
+   cd $HOME
+   # Attention, il faut (Merci S. Hitzel) que le repertoire $HOME soit en 755
+   # C'est pour cela que la connection vers jungfrau et dibona ne marchait pas  
+   [ ! -d .ssh ] && mkdir .ssh && chmod 700 .ssh
+   type=rsa
+   if [ ! -f .ssh/authorized_keys2 ] || [ "`grep $HOST .ssh/authorized_keys2`" = "" ]
+   then
+      ssh-keygen -t dsa -f .ssh/id_$type -N ""
+      # Il semble que sur vielles versions ssh l'option -t n'existe
+      # pas et en plus ca marche par exemple avec login mathieu (Mke 7.2)
+      #ssh-keygen -d -f .ssh/id_$type -N ""
+      cp -f .ssh/id_$type.pub .ssh/authorized_keys2
+   fi
+   eval `ssh-agent` 1>/dev/null 2>&1 
+   ssh-add .ssh/id_$type 1>/dev/null 2>&1
+   # Le fichier necessaire sur le remote .ssh est
+   # authorized_keys pour toutes les machines
+   # authorized_keys2 pour dom.intra.cea.fr 
+   # Attention le - devant les commandes ne marchent pas forcement
+   # Donc on fait en 2 fois:
+   # On copie les fichiers par scp
+   # On cree .ssh et les tests avec ssh
+   echo $ECHO_OPTS "#!/bin/bash\n" 					 > .update_ssh
+   echo $ECHO_OPTS "mkdir .ssh 2>/dev/null;chmod 700 .ssh;cd .ssh;" 	 >> .update_ssh
+   echo $ECHO_OPTS "for file in authorized_keys authorized_keys2; do " 	 >> .update_ssh
+   echo $ECHO_OPTS "rm -f prov_auto"					 >> .update_ssh
+   echo $ECHO_OPTS "[ -f ../\$file ] && grep '$HOST' ../\$file >> prov_auto" >> .update_ssh
+   echo $ECHO_OPTS "[ -f \$file ] && grep -v '$HOST' \$file >> prov_auto"	 >> .update_ssh
+   echo $ECHO_OPTS "sort -u prov_auto > \$file"				 >> .update_ssh
+   echo $ECHO_OPTS "chmod 600 \$file" 					 >> .update_ssh
+   echo $ECHO_OPTS "echo \$HOME/.ssh/\$file updated." 			 >> .update_ssh
+   echo $ECHO_OPTS "done;rm -f prov_auto ../authorized_keys* ../.update_ssh" >> .update_ssh
+
+   echo "Copie de fichiers sur $adr:"
+   scp $scp_option .ssh/authorized_keys* .update_ssh $adr":" 1>/dev/null
+
+   echo "Configuration de \$HOME/.ssh sur $adr:"
+   ssh $ssh_option $adr -n 'chmod +x .update_ssh;./.update_ssh' 
+
+   echo $ECHO_OPTS "Test de ssh sur $adr :\c"
+   ssh $ssh_option $adr -n ls > $TRUST_TMP/ssh_com
+   if [ $? = 0 ]
+   then
+      echo "OK!"
+      exit 0
+   else
+      echo "Error."
+      exit 1
+   fi
+   eval `ssh-agent -k` 1>/dev/null 2>&1 
+fi

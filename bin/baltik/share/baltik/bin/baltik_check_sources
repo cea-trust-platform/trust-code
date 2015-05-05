@@ -1,0 +1,123 @@
+#!/bin/bash
+
+
+baltik_environnement_error() {
+    echo "-----------------------------------------"
+    echo "ERROR : undefined variable BALTIK_ROOT   "
+    echo ""
+    echo "Please, install BALTIK and run :         "
+    echo "  source /path/to/BALTIK/bin/baltik_init "
+    echo "-----------------------------------------"
+    echo ""
+    exit 1
+}
+
+baltik_environnement_init()
+{
+    script=$0
+    bindir=`dirname $script`
+    cd `dirname $bindir`
+    pwd
+}
+
+# initialisation de l'etat de la variable BALTIK_ROOT
+BALTIK_ROOT=`baltik_environnement_init`
+# verification de l'etat de la variable BALTIK_ROOT
+if [ "${BALTIK_ROOT}" = "" ]
+    then
+    baltik_environnement_error
+fi
+
+
+# chargement des fonctions d'affichage des messages d'erreur
+. ${BALTIK_ROOT}/bin/baltik_errors
+
+# chargement des fonctions d'analyse d'un fichier de configuration
+. ${BALTIK_ROOT}/bin/baltik_configuration_parsing
+
+# chargement des fonctions de correspondance nom variable OPT
+. ${BALTIK_ROOT}/bin/baltik_OPT_management
+
+# chargement des fonctions de gestion des dependances
+# . ${BALTIK_ROOT}/bin/baltik_dependencies_management
+
+
+# verification/chargement de trio_u
+. ${BALTIK_ROOT}/bin/baltik_check_init_triou
+
+# verification de l'etat de la variable TRUST_ROOT
+if [ "${TRUST_ROOT}" = "" ]
+    then
+    triou_environnement_error
+fi
+
+# initialisation des variables utiles
+project_directory=`pwd`
+
+project_build_directory="${project_directory}/build/src"
+if [ ! -e $project_build_directory ]
+    then
+    no_build_directory_error "$project_directory"
+fi
+
+
+# on reconstruit la liste des repertoires ayant conduit au build
+cd $project_build_directory
+
+
+DIRS=$(for f in `ls *.cpp *.cxx *.h *.xx *.hpp *.c *.f 2>/dev/null | grep -v info_atelier.cpp` ; do  f2=`ls -l $f | awk '{print $NF}' `;  dirname $f2;done |sort -u)
+
+erreur=0
+
+# on charge les check de trio
+. $TRUST_ROOT/bin/KSH/check_sources.sh
+marqueur=$project_build_directory/.check_sources.ok
+
+check_file=0
+
+if [ "$1" = "-check_file" ]
+    then
+    check_file=1
+    marqueur=${marqueur}"_check_file"
+fi
+
+for dir in $DIRS
+do
+  
+  err=0
+  if [ ! -f $marqueur ] || [ $dir -nt $marqueur ] || [ "`find $dir  -maxdepth 1 -newer $marqueur`" != "" ]
+      then
+      
+      echo "check sources in" $dir
+      cd $dir
+      # check_file.sh -update
+      # check_update_P
+      
+      check_all
+      erreur $?
+      
+      if [ $check_file -eq 1 ]
+	  then
+	  check_file.sh -print
+	  erreur $?
+      fi
+      
+     
+      [ $err -ne 0 ] && erreur=$err #  && echo Error in `pwd` && echo
+      cd $project_build_directory
+      fi
+ 
+done
+
+if [ $erreur -eq 0 ] 
+    then
+    touch $marqueur
+else
+    rm -f $marqueur
+fi
+
+exit $erreur
+
+
+
+

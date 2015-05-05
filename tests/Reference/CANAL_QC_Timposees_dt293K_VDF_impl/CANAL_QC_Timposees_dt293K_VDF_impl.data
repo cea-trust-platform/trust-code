@@ -1,0 +1,170 @@
+# ThermoHydraulique 3D : canal quasi compressible gaz parfait VDF turbulent #
+# PARALLEL OK 8 #
+dimension 3
+Pb_Thermohydraulique_QC pb
+
+Domaine dom
+
+
+# BEGIN MESH #
+Mailler dom
+        {
+        Pave Cavite
+                {
+                Origine 0. 0. 0.
+                Nombre_de_Noeuds 16 16 16
+                Longueurs  0.093764 0.029846 0.046882
+                tanh_taille_premiere_maille 7.69e-5
+                }
+                {
+                Bord periox   X = 0.          0. <= Y <= 0.029846     0. <= Z <= 0.046882
+                Bord periox   X = 0.093764    0. <= Y <= 0.029846     0. <= Z <= 0.046882
+                Bord perioz   Z = 0.          0. <= X <= 0.093764     0. <= Y <= 0.029846
+                Bord perioz   Z = 0.046882    0. <= X <= 0.093764     0. <= Y <= 0.029846
+                Bord bas      Y = 0.          0. <= X <= 0.093764     0. <= Z <= 0.046882
+                Bord haut     Y = 0.029846    0. <= X <= 0.093764     0. <= Z <= 0.046882
+                }
+        }
+
+
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 1 4 1 }
+	Larg_joint 2
+	Nom_Zones canalQCdt20K
+	Periodique 2 periox perioz
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter canalQCdt20K.Zones dom
+END SCATTER #
+VDF dis
+
+Schema_Euler_explicite sch_ex 
+Lire sch_ex
+{
+        tinit 0.
+        tmax 50.
+        dt_min 1.e-11
+        dt_max 5.
+        dt_impr 1.e-7
+        dt_sauv 0.05
+	dt_start dt_calc
+        seuil_statio 1.e-8
+	facsec 1
+	diffusion_implicite 1
+nb_pas_dt_max 20
+}
+
+Schema_Euler_Implicite sch
+Lire sch
+{
+        tinit 0.
+        tmax 50.
+        dt_min 1.e-11
+        dt_max 5.
+        dt_impr 1.e-7
+        dt_sauv 0.05
+	dt_start dt_calc
+        seuil_statio 1.e-8
+	facsec 10
+	nb_pas_dt_max 2
+	Solveur Piso
+	{ 
+		seuil_convergence_solveur 1.e-8
+		solveur gen { seuil 1e-12 solv_elem bicgstab precond ilu { type 2 filling 20 } }
+	}
+}
+
+Fluide_Quasi_Compressible fluide
+Lire fluide
+{
+        mu Champ_Fonc_Fonction 1 temperature (1.461e-6*(val^1.5)/(val+111.))
+        pression 100000.
+        lambda Champ_Fonc_Fonction 1 temperature (2.06803521126761000000e-3*(val^1.5)/(val+111.))
+        loi_etat gaz_parfait 	{
+                		Prandtl 0.71
+                		Cp 1005
+                		gamma 1.4
+        			}
+	traitement_pth conservation_masse
+	Traitement_rho_gravite moins_rho_moyen
+}
+
+Champ_Uniforme gravite
+Lire gravite 3 0. -9.81 0.
+
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Lire pb
+{
+        Navier_Stokes_QC
+        {
+                solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-13 impr }        
+                projection_initiale 0
+		convection { centre }
+                diffusion { }
+                Sources 
+		{ 
+			Canal_perio { bord periox } 
+		}	
+		conditions_initiales 
+		{
+                        vitesse champ_init_canal_sinal 3  { Ucent 10.06 h 0.0149  ampli_sin 0. omega 2. ampli_bruit 0.0 dir_wall 1 dir_flow 0 }
+                }
+                boundary_conditions 
+		{
+                        periox   periodique 
+			perioz   periodique 
+			haut     paroi_fixe
+			bas      paroi_fixe
+                }
+	}
+				
+        Convection_Diffusion_Chaleur_QC
+        {
+                diffusion { }
+                convection { quick }
+		Sources {	}	
+		conditions_initiales { Temperature Champ_Fonc_xyz dom 1  (293*y/0.029846)+293. }
+		boundary_conditions 
+                {
+                 	periox periodique 
+			perioz periodique 
+ 		        haut paroi_temperature_imposee Champ_Front_Uniforme 1 586. 
+			bas paroi_temperature_imposee Champ_Front_Uniforme 1 293. 
+		}
+        }
+
+Postraitement
+        {
+                 Sondes
+        	{ 
+        		sonde_vit vitesse periode 0.00005 segment 121  0.0469 0. 0.0234 0.0469 0.02984 0.0234
+        		sonde_temp temperature periode 0.00005 segment 121	0.0469 0. 0.0234 0.0469 0.02984 0.0234 
+		}
+	format lml
+        Champs binaire dt_post 0.01
+                {
+                        vitesse elem
+                        masse_volumique elem
+                        pression elem
+                        temperature elem
+                }
+
+        }
+}
+
+Solve pb
+Fin
+

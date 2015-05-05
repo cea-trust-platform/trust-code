@@ -1,0 +1,87 @@
+/****************************************************************************
+* Copyright (c) 2015, CEA
+* All rights reserved.
+* 
+* Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+* 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+* 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+* 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+* 
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+* IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; 
+* OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+* 
+*****************************************************************************/
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:        Motcle.h
+// Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
+// Version:     /main/14
+//
+//////////////////////////////////////////////////////////////////////////////
+
+#ifndef Motcle_included
+#define Motcle_included
+
+#include <Vect.h>
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// .DESCRIPTION
+//     Une chaine de caractere (Nom) en majuscules
+// .SECTION voir aussi
+//////////////////////////////////////////////////////////////////////////////
+class Motcle : public Nom
+{
+  Declare_instanciable_sans_constructeur(Motcle);
+
+public:
+
+  Motcle();
+  Motcle(const Motcle& nom);
+  Motcle& operator=(const Motcle& );
+
+  Motcle(const char * const nom);
+  Motcle(const Nom&);
+  Motcle& operator=(const char * const);
+  Motcle& operator=(const Nom&);
+  Motcle& operator+=(const char * const);
+  int selftest();
+
+  int debute_par(const char* const) const;
+  int finit_par(const char* const) const;
+  virtual int find(const char * n) const;
+
+  friend int operator ==(const Motcle& , const Motcle& ) ;
+  friend int operator !=(const Motcle& , const Motcle& ) ;
+  friend int operator ==(const Motcle& , const char* const ) ;
+  friend int operator !=(const Motcle& , const char* const ) ;
+  friend int operator ==(const char* const , const Motcle& ) ;
+  friend int operator !=(const char* const , const Motcle& ) ;
+  friend int operator ==(const Motcle& , const Nom& ) ;
+  friend int operator !=(const Motcle& , const Nom& ) ;
+  friend int operator ==(const Nom& , const Motcle& ) ;
+  friend int operator !=(const Nom& , const Motcle& ) ;
+
+  virtual int map_to_int(const char * keywords_list) const;
+  virtual int try_map_to_int(const char * keywords_list) const;
+};
+
+Declare_vect(Motcle);
+
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// .DESCRIPTION
+//     Un tableau d'objets de la classe Motcle
+// .SECTION voir aussi
+//////////////////////////////////////////////////////////////////////////////
+class Motcles : public VECT(Motcle)
+{
+  Declare_instanciable(Motcles);
+public:
+  Motcles(int);
+};
+
+#endif
+// MOTCLE_H

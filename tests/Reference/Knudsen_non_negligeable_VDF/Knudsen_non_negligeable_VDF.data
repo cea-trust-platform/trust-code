@@ -1,0 +1,92 @@
+# Hydraulique 3D VDF, test de la CL a Knudsen non negligeable #
+# PARALLEL NOT #
+dimension 3
+
+Pb_hydraulique pb
+Domaine dom_pb1
+
+# BEGIN MESH #
+Read_file dom_pb1 croix_Pb1.geom
+# END MESH #
+# BEGIN PARTITION
+Partition dom_pb1
+{
+	Partitionneur metis { Nb_parts 2 }
+	Larg_joint 1
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom_pb1
+END SCATTER #
+
+VDF dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+    nb_pas_dt_max 10
+	tinit 0.
+	tmax 1000.
+	dt_min 0.0001
+	dt_max 1.
+	dt_impr 0.0001
+	dt_sauv 1000
+	seuil_statio 0.01
+}
+
+Fluide_Incompressible eau
+Lire eau
+{
+	mu Champ_Uniforme 1 2
+	rho Champ_Uniforme 1 2
+}
+
+Associate pb dom_pb1
+Associate pb sch
+Associate pb eau
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression cholesky { }
+		convection { amont }
+		diffusion { }
+		conditions_initiales {
+			vitesse Champ_Uniforme 3 0. 0. 0.
+			}
+		boundary_conditions {
+nord frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+sud frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+bas frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+haut frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+droit frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+gauche frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+entree frontiere_ouverte_pression_imposee Champ_front_uniforme 1 2.
+paroi Paroi_Knudsen_non_negligeable vitesse_paroi Champ_front_uniforme 3 0. 0.
+0. k Champ_front_uniforme 1 0.1
+		}
+	}
+
+	Postraitement
+	{
+		Sondes
+		{
+			sonde_pression pression periode 0.0001 
+				points 1 1. 0. 0.
+		}
+		Champs dt_post 0.5
+		{
+			pression elem
+			vitesse som
+		}
+	}
+}
+
+Solve pb
+Fin

@@ -1,0 +1,14 @@
+#!/bin/bash
+#export PYTHONPATH=$XDATA/../../TRIOU/build/lib/python2.2/site-packages/salome/:${PYTHONPATH}
+#pathtoadd=`find $TRIOU_ROOT_DIR -name triou.py -exec dirname {} \;`
+#echo $pathtoadd
+#export PYTHONPATH=${pathtoadd}:${PYTHONPATH}
+TMP=/tmp
+[ "$TRUST_TMP" != "" ] && TMP=$TRUST_TMP
+DIR=`dirname $0`
+[ "DIR" = "." ] && DIR=`pwd` 
+. $DIR/../env_min.sh
+. $DIR/IHMDICO.sh
+org=`pwd`
+xdatagui --module=DICO --with-splitter=no --without-menus=Preferences,Window,Modules,Tools,View $*
+

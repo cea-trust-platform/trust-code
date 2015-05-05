@@ -1,0 +1,63 @@
+#!/bin/bash
+# See http://www.mcs.anl.gov/petsc/petsc-dev/docs/installation.html#threads
+# See http://www.mcs.anl.gov/petsc/features/threads.html
+# Examples with:
+# See http://www2.warwick.ac.uk/fac/sci/dcs/research/pcav/linear_solvers/programme/mlange_hybrid_petsc.pdf
+# See http://arxiv.org/pdf/1205.2005.pdf
+# Tutorial:
+# http://www.mcs.anl.gov/petsc/petsc-dev/docs/manualpages/concepts/petscthreadcomm.html
+rm -f ex19*.log
+export PETSC_DIR=$TRUST_ROOT/lib/src/LIBPETSC/petsc/$TRUST_ARCH"_opt"
+threads=pthread && [ "`grep USE_OPENMP=1 $TRUST_ROOT/lib/src/LIBPETSC/install`" != "" ] && threads=openmp
+
+tests="src/ksp/ksp/examples/tutorials/ex2 src/snes/examples/tutorials/ex19"
+tests="src/ksp/ksp/examples/tutorials/ex2"
+for test in $tests
+do
+   cd $PETSC_DIR/`dirname $test` 
+   test=`basename $test`
+   make $test
+   for pc in none jacobi sor spai
+   do
+      pc_type=$pc && [ $pc = spai ] && pc_type="hypre -pc_hypre_type parasails" 
+      # Similar to gmres (implicit resolution in TRUST)
+      [ $test = ex19 ] && options="-pc_type $pc_type -da_grid_x 100 -da_grid_y 100"
+      # Similar to gc (pression resolution in TRUST)
+      [ $test = ex2  ] && options="-ksp_type cg -pc_type $pc_type -m 250 -n 250"
+      echo $options
+      options=$options" -log_summary -mat_no_inode"
+      for thread in nothread $threads
+      do
+	 n=0
+	 while [ 1 ]
+	 do
+	    let n=$n+1
+	    log=$TRUST_ROOT/lib/src/LIBPETSC/$test"_"$pc"_"$thread"_"$n.log
+            # Setting OMP_NUM_THREADS seems necessary for Hypre threaded version to have good performance
+	    OMP="" && [ $pc = spai ] && OMP="OMP_NUM_THREADS=$n"
+	    if [ $thread = nothread ]
+	    then
+               eval $OMP mpirun -np $n ./$test $options 1>$log 2>&1
+	    else
+               eval $OMP ./$test $options -threadcomm_type $thread -threadcomm_nthreads $n 1>$log 2>&1
+	    fi
+	    cat $log
+	    #if [ $n = $TRUST_NB_PHYSICAL_CORES ]
+	    if [ $n = 2 ]
+	    then
+               break
+	    fi
+	 done
+      done
+   done
+   cd -
+   grep KSPSolve $test"_"*"_"*"_"*.log | awk '{print $1" "$4}'
+done
+# Performances de OpenMP
+# Mauvaises sur le portable vs MPI
+# OK sur le PC vs MPI
+# nothread_1.log:KSPSolve 5.0761e+00
+# nothread_2.log:KSPSolve 2.7061e+00
+# openmp_1.log:KSPSolve 5.0709e+00
+# openmp_2.log:KSPSolve 2.6004e+00
+# Mais des que l'on change de preconditionneur cela se degrade none -> sor ?

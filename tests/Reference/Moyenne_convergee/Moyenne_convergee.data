@@ -1,0 +1,162 @@
+# Thermohydraulique 2D : Couplage Boussinesq et schema quick #
+# PARALLEL OK 6 #
+dimension 2
+Pb_Thermohydraulique pb
+Domaine dom
+Domaine dom_lu
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Cavite 
+		{
+		Origine 0. 0.
+     		Nombre_de_Noeuds 11 11
+		Longueurs 0.01 0.01
+		}
+		{
+		Bord Gauche X = 0.  0. <= Y <= 0.01
+		Bord Haut Y = 0.01  0. <= X <= 0.01
+		Bord Bas Y = 0.     0. <= X <= 0.01
+		Bord Droit X = 0.01 0. <= Y <= 0.01
+		}
+}
+Ecrire_fichier_bin dom fichier_bin.geom
+Lire_fichier_bin dom_lu fichier_bin.geom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur trAnche {  tranchEs   2  	1 }
+	Larg_joint 2
+	Nom_Zones dom
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
+
+VDF dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 4.01
+	tmax 5.
+	dt_min 0.01
+	dt_max 0.01
+	dt_impr 0.01
+	dt_sauv 0.1
+	seuil_statio 1.e-12
+	precision_impr 8
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 1.85e-5
+	rho Champ_Uniforme 1 1.17
+	lambda Champ_Uniforme 1 0.0262 
+	Cp Champ_Uniforme 1 1006
+	beta_th Champ_Uniforme 1 3.41e-3
+}
+
+Champ_Uniforme gravite
+Lire gravite 2 0 -9.81
+
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+domaine front
+extraire_surface 
+  {
+    domaine front
+    probleme pb
+    avec_certains_bords 1 Gauche  
+  }
+  
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		# Solveur Petsc #
+		solveur_pression petsc cholesky { }
+		convection { quick }
+		diffusion { }
+		sources { boussinesq_temperature { T0 5. } }
+		conditions_initiales {
+			vitesse Champ_Uniforme 2 0. 0.
+			}
+		boundary_conditions {
+			Haut paroi_fixe
+			Bas paroi_fixe
+			Gauche paroi_fixe
+			Droit paroi_fixe
+		}
+	}
+	Convection_Diffusion_Temperature
+	{
+		diffusion { }
+		convection { quick }
+		boundary_conditions 
+		{
+			Haut paroi_adiabatique
+			Bas paroi_adiabatique
+ 			Gauche paroi_temperature_imposee Champ_Front_Uniforme 1 10. 
+			Droit  paroi_temperature_imposee Champ_Front_Uniforme 1 0.  
+		}
+		conditions_initiales { Temperature Champ_Uniforme 1 5. }
+	}
+
+	Postraitements
+	{		
+	   post_dom {
+	   
+		Definition_champs 
+		{
+		 
+		 Moyenne_temperature Moyenne {
+                     		t_deb 4.01 t_fin 5.	
+                                source refChamp { Pb_champ pb temperature } 
+				moyenne_convergee Champ_Fonc_Reprise test_pb.xyz pb Moyenne_temperature last_time
+                 		} 
+		  
+		ecart_type_temperature Ecart_Type {
+                     		t_deb 4.01 t_fin 5.	
+                                source refChamp { Pb_champ pb temperature }
+                 		}	
+		}
+		
+		Sondes
+		{
+			sonde_P pression periode 0.01 points 1 0.0045 0.0045
+			sonde_V vitesse periode 0.01 points 1 0.0045 0.0045
+			sonde_T temperature periode 0.01 points 1 0.0045 0.0045
+		}	
+		format lml
+		fichier Moyenne_convergee
+		Champs dt_post 0.1
+		{
+			pression elem
+			vitesse elem
+			temperature elem
+		        Moyenne_temperature
+			ecart_type_temperature
+		}
+	    }
+	    
+	  
+	}
+	
+	
+	reprise formatte test_sauvegarde_simple.sauv
+}
+
+Solve pb
+Fin
+

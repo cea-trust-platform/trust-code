@@ -1,0 +1,244 @@
+dimension 3
+
+Pb_conduction pb_solide
+Pb_ThermoHydraulique_turbulent pb_fluide
+
+Domaine dom_solide
+Domaine dom_fluide
+
+# BEGIN MESH #
+Mailler dom_solide
+{
+Pave Cavite
+	{
+		Origine 0. 0.5  0.
+		Nombre_de_Noeuds 16 3 3
+		Longueurs 5. 0.5 1.
+	}
+	{
+		Bord entree1     X = 0.         0.5 <= Y <= 1.   0. <= Z <= 1.        
+		Bord sortie1     X = 5	        0.5 <= Y <= 1.   0. <= Z <= 1.
+		Bord contact     Y = 0.5        0. <= X <= 5.    0. <= Z <= 1.    
+		Bord haut1       Y = 1.         0. <= X <= 5.    0. <= Z <= 1.
+	        Bord perioz1     Z = 0.         0. <= X <= 5.    0.5 <= Y <= 1.
+		Bord perioz1     Z = 1.         0. <= X <= 5.    0.5 <= Y <= 1.
+	}
+}
+
+Mailler dom_fluide
+{
+Pave Cavite
+	{
+		Origine 0. 0. 0.
+		Nombre_de_Noeuds 16 3 3
+		Longueurs 5. 0.5 1.
+	}
+	{
+		Bord entree2      X = 0.        0. <= Y <= 0.5    0. <= Z <= 1.        
+		Bord sortie2  	  X = 5	        0. <= Y <= 0.5    0. <= Z <= 1.
+		Bord bas2     	  Y = 0.        0. <= X <= 5.     0. <= Z <= 1.    
+		Bord contact      Y = 0.5       0. <= X <= 5.     0. <= Z <= 1.
+	        Bord perioz2  	  Z = 0.        0. <= X <= 5.     0. <= Y <= 0.5
+		Bord perioz2  	  Z = 1.        0. <= X <= 5.     0. <= Y <= 0.5
+	}
+}
+
+Tetraedriser_homogene dom_solide
+Tetraedriser_homogene dom_fluide
+
+Reordonner_Faces_Periodiques dom_solide perioz1
+Reordonner_Faces_Periodiques dom_fluide perioz2
+# END MESH #
+# BEGIN PARTITION
+
+Partition dom_solide
+{
+	Partitionneur tranche { tranches 2 2 1 }
+	Larg_joint 1
+	Nom_Zones DOM_SOL
+	Periodique 1 perioz1
+}
+
+Partition dom_fluide
+{
+	Partitionneur tranche { tranches 2 2 1 }
+	Larg_joint 1
+	Nom_Zones DOM_FLUIDE
+	Periodique 1 perioz2
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM_SOL.Zones dom_solide
+Scatter DOM_FLUIDE.Zones dom_fluide
+END SCATTER #
+
+VEFPreP1B dis
+
+Schema_Euler_explicite sch
+Read sch
+{
+	tinit 0.
+	nb_pas_dt_max 3
+	tmax 1000000
+	dt_min 1.e-7
+	dt_max 100.
+	dt_impr 1000.
+	dt_sauv 20000.
+	seuil_statio 1.e-12
+}
+
+Solide sol
+Read sol
+{
+	rho Champ_Uniforme 1 6.
+	lambda Champ_Uniforme 1 8.e-2    
+	Cp Champ_Uniforme 1 4000.
+}
+
+Fluide_Incompressible fluide
+Read fluide
+{
+	mu Champ_Uniforme 	1 2.e-5
+ 	rho Champ_Uniforme 	1 6.
+        lambda Champ_Uniforme	1 8.e-2
+	Cp Champ_Uniforme	1 4000.
+	beta_th Champ_Uniforme	1 0.
+}
+
+Associate pb_solide dom_solide
+Associate pb_solide sol 
+Associate pb_fluide dom_fluide
+Associate pb_fluide fluide
+
+Probleme_Couple pbc
+Associate pbc pb_fluide
+Associate pbc pb_solide
+
+Associate pbc sch
+Discretize pbc dis
+
+
+Read pb_solide
+{
+	Conduction
+	{
+		diffusion { }
+		conditions_initiales {
+		   temperature Champ_Uniforme 1 505.
+		}
+		
+		boundary_conditions {	
+		   entree1      frontiere_ouverte_temperature_imposee Champ_front_fonc_xyz 1 500.+5.*y
+	           sortie1      frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 505
+ 	           haut1        Paroi_temperature_imposee Champ_Front_Uniforme 1 505
+		   contact      paroi_contact pb_fluide contact
+		   perioz1      periodique 
+		}
+	}
+	Postraitement
+	{
+		Sondes
+		{
+		   sonde_sol_temp_bas  temperature periode 100 points 1  2.5 0.6 0.5
+		   sonde_sol_temp_haut temperature periode 100 points 1  2.5 0.9 0.5
+		   sonde_seg_sol_temp_ent  temperature periode 100 segment 10  0.1 0.5 0.5 0.1 1. 0.5
+		   sonde_seg_sol_temp_mil  temperature periode 100 segment 10  2.5 0.5 0.5 2.5 1. 0.5 
+		   sonde_seg_sol_temp_sor  temperature periode 100 segment 10  4.9 0.5 0.5 4.9 1. 0.5 
+		   sonde_seg_sol_temp_bas  temperature periode 100 segment 10  0. 0.6 0.5 5. 0.6 0.5
+		   sonde_seg_sol_temp_haut temperature periode 100 segment 10  0. 0.9 0.5 5. 0.9 0.5
+		}
+		Format lml
+		Champs dt_post 20000
+		{
+			temperature elem
+			temperature som
+		}
+	}
+}
+
+
+
+Read pb_fluide
+{
+	Navier_Stokes_Turbulent
+	{
+		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e8 impr }	
+		convection { negligeable }
+		diffusion { negligeable }
+		conditions_initiales { vitesse champ_uniforme 3 0. 0. 0. }
+		boundary_conditions 
+		 {
+                     entree2    frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 3 0. 0. 0.
+		     sortie2    frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 3 0. 0. 0.
+	             contact    paroi_fixe
+	             bas2       paroi_fixe
+		     perioz2    periodique 
+		 }
+		 Modele_turbulence combinaison
+		  {
+		     fonction 0.
+		     turbulence_paroi negligeable
+		     
+		  }
+       }
+       
+       Convection_Diffusion_Temperature_Turbulent
+	{
+		diffusion { }
+		convection { negligeable }
+		boundary_conditions 
+		 {
+			entree2   frontiere_ouverte_temperature_imposee Champ_front_fonc_xyz 1 500.+5.*y
+			sortie2   frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 505
+ 			contact   paroi_contact pb_solide contact
+			bas2      Paroi_temperature_imposee Champ_front_fonc_xyz 1 500.+x
+			perioz2   periodique 
+		 }
+		conditions_initiales { Temperature Champ_Uniforme 1 505 }
+		Modele_turbulence Prandtl { turbulence_paroi  negligeable_scalaire }
+	}
+	      
+	Postraitement
+	{   
+	
+	     Definition_champs {
+  		erreur Transformation {
+			methode formule expression 1 temp-((500.+x)+(5.-x)*y)
+			source refChamp {
+				Pb_Champ pb_fluide temperature nom_source temp 
+			}
+			localisation som
+		} 
+    	     } 
+	     Sondes
+	      {
+	           sonde_pression pression periode 100 points 1 2.5 0.25 0.5
+		   sonde_vit vitesse periode 100 points 1  2.5 0.25 0.5
+		   sonde_seg_vit vitesse periode 100 segment 10  2.5 0.0 0.5 2.5 0.5 0.5 
+		   sonde_fluide_temp_mil temperature periode 100 points 1  2.5 0.25 0.5
+		   sonde_fluide_temp_bas temperature periode 100 points 1  2.5 0.1 0.5
+		   sonde_fluide_temp_haut temperature periode 100 points 1  2.5 0.4 0.5
+		   sonde_seg_fl_temp_ent temperature periode 100 segment 10  0.1 0.0 0.5 0.1 0.5 0.5
+		   sonde_seg_fl_temp_mil temperature periode 100 segment 10  2.5 0.0 0.5 2.5 0.5 0.5 
+		   sonde_seg_fl_temp_sor temperature periode 100 segment 10  4.9 0.0 0.5 4.9 0.5 0.5 
+		   sonde_seg_fl_temp_bas temperature periode 100 segment 10  0. 0.1 0.5 5. 0.1 0.5
+		   sonde_seg_fl_temp_mily temperature periode 100 segment 10 0. 0.25 0.5 5. 0.25 0.5 
+		   sonde_seg_fl_temp_haut temperature periode 100 segment 10  0. 0.4 0.5 5. 0.4 0.5
+	      }
+	     Format lml
+	     Champs dt_post 20000
+	      {			
+		   pression elem			
+		   vitesse som
+		   temperature som
+		   erreur som		
+	      }
+	}
+}
+
+Solve pbc
+End
+seuil_statio 1.e-6
+

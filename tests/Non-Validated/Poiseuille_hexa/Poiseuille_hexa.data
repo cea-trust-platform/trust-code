@@ -1,0 +1,113 @@
+# Hydraulique 2D maillage hexaedre : Bas Reynolds #
+# PARALLEL NOT #
+dimension 3
+
+Pb_hydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Entree 
+	{
+	Origine 0. 0. 0.
+	Nombre_de_Noeuds 21 11 11
+	Longueurs 2. 0.5 0.5 
+	}
+	{
+	Bord Entree   X = 0.   0. <= Y <= 0.5  0. <= Z <= 0.5  
+	Bord Haut     Y = 0.5  0. <= X <= 2.   0. <= Z <= 0.5  
+	Bord Bas      Y = 0.   0. <= X <= 2.   0. <= Z <= 0.5  
+	Bord Sortie   X = 2.   0. <= Y <= 0.5  0. <= Z <= 0.5 
+        Bord Avant    Z = 0.   0. <= X <= 2.   0. <= Y <= 0.5
+        Bord Arriere  Z = 0.5  0. <= X <= 2.   0. <= Y <= 0.5
+	}
+}
+
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur metis { Nb_parts 2 }
+	Larg_joint 1
+	Nom_Zones DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+Read dis { P0 }
+
+Schema_Euler_explicite sch
+Read sch
+{
+	tinit 0.
+	tmax 1.
+        nb_pas_dt_max 5
+	dt_min 0.0001
+	dt_max 0.1
+	dt_impr 0.0001
+	dt_sauv 0.5
+	seuil_statio 0.1
+	diffusion_implicite 1
+	seuil_diffusion_implicite 1.e-12
+}
+
+Fluide_Incompressible eau
+Read eau
+{
+	mu Champ_Uniforme 1 2
+	rho Champ_Uniforme 1 2
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb eau
+
+Discretize pb dis
+
+Read pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1e-11 impr }	
+		convection { Amont }
+		diffusion {  }
+		conditions_initiales {
+			vitesse Champ_Uniforme 3 0. 0. 0.
+			}
+		boundary_conditions {
+			Haut paroi_fixe
+			Bas paroi_fixe
+			Sortie frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+			Entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 3 1. 0. 0.
+			Avant paroi_fixe
+			Arriere paroi_fixe
+		}
+	}
+
+	Postraitement
+	{
+		Sondes
+		{
+			sonde_pres pression periode 0.00001 point 1  1. 0.25 0.25  
+			sonde_vit vitesse periode 0.00001 point 1  1. 0.25 0.25  
+			sonde_press pression periode 0.00001 segment 9  2. 0. 0.25  2. 0. 0.25
+			sonde_vits vitesse periode 0.00001 segment 9    2. 0. 0.25  2. 0.5 0.25
+		}
+		Champs dt_post 0.1
+		{
+			pression elem
+			pression som
+			vitesse som
+			vitesse elem
+		}
+	}
+}
+
+Solve pb
+End

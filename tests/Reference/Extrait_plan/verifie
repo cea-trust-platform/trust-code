@@ -1,0 +1,55 @@
+#!/bin/bash
+verif()
+{
+# on verifie que les differents debits valent 2e-5
+for file in test_1 test_1b test_1c
+do
+#	res=`$TRUST_Awk '{ err=($2*$3/2e-5-1); if (err<0) {err=-err };if (err<1e-5)  {print "OK"} else {print ("KO ",err)} }' $file`
+        res=`$TRUST_Awk '($2=="bilan") {bilan=$4} ($1!="#") { err=($2*$3/2e-5-1); if (err<0) {err=-err };if (err<1e-5 && bilan==2e-5)  {print "OK"} else {print ("KO ",err)} }' $file`
+		
+ if [ "$res" != "OK" ]
+  then
+   echo pb avec $file $res
+   ko=1
+  fi
+done
+
+}
+# On verifie que pdflatex est installe sinon on quitte
+[ "`pdflatex -v 1>/dev/null 2>&1;echo $?`" != 0 ] && exit 0
+cas=`pwd`
+cas=`basename $cas`
+para=0
+[ -f PAR_$cas.out ] && para=1
+ko=0
+if [ $para -eq 0 ]
+then
+echo "verif sequentielle"
+# on verifie en sequentiel
+verif
+mv test_100 seq_test_100
+else
+
+echo "verif parallele"
+rm -f test_*
+# on lance le postraitement des calculs // (ils ont reecrits dans les memes fichiers)
+triou  post 1>post.out 2>post.err
+ 
+verif
+
+
+compare_sonde test_100 seq_test_100 1>compare_sonde.log 2>&1
+[ $? != 0 ] && ko=1
+
+
+# on tente le rapport
+$TRUST_ROOT/Validation/Outils/Genere_courbe/src/genererCourbes.py -p Extrait_plan.prm 1>rapport.log 2>&1
+if [ $? -eq 0 ] 
+  then
+    echo rapport.pdf genere dans `pwd`
+  else
+    cat rapport.log
+    ko=1
+  fi
+fi
+exit $ko

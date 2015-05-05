@@ -1,0 +1,70 @@
+# Tests ecriture/lecture de differents type de maillages MED en 2D #
+
+dimension 2
+# PARALLEL NOT #
+{
+Domaine rectangle
+Domaine triangle
+Domaine quadrangle
+
+
+Mailler rectangle 
+{
+ 	Pave Cavite1
+		{
+		Origine 0. 0.
+     		Nombre_de_Noeuds 4 4
+		Longueurs 0.3 1.0
+		}
+		{
+		Bord Gauche X = 0.   0.  <= Y <= 1.0
+		Bord Haut   Y = 1.0  0.  <= X <= 0.3
+		Bord Bas    Y = 0.   0.  <= X <= 0.3
+		Raccord local homogene Droit  X = 0.3  0. <= Y <= 1.0
+		} 
+}
+
+ecrire_fichier rectangle rectangle.geom
+
+ecrire_med rectangle rectangle.med
+
+Read_file triangle rectangle.geom
+trianguler_h triangle
+ecrire_med triangle triangle.med
+
+Read_file quadrangle rectangle.geom
+Transformer quadrangle x*(1+y) y 
+ecrire_med quadrangle quadrangle.med
+
+# on recree le fichier lml reference ? 
+#
+
+postraiter_domaine {
+     domaines { rectangle triangle quadrangle }
+     fichier new_reference.lml
+     format lml }
+
+
+}
+
+Domaine rectangle
+Domaine triangle
+Domaine quadrangle
+lire_med rectangle rectangle rectangle.med
+lire_med triangle triangle triangle.med
+lire_med quadrangle quadrangle quadrangle.med
+postraiter_domaine {
+     domaines { rectangle triangle quadrangle }
+     fichier Kernel_GEOM_MED_2D.lml
+     format lml }
+
+postraiter_domaine {
+     domaines { rectangle triangle quadrangle }
+     fichier Kernel_GEOM_MED_2D.lata
+     format lata }
+fin
+
+
+
+
+

@@ -1,0 +1,52 @@
+-------------------------------------------------------------------
+ 
+                          TRUST
+                      version : 1.6.2 
+ 			 build : 190810 
+                          CEA - DEN
+ 
+ ------------------------------------------------------------------
+ 
+  Vous traitez le cas maillage
+ 
+Reading data file 
+
+
+Histogram of the largest angle of each element found into the mesh dom :
+Between 0° and 5° : 0 elements ( 0 %)
+Between 5° and 10° : 0 elements ( 0 %)
+Between 10° and 15° : 0 elements ( 0 %)
+Between 15° and 20° : 0 elements ( 0 %)
+Between 20° and 25° : 0 elements ( 0 %)
+Between 25° and 30° : 0 elements ( 0 %)
+Between 30° and 35° : 0 elements ( 0 %)
+Between 35° and 40° : 0 elements ( 0 %)
+Between 40° and 45° : 0 elements ( 0 %)
+Between 45° and 50° : 0 elements ( 0 %)
+Between 50° and 55° : 0 elements ( 0 %)
+Between 55° and 60° : 0 elements ( 0 %)
+Between 60° and 65° : 0 elements ( 0 %)
+Between 65° and 70° : 0 elements ( 0 %)
+Between 70° and 75° : 10 elements ( 0.14453 %)
+Between 75° and 80° : 237 elements ( 3.42535 %)
+Between 80° and 85° : 663 elements ( 9.58231 %)
+Between 85° and 90° : 938 elements ( 13.5569 %)
+Between 90° and 95° : 1021 elements ( 14.7565 %)
+Between 95° and 100° : 964 elements ( 13.9326 %)
+Between 100° and 105° : 830 elements ( 11.996 %)
+Between 105° and 110° : 693 elements ( 10.0159 %)
+Between 110° and 115° : 545 elements ( 7.87686 %)
+Between 115° and 120° : 411 elements ( 5.94016 %)
+Between 120° and 125° : 319 elements ( 4.61049 %)
+Between 125° and 130° : 204 elements ( 2.9484 %)
+Between 130° and 135° : 69 elements ( 0.997254 %)
+Between 135° and 140° : 14 elements ( 0.202341 %)
+Between 140° and 145° : 1 elements ( 0.014453 %)
+Between 145° and 150° : 0 elements ( 0 %)
+Between 150° and 155° : 0 elements ( 0 %)
+Between 155° and 160° : 0 elements ( 0 %)
+Between 160° and 165° : 0 elements ( 0 %)
+Between 165° and 170° : 0 elements ( 0 %)
+Between 170° and 175° : 0 elements ( 0 %)
+Between 175° and 180° : 0 elements ( 0 %)
+14 MBytes of RAM taken by the calculation.

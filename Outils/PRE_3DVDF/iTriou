@@ -1,0 +1,5 @@
+#!/bin/bash
+cd $2/../prepro/trans_geom 2>/dev/null
+cas=`basename $1 .data`
+$exec $cas 2>&1| tee TRUST.log
+exit 0

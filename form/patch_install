@@ -1,0 +1,53 @@
+#!/bin/bash
+# Mecanisme d'update d'une version de TRUST
+
+# Recherche de tous les paquets de type '*'.tar.Z ou les patches .pt
+#liste=`find $HOME \( -name '*'.tar.Z \)`
+cd $TRUST_ROOT
+liste=`ls *.tar.Z`
+acompiler=0
+for file in $liste
+do
+   pb=0
+   echo "$file trouve."
+   file=`basename $file`
+   case $file in
+	prepro.tar.Z)	pb=1;;
+	GIBI.tar.Z) 	pb=1;;
+	AVS.tar.Z) 	pb=1;;
+	DV.tar.Z) 	pb=1;;
+	TRUST*.tar.Z) 	uncompress $file
+			for i in `tar tvf $file | $TRUST_Awk '{print $6}'`
+			do
+			   # chmod 744 pour pouvoir compiler ensuite
+			   [ -f $i ] && chmod 744 $i
+                           tar xvf $file $i
+			   chmod 744 `dirname $i`/?akefile
+			done
+                        echo "Mise a jour achevee pour $file."
+			acompiler=1
+	                ;;		
+	*.tar.Z)	uncompress $file
+			file=${file%.Z}
+             		tar xvf $file
+			rm -f $file
+			echo "Mise a jour achevee pour $file.";;	
+        ;;
+   [ $pb=1 ] && echo "Mise a jour delicate pour $file, nous contacter a $TRUST_MAIL"
+done
+if [ $acompiler = 1 ]
+then
+   # Lancement d'une compilation pour mettre a jour
+   echo "Tentative de compilation TRUST..."
+   echo "Pour une version officielle, la compilation est rapide"
+   echo "car les objets existent deja."
+   compile
+fi
+# dans l'installe ne plus laisser que compile et non plus monodir
+# dans mise*arch, faire un tar des .o 
+# dans rec*arch, recuperer le tar .o et stocker dans PORTAGE
+# dans cree_Version_TRUST, mettre les .o en plus
+# dans installer_TRUST, les detarre
+# Question : est ce necessaire de mettre.
+# Mettre les libs sur le site ftp
+# generer les libmetis,blas,skit sans les LIBTRIOU

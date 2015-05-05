@@ -1,0 +1,116 @@
+#!/bin/bash
+prepsrc=0
+# On initialise l'environnement
+source $TRUST_ROOT/env/Init_TRUST 1>/dev/null 2>&1
+LATASRC=Outils/lata2dx/lata2dx
+local=$TRUST_ROOT/Outils/VisIt/bin
+plugin=lata
+
+# Le plugin depuis le Kernel que si la version de VisIt a ete compilee
+[ "`ls $TRUST_ROOT/Outils/VisIt/current/*/bin/engine_par 2>/dev/null`" = "" ] && echo "Sorry, can't update a plugin of a none built VisIt version." && exit 0 
+
+plugin_visit=`ls -rt $TRUST_ROOT/Outils/VisIt/current/*/plugins/databases/*$plugin"Data"*.so 2>/dev/null | head -1`
+plugin_kernel=`ls -rt build/CMakeFiles/*/*.o 2>/dev/null | tail -1`
+
+if [ "$plugin_kernel" != "" ] && [ "$plugin_visit" != "" ] && [ "$plugin_kernel" -nt "$plugin_visit" ]
+then
+   echo "$plugin plugin is up to date under VisIt."
+   exit 0
+fi
+
+# Regroupement des sources du plugin depuis le Kernel:
+cd src
+./generate_lata_xml.sh $TRUST_ROOT/$LATASRC $1 -with_med
+cd ..
+rm -r -f build
+mkdir -p build
+cd build
+ln -s ../src/* . 2>/dev/null
+for i in `cd $TRUST_ROOT/$LATASRC;ls commun_triou/*.cpp triou_compat/*.cpp 2>/dev/null`
+do
+   ln -s ../../../../../$LATASRC/$i `basename $i .cpp`.C
+done
+for i in `cd $TRUST_ROOT/$LATASRC;ls commun_triou/*.h triou_compat/*.h 2>/dev/null`
+do
+   ln -s ../../../../../$LATASRC/$i `basename $i`
+done
+cd ..
+
+update=0
+if [ "$plugin_visit" = "" ]
+then
+   update=1
+   echo "$plugin plugin is not under VisIt distribution so..."
+else
+   if [ "$plugin_kernel" = "" ] || [ "$plugin_visit" -nt "$plugin_kernel" ]
+   then
+      update=1
+      echo "$plugin plugin from VisIt is older than $plugin plugin from Kernel so..."
+   else
+      # On ne recompile le plugin que si une des sources est plus recente que les sources du plugin sous VisIt
+      visit=`ls ../../src/visit?.?.?.tar.gz`
+      visit=`basename $visit`
+      visit=${visit%.tar.gz}
+      rm -r -f $visit
+      tar xfz ../../src/$visit.tar.gz $visit/src/databases/$plugin
+      # Les sources du plugin LATA sous VisIt:
+      echo $ECHO_OPTS "$plugin files detected under VisIt: \c"
+      for src in `cd $visit/src/databases/$plugin; ls *.C *.h`
+      do
+	 echo $src
+      done | wc -l  
+
+      cd build
+      echo $ECHO_OPTS "$plugin files detected under Kernel: \c"
+      ls *.C *.h | wc -l
+
+      # On regarde s'il y'a des differences:
+      for src in *.C *.h
+      do
+	 if [ ! -f ../$visit/src/databases/$plugin/$src ]
+	 then
+            echo "$src is a new file !"
+	    update=1
+	 elif [ "`diff $src ../$visit/src/databases/$plugin/$src`" != "" ]
+	 then
+            echo "$src has changed !"
+	    diff $src ../$visit/src/databases/$plugin/$src
+            update=1
+	 fi
+      done
+      [ $update = 1 ] && echo "$plugin plugin has changed so..."
+      cd ..
+      rm -r -f $visit
+   fi
+fi
+# Si le plugin depuis le Kernel est a compiler:
+if [ $update = 1 ]
+then
+   cd build
+   echo "# Compiling $plugin plugin..."
+   
+   $local/xml2info lata.xml
+
+   if [ $prepsrc -eq 1 ] 
+   then
+       $local/xml2cmake lata.xml -dv
+       echo "end of preparation, makefile not modified" && exit 0
+   fi
+   $local/xml2cmake lata.xml
+   dlocal=`dirname $local`
+   echo $dlocal
+   sed "s?$HOME/.visit/2.?$dlocal/2.?;s?$HOME/.visit?$dlocal/current?" CMakeLists.txt > p
+   # tkdiff  CMakeLists.txt p
+   mv p CMakeLists.txt
+   rm -f CMakeCache*
+   cmake .   
+   [ ! -f Makefile ] && echo "Echec du construction du Makefile par xml2makefile dans build_plugin" && exit -1
+
+   #######################
+   # Compilation du plugin
+   #######################
+   $TRUST_MAKE 2>&1 | tee plugin.log || exit -1   
+   echo
+   # Inutile d'essayer rajouter dans le package les librairies car visit-install les efface a l'installation
+fi
+echo "$plugin plugin is up to date under VisIt."

@@ -1,0 +1,93 @@
+# Hydraulique 3D VDF, test de la diffusion implicite avec pression imposee non nulle  #
+# PARALLEL OK 4 #
+dimension 3
+
+Pb_hydraulique pb
+Domaine dom_pb1
+
+# BEGIN MESH #
+Read_file dom_pb1 croix_Pb1.geom
+# END MESH #
+# BEGIN PARTITION
+Partition dom_pb1
+{
+	Partitionneur tranche { tranches 2 1 1 }
+	Larg_joint 1
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom_pb1
+END SCATTER #
+
+VDF dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0.
+	tmax 1000.
+	dt_min 0.0001
+	dt_max 0.005
+	dt_impr 0.0001
+	dt_sauv 1000
+	seuil_statio 1.e-4
+	diffusion_implicite 1
+	seuil_diffusion_implicite 1.e-6
+	nb_pas_dt_max 15
+}
+
+Fluide_Incompressible eau
+Lire eau
+{
+	mu Champ_Uniforme 1 2
+	rho Champ_Uniforme 1 2
+}
+
+Associate pb dom_pb1
+Associate pb sch
+Associate pb eau
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { precond ssor { omega 1.6 } seuil 1.e-9 }
+		convection { amont }
+		diffusion { }
+		conditions_initiales {
+			vitesse Champ_Uniforme 3 0. 0. 0.
+			}
+		boundary_conditions {
+nord frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+sud frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+bas frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+haut frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+droit frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+gauche frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+entree frontiere_ouverte_pression_imposee Champ_front_uniforme 1 2.
+paroi paroi_fixe
+		}
+	}
+
+	Postraitement
+	{
+		Sondes
+		{
+			sonde_pression pression periode 0.0001 
+				points 1 1. 0. 0.
+		}
+		Champs dt_post 0.04
+		{
+			pression elem
+			vitesse som
+		}
+	}
+}
+
+Solve pb
+Fin

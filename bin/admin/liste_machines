@@ -1,0 +1,20 @@
+#!/bin/bash
+fic=$TRUST_ROOT/bin/admin/liste.machines
+if [ ${#2} = 0 ]
+then
+   cat $fic | grep -v hostname | grep "$1" | awk '{print $4}'
+elif [ $2 = ftp ]
+then
+   export ftp=`cat $fic | grep -v hostname | grep $1 | awk '/externe/ {print 1} /interne/ {print 0} /ssh/ {print -1}'`
+elif [ $2 = recupere_exec ]
+then
+   export recupere_exec=`cat $fic | grep -v hostname | grep $1 | awk '{if ($3=="get_binary") print 1;else print 0}'`
+elif [ $2 = machine_cible ]
+then
+   export machine_cible=`cat $fic | grep -v hostname | grep $1 | awk '/cible/ || /get_binary/ {print 1} /non/ {print 0}'`
+elif [ $2 = TRUST_ARCH ]
+then
+   export TRUST_ARCH=`cat $fic | grep -v hostname | grep $1 | awk '{print $1}'`
+else 
+   cat $fic | grep -v hostname | grep "$1" | grep "$2" | awk '{print $4}'
+fi

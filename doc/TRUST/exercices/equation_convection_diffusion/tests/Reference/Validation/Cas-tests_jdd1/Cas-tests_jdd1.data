@@ -1,0 +1,98 @@
+# Thermohydraulique 2D VDF #
+# PARALLEL OK #
+dimension 2
+Probleme_Convection_Diffusion pb
+
+Domaine dom
+# BEGIN MESH #
+Mesh dom
+{
+	Pave Plaques
+	{
+		origine 0. 0.
+		longueurs 0.04 0.04 
+		nombre_de_noeuds 101 101
+	}
+	{
+		bord Gauche X = 0.   0. <= Y <= 0.04 
+		bord Gauche X = 0.04 0. <= Y <= 0.04 
+		bord Bas  Y = 0.   0. <= X <= 0.04 
+		bord Bas  Y = 0.04 0. <= X <= 0.04 
+	}
+}
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+        Partitionneur tranche { tranches 2 1 }
+        Larg_joint 1
+        Nom_Zones DOM
+        periodique 2 Bas Gauche
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+vdf dis
+
+schema_Euler_explicite sch
+Read sch
+{
+	tinit 0.
+	nb_pas_dt_max 3
+	tmax .04
+	dt_min 1.e-7
+	dt_max 0.1
+	dt_impr 1.e-7
+	dt_sauv 100.
+	seuil_statio 1.e-8
+}
+
+Constituant_Avec_Vitesse constituant
+Read constituant
+{
+	coefficient_diffusion  Champ_Uniforme 1 0.0005
+	vitesse_convection Champ_Uniforme 2 1. 1.
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb constituant
+
+Discretize pb dis
+
+Read pb
+{
+   Convection_Diffusion
+   {
+	diffusion { }
+	convection { amont }
+	conditions_initiales 
+        { 
+         Concentration champ_fonc_xyz dom 1 (x-0.02)^2+(y-0.02)^2<(0.01)^2 
+        }
+	boundary_conditions 
+        {
+		Gauche  periodique
+		Bas    periodique 
+	}
+   }
+
+   Postraitement
+   {
+		format lml
+        	champs dt_post 1.e-7
+		{
+			Concentration elem
+			vitesse_convection elem
+                        coefficient_diffusion elem
+		}
+   }
+}
+
+Solve pb
+
+End

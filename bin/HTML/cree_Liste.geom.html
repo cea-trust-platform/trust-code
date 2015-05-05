@@ -1,0 +1,40 @@
+#!/bin/bash
+
+ETUDE_TRUST=`QUELLE_ETUDE.ihm`
+export ETUDE_TRUST
+NOMETUDE=`echo $ECHO_OPTS $ETUDE_TRUST | $TRUST_Awk '{n=split($0,a,"/");print a[n]}'`
+cd $ETUDE_TRUST
+fichier=$ETUDE_TRUST/.Liste.geom.html
+# Ecriture du fichier :
+echo $ECHO_OPTS "<!--NewPage-->
+<html> 
+<head>
+<title>STUDY: $NOMETUDE </title>
+</head>
+<body>
+<BODY BGCOLOR="#C5D5D5" TEXT="#23238E" LINK="#E47833" ALINK="#007FFF" VLINK="#007FFF">
+<A HREF="TRUST.html"> <a href=TRUST.html>TRUST</a> </A> <br>
+<PRE>
+<HR>
+<h1>List of study $NOMETUDE mesh files </h1>
+<HR>" > $fichier
+for fic in `ls $ETUDE_TRUST/*.geom 2>/dev/null`
+do
+   REP=`dirname $fic`
+   NOM=`basename $fic`
+   NOM=${NOM%.geom}
+   echo $ECHO_OPTS "<h1>$NOM.geom</h1>\n" >> $fichier
+   if [ -s .$NOM.geom.info ]
+   then
+      echo $ECHO_OPTS "<a href="$REP/.$NOM.geom.info">Click here to see the mesh of the file $NOM.geom</a>" >> $fichier
+      echo $ECHO_OPTS " " >> $fichier
+      cat $REP/.$NOM.geom.info | $TRUST_Awk '(NR>1) { print $0 }' >> $fichier
+   else
+      echo $ECHO_OPTS "<a href="$REP/$NOM.geom">Afficher $NOM.geom</a>" >> $fichier
+   fi
+   echo $ECHO_OPTS "<HR>" >> $fichier
+done
+echo $ECHO_OPTS "</body>
+</html> " >> $fichier
+
+

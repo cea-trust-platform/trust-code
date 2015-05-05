@@ -1,0 +1,1 @@
+gunzip -c 35046.geom.gz > 35046.geom

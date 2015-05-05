@@ -1,0 +1,1110 @@
+#!/bin/bash
+# 
+# Ce programme realise un suivi des calculs avec gnuplot :
+# Run_sonde : shell ksh (ce programme) Argument passe : l'executable TRUST
+# Run_sonde_awk : programme awk appele
+# Run_att : shell ksh appele
+# Run_coupe_awk : programme appele
+# Run_DV : lance DV sur une machine distante
+# Run_AVS : lance AVS sur une machine distante
+# Si deux arguments alors le premier est le chemin complet de l'exec
+# et le deuxieme est le nom complet du cas :
+# Si 3 arguments alors $3 indique si batch ($3=1) ou non ($3=0).
+# Si $1=NOM alors TRUST="" est donc on suit les sondes :
+#
+# New !
+# - Possibilite de suivre les sondes uniquement : Run_sonde
+# - Possibilite de faire une reprise
+# - Possibilite d'imprimer direct une fenetre gnuplot
+# - Possibilite de rajouter des courbes
+# - Meilleure gestion de l'archivage (finir peut etre)
+#
+# TESTER ENCORE ET ENCORE !
+#
+Run_calculation()
+{
+   rm -f $NOM.err
+   rm -f $NOM.out
+   rm -r -f core
+   
+   # Signal pour gerer la fin du run :
+   trap "FIN_CALCUL=1;touch gnuplot/$NOM.ordre_IHM;rm -f gnuplot/$NOM.pcs" 16
+
+   heure=0
+   # Demande si differe :
+   if [ $batch = 1 ]
+   then
+      echo $ECHO_OPTS "\n********************************"
+      echo $ECHO_OPTS "* Scheduling running at a specified time *"
+      echo $ECHO_OPTS "****************************************\n"
+      echo $ECHO_OPTS "To submit running process at later time,"
+      echo $ECHO_OPTS "you can quit without stop it,"
+      echo $ECHO_OPTS "In how many hours do you want scheduling your job?"
+      echo $ECHO_OPTS "For immediately start up: enter 0\n>\c"
+      read heure
+   fi
+   if [ "$NB_PROCS" = "" ]
+   then
+      # On se base sur le mot scatter dans le jdd desormais
+      # pour voir si on a affaire a un calcul parallele 
+      # et on regarde le nombre de fichiers .Zones present
+      Zones="" && NP=0 && [ "`grep '# BEGIN MESH #' $NOM.data`" = "" ] && Zones="`grep -i 'scatter ' $NOM.data | grep -v "#" | $TRUST_Awk '{print $2}'`" && NP=`ls ${Zones%.Zones}*.Zones 2>/dev/null | wc -l`
+      if [ $NP != 0 ]
+      then     
+	 #NP=`ls ${Zones%.Zones}*.Zones | wc -l`
+	 echo $ECHO_OPTS $NP" .Zones files detected."
+	 echo $ECHO_OPTS "So $NP processors will be used ..."
+	 # Tests a prevoir:
+	 # Meme noms pour les raccords !
+	 # raccord distant homogene pour le decoupage
+	 # au lieu de raccord local homogene
+      else
+	 NP=""
+      fi
+   else
+      if [ $NB_PROCS = 1 ]
+      then
+         NP=""
+      else
+         NP=$NB_PROCS
+      fi	 
+   fi
+   # Effacement du fichier .son
+   rm -f $NOM.son
+   # Lancement de l'executable de TRUST :
+   # Envoi du signal 16 en fin de calcul :
+   if [ $heure -gt 0 ]
+   then
+      echo $ECHO_OPTS "( time triou $NOM $NP ) 1>$NOM.out 2>$NOM.err" | at now +$heure hours 1>/dev/null 2>/dev/null
+      echo $ECHO_OPTS "Il will run TRUST process in $heure hours."
+      eval $FIN
+   else
+      # Probleme sur Linux RedHat5.2 :
+      [ ${#LD_LIBRARY_PATH} = 0 ] && LD_LIBRARY_PATH=$TRUST_LIB && export LD_LIBRARY_PATH
+      (  nohup time triou $NOM $NP 1>$NOM.out 2>$NOM.err &
+         echo $! > gnuplot/$NOM.pcs;
+ 	 wait $!;
+         proc=$$;kill -16 $proc 1>/dev/null 2>&1;
+      ) &
+   fi
+   
+   while [ ! -f $NOM.err ]
+   do
+      choix=0
+   done
+
+   # xterm where .err is listed:
+   kill -9 $pcs_xterm 1>/dev/null 2>&1
+   $Xterm $HautDroit_geometrie -title "Contents of "$NOM".err" -e tail -f $NOM.err 2>/dev/null &
+   pcs_xterm=$!
+   
+   # Wait for solving the problem:
+   while [ "`grep -E 'solution du probleme|olving of the problem' $NOM.err`" = "" ]
+   do
+      if [ $FIN_CALCUL = 1 ]
+      then
+	 if ((OK_trad==1))
+	 then
+	    if [ "`grep -E "TRUST a provoque une erreur|TRUST has caused an error" $NOM.err`" != "" ]
+	    then
+	       tail -$nb_ligne_erreur $NOM.err > .$NOM.err.french
+	       echo $ECHO_OPTS "\nThis is an automatic translation made by $traducteur\n" > .$NOM.err.english
+	       $Xterm $HautCentre_geometrie -title "Automatic translation of "$NOM".err" -e tail -f .$NOM.err.english 2>/dev/null &
+	       pcs_xterm=`echo "$pcs_xterm $!"`
+	       Traducteur.sh .$NOM.err.french $traducteur >> .$NOM.err.english
+	    fi
+	 fi
+         echo $ECHO_OPTS '\nPress return.'
+         read OK
+	 ((OK_trad==1)) && rm -f .*.err.french .*.err.english
+         # Ferme la fenetre .err :
+         kill -9 $pcs_xterm 1>/dev/null 2>&1
+         exit
+      else
+         sleep 1
+      fi
+   done
+}
+# Pour le Traducteur : Google ou Voila ou Sans, nb_ligne_erreur = nombre de ligne du fichier.err a traduire
+traducteur=Google
+nb_ligne_erreur=15
+#
+batch=0
+exec=$1
+SAUVE=0
+sous_menu=0
+if [ ${#2} != 0 ]
+then
+   NOM=${2%.data}
+else
+   NOM=""
+fi
+GUI=0
+if [ ${#3} != 0 ]
+then
+   GUI=1
+   batch=$3
+fi
+if [ ${#exec} = 0 ] || [ ! -x $exec ]
+then
+   NOM=${1%.data}
+   FIN_CALCUL=-1
+else
+   FIN_CALCUL=0
+fi
+
+rep_tests="$TRUST_TESTS/Reference"
+dt_ev=`ls *.dt_ev 2>/dev/null`
+if [ ${#NOM} != 0 ]
+then
+   NOM2=${NOM%.data}
+   if [ ! -f $NOM2.data ] && [ ! -h $NOM2.data ]
+   then
+      echo $ECHO_OPTS "$NOM2.data : That file does not exist."
+      echo $0 $*
+      echo `pwd`
+      eval $FIN
+   fi
+   dir=`dirname $NOM.data`
+   NOM=`basename $NOM2.data .data`
+   \cd $dir
+elif [ "`echo $dt_ev | $TRUST_Awk '{print NF}'`" = 1 ]
+then
+   # 1 seul fichier .dt_ev donc on devine le .data
+   dir=`pwd`
+   NOM=${dt_ev%.dt_ev}
+   echo "Calculation with $NOM.data detected according to $dt_ev file..."
+else
+   while [ "$dir" = "" ] || [ ! -d $dir ]
+   do 
+      echo $ECHO_OPTS "****************************************************************"
+      echo $ECHO_OPTS "Which study do you want to run?"
+      echo $ECHO_OPTS "Give the complete PATH to the study (for example: $HOME/.../...)"
+      echo $ECHO_OPTS "Or press return to select the local directory `pwd`"
+      echo $ECHO_OPTS "****************************************************************"
+      echo $ECHO_OPTS "> \c"
+      read dir
+      if [ ${#dir} = 0 ] || [ "$dir" = "." ]
+      then
+	 dir=`pwd`
+      fi
+   done
+   echo
+   \cd $dir
+# Cas ou plusieurs cas trouves :
+   j=0
+   datas=`ls *.data 2>/dev/null`
+   [ ${#datas} = 0 ] && echo "No data files found." && exit
+   for i in $datas
+   do
+      echo $ECHO_OPTS "Case $i"
+      let j=$j+1
+   done
+   if [ $j -gt 1 ]
+   then
+      echo $ECHO_OPTS "\nSeveral data files exist, select one of them:"
+      echo $ECHO_OPTS "> \c"
+      read NOM
+      NOM=${NOM%.data}
+      if [ ! -f $NOM.data ]
+      then
+         echo $ECHO_OPTS "Data file $NOM.data does not exist."
+         eval $FIN
+      fi
+   else
+      NOM=${i%.data}
+   fi
+fi
+# Fin recherche du cas
+#\cd $dir
+# Test pour voir si sauvegarde existe dans le jdd pour des problemes de reprise
+if [ "`grep -i Probleme_Couple $NOM.data`" != "" ]
+then
+   nb_problemes="`cat $NOM.data | grep -i 'Postraitement' | wc -l`"
+   nb_sauvegardes="`cat $NOM.data | grep -i 'Sauvegarde ' | wc -l`"
+fi 
+
+# Temporary directory
+mkdir -p gnuplot
+rm -f gnuplot/$NOM.gnu*
+rm -f gnuplot/$NOM.ordre*
+rm -f gnuplot/$NOM.*.coupe
+tmp=`mktemp_`
+
+# Je traduis si ping_ a reussi la connexion avec internet sur $traducteur
+adr="" && [ "$traducteur" == "Google" ] && adr=translate.google.fr ; [ "$traducteur" == "Voila" ] && adr=tr.voila.fr
+OK_trad=0 # We deactivate the translation for 1.6.8
+#OK_trad=`ping_ $adr | $TRUST_Awk 'BEGIN {OK_trad=0;} /received/ {OK_trad=$4;} END {print OK_trad;}'`
+if [ ${#IHM} != 0 ] && [ $IHM = 1 ]
+then
+   # Signal pour recevoir ordre de l'IHM :
+   trap "echo $ECHO_OPTS" 15
+   echo $ECHO_OPTS $$ > gnuplot/Run_sonde.pcs
+   if [ $? != 0 ]
+   then
+      echo $ECHO_OPTS "\nYou have not write permissions in the "
+      echo $ECHO_OPTS "directory  $dir"
+      echo $ECHO_OPTS "Please create a new study."
+      eval $FIN
+   fi
+   # Modifier signal 15 et 16 en signaux superieurs !
+fi
+# Verification si un calcul tourne (FIN_CALCUL=0) ou pas (FIN_CALCUL=1)
+if [ $FIN_CALCUL = -1 ]
+then
+   FIN_CALCUL=1
+   if [ -f gnuplot/$NOM.pcs ]
+   then
+      pcs_TRUST=`cat gnuplot/$NOM.pcs`
+      #kill -0 $pcs_TRUST 2>/dev/null;echo $?
+      if [ "`kill -0 $pcs_TRUST 2>/dev/null;echo $?`" = 0 ]
+      then
+         # Calcul toujours en cours
+         trap "FIN_CALCUL=1;touch gnuplot/$NOM.ordre_IHM; rm -f gnuplot/$NOM.pcs" 16
+         $Xterm $HautDroit_geometrie -title "Contents of "$NOM".err" -e tail -f $NOM.err 2>/dev/null &
+         pcs_xterm=$!
+         FIN_CALCUL=0
+      fi
+   fi
+elif [ $FIN_CALCUL = 0 ]
+then
+   Run_calculation
+fi
+# Lancement du suivi du temps :
+rm -f .fin_prevue
+
+# On boucle tant que TRUST tourne :
+while [ 1 ]
+do
+   # Construction du fichier $NOM.menu et des caracteristiques des sondes :
+   # Preventivement, on cherche si dimension est un mot de ce jeu de donnees:
+   # Car sinon cela boucle sans fin dans Run_sonde_awk
+   if [ "`grep -i 'dimension ' $NOM.data`" = "" ]
+   then
+      OK=0
+      lire_fichier=`grep -i lire_fichier $NOM.data | $TRUST_Awk '/;/ {print $2}'`
+      [ ${#lire_fichier} != 0 ] && [ -f $lire_fichier ] && [ "`grep -i 'dimension ' $lire_fichier`" != "" ] && OK=1
+      [ ! $OK ] && echo "Dimension of the problem not defined in $NOM.data !" && eval $FIN
+   fi
+   touch gnuplot/$NOM.menu
+   # 20/10/05 : ajout d'un test pour detecter les fichiers dos et les caracteres CR/LF de fin de ligne
+   # Car sinon Run_sonde_awk debloque completement
+   dos2unix_ $NOM.data
+   # Le fichier .$NOM.son est fait dans Run_sonde_awk en attendant c'etre cree par TRUST?
+   #\ls -art $NOM"_"*.son > .$NOM.son
+   if [ $GUI = 1 ]
+   then
+      cree_Liste.son.html
+   else
+      echo | $TRUST_Awk -v NOM=$NOM -f $TRUST_AWK/Run_sonde_awk
+   fi
+   touch gnuplot/$NOM.sous_menu1 gnuplot/$NOM.sous_menu2 gnuplot/$NOM.sous_menu3
+   if [ $GUI = 1 ]
+   then
+      [ -f $NOM.out ] && cree_Liste.conv.html
+      [ "`ls $NOM*.out | grep -v $NOM.out`" != "" ] && cree_Liste.flux.html && cree_Liste.bord.html
+   fi
+   if [ ${#IHM} != 0 ] && [ $IHM = 1 ]
+   then
+      echo $ECHO_OPTS $$ > gnuplot/Run_sonde.pcs
+   else
+      echo $ECHO_OPTS '---------------'
+      echo $ECHO_OPTS 'Possible plots:'
+      echo $ECHO_OPTS '---------------'
+      if [ $sous_menu = 0 ]
+      then
+         [ -f $NOM.out ] && echo $ECHO_OPTS '0-Convergence monitoring'
+         [ "`ls $NOM*.out | grep -v $NOM.out`" != "" ] && echo $ECHO_OPTS '1-Surface fluxes characteristics'
+         cat gnuplot/$NOM.menu
+      elif  [ $sous_menu = 1 ]
+      then
+         cat gnuplot/$NOM.sous_menu1
+	 Conv=`wc -l gnuplot/$NOM.sous_menu1 | $TRUST_Awk '{print $1+1}'`
+         echo $ECHO_OPTS $Conv'-Quit convergency characteristics'
+      elif [ $sous_menu = 2 ]
+      then
+         cat gnuplot/$NOM.sous_menu2
+	 Fluxes=`wc -l gnuplot/$NOM.sous_menu2 | $TRUST_Awk '{print $1+1}'`
+         echo $ECHO_OPTS $Fluxes'-Quit Surface fluxes characteristics'
+      elif [ $sous_menu = 3 ]
+      then
+         cat gnuplot/$NOM.sous_menu3
+	 Bord=`wc -l gnuplot/$NOM.sous_menu3 | $TRUST_Awk '{print $1+1}'`
+         echo $ECHO_OPTS $Bord'-Quit '$Flux' on problem '$Pb
+      fi
+      echo $ECHO_OPTS '------------------------------'
+      echo $ECHO_OPTS 'n  <return> : Draw the plot n'
+      echo $ECHO_OPTS '-n <return> : Close the plot n'
+      echo $ECHO_OPTS '&n <return> : Scale the plot n'
+      echo $ECHO_OPTS 'nF <return> : Animate the plot profile n'
+      echo $ECHO_OPTS 'E  <return> : Edit the data file'
+      if [ $FIN_CALCUL = 1 ]
+      then
+         echo $ECHO_OPTS '#  <return> : Quit the tool'
+	 echo $ECHO_OPTS 'R  <return> : Run the calculation'
+      elif [ $FIN_CALCUL = 0 ]
+      then
+         echo $ECHO_OPTS 'S  <return> : Stop the calculation'
+         echo $ECHO_OPTS '~  <return> : Quit the tool and stop the calculation'
+         echo $ECHO_OPTS '#  <return> : Quit the tool without stopping the calculation'
+      fi
+   fi
+   echo $ECHO_OPTS '------------------------------'
+   echo $ECHO_OPTS 'Displayed plots : '$liste
+   echo $ECHO_OPTS 'Binary: '$exec
+   if [ $FIN_CALCUL = 1 ]
+   then
+      echo $ECHO_OPTS 'State of the calculation '$NOM': END'
+      if ((OK_trad==1))
+      then
+         if [ "`grep -E "TRUST a provoque une erreur|TRUST has caused an error" $NOM.err 2>/dev/null`" != "" ]
+         then
+            tail -$nb_ligne_erreur $NOM.err > .$NOM.err.french
+            echo $ECHO_OPTS "\nThis is an automatic translation made by $traducteur\n" > .$NOM.err.english
+            $Xterm $HautCentre_geometrie -title "Automatic translation of "$NOM".err" -e tail -f .$NOM.err.english 2>/dev/null &
+            pcs_xterm=`echo "$pcs_xterm $!"`
+            Traducteur.sh .$NOM.err.french $traducteur >> .$NOM.err.english
+	 fi
+      fi
+
+   else
+      FIN=""
+      if [ -f .fin_prevue ]
+      then
+         FIN='\nExpected end in '`cat .fin_prevue`
+      fi
+      echo $ECHO_OPTS 'State of the calculation '$NOM': Running'$FIN
+   fi
+   echo $ECHO_OPTS '------------------------------'
+
+   if [ "$IHM" = 1 ]
+   then
+      rm -f gnuplot/$NOM.ordre_IHM
+      while [ ! -f gnuplot/$NOM.ordre_IHM ]
+      do
+         # J'enleve le "sleep 1" pour permettre d'aller plus vite dans l'IHM sans avoir de probleme d'ordre qui se perde... 
+	 attend=1
+      done
+      choix=`cat gnuplot/$NOM.ordre_IHM`
+   else
+      read choix
+   fi
+   film=0 && [ "${choix%F}" != "$choix" ] && film=1 && choix=${choix%F}
+# Debut du traitement :
+
+####################
+# Cas ou return :
+####################
+   if [ ${#choix} = 0 ]
+   then
+      echo $ECHO_OPTS
+      
+####################
+# Cas ou $choix="E" :
+####################
+   elif [ $choix = "E" ]
+   then
+      $EDITEUR $NOM.data &
+      
+####################
+# Cas ou $choix="R" :
+####################
+   elif [ $choix = "R" ]
+   then
+      FIN_CALCUL=0
+      Run_calculation
+      
+####################
+# Cas ou $choix="S" :
+####################
+   elif [ $choix = "S" ]
+   then
+      echo $ECHO_OPTS '1' > $NOM.stop
+     
+####################
+# Cas ou $choix="#" :
+####################
+   elif [ $choix = "#" ] || [ $choix = "~" ]
+   then
+      for i in $liste
+      do 
+         if [ $sous_menu != 0 ]
+         then
+            echo $ECHO_OPTS 'quit' > gnuplot/$NOM.ordre0$num
+            echo $ECHO_OPTS 'quit' > gnuplot/$NOM.gnuplot0$num
+         fi
+         echo $ECHO_OPTS 'quit' > gnuplot/$NOM.ordre$i
+# Violent car sinon ne marche pas toujours :
+         echo $ECHO_OPTS 'quit' > gnuplot/$NOM.gnuplot$num
+      done
+      if [ $GUI = 1 ]
+      then
+         cree_Liste.conv.html "ReOpen the process windows"
+         cree_Liste.flux.html "ReOpen the process windows"
+      fi
+# Ferme la fenetre .err :
+      kill -9 $pcs_xterm 1>/dev/null 2>&1
+      if [ $choix = "~" ] && [ $FIN_CALCUL = 0 ]
+      then
+         echo $ECHO_OPTS '1' > $NOM.stop
+      fi
+      sleep 1
+      break
+	    
+####################
+# Cas ou $choix="0" : Caracteristique de convergence
+####################
+   elif [ $choix = 0 ] && [ $sous_menu = 0 ]
+   then
+      num=1
+      Convergency=""
+      if [ ! -f $NOM.out ]
+      then
+         echo $ECHO_OPTS "\n$NOM.out file is not found."
+      elif [ $multi = 0 ] && [ ${#liste} != 0 ]
+      then
+         echo $ECHO_OPTS "\nMultiwindowing is impossible."
+         sleep 1
+      else
+# Lancement d'une commande en arriere plan et analyse du .out :
+      echo $ECHO_OPTS "\nPlease wait...\n"
+      $TRUST_Awk -v tmp=$tmp 'BEGIN {debut=1}\
+           # Recuperation du pas de temps\
+	   /temps numero/ || /time step number/ {\
+	   	pos=7;if ($7=="numero") pos=8;\
+		if (ndt>0) {\
+			if (debut) print en_tete en_tete_abs_vol en_tete_rel_vol en_tete_abs_mass > tmp;\
+			debut=0;print ndt,dt,dtop,div_abs_vol,div_rel_vol,div_abs_mass > tmp\
+		}\
+		en_tete="#Time step#";ndt=$(pos);getline;\
+		dt=$3;dtop="";div_abs_vol="";div_rel_vol="";div_abs_mass="";en_tete_abs_vol="";en_tete_rel_vol="";en_tete_abs_mass=""\
+	   }\
+	   # Recuperation des bilans volumiques\
+	   /Bilan par maille sur le debit volumique/ || /Cell balance flow rate control/  {\
+	   	pb_vol=$(NF-1);getline;\
+		div_abs_vol=div_abs_vol" "$(NF-1);en_tete_abs_vol=en_tete_abs_vol"Valeur absolue (debit volumique) pour "pb_vol"#";getline;\
+		div_rel_vol=div_rel_vol" "$(NF);en_tete_rel_vol=en_tete_rel_vol"Valeur relative (debit volumique) pour "pb_vol"#";\
+	   }\
+	   # Recuperation des bilans massiques\
+	   /Bilan par maille sur le debit massique/  || /Cell balance mass flow rate control/ {\
+	   	pb_mass=$(NF-1);getline;\
+		div_abs_mass=div_abs_mass" "$(NF-1);en_tete_abs_mass=en_tete_abs_mass"Valeur absolue (debit massique) pour "pb_mass"#";\
+	   }\
+	   # Recuperation du nom equation\
+	   /Impression des pas de temps/ || /Printing of the time steps/ {equation=$NF}\
+	   # Recuperation des pas de temps de diffusion\
+	   /temps de diffusion/  || /diffusive time step/ {dtop=dtop" "$NF;en_tete=en_tete"Diffusive time step ("equation")#"}\
+	   # Recuperation des pas de temps de convection\
+	   /temps de convection/ || /convective time step/ {dtop=dtop" "$NF;en_tete=en_tete"Convective time step ("equation")#"}\
+          ' $NOM.out &
+      pcs_awk=$!
+# Verifie quel type de resolution
+      gcp=`grep -i "GCP" $NOM.data`
+      #pause="sleep 3"
+      ###################
+      # Cas explicite+gcp
+      ###################
+      if [ ${#gcp} != 0 ] && [ ${#imp} = 0 ]
+      then
+         nombre_residu=`$TRUST_Awk 'BEGIN {n=0} /Norme du residu/ {n++} /Norm of the residue/ {n++} END {print n}' $NOM.out`
+	 $TRUST_Awk -f $TRUST_AWK/compteU.awk -v compU="gnuplot/$NOM.compU" -v convU="gnuplot/$NOM.convU" -v ncomp=$nombre_residu $NOM.out
+         sleep 1
+       # Evolution du nombre iterations a chaque pas de temps :
+         plot="set grid\nset zero 1.e-20\nset style data linesp\n"
+         if [ -f gnuplot/$NOM.convU ]
+         then
+            Convergency=`echo $ECHO_OPTS "$Convergency\n$num-Pressure linear system iterations at each time step"`
+            plot=$plot"set xlabel 'Time step number'\n
+                       set ylabel ' Iterations number'\n
+                       set title 'Conjugate gradient iterations at each time step'\n
+                       plot 'gnuplot/$NOM.convU' t''\n"
+	    echo $ECHO_OPTS $plot > gnuplot/$NOM.courbe0"$num".gnu
+	    ((num=num+1))
+         else
+            echo $ECHO_OPTS "Conjugate gradient iterations at each time step can not be plotted\nAdd dt_impr keyword in your .data file to see more !"
+            sleep 1
+         fi
+      # Evolution du residu au cours du dernier pas de temps :
+         plot="set grid\nset zero 1.e-20\nset style data linesp\n"
+         if [ -f gnuplot/$NOM.compU ]
+         then
+            Convergency=`echo $ECHO_OPTS "$Convergency\n$num-Pressure linear system residual error ||Ax-B|| during the last time step"`
+            plot=$plot"set log y\n
+                       set xlabel 'Iteration number\n
+                       set ylabel ' ||Ax-b||'\n
+                       set title 'Evolution of the residual error ||Ax-b|| during the last time step'\n
+                       plot 'gnuplot/$NOM.compU' t''\n"
+	    echo $ECHO_OPTS $plot > gnuplot/$NOM.courbe0"$num".gnu
+	    ((num=num+1))
+         else
+            echo $ECHO_OPTS "Evolution of the residual error ||Ax-B|| during the last time step can not be plotted\nAdd dt_impr keyword in your .data file to see more !"
+            sleep 1
+         fi
+      #######################
+      # Cas methode directe ?
+      #######################
+      elif [ ${#imp} = 0 ] && [ ${#gcp} = 0 ]
+      then
+         echo
+      fi
+ 
+# Attente de l'analyse du .out sur les pas de temps :
+      wait $pcs_awk
+      plot="set grid\nset zero 1.e-20\nset style data linesp\n"
+# Evolution du pas de temps :
+      if [ -f $tmp ] && [ -s $tmp ]
+      then 
+         Convergency=`echo $ECHO_OPTS "$Convergency\n$num-Time step evolution"`
+         plot=$plot"set xlabel 'Time step number'\n
+                    set ylabel ' dt [s]'\n
+                    set style data lines\n
+                    set log y\n
+                    set title 'Time step evolution'\n
+                    plot   '$tmp' using 1:2 t'Time step'\n"
+# Evolution des pas de temps 
+         colonnes=`head -1 $tmp | $TRUST_Awk -FValeur '{print $1}' | $TRUST_Awk -F# '{print NF-1}'`
+	 col=3
+	 while [ $col -le $colonnes ]
+	 do
+	    plot=$plot"replot '$tmp' using 1:$col t'`head -1 $tmp | $TRUST_Awk -F# -v col=$col '{print $col}'`'\n"
+ 	    let col=$col+1
+	 done
+	 echo $ECHO_OPTS $plot > gnuplot/$NOM.courbe0"$num".gnu
+         ((num=num+1))
+         plot="set grid\nset zero 1.e-20\nset style data linesp\n"
+	 pbs=`head -1 $tmp | sed "s?#?\n?g" | grep "Valeur" | $TRUST_Awk '{print $6}' | sort -u`
+	 nb_pb=`echo "$pbs" | wc -l`
+	 num_pb=1
+	 while [ $num_pb -le $nb_pb ]
+	 do
+	    pb=`echo "$pbs" | head -$num_pb | tail -1`
+	    let a_vol=$col
+	    let r_vol=$col+$nb_pb
+	    trace=0 && [ "`head -1 $tmp | sed "s?#?\n?g" | grep "massique) pour $pb"`" != "" ] && trace=1 && let a_mass=$col+$nb_pb+$nb_pb
+	    Convergency=`echo $ECHO_OPTS "$Convergency\n$num-Flow rate error evolution for problem $pb"`
+# Evolution de la conservation de la masse :
+            plot=$plot"set xlabel 'Time step number'\n
+                    set ylabel 'Error '\n
+                    set style data lines\n
+                    set log y\n
+                    set title 'Flow rate error evolution for problem $pb'\n
+                    plot   '$tmp' using 1:$r_vol t'Flow rate relative error per cell:'\n
+		    replot '$tmp' using 1:$a_vol t'Flow rate absolute error per cell:'\n"
+            ((trace==1)) && plot=$plot"replot '$tmp' using 1:$a_mass t'Mass Flow rate absolute error per cell:'\n"
+ 	    let num_pb=$num_pb+1
+	    let col=$col+1
+	    echo $ECHO_OPTS $plot > gnuplot/$NOM.courbe0"$num".gnu
+            ((num=num+1))
+	 done
+      else
+	 echo $ECHO_OPTS "\nCan't give convergency... The value for dt_impr is too large in your data file.\n"
+	 sleep 1
+      fi
+      if [ ${#Convergency} != 0 ]
+      then
+         sous_menu=1
+         echo $ECHO_OPTS "$Convergency" | sed "1d" > gnuplot/$NOM.sous_menu1
+	 touch gnuplot/$NOM.courbe0"$num".gnu
+	 if [ $GUI = 1 ]
+         then
+	    cree_Liste.conv.html
+	 fi
+	 for i in $liste
+         do 
+            echo $ECHO_OPTS 'quit' > gnuplot/$NOM.ordre$i
+            echo $ECHO_OPTS 'quit' > gnuplot/$NOM.gnuplot$num
+         done
+	 liste=""
+      fi
+   fi
+
+####################
+# Cas ou $choix="&num" :
+####################
+   elif [ ${choix#"&"} != $choix ]
+   then
+      num=${choix#"&"}
+      echo $ECHO_OPTS "Unchanged choice: Return"
+      echo $ECHO_OPTS "xmin=\c";read xmin;xmin=`echo $ECHO_OPTS $xmin | $TRUST_Awk '{if (NF) print 1.0*$1; else print ""}'`;
+      echo $ECHO_OPTS "xmax=\c";read xmax;xmax=`echo $ECHO_OPTS $xmax | $TRUST_Awk '{if (NF) print 1.0*$1; else print ""}'`;
+      echo $ECHO_OPTS "ymin=\c";read ymin;ymin=`echo $ECHO_OPTS $ymin | $TRUST_Awk '{if (NF) print 1.0*$1; else print ""}'`;
+      echo $ECHO_OPTS "ymax=\c";read ymax;ymax=`echo $ECHO_OPTS $ymax | $TRUST_Awk '{if (NF) print 1.0*$1; else print ""}'`;
+      set=$set"set xra["$xmin":"$xmax"]\nset yra["$ymin":"$ymax"]\n"
+      echo $ECHO_OPTS "Graduations:Logarithmic(1) or Linear(0)"
+      echo $ECHO_OPTS "Along x=\c";read xprog
+      case $xprog in
+         1) xprog="set log x";;
+         0) xprog="set nolog x";;
+      esac
+      echo $ECHO_OPTS "Along y=\c";read yprog
+      case $yprog in
+         1) yprog="set log y";;
+         0) yprog="set nolog y";;
+      esac
+      set=$set$xprog"\n"$yprog"\n"
+
+# Envoi d'un nouvel ordre (fenetrage different) :
+      echo $ECHO_OPTS $set >> gnuplot/$NOM.ordre$num
+
+####################
+# Cas ou $choix="1" : Caracteristique sur les flux
+####################
+   elif [ $choix = 1 ] && [ $sous_menu = 0 ]
+   then
+      num=1
+      Fluxes=""
+      files=`ls $NOM*.out | grep -v $NOM.out`
+      if [ ${#files} = 0 ]
+      then
+         echo $ECHO_OPTS "\nNone flux caracteristic file has been found."
+         sleep 1
+      elif [ $multi = 0 ] && [ ${#liste} != 0 ]
+      then
+         echo $ECHO_OPTS "\nMultiwindowing is impossible."
+         sleep 1
+      else
+         echo $ECHO_OPTS "\nPlease wait...\n"
+	 Viscous=""
+	 Pressure=""
+	 for file in $files
+	 do
+	    Pb=`head -1 $file | grep '#' | grep 'problem' | $TRUST_Awk '{print $NF}'`
+	    Flux=`head -2 $file | tail -1 | grep '#.*=' | $TRUST_Awk -F"=Integral" '{print $1}' | $TRUST_Awk -F"# " '{print $2}'`
+	    Bord=`head -3 $file | tail -1 | grep -E '# Bord:|# Boundary:'`
+	    Temps=`head -4 $file | tail -1 | grep -E '# Temps|# Time'`
+	    if [ ${#Pb} != 0 ] && [ ${#Flux} != 0 ] && [ ${#Bord} != 0 ] && [ ${#Temps} != 0 ]
+	    then
+	       [[ $Flux = "Friction drag exerted by the fluid" ]] && Viscous=$Flux
+	       [[ $Flux = "Pressure drag exerted by the fluid" ]] && Pressure=$Flux
+	       if [ ${#Viscous} != 0 ] && [ ${#Pressure} != 0 ]
+	       then
+	          Fluxes=`echo $ECHO_OPTS "$Fluxes\n$num-$Flux on problem $Pb"`
+	          ((num=num+1))
+	          Fluxes=`echo $ECHO_OPTS "$Fluxes\n$num-$Pressure+$Viscous on problem $Pb"`
+		  Viscous=""
+		  Pressure=""
+	       else
+	          Fluxes=`echo $ECHO_OPTS "$Fluxes\n$num-$Flux on problem $Pb"`
+	       fi
+	       ((num=num+1))
+	    else
+	       echo $ECHO_OPTS "\nUnable to find all the 4 first lines '# ...'\nof file $file"
+	       sleep 1
+	    fi
+	 done
+	 
+         if [ ${#Fluxes} != 0 ]
+         then
+            sous_menu=2
+            echo $ECHO_OPTS "$Fluxes" | sed "1d" > gnuplot/$NOM.sous_menu2
+	    if [ $GUI = 1 ]
+            then
+	       cree_Liste.flux.html
+	    fi
+	    for i in $liste
+            do 
+               echo $ECHO_OPTS 'quit' > gnuplot/$NOM.ordre$i
+               echo $ECHO_OPTS 'quit' > gnuplot/$NOM.gnuplot$num
+            done
+	    liste=""
+         fi
+      fi
+
+####################
+# Cas ou $choix>"0" et sous_menu=1: Courbes de convergence ou sous_menu=3: Courbes de flux sur les bords
+####################
+   elif [ $choix -gt 0 ] && [ -f gnuplot/$NOM.courbe0"$choix".gnu ] && ([ $sous_menu = 1 ] || [ $sous_menu = 3 ])
+   then
+      num=$choix
+      [ $sous_menu = 1 ] && Conv=`wc -l gnuplot/$NOM.sous_menu1 | $TRUST_Awk '{print $1+1}'`
+      [ $sous_menu = 3 ] && Conv=`wc -l gnuplot/$NOM.sous_menu3 | $TRUST_Awk '{print $1+1}'`
+      if [ $choix = $Conv ]
+      then
+	 for i in $liste
+         do 
+            echo $ECHO_OPTS 'quit' > gnuplot/$NOM.ordre0$i
+            echo $ECHO_OPTS 'quit' > gnuplot/$NOM.gnuplot0$num
+         done
+	 liste=""
+	 [ $sous_menu = 1 ] && rm -f gnuplot/$NOM.sous_menu1 && sous_menu=0
+	 [ $sous_menu = 3 ] && rm -f gnuplot/$NOM.sous_menu3 && sous_menu=2
+	 rm -f gnuplot/$NOM.courbe0*.gnu
+      else
+# Au cas ou tourne deja on affiche a nouveau :
+         new=1
+         for i in $liste
+         do
+            if [ $i = $num ]
+            then
+              echo $ECHO_OPTS "quit" > gnuplot/$NOM.ordre0$num
+	      sleep 1
+              new=0
+            fi
+         done
+         if [ $new = 1 ]
+         then
+            liste=$liste" "$num
+         fi
+
+# Preparation de la sequence dans le fichier gnuplot/$NOM.gnu :
+         gnu="rep\n"
+         gnu=$gnu"!Run_att $NOM.out gnuplot/$NOM.ordre0$num\n"
+         gnu=$gnu"!cat gnuplot/$NOM.ordre0$num >> gnuplot/$NOM.gnuplot0$num\n"
+         gnu=$gnu"!echo '' > gnuplot/$NOM.ordre0$num\n"
+         gnu=$gnu"!cat gnuplot/$NOM.gnu0$num >> gnuplot/$NOM.gnuplot0$num"
+         echo $ECHO_OPTS $gnu > gnuplot/$NOM.gnu0$num
+         cat gnuplot/$NOM.courbe0$num.gnu > gnuplot/$NOM.gnuplot0$num
+         cat gnuplot/$NOM.gnu0$num >> gnuplot/$NOM.gnuplot0$num
+
+# Prepare le fichier gnuplot/$NOM.ordre :
+         echo $ECHO_OPTS "" > gnuplot/$NOM.ordre0$num
+
+# Lance gnuplot en arriere plan :
+         gnuplot gnuplot/$NOM.gnuplot0$num 2>>/dev/null &
+         [ $? != 0 ] && echo "Problem with gnuplot..." && sleep 3
+      fi # fin choix
+
+####################
+# Cas ou $choix>"0"et sous_menu=2: Courbes de flux
+####################
+   elif [ $choix -gt 0 ] && [ $sous_menu = 2 ]
+   then
+      num=$choix
+      Fluxes=`wc -l gnuplot/$NOM.sous_menu2 | $TRUST_Awk '{print $1+1}'`
+      if [ $multi = 0 ] && [ ${#liste} != 0 ]
+      then
+         echo $ECHO_OPTS "\nMultiwindowing is impossible."
+         sleep 1
+      elif [ $choix = $Fluxes ]
+      then
+         sous_menu=0
+	 liste=""
+	 rm -f gnuplot/$NOM.sous_menu2
+      else
+         echo $ECHO_OPTS "\nPlease wait...\n"
+         Pb=`cat gnuplot/$NOM.sous_menu2 | head -$num | tail -1 | $TRUST_Awk '{print $NF}'`
+         Flux=`cat gnuplot/$NOM.sous_menu2 | head -$num | tail -1 | $TRUST_Awk -F" on problem " '{print $1}' | $TRUST_Awk -F"-" '{print $2}'`
+	 Somme=0 && [ "`echo $ECHO_OPTS "$Flux" | grep "+"`" != "" ] && Somme=1 && Flux1=`echo $ECHO_OPTS "$Flux" | $TRUST_Awk -F'+' '{print $1}'` && Flux2=`echo $ECHO_OPTS "$Flux" | $TRUST_Awk -F"+" '{print $2}'`
+	 files=`grep "$Pb$" $NOM*.out | $TRUST_Awk -F: '{print $1}'`
+	 fic=""
+	 [ $Somme = 1 ] && fic1=""
+	 for file in $files
+	 do
+	    if [ $Somme = 1 ]
+	    then
+	       var1=`grep "# $Flux1" $file`
+	       [ ${#var1} != 0 ] && fic=$file
+	       var2=`grep "# $Flux2" $file`
+	       [ ${#var2} != 0 ] && fic2=$file
+	    else
+	       var=`grep "# $Flux" $file`
+	       [ ${#var} != 0 ] && fic=$file
+	    fi
+	 done
+	 
+	 Boundary=""
+	 # on part du principe que les bords sont identiques entre fic et fic1 et qu'ils sont classes dans le meme ordre dans les deux fichiers.
+	 if [ ${#fic} != 0 ]
+	 then
+          nb_bord=`head -3 $fic | tail -1 | grep -E '# Bord:|# Boundary:' | $TRUST_Awk '{print NF-2}'`
+	  if [ ${#nb_bord} != 0 ]
+	  then
+	    nb_col=`tail -1 $fic | $TRUST_Awk '{print NF-1}'`
+	    [ $Somme = 1 ] && nb_col1=`tail -1 $fic2 | $TRUST_Awk '{print NF-1}'` && nb_col=`$TRUST_Awk "BEGIN{if($nb_col1>$nb_col) {print $nb_col} else {print $nb_col1}}"`
+	    var=`$TRUST_Awk "BEGIN{printf \"%d\",$nb_col%$nb_bord}"`
+	    while [ $var != 0 ]
+	    do
+	       ((nb_bord=nb_bord-1))
+	       var=`$TRUST_Awk "BEGIN{printf \"%d\",$nb_col%$nb_bord}"`
+	    done
+	    var=`$TRUST_Awk "BEGIN{printf \"%d\",$nb_col/$nb_bord}"`
+	    unit=`head -2 $fic | tail -1 | grep '#.*=' | $TRUST_Awk '{print $NF}'`
+	    b=1
+	    col=2
+	    while (( $b <= $nb_bord ))
+	    do
+	       Bord=`head -3 $fic | tail -1 | grep -E '# Bord:|# Boundary:' | $TRUST_Awk '{print $('$b'+2)}'`
+	       Boundary=`echo $ECHO_OPTS "$Boundary\n$b-$Bord"`
+	       plot="set grid\nset style data linesp"
+	       if [ $Bord = "Total" ]
+	       then
+	          plot=`echo $ECHO_OPTS "$plot\nset title '$Flux : $Bord'"`
+	       else
+	          plot=`echo $ECHO_OPTS "$plot\nset title '$Flux on boundary \"$Bord\"'"`
+	       fi
+	       plot=`echo $ECHO_OPTS "$plot\nset xlabel 'Time [s]'"`
+	       plot=`echo $ECHO_OPTS "$plot\nset ylabel '$Flux $unit'"`
+	       v=0
+	       while (( $v < $var ))
+	       do
+		  title=`head -4 $fic | tail -1 | grep '#' | $TRUST_Awk '{print $('$col'+1)}'`
+		  titre=$title && [ $Somme = 1 ] && titre=`echo $ECHO_OPTS "$Flux1 - $titre"`
+		  if [ $v = 0 ]
+		  then
+		     plot=`echo $ECHO_OPTS "$plot\nplot '$fic' using 1:$col t'$titre'"`
+		  else
+		     plot=`echo $ECHO_OPTS "$plot\nreplot '$fic' using 1:$col t'$titre'"`
+		  fi
+		  [ $Somme = 1 ] && titre=`echo $ECHO_OPTS "$Flux2 - $title"` && plot=`echo $ECHO_OPTS "$plot\nreplot '$fic2' using 1:$col t'$titre'"`
+		  [ $Somme = 1 ] && $TRUST_Awk '{print $1" "$'$col'}' $fic > tmp && $TRUST_Awk '{print $'$col'}' $fic2 > tmp1 && paste tmp tmp1 > gnuplot/$NOM.courbe0$b.gnu.$title && rm -f tmp tmp1
+		  [ $Somme = 1 ] && plot=`echo $ECHO_OPTS "$plot\nreplot 'gnuplot/$NOM.courbe0$b.gnu.$title' using 1:(\\$2+\\$3) t'$Flux1 + $Flux2 - $title'"`
+	          ((col=col+1))
+		  ((v=v+1))
+	       done
+	       echo $ECHO_OPTS "$plot" > gnuplot/$NOM.courbe0$b.gnu
+	       ((b=b+1))
+	    done
+	  fi # fin n_bord
+	 fi # fin fic
+         if [ ${#Boundary} != 0 ]
+         then
+            sous_menu=3
+            echo $ECHO_OPTS "$Boundary" | sed "1d" > gnuplot/$NOM.sous_menu3
+	    touch gnuplot/$NOM.courbe0"$b".gnu
+	    if [ $GUI = 1 ]
+            then
+	       cree_Liste.bord.html "$Flux" "$Pb"
+	       sleep 1
+	    fi
+	    for i in $liste
+            do 
+               echo $ECHO_OPTS 'quit' > gnuplot/$NOM.ordre$i
+               echo $ECHO_OPTS 'quit' > gnuplot/$NOM.gnuplot$num
+            done
+	    liste=""
+         fi # fin Boundary
+      fi # fin choix
+
+####################
+# Cas ou $choix<"0" :
+####################
+   elif [ $choix -lt 0 ]
+   then
+      num=${choix#"-"}
+# On enleve num de la liste des fenetres deja ouvertes :
+      new=""
+      for i in $liste
+      do
+         if [ $i != $num ]
+         then
+            new=$new" "$i
+         fi
+      done
+      liste=$new
+
+      if [ $sous_menu != 0 ]
+      then
+         echo $ECHO_OPTS 'quit' >> gnuplot/$NOM.ordre0$num
+         echo $ECHO_OPTS 'quit' > gnuplot/$NOM.gnuplot0$num
+      else
+# Envoi d'un nouvel ordre (fermeture fenetre) :
+         echo $ECHO_OPTS 'quit' >> gnuplot/$NOM.ordre$num
+# Violent mais sinon ne marche pas !:
+         echo $ECHO_OPTS 'quit' > gnuplot/$NOM.gnuplot$num
+      fi
+
+####################
+# Cas ou $choix=+? :
+####################
+   elif [ ${choix#+} != $choix ]
+   then
+      NUM=${choix#+}
+# Nom du fichier gnuplot/$NOM.gnu de la courbe deja affichee :
+      FIC_GNU=gnuplot/$NOM.courbe$NUM.gnu
+      if [ "`$TRUST_Awk '(NR==2) {print $1}' $FIC_GNU`" = "plan" ]
+      then
+         echo $ECHO_OPTS "Impossible to add planes."
+	 break
+      fi
+# Cherche les courbes disponibles et les affiche :
+      if [ ${#IHM} != 0 ] && [ $IHM = 1 ]
+      then
+         cree_Liste.gnu.html $NUM
+      fi
+      Run_cherche_gnu $FIC_GNU $NOM
+      if [ ${#IHM} != 0 ] && [ $IHM = 1 ]
+      then
+         $WEBBROWSER $FIC_GNU.html &
+	 pcs_sup=$!
+         rm -f gnuplot/$NOM.ordre_IHM
+         while [ ! -f gnuplot/$NOM.ordre_IHM ]
+         do
+            sleep 1
+         done
+         choix=`cat gnuplot/$NOM.ordre_IHM`
+      else
+         echo $ECHO_OPTS "\nWhich curve or file?"
+	 read choix
+      fi
+      Run_gnu $choix $FIC_GNU gnuplot/$NOM.ordre$NUM
+      if [ ${#IHM} != 0 ] && [ $IHM = 1 ]
+      then
+         kill -9 $pcs_sup 1>/dev/null 2>&1
+      fi
+      
+####################
+# Cas ou $choix>"1":
+####################
+   elif [ $choix -gt 1 ] && [ -f gnuplot/$NOM.courbe"$choix".gnu ] && [ $sous_menu = 0 ]
+   then  
+      if [ $multi = 0 ] && [ ${#liste} != 0 ]
+      then
+         echo $ECHO_OPTS "\nMulti-windowing unable."
+	 sleep 1
+      else
+      num=$choix
+# Au cas ou tourne deja on affiche a nouveau :
+      new=1
+      for i in $liste
+      do
+         if [ $i = $num ]
+         then
+           echo $ECHO_OPTS "quit" > gnuplot/$NOM.ordre$num
+	   sleep 1
+           new=0
+         fi
+      done
+      if [ $new = 1 ]
+      then
+         liste=$liste" "$num
+      fi
+
+# On prepare le plot en lisant un fichier gnuplot/$NOM.courbe?.gnu :
+      courbe="gnuplot/$NOM.courbe"$choix".gnu"
+      plot="set grid\n"
+# Le plot est a la derniere ligne :
+      plot=$plot`tail -1 $courbe`
+# nl : nombre de lignes du fichier.son a copier dans le fichier.coupe :
+      nl=`$TRUST_Awk '(NR==2) {if ($1=="sonde") nl=0;
+                         if ($1=="segment") nl=1;
+			 if ($1=="plan") nl=$4} END {print nl}' $courbe`
+
+# Extraction du nom du fichier des valeurs a lire:
+      fic=`echo $ECHO_OPTS $plot | $TRUST_Awk -F"'" '/plot / {print $2}'`
+
+# Cas d'une coupe (on refait le .coupe a partir de la derniere ligne du .son) :
+      if [ $nl != 0 ]
+      then
+# On recupere le nombre de points dans le cas d'un plan (segment alors nl=1):
+         if [ $nl = 1 ]
+	 then
+            fic_son=${fic%.coupe}.son
+	 else
+	    fic_son=${fic%.coupe}.plan
+	 fi
+         # Nouveau on ne peut depasser 256Ko avec tail !
+         if [ "`tail -$nl $fic_son | wc -l | $TRUST_Awk '{print $1}'`" != $nl ]
+         then
+            Erreur.ihm "Too much points for your probe $fic_son. Try to reduce the number of points."
+         else
+	    ((film==0)) && tail -$nl $fic_son | $TRUST_Awk -v num=$num -v fic_coupe=$fic -v NOM=$NOM -f $TRUST_AWK/Run_coupe_awk
+# Debut integration pour jouer l'animation
+	    if ((film==1))
+	    then
+	    echo "Wait..."
+	    plotting=`echo $plot | $TRUST_Awk -F'\\\\\\\n' '{print $(NF-1)}' | sed "s?.coupe?.coupe_anime?g"`
+	    plott=`echo $plot | $TRUST_Awk -F'\\\\\\\n' '{print $(NF-1)}'`
+	    nb_ligne=`wc -l $fic_son | $TRUST_Awk '{print $1}'`
+	    if (( nb_ligne > 2 ))
+	    then
+	       if (( nb_ligne <= 12 ))
+	       then
+	    	  coef=1
+	       else
+	    	  if (( nb_ligne <= 102 ))
+	    	  then
+	    	     coef=1
+	    	  else
+	    	     if (( nb_ligne <= 1002 ))
+	    	     then
+	    		coef=5
+	    	     else
+	    		coef=10
+	    	     fi
+	    	  fi
+	       fi
+	       ligne=5
+	       t=1
+	       maj=0 && [ $fic_son -nt ${fic%.coupe}.coupe_anime ] && maj=1
+	       while (( ligne <= nb_ligne ))
+	       do
+		  temps=`head -$ligne $fic_son | tail -1 | $TRUST_Awk '{printf ("%.4f",$1)}'`
+		  if ((maj==1))
+		  then
+		     head -$ligne $fic_son | tail -1 | $TRUST_Awk -v NOM=$NOM -v num=$num -v fic_coupe="$fic.t$t" -f $TRUST_AWK/Run_coupe_awk
+		     [ -f ${fic%.coupe}.coupe_anime ] && echo "" >> ${fic%.coupe}.coupe_anime && echo "" >> ${fic%.coupe}.coupe_anime && echo "# temps $temps" >> ${fic%.coupe}.coupe_anime
+		     ((t==1)) && echo "# temps $temps" > ${fic%.coupe}.coupe_anime
+		     cat $fic.t$t >> ${fic%.coupe}.coupe_anime
+		     rm -f $fic.t$t
+		  fi
+		  titre="set title'"`head -3 $courbe | tail -1`" Temps:$temps s'"
+		  ((index=t-1))
+		  ((index==0)) && plot=$titre"\n"`echo $plot | sed -e "s?.coupe?.coupe_anime?g" -e "s?t'Case?index $index t'Case?g"`"#set\npause 0.1\n"
+		  ((index!=0)) && plot=$plot$titre"\n"`echo $plotting | sed "s?t'Case?index $index t'Case?g"`"\npause 0.1\n"
+		  ligne=`$TRUST_Awk "BEGIN {print $ligne+1*$coef}"`
+		  (( nb_ligne <= ligne )) && tail -$nl $fic_son | $TRUST_Awk -v NOM=$NOM -v num=$num -v fic_coupe=$fic -f $TRUST_AWK/Run_coupe_awk && plot=$plot$titre"\n"`echo $plott`"\npause 0.1\n"
+	    	  ((t=t+1))
+	       done
+	       if [ "$set" != "" ]
+	       then
+	          plot=`echo $plot | sed "s?#set?$set?g"`
+	       else
+	          plot=`echo $plot | sed "s?#set??g"`
+	       fi
+	    fi
+	    fi
+# Fin integration pour jouer l'animation
+            [ $? != 0 ] && Erreur.ihm "Too much points for your probe $fic_son."
+	 fi
+      else
+         fic_son=$fic
+      fi
+      [ ! -f $fic_son ] && Erreur.ihm "In `pwd`, can't find the file $fic_son !"
+# Preparation de la sequence dans le fichier gnuplot/$NOM.gnu :
+      gnu="rep\n"
+      gnu=$gnu"!Run_att $fic_son gnuplot/$NOM.ordre$num\n"
+      if [ $nl != 0 ]
+      then
+         gnu=$gnu"!tail -$nl $fic_son | $TRUST_Awk -v NOM=$NOM -v num=$num -v fic_coupe=$fic -f $TRUST_AWK/Run_coupe_awk\n"
+      fi
+      gnu=$gnu"!cat gnuplot/$NOM.ordre$num >> gnuplot/$NOM.gnuplot$num\n"
+      gnu=$gnu"!echo '' > gnuplot/$NOM.ordre$num\n"
+      gnu=$gnu"!cat gnuplot/$NOM.gnu$num >> gnuplot/$NOM.gnuplot$num"
+      echo $ECHO_OPTS $gnu > gnuplot/$NOM.gnu$num
+
+# Prepare le fichier gnuplot/$NOM.gnuplot :
+# Necessaire pour le title ou quoi ???
+      if [ -f gnuplot/$NOM.ordre$num ]
+      then
+        ((film==0)) && plot=`cat gnuplot/$NOM.ordre$num | grep -v quit`"\n"$plot
+      fi
+      # essai
+      #plot=$plot"!Run_att $fic_son gnuplot/$NOM.ordre$num\n"
+      #plot=$plot"!cat gnuplot/$NOM.gnu$num >> gnuplot/$NOM.gnuplot$num"
+      echo $ECHO_OPTS "$plot" > gnuplot/$NOM.gnuplot$num
+      # essai
+      cat gnuplot/$NOM.gnu$num >> gnuplot/$NOM.gnuplot$num
+
+# Prepare le fichier gnuplot/$NOM.ordre :
+      echo $ECHO_OPTS "" > gnuplot/$NOM.ordre$num
+
+# Lance gnuplot en arriere plan :
+      gnuplot gnuplot/$NOM.gnuplot$num 2>>/dev/null &
+      [ $? != 0 ] && echo "Problem with gnuplot..." && sleep 3
+      fi
+   fi
+#   j'enleve le "sleep 1" pour permettre d'aller plus vite dans l'IHM sans avoir de probleme d'ordre qui se perde... 
+   clear
+done
+
+# On efface les fichiers :
+rm -f gnuplot/$NOM.ordre*
+rm -f gnuplot/$NOM.menu gnuplot/$NOM.sous_menu1 gnuplot/$NOM.sous_menu2 gnuplot/$NOM.sous_menu3
+rm -f gnuplot/$NOM.gnu*
+rm -f $tmp gnuplot/$NOM.compU gnuplot/$NOM.convU
+rm -f .*.coupe
+rm -f gnuplot/Run_sonde.pcs
+# Probleme si on efface les lignes suivantes pour le prochain calcul !! 
+rm -f gnuplot/$NOM.courbe*.gnu*
+((OK_trad==1)) && rm -f .*.err.french .*.err.english
+[ -f core ] && rm -f core

@@ -1,0 +1,6 @@
+Type : menu
+Acces : Fichiers/Quitter
+
+Description :
+	Cette commande permet de sortir de l'interface, apres une demande de confirmation de la part de l'utilisateur.
+	Si une modification de la matrice des facteurs de forme, ou des surfaces, a ete faite, l'utilisateur aura aussi la possibilite de sauvegarder le cas en cours.

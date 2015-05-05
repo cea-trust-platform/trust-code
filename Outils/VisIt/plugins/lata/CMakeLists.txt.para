@@ -1,0 +1,56 @@
+PROJECT(VisItReaderlata)
+
+
+cmake_minimum_required(VERSION 2.8)
+IF( COMMAND CMAKE_POLICY )
+  CMAKE_POLICY( SET CMP0003 NEW )
+ENDIF( COMMAND CMAKE_POLICY )
+
+FIND_PACKAGE(ParaView REQUIRED)
+message("${PARAVIEW_USE_FILE}")
+INCLUDE(${PARAVIEW_USE_FILE})
+
+
+set(VisItBridgePlugin_SOURCE_DIR /export/home/fauchet/OpenFoam/ThirdParty-2.3.0/ParaView-4.1.0/Utilities/VisItBridge/Library/VisItLib)
+set(AVT_DATABASE_SOURCE_DIR ${VisItBridgePlugin_SOURCE_DIR}/avt/Database)
+include(${ParaView_CMAKE_DIR}/VisItLib/VisItCommon.cmake)
+include_directories(${AVT_DATABASE_SOURCE_DIR}/Formats ${AVT_DATABASE_SOURCE_DIR}/Database ${AVT_DATABASE_SOURCE_DIR}/../Pipeline/Data/ ${AVT_DATABASE_SOURCE_DIR}/../DBAtts/MetaData/ ${VisItBridgePlugin_SOURCE_DIR}/common/Exceptions/Database/)
+
+
+SET(SOURCES
+avtlataFileFormat.C
+LataDB.C
+LataFilter.C
+LataStructures.C
+Lata_tools.C
+LataV1_field_definitions.C
+LataWriter.C
+LmlReader.C
+OpenDXWriter.C
+OperatorBoundary.C
+OperatorDualMesh.C
+OperatorFacesMesh.C
+OperatorReconnect.C
+OperatorRegularize.C
+Rebuild_virtual_layer.C
+UserFields.C
+ArrOfBit.C
+ArrOfDouble.C
+ArrOfFloat.C
+ArrOfInt.C
+Connectivite_som_elem.C
+Motcle.C
+Octree_Double.C
+Octree_Int.C
+Static_Int_Lists.C
+
+)
+
+ADD_VISIT_PLUGIN_READER(VisItReaderlata "1.0"
+  VISIT_READER_NAME "avtlataFileFormat"
+  VISIT_READER_TYPE "MTMD"
+  VISIT_READER_FILE_PATTERN "lata"
+  SERVER_SOURCES ${SOURCES}
+  )
+
+TARGET_LINK_LIBRARIES(VisItReaderlata) #  vtkVisItAVTAlgorithms)

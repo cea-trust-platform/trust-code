@@ -1,0 +1,11 @@
+#!/bin/bash
+#echo on compare $1 $2
+res=`diff -B $1 $2 2>/dev/null`
+if [ "$res" != "" ]
+then
+echo ATTENTION les fichiers $1 $2 different 
+echo $res
+else
+rm $1
+echo 
+fi

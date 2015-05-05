@@ -1,0 +1,4 @@
+Compilation des librairies de ce repertoire:
+--------------------------------------------
+Avant de compiler verifier si la variable TRUST_ROOT
+est correctement fixee ainsi que la variable ARCH.

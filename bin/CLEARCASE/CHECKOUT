@@ -1,0 +1,11 @@
+#!/bin/bash
+# Deverouillage d'un fichier
+liste=$*
+option="-nc" && [ "$1" = "-c" ] && shift && option="-c $2" && shift
+for element in $liste
+do
+   if [ -f $element ] || [ -d $element ]
+   then
+      chmod u+w $element
+   fi
+done  

@@ -1,0 +1,12 @@
+#!/bin/bash
+# On se base sur le fichier passe en parametre
+# Afin de pouvoir comparer differents solveurs
+clear
+echo "    ***************************"
+echo "    * ANALYSE DE PERFORMANCES *"
+echo "    ***************************"
+awk '/Iterations \/ solveur/ {it=$NF} /Secondes \/ solveur/ {s=$NF} /Secondes \/ pas de temps/ {dt=$NF} END { \
+print "Nombre moyen iterations GCP: "it; \
+print "Temps moyen d un pas de temps : "dt; \
+print "Temps moyen iteration GCP: "s/it}' $1
+../StatComm

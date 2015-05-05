@@ -1,0 +1,8 @@
+sed "s/Boundary_field_inward { normal_value 0.45 }/Champ_Front_Normal_VEF valeur_normale 0.45/" Champ_Front_Normal.data > old_syntax.data 
+sed "s/valeur_normale/toto/" old_syntax.data > erreur.data
+# on verifie que l'ancienne syntaxe fonctionne et que la substitution marche
+
+triou erreur 2>err 1>out
+[ $? -eq 0 ] && echo substitution dans jdd ne marche pas && exit -1
+triou old_syntax 2>err 1>out
+

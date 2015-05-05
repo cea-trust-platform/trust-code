@@ -1,0 +1,40 @@
+# PARALLEL NOT #
+
+dimension 2
+
+Domaine domain
+
+Mailler domain 
+{
+   Pave Cavite1
+   {
+      Origine           0. 0.
+      Nombre_de_Noeuds   5 6
+      Longueurs         1. 1.
+   }
+   {
+      Bord Gauche  X = 0.0   0.0  <= Y <= 1.0 
+      Bord Bas     Y = 0.0   0.0  <= X <= 1.0 
+      Bord Droit   X = 1.0   0.0  <= Y <= 1.0 
+      Raccord local homogene  Haut    Y = 1.0   0.0  <= X <= 1.0 
+   } 
+}
+
+trianguler_h domain
+ecrire_fichier domain domain_0.geom
+
+Raffiner_Simplexes domain
+ecrire_fichier_formatte domain domain_1.geom
+
+Domaine initial_domain
+Domaine final_domain
+
+Read_file initial_domain domain_0.geom
+Read_file final_domain   domain_1.geom
+postraiter_domaine {
+     domaines { initial_domain final_domain }
+     format lml
+}
+discretiser_domaine final_domain
+
+End

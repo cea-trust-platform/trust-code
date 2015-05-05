@@ -1,0 +1,27 @@
+TAILLES 3 100 100 100 
+RIEN 0 maillage
+MAIL_X_REG 4 xomin xomax nx-2 2 dx
+MAIL_Y_REG 4 yomin yomax ny-2 2 dy
+MAIL_Z_REG 4 zomin zomax nz-2 2 dz
+PARALAX 7 xomin-eps xomax+eps yomin-eps yomax+eps zomin-eps zomax+eps -1000 vide
+TUBE 10 0.2 -0.4 0.4 0.2 0. 0.5 0.5 0.5 1000 0.1 Tube
+TUBE 10 0.2 -0.8 -0.4 0.2 0. 0.5 0.5 0.5 -2000 0.1 Entree
+TUBE 10 0.2 0.4 0.8 0.2 0. 0.5 0.5 0.5 -3000 0.1 Sortie
+file maillage
+        real xomin,xomax,yomin,yomax,zomin,zomax,eps
+        xomin=0.
+        xomax=1.
+        yomin=0.
+        yomax=1.
+        zomin=0.
+        zomax=1.
+        eps=0.001
+
+        XM(1)=xomin-eps
+        XM(nx)=xomax+eps
+        YM(1)=yomin-eps
+        YM(ny)=yomax+eps
+        ZM(1)=zomin-eps
+        ZM(nz)=zomax+eps
+
+

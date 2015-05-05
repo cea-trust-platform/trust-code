@@ -1,0 +1,35 @@
+#!/bin/bash
+# Installation de ccache
+OK()
+{
+   if [ $1 = 0 ]
+   then
+      echo $ECHO_OPTS "OK!"
+   else
+      echo $ECHO_OPTS "Error !"
+   fi
+}
+version=$1
+[ ${#MAKE} = 0 ] && MAKE=make
+[ $TRUST_ARCH != linux ] && echo "ccache installed on Linux only." && exit
+ccache=`ls -rt $TRUST_ROOT/externalpackages/ccache-*.tar.gz | tail -1 2>/dev/null`
+[ ! -f $ccache ] && exit
+gunzip -c $ccache > tmp.tar
+tar xf tmp.tar
+rep=`ls | grep ccache- | grep -v tar`
+cd $rep
+# Seen on callisto, if icc and gcc available, ccache
+# takes gcc but fault beacause of math.h only useable by Intel...
+# So we select icc if found
+if [ "`type icc 1>/dev/null 2>&1;echo $?`" = 0 ]
+then
+   export CC=icc
+fi
+./configure --prefix=$TRUST_ROOT/exec/ccache || exit -1
+$MAKE || exit -1
+$MAKE install || exit -1
+$MAKE clean
+cd ..
+# On nettoie
+rm -f tmp.tar
+rm -r -f $rep

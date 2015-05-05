@@ -1,0 +1,66 @@
+# Cas test simple pour tester le Kernel et les commentaires #
+# PARALLEL OK #
+dimension 3
+/* ne fait rien du tout
+   /* suite
+*/
+*/
+
+/* commentaire au milieu de la lecture */
+nom toto
+lire toto  # pourquoi pas # mais_si 
+ecrire toto
+Nom toto2
+lire toto2 /* mais si */ mais_non 
+ecrire toto2
+
+Domaine dom
+# BEGIN MESH #
+Mailler dom {
+  Pave Entree
+  {
+    Origine -1.5 -1.5 -1.5
+      Nombre_de_Noeuds 11 11 11
+      Longueurs 3. 3. 3.
+      symx symy symz
+      }
+  {
+    bord CERCLE X = -1.5 -1.5 <= Y <= 1.5 -1.5 <= Z <= 1.5
+      bord CERCLE Y =  1.5 -1.5 <= X <= 1.5 -1.5 <= Z <= 1.5
+      bord CERCLE Y = -1.5 -1.5 <= X <= 1.5 -1.5 <= Z <= 1.5
+      bord CERCLE X =  1.5 -1.5 <= Y <= 1.5 -1.5 <= Z <= 1.5
+      bord CERCLE Z = -1.5 -1.5 <= X <= 1.5 -1.5 <= Y <= 1.5
+      bord CERCLE Z =  1.5 -1.5 <= X <= 1.5 -1.5 <= Y <= 1.5
+      }
+}
+Sous_Zone zone1
+Associate zone1 dom
+Lire zone1
+{
+  Boite
+    Origine -1. -0.1 -0.1
+    Cotes 0.2 0.2 0.2
+    }
+ecrire_fichier dom dom.geom
+Postraiter_domaine { domaine dom format lata fichier dom }
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+  Partitionneur metis { Nb_parts 2 }
+  Larg_joint 1
+    Nom_Zones DOM
+    }
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+Sous_Zone zone1
+Associate zone1 dom
+Lire zone1 { Fichier zone1.ssz }
+Postraiter_domaine { fichier PAR_Kernel.lata format lata domaine dom } 
+END SCATTER #
+
+fin

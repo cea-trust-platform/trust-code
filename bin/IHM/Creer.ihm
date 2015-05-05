@@ -1,0 +1,46 @@
+#!/bin/bash
+# Creation d'une etude ($1=0) ou d'un cas test ($1=1) :
+creer=0
+if [ ${#1} != 0 ]
+then
+   creer=$1
+fi
+cd $HOME
+echo $ECHO_OPTS "Please enter the directory name for the new study:"
+echo $ECHO_OPTS $HOME"/\c"
+read ETUDE
+LISTEREP=`echo $ECHO_OPTS $ETUDE | $TRUST_Awk '{n=split($0,a,"/");for (i=1;i<n+1;i++) print a[i]" "}'`
+ETUDE=$HOME/$ETUDE
+#echo $ECHO_OPTS $ETUDE
+if [ -d $ETUDE ]
+then
+   echo $ECHO_OPTS "This directory $ETUDE already exists !"
+   eval $FIN
+else
+   for REP in $LISTEREP
+   do
+      if [ ! -d $REP ]
+      then
+         mkdir $REP
+      fi
+      cd $REP
+   done
+   echo $ECHO_OPTS "The directory $ETUDE is created."
+   echo $ECHO_OPTS $ETUDE > $HOME/.ETUDE_TRUST
+   cd $ETUDE
+   NOMETUDE=`echo $ECHO_OPTS $ETUDE | $TRUST_Awk '{n=split($0,a,"/");print a[n]}'`
+   # 28/02/07: A la creation d'une etude, on ne cree plus le fichier $NOMETUDE.data
+   #touch $NOMETUDE.data
+   touch .LISTE.geom.html
+   cree_Etude.html $creer
+   ETUDE_HTML=.Etude.html
+   if [ `QUEL_BROWSER.ihm` = "netscape" ]
+   then
+      echo $ECHO_OPTS "\nThe study is created.\nIf necessary click on link MyStudy (left frame)."
+      $WEBBROWSER -remote 'openFile('$HOME/HTML/Etude.html')'
+   else
+      nohup $WEBBROWSER $HOME/$ETUDE_HTML 1>/dev/null &
+# Attente necessaire car sinon $WEBBROWSER n'a pas le temps d'etre lance.
+   fi
+   sleep 3
+fi

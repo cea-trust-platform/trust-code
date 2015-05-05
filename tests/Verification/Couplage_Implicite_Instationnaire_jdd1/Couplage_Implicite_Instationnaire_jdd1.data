@@ -1,0 +1,272 @@
+# Non stationnary coupled calculation with implicit scheme #
+# PARALLEL RUNS #
+Dimension 3
+
+Pb_thermohydraulique_turbulent pb_fluide
+Pb_conduction pb_solide
+
+Domaine dom_fluide
+Domaine dom_solide
+
+# BEGIN MESH #
+Mailler dom_solide
+{
+        Pave solide
+                {
+                Origine -1.0 0.0 0.0
+                Nombre_de_Noeuds 2 2 2
+                Longueurs 0.2 0.2 0.2
+                }
+                {
+                Bord exterieur_solid                    X = -1.0   	0. <= Y <= 0.2 		0. <= Z <= 0.2 
+                Bord perio_solid			Z =  0.0  	-1.0 <= X <= -0.8	0. <= Y <= 0.2
+		Bord perio_solid			Z =  0.2  	-1.0 <= X <= -0.8	0. <= Y <= 0.2
+		Raccord local homogene paroi_contact    	X = -0.8  	0. <= Y <= 0.2 		0. <= Z <= 0.2 
+                Bord symmetry_solid                     Y =  0.   	-1.0 <= X <= -0.8	0. <= Z <= 0.2 
+		Bord symmetry_solid                     Y =  0.2   	-1.0 <= X <= -0.8	0. <= Z <= 0.2 
+                }
+}
+
+Mailler dom_fluide
+{
+        Pave fluide
+                {
+                Origine -0.8 0. 0.
+                Nombre_de_Noeuds 5 2 2
+                Longueurs 0.8 0.2 0.2
+                }
+                {
+                Bord perio_fluid                        Z =  0.0  	-0.8 <= X <= 0.		0. <= Y <= 0.2
+		Bord perio_fluid                        Z =  0.2  	-0.8 <= X <= 0.		0. <= Y <= 0.2
+		Raccord local homogene paroi_contact   	X = -0.8  	0. <= Y <= 0.2 		0. <= Z <= 0.2 
+                Bord symmetry_fluid                     X =  0.0  	0. <= Y <= 0.2 		0. <= Z <= 0.2 
+		Bord symmetry_fluid                     Y =  0.0  	-0.8 <= X <= 0.		0. <= Z <= 0.2 
+		Bord symmetry_fluid                     Y =  0.2  	-0.8 <= X <= 0.		0. <= Z <= 0.2 
+                }
+}
+
+Tetraedriser_homogene dom_solide
+Tetraedriser_homogene dom_fluide
+
+Corriger_frontiere_periodique { Domaine dom_fluide Bord perio_fluid }
+Corriger_frontiere_periodique { Domaine dom_solide Bord perio_solid }
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom_solide
+{
+        Partitionneur metis { Nb_parts 2 }
+        Larg_joint 2
+        Nom_Zones DOM_SOLIDE
+	periodique 1 perio_solid
+}
+Partition dom_fluide
+{
+        Partitionneur metis { Nb_parts 2 }
+        Larg_joint 2
+        Nom_Zones DOM_FLUIDE
+	periodique 1 perio_fluid
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM_SOLIDE.Zones dom_solide
+Scatter DOM_FLUIDE.Zones dom_fluide
+END SCATTER #
+
+VEFPREP1B dis
+
+Schema_Euler_Implicite sch
+Read sch 
+{
+	tinit   0.
+	nb_pas_dt_max 3
+        tmax    100000
+	dt_impr 0.1
+	seuil_statio 1e-8	
+	facsec 		2000.
+	facsec_max 	2000.
+	solveur implicite
+	{
+		seuil_convergence_implicite 0.0001 
+		solveur petsc gmres { precond diag { } seuil 1e-14 impr } 
+	}
+	max_iter_implicite 10000
+}
+#
+Schema_Euler_Explicite sch
+Read sch 
+{
+	tinit   0.
+	nb_pas_dt_max 3
+	tmax    2e5
+	dt_impr 0.1
+	seuil_statio 1e-8	
+	diffusion_implicite 1
+}
+#
+
+Fluide_Incompressible fluide
+Read fluide {
+        rho     champ_uniforme 1 900.
+        cp      champ_uniforme 1 1370.
+        beta_th champ_uniforme 1 2.74e-4
+        lambda  champ_uniforme 1 80.
+        mu      champ_uniforme 1 2.484e-4
+}
+
+Solide solide
+Read solide
+{
+        rho     champ_uniforme 1 7800.
+        cp      champ_uniforme 1 530.
+        lambda  champ_uniforme 1 18.   
+}
+
+
+Champ_Uniforme gravite
+Read gravite 3   0.  0. -9.81 
+Associate fluide gravite
+Associate solide gravite
+
+
+Associate pb_fluide dom_fluide
+Associate pb_fluide fluide
+
+Associate pb_solide dom_solide
+Associate pb_solide solide
+
+Probleme_Couple pbc
+Associate pbc pb_fluide
+Associate pbc pb_solide
+Associate pbc sch
+Discretize pbc dis
+
+Read pb_fluide
+{ 
+ 	Navier_Stokes_turbulent
+ 	{ 
+       		solveur_pression petsc cholesky { } 
+       		convection { muscl }
+       		diffusion  { }
+       
+       		conditions_initiales { vitesse champ_uniforme 3 0. 0. 0.008625 }
+       
+		boundary_conditions 
+		{  
+			perio_fluid 	periodique
+			paroi_contact 	paroi_fixe	
+			symmetry_fluid 	symetrie	
+                } 			  
+		sources { canal_perio { bord perio_fluid } }
+		
+		# pour obtenir la temperature de melange #	
+		Traitement_particulier { Temperature { Bord perio_fluid Direction 2 } } 
+		
+		Modele_turbulence K_epsilon
+		{
+			transport_k_epsilon
+			{
+				diffusion { }
+				convection { amont }		
+				conditions_initiales { k_eps champ_uniforme 2 2.78965e-07 1.84177e-10 }
+				
+				boundary_conditions { 
+					perio_fluid 	periodique
+					paroi_contact 	paroi	
+					symmetry_fluid 	symetrie	
+				}
+			}
+			turbulence_paroi loi_standard_hydr 
+				dt_impr_ustar 1e5 # To print u* and y+ at the wall #
+        	}
+			                    
+  	}
+	Convection_Diffusion_Temperature_turbulent
+	{
+		# Important de bien Solve dT/dt car temperature fluide instationnaire donc seuil bas #
+		parametre_equation parametre_implicite
+                {
+			seuil_convergence_implicite 0.00001 # 0.001 is TOO high to insure proper balances! # 
+			solveur petsc bicgstab { precond ilu { level 1 } seuil 1e-16 impr }
+	        }
+		diffusion { }
+		convection { muscl }
+		conditions_initiales { Temperature Champ_uniforme 1 0. }
+		boundary_conditions 
+		{
+			perio_fluid 	periodique
+			paroi_contact 	paroi_contact pb_solide paroi_contact	
+			symmetry_fluid 	symetrie	
+		}
+               	Modele_Turbulence Prandtl 
+                {
+                        Turbulence_Paroi loi_standard_hydr_scalaire dt_impr_nusselt 1e5
+			Prandt_turbulent_fonction_nu_t_alpha nu_t*nu_t/(0.7*alpha+0.85*nu_t)
+                }
+	}
+        
+	Postraitement {
+		Sondes
+		{
+			temperature			temperature	periode	10.	point 	1	-0.4 0.1 0.0
+			k 				k		periode	10.	point 	1	-0.4 0.1 0.0
+			eps 				eps		periode	10.	point 	1	-0.4 0.1 0.0
+			vitesse 			vitesse		periode	10.	point 	1	-0.4 0.1 0.0
+			temperature_contact_fluide nodes  temperature 	periode 10. 	point 	1 	-0.687 0.107 0.1
+			# Profil at the top of the domain #
+			vitesse_profil	nodes		vitesse		periode 10.	segment 20	-0.8 0.0 0.0 0.0 0.0 0.0
+		}
+		format lml
+		Champs dt_post 1e6
+		{
+			vitesse			elem
+			temperature 		elem
+			viscosite_turbulente	elem
+		}
+	}	 
+}
+
+Read pb_solide
+{
+	Conduction
+	{
+		# Important de bien Solve dT/dt car temperature solide instationnaire donc seuil bas #
+		parametre_equation parametre_implicite
+                {
+			seuil_convergence_implicite 0.001
+			solveur  gmres { diag seuil 1e-15 nb_it_max 100 impr controle_residu 1 }
+                }
+		
+		diffusion { }
+                conditions_initiales { temperature Champ_Uniforme 1 0. }
+			
+		sources { puissance_thermique champ_uniforme 1 4.444 } 
+                boundary_conditions 
+		{
+			exterieur_solid	paroi_adiabatique
+			perio_solid 	periodique
+			symmetry_solid 	symetrie
+			paroi_contact paroi_contact pb_fluide paroi_contact
+		}
+	}
+	Postraitement
+	{
+		Sondes
+		{	
+			temperature_contact 	nodes 	temperature 	periode 10. 	point 1 	-0.8 0.109 0.1
+			temperature_externe	nodes 	temperature 	periode 10. 	point 1 	-1.0 0.198 0.1			
+			temperature_profil 	nodes 	temperature 	periode 10. 	segment 11 	-0.8 0.109 0.1 -1 0.198 0.1
+		}
+               	format lml
+		Champs dt_post 1e6
+		{
+			temperature elem
+		}
+	}
+}
+Solve pbc
+End
+
+

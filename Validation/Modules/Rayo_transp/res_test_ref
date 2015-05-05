@@ -1,0 +1,1012 @@
+Mon Oct  8 21:48:56 CEST 2012 : Test results with the version dated Oct 8 21:48
+/work/triou/Version_test_brevent/TRUST/exec/TRUST_mpi_semi_opt
+ ------------------------------------------------------------------------------------------
+| START  | END    | CPU | NP | SPU | NDT |  GCP | ELEM | MEM  | PLOTS | STATE | NAME       
+ ------------------------------------------------------------------------------------------
+|21:48:58|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Nagano_WBasRe
+|21:48:58|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |PAR_Nagano_WBasRe
+|21:49:01|21:49:02|...1s|..1.|.....|....2|...456|..2214|.168Mo|.......| OK    |OpDiftP1NCP1B 
+|21:49:03|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Quasi_Comp_Cond_GR_VDF
+|21:49:04|21:49:09|...5s|..1.|.....|..100|..9526|..4525|.144Mo|.......| 1 ecarts |Quasi_Comp_Obst_GP_VDF_BasReyn ATTENTION 1 ecarts possible sur ce cas...
+|21:49:10|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Quasi_Comp_Obst_GP_VDF_BasReyn_P1
+|21:49:11|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Quasi_Comp_Obst_GR_VDF
+|21:49:12|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Quasi_Comp_Obst_GR_VDF_BasReyn
+|21:49:14|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Quasi_Comp_Obst_GR_VDF_Turb ATTENTION 1 ecarts possibles sur ce cas possible sur ce cas...
+|21:49:15|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Quasi_Comp_VD_GR_VDF
+|21:49:16|21:49:18|...2s|..1.|.....|..100|.23864|...800|.159Mo|.......| OK    |ThHyd_Coupl_launder_sharma 
+|21:49:18|21:49:22|...4s|..2.|0.699|..100|.44202|...800|.333Mo|..19/19| OK    |PAR_ThHyd_Coupl_launder_sharma 
+|21:49:23|21:49:25|...2s|..1.|.....|...13|...319|...400|.164Mo|.......| OK    |Vahl_Davis_hexa 
+|21:49:25|21:49:28|...3s|..2.|1.632|...13|...434|...400|.291Mo|..12/12| OK    |PAR_Vahl_Davis_hexa 
+|21:49:29|21:49:31|...2s|..1.|.....|..200|..5791|...400|.163Mo|.......| OK    |Vahl_Davis_quadra 
+|21:49:32|21:49:34|...2s|..2.|1.454|..200|..7192|...400|.323Mo|..14/14| OK    |PAR_Vahl_Davis_quadra 
+|21:49:36|21:49:36|...0s|..1.|.....|...10|...205|....49|.165Mo|.......| OK    |docond_BasRe 
+|21:49:36|21:49:38|...2s|..2.|0.777|...10|...247|....49|.328Mo|..14/14| OK    |PAR_docond_BasRe 
+|21:49:39|21:49:40|...1s|..1.|.....|...20|.....0|..1060|.145Mo|.......| OK    |loi_standard_hydr_old 
+|21:49:40|21:49:43|...3s|..2.|0.395|...20|..9051|..1060|.337Mo|..12/12| OK    |PAR_loi_standard_hydr_old 
+|21:49:44|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |muscl_old
+Data file of the previous test must be prepared for parallelism.
+|21:49:45|21:49:50|...5s|..1.|.....|.6719|.....0|....16|.141Mo|.......| OK    |Bilans_VEF 
+|21:49:51|21:50:00|...9s|..2.|0.602|.6719|.91751|....16|.290Mo|..13/13| OK    |PAR_Bilans_VEF 
+|21:50:02|21:50:28|..26s|..1.|.....|20808|.....0|....16|.166Mo|.......| OK    |Bilans_VEF_QC 
+|21:50:28|21:51:08|..40s|..2.|0.685|20808|269268|....16|.291Mo|..14/14| OK    |PAR_Bilans_VEF_QC 
+|21:51:09|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Boussinesq
+Data file of the previous test must be prepared for parallelism.
+|21:51:11|21:51:11|...0s|..1.|.....|....4|...302|...300|.155Mo|.......| OK    |Build_1_domains_from_3 
+|21:51:11|21:51:13|...2s|..2.|0.915|....4|...302|...300|.307Mo|..11/12| OK    |PAR_Build_1_domains_from_3 
+|21:51:15|21:51:16|...1s|..1.|.....|....3|..1656|..8400|.173Mo|.......| OK    |CANAL_QC_Timposees_dt20K 
+|21:51:17|21:51:20|...3s|..4.|1.540|....3|..2321|..8400|.638Mo|..13/13| OK    |PAR_CANAL_QC_Timposees_dt20K 
+|21:51:22|21:51:22|...0s|..1.|.....|....2|....94|..3375|.148Mo|.......| 1 ecarts |CANAL_QC_Timposees_dt293K_VDF_impl
+|21:51:23|21:51:25|...2s|..4.|1.751|....2|...167|..3375|.633Mo|..10/10| OK    |PAR_CANAL_QC_Timposees_dt293K_VDF_impl 
+|21:51:27|21:51:28|...1s|..1.|.....|....5|....51|..3375|.169Mo|.......| 1 ecarts |CANAL_QC_Timposees_dt293K_VDF_segsol
+|21:51:28|21:51:31|...3s|..4.|.....|....5|....57|..3375|.642Mo|...9/10| 1 ecarts |PAR_CANAL_QC_Timposees_dt293K_VDF_segsol
+|21:51:33|21:51:37|...4s|..1.|.....|....2|....44|..5120|.217Mo|.......| 1 ecarts |CANAL_QC_Timposees_dt293K_VEF_impl
+|21:51:37|21:51:42|...5s|..4.|1.782|....2|....44|..5120|.747Mo|..10/10| OK    |PAR_CANAL_QC_Timposees_dt293K_VEF_impl 
+|21:51:44|21:51:48|...4s|..1.|.....|....2|....44|..5120|.229Mo|.......| 1 ecarts |CANAL_QC_Turb_Timposees_dt293K_VEF_impl
+|21:51:48|21:51:53|...5s|..4.|1.862|....2|....44|..5120|.715Mo|..10/10| OK    |PAR_CANAL_QC_Turb_Timposees_dt293K_VEF_impl 
+|21:51:54|21:51:55|...1s|..1.|.....|...10|..1237|....16|.160Mo|.......| OK    |CN_iteratif_VDF_fluide 
+|21:51:55|21:51:57|...2s|..2.|0.524|...10|..1459|....16|.311Mo|....9/9| OK    |PAR_CN_iteratif_VDF_fluide 
+|21:51:58|21:51:58|...0s|..1.|.....|...10|..2038|....32|.165Mo|.......| OK    |CN_iteratif_VEF_fluide 
+|21:51:59|21:52:00|...1s|..2.|0.540|...10|..2109|....32|.307Mo|....9/9| OK    |PAR_CN_iteratif_VEF_fluide 
+|21:52:01|21:52:18|..17s|..1.|.....|..417|...419|..1000|.153Mo|.......| OK    |CanalPlan_LM_Th_TBLE_VDF ATTENTION plantage possible sur certaines machines possible sur ce cas...
+|21:52:20|21:52:29|...9s|..1.|.....|....5|...635|.10240|.204Mo|.......| OK    |CanalPlan_LM_Th_TBLE_VEF ATTENTION plantage possible sur certaines machines possible sur ce cas...
+|21:52:29|21:52:36|...7s|..2.|1.634|....5|...691|.10240|.367Mo|..10/12| OK    |PAR_CanalPlan_LM_Th_TBLE_VEF ATTENTION plantage possible sur certaines machines possible sur ce cas...
+|21:52:38|21:52:39|...1s|..1.|.....|...10|.....0|...384|.165Mo|.......| OK    |Canal_perio_VDF_3D_Keps 
+|21:52:39|21:52:41|...2s|..5.|1.171|...10|.....0|...384|.821Mo|....9/9| OK    |PAR_Canal_perio_VDF_3D_Keps 
+|21:52:42|21:52:46|...4s|..1.|.....|....5|.....0|.29791|.174Mo|.......| OK    |Canal_plan_Loi_WW_Temp_VDF 
+|21:52:48|21:52:49|...1s|..1.|.....|...10|.....0|..1000|.137Mo|.......| OK    |Canal_tanh_bruit 
+|21:52:50|21:52:52|...2s|..1.|.....|..250|.....0|...625|.161Mo|.......| OK    |Cavite_2couches 
+|21:52:52|21:52:56|...4s|..2.|0.599|..250|.24783|...625|.329Mo|..28/28| OK    |PAR_Cavite_2couches 
+|21:52:58|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |ChDonFoncxyzVDF
+|21:52:58|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |PAR_ChDonFoncxyzVDF
+|21:53:03|21:53:04|...1s|..1.|.....|...50|..7889|...804|.165Mo|.......| OK    |ChDonFoncxyzVEF 
+|21:53:04|21:53:07|...3s|..2.|1.210|...50|..9065|...804|.311Mo|....8/8| OK    |PAR_ChDonFoncxyzVEF 
+|21:53:11|21:53:11|...0s|..1.|.....|...11|.....0|..1600|.165Mo|.......| OK    |ChDonXYZ 
+|21:53:12|21:53:13|...1s|..2.|0.895|...11|...495|..1600|.328Mo|..18/19| OK    |PAR_ChDonXYZ 
+|21:53:15|21:53:15|...0s|..1.|.....|...55|..2102|...100|.148Mo|.......| OK    |ChFrontExtXYZ 
+|21:53:16|21:53:17|...1s|..2.|0.755|...55|..2106|...100|.301Mo|..12/12| OK    |PAR_ChFrontExtXYZ 
+|21:53:20|21:53:31|..11s|..1.|.....|....0|...386|.95976|.379Mo|.......| FALSE |ChFrontLu
+|21:53:32|21:53:33|...1s|..1.|.....|..446|.....0|...400|.164Mo|.......| OK    |ChFrontTXYZ 
+|21:53:33|21:53:35|...2s|..2.|0.765|..446|.16315|...400|.318Mo|....9/9| OK    |PAR_ChFrontTXYZ 
+|21:53:37|21:53:37|...0s|..1.|.....|...11|.....0|...400|.151Mo|.......| OK    |ChFrontXYZ 
+|21:53:37|21:53:39|...2s|..2.|0.802|...11|...409|...400|.299Mo|..12/12| OK    |PAR_ChFrontXYZ 
+|21:53:43|21:53:45|...2s|..1.|.....|....2|...734|..7136|.176Mo|.......| OK    |Champ_Fonc_Reprise_KEps 
+|21:53:45|21:53:48|...3s|..2.|1.553|....2|...836|..7136|.311Mo|..12/12| OK    |PAR_Champ_Fonc_Reprise_KEps 
+|21:53:49|21:53:50|...1s|..1.|.....|...11|...451|..1600|.165Mo|.......| OK    |Champ_Fonc_txyz 
+|21:53:50|21:53:52|...2s|..2.|1.436|...11|...545|..1600|.321Mo|..10/10| OK    |PAR_Champ_Fonc_txyz 
+|21:53:53|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Champ_Post_Reduction_0D
+Data file of the previous test must be prepared for parallelism.
+|21:53:55|21:53:56|...1s|..1.|.....|....1|...273|...804|.140Mo|.......| OK    |Champ_fonc_MED 
+|21:53:56|21:53:58|...2s|..2.|1.231|....1|...314|...804|.291Mo|..10/12| OK    |PAR_Champ_fonc_MED 
+|21:54:02|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Champ_fonc_fonction
+Data file of the previous test must be prepared for parallelism.
+|21:54:03|21:54:04|...1s|..1.|.....|...11|...456|..1600|.165Mo|.......| OK    |Champ_fonc_fonction_txyz_VDF 
+|21:54:04|21:54:06|...2s|..2.|1.592|...11|...565|..1600|.331Mo|..10/10| OK    |PAR_Champ_fonc_fonction_txyz_VDF 
+|21:54:07|21:54:13|...6s|..1.|.....|...29|.10186|..6400|.172Mo|.......| OK    |Champ_fonc_fonction_txyz_VEF 
+|21:54:14|21:54:19|...5s|..2.|1.623|...29|.11137|..6400|.342Mo|..10/10| OK    |PAR_Champ_fonc_fonction_txyz_VEF 
+|21:54:20|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Champs_fonc_QC_rayo_semi_transp
+Data file of the previous test must be prepared for parallelism.
+|21:54:25|21:54:26|...1s|..1.|.....|....6|...316|...320|.140Mo|.......| OK    |Champs_fonc_function 
+|21:54:26|21:54:28|...2s|..2.|1.054|....6|...388|...320|.302Mo|..11/11| OK    |PAR_Champs_fonc_function 
+|21:54:29|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Champs_fonc_rayo_semi_transp
+Data file of the previous test must be prepared for parallelism.
+|21:54:30|21:54:31|...1s|..1.|.....|...10|.....0|...100|.166Mo|.......| OK    |Cholesky 
+|21:54:31|21:54:33|...2s|..2.|0.858|...10|...254|...100|.334Mo|..11/11| OK    |PAR_Cholesky 
+|21:54:34|21:54:35|...1s|..1.|.....|..100|.....0|...400|.156Mo|.......| OK    |Cholesky_VEFPreP1B 
+|21:54:35|21:54:37|...2s|..2.|0.763|..100|..9662|...400|.328Mo|..11/11| OK    |PAR_Cholesky_VEFPreP1B 
+|21:54:38|21:54:40|...2s|..1.|.....|.1201|.10203|...100|.165Mo|.......| OK    |Chp_Morc_2D 
+|21:54:40|21:54:44|...4s|..2.|0.806|.1201|.12959|...100|.336Mo|..11/13| OK    |PAR_Chp_Morc_2D 
+|21:54:45|21:54:46|...1s|..1.|.....|..231|..5380|...100|.165Mo|.......| OK    |Cl_var 
+|21:54:46|21:54:48|...2s|..2.|0.863|..231|..6349|...100|.336Mo|..11/11| OK    |PAR_Cl_var 
+|21:54:50|21:54:52|...2s|..1.|.....|....5|.....0|..4914|.174Mo|.......| OK    |Combinaison_Canal_ThHyd 
+|21:54:52|21:54:55|...3s|..2.|1.531|....5|.....0|..4914|.322Mo|..10/10| OK    |PAR_Combinaison_Canal_ThHyd 
+|21:54:55|21:54:56|...1s|..1.|.....|....3|.....0|...400|.165Mo|.......| OK    |Combinaison_champ 
+|21:54:57|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Compare_Concentration
+|21:55:02|21:55:02|...0s|..1.|.....|....1|....35|...100|.165Mo|.......| OK    |Compare_VDF_Flux_Lam 
+|21:55:02|21:55:04|...2s|..2.|0.784|....1|....44|...100|.320Mo|....9/9| OK    |PAR_Compare_VDF_Flux_Lam 
+|21:55:08|21:55:09|...1s|..1.|.....|....1|....35|...100|.162Mo|.......| OK    |Compare_VDF_Flux_Turb 
+|21:55:09|21:55:11|...2s|..2.|0.837|....1|....44|...100|.325Mo|....9/9| OK    |PAR_Compare_VDF_Flux_Turb 
+|21:55:15|21:55:16|...1s|..1.|.....|....1|....43|...100|.142Mo|.......| OK    |Compare_VDF_Flux_Turb_Nu_Impose 
+|21:55:16|21:55:18|...2s|..2.|0.836|....1|....52|...100|.321Mo|....9/9| OK    |PAR_Compare_VDF_Flux_Turb_Nu_Impose 
+|21:55:22|21:55:22|...0s|..1.|.....|....1|...154|...400|.166Mo|.......| OK    |Compare_VEF_Flux_Lam 
+|21:55:22|21:55:24|...2s|..2.|1.125|....1|...170|...400|.317Mo|..10/10| OK    |PAR_Compare_VEF_Flux_Lam 
+|21:55:28|21:55:29|...1s|..1.|.....|....1|...154|...400|.145Mo|.......| OK    |Compare_VEF_Flux_Turb 
+|21:55:29|21:55:31|...2s|..2.|1.083|....1|...170|...400|.283Mo|..10/10| OK    |PAR_Compare_VEF_Flux_Turb 
+|21:55:35|21:55:36|...1s|..1.|.....|....1|...181|...400|.156Mo|.......| OK    |Compare_VEF_Flux_Turb_Nu_Impose 
+|21:55:36|21:55:38|...2s|..2.|1.221|....1|...202|...400|.337Mo|....9/9| OK    |PAR_Compare_VEF_Flux_Turb_Nu_Impose 
+|21:55:39|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Conduite_lm_prdt_var
+|21:55:41|21:55:43|...2s|..1.|.....|....4|.....6|.13094|.199Mo|.......| OK    |ConicBedErgun_QC 
+|21:55:44|21:55:46|...2s|..2.|1.729|....4|.....6|.13094|.337Mo|....7/7| OK    |PAR_ConicBedErgun_QC 
+|21:55:48|21:55:49|...1s|..1.|.....|...10|....66|.....4|.165Mo|.......| OK    |Conserv_Masse_QC_rho_u 
+|21:55:49|21:55:51|...2s|..2.|0.797|...10|....77|.....4|.333Mo|....8/8| OK    |PAR_Conserv_Masse_QC_rho_u 
+|21:55:52|21:55:52|...0s|..1.|.....|...10|...361|.....4|.137Mo|.......| 49 ecarts |Conserv_Masse_QC_rho_u_Piso
+|21:55:52|21:55:54|...2s|..2.|0.598|...10|...326|.....4|.325Mo|....8/8| OK    |PAR_Conserv_Masse_QC_rho_u_Piso 
+|21:55:55|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Conservation_of_mass_VDF_QC
+|21:55:56|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Conservation_of_mass_VEF_QC
+|21:55:58|21:55:59|...1s|..1.|.....|..601|..8963|...300|.165Mo|.......| OK    |Convection 
+|21:55:59|21:56:02|...3s|..2.|0.843|..601|.11314|...300|.335Mo|...9/11| OK    |PAR_Convection 
+|21:56:04|21:56:05|...1s|..1.|.....|..601|..8963|...300|.165Mo|.......| OK    |Convection_Lect_SSZ 
+|21:56:05|21:56:08|...3s|..2.|0.809|..601|.11589|...300|.313Mo|..10/11| OK    |PAR_Convection_Lect_SSZ 
+|21:56:11|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |CouplagePb1Pb2_VEF_turbulent
+Data file of the previous test must be prepared for parallelism.
+|21:56:12|21:56:17|...5s|..1.|.....|...26|.49129|.....4|.144Mo|.......| OK    |Couplage_VEF_segsol 
+|21:56:18|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Couplage_champ_cl_VDF
+Data file of the previous test must be prepared for parallelism.
+|21:56:20|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Couplage_champ_cl_VEF
+Data file of the previous test must be prepared for parallelism.
+|21:56:22|21:56:43|..21s|..1.|.....|...10|....12|.40769|.339Mo|.......| OK    |Cx 
+|21:56:45|21:57:08|..23s|..9.|1.642|...10|....12|.40769|1852|..10/10| OK    |PAR_Cx 
+|21:57:11|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Cylindre_2D_Axi_VDF_Radiation
+Data file of the previous test must be prepared for parallelism.
+|21:57:12|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Cylindre_3D_VEF_Radiation
+Data file of the previous test must be prepared for parallelism.
+|21:57:36|21:57:49|..13s|..1.|.....|...10|...131|...425|.261Mo|.......| OK    |Cylindre_chauffant 
+|21:57:49|21:57:59|..10s|..9.|1.541|...10|...171|...425|1629|..11/11| OK    |PAR_Cylindre_chauffant 
+|21:58:01|21:58:01|...0s|..1.|.....|...10|..1472|...819|.165Mo|.......| OK    |DYN_6_points 
+|21:58:01|21:58:03|...2s|..2.|1.115|...10|..2002|...819|.326Mo|..10/10| OK    |PAR_DYN_6_points 
+|21:58:05|21:58:06|...1s|..1.|.....|...10|...709|...819|.165Mo|.......| OK    |DYN_Moy_Euler 
+|21:58:06|21:58:09|...3s|..6.|0.557|...10|..1426|...819|.962Mo|...9/10| OK    |PAR_DYN_Moy_Euler 
+|21:58:10|21:58:13|...3s|..1.|.....|...10|..1222|...819|.166Mo|.......| OK    |DYN_plans_paralleles 
+|21:58:13|21:58:17|...4s|..2.|1.714|...10|..1940|...819|.302Mo|..10/10| OK    |PAR_DYN_plans_paralleles 
+|21:58:18|21:58:19|...1s|..1.|.....|...10|...205|....51|.164Mo|.......| OK    |Debog 
+|21:58:19|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |PAR_Debog
+|21:58:23|21:58:27|...4s|..1.|.....|....1|.....0|..1137|.180Mo|.......| OK    |Debog_3D_Pb_couple 
+|21:58:28|21:58:31|...3s|..2.|3.425|....1|.....0|..1137|.353Mo|..14/14| OK    |PAR_Debog_3D_Pb_couple 
+|21:58:32|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |DocondVDF_VDF
+|21:58:34|21:58:34|...0s|..1.|.....|...10|..1044|...400|.164Mo|.......| OK    |EF_2D 
+|21:58:35|21:58:36|...1s|..2.|1.047|...10|..1131|...400|.308Mo|..11/11| OK    |PAR_EF_2D 
+|21:58:37|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |EF_stab
+Data file of the previous test must be prepared for parallelism.
+|21:58:39|21:58:41|...2s|..1.|.....|....2|.....4|..2214|.158Mo|.......| OK    |EF_stab_Faces_virt_bord 
+|21:58:41|21:58:44|...3s|..2.|1.319|....2|.....4|..2214|.330Mo|..14/14| OK    |PAR_EF_stab_Faces_virt_bord 
+|21:58:45|21:58:48|...3s|..1.|.....|....2|...359|..7056|.180Mo|.......| OK    |EF_stab_alpha_sous_zone 
+|21:58:49|21:59:13|..24s|..1.|.....|..175|.47083|..4600|.163Mo|.......| OK    |EF_stab_ech_ext_imp 
+|21:59:14|21:59:32|..18s|..2.|1.488|..175|.55881|..4600|.318Mo|..15/18| OK    |PAR_EF_stab_ech_ext_imp 
+|21:59:33|21:59:34|...1s|..1.|.....|..267|.....0|...264|.165Mo|.......| OK    |Ecrire_Fichier_XYZ_VAL 
+|21:59:36|21:59:45|...9s|..1.|.....|....3|..1830|.18000|.208Mo|.......| 4 ecarts |Ellipsoid_vdf_therm ATTENTION 1 ecarts possible sur ce cas...
+|21:59:50|21:59:50|...0s|..1.|.....|....2|....32|...100|.159Mo|.......| OK    |Extension 
+|21:59:50|21:59:52|...2s|..2.|0.809|....2|....40|...100|.304Mo|....8/8| OK    |PAR_Extension 
+|21:59:53|21:59:54|...1s|..1.|.....|....5|...382|....63|.160Mo|.......| OK    |Extraction_Front_VDF 
+|21:59:54|21:59:58|...4s|..1.|.....|....5|..3774|...126|.151Mo|.......| 1 ecarts |Extraction_Front_VEF ATTENTION 1 ecarts possible sur ce cas...
+|21:59:59|22:00:01|...2s|..1.|.....|....3|...459|..2021|.145Mo|.......| OK    |Extraire_domaine_2D 
+|22:00:01|22:00:04|...3s|..2.|1.627|....3|...493|..2021|.317Mo|..12/13| OK    |PAR_Extraire_domaine_2D 
+|22:00:05|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Extruder_en3
+|22:00:06|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |FTD_Colonne_VDF_2D
+Data file of the previous test must be prepared for parallelism.
+|22:00:07|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |FTD_Colonne_VDF_3D
+Data file of the previous test must be prepared for parallelism.
+|22:00:09|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |FTD_Colonne_VDF_3D_Couplage
+Data file of the previous test must be prepared for parallelism.
+|22:00:10|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |FTD_Colonne_VEF_2D
+Data file of the previous test must be prepared for parallelism.
+|22:00:12|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |FTD_Colonne_VEF_3D
+Data file of the previous test must be prepared for parallelism.
+|22:00:14|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |FTD_Colonne_VEF_3D_Couplage
+Data file of the previous test must be prepared for parallelism.
+|22:00:15|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |FTD_Couplage_champ_cl_VDF
+|22:00:16|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |FTD_Flottabilite_VDF_2D
+Data file of the previous test must be prepared for parallelism.
+|22:00:17|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |FTD_Flottabilite_VEF_2D
+Data file of the previous test must be prepared for parallelism.
+|22:00:18|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |FTD_Inst_Masse_Ajout_VDF_2D
+Data file of the previous test must be prepared for parallelism.
+|22:00:20|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |FTD_Inst_Masse_Ajout_VDF_3D
+Data file of the previous test must be prepared for parallelism.
+|22:00:21|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |FTD_Inst_Masse_Ajout_VEF_2D
+Data file of the previous test must be prepared for parallelism.
+|22:00:23|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |FTD_Inst_Masse_Ajout_VEF_3D
+Data file of the previous test must be prepared for parallelism.
+|22:00:24|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |FTD_Transfo_bulles_VDF_3D
+Data file of the previous test must be prepared for parallelism.
+|22:00:26|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |FTD_Transfo_bulles_VEF_3D
+Data file of the previous test must be prepared for parallelism.
+|22:00:28|22:00:35|...7s|..1.|.....|....3|...448|.52920|.231Mo|.......| OK    |FTD_VDF_mono_var 
+|22:00:38|22:00:44|...6s|..2.|1.463|....3|...639|.52920|.414Mo|..12/13| OK    |PAR_FTD_VDF_mono_var 
+|22:00:49|22:00:56|...7s|..1.|.....|.3314|.46116|100
+200|.142Mo|.......| OK    |Fluide_Solide_Fluide 
+|22:00:57|22:00:58|...1s|..1.|.....|....1|.....0|...750|.164Mo|.......| OK    |Flux_CL_periodique 
+|22:00:58|22:00:59|...1s|..2.|1.140|....1|.....0|...750|.321Mo|....6/6| OK    |PAR_Flux_CL_periodique 
+|22:01:01|22:01:01|...0s|..1.|.....|....1|.....0|...100|.151Mo|.......| OK    |Himp_var 
+|22:01:01|22:01:03|...2s|..2.|1.243|....1|.....0|...100|.327Mo|....8/8| OK    |PAR_Himp_var 
+|22:01:10|22:01:24|..14s|..1.|.....|....0|...273|116356|.408Mo|.......| FALSE |Impinging_jet ATTENTION En parallele plantage possible sur ce cas...
+|22:01:24|22:01:36|..12s|..9.|.....|....0|...341|116356|1911|....8/9| FALSE |PAR_Impinging_jet ATTENTION En parallele plantage possible sur ce cas...
+|22:01:37|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |LP_ODVM_PBcouple_VDF
+|22:01:39|22:01:44|...5s|..1.|.....|...20|...810|..8000|.176Mo|.......| OK    |LP_ODVM_Timp_VDF 
+|22:01:45|22:01:49|...4s|..2.|1.701|...20|..1077|..8000|.345Mo|...9/10| OK    |PAR_LP_ODVM_Timp_VDF 
+|22:01:51|22:01:52|...1s|..1.|.....|...10|...713|...400|.136Mo|.......| OK    |Lambda_var_VEF 
+|22:01:52|22:01:53|...1s|..2.|1.041|...10|...801|...400|.321Mo|..10/12| OK    |PAR_Lambda_var_VEF 
+|22:01:55|22:01:55|...0s|..1.|.....|...10|...748|...324|.166Mo|.......| OK    |Lambda_var_VEF_turb 
+|22:01:55|22:01:57|...2s|..2.|1.074|...10|...841|...324|.317Mo|..12/12| OK    |PAR_Lambda_var_VEF_turb 
+|22:01:58|22:01:59|...1s|..1.|.....|..301|..4826|....51|.164Mo|.......| OK    |Lata_To_other 
+|22:02:00|22:02:01|...1s|..1.|.....|....2|...249|..1452|.148Mo|.......| OK    |Lire_unv 
+|22:02:03|22:02:05|...2s|..1.|.....|....1|..4826|....51|.154Mo|.......| OK    |MED_docond 
+|22:02:05|22:02:09|...4s|..2.|0.674|....1|..5791|....51|.332Mo|..14/14| OK    |PAR_MED_docond 
+|22:02:50|22:03:34|..44s|..1.|.....|....0|.....0|....51|.651Mo|.......| FALSE |Maillage_Hexa_ICEM ATTENTION Ce cas peut planter pour cause de manque de RAM possible sur ce cas...
+|22:03:35|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |MaillerParallel
+|22:03:37|22:03:39|...2s|..1.|.....|....3|...384|..2160|.176Mo|.......| OK    |Min_Max_Champ_Paroi 
+|22:03:45|22:03:45|...0s|..1.|.....|..100|...101|...100|.167Mo|.......| OK    |Moyenne_convergee 
+|22:03:45|22:03:47|...2s|..2.|0.945|..100|...101|...100|.317Mo|..11/11| OK    |PAR_Moyenne_convergee 
+|22:03:54|22:04:00|...6s|..1.|.....|....0|....65|.16000|.180Mo|.......| FALSE |Moyenne_vol_quadra_3d
+|22:04:00|22:04:06|...6s|..4.|.....|....0|....93|.16000|.622Mo|....0/0| FALSE |PAR_Moyenne_vol_quadra_3d
+|22:04:08|22:04:08|...0s|..1.|.....|....0|....55|...800|.164Mo|.......| FALSE |Moyenne_volumique_2d
+|22:04:08|22:04:11|...3s|..4.|.....|....0|....72|...800|.648Mo|....0/0| FALSE |PAR_Moyenne_volumique_2d
+|22:04:12|22:04:14|...2s|..1.|.....|....0|....64|..8000|.148Mo|.......| FALSE |Moyenne_volumique_3d
+|22:04:14|22:04:17|...3s|..4.|.....|....0|....98|..8000|.624Mo|....0/0| FALSE |PAR_Moyenne_volumique_3d
+|22:04:18|22:04:19|...1s|..1.|.....|...20|..8997|..1060|.166Mo|.......| OK    |Negligeable_scal_VEF 
+|22:04:20|22:04:22|...2s|..2.|1.380|...20|..9678|..1060|.331Mo|..12/12| OK    |PAR_Negligeable_scal_VEF 
+|22:04:23|22:04:24|...1s|..1.|.....|...10|...728|...324|.151Mo|.......| OK    |Nu_var_VEF 
+|22:04:24|22:04:26|...2s|..2.|0.887|...10|...825|...324|.303Mo|..12/12| OK    |PAR_Nu_var_VEF 
+|22:04:27|22:04:28|...1s|..1.|.....|...25|..2020|..3800|.165Mo|.......| OK    |ObstacleV2 
+|22:04:42|22:04:44|...2s|..1.|.....|..278|.11764|..1010|.142Mo|.......| OK    |Obstacle_reprise ATTENTION 1 ecarts possible sur ce cas...
+|22:04:46|22:04:52|...6s|..1.|.....|....2|..2053|..2598|.238Mo|.......| OK    |PETSC_Quasi_Comp_Coupl_keps_VEF_impl_GMRES 
+|22:04:52|22:05:01|...9s|..2.|0.791|....2|..2255|..2598|.403Mo|..10/10| OK    |PAR_PETSC_Quasi_Comp_Coupl_keps_VEF_impl_GMRES 
+|22:05:02|22:05:05|...3s|..1.|.....|..257|...259|...900|.161Mo|.......| OK    |PETSC_ThHyd_2D_VEF_Ostwald 
+|22:05:05|22:05:09|...4s|..2.|1.375|..257|...259|...900|.296Mo|..14/14| OK    |PAR_PETSC_ThHyd_2D_VEF_Ostwald 
+|22:05:10|22:05:10|...0s|..1.|.....|....3|....37|...125|.166Mo|.......| OK    |PETSC_cpu_3D_CGILU 
+|22:05:11|22:05:12|...1s|..2.|0.814|....3|....61|...125|.299Mo|....8/8| OK    |PAR_PETSC_cpu_3D_CGILU 
+|22:05:14|22:05:14|...0s|..1.|.....|....3|....29|...125|.173Mo|.......| OK    |PETSC_cpu_3D_CGSPAI 
+|22:05:14|22:05:16|...2s|..2.|1.012|....3|....29|...125|.307Mo|....8/8| OK    |PAR_PETSC_cpu_3D_CGSPAI 
+|22:05:17|22:05:18|...1s|..1.|.....|....3|....37|...125|.164Mo|.......| OK    |PETSC_cpu_3D_GMRESILU 
+|22:05:18|22:05:19|...1s|..2.|0.852|....3|....50|...125|.330Mo|....8/8| OK    |PAR_PETSC_cpu_3D_GMRESILU 
+|22:05:21|22:05:21|...0s|..1.|.....|....3|....31|....64|.141Mo|.......| OK    |PETSC_cpu_3D_MG 
+|22:05:21|22:05:23|...2s|..2.|0.842|....3|....33|....64|.335Mo|....8/8| OK    |PAR_PETSC_cpu_3D_MG 
+|22:05:24|22:05:39|..15s|..1.|.....|....1|..1712|.35046|.284Mo|.......| OK    |Paroi_VEF_3D 
+|22:05:39|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Paroi_fictif_turbulent_vef
+Data file of the previous test must be prepared for parallelism.
+|22:05:42|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Pb_couples
+Data file of the previous test must be prepared for parallelism.
+|22:05:43|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Perte_Charge_Anisotrope_QC_VEF
+Data file of the previous test must be prepared for parallelism.
+|22:05:44|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Perte_Charge_Circulaire_QC_VEF
+Data file of the previous test must be prepared for parallelism.
+|22:05:45|22:05:46|...1s|..1.|.....|....5|....85|...125|.165Mo|.......| OK    |Perte_Charge_QC_VDF 
+|22:05:47|22:05:49|...2s|..1.|.....|....5|...789|...756|.168Mo|.......| OK    |Perte_Charge_QC_VEF 
+|22:05:50|22:05:50|...0s|..1.|.....|...10|...395|...300|.165Mo|.......| OK    |Poreps 
+|22:05:50|22:05:52|...2s|..2.|0.874|...10|...455|...300|.317Mo|..11/12| OK    |PAR_Poreps 
+|22:05:53|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Poreux_VEF_2D
+Data file of the previous test must be prepared for parallelism.
+|22:05:54|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Poreux_VEF_3D
+Data file of the previous test must be prepared for parallelism.
+|22:05:55|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Poreux_VEF_3D_EFstab
+Data file of the previous test must be prepared for parallelism.
+|22:05:56|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Poreux_VEF_3D_turb
+Data file of the previous test must be prepared for parallelism.
+|22:05:58|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Porosites_thermo_hyd_tube_vef
+Data file of the previous test must be prepared for parallelism.
+|22:05:59|22:06:08|...9s|..1.|.....|....2|..1645|.14435|.200Mo|.......| OK    |Post_Stat 
+|22:06:09|22:06:10|...1s|..1.|.....|...10|...205|....49|.164Mo|.......| OK    |Post_T_PAROI 
+|22:06:10|22:06:12|...2s|..2.|0.776|...10|...246|....49|.330Mo|..15/15| OK    |PAR_Post_T_PAROI 
+|22:06:13|22:06:14|...1s|..1.|.....|..100|..7549|...204|.167Mo|.......| OK    |Post_multi 
+|22:06:14|22:06:16|...2s|..2.|0.990|..100|..8155|...204|.317Mo|....9/9| OK    |PAR_Post_multi 
+|22:06:17|22:06:19|...2s|..1.|.....|...10|..1961|..1600|.165Mo|.......| OK    |Pred_Cor_P1B 
+|22:06:20|22:06:22|...2s|..2.|1.813|...10|..2152|..1600|.302Mo|..11/11| OK    |PAR_Pred_Cor_P1B 
+|22:06:24|22:06:25|...1s|..1.|.....|....5|..1884|..3600|.168Mo|.......| OK    |Pred_Cor_VEF 
+|22:06:25|22:06:27|...2s|..2.|1.454|....5|..2104|..3600|.285Mo|..15/15| OK    |PAR_Pred_Cor_VEF 
+|22:06:29|22:06:33|...4s|..1.|.....|...20|....21|..3375|.172Mo|.......| 1 ecarts |QC_Turb_VDF_diff_impl ATTENTION 1 ecart possible sur ce cas...
+|22:06:33|22:06:38|...5s|..4.|2.246|...20|....21|..3375|.638Mo|...9/10| OK    |PAR_QC_Turb_VDF_diff_impl ATTENTION 1 ecart possible sur ce cas...
+|22:06:40|22:07:04|..24s|..1.|.....|...20|.12820|..5120|.152Mo|.......| OK    |QC_Turb_VEF_diff_impl 
+|22:07:04|22:07:19|..15s|..4.|1.850|...20|.16053|..5120|.637Mo|...8/10| OK    |PAR_QC_Turb_VEF_diff_impl 
+|22:07:20|22:07:24|...4s|..1.|.....|...20|..1753|..3375|.167Mo|.......| OK    |QC_VDF_diff_impl 
+|22:07:24|22:07:28|...4s|..4.|1.889|...20|..2722|..3375|.658Mo|..10/10| OK    |PAR_QC_VDF_diff_impl 
+|22:07:30|22:07:51|..21s|..1.|.....|...20|.12817|..5120|.176Mo|.......| OK    |QC_VEF_diff_impl 
+|22:07:51|22:08:04|..13s|..4.|1.946|...20|.16069|..5120|.656Mo|...8/10| OK    |PAR_QC_VEF_diff_impl 
+|22:08:05|22:08:06|...1s|..1.|.....|..109|..7203|...320|.165Mo|.......| OK    |QC_centre4_VDF 
+|22:08:07|22:08:11|...4s|..6.|0.318|..109|.11744|...320|.983Mo|....8/8| OK    |PAR_QC_centre4_VDF 
+|22:08:13|22:08:16|...3s|..1.|.....|....1|...417|.14600|.203Mo|.......| OK    |Quasi_Comp_3D 
+|22:08:16|22:08:20|...4s|..3.|1.687|....1|...504|.14600|.549Mo|..37/39| OK    |PAR_Quasi_Comp_3D 
+|22:08:22|22:08:27|...5s|..1.|.....|...10|...761|.20000|.195Mo|.......| OK    |Quasi_Comp_Colonne_VDF_3D_Couplage 
+|22:08:29|22:08:32|...3s|..2.|1.828|...10|...828|.20000|.353Mo|..12/12| OK    |PAR_Quasi_Comp_Colonne_VDF_3D_Couplage 
+|22:08:36|22:08:44|...8s|..1.|.....|....5|..1978|.20000|.226Mo|.......| OK    |Quasi_Comp_Colonne_VEF_3D_Couplage 
+|22:08:48|22:08:52|...4s|..1.|.....|...10|..3397|.13500|.175Mo|.......| OK    |Quasi_Comp_Cond_GP_VDF 
+|22:08:53|22:08:56|...3s|..2.|1.505|...10|..3647|.13500|.319Mo|..11/11| OK    |PAR_Quasi_Comp_Cond_GP_VDF 
+|22:08:59|22:09:03|...4s|..1.|.....|...10|..3397|.13500|.164Mo|.......| OK    |Quasi_Comp_Cond_GP_VDF_FM 
+|22:09:04|22:09:08|...4s|..2.|1.421|...10|..3646|.13500|.352Mo|..11/11| OK    |PAR_Quasi_Comp_Cond_GP_VDF_FM 
+|22:09:10|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Quasi_Comp_Cond_GP_VDF_P1
+Data file of the previous test must be prepared for parallelism.
+|22:09:12|22:09:15|...3s|..1.|.....|....5|..1601|.13500|.182Mo|.......| OK    |Quasi_Comp_Cond_GP_VDF_Turb 
+|22:09:15|22:09:18|...3s|..2.|1.432|....5|..1722|.13500|.330Mo|..12/12| OK    |PAR_Quasi_Comp_Cond_GP_VDF_Turb 
+|22:09:21|22:09:26|...5s|..1.|.....|...10|..3664|.13500|.181Mo|.......| OK    |Quasi_Comp_Cond_GP_VDF_Turb_FM 
+|22:09:27|22:09:32|...5s|..2.|1.492|...10|..3936|.13500|.345Mo|..12/12| OK    |PAR_Quasi_Comp_Cond_GP_VDF_Turb_FM 
+|22:09:36|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Quasi_Comp_Coupl_Incomp
+Data file of the previous test must be prepared for parallelism.
+|22:09:38|22:09:46|...8s|..1.|.....|....2|..2876|..2598|.163Mo|.......| OK    |Quasi_Comp_Coupl_Sous_Maille_VEF_impl 
+|22:09:46|22:09:53|...7s|..2.|1.385|....2|..3294|..2598|.338Mo|..10/10| OK    |PAR_Quasi_Comp_Coupl_Sous_Maille_VEF_impl 
+|22:09:55|22:10:05|..10s|..1.|.....|....2|..1741|..2598|.184Mo|.......| OK    |Quasi_Comp_Coupl_keps_VEF_impl 
+|22:10:06|22:10:14|...8s|..2.|1.496|....2|..1868|..2598|.324Mo|..10/10| OK    |PAR_Quasi_Comp_Coupl_keps_VEF_impl 
+|22:10:16|22:10:19|...3s|..1.|.....|..100|..5271|..3540|.168Mo|.......| OK    |Quasi_Comp_IBC_VDF_2D 
+|22:10:19|22:10:23|...4s|..2.|1.188|..100|..6547|..3540|.336Mo|..17/18| OK    |PAR_Quasi_Comp_IBC_VDF_2D 
+|22:10:24|22:10:26|...2s|..1.|.....|...20|...876|..3200|.169Mo|.......| OK    |Quasi_Comp_IBC_VDF_3D 
+|22:10:27|22:10:37|..10s|..1.|.....|..100|.27823|..3600|.171Mo|.......| OK    |Quasi_Comp_IBC_VEF_2D 
+|22:10:38|22:10:45|...7s|..2.|1.468|..100|.29872|..3600|.321Mo|..14/18| OK    |PAR_Quasi_Comp_IBC_VEF_2D 
+|22:10:48|22:10:52|...4s|..1.|.....|....5|..1555|.10240|.192Mo|.......| OK    |Quasi_Comp_IBC_VEF_3D 
+|22:10:52|22:10:56|...4s|..2.|1.527|....5|..1774|.10240|.362Mo|..10/15| OK    |PAR_Quasi_Comp_IBC_VEF_3D 
+|22:10:58|22:11:00|...2s|..1.|.....|..100|..6962|..2352|.165Mo|.......| OK    |Quasi_Comp_Obst_GP_VDF 
+|22:11:00|22:11:03|...3s|..2.|1.234|..100|..8088|..2352|.310Mo|...9/10| OK    |PAR_Quasi_Comp_Obst_GP_VDF 
+|22:11:05|22:11:08|...3s|..1.|.....|..100|..7034|..2352|.166Mo|.......| OK    |Quasi_Comp_Obst_GP_VDF_FM 
+|22:11:08|22:11:11|...3s|..2.|1.255|..100|..8155|..2352|.285Mo|...9/10| OK    |PAR_Quasi_Comp_Obst_GP_VDF_FM 
+|22:11:13|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Quasi_Comp_Obst_GP_VDF_P1
+Data file of the previous test must be prepared for parallelism.
+|22:11:14|22:11:16|...2s|..1.|.....|..100|..7352|..2352|.148Mo|.......| OK    |Quasi_Comp_Obst_GP_VDF_Pmoy 
+|22:11:17|22:11:20|...3s|..2.|1.217|..100|..8497|..2352|.279Mo|...9/10| OK    |PAR_Quasi_Comp_Obst_GP_VDF_Pmoy 
+|22:11:21|22:11:24|...3s|..1.|.....|..100|..6804|..2352|.164Mo|.......| OK    |Quasi_Comp_Obst_GP_VDF_Turb 
+|22:11:24|22:11:28|...4s|..2.|1.341|..100|..7841|..2352|.326Mo|..11/11| OK    |PAR_Quasi_Comp_Obst_GP_VDF_Turb 
+|22:11:29|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Quasi_Comp_Obst_GP_VDF_Turb_P1
+Data file of the previous test must be prepared for parallelism.
+|22:11:30|22:11:33|...3s|..1.|.....|...10|..1753|..5126|.156Mo|.......| OK    |Quasi_Comp_Obst_GP_VEF 
+|22:11:33|22:11:35|...2s|..2.|1.636|...10|..2054|..5126|.323Mo|...9/10| OK    |PAR_Quasi_Comp_Obst_GP_VEF 
+|22:11:37|22:11:39|...2s|..1.|.....|...10|..1755|..5126|.164Mo|.......| OK    |Quasi_Comp_Obst_GP_VEF_Pmoy 
+|22:11:39|22:11:42|...3s|..2.|1.592|...10|..2049|..5126|.326Mo|...9/10| OK    |PAR_Quasi_Comp_Obst_GP_VEF_Pmoy 
+|22:11:44|22:11:45|...1s|..1.|.....|....2|...536|..5126|.163Mo|.......| OK    |Quasi_Comp_Obst_GP_VEF_Turb 
+|22:11:45|22:11:47|...2s|..2.|1.585|....2|...634|..5126|.317Mo|..10/11| OK    |PAR_Quasi_Comp_Obst_GP_VEF_Turb 
+|22:11:49|22:11:56|...7s|..1.|.....|...10|..1744|..5126|.180Mo|.......| 1 ecarts |Quasi_Comp_Obst_GP_VEF_Turb_impl
+|22:11:56|22:12:02|...6s|..2.|1.705|...10|..2044|..5126|.351Mo|...9/11| OK    |PAR_Quasi_Comp_Obst_GP_VEF_Turb_impl 
+|22:12:04|22:12:10|...6s|..1.|.....|....5|..1428|..5126|.176Mo|.......| 1 ecarts |Quasi_Comp_Obst_GP_VEF_Turb_segsol
+|22:12:11|22:12:16|...5s|..2.|1.772|....5|..1686|..5126|.332Mo|..10/11| OK    |PAR_Quasi_Comp_Obst_GP_VEF_Turb_segsol 
+|22:12:18|22:12:22|...4s|..1.|.....|....3|..4047|.10400|.174Mo|.......| OK    |Quasi_Comp_ThHyd_Coupl_Keps 
+|22:12:24|22:12:25|...1s|..1.|.....|...10|..1979|...500|.165Mo|.......| OK    |Quasi_Comp_ThHyd_Sutherland 
+|22:12:25|22:12:27|...2s|..2.|1.202|...10|..2336|...500|.311Mo|..13/13| OK    |PAR_Quasi_Comp_ThHyd_Sutherland 
+|22:12:28|22:12:29|...1s|..1.|.....|..100|..2453|...400|.149Mo|.......| OK    |Quasi_Comp_VD_GP_VDF 
+|22:12:29|22:12:31|...2s|..2.|0.944|..100|..3113|...400|.330Mo|..12/12| OK    |PAR_Quasi_Comp_VD_GP_VDF 
+|22:12:32|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Quasi_Comp_VD_GP_VDF_P1
+Data file of the previous test must be prepared for parallelism.
+|22:12:34|22:12:35|...1s|..1.|.....|..100|..5952|...200|.165Mo|.......| OK    |Quasi_Comp_VD_GP_VEF 
+|22:12:35|22:12:37|...2s|..2.|0.956|..100|..6636|...200|.298Mo|..10/15| OK    |PAR_Quasi_Comp_VD_GP_VEF 
+|22:12:38|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Quasi_Comp_VD_GP_VEF_P1
+Data file of the previous test must be prepared for parallelism.
+|22:12:40|22:12:44|...4s|..1.|.....|...20|..1703|..2214|.170Mo|.......| OK    |Quasi_Comp_keps_VEF_perio 
+|22:12:44|22:12:48|...4s|..2.|1.352|...20|..1889|..2214|.331Mo|..17/17| OK    |PAR_Quasi_Comp_keps_VEF_perio 
+|22:12:49|22:12:50|...1s|..1.|.....|...30|..8030|...100|.164Mo|.......| 1 ecarts |Quasi_DivRhoUT_moins_TDivRhoU
+|22:12:50|22:12:52|...2s|..2.|0.744|...30|..8987|...100|.300Mo|....6/6| OK    |PAR_Quasi_DivRhoUT_moins_TDivRhoU 
+|22:12:53|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Rayonnement_Cuve_2D
+Data file of the previous test must be prepared for parallelism.
+|22:12:54|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Rayonnement_Cuve_3D
+|22:12:56|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Rayonnement_VDF
+Data file of the previous test must be prepared for parallelism.
+|22:12:57|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Rayonnement_VDF_croix
+Data file of the previous test must be prepared for parallelism.
+|22:12:58|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Rayonnement_VEF
+Data file of the previous test must be prepared for parallelism.
+|22:13:00|22:13:00|...0s|..1.|.....|..120|..1362|...100|.165Mo|.......| OK    |Repere_Rotation_Constante 
+|22:13:01|22:13:03|...2s|..2.|0.971|..120|..1720|...100|.284Mo|..11/13| OK    |PAR_Repere_Rotation_Constante 
+|22:13:04|22:13:05|...1s|..1.|.....|..120|..1432|...100|.157Mo|.......| OK    |Repere_Rotation_Variable 
+|22:13:05|22:13:07|...2s|..2.|0.909|..120|..1852|...100|.318Mo|..11/13| OK    |PAR_Repere_Rotation_Variable 
+|22:13:08|22:13:09|...1s|..1.|.....|..120|..1670|...100|.161Mo|.......| OK    |Repere_Translation 
+|22:13:09|22:13:11|...2s|..2.|0.919|..120|..2151|...100|.305Mo|..13/13| OK    |PAR_Repere_Translation 
+|22:13:18|22:13:23|...5s|..1.|.....|....2|..1259|.14435|.192Mo|.......| 3 ecarts |Reprise_Statistiques_Definition_Champs ATTENTION 3 ecarts possible sur ce cas...
+|22:13:25|22:13:26|...1s|..1.|.....|...10|...215|...100|.165Mo|.......| OK    |Sans_postraitement 
+|22:13:26|22:13:28|...2s|..2.|0.817|...10|...215|...100|.324Mo|....8/8| OK    |PAR_Sans_postraitement 
+|22:13:43|22:13:46|...3s|..1.|.....|...10|....12|..9034|.177Mo|.......| OK    |Scalaire_muscl_2D 
+|22:13:47|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |ThHyd_C_Wale_Scalaires_Passifs_VEFPreP1B
+Data file of the previous test must be prepared for parallelism.
+|22:13:48|22:13:49|...1s|..1.|.....|...10|..2284|...324|.165Mo|.......| OK    |Sondes 
+|22:13:49|22:13:52|...3s|..2.|0.604|...10|..2497|...324|.324Mo|..25/26| OK    |PAR_Sondes 
+|22:13:53|22:13:54|...1s|..1.|.....|...10|..6147|...324|.165Mo|.......| OK    |Sondes_chsom ATTENTION 1 ecart possible sur ce cas...
+|22:13:55|22:13:57|...2s|..2.|1.435|...10|..6843|...324|.337Mo|..14/14| OK    |PAR_Sondes_chsom ATTENTION 1 ecart possible sur ce cas...
+|22:13:58|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Source_TdivU_amont
+Data file of the previous test must be prepared for parallelism.
+|22:13:59|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Source_TdivU_muscl
+Data file of the previous test must be prepared for parallelism.
+|22:14:00|22:14:01|...1s|..1.|.....|...20|..3948|...400|.165Mo|.......| OK    |Sous_zone_VEF 
+|22:14:01|22:14:03|...2s|..2.|1.098|...20|..4362|...400|.335Mo|..13/13| OK    |PAR_Sous_zone_VEF 
+|22:14:05|22:14:06|...1s|..1.|.....|...26|....80|...960|.158Mo|.......| OK    |TBLE_VDF_3D_scal 
+|22:14:06|22:14:09|...3s|..2.|1.705|...26|....80|...960|.337Mo|....9/9| OK    |PAR_TBLE_VDF_3D_scal 
+|22:14:10|22:14:23|..13s|..1.|.....|....1|....22|.27252|.368Mo|.......| OK    |TBLE_VEF_KEPS_3D 
+|22:14:25|22:14:27|...2s|..1.|.....|...11|..1725|..4524|.168Mo|.......| OK    |TP_Profils_VDF 
+|22:14:28|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |TP_THI_ThHyd_centre_perio_VDF
+Data file of the previous test must be prepared for parallelism.
+|22:14:29|22:14:30|...1s|..1.|.....|..123|..7624|...108|.162Mo|.......| OK    |TP_Temp_QC_VEF 
+|22:14:30|22:14:31|...1s|..1.|.....|...37|...343|...100|.165Mo|.......| OK    |Terme_Source_Dirac_VDF 
+|22:14:32|22:14:35|...3s|..1.|.....|..392|.45404|...400|.161Mo|.......| OK    |Terme_Source_Dirac_VEF 
+|22:14:36|22:14:39|...3s|..1.|.....|....1|...566|.15120|.197Mo|.......| OK    |TestUtilitaireAssemblage 
+|22:14:40|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Test_2D_VDF_Radiation
+Data file of the previous test must be prepared for parallelism.
+|22:14:41|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Test_2D_VDF_Radiation_K_Eps
+Data file of the previous test must be prepared for parallelism.
+|22:14:43|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Test_2D_VEF_Radiation
+Data file of the previous test must be prepared for parallelism.
+|22:14:44|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Test_2D_VEF_Radiation_K_Eps
+Data file of the previous test must be prepared for parallelism.
+|22:14:45|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Test_3D_VDF_Radiation
+Data file of the previous test must be prepared for parallelism.
+|22:14:46|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Test_3D_VDF_Radiation_K_Eps
+Data file of the previous test must be prepared for parallelism.
+|22:14:47|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Test_3D_VDF_flux_imp_Radiation
+|22:14:48|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Test_3D_VEF_Radiation
+Data file of the previous test must be prepared for parallelism.
+|22:14:50|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Test_3D_VEF_Radiation_K_Eps
+Data file of the previous test must be prepared for parallelism.
+|22:14:51|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Test_3D_VEF_Radiation_impl
+|22:14:52|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Test_Radiation_dec
+Data file of the previous test must be prepared for parallelism.
+|22:14:54|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Test_recycl_2pbs_turb_VEF
+Data file of the previous test must be prepared for parallelism.
+|22:14:55|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Tetrahedre_rayo_semi_transp
+Data file of the previous test must be prepared for parallelism.
+|22:14:57|22:14:57|...0s|..1.|.....|....1|.....3|...240|.165Mo|.......| OK    |ThHyd_2D_VDF_Ostwald 
+|22:14:57|22:14:59|...2s|..2.|1.056|....1|.....3|...240|.327Mo|..10/11| OK    |PAR_ThHyd_2D_VDF_Ostwald 
+|22:15:00|22:15:01|...1s|..1.|.....|...10|.....0|..1375|.161Mo|.......| OK    |ThHyd_2couches 
+|22:15:01|22:15:03|...2s|..2.|0.502|...10|..2549|..1375|.309Mo|..11/11| OK    |PAR_ThHyd_2couches 
+|22:15:05|22:15:10|...5s|..1.|.....|...20|..2761|..5884|.162Mo|.......| OK    |ThHyd_3D_VEFPreP1B 
+|22:15:10|22:15:14|...4s|..2.|1.490|...20|..3217|..5884|.329Mo|..16/16| OK    |PAR_ThHyd_3D_VEFPreP1B 
+|22:15:16|22:15:17|...1s|..1.|.....|...67|..2224|..1320|.151Mo|.......| OK    |ThHyd_Axi_3D 
+|22:15:18|22:15:21|...3s|..1.|.....|.1254|.39617|....32|.166Mo|.......| OK    |ThHyd_Axi_RZ_K_Eps 
+|22:15:21|22:15:25|...4s|..2.|0.679|.1254|.40025|....32|.330Mo|..14/14| OK    |PAR_ThHyd_Axi_RZ_K_Eps 
+|22:15:26|22:15:27|...1s|..1.|.....|...50|..1872|...209|.165Mo|.......| OK    |ThHyd_Axi_RZ_un_teta 
+|22:15:28|22:15:29|...1s|..1.|.....|...33|...620|....60|.165Mo|.......| OK    |ThHyd_C_K_Eps 
+|22:15:29|22:15:31|...2s|..2.|0.866|...33|...669|....60|.335Mo|..13/14| OK    |PAR_ThHyd_C_K_Eps 
+|22:15:35|22:15:36|...1s|..1.|.....|...90|..5361|...240|.137Mo|.......| OK    |ThHyd_C_K_Eps_VEF 
+|22:15:36|22:15:38|...2s|..2.|1.076|...90|..5826|...240|.308Mo|..12/12| OK    |PAR_ThHyd_C_K_Eps_VEF 
+|22:15:40|22:15:41|...1s|..1.|.....|..100|..3299|...120|.166Mo|.......| OK    |ThHyd_C_SsMaille_Smago_VDF 
+|22:15:41|22:15:44|...3s|..2.|0.918|..100|..4210|...120|.298Mo|..23/23| OK    |PAR_ThHyd_C_SsMaille_Smago_VDF 
+|22:15:45|22:15:48|...3s|..1.|.....|..100|.37954|...480|.165Mo|.......| OK    |ThHyd_C_SsMaille_Smago_VEF 
+|22:15:48|22:15:52|...4s|..2.|1.248|..100|.42330|...480|.337Mo|..12/13| OK    |PAR_ThHyd_C_SsMaille_Smago_VEF 
+|22:15:53|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |ThHyd_C_Wale_Scalaires_Passifs_VEFPreP1B
+Data file of the previous test must be prepared for parallelism.
+|22:15:55|22:15:55|...0s|..1.|.....|...10|.....0|..1375|.166Mo|.......| OK    |ThHyd_Cond_K_Eps 
+|22:15:56|22:15:58|...2s|..2.|0.545|...10|..2562|..1375|.319Mo|..11/11| OK    |PAR_ThHyd_Cond_K_Eps 
+|22:15:59|22:16:02|...3s|..1.|.....|..100|.24761|..1365|.166Mo|.......| OK    |ThHyd_Coupl_2Couches 
+|22:16:02|22:16:05|...3s|..2.|0.951|..100|.30583|..1365|.332Mo|..19/19| OK    |PAR_ThHyd_Coupl_2Couches 
+|22:16:07|22:16:08|...1s|..1.|.....|...50|..6164|...225|.166Mo|.......| OK    |ThHyd_Coupl_Keps_Re7500 
+|22:16:08|22:16:10|...2s|..2.|0.844|...50|..7516|...225|.319Mo|..19/19| OK    |PAR_ThHyd_Coupl_Keps_Re7500 
+|22:16:11|22:16:12|...1s|..1.|.....|...50|..5674|...528|.165Mo|.......| OK    |ThHyd_Coupl_Keps_Re7500_VEF 
+|22:16:12|22:16:15|...3s|..2.|1.165|...50|..6148|...528|.309Mo|..19/19| OK    |PAR_ThHyd_Coupl_Keps_Re7500_VEF 
+|22:16:16|22:16:17|...1s|..1.|.....|....3|..1211|...760|.139Mo|.......| OK    |ThHyd_Coupl_LM_2D_VEF 
+|22:16:17|22:16:19|...2s|..2.|0.889|....3|..1360|...760|.309Mo|..19/19| OK    |PAR_ThHyd_Coupl_LM_2D_VEF 
+|22:16:21|22:16:24|...3s|..1.|.....|....2|...802|..7200|.162Mo|.......| OK    |ThHyd_Coupl_LM_3D_VEF 
+|22:16:24|22:16:28|...4s|..2.|0.910|....2|...965|..7200|.353Mo|..17/17| OK    |PAR_ThHyd_Coupl_LM_3D_VEF 
+|22:16:30|22:16:32|...2s|..1.|.....|..100|.24173|..1365|.165Mo|.......| OK    |ThHyd_Coupl_Laminaire 
+|22:16:32|22:16:36|...4s|..2.|1.040|..100|.29424|..1365|.326Mo|..16/16| OK    |PAR_ThHyd_Coupl_Laminaire 
+|22:16:37|22:16:38|...1s|..1.|.....|....2|..1251|..2352|.166Mo|.......| OK    |ThHyd_CrankNicholsonGmres 
+|22:16:38|22:16:40|...2s|..2.|1.443|....2|..1397|..2352|.309Mo|...8/10| OK    |PAR_ThHyd_CrankNicholsonGmres 
+|22:16:42|22:16:43|...1s|..1.|.....|....3|..1698|..2352|.167Mo|.......| OK    |ThHyd_CrankNicholsonIteratif 
+|22:16:43|22:16:45|...2s|..2.|1.382|....3|..1898|..2352|.286Mo|..10/10| OK    |PAR_ThHyd_CrankNicholsonIteratif 
+|22:16:47|22:16:56|...9s|..1.|.....|...10|..2884|.12021|.200Mo|.......| OK    |ThHyd_EF_stab 
+|22:16:57|22:17:03|...6s|..2.|1.753|...10|..3311|.12021|.345Mo|..18/18| OK    |PAR_ThHyd_EF_stab 
+|22:17:06|22:17:07|...1s|..1.|.....|...20|..7849|..1060|.166Mo|.......| OK    |ThHyd_keps_VEF 
+|22:17:07|22:17:10|...3s|..2.|1.379|...20|..8473|..1060|.321Mo|..13/13| OK    |PAR_ThHyd_keps_VEF 
+|22:17:11|22:17:13|...2s|..1.|.....|...10|..4394|..1060|.172Mo|.......| OK    |ThHyd_keps_VEF_impl 
+|22:17:15|22:17:17|...2s|..2.|1.232|...10|..4848|..1060|.306Mo|..12/12| OK    |PAR_ThHyd_keps_VEF_impl 
+|22:17:20|22:17:22|...2s|..1.|.....|...10|.....0|..2214|.172Mo|.......| OK    |ThHyd_keps_VEF_perio 
+|22:17:22|22:17:25|...3s|..2.|1.055|...10|..1064|..2214|.345Mo|..14/14| OK    |PAR_ThHyd_keps_VEF_perio 
+|22:17:27|22:17:34|...7s|..1.|.....|....3|.20405|..1060|.166Mo|.......| OK    |ThHyd_keps_VEF_segsol 
+|22:17:34|22:17:39|...5s|..2.|1.541|....3|.22619|..1060|.310Mo|..12/12| OK    |PAR_ThHyd_keps_VEF_segsol 
+|22:17:41|22:17:48|...7s|..1.|.....|.9555|.....0|....36|.164Mo|.......| OK    |ThHyd_puissance_tot_VEF 
+|22:17:48|22:17:59|..11s|..2.|0.794|.9555|.....0|....36|.307Mo|....8/8| OK    |PAR_ThHyd_puissance_tot_VEF 
+|22:18:01|22:18:02|...1s|..1.|.....|....5|....90|...100|.164Mo|.......| OK    |Transformer 
+|22:18:02|22:18:03|...1s|..2.|0.818|....5|....90|...100|.291Mo|....8/8| OK    |PAR_Transformer 
+|22:18:04|22:18:08|...4s|..1.|.....|...10|..4874|..4426|.160Mo|.......| OK    |UNCERT_expl 
+|22:18:09|22:18:26|..17s|..1.|.....|...10|.26747|..4426|.178Mo|.......| OK    |UNCERT_impl 
+|22:18:27|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |U_in_var_impl_vef_QC
+Data file of the previous test must be prepared for parallelism.
+|22:18:28|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |U_in_var_segsol_vef_QC
+Data file of the previous test must be prepared for parallelism.
+|22:18:30|22:18:31|...1s|..1.|.....|..120|...122|...100|.167Mo|.......| OK    |VAHL_DAVIS 
+|22:18:32|22:18:35|...3s|..2.|0.909|..120|...122|...100|.332Mo|..25/26| OK    |PAR_VAHL_DAVIS 
+|22:18:36|22:18:41|...5s|..1.|.....|..438|.11410|..1000|.165Mo|.......| OK    |VAHL_DAVIS_TSM 
+|22:18:41|22:18:46|...5s|..2.|1.355|..438|.16008|..1000|.304Mo|..13/13| OK    |PAR_VAHL_DAVIS_TSM 
+|22:18:47|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |VAHL_DAVIS_VDF_Rayon_Semi_Trans
+Data file of the previous test must be prepared for parallelism.
+|22:18:48|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |VAHL_DAVIS_VDF_ray_sem_tr_part
+Data file of the previous test must be prepared for parallelism.
+|22:18:50|22:18:52|...2s|..1.|.....|...50|..6010|...804|.163Mo|.......| OK    |VAHL_DAVIS_VEF ATTENTION 1 ecarts possible sur ce cas...
+|22:18:52|22:18:55|...3s|..2.|1.174|...50|..6970|...804|.297Mo|..25/28| OK    |PAR_VAHL_DAVIS_VEF ATTENTION 1 ecarts possible sur ce cas...
+|22:18:57|22:18:58|...1s|..1.|.....|..100|.10644|...400|.164Mo|.......| OK    |VAHL_DAVIS_VEFPreP1B 
+|22:18:58|22:19:01|...3s|..2.|0.963|..100|.11851|...400|.297Mo|..12/15| OK    |PAR_VAHL_DAVIS_VEFPreP1B 
+|22:19:02|22:19:05|...3s|..1.|.....|..175|..1447|...400|.167Mo|.......| OK    |VAHL_DAVIS_VEFPreP1B_impl 
+|22:19:08|22:19:13|...5s|..2.|0.917|..175|..1445|...400|.313Mo|...8/15| OK    |PAR_VAHL_DAVIS_VEFPreP1B_impl 
+|22:19:18|22:19:24|...6s|..1.|.....|..177|.31876|...400|.158Mo|.......| OK    |VAHL_DAVIS_VEFPreP1B_segsol 
+|22:19:24|22:19:30|...6s|..2.|1.221|..177|.35155|...400|.319Mo|..10/15| OK    |PAR_VAHL_DAVIS_VEFPreP1B_segsol 
+|22:19:31|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |VAHL_DAVIS_VEF_Rayon_Semi_Trans
+Data file of the previous test must be prepared for parallelism.
+|22:19:32|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |VAHL_DAVIS_VEF_ray_sem_tr_part
+Data file of the previous test must be prepared for parallelism.
+|22:19:34|22:19:35|...1s|..1.|.....|..500|.26462|...132|.164Mo|.......| OK    |VAHL_DAVIS_VEF_source_gen ATTENTION 1 ecarts possible sur ce cas...
+|22:19:35|22:19:39|...4s|..2.|0.889|..500|.29645|...132|.327Mo|...6/12| OK    |PAR_VAHL_DAVIS_VEF_source_gen ATTENTION 1 ecarts possible sur ce cas...
+|22:19:40|22:19:41|...1s|..1.|.....|..113|..3233|...100|.165Mo|.......| OK    |VAHL_DAVIS_impl 
+|22:19:41|22:19:43|...2s|..2.|0.792|..113|..3233|...100|.335Mo|..12/12| OK    |PAR_VAHL_DAVIS_impl 
+|22:19:44|22:19:45|...1s|..1.|.....|..251|..5963|....25|.165Mo|.......| OK    |VAHL_DAVIS_post 
+|22:19:47|22:19:48|...1s|..1.|.....|..251|..5963|...100|.165Mo|.......| OK    |VAHL_DAVIS_proj 
+|22:19:48|22:19:50|...2s|..2.|0.783|..251|..5963|...100|.276Mo|..12/12| OK    |PAR_VAHL_DAVIS_proj 
+|22:19:52|22:19:53|...1s|..1.|.....|...50|..3309|...100|.165Mo|.......| OK    |VAHL_DAVIS_segsol 
+|22:19:53|22:19:55|...2s|..2.|0.884|...50|..3309|...100|.323Mo|..12/12| OK    |PAR_VAHL_DAVIS_segsol 
+|22:19:57|22:19:57|...0s|..1.|.....|..120|..2965|...100|.165Mo|.......| OK    |VAHL_DAVIS_source_gen 
+|22:19:57|22:19:59|...2s|..2.|0.849|..120|..2965|...100|.311Mo|..12/12| OK    |PAR_VAHL_DAVIS_source_gen 
+|22:20:01|22:20:01|...0s|..1.|.....|....2|.....4|.....2|.146Mo|.......| OK    |VDF_2x3 
+|22:20:01|22:20:03|...2s|..2.|0.565|....2|.....4|.....2|.312Mo|....8/8| OK    |PAR_VDF_2x3 
+|22:20:04|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |VEF_diffusion_P0_turbulent_stab
+Data file of the previous test must be prepared for parallelism.
+|22:20:06|22:20:06|...0s|..1.|.....|..120|..8329|....32|.165Mo|.......| OK    |VerifierCoin 
+|22:20:08|22:20:08|...0s|..1.|.....|...10|...722|...819|.166Mo|.......| OK    |WALE_Canal_ThHyd_VDF 
+|22:20:08|22:20:10|...2s|..2.|1.241|...10|..1062|...819|.291Mo|...9/10| OK    |PAR_WALE_Canal_ThHyd_VDF 
+|22:20:12|22:20:15|...3s|..1.|.....|....5|..3774|..4914|.174Mo|.......| OK    |WALE_Canal_ThHyd_VEF 
+|22:20:15|22:20:19|...4s|..2.|1.283|....5|..4428|..4914|.310Mo|..10/10| OK    |PAR_WALE_Canal_ThHyd_VEF 
+|22:20:21|22:20:22|...1s|..1.|.....|....5|..1622|..1000|.166Mo|.......| OK    |Wale_Prdt_Dyn 
+|22:20:22|22:20:24|...2s|..2.|1.247|....5|..1812|..1000|.324Mo|..10/10| OK    |PAR_Wale_Prdt_Dyn 
+|22:20:25|22:20:29|...4s|..1.|.....|....3|..2272|..6066|.166Mo|.......| OK    |centre4_VEF 
+|22:20:29|22:20:33|...4s|..2.|1.744|....3|..2619|..6066|.342Mo|..13/13| OK    |PAR_centre4_VEF 
+|22:20:34|22:20:35|...1s|..1.|.....|...99|...750|.....3|.164Mo|.......| OK    |cond_coup_fictif_vdf_impl 
+|22:20:35|22:20:37|...2s|..2.|0.623|...99|...750|.....3|.318Mo|..16/16| OK    |PAR_cond_coup_fictif_vdf_impl 
+|22:20:39|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |cond_coup_fictif_vef_impl
+|22:20:39|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |PAR_cond_coup_fictif_vef_impl
+|22:20:42|22:20:45|...3s|..1.|.....|..216|.18076|.....3|.152Mo|.......| OK    |cond_couple_vdf_impl 
+|22:20:45|22:20:52|...7s|..2.|0.497|..216|.18076|.....3|.308Mo|..14/14| OK    |PAR_cond_couple_vdf_impl 
+|22:20:54|22:21:02|...8s|..1.|.....|...32|.50468|.....4|.166Mo|.......| OK    |cond_couple_vef_impl 
+|22:21:03|22:21:21|..18s|..2.|0.441|...32|.50468|.....4|.320Mo|..14/16| OK    |PAR_cond_couple_vef_impl 
+|22:21:22|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |cond_vef_impl
+|22:21:25|22:21:33|...8s|..1.|.....|....3|...426|125000|.260Mo|.......| OK    |cpu_3D 
+|22:21:33|22:21:40|...7s|..2.|1.493|....3|...560|125000|.431Mo|....8/8| OK    |PAR_cpu_3D 
+|22:21:43|22:22:08|..25s|..1.|.....|....3|...748|102000|.398Mo|.......| OK    |cpu_3D_VEF 
+|22:22:08|22:22:23|..15s|..2.|1.715|....3|...942|102000|.594Mo|....4/8| OK    |PAR_cpu_3D_VEF 
+|22:22:24|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |croix_3D_VDF
+Data file of the previous test must be prepared for parallelism.
+|22:22:26|22:22:31|...5s|..1.|.....|...10|....32|..6720|.162Mo|.......| OK    |croix_3D_VEF 
+|22:22:31|22:22:34|...3s|..3.|2.323|...10|....32|..6720|.486Mo|..10/10| OK    |PAR_croix_3D_VEF 
+|22:22:36|22:22:37|...1s|..1.|.....|..301|..4826|....51|.140Mo|.......| OK    |docond 
+|22:22:37|22:22:41|...4s|..3.|0.655|..301|..6617|....51|.479Mo|..17/17| OK    |PAR_docond 
+|22:22:43|22:22:44|...1s|..1.|.....|....1|.....0|..1137|.187Mo|.......| OK    |docond_3D 
+|22:22:44|22:22:47|...3s|..2.|1.451|....1|.....0|..1137|.334Mo|..14/14| OK    |PAR_docond_3D 
+|22:22:48|22:22:50|...2s|..1.|.....|..784|.11348|....51|.165Mo|.......| OK    |docond_QC 
+|22:22:52|22:22:53|...1s|..1.|.....|...21|..1635|...204|.165Mo|.......| OK    |docond_VEF 
+|22:22:53|22:22:56|...3s|..2.|1.931|...21|..1841|...204|.326Mo|..17/17| OK    |PAR_docond_VEF 
+|22:22:57|22:23:04|...7s|..1.|.....|...51|..6043|..3672|.173Mo|.......| OK    |docond_VEF_3D 
+|22:23:05|22:23:11|...6s|..2.|1.268|...51|..7547|..3672|.307Mo|..17/17| OK    |PAR_docond_VEF_3D 
+|22:23:13|22:23:14|...1s|..1.|.....|..100|.20970|...204|.165Mo|.......| OK    |docond_VEF_CN 
+|22:23:16|22:23:16|...0s|..1.|.....|...10|....12|....51|.156Mo|.......| OK    |docond_anisoproc 
+|22:23:16|22:23:18|...2s|..3.|0.650|...10|....12|....51|.486Mo|..14/14| OK    |PAR_docond_anisoproc 
+|22:23:20|22:23:21|...1s|..1.|.....|...95|..1468|....51|.165Mo|.......| OK    |docond_diff_impl 
+|22:23:21|22:23:23|...2s|..2.|0.844|...95|..1726|....51|.288Mo|..14/14| OK    |PAR_docond_diff_impl 
+|22:23:24|22:23:25|...1s|..1.|.....|...40|..7128|....51|.165Mo|.......| OK    |docond_impl 
+|22:23:25|22:23:28|...3s|..2.|0.633|...40|..8291|....51|.325Mo|..14/14| OK    |PAR_docond_impl 
+|22:23:29|22:23:31|...2s|..1.|.....|...40|.21296|....51|.165Mo|.......| OK    |docond_segsol 
+|22:23:31|22:23:34|...3s|..2.|0.656|...40|.24584|....51|.312Mo|..14/14| OK    |PAR_docond_segsol 
+|22:23:35|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |geom2ansys
+Data file of the previous test must be prepared for parallelism.
+|22:23:37|22:23:38|...1s|..1.|.....|....5|.....3|..1944|.168Mo|.......| OK    |muscl 
+|22:23:38|22:23:40|...2s|..2.|1.364|....5|.....3|..1944|.311Mo|..11/11| OK    |PAR_muscl 
+|22:23:41|22:24:03|..22s|..1.|.....|..398|.....0|..3136|.164Mo|.......| OK    |quick_ThHyd_VDF 
+|22:24:03|22:24:17|..14s|..2.|1.661|..398|.....0|..3136|.334Mo|..10/10| OK    |PAR_quick_ThHyd_VDF 
+|22:24:18|22:24:19|...1s|..1.|.....|....5|.....3|..1944|.143Mo|.......| OK    |quick_VEF 
+|22:24:21|22:24:21|...0s|..1.|.....|....1|....17|....51|.164Mo|.......| OK    |reprise_QC 
+|22:24:22|22:24:23|...1s|..1.|.....|..200|..1800|....51|.165Mo|.......| OK    |sdocond 
+|22:24:24|22:24:26|...2s|..2.|0.764|..200|..2162|....51|.327Mo|..14/14| OK    |PAR_sdocond 
+|22:24:30|22:24:31|...1s|..1.|.....|..100|..1513|...100|.160Mo|.......| OK    |sreprise 
+|22:24:31|22:24:33|...2s|..2.|0.687|..100|..1843|...100|.332Mo|..10/11| OK    |PAR_sreprise 
+|22:24:40|22:24:40|...0s|..1.|.....|...10|...823|..1000|.165Mo|.......| OK    |stat_reprise_QC 
+|22:24:42|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Abort_timestep_jdd1
+Data file of the previous test must be prepared for parallelism.
+|22:24:43|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Abort_timestep_jdd2
+Data file of the previous test must be prepared for parallelism.
+|22:24:44|22:24:45|...1s|..1.|.....|....3|.....0|.....4|.163Mo|.......| OK    |Bilan_chaleur_vef_jdd1 
+|22:24:46|22:24:46|...0s|..1.|.....|....3|.....0|....16|.140Mo|.......| OK    |Bilan_chaleur_vef_jdd2 
+|22:24:47|22:24:48|...1s|..1.|.....|....3|.....0|....64|.165Mo|.......| OK    |Bilan_chaleur_vef_jdd3 
+|22:24:49|22:24:49|...0s|..1.|.....|....3|.....0|...144|.165Mo|.......| OK    |Bilan_chaleur_vef_jdd4 
+|22:24:50|22:24:51|...1s|..1.|.....|....3|.....0|....64|.164Mo|.......| OK    |Bilan_chaleur_vef_jdd5 
+|22:24:52|22:24:52|...0s|..1.|.....|....3|.....0|....64|.165Mo|.......| OK    |Bilan_chaleur_vef_jdd6 
+|22:24:53|22:24:54|...1s|..1.|.....|....3|.....0|....64|.138Mo|.......| OK    |Bilan_chaleur_vef_jdd7 
+|22:24:55|22:24:55|...0s|..1.|.....|....3|.....0|....64|.165Mo|.......| OK    |Bilan_chaleur_vef_jdd8 
+|22:24:57|22:25:21|..24s|..1.|.....|....3|...848|.65856|.287Mo|.......| OK    |Channel_LES_Re_tau405_Pr071_T0Q_jdd1 
+|22:25:25|22:25:33|...8s|..1.|.....|....3|...652|.24192|.218Mo|.......| OK    |Channel_LES_Re_tau405_Pr071_T0Q_jdd2 
+|22:25:35|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Channel_LES_Re_tau405_Pr071_T0Q_jdd3
+|22:25:36|22:25:38|...2s|..1.|.....|....3|.....0|..2214|.180Mo|.......| OK    |Channel_T1_T2_QC_jdd1 
+|22:25:39|22:25:41|...2s|..1.|.....|....3|.....0|..2214|.181Mo|.......| OK    |Channel_T1_T2_QC_jdd2 
+|22:25:42|22:25:43|...1s|..1.|.....|....3|.....0|..2214|.163Mo|.......| OK    |Channel_T1_T2_QC_jdd3 
+|22:25:45|22:25:47|...2s|..1.|.....|....3|...123|..2214|.176Mo|.......| OK    |Channel_T1_T2_incompressible_jdd1 
+|22:25:49|22:25:51|...2s|..1.|.....|....3|...230|..2214|.167Mo|.......| OK    |Channel_T1_T2_incompressible_jdd2 
+|22:25:52|22:25:55|...3s|..1.|.....|....3|...323|..2214|.176Mo|.......| OK    |Channel_T1_T2_incompressible_jdd3 
+|22:25:56|22:25:58|...2s|..1.|.....|....3|....47|..1536|.172Mo|.......| OK    |Channel_T1_T2_incompressible_jdd4 
+|22:25:59|22:26:04|...5s|..1.|.....|....3|....42|..5184|.190Mo|.......| OK    |Channel_T1_T2_incompressible_jdd5 
+|22:26:06|22:26:07|...1s|..1.|.....|....3|.....0|...672|.137Mo|.......| OK    |Comp_conv_jdd1 
+|22:26:08|22:26:09|...1s|..1.|.....|....3|.....0|...672|.158Mo|.......| OK    |Comp_conv_jdd10 
+|22:26:11|22:26:11|...0s|..1.|.....|....3|.....0|...672|.151Mo|.......| OK    |Comp_conv_jdd11 
+|22:26:13|22:26:13|...0s|..1.|.....|....3|.....0|...672|.165Mo|.......| OK    |Comp_conv_jdd12 
+|22:26:15|22:26:21|...6s|..1.|.....|....3|.....0|.40320|.245Mo|.......| OK    |Comp_conv_jdd13 
+|22:26:23|22:26:29|...6s|..1.|.....|....3|.....0|.40320|.232Mo|.......| OK    |Comp_conv_jdd14 
+|22:26:31|22:26:37|...6s|..1.|.....|....3|.....0|.40320|.239Mo|.......| OK    |Comp_conv_jdd15 
+|22:26:39|22:26:45|...6s|..1.|.....|....3|.....0|.40320|.239Mo|.......| OK    |Comp_conv_jdd16 
+|22:26:47|22:26:58|..11s|..1.|.....|....3|.....0|.40320|.250Mo|.......| OK    |Comp_conv_jdd17 
+|22:27:00|22:27:12|..12s|..1.|.....|....3|.....0|.40320|.250Mo|.......| OK    |Comp_conv_jdd18 
+|22:27:14|22:27:31|..17s|..1.|.....|....3|.....0|.40320|.231Mo|.......| OK    |Comp_conv_jdd19 
+|22:27:32|22:27:33|...1s|..1.|.....|....3|.....0|...672|.159Mo|.......| OK    |Comp_conv_jdd2 
+|22:27:35|22:27:44|...9s|..1.|.....|....3|.....0|.40320|.242Mo|.......| OK    |Comp_conv_jdd20 
+|22:27:46|22:27:53|...7s|..1.|.....|....3|.....0|.40320|.245Mo|.......| OK    |Comp_conv_jdd21 
+|22:27:55|22:28:03|...8s|..1.|.....|....3|.....0|.40320|.245Mo|.......| OK    |Comp_conv_jdd22 
+|22:28:05|22:28:13|...8s|..1.|.....|....3|.....0|.40320|.233Mo|.......| OK    |Comp_conv_jdd23 
+|22:28:15|22:28:23|...8s|..1.|.....|....3|.....0|.40320|.222Mo|.......| OK    |Comp_conv_jdd24 
+|22:28:24|22:28:25|...1s|..1.|.....|....3|.....0|...672|.165Mo|.......| OK    |Comp_conv_jdd25 
+|22:28:26|22:28:27|...1s|..1.|.....|....3|.....0|...672|.154Mo|.......| OK    |Comp_conv_jdd26 
+|22:28:29|22:28:29|...0s|..1.|.....|....3|.....0|...672|.159Mo|.......| OK    |Comp_conv_jdd27 
+|22:28:31|22:28:31|...0s|..1.|.....|....3|.....0|...672|.165Mo|.......| OK    |Comp_conv_jdd28 
+|22:28:33|22:28:33|...0s|..1.|.....|....3|.....0|...672|.165Mo|.......| OK    |Comp_conv_jdd29 
+|22:28:35|22:28:35|...0s|..1.|.....|....3|.....0|...672|.161Mo|.......| OK    |Comp_conv_jdd3 
+|22:28:37|22:28:38|...1s|..1.|.....|....3|.....0|...672|.166Mo|.......| OK    |Comp_conv_jdd30 
+|22:28:39|22:28:40|...1s|..1.|.....|....3|.....0|...672|.160Mo|.......| OK    |Comp_conv_jdd31 
+|22:28:41|22:28:42|...1s|..1.|.....|....3|.....0|...672|.164Mo|.......| OK    |Comp_conv_jdd32 
+|22:28:43|22:28:44|...1s|..1.|.....|....3|.....0|...672|.163Mo|.......| OK    |Comp_conv_jdd33 
+|22:28:45|22:28:46|...1s|..1.|.....|....3|.....0|...672|.164Mo|.......| OK    |Comp_conv_jdd34 
+|22:28:47|22:28:48|...1s|..1.|.....|....3|.....0|...672|.165Mo|.......| OK    |Comp_conv_jdd35 
+|22:28:49|22:28:50|...1s|..1.|.....|....3|.....0|...672|.137Mo|.......| OK    |Comp_conv_jdd36 
+|22:28:52|22:28:58|...6s|..1.|.....|....3|.....0|.40320|.233Mo|.......| OK    |Comp_conv_jdd37 
+|22:29:00|22:29:06|...6s|..1.|.....|....3|.....0|.40320|.244Mo|.......| OK    |Comp_conv_jdd38 
+|22:29:08|22:29:14|...6s|..1.|.....|....3|.....0|.40320|.239Mo|.......| OK    |Comp_conv_jdd39 
+|22:29:15|22:29:16|...1s|..1.|.....|....3|.....0|...672|.149Mo|.......| OK    |Comp_conv_jdd4 
+|22:29:18|22:29:24|...6s|..1.|.....|....3|.....0|.40320|.210Mo|.......| OK    |Comp_conv_jdd40 
+|22:29:26|22:29:33|...7s|..1.|.....|....3|.....0|.40320|.250Mo|.......| OK    |Comp_conv_jdd41 
+|22:29:35|22:29:42|...7s|..1.|.....|....3|.....0|.40320|.250Mo|.......| OK    |Comp_conv_jdd42 
+|22:29:44|22:29:55|..11s|..1.|.....|....3|.....0|.40320|.222Mo|.......| OK    |Comp_conv_jdd43 
+|22:29:57|22:30:04|...7s|..1.|.....|....3|.....0|.40320|.244Mo|.......| OK    |Comp_conv_jdd44 
+|22:30:06|22:30:13|...7s|..1.|.....|....3|.....0|.40320|.245Mo|.......| OK    |Comp_conv_jdd45 
+|22:30:16|22:30:23|...7s|..1.|.....|....3|.....0|.40320|.246Mo|.......| OK    |Comp_conv_jdd46 
+|22:30:26|22:30:34|...8s|..1.|.....|....3|.....0|.40320|.226Mo|.......| OK    |Comp_conv_jdd47 
+|22:30:36|22:30:44|...8s|..1.|.....|....3|.....0|.40320|.237Mo|.......| OK    |Comp_conv_jdd48 
+|22:30:45|22:30:46|...1s|..1.|.....|....3|.....0|...672|.165Mo|.......| OK    |Comp_conv_jdd49 
+|22:30:47|22:30:48|...1s|..1.|.....|....3|.....0|...672|.165Mo|.......| OK    |Comp_conv_jdd5 
+|22:30:49|22:30:50|...1s|..1.|.....|....3|.....0|...672|.165Mo|.......| OK    |Comp_conv_jdd50 
+|22:30:51|22:30:52|...1s|..1.|.....|....3|.....0|...672|.165Mo|.......| OK    |Comp_conv_jdd6 
+|22:30:53|22:30:54|...1s|..1.|.....|....3|.....0|...672|.164Mo|.......| OK    |Comp_conv_jdd7 
+|22:30:56|22:30:56|...0s|..1.|.....|....3|.....0|...672|.159Mo|.......| OK    |Comp_conv_jdd8 
+|22:30:58|22:30:58|...0s|..1.|.....|....3|.....0|...672|.158Mo|.......| OK    |Comp_conv_jdd9 
+|22:31:00|22:31:03|...3s|..1.|.....|....3|...384|..2160|.173Mo|.......| OK    |Conv_Heated_pipe_wall_temp_jdd1 
+|22:31:04|22:31:08|...4s|..1.|.....|....3|...679|..3308|.180Mo|.......| OK    |Conv_Heated_pipe_wall_temp_jdd10 
+|22:31:10|22:31:14|...4s|..1.|.....|....3|...679|..3308|.182Mo|.......| OK    |Conv_Heated_pipe_wall_temp_jdd11 
+|22:31:15|22:31:19|...4s|..1.|.....|....3|...670|..3308|.181Mo|.......| OK    |Conv_Heated_pipe_wall_temp_jdd12 
+|22:31:21|22:31:23|...2s|..1.|.....|....3|...873|..3308|.155Mo|.......| OK    |Conv_Heated_pipe_wall_temp_jdd13 
+|22:31:25|22:31:27|...2s|..1.|.....|....3|...873|..3308|.182Mo|.......| OK    |Conv_Heated_pipe_wall_temp_jdd14 
+|22:31:29|22:31:32|...3s|..1.|.....|....3|...384|..2160|.176Mo|.......| OK    |Conv_Heated_pipe_wall_temp_jdd2 
+|22:31:34|22:31:36|...2s|..1.|.....|....3|...381|..2160|.176Mo|.......| OK    |Conv_Heated_pipe_wall_temp_jdd3 
+|22:31:38|22:31:40|...2s|..1.|.....|....3|...686|..2160|.175Mo|.......| OK    |Conv_Heated_pipe_wall_temp_jdd4 
+|22:31:42|22:31:44|...2s|..1.|.....|....3|...686|..2160|.175Mo|.......| OK    |Conv_Heated_pipe_wall_temp_jdd5 
+|22:31:46|22:31:48|...2s|..1.|.....|....3|...687|..2160|.159Mo|.......| OK    |Conv_Heated_pipe_wall_temp_jdd6 
+|22:31:50|22:31:51|...1s|..1.|.....|....3|...156|...576|.148Mo|.......| OK    |Conv_Heated_pipe_wall_temp_jdd7 
+|22:31:53|22:31:54|...1s|..1.|.....|....3|...157|...576|.162Mo|.......| OK    |Conv_Heated_pipe_wall_temp_jdd8 
+|22:31:56|22:31:57|...1s|..1.|.....|....3|...150|...576|.166Mo|.......| OK    |Conv_Heated_pipe_wall_temp_jdd9 
+|22:32:00|22:35:45|.225s|..1.|.....|....3|.16146|.97200|.557Mo|.......| OK    |Conv_Pipe_InOut_jdd1 
+|22:35:50|22:39:37|.227s|..1.|.....|....3|.16276|.97200|.545Mo|.......| OK    |Conv_Pipe_InOut_jdd2 
+|22:39:43|22:43:26|.223s|..1.|.....|....3|.15991|.97200|.538Mo|.......| OK    |Conv_Pipe_InOut_jdd3 
+|22:43:31|22:43:32|...1s|..1.|.....|....3|...267|..2160|.168Mo|.......| OK    |Conv_Pipe_Perio_Expl_jdd1 
+|22:43:33|22:43:34|...1s|..1.|.....|....3|...169|..2160|.169Mo|.......| OK    |Conv_Pipe_Perio_Expl_jdd2 
+|22:43:36|22:43:37|...1s|..1.|.....|....3|...254|..2160|.168Mo|.......| OK    |Conv_Pipe_Perio_Expl_jdd3 
+|22:43:38|22:43:41|...3s|..1.|.....|....3|..1148|..2160|.161Mo|.......| OK    |Conv_Pipe_Perio_Impl_jdd1 
+|22:43:43|22:43:45|...2s|..1.|.....|....3|...714|..2160|.161Mo|.......| OK    |Conv_Pipe_Perio_Impl_jdd2 
+|22:43:47|22:43:50|...3s|..1.|.....|....3|..1102|..2160|.177Mo|.......| OK    |Conv_Pipe_Perio_Impl_jdd3 
+|22:43:51|22:43:52|...1s|..1.|.....|....3|....95|..6130|.168Mo|.......| OK    |Convection_Rotating_Table_jdd1 
+|22:43:54|22:43:55|...1s|..1.|.....|....3|....95|..6130|.145Mo|.......| OK    |Convection_Rotating_Table_jdd10 
+|22:43:56|22:43:57|...1s|..1.|.....|....3|....95|..6130|.173Mo|.......| OK    |Convection_Rotating_Table_jdd11 
+|22:43:59|22:44:00|...1s|..1.|.....|....3|....95|..6130|.173Mo|.......| OK    |Convection_Rotating_Table_jdd12 
+|22:44:01|22:44:02|...1s|..1.|.....|....3|....95|..6130|.151Mo|.......| OK    |Convection_Rotating_Table_jdd13 
+|22:44:03|22:44:04|...1s|..1.|.....|....3|....95|..6130|.173Mo|.......| OK    |Convection_Rotating_Table_jdd14 
+|22:44:06|22:44:07|...1s|..1.|.....|....3|....95|..6130|.173Mo|.......| OK    |Convection_Rotating_Table_jdd15 
+|22:44:08|22:44:09|...1s|..1.|.....|....3|....95|..6130|.173Mo|.......| OK    |Convection_Rotating_Table_jdd16 
+|22:44:11|22:44:12|...1s|..1.|.....|....3|....95|..6130|.170Mo|.......| OK    |Convection_Rotating_Table_jdd17 
+|22:44:13|22:44:14|...1s|..1.|.....|....3|....95|..6130|.158Mo|.......| OK    |Convection_Rotating_Table_jdd18 
+|22:44:15|22:44:17|...2s|..1.|.....|....3|....95|..6130|.173Mo|.......| OK    |Convection_Rotating_Table_jdd19 
+|22:44:18|22:44:19|...1s|..1.|.....|....3|....95|..6130|.173Mo|.......| OK    |Convection_Rotating_Table_jdd2 
+|22:44:21|22:44:22|...1s|..1.|.....|....3|....95|..6130|.168Mo|.......| OK    |Convection_Rotating_Table_jdd20 
+|22:44:23|22:44:24|...1s|..1.|.....|....3|....95|..6130|.173Mo|.......| OK    |Convection_Rotating_Table_jdd21 
+|22:44:26|22:44:27|...1s|..1.|.....|....3|....95|..6130|.152Mo|.......| OK    |Convection_Rotating_Table_jdd22 
+|22:44:28|22:44:29|...1s|..1.|.....|....3|....95|..6130|.170Mo|.......| OK    |Convection_Rotating_Table_jdd23 
+|22:44:31|22:44:32|...1s|..1.|.....|....3|....95|..6130|.173Mo|.......| OK    |Convection_Rotating_Table_jdd24 
+|22:44:33|22:44:34|...1s|..1.|.....|....3|....95|..6130|.173Mo|.......| OK    |Convection_Rotating_Table_jdd25 
+|22:44:36|22:44:37|...1s|..1.|.....|....3|....95|..6130|.173Mo|.......| OK    |Convection_Rotating_Table_jdd26 
+|22:44:38|22:44:39|...1s|..1.|.....|....3|....95|..6130|.172Mo|.......| OK    |Convection_Rotating_Table_jdd27 
+|22:44:40|22:44:41|...1s|..1.|.....|....3|....95|..6130|.173Mo|.......| OK    |Convection_Rotating_Table_jdd28 
+|22:44:43|22:44:44|...1s|..1.|.....|....3|....95|..6130|.162Mo|.......| OK    |Convection_Rotating_Table_jdd3 
+|22:44:46|22:44:47|...1s|..1.|.....|....3|....95|..6130|.173Mo|.......| OK    |Convection_Rotating_Table_jdd4 
+|22:44:48|22:44:49|...1s|..1.|.....|....3|....95|..6130|.143Mo|.......| OK    |Convection_Rotating_Table_jdd5 
+|22:44:51|22:44:52|...1s|..1.|.....|....3|....95|..6130|.173Mo|.......| OK    |Convection_Rotating_Table_jdd6 
+|22:44:53|22:44:54|...1s|..1.|.....|....3|....95|..6130|.165Mo|.......| OK    |Convection_Rotating_Table_jdd7 
+|22:44:56|22:44:57|...1s|..1.|.....|....3|....95|..6130|.157Mo|.......| OK    |Convection_Rotating_Table_jdd8 
+|22:44:58|22:44:59|...1s|..1.|.....|....3|....95|..6130|.160Mo|.......| OK    |Convection_Rotating_Table_jdd9 
+|22:45:01|22:45:01|...0s|..1.|.....|....3|...167|..4761|.136Mo|.......| OK    |Convection_Vahl_Davis_jdd1 
+|22:45:03|22:45:04|...1s|..1.|.....|....3|...888|..6084|.175Mo|.......| OK    |Convection_Vahl_Davis_jdd10 
+|22:45:05|22:45:06|...1s|..1.|.....|....3|...167|..4761|.165Mo|.......| OK    |Convection_Vahl_Davis_jdd2 
+|22:45:07|22:45:08|...1s|..1.|.....|....3|...484|..1444|.166Mo|.......| OK    |Convection_Vahl_Davis_jdd3 
+|22:45:09|22:45:10|...1s|..1.|.....|....3|...484|..1444|.165Mo|.......| OK    |Convection_Vahl_Davis_jdd4 
+|22:45:11|22:45:12|...1s|..1.|.....|....3|...484|..1444|.165Mo|.......| OK    |Convection_Vahl_Davis_jdd5 
+|22:45:13|22:45:14|...1s|..1.|.....|....3|...484|..1444|.157Mo|.......| OK    |Convection_Vahl_Davis_jdd6 
+|22:45:15|22:45:17|...2s|..1.|.....|....3|...888|..6084|.175Mo|.......| OK    |Convection_Vahl_Davis_jdd7 
+|22:45:18|22:45:19|...1s|..1.|.....|....3|...888|..6084|.145Mo|.......| OK    |Convection_Vahl_Davis_jdd8 
+|22:45:21|22:45:22|...1s|..1.|.....|....3|...888|..6084|.176Mo|.......| OK    |Convection_Vahl_Davis_jdd9 
+|22:45:25|22:45:26|...1s|..1.|.....|....3|.....0|..4752|.184Mo|.......| OK    |Convection_kEps_QC_jdd1 
+|22:45:28|22:45:29|...1s|..1.|.....|....3|.....0|..4752|.184Mo|.......| OK    |Convection_kEps_QC_jdd2 
+|22:45:30|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Convection_kEps_QC_jdd3
+|22:45:32|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Convection_kEps_QC_jdd4
+|22:45:33|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Convection_kEps_QC_jdd5
+|22:45:35|22:45:36|...1s|..1.|.....|....3|..4489|...160|.168Mo|.......| OK    |Couplage_Implicite_Instationnaire_jdd1 
+|22:45:37|22:45:45|...8s|..1.|.....|....3|..1733|..2598|.184Mo|.......| OK    |Coupled_plane_channel_VEF_jdd1 
+|22:45:47|22:45:48|...1s|..1.|.....|....3|.....0|..6130|.173Mo|.......| OK    |EFstab_Muscl_and_Limiters_VEF_jdd1 
+|22:45:49|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |EFstab_Muscl_and_Limiters_VEF_jdd10
+|22:45:51|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |EFstab_Muscl_and_Limiters_VEF_jdd11
+|22:45:52|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |EFstab_Muscl_and_Limiters_VEF_jdd12
+|22:45:54|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |EFstab_Muscl_and_Limiters_VEF_jdd13
+|22:45:56|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |EFstab_Muscl_and_Limiters_VEF_jdd14
+|22:45:57|22:45:58|...1s|..1.|.....|....3|.....0|..6130|.164Mo|.......| OK    |EFstab_Muscl_and_Limiters_VEF_jdd2 
+|22:45:59|22:46:00|...1s|..1.|.....|....3|.....0|..6130|.171Mo|.......| OK    |EFstab_Muscl_and_Limiters_VEF_jdd3 
+|22:46:02|22:46:03|...1s|..1.|.....|....3|.....0|..6130|.149Mo|.......| OK    |EFstab_Muscl_and_Limiters_VEF_jdd4 
+|22:46:04|22:46:05|...1s|..1.|.....|....3|.....0|..6130|.172Mo|.......| OK    |EFstab_Muscl_and_Limiters_VEF_jdd5 
+|22:46:06|22:46:07|...1s|..1.|.....|....3|.....0|..6130|.163Mo|.......| OK    |EFstab_Muscl_and_Limiters_VEF_jdd6 
+|22:46:08|22:46:09|...1s|..1.|.....|....3|.....0|..6130|.173Mo|.......| OK    |EFstab_Muscl_and_Limiters_VEF_jdd7 
+|22:46:10|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |EFstab_Muscl_and_Limiters_VEF_jdd8
+|22:46:12|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |EFstab_Muscl_and_Limiters_VEF_jdd9
+|22:46:13|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |FTD_particles_coupling_jdd1
+Data file of the previous test must be prepared for parallelism.
+|22:46:15|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |FTD_particles_coupling_jdd2
+Data file of the previous test must be prepared for parallelism.
+|22:46:17|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |FTD_particles_coupling_jdd3
+|22:46:19|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |FTD_particles_coupling_jdd4
+|22:46:21|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |FTD_particles_coupling_jdd5
+Data file of the previous test must be prepared for parallelism.
+|22:46:22|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |FTD_particles_coupling_jdd6
+|22:46:24|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |FTD_particles_coupling_jdd7
+Data file of the previous test must be prepared for parallelism.
+|22:46:31|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |FTD_particles_transfo_jdd1
+|22:46:35|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |FTD_particles_transfo_jdd2
+|22:46:37|22:46:37|...0s|..1.|.....|....3|...485|..4134|.165Mo|.......| OK    |Heated_Backward_Facing_Step_2D_jdd1 
+|22:46:40|22:46:55|..15s|..1.|.....|....3|..2276|.10855|.191Mo|.......| OK    |Heated_Backward_Facing_Step_2D_jdd2 
+|22:46:57|22:47:09|..12s|..1.|.....|....3|..1948|.10855|.203Mo|.......| OK    |Heated_Backward_Facing_Step_2D_jdd3 
+|22:47:12|22:47:19|...7s|..1.|.....|....3|..1616|.11385|.199Mo|.......| OK    |Heated_floor_k_eps_jdd1 
+|22:47:22|22:47:29|...7s|..1.|.....|....3|..1616|.11385|.203Mo|.......| OK    |Heated_floor_k_eps_jdd2 
+|22:47:31|22:47:32|...1s|..1.|.....|....3|...587|..7784|.169Mo|.......| OK    |Heated_floor_k_eps_jdd3 
+|22:47:34|22:47:35|...1s|..1.|.....|....3|...223|...400|.165Mo|.......| OK    |INEEL_VDF_QC_1D_2D_jdd1 
+|22:47:36|22:47:37|...1s|..1.|.....|....3|...708|..6400|.174Mo|.......| OK    |INEEL_VDF_QC_1D_2D_jdd2 
+|22:47:39|22:47:40|...1s|..1.|.....|....3|...710|..6400|.174Mo|.......| OK    |INEEL_VDF_QC_1D_2D_jdd3 
+|22:47:41|22:47:43|...2s|..1.|.....|....3|...490|..6400|.180Mo|.......| 1 ecarts |INEEL_VEF_QC_jdd1
+|22:47:44|22:47:46|...2s|..1.|.....|....3|....12|..6400|.179Mo|.......| 1 ecarts |INEEL_VEF_QC_jdd2
+|22:47:47|22:47:48|...1s|..1.|.....|....3|....14|..6400|.162Mo|.......| 1 ecarts |INEEL_VEF_QC_jdd3
+|22:47:50|22:47:51|...1s|..1.|.....|....3|...487|..6400|.159Mo|.......| 1 ecarts |INEEL_VEF_QC_jdd4
+|22:47:53|22:48:05|..12s|..1.|.....|....3|..3246|.19200|.235Mo|.......| 1 ecarts |INEEL_VEF_QC_jdd5
+|22:48:07|22:48:14|...7s|..1.|.....|....3|.....6|.19200|.234Mo|.......| 1 ecarts |INEEL_VEF_QC_jdd6
+|22:48:16|22:48:24|...8s|..1.|.....|....3|.....9|.19200|.244Mo|.......| 1 ecarts |INEEL_VEF_QC_jdd7
+|22:48:26|22:48:38|..12s|..1.|.....|....3|..3206|.19200|.241Mo|.......| 1 ecarts |INEEL_VEF_QC_jdd8
+|22:50:52|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Jet_impingement_on_a_hot_flat_plate_jdd1
+|22:53:05|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Jet_impingement_on_a_hot_flat_plate_jdd2
+|22:53:07|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Nusselt_Correlation_2D_jdd1
+|22:53:08|22:53:09|...1s|..1.|.....|....3|.....0|....24|.165Mo|.......| OK    |Nusselt_Correlation_2D_jdd2 
+|22:53:10|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Nusselt_Correlation_Coupling_Pb_jdd1
+|22:53:11|22:53:12|...1s|..1.|.....|....3|.....0|...222|.166Mo|.......| OK    |Nusselt_Correlation_Coupling_Pb_jdd2 
+|22:53:13|22:53:13|...0s|..1.|.....|....3|...167|..2500|.162Mo|.......| OK    |Oscillating_Flow_jdd1 
+|22:53:14|22:53:15|...1s|..1.|.....|....3|...167|..2500|.140Mo|.......| OK    |Oscillating_Flow_jdd2 
+|22:53:16|22:53:18|...2s|..1.|.....|....3|..1064|..5040|.159Mo|.......| OK    |Oscillating_Flow_jdd3 
+|22:53:19|22:53:20|...1s|..1.|.....|....3|..1064|..5040|.146Mo|.......| OK    |Oscillating_Flow_jdd4 
+|22:53:21|22:53:23|...2s|..1.|.....|....3|..1064|..5040|.158Mo|.......| OK    |Oscillating_Flow_jdd5 
+|22:53:24|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Pb_couple_2D_jdd1
+|22:53:25|22:53:26|...1s|..1.|.....|....3|.....0|....20|.165Mo|.......| OK    |Pb_couple_2D_jdd2 
+|22:53:27|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Poreux_VEF_jdd1
+Data file of the previous test must be prepared for parallelism.
+|22:53:29|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Poreux_VEF_jdd2
+Data file of the previous test must be prepared for parallelism.
+|22:53:30|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Poreux_VEF_jdd4
+Data file of the previous test must be prepared for parallelism.
+|22:53:32|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Poreux_VEF_jdd6
+Data file of the previous test must be prepared for parallelism.
+|22:53:34|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |PorousWithPLoss_VEF_jdd1
+Data file of the previous test must be prepared for parallelism.
+|22:53:36|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |PorousWithPLoss_VEF_jdd2
+Data file of the previous test must be prepared for parallelism.
+|22:53:37|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |PorousWithPLoss_VEF_jdd3
+Data file of the previous test must be prepared for parallelism.
+|22:53:39|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |PorousWithPLoss_VEF_jdd4
+Data file of the previous test must be prepared for parallelism.
+|22:53:40|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |QC_d_rho_dt_jdd1
+|22:53:42|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |QC_d_rho_dt_jdd2
+|22:53:44|22:53:45|...1s|..1.|.....|....3|....24|.....4|.165Mo|.......| OK    |QC_d_rho_dt_jdd3 
+|22:53:45|22:53:47|...2s|..2.|0.745|....3|....28|.....4|.301Mo|....8/8| OK    |PAR_QC_d_rho_dt_jdd3 
+|22:53:48|22:53:49|...1s|..1.|.....|....3|...102|.....4|.164Mo|.......| 14 ecarts |QC_d_rho_dt_jdd4
+|22:53:49|22:53:51|...2s|..2.|0.345|....3|...142|.....4|.303Mo|....8/8| OK    |PAR_QC_d_rho_dt_jdd4 
+|22:53:52|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Radiation_jdd1
+Data file of the previous test must be prepared for parallelism.
+|22:53:53|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Radiation_jdd10
+|22:53:54|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Radiation_jdd2
+|22:53:56|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Radiation_jdd3
+Data file of the previous test must be prepared for parallelism.
+|22:53:57|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Radiation_jdd4
+|22:53:59|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Radiation_jdd5
+|22:54:00|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Radiation_jdd6
+|22:54:02|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Radiation_jdd7
+|22:54:03|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Radiation_jdd8
+|22:54:04|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |Radiation_jdd9
+|22:54:06|22:54:06|...0s|..1.|.....|....3|.....0|...144|.166Mo|.......| OK    |T_paroi_jdd1 
+|22:54:07|22:54:08|...1s|..1.|.....|....3|.....0|...144|.166Mo|.......| OK    |T_paroi_jdd2 
+|22:54:09|22:54:09|...0s|..1.|.....|....3|.....0|...144|.166Mo|.......| OK    |T_paroi_jdd4 
+|22:54:11|22:54:11|...0s|..1.|.....|....3|.....0|.....4|.165Mo|.......| OK    |Test_tparoi_jdd1 
+|22:54:11|22:54:13|...2s|..2.|0.864|....3|.....0|.....4|.299Mo|....9/9| OK    |PAR_Test_tparoi_jdd1 
+|22:54:15|22:54:15|...0s|..1.|.....|....3|.....0|.....4|.165Mo|.......| OK    |Test_tparoi_jdd2 
+|22:54:15|22:54:17|...2s|..2.|0.910|....3|.....0|.....4|.328Mo|....9/9| OK    |PAR_Test_tparoi_jdd2 
+|22:54:18|22:54:19|...1s|..1.|.....|....3|.....0|.....4|.165Mo|.......| OK    |Test_tparoi_jdd3 
+|22:54:19|22:54:21|...2s|..2.|0.906|....3|.....0|.....4|.334Mo|....9/9| OK    |PAR_Test_tparoi_jdd3 
+|22:54:22|22:54:22|...0s|..1.|.....|....3|...138|...672|.154Mo|.......| OK    |ThermalCoupling_LaminarFlow_VEF_jdd1 
+|22:54:23|22:54:24|...1s|..1.|.....|....3|...138|...672|.139Mo|.......| OK    |ThermalCoupling_LaminarFlow_VEF_jdd2 
+|22:54:25|22:54:26|...1s|..1.|.....|....3|...187|...864|.166Mo|.......| OK    |ThermalCoupling_TurbulentFlow_VEF_jdd1 
+|22:54:27|22:54:28|...1s|..1.|.....|....3|...112|..1578|.152Mo|.......| OK    |ThermalCoupling_TurbulentFlow_VEF_jdd2 
+|22:54:29|22:54:31|...2s|..1.|.....|....3|.....9|..2968|.157Mo|.......| OK    |Thermal_stratification_flow_jdd1 
+|22:54:32|22:54:34|...2s|..1.|.....|....3|.....9|..2968|.180Mo|.......| OK    |Thermal_stratification_flow_jdd2 
+|22:54:35|22:55:05|..30s|..1.|.....|....3|....12|.27252|.636Mo|.......| OK    |Thermal_stratification_flow_jdd3 
+|22:55:08|22:55:38|..30s|..1.|.....|....3|....12|.27252|.615Mo|.......| OK    |Thermal_stratification_flow_jdd4 
+|22:55:40|22:55:44|...4s|..1.|.....|....3|..3606|..7200|.175Mo|.......| OK    |Two_Layers_Stratif_impl_jdd1 
+|22:55:46|22:55:51|...5s|..1.|.....|....3|..5817|..7200|.186Mo|.......| OK    |Two_Layers_Stratif_impl_jdd10 
+|22:55:53|22:55:56|...3s|..1.|.....|....3|..3655|..7200|.176Mo|.......| OK    |Two_Layers_Stratif_impl_jdd11 
+|22:55:58|22:56:08|..10s|..1.|.....|....3|.11173|..7200|.172Mo|.......| OK    |Two_Layers_Stratif_impl_jdd12 
+|22:56:09|22:56:13|...4s|..1.|.....|....3|..3559|..7200|.181Mo|.......| OK    |Two_Layers_Stratif_impl_jdd13 
+|22:56:15|22:56:19|...4s|..1.|.....|....3|..3507|..7200|.186Mo|.......| OK    |Two_Layers_Stratif_impl_jdd14 
+|22:56:20|22:56:30|..10s|..1.|.....|....3|.11173|..7200|.185Mo|.......| OK    |Two_Layers_Stratif_impl_jdd15 
+|22:56:32|22:56:35|...3s|..1.|.....|....3|..3559|..7200|.181Mo|.......| OK    |Two_Layers_Stratif_impl_jdd16 
+|22:56:37|22:56:41|...4s|..1.|.....|....3|..3507|..7200|.186Mo|.......| OK    |Two_Layers_Stratif_impl_jdd17 
+|22:56:43|22:56:47|...4s|..1.|.....|....3|..3504|..7200|.168Mo|.......| OK    |Two_Layers_Stratif_impl_jdd18 
+|22:56:48|22:56:52|...4s|..1.|.....|....3|..3510|..7200|.186Mo|.......| OK    |Two_Layers_Stratif_impl_jdd19 
+|22:56:54|22:57:03|...9s|..1.|.....|....3|.10771|..7200|.185Mo|.......| OK    |Two_Layers_Stratif_impl_jdd2 
+|22:57:05|22:57:10|...5s|..1.|.....|....3|..5863|..7200|.186Mo|.......| OK    |Two_Layers_Stratif_impl_jdd20 
+|22:57:12|22:57:16|...4s|..1.|.....|....3|..3451|..7200|.172Mo|.......| OK    |Two_Layers_Stratif_impl_jdd3 
+|22:57:18|22:57:22|...4s|..1.|.....|....3|..3500|..7200|.185Mo|.......| OK    |Two_Layers_Stratif_impl_jdd4 
+|22:57:23|22:57:33|..10s|..1.|.....|....3|.10771|..7200|.186Mo|.......| OK    |Two_Layers_Stratif_impl_jdd5 
+|22:57:34|22:57:38|...4s|..1.|.....|....3|..3451|..7200|.179Mo|.......| OK    |Two_Layers_Stratif_impl_jdd6 
+|22:57:40|22:57:44|...4s|..1.|.....|....3|..3500|..7200|.186Mo|.......| OK    |Two_Layers_Stratif_impl_jdd7 
+|22:57:45|22:57:49|...4s|..1.|.....|....3|..3495|..7200|.185Mo|.......| OK    |Two_Layers_Stratif_impl_jdd8 
+|22:57:51|22:57:55|...4s|..1.|.....|....3|..3503|..7200|.185Mo|.......| OK    |Two_Layers_Stratif_impl_jdd9 
+|22:57:57|22:58:06|...9s|..1.|.....|....3|.10771|..7200|.185Mo|.......| OK    |Two_Layers_Stratif_jdd1 
+|22:58:08|22:58:16|...8s|..1.|.....|....3|..8933|..7200|.185Mo|.......| OK    |Two_Layers_Stratif_jdd2 
+|22:58:17|22:58:20|...3s|..1.|.....|....3|..3828|..7000|.171Mo|.......| OK    |Two_Layers_Stratif_jdd3 
+|22:58:21|22:58:31|..10s|..1.|.....|....3|.11173|..7200|.185Mo|.......| OK    |Two_Layers_Stratif_jdd4 
+|22:58:33|22:58:41|...8s|..1.|.....|....3|..9618|..7200|.185Mo|.......| OK    |Two_Layers_Stratif_jdd5 
+|22:58:43|22:58:45|...2s|..1.|.....|....3|..3688|..7000|.169Mo|.......| OK    |Two_Layers_Stratif_jdd6 
+|22:58:47|22:58:48|...1s|..1.|.....|....3|...809|..6400|.173Mo|.......| OK    |VAHL_DAVIS_impl_jdd1 
+|22:58:49|22:58:51|...2s|..2.|1.463|....3|...950|..6400|.313Mo|..14/15| OK    |PAR_VAHL_DAVIS_impl_jdd1 
+|22:58:53|22:58:55|...2s|..1.|.....|....3|...637|..6400|.181Mo|.......| OK    |VAHL_DAVIS_impl_jdd10 
+|22:58:55|22:58:57|...2s|..2.|1.703|....3|...724|..6400|.352Mo|..13/15| OK    |PAR_VAHL_DAVIS_impl_jdd10 
+|22:59:00|22:59:02|...2s|..1.|.....|....3|..1220|..6400|.173Mo|.......| OK    |VAHL_DAVIS_impl_jdd11 
+|22:59:02|22:59:04|...2s|..2.|1.551|....3|..1391|..6400|.352Mo|..13/15| OK    |PAR_VAHL_DAVIS_impl_jdd11 
+|22:59:07|22:59:07|...0s|..1.|.....|....3|...204|.10000|.169Mo|.......| OK    |VAHL_DAVIS_impl_jdd12 
+|22:59:08|22:59:10|...2s|..2.|1.200|....3|...286|.10000|.317Mo|..15/15| OK    |PAR_VAHL_DAVIS_impl_jdd12 
+|22:59:13|22:59:15|...2s|..1.|.....|....3|...480|.10000|.173Mo|.......| OK    |VAHL_DAVIS_impl_jdd13 
+|22:59:15|22:59:18|...3s|..2.|1.597|....3|...595|.10000|.332Mo|..15/15| OK    |PAR_VAHL_DAVIS_impl_jdd13 
+|22:59:21|22:59:22|...1s|..1.|.....|....3|...143|.10000|.174Mo|.......| OK    |VAHL_DAVIS_impl_jdd14 
+|22:59:22|22:59:25|...3s|..2.|1.513|....3|...177|.10000|.308Mo|..15/15| OK    |PAR_VAHL_DAVIS_impl_jdd14 
+|22:59:27|22:59:28|...1s|..1.|.....|....3|...144|.10000|.149Mo|.......| OK    |VAHL_DAVIS_impl_jdd15 
+|22:59:29|22:59:31|...2s|..2.|1.611|....3|...179|.10000|.303Mo|..15/15| OK    |PAR_VAHL_DAVIS_impl_jdd15 
+|22:59:34|22:59:35|...1s|..1.|.....|....3|...480|.10000|.173Mo|.......| OK    |VAHL_DAVIS_impl_jdd16 
+|22:59:36|22:59:39|...3s|..2.|1.260|....3|...595|.10000|.301Mo|..15/15| OK    |PAR_VAHL_DAVIS_impl_jdd16 
+|22:59:41|22:59:42|...1s|..1.|.....|....3|...143|.10000|.173Mo|.......| OK    |VAHL_DAVIS_impl_jdd17 
+|22:59:43|22:59:45|...2s|..2.|1.571|....3|...177|.10000|.341Mo|..15/15| OK    |PAR_VAHL_DAVIS_impl_jdd17 
+|22:59:48|22:59:49|...1s|..1.|.....|....3|...144|.10000|.150Mo|.......| OK    |VAHL_DAVIS_impl_jdd18 
+|22:59:50|22:59:52|...2s|..2.|1.813|....3|...180|.10000|.317Mo|..15/15| OK    |PAR_VAHL_DAVIS_impl_jdd18 
+|22:59:55|22:59:56|...1s|..1.|.....|....3|...144|.10000|.174Mo|.......| OK    |VAHL_DAVIS_impl_jdd19 
+|22:59:56|22:59:58|...2s|..2.|1.597|....3|...179|.10000|.310Mo|..15/15| OK    |PAR_VAHL_DAVIS_impl_jdd19 
+|23:00:01|23:00:04|...3s|..1.|.....|....3|..2131|..6400|.181Mo|.......| OK    |VAHL_DAVIS_impl_jdd2 
+|23:00:05|23:00:08|...3s|..2.|1.544|....3|..2456|..6400|.336Mo|..12/15| OK    |PAR_VAHL_DAVIS_impl_jdd2 
+|23:00:10|23:00:11|...1s|..1.|.....|....3|...144|.10000|.174Mo|.......| OK    |VAHL_DAVIS_impl_jdd20 
+|23:00:12|23:00:14|...2s|..2.|1.599|....3|...180|.10000|.341Mo|..15/15| OK    |PAR_VAHL_DAVIS_impl_jdd20 
+|23:00:17|23:00:18|...1s|..1.|.....|....3|...144|.10000|.174Mo|.......| OK    |VAHL_DAVIS_impl_jdd21 
+|23:00:19|23:00:21|...2s|..2.|1.453|....3|...180|.10000|.308Mo|..15/15| OK    |PAR_VAHL_DAVIS_impl_jdd21 
+|23:00:23|23:00:25|...2s|..1.|.....|....3|...273|.10000|.174Mo|.......| OK    |VAHL_DAVIS_impl_jdd22 
+|23:00:25|23:00:28|...3s|..2.|1.560|....3|...341|.10000|.336Mo|..15/15| OK    |PAR_VAHL_DAVIS_impl_jdd22 
+|23:00:30|23:00:32|...2s|..1.|.....|....3|...634|..6400|.176Mo|.......| OK    |VAHL_DAVIS_impl_jdd3 
+|23:00:32|23:00:34|...2s|..2.|1.601|....3|...742|..6400|.339Mo|..12/15| OK    |PAR_VAHL_DAVIS_impl_jdd3 
+|23:00:36|23:00:38|...2s|..1.|.....|....3|...636|..6400|.180Mo|.......| OK    |VAHL_DAVIS_impl_jdd4 
+|23:00:38|23:00:41|...3s|..2.|1.622|....3|...723|..6400|.302Mo|..13/15| OK    |PAR_VAHL_DAVIS_impl_jdd4 
+|23:00:43|23:00:46|...3s|..1.|.....|....3|..2131|..6400|.180Mo|.......| OK    |VAHL_DAVIS_impl_jdd5 
+|23:00:47|23:00:50|...3s|..2.|1.604|....3|..2456|..6400|.352Mo|..12/15| OK    |PAR_VAHL_DAVIS_impl_jdd5 
+|23:00:52|23:00:54|...2s|..1.|.....|....3|...634|..6400|.175Mo|.......| OK    |VAHL_DAVIS_impl_jdd6 
+|23:00:54|23:00:56|...2s|..2.|1.508|....3|...742|..6400|.315Mo|..12/15| OK    |PAR_VAHL_DAVIS_impl_jdd6 
+|23:00:58|23:01:00|...2s|..1.|.....|....3|...637|..6400|.161Mo|.......| OK    |VAHL_DAVIS_impl_jdd7 
+|23:01:00|23:01:03|...3s|..2.|1.577|....3|...724|..6400|.305Mo|..13/15| OK    |PAR_VAHL_DAVIS_impl_jdd7 
+|23:01:05|23:01:07|...2s|..1.|.....|....3|...636|..6400|.180Mo|.......| OK    |VAHL_DAVIS_impl_jdd8 
+|23:01:07|23:01:09|...2s|..2.|1.612|....3|...723|..6400|.334Mo|..13/15| OK    |PAR_VAHL_DAVIS_impl_jdd8 
+|23:01:11|23:01:13|...2s|..1.|.....|....3|...637|..6400|.180Mo|.......| OK    |VAHL_DAVIS_impl_jdd9 
+|23:01:13|23:01:16|...3s|..2.|1.680|....3|...724|..6400|.319Mo|..13/15| OK    |PAR_VAHL_DAVIS_impl_jdd9 
+|23:01:18|23:01:19|...1s|..1.|.....|....3|.....0|....16|.164Mo|.......| OK    |Verification_flux_implicite_jdd1 
+|23:01:19|23:01:20|...1s|..2.|0.643|....3|....81|....16|.329Mo|..13/13| OK    |PAR_Verification_flux_implicite_jdd1 
+|23:01:22|23:01:22|...0s|..1.|.....|....3|....58|....16|.158Mo|.......| OK    |Verification_flux_implicite_jdd2 
+|23:01:23|23:01:24|...1s|..2.|0.583|....3|....65|....16|.284Mo|..12/13| OK    |PAR_Verification_flux_implicite_jdd2 
+|23:01:26|23:01:27|...1s|..1.|.....|....3|....24|.....3|.165Mo|.......| OK    |conduction_couple_jdd1 
+|23:01:27|23:01:29|...2s|..2.|0.696|....3|....24|.....3|.323Mo|..16/16| OK    |PAR_conduction_couple_jdd1 
+|23:01:30|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |conduction_couple_jdd2
+|23:01:31|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |PAR_conduction_couple_jdd2
+|23:01:34|23:01:35|...1s|..1.|.....|....3|...120|.....3|.165Mo|.......| OK    |conduction_couple_jdd3 
+|23:01:35|23:01:37|...2s|..2.|0.479|....3|...120|.....3|.284Mo|..14/14| OK    |PAR_conduction_couple_jdd3 
+|23:01:38|23:01:40|...2s|..1.|.....|....3|..5779|.....4|.166Mo|.......| OK    |conduction_couple_jdd4 
+|23:01:40|23:01:43|...3s|..2.|0.474|....3|..5779|.....4|.323Mo|..14/16| OK    |PAR_conduction_couple_jdd4 
+|23:01:45|23:01:46|...1s|..1.|.....|....3|....72|....51|.165Mo|.......| OK    |diffusion_implicite_jdd1 
+|23:01:46|23:01:47|...1s|..2.|0.729|....3|....92|....51|.332Mo|..14/14| OK    |PAR_diffusion_implicite_jdd1 
+|23:01:49|23:01:50|...1s|..1.|.....|....3|....71|....51|.152Mo|.......| OK    |diffusion_implicite_jdd2 
+|23:01:50|23:01:51|...1s|..2.|0.939|....3|....90|....51|.299Mo|..14/14| OK    |PAR_diffusion_implicite_jdd2 
+|23:01:53|23:01:53|...0s|..1.|.....|....3|....73|....51|.142Mo|.......| OK    |diffusion_implicite_jdd3 
+|23:01:54|23:01:55|...1s|..2.|0.793|....3|....90|....51|.306Mo|..14/14| OK    |PAR_diffusion_implicite_jdd3 
+|23:01:57|23:01:57|...0s|..1.|.....|....3|....71|....51|.165Mo|.......| OK    |diffusion_implicite_jdd4 
+|23:01:58|23:01:59|...1s|..2.|0.801|....3|....90|....51|.310Mo|..14/14| OK    |PAR_diffusion_implicite_jdd4 
+|23:02:01|23:02:01|...0s|..1.|.....|....3|...249|...204|.150Mo|.......| OK    |diffusion_implicite_jdd5 
+|23:02:02|23:02:03|...1s|..2.|0.854|....3|...291|...204|.331Mo|..14/14| OK    |PAR_diffusion_implicite_jdd5 
+|23:02:05|23:02:06|...1s|..1.|.....|....3|...247|...204|.148Mo|.......| OK    |diffusion_implicite_jdd6 
+|23:02:06|23:02:07|...1s|..2.|1.297|....3|...287|...204|.318Mo|..14/14| OK    |PAR_diffusion_implicite_jdd6 
+|23:02:09|23:02:10|...1s|..1.|.....|....3|...248|...204|.165Mo|.......| OK    |diffusion_implicite_jdd7 
+|23:02:10|23:02:12|...2s|..2.|1.129|....3|...287|...204|.330Mo|..14/14| OK    |PAR_diffusion_implicite_jdd7 
+|23:02:13|23:02:14|...1s|..1.|.....|....3|...247|...204|.143Mo|.......| OK    |diffusion_implicite_jdd8 
+|23:02:14|23:02:16|...2s|..2.|1.081|....3|...287|...204|.303Mo|..14/14| OK    |PAR_diffusion_implicite_jdd8 
+|23:02:17|23:02:27|..10s|..1.|.....|....3|..1830|.18000|.213Mo|.......| 8 ecarts |ellipsoid_vdf_therm_jdd1 ATTENTION 2 ecarts possible sur ce cas...
+|23:02:30|23:02:37|...7s|..1.|.....|....3|...782|.18000|.181Mo|.......| 8 ecarts |ellipsoid_vdf_therm_jdd2 ATTENTION 2 ecarts possible sur ce cas...
+|23:02:40|23:02:41|...1s|..1.|.....|....3|...594|..2400|.160Mo|.......| OK    |ibc_refroidi_jdd1 
+|23:02:42|23:02:44|...2s|..2.|1.527|....3|...700|..2400|.316Mo|..18/19| OK    |PAR_ibc_refroidi_jdd1 
+|23:02:45|23:02:46|...1s|..1.|.....|....3|...589|..2400|.146Mo|.......| OK    |ibc_refroidi_jdd2 
+|23:02:47|23:02:49|...2s|..2.|1.513|....3|...700|..2400|.302Mo|..14/15| OK    |PAR_ibc_refroidi_jdd2 
+|23:02:51|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |laminar_flow_vertical_plate_jdd1
+|23:02:52|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |laminar_flow_vertical_plate_jdd10
+|23:02:54|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |laminar_flow_vertical_plate_jdd11
+|23:02:56|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |laminar_flow_vertical_plate_jdd12
+|23:02:58|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |laminar_flow_vertical_plate_jdd13
+|23:03:00|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |laminar_flow_vertical_plate_jdd14
+|23:03:02|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |laminar_flow_vertical_plate_jdd15
+|23:03:04|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |laminar_flow_vertical_plate_jdd16
+|23:03:05|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |laminar_flow_vertical_plate_jdd17
+|23:03:07|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |laminar_flow_vertical_plate_jdd18
+|23:03:09|23:03:12|...3s|..1.|.....|....3|.....0|.14400|.245Mo|.......| OK    |laminar_flow_vertical_plate_jdd19 
+|23:03:14|23:03:16|...2s|..1.|.....|....3|.....0|.14400|.244Mo|.......| OK    |laminar_flow_vertical_plate_jdd20 
+|23:03:18|23:03:21|...3s|..1.|.....|....3|.....0|.14400|.243Mo|.......| OK    |laminar_flow_vertical_plate_jdd21 
+|23:03:23|23:03:25|...2s|..1.|.....|....3|.....0|.14400|.230Mo|.......| OK    |laminar_flow_vertical_plate_jdd22 
+|23:03:28|23:03:30|...2s|..1.|.....|....3|.....0|.14400|.243Mo|.......| OK    |laminar_flow_vertical_plate_jdd23 
+|23:03:32|23:03:35|...3s|..1.|.....|....3|.....0|.14400|.245Mo|.......| OK    |laminar_flow_vertical_plate_jdd24 
+|23:03:37|23:03:40|...3s|..1.|.....|....3|.....0|.14400|.245Mo|.......| OK    |laminar_flow_vertical_plate_jdd25 
+|23:03:42|23:03:44|...2s|..1.|.....|....3|.....0|.14400|.215Mo|.......| OK    |laminar_flow_vertical_plate_jdd26 
+|23:03:46|23:03:55|...9s|..1.|.....|....3|..3934|.19200|.198Mo|.......| OK    |laminar_flow_vertical_plate_jdd27 
+|23:03:57|23:04:05|...8s|..1.|.....|....3|..3918|.19200|.198Mo|.......| OK    |laminar_flow_vertical_plate_jdd28 
+|23:04:07|23:04:15|...8s|..1.|.....|....3|..3860|.19200|.196Mo|.......| OK    |laminar_flow_vertical_plate_jdd29 
+|23:04:18|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |laminar_flow_vertical_plate_jdd3
+|23:04:19|23:04:22|...3s|..1.|.....|....3|..1522|..9600|.178Mo|.......| OK    |laminar_flow_vertical_plate_jdd30 
+|23:04:24|23:04:32|...8s|..1.|.....|....3|..3877|.19200|.183Mo|.......| OK    |laminar_flow_vertical_plate_jdd31 
+|23:04:34|23:04:37|...3s|..1.|.....|....3|.....0|.14400|.247Mo|.......| OK    |laminar_flow_vertical_plate_jdd5 
+|23:04:39|23:04:45|...6s|..1.|.....|....3|..2921|.19200|.173Mo|.......| OK    |laminar_flow_vertical_plate_jdd7 
+|23:04:47|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |laminar_flow_vertical_plate_jdd9
+|23:04:50|23:05:03|..13s|..1.|.....|....3|...886|.67392|.220Mo|.......| OK    |les_Re180Pr071_T0Q_jdd1 
+|23:05:19|23:07:01|.102s|..1.|.....|....3|....11|134640|1265|.......| OK    |les_Re180Pr071_T0Q_jdd2 
+|23:07:23|23:09:07|.104s|..1.|.....|....3|....11|134640|1228|.......| OK    |les_Re180Pr071_T0Q_jdd3 
+|23:09:27|23:09:29|...2s|..1.|.....|....3|.....0|..8192|.172Mo|.......| OK    |les_Re395Pr0025_T0Q_jdd1 
+|23:09:32|23:09:45|..13s|..1.|.....|....3|..1192|.32928|.233Mo|.......| OK    |les_Re395Pr0025_T0Q_jdd2 
+|23:09:49|23:10:06|..17s|..1.|.....|....3|...364|.32928|.265Mo|.......| OK    |les_Re395Pr0025_T0Q_jdd3 
+|23:10:10|23:10:27|..17s|..1.|.....|....3|...364|.32928|.276Mo|.......| OK    |les_Re395Pr0025_T0Q_jdd4 
+|23:10:31|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |les_Re395Pr0025_T0Q_jdd5
+|23:10:35|23:10:52|..17s|..1.|.....|....3|...380|.32928|.289Mo|.......| OK    |les_Re395Pr0025_T0Q_jdd6 
+|23:10:54|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |les_Re395Pr0025_ToQ_couple_jdd1
+|23:10:57|23:11:15|..18s|..1.|.....|....3|....13|.12960|.516Mo|.......| OK    |les_Re395Pr0025_ToQ_couple_jdd2 
+|23:11:17|23:11:36|..19s|..1.|.....|....3|.....9|.12960|.516Mo|.......| OK    |les_Re395Pr0025_ToQ_couple_jdd3 
+|23:11:38|23:11:56|..18s|..1.|.....|....3|.....0|.12960|.480Mo|.......| OK    |les_Re395Pr0025_ToQ_couple_jdd4 
+|23:11:59|23:12:01|...2s|..1.|.....|....3|.....0|..8192|.199Mo|.......| OK    |les_Re395Pr071_T0Q_jdd1 
+|23:12:04|23:12:15|..11s|..1.|.....|....3|....11|.22176|.279Mo|.......| OK    |les_Re395Pr071_T0Q_jdd2 
+|23:12:18|23:12:31|..13s|..1.|.....|....3|....20|.22176|.332Mo|.......| OK    |les_Re395Pr071_T0Q_jdd3 
+|23:12:35|23:12:48|..13s|..1.|.....|....3|....20|.22176|.330Mo|.......| OK    |les_Re395Pr071_T0Q_jdd4 
+|23:12:52|%%:%%:%%|%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| STOP |les_Re395Pr071_T0Q_jdd5
+|23:12:53|23:12:54|...1s|..1.|.....|....3|..1412|...100|.160Mo|.......| 1 ecarts |test_conservation_energie_QC_jdd1
+|23:12:54|23:12:55|...1s|..1.|.....|....3|..1412|...100|.158Mo|.......| 1 ecarts |test_conservation_energie_QC_jdd2
+|23:12:56|23:12:56|...0s|..1.|.....|....3|..1390|...100|.164Mo|.......| 1 ecarts |test_conservation_energie_QC_jdd3
+|23:12:57|23:12:58|...1s|..1.|.....|....3|..4519|...400|.166Mo|.......| 1 ecarts |test_conservation_energie_QC_jdd4
+|23:12:59|23:13:00|...1s|..1.|.....|....3|..4519|...400|.165Mo|.......| 1 ecarts |test_conservation_energie_QC_jdd5
+|23:13:01|23:13:02|...1s|..1.|.....|....3|..4505|...400|.163Mo|.......| 1 ecarts |test_conservation_energie_QC_jdd6
+|23:13:03|23:13:06|...3s|..1.|.....|....3|.....0|.39402|.253Mo|.......| OK    |therm_stratif_water_tank_jdd1 
+|23:13:12|23:13:15|...3s|..1.|.....|....3|.....0|.39402|.252Mo|.......| OK    |therm_stratif_water_tank_jdd2 
+|23:13:21|23:13:25|...4s|..1.|.....|....3|.....0|.18816|.316Mo|.......| OK    |therm_stratif_water_tank_jdd3 
+|23:13:28|23:13:33|...5s|..1.|.....|....3|.....0|.18816|.317Mo|.......| OK    |therm_stratif_water_tank_jdd4 
+|23:13:37|23:13:47|..10s|..1.|.....|....3|...172|.86246|.240Mo|.......| OK    |therm_stratif_water_tank_jdd5 
+|23:13:56|23:14:07|..11s|..1.|.....|....3|...172|.86246|.239Mo|.......| OK    |therm_stratif_water_tank_jdd6 
+|23:14:17|23:14:36|..19s|..1.|.....|....3|...318|.86400|.347Mo|.......| OK    |therm_stratif_water_tank_jdd7 
+|23:14:43|23:15:02|..19s|..1.|.....|....3|...318|.86400|.331Mo|.......| OK    |therm_stratif_water_tank_jdd8 
+|23:15:07|23:15:08|...1s|..1.|.....|....3|.....0|..1200|.166Mo|.......| OK    |wl_vef_analytic_jdd1 
+|23:15:10|23:15:16|...6s|..1.|.....|....3|.....0|.28800|.220Mo|.......| OK    |wl_vef_analytic_jdd2 
+|23:15:18|23:15:20|...2s|..1.|.....|....3|.....0|..7200|.179Mo|.......| OK    |wl_vef_analytic_jdd3 
+|23:15:21|23:15:22|...1s|..1.|.....|....3|.....0|..1200|.165Mo|.......| OK    |wl_vef_analytic_jdd4 
+|23:15:24|23:15:30|...6s|..1.|.....|....3|.....0|.28800|.199Mo|.......| OK    |wl_vef_analytic_jdd5 
+|23:15:33|23:15:35|...2s|..1.|.....|....3|.....0|..7200|.179Mo|.......| OK    |wl_vef_analytic_jdd6 
+|23:15:36|23:15:37|...1s|..1.|.....|....3|...286|..2400|.170Mo|.......| OK    |wl_vef_correlation_jdd1 
+|23:15:39|23:15:40|...1s|..1.|.....|....3|...282|..2400|.168Mo|.......| OK    |wl_vef_correlation_jdd2 
+|23:15:41|23:15:42|...1s|..1.|.....|....3|...302|..2400|.170Mo|.......| OK    |wl_vef_correlation_jdd3 
+|23:15:43|23:15:45|...2s|..1.|.....|....3|...286|..2400|.169Mo|.......| OK    |wl_vef_correlation_jdd4 
+|23:15:46|23:15:47|...1s|..1.|.....|....3|...311|..2400|.170Mo|.......| OK    |wl_vef_correlation_jdd5 
+|23:15:48|23:15:49|...1s|..1.|.....|....3|.....0|..2400|.170Mo|.......| OK    |wl_vef_coupling_jdd1 
+|23:15:50|23:16:03|..13s|..1.|.....|....3|..1007|..2400|.171Mo|.......| OK    |wl_vef_coupling_jdd2 
+|23:16:04|23:16:05|...1s|..1.|.....|....3|.....0|..2400|.167Mo|.......| OK    |wl_vef_coupling_jdd3 
+|23:16:06|23:16:19|..13s|..1.|.....|....3|..1007|..2400|.171Mo|.......| OK    |wl_vef_coupling_jdd4 
+|23:16:20|23:16:21|...1s|..1.|.....|....3|.....0|..2400|.158Mo|.......| OK    |wl_vef_laminar_jdd1 
+|23:16:22|23:16:23|...1s|..1.|.....|....3|.....0|..2400|.142Mo|.......| OK    |wl_vef_laminar_jdd2 
+|23:16:24|23:16:24|...0s|..1.|.....|....3|.....0|..2400|.168Mo|.......| OK    |wl_vef_laminar_jdd3 
+|23:16:25|23:16:26|...1s|..1.|.....|....3|.....0|..2400|.169Mo|.......| OK    |wl_vef_laminar_jdd4 
+ -----------------------------------------------------------------------------------------
+
+Successful tests cases :497/688
+
+Successful tests cases in parallel mode :214/224
+
+
+752 test cases run in 3544 s ( 5 s/test), so less than 1 hours

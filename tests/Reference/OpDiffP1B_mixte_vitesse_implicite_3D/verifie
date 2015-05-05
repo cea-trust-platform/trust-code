@@ -1,0 +1,5 @@
+jdd=`pwd`
+jdd=`basename $jdd`
+var=var.lml
+[ -f PAR_$jdd.lml ] && jdd=PAR_$jdd && var=PAR_$var
+compare_lata $jdd.lml $var 1>verifie.log 2>&1

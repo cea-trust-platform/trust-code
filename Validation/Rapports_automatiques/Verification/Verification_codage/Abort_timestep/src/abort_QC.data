@@ -1,0 +1,237 @@
+# Thermohydraulique 2D couplee a conduction 2D #
+# PARALLEL OK  #
+dimension 2
+
+Domaine dom_fluid
+# BEGIN MESH #
+
+Mailler dom_fluid
+{
+	Pave Entree1
+		{
+		Origine 0. 0. 
+     		Nombre_de_Noeuds 2 2 
+		Longueurs 0.4  0.4
+		}
+		{
+		Bord inlet1  Y  =  0.       0. <= X <= 0.4
+		Bord wall    X  =  0.       0. <= Y <= 0.4  
+		Bord wall    X  =  0.4      0. <= Y <= 0.4  
+		} ,
+	Pave Sortie1
+		{
+		Origine 0. 3.6
+     		Nombre_de_Noeuds 2 2 
+		Longueurs 0.4  0.4
+		}
+		{
+		Bord outlet1 Y  =  4.       0.  <= X <= 0.4
+		Bord wall    X  =  0.       3.6 <= Y <= 4.
+		Bord wall    X  =  0.4      3.6 <= Y <= 4. 
+
+		} ,
+	Pave Entree2
+		{
+		Origine 0.8 0. 
+     		Nombre_de_Noeuds 2 2 
+		Longueurs 0.4  0.4
+		}
+		{
+		Bord inlet2  Y  =  0.        0.8 <= X <= 1.2
+		Bord wall    X  =  0.8       0.  <= Y <= 0.4  
+		Bord wall    X  =  1.2       0.  <= Y <= 0.4  
+		} ,
+	Pave Sortie2
+		{
+		Origine 0.8 3.6
+     		Nombre_de_Noeuds 2 2
+		Longueurs 0.4  0.4
+		}
+		{
+		Bord outlet2 Y  =  4.        0.8 <= X <= 1.2
+		Bord wall    X  =  0.8       3.6 <= Y <= 4.
+		Bord wall    X  =  1.2       3.6 <= Y <= 4.  
+
+		} ,
+	Pave Enceinte
+		{
+		Origine 0. 0.4
+     		Nombre_de_Noeuds 4 9 
+		Longueurs 1.2  3.2
+		}
+		{
+		Bord wall    Y  =  0.4            0.4 <= X <= 0.8
+		Bord wall    Y  =  3.6            0.4 <= X <= 0.8
+		Bord wall    X  =  0.             0.4 <= Y <= 3.4 
+		Bord wall    X  =  1.2            0.4 <= Y <= 3.4 
+		} 
+ 
+
+}
+Trianguler_fin dom_fluid
+
+# END MESH #
+# BEGIN PARTITION
+Partition dom_fluid
+{
+        Partitionneur metis { nb_parts 2 }
+        Larg_joint 2
+        Nom_Zones DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom_fluid
+END SCATTER #
+
+
+Schema_Euler_implicite sch
+Read sch
+
+{
+	tinit 0.
+	tmax 0.05
+	dt_min 1.e-6
+	dt_min 0.01
+	dt_max 0.01
+	dt_impr 0.01
+	dt_sauv 1000.0
+	seuil_statio 1.e-6
+	facsec 100
+        facsec_max 500
+       Solveur
+           Piso
+           {
+                seuil_convergence_solveur 1.e-6
+           }
+}
+
+Pb_thermohydraulique_QC pb1
+
+VEFPreP1B dis
+
+Fluide_Quasi_Compressible helium
+# Prantl pris a 1 au lieu de 0.67 pour coherence avec Cathare WATER (au lieu de HIGHXNC) #
+# beta=1/T #
+Read helium
+{ 
+        pression 7000000.
+        Sutherland mu0 1.6E-5 T0 273.15 Slambda 235. C 235.
+
+        loi_etat gaz_parfait {
+          Prandtl 1.
+          Cp 5193.
+          gamma 1.666
+         }
+        traitement_pth conservation_masse
+}
+Champ_Uniforme gravite
+Read gravite 2 0 -9.81
+ 
+Associate helium gravite
+Associate pb1 dom_fluid
+Associate pb1 sch
+Associate pb1 helium
+
+Discretize pb1 dis
+
+
+Read pb1
+{
+	Navier_Stokes_QC
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.5 } 
+			seuil 1.000000e-6
+		}
+		convection { amont }
+		diffusion { }
+		conditions_initiales {
+			vitesse Champ_Uniforme 2  30.  0.
+		}
+		boundary_conditions {
+
+
+			inlet1  frontiere_ouverte_rho_u_impose
+					champ_front_uniforme 2 0 300
+			inlet2  frontiere_ouverte_rho_u_impose
+					champ_front_uniforme 2 0 300
+			outlet1 frontiere_ouverte_rho_u_impose
+					champ_front_uniforme 2 0 300
+			outlet2 frontiere_ouverte_rho_u_impose
+					champ_front_uniforme 2 0 300
+
+			wall    paroi_fixe
+
+		}
+		sources {
+                        Perte_Charge_isotrope { diam_hydr champ_fonc_txyz dom_fluid 1 1.4-1.3908*(y]1)*(y[3)
+		        	                lambda 4*((16/Re)$(0.079/(Re^0.25))$0.003)
+					      } 
+
+		}
+
+	}
+	Convection_Diffusion_chaleur_QC
+        {
+		diffusion { }
+		convection { amont }
+
+
+		boundary_conditions {
+			inlet1 frontiere_ouverte t_ext champ_front_uniforme 1 600
+			inlet2 frontiere_ouverte t_ext champ_front_uniforme 1 600
+			outlet1 frontiere_ouverte t_ext champ_front_uniforme 1 600
+			outlet2 frontiere_ouverte t_ext ch_front_input { nb_comp 1 nom temperature_bord probleme pb1 }
+			wall paroi_adiabatique
+		}
+		conditions_initiales { Temperature Champ_Uniforme 1 600. }
+
+		sources	
+		{ 	
+			Puissance_thermique champ_fonc_xyz dom_fluid 1 2400e6*2/3./10./(3*3.1416*0.7*0.7)*0.6/1.8*1.53*(y]1)*(y[3) 
+		}
+
+
+
+
+	}
+
+	Postraitement
+	{
+	
+		Sondes
+		{
+			sonde_pression1 pression periode 0.05 segment 31    0.1  0    0.1 5.8
+			sonde_pression2 pression periode 0.05 segment 31    1.5  0    0.1 5.8
+			sonde_vitesse1 vitesse periode 0.05 segment 31    0.1  0    0.1 5.8
+			sonde_vitesse2 vitesse periode 0.05 segment 31    1.5  0    0.1 5.8
+			sonde_temperature1 temperature periode 0.05 segment 31    0.1  0    0.1 5.8
+			sonde_temperature2 temperature periode 0.05 segment 31    1.5  0    0.1 5.8
+			sonde_rho1 masse_volumique periode 0.05 segment 31    0.1  0    0.1 5.8
+			sonde_rho2 masse_volumique periode 0.05 segment 31    1.5  0    0.1 5.8
+
+		}
+		
+
+		format lata
+
+		Champs dt_post 1e-10
+		{
+			pression elem
+			pression som
+			pression_pa elem
+			pression_pa som
+			vitesse faces
+			temperature faces
+			masse_volumique faces
+
+		}
+	}
+	       
+}
+
+Pilote_ICoCo { Pb_name  pb1 main abort_time_step }
+
+End

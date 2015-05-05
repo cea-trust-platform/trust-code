@@ -1,0 +1,27 @@
+Parameters {
+	Title "Test de abort time step"
+	Author "fauchet Perdu"
+	description "On regarde si suie a un abort time step la presion reste bien continue"
+	TestCase . abort_QC
+	TestCase . abort_QC_Pimp
+}
+Chapter {
+
+	Title "Visus des champs de pression"
+	Description "on espere que l'image du milieu soit semblables aux deux autres"
+	Visu {
+		Title "abort_QC teste surtout milieu::abort_time_step"
+		pseudocolor abort_QC.lata dom_fluid PRESSION ELEM
+		cycles 2 3 4
+		nb_img_without_newline 2
+		width 7cm
+	}
+	Visu {
+		Title "abort_QC_Pimp teste surtout N_S::abort_time_step"
+		pseudocolor abort_QC_Pimp_DP.lata dom_fluid DELTA_PRESSION ELEM
+		cycles 2 3 4
+		nb_img_without_newline 2
+		width 7cm
+	}
+		
+}

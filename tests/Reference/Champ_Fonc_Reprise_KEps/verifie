@@ -1,0 +1,14 @@
+#!/bin/bash
+# Check Champ_Fonc_reprise works with .sauv files:
+start=keps_2D_VEF_Def_pb
+resume=resume
+datafile=`pwd`
+datafile=`basename $datafile`
+if [ -f PAR_$datafile.TU ]
+then
+   cp PAR_$datafile.data PAR_$resume.data
+   sed -i "1,$ s?Champ_Fonc_Reprise $start.xyz?Champ_Fonc_Reprise binaire PAR_$start.sauv?g" PAR_$resume.data
+   triou PAR_$resume 2 1>PAR_$resume.out 2>PAR_$resume.err || exit -1
+   compare_lata PAR_$datafile.lml PAR_$resume.lml 1>compare_lata.log 2>&1 || exit -1
+fi
+exit 0

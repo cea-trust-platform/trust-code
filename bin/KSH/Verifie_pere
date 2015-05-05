@@ -1,0 +1,98 @@
+#!/bin/bash
+test_pere()
+{
+   # Creation de la librairie TRUST necessaire pour l'atelier
+   [ ! -f $TRUST_LIB/TRUST"$COMM"_opt.a ] && cree_TRUST_opt_a
+   Makeatelier.sccs NO_IHM 2
+   triou nul
+   status=$?
+}
+gen_dico()
+{
+   $TRUST_Awk 'BEGIN {printf("{ ");}{if ($2!=$1) {printf(" %s ,",$2);}} END {print("fin")}' $TRUST_ROOT/doc/.dico | sed "s/,fin/}/" > dico
+   $TRUST_Awk 'BEGIN {printf("{ ");}{if ($2!=$1) {printf(" %s ,",$1);}} END {print("fin")}' $TRUST_ROOT/doc/.dico | sed "s/,fin/}/" >> dico	
+   sed "s?|[^ ]* ? ?g"  dico > dico2; mv dico2 dico
+}
+
+[ $TRUST_ARCH != linux ] && echo "This script only runs on Linux..." && exit -1
+
+# Creation d'un atelier avec des sources speciales
+cd $TRUST_TMP
+rm -r -f Verifie_pere
+tar xfz $TRUST_ROOT/bin/KSH/Verifie_pere.tgz
+cd Verifie_pere
+
+echo End > nul.data
+export rep_dev=`pwd`
+echo > LOG 
+gen_dico >>LOG 2>&1
+export exec=$rep_dev/exec_opt/TRUST${COMM}_opt 
+
+# on verifie que les erreurs sont detectees
+echo "We deliberately put a fake father in the Transformer class Transformer.cpp" >>LOG
+sed 's?"Transformer",Interprete_geometrique_base?"Transformer",Interprete?'  $TRUST_ROOT/src/Kernel/Geometrie/Transformer.cpp > Transformer.cpp
+test_pere >>LOG 2>&1
+echo "The error before is voluntary " >> LOG
+erreur=$status
+
+# version std
+rm -f Transformer.cpp
+
+# Pierre si je ne fais pas cela , des fois il ne recompile pas l'atelier
+#
+# Je ne veux pas faire rm $exec comme cela si ca ne compile pas on aura comme avant 
+sleep 1 
+
+test_pere >>LOG 2>&1
+ok=$status
+
+if [ $erreur -eq 0 ]
+then
+    echo "The test doesn't run anymore " | tee -a LOG
+    ok=-13
+fi
+#on teste maintenant les bases... en regardant les sources
+ana_base()
+{
+    f=$1
+    mode=$2
+    h=`echo $f | sed "s/\.cpp/.h/"`
+    [ `basename $f` = "MD_Vector.cpp" ] && h=`echo $h| sed "s/Vector/Vector_base/"`
+    res=`grep Implemente_base $f | awk -F\( '{print $2}' |sed "s?);?,?;s/ //g"`
+    class=`echo $res | awk -F, '{print $1 }'`
+    pere=`echo $res | awk -F, '{print $3 }'`	
+    
+    res2=`grep public $h | grep $class| sed "s/,/ /g"`
+    echo $res2 | awk -v pere=$pere 'BEGIN {ok=0}{ for (i=1;i<=NF;i++) { if ($i==pere){ ok=1}}}  END {print ok}'
+    [ $mode -eq 1 ] && echo "classe " $class, "pere: " $pere&& echo dans $d/$h $res2
+    
+}
+
+for d in `cat $TRUST_ENV/rep.TRUST`
+  do
+  
+  files=`grep -l Implemente_base $TRUST_ROOT/$d/*.cpp`
+  for f in $files
+    do
+    okl=`ana_base $f 0`
+    if [ $okl -ne 1 ]
+	then
+	ok=-100
+ 	echo problem with $f >>LOG
+	ana_base $f 1  >>LOG
+    fi
+    
+  done
+done
+
+
+if [ $ok -ne 0 ]
+then
+    echo "  KO: Problem with a father; See the `pwd`/LOG file" | tee -a LOG
+else
+    echo "  OK: See the `pwd`/LOG file" | tee -a LOG
+fi
+exit $ok
+
+
+

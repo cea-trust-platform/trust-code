@@ -1,0 +1,114 @@
+# SIMULATION D UN CANAL 3D  #
+# PARALLEL OK #
+# Cas test pour le mot cle tanh de la classe Pave #
+dimension 3
+Pb_Hydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+	{
+		Origine 0. 0. 0.
+		Nombre_de_Noeuds 10 65 10
+		Longueurs 6.283185307 2.0 3.141592653
+		tanh_dilatation 0
+                tanh_taille_premiere_maille 0.01
+
+	}
+	{
+	Bord periox  X = 0.            0. <= Y <= 2.0           0. <= Z <= 3.141592653
+	Bord periox  X = 6.283185307   0. <= Y <= 2.0           0. <= Z <= 3.141592653 
+	Bord bas     Y = 0.            0. <= X <= 6.283185307   0. <= Z <= 3.141592653
+	Bord haut    Y = 2.            0. <= X <= 6.283185307   0. <= Z <= 3.141592653
+        Bord perioz  Z = 0.            0. <= X <= 6.283185307   0. <= Y <= 2.0
+	Bord perioz  Z = 3.141592653   0. <= X <= 6.283185307   0. <= Y <= 2.0   	
+	}
+}
+# END MESH #
+# BEGIN PARTITION
+Sous_Zone sous_zone
+Associate sous_zone dom
+Lire sous_zone
+{
+      Boite
+      Origine 2.  0. 1.
+      Cotes   2.  2. 1.
+}
+Partition dom
+{
+	Partitionneur sous_zones { sous_zones 1 sous_zone }
+	Larg_joint 1
+	Nom_Zones DOM
+	Periodique 2 periox perioz
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+
+Runge_Kutta_ordre_3 sch
+Lire sch
+{
+        tinit 0.
+	tmax 10.
+	dt_min 1.e-7
+	dt_max 1.e-1
+	dt_impr 0.00001
+	dt_sauv 1.5
+	seuil_statio 1.e-8
+	nb_pas_dt_max 2
+}
+
+Fluide_Incompressible air
+Lire air
+{
+	mu Champ_Uniforme 1 0.01
+	rho Champ_Uniforme 1 2
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb air
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { precond ssor { omega 1.5 } seuil 5.e-9 impr }	
+		convection { centre }
+		diffusion { }
+		conditions_initiales {
+			vitesse champ_init_canal_sinal 3 { Ucent 25.0 h 1.0 ampli_bruit 0. ampli_sin 0. omega 2. }
+			}
+		boundary_conditions {
+periox periodique 
+perioz periodique 
+			haut  paroi_fixe
+	                bas  paroi_fixe		
+		}
+     }	      
+	Postraitement
+	{
+	     Sondes
+	          {
+	           	sonde_pression pression periode 0.001 points 1 0.05 0.15 3.14 
+			sonde_vit2 vitesse periode 0.05 segment 40   4. 0. 3.14    4. 2. 3.14
+	        }
+		Champs dt_post 4.0
+		{			
+			pression elem			
+			vitesse elem
+		}
+	}
+
+}
+Solve pb
+Fin

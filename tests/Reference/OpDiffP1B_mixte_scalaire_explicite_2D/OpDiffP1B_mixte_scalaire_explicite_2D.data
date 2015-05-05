@@ -1,0 +1,117 @@
+# Conduction 2D VEFPreP1B #
+# PARALLEL OK 6 #
+
+dimension 2
+Domaine dom_pbF1
+
+# BEGIN MESH #
+Mailler dom_pbF1
+{
+       Pave domF
+               {
+               Origine 0. 0.
+               Nombre_de_Noeuds 11 11
+               Longueurs 1. 1.
+               }
+               {
+               bord perio X = 0.   0 <= Y <= 1.
+               bord HautF   Y = 0.  0 <= X <= 1.
+               bord BasF    Y = 1.  0 <= X <= 1.
+               bord perio X = 1.  0 <= Y <= 1.
+               }
+}
+trianguler dom_pbF1
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom_pbF1
+{
+        Partitionneur tranche { tranches 1 4 }
+        Larg_joint 2
+        Nom_Zones DOM
+	periodique 1 perio 
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom_pbF1
+END SCATTER #
+
+Pb_Conduction pbF1
+
+schema_euler_explicite sch
+Lire sch
+{
+       tinit 0.
+       tmax 1000.
+       dt_min 1.e-6
+       dt_max 1
+       dt_impr 0.01
+       dt_sauv 100000
+       seuil_statio 1.e-8
+       facsec 1.
+       nb_pas_dt_max 10
+}
+
+VEFPreP1b cubesregu
+
+Solide eau
+Lire eau
+{
+       rho Champ_Uniforme 1 1.
+       lambda Champ_Uniforme 1 1.                 
+       Cp Champ_Uniforme 1 1.
+}
+
+
+Associate pbF1 dom_pbF1
+Associate pbF1 eau  
+Associate pbF1 sch
+Discretize pbF1 cubesregu
+# Debog pbF1 seq faces 1.e-6 0 #
+
+Lire pbF1
+{
+Conduction
+       {
+               diffusion { 
+	                   P1NCP1B {  } 
+			  }
+               conditions_initiales {
+                       temperature Champ_fonc_txyz dom_pbF1 1 0
+                       }
+               boundary_conditions {
+		   HautF   paroi_temperature_imposee  Champ_Front_fonc_txyz 1 y
+		   perio   periodique 
+		   BasF    Paroi_flux_impose champ_front_uniforme 1 1.
+               }
+
+
+       }
+       Postraitements
+       {
+       		lml
+		{
+       			format lml
+       			fichier OpDiffP1B_mixte_scalaire_explicite_2D
+       			Champs dt_post 1.e-1
+               		{
+                 	temperature elem
+               		}
+       		}       
+		lata
+		{
+		       	format lata
+       			Champs dt_post 1.e-1
+               		{
+                 	temperature faces
+               		}
+		}  
+       }     
+       sauvegarde formatte pbF.sauv
+}
+
+
+Solve pbF1
+Fin 

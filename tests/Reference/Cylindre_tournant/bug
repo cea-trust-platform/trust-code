@@ -1,0 +1,3 @@
+export TRUST_VERIFIE_DIRICHLET=1
+$exec bug
+post bug

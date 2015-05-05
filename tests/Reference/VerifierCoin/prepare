@@ -1,0 +1,4 @@
+sed '/VerifierCoin/d' VerifierCoin.data > prepare.data
+# Create prepare.decoupage_som file (error):
+triou prepare
+mv -f prepare.decoupage_som VerifierCoin.decoupage_som

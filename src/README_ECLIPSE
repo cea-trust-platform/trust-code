@@ -1,0 +1,103 @@
+Notes for Eclipse with TRUST (26/03/2015)
+------------------------------------------
+
+######################################
+# Create a project to browse sources #
+######################################
+
+Download
+========
+> Go to the website of the Eclipse Foundation: http://www.eclipse.org/downloads/
+> Select Eclipse for Parallel Application Developers Linux 64 Bit
+> Download the eclipse-parallel-luna-SR2-linux-gtk-x86_64.tar.gz file in your directory
+
+Installation
+============
+> cd /export/home/login
+> gunzip eclipse-parallel-luna-SR2-linux-gtk-x86_64.tar.gz
+> tar xvf eclipse-parallel-luna-SR2-linux-gtk-x86_64.tar
+> rm  eclipse-parallel-luna-SR2-linux-gtk-x86_64.tar
+> cd eclipse
+
+Configuration
+=============
+> Change the end of the eclipse.ini file
+> vi eclipse.ini
+-Dhelp.lucene.tokenizer=standard
+-XX:PermSize=256m
+-XX:MaxPermSize=1024m
+-XX:+UseParallelGC
+-Xmn256m
+-Xss2m
+-Xms512m
+-Xmx2048m
+-server
+
+Launching
+=========
+> ./eclipse &
+> Workspace: /export/home/login/eclipse/workspace 
+  => OK
+  => Welcome: close X
+> File/New/C++ Project 
+  => Profect name: TRUST-X.Y.Z
+  => Use default location
+  => Project type: Executale/Empty Project
+  => Toolchains: Linux GCC
+  => Finish
+> Project Explorer
+  Right click TRUST-X-Y-Z/Import...
+  => General/File System
+  => Next 
+  => From directory: /data/calculsfme/triou/installations/TRUST-X.Y.Z/OS_machine/TRUST/src
+  => Select All  
+  => Into folder: TRUST-X.Y.Z
+  => Advanced: check Create links in workspace
+  =>           not check Create virtual folders
+  => Finish 
+> Project Explorer
+  Right click TRUST-X.Y.Z/Properties
+  => Builders: not check CDT Builder => OK
+  => OK
+  => Wait to have 100% at the bottom right corner of the window.
+> File/Exit
+
+
+######################################
+# Launch a calculation in debug mode #
+######################################
+
+Configuration
+============= 
+> cd eclipse
+> source /data/calculsfme/triou/installations/TRUST-X.Y.Z/OS_machine/TRUST/env/Init_TRUST
+> ./eclipse &
+> Project Explorer
+  Right click TRUST-X.Y.Z/Debug As/Debug configurarions...
+  => Select C/C++ Application
+  => Press the 'New' button to create a configuration of the selected type
+  => Main: C/C++ Application:  /data/calculsfme/triou/installations/TRUST-X.Y.Z/OS_machine/TRUST/exec/TRUST_mpi
+  => Arguments: not check Use default working directory
+  => Debugger: Main options GDB debugger: replace gdb by /usr/bin/gdb
+  => Close => Save Changes Yes
+
+View debug
+==========
+> Window/Open Perspective/Debug
+  => New button at the top right of the window: view Debug side view C/C++
+
+Case selection
+==============
+> Run/Debug configurations
+  => Select C/C++ application TRUST-X.Y.Y Debug
+  => Arguments: Program arguments: datafile               (for example Cx)
+  =>            Working directoty: /export/home/login/... (for example /export/home/login/Cx : folder of Cx test case in your home-directories)
+  => Close => Save Changes Yes
+
+Launching
+=========
+> Run/Debog (F11)         (Wait to have 100% on the bottom right corner of the window)
+> Run/Resume (F8)
+> Run/Terminate (Ctrl+F2)
+> File/Exit
+

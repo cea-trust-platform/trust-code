@@ -1,0 +1,5 @@
+Type : menu
+Acces : Fichiers
+
+Description :
+	Ce menu contient des commandes necessaires a la gestion des fichiers pour l'interface : ouverture de nouveaux fichiers, sauvegarde du cas en cours, sauvegarde du cas en cours sous un nouveau nom, et sortie de l'interface.

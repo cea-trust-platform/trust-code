@@ -1,0 +1,59 @@
+#!/bin/bash
+echo "Commande admin!" && exit
+fichier=$TRUST_TMP/References.html
+tmp=$HOME/.tmp_file
+# Ecriture du fichier :
+cree_en_tete.ihm > $fichier
+echo "<HR><h1>Reference test cases for TRUST</h1><HR>" >> $fichier
+i=0
+cd $TRUST_TESTS
+echo "<TABLE BORDER COLS=2><TR>
+<TD WIDTH="1%">Name</TD><TD WIDTH="100%">Configuration</TD></TR>" >> $fichier
+#
+testslist=`find Reference/ -follow -name *.lml.gz -print 2>/dev/null`
+#
+# On parcourt les tests pour faire l'index
+#
+#for fic in Reference/*/*.lml.gz
+for fic in $testslist
+do
+   let i=$i+1
+   NOM=`basename $fic .lml.gz`
+   com=`head -1 ${fic%.lml.gz}.data`
+   echo $ECHO_OPTS "<TR><TD><SMALL><A HREF="\"#$NOM\"">$NOM</A></TD><TD><SMALL>$com</TD></TR>" >> $fichier
+done
+echo $ECHO_OPTS "</TABLE><HR><PRE>" >> $fichier
+i=0
+#
+# On parcourt les tests pour creer les liens Edit/Copy
+#
+cd $TRUST_TESTS
+#for fic in Reference/*/*.lml.gz
+for fic in $testslist
+do
+   let i=$i+1
+   NOM=`basename $fic .lml.gz`
+   REP=`dirname $fic`
+   com=`head -1 ${fic%.lml.gz}.data`
+   #echo $ECHO_OPTS "<h1><A NAME=$NOM>$NOM</A></h1>" >> $fichier
+   echo $ECHO_OPTS "<CENTER><B><A NAME=$NOM>$NOM</A></B></CENTER>" >> $fichier
+   echo $ECHO_OPTS "<CENTER>$com</CENTER>" >> $fichier
+   REP_REL="../tests/"$REP
+   if [ -f $REP/$NOM.lml.gif.fin ]
+   then
+      echo $ECHO_OPTS "<CENTER><a href="$REP_REL/$NOM.lml.gif"><img src="$REP_REL/$NOM.lml.gif.fin"></a></CENTER>" >> $fichier
+   else
+      echo $ECHO_OPTS "<CENTER><img src="rien.gif"></CENTER>" >> $fichier
+   fi
+   echo $ECHO_OPTS "<HR>\c" >> $fichier
+done
+echo $ECHO_OPTS "</body>
+</html> " >> $fichier
+
+References=$TRUST_ROOT/tests/References.html
+if [ "`diff $References $fichier`" != "" ]
+then
+   CHECKOUT $References
+   cat $fichier > $References
+   CHECKIN $References
+fi

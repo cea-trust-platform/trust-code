@@ -1,0 +1,123 @@
+# SIMULATION D UN CANAL PLAN 3D incline pour verification de la procedure de creation de couche prismatique #
+# PARALLEL OK #
+# Test de ExtrudeParoi + periodicite sur un cas non academique #
+
+dimension 3
+Pb_Hydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+        {
+                Origine 0. 0. 0.
+                Nombre_de_Noeuds 3 3 3
+                Longueurs 1. 1.  1.
+        }
+        {
+                Bord perio   	X = 0.  0. <= Y <= 1.  0. <= Z <= 1.
+                Bord perio   	X = 1.  0. <= Y <= 1.  0. <= Z <= 1.
+                Bord paroi   	Y = 0.  0. <= X <= 1.  0. <= Z <= 1.
+                Bord paroi    	Y = 1.  0. <= X <= 1.  0. <= Z <= 1.
+                Bord paroi    	Z = 0.  0. <= X <= 1.  0. <= Y <= 1.
+                Bord paroi    	Z = 1.  0. <= X <= 1.  0. <= Y <= 1.
+ 
+                }
+} 
+Tetraedriser_homogene dom
+
+transformer dom
+x
+y+0.4*x
+z
+
+Postraiter_domaine { domaine dom format lata fichier avant }
+
+ExtrudeParoi { domaine dom nom_bord paroi epaisseur 2 0.5 0.2 }
+
+Corriger_frontiere_periodique { Domaine dom Bord perio direction 3 1 0.4 0 }
+
+Postraiter_domaine { domaine dom format lata fichier apres }
+
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur Metis { Nb_parts 2 }
+	Nom_Zones DOM
+	Periodique 1 perio
+        Larg_joint 2
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1b dis
+
+Schema_Euler_Explicite sch
+Lire sch 
+{
+        tinit 0.
+        tmax 20.
+        nb_pas_dt_max 20
+        dt_min 1.e-7
+        dt_max 1.e-1
+	dt_start dt_calc
+        dt_impr 0.001
+        dt_sauv 20.
+        seuil_statio 1.e-8  
+        facsec 1.
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 0.00514
+	rho Champ_Uniforme 1 2
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Lire pb
+	{
+	Navier_Stokes_Standard
+		{
+                solveur_pression Gcp { precond ssor { omega 1.5 } seuil 1.e-08 impr }
+                convection { amont }
+                diffusion  { }
+		conditions_initiales { vitesse Champ_fonc_xyz dom 3  2. 0. 0. }
+		boundary_conditions
+			{
+			perio  periodique 
+			paroi  paroi_fixe
+			}
+ 	}
+
+	Postraitement
+        	{       
+		format lml
+		Champs dt_post 2.
+			{
+			vitesse elem
+			vitesse som
+			pression elem
+			pression som
+			}
+		}
+	}
+
+Solve pb
+Fin
+
+			entree frontiere_ouverte_vitesse_imposee champ_front_uniforme 3  2. 0. 0.
+			sortie frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+ExtrudeParoi { domaine dom nom_bord paroi epaisseur_relative 2 0.5 0.2 }
+ExtrudeParoi { domaine dom nom_bord paroi epaisseur 2 0.2 0.2 critere_absolu }

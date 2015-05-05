@@ -1,0 +1,146 @@
+# Hydraulique 2D : Porosites surfaciques #
+# PARALLEL OK #
+dimension 2
+
+Pb_hydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Entree 
+	{
+	Origine 0. 0.
+	Nombre_de_Noeuds 11 11
+	Longueurs 1.0 1.0
+	}
+	{
+	Bord Entree Y = 0. 0. <= X <= 1.
+	Bord Ouest  X = 0. 0. <= Y <= 1.
+	Bord Est    X = 1. 0. <= Y <= 1.
+	} ,
+	Pave Sortie
+	{
+	Origine 0. 1.
+	Nombre_de_Noeuds 21 11
+	Longueurs 2.0 1.0
+	}
+	{
+	Bord Sortie X = 2. 1. <= Y <= 2.
+	Bord Haut   Y = 2. 0. <= X <= 2.
+	Bord Ouest1 X = 0. 1. <= Y <= 2.
+	Bord Bas    Y = 1. 1. <= X <= 2.
+	}
+} 
+Sous_zone sous_zone1
+Associate sous_zone1 dom
+
+Lire sous_zone1
+{
+   Rectangle
+      Origine 0.3 1.0
+      Cotes 0.4 0.5
+}
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 1
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+Sous_zone sous_zone1
+Associate sous_zone1 dom
+Lire sous_zone1 { Fichier sous_zone1.ssz }
+END SCATTER #
+
+VDF dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0
+	tmax 5.  
+	dt_min 0.00001 
+	dt_max 10.  
+	dt_impr 0.00001
+	dt_sauv 100
+	seuil_statio 1e-8
+}
+
+Fluide_Incompressible eau
+Lire eau
+{
+	mu Champ_Uniforme 1 0.02
+	rho Champ_Uniforme 1 2
+}
+
+
+Associate pb dom
+Associate pb sch
+Associate pb eau
+
+Discretize pb dis
+Porosites pb sous_zone1
+{
+ VOLUMIQUE 1.0
+ SURFACIQUE 2 0.5 0.25
+}
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.500000 } 
+			seuil 1.000000e-06 
+			impr 
+		}
+		convection { amont }
+		diffusion { }
+		conditions_initiales {
+			vitesse Champ_Uniforme 2 0. 0.
+			}
+		boundary_conditions {
+			Haut symetrie
+			Bas symetrie
+			Ouest1 symetrie
+			Ouest symetrie
+			Est symetrie
+			Sortie frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+			Entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  0. 1.
+		}
+	}
+
+	Postraitement
+	{
+		Sondes
+		{
+			sonde_p pression periode 0.1 points 1 0.45 1.15
+			sonde_pression pression periode 0.1 points 2 0.45 1.45 0.45 1.55
+			sonde_vitesse vitesse periode 0.1 points 2 0.55 1.4 0.6 1.45
+		}
+		Champs dt_post 0.5
+		{
+			pression elem
+			pression som
+			vitesse elem
+			vitesse som
+		}
+	}
+}
+
+Solve pb
+Fin
+Fin
+Porosites pb sous_zone1
+{
+ VOLUMIQUE 1.0
+ SURFACIQUE 2 0.5 0.25
+}

@@ -1,0 +1,125 @@
+# Thermohydraulique 2D couplage solide-fluide GCFR- concept plaque avec troncon de sortie Taille maille paroi n°4 (0.4 mm) #
+# PARALLEL NOT #
+
+dimension 2
+domaine dom_pb2
+Pb_thermohydraulique pb2
+
+
+Schema_euler_explicite sch
+Read sch 
+{
+        tinit 0
+	nb_pas_dt_max 3
+        tmax 150000.
+        dt_min 1.e-7
+	dt_start dt_calc
+        dt_impr 1000
+        dt_sauv 10000.
+        seuil_statio 1.e-8  
+        facsec 1.
+}
+
+Mailler dom_pb2
+{
+        Pave demi_canal
+                {
+                Origine  0.  0. 
+                Nombre_de_Noeuds 3 3 
+                Longueurs 5 2 
+                }
+                {
+                bord Plaque 	   Y = 0.     0. <= X <= 5 
+                bord Plaque        Y = 2     0. <= X <= 5 
+                bord periox        X = 0.   0 <= Y <= 2 
+                bord periox        X = 5 0 <= Y <= 2 
+                }
+}
+trianguler_h dom_pb2
+Reordonner_faces_periodiques dom_pb2 periox
+
+VEFPreP1b cubesregu
+
+# Proprietes He vers 700°C #
+Fluide_Incompressible He
+Read He
+{
+        mu Champ_Uniforme 1 4.46437e-05 
+        rho Champ_Uniforme 1 4.40684
+        lambda Champ_Uniforme 1 0.344964     
+        Cp Champ_Uniforme 1 5193.
+        beta_th Champ_Uniforme 1 0.0014285714
+}
+Champ_Uniforme gravite
+Read gravite 2 -9 0.
+Associate He gravite
+
+Associate pb2 dom_pb2
+Associate pb2 He  
+
+
+
+Associate pb2 sch
+Discretize pb2 cubesregu
+
+Read pb2
+{
+        Navier_Stokes_standard
+        {
+                solveur_pression Gcp { precond ssor { omega 1.5 }
+                                        seuil 1.e-10
+                                        }
+
+                convection {      amont }
+                diffusion  {  }
+                conditions_initiales {
+                        vitesse Champ_Uniforme 2 2  0
+                        }
+       		Sources { Canal_perio { bord periox  }  }
+                boundary_conditions {
+                        periox periodique  
+                        Plaque            symetrie
+                }
+
+        }
+        Convection_Diffusion_Temperature
+        {
+                diffusion {  }
+                convection { EF_stab { volumes_etendus }  }
+                conditions_initiales { Temperature Champ_Fonc_xyz dom_pb2 1 -1/0.344964*y/2*(y-2) }
+                Sources {
+                        Puissance_Thermique Champ_Uniforme 1 1.
+                        }
+                boundary_conditions {
+                		        periox   periodique  
+                       		        Plaque   paroi_temperature_imposee  Champ_Front_Uniforme 1 0.
+                                   }
+        }
+
+        Postraitement {
+                Sondes
+                {
+                        sonde_sortie_vite  vitesse     periode 100.   points 1  4.5  1 
+                         prof_sortie_vite  vitesse     periode 1000.   segment 40  4.5  0.0  4.5 2.
+                        sonde_sortie_T  temperature     periode 100.   points 1  4.5  1 
+                         prof_sortie_T  temperature     periode 1000.   segment 40  4.5  0.0   4.5 2.
+                }
+                
+		format lml
+                Champs dt_post 10000.
+                {
+                   vitesse elem
+		   pression elem
+		   temperature elem
+                }
+        }
+}
+
+Solve pb2
+End
+
+                       sonde_sortie_vite  vitesse     periode 10.   points 1  4.5  1 
+                         prof_sortie_vite  vitesse     periode 100.   segment 40  4.5  0.025   4.5 1.975 
+                        sonde_sortie_T  temperature     periode 10.   points 1  4.5  1 
+                         prof_sortie_T  temperature     periode 100   segment 40  4.5  0.025   4.5 1.975
+

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+for cas in obsolete accolade
+do
+  triou ${cas} 1>${cas}.out 2>${cas}.err
+  status=$?
+                 if [ $status -eq 0 ]
+                 then
+                 echo le cas test ${cas} devrait faire une erreur
+                 exit 1
+                 fi
+                 done
+                 exit 0

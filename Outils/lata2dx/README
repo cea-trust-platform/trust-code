@@ -1,0 +1,46 @@
+To read TRUST results files with OpenDX:
+-----------------------------------------
+
+Run OpenDx with the command:
+$DXROOT/dx (or DX under TRUST environment).
+
+Click on Run Visual Programs to run a .net Program
+located under $TRUST_ROOT/Outils/lata2dx
+
+For example, choose simple_importer.net for a single domain
+or geometry_multidomains.net for several domains.
+
+On the Panel, import your .lata results file. Choose
+the element type and select binary if you post-process
+with binary format.
+
+Click Show color field and Show glyph to update
+the two lists containing positions, time, scalar
+and vectorial fields.
+
+UPDATE March, 8th 2005
+----------------------
+
+We switched to a new version of the lata-to-dx converter
+which is lata2dx.
+Old .net programs are still here for reference but they don't work since
+they use the old filter.
+
+The new reference .net file is "post_lata_generique"
+
+
+Mise a jour 6 mars 2006
+-----------------------
+Correction d'un bug avec "regularize" sur les gros maillages,
+Postraitement des vitesses aux faces en VDF avec OpenDx
+
+Pour visualiser les vitesses aux faces:
+- ecrire le champ aux faces au format lata (comme en vef).
+
+- ajouter les options "regularize=1e-6 dualmesh" dans la GUI du post_lata_generique.
+
+- pour visualiser la composante x du champ de vitesse, faire un plan de coupe (en 3d) et
+  mettre "v.x" dans "Compute expression". On voit alors un champ constant sur chaque
+  volume de controle des faces de vitesse x. Idem pour y et z.
+
+- en 2d il faut utiliser Simple shade a la place de cut plane (non teste)

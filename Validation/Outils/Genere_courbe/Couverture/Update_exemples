@@ -1,0 +1,10 @@
+#!/bin/ksh
+
+DEST=../doc/exemples
+chmod +w $DEST/*
+for f in impl ruse visu tableau Histo demo_particules query
+  do
+  cp *.0/$f.prm  $DEST
+  cp  $f.pdf $DEST
+done
+

@@ -1,0 +1,263 @@
+# Thermohydraulique 3D couplage solide-fluide GCFR- concept plaque avec troncon de sortie Taille maille paroi n°4 (0.4 mm) #
+# PARALLEL OK 3 #
+
+dimension 2
+Domaine dom_pb1
+Domaine dom_pb2
+
+Pb_conduction pb1
+Pb_thermohydraulique_turbulent  pb2
+
+
+# On abaisse le facsec sinon le cas diverge #
+Schema_Euler_explicite sch
+Read sch
+{
+	tinit 0.
+	tmax  2.
+        dt_min 1.E-9
+        dt_max 1.E-2
+        dt_impr 0.01
+        dt_sauv .5
+        seuil_statio 1.e-8
+        facsec 0.95
+	nb_pas_dt_max 100
+}
+
+# BEGIN MESH #
+Mailler dom_pb1
+{
+        Pave demi_plaque
+                {
+                Origine -0.003 0.
+                Nombre_de_Noeuds 11 21
+                Longueurs 0.003 1.4
+                }
+                {
+                bord Gauche X = -0.003   0. <= Y <= 1.4
+                bord Haut   Y = 1.4  -0.003 <= X <= 0.0
+                bord Bas    Y = 0.   -0.003 <= X <= 0.0
+                raccord local homogene Plaque X = 0.     0. <= Y <= 1.4
+                }
+}
+Mailler dom_pb2
+{
+        Pave couche_limite
+                {
+                Origine  0.  0.
+                Nombre_de_Noeuds  22 26
+                Longueurs 0.0004 1.75
+		Facteurs 1.2 1. 
+                }
+                {
+                raccord local homogene Plaque X = 0.     0. <= Y <= 1.4
+                bord Bord_entree_CL           Y = 0.     0. <= X <= 0.0004
+                bord Bord_sortie_CL           Y = 1.75   0. <= X <= 0.0004
+                bord Gauche_CL                X = 0.    1.4 <= Y <= 1.75
+                }
+                ,
+        Pave demi_canal
+                {
+                Origine  0.0004  0.
+                Nombre_de_Noeuds 12 26
+                Longueurs 0.0016 1.75
+		facteurs 1.1 1.
+                }
+                {
+                bord Bord_entree_canal        Y = 0.   0.0004 <= X <= 0.002
+                bord Bord_sortie_canal        Y = 1.75 0.0004 <= X <= 0.002
+                bord Droit                    X = 0.002    0. <= Y <= 1.75
+                }
+}
+# END MESH #
+
+
+# BEGIN PARTITION
+Partition dom_pb1
+{
+	Partitionneur metis { Nb_parts 2 }
+	Larg_joint 1
+	Nom_Zones DOM1
+}
+Partition dom_pb2
+{
+	Partitionneur metis { Nb_parts 2 }
+	Larg_joint 1
+	Nom_Zones DOM2
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM1.Zones dom_pb1
+Scatter DOM2.Zones dom_pb2
+END SCATTER #
+
+VDF cubesregu
+
+# Proprietes He vers 700°C #
+Fluide_Incompressible He
+Read He
+{
+        mu Champ_Uniforme 1 4.46437e-05 
+        rho Champ_Uniforme 1 4.40684
+        lambda Champ_Uniforme 1 0.344964     
+        Cp Champ_Uniforme 1 5193.
+        beta_th Champ_Uniforme 1 0.0014285714
+}
+
+Champ_Uniforme gravite
+Read gravite 2 0. -9.81
+Associate He gravite
+Associate pb2 dom_pb2
+Associate pb2 He  
+
+
+Solide ceramique    
+Read ceramique  
+{
+        rho Champ_Uniforme 1 7009.
+        lambda Champ_Uniforme 1 15.8     
+        Cp Champ_Uniforme 1 .527
+}
+# valeur reelle        Cp Champ_Uniforme 1 527. #
+
+
+Associate pb1 dom_pb1
+Associate pb1 ceramique     
+
+
+Probleme_Couple Conduccouplethermoh
+Associate Conduccouplethermoh pb2
+Associate Conduccouplethermoh pb1
+Associate Conduccouplethermoh sch
+Discretize Conduccouplethermoh cubesregu
+
+Read pb2
+{
+        Navier_Stokes_turbulent
+        {
+                solveur_pression GCP { precond ssor { omega 1.6 } seuil 1e-3 impr }
+		convection { amont }
+                diffusion { }
+                sources { boussinesq_temperature { T0 480. } }
+                conditions_initiales {
+                        vitesse Champ_Uniforme 2 0. 38.12 
+                        }
+                boundary_conditions {
+                        Droit             symetrie
+                        Bord_entree_canal frontiere_ouverte_vitesse_imposee champ_front_uniforme 2 0. 38.12 
+                        Bord_entree_CL    frontiere_ouverte_vitesse_imposee champ_front_uniforme 2 0. 38.12 
+                        Bord_sortie_canal frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.
+                        Bord_sortie_CL    frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.
+                        Plaque            paroi_fixe
+                        Gauche_CL         paroi_fixe
+                }
+
+		modele_turbulence  K_epsilon_Bas_Reynolds { 
+			Transport_K_epsilon_Bas_Reynolds
+			{      
+				convection { amont }
+				diffusion { }
+				sources              { source_transport_K_Eps_Bas_Reynolds { } }
+				boundary_conditions {
+ 		                        Droit               symetrie
+                		        Bord_entree_canal   frontiere_ouverte_k_eps_impose champ_front_uniforme 2 1.e-2 1.e-1
+                		        Bord_entree_CL      frontiere_ouverte_k_eps_impose champ_front_uniforme 2 1.e-2 1.e-1
+	                        	Bord_sortie_canal   frontiere_ouverte K_EPS_EXT champ_front_uniforme 2 1.e-2 1.e-1
+ 	                        	Bord_sortie_CL      frontiere_ouverte K_EPS_EXT champ_front_uniforme 2 1.e-2 1.e-1
+                       		        Plaque              paroi_fixe
+                        		Gauche_CL           paroi_fixe
+		      			}
+			   	conditions_initiales { k_eps Champ_Uniforme 2 1.e-2 1.e-1 }
+			}
+			  Modele_fonc_bas_Reynolds Launder_Sharma {  }
+			  Turbulence_paroi negligeable
+		} 
+
+        }
+
+        Convection_Diffusion_Temperature_turbulent
+        {
+                diffusion { }
+                convection { amont }
+                conditions_initiales {
+                        temperature Champ_Uniforme 1 480.
+                        }
+                boundary_conditions {
+                        Droit               symetrie
+                        Bord_entree_canal   frontiere_ouverte T_ext  champ_front_uniforme 1 480.
+                        Bord_entree_CL      frontiere_ouverte T_ext  champ_front_uniforme 1 480.
+                        Bord_sortie_canal   frontiere_ouverte T_ext champ_front_uniforme 1  800.
+                        Bord_sortie_CL      frontiere_ouverte T_ext champ_front_uniforme 1  800.
+                        Plaque              paroi_contact  pb1   Plaque
+                        Gauche_CL           paroi_adiabatique
+                                   }
+                Modele_Turbulence Prandtl { Turbulence_paroi negligeable_scalaire }
+        }
+
+        Postraitement {
+                Sondes
+                {
+                        sonde_He_entree_p pression    periode 1.E-3   points   1  0.001  0.
+                        prof_sortie_vite  vitesse     periode 1.E-3   segment 10  0.  1.4   0.002 1.4
+                        prof_sortie_ktur  k           periode 1.E-3   segment 10  0.  1.4   0.002 1.4
+                        prof_sortie_epsi  eps         periode 1.E-3   segment 10  0.  1.4   0.002 1.4
+                        prof_sortie_vis viscosite_turbulente periode 1.E-3   segment 10  0.  1.4   0.002 1.4
+                        prof_sortie_temp  temperature periode 1.E-3   segment 10  0.  1.4   0.002 1.4
+                        prof_canal_temp   temperature periode 1.E-3   segment 20  0.001 0.  0.001 1.4
+                }
+                Champs dt_post .05
+                {
+                   vitesse elem
+                   vitesse som
+                   temperature elem
+                   temperature som
+		   pression elem
+		   pression som
+                }
+        }
+        sauvegarde formatte pb2.sauv
+}
+#        reprise formatte cas1_pb2.rep #
+
+
+
+Read pb1
+{
+        Conduction
+        {
+                diffusion { }
+                conditions_initiales {
+                        temperature Champ_Uniforme 1 900.
+                        }
+                sources {
+                       Puissance_Thermique Champ_uniforme 1 166.67E+06 
+                        }
+
+                boundary_conditions {
+                        Gauche            paroi_adiabatique
+                        Haut              paroi_adiabatique
+                        Bas               paroi_adiabatique
+                        Plaque            paroi_contact  pb2 Plaque
+                }
+        }
+        Postraitement
+        {
+                Sondes
+                {
+                        sond_Tcombustible_sortie    temperature periode 1.E-3   points   1 -0.003 1.4 
+                        prof_Tcombustible_sortie    temperature periode 1.E-3   segment 10 -0.003 1.4   0.  1.4
+                }
+                Champs dt_post .05
+                {
+                   temperature elem
+                   temperature som
+                }
+        }
+        sauvegarde formatte pb1.sauv
+}
+#        reprise formatte cas1_pb1.rep #
+
+Solve Conduccouplethermoh
+End

@@ -1,0 +1,4 @@
+#!/bin/bash
+[ ${#1} = 0 ] && echo "Usage: `basename $0` filename" && exit -1
+CRLF=`$TRUST_Awk '{n+=sub(/\r$/,"")} END {print n}' $1`
+[ "$CRLF" != 0 ] && $TRUST_Awk '{sub(/\r$/,"");print $0}' $1 > $TRUST_TMP/$1 && mv -f $TRUST_TMP/$1 $1

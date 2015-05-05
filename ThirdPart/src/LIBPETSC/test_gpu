@@ -1,0 +1,192 @@
+#!/bin/bash
+option=$1
+[ "$PETSC_HAVE_CUDA" != 1 ] && echo "PETSc not built with CUDA." && exit -1
+export PETSC_DIR=$TRUST_ROOT/lib/src/LIBPETSC/petsc/$TRUST_ARCH"_opt"
+if [ ! -d $PETSC_DIR ]
+then
+   echo "PETSC_DIR=$PETSC_DIR not found!"
+   exit -1
+fi
+if [ -f $TRUST_ENV/card.log ]
+then
+   echo "================="
+   echo "Card description:"
+   echo "================="
+   cat $TRUST_ENV/card.log
+   echo "================="
+   echo
+fi
+tests="src/ksp/ksp/examples/tutorials/ex2"
+#[ "$option" != -ref ] && tests=$tests" src/snes/examples/tutorials/ex19"
+for test in $tests
+do
+   cd $PETSC_DIR/`dirname $test`
+   test=`basename $test`
+   # Build binary:
+   if [ ! -f $test ]
+   then
+      make $test || exit -1
+   fi
+   export exec=`pwd`/$test
+   cd -
+   ##############
+   # Test Gmres #
+   ##############
+   if [ $test = ex19 ]
+   then   
+      # SNES test case using gmres
+      mesh_size=10  # Quick to check if it works
+      mesh_size=250 # 31000 cells/core
+      #options="-ksp_type fgmres -pc_type none   -da_grid_x $mesh_size -da_grid_y $mesh_size -ksp_rtol 1.e-6"
+      #options="-ksp_type gmres -pc_type jacobi -da_grid_x $mesh_size -da_grid_y $mesh_size -ksp_rtol 1.e-6"
+      # To reproduce TRUST implicit scheme use (gmres/diag nb_it_max 5):
+      #options="-ksp_type gmres -pc_type jacobi -da_grid_x $mesh_size -da_grid_y $mesh_size -ksp_atol 1e50 -ksp_check_norm_iteration 4"
+      options="-ksp_type gmres -pc_type jacobi -da_grid_x $mesh_size -da_grid_y $mesh_size -ksp_rtol 1.e-2"
+      gpu_options="-dm_mat_type aijcusp -dm_vec_type cusp"
+   fi
+   ############
+   # Test GCP #
+   ############
+   if [ $test = ex2 ]
+   then
+      # Linear solver
+      mesh_size=1000 # No gain with mesh_size=100... Why? Matrix too small, the bigger, the better.
+      options="-ksp_type cg -pc_type jacobi -m $mesh_size -n $mesh_size"
+      gpu_options="-mat_type aijcusp -vec_type cusp"
+	 # Obtenu le 06/08/2014 sur curie avec mesh_size=1000:
+	 #       	KSPSolve	MatMult	MFLOPs	Cells/MPI
+	 # 64CPUS:	1.40s		0.38s	39864	15625
+	 # 16GPUS:	1.19s		0.48s	32023	62500
+	 # 32CPUS:	2.62s		0.90s	16981	31250
+	 #  8GPUS:	1.56s		0.71s	20264	125000
+	 # 16CPUS:	5.62s		2.82s	5473	62500
+	 #  4GPUS:	2.37s		1.34s	11442	250000
+	 #  8CPUS:     11.17s		5.34s	2888	125000
+	 #  2GPUS:	2.90s		1.35s	11359	500000
+	 #  4CPUS:     23.35s		9.78s	1578	250000
+	 #  1GPU:	4.95s   	2.30s	6705	1000000
+	 # Obtenu le 06/08/2014 sur airain avec mesh_size=1000:
+	 # 32CPUS:	9.09s
+	 #  4GPUS:	2.37s
+	 # 16CPUS:     10.32s
+	 #  2GPUS:	2.88s
+	 #  8CPUS:     10.85s
+	 #  1GPUS:	4.71s
+	 # A noter que l'option 2CPUS+1GPU tourne plus vite que 1CPU+1GPU, je ne sais pas pourquoi.
+	 # Donc remplacer un calcul 4*n*CPUS par n*(CPU+GPU) sur curie semble interessant a partir de 50000 mailles/CPU si methode iterative (GCP/SSOR) qui converge bien mais prend >80% 
+	 # Model: T cpu time per time step: aT time in Ax=B, (1-a)T time in B build, Acceleration G in solve Ax=B (between 2 and 4).
+	 # New Time / Old Time = aT/G+4*(1-a)T  /  T = a/G+4*(1-a) < 0.5 si a>3.5G/(4G-1) G=2 -> a=1, G=4 -> a=0.93
+	 # Reference Fluent RANS:
+	 # 111e6 mailles et 144 CPUs soit 770833 mailles/CPU
+	 # 44 GPUs (3 CPU par GPU)   soit2522727 mailles/GPU  Tesla K40
+	 # G=2.7
+	 # OldTime/NewTime=2.0
+	 # a=0.80 Il semble qu'ils arrivent a lancer 4*n*CPU et n*GPUs sur un meme calcul.
+	 # Voir donc comment avec PETSc, faire un PETSC_COMM_WORLD reduit et petsc_decide ?
+      if [ "$option" = -ref ]
+      then
+         # Reference: See https://lists.mcs.anl.gov/mailman/htdig/petsc-dev/2012-February/007538.html
+	 # Tested on Tesla M2090  	  4 nodes of 2 sockets with 8 CPUs + 1GPU 
+	 # airain          K20m  	 18 nodes of 2 sockets with 8 CPUs + 1GPU
+	 # curie  	   M2090 	144 nodes of 2 sockets with 4 CPUs + 1GPU
+	 #       	KSPSolve	MatMult	MFLOPs	Cells/MPI
+	 # 64CPUS:	1461s		626s	26069	1562500
+	 #  8GPUS:	 595s		295s	55317	12500000
+	 #numactl -l --cpunodebind=$OMPI_COMM_WORLD_LOCAL_RANK ex2 $KSP_ARGS
+	 mesh_size=10000
+         options="-ksp_type cg -pc_type jacobi -m $mesh_size -n $mesh_size -ksp_max_it 100000"
+	 gpu_options="-mat_type aijcusp -vec_type cusp -cusp_storage_format dia"
+	 # Obtenu le 06/08/2014 sur curie avec mesh_size=1000:
+	 #       	KSPSolve	MatMult	MFLOPs	Cells/MPI
+	 # 64CPUS:	1.78s		0.33s	21100	15625
+	 # 16GPUS:	1.17s		0.48s	32200	62500
+	 # Donc prendre un cas TRUST sur N CPUs, le decouper en N/4 sur curie ou N/8 sur airain et faire tourner pour comparer.
+	 # Obtenu le 05/08/2014 sur curie avec mesh_size=10000:
+	 #       	KSPSolve	MatMult	MFLOPs
+	 # 64CPUS:	
+	 # 16GPUS:	 460s		308s	52910   (VecAXPY 2 fois plus lent que le bench plus haut...)
+      fi
+   fi     
+   # Add CPU logging:
+   log_options=" -log_summary -ksp_monitor"
+   gpu_options=$gpu_options" -cusp_synchronize" # NB: -cusp_synchronize ne sert qu'a bien mesurer les performances, inutile en production
+
+   # Number of GPU tested:
+   # CPU per GPU:
+   if [ $HOST = curie-ccrt ]
+   then
+      gpus="1 2"
+      [ "$option" = -ref ] && gpus="16"
+      [ "$option" = -gpus ] && shift && gpus=$*
+      cpu_per_gpu=4
+   elif [ $HOST = airain ]
+   then
+      gpus="1 2"
+      [ "$option" = -ref ] && gpus="8"
+      [ "$option" = -gpus ] && shift && gpus=$*
+      cpu_per_gpu=8
+   else
+      gpus=1
+      # We don't know...
+      cpu_per_gpu=1
+   fi
+   
+   echo $ECHO_OPTS "Running \"$test $options\" (GPU options: $gpu_options):"
+   # Run on several gpus:
+   for gpu in $gpus
+   do
+      touch dummy.data
+      # Run on several devices:
+      for device in cpu gpu
+      do
+         # Loop on several cpu_per_task:
+	 test_cpu_per_task=0 # Set to 1 to loop on several cpu per task on GPU
+	 let cpu_per_task=$cpu_per_gpu
+	 while [ $cpu_per_task -ge 1 ]
+         do
+	    core_reserved=`echo "$gpu*$cpu_per_gpu" | bc`
+	    if [ $device = gpu ]
+	    then
+	       c="-c $cpu_per_task"
+	       mpi_task=`echo "$gpu*$cpu_per_gpu/$cpu_per_task" | bc`
+	       message="$mpi_task CPU + $gpu GPU"
+	       log_gpu=$test"_"$mpi_task"CPU_"$gpu"GPU_on_"$core_reserved"cores.gpu"
+	       log=$log_gpu
+	    else	
+	       c="    "
+	       mpi_task=$core_reserved
+	       cpu=$mpi_task
+	       message="$mpi_task CPU        "
+	       log_cpu=$test"_"$mpi_task"CPU_0GPU_on_"$core_reserved"cores.cpu"
+	       log=$log_cpu
+	    fi
+	    [ "$cpu_per_gpu" = 1 ] && c="    "
+            echo $ECHO_OPTS "With $mpi_task MPI task on $message (cpu_per_task=\"$c\" so $core_reserved cores reserved): \c"
+	    triou -gpu $c dummy $mpi_task $log_options $options `[ "$device" = gpu ] && echo $gpu_options` 1>$log 2>&1
+            err=$?
+	    time=`awk '/^KSPSolve/ {print $4}' $log`
+	    echo "$time s $log created."
+            if [ $err != 0 ]
+            then
+	       echo "Error see: $log."
+	       exit -1
+            fi
+	    if [ $device = gpu ]
+	    then
+	       # Compute acceleration CPU+GPU vs CPU
+	       cell_per_gpu=`echo "$mesh_size*$mesh_size/$mpi_task" | bc`
+	       cell_per_cpu=`echo "$mesh_size*$mesh_size/$cpu" | bc`
+	       echo "Acceleration PETSc between $mpi_task MPI task on $mpi_task CPU + $gpu GPU ($cell_per_gpu cells/MPI task) vs $cpu MPI task on $cpu CPU ($cell_per_cpu cells/MPI task) : "`grep "KSPSolve " $log_cpu $log_gpu | awk '/KSPSolve / {GAIN=(n++==0?$4:GAIN/$4)} END {print "*"GAIN}'`
+	    fi
+	    if [ $device = cpu ] || [ "$test_cpu_per_task" = 0 ]
+	    then
+	       # To end the loop:
+	       break
+	    else
+	       cpu_per_task=`echo "$cpu_per_task/2" | bc`
+	    fi
+	 done
+      done
+      rm -f dummy.data
+   done
+done

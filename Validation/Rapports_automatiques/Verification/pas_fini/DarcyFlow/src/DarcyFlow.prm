@@ -1,0 +1,111 @@
+Parameters {
+	Title "Check Darcy/Forcheimer source terms in VDF/VEF"
+	Author "Pierre LEDAC (CS)"
+	TestCase . DarcyFlow_VDF.data
+	TestCase . DarcyFlow_QC_VDF.data
+	
+	TestCase . DarcyFlow_VEF.data
+	TestCase . DarcyFlow_QC_VEF.data
+	IncludeData 1
+	Description "Solve a Darcy flow in a conic geometry."
+	Description "Velocity field (0.2m/s) is imposed at the inlet (smallest area)."
+	Description "Pressure field (0 Pa) is imposed at the outlet (buggest area)."
+	Description "Solve dU/dt=-grad(P/rho)-nu.U/K-Cf.U|U|/sqrt(K1)"
+	Description "by using Navier Stokes equation and neglecting convection and diffusion terms."
+	Description "The first source term is Darcy term and the second one, the inertial Forchheimer term."
+	Description "See http://en.wikipedia.org/wiki/Darcy's_law"
+	Description "At the convergence, we have grad(P/rho)=nu.U/K+Cf.U|U|/sqrt(K1)"
+	Description "The time step is set to 0.001s and should be carefully cherry picked to avoid non convergence."
+}
+
+Chapter {
+	Title "3D results"
+        Visu { 
+		Title "Pressure (Incompressible model, VDF discretization)"	
+		mesh DarcyFlow_VDF.lata dom
+		pseudocolor DarcyFlow_VDF.lata dom PRESSION_PA ELEM 
+	}
+        Visu { 
+		Title "Pressure (Quasi compressible model, VDF discretization)"
+		mesh DarcyFlow_QC_VDF.lata dom
+		pseudocolor DarcyFlow_QC_VDF.lata dom PRESSION_PA ELEM 
+	}
+        Visu { 
+	        Title "Pressure (Incompressible model, VEF discretization)"
+		mesh DarcyFlow_VEF.lata dom
+		pseudocolor DarcyFlow_VEF.lata dom PRESSION_PA ELEM 
+	}
+        Visu { 
+		Title "Pressure (Quasi compressible model, VEF discretization)"
+		mesh DarcyFlow_QC_VEF.lata dom
+		pseudocolor DarcyFlow_QC_VEF.lata dom PRESSION_PA ELEM 
+	}
+}
+Chapter {
+	Title "1D results"
+ 	Figure {
+                Title "Convergence of the axial velocity"
+                Description ""
+                LabelX "Time [s]"
+                LabelY "Velocity [m/s]"
+		RangeY 0. 0.2 
+                Include_Description_Curves 0
+                Curve {
+                        legend "Incompressible model, VDF discretization"
+                        Style linespoints
+                        file DarcyFlow_VDF_SONDE_VITESSE.son
+			columns $1 $3
+                }
+		Curve {
+                        legend "Quasi compressible model, VDF discretization"
+                        Style linespoints
+                        file DarcyFlow_QC_VDF_SONDE_VITESSE.son
+			columns $1 $3
+                }
+                Curve {
+                        legend "Incompressible model, VEF discretization"
+                        Style linespoints
+                        file DarcyFlow_VEF_SONDE_VITESSE.son
+			columns $1 $3
+                }
+                Curve {
+                        legend "Quasi compressible model, VEF discretization"
+                        Style linespoints
+                        file DarcyFlow_QC_VEF_SONDE_VITESSE.son
+			columns $1 $3
+                }
+	}
+ 	Figure {
+                Title "Pressure profile"
+                Description ""
+                LabelX "Y [m]"
+                LabelY "Pressure [Pa]"
+                Include_Description_Curves 0
+                Curve {
+                        legend "Incompressible model, VDF discretization"
+                        Style linespoints
+                        file DarcyFlow_VDF_SEGMENT_PRESSION.coupe
+                }
+		Curve {
+                        legend "Quasi compressible model, VDF discretization"
+                        Style linespoints
+                        file DarcyFlow_QC_VDF_SEGMENT_PRESSION.coupe
+                }
+                Curve {
+                        legend "Incompressible model, VEF discretization"
+                        Style linespoints
+                        file DarcyFlow_VEF_SEGMENT_PRESSION.coupe
+                }
+                Curve {
+                        legend "Quasi compressible model, VEF discretization"
+                        Style linespoints
+                        file DarcyFlow_QC_VEF_SEGMENT_PRESSION.coupe
+                }
+	}	
+}
+Chapter {
+        Title "Conclusion"
+	Description "I) Isotherm flow has been specified for the quasi compressible model"
+	Description "so the results should match whith the incompressible model."
+	Description "II) The more refined the mesh, the smaller the VDF/VEF differences for pressure and velocity fields."
+}

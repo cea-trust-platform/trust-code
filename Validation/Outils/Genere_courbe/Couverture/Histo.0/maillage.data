@@ -1,0 +1,8 @@
+dimension 3
+domaine dom
+lire_fichier dom dom.geom
+discretiser_domaine dom
+postraiter_domaine { domaine dom format lata fichier dom }
+analyse_angle dom 36
+fin
+

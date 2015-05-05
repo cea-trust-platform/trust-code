@@ -1,0 +1,20 @@
+# Lecture d'un maillage Quadrangle depuis Fluent et transformation en rectangle #
+dimension 2
+domaine dom
+
+# Lecture du maillage Gambit #
+lire_tgrid dom default_id2228.msh
+
+# Transformation en rectangles #
+Redresser_hexaedres_vdf dom
+
+# Postraitement du domaine #
+Postraiter_domaine { domaine dom fichier dom format lata }
+
+# On reordonne et on discretise pour verifier #
+Reordonner dom
+Discretiser_domaine dom
+
+# Eriture du domaine #
+ecrire_fichier dom dom.geom
+Postraiter_domaine { domaine dom format lml }

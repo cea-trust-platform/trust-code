@@ -1,0 +1,60 @@
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:        Champ_P1.h
+// Directory:   $TRUST_ROOT/Kernel/Champs_dis
+// Version:     /main/13
+//
+//////////////////////////////////////////////////////////////////////////////
+
+#ifndef Champ_P1_H
+#define Champ_P1_H
+
+
+
+
+#include <Champ_Inc.h>
+#include <Champ_implementation_P1.h>
+class Motcle;
+class IntTab;
+
+
+//////////////////////////////////////////////////////////////////////////////
+// .NOM  Champ_P1 
+// .ENTETE  TRUST Champs_dis
+// .LIBRAIRIE  libchpdis
+// .FILE  Champ_P1.h
+// .FILE  Champ_P1.cpp
+// 
+// .DESCRIPTION 
+//    classe Champ_P1
+//    Cette classe sert de base a la hierarchie des champs discrets 
+//    affines par element, i.e. de type P1.
+// .SECTION voir aussi 
+//     Champ_Inc_base Champ_P0
+// .CONTRAINTES 
+// .INVARIANTS 
+// .HTML 
+// .EPS 
+//////////////////////////////////////////////////////////////////////////////
+
+class Champ_P1 : public Champ_Inc_base, public Champ_implementation_P1
+{
+   
+  Declare_base(Champ_P1);
+   
+public :
+  
+  virtual DoubleTab& valeur_aux_elems(const DoubleTab& positions,
+                                      const IntVect& les_polys,
+                                      DoubleTab& valeurs) const;
+  virtual DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys,
+                                             DoubleVect& valeurs,entier ncomp) const ;
+  
+  DoubleTab& remplir_coord_noeuds(DoubleTab&) const;
+  virtual const Zone_dis_base& zone_dis_base() const;
+ 
+  entier fixer_nb_valeurs_nodales(entier nb_noeuds);
+};
+
+
+#endif

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+
+./laminar.awk laminar_coupled_pb
+

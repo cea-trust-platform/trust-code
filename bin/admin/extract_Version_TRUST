@@ -1,0 +1,242 @@
+#!/bin/bash
+# Script de creation a partir d'une version complete de TRUST
+# Soit d'une version sans les sources TRUST
+# Soit d'une version avec le Noyau uniquement
+gunzip_()
+{
+   # Verifie si la cles est la
+   cle=.cle_`basename $1`
+   [ ! -f $cle ] && echo "Missing key in $keys for $1." && exit
+   tmp_gunzip=`mktemp_`
+   echo "begin 664 $1" > $tmp_gunzip
+   cat $cle >> $tmp_gunzip
+   uuencode $1 $1 | awk '(NR!=1) {print $0}' >> $tmp_gunzip
+   [ $? != 0 ] && echo "uuencode seems not installed on your system or is not working well. Please correct. On Linux, install the sharutils rpm package please." && exit
+   # Effacer le $1 est plus prudent...
+   rm -f $1
+   rm -f $cle
+   uudecode $tmp_gunzip
+   [ $? != 0 ] && echo "uudecode seems not installed on your system or is not working well. Please correct. On Linux, install the sharutils rpm package please." && exit
+   rm -f $tmp_gunzip
+   # Attendre que tout est bien fini est plus prudent aussi...
+   sleep 1
+   gunzip -c $1 > ${1%.gz}
+   [ $? != 0 ] && echo "Invalid keys in $keys for $1." && echo "Check you have the keys for the version you want to install." && exit
+   rm -f $1
+   rm -f $cle
+}
+gzip_()
+{
+   gzip -f $1
+   if [ $crypt = 1 ]
+   then
+      cle_tmp=`mktemp_`
+      # on passe par uuencode
+      uuencode $1.gz $1.gz > $cle_tmp
+      head -2 $cle_tmp | tail -1 > .cle_$1.gz
+      # On utilise Awk
+      cat $cle_tmp | $TRUST_Awk '(NR!=2) {print $0}' | uudecode
+      rm -f $cle_tmp
+   fi
+}
+
+tar_xf()
+{
+   tmp=`mktemp_ -d`
+   cd $tmp
+   mv $rep/TRUST/$targz .
+   tar xf $key .cle_$targz
+   gunzip_ $targz
+   tar xf ${targz%.gz}
+   rm -f ${targz%.gz}
+}
+tar_cf()
+{
+   tar cf $rep/TRUST/${targz%.gz} .
+   cd $rep/TRUST
+   gzip_ ${targz%.gz} 
+   rm -r -f $tmp  
+}
+
+decrypte()
+{
+   tar xf $key .cle_$targz
+   gunzip_ $targz
+   gzip_ ${targz%.gz} 
+}
+echo "Usage: `basename $0` ./TRUST-X.Y.Z.ARCH.tar [-install [-remote hostname]] [-no_key] [-without_source | -kernel_only]"
+[ ${#1} = 0 ] && exit
+[ ${#2} = 0 ] && exit
+paquet=`basename $1`
+key=keys${paquet#TRUST-}
+paquet=`pwd`/$paquet
+export key=`pwd`/${key%.tar}
+[ ! -f $paquet ] && echo "Fichier $paquet non trouve." && exit
+[ ! -f $key ] && echo "Cle $key non trouvee." && exit
+export install=0 	&& [ "$2" = -install ]	&& install=1 	&& shift
+export remote=0 	&& [ "$2" = -remote ]	&& remote="-remote $3" && shift && shift
+export crypt=1 		&& [ "$2" = -no_key ] 	&& crypt=0 	&& shift
+export kind="-no_key" 	&& [ "$2" != "" ] 	&& kind=$2
+[ $kind != -no_key ] && [ $kind != -without_source ] && [ $kind != -kernel_only ] && exit
+new_paquet=${paquet%.tar}"."${kind#-}".tar"
+#
+export rep=`mktemp_ -d`
+cd $rep
+
+# On detarre le paquet TRUST
+echo "Extraction de $paquet avec $kind..."
+tar xf $paquet
+
+# On applique a chaque paquet un traitement
+# Ne pas utiliser env/rep.TRUST qui n'est plus
+# gere en configuration
+for targz in $rep/TRUST/*.gz
+do
+   export targz=`basename $targz`
+   cd $rep/TRUST
+   echo "On modifie $targz"
+   ################################
+   if [ ${targz%.gz} = TRUST.tar ]
+   ################################
+   then
+      if [ $kind = -without_source ]
+      then
+         # On efface les sources de TRUST
+	 tar_xf
+         for dir in `find . -name make.include`
+         do
+            rm -r -f `dirname $dir`
+         done
+	 tar_cf
+      elif [ $kind = -kernel_only ]
+      then
+         # On efface les sources autres que celles du Kernel et de MAIN pour construire la version
+	 tar_xf
+         for dir in `find . -name make.include | grep -v ./src/Kernel | grep -v ./src/MAIN`
+         do
+            rm -r -f `dirname $dir`
+         done
+	 # On efface les fiches de validation qui ne sont pas Kernel
+	 for fiche in `find Validation/Rapports_automatiques -type d  -name src  | grep -v /Kernel_`
+	 do 
+	    rm -r -f  `dirname $fiche`
+	 done
+	 # on efface des repertoires en trop
+	 rm -r -f P1P1 Zoom
+	 tar_cf
+      elif [ $crypt = 0 ]
+      then
+         decrypte 
+      fi
+   ################################ 
+   elif [ ${targz#exec} != $targz ]
+   ################################
+   then
+      if [ $kind = -kernel_only ]
+      then
+         # On efface les binaires de TRUST
+         rm -f $targz
+      elif [ $crypt = 0 ]
+      then
+         decrypte 
+      fi
+   ############################### 
+   elif [ ${targz#lib} != $targz ]
+   ###############################
+   then
+      if [ $kind = -kernel_only ]
+      then
+         # On efface les librairies de TRUST
+         rm -f $targz
+      elif [ $crypt = 0 ]
+      then
+         decrypte 
+      fi
+   ######################################   
+   elif [ ${targz%.gz} = Doc_TRUST.tar ]
+   ######################################
+   then
+      if [ $kind = -without_source ] || [ $kind = -kernel_only ]
+      then
+         tar_xf
+         # On efface ce qui est relatif a TRUST
+         rm -f doc/html.tar.gz
+	 if [ $kind = -kernel_only ]
+	 then
+            rm -f -r doc/TRUST doc/Validation
+	    cd doc/Coverage
+	    tar xfz cpp.gcov.tar.gz
+	    find . -name '*'.gcov -exec grep -L TRUST_ROOT/src/Kernel {} \; | xargs rm -f
+	    rm -f cpp.gcov.tar.gz
+	    tar cfz cpp.gcov.tar.gz *.gcov
+	    rm -f *.gcov
+	    cd -
+	 else
+	    rm -f -r doc/Coverage
+	 fi
+	 rm -f -r doc/latex
+	 tar_cf
+      elif [ $crypt = 0 ]
+      then
+         decrypte 
+      fi
+   ########################################   
+   elif [ ${targz%.gz} = Tests_TRUST.tar ]
+   ########################################
+   then
+      if [ $kind = -kernel_only ]
+      then
+         # On ne garde que les cas tests des repertoires Kernel
+         tar_xf
+	 cd tests
+	 kernel_tmp=`mktemp_ -d`
+	 mv * $kernel_tmp
+	 for test_kernel in `cd $kernel_tmp;find . -type d -name Kernel'*'`
+         do
+	    parent_dir=`dirname $test_kernel`	 	
+            mkdir -p $parent_dir
+            mv $kernel_tmp/$test_kernel $parent_dir/.
+         done
+	 rm -r -f $kernel_tmp 
+	 cd ..
+	 tar_cf
+      elif [ $crypt = 0 ]
+      then
+         decrypte 
+      fi
+   ###################
+   elif [ $crypt = 0 ]
+   ###################
+   then
+      decrypte
+   fi
+done
+
+####################################
+# On cree une nouvelle cle du paquet
+####################################
+if [ $crypt = 1 ]
+then
+   new_key=$key"."${kind#-}
+   cp -f $key $new_key
+   cles=`\ls .cle_*.tar.gz 2>/dev/null`
+   tar rf $new_key $cles
+   rm -f $cles
+   echo "Cle $new_key creee"
+fi
+
+#####################
+# On recree le paquet
+#####################
+cd ..
+tar cf $new_paquet .
+
+echo "Paquet $new_paquet cree"
+[ $kind = -without_source ] && echo "contenant une version sans les sources TRUST et sans la documentation Doxygen associee."
+[ $kind = -kernel_only ] && echo "contenant une version du kernel TRUST sans la documentation Doxygen associee."
+[ $crypt = 0 ] && echo "Attention, cette version est sans cle."
+cd `dirname $new_paquet`
+rm -r -f $rep
+# On teste l'installation du nouveau paquet si -install
+[ $install = 1 ] && simule_install_TRUST $new_paquet $remote
+

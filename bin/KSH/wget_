@@ -1,0 +1,14 @@
+#!/bin/bash
+# wget limite a 30s pour le timeout et 1 essai
+# On reduit a 10s
+if [ -f /usr/bin/wget ]
+then
+   # --no-check-certificate depuis castor->llnl
+   # Attention pas toujours reconnue
+   option="--no-check-certificate"
+   [ "`wget --help | grep no-check-certificate`" = "" ] && option=""
+   wget --timeout=10 --tries=1 $option $*
+else
+   echo "wget: command not exist on this host!"
+   echo "Please download $* in `pwd`"
+fi

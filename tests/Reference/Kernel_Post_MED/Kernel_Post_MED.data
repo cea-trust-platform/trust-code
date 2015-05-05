@@ -1,0 +1,38 @@
+# PARALLEL NOT #
+Dimension 2 
+export Domaine dom_solide 
+export Domaine dom_fluide 
+Pbc_MED pbmed 
+Lire pbmed 
+{ 
+   MED_docond.med 
+   dom_solide 
+   { 
+      Postraitement 
+      { 
+	 Champs dt_post 1e-9 
+	 { 
+	 temperature_ELEM ELEM 
+	 temperature_SOM SOM 
+	 } 
+      } 
+   } 
+   , 
+   MED_docond.med 
+   dom_fluide 
+   {  
+      Postraitement 
+      { 
+         Champs dt_post 1e-9 
+         { 
+	    pression_ELEM ELEM 
+	    pression_SOM SOM 
+	    vitesse_ELEM ELEM 
+	    vitesse_SOM SOM 
+	    temperature_ELEM ELEM 
+	    temperature_SOM SOM 
+         } 
+      } 
+   } 
+} 
+fin 

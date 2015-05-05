@@ -1,0 +1,1 @@
+find . -maxdepth 1 -newer TESTS_MINIMUM -type f -printf "%T@ %f\n" | sort -n | awk 'BEGIN {a=0} {if (a==0) {a=$1};print ($1-a,$2);a=$1}'  | sort -n

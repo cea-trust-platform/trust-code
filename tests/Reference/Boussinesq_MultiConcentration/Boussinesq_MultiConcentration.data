@@ -1,0 +1,147 @@
+# Thermohydraulique 2D avec transport 2 constituants et terme source #
+# PARALLEL OK 5 #
+dimension 2
+
+Pb_hydraulique_Concentration pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Cavite 
+		{
+		Origine 0. 0.
+		Nombre_de_Noeuds 11 11 
+		Longueurs 0.01 0.01
+		}
+		{
+		Bord Gauche X = 0.	0. <= Y <= 0.01
+		Bord perioy Y = 0.01	0. <= X <= 0.005
+		Bord Haut   Y = 0.01	0.005 <= X <= 0.01
+		Bord perioy Y = 0.	0. <= X <= 0.005
+		Bord Bas    Y = 0.	0.005 <= X <= 0.01
+		Bord Droit  X = 0.01	0. <= Y <= 0.01
+		}
+}
+trianguler_H dom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 2
+	Nom_Zones DOM
+	Periodique 1 perioy
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0
+	tmax 1.
+	dt_min 1.e-6
+	dt_max 0.01
+	dt_impr 0.001
+	dt_sauv 100
+	seuil_statio 2.e-4
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu	Champ_Uniforme 1 1.85e-5
+	rho	Champ_Uniforme 1 1.17
+	beta_co	Champ_Uniforme 2 1e-4 0.5e-4
+}
+
+Constituant c
+Lire c
+{
+coefficient_diffusion Champ_Uniforme 2 1e-5 2e-5
+}
+
+Champ_Uniforme gravite
+Lire gravite 2 0 -9.81
+
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+Associate pb c
+
+Discretize pb dis
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+	 	solveur_pression GCP { 
+			precond ssor { omega 1.500000 } 
+			seuil 1.e-12
+			impr 
+		}
+		convection { muscl }
+		diffusion { }
+		sources { boussinesq_concentration { C0 2 1. 1. } }
+		conditions_initiales
+		{
+			vitesse Champ_Uniforme 2 0.01 0.
+		}
+		boundary_conditions
+		{
+			Haut	frontiere_ouverte_vitesse_imposee  Champ_Front_Uniforme 2  0. 0.
+			Droit	frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1  0.
+			Bas	symetrie
+			perioy	periodique 
+			Gauche	frontiere_ouverte_vitesse_imposee  Champ_Front_Uniforme 2  0.1 0.
+		}
+		
+	}
+	Convection_diffusion_Concentration
+	{
+		diffusion { }
+		convection { muscl }
+		conditions_initiales
+		{
+			concentration Champ_Uniforme 2 0. 0.
+		}
+		boundary_conditions
+		{
+			Haut	frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 2 0. 0.
+			Droit	frontiere_ouverte C_EXT Champ_Front_Uniforme 2 0. 0.
+			Gauche	frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 2 1. 1.
+			Bas	symetrie
+			perioy	periodique 
+		}
+	}
+
+	Postraitement
+	{
+		Sondes
+		{
+			sonde_pres pression	 periode 0.01 points 1 0.0045 0.0045
+			sonde_vit  vitesse	 periode 0.01 points 1 0.004  0.0045
+			sonde_conc concentration0 periode 0.01 points 1 0.0055 0.0045
+		}
+		Champs dt_post 0.1
+		{
+			pression	elem
+			pression	som
+			vitesse		elem
+			vitesse		som
+			Concentration0	elem
+			Concentration1	elem
+		}
+	}
+}
+
+Solve pb
+Fin
+

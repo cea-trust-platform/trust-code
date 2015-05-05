@@ -1,0 +1,8 @@
+#!/bin/bash
+# Tester la version optimisee de l'atelier ($1=1) ou debug ($1=2)
+# avec les tests de reference :
+fic=$TRUST_TESTS/Reference/.tests
+rm -f $fic
+Lancer.sccs $1 1
+#Lancer.sccs
+

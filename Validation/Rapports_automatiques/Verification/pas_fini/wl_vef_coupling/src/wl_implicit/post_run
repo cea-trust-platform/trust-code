@@ -1,0 +1,29 @@
+#!/bin/bash
+
+extrait_coupe wl_implicit SONDE_SEG_FL_TEMP_ENT 3165698
+extrait_coupe wl_implicit SONDE_SEG_SOL_TEMP_ENT 3165698
+cat wl_implicit_SONDE_SEG_FL_TEMP_ENT.coupe.3165698 wl_implicit_SONDE_SEG_SOL_TEMP_ENT.coupe.3165698 > wl_implicit_temp_ent.coupe
+
+
+extrait_coupe  wl_implicit SONDE_SEG_FL_TEMP_MIL 3165698
+extrait_coupe  wl_implicit SONDE_SEG_SOL_TEMP_MIL 3165698
+cat wl_implicit_SONDE_SEG_FL_TEMP_MIL.coupe.3165698 wl_implicit_SONDE_SEG_SOL_TEMP_MIL.coupe.3165698 > wl_implicit_temp_mil.coupe
+
+extrait_coupe  wl_implicit SONDE_SEG_FL_TEMP_SOR 3165698
+extrait_coupe  wl_implicit SONDE_SEG_SOL_TEMP_SOR 3165698
+cat wl_implicit_SONDE_SEG_FL_TEMP_SOR.coupe.3165698 wl_implicit_SONDE_SEG_SOL_TEMP_SOR.coupe.3165698 > wl_implicit_temp_sor.coupe
+
+file_solide='wl_implicit_pb_solide_Diffusion_chaleur.out'
+file_fluide='wl_implicit_pb_fluide_Diffusion_chaleur.out'
+
+nc_bas_f=4
+nc_contact_f=5
+nc_haut_s=5
+nc_contact_s=4
+
+val_bas_f=`awk -v nc_bas=$nc_bas_f ' END{print $nc_bas}' $file_fluide`
+val_haut_f=`awk -v nc_haut=$nc_contact_f ' END{print $nc_haut}' $file_fluide`
+val_bas_s=`awk -v nc_bas=$nc_contact_s ' END{print $nc_bas}' $file_solide`
+val_haut_s=`awk -v nc_haut=$nc_haut_s ' END{print $nc_haut}' $file_solide`
+
+echo $val_bas_f $val_haut_s $val_haut_f $val_bas_s > val_wl_out

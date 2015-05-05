@@ -1,0 +1,241 @@
+BEGIN {
+# Le fichier erreur c'est fic2 - fic1 !!!!
+# nomfic est le nom du fichier erreur.lml
+     eps=0.0001
+}
+
+/TRUST / {
+     if (FILENAME==fic1) {
+#	print "Analyse du premier fichier."
+	fic=0
+     }
+     if (FILENAME==fic2) {
+#	print "Analyse du deuxieme fichier."
+	fic=1
+     }
+     ndomaine[fic]=0
+     ndom=0
+     nch=0
+}
+
+/GRILLE/ {
+   getline
+   grille=$1
+   nsom=$3
+#   print "nsom="nsom
+   j=0
+   for (i=0;i<nsom;i++)
+   {
+      getline
+# Lit les coordonnees des sommets :
+      x[ndom,fic,i]=$1;y[ndom,fic,i]=$2;z[ndom,fic,i]=$3
+      if (fic) {
+# Recherche le sommet equivalent du fichier 0 :
+         som_equ[ndom,i]=-1
+	 jj=0
+	 while (jj<nsommets[ndom,0])
+	 {
+            if ( !ecart($1,x[ndom,0,j]) &&
+		 !ecart($2,y[ndom,0,j]) &&
+	 	 !ecart($3,z[ndom,0,j]) ) {som_equ[ndom,i]=j;j++;break}
+	    jj++
+	    j++
+	    if (j==nsommets[ndom,0]) j=0
+         }
+         if (som_equ[ndom,i]==-1) {print "Dans le domaine "ndom", le sommet "i" n a pas de correspondants.";exit}
+#         print i,som_equ[ndom,i]
+      }
+   }
+   getline
+   getline
+   topologie=$1
+   if ($2 != grille) {print "Probleme ! "$2"<>"grille;exit}
+   getline
+   getline
+   nmai=$1
+#   print "nmai="nmai
+   j=0
+   for (i=0;i<nmai;i++)
+   {
+      getline
+# Type de mailles : 
+      type_mai[ndom,fic,i]=$1;
+# Nombre de sommets par mailles :
+      nsom_mai[ndom,fic,i]=NF-1;
+#      print "nsom_mai[ndom,fic,i]="nsom_mai[ndom,fic,i]
+# Lit les sommets des mailles : 
+      for (k=0;k<NF-1;k++) {
+         som=$(k+2);
+         s[ndom,fic,i,k]=som;
+# Calcul du centre de gravite :
+	 xg[ndom,fic,i]+=x[ndom,fic,som];
+	 yg[ndom,fic,i]+=y[ndom,fic,som];
+	 zg[ndom,fic,i]+=z[ndom,fic,som];
+      }
+      if (fic) {
+# Recherche la maille equivalent du fichier 0 (on compare les coordonnees de deux sommets extremes) :
+         mai_equ[ndom,i]=-1
+	 jj=0
+	 while (jj<nmaille[ndom,0])
+	 {
+# Compare les centres de gravite des mailles i et j :
+	    if ( !ecart(xg[ndom,fic,i],xg[ndom,fic,j]) &&
+	         !ecart(yg[ndom,fic,i],yg[ndom,fic,j]) &&
+		 !ecart(zg[ndom,fic,i],zg[ndom,fic,j]) ) {mai_equ[ndom,i]=j;j++;break}
+# Rajouter eventuellement test sur element !ecart(type_mai[ndom,fic,i],type_mai[ndom,fic,j])
+	    jj++
+	    j++
+	    if (j==nmaille[ndom,0]) j=0
+         }
+         if (mai_equ[ndom,i]==-1) {print "Dans le domaine "ndom", la maille "i" n a pas de correspondants.";exit}
+#         print i,mai_equ[ndom,i]
+      }
+   }
+   ndomaine[fic]=ndom
+   nsommets[ndom,fic]=nsom
+   nmaille[ndom,fic]=nmai
+   nom_grille[ndom,fic]=grille
+   nom_topologie[ndom,fic]=topologie
+#   print grille,topologie,nsom,nmai
+   ndom++
+}
+
+#
+# Ecriture dans le fichier lml a la fin de la definition du maillage du deuxieme fichier :
+#
+
+/FACE/ && (fic) {
+   print "TRUST Version1 01/09/96" > nomfic
+   print "rien" >> nomfic
+   print "TRUST" >> nomfic
+   for (idom=0;idom<ndom;idom++) {
+      print "GRILLE" >> nomfic
+      print nom_grille[idom,fic]" 3 "nsommets[idom,fic] >> nomfic
+      for (nsom=0;nsom<nsommets[idom,fic];nsom++)
+         print x[idom,fic,nsom],y[idom,fic,nsom],z[idom,fic,nsom] >> nomfic
+      print "TOPOLOGIE" >> nomfic
+      print nom_topologie[idom,fic]" "nom_grille[idom,fic] >> nomfic
+      print "MAILLE" >> nomfic
+      print nmaille[idom,fic] >> nomfic
+      for (nmai=0;nmai<nmaille[idom,fic];nmai++) {
+         chaine=type_mai[idom,fic,nmai]" "
+	 for (ns=0;ns<nsom_mai[idom,fic,nmai];ns++) chaine=chaine" "s[idom,fic,nmai,ns]
+         print chaine >> nomfic
+      }
+      print "\nFACE" >> nomfic
+      print "0" >> nomfic
+   }
+}
+
+/TEMPS/ && (fic) {
+   prem=1
+   TEMPS=$0
+   print "---------------------"
+   print TEMPS
+   print "---------------------"
+}
+
+# Remarque : on ne prend que la premiere composante d'un champ de vecteur
+/CHAMPMAILLE/ || /CHAMPPOINT/ {
+   if ($1=="CHAMPPOINT") type[nch,fic]=1
+   else type[nch,fic]=0
+   champ[nch,fic]=$2;nom_topo=$3;temps[nch,fic]=$4
+# Tests de coherence :
+   if (fic) {
+      if (champ[nch,fic]!=champ[nch,0]) {print "Attention ! Pas le meme nom de champ:"champ[nch,0]" et "champ[nch,fic]}
+      epsilon=1.e-6;
+      err_temps=abs((temps[nch,fic]-temps[nch,0])/(temps[nch,fic]+temps[nch,0]+1.e-30));
+      if (err_temps>epsilon) {print "Attention ! Pas le meme temps:"temps[nch,0]" et "temps[nch,fic]}
+   }
+   if (prem) {print TEMPS >> nomfic;prem=0}
+   if (fic) print $0 >> nomfic
+   getline
+   if (fic) print $0 >> nomfic
+   if (NF==5) np=$5
+   else {getline;np=$2;if (fic) print $0 >> nomfic}
+#
+# Lecture de la valeur du champ :
+#
+   for (i=0;i<np;i++) {
+      getline
+      ncompo[nch]=NF-1;
+      for (compo=0;compo<NF-1;compo++) {
+         val=$(2+compo)
+         v[nch,fic,i,compo]=val
+         if (abs(val)>abs(vmax[nch,compo])) vmax[nch,compo]=abs(val)
+      }
+   }
+#
+# Calcul de l'erreur :
+#
+   if (fic) {
+#
+# Recherche du numero du domaine :
+#
+      for (idom=0;idom<ndom;idom++)
+         if (nom_topo==nom_topologie[idom,fic]) break;
+      if (idom>=ndom) {print "Nom de la topologie non trouve !";exit}
+      for (compo=0;compo<ncompo[nch];compo++) {
+         maxerr[compo]=0
+         emoy[compo]=0
+      }
+
+      for (i=0;i<np;i++) {
+	 mes=i+1
+	 for (compo=0;compo<ncompo[nch];compo++) {
+      # Cas CHAMPMAILLE, on utilise mai_equ :
+	    if (type[nch,fic]==0) val=v[nch,0,mai_equ[idom,i],compo]
+      # Cas CHAMPPOINT, on utilise som_equ :
+	    else if (type[nch,fic]==1) val=v[nch,0,som_equ[idom,i],compo]
+            erre[compo]=erreur(val,v[nch,fic,i,compo])
+            if (abs(erre[compo])>abs(maxerr[compo])) maxerr[compo]=erre[compo]
+            emoy[compo]+=abs(erre[compo])
+	    mes=mes" "erre[compo]
+	 }
+         print mes >> nomfic
+      }
+#
+# On affiche :
+#
+      comp[0]="X";comp[1]="Y";comp[2]="Z";
+      for (compo=0;compo<ncompo[nch];compo++) {
+         chp=champ[nch,fic]
+	 if (ncompo[nch]>1) chp=chp" "comp[compo]; 
+	 pc="%"
+         printf("Emoy:%11.7f %s  Emax:%11.7f %s  Champ: %s \n",emoy[compo]/np,pc,maxerr[compo],pc,chp)
+      }
+   }
+   npoints[nch,fic]=np
+   nch++
+}
+
+END {
+   print "FIN" >> nomfic
+}
+
+function erreur(x,y)
+{
+#   print x,y
+   xabs=abs(x)
+   yabs=abs(y)
+   max=xabs;if (yabs>max) max=yabs
+   zero=abs(vmax[nch,compo]*0.00001)
+   if (max!=0) err=(y-x)*100./max
+   if (max==0 || max<zero) err=0.
+   return err
+}
+
+function ecart(x,y)
+{
+     flag=1
+     if ((x+y)==0) flag=0
+     else if (abs((x-y)/(x+y))<=eps) flag=0
+     return flag
+}
+
+function abs(x)
+{
+     if (x<0) x=-x
+     return x
+}
+

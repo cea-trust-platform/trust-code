@@ -1,0 +1,656 @@
+#!/bin/bash
+# TRUST installation script
+
+########################################################
+check_prerequis()
+{
+   prerequis=1
+   [ -f /usr/bin/gcc ] && [ ! -f /usr/bin/g++ ] 		&& echo "You need g++ installed." 		&& prerequis=0
+   [ -f /usr/bin/gcc ] && [ ! -f /usr/bin/gfortran ] 		&& echo "You need gfortran installed." 		&& prerequis=0
+   #[ ! -f /usr/include/X11/X.h ] 				&& echo "You need X11-devel installed."	&& prerequis=0 && echo "On Ubuntu for example, run: sudo apt-get install libx11-dev"
+   [ "`ed --help 1>/dev/null 2>&1;echo $?`" != 0 ] 		&& echo "You need ed installed." 		&& prerequis=0
+   [ ! -f /usr/bin/wget ] 					&& echo "You need wget installed." 		&& prerequis=0
+   [ ! -f /usr/bin/patch ]					&& echo "You need /usr/bin/patch installed." 	&& prerequis=0  # Installation de IceT pour VisIt echoue sinon...
+   # Vu sur Ubuntu 13.04: Probleme de compilation m4 pour compiler bison -> bison prerequis
+   [ "`grep 'Ubuntu 13.04' /etc/issue 2>/dev/null`" != "" ] && [ ! -f /usr/bin/bison ] && echo "You need bison installed." 	&& prerequis=0
+   [ $prerequis = 0 ] && echo "Install and restart the operation." && exit -1
+}
+
+########################################################
+OK()
+{
+   if [ $1 = 0 ]
+   then
+      echo $ECHO_OPTS "OK!"
+   else
+      echo $ECHO_OPTS "Error !"
+      at=$TRUST_MAIL && [ ${#at} = 0 ] && at=triou@cea.fr
+      echo $ECHO_OPTS "See $LOG and contact support at $at"
+      export error_exit=1
+   fi 
+}
+
+########################################################
+gunzip_()
+{
+if [ $crypt = 1 ]
+then
+   # Verifie si les cles sont la
+   cle=$TRUST_ROOT/.cle_`basename $1`
+   [ ! -f $cle ] && echo "Missing key in $keys for $1." && exit -1
+   tmp=$1".tmp"
+   echo "begin 664 $1" > $tmp
+   cat $cle >> $tmp
+   uuencode $1 $1 | awk '(NR!=1) {print $0}' >> $tmp
+   [ $? != 0 ] && echo "uuencode seems not installed on your system or is not working well. Please correct. On Linux, install the sharutils rpm package please. Then delete TRUST installation and restart it." && rm -r -f $TRUST_ROOT && exit -1
+   # Effacer le $1 est plus prudent...
+   rm -f $1
+   rm -f $cle
+   uudecode $tmp
+   [ $? != 0 ] && echo "uudecode seems not installed on your system or is not working well. Please correct. On Linux, install the sharutils rpm package please. Then delete TRUST installation and restart it." && rm -r -f $TRUST_ROOT && exit -1
+   rm -f $tmp
+   # Attendre que tout est bien fini est plus prudent aussi...
+   sleep 1
+   # Le test suivant ne marche pas sur HP !!!!
+   # [ "`file $1 | grep gzip`" = "" ] && echo "Invalid keys in $keys." && exit -1
+   #gunzip -f $1 2>/dev/null
+   # Fait expres de passer par -c pour eviter l'erreur incomprehensible
+   # et non reproductible suivante sur un PC linux :
+   # gunzip: TRUST.tar.gz: invalid compressed data--crc error
+   gunzip -c $1 > ${1%.gz}
+   [ $? != 0 ] && echo "Invalid keys in $keys for $1." && echo "Check you have the keys for the version you want to install." && exit -1
+else
+   gunzip -c $1 > ${1%.gz}
+fi
+rm -f $1
+}
+
+########################################################
+# Fonction pour activer les droits d'utilisation/lecture
+change_droits()
+{
+  # On donne les droits d'ecriture a user
+  # On donne les droits de lecture a toute le monde sauf hors intra CEA
+  if [ "`grep intra.cea.fr /etc/* 2>/dev/null`" != "" ]
+  then
+     chmod -R u+w,gou+r . 1>/dev/null 2>&1
+  else
+     chmod -R u+w,gu+r,o-rwx . 1>/dev/null 2>&1
+  fi
+}
+
+########################################################
+teste_binaries()
+{
+   echo $ECHO_OPTS "\nTest of running binary $exec ..." | tee -a $LOG
+   if [ -f $TRUST_TESTS/Reference/Kernel/Kernel.data ]
+   then
+      echo Kernel | lance_test -nomail 1>>$LOG 2>&1
+      err=$?
+      if [ "$1" = -print ]
+      then
+	 OK $err | tee -a $LOG
+      else
+	 echo "Kernel test: $err" | tee -a $LOG
+      fi
+   else
+      # Teste les binaires en sequentiel et parallele
+      cd $TRUST_TMP
+      echo $ECHO_OPTS "DoubleVect bidon" > test.data
+      if [ ${#Mpirun} != 0 ] && [ -f $Mpirun ]
+      then
+	 ############################
+	 # Test de $exec en parallele
+	 ############################
+	 echo $ECHO_OPTS "Parallel run of $exec ...\c" | tee -a $LOG
+	 triou test 2 1>>$LOG 2>&1
+      fi
+      err=$?
+      if [ "$1" = -print ]
+      then
+	 OK $err | tee -a $LOG
+      else
+	 echo "Parallel test: $err" | tee -a $LOG
+      fi
+      #############################
+      # Test de $exec en sequentiel
+      #############################
+      echo $ECHO_OPTS "Sequential run of $exec ...\c" | tee -a $LOG
+      triou test 1>>$LOG 2>&1
+      err=$?
+      if [ "$1" = -print ]
+      then
+	 OK $err | tee -a $LOG
+      else
+	 echo "Sequential test: $err" | tee -a $LOG
+      fi
+   fi
+   echo $ECHO_OPTS "End of test of running binary." | tee -a $LOG
+}
+
+########################################################
+teste_atelier()
+{
+   if [ -f $TRUST_ROOT/src/MAIN/MAIN.cpp ]
+   then
+      echo $ECHO_OPTS "\nTesting TRUST development capacities..." | tee -a $LOG
+      export rep_dev=$TRUST_TMP/atelier_test
+      rm -r -f $rep_dev
+      mkdir $rep_dev
+      cp $TRUST_ROOT/src/MAIN/MAIN.cpp $rep_dev/.
+      echo >> $rep_dev/MAIN.cpp
+      echo $ECHO_OPTS "2\n\n" | Makeatelier.sccs 1>>atelier.log 2>&1
+      [ ! -f $rep_dev/exec_opt/TRUST$COMM"_opt" ] && err=1
+      if [ "$1" = -print ]
+      then
+	 OK $err | tee -a $LOG
+      else
+	 echo "Test: $err" | tee -a $LOG
+      fi
+      echo $ECHO_OPTS "End of testing TRUST development capacities." | tee -a $LOG
+   fi
+}
+#
+#
+#
+########################################################
+# First lines used by configure (call with bin/Installer_TRUST -check_prerequis)
+# The check of prerequisites is coded once at the top of Installer_TRUST
+if [ "$1" = -check_prerequis ]
+then
+   check_prerequis
+   exit 0
+fi
+
+ROOT=`pwd`
+export ROOT
+LOG=$ROOT/.LOG
+############################################
+# Debut du script d'installation de TRUST #
+############################################
+echo "Usage: `basename $0` [options]" | tee -a $LOG 
+echo "Options:" | tee -a $LOG
+   echo "  -help                 List options" | tee -a $LOG
+if [ -f KSH/wget_ ] || [ -f TRUST/bin/KSH/wget_ ]
+then
+   # Version already installed
+   echo "  -patch                Download and apply latest patch on the installed version" | tee -a $LOG
+else
+   # First install
+   echo "  -configure            (For advanced users) The installation will stop at one moment and should be finished by configure/monodir" | tee -a $LOG
+   echo "  -rebuild              Rebuild the binary" | tee -a $LOG
+fi
+echo "====================================================================="
+# Verification immediate des prerequis:
+check_prerequis
+# 
+configure=0
+rebuild=0
+export error_exit=0
+while [ "$1" != "" ]
+do
+   [ "$1" = -help ] && exit
+   [ "$1" = -configure ] && configure=1 && shift && continue
+   [ "$1" = -rebuild ] && rebuild=1 && shift && continue
+   if [ "$1" = -patch ]
+   then
+      echo>$LOG
+      if [ -d TRUST ]
+      then
+         source TRUST/env/Init_TRUST 1>/dev/null
+      fi
+      # Connect to ftp
+      . connect_ftp -no_ftp 1>/dev/null 2>&1
+      # Try to download the patch
+      cd `dirname $TRUST_ROOT`
+      echo "Try to download or find the patch $patch..." | tee -a $LOG
+      patch=Patch$TRUST_VERSION.tar
+      wget_ ftp://$TRUST_FTP/$PUBLIC/patch/$patch 1>/dev/null 2>&1
+      if [ ! -f $patch ]
+      then
+         echo "No connection to Internet detected. Please download the patch $patch from ftp://$TRUST_FTP/$PUBLIC/patch" | tee -a $LOG
+	 echo "and put it there: `pwd`" | tee -a $LOG
+	 echo "Then run again, $0 -patch" | tee -a $LOG
+	 exit -1
+      fi
+      # If found apply it
+      echo "Applying the patch:" | tee -a $LOG
+      tar xf $patch patch && rm -f $patch
+      patch=`pwd`/patch
+      cd $TRUST_ROOT
+      tar tvf $patch && tar xvf $patch | xargs chmod +w
+      ./configure && source env/Init_TRUST 1>/dev/null && (OPT=_opt;monodir) && (OPT=;monodir)
+      change_droits
+      cd `dirname $TRUST_ROOT`
+      rm -f $patch Installer_TRUST linux_install* README_INSTALL
+      echo>$LOG
+      exit $?
+   fi
+   echo "Unknown option : $1"  | tee -a $LOG && exit -1
+done
+
+###########
+# ECHO_OPTS
+###########
+[ "`echo -e`" != "-e" ] && ECHO_OPTS="-e"
+
+###########################################################
+# Les outils indispensables parfois pas installes sur Linux
+###########################################################
+if [ "`uname -s`" = Linux ] && [ -f linux_install_tools_`uname -m`.tgz ]
+then
+   mkdir -p bin 2>/dev/null
+   (cd bin;tar xfz ../linux_install_tools_`uname -m`.tgz)
+   touch makefile
+   for command in `cd bin;\ls`
+   do
+      $command --help 1>/dev/null 2>&1
+      [ $? = 0 ] && rm -f bin/$command
+   done
+   rm -f makefile
+   # Si toutes les commandes existent on efface le repertoire
+   # sinon on l'ajoute au PATH
+   if [ "`\ls bin`" = "" ]
+   then
+      rmdir bin
+   else
+      export PATH=$PATH:`pwd`/bin
+   fi
+fi
+
+[ "`id -u 2>/dev/null`" = 0 ] && echo "TRUST install as root is not recommended." | tee -a $LOG && exit -1
+
+# Quelques verifications
+TRUST_ROOT=""
+if [ -d $ROOT/TRUST ]
+then
+   TRUST_ROOT=$ROOT/TRUST && export TRUST_ROOT
+else
+   echo "The TRUST directory must exist on $ROOT!" | tee -a $LOG
+   exit -1
+fi
+# On arrete si la variable $HOME n'existe pas
+if [ ${#HOME} = 0 ] || [ ! -d $HOME ]
+then
+   echo "The \$HOME variable is not defined or the \$HOME=$HOME directory does not exist." | tee -a $LOG
+   echo "Please correct." | tee -a $LOG
+   exit -1
+fi
+# Dossier Diphasique ???
+DIPHA_ROOT="" && [ -d $ROOT/Diphasique ] && DIPHA_ROOT=$ROOT/Diphasique && export DIPHA_ROOT
+# Existence d'une version
+if [ -f $TRUST_ROOT/TRUST.tar.gz ]
+then
+   if [ -f .DATE ] || [ -f $TRUST_ROOT/.DATE ]
+   then
+      echo "Warning, a version is already installed under $TRUST_ROOT." | tee -a $LOG
+      echo "Install aborted." | tee -a $LOG
+      exit -1
+   fi
+fi
+
+########
+# Cles #
+########
+echo | tee -a $LOG
+# Test pour verifier les paquets...
+if [ "`file TRUST/TRUST.tar.gz | grep gzip`" != "" ]
+then
+   echo "Version without install keys." | tee -a $LOG
+   export crypt=0
+else
+   export crypt=1
+   echo "You need a file containing the keys to install TRUST." | tee -a $LOG
+   echo "There is one file by version containing the keys." | tee -a $LOG
+   echo "Contact TRUST support at triou@cea.fr to get this file" | tee -a $LOG
+   echo "and tell the OS of the platform and the version" | tee -a $LOG
+   echo "of TRUST you install." | tee -a $LOG
+   echo | tee -a $LOG
+   path_pwd=`pwd`
+   echo "You are here: "$path_pwd   
+   echo "`find $path_pwd -name keys'*' 2>/dev/null`"
+   echo "Enter the complete filename of this file:" | tee -a $LOG
+   read keys
+   cd TRUST # Pour tester que $keys est bien le PATH complet
+   if [ ${#keys} = 0 ] || [ ! -f $keys ]
+   then
+      echo "Sorry, $keys is not the good complete filename." | tee -a $LOG && exit -1
+   fi
+   echo "$keys is read." | tee -a $LOG
+   # On les rend lisibles pour les effacer ensuite !
+   (cd $TRUST_ROOT;rm -f .cle*;tar xf $keys;chmod gou+w .cle*)
+fi
+echo | tee -a $LOG
+echo "If install fails, please send the `pwd`/.LOG file to TRUST support." | tee -a $LOG
+
+###################
+# Installe le Noyau
+###################
+cd $TRUST_ROOT
+if [ -f TRUST.tar.gz ]
+then
+   echo | tee -a $LOG
+   echo "Please wait now ..." | tee -a $LOG
+   echo | tee -a $LOG
+   gunzip_ TRUST.tar.gz
+   echo $ECHO_OPTS "Extract TRUST source files ...\c" | tee -a $LOG
+   tar xf TRUST.tar 1>>$LOG 2>&1
+   OK $? | tee -a $LOG
+   rm -f TRUST.tar
+   ##################################
+   # Acceptation de la licence TRUST
+   ##################################
+   echo | tee -a $LOG
+   echo "Please, read carefully:" | tee -a $LOG
+   echo  | tee -a $LOG
+   cat $TRUST_ROOT/license
+   echo | tee -a $LOG
+   echo "Do you agree (y/Y) or not ?" | tee -a $LOG
+   read choix
+   if [ "$choix" != y ] && [ "$choix" != Y ]
+   then
+      cd ..
+      echo "OK, you refused the TRUST license." | tee -a $LOG
+      echo "Please delete the TRUST distribution." | tee -a $LOG
+      \rm -r -f $TRUST_ROOT
+      exit -1
+   fi
+fi
+
+#########################################
+# Regarde la place disponible et previent
+#########################################
+echo | tee -a $LOG
+echo "The disc is checked:" | tee -a $LOG
+# Check disk space:
+export LANG=C
+chmod +w $TRUST_ROOT/bin/KSH/dd.ksh
+$TRUST_ROOT/bin/KSH/dd.ksh -space | tee -a $LOG
+if [ $? != 0 ]
+then
+   $TRUST_ROOT/bin/KSH/dd.ksh -space 1>>$LOG 2>&1
+   exit -1
+fi
+# Check disk speed:
+$TRUST_ROOT/bin/KSH/dd.ksh -speed | tee -a $LOG
+if [ $? != 0 ]
+then
+   $TRUST_ROOT/bin/KSH/dd.ksh -speed 1>>$LOG 2>&1
+   # Disc too slow on SESI /soft so we bypass:
+   [ "`echo $HOME | grep /soft/`" = "" ] && exit -1
+fi
+
+#####################
+# Installe les autres
+# modules du Noyau
+#####################
+echo | tee -a $LOG
+liste=`ls *.tar.gz 2>/dev/null | grep -v exec | grep -v lib 2>/dev/null`
+if [ ${#liste} != 0 ]
+then
+   for rep in $liste
+   do
+         rep=${rep%.tar.gz}
+         echo $ECHO_OPTS "Installation of $rep ...\c" | tee -a $LOG
+         gunzip_ $rep.tar.gz
+         tar xf $rep.tar 1>>$LOG 2>&1
+         OK $? | tee -a $LOG
+         rm -f $rep.tar
+   done
+fi
+cd $TRUST_ROOT
+  
+##################################################
+# Regarde s'il y'a un patch disponible a appliquer
+##################################################
+echo | tee -a $LOG
+if [ -f ../patch ]
+then
+   # On met en ecriture tous les fichiers avant d'appliquer le patch:
+   chmod -R u+w . 1>/dev/null 2>&1
+   echo "Patch detected and applied..." | tee -a $LOG
+   tar xvf ../patch
+fi
+change_droits
+
+###############################
+# Fin installation si -configure
+###############################
+if [ "$configure" = 1 ]
+then
+   echo | tee -a $LOG
+   echo "The installation is now stopped and should be finished:" | tee -a $LOG
+   echo "Look at the configure options:" | tee -a $LOG
+   echo "cd TRUST" | tee -a $LOG
+   echo "./configure -help" | tee -a $LOG
+   echo "Run the configure and add desired options:" | tee -a $LOG
+   echo "./configure ..." | tee -a $LOG
+   echo "Then check/modify the environment values in the \$TRUST_ROOT/env/machine.env created." | tee -a $LOG
+   echo "Initialize the environment:" | tee -a $LOG
+   echo "source ./env/Init_TRUST" | tee -a $LOG
+   echo "Compile the code:" | tee -a $LOG
+   echo "(OPT="_opt";monodir)" | tee -a $LOG
+   exit 0
+fi 
+
+########################
+# Configuration du Noyau
+########################
+if [ ! -f .rep ]
+then
+   echo $ECHO_OPTS "\nConfigure the environment. Please wait..." | tee -a $LOG
+   cd $TRUST_ROOT
+   set -o pipefail
+   ./configure 2>&1 | tee -a $LOG
+   configure_err=$?
+   OK $configure_err | tee -a $LOG
+   [ $configure_err != 0 ] && exit -1
+   cd $TRUST_ROOT
+fi
+echo | tee -a $LOG
+. $TRUST_ROOT/env/trio_u.env | tee -a $LOG
+
+# Message de detection :
+[ ${#TRUST_CC} = 0 ] && echo "Warning : this script did not find C++ compiler : you CANNOT compile TRUST" | tee -a $LOG
+[ ${#TRUST_F77} = 0 ] && echo "Warning : this script did not find fortran compiler : you CANNOT compile TRUST" | tee -a $LOG
+[ ${#EDITEUR} = 0 ] && echo "Warning : this script did not find some editor : you CANNOT edit data files" | tee -a $LOG
+[ ${#WEBBROWSER} = 0 ] && echo "Warning : this script did not find some browser : you CANNOT use the Graphical User Interface" | tee -a $LOG
+[ ${#TRUST_MD} = 0 ] && echo "Warning : this script did not find the command makedepend : you CANNOT modify TRUST" | tee -a $LOG
+
+########################
+# Installe le Diphasique 
+########################
+# Dossier Diphasique ???
+if [ ${#DIPHA_ROOT} != 0 ] && [ -d $DIPHA_ROOT ]
+then
+   echo | tee -a $LOG
+   cd $DIPHA_ROOT
+   echo "DIPHA_ROOT="$DIPHA_ROOT
+   if [ -f Diphasique.tar.gz ]
+   then
+      echo $ECHO_OPTS "\nInstallation of Diphasique module under $ROOT ? (y/n) : \c" | tee -a $LOG
+      read choix
+      if [ ${#choix} != 0 ] && [ $choix != "Y" ] && [ $choix != "y" ]
+      then
+         cd ..
+         rm -r -f Diphasique
+         DIPHA_ROOT=""
+         export DIPHA_ROOT
+      else
+         echo
+         echo "Please wait now ..." | tee -a $LOG
+         echo
+         gunzip_ Diphasique.tar.gz
+         echo $ECHO_OPTS "Extract Diphasique source files ...\c" | tee -a $LOG
+         tar xf Diphasique.tar 1>>$LOG 2>&1
+         OK $? | tee -a $LOG
+         rm -f Diphasique.tar
+         liste=`ls *.tar.gz 2>/dev/null`
+         if [ ${#liste} != 0 ]
+         then
+            #####################
+            # Installe les autres
+            # modules du Diphasique
+            #####################
+            for rep in $liste
+            do
+               rep=${rep%.tar.gz}
+               echo $ECHO_OPTS "Installation of $rep ...\c" | tee -a $LOG
+               gunzip_ $rep.tar.gz
+               tar xf $rep.tar 1>>$LOG 2>&1
+               OK $? | tee -a $LOG
+               rm -f $rep.tar
+            done
+         fi
+      fi
+   fi
+   ###############################################
+   # On met les droits d'ecriture a l'admin TRUST
+   ###############################################
+   cd $DIPHA_ROOT && chmod -R u+w . 1>/dev/null 2>&1
+fi
+
+################################################
+# Tests des executables TRUST et Dipha livres #
+################################################
+echo | tee -a $LOG
+codes="$TRUST_ROOT/exec/TRUST"
+# Dossier Diphasique ???
+[ ${#DIPHA_ROOT} != 0 ] && [ -d $DIPHA_ROOT ] && codes=$codes" "$DIPHA_ROOT/exec/dipha
+
+for code in $codes
+do
+   #####################################
+   # Installe les binaires et librairies
+   #####################################
+   cd `dirname $code`/..
+   liste=`ls exec.$TRUST_ARCH.tar.gz 2>/dev/null`
+   if [ ${#liste} != 0 ]
+   then
+      for rep in $liste
+      do 
+         rep=${rep%.tar.gz}
+         echo $ECHO_OPTS "Installation of $rep ...\c" | tee -a $LOG
+         gunzip_ $rep.tar.gz
+         tar xf $rep.tar 1>>$LOG 2>&1
+         OK $? | tee -a $LOG
+         rm -f $rep.tar
+      done
+   fi
+   # Efface les autres binaires
+   rm -f exec.*.tar.gz
+   # Initialise le code
+   cd `dirname $code`/../env
+   [ -f Init_TRUST ] && source ./Init_TRUST 1>>$LOG 2>&1
+   cd `dirname $code`/../bin
+   [ -f Init_Dipha ] && source ./Init_Dipha 1>>$LOG 2>&1
+   exec=`ls $code*opt* 2>/dev/null`
+   if [ ${#exec} = 0 ]
+   then
+      err=1
+      echo $ECHO_OPTS "\n$code binary is not included in the package." | tee -a $LOG
+   else
+      teste_binaries
+   fi
+   
+   ##############################################
+   # Test des librairies livrees par un atelier #
+   ############################################## 
+   teste_atelier
+      
+   ########################################################
+   # Recompilation eventuelle si la version a des sources #
+   ########################################################
+   [ "$rebuild" = 1 ] && err=1 # On force la recompilation
+   if [ $err != 0 ] && [ -f $TRUST_ROOT/src/MAIN/MAIN.cpp ]
+   then
+      echo $ECHO_OPTS "\nCode recompilation..." | tee -a $LOG
+      echo $ECHO_OPTS "`basename $code` application must be recompiled according to the previous tests." | tee -a $LOG
+      echo $ECHO_OPTS "Compilation could take between 1 and 2 hours." | tee -a $LOG
+      [ ${#TRUST_CC} = 0 ] && echo "Warning : this script did not find C++ compiler : you CANNOT compile TRUST. Please install a C++ compiler." | tee -a $LOG && exit -1
+      [ ${#TRUST_F77} = 0 ] && echo "Warning : this script did not find fortran compiler : you CANNOT compile TRUST. Please install a F77 compiler." | tee -a $LOG && exit -1
+      OPT="_opt"
+      # Important de faire menage car certaines librairies ne seront pas recompilees sinon (pb Linux-Intel->Linux-Compaq)!
+      cd `dirname $code`/..
+      echo "make clean in TRUST directories..." | tee -a $LOG
+      make clean | tee -a $LOG
+      (OPT="_opt";monodir) | tee -a $LOG
+      err=$?
+      # Pour recuperer $exec
+      cd `dirname $code`/../env
+      source ./Init_TRUST
+      if [ $err != 0 ] || [ ! -f $exec ]
+      then
+          echo $ECHO_OPTS "It seems that the compilation failed..." | tee -a $LOG
+          echo $ECHO_OPTS "Please contact TRUST support at $TRUST_MAIL" | tee -a $LOG
+      else
+          err=0
+          teste_binaries -print         
+          teste_atelier -print
+      fi
+      echo | tee -a $LOG
+      cat `dirname $code`/../compile*.log>>$LOG
+      echo $ECHO_OPTS "End of code recompilation." | tee -a $LOG
+   else
+      ##################################################################
+      # Nettoyage et recompilation des outils pour meilleure portabilite
+      ##################################################################
+      cd $TRUST_ROOT
+      echo $ECHO_OPTS "\nTools recompilation..." | tee -a $LOG
+      make tools | tee -a $LOG
+      echo $ECHO_OPTS "End of tools recompilation." | tee -a $LOG
+   fi
+done
+
+##################
+# End of install #
+##################
+clear 
+echo | tee -a $LOG
+echo "***************" | tee -a $LOG
+echo "END OF INSTALL." | tee -a $LOG
+echo "***************" | tee -a $LOG
+echo | tee -a $LOG
+echo "**************************" | tee -a $LOG
+echo "HOW TO INITIALIZE TRUST ?:" | tee -a $LOG
+echo "**************************" | tee -a $LOG
+echo "Add the following lines in your $HOME/.profile or $HOME/.bashrc file:" | tee -a $LOG
+echo "# TRUST environment:" | tee -a $LOG
+echo "export TRUST_ROOT=$TRUST_ROOT" | tee -a $LOG
+echo "source \$TRUST_ROOT/env/Init_TRUST 1>/dev/null 2>&1" | tee -a $LOG
+cd $ROOT
+echo  | tee -a $LOG
+echo "********************" | tee -a $LOG
+echo "HOW TO TEST TRUST ?" | tee -a $LOG
+echo "********************" | tee -a $LOG
+echo $ECHO_OPTS "[Fast] Run the command 'triou -check VAHL_DAVIS', if you want to check the TRUST binary on a single test.\n" | tee -a $LOG
+echo $ECHO_OPTS "[Long] Run the command 'triou -check all', if you want to check the TRUST binary on test cases. It may take several hours." | tee -a $LOG
+echo  | tee -a $LOG
+echo "**********************************" | tee -a $LOG
+echo "HOW TO BUILD TRUST IN DEBUG MODE?" | tee -a $LOG
+echo "**********************************" | tee -a $LOG
+echo $ECHO_OPTS "cd $TRUST_ROOT" | tee -a $LOG
+echo $ECHO_OPTS "(OPT=;monodir)" | tee -a $LOG
+echo  | tee -a $LOG
+echo "************************" | tee -a $LOG
+echo "HOW TO RE-BUILD TRUST ?" | tee -a $LOG
+echo "************************" | tee -a $LOG
+echo $ECHO_OPTS "If you want to build again TRUST, run:" | tee -a $LOG
+echo $ECHO_OPTS "cd $TRUST_ROOT" | tee -a $LOG
+echo $ECHO_OPTS "./configure            # Than check and/or change the detected values into the \$TRUST_ROOT/env/machine.env file" | tee -a $LOG
+echo $ECHO_OPTS "source env/Init_TRUST # Initialize the new environment" | tee -a $LOG
+echo $ECHO_OPTS "make clean;(OPT=_opt;monodir)  # Then clean and rebuild TRUST" | tee -a $LOG
+echo | tee -a $LOG
+echo "*******************" | tee -a $LOG
+echo "HOW TO USE TRUST ?" | tee -a $LOG
+echo "*******************" | tee -a $LOG
+echo "Initialize TRUST environment with:" | tee -a $LOG
+echo "source $TRUST_ROOT/env/Init_TRUST" | tee -a $LOG
+echo "And follow the tutorial $TRUST_ROOT/doc/TRUST/Tutorial_TRUST.pdf" | tee -a $LOG
+echo "You can contact us at $TRUST_MAIL for a training session of 2 days." | tee -a $LOG
+
+###################################
+# Efface des fichiers temporaires :
+###################################
+rm -f .path .rep .file
+exit $error_exit

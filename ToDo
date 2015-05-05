@@ -1,0 +1,19 @@
+Version	Qui				Tache
+1.7.1   triou@cea.fr            revoir reprise_auto en reprise sur airain
+1.7.1   triou@cea.fr            verification Robin turbulence : alleger et simplifier cas tests (Turbul_LES_fixed_wall_law, Turbul_LES_Robin_wall_law, Turbul_RANS_fixed_wall_law, Turbul_RANS_Robin_wall_law)
+1.7.1   triou@cea.fr            turbulence : si u_tau.dat reynolds_tau.dat et tauw.dat renommes en jdd_***.dat, alors ATTENTION car beaucoup de fiches de valid s'en servent + voir avec utilisateurs
+1.7.1   triou@cea.fr            revoir message de NUIT.html car indique VisIt PAR OK sur callisto (avec --mesa) or VisIt ne se lance pas => laisser 2 fois --mesa
+1.7.1	triou@cea.fr			Champ_front_normal voir d'autres ne devrait pas heriter de Ch_front_var_instationnaire_dep (notion d'inconnue)
+1.7.1	triou@cea.fr			add_if_not dans Ch_base.cpp lent ?
+1.7.1	triou@cea.fr			Essayer de calculer auto direction quand la periodicite n'est pas orthogonale aux bords (eg: Canal_perio_incline_VEF)
+1.7.1	triou@cea.fr			Renommer sous_maille en sous_maille_fonction_structure (in english)
+1.7.1	triou@cea.fr			Open a ME on checking diffusive fluxes between 2 domains (implicit schemes sanity check). Loop in mettre_a_jour ?
+1.7.1	triou@cea.fr			Try to suppress 2 REF in Equation_base zone_dis and schema_temps, keep problem shema_temps()=mon_probleme().schema_temps()
+1.7.1	triou@cea.fr			zone_dis()=mon_probleme().domaine_dis().zone_dis(0);
+1.7.1	triou@cea.fr			Change the monday TRUST mail with link to ftp.cea.fr + last DI + roundup link + access to RoundUp for everyone
+1.7.1	triou@cea.fr			Translate Ecrire->Write, and other main interpretors... Conditions_initiales,...
+1.7.1	triou@cea.fr			Reduce number of CPUs for TRUST_MAKE (avoid crash with cmake?)
+1.7.1	triou@cea.fr			Check Champ_fonc_reprise with .sauv files produces a clear error message when partition is changed
+1.7.1	triou@cea.fr			Do a git tag on each change of the branch patch_XYZ (patch_XYZ.n)
+1.7.1	triou@cea.fr			Doc Word: mettre a jour index et table des matieres
+1.7.1	triou@cea.fr			Documenter ch_front_input_uniforme est un champ_front_uniforme , ou l'on peut imposer la valeur par l'exterieur (pour les couplages) via Probleme.setInputField

@@ -1,0 +1,92 @@
+#!/bin/bash
+# Script de lancement de l'interface TRUST2Ansys et Ansys2TRUST
+# Analyse du fichier .geom soumis
+echo "Usage: `basename $0` fichier     [O or 1 or 2 or 3]          [0-1000 (2D), 0-100 (3D), 0-??(Hemicube)] [6 - 90]       [0 ou 1]"
+echo "                       [hidden or not or hc or grouped hc]                  [nb_zones]                 [nb_teta]  [Ansys_graphique]"
+echo "        Default values                  [0]                     [200 (2D), 20 (3D), 10 (Hemicube)]        [20]           [0]"
+warning=1 && [ "$1" = -no_warning ] && warning=0 && shift
+# Ansys est toujours installe a la racine genre /ansysXY
+Ansys=`ls -rt /ansys_inc/.  2>/dev/null | grep ansys[0-9][0-9] | tail -1`
+[ ${#Ansys} = 0 ] && echo "Ansys n'est pas installe sur votre machine." && exit -1
+v=${Ansys#ansys}
+v=${v%/}
+export ansys=`ls /ansys*/ansys*/bin/ansys$v 2>/dev/null | $TRUST_Awk '{print $1}'`
+[ $? != 0 ] && echo "Ansys n'est pas installe sur votre machine." && exit -1
+export tansys=`ls /ansys*/ansys*/bin/tansys$v 2>/dev/null | $TRUST_Awk '{print $1}'`
+[ $? != 0 ] && echo "Ansys n'est pas installe sur votre machine." && exit -1
+export PATH=`basename $ansys`:$PATH
+export ANSYS$v"_PRODUCT"=ane3fl
+NOM=${1%.geom}
+[ ${#NOM} = 0 ] && exit
+dom=`head -1 $NOM.geom`
+dimension=`head -3 $NOM.geom | awk '{getline;getline;print $2}'`
+axi=`cat $NOM.geom | awk '/Rectangle_axi/ || /Hexaedre_axi/ {print "Axi";exit} /Rectangle_2D_axi/ {print "Bidim_axi";exit}'`
+
+# Recuperation de quelques parametres utilisateur
+non_hidden=0 && [ ${#2} != 0 ] && non_hidden=$2
+# Nombre de zones, 200 en 2D et 20 en 3D ou Bidim_axi !!!
+[ $dimension = 3 ] && zones=20
+[ $dimension = 2 ] && zones=200
+[ ${#axi} != 0 ] && [ $axi = "Bidim_axi" ] && zones=20
+[ $non_hidden -gt 1 ] && zones=10
+[ ${#3} != 0 ] && zones=$3
+tetas=20 && [ ${#4} != 0 ] && tetas=$4
+gui=0 && [ ${#5} != 0 ] && gui=$5
+
+# Le 2D ne marche pas encore avec les methodes 3 et 4
+[ $dimension = 2 ] && [ $non_hidden -gt 1 ] && echo "Methode de calcul $non_hidden non disponible en 2D." && exit
+
+data=TRUST2Ansys
+# Construction du fichier pour TRUST
+please="Please wait... View factor calculation could take several minutes."
+export title="Warning"
+[ $warning = 1 ] && Erreur.ihm $please &
+echo "dimension $dimension
+$axi
+domaine $dom
+lire_fichier $dom $NOM.geom
+Ecrire_fichier_Ansys $dom $NOM.dat $non_hidden $zones $tetas
+ConcatAnsys $dom $data.vf" > $data".data"
+
+# Creation du fichier de lancement d'Ansys
+if [ $gui = 1 ]
+then
+   echo "$tansys;cat file.out | grep -e \"HIDDEN\" -e \"NUMBER OF ZONES\" -e \"NUMBER OF ELEMENTS\" -e \" Time \" -e \" Memory \";grep -e \"DEFINE \" -e \"NUMBER OF ELEMENTS\" $data.vf" > .run_ansys
+else
+   echo "[ -f $NOM.dat ] && $ansys < $NOM.dat | tee $data.out | grep -e \"HIDDEN\" -e \"NUMBER OF ZONES\" -e \"NUMBER OF ELEMENTS\" -e \" Time \" -e \" Memory \" && grep -e \"DEFINE \" -e \"NUMBER OF ELEMENTS\" $data.vf" > .run_ansys
+fi
+chmod +x .run_ansys
+# Efface le fichier .lock eventuel
+rm -f file.lock
+# Cree des liens vers /dev/null
+ln -s -f /dev/null file.db
+ln -s -f /dev/null trash
+[ ! -f $exec ] && echo "exec=$exec is not existent." && eval $FIN && exit -1
+# Execution de TRUST
+triou $data 2>&1
+
+if [ ! -f $data.vf ]
+then
+   echo "**********************"
+   echo "Probleme avec Ansys..."
+   echo "**********************"
+   cat $data.out
+   echo
+else
+   # On renomme quelques fichiers
+   echo
+   echo "$data.vf renomme en $NOM.vf"
+   mv $data.vf $NOM.vf
+fi
+if [ -f $data.factforme ] && [ -f $data.facesrayo ]
+then
+   echo "$data.factforme renomme en $NOM.factforme"
+   mv $data.factforme $NOM.factforme
+   echo $ECHO_OPTS "\n# Facteurs de forme calcules avec la commande:\n# "`basename $0` $* >> $NOM.factforme
+   echo "$data.facesrayo renomme en $NOM.facesrayo"
+   mv $data.facesrayo $NOM.facesrayo
+   exit 0
+else
+   echo "Echec de geom2ansys: $data.factforme et $data.facesrayo inexistant !"
+   exit -1
+fi

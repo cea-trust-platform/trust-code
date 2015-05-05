@@ -1,0 +1,8 @@
+Type : menu
+Acces : Faces Rayonnantes/Modifier Surfaces (Emissivites)
+
+Description :
+	Cette commande ouvre une fenetre separee, et pour chacune des faces rayonnantes du cas en cours, affiche sa surface (resp. son emissivite) dans une case de texte editable.
+	Le bouton "Ok" permet de fermer la fenetre en prenant en compte les changements, tandis que "Annuler" les ignore.
+
+Note : cette fenetre est bloquante, c'est a dire qu'il faut la fermer pour continuer a travailler (contrairement a la fenetre ouverte par la commande "Faces Rayonnantes/Voir", que l'on peut laisser apparente pendant que l'on travaille sur le reste de l'interface).

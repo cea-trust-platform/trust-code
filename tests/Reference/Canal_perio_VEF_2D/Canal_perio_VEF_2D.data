@@ -1,0 +1,108 @@
+# SIMULATION D UN CANAL 3D   #
+# PARALLEL OK 8 #
+# Tests de l initialisation de la vitesse avec la classe champ_init_canal_sinal #
+
+dimension 2
+Pb_Hydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+	{
+		Origine 0. 0. 
+		Nombre_de_Noeuds 31 11
+		Longueurs 6.283185307 2. 
+	}
+	{
+		Bord periox  X = 0.            	0. <= Y <= 2.0          
+		Bord periox  X = 6.283185307	0. <= Y <= 2.0           
+		Bord bas     Y = 0.            	0. <= X <= 6.283185307           
+		Bord haut    Y = 2.           	0. <= X <= 6.283185307           
+		}
+}
+Trianguler_Fin dom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur tranche { tranches 2 2 }
+	Nom_Zones DOM
+	Periodique 1 periox
+        Larg_joint 2
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0.0
+	tmax 0.08
+	dt_min 0.004
+	dt_max 0.004
+	dt_impr 0.00001
+	dt_sauv 1.5
+	seuil_statio 1.e-8
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 0.05
+ 	rho Champ_Uniforme 1 1.2
+
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression petsc cholesky { }
+		convection { negligeable }
+		diffusion { }
+		conditions_initiales {
+			vitesse champ_init_canal_sinal 2 { Ucent 0.5 h 1.0 ampli_bruit 0. ampli_sin 0. omega 2. }
+		}
+		sources { Canal_perio { coeff 10 bord periox } }
+		boundary_conditions {
+periox periodique 
+			haut  paroi_fixe
+	                bas  paroi_fixe		
+		}
+     }
+	      
+	Postraitement
+	{
+	     Sondes
+	          {
+	           	sonde_pression pression periode 0.001 points 1 0.05 0.15  
+			sonde_vit40 vitesse periode 0.001 segment 20   2. 0.05   2. 1.95 
+			sonde_vit_x vitesse periode 0.001 segment 20   0.157 1.      6.123 1. 
+	        }
+		Champs dt_post 4.0
+		{			
+			pression elem			
+			vitesse som		
+	}
+
+
+	}
+   sauvegarde formatte canal.sauv
+}
+
+Solve pb
+Fin

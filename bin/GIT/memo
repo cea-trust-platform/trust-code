@@ -1,0 +1,25 @@
+# Compare file in the workdir with previous commited version:
+git diff HEAD file
+
+# Graphical:
+env GIT_EXTERNAL_DIFF=tool git diff HEAD file
+or use TRUST tool:
+xdiff.git HEAD file
+
+# Cancel the work in the previous file and come back to the commited version
+git checkout -- file
+
+# Cancel a merge (before commit) from a branch: 
+git merge --abort branch
+
+# State of your whole workdir:
+git status --u=no 
+
+# State of a file:
+git status file
+
+# Back to the previous commit (after a finished merge for example)
+git reset --hard HEAD
+
+# Check other questions:
+http://stackoverflow.com/questions/315911/git-for-beginners-the-definitive-practical-guide?rq=1

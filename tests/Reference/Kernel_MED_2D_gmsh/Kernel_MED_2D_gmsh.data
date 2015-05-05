@@ -1,0 +1,21 @@
+# test de la lecture d'un maillage 2D ecrit en 3d avec une coordonnee nulle #
+dimension 2
+# PARALLEL NOT #
+domaine dom
+lire_med family_names_from_group_names dom Gmsh2D 2D.med
+discretiser_domaine dom
+postraiter_domaine { domaine dom format lml  }
+
+analyse_angle dom 36
+
+dimension 3
+domaine dom3d
+lire_med family_names_from_group_names dom3d Gmsh2D 2D.med
+# on ne peut pas Discretize ce domaine #
+# mais on peut le postraiter #
+postraiter_domaine { domaine dom3d format lata ecrire_frontiere 0 }
+
+
+fin
+
+

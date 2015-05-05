@@ -1,0 +1,10 @@
+To install a Baltik project, run the commands:
+tar xzf baltik_project_name.tar.gz
+cd baltik_project_name
+$TRUST_ROOT/bin/baltik/bin/baltik_build_configure
+./configure
+make check_optim
+
+To rebuild the package baltik_project_name.tar.gz, run the commands:
+cd baltik_project_name
+make distrib

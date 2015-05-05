@@ -1,0 +1,94 @@
+# Hydraulique 3D VEF P1NC/P1B Schema MacCormack+Alternant cylindres emboites #
+# PARALLEL OK #
+dimension 3
+Pb_Hydraulique pb
+
+Domaine dom
+# BEGIN MESH #
+Read_file dom MacCormack_3D.geom 
+
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur Metis { Nb_parts 2 }
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+
+Schema_Predictor_Corrector sch
+Lire sch
+{
+	nb_pas_dt_max 3
+	tinit 0.0
+	tmax 0.05
+	dt_min 1.e-5
+	dt_max 0.01
+	dt_impr 1.e-6
+	dt_sauv 100
+	seuil_statio 1.e-10
+	facsec 1.0
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 2e-05
+	rho Champ_Uniforme 1 2
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+Debog pb seq faces 1.e-6 0
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.500000 } 
+			seuil 1.000000e-10 
+			impr 
+		}
+		convection { muscl }
+		diffusion { }
+		conditions_initiales
+		        {
+			vitesse Champ_Uniforme 3 0. 0. 0.
+			}
+		boundary_conditions {
+		        PAROI1 frontiere_ouverte_vitesse_imposee Champ_Front_Tangentiel_VEF vitesse_tangentielle 0.45
+			PAROI2 paroi_fixe
+			ENTREE paroi_fixe
+			SORTIE symetrie
+		}
+	}
+
+	Postraitement
+	{
+		Sondes
+		{
+		  sonde_vit1 vitesse periode 1.e-6 segment 20 0. 0.06 0. 0. 0.06 0.06
+		  sonde_vit2 vitesse periode 1.e-6 segment  6 0. 0.05 0.04 0. 0.0653 0.04
+		}
+		format lata
+		Champs dt_post 0.01
+		{
+			vitesse
+	                pression	
+		}
+	}
+}
+
+Solve pb
+Fin

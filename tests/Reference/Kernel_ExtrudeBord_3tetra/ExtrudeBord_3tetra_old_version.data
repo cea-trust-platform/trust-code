@@ -1,0 +1,22 @@
+# fichier de creation du canal par extrusion de la face perio #
+dimension 3
+
+Domaine dom
+Domaine canal
+Read_file dom domainComplet.geom
+
+# avec 3 tetraedres par prisme: #
+ extract_2d_from_3d dom entree canal 
+ 
+ dimension 2  
+ 
+  Extruder_en3 { domaine 1 canal nb_tranches 5 direction 0 0 0.0403 } 
+  
+ dimension 3 
+
+RegroupeBord canal PERIO { devant derriere }
+
+Ecrire_fichier canal canal.geom
+# Postraitement du domaine canal au format lml binaire dans le fichier Extrude.lml #
+Postraiter_domaine { format lml domaine canal fichier ExtrudeBord_3tetra_old_version.lml }
+

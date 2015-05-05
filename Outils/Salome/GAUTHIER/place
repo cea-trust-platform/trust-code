@@ -1,0 +1,6 @@
+rm -rf TRIOU/build
+rm -rf DISTRIBUTOR/DISTRIBUTOR_BUILD
+rm -rf SHELL/SHELLCOMPO_BUILD
+rm -rf XDATA/build XDATA/dist/share/doc
+ find . -name '*'.so -exec strip {} \;
+

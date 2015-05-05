@@ -1,0 +1,2 @@
+gunzip -c croix2D_Pb1_2D.geom.gz > croix2D_Pb1_2D.geom
+gunzip -c croix_Pb1.geom.gz > croix_Pb1.geom

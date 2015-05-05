@@ -1,0 +1,10 @@
+#!/bin/bash
+res=`tail -1 Himp_var_pb_Diffusion_chaleur.out | awk '{if ($2==-2.206e+02) {print "OK"} else {print ($2 " KO")}}'`
+if [ "$res" = "OK" ]
+then 
+	exit 0
+else
+	echo echec $res
+	exit 1
+fi
+

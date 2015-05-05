@@ -1,0 +1,161 @@
+//
+// time: Mon Sep  6 09:33:08 2004
+//
+// version: 3.1.2 (format), 4.1.0 (DX)
+//
+//
+// Begin MDF
+// MODULE BuildLataFieldList
+// CATEGORY Macros
+// INPUT imported; group or series or value list or string list; (no default); 
+// OUTPUT output_1; object;  
+// End MDF
+// workspace: width = 481, height = 1020
+// layout: snap = 0, width = 50, height = 50, align = NN
+//
+macro BuildLataFieldList(
+ imported
+) -> (
+ output_1
+) {
+    // 
+    // node GetLocal[1]: x = 316, y = 672, inputs = 3, label = GetLocal
+    //
+BuildLataFieldList_GetLocal_1_out_1,
+BuildLataFieldList_GetLocal_1_out_2 = 
+    GetLocal(
+    NULL,
+    NULL,
+    NULL
+    ) [instance: 1, cache: 1];
+    // 
+    // node Input[1]: x = 236, y = 41, inputs = 0, label = Input
+    // parameter: position = 1, name = 'imported', value = '(no default)', descriptive = 1, description = ' ', required = 0, visible = 1
+    //
+BuildLataFieldList_Input_1_out_1 = imported;
+    // 
+    // node Inquire[1]: x = 218, y = 138, inputs = 3, label = Inquire
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "member names"
+    //
+BuildLataFieldList_Inquire_1_out_1 = 
+    Inquire(
+    BuildLataFieldList_Input_1_out_1,
+    "member names",
+    NULL
+    ) [instance: 1, cache: 1];
+    // 
+    // node ForEachMember[1]: x = 194, y = 230, inputs = 1, label = ForEachMember
+    //
+BuildLataFieldList_ForEachMember_1_out_1,
+BuildLataFieldList_ForEachMember_1_out_2,
+BuildLataFieldList_ForEachMember_1_out_3 = 
+    ForEachMember(
+    BuildLataFieldList_Inquire_1_out_1
+    ) [instance: 1, cache: 1];
+    // 
+    // node Select[1]: x = 187, y = 318, inputs = 3, label = Select
+    //
+BuildLataFieldList_Select_1_out_1 = 
+    Select(
+    BuildLataFieldList_Input_1_out_1,
+    BuildLataFieldList_ForEachMember_1_out_1,
+    NULL
+    ) [instance: 1, cache: 1];
+    // 
+    // node Inquire[2]: x = 199, y = 398, inputs = 3, label = Inquire
+    // input[2]: defaulting = 0, visible = 1, type = 32, value = "component names"
+    //
+BuildLataFieldList_Inquire_2_out_1 = 
+    Inquire(
+    BuildLataFieldList_Select_1_out_1,
+    "component names",
+    NULL
+    ) [instance: 2, cache: 1];
+    // 
+    // node ForEachMember[2]: x = 204, y = 521, inputs = 1, label = ForEachMember
+    //
+BuildLataFieldList_ForEachMember_2_out_1,
+BuildLataFieldList_ForEachMember_2_out_2,
+BuildLataFieldList_ForEachMember_2_out_3 = 
+    ForEachMember(
+    BuildLataFieldList_Inquire_2_out_1
+    ) [instance: 2, cache: 1];
+    // 
+    // node Format[1]: x = 156, y = 644, inputs = 3, label = Format
+    // input[1]: defaulting = 0, visible = 1, type = 32, value = "%s,%s"
+    //
+BuildLataFieldList_Format_1_out_1 = 
+    Format(
+    "%s,%s",
+    BuildLataFieldList_ForEachMember_1_out_1,
+    BuildLataFieldList_ForEachMember_2_out_1
+    ) [instance: 1, cache: 1];
+    // 
+    // node Append[1]: x = 146, y = 752, inputs = 5, label = Append
+    //
+BuildLataFieldList_Append_1_out_1 = 
+    Append(
+    BuildLataFieldList_GetLocal_1_out_1,
+    BuildLataFieldList_Format_1_out_1,
+    NULL,
+    NULL,
+    NULL
+    ) [instance: 1, cache: 1];
+    // 
+    // node Compute[1]: x = 412, y = 672, inputs = 3, label = Compute
+    // input[1]: defaulting = 0, visible = 0, type = 32, value = "($0&&$1)?1:2"
+    // expression: value = (a&&b)?1:2
+    // name[2]: value = a
+    // name[3]: value = b
+    //
+BuildLataFieldList_Compute_1_out_1 = 
+    Compute(
+    "($0&&$1)?1:2",
+    BuildLataFieldList_ForEachMember_1_out_3,
+    BuildLataFieldList_ForEachMember_2_out_3
+    ) [instance: 1, cache: 1];
+    // 
+    // node Route[1]: x = 419, y = 858, inputs = 2, outputs = 2, label = Route
+    //
+BuildLataFieldList_Route_1_out_1,
+BuildLataFieldList_Route_1_out_2 = 
+    Route(
+    BuildLataFieldList_Compute_1_out_1,
+    BuildLataFieldList_Append_1_out_1
+    ) [instance: 1, cache: 1];
+    // 
+    // node Echo[2]: x = 322, y = 958, inputs = 2, label = Echo
+    //
+    Echo(
+    BuildLataFieldList_Route_1_out_1,
+    NULL
+    ) [instance: 2, cache: 1];
+    // 
+    // node Output[1]: x = 404, y = 956, inputs = 1, label = Output
+    // parameter: position = 1, name = 'output_1', value = ' ', descriptive = 0, description = ' ', required = 0, visible = 1
+    //
+output_1 = BuildLataFieldList_Route_1_out_1;
+    // 
+    // node SetLocal[1]: x = 317, y = 850, inputs = 3, label = SetLocal
+    //
+    SetLocal(
+    BuildLataFieldList_Append_1_out_1,
+    BuildLataFieldList_GetLocal_1_out_2,
+    NULL
+    ) [instance: 1, cache: 1];
+// network: end of macro body
+}
+BuildLataFieldList_GetLocal_1_out_1 = NULL;
+BuildLataFieldList_GetLocal_1_out_2 = NULL;
+BuildLataFieldList_Input_1_out_1 = NULL;
+BuildLataFieldList_Inquire_1_out_1 = NULL;
+BuildLataFieldList_ForEachMember_1_out_1 = NULL;
+BuildLataFieldList_ForEachMember_1_out_3 = NULL;
+BuildLataFieldList_Select_1_out_1 = NULL;
+BuildLataFieldList_Inquire_2_out_1 = NULL;
+BuildLataFieldList_ForEachMember_2_out_1 = NULL;
+BuildLataFieldList_ForEachMember_2_out_3 = NULL;
+BuildLataFieldList_Format_1_out_1 = NULL;
+BuildLataFieldList_Append_1_out_1 = NULL;
+BuildLataFieldList_Compute_1_out_1 = NULL;
+BuildLataFieldList_Route_1_out_1 = NULL;

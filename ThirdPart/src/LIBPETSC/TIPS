@@ -1,0 +1,20 @@
+http://www.exascience.com/wp-content/uploads/2012/12/Ghysels_12.2012.1.pdf
+-> Pipelined CG
+
+http://iiun.unine.ch/matrix/seminars/PNA2000/3ec2000a.html
+
+The solution of large, sparse, linear sytems of equations, obtained from the discretization of PDE's, is an important and typical problem in many scientific and engineering disciplines. Since direct solvers become too expensive due to the amount of storage and work required, iterative methods such as CG, GMRES, or Bi-CGSTAB are typically used. Moreover, the widespread use of parallel computers in scientific applications during recent years has generated and justified new interest in the development and implementation of efficient parallel algorithms on modern high-performance computers. Although the parallel implementation of iterative methods is straightforward, a preconditioner is required to enable or accelerate convergence. Unfortunately, the most successful preconditioner, ILU, is usually difficult to parallelize, whereas preconditioners that are easily parallelized, such as Polynomial and Block-Jacobi, are not effective for many difficult, ill-conditioned problems. As an alternative we shall present the SPAI preconditioner (Grote and Huckle, 1997). Unlike incomplete factorization methods, such as ILU, the SPAI algorithm computes explicitly a sparse approximate inverse for use as a preconditioner. Both the computation and the application of the preconditioner in every iteration are inherently parallel. In addition, the SPAI algorithm makes no a priori assumptions on the matrix or is structure; therefore it is very general in its applicability. The SPAI preconditioner was shown to be effective even on difficult problems, and a parallel C/MPI implementation by S. Barnard (NASA Ames Research Center, CA) is available. We shall also present the new version with a variable block formulation (Barnard and Grote, 1999), which significantly reduces the cost of constructing the approximate inverse in many cases, while maintaining inherent parallelism.
+
+
+http://www.ncsa.uiuc.edu/UserInfo/Resources/Software/Math/HYPRE/docs-1.6.0/HYPRE_usr_manual/node33.html
+-level
+    Factorization level for ILU(k). Default: 1. Guidance: for 2D convection-diffusion and similar problems, fastest solution time is typically obtained with levels 4 through 8. For 3D problems fastest solution time is typically obtained with level 1.
+-bj
+    Use Block Jacobi ILU preconditioning instead of PILU. Default: 0 (false). Guidance: if subdomains contain relatively few nodes (less than 1,000), or the problem is not well partitioned, Block Jacobi ILU may give faster solution time than PILU.    
+    
+Euclid: Parallele ilu(k) preconditioneur de Hypre
+Rien a voir avec Pilut, preconditioneur parallele de hypre (qui n'est pas bien pour du precond sur CG avec matrice symetrique)
+http://www.ncsa.uiuc.edu/UserInfo/Resources/Software/Math/HYPRE/docs-1.6.0/HYPRE_usr_manual/node34.html
+
+Tres complet:
+http://www.mathcs.emory.edu/~benzi/Web_papers/survey.pdf

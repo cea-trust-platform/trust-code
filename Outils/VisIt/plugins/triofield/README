@@ -1,0 +1,9 @@
+Premiere version du plugin triofield pour visit.
+
+Il permet de lire les fichiers triofield generes par TRUST directement dans visit.
+
+
+Il ne permet pas encore l'ecriture de fichiers triofield a partir de visit.
+
+
+Le repertoire src/orig correspond aux squelettes originals des sources (obtenus par xml2plugin avec une version de visit 155)

@@ -1,0 +1,61 @@
+#!/bin/bash
+# Script de fusion d'un atelier avec la version TRUST_ROOT courante
+# Supporte Git
+[ "$TRUST_ROOT" = "" ] && echo "Environnement TRUST_ROOT non initialise." && exit -1
+echo "Usage `basename $0` [-semi_auto] [-auto] [-qall] [file1 file2 ...]"
+auto="--auto" # Default
+if [ "$1" = -semi_auto ]
+then
+   auto=""
+   shift
+elif [ "$1" = -auto ]
+then
+   auto="--auto"
+   shift
+elif [ "$1" = -qall ]
+then
+   auto="--qall"
+   shift
+fi
+files=$*
+[ "$files" = "" ] && files=`ls *.cpp *.h *.f 2>/dev/null`
+for file in $files
+do
+   if [ -f $file ]
+   then
+      # Fichier dans la version TRUST:
+      fichier=`Find $file`
+      if [ "$fichier" != "" ]
+      then
+	 if [ "`diff $fichier $file`" = "" ]
+	 then
+            echo "Le fichier $file n'a plus lieu d'etre dans le projet Baltik... A effacer?"
+	 else
+	    # On met a jour par rapport a la version TRUST
+	    if [ -d $TRUST_ROOT/../.git ]
+	    then
+	       # Look for the last stable tag:
+	       if [ "$tag" = "" ]
+	       then
+		  tag=`git tag | grep -v _rc | grep -v beta | tail -1`
+		  echo "This Baltik project is based on the $tag version."
+               fi
+	       base=`mktemp_`
+	       # Solution to track mv in the past with Git:
+	       paths=`cd $TRUST_ROOT;git log --format='%H' --name-only --follow -- ${fichier#$TRUST_ROOT/} | grep "/"`
+	       for path in $paths
+	       do
+		   git show $tag:$path 1>$base 2>/dev/null && break
+	       done 
+	       # Merge between base,local,dev versions:
+	       echo "Updating $file..."
+	       kdiff3 $auto -o $file $base $file $fichier 2>/dev/null
+	       rm -f $base
+	    else
+	       echo "Not supported yet outside Git"
+	       exit -1
+            fi
+	 fi
+      fi
+   fi
+done

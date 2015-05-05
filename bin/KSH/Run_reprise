@@ -1,0 +1,126 @@
+#!/bin/bash
+#
+# Ce programme realise une modification du fichier NOM.data
+# pour une reprise a partir des fichiers de reprise
+# Le premier argument est le nom du cas
+# Le deuxieme argument si le script n'est pas appele depuis l'IHM
+GUI=1 && [ ${#2} != 0 ] && GUI=0
+[ ${#TRUST_Awk} = 0 ] && TRUST_Awk=awk
+NOM=${1%.data}
+echo $ECHO_OPTS "Trying resume calculation : $NOM ..."
+# Recherche des fichiers de reprise (attention, cette recherche est aussi faite dans reprise_auto
+# donc modifier ce dernier script si changement de la facon de faire...):
+sauvs=`grep -i -e 'sauvegarde ' -e 'sauvegarde_simple ' $NOM.data | $TRUST_Awk '(NF==2 || NF==3) {print $NF}'`
+if [ ${#sauvs} != 0 ]
+then
+   # Dans le jeu de donnees
+   reps=""
+   for file in $sauvs
+   do
+      fin=`echo $file | $TRUST_Awk -F. '{print $NF}'`
+      deb=${file%.$fin}
+      reps=$sauv" "`ls $deb*.$fin 2>/dev/null`
+   done
+else
+   # Par defaut
+   reps=`ls $NOM"_"*.sauv 2>/dev/null`
+fi
+
+echo $ECHO_OPTS "Resume files found with the last times:"
+echo $ECHO_OPTS "---------------------------------------"
+for ficrep in $reps
+do
+   # Probleme car file donne des resultats differents a chaque fois !
+   # type=`file $ficrep | $TRUST_Awk '{print $2}'`
+   # Nouveau: on compte le nombre de fois on trouve Champ sur la premiere ligne du fichier:
+   nb_champ=`head -1 $ficrep | $TRUST_Awk '{print split($1,a,"Champ")-1}'`
+   if [ $nb_champ -le 1 ]
+   then
+      type="formatte"
+   else
+      type="binaire"
+   fi
+   echo $ECHO_OPTS $ficrep" ($type)\c"
+   # times=`grep -E "Sauvegarde du champ|Backup of the field" $NOM.err | $TRUST_Awk '{print $NF}' | sort -un`
+   # Amelioration pour recuperer les times valides ! En effet, il se peut que le .err soit tronque
+   # a cause d'un arret premature ou que les sauvegardes statistiques ne soient pas faites au meme
+   # temps que les autres: donc on trie les times par ordre d'occurence...
+   # sort --key=1 -n pas portable...
+   if [ "`grep -i sauvegarde_simple $NOM.data`" != "" ]
+   then
+      # En cas de sauvegarde simple inutile de recuperer des temps passes...
+      # Ajout de -a car parfois le .err est vu comme un fichier binaire et donne binary matches donc tinit=matches
+      times=`grep -Ea "Sauvegarde du champ|Backup of the field" $NOM.err | $TRUST_Awk '{print $NF}' | tail -1`
+   else
+      times=`grep -Ea "Sauvegarde du champ|Backup of the field" $NOM.err | $TRUST_Awk '{print $NF}' | uniq -c | $TRUST_Awk '{if ($1>n) {n=$1;t=$2};if (n==$1 && $2>t) {t=$2}} END {print t}'`
+   fi
+   for time in $times
+   do
+      echo $ECHO_OPTS " "$time"\c"
+   done
+   echo $ECHO_OPTS
+done
+if [ $GUI = 1 ]
+then
+   echo $ECHO_OPTS "--------------------------------------------"
+   echo $ECHO_OPTS "Which time do you choose ?(return: the last) > \c"
+   read tinit
+else
+   # On prend le dernier temps
+   tinit=$time
+fi
+# Le caractere de tabulation est considere comme plusieurs espaces donc pour les detecter
+# utiliser [ ]* dans grep ou awk ou sed
+# On reprend le temps du .data si le .err est abime
+if [ ${#tinit} = 0 ]
+then
+   tinit=`grep -i 'tinit[ ]*' $NOM.data | $TRUST_Awk '{print $2}'`
+   [ ${#tinit} = 0 ] && echo "Erreur dans le tinit du fichier $NOM.data" && exit
+fi
+oldtmax=`grep -i 'tmax[ ]*' $NOM.data`
+tmax=`echo $ECHO_OPTS $oldtmax | $TRUST_Awk '{print $2}'`
+echo $ECHO_OPTS "Initial time tinit =" $tinit
+echo $ECHO_OPTS "Maximal time tmax  =" $tmax
+if [ $GUI = 1 ] && [ ${#tmax} != 0 ] && [ "`echo $ECHO_OPTS $tmax | $TRUST_Awk -v tinit=$tinit '{print (tinit>=$0)}'`" = 1 ]
+then
+   echo $ECHO_OPTS "Warning, tmax=$tmax >= tinit=$tinit"
+   echo $ECHO_OPTS "Enter a new value for maximal time tmax=\c"
+   read tmax
+fi
+cp $NOM.data $NOM.data.old
+# J'insere le terme "indicateur_de_post" avant toute ligne comportant "ostraitement" (independant de la casse)
+sed '/ostraitement/I i\indicateur_de_post' $NOM.data.old > $NOM.data.old.tmp
+$TRUST_Awk -v NOM=$NOM -v type=$type -v newtinit=$tinit -v newtmax=$tmax -v IGNORECASE=1 '!/tinit[ ]*/ && !/tmax[ ]*/ && !/indicateur_de_post/ && !/ostraitement/ {print $0} \
+/tinit[ ]*/ {print "\ttinit "newtinit} \
+/tmax[ ]*/  {print "\ttmax "newtmax}  \
+/Read[ ]*/ || /read / || /Lire[ ]*/ || /lire /{sauv=NOM"_"$2".sauv"} \
+/ostraitement/ {b=0;d=1; \
+   while (b>0 || d==1) \
+   { \
+      i=0;ligne=""; \
+      while (i<NF+1) \
+      { \
+         i++;if ($i=="{") {d=0;b++}; \
+         if ($i=="}") b--; \
+         ligne=ligne" "$i; \
+      } \
+      ok=match($0,"indicateur_de_post"); \
+      if (ok==0) print $0; \
+      if (!getline) break; \
+   }; \
+   while ($1 != "}") \
+   { \
+      ok=match($0,"indicateur_de_post"); \
+      if (ok!=0) break; \
+      if (tolower($1)=="sauvegarde" || tolower($1)=="sauvegarde_simple") {sauv=$NF}; \
+      if (tolower($1)!="reprise") print $0; \
+      if (!getline) break; \
+   } \
+   if (ok==0) print "\treprise "type" "sauv"\n}"; \
+} ' $NOM.data.old.tmp > $NOM.data
+rm -f $NOM.data.old.tmp
+if [ $GUI = 1 ]
+then
+   echo $ECHO_OPTS "\nWarning: $NOM.data has been modified..."
+   nohup $EDITEUR $NOM.data 1>/dev/null & 
+fi

@@ -1,0 +1,126 @@
+# SIMULATION D UN CANAL PLAN 2D avec modele Longueur de melange #
+# PARALLEL OK #
+# Tests du modele Longueur de Melange et de la procedure de calcul du frottement parietal (ParoiVEFHyd.cpp) #
+dimension 2
+Pb_Hydraulique_Turbulent pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Cavite
+		{
+                Origine 0. 0.
+                Nombre_de_Noeuds 3 41
+                Longueurs 0.2 2.
+		}
+		{
+                Bord periox   X = 0.  0. <= Y <= 2.
+                Bord periox   X = 0.2 0. <= Y <= 2.
+                Bord bas      Y = 0.  0. <= X <= 0.2
+                Bord haut     Y = 2.  0. <= X <= 0.2
+                }
+}
+Trianguler_fin dom
+Corriger_frontiere_periodique { Domaine dom Bord periox }
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+        Partitionneur tranche { tranches 1 2 }
+        Larg_joint 2
+        Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN MESH #
+Distance_paroi dom 2 haut bas binaire
+# END MESH #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+
+VEFPreP1b dis
+
+Schema_Euler_explicite sch
+Lire sch 
+{
+        tinit 0.
+        tmax 2.
+        dt_min 1.e-7
+        dt_max 1.e-3
+	dt_start dt_calc
+        dt_impr 0.001
+        dt_sauv 0.5
+        seuil_statio 1.e-8  
+        facsec 0.9
+	nb_pas_dt_max 100
+}
+
+
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 0.0001
+	rho Champ_Uniforme 1 1
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Lire pb
+{
+	Navier_Stokes_Turbulent
+	{
+		solveur_pression GCP
+		{
+			precond ssor { omega 1.5 }
+			seuil 1.e-8
+		}
+		convection { EF_stab { } }
+		diffusion  {  }
+		Sources { Canal_perio { bord periox } }
+		conditions_initiales
+		{
+                        vitesse Champ_fonc_xyz dom 2  10. 0 
+		}
+		boundary_conditions
+		{
+			periox   periodique 
+			haut     paroi_fixe
+			bas      paroi_fixe
+		}
+		Modele_turbulence Longueur_Melange
+		{
+			turbulence_paroi loi_standard_hydr
+			dmax 1000. fichier dom_Wall_length.xyz
+		}
+	}
+
+	Postraitement
+	{       
+		Sondes
+		{ 
+                        sonde_vit	vitesse			periode 0.5 segment 50 0.05 0. 0.05 2.
+			sonde_visc_turb	viscosite_turbulente	periode 0.5 segment 50 0.05 0. 0.05 2.
+		}
+		Champs dt_post 0.05
+		{
+			vitesse			elem
+			viscosite_turbulente	elem
+			pression		elem
+			y_plus			elem
+		}
+	}
+}
+
+Solve pb
+Fin

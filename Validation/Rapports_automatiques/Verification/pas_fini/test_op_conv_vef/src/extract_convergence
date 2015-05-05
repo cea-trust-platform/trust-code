@@ -1,0 +1,5 @@
+for K in `cat listcas`
+do
+cat ${K}_*/conv| awk '{print $2,$1}'| sort -n> conv_glob_${K}_qdm
+cat ${K}_*/conv_T| awk '{print $2,$1}'| sort -n> conv_glob_${K}_T
+done

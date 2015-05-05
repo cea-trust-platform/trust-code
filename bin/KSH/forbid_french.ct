@@ -1,0 +1,29 @@
+#!/bin/bash
+file=$1
+[ "$file" = "" ] && echo "Usage `basename $0` file" && exit -1
+[ -d $file ] && exit 0 # On quitte si le parametre passe est un repertoire
+[ ! -f $file ] && echo "$file not found." && exit -1
+# Attention liste ambigue (peut etre utilise en anglais ou francais)
+mauvais="a on les non type"
+# Liste de mots francais
+mots="par en de la dans pas le erreur du ne des et pour attendait est lecture une vous avec doit etre sont que champ modele compris donnees matrice fichier calcul nombre probleme"
+liste=`mktemp_`
+rm -f $liste
+for mot in $mots
+do
+   echo " "$mot" " >> $liste
+done
+french=`grep -rEi "Cerr|Cout|^[ ]*<<.*\".*\"" $file 2>/dev/null | grep -Eiv "//.*Cerr|//.*Cout|//.*^[ ]*<<.*\".*\""c | awk -F'"' '{for (i=2;i<NF;i+=2) {print $i}}' | grep -i -f $liste`
+rm -f $liste
+if [ "$french" != "" ]
+then
+   echo "Messages should be now written in English since 1.6.2 and this"
+   echo "sentence has been found in the $file:"
+   echo "************************************************************************"
+   echo $french
+   echo "************************************************************************"
+   echo "If you think the message is well written, it is surely"
+   echo "an issue on the test, please, contact TRUST support."
+   exit -1
+fi
+# Ne pas faire exit 0 car sinon pb au niveau du trigger

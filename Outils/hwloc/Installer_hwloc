@@ -1,0 +1,17 @@
+#!/bin/bash
+###############################################################
+# Installation de hwloc pour avoir l'architecture de la machine
+###############################################################
+package=hwloc-1.9
+gunzip -f -c $TRUST_ROOT/externalpackages/$package.tar.gz | tar -xf -
+rm -f $package.tar
+install=$TRUST_ROOT/exec/hwloc
+cd $package
+unset MV # Car defini sur une certaine machine (kolmo)
+./configure --prefix=$install 1>hwloc.log 2>&1 || exit -1
+$TRUST_MAKE 1>>hwloc.log 2>&1 || exit -1 
+make install 1>>hwloc.log 2>&1 || exit -1
+cd ..
+rm -r -f $package
+$install/bin/lstopo --output-format txt 1>$TRUST_ROOT/env/machine.txt 2>&1
+echo "File machine.txt created."

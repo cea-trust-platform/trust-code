@@ -1,0 +1,7 @@
+# 3D Cavite pour test Gmsh #
+dimension 3
+Domaine cavite
+Lire_MED family_names_from_group_names cavite Gmsh3D Gmsh3D.med
+discretiser_domaine cavite
+Fin
+

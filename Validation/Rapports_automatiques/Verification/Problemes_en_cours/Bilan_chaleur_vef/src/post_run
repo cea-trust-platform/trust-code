@@ -1,0 +1,4 @@
+#!/bin/bash
+cas=`basename $1 .data`
+tail -1  ./${cas}_pb2_Diffusion_chaleur.out > fin_${cas}.out
+

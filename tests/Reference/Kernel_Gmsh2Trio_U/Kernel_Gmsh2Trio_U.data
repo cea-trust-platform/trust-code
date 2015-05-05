@@ -1,0 +1,17 @@
+# Create a MED mesh file forme.med #
+# from a Gmsh geometry in the forme.geo file #
+# The boundary names are defined inside forme.geo #
+# Create the mesh by command line #
+# Option -2 is to create a 2D mesh #
+# Option -format med is to write a MED mesh file #
+# Autres options, voir gmsh -help #
+# lance_test crash possible si Gmsh pas installe #
+system "gmsh -2 -order 1 -clscale 1. -format med forme.geo"
+
+# Read the MED mesh by TRUST #
+dimension 2
+domaine dom
+Lire_med family_names_from_group_names dom forme forme.med
+Discretiser_domaine dom
+# Write the TRUST mesh to post process it and check the boundaries #
+Postraiter_domaine { domaine dom format lata fichier Kernel_Gmsh2TRUST }

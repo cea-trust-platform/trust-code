@@ -1,0 +1,52 @@
+/* This is a sample configuration file for html2ps. You may try using this
+   to convert the documentation file that comes with html2ps (html2ps.html).
+   Issue the command:
+
+     html2ps -f sample -o html2ps.ps html2ps.html
+
+   This should create a PostScript file html2ps.ps formatted based on the
+   information below.
+*/
+
+@html2ps {
+  header {               /* Running page header */
+    odd-left: ;          /* Document title */
+    odd-right: ;         /* Current main heading */
+    even-left: ;         /* Ditto */
+    even-right: "$[author]"; /* Document author (from <META NAME="Author"...>) */
+  }
+  footer {               /* Running page footer */
+    center: "- $N -";      /* Page number */
+  }
+  option {
+    titlepage: 0;         /* Generate a title page */
+    hyphenate: 0;
+  }
+  titlepage {           /* The title page content: document title, author and
+                           creation date */
+    content: "<DIV align=center><H1><BIG>$T</BIG></H1>
+              <H2>$[author]</H2>$[created]";
+  }
+  showurl: 1;             /* Show URL:s for external links */
+  seq-number: 0;          /* Automatic numbering of headings */
+}
+
+/* Standard style sheet definitions */
+P {
+   text-align: justify;
+   font-size: 12pt;
+}
+H1, H2, H3, H4, H5, H6 { font-family: Helvetica; font-weight: bold }
+H1 { font-size: 19pt; text-align: center }
+H3, H5 { font-style: oblique }
+H2, H3 { font-size: 16pt }
+H4, H5 { font-size: 13pt }
+H6 { font-size: 11pt }
+ADDRESS { text-align: right }
+@page {
+  margin-left: 0cm;
+  margin-right: 0cm;
+  margin-top: 2cm;
+  margin-bottom: 2cm;
+}
+A:link, HR { color: blue }

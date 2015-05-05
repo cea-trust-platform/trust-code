@@ -1,0 +1,10 @@
+#!/bin/bash
+
+echo "Rotate " $1
+cas=`basename $1 .data`
+. $TRUST_ROOT/Outils/TRIOXDATA/IHMTRIO.sh 
+export PYTHONPATH=`dirname $0`:$PYTHONPATH
+python `dirname $0`/modif.py $cas  >modif.log
+#mv $1 org_$1
+mv mod_$1 Rotation_$1
+cp `dirname $0`/Rotate_lata   .

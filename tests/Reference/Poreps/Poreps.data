@@ -1,0 +1,186 @@
+# Thermohydraulique 2D : porosites volumiques #
+# PARALLEL OK 3 #
+dimension 2
+
+Pb_Thermohydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Entree 
+	{
+	Origine 0. 0.
+	Nombre_de_Noeuds 11 11
+	Longueurs 1.0 1.0
+	}
+	{
+	Bord Entree1 Y = 0. 0. <= X <= 0.5
+	Bord Entree2 Y = 0. 0.5 <= X <= 1.
+	Bord Ouest  X = 0. 0. <= Y <= 1.
+	Bord Est    X = 1. 0. <= Y <= 1.
+	} ,
+	Pave Sortie
+	{
+	Origine 0. 1.
+	Nombre_de_Noeuds 21 11
+	Longueurs 2.0 1.0
+	}
+	{
+	Bord Sortie X = 2. 1. <= Y <= 2.
+	Bord Haut   Y = 2. 0. <= X <= 2.
+	Bord Ouest1 X = 0. 1. <= Y <= 2.
+	Bord Bas    Y = 1. 1. <= X <= 2.
+	}
+}
+Sous_zone sous_zone1
+Associate sous_zone1 dom
+
+Lire sous_zone1
+{
+   Rectangle
+      Origine 0.3 0.3
+      Cotes 0.4 0.5
+}
+
+Sous_zone sous_zone2
+Associate sous_zone2 dom
+Lire sous_zone2
+{
+   Rectangle
+     Origine 0.3 1.0
+     Cotes 0.4 0.5
+}
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur metis { Nb_parts 2 }
+	Larg_joint 1
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+Sous_zone sous_zone1
+Associate sous_zone1 dom
+Lire sous_zone1 { Fichier sous_zone1.ssz }
+Sous_zone sous_zone2
+Associate sous_zone2 dom
+Lire sous_zone2 { Fichier sous_zone2.ssz }
+END SCATTER #
+
+VDF dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	nb_pas_dt_max 10
+	tinit 0
+	tmax 5.  
+	dt_min 0.005
+	dt_max 0.005
+	dt_impr 0.005
+	dt_sauv 100
+	seuil_statio 1e-8
+	facsec 1.0
+}
+
+Fluide_Incompressible eau
+Lire eau
+{
+	mu Champ_Uniforme 1 0.02
+	rho Champ_Uniforme 1 2
+	lambda Champ_Uniforme 1 0.01
+	Cp Champ_Uniforme 1 0.5
+	beta_th Champ_Uniforme 1 0.0
+}
+
+
+Associate pb dom
+Associate pb sch
+Associate pb eau
+
+Discretize pb dis
+
+Porosites pb sous_zone2
+{
+ VOLUMIQUE 1.0
+ SURFACIQUE 2 0.5 0.25 
+}
+
+Porosites pb sous_zone1
+{
+ VOLUMIQUE 0.1
+ SURFACIQUE 2 1.0 1.0
+}
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP { 
+			precond ssor { omega 1.500000 } 
+			seuil 1.000000e-12
+			impr 
+		}
+		convection { amont }
+		diffusion { }
+		conditions_initiales {
+			vitesse Champ_Uniforme 2 0. 0.
+			}
+		boundary_conditions {
+			Haut symetrie
+			Bas symetrie
+			Ouest1 symetrie
+			Ouest symetrie
+			Est symetrie
+			Sortie frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+			Entree1 frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  0. 1.
+			Entree2 frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  0. 1.
+		}
+	}
+	Convection_Diffusion_Temperature
+	{
+		diffusion { }
+		convection { amont }
+		sources {
+			Puissance_thermique Valeur_totale_sur_volume dom 1
+				{ defaut 100  sous_zone1 20 }
+		}
+		boundary_conditions {
+			Haut Paroi_adiabatique
+			Bas Paroi_adiabatique
+			Ouest1 Paroi_adiabatique
+			Ouest Paroi_adiabatique
+			Est Paroi_adiabatique
+                        Sortie frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 5.
+			Entree1 frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 10.
+			Entree2 frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 0.
+		}
+		conditions_initiales { Temperature Champ_Uniforme 1 5. }
+	}
+
+	Postraitement
+	{
+		Sondes
+		{
+			sonde_temperature temperature periode 0.01 points 2 0.45 0.35 0.55 0.35
+			sonde_pression pression periode 0.01 points 2 0.45 1.45 0.45 1.55
+			sonde_vitesse vitesse periode 0.01 points 2 0.55 1.4 0.6 1.45
+		}
+		Champs dt_post 5.
+		{
+			pression elem
+			temperature elem
+			vitesse elem
+		}
+	}
+}
+
+Solve pb
+Fin
+Fin

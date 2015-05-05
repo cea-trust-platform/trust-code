@@ -1,0 +1,6 @@
+#!/bin/bash
+# Lancement de TRUST XData
+echo "Usage: `basename $0` file.data"
+#REP=`pwd`
+# l ajout du chemin est fait dans le vrai EditData
+$TRUST_ROOT/Outils/TRIOXDATA/EditData $*

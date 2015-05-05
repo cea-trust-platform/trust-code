@@ -1,0 +1,108 @@
+#!/bin/bash
+# Merge a Git branch into local workdir (Git)
+###############
+# Some checks #
+###############
+[ "$TRUST_ROOT" = "" ] && echo "Error, initialize TRUST environment." && exit -1
+GIT_ROOT=`dirname $TRUST_ROOT`
+[ ! -d $GIT_ROOT/.git ] && echo "Error, Git repo not found under $GIT_ROOT" && exit -1
+
+##################
+# Check branches #
+##################
+git_branch=`git branch 2>/dev/null | awk '($1=="*") {print $2}'`
+MERGE_ROOT=`pwd`
+echo "Usage: `basename $0` branch [-print] [-compare_before]"
+merge_branch=$1 
+shift
+compare=0
+print=0
+while [ "$1" != "" ]
+do
+   if [ "$1" = -compare_before ]
+   then
+      compare=1
+   elif [ "$1" = -print ]
+   then
+      print=1
+   else 
+      echo "Unknown $1 option."
+      exit -1
+   fi
+   shift
+done
+
+###################
+# fetch the remotes
+###################
+# -p is to delete locally the remote deleted branches...
+[ "$HTTP_PROXY" = "" ] && git fetch --all -p
+
+#########
+# Begin #
+#########
+if [ "$merge_branch" = "" ]
+then
+   echo "------------------------------------------------------------------------------"
+   echo "You need to define a Git branch to merge into your current branch $git_branch:"
+   echo "------------------------------------------------------------------------------"
+   for branch in `git branch --all | awk '{print $NF}'`
+   do
+      number=`git diff --name-status $git_branch...$branch | wc -l`
+      # Print only if number of changes > 0
+      [ "$number" != 0 ] && echo -e "   $number\tchanges could be merged from `git describe --tags $branch`  \tin branch $branch"
+   done | sort -nr
+   exit -1
+fi
+
+if [ "`git status --u=no 2>&1 | grep 'you are still merging'`" != "" ]
+then
+   git status --u=no
+   echo "-> You can't merge with `basename $0` cause you are still merging. Finish the merge and commit."
+   exit -1
+fi
+echo "=============================================================================================="
+echo "List of changes in the branch $merge_branch which can be merged in current branch $git_branch:"
+echo "M:Modified A:Added R:Renamed"
+echo "=============================================================================================="
+options="--name-status --relative=${MERGE_ROOT#$GIT_ROOT/} $git_branch...$merge_branch"
+# Not possible to do a local merge so:
+options="-M --name-status $git_branch...$merge_branch"
+tmp=`mktemp_`
+git diff $options | tee $tmp
+elements=`awk '{print $2}' $tmp`
+rm -f $tmp
+echo "=============================================================================================="
+
+#############
+# Graphical #
+#############
+if [ $compare = 1 ]
+then
+   xdiff.git $git_branch...$merge_branch
+fi
+
+#############################
+# Merge if -print is not used
+#############################
+if [ $print = 0 ] && [ "$elements" != "" ]
+then
+   echo "Ready to merge? (YES|NO)"
+   read OK
+   [ "$OK" != YES ] && exit
+   # To merge only few elements:
+   # http://stackoverflow.com/questions/449541/how-do-you-merge-selective-files-with-git-merge
+   # git checkout $merge_branch $elements || exit -1
+   # git stash
+   # git merge --no-commit --no-ff stash
+   echo "======================"
+   echo "-> Trying now to merge..."
+   echo "-> To abort the merge:"
+   echo "git merge --abort $merge_branch"
+   echo "-> To fix conflicts:"
+   echo "git mergetool -t kdiff3 -y"
+   echo "-> To see the differences:"
+   echo "gitk"
+   git merge --no-commit --no-ff $merge_branch || git mergetool -t kdiff3 -y
+   err=$?    
+fi

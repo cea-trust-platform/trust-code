@@ -1,0 +1,864 @@
+/****************************************************************************
+* Copyright (c) 2015, CEA
+* All rights reserved.
+* 
+* Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+* 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+* 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+* 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+* 
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+* IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; 
+* OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+* 
+*****************************************************************************/
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:        ProblemTrio.cpp
+// Directory:   $TRUST_ROOT/src/Kernel/ICoCo
+// Version:     /main/15
+//
+//////////////////////////////////////////////////////////////////////////////
+
+#include <ProblemTrio.h>
+#include <Probleme_U.h>
+#include <Interprete.h>
+#include <Exceptions.h>
+#include <Noms.h>
+#include <stdlib.h>
+#include <Comm_Group_MPI.h>
+#include <MAIN.h>
+#include <mon_main.h>
+#include <Probleme_base.h>
+#include <Couplage_U.h>
+#include <Champs_compris.h>
+#include <Champ_Generique_base.h>
+#include <ICoCoTrioField.h>
+
+#include <Domaine.h>
+#include <Zone.h>
+
+#include <Postraitement.h>
+#include <List_Nom.h>
+#include <Init_Params.h>
+#include <PE_Groups.h>
+
+#include <ICoCoMEDField.hxx>
+#include <Convert_ICoCoTrioField.h>
+#include <stat_counters.h>
+
+using namespace ICoCo;
+using std::string;
+using std::vector;
+
+
+ProblemTrio::~ProblemTrio()
+{
+  if(p) delete p;
+  p=0;
+  delete (my_params);
+}
+
+////////////////////////////
+//                        //
+//   interface ProblemTrio    //
+//                        //
+////////////////////////////
+
+// When the dynamic library is loaded via dlopen(), getting a handle
+// on this function is the only way to create a Problem object.
+
+extern "C" Problem* getProblem()
+{
+  //cerr<<"coucou getProblem"<<endl;
+  Problem* T=new ProblemTrio;
+  return T;
+}
+
+// Description:
+// As initialize doesn't have any arguments, they can be passed to the Problem
+// at the time of instantiation.
+// They can include data file name, MPI communicator,..
+// In this implementation (for use outside TRUST), only the name of an
+// underlying Probleme_U needs to be provided.
+// Precondition: None.
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception: WrongContext
+// Effets de bord:
+// Postcondition:
+// Problem instantiated
+
+ProblemTrio::ProblemTrio()
+{
+  my_params=new Init_Params;
+  (*my_params).problem_name="default_vvvvv";
+  (*my_params).problem_name="pb";
+  //my_params.comm=MPI_COMM_WORLD;
+  (*my_params).is_mpi=0;
+  pb=NULL;
+  p=NULL;
+}
+
+
+void ProblemTrio::setDataFile(const string& file)
+{
+  (*my_params).data_file=file;
+}
+void ProblemTrio::setMPIComm(void* mpicomm)
+{
+#ifdef MPI_
+  if (mpicomm)
+    {
+      (*my_params).is_mpi=1;
+      (*my_params).comm=*((MPI_Comm*)(mpicomm));
+    }
+#endif
+}
+#if 0
+void ProblemTrio::set_data_file(const string& file)
+{
+  (*my_params).data_file=file;
+  (*my_params).is_mpi=0;
+  cout<<" fata file "<<(*my_params).data_file<<endl;
+}
+
+ProblemTrio::ProblemTrio(void* data)
+{
+  my_params=new Init_Params;
+  set_data(data);
+  p=NULL;
+}
+
+void ProblemTrio::set_data(void* data)
+{
+  if (data==0)
+    throw WrongArgument("??","Constructor","data","data shoud point to the name of a Probleme_U");
+  Init_Params& params=*((Init_Params*)data);
+  assert(my_params!=0);
+  (*my_params)=params;
+  (*my_params).is_mpi=1;
+}
+#endif
+// Description:
+// This method is called once at the beginning, before any other one of
+// the interface Problem.
+// Precondition: Problem is instantiated, not initialized
+// (*my_params) have been filled by constructor.
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception: WrongContext
+// Effets de bord:
+// Postcondition:
+// Problem initialized.
+// Unknown and given fields are initialized at initial time
+bool ProblemTrio::initialize()
+{
+  Process::exception_sur_exit=1;
+  if (((*my_params).problem_name=="default_vvvvv") || ((*my_params).data_file=="default_vvvvv"))
+    throw WrongArgument("??","Constructor","data","data shoud point to the name of a Probleme_U");
+
+#ifdef MPI_
+  // exception if I don't belong to comm !
+  int rank_in_comm=0;
+  if ((*my_params).is_mpi!=0)
+    {
+      if (MPI_Comm_rank((*my_params).comm,&rank_in_comm)!=MPI_SUCCESS)
+        throw WrongArgument((*my_params).problem_name,"initialize","comm","This process should belong to comm");
+      if (rank_in_comm==MPI_UNDEFINED)
+        throw WrongArgument((*my_params).problem_name,"initialize","comm","This process should belong to comm");
+
+      Comm_Group_MPI::set_trio_u_world((*my_params).comm);
+
+    }
+  Comm_Group_MPI::set_must_mpi_initialize(0); // ???
+#endif
+  int argc=2;
+  char** argv=new char*[argc];
+  string code="TRUST wrapper";
+  // Les copies sont necessaires pour se debarrasser des const...
+  argv[0]=new char[code.length()+1];
+  strcpy(argv[0],code.c_str());
+  argv[1]=new char[(*my_params).data_file.length()+1];
+  strcpy(argv[1],(*my_params).data_file.c_str());
+  // pour salome
+  if (p) delete p;
+  p=NULL;
+  int res;
+  // on lance avec ou sans mpi
+  res=main_TRUST(argc,argv,p,(*my_params).is_mpi);
+
+
+  delete [] argv[0];
+  delete [] argv[1];
+  delete [] argv;
+
+  Nom nom("ICoCoProblemName"),nom_pb;
+  if (nom.interprete().objet_existant(nom))
+    {
+      nom_pb=ref_cast(Nom,get_obj(nom));
+      Cout<<finl<<" ICoCoProblemName from data file "<<nom_pb<< finl;
+    }
+  else
+    {
+      nom_pb="pb";
+      Cout<<finl<<" ICoCoProblemName not found in data file, we try "<<nom_pb<< finl;
+    }
+
+  (*my_params).problem_name=nom_pb;
+  pb=&ref_cast(Probleme_U,get_obj(nom_pb));
+  if (res || !pb)
+    throw WrongArgument((*my_params).problem_name,"initialize","problem_name","No problem of that name found in data file");
+  initialize_pb(*pb);
+  // Print the initialization CPU statistics
+  statistiques().dump("Statistiques d'initialisation du calcul", 0);
+  print_statistics_analyse("Statistiques d'initialisation du calcul", 0);
+  statistiques().reset_counters();
+  statistiques().begin_count(temps_total_execution_counter_);
+  return true;
+}
+bool ProblemTrio::initialize_pb(Probleme_U& pb_to_solve)
+{
+  if (pb==NULL)
+    pb=&pb_to_solve;
+  pb_to_solve.initialize();
+  pb_to_solve.postraiter(1);
+  return true;
+}
+
+// Description:
+// This method is called once at the end, after any other one.
+// It frees the memory and saves anything that needs to be saved.
+// Precondition: initialize, but not yet terminate
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception: WrongContext
+// Effets de bord:
+// Postcondition:
+// The object is ready to be destroyed.
+void ProblemTrio::terminate()
+{
+  pb->postraiter(1);
+  pb->terminate();
+  int mode_append=1;
+  statistiques().dump("Statistiques Resolution", mode_append);
+  print_statistics_analyse("Statistiques Resolution", 1);
+  if(p)
+    {
+      delete p;
+      p=0;
+      // fait dans mon_main maintenant // PE_Groups::finalize();
+    }
+}
+
+
+///////////////////////////////////
+//                               //
+//   interface UnsteadyProblem   //
+//                               //
+///////////////////////////////////
+
+
+// Description:
+// Returns the present time.
+// This value may change only at the call of validateTimeStep.
+// A surcharger
+// Precondition: initialize, not yet terminate
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour: double
+//    Signification: present time
+//    Contraintes:
+// Exception: WrongContext
+// Effets de bord:
+// Postcondition:
+// ProblemTrio unchanged
+double ProblemTrio::presentTime() const
+{
+  return pb->presentTime();
+}
+
+// Description:
+// Compute the value the Problem would like for the next time step.
+// This value will not necessarily be used at the call of initTimeStep,
+// but it is a hint.
+// This method may use all the internal state of the Problem.
+// Precondition: initialize, not yet terminate
+// Parametre: stop
+//    Signification: Does the Problem want to stop ?
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour: double
+//    Signification: The desired time step
+//    Contraintes:
+// Exception: WrongContext
+// Effets de bord:
+// Postcondition:
+// ProblemTrio unchanged
+double ProblemTrio::computeTimeStep(bool& stop) const
+{
+  return pb->computeTimeStep(stop);
+}
+
+
+// Description:
+// This method allocates and initializes the unknown and given fields
+// for the future time step.
+// The value of the interval is imposed through the parameter dt.
+// In case of error, returns false.
+// Precondition: initialize, not yet terminate, timestep not yet initialized, dt>0
+// Parametre: double dt
+//    Signification: the time interval to allocate
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour: bool
+//    Signification: true=OK, false=error, not able to tackle this dt
+//    Contraintes:
+// Exception: WrongContext, WrongArgument
+// Effets de bord:
+// Postcondition:
+// Enables the call to several methods for the next time step
+bool ProblemTrio::initTimeStep(double dt)
+{
+  return pb->initTimeStep(dt);
+}
+
+
+// Description:
+// Calculates the unknown fields for the next time step.
+// The default implementation uses iterations.
+// Precondition: initTimeStep
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour: bool
+//    Signification: true=OK, false=unable to find the solution.
+//    Contraintes:
+// Exception: WrongContext
+// Effets de bord:
+// Postcondition:
+// The unknowns are updated over the next time step.
+bool ProblemTrio::solveTimeStep()
+{
+  statistiques().begin_count(timestep_counter_);
+  if (pb->lsauv())
+    pb->sauver();
+  bool res=pb->solveTimeStep();
+
+  return res;
+}
+
+
+// Description:
+// Validates the calculated unknown by moving the present time
+// at the end of the time step.
+// This method is allowed to free past values of the unknown and given
+// fields.
+// Precondition: initTimeStep
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception: WrongContext
+// Effets de bord:
+// Postcondition:
+// The present time has moved forward.
+void ProblemTrio::validateTimeStep()
+{
+  pb->validateTimeStep();
+  pb->postraiter(0);
+  statistiques().end_count(timestep_counter_);
+}
+
+// Description:
+// Tells if the Problem unknowns have changed during the last time step.
+// Precondition: validateTimeStep
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour: bool
+//    Signification: true=stationary, false=not stationary
+//    Contraintes:
+// Exception: WrongContext
+// Effets de bord:
+// Postcondition:
+// ProblemTrio unchanged
+bool ProblemTrio::isStationary() const
+{
+  return pb->isStationary();
+}
+
+// Description:
+// Aborts the resolution of the current time step.
+// Precondition: initTimeStep
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception: WrongContext
+// Effets de bord:
+// Postcondition:
+// Can call again initTimeStep with a new dt.
+void ProblemTrio::abortTimeStep()
+{
+  pb->abortTimeStep();
+}
+
+/////////////////////////////////////////////
+//                                         //
+//   interface IterativeUnsteadyProblem    //
+//                                         //
+/////////////////////////////////////////////
+
+// Description:
+// In the case solveTimeStep uses an iterative process,
+// this method executes a single iteration.
+// It is thus possible to modify the given fields between iterations.
+// converged is set to true if the process has converged, ie if the
+// unknown fields are solution to the problem on the next time step.
+// Otherwise converged is set to false.
+// The return value indicates if the convergence process behaves normally.
+// If false, the ProblemTrio wishes to abort the time step resolution.
+// Precondition: initTimeStep
+// Parametre: bool& converged
+//    Signification: It is a return value :
+//                   true if the process has converged, false otherwise.
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour: bool
+//    Signification: true=OK, false=unable to converge
+//    Contraintes:
+// Exception: WrongContext
+// Effets de bord:
+// Postcondition:
+// The unknowns are updated over the next time step.
+bool ProblemTrio::iterateTimeStep(bool& converged)
+{
+  return pb->iterateTimeStep(converged);
+}
+
+// Description:
+// This method is used to find the names of input fields understood by the Problem
+// Precondition: initTimeStep
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour: vector<string>
+//    Signification: list of names usable with getInputFieldTemplate and setInputField
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+// ProblemTrio unchanged
+vector<string> ProblemTrio::getInputFieldsNames() const
+{
+  vector<string> v;
+  Noms noms;
+  pb->getInputFieldsNames(noms);
+  for (int i=0; i<noms.size(); i++)
+    v.push_back(noms[i].getChar());
+  return v;
+}
+
+// Description:
+// This method is used to get a template of a field expected for the given name.
+// Precondition: initTimeStep, name is one of getInputFieldsNames
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+// afield contains a field with values neither allocated nor filled, describing the
+// field expected by setInputField for that name.
+// ProblemTrio unchanged
+void ProblemTrio::getInputFieldTemplate(const string& name, TrioField& afield) const
+{
+  Nom nom(name.c_str());
+  pb->getInputFieldTemplate(nom,afield);
+}
+
+// Description:
+// This method is used to provide the Problem with an input field.
+// Precondition: initTimeStep, name is one of getInputFieldsNames, afield is like in getInputFieldTemplate
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+// Values of afield have been used (copied inside the ProblemTrio).
+void ProblemTrio::setInputField(const string& name, const TrioField& afield)
+{
+  Nom nom(name.c_str());
+  pb->setInputField(nom,afield);
+}
+
+
+//  a remonter dans pb_base + equivalent dans couplage_u probleme_U
+void get_noms_champs_post_pb(LIST(Nom)& noms,const Probleme_base& pb)
+{
+  for (int i=0; i<pb.postraitements().size(); i++)
+    {
+      if (sub_type(Postraitement,pb.postraitements()(i).valeur()))
+        {
+          LIST(Nom) suite;
+          const Liste_Champ_Generique& liste_champ= ref_cast(Postraitement,pb.postraitements()(i).valeur()).champs_post_complet();
+          for (int ii=0; ii<liste_champ.size(); ii++)
+            suite.add(liste_champ(ii).valeur().get_nom_post() );
+          noms.add(suite);
+        }
+    }
+}
+void get_noms_champs_post(LIST(Nom)& noms,const Probleme_U& pb)
+{
+
+  if (sub_type(Probleme_base,pb))
+    {
+      const Probleme_base& pb_base=ref_cast(Probleme_base,pb);
+      get_noms_champs_post_pb(noms,pb_base);
+    }
+  else if (sub_type(Couplage_U,pb))
+    {
+      const Couplage_U& coupl=ref_cast(Couplage_U, pb);
+      for (int i=0; i<coupl.nb_problemes(); i++)
+        {
+          get_noms_champs_post(noms,coupl.probleme(i));
+        }
+    }
+}
+
+
+vector<string> ProblemTrio::getOutputFieldsNames() const
+{
+
+  // const Probleme_base& pb_base=ref_cast(Probleme_base,*pb);
+  LIST(Nom) my_names;
+  get_noms_champs_post(my_names,*pb);
+  vector<string> output_names;
+  for (int i=0; i<my_names.size(); i++)
+    output_names.push_back(my_names(i).getChar());
+  return  output_names;
+
+}
+
+
+
+void affecte_double_avec_doubletab(double** p, const ArrOfDouble& trio)
+{
+  *p=new double[trio.size_array()];
+  memcpy(*p,trio.addr(),trio.size_array()*sizeof(double));
+}
+
+void affecte_int_avec_inttab(int** p, const ArrOfInt& trio)
+{
+  *p=new int[trio.size_array()];
+  memcpy(*p,trio.addr(),trio.size_array()*sizeof(int));
+}
+//  get_champ coder equivalent dans couplage_u probleme_U
+// + corriger ref_cast dans Pb_base
+
+const Champ_Generique_base* get_field(const Probleme_U& pb,const Motcle& name,int& ok)
+{
+  ok=0;
+  if (sub_type(Probleme_base,pb))
+    {
+      const Probleme_base& pb_base=ref_cast(Probleme_base,pb);
+      if (pb_base.comprend_champ_post(name))
+        {
+          ok=1;
+          const Champ_Generique_base& ch =pb_base.get_champ_post(name);
+          return &ch;
+        }
+    }
+  else if (sub_type(Couplage_U,pb))
+    {
+      const Couplage_U& coupl=ref_cast(Couplage_U, pb);
+      for (int i=0; i<coupl.nb_problemes(); i++)
+        {
+          const Champ_Generique_base* ch=get_field(coupl.probleme(i), name, ok);
+          if (ok)
+            return ch;
+        }
+    }
+  else
+    {
+      Cerr<<"non prevu "<<finl;
+      Process::exit();
+    }
+  ok=0;
+  return NULL;
+}
+
+void ProblemTrio::getOutputField(const std::string& name_, TrioField& afield) const
+{
+  Motcle name(name_.c_str());
+  /*
+    const Probleme_base& pb_base=ref_cast(Probleme_base,*pb);
+    const Champ_Generique_base& ch =pb_base.get_champ_post(name);
+  */
+  int ok=0;
+  const Champ_Generique_base* ch_ptr= get_field(*pb,name,ok);
+  if (ok==0)
+    {
+      cerr<<name <<" not found in"<< (*pb).le_nom()<<endl;
+      Process::exit();
+    }
+  const Champ_Generique_base& ch = *ch_ptr;
+
+  Domaine dom;
+  ch.get_copy_domain(dom);
+
+  Champ espace_stockage;
+  const Champ_base& champ_ecriture = ch.get_champ(espace_stockage);
+  const DoubleTab& values = champ_ecriture.valeurs();
+
+  Entity loc=ch.get_localisation();
+  if (loc==NODE)
+    //if (values.dimension_tot(0)==coord.dimension_tot(0))
+    {
+      Cerr<<name<<" type "<<ch.que_suis_je() <<" P1 ?? "<<finl;
+      //      afield._type=1;
+    }
+  else if (loc!=ELEMENT)
+    {
+      throw WrongArgument(name_," "," "," wrong localisation type for field ");
+    }
+
+
+#if 1
+  double t1=pb->presentTime();
+  double t2=pb->futureTime();
+  int is_p1=0;
+  if (loc==NODE)
+    is_p1=1;
+  afield= build_ICoCoField(name_, dom, values, is_p1,  t1, t2 );
+#else
+  afield.clear();
+  afield._space_dim=Probleme_base::dimension;
+  afield.setName(name_);
+
+  afield._mesh_dim=afield._space_dim;
+
+  // const Domaine& dom= ch.get_ref_domain();
+  const DoubleTab& coord=dom.les_sommets();
+  //ch.get_copy_coordinates(coord);
+  affecte_double_avec_doubletab(&afield._coords,coord);
+
+  afield._nbnodes=coord.dimension(0);
+  Motcle type_elem_=dom.zone(0).type_elem()->que_suis_je();
+  Motcle type_elem(type_elem_);
+  type_elem.prefix("_AXI");
+  if (type_elem!=Motcle(type_elem_))
+    {
+      if (type_elem=="QUADRILATERE_2D")
+        type_elem="SEGMENT_2D";
+      if (type_elem=="RECTANGLE_2D")
+        type_elem="RECTANGLE";
+
+    }
+  if ((type_elem=="RECTANGLE") ||(type_elem=="QUADRANGLE")||(type_elem=="TRIANGLE")|| (type_elem=="TRIANGLE_3D")||(type_elem=="QUADRANGLE_3D"))
+    afield._mesh_dim=2;
+  else if ((type_elem=="HEXAEDRE")|| (type_elem=="HEXAEDRE_VEF")||(type_elem=="POLYEDRE")||(type_elem=="PRISME")||  (type_elem=="TETRAEDRE"))
+    afield._mesh_dim=3;
+  else if ((type_elem=="SEGMENT_2D")||(type_elem=="SEGMENT"))
+    afield._mesh_dim=1;
+  else
+    {
+      Cerr<<type_elem<< " not coded" <<finl;
+      Process::exit();
+    }
+
+
+  const IntTab& les_elems=dom.zone(0).les_elems();
+  //ch.get_copy_connectivity(ELEMENT,NODE,les_elems);
+  affecte_int_avec_inttab(&afield._connectivity,les_elems);
+
+  if (les_elems.dimension(1)==4)
+    {
+      //    exit();
+      for (int f=0; f<les_elems.dimension_tot(0); f++)
+        {
+          *(afield._connectivity+f*4+2)=les_elems(f,3);
+          *(afield._connectivity+f*4+3)=les_elems(f,2);
+
+        }
+    }
+
+  if (loc==NODE)
+    {
+      afield._type=1;
+    }
+
+
+  afield._nodes_per_elem=les_elems.dimension(1);
+  afield._nb_elems=les_elems.dimension(0);
+
+  afield._itnumber=0;
+  afield._time1=pb->presentTime();
+  afield._time2=pb->futureTime();
+
+
+  //DoubleTab values;
+  //ch.get_copy_values(values);
+
+
+  afield._has_field_ownership=true;
+  affecte_double_avec_doubletab(&afield._field,values);
+  if (values.nb_dim()>1)
+    afield._nb_field_components=values.dimension(1);
+  else
+    afield._nb_field_components=(1);
+
+#endif
+}
+
+
+ParaMEDMEM::MEDCouplingFieldDouble* ProblemTrio::getOutputMEDField(const string& name) const
+{
+#ifndef NO_MEDFIELD
+  TrioField  triofield;
+  getOutputField(name,triofield);
+  MEDField medfield= build_medfield(triofield);
+  ParaMEDMEM::MEDCouplingFieldDouble*  field=medfield.getField();
+  field->incrRef();
+  //delete medfield;
+  return field;
+#else
+  throw NotImplemented("No ParaMEDMEM","getInputMEDField");
+#endif
+}
+ParaMEDMEM::MEDCouplingFieldDouble* ProblemTrio::getInputMEDFieldTemplate(const std::string& name) const
+{
+#ifndef NO_MEDFIELD
+  TrioField  triofield;
+  getInputFieldTemplate(name,triofield);
+  MEDField medfield=build_medfield(triofield);
+  ParaMEDMEM::MEDCouplingFieldDouble*  field=medfield.getField();
+  field->incrRef();
+  //delete medfield;
+  return field;
+
+#else
+  throw NotImplemented("No ParaMEDMEM","getInputMEDFieldTemplate");
+#endif
+}
+
+void ProblemTrio::setInputMEDField(const std::string& name, const ParaMEDMEM::MEDCouplingFieldDouble* afield)
+{
+#ifndef NO_MEDFIELD
+  // bof en attendant mieux
+  TrioField  triofield;
+  getInputFieldTemplate(name,triofield);
+
+  const ParaMEDMEM::DataArrayDouble *fieldArr=afield->getArray();
+  triofield._field=const_cast<double*> (fieldArr->getConstPointer());
+  // il faut copier les valeurs
+  setInputField(name,triofield);
+  triofield._field=0;
+  //fieldArr->decrRef();
+#else
+  throw NotImplemented("No ParaMEDMEM","setInputMEDField");
+#endif
+}
+
+
+void ProblemTrio::getOutputField(const string& name,MEDField& medfield) const
+{
+#ifndef NO_MEDFIELD
+  TrioField  triofield;
+  getOutputField(name,triofield);
+  medfield= build_medfield(triofield);
+
+#else
+  throw NotImplemented("No ParaMEDMEM","getInputMEDField");
+#endif
+}
+void ProblemTrio::getInputFieldTemplate(const std::string& name, MEDField& medfield) const
+{
+#ifndef NO_MEDFIELD
+  TrioField  triofield;
+  getInputFieldTemplate(name,triofield);
+  medfield=build_medfield(triofield);
+#else
+  throw NotImplemented("No ParaMEDMEM","getInputMEDFieldTemplate");
+#endif
+}
+
+void ProblemTrio::setInputField(const std::string& name, const MEDField& afield)
+{
+#ifndef NO_MEDFIELD
+  // bof en attendant mieux
+  TrioField  triofield;
+  getInputFieldTemplate(name,triofield);
+
+  const ParaMEDMEM::DataArrayDouble *fieldArr=afield.getField()->getArray();
+  triofield._field=const_cast<double*> (fieldArr->getConstPointer());
+  // il faut copier les valeurs
+  setInputField(name,triofield);
+  triofield._field=0;
+  //fieldArr->decrRef();
+
+#else
+  throw NotImplemented("No ParaMEDMEM","setInputMEDField");
+#endif
+}
+
+
+// Miscellaneous
+
+Objet_U& get_obj(const char* chr)
+{
+  Nom nom(chr);
+  Objet_U& obj=nom.interprete().objet(nom);
+  return obj;
+}
+

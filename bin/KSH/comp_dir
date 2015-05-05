@@ -1,0 +1,8 @@
+echo diff xemacs $1 and $2
+n=`basename $1`
+
+tmp=/tmp/merge.$n
+
+echo "(ediff-directories \"$1\" \"$2\" \"\")" > $tmp
+xemacs  -l $tmp
+rm $tmp

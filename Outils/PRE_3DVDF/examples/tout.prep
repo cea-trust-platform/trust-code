@@ -1,0 +1,40 @@
+TAILLES 3 31 31 31 
+RIEN 0 maillage
+MAIL_X_REG 4 xomin xomax nx-2 2 dx
+MAIL_Y_REG 4 yomin yomax ny-2 2 dy
+MAIL_Z_REG 4 zomin zomax nz-2 2 dz
+RIEN 0 remplissage du domaine
+DEBUT_MACRO 5 'toto' 0. 0. 0. 1000 toto
+PARALAX 7 -300 -100 0. 200 600 800 1000 pave
+PARAGEN 12 -300 -100 0. 200 600 800 1000 Pi/3. Pi/4. 200 0. 0. pave
+CYLAX 7 -400 -100 100. 300 600 2 1000 cylindre
+TUBE 10 100 -100 100. Pi/3. Pi/6. 200 100 300 1000 50 tube
+CYLGEN 9 100 -100 100. Pi/3. Pi/6. -600 100 300 1000 tube
+ELLIPSE 11 -500 500 100. 100 200 0. 200 100 400 1 1000 cylindre troue par ellipse
+REVOLAX 14 500 500 100. 50 50 30 30 Pi/2 5*Pi/4 100 75 200 3 1000 tore coupe
+REVOLAX 14 600 500 200. 50 50 0. 0. -Pi/2. 3*Pi/2. 100 0. 200 2 1000 tore complet
+END_MACRO 1 'toto' end toto
+CONEGEN 12 500 100 200 600 50 100 0. 0. 500 -500 0. 2000 conegen
+ELLIPSE 11 -900 500 100. 100 200 0. 200 100 400 0 2000 ellipse
+file maillage
+	real xomin,xomax,yomin,yomax,zomin,zomax,eps
+	integer i1,j1
+	real xphi1,xtet1
+	xomin=-1100
+	xomax=800
+	yomin=-800
+	yomax=800
+	zomin=-600
+	zomax=900
+	eps=0.01
+
+        XM(1)=xomin-eps
+        XM(nx)=xomax+eps
+        YM(1)=yomin-eps
+        YM(ny)=yomax+eps
+        ZM(1)=zomin-eps
+        ZM(nz)=zomax+eps
+
+
+
+

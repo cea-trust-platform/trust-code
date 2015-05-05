@@ -1,0 +1,274 @@
+#!/bin/bash
+
+#Creation des repertoires
+for sc in Amont Muscl EF_stab  ; do
+	for etude in y20 y40 ; do
+		for nx in nx5 nx13 nx17 nx33 ; do
+			mkdir -p ./$sc/$etude/$nx
+		done;
+	done;
+done;
+
+RACINE=`pwd`
+
+echo $RACINE
+
+#cas de base : maillage Amont/y20/nx5 
+#-----------------
+cd $RACINE/Amont/y20/nx5
+cp $RACINE/test.data .
+cp $RACINE/post_run .
+
+#
+# y20/nx13
+#	
+cd $RACINE/Amont/y20/nx13
+cp $RACINE/test.data .
+sed "s/5  11/13 11/" test.data > modifie.data
+mv modifie.data test.data
+cp $RACINE/post_run .
+
+#
+# y20/nx17
+#	
+cd $RACINE/Amont/y20/nx17
+cp $RACINE/test.data .
+sed "s/5  11/17 11/" test.data > modifie.data
+mv modifie.data test.data
+cp $RACINE/post_run .
+
+#
+# y20/nx33
+#	
+cd $RACINE/Amont/y20/nx33
+cp $RACINE/test.data .
+sed "s/5  11/33 11/" test.data > modifie.data
+mv modifie.data test.data
+cp $RACINE/post_run .
+
+############
+#
+# y40/nx5
+#	
+cd $RACINE/Amont/y40/nx5
+cp $RACINE/test.data .
+sed "s/11/6/" test.data > modifie.data
+mv modifie.data test.data
+cp $RACINE/post_run .
+
+
+#
+# y40/nx13
+#	
+cd $RACINE/Amont/y40/nx13
+cp $RACINE/test.data .
+sed "s/5  11/13 6/" test.data > modifie.data
+mv modifie.data test.data
+cp $RACINE/post_run .
+
+
+#
+# y40/nx17
+#	
+cd $RACINE/Amont/y40/nx17
+cp $RACINE/test.data .
+sed "s/5  11/17 6/" test.data > modifie.data
+mv modifie.data test.data
+cp $RACINE/post_run .
+
+#
+# y40/nx33
+#	
+cd $RACINE/Amont/y40/nx33
+cp $RACINE/test.data .
+sed "s/5  11/33 6/" test.data > modifie.data
+mv modifie.data test.data
+cp $RACINE/post_run .
+
+###########
+########### Muscl
+###########
+cd $RACINE/Muscl/y20/nx5
+cp $RACINE/test.data .
+sed "s/amont/muscl/" test.data > modifie.data
+mv modifie.data test.data
+cp $RACINE/post_run .
+
+#
+# y20/nx13
+#	
+cd $RACINE/Muscl/y20/nx13
+cp $RACINE/test.data .
+sed "s/5  11/13 11/" test.data > modifie.data
+mv modifie.data test.data
+sed "s/amont/muscl/" test.data > modifie.data
+mv modifie.data test.data
+cp $RACINE/post_run .
+
+#
+# y20/nx17
+#	
+cd $RACINE/Muscl/y20/nx17
+cp $RACINE/test.data .
+sed "s/5  11/17 11/" test.data > modifie.data
+mv modifie.data test.data
+sed "s/amont/muscl/" test.data > modifie.data
+mv modifie.data test.data
+cp $RACINE/post_run .
+
+#
+# y20/nx33
+#	
+cd $RACINE/Muscl/y20/nx33
+cp $RACINE/test.data .
+sed "s/5  11/33 11/" test.data > modifie.data
+mv modifie.data test.data
+sed "s/amont/muscl/" test.data > modifie.data
+mv modifie.data test.data
+cp $RACINE/post_run .
+
+############
+#
+# y40/nx5
+#	
+cd $RACINE/Muscl/y40/nx5
+cp $RACINE/test.data .
+sed "s/11/6/" test.data > modifie.data
+mv modifie.data test.data
+sed "s/amont/muscl/" test.data > modifie.data
+mv modifie.data test.data
+cp $RACINE/post_run .
+
+#
+# y40/nx13
+#	
+cd $RACINE/Muscl/y40/nx13
+cp $RACINE/test.data .
+sed "s/5  11/13 6/" test.data > modifie.data
+mv modifie.data test.data
+sed "s/amont/muscl/" test.data > modifie.data
+mv modifie.data test.data
+cp $RACINE/post_run .
+
+#
+# y40/nx17
+#	
+cd $RACINE/Muscl/y40/nx17
+cp $RACINE/test.data .
+sed "s/5  11/17 6/" test.data > modifie.data
+mv modifie.data test.data
+sed "s/amont/muscl/" test.data > modifie.data
+mv modifie.data test.data
+cp $RACINE/post_run .
+
+#
+# y40/nx33
+#	
+cd $RACINE/Muscl/y40/nx33
+cp $RACINE/test.data .
+sed "s/5  11/33 6/" test.data > modifie.data
+mv modifie.data test.data
+sed "s/amont/muscl/" test.data > modifie.data
+mv modifie.data test.data
+cp $RACINE/post_run .
+
+
+
+
+###########
+########### EF_stab
+###########
+cd $RACINE/EF_stab/y20/nx5
+cp $RACINE/test.data .
+sed "s/amont/EF_stab { }/" test.data > modifie.data
+mv modifie.data test.data
+cp $RACINE/post_run .
+
+#
+# y20/nx13
+#	
+cd $RACINE/EF_stab/y20/nx13
+cp $RACINE/test.data .
+sed "s/5  11/13 11/" test.data > modifie.data
+mv modifie.data test.data
+sed "s/amont/EF_stab { }/" test.data > modifie.data
+mv modifie.data test.data
+cp $RACINE/post_run .
+
+#
+# y20/nx17
+#	
+cd $RACINE/EF_stab/y20/nx17
+cp $RACINE/test.data .
+sed "s/5  11/17 11/" test.data > modifie.data
+mv modifie.data test.data
+sed "s/amont/EF_stab { }/" test.data > modifie.data
+mv modifie.data test.data
+cp $RACINE/post_run .
+
+#
+# y20/nx33
+#	
+cd $RACINE/EF_stab/y20/nx33
+cp $RACINE/test.data .
+sed "s/5  11/33 11/" test.data > modifie.data
+mv modifie.data test.data
+sed "s/amont/EF_stab { }/" test.data > modifie.data
+mv modifie.data test.data
+cp $RACINE/post_run .
+
+############
+#
+# y40/nx5
+#	
+cd $RACINE/EF_stab/y40/nx5
+cp $RACINE/test.data .
+sed "s/11/6/" test.data > modifie.data
+mv modifie.data test.data
+sed "s/amont/EF_stab { }/" test.data > modifie.data
+mv modifie.data test.data
+cp $RACINE/post_run .
+
+#
+# y40/nx13
+#	
+cd $RACINE/EF_stab/y40/nx13
+cp $RACINE/test.data .
+sed "s/5  11/13 6/" test.data > modifie.data
+mv modifie.data test.data
+sed "s/amont/EF_stab { }/" test.data > modifie.data
+mv modifie.data test.data
+cp $RACINE/post_run .
+
+#
+# y40/nx17
+#	
+cd $RACINE/EF_stab/y40/nx17
+cp $RACINE/test.data .
+sed "s/5  11/17 6/" test.data > modifie.data
+mv modifie.data test.data
+sed "s/amont/EF_stab { }/" test.data > modifie.data
+mv modifie.data test.data
+cp $RACINE/post_run .
+
+#
+# y40/nx33
+#	
+cd $RACINE/EF_stab/y40/nx33
+cp $RACINE/test.data .
+sed "s/5  11/33 6/" test.data > modifie.data
+mv modifie.data test.data
+sed "s/amont/EF_stab { }/" test.data > modifie.data
+mv modifie.data test.data
+cp $RACINE/post_run .
+
+
+
+
+
+
+
+
+
+
+

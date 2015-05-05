@@ -1,0 +1,52 @@
+# Cas test simple pour tester le Kernel #
+# PARALLEL OK #
+dimension 3
+Domaine dom
+# BEGIN MESH #
+Mailler dom {
+  Pave Entree
+  {
+    Origine -1.5 -1.5 -1.5
+      Nombre_de_Noeuds 11 11 11
+      Longueurs 3. 3. 3.
+      symx symy symz
+      }
+  {
+    bord CERCLE X = -1.5 -1.5 <= Y <= 1.5 -1.5 <= Z <= 1.5
+      bord CERCLE Y =  1.5 -1.5 <= X <= 1.5 -1.5 <= Z <= 1.5
+      bord CERCLE Y = -1.5 -1.5 <= X <= 1.5 -1.5 <= Z <= 1.5
+      bord CERCLE X =  1.5 -1.5 <= Y <= 1.5 -1.5 <= Z <= 1.5
+      bord CERCLE Z = -1.5 -1.5 <= X <= 1.5 -1.5 <= Y <= 1.5
+      bord CERCLE Z =  1.5 -1.5 <= X <= 1.5 -1.5 <= Y <= 1.5
+      }
+}
+Sous_Zone zone1
+Associer zone1 dom
+Lire zone1
+{
+  Boite
+    Origine -1. -0.1 -0.1
+    Cotes 0.2 0.2 0.2
+    }
+ecrire_fichier dom dom.geom
+# END MESH #
+
+# BEGIN PARTITION
+Decouper dom
+{
+  Partitionneur Metis { Nb_parts 2 }
+  Larg_joint 1
+    Nom_Zones DOM
+    }
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+Sous_Zone zone1
+Associer zone1 dom
+Lire zone1 { Fichier zone1.ssz }
+END SCATTER #
+postraiter_domaine { domaine dom format lata joints_non_postraites 1 }
+
+fin

@@ -1,0 +1,69 @@
+Implementation de getInputFieldTemplate et setInputField de l'API ICoCo.
+
+* Creation des classes de champs d'entree.
+  A la lecture du JDD, les champs d'entree s'enregistrent
+  dans leur Pb_base qui garde une liste de refs.
+  On peut les retrouver par la methode findInputField.
+
+  La syntaxe est dans tous les cas :
+  Ch... {  nb_comp nombre_de_composantes_du_champ
+           nom nom_du_champ
+           probleme nom_du_probleme_base_associe
+           [sous_zone nom_de_la_sous_zone_associee] }
+
+  De Champ_Input_Proto derivent :
+   - Ch_front_input_uniforme : uniforme sur une frontiere
+   - Ch_front_input : variable sur une frontiere, valeurs aux face
+   - Champ_Input_P0 : P0 par maille en volume
+  Tous implementent les methodes getTemplate et setValue,
+  analogues a getInputFieldTemplate et setInputField sauf qu'il n'y
+  a pas besoin d'identifier le champ !
+
+Pour ne pas avoir d'heritage en diamant, Champ_Input_Proto n'est pas
+un Objet_U. Du coup, a moins de definir une nouvelle sorte de ref qui
+ne soit pas a la sauce Trio, on ne peut pas avoir de refs sur
+Champ_Input_Proto.
+On utilise donc des ref sur Field_base, et on est oblige de tester les
+types pour caster en Champ_input_*... C'est moche mais je ne vois pas
+d'autre solution.
+
+* Lien d'heritage coupe entre Problem et Probleme_U
+  Cela permet d'avoir des signatures de fonction differentes
+  (Problem utilise string et vector)
+
+* Creation d'un repertoire ICoCo contenant tout ce qui concerne l'API.
+  Classes Problem, ICoCoTrioField, exceptions et exemples de pilotes.
+
+* Aucun #include <string> hors des .cpp du repertoire ICoCo.
+  Par contre il y a des forward declarations :
+  #include <bits/stringfwd.h> qui sont l'equivalent d'un
+  class string;
+  sachant que string est un typedef.
+
+* Champ_base et Champ_front_front ont un ancetre commun Field_base
+  pour pouvoir en faire une liste melangee.
+
+* allocation() n'est plus remontee au niveau Probleme_U mais reste
+  au niveau de Pb_base.
+
+* Ajout a Probleme_U d'une methode futureTime similaire a presentTime.
+  Definissent a elles deux l'intervalle de resolution.
+
+* Conditions limites utilisateur :
+  Il y avait lecture de la CL utilisateur, creation de la vraie CL,
+  puis copie et destruction.
+  Au final, incompatible avec les Champ_Input puisque le champ qui
+  s'etait enregistre aupres du probleme a ete detruit...
+  => ajout d'une methode adopt dans Cond_lim pour adopter une
+Cond_lim_base existante, ce qui evite la copie-destruction.
+     Adopt est a utiliser avec moderation... (voir commentaires)
+
+* Cas tests :
+  U_in_var_impl_ICoCo.data doit donner le meme resultat que
+U_in_var_impl.data utilise Ch_front_input et Ch_front_input_uniforme.
+  ChDonXYZ_ICoCo.data doit donner le meme resultat que ChDonXYZ.data
+    utilise Champ_input_P0.
+  Je les ai mis dans les repertoires de leurs homologues non-ICoCo.
+  Ils utilisent les classes Pilote_ICoCo1 et Pilote_ICoCo_2 qui montrent
+  des exemples d'utilisation de l'API pour piloter Trio.
+

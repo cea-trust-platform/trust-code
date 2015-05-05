@@ -1,0 +1,15 @@
+TRUST Version1.4.9 06/2005
+maillage
+TRUST
+Geometrie dom dom.lata.dom
+Format=ascii
+nb_som_tot=1463
+type_elem=TETRAEDRE
+nb_elem_tot=6919
+TEMPS 0.00000000e+00
+Champ DOM_PERX dom.lata.DOM_PERX.ELEM.dom.pb.0.0000000000
+Champ DOM_TOP dom.lata.DOM_TOP.ELEM.dom.pb.0.0000000000
+Champ DOM_LOW dom.lata.DOM_LOW.ELEM.dom.pb.0.0000000000
+Champ DOM_PERZ dom.lata.DOM_PERZ.ELEM.dom.pb.0.0000000000
+Champ DOM_BORD dom.lata.DOM_BORD.SOM.dom.pb.0.0000000000
+FIN
