@@ -12,7 +12,7 @@ mkdir -p lib exec env
 bin/Installer_TRUST -check_prerequis || exit -1
 
 
-[ ! -d externalpackages ] && [ ! -L externalpackages ] && echo "You need to download externalpackages before configuring" && exit -1
+[ ! -d externalpackages ] && [ ! -L externalpackages ] && echo "You need to download externalpackages before configuring"&& export TRUST_VERSION=`awk '/version/ && /Release notes/ {print $4;exit}' $TRUST_ROOT/RELEASE_NOTES`&& echo wget http://downloads.sourceforge.net/project/trust-platform/externalpackages_$TRUST_VERSION.tar && exit -1
 ###############################
 # Clean old directories (<v169)
 ###############################

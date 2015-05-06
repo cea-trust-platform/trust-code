@@ -3,10 +3,6 @@
 // To update this file, run: make depend
 //
 #include <verifie_pere.h>
-instancie_src_ALE();
-instancie_src_Front_tracking_discontinu();
-instancie_src_Front_tracking_discontinu_VDF();
-instancie_src_Front_tracking_discontinu_VEF();
 instancie_src_Kernel_Champs();
 instancie_src_Kernel_Champs_dis();
 instancie_src_Kernel_Cond_Lim();
@@ -32,14 +28,6 @@ instancie_src_P1NCP1B_Operateurs();
 instancie_src_P1NCP1B_Solveurs();
 instancie_src_P1NCP1B_Turbulence();
 instancie_src_P1NCP1B_Zones();
-instancie_src_Phase_field();
-instancie_src_Phase_field_VDF();
-instancie_src_Rayonnement();
-instancie_src_Rayonnement_VDF();
-instancie_src_Rayonnement_VEF();
-instancie_src_Rayonnement_semi_transp();
-instancie_src_Rayonnement_semi_transp_VDF();
-instancie_src_Rayonnement_semi_transp_VEF();
 instancie_src_ThHyd();
 instancie_src_ThHyd_Chimie();
 instancie_src_ThHyd_Modele_turbulence_base();
@@ -50,7 +38,6 @@ instancie_src_ThHyd_Quasi_Compressible_VEF();
 instancie_src_ThHyd_Schemas_Temps();
 instancie_src_ThHyd_Turbulence();
 instancie_src_ThSol();
-instancie_src_UtilitairesAssemblages();
 instancie_src_VDF();
 instancie_src_VDF_Axi_Operateurs();
 instancie_src_VDF_Axi_Sources();
@@ -74,11 +61,3 @@ instancie_src_VEF_Sources();
 instancie_src_VEF_Sources_Iterateurs();
 instancie_src_VEF_Turbulence();
 instancie_src_VEF_Zones();
-instancie_src_Zoom_Algos();
-instancie_src_Zoom_Geometrie();
-instancie_src_Zoom_Kernel();
-instancie_src_Zoom_Noyau();
-instancie_src_Zoom_Operateurs();
-instancie_src_Zoom_VDF();
-instancie_src_Zoom_VDF_Cond_Lim();
-instancie_src_Zoom_VDF_Turbulence();

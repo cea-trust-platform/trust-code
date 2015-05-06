@@ -6,7 +6,7 @@ You can then edit this file and some others (env/make.linux*)
 to change some default values.
 
 To initialize:
-source bin/Init_TRUST
+source env/env_TRUSTa.sh
 
 
 To build a binary with a single directory build:
@@ -23,28 +23,20 @@ make clean
 To clean also the third party libraries:
 ./configure -clean
 
-To rebuild the makefiles:
-make depend
-
 # Quick directories description:
 bin/		TRUST scripts
 doc/		Documentation files
 env/		Environment files
 exec/		Binaries
-form/		GUI tools (obsolete)
 include/	Link to all TRUST include files (automatically updated)
 lib/		Libraries
 src/		TRUST sources 
 tests/		TRUST tests
-windows/	Windows addon (unsupported)
-Gmsh/		Gmsh sources
 IHM/		GUI (obsolete)
 Milieux_reference/ GUI (obsolete)
 Modeles/	GUI (obsolete)
-ObsoleteOrUncovered_code/	Obsolete TRUST sources
 Outils/		Tools to build TRUST
 Validation/	Location of Validation forms
-VisIt/		VisIt sources
 
 # Quick files description:
 DEVELOPER_NOTES	Developer notes (manually and regulary updated by support)
