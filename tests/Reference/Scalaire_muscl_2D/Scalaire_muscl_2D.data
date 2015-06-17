@@ -30,7 +30,6 @@ Lire sch
 	nb_pas_dt_max 10
 	tmax 0.5
 	seuil_statio -1
-	seuil_statio_relatif 1
 	dt_impr 1.e-10	
 	facsec 1.
 }

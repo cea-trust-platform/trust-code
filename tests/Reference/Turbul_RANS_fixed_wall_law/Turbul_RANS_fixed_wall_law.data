@@ -25,7 +25,7 @@ Mailler dom
 	}
 }
 
-Tetraedriser_homogene_fin dom
+Tetraedriser dom
 Reordonner_faces_periodiques dom PerioX
 Reordonner_faces_periodiques dom PerioZ
 # END MESH #

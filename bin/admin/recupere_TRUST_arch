@@ -1,11 +1,11 @@
 #!/bin/bash
 # Recuperation des rapports sur les machines distantes
-[ ${#TRUST_ROOT} = 0 ] && echo "Vous n'etes pas dans l'environnement TRUST: La variable TRUST_ROOT est vide." && exit
+[ ${#TRUST_ROOT} = 0 ] && echo "The TRUST_ROOT variable is not definied !" && exit
 export DIPHA_ROOT=`dirname $TRUST_ROOT`/Diphasique
 
 machine="" && [ ${#1} != 0 ] && machine=$1
-[ ${#Version} = 0 ] && echo "\$Version vide !" && exit
-[ ${v%beta} != $v ] && [ ${#DATE} = 0 ] && echo "\$DATE vide !" && exit
+[ ${#Version} = 0 ] && echo "\$Version empty !" && exit
+[ ${v%beta} != $v ] && [ ${#DATE} = 0 ] && echo "\$DATE empty !" && exit
 v=${Version#Version}
 PORTAGE=$WORKDIR/PORTAGE_$v
 rm -r -f $PORTAGE
@@ -23,8 +23,8 @@ do
    then
       CHECKOUT $TRUST_ROOT/bin/admin/liste.machines 1>/dev/null 2>&1
       adr=$HOST
-      echo $ECHO_OPTS "linux\tgit_cron\tnon\t$adr\t\t\t\t# Machine de reserve" >> $TRUST_ROOT/bin/admin/liste.machines
-      echo "$adr ajoute a $TRUST_ROOT/bin/admin/liste.machines"   
+      echo $ECHO_OPTS "linux\tgit_cron\tnon\t$adr\t\t\t\t# Reserve machine" >> $TRUST_ROOT/bin/admin/liste.machines
+      echo "$adr added to $TRUST_ROOT/bin/admin/liste.machines"   
    fi
 done
 
@@ -61,7 +61,8 @@ do
    portabilite=0;nb_machine_cible=0
    portabilite_xprepro=0;nb_machine_xprepro_cible=0
    portabilite_baltik=0;nb_machine_baltik_cible=0   
-   portabilite_atelier=0;nb_machine_atelier_cible=0
+   portabilite_atelier=0;nb_machine_atelier_cible=0 
+   portabilite_assert=0;nb_machine_assert_cible=0
    echo "
 <HTML>
 <HEAD>
@@ -85,14 +86,18 @@ do
 <TD>MPI</TD>
 <TD>Size</TD>
 <TD>Build</TD>
-<TD>Med</TD>
+<TD>Tools</TD>
 <TD>Petsc</TD>
+<TD>Med</TD>
+<TD>MedC</TD>
+<TD>lata2</TD>
+<TD>ICoCo</TD>
 <TD>Gmsh</TD>
 <TD>VisIt</TD>
-<TD>lata2dx</TD>
-<TD>Baltik</TD>
 <TD>Ate</TD>
 <TD>Xpr</TD>
+<TD>assert</TD>
+<TD>Baltik</TD>
 <TD>Tests</TD>
 <TD>CPU_3D</TD>
 </TR>" >> $NUIT
@@ -121,25 +126,27 @@ do
       TD="<TD>"`[ "$machine_cible" = 1 ] && echo "<B>"`
       FTD=`[ "$machine_cible" = 1 ] && echo "</B>"`"</TD>"
       vide="&nbsp;"
-      echo "*********************************************************************"
-      echo "* Recuperation sur $adr a `date`"
-      echo "*********************************************************************"
+      echo "************************************************************************"
+      echo "* Recovery on $adr at `date`"
+      echo "************************************************************************"
       REP_NUIT=$TRUST_ROOT/../$MODULE/NUIT && [ ! -d $REP_NUIT ] && mkdir $REP_NUIT 2>/dev/null
       # Recuperation des CR selon le mode
       if [ "`liste_machines git_cron | grep $adr`" != "" ]
       then
          cd $REP_NUIT
-	 rm -f $CR* compile_*_$HOST.log PERF_*_$HOST
+	 rm -f $CR* compile_*_$HOST.log MAKE_*_$HOST PERF_*_$HOST
 	 # Bizarre wget se base sur ~/.netrc pour se logger sur public
          wget_ ftp://$TRUST_FTP/../../$SECRET/../CR/$CR 			1>/dev/null 2>&1			
          wget_ ftp://$TRUST_FTP/../../$SECRET/../CR/compile_*_$HOST.log	1>/dev/null 2>&1
+         wget_ ftp://$TRUST_FTP/../../$SECRET/../CR/MAKE_*_$HOST		1>/dev/null 2>&1
          wget_ ftp://$TRUST_FTP/../../$SECRET/../CR/PERF_*_$HOST		1>/dev/null 2>&1	
-	 [ ! -f $CR ] && echo "$CR non recupere."
-	 COMPILE_LOG=`ls compile_*_$HOST.log 2>/dev/null` && [ "$COMPILE_LOG" = "" ] && echo "Pas de rapport de compilation recupere."
-	 PERF_LOG=`ls PERF_*_$HOST 2>/dev/null` && [ "$PERF_LOG" = "" ] && echo "Pas de rapport de performance recupere."
+	 [ ! -f $CR ] && echo "$CR not recovered KO!"
+	 COMPILE_LOG=`ls compile_*_$HOST.log 2>/dev/null` && [ "$COMPILE_LOG" = "" ] && echo "No compilation report recovered KO!"
+	 MAKE_LOG=`ls MAKE_*_$HOST 2>/dev/null`
+	 PERF_LOG=`ls PERF_*_$HOST 2>/dev/null` && [ "$PERF_LOG" = "" ] && echo "No performance report recovered KO!"
 	 
 	 # On efface les rapports sur le depot
-	 for file in $CR $COMPILE_LOG $PERF_LOG
+	 for file in $CR $COMPILE_LOG $MAKE_LOG $PERF_LOG
 	 do
 	    rm_ftp $SECRET/../CR/$file
 	 done
@@ -148,7 +155,7 @@ do
          ssh_ $log@$adr -n pwd
 	 if [ $? != 0 ]
 	 then
-	    echo "$adr non accessible..."
+	    echo "$adr not accessible..."
 	 else
             # Connection sur machine interne par ssh
 #            echo "
@@ -163,38 +170,45 @@ do
 #" > $TRUST_TMP/ssh_com
 	    log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`
 	    #sftp -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o BatchMode=yes -b $TRUST_TMP/ssh_com $log@$adr 
-            scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o BatchMode=yes $log@$adr:$CR $REP_NUIT/.
-            ssh_ $log@$adr -n "rm $CR"
-            scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o BatchMode=yes $log@$adr:$ROOT/compile_* $REP_NUIT/. 
-            ssh_ $log@$adr -n "rm $ROOT/compile_*" 
-            scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o BatchMode=yes $log@$adr:$ROOT/PERF_* $REP_NUIT/.
-            ssh_ $log@$adr -n "rm $ROOT/PERF_*" 
-	    # New, mise_a_jour_TRUST_arch is killed:
-	    ls_arch -kill $adr >> $REP_NUIT/$CR
+            scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o BatchMode=yes $log@$adr:$CR $REP_NUIT/. 2>/dev/null
+            ssh_ $log@$adr -n "rm $CR 2>/dev/null"
+            scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o BatchMode=yes $log@$adr:$ROOT/compile_* $REP_NUIT/. 2>/dev/null
+            ssh_ $log@$adr -n "rm $ROOT/compile_* 2>/dev/null" 
+            scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o BatchMode=yes $log@$adr:$ROOT/MAKE_* $REP_NUIT/. 2>/dev/null
+            ssh_ $log@$adr -n "rm $ROOT/MAKE_* 2>/dev/null" 
+            scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o BatchMode=yes $log@$adr:$ROOT/PERF_* $REP_NUIT/. 2>/dev/null
+            ssh_ $log@$adr -n "rm $ROOT/PERF_* 2>/dev/null" 
+	    # New, mise_a_jour_TRUST_arch is killed except the Sunday:
+	    if [ "`date '+%u'`" != 7 ]
+	    then
+	       echo "ls_arch -kill $adr" >> $REP_NUIT/$CR
+	       ls_arch -kill $adr >> $REP_NUIT/$CR
+	    fi
 	 fi
       fi    	
-      sleep 1	  		  
-      mac=`echo $adr | $TRUST_Awk -F"." '{print $1}'`
+      sleep 1
       PERF=`ls $REP_NUIT/PERF_*_opt_"$TRUST_ARCH"_"$HOST" 2>/dev/null`
       # Test moins severe pour recuperer un executable OK ou ecarts 
       if [ ${#PERF} != 0 ] && [ -f $PERF ]
       then
-         echo "Etude du rapport `basename $PERF` ..."
+         echo "Study of report: `basename $PERF` ..."
          if [ "`grep OK $PERF`" = "" ] && [ "`grep ecarts $PERF`" = "" ]
          then
-            echo "Pas de cas test passe. Rien n'est recupere."
+            echo "  No test cases passed. Nothing is recovered !"
+            echo "Empty PERF report of $MODULE on $HOST KO!"
+            [ $recupere_exec = 1 ] && [ ${#binaire} = 1 ] && echo "NOT portage from $adr"
          else
-            echo "Nouvel executable pour $MODULE teste avec succes pour $TRUST_ARCH sur $HOST !"
+            echo "  New executable for $MODULE successfully tested with $TRUST_ARCH on $HOST !"
             if [ $recupere_exec = 0 ] || [ ${#binaire} = 0 ]
             then
-               echo "Mais libs et executables non recuperes..."
+               echo "  But libs and executables not recovered..."
             else
-               echo "Recuperation des libs et executables..."
+               echo "  Recovery of libs and executables..."
 	       (cd $exec;rm -f *)
                ssh_ $log@$adr -n pwd
 	       if [ $? != 0 ]
 	       then
-	          echo "$adr non accessible..."
+	          echo "NOT portage: $adr not accessible..."
 	       else	       
                   # Connection interne par ssh
 #                  echo "
@@ -213,12 +227,13 @@ do
 	             name_binary=`ls $exec/TRUST_mpi* 2>/dev/null`
 		     mv $name_binary $name_binary"_"$v"_build_"$DATE
 	          fi
+	          echo "OK portage from $adr to $exec"
 	       fi
 	    fi
 	 fi
       else
-         echo "Pas de rapport PERF de $MODULE sur $HOST KO!"
-	 ls $REP_NUIT/PERF_*_opt_"$TRUST_ARCH"_"$HOST"
+         echo "No PERF report of $MODULE on $HOST KO!"
+	 ls $REP_NUIT/PERF_*_opt_"$TRUST_ARCH"_"$HOST" 2>/dev/null
       fi
       #############################
       # Machine eteinte (pas de CR)
@@ -227,17 +242,17 @@ do
       if [ ! -f $REP_NUIT/$CR ]
       then
          run=0
-         echo "Le `date`, la machine $HOST est eteinte ou inaccessible, ou sa crontab ne fonctionne pas ou n'est pas activee." > $REP_NUIT/$CR
+         echo "The `date`, the $HOST machine if off or not accessible, or its crontab does not run or not actived KO!" > $REP_NUIT/$CR
       elif [ ! -s $REP_NUIT/$CR ]
       then
          run=0
-         echo "La mise a jour n'a pas demarre sur $HOST" > $REP_NUIT/$CR
+         echo "The update does not start on $HOST KO!" > $REP_NUIT/$CR
       fi
       cd $TRUST_ROOT/../$MODULE
       NUIT2=$NUIT
       file=""
       # On ne prend que les compile opt
-      logs=`cd $REP_NUIT;ls -rt compile_*_opt_$TRUST_ARCH"_"$HOST.log 2>/dev/null | grep -v _semi_opt | grep -v _avx | grep -v gcov | grep -v _pg_`
+      logs=`cd $REP_NUIT;ls -rt compile_*_opt_$TRUST_ARCH"_"$HOST.log 2>/dev/null | grep -v _semi_opt | grep -v _avx | grep -v _gcov | grep -v _prof | grep -v _debug`
       for file in $logs
       do
 	#HOST=`echo ${file%.log} | $TRUST_Awk -F"_" '{print $NF}'`
@@ -251,14 +266,16 @@ do
 	PERF=$REP_NUIT/PERF_$NOM
 	EXEC=${NOM%_$HOST}
 	EXEC=${EXEC%_$arch}
-	host="";os="";rel="";mod="";taille="";type="";cpu=""
+	host="";os="";rel="";mod="";taille="";cpu=""
 	BLANC="BGCOLOR=#FEFEFE";ROUGE="BGCOLOR=#C42111";VERT="BGCOLOR=3D\"#E47833\""
 	comp="Echec";COL1=$ROUGE
+	[ "`grep BUILD_EXEC=OK $CR`" != "" ] && comp="Succes" && COL1=$VERT
+	TOOLS="<TD $ROUGE>Echec</TD>" && [ "`grep BUILD_TOOLS=OK $CR`" != "" ] && TOOLS="<TD $VERT>Succes</TD>"
 	COL2="";taux=$vide
-	COL3="";ptaux=""	
+	ptaux=""	
 	if [ ${#PERF} != 0 ] && [ -f $PERF ]
 	then
-	   host=`	$TRUST_Awk -F"=" '/hostname=/ {print $2}' $PERF` && [ $host != $HOST ] && echo "Probleme : $host != $HOST"
+	   host=`	$TRUST_Awk -F"=" '/hostname=/ {print $2}' $PERF` && [ $host != $HOST ] && echo "Problem : $host != $HOST"
 	   os=`		$TRUST_Awk -F"=" '/os=/       {print $2}' $PERF`
 	   rel=`	$TRUST_Awk -F"=" '/release=/  {print $2}' $PERF`
 	   mod=`	$TRUST_Awk -F"=" '/model=/    {print $2}' $PERF`
@@ -268,13 +285,17 @@ do
 	   freq=`	$TRUST_Awk -F"=" '/freq=/     {print $2}' $PERF`
 	   
 	   TRUST_CC=`echo $TRUST_ARCH_CC | $TRUST_Awk -F'_' '{print $NF}'` && CC_PERF=`cat $PERF | $TRUST_Awk '/CC / {print $2" "$3}'` && [ "$CC_PERF" != "" ] && TRUST_CC=$CC_PERF
-	   taille=`cat $PERF | $TRUST_Awk '/taille/ {print $2"Mo"}'`
-	   [ ${#taille} != 0 ] && comp="Succes" && COL1=$VERT && type=`cat $PERF | $TRUST_Awk '/taille/ {print $3}'`
+	   taille=`cat $PERF | $TRUST_Awk '/sizeMo/ {print $2"Mo"}'`
 	   cpu=`cat $PERF | grep "Mo|" | $TRUST_Awk -F"|" '/cpu_3D / && !/PAR_/ && !/NP/{print $4}'`
 	   # Taux sequentiel:
 	   staux=`cat $PERF | $TRUST_Awk '/succes/ && (NF==2) {print $2;exit}'`
 	   # Taux parallele:
-	   [ "$MPI" != "" ] && ptaux=`cat $PERF | $TRUST_Awk '/succes/ && (NF==2) {t=$2} END {print t}'`
+	   if [ "$MPI" != "" ]
+	   then
+	      ptaux=`cat $PERF | $TRUST_Awk '/succes/ && (NF==2) {t=$2} END {print t}'`
+	   else
+	      ptaux="0/0"
+	   fi
 	   # Taux total
 	   if [ "$staux" != "" ] && [ "$ptaux" != "" ] && [ "$ptaux" != 0 ]
 	   then
@@ -290,45 +311,58 @@ do
 	   then
 	      [ "$taux" != "$vide" ] && let nb_machine_cible=$nb_machine_cible+1
 	      portabilite=`echo $ECHO_OPTS "scale=3\n$portabilite+$pourcent" | bc -l`
-	      echo "provisoire "$portabilite" "$pourcent" "$nb_machine_cible" "$file
+	      echo " step $MODULE: total pourc nb file "$portabilite" "$pourcent" "$nb_machine_cible" "$PERF
 	   fi
 	   # Est ce que tous les tests sont passes en version optimisee simple ?
 	   [ ${#comm} = 0 ] && [ ${#opt} != 0 ] && [ $opt = opt ] && [ ${#COL2} != 0 ] && [ $COL2 != $VERT ] && label_teste=0 
 	fi
 	STRICT="<TD`[ $comp = Succes ] && echo " $ROUGE"`>KO</TD>"
-	COOL="<TD>KO</TD>"
-	PETSC=$COOL 	&& [ "`grep PETSC=OK $CR`" != "" ] 	&& PETSC="<TD $VERT>OK</TD>"
-	GMSH=$COOL 	&& [ "`grep Gmsh:OK $CR`" != "" ] 	&& GMSH="<TD $VERT>OK</TD>"
-	VISIT=$STRICT 	&& [ "`grep VisIt:OK $CR`" != "" ] 	&& RUN=`$TRUST_Awk -F= '/VisIt=/ {print $2}' $CR` && VISIT="<TD `[ $RUN = PAR ] && echo $VERT`>$RUN</TD>"
-	LATA2DX=$STRICT && [ "`grep lata2dx:OK $CR`" != "" ] 	&& LATA2DX="<TD $VERT>OK</TD>"
-	MED=$STRICT 	&& [ "`grep MED=OK $CR`" != "" ] 	&& MED="<TD $VERT>OK</TD>"
-	BALTIK=$STRICT 	&& [ "`grep BALTIK=OK $CR`" != "" ] 	&& BALTIK="<TD $VERT>OK</TD>" 	&& [ "$machine_cible" = 1 ] && let portabilite_baltik=$portabilite_baltik+1
-	ATELIER=$STRICT && [ "`grep ATELIER=OK $CR`" != "" ] 	&& ATELIER="<TD $VERT>OK</TD>"	&& [ "$machine_cible" = 1 ] && let portabilite_atelier=$portabilite_atelier+1
+	COOL="<TD $ROUGE>KO</TD>"
+	PETSC=$COOL 	 && [ "`grep PETSC=OK $CR`" != "" ] 	  && PETSC="<TD $VERT>OK</TD>"
+	MED=$COOL 	 && [ "`grep MED=OK $CR`" != "" ] 	  && MED="<TD $VERT>OK</TD>"
+	MEDCOUPL=$COOL   && [ "`grep MEDCOUPLING=OK $CR`" != "" ] && MEDCOUPL="<TD $VERT>OK</TD>"
+	LATA2DX=$STRICT  && [ "`grep lata2dx:OK $CR`" != "" ] 	  && LATA2DX="<TD $VERT>OK</TD>"
+	ICOCO=$COOL 	 && [ "`grep ICoCo:OK $CR`" != "" ] 	  && ICOCO="<TD $VERT>OK</TD>"
+	GMSH=$COOL 	 && [ "`grep Gmsh:OK $CR`" != "" ] 	  && GMSH="<TD $VERT>OK</TD>"
+	VISIT=$COOL 	 && [ "`grep VisIt:OK $CR`" != "" ] 	  && RUN=`$TRUST_Awk -F= '/VisIt=/ {print $2}' $CR` && VISIT="<TD `[ $RUN = PAR ] && echo $VERT`>$RUN</TD>"
+	ATELIER=$STRICT  && [ "`grep ATELIER=OK $CR`" != "" ] 	  && ATELIER="<TD $VERT>OK</TD>" && [ "$machine_cible" = 1 ] && let portabilite_atelier=$portabilite_atelier+1
+	ASSERT=$STRICT   && [ "`grep ASSERT=OK $CR`" != "" ] 	  && ASSERT="<TD $VERT>OK</TD>"	 && [ "$machine_cible" = 1 ] && let portabilite_assert=$portabilite_assert+1
+	BALTIK=$STRICT 	 && [ "`grep BALTIK=OK $CR`" != "" ] 	  && BALTIK="<TD $VERT>OK</TD>"  && [ "$machine_cible" = 1 ] && let portabilite_baltik=$portabilite_baltik+1
 	# Si certains elements sont disabled au configure:
-	NOT="<TD $VERT>NOT</TD>"
-	[ "`grep 'Disabling MED' $CR`" != "" ] 		&& [ "`grep MED=KO $CR`" != "" ] 	&& MED=$NOT 	&& GMSH=$NOT	
-	[ "`grep 'Disabling PETSC' $CR`" != "" ] 	&& [ "`grep PETSC=KO $CR`" != "" ] 	&& PETSC=$NOT
-	[ "`grep 'Disabling Outils/VisIt' $CR`" != "" ] && [ "`grep VisIt:OK $CR`" = "" ] 	&& VISIT=$NOT
+	NOT="<TD $BLANC>NOT</TD>"
+	[ "`grep 'Disabling PETSC' $CR`" != "" ] 	&& [ "`grep PETSC=KO $CR`" != "" ] 	 && PETSC=$NOT
+	[ "`grep 'Disabling MED' $CR`" != "" ] 		&& [ "`grep MED=KO $CR`" != "" ] 	 && MED=$NOT 	  && GMSH=$NOT	 && ICOCO=$NOT
+	[ "`grep 'Disabling MEDCOUPLING' $CR`" != "" ]  && [ "`grep MEDCOUPLING=KO $CR`" != "" ] && MEDCOUPL=$NOT && ICOCO=$NOT
+	[ "`grep 'Disabling MPI' $CR`" != "" ] 		&& [ "`grep ICoCo:OK $CR`" = "" ] 	 && ICOCO=$NOT	
+	[ "`grep 'Disabling GMSH' $CR`" != "" ]         && [ "`grep Gmsh:OK $CR`" = "" ] 	 && GMSH=$NOT
+	[ "`grep 'Disabling VISIT' $CR`" != "" ]        && [ "`grep VisIt:OK $CR`" = "" ] 	 && VISIT=$NOT
 	# On compte le nombre de machines cibles selon le type de tests
 	if [ "$machine_cible" = 1 ]
 	then
 	   [ "`grep BALTIK= $CR`" != "" ]  && let nb_machine_baltik_cible=$nb_machine_baltik_cible+1
-	   echo "provisoire baltik  "$portabilite_baltik" "$nb_machine_baltik_cible" "$file
+	   echo " step Baltik: total nb file "$portabilite_baltik" "$nb_machine_baltik_cible" "$CR
 	   [ "`grep ATELIER= $CR`" != "" ] && let nb_machine_atelier_cible=$nb_machine_atelier_cible+1
-	   echo "provisoire Atelier "$portabilite_atelier" "$nb_machine_atelier_cible" "$file
+	   echo " step workshop: total nb file "$portabilite_atelier" "$nb_machine_atelier_cible" "$CR
+	   [ "`grep ASSERT= $CR`" != "" ] && let nb_machine_assert_cible=$nb_machine_assert_cible+1
+	   echo " step assert: total nb file "$portabilite_assert" "$nb_machine_assert_cible" "$CR
 	fi
-	FIN="`$TRUST_Awk -v rouge=$ROUGE 'BEGIN {date="<TD>CR vide</TD>"} /Debut de la mise a jour/ {date="<TD "rouge">Bloque?</TD>"} /Fin du script/ {date="<TD>"$(NF-1)"</TD>"} END {print date}' $CR`"	
+	FIN="`$TRUST_Awk -v rouge=$ROUGE 'BEGIN {date="<TD>empty CR</TD>"} /Start the update/ {date="<TD "rouge">killed?</TD>"} /End of update script/ {date="<TD>"$NF"</TD>"} END {print date}' $CR`"	
 	tests_html=$TRUST_ROOT/../$MODULE/exec/.tests_$EXEC.html
 	[ $HOST != $TRUST_HOST_ADMIN ] && tests_html=$PERF
-	TAUX_XPREPRO=`cat $PERF | awk 'BEGIN {s=0;r=0} /Xprepro:/ {r++} /Xprepro:/ && /OK/ {s++} END {print s"/"r}'`
-	COULEUR=$ROUGE && [ "`echo $TAUX_XPREPRO | bc`" = 1 ] && COULEUR=$VERT
+	TAUX_XPREPRO=`cat $CR | awk 'BEGIN {s=0;r=0} /Xprepro:/ {r++} /Xprepro:/ && /OK/ {s++} END {print s"/"r}'`
+	if [ "`grep Xprepro: $CR`" != "" ]
+	then
+	   COULEUR=$ROUGE && [ "`echo $TAUX_XPREPRO | bc`" = 1 ] && COULEUR=$VERT
+	else
+	   COULEUR=$ROUGE
+	fi
 	XPREPRO="<TD $COULEUR>$TAUX_XPREPRO</TD>"
-	if [ "$machine_cible" = 1 ] && [ "`grep Xprepro: $PERF`" != "" ]
+	if [ "$machine_cible" = 1 ] && [ "`grep Xprepro: $CR`" != "" ]
 	then
 	   let nb_machine_xprepro_cible=$nb_machine_xprepro_cible+1
-	   pourcent=`cat $PERF | awk 'BEGIN {s=0;n=0} /Xprepro:/ {n++} /Xprepro:/ && /OK/ {s++} END {if (n>0) print s/n;else print s}'`
+	   pourcent=`cat $CR | awk 'BEGIN {s=0;n=0} /Xprepro:/ {n++} /Xprepro:/ && /OK/ {s++} END {if (n>0) print s/n;else print s}'`
 	   portabilite_xprepro=`echo $ECHO_OPTS "scale=3\n$portabilite_xprepro+$pourcent" | bc -l`
-	   echo "provisoire Xprepro "$portabilite_xprepro" "$pourcent" "$nb_machine_xprepro_cible" "$file
+	   echo " step Xprepro: total pourc nb file "$portabilite_xprepro" "$pourcent" "$nb_machine_xprepro_cible" "$CR
 	fi
 	CR=`basename $CR`
         echo "
@@ -345,14 +379,18 @@ $TD$TRUST_CC$FTD
 $TD$MPI$FTD
 $TD$taille$FTD
 <TD $COL1><A HREF="compile_$NOM.log">$comp</A>$FTD
-$MED
+$TOOLS
 $PETSC
+$MED
+$MEDCOUPL
+$LATA2DX
+$ICOCO
 $GMSH
 $VISIT
-$LATA2DX
-$BALTIK
 $ATELIER
 $XPREPRO
+$ASSERT
+$BALTIK
 <TD $COL2><A HREF="`basename $tests_html`">$taux</A>$FTD
 $TD$cpu$FTD
 </TR>" >> $NUIT2
@@ -366,6 +404,13 @@ $TD$cpu$FTD
         echo "
 <TR>
 $TD_CR<A HREF="$CR">$HOST</A>$FTD
+<TD>$vide</TD>
+<TD>$vide</TD>
+<TD>$vide</TD>
+<TD>$vide</TD>
+<TD>$vide</TD>
+<TD>$vide</TD>
+<TD>$vide</TD>
 <TD>$vide</TD>
 <TD>$vide</TD>
 <TD>$vide</TD>
@@ -398,20 +443,28 @@ $TD_CR<A HREF="$CR">$HOST</A>$FTD
    ###############################################
    # Calcul de la portabilite du code et affichage
    ###############################################
-   [ "$nb_machine_xprepro_cible" != 0 ] && portabilite_xprepro=`echo $ECHO_OPTS "scale=3\n$portabilite_xprepro/$nb_machine_xprepro_cible" | bc -l`
    [ "$nb_machine_atelier_cible" != 0 ] && portabilite_atelier=`echo $ECHO_OPTS "scale=3\n$portabilite_atelier/$nb_machine_atelier_cible" | bc -l`
+   [ "$nb_machine_xprepro_cible" != 0 ] && portabilite_xprepro=`echo $ECHO_OPTS "scale=3\n$portabilite_xprepro/$nb_machine_xprepro_cible" | bc -l`
    [ "$nb_machine_baltik_cible"  != 0 ] && portabilite_baltik=` echo $ECHO_OPTS "scale=3\n$portabilite_baltik/$nb_machine_baltik_cible" | bc -l`
+   [ "$nb_machine_assert_cible"  != 0 ] && portabilite_assert=`echo $ECHO_OPTS "scale=3\n$portabilite_assert/$nb_machine_assert_cible" | bc -l`
    [ "$nb_machine_cible" != 0 ]         && portabilite=`echo $ECHO_OPTS "scale=3\n$portabilite/$nb_machine_cible" | bc -l`
    
    #limite=`echo $ECHO_OPTS "scale=3\n1-1/2/$nb_machine_cible" | bc -l`
    limite=0.99
-   mes=`echo $portabilite | $TRUST_Awk -v limite=$limite '{if ($1>limite) print "Version portable qui peut etre livree si elle est stable."}'`
+   mes=`echo $portabilite | $TRUST_Awk -v limite=$limite '{if ($1>limite) print "Portable version that can be livery if it is stable"}'`
 
-   echo "$portabilite : Portabilite de $MODULE (>$limite). $mes<BR>" >> $NUIT2
-   echo "$portabilite_atelier : Compilation atelier de $MODULE<BR>" >> $NUIT2
-   echo "$portabilite_xprepro : Portabilite de Xprepro avec $MODULE<BR>" >> $NUIT2
-   echo "$portabilite_baltik : Portabilite de Baltik avec $MODULE<BR>" >> $NUIT2
+   echo "Portability Components for $TRUST_VERSION version:<BR>" >> $NUIT2
+   echo "<A HREF="nuit_ModeleCoeur.html">MC2</A> : ModeleCoeur baltik compilation portability<BR>" >> $NUIT2
+   echo "<A HREF="nuit_ICoCo.html">ICoCo</A> : ICoCo baltik compilation portability<BR>" >> $NUIT2
+   echo "<A HREF="nuit_equation_convection_diffusion.html">Tuto</A> : equation_convection_diffusion baltik compilation portability<BR>" >> $NUIT2
+   echo "Release criteria of the $TRUST_VERSION version:<BR>" >> $NUIT2
+   echo "$portabilite : $MODULE portability (>$limite) $mes<BR>" >> $NUIT2
+   echo "$portabilite_atelier : $MODULE workshop compilation<BR>" >> $NUIT2
+   echo "$portabilite_xprepro : Xprepro portability with $MODULE<BR>" >> $NUIT2
+   echo "$portabilite_baltik : Baltik portability with $MODULE<BR>" >> $NUIT2
+   echo "$portabilite_assert : Compilation assert test<BR>" >> $NUIT2
 done
+echo "*********************************************************************"
 
 echo "</CENTER>
 </BODY>
@@ -420,14 +473,15 @@ echo "</CENTER>
 # Copie sur $TRUST_FTP #
 #########################
 [ "$1" != "" ] && exit
-. connect_ftp
-cd $TRUST_ROOT/NUIT
-mkdir_ftp $SECRET/NUIT
-cp_ftp $NUIT $SECRET/NUIT
-cd $TRUST_ROOT/exec
-cp_ftp .tests* $SECRET/NUIT
-cd $REP_NUIT
-cp_ftp compile_* PERF_* CR_* $SECRET/NUIT
+# Deplacer dans envoie_ftp_cea_fr pour ne pas bloquer lance_test_nuit
+#. connect_ftp
+#cd $TRUST_ROOT/NUIT
+#cp_ftp $NUIT $SECRET/NUIT
+#cd $TRUST_ROOT/exec
+#cp_ftp .tests* $SECRET/NUIT
+#cd $TRUST_ROOT/NUIT
+#cp_ftp compile_* PERF_* CR_* $SECRET/NUIT
+#
 NUIT=ftp://$TRUST_FTP/$SECRET/NUIT/`basename $NUIT`
 cd $TRUST_ROOT 
 ##############################

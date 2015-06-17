@@ -68,6 +68,13 @@ const ArrOfFloat& ArrOfFloat::operator=(const ArrOfFloat& array)
   return *this;
 }
 
+const ArrOfFloat& ArrOfFloat::operator=(float x)
+{
+  for (int i = 0; i < size_; i++)
+    data_[i] = x;
+  return *this;
+}
+
 // Description: Destructeur
 ArrOfFloat::~ArrOfFloat()
 {
@@ -246,7 +253,7 @@ ArrOfFloat& ArrOfFloat::inject_array(const ArrOfFloat& source,
 //     muliplie toutes les cases par dy
 // Retour: ArrOfFloat &
 //    Signification: *this
-ArrOfFloat& ArrOfFloat::operator*= (const float dy)
+const ArrOfFloat& ArrOfFloat::operator*= (const float dy)
 {
   float * data = addr();
   const int n = size_array();
@@ -260,7 +267,7 @@ ArrOfFloat& ArrOfFloat::operator*= (const float dy)
 //     divise toutes les cases par dy
 // Retour: ArrOfFloat &
 //    Signification: *this
-ArrOfFloat& ArrOfFloat::operator/= (const float dy)
+const ArrOfFloat& ArrOfFloat::operator/= (const float dy)
 {
   // En theorie: les deux lignes suivantes sont plus efficaces, mais
   //  cela produit des differences sur certains cas tests

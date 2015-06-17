@@ -228,7 +228,7 @@ do
 	 # All test cases
 	 option=0 
       # elif [ "`ls $TRUST_TESTS/*/$1/$1.lml.gz 2>/dev/null`" != "" ]
-      elif [ "`find $TRUST_TESTS/ -follow -name $1.lml.gz -print 2>/dev/null`" != "" ]
+      elif [ "`find $TRUST_TESTS/ -follow -name $1.lml.gz -print 2>/dev/null | sort`" != "" ]
       then
 	 # Single test case
 	 option=$1   
@@ -241,13 +241,16 @@ do
       exit $?
    elif [ "$1" = "-clean" ]
    then
-      for ext in lata son out lml dt_ev TU log stop err xyz sauv dump face out_err
+      for ext in lata son out lml dt_ev TU log stop err xyz sauv dump face out_err plan
       do 
 	 echo "rm *.$ext files."
 	 rm -f *.$ext
       done
-      echo "rm *.lata.* core.* err.* out.*"
-      rm -f *.lata.* core.* err.* out.*
+      # echo "rm *.lata.* core.* err.* out.*"
+      # rm -f *.lata.* core.* err.* out.*
+	  # A priori c est un peu fort : err.* out.* ne sont pas crees au run. 
+      echo "rm *.lata.* core.* convert_jdd"
+      rm -f *.lata.* core.* convert_jdd
       exit 0
    else
       # Unknown option
@@ -265,7 +268,16 @@ NOM=`basename $ici` && [ ${#1} != 0 ] && NOM=$1 && NOM=${NOM%.data} && shift
 ###############
 # CPU numbers #
 ###############
-export NB_PROCS=1 && [ ${#1} != 0 ] && [ ${1#-} = $1 ] && NB_PROCS=$1 && USE_MPIRUN=1 && shift
+# si $1 non vide et pas de tiret au debut
+#export NB_PROCS=1 && [ ${#1} != 0 ] && [ ${1#-} = $1 ] && NB_PROCS=$1 && USE_MPIRUN=1 && shift
+export NB_PROCS=1 
+[ $1 -eq 0 ] 2>/dev/null
+code_retour=$?
+# verifie que $1 est une valeur numerique
+if [ $code_retour -eq 0 -o $code_retour -eq 1 ]
+then 
+  [ ${#1} != 0 ] && [ ${1#-} = $1 ] && export NB_PROCS=$1 && USE_MPIRUN=1 && shift
+fi
 
 #################
 # PETSc options #
@@ -345,9 +357,9 @@ then
     fi
     if [ "$gdb" != "" ] || [ "$VALGRIND_GDB" = "1" ]
     then
-       monodir=$TRUST_ROOT/`ls -rt $TRUST_ROOT | grep MonoDir | tail -1`
+       MonoDir=$TRUST_ROOT/`ls -rt $TRUST_ROOT | grep MonoDir | tail -1`
        XTERM="/usr/bin/xterm -e"
-       ATTACH="--extra-debuginfo-path=$monodir/src --db-attach=yes --db-command=\'/usr/bin/gdb --readnow --directory $monodir/src --directory $monodir/include -nw %f %p\'"
+       ATTACH="--extra-debuginfo-path=$MonoDir/src --db-attach=yes --db-command=\'/usr/bin/gdb --readnow --directory $MonoDir/src --directory $MonoDir/include -nw %f %p\'"
        gdb=""
        log_file=""
     fi
@@ -769,8 +781,7 @@ then
 elif [ $HOST = occigen ]
 then
    soumission=2 && [ "$prod" = 1 ] && soumission=1
-   cpu=120  # 5 days
-   cpu=24   # 1 day
+   cpu=24:00:00 # 1 day
    # core_per_task=1
    ram=120GB    # large memory nodes with 128Go of RAM
    ram=60GB     # small memory nodes with  64Go of RAM
@@ -925,6 +936,7 @@ then
 		[ "$core_per_task" != "" ] && echo "#SBATCH -c $core_per_task"	>> $sub_file	# Number of cores per task	
 		[ "$qos" != test ] && echo "#SBATCH --exclusive"	>> $sub_file	# Exclusive use of nodes during production run	
 		[ "$ram" != "" ] && echo "#SBATCH --mem=$ram"           >> $sub_file    # Real memory required per node in MegaBytes
+		echo "cd \$SLURM_SUBMIT_DIR" >> $sub_file # Submit directory for reprise_auto script
 		;;
    	POE)	echo "#!/bin/bash" 					>> $sub_file
 		echo "#@ job_name = $NOM"				>> $sub_file

@@ -1,0 +1,10 @@
+Nom ok
+
+Lire_fichier ok is_ok
+ecrire ok
+system "mv Post1.lml CasCouplage_jdd1.lml"
+system "ln -sf CasCouplage_jdd1.lml CasCouplage_jdd2.lml"
+system "ln -sf CasCouplage_jdd1.lml CasCouplage_jdd3.lml"
+system "ln -sf CasCouplage_jdd1.lml CasCouplage_jdd4.lml"
+system "ln -sf CasCouplage_jdd1.lml CasCouplage_jdd5.lml"
+system "ln -sf CasCouplage_jdd1.lml CasCouplage_jdd6.lml"

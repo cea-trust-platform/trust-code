@@ -153,9 +153,13 @@ Entree& Sous_Zone::readOn(Entree& is)
   int rang = les_mots.search(motlu);
   if (rang==-1)
     {
-      Cerr << motlu << " is not understood " << finl;
-      Cerr << "The understood keywords are " << les_mots;
-      exit();
+      int ok=lire_motcle_non_standard(motlu,is);
+      if (!ok)
+	{
+	  Cerr << motlu << " is not understood " << finl;
+	  Cerr << "The understood keywords are " << les_mots;
+	  exit();
+	}
     }
   if ((rang == 0) && (Process::nproc()>1))
     {
@@ -918,6 +922,9 @@ Entree& Sous_Zone::readOn(Entree& is)
         }
         break;
       }
+     case -1:
+     // traite avant
+      break;    
     default :
       {
         Cerr << "TRUST error" << finl;
@@ -969,6 +976,14 @@ Entree& Sous_Zone::readOn(Entree& is)
     }
   return is;
 }
+
+int Sous_Zone::lire_motcle_non_standard(const Motcle& motlu , Entree& is)
+{
+  return 0;
+}
+  
+  
+
 
 
 // Description:

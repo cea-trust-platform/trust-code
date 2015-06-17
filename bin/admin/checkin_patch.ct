@@ -54,8 +54,8 @@ cd \$TRUST_ROOT
 git pull origin $patch_branch
 Then rebuild the version with:
 ./configure
-source env/Init_TRUST
-monodir
+source env/env_TRUST.sh
+make
 
 -For users with a downloaded TRUST version, you can download, apply the patch and rebuild
 with the single command:

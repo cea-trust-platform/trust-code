@@ -138,7 +138,7 @@ void Perte_Charge_Singuliere_VDF_Face::contribuer_a_avec(const DoubleTab&, Matri
 
 
 }
-DoubleTab& Perte_Charge_Singuliere_VDF_Face::ajouter(DoubleTab& resu) const
+DoubleTab& Perte_Charge_Singuliere_VDF_Face::ajouter_(const DoubleTab& inco,DoubleTab& resu) const
 {
   const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
   const DoubleVect& volumes_entrelaces = zone_VDF.volumes_entrelaces();
@@ -168,7 +168,7 @@ DoubleTab& Perte_Charge_Singuliere_VDF_Face::ajouter(DoubleTab& resu) const
     for (int i=0; i<nb_faces; i++)
       {
         numfa = num_faces[i];
-        U = vit[numfa];
+        U = inco[numfa]*porosite_surf[numfa];
 
         Ud = vit[numfa]*porosite_surf[numfa];
 
@@ -177,15 +177,11 @@ DoubleTab& Perte_Charge_Singuliere_VDF_Face::ajouter(DoubleTab& resu) const
         else
           Ck = -0.5*K()/la_zone_VDF->dist_norm(numfa);
 
-        resu[numfa] += Ck*Ud*dabs(Ud)*volumes_entrelaces[numfa]*porosite_surf[numfa];
+        resu[numfa] += Ck*U*dabs(Ud)*volumes_entrelaces[numfa]*porosite_surf[numfa];
 
       }
   return resu;
 }
 
-DoubleTab& Perte_Charge_Singuliere_VDF_Face::calculer(DoubleTab& resu) const
-{
-  resu = 0;
-  return ajouter(resu);
-}
+
 

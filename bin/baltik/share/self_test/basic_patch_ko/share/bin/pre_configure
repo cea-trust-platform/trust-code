@@ -1,0 +1,3 @@
+mkdir -p src/patch/
+cp ../basic_ok/src/common/Ecrire_fic_lml.cpp src/patch/ 
+cp ../basic_ok/src/common/Ecrire_fic_lml.cpp src/

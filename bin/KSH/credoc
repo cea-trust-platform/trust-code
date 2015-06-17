@@ -4,7 +4,7 @@
 ##################################################################
 doxygen()
 {
-   rm -r -f $TRUST_ROOT/doc/doxygen.*
+   rm -r -f $TRUST_ROOT/doc/doxygen*.*
    make_Doxyfile
    echo "Fin Doxygen a `date '+%H:%M:%S'`";
    # Verification des includes avec Doxygen (fait uniquement le vendredi soir)
@@ -117,10 +117,10 @@ then
       if [ ${#fichier} != 0 ] && [ $fichier -nt $pdf_livre ]
       then
          echo "$fichier found ..." 
-	 $ooffice -display localhost:20.0 --headless --convert-to pdf $fichier
+	 $ooffice -display :0 --headless --convert-to pdf $fichier
 	 if [ ! -f $pdf ]
 	 then
-	    echo "Fail to create the $pdf file from $fichier"
+	    echo "KO: Fail to create the $pdf file from $fichier"
 	    echo "See `pwd`/ooffice.log"
 	 else
 	    if [ ! -f $pdf_livre ]
@@ -133,14 +133,14 @@ then
                CHECKOUT $pdf_livre 1>/dev/null 2>&1
                mv -f $pdf $pdf_livre     
             fi
-	    echo "$pdf_livre updated."
+	    echo "OK: $pdf_livre updated."
 	 fi
       fi
    done
    cd -
    rm -r -f $tmp
 fi
-echo "End Pdf at `date '+%H:%M:%S'`"
+echo "End pdf at `date '+%H:%M:%S'`"
 }
 
 pdf_par_xdata()
@@ -152,16 +152,17 @@ pdf_par_xdata()
    cd $TRUST_ROOT/Outils/TRIOXDATA
    . ./XDATA.sh
    cd XTriou
+   echo "See $TRUST_ROOT/Outils/TRIOXDATA/pdf_par_xdata.log"
    # Nettoyage
-   make clean
+   make clean > pdf_par_xdata.log
    # Creation de triou.py
-   make
+   make >> pdf_par_xdata.log
    # Verification sur 5 cas tests
-   make test
+   make test >> pdf_par_xdata.log
    # Verification sur tous les cas tests
-   # make test_ref
+   # make test_ref >> pdf_par_xdata.log
    # Creation de la doc PDF et LATEX
-   make doc
+   make doc >> pdf_par_xdata.log
    cd -
 }
 
@@ -196,5 +197,6 @@ else
    # On lance en batch car tests est lent (a optimiser)
    tests &
 fi
+echo "####################################################"
 echo "Fin credoc a `date '+%H:%M:%S'`"
 

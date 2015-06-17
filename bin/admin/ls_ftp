@@ -1,11 +1,11 @@
 #!/bin/bash
 # Liste le repertoire passe en argument
 p="" && [ "`ftp -help 2>&1 | grep '\-p'`" != "" ] && p=p # Passive mode utile sur les machines virtuelles
-
+(
 cat << ! | ftp -iv$p 2>&1 | grep rw
 open $TRUST_FTP
-cd ../..
-epsv
-ls $1
+ls "/"$1
 !
+) &
+$TRUST_ROOT/bin/KSH/wait_for $! 600 || (echo "Error: ls_ftp killed"; exit -1)
 

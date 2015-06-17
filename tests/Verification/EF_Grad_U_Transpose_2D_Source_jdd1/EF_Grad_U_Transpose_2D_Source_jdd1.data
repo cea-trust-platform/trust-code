@@ -1,0 +1,112 @@
+# Hydraulique 2D pour tester le grad(u)^T du tenseur visqueux #
+# PARALLEL OK #
+dimension 2
+
+Pb_hydraulique pb
+
+Domaine dom
+# DEBUT MAILLAGE #
+Mailler dom
+{
+        Pave Cavite
+        {
+                Origine -1. -1.
+                Nombre_de_noeuds 31 31
+                Longueurs 2. 2.
+        }
+        {
+                Bord Gauche   X = -1.  -1. <= Y <= 1.
+                Bord Droit    X =  1.  -1. <= Y <= 1.
+                Bord Bas      Y = -1.  -1. <= X <= 1.
+                Bord Haut     Y =  1.  -1. <= X <= 1.
+        }
+}
+# FIN MAILLAGE #
+# DEBUT DECOUPAGE
+Decouper dom
+{
+	Partitionneur tranche { tranches 2 1 }
+	
+	Larg_joint 1
+	Nom_Zones DOM
+}
+Fin
+FIN DECOUPAGE #
+
+# DEBUT LECTURE
+Scatter DOM.Zones dom
+FIN LECTURE #
+
+EF dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0
+	nb_pas_dt_max 3
+	tmax 2.5
+	dt_min 1.e-7
+	dt_max 5.e-3
+	dt_impr 5.e-1
+	dt_sauv 1
+	seuil_statio 1.e-8
+	seuil_statio 8.7e-06
+}
+
+Fluide_Incompressible eau
+Lire eau
+{
+	mu Champ_Fonc_XYZ dom 1 x+y
+	rho Champ_Uniforme 1 2
+}
+
+Associer pb dom
+Associer pb sch
+Associer pb eau
+
+Discretiser pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+                methode_calcul_pression_initiale avec_sources_et_operateurs
+		solveur_pression GCP { 
+			precond ssor { omega 1.5 } 
+			seuil 1.e-8
+		}
+		
+		convection { negligeable }
+		diffusion {  }
+		sources { source_qdm Champ_Fonc_XYZ dom 2 -1. 1. }
+		conditions_initiales {
+			vitesse Champ_Fonc_XYZ dom 2 x -y
+			}
+		conditions_limites {
+			Gauche frontiere_ouverte_vitesse_imposee 
+			     Champ_Front_Fonc_tXYZ 2 x -y
+			Droit frontiere_ouverte_vitesse_imposee 
+			     Champ_Front_Fonc_tXYZ 2 x -y
+			Bas frontiere_ouverte_vitesse_imposee 
+			     Champ_Front_Fonc_tXYZ 2 x -y
+			Haut frontiere_ouverte_vitesse_imposee 
+			     Champ_Front_Fonc_tXYZ 2 x -y
+		}
+	}
+
+	Postraitement
+	{
+                format lml
+		Champs dt_post 5e-1
+		{
+			pression_pa elem
+			vitesse som
+		}
+	}
+
+}
+
+Resoudre pb
+
+Fin
+

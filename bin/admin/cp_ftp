@@ -9,27 +9,26 @@ do
    plus=$i
 done
 rep=$plus
-mkdir_ftp $SECRET 1>/dev/null
+mkdir_ftp $rep 1>/dev/null
+
 for file in $files
 do
    # Ajout du del car parfois impossible de copier
    # il met une erreur en disant fichier not found !
-   echo "Copy of the $file file on ftp://$TRUST_FTP/$rep directory"
-   mkdir_ftp $rep 1>/dev/null
+   echo "Copy of the $dir/$file file on ftp://$TRUST_FTP/$rep directory"
    p="" && [ "`ftp -help 2>&1 | grep '\-p'`" != "" ] && p=p # Passive mode utile sur les machines virtuelles
-
-   cat << ! | ftp -iv$p | grep 'Opening BINARY'
+(
+   cat << ! | ftp -iv$p | grep 'Transfer complete'
 open $TRUST_FTP
 lcd $dir
-cd ../..
-epsv
-cd $rep
+cd "/"$rep
 bin
 del $file
 put $file
 !
+) &
+$TRUST_ROOT/bin/KSH/wait_for $! 600 || (echo "Error: cp_ftp killed"; exit -1)
 
+   [ $? != 0 ] && echo "Error to send data"
 done
-#On enleve:
-#chmod 644 $file
 

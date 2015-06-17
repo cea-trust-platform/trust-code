@@ -184,33 +184,34 @@ void Fluide_Incompressible::discretiser(const Probleme_base& pb, const  Discreti
 // Postcondition:
 void Fluide_Incompressible::verifier_coherence_champs(int& err,Nom& msg)
 {
+  msg="";
   if (rho.non_nul())
     {
       if (sub_type(Champ_Uniforme,rho.valeur()))
         {
           if (rho(0,0) <= 0)
             {
-              msg = "The density rho is not striclty positive.";
+              msg += "The density rho is not striclty positive. \n";
               err = 1;
             }
         }
       else
         {
-          msg = "The density rho is not of type Champ_Uniforme.";
+          msg += "The density rho is not of type Champ_Uniforme. \n";
           err = 1;
         }
       if (sub_type(Champ_Uniforme,mu.valeur()))
         {
-          if (mu(0,0) <= 0)
+          if (mu(0,0) < 0)
             {
-              msg = "The dynamical viscosity mu is not striclty positive.";
+              msg += "The dynamical viscosity mu is not positive. \n";
               err = 1;
             }
         }
     }
   else
     {
-      msg = "The density rho has not been specified.";
+      msg += "The density rho has not been specified. \n";
       err = 1;
     }
 
@@ -220,20 +221,20 @@ void Fluide_Incompressible::verifier_coherence_champs(int& err,Nom& msg)
         {
           if  (Cp(0,0) <= 0)
             {
-              msg = "The heat capacity Cp is not striclty positive.";
+              msg += "The heat capacity Cp is not striclty positive. \n";
               err = 1;
             }
         }
       else
         {
-          msg = "The heat capacity Cp is not of type Champ_Uniforme.";
+          msg += "The heat capacity Cp is not of type Champ_Uniforme. \n";
           err = 1;
         }
       if (sub_type(Champ_Uniforme,lambda.valeur()))
         {
-          if (lambda(0,0) <= 0)
+          if (lambda(0,0) < 0)
             {
-              msg = "The conductivity lambda is not striclty positive.";
+              msg += "The conductivity lambda is not positive. \n";
               err = 1;
             }
         }
@@ -241,20 +242,20 @@ void Fluide_Incompressible::verifier_coherence_champs(int& err,Nom& msg)
     }
   if  ( ( (Cp.non_nul()) || (beta_th.non_nul()) ) && (!lambda.non_nul()) )
     {
-      msg = " Physical properties for an anisotherm case : \n";
-      msg += "the conductivity lambda has not been specified.";
+      msg += " Physical properties for an anisotherm case : \n";
+      msg += "the conductivity lambda has not been specified. \n";
       err = 2;
     }
   if  ( ( (lambda.non_nul()) || (beta_th.non_nul()) ) && (!Cp.non_nul()) )
     {
-      msg = " Physical properties for an anisotherm case : \n";
-      msg += "the heat capacity Cp has not been specified.";
+      msg += " Physical properties for an anisotherm case : \n";
+      msg += "the heat capacity Cp has not been specified. \n";
       err = 2;
     }
   if ( ( (lambda.non_nul()) || (Cp.non_nul()) ) && (!beta_th.non_nul()) )
     {
-      msg = " Physical properties for an anisotherm case : \n";
-      msg += "the thermal expansion coefficient beta_th has not been specified.";
+      msg += " Physical properties for an anisotherm case : \n";
+      msg += "the thermal expansion coefficient beta_th has not been specified. \n";
       err = 2;
     }
 
@@ -262,14 +263,14 @@ void Fluide_Incompressible::verifier_coherence_champs(int& err,Nom& msg)
   // (pour un milieu semi transparent
   if ( (coeff_absorption_.non_nul()) && (!indice_refraction_.non_nul()) )
     {
-      msg = " Physical properties for semi tranparent radiation case : \n";
-      msg += "Refraction index has not been specfied while it has been done for absorption coefficient.";
+      msg += " Physical properties for semi tranparent radiation case : \n";
+      msg += "Refraction index has not been specfied while it has been done for absorption coefficient. \n";
       err = 1;
     }
   if ( (!coeff_absorption_.non_nul()) && (indice_refraction_.non_nul()) )
     {
-      msg = " Physical properties for semi tranparent radiation case : \n";
-      msg += "Absorption coefficient has not been specfied while it has been done for refraction index.";
+      msg += " Physical properties for semi tranparent radiation case : \n";
+      msg += "Absorption coefficient has not been specfied while it has been done for refraction index. \n";
       err = 1;
     }
 
@@ -279,7 +280,7 @@ void Fluide_Incompressible::verifier_coherence_champs(int& err,Nom& msg)
         {
           if (coeff_absorption_(0,0) <= 0)
             {
-              msg = "The absorption coefficient kappa is not striclty positive.";
+              msg += "The absorption coefficient kappa is not striclty positive. \n";
               err = 1;
             }
         }

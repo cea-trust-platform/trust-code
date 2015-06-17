@@ -24,6 +24,8 @@
 #include <Modele_turbulence_hyd_K_Eps.h>
 #include <Les_Pb_Turb.h>
 #include <Param.h>
+#include <EChaine.h>
+
 
 Implemente_instanciable(Transport_K_Eps,"Transport_K_Eps",Transport_K_Eps_base);
 
@@ -46,6 +48,13 @@ Sortie& Transport_K_Eps::printOn(Sortie& s ) const
   return s << que_suis_je() << "\n";
 }
 
+void Transport_K_Eps::set_param(Param& param)
+{
+  Transport_K_Eps_base::set_param(param);
+  param.ajouter("with_nu",&with_nu_);
+  param.dictionnaire("no",0);
+  param.dictionnaire("yes",1);
+}
 
 // Description:
 //    Lit les specifications d'une equation de transport K-epsilon
@@ -65,6 +74,7 @@ Sortie& Transport_K_Eps::printOn(Sortie& s ) const
 // Postcondition:
 Entree& Transport_K_Eps::readOn(Entree& s )
 {
+  with_nu_=0;
   // Lecture des attributs de l'equation
   Transport_K_Eps_base::readOn(s);
 
@@ -76,8 +86,7 @@ Entree& Transport_K_Eps::readOn(Entree& s )
       const Probleme_base& pb = probleme();
       Cerr << "Construction and typing for the source term of the Transport_K_Eps equation." << finl;
       REF(Champ_base) ch;
-
-      if (sub_type(Pb_Hydraulique_Turbulent,pb) || sub_type(Pb_Thermohydraulique_Turbulent_QC,pb))
+      if (sub_type(Pb_Hydraulique_Turbulent,pb) || milieu().que_suis_je()=="Fluide_Quasi_Compressible")
         {
           Nom typ = "Source_Transport_K_Eps";
           Cerr << "TYPAGE DES SOURCES : this " << *this << finl;
@@ -103,11 +112,28 @@ Entree& Transport_K_Eps::readOn(Entree& s )
   return s;
 }
 
+
 int Transport_K_Eps::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
   if (mot=="diffusion")
     {
       Cerr << "Reading and typing of the diffusion operator : " << finl;
+
+      if (with_nu_==0)
+        {
+          Cerr<<" On associe le champ de diffusion nul afin de faire comme avant !!!!!! " <<finl;
+          EChaine tt("Champ_Uniforme 1 0");
+          tt>> Champ_don_nul_;
+          terme_diffusif.associer_diffusivite(Champ_don_nul_);
+        }
+      else
+        {
+          const Fluide_Incompressible& fluide_inc = ref_cast(Fluide_Incompressible,le_fluide.valeur());
+          if (sub_type(Fluide_Quasi_Compressible,fluide_inc))
+            terme_diffusif.associer_diffusivite(fluide_inc.viscosite_dynamique());
+          else
+            terme_diffusif.associer_diffusivite(fluide_inc.viscosite_cinematique());
+        }
       is >> terme_diffusif;
       return 1;
     }

@@ -56,8 +56,8 @@ public:
   inline DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu ) const;
   inline void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
   inline void contribuer_au_second_membre(DoubleTab& ) const;
-  virtual const Champ_Inc_base& vitesse() const=0;
-  virtual Champ_Inc_base& vitesse()=0;
+  virtual const Champ_base& vitesse() const=0;
+  virtual Champ_base& vitesse()=0;
   void completer();
   double calculer_dt_stab() const;
   void calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const;

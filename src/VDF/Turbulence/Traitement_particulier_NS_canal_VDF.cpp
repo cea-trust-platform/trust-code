@@ -27,7 +27,6 @@
 #include <Fluide_Incompressible.h>
 #include <Navier_Stokes_std.h>
 #include <Mod_turb_hyd_base.h>
-#include <VectEsp_Dist.h>
 
 Implemente_instanciable(Traitement_particulier_NS_canal_VDF,"Traitement_particulier_NS_canal_VDF",Traitement_particulier_NS_canal);
 

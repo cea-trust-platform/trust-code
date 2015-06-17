@@ -303,59 +303,65 @@ Entree& latatoother::interpreter(Entree& is)
                     Field_Id fieldid(fields[j],timestate,-1);
 
                     DoubleTab values;
-
-                    const FieldFloat& field = filter.get_float_field(fieldid);
-                    {
-                      const FloatTab& values_lata = field.data_;
-                      int dim1=values_lata.dimension(0);
-                      int dim2=values_lata.dimension(1);
-                      values.resize(dim1,dim2);
-                      for (int i1=0; i1<dim1; i1++)
-                        for (int i2=0; i2<dim2; i2++)
-                          values(i1,i2)=values_lata(i1,i2);
-                    }
-
-
-                    Nom nom_type;
-                    if (field.localisation_==LataField_base::ELEM)
-                      nom_type="ELEM";//"CHAMPMAILLE";
-                    else if (field.localisation_==LataField_base::SOM)
-                      nom_type="SOM";// CHAMPPOINT";
-                    else
+                    try
                       {
-                        Cerr<<nom_type<<" not coded ...... "<<finl;
-                        Cerr<<__FILE__<<":"<<__LINE__<<finl;
-                        exit();
+                        const FieldFloat& field = filter.get_float_field(fieldid);
+                        {
+                          const FloatTab& values_lata = field.data_;
+                          int dim1=values_lata.dimension(0);
+                          int dim2=values_lata.dimension(1);
+                          values.resize(dim1,dim2);
+                          for (int i1=0; i1<dim1; i1++)
+                            for (int i2=0; i2<dim2; i2++)
+                              values(i1,i2)=values_lata(i1,i2);
+                        }
 
-                      }
-                    Nom type_elem=dom.lata_element_name(dom.elt_type_);
-                    Noms unites(values.dimension(1));
-                    Noms noms_post(values.dimension(1));
-                    Cerr<<"Extraction "<< time<<" "<< geoms[i]<<" "<< fields[j].get_field_name()<<finl;
-                    Nom nom_post,ajout;
 
-                    nom_post=fields[j].get_field_name();
-                    // pour eviter qu'en med on est le champ aux faces et sur le dual avec le meme nom
-                    if (dom_trio.le_nom().finit_par("_faces")) nom_post+="_Centre";
-                    ajout="_";
-                    ajout+=nom_type;
-                    ajout+="_";
-                    ajout+=geoms[i];
-                    for (int ii=0; ii<values.dimension(1); ii++)
-                      {
-                        noms_post[ii]=nom_post;
-                        if (values.dimension(1)==dom_trio.les_sommets().dimension(1))
-                          noms_post[ii]+=suffix_vector_names[ii];
+                        Nom nom_type;
+                        if (field.localisation_==LataField_base::ELEM)
+                          nom_type="ELEM";//"CHAMPMAILLE";
+                        else if (field.localisation_==LataField_base::SOM)
+                          nom_type="SOM";// CHAMPPOINT";
                         else
-                          noms_post[ii]+=Nom(ii);
-                        noms_post[ii]+=ajout;
-                      }
-                    nom_post+=ajout;
-                    //exit();
-                    //meddrive.ecrire_champ(type,nom_fic,geoms[i],fields[j].get_field_name(),values,unites,type_elem   ,time,0);
+                          {
+                            Cerr<<nom_type<<" not coded ...... "<<finl;
+                            Cerr<<__FILE__<<":"<<__LINE__<<finl;
+                            exit();
 
-                    post.ecrire_champ(dom_trio,unites,noms_post,-1,time,time,nom_post,geoms[i],nom_type,"iii",values);
-                    filter.release_field(field);
+                          }
+                        Nom type_elem=dom.lata_element_name(dom.elt_type_);
+                        Noms unites(values.dimension(1));
+                        Noms noms_post(values.dimension(1));
+                        Cerr<<"Extraction "<< time<<" "<< geoms[i]<<" "<< fields[j].get_field_name()<<finl;
+                        Nom nom_post,ajout;
+
+                        nom_post=fields[j].get_field_name();
+                        // pour eviter qu'en med on est le champ aux faces et sur le dual avec le meme nom
+                        if (dom_trio.le_nom().finit_par("_faces")) nom_post+="_Centre";
+                        ajout="_";
+                        ajout+=nom_type;
+                        ajout+="_";
+                        ajout+=geoms[i];
+                        for (int ii=0; ii<values.dimension(1); ii++)
+                          {
+                            noms_post[ii]=nom_post;
+                            if (values.dimension(1)==dom_trio.les_sommets().dimension(1))
+                              noms_post[ii]+=suffix_vector_names[ii];
+                            else
+                              noms_post[ii]+=Nom(ii);
+                            noms_post[ii]+=ajout;
+                          }
+                        nom_post+=ajout;
+                        //exit();
+                        //meddrive.ecrire_champ(type,nom_fic,geoms[i],fields[j].get_field_name(),values,unites,type_elem   ,time,0);
+
+                        post.ecrire_champ(dom_trio,unites,noms_post,-1,time,time,nom_post,geoms[i],nom_type,"iii",values);
+                        filter.release_field(field);
+                      }
+                    catch(...)
+                      {
+                        Cerr<<fieldid.uname_.get_field_name()<<" is not a FloatField !!!"<<finl;
+                      }
                   }
                 }
               filter.release_geometry(dom);

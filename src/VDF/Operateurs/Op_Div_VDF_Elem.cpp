@@ -74,4 +74,12 @@ void Op_Div_VDF_Elem::volumique(DoubleTab& div) const
     div(num_elem)/=vol(num_elem);
 }
 
-
+//
+// Fonctions inline de la classe Op_Div_VDF_Elem
+//
+// Description:
+// constructeur
+Op_Div_VDF_Elem::Op_Div_VDF_Elem() :
+  Op_Div_VDF_base(It_VDF_Elem(Eval_Div_VDF_Elem)())
+{
+}

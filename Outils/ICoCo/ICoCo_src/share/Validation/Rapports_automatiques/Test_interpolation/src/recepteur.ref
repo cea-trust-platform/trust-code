@@ -1,0 +1,40 @@
+recepteur cas num 0
+ recepteur  champ_triangle
+ recepteur  0: 1
+ recepteur  1: 1
+ recepteur  2: 1
+ recepteur  3: 1
+recepteur cas num 1
+ recepteur  champ_triangle
+ recepteur  0: 40
+ recepteur  1: 40
+ recepteur  2: 1
+ recepteur  3: 1
+recepteur cas num 2
+ recepteur  champ_quad
+ recepteur  0: 1
+ recepteur  1: 1
+recepteur cas num 3
+ recepteur  champ_quad
+ recepteur  0: 40
+ recepteur  1: 1
+recepteur cas num 4
+ recepteur  champ_triangle
+ recepteur  0: 1
+ recepteur  1: 1
+ recepteur  2: 1
+ recepteur  3: 1
+recepteur cas num 5
+ recepteur  champ_triangle
+ recepteur  0: 40
+ recepteur  1: 1
+ recepteur  2: 1
+ recepteur  3: 1
+recepteur cas num 6
+ recepteur  champ_quad
+ recepteur  0: 1
+ recepteur  1: 1
+recepteur cas num 7
+ recepteur  champ_quad
+ recepteur  0: 20.5
+ recepteur  1: 1

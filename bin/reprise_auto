@@ -7,7 +7,7 @@ help()
 {
 echo "Script to run in a directory containing
 a submission file, mandatory named sub_file.
-Usage:`basename $0` [-help] [-test]
+Usage:`basename $0` [-help] [-test] [-long_test]
 
 The script will first change slightly the submission file.
 
@@ -22,6 +22,10 @@ be stored also locally or in a available storing disc
 The -test option is useful to test the script on few
 timesteps of your calculation with 2 runs separated
 by a stop and retart.
+
+The -long_test option is useful to test the script on
+few timesteps of your calculation with 5 runs separated
+by a stop and retart.
 "
 }
 
@@ -30,11 +34,11 @@ archivage()
    # Archivage sauf si specifie par l'utilisateur:
    if [ "$ARCHIVAGE" != "NO" ]
    then
-      # On fait une sauvegarde sur $CCCSTOREDIR si le repertoire existe et si l'utilisateur n'a pas specifie d'options d'archivage
+      # On fait une sauvegarde sur $CCCSTOREDIR=$STOREDIR si le repertoire existe et si l'utilisateur n'a pas specifie d'options d'archivage
       # sinon en local dans le repertoire d'etude
-      if [ "$CCCSTOREDIR" != "" ] && [ -d $CCCSTOREDIR ] && [ "$ARCHIVAGE" != "FAST_LOCAL" ]
+      if [ "$STOREDIR" != "" ] && [ -d $STOREDIR ] && [ "$ARCHIVAGE" != "FAST_LOCAL" ]
       then
-	 DIRSAUV=`pwd | $TRUST_Awk -F"/" -v p=$CCCSTOREDIR -v h=$HOME '{n=split(h,a,"/")+1;for (i=n;i<=NF;i++) p=p"/"$i;print p}'`"/SAUV-$temps"
+	 DIRSAUV=`pwd | $TRUST_Awk -F"/" -v p=$STOREDIR -v h=$HOME '{n=split(h,a,"/")+1;for (i=n;i<=NF;i++) p=p"/"$i;print p}'`"/SAUV-$temps"
 	 ln -s -f $DIRSAUV . 2>/dev/null
       else
 	 DIRSAUV=`pwd`"/SAUV-$temps"
@@ -141,22 +145,26 @@ then
 	 MSUB_NEW="#MSUB -T 1800"
       fi
    fi
+   [ $sub = SLURM ] && cpu=00:30:00
    # Changement du sub_file pour le nom (MACHINE-DEPENDANT)  
    [ $sub = PBS ] && echo $ECHO_OPTS "1,$ s? -N .*? -N $job?g\nw" | ed $sub_file 1>/dev/null 2>&1
    [ $sub = SGE ] && echo $ECHO_OPTS "1,$ s? -N .*? -N $job?g\nw" | ed $sub_file 1>/dev/null 2>&1
    [ $sub = LSF ] && echo $ECHO_OPTS "1,$ s? -J .*? -J $job?g\nw" | ed $sub_file 1>/dev/null 2>&1   
    [ $sub = CCC ] && echo $ECHO_OPTS "1,$ s? -r .*? -r $job?g\nw" | ed $sub_file 1>/dev/null 2>&1   
+   [ $sub = SLURM ] && echo $ECHO_OPTS "1,$ s? -J .*? -J $job?g\nw" | ed $sub_file 1>/dev/null 2>&1   
    # Changement du sub_file pour mettre en queue test (MACHINE-DEPENDANT)
    [ $sub = PBS ] && echo $ECHO_OPTS "1,$ s? -l walltime=.*? -l walltime=$cpu?g\nw" | ed $sub_file 1>/dev/null 2>&1
    [ $sub = SGE ] && echo $ECHO_OPTS "1,$ s? -q .*? -q test?g\nw" | ed $sub_file 1>/dev/null 2>&1
    [ $sub = LSF ] && echo $ECHO_OPTS "1,$ s? [0-9][0-9]:[0-9][0-9]? $cpu?g\nw" | ed $sub_file 1>/dev/null 2>&1  
    [ $sub = CCC ] && echo $ECHO_OPTS "1,$ s?$MSUB?$MSUB_NEW?g\nw" | ed $sub_file 1>/dev/null 2>&1 
    [ $sub = CCC ] && echo $ECHO_OPTS "1,$ s?#MSUB -Q normal?#MSUB -Q test?g\nw" | ed $sub_file 1>/dev/null 2>&1 
+   [ $sub = SLURM ] && echo $ECHO_OPTS "1,$ s? -t .*? -t $cpu?g\nw" | ed $sub_file 1>/dev/null 2>&1
    # Changement du sub_file pour le chemin vers l'etude (MACHINE-DEPENDANT)
    [ $sub = PBS ] && echo $ECHO_OPTS "1,$ s?cd .*?cd \$PBS_O_WORKDIR?g\nw" | ed $sub_file 1>/dev/null 2>&1   
    [ $sub = SGE ] && echo $ECHO_OPTS "1,$ s?cd .*?cd \$SGE_CWD_PATH?g\nw" | ed $sub_file 1>/dev/null 2>&1   
    [ $sub = LSF ] && echo $ECHO_OPTS "1,$ s?cd .*?cd \$LS_SUBCWD?g\nw"    | ed $sub_file 1>/dev/null 2>&1   
    [ $sub = CCC ] && echo $ECHO_OPTS "1,$ s?cd .*?cd \$BRIDGE_MSUB_PWD?g\nw"    | ed $sub_file 1>/dev/null 2>&1 
+   [ $sub = SLURM ] && echo $ECHO_OPTS "1,$ s?cd .*?cd \$SLURM_SUBMIT_DIR?g\nw"    | ed $sub_file 1>/dev/null 2>&1 
    # Changement du .data en cas de chemins relatifs
    for data in *.data
    do
@@ -177,6 +185,7 @@ then
       [ $sub = SGE ] && mes=$mes"Submission of the job $job now:\n`$qsub sub_file 2>&1`\n" 
       [ $sub = LSF ] && mes=$mes"Submission of the job $job now:\n`bsub < sub_file 2>&1`\n"
       [ $sub = CCC ] && mes=$mes"Submission of the job $job now:\n`ccc_msub sub_file 2>&1`\n"
+      [ $sub = SLURM ] && mes=$mes"Submission of the job $job now:\n`sbatch sub_file 2>&1`\n"
    fi
    # On lance apres le job initial max jobs soit un total de max+1 jobs
    # sauf si un fichier .stop_soumission existe dans le repertoire
@@ -210,6 +219,7 @@ then
             echo $ECHO_OPTS "$shell#BSUB -b $restart" > $sub_file_next # Format restart MM:DD:HH:MN
 	 fi
       fi
+      [ $sub = SLURM ] && echo $ECHO_OPTS "$shell#SBATCH --begin `date '+%Y'-``echo $restart | $TRUST_Awk -F: '{print $1"-"$2"T"$3":"$4}'`" > $sub_file_next # Format restart MMDDHHMN
       # A noter que #MSUB -a ou #MSUB -S ne marche pas sur titane, le CCRT conseille #BSUB -b
       # BSUB -b ne fonctionne pas pour curie
       cat $sub_file >> $sub_file_next    
@@ -218,6 +228,7 @@ then
       [ $sub = SGE ] && mes=$mes"Submission of the job $job delayed to MM:DD:HH:MN=$restart :\n`$qsub $sub_file_next 2>&1`\n" 
       [ $sub = LSF ] && mes=$mes"Submission of the job $job delayed to MM:DD:HH:MN=$restart :\n`bsub < $sub_file_next 2>&1`\n"
       [ $sub = CCC ] && mes=$mes"Submission of the job $job delayed to MM:DD:HH:MN=$restart :\n`ccc_msub $sub_file_next 2>&1`\n"
+      [ $sub = SLURM ] && mes=$mes"Submission of the job $job delayed to MM:DD:HH:MN=$restart :\n`sbatch $sub_file_next 2>&1`\n"
       # Pour tester plusieurs demarrages de JOBS en meme temps, decommenter:
       # mes=$mes"Soumission du job $job pour un demarrage souhaite a MM:JJ:DD:MN=$restart :\n`bsub < $sub_file_next 2>&1`\n"
       # mes=$mes"Soumission du job $job pour un demarrage souhaite a MM:JJ:DD:MN=$restart :\n`bsub < $sub_file_next 2>&1`\n"
@@ -279,6 +290,7 @@ waiting()
    [ $sub = SGE ] && qstat    -u $qui 2>/dev/null | grep " $job " | $TRUST_Awk 'BEGIN {wait=0} (NF==8)         {wait++} END {print wait}'
    [ $sub = LSF ] && qstat -a -u $qui 2>/dev/null | grep " $job " | $TRUST_Awk 'BEGIN {wait=0} ($5=="WAITING") {wait++} END {print wait}'
    [ $sub = CCC ] && qstat -a -u $qui 2>/dev/null | grep " $job " | $TRUST_Awk 'BEGIN {wait=0} ($5=="WAITING") {wait++} END {print wait}'
+   [ $sub = SLURM ] && squeue -u $qui 2>/dev/null | grep " $job " | $TRUST_Awk 'BEGIN {wait=0} ($5!="R")       {wait++} END {print wait}'
 }
 
 running()
@@ -288,6 +300,7 @@ running()
    [ $sub = SGE ] && qstat    -u $qui 2>/dev/null | grep " $job " | $TRUST_Awk 'BEGIN {run=0} (NF==9)         {run++} END {print run}'
    [ $sub = LSF ] && qstat -a -u $qui 2>/dev/null | grep " $job " | $TRUST_Awk 'BEGIN {run=0} ($5!="WAITING") {run++} END {print run}'
    [ $sub = CCC ] && qstat -a -u $qui 2>/dev/null | grep " $job " | $TRUST_Awk 'BEGIN {run=0} ($5!="WAITING") {run++} END {print run}'
+   [ $sub = SLURM ] && squeue -u $qui 2>/dev/null | grep " $job " | $TRUST_Awk 'BEGIN {run=0} ($5=="R")       {run++} END {print run}'
 }
 
 # qsub special pour jade, on doit utiliser qsub depuis l'interactif
@@ -310,6 +323,7 @@ check_max_jobs()
       [ $sub = SGE ] && IDS=`qstat    -u $qui 2>/dev/null | grep " $job " | $TRUST_Awk '(NF==9)         {print $1}' | sort -n`
       [ $sub = LSF ] && IDS=`qstat -a -u $qui 2>/dev/null | grep " $job " | $TRUST_Awk '($5!="WAITING") {print $3}' | sort -n` 
       [ $sub = CCC ] && IDS=`qstat -a -u $qui 2>/dev/null | grep " $job " | $TRUST_Awk '($5!="WAITING") {print $3}' | sort -n`
+      [ $sub = SLURM ] && IDS=`squeue -u $qui 2>/dev/null | grep " $job " | $TRUST_Awk '($5=="R")       {print $1}' | sort -n`
       # On doit avoir au plus UN JOB autre que le LAST_JOBID
       LAST_JOBID=`cat .LAST_JOBID 2>/dev/null` # ID du JOB en cours de calcul
       JOB=0
@@ -339,6 +353,7 @@ check_max_jobs()
 	    [ $sub = SGE ] && CPU_USED="" # Pas trouve la commande: qstat -ext sort un cpu qui semble faux. Voir qstat -F -ext
 	    [ $sub = LSF ] && CPU_USED=`bjobs -l | $TRUST_Awk -v np=$np '/ CPU / {print $6/60/np}'`
 	    [ $sub = CCC ] && CPU_USED=`ccc_mstat | $TRUST_Awk -v job=$job '($5==job) {print $9/60}'`
+	    [ $sub = SLURM ] && CPU_USED="`squeue -u $qui | $TRUST_Awk -v job=$job '($3==job) && ($(NF-1)=="R") {split($NF,a,":");print a[1]*60+a[2]}'`"
 	    [ "$CPU_USED" != "" ] && CPU_USED=" since $CPU_USED minutes"
             mes=$mes"Calculation $job ($LAST_JOBID) running on $HOST$CPU_USED will be stopped and restarted.\n"
             echo 1 > ${data%.data}.stop	  
@@ -371,21 +386,14 @@ ETUDE=`pwd`
 ECHO_OPTS="" && [ "`echo -e`" != "-e" ] && ECHO_OPTS="-e"
 qui=`whoami`
 mes=""
-# On essaye d'initialiser l'environnement TRUST
-if [ ${#TRUST_Awk} = 0 ]
-then
-   TRUST_ROOT_BIN=`dirname $0`
-   if [ "$TRUST_ROOT_BIN" != "" ] && [ -d $TRUST_ROOT_BIN ]
-   then
-      REP_ETUDE=`pwd`;cd $TRUST_ROOT_BIN;. ./Init_TRUST;cd $REP_ETUDE
-   fi
-fi
 
 # On doit etre sous environnement TRUST
 [ ${#TRUST_ROOT} = 0 ] && mes=$mes"You should be under TRUST environment\n to use this script $0.\n" && message && exit -1
 
 echo "
 #################################################################
+13/05/15: CINES cluster occigen supported (SLURM)
+13/05/15: \$CCCSTOREDIR is equivalent to \$STOREDIR on CCRT clusters and \$STOREDIR exists on CINES cluster
 25/01/13: Messages translated in english
 25/01/13: Option -meshtv is suppressed
 04/09/12: CCRT cluster airain is supported (LSF-MOAB-CCC)
@@ -446,12 +454,15 @@ then
    # Pas sur que #MSUB fonctionne sur platine, meme si ccc_msub existe
    # On laisse donc platine en LSF...
    sub="CCC"
+elif [ "`squeue --help 1>/dev/null 2>&1;echo $?`" = 0 ]
+then
+   sub="SLURM"
 else
    sub="LSF"
 fi
 
 # Verifie si la machine a ete testee
-if [ $HOST != nickel ] && [ $HOST != chrome ] && [ $HOST != tantale ] && [ $HOST != castor ] && [ $HOST != platine ] && [ $HOST != jade ] && [ $HOST != titane ] && [ $HOST != curie-ccrt ] && [ $HOST != airain ] # Supported
+if [ $HOST != nickel ] && [ $HOST != chrome ] && [ $HOST != tantale ] && [ $HOST != castor ] && [ $HOST != platine ] && [ $HOST != jade ] && [ $HOST != titane ] && [ $HOST != curie-ccrt ] && [ $HOST != airain ] && [ $HOST != occigen ] # Supported
 then
    if [ $HOST = mars ] || [ $HOST = eris ]
    then
@@ -490,6 +501,10 @@ elif [ $sub = CCC ]
 then
    job=`$TRUST_Awk '($2=="-r") {print substr($3,1,12)}' $sub_file` # 12 premiers caracteres
    [ ${#job} = 0 ] && mes=$mes"Directive -r not found in $ETUDE/$sub_file!\n" && message && exit -1   
+elif [ $sub = SLURM ]
+then
+   job=`$TRUST_Awk '($2=="-J") {print substr($3,1,8)}' $sub_file` # 12 premiers caracteres
+   [ ${#job} = 0 ] && mes=$mes"Directive -J not found in $ETUDE/$sub_file!\n" && message && exit -1   
 fi
 
 # Recupere le nombre de processeurs (MACHINE-DEPENDANT)
@@ -505,6 +520,10 @@ then
    np=`$TRUST_Awk '($2=="-n") {print $3}' $sub_file`
    [ ${#np} = 0 ] && mes=$mes"Directive -n not found in $ETUDE/$sub_file!\n" && message && exit -1
 elif [ $sub = CCC ]
+then
+   np=`$TRUST_Awk '($2=="-n") {print $3}' $sub_file`
+   [ ${#np} = 0 ] && mes=$mes"Directive -n not found in $ETUDE/$sub_file!\n" && message && exit -1 
+elif [ $sub = SLURM ]
 then
    np=`$TRUST_Awk '($2=="-n") {print $3}' $sub_file`
    [ ${#np} = 0 ] && mes=$mes"Directive -n not found in $ETUDE/$sub_file!\n" && message && exit -1 
@@ -536,6 +555,11 @@ then
    cpu=`$TRUST_Awk '($2=="-T") {h=int($3/3600);m=int(($3-3600*h)/60);print h":"m} ($2=="-W") {print $3}' $sub_file`
    [ "$MAX_JOBS_ENCHAINES" = "" ] && MAX_JOBS_ENCHAINES=5
    [ ${#cpu} = 0 ] && mes=$mes"Directive #MSUB -T SS or #BSUB -W HH:MN not found in $ETUDE/$sub_file!\n" && message && exit -1
+elif [ $sub = SLURM ]
+then
+   cpu=`$TRUST_Awk '($2=="-t") && /:/ {print $3}' $sub_file`
+   [ "$MAX_JOBS_ENCHAINES" = "" ] && MAX_JOBS_ENCHAINES=5
+   [ ${#cpu} = 0 ] && mes=$mes"Directive #SBATCH -t HH:MM:SS not found in $ETUDE/$sub_file!\n" && message && exit -1
 fi
 
 format="Error, the instructions should be: $0 && command_line_to_run_parallel_TRUST datafile 1>datafile.out 2>datafile.err\n" 
@@ -549,15 +573,6 @@ then
    echo $ECHO_OPTS "1,$ s?$ligne?$0 \&\& $ligne?g\nw" | ed $sub_file 1>/dev/null 2>&1
    mes=$mes"File $sub_file changed to add the script $0\n" 
 fi
-
-# Provisoire
-# Insere l'environnement TRUST dans le sub_file (MACHINE-DEPENDANT)
-#if [ $sub = SGE ] && [ "`grep -i ' bin/Init_TRUST' $sub_file`" = "" ]
-#then
-   # Environnement perdu sur SGE a moins d'utiliser qsub -v VAR=$VAR
-#   echo $ECHO_OPTS "1,$ s?cd ?cd $TRUST_ROOT;. bin/Init_TRUST;cd -;cd ?g\nw" | ed $sub_file 1>/dev/null 2>&1
-#   mes=$mes"Fichier $sub_file modifie pour rajouter l'environnement TRUST.\n" 
-#fi
 
 # Recherche le nom du jeu de donnees du sub_file
 data=`$TRUST_Awk '/reprise_auto &&/ { for (i=3;i<=NF;i++) {gsub("\\\.data","",$i);file=$i".data";if (system("[ -f "file" ] && ok=1")==0) {data=file;exit}} } \
@@ -586,6 +601,7 @@ Execution=0 # reprise_auto n'est pas appele depuis le sub_file mais en interacti
 [ $sub = SGE ] && [ "$SGE_CWD_PATH" != "" ]  		&& Execution=1 && JOB_ID=`echo $SGE_STDERR_PATH | $TRUST_Awk -F".e" '{print $NF}'` 
 [ $sub = LSF ] && [ "$LS_SUBCWD" != "" ]     		&& Execution=1 && JOB_ID=$LSB_JOBID
 [ $sub = CCC ] && [ "$BRIDGE_MSUB_PWD" != "" ]     	&& Execution=1 && JOB_ID=$BRIDGE_MSUB_JOBID && [ "$JOB_ID" = "" ] && JOB_ID=$LSB_JOBID && [ "$JOB_ID" = "" ] && JOB_ID=$PBS_JOBID
+[ $sub = SLURM ] && [ "$SLURM_SUBMIT_DIR" != "" ]     	&& Execution=1 && JOB_ID=`echo $SLURM_JOBID | $TRUST_Awk -F"." '{print $1}'`
 
 # Initialisation du journal
 if [ $Execution = 0 ]

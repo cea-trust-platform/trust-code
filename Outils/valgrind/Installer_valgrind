@@ -18,7 +18,11 @@ valgrind=$TRUST_ROOT/externalpackages/valgrind-$version".tar.bz2"
   [ ! -f $valgrind ] && echo $valgrind not found && exit -1 && wget_ http://valgrind.org/downloads/$valgrind
 # Command to bunzip2 and untar:
 bzip2 -cd $valgrind | tar xf -
+
+
 cd `ls | grep valgrind- | grep -v tar`
+echo "patching configure"
+cat ../configure_valgrind_3.10.1_patched > configure
 echo patching mpiwrap
 cp mpi/libmpiwrap.c mpi/libmpiwrap.c.org
 sed 's?before(\"Finalize\");?before(\"Finalize\");if (sReqs) { free(sReqs); sReqs=0; }?' -i mpi/libmpiwrap.c

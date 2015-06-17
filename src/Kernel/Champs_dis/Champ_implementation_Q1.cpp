@@ -138,24 +138,39 @@ void Champ_implementation_Q1::value_interpolation(const ArrOfDouble& position, i
 
   Vecteur3 coeff_plan;
   double d;
-
+  IntTab cell3D;
   Vecteur3 coord_bar;
 
-
-  if (Objet_U::dimension == 2)
+  if (nb_nodes_per_cell==4)
     {
-      for (int dir=0; dir<2; dir++)
+      if (Objet_U::dimension == 3)
         {
-
-          calcul_plan_quadra(coeff_plan,d,cell,cells,nodes,dir);
+          cell3D.resize(1,8);
+          for (int i=0; i<4; i++)
+            cell3D(0,2*i)=cells(cell,i);
+          calcul_plan_hexa(coeff_plan,d,0,cell3D,nodes,0);
           double A=d;
-          for (int i=0; i<2; i++) A+=coeff_plan[i]*position(i);
-          calcul_plan_quadra(coeff_plan,d,cell,cells,nodes,dir+2);
-          double B=d;
-          for (int i=0; i<2; i++) B+=coeff_plan[i]*position(i);
-          assert(inf_ou_egal((A*B),0,1e-10));
-          coord_bar[dir]=A/(A-B);
+          for (int i=0; i<Objet_U::dimension; i++) A+=coeff_plan[i]*position(i);
+          if (dabs(A)>dabs(d)*1e-5)
+            {
+              Cerr<<"Error point not in the plane "<<finl;
+              Process::exit();
+            }
+          coord_bar=0.5;
         }
+      else
+        for (int dir=0; dir<2; dir++)
+          {
+
+            calcul_plan_quadra(coeff_plan,d,cell,cells,nodes,dir);
+            double A=d;
+            for (int i=0; i<Objet_U::dimension; i++) A+=coeff_plan[i]*position(i);
+            calcul_plan_quadra(coeff_plan,d,cell,cells,nodes,dir+2);
+            double B=d;
+            for (int i=0; i<Objet_U::dimension; i++) B+=coeff_plan[i]*position(i);
+            assert(inf_ou_egal((A*B),0,1e-10));
+            coord_bar[dir]=A/(A-B);
+          }
     }
   else
     {
@@ -210,7 +225,7 @@ void Champ_implementation_Q1::value_interpolation(const ArrOfDouble& position, i
             }
         }
       double res=0;
-      if (Objet_U::dimension==2)
+      if (nb_nodes_per_cell==4)
         {
 
           const double& i=coord_bar[0];

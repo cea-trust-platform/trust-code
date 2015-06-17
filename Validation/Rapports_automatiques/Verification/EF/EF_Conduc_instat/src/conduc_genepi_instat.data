@@ -1,0 +1,104 @@
+# Conduction 2D #
+# Terme source volumique lineaire #
+# Temperature imposee en entree et en sortie #
+# Symetrie sur les parois laterales #
+
+# PARALLEL OK 8 #
+dimension 2
+
+Pb_conduction pb
+Domaine dom
+# DEBUT MAILLAGE #
+Mailler dom
+{
+	Pave Cavite 
+ 	{
+		Origine 0. 0.
+		Nombre_de_Noeuds 101 3 
+		Longueurs 0.05 0.05
+	}
+	{
+		Bord Gauche X = 0.   0. <= Y <= 0.05
+		Bord Haut   Y = 0.05 0. <= X <= 0.05
+		Bord Bas    Y = 0.   0. <= X <= 0.05
+		Bord Droit  X = 0.05 0. <= Y <= 0.05
+	}
+} 
+
+# FIN MAILLAGE #
+# DEBUT DECOUPAGE
+Decouper dom
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 1
+	Nom_Zones DOM
+}
+Fin
+FIN DECOUPAGE #
+
+# DEBUT LECTURE
+Scatter DOM.Zones dom
+FIN LECTURE #
+
+EF dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0.
+	tmax  10.
+	dt_min 0.00001
+	dt_sauv 1000.
+	dt_impr 0.5
+	seuil_statio 1.e-8
+}
+
+Solide sol
+Lire sol
+{
+	rho Champ_Uniforme 1 0.5
+	lambda Champ_Uniforme 1 0.5
+	Cp Champ_Uniforme 1 1000.
+}
+Associer pb dom
+Associer pb sch
+Associer pb sol
+
+Discretiser pb dis
+
+Lire pb
+{
+	Conduction
+	{
+		diffusion { }
+		conditions_initiales {
+			temperature Champ_Fonc_XYZ dom 1 (-100./0.5*x+20.*sin(3.141592654*x/(2.*0.05)))
+			}
+		conditions_limites {
+			Haut paroi_adiabatique
+			Bas symetrie
+			Gauche paroi_temperature_imposee
+			      Champ_Front_Uniforme 1 0.
+			Droit paroi_flux_impose
+			      Champ_Front_Uniforme 1 -100.
+		}
+	}
+
+	Postraitement
+	{
+		Sondes
+		{
+			temperature_x temperature periode 0.5 segment 42  0. 0.025 0.05 0.025
+		}
+		format lata
+		Champs dt_post 0.5
+		{
+			temperature elem
+			temperature som
+		}
+	}
+}
+
+Resoudre pb
+
+Fin

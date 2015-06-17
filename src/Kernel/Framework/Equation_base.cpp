@@ -37,6 +37,7 @@
 #include <Matrice_Morse_Diag.h>
 #include <Statistiques.h>
 #include <Param.h>
+#include <Source_dep_inco_base.h>
 
 extern Stat_Counter_Id assemblage_sys_counter_;
 extern Stat_Counter_Id diffusion_implicite_counter_;
@@ -1152,6 +1153,9 @@ void Equation_base::mettre_a_jour(double temps)
   inconnue().mettre_a_jour(temps);
   if (calculate_time_derivative()) derivee_en_temps().mettre_a_jour(temps);
 
+  les_sources.mettre_a_jour(temps);
+
+
   // On tourne la roue des CLs
   // Update the boundary condition:
   zone_Cl_dis()->avancer(temps);
@@ -1660,7 +1664,14 @@ void Equation_base::verifie_ch_init_nb_comp(const Champ_Inc_base& ch_ref, const 
 DoubleTab& Equation_base::derivee_en_temps_conv(DoubleTab& secmem, const DoubleTab& solution)
 {
   double dt = le_schema_en_temps->pas_de_temps();
-  double dt_convection = operateur(1).calculer_pas_de_temps();
+  double dt_convection;
+  if (le_schema_en_temps->no_conv_subiteration_diffusion_implicite())
+    {
+      // faux mais permet de ne pas sous iterer sur la convection
+      dt_convection=1e38;
+    }
+  else
+    dt_convection= operateur(1).calculer_pas_de_temps();
   if(inf_strict(dt_convection,dt))
     {
       // Several steps (nstep) are done if the convective time step
@@ -1712,6 +1723,28 @@ DoubleTab& Equation_base::derivee_en_temps_conv(DoubleTab& secmem, const DoubleT
 void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& solution, int size_terme_mul, const DoubleTab& terme_mul)
 {
   statistiques().begin_count(diffusion_implicite_counter_);
+  int marq_tot=0;
+  int size_s=sources().size();
+  ArrOfInt marq(size_s);
+  for (int i =0; i<size_s; i++)
+    if (sub_type(Source_dep_inco_base,sources()(i).valeur()))
+      {
+        marq(i)=1;
+        marq_tot=1;
+      }
+  // on retire les sources depnendant de l ino ; on les rajoutera apres
+  if (marq_tot)
+    {
+      DoubleTrav toto(secmem);
+      statistiques().end_count(diffusion_implicite_counter_);
+      for (int i=0; i<size_s; i++)
+        if (marq(i))
+          sources()(i).ajouter(toto);
+      statistiques().begin_count(diffusion_implicite_counter_);
+      solv_masse().appliquer(toto);
+
+      secmem.ajoute(-1.,toto) ; // ,VECT_REAL_ITEMS);
+    }
   int  n = secmem.size_totale();
   if (solution.size_totale()!= n)
     {
@@ -1770,7 +1803,9 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
         }
       diag.dimensionne_diag(n);
       operateur(0).l_op_base().contribuer_a_avec(inconnue().valeurs(),diag);
-
+      for (int i=0; i<size_s; i++)
+        if (marq(i))
+          sources()(i).valeur().contribuer_a_avec(inconnue().valeurs(),diag);
       // La diagonale est proportionnelle au volume de controle....
       // Il faut appliquer le solveur_masse
       DoubleTab tempo(inconnue().valeurs());
@@ -1787,7 +1822,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
             }
         }
       solveur_masse.appliquer(tempo);
-
+      tempo.echange_espace_virtuel();
       // On inverse... // Crank - Nicholson
       // La matrice correspond a - la jacobienne (pour avoir un plus justement, GF)
       for (int ca=0; ca<nb_case; ca++)
@@ -1802,9 +1837,17 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
       statistiques().end_count(assemblage_sys_counter_);
     }
   // On utilise p pour calculer phiB :
+  statistiques().end_count(diffusion_implicite_counter_);
   operateur(0).ajouter(p, phiB);
+  if (marq_tot)
+    {
+      for (int i=0; i<size_s; i++)
+        if (marq(i))
+          ref_cast(Source_dep_inco_base,sources()(i).valeur()).ajouter_(p, phiB);
+    }
+  statistiques().begin_count(diffusion_implicite_counter_);
   solveur_masse.appliquer(phiB);
-  phiB *= aCKN;  // Crank - Nicholson
+  // phiB *= aCKN;  // Crank - Nicholson
   // fait maintenant avant l'appel
   //solveur_masse.appliquer(secmem);
 
@@ -1823,6 +1866,12 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
   // Stop the counter because operator diffusion is also counted
   statistiques().end_count(diffusion_implicite_counter_,0,0);
   operateur(0).ajouter(solution, resu);
+  if (marq_tot)
+    {
+      for (int i=0; i<size_s; i++)
+        if (marq(i))
+          ref_cast(Source_dep_inco_base,sources()(i).valeur()).ajouter_(solution, resu);
+    }
   statistiques().begin_count(diffusion_implicite_counter_);
   solveur_masse.appliquer(resu);
   resu.echange_espace_virtuel();
@@ -1875,14 +1924,20 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
         // Stop the counter during diffusive operator:
         statistiques().end_count(diffusion_implicite_counter_,0,0);
         operateur(0).ajouter(p, resu);
-        statistiques().begin_count(diffusion_implicite_counter_);
 
+        if (marq_tot)
+          {
+            for (int i=0; i<size_s; i++)
+              if (marq(i))
+                ref_cast(Source_dep_inco_base,sources()(i).valeur()).ajouter_(p, resu);
+          }
+        statistiques().begin_count(diffusion_implicite_counter_);
         solveur_masse.appliquer(resu);
-        resu *= aCKN ;  // Crank - Nicholson
+        //resu *= aCKN ;  // Crank - Nicholson
         resu.echange_espace_virtuel();
 
         resu -= phiB;// On retire la contribution des bords.
-        resu *= -1. ;
+        resu *= -aCKN ;
         if (size_terme_mul)
           {
             for(int i=0 ; i<size_terme_mul ; i++ )
@@ -1915,7 +1970,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
             Cout << "You may also try to stop the calculation and rerun it with a lower facsec, say 0.9 or may be less: 0.5." << finl;
           }
       }
-  if( niter > nmax )
+  if ((le_schema_en_temps->no_error_if_not_converged_diffusion_implicite()==0)&&( niter > nmax ))
     {
       Cerr << "No convergence of the implicited diffusion algorithm for the equation " << que_suis_je() << " in " << nmax << " iterations." << finl;
       Cerr << "Residue : "<< residual << " Threshold : " << seuil << finl;
@@ -1936,6 +1991,12 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
   // CHD 230501 : Call to diffusive operator to update flux_bords (boundary fluxes):
   resu = 0. ;
   operateur(0).ajouter(inconnue(), resu);
+  if (marq_tot)
+    {
+      for (int i=0; i<size_s; i++)
+        if (marq(i))
+          ref_cast(Source_dep_inco_base,sources()(i).valeur()).ajouter_(inconnue(), resu);
+    }
 
   // Since 1.6.8 returns dI/dt:
   solution/=dt;

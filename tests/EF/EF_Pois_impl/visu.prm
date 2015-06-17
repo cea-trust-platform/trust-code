@@ -1,0 +1,32 @@
+arametres {
+	Titre "Conduction couplée implicite"
+	Description "Calculs menés en VDF/VEF avec/sans paroi fictive"
+	Auteur "G.F."
+	CasTest . EF_Pois_impl.data
+}
+
+Chapitre {
+	Titre "FT"
+	Description " test visu\latex_(\begin{math} \theta \end{math}\latex_)u"
+visu {
+	titre "temperature"
+	description "on trace le maillage et indicatrice"
+	mesh ./EF_Pois_impl.lata dom
+	pseudocolor ./EF_Pois_impl.lata dom_X VITESSE SOM
+}
+visu {
+	titre "vitesse-x"
+	description "on trace le maillage et indicatrice"
+	mesh ./EF_Pois_impl.lata dom
+	instruction_visit DefineVectorExpression("erreur_SOM_dom","VITESSE_SOM_dom-{(coord(dom)[1])*(0.22-coord(dom)[1]),0}")
+	instruction_visit DefineScalarExpression("sol_p_ELEM_dom","PRESSION_ELEM_dom*0-(coord(dom)[0]-0.1)*3")
+	instruction_visit DefineScalarExpression("erreur_p_ELEM_dom","PRESSION_ELEM_dom-sol_p_ELEM_dom")
+	vector ./EF_Pois_impl.lata dom erreur SOM
+	pseudocolor ./EF_Pois_impl.lata dom erreur_p ELEM
+}
+}
+
+
+
+
+

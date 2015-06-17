@@ -203,7 +203,7 @@ int Postraitement::champ_fonc(Motcle& nom_champ, REF(Champ_base)& mon_champ, REF
 
   if (comprend_champ_post(nom_champ))
     {
-      const REF(Champ_Generique_base)& champ = probleme().get_champ_post(nom_champ);
+      const REF(Champ_Generique_base)& champ = get_champ_post(nom_champ);
       if (sub_type(Champ_Generique_Statistiques_base,champ.valeur()))
         {
           const Champ_Generique_Statistiques_base& champ_stat = ref_cast(Champ_Generique_Statistiques_base,champ.valeur());

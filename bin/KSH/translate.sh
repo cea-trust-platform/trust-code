@@ -11,7 +11,7 @@ files=$*
 dictionary=`mktemp_`
 awk -F"|" '{if ($1!="" && gsub("XXX","",$1)==0) print length($2)" "$0}' $TRUST_ROOT/doc/TRUST/Keywords.txt | sort -nr | awk '{print $2}' > $dictionary
 
-MonoDir=$TRUST_ROOT/MonoDir_mpi_opt && [ ! -d $MonoDir ] && monodir
+MonoDir=$TRUST_ROOT/MonoDir_mpi_opt && [ ! -d $MonoDir ] && make opt
 tmp=`mktemp_`
 # Check the sources with the dictionary (we start with the longest keywords to avoid some obvious problems...)
 for french in `cat $dictionary | awk -F"|" '{print $2}'`

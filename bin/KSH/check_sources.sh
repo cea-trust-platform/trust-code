@@ -284,7 +284,7 @@ then
 	 newer_files=`find * -type f  \( -name make.include -o -name '*'.cpp -o -name '*'.h -o -name '*'.c \) -newer ${reffile} | grep -v / | grep -v "\.o$"`
 	 new_newer_files=`find . -maxdepth 1 -type f -newer ${reffile} | grep -v CMakeLists.txt` 
       fi
-	[ "$new_newer_files" = "" ] && echo rien de neuf.... && exit 0
+	[ "$new_newer_files" = "" ] && exit 0
      mk_Instancie
       #############
       # Git check #

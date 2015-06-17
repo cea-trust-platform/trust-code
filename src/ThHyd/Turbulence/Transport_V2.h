@@ -69,6 +69,8 @@ public:
   virtual const Champ_Inc& inconnue() const;
   virtual Champ_Inc& inconnue();
   int controler_V2();
+  const RefObjU& get_modele(Type_modele type) const;
+
 
   /////////////////////////////////////////////////////
   const Motcle& domaine_application() const;

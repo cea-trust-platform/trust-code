@@ -41,6 +41,16 @@ Entree& Champ_input_P0::readOn(Entree& is)
   mon_pb->domaine().zone(0).creer_tableau_elements(valeurs_);
   associer_zone_dis_base(mon_pb->domaine_dis().zone_dis(0));
   mon_pb->addInputField(*this);
+
+
+  if (initial_value_.size_array()>0)
+    {
+      int nb_elem_tot=valeurs_.dimension_tot(0);
+      for (int ele=0; ele< nb_elem_tot; ele++)
+        for (int c=0; c<nb_compo_; c++)
+          valeurs_(ele,c)=initial_value_(c);
+    }
+
   return is;
 }
 

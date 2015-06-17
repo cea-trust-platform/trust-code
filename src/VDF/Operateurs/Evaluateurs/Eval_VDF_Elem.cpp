@@ -19,11 +19,12 @@
 // Version:     /main/4
 //
 //////////////////////////////////////////////////////////////////////////////
-
+#include <Champ_P0_VDF.h>
 #include <Eval_VDF_Elem.h>
 
-void Eval_VDF_Elem::associer_inconnue(const Champ_P0_VDF& inco)
+void Eval_VDF_Elem::associer_inconnue(const Champ_base& inco)
 {
+  assert(sub_type(Champ_P0_VDF,inco));
   inconnue=inco;
 }
 

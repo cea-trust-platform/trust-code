@@ -28,8 +28,7 @@
 #include <Zone_VDF.h>
 #include <Zone_Cl_VDF.h>
 
-Implemente_base(Perte_Charge_VDF_Face,"Perte_Charge_VDF_Face",Source_base);
-
+Implemente_base(Perte_Charge_VDF_Face,"Perte_Charge_VDF_Face",Source_dep_inco_base);
 
 
 //// printOn

@@ -25,9 +25,6 @@
 #include <Champ_Don.h>
 #include <Les_Cl.h>
 #include <Champ_Uniforme.h>
-#include <Modele_turbulence_hyd_K_Eps_Bas_Reynolds.h>
-#include <Turbulence_hyd_sous_maille_VEF.h>
-#include <Turbulence_hyd_sous_maille_Smago_VEF.h>
 #include <Paroi_negligeable_VEF.h>
 #include <Debog.h>
 #include <DoubleTrav.h>

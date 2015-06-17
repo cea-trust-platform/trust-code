@@ -1,0 +1,2 @@
+tail -1 conduc_genepi_S_lin_1_pb_Diffusion_chaleur.out  > conduc_genepi_S_lin_1_fin.out
+egrep -v "^404$"  `ls -rt conduc_genepi_S_lin_1.lata.TEMPERATURE.SOM.dom* |tail -1` | awk '{print ((FNR-1)/100.*2,$1)}' > Profil_T.out

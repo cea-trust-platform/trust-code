@@ -418,6 +418,9 @@ int Solv_GCP::resoudre_(const Matrice_Base& matrice,
     }
   else
     {
+      resu_.reset();
+      residu_.reset();
+      tmp_p_avec_items_virt_.reset();
       resu_.copy(solution, Array_base::NOCOPY_NOINIT);
       residu_.copy(solution, Array_base::NOCOPY_NOINIT);
       tmp_p_avec_items_virt_.copy(solution, Array_base::NOCOPY_NOINIT);

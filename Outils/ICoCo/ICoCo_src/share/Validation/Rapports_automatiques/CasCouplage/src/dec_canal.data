@@ -1,0 +1,24 @@
+dimension 3
+
+Domaine canal
+mailler canal {
+	Pave Cavite {
+		Origine 0 0 0
+     		Nombre_de_Noeuds 10 9 9
+		Longueurs 0.1 0.05 0.05
+	} {
+		Bord entree X = 0     0 <= Y <= 0.05 0 <= Z <= 0.05 
+		Bord sortie X = 0.1   0 <= Y <= 0.05 0 <= Z <= 0.05 
+		Bord paroi  Y = 0     0 <= X <= 0.1  0 <= Z <= 0.05 
+		Bord paroi  Y = 0.05  0 <= X <= 0.1  0 <= Z <= 0.05 
+		Bord paroi  Z = 0     0 <= X <= 0.1  0 <= Y <= 0.05 
+		Bord paroi  Z = 0.05  0 <= X <= 0.1  0 <= Y <= 0.05 
+	}	
+}
+tetraedriser_homogene_compact canal
+Decouper canal {
+        Partitionneur tranche { tranches 1 2 1 }
+        Larg_joint 2
+        Nom_Zones canal
+ }
+

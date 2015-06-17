@@ -36,12 +36,6 @@ class Descripteur : public Objet_U
   Declare_instanciable_sans_constructeur(Descripteur);
 public:
   Descripteur();
-  void affecte_deb(int);
-  void affecte_nb(int);
-  void affecte_stride(int);
-  int deb() const;
-  int nb() const;
-  int stride() const;
 private:
   int deb_;    // Indice de debut dans le tableau des donnees
   int nb_;     // Nombre d'elements dans le tableau des donnees

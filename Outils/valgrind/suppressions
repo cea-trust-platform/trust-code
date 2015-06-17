@@ -1,4 +1,14 @@
 {
+   gcc_511
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   obj:/usr/lib64/libstdc++.so.6.0.21
+   fun:call_init.part.0
+   fun:_dl_init
+   obj:/usr/lib64/ld-2.21.so
+   }
+{
    mumps_para
    Memcheck:User
    fun:check_mem_is_defined_untyped

@@ -457,11 +457,16 @@ Figure {
 	legend sans
 	width 7cm
         include_description_curves 0
+	
+	grid 
+	xtics 0.02
+	ytics auto
+        
 	Curve {
 		legend "VDF"
 		origin "TRUST"
 		Version "1.5.3-beta_build_180907"
-		segment ./cond_coup_fictif_vdf_impl/cond_coup_fictif_vdf_impl ERREUR_S 
+		segment ./cond_coup_fictif_vdf_impl/cond_coup_fictif_vdf_impl ERREUR_F 
 		Style linespoints
 	}
 }

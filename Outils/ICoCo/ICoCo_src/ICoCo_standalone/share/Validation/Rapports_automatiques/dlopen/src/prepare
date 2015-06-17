@@ -1,0 +1,11 @@
+mkdir -p std 
+cp dlopen/* std
+chmod +w std/*
+sed "s/check_dynamique/check/; s/dynamique.data/couplage.data/" dlopen/pre_run > std/pre_run
+cd dlopen
+./configure
+cd ../std
+./configure
+cd ..
+# make couplage
+

@@ -224,8 +224,8 @@ int Source_base::impr(Sortie& os) const
 
           if(Process::je_suis_maitre())
             Flux << temps;
-
-          mp_sum_for_each_item(bilan_);
+          DoubleVect bilan_p(bilan_);
+          mp_sum_for_each_item(bilan_p);
           /*
           for(int k=0; k<nb_compo; k++)
                bilan_(k)=Process::mp_sum(bilan_(k)); */
@@ -236,7 +236,7 @@ int Source_base::impr(Sortie& os) const
             {
               Flux << espace;
               for(int k=0; k<nb_compo; k++)
-                Flux << espace << bilan_(k);
+                Flux << espace << bilan_p(k);
               Flux << finl;
             }
         }

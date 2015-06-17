@@ -7,7 +7,7 @@ fichier_tmp=`mktemp_`
 # absolument identiques sur toutes les machines et ainsi
 # eviter des messages de changement des fichiers instancie...
 # GF ajout de -f pour ignorer majuscule minuscule
-for dir in `find ./src/* -type d -print | sort -f 2>/dev/null`
+for dir in `find ./src/* -follow -type d -print | sort -f 2>/dev/null`
 do
    if [ $dir != "./src/MAIN" ] && [ -f $dir/make.include ]
    then
@@ -35,10 +35,4 @@ else
 fi
 
 rm -f $fichier_tmp
-### creation d'un makefile global sur TRUST_ROOT
-makefile=$TRUST_ROOT/makefile.xemacs
-echo "include \$(TRUST_ENV)/makefile" > $makefile
-echo  SUBDIRS=`cat $TRUST_ENV/rep.TRUST` >> $makefile
-echo all: >> $makefile
-echo $ECHO_OPTS \\t "@for dir in \$(SUBDIRS); do (cd \$\$dir && \$(MAKE) $@) ; done" >> $makefile
 

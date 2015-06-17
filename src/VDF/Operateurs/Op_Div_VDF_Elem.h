@@ -57,7 +57,7 @@ class Op_Div_VDF_Elem : public Op_Div_VDF_base
 
 public:
 
-  inline Op_Div_VDF_Elem();
+  Op_Div_VDF_Elem();
   void associer(const Zone_dis& , const Zone_Cl_dis& ,
                 const Champ_Inc& );
   void volumique(DoubleTab& ) const;
@@ -67,16 +67,4 @@ protected:
   REF(Zone_VDF) la_zone_vdf;
   REF(Zone_Cl_VDF) la_zcl_vdf;
 };
-
-//
-// Fonctions inline de la classe Op_Div_VDF_Elem
-//
-// Description:
-// constructeur
-inline Op_Div_VDF_Elem::Op_Div_VDF_Elem() :
-  Op_Div_VDF_base(It_VDF_Elem(Eval_Div_VDF_Elem)())
-{
-}
-
-
 #endif

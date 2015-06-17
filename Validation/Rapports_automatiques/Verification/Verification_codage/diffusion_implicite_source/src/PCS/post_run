@@ -1,0 +1,1 @@
+compare_lata $1.lata PCS_impl.lata --dernier >& diff_$1.out

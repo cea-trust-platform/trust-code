@@ -71,17 +71,24 @@ void Op_Conv_Amont_VDF_Elem::associer_vitesse(const Champ_base& ch_vit)
   eval_conv.associer(vit);                // Eval_Conv_VDF::associer
 }
 
-const Champ_Inc_base& Op_Conv_Amont_VDF_Elem::vitesse() const
+const Champ_base& Op_Conv_Amont_VDF_Elem::vitesse() const
 {
   Eval_Amont_VDF_Elem& eval_conv = (Eval_Amont_VDF_Elem&) iter.evaluateur();
   return eval_conv.vitesse();
 }
 
-Champ_Inc_base& Op_Conv_Amont_VDF_Elem::vitesse()
+Champ_base& Op_Conv_Amont_VDF_Elem::vitesse()
 {
   Eval_Amont_VDF_Elem& eval_conv = (Eval_Amont_VDF_Elem&) iter.evaluateur();
   return eval_conv.vitesse();
 }
 
-
-
+//
+// Fonctions inline de la classe Op_Conv_Amont_VDF_Elem
+//
+// Description:
+// constructeur
+Op_Conv_Amont_VDF_Elem::Op_Conv_Amont_VDF_Elem() :
+  Op_Conv_VDF_base(It_VDF_Elem(Eval_Amont_VDF_Elem)())
+{
+}

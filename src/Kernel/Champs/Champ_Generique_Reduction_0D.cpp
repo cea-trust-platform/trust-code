@@ -301,8 +301,8 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
       double sum=0;
       double volume=0;
       const DoubleVect& volumes = zvf.volumes();
-      int volumes_size_tot = mp_sum(volumes.size_array());
-      if (volumes_size_tot==0)
+      //int volumes_size_tot = mp_sum(volumes.size_array());
+      if (volumes.size_array()<zvf.nb_elem())
         {
           Cerr << "The mesh volumes of the domain " << zvf.zone().domaine().le_nom() << " are not available yet." << finl;
           Cerr << "It is not implemented yet." << finl;
@@ -382,11 +382,66 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
               volume+=volume_controle_(i);
             }
         }
-
       val_extraite = mp_sum(sum);
       if (methode_=="moyenne_ponderee")
         val_extraite /= mp_sum(volume);
     }
+  else if (methode_=="moyenne_ponderee_porosite" || methode_=="somme_ponderee_porosite")
+    {
+      // - au ELEM -> on pondere par les volumes des elements *porosite_volumique
+      // si on n'est pas aux ELEM erreur
+
+      const Zone_dis_base& zone_dis = get_ref_zone_dis_base();
+      const Zone_VF& zvf = ref_cast(Zone_VF,zone_dis);
+      double sum=0;
+      double volume=0;
+      const DoubleVect& volumes = zvf.volumes();
+      // int volumes_size_tot = mp_sum(volumes.size_array());
+      if (volumes.size_array()<zvf.nb_elem())
+        {
+          Cerr << "The mesh volumes of the domain " << zvf.zone().domaine().le_nom() << " are not available yet." << finl;
+          Cerr << "It is not implemented yet." << finl;
+          exit();
+        }
+      if (get_nb_sources()!=2)
+        {
+          Cerr<<" you must define the porosity "<<finl;
+          exit();
+        }
+
+      // au ELEM
+      if (get_localisation()==ELEMENT)
+        {
+          Champ source_espace_stockage2;
+          const Champ_base& source2 = get_source(1).get_champ(source_espace_stockage2);
+          Motcle nom_source_1(get_source(1).get_nom_post());
+          if (!(nom_source_1.debute_par("porosite_volumique")||(nom_source_1.debute_par("beta"))))
+            {
+              Cerr<<" Error with option pondere_porosite !!! "<< get_source(1).get_nom_post()<<finl;
+              exit();
+
+            }
+          const DoubleVect& poro= source2.valeurs();
+          assert(volumes.size_array()==poro.size_array());
+          int nb_elem = zvf.nb_elem();
+          for (int i=0; i<nb_elem; i++)
+            {
+              sum+=val_source(i)*volumes(i)*poro(i);
+              volume+=volumes(i)*poro(i);
+            }
+        }
+      else
+        {
+          Cerr<<que_suis_je()<<" not implemented for this localisation "<<finl;
+          exit();
+
+        }
+
+      val_extraite = mp_sum(sum);
+      if (methode_=="moyenne_ponderee_porosite")
+        val_extraite /= mp_sum(volume);
+    }
+
   else if (methode_=="somme" || methode_=="moyenne")
     {
 

@@ -451,8 +451,8 @@ inline void Eval_Dift_VDF_const_Face::flux_arete_fluide(const DoubleTab& inco, i
   double visc_turb = 0.5*(dv_diffusivite_turbulente(elem1)
                           + dv_diffusivite_turbulente(elem2));
   int ori= orientation(fac3);
-  double vit_imp = 0.5*(inconnue->val_imp_face_bord(rang1,ori)+
-                        inconnue->val_imp_face_bord(rang2,ori));
+  double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori,la_zcl)+
+                        Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori,la_zcl));
 
   double dist = dist_norm_bord(fac1);
   double tau = signe * (vit_imp - inco[fac3])/dist;
@@ -509,8 +509,8 @@ inline void Eval_Dift_VDF_const_Face::secmem_arete_fluide(int fac1, int fac2, in
   double visc_turb = 0.5*(dv_diffusivite_turbulente(elem1)
                           + dv_diffusivite_turbulente(elem2));
   int ori= orientation(fac3);
-  double vit_imp = 0.5*(inconnue->val_imp_face_bord(rang1,ori)+
-                        inconnue->val_imp_face_bord(rang2,ori));
+  double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori,la_zcl)+
+                        Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori,la_zcl));
 
   double dist = dist_norm_bord(fac1);
   double tau = signe*vit_imp/dist;
@@ -534,8 +534,8 @@ inline double Eval_Dift_VDF_const_Face::flux_arete_paroi(const DoubleTab& inco, 
   int rang2 = (fac2-premiere_face_bord);
   int ori = orientation(fac3);
   double vit = inco(fac3);
-  double vit_imp = 0.5*(inconnue->val_imp_face_bord(rang1,ori)+
-                        inconnue->val_imp_face_bord(rang2,ori));
+  double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori,la_zcl)+
+                        Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori,la_zcl));
   if ((indic_bas_Re==1)||(indic_lp_neg==1))
     {
       double dist = dist_norm_bord(fac1);
@@ -586,8 +586,8 @@ inline double Eval_Dift_VDF_const_Face::secmem_arete_paroi(int fac1, int fac2, i
   int ori = orientation(fac3);
   const DoubleTab& inco = inconnue->valeurs();
   double vit = inco(fac3);
-  double vit_imp = 0.5*(inconnue->val_imp_face_bord(rang1,ori)+
-                        inconnue->val_imp_face_bord(rang2,ori));
+  double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori,la_zcl)+
+                        Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori,la_zcl));
   if ((indic_bas_Re==1)||(indic_lp_neg==1))
     {
       double dist = dist_norm_bord(fac1);
@@ -634,9 +634,9 @@ inline void Eval_Dift_VDF_const_Face::flux_arete_paroi_fluide(const DoubleTab& i
   // On ne sait pas qui de fac1 ou de fac2 est la face de paroi
   double vit_imp;
   if (est_egal(inco[fac1],0)) // fac1 est la face de paroi
-    vit_imp = inconnue->val_imp_face_bord(rang2,ori);
+    vit_imp = Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori,la_zcl);
   else  // fac2 est la face de paroi
-    vit_imp = inconnue->val_imp_face_bord(rang1,ori);
+    vit_imp = Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori,la_zcl);
 
   double dist = dist_norm_bord(fac1);
   double tau = signe * (vit_imp - inco[fac3])/dist;
@@ -699,9 +699,9 @@ inline void Eval_Dift_VDF_const_Face::secmem_arete_paroi_fluide(int fac1, int fa
 
   double vit_imp;
   if (est_egal(inconnue->valeurs()[fac1],0)) // fac1 est la face de paroi
-    vit_imp = inconnue->val_imp_face_bord(rang2,ori);
+    vit_imp = Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori,la_zcl);
   else  // fac2 est la face de paroi
-    vit_imp = inconnue->val_imp_face_bord(rang1,ori);
+    vit_imp = Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori,la_zcl);
 
   double dist = dist_norm_bord(fac1);
   double tau = signe*vit_imp/dist;
@@ -887,8 +887,8 @@ inline void Eval_Dift_VDF_const_Face::flux_arete_symetrie_fluide(const DoubleTab
   double visc_turb = 0.5*(dv_diffusivite_turbulente(elem1)
                           + dv_diffusivite_turbulente(elem2));
   int ori= orientation(fac3);
-  double vit_imp = 0.5*(inconnue->val_imp_face_bord(rang1,ori)+
-                        inconnue->val_imp_face_bord(rang2,ori));
+  double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord_sym(inco,inconnue->temps(),rang1,ori,la_zcl)+
+                        Champ_Face_get_val_imp_face_bord_sym(inco,inconnue->temps(),rang2,ori,la_zcl));
 
   double dist = dist_norm_bord(fac1);
   double tau = signe * (vit_imp - inco[fac3])/dist;
@@ -945,8 +945,8 @@ inline void Eval_Dift_VDF_const_Face::secmem_arete_symetrie_fluide(int fac1, int
   double visc_turb = 0.5*(dv_diffusivite_turbulente(elem1)
                           + dv_diffusivite_turbulente(elem2));
   int ori= orientation(fac3);
-  double vit_imp = 0.5*(inconnue->val_imp_face_bord(rang1,ori)+
-                        inconnue->val_imp_face_bord(rang2,ori));
+  double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori,la_zcl)+
+                        Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori,la_zcl));
 
   double dist = dist_norm_bord(fac1);
   double tau = signe*vit_imp/dist;
@@ -970,8 +970,8 @@ inline double Eval_Dift_VDF_const_Face::flux_arete_symetrie_paroi(const DoubleTa
   int rang2 = (fac2-premiere_face_bord);
   int ori = orientation(fac3);
   //  double vit = inco(fac3);
-  double vit_imp = 0.5*(inconnue->val_imp_face_bord(rang1,ori)+
-                        inconnue->val_imp_face_bord(rang2,ori));
+  double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord_sym(inco,inconnue->temps(),rang1,ori,la_zcl)+
+                        Champ_Face_get_val_imp_face_bord_sym(inco,inconnue->temps(),rang2,ori,la_zcl));
   if ((indic_bas_Re==1)||(indic_lp_neg==1))
     {
       double dist = dist_norm_bord(fac1);
@@ -1015,8 +1015,8 @@ inline double Eval_Dift_VDF_const_Face::secmem_arete_symetrie_paroi(int fac1, in
   int rang1 = (fac1-premiere_face_bord);
   int rang2 = (fac2-premiere_face_bord);
   int ori = orientation(fac3);
-  double vit_imp = 0.5*(inconnue->val_imp_face_bord(rang1,ori)+
-                        inconnue->val_imp_face_bord(rang2,ori));
+  double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori,la_zcl)+
+                        Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori,la_zcl));
   if ((indic_bas_Re==1)||(indic_lp_neg==1))
     {
       const DoubleTab& inco = inconnue->valeurs();

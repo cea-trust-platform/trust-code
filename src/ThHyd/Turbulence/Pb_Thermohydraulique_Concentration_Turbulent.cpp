@@ -228,10 +228,7 @@ int Pb_Thermohydraulique_Concentration_Turbulent::verifier()
   // Verification de la compatibilite des conditions aux limites
   tester_compatibilite_hydr_thermique(zone_Cl_hydr,zone_Cl_th);
   tester_compatibilite_hydr_concentration(zone_Cl_hydr,zone_Cl_co);
-  if ( sub_type(Modele_turbulence_hyd_K_Eps, eq_hydraulique.get_modele(TURBULENCE).valeur() )
-       || sub_type(Modele_turbulence_hyd_K_Eps_2_Couches, eq_hydraulique.get_modele(TURBULENCE).valeur() )
-       || sub_type(Modele_turbulence_hyd_K_Eps_V2, eq_hydraulique.get_modele(TURBULENCE).valeur() )
-       || sub_type(Modele_turbulence_hyd_K_Eps_Bas_Reynolds, eq_hydraulique.get_modele(TURBULENCE).valeur() )  )
+  if ( sub_type(Mod_turb_hyd_RANS, eq_hydraulique.get_modele(TURBULENCE).valeur() ))
     {
       const Mod_turb_hyd_RANS& le_mod_RANS = ref_cast(Mod_turb_hyd_RANS, eq_hydraulique.get_modele(TURBULENCE).valeur());
       const Transport_K_Eps_base& eqn = ref_cast(Transport_K_Eps_base, le_mod_RANS.eqn_transp_K_Eps());

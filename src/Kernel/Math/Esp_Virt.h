@@ -38,18 +38,6 @@ class Esp_Virt : public Objet_U
   Declare_instanciable_sans_constructeur(Esp_Virt);
 public:
   Esp_Virt();
-  void affecte_PE_voisin(int);
-  void affecte_deb(int,int=0);
-  void affecte_nb(int,int=0);
-  // void affecte_stride(int,int=0);
-  void affecte_descripteur(const VECT(Descripteur)& vdesc);
-  int num_PE_voisin() const;
-  int deb(int=0) const;
-  int nb(int=0) const;
-  // int stride(int=0) const;
-
-  VECT(Descripteur)& desc_ev();
-  const VECT(Descripteur)& desc_ev() const;
 
 private:
   int PE_voisin_;        // Numero du PE possedant la partie reelle

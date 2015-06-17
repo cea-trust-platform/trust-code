@@ -34,7 +34,8 @@ system("mv tmp "file);\
 }'
 
 # Construction d'un fichier avec les performances par machine
-machines=`ls *_*.cpu | awk -F_ '{print $1}' | sort -u`
+#machines=`ls *_*.cpu | awk -F_ '{print $1}' | sort -u`
+machines=`liste_machines benchmark  | awk -F. '{print $1}' | sort -u`
 sec_today=`date +'%s'`
 for machine in $machines
 do
@@ -54,7 +55,8 @@ do
        # Conversion en secondes
        sec_date=`date +'%s' -d $date` 
        echo $sec_date" "$sec_today" "$date | awk '{printf("%4d  %s",($1-$2)/(3600*24),$3)}' >> $log
-       awk -F'|' '(NF==7) && !/nb_proc/ {printf(" %5.2f %3.2f",$2,$6)} (NF==0) {exit}' $cpu >> $log
+       #awk -F'|' '(NF==7) && !/nb_proc/ {printf(" %5.2f %3.2f",$2,$6)} (NF==0) {exit}' $cpu >> $log
+       awk -F'|' '($1<=4) && (NF==7) && !/nb_proc/ {printf(" %5.2f %3.2f",$2,$6)} (NF==0) {exit}' $cpu >> $log
        echo >> $log
    done  
    echo "Creation de $log"

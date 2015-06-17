@@ -49,7 +49,7 @@ class Op_Dift_VDF_Multi_inco_Elem_Axi : public Op_Dift_VDF_base, public Op_VDF_E
 
 public:
 
-  inline Op_Dift_VDF_Multi_inco_Elem_Axi();
+  Op_Dift_VDF_Multi_inco_Elem_Axi();
   void associer(const Zone_dis& , const Zone_Cl_dis& ,
                 const Champ_Inc& );
   void associer_diffusivite(const Champ_base& );
@@ -75,7 +75,7 @@ class Op_Dift_VDF_Multi_inco_var_Elem_Axi : public Op_Dift_VDF_base, public Op_V
 
 public:
 
-  inline Op_Dift_VDF_Multi_inco_var_Elem_Axi();
+  Op_Dift_VDF_Multi_inco_var_Elem_Axi();
   void associer(const Zone_dis& , const Zone_Cl_dis& ,
                 const Champ_Inc& );
   void associer_diffusivite(const Champ_base& );
@@ -87,20 +87,6 @@ public:
   const Champ_base& diffusivite() const;
   double calculer_dt_stab() const;
 };
-
-
-//
-// Fonctions inline de la classe Op_Dift_VDF_Multi_inco_Elem_Axi
-//
-
-//// Op_Dift_VDF_Multi_inco_Elem_Axi
-//
-
-Op_Dift_VDF_Multi_inco_Elem_Axi::Op_Dift_VDF_Multi_inco_Elem_Axi()
-
-  : Op_Dift_VDF_base(It_VDF_Elem(Eval_Dift_VDF_Multi_inco_const_Elem_Axi)())
-{
-}
 
 // Description:
 // on dimensionne notre matrice.
@@ -121,12 +107,7 @@ inline void Op_Dift_VDF_Multi_inco_Elem_Axi::modifier_pour_Cl(Matrice_Morse& mat
 //// Op_Dift_VDF_Multi_inco_var_Elem_Axi
 //
 
-Op_Dift_VDF_Multi_inco_var_Elem_Axi::
-Op_Dift_VDF_Multi_inco_var_Elem_Axi()
 
-  : Op_Dift_VDF_base(It_VDF_Elem(Eval_Dift_VDF_Multi_inco_var_Elem_Axi)())
-{
-}
 
 // Description:
 // on dimensionne notre matrice.

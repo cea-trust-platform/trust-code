@@ -56,10 +56,11 @@ rep=${rep#$ROOT}
 
 # We keep the version
 version=`$TRUST_Awk '/\/\/ Version: / {print $3}' $file`
+   [ "$version" = "" ] && version=1
 
 if [ "$TRUST_TMP" = "" ]
 then
-   source env/Init_TRUST 1>/dev/null 2>&1
+   source env/env_TRUST.sh 1>/dev/null 2>&1
 fi
 
 # Si file est un fichier non vide, on met a jour l'en tete

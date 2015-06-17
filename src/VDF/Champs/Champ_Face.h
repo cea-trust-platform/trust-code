@@ -71,8 +71,6 @@ public:
   void verifie_valeurs_cl();
   int compo_normale_sortante(int ) const;
 
-  double val_imp_face_bord(int face,int comp) const;
-  double val_imp_face_bord(int face,int comp1,int comp2) const;
   inline const DoubleTab& tau_diag() const;
   inline const DoubleTab& tau_croises() const;
   inline DoubleTab& tau_diag();
@@ -114,6 +112,8 @@ public:
   DoubleVect& calcul_S_barre_sans_contrib_paroi(const DoubleTab&, DoubleVect&, const Zone_Cl_VDF&);
 
 private:
+  double val_imp_face_bord_private(int face,int comp) const;
+  double val_imp_face_bord_private(int face,int comp1,int comp2) const;
 
   REF(Zone_VDF) la_zone_VDF;
 
@@ -124,6 +124,10 @@ private:
 
 };
 
+double Champ_Face_get_val_imp_face_bord( const double& temp,int face,int comp, const Zone_Cl_VDF& zclo) ;
+double Champ_Face_get_val_imp_face_bord( const double& temp,int face,int comp, int comp2, const Zone_Cl_VDF& zclo) ;
+
+double Champ_Face_get_val_imp_face_bord_sym(const DoubleTab& tab_valeurs, const double& temp,int face,int comp, const Zone_Cl_VDF& zclo);
 //////////////////////////////////////////////////
 //
 //   Fonctions inline de la classe Champ_Face

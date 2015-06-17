@@ -1,0 +1,114 @@
+Parameters {
+	Title "Test implicitation of perte_charge_singuliere in diffusion_implicite"
+	Author fauchet 
+	Description On verifie que les pertes de charge en VDF sont bien implicites en diffusion_implicite 
+	Description les calculs PCS_expl et PCR_impl divergent (K grand) et ne sont pas lances
+	Description les calculs *10 *11 avec crank ne sont pas lances et sont à la limite de la convergence
+	TestCase PCS PCS_impl
+	TestCase PCS PCS00
+	TestCase PCS PCS01
+	TestCase PCR PCR_impl
+	TestCase PCR PCR00
+	TestCase PCR PCR01
+}
+
+Chapter {
+	Title Perte_charge_singuliere_vdf
+	Figure
+	{
+		labelx Time
+		labely residual
+		logy
+		Title "Convergence of the residuals"
+		Include_Description_Curves 0
+		Curve {
+			file PCS/PCS_impl.dt_ev
+			columns $1 $4
+			legend Euler_implicite
+			style lines
+		}
+		Curve {
+			file PCS/PCS00.dt_ev
+			columns $1 $4
+			legend Euler_explicite,diffusion_implicite
+			style lines
+		}
+		Curve {
+			file PCS/PCS01.dt_ev
+			columns $1 $4
+			legend Euler_explicite,diffusion_implicite, precond_diagonal
+			style lines
+		}
+	}	
+	Table {
+     		nb_columns 1
+		Description "Check that the results are coherent with PCS_impl"
+		label Error
+		line { 
+			file PCS/diff_PCS00.out
+			legend Euler_explicite,diffusion_implicite
+			last_line
+			nb_columns_file 6
+			colonnes $6
+		}
+			line { 
+			file PCS/diff_PCS01.out
+
+			legend Euler_explicite,diffusion_implicite, precond_diagonal
+			last_line
+			nb_columns_file 6
+			colonnes $6
+		}
+
+	}
+}
+Chapter {
+	Title Perte_charge_reguliere_vdf
+	Figure
+	{
+		labelx Time
+		labely residual
+		logy
+		Title "Convergence of the residuals"
+		Include_Description_Curves 0
+		Curve {
+			file PCR/PCR_impl.dt_ev
+			columns $1 $4
+			legend Euler_implicite
+			style lines
+		}
+		Curve {
+			file PCR/PCR00.dt_ev
+			columns $1 $4
+			legend Euler_explicite,diffusion_implicite
+			style lines
+		}
+		Curve {
+			file PCR/PCR01.dt_ev
+			columns $1 $4
+			legend Euler_explicite,diffusion_implicite, precond_diagonal
+			style lines
+		}
+	}	
+	Table {
+     		nb_columns 1
+		Description "Check that the results are coherent with PCR_impl"
+		label Error
+		line { 
+			file PCR/diff_PCR00.out
+			legend Euler_explicite,diffusion_implicite
+			last_line
+			nb_columns_file 6
+			colonnes $6
+		}
+			line { 
+			file PCR/diff_PCR01.out
+
+			legend Euler_explicite,diffusion_implicite, precond_diagonal
+			last_line
+			nb_columns_file 6
+			colonnes $6
+		}
+
+	}
+}

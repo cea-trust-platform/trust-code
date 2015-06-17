@@ -42,6 +42,7 @@ compare_sonde test_100 seq_test_100 1>compare_sonde.log 2>&1
 [ $? != 0 ] && ko=1
 
 
+[ "`visit -version 1>/dev/null 2>&1;echo $?`" != 0 ] && exit 0
 # on tente le rapport
 $TRUST_ROOT/Validation/Outils/Genere_courbe/src/genererCourbes.py -p Extrait_plan.prm 1>rapport.log 2>&1
 if [ $? -eq 0 ] 

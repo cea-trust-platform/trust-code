@@ -57,12 +57,12 @@ public :
     return resoudre_systeme(M,A,B);
   };
   void create_solver(Entree&);
+  inline void reset();
 #ifdef __PETSCKSP_H
   inline Solv_Petsc& operator=(const Solv_Petsc&);
   inline Solv_Petsc(const Solv_Petsc&);
 
   inline void initialize();
-
   inline const Nom& get_chaine_lue() const
   {
     return chaine_lue_ ;
@@ -73,10 +73,10 @@ public :
   };
 
   void lecture(Entree&);
-  static int instance;          // Nombre d'instance de la classe
   // Timers:
   static PetscLogStage KSPSolve_Stage_;
 #endif
+  static int instance;          // Nombre d'instance de la classe
 
 protected :
 #ifdef __PETSCKSP_H
@@ -149,15 +149,25 @@ inline Solv_Petsc::Solv_Petsc()
 {
 #ifdef __PETSCKSP_H
   initialize();
+  instance++;
+  //  Journal()<<"creation solv_petsc "<<instance<<finl;
 #endif
 }
 
 inline Solv_Petsc::~Solv_Petsc()
 {
+  reset();
+  instance--;
+  // Journal()<<" destr solv_petsc "<<instance<<finl;
+}
+inline void Solv_Petsc::reset()
+{
 #ifdef __PETSCKSP_H
   if (solveur_cree_)
-    KSPDestroy(&SolveurPetsc_);
-
+    {
+      assert(solveur_cree_==1);
+      KSPDestroy(&SolveurPetsc_);
+    }
   if (nb_matrices_creees_)
     {
       // Destruction des vecteurs
@@ -171,7 +181,7 @@ inline Solv_Petsc::~Solv_Petsc()
       // Destruction matrice
       MatDestroy(&MatricePetsc_);
     }
-  instance--;
+  initialize();
 #endif
 }
 
@@ -215,12 +225,13 @@ inline void Solv_Petsc::initialize()
       Cerr << "******************************************************************************************" << finl;
       PetscLogStageRegister("KSPSolve",&KSPSolve_Stage_);
     }
-  instance++;
 }
 
 inline Solv_Petsc::Solv_Petsc(const Solv_Petsc& org):SolveurSys_base::SolveurSys_base()
 {
   initialize();
+  instance++;
+  // Journal()<<"copie solv_petsc "<<instance<<finl;
   cuda_=org.cuda();
   // on relance la lecture ....
   EChaine recup(org.get_chaine_lue());

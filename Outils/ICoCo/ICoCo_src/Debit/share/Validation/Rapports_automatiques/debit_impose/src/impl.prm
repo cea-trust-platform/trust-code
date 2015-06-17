@@ -1,0 +1,76 @@
+parametres {
+	titre "cas test debit"
+	auteur "G.F."
+	description "Calculs menes en VEF"
+	reference "moi_meme"
+	casTest .  test_opt.data exemple de debit impose
+	casTest .  test_opt2.data
+	casTest .  test_opt3.data
+}
+Chapitre {
+	titre "Debit obtenu "
+	# definition figure 0
+	Tableau {
+		nb_colonnes 2
+		label  temps|debit
+		Ligne {
+			legende calcul
+			alias calcul
+			fichier test_opt_pb_Debit.out
+			derniere_ligne
+			colonnes $1 (-$5)
+			nb_colonnes_fichier 6
+		}
+		Ligne {
+			legende calcul avec champ_input
+			alias calcul_avec_champ_input
+			fichier test_opt2_pb_Debit.out
+			derniere_ligne
+			colonnes $1 (-$5)
+			nb_colonnes_fichier 6
+		}
+		Ligne {
+			legende calcul avec champ_front_fonc_txyz
+			alias calcul_avec_champ_front_fonc_txyz
+			fichier test_opt3_pb_Debit.out
+			derniere_ligne
+			colonnes $1 (-$5)
+			nb_colonnes_fichier 6
+		}
+		Ligne {
+			legende voulu
+			alias voulu
+			origine jdd
+			valeurs 10. 5.
+		}
+	}
+	# definition figure 1
+	Visu {
+		titre "visualisation du champ de vitesse sur IN"
+		description la vitesse doit etre uniforme meme si les surfaces sont differentes.
+		mesh test_opt.lata IN
+		vector test_opt.lata IN VITESSE ELEM
+		normal3d -0.0543768 -0.677396 0.733606
+		up3d -0.407612 0.685749 0.602993
+		cycles  -1
+		width 12cm
+	}
+	# definition figure 2
+	Figure {
+		titre "essai avec un champ_front_fonc_txyz"
+		titre_figure " "
+		labelX t
+		labelY debit
+		inclureDescCourbes 0
+		width 10cm
+		Courbe {
+			fichier test_opt3_pb_Debit.out
+			colonnes 1 (-$5)
+			style linespoints
+		}
+		Courbe {
+			origine ana
+			fonction (1+4*x/10)
+		}
+	}
+}

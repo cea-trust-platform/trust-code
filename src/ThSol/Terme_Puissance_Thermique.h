@@ -57,7 +57,7 @@ public :
   {
     la_puissance.mettre_a_jour(temps);
   };
-
+  void modify_name_file(Nom& ) const;
 protected:
 
   REF(Champ_Don) rho_ref;

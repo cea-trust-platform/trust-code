@@ -24,7 +24,7 @@
 #ifndef Perte_Charge_VDF_Face_included
 #define Perte_Charge_VDF_Face_included
 
-#include <Source_base.h>
+#include <Source_dep_inco_base.h>
 #include <Ref_Fluide_Incompressible.h>
 #include <Ref_Champ_Face.h>
 #include <Ref_Zone_VDF.h>
@@ -43,7 +43,7 @@ class Probleme_base;
 //
 //
 
-class Perte_Charge_VDF_Face : public Source_base
+class Perte_Charge_VDF_Face : public Source_dep_inco_base
 {
 
   Declare_base(Perte_Charge_VDF_Face);
@@ -51,8 +51,6 @@ class Perte_Charge_VDF_Face : public Source_base
 public:
 
   void associer_pb(const Probleme_base& );
-  virtual DoubleTab& ajouter(DoubleTab& ) const =0;
-  virtual DoubleTab& calculer(DoubleTab& ) const =0;
   void mettre_a_jour(double temps)
   {
     ;

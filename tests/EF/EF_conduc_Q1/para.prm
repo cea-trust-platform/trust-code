@@ -1,0 +1,38 @@
+Parametres {
+	Titre "Conduction couplée implicite"
+	Description "Calculs menés en VDF/VEF avec/sans paroi fictive"
+	Auteur "G.F."
+	CasTest FTD_all_VEF FTD_all_VEF.data
+}
+
+Chapitre {
+	Titre "FT"
+	Description " test visu "
+Figure {
+	dimension 3
+	courbe {
+	plan ./toto.data SONDE 
+}
+}
+visu {
+	titre "temperature"
+	description "on trace la temperature et les ecarts // séquentiels"
+	mesh ./toto.lata dom
+	pseudocolor ./toto.lata dom TEMPERATURE SOM
+	instruction_visit DefineScalarExpression("erreur_parallele_SOM_dom","TEMPERATURE_SOM_dom-pos_cmfe(<PAR_toto.lata[0]id:TEMPERATURE_SOM_dom>, dom,1000)")
+	isovaleurs ./toto.lata dom erreur_parallele SOM
+}
+visu {
+	titre "temperature-x"
+	description "donne l'erreur"
+	mesh ./toto.lata dom
+	instruction_visit DefineScalarExpression("erreur_SOM_dom","TEMPERATURE_SOM_dom-coord(dom)[0]")
+	pseudocolor ./toto.lata dom erreur SOM
+}
+
+}
+
+
+
+
+

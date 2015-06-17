@@ -21,9 +21,8 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Dift_VDF_var_Elem.h>
-#include <Modele_turbulence_scal_Fluctuation_Temperature.h>
 #include <Champ_P0_VDF.h>
-#include <Modele_turbulence_scal_Fluctuation_Temperature_W.h>
+#include <Modele_turbulence_scal_base.h>
 
 Implemente_instanciable_sans_constructeur(Op_Dift_VDF_var_Elem,"Op_Dift_VDF_var_P0_VDF",Op_Dift_VDF_base);
 
@@ -109,13 +108,11 @@ void Op_Dift_VDF_var_Elem::completer()
   const Modele_turbulence_scal_base& mod_turb = ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur());
   const Champ_Fonc& alpha_t = mod_turb.diffusivite_turbulente();
   associer_diffusivite_turbulente(alpha_t);
-  if  ( !(sub_type(Modele_turbulence_scal_Fluctuation_Temperature,mod_turb))
-        && !(sub_type(Modele_turbulence_scal_Fluctuation_Temperature_W,mod_turb)) )
-    {
-      const Turbulence_paroi_scal& loipar = mod_turb.loi_paroi();
-      if (loipar.non_nul())
-        associer_loipar(loipar);
-    }
+  {
+    const Turbulence_paroi_scal& loipar = mod_turb.loi_paroi();
+    if (loipar.non_nul())
+      associer_loipar(loipar);
+  }
   Evaluateur_VDF& eval = iter.evaluateur();
   Eval_Dift_VDF_var_Elem& eval_diff_turb = (Eval_Dift_VDF_var_Elem&) eval;
   eval_diff_turb.associer_modele_turbulence(mod_turb);
@@ -237,3 +234,12 @@ double Op_Dift_VDF_var_Elem::calculer_dt_stab() const
   return dt_stab;
 }
 
+//
+// Fonctions inline de la classe Op_Dift_VDF_var_Elem
+//
+//// Op_Dift_VDF_Elem
+//
+Op_Dift_VDF_var_Elem::Op_Dift_VDF_var_Elem() :
+  Op_Dift_VDF_base(It_VDF_Elem(Eval_Dift_VDF_var_Elem)())
+{
+}

@@ -102,10 +102,11 @@ Sortie& Postraitements::printOn(Sortie& s) const
 int Postraitements::lire_postraitements(Entree& is, const Motcle& motlu,
                                         const Probleme_base& mon_pb)
 {
-  Motcles motcles(3);
+  Motcles motcles(4);
   motcles[0] = "postraitement";
   motcles[1] = "postraitements";
   motcles[2] = "liste_postraitements";
+  motcles[3] = "liste_de_postraitements";
 
   int lerang = motcles.search(motlu);
 
@@ -122,7 +123,7 @@ int Postraitements::lire_postraitements(Entree& is, const Motcle& motlu,
       post.valeur().associer_nom_et_pb_base("neant", mon_pb);
       is >> post.valeur();
     }
-  else if (lerang == 1 || lerang == 2)
+  else if (lerang == 1 || lerang == 2 || lerang == 3 )
     {
       // Lecture d'une liste
       // Lire l'accolade
@@ -139,16 +140,33 @@ int Postraitements::lire_postraitements(Entree& is, const Motcle& motlu,
       while (motlu2 != "}")
         {
           Motcle type, nom_du_post;
-          if (lerang == 1)
+          switch (lerang)
             {
-              type = "Postraitement";
-              nom_du_post = motlu2;
-            }
-          else
-            {
-              // Le premier mot est le type, le deuxieme est le nom
-              type = motlu2;
-              is >> nom_du_post;
+            case 1:
+              {
+                type = "Postraitement";
+                nom_du_post = motlu2;
+                break;
+              }
+            case 2:
+              {
+                Cerr<<" Warning liste_postraitements obsolete option" <<finl;
+                // Le premier mot est le type, le deuxieme est le nom
+                type = motlu2;
+                is >> nom_du_post;
+                break;
+              }
+            case 3:
+              {
+                nom_du_post = motlu2;
+                is >> type ;
+                break;
+              }
+            default:
+              {
+                Cerr<< "Error in Postraitements"<<finl;
+                exit();
+              }
             }
           list_nom_post.add_if_not(nom_du_post);
 

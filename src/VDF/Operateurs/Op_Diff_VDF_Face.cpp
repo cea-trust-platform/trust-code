@@ -45,3 +45,8 @@ Entree& Op_Diff_VDF_Face::readOn(Entree& s )
   return s ;
 }
 
+// Description:
+// constructeur
+Op_Diff_VDF_Face::Op_Diff_VDF_Face():Op_Diff_VDF_Face_base(It_VDF_Face(Eval_Diff_VDF_const_Face)())
+{
+}

@@ -186,6 +186,7 @@ void Transport_V2::associer_modele_turbulence(const Modele_turbulence_hyd_K_Eps_
   associer_milieu_base(modele.equation().milieu());
   associer_Champ_Inconnu(modele.equation().inconnue());
   mon_modele=modele;
+  liste_modeles_.add_if_not(modele);
   discretiser();
 }
 
@@ -441,5 +442,18 @@ const Motcle& Transport_V2::domaine_application() const
 {
   static Motcle domaine = "Transport_V2";
   return domaine;
+}
+const RefObjU& Transport_V2::get_modele(Type_modele type) const
+{
+  CONST_LIST_CURSEUR(RefObjU) curseur = liste_modeles_;
+  while(curseur)
+    {
+      const RefObjU&  mod = curseur.valeur();
+      if (mod.non_nul())
+        if ((sub_type(Mod_turb_hyd_base,mod.valeur())) && (type==TURBULENCE))
+          return mod;
+      ++curseur;
+    }
+  return Equation_base::get_modele(type);
 }
 

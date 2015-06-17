@@ -1,24 +1,9 @@
 # Thermohydraulique 2D couplage solide-fluide GCFR- concept plaque avec troncon de sortie Taille maille paroi n°4 (0.4 mm) #
-# PARALLEL NOT #
+# PARALLEL OK #
 
 dimension 2
 domaine dom_pb2
-Pb_thermohydraulique pb2
-
-
-Schema_euler_explicite sch
-Read sch 
-{
-        tinit 0
-        tmax 150000.
-        dt_min 1.e-7
-	dt_start dt_calc
-        dt_impr 1000
-        dt_sauv 10000.
-        seuil_statio 1.e-8  
-        facsec 1.
-}
-
+# BEGIN MESH #
 Mailler dom_pb2
 {
         Pave demi_canal
@@ -36,6 +21,40 @@ Mailler dom_pb2
 }
 trianguler_h dom_pb2
 Reordonner_faces_periodiques dom_pb2 periox
+
+
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom_pb2
+{
+	Partitionneur metis { nb_parts 2  }
+	periodique 1 periox
+	Larg_joint 2
+	Nom_Zones DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom_pb2
+END SCATTER #
+
+Pb_thermohydraulique pb2
+Schema_euler_explicite sch
+Read sch 
+{
+        tinit 0
+	nb_pas_dt_max 3
+        tmax 150000.
+        dt_min 1.e-7
+	dt_start dt_calc
+        dt_impr 1000
+        dt_sauv 10000.
+        seuil_statio 1.e-8  
+        facsec 1.
+}
+
 
 VEFPreP1b cubesregu
 

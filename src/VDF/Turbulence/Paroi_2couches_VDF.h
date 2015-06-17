@@ -57,6 +57,10 @@ public:
   inline double tab_u_star(int face) const;
   void imprimer_ustar(Sortie& os) const;
 
+  bool use_shear() const
+  {
+    return false;
+  }
 protected:
 
 

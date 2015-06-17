@@ -1,0 +1,23 @@
+#!/bin/bash
+(cd ../../build/src/exec${OPT}/; make module)
+mkdir -p Problem/lib Problem/include
+cp ../../build/src/Problem.h Problem/include/Problem.hxx
+[ $? -ne 0 ] && cp $TRUST_ROOT/Kernel/ICoCo/Problem.h  Problem/include/Problem.hxx
+
+chmod -R +w Problem
+DIR=`pwd`
+(cd  Problem/lib ; ln -sf $DIR/../../build/src/exec${OPT}/_TRUSTModule${OPT}.so libProblem.so; ln -sf $DIR/../../build/src/exec${OPT}/_TRUSTModule${OPT}.so .)
+[ "$1" = "" ] && echo on arrete la && exit 0
+source $KERNEL_ROOT_DIR/../env_build.sh
+hxx2salome -c `pwd`/Problem Problem.hxx libProblem.so `pwd`/ProblemComp 
+hxx=`find ProblemComp -name Problem_i.hxx`
+sed "s?class Problem;  // forward declaration?namespace ICoCo { class Problem; }  \nusing namespace ICoCo;?" $hxx > p
+mv p $hxx
+cxx=`find ProblemComp -name Problem_i.cxx`
+sed "s?(new Problem)?(getProblem())?;s?Problem_i::Problem_i?extern \"C\" Problem* getProblem(); Problem_i::Problem_i?" $cxx > p
+
+mv p $cxx
+cd ProblemComp/Problem/Problem_BUILD
+source ../Problem_SRC/env_Problem.sh
+make install
+[ $? -ne 0 ] && xterm

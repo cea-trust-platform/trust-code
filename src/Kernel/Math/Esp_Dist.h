@@ -40,24 +40,10 @@
 //////////////////////////////////////////////////////////////////////////////
 class Esp_Dist : public ArrOfInt
 {
-  friend class ShortVect;
-  friend class IntVect;
-  friend class FloatVect;
-  friend class DoubleVect;
 
   Declare_instanciable_sans_constructeur(Esp_Dist);
 public:
   Esp_Dist();
-  Esp_Dist(int);
-  Esp_Dist(int, const ArrOfInt&);
-  Esp_Dist& operator=(const ArrOfInt&);
-  Esp_Dist& operator=(const Esp_Dist&);
-  void affecte_PE_voisin(const int);
-  int num_PE_voisin() const;
-  void ajoute_espace_distant(int pe, const ArrOfInt& v,
-                             VECT(Descripteur)& vdesc_ed);
-  VECT(Descripteur)& desc_ed();
-  const VECT(Descripteur)& desc_ed() const;
 
 private:
   int PE_voisin_;

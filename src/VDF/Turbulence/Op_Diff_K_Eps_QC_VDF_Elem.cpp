@@ -21,8 +21,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Diff_K_Eps_QC_VDF_Elem.h>
-#include <Modele_turbulence_hyd_K_Eps_2_Couches.h>
-#include <Modele_turbulence_hyd_K_Eps_Bas_Reynolds.h>
 #include <Champ_P0_VDF.h>
 
 
@@ -63,75 +61,11 @@ void Op_Diff_K_Eps_QC_VDF_Elem::associer(const Zone_dis& zone_dis,
 }
 
 
-// Description:
-// associe le champ de diffusivite_turbulente a l'evaluateur
-void Op_Diff_K_Eps_QC_VDF_Elem::associer_diffusivite_turbulente()
+
+//
+// Fonctions inline de la classe Op_Diff_K_Eps_QC_VDF_Elem
+//
+Op_Diff_K_Eps_QC_VDF_Elem::Op_Diff_K_Eps_QC_VDF_Elem() :
+  Op_Diff_K_Eps_VDF_base(It_VDF_Elem(Eval_Diff_K_Eps_QC_VDF_Elem)())
 {
-  assert(mon_equation.non_nul());
-  if(sub_type(Transport_K_Eps,mon_equation.valeur()))
-    {
-      const Transport_K_Eps& eqn_transport = ref_cast(Transport_K_Eps,mon_equation.valeur());
-      const Modele_turbulence_hyd_K_Eps& mod_turb = ref_cast(Modele_turbulence_hyd_K_Eps,eqn_transport.modele_turbulence());
-      const Champ_Fonc& diff_turb = mod_turb.viscosite_turbulente();
-      const Fluide_Quasi_Compressible& mil = ref_cast(Fluide_Quasi_Compressible,eqn_transport.milieu());
-      const Champ_Don& mvol = mil.masse_volumique();
-      Eval_Diff_K_Eps_QC_VDF_Elem& eval_diff = (Eval_Diff_K_Eps_QC_VDF_Elem&) iter.evaluateur();
-
-      eval_diff.associer_diff_turb(diff_turb);
-      eval_diff.associer_mvolumique(mvol);
-    }
-  if(sub_type(Transport_K_KEps,mon_equation.valeur()))        //ne devrait plus servir a rien
-    {
-      Eval_Diff_K_Eps_QC_VDF_Elem& eval_diff = (Eval_Diff_K_Eps_QC_VDF_Elem&) iter.evaluateur();
-      eval_diff.associer_diff_turb(diff_tot);
-    }
-  if(sub_type(Transport_K_Eps_Bas_Reynolds,mon_equation.valeur()))         // ne devrait plsu servir a rien
-    {
-      Eval_Diff_K_Eps_QC_VDF_Elem& eval_diff = (Eval_Diff_K_Eps_QC_VDF_Elem&) iter.evaluateur();
-      eval_diff.associer_diff_turb(diff_tot);
-    }
-}
-
-const Champ_Fonc& Op_Diff_K_Eps_QC_VDF_Elem::diffusivite_turbulente() const
-{
-  const Eval_Diff_K_Eps_QC_VDF_Elem& eval_diff =
-    (Eval_Diff_K_Eps_QC_VDF_Elem&) iter.evaluateur();
-  return eval_diff.diffusivite_turbulente();
-}
-
-
-
-void Op_Diff_K_Eps_QC_VDF_Elem::mettre_a_jour_diffusivite() const
-{
-  assert(mon_equation.non_nul());
-  if(sub_type(Transport_K_Eps_Bas_Reynolds,mon_equation.valeur()))
-    {
-      const Transport_K_Eps_Bas_Reynolds& eqn_transport = ref_cast(Transport_K_Eps_Bas_Reynolds,mon_equation.valeur());
-      const Modele_turbulence_hyd_K_Eps_Bas_Reynolds& mod_turb = ref_cast(Modele_turbulence_hyd_K_Eps_Bas_Reynolds,eqn_transport.modele_turbulence());
-      const Champ_Fonc& diff_turb = mod_turb.viscosite_turbulente();
-      const Fluide_Incompressible& mil = ref_cast(Fluide_Incompressible,eqn_transport.milieu());
-      const Champ_Don& diff_cinematique = mil.viscosite_cinematique();
-      Champ_Fonc& verrue = ref_cast_non_const(Champ_Fonc, diff_tot);
-      verrue=diff_turb;
-      Champ_Fonc diff_cine(diff_turb);
-      diff_cine->affecter(diff_cinematique.valeur());
-      verrue.valeurs()+=diff_cine.valeurs();
-    }
-  else if(sub_type(Transport_K_KEps,mon_equation.valeur()))
-    {
-      const Transport_K_KEps& eqn_transport = ref_cast(Transport_K_KEps,mon_equation.valeur());
-      const Modele_turbulence_hyd_K_Eps_2_Couches& mod_turb = ref_cast(Modele_turbulence_hyd_K_Eps_2_Couches,eqn_transport.modele_turbulence());
-      const Champ_Fonc& diff_turb = mod_turb.viscosite_turbulente();
-      const Fluide_Incompressible& mil = ref_cast(Fluide_Incompressible,eqn_transport.milieu());
-      const Champ_Don& diff_cinematique = mil.viscosite_cinematique();
-      Champ_Fonc& verrue = ref_cast_non_const(Champ_Fonc, diff_tot);
-      verrue=diff_turb;
-      Champ_Fonc diff_cine(diff_turb);
-
-      //Corrections pour Quasi-Compressible
-      diff_cine->affecter(diff_cinematique.valeur());
-      //diff_cine->affecter(diff_dyn.valeur());
-      verrue.valeurs()+=diff_cine.valeurs();
-    }
-
 }

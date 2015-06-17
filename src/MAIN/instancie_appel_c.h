@@ -3,6 +3,10 @@
 // To update this file, run: make depend
 //
 #include <verifie_pere.h>
+instancie_src_EF_Champs();
+instancie_src_EF_Operateurs();
+instancie_src_EF_Sources();
+instancie_src_EF_Zones();
 instancie_src_Kernel_Champs();
 instancie_src_Kernel_Champs_dis();
 instancie_src_Kernel_Cond_Lim();

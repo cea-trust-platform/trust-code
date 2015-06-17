@@ -45,8 +45,7 @@ class Perte_Charge_Reguliere_VDF_Face : public Perte_Charge_VDF_Face,
 
 public:
 
-  DoubleTab& ajouter(DoubleTab& ) const;
-  DoubleTab& calculer(DoubleTab& ) const ;
+  DoubleTab& ajouter_(const DoubleTab&, DoubleTab& ) const;
   void remplir_num_faces(Nom& );
 
 };

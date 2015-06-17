@@ -18,7 +18,7 @@ else
 fi
 
 machine=localhost && [ "$2" = "-remote" ] && [ "$3" != "" ] && machine=$3
-cible=/tmp/simule_install_${paquet%.tar}
+cible=$WORKDIR/simule_install_${paquet%.tar}
 ssh_ $machine -n pwd
 if [ $? = 0 ]
 then
@@ -34,14 +34,19 @@ then
   if [ $? = 0 ]
   then
      echo "Installation OK!"
-     rm -r -f '$cible'
+     echo " "
+     cat '$cible'/../Installer_TRUST.log
+     #rm -r -f '$cible'
      exit 0
   else
      echo "Installation KO! See '$cible'/../Installer_TRUST.log"
+     echo " "
+     cat '$cible'/../Installer_TRUST.log
      exit 1
   fi;
 '
   erreur=$?
+  echo " "
   echo "End of the installation simulation of $version_arch at "`date '+%H:%M:%S'` on $machine:$cible
 else
   echo "Installation KO! $machine not accessible for the installation simulation of $version_arch..."

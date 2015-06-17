@@ -875,8 +875,8 @@ void Solv_Petsc::create_solver(Entree& entree)
 
 }
 
-#ifdef __PETSCKSP_H
 int Solv_Petsc::instance=-1;
+#ifdef __PETSCKSP_H
 int Solv_Petsc::KSPSolve_Stage_=0;
 
 // Sortie Maple d'une matrice morse

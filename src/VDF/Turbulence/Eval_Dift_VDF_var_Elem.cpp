@@ -22,7 +22,6 @@
 
 #include <Eval_Dift_VDF_var_Elem.h>
 #include <Paroi_std_scal_hyd_VDF.h>
-#include <Modele_turbulence_scal_Fluctuation_Temperature_W.h>
 #include <Turbulence_paroi_scal.h>
 void Eval_Dift_VDF_var_Elem::associer_loipar(const Turbulence_paroi_scal& loi_paroi)
 {

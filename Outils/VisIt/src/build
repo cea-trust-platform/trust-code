@@ -10,7 +10,7 @@ clean()
       [ -d ${paquet%.tgz} ]    && rm -r -f ${paquet%.tgz}
    done
    # Do not delete cmake cause it is used by TRUST plugins for VisIt !
-   rm -r -f VTK-?.?.? VTK-*-build visit visit?.?.? visit-vtk-?.? visit-vtk-*-build Mesa-?.? Mesa-?.*.? qt-everywhere-opensource-src-?.?.? # cmake-?.?.*.?
+   rm -r -f VTK-?.?.? VTK-*-build visit visit?.?.? visit-vtk-?.? visit-vtk-*-build Mesa-?.? Mesa-?.*.? qt-everywhere-opensource-src-?.?.?  cmake-?.?.?
    rm -f build_visit2_5_2*
    rm -f build_visit*"_log" *.cmake *.conf tmp* *.py
    echo "OK"

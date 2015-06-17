@@ -8,7 +8,7 @@ triou_environnement_error() {
     echo "ERROR : undefined variable TRUST_ROOT   "
     echo ""
     echo "Please, install Trio-U Kernel and run :  "
-    echo "  source /path/to/Trio-U/bin/Init_TRUST "
+    echo "  source /path/to/Trio-U/bin/env_TRUST.sh "
     echo "-----------------------------------------"
     echo ""
     exit 1

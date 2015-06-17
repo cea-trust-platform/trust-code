@@ -2,13 +2,14 @@
 [ ${#TRUST_ROOT} = 0 ] && echo "Environnement TRUST non defini." && exit -1 
 echo $HOST_BUILD > Run_bench.log
 echo $exec > par
-[ -f EN_COURS ] && echo le bench tourne deja le fichier EN_COURS existe && exit
+[ -f EN_COURS ] && echo "The bench already running, the EN_COURS file exists." && exit
 touch EN_COURS
 
 # Par defaut, bench sur 512000 mailles
+NB_PROCS_TOT=`$TRUST_Awk '/processor/ {n++} END {print n}' /proc/cpuinfo`
 NUMBER_CORES_TESTED="1 2 4" # (->128000 mailles/core)
-[ $TRUST_NB_PROCS -ge  8 ] && NUMBER_CORES_TESTED=$NUMBER_CORES_TESTED" 8"  # (->64000 mailles/core)
-[ $TRUST_NB_PROCS -ge 16 ] && NUMBER_CORES_TESTED=$NUMBER_CORES_TESTED" 16" # (->32000 mailles/core)
+[ $NB_PROCS_TOT -ge  8 ] && NUMBER_CORES_TESTED=$NUMBER_CORES_TESTED" 8"  # (->64000 mailles/core)
+[ $NB_PROCS_TOT -ge 16 ] && NUMBER_CORES_TESTED=$NUMBER_CORES_TESTED" 16" # (->32000 mailles/core)
 echo $NUMBER_CORES_TESTED > liste_nb_proc   
 
 # Mais on peut modifier ces valeurs:

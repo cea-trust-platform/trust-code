@@ -24,7 +24,6 @@
 #include <Champ_P1NC.h>
 #include <Les_Cl.h>
 #include <Champ_Uniforme.h>
-#include <Modele_turbulence_hyd_K_Eps_Bas_Reynolds.h>
 #include <Turbulence_hyd_sous_maille_VEF.h>
 #include <Mod_turb_hyd_RANS_0_eq.h>
 #include <Paroi_negligeable_VEF.h>

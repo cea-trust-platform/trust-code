@@ -71,6 +71,7 @@ protected:
      \param t titi
      \param norme_u La norme de la vitesse a la face courante
      \param dh Le diametre hydraulique a la face courante (tire de diam_hydr)
+     \param nu la viscosite cinematique
      \param reynolds Le nombre de reynolds a la face courante : norme_u * dh_valeur / nu
      \param coeff_ortho coefficient dans la direction orthogonale
      \param coeff_long coefficient dans la direction longitudinale

@@ -284,24 +284,30 @@ void traite_erreur(ifstream& entree,ifstream& entree2,double* val_max,int nbc,in
   cout<<" Erreur max sur toutes les colonnes "<< max_err<<endl;
   delete[] err;
 }
-void recupere_max(ifstream& entree,double* val_max,int nbc,int nl1, int max_val_all_comp)
+void recupere_max(ifstream& entree,double* val_max,int nbc,int nl1, int max_val_all_comp,int max_delta)
 {
+  double* val_min=new double[nbc];
   
   for (int el=0;el<nbc;el++)
-    val_max[el]=-1e38;
+    {
+      val_max[el]=-1e38;
+      val_min[el]=1e38;
+    }
   for (int l=0;l<nl1;l++)
     {
       for (int el=0;el<nbc;el++)
 	{
 	  double f;
 	  entree >>f;
-	  f=fabs(f);
+	  //f=fabs(f);
 	  if (f>val_max[el]) val_max[el]=f;
+	  if (f<val_min[el]) val_min[el]=f;
 	}
     }
   if (max_val_all_comp)
     {
-      double max_val_max=0;
+      double max_val_max=-1e37;
+      double min_val_min=1e37;
       // Calcul de la valeur max du fichier
       for (int el=1;el<nbc;el++)
 	{
@@ -311,27 +317,50 @@ void recupere_max(ifstream& entree,double* val_max,int nbc,int nl1, int max_val_
 	  // de toutes les colonnes que le max d'une colonne
 	  // En effet, par exemple pour les forces de pression
 	  // j'ai des ecarts sur Fz et pas sur Fx et Fy alors que Fx~0
-	  if (val_max[el]>max_val_max) max_val_max=val_max[el];
+	  if (val_max[el]>max_val_max) 
+	    max_val_max=val_max[el];
+	  if (val_min[el]<min_val_min) 
+	    min_val_min=val_min[el];
 	} 
       // On ne touche pas a la premiere colonne qui contient le temps
       for (int el=1;el<nbc;el++)
-	val_max[el]=max_val_max;  
+	{
+	  val_max[el]=max_val_max; 
+	  val_min[el]=min_val_min; 
+	}
     }
+   for (int el=0;el<nbc;el++)
+     if (max_delta) {
+       val_max[el]+=(-val_min[el]+1e-2);
+     }
+     else
+       {
+	 if (fabs(val_max[el])>fabs(val_min[el]))
+	   val_max[el]=fabs(val_max[el]);
+	 else
+	   val_max[el]=fabs(val_min[el]);
+	     
+       }
+  
 }
 void usage()
 {
-  cerr<<"mauvais params: file1 file2 [-type evol|statio|evol_inter] [-seuil_erreur val] [-max_par_compo]"<<endl;
+  cerr<<"mauvais params: file1 file2 [-type evol|statio|evol_inter] [-seuil_erreur val] [-max_par_compo] [ -max_delta ]"<<endl;
   exit(-1);	
 }
 int main(int argc, char* argv[])
 {
   int max_val_all_comp=1;
+  int max_delta=0;
   //char c,c2;
   nom file1,file2,option;
   if (argc<3) usage();
   file1.affecte(argv[1]);
   file2.affecte(argv[2]);
-  cout<<"comparaison "<<argv[1] << " "<<argv[2]<<endl;
+  //cout<<"comparaison "<<argv[1] << " "<<argv[2]<<endl;
+  for (int  arg=0;arg<argc;arg++)
+    cout<<argv[arg]<<" ";
+  cout << endl;
   // evol par defaut 
   option.affecte("evol");
   for (int arg=3;arg<argc;arg++)
@@ -344,6 +373,9 @@ int main(int argc, char* argv[])
 	else 
 	  if (!strcmp(argv[arg],"-max_par_compo"))
 	    max_val_all_comp=0;
+	  else
+	    if (!strcmp(argv[arg],"-max_delta"))
+	      max_delta=1;
       else usage();
     }
   ifstream entree(file1.str);
@@ -365,7 +397,7 @@ int main(int argc, char* argv[])
   //double max_val_max=0;
   
   passe_entete(entree);
-  recupere_max(entree,val_max,nb_champ,nl1,max_val_all_comp);
+  recupere_max(entree,val_max,nb_champ,nl1,max_val_all_comp,max_delta);
   entree.close();
   entree.open(file1.str);
   passe_entete(entree);

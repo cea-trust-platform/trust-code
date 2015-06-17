@@ -8,7 +8,7 @@ if [ "$TRUST_ROOT" != "" ]
 	then
 	if [ "$TRUST_ROOT_ORG" != "$TRUST_ROOT" ]
 	    then 
-	    echo "The project was configured with TRUST_ROOT $TRUST_ROOT_ORG and not with $TRUST_ROOT. You should initialize TRUST with \"source $TRUST_ROOT_ORG/env/Init_TRUST\"" 
+	    echo "The project was configured with TRUST_ROOT $TRUST_ROOT_ORG and not with $TRUST_ROOT. You should initialize TRUST with \"source $TRUST_ROOT_ORG/env/env_TRUST.sh\"" 
 	    unset TRUST_ROOT
 	    exit 1
 	fi	
@@ -17,7 +17,7 @@ else
 # si seul  TRUST_ROOT_ORG pour l'instant on ne fait qu'un message ....
  if [ "$TRUST_ROOT_ORG" != "" ]
      then
-    echo "The project was configured with TRUST_ROOT $TRUST_ROOT_ORG, you should initialize TRUST with \"source $TRUST_ROOT_ORG/env/Init_TRUST\""
+    echo "The project was configured with TRUST_ROOT $TRUST_ROOT_ORG, you should initialize TRUST with \"source $TRUST_ROOT_ORG/env/env_TRUST.sh\""
     
     fi
     

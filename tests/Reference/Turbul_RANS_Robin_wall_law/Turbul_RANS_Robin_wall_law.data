@@ -25,7 +25,7 @@ Mailler dom
 	}
 }
 
-Tetraedriser_homogene_fin dom
+Tetraedriser dom
 Reordonner_faces_periodiques dom PerioX
 Reordonner_faces_periodiques dom PerioZ
 # END MESH #
@@ -120,7 +120,7 @@ Read pb
 						}
 					}
 		Sources			{ canal_perio { bord PerioX } }
-		Sources			{ source_Robin 2 Haut Bas 0.005 }
+		Sources			{ source_Robin 2 Haut Bas # 0.005 # }
 	}
 
 	Convection_diffusion_temperature_turbulent
@@ -140,7 +140,7 @@ Read pb
 					dt_impr_nusselt 20
 					}
 		Sources			{ puissance_thermique champ_uniforme 1 1 }
-		Sources			{ source_Robin_scalaire 2 Haut 0 Bas 0 0.005 }
+		Sources			{ source_Robin_scalaire 2 Haut 0 Bas 0 # 0.005 # }
 	}
 
 	Postraitement

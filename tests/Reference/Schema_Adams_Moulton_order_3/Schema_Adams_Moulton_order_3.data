@@ -45,7 +45,6 @@ Lire sch
 {
 	tmax 0.15
 	seuil_statio -1
-	seuil_statio_relatif 1
 	dt_impr -1
 	# facsec 2 facsec_max 2 diverges #
 	facsec 1. facsec_max 1. Solveur Implicite { solveur petsc gmres { precond diag { } seuil 1.e-12 impr } }

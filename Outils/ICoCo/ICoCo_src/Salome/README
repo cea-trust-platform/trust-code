@@ -1,0 +1,12 @@
+#Pour faire fonctionner le module sous salome, il faut
+#1) desactiver petsc, (sinon le module ne marche qu'une fois)
+
+#Puis faire 
+baltik_build_configure
+./configure
+make module_optim
+cd share/Salome
+sh Compil 1
+sh Test_comp
+
+#On doit avoir à la fin un status à zéro.

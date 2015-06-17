@@ -1,0 +1,50 @@
+Parametres {
+	Titre "Ecoulement laminaire dans un coude 3D"
+	Description "On calcule l'écoulement tridimensionnel dans un coude.  L'écoulement est laminaire et on néglige la convection.  La pression est imposée sur les frontières d'entrée et de sortie du domaine de calcul.  Sur les parois supérieure et inférieure, une condition d'adhérence est imposée alors que les parois avant et arrière, une condition de symétrie est imposée.  Les champs initiaux de vitesse et de pression sont ceux du cas bidimensionnel pour lequel il existe une solution analytique."
+	Auteur "D. Jamet"
+	CasTest "." "eclt_coude_pression_3D.data"
+	incluredata 1
+}
+
+Chapitre {
+	Titre "Champs de pression et de vitesse"
+	Description "Dans cette partie, on trace les champs de pression et de vitesse calculés par GENEPI."
+
+
+	visu {
+                titre "Champs de pression et de vitesse calculés"
+                description "Les champs de pression et de vitesse calculés par GENEPI sont tracés."
+                Normal3d -0.7 0.1 0.7
+                Up3D 0. 0.7 0.
+                mesh ./eclt_coude_pression_3D.lata dom 
+                pseudocolor ./eclt_coude_pression_3D.lata dom PRESSION_PA ELEM
+		vector  ./eclt_coude_pression_3D.lata dom VITESSE SOM
+        }
+
+
+	visu {
+                titre "Champs de pression et de vitesse analytiques"
+                description "Le champ de pression analytique est tracé et le champ de pression calculé par GENEPI est donné par des iso-valeurs."
+                Normal3d -0.7 0.1 0.7
+                Up3D 0. 0.7 0.
+                mesh ./eclt_coude_pression_3D.lata dom 
+                instruction_visit DefineScalarExpression("P_ANALYTIQUE_ELEM_dom","(-0.225E1*acos(coord(dom)[0]/sqrt(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1]))/ln(2.0)+0.1125E1*0.3141592653589793E1/ln(2.0))")
+		instruction_visit DefineVectorExpression("V_ANALYTIQUE_SOM_dom","{(-(8.0*ln(2.0)*coord(dom)[0]*coord(dom)[0]+8.0*ln(2.0)*coord(dom)[1]*coord(dom)[1]-8.0*ln(2.0)-3.0*ln(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1])*coord(dom)[0]*coord(dom)[0]-3.0*ln(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1])*coord(dom)[1]*coord(dom)[1])*sqrt(coord(dom)[1]*coord(dom)[1]/(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1]))/sqrt(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1])/ln(2.0)/8.0),((8.0*ln(2.0)*coord(dom)[0]*coord(dom)[0]+8.0*ln(2.0)*coord(dom)[1]*coord(dom)[1]-8.0*ln(2.0)-3.0*ln(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1])*coord(dom)[0]*coord(dom)[0]-3.0*ln(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1])*coord(dom)[1]*coord(dom)[1])*coord(dom)[0]/(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1])/ln(2.0)/8.0),(0.)}")
+                pseudocolor ./eclt_coude_pression_3D.lata dom P_ANALYTIQUE ELEM
+		vector  ./eclt_coude_pression_3D.lata dom V_ANALYTIQUE SOM
+        }
+
+	visu {
+                titre "Erreurs sur les champs de pression et de vitesse"
+                description "On trace l'erreur entre le champ de pression calculé par GENEPI et le champ de pression analytique.  Sont superposés le champ de l'erreur et les iso-valeurs de l'erreur (pour plus de clarté, le maillage n'est pas tracé)."
+                Normal3d -0.7 0.1 0.7
+                Up3D 0. 0.7 0.
+                mesh ./eclt_coude_pression_3D.lata dom 
+                instruction_visit DefineScalarExpression("ERREUR_P_ELEM_dom","PRESSION_PA_ELEM_dom-(-0.225E1*acos(coord(dom)[0]/sqrt(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1]))/ln(2.0)+0.1125E1*0.3141592653589793E1/ln(2.0))")
+                pseudocolor ./eclt_coude_pression_3D.lata dom ERREUR_P ELEM
+		instruction_visit DefineVectorExpression("V_ANALYTIQUE_SOM_dom","{(-(8.0*ln(2.0)*coord(dom)[0]*coord(dom)[0]+8.0*ln(2.0)*coord(dom)[1]*coord(dom)[1]-8.0*ln(2.0)-3.0*ln(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1])*coord(dom)[0]*coord(dom)[0]-3.0*ln(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1])*coord(dom)[1]*coord(dom)[1])*sqrt(coord(dom)[1]*coord(dom)[1]/(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1]))/sqrt(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1])/ln(2.0)/8.0),((8.0*ln(2.0)*coord(dom)[0]*coord(dom)[0]+8.0*ln(2.0)*coord(dom)[1]*coord(dom)[1]-8.0*ln(2.0)-3.0*ln(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1])*coord(dom)[0]*coord(dom)[0]-3.0*ln(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1])*coord(dom)[1]*coord(dom)[1])*coord(dom)[0]/(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1])/ln(2.0)/8.0),(0.)}")
+		instruction_visit DefineVectorExpression("ERREUR_V_SOM_dom","VITESSE_SOM_dom-V_ANALYTIQUE_SOM_dom")
+		vector  ./eclt_coude_pression_3D.lata dom ERREUR_V SOM
+        }
+}
+

@@ -21,9 +21,9 @@ BEGIN {
    ns=0
    ks=1
 
-   # Lecture des fichiers sondes dans le fichier NOM.son
+   # Lecture des fichiers sondes dans le fichier NOM.sons
    ok=1
-   fichier_sondes=NOM".son"
+   fichier_sondes=NOM".sons"
    # Si le fichier n'existe pas (avant 1.5.6, on le cree)
    # GF ou fichier vide 
    system("[ ! -f "fichier_sondes" ] || [ ! -s  "fichier_sondes" ] && ls -art "NOM"_*.son "NOM"_*.plan > "fichier_sondes" 2>/dev/null")

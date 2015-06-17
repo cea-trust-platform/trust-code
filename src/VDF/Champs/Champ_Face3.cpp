@@ -783,8 +783,8 @@ DoubleTab& Champ_Face::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gij, c
           double temp2;
           double temp1 = (vitesse[num1]-vitesse[num0])
                          /zone_VDF.dist_face_period(num0,num1,j);        // dui/dxj
-          double vit_imp = 0.5*(vit.val_imp_face_bord(num0,j)+
-                                vit.val_imp_face_bord(num1,j));                // vitesse tangentielle
+          double vit_imp = 0.5*(vit.val_imp_face_bord_private(num0,j)+
+                                vit.val_imp_face_bord_private(num1,j));                // vitesse tangentielle
           //Dans cette partie, on conserve le codage de Hyd_SGE_Wale_VDF (num1 et non num2)
           //pour calculer la distance entre le centre de la maille et le bord.
 
@@ -874,8 +874,8 @@ DoubleTab& Champ_Face::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gij, c
           double temp2;
           double temp1 = (vitesse[num1]-vitesse[num0])
                          /zone_VDF.dist_face_period(num0,num1,j);                // dui/dxj
-          double vit_imp = 0.5*(vit.val_imp_face_bord(num0,j)+
-                                vit.val_imp_face_bord(num1,j));        // vitesse tangentielle
+          double vit_imp = 0.5*(vit.val_imp_face_bord_private(num0,j)+
+                                vit.val_imp_face_bord_private(num1,j));        // vitesse tangentielle
 
           temp2  = -signe*(vitesse[num2]-vit_imp)/zone_VDF.dist_norm_bord(num1);
 
@@ -1225,8 +1225,8 @@ DoubleVect& Champ_Face::calcul_S_barre_sans_contrib_paroi(const DoubleTab& vites
           double temp2;
           double temp1 = (vitesse[num1]-vitesse[num0])
                          /zone_VDF.dist_face_period(num0,num1,j);        // dv/dx
-          double vit_imp = 0.5*(vit.val_imp_face_bord(num0,j)+
-                                vit.val_imp_face_bord(num1,j));                // vitesse tangentielle
+          double vit_imp = 0.5*(vit.val_imp_face_bord_private(num0,j)+
+                                vit.val_imp_face_bord_private(num1,j));                // vitesse tangentielle
 
           if ( n_type == 0 && contribution_paroi == 0 )
             temp2 = 0;
@@ -1316,8 +1316,8 @@ DoubleVect& Champ_Face::calcul_S_barre_sans_contrib_paroi(const DoubleTab& vites
           double temp2;
           double temp1 = (vitesse[num1]-vitesse[num0])
                          /zone_VDF.dist_face_period(num0,num1,j);        // dv/dx
-          double vit_imp = 0.5*(vit.val_imp_face_bord(num0,j)+
-                                vit.val_imp_face_bord(num1,j));                // vitesse tangentielle
+          double vit_imp = 0.5*(vit.val_imp_face_bord_private(num0,j)+
+                                vit.val_imp_face_bord_private(num1,j));             // vitesse tangentielle
 
           if ( contribution_paroi == 0 )
             temp2 = 0;

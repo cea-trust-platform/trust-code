@@ -72,24 +72,26 @@ void Sonde::completer()
     mots_compare[i] = liste_noms[i];
 
   Motcle nom_macro=nom_champ_lu_;
-  Motcle nom_macro_test, nom1, nom2;
-
-  if (nom_champ_lu_.debute_par("MOYENNE"))
-    nom_macro = nom_macro.suffix("MOYENNE_");
-  else if (nom_champ_lu_.debute_par("ECART_TYPE"))
-    nom_macro = nom_macro.suffix("ECART_TYPE_");
-
-  if (nom_champ_lu_.debute_par("CORRELATION"))
+  Motcle nom_macro_test, nom1("_not_def"), nom2("_not_def");
+  if (!(mots_compare.contient_(nom_champ_lu_)||mon_post->comprend_champ_post(nom_champ_lu_)))
     {
-      nom_macro_test = nom_champ_lu_;
-      nom_macro_test = nom_macro_test.suffix("CORRELATION_");
-      for (int i=0; i<mots_compare.size(); i++)
+      if (nom_champ_lu_.debute_par("MOYENNE_"))
+        nom_macro = nom_macro.suffix("MOYENNE_");
+      else if (nom_champ_lu_.debute_par("ECART_TYPE_"))
+        nom_macro = nom_macro.suffix("ECART_TYPE_");
+
+      if (nom_champ_lu_.debute_par("CORRELATION_"))
         {
-          nom_macro_test = nom_macro_test.suffix(mots_compare[i]);
-          if (nom_macro_test.debute_par("_"))
+          nom_macro_test = nom_champ_lu_;
+          nom_macro_test = nom_macro_test.suffix("CORRELATION_");
+          for (int i=0; i<mots_compare.size(); i++)
             {
-              nom1 = mots_compare[i];
-              nom2 = nom_macro_test.suffix("_");
+              nom_macro_test = nom_macro_test.suffix(mots_compare[i]);
+              if (nom_macro_test.debute_par("_"))
+                {
+                  nom1 = mots_compare[i];
+                  nom2 = nom_macro_test.suffix("_");
+                }
             }
         }
     }
@@ -549,7 +551,7 @@ Entree& Sonde::readOn(Entree& is)
       // Ce fichier sera utilise par Run_sonde
       SFichier fichier_sondes;
       Nom nom_fich=nom_du_cas();
-      nom_fich+=".son";
+      nom_fich+=".sons";
       if (!fichier_sondes_cree)
         fichier_sondes.ouvrir(nom_fich);
       else

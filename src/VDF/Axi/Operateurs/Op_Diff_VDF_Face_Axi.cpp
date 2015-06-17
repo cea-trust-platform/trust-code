@@ -344,13 +344,13 @@ void Op_Diff_VDF_Face_Axi::ajouter_bord(const DoubleTab& inco, DoubleTab& resu) 
               // arete paroi_fluide :il faut determiner qui est la face fluide
               {
                 if (est_egal(inco[fac1],0))
-                  vit_imp = inconnue->val_imp_face_bord(rang2,ori3);
+                  vit_imp = Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori3,la_zcl_vdf);
                 else
-                  vit_imp = inconnue->val_imp_face_bord(rang1,ori3);
+                  vit_imp = Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori3,la_zcl_vdf);
               }
             else
-              vit_imp = 0.5*(inconnue->val_imp_face_bord(rang1,ori3)+
-                             inconnue->val_imp_face_bord(rang2,ori3));
+              vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori3,la_zcl_vdf)+
+                             Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori3,la_zcl_vdf));
 
             if (ori1 == 0) // bord d'equation R = cte
               {
@@ -1015,13 +1015,13 @@ void Op_Diff_VDF_Face_Axi::contribue_au_second_membre(DoubleTab& resu ) const
               // arete paroi_fluide :il faut determiner qui est la face fluide
               {
                 if (est_egal(inconnue.valeur()(fac1),0))
-                  vit_imp = inconnue->val_imp_face_bord(rang2,ori3);
+                  vit_imp = Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori3,la_zcl_vdf);
                 else
-                  vit_imp = inconnue->val_imp_face_bord(rang1,ori3);
+                  vit_imp = Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori3,la_zcl_vdf);
               }
             else
-              vit_imp = 0.5*(inconnue->val_imp_face_bord(rang1,ori3)+
-                             inconnue->val_imp_face_bord(rang2,ori3));
+              vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori3,la_zcl_vdf)+
+                             Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori3,la_zcl_vdf));
 
             if (ori1 == 0) // bord d'equation R = cte
               {

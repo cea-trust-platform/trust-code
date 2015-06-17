@@ -21,11 +21,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Modele_turbulence_hyd_K_Eps.h>
-#include <Modele_turbulence_hyd_K_Eps_2_Couches.h>
-#include <Modele_turbulence_hyd_K_Eps_V2.h>
-#include <Modele_turbulence_hyd_K_Eps_Bas_Reynolds.h>
 #include <Mod_turb_hyd_ss_maille.h>
 #include <Modele_turbulence_scal_Prandtl.h>
 #include <Modele_turbulence_scal_Schmidt.h>
-#include <Modele_turbulence_scal_Fluctuation_Temperature.h>
-#include <Modele_turbulence_scal_Fluctuation_Temperature_W.h>

@@ -45,7 +45,6 @@ Lire sch
 {
 	tmax 0.015
 	seuil_statio -1
-	seuil_statio_relatif 1
 	dt_impr -1
 	facsec 0.5 # facsec 1.0 diverges #
 }

@@ -36,7 +36,9 @@ Sortie& Terme_Puissance_Thermique_VDF_Elem::printOn(Sortie& s ) const
 Entree& Terme_Puissance_Thermique_VDF_Elem::readOn(Entree& s )
 {
   Terme_Puissance_Thermique_VDF_base::readOn(s);
-  set_fichier("Puissance_Thermique");
+  Nom name_file("Puissance_Thermique");
+  modify_name_file(name_file);
+  set_fichier(name_file);
   set_description("Heat power release = Integral(P*dv) [W]");
   return s;
 }

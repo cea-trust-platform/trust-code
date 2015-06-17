@@ -1,0 +1,5 @@
+res=`grep "OK (" $1.out  | grep -v "(0)"`
+[ "$res" != "" ] && exit 0
+echo $res
+exit 1
+

@@ -72,3 +72,10 @@ Champ_Inc_base& Op_Conv_Quick_VDF_Face_Axi::vitesse()
 }
 
 
+// Description:
+// constructeur
+
+Op_Conv_Quick_VDF_Face_Axi::Op_Conv_Quick_VDF_Face_Axi() :Op_Conv_VDF_base(It_VDF_Face(Eval_Quick_VDF_Face_Axi)())
+{
+}
+

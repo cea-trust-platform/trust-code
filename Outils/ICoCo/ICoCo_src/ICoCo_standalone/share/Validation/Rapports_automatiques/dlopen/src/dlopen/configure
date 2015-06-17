@@ -1,0 +1,7 @@
+#!/bin/bash
+[ "$project_directory" = "" ] && echo project_directory not set && exit 1
+
+#sh $project_directory/share/bin/create_Makefile 1
+sh ./create_Makefile 1
+sed 's/couplage PAR_interassemblage.data/couplage/;s?$(TRUST_ARCH_CC)$(OPT)?$(TRUST_ARCH_CC)?' makefile > makefile.tmp
+mv makefile.tmp makefile

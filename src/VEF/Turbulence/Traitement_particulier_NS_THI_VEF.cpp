@@ -49,7 +49,6 @@ extern "C" void rfftmlt(double*, double*, double*, int*,  int, int, int, int, in
 // * des spectres 3D en construisant des grilles cartesiennes (les grilles construites dependent de la discretisation),
 // * des spectres 1D, en suivant des lignes et non plus des grilles cartesiennes.
 
-#include <VectEsp_Dist.h>
 
 Implemente_instanciable(Traitement_particulier_NS_THI_VEF,"Traitement_particulier_NS_THI_VEF",Traitement_particulier_NS_THI);
 

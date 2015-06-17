@@ -268,8 +268,8 @@ inline void Eval_centre4_VDF_Face::flux_arete_fluide(const DoubleTab& inco,
       int rang1 = (fac1-premiere_face_bord);
       int rang2 = (fac2-premiere_face_bord);
       ori =orientation(fac3);
-      flux = 0.5*(inconnue->val_imp_face_bord(rang1,ori)
-                  +  inconnue->val_imp_face_bord(rang2,ori)) * psc ;
+      flux = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori,la_zcl)
+                  +  Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori,la_zcl)) * psc ;
     }
   flux3 = -flux;
 
@@ -369,8 +369,8 @@ inline void Eval_centre4_VDF_Face::flux_arete_paroi_fluide(const DoubleTab& inco
       int rang1 = (fac1-premiere_face_bord);
       int rang2 = (fac2-premiere_face_bord);
       ori =orientation(fac3);
-      flux = 0.5*(inconnue->val_imp_face_bord(rang1, ori)
-                  +  inconnue->val_imp_face_bord(rang2, ori))* psc ;
+      flux = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1, ori,la_zcl)
+                  +  Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2, ori,la_zcl))* psc ;
     }
 
   flux3 = -flux;
@@ -528,8 +528,8 @@ inline void Eval_centre4_VDF_Face::flux_arete_symetrie_fluide(const DoubleTab& i
       int rang1 = (fac1-premiere_face_bord);
       int rang2 = (fac2-premiere_face_bord);
       int ori = orientation(fac3);
-      flux = 0.5*(inconnue->val_imp_face_bord(rang1,ori)
-                  +  inconnue->val_imp_face_bord(rang2,ori))* psc ;
+      flux = 0.5*(Champ_Face_get_val_imp_face_bord_sym(inco,inconnue->temps(),rang1,ori,la_zcl)
+                  +  Champ_Face_get_val_imp_face_bord_sym(inco,inconnue->temps(),rang2,ori,la_zcl))* psc ;
     }
 
   flux3 =  -flux;
@@ -579,8 +579,8 @@ inline void Eval_centre4_VDF_Face::flux_arete_fluide(const DoubleTab& inco,int f
       int rang2 = (fac2-premiere_face_bord);
       int ori = orientation(fac3);
       for (k=0; k<flux3.size(); k++)
-        flux3(k) = -0.5*(inconnue->val_imp_face_bord(rang1,k,ori)
-                         +  inconnue->val_imp_face_bord(rang2,k,ori)) * psc ;
+        flux3(k) = -0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,k,ori,la_zcl)
+                         +  Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,k,ori,la_zcl)) * psc ;
     }
 
   // Calcul de flux1_2:
@@ -694,8 +694,8 @@ inline void Eval_centre4_VDF_Face::flux_arete_paroi_fluide(const DoubleTab& inco
       int rang2 = (fac2-premiere_face_bord);
       int ori = orientation(fac3);
       for (k=0; k<flux3.size(); k++)
-        flux3(k) = -0.5*(inconnue->val_imp_face_bord(rang1,k,ori)
-                         +  inconnue->val_imp_face_bord(rang2,k,ori))* psc ;
+        flux3(k) = -0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,k,ori,la_zcl)
+                         +  Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,k,ori,la_zcl))* psc ;
     }
 
   // Calcul de flux1_2:
@@ -886,8 +886,8 @@ inline void Eval_centre4_VDF_Face::flux_arete_symetrie_fluide(const DoubleTab& i
       int rang2 = (fac2-premiere_face_bord);
       int ori = orientation(fac3);
       for (k=0; k<flux3.size(); k++)
-        flux3(k) = -0.5*(inconnue->val_imp_face_bord(rang1,k,ori)
-                         +  inconnue->val_imp_face_bord(rang2,k,ori)) * psc ;
+        flux3(k) = -0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,k,ori,la_zcl)
+                         +  Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,k,ori,la_zcl)) * psc ;
     }
 
   // Calcul de flux1_2:

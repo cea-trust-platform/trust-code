@@ -33,7 +33,7 @@ then
 	# tkdiff  CMakeLists.txt p
    mv p  CMakeLists.txt
    rm -f CMakeCache*
-   cmake .
+   cmake . -DCMAKE_CXX_COMPILER=$TRUST_CC_BASE  -DCMAKE_C_COMPILER=$TRUST_cc_BASE
 
    # fin modif makefile
   

@@ -16,7 +16,7 @@ DIR=`environnement_init`
 cd $DIR
 BALTIK_BUILD_CONFIGURE_PATH=$DIR/../../bin
 
-
+ORG=`pwd`
 # Optim ou debug ? debug par defaut
 #
 OPT=_opt
@@ -40,7 +40,7 @@ MODE=debug
 test_basic()
 {
  echo Test de $1 \(mode : $MODE \)
- cd $1
+ cd $ORG/$1
  status_tot=0
  ${BALTIK_BUILD_CONFIGURE_PATH}/baltik_build_configure
  ./configure >LOG_CONFIG 2>&1
@@ -65,7 +65,7 @@ test_basic()
  then
  CHECKMODE=$MODE
  [ "$TESTVALGRIND" = "1" ] &&   CHECKMODE=${MODE}_valgrind  
- make check_$CHECKMODE > LOG_RUN 2>&1
+ make check_all_$CHECKMODE > LOG_RUN 2>&1
  status=$?
  if [ $status -ne  0 ] 
  then 
@@ -84,14 +84,25 @@ test_basic()
  fi
  if [ $status_tot -eq 0 ]
  then
-   make dist_clean 1>/dev/null
+   if [ -f Makefile ]
+       then
+       make dist_clean 1>/dev/null
+   else
+       $DIR/../baltik/bin/baltik_clean dist
+       fi
    rm -f LOG_CONFIG LOG_RUN LOG_COMP
+ else
+     err=100
+     export err
+     cat LOG*
  fi
  cd ..
  
  export status_tot
-
+ 
 }
+
+err=0
 
 TESTVALGRIND=0
 
@@ -110,6 +121,24 @@ status_basic_pb_run=$status_tot
 # quatrieme test : test des dependances entre projet
 test_basic basic_depend 0
 status_basic_depend=$status_tot
+
+# quatrieme test : test des dependances entre projet
+test_basic basic_patch_ko 1
+
+cp -ar basic_patch_ko basic_patch_ok1
+rm -f basic_patch_ok1/share/bin/pre_configure  basic_patch_ok1/src/*cpp
+
+cp -ar basic_patch_ok1 basic_patch_ok2
+sed "s/basic_patch/Zbasic_patch/" basic_patch_ok1/project.cfg >  basic_patch_ok2/project.cfg
+rm -f basic_patch_ok2/share/bin/pre_configure  basic_patch_ok2/src/*cpp
+
+
+test_basic basic_patch_ok1 0
+[ $status_tot -eq 0 ] && rm -rf  basic_patch_ok1
+
+
+test_basic basic_patch_ok2 0
+[ $status_tot -eq 0 ] && rm -rf  basic_patch_ok2
 
 # on teste valgrind sans valgrind OK, avec KO
 export TESTVALGRIND=0
@@ -131,46 +160,30 @@ test_basic basic_rapport 0
 status_basic_rapport=$status_tot
 
 # on efface le resultat des  runs d'avant
-git rm -f basic_rapport/tests/Reference/Validation/test_rapport_jdd1/lien_fiche_validation
-git rm -f  basic_rapport/tests/Reference/Validation/test_rapport_jdd1/test_rapport_jdd1.data
-git rm -f     basic_rapport/tests/Reference/Validation/test_rapport_jdd1/test_rapport_jdd1.lml.gz
-rm -rf basic_rapport/tests/Reference/Validation/*_jdd*
+#for file in lien_fiche_validation test_rapport_jdd1.data /test_rapport_jdd1.lml.gz
+#do
+  git reset HEAD basic_rapport/build/tests/all/Validation/test_rapport_jdd1/*
+#  git rm -f  basic_rapport/tests/Reference/Validation/test_rapport_jdd1/$file
+#done
+rm -rf basic_rapport/build/tests/all/Validation/*_jdd*  
 export TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS=${TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS_SA}
 
-err=0 
+#err=0 
 
 status_cppunit=0
-# test_cpp_unit attention modif des src
+#test_cpp_unit 
 test_basic cppunit_proj 0
 status_cppunit=$status_tot
-if [ $status_cppunit -ne 0 ] 
-then
-   err=7 && cat cppunit_proj/LOG_* 2>/dev/null
-fi
 
 # test dependance kernel
 voulu=1
 [ -f $TRUST_LIB/TRUST${COMM}_numeric_kernel${OPT}.a ]  && voulu=0
 test_basic basic_kernel $voulu 
 status_basic_kernel=$status_tot
-if [ $status_basic_kernel -ne 0 ] 
-then
-   err=8 && cat basic_kernel/LOG_* 2>/dev/null
-fi
+
 test_basic basic_kernel_faux 2
 status_basic_kernel_faux=$status_tot
-if [ $status_basic_kernel_faux -ne 0 ] 
-then
-   err=9 && cat basic_kernel_faux/LOG_* 2>/dev/null
-fi
 
-
-[ $status_basic_ok -ne 0 ] 		&& err=1 && cat basic_ok/LOG_* 2>/dev/null
-[ $status_basic_pb_compil -ne 0 ] 	&& err=2 && cat basic_pb_compil/LOG_* 2>/dev/null
-[ $status_basic_pb_run -ne 0 ] 		&& err=3 && cat basic_pb_run/LOG_* 2>/dev/null
-[ $status_basic_depend -ne 0 ] 		&& err=4 && cat basic_depend/LOG_* 2>/dev/null
-[ $status_basic_rapport -ne 0 ] 	&& err=5 && cat basic_rapport/LOG_* 2>/dev/null
-[ $status_valgrind -ne 0 ] && err=6 && cat basic_erreur_valgrind/LOG_* 2>/dev/null
-[ $err = 0 ] && echo "OK"
+[ $err = 0 ] && echo "OK" && rm -f */src/Version_kernel */liste_pb.all
 [ $err != 0 ] && echo "KO"
 exit $err

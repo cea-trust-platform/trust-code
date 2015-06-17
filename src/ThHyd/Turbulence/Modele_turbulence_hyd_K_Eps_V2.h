@@ -56,6 +56,8 @@ public:
   inline const Transport_K_Eps_base& eqn_transp_K_Eps() const;
   const Equation_base& equation_k_eps(int) const ;
 
+
+  void verifie_loi_paroi();
   inline  const Transport_V2& eqn_V2() const;
   inline Transport_V2& eqn_V2();
 

@@ -1,0 +1,85 @@
+Parametres {
+	Titre "verification conduction"
+	Description "Calculs menés en EF laminaire"
+	Auteur "G.F."
+	CasTest "." "EF_conduc_genepi_S_lin_2_sym.data"
+}
+
+Chapitre {
+	Titre "Profil de vitesse"
+	Description "Comparasion du profil de vitesse au profil de poiseuille.  voir data... "
+
+
+Tableau {
+	Titre "essai tableur"
+	nb_colonnes 2
+	label  flux  gauche  | flux droit
+	Ligne {
+		Legende theorie
+		Version "1.5.3-beta_build_180907"
+		valeurs -1. 1.	
+		alias ref
+	}
+	Ligne {
+		Legende calcul
+		Origine "TRUST"
+		Version "1.5.3-beta_build_180907"
+		nb_colonnes_fichier 6
+		fichier ./conduc_fin.out
+		colonnes $2 $5
+	}
+	Ligne {
+		Legende ecart_relatif
+		alias erreur
+		Origine "TRUST"
+		Version "1.5.3-beta_build_180907"
+		difference ecart_relatif calcul ref
+		 afficher_ligne 0	
+	}
+		 ligne {
+        	legende "erreur en %"
+	        difference formule   erreur ref int(v1*10000)/100.
+        }	
+	
+
+	}
+	Figure {
+	Titre "Trac~ de l'erreur T-Tana  au stationnaire"
+	       Dimension 2
+#       RangeX 0. 2.5
+        LabelX "x"
+#       RangeY 0. 2.
+        LabelY "~"
+        
+        width 10cm
+        	
+        Courbe {
+                Legende "EF"
+                Origine "TRUST"
+                Version "1.5.3-beta_build_180907"
+                segment ./EF_conduc_genepi_S_lin_2_sym.data temperature_x
+                Style linespoints
+                }
+	
+	Courbe {
+                Legende "analytique"
+                Origine "ref"
+                segment ./EF_conduc_genepi_S_lin_2_sym.data temperature_x
+                Style lines
+		colonnes ($1) (-(0.4-1./3.)*$1-($1)*($1*$1-1.)/6.)
+#                (-(0.4-1./3.)*x-x*(x*x-1.)/6.)
+
+
+                }
+	}
+	visu {
+                titre "temperature"
+                description "on trace la temperature et les ecarts à la solution"
+                mesh ./EF_conduc_genepi_S_lin_2_sym.lata dom 
+                pseudocolor ./EF_conduc_genepi_S_lin_2_sym.lata dom TEMPERATURE SOM
+                instruction_visit DefineScalarExpression("erreur_SOM_dom","TEMPERATURE_SOM_dom-(-(0.4-1./3.)*coord(dom)[0]-(coord(dom)[0])*(coord(dom)[0]*coord(dom)[0]-1.)/6.)")
+                isovaleurs ./EF_conduc_genepi_S_lin_2_sym.lata dom erreur SOM
+        }
+
+
+}

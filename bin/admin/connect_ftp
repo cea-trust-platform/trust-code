@@ -11,9 +11,11 @@ export SECRET=incoming/y2k01/TRUST
 if [ ${#1} = 0 ] || [ $1 != "-no_ftp" ]
 then
 
-   ok=`cat << ! | ftp -iv | $TRUST_Awk 'BEGIN {ok=0} /Login successful/ {ok=1} END {print ok}'
+   ok=`(cat << ! | ftp -iv | $TRUST_Awk 'BEGIN {ok=0} /Login successful/ {ok=1} END {print ok}'
 open $TRUST_FTP
 !
+) & 
+$TRUST_ROOT/bin/KSH/wait_for $! 600 || (echo "Error: connect_ftp killed"; exit -1)
 `
 
    if [ $ok = 1 ]
@@ -23,6 +25,7 @@ open $TRUST_FTP
       echo "Connection to $TRUST_FTP unsuccessful !"
    #   exit
    fi
+   
    for DIR in $SECRET $PUBLIC
    do
       if [ "`existe_ftp $DIR`" = 1 ]
@@ -33,5 +36,6 @@ open $TRUST_FTP
 	 mkdir_ftp $DIR
       fi
    done
+   
 fi
 

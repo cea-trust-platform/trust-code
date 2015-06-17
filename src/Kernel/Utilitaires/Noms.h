@@ -38,6 +38,9 @@ class Noms : public VECT(Nom)
   Declare_instanciable(Noms);
 public :
   inline Noms(int );
+  int rang(const char* const ch) const;
+  int contient_(const char* const ch) const;
+  int search(const Nom& t ) const ;
 };
 
 

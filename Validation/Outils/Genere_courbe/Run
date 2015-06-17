@@ -8,7 +8,7 @@
 
 usage()
 {
-echo  "Run ./src/fichier.prm [ -help ] [  -dest dir dir ] [ -not_run ] | [ -post_run ] | [ -suite_run ] [ -test_run ] [ -get_list_cas_nr ] [ -aprallel_run ] [ -nb_pas_dt_max N ] [ -archive ] $*"
+echo  "Run ./src/fichier.prm [ -help ] [  -dest dir dir ] [ -not_run ] | [ -post_run ] | [ -suite_run ] [ -test_run ] [ -get_list_cas_nr ] [ -parallel_run ] [ -nb_pas_dt_max N ] [ -archive ] $*"
 echo the other options are passed to genererCourbes.py
 exit 0
 }

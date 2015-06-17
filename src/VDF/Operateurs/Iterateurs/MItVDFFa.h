@@ -647,7 +647,8 @@
     double flux;                                                        \
     int fac1, fac2, fac3, fac4;                                        \
     int n_arete;                                                        \
-    int n=la_zone->nb_faces_bord();                                        \
+    int n=la_zone->nb_faces_bord();					\
+    int n2=la_zone->nb_faces_tot();  /* GF pour assurer bilan seq= para */ \
     DoubleTab& tab_flux_bords=op_base->flux_bords();                        \
     for (n_arete=premiere_arete_mixte; n_arete<derniere_arete_mixte; n_arete++) { \
       fac1=Qdm(n_arete,0);                                                \
@@ -657,13 +658,13 @@
       flux=flux_evaluateur.flux_arete_mixte(inco, fac1, fac2, fac3, fac4); \
       resu[fac3] += flux;                                                \
       resu[fac4] -= flux;                                                \
-      if (fac4<n) {                                                        \
+      if (fac4<n2) {							\
         if (fac1<n)                                                        \
           tab_flux_bords(fac1,orientation(fac3))-=flux;                        \
         if (fac2<n)                                                        \
           tab_flux_bords(fac2,orientation(fac4))-=flux;                        \
       }                                                                        \
-      if (fac3<n) {                                                        \
+      if (fac3<n2) {							\
         if (fac1<n)                                                        \
           tab_flux_bords(fac1,orientation(fac3))+=flux;                        \
         if (fac2<n)                                                        \
@@ -672,13 +673,13 @@
       flux=flux_evaluateur.flux_arete_mixte(inco, fac3, fac4, fac1, fac2); \
       resu[fac1] += flux;                                                \
       resu[fac2] -= flux;                                                \
-      if (fac2<n) {                                                        \
+       if (fac2<n2)  {						\
         if (fac3<n)                                                        \
           tab_flux_bords(fac3,orientation(fac1))-=flux;                        \
         if (fac4<n)                                                        \
           tab_flux_bords(fac4,orientation(fac2))-=flux;                        \
       }                                                                        \
-      if (fac1<n) {                                                        \
+       if (fac1<n2)  {							\
         if (fac3<n)                                                        \
           tab_flux_bords(fac3,orientation(fac1))+=flux;                        \
         if (fac4<n)                                                        \

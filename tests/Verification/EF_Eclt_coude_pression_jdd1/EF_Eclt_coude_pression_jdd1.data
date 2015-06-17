@@ -1,0 +1,94 @@
+# Hydraulique 2D pour tester le terme visqueux dans un cas 2D #
+
+dimension 2
+
+Pb_hydraulique pb
+
+Domaine dom
+
+Mailler dom
+{
+        Pave Cavite
+        {
+                Origine 0. 0.
+                Nombre_de_noeuds 31 31
+                Longueurs 1. 1.
+        }
+        {
+                Bord Gauche   X = 0.  0. <= Y <= 1.
+                Bord Droit    X = 1.  0. <= Y <= 1.
+                Bord Bas      Y = 0.  0. <= X <= 1.
+                Bord Haut     Y = 1.  0. <= X <= 1.
+        }
+}
+
+transformer dom (1.+x)*cos(0.3141592653589793E1*y/2.) (1.+x)*sin(0.3141592653589793E1*y/2.)
+
+EF dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0
+	nb_pas_dt_max 3
+	tmax 1.e-2
+	dt_min 5.e-7
+	dt_max 5.e-3
+	dt_impr 1.e-1
+	dt_sauv 1.e-3
+	seuil_statio 1.e-8
+}
+
+Fluide_Incompressible eau
+Lire eau
+{
+	mu Champ_Fonc_XYZ dom 1 1.5
+	rho Champ_Uniforme 1 2.
+}
+
+Associer pb dom
+Associer pb sch
+Associer pb eau
+
+Discretiser pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+                methode_calcul_pression_initiale avec_sources_et_operateurs
+		solveur_pression GCP { 
+			precond ssor { omega 1.5 } 
+			seuil 1.e-12 
+		}		
+		convection { negligeable }
+		diffusion {  }
+		conditions_initiales {
+			vitesse Champ_Fonc_XYZ dom 2 (-(8.0*ln(2.0)*x*x+8.0*ln(2.0)*y*y-8.0*ln(2.0)-3.0*ln(x*x+y*y)*x*x-3.0*ln(x*x+y*y)*y*y)*sqrt(y*y/(x*x+y*y))/sqrt(x*x+y*y)/ln(2.0)/8.0) ((8.0*ln(2.0)*x*x+8.0*ln(2.0)*y*y-8.0*ln(2.0)-3.0*ln(x*x+y*y)*x*x-3.0*ln(x*x+y*y)*y*y)*x/(x*x+y*y)/ln(2.0)/8.0)
+			}
+		conditions_limites {
+			Gauche frontiere_ouverte_vitesse_imposee 
+				Champ_Front_Uniforme 2 0. 0.
+			Droit frontiere_ouverte_vitesse_imposee 
+				Champ_Front_Uniforme 2 0. 0.
+			Bas frontiere_ouverte_pression_imposee 
+				Champ_Front_Uniforme 1 5.098905160
+			Haut frontiere_ouverte_pression_imposee 
+				Champ_Front_Uniforme 1 0.
+		}
+	}
+
+	Postraitement
+	{
+                format lml
+		Champs dt_post 1.e-3
+		{
+			pression_pa elem
+			vitesse som
+		}
+	}
+}
+
+Resoudre pb
+
+Fin

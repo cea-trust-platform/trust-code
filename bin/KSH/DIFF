@@ -2,8 +2,7 @@
 cd $rep_dev
 echo $rep_dev
 MODE=$1
-[ "$1" = "RECUP" ] && echo "[ \"\$label\" = \"\" ] &&echo label non defini&&exit;(cd $TRUST_ROOT && cleartool mklbtype -nc \$label 2>/dev/null)
-" > cmd
+[ "$1" = "RECUP" ] && echo > cmd
 [ "$MODE" = "NET" ] && mkdir -p inut_files
 [ "$MODE" = "NET" ] && mkdir -p Org_files version_files
 shift
@@ -43,7 +42,7 @@ do
   dirrere=`dirname $file2 2>/dev/null`
   [ "$dirrere" = "." ] && dirrere="\$newdir"
   [ "$dirrere" = "" ] && dirrere="\$newdir"
-  [ "$MODE" = "RECUP" ] && ( [ $m = 1 ] || [ $m = 2 ] ) && echo install_un_fichier `basename $file`  $dirrere "; MKLABEL -replace \$label " $dirrere/`basename $file` >>cmd
+  [ "$MODE" = "RECUP" ] && ( [ $m = 1 ] || [ $m = 2 ] ) && echo install_un_fichier `basename $file`  $dirrere >>cmd
   [ "$MODE" = "MERG" ] && [ $m = 1 ] && merg_files $file $file2 
   [ "$MODE" = "COMP" ] && ( [ $m = 1 ] || [ $m = 3 ] ) &&  comp_files $file $file2 
   [ "$MODE" = "COMP3" ] && ( [ $m = 1 ]  ) &&  comp_files $file $file2 

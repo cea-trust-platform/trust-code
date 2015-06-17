@@ -25,7 +25,7 @@
 #define Eval_VDF_Face_included
 
 #include <Champ_Face.h>
-#include <Ref_Champ_Face.h>
+#include <Ref_Champ_base.h>
 #include <Les_Cl.h>
 
 
@@ -43,7 +43,7 @@ public:
 
   inline Eval_VDF_Face();
   inline virtual ~Eval_VDF_Face() {};
-  inline void associer_inconnue(const Champ_Face& );
+  inline void associer_inconnue(const Champ_base& );
   virtual int calculer_arete_bord() const;
   virtual int calculer_arete_symetrie_paroi() const;
   virtual int calculer_arete_symetrie_fluide() const;
@@ -331,7 +331,7 @@ public:
 
 protected:
 
-  REF(Champ_Face) inconnue;
+  REF(Champ_base) inconnue;
 
 };
 
@@ -342,9 +342,10 @@ protected:
 inline Eval_VDF_Face::Eval_VDF_Face()
 {}
 
-inline void Eval_VDF_Face::associer_inconnue(const Champ_Face& inco)
+inline void Eval_VDF_Face::associer_inconnue(const Champ_base& inco)
 {
-  inconnue=inco;
+  assert(sub_type(Champ_Face,inco));
+  inconnue=ref_cast(Champ_Face,inco);
 }
 
 #endif

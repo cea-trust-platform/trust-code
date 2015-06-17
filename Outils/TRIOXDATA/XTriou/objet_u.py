@@ -38,14 +38,18 @@ XTree.saveAs=mySave
 # Modification de exit_code -> creation du fichier __sa__.py
 #
 #
+
+file_name_import=""
+is_import_file=0
+
 try:
     from xpythongui import XGUIQMainWindow
     XGUIQMainWindow.exit_Org=XGUIQMainWindow.exit_code
     def myexit(self,*args,**kargs):
-        
+        global file_name_import
+        fileName="__sa__"+file_name_import
         try:
             xtree=self.xtree
-            fileName="__sa__.py"
             print "sauvegarde de secours"
             self.xtree.saveAs(fileName)
         except:
@@ -54,6 +58,19 @@ try:
         return
     XGUIQMainWindow.exit_code=myexit
     # print "ok exit changer"
+    from xdatagui import XGUIQProgressDialog
+    XGUIQProgressDialog.importPythonFile_Org=XGUIQProgressDialog.importPythonFile
+    def myImport(self,*args,**kargs):
+        global is_import_file,file_name_import
+        is_import_file=2
+        file_name_import=args[0]
+        self.importPythonFile_Org(*args,**kargs)
+        is_import_file=0
+        from Menu_solver import verifyihm
+        verifyihm()
+        return
+    XGUIQProgressDialog.importPythonFile=myImport
+    # print "ok open"
     pass
 except:
     pass
@@ -1080,7 +1097,9 @@ class objet_u(XObject):
 		pass
             pass
         if self.status!="Valid":
-            print msg
+            global is_import_file
+            if not is_import_file:
+                print msg
             if leve:
                 raise Exception(msg)
             pass
@@ -1108,11 +1127,14 @@ def trouve_class_list(mot,listclass):
             break
         pass
     if ok !=1 :
-        print mot," pas trouve comme classe utilisateur"
-	for cl in listclass:
-	   print  cl.name_u,
-	   pass
-	print
+        global is_import_file
+        if not is_import_file:
+            print mot," pas trouve comme classe utilisateur, noms existants: ",
+            for cl in listclass:
+                if cl.name_u!="not_set":
+                    print  cl.name_u,
+                pass
+            print
         raise Exception("pb dans trouve_class")
     return cl
 

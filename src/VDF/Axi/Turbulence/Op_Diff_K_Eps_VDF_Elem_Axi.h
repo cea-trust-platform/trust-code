@@ -42,44 +42,19 @@ declare_It_VDF_Elem(Eval_Diff_K_Eps_VDF_Elem_Axi)
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Op_Diff_K_Eps_VDF_Elem_Axi : public Op_Diff_K_Eps_VDF_base, public Op_VDF_Elem
+class Op_Diff_K_Eps_VDF_Elem_Axi : public Op_Diff_K_Eps_VDF_base
 {
 
   Declare_instanciable_sans_constructeur(Op_Diff_K_Eps_VDF_Elem_Axi);
 
 public:
 
-  inline Op_Diff_K_Eps_VDF_Elem_Axi();
+  Op_Diff_K_Eps_VDF_Elem_Axi();
   void associer(const Zone_dis& , const Zone_Cl_dis& ,
                 const Champ_Inc& );
-  void associer_diffusivite_turbulente();
-  inline  void dimensionner(Matrice_Morse& ) const;
-  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
-  const Champ_Fonc& diffusivite_turbulente() const;
 };
 
 
 
-
-//
-// Fonctions inline de la classe Op_Diff_K_Eps_VDF_Elem_Axi
-//
-
-inline Op_Diff_K_Eps_VDF_Elem_Axi::Op_Diff_K_Eps_VDF_Elem_Axi()
-
-  : Op_Diff_K_Eps_VDF_base(It_VDF_Elem(Eval_Diff_K_Eps_VDF_Elem_Axi)())
-{}
-
-// Description:
-// on dimensionne notre matrice.
-inline  void Op_Diff_K_Eps_VDF_Elem_Axi::dimensionner(Matrice_Morse& matrice) const
-{
-  Op_VDF_Elem::dimensionner(iter.zone(), iter.zone_Cl(), matrice);
-}
-
-inline void Op_Diff_K_Eps_VDF_Elem_Axi::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const
-{
-  Op_VDF_Elem::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem);
-}
 
 #endif

@@ -1573,7 +1573,7 @@ void Probleme_base::preparer_calcul()
   equation(0).zone_dis()->modifier_pour_Cl(equation(0).zone_Cl_dis().les_conditions_limites());
   for(int i=0; i<nombre_d_equations(); i++)
     equation(i).preparer_calcul();
-
+  equation(0).milieu().preparer_calcul();
   if(schema_temps().file_allocation() && EcritureLectureSpecial::Active)
     file_size_xyz();
 }

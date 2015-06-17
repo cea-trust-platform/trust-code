@@ -47,7 +47,7 @@ class Op_Dift_VDF_Multi_inco_var_Elem : public Op_Dift_VDF_base, public Op_VDF_E
 
 public:
 
-  inline Op_Dift_VDF_Multi_inco_var_Elem();
+  Op_Dift_VDF_Multi_inco_var_Elem();
   void associer(const Zone_dis& , const Zone_Cl_dis& ,
                 const Champ_Inc& );
   void associer_diffusivite(const Champ_base& );
@@ -59,21 +59,6 @@ public:
   const Champ_base& diffusivite() const;
   double calculer_dt_stab() const;
 };
-
-
-//
-// Fonctions inline de la classe Op_Dift_VDF_Multi_inco_var_Elem
-//
-
-//// Op_Dift_VDF_Multi_inco_var_Elem
-//
-
-Op_Dift_VDF_Multi_inco_var_Elem::
-Op_Dift_VDF_Multi_inco_var_Elem()
-
-  : Op_Dift_VDF_base(It_VDF_Elem(Eval_Dift_VDF_Multi_inco_var_Elem)())
-{
-}
 
 // Description:
 // on dimensionne notre matrice.

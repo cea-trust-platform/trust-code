@@ -103,7 +103,7 @@ done
 
 # On copie le cas test
 #if [ "`ls $TRUST_TESTS/*/$cas/$cas.lml.gz 2>/dev/null`" != "" ]
-if [ "`find $TRUST_TESTS/ -follow -name $cas.lml.gz -print 2>/dev/null`" != "" ]
+if [ "`find $TRUST_TESTS/ -follow -name $cas.lml.gz -print 2>/dev/null | sort`" != "" ]
 then
    cd $DEST
    copie_cas_test $cas $TRUST_TESTS 1>copie_cas_test.log 2>&1

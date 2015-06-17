@@ -35,6 +35,9 @@
 #include <Synonyme_info.h>
 #include <Param.h>
 
+#include <Linear_algebra_tools_impl.h>
+
+
 Implemente_instanciable(Champ_Generique_Transformation,"Transformation",Champ_Gen_de_Champs_Gen);
 Add_synonym(Champ_Generique_Transformation,"Champ_Post_Transformation");
 
@@ -124,12 +127,13 @@ void Champ_Generique_Transformation::verifier_coherence_donnees()
     }
   else
     {
-      Motcles methods(5);
+      Motcles methods(6);
       methods[0] = "formule";
       methods[1] = "vecteur";
       methods[2] = "produit_scalaire";
       methods[3] = "norme";
       methods[4] = "composante";
+      methods[5] = "composante_normale";
       if (methods.search(methode_) < 0)
         {
           Cerr<<"Error in  "<<que_suis_je()<<finl;
@@ -279,6 +283,48 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
     }
 }
 
+
+void  projette(DoubleTab& valeurs_espace,const DoubleTab& val_source,const Zone_VF& zvf,const Motcle& loc,int is_VDF)
+{
+  const Nom& type_elem=zvf.zone().type_elem().valeur().que_suis_je();
+  if ((is_VDF)||(loc!="elem")|| (type_elem!="Quadrangle"))
+    {
+      Cerr<<"option composante_normale not coded in this case"<<finl;
+      Process::exit();
+    }
+  const DoubleTab& coord=zvf.zone().domaine().coord_sommets();
+  const IntTab& elems=zvf.zone().les_elems();
+
+  int nb_v= valeurs_espace.dimension(0);
+  assert(nb_v==zvf.nb_elem());
+  assert(val_source.dimension(1)==Objet_U::dimension);
+  for (int i=0; i<nb_v; i++)
+    {
+      Vecteur3 v1,v2,normal,val;
+      int s0=elems(i,0);
+      int s1=elems(i,1);
+      int s2=elems(i,2);
+      if (Objet_U::dimension!=3)
+        {
+          Cerr<<"not implemented "<<finl;
+          assert(0);
+          Process::exit();
+        }
+      v1.set(coord(s1,0)-coord(s0,0),coord(s1,1)-coord(s0,1),coord(s1,2)-coord(s0,2));
+      v2.set(coord(s2,0)-coord(s0,0),coord(s2,1)-coord(s0,1),coord(s2,2)-coord(s0,2));
+      val.set(val_source(i,0),val_source(i,1),val_source(i,2));
+
+      Vecteur3::produit_vectoriel(v1,v2,normal);
+      double norm=Vecteur3::produit_scalaire(normal,normal);
+      double inv=1./sqrt(norm);
+      normal*=inv;
+
+
+      double prod_scal= Vecteur3::produit_scalaire(normal,val);
+      valeurs_espace(i)=prod_scal;
+    }
+
+}
 //Construction de l espace de stockage rendu par ce champ de postraitement
 //-Caracterisation de l espace de stockage rendu par ce champ de postraitement (Typage ...)
 //-Construction du tableau positions qui contient les coordonnees des points de calcul (support)
@@ -331,6 +377,7 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
 
   int nb_sources = get_nb_sources();
   nb_pos = positions.dimension(0);
+  assert(nb_pos>0||(methode_=="formule")||(methode_=="composante_normale"));
   double x=0;
   double y=0;
   double z=0;
@@ -374,8 +421,9 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
         {
           if (source_so_val.nb_dim()==1)
             {
-              sources_val[so].resize(nb_pos,1);
-              for (int i_loc=0; i_loc<nb_pos; i_loc++)
+              int nn=source_so_val.dimension_tot(0);
+              sources_val[so].resize(nn,1);
+              for (int i_loc=0; i_loc<nn; i_loc++)
                 sources_val[so](i_loc,0) = source_so_val(i_loc);
             }
           else
@@ -462,6 +510,11 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
             }
         }
     }
+  else if (Motcle(methode_)=="composante_normale")
+    {
+      const DoubleTab& source_so_val = sources_val[0];
+      projette(valeurs_espace,source_so_val,zvf,localisation_,is_VDF);
+    }
   else if (Motcle(methode_)=="composante")
     {
       int num_compo = les_fct.size()-1;
@@ -496,16 +549,31 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
       //Evaluation des valeurs de l espace de stockage en fonction de la fonction (les_fct)
       Parser_U& f = fxyz[0];
       f.setVar("t",temps);
-      for (int i=0; i<nb_pos; i++)
+      int special=0;
+      if ((nb_pos==0)&&(valeurs_espace.dimension_tot(0)!=0))
         {
-          x = positions(i,0);
-          y = positions(i,1);
-          z = 0;
-          if (dimension>2)
-            z = positions(i,2);
+          special=1;
+          nb_pos=valeurs_espace.dimension(0);
+          x=1e38;
+          y=1e38;
+          z=1e38;
           f.setVar(0,x);
           f.setVar(1,y);
           f.setVar(2,z);
+        }
+      for (int i=0; i<nb_pos; i++)
+        {
+          if (!special)
+            {
+              x = positions(i,0);
+              y = positions(i,1);
+              z = 0;
+              if (dimension>2)
+                z = positions(i,2);
+              f.setVar(0,x);
+              f.setVar(1,y);
+              f.setVar(2,z);
+            }
           /* Plus rapide que de passer par:
              f.setVar("x",x);
              f.setVar("y",y);
@@ -718,7 +786,7 @@ int Champ_Generique_Transformation::preparer_macro()
           fxyz[comp].parseString();
         }
     }
-  else if (Motcle(methode_)=="composante")
+  else if ((Motcle(methode_)=="composante")|| ((Motcle(methode_)=="composante_normale") ))
     {
       if (nb_sources!=1)
         {

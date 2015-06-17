@@ -13,30 +13,12 @@ Chapitre {
 		LabelX "Days ago"
 		LabelY "Time step CPU [s]"
 		RangeX -400. 0.
-		RangeY 0. 20.
+		RangeY 0. 16.
 		InclureDescCourbes 0
 		Courbe { 
 			Legende "callisto"
 			Style points
 			Fichier callisto.cpu
-			colonnes $1 $3
-		}
-		Courbe { 
-			Legende "cesium"
-			Style points
-			Fichier cesium.cpu
-			colonnes $1 $3
-		}
-		Courbe { 
-			Legende "titane"
-			Style points
-			Fichier titane.cpu
-			colonnes $1 $3
-		}
-		Courbe { 
-			Legende "castor"
-			Style points
-			Fichier castor.cpu
 			colonnes $1 $3
 		}
 		Courbe { 
@@ -51,6 +33,12 @@ Chapitre {
 			Fichier airain.cpu
 			colonnes $1 $3
 		}	
+		Courbe { 
+			Legende "ceres2"
+			Style points
+			Fichier ceres2.cpu
+			colonnes $1 $3
+		}	
 		Courbe {
 			Legende "Acceptance limit"
 			Style lines
@@ -62,29 +50,12 @@ Chapitre {
 		LabelX "Days ago"
 		LabelY "Efficiency"
 		RangeX -400. 0.
+		RangeY 0. 2.
 		InclureDescCourbes 0
 		Courbe { 
 			Legende "callisto"
 			Style points
 			Fichier callisto.cpu
-			colonnes $1 $8
-		}
-		Courbe { 
-			Legende "cesium"
-			Style points
-			Fichier cesium.cpu
-			colonnes $1 $8
-		}
-		Courbe { 
-			Legende "titane"
-			Style points
-			Fichier titane.cpu
-			colonnes $1 $8
-		}
-		Courbe { 
-			Legende "castor"
-			Style points
-			Fichier castor.cpu
 			colonnes $1 $8
 		}
 		Courbe { 
@@ -99,10 +70,16 @@ Chapitre {
 			Fichier airain.cpu
 			colonnes $1 $8
 		}
+		Courbe { 
+			Legende "ceres2"
+			Style points
+			Fichier ceres2.cpu
+			colonnes $1 $8
+		}
 		Courbe {
 			Legende "Acceptance limit"
 			Style lines
-			Fonction 0.65
+			Fonction 0.6
 		}				
 	}
 }
@@ -114,30 +91,12 @@ Chapitre {
 		LabelX "Days ago"
 		LabelY "Time step CPU [s]"
 		RangeX -400. 0.
-		RangeY 0. 20.
+		RangeY 0. 16.
 		InclureDescCourbes 0
 		Courbe { 
 			Legende "callisto"
 			Style points
 			Fichier callisto.cpu
-			colonnes $1 $9
-		}
-		Courbe { 
-			Legende "cesium"
-			Style points
-			Fichier cesium.cpu
-			colonnes $1 $9
-		}
-		Courbe { 
-			Legende "titane"
-			Style points
-			Fichier titane.cpu
-			colonnes $1 $9
-		}
-		Courbe { 
-			Legende "castor"
-			Style points
-			Fichier castor.cpu
 			colonnes $1 $9
 		}
 		Courbe { 
@@ -150,6 +109,12 @@ Chapitre {
 			Legende "airain"
 			Style points
 			Fichier airain.cpu
+			colonnes $1 $9
+		}		
+		Courbe { 
+			Legende "ceres2"
+			Style points
+			Fichier ceres2.cpu
 			colonnes $1 $9
 		}		
 		Courbe {
@@ -163,29 +128,12 @@ Chapitre {
 		LabelX "Days ago"
 		LabelY "Efficiency"
 		RangeX -400. 0.
+		RangeY 0. 2.
 		InclureDescCourbes 0
 		Courbe { 
 			Legende "callisto"
 			Style points
 			Fichier callisto.cpu
-			colonnes $1 $14
-		}
-		Courbe { 
-			Legende "cesium"
-			Style points
-			Fichier cesium.cpu
-			colonnes $1 $14
-		}
-		Courbe { 
-			Legende "titane"
-			Style points
-			Fichier titane.cpu
-			colonnes $1 $14
-		}
-		Courbe { 
-			Legende "castor"
-			Style points
-			Fichier castor.cpu
 			colonnes $1 $14
 		}
 		Courbe { 
@@ -200,10 +148,16 @@ Chapitre {
 			Fichier airain.cpu
 			colonnes $1 $14
 		}
+		Courbe { 
+			Legende "ceres2"
+			Style points
+			Fichier ceres2.cpu
+			colonnes $1 $14
+		}
 		Courbe {
 			Legende "Acceptance limit"
 			Style lines
-			Fonction 0.65
+			Fonction 0.6
 		}				
 	}
 }

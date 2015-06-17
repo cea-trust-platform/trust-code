@@ -1,0 +1,16 @@
+#!/bin/bash
+[ "$MED_ROOT_DIR" = "" ] && echo MED_ROOT_DIR not set && exit 1
+
+rm -rf local/ParaMEDMEM
+mkdir -p local/ParaMEDMEM
+cd local/ParaMEDMEM
+for dir in include lib
+do
+mkdir $dir
+cd $dir
+ln -s $MED_ROOT_DIR/$dir/salome .
+ln -sf salome/* .
+cd -
+done
+
+

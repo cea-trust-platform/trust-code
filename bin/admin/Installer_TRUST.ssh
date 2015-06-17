@@ -98,7 +98,7 @@ else
    ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=60 -o BatchMode=yes $log@$adr -n '[ -f .profile ] && . ./.profile;
    	cd '$rep';rm -r -f TRUST 2>/dev/null;
   	tar xf '$file';printf '$rep'/'$keys'"\ny\n" | ./Installer_TRUST && rm -f * 2>/dev/null;
-   	[ '${#compile}' != 0 ] && cd TRUST && source env/Init_TRUST && OPT="" && monodir;
+   	[ '${#compile}' != 0 ] && cd TRUST && source env/env_TRUST.sh && OPT="" && make;
    	find . -name '*'.o -exec rm -f {} \;
    '
 fi

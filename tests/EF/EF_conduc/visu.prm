@@ -1,0 +1,29 @@
+Parametres {
+	Titre "Conduction couplée implicite"
+	Description "Calculs menés en VDF/VEF avec/sans paroi fictive"
+	Auteur "G.F."
+	CasTest FTD_all_VEF FTD_all_VEF.data
+}
+
+Chapitre {
+	Titre "FT"
+	Description " test visu "
+visu {
+	titre "temperature"
+	description "on trace le maillage et indicatrice"
+	mesh ./EF_conduc.lata dom
+	pseudocolor ./EF_conduc.lata dom TEMPERATURE SOM
+}
+visu {
+	titre "temperature-x"
+	description "on trace le maillage et indicatrice"
+	mesh ./EF_conduc.lata dom
+	instruction_visit DefineScalarExpression("erreur_SOM_dom","TEMPERATURE_SOM_dom-coord(dom)[0]")
+	pseudocolor ./EF_conduc.lata dom erreur SOM
+}
+}
+
+
+
+
+

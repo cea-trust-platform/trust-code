@@ -1,0 +1,61 @@
+parametres {
+	titre "Test de couplage sans MedCoupling + test dlopen"
+	auteur "fauchet pour perdu "
+	casTest dlopen ok
+	casTest std ok
+}
+
+Chapitre {
+        Titre comparaison aux solutions de reference
+        Tableau {
+        titre calcul sequentiel
+        nb_colonnes 1
+        label maximum
+       
+        ligne {
+        legende differences resu/ref
+        nb_colonnes_fichier 6
+        fichier dlopen/diff_resu.out
+        derniere_ligne
+        colonnes $6
+        }
+}
+}
+Chapitre {
+	Titre OK ?
+	Tableau {
+	nb_colonnes 1
+	label status 
+	ligne {
+	legende res
+	fichier dlopen/is_ok 
+	}
+	} 
+}
+Chapitre {
+        Titre comparaison aux solutions de reference
+        Tableau {
+        titre calcul sequentiel
+        nb_colonnes 1
+        label maximum
+       
+        ligne {
+        legende differences resu/ref
+        nb_colonnes_fichier 6
+        fichier std/diff_resu.out
+        derniere_ligne
+        colonnes $6
+        }
+}
+}
+Chapitre {
+	Titre OK ?
+	Tableau {
+	nb_colonnes 1
+	label status 
+	ligne {
+	legende res
+	fichier std/is_ok 
+	}
+	} 
+}

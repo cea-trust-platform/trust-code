@@ -21,12 +21,9 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Dift_VDF_Elem.h>
-#include <Transport_V2.h>
-#include <Modele_turbulence_hyd_K_Eps_V2.h>
-#include <Modele_turbulence_scal_Fluctuation_Temperature_W.h>
+#include <Modele_turbulence_scal_base.h>
+#include <Mod_turb_hyd_base.h>
 #include <Champ_P0_VDF.h>
-#include <Modele_turbulence_hyd_K_Eps_Bas_Reynolds.h>
-#include <Modele_turbulence_scal_Fluctuation_Temperature.h>
 
 Implemente_instanciable_sans_constructeur(Op_Dift_VDF_Elem,"Op_Dift_VDF_P0_VDF",Op_Dift_VDF_base);
 
@@ -110,38 +107,32 @@ void Op_Dift_VDF_Elem::completer()
   Cerr << "Op_Dift_VDF_Elem::completer() "<<equation().que_suis_je() << finl;
   Op_Dift_VDF_base::completer();
 
-  if (sub_type(Transport_V2, equation()))
+  const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
+  if (sub_type(Modele_turbulence_scal_base,modele_turbulence.valeur()))
     {
-      const Transport_V2& eqn = ref_cast(Transport_V2,equation());
-      const Modele_turbulence_hyd_K_Eps_V2& mod_turb = eqn.modele_turbulence();
-      const Champ_Fonc& alpha_t = mod_turb.viscosite_turbulente();
-      associer_diffusivite_turbulente(alpha_t);
-    }
-  else
-    {
-
-      const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
       const Modele_turbulence_scal_base& mod_turb = ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur());
       const Champ_Fonc& alpha_t = mod_turb.diffusivite_turbulente();
       associer_diffusivite_turbulente(alpha_t);
 
-      const RefObjU& modele_turbulence_hydr = equation().probleme().equation(0).get_modele(TURBULENCE);
-      const Mod_turb_hyd_base& mod_turb_hydr = ref_cast(Mod_turb_hyd_base,modele_turbulence_hydr.valeur());
 
-      if (!(sub_type(Modele_turbulence_hyd_K_Eps_Bas_Reynolds,mod_turb_hydr))
-          && !(sub_type(Modele_turbulence_scal_Fluctuation_Temperature,mod_turb))
-          && !(sub_type(Modele_turbulence_scal_Fluctuation_Temperature_W,mod_turb)))
-        {
-          const Turbulence_paroi_scal& loipar = mod_turb.loi_paroi();
-          if (loipar.non_nul())
-            associer_loipar(loipar);
-        }
-
+      const Turbulence_paroi_scal& loipar = mod_turb.loi_paroi();
+      if (loipar.non_nul())
+        associer_loipar(loipar);
       //
       Evaluateur_VDF& eval = iter.evaluateur();
       Eval_Dift_VDF_const_Elem& eval_diff_turb = (Eval_Dift_VDF_const_Elem&) eval;
       eval_diff_turb.associer_modele_turbulence(mod_turb);
     }
+  else
+    {
+      // bizarre mais V2
+      const Mod_turb_hyd_base& mod_turb = ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur());
+      const Champ_Fonc& alpha_t = mod_turb.viscosite_turbulente();
+      associer_diffusivite_turbulente(alpha_t);
+
+    }
+
+
 }
 
 double Op_Dift_VDF_Elem::calculer_dt_stab() const
@@ -263,4 +254,12 @@ double Op_Dift_VDF_Elem::calculer_dt_stab() const
   return dt_stab;
 }
 
-
+//
+// Fonctions inline de la classe Op_Dift_VDF_Elem
+//
+//// Op_Dift_VDF_Elem
+//
+Op_Dift_VDF_Elem::Op_Dift_VDF_Elem() :
+  Op_Dift_VDF_base(It_VDF_Elem(Eval_Dift_VDF_const_Elem)())
+{
+}

@@ -24,43 +24,26 @@
 #define DescStructure_included
 
 #include <assert.h>
-#include <VectEsp_Virt.h>
-#include <VectEsp_Dist.h>
+#include <Objet_U.h>
+#include <Vect.h>
 
+class Esp_Virt;
+class Esp_Dist;
 
+Declare_vect(Esp_Virt);
+Declare_vect(Esp_Dist);
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// .DESCRIPTION
+// .DESCRIPTION Sert a relire ancinne structure parallele
 // .SECTION voir aussi
 //////////////////////////////////////////////////////////////////////////////
 class DescStructure : public Objet_U
 {
   Declare_instanciable(DescStructure);
 public:
-  Nom& identificateur();
-  const Nom& identificateur() const;
-  VectEsp_Virt& esp_virt();
-  const VectEsp_Virt& esp_virt() const;
-  VectEsp_Dist& esp_dist();
-  const VectEsp_Dist& esp_dist() const;
-  VECT(Descripteur)& descripteur();
-  const VECT(Descripteur)& descripteur() const;
-
-  void ajoute_espace_virtuel(int pe);
-  // void ajoute_espace_virtuel(int pe, int sz);
-  void ajoute_espace_virtuel(int pe, const VECT(Descripteur)& vdesc);
-  void complete_espace_virtuel(int pe, int sz);
-  // void ajoute_espace_distant(int pe, const ArrOfInt& v);
-
-  void ajoute_descripteur(int deb, int nb, int stride=1);
-  void ajoute_descripteur(const DescStructure&);
 
 
 private:
-  Nom identificateur_;
-  VectEsp_Virt virt_data_;
-  VectEsp_Dist dist_data_;
-  VECT(Descripteur) desc_;
 };
 #endif

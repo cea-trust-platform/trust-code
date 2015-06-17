@@ -48,7 +48,7 @@ def read_libs_from_makeliba():
 def add_library_for_dir(s2):
     strout="add_library(obj_"+s2+" OBJECT  ${srcs} )\n"    
     strout += "set(listlibs ${listlibs} " +s2 +" PARENT_SCOPE    )\n"
-    strout += "add_custom_target(check_sources_"+s2+"   COMMAND check_sources.sh ${CMAKE_CURRENT_SOURCE_DIR} COMMENT  \"checking code validity "+s2+"\" )\n" # MAIN_DEPENDENCY ${file} DEPENDS ${file})\n"
+    strout += "add_custom_target(check_sources_"+s2+"   COMMAND check_sources.sh ${CMAKE_CURRENT_SOURCE_DIR} ) #COMMENT  \"checking code validity "+s2+"\" )\n" # MAIN_DEPENDENCY ${file} DEPENDS ${file})\n"
     strout+="add_DEPENDENCIES(obj_"+s2+" check_sources_"+s2+")\n"
     # strout += "  set(listobj ${listobj}  $<TARGET_OBJECTS:obj_"+s2[1] +"> PARENT_SCOPE    )\n"
     strout +="if(COMPIL_DYN)\n"
@@ -236,7 +236,7 @@ IF(NOT VISUAL)
 
 enable_language(Fortran OPTIONAL)
 
-SET (MPI_ROOT $ENV{MPI_ROOT})
+SET (MPI_INCLUDE $ENV{MPI_INCLUDE})
 SET (TRUST_ARCH $ENV{TRUST_ARCH})
 # OPT sert a petsc pour l instant
 #SET(OPT $ENV{OPT})
@@ -333,7 +333,7 @@ ENDIF(NOT VISUAL)
 
 ''')
     out.write('\n\nSTRING( TOUPPER ${CMAKE_BUILD_TYPE} BUILD_CONFIG)\nstring(STRIP ${CMAKE_EXE_LINKER_FLAGS_${BUILD_CONFIG}} linker_flag )\nSET(syslib ${libs} ${linker_flag} )\n\n')
-    out.write('include_directories(${METIS_ROOT}/include  ${TRUST_MED_ROOT}/include  ${TRUST_MEDCOUPLING_ROOT}/include  ${MPI_ROOT}/include ${PETSC_ROOT}/${TRUST_ARCH}${OPT}/include ${TRUST_LATAFILTER}/include ${TRUST_ICOCOAPI}/include   )\n')
+    out.write('include_directories(${METIS_ROOT}/include  ${TRUST_MED_ROOT}/include  ${TRUST_MEDCOUPLING_ROOT}/include  ${MPI_INCLUDE} ${PETSC_ROOT}/${TRUST_ARCH}${OPT}/include ${TRUST_LATAFILTER}/include ${TRUST_ICOCOAPI}/include   )\n')
     out.write('add_definitions(${ADD_CPPFLAGS})\n')
 
     out.write('''
@@ -490,7 +490,7 @@ if(EXISTS ${CMAKE_SOURCE_DIR}/cmake.deps)
 include(cmake.deps)
 endif()
 
-add_library(list_obj  OBJECT ${srcs} ${srcdeps}  )
+add_library(list_obj  OBJECT ${srcs} ${srcdeps} ${CMAKE_SOURCE_DIR}/exec${OPT}/info_atelier.cpp )
 
 #add_executable(exe ${srcs} ${srcdeps})
 add_executable(exe  $<TARGET_OBJECTS:list_obj>)

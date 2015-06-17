@@ -5,8 +5,8 @@ TRUST scripts
 To run the TRUST tools, TRUST environment must be initialized.
 
 To initialize the TRUST environment :
-cd TRUST/bin
-source ./Init_TRUST
+cd TRUST
+source ./env/env_TRUST.sh
 
 
 **********************

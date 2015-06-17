@@ -281,7 +281,7 @@ class Write_tex:
         nb_columns = len( data[0] )
 
 
-        entete=('\n\begin{tabular}{|c|')
+        entete=('\n\begin{longtable}{|c|')
        
         nbl=nbc
         if tableau.transposed_display:
@@ -314,7 +314,7 @@ class Write_tex:
             for line in data:
                 fichier.write( ' & '.join( line ) )
                 fichier.write(' \\\\  \hline \n')
-        fichier.write_Tex('\end{tabular}\n \n ')
+        fichier.write_Tex('\end{longtable}\n \n ')
         fichier.write_Tex_sans_nl('\vspace{0.5cm}')
         # print "ICICI gros travail a faire !!!!!!!"
         if len(tableau.listeLignes)>0 and tableau.inclureDescLignes==1:
@@ -526,7 +526,7 @@ class Write_tex:
 	    _templateTEX_ = '''% This file was generated automaticaly with the genererCources.py script
 \documentclass[10pt,twoside,a4paper]{article}
 \usepackage[ascii]{}
-% \usepackage[T1]{fontenc}
+\usepackage{longtable}
 \usepackage[latin1]{inputenc}
 % \usepackage[french]{babel}
 \usepackage{amsmath,amssymb,amsfonts,textcomp}

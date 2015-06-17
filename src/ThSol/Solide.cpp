@@ -106,17 +106,18 @@ void Solide::discretiser(const Probleme_base& pb, const  Discretisation_base& di
 // Postcondition:
 void Solide::verifier_coherence_champs(int& err,Nom& msg)
 {
+  msg="";
   if (! ( (sub_type(Champ_Uniforme,rho.valeur())) &&
           (sub_type(Champ_Uniforme,Cp.valeur())) )   )
     {
-      msg = "One of the physical properties rho ou Cp is not of type Champ_Uniforme";
+      msg += "One of the physical properties rho ou Cp is not of type Champ_Uniforme. \n";
       err = 1;
     }
   else
     {
       if  ( (rho(0,0) <= 0) || (Cp(0,0) <= 0) )
         {
-          msg = "One of the physical properties rho ou Cp is not striclty positive.";
+          msg += "One of the physical properties rho ou Cp is not striclty positive. \n";
           err = 1;
         }
     }
@@ -124,7 +125,7 @@ void Solide::verifier_coherence_champs(int& err,Nom& msg)
     {
       if (lambda(0,0) <= 0)
         {
-          msg = "The conductivity lambda is not striclty positive.";
+          msg += "The conductivity lambda is not striclty positive. \n";
           err = 1;
         }
     }

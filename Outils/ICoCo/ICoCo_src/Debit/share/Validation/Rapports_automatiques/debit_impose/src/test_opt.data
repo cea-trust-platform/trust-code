@@ -1,0 +1,96 @@
+# Hydraulique 2D laminaire avec "trou" dans le maillage #
+# PARALLEL OK #
+dimension 3
+Pb_hydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+lire_fichier dom dom.geom
+# END MESH #
+# BEGIN PARTITION
+
+Decouper dom
+{
+	Partitionneur tranche { tranches 2 1 1 }  
+	Larg_joint 2
+	Nom_Zones DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN READ
+Scatter DOM.Zones dom
+END READ #
+
+VEFprep1b dis
+
+
+Schema_Euler_explicite sch
+Lire sch
+{
+        tinit 0
+        dt_min 5.e-8
+        dt_impr 5.e-1
+        
+        seuil_statio -1.e-6
+	nb_pas_dt_max 10
+	dt_max 1
+}
+
+Fluide_Incompressible eau
+Lire eau
+{
+	mu  Champ_uniforme 1 1.
+	rho Champ_Uniforme 1 1000.
+}
+
+Associer pb dom
+Associer pb sch
+Associer pb eau
+
+
+
+Discretiser pb dis
+domaine IN
+extraire_surface { probleme pb domaine IN avec_certains_bords 1 IN } 
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+methode_calcul_pression_initiale avec_sources
+		solveur_pression GCP { 
+			precond ssor { omega 1.5 } 
+			seuil 1.e-8
+			impr
+		}
+		diffusion { negligeable }
+		convection { negligeable   }
+            
+
+		conditions_initiales {
+			vitesse Champ_fonc_xyz dom  3 0 0  0.26259
+			}
+		
+		conditions_limites {
+			IN frontiere_ouverte_vitesse_imposee champ_front_debit_VEF champ_front_uniforme 1 5.
+			sym symetrie
+			paroi symetrie
+			out frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
+
+		}
+	}
+
+	Postraitement
+	{
+
+	format lata
+		domaine IN
+		Champs dt_post 1.3
+		{
+			
+			vitesse elem
+
+		}	}
+}
+resoudre pb
+fin

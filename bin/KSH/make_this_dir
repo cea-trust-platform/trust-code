@@ -6,7 +6,7 @@ sub=`echo $dir|sed "s?$TRUST_ROOT?.?"`
 
 MonoDir=$TRUST_ROOT/MonoDir$COMM$OPT	
 cd $MonoDir/$sub
-make; status=$? 
+make $* ; status=$? 
 
 cd -
 exit $status

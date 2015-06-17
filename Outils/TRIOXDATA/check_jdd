@@ -36,7 +36,7 @@ then
 	  echo "difference "
 	  diff tests_${name}/liste ref/tests_${name}/liste
 	  echo
-	  grep -v CHANNEL_LES_VEF_RE_TAU_1110_jdd tests_${name}/liste | grep -v Execute_parallel >liste_mod
+	  grep -v CHANNEL_LES_VEF_RE_TAU_1110_jdd tests_${name}/liste | grep -v Execute_parallel | grep -v  OBI_diffuser_VEF_k_eps_jdd1 >liste_mod
 	  
 	  if [ "`diff liste_mod ref/tests_${name}/liste`" != "" ]
 	      then

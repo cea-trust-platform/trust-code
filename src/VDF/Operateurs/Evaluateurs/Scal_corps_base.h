@@ -27,14 +27,14 @@
 #define Dist_face_elem0(face,n0) dist_face_elem0_axi(face,n0)
 #define Dist_face_elem1(face,n1) dist_face_elem1_axi(face,n1)
 #ifndef DEQUIV
-#define Dist_norm_bord_externe_(global_face) la_zone->dist_norm_bord_axi(face)
+#define Dist_norm_bord_externe_(global_face) la_zone->dist_norm_bord_axi(global_face)
 #endif
 #else
 #define Dist_norm_bord(face) MULTD la_zone->dist_norm_bord(face)
 #define Dist_face_elem0(face,n0) dist_face_elem0(face,n0)
 #define Dist_face_elem1(face,n1) dist_face_elem1(face,n1)
 #ifndef DEQUIV
-#define Dist_norm_bord_externe_(global_face) la_zone->dist_norm_bord(face)
+#define Dist_norm_bord_externe_(global_face) la_zone->dist_norm_bord(global_face)
 #endif
 #endif
 

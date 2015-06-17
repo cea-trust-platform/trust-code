@@ -134,7 +134,7 @@ void Perte_Charge_Reguliere_VDF_Face::remplir_num_faces(Nom& nom_sous_zone)
 
 }
 
-DoubleTab& Perte_Charge_Reguliere_VDF_Face::ajouter(DoubleTab& resu) const
+DoubleTab& Perte_Charge_Reguliere_VDF_Face::ajouter_(const DoubleTab& inco,DoubleTab& resu) const
 {
 
   const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
@@ -168,8 +168,8 @@ DoubleTab& Perte_Charge_Reguliere_VDF_Face::ajouter(DoubleTab& resu) const
       for (int i=0; i<nb_faces; i++)
         {
           numfa = num_faces[i];
-          U = vit[numfa];
-          U_abs = dabs(U);
+          U = inco[numfa];
+          U_abs = dabs(vit[numfa]);
 
           if (!l_visco_unif)
             {
@@ -187,6 +187,11 @@ DoubleTab& Perte_Charge_Reguliere_VDF_Face::ajouter(DoubleTab& resu) const
             }
           if (couronne_tube == 1)
             {
+              if (vit!=inco)
+                {
+                  Cerr<<"not implemented " <<finl;
+                  exit();
+                }
               double U_res=0.,vit1,vit2,div,corr_sign=1.0;
               int ori,el,fa1,fa2,fa3,fa4 ;
               // modifications ajoutees par fabio :
@@ -249,11 +254,6 @@ DoubleTab& Perte_Charge_Reguliere_VDF_Face::ajouter(DoubleTab& resu) const
   return resu;
 }
 
-DoubleTab& Perte_Charge_Reguliere_VDF_Face::calculer(DoubleTab& resu) const
-{
-  resu = 0;
-  return ajouter(resu);
-}
 
 
 

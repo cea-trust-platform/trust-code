@@ -63,3 +63,33 @@ Entree& Noms::readOn(Entree& s)
 {
   return VECT(Nom)::readOn(s);
 }
+
+int Noms::search(const Nom& t ) const
+{
+  assert(size()>=0);
+  int i=size();
+  while(i--)
+    if (operator()(i)==t)
+      {
+        return i;
+      }
+  return -1;
+}
+
+int Noms::contient_(const char* const ch) const
+{
+  return (rang(ch)!=-1);
+}
+/* Returns the VECT position number of a string (-1 if not found) */
+int Noms::rang(const char* const ch) const
+{
+  Nom nom(ch);
+  assert(size()>=0);
+  int i=size();
+  while(i--)
+    if (operator()(i)==nom)
+      {
+        return i;
+      }
+  return -1;
+}

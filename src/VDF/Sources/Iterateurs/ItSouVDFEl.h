@@ -23,17 +23,14 @@
 #ifndef ItSouVDFEL_H
 #define ItSouVDFEL_H
 
+#include <Config_Template_Version_Sources_VDF.h>
 #define It_Sou_VDF_Elem(_TYPE_) name2(Iterateur_Source_VDF_Elem, _TYPE_)
-#define It_Sou_VDF_loc_Elem(_TYPE_) name2(Iterateur_Source_VDF_local_Elem, _TYPE_)
 
-#ifdef Template_Version
-#include <TItSouVDFEl.h>
-#define declare_It_Sou_VDF_Elem(_TYPE_)                                        \
-  typedef Iterateur_Source_VDF_Elem<_TYPE_> It_Sou_VDF_Elem(_TYPE_);
+#ifdef Template_Version_VDF
+#include <T_It_Sou_VDF_Elem.h>
+#define declare_It_Sou_VDF_Elem(_TYPE_)				\
+  typedef T_It_Sou_VDF_Elem<_TYPE_> It_Sou_VDF_Elem(_TYPE_);
 #define implemente_It_Sou_VDF_Elem(_TYPE_)
-#define declare_It_Sou_VDF_loc_Elem(_TYPE_)                                \
-  typedef Iterateur_Source_VDF_local_Elem<_TYPE_> It_Sou_VDF_loc_Elem(_TYPE_);
-#define implemente_It_Sou_VDF_loc_Elem(_TYPE_)
 #else
 #include <MItSouVDFEl.h>
 #endif

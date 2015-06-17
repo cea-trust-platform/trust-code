@@ -1,0 +1,16 @@
+#gunzip -f interass.geom.gz
+#./configure
+
+gunzip -c ref_lml.gz > ref.lml
+
+echo "solveur petsc cholesky { }"  > dynamique.data
+
+make check_dynamique
+status=$?
+if [ $status -eq 0 ]
+then
+  echo OK > is_ok
+else
+  #echo KO > is_ok
+  rm -f is_ok
+fi

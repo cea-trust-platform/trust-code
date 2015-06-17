@@ -534,3 +534,33 @@ int Motcle::find(const char* const mot) const
   Motcle mm(mot);
   return Nom::find(mm);
 }
+
+int Motcles::search(const Motcle& t ) const
+{
+  assert(size()>=0);
+  int i=size();
+  while(i--)
+    if (operator()(i)==t)
+      {
+        return i;
+      }
+  return -1;
+}
+
+int Motcles::contient_(const char* const ch) const
+{
+  return (rang(ch)!=-1);
+}
+/* Returns the VECT position number of a string (-1 if not found) */
+int Motcles::rang(const char* const ch) const
+{
+  Nom nom(ch);
+  assert(size()>=0);
+  int i=size();
+  while(i--)
+    if (operator()(i)==nom)
+      {
+        return i;
+      }
+  return -1;
+}

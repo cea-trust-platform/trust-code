@@ -8,7 +8,7 @@
 # Mise a jour de l'environnement Kernel
 ici=`pwd`
 cd $TRUST_ROOT
-source env/Init_TRUST
+source env/env_TRUST.sh
 cd $ici
 # Verification que le script est execute dans un projet Baltik
 [ ! -f project.cfg ] || [ ! -d src ] && echo "Vous n'etes pas dans un projet Baltik ici: `pwd`." && exit -1

@@ -1,0 +1,96 @@
+dimension 3
+
+Domaine boite
+
+Scatter boite.Zones boite
+
+Sch_CN_EX_iteratif sch
+Lire sch
+{
+        tinit 0.
+        dt_start dt_fixe 7.e-06
+        tmax 10000.
+        dt_min 1.e-6
+        dt_max 1.e-1
+        dt_impr 1e-7
+        dt_sauv 0.1
+        seuil_statio 1.e-8
+}
+
+VEFpreP1B dis
+
+Fluide_Incompressible Eau
+Lire Eau
+{
+        mu Champ_Uniforme 1 1e-04
+        lambda  Champ_Uniforme 1 1.e-9
+        rho Champ_Uniforme 1 1000
+        Cp Champ_Uniforme 1 5000.
+        beta_th Champ_Uniforme 1 0.
+}
+
+
+Pb_Hydraulique_Turbulent pb
+Probleme_Couple pb_ch
+associer pb_ch pb
+Associer pb boite
+Associer pb Eau
+Associer pb_ch sch
+Discretiser pb_ch dis
+domaine out
+Extraire_surface
+{
+	probleme pb
+	domaine out
+	avec_certains_bords 1 perio
+	
+}	
+Lire pb
+{
+ Navier_Stokes_Turbulent
+ {
+        methode_calcul_pression_initiale avec_les_cl
+	solveur_pression Gcp { precond ssor { omega 1.5 }
+                                             seuil 1.e-06
+                            }
+       solveur_bar      Gcp { precond ssor { omega 1.5 }
+                                             seuil 1.e-12
+                            }
+       convection { EF_stab { } }
+       diffusion  {  }
+       Sources { Canal_perio { bord perio coeff 10. } }
+       conditions_initiales {  vitesse champ_Uniforme 3 10. 0. 0. }
+       conditions_limites {
+                   perio    periodique 
+                   paroi    paroi_fixe
+                          }
+        Modele_turbulence Sous_maille_wale
+                        {
+                        Cw 0.5
+                        turbulence_paroi loi_standard_hydr
+                        dt_impr_ustar 0.5
+                        } 
+}
+Postraitements
+{
+         pb_ch_post
+        {
+            fichier boite
+            format lata
+            Champs dt_post 0.01
+            {
+             vitesse
+            }
+        }
+	titi { 
+	  domaine out
+	format lata
+	champs dt_post 1e-7
+		{
+		vitesse elem
+	}
+	}	
+}
+sauvegarde binaire test.sauv
+}
+

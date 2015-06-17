@@ -23,9 +23,10 @@
 #include <Op_Dift_VEF_base.h>
 #include <Champ_Fonc.h>
 #include <Mod_turb_hyd_base.h>
-#include <Modele_turbulence_hyd_K_Eps_Bas_Reynolds.h>
+#include <Mod_turb_hyd_RANS.h>
 #include <Turbulence_hyd_sous_maille_VEF.h>
 #include <Modele_turbulence_scal_Prandtl.h>
+#include <Transport_K_Eps_base.h>
 #include <Paroi_negligeable_VEF.h>
 #include <Modele_turbulence_scal.h>
 #include <Mod_turb_hyd_RANS_0_eq.h>
@@ -52,18 +53,11 @@ void Op_Dift_VEF_base::associer_modele_turbulence(const Mod_turb_hyd_base& mod)
   le_modele_turbulence = mod;
   indic_bas_Re_ = 0;
 
-  if (sub_type(Modele_turbulence_hyd_K_Eps,le_modele_turbulence.valeur()))
+  if (sub_type(Mod_turb_hyd_RANS,le_modele_turbulence.valeur()))
     {
-      const Modele_turbulence_hyd_K_Eps& mod_K_eps =
-        ref_cast(Modele_turbulence_hyd_K_Eps, le_modele_turbulence.valeur());
-      k.ref(mod_K_eps.K_Eps().valeurs());
-    }
-  else if (sub_type(Modele_turbulence_hyd_K_Eps_Bas_Reynolds,le_modele_turbulence.valeur()))
-    {
-      const Modele_turbulence_hyd_K_Eps_Bas_Reynolds& mod_K_eps_bas_Re =
-        ref_cast(Modele_turbulence_hyd_K_Eps_Bas_Reynolds, le_modele_turbulence.valeur());
-      k.ref(mod_K_eps_bas_Re.K_Eps().valeurs());
-      indic_bas_Re_ = 1;
+      const Mod_turb_hyd_RANS& mod_K_eps =
+        ref_cast(Mod_turb_hyd_RANS, le_modele_turbulence.valeur());
+      k.ref(mod_K_eps.eqn_transp_K_Eps().inconnue().valeurs());
     }
   else if (sub_type(Mod_turb_hyd_ss_maille,le_modele_turbulence.valeur()))
     {
@@ -107,27 +101,21 @@ void Op_Dift_VEF_base::mettre_a_jour(double )
 {
   if (sub_type(Navier_Stokes_std,equation())) // on traite l'hydraulique
     {
-      if (sub_type(Modele_turbulence_hyd_K_Eps,le_modele_turbulence.valeur()))
+      if (sub_type(Mod_turb_hyd_RANS,le_modele_turbulence.valeur()))
         {
-          const Modele_turbulence_hyd_K_Eps& mod_K_eps =
-            ref_cast(Modele_turbulence_hyd_K_Eps, le_modele_turbulence.valeur());
-          k.ref(mod_K_eps.K_Eps().valeurs());
+          const Mod_turb_hyd_RANS& mod_K_eps =
+            ref_cast(Mod_turb_hyd_RANS, le_modele_turbulence.valeur());
+          k.ref(mod_K_eps.eqn_transp_K_Eps().inconnue().valeurs());
         }
-      else if (sub_type(Modele_turbulence_hyd_K_Eps_Bas_Reynolds,le_modele_turbulence.valeur()))
-        {
-          const Modele_turbulence_hyd_K_Eps_Bas_Reynolds& mod_K_eps_bas_Re =
-            ref_cast(Modele_turbulence_hyd_K_Eps_Bas_Reynolds, le_modele_turbulence.valeur());
-          k.ref(mod_K_eps_bas_Re.K_Eps().valeurs());
-        }
-
-      if (!(sub_type(Modele_turbulence_hyd_K_Eps_Bas_Reynolds,le_modele_turbulence.valeur())))
-        {
-          // Modif BM: on ne prend la ref que si le tableau a ete initialise, sinon ca bloque
-          // l'initialisation
-          const DoubleTab& tab = le_modele_turbulence->loi_paroi().valeur().Cisaillement_paroi();
-          if (tab.size_array() > 0)
-            tau_tan_.ref(tab);
-        }
+      if ( le_modele_turbulence->loi_paroi().non_nul())
+        if (le_modele_turbulence->loi_paroi()->use_shear())
+          {
+            // Modif BM: on ne prend la ref que si le tableau a ete initialise, sinon ca bloque
+            // l'initialisation
+            const DoubleTab& tab = le_modele_turbulence->loi_paroi().valeur().Cisaillement_paroi();
+            if (tab.size_array() > 0)
+              tau_tan_.ref(tab);
+          }
     }
 }
 
@@ -154,7 +142,7 @@ void Op_Dift_VEF_base::completer()
       const Champ_Fonc& viscosite_turbulente = mod_turb.viscosite_turbulente();
       associer_diffusivite_turbulente(viscosite_turbulente);
       associer_modele_turbulence(mod_turb);
-      if (indic_bas_Re_!=1)
+      if (mod_turb.loi_paroi().non_nul())
         if (sub_type(Paroi_negligeable_VEF,mod_turb.loi_paroi().valeur()))
           indic_lp_neg_ = 1;
     }

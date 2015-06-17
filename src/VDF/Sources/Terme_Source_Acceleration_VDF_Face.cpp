@@ -231,11 +231,11 @@ const DoubleTab& Terme_Source_Acceleration_VDF_Face::calculer_vitesse_faces(
   const int       nb_faces = v_faces.dimension(0);
   v_faces_stockage.resize(nb_faces, dim);
   int i_face;
-
+  ArrOfDouble composante_vitesse(3);
   for (i_face = 0; i_face < nb_faces; i_face++)
     {
       const int orientation_face = orientation(i_face);
-      double composante_vitesse[3];
+      composante_vitesse=0;
       int composante;
 
       // Numeros des deux elements voisins de la face (-1 si face de bord)

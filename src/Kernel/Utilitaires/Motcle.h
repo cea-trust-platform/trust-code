@@ -81,6 +81,9 @@ class Motcles : public VECT(Motcle)
   Declare_instanciable(Motcles);
 public:
   Motcles(int);
+  int rang(const char* const ch) const;
+  int contient_(const char* const ch) const;
+  int search(const Motcle& t ) const ;
 };
 
 #endif

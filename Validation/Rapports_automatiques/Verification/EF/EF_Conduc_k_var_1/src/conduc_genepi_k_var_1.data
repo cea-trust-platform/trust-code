@@ -1,0 +1,109 @@
+# Conduction 2D #
+# Temperature imposee en entree et en sortie #
+# Paroi du haut adiabatique et paroi du bas symetrie #
+
+# PARALLEL OK 8 #
+dimension 2
+
+Pb_conduction pb
+Domaine dom
+# DEBUT MAILLAGE #
+Mailler dom
+{
+	Pave Cavite 
+ 	{
+		Origine 0. 0.
+		Nombre_de_Noeuds 201 3 
+		Longueurs 2. 1.
+	}
+	{
+		Bord Gauche X = 0. 0. <= Y <= 1.
+		Bord Haut   Y = 1. 0. <= X <= 2.
+		Bord Bas    Y = 0. 0. <= X <= 2.
+		Bord Droit  X = 2. 0. <= Y <= 1.
+	}
+} 
+
+
+# FIN MAILLAGE #
+# DEBUT DECOUPAGE
+Decouper dom
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 1
+	Nom_Zones DOM
+}
+Fin
+FIN DECOUPAGE #
+
+# DEBUT LECTURE
+Scatter DOM.Zones dom
+FIN LECTURE #
+
+EF dis
+
+Schema_Euler_implicite sch
+Lire sch
+{
+	tinit 0
+	tmax 300.
+	dt_min 0.00001
+	dt_impr 0.00001
+	dt_sauv 100
+	seuil_statio 1.e-8
+solveur piso { seuil_convergence_solveur 1e-8 } 
+facsec 1e2
+}
+#
+champ_fonc_xyz ll lire ll dom 1 1+1.125*x
+ecrire_champ_med dom ll ll.med
+	lambda Champ_fonc_med  last_time ll.med dom ll elem 0.
+#
+Solide sol
+Lire sol
+{
+	rho Champ_Uniforme 1 1.
+	lambda champ_fonc_xyz dom 1 0.25+1.125*x
+	Cp Champ_Uniforme 1 1.
+}
+Associer pb dom
+Associer pb sch
+Associer pb sol
+
+Discretiser pb dis
+
+Lire pb
+{
+	Conduction
+	{
+		diffusion { }
+		conditions_initiales {
+			temperature Champ_Uniforme 1 2. 
+			}
+		conditions_limites {
+			Haut paroi_adiabatique
+			Bas symetrie
+			Droit paroi_temperature_imposee
+			      Champ_Front_Uniforme 1 4.
+			Gauche paroi_temperature_imposee
+			      Champ_Front_Uniforme 1 2.
+		}
+	}
+
+	Postraitement
+	{
+		Sondes
+		{
+			temperature_x temperature periode 5. segment 51  0. 0.5 2. 0.5
+		}
+		format lata
+		Champs dt_post 30.
+		{
+			temperature som
+		}
+	}
+}
+
+Resoudre pb
+
+Fin

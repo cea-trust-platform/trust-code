@@ -455,12 +455,13 @@ void Fluide_Quasi_Compressible::discretiser(const Probleme_base& pb, const  Disc
 // Postcondition:
 void Fluide_Quasi_Compressible::verifier_coherence_champs(int& err,Nom& msg)
 {
+  msg="";
   if (rho.non_nul())
     {
     }
   else
     {
-      msg = "The density rho has not been specified.";
+      msg += "The density rho has not been specified. \n";
       err = 1;
     }
   if (mu.non_nul())
@@ -469,14 +470,14 @@ void Fluide_Quasi_Compressible::verifier_coherence_champs(int& err,Nom& msg)
         {
           if (mu(0,0) <= 0)
             {
-              msg = "The dynamical viscosity mu is not striclty positive.";
+              msg += "The dynamical viscosity mu is not striclty positive. \n";
               err = 1;
             }
         }
     }
   else
     {
-      msg = "The dynamical viscosity mu has not been specified.";
+      msg += "The dynamical viscosity mu has not been specified. \n";
       err = 1;
     }
   if (lambda.non_nul())
@@ -484,7 +485,7 @@ void Fluide_Quasi_Compressible::verifier_coherence_champs(int& err,Nom& msg)
     }
   else
     {
-      msg = "The conductivity lambda has not been specified.";
+      msg += "The conductivity lambda has not been specified. \n";
       err = 1;
     }
   if (Cp.non_nul())
@@ -492,7 +493,7 @@ void Fluide_Quasi_Compressible::verifier_coherence_champs(int& err,Nom& msg)
     }
   else
     {
-      msg = "The heat capacity Cp has not been specified.";
+      msg += "The heat capacity Cp has not been specified. \n";
       err = 1;
     }
   Milieu_base::verifier_coherence_champs(err,msg);

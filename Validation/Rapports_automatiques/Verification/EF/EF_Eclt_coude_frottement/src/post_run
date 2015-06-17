@@ -1,0 +1,3 @@
+tail -1 eclt_coude_frottement_pb_Force_pression.out  > eclt_coude_frottement_fin.out
+tail -1 eclt_coude_frottement2_pb_Force_pression.out  > eclt_coude_frottement2_fin.out
+tail -1 eclt_coude_frottement3_pb_Force_pression.out  > eclt_coude_frottement3_fin.out

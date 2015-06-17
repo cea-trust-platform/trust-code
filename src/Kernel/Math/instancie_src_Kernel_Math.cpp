@@ -30,8 +30,6 @@
 #include <StdFunction.h>
 #include <Table.h>
 #include <UserUnaryFunction.h>
-#include <VectEsp_Dist.h>
-#include <VectEsp_Virt.h>
 void instancie_src_Kernel_Math() {
 Cerr << "src_Kernel_Math" << finl;
 ArrOfBit inst1;verifie_pere(inst1);
@@ -77,6 +75,4 @@ Not inst40;verifie_pere(inst40);
 Abs inst41;verifie_pere(inst41);
 Table inst42;verifie_pere(inst42);
 UserUnaryFunction inst43;verifie_pere(inst43);
-VectEsp_Dist inst44;verifie_pere(inst44);
-VectEsp_Virt inst45;verifie_pere(inst45);
 }

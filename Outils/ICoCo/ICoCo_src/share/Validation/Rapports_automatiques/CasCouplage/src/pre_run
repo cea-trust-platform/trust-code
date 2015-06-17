@@ -1,0 +1,29 @@
+#gunzip -f interass.geom.gz
+#./configure
+
+make ld_env.sh
+exec=`make exe | grep Executable |awk '{print $NF}'`
+export exec
+if [ "$1" != "grossier" ]
+then
+triou dec_canal
+triou dec_boite
+else
+sed "s/10 9 9/4 3 3/" dec_canal.data > dec_c.data
+sed "s/10 10 11/5 3 3/" dec_boite.data > dec_b.data
+triou dec_c
+triou dec_b
+fi
+gunzip -c ref_lml.gz > ref_lml
+
+
+
+make check
+status=$?
+if [ $status -eq 0 ]
+then
+  echo OK > is_ok
+else
+  #echo KO > is_ok
+  rm -f is_ok
+fi

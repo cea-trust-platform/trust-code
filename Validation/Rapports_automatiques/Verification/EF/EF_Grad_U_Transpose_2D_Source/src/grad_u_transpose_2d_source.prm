@@ -1,0 +1,26 @@
+Parametres {
+	Titre "Vérification du transposé du gradient de vitesse dans le tenseur des contraintes visqueuses"
+
+	Description "On impose un champ de vitesse à divergence nulle particulier dans tout le domaine.  On choisit une viscosité variable en espace.  Pour ces deux champs, il est possible de déterminer la solution analytique de la force visqueuse.  Cette force est retranchée sous la forme d'un terme source dans l'équation de Navier-Stokes.  La force totale, autre que la force de pression, doit donc être nulle et le champ de pression doit donc être constant."
+
+	Auteur "D. Jamet"
+
+	CasTest "." "grad_u_transpose_2d_source.data"
+
+	incluredata 1
+}
+
+Chapitre {
+	Titre "Champ de pression"
+	Description "On trace le champ de pression qui doit être une constante (la force totale devant être nulle)."
+
+
+	visu {
+                titre "Champ de pression calculé"
+                description "Le champ de pression calculé par GENEPI est tracé.  On s'attend à ce que ce champ soit constant."
+                mesh ./grad_u_transpose_2d_source.lata dom 
+                pseudocolor ./grad_u_transpose_2d_source.lata dom PRESSION_PA ELEM
+        }
+
+
+}

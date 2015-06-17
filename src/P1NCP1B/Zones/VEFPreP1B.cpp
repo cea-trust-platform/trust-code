@@ -27,7 +27,6 @@
 #include <Schema_Temps_base.h>
 #include <Champ_Inc.h>
 #include <Zone_Cl_dis.h>
-#include <DescStructure.h>
 #include <Motcle.h>
 #include <Champ_Don.h>
 #include <Champ_Fonc.h>

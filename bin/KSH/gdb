@@ -6,7 +6,7 @@ if [ "$1" != "" ] && [ -f $1 ]
 then
    #Le lancement prend desormais en compte un repertoire d'include pour gdb 6.x
    exec=`basename $1`
-   monodir=$TRUST_ROOT/MonoDir${exec#TRUST} && [ -d $monodir/src ] && directory="--directory $monodir/src --directory $monodir/include"
+   MonoDir=$TRUST_ROOT/MonoDir${exec#TRUST} && [ -d $MonoDir/src ] && directory="--directory $MonoDir/src --directory $MonoDir/include"
    # Pour prendre en compte l'atelier on ajoute aussi le repertoire du binaire
    directory=$directory" --directory `dirname $1`"
 fi

@@ -31,11 +31,13 @@ do
       if [ -s $rapport ]
       then
          echo "mise_a_jour_TRUST_arch is running on $adr ! May be it is time to do: ls_arch -kill $adr "
+      else
+         echo "mise_a_jour_TRUST_arch is finished on $adr."
       fi
       rm -f $rapport
       if [ $kill = 1 ]
       then
-         echo "Killing mise_a_jour_TRUST_arch processes..."
+         echo "If necessary, killing mise_a_jour_TRUST_arch processes..."
          ssh_ $log@$adr -n "cd $version/TRUST/bin/admin;./mise_a_jour_TRUST_arch -kill"
       fi
       #ssh_ $log@$adr -n '[ `ls /net 2>/dev/null | grep dibona` != "" ] && [ ! -d /net/dibona/users ] && echo Rebooter'

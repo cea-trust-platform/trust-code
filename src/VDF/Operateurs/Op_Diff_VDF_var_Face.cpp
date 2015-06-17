@@ -44,3 +44,14 @@ Entree& Op_Diff_VDF_var_Face::readOn(Entree& s )
 {
   return s ;
 }
+
+//
+// Fonctions inline de la classe Op_Diff_VDF_var_Face
+//
+//// Op_Diff_VDF_var_Face
+//
+Op_Diff_VDF_var_Face::Op_Diff_VDF_var_Face() :
+  Op_Diff_VDF_Face_base(It_VDF_Face(Eval_Diff_VDF_var_Face)())
+{
+  declare_support_masse_volumique(1);
+}

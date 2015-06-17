@@ -8,8 +8,8 @@ if [ "$1" != -short ]
 then
    echo $ECHO_OPTS "`basename $0`" "$*
 Usage: `basename $0` [-html] | [-short] [-file file|all] [-module all|module [-directory]] [-directory all|directory [-file]]
-Reports code coverage of the whole code, a file, or a module.
-Warning: Lines beginning by a comment or containing Cerr or exit are not counted.
+Reports code coverage of the whole code, a file, or a module build the `date '+%d/%m/%y'`.
+Warning: Lines beginning by a comment or containing Cerr or exit or assert or Implemente_ are not counted.
 Please wait...
 -------------------------------------------------
 %Lines tested \ttested/total \t\tComponent:"
@@ -59,7 +59,7 @@ if [ "$type" = "" ]
 then
 # Code complet
    find $HTML_ROOT/cpp.gcov/. -name '*'.gcov | xargs cat > $file
-   what="Code TRUST"
+   what="TRUST code"
 # Fichier
 elif [ "$type" = -file ]
 then
@@ -142,12 +142,13 @@ fi
 # Donne le taux de couverture (lignes) en supprimant les lignes contenant:
 # Cerr
 # exit
+# assert
 # Implemente_
 # Lignes vides
 # Ligne avec /*EOF*/
 # Ligne avec un seul caractere }
 [ -s $file ] && cat $file | awk -v what="$what" -F: 'BEGIN {not_tested=0;line=0} 
-($1!="        -") && !/Cerr/ && !/exit/ && !/Implemente_/ && ($3!="") && ($3!="/*EOF*/") {
+($1!="        -") && !/Cerr/ && !/exit/ && !/assert/ && !/Implemente_/ && ($3!="") && ($3!="/*EOF*/") {
   gsub(" ","",$3);
   gsub("\t","",$3);
   if ($3!="}") { line++;if ($1=="    #####") not_tested++}; 

@@ -10,7 +10,7 @@ cd $TRUST_TESTS
 echo "<TABLE BORDER COLS=2><TR>
 <TD WIDTH="1%">Name</TD><TD WIDTH="100%">Configuration</TD></TR>" >> $fichier
 #
-testslist=`find Reference/ -follow -name *.lml.gz -print 2>/dev/null`
+testslist=`find Reference/ -follow -name *.lml.gz -print 2>/dev/null | sort`
 #
 # On parcourt les tests pour faire l'index
 #

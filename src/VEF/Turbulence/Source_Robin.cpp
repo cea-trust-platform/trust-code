@@ -47,7 +47,8 @@ Sortie& Source_Robin::printOn(Sortie& s) const
 // readOn
 Entree& Source_Robin::readOn(Entree& s)
 {
-  s >> noms_parois >> dt_post;
+//  s >> noms_parois >> dt_post;
+  s >> noms_parois ;
   return s;
 }
 
@@ -71,17 +72,17 @@ void Source_Robin::completer()
 // ajouter
 DoubleTab& Source_Robin::ajouter(DoubleTab& resu) const
 {
-  const Zone_VEF& zone_VEF = la_zone_VEF.valeur();
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zone_Cl_VEF.valeur();
+  const Zone_VEF& zone_VEF             = la_zone_VEF.valeur();
+  const Zone_Cl_VEF& zone_Cl_VEF       = la_zone_Cl_VEF.valeur();
   const Navier_Stokes_Turbulent& eq_ns = ref_cast(Navier_Stokes_Turbulent,equation());
-  const DoubleTab& cisaillement = eq_ns.modele_turbulence().loi_paroi().valeur().Cisaillement_paroi();
-  const DoubleVect& u_star = eq_ns.modele_turbulence().loi_paroi().valeur().tab_u_star();
-  double temps = mon_equation->inconnue().temps();
-  static double temps_dernier_post = -1;
-  const Fluide_Incompressible& fluide = ref_cast(Fluide_Incompressible,equation().milieu());
-  double nu = fluide.viscosite_cinematique().valeurs()(0,0);
-  double utaumoy = 0.;
-  int compt = 0;
+  const DoubleTab& cisaillement        = eq_ns.modele_turbulence().loi_paroi().valeur().Cisaillement_paroi();
+//  const DoubleVect& u_star             = eq_ns.modele_turbulence().loi_paroi().valeur().tab_u_star();
+//  double temps = mon_equation->inconnue().temps();
+//  static double temps_dernier_post = -1;
+//  const Fluide_Incompressible& fluide = ref_cast(Fluide_Incompressible,equation().milieu());
+//  double nu = fluide.viscosite_cinematique().valeurs()(0,0);
+//  double utaumoy = 0.;
+//  int compt = 0;
 
   for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
     {
@@ -104,30 +105,31 @@ DoubleTab& Source_Robin::ajouter(DoubleTab& resu) const
                   resu(face,compo) -= cisaillement(face,compo)*zone_VEF.face_surfaces(face);
                 }
 
-              utaumoy += u_star(face);
-              compt += 1;
+//              utaumoy += u_star(face);
+//              compt += 1;
             }
         }
     }
 
-  utaumoy = mp_sum(utaumoy);
-  compt = mp_sum(compt);
+//  utaumoy = mp_sum(utaumoy);
+//  compt = mp_sum(compt);
 
-  if (je_suis_maitre())
-    {
-      if (dabs(temps-temps_dernier_post)>=dt_post)
-        {
-          SFichier fic1("u_tau.dat",ios::app);
-          fic1 << temps << "\t" << utaumoy/compt << finl;
-          fic1<<flush;
-          fic1.close();
-          SFichier fic2("reynolds_tau.dat",ios::app);
-          fic2 << temps << "\t" << utaumoy/compt/nu << finl;	// Retau valable pour h=1
-          fic2<<flush;
-          fic2.close();
-          temps_dernier_post = temps;
-        }
-    }
+// NB: desormais fait dans src/ThHyd/Turbulence/Traitement_particulier_NS_canal.cpp avec la bonne valeur de h
+//  if (je_suis_maitre())
+//    {
+//      if (dabs(temps-temps_dernier_post)>=dt_post)
+//        {
+//          SFichier fic1("u_tau_robin_old.dat",ios::app);
+//          fic1 << temps << "\t" << utaumoy/compt << finl;
+//          fic1<<flush;
+//          fic1.close();
+//          SFichier fic2("reynolds_tau_robin_old.dat",ios::app);
+//          fic2 << temps << "\t" << utaumoy/compt/nu << finl;	// Retau valable pour h=1
+//          fic2<<flush;
+//          fic2.close();
+//          temps_dernier_post = temps;
+//        }
+//    }
 
   return resu;
 }

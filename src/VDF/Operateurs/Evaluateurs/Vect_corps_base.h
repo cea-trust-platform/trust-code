@@ -201,25 +201,55 @@ inline void CLASSNAME::flux_face(const DoubleTab& inco, int face,
 //// coeffs_face avec Dirichlet_paroi_fixe
 //
 
-inline void CLASSNAME::coeffs_face(int,int, const Dirichlet_paroi_fixe&,
-                                   DoubleVect&, DoubleVect& ) const
+inline void CLASSNAME::coeffs_face(int face,int num1, const Dirichlet_paroi_fixe&,
+                                   DoubleVect& aii , DoubleVect& ajj) const
 {
-  // coder dans evbasreyconst comme entree_fluide ????
-  assert(0);
-  Process::exit();
-  ;
+  int n0 = elem_(face,0);
+  int n1 = elem_(face,1);
+  int k;
+  double dist = Dist_norm_bord(face);
+  if (n0 != -1)
+    {
+#ifdef ISQUASI
+      for (k=0; k<aii.size(); k++)
+        aii(k) =
+          surface(face)*porosite(face)*nu_1(n0,k)/dv_mvol(n0)/dist;
+#else
+      for (k=0; k<aii.size(); k++)
+        aii(k) =
+          surface(face)*porosite(face)*nu_1(n0,k)/dist;
+#endif
+      for (k=0; k<aii.size(); k++)
+        ajj(k) =0;
+    }
+
+  else  // n1 != -1
+    {
+      if (n1==-1) Process::exit();
+#ifdef ISQUASI
+      for (k=0; k<ajj.size(); k++)
+        ajj(k) =
+          surface(face)*porosite(face)*nu_1(n1,k)/dv_mvol(n1)/dist;
+#else
+      for (k=0; k<ajj.size(); k++)
+        ajj(k) =
+          surface(face)*porosite(face)*nu_1(n1,k)/dist;
+
+#endif
+      for (k=0; k<ajj.size(); k++)
+        aii(k) =0.;
+
+    }
 }
 
 //// secmem_face avec Dirichlet_paroi_fixe
 //
 
-inline void CLASSNAME::secmem_face(int, const Dirichlet_paroi_fixe&,
-                                   int, DoubleVect& ) const
+inline void CLASSNAME::secmem_face(int face, const Dirichlet_paroi_fixe&,
+                                   int, DoubleVect& flux) const
 {
   // coder dans evbasreyconst comme entree_fluide ????
-  assert(0);
-  Process::exit();
-  ;
+  flux=0  ;
 }
 
 

@@ -45,3 +45,13 @@ Entree& Op_Diff_VDF_Multi_inco_var_Elem::readOn(Entree& s )
 {
   return s ;
 }
+
+//
+// Fonctions inline de la classe Op_Diff_VDF_Multi_inco_var_Elem
+//
+// Description:
+// constructeur
+Op_Diff_VDF_Multi_inco_var_Elem::Op_Diff_VDF_Multi_inco_var_Elem() :
+  Op_Diff_VDF_Elem_base(It_VDF_Elem(Eval_Diff_VDF_Multi_inco_var_Elem)())
+{
+}

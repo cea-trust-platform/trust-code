@@ -56,7 +56,7 @@ Entree& Source_Robin_Scalaire::readOn(Entree& s)
   noms_parois.dimensionner(nb);
   T_parois.resize(nb);
   for (int i=0; i<nb; i++) s>> noms_parois[i] >> T_parois(i);
-  s >> dt_post;
+//  s >> dt_post;
   return s;
 }
 

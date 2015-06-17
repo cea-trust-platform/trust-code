@@ -54,6 +54,7 @@ for word in $*
   esac
 done
 
+ORIG=`pwd`
 if [ "$SOURCE_TRIO" != "" ]
 then
 source $SOURCE_TRIO
@@ -78,11 +79,11 @@ project_directory=`pwd`/$project
 export project_directory
 
 MODE=$MODE
-
+#ORIG=`pwd`
 cd \$TRUST_ROOT
-source env/Init_TRUST
+source env/env_TRUST.sh
 # [ \$? -ne 0 ] && echo KO , TRUST_ROOT: $TRUST_ROOT false ? 
-cd -" > env.sh
+cd $ORIG" > env.sh
 [ "$VALGRIND" != "0" ] && MODE=${MODE}_valgrind && echo "# VALGRIND=1 ; export VALGRIND" >> env.sh
 export MODE
 [ "$PAR_F" != "not_set" ] && echo "PAR_F=0;export PAR_F" >> env.sh  && echo Info_global test_par OFF

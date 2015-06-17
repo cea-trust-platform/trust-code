@@ -102,7 +102,10 @@ Entree& Sources::readOn(Entree& is)
       if(typ==accfermee)
         return is;
       if(typ!=virgule)
-        Cerr << typ << " : we expected a ',' or a '}'" << finl;
+        {
+          Cerr << typ << " : we expected a ',' or a '}'" << finl;
+          exit();
+        }
       assert (typ==virgule);
       is >> typ;
     }

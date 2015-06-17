@@ -53,8 +53,8 @@ to configure your environment.
 To use TRUST:
 --------------
 cd $TRUST_ROOT
-source env/Init_TRUST	-> Initialize TRUST environment
-TRUST 			-> Run GUI
+source env/env_TRUST.sh -> Initialize TRUST environment
+TRUST 			 -> Run GUI
 
 
 To build TRUST:
@@ -66,8 +66,8 @@ C compiler to build libraries/tools
 
 The instructions to re-build TRUST are:
 cd $TRUST_ROOT
-source env/Init_TRUST
+source env/env_TRUST.sh
 make clean
 ./configure	-> Once it is finished, you can also change values into the $TRUST_ROOT/env/machine.env file
-source env/Init_TRUST
+source env/env_TRUST.sh
 make

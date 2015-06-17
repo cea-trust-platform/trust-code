@@ -1,0 +1,24 @@
+#!/bin/bash
+[ "$ENV_FOR_LAUNCH" != "1" ] && source $SALOME_COMPOSANTS/../env_products.sh
+which runSalome
+
+mkdir -p Test
+. ./env_Pb.sh
+cd Test
+cp  ../Data/* .
+chmod +w *
+runSalome --modules=YACS,Problem  --execute=test.py  -t $*
+status=$?
+
+runSalome --modules=YACS,Problem  --execute=Test_Yacs.py  -t $*
+stat=$?
+status=`echo $status + $stat| bc -l`
+
+sed "s/Fin/resoudre pb/" toto.data > ref.data
+triou ref >&ref.log
+compare_lata ref.lml toto.lml
+stat=$?
+status=`echo $status + $stat| bc -l`
+echo status  $status
+
+

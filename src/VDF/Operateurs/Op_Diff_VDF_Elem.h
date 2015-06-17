@@ -64,23 +64,11 @@ class Op_Diff_VDF_Elem : public Op_Diff_VDF_Elem_base
 
 public:
 
-  inline Op_Diff_VDF_Elem();
+  Op_Diff_VDF_Elem();
   inline Op_Diff_VDF_Elem(const Iterateur_VDF_base&);
 protected:
   inline Eval_VDF_Elem& get_eval_elem();
 };
-
-
-//
-// Fonctions inline de la classe Op_Diff_VDF_Elem
-//
-
-// Description:
-// constructeur
-inline Op_Diff_VDF_Elem::Op_Diff_VDF_Elem()
-  : Op_Diff_VDF_Elem_base(It_VDF_Elem(Eval_Diff_VDF_const_Elem)())
-{
-}
 
 // Ce constructeur permet de creer des classes filles des evalateurs
 // (utilise dans le constructeur de Op_Diff_VDF_Elem_temp_FTBM)

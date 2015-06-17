@@ -1,0 +1,4 @@
+sed  "s/InterpKernelDEC/TrioDEC/g" -i $*
+ 
+
+ sed "s/(ICoCo::Field\*)//g" -i $*

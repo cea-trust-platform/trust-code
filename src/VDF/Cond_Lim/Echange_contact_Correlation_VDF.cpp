@@ -29,7 +29,6 @@
 #include <Champ_Uniforme.h>
 #include <Conduction.h>
 #include <Solv_TDMA.h>
-#include <VectEsp_Dist.h>
 #include <communications.h>
 #include <SFichier.h>
 

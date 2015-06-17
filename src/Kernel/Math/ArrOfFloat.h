@@ -35,7 +35,7 @@ public:
   const ArrOfFloat& operator=(const ArrOfFloat& array);
   ~ArrOfFloat();
 
-  inline float   operator[](int i) const;
+  inline float& operator[](int i) const;
   inline float& operator[](int i);
   void        ordonne_array();
   ArrOfFloat& inject_array(const ArrOfFloat& source,
@@ -47,8 +47,9 @@ public:
   float * addr();
   const float * addr() const;
   inline void resize_array(int size);
-  ArrOfFloat& operator*= (const float) ;
-  ArrOfFloat& operator/= (const float) ;
+  const ArrOfFloat& operator*= (const float) ;
+  const ArrOfFloat& operator/= (const float) ;
+  const ArrOfFloat& operator=(const float);
 protected:
   void mem_resize(int size);
   void invalidate(int first_element, int nb_elements);
@@ -63,7 +64,7 @@ protected:
 // *******************************************************************
 
 // Description: Renvoie la i-ieme valeur du tableau (0 <= i < taille)
-inline float ArrOfFloat::operator[](int i) const
+inline float& ArrOfFloat::operator[](int i) const
 {
   assert(i >= 0 && i < size_);
   return data_[i];

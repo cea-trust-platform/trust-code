@@ -62,60 +62,6 @@ Entree& Chimie::readOn(Entree& is)
   param.lire_avec_accolades_depuis(is);
   return is;
 
-  Motcle motlu;
-  Motcles compris(4);
-  compris[0]="modele_micro_melange";
-  compris[1]="constante_modele_micro_melange";
-  compris[2]="reactions";
-  compris[3]="espece_en_competition_micro_melange";
-  is >> motlu;
-  if (motlu!='{')
-    {
-      Cerr<<" Error { expected in Chimie::readOn "<<endl;
-      exit();
-    }
-  is >> motlu;
-  int rang=compris.search(motlu);
-  Cerr<<rang<<finl;
-  if (rang==-1)
-    {
-      if (motlu=="{")
-        {
-          Cerr<< "syntax modified , you must use reactions {  old_bloc  } in Chimie "<<finl;
-          exit();
-        }
-      return is;
-    }
-  while (motlu!='}')
-    {
-
-      switch(rang)
-        {
-        case 0:
-          is>> modele_micro_melange_;
-          break;
-        case 1:
-          is>> constante_modele_micro_melange_;
-          break;
-        case 2:
-
-          is >> reactions_;
-          break;
-        case 3:
-          is>>espece_en_competition_micro_melange_;
-          break;
-
-        default:
-          Cerr<<"motlu incompris, mots possibles "<<compris<<finl;
-          // impossible
-          abort();
-        }
-      is >> motlu;
-      rang=compris.search(motlu);
-    }
-
-
-  return is;
 }
 
 double Chimie::calculer_pas_de_temps() const

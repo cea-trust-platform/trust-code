@@ -64,7 +64,7 @@ class Op_Conv_Quick_VDF_Face_Axi : public Op_Conv_VDF_base
 
 public:
 
-  inline Op_Conv_Quick_VDF_Face_Axi();
+  Op_Conv_Quick_VDF_Face_Axi();
   void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& );
   inline void associer_vitesse(const Champ_base&) ;
   const Champ_Inc_base& vitesse() const;
@@ -75,14 +75,6 @@ public:
 //
 // Fonctions inline de la classe Op_Conv_Quick_VDF_Face
 //
-
-// Description:
-// constructeur
-
-inline Op_Conv_Quick_VDF_Face_Axi::Op_Conv_Quick_VDF_Face_Axi() :
-  Op_Conv_VDF_base(It_VDF_Face(Eval_Quick_VDF_Face_Axi)())
-{
-}
 
 // Description:
 // associe le champ de vitesse a l'evaluateur

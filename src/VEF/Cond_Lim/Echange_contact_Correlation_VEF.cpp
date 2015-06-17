@@ -29,7 +29,6 @@
 #include <Champ_Uniforme.h>
 #include <Domaine.h>
 #include <Solv_TDMA.h>
-#include <DescStructure.h>
 #include <communications.h>
 #include <Schema_Comm.h>
 #include <EFichier.h>

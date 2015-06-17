@@ -310,3 +310,22 @@ double Op_Dift_VDF_var_Elem_Axi::calculer_dt_stab() const
   return dt_stab;
 }
 
+//
+// Fonctions inline de la classe Op_Dift_VDF_Elem_Axi
+//
+//// Op_Dift_VDF_Elem_Axi
+//
+Op_Dift_VDF_Elem_Axi::Op_Dift_VDF_Elem_Axi() :
+  Op_Dift_VDF_base(It_VDF_Elem(Eval_Dift_VDF_const_Elem_Axi)())
+{
+}
+
+//
+// Fonctions inline de la classe Op_Dift_VDF_var_Elem_Axi
+//
+//// Op_Dift_VDF_Elem_Axi
+//
+Op_Dift_VDF_var_Elem_Axi::Op_Dift_VDF_var_Elem_Axi() :
+  Op_Dift_VDF_base(It_VDF_Elem(Eval_Dift_VDF_var_Elem_Axi)())
+{
+}

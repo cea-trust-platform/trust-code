@@ -276,8 +276,8 @@ inline void Eval_Diff_VDF_var_Face::flux_arete_fluide(const DoubleTab& inco, int
 
   // Calcul de flux3
 
-  double vit_imp = 0.5*(inconnue->val_imp_face_bord(rang1,k)+
-                        inconnue->val_imp_face_bord(rang2,k));
+  double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,k,la_zcl)+
+                        Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,k,la_zcl));
   dist = dist_norm_bord(fac1);
   /*   dist = 2*dist_norm_bord(fac1);  */
   tau = signe * (vit_imp - inco[fac3])/dist;
@@ -331,8 +331,8 @@ inline void Eval_Diff_VDF_var_Face::secmem_arete_fluide(int fac1, int fac2, int 
 
   // Calcul de flux3
 
-  double vit_imp = 0.5*(inconnue->val_imp_face_bord(rang1,k)+
-                        inconnue->val_imp_face_bord(rang2,k));
+  double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,k,la_zcl)+
+                        Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,k,la_zcl));
   //dist = 2*dist_norm_bord(fac1);
   dist = dist_norm_bord(fac1);
   tau = signe * vit_imp/dist;
@@ -472,8 +472,8 @@ inline double Eval_Diff_VDF_var_Face::flux_arete_paroi(const DoubleTab& inco, in
     elem2 = elem1;
 
   double diffus=0.5*(dv_diffusivite(elem1)+dv_diffusivite(elem2));
-  double vit_imp = 0.5*(inconnue->val_imp_face_bord(rang1,k)+
-                        inconnue->val_imp_face_bord(rang2,k));
+  double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,k,la_zcl)+
+                        Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,k,la_zcl));
   double dist = dist_norm_bord(fac1);
   double tau = signe * (vit_imp - inco[fac3])/dist;
   double surf = 0.5*(surface(fac1)+surface(fac2));
@@ -506,8 +506,8 @@ inline double Eval_Diff_VDF_var_Face::secmem_arete_paroi(int fac1, int fac2, int
   int rang2 = (fac2-premiere_face_bord);
   int k= orientation(fac3);
   double diffus=0.5*(dv_diffusivite(elem_(fac3,0))+dv_diffusivite(elem_(fac3,1)));
-  double vit_imp = 0.5*(inconnue->val_imp_face_bord(rang1,k)+
-                        inconnue->val_imp_face_bord(rang2,k));
+  double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,k,la_zcl)+
+                        Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,k,la_zcl));
   double dist = dist_norm_bord(fac1);
   double tau  = signe * vit_imp/dist;
   double surf = 0.5*(surface(fac1)+surface(fac2));
@@ -533,9 +533,9 @@ inline void Eval_Diff_VDF_var_Face::flux_arete_paroi_fluide(const DoubleTab& inc
   // On ne sait pas qui de fac1 ou de fac2 est la face de paroi
 
   if (est_egal(inco[fac1],0)) // fac1 est la face de paroi
-    vit_imp = inconnue->val_imp_face_bord(rang2,k);
+    vit_imp = Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,k,la_zcl);
   else  // fac2 est la face de paroi
-    vit_imp = inconnue->val_imp_face_bord(rang1,k);
+    vit_imp = Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,k,la_zcl);
 
   dist = dist_norm_bord(fac1);
 
@@ -594,9 +594,9 @@ inline void Eval_Diff_VDF_var_Face::secmem_arete_paroi_fluide(int fac1, int fac2
   // On ne sait pas qui de fac1 ou de fac2 est la face de paroi
 
   if (est_egal(inconnue->valeurs()[fac1],0)) // fac1 est la face de paroi
-    vit_imp = inconnue->val_imp_face_bord(rang2,k);
+    vit_imp = Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,k,la_zcl);
   else  // fac2 est la face de paroi
-    vit_imp = inconnue->val_imp_face_bord(rang1,k);
+    vit_imp = Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,k,la_zcl);
 
   dist = dist_norm_bord(fac1);
 
@@ -754,8 +754,8 @@ inline void Eval_Diff_VDF_var_Face::flux_arete_symetrie_fluide(const DoubleTab& 
 
   // Calcul de flux3
 
-  double vit_imp = 0.5*(inconnue->val_imp_face_bord(rang1,k)+
-                        inconnue->val_imp_face_bord(rang2,k));
+  double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord_sym(inco,inconnue->temps(),rang1,k,la_zcl)+
+                        Champ_Face_get_val_imp_face_bord_sym(inco,inconnue->temps(),rang2,k,la_zcl));
   //dist = 2*dist_norm_bord(fac1);
   dist = dist_norm_bord(fac1);
   tau = signe * (vit_imp - inco[fac3])/dist;
@@ -812,8 +812,8 @@ inline void Eval_Diff_VDF_var_Face::secmem_arete_symetrie_fluide(int fac1, int f
 
   // Calcul de flux3
 
-  double vit_imp = 0.5*(inconnue->val_imp_face_bord(rang1,k)+
-                        inconnue->val_imp_face_bord(rang2,k));
+  double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,k,la_zcl)+
+                        Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,k,la_zcl));
   //dist = 2*dist_norm_bord(fac1);
   dist = dist_norm_bord(fac1);
   tau = signe * vit_imp/dist;
@@ -837,8 +837,8 @@ inline double Eval_Diff_VDF_var_Face::flux_arete_symetrie_paroi(const DoubleTab&
   int k= orientation(fac3);
   double diffus=0.5*(dv_diffusivite(elem_(fac3,0))+dv_diffusivite(elem_(fac3,1)));
 
-  double vit_imp = 0.5*(inconnue->val_imp_face_bord(rang1,k)+
-                        inconnue->val_imp_face_bord(rang2,k));
+  double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord_sym(inco,inconnue->temps(),rang1,k,la_zcl)+
+                        Champ_Face_get_val_imp_face_bord_sym(inco,inconnue->temps(),rang2,k,la_zcl));
   double dist = dist_norm_bord(fac1);
   double tau = signe * (vit_imp - inco[fac3])/dist;
   double surf = 0.5*(surface(fac1)+surface(fac2));
@@ -872,8 +872,8 @@ inline double Eval_Diff_VDF_var_Face::secmem_arete_symetrie_paroi(int fac1, int 
   int rang2 = (fac2-premiere_face_bord);
   int k= orientation(fac3);
   double diffus=0.5*(dv_diffusivite(elem_(fac3,0))+dv_diffusivite(elem_(fac3,1)));
-  double vit_imp = 0.5*(inconnue->val_imp_face_bord(rang1,k)+
-                        inconnue->val_imp_face_bord(rang2,k));
+  double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,k,la_zcl)+
+                        Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,k,la_zcl));
   double dist = dist_norm_bord(fac1);
   double tau  = signe * vit_imp/dist;
   double surf = 0.5*(surface(fac1)+surface(fac2));

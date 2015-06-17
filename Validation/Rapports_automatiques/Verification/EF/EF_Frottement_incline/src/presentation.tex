@@ -1,0 +1,73 @@
+On considère un écoulement dans un faisceau incliné d'un angle
+$\alpha$ par rapport à la direction verticale tel que représenté sur la Fig.~\ref{fig:schema}.
+
+\begin{figure}[!hbt]
+\begin{center}
+\input{\orig/figure_frottement_incline.pstex_t}
+\end{center}
+\caption{Schématisation de la configuration traité avec représentation du faisceau incliné d'un angle $\alpha$.}
+\label{fig:schema}
+\end{figure}
+
+On suppose que, dans le référentiel \emph{local}, le tenseur de
+frottement $\boldsymbol{\Lambda}_{loc}$ s'écrit de la manière suivante
+:
+\begin{equation}
+\boldsymbol{\Lambda}_{loc} =
+\left[
+\begin{array}{cc}
+a & 0 \\
+0 & b
+\end{array}
+\right]
+\end{equation}
+Dans le cas où l'on suppose un modèle de frottement en module, on a :
+\begin{equation}
+a = F_1 \, |\boldsymbol{u}|
+\end{equation}
+\begin{equation}
+b = F_2 \, |\boldsymbol{u}|
+\end{equation}
+où $F_1$ et $F_2$ sont les coefficients de frottement perpendiculaire
+et parallèle au faisceau respectivement.
+
+\medskip
+
+On montre que, dans le référentiel global, on a :
+\begin{equation}
+\boldsymbol{\Lambda} =
+\left[
+\begin{array}{cc}
+a \, \cos^2\alpha + b \, \sin^2\alpha & (a-b) \, \cos\alpha \, \sin\alpha \\
+(a-b) \, \cos\alpha \, \sin\alpha & a \, \sin^2\alpha + b \, \cos^2\alpha
+\end{array}
+\right]
+\end{equation}
+
+\medskip
+
+Si l'on suppose que seules les forces de pression et de frottement
+sont prises en compte, le bilan de quantité de mouvement se réduit à
+l'équation suivante~:
+\begin{equation}
+-\nabla P - \boldsymbol{\Lambda}\cdot \rho \, \boldsymbol{u} = 0
+\end{equation}
+
+On cherche alors une solution analytique pour laquelle le champ de
+vitesse est dirigée verticalement~:
+\begin{equation}
+\boldsymbol{u} = U_0 \, \boldsymbol{e}_y
+\end{equation}
+où $U_0$ est une constante.
+
+Avec cette hypothèse, on montre facilement que la force de frottement
+est la suivante~:
+\begin{equation}
+-\boldsymbol{\Lambda} \cdot \rho \, \boldsymbol{u} = - \rho \, U_0^2 \left[ \left( F_1 - F_2 \right) \cos\alpha \, \sin\alpha \right] \boldsymbol{e}_x - \rho \, U_0^2 \left[ F_1 \, \sin^2\alpha + F_2 \, \cos^2\alpha \right] \boldsymbol{e}_y
+\end{equation}
+
+On peut vérifier que le champ de pression suivant est solution de
+l'équation de bilan de quantité de mouvement~:
+\begin{equation}
+P(x,y) = - \rho \, U_0^2 \left\{ \left[ \left( F_1 - F_2 \right) \cos\alpha \, \sin\alpha \right] x + \left[ F_1 \, \sin^2\alpha + F_2 \, \cos^2\alpha \right] y \right\}
+\end{equation}

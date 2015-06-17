@@ -316,8 +316,8 @@ DoubleTab& Op_Dift_VDF_Face_Axi::ajouter(const DoubleTab& inco, DoubleTab& resu)
             int rang1 = (fac1-zvdf.premiere_face_bord());
             int rang2 = (fac2-zvdf.premiere_face_bord());
             double vit = inco(fac3);
-            double vit_imp = 0.5*(inconnue->val_imp_face_bord(rang1,ori3)+
-                                  inconnue->val_imp_face_bord(rang2,ori3));
+            double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori3,la_zcl_vdf)+
+                                  Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori3,la_zcl_vdf));
 
             double tau1 = tau_tan(rang1,ori3)*0.5*surface(fac1);
             double tau2 = tau_tan(rang2,ori3)*0.5*surface(fac2);
@@ -1343,8 +1343,8 @@ void Op_Dift_VDF_Face_Axi::contribue_au_second_membre(DoubleTab& resu ) const
             int rang1 = (fac1-zvdf.premiere_face_bord());
             int rang2 = (fac2-zvdf.premiere_face_bord());
             double vit = inconnue.valeur()(fac3);
-            double vit_imp = 0.5*(inconnue->val_imp_face_bord(rang1,ori3)+
-                                  inconnue->val_imp_face_bord(rang2,ori3));
+            double vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori3,la_zcl_vdf)+
+                                  Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori3,la_zcl_vdf));
 
             double tau1 = tau_tan(rang1,ori3)*0.5*surface(fac1);
             double tau2 = tau_tan(rang2,ori3)*0.5*surface(fac2);

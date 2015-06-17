@@ -177,7 +177,7 @@ TRUST_ROOT=$TRUST_ROOT
 export TRUST_ROOT
 
 cd \$TRUST_ROOT
-source env/Init_TRUST
+source env/env_TRUST.sh
 cd -
 
 project_directory=${install_dir}

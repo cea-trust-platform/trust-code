@@ -64,23 +64,11 @@ class Op_Diff_VDF_Multi_inco_Elem_Axi : public Op_Diff_VDF_Elem_base
 
 public:
 
-  inline Op_Diff_VDF_Multi_inco_Elem_Axi();
+  Op_Diff_VDF_Multi_inco_Elem_Axi();
   inline Op_Diff_VDF_Multi_inco_Elem_Axi(const Iterateur_VDF_base&);
 protected:
   inline Eval_VDF_Elem& get_eval_elem();
 };
-
-
-//
-// Fonctions inline de la classe Op_Diff_VDF_Multi_inco_Elem_Axi
-//
-
-// Description:
-// constructeur
-inline Op_Diff_VDF_Multi_inco_Elem_Axi::Op_Diff_VDF_Multi_inco_Elem_Axi()
-  : Op_Diff_VDF_Elem_base(It_VDF_Elem(Eval_Diff_VDF_Multi_inco_const_Elem_Axi)())
-{
-}
 
 // Ce constructeur permet de creer des classes filles des evalateurs
 // (utilise dans le constructeur de Op_Diff_VDF_Multi_inco_Elem_Axi_temp_FTBM)

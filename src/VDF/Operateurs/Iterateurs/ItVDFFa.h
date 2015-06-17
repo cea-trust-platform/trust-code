@@ -23,15 +23,15 @@
 #ifndef It_VDFFa_H
 #define It_VDFFa_H
 
-
+#include <Config_Template_Version_VDF.h>
 
 #define It_VDF_Face(_TYPE_) name2(Iterateur_VDF_Face, _TYPE_)
 
-#ifdef Template_Version
-#include <TItVDFFa.h>
-#define declare_It_VDF_Face(_TYPE_)                                \
-  typedef Iterateur_VDF_Face<_TYPE_> It_VDF_Face(_TYPE_);
-#define implemente_It_VDF_Face(_TYPE_)
+#ifdef Template_Version_VDF
+#include <T_It_VDF_Face.h>
+#define declare_It_VDF_Face(_TYPE_)
+#define implemente_It_VDF_Face(_TYPE_) \
+  typedef T_It_VDF_Face<_TYPE_> It_VDF_Face(_TYPE_);
 #else
 #include <MItVDFFa.h>
 #endif

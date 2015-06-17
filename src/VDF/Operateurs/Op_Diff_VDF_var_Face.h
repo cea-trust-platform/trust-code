@@ -60,22 +60,9 @@ class Op_Diff_VDF_var_Face : public Op_Diff_VDF_Face_base
 
 public:
   inline Eval_VDF_Face& get_eval_face();
-  inline Op_Diff_VDF_var_Face();
+  Op_Diff_VDF_var_Face();
 };
 
-
-//
-// Fonctions inline de la classe Op_Diff_VDF_var_Face
-//
-
-//// Op_Diff_VDF_var_Face
-//
-
-inline Op_Diff_VDF_var_Face::Op_Diff_VDF_var_Face()
-  : Op_Diff_VDF_Face_base(It_VDF_Face(Eval_Diff_VDF_var_Face)())
-{
-  declare_support_masse_volumique(1);
-}
 // Description renvoit l'evaluateur caste en Ecal_VDF_Face corretement
 inline Eval_VDF_Face& Op_Diff_VDF_var_Face::get_eval_face()
 {

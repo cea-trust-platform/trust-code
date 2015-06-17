@@ -1,0 +1,182 @@
+<?xml version='1.0' encoding='iso-8859-1' ?>
+<proc name="onestep">
+   <property name="DefaultStudyID" value="1"/>
+   <type name="string" kind="string"/>
+   <struct name="Engines/dataref">
+      <member name="ref" type="string"/>
+   </struct>
+   <type name="bool" kind="bool"/>
+   <sequence name="boolvec" content="bool"/>
+   <type name="double" kind="double"/>
+   <sequence name="dblevec" content="double"/>
+   <objref name="file" id="file"/>
+   <type name="int" kind="int"/>
+   <sequence name="intvec" content="int"/>
+   <objref name="pyobj" id="python:obj:1.0"/>
+   <sequence name="stringvec" content="string"/>
+   <container name="DefaultContainer">
+      <property name="container_name" value="FactoryServer"/>
+      <property name="hostname" value="localhost"/>
+   </container>
+   <bloc name="Bloc0">
+      <service name="setDataFile00">
+         <component>Problem</component>
+         <load container="DefaultContainer"/>
+         <method>setDataFile</method>
+         <inport name="file" type="string"/>
+      </service>
+      <service name="initialize10">
+         <node>Bloc0.setDataFile00</node>
+         <method>initialize</method>
+         <outport name="return" type="bool"/>
+      </service>
+      <control> <fromnode>setDataFile00</fromnode> <tonode>initialize10</tonode> </control>
+   </bloc>
+   <while name="WhileLoop1">
+      <bloc name="Bloc30">
+         <service name="computeTimeStep4">
+            <node>Bloc0.setDataFile00</node>
+            <method>computeTimeStep</method>
+            <outport name="return" type="double"/>
+            <outport name="stop" type="bool"/>
+         </service>
+         <inline name="node200">
+            <function name="f">
+               <code><![CDATA[
+def f(dt,p):
+  if p:
+      return dt,2
+  else:
+      return dt,1
+]]></code>
+            </function>
+            <inport name="dt" type="double"/>
+            <inport name="p" type="bool"/>
+            <outport name="dt" type="double"/>
+            <outport name="o2" type="int"/>
+         </inline>
+         <switch name="Switch1" select="0">
+            <case id="1">
+               <bloc name="Bloc30000">
+                  <service name="initTimeStep5">
+                     <node>Bloc0.setDataFile00</node>
+                     <method>initTimeStep</method>
+                     <inport name="dt" type="double"/>
+                     <outport name="return" type="bool"/>
+                  </service>
+                  <service name="solveTimeStep6">
+                     <node>Bloc0.setDataFile00</node>
+                     <method>solveTimeStep</method>
+                     <outport name="return" type="bool"/>
+                  </service>
+                  <service name="validateTimeStep7">
+                     <node>Bloc0.setDataFile00</node>
+                     <method>validateTimeStep</method>
+                  </service>
+                  <service name="isStationary8">
+                     <node>Bloc0.setDataFile00</node>
+                     <method>isStationary</method>
+                     <outport name="return" type="bool"/>
+                  </service>
+                  <inline name="node20">
+                     <function name="f">
+                        <code><![CDATA[
+def f(p):
+  return not(p)
+]]></code>
+                     </function>
+                     <inport name="p" type="bool"/>
+                     <outport name="p" type="bool"/>
+                  </inline>
+                  <control> <fromnode>initTimeStep5</fromnode> <tonode>solveTimeStep6</tonode> </control>
+                  <control> <fromnode>solveTimeStep6</fromnode> <tonode>validateTimeStep7</tonode> </control>
+                  <control> <fromnode>validateTimeStep7</fromnode> <tonode>isStationary8</tonode> </control>
+                  <control> <fromnode>isStationary8</fromnode> <tonode>node20</tonode> </control>
+                  <datalink control="false">
+                     <fromnode>isStationary8</fromnode> <fromport>return</fromport>
+                     <tonode>node20</tonode> <toport>p</toport>
+                  </datalink>
+               </bloc>
+            </case>
+            <case id="2">
+               <inline name="n00">
+                  <script><code><![CDATA[condition=False
+]]></code></script>
+                  <outport name="condition" type="bool"/>
+               </inline>
+            </case>
+         </switch>
+         <control> <fromnode>computeTimeStep4</fromnode> <tonode>node200</tonode> </control>
+         <control> <fromnode>node200</fromnode> <tonode>Switch1</tonode> </control>
+         <datalink control="false">
+            <fromnode>computeTimeStep4</fromnode> <fromport>return</fromport>
+            <tonode>node200</tonode> <toport>dt</toport>
+         </datalink>
+         <datalink control="false">
+            <fromnode>computeTimeStep4</fromnode> <fromport>stop</fromport>
+            <tonode>node200</tonode> <toport>p</toport>
+         </datalink>
+         <datalink control="false">
+            <fromnode>node200</fromnode> <fromport>dt</fromport>
+            <tonode>Switch1.p1_Bloc30000.initTimeStep5</tonode> <toport>dt</toport>
+         </datalink>
+         <datalink control="false">
+            <fromnode>node200</fromnode> <fromport>o2</fromport>
+            <tonode>Switch1</tonode> <toport>select</toport>
+         </datalink>
+      </bloc>
+   </while>
+   <inline name="n0">
+      <script><code><![CDATA[condition=1]]></code></script>
+      <outport name="condition" type="int"/>
+   </inline>
+   <service name="terminate0">
+      <node>Bloc0.setDataFile00</node>
+      <method>terminate</method>
+   </service>
+   <control> <fromnode>Bloc0</fromnode> <tonode>n0</tonode> </control>
+   <control> <fromnode>WhileLoop1</fromnode> <tonode>terminate0</tonode> </control>
+   <control> <fromnode>n0</fromnode> <tonode>WhileLoop1</tonode> </control>
+   <datalink control="false">
+      <fromnode>n0</fromnode> <fromport>condition</fromport>
+      <tonode>WhileLoop1</tonode> <toport>condition</toport>
+   </datalink>
+   <datalink control="false">
+      <fromnode>WhileLoop1.Bloc30.Switch1.p1_Bloc30000.node20</fromnode> <fromport>p</fromport>
+      <tonode>WhileLoop1</tonode> <toport>condition</toport>
+   </datalink>
+   <datalink control="false">
+      <fromnode>WhileLoop1.Bloc30.Switch1.p2_n00</fromnode> <fromport>condition</fromport>
+      <tonode>WhileLoop1</tonode> <toport>condition</toport>
+   </datalink>
+   <parameter>
+      <tonode>WhileLoop1.Bloc30.Switch1</tonode><toport>select</toport>
+      <value><int>0</int></value>
+   </parameter>
+   <parameter>
+      <tonode>WhileLoop1</tonode><toport>condition</toport>
+      <value><boolean>true</boolean></value>
+   </parameter>
+   <parameter>
+      <tonode>Bloc0.setDataFile00</tonode><toport>file</toport>
+      <value><string>toto</string></value>
+   </parameter>
+   <presentation name="WhileLoop1.Bloc30.Switch1.p1_Bloc30000.solveTimeStep6" x="9" y="195.732" width="227.5" height="110"/>
+   <presentation name="WhileLoop1.Bloc30.node200" x="316.095" y="81.8499" width="227.5" height="139"/>
+   <presentation name="WhileLoop1.Bloc30.Switch1" x="115.236" y="221.5" width="421.428" height="1032.18"/>
+   <presentation name="WhileLoop1.Bloc30.Switch1.p1_Bloc30000.validateTimeStep7" x="9" y="306.232" width="223" height="81"/>
+   <presentation name="WhileLoop1.Bloc30" x="168.086" y="244.5" width="553.095" height="1262.68"/>
+   <presentation name="WhileLoop1" x="1156.32" y="321.324" width="730.181" height="1516.18"/>
+   <presentation name="WhileLoop1.Bloc30.Switch1.p2_n00" x="184.428" y="913.176" width="227.5" height="110"/>
+   <presentation name="Bloc0.setDataFile00" x="27.7724" y="80.5372" width="223" height="110"/>
+   <presentation name="WhileLoop1.Bloc30.Switch1.p1_Bloc30000.initTimeStep5" x="9" y="85.2318" width="227.5" height="110"/>
+   <presentation name="WhileLoop1.Bloc30.Switch1.p1_Bloc30000.isStationary8" x="9" y="390.45" width="227.5" height="110"/>
+   <presentation name="terminate0" x="1967.03" y="241.725" width="223" height="81"/>
+   <presentation name="Bloc0.initialize10" x="330.174" y="83.8128" width="227.5" height="110"/>
+   <presentation name="WhileLoop1.Bloc30.Switch1.p1_Bloc30000.node20" x="9" y="500.95" width="227.5" height="110"/>
+   <presentation name="WhileLoop1.Bloc30.computeTimeStep4" x="9" y="80.5" width="227.5" height="139"/>
+   <presentation name="WhileLoop1.Bloc30.Switch1.p1_Bloc30000" x="9" y="110.427" width="246" height="619.95"/>
+   <presentation name="n0" x="11.907" y="266.932" width="227.5" height="110"/>
+   <presentation name="Bloc0" x="287.616" y="84.6092" width="566.674" height="202.813"/>
+   <presentation name="__ROOT__" x="0" y="0" width="2199.03" height="1846.5"/>
+</proc>

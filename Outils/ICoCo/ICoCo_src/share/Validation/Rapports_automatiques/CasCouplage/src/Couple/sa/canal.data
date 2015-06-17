@@ -1,0 +1,97 @@
+dimension 3
+
+Domaine canal
+
+Schema_Euler_Explicite sch
+Lire sch
+{
+        tinit 0.
+        dt_start dt_fixe 7.e-06
+        tmax 10000.
+	nb_pas_dt_max 5 
+        dt_min 1.e-6
+        dt_max 1.e-1
+        dt_impr 1e-7
+        dt_sauv 0.1
+        seuil_statio 1.e-8
+}
+
+Scatter canal.Zones canal
+
+VEFpreP1B dis
+
+Fluide_Incompressible Eau
+Lire Eau
+{
+        mu Champ_Uniforme 1 1e-04
+        lambda  Champ_Uniforme 1 1.e-9
+        rho Champ_Uniforme 1 1000
+        Cp Champ_Uniforme 1 5000.
+        beta_th Champ_Uniforme 1 0.
+}
+
+
+Pb_Hydraulique_Turbulent pb
+Probleme_Couple pb_ch
+associer pb_ch pb
+Associer pb canal
+Associer pb Eau
+Associer pb_ch sch
+Discretiser pb_ch dis
+domaine in
+Extraire_surface
+{
+	probleme pb
+	domaine in
+	avec_certains_bords 1 entree
+	
+}
+Lire pb
+{
+ Navier_Stokes_Turbulent
+ {
+       methode_calcul_pression_initiale avec_les_cl
+       solveur_pression Gcp { precond ssor { omega 1.5 }
+                                             seuil 1.e-06
+                            }
+	solveur_pression petsc cholesky { }
+       solveur_bar      Gcp { precond ssor { omega 1.5 }
+                                             seuil 1.e-12
+                            }
+       convection { EF_Stab { } }
+       diffusion  {  }
+       conditions_initiales {  vitesse champ_Uniforme 3 10. 0. 0. }
+       conditions_limites {
+         entree frontiere_ouverte_vitesse_imposee Ch_front_input { nb_comp 3 nom vitesse_entree probleme pb }
+         sortie frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
+         paroi  paroi_fixe
+       }
+       Modele_turbulence Sous_maille_wale
+                        {
+                        Cw 0.5
+                        turbulence_paroi loi_standard_hydr
+                        dt_impr_ustar 0.5
+                        } 
+}
+Postraitements
+{
+         pb_ch_post
+        {
+            fichier Post1
+            format lml
+            Champs dt_post 0.01
+            {
+             vitesse
+            }
+        }
+		in { 
+	  domaine in
+	format lata
+	champs dt_post 1e-7
+		{
+		vitesse elem
+	}
+	}	
+}
+sauvegarde binaire test.sauv
+}

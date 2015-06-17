@@ -28,8 +28,8 @@
 #include <TriouError.h>
 
 
-
 #include <Bord.h>
+#include <Noms.h>
 #include <Vect.h>
 
 Declare_vect(Bord);
@@ -115,12 +115,13 @@ public:
   }
   void testSearch()
   {
-    VECT(Bord) aa(3);
-    aa[0].nommer("ok0");
-    aa[1].nommer("ok1");
-    aa[2].nommer("ok2");
+    // maintenant search/contient/rang ne sont dispoque pour Noms et Motcles
+    Noms aa(3);
+    aa[0]=("ok0");
+    aa[1]=("ok1");
+    aa[2]=("ok2");
 
-    Bord titi;
+    Nom titi;
     CPPUNIT_ASSERT_EQUAL_MESSAGE("search titi ",-1,aa.search(titi));
     CPPUNIT_ASSERT_EQUAL_MESSAGE("search a[2] ", 2,aa.search(aa[2]));
 

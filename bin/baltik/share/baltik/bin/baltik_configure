@@ -78,6 +78,15 @@ fi
 echo "Done."
 echo ""
 
+preconfigure=$project_directory/share/bin/pre_configure
+if [ -f $preconfigure ]
+then
+    echo "Executing $preconfigure"
+    $preconfigure
+    [ $? -ne 0 ] && echo "Error" && exit -1
+    echo "Done"
+    echo ""
+fi
 
 echo "Checking dependencies ..."
 
@@ -102,22 +111,13 @@ echo "Done."
 echo ""
 
 
-preconfigure=$project_directory/share/bin/pre_configure
-if [ -f $preconfigure ]
-then
-    echo "Executing $preconfigure"
-    $preconfigure
-    [ $? -ne 0 ] && echo "Error" && exit -1
-    echo "Done"
-    echo ""
-fi
 
 
 echo "Preparing sources ..."
 
 # initialisation du repertoire de construction
 project_build_directory="${project_directory}/build/src"
-rm -f $project_build_directory/* 
+rm -f $project_build_directory/*  $project_build_directory/exec*/CMakeCache.txt 
 
 rm -f $project_build_directory/*/CMakeCache.txt
 mkdir -p $project_build_directory
@@ -127,8 +127,14 @@ while read name path
 do
   echo "Adding source files from project $name"
   sourcedir="$path/src"
+ 
   for suf in h cpp f c hxx cxx
     do
+    test_uniq=`find  $sourcedir -follow -name "*."${suf} -exec basename {} \; | sort | uniq -d`
+    if [ "${test_uniq}" != "" ]
+	then
+	conflicting_files_error ${test_uniq}  `find  $sourcedir -follow -name ${test_uniq}`
+	fi
     for sourcefile in `find  $sourcedir -follow -name "*."${suf}`
       do
 	# filename=${sourcefile##*/}
@@ -142,22 +148,42 @@ do
 	      # on regarde si le source file  est dans un repertoire merged
 		dirsource=`dirname ${sourcefile}`
 		dirsource=`basename $dirsource`
+		
+		dirlink=`dirname ${file_link}`
+		dirlink=`basename $dirlink`
 
-		if [ "$dirsource" = "merged" ]
+		[ "$dirsource" = "patch" ] && [ "$dirlink" = "patch" ]&& conflicting_files_error ${filename} ${file_link} ${sourcefile}
+		
+		
+		# Pour anciennes viersions
+		if [ "$dirsource" = "merged" ] ||  [ "$dirsource" = "patch" ]
 		    then
 		    # echo "linkfile" ${linkfile} ${file_link}
 		    # echo "source " ${sourcefile}
-		    echo "file merged ?"
+		    echo "patch file  ?"
 		    if [ ${sourcefile} -nt ${file_link} ]
 			then
 			echo "ok we replace ${file_link} with ${sourcefile}"
 			rm -f ${linkfile}
 			ln -s ${sourcefile} ${linkfile}
 		    else
-			echo "File in merged directory ${sourcefile} not newer that" ${file_link}
+			echo "File in directory ${sourcefile} not newer that" ${file_link}
 			conflicting_files_error ${filename} ${file_link} ${sourcefile}
 		    fi
-		else
+		elif  [ "$dirlink" = "patch" ]
+		    then
+		    # echo "linkfile" ${linkfile} ${file_link}
+		    # echo "source " ${sourcefile}
+		    echo "patch file  ?"
+		    if [ ${file_link} -nt ${sourcefile} ]
+			then
+			echo "ok we keep ${file_link} instead of ${sourcefile}"
+		
+		    else
+			echo "File in directory ${sourcefile} not newer that" ${file_link}
+			conflicting_files_error ${filename} ${file_link} ${sourcefile}
+		    fi
+		  else
 	      # xterm
 		    conflicting_files_error ${filename} ${file_link} ${sourcefile}
 		fi
@@ -253,6 +279,8 @@ do
 	    exit 1
     fi
     libraires_flag=`extract_field "$prerequis_description" librairies_flag`
+    configure_flag=`extract_field "$prerequis_description" configure_flag`
+    export configure_flag
     includes_add="$includes_add -I${project_directory}/local/${prerequis_name}/include"
     librairies_add="$librairies_add -L${project_directory}/local/${prerequis_name}/lib/ $libraires_flag"
     export includes_add
@@ -482,7 +510,7 @@ printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_install `dirna
 printf "\n"                                                     >> $project_makefile
 printf "# help terminal \t: open a xterm with TRUST_TESTS... \n" >> $project_makefile
 printf "terminal :\n" >> $project_makefile
-printf "\t source $TRUST_ROOT/env/Init_TRUST; env TRUST_TESTS=\`pwd\`/build/tests/all/  Rapports_auto_root=\`pwd\`/build/tests/share/all/ project_directory=\`pwd\` exec_optim=${exec_optim} exec=${exec_optim} exec_debug=$exec_debug xterm\n" >> $project_makefile
+printf "\t source $TRUST_ROOT/env/env_TRUST.sh; env TRUST_TESTS=\`pwd\`/build/tests/all/  Rapports_auto_root=\`pwd\`/build/tests/share/all/ project_directory=\`pwd\` exec_optim=${exec_optim} exec=${exec_optim} exec_debug=$exec_debug xterm\n" >> $project_makefile
 
 phony=""
 for type in $list_cible
@@ -536,6 +564,20 @@ do
 done
 
 
+env_file=$project_directory/env_${project_name}.sh
+echo "Creation $env_file"
+
+echo " . $TRUST_ROOT/env/env_TRUST.sh
+export project_directory=${project_directory}
+export PATH=\${project_directory}/build/xdata:\$PATH
+export TRUST_TESTS=\${project_directory}/build/tests/all/
+export Rapports_auto_root=\${project_directory}/build/tests/share/all/ 
+export exec_opt=\${project_directory}/${project_executable_name}_opt
+export exec=\${project_directory}/${project_executable_name}_opt
+export exec_semi_opt=\${project_directory}/${project_executable_name}_semi_opt
+export exec_pg=\${project_directory}/${project_executable_name}_opt_pg
+export exec_gcov=\${project_directory}/${project_executable_name}_opt_gcov
+export exec_debug=\${project_directory}/${project_executable_name}" > $env_file
 echo "Done."
 echo ""
 

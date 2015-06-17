@@ -74,6 +74,13 @@ public:
     v[2] *= x;
     return *this;
   }
+  Vecteur3& operator+=(const Vecteur3& x)
+  {
+    v[0] += x[0];
+    v[1] += x[1];
+    v[2] += x[2];
+    return *this;
+  }
 
   Vecteur3& operator=(const Vecteur3& w)
   {

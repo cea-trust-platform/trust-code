@@ -124,6 +124,13 @@ saisie :
       Cerr << "Use keyword VEFPreP1B and P0 support to match the old VEF keyword." << finl;
       exit();
     }
+  // Test on bidim_axi
+  if ( dimension == 2 && !(typ.que_suis_je()=="VDF") && bidim_axi == 1 )
+    {
+      Cerr << "The feature 'bidim_axi' is only available for 2D calculation with VDF discretisation." << finl;
+      exit();
+    }
+  //
   if( sub_type(Probleme_base, ob1) )
     {
       Probleme_base& pb=ref_cast(Probleme_base,ob1);

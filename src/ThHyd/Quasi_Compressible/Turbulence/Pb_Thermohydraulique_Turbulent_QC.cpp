@@ -172,10 +172,7 @@ int Pb_Thermohydraulique_Turbulent_QC::verifier()
 
   // Verification de la compatibilite des conditions aux limites:
   tester_compatibilite_hydr_thermique(zone_Cl_hydr,zone_Cl_th);
-  if ( sub_type(Modele_turbulence_hyd_K_Eps, eq_hydraulique.get_modele(TURBULENCE).valeur() )
-       || sub_type(Modele_turbulence_hyd_K_Eps_2_Couches, eq_hydraulique.get_modele(TURBULENCE).valeur() )
-       || sub_type(Modele_turbulence_hyd_K_Eps_V2, eq_hydraulique.get_modele(TURBULENCE).valeur() )
-       || sub_type(Modele_turbulence_hyd_K_Eps_Bas_Reynolds, eq_hydraulique.get_modele(TURBULENCE).valeur() )  )
+  if ( sub_type(Mod_turb_hyd_RANS, eq_hydraulique.get_modele(TURBULENCE).valeur() ) )
     {
       const Mod_turb_hyd_RANS& le_mod_RANS = ref_cast(Mod_turb_hyd_RANS, eq_hydraulique.get_modele(TURBULENCE).valeur());
       const Transport_K_Eps_base& eqn = ref_cast(Transport_K_Eps_base, le_mod_RANS.eqn_transp_K_Eps());
@@ -186,23 +183,16 @@ int Pb_Thermohydraulique_Turbulent_QC::verifier()
   // Verification de la compatibilite des modeles de turbulence:
   const Mod_turb_hyd& le_mod_turb_hyd = eq_hydraulique.modele_turbulence();
   const Modele_turbulence_scal_base& le_mod_turb_th = ref_cast(Modele_turbulence_scal_base,eq_thermique.get_modele(TURBULENCE).valeur());
+/*
   if (sub_type(Modele_turbulence_scal_Fluctuation_Temperature,le_mod_turb_th))
     {
       Cerr<<"Le quasi compressible ne prend pas de modele thermique Modele_turbulence_scal_Fluctuation_Temperature"<<finl;
       exit();
     }
-  if ( (sub_type(Modele_turbulence_hyd_K_Eps,le_mod_turb_hyd.valeur())) && (!sub_type(Modele_turbulence_hyd_K_Eps_Bas_Reynolds,le_mod_turb_hyd.valeur())))
+*/
+  if  (sub_type(Modele_turbulence_hyd_K_Eps,le_mod_turb_hyd.valeur())) 
     {
       if (!sub_type(Modele_turbulence_scal_Prandtl,le_mod_turb_th))
-        {
-          Cerr << "Les modeles de turbulence ne sont pas de la meme famille" << finl;
-          Cerr << "pour l'hydraulique et la thermique" << finl;
-          exit();
-        }
-    }
-  else if (sub_type(Modele_turbulence_hyd_K_Eps_Bas_Reynolds,le_mod_turb_hyd.valeur()))
-    {
-      if  (!sub_type(Modele_turbulence_scal_Prandtl,le_mod_turb_th))
         {
           Cerr << "Les modeles de turbulence ne sont pas de la meme famille" << finl;
           Cerr << "pour l'hydraulique et la thermique" << finl;

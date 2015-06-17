@@ -5,11 +5,16 @@ dest=`pwd`
 cd -
 org=$TRUST_ROOT/Outils/TRIOXDATA/
 cp -ar $org/XTriou $dest 
-ln -s $org/*rerequis* $org/EditData $org/VerifData $org/check_jdd $org/XDATA*  $org/TRIOU.tgz  $org/Installer $org/Install_all $org/Prerequis_xdata $org/Makefile $dest
-mkdir $dest/test_complet
-ln -s $org/test_complet/fait_lance_test $org/test_complet/modif $dest/test_complet
+ln -sf  $org/EditData $org/VerifData $org/check_jdd $org/XDATA*    $org/Installer $org/Install_all  $org/Makefile $dest
+mkdir -p $dest/test_complet
+ln -sf $org/test_complet/fait_lance_test $org/test_complet/modif $dest/test_complet
+mkdir -p $dest/TRIOU
+cp -ar $org/TRIOU/TRIOU_SRC $dest/TRIOU
 mv  $dest/XTriou/TRAD_2  $dest/XTriou/TRAD_2.org
 chmod +w  $dest/XTriou/TRAD_2.org
-cat  $dest/XTriou/TRAD_2.org share/doc_src/TRAD2_ajout > $dest/XTriou/TRAD_2
+cp share/doc_src/* $dest/XTriou
+cat  $dest/XTriou/TRAD_2.org $dest/XTriou/TRAD2_ajout > $dest/XTriou/TRAD_2
+
 cd $dest
+(cd XTriou;[ -f build_TRAD2.sh ] && ./build_TRAD2.sh )
 make

@@ -205,7 +205,9 @@ void Schema_Temps_base::validateTimeStep()
           double cpu_per_timestep           = statistiques().last_time(temps_total_execution_counter_) / nb_pas_dt();
           double nb_pas_selon_tmax          = (temps_max()-temps_courant()) / pas_de_temps();
           double nb_pas_selon_nb_pas_dt_max = nb_pas_dt_max() - nb_pas_dt();
-          double seconds_to_finish          = dmin(nb_pas_selon_tmax,nb_pas_selon_nb_pas_dt_max) * cpu_per_timestep;
+          double nb_pas_avant_fin= dmin(nb_pas_selon_tmax,nb_pas_selon_nb_pas_dt_max);
+          double seconds_to_finish  = nb_pas_avant_fin * cpu_per_timestep;
+          int percent=int((1.-nb_pas_avant_fin/(nb_pas_avant_fin+ nb_pas_dt()))*100);    // marche meme si c'est ltemps max qui limite
           int integer_limit=(int)(pow(2.0,(double)((sizeof(int)*8)-1))-1);
           if (seconds_to_finish<integer_limit)
             {
@@ -217,7 +219,7 @@ void Schema_Temps_base::validateTimeStep()
                 Cout << seconds_to_finish << " s";
               else
                 Cout << h << "h" << mn << "mn" << s << "s";
-              Cout << finl;
+              Cout << ". Progress: "<<percent<< finl;
             }
         }
     }
@@ -281,10 +283,12 @@ void Schema_Temps_base::set_param(Param& param)
   param.ajouter( "dt_impr",&dt_impr_);
   param.ajouter( "facsec",&facsec_);
   param.ajouter( "seuil_statio",&seuil_statio_);
-  param.ajouter( "seuil_statio_relatif",&seuil_statio_relatif_);
+  param.ajouter( "seuil_statio_relatif_deconseille",&seuil_statio_relatif_deconseille_);
   param.ajouter( "diffusion_implicite",&ind_diff_impl_);
   param.ajouter( "seuil_diffusion_implicite",&seuil_diff_impl_);
   param.ajouter( "impr_diffusion_implicite",&impr_diff_impl_);
+  param.ajouter( "no_error_if_not_converged_diffusion_implicite",&no_error_if_not_converged_diff_impl_);
+  param.ajouter( "no_conv_subiteration_diffusion_implicite",&no_conv_subiteration_diff_impl_);
   param.ajouter_non_std( "dt_start",(this));
   // param.ajouter( "nb_pas_dt_max",&nb_pas_dt_max_);
   // nb_pas_dt_max non standard pour valgrind
@@ -324,7 +328,7 @@ Sortie& Schema_Temps_base::printOn(Sortie& os) const
   os << "dt_max " << dt_max_ << finl;
   os << "facsec " << facsec_ << finl;
   os << "seuil_statio" << seuil_statio_ << finl;
-  os << "seuil_statio_relatif" << seuil_statio_relatif_ << finl;
+  os << "seuil_statio_relatif_deconseille" << seuil_statio_relatif_deconseille_ << finl;
   os << "dt_sauv " << dt_sauv_ << finl;
   os << "limite_cpu_sans_sauvegarde " << limite_cpu_sans_sauvegarde_ << finl;
   os << "dt_impr " << dt_impr_ << finl;
@@ -496,7 +500,7 @@ Schema_Temps_base::Schema_Temps_base()
   nb_impr_ = 0;
   nb_pas_dt_max_ = (int)(pow(2.0,(double)((sizeof(int)*8)-1))-1);
   seuil_statio_ = 1.e-12;
-  seuil_statio_relatif_ = 0;
+  seuil_statio_relatif_deconseille_ = 0;
   facsec_ = 1.;
   ind_tps_final_atteint=0;
   ind_nb_pas_dt_max_atteint=0;
@@ -504,6 +508,8 @@ Schema_Temps_base::Schema_Temps_base()
   ind_diff_impl_=0 ;
   seuil_diff_impl_=1.e-6 ;
   impr_diff_impl_=0;
+  no_conv_subiteration_diff_impl_=0;
+  no_error_if_not_converged_diff_impl_=0;
   niter_max_diff_impl_ = 1000; // Above 100 iterations, diffusion implicit algorithm is may be diverging
   schema_impr_=1;
   file_allocation_=0; // Desactive car pose probleme sur platine sur les gros maillages
@@ -974,7 +980,7 @@ void Schema_Temps_base::update_critere_statio(const DoubleTab& tab_critere, Equa
     mp_max_abs_tab(tab_critere, residu_equation);
 
   // On calcule le residu_initial_equation sur les 5 premiers pas de temps
-  if (seuil_statio_relatif_)
+  if (seuil_statio_relatif_deconseille_)
     {
       DoubleVect& residu_initial_equation = equation.residu_initial();
       if (nb_pas_dt()<6)

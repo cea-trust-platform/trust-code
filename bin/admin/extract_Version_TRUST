@@ -71,8 +71,8 @@ paquet=`basename $1`
 key=keys${paquet#TRUST-}
 paquet=`pwd`/$paquet
 export key=`pwd`/${key%.tar}
-[ ! -f $paquet ] && echo "Fichier $paquet non trouve." && exit
-[ ! -f $key ] && echo "Cle $key non trouvee." && exit
+[ ! -f $paquet ] && echo "$paquet file not found!" && exit
+[ ! -f $key ] && echo "$key key not found!" && exit
 export install=0 	&& [ "$2" = -install ]	&& install=1 	&& shift
 export remote=0 	&& [ "$2" = -remote ]	&& remote="-remote $3" && shift && shift
 export crypt=1 		&& [ "$2" = -no_key ] 	&& crypt=0 	&& shift
@@ -84,7 +84,7 @@ export rep=`mktemp_ -d`
 cd $rep
 
 # On detarre le paquet TRUST
-echo "Extraction de $paquet avec $kind..."
+echo "Extraction of $paquet with $kind..."
 tar xf $paquet
 
 # On applique a chaque paquet un traitement
@@ -94,7 +94,7 @@ for targz in $rep/TRUST/*.gz
 do
    export targz=`basename $targz`
    cd $rep/TRUST
-   echo "On modifie $targz"
+   echo "  we modify $targz"
    ################################
    if [ ${targz%.gz} = TRUST.tar ]
    ################################
@@ -222,7 +222,7 @@ then
    cles=`\ls .cle_*.tar.gz 2>/dev/null`
    tar rf $new_key $cles
    rm -f $cles
-   echo "Cle $new_key creee"
+   echo "The $new_key key is created."
 fi
 
 #####################
@@ -231,10 +231,11 @@ fi
 cd ..
 tar cf $new_paquet .
 
-echo "Paquet $new_paquet cree"
-[ $kind = -without_source ] && echo "contenant une version sans les sources TRUST et sans la documentation Doxygen associee."
-[ $kind = -kernel_only ] && echo "contenant une version du kernel TRUST sans la documentation Doxygen associee."
-[ $crypt = 0 ] && echo "Attention, cette version est sans cle."
+echo "The $new_paquet package is created."
+[ $kind = -without_source ] && echo "  It contains a version without the TRUST sources and without the associated Doxygen documentation."
+[ $kind = -kernel_only ] && echo "  It contains a TRUST kernel version without the associated Doxygen documentation."
+[ $crypt = 0 ] && echo "Please note that this version is without key."
+echo " "
 cd `dirname $new_paquet`
 rm -r -f $rep
 # On teste l'installation du nouveau paquet si -install

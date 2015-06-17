@@ -124,4 +124,7 @@ if [ $ALL -eq 1 ]
     rm -f ${project_directory}/README.BALTIK
     rm -f ${project_directory}/configure
     rm -rf ${project_directory}/local
+    project_name=`extract_field "$project_description" name`
+    env_file=$project_directory/env_${project_name}.sh
+    rm -f  $env_file
 fi

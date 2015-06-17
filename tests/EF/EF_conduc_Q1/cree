@@ -1,0 +1,3 @@
+#!/bin/sh
+cp ../conduc/* .
+sed "s/trianguler_h dom//" conduc.data > conduc_Q1.data

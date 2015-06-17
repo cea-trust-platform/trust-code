@@ -62,7 +62,7 @@ public:
   DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
   inline double viscA(int, int, int, double) const;
-
+  void calc_visc(ArrOfDouble& diffu_tot,const Zone_VEF& la_zone,int num_face,int num2,int dimension, int num_elem,double diffu_turb,const DoubleTab& diffu,int is_mu_unif,const ArrOfDouble& inv_Prdt) const;
   // Methodes pour l implicite.
 
   inline void dimensionner(Matrice_Morse& ) const;

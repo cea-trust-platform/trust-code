@@ -24,6 +24,7 @@
 #include <sys/types.h>
 #include <stdlib.h>
 #include <mon_main.h>
+#include <EFichier.h>
 #ifdef linux
 #include <fenv.h>
 #endif
@@ -51,6 +52,7 @@ void usage()
        << " -petsc=0            => disable call to PetscInitialize\n"
        << " -journal=0..9       => select journal level (0=disable, 9=maximum verbosity)\n"
        << " -journal_master     => only master processor writes a journal\n"
+       << " -disable_ieee       => Disable the detection of NaNs.\n"
        << endl;
   Process::exit();
 }
@@ -66,13 +68,6 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
 #ifdef VTRACE
   //VT_USER_END("Initialization");
 #endif
-#ifdef linux
-  // Detect all NaNs (don't add FE_UNDERFLOW cause exp(-x) with x big throws an exception)
-  // Test pre 1.7.0, on active en optimise:
-//#ifndef NDEBUG
-  feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
-//#endif
-#endif
   // Attention: on n'a pas le droit d'utiliser les communications paralleles au debut.
   // Cerr et Cout sont OK (variables statiques dans Journal_log_files.cpp)
   // Le journal peut etre utilise mais ecrit dans Sortie_Nulle jusqu'a ce qu'on ouvre
@@ -87,6 +82,7 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
   int nproc = -1;
   int verbose_level = 1;
   int journal_master = 0;
+  int ieee = 1;              // 1 => use of feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
   Nom data_file;
   data_file = "";
   Nom exec_script;
@@ -102,6 +98,11 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
       if (strcmp(argv[i], "-help_triou") == 0)
         {
           usage();
+        }
+      else if (strcmp(argv[i], "-disable_ieee") == 0)
+        {
+          ieee = 0;
+          arguments_info += "-disable_ieee => disable of feenableexcept\n";
         }
       else if (strcmp(argv[i], "-mpi") == 0)
         {
@@ -185,6 +186,23 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
             }
           else
             {
+	    	// Mise en commentaire car dans certains scripts verifie on teste: triou $jdd -ksp_view
+	    	/*
+                Nom fichier=argv[i];
+                fichier.prefix(".data");
+                fichier+=".data";
+                EFichier fic(fichier);
+                if(fic.fail())
+                  {
+                    cerr << "Trying to open file " << fichier << endl;
+                    cerr << "File " << fichier << " doesnt exist !" << endl;
+                    Process::exit();
+                  }
+                else
+                  {
+                    data_file = fichier.prefix(".data");
+                  }
+		*/
               //error = 1;
             }
         }
@@ -204,6 +222,20 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
     }
 
   {
+
+  if ( ieee == 1 )
+    {
+      arguments_info += "feenableexcept enabled.\n";
+      #ifdef linux
+      // Detect all NaNs (don't add FE_UNDERFLOW cause exp(-x) with x big throws an exception)
+      // Test pre 1.7.0, on active en optimise:
+      //#ifndef NDEBUG
+
+        feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
+      //#endif
+      #endif
+    }
+
     // ************** Initialisation de Petsc, du parallele (si Petsc) **********
     // .. et demarrage du journal
     // (tout ce qu'on veut faire en commun avec l'interface python doit etre
@@ -296,8 +328,8 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
         Cerr<<"Localisation etude: " << ::pwd() << finl;
         Cerr<<"Nom du cas " << data_file << finl;
         Cerr<<" code : "<< argv[0] << finl;
-        Cerr<<" version : 1.7.1_beta " << finl;
-        Cerr<<" build : 090415 " << finl;
+        Cerr<<" version : 1.7.1 " << finl;
+        Cerr<<" build : 160615 " << finl;
       }
 
     main_process->dowork(data_file);

@@ -57,3 +57,7 @@ void Op_Diff_K_Eps_VEF_base::completer()
 }
 
 
+void  Op_Diff_K_Eps_VEF_base::associer_diffusivite(const Champ_base& diffu)
+{
+  diffusivite_=diffu;
+}

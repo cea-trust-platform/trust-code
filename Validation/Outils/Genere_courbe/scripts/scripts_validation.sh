@@ -38,13 +38,13 @@ verif_BUILD()
 {
   if [ "$Rapports_auto_root" = "" ]
 	then
-	Rapports_auto_root=$TRUST_ROOT/Validation
+	Rapports_auto_root=$TRUST_ROOT
 	export Rapports_auto_root
   fi
   for f in `ls BUILD`
     do
     echo $f
-    f2=`find  $Rapports_auto_root -follow  -name $f -type d | grep -v $f/src`
+    f2=`find  $Rapports_auto_root/Validation/Rapports_automatiques -follow  -name $f -type d | grep -v $f/src`
     diff -r BUILD/$f/src $f2/src
   done
 }

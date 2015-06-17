@@ -3,22 +3,24 @@
 # Argument $1 nom du repertoire
 nom=${1%.}
 nom=${nom%/}
+echo "Make the $1 directory on ftp://$TRUST_FTP"
+
 if [ "`existe_ftp $nom`" != 1 ]
 then
    dir=`dirname $nom`
    rep=`basename $nom`
-   echo "  $nom on $TRUST_FTP is created"
    p="" && [ "`ftp -help 2>&1 | grep '\-p'`" != "" ] && p=p # Passive mode utile sur les machines virtuelles
-
-   cat << ! | ftp -iv$p | $TRUST_Awk '/MKD command/ || /File exists/ {print $0}'
+(
+   cat << ! | ftp -iv$p | grep 'created'
 open $TRUST_FTP
-cd ../..
-cd $dir
+cd "/"$dir
 mkdir $rep
 chmod 755 $rep
 !
+) &
+$TRUST_ROOT/bin/KSH/wait_for $! 600 || (echo "Error: mkdir_ftp killed"; exit -1)
 
+   [ $? != 0 ] && echo "Error: $nom on $TRUST_FTP is NOT created"
 else
-   echo "  $nom on $TRUST_FTP already exists"
+   echo "$nom on $TRUST_FTP already exists"
 fi
-

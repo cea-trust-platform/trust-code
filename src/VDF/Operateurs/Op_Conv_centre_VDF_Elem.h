@@ -57,7 +57,7 @@ class Op_Conv_centre_VDF_Elem : public Op_Conv_VDF_base, public Op_VDF_Elem
 
 public:
 
-  inline Op_Conv_centre_VDF_Elem();
+  Op_Conv_centre_VDF_Elem();
   void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc&  );
   inline void associer_vitesse(const Champ_base& );
   const Champ_Inc_base& vitesse() const;
@@ -66,18 +66,6 @@ public:
   inline void dimensionner(Matrice_Morse& ) const;
   inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
 };
-
-//
-// Fonctions inline de la classe Op_Conv_centre_VDF_Elem
-//
-
-// Description:
-// constructeur
-inline Op_Conv_centre_VDF_Elem::Op_Conv_centre_VDF_Elem()
-  :Op_Conv_VDF_base(It_VDF_Elem(Eval_centre_VDF_Elem)())
-{
-}
-
 
 // Description:
 // associe le champ de vitesse a l'evaluateur

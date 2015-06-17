@@ -2,7 +2,7 @@
 # Run VDF preprocessor avec argument test
 # Initialise l'environnement TRUST
 echo "Usage: `basename $0` [file.prep]"
-. ${0%/Xprepro}/Init_TRUST
+source ${0%/bin/Xprepro}/env/env_TRUST.sh
 
 if [ "$1" = -gui ]
 then

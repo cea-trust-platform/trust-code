@@ -45,6 +45,7 @@ class Sous_Zone : public Objet_U
 
 public :
 
+  virtual int lire_motcle_non_standard(const Motcle&, Entree&);
   inline Sous_Zone(const Zone& );
   inline const Nom& le_nom() const;
   inline int operator()(int) const;
@@ -64,7 +65,7 @@ public :
   int add_poly(const int& poly);
   int remove_poly(const int& poly);
 
-private :
+protected :
 
   IntVect les_polys_;
   REF(Zone) la_zone_;

@@ -1,0 +1,37 @@
+Parametres {
+	Titre "Conduction couplée implicite"
+	Description "Calculs menés en VDF/VEF avec/sans paroi fictive"
+	Auteur "G.F."
+	CasTest FTD_all_VEF FTD_all_VEF.data
+}
+
+Chapitre {
+	Titre "FT"
+	Description " test visu "
+Figure {
+	dimension 2
+	courbe {
+	segment ./toto.data SEG 1.
+	style linespoints
+}
+}
+Figure {
+	dimension 2
+	courbe {
+	segment ./toto.data SEG 
+	style linespoints
+}
+}
+Figure {
+	dimension 3
+	courbe {
+	plan ./toto.data SONDE 1.
+}
+}
+Figure {
+	dimension 3
+	courbe {
+	plan ./toto.data SONDE 
+}
+}
+}

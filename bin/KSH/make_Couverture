@@ -63,7 +63,7 @@ echo $ECHO_OPTS "Creation du dico Python: \c"
 update_version dico.pkl
 
 python -c "from Couv import util;util()" | sort -u > list_methodes_non_appelees
+echo $ECHO_OPTS "Creation d'un fichier contenant les methodes non appelees par les cas tests: \c"
 update_version list_methodes_non_appelees
-echo $ECHO_OPTS "Creation d'un fichier contenant les methodes non appelees par les cas tests: list_methodes_non_appelees"
 
 rm -f $listfichier_a_retirer

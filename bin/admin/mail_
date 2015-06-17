@@ -7,24 +7,62 @@
 [ "`domainname 2>/dev/null | grep 'cea.fr'`" = "" ] && [ $HOST != jade ] && [ "`grep 'cea.fr' /etc/mtab 2>/dev/null`" = "" ] && [ "`echo $HOSTNAME | grep 'cea.fr'`" = "" ] && [ "`ping_ $HOST | grep '132.16'`" = "" ] && [ $HOST != callisto ] && exit 
 
 commande=$*
+attached=`echo $commande | awk -F\" '/-a/ {print $2}'`
 tmp_file=`mktemp_ 2>/dev/null` || tmp_file=/tmp/tmp_file
 cat > $tmp_file
 
-#######################################################
-# Serveur de mail en local avec /bin/mail ou /bin/mailx
-#######################################################
-binaires="/bin/mail /bin/mailx"
-for binaire in $binaires
-do
-   envoi="cat $tmp_file | $binaire $commande 2>&1"
-   err=`eval $envoi 1>/dev/null 2>&1;echo $?`
-   if [ $err = 0 ]
+###############################
+# Serveur de mail local au LMDL 
+###############################
+# NB: necessaire pour les machines de Grenoble (sitre, vonnes, gaillands, forchat)
+# et egalement pour envoyer mail via mailing lists saxifrage.saclay.cea.fr
+TRUST_SHARE="/net/dibona/users/dibona/triou"
+if [ "$TRUST_SHARE" != "" ] && [ -d "$TRUST_SHARE" ] && [ "$attached" == "" ]
+then
+   # Probleme de l'autentification donc copie sur dibona qui fera serveur de mail_
+   mel=$TRUST_SHARE/tmp
+   mkdir -p $mel 2>/dev/null     
+   chmod 777 $mel 2>/dev/null
+   if [ -d $mel ]
    then
+      mel=$mel/mail.`id -u`.$$
+      # On verifie que le mail n'existe pas dans la liste
+      while [ -f $mel ]
+      do
+         mel=$mel"_"
+      done
+      subject=`echo $commande | awk -F\" '/-s/ {print $2}'`
+      if [ "$subject" != "" ]
+      then
+         qui=`echo $commande | awk -F\" '{print $3}'`
+      else
+         qui=$commande
+      fi
+      echo $ECHO_OPTS "$subject\n$qui\n`cat $tmp_file`" > $mel
       rm -f $tmp_file
       exit 0
+   else
+      echo "No mail sent to $HOST..."
+      rm -f $tmp_file
+      exit -1
    fi
-done
-rm -f $tmp_file
-echo "No mail sent to $HOST by $binaires ..."
-exit -1
+else
+   #######################################################
+   # Serveur de mail en local avec /bin/mail ou /bin/mailx
+   #######################################################
+   binaires="/bin/mail /bin/mailx"
+   for binaire in $binaires
+   do
+      envoi="cat $tmp_file | $binaire $commande 2>&1"
+      err=`eval $envoi 1>/dev/null 2>&1;echo $?`
+      if [ $err = 0 ]
+      then
+         rm -f $tmp_file
+         exit 0
+      fi
+   done
+   rm -f $tmp_file
+   echo "No mail sent to $HOST by $binaires ..."
+   exit -1
+fi
 

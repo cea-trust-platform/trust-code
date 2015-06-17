@@ -74,5 +74,12 @@ void Op_Dift_VDF_Face::completer()
   eval_diff_turb.associer_modele_turbulence(mod_turb);
 }
 
-
-
+//
+// Fonctions inline de la classe Op_Dift_VDF_Face
+//
+//// Op_Dift_VDF_Face
+//
+Op_Dift_VDF_Face::Op_Dift_VDF_Face() :
+  Op_Dift_VDF_Face_base(It_VDF_Face(Eval_Dift_VDF_const_Face)())
+{
+}

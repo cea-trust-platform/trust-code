@@ -1,0 +1,89 @@
+Parametres {
+	Titre "Vérification de la conduction thermique stationnaire à conductivité thermique variable : conductivité thermique quadratique"
+	Description "On considère une conductivité thermique qui varie quadratiquement suivant la direction $x$.  On compare la solution obtenue par GENEPI à la solution analytique.  La température est imposée en entrée et sortie du domaine (cf. jeu de données).  On compare le profil de température dans la direction $x$ ainsi que le champ de température bidimensionnel.  On compare également les flux conductifs sur les parois en entrée et sortie."
+	Auteur "D. Jamet"
+	CasTest "." "conduc_genepi_k_var_2.data"
+	incluredata 1
+}
+
+Chapitre {
+	Titre "Champs de température"
+	Description "On compare les champs de température calculé par GENEPI et analytique.  Cette comparaison se fait sur un profil en $y=cte$ et sur le champ 2D."
+
+	Figure {
+		incluredesccourbes 0
+		Titre "Comparaison des profils calculé et analytique"
+		Dimension 2
+	        LabelX "x"
+	        LabelY "T"
+        
+	        width 7cm
+        	
+	        Courbe {
+        	        Legende "EF"
+                	Origine "Trio_U"
+	                Version "1.5.3-beta_build_180907"
+        	        segment ./conduc_genepi_k_var_2.data temperature_x
+                	Style linespoints
+                }
+	
+		Courbe {
+        	        Legende "analytique"
+                	Origine "ref"
+	                segment ./conduc_genepi_k_var_2.data temperature_x
+        	        Style lines
+			colonnes ($1) 2.+(4.-2.)/(atan(sqrt(0.5625/0.25)*2.))*atan(sqrt(0.5625/0.25)*($1))
+                }
+	}
+
+	visu {
+                titre "Comparaison des champs 2D calculé et analytique"
+                description "On trace le champ d'écart entre la température calculée et la solution analytique.  La solution analytique est représentée par des isovaleurs du champ de température."
+                mesh ./conduc_genepi_k_var_2.lata dom 
+                isovaleurs ./conduc_genepi_k_var_2.lata dom TEMPERATURE SOM
+                instruction_visit DefineScalarExpression("ERREUR_SOM_dom","TEMPERATURE_SOM_dom-(2.+(4.-2.)/(atan(sqrt(0.5625/0.25)*2.))*atan(sqrt(0.5625/0.25)*(coord(dom)[0])))")
+                pseudocolor ./conduc_genepi_k_var_2.lata dom ERREUR SOM
+        }
+
+
+}
+
+
+Chapitre {
+	Titre "Flux conductifs aux frontières du domaine"
+	Description "Les flux conductifs calculés par GENEPI en $x=0$ et $x=L$ sont comparés aux flux théoriques.  L'erreur correspondante est également donnée."
+
+
+	Tableau {
+		Titre "Comparaison numérique/théorie"
+		nb_colonnes 2
+		label  flux  gauche  | flux droit
+		Ligne {
+			Legende theorie
+			Version "1.5.3-beta_build_180907"
+			valeurs -0.6005 0.6005
+			alias ref
+		}
+		Ligne {
+			Legende calcul
+			Origine "Trio_U"
+			Version "1.5.3-beta_build_180907"
+			nb_colonnes_fichier 6
+			fichier ./conduc_genepi_k_var_2_fin.out
+			colonnes $2 $5
+		}
+		Ligne {
+			Legende ecart_relatif
+			alias erreur
+			Origine "Trio_U"
+			Version "1.5.3-beta_build_180907"
+			difference ecart_relatif calcul ref
+			 afficher_ligne 0	
+		}
+		Ligne {
+	        	legende "erreur en %"
+			alias err_bis
+		        difference formule   erreur ref int(v1*10000)/100.
+	        }
+	}
+}

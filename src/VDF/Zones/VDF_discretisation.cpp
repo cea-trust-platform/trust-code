@@ -38,7 +38,6 @@
 #include <Schema_Temps_base.h>
 // #include <Champ_T_Paroi_Face.h>
 #include <Zone_Cl_VDF.h>
-#include <DescStructure.h>
 #include <Navier_Stokes_std.h>
 
 Implemente_instanciable(VDF_discretisation,"VDF",Discret_Thyd);

@@ -33,6 +33,7 @@ cat <<EOF
 % This file was generated automaticaly with the genererCources.py script
 \documentclass[10pt,twoside,a4paper]{report}
 \usepackage[ascii]{}
+\usepackage{longtable}
 % \usepackage[T1]{fontenc}
 \usepackage[latin1]{inputenc}
 % \usepackage[french]{babel}

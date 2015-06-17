@@ -4,7 +4,7 @@ bloc_comment objet_u /* 0 bloc of Comment in a data file.
   attr comm chaine comm 0 Text to be commented.
 interprete objet_u interprete 0 Basic class for interpreting a data file. Interpretors allow some operations to be carried out on objects.
 read interprete lire 0 Interpretor to read the object objet defined between the braces.
-  attr object chaine object 0 Object to be read.
+  attr a_object chaine a_object 0 Object to be read.
   attr bloc chaine bloc 0 Definition of the object.
 associate interprete associer -1 This interpretor allows one object to be associated with another. The order of the two objects in this instruction is not important. The object objet_2 is associated to objet_1 if this makes sense; if not either objet_1 is associated to objet_2 or the program exits in error because it cannot execute the Associer (Associate) instruction. For example, to calculate water flow in a pipe, a Pb_Hydraulique type object needs to be defined. But also a Domaine type object to represent the pipe, a Schema_euler_explicite type object for time discretisation, a discretisation type object (VDF or VEF) and a Fluide_Incompressible type object which will contain the water properties. These objects must then all be associated with the problem.
   attr objet_1 chaine objet_1 0 Objet_1
@@ -139,7 +139,7 @@ transformation champ_post_de_champs_post transformation -1 To create a field wit
   attr methode chaine(into=["produit_scalaire","norme","vecteur","formule","composante"]) methode 0 methode norme : will calculate the norm of a vector given by a source field NL2 methode produit_scalaire : will calculate the dot product of two vectors given by two sources fields NL2 methode composante numero integer : will create a field by extracting the integer component of a field given by a source field NL2 methode formule expression 1 : will create a scalar field located to elements using expressions with x,y,z,t parameters and field names given by a source field or several sources fields. NL2 methode vecteur expression N f1(x,y,z,t)  fN(x,y,z,t) : will create a vector field located to elements by defining its N components with N expressions with x,y,z,t parameters and field names given by a source field or several sources fields.
   attr expression listchaine expression 1 see methodes formule and vecteur
   attr numero entier numero 1 see methode composante
-  attr localisation chaine localisation 1 type_loc indicate where is done the interpolation (´†elem†ª for element or ´†som†ª for node). The optional keyword methode is limited to calculer_champ_post for the moment
+  attr localisation chaine localisation 1 type_loc indicate where is done the interpolation (¬´¬†elem¬†¬ª for element or ¬´¬†som¬†¬ª for node). The optional keyword methode is limited to calculer_champ_post for the moment
 predefini champ_generique_base predefini -1 These keyword is used to post process predefined postprocessing fields. For the moment, only kinetic energy (energie_cinetique keyword to use for field_name) is available.
   attr pb_champ deuxmots pb_champ 0 { Pb_champ nom_pb nom_champ } : nom_pb is the problem name and nom_champ is the selected field name.
 refchamp champ_generique_base refchamp -1 Field of prolem
@@ -151,7 +151,7 @@ champ_post_operateur_base champ_post_de_champs_post champ_post_operateur_base -1
 gradient champ_post_operateur_base gradient -1 To calculate gradient of a given field.
 divergence champ_post_operateur_base divergence -1 To calculate divergency of a given field.
 interpolation champ_post_de_champs_post interpolation -1 To create a field which is an interpolation of the field given by the keyword source.
-  attr localisation chaine localisation 0 type_loc indicate where is done the interpolation (´†elem†ª for element or ´†som†ª for node).
+  attr localisation chaine localisation 0 type_loc indicate where is done the interpolation (¬´¬†elem¬†¬ª for element or ¬´¬†som¬†¬ª for node).
   attr domaine chaine domaine 1 the domain name where the interpolation is done (by default, the calculation domain)
   attr methode chaine methode 1 The optional keyword methode is limited to calculer_champ_post for the moment.
 champ_post_statistiques_base champ_post_de_champs_post champ_post_statistiques_base -1 not_set
@@ -174,7 +174,8 @@ definition_champ objet_lecture nul 0 Keyword to create new complex field for adv
   attr name chaine name 0 The name of the new created field.
   attr champ_generique champ_generique_base champ_generique 0 not_set
 definition_champs listobj nul 1 definition_champ 0 List of definition champ
-postraitement objet_lecture nul -1 An object of post-processing (without name).
+postraitement_base  objet_lecture postraitement_base -1 not_set
+postraitement postraitement_base postraitement -1 An object of post-processing (without name).
   attr definition_champs definition_champs definition_champs 1 Keyword to create new or more complex field for advanced postprocessing.
   attr sondes sondes sondes 1 Probe.
   attr domaine chaine domaine 1 This optional parameter specifies the domain on which the data should be interpolated before it is written in the output file. The default is to write the data on the domain of the current problem (no interpolation).
@@ -184,13 +185,16 @@ postraitement objet_lecture nul -1 An object of post-processing (without name).
   attr fichier chaine fichier 1 Name of file.
   attr statistiques_en_serie stats_serie_posts statistiques_en_serie 1 Statistics between two points not fixed : on period of integration.
   attr interfaces champs_posts interfaces 1 Keyword to read all the caracteristics of the interfaces. Different kind of interfaces exist as well as different interface intitialisations.
+corps_postraitement postraitement nul -1 not_set
 un_postraitement objet_lecture nul 0 An object of post-processing (with name).
   attr nom chaine nom 0 Name of the post-processing.
-  attr post postraitement post 0 Definition of the post-processing.
+  attr post corps_postraitement post 0 Definition of the post-processing.
 postraitements listobj postraitements -1 un_postraitement 0 Keyword to use several results files. List of objects of post-processing (with name).
 type_un_post objet_lecture nul 0 not_set
   attr type chaine(into=["postraitement"]) type 0 not_set
   attr post un_postraitement post 0 not_set
+postraitement_ft_lata postraitement_base postraitement_ft_lata 0 not_set
+  attr bloc chaine bloc 0 not_set
 type_postraitement_ft_lata objet_lecture nul 0 not_set
   attr type chaine(into=["postraitement_ft_lata","postraitement_lata"]) type 0 not_set
   attr nom chaine nom 0 Name of the post-processing.
@@ -199,10 +203,15 @@ un_postraitement_spec objet_lecture nul 0 An object of post-processing (with typ
   attr type_un_post type_un_post type_un_post 1 not_set
   attr type_postraitement_ft_lata type_postraitement_ft_lata type_postraitement_ft_lata 1 not_set
 liste_post listobj liste_post -1 un_postraitement_spec 0 Keyword to use several results files. List of objects of post-processing (with name)
+nom_postraitement objet_lecture nul 0 
+  attr nom chaine nom 0 Name of the post-processing.
+  attr post postraitement_base post 0 the post
+liste_post_ok listobj liste_post_ok -1 nom_postraitement 0 Keyword to use several results files. List of objects of post-processing (with name)
 pb_gen_base objet_u pb_gen_base -1 Basic class for problems.
 Pb_base pb_gen_base Pb_base -3 Resolution of equations on a domain. A problem is defined by creating an object and assigning the problem type that the user wishes to resolve. To enter values for the problem objects created, the Lire (Read) interpretor is used with a data block.
-  attr postraitement postraitement postraitement 1 One post-processing (without name).
+  attr postraitement corps_postraitement postraitement 1 One post-processing (without name).
   attr postraitements postraitements postraitements 1 List of Postraitement objects (with name).
+  attr liste_de_postraitements liste_post_ok liste_de_postraitements 1 This
   attr liste_postraitements liste_post liste_postraitements 1 This block defines the output files to be written during the computation. The output format is lata in order to use OpenDX to draw the results. This block can be divided in one or several sub-blocks that can be written at different frequencies and in different directories. Attention. The directory lata used in this example should be created before running the computation or the lata files will be lost.
   attr sauvegarde format_file sauvegarde 1 Keyword used when calculation results are to be backed up. When a coupling is performed, the backup-recovery file name must be well specified for each problem. In this case, you must save to different files and correctly specify these files when restarting the calculation.
   attr sauvegarde_simple format_file sauvegarde_simple 1 The same keyword than Sauvegarde except, the last time step only is saved.
@@ -383,12 +392,14 @@ schema_temps_base objet_u schema_temps_base -1 Basic class for time schemes. Thi
   attr dt_impr floattant dt_impr 1 Scheme parameter printing time step in time (1e30s by default). The time steps and the flux balances are printed (incorporated onto every side of processed domains) into the .out file.
   attr dt_start dt_start dt_start 1 dt_min : the first iteration is based on dt_min NL2 dt_start dt_calc : the time step at first iteration is calculated in agreement with CFL condition. NL2 dt_start dt_fixe value : the first time step is fixed by the user (recommended when restarting calculation with Crank Nicholson temporal scheme to ensure continuity). NL2 By default, the first iteration is based on dt_calc.
   attr seuil_statio floattant seuil_statio 1 Value of the convergence threshold (1e-12 by default). Problems using this type of time scheme converge when the derivatives dGi/Gi NL1 of all the unknown transported values Gi have a combined absolute value less than this value. This is the keyword used to set the permanent rating threshold.
-  attr seuil_statio_relatif entier(into=[0,1]) seuil_statio_relatif 1 not_set
+  attr seuil_statio_relatif_deconseille entier(into=[0,1]) seuil_statio_relatif_deconseille 1 not_set
   attr diffusion_implicite entier(into=[0,1]) diffusion_implicite 1 Keyword to make the diffusion term in the Navier Stokes equation implicit (in this case, vrel should be set to 1). The stability time step is then only based on the convection time step (dt=facsec*dt_convection). Thus, in some circumstances, an important gain is achieved with respect to the time step (large diffusion with respect to convection on tightened meshes). Caution: It is however recommended that the user should avoid exceeding the calculation convection time step by selecting a facsec that is too large. Start with a facsec of 1 and then increase this gradually if you wish to accelerate calculation. In addition, for a natural convection calculation with a zero initial speed, in the first time step, the convection time is infinite and therefore dt=facsec*dt_max.
   attr niter_max_diffusion_implicite entier niter_max_diffusion_implicite 1 This keyword changes the default value (number of unknowns) of the maximal iterations number in the conjugate gradient method used for implicit diffusion.
   attr seuil_diffusion_implicite floattant seuil_diffusion_implicite 1 This keyword changes the default value (1e-6) of convergency criteria for the resolution by conjugate gradient used for implicit diffusion.
   attr impr_diffusion_implicite entier(into=[0,1]) impr_diffusion_implicite 1 Unactivate (default) or not the printing of the convergence during the resolution of the conjugate gradient.
   attr precision_impr entier precision_impr 1 Optional keyword to define the digit number for flux values printed into .out files (by default 3).
+  attr no_error_if_not_converged_diffusion_implicite entier(into=[0,1]) no_error_if_not_converged_diffusion_implicite 1 not_set 
+  attr no_conv_subiteration_diffusion_implicite entier(into=[0,1]) no_conv_subiteration_diffusion_implicite 1 not_set 
   attr periode_sauvegarde_securite_en_heures entier periode_sauvegarde_securite_en_heures 1 To change the default period (10 hours) between the save of the fields in .sauv file.
   attr no_check_disk_space rien no_check_disk_space 1 To disable the check of the available amount of disk space during the calculation.
 euler_scheme schema_temps_base schema_euler_explicite -1 This is the Euler explicite scheme.
@@ -447,7 +458,7 @@ parametre_implicite parametre_equation_base parametre_implicite -1 Keyword to ch
   attr equation_non_resolue rien equation_non_resolue 1 Keyword to specify that the equation is not solved.
   attr equation_frequence_resolue chaine equation_frequence_resolue 1 Keyword to specify that the equation is solved only every n time steps (n is the integer).
 schema_implicite_base schema_temps_base schema_implicite_base -1 Basic class for implicite time scheme.
-  attr facsec_max floattant facsec_max 1 Maximum ratio allowed between time step and stability time returned by CFL condition. The initial ratio given by facsec keyword is changed during the calculation with the implicit scheme but it couldn\'t be higher than facsec_max value. NL2 Advice:NL2 The calculation may start with a facsec specified by the user and increased by the algorithm up to the facsec_max limit. But the user can also choose to specify a constant facsec (facsec_max will be set to facsec value then). Faster convergence has been seen and depends on the kind of calculation: NL2-Hydraulic only or thermal hydraulic with forced convection and low coupling between velocity and temperature (Boussinesq value beta low), facsec between 20-30NL2-Thermal hydraulic with forced convection and strong coupling between velocity and temperature (Boussinesq value iÅ¢ high), facsec between 90-100 NL2-Thermohydralic with natural convection, facsec around 300NL2 -Conduction only, facsec can be set to a very high value (1e8) as if the scheme was unconditionally stableNL2These values can also be used as rule of thumb for initial facsec with a facsec_max limit higher.
+  attr facsec_max floattant facsec_max 1 Maximum ratio allowed between time step and stability time returned by CFL condition. The initial ratio given by facsec keyword is changed during the calculation with the implicit scheme but it couldn\'t be higher than facsec_max value. NL2 Advice:NL2 The calculation may start with a facsec specified by the user and increased by the algorithm up to the facsec_max limit. But the user can also choose to specify a constant facsec (facsec_max will be set to facsec value then). Faster convergence has been seen and depends on the kind of calculation: NL2-Hydraulic only or thermal hydraulic with forced convection and low coupling between velocity and temperature (Boussinesq value beta low), facsec between 20-30NL2-Thermal hydraulic with forced convection and strong coupling between velocity and temperature (Boussinesq value i¬Å¬¢ high), facsec between 90-100 NL2-Thermohydralic with natural convection, facsec around 300NL2 -Conduction only, facsec can be set to a very high value (1e8) as if the scheme was unconditionally stableNL2These values can also be used as rule of thumb for initial facsec with a facsec_max limit higher.
   attr max_iter_implicite entier max_iter_implicite 1 Maximum number of iterations allowed for the solver (by default 100000).
   attr solveur solveur_implicite_base solveur 0 Solver selected in the situation where the time scheme is the implicit scheme. Solver allows equation diffusion and convection operators to be set as implicit terms. solver is the name of the solver that allows equation diffusion and convection operators to be set as implicit terms. Keywords corresponding to this functionality are Simple (SIMPLE type algorithm), Simpler (SIMPLER type algorithm) for incompressible systems, Piso (Pressure Implicit with Split Operator), and Implicite (similar to PISO, but as it looks like a simplified solver, it will use fewer timesteps. But it may run faster because the pressure matrix is not re-assembled and thus provides CPU gains.NL2 Advice: Since the 1.6.0 version, we recommend to use first the Implicite or Simple, then Piso, and at least Simpler. Because the two first give a fastest convergence (several times) than Piso and the Simpler has not been validated. It seems also than Implicite and Piso schemes give better results than the Simple scheme when the flow is not fully stationary. Thus, if the solution obtained with Simple is not stationary, it is recommended to switch to Piso or Implicite scheme.
 schema_euler_implicite schema_implicite_base schema_euler_implicite -1 This is the Euler implicite scheme.
@@ -555,7 +566,7 @@ pb_conduction Pb_base pb_conduction -1 Resolution of the heat equation.
   attr conduction conduction conduction 1 Heat equation.
 navier_stokes_qc navier_stokes_standard navier_stokes_qc -1 NAVIER STOKES equations under smal Mach number.
 convection_diffusion_chaleur_qc eqn_base convection_diffusion_chaleur_qc -1 Energy equation under smal Mach number.
-  attr mode_calcul_convection chaine(into=["ancien","divuT_moins_Tdivu","divrhouT_moins_Tdivrhou"]) mode_calcul_convection 1 Option to set the form of the convective operatorNL2 ancien (the default): u.gradT = div(u.T) - T.div(u) NL2 divuT_moins_Tdivu†: u.gradT = div(u.T) - Tdiv(u.1) NL2 divrhouT_moins_Tdivrhou†: rho.u.gradT = div(rho.u.T )- Tdiv(rho.u.1)
+  attr mode_calcul_convection chaine(into=["ancien","divuT_moins_Tdivu","divrhouT_moins_Tdivrhou"]) mode_calcul_convection 1 Option to set the form of the convective operatorNL2 ancien (the default): u.gradT = div(u.T) - T.div(u) NL2 divuT_moins_Tdivu¬†: u.gradT = div(u.T) - Tdiv(u.1) NL2 divrhouT_moins_Tdivrhou¬†: rho.u.gradT = div(rho.u.T )- Tdiv(rho.u.1)
 pb_thermohydraulique_qc Pb_base pb_thermohydraulique_qc -1 Resolution of thermohydraulic problem under smal Mach number. NL2 Keywords for the unknowns other than pressure, velocity, temperature are : NL2 masse_volumique : density NL2 enthalpie : enthalpy NL2 pression : reduced pressure NL2 pression_tot : total pressure.
   attr navier_stokes_qc navier_stokes_qc navier_stokes_qc 0 NAVIER STOKES equations under smal Mach number.
   attr convection_diffusion_chaleur_qc convection_diffusion_chaleur_qc convection_diffusion_chaleur_qc 0 Energy equation under smal Mach number.
@@ -659,10 +670,8 @@ source_qdm_lambdaup source_base source_qdm_lambdaup 1 This source term is a diss
 source_th_tdivu source_base source_th_tdivu 0 This term source is dedicated for any scalar (called T) transportation. Coupled with upwind (amont) or muscl scheme, this term gives for final expression of convection : div(U.T)-T.div (U)=U.grad(T) This ensures, in incompressible flow when divergence free is badly resolved, to stay in a better way in the physical boundaries. NL2 Warning: Only available in VEF discretization.
 source_robin source_base source_robin 0 not_set
   attr bords vect_nom bords 0 not_set
-  attr dt_post floattant dt_post 0 not_set
 source_robin_scalaire source_base source_robin_scalaire 0 not_set
   attr bords listdeuxmots_sacc bords 0 not_set
-  attr dt_post floattant dt_post 0 not_set
 canal_perio source_base canal_perio 0 Momentum source term to maintain flow rate. Two files will be created during calculation (pbname is the probleme name). The first one contains the flow rate evolution. The second one is useful for restarting a calculation with the flow rate of the previous stopped calculation : NL2 -Channel_Flow_Rate_pbname NL2 -Channel_Flow_Rate_repr_pbname.
   attr bloc bloc_lecture bloc 0 Description (direction of the flow, half heigth of the channel, damping coefficient).
 champ_don_base field_base champ_don_base -1 Basic class for data fields (not calculated), p.e. physics properties.
@@ -830,7 +839,7 @@ loi_standard_hydr_old turbulence_paroi_base loi_standard_hydr_old 0 not_set
 loi_standard_hydr turbulence_paroi_base loi_standard_hydr 0 Keyword for the logarithmic wall law for a hydraulic problem. Loi_standard_hydr refers to first cell rank eddy-viscosity defined from continuous analytical functions, whereas Loi_standard_hydr_3couches from functions separataly defined for each sub-layer
 loi_expert_hydr loi_standard_hydr loi_expert_hydr 1 This keyword is similar to the previous keyword Loi_standard_hydr but has several additional options into brackets.
   attr u_star_impose floattant u_star_impose 1 The value of the friction velocity (u*) is not calculated but given by the user.
-  attr methode_calcul_face_keps_impose chaine(into=["toutes_les_faces_accrochees","que_les_faces_des_elts_dirichlet"]) methode_calcul_face_keps_impose 1 The available options select the algorithm to apply K and Eps boundaries condition (the algorithms differ according to the faces).NL2 toutes_les_faces_accrochees†: Default option in 2D (the algorithm is the same than the algorithm used in Loi_standard_hydr) NL2 que_les_faces_des_elts_dirichlet†: Default option in 3D (another algorithm where less faces are concerned when applying K-Eps boundary condition).
+  attr methode_calcul_face_keps_impose chaine(into=["toutes_les_faces_accrochees","que_les_faces_des_elts_dirichlet"]) methode_calcul_face_keps_impose 1 The available options select the algorithm to apply K and Eps boundaries condition (the algorithms differ according to the faces).NL2 toutes_les_faces_accrochees¬†: Default option in 2D (the algorithm is the same than the algorithm used in Loi_standard_hydr) NL2 que_les_faces_des_elts_dirichlet¬†: Default option in 3D (another algorithm where less faces are concerned when applying K-Eps boundary condition).
   attr kappa floattant kappa 1 The value can bechanged from the default one (0.415)
   attr Erugu floattant Erugu 1 The value of E can be changed from the default one for a smooth wall (9.11). It is also possible to change the value for one boundary wall only with paroi_rugueuse keyword/
   attr A_plus floattant A_plus 1 The value can can be changed from the default one (26.0)
@@ -1185,7 +1194,7 @@ champ_fonc_reprise champ_don_base champ_fonc_reprise 0 This field is used to rea
   attr filename chaine filename 0 Name of the .xyz file.
   attr pb_name ref_Pb_base pb_name 0 Name of the problem.
   attr champ chaine champ 0 Name of the problem unknown. It may also be the temporal average of a problem unknown (like moyenne_vitesse, moyenne_temperature,...)
-  attr fonction fonction_champ_reprise fonction 1 Optional keyword to apply a function on the field being read in the .xyz file (e.g. to read a temperature field in Celsius units and convert it for the calculation on Kelvin units, you will use: fonction 1†273.+val )
+  attr fonction fonction_champ_reprise fonction 1 Optional keyword to apply a function on the field being read in the .xyz file (e.g. to read a temperature field in Celsius units and convert it for the calculation on Kelvin units, you will use: fonction 1¬†273.+val )
   attr temps chaine time 0 Time of the saved field in the .xyz file or last_time. If you give the keyword last_time instead, the last time saved in the .xyz file will be used.
 source_qdm source_base source_qdm 0 Momentum source term in the Navier Stokes equation.
   attr ch field_base champ 0 Field type.
@@ -1647,7 +1656,7 @@ interpolation_champ_face_lineaire interpolation_champ_face_deriv lineaire 1 not_
 parcours_interface objet_lecture nul 1 allows you to configure the algorithm that computes the surface mesh to volume mesh intersection. This algorithm has some serious trouble when the surface mesh points coincide with some faces of the volume mesh. Effects are visible on the indicator function, in VDF when a plane interface coincides with a volume mesh surface.NL2 To overcome these problems, the keyword correction_parcours_thomas keyword can be used: it allows the algorithm to slightly move some mesh points. This algorithm, which is experimental and is NOT activated by default, triggers a correction that avoids some errors in the computation of the indicator function for surface meshes that exactly cross some eulerian mesh edges (strongly suggested !).
   attr correction_parcours_thomas rien correction_parcours_thomas 1 not_set
 transport_interfaces_ft_disc eqn_base transport_interfaces_ft_disc -1 Interface tracking equation for Front-Tracking problem in the discontinuous version.
-  attr conditions_initiales bloc_lecture conditions_initiales 1 The keyword conditions_initiales is used to define the shape of the initial interfaces through the zero level-set of a function, or through a mesh fichier_geom. Indicator function is set to 0, that is fluide0, where the function is negative; indicator function is set to 1, that is fluide1, where the function is positive; the interfaces are the level-set 0 of that function: NL2 NL2 conditions_initiales { fonction NL2 $(-((x-0.002)^2+(y-0.002)^2+z^2-(0.00125)^2))*((x-0.005)^2+(y-0.007)^2+z^2 (0.00150)^2))*(0.020-z))$ NL2 } NL2 NL2 In the above example, there are three interfaces: two bubbles in a liquid with a free surface. One bubble has a radius of 0.00125, i.e. 1.25†mm, and its center is {0.002, 0.002, 0.000}. The other bubble has a radius of 0.00150, i.e. 1.5†mm, and its center is {0.005, 0.007, 0.000}. The free surface is above the two bubble, at a level z=0.02. NL2 NL2 Additional feature in this block concerns the keywords ajout_phase0 and ajout_phase1. They can be used to simplify the composition of different interfaces. When using these keywords, the initial function defines the indicator function; ajout_phase0 and ajout_phase1 are used to modify this initial field. Each time ajout_phase0 is used, the field is untouched where the function is positive whereas the indicator field is set to 0 where the function is negative. The keyword ajout_phase1 has the symmetrical use, keeping the field value where the function is negative and setting the indicator field to 1 where the function is positive. The previous example can also be written: NL2 NL2 conditions_initiales { NL2 fonction z-0.020 , NL fonction ajout_phase1 $(x-0.002)^2+(y-0.002)^2+z^2-(0.00125)^2$ , NL2 fonction ajout_phase1 $(x-0.005)^2+(y-0.007)^2+z^2-(0.00150)^2$ NL2 }
+  attr conditions_initiales bloc_lecture conditions_initiales 1 The keyword conditions_initiales is used to define the shape of the initial interfaces through the zero level-set of a function, or through a mesh fichier_geom. Indicator function is set to 0, that is fluide0, where the function is negative; indicator function is set to 1, that is fluide1, where the function is positive; the interfaces are the level-set 0 of that function: NL2 NL2 conditions_initiales { fonction NL2 $(-((x-0.002)^2+(y-0.002)^2+z^2-(0.00125)^2))*((x-0.005)^2+(y-0.007)^2+z^2 (0.00150)^2))*(0.020-z))$ NL2 } NL2 NL2 In the above example, there are three interfaces: two bubbles in a liquid with a free surface. One bubble has a radius of 0.00125, i.e. 1.25¬†mm, and its center is {0.002, 0.002, 0.000}. The other bubble has a radius of 0.00150, i.e. 1.5¬†mm, and its center is {0.005, 0.007, 0.000}. The free surface is above the two bubble, at a level z=0.02. NL2 NL2 Additional feature in this block concerns the keywords ajout_phase0 and ajout_phase1. They can be used to simplify the composition of different interfaces. When using these keywords, the initial function defines the indicator function; ajout_phase0 and ajout_phase1 are used to modify this initial field. Each time ajout_phase0 is used, the field is untouched where the function is positive whereas the indicator field is set to 0 where the function is negative. The keyword ajout_phase1 has the symmetrical use, keeping the field value where the function is negative and setting the indicator field to 1 where the function is positive. The previous example can also be written: NL2 NL2 conditions_initiales { NL2 fonction z-0.020 , NL fonction ajout_phase1 $(x-0.002)^2+(y-0.002)^2+z^2-(0.00125)^2$ , NL2 fonction ajout_phase1 $(x-0.005)^2+(y-0.007)^2+z^2-(0.00150)^2$ NL2 }
   attr methode_transport methode_transport_deriv methode_transport 1 Method of transport of interface.
   attr iterations_correction_volume entier iterations_correction_volume 1 Keyword to specify the number or iterations requested for the correction process that can be used to keep the volume of the phases constant during the transport process.
   attr n_iterations_distance entier n_iterations_distance 1 Keyword to specify the number or iterations requested for the smoothing process of computing the field corresponding to the signed distance to the interfaces and located at the center of the Eulerian elements. This smoothing is necessary when there are more Lagrangian nodes than Eulerian two-phase cells.
@@ -1910,6 +1919,14 @@ field_uniform_keps_from_ud field_base field_uniform_keps_from_ud 1 not_set
 boundary_field_uniform_keps_from_ud front_field_base boundary_field_uniform_keps_from_ud 1 not_set
   attr u floattant u 0 not_set
   attr d floattant d 0 not_set
+ef discretisation_base ef -1 Element Finite discretization.
+diffusion_option diffusion_deriv option 0 not_set 
+  attr bloc_lecture bloc_lecture bloc_lecture 0 not_set
+convection_supg convection_deriv supg 1 not_set
+  attr facteur floattant facteur 1 not_set
+convection_btd convection_deriv btd 1 not_set
+  attr facteur floattant facteur 1 not_set
+  attr btd floattant btd 0 not_set
 testeur_medcoupling interprete testeur_medcoupling 0 not_set
   attr pb_name chaine pb_name 0 Name of domain.
   attr field_name chaine filed_name 0 Name of domain.

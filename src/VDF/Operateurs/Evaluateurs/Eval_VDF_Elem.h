@@ -24,7 +24,7 @@
 #ifndef Eval_VDF_Elem_included
 #define Eval_VDF_Elem_included
 
-#include <Ref_Champ_P0_VDF.h>
+#include <Ref_Champ_base.h>
 #include <Les_Cl.h>
 
 //
@@ -42,7 +42,7 @@ public:
 
   inline Eval_VDF_Elem();
   inline virtual ~Eval_VDF_Elem() {};
-  void associer_inconnue(const Champ_P0_VDF& );
+  void associer_inconnue(const Champ_base& );
 
 #ifndef _INLINE_EVALUATEURS_
 
@@ -335,7 +335,7 @@ public:
   //virtual void secmem_face(int , const Nouvelle_Cl_VDF&, int, DoubleVect& ) const { ; }
 protected:
 
-  REF(Champ_P0_VDF) inconnue;
+  REF(Champ_base) inconnue;
 
 };
 

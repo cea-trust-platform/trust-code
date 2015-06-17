@@ -192,3 +192,12 @@ double Op_Dift_VDF_Multi_inco_var_Elem::calculer_dt_stab() const
   return dt_stab;
 }
 
+//
+// Fonctions inline de la classe Op_Dift_VDF_Multi_inco_var_Elem
+//
+//// Op_Dift_VDF_Multi_inco_var_Elem
+//
+Op_Dift_VDF_Multi_inco_var_Elem::Op_Dift_VDF_Multi_inco_var_Elem() :
+  Op_Dift_VDF_base(It_VDF_Elem(Eval_Dift_VDF_Multi_inco_var_Elem)())
+{
+}

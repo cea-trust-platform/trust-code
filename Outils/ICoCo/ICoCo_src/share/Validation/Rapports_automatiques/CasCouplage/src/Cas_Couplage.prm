@@ -1,0 +1,82 @@
+parametres {
+	titre "Tests de Couplage via ICoCo + MEDCoupling"
+	auteur "fauchet pour perdu "
+	casTest . ok
+	casTest Couple ok
+	casTest Couple2 ok
+	casTest Couple3 ok
+#	casTest CoupleMEDField ok
+#	casTest CoupleVectorMEDField ok
+
+}
+
+Chapitre {
+        Titre comparaison aux solutions de reference
+        Tableau {
+        titre calcul sequentiel
+        nb_colonnes 1
+        label maximum
+       
+        ligne {
+        legende differences resu/ref
+        nb_colonnes_fichier 6
+        fichier diff_resu.out
+        derniere_ligne
+        colonnes $6
+        }
+}
+}
+Chapitre {
+	Titre OK ?
+	Tableau {
+	nb_colonnes 1
+	label status 
+	ligne {
+	legende res
+	fichier is_ok 
+	}
+	} 
+}
+Chapitre {
+        Titre comparaison aux solutions de reference en pb couple
+        Tableau {
+        titre calcul sequentiel
+        nb_colonnes 1
+        label maximum
+       
+        ligne {
+        legende differences resu/ref
+        nb_colonnes_fichier 6
+        fichier Couple/diff_resu.out
+        derniere_ligne
+        colonnes $6
+        }
+}
+}
+Chapitre {
+	Titre OK ?
+	Tableau {
+	nb_colonnes 1
+	label status 
+	ligne {
+	legende res Couple
+	fichier Couple/is_ok 
+	}
+	ligne {
+	legende res Couple2
+	fichier Couple2/is_ok 
+	}
+	ligne {
+	legende res Couple3
+	fichier Couple3/is_ok 
+	}
+#	ligne {
+#	legende res CoupleMEDField
+#	fichier CoupleMEDField/is_ok 
+#	}
+#	ligne {
+#	legende res CoupleVectorMEDField
+#	fichier CoupleVectorMEDField/is_ok 
+#	}
+	} 
+}

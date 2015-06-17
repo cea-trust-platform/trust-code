@@ -52,5 +52,11 @@ $BALTIK_ROOT/bin/baltik_configure " > configure
 cp $BALTIK_ROOT/../../doc/README.BALTIK .
 chmod +x configure
 chmod +w README.BALTIK
-
-
+if [ "$1" != "" ]
+then
+[ "$1" = "-execute" ] && ./configure && exit $?
+echo $1 option not available && exit 1
+else
+echo "You can now run ./configure. (baltik_build_configure -execute : build ./configure and run it)"
+fi
+exit 0

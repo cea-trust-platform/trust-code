@@ -1,0 +1,90 @@
+#!/bin/bash
+
+if [ "${project_directory}" = "" ]
+then
+build=`dirname $0`/../../build/src
+build=`cd $build; pwd`
+project_directory=`cd $build/../..;pwd`
+else
+build=`cd $project_directory/build/src;pwd` 
+fi
+
+makeincludedeps=$build/cmake.deps
+[ ! -f $makeincludedeps ] && echo $makeincludedeps doenst exist && exit
+cp $makeincludedeps .
+
+makeincludeatelier=$build/make.include.atelier
+[ ! -f $makeincludeatelier ] && echo $makeincludeatelier doenst exist && exit
+cp $makeincludeatelier .
+[ ! -f main.cpp ] && cp `dirname $0`/main.cpp . && chmod +w main.cpp
+nn=`grep LD_LIBRARY_PATH make.include.atelier  | sed "s/#//"| awk -F: '{printf ("%s:",$2)}' | sed "s?\\${LD_LIBRARY_PATH}:??"`":\${LD_LIBRARY_PATH}"
+#eval $nn
+nproc=2
+[ "$1" != "" ] && nproc=$1
+
+if [ -O $0 ]
+    then
+    lib_dyn="lib_dyn"
+    exe="exe"
+else	
+    lib_dyn=""
+    exe=""
+fi
+echo "nproc=$nproc
+include \$(TRUST_ENV)/make.\$(TRUST_ARCH_CC)\$(OPT) 
+#include \$(TRUST_ENV)/make.Com\$(COMM)
+include \$(TRUST_ENV)/make.lib\$(LIB_EXTENSION)
+include \$(TRUST_ENV)/make.all_Includes.TRUST " > makefile
+cat $makeincludeatelier | grep -v project_directory >>makefile
+
+echo "# on refait a chaque fois l executable" >>makefile
+
+echo "couplage: $lib_dyn main.cpp makefile ld_env.sh $build/exec\$(OPT)/_TRUSTModule\$(OPT).so
+	touch couplage.data
+	@echo Linking.. 
+	@\$(TRUST_CC) main.cpp -o couplage -I$build \$(Includes) -Wl,-R $build/exec\$(OPT) $build/exec\$(OPT)/_TRUSTModule\$(OPT).so \$(CppFlags) \$(Libs) \$(SYSLIBS)
+$build/exec\$(OPT)/_TRUSTModule\$(OPT).so: $lib_dyn
+dynamique: $lib_dyn main.cpp makefile ld_env.sh $build/exec\$(OPT)/_TRUSTModule\$(OPT).so
+	touch dynamique.data
+	@echo Linking.. 
+	@\$(TRUST_CC) main.cpp -o dynamique -I$build \$(Includes) -D_libtrio_='\"$build/exec\$(OPT)/_TRUSTModule\$(OPT).so\"' -Wl,-R $build/exec\$(OPT) $build/exec\$(OPT)/_TRUSTModule\$(OPT).so \$(CppFlags) \$(Libs) \$(SYSLIBS)
+lib_dyn:
+	@if [ \"\$(TRUST_ROOT)\" = \"\" ] ; then echo error TRUST_ROOT not set ; exit -1; fi
+	(cd $build/../..;\$(TRUST_ROOT)/bin/baltik/share/baltik/bin/baltik_build module_from_OPT)" >>makefile
+echo "PAR_interassemblage.data: interassemblage.data makefile $exe" >> makefile
+echo "	rm -f PAR_interassembklage.data
+	 env exec=$build/../../MC\$(OPT) make_PAR.data interassemblage.data \`echo \$(nproc)-1 | bc\`|| echo
+	if [ \$(nproc) -eq 2 ]; then cp \`ls *_0000.Zones\` \`ls *_0000.Zones | sed \"s/_0000//\"\`;fi  " >>makefile
+
+if [ -f interassemblage.data ]
+    then
+   echo "check: couplage PAR_interassemblage.data">>makefile
+else
+    echo "check: couplage">> makefile
+fi
+echo "	env exec=./couplage triou couplage \$(nproc) 1>couplage.out 2>couplage.err
+	if [ -f check.sh ]; then sh check.sh ;fi
+	@echo ok
+check_dynamique: dynamique
+	env exec=./dynamique triou dynamique \$(nproc) 1>dynamique.out 2>dynamique.err
+	if [ -f check.sh ]; then sh check.sh ;fi
+	@echo ok
+ld_env.sh: makefile
+	@echo \"echo on charge ld_env.sh\" > ld_env.sh
+	@echo export LD_LIBRARY_PATH=$nn >>ld_env.sh
+exe:
+	if [ \"\$(OPT)\" = \"_opt\" ]; then (cd  $build/../..; make optim);else  (cd  $build/../..; make debug); fi
+Multiassemblage_only: ld_env.sh $exe
+	sed 's/# ResoudreMultiAssemblage MonMulti #/ ResoudreMultiAssemblage MonMulti /' Multiassemblage.data > Multiassemblage_only.data 
+	env exec=$build/../../MC\$(OPT) triou Multiassemblage_only 1> Multiassemblage_only.out 2>Multiassemblage_only.err
+valgrind: couplage
+	env exec=\"\$TRUST_ROOT/exec/valgrind/bin/valgrind --db-attach=yes ./couplage \"   triou couplage \$(nproc) 
+clean:
+	rm -f couplage *dump *lata* *out *err *TU *log  *son Evol_T_ASS es.med *sauv *xyz convert_jdd *~ *dt_ev *stop	make.include.atelier makefile ld_env.sh PAR_interassemblage.data SEQ_interassemblage.data DEC_interassemblage.data Multiassemblage_only.data 
+	if [ -f Clean.sh ] ; then sh Clean.sh ; fi">> makefile
+
+
+sed "s?${project_directory}?\$(project_directory)?g" makefile > mm
+echo "project_directory=$project_directory" > makefile
+cat mm >> makefile
+rm mm

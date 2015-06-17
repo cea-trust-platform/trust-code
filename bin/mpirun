@@ -13,8 +13,8 @@ machinefile="" && [ -f machinefile ] && machinefile="-machinefile machinefile"
 if [ "$Mpirun" = "" ]
 then
    depart=`pwd`
-   cd ${0%/mpirun}
-   . ./Init_TRUST
+   cd ${0%/bin/mpirun}
+   source env/env_TRUST.sh
    cd $depart
 fi
 # Passer progressivement tous les cas dans le script triou...

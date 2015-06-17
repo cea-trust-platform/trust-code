@@ -61,7 +61,13 @@ void Terme_Puissance_Thermique::lire_donnees(Entree& is,const Equation_base& eqn
   la_puissance.typer(type);
   Champ_Don_base& ch_puissance = ref_cast(Champ_Don_base,la_puissance.valeur());
   is >> ch_puissance;
-  la_puissance->fixer_nom_compo("Puissance_volumique");
+  if (la_puissance.le_nom()=="anonyme")
+    la_puissance->fixer_nom_compo("Puissance_volumique");
+  else
+    {
+// on met a jour le nom des compos
+      la_puissance->fixer_nom_compo(la_puissance.le_nom());
+    }
 }
 
 void Terme_Puissance_Thermique::preparer_source(const Probleme_base& pb)
@@ -69,4 +75,13 @@ void Terme_Puissance_Thermique::preparer_source(const Probleme_base& pb)
   const Champ_Don& le_Cp = pb.milieu().capacite_calorifique();
   const Champ_Don& rho = pb.milieu().masse_volumique();
   associer_champs(rho,le_Cp);
+}
+
+void   Terme_Puissance_Thermique::modify_name_file(Nom& fichier) const
+{
+  if (la_puissance.le_nom()!="Puissance_volumique")
+    {
+      fichier+="_";
+      fichier+=la_puissance.le_nom();
+    }
 }

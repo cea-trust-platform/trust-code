@@ -25,6 +25,10 @@
 #include <Champ_P1NC.h>
 #include <Les_Cl.h>
 #include <Paroi_hyd_base_VEF.h>
+#include <Champ_Don.h>
+#include <Champ_Uniforme.h>
+#include <Fluide_Incompressible.h>
+
 Implemente_instanciable(Op_Diff_K_Eps_VEF_Face,"Op_Diff_K_Eps_VEF_P1NC",Op_Diff_K_Eps_VEF_base);
 Sortie& Op_Diff_K_Eps_VEF_Face::printOn(Sortie& s ) const
 {
@@ -58,6 +62,21 @@ void Op_Diff_K_Eps_VEF_Face::associer_diffusivite_turbulente()
   Op_Diff_K_Eps_VEF_base::associer_diffusivite_turbulente(diff_turb);
 }
 
+
+void  Op_Diff_K_Eps_VEF_Face::calc_visc(ArrOfDouble& diffu_tot,const Zone_VEF& la_zone,int num_face,int num2,int dimension_inut,
+                                        int num_elem,double diffu_turb,const DoubleTab& diffu,int is_mu_unif,const ArrOfDouble& inv_Prdt) const
+{
+  double valA=viscA(num_face,num2,num_elem,diffu_turb);
+  double nu=0;
+  if (is_mu_unif)
+    nu=diffu(0,0);
+  else
+    nu=diffu(num_elem);
+  diffu_tot[0]=nu+valA*inv_Prdt[0];
+  diffu_tot[1]=nu+valA*inv_Prdt[1];
+}
+
+
 DoubleTab& Op_Diff_K_Eps_VEF_Face::ajouter(const DoubleTab& inconnue, DoubleTab& resu) const
 {
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
@@ -66,12 +85,19 @@ DoubleTab& Op_Diff_K_Eps_VEF_Face::ajouter(const DoubleTab& inconnue, DoubleTab&
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const IntTab& face_voisins = zone_VEF.face_voisins();
 
+  ArrOfDouble diffu_tot(2);
+  ArrOfDouble inv_Prdt(2);
+  inv_Prdt[0]=1./Prdt_K;
+  inv_Prdt[1]=1./Prdt_Eps;
+
+  int is_mu_unif=sub_type(Champ_Uniforme,diffusivite_.valeur());
+  const DoubleTab& mu=diffusivite_->valeurs();
 
   int nb_faces_elem = zone_VEF.zone().nb_faces_elem();
   int nb_front=zone_VEF.nb_front_Cl();
   const DoubleTab& mu_turb=diffusivite_turbulente_->valeurs();
-  double inverse_Prdt_K = 1.0/Prdt_K;
-  double inverse_Prdt_Eps = 1.0/Prdt_Eps;
+  // double inverse_Prdt_K = 1.0/Prdt_K;
+  //double inverse_Prdt_Eps = 1.0/Prdt_Eps;
   int j;
   // On traite les faces bord :
   for (int n_bord=0; n_bord<nb_front; n_bord++)
@@ -97,17 +123,17 @@ DoubleTab& Op_Diff_K_Eps_VEF_Face::ajouter(const DoubleTab& inconnue, DoubleTab&
                     {
                       if ( ( (j= elem_faces(elem,i)) > num_face ) && (j != fac_asso) )
                         {
-                          double valA = viscA(num_face,j,elem,d_mu);
+                          //valA = viscA(zone_VEF,num_face,j,dimension,elem,d_mu);
+                          calc_visc(diffu_tot,zone_VEF,num_face,j,dimension,elem,d_mu,mu,is_mu_unif,inv_Prdt);
+                          resu(num_face,0)+=diffu_tot[0]*inconnue(j,0);
+                          resu(num_face,0)-=diffu_tot[0]*inconnue(num_face,0);
+                          resu(num_face,1)+=diffu_tot[1]*inconnue(j,1);
+                          resu(num_face,1)-=diffu_tot[1]*inconnue(num_face,1);
 
-                          resu(num_face,0)+=valA*inconnue(j,0)*inverse_Prdt_K;
-                          resu(num_face,0)-=valA*inconnue(num_face,0)*inverse_Prdt_K;
-                          resu(num_face,1)+=valA*inconnue(j,1)*inverse_Prdt_Eps;
-                          resu(num_face,1)-=valA*inconnue(num_face,1)*inverse_Prdt_Eps;
-
-                          resu(j,0)+=0.5*valA*inconnue(num_face,0)*inverse_Prdt_K;
-                          resu(j,0)-=0.5*valA*inconnue(j,0)*inverse_Prdt_K;
-                          resu(j,1)+=0.5*valA*inconnue(num_face,1)*inverse_Prdt_Eps;
-                          resu(j,1)-=0.5*valA*inconnue(j,1)*inverse_Prdt_Eps;
+                          resu(j,0)+=0.5*diffu_tot[0]*inconnue(num_face,0);
+                          resu(j,0)-=0.5*diffu_tot[0]*inconnue(j,0);
+                          resu(j,1)+=0.5*diffu_tot[1]*inconnue(num_face,1);
+                          resu(j,1)-=0.5*diffu_tot[1]*inconnue(j,1);
                         }
                     }
                 }
@@ -124,17 +150,18 @@ DoubleTab& Op_Diff_K_Eps_VEF_Face::ajouter(const DoubleTab& inconnue, DoubleTab&
                 {
                   if ( (j= elem_faces(elem,i)) > num_face )
                     {
-                      double valA = viscA(num_face,j,elem,d_mu);
+                      // valA = viscA(zone_VEF,num_face,j,dimension,elem,d_mu);
+                      calc_visc(diffu_tot,zone_VEF,num_face,j,dimension,elem,d_mu,mu,is_mu_unif,inv_Prdt);
+                      resu(num_face,0)+=diffu_tot[0]*inconnue(j,0);
+                      resu(num_face,0)-=diffu_tot[0]*inconnue(num_face,0);
 
-                      resu(num_face,0)+=valA*inconnue(j,0)*inverse_Prdt_K;
-                      resu(num_face,0)-=valA*inconnue(num_face,0)*inverse_Prdt_K;
-                      resu(num_face,1)+=valA*inconnue(j,1)*inverse_Prdt_Eps;
-                      resu(num_face,1)-=valA*inconnue(num_face,1)*inverse_Prdt_Eps;
+                      resu(num_face,1)+=diffu_tot[1]*inconnue(j,1);
+                      resu(num_face,1)-=diffu_tot[1]*inconnue(num_face,1);
 
-                      resu(j,0)+=valA*inconnue(num_face,0)*inverse_Prdt_K;
-                      resu(j,0)-=valA*inconnue(j,0)*inverse_Prdt_K;
-                      resu(j,1)+=valA*inconnue(num_face,1)*inverse_Prdt_Eps;
-                      resu(j,1)-=valA*inconnue(j,1)*inverse_Prdt_Eps;
+                      resu(j,0)+=diffu_tot[0]*inconnue(num_face,0);
+                      resu(j,0)-=diffu_tot[0]*inconnue(j,0);
+                      resu(j,1)+=diffu_tot[1]*inconnue(num_face,1);
+                      resu(j,1)-=diffu_tot[1]*inconnue(j,1);
                     }
                 }
             }
@@ -154,17 +181,19 @@ DoubleTab& Op_Diff_K_Eps_VEF_Face::ajouter(const DoubleTab& inconnue, DoubleTab&
             {
               if ( (j= elem_faces(elem,i)) > num_face )
                 {
-                  double valA = viscA(num_face,j,elem,d_mu);
+                  //   double valA = viscA(num_face,j,elem,d_mu);
+                  calc_visc(diffu_tot,zone_VEF,num_face,j,dimension,elem,d_mu,mu,is_mu_unif,inv_Prdt);
+                  //if (valA*inverse_Prdt_K!=diffu_tot[0]) abort();
+                  //if (valA*inverse_Prdt_Eps!=diffu_tot[1]) abort();
+                  resu(num_face,0)+=diffu_tot[0]*inconnue(j,0);
+                  resu(num_face,0)-=diffu_tot[0]*inconnue(num_face,0);
+                  resu(num_face,1)+=diffu_tot[1]*inconnue(j,1);
+                  resu(num_face,1)-=diffu_tot[1]*inconnue(num_face,1);
 
-                  resu(num_face,0)+=valA*inconnue(j,0)*inverse_Prdt_K;
-                  resu(num_face,0)-=valA*inconnue(num_face,0)*inverse_Prdt_K;
-                  resu(num_face,1)+=valA*inconnue(j,1)*inverse_Prdt_Eps;
-                  resu(num_face,1)-=valA*inconnue(num_face,1)*inverse_Prdt_Eps;
-
-                  resu(j,0)+=valA*inconnue(num_face,0)*inverse_Prdt_K;
-                  resu(j,0)-=valA*inconnue(j,0)*inverse_Prdt_K;
-                  resu(j,1)+=valA*inconnue(num_face,1)*inverse_Prdt_Eps;
-                  resu(j,1)-=valA*inconnue(j,1)*inverse_Prdt_Eps;
+                  resu(j,0)+=diffu_tot[0]*inconnue(num_face,0);
+                  resu(j,0)-=diffu_tot[0]*inconnue(j,0);
+                  resu(j,1)+=diffu_tot[1]*inconnue(num_face,1);
+                  resu(j,1)-=diffu_tot[1]*inconnue(j,1);
                 }
             }
         }
@@ -218,10 +247,14 @@ void Op_Diff_K_Eps_VEF_Face::ajouter_contribution(const DoubleTab& transporte, M
   int nb_faces = zone_VEF.nb_faces();
   int elem;
   int nb_faces_elem = zone_VEF.zone().nb_faces_elem();
-  double  d_mu,Prdt[2];
-  Prdt[0]=Prdt_K;
-  Prdt[1]=Prdt_Eps;
+  double  d_mu;
+  ArrOfDouble inv_Prdt(2),diffu_tot(2);
+  inv_Prdt[0]=1./Prdt_K;
+  inv_Prdt[1]=1./Prdt_Eps;
   const DoubleTab& mu_turb=diffusivite_turbulente_->valeurs();
+
+  int is_mu_unif=sub_type(Champ_Uniforme,diffusivite_.valeur());
+  const DoubleTab& mu=diffusivite_->valeurs();
   int nb_comp = 1;
   int nb_dim = transporte.nb_dim();
 
@@ -256,7 +289,8 @@ void Op_Diff_K_Eps_VEF_Face::ajouter_contribution(const DoubleTab& transporte, M
                     {
                       if ( (j= elem_faces(elem2,ii)) > num_face_b )
                         {
-                          double valAp = viscA(num_face_b,j,elem2,d_mu2);
+                          //double valAp = viscA(num_face_b,j,elem2,d_mu2);
+                          calc_visc(diffu_tot,zone_VEF,num_face_b,j,dimension,elem2,d_mu2,mu,is_mu_unif,inv_Prdt);
                           int fac_loc=0;
                           int ok=1;
                           while ((fac_loc<nb_faces_elem) && (elem_faces(elem2,fac_loc)!=num_face_b)) fac_loc++;
@@ -277,7 +311,7 @@ void Op_Diff_K_Eps_VEF_Face::ajouter_contribution(const DoubleTab& transporte, M
                                   int n0=num_face_b*nb_comp+nc2;
                                   int n0perio=fac_asso*nb_comp+nc2;
                                   int j0=j*nb_comp+nc2;
-                                  double valA=valAp/Prdt[nc2];
+                                  double valA=diffu_tot[nc2];
                                   matrice(n0,n0)+=valA;
                                   matrice(n0,j0)-=valA;
                                   if(j<nb_faces) // On traite les faces reelles
@@ -306,14 +340,18 @@ void Op_Diff_K_Eps_VEF_Face::ajouter_contribution(const DoubleTab& transporte, M
               for (i=0; i<nb_faces_elem; i++)
                 if (( (j= elem_faces(elem,i)) > num_face_b ) || (ind_face>=nb_faces_bord_reel))
                   {
-                    double valAp = viscA(num_face_b,j,elem,d_mu);
+                    //double valAp = viscA(num_face_b,j,elem,d_mu);
+                    calc_visc(diffu_tot,zone_VEF,num_face_b,j,dimension,elem,d_mu,mu,is_mu_unif,inv_Prdt);
+
                     for (int nc2=0; nc2<nb_comp; nc2++)
                       {
                         int n0=num_face_b*nb_comp+nc2;
                         int j0=j*nb_comp+nc2;
-                        double valA=valAp/Prdt[nc2];
+                        double valA=diffu_tot[nc2];
+
                         if (ind_face<nb_faces_bord_reel)
                           {
+                            // double valA=diffu_tot[nc];
                             matrice(n0,n0)+=valA;
                             matrice(n0,j0)-=valA;
                           }
@@ -351,10 +389,12 @@ void Op_Diff_K_Eps_VEF_Face::ajouter_contribution(const DoubleTab& transporte, M
                     }
                   if (contrib)
                     {
-                      double valAp = viscA(num_face,jj,elem2,d_mu2);
+                      //double valAp = viscA(num_face,jj,elem2,d_mu2);
+                      calc_visc(diffu_tot,zone_VEF,num_face,jj,dimension,elem2,d_mu2,mu,is_mu_unif,inv_Prdt);
+
                       for (nc=0; nc<nb_comp; nc++)
                         {
-                          double valA=valAp/Prdt[nc];
+                          double valA=diffu_tot[nc];
                           int num0=num_face*nb_comp+nc;
                           int j0=jj*nb_comp+nc;
                           matrice(num0,num0)+=valA;
@@ -414,26 +454,26 @@ void Op_Diff_K_Eps_VEF_Face::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab&
   int nb_comp=2;
 
   Op_VEF_Face::modifier_pour_Cl(la_zone_vef.valeur(),la_zcl_vef.valeur(), matrice, secmem);
-
-  // en plus des dirichlets ????
-  // on change la matrice et le resu sur toutes les lignes ou k_eps_ est imposee....
-  for (int face=0; face<size; face++)
-    {
-      if (face_keps_imposee(face)!=-2)
-        {
-          for (int comp=0; comp<nb_comp; comp++)
-            {
-              // on doit remettre la ligne a l'identite et le secmem a l'inconnue
-              int idiag = tab1[face*nb_comp+comp]-1;
-              coeff[idiag]=1;
-              // pour les voisins
-              int nbvois = tab1[face*nb_comp+1+comp] - tab1[face*nb_comp+comp];
-              for (int k=1; k < nbvois; k++)
-                {
-                  coeff[idiag+k]=0;
-                }
-              secmem(face,comp)=val(face,comp);
-            }
-        }
-    }
+  if (face_keps_imposee.size_array()>0)
+    // en plus des dirichlets ????
+    // on change la matrice et le resu sur toutes les lignes ou k_eps_ est imposee....
+    for (int face=0; face<size; face++)
+      {
+        if (face_keps_imposee(face)!=-2)
+          {
+            for (int comp=0; comp<nb_comp; comp++)
+              {
+                // on doit remettre la ligne a l'identite et le secmem a l'inconnue
+                int idiag = tab1[face*nb_comp+comp]-1;
+                coeff[idiag]=1;
+                // pour les voisins
+                int nbvois = tab1[face*nb_comp+1+comp] - tab1[face*nb_comp+comp];
+                for (int k=1; k < nbvois; k++)
+                  {
+                    coeff[idiag+k]=0;
+                  }
+                secmem(face,comp)=val(face,comp);
+              }
+          }
+      }
 }

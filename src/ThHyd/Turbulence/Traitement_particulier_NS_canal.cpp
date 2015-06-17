@@ -35,6 +35,9 @@
 #include <DoubleTrav.h>
 #include <communications.h>
 #include <Paroi_decalee_Robin.h>
+#include <Fluide_Incompressible.h>
+#include <DoubleVect.h>
+#include <Champ_Uniforme.h>
 
 Implemente_base_sans_constructeur(Traitement_particulier_NS_canal,"Traitement_particulier_NS_canal",Traitement_particulier_NS_base);
 
@@ -693,6 +696,7 @@ void Traitement_particulier_NS_canal::post_traitement_particulier()
     }
 }
 
+
 void Traitement_particulier_NS_canal::calcul_reynolds_tau()
 {
   // Aspects geometriques du maillage
@@ -702,9 +706,10 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
   Nom nom_discr=mon_equation.valeur().discretisation().que_suis_je();
   // indice du premier point hors paroi
   int kmin=(nom_discr=="VEFPreP1B" || nom_discr=="VEF") ? 1 : 0;
-  int kmax=Y_tot.size()-1-kmin;                            // indice du dernier point hors paroi
-  double ymin=Y_tot(kmin);                               // position du premier point
-  double ymax=Y_tot(kmax);                               // position du dernier point
+  int kmax=Y_tot.size()-1-kmin;                         // indice du dernier point hors paroi
+  double ymin=Y_tot(kmin);                              // position du premier point
+  double ymax=Y_tot(kmax);                              // position du dernier point
+  double hs2=0.5*(ymin+ymax);                           // demi-hauteur
 
   // viscosite dynamique
   double mu_bas  = val_moy_tot(kmin,11,0);
@@ -716,9 +721,40 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
 
   // cisaillement a la paroi
   double tauwb, tauwh, tauwm;
+//  int nbfaces_tot=0;
 
-  const RefObjU& modele_turbulence = mon_equation.valeur().get_modele(TURBULENCE);
-  int ecrire=1;
+  int nb_cl_diri=0;
+  double tauw_diri_m=0.;
+  double retau_diri_m=0.;
+  double utau_diri_m=0.;
+
+  int nb_cl_robin=0;
+  double tauw_robin_m=0.;
+  double retau_robin_m=0.;
+  double utau_robin_m=0.;
+
+  const RefObjU& modele_turbulence         = mon_equation.valeur().get_modele(TURBULENCE);
+  const Equation_base& eqn                 = ref_cast(Equation_base,mon_equation.valeur()) ;
+  const Zone_Cl_dis_base& zone_Cl_dis_base = ref_cast(Zone_Cl_dis_base,eqn.zone_Cl_dis().valeur());
+  const Conds_lim& les_cl                  = zone_Cl_dis_base.les_conditions_limites();
+  const Zone_VF& zone_VF                   = ref_cast(Zone_VF,eqn.zone_dis().valeur());
+  double tps                               = mon_equation->inconnue().temps();
+
+
+
+  int nb_cl=les_cl.size();
+  for (int num_cl=0; num_cl<nb_cl; num_cl++)
+  {
+    const Cond_lim& la_cl = les_cl[num_cl];
+    if (sub_type(Paroi_decalee_Robin,la_cl.valeur()))
+      {
+        nb_cl_robin+=1;
+      }
+    if (sub_type(Dirichlet_paroi_fixe,la_cl.valeur()))
+      {
+        nb_cl_diri+=1;
+      }
+  }
 
   if (modele_turbulence.non_nul() && !ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur()).loi_paroi().valeur().que_suis_je().debute_par("negligeable"))
     {
@@ -726,125 +762,376 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
       // Hypotheses :    1ere condition de Dirichlet = paroi basse
       //                 2eme condition de Dirichlet = paroi haute
       //                 maillage regulier suivant x
-      const Equation_base& eqn = ref_cast(Equation_base,mon_equation.valeur()) ;
-      const Zone_Cl_dis_base& zone_Cl_dis_base = ref_cast(Zone_Cl_dis_base,eqn.zone_Cl_dis().valeur());
-      const Conds_lim& les_cl = zone_Cl_dis_base.les_conditions_limites();
-      int nb_cl=les_cl.size();
-      int num_cl_rep=0;
-
-      const Turbulence_paroi& loipar = ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur()).loi_paroi();
+      const Fluide_Incompressible& fluide = ref_cast(Fluide_Incompressible,mon_equation.valeur().probleme().equation(0).milieu());
+      const Turbulence_paroi& loipar           = ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur()).loi_paroi();
       DoubleTab tau_tan;
       tau_tan.ref(loipar->Cisaillement_paroi());
-      int nbfaces=0;
+
+//      int num_cl_rep=0;
+//      int nbfaces=0;
       tauwb=0.;
       tauwh=0.;
-      for (int num_cl=0; num_cl<nb_cl; num_cl++)
-        {
-          //Boucle sur les bords
-          const Cond_lim& la_cl = les_cl[num_cl];
-          if (sub_type(Dirichlet_paroi_fixe,la_cl.valeur()))
-            {
-              const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
-              nbfaces = la_front_dis.nb_faces();
-              int ndeb = la_front_dis.num_premiere_face();
-              int nfin = ndeb + nbfaces;
-              if (Objet_U::dimension == 2 )
-                for (int fac=ndeb; fac<nfin ; fac++)
-                  {
-                    tauwb+=sqrt(tau_tan(fac,0)*tau_tan(fac,0));
-                  }
-              else
-                for (int fac=ndeb; fac<nfin ; fac++)
-                  {
-                    tauwb+=sqrt(tau_tan(fac,0)*tau_tan(fac,0)+tau_tan(fac,2)*tau_tan(fac,2));
-                  }
-              num_cl_rep=num_cl+1;
-              break;
-            }
-        } //Boucle sur les bords
-      int nbfaces_tot=mp_sum(nbfaces);
-      if (nbfaces_tot)
-        tauwb=mp_sum(tauwb)/nbfaces_tot;
-      nbfaces=0;
 
-      for (int num_cl=num_cl_rep; num_cl<nb_cl; num_cl++)
+//    dirichlet
+      if ( nb_cl_diri != 0 )
         {
-          //Boucle sur les bords
-          const Cond_lim& la_cl = les_cl[num_cl];
-          if (sub_type(Dirichlet_paroi_fixe,la_cl.valeur()))
-            {
-              const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
-              nbfaces = la_front_dis.nb_faces();
-              int ndeb = la_front_dis.num_premiere_face();
-              int nfin = ndeb + nbfaces;
-              if (Objet_U::dimension == 2 )
-                for (int fac=ndeb; fac<nfin ; fac++)
-                  {
-                    tauwh+=sqrt(tau_tan(fac,0)*tau_tan(fac,0));
-                  }
-              else
-                for (int fac=ndeb; fac<nfin ; fac++)
-                  {
-                    tauwh+=sqrt(tau_tan(fac,0)*tau_tan(fac,0)+tau_tan(fac,2)*tau_tan(fac,2));
-                  }
-              break;
-            }
-          else if (sub_type(Paroi_decalee_Robin,la_cl.valeur()))
-            {
-              ecrire=0;
-            }
-        } //Boucle sur les bords
-      nbfaces_tot=mp_sum(nbfaces);
-      if (nbfaces_tot)
-        tauwh=mp_sum(tauwh)/nbfaces_tot;
+              DoubleVect tauw_diri(nb_cl_diri);
+              DoubleVect retau_diri(nb_cl_diri);
+              DoubleVect utau_diri(nb_cl_diri);
+//            search of cl diri
+//            nb cl diri
+              double tauw_diri_tmp=0.;
+              int numero_bord_diri=0;
+              int nbfaces_bord_diri=0;
 
-      if(!(mon_equation.valeur().probleme().is_QC()))
+              double rho = 0.;
+              double mu = 0.;
+
+              if ( sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
+                {
+                    rho = fluide.masse_volumique().valeurs()(0,0);
+                }
+              if ( sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
+                {
+                    mu = fluide.viscosite_dynamique().valeurs()(0,0);
+                }
+
+//            for each cl, calculation of the mean tauw
+//            loop on boundaries
+              for (int num_cl=0; num_cl<nb_cl; num_cl++)
+                {
+                  tauw_diri_tmp=0.;
+                  if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
+                    rho = 0.;
+                  if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
+                    mu = 0.;
+                  const Cond_lim& la_cl = les_cl[num_cl];
+                  if (sub_type(Dirichlet_paroi_fixe,la_cl.valeur()))
+                    {
+                      const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+                      nbfaces_bord_diri = la_front_dis.nb_faces();
+                      int ndeb = la_front_dis.num_premiere_face();
+                      int nfin = ndeb + nbfaces_bord_diri;
+                      if (Objet_U::dimension == 2 )
+                        {
+//                        loop on faces in 2D
+                          for (int fac=ndeb; fac<nfin ; fac++)
+                            {
+                              tauw_diri_tmp += sqrt(tau_tan(fac,0)*tau_tan(fac,0));
+
+                              int elem = zone_VF.face_voisins(fac,0);
+                              if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
+                                rho += fluide.masse_volumique().valeurs()[elem];
+                              if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
+                                mu += fluide.viscosite_dynamique().valeurs()[elem];
+                            }
+                        }
+                      else
+                        {
+//                        loop on faces on 3D
+                          for (int fac=ndeb; fac<nfin ; fac++)
+                            {
+                              tauw_diri_tmp += sqrt(tau_tan(fac,0)*tau_tan(fac,0)+tau_tan(fac,2)*tau_tan(fac,2));
+
+                              int elem = zone_VF.face_voisins(fac,0);
+                              if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
+                                rho += fluide.masse_volumique().valeurs()[elem];
+                              if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
+                                mu += fluide.viscosite_dynamique().valeurs()[elem];
+                            }
+                        }
+                      tauw_diri_tmp=mp_sum(tauw_diri_tmp)/mp_sum(nbfaces_bord_diri);
+                      if(!(mon_equation.valeur().probleme().is_QC()))
+                        tauw_diri_tmp *= rho ;
+
+                      if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
+                        rho=mp_sum(rho)/mp_sum(nbfaces_bord_diri);
+                      if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
+                        mu=mp_sum(mu)/mp_sum(nbfaces_bord_diri);
+
+                      tauw_diri(numero_bord_diri) = tauw_diri_tmp;
+                      utau_diri(numero_bord_diri) = sqrt(tauw_diri_tmp/rho);
+                      retau_diri(numero_bord_diri)= rho*utau_diri(numero_bord_diri)*hs2/mu;
+
+                      tauw_diri_m  += tauw_diri(numero_bord_diri);
+                      utau_diri_m  += utau_diri(numero_bord_diri);
+                      retau_diri_m += retau_diri(numero_bord_diri);
+
+                      numero_bord_diri+=1;
+                    }
+                } // loop on boundaries
+
+              tauw_diri_m  =tauw_diri_m/nb_cl_diri;
+              retau_diri_m =retau_diri_m/nb_cl_diri;
+              utau_diri_m  =utau_diri_m/nb_cl_diri;
+
+//            prints
+              if (je_suis_maitre())
+                {
+                  SFichier fic7("tauw.dat",ios::app);
+                  SFichier fic8("reynolds_tau.dat",ios::app);
+                  SFichier fic9("u_tau.dat",ios::app);
+                  fic7 << tps << "   " << tauw_diri_m   << "   ";
+                  fic8 << tps << "   " << retau_diri_m  << "   ";
+                  fic9 << tps << "   " << utau_diri_m   << "   ";
+                  for ( int num=0 ; num<nb_cl_diri ; num++)
+                    {
+                      fic7 << tauw_diri(num)   << "   ";
+                      fic8 << retau_diri(num)  << "   ";
+                      fic9 << utau_diri(num)   << "   ";
+                    }
+                  fic7 <<  finl;
+                  fic8 <<  finl;
+                  fic9 <<  finl;
+                  fic7.flush();
+                  fic8.flush();
+                  fic9.flush();
+                  fic7.close();
+                  fic8.close();
+                  fic9.close();
+                }
+        } // end dirichlet
+
+//    robin
+      if ( nb_cl_robin != 0 )
         {
-          tauwb*=rho_bas;
-          tauwh*=rho_haut;
-        }
-    }
+              DoubleVect tauw_robin(nb_cl_robin);
+              DoubleVect retau_robin(nb_cl_robin);
+              DoubleVect utau_robin(nb_cl_robin);
+//            search of cl robin
+//            nb cl robin
+              double tauw_robin_tmp=0.;
+              int numero_bord_robin=0;
+              int nbfaces_bord_robin=0;
+              double rho = 0.;
+              double mu = 0.;
+
+              if ( sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
+                {
+                    rho = fluide.masse_volumique().valeurs()(0,0);
+                }
+              if ( sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
+                {
+                    mu = fluide.viscosite_dynamique().valeurs()(0,0);
+                }
+
+//            for each cl, calculation of the mean tauw
+//            loop on boundaries
+              for (int num_cl=0; num_cl<nb_cl; num_cl++)
+                {
+                  tauw_robin_tmp=0.;
+                  if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
+                    rho = 0.;
+                  if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
+                    mu = 0.;
+                  const Cond_lim& la_cl = les_cl[num_cl];
+                  if (sub_type(Paroi_decalee_Robin,la_cl.valeur()))
+                    {
+                      const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+                      nbfaces_bord_robin = la_front_dis.nb_faces();
+                      int ndeb = la_front_dis.num_premiere_face();
+                      int nfin = ndeb + nbfaces_bord_robin;
+                      if (Objet_U::dimension == 2 )
+                        {
+//                        loop on faces in 2D
+                          for (int fac=ndeb; fac<nfin ; fac++)
+                            {
+                              tauw_robin_tmp+=sqrt(tau_tan(fac,0)*tau_tan(fac,0));
+
+                              int elem = zone_VF.face_voisins(fac,0);
+                              if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
+                                rho+=fluide.masse_volumique().valeurs()[elem];
+                              if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
+                                mu+=fluide.viscosite_dynamique().valeurs()[elem];
+                            }
+                        }
+                      else
+                        {
+//                        loop on faces on 3D
+                          for (int fac=ndeb; fac<nfin ; fac++)
+                            {
+                              tauw_robin_tmp+=sqrt(tau_tan(fac,0)*tau_tan(fac,0)+tau_tan(fac,2)*tau_tan(fac,2));
+
+                              int elem = zone_VF.face_voisins(fac,0);
+                              if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
+                                rho+=fluide.masse_volumique().valeurs()[elem];
+                              if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
+                                mu+=fluide.viscosite_dynamique().valeurs()[elem];
+                            }
+                        }
+                      tauw_robin_tmp=mp_sum(tauw_robin_tmp)/mp_sum(nbfaces_bord_robin);
+                      if(!(mon_equation.valeur().probleme().is_QC()))
+                        tauw_robin_tmp *= rho ;
+
+                      if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
+                        rho=mp_sum(rho)/mp_sum(nbfaces_bord_robin);
+                      if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
+                        mu=mp_sum(mu)/mp_sum(nbfaces_bord_robin);
+
+                      tauw_robin(numero_bord_robin) = tauw_robin_tmp;
+                      utau_robin(numero_bord_robin) = sqrt(tauw_robin_tmp/rho);
+                      retau_robin(numero_bord_robin)= rho*utau_robin(numero_bord_robin)*hs2/mu;
+
+                      tauw_robin_m  += tauw_robin(numero_bord_robin);
+                      utau_robin_m  += utau_robin(numero_bord_robin);
+                      retau_robin_m += retau_robin(numero_bord_robin);
+
+                      numero_bord_robin+=1;
+                    }
+                } // loop on boundaries
+
+              tauw_robin_m  = tauw_robin_m/nb_cl_robin;
+              retau_robin_m = retau_robin_m/nb_cl_robin;
+              utau_robin_m  = utau_robin_m/nb_cl_robin;
+
+//            prints
+              if (je_suis_maitre())
+                {
+                  SFichier fic4("tauw_robin.dat",ios::app);
+                  SFichier fic5("reynolds_tau_robin.dat",ios::app);
+                  SFichier fic6("u_tau_robin.dat",ios::app);
+                  fic4 << tps << "   " << tauw_robin_m   << "   ";
+                  fic5 << tps << "   " << retau_robin_m  << "   ";
+                  fic6 << tps << "   " << utau_robin_m   << "   ";
+                  for ( int num=0 ; num<nb_cl_robin ; num++)
+                    {
+                      fic4 << tauw_robin(num)   << "   ";
+                      fic5 << retau_robin(num)  << "   ";
+                      fic6 << utau_robin(num)   << "   ";
+                    }
+                  fic4 <<  finl;
+                  fic5 <<  finl;
+                  fic6 <<  finl;
+                  fic4.flush();
+                  fic5.flush();
+                  fic6.flush();
+                  fic4.close();
+                  fic5.close();
+                  fic6.close();
+                }
+        } // end robin
+
+//// begin old
+////    search of cl dirichlet
+//      for (int num_cl=0; num_cl<nb_cl; num_cl++)
+//        {
+//          //Loop on boundaries
+//          const Cond_lim& la_cl = les_cl[num_cl];
+//          if (sub_type(Dirichlet_paroi_fixe,la_cl.valeur()))
+//            {
+//              const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+//              nbfaces = la_front_dis.nb_faces();
+//              int ndeb = la_front_dis.num_premiere_face();
+//              int nfin = ndeb + nbfaces;
+//              if (Objet_U::dimension == 2 )
+//                for (int fac=ndeb; fac<nfin ; fac++)
+//                  {
+//                    tauwb+=sqrt(tau_tan(fac,0)*tau_tan(fac,0));
+//                  }
+//              else
+//                for (int fac=ndeb; fac<nfin ; fac++)
+//                  {
+//                    tauwb+=sqrt(tau_tan(fac,0)*tau_tan(fac,0)+tau_tan(fac,2)*tau_tan(fac,2));
+//                  }
+//              num_cl_rep=num_cl+1;
+//              break;
+//            }
+//        } //Loop on boundaries
+//      nbfaces_tot=mp_sum(nbfaces);
+//      if (nbfaces_tot)
+//        tauwb=mp_sum(tauwb)/nbfaces_tot;
+////    on cherche la deuxieme cl dirichlet
+//      nbfaces=0;
+//      for (int num_cl=num_cl_rep; num_cl<nb_cl; num_cl++)
+//        {
+//          //Boucle sur les bords
+//          const Cond_lim& la_cl = les_cl[num_cl];
+//          if (sub_type(Dirichlet_paroi_fixe,la_cl.valeur()))
+//            {
+//              const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+//              nbfaces = la_front_dis.nb_faces();
+//              int ndeb = la_front_dis.num_premiere_face();
+//              int nfin = ndeb + nbfaces;
+//              if (Objet_U::dimension == 2 )
+//                for (int fac=ndeb; fac<nfin ; fac++)
+//                  {
+//                    tauwh+=sqrt(tau_tan(fac,0)*tau_tan(fac,0));
+//                  }
+//              else
+//                for (int fac=ndeb; fac<nfin ; fac++)
+//                  {
+//                    tauwh+=sqrt(tau_tan(fac,0)*tau_tan(fac,0)+tau_tan(fac,2)*tau_tan(fac,2));
+//                  }
+//              break;
+//            }
+//        } //Boucle sur les bords
+//      nbfaces_tot=mp_sum(nbfaces);
+//      if (nbfaces_tot)
+//        tauwh=mp_sum(tauwh)/nbfaces_tot;
+//      if(!(mon_equation.valeur().probleme().is_QC()))
+//        {
+//          tauwb*=rho_bas;
+//          tauwh*=rho_haut;
+//        }
+//      if (je_suis_maitre())
+//        {
+//          // calcul et ecritures des differentes grandeurs parietales
+//          //////////////////////////////////////////////////////
+//          // vitesse de frottement
+//          double utaub=sqrt(tauwb/rho_bas);
+//          if(val_moy_tot(kmin,0,0)<=0) utaub*=-1.;
+//          double utauh=sqrt(tauwh/rho_haut);
+//          if(val_moy_tot(kmax,0,0)<=0) utauh*=-1.;
+//          double utaum=0.5*(utauh+utaub);
+//          // Reynolds de frottement
+//          double retaub=rho_bas*utaub*hs2/mu_bas;
+//          double retauh=rho_haut*utauh*hs2/mu_haut;
+//          double retaum=0.5*(retauh+retaub);
+//          tauwm=0.5*(tauwh+tauwb);
+//          SFichier fic1("reynolds_tau_old.dat",ios::app);
+//          SFichier fic2("u_tau_old.dat",ios::app);
+//          SFichier fic3("tauw_old.dat",ios::app);
+//          fic1 << tps << " " << retaum << " " << retaub << " " << retauh << finl;
+//          fic2 << tps << " " << utaum << " "  << utaub << " "  << utauh  << finl;
+//          fic3 << tps << " " << tauwm << " "  << tauwb << " "  << tauwh  << finl;
+//          fic1.close();
+//          fic2.close();
+//          fic3.close();
+//        }
+//// end old
+
+    } // end if turbul
   else
     {
       // norme de la vitesse tangente a la paroi
       double utang_bas  = val_moy_tot(kmin,9,0);
       double utang_haut = val_moy_tot(kmax,9,0);
-
       // calcul du cisaillement a la paroi suivant la vitesse tangentielle
       //////////////////////////////////////////////////////
-
       // approximation lineaire : Tau_w = mu * ||u_t||(y1) / dy1
-
       tauwb= mu_bas * utang_bas  / ymin;
       tauwh= mu_haut* utang_haut / ymin;
-    }
 
-  if (je_suis_maitre())
-    {
-      // calcul et ecritures des differentes grandeurs parietales
-      //////////////////////////////////////////////////////
-      // vitesse de frottement
-      double utaub=sqrt(tauwb/rho_bas);
-      if(val_moy_tot(kmin,0,0)<=0) utaub*=-1.;
-      double utauh=sqrt(tauwh/rho_haut);
-      if(val_moy_tot(kmax,0,0)<=0) utauh*=-1.;
-      double utaum=0.5*(utauh+utaub);
-
-      double hs2=0.5*(ymin+ymax);       // demi-hauteur
-
-      // Reynolds de frottement
-      double retaub=rho_bas*utaub*hs2/mu_bas;
-      double retauh=rho_haut*utauh*hs2/mu_haut;
-      double retaum=0.5*(retauh+retaub);
-
-      tauwm=0.5*(tauwh+tauwb);
-
-      if (ecrire == 1)
+      if (je_suis_maitre())
         {
+          // calcul et ecritures des differentes grandeurs parietales
+          //////////////////////////////////////////////////////
+          // vitesse de frottement
+          double utaub=sqrt(tauwb/rho_bas);
+          if(val_moy_tot(kmin,0,0)<=0) utaub*=-1.;
+          double utauh=sqrt(tauwh/rho_haut);
+          if(val_moy_tot(kmax,0,0)<=0) utauh*=-1.;
+          double utaum=0.5*(utauh+utaub);
+
+          // Reynolds de frottement
+          double retaub=rho_bas*utaub*hs2/mu_bas;
+          double retauh=rho_haut*utauh*hs2/mu_haut;
+          double retaum=0.5*(retauh+retaub);
+          tauwm=0.5*(tauwh+tauwb);
+
           SFichier fic1("reynolds_tau.dat",ios::app);
           SFichier fic2("u_tau.dat",ios::app);
           SFichier fic3("tauw.dat",ios::app);
-          double tps = mon_equation->inconnue().temps();
           fic1 << tps << " " << retaum << " " << retaub << " " << retauh << finl;
           fic2 << tps << " " << utaum << " "  << utaub << " "  << utauh  << finl;
           fic3 << tps << " " << tauwm << " "  << tauwb << " "  << tauwh  << finl;
@@ -852,7 +1139,10 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
           fic2.close();
           fic3.close();
         }
-    }
+
+    } // end if not-turbul
+
+
 }
 
 

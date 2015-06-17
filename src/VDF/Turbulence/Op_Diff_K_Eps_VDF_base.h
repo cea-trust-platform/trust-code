@@ -40,7 +40,7 @@ class Champ_Inc;
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Op_Diff_K_Eps_VDF_base : public Op_Diff_K_Eps_base
+class Op_Diff_K_Eps_VDF_base : public Op_Diff_K_Eps_base, public Op_VDF_Elem
 {
 
   Declare_base(Op_Diff_K_Eps_VDF_base);
@@ -54,10 +54,18 @@ public:
   inline void contribuer_au_second_membre(DoubleTab& ) const;
   virtual void mettre_a_jour_diffusivite() const;
   void completer();
+  void associer_diffusivite(const Champ_base& ch_diff);
+  void associer_diffusivite_turbulente();
+  // void associer_diffusivite(const Champ_Don& );
+  // void associer_mvolumique();
+  inline  void dimensionner(Matrice_Morse& ) const;
+  void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
+  const Champ_Fonc& diffusivite_turbulente() const;
+  const Champ_base& diffusivite() const ;
 
 protected:
 
-  Champ_Fonc diff_tot;
+  //Champ_Fonc diff_tot;
   Iterateur_VDF iter;
 
 };
@@ -70,24 +78,16 @@ declare_It_VDF_Elem(Eval_Diff_K_Eps_VDF_Elem)
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Op_Diff_K_Eps_VDF_Elem : public Op_Diff_K_Eps_VDF_base, public Op_VDF_Elem
+class Op_Diff_K_Eps_VDF_Elem : public Op_Diff_K_Eps_VDF_base
 {
 
   Declare_instanciable_sans_constructeur(Op_Diff_K_Eps_VDF_Elem);
 
 public:
 
-  inline Op_Diff_K_Eps_VDF_Elem();
+  Op_Diff_K_Eps_VDF_Elem();
   void associer(const Zone_dis& , const Zone_Cl_dis& ,
                 const Champ_Inc& );
-  void associer_diffusivite_turbulente();
-  // void associer_diffusivite(const Champ_base& );
-  // void associer_mvolumique();
-  inline  void dimensionner(Matrice_Morse& ) const;
-  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
-  void mettre_a_jour_diffusivite() const;
-  const Champ_Fonc& diffusivite_turbulente() const;
-  // const Champ_base& diffusivite() const;
 };
 
 
@@ -140,26 +140,14 @@ inline DoubleTab& Op_Diff_K_Eps_VDF_base::calculer(const DoubleTab& inco,  Doubl
   return iter.calculer(inco, resu);
 }
 
-//
-// Fonctions inline de la classe Op_Diff_K_Eps_VDF_Elem
-//
-
-inline Op_Diff_K_Eps_VDF_Elem::Op_Diff_K_Eps_VDF_Elem()
-
-  : Op_Diff_K_Eps_VDF_base(It_VDF_Elem(Eval_Diff_K_Eps_VDF_Elem)())
-{}
-
 // Description:
 // on dimensionne notre matrice.
-inline  void Op_Diff_K_Eps_VDF_Elem::dimensionner(Matrice_Morse& matrice) const
+inline  void Op_Diff_K_Eps_VDF_base::dimensionner(Matrice_Morse& matrice) const
 {
   Op_VDF_Elem::dimensionner(iter.zone(), iter.zone_Cl(), matrice);
 }
 
-inline void Op_Diff_K_Eps_VDF_Elem::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const
-{
-  Op_VDF_Elem::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem);
-}
+
 
 
 #endif

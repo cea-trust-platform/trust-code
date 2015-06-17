@@ -1,0 +1,24 @@
+#In oreder to build _TRUSTModule_opt.so:
+
+#Init the triou environement: . bin/Init_TRUST
+
+#cd 
+tar zxvf ICoCo_standalone.tar.gz 
+cd ICoCo_standalone
+$TRUST_ROOT/bin/baltik/bin/baltik_build_configure 
+./configure
+make check_optim
+
+# You should obtain
+#---------
+#| START  | END    | CPU | NP | SPU | NDT |  GCP | ELEM | MEM | PLOTS | STATE | NAME       
+# -----------------------------------------------------------------------------------------
+#|07:25:59|07:26:01|...2s|..1.|.....|....0|.....0|....18|.10Mo|.......| OK    |dlopen_jdd1 
+#|07:26:08|07:26:10|...2s|..1.|.....|....0|.....0|....18|.10Mo|.......| OK    |dlopen_jdd2 
+# -----------------------------------------------------------------------------------------
+#
+#Successful tests cases :2/2
+
+# The _TRUSTModule_opt.so is in build/exec_opt, you can move it
+
+ls -l `pwd`/build/src/exec_opt/_TRUSTModule_opt.so

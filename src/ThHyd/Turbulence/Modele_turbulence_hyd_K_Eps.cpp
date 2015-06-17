@@ -251,7 +251,7 @@ void imprimer_evolution_keps(const Champ_Inc& le_champ_K_Eps, const Schema_Temps
       k_max = Process::mp_max(k_max);
       eps_max = Process::mp_max(eps_max);
       nut_max = Process::mp_max(nut_max);
-      MPI_reduce optimization: */
+       */
       ArrOfDouble values(3);
 
       values(0)=k_min;

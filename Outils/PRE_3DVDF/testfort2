@@ -119,5 +119,5 @@ do
 done
 # il en reste encore 1 
 rm -r -f $DIR/test $DIR/testref
-echo "Voir fichier $log en cas d'erreur."
+echo "See $log file if error."
 exit $errtot

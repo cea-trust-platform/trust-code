@@ -1,22 +1,11 @@
 #!/bin/bash
-# Liste le repertoire passe en argument
-
-cat << ! | ftp -iv 2>&1 | grep rw
+# Supprime le fichier passe en argument
+echo "Delete of the $1 file on ftp://$TRUST_FTP/ directory"
+(
+cat << ! | ftp -iv 2>&1 | grep 'Delete'
 open $TRUST_FTP
-cd ../..
-delete $1
+delete "/"$1
 !
-
-# En cas d'echec, essai en mode anonymous
-if [ $? != 0 ]
-then
-
-   cat << ! | ftp -n 2>&1 | grep rw
-open $TRUST_FTP
-user anonymous triou@cea.fr
-cd ../..
-delete $1
-!
-
-fi
+) &
+$TRUST_ROOT/bin/KSH/wait_for $! 600 || (echo "Error: rm_ftp killed"; exit -1)
 

@@ -22,6 +22,7 @@
 
 #include <Eval_Diff_K_Eps_VDF.h>
 #include <Champ_Fonc.h>
+#include <Champ_Uniforme.h>
 
 void Eval_Diff_K_Eps_VDF::associer_diff_turb(const Champ_Fonc& diffu)
 {
@@ -42,7 +43,8 @@ void Eval_Diff_K_Eps_VDF::mettre_a_jour( )
   //Debog::verifier("Eval_Diff_K_Eps_VDF::mettre_a_jour : dv_diffusivite_turbulente",diffusivite_turbulente_->valeurs());
   dv_diffusivite_turbulente.ref(diffusivite_turbulente_->valeurs());
   //  Cerr << " APRES dv_diffusivite_turbulente.ref(diffusivite_turbulente_->valeurs()); " << finl;
-  //   db_diffusivite = diffusivite_.valeur()(0,0);
+  if (sub_type(Champ_Uniforme, diffusivite_.valeur()))
+    db_diffusivite = diffusivite_.valeur()(0,0);
 }
 
 void Eval_Diff_K_Eps_VDF::associer_mvolumique(const Champ_Don& mvol)
@@ -51,10 +53,13 @@ void Eval_Diff_K_Eps_VDF::associer_mvolumique(const Champ_Don& mvol)
   dv_mvol.ref(mvol.valeurs());
 }
 
-// // Description:
-// // associe le champ de diffusivite
-// void Eval_Diff_K_Eps_VDF::associer(const Champ_Don& diffu)
-// {
-//   diffusivite_ = ref_cast(Champ_Uniforme, diffu.valeur());
-//   db_diffusivite = diffusivite_.valeur()(0,0);
-// }
+// Description:
+// associe le champ de diffusivite
+void Eval_Diff_K_Eps_VDF::associer(const Champ_base& diffu)
+{
+  diffusivite_ =  diffu;
+  if (sub_type(Champ_Uniforme, diffu))
+    {
+      db_diffusivite = diffu(0,0);
+    }
+}

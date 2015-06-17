@@ -37,7 +37,9 @@ Sortie& Terme_Puissance_Thermique_QC_VEF_Face::printOn(Sortie& s ) const
 Entree& Terme_Puissance_Thermique_QC_VEF_Face::readOn(Entree& s )
 {
   Terme_Puissance_Thermique_VEF_base::readOn(s);
-  set_fichier("Puissance_Thermique_QC");
+  Nom name_file("Puissance_Thermique_QC");
+  modify_name_file(name_file);
+  set_fichier(name_file);
   set_description("Heat power release = Integral(P*dv) [W]");
   return s;
 }

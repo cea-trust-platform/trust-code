@@ -79,3 +79,13 @@ Champ_Inc_base& Op_Conv_Quick_VDF_Face::vitesse()
   Eval_Quick_VDF_Face& eval_conv = (Eval_Quick_VDF_Face&) iter.evaluateur();
   return eval_conv.vitesse();
 }
+
+//
+// Fonctions inline de la classe Op_Conv_Quick_VDF_Face
+//
+// Description:
+// constructeur
+Op_Conv_Quick_VDF_Face::Op_Conv_Quick_VDF_Face() :
+  Op_Conv_VDF_base(It_VDF_Face(Eval_Quick_VDF_Face)())
+{
+}

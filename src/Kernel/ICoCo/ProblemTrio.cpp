@@ -515,7 +515,7 @@ vector<string> ProblemTrio::getInputFieldsNames() const
 // afield contains a field with values neither allocated nor filled, describing the
 // field expected by setInputField for that name.
 // ProblemTrio unchanged
-void ProblemTrio::getInputFieldTemplate(const string& name, TrioField& afield) const
+void ProblemTrio::getInputFieldTemplate(const std::string& name, TrioField& afield) const
 {
   Nom nom(name.c_str());
   pb->getInputFieldTemplate(nom,afield);
@@ -536,7 +536,7 @@ void ProblemTrio::getInputFieldTemplate(const string& name, TrioField& afield) c
 // Effets de bord:
 // Postcondition:
 // Values of afield have been used (copied inside the ProblemTrio).
-void ProblemTrio::setInputField(const string& name, const TrioField& afield)
+void ProblemTrio::setInputField(const std::string& name, const TrioField& afield)
 {
   Nom nom(name.c_str());
   pb->setInputField(nom,afield);
@@ -811,7 +811,7 @@ void ProblemTrio::setInputMEDField(const std::string& name, const ParaMEDMEM::ME
 }
 
 
-void ProblemTrio::getOutputField(const string& name,MEDField& medfield) const
+void ProblemTrio::getOutputField(const std::string& name,MEDField& medfield) const
 {
 #ifndef NO_MEDFIELD
   TrioField  triofield;

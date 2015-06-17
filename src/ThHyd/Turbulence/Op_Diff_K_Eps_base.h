@@ -61,8 +61,18 @@ class Op_Diff_K_Eps_base : public Operateur_base
 public:
 
   virtual void associer_diffusivite_turbulente() =0;
-  /*   virtual void associer_diffusivite(const Champ_base& ) =0; */
-  /*   virtual const Champ_base& diffusivite() const=0;    */
+  inline virtual void associer_diffusivite(const Champ_base& )
+  {
+    cerr<<get_info()->name()<<" doit coder associer_diffusivite"<<endl;
+    Process::exit();
+  }
+
+  inline  virtual const Champ_base& diffusivite() const
+  {
+    cerr<<get_info()->name()<<" doit coder diffusivite()"<<endl;
+    throw;
+
+  }
 
 };
 
@@ -87,15 +97,13 @@ class Op_Diff_K_Eps_negligeable : public Operateur_negligeable,
 public:
 
   inline void associer(const Zone_dis&, const Zone_Cl_dis&, const Champ_Inc& );
-  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
+  inline DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
+  inline DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
   inline void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
   inline void contribuer_au_second_membre(DoubleTab& ) const;
   inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
   inline void dimensionner(Matrice_Morse& ) const;
   inline void associer_diffusivite_turbulente();
-  /*   void associer_diffusivite(const Champ_base& ) ; */
-  /*   const Champ_base& diffusivite() const;    */
 
 protected:
   REF(Champ_base) la_diffusivite;
@@ -126,8 +134,10 @@ public:
   inline Operateur_base& l_op_base();
   inline const Operateur_base& l_op_base() const;
   inline void associer_diffusivite_turbulente();
-  inline DoubleTab& ajouter(const DoubleTab& , DoubleTab& ) const;
-  inline DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
+  DoubleTab& ajouter(const DoubleTab& , DoubleTab& ) const;
+  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
+  inline Champ_base& associer_diffusivite(const Champ_base&);
+  inline const Champ_base& diffusivite() const;
   void typer();
   virtual inline int op_non_nul() const;
 
@@ -350,6 +360,58 @@ inline int Op_Diff_K_Eps::op_non_nul() const
   else
     return 0;
 }
+
+
+// Description:
+//    Appel a l'objet sous-jacent.
+//    Initialise le tableau passe en parametre avec la contribution
+//    de l'operateur.
+// Precondition:
+// Parametre: DoubleTab& inconnue
+//    Signification: tableau contenant les donnees sur lesquelles on applique
+//                   l'operateur.
+//    Valeurs par defaut:
+//    Contraintes: reference constante
+//    Acces: entree
+// Parametre: DoubleTab& resu
+//    Signification: tableau dans lequel stocke la contribution de l'operateur
+//    Valeurs par defaut:
+//    Contraintes: l'ancien contenu est ecrase
+//    Acces: sortie
+// Retour: DoubleTab&
+//    Signification: le tableau contenant le resultat
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition: la methode ne modifie pas l'objet
+inline const Champ_base& Op_Diff_K_Eps::diffusivite() const
+{
+  return la_diffusivite.valeur();
+}
+
+
+// Description:
+//    Associe la diffusivite a l'operateur.
+// Precondition:
+// Parametre: Champ_Don& nu
+//    Signification: le champ representant la diffusivite
+//    Valeurs par defaut:
+//    Contraintes: reference constante
+//    Acces: entree
+// Retour: Champ_Don&
+//    Signification: le champ representant la diffusivite
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+inline Champ_base& Op_Diff_K_Eps::associer_diffusivite(const Champ_base& nu)
+{
+  la_diffusivite=nu;
+  return la_diffusivite.valeur();
+}
+
+
+
 
 #endif
 

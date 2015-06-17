@@ -33,6 +33,7 @@
 
 #include <Champ_Don.h>
 #include <Ref_Champ_Don_base.h>
+#include <Ref_Champ_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -49,10 +50,10 @@ public:
                              double Prandt_Eps =PRDT_EPS_DEFAUT );
   void associer_diff_turb(const Champ_Fonc& );
   void associer_mvolumique(const Champ_Don& );
-  void associer(const Champ_Don& );
+  void associer(const Champ_base& );
   void associer_Pr_K_Eps(double,double);
   inline const Champ_Fonc& diffusivite_turbulente() const;
-  // inline const Champ_Uniforme& diffusivite() const;
+  inline const Champ_base& diffusivite() const;
   void mettre_a_jour( );
 
 protected:
@@ -64,8 +65,8 @@ protected:
   DoubleVect dv_diffusivite_turbulente;
   REF(Champ_Don_base) masse_volumique_;
   DoubleVect dv_mvol;
-  REF(Champ_Uniforme) diffusivite_;
-  //double db_diffusivite2;
+  REF(Champ_base) diffusivite_;
+  double db_diffusivite;
 
 };
 
@@ -76,7 +77,7 @@ protected:
 
 
 inline Eval_Diff_K_Eps_VDF::Eval_Diff_K_Eps_VDF(double Prandt_K ,double Prandt_Eps)
-  : Prdt_K(Prandt_K) , Prdt_Eps(Prandt_Eps)
+  : Prdt_K(Prandt_K) , Prdt_Eps(Prandt_Eps),db_diffusivite(-123.)
 {
   Prdt[0]=Prandt_K;
   Prdt[1]=Prandt_Eps;
@@ -90,8 +91,8 @@ inline const Champ_Fonc& Eval_Diff_K_Eps_VDF::diffusivite_turbulente() const
   return diffusivite_turbulente_.valeur();
 }
 
-/* inline const Champ_Uniforme& Eval_Diff_K_Eps_VDF::diffusivite() const */
-/* { */
-/*   return diffusivite_.valeur(); */
-/* } */
+inline const Champ_base& Eval_Diff_K_Eps_VDF::diffusivite() const
+{
+  return diffusivite_.valeur();
+}
 #endif

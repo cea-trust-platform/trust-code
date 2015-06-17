@@ -49,6 +49,9 @@ class Figure:
 		self.format = 'png'
 		self.pointSize = 'Undefined'
 		self.legende = 'Undefined'
+		self.grid = 'Undefined'
+		self.xtics = 'Undefined'
+		self.ytics = 'Undefined'
 		self.description = []
 		self.inclureDescCourbes = 1
 		self.image     = 'Undefined'
@@ -74,6 +77,11 @@ class Figure:
 		if self.format != 'png' : print dec,"format", self.format
 		if self.pointSize != 'Undefined' : print dec,"pointSize", self.pointSize
 		if self.legende != 'Undefined' : print dec,"legende", self.legende
+		if self.grid != 'Undefined' : print dec,"grid", self.grid
+		if self.xtics != 'Undefined' : print dec,"xtics", self.xtics
+		if self.ytics != 'Undefined' : print dec,"ytics", self.ytics
+		
+		
 		if self.inclureDescCourbes != 1 : print dec,"inclureDescCourbes", self.inclureDescCourbes
 		if self.image != 'Undefined' : print dec,"image", self.image
 		if self.width != "15cm" : print dec,"width", self.width
@@ -87,7 +95,7 @@ class Figure:
 		'''Lecture des parametres de la figure.'''
 		self.gestMsg.ecrire(GestionMessages._DEBOG, 'DEBUT %s.%s' % (self.__class__.__name__, getNomFonction()), niveau=15)
 		fin = False
-		dico=['titre','titre_figure','dimension','logx','logy','rangex','rangey','labelx','labely','pointsize','legende','description','courbe','incluredesccourbes','width','image','nb_img_without_newline']
+		dico=['titre','titre_figure','dimension','logx','logy','rangex','rangey','labelx','labely','pointsize','legende','grid','xtics','ytics','description','courbe','incluredesccourbes','width','image','nb_img_without_newline']
 		while not fin:
 			ligne = fichier.readline()
 			if not ligne:
@@ -137,6 +145,12 @@ class Figure:
 					self.pointSize = valeur
 				elif motcle=='legende':
 					self.legende = valeur
+				elif motcle=='grid':
+					self.grid = valeur
+				elif motcle=='xtics':
+					self.xtics = valeur
+				elif motcle=='ytics':
+					self.ytics = valeur
 				elif motcle=='description':
 					self.description.append(valeur)
 				elif motcle=='courbe':
@@ -207,6 +221,12 @@ class Figure:
 					ficPlot.write('set key off\n')
 				else:
 					ficPlot.write('set key %s\n' % self.legende)
+			if self.grid!='Undefined':
+				ficPlot.write('set grid %s\n' % self.grid)
+			if self.xtics!='Undefined':
+				ficPlot.write('set xtics %s\n' % self.xtics)
+			if self.ytics!='Undefined':
+				ficPlot.write('set ytics %s\n' % self.ytics) 
 			cmd = ''
 			if self.dimension==2:
 				cmd = 'plot'

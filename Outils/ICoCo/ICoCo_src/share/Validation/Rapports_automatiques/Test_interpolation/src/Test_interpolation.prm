@@ -1,0 +1,16 @@
+parametres {
+	titre "Test de l'interpolateur MEDMEM"
+	auteur "fauchet pour quemere "
+	casTest . ok
+}
+Chapitre {
+	Titre OK ?
+	Tableau {
+	nb_colonnes 1
+	label status 
+	ligne {
+	legende res
+	fichier is_ok 
+	}
+	} 
+}

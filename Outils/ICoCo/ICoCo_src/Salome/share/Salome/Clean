@@ -1,0 +1,7 @@
+#!/bin/bash
+#rm -rf Test ProblemComp/ Problem/ *~
+rm -rf Test ProblemComp/Problem/Problem_BUILD/   ProblemComp/Problem/Problem_INSTALL *~
+#(cd Conversion; make clean)
+(cd  ProblemComp/Problem/Problem_SRC; ~/Salome/salome_5.1.3/MED_SRC_5.1.3/clean_configure)
+
+

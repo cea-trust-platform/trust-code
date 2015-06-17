@@ -1,7 +1,7 @@
 #!/bin/bash
 # Lancement de TRUST par clavier avec comme
 # argument le nom complet de l'executable :
-. Init_TRUST
+source $TRUST_ROOT/env/env_TRUST.sh
 echo "Usage: `basename $0` [$exec]"
 if [ ${#1} = 0 ]
 then

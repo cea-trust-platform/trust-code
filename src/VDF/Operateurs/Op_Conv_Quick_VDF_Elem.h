@@ -56,7 +56,7 @@ class Op_Conv_Quick_VDF_Elem : public Op_Conv_VDF_base, Op_VDF_Elem
 
 public:
 
-  inline Op_Conv_Quick_VDF_Elem();
+  Op_Conv_Quick_VDF_Elem();
   void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc&  );
   inline void associer_vitesse(const Champ_base& );
   const Champ_Inc_base& vitesse() const;
@@ -67,17 +67,6 @@ public:
 protected:
   inline Op_Conv_Quick_VDF_Elem(const Iterateur_VDF_base&);
 };
-
-//
-// Fonctions inline de la classe Op_Conv_Quick_VDF_Elem
-//
-
-// Description:
-// constructeur
-inline Op_Conv_Quick_VDF_Elem::Op_Conv_Quick_VDF_Elem()
-  :Op_Conv_VDF_base(It_VDF_Elem(Eval_Quick_VDF_Elem)())
-{
-}
 
 // Ce constructeur permet de creer des classes filles (exemple : front_tracking)
 inline Op_Conv_Quick_VDF_Elem::Op_Conv_Quick_VDF_Elem(const Iterateur_VDF_base& it)

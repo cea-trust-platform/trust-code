@@ -12,7 +12,7 @@ echo "
 <BODY BGCOLOR=#FFFFFF>
 <IMG SRC=../animation.gif HEIGHT=101 WIDTH=501>
 <BR>" > /tmp/index.html
-[ ${#Version} = 0 ] && echo "Quelle version?" && exit
+[ ${#Version} = 0 ] && echo "What version?" && exit
 v=${Version#Version}
 version_arch=TRUST-$v".tar"
 keys="keys"$v
@@ -22,6 +22,30 @@ GRAVAGE=$WORKDIR/A_GRAVER_CD_TRUST
 cd $TRUST_ENV
 # Teste la connection :
 . connect_ftp
+
+##################################################
+# Copie des fichiers issus de recupere_TRUST_arch 
+##################################################
+cd $TRUST_ROOT/NUIT
+rmdir_ftp $SECRET/NUIT
+mkdir_ftp $SECRET/NUIT
+cp_ftp NUIT.html $SECRET/NUIT
+cp_ftp CR_* $SECRET/NUIT
+cp_ftp PERF_* $SECRET/NUIT
+cp_ftp MAKE_* $SECRET/NUIT
+cp_ftp compile_* $SECRET/NUIT
+cd $TRUST_ROOT/exec
+cp_ftp .tests* $SECRET/NUIT
+cd $TRUST_ROOT/../Composants/ModeleCoeur
+cp_ftp nuit_*.html $SECRET/NUIT
+cp_ftp *_%_*.log $SECRET/NUIT
+cd $TRUST_ROOT/../Pre_Post_TRUST/Outils/ICoCo/ICoCo_src
+cp_ftp nuit_*.html $SECRET/NUIT
+cp_ftp *_%_*.log $SECRET/NUIT
+cd $TRUST_ROOT/../Doc_TRUST/doc/TRUST/exercices/equation_convection_diffusion
+cp_ftp nuit_*.html $SECRET/NUIT
+cp_ftp *_%_*.log $SECRET/NUIT
+cd $TRUST_ROOT
 
 #########################################################################
 # Liste les architectures existantes et cree la version si compilation OK 
@@ -128,13 +152,15 @@ for machine in `liste_machines "\-rsync"`
 do
    cible=$machine:$depot/.
    ssh_ $machine -n 'ls $depot 1>/dev/null 2>&1'
+   echo " "
    if [ $? = 0 ]
    then
-      echo "Debut synchronisation de $GRAVAGE avec $machine a `date '+%H:%M:%S'`" 
+      echo "Start synchronization of $GRAVAGE with $cible at `date '+%H:%M:%S'`" 
       rsync -v -L --rsh=ssh --archive --delete --ignore-errors --timeout=100 --compress $GRAVAGE $cible
-      echo "Fin synchronisation de $GRAVAGE avec $machine a `date '+%H:%M:%S'`" 
+      echo "End synchronization of $GRAVAGE with $cible at `date '+%H:%M:%S'`" 
    else
-      echo " KO Machine $cible non accessible pour synchronisation."
+      echo " KO Machine $cible not accessible for synchronization."
    fi
+   echo " "
 done
 

@@ -71,6 +71,12 @@ Champ_Inc_base& Op_Conv_Centre_VDF_Face::vitesse()
   return eval_conv.vitesse();
 }
 
-
-
-
+//
+// Fonctions inline de la classe Op_Conv_Centre_VDF_Face
+//
+// Description:
+// constructeur
+Op_Conv_Centre_VDF_Face::Op_Conv_Centre_VDF_Face() :
+  Op_Conv_VDF_base(It_VDF_Face(Eval_Centre_VDF_Face)())
+{
+}

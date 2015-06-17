@@ -185,7 +185,7 @@ inline Eval_Diff_K_Eps_QC_VDF_Elem::Eval_Diff_K_Eps_QC_VDF_Elem()
   : Eval_Diff_K_Eps_VDF() {}
 // DEBUT DES DEFINES
 #define CLASSNAME Eval_Diff_K_Eps_QC_VDF_Elem
-#define nu_1(i,k) dv_diffusivite_turbulente(i)/Prdt[k]
+#define nu_1(i,k) (db_diffusivite+dv_diffusivite_turbulente(i)/Prdt[k])
 // normalement nu2 ne sert pas!!
 #define nu_2(i,k) 1.;assert(0);Process::exit();
 #define f_heq(d0,i,d1,j,k) heq=0.5*(nu_1(i,k) + nu_1(j,k))/(d1+d0);

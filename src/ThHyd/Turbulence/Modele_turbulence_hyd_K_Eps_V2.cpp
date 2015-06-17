@@ -71,9 +71,6 @@ Entree& Modele_turbulence_hyd_K_Eps_V2::readOn(Entree& is )
       exit();
     }
   Mod_turb_hyd_RANS::readOn(is);
-  EChaine cha("loi_standard_hydr");
-  loipar.associer_modele(*this);
-  cha >> loipar;
   return is;
 }
 
@@ -237,4 +234,16 @@ const Equation_base& Modele_turbulence_hyd_K_Eps_V2::equation_k_eps(int i) const
   else
     return  eqn_f22.valeur();
 
+}
+
+void Modele_turbulence_hyd_K_Eps_V2::verifie_loi_paroi()
+{
+  Nom lp=loipar.valeur().que_suis_je();
+  if (lp!="negligeable_VEF" && lp!="negligeable_VDF")
+    {
+      Cerr<<"The turbulence model of type "<<que_suis_je()<<finl;
+      Cerr<<"must be used with a wall law of type negligeable."<<finl;
+      Cerr<<"Another wall law must be selected with this kind of turbulence model."<<finl;
+      exit();
+    }
 }

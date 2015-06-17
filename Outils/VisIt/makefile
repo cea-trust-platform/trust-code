@@ -4,7 +4,7 @@
 # b) Taper make
 # c) Puis mettre a jour les paquets telecharges en gestion de conf sous $TRUST_ROOT/Outils/VisIt/src
 # d) Essayer d'expurger (ex doc/demos/examples dans QT) pour des questions de place
-version=2_8_2
+version=2_9_1
 
 visit=bin/visit
 check=test/ok   

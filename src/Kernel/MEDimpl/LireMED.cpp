@@ -1610,7 +1610,7 @@ void LireMED::lire_geom( Nom& nom_fic,Domaine& dom,const Nom& nom_dom,const Nom&
   //  GF au moins en polyedre il faut  reordonner
   //  il faut certainement le faire tout le temps
   //  non c'est trop long
-  if (sub_type(Polyedre,zone.type_elem().valeur()))
+  if (sub_type(Polyedre,zone.type_elem().valeur())|| (type_elem=="Rectangle")|| (type_elem=="Hexaedre"))
     dom.reordonner();
 
 

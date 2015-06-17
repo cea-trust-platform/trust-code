@@ -173,9 +173,9 @@ Convection_Diffusion_Temperature
 		}
 	}
 	
-liste_postraitements 
+liste_de_postraitements 
 {
-	Postraitement Sonde
+	Sonde Postraitement 
 	{
 		Sondes
 		{

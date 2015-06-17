@@ -118,9 +118,11 @@ test_cas_OK -p query.prm -v 10 --compare=../query/
 if [ $ok_only -ne 1 ]
 then
     cd ../cove
-    export PYTHONPATH=$TRUST_ROOT/Validation/Outils/Genere_courbe/Couverture/trace2html/lib/python2.7/site-packages/
-    # python setup.py install --prefix=$TRUST_ROOT/Validation/Outils/Genere_courbe/Couverture/trace2html
-    export PATH=$TRUST_ROOT/Validation/Outils/Genere_courbe/Couverture/trace2html/bin/:${PATH}
+    DEST=$TRUST_ROOT/Validation/Outils/Genere_courbe/Couverture/trace2html
+    mkdir -p $DEST $DEST/lib/python2.7/site-packages/
+    export PYTHONPATH=$DEST/lib/python2.7/site-packages/
+    (cd ../trace2html-0.2.1; python setup.py install --prefix=$DEST)
+    export PATH=$DEST/bin/:${PATH}
     if [ "`which trace2html.py 2>/dev/null`" != "" ]
 	then
 

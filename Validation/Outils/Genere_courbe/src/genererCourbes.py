@@ -143,9 +143,6 @@ DESCRIPTION
 SEE ALSO
 	NA.
 
-AUTHOR
-	G. ETIEVENT (Astek Rhone-Alpes)
-
 BUGS
 	No known bug today...
 

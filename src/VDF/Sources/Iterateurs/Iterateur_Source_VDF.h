@@ -29,9 +29,8 @@
 //
 // .SECTION voir aussi
 //
-#define It_Sou_VDF_Face(_TYPE_) name2(Iterateur_Source_VDF_Face, _TYPE_)
-#include <MItSouVDFFa.h>
 #include <Iterateur_Source_VDF_base.h>
+#include <ItSouVDFFa.h>
 
 Declare_deriv(Iterateur_Source_VDF_base);
 

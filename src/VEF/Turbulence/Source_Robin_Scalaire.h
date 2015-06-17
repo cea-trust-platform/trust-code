@@ -45,7 +45,7 @@ protected:
   REF(Zone_VEF) la_zone_VEF;
   REF(Zone_Cl_VEF) la_zone_Cl_VEF;
   void associer_zones(const Zone_dis& , const Zone_Cl_dis&);
-  double dt_post;
+//  double dt_post;
   Noms noms_parois;
   DoubleVect T_parois;
   REF(DoubleVect) tab_u_star;

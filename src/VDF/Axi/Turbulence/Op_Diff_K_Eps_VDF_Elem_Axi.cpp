@@ -64,26 +64,10 @@ void Op_Diff_K_Eps_VDF_Elem_Axi::associer(const Zone_dis& zone_dis,
 }
 
 
-// Description:
-// associe le champ de diffusivite_turbulente a l'evaluateur
-void Op_Diff_K_Eps_VDF_Elem_Axi::associer_diffusivite_turbulente()
+//
+// Fonctions inline de la classe Op_Diff_K_Eps_VDF_Elem_Axi
+//
+Op_Diff_K_Eps_VDF_Elem_Axi::Op_Diff_K_Eps_VDF_Elem_Axi() :
+  Op_Diff_K_Eps_VDF_base(It_VDF_Elem(Eval_Diff_K_Eps_VDF_Elem_Axi)())
 {
-  assert(mon_equation.non_nul());
-  // Cerr << "Op_Diff_K_Eps_VDF_Elem_Axi::associer_diffusivite_turbulente() debut " << finl;
-  double Prandtl_K, Prandtl_Eps;
-  const Transport_K_Eps& eqn_transport = ref_cast(Transport_K_Eps,mon_equation.valeur());
-  const Modele_turbulence_hyd_K_Eps& mod_turb = ref_cast(Modele_turbulence_hyd_K_Eps,eqn_transport.modele_turbulence());
-  const Champ_Fonc& diff_turb = mod_turb.viscosite_turbulente();
-  Prandtl_K = mod_turb.get_Prandtl_K();
-  Prandtl_Eps = mod_turb.get_Prandtl_Eps();
-  Eval_Diff_K_Eps_VDF_Elem_Axi& eval_diff = (Eval_Diff_K_Eps_VDF_Elem_Axi&) iter.evaluateur();
-  eval_diff.associer_diff_turb(diff_turb);
-  eval_diff.associer_Pr_K_Eps(Prandtl_K,Prandtl_Eps);
-}
-
-const Champ_Fonc& Op_Diff_K_Eps_VDF_Elem_Axi::diffusivite_turbulente() const
-{
-  const Eval_Diff_K_Eps_VDF_Elem_Axi& eval_diff =
-    (Eval_Diff_K_Eps_VDF_Elem_Axi&) iter.evaluateur();
-  return eval_diff.diffusivite_turbulente();
 }

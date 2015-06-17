@@ -324,23 +324,83 @@ void Champ_Face::verifie_valeurs_cl()
 // present du Champ_Face
 // L'implementation a change : ces valeurs ne sont plus stockees dans le champ.
 
-double Champ_Face::val_imp_face_bord(int face,int comp) const
+double Champ_Face::val_imp_face_bord_private(int face,int comp) const
 {
+  const Zone_Cl_VDF& zclo=ref_cast(Zone_Cl_VDF,equation().zone_Cl_dis().valeur());
+  return Champ_Face_get_val_imp_face_bord_sym(valeurs(),temps(), face,comp,  zclo);
+}
 
+
+double Champ_Face_get_val_imp_face_bord(const double& temp,int face,int comp, const Zone_Cl_VDF& zclo) 
+{
+  const Zone_VDF& zone_vdf=zclo.zone_VDF();
   int face_globale,face_locale;
-  face_globale=face+zone_vdf().premiere_face_bord(); // Maintenant numero dans le tableau global des faces.
-
+  
+  face_globale=face+zone_vdf.premiere_face_bord(); // Maintenant numero dans le tableau global des faces.
+  const Zone_Cl_dis_base& zcl = zclo; //equation().zone_Cl_dis().valeur();
   // On recupere la CL associee a la face et le numero local de la face dans la frontiere.
-  const Cond_lim_base& cl=(face<zone_vdf().nb_faces()) ?
-                          equation().zone_Cl_dis()->condition_limite_de_la_face_reelle(face_globale,face_locale) :
-                          equation().zone_Cl_dis()->condition_limite_de_la_face_virtuelle(face_globale,face_locale);
+  //assert(equation().zone_Cl_dis().valeur()==zclo);
 
-  const IntTab& face_voisins = zone_vdf().face_voisins();
-  const IntTab& elem_faces = zone_vdf().elem_faces();
-  const DoubleVect& porosite = zone_vdf().porosite_face();
-  int ori = zone_vdf().orientation()(face_globale);
+  const Cond_lim_base& cl=(face<zone_vdf.nb_faces()) ?
+                          zcl.condition_limite_de_la_face_reelle(face_globale,face_locale) :
+                          zcl.condition_limite_de_la_face_virtuelle(face_globale,face_locale);
 
-  const DoubleTab& vals=cl.champ_front()->valeurs_au_temps(temps());
+  int ori = zone_vdf.orientation()(face_globale);
+
+  const DoubleTab& vals=cl.champ_front()->valeurs_au_temps(temp);
+
+  int face_de_vals=vals.dimension(0)==1 ? 0 : face_locale;
+
+  if(sub_type(Symetrie,cl))
+    {
+      if (comp == ori)
+        return 0;
+      else
+        {
+	  Cerr<<"You should call Champ_Face_get_val_imp_face_bord_sym and not  Champ_Face_get_val_imp_face_bord"<<finl;
+	  Process::exit();
+	  return 1e9;
+        }
+    }
+
+  else if ( sub_type(Dirichlet_entree_fluide,cl) )
+    {
+      return vals(face_de_vals,comp);
+    }
+
+  else if ( sub_type(Dirichlet_paroi_fixe,cl) )
+    {
+      return 0;
+    }
+
+  else if ( sub_type(Dirichlet_paroi_defilante,cl) )
+    {
+      return vals(face_de_vals,comp);
+    }
+
+  return 0; // All other cases
+
+}
+double Champ_Face_get_val_imp_face_bord_sym(const DoubleTab& tab_valeurs, const double& temp,int face,int comp, const Zone_Cl_VDF& zclo) 
+{
+  const Zone_VDF& zone_vdf=zclo.zone_VDF();
+  int face_globale,face_locale;
+  
+  face_globale=face+zone_vdf.premiere_face_bord(); // Maintenant numero dans le tableau global des faces.
+  const Zone_Cl_dis_base& zcl = zclo; //equation().zone_Cl_dis().valeur();
+  // On recupere la CL associee a la face et le numero local de la face dans la frontiere.
+  //assert(equation().zone_Cl_dis().valeur()==zclo);
+
+  const Cond_lim_base& cl=(face<zone_vdf.nb_faces()) ?
+                          zcl.condition_limite_de_la_face_reelle(face_globale,face_locale) :
+                          zcl.condition_limite_de_la_face_virtuelle(face_globale,face_locale);
+
+  const IntTab& face_voisins = zone_vdf.face_voisins();
+  const IntTab& elem_faces = zone_vdf.elem_faces();
+  const DoubleVect& porosite = zone_vdf.porosite_face();
+  int ori = zone_vdf.orientation()(face_globale);
+
+  const DoubleTab& vals=cl.champ_front()->valeurs_au_temps(temp);
 
   int face_de_vals=vals.dimension(0)==1 ? 0 : face_locale;
 
@@ -355,9 +415,10 @@ double Champ_Face::val_imp_face_bord(int face,int comp) const
             elem = face_voisins(face_globale,0);
           else
             elem = face_voisins(face_globale,1);
-          return (valeurs()(elem_faces(elem,comp))*porosite[elem_faces(elem,comp)]
-                  + valeurs()(elem_faces(elem,comp+dimension))*porosite[elem_faces(elem,comp+dimension)])
-                 /    (porosite[elem_faces(elem,comp)] + porosite[elem_faces(elem,comp+dimension)]) ;
+	  int comp2=comp+Objet_U::dimension;
+          return (tab_valeurs(elem_faces(elem,comp))*porosite[elem_faces(elem,comp)]
+                  + tab_valeurs(elem_faces(elem,comp2))*porosite[elem_faces(elem,comp2)])
+                 /    (porosite[elem_faces(elem,comp)] + porosite[elem_faces(elem,comp2)]) ;
         }
     }
 
@@ -380,14 +441,21 @@ double Champ_Face::val_imp_face_bord(int face,int comp) const
 
 }
 
+
 // WEC : jamais appele !!
-double Champ_Face::val_imp_face_bord(int face,int comp1,int comp2) const
+double Champ_Face::val_imp_face_bord_private(int face,int comp1,int comp2) const
 {
   Cerr << "Champ_Face::val_imp_face_bord(,,) exit" << endl;
   exit();
   return 0; // For compilers
 }
 
+double Champ_Face_get_val_imp_face_bord( const double& temp,int face,int comp, int comp2, const Zone_Cl_VDF& zclo) 
+{
+  Cerr << "Champ_Face::val_imp_face_bord(,,) exit" << endl;
+  Process::exit();
+  return 0; // For compilers
+}
 // Cette fonction retourne :
 //   1 si le fluide est sortant sur la face num_face
 //   0 si la face correspond a une reentree de fluide

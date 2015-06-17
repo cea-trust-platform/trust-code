@@ -189,7 +189,11 @@ void mon_main::finalize()
   if (isInitialized==PETSC_TRUE)
     {
       PetscPopErrorHandler(); // Removes the latest error handler that was pushed with PetscPushErrorHandler in init_petsc
-      PetscFinalize();
+#ifdef MPI_
+  if (sub_type(Comm_Group_MPI,PE_Groups::current_group()))
+    PETSC_COMM_WORLD = ref_cast(Comm_Group_MPI,PE_Groups::current_group()).get_mpi_comm();
+#endif
+     PetscFinalize();
     }
 #endif
 #ifdef MPI_
@@ -265,8 +269,8 @@ void mon_main::dowork(const Nom& nom_du_cas)
   Cout<<"-------------------------------------------------------------------" << finl;
   Cout<<" " << finl;
   Cout<<"                          TRUST" << finl;
-  Cout<<"                      version : 1.7.1_beta "  << finl;
-  Cout<<"                          build : 090415 " << finl;
+  Cout<<"                      version : 1.7.1 "  << finl;
+  Cout<<"                          build : 160615 " << finl;
   Cout<<"                          CEA - DEN" << finl;
   Cout<<" " << finl;
   info_atelier(Cout);

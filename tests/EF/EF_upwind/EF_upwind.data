@@ -1,0 +1,101 @@
+# Hydraulique 2D laminaire avec "trou" dans le maillage #
+# PARALLEL OK #
+dimension 2
+Pb_hydraulique pb
+Domaine dom
+# DEBUT MAILLAGE #
+Lire_Fichier upwind.geo ;
+# FIN MAILLAGE #
+# DEBUT DECOUPAGE
+Postraiter_domaine
+{
+   fichier mesh.lata
+   format lata
+   domaine dom
+}
+
+Decouper dom
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 1
+	Nom_Zones DOM
+}
+Fin
+FIN DECOUPAGE #
+
+# DEBUT LECTURE
+Scatter DOM.Zones dom
+FIN LECTURE #
+
+EF dis
+
+Schema_Euler_explicite sch
+Lire sch
+{
+	tinit 0
+	tmax 2.5e1
+	dt_min 5.e-3
+	dt_max 5.e+3
+	dt_impr 5.e-1
+	dt_sauv 1
+	seuil_statio 1.e-8
+}
+
+Fluide_Incompressible eau
+Lire eau
+{
+	mu Champ_Uniforme 1 3.7e-05
+	rho Champ_Uniforme 1 2
+}
+
+Associer pb dom
+Associer pb sch
+Associer pb eau
+
+Discretiser pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+                methode_calcul_pression_initiale avec_sources_et_operateurs
+		solveur_pression GCP { 
+			precond ssor { omega 1.5 } 
+			seuil 1.e-12
+		}
+		convection { negligeable }
+		diffusion {   }
+		conditions_initiales {
+			vitesse Champ_Uniforme 2 0. 0.
+			}
+		conditions_limites {
+			Obstacle frontiere_ouverte_vitesse_imposee
+                             Champ_front_Uniforme 2  0. 0.
+
+			Symetrie symetrie
+			Sortie frontiere_ouverte_pression_imposee 
+			    Champ_front_Uniforme 1 0.
+			Entree frontiere_ouverte_vitesse_imposee 
+			     Champ_front_Uniforme 2  1. 0.
+		}
+	}
+
+	Postraitement
+	{
+		Sondes
+		{
+		sonde_pression pression periode 0.005 points 2 0.13 0.105 0.13 0.115
+		sonde_vitesse vitesse periode 0.005 points 2 0.14 0.105 0.14 0.115
+		sonde_vitesse_bis vitesse periode 0.005 position_like sonde_vitesse
+                sonde_vitesse_ter vitesse periode 1e-5 position_like sonde_vitesse
+
+		}
+		Champs dt_post 1.3
+		{
+			pression elem
+			vitesse elem
+		}
+	}
+}
+Resoudre pb
+Fin

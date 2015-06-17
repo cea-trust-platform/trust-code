@@ -51,20 +51,36 @@ Entree& SolveurSys::readOn(Entree& is )
   return is >> valeur();
 }
 
+static int nested_solver = 0;
+
+
 int SolveurSys::resoudre_systeme(const Matrice_Base& matrice,
                                  const DoubleVect& secmem,
                                  DoubleVect& solution)
 {
   valeur().save_matrice_secmem_conditionnel(matrice, secmem, solution);
-  statistiques().begin_count(solv_sys_counter_);
+
+  // Cas de solveurs emboites: n'afficher que le temps du solveur "exterieur"
+  // temporaire : test issu du baltik IJK_FT en commentaire car sinon erreur dans .TU avec PETSC (solveurs Ax=B => 0%)
+  //if (nested_solver == 0)
+    statistiques().begin_count(solv_sys_counter_);
+  nested_solver++;
+
   int nb_iter = valeur().resoudre_systeme(matrice,secmem,solution);
-  statistiques().end_count(solv_sys_counter_, nb_iter);
-  // Si limpr vaut -1, on n'imprime pas
-  if (valeur().limpr()==1)
-    {
-      Cout << " Convergence in " << nb_iter << " iterations for " << le_nom() << finl;
-      Cout << "clock Ax=B: " << statistiques().last_time(solv_sys_counter_) << " s for " << le_nom() << finl;
-    }
+
+  nested_solver--;
+  // temporaire : test issu du baltik IJK_FT en commentaire car sinon erreur avec script Check_solver.sh pour test PETSC_VEF
+  //if (nested_solver == 0)
+  //  {
+      statistiques().end_count(solv_sys_counter_, nb_iter);
+      // Si limpr vaut -1, on n'imprime pas
+      if (valeur().limpr()==1)
+        {
+          Cout << " Convergence in " << nb_iter << " iterations for " << le_nom() << finl;
+          Cout << "clock Ax=B: " << statistiques().last_time(solv_sys_counter_) << " s for " << le_nom() << finl;
+        }
+
+  //  }
   return nb_iter;
 }
 

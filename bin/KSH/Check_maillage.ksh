@@ -215,7 +215,8 @@ Ecriture_Python
 # Bizarrerie de VisIt 2.5.2, il faut monter d'un niveau pour que cela marche
 cd ..
 #visit -debug 5 -s $fichier_config # 1>/dev/null 2>&1
-visit -cli -s $fichier_config # 1>/dev/null 2>&1
+# GF en 282 ne pas mettre -cli
+visit  -s $fichier_config # 1>/dev/null 2>&1
 erreur=$?
 
 # On efface les fichiers si pas d'erreurs

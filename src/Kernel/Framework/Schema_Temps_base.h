@@ -160,6 +160,14 @@ public :
     return niter_max_diff_impl_;
   };// Iterations maximale pour GC implicitation
 
+  inline int no_conv_subiteration_diffusion_implicite() const
+  {
+    return no_conv_subiteration_diff_impl_;
+  };
+  inline int no_error_if_not_converged_diffusion_implicite() const
+  {
+    return no_error_if_not_converged_diff_impl_;
+  };
   virtual int lire_motcle_non_standard(const Motcle&, Entree&);
   virtual Entree& lire_nb_pas_dt_max(Entree&);
   virtual Entree& lire_periode_sauvegarde_securite_en_heures(Entree&);
@@ -332,7 +340,7 @@ protected :
   double dt_stab_;                // Pas de temps de stabilite
   double facsec_;
   double seuil_statio_;
-  int seuil_statio_relatif_;                // Drapeau pour specifier si seuil_statio_ est une valeur absolue (defaut) ou relative
+  int seuil_statio_relatif_deconseille_;                // Drapeau pour specifier si seuil_statio_ est une valeur absolue (defaut) ou relative
   double dt_sauv_;
   int limite_cpu_sans_sauvegarde_;
   int periode_cpu_sans_sauvegarde_;
@@ -349,6 +357,8 @@ protected :
   double seuil_diff_impl_;
   int impr_diff_impl_;
   int niter_max_diff_impl_;
+  int no_conv_subiteration_diff_impl_;
+  int no_error_if_not_converged_diff_impl_;
   int schema_impr_;                  // 1 si le schema a le droit d'imprimer dans le .out et dt_ev
   int file_allocation_;                // 1 = allocation espace disque (par defaut), 0 sinon
 private:

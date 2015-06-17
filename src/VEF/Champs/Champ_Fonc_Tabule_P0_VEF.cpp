@@ -58,7 +58,7 @@ void Champ_Fonc_Tabule_P0_VEF::mettre_a_jour(double t)
   const int& isfct = table.isfonction();
   const DoubleTab& val_param = le_champ_parametre->valeurs();
   DoubleTab& mes_valeurs = valeurs();
-  if (!val_param.nb_dim() == mes_valeurs.nb_dim())
+  if (!(val_param.nb_dim() == mes_valeurs.nb_dim()))
     {
       Cerr << "Erreur a la mise a jour d'un Champ_Fonc_Tabule" << finl;
       Cerr << "Le champ parametre et le champ a initialiser ne sont pas compatibles" << finl;

@@ -38,7 +38,6 @@
 #include <Ref_Zone_Cl_VEF.h>
 #include <Ref_Champ_P1NC.h>
 #include <Op_VEF_Face.h>
-#include <Zone_VEF.h>
 #include <Ref_Champ_Don_base.h>
 
 class Zone_dis;
@@ -61,17 +60,22 @@ public:
   inline Op_Diff_K_Eps_VEF_base(double Prandt_K = PRDT_K_DEFAUT ,
                                 double Prandt_Eps =PRDT_EPS_DEFAUT );
   void completer();
+  void associer_diffusivite(const Champ_base& ch_diff);
   virtual void associer_diffusivite_turbulente() =0;
   inline void associer_diffusivite_turbulente(const Champ_Fonc& );
   inline void associer_Pr_K_Eps(double, double);
   inline const Champ_Fonc& diffusivite_turbulente() const;
+  inline const Champ_base& diffusivite() const
+  {
+    return diffusivite_.valeur();
+  } ;
 
 protected:
   double Prdt_K;
   double Prdt_Eps;
   REF(Champ_Fonc) diffusivite_turbulente_;
   REF(Champ_Don_base) tmp;
-  //DoubleVect porosite_face;
+  REF(Champ_base) diffusivite_;
 };
 
 

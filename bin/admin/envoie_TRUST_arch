@@ -77,12 +77,21 @@ then
          delete_version_machine_cible=1
 	 echo "Several files were moved or deleted in Git since yesterday then we must make a delete on remote machines." 
       fi  
+      # Trop frequent du coup trop long pour recompiler VisIt
+      ## Look for the last commit where at least on branch was merged:
+      #last_commit=`git log --merges | awk '/commit / {print substr($2,1,7)}' | head -1`
+      ## Check if this commit is in the last day compared to the HEAD or if future commit contains merged branchs:
+      #if [ "`git log --since=1.days..HEAD | grep $last_commit`" != "" ]
+      #then
+      #   #delete_version_machine_cible=1
+      #   echo "Several branchs were merged in Git since yesterday then we must make a delete on remote machines." 
+      #fi 
    else
       echo "Detection of a deleted file not implemented yet outside Git." 1>/dev/null 2>&1
    fi
 fi
 # Versions distantes automatiquement effacees le vendredi/samedi
-[ "`date '+%u'`" = 5 ] && delete_version_machine_cible=1 && echo "We delete the version on the machines of type cible on Friday."
+#[ "`date '+%u'`" = 5 ] && delete_version_machine_cible=1 && echo "We delete the version on the machines of type cible on Friday."
 [ "`date '+%u'`" = 6 ] && delete_version_machine_cible=1 && echo "We delete the version on the machines of type cible on Saturday."
 # Versions distantes ponctuellement effacees avec un "touch ~/delete_version_machine_cible"
 [ -f ~/delete_version_machine_cible ] && delete_version_machine_cible=1 && echo "We delete the version on the machines of type cible promptly." && rm -f ~/delete_version_machine_cible
@@ -96,13 +105,15 @@ do
    machine=`echo $adr | awk -F"." '{print $1}'`
    version=Version_test_$machine
    log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`      
+   ssh_log=$TRUST_ROOT/ssh_$machine.log
+   echo "ssh on $machine the `date` ...">$ssh_log
    if [ "$log" = "" ]
    then
       echo "KO $adr machine not reported in ~/.netrc"
    # Les machines git_cron ne sont pas accessibles par ssh
-   elif [ "`liste_machines git_cron | grep $adr`" = "" ] && [ "`ssh_ -o ConnectTimeout=30 -o BatchMode=yes $log@$adr -n pwd 1>ssh_$adr.log 2>&1;echo $?`" != 0 ]
+   elif [ "`liste_machines git_cron | grep $adr`" = "" ] && [ "`ssh_ -o ConnectTimeout=30 -o BatchMode=yes $log@$adr -n pwd 1>>$ssh_log 2>&1;echo $?`" != 0 ]
    then
-      echo "KO $adr machine not accessible via ssh. See ssh_$adr.log" 
+      echo "KO $adr machine not accessible via ssh. See $ssh_log" 
    else
       ##################################################
       # Determination de WORKDIR si accessible par ssh #
@@ -171,14 +182,14 @@ do
 	 fi
          # Creation eventuelle du repertoire:
 	 ssh_command '[ ! -d '$WORKDIR/$version'/TRUST ] && mkdir -p '$WORKDIR/$version'/TRUST'
-	 rsync_log=$TRUST_ROOT/rsync_$adr.log
-	 rm -f $rsync_log
+	 rsync_log=$TRUST_ROOT/rsync_$machine.log
+	 echo "rsync on $machine the `date` ...">$rsync_log
 	 if [ "$delete_version_machine_cible" = 1 ]
 	 then
 	    # On fait en 2 passes (car sinon conflit possible)
 	    echo "Deleting $WORKDIR/$version on $log@$adr..."
-	    ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=30 -o BatchMode=yes $log@$adr -n 'cd '$WORKDIR/$version';mv -f TRUST trash;mkdir -p TRUST' 
-	    ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=30 -o BatchMode=yes $log@$adr -n 'rm -r -f '$WORKDIR/$version'/trash 1>/dev/null 2>&1' &    
+	    ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=30 -o BatchMode=yes $log@$adr -n 'cd '$WORKDIR/$version';mv -f TRUST trash;mkdir -p TRUST'
+	    ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=30 -o BatchMode=yes $log@$adr -n 'rm -r -f '$WORKDIR/$version'/trash 1>/dev/null 2>&1' & 
          fi
 	 echo "rsync of sources on $log@$adr:$WORKDIR/$version at "`date '+%H:%M:%S'`
          for VOB in $VOBS
@@ -186,7 +197,7 @@ do
 	    cd $TRUST_ROOT/../$VOB
 	    # -delete ne marche pas avec --files-from. A savoir. Voir: http://stackoverflow.com/questions/1813907/rsync-delete-files-from-list-dest-does-not-delete-unwanted-files
 	    rsync -e 'ssh -o StrictHostKeyChecking=no' --stats -aiHD --delete --files-from=$TRUST_ROOT/$VOB.tar.gz.files --timeout=1000 . $log@$adr:$WORKDIR/$version/$VOB
-	 done | grep -v "^\." 1>$rsync_log 2>&1 # On filtre pour n'avoir que les fichiers modifies/deleted remotely
+	 done | grep -v "^\." 1>>$rsync_log 2>&1 # On filtre pour n'avoir que les fichiers modifies/deleted remotely
 	 cd $TRUST_ROOT	 
          # Creation eventuelle du lien:
 	 ssh_command '[ "$WORKDIR" != "" ] && [ "$WORKDIR" != "$HOME" ] && cd $HOME && rm -f '$version' && ln -s -f $WORKDIR/'$version' .'
@@ -213,8 +224,8 @@ do
 	 then
 	    # On fait en 2 passes (car sinon conflit possible)
 	    echo "Deleting $WORKDIR/$version on $log@$adr..."
-	    ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $log@$adr -n 'cd '$WORKDIR/$version';mv -f TRUST trash;mkdir -p TRUST' 
-	    ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $log@$adr -n 'rm -r -f '$WORKDIR/$version'/trash 1>/dev/null 2>&1' &
+	    ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $log@$adr -n 'cd '$WORKDIR/$version';mv -f TRUST trash;mkdir -p TRUST'
+	    ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $log@$adr -n 'rm -r -f '$WORKDIR/$version'/trash 1>/dev/null 2>&1' &  
          fi
 	 
 	 # Construction des paquets si necessaire
@@ -259,8 +270,8 @@ do
 	 then
 	    # On fait en 2 passes (car sinon conflit possible)
 	    echo "Deleting $WORKDIR/$version on $log@$adr..."
-	    ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $log@$adr -n 'cd '$WORKDIR/$version';mv -f TRUST trash;mkdir -p TRUST' 
-	    ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $log@$adr -n 'rm -r -f '$WORKDIR/$version'/trash 1>/dev/null 2>&1' &
+	    ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $log@$adr -n 'cd '$WORKDIR';mv -f '$version' trash;mkdir -p '$version
+	    ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $log@$adr -n 'rm -r -f '$WORKDIR'/trash 1>/dev/null 2>&1' &   
          fi
 	 
 	 # Construction des paquets si necessaire

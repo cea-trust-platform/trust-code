@@ -118,7 +118,8 @@ int Memoire::add(Objet_U* obj)
     }
   int old_size=size;
   int i;
-  size+=step;
+  size*=2;
+  // Cerr<<"size "<<size<<" "<<size/step<<finl;
   Memoire_ptr* newdata=new Memoire_ptr[size];
   if(!newdata)
     {
@@ -168,7 +169,8 @@ int Memoire::suppr(int num)
   prems=num;
   data[num].set(0);
   compteur--;
-  if((size-compteur)>step)
+  if((size>2*compteur)&&(size>step))
+    //if((size-compteur)>step)
     {
       compacte();
     }

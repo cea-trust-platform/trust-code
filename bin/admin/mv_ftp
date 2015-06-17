@@ -1,8 +1,12 @@
 #!/bin/bash
-
-cat << ! | ftp -iv | grep 'Opening BINARY'
+# Renomme le fichier passe en argument
+echo "Rename the $1 file to $2 file on ftp://$TRUST_FTP/ directory"
+(
+cat << ! | ftp -iv | grep 'Rename'
 open $TRUST_FTP
-cd ../..
-rename $1 $2
+rename "/"$1 "/"$2
 !
+) &
+$TRUST_ROOT/bin/KSH/wait_for $! 600 || (echo "Error: mv_ftp killed"; exit -1)
 
+[ $? != 0 ] && echo "Error command failed"

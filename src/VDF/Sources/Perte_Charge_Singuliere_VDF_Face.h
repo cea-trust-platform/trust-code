@@ -47,8 +47,7 @@ class Perte_Charge_Singuliere_VDF_Face : public Perte_Charge_VDF_Face,
 
 public:
 
-  DoubleTab& ajouter(DoubleTab& ) const;
-  DoubleTab& calculer(DoubleTab& ) const ;
+  DoubleTab& ajouter_(const DoubleTab&, DoubleTab& ) const;
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const ;
   void remplir_num_faces(Entree& );
 

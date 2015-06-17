@@ -58,7 +58,7 @@ test_execution()
 	    then
 	env PATH=$BALTIK_ROOT/bin:${PATH} Makeatelier.sccs NO_IHM 2 depend
 	cd exec_opt
-	make PROGRAM=../../test_prog #LIB=
+	make PROGRAM=../../test_prog_opt #LIB=
 	#$CC -o test_prog $prog_test $includes_add $librairies_add
 	status=$?
 	else
@@ -97,7 +97,7 @@ install_arch()
    tar xf prov$3.tar
    cd  $3
    DIR=`pwd`
-   $DIR/configure --prefix=$dir --disable-shared --enable-static 
+   $DIR/configure --prefix=$dir  ${configure_flag}
    make
    make install	
    status=$?

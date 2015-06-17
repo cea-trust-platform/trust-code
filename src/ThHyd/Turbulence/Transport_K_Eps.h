@@ -26,6 +26,8 @@
 #include <Transport_K_Eps_base.h>
 #include <Op_Diff_K_Eps_base.h>
 #include <Operateur_Conv.h>
+#include <Champ_Don.h>
+
 class Motcle;
 
 //////////////////////////////////////////////////////////////////////////////
@@ -49,7 +51,7 @@ class Transport_K_Eps : public Transport_K_Eps_base
   Declare_instanciable(Transport_K_Eps);
 
 public:
-
+  void set_param(Param& param);
   int lire_motcle_non_standard(const Motcle&, Entree&);
   inline void associer_Champ_Inconnu(const Champ_Inc& );
   void associer_modele_turbulence(const Mod_turb_hyd_RANS& );
@@ -60,11 +62,12 @@ public:
   DoubleTab& corriger_derivee_impl(DoubleTab& d);
 
 protected :
-
+  int with_nu_;
   Op_Diff_K_Eps terme_diffusif;
   Operateur_Conv terme_convectif;
 
   REF(Champ_Inc) inco_eqn_associee;
+  Champ_Don Champ_don_nul_;  // on y met 0 si on ne veut pas de nu
 
 };
 

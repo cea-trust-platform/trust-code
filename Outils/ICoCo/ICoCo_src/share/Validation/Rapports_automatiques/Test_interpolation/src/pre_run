@@ -1,0 +1,11 @@
+#gunzip -f interass.geom.gz
+#./configure
+make check
+status=$?
+if [ $status -eq 0 ]
+then
+  echo OK > is_ok
+else
+  #echo KO > is_ok
+  rm -f is_ok
+fi

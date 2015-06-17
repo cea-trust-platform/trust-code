@@ -55,18 +55,31 @@ analyse_fichier_colonne()
    # Ne compare pour le moment que les fichiers paralleles avec ceux sequentiels
    if [ $type = "par" ]
    then
-      rm -f compare_sonde.log
       let egal=0
-      list_output=`ls $NOM2"_"*.son $NOM2"_"*.out 2>/dev/null` 
+      list_output=`ls  $NOM2"_"*.out 2>/dev/null` 
       total=`echo $list_output | wc -w | $TRUST_Awk '{print $1}'`
+      seuil=1e-3
+      if [ -f seuil_controle_bilan ]
+	  then
+	  seuil=`cat seuil_controle_bilan`
+	  echo "Control of out with $seuil"
+      fi
+
       for par_output in $list_output
       do
          seq_output=${par_output#PAR_}
-	 compare_sonde $seq_output $par_output 1>>compare_sonde.log 2>&1
-	 [ $? = 0 ] && let egal=$egal+1
+	 compare_sonde $seq_output $par_output -max_delta -seuil_erreur $seuil 1>compare_${seq_output}.log 2>ompare_${seq_output}.err
+	 if [ $? = 0 ] 
+           then
+          let egal=$egal+1 
+	else
+         echo error with files ${seq_output}
+	 cat compare_${seq_output}.log
+	fi
       done
       PLOT=$egal/$total
       ecarts_plots=1 && [ $egal = $total ] && ecarts_plots=0
+      [ $ecarts_plots = 1 ] && echo error with files out 
       case ${#PLOT} in
 	3) PLOT="...."$PLOT;;
 	4) PLOT="..."$PLOT;;
@@ -150,12 +163,20 @@ liste()
    add_test_case_from_validation || exit -1
    echo " "
    echo "Searching test cases in $ref. Please wait..."
-   testslist=`find $ref/ -follow -name *.lml.gz -print 2>/dev/null | sed 's#'"$ref/"'##'`
+   testslist=`find $ref/ -follow -name *.lml.gz -print 2>/dev/null | sed 's#'"$ref/"'##' | sort`
    # Pour eviter les problemes des .lml.gz sortis de gestion de conf
    if [ "`element_gere_en_configuration.sh .`" = git ]
    then
       #liste=`\cd $ref;git-ls-files */*/*.lml.gz` 
-      liste=`\cd $ref;git-ls-files $testslist`
+      liste=`\cd $ref;git-ls-files $testslist | sort`
+      nbold=`echo $liste | wc -w`
+      nbnew=`echo $testslist | wc -w`
+      nbdif=`echo "$nbnew-$nbold" | bc -l`
+      if [ $nbdif != 0 ]
+      then
+         echo "Warning: $nbdif test case(s) not in configuration management => Commit your test case(s) on git!"
+	 exit -1
+      fi
    else
       #liste=`\cd $ref;ls */*/[A-N]*.lml.gz 2>/dev/null;ls */*/[O-Z]*.lml.gz 2>/dev/null;ls */*/[a-n]*.lml.gz 2>/dev/null;ls */*/[o-z]*.lml.gz 2>/dev/null;ls */*/__*.lml.gz 2>/dev/null;ls */*/[0-9]*.lml.gz 2>/dev/null`
       liste=$testslist
@@ -332,7 +353,7 @@ add_test_case_from_validation()
       #############################################################################
       # Creation eventuelle de nouveaux cas tests depuis les fiches de validation #
       #############################################################################
-      for FICHE_ROOT in `cd ${Rapports_auto_root} 2>/dev/null && find Validation/Rapports_automatiques -name '*'.prm | $TRUST_Awk -F/src '!/build/ {print $1}'`
+      for FICHE_ROOT in `cd ${Rapports_auto_root} 2>/dev/null && find  Validation/Rapports_automatiques -follow -name '*'.prm | $TRUST_Awk -F/src '!/build/ {print $1}'`
       do
          ####################
 	 # Nouveau cas test #
@@ -383,6 +404,7 @@ add_test_case_from_validation()
 		  then
 		     if [ ! -f $TRUST_TESTS/$DIRECTORY/$test/lien_fiche_validation ]
 		     then
+                        org=`pwd`
 			if [ ! -d $TRUST_TESTS/$DIRECTORY/$test ]
 			then
 		           cd $TRUST_TESTS/$DIRECTORY
@@ -395,11 +417,11 @@ add_test_case_from_validation()
 			if [ "$TRUST_SCM" = 1 ] 
 			then
 			   CHECKOUT . 1>/dev/null 2>&1
-			   MKELEM lien_fiche_validation 1>mkelem.log 2>&1
-			   [ $? != 0 ] && echo "Error during the creation of `pwd`/lien_fiche_validation" && cat mkelem.log && exit -1	     
+			   MKELEM lien_fiche_validation 
+			   [ $? != 0 ] && echo "Error during the creation of `pwd`/lien_fiche_validation" &&  exit -1	     
 			fi
 			echo "Creation of $test/lien_fiche_validation"  
-			cd - 1>/dev/null 2>&1
+			cd $org 1>/dev/null 2>&1
 		     fi
 		  else
 		      # le fichier lien est il a jour
@@ -446,9 +468,10 @@ add_test_case_from_validation()
 			   then
 			      cd $TRUST_TESTS/$DIRECTORY/$test
 			      CHECKOUT . 1>/dev/null 2>&1
-			      MKELEM $test.lml.gz 1>mkelem.log 2>&1
-			      [ $? != 0 ] && echo "Error when creating the file `pwd`/$test.lml.gz" && cat mkelem.log && exit -1	 
+			      MKELEM $test.lml.gz 
+			      [ $? != 0 ] && echo "Error when creating the file `pwd`/$test.lml.gz" && exit -1	 
 			   fi
+			      cd $TRUST_TESTS
 			   rm -r -f $REP_TMP
 			fi
 		     fi	 
@@ -465,7 +488,7 @@ add_test_case_from_validation()
 # Debut du script #
 ###################
 
-[ ${#TRUST_ROOT} = 0 ] && echo "TRUST environment not initialized. Go to the bin directory of TRUST installation and run: . ./Init_TRUST" && exit
+[ ${#TRUST_ROOT} = 0 ] && echo "TRUST environment not initialized. Go to the env directory of TRUST installation and run: source ./env_TRUST.sh" && exit
 
 LANG=C
 PETSC_DEBUG=0 && [ $PETSC_DEBUG = 1 ] && echo "ATTENTION PETSC_DEBUG MIS A 1 !!!" 
@@ -476,7 +499,6 @@ echo "Usage: `basename $0` [-print] [-distant] [-nomail] [-efface] [-no_timeout]
 # Les fichiers .tests_$exec et .tests_$exec.html seront dans ce repertoire
 # et les cas de references en dessous linkes avec les fichiers
 # des repertoires contenus dans tests/Reference
-#[ -z "$DIPHA_ROOT" ] && . Init_TRUST 1>/dev/null 2>&1
 AWK=$TRUST_ROOT/bin/AWK
 GMON_DIR=$TRUST_TMP/gmon && rm -r -f $GMON_DIR
 GMON_DIR="" # On desactive la construction d'un profile complet (assez long)
@@ -486,7 +508,7 @@ then
     Rapports_auto_root=$TRUST_ROOT
 else
     echo "Use of $Rapports_auto_root directory for validation instead of \$TRUST_ROOT"
-    if [ "$ref" = "$TRUST_ROOT/tests" ]
+    if [ "$ref" = "$TRUST_ROOT/tests" ] && [ "$Rapports_auto_root" != "$TRUST_ROOT" ]
     then
        echo "You must change TRUST_TESTS variable and define Rapports_auto_root"
        exit -1
@@ -629,7 +651,7 @@ then
     if [ $choix != 0 ]
     then
        #liste=`ls */$choix/$choix.lml.gz 2>/dev/null`
-       liste=`find ./ -follow -name $choix.lml.gz -print 2>/dev/null | sed 's#'"./"'##'`
+       liste=`find ./ -follow -name $choix.lml.gz -print 2>/dev/null | sed 's#'"./"'##' | sort`
        if [ ${#liste} != 0 ]
        then
 	  choix="M"
@@ -644,8 +666,8 @@ then
 	        cas=`basename $cas`
 		#lmlgz=`ls */$cas/$cas.lml.gz 2>/dev/null`
 		#if [ -f ${lmlgz%lml.gz}data ] || [ "`ls */$cas/lien_fiche_validation 2>/dev/null`" != "" ]
-                lmlgz=`find ./ -follow -name $cas.lml.gz -print 2>/dev/null | sed 's#'"./"'##'`
-		if [ -f ${lmlgz%lml.gz}data ] || [ "`find ./ -follow -name lien_fiche_validation -print 2>/dev/null | sed 's#'"./"'##'`" != "" ]
+                lmlgz=`find ./ -follow -name $cas.lml.gz -print 2>/dev/null | sed 's#'"./"'##' | sort`
+		if [ -f ${lmlgz%lml.gz}data ] || [ "`find ./ -follow -name lien_fiche_validation -print 2>/dev/null | sed 's#'"./"'##' | sort`" != "" ]
 		then
 		   liste=$liste" "$lmlgz
 		fi
@@ -661,9 +683,20 @@ then
     # Verifier si liste non vide
     [ "$liste" = "" ] && echo "Error: No test cases found." && exit -1
     # Verifier si liste contient cas en double
-    fulllist=`echo $liste | xargs dirname | xargs basename -a`
-    uniqlist=`echo $liste | xargs dirname | xargs basename -a | sort -u`
-    [ ${#fulllist} != ${#uniqlist} ] && echo "Error: Test cases duplicate => Check that 2 test cases don't have the same name!" && exit -1
+    # l option -a n est pas disponible sur toutes les machines donc passage a une boucle for
+    #fulllist=`echo $liste | xargs dirname | xargs basename -a`
+    #uniqlist=`echo $liste | xargs dirname | xargs basename -a | sort -u`
+    fulllist=""
+    for i in `echo $liste`
+    do
+       j=`dirname $i`
+       fulllist=$fulllist" "`basename $j`
+    done
+    uniqlist=`echo $fulllist | sort -u`
+    nbold=`echo $fulllist | wc -w`
+    nbnew=`echo $uniqlist | wc -w`
+    nbdif=`echo "$nbnew-$nbold" | bc -l`
+    [ $nbdif != 0 ] && echo "Error: Test cases duplicate => Check that $nbdif test cases don't have the same name!" && exit -1
     k=0
     succes=0
     succes_par=0
@@ -740,7 +773,7 @@ then
          export GCOV_PREFIX
           [ $choix = 0 ] && rm -rf ${GCOV_PREFIX}
        fi    
-  # find $TRUST_ROOT/MonoDir$COMM"_opt_gcov"/src/. -name '*'.gcda | xargs rm -f
+  # find $TRUST_ROOT/MonoDir$COMM"_gcov"/src/. -name '*'.gcda | xargs rm -f
     fi
     coverage_gprof=0 && [ ${exec%_pg}   != $exec ] && [ $choix = 0 ] && coverage_gprof=1
     
@@ -786,6 +819,15 @@ then
 	      i=""
            fi
 	fi
+	# Discard MED test case if no MED capabilities
+	if [ "$TRUST_DISABLE_GMSH" = 1 ]
+	then
+	   if [ "`grep "gmsh " $REP/* 2>/dev/null`" != "" ]
+	   then
+              echo "Test $i skipped (no gmsh)"
+	      i=""
+           fi
+	fi
 	# Discard PARALLEL ONLY test case if no MPI capabilities
 	if [ "$TRUST_DISABLE_MPI" = 1 ]
 	then
@@ -796,8 +838,15 @@ then
 	   [ "`grep -i hypre $REP/* 2>/dev/null`" != "" ]		&& i=""
 	   [ "`grep -i boomeramg $REP/* 2>/dev/null`" != "" ]		&& i=""
 	   [ "`grep -i Check_solver.sh $REP/* 2>/dev/null`" != "" ]	&& i=""
+	   [ "`grep -i 'Testeur_MEDCoupling' $REP/* 2>/dev/null`" != "" ] && i=""
            [ "$i" = "" ] &&  echo "Test $iisa skipped (no MPI)"
 
+	fi
+        if [ -f $REP/skipped ]
+	then
+	echo "Test $i skipped (file skipped)"
+
+	i=""
 	fi
 	[ $choix != "0" ] && [ ${choix#P_} = $choix ] && [ $choix != $k ] && [ $choix != "M" ] && i=""
 	if [ ${#i} != 0 ]
@@ -1109,6 +1158,7 @@ then
 			    SPU="....."
 		            # Nouveau: compare les fichiers colonnes
 			    analyse_fichier_colonne
+				[ $ecarts_plots -ne 0 ] && PB=254
 			    if [ $PB -eq '0' ]
 			    then
 				if [ "$type" = "seq" ]
@@ -1229,8 +1279,8 @@ echo $ECHO_OPTS "Successful tests cases :"$succes"/"$tests"\n" >> $SORTIE
 # GF le test est faux car PAR est modififie par chaque cas
 if [ $tests_par  -ne 0  ]
 then
-   echo $ECHO_OPTS "Successful tests cases in parallel mode :"$succes_par"/"$tests_par"\n" >> $SORTIE
-   (echo $ECHO_OPTS "Successful tests cases in parallel mode :"$succes_par"/"$tests_par"\n" >> $fichier) 2>/dev/null
+   echo $ECHO_OPTS "Successful tests cases in parallel mode :"$succes_par"/"$tests_par"" >> $SORTIE
+   (echo $ECHO_OPTS "Successful tests cases in parallel mode :"$succes_par"/"$tests_par"" >> $fichier) 2>/dev/null
 fi
 
 # Sort le temps CPU de la suite de tests
@@ -1239,6 +1289,7 @@ $TRUST_Awk -F'|' '/s\|/ {gsub("s","",$4);CPU+=$4;i++} END {if (i!=0) print i" te
 
 if [ ${#choix} = 0 ] || [ $choix = 0 ]
 then
+   echo >> $SORTIE
    echo "Parallel tests cases :" | tee -a $SORTIE
    for file in $liste
    do
@@ -1250,6 +1301,7 @@ then
    done | sort | uniq -c | tee -a $SORTIE
 fi
 
+echo >> $SORTIE
 if [ $succes = $tests ]
 then
    echo $ECHO_OPTS "Successful result." >> $SORTIE
@@ -1293,7 +1345,11 @@ then
          [ "$dest" != "" ] && cat $message | grep -v ' ecarts |' | mail_ -s \"[lance_test] Unsuccesful no-regression tests on $HOST \(without warning\)\" $dest 
       fi
    fi
+   # Liste des cas tests ayant pose probleme
+   echo $ECHO_OPTS "List of unsuccessful tests cases :\n`cat $rep_tests/liste`\n" >> $SORTIE
+   (echo $ECHO_OPTS "List of unsuccessful tests cases :\n`cat $rep_tests/liste`\n" >> $fichier) 2>/dev/null
 fi
+echo >> $SORTIE
 rm -f $message
 
 #[ $checkin = 0 ] && CHECKIN $SORTIE

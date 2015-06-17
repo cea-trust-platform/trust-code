@@ -25,7 +25,7 @@ let b:current_syntax = \"$type\"
 hi def link TRUSTLanguageKeywords$VERSION Type
 hi def link TRUSTComments Comment
 syntax case ignore
-syntax region TRUSTComments start=/# / end=/ #/ contains=TRUSTComments
+syntax region TRUSTComments start=/# / end=/ #/ keepend contains=TRUSTComments
 syntax region TRUSTComments start=/\/\* / end=/ \*\// contains=TRUSTComments
 " > $file.tmp
    echo "syntax keyword TRUSTLanguageKeywords$VERSION$KeywordsTRUST" >> $file.tmp

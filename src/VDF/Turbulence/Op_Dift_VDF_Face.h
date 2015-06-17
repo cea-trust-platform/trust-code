@@ -47,25 +47,12 @@ class Op_Dift_VDF_Face : public Op_Dift_VDF_Face_base
 
 public:
 
-  inline Op_Dift_VDF_Face();
+  Op_Dift_VDF_Face();
   void associer_diffusivite_turbulente(const Champ_Fonc& );
   void completer();
   inline Eval_VDF_Face& get_eval_face();
 };
 
-
-//
-// Fonctions inline de la classe Op_Dift_VDF_Face
-//
-
-//// Op_Dift_VDF_Face
-//
-
-inline Op_Dift_VDF_Face::Op_Dift_VDF_Face()
-
-  : Op_Dift_VDF_Face_base(It_VDF_Face(Eval_Dift_VDF_const_Face)())
-{
-}
 // Description renvoit l'evaluateur caste en Ecal_VDF_Face corretement
 inline Eval_VDF_Face& Op_Dift_VDF_Face::get_eval_face()
 {

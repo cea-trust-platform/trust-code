@@ -180,6 +180,29 @@ Read pb
 			compo_graPx_elem
 		}
 	}
+	liste_de_postraitements {
+	test1 Postraitement {
+		Definition_champs {
+		test_nom reduction_0D { methode moyenne_ponderee 
+	              sources { refchamp { pb_champ pb pression } } 
+		         }
+	                }
+		format lata 
+		Champs dt_post 1.3
+		  {
+			pression elem
+			test_nom
+		 }
+	      }
+	
+	test2 Postraitement {
+	        format lata 
+		Champs dt_post 1.3e9
+		{
+		       pression elem			
+		}
+	    } 
+	}
 }
 # On doit trouver les resultantes des forces de pression et visqueuses exercees par le fluide sur la frontiere Obstacle positives #
 # On doit trouver le moment des forces de pression et visqueuses exercees par le fluide sur la frontiere Obstacle positifs #

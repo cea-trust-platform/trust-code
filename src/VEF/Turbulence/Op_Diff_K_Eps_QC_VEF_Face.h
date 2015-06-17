@@ -32,9 +32,6 @@
 
 #include <Op_Diff_K_Eps_VEF_Face.h>
 
-class Zone_dis;
-class Zone_Cl_dis;
-class Champ_Inc;
 
 
 

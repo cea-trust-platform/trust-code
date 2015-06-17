@@ -25,6 +25,8 @@
 #include <Verif_Cl.h>
 #include <Les_Cl.h>
 #include <Les_mod_turb.h>
+#include <Mod_turb_hyd_RANS.h>
+
 
 Implemente_instanciable(Pb_Hydraulique_Turbulent,"Pb_Hydraulique_Turbulent",Pb_qdm_fluide);
 
@@ -193,10 +195,7 @@ int Pb_Hydraulique_Turbulent::verifier()
 {
   const Zone_Cl_dis& zone_Cl_hydr = eq_hydraulique.zone_Cl_dis();
 
-  if ( sub_type(Modele_turbulence_hyd_K_Eps, eq_hydraulique.get_modele(TURBULENCE).valeur() )
-       || sub_type(Modele_turbulence_hyd_K_Eps_2_Couches, eq_hydraulique.get_modele(TURBULENCE).valeur() )
-       || sub_type(Modele_turbulence_hyd_K_Eps_V2, eq_hydraulique.get_modele(TURBULENCE).valeur() )
-       || sub_type(Modele_turbulence_hyd_K_Eps_Bas_Reynolds, eq_hydraulique.get_modele(TURBULENCE).valeur() )  )
+  if ( sub_type(Mod_turb_hyd_RANS, eq_hydraulique.get_modele(TURBULENCE).valeur() ))
     {
       const Mod_turb_hyd_RANS& le_mod_RANS = ref_cast(Mod_turb_hyd_RANS, eq_hydraulique.get_modele(TURBULENCE).valeur());
       const Transport_K_Eps_base& eqn = ref_cast(Transport_K_Eps_base, le_mod_RANS.eqn_transp_K_Eps());

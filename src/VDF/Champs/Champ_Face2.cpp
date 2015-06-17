@@ -126,13 +126,13 @@ void Champ_Face::calculer_dercov_axi(const Zone_Cl_VDF& zone_Cl_VDF)
               // arete paroi_fluide :il faut determiner qui est la face fluide
               {
                 if (est_egal(inco[fac1],0))
-                  vit_imp = val_imp_face_bord(rang2,ori3);
+                  vit_imp = val_imp_face_bord_private(rang2,ori3);
                 else
-                  vit_imp = val_imp_face_bord(rang1,ori3);
+                  vit_imp = val_imp_face_bord_private(rang1,ori3);
               }
             else
-              vit_imp = 0.5*(val_imp_face_bord(rang1,ori3)+
-                             val_imp_face_bord(rang2,ori3));
+              vit_imp = 0.5*(val_imp_face_bord_private(rang1,ori3)+
+                             val_imp_face_bord_private(rang2,ori3));
 
             if (ori1 == 0) // bord d'equation R = cte
               {
