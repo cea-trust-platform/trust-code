@@ -106,6 +106,7 @@ fi
 
 # Update petsc-master
 PETSC_MASTER=petsc-master.tar.gz
+touch $PETSC_MASTER
 HTTP_PETSC_MASTER=http://ftp.mcs.anl.gov/pub/petsc/$PETSC_MASTER
 if [ "$PETSC_HAVE_CUDA" = 1 ] || [ "$PETSC_HAVE_OPENMP" = 1 ] || [ "$ADMIN" = 1 ]
 then

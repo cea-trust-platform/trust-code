@@ -1,11 +1,19 @@
 --------------------------------------------------------------------------------------------------
-Release notes version 1.7.1_beta : Enhancements, modifications and corrected bugs since version 1.7.0 :
+Release notes version 1.7.1 : Enhancements, modifications and corrected bugs since version 1.7.0 :
 --------------------------------------------------------------------------------------------------
+11/06/15 (Tools)  Portability : Released version of VisIt is upgraded to 2.9.1
+09/06/15 (TRUST) Portability : Linux distribution Fedora 22 and gcc 5.1 supported
+09/06/15 (Kernel) Portability : Released Valgrind version updated to 3.10.1
+03/06/15 (Kernel) Minor change: Option -disable-optionals added to the Kernel/TRUST configure tool (Disable all optionals librairies and tools)
+02/06/15 (TRUST) Minor change: Update reynolds_tau_robin.dat taking account of canal half-height h
+22/05/15 (Tools)  Portability : reprise_auto script is supported on cluster occigen (CINES)
+12/05/15 (TRUST) New keyword : seuil_statio_relatif keyword renamed to seuil_statio_relatif_deconseille
+11/05/15 (TRUST) Bug fixed   : Adding a stop if bidim_axi variable used with VEF discretization
 29/04/15 (TRUST) Bug fixed   : Fix display k-eps residues in .dt_ev file (at the same time as the other residues)
 24/04/15 (Kernel) Minor change: PETSc updated from 3.5.2 to 3.5.3
 15/04/15 (TRUST) Minor change: TRUST is configured to use now the v1.2.8.2 Bullxmpi library on CCRT clusters (v1.1.16.6 is decommissioned by hotline since last maintenance)
 15/04/15 (TRUST) Minor change: Ability to read 2 med files with sub-zones in the same datafile by renaming ssz.geo and ssz_par.geo in *_ssz.geo and *_ssz_par.geo (*=name of med domain)
-14/14/15 (TRUST) Bug fixed   : Champ_fonc_fonction for beta_th and factorisation of the three functions Calcul_Production_K_VEF::calculer_terme_destruction_K using Champ_P1NC::calcul_gradient
+14/04/15 (TRUST) Bug fixed   : Champ_fonc_fonction for beta_th and factorisation of the three functions Calcul_Production_K_VEF::calculer_terme_destruction_K using Champ_P1NC::calcul_gradient
 07/04/15 (TRUST) New feature : MedCoupling used as ThirdPart
 17/03/15 (TRUST) Bug fixed   : Fix the sources balance in parallel
 03/02/15 (TRUST) Bug fixed   : Add test if virtual cells in several functions (Perte_Charge_VEF.cpp and Modifier_pour_QC.cpp)

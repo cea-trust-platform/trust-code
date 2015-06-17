@@ -61,7 +61,7 @@ def modif_keps(eq1,rho):
         ci=mod.transport_k_epsilon.conditions_initiales.condinit
         ci.ch.val[0]*=rho
         ci.ch.val[1]*=rho
-        mod.transport_k_epsilon.conditions_initiales.condinit=[ci]
+        mod.transport_k_epsilon.conditions_initiales.condinit=ci
         cls=mod.transport_k_epsilon.conditions_limites.listobj
         for cla in cls:
             cl=cla.cl

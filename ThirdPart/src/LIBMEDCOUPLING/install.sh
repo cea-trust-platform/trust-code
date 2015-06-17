@@ -11,6 +11,11 @@ echo "#define NO_MEDFIELD " > $DEST/include/ICoCoMEDField.hxx
 exit 0
 fi
 tar zxf MED_SRC.tgz
+
+echo patching MPIAcces.h
+
+sed -i  "s/return (MPI_Datatype ) NULL /return MPI_DATATYPE_NULL /"    MED_SRC/src/ParaMEDMEM/MPIAccess.hxx
+
 mkdir build
 cd build
 
@@ -35,6 +40,8 @@ fi
 
 
 make -j $TRUST_NB_PROCS
+# si make install fonctionne coorectement ce fichier sera ecrase
+# echo "#define NO_MEDFIELD " > $DEST/include/ICoCoMEDField.hxx
 make install
 status=$?
 if [ $status -ne 0 ]
@@ -69,6 +76,6 @@ cd $dir
 ln -sf salome/* .
 cd -
 done
-
+[ ! -f $DEST/include/ICoCoMEDField.hxx ] && echo "#define NO_MEDFIELD " > $DEST/include/ICoCoMEDField.hxx
 
 exit $status

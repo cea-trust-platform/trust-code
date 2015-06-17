@@ -16,8 +16,8 @@ $root/$lcov/bin/lcov --remove tmp.info \
 	/usr/include/c++/*/* \
 	/usr/include/c++/*/*/* \
 	/usr/include/c++/*/*/*/* \
-	/*/*/*/TRUST/lib/src/LIBLATAFILTER/include/* \
-	/*/*/*/TRUST/lib/src/LIBPETSC/*/include/* \
+	$TRUST_ROOT/lib/src/LIBLATAFILTER/include/* \
+	$TRUST_ROOT/lib/src/LIBPETSC/*/*/include/* \
 	-o app.info || exit -1
 
 #########################################################
