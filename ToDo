@@ -1,5 +1,6 @@
 Version	Qui				Tache
-1.7.2   triou@cea.fr            rintenance CCRT 16 juin => revoir point d acces sur curie et airain
+1.7.2   triou@cea.fr            dans lance_test_nuit quand jobs tues a distance faire de meme avec run etudes
+1.7.2   triou@cea.fr            maintenance CCRT 16 juin => revoir point d acces sur curie et airain
 1.7.2   triou@cea.fr            revoir sortie Installer_TRUST quand erreur a la compilation ou etat des lieux lors d'une "longue" attente sans message
 1.7.2   triou@cea.fr            revoir echo Disabling de configure pour NUIT.html ET reps=LIB... dans bin/compile avec un OK KO ou NOT (MED et MEDCOUPLING traites differemment)
 1.7.2   triou@cea.fr            pas de touch ~/force_parallelism (Check_decoupage) !

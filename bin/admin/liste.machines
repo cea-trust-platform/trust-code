@@ -1,10 +1,10 @@
 arch 	maj		recup 		hostname		Update	lance_test	Tasks		Options	
 linux	rsync_ssh	cible		is224668.intra.cea.fr				-valgrind 	-force_old_openmpi					# CentOS 6.4    MACHINE 64bits	CEA Saclay 	Bat 451	LMSF	bureau 43 stagiaire (Desormais on livre un binaire 64bits)
-linux	rsync_ssh 	tache		vonnes.intra.cea.fr				-valgrind	-force_old_openmpi					# Mandriva 2010			CEA Grenoble			(Place en premier car long)
+linux	rsync_ssh 	get_binary	vonnes.intra.cea.fr				-valgrind	-force_old_openmpi					# Mandriva 2010			CEA Grenoble			(Place en premier car long)
 linux	rsync_ssh	tache		sitre.intra.cea.fr				-valgrind 	-force_old_openmpi					# Fedora 18			CEA Grenoble 	Bat 10.05 	bureau 554 TMA TRUST
 linux	rsync_ssh	tache		is226422.intra.cea.fr		-all								-disable-mpi		# CentOS 6.4    		CEA Saclay 	Bat 451	LMSF	bureau 43 stagiaire
 linux	rsync_ssh	tache		is205677.intra.cea.fr	-rsync			-xdata									# Fedora 18			CEA Saclay	Bat 451 LGLS	bureau 43
-linux	rsync_ssh	get_binary	is210375.intra.cea.fr		-all							 	-download-salome	# Mandriva 2010			CEA Saclay	Bat ??	
+linux	rsync_ssh	tache		is210375.intra.cea.fr		-all							 	-download-salome	# Mandriva 2010			CEA Saclay	Bat ??	
 linux	rsync_ssh	cible		is223196.intra.cea.fr		-all				-force_provided_openmpi					# CentOS 6.4 			CEA Saclay	Bat 451 LMSF	bureau 43 CS Marthe Roux	
 linux	rsync_ssh	cible		is220631.intra.cea.fr			 		 	 				-disable 		# Fedora 17			CEA Saclay	Bat 451 LGLS	bureau 43 (Teste la compilation de TRUST allegee)
 linux	rsync_ssh	non		is221559.intra.cea.fr		 		-g  		-force_old_openmpi					# Fedora 18 			CEA Saclay	Bat 451 LGLS	bureau Gauthier Fauchet (PC of the Leader Project)

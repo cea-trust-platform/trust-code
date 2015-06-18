@@ -663,19 +663,19 @@ then
 	 if [ "$etude_test" = 1 ]
 	 then
             echo "  See $REP_NUIT/run_Mistra_*.log"
-           echo "TRUST script on airain the `date` ...">run_Mistra_airain.log
-	   echo>>run_Mistra_airain.log
-           ./run Validation/Mistra -adr airain.ccc.cea.fr 1>>run_Mistra_airain.log 2>&1 &
-           echo "TRUST script on curie the `date` ...">run_Mistra_curie.log
-	   echo>>run_Mistra_curie.log
-           ./run Validation/Mistra -adr curie-ccrt.ccc.cea.fr 1>>run_Mistra_curie.log 2>&1 &
-           echo "TRUST script on callisto the `date` ...">run_Mistra_callisto.log
-	   echo>>run_Mistra_callisto.log
+            echo "TRUST script on airain the `date` ...">run_Mistra_airain.log
+	    echo>>run_Mistra_airain.log
+            ./run Validation/Mistra -adr airain.ccc.cea.fr 1>>run_Mistra_airain.log 2>&1 &
+            echo "TRUST script on curie the `date` ...">run_Mistra_curie.log
+	    echo>>run_Mistra_curie.log
+            ./run Validation/Mistra -adr curie-ccrt.ccc.cea.fr 1>>run_Mistra_curie.log 2>&1 &
+            echo "TRUST script on callisto the `date` ...">run_Mistra_callisto.log
+	    echo>>run_Mistra_callisto.log
            ./run Validation/Mistra -adr callisto.intra.cea.fr 1>>run_Mistra_callisto.log 2>&1 &
 	 else
             echo "  See $REP_NUIT/run_Etudes.log"
-           echo "TRUST script from $HOST the `date` ...">run_Etudes.log
-	   echo>>run_Etudes.log
+            echo "TRUST script from $HOST the `date` ...">run_Etudes.log
+	    echo>>run_Etudes.log
             (./run -all 1>>run_Etudes.log 2>&1) &
 	 fi
       else
@@ -1755,7 +1755,7 @@ cd $repertoire_gcov
 #couverture_de_code=`tggcov -R all | $TRUST_Awk 'BEGIN {lines="??"} /Summary/ && /src/ {for (i=0;i<7;i++) getline;lines=$1} END {gsub("%","",lines);print lines}'`
 echo "  Call to $TRUST_ROOT/bin/admin/tggcov_"
 echo "from `pwd`"
-echo "  See $REP_NUIT/tggcov.log"
+echo "    See $REP_NUIT/tggcov.log"
 $TRUST_ROOT/bin/admin/tggcov_ 1>$REP_NUIT/tggcov.log 2>&1
 #tail -n2 $REP_NUIT/tggcov.log
 couverture_de_code=`tggcov_ | $TRUST_Awk '/TRUST code/ {print $1}'`
@@ -1764,9 +1764,9 @@ couverture_minimale=65.26 #66
 coverage=`echo $couverture_de_code | $TRUST_Awk -v m=$couverture_minimale '{if ($1>=m) print 1;else print 0}'`
 if [ "$coverage" = 1 ]
 then
-   echo "  Coverage $couverture_de_code% >= $couverture_minimale% of lines"
+   echo "    Coverage $couverture_de_code% >= $couverture_minimale% of lines"
 else
-   echo "  Coverage $couverture_de_code% < $couverture_minimale% of lines"
+   echo "    Coverage $couverture_de_code% < $couverture_minimale% of lines"
    cat $REP_NUIT/tggcov.log | mail_ -s\"[lance_test_nuit] Coverage KO with $couverture_de_code% \< $couverture_minimale% of lines tested\" $TRUST_MAIL #$TRUST_PROJECT_LEADER
 fi
 (
@@ -2220,9 +2220,9 @@ echo " "
 echo "Analysis of $MESSAGES_NUIT file"
 grep "Total:" $MESSAGES_NUIT
 echo "  criteria:  "$criteres_remplis" != "$total_criteres
-echo "  minimum:   "$criteres_remplis" -ge 9"
+echo "  minimum:   "$criteres_remplis" -ge 11"
 echo "  stability: "$stabilite" = 1.000"
-if [ $criteres_remplis != $total_criteres ] && [ $criteres_remplis -ge 9 ] && [ $stabilite = "1.000" ]
+if [ $criteres_remplis != $total_criteres ] && [ $criteres_remplis -ge 11 ] && [ $stabilite = "1.000" ]
 then
    echo "Version $new : Currently $criteres_remplis criteria are OK on $total_criteres planned" >> $MESSAGES_NUIT
    echo -e "=> release OK\c"

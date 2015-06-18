@@ -329,7 +329,7 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
         Cerr<<"Nom du cas " << data_file << finl;
         Cerr<<" code : "<< argv[0] << finl;
         Cerr<<" version : 1.7.1 " << finl;
-        Cerr<<" build : 160615 " << finl;
+        Cerr<<" build : 170615 " << finl;
       }
 
     main_process->dowork(data_file);
