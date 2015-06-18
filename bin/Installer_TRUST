@@ -164,15 +164,16 @@ fi
 
 ROOT=`pwd`
 export ROOT
-LOG=$ROOT/.LOG
+LOG=$ROOT/LOG_TRUST
 cat /dev/null > $LOG
+[ "$TRUST_VERSION" = "" ] && echo TRUST_VERSION must be defined | tee -a $LOG && exit 1
 ############################################
 # Debut du script d'installation de TRUST #
 ############################################
 echo "Usage: `basename $0` [options]" | tee -a $LOG 
 echo "Options:" | tee -a $LOG
    echo "  -help                 List options" | tee -a $LOG
-if [ -f KSH/wget_ ] || [ -f TRUST/bin/KSH/wget_ ]
+if [ -f KSH/wget_ ] || [ -f TRUST_$TRUST_VERSION/bin/KSH/wget_ ]
 then
    # Version already installed
    echo "  -patch                Download and apply latest patch on the installed version" | tee -a $LOG
@@ -201,9 +202,9 @@ do
    if [ "$1" = -patch ]
    then
       echo>$LOG
-      if [ -d TRUST ]
+      if [ -d TRUST_$TRUST_VERSION ]
       then
-         source TRUST/env/env_TRUST.sh 1>/dev/null
+         source TRUST_$TRUST_VERSION/env/env_TRUST.sh 1>/dev/null
       fi
       # Connect to ftp
       . connect_ftp -no_ftp 1>/dev/null 2>&1
@@ -268,9 +269,9 @@ fi
 
 # Quelques verifications
 TRUST_ROOT=""
-if [ -d $ROOT/TRUST ]
+if [ -d $ROOT/TRUST_$TRUST_VERSION ]
 then
-   TRUST_ROOT=$ROOT/TRUST && export TRUST_ROOT
+   TRUST_ROOT=$ROOT/TRUST_$TRUST_VERSION && export TRUST_ROOT
 else
    echo "The TRUST directory must exist on $ROOT!" | tee -a $LOG
    exit -1
@@ -295,39 +296,7 @@ then
    fi
 fi
 
-########
-# Cles #
-########
-echo | tee -a $LOG
-# Test pour verifier les paquets...
-if [ "`file TRUST/TRUST.tar.gz | grep gzip`" != "" ]
-then
-   echo "Version without install keys." | tee -a $LOG
-   export crypt=0
-else
-   export crypt=1
-   echo "You need a file containing the keys to install TRUST." | tee -a $LOG
-   echo "There is one file by version containing the keys." | tee -a $LOG
-   echo "Contact TRUST support at triou@cea.fr to get this file" | tee -a $LOG
-   echo "and tell the OS of the platform and the version" | tee -a $LOG
-   echo "of TRUST you install." | tee -a $LOG
-   echo | tee -a $LOG
-   path_pwd=`pwd`
-   echo "You are here: "$path_pwd   
-   echo "`find $path_pwd -name keys'*' 2>/dev/null`"
-   echo "Enter the complete filename of this file:" | tee -a $LOG
-   read keys
-   cd TRUST # Pour tester que $keys est bien le PATH complet
-   if [ ${#keys} = 0 ] || [ ! -f $keys ]
-   then
-      echo "Sorry, $keys is not the good complete filename." | tee -a $LOG && exit -1
-   fi
-   echo "$keys is read." | tee -a $LOG
-   # On les rend lisibles pour les effacer ensuite !
-   (cd $TRUST_ROOT;rm -f .cle*;tar xf $keys;chmod gou+w .cle*)
-fi
-echo | tee -a $LOG
-echo "If install fails, please send the `pwd`/.LOG file to TRUST support." | tee -a $LOG
+echo "If install fails, please send the $LOG file to TRUST support." | tee -a $LOG
 
 ###################
 # Installe le Noyau
@@ -447,8 +416,18 @@ then
    echo $ECHO_OPTS "\nConfigure the environment. Please wait..." | tee -a $LOG
    cd $TRUST_ROOT
    set -o pipefail
-   ./configure $opt >> $LOG 2>&1
-   configure_err=$?
+   if  [ -f configure.log ] &&  [ "$opt" = "" ]
+       then
+       echo "re-configure with old options" | tee -a $LOG
+       cat configure.log >> $LOG
+       chmod +x configure.log
+       
+       ./configure.log $opt >> $LOG 2>&1
+      configure_err=$?
+   else
+       ./configure $opt >> $LOG 2>&1
+       configure_err=$?
+   fi
    OK $configure_err | tee -a $LOG
    [ $configure_err != 0 ] && exit -1
    cd $TRUST_ROOT
@@ -568,19 +547,20 @@ do
    ########################################################
    # Recompilation eventuelle si la version a des sources #
    ########################################################
-   [ "$rebuild" = 1 ] && err=1 # On force la recompilation
+   # [ "$rebuild" = 1 ] && err=1 # On force la recompilation
    if [ $err != 0 ] && [ -f $TRUST_ROOT/src/MAIN/MAIN.cpp ]
    then
       echo $ECHO_OPTS "\nCode recompilation..." | tee -a $LOG
       echo $ECHO_OPTS "`basename $code` application must be recompiled according to the previous tests." | tee -a $LOG
-      echo $ECHO_OPTS "Compilation could take between 1 and 2 hours." | tee -a $LOG
+      
       [ ${#TRUST_CC} = 0 ] && echo "Warning : this script did not find C++ compiler : you CANNOT compile TRUST. Please install a C++ compiler." | tee -a $LOG && exit -1
       [ ${#TRUST_F77} = 0 ] && echo "Warning : this script did not find fortran compiler : you CANNOT compile TRUST. Please install a F77 compiler." | tee -a $LOG && exit -1
       OPT="_opt"
       # Important de faire menage car certaines librairies ne seront pas recompilees sinon (pb Linux-Intel->Linux-Compaq)!
       cd `dirname $code`/..
       echo "make clean in TRUST directories..." | tee -a $LOG
-      make clean | tee -a $LOG
+     # provisoire  make clean | tee -a $LOG
+      echo $ECHO_OPTS "Compilation could take between 1 and 2 hours." | tee -a $LOG
       make >> $LOG 2>&1
       err=$?
       # Pour recuperer $exec
@@ -604,6 +584,7 @@ do
       ##################################################################
       cd $TRUST_ROOT
       echo $ECHO_OPTS "\nRecompilation..." | tee -a $LOG
+     
       make  >> $LOG  2>&1
       echo $ECHO_OPTS "End of recompilation." | tee -a $LOG
    fi
@@ -614,6 +595,7 @@ done
 ##################
 clear 
 echo | tee -a $LOG
+grep BUILD_ $LOG
 echo "***************" | tee -a $LOG
 echo "END OF INSTALL." | tee -a $LOG
 echo "***************" | tee -a $LOG
