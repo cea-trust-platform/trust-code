@@ -25,11 +25,11 @@
 
 #include <Nom.h>
 #include <assert.h>
-#include <vect.h>
+#include <vect_impl.h>
 
 
 #define declare_vect(_TYPE_)						\
-  class VECT(_TYPE_) : public vect					\
+  class VECT(_TYPE_) : public vect_impl					\
   {									\
     Declare_instanciable_sans_constructeur(VECT(_TYPE_));		\
     									\
@@ -50,51 +50,51 @@
   };									\
   /* Returns the ith VECT element */					\
   inline const _TYPE_& VECT(_TYPE_)::operator[](int i) const {		\
-    return (const _TYPE_&)vect::operator[](i);				\
+    return (const _TYPE_&)vect_impl::operator[](i);			\
   }									\
   /* Returns the ith VECT element */					\
   inline _TYPE_& VECT(_TYPE_)::operator[](int i) {			\
-    return ( _TYPE_&)vect::operator[](i);				\
+    return ( _TYPE_&)vect_impl::operator[](i);				\
   }
 
 #define implemente_vect(_TYPE_)						\
-  Implemente_instanciable_sans_constructeur(VECT(_TYPE_),string_macro_trio("VECT",VECT(_TYPE_)),vect); \
+  Implemente_instanciable_sans_constructeur(VECT(_TYPE_),string_macro_trio("VECT",VECT(_TYPE_)),vect_impl); \
   Sortie& VECT(_TYPE_)::printOn(Sortie& s) const {			\
-    return vect::printOn(s);						\
+    return vect_impl::printOn(s);					\
     }									\
   Entree& VECT(_TYPE_)::readOn(Entree& s) {				\
-    return vect::readOn(s);						\
+    return vect_impl::readOn(s);					\
       }									\
   Entree& VECT(_TYPE_)::lit(Entree& s) {                                \
-    return vect::lit(s) ;						\
+    return vect_impl::lit(s) ;						\
     }									\
   Objet_U* VECT(_TYPE_)::cree_une_instance() const 			\
   { _TYPE_* instan = new _TYPE_();					\
     return instan ; }							\
   /* VECT constructors */						\
-  VECT(_TYPE_)::VECT(_TYPE_)():vect() { }				\
+  VECT(_TYPE_)::VECT(_TYPE_)():vect_impl() { }				\
   VECT(_TYPE_)::VECT(_TYPE_)(int i) 					\
   {									\
-    build_vect(i) ;							\
+    build_vect_impl(i) ;							\
   }									\
   /* Constructor by copy for VECT */					\
   VECT(_TYPE_)::VECT(_TYPE_)(const VECT(_TYPE_)& avect)			\
-    : vect(avect)  {  }							\
+    : vect_impl(avect)  {  }						\
   /* VECT destructor */							\
   /* VECT operator= */							\
   VECT(_TYPE_)& VECT(_TYPE_)::operator=(const VECT(_TYPE_)& avect)	\
   {									\
-    vect::operator=(avect);						\
+    vect_impl::operator=(avect);					\
     return *this; 							\
     }									\
   /* Add a new element to the VECT */					\
   VECT(_TYPE_)& VECT(_TYPE_)::add(const _TYPE_& data_to_add) {		\
-    vect::add(data_to_add);						\
+    vect_impl::add(data_to_add);					\
     return *this;							\
   }									\
   /* Append a VECT to a VECT */						\
   VECT(_TYPE_)& VECT(_TYPE_)::add(const VECT(_TYPE_)& data_to_add) {	\
-    vect::add(data_to_add);						\
+    vect_impl::add(data_to_add);					\
     return *this;							\
   }
 

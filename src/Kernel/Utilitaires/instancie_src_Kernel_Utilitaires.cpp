@@ -36,7 +36,7 @@
 #include <System.h>
 #include <liste.h>
 #include <ptrParam.h>
-#include <vect.h>
+#include <vect_impl.h>
 void instancie_src_Kernel_Utilitaires() {
 Cerr << "src_Kernel_Utilitaires" << finl;
 Comm_Group_MPI inst1;verifie_pere(inst1);
@@ -73,5 +73,5 @@ SFichierBin inst31;verifie_pere(inst31);
 System inst32;verifie_pere(inst32);
 liste inst33;verifie_pere(inst33);
 ptrParam inst34;verifie_pere(inst34);
-vect inst35;verifie_pere(inst35);
+vect_impl inst35;verifie_pere(inst35);
 }
