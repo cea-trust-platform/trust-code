@@ -165,8 +165,8 @@ Composants="ModeleCoeur ICoCo equation_convection_diffusion"
 
 # Initialize environment TRUST:
 echo " "
-echo "Call to "$TRUST_ROOT"/env/trio_u.env"
-. $TRUST_ROOT/env/trio_u.env #1>/dev/null 2>&1
+echo "Call to "$TRUST_ROOT"/env/TRUST.env"
+. $TRUST_ROOT/env/TRUST.env #1>/dev/null 2>&1
 
 # List of executables tested:
 exec_debug=$TRUST_ROOT/exec/TRUST$COMM

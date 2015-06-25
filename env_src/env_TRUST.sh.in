@@ -37,7 +37,7 @@ else
    ###################################
    # Initialize the TRUST environment
    ###################################
-   source $TRUST_ROOT/env/trio_u.env
+   source $TRUST_ROOT/env/TRUST.env
 
    ##########
    # Finalize

@@ -8,7 +8,7 @@ exit_()
    command=`basename $0`
    if [ "`crontab -l 2>/dev/null | grep $command`" != "" ]
    then
-      export TRUST_FTP=`cat $TRUST_ROOT/env/trio_u.env | awk -F= '/TRUST_FTP=/ {print $2}'`
+      export TRUST_FTP=`cat $TRUST_ROOT/env/TRUST.env | awk -F= '/TRUST_FTP=/ {print $2}'`
       export TRUST_Awk=awk
       export SECRET=`cat $TRUST_ROOT/bin/admin/connect_ftp | awk -F= '/SECRET=/ {print $2}'`
       ###############################################################
@@ -265,7 +265,7 @@ fi
 #rm -r -f ~/tmp/openmpi-sessions* 1>/dev/null 2>&1
 rm -r -f $TRUST_ROOT/tests/Reference/ConicBedErgun $TRUST_ROOT/tests/Reference/ConicBedErgun_QC
 # fin provisoire
-echo -e "1,$ s?export LIBGL_ALWAYS_INDIRECT=1 # To avoid VisIt crashes on $HOST??g\nw" | ed ~/.perso_trio_u.env 1>/dev/null 2>&1
+echo -e "1,$ s?export LIBGL_ALWAYS_INDIRECT=1 # To avoid VisIt crashes on $HOST??g\nw" | ed ~/.perso_TRUST.env 1>/dev/null 2>&1
 
 cd $TRUST_ROOT
 # Si on a les tests, on efface le repertoire tests/Reference

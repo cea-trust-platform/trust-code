@@ -1,4 +1,6 @@
 Version	Qui				Tache
+1.7.2   gauthier.fauchet@cea.fr  configure.log avec mise en commentaire des anciens configures
+1.7.2   gauthier.fauchet@cea.fr  configure disable-optionals essaie d installer tcl/tk non necessaire mais plante si non dispo
 1.7.2   triou@cea.fr            dans lance_test_nuit quand jobs tues a distance faire de meme avec run etudes
 1.7.2   triou@cea.fr            maintenance CCRT 16 juin => revoir point d acces sur curie et airain
 1.7.2   triou@cea.fr            revoir sortie Installer_TRUST quand erreur a la compilation ou etat des lieux lors d'une "longue" attente sans message

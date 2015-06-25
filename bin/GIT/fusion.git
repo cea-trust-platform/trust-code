@@ -4,7 +4,9 @@
 # Some checks #
 ###############
 [ "$TRUST_ROOT" = "" ] && echo "Error, initialize TRUST environment." && exit -1
-GIT_ROOT=`dirname $TRUST_ROOT`
+# New git repos: TRUST
+#GIT_ROOT=`dirname $TRUST_ROOT`
+GIT_ROOT=$TRUST_ROOT
 [ ! -d $GIT_ROOT/.git ] && echo "Error, Git repo not found under $GIT_ROOT" && exit -1
 
 ##################
