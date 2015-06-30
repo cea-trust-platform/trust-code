@@ -1,0 +1,15 @@
+#!/bin/sh
+
+
+sed "s/champ_uniforme 2 1. 0./ champ_uniforme 2 2 0./;s/bord periox/ bord periox debit_impose 2./" std.data >  debit.data
+diff std.data debit.data > diff_deb.out
+
+sed "s/paroi_fixe/periodique/;s/champ_uniforme 2 1. 0../ champ_uniforme 2 2. 1./;s/bord periox/ bord periox debit_impose 2./;s/# balise #/sources { Canal_perio {  bord haut debit_impose 0 } }/"  std.data >  debit2.data
+diff std.data debit2.data | grep -v balise > diff_deb2.out
+
+sed "s/Discretize pb dis/Discretize pb dis Porosites_champ pb champ_uniforme 1 0.25/;s/Trianguler_Fin dom/Trianguler_Fin dom transformer dom x+y y/"  debit2.data > debit3.data 
+diff debit2.data debit3.data | grep -v balise > diff_deb3.out
+
+sed "s/champ_uniforme 2 1. 0./ champ_uniforme 2 0 0./;s/bord periox/ bord periox debit_impose 2./" std.data >  debit4.data
+diff std.data debit4.data  | grep -v balise > diff_deb4.out
+
