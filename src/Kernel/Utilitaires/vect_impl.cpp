@@ -14,16 +14,16 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        vect.cpp
+// File:        vect_impl.cpp
 // Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
 // Version:     /main/23
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <vect.h>
+#include <vect_impl.h>
 
-Implemente_instanciable_sans_constructeur_ni_destructeur(vect,"vect",Objet_U);
-Sortie& vect::printOn(Sortie& s) const
+Implemente_instanciable_sans_constructeur_ni_destructeur(vect_impl,"vect_impl",Objet_U);
+Sortie& vect_impl::printOn(Sortie& s) const
 {
   int i=sz;
   s<<sz<<space;
@@ -33,7 +33,7 @@ Sortie& vect::printOn(Sortie& s) const
   if(sz) assert(data!=0);
   return s<<finl;
 }
-Entree& vect::readOn(Entree& s)
+Entree& vect_impl::readOn(Entree& s)
 {
   int i;
   s >> i;
@@ -44,7 +44,7 @@ Entree& vect::readOn(Entree& s)
   if(sz) assert(data!=0);
   return s;
 }
-Entree& vect::lit(Entree& s)
+Entree& vect_impl::lit(Entree& s)
 {
   int i;
   s >> i;
@@ -58,15 +58,15 @@ Entree& vect::lit(Entree& s)
 
 // Description: methhode surcharge par les classes filles pour fournir la bonne
 // instance aux constructeurs au readOn....
-Objet_U* vect::cree_une_instance() const
+Objet_U* vect_impl::cree_une_instance() const
 {
   Cerr<<"cree_une_instance() must be redefined in "<<que_suis_je()<<finl;
   exit();
   return cree_une_instance() ;
 }
 /* VECT constructors */
-vect::vect() : sz(0), data(0) {}
-void vect::build_vect(int i)
+vect_impl::vect_impl() : sz(0), data(0) {}
+void vect_impl::build_vect_impl(int i)
 {
   sz=i;
   if(i==0) data=0;
@@ -84,8 +84,8 @@ void vect::build_vect(int i)
   if(sz) assert(data!=0);
 }
 /* Constructor by copy for VECT */
-vect::vect(const vect& avect)
-  : Objet_U(avect),sz(avect.sz), data(new DerObjU[avect.sz])
+vect_impl::vect_impl(const vect_impl& avect_impl)
+  : Objet_U(avect_impl),sz(avect_impl.sz), data(new DerObjU[avect_impl.sz])
 {
   if(!data)
     {
@@ -100,27 +100,27 @@ vect::vect(const vect& avect)
     }
   else while(i--)
       {
-        (data[i])=(avect[i]);
+        (data[i])=(avect_impl[i]);
       }
   assert(sz>=0);
   if(sz) assert(data!=0);
 }
 /* VECT destructor */
-vect::~vect()
+vect_impl::~vect_impl()
 {
   reset();
   assert (data==0) ;
 }
 /* VECT operator= */
-vect& vect::operator=(const vect& avect)
+vect_impl& vect_impl::operator=(const vect_impl& avect_impl)
 {
-  if (this==&(ref_cast(vect,avect)))
+  if (this==&(ref_cast(vect_impl,avect_impl)))
     return *this;
   if(data)
     {
       reset();
     }
-  sz=avect.sz;
+  sz=avect_impl.sz;
   if(sz)
     {
       data = new DerObjU[sz];
@@ -132,7 +132,7 @@ vect& vect::operator=(const vect& avect)
       int i=sz;
       while(i--)
         {
-          data[i]=avect[i];
+          data[i]=avect_impl[i];
         }
     }
   else data=0;
@@ -141,12 +141,12 @@ vect& vect::operator=(const vect& avect)
   return *this;
 }
 /* Size a VECT to i elements */
-void vect::dimensionner(int i)
+void vect_impl::dimensionner(int i)
 {
   if(sz==i) return;
   if(sz!=0)
     {
-      Cerr << "WARNING : dimensionner method of a vect" << finl;
+      Cerr << "WARNING : dimensionner method of a vect_impl" << finl;
       Cerr << "old size : " << sz << finl;
       Cerr << "new size : " << i << finl;
     }
@@ -167,7 +167,7 @@ void vect::dimensionner(int i)
   delete ptr_inst;
 }
 /* Empty then size a VECT to i elements */
-void vect::dimensionner_force(int i)
+void vect_impl::dimensionner_force(int i)
 {
   if(data)
     {
@@ -190,7 +190,7 @@ void vect::dimensionner_force(int i)
 
 }
 /* Empty a VECT (delete data and reset size to 0) */
-void vect::reset()
+void vect_impl::reset()
 {
   if (data)
     {
@@ -201,7 +201,7 @@ void vect::reset()
   assert(sz==0);
 }
 /* Add a new element to the VECT */
-vect& vect::add(const Objet_U& data_to_add)
+vect_impl& vect_impl::add(const Objet_U& data_to_add)
 {
   DerObjU* tempo;
   int new_size=sz+1;
@@ -217,7 +217,7 @@ vect& vect::add(const Objet_U& data_to_add)
   return *this;
 }
 /* Append a VECT to a VECT */
-vect& vect::add(const vect& data_to_add)
+vect_impl& vect_impl::add(const vect_impl& data_to_add)
 {
   int sz_data_to_add = data_to_add.size();
   DerObjU* tempo;
