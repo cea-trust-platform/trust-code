@@ -42,13 +42,13 @@ fi
 # . ${BALTIK_ROOT}/bin/baltik_dependencies_management
 
 
-# verification/chargement de trio_u
-. ${BALTIK_ROOT}/bin/baltik_check_init_triou
+# verification/chargement de TRUST
+. ${BALTIK_ROOT}/bin/baltik_check_init_TRUST
 
 # verification de l'etat de la variable TRUST_ROOT
 if [ "${TRUST_ROOT}" = "" ]
     then
-    triou_environnement_error
+    TRUST_environnement_error
 fi
 
 # initialisation des variables utiles

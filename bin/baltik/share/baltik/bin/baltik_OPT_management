@@ -39,7 +39,7 @@ human_name_from_name()
  echo $human 
 	 
 }
-triou_opt_from_name()
+TRUST_opt_from_name()
 {
  name=$1
  ok=0

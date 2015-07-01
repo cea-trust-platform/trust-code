@@ -3,12 +3,12 @@
 # Author : Eli LAUCOIN (CEA)
 # --
 
-triou_environnement_error() {
+TRUST_environnement_error() {
     echo "-----------------------------------------"
     echo "ERROR : undefined variable TRUST_ROOT   "
     echo ""
-    echo "Please, install Trio-U Kernel and run :  "
-    echo "  source /path/to/Trio-U/bin/env_TRUST.sh "
+    echo "Please, install TRUST and run :  "
+    echo "  source /path/to/TRUST/env/env_TRUST.sh "
     echo "-----------------------------------------"
     echo ""
     exit 1

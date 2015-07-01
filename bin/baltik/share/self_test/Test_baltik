@@ -22,7 +22,7 @@ ORG=`pwd`
 OPT=_opt
 [ ! -f $TRUST_LIB/TRUST${COMM}${OPT}.a ] && OPT=
 
-[ ! -f $TRUST_LIB/TRUST${COMM}${OPT}.a ] && echo "Pas de librairie trio_u trouve " && exit -1
+[ ! -f $TRUST_LIB/TRUST${COMM}${OPT}.a ] && echo "Pas de librairie TRUST trouve " && exit -1
 
 MODE=debug
 [ "$OPT" = "_opt" ] && MODE=optim

@@ -40,13 +40,13 @@ fi
 # chargement des fonctions de correspondance nom variable OPT
 . ${BALTIK_ROOT}/bin/baltik_OPT_management
 
-# verification/chargement de trio_u
-. ${BALTIK_ROOT}/bin/baltik_check_init_triou
+# verification/chargement de TRUST
+. ${BALTIK_ROOT}/bin/baltik_check_init_TRUST
 
 # verification de l'etat de la variable TRUST_ROOT
 if [ "${TRUST_ROOT}"  = "" ]
 then
-    triou_environnement_error
+    TRUST_environnement_error
 fi
 ALL=0
 [ "$1" = "dist" ] && ALL=1
@@ -99,7 +99,7 @@ fi
  
 for type in `list_type`
 do
-  OPT=`triou_opt_from_name $type`
+  OPT=`TRUST_opt_from_name $type`
   [ $? != 0 ] && eval $OPT
   export OPT
 
