@@ -22,13 +22,13 @@ installation_visit()
    # en activant eventuellement la variable LIBGL_ALWAYS_INDIRECT=1 
    if [ "`grep 'exec perl' bin/visit`" != "" ]
    then
-      echo $ECHO_OPTS "1,$ s?exec perl ?\${0%visit}/../check_visit \$\*;[ -f ~/.perso_trio_u.env ] \&\& . ~/.perso_trio_u.env;exec perl ?g\nw" | ed bin/visit 1>/dev/null 2>&1
+      echo $ECHO_OPTS "1,$ s?exec perl ?\${0%visit}/../check_visit \$\*;[ -f ~/.perso_TRUST.env ] \&\& . ~/.perso_TRUST.env;exec perl ?g\nw" | ed bin/visit 1>/dev/null 2>&1
       [ $? != 0 ] && echo "The change of visit script failed." && exit -1  
    else
       # source ne marche pas en /bin/sh donc .
       # Pour les versions 2.6.x, l'environnement Python doit etre charge
       python_env=";" # && [ -f $TRUST_ROOT/exec/python/env.sh ] && python_env=";. $TRUST_ROOT/exec/python/env.sh"
-      echo $ECHO_OPTS "1,$ s?# Determine VisIt architecture?\${0%visit}/../check_visit \$\* 2\>/dev/null;[ -f ~/.perso_trio_u.env ] \&\& . ~/.perso_trio_u.env$python_env?g\nw" | ed bin/visit 1>/dev/null 2>&1
+      echo $ECHO_OPTS "1,$ s?# Determine VisIt architecture?\${0%visit}/../check_visit \$\* 2\>/dev/null;[ -f ~/.perso_TRUST.env ] \&\& . ~/.perso_TRUST.env$python_env?g\nw" | ed bin/visit 1>/dev/null 2>&1
       [ $? != 0 ] && echo "The change of visit script failed." && exit -1  
    fi
 }
