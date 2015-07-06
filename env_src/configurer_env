@@ -1562,18 +1562,18 @@ then
    SHARE_LIBS=0
 fi
 # Detect an software configuration management tool -> means a developer version
-if [ -d $TRUST_ROOT/../.git ]
+if [ -d $TRUST_ROOT/.git ]
 then
    TRUST_SCM=1
-   if [ -d $TRUST_ROOT/../.git ]
+   if [ -d $TRUST_ROOT/.git ]
    then
-      GIT_ROOT=`dirname $TRUST_ROOT`/.git
+      GIT_ROOT=$TRUST_ROOT/.git
       # Activate and add Git hooks
       for hook in `cd $TRUST_ROOT/bin/GIT/hooks;ls 2>/dev/null`
       do
           # Don't use source but . instead in .git/hooks commits
-          command=". TRUST/bin/GIT/hooks/$hook"
-	  if [ "`grep "$command" $GIT_ROOT/hooks/$hook`" = "" ]
+          command=". bin/GIT/hooks/$hook"
+	  if [ "`grep "$command" $GIT_ROOT/hooks/$hook 2>/dev/null`" = "" ]
 	  then
              echo "Activating and changing the $hook hook in $GIT_ROOT/hooks/$hook"
 	     echo "If you want to deny the involved action, then comment the line into this file."

@@ -10,7 +10,7 @@ fi
 [ $err = 1 ] && echo "Erreur! Usage: `basename $0` path_to_element" && exit -1
 
 SCM=""
-if [ -d $TRUST_ROOT/../.git ]
+if [ -d $TRUST_ROOT/.git ]
 then
    # Git
    rep=`dirname $1`

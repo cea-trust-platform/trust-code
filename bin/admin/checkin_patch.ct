@@ -5,7 +5,7 @@ checkin=1
 tar=$WORKDIR/A_GRAVER_CD_TRUST/Patch_checkout.tar
 rm -f $tar
 log=`mktemp_`
-cd $TRUST_ROOT/..
+cd $TRUST_ROOT
 # Attention git diff --name-only --exit-code donne seulement
 # le diff des fichiers not staged avec l'index d'ou la necessite
 # du HEAD:

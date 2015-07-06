@@ -2,7 +2,7 @@
 # Script de copie d'un cas de la base de cas tests ($TRUST_ROOT/tests)
 # vers `pwd`/$1, repertoire courant
 # $1=Reference/VAHL_DAVIS
-# $2=/export/home/triou/git/Livraison/TRUST/tests
+# $2=$TRUST_ROOT/tests
 [ "$1" = "" ] && echo "Usage: `basename $0` TEST [TRUST_TESTS]" && exit -1
 REP=$1
 ref=$TRUST_TESTS

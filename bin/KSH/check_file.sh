@@ -16,7 +16,7 @@ then
    fix=0
 elif [ "$1" = -fix ]
 then
-   if [ ! -d $TRUST_ROOT/../.git ]
+   if [ ! -d $TRUST_ROOT/.git ]
    then
       echo "This command should be used under git only."
       exit -1

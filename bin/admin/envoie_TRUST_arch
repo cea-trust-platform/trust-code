@@ -47,7 +47,6 @@ if [ $all = 1 ]
 then
    liste_adr=$liste
 else
-   liste=`liste_machines`
    for machine in $machines
    do
       reconnue=0
@@ -62,11 +61,12 @@ fi
 # Determination si un repertoire a ete checkoute et donc
 # un fichier potentiellement renome ou efface (auquel cas on doit faire un delete)
 # On le faut aussi le samedi
-VOBS="Doc_TRUST Pre_Post_TRUST Tests_TRUST TRUST"
+#VOBS="Doc_TRUST Pre_Post_TRUST Tests_TRUST TRUST"
+VOBS="TRUST"
 if [ "$delete_version_machine_cible" = "" ]
 then
    delete_version_machine_cible=0
-   if [ -d $TRUST_ROOT/../.git ]
+   if [ -d $TRUST_ROOT/.git ]
    then 
       #if [ "`git log --since=1.days..HEAD --name-status | grep ^D | grep -v ^Date`" != "" ]
       # Look for the last commit where at least on file was deleted:
@@ -76,18 +76,23 @@ then
       then
          delete_version_machine_cible=1
 	 echo "Several files were moved or deleted in Git since yesterday then we must make a delete on remote machines." 
-      fi  
-      # Trop frequent du coup trop long pour recompiler VisIt
-      ## Look for the last commit where at least on branch was merged:
-      #last_commit=`git log --merges | awk '/commit / {print substr($2,1,7)}' | head -1`
-      ## Check if this commit is in the last day compared to the HEAD or if future commit contains merged branchs:
-      #if [ "`git log --since=1.days..HEAD | grep $last_commit`" != "" ]
-      #then
-      #   #delete_version_machine_cible=1
-      #   echo "Several branchs were merged in Git since yesterday then we must make a delete on remote machines." 
-      #fi 
+     fi 
    else
-      echo "Detection of a deleted file not implemented yet outside Git." 1>/dev/null 2>&1
+      if [ -d $TRUST_ROOT/externalpackages/.git ]
+      then
+         cd $TRUST_ROOT/externalpackages
+         # Look for the last commit where at least on branch was merged:
+         last_commit=`git log --merges | awk '/commit / {print substr($2,1,7)}' | head -1`
+         # Check if this commit is in the last day compared to the HEAD or if future commit contains merged branchs:
+         if [ "`git log --since=1.days..HEAD | grep $last_commit`" != "" ]
+         then
+            delete_version_machine_cible=1
+            echo "Several branchs were merged in Git since yesterday then we must make a delete on remote machines." 
+         fi
+         cd -
+      else
+         echo "Detection of a deleted file not implemented yet outside Git." 1>/dev/null 2>&1
+      fi
    fi
 fi
 # Versions distantes automatiquement effacees le vendredi/samedi
@@ -149,9 +154,9 @@ do
       then
 	 echo "Sources updated by Git on $log@$adr:$WORKDIR/$version at "`date '+%H:%M:%S'` 
 	 # Si premiere installation:
-	 if [ "`ssh_ -o ConnectTimeout=10 -o BatchMode=yes $log@$adr -n ls $WORKDIR/$version/.git 1>/dev/null 2>&1;echo $?`" != 0 ]
+	 if [ "`ssh_ -o ConnectTimeout=10 -o BatchMode=yes $log@$adr -n ls $WORKDIR/$version/TRUST/.git 1>/dev/null 2>&1;echo $?`" != 0 ]
 	 then
-	    ssh_command "git clone $TRUST_GIT_OFFICIAL $WORKDIR/$version;cd $WORKDIR/$version;git checkout -b master origin/master"
+	    ssh_command "git clone $TRUST_GIT_OFFICIAL $WORKDIR/$version/TRUST;cd $WORKDIR/$version/TRUST;git checkout -b master origin/master"
 	 fi
 	 ssh_command "cd $WORKDIR/$version/TRUST/bin/admin;./mise_a_jour_TRUST_arch -git 1>~/CR_$machine 2>&1" &     
 	 echo "Launching the update by ssh on $log@$adr at "`date '+%H:%M:%S'`   

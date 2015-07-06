@@ -32,7 +32,7 @@ do
             echo "Le fichier $file n'a plus lieu d'etre dans le projet Baltik... A effacer?"
 	 else
 	    # On met a jour par rapport a la version TRUST
-	    if [ -d $TRUST_ROOT/../.git ]
+	    if [ -d $TRUST_ROOT/.git ]
 	    then
 	       # Look for the last stable tag:
 	       if [ "$tag" = "" ]

@@ -84,7 +84,7 @@ without_test_validation=0 && [ "$1" = "-without_test_validation" ] && without_te
 cd $TRUST_ROOT
 VOB="TRUST"
 fonction
-if [ -d $TRUST_ROOT/../.git ]
+if [ -d $TRUST_ROOT/.git ]
 then
    git-ls-files > $contenu
    if [ $? != 0 ]
@@ -92,6 +92,18 @@ then
       echo "Error !"
       exit -1
    fi
+   cd externalpackages
+   git-ls-files 1>/dev/null
+   if [ $? != 0 ]
+   then
+      echo "Error !"
+      exit -1
+   fi
+   for file in `git-ls-files`
+   do
+      echo "externalpackages/"$file >> ../$contenu
+   done
+   cd ..
 else
    echo "Error, no Git."
    exit -1
@@ -115,13 +127,13 @@ fi
 # VOBs restantes #
 ##################
 filtre="je_ne_filtre_rien_du_tout" && [ "$without_test_validation" = 1 ] && filtre="tests/Validation"
-VOBS="Tests_TRUST Doc_TRUST Pre_Post_TRUST"
+#VOBS="Tests_TRUST Doc_TRUST Pre_Post_TRUST"
 VOBS=""
 for VOB in $VOBS
 do
    cd $TRUST_ROOT/../$VOB
    fonction
-   if [ -d $TRUST_ROOT/../.git ]
+   if [ -d $TRUST_ROOT/.git ]
    then
       #git-ls-files                                                    | grep -v Hyd_C_V | grep -v Echangeur_3D | grep -v $filtre > $contenu
       git-ls-files | grep -v $filtre > $contenu

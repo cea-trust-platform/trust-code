@@ -6,7 +6,7 @@ erreur()
 }
 err=0
 # Source files should be tracked:
-#if [ -d $TRUST_ROOT/../.git ]
+#if [ -d $TRUST_ROOT/.git ]
 # on teste si on a git dans le repertoire courant
 git tag 1>/dev/null 2>&1
 if [ $? = 0 ] 

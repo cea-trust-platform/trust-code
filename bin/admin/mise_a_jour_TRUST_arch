@@ -150,13 +150,13 @@ fi
 WHERE=$HOME && [ "$WORKDIR" != "" ] && WHERE=$WORKDIR
 QUI=triou@cea.fr
 export version=$WHERE/Version_test_$HOST
-if [ "$git" = 1 ] && [ ! -d $version/.git ]
+if [ "$git" = 1 ] && [ ! -d $version/TRUST/.git ]
 then
    # First install
    git --version
    [ $? != 0 ] && echo "git should be installed." && exit -1
-   git clone $TRUST_GIT_OFFICIAL $version
-   [ ! -d $version/.git ] && echo "$version/.git directory not created !" && exit -1
+   git clone $TRUST_GIT_OFFICIAL $version"/TRUST"
+   [ ! -d $version/TRUST/.git ] && echo "$version/TRUST/.git directory not created !" && exit -1
 fi
 [ ! -d $version ] && echo "$version directory not found !" && exit -1
 
@@ -477,7 +477,7 @@ option_configure=""
 # Lancement du configure
 ######################## 
 echo "--------------------------------------------------------"
-echo "Configure on $HOST_BUILD at "`date '+%H:%M:%S'`
+echo "Configure on $HOST at "`date '+%H:%M:%S'`
 echo "--------------------------------------------------------"
 ./configure $option_configure
 [ $? != 0 ] && echo "Error in the configure... We leave." && exit_ -1
@@ -963,11 +963,11 @@ do
 	 # Etre une machine cible (si on teste sur toutes les machines en meme temps, on a un message "trop de clients X11"
 	 ###########################################
 	 test_run_fiche=1
-	 if [ "$test_run_fiche" = 1 ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable" | grep ^$HOST_BUILD"\."`" = "" ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-limited" | grep ^$HOST_BUILD"\."`" = "" ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\cible" | grep ^$HOST_BUILD"\."`" != "" ]
+	 if [ "$test_run_fiche" = 1 ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable" | grep ^$HOST_BUILD"\."`" = "" ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-limited" | grep ^$HOST_BUILD"\."`" = "" ] #&& [ "`$TRUST_ROOT/bin/admin/liste_machines "\cible" | grep ^$HOST_BUILD"\."`" != "" ]
 	 then
             echo "--------------------------------------------------------"
             echo "Test of Run_fiche at `date '+%H:%M:%S'`"
-	    cd $TRUST_ROOT/Validation/Rapports_automatiques/Validant/pas_fini/Drag
+	    cd $TRUST_ROOT/doc/TRUST/exercices/validation_form_exercise
 	    log=`pwd`/Run_fiche.log
 	    visit_erreur=`$TRUST_ROOT/Outils/VisIt/bin/visit -help 1>/dev/null 2>&1;echo $?`
 	    if [ $visit_erreur = 0 ]

@@ -103,7 +103,10 @@ git_push()
    repos=`git remote`
    # Si branche patch_XYZ, on ne pousse pas automatiquement sur official (demande par Gauthier):
    # sauf si -all (sortie de version)
-   [ "$all" != 1 ] && [ ${git_branch#patch_} != $git_branch ] && repos=`git remote | grep -v official`
+   #[ "$all" != 1 ] && [ ${git_branch#patch_} != $git_branch ] && repos=`git remote | grep -v official`
+   repos="" # temporary: master must not evolve on sedna
+   # => nouveau depot GIT: on ne pousse rien sur origin, seulement sur shared
+   repos=`git remote | grep -v origin`
    for repo in $repos
    do
       repo_log=$REP_NUIT"/git_"$repo"_"$git_branch"_"$HOST".log"
@@ -142,7 +145,7 @@ else
 fi
 # ROOT
 export TRUST_ROOT=${0%/bin/admin/lance_test_nuit}
-export TRUST_ROOT_MASTER=$TRUST_ROOT # New variable to set master workdir (master branch in git)
+export TRUST_ROOT_MASTER=$TRUST_ROOT # New variable to set Livraison workdir (master branch in git)
 
 # On recupere les numeros de version dans le fichier RELEASE_NOTES
 export old=`awk '/version/ {print $(NF-1);exit}' $TRUST_ROOT/RELEASE_NOTES`
@@ -248,7 +251,7 @@ echo>>$config_log
 ./configure 1>>$config_log || exit -1
 grep -i error $config_log
 grep KO $config_log
-tail -n5 $config_log | head -n1
+tail -n8 $config_log | head -n1
 echo " "
 echo "Call to "$TRUST_ROOT"/env/env_TRUST.sh"
 source env/env_TRUST.sh #1>/dev/null 2>&1
@@ -308,7 +311,7 @@ rm -f $index.new
 echo " "
 
 
-[ ! -d $TRUST_ROOT/../.git ] && echo "Error: You must have $TRUST_ROOT/../.git directory to do this action" && exit
+[ ! -d $TRUST_ROOT/.git ] && echo "Error: You must have $TRUST_ROOT/.git directory to do this action" && exit
 
 # Update Git repos #
 ####################
@@ -366,7 +369,7 @@ echo "# Compile and verify the old and new versions #"
 echo "###############################################"
 ( 
   # On allege le nombre de versions compilees:
-  for vue in git/Livraison git/Maintenance git/Kernel
+  for vue in sourceforge/Livraison sourceforge/Maintenance sourceforge/Kernel
   do
      if [ -d $WORKDIR/$vue ]
      then
@@ -378,7 +381,7 @@ echo "###############################################"
         echo "# On workdir: "$TRUST_ROOT
         echo "#############################"
         echo "---> Begin at "`date '+%H:%M:%S'`
-	if [ $vue = git/Kernel ]
+	if [ $vue = sourceforge/Kernel ]
 	then
            # Kernel desormais workdir Git:
 	   #rebase_log=`mktemp_`
@@ -388,7 +391,7 @@ echo "###############################################"
            echo "git rebase on $HOST the `date` ...">$rebase_log
            echo>>$rebase_log
 	   git commit doc/.dico src/CMakeLists.txt src/MAIN/instancie_appel.h src/MAIN/instancie_appel_c.h -m"Commit in Kernel before git rebase master" --u=no 1>>$rebase_log 2>&1
-	   git rebase master 1>>$rebase_log 2>&1
+	   git rebase Livraison 1>>$rebase_log 2>&1
 	   rebase_error=$?
 	   if [ $rebase_error != 0 ]
 	   then
@@ -425,48 +428,28 @@ echo "###############################################"
 	      do
 		 git rm -r $NonKernelTest
 	      done
-	      git commit --all -m"Non Kernel tests suppressed from the branch Kernel."
+	      git commit --all -m"Non Kernel tests suppressed from the branch Kernel"
 	      echo " "
 	   fi
 	   cd - 1>/dev/null 2>&1
 	fi
 	echo "Call to configure $vue version in `pwd`"
 	./configure 1>/dev/null 2>&1
-	# A supprimer quand la version Maintenance sera passee en 1.7.1
-	if [ $vue = git/Maintenance ] # temporarily
-	then
-           source bin/Init_TRUST 1>/dev/null 2>&1 # temporarily
-        else
-	   source env/env_TRUST.sh 1>/dev/null 2>&1
-	fi
+        source env/env_TRUST.sh 1>/dev/null 2>&1
 	###################################################
 	# Boucle sur les differentes options de compilation
 	###################################################
 	for OPT in _semi_opt_ _opt_ _ _opt_pg_ _opt_gcov_ _opt_avx_
 	do
-	   # A supprimer quand la version Maintenance sera passee en 1.7.1
-	   if [ $vue = git/Maintenance ] # temporarily
-	   then
-              case $OPT in
-	      _semi_opt_) TYPE="";;
-	      _opt_) TYPE="optim";;
-	      _) TYPE="debug";;
-	      _opt_pg_) TYPE="prof";;
-	      _opt_gcov_) TYPE="gcov";;
-	      _opt_avx_) TYPE="optim_avx";;
-              *) echo $OPT not coded in $0;  exit -1 ;;
-	      esac;
-	   else
-              case $OPT in
-	      _semi_opt_) TYPE="semi_opt";;
-	      _opt_) TYPE="opt";;
-	      _) TYPE="debug";;
-	      _opt_pg_) TYPE="prof";;
-	      _opt_gcov_) TYPE="gcov";;
-	      _opt_avx_) TYPE="opt_avx";;
-              *) echo $OPT not coded in $0;  exit -1 ;;
-	      esac;
-	   fi
+           case $OPT in
+	   _semi_opt_) TYPE="semi_opt";;
+	   _opt_) TYPE="opt";;
+	   _) TYPE="debug";;
+	   _opt_pg_) TYPE="prof";;
+	   _opt_gcov_) TYPE="gcov";;
+	   _opt_avx_) TYPE="opt_avx";;
+           *) echo $OPT not coded in $0;  exit -1 ;;
+	   esac;
 	   OPT=${OPT%_} # <=> OPT=${OPT::-1}
 	   echo " "
 	   make_log=$REP_NUIT"/MAKE_TRUST"$COMM"_"$TYPE"_"$TRUST_ARCH"_"$HOST"_"${vue#*/}
@@ -480,7 +463,7 @@ echo "###############################################"
 	   grep KO $make_log
 	   if [ "$OPT" = "_semi_opt" ]
 	   then
-	      if [ $TRUST_ROOT = $TRUST_ROOT_MASTER ]
+	      if [ $vue = sourceforge/Livraison ]
 	      then
                  # Force une compilation statique pour:
                  # a) Instanciation manquante
@@ -497,7 +480,7 @@ echo "###############################################"
 		 cd $TRUST_ROOT
 		 echo " "
 	         echo "Save "$REP_HIST/`basename $exec`"."$DATE".gz"
-	      elif [ $vue = git/Maintenance ]
+	      elif [ $vue = sourceforge/Maintenance ]
 	      then
 	         echo " "
 	         echo "Special treatment..."
@@ -510,7 +493,7 @@ echo "###############################################"
                  echo "TRUST checkin patch on $HOST the `date` ...">$checkin_log
 		 $TRUST_ROOT/bin/admin/checkin_patch.ct 1>>$checkin_log 2>&1
 		 wc -l $checkin_log
-		 [ "`cat $checkin_log | tail -n +2`" != "" ] && cat $checkin_log | mail_ -s\"[checkin_patch.ct] Changes in the $TRUST_VERSION patch branch\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+		 [ "`cat $checkin_log | tail -n +2`" != "" ] && cat $checkin_log | mail_ -s\"[checkin_patch.ct] Changes in the $TRUST_VERSION patch branch\" $TRUST_MAIL #$TRUST_PROJECT_LEADER
 		 #######################
 		 # Construction du patch
 		 #######################
@@ -531,7 +514,7 @@ echo "###############################################"
 		    git_push
 		    echo "  Files contained in $TRUST_TMP/patch"
 		    echo "    See $TRUST_TMP/patch_files"
-		    git diff --name-only v$TRUST_VERSION | awk -F/ '{s=$2;for (i=3;i<=NF;i++) s=s"/"$i;print s}' > $TRUST_TMP/patch_files
+		    git diff --name-only v$TRUST_VERSION > $TRUST_TMP/patch_files
 		    if [ -s $TRUST_TMP/patch_files ]
 		    then
 		       for file in `cat $TRUST_TMP/patch_files`
@@ -542,9 +525,9 @@ echo "###############################################"
         		     tar rf $TRUST_TMP/patch $file
         		  fi
 		       done
+		       echo "  Files compressed in $patch"
+		       cd $TRUST_TMP;tar rf $patch patch
 		    fi
-		    echo "  Files compressed in $patch"
-		    cd $TRUST_TMP;tar rf $patch patch
 		 )
 		 cd $TRUST_ROOT
 		 # Envoi immediat sur ftp.cea.fr
@@ -585,7 +568,7 @@ echo "###############################################"
 	########################
 	# Check non regression #
 	########################
-	if [ $vue = git/Maintenance ] || [ $vue = git/Kernel ]
+	if [ $vue = sourceforge/Maintenance ] || [ $vue = sourceforge/Kernel ]
 	then
 	   lance_test_log=$REP_NUIT"/lance_test_"$HOST"_"${vue#*/}".log"
 	   echo " "
@@ -599,24 +582,25 @@ echo "###############################################"
 	###############################
 	# Verification des composants #
 	###############################
-	if [ $vue = git/Maintenance ]
+	if [ $vue = sourceforge/Maintenance ]
 	then
 	   echo " "
 	   echo "Call check_components for $TRUST_VERSION version from `pwd`"
 	   check_components $vue
 	fi
-	if [ $vue = git/Livraison ]
+	if [ $vue = sourceforge/Livraison ]
 	then
 	   ##########################################
  	   # Merge needed from patch branch under Git
  	   ##########################################
 	   to_merge=`mktemp_`
-  	   patch_branch=`cd $WORKDIR/git/Maintenance/;git rev-parse --abbrev-ref HEAD`
+  	   patch_branch=`cd $WORKDIR/sourceforge/Maintenance/TRUST;git rev-parse --abbrev-ref HEAD`
+  	   master_branch=`cd $WORKDIR/sourceforge/Livraison/TRUST;git rev-parse --abbrev-ref HEAD`
 	   echo " "
  	   echo "Call `pwd`/git diff --name-status master...$patch_branch"
- 	   git diff --name-status master...$patch_branch 1>$to_merge
+ 	   git diff --name-status $master_branch...$patch_branch 1>$to_merge
 	   cat $to_merge
- 	   [ -s $to_merge ] && cat $to_merge | mail_ -s\"[lance_test_nuit] Some stuff to merge in master from $patch_branch with command: fusion.git $patch_branch\" $TRUST_MAIL
+ 	   [ -s $to_merge ] && cat $to_merge | mail_ -s\"[lance_test_nuit] Some stuff to merge in $master_branch from $patch_branch with command: fusion.git $patch_branch\" $TRUST_MAIL
  	   rm -f $to_merge
 	fi
         echo "<--- End at "`date '+%H:%M:%S'`
@@ -799,7 +783,7 @@ echo "#################"
 echo "# On components #"
 echo "#################"
 echo "---> Begin at "`date '+%H:%M:%S'`
-vue="git/Livraison"
+vue="sourceforge/Livraison"
 echo "Call check_components for $TRUST_VERSION version from `pwd`"
 check_components $vue
 echo "<--- End at "`date '+%H:%M:%S'`
@@ -1811,10 +1795,10 @@ for file in list_methodes list_methodes_non_appelees
 do
    echo "    "`wc -l $file | awk '{ print $1 }'`" $file"
 done
-# Nouveau pour 1.6.3: Comparaison de la couverture de code fichier par fichier par rapport a la version precedante (sous $WORKDIR/git/Maintenance)
+# Nouveau pour 1.6.3: Comparaison de la couverture de code fichier par fichier par rapport a la version precedante (sous $WORKDIR/sourceforge/Maintenance)
 (
 cd $TRUST_ROOT/doc/Coverage/html/cpp.gcov
-MAINTENANCE=$WORKDIR/git/Maintenance/TRUST
+MAINTENANCE=$WORKDIR/sourceforge/Maintenance/TRUST
 echo " "
 echo "Comparison of code coverage between new and old versions"
 echo "from `pwd`"
@@ -2053,14 +2037,14 @@ PROJECT_ROOT=$WORKDIR/MPCube/mpcube-portage166	# MPCube a porter pour 1.6.2
 log=$REP_NUIT"/baltik_MPCube_"$HOST"_Kernel.log"
 # Necessaire de mettre entre () car initialisation du projet Baltik
 (
-source $WORKDIR/git/Kernel/TRUST/env/env_TRUST.sh 1>/dev/null 2>&1
+source $WORKDIR/sourceforge/Kernel/TRUST/env/env_TRUST.sh 1>/dev/null 2>&1
 cd $PROJECT_ROOT
-echo "Call to $WORKDIR/git/Kernel/TRUST/bin/admin/check_baltik_project"
+echo "Call to $WORKDIR/sourceforge/Kernel/TRUST/bin/admin/check_baltik_project"
 echo "from `pwd`"
 echo "  See $log"
 echo "MPCube project baltik check on $HOST the `date` ...">$log
 echo>>$log
-$WORKDIR/git/Kernel/TRUST/bin/admin/check_baltik_project 1>>$log 2>&1
+$WORKDIR/sourceforge/Kernel/TRUST/bin/admin/check_baltik_project 1>>$log 2>&1
 grep 'Projet Baltik' $log | grep OK
 cd - 1>/dev/null 2>&1
 )
@@ -2315,13 +2299,14 @@ then
 	 echo "Changing the Maintenance view"	 
 	 # Changement de la vue Maintenance
 	 (
-	    cd $WORKDIR/git/Maintenance/TRUST
+	    cd $WORKDIR/sourceforge/Maintenance/TRUST
 	    echo "from `pwd`"
-            patch_old=patch_`echo $old | $TRUST_Awk '{gsub("\\\.","",$0);print $0}'`
-	    patch_new=patch_`echo $new | $TRUST_Awk '{gsub("\\\.","",$0);print $0}'`
+            patch_old=patch_`echo $old`
+	    patch_new=patch_`echo $new`
 	    echo "  Call git fetch --all"
             git fetch --all # Pour recuperer tous les tags
             # Creation de la branche depuis le tag (example: patch_XYZ depuis vX.Y.Z)
+	    echo "  Call git checkout -b $patch_new $label"
             git checkout -b $patch_new $label
             # Positionnement de HEAD sur la branche (exemple: patch_XYZ)
 	    echo "  Call git symbolic-ref HEAD refs/heads/$patch_new"
@@ -2336,12 +2321,12 @@ then
 	 echo " "
 	 echo "Creation of the packages of each Baltik component"
 	 # Creation des packages de chaque composant BALTIK
-	 cd $WORKDIR/git/Livraison/TRUST
+	 cd $WORKDIR/sourceforge/Livraison/TRUST
 	 source env/env_TRUST.sh 1>/dev/null 2>&1
 	 for Composant in $Composants 
 	 do
 	    # Appel du make distrib
-	    cd $WORKDIR/git/Livraison/Composants/$Composant
+	    cd $WORKDIR/sourceforge/Livraison/Composants/$Composant
 	    echo "from `pwd`"
 	    echo "  Call make distrib"
 	    make distrib
@@ -2432,7 +2417,7 @@ done
 ALL_USERS_TRUST_MAIL=trio_u_annonces@saxifrage.saclay.cea.fr
 if [ $livraison = 1 ]
 then
-   echo | mail_ -s \"[lance_test_nuit] WARNING! TRUST v$new released: Check that the data of FTP site is correct...\" $TRUST_MAIL
+   #echo | mail_ -s \"[lance_test_nuit] WARNING! TRUST v$new released: Check that the data of FTP site is correct...\" $TRUST_MAIL
    for dest in $ALL_USERS_TRUST_MAIL" "$ALL_DEVELOPERS_TRUST_MAIL
    do
       echo "Stable release announcement sent to $dest"
@@ -2484,14 +2469,23 @@ Developer notes version $next_new : Changes since version $new :
    for machine in `liste_machines updated`
    do
       (
-       install_stable_log=$REP_NUIT"/install_stable_"$machine".log"
+       install_stable_log=$REP_NUIT"/install_stable_"`echo $machine | awk -F"." '{print $1}'`"_"${vue#*/}".log"
        echo "-> Start of Installer_TRUST.ssh $machine $new -compile..."
        echo "  See $install_stable_log"
       )
    done
    for machine in `liste_machines updated`
    do
-      Installer_TRUST.ssh $machine $new -compile 1>$install_stable_log 2>&1 &
+      (
+      install_stable_log=$REP_NUIT"/install_stable_"`echo $machine | awk -F"." '{print $1}'`"_"${vue#*/}".log"
+      echo "TRUST script on $HOST the `date` ...">$install_stable_log
+      echo>>$install_stable_log
+      $TRUST_ROOT/bin/admin/Installer_TRUST.ssh $machine $new -compile 1>>$install_stable_log 2>&1
+      if [ $? != 0 ] || [ "`grep :error $install_stable_log | grep -iv warning | grep -v TRIOXDATA | grep -v Gmsh`" != "" ]
+      then
+         cat $install_stable_log | mail_ -s\"[lance_test_nuit] Failed to install stable version on $machine\" $TRUST_MAIL
+      fi
+      ) &
    done
    wait
    echo " "
