@@ -39,7 +39,9 @@ for word in $*
   do
   case $word in
       --with-trio*) TRUST_ROOT=`right $word` ;;
-      --with-source-trio*) SOURCE_TRIO=`right $word` ;;
+      --with-source-trio*) SOURCE_TRUST=`right $word` ;;
+      --with-TRUST*) TRUST_ROOT=`right $word` ;;
+      --with-source-TRUST*) SOURCE_TRUST=`right $word` ;;
       --with-mode*) MODE=`right $word` ;;
       --with-valgrind) VALGRIND=1 ;;
       --without-parallel) PAR_F=0;;
@@ -55,9 +57,9 @@ for word in $*
 done
 
 ORIG=`pwd`
-if [ "$SOURCE_TRIO" != "" ]
+if [ "$SOURCE_TRUST" != "" ]
 then
-source $SOURCE_TRIO
+source $SOURCE_TRUST
 fi
 files=`tar tf $archive | grep .tar.gz`
 for file in $files

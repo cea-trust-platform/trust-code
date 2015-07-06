@@ -43,14 +43,14 @@ fi
 . ${BALTIK_ROOT}/bin/baltik_OPT_management
 
 
-# verification/chargement de trio_u
-. ${BALTIK_ROOT}/bin/baltik_check_init_triou
+# verification/chargement de TRUST
+. ${BALTIK_ROOT}/bin/baltik_check_init_TRUST
 
 
 # verification de l'etat de la variable TRUST_ROOT
 if [ "${TRUST_ROOT}" = "" ]
 then
-    triou_environnement_error
+    TRUST_environnement_error
 fi
 
 echo "Initialisation ..."
@@ -346,6 +346,7 @@ exec_optim=`pwd`"/"${project_executable_name}_opt
 exec_debug=`pwd`"/"${project_executable_name}
 
 project_makefile="${project_directory}/Makefile"
+env_file=$project_directory/env_${project_name}.sh
 if [ -e $project_makefile ]
 then
     rm -f $project_makefile
@@ -510,7 +511,7 @@ printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_install `dirna
 printf "\n"                                                     >> $project_makefile
 printf "# help terminal \t: open a xterm with TRUST_TESTS... \n" >> $project_makefile
 printf "terminal :\n" >> $project_makefile
-printf "\t source $TRUST_ROOT/env/env_TRUST.sh; env TRUST_TESTS=\`pwd\`/build/tests/all/  Rapports_auto_root=\`pwd\`/build/tests/share/all/ project_directory=\`pwd\` exec_optim=${exec_optim} exec=${exec_optim} exec_debug=$exec_debug xterm\n" >> $project_makefile
+printf "\t source $env_file; env MAKELEVEL=0 xterm\n" >> $project_makefile
 
 phony=""
 for type in $list_cible
@@ -564,7 +565,6 @@ do
 done
 
 
-env_file=$project_directory/env_${project_name}.sh
 echo "Creation $env_file"
 
 echo " . $TRUST_ROOT/env/env_TRUST.sh
