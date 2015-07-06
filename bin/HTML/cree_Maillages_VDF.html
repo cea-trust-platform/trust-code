@@ -24,14 +24,14 @@ do
    then
       echo $ECHO_OPTS "<a href="$REP/$NOM.gibi"><img src="$REP/$NOM.gif">$NOM</a>\c" >> $fichier
    else
-      echo $ECHO_OPTS "<a href="$REP/$NOM.gibi"><img src="../../Doc_TRUST/IHM/rien.gif">$NOM</a>\c" >> $fichier
+      echo $ECHO_OPTS "<a href="$REP/$NOM.gibi"><img src="../IHM/rien.gif">$NOM</a>\c" >> $fichier
    fi
 #   echo $ECHO_OPTS "$com" >> $fichier
    echo $ECHO_OPTS "<HR>" >> $fichier
 done
 echo $ECHO_OPTS "</body>
 </html> " >> $fichier
-new=$TRUST_ROOT/../Doc_TRUST/IHM/Maillages_VDF.html
+new=$TRUST_ROOT/IHM/Maillages_VDF.html
 if [ "`diff $fichier $new`" != "" ]
 then
    CHECKOUT $new

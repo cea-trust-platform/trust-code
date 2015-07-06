@@ -5,6 +5,6 @@ args=`cg $1`
 echo $args
 eval $args
 # Verification
-cat $TRUST_ROOT/../Doc_TRUST/IHM/Incident.html | awk -v nom=$nom -v mail=$mail -v
+cat $TRUST_ROOT/IHM/Incident.html | awk -v nom=$nom -v mail=$mail -v
 societe=$societe -v phone=$phone -v version=$version -v machine=$machine -v
 type=$type -v description=$description '

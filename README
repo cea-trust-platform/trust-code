@@ -36,7 +36,7 @@ tests/		TRUST tests
 Outils/		Tools to build TRUST
 Validation/	Location of Validation forms
 form/       GUI tools (obsolete)
-../Doc_TRUST/IHM/ Milieux_reference/ Modeles/ GUI (obsolete)
+IHM/ Milieux_reference/ Modeles/ GUI (obsolete)
 
 # Quick files description:
 DEVELOPER_NOTES	Developer notes (manually and regulary updated by support)

@@ -12,11 +12,11 @@ mkdir -p lib exec env
 bin/Installer_TRUST -check_prerequis || exit -1
 
 
-[ ! -d externalpackages ] && [ ! -L externalpackages ] && echo "You need to download externalpackages before configuring"&& export TRUST_ROOT_VERSION=`awk '/version/ && /Release notes/ {print $4;exit}' $TRUST_ROOT/RELEASE_NOTES`&& echo wget http://downloads.sourceforge.net/project/trust-platform/externalpackages_$TRUST_ROOT_VERSION.tar && exit -1
 ###############################
 # Clean old directories (<v169)
 ###############################
-reps="ALE EF Front_tracking_discontinu Kernel MAIN P1NCP1B Phase_field Rayonnement Rayonnement_semi_transp ThHyd ThSol UtilitairesAssemblages VDF VEF Zoom"
+#reps="ALE EF Front_tracking_discontinu Kernel MAIN P1NCP1B Phase_field Rayonnement Rayonnement_semi_transp ThHyd ThSol UtilitairesAssemblages VDF VEF Zoom"
+reps="EF Kernel MAIN P1NCP1B ThHyd ThSol VDF VEF"
 for rep in $reps
 do
    [ -d $rep ] && rm -r -f $rep
@@ -25,12 +25,8 @@ done
 #########################################
 # Creation des liens avec les autres VOBS
 #########################################
-# reps="../Tests_TRUST/tests ../Doc_TRUST/doc ../Doc_TRUST/Modeles ../Doc_TRUST/Milieux_reference ../Doc_TRUST/Word ../Doc_TRUST/CreDoc ../Doc_TRUST/form ../Doc_TRUST/IHM ../Pre_Post_TRUST/VisIt ../Pre_Post_TRUST/Gmsh ../Pre_Post_TRUST/Outils"
-# ../Doc_TRUST/Word ../Doc_TRUST/CreDoc ../Doc_TRUST/form n'existent plus
-# reps="../Tests_TRUST/tests ../Doc_TRUST/doc ../Doc_TRUST/Modeles ../Doc_TRUST/Milieux_reference ../Doc_TRUST/IHM ../Pre_Post_TRUST/VisIt ../Pre_Post_TRUST/Gmsh ../Pre_Post_TRUST/Outils"
-# cf. ToDo:  Time for the 1.7.1 to clean Milieux_reference, Modeles and IHM
-# VisIt and Gmsh directories moved to Outils
-reps="../Tests_TRUST/tests ../Doc_TRUST/doc ../Pre_Post_TRUST/Outils"
+#reps="../Tests_TRUST/tests ../Doc_TRUST/doc ../Pre_Post_TRUST/Outils"
+reps=""
 for rep in $reps
 do 
    # Eventuelle substitution pour les VOBs en Noyau et non TRUST
@@ -42,6 +38,8 @@ do
       [ ! -d $r ]  && ln -s -f $rep $r && echo "Link created: $rep ->" $r
    fi
 done
+
+[ ! -d externalpackages ] && [ ! -L externalpackages ] && echo "You need to download externalpackages before configuring"&& export TRUST_ROOT_VERSION=`awk '/version/ && /Release notes/ {print $4;exit}' $TRUST_ROOT/RELEASE_NOTES`&& echo wget http://downloads.sourceforge.net/project/trust-platform/externalpackages_$TRUST_ROOT_VERSION.tar && exit -1
 
 echo "----------------------------------------------------------------------------------------------------------------------------"
 echo "Usage: `basename $0` "
@@ -286,12 +284,14 @@ then
    ##################################
    # Desormais on recree les makefile
    ##################################   
-   make depend 
+   #make depend 
    echo $ECHO_OPTS "# File \$TRUST_ROOT/Makefile is created."
    echo $ECHO_OPTS "# File \$TRUST_ROOT/configure.log is created."
    echo $ECHO_OPTS "# To initialize the TRUST environment, run:"
    echo $ECHO_OPTS "source env/env_TRUST.sh"
    echo $ECHO_OPTS "# To build TRUST, run:"
    echo $ECHO_OPTS "make"
+   echo $ECHO_OPTS "# To check TRUST, run:"
+   echo $ECHO_OPTS "make check"
 fi
 exit 0

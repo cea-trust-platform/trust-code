@@ -50,10 +50,10 @@ aff.focus();
 }
 </SCRIPT>
 <PRE><HR><h1>		STUDY $NOMETUDE </h1><HR>
-To copy in your study <a href=$fichierref >a data file</a> from tests database. Look here for <a href=$TRUST_ROOT/../Doc_TRUST/IHM/Milieux.html>some</a> or <a
+To copy in your study <a href=$fichierref >a data file</a> from tests database. Look here for <a href=$TRUST_ROOT/IHM/Milieux.html>some</a> or <a
 href=http://webbook.nist.gov/chemistry/fluid/>complete</a> datas for fluid characteristics
 
-To copy in your study a Castem format file <a href=$TRUST_ROOT/../Doc_TRUST/IHM/Maillages_VEF.html>VEF mesh</a>
+To copy in your study a Castem format file <a href=$TRUST_ROOT/IHM/Maillages_VEF.html>VEF mesh</a>
 <HR><FORM METHOD="Change" ACTION="$TRUST_ROOT/form/Case.ksh?"><input type="submit" value="Change"> Change default data file $LISTEDATA</FORM><FORM METHOD="Edit" ACTION="$TRUST_ROOT/form/Editer.ksh?"><input type="submit" value="Edit">     Edit a file</FORM><FORM METHOD="EditData" ACTION="$TRUST_ROOT/form/Editer_xdata.ksh?"><input type="submit" value="EditData"> Edit the default data file with Xdata</FORM><FORM METHOD="Prepro" ACTION="$TRUST_ROOT/form/Xprepro.ksh"><input type="submit" value="Mesh">   Stuctured mesh generation with Xprepro</FORM><FORM METHOD="Gmsh" ACTION="$TRUST_ROOT/form/Gmsh.ksh"><input type="submit" value="Mesh">   Unstructured mesh generation with <A HREF=javascript:viewer(\"http://www.geuz.org/gmsh\")>Gmsh</A>\c" >> $fichier
 [ "$GMSH_ROOT" != "" ] && echo $ECHO_OPTS ". See <A HREF=javascript:viewer(\"file:$GMSH_ROOT/share/doc/gmsh/tutorial\")>tutorials</A> or <A HREF=javascript:viewer(\"file:$GMSH_ROOT/share/doc/gmsh/demos\")>examples</A>.</FORM>\c" >> $fichier
 echo $ECHO_OPTS "<FORM METHOD="Mesh" ACTION="$TRUST_ROOT/form/Mailler.ksh?"><input type="submit" value="Mesh">   Unstructured mesh generation with Castem <a href=$ETUDE_TRUST/.Liste.geom.html>See created meshes characteristics</a></FORM><FORM METHOD="Check" ACTION="$TRUST_ROOT/form/Check.ksh?"><input type="submit" value="Check">  Visualize the mesh</FORM><FORM METHOD="Ansys" ACTION="$TRUST_ROOT/form/preray.ksh"><input type="submit" value="Preray"> Define view factors for thermal radiation</FORM><HR><FORM METHOD="Solve" ACTION="$TRUST_ROOT/form/Calculer.ksh?"><input type="submit" value="Solve">  Run solve process <a href=$ETUDE_TRUST/.Liste.son.html>See results evolution</a></FORM>\c" >> $fichier

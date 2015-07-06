@@ -11,9 +11,9 @@ check_components()
 	 then
 	    ln -s -f ../TRUST/doc/TRUST/exercices/$Composant .
 	 fi
-	 if [ -d ../Pre_Post_TRUST/Outils/$Composant/$Composant_src ]
+	 if [ -d ../TRUST/Outils/$Composant/$Composant_src ]
 	 then
-	    ln -s -f ../Pre_Post_TRUST/Outils/$Composant/$Composant"_src" $Composant
+	    ln -s -f ../TRUST/Outils/$Composant/$Composant"_src" $Composant
 	 fi
       fi
       if [ -d $TRUST_ROOT/../Composants/$Composant ]
@@ -155,7 +155,8 @@ echo "Release notes new version: "$new
 # DISPLAY
 [ ${#DISPLAY} = 0 ] && export DISPLAY=":0"
 
-VOBS="Doc_TRUST Pre_Post_TRUST Tests_TRUST TRUST Composants"
+#VOBS="Doc_TRUST Pre_Post_TRUST Tests_TRUST TRUST Composants"
+VOBS="TRUST Composants"
 
 # List of components tested with TRUST:
 # equation_convection_diffusion est un projet Baltik qui sert de tutorial a la formation developpeur.
@@ -314,9 +315,9 @@ echo " "
 # Must be done BEFORE envoie_TRUST_arch (git_cron or git_ssh process)
 (
    # Assume unchanged some files (big one with a lot of changes):
-   cd $TRUST_ROOT/..
+   cd $TRUST_ROOT/doc
    echo "Update Git repos "`pwd`
-   for assume_inchanged in Doc_TRUST/doc/Coverage/html.tgz Doc_TRUST/doc/Coverage/cpp.gcov.tar.gz Doc_TRUST/doc/Coverage/list_methodes.gz Doc_TRUST/doc/Coverage/dico.pkl.gz Doc_TRUST/doc/Coverage/list_methodes_non_appelees.gz
+   for assume_inchanged in Coverage/html.tgz Coverage/cpp.gcov.tar.gz Coverage/list_methodes.gz Coverage/dico.pkl.gz Coverage/list_methodes_non_appelees.gz
    do
       if [ ! -f $assume_inchanged ]
       then
@@ -386,7 +387,7 @@ echo "###############################################"
 	   echo "  See $rebase_log"
            echo "git rebase on $HOST the `date` ...">$rebase_log
            echo>>$rebase_log
-	   git commit ../Doc_TRUST/doc/.dico src/CMakeLists.txt src/MAIN/instancie_appel.h src/MAIN/instancie_appel_c.h -m"Commit in Kernel before git rebase master" --u=no 1>>$rebase_log 2>&1
+	   git commit doc/.dico src/CMakeLists.txt src/MAIN/instancie_appel.h src/MAIN/instancie_appel_c.h -m"Commit in Kernel before git rebase master" --u=no 1>>$rebase_log 2>&1
 	   git rebase master 1>>$rebase_log 2>&1
 	   rebase_error=$?
 	   if [ $rebase_error != 0 ]

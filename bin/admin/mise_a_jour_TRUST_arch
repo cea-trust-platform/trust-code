@@ -269,9 +269,9 @@ echo -e "1,$ s?export LIBGL_ALWAYS_INDIRECT=1 # To avoid VisIt crashes on $HOST?
 
 cd $TRUST_ROOT
 # Si on a les tests, on efface le repertoire tests/Reference
-[ -f Tests_TRUST.tar.gz ] && rm -r -f tests Tests_reference
-[ -f Pre_Post_TRUST.tar.gz ] && rm -r -f Outils
-[ -f Doc_TRUST.tar.gz ] && rm -r -f doc
+#[ -f Tests_TRUST.tar.gz ] && rm -r -f tests Tests_reference
+#[ -f Pre_Post_TRUST.tar.gz ] && rm -r -f Outils
+#[ -f Doc_TRUST.tar.gz ] && rm -r -f doc
 #[ -f TRUST.tar.gz ] && rm -r -f Validation
 # On fait de la place
 \rm -r -f .essai lib/TRUST*.a

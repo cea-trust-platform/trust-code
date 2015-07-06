@@ -29,7 +29,7 @@ then
 <FORM>
 <H1><CENTER>Release notes</CENTER></H1>' > $file
 cat $TRUST_ROOT/RELEASE_NOTES | $TRUST_Awk '{print "<LI>"$0}' >> $file
-echo $ECHO_OPTS "</FONT><BR><P><CENTER><INPUT type="button" value=\"See new keywords\" onClick=window.open('file:"$TRUST_ROOT"/../Doc_TRUST/IHM/Aide_Mots_Cles.html','win2','location=no,resizable=yes,scrollbars=yes')>
+echo $ECHO_OPTS "</FONT><BR><P><CENTER><INPUT type="button" value=\"See new keywords\" onClick=window.open('file:"$TRUST_ROOT"/IHM/Aide_Mots_Cles.html','win2','location=no,resizable=yes,scrollbars=yes')>
 <INPUT type="button" value=\"Close Window\" onClick=window.close()></CENTER></FORM>
 </BODY>
 </HTML>" >> $file
@@ -72,14 +72,14 @@ echo $ECHO_OPTS "<HTML>
 <body>
 <PRE>
 <HR><h1> TRUST Version $v</h1><HR>
-<img src=$TRUST_ROOT/../Doc_TRUST/IHM/animation.gif></PRE>
+<img src=$TRUST_ROOT/IHM/animation.gif></PRE>
 <h2>    HyperText Documentation  </h2>
 <UL>
-<LI> <a href=$TRUST_ROOT/../Doc_TRUST/IHM/Util_calcul.html> <img src=$TRUST_ROOT/../Doc_TRUST/IHM/calcul.gif> Studies</a>" > $HOME/HTML/TRUST.html
+<LI> <a href=$TRUST_ROOT/IHM/Util_calcul.html> <img src=$TRUST_ROOT/IHM/calcul.gif> Studies</a>" > $HOME/HTML/TRUST.html
 # Cas version sans sources
-[ -f $TRUST_ROOT/doc/html/index.html ] && echo "<LI> <a href=$TRUST_ROOT/doc/html/index.html><img src=$TRUST_ROOT/../Doc_TRUST/IHM/liste.gif> $CLASSES</a>" >> $HOME/HTML/TRUST.html
-echo "<LI> <a href=$TRUST_ROOT/../Doc_TRUST/IHM/Documents.html><img src=$TRUST_ROOT/../Doc_TRUST/IHM/Notice.gif> $HELP</a>
-<LI> <a HREF=mailto:$TRUST_MAIL> <img src=$TRUST_ROOT/../Doc_TRUST/IHM/mail.gif> Support </a>
+[ -f $TRUST_ROOT/doc/html/index.html ] && echo "<LI> <a href=$TRUST_ROOT/doc/html/index.html><img src=$TRUST_ROOT/IHM/liste.gif> $CLASSES</a>" >> $HOME/HTML/TRUST.html
+echo "<LI> <a href=$TRUST_ROOT/IHM/Documents.html><img src=$TRUST_ROOT/IHM/Notice.gif> $HELP</a>
+<LI> <a HREF=mailto:$TRUST_MAIL> <img src=$TRUST_ROOT/IHM/mail.gif> Support </a>
 </UL>
 <BR>
 <HR>
@@ -122,6 +122,6 @@ echo "<DT><A HREF="file:$TRUST_ROOT/doc/TRUST/User_Manual_TRUST.pdf" TARGET="RIG
     <HR> 
     <DT><A HREF="file:$TRUST_ROOT/doc/TRUST/NT_Valid_2009_lin.pdf" TARGET="RIGHT" onMouseOver=\"status='TRUST Validation'\">Validation note</A>
     <HR> 
-    <DT><A HREF="file:$TRUST_ROOT/../Doc_TRUST/IHM/Documents.html" TARGET="RIGHT" onMouseOver=\"status='$HELP'\">$HELP</A>
+    <DT><A HREF="file:$TRUST_ROOT/IHM/Documents.html" TARGET="RIGHT" onMouseOver=\"status='$HELP'\">$HELP</A>
     <HR>       
 </DL><p>" >> $HOME/HTML/Raccourcis.html

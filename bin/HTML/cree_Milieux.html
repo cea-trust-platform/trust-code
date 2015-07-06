@@ -1,10 +1,10 @@
 #!/bin/bash
-fichier=$TRUST_ROOT/../Doc_TRUST/IHM/.Milieux.html
+fichier=$TRUST_ROOT/IHM/.Milieux.html
 # Ecriture du fichier :
 cree_en_tete.ihm > $fichier
 echo "<PRE><HR><h1>Physical caracteristics of some fluids and solids</h1><HR>" >> $fichier
 cd $TRUST_ROOT/doc
-for fic in ../../Doc_TRUST/Milieux_reference/*.prop
+for fic in ../Milieux_reference/*.prop
 do
    REP=`dirname $fic`
    NOM=`basename $fic`
@@ -24,7 +24,7 @@ do
 done
 echo $ECHO_OPTS "</body>
 </html> " >> $fichier
-milieu=$TRUST_ROOT/../Doc_TRUST/IHM/Milieux.html
+milieu=$TRUST_ROOT/IHM/Milieux.html
 if [ "`diff $fichier $milieu`" != "" ]
 then
    CHECKOUT $milieu

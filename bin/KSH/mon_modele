@@ -1,7 +1,7 @@
 #!/bin/bash
 # Creation d'un fichier a partir d'un modele :
 
-rep_modeles=$TRUST_ROOT/../Doc_TRUST/Modeles
+rep_modeles=$TRUST_ROOT/Modeles
 
 # Recupere le nom du modele :
 modele=`$TRUST_Awk '(NR==1) {print $2}' $1`

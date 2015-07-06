@@ -116,6 +116,7 @@ fi
 ##################
 filtre="je_ne_filtre_rien_du_tout" && [ "$without_test_validation" = 1 ] && filtre="tests/Validation"
 VOBS="Tests_TRUST Doc_TRUST Pre_Post_TRUST"
+VOBS=""
 for VOB in $VOBS
 do
    cd $TRUST_ROOT/../$VOB

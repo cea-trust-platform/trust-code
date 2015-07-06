@@ -8,12 +8,12 @@ Developer notes version 1.7.1 : Changes since version 1.7.0 :
 -------------------------------------------------------------
 11/06/15 (Tools)  bin/Init_TRUST.in renamed to env_src/env_TRUST.sh.in
 04/06/15 (TRUST) new option (-disable_ieee) in MAIN.cpp to disable the detection of NaNs
-03/06/15 (Tools)  ICoCo baltik moved from Composants to Pre_Post_TRUST/Outils
+03/06/15 (Tools)  ICoCo baltik moved from Composants to TRUST/Outils
 21/05/15 (Kernel) Add class Matrice_Dense: specialization of Matrice_Base, handle dense matrices. 
 15/05/14 (Kernel) Implementation of Vect, via a class vect innstead of macro 
 15/05/14 (TRUST) Optionnal Template Version of Operateur and Sources in VDF
 24/04/15 (Kernel) Minor change: PETSc updated from 3.5.2 to 3.5.3
-23/04/15 (Tools)  Gmsh and VisIT moved from Pre_Post_TRUST to Pre_Post_TRUST/Outils
+23/04/15 (Tools)  Gmsh and VisIT moved from TRUST to TRUST/Outils
 17/04/15 (Tools)  The search of non-regression tests by 'ls tests/Reference/*/*.lml.gz' is replaced by 'find tests/Reference/ -name *.lml.gz'
 13/03/15 (Tools)  gnuplot and valgrind compilation moved from configure to building tools
 04/03/15 (Tools)  Bug fixed for portability_baltik script

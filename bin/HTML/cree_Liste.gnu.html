@@ -22,7 +22,7 @@ echo "<!--NewPage-->
 <h2>Courbe de base</h2>" > $fichier
 # Lecture du nom du cas:
 export NOM=`cat $ETUDE_TRUST/.NOM_DATA`
-REP=$TRUST_ROOT/../Doc_TRUST/IHM
+REP=$TRUST_ROOT/IHM
 # Affichage de la barre de menu de la courbe :
 cat gnuplot/$NOM.menu | grep "$NUM-" | $TRUST_Awk -v ETUDE=$ETUDE_TRUST -v REP=$REP -v html=$fichier -v lpnb=${#IMPRESSION} -v lpcou=${#IMPRESSION_COLOR} '{i++;image=REP"/"$2".gif";image1=REP"/"$2"1.gif";image2=REP"/lpnb.gif";image3=REP"/lpcou.gif";
 com="";for (j=2;j<NF+1;j++) com=com" "$j;
@@ -31,7 +31,7 @@ im=im"<a href="REP"/ordre-"i".IHM><img src="image1" ></a> ";
 if (lpnb!=0) im=im"<a href="REP"/ordrei"i".IHM><img src="image2" ></a> ";
 if (lpcou!=0) im=im"<a href="REP"/ordreI"i".IHM><img src="image3" ></a> ";
 print $1" "com"\n"im"<HR>" >> html}'
-#<FORM METHOD="Rechercher" ACTION="$TRUST_ROOT/../Doc_TRUST/IHM/ordreplus$NUM.IHM"> <input type="submit" value="Rechercher"> Rechercher des courbes dans un repertoire <a href="$fichier">Mise a jour</a></FORM>
+#<FORM METHOD="Rechercher" ACTION="$TRUST_ROOT/IHM/ordreplus$NUM.IHM"> <input type="submit" value="Rechercher"> Rechercher des courbes dans un repertoire <a href="$fichier">Mise a jour</a></FORM>
 
 
 
