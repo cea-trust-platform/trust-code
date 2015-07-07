@@ -1,6 +1,6 @@
 #!/bin/bash  
 
-# Permet de stoker les sources de trio modifiees par le projet
+# Permet de stoker les sources de TRUST modifiees par le projet
 # util pour le portage 
 org=`mktemp_ -d `
 for f in `ls build/src/*.{cpp,h,f}| grep -v info_atelier`

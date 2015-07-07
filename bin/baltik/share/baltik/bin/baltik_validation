@@ -39,14 +39,14 @@ fi
 # chargement des fonctions de correspondance nom variable OPT
 . ${BALTIK_ROOT}/bin/baltik_OPT_management
 
-# verification/chargement de trio_u
-. ${BALTIK_ROOT}/bin/baltik_check_init_triou
+# verification/chargement de TRUST
+. ${BALTIK_ROOT}/bin/baltik_check_init_TRUST
 
 
 # verification de l'etat de la variable TRUST_ROOT
 if [ "${TRUST_ROOT}" = "" ]
 then
-    triou_environnement_error
+    TRUST_environnement_error
 fi
 
 
@@ -59,7 +59,7 @@ fi
 
 # recuperation des options de compilation
 
-#OPT=`triou_opt_from_name $1`
+#OPT=`TRUST_opt_from_name $1`
 #[  $? != 0 ] && eval $OPT
 
 
