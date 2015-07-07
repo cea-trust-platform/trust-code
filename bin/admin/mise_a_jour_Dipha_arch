@@ -8,7 +8,7 @@ EN_COURS=$HOME/EN_COURS_$HOST
 [ ! -f $EN_COURS ] && exit
 
 dirdipha=$HOME/Version_Dipha_$v
-version=$HOME/Version_test_$v/TRUST
+version=$HOME/$WORKBASE$v/TRUST
 export version
 cd $version
 source env/env_TRUST.sh

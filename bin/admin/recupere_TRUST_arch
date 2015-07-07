@@ -109,7 +109,7 @@ do
    rm -f /tmp/os /tmp/CC
    for adr in $liste
    do
-      version=Version_test_`echo $adr | awk -F'.' '{print $1}'`
+      version=$WORKBASE`echo $adr | awk -F'.' '{print $1}'`
       ROOT=$version/$MODULE
       log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`
       recupere_exec=0	# C'est une machine dont on recupere les binaires
@@ -122,7 +122,7 @@ do
       # Une machine sur laquelle on recupere un exec EST AUSSI une machine cible
       [ "$recupere_exec" = 1 ] && machine_cible=1
       # Definition de quelques variables
-      HOST=${version#Version_test_}
+      HOST=${version#$WORKBASE}
       CR=CR_$HOST
       TD="<TD>"`[ "$machine_cible" = 1 ] && echo "<B>"`
       FTD=`[ "$machine_cible" = 1 ] && echo "</B>"`"</TD>"

@@ -95,7 +95,7 @@ then
          do
             exec=`echo $pid | awk -F"|" '{print $1}'`
 	    # Trouver mieux:
-	    exec=~/Version_test_$HOST/TRUST/exec/TRUST_mpiscali
+	    exec=~/$WORKBASE$HOST/TRUST/exec/TRUST_mpiscali
             pid=`echo $pid | awk -F"|" '{print $2}'`
             rsh $HOST$a -n 'echo where > .com | gdb -batch -x .com '$exec' '$pid | grep "#"
             [ $? != 0 ] && break

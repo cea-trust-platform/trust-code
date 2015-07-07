@@ -116,7 +116,7 @@ fi
 VERSION=`pwd`
 VERSION=${VERSION%/TRUST/bin/admin}
 VERSION=`basename $VERSION`
-HOST=${VERSION#Version_test_}
+HOST=${VERSION#$WORKBASE}
 if [ $VERSION = $HOST ]
 then
    # Pas evident d'appeler HOST.env tant que HOST n'est
@@ -149,7 +149,7 @@ fi
 
 WHERE=$HOME && [ "$WORKDIR" != "" ] && WHERE=$WORKDIR
 QUI=triou@cea.fr
-export version=$WHERE/Version_test_$HOST
+export version=$WHERE/$WORKBASE$HOST
 if [ "$git" = 1 ] && [ ! -d $version/TRUST/.git ]
 then
    # First install
@@ -227,7 +227,7 @@ echo "--------------------------------------------------------------------------
 echo "Start the update on $HOST the `date` (NIGHT=$NUIT) ..."
 echo "----------------------------------------------------------------------------"
 qui=`basename $HOME`
-too_much_tasks=`ps -u $qui 2>/dev/null | grep Version_test | wc -l | awk '{if ($0>40) print 1;else print 0}'`
+too_much_tasks=`ps -u $qui 2>/dev/null | grep $WORKBASE | wc -l | awk '{if ($0>40) print 1;else print 0}'`
 
 [ ! -d $TRUST_ROOT ] && mkdir $TRUST_ROOT
 DIPHA_ROOT=$version/Diphasique
@@ -493,7 +493,7 @@ echo "End configure on $HOST_BUILD at "`date '+%H:%M:%S'`
 echo "--------------------------------------------------------"
 
 # Envoi d'un mail si trop de taches detectees
-[ $too_much_tasks = 1 ] && ps -efl 2>/dev/null | grep $qui | grep Version_test | mail_ -s\"[mise_a_jour_TRUST_arch] Attention, trop de taches sur $HOST\" $TRUST_MAIL
+[ $too_much_tasks = 1 ] && ps -efl 2>/dev/null | grep $qui | grep $WORKBASE | mail_ -s\"[mise_a_jour_TRUST_arch] Attention, trop de taches sur $HOST\" $TRUST_MAIL
 
 # Teste la connection a ftp.cea.fr
 teste_ftp ftp.cea.fr anonymous $TRUST_MAIL

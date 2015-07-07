@@ -67,17 +67,19 @@ check_components()
 	       valgrind_machine=`liste_machines "\-valgrind" | head -1 | awk -F. '{print $1}'`
 	       liste_options="--with-efface-dir-before --with-mode=optim --check-all"
 	       echo "  See `pwd`/Run.liste"
-	       echo "$Composant.tar /home/pledac/Version_test_cezanne63/Composants/$Composant pledac@cezanne63 --with-trio=/home/pledac/Version_test_cezanne63/TRUST $liste_options" >> Run.liste
-	       # ModeleCoeur 
-	       #[ "$Composant" != ModeleCoeur ] && echo "$Composant.tar /panfs/ixion/home/triou/Version_test_callisto/Composants/$Composant triou@callisto --with-trio=/panfs/ixion/home/triou/Version_test_callisto/TRUST $liste_options" >> Run.liste
-	       echo "$Composant.tar /panfs/ixion/home/triou/Version_test_callisto/Composants/$Composant triou@callisto --with-trio=/panfs/ixion/home/triou/Version_test_callisto/TRUST $liste_options" >> Run.liste
+	       machine="cezanne63"
+	       echo "$Composant.tar /home/pledac/$WORKBASE$machine/Composants/$Composant pledac@$machine --with-trio=/home/pledac/$WORKBASE$machine/TRUST $liste_options" >> Run.liste
+	       machine="callisto"
+	       #[ "$Composant" != ModeleCoeur ] && echo "$Composant.tar /panfs/ixion/home/triou/$WORKBASE$machine/Composants/$Composant triou@$machine --with-trio=/panfs/ixion/home/triou/$WORKBASE$machine/TRUST $liste_options" >> Run.liste
+	       echo "$Composant.tar /panfs/ixion/home/triou/$WORKBASE$machine$/Composants/$Composant triou@$machine --with-trio=/panfs/ixion/home/triou/$WORKBASE$machine/TRUST $liste_options" >> Run.liste
 	       # ModeleCoeur had some crashes on curie for inter assemblage calculations:
-	       #[ "$Composant" != ModeleCoeur ] && echo "$Composant.tar /ccc/cont002/home/den/triou/Version_test_curie-ccrt/Composants/$Composant triou@curie-ccrt --with-trio=/ccc/cont002/home/den/triou/Version_test_curie-ccrt/TRUST $liste_options" >> Run.liste
-	       echo "$Composant.tar /ccc/cont002/home/den/triou/Version_test_curie-ccrt/Composants/$Composant triou@curie-ccrt --with-trio=/ccc/cont002/home/den/triou/Version_test_curie-ccrt/TRUST $liste_options" >> Run.liste
+	       machine="curie-ccrt"
+	       #[ "$Composant" != ModeleCoeur ] && echo "$Composant.tar /ccc/cont002/home/den/triou/$WORKBASE$machine/Composants/$Composant triou@$machine --with-trio=/ccc/cont002/home/den/triou/$WORKBASE$machine/TRUST $liste_options" >> Run.liste
+	       echo "$Composant.tar /ccc/cont002/home/den/triou/$WORKBASE$machine/Composants/$Composant triou@$machine --with-trio=/ccc/cont002/home/den/triou/$WORKBASE$machine/TRUST $liste_options" >> Run.liste
 	       # valgrind too slow (try again the 21/11/14 for 1.7.0):
 	       # /work/triou/ au CEA Grenoble ; /export/home/triou/ au CEA Saclay
-	       #echo "$Composant.tar /work/triou/Version_test_$valgrind_machine/Composants/$Composant triou@$valgrind_machine --with-trio=/work/triou/Version_test_$valgrind_machine/TRUST $liste_options --with-valgrind" >> Run.liste
-	       echo "$Composant.tar /export/home/triou/Version_test_$valgrind_machine/Composants/$Composant triou@$valgrind_machine --with-trio=/export/home/triou/Version_test_$valgrind_machine/TRUST $liste_options --with-valgrind" >> Run.liste
+	       #echo "$Composant.tar /work/triou/$WORKBASE$valgrind_machine/Composants/$Composant triou@$valgrind_machine --with-trio=/work/triou/$WORKBASE$valgrind_machine/TRUST $liste_options --with-valgrind" >> Run.liste
+	       echo "$Composant.tar /export/home/triou/$WORKBASE$valgrind_machine/Composants/$Composant triou@$valgrind_machine --with-trio=/export/home/triou/$WORKBASE$valgrind_machine/TRUST $liste_options --with-valgrind" >> Run.liste
                echo " "
 	       cat Run.liste
 	       echo " "
@@ -140,6 +142,7 @@ then
    . ~/.profile 1>/dev/null 2>&1
    echo "  HOST=$HOST"
    echo "  WORKDIR=$WORKDIR"
+   echo "  WORKBASE=$WORKBASE"
 else
    echo `echo ~`"/.profile file not exist!" && exit -1
 fi
@@ -909,7 +912,7 @@ echo $ECHO_OPTS "---------------------------------------------------------------
 echo "Binaries of TRUST $new version are available here:" >> $MESSAGES_NUIT
 for machine in `liste_machines updated`
 do 
-   ssh_ $machine -n 'echo -e "'$machine:'\n\c";ls ${WORKDIR:-$HOME}/Version_test_*/TRUST/exec/TRUST_mpi_opt 2>/dev/null || echo' 2>/dev/null
+   ssh_ $machine -n 'echo -e "'$machine:'\n\c";ls ${WORKDIR:-$HOME}/$WORKBASE*/TRUST/exec/TRUST_mpi_opt 2>/dev/null || echo' 2>/dev/null
 done >> $MESSAGES_NUIT
 echo "Older binaries (> v1.6.6) are available here: ftp://$TRUST_FTP/$PUBLIC/" >> $MESSAGES_NUIT
 echo "Older binaries (< v1.6.6) are available here: file:///net/dibona/users/dibona/triou/version" >> $MESSAGES_NUIT
@@ -1331,7 +1334,7 @@ do
    check_xdata_log=$REP_NUIT"/check_xdata_"$machine".log"
    echo "  See $check_xdata_log"
    rm -f $check_xdata_log
-   scp triou@$machine:~/Version_test_$machine/TRUST/Outils/TRIOXDATA/check_xdata.log $check_xdata_log
+   scp triou@$machine:~/$WORKBASE$machine/TRUST/Outils/TRIOXDATA/check_xdata.log $check_xdata_log
    scp_error=$?
    if [ $scp_error != 0 ]
    then
@@ -1410,11 +1413,11 @@ then
 	       module_log=$REP_NUIT"/Modules_"$module"_"$hostname".log"
 	       echo "  Receive tests of $module module from $hostname"
 	       log=`awk -v adr=$machine '($2==adr) {print $4}' ~/.netrc | head -1`
-	       scp $log@$machine:~/Version_test_$hostname/TRUST/Validation/Modules/$module/$module.log . 2>/dev/null
-	       scp $log@$machine:~/Version_test_$hostname/TRUST/Validation/Modules/$module/compare_resultat.log . 2>/dev/null
+	       scp $log@$machine:~/$WORKBASE$hostname/TRUST/Validation/Modules/$module/$module.log . 2>/dev/null
+	       scp $log@$machine:~/$WORKBASE$hostname/TRUST/Validation/Modules/$module/compare_resultat.log . 2>/dev/null
 	       # On efface les rapports precedants
 	       rm -f .tests_TRUST_*
-	       scp $log@$machine:~/Version_test_$hostname/TRUST/Validation/Modules/$module/.tests_TRUST_* . 2>/dev/null
+	       scp $log@$machine:~/$WORKBASE$hostname/TRUST/Validation/Modules/$module/.tests_TRUST_* . 2>/dev/null
 	       if [ ! -f $module.log ]
 	       then
                   echo | mail_ -s\"[lance_test_nuit] Verification of $module module to $machine host no made or no recovered.\" $TRUST_MAIL 
@@ -1488,7 +1491,7 @@ fi
 for machine in $machines
 do
    echo "Verification of $TRUST_ROOT/Validation/Valgrind/ANA_$machine.log"
-   scp triou@$machine:~/Version_test_$machine/TRUST/Validation/Valgrind/ANA.log ANA_$machine.log
+   scp triou@$machine:~/$WORKBASE$machine/TRUST/Validation/Valgrind/ANA.log ANA_$machine.log
    scp_error=$?
    if [ $scp_error != 0 ]
    then
@@ -1502,7 +1505,7 @@ do
       echo "  valgrind not finished"
       valgrind=0
    else
-      scp triou@$machine:~/Version_test_$machine/TRUST/Validation/Valgrind/casmem casmem_$machine
+      scp triou@$machine:~/$WORKBASE$machine/TRUST/Validation/Valgrind/casmem casmem_$machine
       cat ANA_$machine.log 2>/dev/null | $TRUST_Awk -F: '/ errors from /{gsub("\\.val","",$2);print $2}' > caserr_$machine
       valgrind_max=0
       valgrind_err=`cat caserr_$machine 2>/dev/null | wc -l`
@@ -1575,7 +1578,7 @@ do
    file=cpp.gcov.tar.gz  
    echo "    Copy $file to $TRUST_ROOT/doc/Coverage/"
    rm -f $TRUST_TMP/$file
-   scp triou@$machine_gcov:~/Version_test_$hostname/TRUST/doc/Coverage/$file $TRUST_TMP/$file
+   scp triou@$machine_gcov:~/$WORKBASE$hostname/TRUST/doc/Coverage/$file $TRUST_TMP/$file
    if [ "`diff $TRUST_TMP/$file $TRUST_ROOT/doc/Coverage/$file`" != "" ]
    then
       echo "    => updated"
@@ -1591,9 +1594,9 @@ do
    #for suffixe in gcda gcno
    #do
    #   find $repertoire_gcov -name '*'.$suffixe | xargs rm -f
-   #   #scp triou@$machine_gcov:$WORKDIR/Version_test_$hostname/TRUST/MonoDir$COMM"_gcov"/src/[A-N]*.$suffixe $repertoire_gcov/.
-   #   #scp triou@$machine_gcov:$WORKDIR/Version_test_$hostname/TRUST/MonoDir$COMM"_gcov"/src/[N-Z]*.$suffixe $repertoire_gcov/.
-   #   #scp triou@$machine_gcov:$WORKDIR/Version_test_$hostname/TRUST/MonoDir$COMM"_gcov"/src/[a-z]*.$suffixe $repertoire_gcov/.
+   #   #scp triou@$machine_gcov:$WORKDIR/$WORKBASE$hostname/TRUST/MonoDir$COMM"_gcov"/src/[A-N]*.$suffixe $repertoire_gcov/.
+   #   #scp triou@$machine_gcov:$WORKDIR/$WORKBASE$hostname/TRUST/MonoDir$COMM"_gcov"/src/[N-Z]*.$suffixe $repertoire_gcov/.
+   #   #scp triou@$machine_gcov:$WORKDIR/$WORKBASE$hostname/TRUST/MonoDir$COMM"_gcov"/src/[a-z]*.$suffixe $repertoire_gcov/.
    #   scp triou@$machine_gcov:$WORKDIR/.tmp_TRUST_$hostname/tests/GCDA/ana/*.$suffixe $repertoire_gcov/. 1>/dev/null 2>&1
    #   find $repertoire_gcov -name '*'.$suffixe | wc -l
    #done
@@ -1601,7 +1604,7 @@ do
    #echo "    Copy html directory to $TRUST_ROOT/doc/Coverage/lcov"
    #rm -r -f $TRUST_ROOT/doc/Coverage/lcov/html
    #mkdir $TRUST_ROOT/doc/Coverage/lcov/html
-   #scp -r triou@$machine_gcov:$WORKDIR/Version_test_$hostname/TRUST/doc/Coverage/lcov/html $TRUST_ROOT/doc/Coverage/lcov
+   #scp -r triou@$machine_gcov:$WORKDIR/$WORKBASE$hostname/TRUST/doc/Coverage/lcov/html $TRUST_ROOT/doc/Coverage/lcov
    #ls -l $TRUST_ROOT/doc/Coverage/lcov/ | grep html
 done
 ###########
@@ -1630,7 +1633,7 @@ do
    do
       echo "    Copy $file to $TRUST_ROOT/doc/Coverage/"
       rm -f $TRUST_TMP/$file
-      scp triou@$machine:~/Version_test_$hostname/TRUST/doc/Coverage/$file $TRUST_TMP/$file
+      scp triou@$machine:~/$WORKBASE$hostname/TRUST/doc/Coverage/$file $TRUST_TMP/$file
       if [ -f $TRUST_TMP/$file ] && [ "`diff $TRUST_TMP/$file $TRUST_ROOT/doc/Coverage/$file`" != "" ]
       then
          echo "    => updated"

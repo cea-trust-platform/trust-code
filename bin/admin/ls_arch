@@ -6,7 +6,7 @@ for adr in $adresses
 do
    HOST=`echo $adr | awk -F"." '{print $1}'`
    EN_COURS=EN_COURS_$HOST
-   version=Version_test_$HOST
+   version=$WORKBASE$HOST
    echo $ECHO_OPTS `date '+%H:%M:%S'`" "$adr" \t\c"
    echo "
 -pwd
