@@ -293,9 +293,7 @@ do
    echo "Mark "$MAIN
    CHECKOUT $MAIN 1>/dev/null 2>&1
    version=`$TRUST_Awk '/version :/ {print $4}' $MAIN`
-   build=`$TRUST_Awk '/build :/ {print $4}' $MAIN`
    echo $ECHO_OPTS "1,$ s?version : $version?version : $new?g\nw" | ed $MAIN 1>/dev/null 2>&1
-   echo $ECHO_OPTS "1,$ s?build : $build?build : $DATE?g\nw" | ed $MAIN 1>/dev/null 2>&1
    CHECKIN $MAIN 1>/dev/null 2>&1
 done
 index=$TRUST_ROOT/index.html

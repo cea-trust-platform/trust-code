@@ -1022,7 +1022,7 @@
  Valeur_totale_sur_volume_VDF Champ_val_tot_sur_vol_VDF Champ_val_tot_sur_vol_VDF.h
  Valeur_totale_sur_volume_VEF Champ_val_tot_sur_vol_VEF Champ_val_tot_sur_vol_VEF.h
  VDF VDF_discretisation VDF_discretisation.h
- vect vect vect.h
+ vect_impl vect_impl vect_impl.h
  VEF VEF_discretisation VEF_discretisation.h
  VEFPreP1B VEFPreP1B VEFPreP1B.h
  VEF_1D VEF_1D VEF_1D.h

@@ -1,4 +1,7 @@
 Version	Qui				Tache
+1.7.2   triou@cea.fr            revoir comment activer ou non les mot cles dans vi car a adapter selon les baltiks charges
+1.7.2   triou@cea.fr            revoir le TRUST env qui teste beaucoup de chose (ex: dd.ksh,...) et trop long pour utilisateur
+1.7.2   triou@cea.fr            dans lance_test_nuit revoir le test Run_fiche sur VisIt (quand et sur quelles machines le faire)
 1.7.2   gauthier.fauchet@cea.fr  configure.log avec mise en commentaire des anciens configures
 1.7.2   gauthier.fauchet@cea.fr  configure disable-optionals essaie d installer tcl/tk non necessaire mais plante si non dispo
 1.7.2   triou@cea.fr            dans lance_test_nuit quand jobs tues a distance faire de meme avec run etudes
