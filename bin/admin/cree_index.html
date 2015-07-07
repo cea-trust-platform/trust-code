@@ -8,6 +8,7 @@ stable=`ls_ftp $PUBLIC | $TRUST_Awk '/Version/ {gsub("Version","",$NF);v=$NF} EN
 patch=`ls_ftp $PUBLIC/patch/Patch$stable.tar`
 patch_branch=patch_`echo $stable | awk '{gsub("\\\.","",$0);print $0}'`
 beta=`awk '/Release notes/ && /beta/ {print $4;exit}' $TRUST_ROOT/RELEASE_NOTES`
+REP_NUIT=/data/tmplgls/triou/Historique/NUIT
 ######################################
 # Debut creation de la page index.html
 ######################################
@@ -41,13 +42,12 @@ echo "
 <pre>source /home/triou/env_triou_"$stable"_patch.sh</pre>
 <BR><B>Download TRUST with Git:</B>
 <LI>For CEA developers who have Git installed, you can get the sources of the latest $stable patched version and build the code with the following commands:<BR>
-<pre>git clone $TRUST_GIT_OFFICIAL</pre>
-<pre>cd trio_u/TRUST</pre>
+<pre>git clone $TRUST_GIT_OFFICIAL TRUST</pre>
+<pre>cd TRUST</pre>
 <pre>./configure # Configure </pre>
 <pre>source env/env_TRUST.sh # Initialize environment</pre>
-<pre>make optim # Build the code</pre>
-<pre>make debug # Optional: to build also a debug version</pre>
-<pre>make # Optional: to build also a semi-optimized version</pre>
+<pre>make # Build the code</pre>
+<pre>make check # Check the code</pre>
 <LI>If you want to change now the code in a new branch:<BR>
 <pre>git checkout -b YourNewBranch</pre>
 <LI>Later, to update your work with the latest $stable patch:<BR>
@@ -58,9 +58,9 @@ echo "
 <BR><B>Version portability:</B>
 <BR>For this $stable release, TRUST has been succesfully built on several OS:
 ">> $html
-cat $TRUST_ROOT/NUIT/os >> $html
+cat $REP_NUIT/os >> $html
 echo "<BR>And with several compilers:" >> $html
-cat $TRUST_ROOT/NUIT/CC >> $html
+cat $REP_NUIT/CC >> $html
 echo "<BR>" >> $html
 cat $TRUST_ROOT/RELEASE_NOTES | $TRUST_Awk 'BEGIN {ok=0} /Release notes/ && !/beta/ {ok++;if (ok>1) exit;print "<BR><B>"$0"</B>"}' >> $html
 cat $TRUST_ROOT/RELEASE_NOTES | $TRUST_Awk 'BEGIN {ok=0} /Release notes/ && !/beta/ {ok++;if (ok>1) exit} !/Release notes/ && !/---/ && (ok==1) {gsub($1,"<BR><LI>",$0);print $0}' | sort -r >> $html

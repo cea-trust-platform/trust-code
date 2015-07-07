@@ -26,25 +26,29 @@ cd $TRUST_ENV
 ##################################################
 # Copie des fichiers issus de recupere_TRUST_arch 
 ##################################################
-cd $TRUST_ROOT/NUIT
-rmdir_ftp $SECRET/NUIT
-mkdir_ftp $SECRET/NUIT
-cp_ftp NUIT.html $SECRET/NUIT
-cp_ftp CR_* $SECRET/NUIT
-cp_ftp PERF_* $SECRET/NUIT
-cp_ftp MAKE_* $SECRET/NUIT
-cp_ftp compile_* $SECRET/NUIT
-cd $TRUST_ROOT/exec
-cp_ftp .tests* $SECRET/NUIT
-cd $TRUST_ROOT/../Composants/ModeleCoeur
-cp_ftp nuit_*.html $SECRET/NUIT
-cp_ftp *_%_*.log $SECRET/NUIT
-cd $TRUST_ROOT/../Pre_Post_TRUST/Outils/ICoCo/ICoCo_src
-cp_ftp nuit_*.html $SECRET/NUIT
-cp_ftp *_%_*.log $SECRET/NUIT
-cd $TRUST_ROOT/../Doc_TRUST/doc/TRUST/exercices/equation_convection_diffusion
-cp_ftp nuit_*.html $SECRET/NUIT
-cp_ftp *_%_*.log $SECRET/NUIT
+REP_NUIT=/data/tmplgls/triou/Historique/NUIT
+if [ -d $REP_NUIT ]
+then
+   cd $REP_NUIT
+   rmdir_ftp $SECRET/NUIT
+   mkdir_ftp $SECRET/NUIT
+   cp_ftp NUIT.html $SECRET/NUIT
+   cp_ftp CR_* $SECRET/NUIT
+   cp_ftp PERF_* $SECRET/NUIT
+   cp_ftp MAKE_* $SECRET/NUIT
+   cp_ftp compile_* $SECRET/NUIT
+   cd $TRUST_ROOT/exec
+   cp_ftp .tests* $SECRET/NUIT
+   cd $TRUST_ROOT/../Composants/ModeleCoeur
+   cp_ftp nuit_*.html $SECRET/NUIT
+   cp_ftp *_%_*.log $SECRET/NUIT
+   cd $TRUST_ROOT/Outils/ICoCo/ICoCo_src
+   cp_ftp nuit_*.html $SECRET/NUIT
+   cp_ftp *_%_*.log $SECRET/NUIT
+   cd $TRUST_ROOT/doc/TRUST/exercices/equation_convection_diffusion
+   cp_ftp nuit_*.html $SECRET/NUIT
+   cp_ftp *_%_*.log $SECRET/NUIT
+fi
 cd $TRUST_ROOT
 
 #########################################################################

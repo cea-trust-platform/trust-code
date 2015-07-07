@@ -42,9 +42,4 @@ rm *.tar
 proj=`basename $org`
 
 sh $DIR/../portability/build_report.sh $proj
-if [ "$NUIT" != "" ]
-then
-   echo "See html log here:" `pwd`/nuit_$proj.html
-else
-   konqueror nuit_$proj.html &
-fi
+echo "See html log here:" `pwd`/nuit_$proj.html

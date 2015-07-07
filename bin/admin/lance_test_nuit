@@ -199,20 +199,20 @@ echo " "
 
 export DATE=`date '+%d%m%y'`
 export NUIT=1
-REP_NUIT=$TRUST_ROOT/NUIT
-REP_HIST=$TRUST_ROOT/HIST
+REP_NUIT=/data/tmplgls/triou/Historique/NUIT
+REP_HIST=/data/tmplgls/triou/Historique/HIST
 MESSAGES_NUIT=$REP_NUIT/MESSAGES_NUIT
 
 # On fait le menage :
-echo "Cleaning of $REP_NUIT directory"
-rm -f $REP_NUIT/CR_* $REP_NUIT/PERF_* $REP_NUIT/MAKE_* $REP_NUIT/*.log
-rm -f $REP_NUIT/rsync_include_from $REP_NUIT/NUIT.html
-rm -f $REP_NUIT/os $REP_NUIT/CC $REP_NUIT/CR
-rm -f $MESSAGES_NUIT
+#echo "Cleaning of $REP_NUIT directory"
+#rm -f $REP_NUIT/CR_* $REP_NUIT/PERF_* $REP_NUIT/MAKE_* $REP_NUIT/*.log
+#rm -f $REP_NUIT/rsync_include_from $REP_NUIT/NUIT.html
+#rm -f $REP_NUIT/os $REP_NUIT/CC $REP_NUIT/CR
+#rm -f $MESSAGES_NUIT
 # On cree :
 [ ! -d $REP_NUIT ] && mkdir $REP_NUIT
 [ ! -d $REP_HIST ] && mkdir $REP_HIST
-ls $REP_NUIT
+#ls $REP_NUIT
 echo "<--- End at "`date '+%H:%M:%S'`
 echo " "
 echo "------------------------------------------------------"

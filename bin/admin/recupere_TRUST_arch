@@ -44,9 +44,10 @@ fi
 ###############################
 # Creation du rapport NUIT.html
 ###############################
-[ ! -d $TRUST_ROOT/NUIT ] && mkdir $TRUST_ROOT/NUIT
-NUIT=$TRUST_ROOT/NUIT/NUIT.html
-NUIT_DIPHA=$TRUST_ROOT/NUIT/NUIT_dipha.html
+REP_NUIT=/data/tmplgls/triou/Historique/NUIT
+[ ! -d $REP_NUIT ] && mkdir $REP_NUIT
+NUIT=$REP_NUIT/NUIT.html
+NUIT_DIPHA=$REP_NUIT/NUIT_dipha.html
 echo > $NUIT
 ################################
 # Debut boucle sur les modules #
@@ -129,7 +130,6 @@ do
       echo "************************************************************************"
       echo "* Recovery on $adr at `date`"
       echo "************************************************************************"
-      REP_NUIT=$TRUST_ROOT/../$MODULE/NUIT && [ ! -d $REP_NUIT ] && mkdir $REP_NUIT 2>/dev/null
       # Recuperation des CR selon le mode
       if [ "`liste_machines git_cron | grep $adr`" != "" ]
       then
@@ -432,8 +432,8 @@ $TD_CR<A HREF="$CR">$HOST</A>$FTD
 </TR>" >> $NUIT2
      fi
    done
-   sort -u /tmp/os > $TRUST_ROOT/NUIT/os
-   sort -u /tmp/CC > $TRUST_ROOT/NUIT/CC
+   sort -u /tmp/os > $REP_NUIT/os
+   sort -u /tmp/CC > $REP_NUIT/CC
    rm -f /tmp/os /tmp/CC
    echo "
 </TABLE>
@@ -475,11 +475,11 @@ echo "</CENTER>
 [ "$1" != "" ] && exit
 # Deplacer dans envoie_ftp_cea_fr pour ne pas bloquer lance_test_nuit
 #. connect_ftp
-#cd $TRUST_ROOT/NUIT
+#cd $REP_NUIT
 #cp_ftp $NUIT $SECRET/NUIT
 #cd $TRUST_ROOT/exec
 #cp_ftp .tests* $SECRET/NUIT
-#cd $TRUST_ROOT/NUIT
+#cd $REP_NUIT
 #cp_ftp compile_* PERF_* CR_* $SECRET/NUIT
 #
 NUIT=ftp://$TRUST_FTP/$SECRET/NUIT/`basename $NUIT`
