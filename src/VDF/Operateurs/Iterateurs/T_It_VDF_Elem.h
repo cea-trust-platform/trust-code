@@ -2234,7 +2234,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords(
                     {
                       for (i=0; i<ncomp; i++)
                         {
-                          matrice(elem1*ncomp+i,elem1*ncomp+i)+=aii(i);
+                          matrice(elem2*ncomp+i,elem2*ncomp+i)+=aii(i);
                         }
                     }
                 }

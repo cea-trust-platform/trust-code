@@ -34,7 +34,12 @@ class LataLoader
     //ParaMEDMEM::DataArray  *GetVar(int, int, const char *);
     ParaMEDMEM::DataArray  *GetVectorVar(int, int, const char *);
     void GetTimes(std::vector<double>& times);
+    inline std::vector<double> getTimes() { std::vector<double> a; GetTimes(a);return a; };
     ParaMEDMEM::MEDCouplingFieldDouble*  GetFieldDouble(const char *varname,int timestate, int block=-1);
+    std::vector<std::string> GetMeshNames();
+    
+    std::vector<std::string> GetFieldNames();
+    std::vector<std::string> GetFieldNamesOnMesh(const std::string& );
   protected:
     // DATA MEMBERS
 

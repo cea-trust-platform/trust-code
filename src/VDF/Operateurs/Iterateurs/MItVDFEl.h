@@ -2051,7 +2051,7 @@ modifier_flux() ;  						\
               {                                                                \
                 for (i=0; i<ncomp; i++)                                        \
                   {                                                        \
-                    matrice(elem1*ncomp+i,elem1*ncomp+i)+=aii(i);        \
+                    matrice(elem2*ncomp+i,elem2*ncomp+i)+=aii(i);        \
                   }                                                        \
               }                                                                \
           }                                                                \
