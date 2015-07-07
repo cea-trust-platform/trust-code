@@ -346,12 +346,15 @@ LataLoader::GetMesh(const char *meshname, int timestate, int block)
       break;
     case Domain::line:
       type_cell=INTERP_KERNEL::NORM_SEG2;
+      ugrid->setMeshDimension(1);
       break;
     case Domain::triangle:
       type_cell=INTERP_KERNEL::NORM_TRI3;
+      ugrid->setMeshDimension(2);
       break;
     case Domain::quadri:
       type_cell=INTERP_KERNEL::NORM_QUAD4;
+      ugrid->setMeshDimension(2);
       break;
     case Domain::tetra:
       type_cell=INTERP_KERNEL::NORM_TETRA4;
@@ -819,7 +822,7 @@ MEDCouplingFieldDouble*  LataLoader::GetFieldDouble(const char *varname,int time
     }
   }
   
-  double time=filter_.get_timestep(timestate);
+  double time=filter_.get_timestep(timestate+1);
   MEDCouplingFieldDouble* ret=MEDCouplingFieldDouble::New(cent,ONE_TIME);
   MEDCouplingMesh* mesh=GetMesh(field_uname.get_geometry(),timestate,block);
   DataArray* array=GetVectorVar(timestate,block,varname);
@@ -835,3 +838,37 @@ MEDCouplingFieldDouble*  LataLoader::GetFieldDouble(const char *varname,int time
 }
 
 
+std::vector<std::string> LataLoader::GetMeshNames()
+{
+  std::vector<std::string> names;
+  const Noms& geoms = mesh_username_;
+  for (int i=0;i<geoms.size();i++)
+    names.push_back(geoms[i].getString());
+  return names;
+
+}
+std::vector<std::string>  LataLoader::GetFieldNames()
+{
+  std::vector<std::string> names;
+  for (int i=0;i<field_username_.size();i++)
+    {
+      const Nom& name=field_username_[i];
+      if ((!name.debute_par("mesh_quality/"))&&(!name.debute_par("normals/") ))
+	names.push_back(name.getString());
+    }
+  return names;
+}
+std::vector<std::string>  LataLoader::GetFieldNamesOnMesh(const std::string& domain_name)
+{
+  std::vector<std::string> names;
+  std::vector<std::string> names_tot=GetFieldNames();
+  Nom test("_");
+  test+=domain_name.c_str();
+  for (int i=0;i<names_tot.size();i++)
+    {
+      const Nom& name=names_tot[i];
+      if (name.finit_par(test))   
+	names.push_back(name.getString());
+    }
+  return names;
+}
