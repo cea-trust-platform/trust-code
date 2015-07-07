@@ -460,7 +460,7 @@ then
    # Variable d'environnement bigmem (128Go disponible)
    ram="" && [ "$bigmem" = 1 ] && ram="128000000" && soumission=1   
    sub=LSF
-elif [ $HOST = curie-ccrt ] || [ $HOST = airain ]
+elif [ $HOST = curie-ccrt ] || [ $HOST = curie-fr ] || [ $HOST = airain ]
 then
    soumission=2
    #mpirun="mpirun -n $NB_PROCS" ne marche pas au dela de 32 procs ?
@@ -486,6 +486,7 @@ then
       if [ "$USE_PETSC_GPU" = 1 ] && [ "$core_per_task" = 1 ]
       then
          [ $HOST = curie-ccrt ] && core_per_task=4
+         [ $HOST = curie-fr ] && core_per_task=4
 	 [ $HOST = airain ] && core_per_task=8
 	 echo "You are using PETSc GPU solvers on $HOST. core_per_task is changed automatically"
 	 echo "to $core_per_task to use CPU per GPU for optimal performances."

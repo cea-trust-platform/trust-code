@@ -755,6 +755,7 @@ module () {
       # MPI module 1.1.16.6 1.2.8.2(default)
       [ $HOST = airain ] 	&& module="bullxmpi/1.2.8.2"
       [ $HOST = curie-ccrt ] 	&& module="bullxmpi/1.2.8.2"
+      [ $HOST = curie-fr ] 	&& module="bullxmpi/1.2.8.2"
       echo "Module $module detected and loaded on $HOST."
       module unload bullxmpi
       module load $module
@@ -763,6 +764,7 @@ module () {
       [ $HOST = airain ] 	&& module="intel/13.1.3.192"
       [ $HOST_BUILD = airain-intel15 ] && module="intel/15.0.2.164"
       [ $HOST = curie-ccrt ] 	&& module="intel/13.1.3.192"
+      [ $HOST = curie-fr ] 	&& module="intel/13.1.3.192"
       echo "Module $module detected and loaded on $HOST."
       module unload intel
       module load $module
