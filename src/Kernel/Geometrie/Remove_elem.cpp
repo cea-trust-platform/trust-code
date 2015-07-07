@@ -224,9 +224,10 @@ void Remove_elem::Remove_elem_(Zone& zone)
 {
   if (zone.type_elem()->que_suis_je() == "Rectangle" || zone.type_elem()->que_suis_je() == "Hexaedre")
     {
+      
       IntTab& les_elems=zone.les_elems();
       int oldsz=les_elems.dimension(0);
-
+      ArrOfInt marq_remove(oldsz);
       int nbsom=domaine().les_sommets().dimension(0);
 
       int nbs = (dimension==2) ? 4 : 8 ;  // nombre de sommets par element
@@ -246,20 +247,28 @@ void Remove_elem::Remove_elem_(Zone& zone)
               f.setVar(1,xg(i,1));
               if(dimension==3) f.setVar(2,xg(i,2));
               //if(f.eval()) listelem.add(i);
-              if(int(f.eval()+0.5)) listelem.add(i); // pour etre conforme a ce qui est fait dans DecoupeBord
+              if(int(f.eval()+0.5)) marq_remove[i]=1; //listelem.add(i); // pour etre conforme a ce qui est fait dans DecoupeBord
             }
         }
+      else
+	{
+	  for (int i=0;i<listelem.size();i++)
+	    {
+	      marq_remove[listelem[i]]=1;
+	    }
+
+	}
 
       int j=0;
       Cerr << "-> " << listelem.size() << " elements will be removed from the domain " << domaine().le_nom() << finl;
-      if (listelem.size()==0)
+      /*    if (listelem.size()==0)
         {
           Cerr << "May be an error when applying Remove_elem : no elements found." << finl;
           Process::exit();
-        }
+	  } */
       for(int i=0; i<oldsz; i++)
         {
-          if(!(listelem.contient(i)))
+          if(marq_remove[i]==0)
             {
               for(int k=0; k<nbs; k++) new_elems(j,k) = les_elems(i,k);
               j++;
