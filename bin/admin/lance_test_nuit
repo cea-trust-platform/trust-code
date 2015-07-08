@@ -15,8 +15,10 @@ check_components()
 	 then
 	    ln -s -f ../TRUST/Outils/$Composant/$Composant"_src" $Composant
 	 fi
+	 cd -
       fi
-      if [ -d $TRUST_ROOT/../Composants/$Composant ]
+      #if [ -d $TRUST_ROOT/../Composants/$Composant ]
+      if [ -d $TRUST_ROOT/../Composants/$Composant ] && [ "$Composant" != ModeleCoeur ] # Temporary
       then
          cd $TRUST_ROOT/../Composants/$Composant
 	 rm -f $Composant*.log
@@ -34,7 +36,8 @@ check_components()
 	    [ $TRUST_ROOT = $TRUST_ROOT_MASTER ] && export MAKEATELIER_SEVERITY=1
 	    COMPOSANT_OK=0
 	    # First pass, reconfigure to clean properly (in the case where the TRUST_ROOT has changed):
-	    $TRUST_ROOT/bin/baltik/bin/baltik_build_configure && ./configure && make dist_clean
+	    [ "$Composant" != ICoCo ] && source env_$Composant.sh && make dist_clean
+	    [ "$Composant" == ICoCo ] && source env_MED$Composant.sh && make dist_clean
 	    $TRUST_ROOT/bin/baltik/bin/baltik_build_configure && ./configure &&
 	    make optim module_optim debug module_debug &&
 	    make check_all_optim `[ $TRUST_ROOT = $TRUST_ROOT_MASTER ] && echo check_all_debug` && echo "$Composant OK" && COMPOSANT_OK=1
@@ -68,14 +71,14 @@ check_components()
 	       liste_options="--with-efface-dir-before --with-mode=optim --check-all"
 	       echo "  See `pwd`/Run.liste"
 	       machine="cezanne63"
-	       echo "$Composant.tar /home/pledac/$WORKBASE$machine/Composants/$Composant pledac@$machine --with-trio=/home/pledac/$WORKBASE$machine/TRUST $liste_options" >> Run.liste
+	       #echo "$Composant.tar /home/pledac/$WORKBASE$machine/Composants/$Composant pledac@$machine --with-trio=/home/pledac/$WORKBASE$machine/TRUST $liste_options" >> Run.liste
 	       machine="callisto"
 	       #[ "$Composant" != ModeleCoeur ] && echo "$Composant.tar /panfs/ixion/home/triou/$WORKBASE$machine/Composants/$Composant triou@$machine --with-trio=/panfs/ixion/home/triou/$WORKBASE$machine/TRUST $liste_options" >> Run.liste
-	       echo "$Composant.tar /panfs/ixion/home/triou/$WORKBASE$machine$/Composants/$Composant triou@$machine --with-trio=/panfs/ixion/home/triou/$WORKBASE$machine/TRUST $liste_options" >> Run.liste
+	       #echo "$Composant.tar /panfs/ixion/home/triou/$WORKBASE$machine$/Composants/$Composant triou@$machine --with-trio=/panfs/ixion/home/triou/$WORKBASE$machine/TRUST $liste_options" >> Run.liste
 	       # ModeleCoeur had some crashes on curie for inter assemblage calculations:
 	       machine="curie-ccrt"
 	       #[ "$Composant" != ModeleCoeur ] && echo "$Composant.tar /ccc/cont002/home/den/triou/$WORKBASE$machine/Composants/$Composant triou@$machine --with-trio=/ccc/cont002/home/den/triou/$WORKBASE$machine/TRUST $liste_options" >> Run.liste
-	       echo "$Composant.tar /ccc/cont002/home/den/triou/$WORKBASE$machine/Composants/$Composant triou@$machine --with-trio=/ccc/cont002/home/den/triou/$WORKBASE$machine/TRUST $liste_options" >> Run.liste
+	       #echo "$Composant.tar /ccc/cont002/home/den/triou/$WORKBASE$machine/Composants/$Composant triou@$machine --with-trio=/ccc/cont002/home/den/triou/$WORKBASE$machine/TRUST $liste_options" >> Run.liste
 	       # valgrind too slow (try again the 21/11/14 for 1.7.0):
 	       # /work/triou/ au CEA Grenoble ; /export/home/triou/ au CEA Saclay
 	       #echo "$Composant.tar /work/triou/$WORKBASE$valgrind_machine/Composants/$Composant triou@$valgrind_machine --with-trio=/work/triou/$WORKBASE$valgrind_machine/TRUST $liste_options --with-valgrind" >> Run.liste
@@ -106,7 +109,6 @@ git_push()
    # Si branche patch_XYZ, on ne pousse pas automatiquement sur official (demande par Gauthier):
    # sauf si -all (sortie de version)
    #[ "$all" != 1 ] && [ ${git_branch#patch_} != $git_branch ] && repos=`git remote | grep -v official`
-   repos="" # temporary: master must not evolve on sedna
    # => nouveau depot GIT: on ne pousse rien sur origin, seulement sur shared
    repos=`git remote | grep -v origin`
    for repo in $repos
@@ -165,10 +167,13 @@ echo "Release notes new version: "$new
 VOBS="TRUST Composants"
 
 # List of components tested with TRUST:
+# TrioCFD est ajoute a la liste car est devenu un Baltik de TRUST suite au decoupage de Trio_U.
+# ICoCo est devenu un Outil de TRUST.
 # equation_convection_diffusion est un projet Baltik qui sert de tutorial a la formation developpeur.
-# MPCube est supprime de la liste car teste par ailleurs sur le Kernel
-#Composants="ModeleCoeur ICoCo equation_convection_diffusion MPCube" 
-Composants="ModeleCoeur ICoCo equation_convection_diffusion" 
+# MPCube est un Baltik qui peut etre teste sur TRUST.
+# MPCube est supprime de la liste car teste par ailleurs sur le Kernel.
+#Composants="ModeleCoeur ICoCo equation_convection_diffusion" 
+Composants="equation_convection_diffusion ICoCo TrioCFD ModeleCoeur" 
 
 # Initialize environment TRUST:
 echo " "
@@ -207,15 +212,15 @@ REP_HIST=/data/tmplgls/triou/Historique/HIST
 MESSAGES_NUIT=$REP_NUIT/MESSAGES_NUIT
 
 # On fait le menage :
-#echo "Cleaning of $REP_NUIT directory"
-#rm -f $REP_NUIT/CR_* $REP_NUIT/PERF_* $REP_NUIT/MAKE_* $REP_NUIT/*.log
-#rm -f $REP_NUIT/rsync_include_from $REP_NUIT/NUIT.html
-#rm -f $REP_NUIT/os $REP_NUIT/CC $REP_NUIT/CR
-#rm -f $MESSAGES_NUIT
+echo "Cleaning of $REP_NUIT directory"
+rm -f $REP_NUIT/CR_* $REP_NUIT/PERF_* $REP_NUIT/MAKE_* $REP_NUIT/*.log
+rm -f $REP_NUIT/rsync_include_from $REP_NUIT/NUIT.html
+rm -f $REP_NUIT/os $REP_NUIT/CC $REP_NUIT/CR
+rm -f $MESSAGES_NUIT
 # On cree :
 [ ! -d $REP_NUIT ] && mkdir $REP_NUIT
 [ ! -d $REP_HIST ] && mkdir $REP_HIST
-#ls $REP_NUIT
+ls $REP_NUIT
 echo "<--- End at "`date '+%H:%M:%S'`
 echo " "
 echo "------------------------------------------------------"
@@ -349,7 +354,6 @@ echo "---> Begin at "`date '+%H:%M:%S'`
 (
 envoie_log=$REP_NUIT/envoie_TRUST_arch_$HOST.log
 echo "Call to "$TRUST_ROOT"/bin/admin/envoie_TRUST_arch"
-rm -f $REP_NUIT/rsync_include_from
 echo "  See $envoie_log"
 echo "TRUST script on $HOST the `date` ...">$envoie_log
 echo>>$envoie_log
@@ -433,6 +437,8 @@ echo "###############################################"
 	      echo " "
 	   fi
 	   cd - 1>/dev/null 2>&1
+           #echo "Call git_push"
+           #git_push
 	fi
 	echo "Call to configure $vue version in `pwd`"
 	./configure 1>/dev/null 2>&1
@@ -507,9 +513,8 @@ echo "###############################################"
 		 echo "from `pwd`"
 		 (    
 		    (
-		       cd bin;tar cf $patch Installer_TRUST README_INSTALL linux_install_tools*.tgz
+		       cd bin;tar cf $patch Installer_TRUST README_INSTALL linux_install_tools*.tgz;cd ..
 		    )
-		    cd ..
 		    # Git (On ne scrute que les VOBs TRUST):
 		    cd $TRUST_ROOT
 		    git_push
@@ -554,7 +559,8 @@ echo "###############################################"
 		    install_patch_log=$REP_NUIT"/install_patch_"`echo $machine | awk -F"." '{print $1}'`"_"${vue#*/}".log"
                     echo "TRUST script on $HOST the `date` ...">$install_patch_log
 		    echo>>$install_patch_log
-		    $TRUST_ROOT/bin/admin/Installer_TRUST.ssh $machine $patch_version -patch -compile 1>>$install_patch_log 2>&1
+		    #$TRUST_ROOT/bin/admin/Installer_TRUST.ssh $machine $patch_version -patch -compile 1>>$install_patch_log 2>&1
+		    echo "A tester manuellement avant de la faire par lance_test_nuit :error">>$install_patch_log 2>&1 # Temporary
 		    if [ $? != 0 ] || [ "`grep :error $install_patch_log | grep -iv warning | grep -v TRIOXDATA | grep -v Gmsh`" != "" ]
 		    then
                        cat $install_patch_log | mail_ -s\"[lance_test_nuit] Failed to install patch version on $machine\" $TRUST_MAIL
@@ -598,7 +604,7 @@ echo "###############################################"
   	   patch_branch=`cd $WORKDIR/sourceforge/Maintenance/TRUST;git rev-parse --abbrev-ref HEAD`
   	   master_branch=`cd $WORKDIR/sourceforge/Livraison/TRUST;git rev-parse --abbrev-ref HEAD`
 	   echo " "
- 	   echo "Call `pwd`/git diff --name-status master...$patch_branch"
+ 	   echo "Call `pwd`/git diff --name-status $master_branch...$patch_branch"
  	   git diff --name-status $master_branch...$patch_branch 1>$to_merge
 	   cat $to_merge
  	   [ -s $to_merge ] && cat $to_merge | mail_ -s\"[lance_test_nuit] Some stuff to merge in $master_branch from $patch_branch with command: fusion.git $patch_branch\" $TRUST_MAIL
@@ -621,7 +627,7 @@ echo "########################"
 ####################################################
 # Lancement des etudes sur une machine de production
 ####################################################
-ETUDES=$WORKDIR/git/Etudes
+ETUDES=$WORKDIR/sourceforge/Etudes # Temporary
 echo " "
 echo "##################"
 echo "# On study cases #"
@@ -649,12 +655,12 @@ then
 	 if [ "$etude_test" = 1 ]
 	 then
             echo "  See $REP_NUIT/run_Mistra_*.log"
-            echo "TRUST script on airain the `date` ...">run_Mistra_airain.log
-	    echo>>run_Mistra_airain.log
-            ./run Validation/Mistra -adr airain.ccc.cea.fr 1>>run_Mistra_airain.log 2>&1 &
-            echo "TRUST script on curie the `date` ...">run_Mistra_curie.log
-	    echo>>run_Mistra_curie.log
-            ./run Validation/Mistra -adr curie-ccrt.ccc.cea.fr 1>>run_Mistra_curie.log 2>&1 &
+            #echo "TRUST script on airain the `date` ...">run_Mistra_airain.log
+	    #echo>>run_Mistra_airain.log
+            #./run Validation/Mistra -adr airain.ccc.cea.fr 1>>run_Mistra_airain.log 2>&1 &
+            #echo "TRUST script on curie the `date` ...">run_Mistra_curie.log
+	    #echo>>run_Mistra_curie.log
+            #./run Validation/Mistra -adr curie-ccrt.ccc.cea.fr 1>>run_Mistra_curie.log 2>&1 &
             echo "TRUST script on callisto the `date` ...">run_Mistra_callisto.log
 	    echo>>run_Mistra_callisto.log
            ./run Validation/Mistra -adr callisto.intra.cea.fr 1>>run_Mistra_callisto.log 2>&1 &
@@ -678,14 +684,16 @@ echo "<--- End at "`date '+%H:%M:%S'`
 # Lancement des tests sur Livraison #
 #####################################
 cd $TRUST_ROOT
-touch $REP_HIST/lance_test.$DATE
-echo "TRUST script on $HOST the `date` ...">$REP_HIST/lance_test.$DATE
+vue="sourceforge/Livraison"
+lance_test_log=$REP_NUIT"/lance_test_"$HOST"_"${vue#*/}".log"
+touch $lance_test_log
+echo "TRUST script on $HOST the `date` ...">$lance_test_log
 echo " "
 echo "##########################"
 echo "# On no-regression tests #"
 echo "##########################"
 echo "---> Begin at "`date '+%H:%M:%S'`
-echo "  See $REP_HIST/lance_test.$DATE"
+echo "  See $lance_test_log"
 for exec in $liste_exec
 do
    cd $TRUST_ROOT
@@ -732,10 +740,10 @@ do
       echo "  See $PERF"
       fic_test=`dirname $exec`/.tests_`basename $exec`
       rm -f $fic_test
-      echo " " >> $REP_HIST/lance_test.$DATE
-      echo "######################################################" >> $REP_HIST/lance_test.$DATE
-      echo " " >> $REP_HIST/lance_test.$DATE
-      echo $ECHO_OPTS $N | lance_test $exec `dirname $exec` 2>&1 >> $REP_HIST/lance_test.$DATE
+      echo " " >> $lance_test_log
+      echo "######################################################" >> $lance_test_log
+      echo " " >> $lance_test_log
+      echo $ECHO_OPTS $N | lance_test $exec `dirname $exec` 2>&1 >> $lance_test_log
       PAR=0
       export PAR
       if [ -f $fic_test ]
@@ -784,7 +792,6 @@ echo "#################"
 echo "# On components #"
 echo "#################"
 echo "---> Begin at "`date '+%H:%M:%S'`
-vue="sourceforge/Livraison"
 echo "Call check_components for $TRUST_VERSION version from `pwd`"
 check_components $vue
 echo "<--- End at "`date '+%H:%M:%S'`
@@ -883,7 +890,7 @@ echo "Move $version_arch packages to $GRAVAGE"
 mv $TRUST_ROOT/$version_arch $GRAVAGE/.
 [ -f $TRUST_ROOT/$keys ] && mv $TRUST_ROOT/$keys $GRAVAGE/.
 ls $GRAVAGE/$version_arch
-ls $GRAVAGE/$keys
+[ -f $GRAVAGE/$keys ] && ls $GRAVAGE/$keys
 cd $TRUST_ROOT
 echo "<--- End at "`date '+%H:%M:%S'`
 #
@@ -957,41 +964,50 @@ echo "  See $remote3_log"
 echo " "
 # Test d'une extraction/installation d'une version avec les sources
 (
-simule_install_TRUST ./$version_arch $remote1 					1>>$remote1_log 2>&1 			
-if [ $? != 0 ]
-then
+#simule_install_TRUST ./$version_arch $remote1 					1>>$remote1_log 2>&1 			
+#if [ $? != 0 ]
+#then
+#   echo "Installation KO -with_source on $remote1"
+#   cat $remote1_log | mail_ -s\"[lance_test_nuit] Remote install with source failed on ${remote1##* }\" $TRUST_MAIL
+#   cp $remote1_log $TRUST_ROOT/simule_install_TRUST.log
+#else
+#   echo "Installation OK -with_source on $remote1"
+#fi
+echo "A tester manuellement avant de la faire par lance_test_nuit :error">>$remote1_log 2>&1 # Temporary
    echo "Installation KO -with_source on $remote1"
-   cat $remote1_log | mail_ -s\"[lance_test_nuit] Remote install with source failed on ${remote1##* }\" $TRUST_MAIL
    cp $remote1_log $TRUST_ROOT/simule_install_TRUST.log
-else
-   echo "Installation OK -with_source on $remote1"
-fi
 ) &
 installation_id1=$!
 # Test d'une extraction/installation d'une version kernel
 (
-extract_Version_TRUST ./$version_arch -install $remote2 -kernel_only 		1>$remote2_log 2>&1
-if [ $? != 0 ]
-then
+#extract_Version_TRUST ./$version_arch -install $remote2 -kernel_only 		1>$remote2_log 2>&1
+#if [ $? != 0 ]
+#then
+#   echo "Installation KO -kernel_only on $remote2"
+#   cat $remote2_log | mail_ -s\"[lance_test_nuit] Remote install kernel only failed on ${remote2##* }\" $TRUST_MAIL
+#   cp $remote2_log $TRUST_ROOT/simule_install_TRUST_kernel_only.log
+#else
+#   echo "Installation OK -kernel_only on $remote2"
+#fi
+echo "A tester manuellement avant de la faire par lance_test_nuit :error">>$remote2_log 2>&1 # Temporary
    echo "Installation KO -kernel_only on $remote2"
-   cat $remote2_log | mail_ -s\"[lance_test_nuit] Remote install kernel only failed on ${remote2##* }\" $TRUST_MAIL
    cp $remote2_log $TRUST_ROOT/simule_install_TRUST_kernel_only.log
-else
-   echo "Installation OK -kernel_only on $remote2"
-fi
 ) &
 installation_id2=$!
 # Test d'une extraction/installation d'une version sans les sources
 (
-extract_Version_TRUST ./$version_arch -install $remote3 -without_source 	1>$remote3_log 2>&1
-if [ $? != 0 ]
-then
+#extract_Version_TRUST ./$version_arch -install $remote3 -without_source 	1>$remote3_log 2>&1
+#if [ $? != 0 ]
+#then
+#   echo "Installation KO -without_source on $remote3"
+#   cat $remote3_log | mail_ -s\"[lance_test_nuit] Remote install without source failed on ${remote3##* }\" $TRUST_MAIL
+#   cp $remote3_log $TRUST_ROOT/simule_install_TRUST_without_source.log
+#else
+#   echo "Installation OK -without_source on $remote3"
+#fi
+echo "A tester manuellement avant de la faire par lance_test_nuit :error">>$remote3_log 2>&1 # Temporary
    echo "Installation KO -without_source on $remote3"
-   cat $remote3_log | mail_ -s\"[lance_test_nuit] Remote install without source failed on ${remote3##* }\" $TRUST_MAIL
    cp $remote3_log $TRUST_ROOT/simule_install_TRUST_without_source.log
-else
-   echo "Installation OK -without_source on $remote3"
-fi
 ) &
 installation_id3=$!
 # On attend la fin des installations lancees en parallele
@@ -1534,6 +1550,7 @@ do
       fi
    fi
 done
+cd $TRUST_ROOT
 echo " "
 if [ "$valgrind" = 1 ]
 then
@@ -1918,13 +1935,14 @@ do
       echo "File not exist => benchmark not executed on the machine: $machine"
    fi
 done
+#
 echo "Call to $TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/src/Run_fiche"
 bench_log=$REP_NUIT"/benchmark_report_"$HOST".log"
 echo "  See $bench_log"
 echo "TRUST benchmarh report on $HOST the `date` ...">$bench_log
 echo>>$bench_log
 rm -f $TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/build/rapport.pdf
-(cd $TRUST_ROOT/tests/Reference/BENCHMARK/Rapport;rm -f Run.log;Run_fiche 1>>$bench_log 2>&1)
+(cd $TRUST_ROOT/tests/Reference/BENCHMARK/Rapport;rm -f Run.log;Run_fiche 1>>$bench_log 2>&1) # Temporary sourcer TrioCFD
 tail -n1 $bench_log
 if [ -f $TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/build/rapport.pdf ]
 then
@@ -1973,6 +1991,7 @@ do
 done
 # Envoi tous les samedis au chef de projet pour planning debut de semaine
 [ "`date '+%u'`" = 6 ] && cat $TRUST_ROOT/ToDo | mail_ -s \"[lance_test_nuit] ToDo list for the version ${TRUST_VERSION%_beta}\" $TRUST_PROJECT_LEADER $TRUST_TODO_MAIL
+rm -f $TRUST_TMP/ToDo
 #
 echo " "
 if [ "$nothing_todo" = 1 ]
@@ -2208,7 +2227,8 @@ grep "Total:" $MESSAGES_NUIT
 echo "  criteria:  "$criteres_remplis" != "$total_criteres
 echo "  minimum:   "$criteres_remplis" -ge 11"
 echo "  stability: "$stabilite" = 1.000"
-if [ $criteres_remplis != $total_criteres ] && [ $criteres_remplis -ge 11 ] && [ $stabilite = "1.000" ]
+#if [ $criteres_remplis != $total_criteres ] && [ $criteres_remplis -ge 11 ] && [ $stabilite = "1.000" ]
+if [ $criteres_remplis != $total_criteres ] && [ $criteres_remplis -ge 21 ] && [ $stabilite = "1.000" ] # Temporary
 then
    echo "Version $new : Currently $criteres_remplis criteria are OK on $total_criteres planned" >> $MESSAGES_NUIT
    echo -e "=> release OK\c"
@@ -2395,11 +2415,12 @@ then
 else
    ALL_DEVELOPERS_TRUST_MAIL=$TRUST_MAIL" "$TRUST_PROJECT_LEADER
 fi
+   ALL_DEVELOPERS_TRUST_MAIL=$TRUST_MAIL" "$TRUST_PROJECT_LEADER # Temporary
 
 #####################################
 # Envoi d'un message aux developpeurs
 #####################################
-cd $TRUST_ROOT/exec
+cd $TRUST_ROOT
 for dest in $ALL_DEVELOPERS_TRUST_MAIL
 do
    if [ $livraison = 0 ]
