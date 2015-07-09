@@ -711,6 +711,15 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
   double ymax=Y_tot(kmax);                              // position du dernier point
   double hs2=0.5*(ymin+ymax);                           // demi-hauteur
 
+  // check that the canal is in the good bounds
+  if ( ymin < 0. || ymax < 0.)
+    {
+      Cerr << "Error Traitement_particulier_NS_canal" << finl;
+      Cerr << "Invalid mesh: Y must be between 0 and H>0" << finl;
+      Cerr << "In addition, the mesh must be symmetric along the half-height." << finl;
+      exit() ;
+    }
+
   // viscosite dynamique
   double mu_bas  = val_moy_tot(kmin,11,0);
   double mu_haut = val_moy_tot(kmax,11,0);
