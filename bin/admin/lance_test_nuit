@@ -2527,3 +2527,8 @@ mail_ -s \"[lance_test_nuit] Night report of TRUST workshop  on `date '+%d/%m/%y
 mv -f ~/CR $REP_NUIT/CR
 cp -f $REP_NUIT/CR $REP_HIST/CR.$DATE
 
+# On sauvegarde l'historique de la nuit
+cd $REP_NUIT
+git add --all
+git commit -m"Commit $DATE"
+cd $TRUST_ROOT

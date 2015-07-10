@@ -80,7 +80,8 @@ clean=""
 
 LIST_THIRD_PARTY="PETSC MED MPI METIS MEDCOUPLING CCACHE GMSH VALGRIND GNUPLOT"
 
-[ -f configure.log ] && sed "s/^/# /" -i  configure.log
+#[ -f configure.log ] && sed "s/^/# /" -i  configure.log
+[ -f configure.log ] && sed "s/# //" -i  configure.log && sed "s/^/# /" -i  configure.log
 echo $0 $* "\$"* >> configure.log
 
 if [ "$1" = "-disable-optionals" ]

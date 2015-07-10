@@ -119,8 +119,8 @@ help()
    echo "-valgrind_strict       : Run under valgrind with no suppressions."
    echo "-gdb                   : Run under gdb debugger."
    echo "-prm                   : Write a prm file and generate the corresponding pdf file in the build directory."
-   echo "-journal=0..9          : Select journal .log level (0=disable, 9=maximum verbosity)."
    [ -d /ccc ] && echo "-ipm                   : Use ipm to report MPI statistics."
+   trust -help_triou
 
    echo "If no option is given, create a submission file and submit the job on the test class."
    exit 0
