@@ -13,7 +13,7 @@ all: $(visit)
 	./install $(version) plugins
 	make $(check)
 
-$(visit): ./makefile ./install ./src/build $(MPI_INCLUDE)/mpi.h
+$(visit): ./makefile ./install ./src/build.sh $(MPI_INCLUDE)/mpi.h
 	make clean
 	# gf on essaye 2 fois a cause de mesa 
 	./install $(version) visit || ./install $(version) visit

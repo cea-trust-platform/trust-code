@@ -124,7 +124,7 @@ then
       echo "# Trying to build a $parallel version for VisIt..."
       echo "#################################################"
       cd src
-      ./build $package $parallel || TRUST_DOWNLOAD_VISIT=1 # La construction a echoue on telecharge une version sequentielle
+      ./build.sh $package $parallel || TRUST_DOWNLOAD_VISIT=1 # La construction a echoue on telecharge une version sequentielle
       cd - 1>/dev/null 2>&1	
    fi
    # Telechargement demande ou suite echec de construction (sauf si une configuration parallele existe
@@ -224,11 +224,11 @@ then
       # On change egalement le chemin vers la version de VisIt si la version TRUST est de type stable ou beta
       # La version TRUST sera toujours de type beta si on est sous la vue Livraison
       ligne=1 && [ $machine = $HOST ] && ligne=2
-      if [ ${TRUST_VERSION%_beta} != $TRUST_VERSION ] || [ "$MA_VUE" = triou_admin ] || [ "`echo $TRUST_ROOT | grep Version_test_`" != "" ]
+      if [ ${TRUST_VERSION%_beta} != $TRUST_VERSION ] || [ "$MA_VUE" = triou_admin ] || [ "`echo $TRUST_ROOT | grep $WORKBASE`" != "" ]
       then
-         VERSION=Version_test_$machine
+         VERSION=$WORKBASE$machine
       else
-         VERSION=TRUST-$TRUST_VERSION
+         VERSION=TRUST_$TRUST_VERSION
 	 # Sur les machines du CCRT, desormais suivi par le nom de la machine
 	 if [ "`grep /ccc $xml`" != "" ]
 	 then
@@ -244,7 +244,7 @@ then
          then
 	    adr=`awk -F">" '/"host"/ {print $2}' $xml | awk -F"<" '{print $1}' | head -1`
 	    tmp=/tmp/remote.xml;$TRUST_Awk -v ligne=2 '(ligne==2) && /<!--/ {getline} /"host"/ {n++;if (n==ligne) print $0} !/"host"/ {print $0}' $xml > $tmp
-	    scp $tmp $adr:~/Version_test_$machine/TRUST/Outils/VisIt/current/.visit/hosts/$xml	 
+	    scp $tmp $adr:~/$WORKBASE$machine/TRUST/Outils/VisIt/current/.visit/hosts/$xml	 
          fi
       else
          rm -f $xml.tmp
@@ -323,7 +323,7 @@ then
       if [ "`ls $TRUST_ROOT/Outils/VisIt/current/*/bin/engine_par 2>/dev/null`" != "" ]
       then
 	 cd $TRUST_ROOT/Outils/VisIt/src 
-	 ./build clean
+	 ./build.sh clean
       fi      
    fi
 else
