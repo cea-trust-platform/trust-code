@@ -305,6 +305,18 @@ then
    ./test_visit
    if [ $? != 0 ]
    then
+      # GF si erreur test avec build VisIt on arrete et on propose de tester download VisIt (TRUST_DOWNLOAD_VISIT=1) manuellement et non automatiquement
+      echo "==========================================================================="
+      echo "Parallel VisIt does NOT work so you try to download a sequential version..."
+      echo "==========================================================================="
+      echo "Error with build VisIt of $TRUST_ROOT/Outils/VisIt/test/test_visit"
+      echo "You can test with download VisIt:"
+      echo "cd $TRUST_ROOT/Outils/VisIt"
+      echo "make clean"
+      echo "export TRUST_DOWNLOAD_VISIT=1"
+      echo "make"
+      echo "==========================================================================="
+      exit -1
       if [ "`ls $TRUST_ROOT/Outils/VisIt/current/*/bin/engine_par 2>/dev/null`" != "" ]
       then
 	 echo "=========================================================================="

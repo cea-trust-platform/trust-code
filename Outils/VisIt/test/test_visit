@@ -1,5 +1,6 @@
 #!/bin/bash
 test_visit=0 # Too much problems now for 1.7.0...
+test_visit=1 # Reactivation for 1.7.2...
 if [ "$test_visit" = 1 ]
 then
    # Teste que le format Visit+Lata fonctionne
