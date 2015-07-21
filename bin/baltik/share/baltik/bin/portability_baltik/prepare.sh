@@ -72,6 +72,7 @@ echo "Project :" $project
 ## generation de env.sh
 
 pwd
+[ "$VALGRIND" != "0" ] && MODE=${MODE}_valgrind 
 echo "
 unset TRUST_ENV
 TRUST_ROOT=$TRUST_ROOT
@@ -86,7 +87,7 @@ cd \$TRUST_ROOT
 source env/env_TRUST.sh
 # [ \$? -ne 0 ] && echo KO , TRUST_ROOT: $TRUST_ROOT false ? 
 cd $ORIG" > env.sh
-[ "$VALGRIND" != "0" ] && MODE=${MODE}_valgrind && echo "# VALGRIND=1 ; export VALGRIND" >> env.sh
+[ "$VALGRIND" != "0" ] &&  echo "# VALGRIND=1 ; export VALGRIND" >> env.sh
 export MODE
 [ "$PAR_F" != "not_set" ] && echo "PAR_F=0;export PAR_F" >> env.sh  && echo Info_global test_par OFF
 
@@ -164,7 +165,7 @@ fi
 echo "Info_global release "`uname -r` 
 echo "Info_global model "`uname -m`
 mode=$MODE
-[ "$VALGRIND" = "1" ] && mode=valgrind
+# [ "$VALGRIND" = "1" ] && mode=valgrind
 echo "Info_global mode "$mode
 
 
