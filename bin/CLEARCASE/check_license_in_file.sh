@@ -55,10 +55,10 @@ else
   [ "`grep Copyright $file`" = "" ] && echo  No license in $file && return 1
 fi
 }
-if [ ! -f ${LICENSE}_c ]
+if  [ ! -f ${LICENSE}_c  ] || [  ${LICENSE}_c -ot  ${LICENSE} ] 
 then
 awk 'BEGIN {print ("/****************************************************************************")} 
-    { print ("* "$0)}
+    { if ($0=="") {print ("*") } else {print ("* "$0) }}
     END    {print ("*****************************************************************************/")}' ${LICENSE}  >  ${LICENSE}_c
 
 awk 'BEGIN {print ("#****************************************************************************")} 

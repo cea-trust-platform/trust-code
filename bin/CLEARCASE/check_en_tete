@@ -80,7 +80,7 @@ then
 $TRUST_Awk 'BEGIN {en_tete=1}
 (en_tete) {
    i=0;
-   while (i<2 && ((substr($0,1,2)=="* ")||(substr($0,2,3)=="***")))
+   while (i<2 && ((substr($0,1,2)=="* ")||($0=="*")||(substr($0,2,3)=="***")))
    {
       if (substr($0,2,3)=="***") i++;
       getline;
