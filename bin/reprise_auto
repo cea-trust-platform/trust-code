@@ -475,8 +475,8 @@ fi
 # Verifie la presence du fichier de soumission
 sub_file=sub_file
 [ ! -f $sub_file ] && mes=$mes"No $sub_file file in the directory $ETUDE\n
-You could create a submission file with the triou command:\n
-triou -create_sub_file datafile number_of_cpus\n\n
+You could create a submission file with the trust command:\n
+trust -create_sub_file datafile number_of_cpus\n\n
 Then, you would run again: `basename $0`\n" && message && exit -1
 
 # Recupere le nom du JOB pour etre ensuite compatible avec qstat -u (MACHINE-DEPENDANT) 

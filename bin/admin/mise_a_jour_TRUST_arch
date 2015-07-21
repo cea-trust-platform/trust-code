@@ -633,7 +633,7 @@ do
 	    echo>>$MAKE_LOG
             echo "--------------------------------------------------------" >> $MAKE_LOG
 	    echo>>$MAKE_LOG
-	    echo "triou -check cpu_3D"
+	    echo "trust -check cpu_3D"
 	    echo cpu_3D | lance_test $binary 1>>$MAKE_LOG 2>&1
 	    if [ $? != 0 ]
 	    then
@@ -677,7 +677,7 @@ do
    fi
    echo $CC_PERF >> $PERF
    # On verifie si on a obtenu un executable teste 
-   if [ -f $exec ] && [ "`touch vide.data;triou vide 2>&1 | grep TRUST;rm -f vide.data`" != "" ]
+   if [ -f $exec ] && [ "`touch vide.data;trust vide 2>&1 | grep TRUST;rm -f vide.data`" != "" ]
    then
       taille=`\ls -la $exec | $TRUST_Awk '{print int($5/1024/1024)}'`
       type=`ldd $exec 2>/dev/null | grep lib | $TRUST_Awk 'END {type="Statique";if (NR>50) type="Dynamique";else if (NR>0) type="Semi-Statique";print type}'`
@@ -751,7 +751,7 @@ do
 	    # Passage d'un cas test du Kernel:
 	    cp $TRUST_TESTS/Reference/Kernel/Kernel.data exec_opt.data
 	    exec=$rep_dev/exec_opt/TRUST$COMM$OPT
-	    OK="KO" && rm -f err && [ -f $exec ] && triou exec_opt 1>atelier.log 2>&1 && OK=`$TRUST_Awk 'BEGIN {mes="KO"} /TEST_ATELIER_OK/ { mes="OK" } END {print mes}' atelier.log`
+	    OK="KO" && rm -f err && [ -f $exec ] && trust exec_opt 1>atelier.log 2>&1 && OK=`$TRUST_Awk 'BEGIN {mes="KO"} /TEST_ATELIER_OK/ { mes="OK" } END {print mes}' atelier.log`
 	    # On verifie qu'il est alle jusqu'a la fin aussi...
 	    [ "`grep 'Arret des processes.' atelier.log`" = "" ] && OK=KO
 	    # Nouveau test pour l'atelier, il doit etre capable de creer un objet partage pour certains projets Baltik
@@ -942,7 +942,7 @@ do
   	    cd $TRUST_ROOT/tests/Reference/Obstacle
 	    make_PAR.data Obstacle 1>$log 2>&1
 	    echo $ECHO_OPTS "1,$ s?tmax 5.0?tmax 100.0?g\nw" | ed PAR_Obstacle.data 1>>$log 2>&1
-	    triou -create_sub_file PAR_Obstacle 2 1>>$log 2>&1
+	    trust -create_sub_file PAR_Obstacle 2 1>>$log 2>&1
 	    reprise_auto -test 1>>$log 2>&1
 	    sleep 1800 # Attente de 30mn que le calcul/reprise se finisse
 	    cd test_reprise_auto 1>>$log 2>&1

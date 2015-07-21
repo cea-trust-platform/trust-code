@@ -75,13 +75,13 @@ Run_calculation()
    # Envoi du signal 16 en fin de calcul :
    if [ $heure -gt 0 ]
    then
-      echo $ECHO_OPTS "( time triou $NOM $NP ) 1>$NOM.out 2>$NOM.err" | at now +$heure hours 1>/dev/null 2>/dev/null
+      echo $ECHO_OPTS "( time trust $NOM $NP ) 1>$NOM.out 2>$NOM.err" | at now +$heure hours 1>/dev/null 2>/dev/null
       echo $ECHO_OPTS "Il will run TRUST process in $heure hours."
       eval $FIN
    else
       # Probleme sur Linux RedHat5.2 :
       [ ${#LD_LIBRARY_PATH} = 0 ] && LD_LIBRARY_PATH=$TRUST_LIB && export LD_LIBRARY_PATH
-      (  nohup time triou $NOM $NP 1>$NOM.out 2>$NOM.err &
+      (  nohup time trust $NOM $NP 1>$NOM.out 2>$NOM.err &
          echo $! > gnuplot/$NOM.pcs;
  	 wait $!;
          proc=$$;kill -16 $proc 1>/dev/null 2>&1;

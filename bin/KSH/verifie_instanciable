@@ -3,12 +3,12 @@ verif()
 {
 cat /dev/null > $TRUST_TMP/st
 cat /dev/null > $TRUST_TMP/st2
-list_code="Triou"
+list_code="TRUST"
 for code in $list_code
 do
     rep=`cat $TRUST_ROOT/env/rep.TRUST`
     base=$TRUST_ROOT
-    if [ "$code" = "Triou" ]
+    if [ "$code" = "TRUST" ]
     then
 	rep=`cat $TRUST_ENV/rep.TRUST`
 

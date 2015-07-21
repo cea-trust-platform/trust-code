@@ -658,7 +658,7 @@ int Type_info::les_sous_types(const Nom& type, Noms& sous_types)
 {
   if (!est_un_type(type))
     {
-      Cerr << type << "is not a type recognized by Trio Unitaire " << finl;
+      Cerr << type << "is not a type recognized by TRUST Unitaire " << finl;
       Process::exit();
     }
   int i= nb_classes;

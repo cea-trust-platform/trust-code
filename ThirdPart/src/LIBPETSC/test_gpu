@@ -162,7 +162,7 @@ do
 	    fi
 	    [ "$cpu_per_gpu" = 1 ] && c="    "
             echo $ECHO_OPTS "With $mpi_task MPI task on $message (cpu_per_task=\"$c\" so $core_reserved cores reserved): \c"
-	    triou -gpu $c dummy $mpi_task $log_options $options `[ "$device" = gpu ] && echo $gpu_options` 1>$log 2>&1
+	    trust -gpu $c dummy $mpi_task $log_options $options `[ "$device" = gpu ] && echo $gpu_options` 1>$log 2>&1
             err=$?
 	    time=`awk '/^KSPSolve/ {print $4}' $log`
 	    echo "$time s $log created."

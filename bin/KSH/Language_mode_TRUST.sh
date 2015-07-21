@@ -185,10 +185,10 @@ fi
 # Si le languageModes TRUST n'existe pas alors je defini dans neditrc le languageModes TRUST
 if (( Indice_Version == 0 ))
 then
-   TriouData='nedit.languageModes: 	TRUST:.data .geo::::::\n\'
+   TRUSTData='nedit.languageModes: 	TRUST:.data .geo::::::\n\'
    Problemred='	Problem:red:Bold\n\'
 else
-   TriouData='nedit.languageModes: 	TRUST:.data .geo:::::::\n\'
+   TRUSTData='nedit.languageModes: 	TRUST:.data .geo:::::::\n\'
    Problemred='	Problem:red/red:Bold\n\'
 fi
 
@@ -196,7 +196,7 @@ if [ "$L_mode2" == "" ]
 then
    entre=`awk 'BEGIN{print '$num_ligne_style'-'$num_ligne'-1}'`
    fin=`awk 'BEGIN{print '$num_ligne_tot'-'$num_ligne_style'}'`
-   neditrc=`echo "$neditrc" ; echo "$TriouData" ; grep 'nedit.languageModes' $Nedit_file | awk -F'nedit.languageModes:' '{print $2}'`
+   neditrc=`echo "$neditrc" ; echo "$TRUSTData" ; grep 'nedit.languageModes' $Nedit_file | awk -F'nedit.languageModes:' '{print $2}'`
    neditrc=`echo "$neditrc" ; [ "$num_ligne_style" != "" ] && head -$num_ligne_style $Nedit_file | tail -$entre`
    # Si le style "Problem" n'existe pas, je le cree
    if [ "`grep 'Problem:red' $Nedit_file`" == "" ]
@@ -211,7 +211,7 @@ else
    fin=`awk 'BEGIN{print '$num_ligne_tot'-'$num_ligne_style'}'`
    if (( L_mode2 == num_ligne ))
    then
-      neditrc=`echo "$neditrc" ; echo "$TriouData"`
+      neditrc=`echo "$neditrc" ; echo "$TRUSTData"`
       neditrc=`echo "$neditrc"; [ "$num_ligne_style" != "" ] && head -$num_ligne_style $Nedit_file | tail -$entre`
       # Si le style "Problem" n'existe pas, je le cree
       if [ "`grep 'Problem:red' $Nedit_file`" == "" ]
@@ -221,7 +221,7 @@ else
       neditrc=`echo "$neditrc"; [ "$num_ligne_tot" != "" ] && head -$num_ligne_tot $Nedit_file | tail -$fin`
    else
       ecart=`awk 'BEGIN{print '$L_mode2'-'$num_ligne'}'`
-      neditrc=`echo "$neditrc" ; [ "$L_mode2" != "" ] && head -$L_mode2 $Nedit_file | tail -$ecart ; echo "$TriouData"`
+      neditrc=`echo "$neditrc" ; [ "$L_mode2" != "" ] && head -$L_mode2 $Nedit_file | tail -$ecart ; echo "$TRUSTData"`
       neditrc=`echo "$neditrc" ; [ "$num_ligne_style" != "" ] && head -$num_ligne_style $Nedit_file | tail -$entre`
       # Si le style "Problem" n'existe pas, je le cree
       if [ "`grep 'Problem:red' $Nedit_file`" == "" ]

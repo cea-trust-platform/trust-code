@@ -85,19 +85,19 @@ basicstyle=\ttfamily,
 
 \begin{document} 
 \renewcommand{\labelitemi}{$\bullet$}
-\title{Tutoriel de réalisation d'une application \texttt{BALTIK} basée sur le logiciel \texttt{\textbf{TRIO\_U}}}
+\title{Tutoriel de réalisation d'une application \texttt{BALTIK} basée sur le logiciel \texttt{\textbf{TRUST}}}
 
 \maketitle
 \section { résumé}
-Ce tutoriel a comme objectif de décrire la démarche à suivre pour la réalisatiion d'une application \texttt{BALTIK} sur la base du logiciel \texttt{\textbf{TRIO\_U}}.
+Ce tutoriel a comme objectif de décrire la démarche à suivre pour la réalisatiion d'une application \texttt{BALTIK} sur la base du logiciel \texttt{\textbf{TRUST}}.
 %
 Pour ce faire, on choisit à titre d'exercice une équation de convection-diffusion comme problème mathématique à résoudre. Dans cette équation, la vitesse de convection et le coefficient de diffusion sont des données utilisateur.\\ \\
 %
 On décrit en particulier les spécifications des développements à réaliser et on donne quelques recommandations pour résoudre cette équation de convection-diffusion.\\ \\
 %
-Les développements sont ensuite décrits et réalisés dans un environnement proposé par le logiciel \texttt{\textbf{TRIO\_U}} appelé application \texttt{BALTIK}. La mise en place de cet environnement est également décrit.\\ \\
+Les développements sont ensuite décrits et réalisés dans un environnement proposé par le logiciel \texttt{\textbf{TRUST}} appelé application \texttt{BALTIK}. La mise en place de cet environnement est également décrit.\\ \\
 %
-Deux tests de vérification des développements et de non-régression sont enfin réalisés en utilisant les outils proposés par le logiciel \texttt{\textbf{TRIO\_U}} (\texttt{genererCourbes}, \texttt{make check\_optim}).
+Deux tests de vérification des développements et de non-régression sont enfin réalisés en utilisant les outils proposés par le logiciel \texttt{\textbf{TRUST}} (\texttt{genererCourbes}, \texttt{make check\_optim}).
 %
 
 
@@ -108,7 +108,7 @@ Deux tests de vérification des développements et de non-régression sont enfin ré
 
 
 \section{Introduction}
-Ce tutoriel a comme objectif de décrire la démarche à suivre pour la réalisation d'une application \texttt{BALTIK} sur la base du logiciel \texttt{\textbf{TRIO\_U}}. 
+Ce tutoriel a comme objectif de décrire la démarche à suivre pour la réalisation d'une application \texttt{BALTIK} sur la base du logiciel \texttt{\textbf{TRUST}}. 
 Pour ce faire, on choisit à titre d'exercice l'équation de convection-diffusion (\ref{eq_con_diff}) comme problème mathématique à résoudre:
 
 \begin{align}
@@ -127,7 +127,7 @@ $a$, $b$, $c$ et $d$ : les bornes du domaine de calcul en deux dimensions.
 
 \
 
-La discrétisation en espace et en temps de l'équation (\ref{eq_con_diff}) sera réalisée avec les schémas numériques disponibles dans le logiciel \texttt{\textbf{TRIO\_U}} \cite{BIB_03}.
+La discrétisation en espace et en temps de l'équation (\ref{eq_con_diff}) sera réalisée avec les schémas numériques disponibles dans le logiciel \texttt{\textbf{TRUST}} \cite{BIB_03}.
 
 \
 
@@ -135,11 +135,11 @@ Dans la section \ref{spec}, nous décrivons les spécifications des développements
 
 \
 
-Les développements spécifiés dans la section \ref{spec} sont décrits dans la section \ref{dev}. Ces développements seront réalisés dans un environnement proposé par le logiciel \texttt{\textbf{TRIO\_U}} appelé application \texttt{BALTIK}. La mise en place de cet environnement sera décrit dans cette même section \ref{dev}.
+Les développements spécifiés dans la section \ref{spec} sont décrits dans la section \ref{dev}. Ces développements seront réalisés dans un environnement proposé par le logiciel \texttt{\textbf{TRUST}} appelé application \texttt{BALTIK}. La mise en place de cet environnement sera décrit dans cette même section \ref{dev}.
 
 \
 
-La section \ref{tests} sera consacrée à la réalisés deux tests de vérification des développements et de non-régression en utilisant les outils proposés par le logiciel \texttt{\textbf{TRIO\_U}} (\texttt{genererCourbes}, \texttt{make check\_optim}).
+La section \ref{tests} sera consacrée à la réalisés deux tests de vérification des développements et de non-régression en utilisant les outils proposés par le logiciel \texttt{\textbf{TRUST}} (\texttt{genererCourbes}, \texttt{make check\_optim}).
 
 \section{Spécification}\label{spec}
 
@@ -180,7 +180,7 @@ Une équation est portée par un problème et possède une référence qui permet de r
 %\begin{figure}[!h]
 %\begin{center}
 %   \includegraphics[width=9cm]{voca.pdf}
-%   \caption{Notion de problème dans le logiciel \texttt{\textbf{TRIO\_U}}}
+%   \caption{Notion de problème dans le logiciel \texttt{\textbf{TRUST}}}
 %\end{center}
 %\label{voca}
 %\end{figure}
@@ -198,8 +198,8 @@ Dans notre cas, le problème qu'on souhaite résoudre comprend une seule équation 
 
 \subsection{Jeu de données - analyse des besoins}\label{jdd}
 
-Dans le cadre des développements des applications basées sur le logiciel \texttt{\textbf{TRIO\_U}}, il est recommandé de commencer les spécifications par écrire le jeu de données. 
-La recommandation précédente est liée au fait que les mots clés du jeu données du logiciel \texttt{\textbf{TRIO\_U}} correspondent à des objets (classes) C++ et donc commencer par le jeu de données sert, d'une part, à se mettre dans la position d'un utilisateur et, d'autre part, à définir les objets (problème, équation(s), ...) à spécifier et à développer. 
+Dans le cadre des développements des applications basées sur le logiciel \texttt{\textbf{TRUST}}, il est recommandé de commencer les spécifications par écrire le jeu de données. 
+La recommandation précédente est liée au fait que les mots clés du jeu données du logiciel \texttt{\textbf{TRUST}} correspondent à des objets (classes) C++ et donc commencer par le jeu de données sert, d'une part, à se mettre dans la position d'un utilisateur et, d'autre part, à définir les objets (problème, équation(s), ...) à spécifier et à développer. 
 
 \
 
@@ -221,7 +221,7 @@ Cette équation est composée de deux opérateurs (convection et diffusion), des co
 \item \underline{\textbf{Données utilisateur}}
 
 Pour l'équation (\ref{eq_con_diff}), la vitesse de convection $\overrightarrow{V}(\overrightarrow{X},t)$ et le coefficient de diffusion $D(\overrightarrow{X},t)$ sont donnés par l'utilisateur. 
-Dans les pratiques des développements \texttt{\textbf{TRIO\_U}}, ces paramètres doivent être associés à un objet (équation, problème, ....) du jeu de données. on notera ces paramètres \texttt{coefficient\_diffusion} et
+Dans les pratiques des développements \texttt{\textbf{TRUST}}, ces paramètres doivent être associés à un objet (équation, problème, ....) du jeu de données. on notera ces paramètres \texttt{coefficient\_diffusion} et
 \texttt{vitesse\_convection}.
 \lstinputlisting[language=C++,title=paramètres d'entrées,emph={vitesse_convection,coefficient_diffusion},emphstyle={\color{blue}}]{jdd_constituant_interm.data}
 
@@ -235,13 +235,13 @@ Le bloc de post-traitement de ces variables se présente sous la forme suivante:
 \end{itemize}
 
 
-\subsection{Fonctionnalités \texttt{\textbf{TRIO\_U}}}
-Il est fortement recommandé d'utiliser au maximum les fonctionnalités existantes dans le logiciel \texttt{\textbf{TRIO\_U}} et d'éviter de dupliquer les lignes de codes. 
-Ceci permet, d'une part, de minimiser le temps de développement de l'application et, d'autre part, de profiter des fonctionnalités couvertes par les tests du logiciel \texttt{\textbf{TRIO\_U}}. 
+\subsection{Fonctionnalités \texttt{\textbf{TRUST}}}
+Il est fortement recommandé d'utiliser au maximum les fonctionnalités existantes dans le logiciel \texttt{\textbf{TRUST}} et d'éviter de dupliquer les lignes de codes. 
+Ceci permet, d'une part, de minimiser le temps de développement de l'application et, d'autre part, de profiter des fonctionnalités couvertes par les tests du logiciel \texttt{\textbf{TRUST}}. 
 
 \
 
-L'identification des fonctionnalités peut se faire via la documentation doxygen du logiciel \texttt{\textbf{TRIO\_U}}. 
+L'identification des fonctionnalités peut se faire via la documentation doxygen du logiciel \texttt{\textbf{TRUST}}. 
 Nous faisons ci-dessous cet exercice d'identification par rapport à nos besoins (\ref{jdd}).
 
 \
@@ -305,9 +305,9 @@ Les spécificités de l'équation \texttt{Convection\_Diffusion\_Concentration} son
 \begin{itemize}
  \item coefficient de diffusion \cite{BIB_02}: ce coefficient constitue une propriété d'un constituant associé à cette équation. Cette propriété est donnée par l'utilisateur
 dans le jeu de données de la manière suivante: 
-\lstinputlisting[language=C++,title=déclaration du constituant standard \texttt{\textbf{TRIO\_U}},emph={coefficient_diffusion},emphstyle={\color{blue}}]{jdd_constituant_std.data}
+\lstinputlisting[language=C++,title=déclaration du constituant standard \texttt{\textbf{TRUST}},emph={coefficient_diffusion},emphstyle={\color{blue}}]{jdd_constituant_std.data}
 
- \item vitesse de convection \cite{BIB_01}: cette vitesse est obtenue par la méthode \texttt{vitesse\_pour\_transport} qui récupéré cette vitesse à partir de l'équation du problème qui la porte. En effet, dans une utilisation standard du logiciel \texttt{\textbf{TRIO\_U}}, cette vitesse de convection est
+ \item vitesse de convection \cite{BIB_01}: cette vitesse est obtenue par la méthode \texttt{vitesse\_pour\_transport} qui récupéré cette vitesse à partir de l'équation du problème qui la porte. En effet, dans une utilisation standard du logiciel \texttt{\textbf{TRUST}}, cette vitesse de convection est
  obtenue par l'équation de l'hydraulique Navier-Stokes.
 \end{itemize}
 
@@ -315,7 +315,7 @@ dans le jeu de données de la manière suivante:
 
 \subsection{Fonctionnalités spécifiques}
 
-L'analyse des fonctionnalités du logiciel \texttt{\textbf{TRIO\_U}} dans la section précédente a permis d'identifier une équation \texttt{Convection\_Diffusion\_Concentration} très proche de l'équation (\ref{eq_con_diff}) avec
+L'analyse des fonctionnalités du logiciel \texttt{\textbf{TRUST}} dans la section précédente a permis d'identifier une équation \texttt{Convection\_Diffusion\_Concentration} très proche de l'équation (\ref{eq_con_diff}) avec
 un coefficient de diffusion donné par l'utilisateur à travers un constituant. Nous faisons donc le choix d'utiliser cette équation comme base pour développer
 une nouvelle équation qu'on notera \texttt{Convection\_Diffusion}. A cette équation, on associe un nouveau constituant \texttt{Constituant\_Avec\_Vitesse} basé sur l'ancien en lui rajoutant comme propriété la vitesse de convection.
 
@@ -346,17 +346,17 @@ La nouvelle classe de constituant \texttt{Constituant\_Avec\_Vitesse} sera appel
 
 \subsection{Environnement de développement : Application \texttt{BALTIK}}
 
-Un environnement de développement Application \texttt{BALTIK} est mis à disposition pour les applications reposant, soit sur le logiciel \texttt{\textbf{TRIO\_U}} soit, sur son noyau
+Un environnement de développement Application \texttt{BALTIK} est mis à disposition pour les applications reposant, soit sur le logiciel \texttt{\textbf{TRUST}} soit, sur son noyau
 numérique « Kernel » soit sur une autre application \texttt{BALTIK}. Cet environnement permet une gestion de compilation de ces applications (sources spécifiques)
-ainsi que les sources modifiées et/ou rajoutées du logiciel \texttt{\textbf{TRIO\_U}}.
+ainsi que les sources modifiées et/ou rajoutées du logiciel \texttt{\textbf{TRUST}}.
 Dans ce cadre, une application est constituée :
 \begin{itemize}
-\item du noyau numérique « Kernel » ou du logiciel \texttt{\textbf{TRIO\_U}} ou d'une autre application \texttt{BALTIK}, 
+\item du noyau numérique « Kernel » ou du logiciel \texttt{\textbf{TRUST}} ou d'une autre application \texttt{BALTIK}, 
 \item des sources spécifiques à l'application.
 \end{itemize}
 \smallskip{}
 
-En pratique, les sources spécifiques à l'application sont rassemblées dans un répertoire de travail appelé \texttt{src}\footnote{L'emplacement du répertoire \texttt{src} dans l'arborescence de l'application \texttt{BALTIK} est indiqué dans la section \ref{configBALTIK}}, celui-ci est compilé suivant le processus classique de compilation du logiciel \texttt{\textbf{TRIO\_U}}. On peut inclure à cette application des sources du « Kernel » ou de \texttt{\textbf{TRIO\_U}}
+En pratique, les sources spécifiques à l'application sont rassemblées dans un répertoire de travail appelé \texttt{src}\footnote{L'emplacement du répertoire \texttt{src} dans l'arborescence de l'application \texttt{BALTIK} est indiqué dans la section \ref{configBALTIK}}, celui-ci est compilé suivant le processus classique de compilation du logiciel \texttt{\textbf{TRUST}}. On peut inclure à cette application des sources du « Kernel » ou de \texttt{\textbf{TRUST}}
 que l'on souhaite modifier par rapport à leurs versions standards.
 
 
@@ -432,7 +432,7 @@ $ make optim
 \subsection{Développements}
 \subsection{Classe constituant \texttt{Constituant\_Avec\_Vitesse}}
 Comme spécifié dans la section \ref{spec}, les paramètres utilisateurs vitesse de convection et coefficient de diffusion sont attribués à la nouvelle classe de constituant \texttt{Constituant\_Avec\_Vitesse} basée
-(héritage) sur la classe \texttt{Constituant} du logiciel \texttt{\textbf{TRIO\_U}}. La spécificité de cette nouvelle classe est que cette dernière possède un champ de vitesse de convection du constituant.
+(héritage) sur la classe \texttt{Constituant} du logiciel \texttt{\textbf{TRUST}}. La spécificité de cette nouvelle classe est que cette dernière possède un champ de vitesse de convection du constituant.
 
 \
 
@@ -493,7 +493,7 @@ Le traitement de cette nouvelle référence nécessite les actions suivantes:
 
 \begin{enumerate}
  \item le rajout de la référence \texttt{le\_constituant}. Pour ce faire, il est nécessaire d'implémenter les deux sources ci-dessous. Cette technique, non standard C++, est utilisée dans
- le logiciel \texttt{\textbf{TRIO\_U}} pour éviter aux développeurs de manipuler des pointeurs qui peuvent être source des fuites mémoires. 
+ le logiciel \texttt{\textbf{TRUST}} pour éviter aux développeurs de manipuler des pointeurs qui peuvent être source des fuites mémoires. 
  
 \lstinputlisting[language=C++]{Ref_Constituant_Avec_Vitesse.h}
 
@@ -646,13 +646,13 @@ $ mkdir -p tests/Reference/Validation
 \section{Conclusion}
 Dans ce tutoriel, nous avons décrit à travers la résolution d'une équation de convection-diffusion les aspects suivants:
 \begin{itemize}
- \item l'environnement de développement du logiciel \texttt{\textbf{TRIO\_U}} en réalisant une nouvelle application \texttt{BALTIK},
+ \item l'environnement de développement du logiciel \texttt{\textbf{TRUST}} en réalisant une nouvelle application \texttt{BALTIK},
   
  \item la démarche de spécifications et de développements. Dans cette démarche, il est nécessaire de réaliser des choix techniques tels que l'association de la vitesse de convection à un constituant et non pas à l'équation ou problème).
  Ces choix ne sont ni uniques ni meilleurs que d'autres. Il est à noter que le but principal de ce tutoriel est de présenter une démarche accompagnée de ces propres choix
  techniques en donnant quelques recommandations ou méthodologies à suivre lors de sa phase de spécification.
   
- \item la mise en place des tests de non-régression et la génération automatique d'un rapport de vérification des développement via des outils proposés par le logiciel \texttt{\textbf{TRIO\_U}}.
+ \item la mise en place des tests de non-régression et la génération automatique d'un rapport de vérification des développement via des outils proposés par le logiciel \texttt{\textbf{TRUST}}.
 \end{itemize}
 
 

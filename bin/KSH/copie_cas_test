@@ -268,7 +268,7 @@ fi
 # Mise a jour du lml.gz si cas test de validation modifie
 if [ -f $lien ] && [ -f check_lml_gz ]
 then
-   triou $test.data 1>$test.build 2>&1
+   trust $test.data 1>$test.build 2>&1
    if [ $? = 0 ]
    then
       gunzip -c $test.lml.gz > ref.lml

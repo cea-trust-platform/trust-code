@@ -103,7 +103,7 @@ teste_binaries()
 	 # Test de $exec en parallele
 	 ############################
 	 echo $ECHO_OPTS "Parallel run of $exec ...\c" | tee -a $LOG
-	 triou test 2 1>>$LOG 2>&1
+	 trust test 2 1>>$LOG 2>&1
       fi
       err=$?
       if [ "$1" = -print ]
@@ -116,7 +116,7 @@ teste_binaries()
       # Test de $exec en sequentiel
       #############################
       echo $ECHO_OPTS "Sequential run of $exec ...\c" | tee -a $LOG
-      triou test 1>>$LOG 2>&1
+      trust test 1>>$LOG 2>&1
       err=$?
       if [ "$1" = -print ]
       then
@@ -612,8 +612,8 @@ echo  | tee -a $LOG
 echo "********************" | tee -a $LOG
 echo "HOW TO TEST TRUST ?" | tee -a $LOG
 echo "********************" | tee -a $LOG
-echo $ECHO_OPTS "[Fast] Run the command 'triou -check VAHL_DAVIS', if you want to check the TRUST binary on a single test.\n" | tee -a $LOG
-echo $ECHO_OPTS "[Long] Run the command 'triou -check all', if you want to check the TRUST binary on test cases. It may take several hours." | tee -a $LOG
+echo $ECHO_OPTS "[Fast] Run the command 'trust -check VAHL_DAVIS', if you want to check the TRUST binary on a single test.\n" | tee -a $LOG
+echo $ECHO_OPTS "[Long] Run the command 'trust -check all', if you want to check the TRUST binary on test cases. It may take several hours." | tee -a $LOG
 echo  | tee -a $LOG
 echo "**********************************" | tee -a $LOG
 echo "HOW TO BUILD TRUST IN DEBUG MODE?" | tee -a $LOG

@@ -34,7 +34,7 @@ rm -f old.out_err old.lata old*.son
 echo -e "1,$ s?fichier $rep?fichier old?g\nw" | ed old.data 1>/dev/null 2>&1
 echo "1er calcul en cours..."
 export exec=$path_old_binary
-triou old $NB_PROCS 1>old.out_err 2>&1
+trust old $NB_PROCS 1>old.out_err 2>&1
 [ $? != 0 ] && echo "Echec 1er calcul." && exit
 [ -f Performance.TU ] && mv -f Performance.TU old.TU
 
@@ -46,7 +46,7 @@ echo -e "1,$ s?fichier $rep?fichier new?g\nw" | ed new.data 1>/dev/null 2>&1
 
 echo "2eme calcul en cours..."
 export exec=$path_new_binary
-triou new $NB_PROCS 1>new.out_err 2>&1
+trust new $NB_PROCS 1>new.out_err 2>&1
 [ $? != 0 ] && echo "Echec 2eme calcul." && exit
 [ -f Performance.TU ] && mv -f Performance.TU new.TU
 

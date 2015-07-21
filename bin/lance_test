@@ -455,7 +455,7 @@ add_test_case_from_validation()
 			#[ -f prepare ] && ./prepare $test.data
 			[ ! -f $test.data ] && echo "File $test.data not found under $TRUST_TESTS/$DIRECTORY/$test !" && exit -1
 			NB_CPUS=`cat $test.data | $TRUST_Awk '/# PARALLEL ONLY/ {print $4}'` 	
-			triou $test.data $NB_CPUS 1>$test.build 2>&1
+			trust $test.data $NB_CPUS 1>$test.build 2>&1
 			if [ $? != 0 ] || [ ! -f $test.lml ]
 			then
 			   echo "Error when running the test case $test.data or there is no $test.lml file generated."
@@ -902,12 +902,12 @@ then
 	    PARALLEL_ONLY=0
 	    if [ "$NB_CPUS" = "" ]
 	    then
-	       E="echo $ECHO_OPTS 'Running sequential calculation...\c' ;triou $NOM 1>$NOM.out 2>$NOM.err;OK \$?"
+	       E="echo $ECHO_OPTS 'Running sequential calculation...\c' ;trust $NOM 1>$NOM.out 2>$NOM.err;OK \$?"
 	    else
 	       # Nouveau 06/07/09
 	       # On peut avoir des cas tests qui ne sont lances qu'en parallele avec la balise # PARALLEL ONLY NB_CPUS #     
                PARALLEL_ONLY=1
-	       E="echo $ECHO_OPTS 'Running parallel calculation on $NB_CPUS CPUs...\c' ;triou $NOM $NB_CPUS 1>$NOM.out 2>$NOM.err;OK \$?"
+	       E="echo $ECHO_OPTS 'Running parallel calculation on $NB_CPUS CPUs...\c' ;trust $NOM $NB_CPUS 1>$NOM.out 2>$NOM.err;OK \$?"
 	       # Fin Nouveau
 	    fi
 	    ATTENTION=`$TRUST_Awk '/lance_test/ {gsub("# lance_test","ATTENTION",$0);gsub("#","possible sur ce cas...",$0);print $0}' $NOM.data`
@@ -933,7 +933,7 @@ then
 		    type=dec
 		    gmon
 		    NPDEC=$NB_CPUS		    
-		    EP="echo $ECHO_OPTS 'Running parallel calculation on $NB_CPUS cpus...\c' ;triou $PAR_NOM $NB_CPUS 1>$PAR_NOM.out 2>$PAR_NOM.err;OK \$?"
+		    EP="echo $ECHO_OPTS 'Running parallel calculation on $NB_CPUS cpus...\c' ;trust $PAR_NOM $NB_CPUS 1>$PAR_NOM.out 2>$PAR_NOM.err;OK \$?"
 		fi
 	    fi
 	    arret=0
@@ -1022,7 +1022,7 @@ then
 			#then
 			#	echo "latatomed $NOM2.lata prov.med lire_fichier lata_postmed.data ; fin"> trad.data
 			#	echo "latatoother lml $NOM2.lata  fin"> trad.data
-			#	triou trad 1> trad.out 2>trad.err
+			#	trust trad 1> trad.out 2>trad.err
 			#	PB=$?
 			#	[ ! -f $NOM2.lml ] && PB=1000
 			#fi			

@@ -94,7 +94,7 @@ int Paroi_loi_WW_scal_VEF::calculer_scal(Champ_Fonc_base& diffusivite_turb)
   if (axi)
     {
       Cerr<<"Attention: the axisymmetric VEF case is not yet implemented"<<finl;
-      Cerr<<"in the thermal wall-function. Trio will now stop."<<finl;
+      Cerr<<"in the thermal wall-function. trust will now stop."<<finl;
       exit();
     }
 

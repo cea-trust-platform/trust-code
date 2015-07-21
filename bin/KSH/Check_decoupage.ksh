@@ -148,7 +148,7 @@ do
    # On prepare
    if [ -f prepare ]
    then
-      cat prepare | $TRUST_Awk -v n=$NB_PROCS '// {ch=$0;if ($1=="make_PAR.data" || $1=="triou" && NF==3) ch=$1" "$2" "n;print ch}' > PAR_prepare
+      cat prepare | $TRUST_Awk -v n=$NB_PROCS '// {ch=$0;if ($1=="make_PAR.data" || $1=="trust" && NF==3) ch=$1" "$2" "n;print ch}' > PAR_prepare
       chmod +x PAR_prepare
       ./PAR_prepare 1>PAR_prepare.log 2>&1
    fi
@@ -157,7 +157,7 @@ do
       echo $ECHO_OPTS "$NB_PROCS processeur :\c"
       [ "$cpu" = 0 ] && echo $ECHO_OPTS "                Execution...\c" | tee -a $log 
       [ $quick = 1 ] && change_timestep $cas".data"
-      triou $cas 1>$cas".out" 2>$cas".err"
+      trust $cas 1>$cas".out" 2>$cas".err"
       if [ $? = 0 ]
       then
          if [ "$cpu" = 0 ]
@@ -186,7 +186,7 @@ do
 	 [ $quick = 1 ] && change_timestep PAR_$cas".data"
 	 # On lance le calcul en parallele
 	 rm -f PAR_$cas*".lml"
-	 triou PAR_$cas $NB_PROCS 1>PAR_$cas".out" 2>PAR_$cas".err"
+	 trust PAR_$cas $NB_PROCS 1>PAR_$cas".out" 2>PAR_$cas".err"
 	 err=$?
 	 if [ $err = 0 ]
 	 then

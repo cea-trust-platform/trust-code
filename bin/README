@@ -63,13 +63,13 @@ a data set is User_Manual_TRUST.pdf (located in $TRUST_ROOT/doc/TRUST)
 to run a calculation
 ***********************
 
--triou : to perform a calculation
+-trust : to perform a calculation
 	 located in $TRUST_ROOT/bin
 	 
-	syntax : triou jdd [ 1>jdd.out 2>jdd.err ] for sequential calculation
+	syntax : trust jdd [ 1>jdd.out 2>jdd.err ] for sequential calculation
 		 identical to : $exec jdd [ 1>jdd.out 2>jdd.err ]
 		 
-	 	 triou PAR_jdd nb_procs [ 1>par_jdd.out 2>par_jdd.err ]
+	 	 trust PAR_jdd nb_procs [ 1>par_jdd.out 2>par_jdd.err ]
 		 identical to : mpirun -np nb_procs $exec PAR_jdd nb_procs [ 1>par.out 2>par.err ]
 		 		 	 
 		 

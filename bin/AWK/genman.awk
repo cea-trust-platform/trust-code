@@ -9,7 +9,7 @@ ub
 #	  Version 2
 
 BEGIN {
-    library= "trio_u"
+    library= "TRUST"
     sourcefilecount= 1
     definecount= 1
     constcount= 1

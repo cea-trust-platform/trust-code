@@ -165,7 +165,7 @@ fi
 
 # Pour initialiser
 rm -f rank
-[ $lml = 1 ] && triou $ref $NB_PROCS 1>/dev/null 2>&1
+[ $lml = 1 ] && trust $ref $NB_PROCS 1>/dev/null 2>&1
 
 # Titre
 titre="Calcul "`awk 'BEGIN {IGNORECASE=1} /VDF / {print "VDF";exit} /VEFPREP1B / {print "VEF";exit}' $ref.data`
@@ -217,7 +217,7 @@ then
    echo -e "1,$ s?nb_pas_dt_max .*?nb_pas_dt_max 1?g\nw" | ed test_solveur_$ref.data 1>/dev/null 2>&1
    # On lance le calcul (qui fera un pas de temps puis qui testera les solveurs apres la resolution)
    output=test_solveur_$ref.out_err
-   triou test_solveur_$ref $NB_PROCS 1>out 2>err
+   trust test_solveur_$ref $NB_PROCS 1>out 2>err
    run_err=$? 
    cat out err > $output ; rm -f out err
    OK $run_err $output
@@ -264,9 +264,9 @@ do
       if [ $run = 1 ]
       then
          rm -f gmon.out
-	 # triou $jdd $NB_PROCS 1>$output 2>&1
-	 # Bug vu sur triou sur castor ou CCRT, il faut rediriger dans 2 fichiers distincts:
-	 triou $jdd $NB_PROCS 1>out 2>err
+	 # trust $jdd $NB_PROCS 1>$output 2>&1
+	 # Bug vu sur trust sur castor ou CCRT, il faut rediriger dans 2 fichiers distincts:
+	 trust $jdd $NB_PROCS 1>out 2>err
 	 run_err=$?
 	 cat out err > $output
 	 rm -f out err

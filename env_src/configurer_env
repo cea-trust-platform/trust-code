@@ -426,11 +426,11 @@ check_nvidia_cuda()
 	 $CUDA_ROOT/bin/nvcc -o nvc_get_devices *.cu
 	 cd ..
 	 (
-	    # On utilise le script triou en specifiant -gpu
+	    # On utilise le script trust en specifiant -gpu
 	    source ../env/env_TRUST.sh 1>/dev/null 2>&1
 	    LD_LIBRARY_PATH=$CUDA_LIB:$LD_LIBRARY_PATH
 	    export exec=`pwd`/nvc_get_devices/nvc_get_devices
-	    triou -gpu dummy_file 1>$TRUST_ENV/card.log &
+	    trust -gpu dummy_file 1>$TRUST_ENV/card.log &
             $TRUST_ROOT/bin/KSH/wait_for $! 60 # Pour eviter blocage (vu sur airain, queue hybrid desactivee...)
 	 )
 	 COMPUTE_CAPABILITY="`awk '/Revision number/ {print $NF}' $TRUST_ENV/card.log | head -1`"

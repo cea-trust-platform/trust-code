@@ -105,8 +105,8 @@ void Solv_Petsc::create_solver(Entree& entree)
     {
       Cerr << "On this queuing system cluster, you need to use mpirun even on sequential mode" << finl;
       Cerr << "(mpirun -np 1 ...) with a PETSc solver or the calculation will crash. " << finl;
-      Cerr << "You can use the triou script as a workaround:" << finl;
-      Cerr << "triou " << nom_du_cas() << finl;
+      Cerr << "You can use the trust script as a workaround:" << finl;
+      Cerr << "trust " << nom_du_cas() << finl;
       exit();
     }
 
@@ -236,7 +236,7 @@ void Solv_Petsc::create_solver(Entree& entree)
         // A 90, le cas les_Re180Pr071_T0Q_jdd2 plante sur forchat (32bits)
         // On differencie sequentiel (peu de memoire, mais estimation juste)
         // et le calcul parallele (voir peut etre une separation entre plus et moins de 16 processeurs...)
-        // Peut etre equiper le script triou d'une detection des erreurs INFO(1)=-9 ...
+        // Peut etre equiper le script trust d'une detection des erreurs INFO(1)=-9 ...
         if (Process::nproc()==1)
           add_option("mat_mumps_icntl_14","35");
         else

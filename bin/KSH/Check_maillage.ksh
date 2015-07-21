@@ -196,7 +196,7 @@ for file in `ls $etude`
 do
    ln -s -f $etude/$file .
 done
-triou .$NOM $NB_CPUS 1>.$NOM.out 2>.$NOM.err
+trust .$NOM $NB_CPUS 1>.$NOM.out 2>.$NOM.err
 erreur=$?
 echo "$nombre_domaines domain(s) detected : "$domaines
 echo "========================================"

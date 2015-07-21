@@ -67,7 +67,7 @@ CLASSES="C++ classes"
 echo $ECHO_OPTS "<HTML>
 <BODY BGCOLOR=#D0D5D9 TEXT=#23238E LINK=#E47833 ALINK=#007FFF VLINK=#007FFF>
 <head>
-<title> Trio Unitaire </title>
+<title> TRUST Unitaire </title>
 </head>
 <body>
 <PRE>
@@ -87,7 +87,7 @@ echo "<LI> <a href=$TRUST_ROOT/IHM/Documents.html><img src=$TRUST_ROOT/IHM/Notic
 </html>" >> $HOME/HTML/TRUST.html
 
    echo $ECHO_OPTS "<TITLE>Raccourcis</TITLE>
-<H1>TrioU </H1>
+<H1>TRUST </H1>
 <DL><p>
     <HR>
     <DT><A HREF="file:$HOME/HTML/TRUST.html" TARGET="RIGHT" onMouseOver=\"status='Main page of TRUST'\">Main</A>
@@ -98,7 +98,7 @@ echo "<LI> <a href=$TRUST_ROOT/IHM/Documents.html><img src=$TRUST_ROOT/IHM/Notic
     <HR>" > $HOME/HTML/Raccourcis.html
 if [ $TRUST_ATELIER != -1 ]
 then
-   echo $ECHO_OPTS " <DT><A HREF="file:$rep_dev/.Fichiers_atelier.html" TARGET="RIGHT" onMouseOver=\"status='Workbench to compile your own TRUST binary'\">MyTrioU </A>
+   echo $ECHO_OPTS " <DT><A HREF="file:$rep_dev/.Fichiers_atelier.html" TARGET="RIGHT" onMouseOver=\"status='Workbench to compile your own TRUST binary'\">MyTRUST </A>
 <HR>" >> $HOME/HTML/Raccourcis.html
 fi
 echo $ECHO_OPTS "<SCRIPT LANGUAGE=\"JavaScript\">

@@ -200,7 +200,7 @@ void Process::exit(const Nom& message ,int i)
   if (exception_sur_exit)
     {
       // Lancement d'une exception (utilise par Execute_parallel)
-      throw TriouError("Error in triou ",Process::me());
+      throw TriouError("Error in trust ",Process::me());
     }
   else
     {

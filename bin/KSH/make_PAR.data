@@ -76,7 +76,7 @@ do
 done
 [ "$3" = "no_exec" ] && exit -1
 [ ${#DEC} = 0 ] && echo $ECHO_OPTS "Wait for partitionning...\c"
-triou $DEC_NOM 1>$DEC_NOM.out 2>$DEC_NOM.err
+trust $DEC_NOM 1>$DEC_NOM.out 2>$DEC_NOM.err
 err=$?
 OK_make_par $err
 if [ "`grep -E 'La syntaxe du decoupeur a change apres la v1.5.2|The syntax of the splitter has changed after the v1.5.2.' $DEC_NOM.err`" != "" ]
@@ -125,7 +125,7 @@ else
    if [ ${#DEC} = 0 ]
    then
       echo $ECHO_OPTS "To run the parallel calculation on $NB_CPUS CPUs:"
-      echo $ECHO_OPTS "triou $PAR_NOM $NB_CPUS"
+      echo $ECHO_OPTS "trust $PAR_NOM $NB_CPUS"
       exit $NB_CPUS
    fi
 fi

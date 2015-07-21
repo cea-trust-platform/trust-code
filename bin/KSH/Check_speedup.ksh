@@ -36,7 +36,7 @@ do
    # Ax=B (0) Ax=B(1) et dt(1) et RAM RAM/cell cell/Procs
    # Check_decoupage.ksh $cas -cpu
    [ "$NB_PROCS" != 1 ] && make_PAR.data $jdd $NB_PROCS 1>/dev/null 2>&1
-   triou $cas $NB_PROCS 1>$cas.out 2>$cas.err
+   trust $cas $NB_PROCS 1>$cas.out 2>$cas.err
    err=$?
    if [ $err = 0 ]
    then

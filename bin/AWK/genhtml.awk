@@ -7,7 +7,7 @@ ub
 #<a href="Probleme.html"><strong><em>Probleme</strong></em></a>
 #
 BEGIN {
-    library= "trio_u"
+    library= "TRUST"
     sourcefilecount= 1
     definecount= 1
     constcount= 1

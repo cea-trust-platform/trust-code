@@ -43,7 +43,7 @@ void usage()
 {
   cerr << "usage:\n"
        << "TRUST_EXECUTABLE [CASE[.data]] [options]\n"
-       << " CASE is the basename of the trio_u data file (must have .data extension)\n"
+       << " CASE is the basename of the trust data file (must have .data extension)\n"
        << "   If no CASE given, the current directory name is used\n"
        << " -help_triou => print options\n"
        << " -mpi => run in parallel with MPI (must run with mpirun)\n"
@@ -186,7 +186,7 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
             }
           else
             {
-	    	// Mise en commentaire car dans certains scripts verifie on teste: triou $jdd -ksp_view
+	    	// Mise en commentaire car dans certains scripts verifie on teste: trust $jdd -ksp_view
 	    	/*
                 Nom fichier=argv[i];
                 fichier.prefix(".data");
@@ -250,7 +250,7 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
     const int master = Process::je_suis_maitre();
 
     // Modif B.Mathieu 28/09/2004 :
-    //  Pour debugger trio_u, on donne parametre le nom
+    //  Pour debugger trust, on donne parametre le nom
     //  d'une commande systeme a executer lorsqu'on arrive a cet endroit.
     //  Le plus pratique, c'est d'utiliser un shell script qui ouvre
     //  un xterm et lance gdb. On peut aussi faire un tail -f du fichier log,

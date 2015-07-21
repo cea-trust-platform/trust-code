@@ -157,7 +157,7 @@ Entree& Terme_Source_Canal_perio::lire_donnees(Entree& is)
   if (verif != 1)
     {
       Cerr << "User did not specify flow direction." << finl;
-      Cerr << "Trio will now stop !" << finl;
+      Cerr << "trust will now stop !" << finl;
       exit();
     }
   return is;

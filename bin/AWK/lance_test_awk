@@ -194,7 +194,7 @@ END {
 	  print "Number of differences :",nerr
 	  print "Maximal relative error encountered :",emax
        }
-       if (nerr == -1) print "Trio-U stops. May be a .lml file empty or keyword FIN not found inside."
+       if (nerr == -1) print "TRUST stops. May be a .lml file empty or keyword FIN not found inside."
        # Horrible :
        if (nerr==255) nerr=nerr+1
        exit nerr

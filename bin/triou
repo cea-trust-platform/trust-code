@@ -1069,7 +1069,7 @@ then
    then
       OUTPUT=$NOM
    else
-      # En interactif OUTPUT=.$NOM et non OUTPUT=$NOM car sinon conflit avec lance_test (triou NOM 1>$NOM.out 2>$NOM.err)
+      # En interactif OUTPUT=.$NOM et non OUTPUT=$NOM car sinon conflit avec lance_test (trust NOM 1>$NOM.out 2>$NOM.err)
       # et blocage possible sur castor avec Baltik par exemple !!!
       OUTPUT=.$NOM   
    fi
@@ -1138,7 +1138,7 @@ then
    esac	
    err=$?   
    [ $err = 0 ] && rm -f $sub_file
-   # On envoit $OUTPUT.out et $OUTPUT.err vers les bonnes sorties afin que "triou jdd 1>jdd.out 2>jdd.err" envoie ce qu'il faut dans jdd.out et jdd.err
+   # On envoit $OUTPUT.out et $OUTPUT.err vers les bonnes sorties afin que "trust jdd 1>jdd.out 2>jdd.err" envoie ce qu'il faut dans jdd.out et jdd.err
    # A cause de platine (permission denied), on utilise plutot les chemins pointes /proc/self/fd/1 et 2
    [ -f $OUTPUT.out ] && cat $OUTPUT.out >> "/proc/self/fd/1" #cat $OUTPUT.out > "/dev/stdout"
    [ -f $OUTPUT.err ] && cat $OUTPUT.err >> "/proc/self/fd/2" #cat $OUTPUT.err > "/dev/stderr"

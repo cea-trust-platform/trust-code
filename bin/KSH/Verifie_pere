@@ -4,7 +4,7 @@ test_pere()
    # Creation de la librairie TRUST necessaire pour l'atelier
    [ ! -f $TRUST_LIB/TRUST"$COMM"_opt.a ] && cree_TRUST_opt_a
    Makeatelier.sccs NO_IHM 2
-   triou nul
+   trust nul
    status=$?
 }
 gen_dico()

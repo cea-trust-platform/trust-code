@@ -20,7 +20,7 @@
 ==================================================
 
 Baltik is an acronym for "Building AppLications using TRUST Kernels"
-or "Building Applications Linked with Trio-U Kernels". The goal is
+or "Building Applications Linked with TRUST Kernels". The goal is
 to give a full compilation framework for applications build with
 TRUST Kernels (micro, numeric, standard) or with the whole TRUST
 code. 

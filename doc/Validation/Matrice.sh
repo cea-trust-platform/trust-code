@@ -33,7 +33,7 @@ AIDE()
 
 #########################################################################################################################################
 # Si l'environnement TRUST n'est pas charge, je stop
-ENVIRONNEMENT_TRIOU()
+ENVIRONNEMENT_TRUST()
 {
    if [ "$TRUST_ROOT" = "" ]
    then
@@ -526,12 +526,12 @@ done
 
 if [ $verbose = 1 ]
 then
-   ENVIRONNEMENT_TRIOU
+   ENVIRONNEMENT_TRUST
    [ $html = 1 ] && CREATION_HTML && [ $pdf = 0 ] && CPU_TIME && exit
    [ $pdf = 1 ] && CREATION_PDF && CPU_TIME && exit
    MAIN
 else
-   ENVIRONNEMENT_TRIOU 1>Matrice.log 2>&1
+   ENVIRONNEMENT_TRUST 1>Matrice.log 2>&1
    [ $html = 1 ] && CREATION_HTML 1>>Matrice.log 2>&1 && [ $pdf = 0 ] && CPU_TIME 1>>Matrice.log 2>&1 && exit
    [ $pdf = 1 ] && CREATION_PDF 1>>Matrice.log 2>&1 && CPU_TIME 1>>Matrice.log 2>&1 && exit
    MAIN 1>>Matrice.log 2>&1
