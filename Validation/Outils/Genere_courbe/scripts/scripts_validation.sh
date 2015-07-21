@@ -192,7 +192,7 @@ compare_new_rap_old_rap()
 
 cd new_rap/; fiches=`ls *.pdf`; cd -
 
-#. /users/fauchet/VUES/168/trio_u/TRUST/bin/Init_TRUST
+#. /users/fauchet/VUES/168/trio_u/TRUST/env/env_TRUST.sh
 
 
 mkdir -p new_rap/OK new_rap/KO

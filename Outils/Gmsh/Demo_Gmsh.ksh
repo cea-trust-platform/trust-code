@@ -7,7 +7,7 @@
 #   - lancement en batch de Gmsh, on obtient: Gmsh2D.msh et Gmsh23D.msh
 #   - lancement en batch de TRUST jusqu'a la phase de discretisation
 #       (jusqu'a la creation des faces)
-source $TRUST_ROOT/env/Init_TRUST 1>/dev/null 2>&1
+source $TRUST_ROOT/env/env_TRUST.sh 1>/dev/null 2>&1
 # Test Gmsh if installed
 [ -f ~/.gmshrc ] && mv ~/.gmshrc ~/.gmshrc.bak
 gmsh --version 1>/dev/null 2>&1

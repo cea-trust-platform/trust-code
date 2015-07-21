@@ -21,7 +21,7 @@ then
 if [ "$2" != "" ]
 then
 	`dirname $0`/configure.ssh.GF $name
-	ssh $name "ls Version_test_$host/TRUST/bin/Init_TRUST"
+	ssh $name "ls Version_test_$host/TRUST/env/env_TRUST.sh"
 	res=$?
 
 	if [ $res -eq 0 ] 
@@ -58,7 +58,7 @@ echo "#!/bin/bash" > tmp_init
 
 echo "cd \$HOME/Version_test_$host/TRUST/" >> tmp_init
 
-echo ". bin/Init_TRUST 1>/dev/null" >> tmp_init
+echo ". env/env_TRUST.sh 1>/dev/null" >> tmp_init
 echo "export Reference_dir=/tmp/"$user"/" >> tmp_init
 echo "export TRUST_TESTS=/tmp/"$user"/" >> tmp_init
 echo "cd /tmp/"$user >> tmp_init

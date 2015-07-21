@@ -1,5 +1,5 @@
-Notes for Eclipse with TRUST (26/03/2015)
-------------------------------------------
+Notes for Eclipse with TRUST (21/07/2015)
+-----------------------------------------
 
 ######################################
 # Create a project to browse sources #
@@ -40,23 +40,23 @@ Launching
   => OK
   => Welcome: close X
 > File/New/C++ Project 
-  => Profect name: TRUST-X.Y.Z
+  => Profect name: TRUST_X.Y.Z
   => Use default location
-  => Project type: Executale/Empty Project
+  => Project type: Executable/Empty Project
   => Toolchains: Linux GCC
   => Finish
 > Project Explorer
-  Right click TRUST-X-Y-Z/Import...
+  Right click TRUST_X-Y-Z/Import...
   => General/File System
   => Next 
-  => From directory: /data/calculsfme/triou/installations/TRUST-X.Y.Z/OS_machine/TRUST/src
+  => From directory: /data/tmpletr/triou/installations/TRUST_X.Y.Z/OS_machine/TRUST_X.Y.Z/src
   => Select All  
-  => Into folder: TRUST-X.Y.Z
+  => Into folder: TRUST_X.Y.Z
   => Advanced: check Create links in workspace
   =>           not check Create virtual folders
   => Finish 
 > Project Explorer
-  Right click TRUST-X.Y.Z/Properties
+  Right click TRUST_X.Y.Z/Properties
   => Builders: not check CDT Builder => OK
   => OK
   => Wait to have 100% at the bottom right corner of the window.
@@ -70,13 +70,13 @@ Launching
 Configuration
 ============= 
 > cd eclipse
-> source /data/calculsfme/triou/installations/TRUST-X.Y.Z/OS_machine/TRUST/env/Init_TRUST
+> source /data/tmpletr/triou/installations/TRUST_X.Y.Z/OS_machine/TRUST_X.Y.Z/env/env_TRUST.sh
 > ./eclipse &
 > Project Explorer
-  Right click TRUST-X.Y.Z/Debug As/Debug configurarions...
+  Right click TRUST_X.Y.Z/Debug As/Debug configurarions...
   => Select C/C++ Application
   => Press the 'New' button to create a configuration of the selected type
-  => Main: C/C++ Application:  /data/calculsfme/triou/installations/TRUST-X.Y.Z/OS_machine/TRUST/exec/TRUST_mpi
+  => Main: C/C++ Application:  /data/tmpletr/triou/installations/TRUST_X.Y.Z/OS_machine/TRUST_X.Y.Z/exec/TRUST_mpi
   => Arguments: not check Use default working directory
   => Debugger: Main options GDB debugger: replace gdb by /usr/bin/gdb
   => Close => Save Changes Yes
@@ -89,7 +89,7 @@ View debug
 Case selection
 ==============
 > Run/Debug configurations
-  => Select C/C++ application TRUST-X.Y.Y Debug
+  => Select C/C++ application TRUST_X.Y.Z Debug
   => Arguments: Program arguments: datafile               (for example Cx)
   =>            Working directoty: /export/home/login/... (for example /export/home/login/Cx : folder of Cx test case in your home-directories)
   => Close => Save Changes Yes

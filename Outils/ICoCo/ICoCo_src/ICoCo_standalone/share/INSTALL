@@ -1,6 +1,6 @@
 #In oreder to build _TRUSTModule_opt.so:
 
-#Init the triou environement: . bin/Init_TRUST
+#Init the triou environement: . env/env_TRUST.sh
 
 #cd 
 tar zxvf ICoCo_standalone.tar.gz 
