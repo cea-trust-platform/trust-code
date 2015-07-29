@@ -33,7 +33,7 @@ else
 echo "verif parallele"
 rm -f test_*
 # on lance le postraitement des calculs // (ils ont reecrits dans les memes fichiers)
-triou  post 1>post.out 2>post.err
+trust  post 1>post.out 2>post.err
  
 verif
 

@@ -2,6 +2,6 @@
 jdd=`pwd`;jdd=`basename $jdd`
 sed -e "s?tinit 9.00?tinit 0.00?g" -e "s?tmax 19.99?tmax 8.99?g" -e "s?reprise ?sauvegarde ?g" $jdd.data > prepare.data
 [ "$TRUST_DISABLE_MPI" != 1 ] && make_PAR.data prepare
-triou prepare
-[ "$TRUST_DISABLE_MPI" != 1 ] && triou PAR_prepare 2
+trust prepare
+[ "$TRUST_DISABLE_MPI" != 1 ] && trust PAR_prepare 2
 exit 0

@@ -1,7 +1,7 @@
 # On fait un premier calcul avec une rotation d'un certain angle du domaine selon l'axe Y #
 angle=130
 echo $ECHO_OPTS "1,$ s?45?$angle?g\nw prepare.data" | ed PETSC_Canal_perio_VEF_3D.data
-triou prepare.data 1>prepare.out_err 2>&1 || exit -1
+trust prepare.data 1>prepare.out_err 2>&1 || exit -1
 rm -f *ref
 mv prepare_pb_Debit.out PETSC_Canal_perio_VEF_3D_pb_Debit.out.ref
 

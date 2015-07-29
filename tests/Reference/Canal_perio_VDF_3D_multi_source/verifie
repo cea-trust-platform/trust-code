@@ -14,10 +14,10 @@ echo $ECHO_OPTS "1,$ s?tmax 0.08?tmax 0.04?g\nw" | ed sauvegarde_reprise.data
 # Premiere partie du calcul 
 if [ ! -f PAR_$jdd.dt_ev ]
 then
-    triou sauvegarde_reprise
+    trust sauvegarde_reprise
 else
    make_PAR.data sauvegarde_reprise
-   triou PAR_sauvegarde_reprise `ls *Zones | wc -l`
+   trust PAR_sauvegarde_reprise `ls *Zones | wc -l`
 fi
 # Deuxieme partie du calcul (reprise)
 echo $ECHO_OPTS "1,$ s?tinit 0.0?tinit 0.04?g\nw" | ed sauvegarde_reprise.data
@@ -26,14 +26,14 @@ echo $ECHO_OPTS "1,$ s?sauvegarde ?reprise ?g\nw" | ed sauvegarde_reprise.data
 
 if [ ! -f PAR_$jdd.dt_ev ]
 then
-   triou sauvegarde_reprise
+   trust sauvegarde_reprise
    for bord in $bords
    do
       compare_sonde $jdd"_Channel_Flow_Rate_pb_$bord" sauvegarde_reprise_Channel_Flow_Rate_pb_$bord || exit -1
    done
 else
    make_PAR.data sauvegarde_reprise
-   triou PAR_sauvegarde_reprise `ls *Zones | wc -l`
+   trust PAR_sauvegarde_reprise `ls *Zones | wc -l`
    for bord in $bords
    do  
       compare_sonde PAR_$jdd"_Channel_Flow_Rate_pb_$bord" PAR_sauvegarde_reprise_Channel_Flow_Rate_pb_$bord || exit -1

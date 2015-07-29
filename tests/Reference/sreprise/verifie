@@ -15,7 +15,7 @@ jdd=`basename $jdd`
 echo $ECHO_OPTS "1,$ s?tinit 0.2??g\nw tinit_from_last_time.data" | ed sreprise.data
 echo $ECHO_OPTS "1,$ s?reprise ?resume_last_time ?g\nw" | ed tinit_from_last_time.data
 echo $ECHO_OPTS "1,$ s?sreprise?tinit_from_last_time?g\nw" | ed tinit_from_last_time.data
-triou tinit_from_last_time
+trust tinit_from_last_time
 compare_lata sreprise.lml tinit_from_last_time.lml || exit -1
 
 # Creation d'un calcul continu de t=0 a t=1.2
@@ -25,8 +25,8 @@ echo $ECHO_OPTS "1,$ s?tinit 0.2?tinit 0.?g\nw" | ed continu.data
 echo $ECHO_OPTS "1,$ s?reprise ?sauvegarde ?g\nw" | ed continu.data
 echo $ECHO_OPTS "1,$ s?fichier sreprise?fichier continu?g\nw" | ed continu.data
 make_PAR.data continu
-triou continu
-triou PAR_continu 2
+trust continu
+trust PAR_continu 2
 # Comparaison du calcul avec et sans reprise de t=0 a t=1.2
 # sur les en tetes et la premiere colonne (temps) des fichiers .out:
 err=0

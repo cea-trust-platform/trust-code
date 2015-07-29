@@ -8,5 +8,5 @@ do
    [ $scheme = generic_muscl ] && keyword="generic muscl minmod 3 1"
    echo $ECHO_OPTS "1,$ s?$jdd?$file?g\nw $file.data" | ed $jdd.data
    echo $ECHO_OPTS "1,$ s? muscl ? $keyword ?g\nw" | ed $file.data
-   triou $file 1>$file.out 2>$file.err || exit -1
+   trust $file 1>$file.out 2>$file.err || exit -1
 done

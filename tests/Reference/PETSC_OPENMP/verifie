@@ -6,7 +6,7 @@ then
    threads=2
    datafile=$initial_datafile"_"$threads
    cp -f $initial_datafile.data $datafile.data
-   triou $datafile -threadcomm_type openmp -threadcomm_nthreads $threads 1>$datafile.out 2>$datafile.err || exit -1
+   trust $datafile -threadcomm_type openmp -threadcomm_nthreads $threads 1>$datafile.out 2>$datafile.err || exit -1
    compare_lata $initial_datafile.lml $datafile.lml || exit -1
    echo "
 Compare KSPSolve performance for:

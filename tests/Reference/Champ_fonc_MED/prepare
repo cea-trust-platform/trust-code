@@ -1,4 +1,4 @@
-triou prepare || exit -1
+trust prepare || exit -1
 # Prepare le med sequentiel:
 mv prepare_0000.med prepare.med
 exit 0
@@ -6,7 +6,7 @@ exit 0
 # 07/07/2010 : ne marche pas pour le moment, voir:
 # http://dibona.intra.cea.fr:8090/trio_u/issue2605
 make_PAR.data prepare
-triou PAR_prepare 2 || exit -1
+trust PAR_prepare 2 || exit -1
 for file in PAR*med
 do
    mv -f $file ${file#PAR_}

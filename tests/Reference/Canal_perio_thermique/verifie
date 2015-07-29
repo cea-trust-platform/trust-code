@@ -3,5 +3,5 @@ jdd=`pwd`
 jdd=`basename $jdd`
 [ -f PAR_$jdd.dt_ev ] && exit 0
 sed -e "s?#  #?#?g" -e "s?# Puissance_thermique?Puissance_thermique?g" $jdd.data > ref.data
-triou ref 1>ref.out 2>ref.err || exit -1
+trust ref 1>ref.out 2>ref.err || exit -1
 compare_lata ref.lml $jdd.lml 1>compare_lata>.log 2>&1 || exit -1

@@ -1,4 +1,4 @@
 # Verification que le debog sequentiel marche
 echo $ECHO_OPTS "1,$ s?Debog pb seq faces 1.e-6 0?Debog pb seq faces 1.e-6 1?g\nw seq.data" | ed Debog_VEF.data 1>/dev/null 2>&1
-triou seq 1>>verifie.log 2>&1
+trust seq 1>>verifie.log 2>&1
 exit $?

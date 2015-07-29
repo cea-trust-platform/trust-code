@@ -38,10 +38,10 @@ lan_ici()
       # Lancement en sequentiel
       if [ "$gdb" != "" ]
       then
-         triou $gdb $cas
+         trust $gdb $cas
 	 err=$?
       else
-         triou $cas 1>$cas.out 2>$cas.err
+         trust $cas 1>$cas.out 2>$cas.err
          err=$?
 	 cat tmp_log* > $DEST/$cas.val && analyse
       fi
@@ -63,10 +63,10 @@ lan_ici()
       then
          if [ "$gdb" != "" ]
 	 then
-	    triou $gdb $cas $NB_PROCS
+	    trust $gdb $cas $NB_PROCS
 	    err=$?	    
 	 else
-	    triou $cas $NB_PROCS 1>$cas.out 2>$cas.err
+	    trust $cas $NB_PROCS 1>$cas.out 2>$cas.err
 	    err=$?
 	    cat tmp_log* > $DEST/$cas.val && analyse
 	 fi

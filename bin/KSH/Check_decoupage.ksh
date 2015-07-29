@@ -148,7 +148,7 @@ do
    # On prepare
    if [ -f prepare ]
    then
-      cat prepare | $TRUST_Awk -v n=$NB_PROCS '// {ch=$0;if ($1=="make_PAR.data" || $1=="trust" && NF==3) ch=$1" "$2" "n;print ch}' > PAR_prepare
+      cat prepare | $TRUST_Awk -v n=$NB_PROCS '// {ch=$0;if ($1=="make_PAR.data" || $1=="trust" || $1=="triou" && NF==3) ch=$1" "$2" "n;print ch}' > PAR_prepare
       chmod +x PAR_prepare
       ./PAR_prepare 1>PAR_prepare.log 2>&1
    fi

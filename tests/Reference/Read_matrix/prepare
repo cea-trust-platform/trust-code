@@ -10,7 +10,7 @@ echo $ECHO_OPTS "1,$ s?nb_pas_dt_max 10?nb_pas_dt_max 0?g\nw" | ed Save_matrix.d
 # Change DOM1 to DOM2 to compare size of .Zones with largeur_joint 1 and 2:
 echo $ECHO_OPTS "1,$ s?DOM1?DOM2?g\nw" | ed Save_matrix.data
 # Run sequential calculation:
-triou Save_matrix || exit -1
+trust Save_matrix || exit -1
 
 if [ "$TRUST_DISABLE_MPI" != 1 ]
 then
@@ -18,7 +18,7 @@ then
    # Partition:
    make_PAR.data Save_matrix
    NbCpus=$?
-   triou PAR_Save_matrix $NbCpus || exit -1
+   trust PAR_Save_matrix $NbCpus || exit -1
 fi
 exit 0
 

@@ -1,5 +1,5 @@
 -curie/airain config differente (plus de CPU par GPU sur airain que sur curie) -mais performance sur 1CPU+1GPU identiques...
--Pas de gain releve encore en mappant CPU et GPU sur curie avec "triou -c 4"
+-Pas de gain releve encore en mappant CPU et GPU sur curie avec "trust -c 4"
 -Test de plusieurs preconditionneurs CUSP, plus efficaces que diag/jacobi, mais au final plus lent sur 1 CPU
 
 

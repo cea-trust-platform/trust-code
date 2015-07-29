@@ -3,5 +3,5 @@
 time=`grep "Backup of the field vitesse performed on time" Piso.err| tail -1 |$TRUST_Awk '{print $NF}'` 
 sed "s/Associer pb sch/Associer pb sch_expl/" Piso.data | sed "s/vitesse champ_uniforme  2 0.0 0.0/vitesse Champ_fonc_reprise Piso_pb.xyz pb vitesse $time/"| sed "s/vitesse Champ_Uniforme 2 0. 0./vitesse Champ_fonc_reprise Piso_pb.xyz pb vitesse $time/"  > explicite.data
 
-triou explicite 1>explicite.out 2>explicite.err
+trust explicite 1>explicite.out 2>explicite.err
 compare_lata explicite.lml Piso.lml --dernier 1>compare_lata.log 2>&1

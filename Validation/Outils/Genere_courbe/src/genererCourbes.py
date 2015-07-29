@@ -452,9 +452,9 @@ if __name__ == "__main__":
 			test_cmd='extract_perf %s 2>/dev/null; if [ $? -ne 0 ]; then '%(case)
 			if (nb_proc==1):
 				
-				cmd=' [ -f pre_run ] && chmod +x pre_run && echo "-> Running the pre_run script in the %s directory ..." && ./pre_run %s; triou %s     1>%s.out 2>%s.err ;'%(dir,case,case,case,case)
+				cmd=' [ -f pre_run ] && chmod +x pre_run && echo "-> Running the pre_run script in the %s directory ..." && ./pre_run %s; trust %s     1>%s.out 2>%s.err ;'%(dir,case,case,case,case)
 			else:
-				cmd=' [ -f pre_run ] && chmod +x pre_run && echo "-> Running the pre_run script in the %s directory ..." && ./pre_run %s; triou %s %d  1>%s.out 2>%s.err ;'%(dir,case,case,nb_proc,case,case)
+				cmd=' [ -f pre_run ] && chmod +x pre_run && echo "-> Running the pre_run script in the %s directory ..." && ./pre_run %s; trust %s %d  1>%s.out 2>%s.err ;'%(dir,case,case,nb_proc,case,case)
 				pass
 			cmd_2='extract_perf %s; [ -f post_run ] && chmod +x post_run && echo "-> Running the post_run script in the %s directory ..." && ./post_run %s)'%(case,dir,case)
 			if (get_cmd_to_run=='yes'):

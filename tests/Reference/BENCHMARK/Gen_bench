@@ -11,7 +11,7 @@ fi
 
 echo "-------------------------------------------------"
 echo "Creation de la geometrie ..."
-triou Geom 1>Geom.out 2>Geom.err
+trust Geom 1>Geom.out 2>Geom.err
 
 # Sequential
 mkdir -p PAR1
@@ -84,7 +84,7 @@ do
         fi
 	
         # Partition (-bigmem?)
-	triou dec$nb_proc 1>dec.out 2>dec.err
+	trust dec$nb_proc 1>dec.out 2>dec.err
 
         # Number of nodes
 	dis=VDF && [ "`grep VEFPreP1B ../TpltPar.data`" != "" ] && dis=VEFPreP1B

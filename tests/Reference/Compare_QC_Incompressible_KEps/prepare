@@ -2,6 +2,6 @@ jdd=`pwd`
 jdd=`basename $jdd`
 # Appel possible a $TRUST_ROOT/Validation/Modules/QC/modif $jdd
 [ "$TRUST_DISABLE_MPI" != 1 ] && make_PAR.data QC_$jdd
-triou QC_$jdd
-[ "$TRUST_DISABLE_MPI" != 1 ] && triou PAR_QC_$jdd 2
+trust QC_$jdd
+[ "$TRUST_DISABLE_MPI" != 1 ] && trust PAR_QC_$jdd 2
 exit 0

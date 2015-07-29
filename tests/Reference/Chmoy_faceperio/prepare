@@ -2,8 +2,8 @@
 if [ "$1" = "" ] && [ "$TRUST_DISABLE_MPI" != 1 ]
 then
    make_PAR.data prepare
-   triou PAR_prepare 2
+   trust PAR_prepare 2
 else
-   triou prepare
+   trust prepare
 fi
 

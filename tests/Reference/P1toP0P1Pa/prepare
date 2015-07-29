@@ -8,4 +8,4 @@ $TRUST_Awk ' \
 /Champ_Fonc_reprise/ {print "vitesse Champ_Uniforme 3 1 0 0";getline} \
 // {print $0} \
 ' $jdd.data > P1.data
-triou P1 1>P1.out 2>P1.err
+trust P1 1>P1.out 2>P1.err

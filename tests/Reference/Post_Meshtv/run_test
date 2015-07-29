@@ -13,7 +13,7 @@ do
    then
       NP=4
       make_PAR.data M3DLAM $NP 1>/dev/null 2>&1
-      triou DEC_M3DLAM 1>/dev/null 2>&1
+      trust DEC_M3DLAM 1>/dev/null 2>&1
       cas=PAR_M3DLAM
    fi
    if [ $format = lata ]
@@ -26,7 +26,7 @@ do
    # Menage
    rm -f *.$format
    echo $ECHO_OPTS "Cas $cas : \c"
-   triou $cas $NP 1>$cas.out 2>$cas.err
+   trust $cas $NP 1>$cas.out 2>$cas.err
    [ $? != 0 ] && echo "Erreur du calcul pour le cas test $cas" && exit -1
    echo "OK"
    # Verifie s'il y'a des erreurs de type DB pour visit

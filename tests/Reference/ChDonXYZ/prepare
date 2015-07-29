@@ -1,5 +1,5 @@
 cas=ChDonXYZ_ICoCo
 [ "$TRUST_DISABLE_MPI" != 1 ] && make_PAR.data $cas
-triou $cas
-[ "$TRUST_DISABLE_MPI" != 1 ] && triou PAR_$cas 2
+trust $cas
+[ "$TRUST_DISABLE_MPI" != 1 ] && trust PAR_$cas 2
 exit 0

@@ -10,13 +10,13 @@ Run va par defaut:
   pour cela, il execute prepare_gen qui cree build et copie src, et qui execute le script prepare si il existe
 
 si on n'a pas mis l'argument -not_run ou -post_run
-- cherche les calculs a relancer en utilisant l'option  --get_cmd_to_run=yes , celui ci genere des lignes du type:   ( cd test_ef_stab_old ; [ -f pre_run ] && chmod +x pre_run && ./pre_run test; triou test 1>test.out 2>test.err ;  extract_perf test  ;[ -f post_run ] && chmod +x post_run &&./post_run test;echo fin test )
+- cherche les calculs a relancer en utilisant l'option  --get_cmd_to_run=yes , celui ci genere des lignes du type:   ( cd test_ef_stab_old ; [ -f pre_run ] && chmod +x pre_run && ./pre_run test; trust test 1>test.out 2>test.err ;  extract_perf test  ;[ -f post_run ] && chmod +x post_run &&./post_run test;echo fin test )
  qui sont executees ensuite.
 pre_run et post_run sont executes si ils existent dans le repertoire du cas test
 
 si on a mis post_run , on va genere un fichier cmd_post que l'on va executer
 ( cd test_ef_stab_old ;  extract_perf test  ;[ -f post_run ] && chmod +x post_run &&./post_run test;echo fin test )
-a la difference du cas standard,  pre_run et triou ne sont pas executes.
+a la difference du cas standard,  pre_run et trust ne sont pas executes.
 
 - enfin on genere le pdf , par defaut il se trouve dans build/rapport.pdf
 

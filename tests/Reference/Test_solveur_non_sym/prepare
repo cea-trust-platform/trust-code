@@ -1,5 +1,5 @@
 #!/bin/bash
 [ "$TRUST_DISABLE_MPI" != 1 ] && make_PAR.data cond_vef_impl_mod 
-triou cond_vef_impl_mod 
-[ "$TRUST_DISABLE_MPI" != 1 ] && triou PAR_cond_vef_impl_mod 2
+trust cond_vef_impl_mod 
+[ "$TRUST_DISABLE_MPI" != 1 ] && trust PAR_cond_vef_impl_mod 2
 exit 0

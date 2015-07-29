@@ -4,7 +4,7 @@ then
    for cas in 2D_P0P1 2D_P0 2D_P1
    do
       cp $TRUST_ROOT/tests/Reference/$cas/$cas.data .
-      triou $cas
+      trust $cas
    done
 fi
 rm -f .gnuplot

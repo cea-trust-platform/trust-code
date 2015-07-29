@@ -1,4 +1,4 @@
 jdd=`pwd`
 jdd=`basename $jdd`
 sed "1,$ s?Associer pb implicite?Associer pb explicite?" $jdd.data > explicite.data
-triou explicite
+trust explicite

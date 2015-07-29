@@ -4,4 +4,4 @@
 jdd=`pwd`
 jdd=`basename $jdd`
 sed "s?Champ_Fonc_XYZ dom?Champ_uniforme?g" $jdd.data > prepare.data
-triou prepare
+trust prepare

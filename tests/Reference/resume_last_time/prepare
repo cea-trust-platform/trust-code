@@ -11,8 +11,8 @@ then
    echo $ECHO_OPTS "1,$ s?$jdd?PAR_$jdd?g\nw" | ed PAR_sauve.data
 fi
 rm -f *out *son
-triou sauve
-[ "$TRUST_DISABLE_MPI" != 1 ] && triou PAR_sauve 2
+trust sauve
+[ "$TRUST_DISABLE_MPI" != 1 ] && trust PAR_sauve 2
 # On renomme certains fichiers
 for file in *out *son
 do

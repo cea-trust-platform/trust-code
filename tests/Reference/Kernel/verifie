@@ -2,7 +2,7 @@
 
 for cas in obsolete accolade
 do
-  triou ${cas} 1>${cas}.out 2>${cas}.err
+  trust ${cas} 1>${cas}.out 2>${cas}.err
   status=$?
                  if [ $status -eq 0 ]
                  then

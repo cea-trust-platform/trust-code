@@ -1,4 +1,4 @@
 #!/bin/bash
 
-triou ExtrudeBord_3tetra_old_version.data 1>ExtrudeBord_3tetra_old_version.out 2>ExtrudeBord_3tetra_old_version.err || exit -1
+trust ExtrudeBord_3tetra_old_version.data 1>ExtrudeBord_3tetra_old_version.out 2>ExtrudeBord_3tetra_old_version.err || exit -1
 compare_lata Kernel_ExtrudeBord_3tetra.lml ExtrudeBord_3tetra_old_version.lml 1>verifie.log 2>&1 || exit -1

@@ -5,7 +5,7 @@ DIR=`dirname $0`
 [ "$DIR" = "" ] && DIR=`pwd`
 lan()
 {
-    triou $1 1>$1.out 2>$1.err
+    trust $1 1>$1.out 2>$1.err
 }
 #rm -f *.lml
 if [ -f Rep_$cas.data ] && [ "$force" != 1 ] 

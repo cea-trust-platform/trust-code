@@ -13,8 +13,8 @@ echo $org_lml $res_lml ecarts:
 compare_lata modif.lml $res_lml || exit -1
 }
 
-triou Marche 
-triou Marche_y  
-triou Marche_incline 
+trust Marche 
+trust Marche_y  
+trust Marche_incline 
 modif_lml Marche.lml Marche_y.lml
 modif_lml Marche.lml Marche_incline.lml

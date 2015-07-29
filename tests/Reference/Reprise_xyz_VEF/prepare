@@ -1,5 +1,5 @@
 # Creation d'un lien entre les fichiers ok_arete pour
 # la sauvegarde xyz puisse se faire correctement (meme graphe aretes liees)
 ln -s -f PAR_Reprise_xyz_VEF_dom.ok_arete Reprise_xyz_VEF_dom.ok_arete 
-triou prepare
+trust prepare
 

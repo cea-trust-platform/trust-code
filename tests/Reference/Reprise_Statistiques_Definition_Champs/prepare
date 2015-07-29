@@ -1,2 +1,2 @@
 sed -e "s?tinit.*0\.2?tinit 0.?g" -e "s?tmax.*0\.4?tmax 0.2?g" -e "s?reprise?sauvegarde?g" Reprise_Statistiques_Definition_Champs.data > debut.data
-triou debut.data
+trust debut.data

@@ -107,7 +107,7 @@ else
     ln -s $orig/src/* .
     cd ..
 fi
-# If "run" requested, run triou testcases and PreRequis command found in the
+# If "run" requested, run trust testcases and PreRequis command found in the
 # header of the .prm file
 
 cd build

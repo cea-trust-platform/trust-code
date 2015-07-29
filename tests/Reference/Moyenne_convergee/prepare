@@ -1,7 +1,7 @@
-triou test
+trust test
 if [ "$TRUST_DISABLE_MPI" != 1 ]
 then
    make_PAR.data test
-   triou PAR_test 2
+   trust PAR_test 2
 fi
 exit 0

@@ -3,6 +3,6 @@ copie_cas_test cpu_3D
 mv cpu_3D/cpu_3D.data .
 sed "s/precond/save_matrice precond/" cpu_3D.data > mod.data 
 [ "$TRUST_DISABLE_MPI" != 1 ] && make_PAR.data mod
-triou mod
-[ "$TRUST_DISABLE_MPI" != 1 ] && triou PAR_mod 2
+trust mod
+[ "$TRUST_DISABLE_MPI" != 1 ] && trust PAR_mod 2
 exit 0

@@ -2,6 +2,6 @@ jdd=`pwd`
 jdd=`basename $jdd`
 sed "s?VEFPreP1B ?VDF ?g" $jdd.data | sed "s?trianguler_H dom??g" > VDF_$jdd.data
 [ "$TRUST_DISABLE_MPI" != 1 ] && make_PAR.data VDF_$jdd
-triou VDF_$jdd
-[ "$TRUST_DISABLE_MPI" != 1 ] && triou PAR_VDF_$jdd 2
+trust VDF_$jdd
+[ "$TRUST_DISABLE_MPI" != 1 ] && trust PAR_VDF_$jdd 2
 exit 0                            

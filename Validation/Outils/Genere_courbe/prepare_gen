@@ -36,9 +36,9 @@ then
    echo $ECHO_OPTS "-> Run script prepare in the build directory..."
    echo $ECHO_OPTS "==============================================="
    chmod +x prepare
-   # Detection pour empecher que le script triou, make_PAR.data ou $exec soit utilise dans le prepare
+   # Detection pour empecher que le script triou, trust, make_PAR.data ou $exec soit utilise dans le prepare
    warning=1
-   if [ "`grep ' triou ' ./prepare`" != "" ] || [ "`grep ' \$exec ' ./prepare`" != "" ] || [ "`grep ' make_PAR.data ' ./prepare`" != "" ]
+   if [ "`grep ' triou ' ./prepare`" != "" ] || [ "`grep ' trust ' ./prepare`" != "" ] || [ "`grep ' \$exec ' ./prepare`" != "" ] || [ "`grep ' make_PAR.data ' ./prepare`" != "" ]
    then
       echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" 
       echo "You should not run a calculation or partition a mesh in the prepare script."

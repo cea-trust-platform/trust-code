@@ -36,7 +36,7 @@ for j1 in range(n):
                                             if (k3!=k1) and (k3!=k2) :
                                                 for k4 in range(n):
                                                     if (k4!=k1) and (k4!=k2) and (k4!=k3):
-                                                        cmd="sed \"s/0 1 2 3 4 5 6 7/ "+str(j1)+" "+str(j2)+" "+str(j3)+" "+str(j4)+" "+str(k1+4)+" "+str(k2+4)+" "+str(k3+4)+" "+str(k4+4)+" /\" mod2.geom  >mod2b.geom;rm -f mod2o.geom; triou mod2>out 2>&1; [ $? != 0 ] && echo pb&& cp mod2b.geom rate.geom;x=`grep -n Hexaedre_VEF mod2o.geom | awk -F: '{print $1}'`; xx=`awk 'BEGIN {print '$x'+5}'`; head -$xx mod2o.geom | tail -1"
+                                                        cmd="sed \"s/0 1 2 3 4 5 6 7/ "+str(j1)+" "+str(j2)+" "+str(j3)+" "+str(j4)+" "+str(k1+4)+" "+str(k2+4)+" "+str(k3+4)+" "+str(k4+4)+" /\" mod2.geom  >mod2b.geom;rm -f mod2o.geom; trust mod2>out 2>&1; [ $? != 0 ] && echo pb&& cp mod2b.geom rate.geom;x=`grep -n Hexaedre_VEF mod2o.geom | awk -F: '{print $1}'`; xx=`awk 'BEGIN {print '$x'+5}'`; head -$xx mod2o.geom | tail -1"
                                                         print cmd
                                                         pass
                                                     pass

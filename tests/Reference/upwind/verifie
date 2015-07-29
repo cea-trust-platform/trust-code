@@ -2,11 +2,11 @@
 [ ! -f PAR_upwind.err ] && exit 0
 # Test in parallel that TRUST don't freeze if one process exited #
 cp PAR_upwind.data PAR_exit.data
-triou PAR_exit 2 1>PAR_exit.out 2>PAR_exit.err
+trust PAR_exit 2 1>PAR_exit.out 2>PAR_exit.err
 # We erase a restart file:
 Run_reprise PAR_exit.data -no_gui 1>/dev/null 2>&1 || exit 1
 rm -f PAR_exit_pb_0001.sauv
-triou PAR_exit 2 1>PAR_exit.out 2>PAR_exit.err
+trust PAR_exit 2 1>PAR_exit.out 2>PAR_exit.err
 # It should failed and print a message Aborting calculation #
 if [ $? != 0 ] && [ "`grep 'Aborting calculation' PAR_exit.err`" != "" ]
 then

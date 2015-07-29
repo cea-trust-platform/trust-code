@@ -1,4 +1,4 @@
-triou prepare
+trust prepare
 # C'est normal que le cas precedant plante cela fait partie du test
 # Voir le message d'erreur
 exit 0
