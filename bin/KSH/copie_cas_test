@@ -45,7 +45,12 @@ fi
 # Copie des fichiers et on met les droits d'ecriture
 for file in $files
 do
-   rm -f $file && [ -s $ref/$REP/$file ] && cp -f $ref/$REP/$file .
+   if [ $file = "./skipped" ] || [ $file = "./no_ref_comparison" ]
+   then
+      rm -f $file && [ -f $ref/$REP/$file ] && cp -f $ref/$REP/$file .
+   else
+      rm -f $file && [ -s $ref/$REP/$file ] && cp -f $ref/$REP/$file .
+   fi
 done
 chmod -R +w .
 # Gere les liens entre fichiers de differents repertoires

@@ -591,6 +591,8 @@ echo $ECHO_OPTS "Executable :$exec"
 echo $ECHO_OPTS "Directory  :$rep_tests"
 echo $ECHO_OPTS
 liste=""
+liste_skipped=""
+liste_no_ref_comparison=""
 if [ $print = 1 ]
 then
    liste || exit -1
@@ -702,6 +704,8 @@ then
     succes_par=0
     tests=0
     tests_par=0
+    nb_skipped=0
+    nb_no_ref_comparison=0
     mes=""
     mes=`ls -la $exec | $TRUST_Awk '{print $6,$7,$8}'`
 
@@ -807,6 +811,7 @@ then
 	   if [ "`grep -i petsc $REP/* 2>/dev/null`" != "" ]
 	   then
               echo "Test $i skipped (no petsc)"
+	      liste_skipped=$liste_skipped" $i"
 	      i=""
            fi
 	fi
@@ -816,6 +821,7 @@ then
 	   if [ "`grep -i med $REP/* 2>/dev/null`" != "" ]
 	   then
               echo "Test $i skipped (no MED)"
+	      liste_skipped=$liste_skipped" $i"
 	      i=""
            fi
 	fi
@@ -825,6 +831,7 @@ then
 	   if [ "`grep "gmsh " $REP/* 2>/dev/null`" != "" ]
 	   then
               echo "Test $i skipped (no gmsh)"
+	      liste_skipped=$liste_skipped" $i"
 	      i=""
            fi
 	fi
@@ -839,13 +846,13 @@ then
 	   [ "`grep -i boomeramg $REP/* 2>/dev/null`" != "" ]		&& i=""
 	   [ "`grep -i Check_solver.sh $REP/* 2>/dev/null`" != "" ]	&& i=""
 	   [ "`grep -i 'Testeur_MEDCoupling' $REP/* 2>/dev/null`" != "" ] && i=""
-           [ "$i" = "" ] &&  echo "Test $iisa skipped (no MPI)"
+           [ "$i" = "" ] &&  echo "Test $iisa skipped (no MPI)" && liste_skipped=$liste_skipped" $iisa"
 
 	fi
         if [ -f $REP/skipped ]
 	then
 	echo "Test $i skipped (file skipped)"
-
+	liste_skipped=$liste_skipped" $i"
 	i=""
 	fi
 	[ $choix != "0" ] && [ ${choix#P_} = $choix ] && [ $choix != $k ] && [ $choix != "M" ] && i=""
@@ -1049,7 +1056,12 @@ then
 			        # Comparaison reference-sequentiel(ou parallele si PARALLEL_ONLY=1)
 			        LML1=$NOM.lml
 				LML2=$NOM2.lml
-			    fi			    
+			    fi
+			    if [ -f $rep_tests/$REP/no_ref_comparison ]
+			    then
+			       echo "Test $i not compared to the reference"
+	                       liste_no_ref_comparison=$liste_skipped" $i"
+			    else		    
 			    # lance_test_seq_par will be replaced by compare_lata
 			    tool=lance_test_seq_par	# older program soon retired
 			    tool=compare_lata		# newer faster program
@@ -1058,7 +1070,7 @@ then
 			       echo "Tool $TRUST_ROOT/exec/$tool is not available."
 			       echo "Contact TRUST support."
 			       exit -1
-			    fi			    
+			    fi
 			    if [ $tool = compare_lata ]
 			    then
                                $TRUST_ROOT/exec/$tool $LML1 $LML2
@@ -1079,6 +1091,7 @@ then
 			           echo "Number of differences : 0"
 			           echo "Maximal relative error encountered : 0"
 			       fi
+			    fi
 			    fi
 			else
 			    if [ ! -f $NOM2.lml ] && [ -s .reference.lml ]
@@ -1307,6 +1320,26 @@ then
    echo $ECHO_OPTS "Successful result." >> $SORTIE
    (echo $ECHO_OPTS "Successful result." >> $fichier) 2>/dev/null
 fi
+if [ ${#liste_skipped} != 0 ]
+then
+   # Liste des cas tests non lances
+   for file_skipped in $liste_skipped
+   do
+      let nb_skipped=nb_skipped+1
+   done
+   echo $ECHO_OPTS "\n$nb_skipped test cases skipped" >> $SORTIE
+   (echo $ECHO_OPTS "\n$nb_skipped test cases skipped" >> $fichier) 2>/dev/null
+fi
+if [ ${#liste_no_ref_comparison} != 0 ]
+then
+   # Liste des cas tests non compares a la reference
+   for file_no_ref_comparison in $liste_no_ref_comparison
+   do
+      let nb_no_ref_comparison=nb_no_ref_comparisons+1
+   done
+   echo $ECHO_OPTS "\n$nb_no_ref_comparison test cases not compared to the reference" >> $SORTIE
+   (echo $ECHO_OPTS "\n$nb_no_ref_comparison test cases not compared to the reference" >> $fichier) 2>/dev/null
+fi
 ###################
 # Envoi d un mail #
 ###################
@@ -1349,8 +1382,38 @@ then
    echo $ECHO_OPTS "List of unsuccessful tests cases :\n`cat $rep_tests/liste`\n" >> $SORTIE
    (echo $ECHO_OPTS "List of unsuccessful tests cases :\n`cat $rep_tests/liste`\n" >> $fichier) 2>/dev/null
 fi
-echo >> $SORTIE
 rm -f $message
+if [ ${#liste_skipped} != 0 ]
+then
+   # Liste des cas tests non lances
+   echo $ECHO_OPTS "\nList of skipped tests cases :" >> $SORTIE
+   for file_skipped in $liste_skipped
+   do
+      echo $ECHO_OPTS "$file_skipped" >> $SORTIE
+   done
+   (echo $ECHO_OPTS "\nList of skipped tests cases :" >> $fichier
+   for file_skipped in $liste_skipped
+   do
+      echo $ECHO_OPTS "$file_skipped" >> $fichier
+   done
+   ) 2>/dev/null
+fi
+if [ ${#liste_no_ref_comparison} != 0 ]
+then
+   # Liste des cas tests non compares a la reference
+   echo $ECHO_OPTS "\nList of no_ref_comparison tests cases :" >> $SORTIE
+   for file_no_ref_comparison in $liste_no_ref_comparison
+   do
+      echo $ECHO_OPTS "$file_no_ref_comparison" >> $SORTIE
+   done
+   (echo $ECHO_OPTS "\nList of no_ref_comparison tests cases :" >> $fichier
+   for file_no_ref_comparison in $liste_no_ref_comparison
+   do
+      echo $ECHO_OPTS "$file_no_ref_comparison" >> $fichier
+   done
+   ) 2>/dev/null
+fi
+echo >> $SORTIE
 
 #[ $checkin = 0 ] && CHECKIN $SORTIE
 # On checkine quelque soit le type de lance_test fait
