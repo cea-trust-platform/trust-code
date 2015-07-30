@@ -855,6 +855,7 @@ void Op_Div_VEFP1B_Elem::degres_liberte() const
     }
   if (afficher_message && VerifierCoin::expert_only==0)
     {
+      Nom nom_fichier(nom_du_cas());
       Cerr << "Look at the .log file of processor " << Process::me() << " to know which nodes" << finl;
       Cerr << "do not have enough degrees of freedom. You can also visualize" << finl;
       Cerr << "your mesh to identify which elements have a problem and" << finl;
@@ -868,7 +869,7 @@ void Op_Div_VEFP1B_Elem::degres_liberte() const
       if (dimension==3)
         Cerr << "If you have used \"Tetraedriser\", substituted by \"Tetraedriser_homogene\" or \"Tetraedriser_par_prisme\"." << finl << finl;
       Cerr << "Or insert the line:" << finl;
-      Cerr << "VerifierCoin " << dom.le_nom() << " { [lire_fichier file.decoupage_som] [ }" << finl;
+      Cerr << "VerifierCoin " << dom.le_nom() << " { [Read_file " << nom_fichier << ".decoupage_som] }" << finl;
       Cerr << "after the mesh is finished to be read and built." << finl;
       if (Process::nproc()>1)
         Cerr << "and BEFORE the keyword \"Decouper\" during the partition of the mesh." << finl;
