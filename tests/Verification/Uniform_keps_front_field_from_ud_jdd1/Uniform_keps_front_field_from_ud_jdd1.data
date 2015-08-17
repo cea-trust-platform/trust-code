@@ -182,8 +182,8 @@ Lire pb
 	    {
 	         keps Extraction { Domaine boundary_entrance nom_frontiere 1 methode champ_frontiere source refChamp { Pb_champ pb k } }
 
-		 true_k_  Transformation { methode formule expression 1 0.00375 localisation elem }
-		 true_eps_  Transformation { methode formule expression 1 0.001985778773384587 localisation elem }
+		 true_k_  Transformation { methode formule expression 1 0.0025 localisation elem }
+		 true_eps_  Transformation { methode formule expression 1 0.001081 localisation elem }
 
 	         true_k Extraction { Domaine boundary_entrance nom_frontiere 1 methode trace sources_reference { true_k_ } }
 	         true_eps Extraction { Domaine boundary_entrance nom_frontiere 1 methode trace sources_reference { true_eps_ } }
