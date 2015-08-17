@@ -6,7 +6,7 @@ then
 	if [ -z "$LATASRC" ]
 	then
 	ROOT=`pwd`/../..
-	echo "Not in triou environment. Rootdir=$ROOT"
+	echo "Not in TRUST environment. Rootdir=$ROOT"
 	LATASRC=$ROOT/lata2dx
 	local=$ROOT/bin
 	else	

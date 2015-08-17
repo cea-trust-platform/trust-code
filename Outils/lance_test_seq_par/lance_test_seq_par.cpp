@@ -84,7 +84,7 @@ typedef struct {
 } T_Champ;
 
 /* Structure du fichier TRIO contenant les informations necessaires a la sauvegarde*
- * des resultats du fichier  pour TRIOU.                              */
+ * des resultats du fichier  pour TRUST.                              */
 typedef struct {
   int      nb_grille;        /* Nombre de grille  du cas*/
   String80 nom_grille[MAX_GRILLE];    /* Nom des grilles */
@@ -330,7 +330,7 @@ int Ecart(double x, double y, double ymax)
  * Fonction  Lecture_Geom(nom, contenu)                          *
  *****************************************************************
  *                                                               *
- * Fonction permettant de lire des fichiers de resultats Triou   *
+ * Fonction permettant de lire des fichiers de resultats TRUST   *
  * en vue de les comparer.                                       *
  *                                                               *
  *---------------------------------------------------------------*
@@ -341,7 +341,7 @@ int Ecart(double x, double y, double ymax)
  * Sorties :                                                     *
  * T_Trio   *contenu   - Pointeur sur la structure contenant les *
  *                       informations contenues dans             *
- *                       un fichier de resultats TRIOU.          *
+ *                       un fichier de resultats TRUST.          *
  *---------------------------------------------------------------*
  * Auteur :                                                      *
  *           G.DEGENEVE                                          *
@@ -562,7 +562,7 @@ int Lecture_Geom(char *nom,T_Trio   *contenu)
  * FILE   *fic -Pointeur sur le fichier                          *
  * T_Trio   *contenu   - Pointeur sur la structure contenant les *
  *                       informations contenues dans             *
- *                       un fichier de resultats TRIOU.          *
+ *                       un fichier de resultats TRUST.          *
  * double   time       - Valeur du pas de temps recherche.       *
  *---------------------------------------------------------------*
  * Sorties :                                                     *
@@ -639,7 +639,7 @@ int Recherche_temps(ifstream *fic, T_Trio *contenu, double time, int exact=0)
                          calcul parallele.   (PARALLELE)         *
 			 * T_Trio   *contenu   - Pointeur sur la structure contenant les *
 			 *                       informations contenues dans             *
-			 *                       un fichier de resultats TRIOU.          *
+			 *                       un fichier de resultats TRUST.          *
 			 * int       k         - Numero de l'instant (debute a 1)        *
 			 * double    time      - Valeur de l'instant.
 			 *---------------------------------------------------------------*
@@ -1023,14 +1023,14 @@ int compare_elem_seq_par(int i1,double *pos)
  *****************************************************************
  *                                                               *
  * Fonction permettant de verifier la coherence des structures   *
- * issues des 2 fichiers de resultats  Triou.                    *
+ * issues des 2 fichiers de resultats  TRUST.                    *
  *                                                               *
  *---------------------------------------------------------------*
  * Entrees :                                                     *
  * T_Trio   contenu1  - Structure contenant les informations     *
- *                       de la geometrie du premier fichier Triou*
+ *                       de la geometrie du premier fichier TRUST*
  * T_Trio   contenu2  - Structure contenant les informations     *
- *                       de la geometrie du second fichier Triou *
+ *                       de la geometrie du second fichier TRUST *
  *---------------------------------------------------------------*
  * Sorties :                                                     *
  *---------------------------------------------------------------*
@@ -1418,7 +1418,7 @@ double trouve_dernier_temps(char* nom1)
  * Fonction  Verif_Result_statio(nom1, nom2, contenu1, contenu2)        *
  *****************************************************************
  *                                                               *
- * Fonction permettant de lire des fichiers de resultats Triou   *
+ * Fonction permettant de lire des fichiers de resultats TRUST   *
  * en vue de  comparer le dernier temps .                                       *
  *                                                               *
  *---------------------------------------------------------------*
@@ -1429,10 +1429,10 @@ double trouve_dernier_temps(char* nom1)
  *                      avec son chemin en absolu                *
  * T_Trio   *contenu1  - Pointeur sur la structure contenant les *
  *                       informations contenues dans             *
- *                       un fichier de resultats TRIOU.          *
+ *                       un fichier de resultats TRUST.          *
  * T_Trio   *contenu1  - Pointeur sur la structure contenant les *
  *                       informations contenues dans             *
- *                       un fichier de resultats TRIOU.          *
+ *                       un fichier de resultats TRUST.          *
  *---------------------------------------------------------------*
  * Sorties :                                                     *
  *---------------------------------------------------------------*
@@ -1487,7 +1487,7 @@ int Verif_Result_statio(char *nom1, char *nom2, T_Trio *contenu1, T_Trio *conten
  * Fonction  Verif_Result(nom1, nom2, contenu1, contenu2)        *
  *****************************************************************
  *                                                               *
- * Fonction permettant de lire des fichiers de resultats Triou   *
+ * Fonction permettant de lire des fichiers de resultats TRUST   *
  * en vue de les comparer.                                       *
  *                                                               *
  *---------------------------------------------------------------*
@@ -1498,10 +1498,10 @@ int Verif_Result_statio(char *nom1, char *nom2, T_Trio *contenu1, T_Trio *conten
  *                      avec son chemin en absolu                *
  * T_Trio   *contenu1  - Pointeur sur la structure contenant les *
  *                       informations contenues dans             *
- *                       un fichier de resultats TRIOU.          *
+ *                       un fichier de resultats TRUST.          *
  * T_Trio   *contenu1  - Pointeur sur la structure contenant les *
  *                       informations contenues dans             *
- *                       un fichier de resultats TRIOU.          *
+ *                       un fichier de resultats TRUST.          *
  *---------------------------------------------------------------*
  * Sorties :                                                     *
  *---------------------------------------------------------------*
@@ -1635,12 +1635,12 @@ int Verif_Result(char *nom1,char * nom2, T_Trio *contenu1, T_Trio *contenu2)
  *---------------------------------------------------------------*
  * Entrees :                                                     *
  * T_Trio   contenu1  - Structure fichier resultat calcul        *
- *                      sequentiel TRIOU.                        *
+ *                      sequentiel TRUST.                        *
  * T_Trio   contenu2  - Structure fichier resultat calcul        *
- *                      parallele  TRIOU.                        *
+ *                      parallele  TRUST.                        *
  * T_Equiv   *equi    - Structure correspondance sommets et      *
  *                      mailles entre calcul parallele et        *
- *                      calcul sequentiel TRIOU.                 *
+ *                      calcul sequentiel TRUST.                 *
  *---------------------------------------------------------------*
  * Sorties :                                                     *
  *---------------------------------------------------------------*
@@ -1652,7 +1652,7 @@ int libere_trio(T_Trio contenu1,T_Trio  contenu2,T_Equiv   *equi)
 {
 
   /* Liberation de la Structure de correspondance sommets et mailles entre calcul parallele et 
-     calcul sequentiel TRIOU.*/
+     calcul sequentiel TRUST.*/
   for(int i = 0; i < contenu2.nb_grille; i++){
     if(equi[i].ielem != NULL){
       free(equi[i].ielem);
@@ -1664,7 +1664,7 @@ int libere_trio(T_Trio contenu1,T_Trio  contenu2,T_Equiv   *equi)
     }
   }
 
-  /* Liberation de la Structure du fichier resultat calcul sequentiel TRIOU.*/
+  /* Liberation de la Structure du fichier resultat calcul sequentiel TRUST.*/
   for (int i =0; i < contenu1.nb_grille; i++){
     if(contenu1.coord1[i].x != NULL){
       free(contenu1.coord1[i].x);
@@ -1736,7 +1736,7 @@ int libere_trio(T_Trio contenu1,T_Trio  contenu2,T_Equiv   *equi)
     contenu1.champ.vec = NULL;
   }
 
-  /* Liberation de la Structure du fichier resultat calcul parallele TRIOU.*/
+  /* Liberation de la Structure du fichier resultat calcul parallele TRUST.*/
   for (int i =0; i < contenu2.nb_grille; i++){
     if(contenu2.coord1[i].x != NULL){
       free(contenu2.coord1[i].x);

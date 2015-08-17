@@ -15,7 +15,7 @@ stat=$?
 status=`echo $status + $stat| bc -l`
 
 sed "s/Fin/resoudre pb/" toto.data > ref.data
-triou ref >&ref.log
+trust ref >&ref.log
 compare_lata ref.lml toto.lml
 stat=$?
 status=`echo $status + $stat| bc -l`

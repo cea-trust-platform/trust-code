@@ -3,7 +3,7 @@ plugin=$1
 if [ -z "$TRUST_ROOT" ]
 then
 	ROOT=`pwd`/../..
-	echo "Not in triou environment. Rootdir=$ROOT"
+	echo "Not in TRUST environment. Rootdir=$ROOT"
 	
 	local=$ROOT/bin
 

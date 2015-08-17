@@ -2,7 +2,7 @@ Parametres {
 	Titre "Basic parallel benchmarking"
 	Description ""
 	Auteur "Pierre LEDAC (CS)"	
-	VersionTRUST "1.6.2"	
+	VersionTrio_U "1.6.2"	
 	Reference "See data files into \$TRUST_ROOT/tests/Reference/BENCHMARK directory"
 }
 

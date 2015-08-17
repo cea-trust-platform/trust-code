@@ -34,8 +34,8 @@ system("mv tmp "file);\
 }'
 
 # Construction d'un fichier avec les performances par machine
-#machines=`ls *_*.cpu | awk -F_ '{print $1}' | sort -u`
-machines=`liste_machines benchmark  | awk -F. '{print $1}' | sort -u`
+machines=`ls *_*.cpu | awk -F_ '{print $1}' | sort -u`
+#machines=`liste_machines benchmark  | awk -F. '{print $1}' | sort -u`
 sec_today=`date +'%s'`
 for machine in $machines
 do

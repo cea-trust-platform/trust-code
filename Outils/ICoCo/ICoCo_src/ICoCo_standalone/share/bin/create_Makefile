@@ -62,11 +62,11 @@ if [ -f interassemblage.data ]
 else
     echo "check: couplage">> makefile
 fi
-echo "	env exec=./couplage triou couplage \$(nproc) 1>couplage.out 2>couplage.err
+echo "	env exec=./couplage trust couplage \$(nproc) 1>couplage.out 2>couplage.err
 	if [ -f check.sh ]; then sh check.sh ;fi
 	@echo ok
 check_dynamique: dynamique
-	env exec=./dynamique triou dynamique \$(nproc) 1>dynamique.out 2>dynamique.err
+	env exec=./dynamique trust dynamique \$(nproc) 1>dynamique.out 2>dynamique.err
 	if [ -f check.sh ]; then sh check.sh ;fi
 	@echo ok
 ld_env.sh: makefile
@@ -76,9 +76,9 @@ exe:
 	if [ \"\$(OPT)\" = \"_opt\" ]; then (cd  $build/../..; make optim);else  (cd  $build/../..; make debug); fi
 Multiassemblage_only: ld_env.sh $exe
 	sed 's/# ResoudreMultiAssemblage MonMulti #/ ResoudreMultiAssemblage MonMulti /' Multiassemblage.data > Multiassemblage_only.data 
-	env exec=$build/../../MC\$(OPT) triou Multiassemblage_only 1> Multiassemblage_only.out 2>Multiassemblage_only.err
+	env exec=$build/../../MC\$(OPT) trust Multiassemblage_only 1> Multiassemblage_only.out 2>Multiassemblage_only.err
 valgrind: couplage
-	env exec=\"\$TRUST_ROOT/exec/valgrind/bin/valgrind --db-attach=yes ./couplage \"   triou couplage \$(nproc) 
+	env exec=\"\$TRUST_ROOT/exec/valgrind/bin/valgrind --db-attach=yes ./couplage \"   trust couplage \$(nproc) 
 clean:
 	rm -f couplage *dump *lata* *out *err *TU *log  *son Evol_T_ASS es.med *sauv *xyz convert_jdd *~ *dt_ev *stop	make.include.atelier makefile ld_env.sh PAR_interassemblage.data SEQ_interassemblage.data DEC_interassemblage.data Multiassemblage_only.data 
 	if [ -f Clean.sh ] ; then sh Clean.sh ; fi">> makefile

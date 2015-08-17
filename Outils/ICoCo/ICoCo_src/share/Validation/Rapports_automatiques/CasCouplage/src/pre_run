@@ -6,13 +6,13 @@ exec=`make exe | grep Executable |awk '{print $NF}'`
 export exec
 if [ "$1" != "grossier" ]
 then
-triou dec_canal
-triou dec_boite
+trust dec_canal
+trust dec_boite
 else
 sed "s/10 9 9/4 3 3/" dec_canal.data > dec_c.data
 sed "s/10 10 11/5 3 3/" dec_boite.data > dec_b.data
-triou dec_c
-triou dec_b
+trust dec_c
+trust dec_b
 fi
 gunzip -c ref_lml.gz > ref_lml
 
