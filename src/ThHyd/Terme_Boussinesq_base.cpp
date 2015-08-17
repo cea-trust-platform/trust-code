@@ -63,10 +63,32 @@ void Terme_Boussinesq_base::associer_pb(const Probleme_base& pb)
   // Fill la_gravite_ and beta_ attributes
   const Fluide_Incompressible& fluide=ref_cast(Fluide_Incompressible,pb.milieu());
   la_gravite_=fluide.gravite();
+
+  //this variable indicates if the beta field is valid or not
+  int valid_beta_field = 0; // by default it is invalid
+  Nom beta_field_name="??"; // only used for the error message
+
   if (NomScalaire_=="temperature")
-    beta_=fluide.beta_t();
+    {
+      valid_beta_field = fluide.beta_t( ).non_nul( );
+      beta_field_name = "thermal expansion value (beta_th)";
+      beta_=fluide.beta_t();
+    }
   else if (NomScalaire_=="concentration")
-    beta_=fluide.beta_c();
+    {
+      valid_beta_field = fluide.beta_c( ).non_nul( );
+      beta_field_name = "volume expansion coefficient values in concentration (beta_co)";
+      beta_=fluide.beta_c();
+    }
+
+  if( ! valid_beta_field )
+    {
+      Cerr << "Error. Boussinesq source term is not able to access to the "<<beta_field_name<<" associated to the fluid."<<finl;
+      Cerr << "Please check your data file. " << finl;
+      Cerr << "Aborting..."<<finl;
+      Process::abort( );
+    }
+
 }
 
 // Fonction de lecture d'un Parser_U
