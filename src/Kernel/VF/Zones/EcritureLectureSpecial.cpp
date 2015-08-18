@@ -37,8 +37,7 @@ int EcritureLectureSpecial::Active=1;
 
 #ifdef MPI_
 Nom EcritureLectureSpecial::Input="LecFicDiffuseBin";    // "EFichierBin" was the past (<=1.6.9) and "LecFicPartageMPIIO" is may be the future
-//Nom EcritureLectureSpecial::Output="EcrFicPartageMPIIO"; // "EcrFicPartageBin" was the past (<=1.6.9) and "EcrFicPartageMPIIO" is after 1.7.0
-Nom EcritureLectureSpecial::Output="EcrFicPartageBin";	 // since 1.7.2 because MPIIO blocks according to MPI library type (OPENMPI or MPICH)
+Nom EcritureLectureSpecial::Output="EcrFicPartageMPIIO"; // "EcrFicPartageBin" was the past (<=1.6.9) and "EcrFicPartageMPIIO" is after 1.7.0
 #else
 Nom EcritureLectureSpecial::Input="EFichierBin";
 Nom EcritureLectureSpecial::Output="EcrFicPartageBin";
