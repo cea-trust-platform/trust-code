@@ -3,6 +3,12 @@ cd Couple
 cp ../*.data  ../main.cpp ../pre_run ../post_run ../configure ../check.sh ../ref_lml.gz ../create_Makefile .
 chmod +w .
 cp sa/* .
+if [ "$TRUST_DISABLE_PETSC" = "1" ]
+then
+   echo "Disabling petsc in canal.data"
+   grep -v petsc canal.data > p.data
+   mv p.data canal.data
+fi
 ./configure
 #make couplage
 cd ..
