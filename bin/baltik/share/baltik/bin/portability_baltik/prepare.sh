@@ -1,3 +1,4 @@
+#!/bin/bash
 echo $0 $*
 
 #set -xv
@@ -101,7 +102,8 @@ source ./env.sh
 
 for pp in configure make make_check make_install
   do
-  echo "echo \$0 \$*
+  echo "#!/bin/bash
+echo \$0 \$*
 PID=\$\$
 echo current_PID \$PID start
 trap \"echo current_PID \$PID stop\" EXIT
