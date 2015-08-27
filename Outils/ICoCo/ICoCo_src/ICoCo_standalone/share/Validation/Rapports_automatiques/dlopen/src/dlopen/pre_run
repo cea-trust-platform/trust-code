@@ -14,3 +14,4 @@ else
   #echo KO > is_ok
   rm -f is_ok
 fi
+exit $status

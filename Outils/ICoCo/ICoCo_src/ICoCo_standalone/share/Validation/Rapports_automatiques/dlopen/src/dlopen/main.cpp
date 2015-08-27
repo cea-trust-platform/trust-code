@@ -41,7 +41,9 @@ int main(int argc, char** argv) {
     throw 0;
   }
  // getProblem=(Problem* (*)(void*))dlsym(handle_Trio, "getProblem");
-  *(void **)(&getProblem_Trio)=dlsym(handle_Trio, "getProblem");
+ typedef void * __attribute__ ((__may_alias__)) pvoid_may_alias_t;
+
+  *(pvoid_may_alias_t*)(&getProblem_Trio)=dlsym(handle_Trio, "getProblem");
   if (!getProblem_Trio) {
     cout << dlerror() << endl;
     throw 0;
@@ -79,7 +81,7 @@ int main(int argc, char** argv) {
       if (1)
       {
 	TrioField f;
-	T->getOutputField("vitesse_sortie",f);
+	T->getOutputField("vitesse_elem_dom_boundaries_Sortie",f);
        	cout <<  f.getName()<<" Output value " << *f._field << endl;
 	for (int nb_val=0;nb_val<f._nb_elems;nb_val++)
 	  for (int comp=0;comp<f._nb_field_components;comp++)
@@ -90,7 +92,7 @@ int main(int argc, char** argv) {
       if (1)
       {
 	TrioField f;
-	T->getOutputField("vitesse_elem_sortie",f);
+	T->getOutputField("vitesse_elem_dom_boundaries_Sortie",f);
        	cout <<  f.getName()<<" Output value " << *f._field << endl;
 	for (int nb_val=0;nb_val<f._nb_elems;nb_val++)
 	  for (int comp=0;comp<f._nb_field_components;comp++)
@@ -99,7 +101,7 @@ int main(int argc, char** argv) {
       if (1)
       {
 	TrioField f;
-	T->getOutputField("viscosite_dynamique_elem_sortie",f);
+	T->getOutputField("viscosite_dynamique_elem_dom_boundaries_Sortie",f);
        	cout << f.getName()<<" Output value " << *f._field << endl;
 	for (int nb_val=0;nb_val<f._nb_elems;nb_val++)
 	  for (int comp=0;comp<f._nb_field_components;comp++)

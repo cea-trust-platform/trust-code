@@ -68,7 +68,7 @@ for phase in prepare configure make make_check make_install
   fi
   
   #ssh -n ${machine_cible} "cd ${path_to_run};$detar chmod +x $phase.sh;${path_to_run}/englobe.sh ./$phase.sh $* 2>&1  " > ${log_phase}
-  ssh -o "StrictHostKeyChecking no" -n ${machine_cible} "cd ${path_to_run};$detar chmod +x $phase.sh; sh $phase.sh $* 2>&1  " > ${log_phase}
+  ssh -o "StrictHostKeyChecking no" -n ${machine_cible} "cd ${path_to_run};$detar chmod +x $phase.sh; ./$phase.sh $* 2>&1  " > ${log_phase}
   status=$?
   echo Info date_fin_$phase `date` >>${log_time}
   [ $status -ne 0 ] && echo Info $phase KO on $machine_cible  && tail  ${log_phase} && echo Info_global $phase KO >>  ${log_phase} && echo "Info_global date_fin `date`" >> ${log_time} && exit 4

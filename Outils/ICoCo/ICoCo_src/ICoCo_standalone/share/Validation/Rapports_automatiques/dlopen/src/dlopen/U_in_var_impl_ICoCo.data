@@ -73,12 +73,7 @@ Associer pb sch
 Associer pb eau
 Discretiser pb dis
 # Debog pb seq faces 1.e-6 0 #
-domaine sortie
-extraire_surface {
-	domaine sortie
-	probleme pb
-	avec_certains_bords 1 Sortie
-	}
+
 Lire pb
 {
 	Navier_Stokes_standard
@@ -123,7 +118,7 @@ fichier post
 		{
 			vitesse_sortie champ_post_interpolation {
 			 localisation elem
-			domaine sortie
+			domaine dom_boundaries_Sortie
 			source champ_post_refchamp
 	                  {
         	            pb_champ  pb vitesse
@@ -131,10 +126,10 @@ fichier post
 	 	
 			}
 		}
-		domaine sortie
+		domaine dom_boundaries_Sortie
 		}
 
-	toto { 	domaine sortie
+	toto { 	domaine dom_boundaries_Sortie
 		format lata
 		champs dt_post 1e6 { vitesse  elem  
 					viscosite_dynamique elem }		
@@ -142,6 +137,3 @@ fichier post
 }	
 }
 Fin
-		domaine sortie
-		champs dt_post 1e6 { vitesse_sortie   }		
-		champs dt_post 1e6 { vitesse_sortie0   }		

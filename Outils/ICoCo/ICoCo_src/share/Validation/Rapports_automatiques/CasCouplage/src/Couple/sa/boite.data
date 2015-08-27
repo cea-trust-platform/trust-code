@@ -37,14 +37,7 @@ Associer pb boite
 Associer pb Eau
 Associer pb_ch sch
 Discretiser pb_ch dis
-domaine out
-Extraire_surface
-{
-	probleme pb
-	domaine out
-	avec_certains_bords 1 perio
-	
-}	
+
 Lire pb
 {
  Navier_Stokes_Turbulent
@@ -83,7 +76,7 @@ Postraitements
             }
         }
 	titi { 
-	  domaine out
+	  domaine boite_boundaries_perio
 	format lata
 	champs dt_post 1e-7
 		{

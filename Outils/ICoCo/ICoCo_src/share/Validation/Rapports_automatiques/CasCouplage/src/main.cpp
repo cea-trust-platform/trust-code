@@ -195,11 +195,11 @@ int main(int argc,char **argv) {
 	 
 #ifdef MM
 	  cout <<" medcouplindfielddouble"<<endl;
-	  field_vitesse=T->getOutputMEDField("VITESSE_ELEM_out");
+	  field_vitesse=T->getOutputMEDField("VITESSE_ELEM_boite_boundaries_perio");
 	  //dec.attachLocalField(parafield);
 	  dec.attachLocalField(field_vitesse);
 #else 
-	  T->getOutputField("VITESSE_ELEM_out",vitesse);
+	  T->getOutputField("VITESSE_ELEM_boite_boundaries_perio",vitesse);
 	  dec.attachLocalField( &vitesse);
 #endif	  
 	  // Compute intersections if necessary 
