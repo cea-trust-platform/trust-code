@@ -1,0 +1,10 @@
+
+mkdir new
+cd new
+tar zxf ../$1
+cd ../
+mkdir old
+cd old
+tar zxf $TRUST_ROOT/externalpackages/$1
+cd ..
+#kdiff3 new old

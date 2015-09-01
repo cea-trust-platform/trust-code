@@ -1,0 +1,57 @@
+dir,paquet,"Outil librairie",Qui,License,"site du produit ","lien pour telecharger",remarque
+General,cmake-3.0.1.tar.gz,outil,GF,BSD,http://www.cmake.org/,http://www.cmake.org/files/v3.0/cmake-3.0.1.tar.gz,
+General,make-4.0.tar.gz,outil,GF,GPL,http://www.gnu.org/software/make,http://ftp.gnu.org/gnu/make/make-4.0.tar.gz,
+General,xdata-0.9.10.tar.gz,outil,GF,LGPL,http://files.salome-platform.org,http://files.salome-platform.org/cea/adam/xdata/download/0.9.10/xdata-0.9.10.tar.gz,
+General,ccache-3.1.4.tar.gz,outil,GF,GPL,http://ccache.samba.org,https://ftp.samba.org/pub/ccache/ccache-3.1.4.tar.gz,
+General,cppunit-1.12.1.tar.gz,outil,GF,GPL,https://sourceforge.net/projects/cppunit,http://sourceforge.net/projects/cppunit/files/cppunit/1.12.1/cppunit-1.12.1.tar.gz/download,
+General,valgrind-3.10.1.tar.bz2,outil,GF,GPL,http://valgrind.org/info/,http://valgrind.org/downloads/valgrind-3.10.1.tar.bz2,
+General,astyle_2.02.1_linux.tar.gz,outil,GF,LGPL,http://astyle.sourceforge.net/,http://pkgs.fedoraproject.org/lookaside/pkgs/astyle/astyle_2.02.1_linux.tar.gz/3e3ef8024c175ef4e1720b7aa4c75202/astyle_2.02.1_linux.tar.gz,
+General,doxygen-1.7.4.linux.bin.tar.gz,outil,GF,GPL,https://sourceforge.net/projects/doxygen/,http://sourceforge.net/projects/doxygen/files/rel-1.7.4/doxygen-1.7.4.linux.bin.tar.gz/download,
+General,Python-2.7.6.tgz,,GF,GPL,https://www.python.org/,https://www.python.org/ftp/python/2.7.6/Python-2.7.6.tgz,
+General,hwloc-1.9.tar.gz,,GF,BSD,http://www.open-mpi.org/projects/hwloc/,https://www.open-mpi.org/software/hwloc/v1.9/downloads/hwloc-1.9.tar.gz,
+General,makedepend-1.0.5.tar.bz2,,GF,"BSD like",https://github.com/ioerror/makedepend/,ftp://ftp.x.org/pub/individual/util/makedepend-1.0.5.tar.bz2,
+General,metis-5.0.3.tar.gz,,GF,Apache,http://glaros.dtc.umn.edu/gkhome/metis/metis/overview,http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/metis-5.0.3.tar.gz,
+MPI,mvapich2-2.1.tgz,,GF,BSD,http://mvapich.cse.ohio-state.edu/,http://mvapich.cse.ohio-state.edu/download/mvapich/mv2/mvapich2-2.1.tar.gz,"archive introuvable, update !!"
+MPI,openmpi-1.6.4.tar.gz,,GF,BSD,https://www.open-mpi.org/,https://www.open-mpi.org/software/ompi/v1.6/downloads/openmpi-1.6.4.tar.gz,
+MPI,mpich-3.0.4.tar.gz,,SV,"BSD-like license",https://www.mpich.org/,http://www.mpich.org/static/downloads/3.0.4/mpich-3.0.4.tar.gz,"pour la licence, verifiez. j'ai tiré l'info de http://lists.mpich.org/pipermail/discuss/2014-October/003306.html"
+MPI,osu-micro-benchmarks-3.8.tar,,SV,BSD,https://www.nersc.gov/,https://www.nersc.gov/assets/Trinity--NERSC-8-RFP/Benchmarks/July12/osu-micro-benchmarks-3.8-July12.tar,"Note : pour le site je ne sais si celui ci est mieux ou pas : https://www.nersc.gov/users/computational-systems/cori/nersc-8-procurement/trinity-nersc-8-rfp/nersc-8-trinity-benchmarks/omb-mpi-tests et pour la licence j'ai regardé sur http://mvapich.cse.ohio-state.edu/benchmarks/ "
+SKIT,SPARSKIT2.tar.gz,,SV,"LGPL ",http://www-users.cs.umn.edu/~saad/software/SPARSKIT/,http://www-users.cs.umn.edu/~saad/software/SPARSKIT/SPARSKIT2.tar.gz,"Pour la license, voir : https://launchpad.net/ubuntu/vivid/+source/sparskit/+copyright"
+tcl_tk,tk8.5.13-src.tar.gz,outil,SV,"BSD style tcl/tk license",http://www.tcl.tk/,http://sourceforge.net/projects/tcl/files/Tcl/8.5.13/tk8.5.13-src.tar.gz/download,
+tcl_tk,tcl8.5.13-src.tar.gz,outil,SV,"BSD style tcl/tk license",http://www.tcl.tk/,http://sourceforge.net/projects/tcl/files/Tcl/8.5.13/tcl8.5.13-src.tar.gz/download,
+Gmsh,gmsh-2.6.1-source.tgz,outil,SV,GPL,http://geuz.org/gmsh,http://geuz.org/gmsh/src/gmsh-2.6.1-source.tgz,
+Gmsh,fltk-1.3.2-source.tar.gz,,SV,LGPL,http://www.fltk.org/index.php,http://fltk.org/pub/fltk/1.3.2/fltk-1.3.2-source.tar.gz,
+MED,med-3.0.7.tar.gz,lib,GF,LGPL,http://files.salome-platform.org,http://files.salome-platform.org/Salome/other/med-3.0.7.tar.gz,
+MED,hdf5-1.8.13.tar.gz,lib,SV,BSD,http://www.hdfgroup.org/HDF5/,http://www.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8.13/src/hdf5-1.8.13.tar.gz,"corrigé GF"
+VisIt,zlib-1.2.7.tar.gz,,SV,"free zlib/libpng license",http://www.zlib.net/,http://sourceforge.net/projects/libpng/files/zlib/1.2.7/zlib-1.2.7.tar.gz/download,"pour la licence voir : http://opensource.org/licenses/Zlib pour plus d'infos ou http://www.zlib.net/zlib_license.html"
+VisIt,VTK-6.1.0.tar.gz,,SV,BSD,http://www.vtk.org/,http://www.vtk.org/files/release/6.1/VTK-6.1.0.tar.gz,
+VisIt,pyparsing-1.5.2.tar.gz,,SV,"MIT License",https://pypi.python.org/pypi/pyparsing,https://pypi.python.org/packages/source/p/pyparsing/pyparsing-1.5.2.tar.gz#md5=13aed3cb21a427f8aeb0fe7ca472ba42,
+VisIt,MesaLib-7.10.2.tar.gz,,SV,"MIT license",http://www.mesa3d.org/,ftp://ftp.freedesktop.org/pub/mesa/older-versions/7.x/7.10.2/MesaLib-7.10.2.tar.gz,"pour la licence voir : http://www.mesa3d.org/license.html"
+VisIt,IceT-1-0-0.tar.gz,,SV,BSD,http://icet.sandia.gov/index.html,http://icet.sandia.gov/downloads/IceT-1-0-0.tar.gz,
+VisIt,visit2.9.1.tar.gz,outil,SV,BSD,https://wci.llnl.gov/simulation/computer-codes/visit/,http://portal.nersc.gov/svn/visit/trunk/releases/2.9.1/visit2.9.1.tar.gz,
+VisIt,cmake-3.0.2.tar.gz,,GF,BSD,http://www.cmake.org/,http://www.cmake.org/files/v3.0/cmake-3.0.2.tar.gz,
+VisIt,qt-everywhere-opensource-src-4.8.3.tar.gz,,," GPL Version 3  LGPL 2.1",http://www.qt.io/,https://download.qt.io/archive/qt/4.8/4.8.3/qt-everywhere-opensource-src-4.8.3.tar.gz,"C'est quoi la page qu'on veut ? qt.io? qt ?"
+VisIt,Imaging-1.1.6.tar.gz,,SV,"voir remarque",http://www.pythonware.com/products/pil/,http://effbot.org/downloads/Imaging-1.1.6.tar.gz,"pour la licence voir http://www.pythonware.com/products/pil/license.htm (je ne sais pas de quel type de licence il s'agit)"
+VisIt,requests-2.5.1.tar.gz,,GF,"?","?",http://portal.nersc.gov/svn/visit/tags/2.9.1/third_party/requests-2.5.1.tar.gz,
+VisIt,seedme-seedme-python-client-0a365da9c861.tar.gz,,GF,"?","?",http://portal.nersc.gov/svn/visit/tags/2.9.1/third_party/seedme-seedme-python-client-0a365da9c861.tar.gz,
+lapack,lapack-3.4.1.tgz,,SV,BSD,http://www.netlib.org/lapack/,http://www.netlib.org/lapack/lapack-3.4.1.tgz,
+petsc,SuiteSparse-4.2.1.tar.gz,,,"voir remarque",http://faculty.cse.tamu.edu/davis/suitesparse.html,http://ftp.mcs.anl.gov/pub/petsc/externalpackages/SuiteSparse-4.2.1.tar.gz,"je ne sais pas quel est le type de licence, on peut voir http://www.netlib.org/linalg/SuiteSparse-README.txt"
+petsc,ViennaCL-1.5.1.tar.gz,,,"MIT License",http://viennacl.sourceforge.net/,http://downloads.sourceforge.net/project/viennacl/1.5.x/ViennaCL-1.5.1.tar.gz,"Hum option utilisée ????"
+petsc,scotch_6.0.3.tar.gz,,SV," CeCILL-C license",http://scotch.gforge.inria.fr/,https://gforge.inria.fr/frs/download.php/file/34099/scotch_6.0.3.tar.gz,
+petsc,bison-2.7.tar.gz,,SV,"GNU GPL",https://www.gnu.org/software/bison/,http://ftp.gnu.org/gnu/bison/bison-2.7.tar.gz,
+petsc,flex-2.5.37.tar.gz,,SV,"BSD Unix",http://flex.sourceforge.net/,https://sourceforge.net/projects/flex/files/flex-2.5.37.tar.gz/download,"d'après https://sourceforge.net/projects/flex/files/ flex is distributed under a copyright very similar to that of BSD Unix, and not under the GNU General Public License (GPL)"
+petsc,parmetis-4.0.2-p5.tar.gz,,SV+GF,"Freely distributed as described in the FAQ section of the site http://glaros.dtc.umn.edu/gkhome/metis/parmetis/download",http://glaros.dtc.umn.edu/gkhome/metis/parmetis/overview,http://ftp.mcs.anl.gov/pub/petsc/externalpackages/parmetis-4.0.2-p5.tar.gz,"pour la licence (je ne sais pas ce que c'est) voir http://glaros.dtc.umn.edu/gkhome/metis/parmetis/download"
+petsc,superlu_dist_3.3.tar.gz,,GF,BSD,http://www.cs.berkeley.edu/~demmel/SuperLU.html,http://crd-legacy.lbl.gov/~xiaoye/SuperLU/superlu_dist_3.3.tar.gz,
+petsc,hypre-2.9.1a.tar.gz,,GF,LGPL,http://acts.nersc.gov/hypre/,http://ftp.mcs.anl.gov/pub/petsc/externalpackages/hypre-2.9.1a.tar.gz,
+petsc,cusplibrary-0.4.0.tgz,,SV,"Apache License",http://cusplibrary.github.io/,https://github.com/cusplibrary/cusplibrary/archive/v0.4.0.tar.gz,
+petsc,petsc-3.5.3.tar.gz,,"GF SV",BSD,http://www.mcs.anl.gov/research/projects/petsc/index.html,http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-3.5.3.tar.gz,
+petsc,MUMPS_4.10.0-p3.tar.gz,,GF,CeCILL-C,http://mumps.enseeiht.fr/index.php?page=home,http://ftp.mcs.anl.gov/pub/petsc/externalpackages/MUMPS_4.10.0-p3.tar.gz,
+petsc,m4-1.4.17.tar.gz,,SV,"GNU GPL",https://www.gnu.org/software/m4/,http://ftp.gnu.org/gnu/m4/m4-1.4.17.tar.gz,
+petsc,scalapack-2.0.2.tgz,,GF,"BSD modified",http://www.netlib.org/scalapack/,http://www.netlib.org/scalapack/scalapack-2.0.2.tgz,
+petsc,metis-5.0.2-p3.tar.gz,,GF,"Freely distributed as described in the FAQ section of the site http://glaros.dtc.umn.edu/gkhome/metis/metis/faq",http://glaros.dtc.umn.edu/gkhome/metis/metis/overview,http://ftp.mcs.anl.gov/pub/petsc/externalpackages/metis-5.0.2-p3.tar.gz,
+petsc,pastix_5.2.2.12.tar.bz2,,GF,"CeCILL-C license",http://pastix.gforge.inria.fr/files/README-txt.html,https://gforge.inria.fr/frs/download.php/file/33841/pastix_5.2.2.12.tar.bz2,
+gnuplot,zlib-1.2.5.tar.gz,,GF,"free zlib/libpng license",http://www.zlib.net/,http://sourceforge.net/projects/libpng/files/zlib/1.2.5/zlib-1.2.5.tar.gz/download,
+gnuplot,gnuplot-4.4.2.tar.gz,outil,AC,specifique,http://gnuplot.sourceforge.net/,http://sourceforge.net/projects/gnuplot/files/gnuplot/4.4.2/gnuplot-4.4.2.tar.gz/download,
+gnuplot,gd-2.0.36RC1.tar.gz,,GF,BSD,http://www.libgd.org/,https://lamefox-linux.googlecode.com/files/gd-2.0.36RC1.tar.gz,"version non trouvable: changer de version"
+gnuplot,libpng-1.5.6.tar.gz,lib,AC,"free zlib/libpng license",http://www.libpng.org/pub/png/,http://sourceforge.net/projects/libpng/files/libpng15/older-releases/1.5.6/libpng-1.5.6.tar.gz/download,
+General,MEDCoupling_Standalone_715.tgz,,GF,LGPL,http://files.salome-platform.org,http://downloads.sourceforge.net/project/trust-platform/extra/MEDCoupling_Standalone_715.tgz,
+General,nvc_get_devices.tgz,,GF,LGPL,http://files.salome-platform.org,http://downloads.sourceforge.net/project/trust-platform/extra/nvc_get_devices.tgz,
