@@ -50,6 +50,7 @@ int main(int argc, char** argv) {
   
 
   Problem *T=(*getProblem_Trio)();
+  dlclose(handle_Trio);
 #else
   cout <<" no dlopen "<<endl;
    Problem *T=getProblem();

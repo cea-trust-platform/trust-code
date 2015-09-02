@@ -1,4 +1,13 @@
 {
+   leak_dlopen
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   fun:main
+}
+{
    gcc_511
    Memcheck:Leak
    match-leak-kinds: reachable

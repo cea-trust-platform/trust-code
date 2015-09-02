@@ -204,8 +204,8 @@ void main2 (int argc,char **argv) {
       cas="recepteur";
       if (is_master)
 	{
-	  freopen("recepteur.out","w",stdout);
-	  freopen("recepteur.err","w",stderr);
+	  if (!freopen("recepteur.out","w",stdout)) abort();
+	  if (!freopen("recepteur.err","w",stderr)) abort();
 	}
       
     }
@@ -214,8 +214,8 @@ void main2 (int argc,char **argv) {
       cas="emetteur";
       if (is_master)
 	{
-	  freopen("emetteur.out","w",stdout);
-	  freopen("emetteur.err","w",stderr);
+	  if (!freopen("emetteur.out","w",stdout)) abort();
+	  if (!freopen("emetteur.err","w",stderr)) abort();
 	}
     }
 
