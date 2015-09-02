@@ -1,0 +1,21 @@
+#gunzip -f interass.geom.gz
+#./configure
+if [ "`basename $PWD | grep vef_ef`" = ""  ] 
+then
+echo on ne fait que 3 pas de temps
+sed "s/tinit/# que 3 pas pour la NR # nb_pas_dt_max 3 tinit/" EF.data > mod.data
+mv mod.data EF.data
+fi
+make check
+status=$?
+exit $status
+# GF cela ne va pas...
+if [ $status -eq 0 ]
+then
+cp EF.data  bidon.data
+echo resoudre pb >> bidon.data
+$exec bidon 1>bidon.out 2>bidon.err
+cp bidon.TU ref.TU
+else
+rm -f ref.TU
+fi

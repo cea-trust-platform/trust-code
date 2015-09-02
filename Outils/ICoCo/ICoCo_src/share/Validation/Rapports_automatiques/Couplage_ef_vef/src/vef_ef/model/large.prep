@@ -1,0 +1,38 @@
+TAILLES 3 167 203 4 
+RIEN 0 maillage
+MAIL_X_REG 4 xomin xomax nx-2 2 dx
+MAIL_Y_REG 4 yomin yomax ny-2 2 dy
+MAIL_Z_REG 4 zomin zomax nz-2 2 dz
+RIEN 0 remplissage du domaine
+PARALAX 7 xomin xomax yomin yomax zomin zomax 1000 on met tout a 1
+PARALAX 7 R0 R1 yomin yomax zomin zomax 1000 on modife la gauche
+PARALAX 7 R1 R2 h yomax zomin zomax 0 coude
+PARALAX 7 xomin-eps R0 yomin yomax zomin zomax -1000 gauche
+PARALAX 7 xomin (R1+R2)/2. yomax yomax+eps zomin zomax -2000 out
+PARALAX 7 xomin xomax yomin yomax zomin-eps zomin -8000 symetrie
+PARALAX 7 (R1+R2)/2. xomax yomax yomax+eps zomin zomax -3000 in
+PARALAX 7 xomin xomax yomin yomax zomax zomax+eps -8000 
+file maillage
+	real xomin,xomax,yomin,yomax,zomin,zomax,eps,r1,r2,h
+	real r0
+	xomin=0
+	xomax=1640	
+	yomin=0	
+	yomax=2000	
+	zomin=-500	
+	zomax=500
+	eps=100
+	r0=xomin
+	R1=540
+	R2=1560
+	R1=R2-(xomax-R2)/4.
+	R0=40
+	h=260
+        XM(1)=xomin-eps
+        XM(nx)=xomax+eps
+        YM(1)=yomin-eps
+        YM(ny)=yomax+eps
+        ZM(1)=zomin-eps
+        ZM(nz)=zomax+eps
+
+

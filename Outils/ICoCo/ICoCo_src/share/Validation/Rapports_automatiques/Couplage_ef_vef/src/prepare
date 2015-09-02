@@ -1,0 +1,9 @@
+cd vef_ef
+gunzip -f  model/grossier/*gz
+./configure
+cd ..
+cp -r vef_ef vef_ef_bis
+cd vef_ef_bis
+gunzip -c ../Pb1.geom.gz >  model/grossier/Pb1.geom
+./configure
+

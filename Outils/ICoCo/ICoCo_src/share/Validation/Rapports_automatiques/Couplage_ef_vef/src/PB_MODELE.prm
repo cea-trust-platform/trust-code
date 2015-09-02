@@ -1,0 +1,116 @@
+parametres {
+	titre "Test du couplage"
+	auteur "fauchet "
+	description "entree VEF / puis EF"
+	casTest vef_ef ref
+	casTest vef_ef_bis ref
+}
+
+Chapitre {
+	
+	Visu {
+
+	mesh vef_ef/EF.lata dom_EF
+	mesh vef_ef/entree_vef.lata dom
+	zoom3d -0.002284843940287828 0.002109704539179802 0.9
+	operator_to_all no_axes
+	operator_to_all no_bounding_box
+}
+}
+Chapitre {
+	Titre visus  avant retroaction de la pression 
+	visu {
+normal3d -0.654768 0.0258403 0.755388
+         up3d -0.260335 0.930551 -0.25749
+	pseudocolor vef_ef/EF_BORD.lata dom_EF_boundaries_r_1000_2000 PRESSION_PA ELEM
+	vector vef_ef/EF_BORD.lata dom_EF_boundaries_r_1000_2000 VITESSE SOM
+	mesh vef_ef/EF_BORD.lata dom_EF_boundaries_r_1000_2000
+	cycles 2
+nb_img_without_newline 2
+	width 7.9cm
+	}	
+	visu {
+normal3d -0.654768 0.0258403 0.755388
+         up3d -0.260335 0.930551 -0.25749
+	pseudocolor vef_ef/entree_vef_BORD.lata dom_boundaries_r_1000_2000 PRESSION_PA ELEM
+	vector vef_ef/entree_vef_BORD.lata dom_boundaries_r_1000_2000 VITESSE SOM
+        mesh vef_ef/entree_vef_BORD.lata dom_boundaries_r_1000_2000 
+	cycles 2
+	width 7.9cm
+	}	
+} 
+Chapitre {
+	Titre visus  apres retroaction de la pression 
+	visu {
+normal3d -0.654768 0.0258403 0.755388
+         up3d -0.260335 0.930551 -0.25749
+	pseudocolor vef_ef/EF_BORD.lata dom_EF_boundaries_r_1000_2000 PRESSION_PA ELEM
+	vector vef_ef/EF_BORD.lata dom_EF_boundaries_r_1000_2000 VITESSE SOM
+	mesh vef_ef/EF_BORD.lata dom_EF_boundaries_r_1000_2000
+nb_img_without_newline 2
+	width 7.9cm
+	}	
+	visu {
+normal3d -0.654768 0.0258403 0.755388
+         up3d -0.260335 0.930551 -0.25749
+	pseudocolor vef_ef/entree_vef_BORD.lata dom_boundaries_r_1000_2000 PRESSION_PA ELEM
+	vector vef_ef/entree_vef_BORD.lata dom_boundaries_r_1000_2000 VITESSE SOM
+        mesh vef_ef/entree_vef_BORD.lata dom_boundaries_r_1000_2000 
+	width 7.9cm
+	}	
+}
+
+
+Chapitre {
+	Description "La meme chose avec un autre maillage vef"
+	Visu {
+
+	mesh vef_ef_bis/EF.lata dom_EF
+	mesh vef_ef_bis/entree_vef.lata dom
+	zoom3d -0.002284843940287828 0.002109704539179802 0.9
+	operator_to_all no_axes
+	operator_to_all no_bounding_box
+}
+}
+Chapitre {
+	Titre visus  avant retroaction de la pression 
+	visu {
+normal3d -0.654768 0.0258403 0.755388
+         up3d -0.260335 0.930551 -0.25749
+	pseudocolor vef_ef_bis/EF_BORD.lata dom_EF_boundaries_r_1000_2000 PRESSION_PA ELEM
+	vector vef_ef_bis/EF_BORD.lata dom_EF_boundaries_r_1000_2000 VITESSE SOM
+	mesh vef_ef_bis/EF_BORD.lata dom_EF_boundaries_r_1000_2000
+	cycles 2
+nb_img_without_newline 2
+	width 7.9cm
+	}	
+	visu {
+normal3d -0.654768 0.0258403 0.755388
+         up3d -0.260335 0.930551 -0.25749
+	pseudocolor vef_ef_bis/entree_vef_BORD.lata dom_boundaries_r_1000_2000 PRESSION_PA ELEM
+	vector vef_ef_bis/entree_vef_BORD.lata dom_boundaries_r_1000_2000 VITESSE SOM
+        mesh vef_ef_bis/entree_vef_BORD.lata dom_boundaries_r_1000_2000 
+	cycles 2
+	width 7.9cm
+	}	
+} 
+Chapitre {
+	Titre visus  apres retroaction de la pression 
+	visu {
+normal3d -0.654768 0.0258403 0.755388
+         up3d -0.260335 0.930551 -0.25749
+	pseudocolor vef_ef_bis/EF_BORD.lata dom_EF_boundaries_r_1000_2000 PRESSION_PA ELEM
+	vector vef_ef_bis/EF_BORD.lata dom_EF_boundaries_r_1000_2000 VITESSE SOM
+	mesh vef_ef_bis/EF_BORD.lata dom_EF_boundaries_r_1000_2000
+nb_img_without_newline 2
+	width 7.9cm
+	}	
+	visu {
+normal3d -0.654768 0.0258403 0.755388
+         up3d -0.260335 0.930551 -0.25749
+	pseudocolor vef_ef_bis/entree_vef_BORD.lata dom_boundaries_r_1000_2000 PRESSION_PA ELEM
+	vector vef_ef_bis/entree_vef_BORD.lata dom_boundaries_r_1000_2000 VITESSE SOM
+        mesh vef_ef_bis/entree_vef_BORD.lata dom_boundaries_r_1000_2000 
+	width 7.9cm
+	}	
+} 

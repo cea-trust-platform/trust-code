@@ -1,0 +1,117 @@
+# Hydraulique 2D turbulent K-Eps #
+# PARALLEL OK 8 #
+dimension 3
+Pb_Hydraulique pb
+Domaine dom_EF
+# DEBUT MAILLAGE #
+Lire_fichier dom_EF model/grossier/Pb2.geom
+dilate dom_EF 1e-3
+transformer dom_EF x y z/50.
+# FIN MAILLAGE #
+# DEBUT DECOUPAGE
+Decouper dom_EF
+{
+	Partitionneur tranche { tranches 2 1 }
+	Larg_joint 1
+	Nom_Zones DOM_EF
+}
+Fin
+FIN DECOUPAGE #
+
+# DEBUT LECTURE
+Scatter DOM_EF.Zones dom_EF
+FIN LECTURE #
+
+EF dis
+schema_Euler_implicite sch
+Lire sch
+{
+	tinit 0
+	tmax 1 
+dt_start dt_calc	
+	dt_impr 0.1
+	dt_sauv 1000.
+	seuil_statio 1.e-8
+facsec 1
+	solveur implicite { solveur gmres { diag seuil 1e-18 impr nb_it_max 3 } }
+}
+Fluide_Incompressible fluide
+Lire fluide
+{
+	mu Champ_Uniforme 1 1e-3
+	rho Champ_Uniforme 1 781
+}
+Associer pb dom_EF
+Associer pb sch
+Associer pb fluide
+Discretiser pb dis
+
+Lire pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression gcp  { seuil 1e-6 impr precond ssor { omega 1.5 }  }
+solveur_pression petsc cholesky { }
+		convection {    generic   Amont  # negligeable # }
+                diffusion { option { grad_u_transpose_partout 1 }   }
+# convection {  amont } diffusion { } #
+
+		conditions_initiales {
+			vitesse Champ_Uniforme 3 -2.5  0. 0.
+			}
+		conditions_limites {
+			 
+			symetrie symetrie
+			coude_defaut symetrie
+			r_1000_2000 frontiere_ouverte_vitesse_imposee ch_front_input_P1 { nb_comp 3 nom vitesse_in probleme pb  initial_value 3 -2.5  0. 0.  }
+			 gauche symetrie out frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+		}	
+	}
+Postraitement 
+{
+	Definition_champs {
+		pression_som Champ_post_interpolation {
+                         localisation SOM
+                        source champ_post_refchamp
+                          {
+                            pb_champ  pb pression_pa
+                          }
+
+                        }
+	# on prend une pression aux sommets pour calculer correctement l'interpolation #
+
+			pression_lisse Champ_post_interpolation {
+			 localisation SOM
+                        domaine dom_EF_boundaries_r_1000_2000
+			source_reference pression_som
+			}
+
+	}
+	Sondes 
+	{
+		sonde_vitesse grav vitesse periode 1 segment 300 1.56 0. 0. 1.56 0.27  0.
+		}
+	format lata
+	Champs dt_post 0.1
+	{
+			pression_pa elem
+			pression_pa som
+			vitesse elem
+			vitesse som
+			pression_som
+		
+}  	
+}
+postraitements { 
+	 bord {
+	 format lata
+	 domaine dom_EF_boundaries_r_1000_2000 
+	 champs dt_post 0.05
+	 { 
+	pression_pa elem
+	vitesse som
+	 }
+	 }
+	 }
+}
+
