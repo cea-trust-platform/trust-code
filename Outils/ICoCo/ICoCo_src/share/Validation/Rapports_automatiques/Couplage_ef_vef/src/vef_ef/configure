@@ -1,0 +1,5 @@
+#!/bin/sh
+[ "$project_directory" = "" ] && echo project_directory not set && exit 1
+
+sh $project_directory/share/bin/create_Makefile 
+
