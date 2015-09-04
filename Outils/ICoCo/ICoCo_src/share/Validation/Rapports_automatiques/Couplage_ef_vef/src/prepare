@@ -1,4 +1,14 @@
 cd vef_ef
+cp sa/* .
+if [ "$TRUST_DISABLE_PETSC" = "1" ]
+then
+   echo "Disabling petsc in EF.data"
+   grep -v petsc EF.data > p.data
+   mv p.data EF.data
+   echo "Disabling petsc in entree_vef.data"
+   grep -v petsc entree_vef.data > p.data
+   mv p.data entree_vef.data
+fi
 gunzip -f  model/grossier/*gz
 ./configure
 cd ..
