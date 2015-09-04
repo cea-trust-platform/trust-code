@@ -249,7 +249,7 @@ void convert_to(const char *s, double& ob)
 //  Si une erreur se produit, on appelle error_handle_()
 //  Note pour les programmeurs des classes derivees:
 //  L'implementation de cette methode doit toujours passer par hande_error()
-Entree& Entree::operator>>(int & ob)
+Entree& Entree::operator>>(int& ob)
 {
   assert(istream_!=0);
   if (bin_)
@@ -312,7 +312,7 @@ int Entree::get(int * ob, int n)
 //  Si une erreur se produit, on appelle error_handle_()
 //  Note pour les programmeurs des classes derivees:
 //  L'implementation de cette methode doit toujours passer par hande_error()
-Entree& Entree::operator>>(long & ob)
+Entree& Entree::operator>>(long& ob)
 {
   assert(istream_!=0);
   if (bin_)
@@ -375,7 +375,7 @@ int Entree::get(long * ob, int n)
 //  Si une erreur se produit, on appelle error_handle_()
 //  Note pour les programmeurs des classes derivees:
 //  L'implementation de cette methode doit toujours passer par hande_error()
-Entree& Entree::operator>>(float & ob)
+Entree& Entree::operator>>(float& ob)
 {
   assert(istream_!=0);
   if (bin_)
@@ -438,7 +438,7 @@ int Entree::get(float * ob, int n)
 //  Si une erreur se produit, on appelle error_handle_()
 //  Note pour les programmeurs des classes derivees:
 //  L'implementation de cette methode doit toujours passer par hande_error()
-Entree& Entree::operator>>(double & ob)
+Entree& Entree::operator>>(double& ob)
 {
   assert(istream_!=0);
   if (bin_)

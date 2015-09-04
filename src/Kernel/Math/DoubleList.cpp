@@ -26,57 +26,60 @@
 #include <DoubleList.h>
 #include <Nom.h>
 
-// Description: 
+// Description:
 //     Ecriture d'une liste sur un flot de sortie
 //     les elements separes par des virgules figurent entre des accolades
-// Precondition: 
+// Precondition:
 // Parametre: Sortie& os
 //    Signification: le flot de sortie a utiliser
-//    Valeurs par defaut: 
-//    Contraintes: 
+//    Valeurs par defaut:
+//    Contraintes:
 //    Acces: entree/sortie
 // Retour: Sortie&
 //    Signification: le flot d'entree modifie
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
-Sortie& DoubleList::printOn(Sortie& os) const {
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+Sortie& DoubleList::printOn(Sortie& os) const
+{
   DoubleList_Curseur curseur(*this);
   Nom accouverte = "{";
   Nom accfermee = "}";
   Nom virgule = ",";
   os << accouverte << " " ;
-  while(curseur){
-    // if(est_dernier()) GF sinon on a une virgule de trop
-    if(curseur.list().est_dernier())
-      os << curseur.valeur() << " " ;
-    else
-      os << curseur.valeur() << " " << virgule << " " ;
-    ++curseur;
-  }
+  while(curseur)
+    {
+      // if(est_dernier()) GF sinon on a une virgule de trop
+      if(curseur.list().est_dernier())
+        os << curseur.valeur() << " " ;
+      else
+        os << curseur.valeur() << " " << virgule << " " ;
+      ++curseur;
+    }
   os << accfermee;
   return os;
 }
 
 
 
-// Description: 
+// Description:
 //     Lecture d'une liste sur un flot d'entree
 //     les elements separes par des virgules figurent entre des accolades
-// Precondition: 
+// Precondition:
 // Parametre: Entree& is
 //    Signification: le flot d'entree a utiliser
-//    Valeurs par defaut: 
-//    Contraintes: 
+//    Valeurs par defaut:
+//    Contraintes:
 //    Acces: entree/sortie
-// Retour: Entree& 
+// Retour: Entree&
 //    Signification: le flot d'entree modifie
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
-Entree& DoubleList::readOn(Entree& is)  {
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+Entree& DoubleList::readOn(Entree& is)
+{
   Nom accouverte = "{";
   Nom accfermee = "}";
   Nom virgule = ",";
@@ -84,97 +87,103 @@ Entree& DoubleList::readOn(Entree& is)  {
   double t;
   is >> nom;
   assert(nom==accouverte);
-  while(nom != accfermee){
-    is >> t;
-    add(t);
-    is >> nom;
-    assert((nom==accfermee)||(nom==virgule));
-  }
+  while(nom != accfermee)
+    {
+      is >> t;
+      add(t);
+      is >> nom;
+      assert((nom==accfermee)||(nom==virgule));
+    }
   return is ;
 }
 
-// Description: 
+// Description:
 //    Constructeur par copie
-// Precondition: 
+// Precondition:
 // Parametre: const DoubleList& list
 //    Signification: la liste a copier
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
-// Retour: 
-//    Signification: 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 DoubleList::DoubleList(const DoubleList& a_list) : DoubleListElem()
 {
-  if(a_list.est_vide() ){
-    suivant_=this;
-  }
-  else {
-    data=a_list.data;
-    min_data=a_list.min_data;
-    max_data=a_list.max_data;
-    dernier_=this;    
-    if(a_list.suivant_) {
-      DoubleListElem* next = new DoubleListElem(*a_list.suivant_); //Recursif !!
-      suivant_ = next;
+  if(a_list.est_vide() )
+    {
+      suivant_=this;
     }
-    else
-      suivant_ =0;
-  }
+  else
+    {
+      data=a_list.data;
+      min_data=a_list.min_data;
+      max_data=a_list.max_data;
+      dernier_=this;
+      if(a_list.suivant_)
+        {
+          DoubleListElem* next = new DoubleListElem(*a_list.suivant_); //Recursif !!
+          suivant_ = next;
+        }
+      else
+        suivant_ =0;
+    }
 }
 
-// Description: 
+// Description:
 //   Affectation
 //   Les elements sont copies
-// Precondition: 
+// Precondition:
 // Parametre: const DoubleList& list
 //    Signification: la liste a copier
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: DoubleList&
 //    Signification: *this
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 DoubleList& DoubleList::operator=(const DoubleList& a_list)
 {
-  if(a_list.est_vide()){
-    suivant_=this;
-  }
-  else {
-    vide();
-    DoubleList_Curseur curseur(a_list);   
-    while(curseur)
-      {
-        add(curseur.valeur());
-        ++curseur;
-      }
-  }
+  if(a_list.est_vide())
+    {
+      suivant_=this;
+    }
+  else
+    {
+      vide();
+      DoubleList_Curseur curseur(a_list);
+      while(curseur)
+        {
+          add(curseur.valeur());
+          ++curseur;
+        }
+    }
   return *this;
 }
 
-// Description: 
+// Description:
 //     Renvoie le dernier element de la liste
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: const DoubleList&
 //    Signification: le dernier element de la liste
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
-const DoubleListElem& DoubleList::dernier() const 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+const DoubleListElem& DoubleList::dernier() const
 {
-  return *dernier_; 
+  return *dernier_;
   /*  if (est_dernier()) return *this;
       DoubleList_Curseur curseur(*this);
       while(curseur)
@@ -183,20 +192,20 @@ const DoubleListElem& DoubleList::dernier() const
       return curseur.list(); */
 }
 
-// Description: 
+// Description:
 //     Renvoie le dernier element de la liste
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: DoubleList&
 //    Signification: le dernier element de la liste
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 DoubleListElem& DoubleList::dernier()
 {
   return *dernier_;
@@ -210,62 +219,66 @@ DoubleListElem& DoubleList::dernier()
   */
 }
 
-// Description: 
+// Description:
 //    insertion en queue
-// Precondition: 
+// Precondition:
 // Parametre: double double_to_add
 //    Signification: element a ajouter
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: DoubleList&
 //    Signification: *this
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 DoubleList& DoubleList::add(double double_to_add)
-{ 
+{
   if (double_to_add<min_data)
     min_data=double_to_add;
   if (double_to_add>max_data)
     max_data=double_to_add;
-  if( est_vide()) {
-    data=double_to_add;
-    suivant_=0;
-    return *this;
-  }
-  else{
-    if(est_dernier()){
-      DoubleListElem* next=new DoubleListElem(double_to_add);
-      suivant_ = next; 
-      dernier_ = next; 
+  if( est_vide())
+    {
+      data=double_to_add;
+      suivant_=0;
+      return *this;
     }
-    else 
-      {
-        dernier().add(double_to_add);
-        dernier_ = &dernier_->suivant(); 
-      }    
-    return *this;
-  }
+  else
+    {
+      if(est_dernier())
+        {
+          DoubleListElem* next=new DoubleListElem(double_to_add);
+          suivant_ = next;
+          dernier_ = next;
+        }
+      else
+        {
+          dernier().add(double_to_add);
+          dernier_ = &dernier_->suivant();
+        }
+      return *this;
+    }
 }
 
-// Description: 
+// Description:
 //     Renvoie la taille de la liste
 //     Une liste vide est de taille nulle
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: int
 //    Signification: nombre d'elements de la liste
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
-int DoubleList::size() const {
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+int DoubleList::size() const
+{
   if(est_vide())
     return 0;
   int i=0;
@@ -276,23 +289,23 @@ int DoubleList::size() const {
       ++curseur;
     }
   return i;
-}         
-      
-// Description: 
+}
+
+// Description:
 //     Ajout d'un element a la liste ssi il n'existe pas deja
-// Precondition: 
+// Precondition:
 // Parametre: double x
 //    Signification: l'element a ajouter
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: DoubleList&
 //    Signification: *this
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
-DoubleList& DoubleList::add_if_not(double x) 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+DoubleList& DoubleList::add_if_not(double x)
 {
   if (!contient(x))
     return add(x);
@@ -301,20 +314,20 @@ DoubleList& DoubleList::add_if_not(double x)
 }
 
 
-// Description: 
+// Description:
 //     Verifie si un element appartient ou non a la liste
-// Precondition: 
+// Precondition:
 // Parametre: double x
 //    Signification: L'element a rechercher
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: int
 //    Signification: 1 si la liste contient l'element, 0 sinon
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 int DoubleList::contient(double x) const
 {
   if(est_vide() || x>max_data || x<min_data)
@@ -330,27 +343,27 @@ int DoubleList::contient(double x) const
 }
 
 
-// Description: 
+// Description:
 //     renvoie le rang d'un element dans la liste
 //     si un element apparait plusieurs fois, renvoie le rang du premier.
-// Precondition: 
+// Precondition:
 // Parametre: int i
 //    Signification: L'element a rechercher
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: int
 //    Signification: le rang du premier element de la liste valant i,
 //     -1 si la liste ne contient pas i.
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 int DoubleList::rang(double x) const
 {
   if(est_vide() || x>max_data || x<min_data)
     return -1;
-  int compteur=0;    
+  int compteur=0;
   DoubleList_Curseur curseur(*this);
   while(curseur)
     {
@@ -362,21 +375,21 @@ int DoubleList::rang(double x) const
   return -1;
 }
 
-// Description: 
+// Description:
 //     Operateur d'acces au ieme int de la liste
-// Precondition: 
+// Precondition:
 // Parametre: int i
 //    Signification: l'indice de l'element a trouver
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: double&
 //    Signification: le ieme element de la liste
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
-double& DoubleList::operator[](int i) 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+double& DoubleList::operator[](int i)
 {
   DoubleList_Curseur curseur(*this);
   while(curseur && i--)
@@ -389,21 +402,21 @@ double& DoubleList::operator[](int i)
   return curseur.valeur();
 }
 
-// Description: 
+// Description:
 //     Operateur d'acces au ieme int de la liste
-// Precondition: 
+// Precondition:
 // Parametre: int i
 //    Signification: l'indice de l'element a trouver
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: const double&
 //    Signification: le ieme element de la liste
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
-const double& DoubleList::operator[](int i) const 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+const double& DoubleList::operator[](int i) const
 {
   DoubleList_Curseur curseur(*this);
   while(curseur && i--)
@@ -416,25 +429,25 @@ const double& DoubleList::operator[](int i) const
   return curseur.valeur();
 }
 
-// Description: 
+// Description:
 //     Operateur de comparaison de deux listes
-// Precondition: 
+// Precondition:
 // Parametre: const DoubleList& list1
 //    Signification: premiere liste a comparer
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Parametre: const DoubleList& list2
 //    Signification: seconde liste a comparer
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: int
 //    Signification: 1 si les listes sont egales, 0 sinon
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 int operator ==(const DoubleList& list1 , const DoubleList& list2)
 {
   int retour=1;
@@ -449,20 +462,20 @@ int operator ==(const DoubleList& list1 , const DoubleList& list2)
   return retour;
 }
 
-// Description: 
+// Description:
 //     Supprime un element contenu dans la liste
-// Precondition: 
+// Precondition:
 // Parametre: double obj
 //    Signification: l'element a supprimer de la liste
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
-// Retour: 
-//    Signification: 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 void DoubleList::suppr(double obj)
 {
   if(valeur()==obj)
@@ -475,24 +488,24 @@ void DoubleList::suppr(double obj)
           next->suivant_=0;
           delete next;
         }
-      else 
+      else
         {
           suivant_=this;
           dernier_=this;
         }
-      calcule_min_max();                  
+      calcule_min_max();
       return;
     }
   DoubleList_Curseur curseur_pre=*this;
   DoubleList_Curseur curseur=*suivant_;
   while(curseur)
     {
-      if(curseur.valeur()==obj) 
+      if(curseur.valeur()==obj)
         {
           DoubleListElem* next=&curseur_pre.list().suivant();
           curseur_pre.list().suivant_=curseur.list().suivant_;
           if (next->suivant_==0)
-            dernier_=&curseur_pre.list();          
+            dernier_=&curseur_pre.list();
           else
             next->suivant_=0;
           delete next;
@@ -522,24 +535,24 @@ void DoubleList::calcule_min_max()
     }
 }
 
-// Description: 
+// Description:
 //     Vide la liste
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
-// Retour: 
-//    Signification: 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 void DoubleList::vide()
 {
-  if (!est_vide()) 
-    if(suivant_) 
+  if (!est_vide())
+    if(suivant_)
       delete suivant_;
   suivant_=this;
   dernier_=this;

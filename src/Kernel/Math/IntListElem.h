@@ -32,20 +32,20 @@ class Sortie;
 class Entree;
 
 //////////////////////////////////////////////////////////////////////////////
-// 
-// .DESCRIPTION 
-//      Classe qui sert a representer une liste de reels int 
-//      precision. On ne peut pas utiliser la classe container 
+//
+// .DESCRIPTION
+//      Classe qui sert a representer une liste de reels int
+//      precision. On ne peut pas utiliser la classe container
 //      List avec des objets du type int car int est un type
 //      predefini du C++ qui ne possede pas les fonctions exigees
-//      par List< >. 
-// .SECTION voir aussi 
+//      par List< >.
+// .SECTION voir aussi
 //////////////////////////////////////////////////////////////////////////////
 
 class IntList;
-class IntListElem 
+class IntListElem
 {
-   
+
 public :
   friend class IntList;
   inline IntListElem();
@@ -60,165 +60,165 @@ public :
   inline int valeur() const;
   IntListElem& add(int ) ;
   friend int operator == (const IntListElem& , const IntListElem& );
-   
+
 protected:
- 
+
   int data;
   IntListElem* suivant_;
 };
 
-// Description: 
+// Description:
 //     Construit une liste vide.
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
-// Retour: 
-//    Signification: 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 inline IntListElem::IntListElem()
 {
   suivant_=this;
 }
 
-// Description: 
+// Description:
 //     Construit le singleton (x).
-// Precondition: 
+// Precondition:
 // Parametre: const int x
 //    Signification: element de la liste
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
-// Retour: 
-//    Signification: 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 inline IntListElem::IntListElem(const int x) : data(x), suivant_(0)
-{} 
+{}
 
-// Description: 
+// Description:
 //     renvoie 1 si la liste est vide
 //     renvoie 0 sinon.
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: int
 //    Signification: 1 si la liste est vide, 0 sinon
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 inline int IntListElem::est_vide() const
 {
   return suivant_==this;
 }
 
 
-// Description: 
+// Description:
 //     renvoie 1 si il n'y a pas de suivant
 //     renvoie 0 sinon.
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: int
 //    Signification: 1 si il n'y a pas de suivant, 0 sinon
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 inline int IntListElem::est_dernier() const
 {
   return ((est_vide()) || (suivant_==0) );
-}   
+}
 
 
-// Description: 
+// Description:
 //     renvoie le reel int precision.
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: int&
-//    Signification: 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
-inline int& IntListElem::valeur() 
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+inline int& IntListElem::valeur()
 {
   return data;
-}  
+}
 
 
-// Description: 
+// Description:
 //     renvoie le reel int precision.
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: int&
-//    Signification: 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 inline int IntListElem::valeur() const
 {
   return data;
 }
 
 
-// Description: 
+// Description:
 //     renvoie le suivant.
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: const IntList&
 //    Signification: liste sur l'element suivant
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 inline const IntListElem& IntListElem::suivant() const
 {
   return *suivant_;
 }
 
 
-// Description: 
+// Description:
 //     renvoie le suivant.
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: IntList&
 //    Signification: liste sur l'element suivant
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 inline IntListElem& IntListElem::suivant()
 {
   return *suivant_;

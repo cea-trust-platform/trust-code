@@ -32,20 +32,20 @@ class Sortie;
 class Entree;
 
 //////////////////////////////////////////////////////////////////////////////
-// 
-// .DESCRIPTION 
-//      Classe qui sert a representer une liste de reels double 
-//      precision. On ne peut pas utiliser la classe container 
+//
+// .DESCRIPTION
+//      Classe qui sert a representer une liste de reels double
+//      precision. On ne peut pas utiliser la classe container
 //      List avec des objets du type double car double est un type
 //      predefini du C++ qui ne possede pas les fonctions exigees
-//      par List< >. 
-// .SECTION voir aussi 
+//      par List< >.
+// .SECTION voir aussi
 //////////////////////////////////////////////////////////////////////////////
 
 class DoubleList;
-class DoubleListElem 
+class DoubleListElem
 {
-   
+
 public :
   friend class DoubleList;
   inline DoubleListElem();
@@ -60,165 +60,165 @@ public :
   inline double valeur() const;
   DoubleListElem& add(double ) ;
   friend int operator == (const DoubleListElem& , const DoubleListElem& );
-   
+
 protected:
- 
+
   double data;
   DoubleListElem* suivant_;
 };
 
-// Description: 
+// Description:
 //     Construit une liste vide.
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
-// Retour: 
-//    Signification: 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 inline DoubleListElem::DoubleListElem()
 {
   suivant_=this;
 }
 
-// Description: 
+// Description:
 //     Construit le singleton (x).
-// Precondition: 
+// Precondition:
 // Parametre: const double x
 //    Signification: element de la liste
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
-// Retour: 
-//    Signification: 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 inline DoubleListElem::DoubleListElem(const double x) : data(x), suivant_(0)
-{} 
+{}
 
-// Description: 
+// Description:
 //     renvoie 1 si la liste est vide
 //     renvoie 0 sinon.
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: int
 //    Signification: 1 si la liste est vide, 0 sinon
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 inline int DoubleListElem::est_vide() const
 {
   return suivant_==this;
 }
 
 
-// Description: 
+// Description:
 //     renvoie 1 si il n'y a pas de suivant
 //     renvoie 0 sinon.
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: int
 //    Signification: 1 si il n'y a pas de suivant, 0 sinon
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 inline int DoubleListElem::est_dernier() const
 {
   return ((est_vide()) || (suivant_==0) );
-}   
+}
 
 
-// Description: 
+// Description:
 //     renvoie le reel double precision.
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: double&
-//    Signification: 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
-inline double& DoubleListElem::valeur() 
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+inline double& DoubleListElem::valeur()
 {
   return data;
-}  
+}
 
 
-// Description: 
+// Description:
 //     renvoie le reel double precision.
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: double&
-//    Signification: 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 inline double DoubleListElem::valeur() const
 {
   return data;
 }
 
 
-// Description: 
+// Description:
 //     renvoie le suivant.
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: const DoubleList&
 //    Signification: liste sur l'element suivant
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 inline const DoubleListElem& DoubleListElem::suivant() const
 {
   return *suivant_;
 }
 
 
-// Description: 
+// Description:
 //     renvoie le suivant.
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: DoubleList&
 //    Signification: liste sur l'element suivant
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 inline DoubleListElem& DoubleListElem::suivant()
 {
   return *suivant_;

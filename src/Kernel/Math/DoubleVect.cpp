@@ -41,12 +41,13 @@ Implemente_instanciable_sans_constructeur_ni_destructeur(DoubleVect, "DoubleVect
 // Description: Ecriture d'un vecteur sequentiel (sans descripteur parallele)
 //  Pour l'instant: erreur si presence d'un md_vector_ (sinon quoi faire ?)
 //  Pour les vecteurs paralleles, utiliser une methode de sauvegarde/reprise
-Sortie & DoubleVect::printOn(Sortie& os) const 
+Sortie& DoubleVect::printOn(Sortie& os) const
 {
-  if (nproc() > 1 && md_vector_.non_nul()) {
-    Cerr << "Error in DoubleVect::printOn: try to print a parallel vector" << finl;
-    exit();
-  }        
+  if (nproc() > 1 && md_vector_.non_nul())
+    {
+      Cerr << "Error in DoubleVect::printOn: try to print a parallel vector" << finl;
+      exit();
+    }
   ArrOfDouble::printOn(os);
   return os;
 }
@@ -54,13 +55,14 @@ Sortie & DoubleVect::printOn(Sortie& os) const
 // Description: Lecture d'un vecteur sequentiel (comme un ArrOfDouble)
 //  Attention: appel invalide si le vecteur a un MD_Vector non nul.
 //  (pour les vecteurs paralleles, utiliser une methode de sauvegarde/reprise)
-Entree & DoubleVect::readOn(Entree& is)
+Entree& DoubleVect::readOn(Entree& is)
 {
-  if (md_vector_.non_nul()) {
-    // Que veut-on faire si on lit dans un vecteur ayant deja une structure parallele ?
-    Cerr << "Error in DoubleVect::readOn: vector has a parallel structure" << finl;
-    exit();
-  }
+  if (md_vector_.non_nul())
+    {
+      // Que veut-on faire si on lit dans un vecteur ayant deja une structure parallele ?
+      Cerr << "Error in DoubleVect::readOn: vector has a parallel structure" << finl;
+      exit();
+    }
   ArrOfDouble::readOn(is);
   size_reelle_ = size_array();
   line_size_ = 1;
@@ -73,22 +75,22 @@ Entree & DoubleVect::readOn(Entree& is)
 //   DoubleVect toto;
 //   toto.resize(n, NOCOPY_NOINIT);
 DoubleVect::DoubleVect(int n) :
-  ArrOfDouble(n), 
-  size_reelle_(n), 
+  ArrOfDouble(n),
+  size_reelle_(n),
   line_size_(1)
 {
 }
 
 // Description: construction d'un vecteur de taille n.
 //  Les elements du vecteur sont initialises avec la valeur x.
-DoubleVect::DoubleVect(int n, double x) :  
-  ArrOfDouble(n, x), 
-  size_reelle_(n), 
+DoubleVect::DoubleVect(int n, double x) :
+  ArrOfDouble(n, x),
+  size_reelle_(n),
   line_size_(1)
 {
 }
 
-// Description: Constructeur par copie. Il s'agit d'un "deep copy" 
+// Description: Constructeur par copie. Il s'agit d'un "deep copy"
 //   voir ArrOfDouble::ArrOfDouble(const ArrOfDouble &)
 //  Remarque: il n'y a pas de constructeur par copie a partir de ArrOfDouble
 //   Ceci est volontaire, sinon on risque de grosses pertes de performances
@@ -96,10 +98,10 @@ DoubleVect::DoubleVect(int n, double x) :
 //   (exemple: appel d'une methode toto(const IntVect &) avec un ArrOfInt
 //    produit une copie du tableau !)
 //  Utiliser copy() pour copier un ArrOfDouble dans un DoubleVect
-DoubleVect::DoubleVect(const DoubleVect & v) :
-  ArrOfDouble(v), 
-  md_vector_(v.md_vector_), 
-  size_reelle_(v.size_reelle_), 
+DoubleVect::DoubleVect(const DoubleVect& v) :
+  ArrOfDouble(v),
+  md_vector_(v.md_vector_),
+  size_reelle_(v.size_reelle_),
   line_size_(v.line_size_)
 {
 }
@@ -128,18 +130,19 @@ void DoubleVect::detach_vect()
 // Precondition:
 //  L'objet ne doit pas etre un sous-type de DoubleVect (sinon mauvaise initialisation
 //  des dimensions.
-void DoubleVect::ref(const DoubleVect & v)
+void DoubleVect::ref(const DoubleVect& v)
 {
-  if (&v != this) {
-    detach_array();
-    attach_array(v);
-    md_vector_ = v.md_vector_;
-    size_reelle_ = v.size_reelle_;
-    line_size_ = v.line_size_;
-  }
+  if (&v != this)
+    {
+      detach_array();
+      attach_array(v);
+      md_vector_ = v.md_vector_;
+      size_reelle_ = v.size_reelle_;
+      line_size_ = v.line_size_;
+    }
 }
 
-// Description: copie la structure et les valeurs du tableau v dans *this avec ArrOfDouble::operator=() 
+// Description: copie la structure et les valeurs du tableau v dans *this avec ArrOfDouble::operator=()
 //  (attention, si le tableau est de type ref_data ou ref, restrictions et cas particuliers !!!)
 //  Attention: si on ne veut pas copier les structures paralleles, utiliser inject_array()
 // Precondition: si le tableau *this doit etre resize, il doit etre de type DoubleVect
@@ -149,7 +152,7 @@ void DoubleVect::ref(const DoubleVect & v)
 //  ou utiliser inject_array() (pour ne pas copier la structure).
 //  (ceci pour eviter d'ecraser accidentellement une structure parallele alors qu'on ne veut
 //   que copier les valeurs).
-DoubleVect& DoubleVect::operator=(const DoubleVect & v)
+DoubleVect& DoubleVect::operator=(const DoubleVect& v)
 {
   copy(v);
   return *this;
@@ -160,7 +163,7 @@ DoubleVect& DoubleVect::operator=(const DoubleVect & v)
 //  (sinon ambiguite: faut-il copier ou pas le MD_Vector ?)
 // Precondition: Le vecteur ne doit pas avoir de structure de tableau distribue
 //  et il doit vraiment etre de type DoubleVect.
-void DoubleVect::copy(const ArrOfDouble & v, Array_base::Resize_Options opt)
+void DoubleVect::copy(const ArrOfDouble& v, Array_base::Resize_Options opt)
 {
   assert(get_info() == DoubleVect::info());
   assert(v.get_info() == ArrOfDouble::info());
@@ -172,19 +175,20 @@ void DoubleVect::copy(const ArrOfDouble & v, Array_base::Resize_Options opt)
 
 // Description: copie de la structure du vecteur v et des valeurs si opt==COPY_INIT.
 // Precondition: idem que operator=(const DoubleVect &)
-void DoubleVect::copy(const DoubleVect & v, Array_base::Resize_Options opt)
+void DoubleVect::copy(const DoubleVect& v, Array_base::Resize_Options opt)
 {
-  if (&v != this) {
-    // Interdiction de resizer si l'objet est d'un type derive de DoubleVect
-    // (sinon mauvaise dimension(0) !)
-    assert(v.size_array() == size_array() || get_info() == DoubleVect::info());
-    copy_(v, opt);
-  }
+  if (&v != this)
+    {
+      // Interdiction de resizer si l'objet est d'un type derive de DoubleVect
+      // (sinon mauvaise dimension(0) !)
+      assert(v.size_array() == size_array() || get_info() == DoubleVect::info());
+      copy_(v, opt);
+    }
 }
 
 // Description: methode protegee appelable depuis une classe derivee
 //  (pas de precondition sur le type derive de *this)
-void DoubleVect::copy_(const DoubleVect & v, Array_base::Resize_Options opt)
+void DoubleVect::copy_(const DoubleVect& v, Array_base::Resize_Options opt)
 {
   assert(&v != this); // Il faut avoir fait le test avant !
   // Si le vecteur a deja une structure parallele, la copie n'est autorisee que si
@@ -241,28 +245,31 @@ void DoubleVect::ref_array(ArrOfDouble& m, int start, int new_size)
 //  Si md_vector est nul, detache simplement le md_vector existant.
 // Precondition: le vecteur doit deja avoir la taille appropriee au nouveau md_vector,
 //  c'est a dire md_vector...get_nb_items_tot() * line_size_
-void DoubleVect::set_md_vector(const MD_Vector & md_vector)
+void DoubleVect::set_md_vector(const MD_Vector& md_vector)
 {
   int size_r = size_array();
-  if (md_vector.non_nul()) {
-    size_r = md_vector.valeur().get_nb_items_reels();
-    if (size_r >= 0)
-      size_r *= line_size_;
-    else
-      size_r = -1; // Cas particulier ou la size_reelle ne veut rien dire
-    int size_tot = md_vector.valeur().get_nb_items_tot() * line_size_;
-    if (size_tot != size_array()) {
-      Cerr << "Internal error in DoubleVect::set_md_vector(): wrong array size\n"
-           << " Needed size = " << md_vector.valeur().get_nb_items_tot() << " x " << line_size_
-           << "\n Actual size = " << size_array() << finl;
-      exit();
+  if (md_vector.non_nul())
+    {
+      size_r = md_vector.valeur().get_nb_items_reels();
+      if (size_r >= 0)
+        size_r *= line_size_;
+      else
+        size_r = -1; // Cas particulier ou la size_reelle ne veut rien dire
+      int size_tot = md_vector.valeur().get_nb_items_tot() * line_size_;
+      if (size_tot != size_array())
+        {
+          Cerr << "Internal error in DoubleVect::set_md_vector(): wrong array size\n"
+               << " Needed size = " << md_vector.valeur().get_nb_items_tot() << " x " << line_size_
+               << "\n Actual size = " << size_array() << finl;
+          exit();
+        }
+      if (line_size_ == 0)
+        {
+          Cerr << "Internal error in DoubleVect::set_md_vector():\n"
+               << " cannot attach descriptor to empty array (line_size_ is zero)" << finl;
+          exit();
+        }
     }
-    if (line_size_ == 0) {
-      Cerr << "Internal error in DoubleVect::set_md_vector():\n"
-           << " cannot attach descriptor to empty array (line_size_ is zero)" << finl;
-      exit();
-    }
-  }
   size_reelle_ = size_r;
   md_vector_ = md_vector;
 }
@@ -273,67 +280,72 @@ void DoubleVect::echange_espace_virtuel()
 }
 
 // Description: ecriture des valeurs du tableau "raw" sans structure parallele
-void DoubleVect::ecrit(Sortie & os) const
+void DoubleVect::ecrit(Sortie& os) const
 {
   ArrOfDouble::printOn(os);
   os << -1 << finl; // le marqueur -1 indique que c'est le nouveau format "ecrit", sans structure parallele
 }
 
-void DoubleVect::jump(Entree & is)
+void DoubleVect::jump(Entree& is)
 {
-    DoubleVect::lit(is, 0 /* Do not resize&read the array */);
+  DoubleVect::lit(is, 0 /* Do not resize&read the array */);
 }
 
 // Description: lecture d'un tableau pour reprise de calcul. On lit les valeurs "raw".
-//  Attention, si le tableau n'est pas vide, il doit deja avoir la bonne 
+//  Attention, si le tableau n'est pas vide, il doit deja avoir la bonne
 //  taille et la bonne structure, sinon erreur !
 // Parameter resize_and_read if the array is sized AND read (by default, yes)
-void DoubleVect::lit(Entree & is, int resize_and_read)
+void DoubleVect::lit(Entree& is, int resize_and_read)
 {
   int sz = -1;
   is >> sz;
   if (resize_and_read)
-  {
-     if (size_array() == 0 && (!get_md_vector().non_nul())) {
-       resize(sz, NOCOPY_NOINIT);
-     } else {
-       if (sz != size_array()) {
-	 // Si on cherche a relire un tableau de taille inconnue, le tableau doit
-	 // etre reset() a l'entree. On n'aura pas la structure parallele du tableau !
-	 Cerr << "Error in DoubleVect::lit(Entree & is): array has already a structure with incorrect size" << finl;
-	 exit();
-       }
-     }
-     is.get(addr(), sz);
-  }
+    {
+      if (size_array() == 0 && (!get_md_vector().non_nul()))
+        {
+          resize(sz, NOCOPY_NOINIT);
+        }
+      else
+        {
+          if (sz != size_array())
+            {
+              // Si on cherche a relire un tableau de taille inconnue, le tableau doit
+              // etre reset() a l'entree. On n'aura pas la structure parallele du tableau !
+              Cerr << "Error in DoubleVect::lit(Entree & is): array has already a structure with incorrect size" << finl;
+              exit();
+            }
+        }
+      is.get(addr(), sz);
+    }
   else
-  {
-     // May be slow if large chunks are read:
-     // Double tmp;
-     //for (int i=0;i<sz;i++) is >> tmp;
-     // So we bufferize:
-     int buffer_size = min(sz,128000);
-     ArrOfDouble tmp(buffer_size);
-     while(sz>buffer_size)
-     {
-        is.get(tmp.addr(), buffer_size);
-	sz-=buffer_size;
-     }
-     is.get(tmp.addr(), sz);
-  }
+    {
+      // May be slow if large chunks are read:
+      // Double tmp;
+      //for (int i=0;i<sz;i++) is >> tmp;
+      // So we bufferize:
+      int buffer_size = min(sz,128000);
+      ArrOfDouble tmp(buffer_size);
+      while(sz>buffer_size)
+        {
+          is.get(tmp.addr(), buffer_size);
+          sz-=buffer_size;
+        }
+      is.get(tmp.addr(), sz);
+    }
   int sz_reel = -2;
   is >> sz_reel;
-  if (sz_reel >= 0) {
-    // Lecture de l'ancien format. Ignore les valeurs lues.
-    int sz_virt; 
-    is >> sz_virt;
-    DescStructure toto;
-    is >> toto;
-    ArrOfInt it_communs;
-    is >> it_communs;
-    ArrOfInt it_communs_tot;
-    is >> it_communs_tot;
-  }
+  if (sz_reel >= 0)
+    {
+      // Lecture de l'ancien format. Ignore les valeurs lues.
+      int sz_virt;
+      is >> sz_virt;
+      DescStructure toto;
+      is >> toto;
+      ArrOfInt it_communs;
+      is >> it_communs;
+      ArrOfInt it_communs_tot;
+      is >> it_communs_tot;
+    }
 }
 
 // Description:
@@ -344,8 +356,8 @@ int operator==(const DoubleVect& x, const DoubleVect& y)
 {
   if (!(x.get_md_vector() == y.get_md_vector()))
     return 0;
-  const ArrOfDouble & ax = x;
-  const ArrOfDouble & ay = y;
+  const ArrOfDouble& ax = x;
+  const ArrOfDouble& ay = y;
   return ax == ay;
 }
 
@@ -363,33 +375,34 @@ int operator!=(const DoubleVect& x, const DoubleVect& y)
 // The value below probably triggers errors on parallel test cases but
 // does not prevent from doing "useless" computations with it.
 
-#ifndef NDEBUG 
-static void invalidate_data(DoubleVect & resu, Mp_vect_options opt)
+#ifndef NDEBUG
+static void invalidate_data(DoubleVect& resu, Mp_vect_options opt)
 {
   const double invalid = -987654.321;
-  const MD_Vector & md = resu.get_md_vector();
+  const MD_Vector& md = resu.get_md_vector();
   const int line_size = resu.line_size();
   if (opt == VECT_ALL_ITEMS || (!md.non_nul()))
     return; // no invalid values
   assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
-  const ArrOfInt & items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+  const ArrOfInt& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
   const int blocs_size = items_blocs.size_array();
   int i = 0;
-  for (int blocs_idx = 0; blocs_idx < blocs_size; blocs_idx += 2) {
-    // process data until beginning of next bloc, or end of array
-    const int bloc_end = line_size * items_blocs[blocs_idx];
-    double *ptr = resu.addr() + i;
-    for (; i < bloc_end; i++)
-      *(ptr++) = invalid;
-    i = items_blocs[blocs_idx+1] * line_size;
-  }
+  for (int blocs_idx = 0; blocs_idx < blocs_size; blocs_idx += 2)
+    {
+      // process data until beginning of next bloc, or end of array
+      const int bloc_end = line_size * items_blocs[blocs_idx];
+      double *ptr = resu.addr() + i;
+      for (; i < bloc_end; i++)
+        *(ptr++) = invalid;
+      i = items_blocs[blocs_idx+1] * line_size;
+    }
   // Process until end of vector
   const int bloc_end = resu.size_array();
   double *ptr = resu.addr() + i;
   for (; i < bloc_end; i++)
     *(ptr++) = invalid;
 }
-#endif 
+#endif
 
 
 
@@ -403,14 +416,14 @@ static void invalidate_data(DoubleVect & resu, Mp_vect_options opt)
 
 
 
-double local_prodscal(const DoubleVect & vx, const DoubleVect & vy)
+double local_prodscal(const DoubleVect& vx, const DoubleVect& vy)
 {
   double sum = 0;
-    // Master vect donne la structure de reference, les autres vecteurs
-    // doivent avoir la meme structure.
-  const DoubleVect & master_vect = vx;
+  // Master vect donne la structure de reference, les autres vecteurs
+  // doivent avoir la meme structure.
+  const DoubleVect& master_vect = vx;
   int line_size = master_vect.line_size();
-  const MD_Vector & md = master_vect.get_md_vector();
+  const MD_Vector& md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
   assert(vx.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
@@ -422,50 +435,57 @@ double local_prodscal(const DoubleVect & vx, const DoubleVect & vy)
   int nblocs_left = 1;
   int one_bloc[2];
   const int *bloc_ptr;
-  if ( VECT_SEQUENTIAL_ITEMS != VECT_ALL_ITEMS && md.non_nul()) {
-    assert( VECT_SEQUENTIAL_ITEMS == VECT_SEQUENTIAL_ITEMS ||  VECT_SEQUENTIAL_ITEMS == VECT_REAL_ITEMS);
-    const ArrOfInt & items_blocs = ( VECT_SEQUENTIAL_ITEMS == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-    assert(items_blocs.size_array() % 2 == 0);
-    nblocs_left = items_blocs.size_array() >> 1;
-    bloc_ptr = items_blocs.addr();
-  } else if (vect_size_tot > 0) {
-    // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-    // Compute all data, in the vector (including virtual data), build a big bloc:
-    nblocs_left = 1;
-    bloc_ptr = one_bloc;
-    one_bloc[0] = 0;
-    one_bloc[1] = vect_size_tot / line_size;
-  } else {
-    // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return  sum;
-  }
+  if ( VECT_SEQUENTIAL_ITEMS != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert( VECT_SEQUENTIAL_ITEMS == VECT_SEQUENTIAL_ITEMS ||  VECT_SEQUENTIAL_ITEMS == VECT_REAL_ITEMS);
+      const ArrOfInt& items_blocs = ( VECT_SEQUENTIAL_ITEMS == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
+    }
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else
+    {
+      // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return  sum;
+    }
   const double *x_base = vx.addr();
   const double *y_base = vy.addr();
-  for (; nblocs_left; nblocs_left--) {
-    // Get index of next bloc start:
-    const int begin_bloc = (*(bloc_ptr++)) * line_size;
-    const int end_bloc = (*(bloc_ptr++)) * line_size;
-    assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-                                                    const double* x_ptr = x_base + begin_bloc;
-    const double* y_ptr = y_base + begin_bloc;
-    int count = end_bloc - begin_bloc;
-    for (; count; count--) {
-      const double x = *x_ptr;
-      const double y = *(y_ptr++);
-       sum += x * y;      
-        x_ptr++;
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size;
+      const int end_bloc = (*(bloc_ptr++)) * line_size;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      const double* x_ptr = x_base + begin_bloc;
+      const double* y_ptr = y_base + begin_bloc;
+      int count = end_bloc - begin_bloc;
+      for (; count; count--)
+        {
+          const double x = *x_ptr;
+          const double y = *(y_ptr++);
+          sum += x * y;
+          x_ptr++;
+        }
     }
-  }
-  return  sum; 
+  return  sum;
 }
-  double local_carre_norme_vect(const DoubleVect & vx)
+double local_carre_norme_vect(const DoubleVect& vx)
 {
-   double sum = 0;
-    // Master vect donne la structure de reference, les autres vecteurs
-    // doivent avoir la meme structure.
-  const DoubleVect & master_vect = vx;
+  double sum = 0;
+  // Master vect donne la structure de reference, les autres vecteurs
+  // doivent avoir la meme structure.
+  const DoubleVect& master_vect = vx;
   int line_size = master_vect.line_size();
-  const MD_Vector & md = master_vect.get_md_vector();
+  const MD_Vector& md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
   assert(vx.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
@@ -474,51 +494,58 @@ double local_prodscal(const DoubleVect & vx, const DoubleVect & vy)
   int nblocs_left = 1;
   int one_bloc[2];
   const int *bloc_ptr;
-  if ( VECT_SEQUENTIAL_ITEMS != VECT_ALL_ITEMS && md.non_nul()) {
-    assert( VECT_SEQUENTIAL_ITEMS == VECT_SEQUENTIAL_ITEMS ||  VECT_SEQUENTIAL_ITEMS == VECT_REAL_ITEMS);
-    const ArrOfInt & items_blocs = ( VECT_SEQUENTIAL_ITEMS == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-    assert(items_blocs.size_array() % 2 == 0);
-    nblocs_left = items_blocs.size_array() >> 1;
-    bloc_ptr = items_blocs.addr();
-  } else if (vect_size_tot > 0) {
-    // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-    // Compute all data, in the vector (including virtual data), build a big bloc:
-    nblocs_left = 1;
-    bloc_ptr = one_bloc;
-    one_bloc[0] = 0;
-    one_bloc[1] = vect_size_tot / line_size;
-  } else {
-    // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return  sum;
-  }
-  const double *x_base = vx.addr();
-  for (; nblocs_left; nblocs_left--) {
-    // Get index of next bloc start:
-    const int begin_bloc = (*(bloc_ptr++)) * line_size;
-    const int end_bloc = (*(bloc_ptr++)) * line_size;
-    assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-                                                    const double* x_ptr = x_base + begin_bloc;
-    int count = end_bloc - begin_bloc;
-    for (; count; count--) {
-      const double x = *x_ptr;
-       sum += x * x;      
-        x_ptr++;
+  if ( VECT_SEQUENTIAL_ITEMS != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert( VECT_SEQUENTIAL_ITEMS == VECT_SEQUENTIAL_ITEMS ||  VECT_SEQUENTIAL_ITEMS == VECT_REAL_ITEMS);
+      const ArrOfInt& items_blocs = ( VECT_SEQUENTIAL_ITEMS == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
     }
-  }
-  return  sum; 
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else
+    {
+      // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return  sum;
+    }
+  const double *x_base = vx.addr();
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size;
+      const int end_bloc = (*(bloc_ptr++)) * line_size;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      const double* x_ptr = x_base + begin_bloc;
+      int count = end_bloc - begin_bloc;
+      for (; count; count--)
+        {
+          const double x = *x_ptr;
+          sum += x * x;
+          x_ptr++;
+        }
+    }
+  return  sum;
 }
-    double mp_carre_norme_vect(const DoubleVect & vx)
+double mp_carre_norme_vect(const DoubleVect& vx)
 {
   return Process::mp_sum(local_carre_norme_vect(vx));
 }
-double local_somme_vect(const DoubleVect & vx)
+double local_somme_vect(const DoubleVect& vx)
 {
-   double sum = 0;
-    // Master vect donne la structure de reference, les autres vecteurs
-    // doivent avoir la meme structure.
-  const DoubleVect & master_vect = vx;
+  double sum = 0;
+  // Master vect donne la structure de reference, les autres vecteurs
+  // doivent avoir la meme structure.
+  const DoubleVect& master_vect = vx;
   int line_size = master_vect.line_size();
-  const MD_Vector & md = master_vect.get_md_vector();
+  const MD_Vector& md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
   assert(vx.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
@@ -527,53 +554,61 @@ double local_somme_vect(const DoubleVect & vx)
   int nblocs_left = 1;
   int one_bloc[2];
   const int *bloc_ptr;
-  if ( VECT_SEQUENTIAL_ITEMS != VECT_ALL_ITEMS && md.non_nul()) {
-    assert( VECT_SEQUENTIAL_ITEMS == VECT_SEQUENTIAL_ITEMS ||  VECT_SEQUENTIAL_ITEMS == VECT_REAL_ITEMS);
-    const ArrOfInt & items_blocs = ( VECT_SEQUENTIAL_ITEMS == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-    assert(items_blocs.size_array() % 2 == 0);
-    nblocs_left = items_blocs.size_array() >> 1;
-    bloc_ptr = items_blocs.addr();
-  } else if (vect_size_tot > 0) {
-    // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-    // Compute all data, in the vector (including virtual data), build a big bloc:
-    nblocs_left = 1;
-    bloc_ptr = one_bloc;
-    one_bloc[0] = 0;
-    one_bloc[1] = vect_size_tot / line_size;
-  } else {
-    // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return  sum;
-  }
-  const double *x_base = vx.addr();
-  for (; nblocs_left; nblocs_left--) {
-    // Get index of next bloc start:
-    const int begin_bloc = (*(bloc_ptr++)) * line_size;
-    const int end_bloc = (*(bloc_ptr++)) * line_size;
-    assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-                                                    const double* x_ptr = x_base + begin_bloc;
-    int count = end_bloc - begin_bloc;
-    for (; count; count--) {
-      const double x = *x_ptr;
-       sum += x;      
-        x_ptr++;
+  if ( VECT_SEQUENTIAL_ITEMS != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert( VECT_SEQUENTIAL_ITEMS == VECT_SEQUENTIAL_ITEMS ||  VECT_SEQUENTIAL_ITEMS == VECT_REAL_ITEMS);
+      const ArrOfInt& items_blocs = ( VECT_SEQUENTIAL_ITEMS == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
     }
-  }
-  return  sum; 
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else
+    {
+      // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return  sum;
+    }
+  const double *x_base = vx.addr();
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size;
+      const int end_bloc = (*(bloc_ptr++)) * line_size;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      const double* x_ptr = x_base + begin_bloc;
+      int count = end_bloc - begin_bloc;
+      for (; count; count--)
+        {
+          const double x = *x_ptr;
+          sum += x;
+          x_ptr++;
+        }
+    }
+  return  sum;
 }
-  double mp_somme_vect(const DoubleVect & vx)
+double mp_somme_vect(const DoubleVect& vx)
 {
   double x = local_somme_vect(vx);
   double y = Process::mp_sum(x);
   return y;
 }
-double local_imin_vect(const DoubleVect & vx, Mp_vect_options opt)
+double local_imin_vect(const DoubleVect& vx, Mp_vect_options opt)
 {
-   double min_val = HUGE_VALL; int i_min = -1;
-    // Master vect donne la structure de reference, les autres vecteurs
-    // doivent avoir la meme structure.
-  const DoubleVect & master_vect = vx;
+  double min_val = HUGE_VALL;
+  int i_min = -1;
+  // Master vect donne la structure de reference, les autres vecteurs
+  // doivent avoir la meme structure.
+  const DoubleVect& master_vect = vx;
   int line_size = master_vect.line_size();
-  const MD_Vector & md = master_vect.get_md_vector();
+  const MD_Vector& md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
   assert(vx.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
@@ -582,47 +617,58 @@ double local_imin_vect(const DoubleVect & vx, Mp_vect_options opt)
   int nblocs_left = 1;
   int one_bloc[2];
   const int *bloc_ptr;
-  if ( opt != VECT_ALL_ITEMS && md.non_nul()) {
-    assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
-    const ArrOfInt & items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-    assert(items_blocs.size_array() % 2 == 0);
-    nblocs_left = items_blocs.size_array() >> 1;
-    bloc_ptr = items_blocs.addr();
-  } else if (vect_size_tot > 0) {
-    // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-    // Compute all data, in the vector (including virtual data), build a big bloc:
-    nblocs_left = 1;
-    bloc_ptr = one_bloc;
-    one_bloc[0] = 0;
-    one_bloc[1] = vect_size_tot / line_size;
-  } else {
-    // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return  i_min;
-  }
-  const double *x_base = vx.addr();
-  for (; nblocs_left; nblocs_left--) {
-    // Get index of next bloc start:
-    const int begin_bloc = (*(bloc_ptr++)) * line_size;
-    const int end_bloc = (*(bloc_ptr++)) * line_size;
-    assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-                                                    const double* x_ptr = x_base + begin_bloc;
-    int count = end_bloc - begin_bloc;
-    for (; count; count--) {
-      const double x = *x_ptr;
-       if (x < min_val) { i_min = x_ptr - x_base; min_val = x; }      
-        x_ptr++;
+  if ( opt != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
+      const ArrOfInt& items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
     }
-  }
-  return  i_min; 
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else
+    {
+      // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return  i_min;
+    }
+  const double *x_base = vx.addr();
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size;
+      const int end_bloc = (*(bloc_ptr++)) * line_size;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      const double* x_ptr = x_base + begin_bloc;
+      int count = end_bloc - begin_bloc;
+      for (; count; count--)
+        {
+          const double x = *x_ptr;
+          if (x < min_val)
+            {
+              i_min = x_ptr - x_base;
+              min_val = x;
+            }
+          x_ptr++;
+        }
+    }
+  return  i_min;
 }
-  double local_min_vect(const DoubleVect & vx, Mp_vect_options opt)
+double local_min_vect(const DoubleVect& vx, Mp_vect_options opt)
 {
-   double min_val = HUGE_VALL;
-    // Master vect donne la structure de reference, les autres vecteurs
-    // doivent avoir la meme structure.
-  const DoubleVect & master_vect = vx;
+  double min_val = HUGE_VALL;
+  // Master vect donne la structure de reference, les autres vecteurs
+  // doivent avoir la meme structure.
+  const DoubleVect& master_vect = vx;
   int line_size = master_vect.line_size();
-  const MD_Vector & md = master_vect.get_md_vector();
+  const MD_Vector& md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
   assert(vx.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
@@ -631,47 +677,55 @@ double local_imin_vect(const DoubleVect & vx, Mp_vect_options opt)
   int nblocs_left = 1;
   int one_bloc[2];
   const int *bloc_ptr;
-  if ( opt != VECT_ALL_ITEMS && md.non_nul()) {
-    assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
-    const ArrOfInt & items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-    assert(items_blocs.size_array() % 2 == 0);
-    nblocs_left = items_blocs.size_array() >> 1;
-    bloc_ptr = items_blocs.addr();
-  } else if (vect_size_tot > 0) {
-    // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-    // Compute all data, in the vector (including virtual data), build a big bloc:
-    nblocs_left = 1;
-    bloc_ptr = one_bloc;
-    one_bloc[0] = 0;
-    one_bloc[1] = vect_size_tot / line_size;
-  } else {
-    // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return  min_val;
-  }
-  const double *x_base = vx.addr();
-  for (; nblocs_left; nblocs_left--) {
-    // Get index of next bloc start:
-    const int begin_bloc = (*(bloc_ptr++)) * line_size;
-    const int end_bloc = (*(bloc_ptr++)) * line_size;
-    assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-                                                    const double* x_ptr = x_base + begin_bloc;
-    int count = end_bloc - begin_bloc;
-    for (; count; count--) {
-      const double x = *x_ptr;
-       min_val = (x < min_val) ? x : min_val;      
-        x_ptr++;
+  if ( opt != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
+      const ArrOfInt& items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
     }
-  }
-  return  min_val; 
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else
+    {
+      // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return  min_val;
+    }
+  const double *x_base = vx.addr();
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size;
+      const int end_bloc = (*(bloc_ptr++)) * line_size;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      const double* x_ptr = x_base + begin_bloc;
+      int count = end_bloc - begin_bloc;
+      for (; count; count--)
+        {
+          const double x = *x_ptr;
+          min_val = (x < min_val) ? x : min_val;
+          x_ptr++;
+        }
+    }
+  return  min_val;
 }
-    double local_imax_vect(const DoubleVect & vx, Mp_vect_options opt)
+double local_imax_vect(const DoubleVect& vx, Mp_vect_options opt)
 {
-   double max_val = (-HUGE_VALL); int i_max = -1;
-    // Master vect donne la structure de reference, les autres vecteurs
-    // doivent avoir la meme structure.
-  const DoubleVect & master_vect = vx;
+  double max_val = (-HUGE_VALL);
+  int i_max = -1;
+  // Master vect donne la structure de reference, les autres vecteurs
+  // doivent avoir la meme structure.
+  const DoubleVect& master_vect = vx;
   int line_size = master_vect.line_size();
-  const MD_Vector & md = master_vect.get_md_vector();
+  const MD_Vector& md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
   assert(vx.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
@@ -680,47 +734,58 @@ double local_imin_vect(const DoubleVect & vx, Mp_vect_options opt)
   int nblocs_left = 1;
   int one_bloc[2];
   const int *bloc_ptr;
-  if ( opt != VECT_ALL_ITEMS && md.non_nul()) {
-    assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
-    const ArrOfInt & items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-    assert(items_blocs.size_array() % 2 == 0);
-    nblocs_left = items_blocs.size_array() >> 1;
-    bloc_ptr = items_blocs.addr();
-  } else if (vect_size_tot > 0) {
-    // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-    // Compute all data, in the vector (including virtual data), build a big bloc:
-    nblocs_left = 1;
-    bloc_ptr = one_bloc;
-    one_bloc[0] = 0;
-    one_bloc[1] = vect_size_tot / line_size;
-  } else {
-    // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return  i_max;
-  }
-  const double *x_base = vx.addr();
-  for (; nblocs_left; nblocs_left--) {
-    // Get index of next bloc start:
-    const int begin_bloc = (*(bloc_ptr++)) * line_size;
-    const int end_bloc = (*(bloc_ptr++)) * line_size;
-    assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-                                                    const double* x_ptr = x_base + begin_bloc;
-    int count = end_bloc - begin_bloc;
-    for (; count; count--) {
-      const double x = *x_ptr;
-       if (x > max_val) { i_max = x_ptr - x_base; max_val = x; }      
-        x_ptr++;
+  if ( opt != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
+      const ArrOfInt& items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
     }
-  }
-  return  i_max; 
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else
+    {
+      // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return  i_max;
+    }
+  const double *x_base = vx.addr();
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size;
+      const int end_bloc = (*(bloc_ptr++)) * line_size;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      const double* x_ptr = x_base + begin_bloc;
+      int count = end_bloc - begin_bloc;
+      for (; count; count--)
+        {
+          const double x = *x_ptr;
+          if (x > max_val)
+            {
+              i_max = x_ptr - x_base;
+              max_val = x;
+            }
+          x_ptr++;
+        }
+    }
+  return  i_max;
 }
-      double local_max_vect(const DoubleVect & vx, Mp_vect_options opt)
+double local_max_vect(const DoubleVect& vx, Mp_vect_options opt)
 {
-   double max_val = (-HUGE_VALL);
-    // Master vect donne la structure de reference, les autres vecteurs
-    // doivent avoir la meme structure.
-  const DoubleVect & master_vect = vx;
+  double max_val = (-HUGE_VALL);
+  // Master vect donne la structure de reference, les autres vecteurs
+  // doivent avoir la meme structure.
+  const DoubleVect& master_vect = vx;
   int line_size = master_vect.line_size();
-  const MD_Vector & md = master_vect.get_md_vector();
+  const MD_Vector& md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
   assert(vx.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
@@ -729,47 +794,54 @@ double local_imin_vect(const DoubleVect & vx, Mp_vect_options opt)
   int nblocs_left = 1;
   int one_bloc[2];
   const int *bloc_ptr;
-  if ( opt != VECT_ALL_ITEMS && md.non_nul()) {
-    assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
-    const ArrOfInt & items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-    assert(items_blocs.size_array() % 2 == 0);
-    nblocs_left = items_blocs.size_array() >> 1;
-    bloc_ptr = items_blocs.addr();
-  } else if (vect_size_tot > 0) {
-    // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-    // Compute all data, in the vector (including virtual data), build a big bloc:
-    nblocs_left = 1;
-    bloc_ptr = one_bloc;
-    one_bloc[0] = 0;
-    one_bloc[1] = vect_size_tot / line_size;
-  } else {
-    // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return  max_val;
-  }
-  const double *x_base = vx.addr();
-  for (; nblocs_left; nblocs_left--) {
-    // Get index of next bloc start:
-    const int begin_bloc = (*(bloc_ptr++)) * line_size;
-    const int end_bloc = (*(bloc_ptr++)) * line_size;
-    assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-                                                    const double* x_ptr = x_base + begin_bloc;
-    int count = end_bloc - begin_bloc;
-    for (; count; count--) {
-      const double x = *x_ptr;
-       max_val = (x > max_val) ? x : max_val;      
-        x_ptr++;
+  if ( opt != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
+      const ArrOfInt& items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
     }
-  }
-  return  max_val; 
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else
+    {
+      // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return  max_val;
+    }
+  const double *x_base = vx.addr();
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size;
+      const int end_bloc = (*(bloc_ptr++)) * line_size;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      const double* x_ptr = x_base + begin_bloc;
+      int count = end_bloc - begin_bloc;
+      for (; count; count--)
+        {
+          const double x = *x_ptr;
+          max_val = (x > max_val) ? x : max_val;
+          x_ptr++;
+        }
+    }
+  return  max_val;
 }
-        double local_max_abs_vect(const DoubleVect & vx, Mp_vect_options opt)
+double local_max_abs_vect(const DoubleVect& vx, Mp_vect_options opt)
 {
-   double max_val = 0;
-    // Master vect donne la structure de reference, les autres vecteurs
-    // doivent avoir la meme structure.
-  const DoubleVect & master_vect = vx;
+  double max_val = 0;
+  // Master vect donne la structure de reference, les autres vecteurs
+  // doivent avoir la meme structure.
+  const DoubleVect& master_vect = vx;
   int line_size = master_vect.line_size();
-  const MD_Vector & md = master_vect.get_md_vector();
+  const MD_Vector& md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
   assert(vx.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
@@ -778,47 +850,55 @@ double local_imin_vect(const DoubleVect & vx, Mp_vect_options opt)
   int nblocs_left = 1;
   int one_bloc[2];
   const int *bloc_ptr;
-  if ( opt != VECT_ALL_ITEMS && md.non_nul()) {
-    assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
-    const ArrOfInt & items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-    assert(items_blocs.size_array() % 2 == 0);
-    nblocs_left = items_blocs.size_array() >> 1;
-    bloc_ptr = items_blocs.addr();
-  } else if (vect_size_tot > 0) {
-    // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-    // Compute all data, in the vector (including virtual data), build a big bloc:
-    nblocs_left = 1;
-    bloc_ptr = one_bloc;
-    one_bloc[0] = 0;
-    one_bloc[1] = vect_size_tot / line_size;
-  } else {
-    // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return  max_val;
-  }
-  const double *x_base = vx.addr();
-  for (; nblocs_left; nblocs_left--) {
-    // Get index of next bloc start:
-    const int begin_bloc = (*(bloc_ptr++)) * line_size;
-    const int end_bloc = (*(bloc_ptr++)) * line_size;
-    assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-                                                    const double* x_ptr = x_base + begin_bloc;
-    int count = end_bloc - begin_bloc;
-    for (; count; count--) {
-      const double x = *x_ptr;
-       double xx = fabs(x); max_val = (xx > max_val) ? xx : max_val;      
-        x_ptr++;
+  if ( opt != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
+      const ArrOfInt& items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
     }
-  }
-  return  max_val; 
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else
+    {
+      // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return  max_val;
+    }
+  const double *x_base = vx.addr();
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size;
+      const int end_bloc = (*(bloc_ptr++)) * line_size;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      const double* x_ptr = x_base + begin_bloc;
+      int count = end_bloc - begin_bloc;
+      for (; count; count--)
+        {
+          const double x = *x_ptr;
+          double xx = fabs(x);
+          max_val = (xx > max_val) ? xx : max_val;
+          x_ptr++;
+        }
+    }
+  return  max_val;
 }
-          double local_min_abs_vect(const DoubleVect & vx, Mp_vect_options opt)
+double local_min_abs_vect(const DoubleVect& vx, Mp_vect_options opt)
 {
-   double min_val = HUGE_VALL;
-    // Master vect donne la structure de reference, les autres vecteurs
-    // doivent avoir la meme structure.
-  const DoubleVect & master_vect = vx;
+  double min_val = HUGE_VALL;
+  // Master vect donne la structure de reference, les autres vecteurs
+  // doivent avoir la meme structure.
+  const DoubleVect& master_vect = vx;
   int line_size = master_vect.line_size();
-  const MD_Vector & md = master_vect.get_md_vector();
+  const MD_Vector& md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
   assert(vx.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
@@ -827,95 +907,111 @@ double local_imin_vect(const DoubleVect & vx, Mp_vect_options opt)
   int nblocs_left = 1;
   int one_bloc[2];
   const int *bloc_ptr;
-  if ( opt != VECT_ALL_ITEMS && md.non_nul()) {
-    assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
-    const ArrOfInt & items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-    assert(items_blocs.size_array() % 2 == 0);
-    nblocs_left = items_blocs.size_array() >> 1;
-    bloc_ptr = items_blocs.addr();
-  } else if (vect_size_tot > 0) {
-    // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-    // Compute all data, in the vector (including virtual data), build a big bloc:
-    nblocs_left = 1;
-    bloc_ptr = one_bloc;
-    one_bloc[0] = 0;
-    one_bloc[1] = vect_size_tot / line_size;
-  } else {
-    // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return  min_val;
-  }
-  const double *x_base = vx.addr();
-  for (; nblocs_left; nblocs_left--) {
-    // Get index of next bloc start:
-    const int begin_bloc = (*(bloc_ptr++)) * line_size;
-    const int end_bloc = (*(bloc_ptr++)) * line_size;
-    assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-                                                    const double* x_ptr = x_base + begin_bloc;
-    int count = end_bloc - begin_bloc;
-    for (; count; count--) {
-      const double x = *x_ptr;
-       double xx = fabs(x); min_val = (xx < min_val) ? xx : min_val;      
-        x_ptr++;
+  if ( opt != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
+      const ArrOfInt& items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
     }
-  }
-  return  min_val; 
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else
+    {
+      // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return  min_val;
+    }
+  const double *x_base = vx.addr();
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size;
+      const int end_bloc = (*(bloc_ptr++)) * line_size;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      const double* x_ptr = x_base + begin_bloc;
+      int count = end_bloc - begin_bloc;
+      for (; count; count--)
+        {
+          const double x = *x_ptr;
+          double xx = fabs(x);
+          min_val = (xx < min_val) ? xx : min_val;
+          x_ptr++;
+        }
+    }
+  return  min_val;
 }
-            void operator_abs(DoubleVect & resu, Mp_vect_options opt)
+void operator_abs(DoubleVect& resu, Mp_vect_options opt)
 {
-   
-    // Master vect donne la structure de reference, les autres vecteurs
-    // doivent avoir la meme structure.
-    const DoubleVect & master_vect = resu;
+
+  // Master vect donne la structure de reference, les autres vecteurs
+  // doivent avoir la meme structure.
+  const DoubleVect& master_vect = resu;
   int line_size = master_vect.line_size();
-  const MD_Vector & md = master_vect.get_md_vector();
+  const MD_Vector& md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
   // Determine blocs of data to process, depending on " opt"
   int nblocs_left = 1;
   int one_bloc[2];
   const int *bloc_ptr;
-  if ( opt != VECT_ALL_ITEMS && md.non_nul()) {
-    assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
-    const ArrOfInt & items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-    assert(items_blocs.size_array() % 2 == 0);
-    nblocs_left = items_blocs.size_array() >> 1;
-    bloc_ptr = items_blocs.addr();
-  } else if (vect_size_tot > 0) {
-    // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-    // Compute all data, in the vector (including virtual data), build a big bloc:
-    nblocs_left = 1;
-    bloc_ptr = one_bloc;
-    one_bloc[0] = 0;
-    one_bloc[1] = vect_size_tot / line_size;
-  } else {
-    // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return ;
-  }
-  double *resu_base = resu.addr();
-  for (; nblocs_left; nblocs_left--) {
-    // Get index of next bloc start:
-    const int begin_bloc = (*(bloc_ptr++)) * line_size;
-    const int end_bloc = (*(bloc_ptr++)) * line_size;
-    assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-    double* resu_ptr = resu_base + begin_bloc;    int count = end_bloc - begin_bloc;
-    for (; count; count--) {
-      double & p_resu = *(resu_ptr++);
-       p_resu = fabs(p_resu);      
+  if ( opt != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
+      const ArrOfInt& items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
     }
-  }
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else
+    {
+      // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return ;
+    }
+  double *resu_base = resu.addr();
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size;
+      const int end_bloc = (*(bloc_ptr++)) * line_size;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      double* resu_ptr = resu_base + begin_bloc;
+      int count = end_bloc - begin_bloc;
+      for (; count; count--)
+        {
+          double& p_resu = *(resu_ptr++);
+          p_resu = fabs(p_resu);
+        }
+    }
   // In debug mode, put invalid values where data has not been computed
-#ifndef NDEBUG 
+#ifndef NDEBUG
   invalidate_data(resu,  opt);
 #endif
-  return ; 
+  return ;
 }
-              void operator_add(DoubleVect & resu, const DoubleVect & vx, Mp_vect_options opt)
+void operator_add(DoubleVect& resu, const DoubleVect& vx, Mp_vect_options opt)
 {
-   
-    // Master vect donne la structure de reference, les autres vecteurs
-    // doivent avoir la meme structure.
-    const DoubleVect & master_vect = resu;
+
+  // Master vect donne la structure de reference, les autres vecteurs
+  // doivent avoir la meme structure.
+  const DoubleVect& master_vect = resu;
   int line_size = master_vect.line_size();
-  const MD_Vector & md = master_vect.get_md_vector();
+  const MD_Vector& md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
   assert(vx.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
@@ -924,101 +1020,117 @@ double local_imin_vect(const DoubleVect & vx, Mp_vect_options opt)
   int nblocs_left = 1;
   int one_bloc[2];
   const int *bloc_ptr;
-  if ( opt != VECT_ALL_ITEMS && md.non_nul()) {
-    assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
-    const ArrOfInt & items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-    assert(items_blocs.size_array() % 2 == 0);
-    nblocs_left = items_blocs.size_array() >> 1;
-    bloc_ptr = items_blocs.addr();
-  } else if (vect_size_tot > 0) {
-    // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-    // Compute all data, in the vector (including virtual data), build a big bloc:
-    nblocs_left = 1;
-    bloc_ptr = one_bloc;
-    one_bloc[0] = 0;
-    one_bloc[1] = vect_size_tot / line_size;
-  } else {
-    // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return ;
-  }
+  if ( opt != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
+      const ArrOfInt& items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
+    }
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else
+    {
+      // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return ;
+    }
   double *resu_base = resu.addr();
   const double *x_base = vx.addr();
-  for (; nblocs_left; nblocs_left--) {
-    // Get index of next bloc start:
-    const int begin_bloc = (*(bloc_ptr++)) * line_size;
-    const int end_bloc = (*(bloc_ptr++)) * line_size;
-    assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-    double* resu_ptr = resu_base + begin_bloc;                                                    const double* x_ptr = x_base + begin_bloc;
-    int count = end_bloc - begin_bloc;
-    for (; count; count--) {
-      const double x = *x_ptr;
-      double & p_resu = *(resu_ptr++);
-       p_resu += x;      
-        x_ptr++;
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size;
+      const int end_bloc = (*(bloc_ptr++)) * line_size;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      double* resu_ptr = resu_base + begin_bloc;
+      const double* x_ptr = x_base + begin_bloc;
+      int count = end_bloc - begin_bloc;
+      for (; count; count--)
+        {
+          const double x = *x_ptr;
+          double& p_resu = *(resu_ptr++);
+          p_resu += x;
+          x_ptr++;
+        }
     }
-  }
   // In debug mode, put invalid values where data has not been computed
-#ifndef NDEBUG 
+#ifndef NDEBUG
   invalidate_data(resu,  opt);
 #endif
-  return ; 
+  return ;
 }
-                void operator_add(DoubleVect & resu, const double x, Mp_vect_options opt)
+void operator_add(DoubleVect& resu, const double x, Mp_vect_options opt)
 {
-   
-    // Master vect donne la structure de reference, les autres vecteurs
-    // doivent avoir la meme structure.
-    const DoubleVect & master_vect = resu;
+
+  // Master vect donne la structure de reference, les autres vecteurs
+  // doivent avoir la meme structure.
+  const DoubleVect& master_vect = resu;
   int line_size = master_vect.line_size();
-  const MD_Vector & md = master_vect.get_md_vector();
+  const MD_Vector& md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
   // Determine blocs of data to process, depending on " opt"
   int nblocs_left = 1;
   int one_bloc[2];
   const int *bloc_ptr;
-  if ( opt != VECT_ALL_ITEMS && md.non_nul()) {
-    assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
-    const ArrOfInt & items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-    assert(items_blocs.size_array() % 2 == 0);
-    nblocs_left = items_blocs.size_array() >> 1;
-    bloc_ptr = items_blocs.addr();
-  } else if (vect_size_tot > 0) {
-    // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-    // Compute all data, in the vector (including virtual data), build a big bloc:
-    nblocs_left = 1;
-    bloc_ptr = one_bloc;
-    one_bloc[0] = 0;
-    one_bloc[1] = vect_size_tot / line_size;
-  } else {
-    // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return ;
-  }
-  double *resu_base = resu.addr();
-  for (; nblocs_left; nblocs_left--) {
-    // Get index of next bloc start:
-    const int begin_bloc = (*(bloc_ptr++)) * line_size;
-    const int end_bloc = (*(bloc_ptr++)) * line_size;
-    assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-    double* resu_ptr = resu_base + begin_bloc;    int count = end_bloc - begin_bloc;
-    for (; count; count--) {
-      double & p_resu = *(resu_ptr++);
-       p_resu += x;      
+  if ( opt != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
+      const ArrOfInt& items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
     }
-  }
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else
+    {
+      // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return ;
+    }
+  double *resu_base = resu.addr();
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size;
+      const int end_bloc = (*(bloc_ptr++)) * line_size;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      double* resu_ptr = resu_base + begin_bloc;
+      int count = end_bloc - begin_bloc;
+      for (; count; count--)
+        {
+          double& p_resu = *(resu_ptr++);
+          p_resu += x;
+        }
+    }
   // In debug mode, put invalid values where data has not been computed
-#ifndef NDEBUG 
+#ifndef NDEBUG
   invalidate_data(resu,  opt);
 #endif
-  return ; 
+  return ;
 }
-                  void operator_sub(DoubleVect & resu, const DoubleVect & vx, Mp_vect_options opt)
+void operator_sub(DoubleVect& resu, const DoubleVect& vx, Mp_vect_options opt)
 {
-   
-    // Master vect donne la structure de reference, les autres vecteurs
-    // doivent avoir la meme structure.
-    const DoubleVect & master_vect = resu;
+
+  // Master vect donne la structure de reference, les autres vecteurs
+  // doivent avoir la meme structure.
+  const DoubleVect& master_vect = resu;
   int line_size = master_vect.line_size();
-  const MD_Vector & md = master_vect.get_md_vector();
+  const MD_Vector& md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
   assert(vx.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
@@ -1027,101 +1139,117 @@ double local_imin_vect(const DoubleVect & vx, Mp_vect_options opt)
   int nblocs_left = 1;
   int one_bloc[2];
   const int *bloc_ptr;
-  if ( opt != VECT_ALL_ITEMS && md.non_nul()) {
-    assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
-    const ArrOfInt & items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-    assert(items_blocs.size_array() % 2 == 0);
-    nblocs_left = items_blocs.size_array() >> 1;
-    bloc_ptr = items_blocs.addr();
-  } else if (vect_size_tot > 0) {
-    // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-    // Compute all data, in the vector (including virtual data), build a big bloc:
-    nblocs_left = 1;
-    bloc_ptr = one_bloc;
-    one_bloc[0] = 0;
-    one_bloc[1] = vect_size_tot / line_size;
-  } else {
-    // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return ;
-  }
+  if ( opt != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
+      const ArrOfInt& items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
+    }
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else
+    {
+      // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return ;
+    }
   double *resu_base = resu.addr();
   const double *x_base = vx.addr();
-  for (; nblocs_left; nblocs_left--) {
-    // Get index of next bloc start:
-    const int begin_bloc = (*(bloc_ptr++)) * line_size;
-    const int end_bloc = (*(bloc_ptr++)) * line_size;
-    assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-    double* resu_ptr = resu_base + begin_bloc;                                                    const double* x_ptr = x_base + begin_bloc;
-    int count = end_bloc - begin_bloc;
-    for (; count; count--) {
-      const double x = *x_ptr;
-      double & p_resu = *(resu_ptr++);
-       p_resu -= x;      
-        x_ptr++;
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size;
+      const int end_bloc = (*(bloc_ptr++)) * line_size;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      double* resu_ptr = resu_base + begin_bloc;
+      const double* x_ptr = x_base + begin_bloc;
+      int count = end_bloc - begin_bloc;
+      for (; count; count--)
+        {
+          const double x = *x_ptr;
+          double& p_resu = *(resu_ptr++);
+          p_resu -= x;
+          x_ptr++;
+        }
     }
-  }
   // In debug mode, put invalid values where data has not been computed
-#ifndef NDEBUG 
+#ifndef NDEBUG
   invalidate_data(resu,  opt);
 #endif
-  return ; 
+  return ;
 }
-                    void operator_sub(DoubleVect & resu, const double x, Mp_vect_options opt)
+void operator_sub(DoubleVect& resu, const double x, Mp_vect_options opt)
 {
-   
-    // Master vect donne la structure de reference, les autres vecteurs
-    // doivent avoir la meme structure.
-    const DoubleVect & master_vect = resu;
+
+  // Master vect donne la structure de reference, les autres vecteurs
+  // doivent avoir la meme structure.
+  const DoubleVect& master_vect = resu;
   int line_size = master_vect.line_size();
-  const MD_Vector & md = master_vect.get_md_vector();
+  const MD_Vector& md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
   // Determine blocs of data to process, depending on " opt"
   int nblocs_left = 1;
   int one_bloc[2];
   const int *bloc_ptr;
-  if ( opt != VECT_ALL_ITEMS && md.non_nul()) {
-    assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
-    const ArrOfInt & items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-    assert(items_blocs.size_array() % 2 == 0);
-    nblocs_left = items_blocs.size_array() >> 1;
-    bloc_ptr = items_blocs.addr();
-  } else if (vect_size_tot > 0) {
-    // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-    // Compute all data, in the vector (including virtual data), build a big bloc:
-    nblocs_left = 1;
-    bloc_ptr = one_bloc;
-    one_bloc[0] = 0;
-    one_bloc[1] = vect_size_tot / line_size;
-  } else {
-    // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return ;
-  }
-  double *resu_base = resu.addr();
-  for (; nblocs_left; nblocs_left--) {
-    // Get index of next bloc start:
-    const int begin_bloc = (*(bloc_ptr++)) * line_size;
-    const int end_bloc = (*(bloc_ptr++)) * line_size;
-    assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-    double* resu_ptr = resu_base + begin_bloc;    int count = end_bloc - begin_bloc;
-    for (; count; count--) {
-      double & p_resu = *(resu_ptr++);
-       p_resu -= x;      
+  if ( opt != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
+      const ArrOfInt& items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
     }
-  }
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else
+    {
+      // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return ;
+    }
+  double *resu_base = resu.addr();
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size;
+      const int end_bloc = (*(bloc_ptr++)) * line_size;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      double* resu_ptr = resu_base + begin_bloc;
+      int count = end_bloc - begin_bloc;
+      for (; count; count--)
+        {
+          double& p_resu = *(resu_ptr++);
+          p_resu -= x;
+        }
+    }
   // In debug mode, put invalid values where data has not been computed
-#ifndef NDEBUG 
+#ifndef NDEBUG
   invalidate_data(resu,  opt);
 #endif
-  return ; 
+  return ;
 }
-                      void operator_multiply(DoubleVect & resu, const DoubleVect & vx, Mp_vect_options opt)
+void operator_multiply(DoubleVect& resu, const DoubleVect& vx, Mp_vect_options opt)
 {
-   
-    // Master vect donne la structure de reference, les autres vecteurs
-    // doivent avoir la meme structure.
-    const DoubleVect & master_vect = resu;
+
+  // Master vect donne la structure de reference, les autres vecteurs
+  // doivent avoir la meme structure.
+  const DoubleVect& master_vect = resu;
   int line_size = master_vect.line_size();
-  const MD_Vector & md = master_vect.get_md_vector();
+  const MD_Vector& md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
   assert(vx.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
@@ -1130,197 +1258,229 @@ double local_imin_vect(const DoubleVect & vx, Mp_vect_options opt)
   int nblocs_left = 1;
   int one_bloc[2];
   const int *bloc_ptr;
-  if ( opt != VECT_ALL_ITEMS && md.non_nul()) {
-    assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
-    const ArrOfInt & items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-    assert(items_blocs.size_array() % 2 == 0);
-    nblocs_left = items_blocs.size_array() >> 1;
-    bloc_ptr = items_blocs.addr();
-  } else if (vect_size_tot > 0) {
-    // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-    // Compute all data, in the vector (including virtual data), build a big bloc:
-    nblocs_left = 1;
-    bloc_ptr = one_bloc;
-    one_bloc[0] = 0;
-    one_bloc[1] = vect_size_tot / line_size;
-  } else {
-    // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return ;
-  }
+  if ( opt != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
+      const ArrOfInt& items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
+    }
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else
+    {
+      // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return ;
+    }
   double *resu_base = resu.addr();
   const double *x_base = vx.addr();
-  for (; nblocs_left; nblocs_left--) {
-    // Get index of next bloc start:
-    const int begin_bloc = (*(bloc_ptr++)) * line_size;
-    const int end_bloc = (*(bloc_ptr++)) * line_size;
-    assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-    double* resu_ptr = resu_base + begin_bloc;                                                    const double* x_ptr = x_base + begin_bloc;
-    int count = end_bloc - begin_bloc;
-    for (; count; count--) {
-      const double x = *x_ptr;
-      double & p_resu = *(resu_ptr++);
-       p_resu *= x;      
-        x_ptr++;
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size;
+      const int end_bloc = (*(bloc_ptr++)) * line_size;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      double* resu_ptr = resu_base + begin_bloc;
+      const double* x_ptr = x_base + begin_bloc;
+      int count = end_bloc - begin_bloc;
+      for (; count; count--)
+        {
+          const double x = *x_ptr;
+          double& p_resu = *(resu_ptr++);
+          p_resu *= x;
+          x_ptr++;
+        }
     }
-  }
   // In debug mode, put invalid values where data has not been computed
-#ifndef NDEBUG 
+#ifndef NDEBUG
   invalidate_data(resu,  opt);
 #endif
-  return ; 
+  return ;
 }
-                        void operator_multiply(DoubleVect & resu, const double x, Mp_vect_options opt)
+void operator_multiply(DoubleVect& resu, const double x, Mp_vect_options opt)
 {
-   
-    // Master vect donne la structure de reference, les autres vecteurs
-    // doivent avoir la meme structure.
-    const DoubleVect & master_vect = resu;
+
+  // Master vect donne la structure de reference, les autres vecteurs
+  // doivent avoir la meme structure.
+  const DoubleVect& master_vect = resu;
   int line_size = master_vect.line_size();
-  const MD_Vector & md = master_vect.get_md_vector();
+  const MD_Vector& md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
   // Determine blocs of data to process, depending on " opt"
   int nblocs_left = 1;
   int one_bloc[2];
   const int *bloc_ptr;
-  if ( opt != VECT_ALL_ITEMS && md.non_nul()) {
-    assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
-    const ArrOfInt & items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-    assert(items_blocs.size_array() % 2 == 0);
-    nblocs_left = items_blocs.size_array() >> 1;
-    bloc_ptr = items_blocs.addr();
-  } else if (vect_size_tot > 0) {
-    // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-    // Compute all data, in the vector (including virtual data), build a big bloc:
-    nblocs_left = 1;
-    bloc_ptr = one_bloc;
-    one_bloc[0] = 0;
-    one_bloc[1] = vect_size_tot / line_size;
-  } else {
-    // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return ;
-  }
-  double *resu_base = resu.addr();
-  for (; nblocs_left; nblocs_left--) {
-    // Get index of next bloc start:
-    const int begin_bloc = (*(bloc_ptr++)) * line_size;
-    const int end_bloc = (*(bloc_ptr++)) * line_size;
-    assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-    double* resu_ptr = resu_base + begin_bloc;    int count = end_bloc - begin_bloc;
-    for (; count; count--) {
-      double & p_resu = *(resu_ptr++);
-       p_resu *= x;      
+  if ( opt != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
+      const ArrOfInt& items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
     }
-  }
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else
+    {
+      // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return ;
+    }
+  double *resu_base = resu.addr();
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size;
+      const int end_bloc = (*(bloc_ptr++)) * line_size;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      double* resu_ptr = resu_base + begin_bloc;
+      int count = end_bloc - begin_bloc;
+      for (; count; count--)
+        {
+          double& p_resu = *(resu_ptr++);
+          p_resu *= x;
+        }
+    }
   // In debug mode, put invalid values where data has not been computed
-#ifndef NDEBUG 
+#ifndef NDEBUG
   invalidate_data(resu,  opt);
 #endif
-  return ; 
+  return ;
 }
-                          void operator_negate(DoubleVect & resu, Mp_vect_options opt)
+void operator_negate(DoubleVect& resu, Mp_vect_options opt)
 {
-   
-    // Master vect donne la structure de reference, les autres vecteurs
-    // doivent avoir la meme structure.
-    const DoubleVect & master_vect = resu;
+
+  // Master vect donne la structure de reference, les autres vecteurs
+  // doivent avoir la meme structure.
+  const DoubleVect& master_vect = resu;
   int line_size = master_vect.line_size();
-  const MD_Vector & md = master_vect.get_md_vector();
+  const MD_Vector& md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
   // Determine blocs of data to process, depending on " opt"
   int nblocs_left = 1;
   int one_bloc[2];
   const int *bloc_ptr;
-  if ( opt != VECT_ALL_ITEMS && md.non_nul()) {
-    assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
-    const ArrOfInt & items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-    assert(items_blocs.size_array() % 2 == 0);
-    nblocs_left = items_blocs.size_array() >> 1;
-    bloc_ptr = items_blocs.addr();
-  } else if (vect_size_tot > 0) {
-    // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-    // Compute all data, in the vector (including virtual data), build a big bloc:
-    nblocs_left = 1;
-    bloc_ptr = one_bloc;
-    one_bloc[0] = 0;
-    one_bloc[1] = vect_size_tot / line_size;
-  } else {
-    // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return ;
-  }
-  double *resu_base = resu.addr();
-  for (; nblocs_left; nblocs_left--) {
-    // Get index of next bloc start:
-    const int begin_bloc = (*(bloc_ptr++)) * line_size;
-    const int end_bloc = (*(bloc_ptr++)) * line_size;
-    assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-    double* resu_ptr = resu_base + begin_bloc;    int count = end_bloc - begin_bloc;
-    for (; count; count--) {
-      double & p_resu = *(resu_ptr++);
-       p_resu = -p_resu;      
+  if ( opt != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
+      const ArrOfInt& items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
     }
-  }
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else
+    {
+      // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return ;
+    }
+  double *resu_base = resu.addr();
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size;
+      const int end_bloc = (*(bloc_ptr++)) * line_size;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      double* resu_ptr = resu_base + begin_bloc;
+      int count = end_bloc - begin_bloc;
+      for (; count; count--)
+        {
+          double& p_resu = *(resu_ptr++);
+          p_resu = -p_resu;
+        }
+    }
   // In debug mode, put invalid values where data has not been computed
-#ifndef NDEBUG 
+#ifndef NDEBUG
   invalidate_data(resu,  opt);
 #endif
-  return ; 
+  return ;
 }
-                            void operator_egal(DoubleVect & resu, double x, Mp_vect_options opt)
+void operator_egal(DoubleVect& resu, double x, Mp_vect_options opt)
 {
-   
-    // Master vect donne la structure de reference, les autres vecteurs
-    // doivent avoir la meme structure.
-    const DoubleVect & master_vect = resu;
+
+  // Master vect donne la structure de reference, les autres vecteurs
+  // doivent avoir la meme structure.
+  const DoubleVect& master_vect = resu;
   int line_size = master_vect.line_size();
-  const MD_Vector & md = master_vect.get_md_vector();
+  const MD_Vector& md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
   // Determine blocs of data to process, depending on " opt"
   int nblocs_left = 1;
   int one_bloc[2];
   const int *bloc_ptr;
-  if ( opt != VECT_ALL_ITEMS && md.non_nul()) {
-    assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
-    const ArrOfInt & items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-    assert(items_blocs.size_array() % 2 == 0);
-    nblocs_left = items_blocs.size_array() >> 1;
-    bloc_ptr = items_blocs.addr();
-  } else if (vect_size_tot > 0) {
-    // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-    // Compute all data, in the vector (including virtual data), build a big bloc:
-    nblocs_left = 1;
-    bloc_ptr = one_bloc;
-    one_bloc[0] = 0;
-    one_bloc[1] = vect_size_tot / line_size;
-  } else {
-    // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return ;
-  }
-  double *resu_base = resu.addr();
-  for (; nblocs_left; nblocs_left--) {
-    // Get index of next bloc start:
-    const int begin_bloc = (*(bloc_ptr++)) * line_size;
-    const int end_bloc = (*(bloc_ptr++)) * line_size;
-    assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-    double* resu_ptr = resu_base + begin_bloc;    int count = end_bloc - begin_bloc;
-    for (; count; count--) {
-      double & p_resu = *(resu_ptr++);
-       p_resu = x;      
+  if ( opt != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
+      const ArrOfInt& items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
     }
-  }
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else
+    {
+      // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return ;
+    }
+  double *resu_base = resu.addr();
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size;
+      const int end_bloc = (*(bloc_ptr++)) * line_size;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      double* resu_ptr = resu_base + begin_bloc;
+      int count = end_bloc - begin_bloc;
+      for (; count; count--)
+        {
+          double& p_resu = *(resu_ptr++);
+          p_resu = x;
+        }
+    }
   // In debug mode, put invalid values where data has not been computed
-#ifndef NDEBUG 
+#ifndef NDEBUG
   invalidate_data(resu,  opt);
 #endif
-  return ; 
+  return ;
 }
-                              void operator_egal(DoubleVect & resu, const DoubleVect & vx, Mp_vect_options opt)
+void operator_egal(DoubleVect& resu, const DoubleVect& vx, Mp_vect_options opt)
 {
-   
-    // Master vect donne la structure de reference, les autres vecteurs
-    // doivent avoir la meme structure.
-    const DoubleVect & master_vect = resu;
+
+  // Master vect donne la structure de reference, les autres vecteurs
+  // doivent avoir la meme structure.
+  const DoubleVect& master_vect = resu;
   int line_size = master_vect.line_size();
-  const MD_Vector & md = master_vect.get_md_vector();
+  const MD_Vector& md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
   assert(vx.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
@@ -1329,53 +1489,61 @@ double local_imin_vect(const DoubleVect & vx, Mp_vect_options opt)
   int nblocs_left = 1;
   int one_bloc[2];
   const int *bloc_ptr;
-  if ( opt != VECT_ALL_ITEMS && md.non_nul()) {
-    assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
-    const ArrOfInt & items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-    assert(items_blocs.size_array() % 2 == 0);
-    nblocs_left = items_blocs.size_array() >> 1;
-    bloc_ptr = items_blocs.addr();
-  } else if (vect_size_tot > 0) {
-    // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-    // Compute all data, in the vector (including virtual data), build a big bloc:
-    nblocs_left = 1;
-    bloc_ptr = one_bloc;
-    one_bloc[0] = 0;
-    one_bloc[1] = vect_size_tot / line_size;
-  } else {
-    // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return ;
-  }
+  if ( opt != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
+      const ArrOfInt& items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
+    }
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else
+    {
+      // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return ;
+    }
   double *resu_base = resu.addr();
   const double *x_base = vx.addr();
-  for (; nblocs_left; nblocs_left--) {
-    // Get index of next bloc start:
-    const int begin_bloc = (*(bloc_ptr++)) * line_size;
-    const int end_bloc = (*(bloc_ptr++)) * line_size;
-    assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-    double* resu_ptr = resu_base + begin_bloc;                                                    const double* x_ptr = x_base + begin_bloc;
-    int count = end_bloc - begin_bloc;
-    for (; count; count--) {
-      const double x = *x_ptr;
-      double & p_resu = *(resu_ptr++);
-       p_resu = x;      
-        x_ptr++;
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size;
+      const int end_bloc = (*(bloc_ptr++)) * line_size;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      double* resu_ptr = resu_base + begin_bloc;
+      const double* x_ptr = x_base + begin_bloc;
+      int count = end_bloc - begin_bloc;
+      for (; count; count--)
+        {
+          const double x = *x_ptr;
+          double& p_resu = *(resu_ptr++);
+          p_resu = x;
+          x_ptr++;
+        }
     }
-  }
   // In debug mode, put invalid values where data has not been computed
-#ifndef NDEBUG 
+#ifndef NDEBUG
   invalidate_data(resu,  opt);
 #endif
-  return ; 
+  return ;
 }
-                                void ajoute_alpha_v(DoubleVect & resu, double alpha, const DoubleVect & vx, Mp_vect_options opt)
+void ajoute_alpha_v(DoubleVect& resu, double alpha, const DoubleVect& vx, Mp_vect_options opt)
 {
-   
-    // Master vect donne la structure de reference, les autres vecteurs
-    // doivent avoir la meme structure.
-    const DoubleVect & master_vect = resu;
+
+  // Master vect donne la structure de reference, les autres vecteurs
+  // doivent avoir la meme structure.
+  const DoubleVect& master_vect = resu;
   int line_size = master_vect.line_size();
-  const MD_Vector & md = master_vect.get_md_vector();
+  const MD_Vector& md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
   assert(vx.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
@@ -1384,53 +1552,61 @@ double local_imin_vect(const DoubleVect & vx, Mp_vect_options opt)
   int nblocs_left = 1;
   int one_bloc[2];
   const int *bloc_ptr;
-  if ( opt != VECT_ALL_ITEMS && md.non_nul()) {
-    assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
-    const ArrOfInt & items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-    assert(items_blocs.size_array() % 2 == 0);
-    nblocs_left = items_blocs.size_array() >> 1;
-    bloc_ptr = items_blocs.addr();
-  } else if (vect_size_tot > 0) {
-    // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-    // Compute all data, in the vector (including virtual data), build a big bloc:
-    nblocs_left = 1;
-    bloc_ptr = one_bloc;
-    one_bloc[0] = 0;
-    one_bloc[1] = vect_size_tot / line_size;
-  } else {
-    // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return ;
-  }
+  if ( opt != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
+      const ArrOfInt& items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
+    }
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else
+    {
+      // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return ;
+    }
   double *resu_base = resu.addr();
   const double *x_base = vx.addr();
-  for (; nblocs_left; nblocs_left--) {
-    // Get index of next bloc start:
-    const int begin_bloc = (*(bloc_ptr++)) * line_size;
-    const int end_bloc = (*(bloc_ptr++)) * line_size;
-    assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-    double* resu_ptr = resu_base + begin_bloc;                                                    const double* x_ptr = x_base + begin_bloc;
-    int count = end_bloc - begin_bloc;
-    for (; count; count--) {
-      const double x = *x_ptr;
-      double & p_resu = *(resu_ptr++);
-       p_resu += alpha * x;      
-        x_ptr++;
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size;
+      const int end_bloc = (*(bloc_ptr++)) * line_size;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      double* resu_ptr = resu_base + begin_bloc;
+      const double* x_ptr = x_base + begin_bloc;
+      int count = end_bloc - begin_bloc;
+      for (; count; count--)
+        {
+          const double x = *x_ptr;
+          double& p_resu = *(resu_ptr++);
+          p_resu += alpha * x;
+          x_ptr++;
+        }
     }
-  }
   // In debug mode, put invalid values where data has not been computed
-#ifndef NDEBUG 
+#ifndef NDEBUG
   invalidate_data(resu,  opt);
 #endif
-  return ; 
+  return ;
 }
-                                  void ajoute_carre(DoubleVect & resu, double alpha, const DoubleVect & vx, Mp_vect_options opt)
+void ajoute_carre(DoubleVect& resu, double alpha, const DoubleVect& vx, Mp_vect_options opt)
 {
-   
-    // Master vect donne la structure de reference, les autres vecteurs
-    // doivent avoir la meme structure.
-    const DoubleVect & master_vect = resu;
+
+  // Master vect donne la structure de reference, les autres vecteurs
+  // doivent avoir la meme structure.
+  const DoubleVect& master_vect = resu;
   int line_size = master_vect.line_size();
-  const MD_Vector & md = master_vect.get_md_vector();
+  const MD_Vector& md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
   assert(vx.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
@@ -1439,53 +1615,61 @@ double local_imin_vect(const DoubleVect & vx, Mp_vect_options opt)
   int nblocs_left = 1;
   int one_bloc[2];
   const int *bloc_ptr;
-  if ( opt != VECT_ALL_ITEMS && md.non_nul()) {
-    assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
-    const ArrOfInt & items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-    assert(items_blocs.size_array() % 2 == 0);
-    nblocs_left = items_blocs.size_array() >> 1;
-    bloc_ptr = items_blocs.addr();
-  } else if (vect_size_tot > 0) {
-    // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-    // Compute all data, in the vector (including virtual data), build a big bloc:
-    nblocs_left = 1;
-    bloc_ptr = one_bloc;
-    one_bloc[0] = 0;
-    one_bloc[1] = vect_size_tot / line_size;
-  } else {
-    // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return ;
-  }
+  if ( opt != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
+      const ArrOfInt& items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
+    }
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else
+    {
+      // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return ;
+    }
   double *resu_base = resu.addr();
   const double *x_base = vx.addr();
-  for (; nblocs_left; nblocs_left--) {
-    // Get index of next bloc start:
-    const int begin_bloc = (*(bloc_ptr++)) * line_size;
-    const int end_bloc = (*(bloc_ptr++)) * line_size;
-    assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-    double* resu_ptr = resu_base + begin_bloc;                                                    const double* x_ptr = x_base + begin_bloc;
-    int count = end_bloc - begin_bloc;
-    for (; count; count--) {
-      const double x = *x_ptr;
-      double & p_resu = *(resu_ptr++);
-       p_resu += alpha * x * x;      
-        x_ptr++;
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size;
+      const int end_bloc = (*(bloc_ptr++)) * line_size;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      double* resu_ptr = resu_base + begin_bloc;
+      const double* x_ptr = x_base + begin_bloc;
+      int count = end_bloc - begin_bloc;
+      for (; count; count--)
+        {
+          const double x = *x_ptr;
+          double& p_resu = *(resu_ptr++);
+          p_resu += alpha * x * x;
+          x_ptr++;
+        }
     }
-  }
   // In debug mode, put invalid values where data has not been computed
-#ifndef NDEBUG 
+#ifndef NDEBUG
   invalidate_data(resu,  opt);
 #endif
-  return ; 
+  return ;
 }
-                                    void ajoute_produit_scalaire(DoubleVect & resu, double alpha, const DoubleVect & vx, const DoubleVect & vy, Mp_vect_options opt)
+void ajoute_produit_scalaire(DoubleVect& resu, double alpha, const DoubleVect& vx, const DoubleVect& vy, Mp_vect_options opt)
 {
-   
-    // Master vect donne la structure de reference, les autres vecteurs
-    // doivent avoir la meme structure.
-    const DoubleVect & master_vect = resu;
+
+  // Master vect donne la structure de reference, les autres vecteurs
+  // doivent avoir la meme structure.
+  const DoubleVect& master_vect = resu;
   int line_size = master_vect.line_size();
-  const MD_Vector & md = master_vect.get_md_vector();
+  const MD_Vector& md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
   assert(vx.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
@@ -1497,152 +1681,176 @@ double local_imin_vect(const DoubleVect & vx, Mp_vect_options opt)
   int nblocs_left = 1;
   int one_bloc[2];
   const int *bloc_ptr;
-  if ( opt != VECT_ALL_ITEMS && md.non_nul()) {
-    assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
-    const ArrOfInt & items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-    assert(items_blocs.size_array() % 2 == 0);
-    nblocs_left = items_blocs.size_array() >> 1;
-    bloc_ptr = items_blocs.addr();
-  } else if (vect_size_tot > 0) {
-    // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-    // Compute all data, in the vector (including virtual data), build a big bloc:
-    nblocs_left = 1;
-    bloc_ptr = one_bloc;
-    one_bloc[0] = 0;
-    one_bloc[1] = vect_size_tot / line_size;
-  } else {
-    // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return ;
-  }
+  if ( opt != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
+      const ArrOfInt& items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
+    }
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else
+    {
+      // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return ;
+    }
   double *resu_base = resu.addr();
   const double *x_base = vx.addr();
   const double *y_base = vy.addr();
-  for (; nblocs_left; nblocs_left--) {
-    // Get index of next bloc start:
-    const int begin_bloc = (*(bloc_ptr++)) * line_size;
-    const int end_bloc = (*(bloc_ptr++)) * line_size;
-    assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-    double* resu_ptr = resu_base + begin_bloc;                                                    const double* x_ptr = x_base + begin_bloc;
-    const double* y_ptr = y_base + begin_bloc;
-    int count = end_bloc - begin_bloc;
-    for (; count; count--) {
-      const double x = *x_ptr;
-      const double y = *(y_ptr++);
-      double & p_resu = *(resu_ptr++);
-       p_resu += alpha * x * y;      
-        x_ptr++;
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size;
+      const int end_bloc = (*(bloc_ptr++)) * line_size;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      double* resu_ptr = resu_base + begin_bloc;
+      const double* x_ptr = x_base + begin_bloc;
+      const double* y_ptr = y_base + begin_bloc;
+      int count = end_bloc - begin_bloc;
+      for (; count; count--)
+        {
+          const double x = *x_ptr;
+          const double y = *(y_ptr++);
+          double& p_resu = *(resu_ptr++);
+          p_resu += alpha * x * y;
+          x_ptr++;
+        }
     }
-  }
   // In debug mode, put invalid values where data has not been computed
-#ifndef NDEBUG 
+#ifndef NDEBUG
   invalidate_data(resu,  opt);
 #endif
-  return ; 
+  return ;
 }
-                                      void racine_carree(DoubleVect & resu, Mp_vect_options opt)
+void racine_carree(DoubleVect& resu, Mp_vect_options opt)
 {
-   
-    // Master vect donne la structure de reference, les autres vecteurs
-    // doivent avoir la meme structure.
-    const DoubleVect & master_vect = resu;
+
+  // Master vect donne la structure de reference, les autres vecteurs
+  // doivent avoir la meme structure.
+  const DoubleVect& master_vect = resu;
   int line_size = master_vect.line_size();
-  const MD_Vector & md = master_vect.get_md_vector();
+  const MD_Vector& md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
   // Determine blocs of data to process, depending on " opt"
   int nblocs_left = 1;
   int one_bloc[2];
   const int *bloc_ptr;
-  if ( opt != VECT_ALL_ITEMS && md.non_nul()) {
-    assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
-    const ArrOfInt & items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-    assert(items_blocs.size_array() % 2 == 0);
-    nblocs_left = items_blocs.size_array() >> 1;
-    bloc_ptr = items_blocs.addr();
-  } else if (vect_size_tot > 0) {
-    // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-    // Compute all data, in the vector (including virtual data), build a big bloc:
-    nblocs_left = 1;
-    bloc_ptr = one_bloc;
-    one_bloc[0] = 0;
-    one_bloc[1] = vect_size_tot / line_size;
-  } else {
-    // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return ;
-  }
-  double *resu_base = resu.addr();
-  for (; nblocs_left; nblocs_left--) {
-    // Get index of next bloc start:
-    const int begin_bloc = (*(bloc_ptr++)) * line_size;
-    const int end_bloc = (*(bloc_ptr++)) * line_size;
-    assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-    double* resu_ptr = resu_base + begin_bloc;    int count = end_bloc - begin_bloc;
-    for (; count; count--) {
-      double & p_resu = *(resu_ptr++);
-       p_resu = sqrt(p_resu);      
+  if ( opt != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
+      const ArrOfInt& items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
     }
-  }
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else
+    {
+      // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return ;
+    }
+  double *resu_base = resu.addr();
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size;
+      const int end_bloc = (*(bloc_ptr++)) * line_size;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      double* resu_ptr = resu_base + begin_bloc;
+      int count = end_bloc - begin_bloc;
+      for (; count; count--)
+        {
+          double& p_resu = *(resu_ptr++);
+          p_resu = sqrt(p_resu);
+        }
+    }
   // In debug mode, put invalid values where data has not been computed
-#ifndef NDEBUG 
+#ifndef NDEBUG
   invalidate_data(resu,  opt);
 #endif
-  return ; 
+  return ;
 }
-                                        void carre(DoubleVect & resu, Mp_vect_options opt)
+void carre(DoubleVect& resu, Mp_vect_options opt)
 {
-   
-    // Master vect donne la structure de reference, les autres vecteurs
-    // doivent avoir la meme structure.
-    const DoubleVect & master_vect = resu;
+
+  // Master vect donne la structure de reference, les autres vecteurs
+  // doivent avoir la meme structure.
+  const DoubleVect& master_vect = resu;
   int line_size = master_vect.line_size();
-  const MD_Vector & md = master_vect.get_md_vector();
+  const MD_Vector& md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
   // Determine blocs of data to process, depending on " opt"
   int nblocs_left = 1;
   int one_bloc[2];
   const int *bloc_ptr;
-  if ( opt != VECT_ALL_ITEMS && md.non_nul()) {
-    assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
-    const ArrOfInt & items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-    assert(items_blocs.size_array() % 2 == 0);
-    nblocs_left = items_blocs.size_array() >> 1;
-    bloc_ptr = items_blocs.addr();
-  } else if (vect_size_tot > 0) {
-    // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-    // Compute all data, in the vector (including virtual data), build a big bloc:
-    nblocs_left = 1;
-    bloc_ptr = one_bloc;
-    one_bloc[0] = 0;
-    one_bloc[1] = vect_size_tot / line_size;
-  } else {
-    // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return ;
-  }
-  double *resu_base = resu.addr();
-  for (; nblocs_left; nblocs_left--) {
-    // Get index of next bloc start:
-    const int begin_bloc = (*(bloc_ptr++)) * line_size;
-    const int end_bloc = (*(bloc_ptr++)) * line_size;
-    assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-    double* resu_ptr = resu_base + begin_bloc;    int count = end_bloc - begin_bloc;
-    for (; count; count--) {
-      double & p_resu = *(resu_ptr++);
-       p_resu *= p_resu;      
+  if ( opt != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
+      const ArrOfInt& items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
     }
-  }
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else
+    {
+      // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return ;
+    }
+  double *resu_base = resu.addr();
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size;
+      const int end_bloc = (*(bloc_ptr++)) * line_size;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      double* resu_ptr = resu_base + begin_bloc;
+      int count = end_bloc - begin_bloc;
+      for (; count; count--)
+        {
+          double& p_resu = *(resu_ptr++);
+          p_resu *= p_resu;
+        }
+    }
   // In debug mode, put invalid values where data has not been computed
-#ifndef NDEBUG 
+#ifndef NDEBUG
   invalidate_data(resu,  opt);
 #endif
-  return ; 
+  return ;
 }
-                                          void operator_divide(DoubleVect & resu, const DoubleVect & vx, Mp_vect_options opt)
+void operator_divide(DoubleVect& resu, const DoubleVect& vx, Mp_vect_options opt)
 {
-   
-    // Master vect donne la structure de reference, les autres vecteurs
-    // doivent avoir la meme structure.
-    const DoubleVect & master_vect = resu;
+
+  // Master vect donne la structure de reference, les autres vecteurs
+  // doivent avoir la meme structure.
+  const DoubleVect& master_vect = resu;
   int line_size = master_vect.line_size();
-  const MD_Vector & md = master_vect.get_md_vector();
+  const MD_Vector& md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
   assert(vx.line_size() == line_size);
   assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
@@ -1651,102 +1859,118 @@ double local_imin_vect(const DoubleVect & vx, Mp_vect_options opt)
   int nblocs_left = 1;
   int one_bloc[2];
   const int *bloc_ptr;
-  if ( opt != VECT_ALL_ITEMS && md.non_nul()) {
-    assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
-    const ArrOfInt & items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-    assert(items_blocs.size_array() % 2 == 0);
-    nblocs_left = items_blocs.size_array() >> 1;
-    bloc_ptr = items_blocs.addr();
-  } else if (vect_size_tot > 0) {
-    // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-    // Compute all data, in the vector (including virtual data), build a big bloc:
-    nblocs_left = 1;
-    bloc_ptr = one_bloc;
-    one_bloc[0] = 0;
-    one_bloc[1] = vect_size_tot / line_size;
-  } else {
-    // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return ;
-  }
+  if ( opt != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
+      const ArrOfInt& items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
+    }
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else
+    {
+      // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return ;
+    }
   double *resu_base = resu.addr();
   const double *x_base = vx.addr();
-  for (; nblocs_left; nblocs_left--) {
-    // Get index of next bloc start:
-    const int begin_bloc = (*(bloc_ptr++)) * line_size;
-    const int end_bloc = (*(bloc_ptr++)) * line_size;
-    assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-    double* resu_ptr = resu_base + begin_bloc;                                                    const double* x_ptr = x_base + begin_bloc;
-    int count = end_bloc - begin_bloc;
-    for (; count; count--) {
-      const double x = *x_ptr;
-      double & p_resu = *(resu_ptr++);
-       p_resu /= x;      
-        x_ptr++;
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size;
+      const int end_bloc = (*(bloc_ptr++)) * line_size;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      double* resu_ptr = resu_base + begin_bloc;
+      const double* x_ptr = x_base + begin_bloc;
+      int count = end_bloc - begin_bloc;
+      for (; count; count--)
+        {
+          const double x = *x_ptr;
+          double& p_resu = *(resu_ptr++);
+          p_resu /= x;
+          x_ptr++;
+        }
     }
-  }
   // In debug mode, put invalid values where data has not been computed
-#ifndef NDEBUG 
+#ifndef NDEBUG
   invalidate_data(resu,  opt);
 #endif
-  return ; 
+  return ;
 }
-                                            void operator_inverse(DoubleVect & resu, Mp_vect_options opt)
+void operator_inverse(DoubleVect& resu, Mp_vect_options opt)
 {
-   
-    // Master vect donne la structure de reference, les autres vecteurs
-    // doivent avoir la meme structure.
-    const DoubleVect & master_vect = resu;
+
+  // Master vect donne la structure de reference, les autres vecteurs
+  // doivent avoir la meme structure.
+  const DoubleVect& master_vect = resu;
   int line_size = master_vect.line_size();
-  const MD_Vector & md = master_vect.get_md_vector();
+  const MD_Vector& md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
   // Determine blocs of data to process, depending on " opt"
   int nblocs_left = 1;
   int one_bloc[2];
   const int *bloc_ptr;
-  if ( opt != VECT_ALL_ITEMS && md.non_nul()) {
-    assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
-    const ArrOfInt & items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-    assert(items_blocs.size_array() % 2 == 0);
-    nblocs_left = items_blocs.size_array() >> 1;
-    bloc_ptr = items_blocs.addr();
-  } else if (vect_size_tot > 0) {
-    // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-    // Compute all data, in the vector (including virtual data), build a big bloc:
-    nblocs_left = 1;
-    bloc_ptr = one_bloc;
-    one_bloc[0] = 0;
-    one_bloc[1] = vect_size_tot / line_size;
-  } else {
-    // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return ;
-  }
-  double *resu_base = resu.addr();
-  for (; nblocs_left; nblocs_left--) {
-    // Get index of next bloc start:
-    const int begin_bloc = (*(bloc_ptr++)) * line_size;
-    const int end_bloc = (*(bloc_ptr++)) * line_size;
-    assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-    double* resu_ptr = resu_base + begin_bloc;    int count = end_bloc - begin_bloc;
-    for (; count; count--) {
-      double & p_resu = *(resu_ptr++);
-       p_resu = 1. / p_resu;      
+  if ( opt != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
+      const ArrOfInt& items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
     }
-  }
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else
+    {
+      // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return ;
+    }
+  double *resu_base = resu.addr();
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size;
+      const int end_bloc = (*(bloc_ptr++)) * line_size;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      double* resu_ptr = resu_base + begin_bloc;
+      int count = end_bloc - begin_bloc;
+      for (; count; count--)
+        {
+          double& p_resu = *(resu_ptr++);
+          p_resu = 1. / p_resu;
+        }
+    }
   // In debug mode, put invalid values where data has not been computed
-#ifndef NDEBUG 
+#ifndef NDEBUG
   invalidate_data(resu,  opt);
 #endif
-  return ; 
+  return ;
 }
-                                              static void tab_multiply_any_shape_(DoubleVect & resu, const DoubleVect & vx, Mp_vect_options opt)
+static void tab_multiply_any_shape_(DoubleVect& resu, const DoubleVect& vx, Mp_vect_options opt)
 {
-   
-    // Master vect donne la structure de reference, les autres vecteurs
-    // doivent avoir la meme structure.
-    const DoubleVect & master_vect = resu;
+
+  // Master vect donne la structure de reference, les autres vecteurs
+  // doivent avoir la meme structure.
+  const DoubleVect& master_vect = resu;
   int line_size = master_vect.line_size();
   int line_size_vx = vx.line_size();
-  const MD_Vector & md = master_vect.get_md_vector();
+  const MD_Vector& md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
   // Le line_size du vecteur resu doit etre un multiple du line_size du vecteur vx
   assert(line_size > 0 && line_size_vx > 0 && line_size % line_size_vx == 0);
@@ -1757,57 +1981,66 @@ double local_imin_vect(const DoubleVect & vx, Mp_vect_options opt)
   int nblocs_left = 1;
   int one_bloc[2];
   const int *bloc_ptr;
-  if ( opt != VECT_ALL_ITEMS && md.non_nul()) {
-    assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
-    const ArrOfInt & items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-    assert(items_blocs.size_array() % 2 == 0);
-    nblocs_left = items_blocs.size_array() >> 1;
-    bloc_ptr = items_blocs.addr();
-  } else if (vect_size_tot > 0) {
-    // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-    // Compute all data, in the vector (including virtual data), build a big bloc:
-    nblocs_left = 1;
-    bloc_ptr = one_bloc;
-    one_bloc[0] = 0;
-    one_bloc[1] = vect_size_tot / line_size;
-  } else {
-    // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return ;
-  }
+  if ( opt != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
+      const ArrOfInt& items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
+    }
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else
+    {
+      // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return ;
+    }
   double *resu_base = resu.addr();
   const double *x_base = vx.addr();
-  for (; nblocs_left; nblocs_left--) {
-    // Get index of next bloc start:
-    const int begin_bloc = (*(bloc_ptr++)) * line_size_vx;
-    const int end_bloc = (*(bloc_ptr++)) * line_size_vx;
-    assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-    double* resu_ptr = resu_base + begin_bloc * delta_line_size;
-                                                    const double* x_ptr = x_base + begin_bloc;
-    int count = end_bloc - begin_bloc;
-    for (; count; count--) {
-      const double x = *x_ptr;
-      // Any shape: pour chaque item de vx, on a delta_line_size items de resu a traiter
-      for(int count2 = delta_line_size; count2; count2--) {          double & p_resu = *(resu_ptr++);
-         p_resu *= x;
-          }
-        x_ptr++;
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size_vx;
+      const int end_bloc = (*(bloc_ptr++)) * line_size_vx;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      double* resu_ptr = resu_base + begin_bloc * delta_line_size;
+      const double* x_ptr = x_base + begin_bloc;
+      int count = end_bloc - begin_bloc;
+      for (; count; count--)
+        {
+          const double x = *x_ptr;
+          // Any shape: pour chaque item de vx, on a delta_line_size items de resu a traiter
+          for(int count2 = delta_line_size; count2; count2--)
+            {
+              double& p_resu = *(resu_ptr++);
+              p_resu *= x;
+            }
+          x_ptr++;
+        }
     }
-  }
   // In debug mode, put invalid values where data has not been computed
-#ifndef NDEBUG 
+#ifndef NDEBUG
   invalidate_data(resu,  opt);
 #endif
-  return ; 
+  return ;
 }
-                                                static void tab_divide_any_shape_(DoubleVect & resu, const DoubleVect & vx, Mp_vect_options opt)
+static void tab_divide_any_shape_(DoubleVect& resu, const DoubleVect& vx, Mp_vect_options opt)
 {
-   
-    // Master vect donne la structure de reference, les autres vecteurs
-    // doivent avoir la meme structure.
-    const DoubleVect & master_vect = resu;
+
+  // Master vect donne la structure de reference, les autres vecteurs
+  // doivent avoir la meme structure.
+  const DoubleVect& master_vect = resu;
   int line_size = master_vect.line_size();
   int line_size_vx = vx.line_size();
-  const MD_Vector & md = master_vect.get_md_vector();
+  const MD_Vector& md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
   // Le line_size du vecteur resu doit etre un multiple du line_size du vecteur vx
   assert(line_size > 0 && line_size_vx > 0 && line_size % line_size_vx == 0);
@@ -1818,134 +2051,161 @@ double local_imin_vect(const DoubleVect & vx, Mp_vect_options opt)
   int nblocs_left = 1;
   int one_bloc[2];
   const int *bloc_ptr;
-  if ( opt != VECT_ALL_ITEMS && md.non_nul()) {
-    assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
-    const ArrOfInt & items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-    assert(items_blocs.size_array() % 2 == 0);
-    nblocs_left = items_blocs.size_array() >> 1;
-    bloc_ptr = items_blocs.addr();
-  } else if (vect_size_tot > 0) {
-    // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-    // Compute all data, in the vector (including virtual data), build a big bloc:
-    nblocs_left = 1;
-    bloc_ptr = one_bloc;
-    one_bloc[0] = 0;
-    one_bloc[1] = vect_size_tot / line_size;
-  } else {
-    // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return ;
-  }
+  if ( opt != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
+      const ArrOfInt& items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
+    }
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else
+    {
+      // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return ;
+    }
   double *resu_base = resu.addr();
   const double *x_base = vx.addr();
-  for (; nblocs_left; nblocs_left--) {
-    // Get index of next bloc start:
-    const int begin_bloc = (*(bloc_ptr++)) * line_size_vx;
-    const int end_bloc = (*(bloc_ptr++)) * line_size_vx;
-    assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-    double* resu_ptr = resu_base + begin_bloc * delta_line_size;
-                                                    const double* x_ptr = x_base + begin_bloc;
-    int count = end_bloc - begin_bloc;
-    for (; count; count--) {
-      const double x = *x_ptr;
-      // Any shape: pour chaque item de vx, on a delta_line_size items de resu a traiter
-      for(int count2 = delta_line_size; count2; count2--) {          double & p_resu = *(resu_ptr++);
-         p_resu *= (1. / x);
-          }
-        x_ptr++;
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size_vx;
+      const int end_bloc = (*(bloc_ptr++)) * line_size_vx;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      double* resu_ptr = resu_base + begin_bloc * delta_line_size;
+      const double* x_ptr = x_base + begin_bloc;
+      int count = end_bloc - begin_bloc;
+      for (; count; count--)
+        {
+          const double x = *x_ptr;
+          // Any shape: pour chaque item de vx, on a delta_line_size items de resu a traiter
+          for(int count2 = delta_line_size; count2; count2--)
+            {
+              double& p_resu = *(resu_ptr++);
+              p_resu *= (1. / x);
+            }
+          x_ptr++;
+        }
     }
-  }
   // In debug mode, put invalid values where data has not been computed
-#ifndef NDEBUG 
+#ifndef NDEBUG
   invalidate_data(resu,  opt);
 #endif
-  return ; 
+  return ;
 }
-                                                // Cette methode permettent de multiplier un tableau a plusieurs dimensions par un tableau
-                                                //  de dimension inferieure (par exemple un tableau a trois composantes par un tableau a une composante).
-                                                //  Chaque valeur du tableau vx est utilisee pour plusieurs items consecutifs du tableau resu
-                                                //  (le nombre de fois est le rapport des line_size() des deux tableaux).
-                                                //  resu.line_size() doit etre un multiple int de vx.line_size() et les descripteurs doivent etre identiques.
-                                                //  Cas particulier: vx peut contenir une constante unique (size_array() == 1 et descripteur nul),
-                                                //   dans ce cas c'est un simple produit par la constante
-                                                  void tab_multiply_any_shape(DoubleVect & resu, const DoubleVect & vx, Mp_vect_options opt)
+// Cette methode permettent de multiplier un tableau a plusieurs dimensions par un tableau
+//  de dimension inferieure (par exemple un tableau a trois composantes par un tableau a une composante).
+//  Chaque valeur du tableau vx est utilisee pour plusieurs items consecutifs du tableau resu
+//  (le nombre de fois est le rapport des line_size() des deux tableaux).
+//  resu.line_size() doit etre un multiple int de vx.line_size() et les descripteurs doivent etre identiques.
+//  Cas particulier: vx peut contenir une constante unique (size_array() == 1 et descripteur nul),
+//   dans ce cas c'est un simple produit par la constante
+void tab_multiply_any_shape(DoubleVect& resu, const DoubleVect& vx, Mp_vect_options opt)
 {
-  if (vx.size_array() == 1 && !vx.get_md_vector().non_nul()) {
-    // Produit par une constante
-    double x = vx[0];
-    operator_multiply(resu, x, opt);
-  } else if (vx.line_size() == resu.line_size()) {
-    // Produit membre a membre
-    operator_multiply(resu, vx, opt);
-  } else {
-    // Cas general
-    tab_multiply_any_shape_(resu, vx, opt);
-  }
+  if (vx.size_array() == 1 && !vx.get_md_vector().non_nul())
+    {
+      // Produit par une constante
+      double x = vx[0];
+      operator_multiply(resu, x, opt);
+    }
+  else if (vx.line_size() == resu.line_size())
+    {
+      // Produit membre a membre
+      operator_multiply(resu, vx, opt);
+    }
+  else
+    {
+      // Cas general
+      tab_multiply_any_shape_(resu, vx, opt);
+    }
 }
 // Idem que tab_multiply_any_shape() mais avec une division
-void tab_divide_any_shape(DoubleVect & resu, const DoubleVect & vx, Mp_vect_options opt)
+void tab_divide_any_shape(DoubleVect& resu, const DoubleVect& vx, Mp_vect_options opt)
 {
-  if (vx.size_array() == 1 && !vx.get_md_vector().non_nul()) {
-    // Produit par une constante
-    double x = 1. / vx[0];
-    operator_multiply(resu, x, opt);
-  } else if (vx.line_size() == resu.line_size()) {
-    // Produit membre a membre
-    operator_divide(resu, vx, opt);
-  } else {
-    // Cas general
-    tab_divide_any_shape_(resu, vx, opt);
-  }
+  if (vx.size_array() == 1 && !vx.get_md_vector().non_nul())
+    {
+      // Produit par une constante
+      double x = 1. / vx[0];
+      operator_multiply(resu, x, opt);
+    }
+  else if (vx.line_size() == resu.line_size())
+    {
+      // Produit membre a membre
+      operator_divide(resu, vx, opt);
+    }
+  else
+    {
+      // Cas general
+      tab_divide_any_shape_(resu, vx, opt);
+    }
 }
-void operator_divide(DoubleVect & resu, const double x, Mp_vect_options opt)
+void operator_divide(DoubleVect& resu, const double x, Mp_vect_options opt)
 {
-   
-    // Master vect donne la structure de reference, les autres vecteurs
-    // doivent avoir la meme structure.
-    const DoubleVect & master_vect = resu;
+
+  // Master vect donne la structure de reference, les autres vecteurs
+  // doivent avoir la meme structure.
+  const DoubleVect& master_vect = resu;
   int line_size = master_vect.line_size();
-  const MD_Vector & md = master_vect.get_md_vector();
+  const MD_Vector& md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
   // Determine blocs of data to process, depending on " opt"
   int nblocs_left = 1;
   int one_bloc[2];
   const int *bloc_ptr;
-  if ( opt != VECT_ALL_ITEMS && md.non_nul()) {
-    assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
-    const ArrOfInt & items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-    assert(items_blocs.size_array() % 2 == 0);
-    nblocs_left = items_blocs.size_array() >> 1;
-    bloc_ptr = items_blocs.addr();
-  } else if (vect_size_tot > 0) {
-    // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-    // Compute all data, in the vector (including virtual data), build a big bloc:
-    nblocs_left = 1;
-    bloc_ptr = one_bloc;
-    one_bloc[0] = 0;
-    one_bloc[1] = vect_size_tot / line_size;
-  } else {
-    // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return ;
-  }
-  double *resu_base = resu.addr();
-  for (; nblocs_left; nblocs_left--) {
-    // Get index of next bloc start:
-    const int begin_bloc = (*(bloc_ptr++)) * line_size;
-    const int end_bloc = (*(bloc_ptr++)) * line_size;
-    assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-    double* resu_ptr = resu_base + begin_bloc;    int count = end_bloc - begin_bloc;
-    for (; count; count--) {
-      double & p_resu = *(resu_ptr++);
-       p_resu /= x;      
+  if ( opt != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert( opt == VECT_SEQUENTIAL_ITEMS ||  opt == VECT_REAL_ITEMS);
+      const ArrOfInt& items_blocs = ( opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
     }
-  }
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else
+    {
+      // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+      return ;
+    }
+  double *resu_base = resu.addr();
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size;
+      const int end_bloc = (*(bloc_ptr++)) * line_size;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      double* resu_ptr = resu_base + begin_bloc;
+      int count = end_bloc - begin_bloc;
+      for (; count; count--)
+        {
+          double& p_resu = *(resu_ptr++);
+          p_resu /= x;
+        }
+    }
   // In debug mode, put invalid values where data has not been computed
-#ifndef NDEBUG 
+#ifndef NDEBUG
   invalidate_data(resu,  opt);
 #endif
-  return ; 
+  return ;
 }
 
-  double DoubleVect::local_min_vect(Mp_vect_options opt) const
+double DoubleVect::local_min_vect(Mp_vect_options opt) const
 {
   return ::local_min_vect(*this, opt);
 }
@@ -1977,11 +2237,11 @@ double DoubleVect::mp_min_abs_vect(Mp_vect_options opt) const
 {
   return ::mp_min_abs_vect(*this, opt);
 }
-void DoubleVect::operator+=(const DoubleVect & v)
+void DoubleVect::operator+=(const DoubleVect& v)
 {
   operator_add(*this, v);
 }
-void DoubleVect::operator-=(const DoubleVect & v)
+void DoubleVect::operator-=(const DoubleVect& v)
 {
   operator_sub(*this, v);
 }
@@ -1997,25 +2257,25 @@ void DoubleVect::operator*=(const double x)
 {
   operator_multiply(*this, x);
 }
-double mp_max_vect(const DoubleVect & x, Mp_vect_options opt)
+double mp_max_vect(const DoubleVect& x, Mp_vect_options opt)
 {
   double s = local_max_vect(x, opt);
   s =  Process::mp_max(s);
   return s;
 }
-double mp_min_vect(const DoubleVect & x, Mp_vect_options opt)
+double mp_min_vect(const DoubleVect& x, Mp_vect_options opt)
 {
   double s = local_min_vect(x, opt);
   s =  Process::mp_min(s);
   return s;
 }
-double mp_max_abs_vect(const DoubleVect & x, Mp_vect_options opt)
+double mp_max_abs_vect(const DoubleVect& x, Mp_vect_options opt)
 {
   double s = local_max_abs_vect(x, opt);
   s = Process::mp_max(s);
   return s;
 }
-double mp_min_abs_vect(const DoubleVect & x, Mp_vect_options opt)
+double mp_min_abs_vect(const DoubleVect& x, Mp_vect_options opt)
 {
   double s = local_min_abs_vect(x, opt);
   s = Process::mp_min(s);
@@ -2047,7 +2307,7 @@ void DoubleVect::ajoute_sans_ech_esp_virt(double alpha, const DoubleVect& y, Mp_
 {
   ajoute_alpha_v(*this, alpha, y, opt);
 }
-void DoubleVect::ajoute_produit_scalaire(double alpha, const DoubleVect & x, const DoubleVect & y, Mp_vect_options opt)
+void DoubleVect::ajoute_produit_scalaire(double alpha, const DoubleVect& x, const DoubleVect& y, Mp_vect_options opt)
 {
   ::ajoute_produit_scalaire(*this, alpha, x, y, opt);
 }
@@ -2055,22 +2315,22 @@ void DoubleVect::ajoute_carre(double alpha, const DoubleVect& y, Mp_vect_options
 {
   ::ajoute_carre(*this, alpha, y, opt);
 }
-double mp_moyenne_vect(const DoubleVect & x)
+double mp_moyenne_vect(const DoubleVect& x)
 {
   double s = mp_somme_vect(x);
   double n;
-  const MD_Vector & md = x.get_md_vector();
+  const MD_Vector& md = x.get_md_vector();
   if (md.non_nul())
     n = md.valeur().nb_items_seq_tot() * x.line_size();
   else
-  {
-    // Coding error: mp_moyenne_vect is used on a not distributed DoubleVect !
-    assert(Process::nproc()==1);
-    n = x.size_totale();
-  }
+    {
+      // Coding error: mp_moyenne_vect is used on a not distributed DoubleVect !
+      assert(Process::nproc()==1);
+      n = x.size_totale();
+    }
   return s / n;
 }
-double mp_prodscal(const DoubleVect & x, const DoubleVect & y)
+double mp_prodscal(const DoubleVect& x, const DoubleVect& y)
 {
   return Process::mp_sum(local_prodscal(x, y));
 }
@@ -2081,7 +2341,7 @@ double DoubleVect::mp_norme_vect() const
 {
   return ::mp_norme_vect(*this);
 }
-double mp_norme_vect(const DoubleVect & vx)
+double mp_norme_vect(const DoubleVect& vx)
 {
   double x = mp_carre_norme_vect(vx);
   x = sqrt(x);

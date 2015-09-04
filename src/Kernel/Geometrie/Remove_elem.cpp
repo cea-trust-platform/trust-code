@@ -224,7 +224,7 @@ void Remove_elem::Remove_elem_(Zone& zone)
 {
   if (zone.type_elem()->que_suis_je() == "Rectangle" || zone.type_elem()->que_suis_je() == "Hexaedre")
     {
-      
+
       IntTab& les_elems=zone.les_elems();
       int oldsz=les_elems.dimension(0);
       ArrOfInt marq_remove(oldsz);
@@ -251,13 +251,13 @@ void Remove_elem::Remove_elem_(Zone& zone)
             }
         }
       else
-	{
-	  for (int i=0;i<listelem.size();i++)
-	    {
-	      marq_remove[listelem[i]]=1;
-	    }
+        {
+          for (int i=0; i<listelem.size(); i++)
+            {
+              marq_remove[listelem[i]]=1;
+            }
 
-	}
+        }
 
       int j=0;
       Cerr << "-> " << listelem.size() << " elements will be removed from the domain " << domaine().le_nom() << finl;
@@ -265,7 +265,7 @@ void Remove_elem::Remove_elem_(Zone& zone)
         {
           Cerr << "May be an error when applying Remove_elem : no elements found." << finl;
           Process::exit();
-	  } */
+      } */
       for(int i=0; i<oldsz; i++)
         {
           if(marq_remove[i]==0)

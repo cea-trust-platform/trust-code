@@ -177,8 +177,8 @@ void traite_diagonale(const double omega, const ArrOfInt& tab1, const ArrOfInt& 
 }
 
 void descente(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2, const ArrOfDouble& coeff,
-                  DoubleVect& vecteur
-                 )
+              DoubleVect& vecteur
+             )
 {
   const int nb_lignes_a_traiter = vecteur.size_reelle_ok() ? vecteur.size_reelle() : vecteur.size_totale();
   // pointeur "fortran" vers le tableau solution (indexable avec index fortran)
@@ -195,38 +195,38 @@ void descente(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2, co
     {
       const int tab1_de_i = *tab1_ptr; // = tab1[i]
       const int nvois = tab1_de_i - last_tab1_de_i;
- static_cast<void> (0);
+      static_cast<void> (0);
       last_tab1_de_i = tab1_de_i;
       // Ce test doit rester, sinon on pollue les autres lignes du vecteur sol
       // avec des valeurs dependant des items communs et virtuels
-        {
-          // Le premier coeff doit etre le coef diagonal et doit etre strictement positif
- static_cast<void> (0);
-          const double omega_coeff_i_i = omega / (*coeff_ptr);
-          const double v_i = sol_fortran[i] *= omega_coeff_i_i;
-          tab2_ptr++;
-          coeff_ptr++;
-          for (int j = nvois-1; j; j--, tab2_ptr++, coeff_ptr++)
-            {
-              const int i2 = *tab2_ptr; // indice de colonne pour le prochain coefficient
-              const double coeff_i_i2 = *coeff_ptr;
-              // la matrice n'a que des coeffs diagonaux superieurs et on a deja traite
-              // la diagonale, donc i2 > i.
-              // Pas d'items virtuels autorises !
- static_cast<void> (0);
-              // B.M.: ... en revanche, le test sur les items communs est superflu ici car
-              // la valeur sera annulee (voir **Annulation items communs**),
-              // gain de perfs si on ne fait pas le test
-              sol_fortran[i2] -= coeff_i_i2 * v_i;
-            }
-        }
+      {
+        // Le premier coeff doit etre le coef diagonal et doit etre strictement positif
+        static_cast<void> (0);
+        const double omega_coeff_i_i = omega / (*coeff_ptr);
+        const double v_i = sol_fortran[i] *= omega_coeff_i_i;
+        tab2_ptr++;
+        coeff_ptr++;
+        for (int j = nvois-1; j; j--, tab2_ptr++, coeff_ptr++)
+          {
+            const int i2 = *tab2_ptr; // indice de colonne pour le prochain coefficient
+            const double coeff_i_i2 = *coeff_ptr;
+            // la matrice n'a que des coeffs diagonaux superieurs et on a deja traite
+            // la diagonale, donc i2 > i.
+            // Pas d'items virtuels autorises !
+            static_cast<void> (0);
+            // B.M.: ... en revanche, le test sur les items communs est superflu ici car
+            // la valeur sera annulee (voir **Annulation items communs**),
+            // gain de perfs si on ne fait pas le test
+            sol_fortran[i2] -= coeff_i_i2 * v_i;
+          }
+      }
     }
 }
 
 
 void remontee(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2, const ArrOfDouble& coeff,
-                  DoubleVect& vecteur
-                 )
+              DoubleVect& vecteur
+             )
 {
   const int nb_lignes_a_traiter = vecteur.size_reelle_ok() ? vecteur.size_reelle() : vecteur.size_totale();
   const double psi = (2. - omega) / omega;
@@ -246,7 +246,7 @@ void remontee(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2, co
     {
       const int tab1_de_i = *tab1_ptr; // = tab1[i]
       const int nvois = last_tab1_de_i - tab1_de_i;
- static_cast<void> (0);
+      static_cast<void> (0);
       last_tab1_de_i = tab1_de_i;
       // Ce test doit rester car il ne faut pas modifier sol[i] pour les items communs
       // et virtuels (ils sont nuls et doivent le rester pour ne pas polluer les autres lignes):
@@ -263,7 +263,7 @@ void remontee(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2, co
               x += coeff_i_i2 * sol_fortran[i2];
             }
           // ici coeff_ptr est le coeff diagonal
- static_cast<void> (0);
+          static_cast<void> (0);
           const double coeff_i_i = *coeff_ptr;
           const double omega_coeff_i_i = omega / coeff_i_i;
           *soli_ptr = (*soli_ptr) * psi * omega - x * omega_coeff_i_i;
@@ -280,9 +280,9 @@ void remontee(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2, co
 }
 
 void descente(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2, const ArrOfDouble& coeff,
-                  DoubleVect& vecteur
-                  , const ArrOfInt& items_a_traiter
-                 )
+              DoubleVect& vecteur
+              , const ArrOfInt& items_a_traiter
+             )
 {
   const int nb_lignes_a_traiter = vecteur.size_reelle_ok() ? vecteur.size_reelle() : vecteur.size_totale();
   // pointeur "fortran" vers le tableau solution (indexable avec index fortran)
@@ -301,16 +301,16 @@ void descente(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2, co
     {
       const int tab1_de_i = *tab1_ptr; // = tab1[i]
       const int nvois = tab1_de_i - last_tab1_de_i;
- static_cast<void> (0);
+      static_cast<void> (0);
       last_tab1_de_i = tab1_de_i;
       // Ce test doit rester, sinon on pollue les autres lignes du vecteur sol
       // avec des valeurs dependant des items communs et virtuels
- static_cast<void> (0);
+      static_cast<void> (0);
       const int item_a_traiter = *(flags_ptr++);
       if (item_a_traiter)
         {
           // Le premier coeff doit etre le coef diagonal et doit etre strictement positif
- static_cast<void> (0);
+          static_cast<void> (0);
           const double omega_coeff_i_i = omega / (*coeff_ptr);
           const double v_i = sol_fortran[i] *= omega_coeff_i_i;
           tab2_ptr++;
@@ -321,7 +321,7 @@ void descente(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2, co
               const double coeff_i_i2 = *coeff_ptr;
               // la matrice n'a que des coeffs diagonaux superieurs et on a deja traite
               // la diagonale, donc i2 > i.
- static_cast<void> (0);
+              static_cast<void> (0);
               // B.M.: ... en revanche, le test sur les items communs est superflu ici car
               // la valeur sera annulee (voir **Annulation items communs**),
               // gain de perfs si on ne fait pas le test
@@ -351,9 +351,9 @@ void descente(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2, co
 
 
 void remontee(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2, const ArrOfDouble& coeff,
-                  DoubleVect& vecteur
-                  , const ArrOfInt& items_a_traiter
-                 )
+              DoubleVect& vecteur
+              , const ArrOfInt& items_a_traiter
+             )
 {
   const int nb_lignes_a_traiter = vecteur.size_reelle_ok() ? vecteur.size_reelle() : vecteur.size_totale();
   const int *flags_ptr = items_a_traiter.addr() + nb_lignes_a_traiter - 1;
@@ -375,7 +375,7 @@ void remontee(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2, co
     {
       const int tab1_de_i = *tab1_ptr; // = tab1[i]
       const int nvois = last_tab1_de_i - tab1_de_i;
- static_cast<void> (0);
+      static_cast<void> (0);
       last_tab1_de_i = tab1_de_i;
       // Ce test doit rester car il ne faut pas modifier sol[i] pour les items communs
       // et virtuels (ils sont nuls et doivent le rester pour ne pas polluer les autres lignes):
@@ -392,7 +392,7 @@ void remontee(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2, co
               x += coeff_i_i2 * sol_fortran[i2];
             }
           // ici coeff_ptr est le coeff diagonal
- static_cast<void> (0);
+          static_cast<void> (0);
           const double coeff_i_i = *coeff_ptr;
           const double omega_coeff_i_i = omega / coeff_i_i;
           *soli_ptr = (*soli_ptr) * psi * omega - x * omega_coeff_i_i;
@@ -409,8 +409,8 @@ void remontee(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2, co
 }
 
 void descente_assert(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2, const ArrOfDouble& coeff,
-                  DoubleVect& vecteur
-                 )
+                     DoubleVect& vecteur
+                    )
 {
   const int nb_lignes_a_traiter = vecteur.size_reelle_ok() ? vecteur.size_reelle() : vecteur.size_totale();
   // pointeur "fortran" vers le tableau solution (indexable avec index fortran)
@@ -427,31 +427,31 @@ void descente_assert(const double omega, const ArrOfInt& tab1, const ArrOfInt& t
     {
       const int tab1_de_i = *tab1_ptr; // = tab1[i]
       const int nvois = tab1_de_i - last_tab1_de_i;
- assert(nvois >= 0 && (tab1_de_i - 1) <= tab2.size_array());
+      assert(nvois >= 0 && (tab1_de_i - 1) <= tab2.size_array());
       last_tab1_de_i = tab1_de_i;
       // Ce test doit rester, sinon on pollue les autres lignes du vecteur sol
       // avec des valeurs dependant des items communs et virtuels
-        {
-          // Le premier coeff doit etre le coef diagonal et doit etre strictement positif
- assert(nvois >= 1 && (*tab2_ptr) == i && (*coeff_ptr) > 0.);
-          const double omega_coeff_i_i = omega / (*coeff_ptr);
-          const double v_i = sol_fortran[i] *= omega_coeff_i_i;
-          tab2_ptr++;
-          coeff_ptr++;
-          for (int j = nvois-1; j; j--, tab2_ptr++, coeff_ptr++)
-            {
-              const int i2 = *tab2_ptr; // indice de colonne pour le prochain coefficient
-              const double coeff_i_i2 = *coeff_ptr;
-              // la matrice n'a que des coeffs diagonaux superieurs et on a deja traite
-              // la diagonale, donc i2 > i.
-              // Pas d'items virtuels autorises !
- assert(i2 > i && i2 <= nb_lignes_a_traiter);
-              // B.M.: ... en revanche, le test sur les items communs est superflu ici car
-              // la valeur sera annulee (voir **Annulation items communs**),
-              // gain de perfs si on ne fait pas le test
-              sol_fortran[i2] -= coeff_i_i2 * v_i;
-            }
-        }
+      {
+        // Le premier coeff doit etre le coef diagonal et doit etre strictement positif
+        assert(nvois >= 1 && (*tab2_ptr) == i && (*coeff_ptr) > 0.);
+        const double omega_coeff_i_i = omega / (*coeff_ptr);
+        const double v_i = sol_fortran[i] *= omega_coeff_i_i;
+        tab2_ptr++;
+        coeff_ptr++;
+        for (int j = nvois-1; j; j--, tab2_ptr++, coeff_ptr++)
+          {
+            const int i2 = *tab2_ptr; // indice de colonne pour le prochain coefficient
+            const double coeff_i_i2 = *coeff_ptr;
+            // la matrice n'a que des coeffs diagonaux superieurs et on a deja traite
+            // la diagonale, donc i2 > i.
+            // Pas d'items virtuels autorises !
+            assert(i2 > i && i2 <= nb_lignes_a_traiter);
+            // B.M.: ... en revanche, le test sur les items communs est superflu ici car
+            // la valeur sera annulee (voir **Annulation items communs**),
+            // gain de perfs si on ne fait pas le test
+            sol_fortran[i2] -= coeff_i_i2 * v_i;
+          }
+      }
     }
 }
 
@@ -459,41 +459,41 @@ void descente_assert(const double omega, const ArrOfInt& tab1, const ArrOfInt& t
 // vecteur: de taille "nombre de lignes de la matrice"
 // vecteur2: "nombre de colonnes"
 void descente_bloc_extradiag_assert(const ArrOfInt& tab1, const ArrOfInt& tab2, const ArrOfDouble& coeff,
-                        const DoubleVect& vecteur,
-                        DoubleVect& vecteur2
-                       )
+                                    const DoubleVect& vecteur,
+                                    DoubleVect& vecteur2
+                                   )
 {
   const int nb_lignes = vecteur.size_reelle_ok() ? vecteur.size_reelle() : vecteur.size_totale();
   const double *vecteur_ptr = vecteur.addr();
   double       *vecteur2_fortran_ptr = vecteur2.addr() - 1;
   const int *tab2_fortran_ptr = tab2.addr() - 1;
   const double *coeff_fortran_ptr = coeff.addr() - 1;
- assert(coeff.size_array() == tab2.size_array());
+  assert(coeff.size_array() == tab2.size_array());
   for (int i_ligne = 0; i_ligne < nb_lignes; i_ligne++, vecteur_ptr++)
     {
-        {
-          const double v_i = *vecteur_ptr;
-          int index = tab1[i_ligne];
-          const int index_fin = tab1[i_ligne+1];
-          // Il peut n'y avoir aucun coefficient sur la ligne => index_fin == index
- assert(index > 0 && index_fin >= index && index_fin <= tab2.size_array()+1);
-          const int *tab2_ptr = tab2_fortran_ptr + index;
-          const double *coeff_ptr = coeff_fortran_ptr + index;
-          for (; index < index_fin; index++, tab2_ptr++, coeff_ptr++)
-            {
-              const int i_colonne = *tab2_ptr;
- assert(i_colonne >= 1 && i_colonne <= vecteur2.size_array());
-              const double c = *coeff_ptr;
-              // pas de test item commun sur les colonnes, voir **Annulation items communs**
-              vecteur2_fortran_ptr[i_colonne] -= c * v_i;
-            }
-        }
+      {
+        const double v_i = *vecteur_ptr;
+        int index = tab1[i_ligne];
+        const int index_fin = tab1[i_ligne+1];
+        // Il peut n'y avoir aucun coefficient sur la ligne => index_fin == index
+        assert(index > 0 && index_fin >= index && index_fin <= tab2.size_array()+1);
+        const int *tab2_ptr = tab2_fortran_ptr + index;
+        const double *coeff_ptr = coeff_fortran_ptr + index;
+        for (; index < index_fin; index++, tab2_ptr++, coeff_ptr++)
+          {
+            const int i_colonne = *tab2_ptr;
+            assert(i_colonne >= 1 && i_colonne <= vecteur2.size_array());
+            const double c = *coeff_ptr;
+            // pas de test item commun sur les colonnes, voir **Annulation items communs**
+            vecteur2_fortran_ptr[i_colonne] -= c * v_i;
+          }
+      }
     }
 }
 
 void remontee_assert(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2, const ArrOfDouble& coeff,
-                  DoubleVect& vecteur
-                 )
+                     DoubleVect& vecteur
+                    )
 {
   const int nb_lignes_a_traiter = vecteur.size_reelle_ok() ? vecteur.size_reelle() : vecteur.size_totale();
   const double psi = (2. - omega) / omega;
@@ -513,7 +513,7 @@ void remontee_assert(const double omega, const ArrOfInt& tab1, const ArrOfInt& t
     {
       const int tab1_de_i = *tab1_ptr; // = tab1[i]
       const int nvois = last_tab1_de_i - tab1_de_i;
- assert(nvois >= 0 && tab1_de_i > 0);
+      assert(nvois >= 0 && tab1_de_i > 0);
       last_tab1_de_i = tab1_de_i;
       // Ce test doit rester car il ne faut pas modifier sol[i] pour les items communs
       // et virtuels (ils sont nuls et doivent le rester pour ne pas polluer les autres lignes):
@@ -530,7 +530,7 @@ void remontee_assert(const double omega, const ArrOfInt& tab1, const ArrOfInt& t
               x += coeff_i_i2 * sol_fortran[i2];
             }
           // ici coeff_ptr est le coeff diagonal
- assert((*tab2_ptr) == i);
+          assert((*tab2_ptr) == i);
           const double coeff_i_i = *coeff_ptr;
           const double omega_coeff_i_i = omega / coeff_i_i;
           *soli_ptr = (*soli_ptr) * psi * omega - x * omega_coeff_i_i;
@@ -550,43 +550,43 @@ void remontee_assert(const double omega, const ArrOfInt& tab1, const ArrOfInt& t
 // vecteur: de taille "nombre de lignes de la matrice"
 // vecteur2: "nombre de colonnes"
 void remontee_bloc_extradiag_assert(const ArrOfInt& tab1, const ArrOfInt& tab2, const ArrOfDouble& coeff,
-                        DoubleVect& vecteur,
-                        const DoubleVect& vecteur2
-                       )
+                                    DoubleVect& vecteur,
+                                    const DoubleVect& vecteur2
+                                   )
 {
   const int nb_lignes = vecteur.size_reelle_ok() ? vecteur.size_reelle() : vecteur.size_totale();
   double *vecteur_ptr = vecteur.addr();
   const double *vecteur2_fortran_ptr = vecteur2.addr() - 1;
   const int *tab2_fortran_ptr = tab2.addr() - 1;
   const double *coeff_fortran_ptr = coeff.addr() - 1;
- assert(coeff.size_array() == tab2.size_array());
+  assert(coeff.size_array() == tab2.size_array());
   for (int i_ligne = 0; i_ligne < nb_lignes; i_ligne++, vecteur_ptr++)
     {
-        {
-          double x = *vecteur_ptr;
-          int index = tab1[i_ligne];
-          const int index_fin = tab1[i_ligne+1];
-          // Il peut n'y avoir aucun coefficient sur la ligne => index_fin == index
- assert(index > 0 && index_fin >= index && index_fin <= tab2.size_array()+1);
-          const int *tab2_ptr = tab2_fortran_ptr + index;
-          const double *coeff_ptr = coeff_fortran_ptr + index;
-          for (; index < index_fin; index++, tab2_ptr++, coeff_ptr++)
-            {
-              const int i_colonne = *tab2_ptr;
- assert(i_colonne >= 1 && i_colonne <= vecteur2.size_array());
-              const double c = *coeff_ptr;
-              const double x2 = vecteur2_fortran_ptr[i_colonne];
-              // pas de test item commun sur les colonnes, voir **Annulation items communs**
-              x -= c * x2;
-            }
-          *vecteur_ptr = x;
-        }
+      {
+        double x = *vecteur_ptr;
+        int index = tab1[i_ligne];
+        const int index_fin = tab1[i_ligne+1];
+        // Il peut n'y avoir aucun coefficient sur la ligne => index_fin == index
+        assert(index > 0 && index_fin >= index && index_fin <= tab2.size_array()+1);
+        const int *tab2_ptr = tab2_fortran_ptr + index;
+        const double *coeff_ptr = coeff_fortran_ptr + index;
+        for (; index < index_fin; index++, tab2_ptr++, coeff_ptr++)
+          {
+            const int i_colonne = *tab2_ptr;
+            assert(i_colonne >= 1 && i_colonne <= vecteur2.size_array());
+            const double c = *coeff_ptr;
+            const double x2 = vecteur2_fortran_ptr[i_colonne];
+            // pas de test item commun sur les colonnes, voir **Annulation items communs**
+            x -= c * x2;
+          }
+        *vecteur_ptr = x;
+      }
     }
 }
 void descente_assert(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2, const ArrOfDouble& coeff,
-                  DoubleVect& vecteur
-                  , const ArrOfInt& items_a_traiter
-                 )
+                     DoubleVect& vecteur
+                     , const ArrOfInt& items_a_traiter
+                    )
 {
   const int nb_lignes_a_traiter = vecteur.size_reelle_ok() ? vecteur.size_reelle() : vecteur.size_totale();
   // pointeur "fortran" vers le tableau solution (indexable avec index fortran)
@@ -605,16 +605,16 @@ void descente_assert(const double omega, const ArrOfInt& tab1, const ArrOfInt& t
     {
       const int tab1_de_i = *tab1_ptr; // = tab1[i]
       const int nvois = tab1_de_i - last_tab1_de_i;
- assert(nvois >= 0 && (tab1_de_i - 1) <= tab2.size_array());
+      assert(nvois >= 0 && (tab1_de_i - 1) <= tab2.size_array());
       last_tab1_de_i = tab1_de_i;
       // Ce test doit rester, sinon on pollue les autres lignes du vecteur sol
       // avec des valeurs dependant des items communs et virtuels
- assert((flags_ptr - items_a_traiter.addr()) == (i-1));
+      assert((flags_ptr - items_a_traiter.addr()) == (i-1));
       const int item_a_traiter = *(flags_ptr++);
       if (item_a_traiter)
         {
           // Le premier coeff doit etre le coef diagonal et doit etre strictement positif
- assert(nvois >= 1 && (*tab2_ptr) == i && (*coeff_ptr) > 0.);
+          assert(nvois >= 1 && (*tab2_ptr) == i && (*coeff_ptr) > 0.);
           const double omega_coeff_i_i = omega / (*coeff_ptr);
           const double v_i = sol_fortran[i] *= omega_coeff_i_i;
           tab2_ptr++;
@@ -625,7 +625,7 @@ void descente_assert(const double omega, const ArrOfInt& tab1, const ArrOfInt& t
               const double coeff_i_i2 = *coeff_ptr;
               // la matrice n'a que des coeffs diagonaux superieurs et on a deja traite
               // la diagonale, donc i2 > i.
- assert(i2 > i && i2 <= vecteur.size_totale());
+              assert(i2 > i && i2 <= vecteur.size_totale());
               // B.M.: ... en revanche, le test sur les items communs est superflu ici car
               // la valeur sera annulee (voir **Annulation items communs**),
               // gain de perfs si on ne fait pas le test
@@ -657,10 +657,10 @@ void descente_assert(const double omega, const ArrOfInt& tab1, const ArrOfInt& t
 // vecteur: de taille "nombre de lignes de la matrice"
 // vecteur2: "nombre de colonnes"
 void descente_bloc_extradiag_assert(const ArrOfInt& tab1, const ArrOfInt& tab2, const ArrOfDouble& coeff,
-                        const DoubleVect& vecteur,
-                        DoubleVect& vecteur2
-                        , const ArrOfInt& items_a_traiter
-                       )
+                                    const DoubleVect& vecteur,
+                                    DoubleVect& vecteur2
+                                    , const ArrOfInt& items_a_traiter
+                                   )
 {
   const int nb_lignes = vecteur.size_reelle_ok() ? vecteur.size_reelle() : vecteur.size_totale();
   const int *flags_ptr = items_a_traiter.addr();
@@ -668,7 +668,7 @@ void descente_bloc_extradiag_assert(const ArrOfInt& tab1, const ArrOfInt& tab2, 
   double       *vecteur2_fortran_ptr = vecteur2.addr() - 1;
   const int *tab2_fortran_ptr = tab2.addr() - 1;
   const double *coeff_fortran_ptr = coeff.addr() - 1;
- assert(coeff.size_array() == tab2.size_array());
+  assert(coeff.size_array() == tab2.size_array());
   for (int i_ligne = 0; i_ligne < nb_lignes; i_ligne++, vecteur_ptr++)
     {
       if (*(flags_ptr++))
@@ -677,13 +677,13 @@ void descente_bloc_extradiag_assert(const ArrOfInt& tab1, const ArrOfInt& tab2, 
           int index = tab1[i_ligne];
           const int index_fin = tab1[i_ligne+1];
           // Il peut n'y avoir aucun coefficient sur la ligne => index_fin == index
- assert(index > 0 && index_fin >= index && index_fin <= tab2.size_array()+1);
+          assert(index > 0 && index_fin >= index && index_fin <= tab2.size_array()+1);
           const int *tab2_ptr = tab2_fortran_ptr + index;
           const double *coeff_ptr = coeff_fortran_ptr + index;
           for (; index < index_fin; index++, tab2_ptr++, coeff_ptr++)
             {
               const int i_colonne = *tab2_ptr;
- assert(i_colonne >= 1 && i_colonne <= vecteur2.size_array());
+              assert(i_colonne >= 1 && i_colonne <= vecteur2.size_array());
               const double c = *coeff_ptr;
               // pas de test item commun sur les colonnes, voir **Annulation items communs**
               vecteur2_fortran_ptr[i_colonne] -= c * v_i;
@@ -693,9 +693,9 @@ void descente_bloc_extradiag_assert(const ArrOfInt& tab1, const ArrOfInt& tab2, 
 }
 
 void remontee_assert(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2, const ArrOfDouble& coeff,
-                  DoubleVect& vecteur
-                  , const ArrOfInt& items_a_traiter
-                 )
+                     DoubleVect& vecteur
+                     , const ArrOfInt& items_a_traiter
+                    )
 {
   const int nb_lignes_a_traiter = vecteur.size_reelle_ok() ? vecteur.size_reelle() : vecteur.size_totale();
   const int *flags_ptr = items_a_traiter.addr() + nb_lignes_a_traiter - 1;
@@ -717,7 +717,7 @@ void remontee_assert(const double omega, const ArrOfInt& tab1, const ArrOfInt& t
     {
       const int tab1_de_i = *tab1_ptr; // = tab1[i]
       const int nvois = last_tab1_de_i - tab1_de_i;
- assert(nvois >= 0 && tab1_de_i > 0);
+      assert(nvois >= 0 && tab1_de_i > 0);
       last_tab1_de_i = tab1_de_i;
       // Ce test doit rester car il ne faut pas modifier sol[i] pour les items communs
       // et virtuels (ils sont nuls et doivent le rester pour ne pas polluer les autres lignes):
@@ -734,7 +734,7 @@ void remontee_assert(const double omega, const ArrOfInt& tab1, const ArrOfInt& t
               x += coeff_i_i2 * sol_fortran[i2];
             }
           // ici coeff_ptr est le coeff diagonal
- assert((*tab2_ptr) == i);
+          assert((*tab2_ptr) == i);
           const double coeff_i_i = *coeff_ptr;
           const double omega_coeff_i_i = omega / coeff_i_i;
           *soli_ptr = (*soli_ptr) * psi * omega - x * omega_coeff_i_i;
@@ -754,10 +754,10 @@ void remontee_assert(const double omega, const ArrOfInt& tab1, const ArrOfInt& t
 // vecteur: de taille "nombre de lignes de la matrice"
 // vecteur2: "nombre de colonnes"
 void remontee_bloc_extradiag_assert(const ArrOfInt& tab1, const ArrOfInt& tab2, const ArrOfDouble& coeff,
-                        DoubleVect& vecteur,
-                        const DoubleVect& vecteur2
-                        , const ArrOfInt& items_a_traiter
-                       )
+                                    DoubleVect& vecteur,
+                                    const DoubleVect& vecteur2
+                                    , const ArrOfInt& items_a_traiter
+                                   )
 {
   const int nb_lignes = vecteur.size_reelle_ok() ? vecteur.size_reelle() : vecteur.size_totale();
   const int *flags_ptr = items_a_traiter.addr();
@@ -765,7 +765,7 @@ void remontee_bloc_extradiag_assert(const ArrOfInt& tab1, const ArrOfInt& tab2, 
   const double *vecteur2_fortran_ptr = vecteur2.addr() - 1;
   const int *tab2_fortran_ptr = tab2.addr() - 1;
   const double *coeff_fortran_ptr = coeff.addr() - 1;
- assert(coeff.size_array() == tab2.size_array());
+  assert(coeff.size_array() == tab2.size_array());
   for (int i_ligne = 0; i_ligne < nb_lignes; i_ligne++, vecteur_ptr++)
     {
       if (*(flags_ptr++))
@@ -774,13 +774,13 @@ void remontee_bloc_extradiag_assert(const ArrOfInt& tab1, const ArrOfInt& tab2, 
           int index = tab1[i_ligne];
           const int index_fin = tab1[i_ligne+1];
           // Il peut n'y avoir aucun coefficient sur la ligne => index_fin == index
- assert(index > 0 && index_fin >= index && index_fin <= tab2.size_array()+1);
+          assert(index > 0 && index_fin >= index && index_fin <= tab2.size_array()+1);
           const int *tab2_ptr = tab2_fortran_ptr + index;
           const double *coeff_ptr = coeff_fortran_ptr + index;
           for (; index < index_fin; index++, tab2_ptr++, coeff_ptr++)
             {
               const int i_colonne = *tab2_ptr;
- assert(i_colonne >= 1 && i_colonne <= vecteur2.size_array());
+              assert(i_colonne >= 1 && i_colonne <= vecteur2.size_array());
               const double c = *coeff_ptr;
               const double x2 = vecteur2_fortran_ptr[i_colonne];
               // pas de test item commun sur les colonnes, voir **Annulation items communs**
@@ -791,8 +791,8 @@ void remontee_bloc_extradiag_assert(const ArrOfInt& tab1, const ArrOfInt& tab2, 
     }
 }
 void descente_diag_ok_assert(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2, const ArrOfDouble& coeff,
-                  DoubleVect& vecteur
-                 )
+                             DoubleVect& vecteur
+                            )
 {
   const int nb_lignes_a_traiter = vecteur.size_reelle_ok() ? vecteur.size_reelle() : vecteur.size_totale();
   // pointeur "fortran" vers le tableau solution (indexable avec index fortran)
@@ -809,38 +809,38 @@ void descente_diag_ok_assert(const double omega, const ArrOfInt& tab1, const Arr
     {
       const int tab1_de_i = *tab1_ptr; // = tab1[i]
       const int nvois = tab1_de_i - last_tab1_de_i;
- assert(nvois >= 0 && (tab1_de_i - 1) <= tab2.size_array());
+      assert(nvois >= 0 && (tab1_de_i - 1) <= tab2.size_array());
       last_tab1_de_i = tab1_de_i;
       // Ce test doit rester, sinon on pollue les autres lignes du vecteur sol
       // avec des valeurs dependant des items communs et virtuels
-        {
-          // Le premier coeff doit etre le coef diagonal et doit etre strictement positif
- assert(nvois >= 1 && (*tab2_ptr) == i && (*coeff_ptr) > 0.);
-          const double omega_coeff_i_i = omega / (*coeff_ptr);
-          const double v_i = sol_fortran[i] *= omega_coeff_i_i;
-          tab2_ptr++;
-          coeff_ptr++;
-          for (int j = nvois-1; j; j--, tab2_ptr++, coeff_ptr++)
-            {
-              const int i2 = *tab2_ptr; // indice de colonne pour le prochain coefficient
-              const double coeff_i_i2 = *coeff_ptr;
-              // la matrice n'a que des coeffs diagonaux superieurs et on a deja traite
-              // la diagonale, donc i2 > i.
-              // Pas d'items virtuels autorises !
- assert(i2 > i && i2 <= nb_lignes_a_traiter);
-              // B.M.: ... en revanche, le test sur les items communs est superflu ici car
-              // la valeur sera annulee (voir **Annulation items communs**),
-              // gain de perfs si on ne fait pas le test
-              sol_fortran[i2] -= coeff_i_i2 * v_i;
-            }
-        }
+      {
+        // Le premier coeff doit etre le coef diagonal et doit etre strictement positif
+        assert(nvois >= 1 && (*tab2_ptr) == i && (*coeff_ptr) > 0.);
+        const double omega_coeff_i_i = omega / (*coeff_ptr);
+        const double v_i = sol_fortran[i] *= omega_coeff_i_i;
+        tab2_ptr++;
+        coeff_ptr++;
+        for (int j = nvois-1; j; j--, tab2_ptr++, coeff_ptr++)
+          {
+            const int i2 = *tab2_ptr; // indice de colonne pour le prochain coefficient
+            const double coeff_i_i2 = *coeff_ptr;
+            // la matrice n'a que des coeffs diagonaux superieurs et on a deja traite
+            // la diagonale, donc i2 > i.
+            // Pas d'items virtuels autorises !
+            assert(i2 > i && i2 <= nb_lignes_a_traiter);
+            // B.M.: ... en revanche, le test sur les items communs est superflu ici car
+            // la valeur sera annulee (voir **Annulation items communs**),
+            // gain de perfs si on ne fait pas le test
+            sol_fortran[i2] -= coeff_i_i2 * v_i;
+          }
+      }
     }
 }
 
 
 void remontee_diag_ok_assert(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2, const ArrOfDouble& coeff,
-                  DoubleVect& vecteur
-                 )
+                             DoubleVect& vecteur
+                            )
 {
   const int nb_lignes_a_traiter = vecteur.size_reelle_ok() ? vecteur.size_reelle() : vecteur.size_totale();
 
@@ -859,7 +859,7 @@ void remontee_diag_ok_assert(const double omega, const ArrOfInt& tab1, const Arr
     {
       const int tab1_de_i = *tab1_ptr; // = tab1[i]
       const int nvois = last_tab1_de_i - tab1_de_i;
- assert(nvois >= 0 && tab1_de_i > 0);
+      assert(nvois >= 0 && tab1_de_i > 0);
       last_tab1_de_i = tab1_de_i;
       // Ce test doit rester car il ne faut pas modifier sol[i] pour les items communs
       // et virtuels (ils sont nuls et doivent le rester pour ne pas polluer les autres lignes):
@@ -876,7 +876,7 @@ void remontee_diag_ok_assert(const double omega, const ArrOfInt& tab1, const Arr
               x += coeff_i_i2 * sol_fortran[i2];
             }
           // ici coeff_ptr est le coeff diagonal
- assert((*tab2_ptr) == i);
+          assert((*tab2_ptr) == i);
           const double coeff_i_i = *coeff_ptr;
           const double omega_coeff_i_i = omega / coeff_i_i;
           // La diagonale a deja ete multipliee par psi * coeff_i_i
@@ -894,9 +894,9 @@ void remontee_diag_ok_assert(const double omega, const ArrOfInt& tab1, const Arr
 }
 
 void descente_diag_ok_assert(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2, const ArrOfDouble& coeff,
-                  DoubleVect& vecteur
-                  , const ArrOfInt& items_a_traiter
-                 )
+                             DoubleVect& vecteur
+                             , const ArrOfInt& items_a_traiter
+                            )
 {
   const int nb_lignes_a_traiter = vecteur.size_reelle_ok() ? vecteur.size_reelle() : vecteur.size_totale();
   // pointeur "fortran" vers le tableau solution (indexable avec index fortran)
@@ -915,16 +915,16 @@ void descente_diag_ok_assert(const double omega, const ArrOfInt& tab1, const Arr
     {
       const int tab1_de_i = *tab1_ptr; // = tab1[i]
       const int nvois = tab1_de_i - last_tab1_de_i;
- assert(nvois >= 0 && (tab1_de_i - 1) <= tab2.size_array());
+      assert(nvois >= 0 && (tab1_de_i - 1) <= tab2.size_array());
       last_tab1_de_i = tab1_de_i;
       // Ce test doit rester, sinon on pollue les autres lignes du vecteur sol
       // avec des valeurs dependant des items communs et virtuels
- assert((flags_ptr - items_a_traiter.addr()) == (i-1));
+      assert((flags_ptr - items_a_traiter.addr()) == (i-1));
       const int item_a_traiter = *(flags_ptr++);
       if (item_a_traiter)
         {
           // Le premier coeff doit etre le coef diagonal et doit etre strictement positif
- assert(nvois >= 1 && (*tab2_ptr) == i && (*coeff_ptr) > 0.);
+          assert(nvois >= 1 && (*tab2_ptr) == i && (*coeff_ptr) > 0.);
           const double omega_coeff_i_i = omega / (*coeff_ptr);
           const double v_i = sol_fortran[i] *= omega_coeff_i_i;
           tab2_ptr++;
@@ -935,7 +935,7 @@ void descente_diag_ok_assert(const double omega, const ArrOfInt& tab1, const Arr
               const double coeff_i_i2 = *coeff_ptr;
               // la matrice n'a que des coeffs diagonaux superieurs et on a deja traite
               // la diagonale, donc i2 > i.
- assert(i2 > i && i2 <= vecteur.size_totale());
+              assert(i2 > i && i2 <= vecteur.size_totale());
               // B.M.: ... en revanche, le test sur les items communs est superflu ici car
               // la valeur sera annulee (voir **Annulation items communs**),
               // gain de perfs si on ne fait pas le test
@@ -965,9 +965,9 @@ void descente_diag_ok_assert(const double omega, const ArrOfInt& tab1, const Arr
 
 
 void remontee_diag_ok_assert(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2, const ArrOfDouble& coeff,
-                  DoubleVect& vecteur
-                  , const ArrOfInt& items_a_traiter
-                 )
+                             DoubleVect& vecteur
+                             , const ArrOfInt& items_a_traiter
+                            )
 {
   const int nb_lignes_a_traiter = vecteur.size_reelle_ok() ? vecteur.size_reelle() : vecteur.size_totale();
   const int *flags_ptr = items_a_traiter.addr() + nb_lignes_a_traiter - 1;
@@ -988,7 +988,7 @@ void remontee_diag_ok_assert(const double omega, const ArrOfInt& tab1, const Arr
     {
       const int tab1_de_i = *tab1_ptr; // = tab1[i]
       const int nvois = last_tab1_de_i - tab1_de_i;
- assert(nvois >= 0 && tab1_de_i > 0);
+      assert(nvois >= 0 && tab1_de_i > 0);
       last_tab1_de_i = tab1_de_i;
       // Ce test doit rester car il ne faut pas modifier sol[i] pour les items communs
       // et virtuels (ils sont nuls et doivent le rester pour ne pas polluer les autres lignes):
@@ -1005,7 +1005,7 @@ void remontee_diag_ok_assert(const double omega, const ArrOfInt& tab1, const Arr
               x += coeff_i_i2 * sol_fortran[i2];
             }
           // ici coeff_ptr est le coeff diagonal
- assert((*tab2_ptr) == i);
+          assert((*tab2_ptr) == i);
           const double coeff_i_i = *coeff_ptr;
           const double omega_coeff_i_i = omega / coeff_i_i;
           // La diagonale a deja ete multipliee par psi * coeff_i_i
@@ -1023,8 +1023,8 @@ void remontee_diag_ok_assert(const double omega, const ArrOfInt& tab1, const Arr
 }
 
 void descente_precond_diag(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2, const ArrOfDouble& coeff,
-                  DoubleVect& vecteur
-                 )
+                           DoubleVect& vecteur
+                          )
 {
   const int nb_lignes_a_traiter = vecteur.size_reelle_ok() ? vecteur.size_reelle() : vecteur.size_totale();
   // pointeur "fortran" vers le tableau solution (indexable avec index fortran)
@@ -1041,34 +1041,34 @@ void descente_precond_diag(const double omega, const ArrOfInt& tab1, const ArrOf
     {
       const int tab1_de_i = *tab1_ptr; // = tab1[i]
       const int nvois = tab1_de_i - last_tab1_de_i;
- static_cast<void> (0);
+      static_cast<void> (0);
       last_tab1_de_i = tab1_de_i;
       // Ce test doit rester, sinon on pollue les autres lignes du vecteur sol
       // avec des valeurs dependant des items communs et virtuels
-        {
-          // Pas de coefficient diagonal stocke (ni dans tab2 ni dans coeff), la diagonale vaut 1:
-          const double v_i = sol_fortran[i] *= omega;
-          for (int j = nvois-1; j; j--, tab2_ptr++, coeff_ptr++)
-            {
-              const int i2 = *tab2_ptr; // indice de colonne pour le prochain coefficient
-              const double coeff_i_i2 = *coeff_ptr;
-              // la matrice n'a que des coeffs diagonaux superieurs et on a deja traite
-              // la diagonale, donc i2 > i.
-              // Pas d'items virtuels autorises !
- static_cast<void> (0);
-              // B.M.: ... en revanche, le test sur les items communs est superflu ici car
-              // la valeur sera annulee (voir **Annulation items communs**),
-              // gain de perfs si on ne fait pas le test
-              sol_fortran[i2] -= coeff_i_i2 * v_i;
-            }
-        }
+      {
+        // Pas de coefficient diagonal stocke (ni dans tab2 ni dans coeff), la diagonale vaut 1:
+        const double v_i = sol_fortran[i] *= omega;
+        for (int j = nvois-1; j; j--, tab2_ptr++, coeff_ptr++)
+          {
+            const int i2 = *tab2_ptr; // indice de colonne pour le prochain coefficient
+            const double coeff_i_i2 = *coeff_ptr;
+            // la matrice n'a que des coeffs diagonaux superieurs et on a deja traite
+            // la diagonale, donc i2 > i.
+            // Pas d'items virtuels autorises !
+            static_cast<void> (0);
+            // B.M.: ... en revanche, le test sur les items communs est superflu ici car
+            // la valeur sera annulee (voir **Annulation items communs**),
+            // gain de perfs si on ne fait pas le test
+            sol_fortran[i2] -= coeff_i_i2 * v_i;
+          }
+      }
     }
 }
 
 
 void remontee_precond_diag(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2, const ArrOfDouble& coeff,
-                  DoubleVect& vecteur
-                 )
+                           DoubleVect& vecteur
+                          )
 {
   const int nb_lignes_a_traiter = vecteur.size_reelle_ok() ? vecteur.size_reelle() : vecteur.size_totale();
   const double psi = (2. - omega) / omega;
@@ -1088,7 +1088,7 @@ void remontee_precond_diag(const double omega, const ArrOfInt& tab1, const ArrOf
     {
       const int tab1_de_i = *tab1_ptr; // = tab1[i]
       const int nvois = last_tab1_de_i - tab1_de_i;
- static_cast<void> (0);
+      static_cast<void> (0);
       last_tab1_de_i = tab1_de_i;
       // Ce test doit rester car il ne faut pas modifier sol[i] pour les items communs
       // et virtuels (ils sont nuls et doivent le rester pour ne pas polluer les autres lignes):
@@ -1117,9 +1117,9 @@ void remontee_precond_diag(const double omega, const ArrOfInt& tab1, const ArrOf
 }
 
 void descente_precond_diag(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2, const ArrOfDouble& coeff,
-                  DoubleVect& vecteur
-                  , const ArrOfInt& items_a_traiter
-                 )
+                           DoubleVect& vecteur
+                           , const ArrOfInt& items_a_traiter
+                          )
 {
   const int nb_lignes_a_traiter = vecteur.size_reelle_ok() ? vecteur.size_reelle() : vecteur.size_totale();
   // pointeur "fortran" vers le tableau solution (indexable avec index fortran)
@@ -1138,11 +1138,11 @@ void descente_precond_diag(const double omega, const ArrOfInt& tab1, const ArrOf
     {
       const int tab1_de_i = *tab1_ptr; // = tab1[i]
       const int nvois = tab1_de_i - last_tab1_de_i;
- static_cast<void> (0);
+      static_cast<void> (0);
       last_tab1_de_i = tab1_de_i;
       // Ce test doit rester, sinon on pollue les autres lignes du vecteur sol
       // avec des valeurs dependant des items communs et virtuels
- static_cast<void> (0);
+      static_cast<void> (0);
       const int item_a_traiter = *(flags_ptr++);
       if (item_a_traiter)
         {
@@ -1154,7 +1154,7 @@ void descente_precond_diag(const double omega, const ArrOfInt& tab1, const ArrOf
               const double coeff_i_i2 = *coeff_ptr;
               // la matrice n'a que des coeffs diagonaux superieurs et on a deja traite
               // la diagonale, donc i2 > i.
- static_cast<void> (0);
+              static_cast<void> (0);
               // B.M.: ... en revanche, le test sur les items communs est superflu ici car
               // la valeur sera annulee (voir **Annulation items communs**),
               // gain de perfs si on ne fait pas le test
@@ -1184,9 +1184,9 @@ void descente_precond_diag(const double omega, const ArrOfInt& tab1, const ArrOf
 
 
 void remontee_precond_diag(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2, const ArrOfDouble& coeff,
-                  DoubleVect& vecteur
-                  , const ArrOfInt& items_a_traiter
-                 )
+                           DoubleVect& vecteur
+                           , const ArrOfInt& items_a_traiter
+                          )
 {
   const int nb_lignes_a_traiter = vecteur.size_reelle_ok() ? vecteur.size_reelle() : vecteur.size_totale();
   const int *flags_ptr = items_a_traiter.addr() + nb_lignes_a_traiter - 1;
@@ -1208,7 +1208,7 @@ void remontee_precond_diag(const double omega, const ArrOfInt& tab1, const ArrOf
     {
       const int tab1_de_i = *tab1_ptr; // = tab1[i]
       const int nvois = last_tab1_de_i - tab1_de_i;
- static_cast<void> (0);
+      static_cast<void> (0);
       last_tab1_de_i = tab1_de_i;
       // Ce test doit rester car il ne faut pas modifier sol[i] pour les items communs
       // et virtuels (ils sont nuls et doivent le rester pour ne pas polluer les autres lignes):
@@ -1237,8 +1237,8 @@ void remontee_precond_diag(const double omega, const ArrOfInt& tab1, const ArrOf
 }
 
 void descente_assert_precond_diag(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2, const ArrOfDouble& coeff,
-                  DoubleVect& vecteur
-                 )
+                                  DoubleVect& vecteur
+                                 )
 {
   const int nb_lignes_a_traiter = vecteur.size_reelle_ok() ? vecteur.size_reelle() : vecteur.size_totale();
   // pointeur "fortran" vers le tableau solution (indexable avec index fortran)
@@ -1255,34 +1255,34 @@ void descente_assert_precond_diag(const double omega, const ArrOfInt& tab1, cons
     {
       const int tab1_de_i = *tab1_ptr; // = tab1[i]
       const int nvois = tab1_de_i - last_tab1_de_i;
- assert(nvois >= 0 && (tab1_de_i - 1) <= tab2.size_array());
+      assert(nvois >= 0 && (tab1_de_i - 1) <= tab2.size_array());
       last_tab1_de_i = tab1_de_i;
       // Ce test doit rester, sinon on pollue les autres lignes du vecteur sol
       // avec des valeurs dependant des items communs et virtuels
-        {
-          // Pas de coefficient diagonal stocke (ni dans tab2 ni dans coeff), la diagonale vaut 1:
-          const double v_i = sol_fortran[i] *= omega;
-          for (int j = nvois-1; j; j--, tab2_ptr++, coeff_ptr++)
-            {
-              const int i2 = *tab2_ptr; // indice de colonne pour le prochain coefficient
-              const double coeff_i_i2 = *coeff_ptr;
-              // la matrice n'a que des coeffs diagonaux superieurs et on a deja traite
-              // la diagonale, donc i2 > i.
-              // Pas d'items virtuels autorises !
- assert(i2 > i && i2 <= nb_lignes_a_traiter);
-              // B.M.: ... en revanche, le test sur les items communs est superflu ici car
-              // la valeur sera annulee (voir **Annulation items communs**),
-              // gain de perfs si on ne fait pas le test
-              sol_fortran[i2] -= coeff_i_i2 * v_i;
-            }
-        }
+      {
+        // Pas de coefficient diagonal stocke (ni dans tab2 ni dans coeff), la diagonale vaut 1:
+        const double v_i = sol_fortran[i] *= omega;
+        for (int j = nvois-1; j; j--, tab2_ptr++, coeff_ptr++)
+          {
+            const int i2 = *tab2_ptr; // indice de colonne pour le prochain coefficient
+            const double coeff_i_i2 = *coeff_ptr;
+            // la matrice n'a que des coeffs diagonaux superieurs et on a deja traite
+            // la diagonale, donc i2 > i.
+            // Pas d'items virtuels autorises !
+            assert(i2 > i && i2 <= nb_lignes_a_traiter);
+            // B.M.: ... en revanche, le test sur les items communs est superflu ici car
+            // la valeur sera annulee (voir **Annulation items communs**),
+            // gain de perfs si on ne fait pas le test
+            sol_fortran[i2] -= coeff_i_i2 * v_i;
+          }
+      }
     }
 }
 
 
 void remontee_assert_precond_diag(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2, const ArrOfDouble& coeff,
-                  DoubleVect& vecteur
-                 )
+                                  DoubleVect& vecteur
+                                 )
 {
   const int nb_lignes_a_traiter = vecteur.size_reelle_ok() ? vecteur.size_reelle() : vecteur.size_totale();
   const double psi = (2. - omega) / omega;
@@ -1302,7 +1302,7 @@ void remontee_assert_precond_diag(const double omega, const ArrOfInt& tab1, cons
     {
       const int tab1_de_i = *tab1_ptr; // = tab1[i]
       const int nvois = last_tab1_de_i - tab1_de_i;
- assert(nvois >= 0 && tab1_de_i > 0);
+      assert(nvois >= 0 && tab1_de_i > 0);
       last_tab1_de_i = tab1_de_i;
       // Ce test doit rester car il ne faut pas modifier sol[i] pour les items communs
       // et virtuels (ils sont nuls et doivent le rester pour ne pas polluer les autres lignes):
@@ -1331,9 +1331,9 @@ void remontee_assert_precond_diag(const double omega, const ArrOfInt& tab1, cons
 }
 
 void descente_assert_precond_diag(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2, const ArrOfDouble& coeff,
-                  DoubleVect& vecteur
-                  , const ArrOfInt& items_a_traiter
-                 )
+                                  DoubleVect& vecteur
+                                  , const ArrOfInt& items_a_traiter
+                                 )
 {
   const int nb_lignes_a_traiter = vecteur.size_reelle_ok() ? vecteur.size_reelle() : vecteur.size_totale();
   // pointeur "fortran" vers le tableau solution (indexable avec index fortran)
@@ -1352,11 +1352,11 @@ void descente_assert_precond_diag(const double omega, const ArrOfInt& tab1, cons
     {
       const int tab1_de_i = *tab1_ptr; // = tab1[i]
       const int nvois = tab1_de_i - last_tab1_de_i;
- assert(nvois >= 0 && (tab1_de_i - 1) <= tab2.size_array());
+      assert(nvois >= 0 && (tab1_de_i - 1) <= tab2.size_array());
       last_tab1_de_i = tab1_de_i;
       // Ce test doit rester, sinon on pollue les autres lignes du vecteur sol
       // avec des valeurs dependant des items communs et virtuels
- assert((flags_ptr - items_a_traiter.addr()) == (i-1));
+      assert((flags_ptr - items_a_traiter.addr()) == (i-1));
       const int item_a_traiter = *(flags_ptr++);
       if (item_a_traiter)
         {
@@ -1368,7 +1368,7 @@ void descente_assert_precond_diag(const double omega, const ArrOfInt& tab1, cons
               const double coeff_i_i2 = *coeff_ptr;
               // la matrice n'a que des coeffs diagonaux superieurs et on a deja traite
               // la diagonale, donc i2 > i.
- assert(i2 > i && i2 <= vecteur.size_totale());
+              assert(i2 > i && i2 <= vecteur.size_totale());
               // B.M.: ... en revanche, le test sur les items communs est superflu ici car
               // la valeur sera annulee (voir **Annulation items communs**),
               // gain de perfs si on ne fait pas le test
@@ -1398,9 +1398,9 @@ void descente_assert_precond_diag(const double omega, const ArrOfInt& tab1, cons
 
 
 void remontee_assert_precond_diag(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2, const ArrOfDouble& coeff,
-                  DoubleVect& vecteur
-                  , const ArrOfInt& items_a_traiter
-                 )
+                                  DoubleVect& vecteur
+                                  , const ArrOfInt& items_a_traiter
+                                 )
 {
   const int nb_lignes_a_traiter = vecteur.size_reelle_ok() ? vecteur.size_reelle() : vecteur.size_totale();
   const int *flags_ptr = items_a_traiter.addr() + nb_lignes_a_traiter - 1;
@@ -1422,7 +1422,7 @@ void remontee_assert_precond_diag(const double omega, const ArrOfInt& tab1, cons
     {
       const int tab1_de_i = *tab1_ptr; // = tab1[i]
       const int nvois = last_tab1_de_i - tab1_de_i;
- assert(nvois >= 0 && tab1_de_i > 0);
+      assert(nvois >= 0 && tab1_de_i > 0);
       last_tab1_de_i = tab1_de_i;
       // Ce test doit rester car il ne faut pas modifier sol[i] pour les items communs
       // et virtuels (ils sont nuls et doivent le rester pour ne pas polluer les autres lignes):

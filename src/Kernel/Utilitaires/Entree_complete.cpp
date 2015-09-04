@@ -68,7 +68,7 @@ int Entree_complete::get(char* ob, int bufsize)
 }
 
 
-Entree& Entree_complete::operator>>(int & ob)
+Entree& Entree_complete::operator>>(int& ob)
 {
   Entree& is = get_input();
   is >> ob;
@@ -87,7 +87,7 @@ int Entree_complete::get(int * ob, int n)
     }
   return 1;
 }
-Entree& Entree_complete::operator>>(long & ob)
+Entree& Entree_complete::operator>>(long& ob)
 {
   Entree& is = get_input();
   is >> ob;
@@ -106,7 +106,7 @@ int Entree_complete::get(long * ob, int n)
     }
   return 1;
 }
-Entree& Entree_complete::operator>>(float & ob)
+Entree& Entree_complete::operator>>(float& ob)
 {
   Entree& is = get_input();
   is >> ob;
@@ -125,7 +125,7 @@ int Entree_complete::get(float * ob, int n)
     }
   return 1;
 }
-Entree& Entree_complete::operator>>(double & ob)
+Entree& Entree_complete::operator>>(double& ob)
 {
   Entree& is = get_input();
   is >> ob;

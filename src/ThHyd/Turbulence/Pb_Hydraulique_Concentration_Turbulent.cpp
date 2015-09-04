@@ -214,7 +214,7 @@ int Pb_Hydraulique_Concentration_Turbulent::verifier()
   // Verification de la compatibilite des conditions aux limites:
   tester_compatibilite_hydr_concentration(zone_Cl_hydr,zone_Cl_co);
   if ( sub_type( Mod_turb_hyd_RANS, eq_hydraulique.get_modele(TURBULENCE).valeur() ))
-  
+
     {
       const Mod_turb_hyd_RANS& le_mod_RANS = ref_cast(Mod_turb_hyd_RANS, eq_hydraulique.get_modele(TURBULENCE).valeur());
       const Transport_K_Eps_base& eqn = ref_cast(Transport_K_Eps_base, le_mod_RANS.eqn_transp_K_Eps());

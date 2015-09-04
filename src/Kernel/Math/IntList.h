@@ -33,22 +33,22 @@ class Entree;
 #include <IntListElem.h>
 
 //////////////////////////////////////////////////////////////////////////////
-// 
-// .DESCRIPTION 
-//      Classe qui sert a representer une liste de reels int 
-//      precision. On ne peut pas utiliser la classe container 
+//
+// .DESCRIPTION
+//      Classe qui sert a representer une liste de reels int
+//      precision. On ne peut pas utiliser la classe container
 //      List avec des objets du type int car int est un type
 //      predefini du C++ qui ne possede pas les fonctions exigees
-//      par List< >. 
-// .SECTION voir aussi 
+//      par List< >.
+// .SECTION voir aussi
 //////////////////////////////////////////////////////////////////////////////
 class IntList : public IntListElem
 {
-   
+
 public :
   friend class IntList_Curseur;
 
-  IntList(const IntList&);   
+  IntList(const IntList&);
   inline IntList();
   Sortie& printOn(Sortie& os) const;
   Entree& readOn(Entree& is);
@@ -57,13 +57,13 @@ public :
   int rang(int) const;
   IntListElem& dernier() ;
   const IntListElem& dernier() const;
-  
+
   int& operator[](int );
   const int& operator[](int ) const;
   IntList& add(int ) ;
   IntList& add_if_not(int ) ;
-  IntList& operator=(const IntList& );  
-   
+  IntList& operator=(const IntList& );
+
   friend int operator == (const IntList& , const IntList& );
   void suppr(int );
   void vide();
@@ -76,12 +76,13 @@ private:
 };
 
 //////////////////////////////////////////////////////////////////////////////
-// 
-// .DESCRIPTION 
+//
+// .DESCRIPTION
 //      List_Curseur de reels int precision
-// .SECTION voir aussi 
+// .SECTION voir aussi
 //////////////////////////////////////////////////////////////////////////////
-class IntList_Curseur{
+class IntList_Curseur
+{
 public :
   inline IntList_Curseur(const IntList& a_list);
   inline IntList_Curseur(const IntListElem& a_list);
@@ -92,111 +93,111 @@ public :
   inline void operator=(const IntList& a_list);
   inline const IntListElem& list() const;
   inline IntListElem& list();
-  
+
 private :
   IntListElem* curseur;
 };
 
-// Description: 
+// Description:
 //    Construit une liste vide
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
-// Retour: 
-//    Signification: 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 
 inline IntList::IntList() :
   IntListElem(),min_data(IMAX),max_data(-IMAX)
-{ 
+{
   dernier_=this;
 }
 
-// Description: 
+// Description:
 //    Constructeur
 //    Construit une liste_curseur a partir d'une liste
-// Precondition: 
+// Precondition:
 // Parametre: const IntList& list
 //    Signification: la liste a utiliser
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
-// Retour: 
-//    Signification: 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
-inline IntList_Curseur::IntList_Curseur(const IntList& a_list) 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+inline IntList_Curseur::IntList_Curseur(const IntList& a_list)
   : curseur(&(IntListElem&)a_list)
 {
   if (a_list.est_vide())
     curseur=0;
 }
 
-// Description: 
+// Description:
 //    Constructeur
 //    Construit une liste_curseur a partir d'une liste
-// Precondition: 
+// Precondition:
 // Parametre: const IntList& list
 //    Signification: la liste a utiliser
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
-// Retour: 
-//    Signification: 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
-inline IntList_Curseur::IntList_Curseur(const IntListElem& a_list) 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+inline IntList_Curseur::IntList_Curseur(const IntListElem& a_list)
   : curseur(&(IntListElem&)a_list)
 {
   if (a_list.est_vide())
     curseur=0;
 }
 
-// Description: 
+// Description:
 //    Teste si le curseur est non nul
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: int
 //    Signification: 1 si le curseur est non nul, 0 si il est nul
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 inline IntList_Curseur::operator int() const
 {
   return (curseur!=0);
 }
 
 
-// Description: 
+// Description:
 //    Avance le curseur dans la liste
 //    Si le curseur est sur le dernier element, il devient nul
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
-// Retour: 
-//    Signification: 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 inline void IntList_Curseur::operator++()
 {
   if(curseur->est_dernier())
@@ -206,102 +207,103 @@ inline void IntList_Curseur::operator++()
 }
 
 
-// Description: 
+// Description:
 //    retourne la valeur du curseur
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: int
 //    Signification: valeur du curseur
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 inline int IntList_Curseur::valeur() const
 {
   return curseur->valeur();
 }
 
 
-// Description: 
+// Description:
 //    retourne la valeur du curseur
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: int&
 //    Signification: valeur du curseur
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 inline int& IntList_Curseur::valeur()
 {
   return curseur->valeur();
 }
 
 
-// Description: 
+// Description:
 //    Affectation d'une liste a une liste_curseur
-// Precondition: 
+// Precondition:
 // Parametre: const IntList& list
 //    Signification: la liste a affecter
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
-// Retour: 
-//    Signification: 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
 //    Mise a jour du curseur sur le premier element
-// Postcondition: 
-inline void IntList_Curseur::operator=(const IntList& a_list){
+// Postcondition:
+inline void IntList_Curseur::operator=(const IntList& a_list)
+{
   curseur=(&(IntListElem&)a_list);
   if (a_list.est_vide())
     curseur=0;
 }
 
 
-// Description: 
+// Description:
 //    Retourne la liste associee a la liste_curseur
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: const IntList&
 //    Signification: la liste associee
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 inline const IntListElem& IntList_Curseur::list() const
 {
   return *curseur;
 }
 
 
-// Description: 
+// Description:
 //    Retourne la liste associee a la liste_curseur
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: IntList&
 //    Signification: la liste associee
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 inline IntListElem& IntList_Curseur::list()
 {
   return *curseur;

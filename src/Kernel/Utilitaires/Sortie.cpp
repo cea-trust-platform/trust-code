@@ -90,15 +90,15 @@ Sortie& Sortie::operator=(Sortie& os)
 {
   if(ostream_)
     delete ostream_;
- if (os.has_ostream())
-   {
-     Cerr<<"we try to copy a Sortie with ostream !!!"<<finl;
-     abort();
-     ostream_ = new ostream(os.get_ostream().rdbuf());
-   }
- else
-   ostream_=0;
- return *this;
+  if (os.has_ostream())
+    {
+      Cerr<<"we try to copy a Sortie with ostream !!!"<<finl;
+      abort();
+      ostream_ = new ostream(os.get_ostream().rdbuf());
+    }
+  else
+    ostream_=0;
+  return *this;
 }
 
 ostream& Sortie::get_ostream()
@@ -122,7 +122,7 @@ void Sortie::set_ostream(ostream* os)
 //  Methode de bas niveau pour ecrire un int ou flottant dans le stream.
 //  Dans l'implementation de la classe de base, on ecrit dans ostream_.
 //  En binaire on utilise ostream::write(), en ascii ostream::operato<<()
-Sortie& Sortie::operator<<(const int & ob)
+Sortie& Sortie::operator<<(const int& ob)
 {
   if(bin_)
     {
@@ -179,7 +179,7 @@ int Sortie::put(const int * ob, int n, int nb_col)
 //  Methode de bas niveau pour ecrire un int ou flottant dans le stream.
 //  Dans l'implementation de la classe de base, on ecrit dans ostream_.
 //  En binaire on utilise ostream::write(), en ascii ostream::operato<<()
-Sortie& Sortie::operator<<(const long & ob)
+Sortie& Sortie::operator<<(const long& ob)
 {
   if(bin_)
     {
@@ -236,7 +236,7 @@ int Sortie::put(const long * ob, int n, int nb_col)
 //  Methode de bas niveau pour ecrire un int ou flottant dans le stream.
 //  Dans l'implementation de la classe de base, on ecrit dans ostream_.
 //  En binaire on utilise ostream::write(), en ascii ostream::operato<<()
-Sortie& Sortie::operator<<(const float & ob)
+Sortie& Sortie::operator<<(const float& ob)
 {
   if(bin_)
     {
@@ -293,7 +293,7 @@ int Sortie::put(const float * ob, int n, int nb_col)
 //  Methode de bas niveau pour ecrire un int ou flottant dans le stream.
 //  Dans l'implementation de la classe de base, on ecrit dans ostream_.
 //  En binaire on utilise ostream::write(), en ascii ostream::operato<<()
-Sortie& Sortie::operator<<(const double & ob)
+Sortie& Sortie::operator<<(const double& ob)
 {
   if(bin_)
     {
@@ -503,8 +503,8 @@ int Sortie::set_bin(int bin)
 }
 bool Sortie::has_ostream() const
 {
-  return (ostream_!=0); 
-}     
+  return (ostream_!=0);
+}
 
 int Sortie::is_bin()
 {

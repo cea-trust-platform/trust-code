@@ -26,56 +26,59 @@
 #include <IntList.h>
 #include <Nom.h>
 
-// Description: 
+// Description:
 //    Constructeur par copie
-// Precondition: 
+// Precondition:
 // Parametre: const IntListElem& list
 //    Signification: la liste a copier
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
-// Retour: 
-//    Signification: 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
-IntListElem::IntListElem(const IntListElem& list) 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+IntListElem::IntListElem(const IntListElem& list)
 {
-  if(list.est_vide() ){
-    suivant_=this;
-  }
-  else {
-    data=list.data;
-    if(list.suivant_) {
-      IntListElem* next = new IntListElem(*list.suivant_); //Recursif !!
-      suivant_ = next;
+  if(list.est_vide() )
+    {
+      suivant_=this;
     }
-    else
-      suivant_ =0;
-  }
+  else
+    {
+      data=list.data;
+      if(list.suivant_)
+        {
+          IntListElem* next = new IntListElem(*list.suivant_); //Recursif !!
+          suivant_ = next;
+        }
+      else
+        suivant_ =0;
+    }
 }
 
-// Description: 
+// Description:
 //    destructeur
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
-// Retour: 
-//    Signification: 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 IntListElem:: ~IntListElem()
 {
   // Cout << "Destruction de IntList" << finl;
   if (est_vide())
     suivant_=0;
-  if(suivant_) 
+  if(suivant_)
     {
       // On ne garde pas la version delete suivant_ car sinon on est limite par le nombre d'appel recursif possible
       // delete suivant_;
@@ -93,47 +96,47 @@ IntListElem:: ~IntListElem()
 
 }
 
-// Description: 
+// Description:
 //    insertion en queue
-// Precondition: 
+// Precondition:
 // Parametre: int int_to_add
 //    Signification: element a ajouter
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: Int_ListElem&
 //    Signification: *this
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
-IntListElem& IntListElem::add(int int_to_add) 
-{  
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+IntListElem& IntListElem::add(int int_to_add)
+{
   assert(est_dernier());
   IntListElem* next=new IntListElem(int_to_add);
-  suivant_ = next; 
+  suivant_ = next;
   return *this;
-}      
+}
 
-// Description: 
+// Description:
 //     Operateur de comparaison de deux listes
-// Precondition: 
+// Precondition:
 // Parametre: const IntList& list1
 //    Signification: premiere liste a comparer
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Parametre: const IntList& list2
 //    Signification: seconde liste a comparer
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: int
 //    Signification: 1 si les listes sont egales, 0 sinon
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 int operator ==(const IntListElem& list1 , const IntListElem& list2)
 {
   int retour=1;

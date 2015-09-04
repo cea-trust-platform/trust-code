@@ -26,57 +26,60 @@
 #include <IntList.h>
 #include <Nom.h>
 
-// Description: 
+// Description:
 //     Ecriture d'une liste sur un flot de sortie
 //     les elements separes par des virgules figurent entre des accolades
-// Precondition: 
+// Precondition:
 // Parametre: Sortie& os
 //    Signification: le flot de sortie a utiliser
-//    Valeurs par defaut: 
-//    Contraintes: 
+//    Valeurs par defaut:
+//    Contraintes:
 //    Acces: entree/sortie
 // Retour: Sortie&
 //    Signification: le flot d'entree modifie
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
-Sortie& IntList::printOn(Sortie& os) const {
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+Sortie& IntList::printOn(Sortie& os) const
+{
   IntList_Curseur curseur(*this);
   Nom accouverte = "{";
   Nom accfermee = "}";
   Nom virgule = ",";
   os << accouverte << " " ;
-  while(curseur){
-    // if(est_dernier()) GF sinon on a une virgule de trop
-    if(curseur.list().est_dernier())
-      os << curseur.valeur() << " " ;
-    else
-      os << curseur.valeur() << " " << virgule << " " ;
-    ++curseur;
-  }
+  while(curseur)
+    {
+      // if(est_dernier()) GF sinon on a une virgule de trop
+      if(curseur.list().est_dernier())
+        os << curseur.valeur() << " " ;
+      else
+        os << curseur.valeur() << " " << virgule << " " ;
+      ++curseur;
+    }
   os << accfermee;
   return os;
 }
 
 
 
-// Description: 
+// Description:
 //     Lecture d'une liste sur un flot d'entree
 //     les elements separes par des virgules figurent entre des accolades
-// Precondition: 
+// Precondition:
 // Parametre: Entree& is
 //    Signification: le flot d'entree a utiliser
-//    Valeurs par defaut: 
-//    Contraintes: 
+//    Valeurs par defaut:
+//    Contraintes:
 //    Acces: entree/sortie
-// Retour: Entree& 
+// Retour: Entree&
 //    Signification: le flot d'entree modifie
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
-Entree& IntList::readOn(Entree& is)  {
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+Entree& IntList::readOn(Entree& is)
+{
   Nom accouverte = "{";
   Nom accfermee = "}";
   Nom virgule = ",";
@@ -84,97 +87,103 @@ Entree& IntList::readOn(Entree& is)  {
   int t;
   is >> nom;
   assert(nom==accouverte);
-  while(nom != accfermee){
-    is >> t;
-    add(t);
-    is >> nom;
-    assert((nom==accfermee)||(nom==virgule));
-  }
+  while(nom != accfermee)
+    {
+      is >> t;
+      add(t);
+      is >> nom;
+      assert((nom==accfermee)||(nom==virgule));
+    }
   return is ;
 }
 
-// Description: 
+// Description:
 //    Constructeur par copie
-// Precondition: 
+// Precondition:
 // Parametre: const IntList& list
 //    Signification: la liste a copier
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
-// Retour: 
-//    Signification: 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 IntList::IntList(const IntList& a_list) : IntListElem()
 {
-  if(a_list.est_vide() ){
-    suivant_=this;
-  }
-  else {
-    data=a_list.data;
-    min_data=a_list.min_data;
-    max_data=a_list.max_data;
-    dernier_=this;    
-    if(a_list.suivant_) {
-      IntListElem* next = new IntListElem(*a_list.suivant_); //Recursif !!
-      suivant_ = next;
+  if(a_list.est_vide() )
+    {
+      suivant_=this;
     }
-    else
-      suivant_ =0;
-  }
+  else
+    {
+      data=a_list.data;
+      min_data=a_list.min_data;
+      max_data=a_list.max_data;
+      dernier_=this;
+      if(a_list.suivant_)
+        {
+          IntListElem* next = new IntListElem(*a_list.suivant_); //Recursif !!
+          suivant_ = next;
+        }
+      else
+        suivant_ =0;
+    }
 }
 
-// Description: 
+// Description:
 //   Affectation
 //   Les elements sont copies
-// Precondition: 
+// Precondition:
 // Parametre: const IntList& list
 //    Signification: la liste a copier
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: IntList&
 //    Signification: *this
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 IntList& IntList::operator=(const IntList& a_list)
 {
-  if(a_list.est_vide()){
-    suivant_=this;
-  }
-  else {
-    vide();
-    IntList_Curseur curseur(a_list);   
-    while(curseur)
-      {
-        add(curseur.valeur());
-        ++curseur;
-      }
-  }
+  if(a_list.est_vide())
+    {
+      suivant_=this;
+    }
+  else
+    {
+      vide();
+      IntList_Curseur curseur(a_list);
+      while(curseur)
+        {
+          add(curseur.valeur());
+          ++curseur;
+        }
+    }
   return *this;
 }
 
-// Description: 
+// Description:
 //     Renvoie le dernier element de la liste
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: const IntList&
 //    Signification: le dernier element de la liste
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
-const IntListElem& IntList::dernier() const 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+const IntListElem& IntList::dernier() const
 {
-  return *dernier_; 
+  return *dernier_;
   /*  if (est_dernier()) return *this;
       IntList_Curseur curseur(*this);
       while(curseur)
@@ -183,20 +192,20 @@ const IntListElem& IntList::dernier() const
       return curseur.list(); */
 }
 
-// Description: 
+// Description:
 //     Renvoie le dernier element de la liste
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: IntList&
 //    Signification: le dernier element de la liste
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 IntListElem& IntList::dernier()
 {
   return *dernier_;
@@ -210,62 +219,66 @@ IntListElem& IntList::dernier()
   */
 }
 
-// Description: 
+// Description:
 //    insertion en queue
-// Precondition: 
+// Precondition:
 // Parametre: int int_to_add
 //    Signification: element a ajouter
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: IntList&
 //    Signification: *this
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 IntList& IntList::add(int int_to_add)
-{ 
+{
   if (int_to_add<min_data)
     min_data=int_to_add;
   if (int_to_add>max_data)
     max_data=int_to_add;
-  if( est_vide()) {
-    data=int_to_add;
-    suivant_=0;
-    return *this;
-  }
-  else{
-    if(est_dernier()){
-      IntListElem* next=new IntListElem(int_to_add);
-      suivant_ = next; 
-      dernier_ = next; 
+  if( est_vide())
+    {
+      data=int_to_add;
+      suivant_=0;
+      return *this;
     }
-    else 
-      {
-        dernier().add(int_to_add);
-        dernier_ = &dernier_->suivant(); 
-      }    
-    return *this;
-  }
+  else
+    {
+      if(est_dernier())
+        {
+          IntListElem* next=new IntListElem(int_to_add);
+          suivant_ = next;
+          dernier_ = next;
+        }
+      else
+        {
+          dernier().add(int_to_add);
+          dernier_ = &dernier_->suivant();
+        }
+      return *this;
+    }
 }
 
-// Description: 
+// Description:
 //     Renvoie la taille de la liste
 //     Une liste vide est de taille nulle
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: int
 //    Signification: nombre d'elements de la liste
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
-int IntList::size() const {
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+int IntList::size() const
+{
   if(est_vide())
     return 0;
   int i=0;
@@ -276,23 +289,23 @@ int IntList::size() const {
       ++curseur;
     }
   return i;
-}         
-      
-// Description: 
+}
+
+// Description:
 //     Ajout d'un element a la liste ssi il n'existe pas deja
-// Precondition: 
+// Precondition:
 // Parametre: int x
 //    Signification: l'element a ajouter
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: IntList&
 //    Signification: *this
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
-IntList& IntList::add_if_not(int x) 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+IntList& IntList::add_if_not(int x)
 {
   if (!contient(x))
     return add(x);
@@ -301,20 +314,20 @@ IntList& IntList::add_if_not(int x)
 }
 
 
-// Description: 
+// Description:
 //     Verifie si un element appartient ou non a la liste
-// Precondition: 
+// Precondition:
 // Parametre: int x
 //    Signification: L'element a rechercher
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: int
 //    Signification: 1 si la liste contient l'element, 0 sinon
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 int IntList::contient(int x) const
 {
   if(est_vide() || x>max_data || x<min_data)
@@ -330,27 +343,27 @@ int IntList::contient(int x) const
 }
 
 
-// Description: 
+// Description:
 //     renvoie le rang d'un element dans la liste
 //     si un element apparait plusieurs fois, renvoie le rang du premier.
-// Precondition: 
+// Precondition:
 // Parametre: int i
 //    Signification: L'element a rechercher
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: int
 //    Signification: le rang du premier element de la liste valant i,
 //     -1 si la liste ne contient pas i.
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 int IntList::rang(int x) const
 {
   if(est_vide() || x>max_data || x<min_data)
     return -1;
-  int compteur=0;    
+  int compteur=0;
   IntList_Curseur curseur(*this);
   while(curseur)
     {
@@ -362,21 +375,21 @@ int IntList::rang(int x) const
   return -1;
 }
 
-// Description: 
+// Description:
 //     Operateur d'acces au ieme int de la liste
-// Precondition: 
+// Precondition:
 // Parametre: int i
 //    Signification: l'indice de l'element a trouver
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: int&
 //    Signification: le ieme element de la liste
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
-int& IntList::operator[](int i) 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+int& IntList::operator[](int i)
 {
   IntList_Curseur curseur(*this);
   while(curseur && i--)
@@ -389,21 +402,21 @@ int& IntList::operator[](int i)
   return curseur.valeur();
 }
 
-// Description: 
+// Description:
 //     Operateur d'acces au ieme int de la liste
-// Precondition: 
+// Precondition:
 // Parametre: int i
 //    Signification: l'indice de l'element a trouver
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: const int&
 //    Signification: le ieme element de la liste
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
-const int& IntList::operator[](int i) const 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+const int& IntList::operator[](int i) const
 {
   IntList_Curseur curseur(*this);
   while(curseur && i--)
@@ -416,25 +429,25 @@ const int& IntList::operator[](int i) const
   return curseur.valeur();
 }
 
-// Description: 
+// Description:
 //     Operateur de comparaison de deux listes
-// Precondition: 
+// Precondition:
 // Parametre: const IntList& list1
 //    Signification: premiere liste a comparer
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Parametre: const IntList& list2
 //    Signification: seconde liste a comparer
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: int
 //    Signification: 1 si les listes sont egales, 0 sinon
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 int operator ==(const IntList& list1 , const IntList& list2)
 {
   int retour=1;
@@ -449,20 +462,20 @@ int operator ==(const IntList& list1 , const IntList& list2)
   return retour;
 }
 
-// Description: 
+// Description:
 //     Supprime un element contenu dans la liste
-// Precondition: 
+// Precondition:
 // Parametre: int obj
 //    Signification: l'element a supprimer de la liste
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
-// Retour: 
-//    Signification: 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 void IntList::suppr(int obj)
 {
   if(valeur()==obj)
@@ -475,24 +488,24 @@ void IntList::suppr(int obj)
           next->suivant_=0;
           delete next;
         }
-      else 
+      else
         {
           suivant_=this;
           dernier_=this;
         }
-      calcule_min_max();                  
+      calcule_min_max();
       return;
     }
   IntList_Curseur curseur_pre=*this;
   IntList_Curseur curseur=*suivant_;
   while(curseur)
     {
-      if(curseur.valeur()==obj) 
+      if(curseur.valeur()==obj)
         {
           IntListElem* next=&curseur_pre.list().suivant();
           curseur_pre.list().suivant_=curseur.list().suivant_;
           if (next->suivant_==0)
-            dernier_=&curseur_pre.list();          
+            dernier_=&curseur_pre.list();
           else
             next->suivant_=0;
           delete next;
@@ -522,24 +535,24 @@ void IntList::calcule_min_max()
     }
 }
 
-// Description: 
+// Description:
 //     Vide la liste
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
-// Retour: 
-//    Signification: 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 void IntList::vide()
 {
-  if (!est_vide()) 
-    if(suivant_) 
+  if (!est_vide())
+    if(suivant_)
       delete suivant_;
   suivant_=this;
   dernier_=this;

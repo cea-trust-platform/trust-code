@@ -33,22 +33,22 @@ class Entree;
 #include <DoubleListElem.h>
 
 //////////////////////////////////////////////////////////////////////////////
-// 
-// .DESCRIPTION 
-//      Classe qui sert a representer une liste de reels double 
-//      precision. On ne peut pas utiliser la classe container 
+//
+// .DESCRIPTION
+//      Classe qui sert a representer une liste de reels double
+//      precision. On ne peut pas utiliser la classe container
 //      List avec des objets du type double car double est un type
 //      predefini du C++ qui ne possede pas les fonctions exigees
-//      par List< >. 
-// .SECTION voir aussi 
+//      par List< >.
+// .SECTION voir aussi
 //////////////////////////////////////////////////////////////////////////////
 class DoubleList : public DoubleListElem
 {
-   
+
 public :
   friend class DoubleList_Curseur;
 
-  DoubleList(const DoubleList&);   
+  DoubleList(const DoubleList&);
   inline DoubleList();
   Sortie& printOn(Sortie& os) const;
   Entree& readOn(Entree& is);
@@ -57,13 +57,13 @@ public :
   int rang(double) const;
   DoubleListElem& dernier() ;
   const DoubleListElem& dernier() const;
-  
+
   double& operator[](int );
   const double& operator[](int ) const;
   DoubleList& add(double ) ;
   DoubleList& add_if_not(double ) ;
-  DoubleList& operator=(const DoubleList& );  
-   
+  DoubleList& operator=(const DoubleList& );
+
   friend int operator == (const DoubleList& , const DoubleList& );
   void suppr(double );
   void vide();
@@ -76,12 +76,13 @@ private:
 };
 
 //////////////////////////////////////////////////////////////////////////////
-// 
-// .DESCRIPTION 
+//
+// .DESCRIPTION
 //      List_Curseur de reels double precision
-// .SECTION voir aussi 
+// .SECTION voir aussi
 //////////////////////////////////////////////////////////////////////////////
-class DoubleList_Curseur{
+class DoubleList_Curseur
+{
 public :
   inline DoubleList_Curseur(const DoubleList& a_list);
   inline DoubleList_Curseur(const DoubleListElem& a_list);
@@ -92,111 +93,111 @@ public :
   inline void operator=(const DoubleList& a_list);
   inline const DoubleListElem& list() const;
   inline DoubleListElem& list();
-  
+
 private :
   DoubleListElem* curseur;
 };
 
-// Description: 
+// Description:
 //    Construit une liste vide
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
-// Retour: 
-//    Signification: 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 
 inline DoubleList::DoubleList() :
   DoubleListElem(),min_data(DMAXFLOAT),max_data(-DMAXFLOAT)
-{ 
+{
   dernier_=this;
 }
 
-// Description: 
+// Description:
 //    Constructeur
 //    Construit une liste_curseur a partir d'une liste
-// Precondition: 
+// Precondition:
 // Parametre: const DoubleList& list
 //    Signification: la liste a utiliser
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
-// Retour: 
-//    Signification: 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
-inline DoubleList_Curseur::DoubleList_Curseur(const DoubleList& a_list) 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+inline DoubleList_Curseur::DoubleList_Curseur(const DoubleList& a_list)
   : curseur(&(DoubleListElem&)a_list)
 {
   if (a_list.est_vide())
     curseur=0;
 }
 
-// Description: 
+// Description:
 //    Constructeur
 //    Construit une liste_curseur a partir d'une liste
-// Precondition: 
+// Precondition:
 // Parametre: const DoubleList& list
 //    Signification: la liste a utiliser
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
-// Retour: 
-//    Signification: 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
-inline DoubleList_Curseur::DoubleList_Curseur(const DoubleListElem& a_list) 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+inline DoubleList_Curseur::DoubleList_Curseur(const DoubleListElem& a_list)
   : curseur(&(DoubleListElem&)a_list)
 {
   if (a_list.est_vide())
     curseur=0;
 }
 
-// Description: 
+// Description:
 //    Teste si le curseur est non nul
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: int
 //    Signification: 1 si le curseur est non nul, 0 si il est nul
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 inline DoubleList_Curseur::operator int() const
 {
   return (curseur!=0);
 }
 
 
-// Description: 
+// Description:
 //    Avance le curseur dans la liste
 //    Si le curseur est sur le dernier element, il devient nul
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
-// Retour: 
-//    Signification: 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 inline void DoubleList_Curseur::operator++()
 {
   if(curseur->est_dernier())
@@ -206,102 +207,103 @@ inline void DoubleList_Curseur::operator++()
 }
 
 
-// Description: 
+// Description:
 //    retourne la valeur du curseur
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: double
 //    Signification: valeur du curseur
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 inline double DoubleList_Curseur::valeur() const
 {
   return curseur->valeur();
 }
 
 
-// Description: 
+// Description:
 //    retourne la valeur du curseur
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: double&
 //    Signification: valeur du curseur
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 inline double& DoubleList_Curseur::valeur()
 {
   return curseur->valeur();
 }
 
 
-// Description: 
+// Description:
 //    Affectation d'une liste a une liste_curseur
-// Precondition: 
+// Precondition:
 // Parametre: const DoubleList& list
 //    Signification: la liste a affecter
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
-// Retour: 
-//    Signification: 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
 //    Mise a jour du curseur sur le premier element
-// Postcondition: 
-inline void DoubleList_Curseur::operator=(const DoubleList& a_list){
+// Postcondition:
+inline void DoubleList_Curseur::operator=(const DoubleList& a_list)
+{
   curseur=(&(DoubleListElem&)a_list);
   if (a_list.est_vide())
     curseur=0;
 }
 
 
-// Description: 
+// Description:
 //    Retourne la liste associee a la liste_curseur
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: const DoubleList&
 //    Signification: la liste associee
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 inline const DoubleListElem& DoubleList_Curseur::list() const
 {
   return *curseur;
 }
 
 
-// Description: 
+// Description:
 //    Retourne la liste associee a la liste_curseur
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: DoubleList&
 //    Signification: la liste associee
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 inline DoubleListElem& DoubleList_Curseur::list()
 {
   return *curseur;

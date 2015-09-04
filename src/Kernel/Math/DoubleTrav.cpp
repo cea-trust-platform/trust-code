@@ -32,35 +32,35 @@ Implemente_instanciable_sans_constructeur_ni_destructeur(DoubleTrav,"DoubleTrav"
 #define zero_double 0.
 #define zero_int 0
 // Description: Appel a DoubleTab::printOn
-Sortie& DoubleTrav::printOn(Sortie& os) const 
+Sortie& DoubleTrav::printOn(Sortie& os) const
 {
   DoubleTab::printOn(os);
   return os;
 }
 
 // Description: Appel a DoubleTab::readOn
-Entree& DoubleTrav::readOn(Entree& is)  
+Entree& DoubleTrav::readOn(Entree& is)
 {
   DoubleTab::readOn(is);
   return is;
 }
 
 
-// Description: 
-DoubleTrav::DoubleTrav() 
+// Description:
+DoubleTrav::DoubleTrav()
 {
   set_mem_storage(TEMP_STORAGE);
 }
 
-// Description: 
-DoubleTrav::DoubleTrav(int n) 
+// Description:
+DoubleTrav::DoubleTrav(int n)
 {
   set_mem_storage(TEMP_STORAGE);
   resize(n);
 }
 
-// Description: 
-DoubleTrav::DoubleTrav(int n1, int n2) 
+// Description:
+DoubleTrav::DoubleTrav(int n1, int n2)
 
 
 {
@@ -69,21 +69,21 @@ DoubleTrav::DoubleTrav(int n1, int n2)
 }
 
 
-// Description: 
-DoubleTrav::DoubleTrav(int n1, int n2, int n3) 
+// Description:
+DoubleTrav::DoubleTrav(int n1, int n2, int n3)
 {
   set_mem_storage(TEMP_STORAGE);
   resize(n1, n2, n3);
 }
 
-// Description: 
-DoubleTrav::DoubleTrav(int n1, int n2, int n3, int n4) 
+// Description:
+DoubleTrav::DoubleTrav(int n1, int n2, int n3, int n4)
 {
   set_mem_storage(TEMP_STORAGE);
   resize(n1, n2, n3, n4);
 }
 
-// Description: 
+// Description:
 //  ATTENTION: construit un tableau de meme taill et de meme structure
 //   (espaces virtuels), mais initialise avec ZERO !!!
 DoubleTrav::DoubleTrav(const DoubleTab& tab)
@@ -119,7 +119,7 @@ DoubleTrav::DoubleTrav(const DoubleVect& tab)
 
 // Description:
 // Operateur copie (on ne veut pas l'operateur par defaut)
-DoubleTrav& DoubleTrav::operator=(const DoubleTrav & tab)
+DoubleTrav& DoubleTrav::operator=(const DoubleTrav& tab)
 {
   DoubleTab::operator=(tab);
   return *this;
@@ -127,7 +127,7 @@ DoubleTrav& DoubleTrav::operator=(const DoubleTrav & tab)
 
 // Description:
 //  Operateur copie d'un tableau (copie structure ET contenu)
-DoubleTrav& DoubleTrav::operator=(const DoubleTab & tab)
+DoubleTrav& DoubleTrav::operator=(const DoubleTab& tab)
 {
   // ATTENTION: note aux programmeurs
   //  La declaration de cet operateur est indispensable, sinon
@@ -142,7 +142,7 @@ DoubleTrav& DoubleTrav::operator=(const DoubleTab & tab)
 }
 // Description:
 //  Operateur copie d'un tableau (copie structure ET contenu)
-DoubleTrav& DoubleTrav::operator=(const DoubleVect & tab)
+DoubleTrav& DoubleTrav::operator=(const DoubleVect& tab)
 {
   // ATTENTION: note aux programmeurs
   //  La declaration de cet operateur est indispensable, sinon
@@ -163,31 +163,32 @@ DoubleTrav& DoubleTrav::operator=(double d)
   return *this;
 }
 
-// Description: 
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
-// Retour: 
-//    Signification: 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
-int DoubleTrav_test() 
+// Description:
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+int DoubleTrav_test()
 {
   int j,i=1;
-  while(i){
-    Cout << "imput of i j (0 0 for => end)";
-    cin >> i >> j;
-    Cout << finl;
+  while(i)
     {
-      DoubleTrav x(i, j);
-      Cout << x.size()<< finl;
+      Cout << "imput of i j (0 0 for => end)";
+      cin >> i >> j;
+      Cout << finl;
+      {
+        DoubleTrav x(i, j);
+        Cout << x.size()<< finl;
+      }
     }
-  }
   {
     DoubleTab y(10, 10, (double)1);
     DoubleTrav x(y);
@@ -197,6 +198,6 @@ int DoubleTrav_test()
   }
   return 1;
 }
-#undef zero_double 
-#undef zero_int 
+#undef zero_double
+#undef zero_int
 

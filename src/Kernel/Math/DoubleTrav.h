@@ -29,18 +29,18 @@
 #include <DoubleTab.h>
 
 //////////////////////////////////////////////////////////////////////////////
-// 
-// .DESCRIPTION 
+//
+// .DESCRIPTION
 //            Tableau de travail a n entrees pour n<= 4
 //      C'est un DoubleTab avec allocation dans un pool de memoire gere par
 //      la_memoire. L'allocation initiale est realisee avec alloc_temp_storage
-// .SECTION voir aussi 
+// .SECTION voir aussi
 //     DoubleTab Memoire
 //////////////////////////////////////////////////////////////////////////////
-class DoubleTrav : public DoubleTab 
+class DoubleTrav : public DoubleTab
 {
   Declare_instanciable_sans_constructeur_ni_destructeur(DoubleTrav);
-public: 
+public:
   DoubleTrav();
   DoubleTrav(int n);
   DoubleTrav(int n1, int n2);
@@ -53,9 +53,9 @@ public:
   // Constructeur par copie
   DoubleTrav(const DoubleTrav&); // ATTENTION: non standard, voir la description !!!
   // Operateurs copie
-  DoubleTrav& operator=(const DoubleTrav &);
-  DoubleTrav& operator=(const DoubleTab  &);
-  DoubleTrav& operator=(const DoubleVect  &);
+  DoubleTrav& operator=(const DoubleTrav&);
+  DoubleTrav& operator=(const DoubleTab&);
+  DoubleTrav& operator=(const DoubleVect&);
   DoubleTrav& operator=(double d);
 
 };

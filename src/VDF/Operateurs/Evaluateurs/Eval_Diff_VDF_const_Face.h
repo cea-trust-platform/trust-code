@@ -717,11 +717,11 @@ inline void Eval_Diff_VDF_const_Face::flux_arete_symetrie_fluide(const DoubleTab
                         Champ_Face_get_val_imp_face_bord_sym(inco,inconnue->temps(),rang2,k,la_zcl));
   /*
   double vit2 = 0.5*(Champ_Face_get_val_imp_face_bord_sym(inconnue->valeurs(),inconnue->temps(),rang1,k,la_zcl)+
-		     Champ_Face_get_val_imp_face_bord_sym(inconnue->valeurs(),inconnue->temps(),rang2,k,la_zcl));
+  	     Champ_Face_get_val_imp_face_bord_sym(inconnue->valeurs(),inconnue->temps(),rang2,k,la_zcl));
   if (vit_imp!=vit2)
     {
       Cerr<<"yyyyyyyyy "<< vit_imp<< " " <<vit2<<" "<<inco[fac3]<<finl;
-    }	
+    }
   */
   dist = dist_norm_bord(fac1);
   tau = signe * (vit_imp - inco[fac3])/dist;

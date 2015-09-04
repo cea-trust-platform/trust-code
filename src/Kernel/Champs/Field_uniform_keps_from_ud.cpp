@@ -95,14 +95,14 @@ Entree& Field_uniform_keps_from_ud::readOn(Entree& is)
   double I=0.05;  //: initial turbulence intensity
 
   //in 3D we have
-  //k = 3/2*(u*I)^2 
-  //in 2D we have 
-  //k = (u*I)^2 
+  //k = 3/2*(u*I)^2
+  //in 2D we have
+  //k = (u*I)^2
   //with u = initial velocity magnitude
   //eps = Cmu^(3/4) * k^(3/2) * l^(-1)
   //where l is the turbulence length scale which can be expressed as 0.038 Dh
   //Dh is the hydraulic diameter
-  double l=0.038*d; 
+  double l=0.038*d;
   double k = ( dimension == 2 ? 1 : 3./2. )*(u*I)*(u*I);
 
   double eps = 0.1643*pow(k,1.5)/l;

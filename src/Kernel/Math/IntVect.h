@@ -29,7 +29,7 @@
 
 #include <ArrOfInt.h>
 #include <MD_Vector.h>
- 
+
 // A nettoyer: les includes suivants ne sont pas necessaires a ce fichier
 //  mais a d'autres qui ne font pas les include
 #include <Vect.h>
@@ -50,14 +50,14 @@ public:
   IntVect& operator=(const IntVect&);
   IntVect& operator=(int);
 
-  virtual void ref(const IntVect &);
-  virtual void ref_data(int* ptr, int new_size); 
-  virtual void ref_array(ArrOfInt &, int start = 0, int sz = -1);
+  virtual void ref(const IntVect&);
+  virtual void ref_data(int* ptr, int new_size);
+  virtual void ref_array(ArrOfInt&, int start = 0, int sz = -1);
 
   inline void resize(int, Array_base::Resize_Options opt = COPY_INIT);
   virtual void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT);
-  void copy(const ArrOfInt &, Array_base::Resize_Options opt = COPY_INIT);
-  void copy(const IntVect &, Array_base::Resize_Options opt = COPY_INIT);
+  void copy(const ArrOfInt&, Array_base::Resize_Options opt = COPY_INIT);
+  void copy(const IntVect&, Array_base::Resize_Options opt = COPY_INIT);
 
   // par defaut: min et max sur items reels (compat. 1.5.6):
   int local_max_vect(Mp_vect_options opt = VECT_REAL_ITEMS) const;
@@ -83,18 +83,21 @@ public:
   inline int line_size() const;
 
   virtual void echange_espace_virtuel();
-  
-  virtual const MD_Vector & get_md_vector() const { return md_vector_; }
-  virtual void              set_md_vector(const MD_Vector &);
-  virtual void jump(Entree &);
-  virtual void lit(Entree &, int resize_and_read=1);
-  virtual void ecrit(Sortie &) const;
+
+  virtual const MD_Vector& get_md_vector() const
+  {
+    return md_vector_;
+  }
+  virtual void              set_md_vector(const MD_Vector&);
+  virtual void jump(Entree&);
+  virtual void lit(Entree&, int resize_and_read=1);
+  virtual void ecrit(Sortie&) const;
 
 protected:
   inline void set_line_size_(int n);
   inline void resize_vect_(int n, Array_base::Resize_Options opt = COPY_INIT);
-  void copy_(const IntVect & v, Array_base::Resize_Options opt = COPY_INIT);
-  void attach_vect(const IntVect & v, int start, int size = -1);
+  void copy_(const IntVect& v, Array_base::Resize_Options opt = COPY_INIT);
+  void attach_vect(const IntVect& v, int start, int size = -1);
   //void detach_vect(); // Not used in protected mode => Need in public mode => So method moved
 private:
   // Un IntVect est un ArrOfInt qui possede eventuellement une structure de tableau
@@ -167,7 +170,7 @@ inline void IntVect::set_line_size_(int n)
   line_size_ = n;
 }
 
-// Description: Change la taille du vecteur (identique a resize_array() 
+// Description: Change la taille du vecteur (identique a resize_array()
 //  pour le traitement des anciennes valeurs et de nouvelles cases).
 //  Attention: Cette methode n'est pas virtuelle, et afin d'eviter d'amener
 //  un IntTab dans un etat invalide, l'appel est interdit si l'objet
@@ -191,15 +194,15 @@ inline void IntVect::resize(int n, Array_base::Resize_Options opt)
 inline void IntVect::resize_vect_(int n, Array_base::Resize_Options opt)
 {
   // Note B.M.: j'aurais voulu interdire completement resize des qu'on a un descripteur
-  //  mais il y en a partout dans le code (on resize les tableaux alors qu'ils ont deja 
+  //  mais il y en a partout dans le code (on resize les tableaux alors qu'ils ont deja
   //  la bonne taille). Donc j'autorise si la taille ne change pas.
   //assert(!md_vector_.non_nul() || n == size_array());
   // PL: 1.7.0 is now strict about this point:
-  if (md_vector_.non_nul()) 
-  { 
-     Cerr << "Resize of a distributed array is forbidden!" << finl;
-     exit();
-  }
+  if (md_vector_.non_nul())
+    {
+      Cerr << "Resize of a distributed array is forbidden!" << finl;
+      exit();
+    }
   assert(n == 0 || (n > 0 && line_size_ > 0 && n % line_size_ == 0));
   resize_array_(n, opt);
   size_reelle_ = n;
@@ -210,28 +213,28 @@ inline void IntVect::resize_vect_(int n, Array_base::Resize_Options opt)
 
 //int operator<(const IntVect&, const IntVect&);
 //int operator>(const IntVect& x, const IntVect& y);
-//int operator<=(const IntVect& x, const IntVect& y); 
+//int operator<=(const IntVect& x, const IntVect& y);
 //int operator>=(const IntVect& x, const IntVect& y);
 
 int operator==(const IntVect& x, const IntVect& y);
 int operator!=(const IntVect& x, const IntVect& y);
-   
+
 // Arithmetique :
 //IntVect operator+(const IntVect&, const int);
 //IntVect operator-(const IntVect&, const int);
 //IntVect operator-(const IntVect&);
 
 //void ordonne(IntVect&);
-   
+
 //indice du min :
 //int imin(const IntVect&) ;
-   
+
 //indice du max
 //int imax(const IntVect&) ;
-   
+
 //valeur min
 //int min(const IntVect&) ;
-   
+
 //valeur max
 //int max(const IntVect&) ;
 
@@ -241,30 +244,30 @@ int operator!=(const IntVect& x, const IntVect& y);
 //IntVect operator / (const IntVect&, int);
 //IntVect operator * (int, const IntVect&);
 
-int local_imax_vect(const IntVect &, Mp_vect_options opt = VECT_REAL_ITEMS);
-int local_max_vect(const IntVect &, Mp_vect_options opt = VECT_REAL_ITEMS);
-int local_imin_vect(const IntVect &, Mp_vect_options opt = VECT_REAL_ITEMS);
-int local_min_vect(const IntVect &, Mp_vect_options opt = VECT_REAL_ITEMS);
-int mp_max_vect(const IntVect &, Mp_vect_options opt = VECT_REAL_ITEMS);
-int mp_min_vect(const IntVect &, Mp_vect_options opt = VECT_REAL_ITEMS);
+int local_imax_vect(const IntVect&, Mp_vect_options opt = VECT_REAL_ITEMS);
+int local_max_vect(const IntVect&, Mp_vect_options opt = VECT_REAL_ITEMS);
+int local_imin_vect(const IntVect&, Mp_vect_options opt = VECT_REAL_ITEMS);
+int local_min_vect(const IntVect&, Mp_vect_options opt = VECT_REAL_ITEMS);
+int mp_max_vect(const IntVect&, Mp_vect_options opt = VECT_REAL_ITEMS);
+int mp_min_vect(const IntVect&, Mp_vect_options opt = VECT_REAL_ITEMS);
 //int mp_somme_vect_local(const IntVect&);
 int mp_somme_vect(const IntVect&);
-int local_max_abs_vect(const IntVect &, Mp_vect_options opt = VECT_REAL_ITEMS);
-int local_min_abs_vect(const IntVect &, Mp_vect_options opt = VECT_REAL_ITEMS);
-int mp_max_abs_vect(const IntVect &, Mp_vect_options opt = VECT_REAL_ITEMS);
-int mp_min_abs_vect(const IntVect &, Mp_vect_options opt = VECT_REAL_ITEMS);
+int local_max_abs_vect(const IntVect&, Mp_vect_options opt = VECT_REAL_ITEMS);
+int local_min_abs_vect(const IntVect&, Mp_vect_options opt = VECT_REAL_ITEMS);
+int mp_max_abs_vect(const IntVect&, Mp_vect_options opt = VECT_REAL_ITEMS);
+int mp_min_abs_vect(const IntVect&, Mp_vect_options opt = VECT_REAL_ITEMS);
 
 // Valeurs par defaut choisies pour compatibilite approximative avec V1.5.6
 // (compatibilite exacte non voulue car necessite echange_espace_virtuel)
-void operator_add(IntVect & resu, const IntVect & vx, Mp_vect_options opt = VECT_ALL_ITEMS);
-void operator_add(IntVect & resu, const int x, Mp_vect_options opt = VECT_ALL_ITEMS);
-void operator_sub(IntVect & resu, const IntVect & vx, Mp_vect_options opt = VECT_ALL_ITEMS);
-void operator_sub(IntVect & resu, const int x, Mp_vect_options opt = VECT_ALL_ITEMS);
-void operator_multiply(IntVect & resu, const IntVect & vx, Mp_vect_options opt = VECT_ALL_ITEMS);
-void operator_multiply(IntVect & resu, const int x, Mp_vect_options opt = VECT_ALL_ITEMS);
-void operator_negate(IntVect & resu, Mp_vect_options opt = VECT_ALL_ITEMS);
-void operator_egal(IntVect & resu, int x, Mp_vect_options opt = VECT_ALL_ITEMS);
-void operator_egal(IntVect & resu, const IntVect & vx, Mp_vect_options opt = VECT_ALL_ITEMS);
+void operator_add(IntVect& resu, const IntVect& vx, Mp_vect_options opt = VECT_ALL_ITEMS);
+void operator_add(IntVect& resu, const int x, Mp_vect_options opt = VECT_ALL_ITEMS);
+void operator_sub(IntVect& resu, const IntVect& vx, Mp_vect_options opt = VECT_ALL_ITEMS);
+void operator_sub(IntVect& resu, const int x, Mp_vect_options opt = VECT_ALL_ITEMS);
+void operator_multiply(IntVect& resu, const IntVect& vx, Mp_vect_options opt = VECT_ALL_ITEMS);
+void operator_multiply(IntVect& resu, const int x, Mp_vect_options opt = VECT_ALL_ITEMS);
+void operator_negate(IntVect& resu, Mp_vect_options opt = VECT_ALL_ITEMS);
+void operator_egal(IntVect& resu, int x, Mp_vect_options opt = VECT_ALL_ITEMS);
+void operator_egal(IntVect& resu, const IntVect& vx, Mp_vect_options opt = VECT_ALL_ITEMS);
 
 
 #endif

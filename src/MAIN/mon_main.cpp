@@ -190,10 +190,10 @@ void mon_main::finalize()
     {
       PetscPopErrorHandler(); // Removes the latest error handler that was pushed with PetscPushErrorHandler in init_petsc
 #ifdef MPI_
-  if (sub_type(Comm_Group_MPI,PE_Groups::current_group()))
-    PETSC_COMM_WORLD = ref_cast(Comm_Group_MPI,PE_Groups::current_group()).get_mpi_comm();
+      if (sub_type(Comm_Group_MPI,PE_Groups::current_group()))
+        PETSC_COMM_WORLD = ref_cast(Comm_Group_MPI,PE_Groups::current_group()).get_mpi_comm();
 #endif
-     PetscFinalize();
+      PetscFinalize();
     }
 #endif
 #ifdef MPI_

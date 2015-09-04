@@ -323,10 +323,10 @@ void MD_Vector_std::initialize_comm(const Echange_EV_Options& opt, Schema_Comm_V
 // static inline void -> inline void car sinon erreur sur AIX:
 // Static declarations are not considered for a function call if the function is not qualified
 inline void read_from_vect_items(const int line_size,
-                                const ArrOfInt& voisins,
-                                const Static_Int_Lists& list,
-                                ArrOfDouble& vect,
-                                Schema_Comm_Vecteurs& buffers)
+                                 const ArrOfInt& voisins,
+                                 const Static_Int_Lists& list,
+                                 ArrOfDouble& vect,
+                                 Schema_Comm_Vecteurs& buffers)
 {
   assert(line_size > 0);
   double *data = vect.addr();
@@ -411,10 +411,10 @@ inline void write_to_vect_items(const int line_size,
 // static inline void -> inline void car sinon erreur sur AIX:
 // Static declarations are not considered for a function call if the function is not qualified
 inline void add_to_vect_items(const int line_size,
-                                const ArrOfInt& voisins,
-                                const Static_Int_Lists& list,
-                                ArrOfDouble& vect,
-                                Schema_Comm_Vecteurs& buffers)
+                              const ArrOfInt& voisins,
+                              const Static_Int_Lists& list,
+                              ArrOfDouble& vect,
+                              Schema_Comm_Vecteurs& buffers)
 {
   assert(line_size > 0);
   double *data = vect.addr();
@@ -455,10 +455,10 @@ inline void add_to_vect_items(const int line_size,
 // static inline void -> inline void car sinon erreur sur AIX:
 // Static declarations are not considered for a function call if the function is not qualified
 inline void max_to_vect_items(const int line_size,
-                                const ArrOfInt& voisins,
-                                const Static_Int_Lists& list,
-                                ArrOfDouble& vect,
-                                Schema_Comm_Vecteurs& buffers)
+                              const ArrOfInt& voisins,
+                              const Static_Int_Lists& list,
+                              ArrOfDouble& vect,
+                              Schema_Comm_Vecteurs& buffers)
 {
   assert(line_size > 0);
   double *data = vect.addr();
@@ -501,10 +501,10 @@ inline void max_to_vect_items(const int line_size,
 // static inline void -> inline void car sinon erreur sur AIX:
 // Static declarations are not considered for a function call if the function is not qualified
 inline void mincol1_to_vect_items(const int line_size,
-                                const ArrOfInt& voisins,
-                                const Static_Int_Lists& list,
-                                ArrOfDouble& vect,
-                                Schema_Comm_Vecteurs& buffers)
+                                  const ArrOfInt& voisins,
+                                  const Static_Int_Lists& list,
+                                  ArrOfDouble& vect,
+                                  Schema_Comm_Vecteurs& buffers)
 {
   assert(line_size > 0);
   double *data = vect.addr();
@@ -556,11 +556,11 @@ inline void mincol1_to_vect_items(const int line_size,
 // static inline void -> inline void car sinon erreur sur AIX:
 // Static declarations are not considered for a function call if the function is not qualified
 inline void read_from_vect_blocs(const int line_size,
-                                const ArrOfInt& voisins,
-                                const Static_Int_Lists& list,
-                                const ArrOfInt& nb_items_par_voisin,
-                                ArrOfDouble& vect,
-                                Schema_Comm_Vecteurs& buffers)
+                                 const ArrOfInt& voisins,
+                                 const Static_Int_Lists& list,
+                                 const ArrOfInt& nb_items_par_voisin,
+                                 ArrOfDouble& vect,
+                                 Schema_Comm_Vecteurs& buffers)
 {
   assert(line_size > 0);
   double *data = vect.addr();
@@ -650,11 +650,11 @@ inline void write_to_vect_blocs(const int line_size,
 // static inline void -> inline void car sinon erreur sur AIX:
 // Static declarations are not considered for a function call if the function is not qualified
 inline void add_to_vect_blocs(const int line_size,
-                                const ArrOfInt& voisins,
-                                const Static_Int_Lists& list,
-                                const ArrOfInt& nb_items_par_voisin,
-                                ArrOfDouble& vect,
-                                Schema_Comm_Vecteurs& buffers)
+                              const ArrOfInt& voisins,
+                              const Static_Int_Lists& list,
+                              const ArrOfInt& nb_items_par_voisin,
+                              ArrOfDouble& vect,
+                              Schema_Comm_Vecteurs& buffers)
 {
   assert(line_size > 0);
   double *data = vect.addr();
@@ -691,47 +691,47 @@ inline void add_to_vect_blocs(const int line_size,
     }
 }
 
-    // Description: This is the first part of the echange_espace_virtuel() process.
-    //  We take the data that has to be sent to other processors in "vect" and put
-    //  it in appropriate send buffers in "buffers". The data taken depends on "opt".
-    // Preconditon: The buffers must have been initialized to the appropriate size
-    //  and neighbour processors.
-    void MD_Vector_std::prepare_send_data(const Echange_EV_Options& opt,
-                                          Schema_Comm_Vecteurs& buffers,
-                                          DoubleVect& vect) const
+// Description: This is the first part of the echange_espace_virtuel() process.
+//  We take the data that has to be sent to other processors in "vect" and put
+//  it in appropriate send buffers in "buffers". The data taken depends on "opt".
+// Preconditon: The buffers must have been initialized to the appropriate size
+//  and neighbour processors.
+void MD_Vector_std::prepare_send_data(const Echange_EV_Options& opt,
+                                      Schema_Comm_Vecteurs& buffers,
+                                      DoubleVect& vect) const
+{
+  const int line_size = vect.line_size();
+  switch(opt.get_op())
     {
-      const int line_size = vect.line_size();
-      switch(opt.get_op())
+    case Echange_EV_Options::SYNC:
+      if ( line_size==1)
+        read_from_vect_items(1, pe_voisins_, items_to_send_, vect, buffers);
+      else
+        read_from_vect_items( line_size, pe_voisins_, items_to_send_, vect, buffers);
+      break;
+    case Echange_EV_Options::SUM:
+    case Echange_EV_Options::MAX:
+    case Echange_EV_Options::MINCOL1:
+      if (items_to_recv_.get_data().size_array() > 0)
         {
-        case Echange_EV_Options::SYNC:
-if ( line_size==1)
-  read_from_vect_items(1, pe_voisins_, items_to_send_, vect, buffers);
-else
-  read_from_vect_items( line_size, pe_voisins_, items_to_send_, vect, buffers);
-          break;
-        case Echange_EV_Options::SUM:
-        case Echange_EV_Options::MAX:
-        case Echange_EV_Options::MINCOL1:
-          if (items_to_recv_.get_data().size_array() > 0)
-            {
-if ( line_size==1)
-  read_from_vect_items(1, pe_voisins_, items_to_recv_, vect, buffers);
-else
-  read_from_vect_items( line_size, pe_voisins_, items_to_recv_, vect, buffers);
-            }
-          if (blocs_to_recv_.get_data().size_array() > 0)
-            {
-  if ( line_size==1)
-    read_from_vect_blocs(1, pe_voisins_, blocs_to_recv_, blocs_items_count_, vect, buffers);
-  else
-    read_from_vect_blocs( line_size, pe_voisins_, blocs_to_recv_, blocs_items_count_, vect, buffers);
-            }
-          break;
-        default:
-          Cerr << "Error in MD_Vector_std.cpp prepare send data: operation not implemented" << finl;
-          Process::exit();
+          if ( line_size==1)
+            read_from_vect_items(1, pe_voisins_, items_to_recv_, vect, buffers);
+          else
+            read_from_vect_items( line_size, pe_voisins_, items_to_recv_, vect, buffers);
         }
+      if (blocs_to_recv_.get_data().size_array() > 0)
+        {
+          if ( line_size==1)
+            read_from_vect_blocs(1, pe_voisins_, blocs_to_recv_, blocs_items_count_, vect, buffers);
+          else
+            read_from_vect_blocs( line_size, pe_voisins_, blocs_to_recv_, blocs_items_count_, vect, buffers);
+        }
+      break;
+    default:
+      Cerr << "Error in MD_Vector_std.cpp prepare send data: operation not implemented" << finl;
+      Process::exit();
     }
+}
 
 void MD_Vector_std::process_recv_data(const Echange_EV_Options& opt,
                                       Schema_Comm_Vecteurs& buffers,
@@ -743,37 +743,37 @@ void MD_Vector_std::process_recv_data(const Echange_EV_Options& opt,
     case Echange_EV_Options::SYNC:
       if (items_to_recv_.get_data().size_array() > 0)
         {
-if ( line_size==1)
-  write_to_vect_items(1, pe_voisins_, items_to_recv_, vect, buffers);
-else
-  write_to_vect_items( line_size, pe_voisins_, items_to_recv_, vect, buffers);
+          if ( line_size==1)
+            write_to_vect_items(1, pe_voisins_, items_to_recv_, vect, buffers);
+          else
+            write_to_vect_items( line_size, pe_voisins_, items_to_recv_, vect, buffers);
         }
       if (blocs_to_recv_.get_data().size_array() > 0)
         {
-  if ( line_size==1)
-    write_to_vect_blocs(1, pe_voisins_, blocs_to_recv_, blocs_items_count_, vect, buffers);
-  else
-    write_to_vect_blocs( line_size, pe_voisins_, blocs_to_recv_, blocs_items_count_, vect, buffers);
+          if ( line_size==1)
+            write_to_vect_blocs(1, pe_voisins_, blocs_to_recv_, blocs_items_count_, vect, buffers);
+          else
+            write_to_vect_blocs( line_size, pe_voisins_, blocs_to_recv_, blocs_items_count_, vect, buffers);
         }
       break;
     case Echange_EV_Options::SUM:
       // Reverse operation: write data to "real" items
-if ( line_size==1)
-  add_to_vect_items(1, pe_voisins_, items_to_send_, vect, buffers);
-else
-  add_to_vect_items( line_size, pe_voisins_, items_to_send_, vect, buffers);
+      if ( line_size==1)
+        add_to_vect_items(1, pe_voisins_, items_to_send_, vect, buffers);
+      else
+        add_to_vect_items( line_size, pe_voisins_, items_to_send_, vect, buffers);
       break;
     case Echange_EV_Options::MAX:
-if ( line_size==1)
-  max_to_vect_items(1, pe_voisins_, items_to_send_, vect, buffers);
-else
-  max_to_vect_items( line_size, pe_voisins_, items_to_send_, vect, buffers);
+      if ( line_size==1)
+        max_to_vect_items(1, pe_voisins_, items_to_send_, vect, buffers);
+      else
+        max_to_vect_items( line_size, pe_voisins_, items_to_send_, vect, buffers);
       break;
     case Echange_EV_Options::MINCOL1:
-if ( line_size==1)
-  mincol1_to_vect_items(1, pe_voisins_, items_to_send_, vect, buffers);
-else
-  mincol1_to_vect_items( line_size, pe_voisins_, items_to_send_, vect, buffers);
+      if ( line_size==1)
+        mincol1_to_vect_items(1, pe_voisins_, items_to_send_, vect, buffers);
+      else
+        mincol1_to_vect_items( line_size, pe_voisins_, items_to_send_, vect, buffers);
       break;
     default:
       Cerr << "Error in MD_Vector_std.cpp process recv data: operation not implemented" << finl;
@@ -787,10 +787,10 @@ else
 // static inline void -> inline void car sinon erreur sur AIX:
 // Static declarations are not considered for a function call if the function is not qualified
 inline void read_from_vect_items(const int line_size,
-                                const ArrOfInt& voisins,
-                                const Static_Int_Lists& list,
-                                ArrOfInt& vect,
-                                Schema_Comm_Vecteurs& buffers)
+                                 const ArrOfInt& voisins,
+                                 const Static_Int_Lists& list,
+                                 ArrOfInt& vect,
+                                 Schema_Comm_Vecteurs& buffers)
 {
   assert(line_size > 0);
   int *data = vect.addr();
@@ -875,10 +875,10 @@ inline void write_to_vect_items(const int line_size,
 // static inline void -> inline void car sinon erreur sur AIX:
 // Static declarations are not considered for a function call if the function is not qualified
 inline void add_to_vect_items(const int line_size,
-                                const ArrOfInt& voisins,
-                                const Static_Int_Lists& list,
-                                ArrOfInt& vect,
-                                Schema_Comm_Vecteurs& buffers)
+                              const ArrOfInt& voisins,
+                              const Static_Int_Lists& list,
+                              ArrOfInt& vect,
+                              Schema_Comm_Vecteurs& buffers)
 {
   assert(line_size > 0);
   int *data = vect.addr();
@@ -919,10 +919,10 @@ inline void add_to_vect_items(const int line_size,
 // static inline void -> inline void car sinon erreur sur AIX:
 // Static declarations are not considered for a function call if the function is not qualified
 inline void max_to_vect_items(const int line_size,
-                                const ArrOfInt& voisins,
-                                const Static_Int_Lists& list,
-                                ArrOfInt& vect,
-                                Schema_Comm_Vecteurs& buffers)
+                              const ArrOfInt& voisins,
+                              const Static_Int_Lists& list,
+                              ArrOfInt& vect,
+                              Schema_Comm_Vecteurs& buffers)
 {
   assert(line_size > 0);
   int *data = vect.addr();
@@ -965,10 +965,10 @@ inline void max_to_vect_items(const int line_size,
 // static inline void -> inline void car sinon erreur sur AIX:
 // Static declarations are not considered for a function call if the function is not qualified
 inline void mincol1_to_vect_items(const int line_size,
-                                const ArrOfInt& voisins,
-                                const Static_Int_Lists& list,
-                                ArrOfInt& vect,
-                                Schema_Comm_Vecteurs& buffers)
+                                  const ArrOfInt& voisins,
+                                  const Static_Int_Lists& list,
+                                  ArrOfInt& vect,
+                                  Schema_Comm_Vecteurs& buffers)
 {
   assert(line_size > 0);
   int *data = vect.addr();
@@ -1020,11 +1020,11 @@ inline void mincol1_to_vect_items(const int line_size,
 // static inline void -> inline void car sinon erreur sur AIX:
 // Static declarations are not considered for a function call if the function is not qualified
 inline void read_from_vect_blocs(const int line_size,
-                                const ArrOfInt& voisins,
-                                const Static_Int_Lists& list,
-                                const ArrOfInt& nb_items_par_voisin,
-                                ArrOfInt& vect,
-                                Schema_Comm_Vecteurs& buffers)
+                                 const ArrOfInt& voisins,
+                                 const Static_Int_Lists& list,
+                                 const ArrOfInt& nb_items_par_voisin,
+                                 ArrOfInt& vect,
+                                 Schema_Comm_Vecteurs& buffers)
 {
   assert(line_size > 0);
   int *data = vect.addr();
@@ -1114,11 +1114,11 @@ inline void write_to_vect_blocs(const int line_size,
 // static inline void -> inline void car sinon erreur sur AIX:
 // Static declarations are not considered for a function call if the function is not qualified
 inline void add_to_vect_blocs(const int line_size,
-                                const ArrOfInt& voisins,
-                                const Static_Int_Lists& list,
-                                const ArrOfInt& nb_items_par_voisin,
-                                ArrOfInt& vect,
-                                Schema_Comm_Vecteurs& buffers)
+                              const ArrOfInt& voisins,
+                              const Static_Int_Lists& list,
+                              const ArrOfInt& nb_items_par_voisin,
+                              ArrOfInt& vect,
+                              Schema_Comm_Vecteurs& buffers)
 {
   assert(line_size > 0);
   int *data = vect.addr();
@@ -1155,47 +1155,47 @@ inline void add_to_vect_blocs(const int line_size,
     }
 }
 
-    // Description: This is the first part of the echange_espace_virtuel() process.
-    //  We take the data that has to be sent to other processors in "vect" and put
-    //  it in appropriate send buffers in "buffers". The data taken depends on "opt".
-    // Preconditon: The buffers must have been initialized to the appropriate size
-    //  and neighbour processors.
-    void MD_Vector_std::prepare_send_data(const Echange_EV_Options& opt,
-                                          Schema_Comm_Vecteurs& buffers,
-                                          IntVect& vect) const
+// Description: This is the first part of the echange_espace_virtuel() process.
+//  We take the data that has to be sent to other processors in "vect" and put
+//  it in appropriate send buffers in "buffers". The data taken depends on "opt".
+// Preconditon: The buffers must have been initialized to the appropriate size
+//  and neighbour processors.
+void MD_Vector_std::prepare_send_data(const Echange_EV_Options& opt,
+                                      Schema_Comm_Vecteurs& buffers,
+                                      IntVect& vect) const
+{
+  const int line_size = vect.line_size();
+  switch(opt.get_op())
     {
-      const int line_size = vect.line_size();
-      switch(opt.get_op())
+    case Echange_EV_Options::SYNC:
+      if ( line_size==1)
+        read_from_vect_items(1, pe_voisins_, items_to_send_, vect, buffers);
+      else
+        read_from_vect_items( line_size, pe_voisins_, items_to_send_, vect, buffers);
+      break;
+    case Echange_EV_Options::SUM:
+    case Echange_EV_Options::MAX:
+    case Echange_EV_Options::MINCOL1:
+      if (items_to_recv_.get_data().size_array() > 0)
         {
-        case Echange_EV_Options::SYNC:
-if ( line_size==1)
-  read_from_vect_items(1, pe_voisins_, items_to_send_, vect, buffers);
-else
-  read_from_vect_items( line_size, pe_voisins_, items_to_send_, vect, buffers);
-          break;
-        case Echange_EV_Options::SUM:
-        case Echange_EV_Options::MAX:
-        case Echange_EV_Options::MINCOL1:
-          if (items_to_recv_.get_data().size_array() > 0)
-            {
-if ( line_size==1)
-  read_from_vect_items(1, pe_voisins_, items_to_recv_, vect, buffers);
-else
-  read_from_vect_items( line_size, pe_voisins_, items_to_recv_, vect, buffers);
-            }
-          if (blocs_to_recv_.get_data().size_array() > 0)
-            {
-  if ( line_size==1)
-    read_from_vect_blocs(1, pe_voisins_, blocs_to_recv_, blocs_items_count_, vect, buffers);
-  else
-    read_from_vect_blocs( line_size, pe_voisins_, blocs_to_recv_, blocs_items_count_, vect, buffers);
-            }
-          break;
-        default:
-          Cerr << "Error in MD_Vector_std.cpp prepare send data: operation not implemented" << finl;
-          Process::exit();
+          if ( line_size==1)
+            read_from_vect_items(1, pe_voisins_, items_to_recv_, vect, buffers);
+          else
+            read_from_vect_items( line_size, pe_voisins_, items_to_recv_, vect, buffers);
         }
+      if (blocs_to_recv_.get_data().size_array() > 0)
+        {
+          if ( line_size==1)
+            read_from_vect_blocs(1, pe_voisins_, blocs_to_recv_, blocs_items_count_, vect, buffers);
+          else
+            read_from_vect_blocs( line_size, pe_voisins_, blocs_to_recv_, blocs_items_count_, vect, buffers);
+        }
+      break;
+    default:
+      Cerr << "Error in MD_Vector_std.cpp prepare send data: operation not implemented" << finl;
+      Process::exit();
     }
+}
 
 void MD_Vector_std::process_recv_data(const Echange_EV_Options& opt,
                                       Schema_Comm_Vecteurs& buffers,
@@ -1207,37 +1207,37 @@ void MD_Vector_std::process_recv_data(const Echange_EV_Options& opt,
     case Echange_EV_Options::SYNC:
       if (items_to_recv_.get_data().size_array() > 0)
         {
-if ( line_size==1)
-  write_to_vect_items(1, pe_voisins_, items_to_recv_, vect, buffers);
-else
-  write_to_vect_items( line_size, pe_voisins_, items_to_recv_, vect, buffers);
+          if ( line_size==1)
+            write_to_vect_items(1, pe_voisins_, items_to_recv_, vect, buffers);
+          else
+            write_to_vect_items( line_size, pe_voisins_, items_to_recv_, vect, buffers);
         }
       if (blocs_to_recv_.get_data().size_array() > 0)
         {
-  if ( line_size==1)
-    write_to_vect_blocs(1, pe_voisins_, blocs_to_recv_, blocs_items_count_, vect, buffers);
-  else
-    write_to_vect_blocs( line_size, pe_voisins_, blocs_to_recv_, blocs_items_count_, vect, buffers);
+          if ( line_size==1)
+            write_to_vect_blocs(1, pe_voisins_, blocs_to_recv_, blocs_items_count_, vect, buffers);
+          else
+            write_to_vect_blocs( line_size, pe_voisins_, blocs_to_recv_, blocs_items_count_, vect, buffers);
         }
       break;
     case Echange_EV_Options::SUM:
       // Reverse operation: write data to "real" items
-if ( line_size==1)
-  add_to_vect_items(1, pe_voisins_, items_to_send_, vect, buffers);
-else
-  add_to_vect_items( line_size, pe_voisins_, items_to_send_, vect, buffers);
+      if ( line_size==1)
+        add_to_vect_items(1, pe_voisins_, items_to_send_, vect, buffers);
+      else
+        add_to_vect_items( line_size, pe_voisins_, items_to_send_, vect, buffers);
       break;
     case Echange_EV_Options::MAX:
-if ( line_size==1)
-  max_to_vect_items(1, pe_voisins_, items_to_send_, vect, buffers);
-else
-  max_to_vect_items( line_size, pe_voisins_, items_to_send_, vect, buffers);
+      if ( line_size==1)
+        max_to_vect_items(1, pe_voisins_, items_to_send_, vect, buffers);
+      else
+        max_to_vect_items( line_size, pe_voisins_, items_to_send_, vect, buffers);
       break;
     case Echange_EV_Options::MINCOL1:
-if ( line_size==1)
-  mincol1_to_vect_items(1, pe_voisins_, items_to_send_, vect, buffers);
-else
-  mincol1_to_vect_items( line_size, pe_voisins_, items_to_send_, vect, buffers);
+      if ( line_size==1)
+        mincol1_to_vect_items(1, pe_voisins_, items_to_send_, vect, buffers);
+      else
+        mincol1_to_vect_items( line_size, pe_voisins_, items_to_send_, vect, buffers);
       break;
     default:
       Cerr << "Error in MD_Vector_std.cpp process recv data: operation not implemented" << finl;

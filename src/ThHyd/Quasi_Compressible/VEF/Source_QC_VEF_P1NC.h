@@ -120,5 +120,5 @@ public:
   virtual void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const ;
 };
 
- // Includes the declaration file of QC source terms
+// Includes the declaration file of QC source terms
 #endif

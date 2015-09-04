@@ -38,31 +38,31 @@ class FIntTab;
 class ArrOfInt;
 
 //////////////////////////////////////////////////////////////////////////////
-// 
-// .DESCRIPTION 
+//
+// .DESCRIPTION
 //    Tableau a n entrees pour n<= 4
 //    Repose sur un IntVect avec calculs de l'indice corespondant
 //    Voir les commentaires de IntVect
-// .SECTION voir aussi 
+// .SECTION voir aussi
 //    IntVect
 //////////////////////////////////////////////////////////////////////////////
 class IntTab : public IntVect
-{  
+{
   Declare_instanciable_sans_constructeur(IntTab);
 public:
   IntTab();
-  IntTab(const IntTab &);
+  IntTab(const IntTab&);
   // Les DoubleTab peuvent prendre un argument de plus dans la signature: valeur de remplissage
   // Pour les IntTab on ne peut pas: sinon confusion entre dimension et valeur de remplissage
   IntTab(int n);
   IntTab(int n1, int n2);
   IntTab(int n1, int n2, int n3);
   IntTab(int n1, int n2, int n3, int n4);
-  virtual void ref(const IntVect &);
-  virtual void ref(const IntTab &);
-  virtual void ref_data(int* ptr, int size); 
-  virtual void ref_array(ArrOfInt &, int start = 0, int sz = -1);
-  virtual void ref_tab(IntTab &, int start_line = 0, int nb_lines = -1);
+  virtual void ref(const IntVect&);
+  virtual void ref(const IntTab&);
+  virtual void ref_data(int* ptr, int size);
+  virtual void ref_array(ArrOfInt&, int start = 0, int sz = -1);
+  virtual void ref_tab(IntTab&, int start_line = 0, int nb_lines = -1);
   virtual void reset();
 
   virtual void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT);
@@ -71,19 +71,19 @@ public:
   void resize(int n1, int n2, Array_base::Resize_Options opt = COPY_INIT);
   void resize(int n1, int n2, int n3, Array_base::Resize_Options opt = COPY_INIT);
   void resize(int n1, int n2, int n3, int n4, Array_base::Resize_Options opt = COPY_INIT);
-  void resize(const ArrOfInt & tailles, Array_base::Resize_Options opt = COPY_INIT);
-  IntTab & operator=(const IntTab &);
-  IntTab & operator=(const IntVect &);
-  IntTab & operator=(const FIntTab &);
-  IntTab & operator=(int d);
+  void resize(const ArrOfInt& tailles, Array_base::Resize_Options opt = COPY_INIT);
+  IntTab& operator=(const IntTab&);
+  IntTab& operator=(const IntVect&);
+  IntTab& operator=(const FIntTab&);
+  IntTab& operator=(int d);
   //void copy(const ArrOfInt &, Array_base::Resize_Options opt = COPY_INIT);
   //void copy(const IntVect &, Array_base::Resize_Options opt = COPY_INIT);
-  void copy(const IntTab &, Array_base::Resize_Options opt = COPY_INIT);
+  void copy(const IntTab&, Array_base::Resize_Options opt = COPY_INIT);
 
-  int & operator()(const ArrOfInt & indice);
-  int operator()(const ArrOfInt & indice) const;
-  inline int & operator[](int i);
-  inline const int & operator[](int i) const ;
+  int& operator()(const ArrOfInt& indice);
+  int operator()(const ArrOfInt& indice) const;
+  inline int& operator[](int i);
+  inline const int& operator[](int i) const ;
   inline int& operator()(int i);
   inline const int& operator()(int i) const ;
   inline int& operator()(int i1, int i2);
@@ -98,13 +98,13 @@ public:
   inline int nb_dim() const;
 
   // Attention: pour des vecteurs distribues, la liste des cases calculees depend
-  //  du type du MD_Vect associe au vecteur (calcul des cases specifiees 
+  //  du type du MD_Vect associe au vecteur (calcul des cases specifiees
   //  par MD_Vect::get_items_to_compute())
 
-  virtual void set_md_vector(const MD_Vector &);
-  virtual void jump(Entree &);
-  virtual void lit(Entree &, int resize_and_read=1);
-  virtual void ecrit(Sortie &) const;
+  virtual void set_md_vector(const MD_Vector&);
+  virtual void jump(Entree&);
+  virtual void lit(Entree&, int resize_and_read=1);
+  virtual void ecrit(Sortie&) const;
 
   inline void append_line(int, int);
   inline void append_line(int, int, int);
@@ -144,7 +144,7 @@ inline int& IntTab::operator[](int i)
   return IntVect::operator[](i);
 }
 
-inline const int& IntTab::operator[](int i) const 
+inline const int& IntTab::operator[](int i) const
 {
   assert(nb_dim_ == 1);
   assert(i >= 0 && i < dimension_tot_0_);
@@ -158,14 +158,14 @@ inline int& IntTab::operator()(int i)
   return IntVect::operator[](i);
 }
 
-inline const int& IntTab::operator()(int i) const 
+inline const int& IntTab::operator()(int i) const
 {
   assert(nb_dim_ == 1);
   assert(i >= 0 && i < dimension_tot_0_);
   return IntVect::operator[](i);
 }
 
-inline int& IntTab::operator()(int i1, int i2) 
+inline int& IntTab::operator()(int i1, int i2)
 {
   assert(nb_dim_ == 2);
   assert(i1 >= 0 && i1 < dimension_tot_0_);
@@ -173,7 +173,7 @@ inline int& IntTab::operator()(int i1, int i2)
   return IntVect::operator[](i1*dimensions_[1]+i2);
 }
 
-inline const int& IntTab::operator()(int i1, int i2) const 
+inline const int& IntTab::operator()(int i1, int i2) const
 {
   assert(nb_dim_ == 2);
   assert(i1 >= 0 && i1 < dimension_tot_0_);
@@ -190,7 +190,7 @@ inline int& IntTab::operator()(int i1, int i2, int i3)
   return IntVect::operator[]((i1*dimensions_[1]+i2)*dimensions_[2]+i3);
 }
 
-inline const int& IntTab::operator()(int i1, int i2, int i3) const 
+inline const int& IntTab::operator()(int i1, int i2, int i3) const
 {
   assert(nb_dim_ == 3);
   assert(i1 >= 0 && i1 < dimension_tot_0_);
@@ -209,14 +209,14 @@ inline int& IntTab::operator()(int i1, int i2, int i3, int i4)
   return IntVect::operator[](((i1*dimensions_[1]+i2)*dimensions_[2]+i3)*dimensions_[3]+i4);
 }
 inline const int& IntTab::operator()(int i1, int i2, int i3, int i4) const
-{ 
+{
   assert(nb_dim_ == 4);
   assert(i1 >= 0 && i1 < dimension_tot_0_);
   assert(i2 >= 0 && i2 < dimensions_[1]);
   assert(i3 >= 0 && i3 < dimensions_[2]);
   assert(i4 >= 0 && i4 < dimensions_[3]);
   return IntVect::operator[](((i1*dimensions_[1]+i2)*dimensions_[2]+i3)*dimensions_[3]+i4);
-} 
+}
 
 // Description: Returns one of the "real" dimensions of the multi-dimensionnal array,
 //  as defined by:

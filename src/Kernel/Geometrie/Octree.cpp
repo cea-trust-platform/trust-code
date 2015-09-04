@@ -1041,12 +1041,12 @@ void OctreeRoot::construire(int reel_prec)
         int j;
         for (j = 0; j < 3; j++)
           {
-	    if (j>=dim) break;
+            if (j>=dim) break;
             double x = tab(i,j);
-            if (x < min[j]) 
-	      min[j] = x;
+            if (x < min[j])
+              min[j] = x;
             if (x > max[j])
-	      max[j] = x;
+              max[j] = x;
           }
       }
     loc.xmin = min[0];

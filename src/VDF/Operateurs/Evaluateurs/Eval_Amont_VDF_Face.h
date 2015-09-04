@@ -841,10 +841,10 @@ inline void Eval_Amont_VDF_Face::flux_arete_symetrie_fluide(const DoubleTab& inc
       double flux2 = 0.5*(Champ_Face_get_val_imp_face_bord_sym(inconnue->valeurs(),inconnue->temps(),rang1,ori,la_zcl)
                   +  Champ_Face_get_val_imp_face_bord_sym(inconnue->valeurs(),inconnue->temps(),rang2,ori,la_zcl))* psc ;
       if ( !(flux == flux2))
-	{
-	Cerr<<"iii" << flux<<" "<<flux2<<finl;
-	
-	}
+      {
+      Cerr<<"iii" << flux<<" "<<flux2<<finl;
+
+      }
       */
     }
 

@@ -32,35 +32,35 @@ Implemente_instanciable_sans_constructeur_ni_destructeur(IntTrav,"IntTrav",IntTa
 #define zero_double 0.
 #define zero_int 0
 // Description: Appel a IntTab::printOn
-Sortie& IntTrav::printOn(Sortie& os) const 
+Sortie& IntTrav::printOn(Sortie& os) const
 {
   IntTab::printOn(os);
   return os;
 }
 
 // Description: Appel a IntTab::readOn
-Entree& IntTrav::readOn(Entree& is)  
+Entree& IntTrav::readOn(Entree& is)
 {
   IntTab::readOn(is);
   return is;
 }
 
 
-// Description: 
-IntTrav::IntTrav() 
+// Description:
+IntTrav::IntTrav()
 {
   set_mem_storage(TEMP_STORAGE);
 }
 
-// Description: 
-IntTrav::IntTrav(int n) 
+// Description:
+IntTrav::IntTrav(int n)
 {
   set_mem_storage(TEMP_STORAGE);
   resize(n);
 }
 
-// Description: 
-IntTrav::IntTrav(int n1, int n2) 
+// Description:
+IntTrav::IntTrav(int n1, int n2)
 
 
 {
@@ -69,21 +69,21 @@ IntTrav::IntTrav(int n1, int n2)
 }
 
 
-// Description: 
-IntTrav::IntTrav(int n1, int n2, int n3) 
+// Description:
+IntTrav::IntTrav(int n1, int n2, int n3)
 {
   set_mem_storage(TEMP_STORAGE);
   resize(n1, n2, n3);
 }
 
-// Description: 
-IntTrav::IntTrav(int n1, int n2, int n3, int n4) 
+// Description:
+IntTrav::IntTrav(int n1, int n2, int n3, int n4)
 {
   set_mem_storage(TEMP_STORAGE);
   resize(n1, n2, n3, n4);
 }
 
-// Description: 
+// Description:
 //  ATTENTION: construit un tableau de meme taill et de meme structure
 //   (espaces virtuels), mais initialise avec ZERO !!!
 IntTrav::IntTrav(const IntTab& tab)
@@ -119,7 +119,7 @@ IntTrav::IntTrav(const IntVect& tab)
 
 // Description:
 // Operateur copie (on ne veut pas l'operateur par defaut)
-IntTrav& IntTrav::operator=(const IntTrav & tab)
+IntTrav& IntTrav::operator=(const IntTrav& tab)
 {
   IntTab::operator=(tab);
   return *this;
@@ -127,7 +127,7 @@ IntTrav& IntTrav::operator=(const IntTrav & tab)
 
 // Description:
 //  Operateur copie d'un tableau (copie structure ET contenu)
-IntTrav& IntTrav::operator=(const IntTab & tab)
+IntTrav& IntTrav::operator=(const IntTab& tab)
 {
   // ATTENTION: note aux programmeurs
   //  La declaration de cet operateur est indispensable, sinon
@@ -142,7 +142,7 @@ IntTrav& IntTrav::operator=(const IntTab & tab)
 }
 // Description:
 //  Operateur copie d'un tableau (copie structure ET contenu)
-IntTrav& IntTrav::operator=(const IntVect & tab)
+IntTrav& IntTrav::operator=(const IntVect& tab)
 {
   // ATTENTION: note aux programmeurs
   //  La declaration de cet operateur est indispensable, sinon
@@ -163,31 +163,32 @@ IntTrav& IntTrav::operator=(int d)
   return *this;
 }
 
-// Description: 
-// Precondition: 
-// Parametre: 
-//    Signification: 
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
-// Retour: 
-//    Signification: 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
-int IntTrav_test() 
+// Description:
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+int IntTrav_test()
 {
   int j,i=1;
-  while(i){
-    Cout << "imput of i j (0 0 for => end)";
-    cin >> i >> j;
-    Cout << finl;
+  while(i)
     {
-      IntTrav x(i, j);
-      Cout << x.size()<< finl;
+      Cout << "imput of i j (0 0 for => end)";
+      cin >> i >> j;
+      Cout << finl;
+      {
+        IntTrav x(i, j);
+        Cout << x.size()<< finl;
+      }
     }
-  }
   {
     IntTab y(10, 10, (int)1);
     IntTrav x(y);
@@ -197,6 +198,6 @@ int IntTrav_test()
   }
   return 1;
 }
-#undef zero_double 
-#undef zero_int 
+#undef zero_double
+#undef zero_int
 

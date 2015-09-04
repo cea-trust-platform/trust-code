@@ -57,7 +57,7 @@ Lec_Diffuse_base& Lec_Diffuse_base::operator=(const Lec_Diffuse_base& )
 }
 
 
-Entree& Lec_Diffuse_base::operator>>(int & ob)
+Entree& Lec_Diffuse_base::operator>>(int& ob)
 {
   int ok = 0;
   if (Process::je_suis_maitre())
@@ -104,7 +104,7 @@ int Lec_Diffuse_base::get(int* ob, int n)
     }
   return error_handle(!ok);
 }
-Entree& Lec_Diffuse_base::operator>>(long & ob)
+Entree& Lec_Diffuse_base::operator>>(long& ob)
 {
   int ok = 0;
   if (Process::je_suis_maitre())
@@ -151,7 +151,7 @@ int Lec_Diffuse_base::get(long* ob, int n)
     }
   return error_handle(!ok);
 }
-Entree& Lec_Diffuse_base::operator>>(float & ob)
+Entree& Lec_Diffuse_base::operator>>(float& ob)
 {
   int ok = 0;
   if (Process::je_suis_maitre())
@@ -198,7 +198,7 @@ int Lec_Diffuse_base::get(float* ob, int n)
     }
   return error_handle(!ok);
 }
-Entree& Lec_Diffuse_base::operator>>(double & ob)
+Entree& Lec_Diffuse_base::operator>>(double& ob)
 {
   int ok = 0;
   if (Process::je_suis_maitre())

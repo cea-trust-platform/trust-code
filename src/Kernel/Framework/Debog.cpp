@@ -123,7 +123,7 @@ Entree& Old_Debog::interpreter(Entree& is)
 
   EChaine echaine(n);
   Interprete_bloc::interprete_courant().interpreter_bloc(echaine, Interprete_bloc::BLOC_EOF,
-      0 /* verifie_sans_interpreter */);
+                                                         0 /* verifie_sans_interpreter */);
   return is;
 }
 

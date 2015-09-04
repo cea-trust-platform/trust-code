@@ -331,11 +331,11 @@ double Champ_Face::val_imp_face_bord_private(int face,int comp) const
 }
 
 
-double Champ_Face_get_val_imp_face_bord(const double& temp,int face,int comp, const Zone_Cl_VDF& zclo) 
+double Champ_Face_get_val_imp_face_bord(const double& temp,int face,int comp, const Zone_Cl_VDF& zclo)
 {
   const Zone_VDF& zone_vdf=zclo.zone_VDF();
   int face_globale,face_locale;
-  
+
   face_globale=face+zone_vdf.premiere_face_bord(); // Maintenant numero dans le tableau global des faces.
   const Zone_Cl_dis_base& zcl = zclo; //equation().zone_Cl_dis().valeur();
   // On recupere la CL associee a la face et le numero local de la face dans la frontiere.
@@ -357,9 +357,9 @@ double Champ_Face_get_val_imp_face_bord(const double& temp,int face,int comp, co
         return 0;
       else
         {
-	  Cerr<<"You should call Champ_Face_get_val_imp_face_bord_sym and not  Champ_Face_get_val_imp_face_bord"<<finl;
-	  Process::exit();
-	  return 1e9;
+          Cerr<<"You should call Champ_Face_get_val_imp_face_bord_sym and not  Champ_Face_get_val_imp_face_bord"<<finl;
+          Process::exit();
+          return 1e9;
         }
     }
 
@@ -381,11 +381,11 @@ double Champ_Face_get_val_imp_face_bord(const double& temp,int face,int comp, co
   return 0; // All other cases
 
 }
-double Champ_Face_get_val_imp_face_bord_sym(const DoubleTab& tab_valeurs, const double& temp,int face,int comp, const Zone_Cl_VDF& zclo) 
+double Champ_Face_get_val_imp_face_bord_sym(const DoubleTab& tab_valeurs, const double& temp,int face,int comp, const Zone_Cl_VDF& zclo)
 {
   const Zone_VDF& zone_vdf=zclo.zone_VDF();
   int face_globale,face_locale;
-  
+
   face_globale=face+zone_vdf.premiere_face_bord(); // Maintenant numero dans le tableau global des faces.
   const Zone_Cl_dis_base& zcl = zclo; //equation().zone_Cl_dis().valeur();
   // On recupere la CL associee a la face et le numero local de la face dans la frontiere.
@@ -415,7 +415,7 @@ double Champ_Face_get_val_imp_face_bord_sym(const DoubleTab& tab_valeurs, const 
             elem = face_voisins(face_globale,0);
           else
             elem = face_voisins(face_globale,1);
-	  int comp2=comp+Objet_U::dimension;
+          int comp2=comp+Objet_U::dimension;
           return (tab_valeurs(elem_faces(elem,comp))*porosite[elem_faces(elem,comp)]
                   + tab_valeurs(elem_faces(elem,comp2))*porosite[elem_faces(elem,comp2)])
                  /    (porosite[elem_faces(elem,comp)] + porosite[elem_faces(elem,comp2)]) ;
@@ -450,7 +450,7 @@ double Champ_Face::val_imp_face_bord_private(int face,int comp1,int comp2) const
   return 0; // For compilers
 }
 
-double Champ_Face_get_val_imp_face_bord( const double& temp,int face,int comp, int comp2, const Zone_Cl_VDF& zclo) 
+double Champ_Face_get_val_imp_face_bord( const double& temp,int face,int comp, int comp2, const Zone_Cl_VDF& zclo)
 {
   Cerr << "Champ_Face::val_imp_face_bord(,,) exit" << endl;
   Process::exit();

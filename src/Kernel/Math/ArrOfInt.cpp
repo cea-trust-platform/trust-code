@@ -60,7 +60,8 @@ Implemente_ref(ArrOfInt);
 // .SECTION voir aussi
 ///////////////////////////////////////////////////////////////////
 
-class VIntdata {
+class VIntdata
+{
 public:
   VIntdata(int size, ArrOfInt::Storage storage);
   ~VIntdata();
@@ -72,8 +73,8 @@ public:
   inline int   get_size() const;
 private:
   // Le constructeur par copie et l'operateur= sont interdits.
-  VIntdata(const VIntdata & v);
-  VIntdata & operator=(const VIntdata & v);
+  VIntdata(const VIntdata& v);
+  VIntdata& operator=(const VIntdata& v);
 
   // "data" est un pointeur sur une zone de memoire de taille
   // sz * sizeof(int), allouee par le
@@ -84,7 +85,7 @@ private:
   // Contient le nombre d'objets ArrOfInt dont le membre "p" pointe
   // vers "this". On a ref_count_ >= 0.
   int ref_count_;
-  // "sz" est la taille du tableau "data_" alloue 
+  // "sz" est la taille du tableau "data_" alloue
   // On a sz >= 0.
   int size_;
   // Si storage est de type TEMP_STORAGE, d_ptr_trav porte la reference
@@ -110,46 +111,54 @@ VIntdata::VIntdata(int size, ArrOfInt::Storage storage)
   if (size == 0)
     storage = ArrOfInt::STANDARD;
 
-  switch (storage) {
-  case ArrOfInt::STANDARD: {
-    d_ptr_trav_ = 0;
-    if (size>size_warning) Cerr << "Warning: Allocating an array of " << size << " Int ...";
+  switch (storage)
+    {
+    case ArrOfInt::STANDARD:
+      {
+        d_ptr_trav_ = 0;
+        if (size>size_warning) Cerr << "Warning: Allocating an array of " << size << " Int ...";
 #ifdef _EXCEPTION_
-    // Allocation de la memoire sur le tas
-    try {
-      data_ = new int[size];
-    }
-    catch(...) {
-      Cerr << "unable to allocate " << size << " int " << finl;
-      Process::exit();
-    }
+        // Allocation de la memoire sur le tas
+        try
+          {
+            data_ = new int[size];
+          }
+        catch(...)
+          {
+            Cerr << "unable to allocate " << size << " int " << finl;
+            Process::exit();
+          }
 #else
-    data_ = new int[size];
-    if(!data_) {
-      Cerr << "unable to allocate " << size << "int " << finl;
+        data_ = new int[size];
+        if(!data_)
+          {
+            Cerr << "unable to allocate " << size << "int " << finl;
+            Process::exit();
+          }
+#endif
+        if (size>size_warning) Cerr << " OK" << finl;
+        break;
+      }
+    case ArrOfInt::TEMP_STORAGE:
+      {
+        // Allocation de la memoire sur un tas special.
+        // La memoire ne sera pas rendue au systeme mais conservee pour une
+        // reutilisation ulterieure.
+        Memoire& memoire = Memoire::Instance();
+        if (size>size_warning) Cerr << "Warning: Allocating or reusing a IntTrav of " << size << " elements ...";
+        d_ptr_trav_ = memoire.add_trav_int(size);
+        assert(d_ptr_trav_ != 0);
+        data_ = d_ptr_trav_->i_ptr_();
+        if (size>size_warning) Cerr << " OK" << finl;
+        break;
+
+      }
+    default:
       Process::exit();
     }
-#endif
-    if (size>size_warning) Cerr << " OK" << finl;
-    break;
-  }
-  case ArrOfInt::TEMP_STORAGE: {
-    // Allocation de la memoire sur un tas special.
-    // La memoire ne sera pas rendue au systeme mais conservee pour une
-    // reutilisation ulterieure.
-    Memoire & memoire = Memoire::Instance();
-    if (size>size_warning) Cerr << "Warning: Allocating or reusing a IntTrav of " << size << " elements ...";
-    d_ptr_trav_ = memoire.add_trav_int(size);    assert(d_ptr_trav_ != 0);
-    data_ = d_ptr_trav_->i_ptr_();    if (size>size_warning) Cerr << " OK" << finl;
-    break;
-    
-  }
-  default:
-    Process::exit();
-  }
   ref_count_ = 1;
   size_ = size;
-  
+
   assert(data_ != 0);
 }
 
@@ -160,14 +169,17 @@ VIntdata::VIntdata(int size, ArrOfInt::Storage storage)
 VIntdata::~VIntdata()
 {
   assert(ref_count_ == 0);
-  if (d_ptr_trav_ == 0) {
-    // Stockage STANDARD
-    delete[] data_;
-  } else {
-    // Stockage TEMP_STORAGE
-    d_ptr_trav_->unlock();
-    d_ptr_trav_ = 0;
-  }
+  if (d_ptr_trav_ == 0)
+    {
+      // Stockage STANDARD
+      delete[] data_;
+    }
+  else
+    {
+      // Stockage TEMP_STORAGE
+      d_ptr_trav_->unlock();
+      d_ptr_trav_ = 0;
+    }
   data_ = 0;  // paranoia: si size_==-1 c'est qu'on pointe sur un zombie
   size_ = -1; //  (pointeur vers un objet qui a ete detruit)
 }
@@ -220,14 +232,14 @@ inline const int * VIntdata::get_data() const
 }
 
 // Description: Constructeur par copie. Interdit : genere une erreur !
-VIntdata::VIntdata(const VIntdata & v)
+VIntdata::VIntdata(const VIntdata& v)
 {
   Cerr << "Error in VIntdata: VIntdata (const VIntdata & v)" << finl;
   Process::exit();
 }
 
 // Description: Operateur= interdit. Genere une erreur !
-VIntdata & VIntdata::operator=(const VIntdata & v)
+VIntdata& VIntdata::operator=(const VIntdata& v)
 {
   Cerr << "Error in VIntdata::operator=(const VIntdata & v)" << finl;
   Process::exit();
@@ -240,7 +252,7 @@ VIntdata & VIntdata::operator=(const VIntdata & v)
 //
 // ******************************************************************
 
-// Description: 
+// Description:
 //    Ecriture du tableau sur "os" :
 //    ecrit le nombre d'elements suivi des valeurs du tableau
 // Precondition:
@@ -248,49 +260,54 @@ VIntdata & VIntdata::operator=(const VIntdata & v)
 //    Signification: le flot de sortie a utiliser
 // Retour: Sortie&
 //    Signification: le flot de sortie modifie
-Sortie& ArrOfInt::printOn(Sortie& os) const 
-{  
+Sortie& ArrOfInt::printOn(Sortie& os) const
+{
   int sz=size_array();
   os << sz << finl;
-  if (sz > 0) {
-    const int* v = data_;
-    os.put(v,sz,sz);
-  }
+  if (sz > 0)
+    {
+      const int* v = data_;
+      os.put(v,sz,sz);
+    }
   return os;
 }
 
-// Description: 
+// Description:
 //    Lecture d'un tableau dans un flot d'entree
 //    Lit le nombre d'elements suivi des elements eux-memes
-// Precondition: 
+// Precondition:
 //    Le tableau doit etre "resizable" (voir precondition de resize_array_)
 // Parametre: Entree& is
 //    Signification: le flot d'entree a utiliser
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
-// Retour: Entree& 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour: Entree&
 //    Signification: le flot d'entree modifie
-//    Contraintes: 
+//    Contraintes:
 // Exception:
 //    Si la taille lue est negative, erreur.
 Entree& ArrOfInt::readOn(Entree& is)
 {
   int sz;
   is >> sz;
-  if (sz >= 0) {
-    // Appel a la methode sans precondition sur le type derive
-    // (car readOn est virtuelle, les autres proprietes seront initialisees correctement)
-    resize_array_(sz);
-    if (sz > 0) {
-      int* v = data_;
-      is.get(v,sz);
+  if (sz >= 0)
+    {
+      // Appel a la methode sans precondition sur le type derive
+      // (car readOn est virtuelle, les autres proprietes seront initialisees correctement)
+      resize_array_(sz);
+      if (sz > 0)
+        {
+          int* v = data_;
+          is.get(v,sz);
+        }
     }
-  } else {
-    Cerr << "Error in ArrOfInt:readOn : size = " << sz << finl;
-    assert(0);
-    exit();
-  }
+  else
+    {
+      Cerr << "Error in ArrOfInt:readOn : size = " << sz << finl;
+      assert(0);
+      exit();
+    }
   return is;
 }
 
@@ -330,11 +347,12 @@ ArrOfInt::ArrOfInt(int n) :
   smart_resize_(0),
   storage_type_(STANDARD)
 {
-  if (n) {
-    p_ = new VIntdata(n, STANDARD);
-    data_ = p_->get_data();
-    fill_default_value(COPY_INIT, 0, n);
-  }
+  if (n)
+    {
+      p_ = new VIntdata(n, STANDARD);
+      data_ = p_->get_data();
+      fill_default_value(COPY_INIT, 0, n);
+    }
 }
 
 // Description:
@@ -353,16 +371,17 @@ ArrOfInt::ArrOfInt(int n, int x) :
   smart_resize_(0),
   storage_type_(STANDARD)
 {
-  if (n) {
-    p_ = new VIntdata(n, STANDARD);
-    data_ = p_->get_data();
-    *this = x;
-  }
+  if (n)
+    {
+      p_ = new VIntdata(n, STANDARD);
+      data_ = p_->get_data();
+      *this = x;
+    }
 }
 
 // Description:
 //     Constructeur par copie. On alloue une nouvelle zone de memoire
-//     et on copie le contenu du tableau (il s'agit d'un "deep copy"). 
+//     et on copie le contenu du tableau (il s'agit d'un "deep copy").
 //     L'attribut smart_resize_ est copie aussi.
 //     Si le tableau A est de taille nulle, on cree un tableau "detache",
 //     sinon on cree un tableau "normal".
@@ -371,24 +390,27 @@ ArrOfInt::ArrOfInt(int n, int x) :
 ArrOfInt::ArrOfInt(const ArrOfInt& A): Array_base()
 {
   const int size = A.size_array();
-  if (size > 0) {
-    // Creation d'un tableau "normal"
-    storage_type_ = STANDARD;
-    p_ = new VIntdata(size, STANDARD);
-    data_ = p_->get_data();
-    size_array_ = size;
-    memory_size_ = size;    
-    smart_resize_ = A.smart_resize_;
-    inject_array(A);
-  } else {
-    // Creation d'un tableau "detache"
-    p_ = 0;
-    data_ = 0;
-    size_array_ = 0;
-    memory_size_ = 0;
-    smart_resize_ = 0;
-    storage_type_ = STANDARD;
-  }
+  if (size > 0)
+    {
+      // Creation d'un tableau "normal"
+      storage_type_ = STANDARD;
+      p_ = new VIntdata(size, STANDARD);
+      data_ = p_->get_data();
+      size_array_ = size;
+      memory_size_ = size;
+      smart_resize_ = A.smart_resize_;
+      inject_array(A);
+    }
+  else
+    {
+      // Creation d'un tableau "detache"
+      p_ = 0;
+      data_ = 0;
+      size_array_ = 0;
+      memory_size_ = 0;
+      smart_resize_ = 0;
+      storage_type_ = STANDARD;
+    }
 }
 
 // Description:
@@ -444,17 +466,18 @@ void ArrOfInt::reset()
 //    Signification: *this
 ArrOfInt& ArrOfInt::operator=(const ArrOfInt& m)
 {
-  if (&m != this) {
-    const int new_size = m.size_array();
-    // On utilise la methode resize_array() qui teste le type derive de l'objet
-    // (resize interdit sur un type derive)
-    resize_array(new_size, NOCOPY_NOINIT);
-    inject_array(m);
-  }
+  if (&m != this)
+    {
+      const int new_size = m.size_array();
+      // On utilise la methode resize_array() qui teste le type derive de l'objet
+      // (resize interdit sur un type derive)
+      resize_array(new_size, NOCOPY_NOINIT);
+      inject_array(m);
+    }
   return *this;
 }
 /*
-// Description: 
+// Description:
 //   Affectation d'un tableau de type FArrOfInt
 //   (tableau stocke sur disque).
 // Precondition:
@@ -474,7 +497,7 @@ ArrOfInt& ArrOfInt::operator=(const FArrOfInt& m)
 */
 
 // Description: appelle operator=(a)
-ArrOfInt& ArrOfInt::copy_array(const ArrOfInt & a)
+ArrOfInt& ArrOfInt::copy_array(const ArrOfInt& a)
 {
   operator=(a);
   return *this;
@@ -537,56 +560,66 @@ void  ArrOfInt::memory_resize(int new_size, Array_base::Resize_Options opt)
   // Si smart_resize, on prend au moins deux fois la taille
   // precedente, ou new_size
   int new_mem_size = new_size;
-  if (smart_resize_) {
-    if (new_size <= old_mem_size)
-      new_mem_size = old_mem_size;
-    else if (new_size < old_mem_size * 2)
-      new_mem_size = old_mem_size * 2;
-  }
+  if (smart_resize_)
+    {
+      if (new_size <= old_mem_size)
+        new_mem_size = old_mem_size;
+      else if (new_size < old_mem_size * 2)
+        new_mem_size = old_mem_size * 2;
+    }
 
-  if (new_mem_size != old_mem_size) {
-    // detach_array() efface le contenu de size_array_. On le met de cote:
-    const int old_size_array = size_array_;
-    if (new_mem_size == 0) {
-      // La nouvelle taille est nulle, on cree un tableau "detache"
-      detach_array();
-    } else {
-      // Allocation d'une nouvelle zone
-      VIntdata * new_p = new VIntdata(new_mem_size, storage_type_);
-      int * new_data = new_p->get_data();
-      // Raccourci si le tableau etait "detache", inutile de copier
-      // les anciennes donnees. On copie si COPY_OLD est demande
-      int copy_size = 0;
-      if (data_ != 0) {
-        // Calcul du nombre d'elements a copier vers la nouvelle
-        // zone de memoire : c'est le min de l'ancienne et de
-        // la nouvelle taille.
-        if (opt != NOCOPY_NOINIT) {
-          copy_size = size_array_;
-          if (new_size < copy_size)
-            copy_size = new_size;
-          // Copie des valeurs dans le nouveau tableau
-          for (int i = 0; i < copy_size; i++)
-            new_data[i] = data_[i];
+  if (new_mem_size != old_mem_size)
+    {
+      // detach_array() efface le contenu de size_array_. On le met de cote:
+      const int old_size_array = size_array_;
+      if (new_mem_size == 0)
+        {
+          // La nouvelle taille est nulle, on cree un tableau "detache"
+          detach_array();
         }
-        // Destruction de l'ancienne zone (si plus aucune reference)
-        detach_array();
-      }
-      // On attache la nouvelle zone de memoire
-      p_ = new_p;
-      data_ = new_data;
-      memory_size_ = new_mem_size;
-      // Initialisation des cases supplementaires avec une valeur par defaut
-      fill_default_value(opt, copy_size, new_mem_size - copy_size);
-      // Restaure l'ancienne valeur de size_array_
-      size_array_ = old_size_array;
+      else
+        {
+          // Allocation d'une nouvelle zone
+          VIntdata * new_p = new VIntdata(new_mem_size, storage_type_);
+          int * new_data = new_p->get_data();
+          // Raccourci si le tableau etait "detache", inutile de copier
+          // les anciennes donnees. On copie si COPY_OLD est demande
+          int copy_size = 0;
+          if (data_ != 0)
+            {
+              // Calcul du nombre d'elements a copier vers la nouvelle
+              // zone de memoire : c'est le min de l'ancienne et de
+              // la nouvelle taille.
+              if (opt != NOCOPY_NOINIT)
+                {
+                  copy_size = size_array_;
+                  if (new_size < copy_size)
+                    copy_size = new_size;
+                  // Copie des valeurs dans le nouveau tableau
+                  for (int i = 0; i < copy_size; i++)
+                    new_data[i] = data_[i];
+                }
+              // Destruction de l'ancienne zone (si plus aucune reference)
+              detach_array();
+            }
+          // On attache la nouvelle zone de memoire
+          p_ = new_p;
+          data_ = new_data;
+          memory_size_ = new_mem_size;
+          // Initialisation des cases supplementaires avec une valeur par defaut
+          fill_default_value(opt, copy_size, new_mem_size - copy_size);
+          // Restaure l'ancienne valeur de size_array_
+          size_array_ = old_size_array;
+        }
     }
-  } else {
-    // Pas de reallocation, initialisation si besoin
-    if (opt == COPY_INIT && new_size > size_array_) {
-      fill_default_value(opt, size_array_, new_size - size_array_);
+  else
+    {
+      // Pas de reallocation, initialisation si besoin
+      if (opt == COPY_INIT && new_size > size_array_)
+        {
+          fill_default_value(opt, size_array_, new_size - size_array_);
+        }
     }
-  }
 }
 
 // Description:
@@ -607,10 +640,10 @@ void  ArrOfInt::memory_resize(int new_size, Array_base::Resize_Options opt)
 //    DONC: il faut supposer desormais que les nouvelles cases ne sont pas
 //    initialisees lors d'un resize.
 // Parametre: first
-//  Signification: premiere case a initialiser. 
+//  Signification: premiere case a initialiser.
 //  Contrainte:    (nb==0) ou (0 <= first < memory_size_)
 // Parametre: nb
-//  Signification: nombre de cases a initialiser. 
+//  Signification: nombre de cases a initialiser.
 //  Contrainte:    (nb==0) ou (0 < nb <= memory_size_ - first)
 void  ArrOfInt::fill_default_value(Array_base::Resize_Options opt, int first, int nb)
 {
@@ -619,201 +652,221 @@ void  ArrOfInt::fill_default_value(Array_base::Resize_Options opt, int first, in
   int * data = data_;
   assert(data!=0 || nb==0);
   data += first;
-  if (opt != COPY_INIT) {
-    // On initialise uniquement en mode debug
+  if (opt != COPY_INIT)
+    {
+      // On initialise uniquement en mode debug
 #ifndef NDEBUG
-    static const int INT_INVALIDE = INT_MIN;
-    for (int i = 0; i < nb; i++) 
-      data[i] = INT_INVALIDE;
+      static const int INT_INVALIDE = INT_MIN;
+      for (int i = 0; i < nb; i++)
+        data[i] = INT_INVALIDE;
 #endif
-  } else {
-    // Comportement pour les tableaux normaux : compatibilite avec la
-    // version precedente : on initialise avec 0.
-    for (int i = 0; i < nb; i++) 
-      data[i] = (int) 0;
-  }
+    }
+  else
+    {
+      // Comportement pour les tableaux normaux : compatibilite avec la
+      // version precedente : on initialise avec 0.
+      for (int i = 0; i < nb; i++)
+        data[i] = (int) 0;
+    }
 }
 
 // ****************************************************************
-// 
+//
 //         Fonctions non membres de la classe ArrOfInt
 //
 // ****************************************************************
 
-// Description: 
+// Description:
 //  Renvoie 1 si les tableaux "v" et "a" sont de la meme taille
 //  et contiennent les memes valeurs au sens strict, sinon renvoie 0.
 //  Le test est !(v[i]!=a[i])
-int operator==(const ArrOfInt& v, const ArrOfInt& a) 
+int operator==(const ArrOfInt& v, const ArrOfInt& a)
 {
   const int n = v.size_array();
   const int na = a.size_array();
   int resu = 1;
-  if (n != na) {
-    resu = 0;
-  } else {
-    const int* vv = v.addr();
-    const int* av = a.addr();
-    int i;
-    for (i = 0; i < n; i++) {
-      if (av[i] != vv[i]) {
-        resu = 0;
-        break;
-      }
+  if (n != na)
+    {
+      resu = 0;
     }
-  }
+  else
+    {
+      const int* vv = v.addr();
+      const int* av = a.addr();
+      int i;
+      for (i = 0; i < n; i++)
+        {
+          if (av[i] != vv[i])
+            {
+              resu = 0;
+              break;
+            }
+        }
+    }
   return resu;
 }
 
-// Description: 
+// Description:
 //    Retourne l'indice du min ou -1 si le tableau est vide
-// Precondition: 
+// Precondition:
 // Parametre: const ArrOfInt& dx
 //    Signification: tableau a utiliser
 // Retour: int
-//    Signification: indice du min 
-int imin_array(const ArrOfInt& dx){
+//    Signification: indice du min
+int imin_array(const ArrOfInt& dx)
+{
   int indice_min = -1;
   const int size = dx.size_array();
-  if (size > 0) {
-    indice_min = 0;
-    int valeur_min = dx[0];
-    for(int i = 1; i < size; i++) {
-      const int val = dx[i];
-      if(val < valeur_min) {
-        indice_min = i;
-        valeur_min = val;
-      }
+  if (size > 0)
+    {
+      indice_min = 0;
+      int valeur_min = dx[0];
+      for(int i = 1; i < size; i++)
+        {
+          const int val = dx[i];
+          if(val < valeur_min)
+            {
+              indice_min = i;
+              valeur_min = val;
+            }
+        }
     }
-  }
   return indice_min;
 }
 
-// Description: 
+// Description:
 //    Retourne l'indice du max ou -1 si le tableau est vide
-// Precondition: 
+// Precondition:
 // Parametre: const ArrOfInt& dx
 //    Signification: tableau a utiliser
 // Retour: int
 //    Signification: indice du max
-int imax_array(const ArrOfInt& dx){
+int imax_array(const ArrOfInt& dx)
+{
   int indice_max = -1;
   const int size = dx.size_array();
-  if (size > 0) {
-    indice_max = 0;
-    int valeur_max = dx[0];
-    for(int i = 1; i < size; i++) {
-      const int val = dx[i];
-      if(val > valeur_max) {
-        indice_max = i;
-        valeur_max = val;
-      }
+  if (size > 0)
+    {
+      indice_max = 0;
+      int valeur_max = dx[0];
+      for(int i = 1; i < size; i++)
+        {
+          const int val = dx[i];
+          if(val > valeur_max)
+            {
+              indice_max = i;
+              valeur_max = val;
+            }
+        }
     }
-  }
   return indice_max;
 }
 
-// Description: 
+// Description:
 //    Retourne la valeur minimale
 // Precondition:
 //    Le tableau doit contenir au moins une valeur
 // Parametre: const ArrOfInt& dx
 //    Signification: tableau a utiliser
 // Retour: int
-//    Signification: valeur du min 
+//    Signification: valeur du min
 int min_array(const ArrOfInt& dx)
 {
   const int size = dx.size_array();
   assert(size > 0);
   int valeur_min = dx[0];
-  for(int i = 1; i < size; i++) {
-    const int val = dx[i];
-    if (val < valeur_min)
-      valeur_min = val;
-  }
+  for(int i = 1; i < size; i++)
+    {
+      const int val = dx[i];
+      if (val < valeur_min)
+        valeur_min = val;
+    }
   return valeur_min;
 }
 
-// Description: 
+// Description:
 //    Retourne la valeur maximale
-// Precondition: 
+// Precondition:
 //    Le tableau doit contenir au moins une valeur
 // Parametre: const ArrOfInt& dx
 //    Signification: tableau a utiliser
 // Retour: int
-//    Signification: valeur du max 
+//    Signification: valeur du max
 int max_array(const ArrOfInt& dx)
 {
   const int size = dx.size_array();
   assert(size > 0);
   int valeur_max = dx[0];
-  for(int i = 1; i < size; i++) {
-    const int val = dx[i];
-    if (val > valeur_max)
-      valeur_max = val;
-  }
+  for(int i = 1; i < size; i++)
+    {
+      const int val = dx[i];
+      if (val > valeur_max)
+        valeur_max = val;
+    }
   return valeur_max;
 }
 
-static inline int scalar_abs(int x) 
-{ 
-  return abs(x); 
-  
+static inline int scalar_abs(int x)
+{
+  return abs(x);
+
 }
 
-// Description: 
+// Description:
 //    Retourne le max des abs(i)
-// Precondition: 
+// Precondition:
 //    Le tableau doit contenir au moins une valeur
 // Parametre: const ArrOfInt& dx
 //    Signification: tableau a utiliser
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: int
-//    Signification: valeur du max des valeurs absolues 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Signification: valeur du max des valeurs absolues
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 int max_abs_array(const ArrOfInt& dx)
 {
   const int size = dx.size_array();
   assert(size > 0);
   int valeur_max = scalar_abs(dx[0]);
-  for(int i = 1; i < size; i++) {
-    const int val = scalar_abs(dx[i]);
-    if (val > valeur_max)
-      valeur_max = val;
-  }
+  for(int i = 1; i < size; i++)
+    {
+      const int val = scalar_abs(dx[i]);
+      if (val > valeur_max)
+        valeur_max = val;
+    }
   return valeur_max;
 }
 
-// Description: 
+// Description:
 //    Retourne le min des abs(i)
-// Precondition: 
+// Precondition:
 //    Le tableau doit contenir au moins une valeur
 // Parametre: const ArrOfInt& dx
 //    Signification: tableau a utiliser
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: int
-//    Signification: valeur du min des valeurs absolues 
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Signification: valeur du min des valeurs absolues
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 int min_abs_array(const ArrOfInt& dx)
 {
   const int size = dx.size_array();
   assert(size > 0);
   int v = scalar_abs(dx[0]);
-  for(int i = 1; i < size; i++) {
-    const int val = scalar_abs(dx[i]);
-    if (val < v)
-      v = val;
-  }
+  for(int i = 1; i < size; i++)
+    {
+      const int val = scalar_abs(dx[i]);
+      if (val < v)
+        v = val;
+    }
   return v;
 }
 
@@ -827,20 +880,21 @@ static int fonction_compare_arrofint_ordonner(const void * data1, const void * d
   return x - y;
 }
 
-// Description: 
+// Description:
 //   Tri des valeurs du tableau dans l'ordre croissant.
 //   La fonction utilisee est qsort de stdlib (elle est en n*log(n)).
 void ArrOfInt::ordonne_array()
 {
   const int size = size_array_;
-  if (size > 1) {
-    int * data = data_;
-    qsort(data, size, sizeof(int), 
-          fonction_compare_arrofint_ordonner);
-  }
+  if (size > 1)
+    {
+      int * data = data_;
+      qsort(data, size, sizeof(int),
+            fonction_compare_arrofint_ordonner);
+    }
 }
 
-// Description: 
+// Description:
 //   Tri des valeurs du tableau dans l'ordre croissant et suppresion des doublons
 //   La fonction utilisee est qsort de stdlib (elle est en n*log(n)).
 void ArrOfInt::array_trier_retirer_doublons()
@@ -854,13 +908,15 @@ void ArrOfInt::array_trier_retirer_doublons()
   int last_value = *data_;
   int *src = data_ + 1;
   int *dest = data_ + 1;
-  for (int i = size_ - 1; i != 0; i--) {
-    int x = *(src++);
-    if (x != last_value) {
-      *(dest++) = x;
-      last_value = x;
+  for (int i = size_ - 1; i != 0; i--)
+    {
+      int x = *(src++);
+      if (x != last_value)
+        {
+          *(dest++) = x;
+          last_value = x;
+        }
     }
-  }
   int new_size_ = dest - data_;
   resize_array(new_size_);
 }
@@ -882,7 +938,7 @@ void ArrOfInt::array_trier_retirer_doublons()
 // Exception:
 // Effets de bord:
 // Postcondition:
-void ArrOfInt::ref_array(ArrOfInt& m, int start, int size) 
+void ArrOfInt::ref_array(ArrOfInt& m, int start, int size)
 {
   assert(&m != this);
   // La condition 'm n'est pas de type "ref_data"' est necessaire pour
@@ -929,22 +985,24 @@ void ArrOfInt::ref_data(int* ptr, int size)
 // Retour: int
 //    Signification: 1 si les donnees du tableau ont ete supprimees
 // Precondition:
-// Postcondition: 
+// Postcondition:
 //  On a p_==0, data_==0 et size_array_==0, memory_size_ = 0
 //  L'attribut smart_resize_ est conserve.
-int ArrOfInt::detach_array() 
+int ArrOfInt::detach_array()
 {
   int retour = 0;
-  if (p_) {
-    // Le tableau est de type "normal"
-    // Si la zone de memoire n'est plus utilisee par personne,
-    // on la detruit.
-    if ((p_->suppr_one_ref()) == 0) {
-      delete p_;
-      retour = 1;
+  if (p_)
+    {
+      // Le tableau est de type "normal"
+      // Si la zone de memoire n'est plus utilisee par personne,
+      // on la detruit.
+      if ((p_->suppr_one_ref()) == 0)
+        {
+          delete p_;
+          retour = 1;
+        }
+      p_ = 0;
     }
-    p_ = 0;
-  }
   data_ = 0;
   size_array_ = 0;
   memory_size_ = 0;
@@ -952,7 +1010,7 @@ int ArrOfInt::detach_array()
 }
 
 // Description:
-//    Amene le tableau dans l'etat "normal", "detache" ou "ref_array" 
+//    Amene le tableau dans l'etat "normal", "detache" ou "ref_array"
 //    en associant une sous-zone de memoire du tableau m, definie par start et size
 //    Si size < 0, on prend le tableau m jusqu'a la fin.
 // Precondition:
@@ -966,11 +1024,11 @@ int ArrOfInt::detach_array()
 // Exception:
 // Effets de bord:
 // Postcondition:
-//    Si m est detache, le tableau reste detache, 
+//    Si m est detache, le tableau reste detache,
 //    si m est "ref_array", le tableau devient "ref_array",
 //    sinon le tableau est "normal", avec ref_count > 1
 //    Si m est de taille nulle, le tableau reste detache + Warning dans fichier .log
-void ArrOfInt::attach_array(const ArrOfInt& m, int start, int size) 
+void ArrOfInt::attach_array(const ArrOfInt& m, int start, int size)
 {
   // Le tableau doit etre detache
   assert(data_ == 0 && p_ == 0);
@@ -979,25 +1037,28 @@ void ArrOfInt::attach_array(const ArrOfInt& m, int start, int size)
   if (size < 0)
     size = m.size_array_ - start;
   assert(start >= 0 && size >=0 && start + size <= m.size_array_);
-  if (m.size_array() > 0) {
-    p_ = m.p_;
-    if (p_)
-      p_->add_one_ref();
-    data_ = m.data_ + start;
-    size_array_ = size;
-    memory_size_ = m.memory_size_ - start;
-    smart_resize_ = m.smart_resize_;
-  } else {
-    // Cas particulier ou on attache un tableau de taille nulle:
-    //  en theorie, c'est pareil qu'un tableau de taille non nulle, MAIS
-    //  dans les operateurs (ex:Op_Dift_VDF_Face_Axi), une ref est construite
-    //  avant que le tableau ne prenne sa taille definitive. Donc, pour ne pas
-    //  empecher le resize, il ne faut pas attacher le tableau s'il n'a pas
-    //  encore la bonne taille. Solution propre: reecrire les operateurs pour
-    //  qu'ils ne prennent pas une ref avant que le tableau ne soit valide
-    //  et faire p_ = m.p_ dans tous les cas.
-    // Process::Journal() << "Warning ArrOfInt::attach_array(m), m.size_array()==0, on n attache pas le tableau" << finl;
-  }
+  if (m.size_array() > 0)
+    {
+      p_ = m.p_;
+      if (p_)
+        p_->add_one_ref();
+      data_ = m.data_ + start;
+      size_array_ = size;
+      memory_size_ = m.memory_size_ - start;
+      smart_resize_ = m.smart_resize_;
+    }
+  else
+    {
+      // Cas particulier ou on attache un tableau de taille nulle:
+      //  en theorie, c'est pareil qu'un tableau de taille non nulle, MAIS
+      //  dans les operateurs (ex:Op_Dift_VDF_Face_Axi), une ref est construite
+      //  avant que le tableau ne prenne sa taille definitive. Donc, pour ne pas
+      //  empecher le resize, il ne faut pas attacher le tableau s'il n'a pas
+      //  encore la bonne taille. Solution propre: reecrire les operateurs pour
+      //  qu'ils ne prennent pas une ref avant que le tableau ne soit valide
+      //  et faire p_ = m.p_ dans tous les cas.
+      // Process::Journal() << "Warning ArrOfInt::attach_array(m), m.size_array()==0, on n attache pas le tableau" << finl;
+    }
 }
 
 // Description:
@@ -1024,9 +1085,9 @@ void ArrOfInt::attach_array(const ArrOfInt& m, int start, int size)
 // Effets de bord:
 // Postcondition:
 ArrOfInt& ArrOfInt::inject_array(const ArrOfInt& source,
-                                               int nb_elements,
-                                               int first_element_dest,
-                                               int first_element_source) 
+                                 int nb_elements,
+                                 int first_element_dest,
+                                 int first_element_source)
 {
   assert(&source != this);
   assert(nb_elements >= -1);
@@ -1039,17 +1100,18 @@ ArrOfInt& ArrOfInt::inject_array(const ArrOfInt& source,
   assert(first_element_source + nb_elements <= source.size_array());
   assert(first_element_dest + nb_elements <= size_array());
 
-  if (nb_elements > 0) {
-    int * addr_dest = data_ + first_element_dest;
-    const int * addr_source = source.addr() + first_element_source;
-    // PL: On utilise le memcpy car c'est VRAIMENT plus rapide (10% +vite sur RNR_G20)
-    memcpy(addr_dest , addr_source, nb_elements * sizeof(int));
-    /*
-      int i;
-      for (i = 0; i < nb_elements; i++) {
-      addr_dest[i] = addr_source[i];
-      } */
-  }
+  if (nb_elements > 0)
+    {
+      int * addr_dest = data_ + first_element_dest;
+      const int * addr_source = source.addr() + first_element_source;
+      // PL: On utilise le memcpy car c'est VRAIMENT plus rapide (10% +vite sur RNR_G20)
+      memcpy(addr_dest , addr_source, nb_elements * sizeof(int));
+      /*
+        int i;
+        for (i = 0; i < nb_elements; i++) {
+        addr_dest[i] = addr_source[i];
+        } */
+    }
   return *this;
 }
 
@@ -1068,19 +1130,19 @@ int ArrOfInt::ref_count() const
 
 // Description:
 //    Addition case a case sur toutes les cases du tableau
-// Precondition: 
+// Precondition:
 //    la taille de y doit etre au moins egale a la taille de this
 // Parametre: const ArrOfInt& y
 //    Signification: tableau a ajouter
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: ArrOfInt&
 //    Signification: *this
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 ArrOfInt& ArrOfInt::operator+=(const ArrOfInt& y)
 {
   assert(size_array()==y.size_array());
@@ -1092,20 +1154,20 @@ ArrOfInt& ArrOfInt::operator+=(const ArrOfInt& y)
   return *this;
 }
 
-// Description: 
+// Description:
 //     ajoute la meme valeur a toutes les cases du tableau
-// Precondition: 
+// Precondition:
 // Parametre: const int dy
 //    Signification: valeur a ajouter
-//    Valeurs par defaut: 
-//    Contraintes: 
-//    Acces: 
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
 // Retour: ArrOfInt
 //    Signification: *this
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 ArrOfInt& ArrOfInt::operator+=(const int dy)
 {
   int * data = data_;
@@ -1132,7 +1194,7 @@ ArrOfInt& ArrOfInt::operator-=(const ArrOfInt& y)
 }
 
 
-// Description: 
+// Description:
 //     soustrait la meme valeur a toutes les cases
 // Retour: ArrOfInt &
 //    Signification: *this

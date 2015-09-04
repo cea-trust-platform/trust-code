@@ -731,7 +731,7 @@ int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const
             }
 
           // Contribution de la pression Pa
-	  // GF descativation car bilan incorret
+          // GF descativation car bilan incorret
           if (zone_VEF.get_alphaA()*0)
             {
               pres_arete = 0.;

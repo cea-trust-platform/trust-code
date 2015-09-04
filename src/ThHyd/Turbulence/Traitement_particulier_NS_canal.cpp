@@ -753,17 +753,17 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
 
   int nb_cl=les_cl.size();
   for (int num_cl=0; num_cl<nb_cl; num_cl++)
-  {
-    const Cond_lim& la_cl = les_cl[num_cl];
-    if (sub_type(Paroi_decalee_Robin,la_cl.valeur()))
-      {
-        nb_cl_robin+=1;
-      }
-    if (sub_type(Dirichlet_paroi_fixe,la_cl.valeur()))
-      {
-        nb_cl_diri+=1;
-      }
-  }
+    {
+      const Cond_lim& la_cl = les_cl[num_cl];
+      if (sub_type(Paroi_decalee_Robin,la_cl.valeur()))
+        {
+          nb_cl_robin+=1;
+        }
+      if (sub_type(Dirichlet_paroi_fixe,la_cl.valeur()))
+        {
+          nb_cl_diri+=1;
+        }
+    }
 
   if (modele_turbulence.non_nul() && !ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur()).loi_paroi().valeur().que_suis_je().debute_par("negligeable"))
     {
@@ -784,240 +784,240 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
 //    dirichlet
       if ( nb_cl_diri != 0 )
         {
-              DoubleVect tauw_diri(nb_cl_diri);
-              DoubleVect retau_diri(nb_cl_diri);
-              DoubleVect utau_diri(nb_cl_diri);
+          DoubleVect tauw_diri(nb_cl_diri);
+          DoubleVect retau_diri(nb_cl_diri);
+          DoubleVect utau_diri(nb_cl_diri);
 //            search of cl diri
 //            nb cl diri
-              double tauw_diri_tmp=0.;
-              int numero_bord_diri=0;
-              int nbfaces_bord_diri=0;
+          double tauw_diri_tmp=0.;
+          int numero_bord_diri=0;
+          int nbfaces_bord_diri=0;
 
-              double rho = 0.;
-              double mu = 0.;
+          double rho = 0.;
+          double mu = 0.;
 
-              if ( sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
-                {
-                    rho = fluide.masse_volumique().valeurs()(0,0);
-                }
-              if ( sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
-                {
-                    mu = fluide.viscosite_dynamique().valeurs()(0,0);
-                }
+          if ( sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
+            {
+              rho = fluide.masse_volumique().valeurs()(0,0);
+            }
+          if ( sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
+            {
+              mu = fluide.viscosite_dynamique().valeurs()(0,0);
+            }
 
 //            for each cl, calculation of the mean tauw
 //            loop on boundaries
-              for (int num_cl=0; num_cl<nb_cl; num_cl++)
+          for (int num_cl=0; num_cl<nb_cl; num_cl++)
+            {
+              tauw_diri_tmp=0.;
+              if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
+                rho = 0.;
+              if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
+                mu = 0.;
+              const Cond_lim& la_cl = les_cl[num_cl];
+              if (sub_type(Dirichlet_paroi_fixe,la_cl.valeur()))
                 {
-                  tauw_diri_tmp=0.;
-                  if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
-                    rho = 0.;
-                  if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
-                    mu = 0.;
-                  const Cond_lim& la_cl = les_cl[num_cl];
-                  if (sub_type(Dirichlet_paroi_fixe,la_cl.valeur()))
+                  const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+                  nbfaces_bord_diri = la_front_dis.nb_faces();
+                  int ndeb = la_front_dis.num_premiere_face();
+                  int nfin = ndeb + nbfaces_bord_diri;
+                  if (Objet_U::dimension == 2 )
                     {
-                      const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
-                      nbfaces_bord_diri = la_front_dis.nb_faces();
-                      int ndeb = la_front_dis.num_premiere_face();
-                      int nfin = ndeb + nbfaces_bord_diri;
-                      if (Objet_U::dimension == 2 )
-                        {
 //                        loop on faces in 2D
-                          for (int fac=ndeb; fac<nfin ; fac++)
-                            {
-                              tauw_diri_tmp += sqrt(tau_tan(fac,0)*tau_tan(fac,0));
-
-                              int elem = zone_VF.face_voisins(fac,0);
-                              if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
-                                rho += fluide.masse_volumique().valeurs()[elem];
-                              if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
-                                mu += fluide.viscosite_dynamique().valeurs()[elem];
-                            }
-                        }
-                      else
+                      for (int fac=ndeb; fac<nfin ; fac++)
                         {
-//                        loop on faces on 3D
-                          for (int fac=ndeb; fac<nfin ; fac++)
-                            {
-                              tauw_diri_tmp += sqrt(tau_tan(fac,0)*tau_tan(fac,0)+tau_tan(fac,2)*tau_tan(fac,2));
+                          tauw_diri_tmp += sqrt(tau_tan(fac,0)*tau_tan(fac,0));
 
-                              int elem = zone_VF.face_voisins(fac,0);
-                              if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
-                                rho += fluide.masse_volumique().valeurs()[elem];
-                              if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
-                                mu += fluide.viscosite_dynamique().valeurs()[elem];
-                            }
+                          int elem = zone_VF.face_voisins(fac,0);
+                          if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
+                            rho += fluide.masse_volumique().valeurs()[elem];
+                          if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
+                            mu += fluide.viscosite_dynamique().valeurs()[elem];
                         }
-                      tauw_diri_tmp=mp_sum(tauw_diri_tmp)/mp_sum(nbfaces_bord_diri);
-                      if(!(mon_equation.valeur().probleme().is_QC()))
-                        tauw_diri_tmp *= rho ;
-
-                      if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
-                        rho=mp_sum(rho)/mp_sum(nbfaces_bord_diri);
-                      if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
-                        mu=mp_sum(mu)/mp_sum(nbfaces_bord_diri);
-
-                      tauw_diri(numero_bord_diri) = tauw_diri_tmp;
-                      utau_diri(numero_bord_diri) = sqrt(tauw_diri_tmp/rho);
-                      retau_diri(numero_bord_diri)= rho*utau_diri(numero_bord_diri)*hs2/mu;
-
-                      tauw_diri_m  += tauw_diri(numero_bord_diri);
-                      utau_diri_m  += utau_diri(numero_bord_diri);
-                      retau_diri_m += retau_diri(numero_bord_diri);
-
-                      numero_bord_diri+=1;
                     }
-                } // loop on boundaries
+                  else
+                    {
+//                        loop on faces on 3D
+                      for (int fac=ndeb; fac<nfin ; fac++)
+                        {
+                          tauw_diri_tmp += sqrt(tau_tan(fac,0)*tau_tan(fac,0)+tau_tan(fac,2)*tau_tan(fac,2));
 
-              tauw_diri_m  =tauw_diri_m/nb_cl_diri;
-              retau_diri_m =retau_diri_m/nb_cl_diri;
-              utau_diri_m  =utau_diri_m/nb_cl_diri;
+                          int elem = zone_VF.face_voisins(fac,0);
+                          if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
+                            rho += fluide.masse_volumique().valeurs()[elem];
+                          if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
+                            mu += fluide.viscosite_dynamique().valeurs()[elem];
+                        }
+                    }
+                  tauw_diri_tmp=mp_sum(tauw_diri_tmp)/mp_sum(nbfaces_bord_diri);
+                  if(!(mon_equation.valeur().probleme().is_QC()))
+                    tauw_diri_tmp *= rho ;
+
+                  if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
+                    rho=mp_sum(rho)/mp_sum(nbfaces_bord_diri);
+                  if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
+                    mu=mp_sum(mu)/mp_sum(nbfaces_bord_diri);
+
+                  tauw_diri(numero_bord_diri) = tauw_diri_tmp;
+                  utau_diri(numero_bord_diri) = sqrt(tauw_diri_tmp/rho);
+                  retau_diri(numero_bord_diri)= rho*utau_diri(numero_bord_diri)*hs2/mu;
+
+                  tauw_diri_m  += tauw_diri(numero_bord_diri);
+                  utau_diri_m  += utau_diri(numero_bord_diri);
+                  retau_diri_m += retau_diri(numero_bord_diri);
+
+                  numero_bord_diri+=1;
+                }
+            } // loop on boundaries
+
+          tauw_diri_m  =tauw_diri_m/nb_cl_diri;
+          retau_diri_m =retau_diri_m/nb_cl_diri;
+          utau_diri_m  =utau_diri_m/nb_cl_diri;
 
 //            prints
-              if (je_suis_maitre())
+          if (je_suis_maitre())
+            {
+              SFichier fic7("tauw.dat",ios::app);
+              SFichier fic8("reynolds_tau.dat",ios::app);
+              SFichier fic9("u_tau.dat",ios::app);
+              fic7 << tps << "   " << tauw_diri_m   << "   ";
+              fic8 << tps << "   " << retau_diri_m  << "   ";
+              fic9 << tps << "   " << utau_diri_m   << "   ";
+              for ( int num=0 ; num<nb_cl_diri ; num++)
                 {
-                  SFichier fic7("tauw.dat",ios::app);
-                  SFichier fic8("reynolds_tau.dat",ios::app);
-                  SFichier fic9("u_tau.dat",ios::app);
-                  fic7 << tps << "   " << tauw_diri_m   << "   ";
-                  fic8 << tps << "   " << retau_diri_m  << "   ";
-                  fic9 << tps << "   " << utau_diri_m   << "   ";
-                  for ( int num=0 ; num<nb_cl_diri ; num++)
-                    {
-                      fic7 << tauw_diri(num)   << "   ";
-                      fic8 << retau_diri(num)  << "   ";
-                      fic9 << utau_diri(num)   << "   ";
-                    }
-                  fic7 <<  finl;
-                  fic8 <<  finl;
-                  fic9 <<  finl;
-                  fic7.flush();
-                  fic8.flush();
-                  fic9.flush();
-                  fic7.close();
-                  fic8.close();
-                  fic9.close();
+                  fic7 << tauw_diri(num)   << "   ";
+                  fic8 << retau_diri(num)  << "   ";
+                  fic9 << utau_diri(num)   << "   ";
                 }
+              fic7 <<  finl;
+              fic8 <<  finl;
+              fic9 <<  finl;
+              fic7.flush();
+              fic8.flush();
+              fic9.flush();
+              fic7.close();
+              fic8.close();
+              fic9.close();
+            }
         } // end dirichlet
 
 //    robin
       if ( nb_cl_robin != 0 )
         {
-              DoubleVect tauw_robin(nb_cl_robin);
-              DoubleVect retau_robin(nb_cl_robin);
-              DoubleVect utau_robin(nb_cl_robin);
+          DoubleVect tauw_robin(nb_cl_robin);
+          DoubleVect retau_robin(nb_cl_robin);
+          DoubleVect utau_robin(nb_cl_robin);
 //            search of cl robin
 //            nb cl robin
-              double tauw_robin_tmp=0.;
-              int numero_bord_robin=0;
-              int nbfaces_bord_robin=0;
-              double rho = 0.;
-              double mu = 0.;
+          double tauw_robin_tmp=0.;
+          int numero_bord_robin=0;
+          int nbfaces_bord_robin=0;
+          double rho = 0.;
+          double mu = 0.;
 
-              if ( sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
-                {
-                    rho = fluide.masse_volumique().valeurs()(0,0);
-                }
-              if ( sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
-                {
-                    mu = fluide.viscosite_dynamique().valeurs()(0,0);
-                }
+          if ( sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
+            {
+              rho = fluide.masse_volumique().valeurs()(0,0);
+            }
+          if ( sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
+            {
+              mu = fluide.viscosite_dynamique().valeurs()(0,0);
+            }
 
 //            for each cl, calculation of the mean tauw
 //            loop on boundaries
-              for (int num_cl=0; num_cl<nb_cl; num_cl++)
+          for (int num_cl=0; num_cl<nb_cl; num_cl++)
+            {
+              tauw_robin_tmp=0.;
+              if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
+                rho = 0.;
+              if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
+                mu = 0.;
+              const Cond_lim& la_cl = les_cl[num_cl];
+              if (sub_type(Paroi_decalee_Robin,la_cl.valeur()))
                 {
-                  tauw_robin_tmp=0.;
-                  if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
-                    rho = 0.;
-                  if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
-                    mu = 0.;
-                  const Cond_lim& la_cl = les_cl[num_cl];
-                  if (sub_type(Paroi_decalee_Robin,la_cl.valeur()))
+                  const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
+                  nbfaces_bord_robin = la_front_dis.nb_faces();
+                  int ndeb = la_front_dis.num_premiere_face();
+                  int nfin = ndeb + nbfaces_bord_robin;
+                  if (Objet_U::dimension == 2 )
                     {
-                      const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
-                      nbfaces_bord_robin = la_front_dis.nb_faces();
-                      int ndeb = la_front_dis.num_premiere_face();
-                      int nfin = ndeb + nbfaces_bord_robin;
-                      if (Objet_U::dimension == 2 )
-                        {
 //                        loop on faces in 2D
-                          for (int fac=ndeb; fac<nfin ; fac++)
-                            {
-                              tauw_robin_tmp+=sqrt(tau_tan(fac,0)*tau_tan(fac,0));
-
-                              int elem = zone_VF.face_voisins(fac,0);
-                              if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
-                                rho+=fluide.masse_volumique().valeurs()[elem];
-                              if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
-                                mu+=fluide.viscosite_dynamique().valeurs()[elem];
-                            }
-                        }
-                      else
+                      for (int fac=ndeb; fac<nfin ; fac++)
                         {
-//                        loop on faces on 3D
-                          for (int fac=ndeb; fac<nfin ; fac++)
-                            {
-                              tauw_robin_tmp+=sqrt(tau_tan(fac,0)*tau_tan(fac,0)+tau_tan(fac,2)*tau_tan(fac,2));
+                          tauw_robin_tmp+=sqrt(tau_tan(fac,0)*tau_tan(fac,0));
 
-                              int elem = zone_VF.face_voisins(fac,0);
-                              if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
-                                rho+=fluide.masse_volumique().valeurs()[elem];
-                              if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
-                                mu+=fluide.viscosite_dynamique().valeurs()[elem];
-                            }
+                          int elem = zone_VF.face_voisins(fac,0);
+                          if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
+                            rho+=fluide.masse_volumique().valeurs()[elem];
+                          if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
+                            mu+=fluide.viscosite_dynamique().valeurs()[elem];
                         }
-                      tauw_robin_tmp=mp_sum(tauw_robin_tmp)/mp_sum(nbfaces_bord_robin);
-                      if(!(mon_equation.valeur().probleme().is_QC()))
-                        tauw_robin_tmp *= rho ;
-
-                      if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
-                        rho=mp_sum(rho)/mp_sum(nbfaces_bord_robin);
-                      if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
-                        mu=mp_sum(mu)/mp_sum(nbfaces_bord_robin);
-
-                      tauw_robin(numero_bord_robin) = tauw_robin_tmp;
-                      utau_robin(numero_bord_robin) = sqrt(tauw_robin_tmp/rho);
-                      retau_robin(numero_bord_robin)= rho*utau_robin(numero_bord_robin)*hs2/mu;
-
-                      tauw_robin_m  += tauw_robin(numero_bord_robin);
-                      utau_robin_m  += utau_robin(numero_bord_robin);
-                      retau_robin_m += retau_robin(numero_bord_robin);
-
-                      numero_bord_robin+=1;
                     }
-                } // loop on boundaries
+                  else
+                    {
+//                        loop on faces on 3D
+                      for (int fac=ndeb; fac<nfin ; fac++)
+                        {
+                          tauw_robin_tmp+=sqrt(tau_tan(fac,0)*tau_tan(fac,0)+tau_tan(fac,2)*tau_tan(fac,2));
 
-              tauw_robin_m  = tauw_robin_m/nb_cl_robin;
-              retau_robin_m = retau_robin_m/nb_cl_robin;
-              utau_robin_m  = utau_robin_m/nb_cl_robin;
+                          int elem = zone_VF.face_voisins(fac,0);
+                          if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
+                            rho+=fluide.masse_volumique().valeurs()[elem];
+                          if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
+                            mu+=fluide.viscosite_dynamique().valeurs()[elem];
+                        }
+                    }
+                  tauw_robin_tmp=mp_sum(tauw_robin_tmp)/mp_sum(nbfaces_bord_robin);
+                  if(!(mon_equation.valeur().probleme().is_QC()))
+                    tauw_robin_tmp *= rho ;
+
+                  if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
+                    rho=mp_sum(rho)/mp_sum(nbfaces_bord_robin);
+                  if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
+                    mu=mp_sum(mu)/mp_sum(nbfaces_bord_robin);
+
+                  tauw_robin(numero_bord_robin) = tauw_robin_tmp;
+                  utau_robin(numero_bord_robin) = sqrt(tauw_robin_tmp/rho);
+                  retau_robin(numero_bord_robin)= rho*utau_robin(numero_bord_robin)*hs2/mu;
+
+                  tauw_robin_m  += tauw_robin(numero_bord_robin);
+                  utau_robin_m  += utau_robin(numero_bord_robin);
+                  retau_robin_m += retau_robin(numero_bord_robin);
+
+                  numero_bord_robin+=1;
+                }
+            } // loop on boundaries
+
+          tauw_robin_m  = tauw_robin_m/nb_cl_robin;
+          retau_robin_m = retau_robin_m/nb_cl_robin;
+          utau_robin_m  = utau_robin_m/nb_cl_robin;
 
 //            prints
-              if (je_suis_maitre())
+          if (je_suis_maitre())
+            {
+              SFichier fic4("tauw_robin.dat",ios::app);
+              SFichier fic5("reynolds_tau_robin.dat",ios::app);
+              SFichier fic6("u_tau_robin.dat",ios::app);
+              fic4 << tps << "   " << tauw_robin_m   << "   ";
+              fic5 << tps << "   " << retau_robin_m  << "   ";
+              fic6 << tps << "   " << utau_robin_m   << "   ";
+              for ( int num=0 ; num<nb_cl_robin ; num++)
                 {
-                  SFichier fic4("tauw_robin.dat",ios::app);
-                  SFichier fic5("reynolds_tau_robin.dat",ios::app);
-                  SFichier fic6("u_tau_robin.dat",ios::app);
-                  fic4 << tps << "   " << tauw_robin_m   << "   ";
-                  fic5 << tps << "   " << retau_robin_m  << "   ";
-                  fic6 << tps << "   " << utau_robin_m   << "   ";
-                  for ( int num=0 ; num<nb_cl_robin ; num++)
-                    {
-                      fic4 << tauw_robin(num)   << "   ";
-                      fic5 << retau_robin(num)  << "   ";
-                      fic6 << utau_robin(num)   << "   ";
-                    }
-                  fic4 <<  finl;
-                  fic5 <<  finl;
-                  fic6 <<  finl;
-                  fic4.flush();
-                  fic5.flush();
-                  fic6.flush();
-                  fic4.close();
-                  fic5.close();
-                  fic6.close();
+                  fic4 << tauw_robin(num)   << "   ";
+                  fic5 << retau_robin(num)  << "   ";
+                  fic6 << utau_robin(num)   << "   ";
                 }
+              fic4 <<  finl;
+              fic5 <<  finl;
+              fic6 <<  finl;
+              fic4.flush();
+              fic5.flush();
+              fic6.flush();
+              fic4.close();
+              fic5.close();
+              fic6.close();
+            }
         } // end robin
 
 //// begin old

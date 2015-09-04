@@ -99,9 +99,9 @@ Entree& Boundary_field_uniform_keps_from_ud::readOn(Entree& is)
   double I=0.05;  //: initial turbulence intensity
 
   //in 3D we have
-  //k = 3/2*(u*I)^2 
-  //in 2D we have 
-  //k = (u*I)^2 
+  //k = 3/2*(u*I)^2
+  //in 2D we have
+  //k = (u*I)^2
   //with u = initial velocity magnitude
   //eps = Cmu^(3/4) * k^(3/2) * l^(-1)
   //where l is the turbulence length scale which can be expressed as 0.038 Dh

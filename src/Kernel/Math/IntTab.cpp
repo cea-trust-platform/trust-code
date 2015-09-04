@@ -43,18 +43,19 @@ Implemente_vect(IntTab);
 // Description: ecriture d'un tableau sequentiel
 //  (idem que IntVect::printOn() on ne sait pas quoi faire de pertinent
 //   pour un tableau distribue).
-Sortie & IntTab::printOn(Sortie & os) const
+Sortie& IntTab::printOn(Sortie& os) const
 {
   assert(CHECK_LINE_SIZE);
-  if (nproc() > 1 && get_md_vector().non_nul()) {
-    Cerr << "Error in IntTab::printOn: try to print a parallel vector" << finl;
-    exit();
-  }
+  if (nproc() > 1 && get_md_vector().non_nul())
+    {
+      Cerr << "Error in IntTab::printOn: try to print a parallel vector" << finl;
+      exit();
+    }
   os << nb_dim_ << finl;
   assert(dimensions_[0] == dimension_tot_0_);
   if (nb_dim_ > 0)
     os.put(dimensions_, nb_dim_, nb_dim_);
-  
+
   const int sz = size_array();
   os << sz << finl;
   const int l_size = line_size();
@@ -66,40 +67,46 @@ Sortie & IntTab::printOn(Sortie & os) const
 
 // Description: lecture d'un tableau sequentiel
 // Precondition: le md_vector_ doit etre nul.
-Entree & IntTab::readOn(Entree & is)  
+Entree& IntTab::readOn(Entree& is)
 {
-  if (get_md_vector().non_nul()) {
-    // Que veut-on faire si on lit dans un vecteur ayant deja une structure parallele ?
-    Cerr << "Error in IntTab::readOn: vector has a parallel structure" << finl;
-    exit();
-  }
-
-  is >> nb_dim_;
-  if (nb_dim_ < 1 || nb_dim_ > MAXDIM_TAB) {
-    Cerr << "Error in IntTab::readOn: wrong nb_dim_ = " << nb_dim_ << finl;
-    exit();
-  }
-  is.get(dimensions_, nb_dim_);
-  if (dimensions_[0] < 0) {
-    Cerr << "Error in IntTab::readOn: wrong dimension(0) = " << dimensions_[0] << finl;
-    exit(); 
-  }
-  int l_size = 1; 
-  for (int i = 1; i < nb_dim_; i++) {
-    if (dimensions_[i] < 0) {
-      Cerr << "Error in IntTab::readOn: wrong dimension(" << i << ") = " << dimensions_[i] << finl;
+  if (get_md_vector().non_nul())
+    {
+      // Que veut-on faire si on lit dans un vecteur ayant deja une structure parallele ?
+      Cerr << "Error in IntTab::readOn: vector has a parallel structure" << finl;
       exit();
     }
-    l_size *= dimensions_[i];
-  }
+
+  is >> nb_dim_;
+  if (nb_dim_ < 1 || nb_dim_ > MAXDIM_TAB)
+    {
+      Cerr << "Error in IntTab::readOn: wrong nb_dim_ = " << nb_dim_ << finl;
+      exit();
+    }
+  is.get(dimensions_, nb_dim_);
+  if (dimensions_[0] < 0)
+    {
+      Cerr << "Error in IntTab::readOn: wrong dimension(0) = " << dimensions_[0] << finl;
+      exit();
+    }
+  int l_size = 1;
+  for (int i = 1; i < nb_dim_; i++)
+    {
+      if (dimensions_[i] < 0)
+        {
+          Cerr << "Error in IntTab::readOn: wrong dimension(" << i << ") = " << dimensions_[i] << finl;
+          exit();
+        }
+      l_size *= dimensions_[i];
+    }
   dimension_tot_0_ = dimensions_[0];
   IntVect::readOn(is);
   set_line_size_(l_size);
-  if (dimension_tot_0_ * l_size != size_array()) {
-    Cerr << "Error in IntTab::readOn: wrong size_array " << size_array() 
-         << ", expected " << dimension_tot_0_ * l_size << finl;
-    exit();
-  }
+  if (dimension_tot_0_ * l_size != size_array())
+    {
+      Cerr << "Error in IntTab::readOn: wrong size_array " << size_array()
+           << ", expected " << dimension_tot_0_ * l_size << finl;
+      exit();
+    }
   assert(CHECK_LINE_SIZE);
   return is;
 }
@@ -119,20 +126,20 @@ IntTab::IntTab() :
   dimensions_[0] = 0;
 }
 
-IntTab::IntTab(const IntTab & dbt) :
+IntTab::IntTab(const IntTab& dbt) :
   IntVect(dbt),
   nb_dim_(dbt.nb_dim_),
   dimension_tot_0_(dbt.dimension_tot_0_)
-{  
+{
   for (int i = 0; i < MAXDIM_TAB; i++)
     dimensions_[i] = dbt.dimensions_[i];
 }
 #define PARAM_X
 #define PARAM_X2
 
-IntTab::IntTab(int n PARAM_X) 
-  : IntVect(n PARAM_X2), 
-    nb_dim_(1), 
+IntTab::IntTab(int n PARAM_X)
+  : IntVect(n PARAM_X2),
+    nb_dim_(1),
     dimension_tot_0_(n)
 {
   init_dimensions(dimensions_);
@@ -140,16 +147,16 @@ IntTab::IntTab(int n PARAM_X)
 }
 
 IntTab::IntTab(int n1, int n2 PARAM_X)
-  : IntVect(n1*n2 PARAM_X2), 
+  : IntVect(n1*n2 PARAM_X2),
     nb_dim_(2),
     dimension_tot_0_(n1)
 {
   assert(n1 >= 0 && n2 >= 0);
   if (n1*n2<0)
-  {
-     Cerr << "n1*n2 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n1 << " and n2=" << n2 << finl;
-     exit(); 
-  }
+    {
+      Cerr << "n1*n2 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n1 << " and n2=" << n2 << finl;
+      exit();
+    }
   init_dimensions(dimensions_);
   dimensions_[0]=n1;
   dimensions_[1]=n2;
@@ -157,16 +164,16 @@ IntTab::IntTab(int n1, int n2 PARAM_X)
 }
 
 IntTab::IntTab(int n1, int n2, int n3 PARAM_X)
-  : IntVect(n1*n2*n3 PARAM_X2), 
-    nb_dim_(3), 
+  : IntVect(n1*n2*n3 PARAM_X2),
+    nb_dim_(3),
     dimension_tot_0_(n1)
 {
   assert(n1 >= 0 && n2 >= 0 && n3 >= 0);
   if (n1*n2*n3<0)
-  {
-     Cerr << "n1*n2*n3 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n1 << " and n2=" << n2 << " and n3=" << n3 << finl;
-     exit(); 
-  }
+    {
+      Cerr << "n1*n2*n3 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n1 << " and n2=" << n2 << " and n3=" << n3 << finl;
+      exit();
+    }
   init_dimensions(dimensions_);
   dimensions_[0]=n1;
   dimensions_[1]=n2;
@@ -175,16 +182,16 @@ IntTab::IntTab(int n1, int n2, int n3 PARAM_X)
 }
 
 IntTab::IntTab(int n1, int n2, int n3, int n4 PARAM_X)
-  : IntVect(n1*n2*n3*n4 PARAM_X2), 
-    nb_dim_(4), 
+  : IntVect(n1*n2*n3*n4 PARAM_X2),
+    nb_dim_(4),
     dimension_tot_0_(n1)
 {
   assert(n1 >= 0 && n2 >= 0 && n3 >= 0 && n4 >= 0);
   if (n1*n2*n3*n4<0)
-  {
-     Cerr << "n1*n2*n3*n4 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n1 << " and n2=" << n2 << " and n3=" << n3 << " and n3=" << n3 << finl;
-     exit(); 
-  }
+    {
+      Cerr << "n1*n2*n3*n4 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n1 << " and n2=" << n2 << " and n3=" << n3 << " and n3=" << n3 << finl;
+      exit();
+    }
   init_dimensions(dimensions_);
   dimensions_[0]=n1;
   dimensions_[1]=n2;
@@ -201,12 +208,12 @@ IntTab::IntTab(int n1, int n2, int n3, int n4 PARAM_X)
 //  une ref sur ce Vect).
 // Precondition: le vecteur v doit vraiment etre de type Vect !
 //   (sinon utiliser IntTab::ref(const IntTab &)
-void IntTab::ref(const IntVect & v)
+void IntTab::ref(const IntVect& v)
 {
   assert(v.get_info() == IntVect::info());
   IntVect::ref(v);
   const int l = v.line_size();
-  // Attention: 
+  // Attention:
   //  En prenant la ref, on est oblige de conserver l'attribut line_size
   //  du Vect (sinon echange_espace_virtuel ne fonctionnera pas car
   //  on n'aura pas le bon facteur multiplicatif des items geometriques)
@@ -215,18 +222,24 @@ void IntTab::ref(const IntVect & v)
   //  dimensions > 1.
   //  On peut le faire a condition de laisser tomber le md_vector_ en
   //  faisant  tab.ref_array(v) au lieu de  tab.ref(v)
-  if (l == 1) {
-    nb_dim_ = 1;
-  } else {
-    nb_dim_ = 2;
-    dimensions_[1] = l;
-  }
-  if (v.size_reelle_ok()) {
-    int sz = v.size_reelle();
-    dimensions_[0] = sz / l;
-  } else {
-    dimensions_[0] = -1;
-  }
+  if (l == 1)
+    {
+      nb_dim_ = 1;
+    }
+  else
+    {
+      nb_dim_ = 2;
+      dimensions_[1] = l;
+    }
+  if (v.size_reelle_ok())
+    {
+      int sz = v.size_reelle();
+      dimensions_[0] = sz / l;
+    }
+  else
+    {
+      dimensions_[0] = -1;
+    }
   dimension_tot_0_ = size_array() / l;
   assert(CHECK_LINE_SIZE);
 }
@@ -234,7 +247,7 @@ void IntTab::ref(const IntVect & v)
 // Description: fait pointer le tableau sur le tableau t
 //  en recuperant la structure parallele. Attention,
 //  on fige le tableau qui ne pourra plus etre resize
-void IntTab::ref(const IntTab & src)
+void IntTab::ref(const IntTab& src)
 {
   IntVect::ref(src);
   nb_dim_ = src.nb_dim_;
@@ -258,7 +271,7 @@ void IntTab::ref_data(int* ptr, int new_size)
 //  (cree un tableau monodimensionnel sans structure parallele)
 //  Attention, le tableau source et destination sont figes (resize interdit)
 //  (voir ArrOfInt::
-void IntTab::ref_array(ArrOfInt & src, int start, int sz)
+void IntTab::ref_array(ArrOfInt& src, int start, int sz)
 {
   IntVect::ref_array(src, start, sz);
   assert(!get_md_vector().non_nul() && size_reelle() == size_array());
@@ -272,7 +285,7 @@ void IntTab::ref_array(ArrOfInt & src, int start, int sz)
 //   a recuperer (une ligne = toutes les valeurs tab(i,j,k,...) pour un i donne).
 //   Le nombre de dimensions du tableau est le meme que pour t,
 //   les dimension(i) pour i>=1 sont les memes et dimension(0) = nb_lines.
-void IntTab::ref_tab(IntTab & t, int start_line, int nb_lines)
+void IntTab::ref_tab(IntTab& t, int start_line, int nb_lines)
 {
   if (nb_lines < 0)
     nb_lines = t.dimension_tot_0_ - start_line;
@@ -335,11 +348,11 @@ void IntTab::resize(int n, int n2, Array_base::Resize_Options opt)
   set_line_size_(n2);
   int new_size = n * n2;
   if (new_size<0)
-  {
-     Cerr << "n1*n2 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n << " and n2=" << n2 << finl;
-     exit(); 
-  }
-  
+    {
+      Cerr << "n1*n2 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n << " and n2=" << n2 << finl;
+      exit();
+    }
+
   IntVect::resize_vect_(new_size, opt);
   nb_dim_ = 2;
   dimensions_[0] = dimension_tot_0_ = n;
@@ -353,11 +366,11 @@ void IntTab::resize(int n, int n2, int n3, Array_base::Resize_Options opt)
   set_line_size_(n2 * n3);
   int new_size = n * n2 * n3;
   if (new_size<0)
-  {
-     Cerr << "n1*n2*n3 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n << " and n2=" << n2 << " and n3=" << n3 << finl;
-     exit(); 
-  }
-  
+    {
+      Cerr << "n1*n2*n3 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n << " and n2=" << n2 << " and n3=" << n3 << finl;
+      exit();
+    }
+
   IntVect::resize_vect_(new_size, opt);
   nb_dim_ = 3;
   dimensions_[0] = dimension_tot_0_ = n;
@@ -372,11 +385,11 @@ void IntTab::resize(int n, int n2, int n3, int n4, Array_base::Resize_Options op
   set_line_size_(n2 * n3 * n4);
   int new_size = n * n2 * n3 * n4;
   if (new_size<0)
-  {
-     Cerr << "n1*n2*n3*n4 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n << " and n2=" << n2 << " and n3=" << n3 << " and n4=" << n4 << finl;
-     exit(); 
-  }
-  
+    {
+      Cerr << "n1*n2*n3*n4 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n << " and n2=" << n2 << " and n3=" << n3 << " and n4=" << n4 << finl;
+      exit();
+    }
+
   IntVect::resize_vect_(new_size, opt);
   nb_dim_ = 4;
   dimensions_[0] = dimension_tot_0_ = n;
@@ -387,28 +400,31 @@ void IntTab::resize(int n, int n2, int n3, int n4, Array_base::Resize_Options op
 }
 
 // Description: redimensionne le tableau (nb_dim_ sera egal a tailles.size_array()
-//   et dimension(i) a tailles[i]. 
+//   et dimension(i) a tailles[i].
 // Precondition: identiques a IntVect::resize_vect_()
-void IntTab::resize(const ArrOfInt & tailles, Array_base::Resize_Options opt)
+void IntTab::resize(const ArrOfInt& tailles, Array_base::Resize_Options opt)
 {
   nb_dim_ = tailles.size_array();
-  if (nb_dim_ <= 0 || nb_dim_ > MAXDIM_TAB) {
-    Cerr << "Internal error in IntTab::resize(const ArrOfInt & tailles, ...) \n"
-         << " wrong dimensions number " << nb_dim_ << finl;
-    exit();
-  }
-  int l_size = 1;
-  for (int i = 0; i < nb_dim_; i++) {
-    const int n = tailles[i];
-    dimensions_[i] = n;
-    if (i > 0)
-      l_size *= n;
-    if (n < 0) {
+  if (nb_dim_ <= 0 || nb_dim_ > MAXDIM_TAB)
+    {
       Cerr << "Internal error in IntTab::resize(const ArrOfInt & tailles, ...) \n"
-           << " wrong dimensions: " << tailles << finl;
+           << " wrong dimensions number " << nb_dim_ << finl;
       exit();
     }
-  }
+  int l_size = 1;
+  for (int i = 0; i < nb_dim_; i++)
+    {
+      const int n = tailles[i];
+      dimensions_[i] = n;
+      if (i > 0)
+        l_size *= n;
+      if (n < 0)
+        {
+          Cerr << "Internal error in IntTab::resize(const ArrOfInt & tailles, ...) \n"
+               << " wrong dimensions: " << tailles << finl;
+          exit();
+        }
+    }
   dimension_tot_0_ = dimensions_[0];
   set_line_size_(l_size);
   resize_vect_(dimensions_[0] * l_size, opt);
@@ -417,7 +433,7 @@ void IntTab::resize(const ArrOfInt & tailles, Array_base::Resize_Options opt)
 
 // Description: copie la structure et les valeurs du tableau src
 //   Restrictions et preconditions identiques a IntVect::operator=(const IntVect & v)
-IntTab & IntTab::operator=(const IntTab & src)
+IntTab& IntTab::operator=(const IntTab& src)
 {
   copy(src);
   return *this;
@@ -426,93 +442,111 @@ IntTab & IntTab::operator=(const IntTab & src)
 // Description: copie la structure et les valeurs de src.
 //  Attention: appel invalide si src est un type derive de Vect
 //  (sinon quoi faire, un tableau unidimensionnel, ou une copie de la structure ?)
-IntTab & IntTab::operator=(const IntVect & src)
+IntTab& IntTab::operator=(const IntVect& src)
 {
   assert(src.get_info() == IntVect::info());
   IntVect::copy_(src);
   // Idem que dans ref(IntVect) pour le nombre de dimensions du tableau cree
   const int l = src.line_size();
-  if (l == 1) {
-    nb_dim_ = 1;
-  } else {
-    nb_dim_ = 2;
-    dimensions_[1] = l;
-  }
-  if (src.size_reelle_ok()) {
-    int sz = src.size_reelle();
-    dimensions_[0] = sz / l;
-    assert(sz % l == 0);
-  } else {
-    dimensions_[0] = -1;
-  }
+  if (l == 1)
+    {
+      nb_dim_ = 1;
+    }
+  else
+    {
+      nb_dim_ = 2;
+      dimensions_[1] = l;
+    }
+  if (src.size_reelle_ok())
+    {
+      int sz = src.size_reelle();
+      dimensions_[0] = sz / l;
+      assert(sz % l == 0);
+    }
+  else
+    {
+      dimensions_[0] = -1;
+    }
   dimension_tot_0_ = size_array() / l;
   assert(CHECK_LINE_SIZE);
   return *this;
 }
 
-IntTab & IntTab::operator=(int d)
+IntTab& IntTab::operator=(int d)
 {
   IntVect::operator=(d);
   return *this;
 }
 
-void IntTab::copy(const IntTab & src, Array_base::Resize_Options opt)
+void IntTab::copy(const IntTab& src, Array_base::Resize_Options opt)
 {
-  if (&src != this) {
-    IntVect::copy_(src, opt);
-    nb_dim_ = src.nb_dim_;
-    for (int i = 0; i < MAXDIM_TAB; i++)
-      dimensions_[i] = src.dimensions_[i];
-    dimension_tot_0_ = src.dimension_tot_0_;
-    assert(CHECK_LINE_SIZE);
-  }
+  if (&src != this)
+    {
+      IntVect::copy_(src, opt);
+      nb_dim_ = src.nb_dim_;
+      for (int i = 0; i < MAXDIM_TAB; i++)
+        dimensions_[i] = src.dimensions_[i];
+      dimension_tot_0_ = src.dimension_tot_0_;
+      assert(CHECK_LINE_SIZE);
+    }
 }
 
-int & IntTab::operator()(const ArrOfInt & indice)
+int& IntTab::operator()(const ArrOfInt& indice)
 {
   assert(indice.size_array() == nb_dim_);
 #if MAXDIM_TAB != 4
 #error Mettre a jour le code pour MAXDIM_TAB ici
 #endif
-  switch(nb_dim_) {
-  case 1: return operator()(indice[0]);
-  case 2: return operator()(indice[0], indice[1]);
-  case 3: return operator()(indice[0], indice[1], indice[2]);
-  default: return operator()(indice[0], indice[1], indice[2], indice[3]);
-  }
+  switch(nb_dim_)
+    {
+    case 1:
+      return operator()(indice[0]);
+    case 2:
+      return operator()(indice[0], indice[1]);
+    case 3:
+      return operator()(indice[0], indice[1], indice[2]);
+    default:
+      return operator()(indice[0], indice[1], indice[2], indice[3]);
+    }
 }
-int IntTab::operator()(const ArrOfInt & indice) const
+int IntTab::operator()(const ArrOfInt& indice) const
 {
   assert(indice.size_array() == nb_dim_);
 #if MAXDIM_TAB != 4
 #error Mettre a jour le code pour MAXDIM_TAB ici
 #endif
-  switch(nb_dim_) {
-  case 1: return operator()(indice[0]);
-  case 2: return operator()(indice[0], indice[1]);
-  case 3: return operator()(indice[0], indice[1], indice[2]);
-  default: return operator()(indice[0], indice[1], indice[2], indice[3]);
-  }
+  switch(nb_dim_)
+    {
+    case 1:
+      return operator()(indice[0]);
+    case 2:
+      return operator()(indice[0], indice[1]);
+    case 3:
+      return operator()(indice[0], indice[1], indice[2]);
+    default:
+      return operator()(indice[0], indice[1], indice[2], indice[3]);
+    }
 }
 
 // Description: associe le md_vector au vecteur (voir IntVect::set_md_vector())
 //  dimension(0) sera initialise a md_vector...get_nb_items_reels().
 // Precondition: en plus des preconditions de IntVect::set_md_vector(),
 //  dimension_tot(0) doit etre egal a get_nb_items_tot() du md_vector.
-void IntTab::set_md_vector(const MD_Vector & md_vector)
+void IntTab::set_md_vector(const MD_Vector& md_vector)
 {
   int dim0 = dimension_tot_0_;
-  if (md_vector.non_nul()) {
-    // renvoie -1 si l'appel et invalide:
-    dim0 = md_vector.valeur().get_nb_items_reels();
-  }
+  if (md_vector.non_nul())
+    {
+      // renvoie -1 si l'appel et invalide:
+      dim0 = md_vector.valeur().get_nb_items_reels();
+    }
   dimensions_[0] = dim0;
   assert(CHECK_LINE_SIZE);
   // a appeler meme pour un md_vector nul (pour remettre size_reelle_):
-  IntVect::set_md_vector(md_vector); 
+  IntVect::set_md_vector(md_vector);
 }
 
-void IntTab::ecrit(Sortie & os) const
+void IntTab::ecrit(Sortie& os) const
 {
   os << nb_dim_ << finl;
   if (nb_dim_ > 0)
@@ -524,29 +558,30 @@ void IntTab::ecrit(Sortie & os) const
   IntVect::ecrit(os);
 }
 
-void IntTab::jump(Entree & is)
+void IntTab::jump(Entree& is)
 {
-   IntTab::lit(is, 0 /* Do not resize&read the array */);
+  IntTab::lit(is, 0 /* Do not resize&read the array */);
 }
 
 // Description: lecture d'un tableau pour reprise de calcul. On lit les valeurs "raw".
-//  Attention, si le tableau n'est pas vide, il doit deja avoir la bonne 
+//  Attention, si le tableau n'est pas vide, il doit deja avoir la bonne
 //  taille et la bonne structure, sinon erreur !
 // Parameter resize_and_read if the array is sized AND read (by default, yes)
-void IntTab::lit(Entree & is, int resize_and_read)
+void IntTab::lit(Entree& is, int resize_and_read)
 {
   ArrOfInt tmp;
   is >> tmp;
-  int ok = 1;        
+  int ok = 1;
   if (tmp.size_array() != nb_dim_)
     ok = 0;
-  if (ok) {
-    if (size_reelle_ok() && dimension(0) != tmp[0])
-      ok = 0;
-    for (int i = 1; i < nb_dim_; i++)
-      if (dimension(i) != tmp[i])
+  if (ok)
+    {
+      if (size_reelle_ok() && dimension(0) != tmp[0])
         ok = 0;
-  }
+      for (int i = 1; i < nb_dim_; i++)
+        if (dimension(i) != tmp[i])
+          ok = 0;
+    }
   is >> tmp;
   if (ok && tmp.size_array() != nb_dim_)
     ok = 0;
@@ -554,19 +589,23 @@ void IntTab::lit(Entree & is, int resize_and_read)
     for (int i = 0; i < nb_dim_; i++)
       if (dimension_tot(i) != tmp[i])
         ok = 0;
-  if (resize_and_read)	
-  {
-     if (size_array() == 0 && (!get_md_vector().non_nul())) {
-       resize(tmp, NOCOPY_NOINIT);
-     } else {
-       if (!ok) {
-	 // Si on cherche a relire un tableau de taille inconnue, le tableau doit
-	 // etre reset() a l'entree. On n'aura pas la structure parallele du tableau !
-	 Cerr << "Error in IntTab::lit: array has wrong dimensions" << finl;
-	 exit();
-       }
-     }
-  }
+  if (resize_and_read)
+    {
+      if (size_array() == 0 && (!get_md_vector().non_nul()))
+        {
+          resize(tmp, NOCOPY_NOINIT);
+        }
+      else
+        {
+          if (!ok)
+            {
+              // Si on cherche a relire un tableau de taille inconnue, le tableau doit
+              // etre reset() a l'entree. On n'aura pas la structure parallele du tableau !
+              Cerr << "Error in IntTab::lit: array has wrong dimensions" << finl;
+              exit();
+            }
+        }
+    }
   IntVect::lit(is,resize_and_read);
 }
 

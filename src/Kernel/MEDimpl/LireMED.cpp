@@ -1077,12 +1077,12 @@ int medliregeom(Nom& nom_fic,const Nom& nom_dom,const Nom& nom_dom_trio,int& dim
       }
     if ((list_group.size())&& (Process::je_suis_maitre())&&(nom_dom_trio!=Nom()))
       {
-	// If several lire_med following and in parallel, so possibility that a field reads the ssz.geo of another mesh => Error
-	// That is why ssz.geo and ssz_par.geo are renamed
+        // If several lire_med following and in parallel, so possibility that a field reads the ssz.geo of another mesh => Error
+        // That is why ssz.geo and ssz_par.geo are renamed
         // SFichier jdd("ssz.geo");
         // SFichier jdd_par("ssz_par.geo");
         SFichier jdd(nom_dom_trio + "_ssz.geo");
-	SFichier jdd_old("ssz.geo"); // je garde celui ci pour les anciens jdds
+        SFichier jdd_old("ssz.geo"); // je garde celui ci pour les anciens jdds
         SFichier jdd_par(nom_dom_trio + "_ssz_par.geo");
         SFichier jdd_par_old("ssz_par.geo");
 
@@ -1115,8 +1115,8 @@ int medliregeom(Nom& nom_fic,const Nom& nom_dom,const Nom& nom_dom_trio,int& dim
                 jdd<<"export Sous_Zone "<<toto<<finl;;
                 jdd<<"Associer "<<toto <<" "<<nom_dom_trio<<finl;
                 jdd<<"Lire "<<toto <<" { "<<finl<<"fichier "<<file_ssz<<" \n }"<<finl;
-		jdd_old<<"export Sous_Zone "<<toto<<finl;;
-		jdd_old<<"Associer "<<toto <<" "<<nom_dom_trio<<finl;
+                jdd_old<<"export Sous_Zone "<<toto<<finl;;
+                jdd_old<<"Associer "<<toto <<" "<<nom_dom_trio<<finl;
                 jdd_old<<"Lire "<<toto <<" { "<<finl<<"fichier "<<file_ssz<<" \n }"<<finl;
                 jdd_par<<"export Sous_Zone "<<toto<<finl;;
                 jdd_par<<"Associer "<<toto <<" "<<nom_dom_trio<<finl;

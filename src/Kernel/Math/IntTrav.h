@@ -29,18 +29,18 @@
 #include <IntTab.h>
 
 //////////////////////////////////////////////////////////////////////////////
-// 
-// .DESCRIPTION 
+//
+// .DESCRIPTION
 //            Tableau de travail a n entrees pour n<= 4
 //      C'est un IntTab avec allocation dans un pool de memoire gere par
 //      la_memoire. L'allocation initiale est realisee avec alloc_temp_storage
-// .SECTION voir aussi 
+// .SECTION voir aussi
 //     IntTab Memoire
 //////////////////////////////////////////////////////////////////////////////
-class IntTrav : public IntTab 
+class IntTrav : public IntTab
 {
   Declare_instanciable_sans_constructeur_ni_destructeur(IntTrav);
-public: 
+public:
   IntTrav();
   IntTrav(int n);
   IntTrav(int n1, int n2);
@@ -53,9 +53,9 @@ public:
   // Constructeur par copie
   IntTrav(const IntTrav&); // ATTENTION: non standard, voir la description !!!
   // Operateurs copie
-  IntTrav& operator=(const IntTrav &);
-  IntTrav& operator=(const IntTab  &);
-  IntTrav& operator=(const IntVect  &);
+  IntTrav& operator=(const IntTrav&);
+  IntTrav& operator=(const IntTab&);
+  IntTrav& operator=(const IntVect&);
   IntTrav& operator=(int d);
 
 };

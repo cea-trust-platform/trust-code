@@ -373,8 +373,8 @@ int Transport_K_Eps_base::controler_K_Eps()
               Cerr << "k~" << (dimension==2?"":"3/2*") << "(t*U)^2 (t turbulence rate, U mean velocity) ";
               Cerr << "and eps~Cmu^0.75 k^1.5/l with l turbulent length scale and Cmu a k-eps model parameter whose value is typically given as 0.09." << finl;
               Cerr << "See explanations here: http://www.esi-cfd.com/esi-users/turb_parameters/" << finl;
-	      Cerr << "Remark : by giving the velocity field (u) and the hydraulic diameter (d), by using boundary_field_uniform_keps_from_ud and field_uniform_keps_from_ud,  "<<finl;
-	      Cerr << "respectively for boudnaries and initial conditions, TRUST will determine automatically values for k and eps."<<finl;
+              Cerr << "Remark : by giving the velocity field (u) and the hydraulic diameter (d), by using boundary_field_uniform_keps_from_ud and field_uniform_keps_from_ud,  "<<finl;
+              Cerr << "respectively for boudnaries and initial conditions, TRUST will determine automatically values for k and eps."<<finl;
               if (probleme().is_QC()==1)
                 {
                   Cerr << "Please, don't forget (sorry for this TRUST syntax weakness) that when using Quasi-Compressible module" << finl;

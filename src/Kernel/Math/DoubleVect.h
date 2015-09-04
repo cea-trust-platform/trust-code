@@ -29,7 +29,7 @@
 
 #include <ArrOfDouble.h>
 #include <MD_Vector.h>
- 
+
 // A nettoyer: les includes suivants ne sont pas necessaires a ce fichier
 //  mais a d'autres qui ne font pas les include
 #include <Vect.h>
@@ -51,14 +51,14 @@ public:
   DoubleVect& operator=(const DoubleVect&);
   DoubleVect& operator=(double);
 
-  virtual void ref(const DoubleVect &);
-  virtual void ref_data(double* ptr, int new_size); 
-  virtual void ref_array(ArrOfDouble &, int start = 0, int sz = -1);
+  virtual void ref(const DoubleVect&);
+  virtual void ref_data(double* ptr, int new_size);
+  virtual void ref_array(ArrOfDouble&, int start = 0, int sz = -1);
 
   inline void resize(int, Array_base::Resize_Options opt = COPY_INIT);
   virtual void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT);
-  void copy(const ArrOfDouble &, Array_base::Resize_Options opt = COPY_INIT);
-  void copy(const DoubleVect &, Array_base::Resize_Options opt = COPY_INIT);
+  void copy(const ArrOfDouble&, Array_base::Resize_Options opt = COPY_INIT);
+  void copy(const DoubleVect&, Array_base::Resize_Options opt = COPY_INIT);
 
   // par defaut: min et max sur items reels (compat. 1.5.6):
   double local_max_vect(Mp_vect_options opt = VECT_REAL_ITEMS) const;
@@ -77,7 +77,7 @@ public:
   void operator-=(const double);
   void operator*= (const double);
 
-  void operator/= (const double); 
+  void operator/= (const double);
   // Options par defaut choisies pour compatibilite avec la version precedente
   // Attention: il y avait un echange_espace_virtuel avant, ce n'est pas strictement equivalent
   void abs(Mp_vect_options opt = VECT_ALL_ITEMS);
@@ -86,7 +86,7 @@ public:
   void ajoute(double alpha, const DoubleVect& y, Mp_vect_options opt = VECT_ALL_ITEMS); // x+=alpha*y
   void ajoute_sans_ech_esp_virt(double alpha, const DoubleVect& y, Mp_vect_options opt = VECT_REAL_ITEMS); // x+=alpha*y sans echange_espace_virtuel
   void ajoute_produit_scalaire(double alpha, const DoubleVect&, const DoubleVect&, Mp_vect_options opt = VECT_ALL_ITEMS); // z+=alpha*x*y;
-  void ajoute_carre(double alpha, const DoubleVect& y, Mp_vect_options opt = VECT_ALL_ITEMS); 
+  void ajoute_carre(double alpha, const DoubleVect& y, Mp_vect_options opt = VECT_ALL_ITEMS);
 
   inline int size() const;
   inline int size_totale() const;
@@ -95,18 +95,21 @@ public:
   inline int line_size() const;
 
   virtual void echange_espace_virtuel();
-  
-  virtual const MD_Vector & get_md_vector() const { return md_vector_; }
-  virtual void              set_md_vector(const MD_Vector &);
-  virtual void jump(Entree &);
-  virtual void lit(Entree &, int resize_and_read=1);
-  virtual void ecrit(Sortie &) const;
+
+  virtual const MD_Vector& get_md_vector() const
+  {
+    return md_vector_;
+  }
+  virtual void              set_md_vector(const MD_Vector&);
+  virtual void jump(Entree&);
+  virtual void lit(Entree&, int resize_and_read=1);
+  virtual void ecrit(Sortie&) const;
 
 protected:
   inline void set_line_size_(int n);
   inline void resize_vect_(int n, Array_base::Resize_Options opt = COPY_INIT);
-  void copy_(const DoubleVect & v, Array_base::Resize_Options opt = COPY_INIT);
-  void attach_vect(const DoubleVect & v, int start, int size = -1);
+  void copy_(const DoubleVect& v, Array_base::Resize_Options opt = COPY_INIT);
+  void attach_vect(const DoubleVect& v, int start, int size = -1);
   //void detach_vect(); // Not used in protected mode => Need in public mode => So method moved
 private:
   // Un DoubleVect est un ArrOfDouble qui possede eventuellement une structure de tableau
@@ -179,7 +182,7 @@ inline void DoubleVect::set_line_size_(int n)
   line_size_ = n;
 }
 
-// Description: Change la taille du vecteur (identique a resize_array() 
+// Description: Change la taille du vecteur (identique a resize_array()
 //  pour le traitement des anciennes valeurs et de nouvelles cases).
 //  Attention: Cette methode n'est pas virtuelle, et afin d'eviter d'amener
 //  un DoubleTab dans un etat invalide, l'appel est interdit si l'objet
@@ -203,15 +206,15 @@ inline void DoubleVect::resize(int n, Array_base::Resize_Options opt)
 inline void DoubleVect::resize_vect_(int n, Array_base::Resize_Options opt)
 {
   // Note B.M.: j'aurais voulu interdire completement resize des qu'on a un descripteur
-  //  mais il y en a partout dans le code (on resize les tableaux alors qu'ils ont deja 
+  //  mais il y en a partout dans le code (on resize les tableaux alors qu'ils ont deja
   //  la bonne taille). Donc j'autorise si la taille ne change pas.
   //assert(!md_vector_.non_nul() || n == size_array());
   // PL: 1.7.0 is now strict about this point:
-  if (md_vector_.non_nul()) 
-  { 
-     Cerr << "Resize of a distributed array is forbidden!" << finl;
-     exit();
-  }
+  if (md_vector_.non_nul())
+    {
+      Cerr << "Resize of a distributed array is forbidden!" << finl;
+      exit();
+    }
   assert(n == 0 || (n > 0 && line_size_ > 0 && n % line_size_ == 0));
   resize_array_(n, opt);
   size_reelle_ = n;
@@ -222,28 +225,28 @@ inline void DoubleVect::resize_vect_(int n, Array_base::Resize_Options opt)
 
 //int operator<(const DoubleVect&, const DoubleVect&);
 //int operator>(const DoubleVect& x, const DoubleVect& y);
-//int operator<=(const DoubleVect& x, const DoubleVect& y); 
+//int operator<=(const DoubleVect& x, const DoubleVect& y);
 //int operator>=(const DoubleVect& x, const DoubleVect& y);
 
 int operator==(const DoubleVect& x, const DoubleVect& y);
 int operator!=(const DoubleVect& x, const DoubleVect& y);
-   
+
 // Arithmetique :
 //DoubleVect operator+(const DoubleVect&, const double);
 //DoubleVect operator-(const DoubleVect&, const double);
 //DoubleVect operator-(const DoubleVect&);
 
 //void ordonne(DoubleVect&);
-   
+
 //indice du min :
 //int imin(const DoubleVect&) ;
-   
+
 //indice du max
 //int imax(const DoubleVect&) ;
-   
+
 //valeur min
 //double min(const DoubleVect&) ;
-   
+
 //valeur max
 //double max(const DoubleVect&) ;
 
@@ -253,48 +256,48 @@ int operator!=(const DoubleVect& x, const DoubleVect& y);
 //DoubleVect operator / (const DoubleVect&, double);
 //DoubleVect operator * (double, const DoubleVect&);
 
-double local_imax_vect(const DoubleVect &, Mp_vect_options opt = VECT_REAL_ITEMS);
-double local_max_vect(const DoubleVect &, Mp_vect_options opt = VECT_REAL_ITEMS);
-double local_imin_vect(const DoubleVect &, Mp_vect_options opt = VECT_REAL_ITEMS);
-double local_min_vect(const DoubleVect &, Mp_vect_options opt = VECT_REAL_ITEMS);
-double mp_max_vect(const DoubleVect &, Mp_vect_options opt = VECT_REAL_ITEMS);
-double mp_min_vect(const DoubleVect &, Mp_vect_options opt = VECT_REAL_ITEMS);
+double local_imax_vect(const DoubleVect&, Mp_vect_options opt = VECT_REAL_ITEMS);
+double local_max_vect(const DoubleVect&, Mp_vect_options opt = VECT_REAL_ITEMS);
+double local_imin_vect(const DoubleVect&, Mp_vect_options opt = VECT_REAL_ITEMS);
+double local_min_vect(const DoubleVect&, Mp_vect_options opt = VECT_REAL_ITEMS);
+double mp_max_vect(const DoubleVect&, Mp_vect_options opt = VECT_REAL_ITEMS);
+double mp_min_vect(const DoubleVect&, Mp_vect_options opt = VECT_REAL_ITEMS);
 //double mp_somme_vect_local(const DoubleVect&);
 double mp_somme_vect(const DoubleVect&);
-double local_max_abs_vect(const DoubleVect &, Mp_vect_options opt = VECT_REAL_ITEMS);
-double local_min_abs_vect(const DoubleVect &, Mp_vect_options opt = VECT_REAL_ITEMS);
-double mp_max_abs_vect(const DoubleVect &, Mp_vect_options opt = VECT_REAL_ITEMS);
-double mp_min_abs_vect(const DoubleVect &, Mp_vect_options opt = VECT_REAL_ITEMS);
+double local_max_abs_vect(const DoubleVect&, Mp_vect_options opt = VECT_REAL_ITEMS);
+double local_min_abs_vect(const DoubleVect&, Mp_vect_options opt = VECT_REAL_ITEMS);
+double mp_max_abs_vect(const DoubleVect&, Mp_vect_options opt = VECT_REAL_ITEMS);
+double mp_min_abs_vect(const DoubleVect&, Mp_vect_options opt = VECT_REAL_ITEMS);
 
 // Valeurs par defaut choisies pour compatibilite approximative avec V1.5.6
 // (compatibilite exacte non voulue car necessite echange_espace_virtuel)
-void operator_add(DoubleVect & resu, const DoubleVect & vx, Mp_vect_options opt = VECT_ALL_ITEMS);
-void operator_add(DoubleVect & resu, const double x, Mp_vect_options opt = VECT_ALL_ITEMS);
-void operator_sub(DoubleVect & resu, const DoubleVect & vx, Mp_vect_options opt = VECT_ALL_ITEMS);
-void operator_sub(DoubleVect & resu, const double x, Mp_vect_options opt = VECT_ALL_ITEMS);
-void operator_multiply(DoubleVect & resu, const DoubleVect & vx, Mp_vect_options opt = VECT_ALL_ITEMS);
-void operator_multiply(DoubleVect & resu, const double x, Mp_vect_options opt = VECT_ALL_ITEMS);
-void operator_negate(DoubleVect & resu, Mp_vect_options opt = VECT_ALL_ITEMS);
-void operator_egal(DoubleVect & resu, double x, Mp_vect_options opt = VECT_ALL_ITEMS);
-void operator_egal(DoubleVect & resu, const DoubleVect & vx, Mp_vect_options opt = VECT_ALL_ITEMS);
+void operator_add(DoubleVect& resu, const DoubleVect& vx, Mp_vect_options opt = VECT_ALL_ITEMS);
+void operator_add(DoubleVect& resu, const double x, Mp_vect_options opt = VECT_ALL_ITEMS);
+void operator_sub(DoubleVect& resu, const DoubleVect& vx, Mp_vect_options opt = VECT_ALL_ITEMS);
+void operator_sub(DoubleVect& resu, const double x, Mp_vect_options opt = VECT_ALL_ITEMS);
+void operator_multiply(DoubleVect& resu, const DoubleVect& vx, Mp_vect_options opt = VECT_ALL_ITEMS);
+void operator_multiply(DoubleVect& resu, const double x, Mp_vect_options opt = VECT_ALL_ITEMS);
+void operator_negate(DoubleVect& resu, Mp_vect_options opt = VECT_ALL_ITEMS);
+void operator_egal(DoubleVect& resu, double x, Mp_vect_options opt = VECT_ALL_ITEMS);
+void operator_egal(DoubleVect& resu, const DoubleVect& vx, Mp_vect_options opt = VECT_ALL_ITEMS);
 
 double local_prodscal(const DoubleVect&, const DoubleVect& );
 double mp_prodscal(const DoubleVect&, const DoubleVect& );
 double mp_norme_vect(const DoubleVect&);
 double mp_carre_norme_vect(const DoubleVect&);
-double local_carre_norme_vect(const DoubleVect & vx);
-double mp_moyenne_vect(const DoubleVect &);
-void ajoute_alpha_v(DoubleVect & v, double alpha, const DoubleVect & vx, Mp_vect_options opt = VECT_REAL_ITEMS);
-void ajoute_carre(DoubleVect & v, double alpha, const DoubleVect & vx, Mp_vect_options opt = VECT_ALL_ITEMS);
-void ajoute_produit_scalaire(DoubleVect & v, double alpha, const DoubleVect & vx, const DoubleVect & vy, Mp_vect_options opt = VECT_ALL_ITEMS);
-void racine_carree(DoubleVect & v, Mp_vect_options opt = VECT_ALL_ITEMS);
-void carre(DoubleVect & v, Mp_vect_options opt = VECT_ALL_ITEMS);
-void operator_inverse(DoubleVect & resu, Mp_vect_options opt = VECT_ALL_ITEMS);
-void operator_abs(DoubleVect & resu, Mp_vect_options opt = VECT_ALL_ITEMS);
-void tab_multiply_any_shape(DoubleVect & resu, const DoubleVect & vx, Mp_vect_options opt = VECT_ALL_ITEMS);
-void tab_divide_any_shape(DoubleVect & resu, const DoubleVect & vx, Mp_vect_options opt = VECT_ALL_ITEMS);
-void operator_divide(DoubleVect & resu, const DoubleVect & vx, Mp_vect_options opt = VECT_ALL_ITEMS);
-void operator_divide(DoubleVect & resu, const double x, Mp_vect_options opt = VECT_ALL_ITEMS);
+double local_carre_norme_vect(const DoubleVect& vx);
+double mp_moyenne_vect(const DoubleVect&);
+void ajoute_alpha_v(DoubleVect& v, double alpha, const DoubleVect& vx, Mp_vect_options opt = VECT_REAL_ITEMS);
+void ajoute_carre(DoubleVect& v, double alpha, const DoubleVect& vx, Mp_vect_options opt = VECT_ALL_ITEMS);
+void ajoute_produit_scalaire(DoubleVect& v, double alpha, const DoubleVect& vx, const DoubleVect& vy, Mp_vect_options opt = VECT_ALL_ITEMS);
+void racine_carree(DoubleVect& v, Mp_vect_options opt = VECT_ALL_ITEMS);
+void carre(DoubleVect& v, Mp_vect_options opt = VECT_ALL_ITEMS);
+void operator_inverse(DoubleVect& resu, Mp_vect_options opt = VECT_ALL_ITEMS);
+void operator_abs(DoubleVect& resu, Mp_vect_options opt = VECT_ALL_ITEMS);
+void tab_multiply_any_shape(DoubleVect& resu, const DoubleVect& vx, Mp_vect_options opt = VECT_ALL_ITEMS);
+void tab_divide_any_shape(DoubleVect& resu, const DoubleVect& vx, Mp_vect_options opt = VECT_ALL_ITEMS);
+void operator_divide(DoubleVect& resu, const DoubleVect& vx, Mp_vect_options opt = VECT_ALL_ITEMS);
+void operator_divide(DoubleVect& resu, const double x, Mp_vect_options opt = VECT_ALL_ITEMS);
 
 #endif
 

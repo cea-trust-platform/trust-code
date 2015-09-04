@@ -186,23 +186,23 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
             }
           else
             {
-	    	// Mise en commentaire car dans certains scripts verifie on teste: trust $jdd -ksp_view
-	    	/*
-                Nom fichier=argv[i];
-                fichier.prefix(".data");
-                fichier+=".data";
-                EFichier fic(fichier);
-                if(fic.fail())
-                  {
-                    cerr << "Trying to open file " << fichier << endl;
-                    cerr << "File " << fichier << " doesnt exist !" << endl;
-                    Process::exit();
-                  }
-                else
-                  {
-                    data_file = fichier.prefix(".data");
-                  }
-		*/
+              // Mise en commentaire car dans certains scripts verifie on teste: trust $jdd -ksp_view
+              /*
+                      Nom fichier=argv[i];
+                      fichier.prefix(".data");
+                      fichier+=".data";
+                      EFichier fic(fichier);
+                      if(fic.fail())
+                        {
+                          cerr << "Trying to open file " << fichier << endl;
+                          cerr << "File " << fichier << " doesnt exist !" << endl;
+                          Process::exit();
+                        }
+                      else
+                        {
+                          data_file = fichier.prefix(".data");
+                        }
+              */
               //error = 1;
             }
         }
@@ -223,18 +223,18 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
 
   {
 
-  if ( ieee == 1 )
-    {
-      arguments_info += "feenableexcept enabled.\n";
-      #ifdef linux
-      // Detect all NaNs (don't add FE_UNDERFLOW cause exp(-x) with x big throws an exception)
-      // Test pre 1.7.0, on active en optimise:
-      //#ifndef NDEBUG
+    if ( ieee == 1 )
+      {
+        arguments_info += "feenableexcept enabled.\n";
+#ifdef linux
+        // Detect all NaNs (don't add FE_UNDERFLOW cause exp(-x) with x big throws an exception)
+        // Test pre 1.7.0, on active en optimise:
+        //#ifndef NDEBUG
 
         feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
-      //#endif
-      #endif
-    }
+        //#endif
+#endif
+      }
 
     // ************** Initialisation de Petsc, du parallele (si Petsc) **********
     // .. et demarrage du journal
