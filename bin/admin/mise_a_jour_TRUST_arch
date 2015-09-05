@@ -33,27 +33,7 @@ exit_()
 }
 gunzip_()
 {
-   keys=$TRUST_ROOT/keys
-   [ -f $keys ] && (cd $TRUST_ROOT ; tar xf $keys ; rm -f $keys)
-# Verifie si les cles sont la
-   cle=`dirname $keys`/.cle_`basename $1`
-   [ ! -f $cle ] && echo "Missing key in $keys for $1." && exit_
-   tmp=$1".tmp"
-   echo "begin 664 $1" > $tmp
-   cat $cle >> $tmp
-   uuencode $1 $1 | awk '(NR!=1) {print $0}' >> $tmp
-   [ $? != 0 ] && echo "uuencode seems not installed on your system or is not working well. Please correct." && exit_
-   # Incroyable: il faut effacer $1 sinon le uudecode peut echouer de maniere mysterieuse.... 
-   # Encore plus fort, sur nickel il le faut sinon ca echoue de maniere mysterieuse !!!
-   [ $HOST != nickel ] && rm -f $1   
-   uudecode $tmp
-   [ $? != 0 ] && echo "uudecode seems not installed on your system or is not working well. Please correct." && exit_
-   rm -f $tmp
-   rm -f $cle
-   # Le test suivant ne marche pas sur HP !!!!
-   # [ "`file $1 | grep gzip`" = "" ] && echo "Invalid keys in $keys." && exit_
    gunzip -f $1
-   [ $? != 0 ] && echo "Invalid keys in $keys for $1." && exit_
 }
 
 ########################################################
@@ -61,6 +41,7 @@ gunzip_()
 ########################################################
 change_droits()
 {
+  echo "change_droits"
   # On donne les droits d'ecriture a user
   # On donne les droits de lecture a toute le monde sauf hors intra CEA
   if [ "`grep intra.cea.fr /etc/* 2>/dev/null`" != "" ]
@@ -75,15 +56,10 @@ change_droits()
 # DEBUT #
 #########
 # Mise a jour des sources par:
-# sftp de paquets .tar.gz de la machine TMA vers la machine meme  (sftp=1 mode par defaut mais plus utilise que sur castor et is210376...)
-# rsync de la machine TMA vers la machine meme                    (rsync=1)
-# git depuis la machine meme                                      (git=1)
+# sftp de paquets .tgz de la machine TMA vers la machine meme     (sftp=1)
+# rsync de la machine TMA vers la machine meme                    (rsync=1 mode par defaut)
+# git depuis la machine meme                                      (git=1)   => no updated with TRUST
 # kill: permet de detruire tous les processes lances par ce script
-#sftp=1
-#rsync="" && [ "$1" = "-rsync" ] && rsync=1 && sftp="" 
-#git=""   && [ "$1" = "-git"   ] && git=1   && sftp=""
-#kill=""  && [ "$1" = "-kill"  ] && kill=1
-# rsync devient le mode par defaut
 rsync=1
 sftp=""  && [ "$1" = "-sftp"  ] && sftp=1  && rsync="" 
 git=""   && [ "$1" = "-git"   ] && git=1   && rsync=""
@@ -106,11 +82,11 @@ fi
 #################
 # Variable HOST #
 #################
-# HOST is given by the directory version Version_test if possible
+# HOST is given by the directory version $WORKBASE if possible
 # It is now possible to build several version on the same machine. Eg:
-# Version_test_curie-ccrt
-# Version_test_curie-ccrt-mvapich
-# Version_test_curie-ccrt-gcc
+# $WORKBASEcurie-ccrt
+# $WORKBASEcurie-ccrt-mvapich
+# $WORKBASEcurie-ccrt-gcc
 # ...
 # ~/.ssh/config need to be change to recognize the "new" hosts 
 VERSION=`pwd`
@@ -123,33 +99,17 @@ then
    # pas lui meme connu (ex: machines CCRT, curie) donc
    # on laisse pour le moment:
    HOST=`hostname | awk -F. '{print $1}'`
-   [ "${HOST#argent}"  != $HOST ] && HOST=argent
-   [ "${HOST#platine}" != $HOST ] && HOST=platine
-   [ "${HOST#chrome}"  != $HOST ] && HOST=chrome
-   [ "${HOST#mercure}" != $HOST ] && HOST=mercure
-   [ "${HOST#tantal}"  != $HOST ] && HOST=tantale
-   [ "${HOST#paradis}" != $HOST ] && HOST=paradis
-   [ "${HOST#castor}"  != $HOST ] && HOST=castor
-   [ "${HOST#dom}"     != $HOST ] && HOST=dom
-   [ "${HOST#mezel0}"  != $HOST ] && HOST=mezel
-   [ "${HOST#mezel-}"  != $HOST ] && HOST=mezel2
-   [ "${HOST#zahir}"   != $HOST ] && HOST=zahir
-   [ "${HOST#r41}"     != $HOST ] && HOST=zeus
-   [ "${HOST#buda}"    != $HOST ] && HOST=buda
-   [ "${HOST#vargas}"  != $HOST ] && HOST=vargas
-   [ "${HOST#service}" != $HOST ] && HOST=jade
-   [ "${HOST#cesium}"  != $HOST ] && HOST=cesium
-   [ "${HOST#titane}"  != $HOST ] && HOST=titane
-   [ "${HOST#kata}"    != $HOST ] && HOST=kata
    [ "${HOST#curie}"   != $HOST ] && HOST=curie-ccrt
-   [ "${HOST#eris}"    != $HOST ] && HOST=eris
    [ "${HOST#airain}"  != $HOST ] && HOST=airain
-   [ "${HOST#login}"   != $HOST ] && HOST=supermuc
+   [ "${HOST#callisto}"  != $HOST ] && HOST=callisto
+   [ "${HOST#ceres2}"  != $HOST ] && HOST=ceres2
 fi
 
 WHERE=$HOME && [ "$WORKDIR" != "" ] && WHERE=$WORKDIR
 QUI=triou@cea.fr
 export version=$WHERE/$WORKBASE$HOST
+
+[ "$git" = 1 ]&& echo "-git mode no supported with TRUST for the moment!" && exit -1
 if [ "$git" = 1 ] && [ ! -d $version/TRUST/.git ]
 then
    # First install
@@ -161,6 +121,8 @@ fi
 [ ! -d $version ] && echo "$version directory not found !" && exit -1
 
 export TRUST_ROOT=$version/TRUST
+[ ! -d $TRUST_ROOT ] && mkdir $TRUST_ROOT
+DIPHA_ROOT=$version/Diphasique
 cd $TRUST_ROOT
 
 # Command run with -kill option:
@@ -210,11 +172,12 @@ fi
 ##################################
 # Debut effectif de la mise a jour
 ##################################
-echo "Usage: `basename $0` [-rsync|-sftp|-git]"
+echo "Usage: `basename $0` [-rsync|-sftp|-kill]"
 
-if [ "`ps -efl | grep mise_a_jour_TRUST_tar | grep -v grep`" != "" ]
+if [ "`ps -efl | grep make | grep TRUST | grep -v grep`" != "" ]
 then
-   echo $ECHO_OPTS "\n\nSorry, $QUI is now compiling on the $HOST machine... Try later." | mail_ $QUI
+   # mail_ command not found at this moment
+   echo $ECHO_OPTS "\n\nSorry, $QUI is now compiling on the $HOST machine... Try later." #| mail_ $QUI
    exit_
 fi
 # Variable NUIT
@@ -229,12 +192,8 @@ echo "--------------------------------------------------------------------------
 qui=`basename $HOME`
 too_much_tasks=`ps -u $qui 2>/dev/null | grep $WORKBASE | wc -l | awk '{if ($0>40) print 1;else print 0}'`
 
-[ ! -d $TRUST_ROOT ] && mkdir $TRUST_ROOT
-DIPHA_ROOT=$version/Diphasique
-[ ! -d $DIPHA_ROOT ] && mkdir $DIPHA_ROOT
-
-# Place memoire occupee par la version (blocage sur buda)
-[ $HOST != buda ] && du -s -m -L $version 1>/dev/null 2>&1 | awk '{print $1/1000" GBytes "$2}'
+# Place memoire occupee par la version
+du -s -m -L $version 2>/dev/null | awk '{print $1/1000" GBytes "$2}'
 
 # Place memoire encore disponible
 if [ -f $TRUST_ROOT/bin/KSH/dd.ksh ]
@@ -253,39 +212,16 @@ then
       exit_ -1
    fi
 fi
-[ "$sftp" = 1 ] && [ ! -f $TRUST_ROOT/TRUST.tar.gz ] && echo "No update on $HOST because $TRUST_ROOT/TRUST.tar.gz missing." && exit_
+[ "$sftp" = 1 ] && [ ! -f $version/TRUST.tgz ] && echo "No update on $HOST because $version/TRUST.tgz missing." && exit_
 
 # Creation des repertoires necessaires :
 [ ! -d $TRUST_ROOT/env ] && mkdir $TRUST_ROOT/env
 
-# Provisoire
-# Par manque de place on efface certaines choses:
-#[ $HOST = esterel1 ] && esterel all
-# OpenMPI
-#rm -r -f ~/tmp/openmpi-sessions* 1>/dev/null 2>&1
-rm -r -f $TRUST_ROOT/tests/Reference/ConicBedErgun $TRUST_ROOT/tests/Reference/ConicBedErgun_QC
-# fin provisoire
 echo -e "1,$ s?export LIBGL_ALWAYS_INDIRECT=1 # To avoid VisIt crashes on $HOST??g\nw" | ed ~/.perso_TRUST.env 1>/dev/null 2>&1
 
 cd $TRUST_ROOT
-# Si on a les tests, on efface le repertoire tests/Reference
-#[ -f Tests_TRUST.tar.gz ] && rm -r -f tests Tests_reference
-#[ -f Pre_Post_TRUST.tar.gz ] && rm -r -f Outils
-#[ -f Doc_TRUST.tar.gz ] && rm -r -f doc
-#[ -f TRUST.tar.gz ] && rm -r -f Validation
 # On fait de la place
-\rm -r -f .essai lib/TRUST*.a
-
-# Cas ou Diphasique a pollue TRUST alors on nettoie tout
-if [ -d Noyau_evolution ]
-then
-   mv *.tar* keys ..
-   cd ..
-   rm -r -f TRUST
-   mkdir TRUST
-   cd TRUST
-   mv ../*.tar* ../keys .
-fi
+\rm -r -f lib/TRUST*.a
 
 ##########################################
 # On modifie les droits des fichiers avant
@@ -294,9 +230,8 @@ cd $version
 change_droits
 cd - 1>/dev/null 2>&1
 
-teste=0
-MODULES="TRUST Diphasique"
-MODULES=TRUST
+#MODULES="TRUST Diphasique"
+MODULES="TRUST"
 for MODULE in $MODULES
 do
    ROOT=$version/$MODULE
@@ -305,23 +240,26 @@ do
    # Sauvegarde du binaire sous $WORKDIR (car $DMFDIR est partage par nickel/tantale/chrome)
    # et sous ~/test/NUIT si on n'est pas sur une machine du CCRT (voir pbs place disque)
    #######################################################################################
-   exec=`ls exec/$MODULE*opt 2>/dev/null | head -1`
-   DATE=`$exec 2>&1 | awk '/build :/ {date=$3} END {print date}'`
-   if [ "$WORKDIR" != "" ] && [ -d $WORKDIR ]
-   then      
-      mkdir $WORKDIR/NUIT 2>/dev/null
-      for binaire in `ls $ROOT/exec/$MODULE*opt 2>/dev/null`
-      do
-         gzip -c $binaire > $WORKDIR/NUIT/`basename $binaire`.$DATE.gz
-	 echo "Binary backup: $WORKDIR/NUIT/`basename $binaire`.$DATE.gz"
-      done
-   else
-      mkdir -p ~/test/NUIT 2>/dev/null
-      for binaire in `ls $ROOT/exec/$MODULE*opt 2>/dev/null`
-      do
-         gzip -c $binaire > ~/test/NUIT/`basename $binaire`.$DATE.gz
-	 echo "Binary backup: ~/test/NUIT/`basename $binaire`.$DATE.gz"
-      done   
+   exec=`ls exec/$MODULE*"_opt" 2>/dev/null | head -1`
+   if [ "$exec" != "" ]
+   then
+      DATE=`date '+%d%m%y' -r $exec`
+      if [ "$WORKDIR" != "" ] && [ -d $WORKDIR ]
+      then      
+         mkdir $WORKDIR/NUIT 2>/dev/null
+         for binaire in `ls $ROOT/exec/$MODULE*opt 2>/dev/null`
+         do
+            gzip -c $binaire > $WORKDIR/NUIT/`basename $binaire`.$DATE.gz
+	    echo "Binary backup: $WORKDIR/NUIT/`basename $binaire`.$DATE.gz"
+         done
+      else
+         mkdir -p ~/test/NUIT 2>/dev/null
+         for binaire in `ls $ROOT/exec/$MODULE*opt 2>/dev/null`
+         do
+            gzip -c $binaire > ~/test/NUIT/`basename $binaire`.$DATE.gz
+	    echo "Binary backup: ~/test/NUIT/`basename $binaire`.$DATE.gz"
+         done   
+      fi
    fi   
    
    ###############################################
@@ -329,103 +267,17 @@ do
    ###############################################
    if [ "$sftp" = 1 ]
    then
-      # Dans PAQUETS, on ne prend pas le module principal
-      PAQUETS=`\ls *.tar.gz 2>/dev/null | grep -v "^$MODULE.tar"`
-      for PAQ in $PAQUETS
-      do
-	 # Si plus d'un paquet alors teste
-	 teste=1
-	 FIC=${PAQ%.tar.gz}
-	 # gunzip dezippe les .Z et .gz
-	 gunzip_ $PAQ
-	 rm -r -f $FIC
-	 tar xf $FIC.tar 1>/dev/null
-	 rm -f $FIC.tar
-      done
-      rm -r -f $ROOT/.essai && mkdir $ROOT/.essai && cd $ROOT/.essai
-      mak=$1
+      cd $version
       date
       #####################################
       # Paquet $MODULE : traitement special
       #####################################
-      if [ -f $ROOT/$MODULE.tar.gz ]
+      if [ -f $version/$MODULE.tgz ]
       then
-	 gunzip_ $ROOT/$MODULE.tar.gz
-	 mv $ROOT/$MODULE.tar .
-	 tar xf $MODULE.tar 2>/dev/null
-	 rm -f $MODULE.tar
+	 #tar tvf $MODULE.tgz 
+	 tar xvfz $MODULE.tgz 1>/dev/null
+	 rm -f $MODULE.tgz
       fi
-      rm -f @LongLink ../@LongLink
-      # Changement droits
-      change_droits
-
-      ################################################################
-      # Parcours chaque repertoire et compare par rapport a la version
-      ################################################################
-      echo "-----------------------------------------"
-      echo "Update of $MODULE on $HOST"
-      echo "List of modified files :"
-      echo "-----------------------------------------"
-      # Suppression de repertoires TRUST
-      for repertoire in `cat $ROOT/env/rep.TRUST 2>/dev/null`
-      do
-	 [ ! -d $repertoire ] && rm -r -f $ROOT/$repertoire && echo "Directory deleted: $repertoire"
-      done
-      # On parcours les repertoires existants
-      for rep in `find . -type d -print`
-      do
-	 cd $rep
-	 [ ! -d $ROOT/$rep ] && mkdir $ROOT/$rep
-	 # on met \ls car pb sur linux parfois ls surcharge pour Vim donne des * ...
-	 for file in `\ls 2>/dev/null`
-	 do  
-            if [ -h $file ]
-            then
-            # Cas liens !
-               if [ ! -h $ROOT/$rep/$file ] || [ "`\ls -la $ROOT/$rep/$file | awk '{print $NF}'`" != "`\ls -la $file | awk '{print $NF}'`" ]
-               then
-        	  rm -f $ROOT/$rep/$file
-        	  ln -s -f `\ls -la $file | awk '{print $NF}'` $ROOT/$rep/$file
-        	  echo "Link created: $rep/$file"
-               fi
-            elif [ -f $file ]
-            then
-               #if [ ! -f $ROOT/$rep/$file ] || [ "`wc -l $file | awk '{print $1}'`" != "`wc -l $ROOT/$rep/$file | awk '{print $1}'`" ] || [ "`diff $file $ROOT/$rep/$file`" != "" ]
-               # Remplacement par ls (meme si c'est plus lent) car plantage du script avec "no space" sur AIX sinon
-	       if [ ! -f $ROOT/$rep/$file ] || [ "`\ls -l $file | awk '{print $5}'`" != "`\ls -l $ROOT/$rep/$file | awk '{print $5}'`" ] || [ "`diff $file $ROOT/$rep/$file`" != "" ]
-	       then
-        	  # cp -f marche pas sur nymphea
-        	  # cp -f $file $ROOT/$rep/$file
-        	  \cp $file $ROOT/$rep/$file
-        	  echo $rep/$file
-               fi
-            fi
-	 done
-	 # Efface les fichiers supprimes + les objets :
-	 eff=0
-	 for file in `\ls $ROOT/$rep 2>/dev/null | grep -v "\.o" | grep -v "^lib"`
-	 do
-            efface=0
-            [ -f $ROOT/$rep/$file ] && [ ! -f `basename $file` ] && efface=1
-            [ -h $ROOT/$rep/$file ] && [ ! -h `basename $file` ] && efface=1
-            if [ $efface = 1 ]
-            then
-               echo "File deleted:"$rep/$file
-               file=$ROOT/$rep/$file
-               eff=1
-               rm -f $file
-               file=${file%.cpp};file=${file%.f};file=${file%.h}
-               rm -f $file.o
-            fi
-	done
-	# Si des objets sont supprimes, on supprime les librairies
-	[ $eff = 1 ] && \rm -f $ROOT/lib/$MODULE*.a $ROOT/lib/lib*.s?
-	cd $ROOT/.essai
-      done
-      # On essaie de trouver les repertoires
-      echo "-----------------------------------------"
-      cd .. 
-      rm -r -f $ROOT/.essai
    fi
 done
 ##########################################
@@ -441,6 +293,7 @@ cd - 1>/dev/null 2>&1
 cd $TRUST_ROOT
 
 HOST_tmp=$HOST
+echo "-----------------------------------------"
 date
 
 ################################################
@@ -450,26 +303,29 @@ option_configure=""
 # PETSc with CUDA for GPU (needs GNU compiler for PETSc, confirmed in petsc-dev december 2013) 
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_petsc_have_cuda" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -force_petsc_have_cuda -c++=g++ -cc=gcc -fc=gfortran"
 # PETSc with OpenMP 
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_petsc_have_openmp" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -force_petsc_have_openmp"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_petsc_have_openmp" | grep ^$HOST"\."`" != "" ] 	&& option_configure=$option_configure" -force_petsc_have_openmp"
 # without PETSc 
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-petsc" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-petsc"
 # OpenMPI
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_old_openmpi" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -force_old_openmpi"
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_provided_openmpi" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -force_provided_openmpi"
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_latest_openmpi" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -force_latest_openmpi"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_old_openmpi" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -force_old_openmpi"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_provided_openmpi" | grep ^$HOST"\."`" != "" ] 	&& option_configure=$option_configure" -force_provided_openmpi"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_latest_openmpi" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -force_latest_openmpi"
 # MPICH
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_provided_mpich" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -force_provided_mpich"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_provided_mpich" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -force_provided_mpich"
 # OpenMPI ancien sur la machine ou l'on construit le binaire sinon ne trouve pas un fichier en local
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\get_binary" | grep ^$HOST"\."`" != "" ] 				&& option_configure=$option_configure" -force_old_openmpi"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\get_binary" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -force_old_openmpi"
 # Compilation minimale avec -disable
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable " | grep ^$HOST"\."`" != "" ] 				&& option_configure=$option_configure" -disable-med -disable-medcoupling -disable-mpi -without-visit"
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-mpi" | grep ^$HOST"\."`" != "" ] 				&& option_configure=$option_configure" -disable-mpi"
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-optionals" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-optionals"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable " | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-med -disable-medcoupling -disable-mpi -without-visit"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-mpi" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-mpi"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-optionals" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -disable-optionals"
 # Salome
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-download-salome" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -download-salome"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-download-salome" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -download-salome"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-download " | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -download-salome -download-visit"
 # VisIt
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-download-visit" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -download-visit"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-download-visit" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -download-visit"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-without-visit" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -without-visit"
+# Gmsh
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-gmsh" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-gmsh"
 # Pour compiler cesium avec pgCC:
 # [ $HOST = cesium ] 												&& option_configure=$option_configure" -c++=pgCC -cc=pgcc -fc=pgf90 -disable-med"
 
@@ -487,7 +343,10 @@ HOST=$HOST_tmp
 ###############################
 # Initialize TRUST environment
 ###############################
-source env/env_TRUST.sh
+source env/env_TRUST.sh # necessaire pour connaitre le nom de $TRUST_TMP
+rm -r -f $TRUST_TMP # suppression des anciens log sur machine distante
+source env/env_TRUST.sh 1>/dev/null 2>&1 # necessaire pour creer le dossier $TRUST_TMP
+
 echo "--------------------------------------------------------"
 echo "End configure on $HOST_BUILD at "`date '+%H:%M:%S'`
 echo "--------------------------------------------------------"
@@ -607,6 +466,7 @@ do
    # Force la creation de la lib dipha en attendant de revoir tout ca....
    [ $MODULE = Diphasique ] && cree_Dipha_opt_a
    # Build other TRUST binaries during the night only if main build is OK:
+   testcpu3d=0
    if [ $NUIT = 1 ] && [ $MODULE = TRUST ] && [ $err_compile = 0 ]
    then
       for TYPE in prof gcov opt_avx
@@ -630,22 +490,43 @@ do
             echo>>$MAKE_LOG
 	    make $TYPE 1>>$MAKE_LOG 2>&1
 	    # On teste le binaire
-	    echo>>$MAKE_LOG
-            echo "--------------------------------------------------------" >> $MAKE_LOG
-	    echo>>$MAKE_LOG
+	    #echo>>$MAKE_LOG
+            #echo "--------------------------------------------------------" >> $MAKE_LOG
+	    #echo>>$MAKE_LOG
 	    echo "trust -check cpu_3D"
-	    echo cpu_3D | lance_test $binary 1>>$MAKE_LOG 2>&1
+	    testcpu3d=1
+	    exec=$binary trust -check cpu_3D #1>>$MAKE_LOG 2>&1
 	    if [ $? != 0 ]
 	    then
-	       echo "Error, see $MAKE_LOG!"
+	       #echo "Error, see $MAKE_LOG!"
+	       echo "CPU_3D=KO"
+	       testcpu3d=-1
 	       [ "$TYPE" != "opt_avx" ] && exit -1
 	    else
-	       echo "OK"
+	       echo "CPU_3D=OK"
 	    fi
 	 else
 	    rm -r -f $TRUST_ROOT/MonoDir$COMM$OPT
 	 fi
       done
+      if [ $testcpu3d == 0 ]
+      then
+         binary=$exec_debug
+         echo "--------------------------------------------------------"
+         echo "Binary: $binary" 
+	 cd $ROOT
+	 echo "trust -check cpu_3D"
+	 testcpu3d=1
+	 exec=$binary trust -check cpu_3D #1>/dev/null 2>&1
+	 if [ $? != 0 ]
+	 then
+	    echo "CPU_3D=KO"
+	    testcpu3d=-1
+	    #exit -1
+	 else
+	    echo "CPU_3D=OK"
+	 fi
+      fi
       OPT="_opt"
    fi
    echo "--------------------------------------------------------"
@@ -773,14 +654,8 @@ do
             echo "--------------------------------------------------------" 
 	    echo "Launch tests on XPREPRO at "`date '+%H:%M:%S'`
 	    cd $TRUST_ROOT/Outils/PRE_3DVDF;
-	    # sdiff horriblement lent sur fsf, on passe par la machine les
-	    if [ $HOST = fsf ]
-	    then
-               ssh -o ConnectTimeout=10 -o BatchMode=yes les -n 'cd Version_test_les/TRUST;source env/env_TRUST.sh;cd Outils/PRE_3DVDF;./testfort2'
-	    else
-	       # On ne fait pas sur vargas car cela bloque...
-	       [ $HOST != vargas ] && ./testfort2
-            fi
+	    # On ne fait pas sur vargas car cela bloque...
+	    [ $HOST != vargas ] && ./testfort2
 	 )	 	 
 	 ###################################################
 	 # On lance le test sur les assertions en mode debug
@@ -820,7 +695,7 @@ do
 	    then
                echo "--------------------------------------------------------" 
 	       echo "Test the no-regression of XData at "`date '+%H:%M:%S'`
-	       cd $TRUST_ROOT/Outils/TRIOXDATA;rm -f *.log;make 1>make.log 2>&1;make check 1>check_xdata.log 2>&1;cat check_xdata.log;cd - 1>/dev/null 2>&1
+	       cd $TRUST_ROOT/Outils/TRIOXDATA;rm -f *.log;make 1>make.log 2>&1;make check 1>check_xdata.log 2>&1;cat check_xdata.log;cp check_xdata.log $TRUST_TMP/.;cd - 1>/dev/null 2>&1
 	    fi
 	 fi		 
 	 ###############################################
@@ -851,6 +726,8 @@ do
 	       rm -f *.val *.err *.out *.log cas*
 	       ./testall `liste_machines "\-valgrind" | $TRUST_Awk -v HOST=$HOST_BUILD -F"." '// {t++} ($1==HOST) {p=NR} END {print p" "t}'` 2>&1
 	       ./ANA 2>&1 | tee ANA.log
+	       cp ANA.log $TRUST_TMP/.
+	       cp casmem $TRUST_TMP/.
 	    fi
 	 fi
  
@@ -859,15 +736,25 @@ do
 	 ######################################    
 	 # Premiere liste minimale de cas tests a passer
 	 NUM=liste_cherche
-	 cherche.ksh PARALLEL@OK VEFPreP1B dimension@3 sous_maille 1>/dev/null
+	 #cherche.ksh PARALLEL@OK VEFPreP1B dimension@3 sous_maille 1>/dev/null # Dans TRUST pas de modele de turbulence LES mais seulement RANS
+	 cherche.ksh PARALLEL@OK VEFPreP1B dimension@3 K_epsilon 1>/dev/null
+	 #PAR_Impinging_jet ATTENTION En parallele plantage possible sur ce cas... => supprime de la liste liste_cherche
+	 grep -v Impinging_jet liste_cherche > tmp_liste_cherche
+	 mv tmp_liste_cherche liste_cherche
+	 rm -f tmp_liste_cherche
 	 # Ajout de PETSC_ThHyd_2D_VEF_Ostwald pour PETSc Cholesky
 	 # Ajout de FTD_instab2D car ce cas a pose des blocages sur OpenMPI 1.3.3 sur is212958
-	 echo cpu_3D >> liste_cherche && echo PETSC_ThHyd_2D_VEF_Ostwald >> liste_cherche && echo FTD_instab2D >> liste_cherche && echo upwind >> liste_cherche 
+	 # Ajout de Canal_perio_VDF_3D_Keps pour discretisation VDF
+	 echo PETSC_ThHyd_2D_VEF_Ostwald >> liste_cherche && echo FTD_instab2D >> liste_cherche && echo Canal_perio_VDF_3D_Keps >> liste_cherche 
+	 # Autres ajouts
+	 echo cpu_3D >> liste_cherche #& echo PETSC_VDF >> liste_cherche && echo PETSC_VEF >> liste_cherche
+	 echo VAHL_DAVIS >> liste_cherche && echo upwind >> liste_cherche && echo Cx >> liste_cherche 
 	 # Ensuite selon les options, on affine:
+	 teste=0
 	 if [ "`liste_machines "\-seq" | grep ^$HOST_BUILD"\."`" ]
 	 then
             [ $NUIT = 1 ] || [ $teste = 1 ] && NUM=liste_cherche && cherche.ksh PARALLEL@NOT      
-	 elif [ "`liste_machines "\-disable" | grep ^$HOST_BUILD"\."`" ]
+	 elif [ "`liste_machines "\-disable " | grep ^$HOST_BUILD"\."`" ]
 	 then
 	    [ $NUIT = 1 ] && NUM=0
 	 elif [ "`liste_machines "\-all" | grep ^$HOST_BUILD"\."`" ]
@@ -887,7 +774,7 @@ do
 	    [ $NUIT = 1 ] || [ $teste = 1 ] && NUM=PETSC_OPENMP
 	 fi
 	 # Choix de l'executable pour lance_test
-	 lance_test_exec=$exec
+	 lance_test_exec=$exec_opt
 	 [ $NUIT = 1 ] && [ "`liste_machines "\-prof" | grep ^$HOST_BUILD"\."`" != "" ] && lance_test_exec=$exec_pg
 	 [ $NUIT = 1 ] && [ "`liste_machines "\-gcov" | grep ^$HOST_BUILD"\."`" != "" ] && lance_test_exec=$exec_gcov	
 	 #[ $NUIT = 1 ] && [ "`liste_machines "\-avx"  | grep ^$HOST_BUILD"\."`" != "" ] && lance_test_exec=$exec_avx	
@@ -904,12 +791,13 @@ do
 	 ################################
 	 # Generation couverture de tests
 	 ################################
-	 #if [ "`liste_machines "\-gcov" | grep ^$HOST_BUILD"\."`" != "" ]
-	 #then	 
+	 if [ "`liste_machines "\-gcov" | grep ^$HOST_BUILD"\."`" != "" ]
+	 then	 
 	 #   # Lancement de lcov qui produit un rapport sous $TRUST_ROOT/doc/Coverage/lcov/html
          #   echo "--------------------------------------------------------" 
          #   echo "Start of lcov at `date '+%H:%M:%S'`"
-         #   cd $TRUST_ROOT/doc/Coverage/lcov
+            cd $TRUST_ROOT/doc/Coverage/lcov
+	    rm -r -f html lcov.log
          #   cp $TRUST_TMP/tests/GCDA/ana/*.gcda $TRUST_ROOT/MonoDir$COMM/src/.
          #   cp $TRUST_TMP/tests/GCDA/ana/*.gcno $TRUST_ROOT/MonoDir$COMM/src/.
          #   chmod +x $TRUST_ROOT/MonoDir$COMM/src/*.gcno
@@ -918,7 +806,7 @@ do
          #   echo "Generation of `pwd`/lcov.log"
          #   cd - 1>/dev/null 2>&1
          #   echo "End of lcov at `date '+%H:%M:%S'`"
-	 #fi
+	 fi
          #################################################
 	 # Mesure les performances en // avec le BENCHMARK
 	 #################################################
@@ -940,6 +828,7 @@ do
             echo "Test of reprise_auto at `date '+%H:%M:%S'`"
 	    log=$TRUST_ROOT/tests/Reference/Obstacle/test_reprise_auto.log
   	    cd $TRUST_ROOT/tests/Reference/Obstacle
+	    rm -f $log
 	    make_PAR.data Obstacle 1>$log 2>&1
 	    echo $ECHO_OPTS "1,$ s?tmax 5.0?tmax 100.0?g\nw" | ed PAR_Obstacle.data 1>>$log 2>&1
 	    trust -create_sub_file PAR_Obstacle 2 1>>$log 2>&1
@@ -952,7 +841,6 @@ do
 	       echo "final time reached no detecte in PAR_Obstacle.err:" >> $log
 	       cat PAR_Obstacle.err >> $log
 	       cat $log | mail_ -s\"[mise_a_jour_TRUST_arch] KO reprise_auto script on $HOST_BUILD\" $TRUST_MAIL
-	       rm -f $log
             else
                echo "Script reprise_auto OK"
             fi
@@ -963,12 +851,13 @@ do
 	 # Etre une machine cible (si on teste sur toutes les machines en meme temps, on a un message "trop de clients X11"
 	 ###########################################
 	 test_run_fiche=1
-	 if [ "$test_run_fiche" = 1 ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable" | grep ^$HOST_BUILD"\."`" = "" ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-limited" | grep ^$HOST_BUILD"\."`" = "" ] #&& [ "`$TRUST_ROOT/bin/admin/liste_machines "\cible" | grep ^$HOST_BUILD"\."`" != "" ]
+	 if [ "$test_run_fiche" = 1 ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable" | grep ^$HOST_BUILD"\."`" = "" ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-limited" | grep ^$HOST_BUILD"\."`" = "" ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-without-visit" | grep ^$HOST_BUILD"\."`" = "" ]
 	 then
             echo "--------------------------------------------------------"
             echo "Test of Run_fiche at `date '+%H:%M:%S'`"
 	    cd $TRUST_ROOT/doc/TRUST/exercices/validation_form_exercise
 	    log=`pwd`/Run_fiche.log
+	    rm -f $log
 	    visit_erreur=`$TRUST_ROOT/Outils/VisIt/bin/visit -help 1>/dev/null 2>&1;echo $?`
 	    if [ $visit_erreur = 0 ]
 	    then

@@ -3,19 +3,8 @@
 gzip_()
 {
    gzip -f $1
-   if [ $crypt = 1 ]
-   then
-      # on passe par uuencode
-      uuencode $1.gz $1.gz > .tmp
-      head -2 .tmp | tail -1 > $TRUST_ROOT/.cle_$1.gz
-      option=c && [ -f $TRUST_ROOT/keys ] && option=u
-      (cd $TRUST_ROOT;tar f$option keys .cle_$1.gz)
-      # On utilise Awk
-      cat .tmp | $TRUST_Awk '(NR!=2) {print $0}' | uudecode
-      rm -f .tmp
-   fi
 }
-[ "$crypt" != 0 ] && crypt=1
+
 lib=0;[ ${#1} != 0 ] && lib=1
 cd $WORKDIR
 echo $ECHO_OPTS "\nPortage what version of TRUST? (Typing return if no version)\c"
@@ -23,7 +12,7 @@ for i in `ls | grep PORTAGE_`
 do
    echo $ECHO_OPTS ${i#PORTAGE_}" \c"
 done
-echo $ECHO_OPTS ": \c"
+echo $ECHO_OPTS ":"
 read v
 PORTAGE=""
 if [ "$v" != "" ]
@@ -37,9 +26,11 @@ then
          echo $PORTAGE"_beta" renamed in $PORTAGE
          mv $PORTAGE"_beta" $PORTAGE
       else
-         echo $ECHO_OPTS "Versions $PORTAGE or $PORTAGE"_beta" non-existent."
-         exit
+         echo $ECHO_OPTS "Versions $PORTAGE or $PORTAGE"_beta" not exists."
+         exit -1
       fi
+   else
+      echo $ECHO_OPTS "Version $PORTAGE exists."  
    fi
 fi
 #####################################################
@@ -50,11 +41,8 @@ fi
 #      |       |
 #    TRUST  Diphasique
 #
-fichier=$TRUST_ROOT/TRUST-$v.tar
-keys="keys"$v
-echo $ECHO_OPTS "\nCreation of $fichier..."
-cd $TRUST_ROOT/bin
-tar cf $fichier Installer_TRUST README_INSTALL linux_install_tools_*.tgz >/dev/null
+fichier=$TRUST_ROOT/TRUST_$v.tgz
+rm -f $fichier
 
 ##########################
 # Boucle sur les modules #
@@ -68,32 +56,34 @@ do
    ROOT=`dirname $TRUST_ROOT`/$MODULE
    if [ "$PORTAGE" != "" ]
    then
+      
       for TRUST_ARCH in `\ls $PORTAGE`
       do   
 	 if [ ! -d $PORTAGE/$TRUST_ARCH/$MODULE ]
 	 then
-	    echo "$PORTAGE/$TRUST_ARCH/$MODULE non-existent."
+	    echo "$PORTAGE/$TRUST_ARCH/$MODULE not exists."
 	 else
 	    # Cree le exec.tar
-	    echo "Construction of exec.$TRUST_ARCH.tar...."
+	    echo "Construction of exec.$TRUST_ARCH.tar..."
 	    cd $PORTAGE/$TRUST_ARCH/$MODULE
 	    tar cf $ROOT/exec.$TRUST_ARCH.tar exec 1>/dev/null
-	    (cd $ROOT;gzip_ exec.$TRUST_ARCH.tar)
+	    cd $ROOT
+	    gzip_ exec.$TRUST_ARCH.tar
 	 fi
       done
+      cd $ROOT/..
+      ls $MODULE/exec.*.tar.gz > $MODULE/exec.files
+      # Construit le paquet
+      echo $ECHO_OPTS "\nCreation of $fichier..."
+      tar zcf $fichier  --transform=s?$MODULE?${MODULE}_${v}? `cat $MODULE/TRUST.files;cat $MODULE/exec.files`
+      echo $ECHO_OPTS "\nThe $fichier file is ready."
+      cd $ROOT
    else
-      mise_a_jour_TRUST_tar
+      # Construit le paquet
+      echo $ECHO_OPTS "\nCreation of $fichier..."
+      mise_a_jour_TRUST_tar -without_test_validation
+      echo $ECHO_OPTS "\nThe $TRUST_ROOT/TRUST_$TRUST_VERSION.tgz file is ready."   
    fi
-   # Construit le paquet et la licence en meme temps
-   cd $ROOT/..
-   for fic in `ls $MODULE/*.tar.gz`
-   do
-      tar rf $fichier $fic 1>/dev/null
-      (cd $ROOT;tar rf $keys .cle_`basename $fic` 1>/dev/null)
-   done
-   rm -f $ROOT/exec.*.tar.gz
+   # FIN ET MENAGE
+   rm -f $ROOT/exec.*.tar.gz $ROOT/exec.files
 done
-#
-# FIN ET MENAGE
-#
-echo $ECHO_OPTS "\nThe $fichier file and the $keys key are ready."

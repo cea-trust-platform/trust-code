@@ -1,21 +1,16 @@
-                      Installation Notes for TRUST (30/05/2011)
-                      ------------------------------------------
+                      Installation Notes for TRUST
+                      ----------------------------
 
 Requirements:
 -------------
 The following OS is required to use/build TRUST:
-	LINUX:      	All distribution with GNU version 3.x/4.x
+	LINUX:      	All distribution with GNU version 3.x/4.x/5.x
 	
 You need also:
 	1024 Mo RAM
 	3GB memory disc
 	FireFox installed to use TRUST GUI
-	csh shell installed and sh or ksh or bash shell installed
-
-A key will be asked to you in order to install TRUST. 
-Please contact triou@cea.fr to receive the file containing
-the keys. Follow the instructions during install to apply
-correctly the key. Key is changed at each new release.
+	bash shell installed
 
 In most cases, you can install TRUST without building it. In the case
 where you should build or re-build TRUST, please install TRUST and after
@@ -25,22 +20,17 @@ To install TRUST:
 -----------------
 
 1. To install version X.Y.Z of TRUST, create a directory to install TRUST. 
-Move into this directory the file TRUST-X.Y.Z.tar (and eventually the
-file PatchX.Y.Z.tar containing a patch for TRUST). Then run the following commands
-to untar the files (the version before the eventual patch):
+Move into this directory the file TRUST_X.Y.Z.tgz.
+Then run the following commands to untar the files:
 
-$ tar xvf TRUST-X.Y.Z_ARCH.tar
-$ tar xvf PatchX.Y.Z.tar
-
-Several files appear and in particular the file you read and
-the Intaller_TRUST install script.
+$ tar xvfz TRUST_X.Y.Z.tgz
 
 2. Run the Installer_TRUST script to install TRUST automatically.
 
-$ ./Installer_TRUST
+$ export TRUST_VERSION=X.Y.Z
+$ ./TRUST_X.Y.Z/bin/Installer_TRUST
 
-Several questions may be asked to you, for example, if you want to
-re-compile TRUST.
+A LOG_TRUST file is created to analyse the progress of the compilation.
 
 If things didn't work smoothly and you can't figure out how to
 modify the configuration so that it builds properly on your system
@@ -51,14 +41,13 @@ to configure your environment.
 
 
 To use TRUST:
---------------
-cd $TRUST_ROOT
+-------------
+cd TRUST_X.Y.Z
 source env/env_TRUST.sh -> Initialize TRUST environment
-TRUST 			 -> Run GUI
 
 
 To build TRUST:
-----------------
+---------------
 On all platforms the build of TRUST requires:
 C++ compiler to build TRUST
 f77 compiler to build libraries/tools
@@ -69,5 +58,3 @@ cd $TRUST_ROOT
 source env/env_TRUST.sh
 make clean
 ./configure	-> Once it is finished, you can also change values into the $TRUST_ROOT/env/machine.env file
-source env/env_TRUST.sh
-make

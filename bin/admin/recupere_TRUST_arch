@@ -128,7 +128,12 @@ do
       FTD=`[ "$machine_cible" = 1 ] && echo "</B>"`"</TD>"
       vide="&nbsp;"
       echo "************************************************************************"
-      echo "* Recovery on $adr at `date`"
+      if [ $recupere_exec = 1 ]
+      then
+         echo "* Recovery on $adr (get_binary) at `date`"
+      else
+         echo "* Recovery on $adr at `date`"
+      fi
       echo "************************************************************************"
       # Recuperation des CR selon le mode
       if [ "`liste_machines git_cron | grep $adr`" != "" ]
@@ -158,18 +163,6 @@ do
 	    echo "$adr not accessible..."
 	 else
             # Connection sur machine interne par ssh
-#            echo "
-#-lcd $REP_NUIT
-#-mget $CR
-#-rm $CR
-#-cd $ROOT
-#-mget compile_*
-#-rm compile_*
-#-mget PERF_*
-#-rm PERF_*
-#" > $TRUST_TMP/ssh_com
-	    log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`
-	    #sftp -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o BatchMode=yes -b $TRUST_TMP/ssh_com $log@$adr 
             scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o BatchMode=yes $log@$adr:$CR $REP_NUIT/. 2>/dev/null
             ssh_ $log@$adr -n "rm $CR 2>/dev/null"
             scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o BatchMode=yes $log@$adr:$ROOT/compile_* $REP_NUIT/. 2>/dev/null
@@ -196,7 +189,7 @@ do
          then
             echo "  No test cases passed. Nothing is recovered !"
             echo "Empty PERF report of $MODULE on $HOST KO!"
-            [ $recupere_exec = 1 ] && [ ${#binaire} = 1 ] && echo "NOT portage from $adr"
+            [ $recupere_exec = 1 ] && [ ${#binaire} = 1 ] && echo "Portage KO from $adr"
          else
             echo "  New executable for $MODULE successfully tested with $TRUST_ARCH on $HOST !"
             if [ $recupere_exec = 0 ] || [ ${#binaire} = 0 ]
@@ -208,17 +201,10 @@ do
                ssh_ $log@$adr -n pwd
 	       if [ $? != 0 ]
 	       then
-	          echo "NOT portage: $adr not accessible..."
+	          echo "Portage KO: $adr not accessible..."
 	       else	       
                   # Connection interne par ssh
-#                  echo "
-#-cd $ROOT/exec
-#-lcd $exec
-#-pwd
-#-get exec.tar.gz
-#" > $TRUST_TMP/ssh_com
                   log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`
-                  #sftp -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o BatchMode=yes -b $TRUST_TMP/ssh_com $log@$adr 
                   scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o BatchMode=yes $log@$adr:$ROOT/exec/exec.tar.gz $exec/.   		  		  
 	          (cd $exec;gunzip -f exec.tar.gz;tar xf exec.tar;rm -f exec.tar)
 	          # Si version beta on renomme avec la date et le numero de version
@@ -227,7 +213,7 @@ do
 	             name_binary=`ls $exec/TRUST_mpi* 2>/dev/null`
 		     mv $name_binary $name_binary"_"$v"_build_"$DATE
 	          fi
-	          echo "OK portage from $adr to $exec"
+	          echo "Portage OK from $adr to $exec"
 	       fi
 	    fi
 	 fi
@@ -266,7 +252,7 @@ do
 	PERF=$REP_NUIT/PERF_$NOM
 	EXEC=${NOM%_$HOST}
 	EXEC=${EXEC%_$arch}
-	host="";os="";rel="";mod="";taille="";cpu=""
+	host="";os="";rel="";mod="";taille="";cpu="";cpu3d="<TD $BLANC>NOT</TD>"
 	BLANC="BGCOLOR=#FEFEFE";ROUGE="BGCOLOR=#C42111";VERT="BGCOLOR=3D\"#E47833\""
 	comp="Echec";COL1=$ROUGE
 	[ "`grep BUILD_EXEC=OK $CR`" != "" ] && comp="Succes" && COL1=$VERT
@@ -286,7 +272,9 @@ do
 	   
 	   TRUST_CC=`echo $TRUST_ARCH_CC | $TRUST_Awk -F'_' '{print $NF}'` && CC_PERF=`cat $PERF | $TRUST_Awk '/CC / {print $2" "$3}'` && [ "$CC_PERF" != "" ] && TRUST_CC=$CC_PERF
 	   taille=`cat $PERF | $TRUST_Awk '/sizeMo/ {print $2"Mo"}'`
-	   cpu=`cat $PERF | grep "Mo|" | $TRUST_Awk -F"|" '/cpu_3D / && !/PAR_/ && !/NP/{print $4}'`
+	   cpu3d=$cpu3d && [ "`grep CPU_3D=KO $CR`" != "" ] && cpu3d="<TD $ROUGE>KO</TD>"
+	   cpu=`cat $CR | grep "Mo|" | $TRUST_Awk -F"|" '/cpu_3D / && !/PAR_/ && !/NP/{print $4}'`
+	   cpu3d=$cpu3d && [ "`grep CPU_3D=OK $CR`" != "" ] && cpu3d="<TD $VERT>$cpu</TD>"
 	   # Taux sequentiel:
 	   staux=`cat $PERF | $TRUST_Awk '/succes/ && (NF==2) {print $2;exit}'`
 	   # Taux parallele:
@@ -302,7 +290,7 @@ do
 	      taux=`echo $staux/$ptaux | $TRUST_Awk -F/ '{print $1+$3"/"$2+$4}'`
 	      pourcent=`echo $ECHO_OPTS "scale=3\n$taux" | bc -l`
 	      COL2="" && [ "$pourcent" = "1.000" ] && COL2=$VERT
-	      [ "`echo $pourcent | $TRUST_Awk '{print $1<0.95}'`" = 1 ] && COL2=$ROUGE
+	      [ "`echo $pourcent | $TRUST_Awk '{print $1<0.999}'`" = 1 ] && COL2=$ROUGE
 	   else
 	      pourcent=0
 	      COL2=$ROUGE      
@@ -331,11 +319,17 @@ do
 	# Si certains elements sont disabled au configure:
 	NOT="<TD $BLANC>NOT</TD>"
 	[ "`grep 'Disabling PETSC' $CR`" != "" ] 	&& [ "`grep PETSC=KO $CR`" != "" ] 	 && PETSC=$NOT
+	[ "`grep ' -disable-petsc' $CR`" != "" ] 	&& [ "`grep PETSC=KO $CR`" != "" ] 	 && PETSC=$NOT
 	[ "`grep 'Disabling MED' $CR`" != "" ] 		&& [ "`grep MED=KO $CR`" != "" ] 	 && MED=$NOT 	  && GMSH=$NOT	 && ICOCO=$NOT
+	[ "`grep ' -disable-med ' $CR`" != "" ] 	&& [ "`grep MED=KO $CR`" != "" ] 	 && MED=$NOT 	  && GMSH=$NOT	 && ICOCO=$NOT
 	[ "`grep 'Disabling MEDCOUPLING' $CR`" != "" ]  && [ "`grep MEDCOUPLING=KO $CR`" != "" ] && MEDCOUPL=$NOT && ICOCO=$NOT
+	[ "`grep ' -disable-medcoupling' $CR`" != "" ]  && [ "`grep MEDCOUPLING=KO $CR`" != "" ] && MEDCOUPL=$NOT && ICOCO=$NOT
 	[ "`grep 'Disabling MPI' $CR`" != "" ] 		&& [ "`grep ICoCo:OK $CR`" = "" ] 	 && ICOCO=$NOT	
-	[ "`grep 'Disabling GMSH' $CR`" != "" ]         && [ "`grep Gmsh:OK $CR`" = "" ] 	 && GMSH=$NOT
+	[ "`grep ' -disable-mpi' $CR`" != "" ] 		&& [ "`grep ICoCo:OK $CR`" = "" ] 	 && ICOCO=$NOT	
+	[ "`grep 'Disabling GMSH' $CR`" != "" ]         && [ "`grep Gmsh:OK $CR`" = "" ] 	 && GMSH=$NOT	
+	[ "`grep ' -disable-gmsh' $CR`" != "" ]         && [ "`grep Gmsh:OK $CR`" = "" ] 	 && GMSH=$NOT
 	[ "`grep 'Disabling VISIT' $CR`" != "" ]        && [ "`grep VisIt:OK $CR`" = "" ] 	 && VISIT=$NOT
+	[ "`grep ' -without-visit' $CR`" != "" ]	&& [ "`grep VisIt:OK $CR`" = "" ] 	 && VISIT=$NOT
 	# On compte le nombre de machines cibles selon le type de tests
 	if [ "$machine_cible" = 1 ]
 	then
@@ -392,7 +386,7 @@ $XPREPRO
 $ASSERT
 $BALTIK
 <TD $COL2><A HREF="`basename $tests_html`">$taux</A>$FTD
-$TD$cpu$FTD
+$cpu3d$FTD
 </TR>" >> $NUIT2
       echo "<BR><LI>"$os >> /tmp/os
       echo "<BR><LI>"$TRUST_CC >> /tmp/CC
@@ -443,26 +437,33 @@ $TD_CR<A HREF="$CR">$HOST</A>$FTD
    ###############################################
    # Calcul de la portabilite du code et affichage
    ###############################################
-   [ "$nb_machine_atelier_cible" != 0 ] && portabilite_atelier=`echo $ECHO_OPTS "scale=3\n$portabilite_atelier/$nb_machine_atelier_cible" | bc -l`
-   [ "$nb_machine_xprepro_cible" != 0 ] && portabilite_xprepro=`echo $ECHO_OPTS "scale=3\n$portabilite_xprepro/$nb_machine_xprepro_cible" | bc -l`
-   [ "$nb_machine_baltik_cible"  != 0 ] && portabilite_baltik=` echo $ECHO_OPTS "scale=3\n$portabilite_baltik/$nb_machine_baltik_cible" | bc -l`
-   [ "$nb_machine_assert_cible"  != 0 ] && portabilite_assert=`echo $ECHO_OPTS "scale=3\n$portabilite_assert/$nb_machine_assert_cible" | bc -l`
-   [ "$nb_machine_cible" != 0 ]         && portabilite=`echo $ECHO_OPTS "scale=3\n$portabilite/$nb_machine_cible" | bc -l`
+   port_atelier=0
+   port_xprepro=0
+   port_baltik=0
+   port_assert=0
+   port_trust=0
+   [ "$nb_machine_atelier_cible" != 0 ] && port_atelier=`echo $ECHO_OPTS "scale=3\n$portabilite_atelier/$nb_machine_atelier_cible" | bc -l`
+   [ "$nb_machine_xprepro_cible" != 0 ] && port_xprepro=`echo $ECHO_OPTS "scale=3\n$portabilite_xprepro/$nb_machine_xprepro_cible" | bc -l`
+   [ "$nb_machine_baltik_cible"  != 0 ] && port_baltik=` echo $ECHO_OPTS "scale=3\n$portabilite_baltik/$nb_machine_baltik_cible" | bc -l`
+   [ "$nb_machine_assert_cible"  != 0 ] && port_assert=`echo $ECHO_OPTS "scale=3\n$portabilite_assert/$nb_machine_assert_cible" | bc -l`
+   [ "$nb_machine_cible" != 0 ]         && port_trust=`echo $ECHO_OPTS "scale=3\n$portabilite/$nb_machine_cible" | bc -l`
    
    #limite=`echo $ECHO_OPTS "scale=3\n1-1/2/$nb_machine_cible" | bc -l`
    limite=0.99
-   mes=`echo $portabilite | $TRUST_Awk -v limite=$limite '{if ($1>limite) print "Portable version that can be livery if it is stable"}'`
+   mes=`echo $port_trust | $TRUST_Awk -v limite=$limite '{if ($1>limite) print "Portable version that can be livery if it is stable"}'`
 
    echo "Portability Components for $TRUST_VERSION version:<BR>" >> $NUIT2
+   echo "<A HREF="nuit_TrioCFD.html">TrioCFD</A> : TrioCFD baltik compilation portability<BR>" >> $NUIT2
    echo "<A HREF="nuit_ModeleCoeur.html">MC2</A> : ModeleCoeur baltik compilation portability<BR>" >> $NUIT2
+   echo "<A HREF="nuit_MPCube.html">MPCube</A> : MPCube baltik compilation portability<BR>" >> $NUIT2
    echo "<A HREF="nuit_ICoCo.html">ICoCo</A> : ICoCo baltik compilation portability<BR>" >> $NUIT2
    echo "<A HREF="nuit_equation_convection_diffusion.html">Tuto</A> : equation_convection_diffusion baltik compilation portability<BR>" >> $NUIT2
-   echo "Release criteria of the $TRUST_VERSION version:<BR>" >> $NUIT2
-   echo "$portabilite : $MODULE portability (>$limite) $mes<BR>" >> $NUIT2
-   echo "$portabilite_atelier : $MODULE workshop compilation<BR>" >> $NUIT2
-   echo "$portabilite_xprepro : Xprepro portability with $MODULE<BR>" >> $NUIT2
-   echo "$portabilite_baltik : Baltik portability with $MODULE<BR>" >> $NUIT2
-   echo "$portabilite_assert : Compilation assert test<BR>" >> $NUIT2
+   #echo "Release criteria of the $TRUST_VERSION version:<BR>" >> $NUIT2
+   echo "$port_trust : $MODULE portability ( $portabilite/$nb_machine_cible > $limite ) $mes<BR>" >> $NUIT2
+   echo "$port_atelier : $MODULE workshop compilation ( $portabilite_atelier/$nb_machine_atelier_cible )<BR>" >> $NUIT2
+   echo "$port_xprepro : Xprepro portability with $MODULE ( $portabilite_xprepro/$nb_machine_xprepro_cible )<BR>" >> $NUIT2
+   echo "$port_baltik : Baltik portability with $MODULE ( $portabilite_baltik/$nb_machine_baltik_cible )<BR>" >> $NUIT2
+   echo "$port_assert : Compilation assert test ( $portabilite_assert/$nb_machine_assert_cible )<BR>" >> $NUIT2
 done
 echo "*********************************************************************"
 

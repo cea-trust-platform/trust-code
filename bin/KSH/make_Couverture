@@ -12,9 +12,12 @@ update_version()
          CHECKOUT $rep/$1 1>/dev/null 2>&1
          gzip -c $1 > $rep/$1.gz
       fi
+      echo "=> Copie $1.gz dans $TRUST_TMP"
+      cp $rep/$1.gz $TRUST_TMP/$1.gz
    else
       echo "$1"
    fi  
+   echo " "
 }
 export PYTHONPATH=$TRUST_ROOT/bin/KSH:$PYTHONPATH
 rep=$TRUST_ROOT/doc/Coverage

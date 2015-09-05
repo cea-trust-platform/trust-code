@@ -67,6 +67,7 @@ then
    CHECKOUT $file
    tar cfz $file *.gcov
    echo "$file updated"
+   cp $file $TRUST_TMP/cpp.gcov.tar.gz
 fi
 
 echo "Analysis of the coverage..."

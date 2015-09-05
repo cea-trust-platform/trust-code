@@ -70,6 +70,7 @@ check_src_in_gc()
 check_recent_src()
 {
     file=$1
+	indent_file.sh $file
     #############################################################
     # Interdiction de entier au lieu de int a partir de la v1.6.8
     #############################################################

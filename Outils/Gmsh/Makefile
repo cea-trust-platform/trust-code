@@ -7,7 +7,7 @@ all : $(PROGRAM)
 $(PROGRAM) : Makefile install_gmsh Demo_Gmsh.ksh $(TRUST_ROOT)/lib/src/LIBMED/MED/lib/libmed.so
 	make clean
 	./install_gmsh 2>&1 | tee install_gmsh.log
-	#make demo
+	make demo
 demo:
 	./Demo_Gmsh.ksh
 

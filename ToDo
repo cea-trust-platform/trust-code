@@ -1,22 +1,20 @@
 Version	Qui				Tache
+1.7.2   triou@cea.fr            Augmenter la version de Gnuplot : passer de 4.4 a 4.6
+1.7.2   triou@cea.fr            Gauthier a demande d ajouter test Execute_parallel lors du configure pour verifier l'installation MPI
 1.7.2   triou@cea.fr            revoir comment activer ou non les mot cles dans vi car a adapter selon les baltiks charges
 1.7.2   triou@cea.fr            revoir le TRUST env qui teste beaucoup de chose (ex: dd.ksh,...) et trop long pour utilisateur
-1.7.2   triou@cea.fr            dans lance_test_nuit revoir le test Run_fiche sur VisIt (quand et sur quelles machines le faire)
 1.7.2   gauthier.fauchet@cea.fr  configure disable-optionals essaie d installer tcl/tk non necessaire mais plante si non dispo
 1.7.2   triou@cea.fr            dans lance_test_nuit quand jobs tues a distance faire de meme avec run etudes
 1.7.2   triou@cea.fr            maintenance CCRT 16 juin => revoir point d acces sur curie et airain
 1.7.2   triou@cea.fr            revoir sortie Installer_TRUST quand erreur a la compilation ou etat des lieux lors d'une "longue" attente sans message
 1.7.2   triou@cea.fr            revoir echo Disabling de configure pour NUIT.html ET reps=LIB... dans bin/compile avec un OK KO ou NOT (MED et MEDCOUPLING traites differemment)
-1.7.2   triou@cea.fr            supprimer les anciens log sur machines distantes pour -Check-decoupagen -xdata dans liste.machines, -gcov, -prof
-1.7.2   triou@cea.fr            modifier liste.machines tel que -valgrind sans -force_old_openmpi
 1.7.2   gauthier.fauchet@cea.fr  revoir preconditionnement_diag 1 en parallele (modif src ou message a l utilisateur)
 1.7.2   triou@cea.fr            completer benchmark avec et sans Petsc
 1.7.2   triou@cea.fr            Avoir un fichier avec la liste des fichiers deleted sur git pour faire un rm a distance
 1.7.2   triou@cea.fr            Probleme avec pre-commit et post-commit qui modifie des fichiers lors du commit apres nos tests !!! Le faire lors du compile et si modif alors arret...
 1.7.2   triou@cea.fr            tester options du configure: -force_petsc_have_cuda -force_petsc_have_openmp
 1.7.2   triou@cea.fr            turbulence : si u_tau.dat reynolds_tau.dat et tauw.dat renommes en jdd_***.dat, alors ATTENTION car beaucoup de fiches de valid s'en servent + voir avec utilisateurs
-1.7.2   triou@cea.fr            revoir TEST_MINIMUM en augmentant le nombre de tests 27/27
-1.7.2   triou@cea.fr            faire une base git pour avoir l historique des CR de nuit (comme Etudes)
+1.7.2   triou@cea.fr            revoir TESTS_MINIMUM dans lance_test en augmentant le nombre de tests 27/27
 1.7.2   triou@cea.fr            ameliorer compare_lata en ajoutant des *.out.ref et/ou *.son.ref cf DI 3825
 1.7.2   triou@cea.fr            considerer les ecarts comme des erreurs ie supprimer les lignes # lance_test 2 ecarts possibles sur ce cas possible # dans l ensemble des tests de NR
 1.7.2	triou@cea.fr			Champ_front_normal voir d'autres ne devrait pas heriter de Ch_front_var_instationnaire_dep (notion d'inconnue)
@@ -31,4 +29,5 @@ Version	Qui				Tache
 1.7.2	triou@cea.fr			Reduce number of CPUs for TRUST_MAKE (avoid crash with cmake?)
 1.7.2	triou@cea.fr			Check Champ_fonc_reprise with .sauv files produces a clear error message when partition is changed
 1.7.2	triou@cea.fr			Do a git tag on each change of the branch patch_XYZ (patch_XYZ.n)
+1.7.2	marthe.roux@cea.fr  	Graver CD Trio_U 1.6.7, 1.6.8 et 1.6.9
 1.7.2	triou@cea.fr  			Doc Word: mettre a jour index et table des matieres

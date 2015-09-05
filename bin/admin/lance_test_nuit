@@ -3,7 +3,7 @@ check_components()
 {
    for Composant in $Composants
    do
-      if [ ! -d $TRUST_ROOT/../Composants/$Composant ]
+      if [ ! -d $TRUST_ROOT/../Composants/$Composant ] && [ $* != sourceforge/Kernel ]
       then
          # Create a link for some components
 	 cd $TRUST_ROOT/../Composants
@@ -17,12 +17,10 @@ check_components()
 	 fi
 	 cd -
       fi
-      #if [ -d $TRUST_ROOT/../Composants/$Composant ]
-      if [ -d $TRUST_ROOT/../Composants/$Composant ] && [ "$Composant" != ModeleCoeur ] # Temporary
+      if [ -d $TRUST_ROOT/../Composants/$Composant ]
       then
          cd $TRUST_ROOT/../Composants/$Composant
 	 rm -f $Composant*.log
-	 #Composant_log=`dirname $TRUST_ROOT`/Composants/$Composant.log
 	 Composant_log=$REP_NUIT"/baltik_"$Composant"_"$HOST"_"${*#*/}".log"
          echo "  Check `pwd`"
 	 echo "    See $Composant_log"
@@ -38,9 +36,27 @@ check_components()
 	    # First pass, reconfigure to clean properly (in the case where the TRUST_ROOT has changed):
 	    [ "$Composant" != ICoCo ] && source env_$Composant.sh && make dist_clean
 	    [ "$Composant" == ICoCo ] && source env_MED$Composant.sh && make dist_clean
+	    if [ $TRUST_ROOT = $TRUST_ROOT_MASTER ]
+	    then
+	       if [ "$Composant" = ModeleCoeur ]  # check_all KO a cause d'ecarts sur cas ICoCo car changement de modele par defaut sur Navier-Stockes!!!
+	       then
+	          make_option="make check_optim check_debug"
+	       #elif [ "$Composant" = TrioCFD ] # check_all_debug trop long
+	       #   make_option="make check_all_optim"
+	       else
+	          make_option="make check_all_optim check_all_debug"
+	       fi
+	    else
+	       if [ "$Composant" = ModeleCoeur ]  # check_all KO a cause d'ecarts sur cas ICoCo car changement de modele par defaut sur Navier-Stockes!!!
+	       then
+	          make_option="make check_optim"
+	       else
+	          make_option="make check_all_optim"
+	       fi
+	    fi
 	    $TRUST_ROOT/bin/baltik/bin/baltik_build_configure && ./configure &&
 	    make optim module_optim debug module_debug &&
-	    make check_all_optim `[ $TRUST_ROOT = $TRUST_ROOT_MASTER ] && echo check_all_debug` && echo "$Composant OK" && COMPOSANT_OK=1
+	    $make_option && echo "$Composant OK" && COMPOSANT_OK=1
             echo " "
             echo "******************************************************"
             echo " "
@@ -48,11 +64,13 @@ check_components()
 	    if [ "$COMPOSANT_OK" = 0 ]
 	    then
 	       echo $ECHO_OPTS "KO."
-	       cat $Composant_log | mail_ -s\"[lance_test_nuit] check_components $Composant $TRUST_VERSION KO\" $TRUST_MAIL
+	       cat $Composant_log | mail_ -s\"[lance_test_nuit] check_components $Composant $TRUST_VERSION KO\" $TRUST_MAIL $TRUST_PROJECT_LEADER
 	    else
 	       echo $ECHO_OPTS "OK"
 	    fi	    
 	    echo " "
+            echo "TRUST script on $HOST the `date` ..."
+            echo " "
 	    rm -f Run.liste
 	    rm -f nuit_$Composant.html
 	    rm -f $Composant_%_*.log
@@ -63,26 +81,63 @@ check_components()
                echo " "
                echo "******************************************************"
                echo " "
-	       # Test on cezanne63 (for SESI Debian 7.0)
-	       # Test on callisto (DM2S cluster)
-	       # Test on curie (CCRT cluster) 
-	       # Test sur une machine valgrind 
-	       valgrind_machine=`liste_machines "\-valgrind" | head -1 | awk -F. '{print $1}'`
 	       liste_options="--with-efface-dir-before --with-mode=optim --check-all"
 	       echo "  See `pwd`/Run.liste"
-	       machine="cezanne63"
-	       #echo "$Composant.tar /home/pledac/$WORKBASE$machine/Composants/$Composant pledac@$machine --with-trio=/home/pledac/$WORKBASE$machine/TRUST $liste_options" >> Run.liste
-	       machine="callisto"
-	       #[ "$Composant" != ModeleCoeur ] && echo "$Composant.tar /panfs/ixion/home/triou/$WORKBASE$machine/Composants/$Composant triou@$machine --with-trio=/panfs/ixion/home/triou/$WORKBASE$machine/TRUST $liste_options" >> Run.liste
-	       #echo "$Composant.tar /panfs/ixion/home/triou/$WORKBASE$machine$/Composants/$Composant triou@$machine --with-trio=/panfs/ixion/home/triou/$WORKBASE$machine/TRUST $liste_options" >> Run.liste
-	       # ModeleCoeur had some crashes on curie for inter assemblage calculations:
-	       machine="curie-ccrt"
-	       #[ "$Composant" != ModeleCoeur ] && echo "$Composant.tar /ccc/cont002/home/den/triou/$WORKBASE$machine/Composants/$Composant triou@$machine --with-trio=/ccc/cont002/home/den/triou/$WORKBASE$machine/TRUST $liste_options" >> Run.liste
-	       #echo "$Composant.tar /ccc/cont002/home/den/triou/$WORKBASE$machine/Composants/$Composant triou@$machine --with-trio=/ccc/cont002/home/den/triou/$WORKBASE$machine/TRUST $liste_options" >> Run.liste
-	       # valgrind too slow (try again the 21/11/14 for 1.7.0):
-	       # /work/triou/ au CEA Grenoble ; /export/home/triou/ au CEA Saclay
-	       #echo "$Composant.tar /work/triou/$WORKBASE$valgrind_machine/Composants/$Composant triou@$valgrind_machine --with-trio=/work/triou/$WORKBASE$valgrind_machine/TRUST $liste_options --with-valgrind" >> Run.liste
-	       echo "$Composant.tar /export/home/triou/$WORKBASE$valgrind_machine/Composants/$Composant triou@$valgrind_machine --with-trio=/export/home/triou/$WORKBASE$valgrind_machine/TRUST $liste_options --with-valgrind" >> Run.liste
+	       # Toutes les machines
+	       all_machines=`liste_machines | awk -F. '{print $1}'`
+	       # Machines en mode valgrind
+	       valgrind_machines=`liste_machines "\-valgrind" | awk -F. '{print $1}'`
+	       if [ "$Composant" = ICoCo ]
+	       then
+	          # Machines en mode sequentiel
+	          wompi_machines=`liste_machines "\-disable-mpi" | awk -F. '{print $1}'`
+	          wompi_machines=$wompi_machines" `liste_machines "\-disable-optionals" | awk -F. '{print $1}'`"
+	          wompi_machines=$wompi_machines" `liste_machines "\-disable " | awk -F. '{print $1}'`"
+	          # Machines en mode parallele
+		  machines=""
+		  for machine in $all_machines
+		  do
+		     [[ "$wompi_machines" != *"$machine"* ]] && machines=$machines" $machine"
+		  done
+	       elif [ "$Composant" = TrioCFD ]
+	       then
+	          machines=`liste_machines "\-TrioCFD" | awk -F. '{print $1}'`
+	       elif [ "$Composant" = ModeleCoeur ]
+	       then
+	          machines=`liste_machines "\-ModeleCoeur" | awk -F. '{print $1}'`
+	       elif [ "$Composant" = MPCube ]
+	       then
+	          machines=`liste_machines "\-MPCube" | awk -F. '{print $1}'`
+	       else
+	          machines=$all_machines
+	       fi
+	       for machine in $machines
+	       do
+	          if [[ "$liste_machines_KO" != *"$machine"* ]] # Test si machine n est pas dans la liste des machines KO
+		  then
+	             if [[ "$valgrind_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines valgrind
+		     then
+		        valgrind_option="--with-valgrind"
+		     else
+		        valgrind_option=""
+		     fi
+	             if [ "${machine:0:2}" = "is" ] || [ "${machine:0:10}" = "antoinette" ] # Test si machine est a Saclay ou a Cadarache
+		     then
+	                echo "$Composant.tar $WORKDIR/$WORKBASE$machine/Composants/$Composant triou@$machine --with-trio=$WORKDIR/$WORKBASE$machine/TRUST $liste_options $valgrind_option" >> Run.liste
+	             elif [ "${machine:0:7}" = "cezanne" ] || [ "${machine:0:5}" = "ceres" ] # Test si machine est a Cadarache ou a Marcoule
+		     then
+	                echo "$Composant.tar /home/ccapitai/$WORKBASE$machine/Composants/$Composant ccapitai@$machine --with-trio=/home/ccapitai/$WORKBASE$machine/TRUST $liste_options $valgrind_option" >> Run.liste
+		     elif [ "${machine:0:5}" = "sitre" ] || [ "${machine:0:6}" = "vonnes" ] # Test si machine est a Grenoble
+		     then
+	                echo "$Composant.tar /work/triou/$WORKBASE$machine/Composants/$Composant triou@$machine --with-trio=/work/triou/$WORKBASE$machine/TRUST $liste_options $valgrind_option" >> Run.liste
+	             elif [ "${machine:0:4}" = "thor" ] # Test si machine est a Grenoble
+		     then
+	                echo "$Composant.tar /tmp_mnt/clusdata/trio/$WORKBASE$machine/Composants/$Composant trio@$machine --with-trio=/tmp_mnt/clusdata/trio/$WORKBASE$machine/TRUST $liste_options $valgrind_option" >> Run.liste
+		     else # Test si machine est a Saclay
+	                echo "$Composant.tar $HOME/$WORKBASE$machine/Composants/$Composant triou@$machine --with-trio=$HOME/$WORKBASE$machine/TRUST $liste_options $valgrind_option" >> Run.liste
+		     fi
+		  fi
+	       done
                echo " "
 	       cat Run.liste
 	       echo " "
@@ -93,8 +148,8 @@ check_components()
 	 ) 1>$Composant_log 2>&1
 	 echo "    `grep "Component $Composant" $Composant_log`"
          cd $TRUST_ROOT
-      else
-         echo "Component $Composant not found here: $TRUST_ROOT/../Composants"
+      #else
+      #   echo "  Component $Composant KO not found here: $TRUST_ROOT/../Composants"
       fi
    done
 }
@@ -162,6 +217,7 @@ echo "Release notes new version: "$new
 
 # DISPLAY
 [ ${#DISPLAY} = 0 ] && export DISPLAY=":0"
+[ "`echo -e`" != "-e" ] && ECHO_OPTS="-e"
 
 #VOBS="Doc_TRUST Pre_Post_TRUST Tests_TRUST TRUST Composants"
 VOBS="TRUST Composants"
@@ -170,10 +226,8 @@ VOBS="TRUST Composants"
 # TrioCFD est ajoute a la liste car est devenu un Baltik de TRUST suite au decoupage de Trio_U.
 # ICoCo est devenu un Outil de TRUST.
 # equation_convection_diffusion est un projet Baltik qui sert de tutorial a la formation developpeur.
-# MPCube est un Baltik qui peut etre teste sur TRUST.
-# MPCube est supprime de la liste car teste par ailleurs sur le Kernel.
-#Composants="ModeleCoeur ICoCo equation_convection_diffusion" 
-Composants="equation_convection_diffusion ICoCo TrioCFD ModeleCoeur" 
+# MPCube est un Baltik qui peut etre teste sur TRUST et sur le kernel.
+Composants="equation_convection_diffusion ICoCo TrioCFD ModeleCoeur MPCube" 
 
 # Initialize environment TRUST:
 echo " "
@@ -217,10 +271,11 @@ rm -f $REP_NUIT/CR_* $REP_NUIT/PERF_* $REP_NUIT/MAKE_* $REP_NUIT/*.log
 rm -f $REP_NUIT/rsync_include_from $REP_NUIT/NUIT.html
 rm -f $REP_NUIT/os $REP_NUIT/CC $REP_NUIT/CR
 rm -f $MESSAGES_NUIT
+rm -f $REP_NUIT/.nfs*
 # On cree :
 [ ! -d $REP_NUIT ] && mkdir $REP_NUIT
 [ ! -d $REP_HIST ] && mkdir $REP_HIST
-ls $REP_NUIT
+ls -a $REP_NUIT
 echo "<--- End at "`date '+%H:%M:%S'`
 echo " "
 echo "------------------------------------------------------"
@@ -257,7 +312,7 @@ echo "  See $config_log"
 echo "TRUST configuration on $HOST the `date` ...">$config_log
 echo>>$config_log
 ./configure 1>>$config_log || exit -1
-grep -i error $config_log
+#grep -i error $config_log
 grep KO $config_log
 tail -n8 $config_log | head -n1
 echo " "
@@ -294,13 +349,69 @@ fi
 echo>>$verif_log
 cat $TRUST_TMP/Verifie_pere/LOG>>$verif_log 
 
+# Gestion externalpackages
+cd $TRUST_ROOT/bin/gestion_externalpackages
+external_log=$REP_NUIT/Verify_externalpackages_$HOST.log
+echo " "
+echo "Call to "$TRUST_ROOT"/bin/gestion_externalpackages/Verify_externalpackages.sh"
+echo "  See $external_log"
+echo "TRUST external packages check on $HOST the `date` ...">$external_log
+echo>>$external_log
+./Verify_externalpackages.sh 1>>$external_log 2>&1
+nb_error=`grep "not in" $external_log | wc -l`
+if [ $nb_error != 0 ]
+then
+   cat $external_log | mail_ -s\"[lance_test_nuit] Verify_externalpackages.sh KO on $HOST:$TRUST_ROOT\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+   cat $external_log
+   echo "KO"
+else
+   echo "OK"
+fi
+liste_log=$REP_NUIT/Verify_liste_dep_$HOST.log
+echo " "
+echo "Call to "$TRUST_ROOT"/bin/gestion_externalpackages/Verify_liste_dep.sh"
+echo "  See $liste_log"
+echo "TRUST external packages liste dep on $HOST the `date` ...">$liste_log
+echo>>$liste_log
+[ "`date '+%u'`" = 6 ] && rm -r -f Test
+./Verify_liste_dep.sh 1>>$liste_log 2>&1
+# les 3 paquets suivants different car
+# qt-everywhere-opensource-src-4.8.3 sans doc (taille passe de 685M a 352M)
+# med-3.0.7 sans doc et sans python (taille passe de 162M a 19M)
+# osu-micro-benchmarks-3.8 version initiale non retrouvee
+nb_error=`grep "FAILED" $liste_log | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.0.7 | grep -v osu-micro-benchmarks-3.8 | wc -l`
+if [ $nb_error != 0 ]
+then
+   # qt-everywhere-opensource-src-4.8.3 sans doc (taille passe de 685M a 352M)
+   # med-3.0.7 sans doc et sans python (taille passe de 162M a 19M)
+   # osu-micro-benchmarks-3.8 version initiale non retrouvee
+   liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.0.7 | grep -v osu-micro-benchmarks-3.8`
+   cd Test
+   rm -r -f old new
+   for package in $liste_failed
+   do
+      echo>>$liste_log
+      echo "Launch ../compare_archive $package">>$liste_log    
+      ../compare_archive $package 1>>$liste_log 2>&1
+   done
+   cd ..
+   cat $liste_log | mail_ -s\"[lance_test_nuit] Verify_liste_dep.sh KO on $HOST:$TRUST_ROOT\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+   grep "computed checksums did NOT match" $liste_log
+   grep "FAILED" $liste_log
+   echo "KO"
+else
+   echo "OK"
+fi
+cd $TRUST_ROOT
+
 # Marque la version dans MAIN.cpp et mon_main.cpp
 echo " "
+echo "Mark version in following files:"
 for MAIN in $TRUST_ROOT/src/MAIN/MAIN.cpp $TRUST_ROOT/src/MAIN/mon_main.cpp
 do
-   echo "Mark "$MAIN
    CHECKOUT $MAIN 1>/dev/null 2>&1
    version=`$TRUST_Awk '/version :/ {print $4}' $MAIN`
+   echo "  "$version"=>"$new": "$MAIN
    echo $ECHO_OPTS "1,$ s?version : $version?version : $new?g\nw" | ed $MAIN 1>/dev/null 2>&1
    CHECKIN $MAIN 1>/dev/null 2>&1
 done
@@ -351,20 +462,25 @@ echo "#######################################"
 echo "# Send the sources to remote machines #"
 echo "#######################################"
 echo "---> Begin at "`date '+%H:%M:%S'`
-(
 envoie_log=$REP_NUIT/envoie_TRUST_arch_$HOST.log
 echo "Call to "$TRUST_ROOT"/bin/admin/envoie_TRUST_arch"
 echo "  See $envoie_log"
 echo "TRUST script on $HOST the `date` ...">$envoie_log
 echo>>$envoie_log
+touch liste_envoie_KO
 envoie_TRUST_arch 1>>$envoie_log 2>&1
+export liste_machines_KO=`cat liste_envoie_KO`
+rm -f liste_envoie_KO
 grep -i delete $envoie_log | head -n1
-grep KO $envoie_log
-grep error $envoie_log
+grep "KO " $envoie_log
+#grep error $envoie_log
 mv -f rsync_*.log $REP_NUIT/.
 mv -f rsync_include_from $REP_NUIT/.
 mv -f ssh_*.log $REP_NUIT/.
-) # & Pas en background pour voir ce qui fait planter le serveur X
+# On recupere le nom des machines sur lesquelles les sources n'ont pu ^etre mises a jour 
+# Cette liste permettra de ne pas lancer la portabilite des baltiks sur ces machines
+echo "  liste_machines_KO:"
+echo $liste_machines_KO
 echo "<--- End at "`date '+%H:%M:%S'`
 echo " "
 echo "------------------------------------------------------"
@@ -420,7 +536,7 @@ echo "###############################################"
 	      cat $rebase_log | mail_ -s\"[lance_test_nuit] Error when rebasing $vue workdir. Check.\" $TRUST_PROJECT_LEADER $TRUST_MAIL
 	   fi
 	   grep -i error $rebase_log
-	   tail -n1 $rebase_log
+	   echo "rebase_error=$rebase_error"
 	   echo " "
 	   #rm -f $rebase_log
 	   # Delete non Kernel tests if any:
@@ -443,6 +559,7 @@ echo "###############################################"
 	echo "Call to configure $vue version in `pwd`"
 	./configure 1>/dev/null 2>&1
         source env/env_TRUST.sh 1>/dev/null 2>&1
+	echo "TRUST_ROOT=$TRUST_ROOT"
 	###################################################
 	# Boucle sur les differentes options de compilation
 	###################################################
@@ -465,7 +582,8 @@ echo "###############################################"
            echo "TRUST make on $HOST the `date` ...">$make_log
            echo>>$make_log
 	   make $TYPE 1>>$make_log 2>&1
-	   grep -i error $make_log
+	   grep "BUILD_" $make_log
+	   grep error $make_log
 	   grep -i Stop $make_log
 	   grep KO $make_log
 	   if [ "$OPT" = "_semi_opt" ]
@@ -500,6 +618,7 @@ echo "###############################################"
                  echo "TRUST checkin patch on $HOST the `date` ...">$checkin_log
 		 $TRUST_ROOT/bin/admin/checkin_patch.ct 1>>$checkin_log 2>&1
 		 wc -l $checkin_log
+		 grep "diff --git" $checkin_log
 		 [ "`cat $checkin_log | tail -n +2`" != "" ] && cat $checkin_log | mail_ -s\"[checkin_patch.ct] Changes in the $TRUST_VERSION patch branch\" $TRUST_MAIL #$TRUST_PROJECT_LEADER
 		 #######################
 		 # Construction du patch
@@ -507,35 +626,42 @@ echo "###############################################"
 		 patch_version=`awk '/version/ && /Release notes/ {print $4;exit}' RELEASE_NOTES`
 		 rm -f $TRUST_TMP/patch
 		 GRAVAGE=$WORKDIR/A_GRAVER_CD_TRUST
-		 patch=$GRAVAGE/Patch$patch_version".tar" && rm -f $patch
+		 patch=$GRAVAGE/Patch_$patch_version".tgz" && rm -f $patch
 		 echo " "
 		 echo "Construction of the $patch patch..."
 		 echo "from `pwd`"
-		 (    
-		    (
-		       cd bin;tar cf $patch Installer_TRUST README_INSTALL linux_install_tools*.tgz;cd ..
-		    )
+		 (
 		    # Git (On ne scrute que les VOBs TRUST):
 		    cd $TRUST_ROOT
 		    git_push
-		    echo "  Files contained in $TRUST_TMP/patch"
-		    echo "    See $TRUST_TMP/patch_files"
-		    git diff --name-only v$TRUST_VERSION > $TRUST_TMP/patch_files
-		    if [ -s $TRUST_TMP/patch_files ]
+		    echo "  Files contained in the patch"
+		    echo "    See $TRUST_ROOT/patch.files"
+		    git diff --name-only v$TRUST_VERSION > patch.files
+		    if [ -s patch.files ]
 		    then
-		       for file in `cat $TRUST_TMP/patch_files`
-		       do
-		          if [ -f $file ]
-		          then
-			     # echo $file
-        		     tar rf $TRUST_TMP/patch $file
-        		  fi
-		       done
+                       # ajout du log pour identifier l'archive
+		       git log -1 > .git_patch_log
+                       echo .git_patch_log >> patch.files
+		       # Ajout de Patch au fichier
+		       #BASE=`basename $TRUST_ROOT`
+		       #for file in `cat patch.files`
+		       #do
+		       #   if [ -f $file ]
+		       #   then
+		       #      echo $BASE/$file
+        	       #   fi
+		       #done > Patch.files
+		       # creation des archives
 		       echo "  Files compressed in $patch"
-		       cd $TRUST_TMP;tar rf $patch patch
+		       tar zcf $patch `cat patch.files`
+		       #cd ..
+		       #tar zcf $patch  --transform=s?$BASE?Patch_${patch_version}? `cat $BASE/Patch.files`
+		       #md5sum  $patch > $patch.md5
 		    fi
+		    cd $TRUST_ROOT
+		    cat patch.files 
+		    rm -f Patch.files
 		 )
-		 cd $TRUST_ROOT
 		 # Envoi immediat sur ftp.cea.fr
                  echo "  Call to "$TRUST_ROOT"/bin/admin/connect_ftp"
                  . $TRUST_ROOT/bin/admin/connect_ftp
@@ -559,8 +685,7 @@ echo "###############################################"
 		    install_patch_log=$REP_NUIT"/install_patch_"`echo $machine | awk -F"." '{print $1}'`"_"${vue#*/}".log"
                     echo "TRUST script on $HOST the `date` ...">$install_patch_log
 		    echo>>$install_patch_log
-		    #$TRUST_ROOT/bin/admin/Installer_TRUST.ssh $machine $patch_version -patch -compile 1>>$install_patch_log 2>&1
-		    echo "A tester manuellement avant de la faire par lance_test_nuit :error">>$install_patch_log 2>&1 # Temporary
+		    $TRUST_ROOT/bin/admin/Installer_TRUST.ssh $machine $patch_version -patch -compile 1>>$install_patch_log 2>&1
 		    if [ $? != 0 ] || [ "`grep :error $install_patch_log | grep -iv warning | grep -v TRIOXDATA | grep -v Gmsh`" != "" ]
 		    then
                        cat $install_patch_log | mail_ -s\"[lance_test_nuit] Failed to install patch version on $machine\" $TRUST_MAIL
@@ -579,17 +704,17 @@ echo "###############################################"
 	then
 	   lance_test_log=$REP_NUIT"/lance_test_"$HOST"_"${vue#*/}".log"
 	   echo " "
-	   echo "-> Start of exec=$exec_opt triou -check all"
+	   echo "-> Start of exec=$exec_opt trust -check all"
            echo "  See $lance_test_log"
            echo "TRUST script on $HOST the `date` ...">$lance_test_log
 	   echo>>$lance_test_log
 	   # Reduce priority with nice:
-	   exec=$exec_opt nice -n 19 $TRUST_ROOT/bin/triou -check all 1>>$lance_test_log 2>&1 &
+	   exec=$exec_opt nice -n 19 $TRUST_ROOT/bin/trust -check all 1>>$lance_test_log 2>&1 &
 	fi
 	###############################
 	# Verification des composants #
 	###############################
-	if [ $vue = sourceforge/Maintenance ]
+	if [ $vue = sourceforge/Maintenance ] || [ $vue = sourceforge/Kernel ]
 	then
 	   echo " "
 	   echo "Call check_components for $TRUST_VERSION version from `pwd`"
@@ -607,7 +732,13 @@ echo "###############################################"
  	   echo "Call `pwd`/git diff --name-status $master_branch...$patch_branch"
  	   git diff --name-status $master_branch...$patch_branch 1>$to_merge
 	   cat $to_merge
- 	   [ -s $to_merge ] && cat $to_merge | mail_ -s\"[lance_test_nuit] Some stuff to merge in $master_branch from $patch_branch with command: fusion.git $patch_branch\" $TRUST_MAIL
+ 	   if [ -s $to_merge ]
+	   then
+	      echo "KO: Some stuff to merge in $master_branch from $patch_branch with command: fusion.git $patch_branch"
+	      cat $to_merge | mail_ -s\"[lance_test_nuit] Some stuff to merge in $master_branch from $patch_branch with command: fusion.git $patch_branch\" $TRUST_MAIL
+	   else
+	      echo "OK: No stuff to merge in $master_branch from $patch_branch"
+	   fi
  	   rm -f $to_merge
 	fi
         echo "<--- End at "`date '+%H:%M:%S'`
@@ -638,12 +769,12 @@ etude_test=0
 disable_etudes=~/disable_etudes && [ -f $disable_etudes ] && etude_test=1 && rm -f $disable_etudes
 if [ "$etude_activation" = 1 ] 
 then
-   cd $ETUDES
+   cd $ETUDES 2>/dev/null
    if [ $? != 0 ]
    then
       echo "Error: $ETUDES not found !"
-      echo "You should create a git repo for Etudes and change the run script"
-      echo "or for the moment, you can create a link to Etudes directory."
+      echo "  You should create a git repo for Etudes and change the run script"
+      echo "  or for the moment, you can create a link to Etudes directory."
 # seulement si le script run de la veille est termine (ie run_Etudes.log deplace dans $REP_NUIT)
    else 
       if [ ! -f run_Etudes.log ]
@@ -743,9 +874,8 @@ do
       echo " " >> $lance_test_log
       echo "######################################################" >> $lance_test_log
       echo " " >> $lance_test_log
+      export PAR=0
       echo $ECHO_OPTS $N | lance_test $exec `dirname $exec` 2>&1 >> $lance_test_log
-      PAR=0
-      export PAR
       if [ -f $fic_test ]
       then
          #cat $fic_test".html" | grep "Mo|" >> $PERF
@@ -780,7 +910,6 @@ do
    # Suite au test `$exec 2>&1 | grep TRUST`
    rm -f convert_jdd hierarchie.dump TRUST.log
 done
-echo " "
 echo "<--- End at "`date '+%H:%M:%S'`
 
 #################################################
@@ -869,16 +998,15 @@ echo "Deleting of _build_ packages in $GRAVAGE"
 ls -f $GRAVAGE/*_build_*
 rm -f $GRAVAGE/*_build_*
 v=${Version#Version}
-version_arch=TRUST-$v".tar"
-keys="keys"$v
+version_arch=TRUST_$v".tgz"
 package_log=$REP_NUIT"/package_$HOST.log"
 # Dans le paquet officiel, on ne met pas les tests de validation car cela prend trop de place
 echo " "
-echo "Call to "$TRUST_ROOT"/bin/admin/mise_a_jour_TRUST_tar -without_test_validation"
+echo "Call to "$TRUST_ROOT"/bin/admin/mise_a_jour_TRUST_tar -without_test_validation -without_version"
 echo "  See $package_log"
 echo "TRUST script on $HOST the `date` ...">$package_log
 echo>>$package_log
-mise_a_jour_TRUST_tar -without_test_validation 1>>$package_log
+mise_a_jour_TRUST_tar -without_test_validation -without_version 1>>$package_log
 grep "Creation of" $package_log
 echo " "
 echo "Call to "$TRUST_ROOT"/bin/admin/cree_Version_TRUST $v"
@@ -888,9 +1016,7 @@ tail -n1 $package_log
 echo " "
 echo "Move $version_arch packages to $GRAVAGE"
 mv $TRUST_ROOT/$version_arch $GRAVAGE/.
-[ -f $TRUST_ROOT/$keys ] && mv $TRUST_ROOT/$keys $GRAVAGE/.
 ls $GRAVAGE/$version_arch
-[ -f $GRAVAGE/$keys ] && ls $GRAVAGE/$keys
 cd $TRUST_ROOT
 echo "<--- End at "`date '+%H:%M:%S'`
 #
@@ -904,25 +1030,26 @@ echo `date` >> $MESSAGES_NUIT
 echo "----------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 [ -f $TRUST_ROOT/RELEASE_NOTES ] && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/RELEASE_NOTES >> $MESSAGES_NUIT
 [ -f $TRUST_ROOT/DEVELOPER_NOTES ] && $TRUST_Awk '/Developer notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/DEVELOPER_NOTES >> $MESSAGES_NUIT
-echo $ECHO_OPTS "User TRUST      diffusion list http://saxifrage:3500/wws/info/trio_u_annonces" 	>> $MESSAGES_NUIT
-echo $ECHO_OPTS "Developer TRUST diffusion list http://saxifrage:3500/wws/info/trio_u_dev" 		>> $MESSAGES_NUIT
-echo $ECHO_OPTS "User MC2         diffusion list http://saxifrage:3500/wws/info/mc2_annonces" 		>> $MESSAGES_NUIT
-echo $ECHO_OPTS "Kernel             mailing list http://saxifrage:3500/wws/info/trio_u_kernel" 		>> $MESSAGES_NUIT
-echo $ECHO_OPTS "Post processing    mailing list http://saxifrage:3500/wws/info/trio_u_post_traitement" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "Front Tracking     mailing list http://saxifrage:3500/wws/info/trio_u_front_tracking" 	>> $MESSAGES_NUIT
-echo $ECHO_OPTS "---------------------------------------------------------------------------------" 	>> $MESSAGES_NUIT
-echo $ECHO_OPTS "TRUST ftp site:             ftp://$TRUST_FTP/$PUBLIC/index.html" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "Latest TRUST binary:        ftp://$TRUST_FTP/$SECRET/exec/linux/TRUST_mpi_opt"_"$new"_build_"$DATE.gz" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "User TRUST TrioCFD      diffusion list http://saxifrage:3500/wws/info/trio_u_annonces" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "Developer TRUST TrioCFD diffusion list http://saxifrage:3500/wws/info/trio_u_dev" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "User TRUST ModeleCoeur  diffusion list http://saxifrage:3500/wws/info/mc2_annonces" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TRUST Kernel              mailing list http://saxifrage:3500/wws/info/trio_u_kernel" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TRUST Post processing     mailing list http://saxifrage:3500/wws/info/trio_u_post_traitement" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TrioCFD Front Tracking    mailing list http://saxifrage:3500/wws/info/trio_u_front_tracking" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TRUST ftp site:              ftp://$TRUST_FTP/$PUBLIC/index.html" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "Latest TRUST binary:         ftp://$TRUST_FTP/$SECRET/exec/linux/TRUST_mpi_opt"_"$new"_build_"$DATE.gz" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "Latest User's manual:        ftp://$TRUST_FTP/$SECRET/doc/User_Manual_TRUST.pdf" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "Latest list of builds:       ftp://$TRUST_FTP/$SECRET/NUIT/NUIT.html" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "---------------------------------------------------------------------------------" 	>> $MESSAGES_NUIT
+echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 echo "Binaries of TRUST $new version are available here:" >> $MESSAGES_NUIT
 for machine in `liste_machines updated`
 do 
    ssh_ $machine -n 'echo -e "'$machine:'\n\c";ls ${WORKDIR:-$HOME}/$WORKBASE*/TRUST/exec/TRUST_mpi_opt 2>/dev/null || echo' 2>/dev/null
 done >> $MESSAGES_NUIT
-echo "Older binaries (> v1.6.6) are available here: ftp://$TRUST_FTP/$PUBLIC/" >> $MESSAGES_NUIT
-echo "Older binaries (< v1.6.6) are available here: file:///net/dibona/users/dibona/triou/version" >> $MESSAGES_NUIT
+echo "Older binaries (> v1.7.1) are available here: ftp://$TRUST_FTP/$PUBLIC/" >> $MESSAGES_NUIT
+echo "Older binaries (< v1.7.1) are available here: ftp://ftp.cea.fr/pub/Trio_U/a87pour/" >> $MESSAGES_NUIT
+echo "Older binaries (< v1.6.6) are available here: file:///net/dibona/users/dibona/triou/version/" >> $MESSAGES_NUIT
 echo "-------------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 ##########################################################
 # On checkine dans la vue si criteres suivants respectes :
@@ -940,8 +1067,8 @@ echo "############################################"
 echo "# Test the installation to remote machines #"
 echo "############################################"
 echo "---> Begin at "`date '+%H:%M:%S'`
-version_arch=TRUST-$TRUST_VERSION".tar"
-installation=0
+version_arch=TRUST_$TRUST_VERSION".tgz"
+installation=1
 remote1="-remote "`liste_machines "\-remote_install_TRUST_with_source" 		| head -1 | $TRUST_Awk -F. '{print $1}'`
 remote2="-remote "`liste_machines "\-remote_install_TRUST_kernel_only" 		| head -1 | $TRUST_Awk -F. '{print $1}'`
 remote3="-remote "`liste_machines "\-remote_install_TRUST_without_source" 		| head -1 | $TRUST_Awk -F. '{print $1}'`
@@ -961,62 +1088,62 @@ echo "Call to $TRUST_ROOT/bin/admin/extract_Version_TRUST $version_arch -install
 echo "  See $remote2_log"
 echo "Call to $TRUST_ROOT/bin/admin/extract_Version_TRUST $version_arch -install $remote3 -without_source"
 echo "  See $remote3_log"
-echo " "
 # Test d'une extraction/installation d'une version avec les sources
 (
-#simule_install_TRUST ./$version_arch $remote1 					1>>$remote1_log 2>&1 			
+simule_install_TRUST ./$version_arch $remote1 					1>>$remote1_log 2>&1 	
+echo " "		
 #if [ $? != 0 ]
-#then
-#   echo "Installation KO -with_source on $remote1"
-#   cat $remote1_log | mail_ -s\"[lance_test_nuit] Remote install with source failed on ${remote1##* }\" $TRUST_MAIL
-#   cp $remote1_log $TRUST_ROOT/simule_install_TRUST.log
-#else
-#   echo "Installation OK -with_source on $remote1"
-#fi
-echo "A tester manuellement avant de la faire par lance_test_nuit :error">>$remote1_log 2>&1 # Temporary
+if [ "`grep "BUILD_" $remote1_log | grep "KO" 2>/dev/null`" != "" ]
+then
    echo "Installation KO -with_source on $remote1"
+   cat $remote1_log | mail_ -s\"[lance_test_nuit] Remote install with source failed on ${remote1##* }\" $TRUST_MAIL
    cp $remote1_log $TRUST_ROOT/simule_install_TRUST.log
+else
+   echo "Installation OK -with_source on $remote1"
+fi
+grep "BUILD_" $remote1_log
 ) &
 installation_id1=$!
 # Test d'une extraction/installation d'une version kernel
 (
-#extract_Version_TRUST ./$version_arch -install $remote2 -kernel_only 		1>$remote2_log 2>&1
+extract_Version_TRUST ./$version_arch -install $remote2 -kernel_only 		1>>$remote2_log 2>&1
+echo " "
 #if [ $? != 0 ]
-#then
-#   echo "Installation KO -kernel_only on $remote2"
-#   cat $remote2_log | mail_ -s\"[lance_test_nuit] Remote install kernel only failed on ${remote2##* }\" $TRUST_MAIL
-#   cp $remote2_log $TRUST_ROOT/simule_install_TRUST_kernel_only.log
-#else
-#   echo "Installation OK -kernel_only on $remote2"
-#fi
-echo "A tester manuellement avant de la faire par lance_test_nuit :error">>$remote2_log 2>&1 # Temporary
+if [ "`grep "BUILD_" $remote2_log | grep "KO" 2>/dev/null`" != "" ]
+then
    echo "Installation KO -kernel_only on $remote2"
+   cat $remote2_log | mail_ -s\"[lance_test_nuit] Remote install kernel only failed on ${remote2##* }\" $TRUST_MAIL
    cp $remote2_log $TRUST_ROOT/simule_install_TRUST_kernel_only.log
+else
+   echo "Installation OK -kernel_only on $remote2"
+fi
+grep "BUILD_" $remote2_log
 ) &
 installation_id2=$!
 # Test d'une extraction/installation d'une version sans les sources
 (
-#extract_Version_TRUST ./$version_arch -install $remote3 -without_source 	1>$remote3_log 2>&1
+extract_Version_TRUST ./$version_arch -install $remote3 -without_source 	1>>$remote3_log 2>&1
+echo " "
 #if [ $? != 0 ]
-#then
-#   echo "Installation KO -without_source on $remote3"
-#   cat $remote3_log | mail_ -s\"[lance_test_nuit] Remote install without source failed on ${remote3##* }\" $TRUST_MAIL
-#   cp $remote3_log $TRUST_ROOT/simule_install_TRUST_without_source.log
-#else
-#   echo "Installation OK -without_source on $remote3"
-#fi
-echo "A tester manuellement avant de la faire par lance_test_nuit :error">>$remote3_log 2>&1 # Temporary
+if [ "`grep "BUILD_" $remote3_log | grep "KO" 2>/dev/null`" != "" ]
+then
    echo "Installation KO -without_source on $remote3"
+   cat $remote3_log | mail_ -s\"[lance_test_nuit] Remote install without source failed on ${remote3##* }\" $TRUST_MAIL
    cp $remote3_log $TRUST_ROOT/simule_install_TRUST_without_source.log
+else
+   echo "Installation OK -without_source on $remote3"
+fi
+grep "BUILD_" $remote3_log
 ) &
 installation_id3=$!
 # On attend la fin des installations lancees en parallele
 wait $installation_id1 $installation_id2 $installation_id3 1>/dev/null 2>&1
 # S'il n'y a pas de logs, c'est que les installations ont toutes reussies
-if [ "`ls $TRUST_ROOT/simule_install_TRUST*.log 2>/dev/null`" = "" ]
-then
-   installation=1
-fi
+NB=`ls $REP_NUIT/simule_install_TRUST*.log 2>/dev/null | wc -l`
+KO=`ls $TRUST_ROOT/simule_install_TRUST*.log 2>/dev/null | wc -l`
+let OK=$NB-$KO
+[ $NB = 0 ] && installation=0
+[ $KO != 0 ] && installation=0
 rm -f $TRUST_ROOT/simule_install_TRUST*.log
 ################################
 # Test de la taille du DVD grave
@@ -1024,9 +1151,11 @@ rm -f $TRUST_ROOT/simule_install_TRUST*.log
 echo " "
 echo "Test the size of the $version_arch package if it can be written to a DVD"
 limite_Mo=2000
+package_size=`ls -lart $version_arch | $TRUST_Awk -v limite_Mo=$limite_Mo '{print $5/1000000}'`
+export package_size=`printf '%0.f' $package_size`
 if [ "`ls -lart $version_arch | $TRUST_Awk -v limite_Mo=$limite_Mo '{if ($5>limite_Mo*1000000) print "KO"}'`" = KO ]
 then
-   msg="The package $version_arch on $GRAVAGE is too large (`ls -lart $version_arch | $TRUST_Awk -v limite_Mo=$limite_Mo '{print $5/1000000}'`>"$limite_Mo"Mo) to be written to a DVD."
+   msg="The package $version_arch on $GRAVAGE is too large ($package_size>"$limite_Mo"Mo) to be written to a DVD."
    tmp=`mktemp_`
    echo $msg > $tmp
    echo "More large files (>2Mo) in each VOB:" >> $tmp
@@ -1048,9 +1177,9 @@ then
    cat $tmp
    rm -f $tmp
    installation=0
-   echo "  Size `ls -lart $version_arch | $TRUST_Awk -v limite_Mo=$limite_Mo '{print $5/1000000}'` > "$limite_Mo"Mo KO"
+   echo "  Size $package_size > "$limite_Mo"Mo KO"
 else
-   echo "  Size `ls -lart $version_arch | $TRUST_Awk -v limite_Mo=$limite_Mo '{print $5/1000000}'` < "$limite_Mo"Mo OK"
+   echo "  Size $package_size < "$limite_Mo"Mo OK"
 fi
 cd - 1>/dev/null 2>&1
 echo " "
@@ -1061,7 +1190,14 @@ else
    echo "Release criterion: Installation KO"
 fi
 force_installation=~/force_installation && [ -f $force_installation ] && installation=1 && rm -f $force_installation
-echo "$installation  Installation $installation (=1)" >> $MESSAGES_NUIT
+[ "$NB" -eq 0 ] && NB=-1
+if [ "$NB" -eq -1 ]
+then
+   echo "$installation  Installation $OK/0="`echo $ECHO_OPTS "scale=3;$OK/$NB" | bc -l`" + size="$package_size"Mo (=1+size<"$limite_Mo"Mo)" >> $MESSAGES_NUIT
+   NB=0
+else
+   echo "$installation  Installation $OK/$NB="`echo $ECHO_OPTS "scale=3;$OK/$NB" | bc -l`" + size="$package_size"Mo (=1+size<"$limite_Mo"Mo)" >> $MESSAGES_NUIT
+fi
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+$installation
 echo "<--- End at "`date '+%H:%M:%S'`
@@ -1069,11 +1205,83 @@ echo "<--- End at "`date '+%H:%M:%S'`
 #####################################################################
 # Attente jusqu'a pour attendre le retour des compilations eloignees:
 #####################################################################
-while [ `date '+%H'` -lt 6 ] || [ `date '+%H'` -gt 21 ]
+#while [ `date '+%H'` -lt 6 ] || [ `date '+%H'` -gt 21 ]
+# Augmentation d une heure car avec la portabilite des baltiks dont TrioCFD, c est plus long
+while [ `date '+%H'` -lt 7 ] || [ `date '+%H'` -gt 21 ]
 do
    sleep 30
 done
-
+  
+#####################################################
+# Arret de la portabilite des baltik si non terminee:  
+#####################################################
+echo " "
+echo "##########################################"
+echo "# Verify the end of baltik portabilities #"
+echo "##########################################"
+echo "---> Begin at "`date '+%H:%M:%S'`
+for Composant in $Composants
+do
+   if [ -d $TRUST_ROOT/../Composants/$Composant ]
+   then
+      cd $TRUST_ROOT/../Composants/$Composant
+      echo "Check $Composant"
+      if [ ! -f  nuit_$Composant.html ] # Fichier non cree donc portabilite non terminee
+      then
+         #nbtot=`sed -n '$=' Run.liste` # Nombre total de machines surlesquelles c est teste
+         (grep PID $Composant*.log | grep start | awk '{$NF=""; print $0}') 1>start.liste 2>/dev/null # Nombre de start (4 x nbtot)
+         (grep PID $Composant*.log | grep stop | awk '{$NF=""; print $0}') 1>stop.liste 2>/dev/null # Nombre de stop
+	 sort start.liste stop.liste | uniq -u 1>kill.liste 2>/dev/null # Pour chaque start non stoppe, recuperer le nom de la machine et le PID
+         if [ `cat kill.liste | wc -l` = 0 ]
+	 then
+	    echo "  => The portability was NOT launched."
+	 else
+	    echo "  => KO: portability is NOT finished"
+	    cat kill.liste
+	    cat kill.liste | while read line
+	    do
+	       PID=`echo $line | awk '{print $(NF)}'`
+	       machine=`echo $line | awk -F"@" '{print $2}' | awk -F"_" '{print $1}'`
+	       if [ "${machine:0:2}" = "is" ] || [ "${machine:0:10}" = "antoinette" ] # Test si machine est a Saclay ou a Cadarache
+	       then
+	          pids=$(ssh triou@$machine $WORKDIR/$WORKBASE$machine/TRUST/bin/baltik/share/baltik/bin/portability/list_pid_et_fils.sh $PID)
+		  echo "    ssh triou@$machine kill -9 $pids"
+	          ssh triou@$machine kill -19 $pids
+	          ssh triou@$machine kill -9 $pids
+	       elif [ "${machine:0:7}" = "cezanne" ] || [ "${machine:0:5}" = "ceres" ] # Test si machine est a Cadarache ou a Marcoule
+	       then
+	          pids=$(ssh ccapitai@$machine /home/ccapitai/$WORKBASE$machine/TRUST/bin/baltik/share/baltik/bin/portability/list_pid_et_fils.sh $PID)
+		  echo "    ssh ccapitai@$machine kill -9 $pids"
+	          ssh ccapitai@$machine kill -19 $pids
+	          ssh ccapitai@$machine kill -9 $pids
+	       elif [ "${machine:0:5}" = "sitre" ] || [ "${machine:0:6}" = "vonnes" ] # Test si machine est a Grenoble
+	       then
+	          pids=$(ssh triou@$machine /work/triou/$WORKBASE$machine/TRUST/bin/baltik/share/baltik/bin/portability/list_pid_et_fils.sh $PID)
+		  echo "    ssh triou@$machine kill -9 $pids"
+	          ssh triou@$machine kill -19 $pids
+	          ssh triou@$machine kill -9 $pids
+	       elif [ "${machine:0:4}" = "thor" ] # Test si machine est a Grenoble
+	       then
+	          pids=$(ssh trio@$machine /tmp_mnt/clusdata/trio/$WORKBASE$machine/TRUST/bin/baltik/share/baltik/bin/portability/list_pid_et_fils.sh $PID)
+		  echo "    ssh trio@$machine kill -9 $pids"
+	          ssh trio@$machine kill -19 $pids
+	          ssh trio@$machine kill -9 $pids
+	       else # Test si machine est a Saclay
+	          pids=$(ssh triou@$machine $HOME/$WORKBASE$machine/TRUST/bin/baltik/share/baltik/bin/portability/list_pid_et_fils.sh $PID)
+		  echo "    ssh triou@$machine kill -9 $pids"
+	          ssh triou@$machine kill -19 $pids
+	          ssh triou@$machine kill -9 $pids
+	       fi 
+	    done
+	 fi 
+	 rm -f start.liste stop.liste kill.liste
+      else
+         echo "  => OK: portability is finished"
+      fi 
+   fi
+done
+echo "<--- End at "`date '+%H:%M:%S'`
+ 
 ##########################################################
 # Recupere les executables et divers fichiers sur machines
 ##########################################################
@@ -1092,6 +1300,8 @@ echo>>$recupere_log
 recupere_TRUST_arch 1>>$recupere_log 2>&1
 grep KO $recupere_log
 grep -i portage $recupere_log
+echo "  Recall liste_machines_KO:"
+echo $liste_machines_KO
 echo "  Creation of $REP_NUIT/NUIT.html"
 ls -la $REP_NUIT"/NUIT.html"
 # Deplace le log des etudes si script termine
@@ -1106,7 +1316,9 @@ do
    echo " "
    echo "Analysis of $file file"
    head -n4 $file | tail -n1
-   grep -i error $file
+   grep "BUILD_" $file
+   grep error $file
+   grep Stop $file
    grep KO $file
 done
 
@@ -1125,9 +1337,9 @@ echo "<--- End at "`date '+%H:%M:%S'`
 # Stabilite TRUST
 ##################
 echo " "
-echo "######################"
-echo "# Test the stability #"
-echo "######################"
+echo "############################"
+echo "# Test the TRUST stability #"
+echo "############################"
 echo "---> Begin at "`date '+%H:%M:%S'`
 fic_test=$TRUST_ROOT"/exec/.tests_TRUST"$COMM
 echo "Analysis of "$fic_test" file"
@@ -1140,8 +1352,10 @@ echo " "
 if [ -f $fic_test ]
 then
    stabilite=`$TRUST_Awk -F':' 'BEGIN {print "scale=3\n"} /Successful tests cases/ {print $2}' $fic_test | bc -l | sort -n | head -1`
+   rstab=`$TRUST_Awk -F':' 'BEGIN {} /Successful tests cases/ {print $2}' $fic_test | sort -n | head -1`
 else
    stabilite="0.000"
+   rstab="0/0"
 fi
 if [ "$stabilite" = "1.000" ]
 then
@@ -1150,7 +1364,7 @@ else
    echo "Release criterion: Stability KO"
 fi
 force_stabilite=~/force_stabilite && [ -f $force_stabilite ] && stabilite="1.000" && rm -f $force_stabilite
-echo `if [ "$stabilite" = "1.000" ]; then echo 1;else echo 0;fi`"  Stability $stabilite (=1.000)" >> $MESSAGES_NUIT
+echo `if [ "$stabilite" = "1.000" ]; then echo 1;else echo 0;fi`"  Stability $rstab=$stabilite (=1.000)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+`if [ "$stabilite" = "1.000" ]; then echo 1;else echo 0;fi`
 echo "<--- End at "`date '+%H:%M:%S'`
@@ -1165,11 +1379,12 @@ echo "###############################"
 echo "---> Begin at "`date '+%H:%M:%S'`
 echo "Analysis of $recupere_log file"
 grep "step TRUST" $recupere_log
-echo "Analysis of $TRUST_ROOT/NUIT/NUIT.html file"
-grep "TRUST portability" $TRUST_ROOT/NUIT/NUIT.html
+echo "Analysis of $REP_NUIT/NUIT.html file"
+grep "TRUST portability" $REP_NUIT/NUIT.html
 echo " "
-portabilite_trio=`$TRUST_Awk '/TRUST portability/ {print $1}' $TRUST_ROOT/NUIT/NUIT.html`
-portabilite=0 && [ "`grep "Portable version" $TRUST_ROOT/NUIT/NUIT.html`" != "" ] && portabilite=1
+portabilite_trio=`$TRUST_Awk '/TRUST portability/ {print $1}' $REP_NUIT/NUIT.html`
+portabilite_trust=`$TRUST_Awk '/TRUST portability/ {print $6}' $REP_NUIT/NUIT.html`
+portabilite=0 && [ "`grep "Portable version" $REP_NUIT/NUIT.html`" != "" ] && portabilite=1
 if [ "$portabilite" = 1 ]
 then
    echo "Release criterion: TRUST  OK"
@@ -1177,7 +1392,8 @@ else
    echo "Release criterion: TRUST  KO"
 fi
 force_portabilite=~/force_portabilite && [ -f $force_portabilite ] && portabilite=1 && rm -f $force_portabilite
-echo "$portabilite  Portability $portabilite_trio (>.99)" >> $MESSAGES_NUIT
+limite=0.99 # cf recupere_TRUST_arch
+echo "$portabilite  Portability $portabilite_trust=$portabilite_trio (>$limite)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+$portabilite
 echo "<--- End at "`date '+%H:%M:%S'`
@@ -1192,9 +1408,10 @@ echo "######################################"
 echo "---> Begin at "`date '+%H:%M:%S'`
 echo "Analysis of $recupere_log file"
 grep "step workshop" $recupere_log
-echo "Analysis of $TRUST_ROOT/NUIT/NUIT.html file"
-grep "TRUST workshop compilation" $TRUST_ROOT/NUIT/NUIT.html
-make_atelier=`$TRUST_Awk '/workshop compilation/ && /TRUST/ {print $1}' $TRUST_ROOT/NUIT/NUIT.html`
+echo "Analysis of $REP_NUIT/NUIT.html file"
+grep "TRUST workshop compilation" $REP_NUIT/NUIT.html
+make_atelier=`$TRUST_Awk '/workshop compilation/ && /TRUST/ {print $1}' $REP_NUIT/NUIT.html`
+port_atelier=`$TRUST_Awk '/workshop compilation/ && /TRUST/ {print $7}' $REP_NUIT/NUIT.html`
 echo " "
 if [ "$make_atelier" = "1.000" ]
 then
@@ -1203,7 +1420,7 @@ else
    echo "Release criterion: Workshop KO"
 fi
 force_make_atelier=~/force_make_atelier && [ -f $force_make_atelier ] && make_atelier="1.000" && rm -f $force_make_atelier
-echo `if [ "$make_atelier" = "1.000" ]; then echo 1;else echo 0;fi`"  Workshop $make_atelier (=1.000)" >> $MESSAGES_NUIT
+echo `if [ "$make_atelier" = "1.000" ]; then echo 1;else echo 0;fi`"  Workshop $port_atelier=$make_atelier (=1.000)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+`if [ "$make_atelier" = "1.000" ]; then echo 1;else echo 0;fi`
 echo "<--- End at "`date '+%H:%M:%S'`
@@ -1218,10 +1435,11 @@ echo "################################"
 echo "---> Begin at "`date '+%H:%M:%S'`
 echo "Analysis of $recupere_log file"
 grep "step Xprepro" $recupere_log
-echo "Analysis of $TRUST_ROOT/NUIT/NUIT.html file"
-grep "Xprepro portability" $TRUST_ROOT/NUIT/NUIT.html
+echo "Analysis of $REP_NUIT/NUIT.html file"
+grep "Xprepro portability" $REP_NUIT/NUIT.html
 echo " "
-Xprepro=`$TRUST_Awk '/Xprepro portability with TRUST/ {print $1}' $TRUST_ROOT/NUIT/NUIT.html`
+Xprepro=`$TRUST_Awk '/Xprepro portability with TRUST/ {print $1}' $REP_NUIT/NUIT.html`
+port_Xprepro=`$TRUST_Awk '/Xprepro portability with TRUST/ {print $8}' $REP_NUIT/NUIT.html`
 portabilite_Xprepro=`echo $Xprepro | $TRUST_Awk '{if ($1>=1) print 1;else print 0}'`
 if [ "$portabilite_Xprepro" = 1 ]
 then
@@ -1230,7 +1448,7 @@ else
    echo "Release criterion: Xprepro KO"
 fi
 force_portabilite_Xprepro=~/force_portabilite_Xprepro && [ -f $force_portabilite_Xprepro ] && portabilite_Xprepro=1 && rm -f $force_portabilite_Xprepro
-echo "$portabilite_Xprepro  Xprepro $Xprepro (>=1)" >> $MESSAGES_NUIT
+echo "$portabilite_Xprepro  Xprepro $port_Xprepro=$Xprepro (>=1)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+$portabilite_Xprepro
 echo "<--- End at "`date '+%H:%M:%S'`
@@ -1245,10 +1463,11 @@ echo "###############################"
 echo "---> Begin at "`date '+%H:%M:%S'`
 echo "Analysis of $recupere_log file"
 grep "step Baltik" $recupere_log
-echo "Analysis of $TRUST_ROOT/NUIT/NUIT.html file"
-grep "Baltik portability" $TRUST_ROOT/NUIT/NUIT.html
+echo "Analysis of $REP_NUIT/NUIT.html file"
+grep "Baltik portability" $REP_NUIT/NUIT.html
 echo " "
-portabilite_baltik=`$TRUST_Awk '/Baltik portability/ && /TRUST/ {print $1}' $TRUST_ROOT/NUIT/NUIT.html`
+portabilite_baltik=`$TRUST_Awk '/Baltik portability/ && /TRUST/ {print $1}' $REP_NUIT/NUIT.html`
+port_baltik=`$TRUST_Awk '/Baltik portability/ && /TRUST/ {print $8}' $REP_NUIT/NUIT.html`
 if [ "$portabilite_baltik" = "1.000" ]
 then
    echo "Release criterion: Baltik  OK"
@@ -1256,7 +1475,7 @@ else
    echo "Release criterion: Baltik  KO"
 fi
 force_portabilite_baltik=~/force_portabilite_baltik && [ -f $force_portabilite_baltik ] && portabilite_baltik="1.000" && rm -f $force_portabilite_baltik
-echo `if [ "$portabilite_baltik" = "1.000" ]; then echo 1;else echo 0;fi`"  Baltik $portabilite_baltik (=1.000)" >> $MESSAGES_NUIT
+echo `if [ "$portabilite_baltik" = "1.000" ]; then echo 1;else echo 0;fi`"  Baltik $port_baltik=$portabilite_baltik (=1.000)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+`if [ "$portabilite_baltik" = "1.000" ]; then echo 1;else echo 0;fi`
 echo "<--- End at "`date '+%H:%M:%S'`
@@ -1271,9 +1490,10 @@ echo "###############################"
 echo "---> Begin at "`date '+%H:%M:%S'`
 echo "Analysis of $recupere_log file"
 grep "step assert" $recupere_log
-echo "Analysis of $TRUST_ROOT/NUIT/NUIT.html file"
-grep "Compilation assert test" $TRUST_ROOT/NUIT/NUIT.html
-test_assert=`$TRUST_Awk '/Compilation assert/ {print $1}' $TRUST_ROOT/NUIT/NUIT.html`
+echo "Analysis of $REP_NUIT/NUIT.html file"
+grep "Compilation assert test" $REP_NUIT/NUIT.html
+test_assert=`$TRUST_Awk '/Compilation assert/ {print $1}' $REP_NUIT/NUIT.html`
+port_assert=`$TRUST_Awk '/Compilation assert/ {print $7}' $REP_NUIT/NUIT.html`
 echo " "
 if [ "$test_assert" = "1.000" ]
 then
@@ -1282,7 +1502,7 @@ else
    echo "Release criterion: Assert KO"
 fi
 force_test_assert=~/force_test_assert && [ -f $force_test_assert ] && test_assert="1.000" && rm -f $force_test_assert
-echo `if [ "$test_assert" = "1.000" ]; then echo 1;else echo 0;fi`"  Assert $test_assert (=1.000)" >> $MESSAGES_NUIT
+echo `if [ "$test_assert" = "1.000" ]; then echo 1;else echo 0;fi`"  Assert $port_assert=$test_assert (=1.000)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+`if [ "$test_assert" = "1.000" ]; then echo 1;else echo 0;fi`
 echo "<--- End at "`date '+%H:%M:%S'`
@@ -1296,10 +1516,13 @@ echo "# Test the disponibility of binaries #"
 echo "######################################"
 echo "---> Begin at "`date '+%H:%M:%S'`
 nb_binaires=0
+porta_binaires=0
+dispo_binaires=0
 disponibilite_binaires=0
+machine=`liste_machines "get_binary" | $TRUST_Awk -F. '{print $1}' | head -1`
 echo "Analysis of $WORKDIR/PORTAGE_$new directory"
 binaires=`ls $WORKDIR/PORTAGE_$new/*/TRUST/exec/TRUST*opt* 2>/dev/null`
-[ "$binaires" = "" ] && echo | mail_ -s\"[lance_test_nuit] No binary created under $WORKDIR/PORTAGE_$new/*/TRUST/exec\" $TRUST_MAIL
+[ "$binaires" = "" ] && echo "See $REP_NUIT/CR_$machine" | mail_ -s\"[lance_test_nuit] No binary created under $WORKDIR/PORTAGE_$new/*/TRUST/exec\" $TRUST_MAIL
 for binaire in $binaires
 do
    let nb_binaires=$nb_binaires+1
@@ -1313,13 +1536,13 @@ do
       echo "KO"
       cat binaire.out | mail_ -s \"[lance_test_nuit] Binary $binaire KO\" $TRUST_MAIL
    else
-      let disponibilite_binaires=$disponibilite_binaires+1
+      let porta_binaires=$porta_binaires+1
       echo "OK"
    fi
    cd - 1>/dev/null 2>&1
 done
-[ "$nb_binaires" != 0 ] && disponibilite_binaires=`echo $disponibilite_binaires | $TRUST_Awk -v n=$nb_binaires '{print "scale=3\n"$1"/"n}' | bc -l`
-disponibilite_binaires=`echo $disponibilite_binaires | $TRUST_Awk '{if ($1>=1) print 1;else print 0}'`
+[ "$nb_binaires" != 0 ] && dispo_binaires=`echo $porta_binaires | $TRUST_Awk -v n=$nb_binaires '{print "scale=3\n"$1"/"n}' | bc -l`
+disponibilite_binaires=`echo $dispo_binaires | $TRUST_Awk '{if ($1>=1) print 1;else print 0}'`
 echo " "
 if [ "$disponibilite_binaires" = 1 ]
 then
@@ -1328,7 +1551,7 @@ else
    echo "Release criterion: Binaries KO"
 fi
 force_disponibilite_binaires=~/force_disponibilite_binaires && [ -f $force_disponibilite_binaires ] && disponibilite_binaires=1 && rm -f $force_disponibilite_binaires
-echo "$disponibilite_binaires  Binairies $disponibilite_binaires (=1)" >> $MESSAGES_NUIT
+echo "$disponibilite_binaires  Binairies $porta_binaires/$nb_binaires=$dispo_binaires (=1)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+$disponibilite_binaires
 echo "<--- End at "`date '+%H:%M:%S'`
@@ -1350,7 +1573,13 @@ do
    check_xdata_log=$REP_NUIT"/check_xdata_"$machine".log"
    echo "  See $check_xdata_log"
    rm -f $check_xdata_log
-   scp triou@$machine:~/$WORKBASE$machine/TRUST/Outils/TRIOXDATA/check_xdata.log $check_xdata_log
+   #scp triou@$machine:~/$WORKBASE$machine/TRUST/Outils/TRIOXDATA/check_xdata.log $check_xdata_log
+   if  [ "${machine:0:2}" = "is" ]
+   then
+      scp triou@$machine:$WORKDIR/.tmp_TRUST_$machine/check_xdata.log $check_xdata_log
+   else
+      scp triou@$machine:~/.tmp_TRUST_$machine/check_xdata.log $check_xdata_log
+   fi
    scp_error=$?
    if [ $scp_error != 0 ]
    then
@@ -1473,7 +1702,7 @@ then
          echo "Release criterion: Modules KO"
       fi
       force_verification_modules=~/force_verification_modules && [ -f $force_verification_modules ] && verification_modules=1 && rm -f $force_verification_modules
-      echo "$verification_modules  Modules $ok/$nb="`echo "scale=3;$ok/$nb" | bc`" (=1.000)" >> $MESSAGES_NUIT
+      echo "$verification_modules  Modules $ok/$nb="`echo $ECHO_OPTS "scale=3;$ok/$nb" | bc -l`" (=1.000)" >> $MESSAGES_NUIT
       let total_criteres=$total_criteres+1
       let criteres_remplis=$criteres_remplis+$verification_modules
    fi
@@ -1507,7 +1736,13 @@ fi
 for machine in $machines
 do
    echo "Verification of $TRUST_ROOT/Validation/Valgrind/ANA_$machine.log"
-   scp triou@$machine:~/$WORKBASE$machine/TRUST/Validation/Valgrind/ANA.log ANA_$machine.log
+   #scp triou@$machine:~/$WORKBASE$machine/TRUST/Validation/Valgrind/ANA.log ANA_$machine.log
+   if [ "${machine:0:2}" = "is" ]
+   then
+      scp triou@$machine:$WORKDIR/.tmp_TRUST_$machine/ANA.log ANA_$machine.log
+   else
+      scp triou@$machine:~/.tmp_TRUST_$machine/ANA.log ANA_$machine.log
+   fi
    scp_error=$?
    if [ $scp_error != 0 ]
    then
@@ -1521,7 +1756,13 @@ do
       echo "  valgrind not finished"
       valgrind=0
    else
-      scp triou@$machine:~/$WORKBASE$machine/TRUST/Validation/Valgrind/casmem casmem_$machine
+      #scp triou@$machine:~/$WORKBASE$machine/TRUST/Validation/Valgrind/casmem casmem_$machine
+      if [ "${machine:0:2}" = "is" ]
+      then
+         scp triou@$machine:$WORKDIR/.tmp_TRUST_$machine/casmem casmem_$machine
+      else
+         scp triou@$machine:~/.tmp_TRUST_$machine/casmem casmem_$machine
+      fi
       cat ANA_$machine.log 2>/dev/null | $TRUST_Awk -F: '/ errors from /{gsub("\\.val","",$2);print $2}' > caserr_$machine
       valgrind_max=0
       valgrind_err=`cat caserr_$machine 2>/dev/null | wc -l`
@@ -1587,15 +1828,29 @@ do
    hostname=`echo $machine_gcov | $TRUST_Awk -F. '{print $1}'` 
    echo "  Recovery from $hostname"
    echo "    See $REP_NUIT/analyse_couverture_$hostname.log"
-   scp triou@$machine_gcov:$WORKDIR/.tmp_TRUST_$hostname/tests/analyse_couverture.log $REP_NUIT/analyse_couverture_$hostname.log
-   scp triou@$machine_gcov:$WORKDIR/.tmp_TRUST_$hostname/tests/GCDA/ana/monana_out $REP_NUIT/monana_out_$hostname.log
-   scp triou@$machine_gcov:$WORKDIR/.tmp_TRUST_$hostname/tests/GCDA/ana/gcov_out $REP_NUIT/gcov_out_$hostname.log
-   scp triou@$machine_gcov:$WORKDIR/.tmp_TRUST_$hostname/tests/GCDA/ana/gcov_err $REP_NUIT/gcov_err_$hostname.log
+   if  [ "${hostname:0:2}" = "is" ]
+   then
+      scp triou@$machine_gcov:$WORKDIR/.tmp_TRUST_$hostname/tests/analyse_couverture.log $REP_NUIT/analyse_couverture_$hostname.log
+      scp triou@$machine_gcov:$WORKDIR/.tmp_TRUST_$hostname/tests/GCDA/ana/monana_out $REP_NUIT/monana_out_$hostname.log
+      scp triou@$machine_gcov:$WORKDIR/.tmp_TRUST_$hostname/tests/GCDA/ana/gcov_out $REP_NUIT/gcov_out_$hostname.log
+      scp triou@$machine_gcov:$WORKDIR/.tmp_TRUST_$hostname/tests/GCDA/ana/gcov_err $REP_NUIT/gcov_err_$hostname.log
+   else
+      scp triou@$machine_gcov:~/.tmp_TRUST_$hostname/tests/analyse_couverture.log $REP_NUIT/analyse_couverture_$hostname.log
+      scp triou@$machine_gcov:~/.tmp_TRUST_$hostname/tests/GCDA/ana/monana_out $REP_NUIT/monana_out_$hostname.log
+      scp triou@$machine_gcov:~/.tmp_TRUST_$hostname/tests/GCDA/ana/gcov_out $REP_NUIT/gcov_out_$hostname.log
+      scp triou@$machine_gcov:~/.tmp_TRUST_$hostname/tests/GCDA/ana/gcov_err $REP_NUIT/gcov_err_$hostname.log
+   fi
    # Copie cpp.gcov.tar.gz 
    file=cpp.gcov.tar.gz  
    echo "    Copy $file to $TRUST_ROOT/doc/Coverage/"
    rm -f $TRUST_TMP/$file
-   scp triou@$machine_gcov:~/$WORKBASE$hostname/TRUST/doc/Coverage/$file $TRUST_TMP/$file
+   #scp triou@$machine_gcov:~/$WORKBASE$hostname/TRUST/doc/Coverage/$file $TRUST_TMP/$file
+   if  [ "${hostname:0:2}" = "is" ]
+   then
+      scp triou@$machine_gcov:$WORKDIR/.tmp_TRUST_$hostname/$file $TRUST_TMP/$file
+   else
+      scp triou@$machine_gcov:~/.tmp_TRUST_$hostname/$file $TRUST_TMP/$file
+   fi
    if [ "`diff $TRUST_TMP/$file $TRUST_ROOT/doc/Coverage/$file`" != "" ]
    then
       echo "    => updated"
@@ -1642,7 +1897,12 @@ do
    hostname=`echo $machine | $TRUST_Awk -F. '{print $1}'`
    echo "  Recovery from $hostname"
    echo "    See $REP_NUIT/make_Couverture_$hostname.log"
-   scp triou@$machine:$WORKDIR/.tmp_TRUST_$hostname/tests/make_Couverture.log $REP_NUIT/make_Couverture_$hostname.log
+   if [ "${hostname:0:2}" = "is" ]
+   then
+      scp triou@$machine:$WORKDIR/.tmp_TRUST_$hostname/tests/make_Couverture.log $REP_NUIT/make_Couverture_$hostname.log
+   else
+      scp triou@$machine:~/.tmp_TRUST_$hostname/tests/make_Couverture.log $REP_NUIT/make_Couverture_$hostname.log
+   fi
    error_log=`grep "Problem with the gprof command" $REP_NUIT/make_Couverture_$hostname.log`
    [ ${#error_log} != 0 ] && cat $REP_NUIT/make_Couverture_$hostname.log | mail_ -s\"[lance_test_nuit] Problem with the gprof command on $hostname in make_Couverture\" $TRUST_MAIL
    # Copie file 
@@ -1650,7 +1910,13 @@ do
    do
       echo "    Copy $file to $TRUST_ROOT/doc/Coverage/"
       rm -f $TRUST_TMP/$file
-      scp triou@$machine:~/$WORKBASE$hostname/TRUST/doc/Coverage/$file $TRUST_TMP/$file
+      #scp triou@$machine:~/$WORKBASE$hostname/TRUST/doc/Coverage/$file $TRUST_TMP/$file
+      if [ "${hostname:0:2}" = "is" ]
+      then
+         scp triou@$machine:$WORKDIR/.tmp_TRUST_$hostname/$file $TRUST_TMP/$file
+      else
+         scp triou@$machine:~/.tmp_TRUST_$hostname/$file $TRUST_TMP/$file
+      fi
       if [ -f $TRUST_TMP/$file ] && [ "`diff $TRUST_TMP/$file $TRUST_ROOT/doc/Coverage/$file`" != "" ]
       then
          echo "    => updated"
@@ -1667,7 +1933,12 @@ do
          cpu=all_tests.cpu 
          echo "    Copy $cpu to $TRUST_ROOT/doc/Coverage/"
          #CHECKOUT $cpu
-         scp triou@$machine:$WORKDIR/.tmp_TRUST_$hostname/tests/$cpu . 1>/dev/null 2>&1
+	 if [ "${hostname:0:2}" = "is" ]
+	 then
+            scp triou@$machine:$WORKDIR/.tmp_TRUST_$hostname/tests/$cpu . #1>/dev/null 2>&1
+	 else
+            scp triou@$machine:~/.tmp_TRUST_$hostname/tests/$cpu . #1>/dev/null 2>&1
+	 fi
          #CHECKIN $cpu
          ls -la $TRUST_ROOT"/doc/Coverage/"$cpu
       fi
@@ -1741,7 +2012,7 @@ done
 echo "  Analysis of $credoc_log"
 grep OK $credoc_log
 grep KO $credoc_log
-echo "    See $TRUST_ROOT/Outils/TRIOXDATA/pdf_par_xdata.log"
+#echo "    See $TRUST_ROOT/Outils/TRIOXDATA/pdf_par_xdata.log"
 echo "    See $TRUST_TMP/motcles file"
 echo "    "`wc -l $TRUST_TMP/motcles | awk '{ print $1 }'`" keywords without test cases!"
 [ "`date | $TRUST_Awk '{print $1}'`" = "Fri" ] && [ -f $TRUST_TMP/motcles ] && cat $TRUST_TMP/motcles | mail_ -s \"[lance_test_nuit] Tests coverage credoc\" $TRUST_MAIL $TRUST_PROJECT_LEADER
@@ -1770,7 +2041,7 @@ then
    echo "    Coverage $couverture_de_code% >= $couverture_minimale% of lines"
 else
    echo "    Coverage $couverture_de_code% < $couverture_minimale% of lines"
-   cat $REP_NUIT/tggcov.log | mail_ -s\"[lance_test_nuit] Coverage KO with $couverture_de_code% \< $couverture_minimale% of lines tested\" $TRUST_MAIL #$TRUST_PROJECT_LEADER
+   cat $REP_NUIT/tggcov.log | mail_ -s\"[lance_test_nuit] Coverage KO with $couverture_de_code% \< $couverture_minimale% of lines tested\" $TRUST_MAIL $TRUST_PROJECT_LEADER
 fi
 (
 # Creation du rapport html
@@ -1801,14 +2072,15 @@ make clean
 make
 CPP_GCOV=$TRUST_ROOT/doc/Coverage/html/cpp.gcov
 echo "  Verification of $CPP_GCOV"
-grep $DATE $CPP_GCOV/MAIN.cpp.gcov
-if [ "`grep $DATE $CPP_GCOV/MAIN.cpp.gcov 2>/dev/null`" = "" ]
-then
-   echo "    KO"
-   echo "$CPP_GCOV KO. See on $machine_gcov host with the gcov TRUST binairy: `grep build $CPP_GCOV/MAIN.cpp.gcov`" | mail_ -s\"[lance_test_nuit] Coverage KO on $hostname host\" $TRUST_MAIL
-else
-   echo "    OK"
-fi
+#grep $DATE $CPP_GCOV/MAIN.cpp.gcov # Build a ete retire des fichiers MAIN.cpp
+#if [ "`grep $DATE $CPP_GCOV/MAIN.cpp.gcov 2>/dev/null`" = "" ]
+#then
+#   echo "    KO"
+#   echo "$CPP_GCOV KO. See on $machine_gcov host with the gcov TRUST binairy: `grep build $CPP_GCOV/MAIN.cpp.gcov`" | mail_ -s\"[lance_test_nuit] Coverage KO on $hostname host\" $TRUST_MAIL
+#else
+#   echo "    OK"
+#fi
+ls -la $CPP_GCOV/MAIN.cpp.gcov
 for file in list_methodes list_methodes_non_appelees
 do
    echo "    "`wc -l $file | awk '{ print $1 }'`" $file"
@@ -1873,24 +2145,44 @@ echo "---> Begin at "`date '+%H:%M:%S'`
 machine=`liste_machines "\-Check_decoupage" | $TRUST_Awk -F. '{print $1}'`
 echo "Validation by -Check_decoupage on $machine"
 echo "  See $REP_NUIT/Check_decoupage.ksh_$machine.log"
-scp triou@$machine:$WORKDIR/.tmp_TRUST_$machine/Check_decoupage/Check_decoupage.ksh.log $REP_NUIT/Check_decoupage.ksh_$machine.log
+if [ "${machine:0:2}" = "is" ]
+then
+   scp triou@$machine:$WORKDIR/.tmp_TRUST_$machine/Check_decoupage/Check_decoupage.ksh.log $REP_NUIT/Check_decoupage.ksh_$machine.log
+else
+   scp triou@$machine:~/.tmp_TRUST_$machine/Check_decoupage/Check_decoupage.ksh.log $REP_NUIT/Check_decoupage.ksh_$machine.log
+fi
 error_log=`grep "Failure on " $REP_NUIT/Check_decoupage.ksh_$machine.log`
 [ ${#error_log} != 0 ] && cat $REP_NUIT/Check_decoupage.ksh_$machine.log | mail_ -s\"[lance_test_nuit] Check_decoupage.ksh on $machine KO\" $TRUST_MAIL
 file_log=$REP_NUIT"/PERF_TRUST"$COMM"_opt_linux_"$machine
-echo "  Analysis of "$file_log" file"
-stabilite_parallelisme=`$TRUST_Awk '/Calcul sur le cas/ {cas++;procs+=$(NF-1)} /Validite...OK/ {ok++} END {print ok/procs}' $file_log`
-$TRUST_Awk '/Calcul sur le cas/ {cas++;procs+=$(NF-1)} /Validite...OK/ {ok++} END {print cas " cases including "ok " OK to "procs" CPUs. Validity = "ok"/"procs" = "ok/procs" %"}' $file_log
-parallelism=`echo $stabilite_parallelisme | $TRUST_Awk '{if ($1==1) print 1;else print 0}'`
-echo " "
+check_log=`mktemp_`
+echo "  Analysis of "$file_log" file" | tee -a $check_log
+if [ ! -f $REP_NUIT/Check_decoupage.ksh_$machine.log ]
+then
+   stabilite_parallelisme=0
+   resultat_parallelisme=0/0
+   parallelism=0
+else
+   grep "Decoupage...OK Execution...Arret Validite...KO" $file_log | tee -a $check_log
+   grep "Failure on" $file_log | tee -a $check_log
+   stabilite_parallelisme=`$TRUST_Awk '/Calcul sur le cas/ {cas++;procs+=$(NF-1)} /Validite...OK/ {ok++} END {print ok/procs}' $file_log`
+   resultat_parallelisme=`$TRUST_Awk '/Calcul sur le cas/ {cas++;procs+=$(NF-1)} /Validite...OK/ {ok++} END {print ok"/"procs}' $file_log`
+   $TRUST_Awk '/Calcul sur le cas/ {cas++;procs+=$(NF-1)} /Validite...OK/ {ok++} END {print cas " cases including "ok " OK to "procs" CPUs. Validity = "ok"/"procs" = "ok/procs" %"}' $file_log | tee -a $check_log
+   parallelism=`echo $stabilite_parallelisme | $TRUST_Awk '{if ($1==1) print 1;else print 0}'`
+fi
+echo " " | tee -a $check_log
 if [ "$parallelism" = 1 ]
 then
-   echo "Release criterion: Parallelism OK"
+   echo "Release criterion: Parallelism OK" | tee -a $check_log
 else
-   echo "Release criterion: Parallelism KO"
-   cat $REP_NUIT/Check_decoupage.ksh_$machine.log | mail_ -s\"[lance_test_nuit] KO Check_decoupage script on $machine\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+   echo "Release criterion: Parallelism KO" | tee -a $check_log
+   echo "-------------------------------------------------------------------------------------------" >> $check_log
+   echo " " >> $check_log
+   [ "$error_log" != "" ] && cat $REP_NUIT/Check_decoupage.ksh_$machine.log >> $check_log
+   cat $check_log | mail_ -s\"[lance_test_nuit] KO Check_decoupage script on $machine\" $TRUST_MAIL $TRUST_PROJECT_LEADER
 fi
+rm -f $check_log
 force_check_decoupage=~/force_check_decoupage && [ -f $force_check_decoupage ] && parallelism=1 && rm -f $force_check_decoupage
-echo "$parallelism  Parallelism $stabilite_parallelisme (=1.000)" >> $MESSAGES_NUIT
+echo "$parallelism  Parallelism $resultat_parallelisme=$stabilite_parallelisme (=1.000)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+$parallelism
 # Desormais le samedi sur pc tma, on met a jour les cas tests
@@ -1936,24 +2228,29 @@ do
    fi
 done
 #
-echo "Call to $TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/src/Run_fiche"
-bench_log=$REP_NUIT"/benchmark_report_"$HOST".log"
-echo "  See $bench_log"
-echo "TRUST benchmarh report on $HOST the `date` ...">$bench_log
-echo>>$bench_log
-rm -f $TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/build/rapport.pdf
-(cd $TRUST_ROOT/tests/Reference/BENCHMARK/Rapport;rm -f Run.log;Run_fiche 1>>$bench_log 2>&1) # Temporary sourcer TrioCFD
-tail -n1 $bench_log
-if [ -f $TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/build/rapport.pdf ]
+if [ "$nb_machines" != 0 ]
 then
-   if [ "`date '+%u'`" = 6 ]
+   echo "Call to $TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/src/Run_fiche"
+   bench_log=$REP_NUIT"/benchmark_report_"$HOST".log"
+   echo "  See $bench_log"
+   echo "TRUST benchmarh report on $HOST the `date` ...">$bench_log
+   echo>>$bench_log
+   rm -f $TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/build/rapport.pdf
+   (cd $TRUST_ROOT/tests/Reference/BENCHMARK/Rapport;rm -f Run.log;Run_fiche 1>>$bench_log 2>&1)
+   tail -n1 $bench_log
+   if [ -f $TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/build/rapport.pdf ]
    then
-      echo "$TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/src/Run_fiche" | mail_ -a\"$TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/build/rapport.pdf\" -s\"[lance_test_nuit] Benchmark report generated `date '+%d/%m/%y'`\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+      if [ "`date '+%u'`" = 6 ]
+      then
+         echo "$TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/src/Run_fiche" | mail_ -a\"$TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/build/rapport.pdf\" -s\"[lance_test_nuit] Benchmark report generated `date '+%d/%m/%y'`\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+      else
+         echo "$TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/src/Run_fiche" | mail_ -a\"$TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/build/rapport.pdf\" -s\"[lance_test_nuit] Benchmark report generated `date '+%d/%m/%y'`\" $TRUST_MAIL
+      fi
    else
-      echo "$TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/src/Run_fiche" | mail_ -a\"$TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/build/rapport.pdf\" -s\"[lance_test_nuit] Benchmark report generated `date '+%d/%m/%y'`\" $TRUST_MAIL
+      cat $TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/Run.log | mail_ -s\"[lance_test_nuit] KO Benchmark report NOT generated `date '+%d/%m/%y'`\" $TRUST_MAIL
    fi
 else
-   cat $TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/Run.log | mail_ -s\"[lance_test_nuit] KO Benchmark report NOT generated `date '+%d/%m/%y'`\" $TRUST_MAIL
+   echo "...no machine with benchmark option in $TRUST_ROOT/bin/admin/liste.machines file"
 fi
 #nb_machines=`echo $machines | $TRUST_Awk '{print NF}'`
 performances=0 && [ $total = $nb_machines ] && [ $total != 0 ] && performances=1
@@ -1966,8 +2263,13 @@ else
 fi
 force_performances=~/force_performances && [ -f $force_performances ] && performances=1 && rm -f $force_performances
 [ "$nb_machines" -eq 0 ] && nb_machines=-1
-echo "$performances  Performance $total/$nb_machines="`echo "$total/$nb_machines" | bc`" (=1)" >> $MESSAGES_NUIT
-[ "$nb_machines" -eq -1 ] && nb_machines=0
+if [ "$nb_machines" -eq -1 ]
+then
+  echo "$performances  Performance $total/0="`echo $ECHO_OPTS "scale=3;$total/$nb_machines" | bc -l`" (=1)" >> $MESSAGES_NUIT
+  nb_machines=0
+else
+   echo "$performances  Performance $total/$nb_machines="`echo $ECHO_OPTS "scale=3;$total/$nb_machines" | bc -l`" (=1)" >> $MESSAGES_NUIT
+fi
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+$performances
 echo "<--- End at "`date '+%H:%M:%S'`
@@ -1981,7 +2283,8 @@ echo "# Verify the ToDo list #"
 echo "########################"
 echo "---> Begin at "`date '+%H:%M:%S'`
 echo "Analysis of $TRUST_ROOT/ToDo file"
-echo `grep -c ${TRUST_VERSION%_beta} $TRUST_ROOT/ToDo`" requests to do before the release of the next version"
+nb_todo=`grep -c ${TRUST_VERSION%_beta} $TRUST_ROOT/ToDo`
+echo "$nb_todo requests to do before the release of the next version"
 nothing_todo=0 && [ "`grep ${TRUST_VERSION%_beta} $TRUST_ROOT/ToDo`" = "" ] && nothing_todo=1
 # Envoi aux personnes concernees
 for qui in `$TRUST_Awk '!/Qui/ {print $2}' $TRUST_ROOT/ToDo | sort -u`
@@ -2000,7 +2303,7 @@ then
 else
    echo "Release criterion: ToDo KO"
 fi
-echo "$nothing_todo  ToDo $nothing_todo (=1)" >> $MESSAGES_NUIT
+echo "$nothing_todo  ToDo $nb_todo (=0)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+$nothing_todo
 echo "<--- End at "`date '+%H:%M:%S'`
@@ -2026,16 +2329,15 @@ then
    echo "Release criterion: Studies OK"
 else
    echo "Release criterion: Studies KO"
-   #[ "$NB" -gt 0 ] && cat $REP_NUIT/run_Etudes.log | mail_ -s \"[lance_test_nuit] Results of study cases KO\" $TRUST_MAIL
-   cat $REP_NUIT/run_Etudes.log | mail_ -s \"[lance_test_nuit] Results of study cases KO\" $TRUST_MAIL
+   [ "$NB" -gt 0 ] && cat $REP_NUIT/run_Etudes.log | mail_ -s \"[lance_test_nuit] Results of study cases KO\" $TRUST_MAIL
 fi
 force_validation_etudes=~/force_validation_etudes && [ -f $force_validation_etudes ] && validation_etudes=1 && rm -f $force_validation_etudes
 if [ "$NB" -eq -1 ]
 then
-  echo "$validation_etudes  Studies $OK/0="`echo "$OK/$NB" | bc`" (=1)" >> $MESSAGES_NUIT
+  echo "$validation_etudes  Studies $OK/0="`echo $ECHO_OPTS "scale=3;$OK/$NB" | bc -l`" (=1)" >> $MESSAGES_NUIT
   NB=0
 else
-  echo "$validation_etudes  Studies $OK/$NB="`echo "$OK/$NB" | bc`" (=1)" >> $MESSAGES_NUIT
+  echo "$validation_etudes  Studies $OK/$NB="`echo $ECHO_OPTS "scale=3;$OK/$NB" | bc -l`" (=1)" >> $MESSAGES_NUIT
 fi
 [ "$NB" -eq -1 ] && NB=0 
 let total_criteres=$total_criteres+1
@@ -2045,47 +2347,48 @@ echo "<--- End at "`date '+%H:%M:%S'`
 ###########################################
 # PROJETS BALTIK BASES SUR LE KERNEL ONLY #
 ###########################################
-echo " "
-echo "#########################################"
-echo "# Test the portability of baltik MPCube #"
-echo "#########################################"
-echo "---> Begin at "`date '+%H:%M:%S'`
-# Voir si dans le futur on ne peut pas faire converger la procedure check_components sur
-# les projets Baltik place sous la VOBS Composants et ce projet Baltik.
-PROJECT_ROOT=$WORKDIR/MPCube/mpcube-portage166	# MPCube a porter pour 1.6.2
-#log=$PROJECT_ROOT/check_baltik_project.log
-log=$REP_NUIT"/baltik_MPCube_"$HOST"_Kernel.log"
-# Necessaire de mettre entre () car initialisation du projet Baltik
-(
-source $WORKDIR/sourceforge/Kernel/TRUST/env/env_TRUST.sh 1>/dev/null 2>&1
-cd $PROJECT_ROOT
-echo "Call to $WORKDIR/sourceforge/Kernel/TRUST/bin/admin/check_baltik_project"
-echo "from `pwd`"
-echo "  See $log"
-echo "MPCube project baltik check on $HOST the `date` ...">$log
-echo>>$log
-$WORKDIR/sourceforge/Kernel/TRUST/bin/admin/check_baltik_project 1>>$log 2>&1
-grep 'Projet Baltik' $log | grep OK
-cd - 1>/dev/null 2>&1
-)
-if [ "`grep 'Projet Baltik' $log | grep OK`" != "" ]
-then
-   validation_projets_baltik=1
-else
-   validation_projets_baltik=0
-   cat $log | mail_ -s \"[lance_test_nuit] Portability KO on Baltik $PROJECT_ROOT\" $TRUST_MAIL $TRUST_PROJECT_LEADER
-fi
-echo " "
-if [ "$validation_projets_baltik" = 1 ]
-then
-   echo "Release criterion: MPCube OK"
-else
-   echo "Release criterion: MPCube KO"
-fi
-echo "$validation_projets_baltik  MPCube $validation_projets_baltik (=1) Baltik=$PROJECT_ROOT" >> $MESSAGES_NUIT
-let total_criteres=$total_criteres+1
-let criteres_remplis=$criteres_remplis+$validation_projets_baltik
-echo "<--- End at "`date '+%H:%M:%S'`
+# CC 01/09/2015: desormais MPCube issu de git teste via check_component
+#echo " "
+#echo "#########################################"
+#echo "# Test the portability of baltik MPCube #"
+#echo "#########################################"
+#echo "---> Begin at "`date '+%H:%M:%S'`
+## Voir si dans le futur on ne peut pas faire converger la procedure check_components sur
+## les projets Baltik place sous la VOBS Composants et ce projet Baltik.
+#PROJECT_ROOT=$WORKDIR/MPCube/mpcube-portage166	# MPCube a porter pour 1.6.2
+##log=$PROJECT_ROOT/check_baltik_project.log
+#log=$REP_NUIT"/baltik_MPCube_"$HOST"_Kernel.log"
+## Necessaire de mettre entre () car initialisation du projet Baltik
+#(
+#source $WORKDIR/sourceforge/Kernel/TRUST/env/env_TRUST.sh 1>/dev/null 2>&1
+#cd $PROJECT_ROOT
+#echo "Call to $WORKDIR/sourceforge/Kernel/TRUST/bin/admin/check_baltik_project"
+#echo "from `pwd`"
+#echo "  See $log"
+#echo "MPCube project baltik check on $HOST the `date` ...">$log
+#echo>>$log
+#$WORKDIR/sourceforge/Kernel/TRUST/bin/admin/check_baltik_project 1>>$log 2>&1
+#grep 'Projet Baltik' $log | grep OK
+#cd - 1>/dev/null 2>&1
+#)
+#if [ "`grep 'Projet Baltik' $log | grep OK`" != "" ]
+#then
+#   validation_projets_baltik=1
+#else
+#   validation_projets_baltik=0
+#   cat $log | mail_ -s \"[lance_test_nuit] Portability KO on Baltik $PROJECT_ROOT\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+#fi
+#echo " "
+#if [ "$validation_projets_baltik" = 1 ]
+#then
+#   echo "Release criterion: MPCube OK"
+#else
+#   echo "Release criterion: MPCube KO"
+#fi
+#echo "$validation_projets_baltik  MPCube $validation_projets_baltik (=1) Baltik=$HOST:$PROJECT_ROOT" >> $MESSAGES_NUIT
+#let total_criteres=$total_criteres+1
+#let criteres_remplis=$criteres_remplis+$validation_projets_baltik
+#echo "<--- End at "`date '+%H:%M:%S'`
 
 ##########
 # PROJETS
@@ -2099,21 +2402,41 @@ do
    echo "###################################"
    echo "---> Begin at "`date '+%H:%M:%S'`
    PROJECT_ROOT=`dirname $TRUST_ROOT`/Composants/$Composant
+   validation_composant=1
    # Check if component is OK on $HOST:
-   #Composant_log=$PROJECT_ROOT.log
-   Composant_log=$REP_NUIT"/baltik_"$Composant"_"$HOST"_Livraison.log"
-   echo "Analysis of  $PROJECT_ROOT/*.log files"
-   validation_composant=0 && [ "`grep "$Composant OK" $Composant_log`" != "" ] && validation_composant=1
-   grep "$Composant OK" $Composant_log | sed '1d'  
-   grep KO $PROJECT_ROOT/*.log | grep Info_global
+   OK=0
+   KO=0
+   rm -f tmp.log
+   for view in Livraison Maintenance Kernel
+   do
+      Composant_log=$REP_NUIT"/baltik_"$Composant"_"$HOST"_"$view".log"
+      if [ -f $Composant_log ]
+      then
+         echo "Analysis of "$Composant_log" file" | tee -a tmp.log
+         #grep "$Composant OK" $Composant_log | sed 1d | tee -a tmp.log # check only component without portability
+         grep "$Composant OK" $Composant_log | tee -a tmp.log
+         (grep " KO" $Composant_log;grep KO $Composant_log | grep $Composant) | tee -a tmp.log
+	 nb=`grep "$Composant OK" $Composant_log | wc -l`
+         OK=`echo $(($OK+$nb))`
+	 nb=`(grep " KO" $Composant_log;grep KO $Composant_log | grep $Composant) | wc -l`
+         KO=`echo $(($KO+$nb))`
+      fi
+   done
+   let NB=$OK+$KO
+   [ $NB = 0 ] && validation_composant=0
    # Check if portability is OK:
-   # if [ "`grep " Error" $PROJECT_ROOT/*.log 2>/dev/null`" != "" ]
-   if [ "`grep KO $PROJECT_ROOT/*.log | grep Info_global 2>/dev/null`" != "" ]
+   #if [ "`grep KO $PROJECT_ROOT/*.log | grep Info_global 2>/dev/null`" != "" ]
+   if [ $KO != 0 ]
    then
       validation_composant=0
-      echo "Run: konqueror $PROJECT_ROOT/nuit_$Composant.html"
-      echo "Run: konqueror $PROJECT_ROOT/nuit_$Composant.html" | mail_ -s \"[lance_test_nuit] Portability KO on Baltik $Composant\" $TRUST_MAIL
+      if [ -f $PROJECT_ROOT/nuit_$Composant.html ]
+      then
+         echo " " | tee -a tmp.log
+         echo "Run: konqueror $PROJECT_ROOT/nuit_$Composant.html" | tee -a tmp.log	 
+      fi
+      cat tmp.log | mail_ -s \"[lance_test_nuit] Portability KO on Baltik $Composant\" $TRUST_MAIL $TRUST_PROJECT_LEADER
    fi
+   rm -f tmp.log
    echo " "
    if [ "$validation_composant" = 1 ]
    then
@@ -2122,7 +2445,14 @@ do
       echo "Release criterion: $Composant KO"
    fi
    [ -f $force_composant ] && validation_composant=1
-   echo "$validation_composant  $Composant $validation_composant (=1) Baltik=$PROJECT_ROOT" >> $MESSAGES_NUIT
+   [ "$NB" -eq 0 ] && NB=-1
+   if [ "$NB" -eq -1 ]
+   then
+      echo "$validation_composant  $Composant $OK/0="`echo $ECHO_OPTS "scale=3;$OK/$NB" | bc -l`" (=1)" >> $MESSAGES_NUIT
+      NB=0
+   else
+      echo "$validation_composant  $Composant $OK/$NB="`echo $ECHO_OPTS "scale=3;$OK/$NB" | bc -l`" (=1)" >> $MESSAGES_NUIT
+   fi
    let total_criteres=$total_criteres+1
    let criteres_remplis=$criteres_remplis+$validation_composant
    echo "<--- End at "`date '+%H:%M:%S'`
@@ -2138,13 +2468,16 @@ echo "# Verify the validation of scripts #"
 echo "####################################"
 echo "---> Begin at "`date '+%H:%M:%S'`
 echo "Analysis of $REP_NUIT/CR_* files"
-grep Script $REP_NUIT/CR_* | grep KO
+grep "Script " $REP_NUIT/CR_* | grep KO
 validation_scripts=0
-if [ "`grep Script $REP_NUIT/CR_* | grep KO`" = "" ]
+OK=`grep "Script " $REP_NUIT/CR_* | grep OK 2>/dev/null | wc -l`
+KO=`grep "Script " $REP_NUIT/CR_* | grep KO 2>/dev/null | wc -l`
+let NB=$OK+$KO
+if [ "`grep "Script " $REP_NUIT/CR_* | grep KO`" = "" ]
 then
    validation_scripts=1
 else
-   grep Script $REP_NUIT/CR_* | grep KO | mail_ -s\"[lance_test_nuit] Validation of scripts KO\" $TRUST_MAIL
+   grep "Script " $REP_NUIT/CR_* | grep KO | mail_ -s\"[lance_test_nuit] Validation of scripts KO\" $TRUST_MAIL
 fi
 echo " "
 if [ "$validation_scripts" = 1 ]
@@ -2154,7 +2487,14 @@ else
    echo "Release criterion: Scripts KO"
 fi
 force_validation_scripts=~/force_validation_scripts && [ -f $force_validation_scripts ] && validation_scripts=1 && rm -f $force_validation_scripts
-echo "$validation_scripts  Scripts $validation_scripts (=1)" >> $MESSAGES_NUIT
+[ "$NB" -eq 0 ] && NB=-1
+if [ "$NB" -eq -1 ]
+then
+   echo "$validation_scripts  Scripts $OK/0="`echo $ECHO_OPTS "scale=3;$OK/$NB" | bc -l`" (=1)" >> $MESSAGES_NUIT
+   NB=0
+else
+   echo "$validation_scripts  Scripts $OK/$NB="`echo $ECHO_OPTS "scale=3;$OK/$NB" | bc -l`" (=1)" >> $MESSAGES_NUIT
+fi
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+$validation_scripts
 echo "<--- End at "`date '+%H:%M:%S'`
@@ -2168,7 +2508,12 @@ echo "# Verify the Doxygen documentation #"
 echo "####################################"
 echo "---> Begin at "`date '+%H:%M:%S'`
 echo "Search of $TRUST_ROOT/doc/doxygen*.err file"
-[ -f $TRUST_ROOT/doc/doxygen*.err ] && ls -la $TRUST_ROOT/doc/doxygen*.err
+if [ -f $TRUST_ROOT/doc/doxygen*.err ]
+then
+   ls -la $TRUST_ROOT/doc/doxygen*.*
+   head -n1 $TRUST_ROOT/doc/doxygen*.out
+   tail -n1 $TRUST_ROOT/doc/doxygen*.out
+fi
 validation_doxygen=1 && [ -s $TRUST_ROOT/doc/doxygen*.err ] && validation_doxygen=0 && cat $TRUST_ROOT/doc/doxygen*.err | mail_ -s\"[lance_test_nuit] Validation of Doxygen documentation KO\" $TRUST_MAIL #$TRUST_PROJECT_LEADER
 echo " "
 if [ "$validation_doxygen" = 1 ]
@@ -2225,14 +2570,13 @@ echo " "
 echo "Analysis of $MESSAGES_NUIT file"
 grep "Total:" $MESSAGES_NUIT
 echo "  criteria:  "$criteres_remplis" != "$total_criteres
-echo "  minimum:   "$criteres_remplis" -ge 11"
+echo "  minimum:   "$criteres_remplis" -ge 15"
 echo "  stability: "$stabilite" = 1.000"
-#if [ $criteres_remplis != $total_criteres ] && [ $criteres_remplis -ge 11 ] && [ $stabilite = "1.000" ]
-if [ $criteres_remplis != $total_criteres ] && [ $criteres_remplis -ge 21 ] && [ $stabilite = "1.000" ] # Temporary
+if [ $criteres_remplis != $total_criteres ] && [ $criteres_remplis -ge 15 ] && [ $stabilite = "1.000" ]
 then
    echo "Version $new : Currently $criteres_remplis criteria are OK on $total_criteres planned" >> $MESSAGES_NUIT
    echo -e "=> release OK\c"
-   # if [ $accord_admin = 1 ] || [ "`date '+%u'`" > 0 ]
+   # if [ $accord_admin = 1 ] || [ "`date '+%u'`" > 0 ] # Temporary
    if [ $accord_admin = 1 ] || [ "`date '+%u'`" = 6 ]
    then
       # On decide du nom du label specifique
@@ -2365,6 +2709,10 @@ fi
 echo "----------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 echo `date` >> $MESSAGES_NUIT
 echo "----------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
+grep -A `echo $(($total_criteres+2))` -B 1 "Release criteria of the" $MESSAGES_NUIT > tmp_NUIT.txt
+sed 's/$/ <BR>/g' tmp_NUIT.txt > tmp_NUIT.html
+cat tmp_NUIT.html >> $REP_NUIT/NUIT.html
+rm -f tmp_NUIT.txt tmp_NUIT.html
 echo "<--- End at "`date '+%H:%M:%S'`
 
 
@@ -2383,9 +2731,12 @@ echo "  See $envoie_ftp_log"
 echo "TRUST script on $HOST the `date` ...">$envoie_ftp_log
 echo>>$envoie_ftp_log
 envoie_ftp_cea_fr 1>>$envoie_ftp_log 2>&1
+echo>>$envoie_ftp_log
+echo "End at `date` ...">>$envoie_ftp_log
 grep -i killed $envoie_ftp_log
 grep -i Error $envoie_ftp_log
 grep KO $envoie_ftp_log
+grep local $envoie_ftp_log
 
 #####################################
 # Mises a jour diverses de $TRUST_FTP
@@ -2411,7 +2762,7 @@ echo "---> Begin at "`date '+%H:%M:%S'`
 ################################################################################################
 if [ "`date '+%u'`" = 2 ] || [ $livraison = 1 ]
 then
-   ALL_DEVELOPERS_TRUST_MAIL=trio_u_dev@saxifrage.saclay.cea.fr
+   ALL_DEVELOPERS_TRUST_MAIL="trio_u_dev@saxifrage.saclay.cea.fr $TRUST_MAIL"
 else
    ALL_DEVELOPERS_TRUST_MAIL=$TRUST_MAIL" "$TRUST_PROJECT_LEADER
 fi
@@ -2529,6 +2880,7 @@ cp -f $REP_NUIT/CR $REP_HIST/CR.$DATE
 
 # On sauvegarde l'historique de la nuit
 cd $REP_NUIT
+git rm .nfs*
 git add --all
 git commit -m"Commit $DATE"
 cd $TRUST_ROOT

@@ -983,7 +983,7 @@ then
 		    echo $ECHO_OPTS "****************************************"
 		    echo $ECHO_OPTS "CAUTION: THIS TEST CASE ABRUPTLY FAILED"
 		    echo $ECHO_OPTS "****************************************"
-		    mes="|$DEB|%%:%%:%%|%%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%%| CORE   |"$NOM2" "$ATTENTION
+		    mes="|$DEB|%%:%%:%%|%%%%%%|%%%%|%%%%%|%%%%%|%%%%%%|%%%%%%|%%%%%%|%%%%%%%| CORE  |"$NOM2" "$ATTENTION
 		    echo $ECHO_OPTS $mes >> $SORTIE
 		    path=""
 		    (echo $ECHO_OPTS $mes" <a href=$path$rep_tests/$REP/$NOM2.err>Fichier $NOM2.err</a>" >> $fichier) 2>/dev/null
@@ -1327,8 +1327,8 @@ then
    do
       let nb_skipped=nb_skipped+1
    done
-   echo $ECHO_OPTS "\n$nb_skipped test cases skipped" >> $SORTIE
-   (echo $ECHO_OPTS "\n$nb_skipped test cases skipped" >> $fichier) 2>/dev/null
+   echo $ECHO_OPTS "$nb_skipped test cases skipped\n" >> $SORTIE
+   (echo $ECHO_OPTS "$nb_skipped test cases skipped\n" >> $fichier) 2>/dev/null
 fi
 if [ ${#liste_no_ref_comparison} != 0 ]
 then
@@ -1337,8 +1337,8 @@ then
    do
       let nb_no_ref_comparison=nb_no_ref_comparisons+1
    done
-   echo $ECHO_OPTS "\n$nb_no_ref_comparison test cases not compared to the reference" >> $SORTIE
-   (echo $ECHO_OPTS "\n$nb_no_ref_comparison test cases not compared to the reference" >> $fichier) 2>/dev/null
+   echo $ECHO_OPTS "$nb_no_ref_comparison test cases not compared to the reference\n" >> $SORTIE
+   (echo $ECHO_OPTS "$nb_no_ref_comparison test cases not compared to the reference\n" >> $fichier) 2>/dev/null
 fi
 ###################
 # Envoi d un mail #
@@ -1379,8 +1379,8 @@ then
       fi
    fi
    # Liste des cas tests ayant pose probleme
-   echo $ECHO_OPTS "List of unsuccessful tests cases :\n`cat $rep_tests/liste`\n" >> $SORTIE
-   (echo $ECHO_OPTS "List of unsuccessful tests cases :\n`cat $rep_tests/liste`\n" >> $fichier) 2>/dev/null
+   echo $ECHO_OPTS "List of unsuccessful tests cases :\n`cat $rep_tests/liste`" >> $SORTIE
+   (echo $ECHO_OPTS "List of unsuccessful tests cases :\n`cat $rep_tests/liste`" >> $fichier) 2>/dev/null
 fi
 rm -f $message
 if [ ${#liste_skipped} != 0 ]

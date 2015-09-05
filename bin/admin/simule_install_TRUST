@@ -1,6 +1,6 @@
 #!/bin/bash
 # Test d'installation d'une version specifie par parametre
-echo "Usage: `basename $0` package.tar [-remote hostname]"
+echo "Usage: `basename $0` package.tgz [-remote hostname]"
 if [ ${#1} != 0 ] && [ -f $1 ]
 then
    if [ ${1#/} != $1 ]
@@ -10,27 +10,29 @@ then
       version_arch=`pwd`/$1	# Chemin relatif
    fi
    paquet=`basename $version_arch`
-   keys=keys${paquet#TRUST-}
-   keys=`dirname $version_arch`/${keys%.tar}
-   [ ! -f $keys ] && echo "$keys key not found." && exit -1
+   version=`echo $paquet | sed 's/TRUST_//' | sed 's/.tgz//'` # version stable ou beta
+   version=`echo ${version%-*}` # si version extraite
+   echo "package: "$paquet
+   echo "version: "$version
 else
    exit -1
 fi
 
 machine=localhost && [ "$2" = "-remote" ] && [ "$3" != "" ] && machine=$3
-cible=$WORKDIR/simule_install_${paquet%.tar}
+cible=$WORKDIR/simule_install_${paquet%.tgz}
 ssh_ $machine -n pwd
 if [ $? = 0 ]
 then
   echo "Begin of the installation simulation of $version_arch at "`date '+%H:%M:%S'` on $machine:$cible
   # Add -X to ssh ?
   ssh -o ConnectTimeout=10 -o BatchMode=yes $machine -n 'rm -r -f '$cible';mkdir '$cible''
-  scp -o ConnectTimeout=10 -o BatchMode=yes $version_arch $keys $machine:$cible/.
+  scp -o ConnectTimeout=10 -o BatchMode=yes $version_arch $machine:$cible/.
   ssh -o ConnectTimeout=10 -o BatchMode=yes $machine -n '
   cd '$cible';
-  tar xf '$paquet';
+  tar xvfz '$paquet';
   rm -f '$paquet';
-  printf `pwd`/`basename '$keys'`"\ny\nn" | ./Installer_TRUST 1>'$cible'/../Installer_TRUST.log 2>&1;
+  export TRUST_VERSION='$version';
+  ./TRUST_'$version'/bin/Installer_TRUST 1>'$cible'/../Installer_TRUST.log 2>&1;
   if [ $? = 0 ]
   then
      echo "Installation OK!"

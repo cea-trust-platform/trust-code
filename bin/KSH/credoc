@@ -6,12 +6,12 @@ doxygen()
 {
    rm -r -f $TRUST_ROOT/doc/doxygen*.*
    make_Doxyfile
-   echo "Fin Doxygen a `date '+%H:%M:%S'`";
+   echo "End doxygen at `date '+%H:%M:%S'`";
    # Verification des includes avec Doxygen (fait uniquement le vendredi soir)
    if [ "`date '+%u'`" = 5 ]
    then
       cd $TRUST_ROOT/MonoDir$COMM;
-      (check_include 1>check_include.log 2>&1;echo "Fin check_include a `date '+%H:%M:%S'`")&
+      (echo "Begin check_include at `date '+%H:%M:%S'`";check_include 1>check_include.log 2>&1;echo "End check_include at `date '+%H:%M:%S'`")&
    fi
 } 
 
@@ -22,6 +22,7 @@ doxygen()
 ##############################################################################
 tests()
 {
+echo "Begin keyword index at `date '+%H:%M:%S'`"
 keywords=$TRUST_ROOT/doc/TRUST/Keywords.txt
 tests=$TRUST_ROOT/doc/TRUST/Tests.txt
 rm -f $tests $TRUST_TMP/motcles
@@ -56,11 +57,11 @@ do
       echo $ECHO_OPTS $ligne >> $tests
    else
       # Previent qu'il n'y a pas de cas test pour un mot cle !
-      echo "Le mot cle $keyword n'a aucun cas test !" >> $TRUST_TMP/motcles
+      echo "The $keyword keyword has no test cases!" >> $TRUST_TMP/motcles
    fi
    echo "</tr>" >> $html
 done
-echo "Fin index mots cles a `date '+%H:%M:%S'`"
+echo "End keyword index at `date '+%H:%M:%S'`"
 echo "</html>" >> $html
 CHECKOUT ${html%.tmp} 1>/dev/null 2>&1
 if [ "`diff $html ${html%.tmp}`" != "" ]
@@ -85,6 +86,7 @@ ihm()
    # cree_Maillages_VDF.html
    # Le fichier des maillages VEF GIBI disponible :
    # cree_Maillages_VEF.html
+   echo "End ihm at `date '+%H:%M:%S'`"
 }
 
 pdf_par_office()
@@ -105,7 +107,7 @@ if [ -f $ooffice ]
 then
    tmp=`mktemp_ -d`
    cd $tmp
-   for fichier in `ls -rt $TRUST_ROOT/doc/TRUST/*.od* 2>/dev/null`
+   for fichier in `ls -rt $TRUST_ROOT/doc/TRUST/*.od* | grep -v ods 2>/dev/null`
    do
       pdf=$fichier
       for format in $formats
@@ -140,7 +142,7 @@ then
    cd -
    rm -r -f $tmp
 fi
-echo "End pdf at `date '+%H:%M:%S'`"
+echo "End pdf_par_office at `date '+%H:%M:%S'`"
 }
 
 pdf_par_xdata()
@@ -164,12 +166,13 @@ pdf_par_xdata()
    # Creation de la doc PDF et LATEX
    make doc >> pdf_par_xdata.log
    cd -
+   echo "End pdf_par_xdata at `date '+%H:%M:%S'`"
 }
 
 ###################
 # Debut du script #
 ###################
-echo "Debut credoc a `date '+%H:%M:%S'`"
+echo "Begin credoc at `date '+%H:%M:%S'`"
 if [ "$1" = -pdf ]
 then
    pdf_par_office
@@ -193,10 +196,10 @@ else
    echo "# Begin pdf_par_xdata at `date '+%H:%M:%S'`"
    pdf_par_xdata
    echo "####################################################"
-   echo "# Begin tests at `date '+%H:%M:%S'`"
+   echo "# Launch tests at `date '+%H:%M:%S'`"
    # On lance en batch car tests est lent (a optimiser)
    tests &
 fi
 echo "####################################################"
-echo "Fin credoc a `date '+%H:%M:%S'`"
-
+echo "End credoc at `date '+%H:%M:%S'`"
+echo " "

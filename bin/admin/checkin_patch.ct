@@ -30,6 +30,8 @@ $TRUST_HOST_ADMIN@$tar
 ==============================================" >> $log
    cat $log
    sleep 10
+else
+   rm -f $tar
 fi
 rm -f $log
 
@@ -41,7 +43,7 @@ then
    if [ ! -f $TRUST_ROOT/.RELEASE_NOTES ] || [ $TRUST_ROOT/RELEASE_NOTES -nt $TRUST_ROOT/.RELEASE_NOTES ]
    then
       touch $TRUST_ROOT/.RELEASE_NOTES
-      dest="trio_u_annonces@saxifrage.saclay.cea.fr trio_u_dev@saxifrage.saclay.cea.fr"
+      dest="trio_u_annonces@saxifrage.saclay.cea.fr trio_u_dev@saxifrage.saclay.cea.fr $TRUST_MAIL"
       patch_branch=patch_`echo $TRUST_VERSION | awk '{gsub("\\\.","",$0);print $0}'`
 	  echo "  New TRUST v$TRUST_VERSION patch released"
       mail_ -s \"[checking_patch.ct] WARNING! New TRUST v$TRUST_VERSION patch released: Ensure that git push official has been done manually...\" $TRUST_MAIL
@@ -59,8 +61,9 @@ make
 
 -For users with a downloaded TRUST version, you can download, apply the patch and rebuild
 with the single command:
-cd \$TRUST_ROOT/bin
-./Installer_TRUST -patch
+cd \$TRUST_ROOT
+source env/env_TRUST.sh
+./bin/Installer_TRUST -patch
 
 
 TRUST ftp site: ftp://$TRUST_FTP/$PUBLIC/index.html

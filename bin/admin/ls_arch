@@ -23,10 +23,9 @@ do
    then
       echo "Connection hangs..."
    else
-      cat ls_arch.log | awk 'BEGIN {ETAT="No connection";ok=0} /CR_/ && (NF==9) {ETAT="Compile en cours..."} /rwx/ && (ok==0) {ok=1;ETAT="Ok"} / TRUST/ {ETAT=ETAT" "$NF} END {print ETAT}'      		  		  
-      #[ $err = 0 ] && [ "`grep 'No route' ls_arch.log`" = "" ] && ssh_ $log@$adr -n 'rm -f ~/Version_test*/compile*'
+      cat ls_arch.log | awk 'BEGIN {ETAT="No connection";ok=0} /CR_/ && (NF==9) {ETAT="Compile en cours..."} /rwx/ && (ok==0) {ok=1;ETAT="Ok"} / TRUST/ {ETAT=ETAT" "$NF} END {print ETAT}'  
       #configure.ssh $log@$adr
-      rapport=`mktemp_`
+	  rapport=`mktemp_`
       ssh_ $log@$adr -n "ps -efl | grep mise_a_jour_TRUST_arch | grep -v grep | grep -v kill" 1>$rapport 2>/dev/null
       if [ -s $rapport ]
       then
@@ -40,7 +39,6 @@ do
          echo "If necessary, killing mise_a_jour_TRUST_arch processes..."
          ssh_ $log@$adr -n "cd $version/TRUST/bin/admin;./mise_a_jour_TRUST_arch -kill"
       fi
-      #ssh_ $log@$adr -n '[ `ls /net 2>/dev/null | grep dibona` != "" ] && [ ! -d /net/dibona/users ] && echo Rebooter'
    fi
    rm ls_arch.log
 done

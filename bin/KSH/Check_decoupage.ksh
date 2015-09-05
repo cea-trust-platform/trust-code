@@ -169,7 +169,7 @@ do
 	 fi
          echo $ECHO_OPTS $OK | tee -a $log 
       else
-         echo "Arret" | tee -a $log
+         echo "Arret Validite...KO" | tee -a $log
 	 warning      
       fi 
       [ -f $cas*lml ] && mv $cas*lml ref.lml   
@@ -213,7 +213,7 @@ do
 	       warning
             fi
 	 else
-            echo "Arret" | tee -a $log
+            echo "Arret Validite...KO" | tee -a $log
 	    warning
 	 fi
       else

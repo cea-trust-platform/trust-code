@@ -33,36 +33,8 @@ OK()
 ########################################################
 gunzip_()
 {
-if [ $crypt = 1 ]
-then
-   # Verifie si les cles sont la
-   cle=$TRUST_ROOT/.cle_`basename $1`
-   [ ! -f $cle ] && echo "Missing key in $keys for $1." && exit -1
-   tmp=$1".tmp"
-   echo "begin 664 $1" > $tmp
-   cat $cle >> $tmp
-   uuencode $1 $1 | awk '(NR!=1) {print $0}' >> $tmp
-   [ $? != 0 ] && echo "uuencode seems not installed on your system or is not working well. Please correct. On Linux, install the sharutils rpm package please. Then delete TRUST installation and restart it." && rm -r -f $TRUST_ROOT && exit -1
-   # Effacer le $1 est plus prudent...
+   gunzip -c $1 > ${1%.gz}
    rm -f $1
-   rm -f $cle
-   uudecode $tmp
-   [ $? != 0 ] && echo "uudecode seems not installed on your system or is not working well. Please correct. On Linux, install the sharutils rpm package please. Then delete TRUST installation and restart it." && rm -r -f $TRUST_ROOT && exit -1
-   rm -f $tmp
-   # Attendre que tout est bien fini est plus prudent aussi...
-   sleep 1
-   # Le test suivant ne marche pas sur HP !!!!
-   # [ "`file $1 | grep gzip`" = "" ] && echo "Invalid keys in $keys." && exit -1
-   #gunzip -f $1 2>/dev/null
-   # Fait expres de passer par -c pour eviter l'erreur incomprehensible
-   # et non reproductible suivante sur un PC linux :
-   # gunzip: TRUST.tar.gz: invalid compressed data--crc error
-   gunzip -c $1 > ${1%.gz}
-   [ $? != 0 ] && echo "Invalid keys in $keys for $1." && echo "Check you have the keys for the version you want to install." && exit -1
-else
-   gunzip -c $1 > ${1%.gz}
-fi
-rm -f $1
 }
 
 ########################################################
@@ -177,41 +149,39 @@ if [ -f KSH/wget_ ] || [ -f TRUST_$TRUST_VERSION/bin/KSH/wget_ ]
 then
    # Version already installed
    echo "  -patch                Download and apply latest patch on the installed version" | tee -a $LOG
-      # echo "  -rebuild              Rebuild the binary" | tee -a $LOG
    echo "  -configure-options \"OPT1 OPT2 ..\"           (For advanced users) The installation is made with ./configure OPT1 OPT2 " | tee -a $LOG
 else
    # First install
-   echo "  -configure            (For advanced users) The installation will stop at one moment and should be finished by configure/make" | tee -a $LOG
-  
-   
+   echo "  -configure            (For advanced users) The installation will stop at one moment and should be finished by configure/make" | tee -a $LOG  
 fi
 echo "====================================================================="
+
 # Verification immediate des prerequis:
 check_prerequis
-# 
+#
 configure=0
-rebuild=0
 export error_exit=0
 while [ "$1" != "" ]
 do
    [ "$1" = -help ] && exit 6 # error not installed
    [ "$1" = -configure ] && configure=1 && shift && continue
-   [ "$1" = -rebuild ] && rebuild=1 && shift && continue
    [ "$1" = -configure-options ] && opt="$2" && shift && shift && continue
    
    if [ "$1" = -patch ]
    then
       echo>$LOG
-      if [ -d TRUST_$TRUST_VERSION ]
+      if [ -d $TRUST_ROOT ]
       then
-         source TRUST_$TRUST_VERSION/env/env_TRUST.sh 1>/dev/null
+         source $TRUST_ROOT/env/env_TRUST.sh 1>/dev/null
+      else
+         echo "TRUST environment not initialized." && exit -1
       fi
       # Connect to ftp
       . connect_ftp -no_ftp 1>/dev/null 2>&1
       # Try to download the patch
       cd `dirname $TRUST_ROOT`
+      patch=Patch_$TRUST_VERSION.tgz
       echo "Try to download or find the patch $patch..." | tee -a $LOG
-      patch=Patch$TRUST_VERSION.tar
       wget_ ftp://$TRUST_FTP/$PUBLIC/patch/$patch 1>/dev/null 2>&1
       if [ ! -f $patch ]
       then
@@ -222,14 +192,13 @@ do
       fi
       # If found apply it
       echo "Applying the patch:" | tee -a $LOG
-      tar xf $patch patch && rm -f $patch
-      patch=`pwd`/patch
+      patch=`pwd`/$patch
       cd $TRUST_ROOT
-      tar tvf $patch && tar xvf $patch | xargs chmod +w
+      tar tvf $patch && tar xvfz $patch | xargs chmod +w
       ./configure && source env/env_TRUST.sh 1>/dev/null && make
       change_droits
       cd `dirname $TRUST_ROOT`
-      rm -f $patch Installer_TRUST linux_install* README_INSTALL
+      rm -f $patch
       echo>$LOG
       exit $?
    fi
@@ -273,7 +242,7 @@ if [ -d $ROOT/TRUST_$TRUST_VERSION ]
 then
    TRUST_ROOT=$ROOT/TRUST_$TRUST_VERSION && export TRUST_ROOT
 else
-   echo "The TRUST directory must exist on $ROOT!" | tee -a $LOG
+   echo "The TRUST_$TRUST_VERSION directory must exist on $ROOT!" | tee -a $LOG
    exit -1
 fi
 # On arrete si la variable $HOME n'existe pas
@@ -286,7 +255,7 @@ fi
 # Dossier Diphasique ???
 DIPHA_ROOT="" && [ -d $ROOT/Diphasique ] && DIPHA_ROOT=$ROOT/Diphasique && export DIPHA_ROOT
 # Existence d'une version
-if [ -f $TRUST_ROOT/TRUST.tar.gz ]
+if [ -f $TRUST_ROOT/TRUST.tgz ]
 then
    if [ -f .DATE ] || [ -f $TRUST_ROOT/.DATE ]
    then
@@ -302,16 +271,15 @@ echo "If install fails, please send the $LOG file to TRUST support." | tee -a $L
 # Installe le Noyau
 ###################
 cd $TRUST_ROOT
-if [ -f TRUST.tar.gz ]
+if [ -f TRUST.tgz ]
 then
    echo | tee -a $LOG
    echo "Please wait now ..." | tee -a $LOG
    echo | tee -a $LOG
-   gunzip_ TRUST.tar.gz
    echo $ECHO_OPTS "Extract TRUST source files ...\c" | tee -a $LOG
-   tar xf TRUST.tar 1>>$LOG 2>&1
+   tar xfz TRUST.tgz 1>>$LOG 2>&1
    OK $? | tee -a $LOG
-   rm -f TRUST.tar
+   rm -f TRUST.tgz
    ##################################
    # Acceptation de la licence TRUST
    ##################################
@@ -359,10 +327,10 @@ fi
 # Installe les autres
 # modules du Noyau
 #####################
-echo | tee -a $LOG
 liste=`ls *.tar.gz 2>/dev/null | grep -v exec | grep -v lib 2>/dev/null`
 if [ ${#liste} != 0 ]
 then
+   echo | tee -a $LOG
    for rep in $liste
    do
          rep=${rep%.tar.gz}
@@ -378,9 +346,9 @@ cd $TRUST_ROOT
 ##################################################
 # Regarde s'il y'a un patch disponible a appliquer
 ##################################################
-echo | tee -a $LOG
-if [ -f ../patch ]
+if [ -f ../patch ]  # A revoir... avec TRUST ???
 then
+   echo | tee -a $LOG
    # On met en ecriture tous les fichiers avant d'appliquer le patch:
    chmod -R u+w . 1>/dev/null 2>&1
    echo "Patch detected and applied..." | tee -a $LOG
@@ -396,13 +364,13 @@ then
    echo | tee -a $LOG
    echo "The installation is now stopped and should be finished:" | tee -a $LOG
    echo "Look at the configure options:" | tee -a $LOG
-   echo "cd TRUST" | tee -a $LOG
+   echo "cd TRUST_$TRUST_VERSION" | tee -a $LOG
    echo "./configure -help" | tee -a $LOG
    echo "Run the configure and add desired options:" | tee -a $LOG
    echo "./configure ..." | tee -a $LOG
    echo "Then check/modify the environment values in the \$TRUST_ROOT/env/machine.env created." | tee -a $LOG
    echo "Initialize the environment:" | tee -a $LOG
-   echo "source ./env/env_TRUST.sh" | tee -a $LOG
+   echo "source env/env_TRUST.sh" | tee -a $LOG
    echo "Compile the code:" | tee -a $LOG
    echo "make" | tee -a $LOG
    exit 0
@@ -520,6 +488,7 @@ do
          gunzip_ $rep.tar.gz
          tar xf $rep.tar 1>>$LOG 2>&1
          OK $? | tee -a $LOG
+         echo | tee -a $LOG
          rm -f $rep.tar
       done
    fi
@@ -547,7 +516,6 @@ do
    ########################################################
    # Recompilation eventuelle si la version a des sources #
    ########################################################
-   # [ "$rebuild" = 1 ] && err=1 # On force la recompilation
    if [ $err != 0 ] && [ -f $TRUST_ROOT/src/MAIN/MAIN.cpp ]
    then
       echo $ECHO_OPTS "\nCode recompilation..." | tee -a $LOG
@@ -626,7 +594,7 @@ echo "HOW TO RE-BUILD TRUST ?" | tee -a $LOG
 echo "************************" | tee -a $LOG
 echo $ECHO_OPTS "If you want to build again TRUST, run:" | tee -a $LOG
 echo $ECHO_OPTS "cd $TRUST_ROOT" | tee -a $LOG
-echo $ECHO_OPTS "./configure            # Than check and/or change the detected values into the \$TRUST_ROOT/env/machine.env file" | tee -a $LOG
+echo $ECHO_OPTS "./configure -help       # Than check and/or change the detected values into the \$TRUST_ROOT/env/machine.env file" | tee -a $LOG
 echo $ECHO_OPTS "source env/env_TRUST.sh # Initialize the new environment" | tee -a $LOG
 echo $ECHO_OPTS "make clean;make # Then clean and rebuild TRUST" | tee -a $LOG
 echo | tee -a $LOG
@@ -637,6 +605,7 @@ echo "Initialize TRUST environment with:" | tee -a $LOG
 echo "source $TRUST_ROOT/env/env_TRUST.sh" | tee -a $LOG
 echo "And follow the tutorial $TRUST_ROOT/doc/TRUST/Tutorial_TRUST.pdf" | tee -a $LOG
 echo "You can contact us at $TRUST_MAIL for a training session of 2 days." | tee -a $LOG
+echo " " | tee -a $LOG
 
 ###################################
 # Efface des fichiers temporaires :
