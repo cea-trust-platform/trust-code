@@ -54,6 +54,7 @@ Lire pb
 {
 	Navier_Stokes_standard
 	{
+		methode_calcul_pression_initiale avec_les_cl # pour forcer modele NS par defaut dans baltik ModeleCoeur #
 		solveur_pression cholesky { }
 solveur_pression petsc cholesky { }
 		convection { Amont }
