@@ -328,7 +328,7 @@ fi
 ################
 if [ "$copy" = 1 ]
 then
-   echo "Try to extract $NOM test case from TRUST database..."
+   echo "Try to extract $NOM test case from database..."
    copie_cas_test $NOM
    err=$?
    echo "Directory `pwd`/$NOM created with files inside:"

@@ -308,14 +308,14 @@ echo "The disc is checked:" | tee -a $LOG
 # Check disk space:
 export LANG=C
 chmod +w $TRUST_ROOT/bin/KSH/dd.ksh
-$TRUST_ROOT/bin/KSH/dd.ksh -space | tee -a $LOG
+$TRUST_ROOT/bin/KSH/dd.ksh -space
 if [ $? != 0 ]
 then
    $TRUST_ROOT/bin/KSH/dd.ksh -space 1>>$LOG 2>&1
    exit -1
 fi
 # Check disk speed:
-$TRUST_ROOT/bin/KSH/dd.ksh -speed | tee -a $LOG
+$TRUST_ROOT/bin/KSH/dd.ksh -speed
 if [ $? != 0 ]
 then
    $TRUST_ROOT/bin/KSH/dd.ksh -speed 1>>$LOG 2>&1

@@ -226,9 +226,9 @@ then
       ligne=1 && [ $machine = $HOST ] && ligne=2
       if [ ${TRUST_VERSION%_beta} != $TRUST_VERSION ] || [ "$MA_VUE" = triou_admin ] || [ "`echo $TRUST_ROOT | grep $WORKBASE`" != "" ]
       then
-         VERSION=$WORKBASE$machine
+         VERSION=$WORKBASE$machine/TRUST
       else
-         VERSION=TRUST_$TRUST_VERSION
+         VERSION=TRUST/TRUST_$TRUST_VERSION
 	 # Sur les machines du CCRT, desormais suivi par le nom de la machine
 	 if [ "`grep /ccc $xml`" != "" ]
 	 then

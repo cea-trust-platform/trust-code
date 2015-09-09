@@ -86,7 +86,6 @@ fi
 # It is now possible to build several version on the same machine. Eg:
 # $WORKBASEcurie-ccrt
 # $WORKBASEcurie-ccrt-mvapich
-# $WORKBASEcurie-ccrt-gcc
 # ...
 # ~/.ssh/config need to be change to recognize the "new" hosts 
 VERSION=`pwd`
@@ -177,7 +176,7 @@ echo "Usage: `basename $0` [-rsync|-sftp|-kill]"
 if [ "`ps -efl | grep make | grep TRUST | grep -v grep`" != "" ]
 then
    # mail_ command not found at this moment
-   echo $ECHO_OPTS "\n\nSorry, $QUI is now compiling on the $HOST machine... Try later." #| mail_ $QUI
+   echo $ECHO_OPTS "\n\nSorry, $QUI is now running on the $HOST machine... Try later." #| mail_ $QUI
    exit_
 fi
 # Variable NUIT

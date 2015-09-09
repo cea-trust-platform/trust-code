@@ -45,7 +45,8 @@ if [ "`ssh_ -o BatchMode=yes $log@$adr -n '. ./.profile 1>/dev/null 2>&1;[ ${#WO
 then
    # New, if $WORKDIR is defined, then the PATH is changed:
    # $HOME/TRUST/machine/TRUST_$v -> $WORKDIR/TRUST/TRUST_$v
-   machine=`echo $adr | $TRUST_Awk -F. '{print $1}'`
+   #machine=`echo $adr | $TRUST_Awk -F. '{print $1}'` 
+   machine=`echo $adr | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'` # 09/2015 Modification des acces SSH au TGCC *-gw.ccc.cea.fr
    ssh_ -o BatchMode=yes $log@$adr -n '. ./.profile 1>/dev/null 2>&1;mkdir -p $WORKDIR/'$rep'/'$rep_patch';mkdir -p '$rep_patch';rm -f '$rep_patch'/'$machine';ln -s -f $WORKDIR/'$rep'/'$rep_patch' '$rep_patch'/'$machine''
 else
    machine=""
@@ -93,7 +94,7 @@ else
    echo "Launch Installer_TRUST from $rep"
    ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=60 -o BatchMode=yes $log@$adr -n '[ -f .profile ] && . ./.profile;
    	cd '$rep';rm -r -f '$rep_stable' 2>/dev/null;
-  	tar xvfz '$file';export TRUST_VERSION=$v;'$rep_stable'/bin/Installer_TRUST -configure;rm -f *.tgz 2>/dev/null;
-   	[ "$compile" != "0" ] && cd '$rep_stable' && ./configure && source env/env_TRUST.sh && make;
+  	tar xvfz '$file';export TRUST_VERSION='$v';'$rep_stable'/bin/Installer_TRUST -configure;rm -f *.tgz 2>/dev/null;
+   	[ "'$compile'" != "0" ] && cd '$rep_stable' && ./configure && source env/env_TRUST.sh && make;
    '
 fi

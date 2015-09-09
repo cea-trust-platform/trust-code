@@ -107,7 +107,8 @@ echo "------------------------------------"
 liste_machines_KO=""
 for adr in $liste_adr
 do
-   machine=`echo $adr | awk -F"." '{print $1}'`
+   #machine=`echo $adr | awk -F"." '{print $1}'`
+   machine=`echo $adr | awk -F"." '{print $1}' | awk -F"-gw" '{print $1}'` # 09/2015 Modification des acces SSH au TGCC *-gw.ccc.cea.fr
    version=$WORKBASE$machine
    log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`      
    ssh_log=$TRUST_ROOT/ssh_$machine.log

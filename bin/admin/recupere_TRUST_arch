@@ -19,7 +19,8 @@ mkdir -p $PORTAGE 2>/dev/null
 #####################################
 for HOST in `ls_ftp $SECRET/../CR/CR_* 2>/dev/null | $TRUST_Awk '{gsub("CR_","",$NF);print $NF}'`
 do
-   if [ "`liste_machines | $TRUST_Awk -F. '{print $1}' | grep -w $HOST`" = "" ]
+   #if [ "`liste_machines | $TRUST_Awk -F. '{print $1}' | grep -w $HOST`" = "" ]
+   if [ "`liste_machines | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}' | grep -w $HOST`" = "" ] # 09/2015 Modification des acces SSH au TGCC *-gw.ccc.cea.fr
    then
       CHECKOUT $TRUST_ROOT/bin/admin/liste.machines 1>/dev/null 2>&1
       adr=$HOST
@@ -109,7 +110,8 @@ do
    rm -f /tmp/os /tmp/CC
    for adr in $liste
    do
-      version=$WORKBASE`echo $adr | awk -F'.' '{print $1}'`
+      #version=$WORKBASE`echo $adr | awk -F'.' '{print $1}'`
+      version=$WORKBASE`echo $adr | awk -F'.' '{print $1}' | awk -F"-gw" '{print $1}'` # 09/2015 Modification des acces SSH au TGCC *-gw.ccc.cea.fr
       ROOT=$version/$MODULE
       log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`
       recupere_exec=0	# C'est une machine dont on recupere les binaires
@@ -458,6 +460,7 @@ $TD_CR<A HREF="$CR">$HOST</A>$FTD
    echo "<A HREF="nuit_MPCube.html">MPCube</A> : MPCube baltik compilation portability<BR>" >> $NUIT2
    echo "<A HREF="nuit_ICoCo.html">ICoCo</A> : ICoCo baltik compilation portability<BR>" >> $NUIT2
    echo "<A HREF="nuit_equation_convection_diffusion.html">Tuto</A> : equation_convection_diffusion baltik compilation portability<BR>" >> $NUIT2
+   echo "<A HREF="nuit_basic.html">TRUST</A> : TRUST compilation portability<BR>" >> $NUIT2
    #echo "Release criteria of the $TRUST_VERSION version:<BR>" >> $NUIT2
    echo "$port_trust : $MODULE portability ( $portabilite/$nb_machine_cible > $limite ) $mes<BR>" >> $NUIT2
    echo "$port_atelier : $MODULE workshop compilation ( $portabilite_atelier/$nb_machine_atelier_cible )<BR>" >> $NUIT2

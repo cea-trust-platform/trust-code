@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <Object name="MachineProfile">
     <Field name="hostNickname" type="string">curie</Field>	
-    <Field name="host" type="string">curie-ccrt.ccc.cea.fr</Field>
+    <Field name="host" type="string">curie-ccrt-gw.ccc.cea.fr</Field>
     <Field name="host" type="string">curie*</Field>
     <Field name="userName" type="string">notset</Field>
     <Field name="hostAliases" type="string"></Field>
-    <Field name="directory" type="string">/ccc/cont002/home/den/triou/TRUST_VERSION/TRUST/Outils/VisIt</Field>
+    <Field name="directory" type="string">/ccc/cont002/home/den/triou/TRUST_VERSION/Outils/VisIt</Field>
     <Field name="shareOneBatchJob" type="bool">false</Field>
     <Field name="sshPortSpecified" type="bool">false</Field>
     <Field name="sshPort" type="int">22</Field>

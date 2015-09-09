@@ -745,7 +745,7 @@ module () {
   
    # New restore/save collection of modules (faster to load) 
    # Try to generalize to other clusters...
-   collection_modules=TRUST-$TRUST_VERSION-$HOST`[ "$TRUST_FORCE_PETSC_HAVE_CUDA" = 1 ] && echo -CUDA``[ "VAMPIR_SUPPORTED" = 1 ] && echo -VAMPIR``[ $HOST_BUILD = airain-intel15 ] && echo -intel15`
+   collection_modules=TRUST_$TRUST_VERSION-$HOST`[ "$TRUST_FORCE_PETSC_HAVE_CUDA" = 1 ] && echo -CUDA``[ "VAMPIR_SUPPORTED" = 1 ] && echo -VAMPIR``[ $HOST_BUILD = airain-intel15 ] && echo -intel15`
    module savelist
    echo "Trying to restore collection of modules named $collection_modules:"
    module restore $collection_modules
