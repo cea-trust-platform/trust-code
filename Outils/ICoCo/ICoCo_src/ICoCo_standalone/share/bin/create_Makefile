@@ -51,17 +51,7 @@ dynamique: $lib_dyn main.cpp makefile ld_env.sh $build/exec\$(OPT)/_TRUSTModule\
 lib_dyn:
 	@if [ \"\$(TRUST_ROOT)\" = \"\" ] ; then echo error TRUST_ROOT not set ; exit -1; fi
 	(cd $build/../..;\$(TRUST_ROOT)/bin/baltik/share/baltik/bin/baltik_build module_from_OPT)" >>makefile
-echo "PAR_interassemblage.data: interassemblage.data makefile $exe" >> makefile
-echo "	rm -f PAR_interassembklage.data
-	 env exec=$build/../../MC\$(OPT) make_PAR.data interassemblage.data \`echo \$(nproc)-1 | bc\`|| echo
-	if [ \$(nproc) -eq 2 ]; then cp \`ls *_0000.Zones\` \`ls *_0000.Zones | sed \"s/_0000//\"\`;fi  " >>makefile
-
-if [ -f interassemblage.data ]
-    then
-   echo "check: couplage PAR_interassemblage.data">>makefile
-else
-    echo "check: couplage">> makefile
-fi
+echo "check: couplage">> makefile
 echo "	env exec=./couplage trust couplage \$(nproc) 1>couplage.out 2>couplage.err
 	if [ -f check.sh ]; then sh check.sh ;fi
 	@echo ok
@@ -74,13 +64,10 @@ ld_env.sh: makefile
 	@echo export LD_LIBRARY_PATH=$nn >>ld_env.sh
 exe:
 	if [ \"\$(OPT)\" = \"_opt\" ]; then (cd  $build/../..; make optim);else  (cd  $build/../..; make debug); fi
-Multiassemblage_only: ld_env.sh $exe
-	sed 's/# ResoudreMultiAssemblage MonMulti #/ ResoudreMultiAssemblage MonMulti /' Multiassemblage.data > Multiassemblage_only.data 
-	env exec=$build/../../MC\$(OPT) trust Multiassemblage_only 1> Multiassemblage_only.out 2>Multiassemblage_only.err
 valgrind: couplage
 	env exec=\"\$TRUST_ROOT/exec/valgrind/bin/valgrind --db-attach=yes ./couplage \"   trust couplage \$(nproc) 
 clean:
-	rm -f couplage *dump *lata* *out *err *TU *log  *son Evol_T_ASS es.med *sauv *xyz convert_jdd *~ *dt_ev *stop	make.include.atelier makefile ld_env.sh PAR_interassemblage.data SEQ_interassemblage.data DEC_interassemblage.data Multiassemblage_only.data 
+	rm -f couplage *dump *lata* *out *err *TU *log  *son *sons *sauv *xyz convert_jdd *~ *dt_ev *stop	make.include.atelier makefile ld_env.sh 
 	if [ -f Clean.sh ] ; then sh Clean.sh ; fi">> makefile
 
 
