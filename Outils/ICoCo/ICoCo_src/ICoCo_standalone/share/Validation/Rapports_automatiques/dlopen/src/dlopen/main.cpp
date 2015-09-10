@@ -82,7 +82,7 @@ int main(int argc, char** argv) {
       if (1)
       {
 	TrioField f;
-	T->getOutputField("vitesse_elem_dom_boundaries_Sortie",f);
+	T->getOutputField("vitesse_sortie",f);
        	cout <<  f.getName()<<" Output value " << *f._field << endl;
 	for (int nb_val=0;nb_val<f._nb_elems;nb_val++)
 	  for (int comp=0;comp<f._nb_field_components;comp++)
