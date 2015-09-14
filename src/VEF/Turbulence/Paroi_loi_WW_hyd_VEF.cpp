@@ -95,7 +95,7 @@ int Paroi_loi_WW_hyd_VEF::calculer_hyd(DoubleTab& tab_nu_t,DoubleTab& tab_k)
   const Fluide_Incompressible& le_fluide = ref_cast(Fluide_Incompressible, eqn_hydr.milieu());
   const Champ_Don& ch_visco_cin = le_fluide.viscosite_cinematique();
   const DoubleTab& vit = eqn_hydr.inconnue().valeurs();
-  DoubleTab& tab_visco = ref_cast_non_const(DoubleTab,ch_visco_cin->valeurs());
+  const DoubleTab& tab_visco = ref_cast(DoubleTab,ch_visco_cin->valeurs());
   double visco=-1;
   int l_unif;
   if (sub_type(Champ_Uniforme,ch_visco_cin.valeur()))
@@ -108,7 +108,12 @@ int Paroi_loi_WW_hyd_VEF::calculer_hyd(DoubleTab& tab_nu_t,DoubleTab& tab_k)
 
   // preparer_calcul_hyd(tab);
   if ((!l_unif) && (tab_visco.local_min_vect()<DMINFLOAT))
-    tab_visco+=DMINFLOAT;
+    //   on ne doit pas changer tab_visco ici !
+    { 
+      Cerr<<" visco <=0 ?"<<finl;
+      exit();
+    } 
+  //tab_visco+=DMINFLOAT;
 
   int ndeb,nfin;
   double norm_v,signe;

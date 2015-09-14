@@ -178,8 +178,6 @@ DoubleTab& Op_Dift_Stab_VEF_Face::ajouter(const DoubleTab& inconnue_org,DoubleTa
   DoubleTab resu2(resu);
   resu2=0.;
 
-  //Curieux
-  ref_cast_non_const(Op_Dift_VEF_Face,(*this)).mettre_a_jour(0.);
 
   // soit on a div(phi nu grad inco)
   // soit on a div(nu grad phi inco)
@@ -229,7 +227,7 @@ void Op_Dift_Stab_VEF_Face::modifie_pour_Cl(const DoubleTab& inconnue, DoubleTab
   int nb_comp=1;
   if(resu.nb_dim()==2) nb_comp=resu.dimension(1);
 
-  DoubleTab& tab_flux_bords = ref_cast_non_const(DoubleTab,flux_bords_);
+  DoubleTab& tab_flux_bords = flux_bords_;
   tab_flux_bords.resize(zone_VEF.nb_faces_bord(),nb_comp);
   tab_flux_bords=0.;
 
@@ -1651,7 +1649,6 @@ void Op_Dift_Stab_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Ma
       //       const DoubleTab& face_normale = zone_VEF.face_normales();
       //      const DoubleVect& volumes = zone_VEF.volumes();
       DoubleVect n(dimension);
-      ref_cast_non_const(Op_Dift_VEF_Face,(*this)).mettre_a_jour(0.);
 
       DoubleTab nu,nu_turb;
       int marq=phi_psi_diffuse(equation());
@@ -1774,7 +1771,6 @@ void Op_Dift_Stab_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab&
       double valA, d_nu;
       const DoubleTab& nu_turb_=la_diffusivite_turbulente->valeurs();
       DoubleVect n(dimension);
-      ref_cast_non_const(Op_Dift_VEF_Face,(*this)).mettre_a_jour(0.);
 
       DoubleTab nu,nu_turb;
       int marq=phi_psi_diffuse(equation());

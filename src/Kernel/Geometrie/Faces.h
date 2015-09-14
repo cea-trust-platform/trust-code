@@ -89,7 +89,7 @@ public:
   void completer(int, int);
   inline void associer_zone(const Zone&);
   inline const Zone& zone() const;
-  void calculer_surfaces(DoubleVect& );
+  void calculer_surfaces(DoubleVect& ) const;
   void calculer_centres_gravite(DoubleTab& ) const;
   void reordonner();
   IntVect& compare(const Faces&, IntVect&);

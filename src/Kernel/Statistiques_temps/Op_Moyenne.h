@@ -61,10 +61,15 @@ public:
   {
     return integrale_champ;
   };
+  inline const DoubleTab& valeurs() const
+  {
+    return integrale_champ.valeurs();
+  };
   inline DoubleTab& valeurs()
   {
     return integrale_champ.valeurs();
   };
+
   inline double dt_integration() const
   {
     return integrale_champ.dt_integration();
@@ -77,7 +82,7 @@ public:
   inline int sauvegarder(Sortie& os) const;
   inline int reprendre(Entree& is);
   void completer(const Probleme_base& );
-  DoubleTab calculer_valeurs();
+  DoubleTab calculer_valeurs() const;
 
 protected:
 

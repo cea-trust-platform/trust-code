@@ -64,7 +64,7 @@ public :
   void gradient(DoubleTab&) const;
   int imprime(Sortie& , int ) const ;
   void calcul_critere_Q(DoubleVect&);
-  void calcul_y_plus(const Zone_Cl_VEF& , DoubleVect&);
+  void calcul_y_plus(const Zone_Cl_VEF& , DoubleVect&) const;
   void calcul_grad_T(const Zone_Cl_VEF& , DoubleTab&);
   ////void calcul_h_conv(const Zone_Cl_VEF& , DoubleTab&);
   void calcul_h_conv(const Zone_Cl_VEF& , DoubleTab&, int temp_ref);

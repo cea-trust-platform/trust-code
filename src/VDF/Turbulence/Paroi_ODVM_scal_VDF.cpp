@@ -363,7 +363,7 @@ int Paroi_ODVM_scal_VDF::calculer_scal(Champ_Fonc_base& diffusivite_turb)
       SFichier fic_sonde_temp_95("sonde_ODVM_yp_9_5.dat",ios::app); // impression sonde 9
       ////////////////////////////////////////////////////////////////////////////////
     }
-  DoubleTab& tab_visco = ref_cast_non_const(DoubleTab,ch_visco_cin->valeurs());
+  const DoubleTab& tab_visco = ref_cast(DoubleTab,ch_visco_cin->valeurs());
   int l_unif;
   double visco=-1;
   if (sub_type(Champ_Uniforme,ch_visco_cin.valeur()))
@@ -375,7 +375,12 @@ int Paroi_ODVM_scal_VDF::calculer_scal(Champ_Fonc_base& diffusivite_turb)
     l_unif = 0;
 
   if ((!l_unif) && (tab_visco.local_min_vect()<DMINFLOAT))
-    tab_visco+=DMINFLOAT;
+    //   on ne doit pas changer tab_visco ici !
+    { 
+      Cerr<<" visco <=0 ?"<<finl;
+      exit();
+    } 
+  // tab_visco+=DMINFLOAT;
 
   int ndeb=0,nfin=0;
   int elem;

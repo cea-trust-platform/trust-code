@@ -486,7 +486,7 @@ void Champ_base::affecter_erreur()
 // Description:
 // cette methode va fixer les unites et le nom des compos
 // elle n'est pas const en realite !!!
-void Champ_base::corriger_unite_nom_compo() const
+void Champ_base::corriger_unite_nom_compo()
 {
   if(unite_.size() != nb_compo_)
     {

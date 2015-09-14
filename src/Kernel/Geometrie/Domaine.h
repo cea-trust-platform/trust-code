@@ -90,6 +90,7 @@ public :
     return i;
   };
   inline const Zones& zones() const;
+  inline Zones& zones() ;
   inline const LIST(REF(Sous_Zone))& ss_zones() const;
   inline int deformable() const
   {
@@ -555,6 +556,10 @@ inline const DoubleTab& Domaine::les_sommets() const
   return sommets;
 }
 inline const Zones& Domaine::zones() const
+{
+  return les_zones;
+}
+inline Zones& Domaine::zones()
 {
   return les_zones;
 }

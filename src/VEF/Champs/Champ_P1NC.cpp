@@ -567,7 +567,7 @@ void Champ_P1NC::calcul_critere_Q(DoubleVect& Critere_Q)
 }
 
 
-void Champ_P1NC::calcul_y_plus(const Zone_Cl_VEF& zone_Cl_VEF, DoubleVect& y_plus)
+void Champ_P1NC::calcul_y_plus(const Zone_Cl_VEF& zone_Cl_VEF, DoubleVect& y_plus) const
 {
   // On initialise le champ y_plus avec une valeur negative,
   // comme ca lorsqu'on veut visualiser le champ pres de la paroi,
@@ -586,7 +586,7 @@ void Champ_P1NC::calcul_y_plus(const Zone_Cl_VEF& zone_Cl_VEF, DoubleVect& y_plu
   const Equation_base& eqn_hydr = equation();
   const Fluide_Incompressible& le_fluide = ref_cast(Fluide_Incompressible, eqn_hydr.milieu());
   const Champ_Don& ch_visco_cin = le_fluide.viscosite_cinematique();
-  DoubleTab& tab_visco = ref_cast_non_const(DoubleTab,ch_visco_cin->valeurs());
+  const DoubleTab& tab_visco = ref_cast(DoubleTab,ch_visco_cin->valeurs());
 
   if (sub_type(Champ_Uniforme,ch_visco_cin.valeur()))
     {
@@ -597,7 +597,12 @@ void Champ_P1NC::calcul_y_plus(const Zone_Cl_VEF& zone_Cl_VEF, DoubleVect& y_plu
   else
     l_unif = 0;
   if ((!l_unif) && (tab_visco.local_min_vect()<DMINFLOAT))
-    tab_visco+=DMINFLOAT;
+// GF on ne doit pas changer tab_visco ici !
+   { 
+	Cerr<<" visco <=0 ?"<<finl;
+	exit();
+   } 
+   // tab_visco+=DMINFLOAT;
 
   DoubleTab cisaillement(1,1);
   int lp=0;

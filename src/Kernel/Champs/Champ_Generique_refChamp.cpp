@@ -85,6 +85,7 @@ int Champ_Generique_refChamp::lire_motcle_non_standard(const Motcle& mot, Entree
       pb.get_noms_champs_postraitables(liste_noms);
       pb.creer_champ(nom_champ_);
       ref_champ = pb.get_champ(nom_champ_);
+      ref_champ.valeur().corriger_unite_nom_compo();
       set_ref_champ(ref_champ.valeur());
       return 1;
     }
@@ -157,9 +158,22 @@ const Noms Champ_Generique_refChamp::get_property(const Motcle& query) const
       }
     case 2 :
       {
-        ref_champ_.valeur().corriger_unite_nom_compo();
+	const Noms mots0= ref_champ_.valeur().unites();
+        ref_cast_non_const(Champ_base,ref_champ_.valeur()).corriger_unite_nom_compo();
         const Noms mots = ref_champ_.valeur().unites();
-
+	if (mots.size()!=mots0.size())
+	  {
+	    Cerr<<"iuuuuuu"<<mots<<" "<<mots0<<finl;
+	    exit();
+	  }
+	for (int i=0;i<mots.size();i++)
+	  {
+	    if (mots0[i]!=mots[i])
+	      {
+		Cerr <<" iiiiiiiiii"<<mots0[i]<< " "<<mots[i]<<finl;
+		exit();
+	      }
+	  }
         return mots;
         break;
       }
@@ -398,9 +412,8 @@ void Champ_Generique_refChamp::mettre_a_jour(double temps)
 const Champ_base& Champ_Generique_refChamp::get_champ(Champ& espace_stockage) const
 {
   {
-    const Interprete& interp = interprete();
-    Objet_U& ob = ref_cast_non_const(Interprete,interp).objet(nom_pb_);
-    Probleme_base& pb = ref_cast_non_const(Probleme_base,ob);
+    Objet_U& ob = Interprete::objet(nom_pb_);
+    const Probleme_base& pb = ref_cast(Probleme_base,ob);
     const Nom& nom_cible = ref_champ_.valeur().le_nom();
     pb.get_champ(nom_cible);
     return get_ref_champ_base();

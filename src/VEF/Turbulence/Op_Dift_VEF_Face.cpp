@@ -964,8 +964,6 @@ DoubleTab& Op_Dift_VEF_Face::ajouter(const DoubleTab& inconnue_org,
   int nb_dim = resu.nb_dim();
   if(nb_dim==2)
     nb_comp=resu.dimension(1);
-  //Curieux
-  ref_cast_non_const(Op_Dift_VEF_Face,(*this)).mettre_a_jour(0.);
 
   DoubleTab nu,nu_turb_m;
   DoubleTab tab_inconnue;
@@ -1292,7 +1290,6 @@ void Op_Dift_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
   const DoubleTab& face_normale = zone_VEF.face_normales();
   const DoubleVect& volumes = zone_VEF.volumes();
   DoubleVect n(dimension);
-  ref_cast_non_const(Op_Dift_VEF_Face,(*this)).mettre_a_jour(0.);
 
   DoubleTab nu,nu_turb;
   int marq=phi_psi_diffuse(equation());
@@ -1408,7 +1405,6 @@ void Op_Dift_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& tran
   double valA, d_nu;
   const DoubleTab& nu_turb_=la_diffusivite_turbulente->valeurs();
   DoubleVect n(dimension);
-  ref_cast_non_const(Op_Dift_VEF_Face,(*this)).mettre_a_jour(0.);
 
   DoubleTab nu,nu_turb;
   int marq=phi_psi_diffuse(equation());
@@ -1698,7 +1694,6 @@ void Op_Dift_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) const
   const DoubleTab& face_normale = zone_VEF.face_normales();
   DoubleVect n(dimension);
   DoubleTrav Tgrad(dimension,dimension);
-  ref_cast_non_const(Op_Dift_VEF_Face,(*this)).mettre_a_jour(0.);
 
   // On traite les faces bord
   //  if (nb_comp!=1)

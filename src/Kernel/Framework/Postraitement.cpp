@@ -83,7 +83,7 @@ void Postraitement::postraiter(int forcer)
             {
               if (sub_type(Champ_Gen_de_Champs_Gen,curseur2.valeur().valeur()))
                 {
-                  Champ_Gen_de_Champs_Gen& champ_post = ref_cast_non_const(Champ_Gen_de_Champs_Gen,curseur2.valeur().valeur());
+                  Champ_Gen_de_Champs_Gen& champ_post = ref_cast(Champ_Gen_de_Champs_Gen,curseur2.valeur().valeur());
                   champ_post.fixer_serie(tstat_deb_,tstat_fin_);
                 }
               ++curseur2;
@@ -675,7 +675,7 @@ int Postraitement::reprendre(Entree& is)
                     {
                       if (sub_type(Champ_Gen_de_Champs_Gen,curseur.valeur().valeur()))
                         {
-                          Champ_Gen_de_Champs_Gen& champ_post = ref_cast_non_const(Champ_Gen_de_Champs_Gen,curseur.valeur().valeur());
+                          Champ_Gen_de_Champs_Gen& champ_post = ref_cast(Champ_Gen_de_Champs_Gen,curseur.valeur().valeur());
                           champ_post.fixer_tstat_deb(tstat_deb_,temps_derniere_mise_a_jour_stats);
                         }
                       ++curseur;
@@ -1904,7 +1904,7 @@ void Postraitement::creer_champ_post_stat(const Motcle& motlu1,const Motcle& mot
       champ_post.nommer_sources();
 
       //On fixe l attribut compo_ pour le Champ_Generique_Interpolation cree par cette macro
-      Champ_Generique_Statistiques_base& champ_stat = ref_cast_non_const(Champ_Generique_Statistiques_base,champ_post.get_source(0));
+      Champ_Generique_Statistiques_base& champ_stat = ref_cast(Champ_Generique_Statistiques_base,champ_post.set_source(0));
       const Champ_Generique_refChamp& champ_ref = ref_cast(Champ_Generique_refChamp,champ_stat.get_source(0));
 
       Champ espace_stockage;

@@ -179,12 +179,12 @@ DoubleTab& Source_Transport_K_Eps_VDF_Elem::ajouter(DoubleTab& resu) const
 
   if (axi)
     {
-      Champ_Face& vitesse = ref_cast_non_const(Champ_Face,eq_hydraulique->inconnue().valeur());
+      const Champ_Face& vitesse = ref_cast(Champ_Face,eq_hydraulique->inconnue().valeur());
       calculer_terme_production_K_Axi(zone_VDF,vitesse,P,K_eps,visco_turb);
     }
   else
     {
-      Champ_Face& vitesse = ref_cast_non_const(Champ_Face,eq_hydraulique->inconnue().valeur());
+      const Champ_Face& vitesse = ref_cast(Champ_Face,eq_hydraulique->inconnue().valeur());
       calculer_terme_production_K(zone_VDF,zcl_VDF,P,K_eps,vit,vitesse,visco_turb);
     }
 

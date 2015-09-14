@@ -143,7 +143,7 @@ void Terme_Source_Canal_perio_VEF_P1NC::calculer_debit(double& debit_e) const
 {
   const Zone_VF& zone_VF = la_zone_VEF.valeur();
   const Zone_Cl_dis_base& zone_Cl_dis = la_zone_Cl_VEF.valeur();
-  const Champ_Inc_base& velocity = (sub_type(Convection_Diffusion_std,equation()) ? ref_cast_non_const(Convection_Diffusion_std,equation()).vitesse_transportante() : equation().inconnue());
+  const Champ_Inc_base& velocity = (sub_type(Convection_Diffusion_std,equation()) ? ref_cast(Convection_Diffusion_std,equation()).vitesse_transportante() : equation().inconnue());
   const DoubleVect& porosite_face=zone_VF.porosite_face();
   // Check we have really velocity:
   assert(velocity.le_nom()=="vitesse");

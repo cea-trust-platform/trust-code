@@ -161,7 +161,6 @@ DoubleTab& Op_Dift_VEF_Face_Q1::ajouter(const DoubleTab& inconnue,
   const DoubleTab& face_normale = zone_VEF.face_normales();
   DoubleVect n(dimension);
   DoubleTrav Tgrad(dimension,dimension);
-  ref_cast_non_const(Op_Dift_VEF_Face_Q1,(*this)).mettre_a_jour(0.);
 
   // On traite les faces bord
 
@@ -570,7 +569,6 @@ void Op_Dift_VEF_Face_Q1::ajouter_contribution(const DoubleTab& transporte, Matr
   //  const DoubleTab& face_normale = zone_VEF.face_normales();
   DoubleVect n(dimension);
   DoubleTrav Tgrad(dimension,dimension);
-  ref_cast_non_const(Op_Dift_VEF_Face_Q1,(*this)).mettre_a_jour(0.);
 
   IntVect& tab1 = matrice.tab1_;
   IntVect& tab2 = matrice.tab2_;
@@ -875,7 +873,6 @@ void Op_Dift_VEF_Face_Q1::contribue_au_second_membre(DoubleTab& resu ) const
   const DoubleTab& face_normale = zone_VEF.face_normales();
   DoubleVect n(dimension);
   DoubleTrav Tgrad(dimension,dimension);
-  ref_cast_non_const(Op_Dift_VEF_Face_Q1,(*this)).mettre_a_jour(0.);
 
   // On traite les faces bord
   if (nb_comp!=1)

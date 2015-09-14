@@ -106,10 +106,10 @@ public:
   void calcul_critere_Q(DoubleTab&, const Zone_Cl_VDF&  );
   void calcul_y_plus(DoubleTab&, const Zone_Cl_VDF&  );
 
-  DoubleTab& calcul_duidxj(const DoubleTab&, DoubleTab&);
-  DoubleTab& calcul_duidxj(const DoubleTab&, DoubleTab&, const Zone_Cl_VDF&);
-  DoubleVect& calcul_S_barre(const DoubleTab&, DoubleVect&, const Zone_Cl_VDF&);
-  DoubleVect& calcul_S_barre_sans_contrib_paroi(const DoubleTab&, DoubleVect&, const Zone_Cl_VDF&);
+  DoubleTab& calcul_duidxj(const DoubleTab&, DoubleTab&) const;
+  DoubleTab& calcul_duidxj(const DoubleTab&, DoubleTab&, const Zone_Cl_VDF&) const;
+  DoubleVect& calcul_S_barre(const DoubleTab&, DoubleVect&, const Zone_Cl_VDF&) const;
+  DoubleVect& calcul_S_barre_sans_contrib_paroi(const DoubleTab&, DoubleVect&, const Zone_Cl_VDF&) const;
 
 private:
   double val_imp_face_bord_private(int face,int comp) const;

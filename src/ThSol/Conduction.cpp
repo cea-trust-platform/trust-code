@@ -365,14 +365,6 @@ void Conduction::creer_champ(const Motcle& motlu)
 
 const Champ_base& Conduction::get_champ(const Motcle& nom) const
 {
-  /* if (nom=="temperature_paroi")
-    {
-      double temps_init = schema_temps().temps_init();
-      Champ_Fonc_base& ch_tp=ref_cast_non_const(Champ_Fonc_base,temperature_paroi.valeur());
-      if (((ch_tp.temps()!=la_temperature->temps()) || (ch_tp.temps()==temps_init)) && ((la_temperature->mon_equation_non_nul())))
-        ch_tp.mettre_a_jour(la_temperature->temps());
-      return champs_compris_.get_champ(nom);
-    } */
   try
     {
       return Equation_base::get_champ(nom);

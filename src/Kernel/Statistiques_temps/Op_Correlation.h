@@ -98,7 +98,7 @@ public:
   inline int reprendre(Entree& is);
   inline void associer_op_stat(const Operateur_Statistique_tps_base&);
   void completer(const Probleme_base& );
-  DoubleTab calculer_valeurs();
+  DoubleTab calculer_valeurs() const;
 
 protected:
   REF(Op_Moyenne) la_moyenne_a_;

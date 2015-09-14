@@ -582,7 +582,7 @@ void Faces::completer(int face, int num_elem)
 // Exception: type de face ne correspondant pas a la dimension d'espace
 // Effets de bord:
 // Postcondition:
-void Faces::calculer_surfaces(DoubleVect& surfaces)
+void Faces::calculer_surfaces(DoubleVect& surfaces) const
 {
   surfaces.resize(nb_faces_tot());
   const Domaine& dom=zone().domaine();

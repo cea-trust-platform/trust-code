@@ -75,7 +75,7 @@ public:
 
   void zone_Cl_dis(Zone_dis& z, Zone_Cl_dis& zcl) const;
 
-  void proprietes_physiques_fluide_Ostwald(Zone_dis& ,Fluide_Ostwald& ,
+  void proprietes_physiques_fluide_Ostwald(const Zone_dis& ,Fluide_Ostwald& ,
                                            const Navier_Stokes_std& ,
                                            const Champ_Inc& ) const;
   void vorticite(Zone_dis& ,const Champ_Inc& , Champ_Fonc& ) const;

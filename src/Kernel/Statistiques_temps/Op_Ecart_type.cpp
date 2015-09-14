@@ -81,7 +81,7 @@ void Op_Ecart_type::completer(const Probleme_base& Pb)
   integrale_carre_champ->changer_temps(Pb.schema_temps().temps_courant());
 }
 
-DoubleTab Op_Ecart_type::calculer_valeurs()
+DoubleTab Op_Ecart_type::calculer_valeurs() const
 {
   double dt = dt_integration();
   if (!est_egal(dt,dt_integration_carre()))

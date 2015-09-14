@@ -1668,7 +1668,8 @@ static void construire_matrice_implicite(Operateur_base& op,
           // mat est detruite puis reconstruite:
           mat = new_mat;
           // Reinitialisation du solveur (recalcul des preconditionnements, factorisation, etc...)
-          ref_cast_non_const(SolveurSys_base,op.get_solveur().valeur()).reinit();
+          //ref_cast_non_const(SolveurSys_base,op.get_solveur().valeur()).reinit();
+          op.set_solveur().valeur().reinit();
         }
     }
 }

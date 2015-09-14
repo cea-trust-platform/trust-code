@@ -167,7 +167,7 @@ void Champ_front_txyz::mettre_a_jour(double temps)
 
 double Champ_front_txyz::valeur_au_temps_et_au_point(double temps,int som,double x,double y, double z, int k) const
 {
-  Parser_U& fxyzk=ref_cast_non_const(Parser_U,fxyz[k]);
+  Parser_U& fxyzk=fxyz[k];
   fxyzk.setVar("t",temps);
   fxyzk.setVar("x",x);
   fxyzk.setVar("y",y);

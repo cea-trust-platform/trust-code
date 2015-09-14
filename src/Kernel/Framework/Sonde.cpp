@@ -1116,8 +1116,8 @@ void Sonde::mettre_a_jour(double un_temps, double tinit)
   if ( temps_courant != un_temps )
     {
       Champ espace_stockage;
-      ma_source = ref_cast_non_const(Champ_base,mon_champ->get_champ(espace_stockage));
-      ma_source->mettre_a_jour(un_temps);
+      Champ_base& ma_source_mod = ref_cast_non_const(Champ_base,mon_champ->get_champ(espace_stockage));
+      ma_source_mod.mettre_a_jour(un_temps);
     }
   double dt=mon_post->probleme().schema_temps().pas_de_temps();
   double nb;
@@ -1162,21 +1162,22 @@ void Sonde::postraiter()
   // de calculer les valeurs du champ
   Champ espace_stockage;
   mon_champ->fixer_identifiant_appel(nom_champ_lu_);
-  ma_source = ref_cast_non_const(Champ_base,mon_champ->get_champ(espace_stockage));
+  const Champ_base& ma_source = ref_cast(Champ_base,mon_champ->get_champ(espace_stockage));
 
   if (chsom==1)
     {
+        Champ_base& ma_source_mod =ref_cast_non_const(Champ_base,ma_source);
       if (ncomp == -1)
-        ma_source->valeur_aux_elems_smooth(les_positions_,elem_, valeurs_locales);
+        ma_source_mod.valeur_aux_elems_smooth(les_positions_,elem_, valeurs_locales);
       else
-        ma_source->valeur_aux_elems_compo_smooth(les_positions_,elem_,valeurs_locales, ncomp);
+        ma_source_mod.valeur_aux_elems_compo_smooth(les_positions_,elem_,valeurs_locales, ncomp);
     }
   else
     {
       if (ncomp == -1)
-        ma_source->valeur_aux_elems(les_positions_,elem_, valeurs_locales);
+        ma_source.valeur_aux_elems(les_positions_,elem_, valeurs_locales);
       else
-        ma_source->valeur_aux_elems_compo(les_positions_,elem_,valeurs_locales, ncomp);
+        ma_source.valeur_aux_elems_compo(les_positions_,elem_,valeurs_locales, ncomp);
     }
 
   //int i;

@@ -65,7 +65,7 @@ public :
   const Operateur& operateur(int) const;
   Operateur& operateur(int);
   inline void associer_vitesse(const Champ_base& );
-  inline const Champ_Inc_base& vitesse_transportante();
+  inline const Champ_Inc_base& vitesse_transportante() const;
   virtual const Champ_Inc& inconnue() const =0;
   virtual Champ_Inc& inconnue() =0;
   virtual const Champ_Don& diffusivite_pour_transport();
@@ -97,7 +97,7 @@ protected :
 // Exception:
 // Effets de bord:
 // Postcondition:
-inline const Champ_Inc_base& Convection_Diffusion_std::vitesse_transportante()
+inline const Champ_Inc_base& Convection_Diffusion_std::vitesse_transportante() const
 {
   return la_vitesse_transportante.valeur();
 }

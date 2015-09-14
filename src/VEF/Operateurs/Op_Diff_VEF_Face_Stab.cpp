@@ -193,7 +193,7 @@ void Op_Diff_VEF_Face_Stab::modifie_pour_Cl(const DoubleTab& inconnue, DoubleTab
   int nb_comp=1;
   if(resu.nb_dim()==2) nb_comp=resu.dimension(1);
 
-  DoubleTab& tab_flux_bords = ref_cast_non_const(DoubleTab,flux_bords_);
+  DoubleTab& tab_flux_bords = flux_bords_;
   tab_flux_bords.resize(zone_VEF.nb_faces_bord(),nb_comp);
   tab_flux_bords=0.;
 

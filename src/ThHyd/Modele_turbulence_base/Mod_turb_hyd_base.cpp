@@ -473,6 +473,13 @@ void Mod_turb_hyd_base::limiter_viscosite_turbulente()
       // On recalcule les bornes de la viscosite turbulente apres le premier pas de temps
       const Operateur_Diff_base& op_diff = ref_cast(Operateur_Diff_base,equation().operateur(0).l_op_base());
       const Operateur_Conv_base& op_conv = ref_cast(Operateur_Conv_base,equation().operateur(1).l_op_base());
+      double tu2=op_conv.dt_stab_conv();
+      double tu=op_conv.calculer_dt_stab();
+      if (tu!=tu2)
+      {
+	Cerr<<" dt_stab_conv not ok "<< tu<<" "<<tu2<<" deltai_rel "<<(tu-tu2)*2/(tu+tu2)<<finl;
+//	abort();
+}
       op_diff.calculer_borne_locale(borne_visco_turb, op_conv.dt_stab_conv(), dt_diff_sur_dt_conv_);
     }
   // On borne la viscosite turbulente

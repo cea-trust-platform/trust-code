@@ -80,7 +80,7 @@ void Op_Moyenne::completer(const Probleme_base& Pb)
   integrale_champ->changer_temps(Pb.schema_temps().temps_courant());
 }
 
-DoubleTab Op_Moyenne::calculer_valeurs()
+DoubleTab Op_Moyenne::calculer_valeurs() const
 {
   double dt = dt_integration();
   DoubleTab moyenne(valeurs());

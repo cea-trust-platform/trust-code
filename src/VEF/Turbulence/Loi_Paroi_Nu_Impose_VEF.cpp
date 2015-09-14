@@ -138,7 +138,7 @@ int  Loi_Paroi_Nu_Impose_VEF::calculer_scal(Champ_Fonc_base& diffusivite_turb)
   ArrOfDouble v(dimension);
   static DoubleVect pos(dimension);
 
-  DoubleTab& tab_visco = ref_cast_non_const(DoubleTab,ch_visco_cin->valeurs());
+  const DoubleTab& tab_visco = ref_cast(DoubleTab,ch_visco_cin->valeurs());
   int l_unif;
   double visco=-1;
   if (sub_type(Champ_Uniforme,ch_visco_cin.valeur()))
@@ -150,7 +150,12 @@ int  Loi_Paroi_Nu_Impose_VEF::calculer_scal(Champ_Fonc_base& diffusivite_turb)
     l_unif = 0;
 
   if ((!l_unif) && (local_min_vect(tab_visco)<DMINFLOAT))
-    tab_visco+=DMINFLOAT;
+    //   on ne doit pas changer tab_visco ici !
+    { 
+      Cerr<<" visco <=0 ?"<<finl;
+      exit();
+    } 
+  //tab_visco+=DMINFLOAT;
 
   bool dh_constant=sub_type(Champ_Uniforme,diam_hydr.valeur())?true:false;
   double dh_valeur=diam_hydr(0,0);

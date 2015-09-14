@@ -183,7 +183,7 @@ int Paroi_std_hyd_VDF::calculer_hyd(DoubleTab& tab1,int isKeps,DoubleTab& tab2)
   const Fluide_Incompressible& le_fluide = ref_cast(Fluide_Incompressible, eqn_hydr.milieu());
   const Champ_Don& ch_visco_cin = le_fluide.viscosite_cinematique();
   const DoubleVect& vit = eqn_hydr.inconnue().valeurs();
-  DoubleTab& tab_visco = ref_cast_non_const(DoubleTab,ch_visco_cin->valeurs());
+  const DoubleTab& tab_visco = ref_cast(DoubleTab,ch_visco_cin->valeurs());
   double visco=-1;
   int l_unif;
   if (sub_type(Champ_Uniforme,ch_visco_cin.valeur()))
@@ -196,8 +196,11 @@ int Paroi_std_hyd_VDF::calculer_hyd(DoubleTab& tab1,int isKeps,DoubleTab& tab2)
 
   // preparer_calcul_hyd(tab);
   if ((!l_unif) && (tab_visco.local_min_vect()<DMINFLOAT))
-    tab_visco+=DMINFLOAT;
-
+  //   on ne doit pas changer tab_visco ici !
+    { 
+      Cerr<<" visco <=0 ?"<<finl;
+      exit();
+    } 
   int ndeb,nfin;
   int elem,ori;
   double norm_v;
@@ -870,7 +873,7 @@ void Paroi_std_hyd_VDF::calculer_moyennes_parois(double& U_moy_1,
   const DoubleTab& vitesse = eqn_hydr.inconnue().valeurs();
   const Fluide_Incompressible& le_fluide = ref_cast(Fluide_Incompressible,eqn_hydr.milieu());
   const Champ_Don& ch_visco_cin = le_fluide.viscosite_cinematique();
-  DoubleTab& tab_visco = ref_cast_non_const(DoubleTab,ch_visco_cin->valeurs());
+  const DoubleTab& tab_visco = ref_cast(DoubleTab,ch_visco_cin->valeurs());
   const IntVect& orientation = zone_VDF.orientation();
 
 //  double u_m1 = 0.; // moyenne des vitesses selon x, a la paroi 1 (y=0)
@@ -903,7 +906,12 @@ void Paroi_std_hyd_VDF::calculer_moyennes_parois(double& U_moy_1,
   else
     {
       if (tab_visco.local_min_vect()<DMINFLOAT)
-        tab_visco += DMINFLOAT;
+	//   on ne doit pas changer tab_visco ici !
+	{ 
+	  Cerr<<" visco <=0 ?"<<finl;
+	  exit();
+	} 
+      //        tab_visco += DMINFLOAT;
     }
 
   for (int n_bord=0; n_bord<nb_front_Cl; n_bord++)

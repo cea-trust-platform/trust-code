@@ -507,7 +507,7 @@ int ParoiVDF_TBLE_LRM::calculer_hyd(DoubleTab& tab_k_eps)
   const Equation_base& eqn_hydr = mon_modele_turb_hyd->equation();
   const Fluide_Incompressible& le_fluide = ref_cast(Fluide_Incompressible, eqn_hydr.milieu());
   const Champ_Don& ch_visco_cin = le_fluide.viscosite_cinematique();
-  DoubleTab& tab_visco = ref_cast_non_const(DoubleTab,ch_visco_cin->valeurs());
+  const DoubleTab& tab_visco = ref_cast(DoubleTab,ch_visco_cin->valeurs());
   Mod_echelle_LRM_base& le_mod_ech= mod_ech.valeur();
 
   const DoubleTab& nu_t = mon_modele_turb_hyd->viscosite_turbulente().valeur().valeurs();
@@ -526,7 +526,12 @@ int ParoiVDF_TBLE_LRM::calculer_hyd(DoubleTab& tab_k_eps)
 
   // preparer_calcul_hyd(tab);
   if ((!l_unif) && (tab_visco.local_min_vect()<DMINFLOAT))
-    tab_visco+=DMINFLOAT;
+    //   on ne doit pas changer tab_visco ici !
+    { 
+      Cerr<<" visco <=0 ?"<<finl;
+      exit();
+    } 
+    //    tab_visco+=DMINFLOAT;
 
 
   int ndeb=0,nfin=0;

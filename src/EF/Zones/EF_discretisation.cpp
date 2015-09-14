@@ -518,13 +518,13 @@ void EF_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch,
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-void EF_discretisation::proprietes_physiques_fluide_Ostwald(Zone_dis& z, Fluide_Ostwald& le_fluide,
+void EF_discretisation::proprietes_physiques_fluide_Ostwald(const Zone_dis& z, Fluide_Ostwald& le_fluide,
                                                             const Navier_Stokes_std& eqn_hydr, const Champ_Inc& ch_temper ) const
 {
 
 #ifdef dependance
   Cerr << "Discretisation EF du fluide_Ostwald" << finl;
-  Zone_EF& zone_EF=ref_cast(Zone_EF, z.valeur());
+  const Zone_EF& zone_EF=ref_cast(Zone_EF, z.valeur());
   const Champ_Inc& ch_vitesse = eqn_hydr.inconnue();
   const Champ_P1_EF& vit = ref_cast(Champ_P1_EF,ch_vitesse.valeur());
 

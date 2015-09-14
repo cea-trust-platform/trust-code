@@ -90,7 +90,7 @@ protected :
   int dim;                                // la dimension de la sone (point:0,segment:1,plan:2,volume:3)
   int nbre_points1,nbre_points2,nbre_points3;        // faire des sonde_segment,sonde_plan,etc...
   REF(Champ_Generique_base) mon_champ;
-  REF(Champ_base) ma_source;
+  //REF(Champ_base) ma_source;
   REF(Operateur_Statistique_tps_base) operateur_statistique_;        // Reference vers un operateur statistique eventuel
   int ncomp;                           // Numero de la composante a sonder
   // Si ncomp = -1 la sonde s'applique a toutes les

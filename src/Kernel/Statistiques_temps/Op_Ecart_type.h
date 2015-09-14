@@ -63,7 +63,16 @@ public:
   {
     return integrale_champ->valeurs();
   };
+  inline const DoubleTab& valeurs() const
+  {
+    return integrale_champ->valeurs();
+  };
+  
   inline DoubleTab& valeurs_carre()
+  {
+    return integrale_carre_champ.valeurs();
+  };
+  inline const DoubleTab& valeurs_carre() const
   {
     return integrale_carre_champ.valeurs();
   };
@@ -82,7 +91,7 @@ public:
   inline void fixer_tstat_fin(double );
   inline void associer_op_stat(const Operateur_Statistique_tps_base& );
   void completer(const Probleme_base& );
-  DoubleTab calculer_valeurs();
+  DoubleTab calculer_valeurs() const;
   inline int sauvegarder(Sortie& os) const;
   inline int reprendre(Entree& is);
 

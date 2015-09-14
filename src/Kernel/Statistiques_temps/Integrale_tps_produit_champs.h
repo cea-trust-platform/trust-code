@@ -60,7 +60,11 @@ public:
   {
     return seconde_puissance_;
   }
-  inline int& support_different()
+  inline const int& get_support_different() const
+  {
+    return support_different_;
+  };
+  inline int& support_different() 
   {
     return support_different_;
   };

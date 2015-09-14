@@ -75,7 +75,7 @@ void  Fluide_Ostwald::discretiser(const Probleme_base& pb, const  Discretisation
   const Discret_Thyd& dis2=ref_cast(Discret_Thyd, dis);
 
   // avec la signature de Ostwald....
-  Navier_Stokes_std& eqn_hydr=ref_cast_non_const(Navier_Stokes_std,pb.equation(0));
+  const Navier_Stokes_std& eqn_hydr=ref_cast(Navier_Stokes_std,pb.equation(0));
   dis2.proprietes_physiques_fluide_Ostwald(eqn_hydr.zone_dis(),(*this),eqn_hydr,eqn_hydr.inconnue());
   Champ_Don& K = consistance();
   if (K.non_nul())
