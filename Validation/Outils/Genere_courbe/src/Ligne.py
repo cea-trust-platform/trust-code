@@ -124,7 +124,13 @@ tracee dans le rapport de validation de TRUST.'''
 	def get_values(self,nb_colonnes,dico):
 		val={}
 		if self.valeurs!='Undefined':
-			valeur_f=[ eval(x) for x in self.valeurs.split() ]
+			valeur_f= self.valeurs.split()
+			for i in xrange(len(valeur_f)):
+				try:
+					valeur_f[i]=eval(valeur_f[i])
+				except:
+					pass
+				
 			for i in range(nb_colonnes):
 				val[i]=valeur_f[i]
 				pass
