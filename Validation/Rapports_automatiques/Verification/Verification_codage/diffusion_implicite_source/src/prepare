@@ -2,8 +2,8 @@ for cas in PCS PCR
 do
 sed "s/diffusion_implicite 1/diffusion_implicite 0/" ${cas}/${cas}00.data >${cas}/${cas}_expl.data
 sed "s/crank 0/crank 1/" ${cas}/${cas}00.data >${cas}/${cas}10.data
-sed "s/preconditionnement_diag 0/preconditionnement_diag 1/" ${cas}/${cas}00.data >${cas}/${cas}01.data
-sed "s/preconditionnement_diag 0/preconditionnement_diag 1/" ${cas}/${cas}10.data >${cas}/${cas}11.data
+sed "s/preconditionnement_diag 0/preconditionnement_diag 1/;s/PARALLEL OK/PARALLEL NOT/" ${cas}/${cas}00.data >${cas}/${cas}01.data
+sed "s/preconditionnement_diag 0/preconditionnement_diag 1/;s/PARALLEL OK/PARALLEL NOT/" ${cas}/${cas}10.data >${cas}/${cas}11.data
 sed "s/diffusion_implicite 1/solveur implicite { solveur gmres { diag seuil 1e-14 impr } }/;s/Euler_explicite/Euler_implicite/"  ${cas}/${cas}00.data | grep -v parametre_equation>${cas}/${cas}_impl.data
 done
 sed "s/PCS/PCR/g" PCS/post_run > PCR/post_run

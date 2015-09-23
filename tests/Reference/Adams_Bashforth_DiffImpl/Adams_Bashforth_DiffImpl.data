@@ -56,7 +56,7 @@ Lire pb
 {
 	Navier_Stokes_standard
 	{
-		parametre_equation parametre_diffusion_implicite { preconditionnement_diag 1 crank 1 }
+		parametre_equation parametre_diffusion_implicite { preconditionnement_diag 0 crank 1 }
 		solveur_pression petsc cholesky { }
 		convection { amont }
 		diffusion {  }

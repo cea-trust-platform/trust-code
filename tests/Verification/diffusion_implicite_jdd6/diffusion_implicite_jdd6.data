@@ -1,5 +1,5 @@
 # Thermohydraulique 2D couplee a conduction 2D #
-# PARALLEL OK 8 #
+# PARALLEL NOT #
 dimension 2
 Schema_Euler_explicite sch
 Read sch
