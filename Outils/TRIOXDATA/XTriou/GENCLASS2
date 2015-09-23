@@ -111,7 +111,7 @@ do
 #echo $cl
 gen_class $cl >> gencl.py
 done
-sed "s/; gen_class/;\ngen_class/" gencl.py > gencles.py
+sed "s/; gen_class/;\ngen_class/g" gencl.py > gencles.py
 python sort_gen_cl.py
 status=$?
 [ $status -ne 0 ] && exit 1
