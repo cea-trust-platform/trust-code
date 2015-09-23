@@ -243,7 +243,7 @@ add_test_case_from_validation()
                      then
                 	# La fiche a bouge ? On cherche sa nouvelle localisation sous ${Rapports_auto_root}/Validation/Rapports_automatiques
 	        	basename_fiche=`basename $FICHE_ROOT`
-	        	NEW_FICHE_ROOT=`cd ${Rapports_auto_root};find Validation/Rapports_automatiques -name $basename_fiche`
+	        	NEW_FICHE_ROOT=`cd ${Rapports_auto_root};find Validation/Rapports_automatiques -follow -name $basename_fiche`
 	        	[ "$NEW_FICHE_ROOT" = "$FICHE_ROOT" ] && echo "Erreur dans lance_test !" && echo $NEW_FICHE_ROOT" "$FICHE_ROOT && exit -1
 	        	if [ -d ${Rapports_auto_root}/$NEW_FICHE_ROOT/src ]
 	        	then
@@ -864,7 +864,7 @@ then
 	    reference=$ref/$i
 	    echo $ECHO_OPTS
 	    echo $ECHO_OPTS '*********************************************'
-	    echo $ECHO_OPTS '* '`dirname $REP`' test case : '$NOM
+	    echo $ECHO_OPTS '* '$k'/'$nbnew `dirname $REP`' test case : '$NOM
 	    echo $ECHO_OPTS '*********************************************'
 	    # Tests hyper-important car sinon gros probleme (lien sur lui meme!) :
 	    effacer=0
@@ -1439,7 +1439,7 @@ then
    ecarts=`$TRUST_Awk -F"|" '(/ ecarts \|/){gsub("PAR_","",$0);print $NF}' $SORTIE | $TRUST_Awk '{print $1}' | $TRUST_Awk -F"_jdd" '{print $1}' | sort -u`
    for echec in $echecs
    do
-      fiche=`cd ${Rapports_auto_root}/Validation/Rapports_automatiques;find * -type d | grep -e ^$echec$ -e /$echec$ | grep -v build`
+      fiche=`cd ${Rapports_auto_root}/Validation/Rapports_automatiques;find * -type d -follow| grep -e ^$echec$ -e /$echec$ | grep -v build`
       # C'est un cas test de validation
       if [ "$fiche" != "" ]
       then
@@ -1456,7 +1456,7 @@ then
 
    for ecart in $ecarts
    do
-      fiche=`cd ${Rapports_auto_root}/Validation/Rapports_automatiques;find * -type d | grep -e ^$ecart$ -e /$ecart$ | grep -v build`
+      fiche=`cd ${Rapports_auto_root}/Validation/Rapports_automatiques;find * -type d -follow| grep -e ^$ecart$ -e /$ecart$ | grep -v build`
       # C'est un cas test de validation   
       if [ "$fiche" != "" ]
       then

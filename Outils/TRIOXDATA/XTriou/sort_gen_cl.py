@@ -11,6 +11,7 @@ def add_class(*args,**kwargs):
     
 
 dico={}
+list=[]
 for ob in 'suppress_param','objet_u','listobj_impl','chaine','floattant','entier','rien','listentier','listentierf','listchaine','listchainef','list','listf':
     dico[ob]=[1,"yy"]
     pass
@@ -26,6 +27,7 @@ while (line):
             #raise Exception (message)
     	    print "WARNING", message
         pass
+    list.append(name)
     dico[name]=[0,line]
     #   f2.write(line)
     line=file.readline()
@@ -79,8 +81,8 @@ def gen_class(cl,dico):
         pass
     pass
 
-for cl in dico.keys():
-  
+for cl in list:
+    # print 'ici',cl
     gen_class(cl,dico)
    
     pass

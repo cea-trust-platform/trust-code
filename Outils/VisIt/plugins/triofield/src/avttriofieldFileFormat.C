@@ -383,7 +383,7 @@ avttriofieldFileFormat::GetMesh(int domain, const char *meshname)
     break;
   default:
     type_cell=-1;
-    cerr<<"avtlataFileFormat::GetMesh unknown elt type "<<endl;
+    cerr<<"avtlataFileFormat::GetMesh unknown elt type nverts "<<nverts<<endl;
     exit(-1);
     break;
   }

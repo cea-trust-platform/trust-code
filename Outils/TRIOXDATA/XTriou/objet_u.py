@@ -1274,7 +1274,13 @@ def retire_nl(a):
     aa=a.replace('\n',' \n ')
     aa=split(aa,' ')
     # b=' '.join(aa)
-    poub,listcomm=traite_naif(aa)
+    poub,_,listcomm=traite_naif(aa)
+    
+    rr=' '.join(poub).replace('\n',' ').replace('__NL__','\n')
+    # int rr
+    
+    return rr
+    # print "la"
     # aa.append('fin')
     # print listcomm
     debut=0
@@ -1340,6 +1346,16 @@ def retire_nl(a):
         pass
     return b
 
+def strip_data(data):
+    """ retire les blancs et les retour chariot"""
+    b=data.replace('\n',' ').replace('\t',' ').strip().replace('  ',' ')
+    c=b.replace('  ',' ')
+    while (cmp(b,c)!=0):
+        b=c
+        c=b.replace('  ',' ')
+        pass
+    return b
+
 def lire_fichier(name):
     " lit le fichier et renvoie une liste modififee de chaines de caractere"
     ent=open(name,'r')
@@ -1366,7 +1382,7 @@ def lire_fichier(name):
     while (c[-1]==''):
         if len(c): c.pop()
 	pass
-    d,listcomm=traite_naif(c)
+    _,d,listcomm=traite_naif(c)
     return c,d,listcomm
 def read_file_data(name):
     " lit le jdd de nom name et renvoie la liste des classes"
@@ -1396,7 +1412,7 @@ def read_file_data(name):
                 l=c[3:]
                 # ouhps si commentaire dans lire_fichier c est faux !!!
                 c=new_chaine+l
-                d,listcomm=traite_naif(c)
+                _,d,listcomm=traite_naif(c)
                 c.append('fin')
                 # on remet le fin pour decaler
                 fichier_lu=1
@@ -1551,7 +1567,8 @@ def indent_chaine(c):
    
 
 
-def traite_naif(a):
+def traite_naif(aa):
+    a=aa[:]
     # return a
     c=[]
     decal=0
@@ -1565,7 +1582,9 @@ def traite_naif(a):
         if (mot=='#'):
             listcomm.append(lena-i)
             # print "commentaire apres", a[i-30:i],a[i]
-            while (a[i+1]!="#"):                
+            while (a[i+1]!="#"):
+                if a[i+1]=='\n':
+                    a[i+1]='__NL__'
                 if i+1>=len(a)-1:
                     i-=1;
                     print " il manque un # ?"
@@ -1595,6 +1614,8 @@ def traite_naif(a):
                 elif (te=="/*"):
                     acc+=1
                     pass
+                if a[i+1]=='\n':
+                    a[i+1]='__NL__'
                 i+=1
                 pass
             listcomm.append(lena-i)
@@ -1604,7 +1625,7 @@ def traite_naif(a):
             pass
         decal=i-i0
         pass
-    return c,listcomm
+    return a,c,listcomm
 def write_file_data(name,listclass):
     " ecrit le jdd dans name "
     print "write_file_data ", name
@@ -1748,13 +1769,16 @@ class listobj_impl(objet_u):
         if self.listobj==None:
 	    self.listobj=[]	
             pass
+        cmd="tst="+self.__class__.class_type+"()"
+        exec(cmd)
+	    
         while (chaine[0]!= '}') and (i2!=0):
             i2=i2-1
             #   print "lecture ",i2
             self.listobj.append(None)
             newob="self.listobj[-1]"
 	    special=1
-	    if (self.__class__.class_type[-6:]=='_deriv') or issubclass(self.__class__,class_generic):
+	    if (self.__class__.class_type[-6:]=='_deriv') or isinstance(tst,class_generic):
                 # on va lire un derive
 		type2_=self.__class__.class_type
                 mot0=type2_+'___'
@@ -1825,7 +1849,10 @@ class listobj_impl(objet_u):
             pass
         # print type(self.__class__.virgule)," ",bizarre
         if (self.listobj==None) or len(self.listobj)==0:
-            return "{ }"
+            if (self.__class__.readacc_ == 0):
+                return "0 "
+            else:
+                return "{ } "
         if self.__class__.readacc_==1:
             stri+=" \n{\n"
         else:

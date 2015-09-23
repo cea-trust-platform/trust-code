@@ -509,6 +509,8 @@ void LataFilter::get_all_metadata(LataVector<LataGeometryMetaData> & geoms_data,
     data.dynamic_ = dynamic;
     data.dimension_ = dim;
     data.element_type_ = element_type;
+    data.is_ijk_=domain_already_ijk;
+     
     // If we reconnect all subdomains, always load all of them:
     if (!opt_.reconnect)
       data.nblocks_ = nblocks;
@@ -568,6 +570,7 @@ void LataFilter::get_all_metadata(LataVector<LataGeometryMetaData> & geoms_data,
     if (regularizable) {
       data.internal_name_ = lata_geom_name;
       data.internal_name_ += "_IJK";
+      data.is_ijk_=1;
       data.displayed_name_ = lata_geom_name;
       data.source_ = "operator_ijk";
       data.source_domain_ = lata_geom_name;
@@ -589,6 +592,7 @@ void LataFilter::get_all_metadata(LataVector<LataGeometryMetaData> & geoms_data,
       if (regularizable) {
         data.internal_name_ += "_IJK";
         data.source_domain_ += "_IJK";
+	data.is_ijk_=1;
       }
       data.internal_name_ += "_dual";
       data.displayed_name_ += "_dual";

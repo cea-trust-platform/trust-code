@@ -108,6 +108,7 @@ struct LataGeometryMetaData
   entier nblocks_; // Number of sub_blocks in the geometry (parallel computation)
   Motcle source_; // How to build this domain ("latadb", "operator_ijk", "operator_dual", "operator_boundary", "user_fields")
   Nom source_domain_;
+  entier is_ijk_;
 };
 
 struct LataFieldMetaData

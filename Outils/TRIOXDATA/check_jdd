@@ -1,4 +1,5 @@
 #!/bin/bash
+cd `dirname $0`
 . ./XDATA.sh
 cd XTriou
 make test_ref_trace >/dev/null

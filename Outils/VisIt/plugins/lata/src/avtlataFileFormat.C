@@ -203,8 +203,7 @@ avtlataFileFormat::PopulateDatabaseMetaData(avtDatabaseMetaData *md, int timeSta
 
     avtMeshType mt = AVT_UNSTRUCTURED_MESH;
     
-    if ((data.internal_name_.finit_par("IJK")) 
-	    || (data.internal_name_.finit_par("IJK_dual")))
+    if (data.is_ijk_==1)
       {
         mt = AVT_RECTILINEAR_MESH;
       }
