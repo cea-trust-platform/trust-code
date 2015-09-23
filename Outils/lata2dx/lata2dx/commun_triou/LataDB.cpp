@@ -1083,7 +1083,7 @@ void LataDB::read_master_file_header(const char *filename, EFichier & is)
   if (strncmp(s, lata_header, strlen(lata_header)) == 0) {
     Journal(2) << "LataDB::read_master_file found lata format " << lata_header << endl;
     old_style_lata_ = 0;
-  } else if (Motcle(s).debute_par("Trio_U")) {
+  } else if ((Motcle(s).debute_par("Trio_U"))||(Motcle(s).debute_par("TRUST"))) {
     Journal(2) << "LataDB::read_master_file found old style lata format" << endl;
     old_style_lata_ = 1;
   } else {

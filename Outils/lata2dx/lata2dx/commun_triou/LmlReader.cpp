@@ -414,7 +414,7 @@ void read_any_format_options(const char * file, LataOptions & opt)
         toto += Nom(*s);
         s++;
       }
-      if (toto != "Trio_U") {
+      if ((toto != "Trio_U")&&(toto != "TRUST" )) {
         if (!opt.parse_option(toto)) {
           Journal(0) << "Interpreting option: " << toto <<"  Failed." << endl;
           throw LataDBError::BAD_HEADER;
