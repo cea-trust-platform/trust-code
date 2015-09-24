@@ -1,0 +1,6 @@
+mkdir -p tests/Reference
+(cd tests;ln -sf $TRUST_ROOT/tests/* Reference)
+mkdir -p src
+[ ! -f src/dummy.cpp  ] && touch  src/dummy.cpp
+mkdir -p share/Validation/
+(cd share/Validation/; ln -sf $TRUST_ROOT/Validation/Rapports_automatiques .)
