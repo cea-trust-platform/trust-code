@@ -1,0 +1,35 @@
+\begin{alltt}
+TAILLES 3 103 23 13 
+RIEN 0 meshing
+MAIL_X_REG 4 xomin xomax nx-2 2 dx
+MAIL_Y_REG 4 yomin yomax ny-2 2 dy
+MAIL_Z_REG 4 zomin zomax nz-2 2 dz
+RIEN 0 filling up of the domain
+PARALAX 7 xomin xomax yomin yomax zomin zomax 1000 filling up of the domain
+RIEN 0 boundaries domain definition
+PARALAX 7 xomin-eps xomax+eps yomin-eps yomax+eps zomax zomax+eps -1000 Wall
+PARALAX 7 xomin-eps xomax+eps yomin-eps yomax+eps zomin-eps zomin -1000 Wall
+PARALAX 7 xomin-eps xomin yomin-eps yomax+eps zomin-eps zomax+eps -2000 Inlet
+PARALAX 7 xomax xomax+eps yomin-eps yomax+eps zomin-eps zomax+eps -3000 Outlet
+PARALAX 7 xomin-eps xomax+eps yomin-eps yomin zomin-eps zomax+eps -1000 Bottom
+PARALAX 7 xomin-eps xomax+eps yomax yomax+eps zomin-eps zomax+eps -1000 Top
+CYLAX 7 xomin+(xomax-xomin)/10 yomin+(yomax-yomin)/2 radius zomin-eps zomax+eps 3 -9000 Obstacle
+file maillage
+        real xomin,xomax,yomin,yomax,zomin,zomax,eps,radius
+C       Extremal sizes of the meshing
+        xomin=0
+        xomax=10
+        yomin=0
+        yomax=2
+        zomin=0
+        zomax=1
+C       eps is useful for thickness of the blocks featuring boundaries
+        eps=0.01
+        radius=0.4
+        XM(1)=xomin-eps
+        XM(nx)=xomax+eps
+        YM(1)=yomin-eps
+        YM(ny)=yomax+eps
+        ZM(1)=zomin-eps
+        ZM(nz)=zomax+eps
+\end{alltt}

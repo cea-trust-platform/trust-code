@@ -1,0 +1,141 @@
+\begin{alltt}
+# Hydraulique 2D avec transport constituant #
+# PARALLEL OK 5 #
+dimension 2
+Pb_hydraulique_concentration pb
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+\{
+    {\bf{Pave Block1 }}
+    {\bf{\{ }}
+        {\bf{Origine 0. 0.03 }}
+        {\bf{Nombre_de_Noeuds 51 121  }}
+        {\bf{Longueurs 0.1 0.21 }}
+    {\bf{\} }}
+    {\bf{\{ }}
+        {\bf{Bord Left1    X = 0.    0.03 <= Y <= 0.24 }}
+        {\bf{Bord Outlet     Y = 0.24  0.   <= X <= 0.1 }}
+        {\bf{Bord Right1   X = 0.1   0.03 <= Y <= 0.24 }}
+    {\bf{\} , }}
+    {\bf{Pave Block2 }}
+    {\bf{\{ }}
+        {\bf{Origine 0. 0.02 }}
+        {\bf{Nombre_de_Noeuds 51 6 }}
+        {\bf{Longueurs 0.1 0.01 }}
+    {\bf{\} }}
+    {\bf{\{ }}
+        {\bf{Bord Inlet    X = 0.    0.02 <= Y <= 0.03 }}
+        {\bf{Bord Right2   X = 0.1   0.02 <= Y <= 0.03 }}
+    {\bf{\} , }}
+    {\bf{Pave Block3 }}
+    {\bf{\{ }}
+        {\bf{Origine 0. 0. }}
+        {\bf{Nombre_de_Noeuds 51 11 }}
+        {\bf{Longueurs 0.1 0.02 }}
+    {\bf{\} }}
+    {\bf{\{ }}
+        {\bf{Bord Bottom3   Y = 0.    0. <= X <= 0.1 }}
+        {\bf{Bord Right3    X = 0.1   0. <= Y <= 0.02 }}
+        {\bf{Bord Left3     X = 0.    0. <= Y <= 0.02 }}
+    {\bf{\} }}
+\}
+{\bf{RegroupeBord dom Wall \{ Left1 Bottom3 Right1 Right2 Right3 Left3 \} }}
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+\{
+    Partitionneur tranche \{ tranches 2 1 \}
+    Larg_joint 2
+    Nom_Zones DOM
+\}
+Fin
+END PARTITION #
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+VDF dis
+Schema_Euler_explicite sch
+Lire sch
+\{
+    tinit 0
+    {\bf{tmax 1.}}
+    {\sout{dt_min 0.01}}
+    {\sout{dt_max 0.01}}
+    dt_impr 0.01
+    dt_sauv 100
+    seuil_statio 1.e-8
+\}
+Fluide_Incompressible fluide
+Lire fluide
+\{
+    {\bf{mu Champ_Uniforme 1 1.e-03}}
+    {\bf{rho Champ_Uniforme 1 1000}}
+    beta_co Champ_Uniforme 1 0.
+\}
+Constituant c1
+{\bf{Lire c1 \{ coefficient_diffusion Champ_Uniforme 1 1.e-09 \} }}
+Champ_Uniforme gravite
+{\bf{Lire gravite 2 0 -9.81}}
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+Associate pb c1
+Discretize pb dis
+Lire pb
+\{
+    Navier_Stokes_standard
+    \{
+        solveur_pression GCP \{ 
+            precond ssor \{ omega 1.500000 \} 
+            seuil 1.000000e-06 
+            impr 
+        \}
+        {\bf{convection \{ quick \} }}
+        diffusion \{ \}
+        {\bf{conditions_initiales \{ vitesse Champ_Uniforme 2 0. 0. \} }}
+        boundary_conditions \{
+            {\bf{Inlet   frontiere_ouverte_vitesse_imposee Champ_Front_Fonc_txyz 2 }}
+                                                {\bf{(1-((y-0.025)/0.005)^2)*(t<0.5)  0.}}
+            {\bf{Wall    paroi_fixe}}
+            {\bf{Outlet  frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.}}
+        \}
+    \}
+    Convection_diffusion_Concentration \{
+        diffusion \{ \}
+        {\bf{convection \{ quick \} }}
+        boundary_conditions 
+        \{
+            {\bf{Inlet   frontiere_ouverte_concentration_imposee Champ_Front_Fonc_txyz 1 (1)*(t<0.5)}}
+            {\bf{Wall    paroi}}
+            {\bf{Outlet  frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.}}
+        \}
+        {\bf{conditions_initiales \{ concentration Champ_Uniforme 1 0. \} }}
+        sources \{ source_Constituant champ_fonc_fonction 1 concentration 0 \}
+    \}
+    Postraitement
+    \{
+        Sondes
+        \{
+            sonde_pres pression periode 0.01 points 1 0.45 0.45
+            sonde_vit vitesse periode 0.01 points 1 0.4 0.45
+            sonde_conc concentration periode 0.01 points 1 0.55 0.45
+            {\bf{sonde_conc_inlet concentration periode 0.01 points 1 0 0.025 }}
+            {\bf{sonde_velocity_inlet vitesse periode 0.01 segment 5 0 0.021 0 0.029}}
+        \}
+        format lata
+        Champs dt_post 0.1
+        \{
+            pression elem
+            pression som
+            vitesse elem
+            vitesse som
+            concentration elem
+            concentration som
+        \}
+    \}
+\}
+Solve pb
+Fin
+\end{alltt}

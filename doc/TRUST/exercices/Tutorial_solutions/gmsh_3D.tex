@@ -1,0 +1,54 @@
+\begin{alltt}
+// Variables definition
+{\bf{lc = 0.02;}}
+// First cell size (used when points are defined)
+lc1 = lc * 8;
+// Second cell size
+lc2 = lc / 2;
+// Circle diameter
+H=2;
+L=10;
+// Points definition 
+Point(1)=\{0,0,0,lc1\};
+Point(2) = \{L,0,0,lc1\};
+Point(3) = \{L,H,0,lc1\};
+Point(4) = \{0,H,0,lc1\};
+Point(10)= \{1,1,0,lc2\};
+Point(11)=\{1.25,1,0,lc2\}; 
+Point(12)=\{1,1.25,0,lc2\}; 
+Point(13)=\{0.75,1,0,lc2\}; 
+Point(14)=\{1,0.75,0,lc2\};
+// Lines definition
+Line(2) = \{1,2\};
+Line(6) = \{3,2\};
+Line(7) = \{3,4\};
+Line(8) = \{4,1\};
+// 1/4 Circle definition
+// 3 points for the circle arc
+// A circle arc is STRICTLY smaller than Pi
+Circle(10)=\{11,10,12\}; 
+Circle(11)=\{12,10,13\}; 
+Circle(12)=\{13,10,14\}; 
+Circle(13)=\{14,10,11\};
+// Naming the boundaries
+{\bf{//Physical Line("Outlet") = \{6\};}}
+{\bf{//Physical Line("Wall") = \{2,7\};}}
+{\bf{//Physical Line("Inlet") = \{8\};}}
+{\bf{//Physical Line("Circle") = \{10,11,12,13\};}}
+// A lineloop is a loop on several lines
+// for defining/orienting a surface
+// Use negative lines to reverse the
+// orientation of the line
+Line Loop(1) = \{2,-6,7,8\};
+Line Loop(2) = \{10,11,12,13\};
+/// The surfac will use the lineloop
+Plane Surface(1) = \{1,2\};
+{\bf{Extrude \{0,0,1\} \{ Surface\{1\} ; \}}}
+// Naming the domain
+{\bf{Physical Surface("domain") = \{1\};}}
+{\bf{Physical Surface("Inlet") = \{38\};}}
+{\bf{Physical Surface("Outlet") = \{30\};}}
+{\bf{Physical Surface("Wall") = \{1,26,34,55\};}}
+{\bf{Physical Surface("Obstacle") = \{42,46,50,54\};}}
+{\bf{Physical Volume("dom") = \{1\};}}
+\end{alltt}

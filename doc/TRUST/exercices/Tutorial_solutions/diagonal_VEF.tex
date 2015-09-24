@@ -1,0 +1,135 @@
+\begin{alltt}
+# Hydraulique 2D avec transport constituant #
+# PARALLEL OK 5 #
+dimension 2
+Pb_hydraulique_concentration pb
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+\{
+    Pave Block1 
+    \{
+        Origine 0. 0.03
+        Nombre_de_Noeuds 51 121 
+        Longueurs 0.1 0.21
+    \}
+    \{
+        Bord Left1    X = 0.    0.03 <= Y <= 0.24
+        Bord Outlet     Y = 0.24  0.   <= X <= 0.1
+        Bord Right1   X = 0.1   0.03 <= Y <= 0.24
+    \} ,
+    Pave Block2
+    \{
+        Origine 0. 0.02
+        Nombre_de_Noeuds 51 6
+        Longueurs 0.1 0.01
+    \}
+    \{
+        Bord Inlet    X = 0.    0.02 <= Y <= 0.03
+        Bord Right2   X = 0.1   0.02 <= Y <= 0.03
+    \} ,
+    Pave Block3
+    \{
+        Origine 0. 0.
+        Nombre_de_Noeuds 51 11
+        Longueurs 0.1 0.02
+    \}
+    \{
+        Bord Bottom3   Y = 0.    0. <= X <= 0.1
+        Bord Right3    X = 0.1   0. <= Y <= 0.02
+        Bord Left3     X = 0.    0. <= Y <= 0.02
+    \}
+\}
+RegroupeBord dom Wall \{ Left1 Bottom3 Right1 Right2 Right3 Left3 \}
+{\bf{Trianguler_h dom }}
+{\bf{# VerifierCoin dom \{ lire_fichier diagonale_VEF.decoupage_som \} # }}
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+\{
+    Partitionneur tranche \{ tranches 2 1 \}
+    Larg_joint 2
+    Nom_Zones DOM
+\}
+Fin
+END PARTITION #
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+{\bf{VEFPreP1B dis}}
+Schema_Euler_explicite sch
+Lire sch
+\{
+    tinit 0
+    tmax 0.01
+    dt_impr 0.01
+    dt_sauv 100
+    seuil_statio 1.e-8
+\}
+Fluide_Incompressible fluide
+Lire fluide
+\{
+    mu Champ_Uniforme 1 3.7e-05
+    rho Champ_Uniforme 1 2
+    beta_co Champ_Uniforme 1 0.
+\}
+Constituant c1
+Lire c1 \{ coefficient_diffusion Champ_Uniforme 1 0.01 \}
+Champ_Uniforme gravite
+Lire gravite 2 0 -9.81
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+Associate pb c1
+Discretize pb dis
+Lire pb
+\{
+    Navier_Stokes_standard
+    \{
+        {\bf{solveur_pression Petsc Cholesky \{ \} }}
+        {\bf{convection \{ muscl \} }}
+        diffusion \{ \}
+        conditions_initiales \{ vitesse Champ_Uniforme 2 1. 1. \}
+        boundary_conditions \{
+            Inlet   frontiere_ouverte_vitesse_imposee Champ_Front_Fonc_txyz 2 (1-((y-0.025)/0.005)^2)*(t<0.5)  0.
+            Wall    paroi_fixe
+            Outlet  frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+        \}
+    \}
+    Convection_diffusion_Concentration \{
+        diffusion \{ \}
+        convection \{ muscl \}
+        boundary_conditions \{
+            Inlet   frontiere_ouverte_concentration_imposee Champ_Front_Fonc_txyz 1 (1)*(t<0.5)
+            Wall    paroi
+            Outlet  frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+        \}
+        conditions_initiales \{ concentration Champ_Uniforme 1 0.5 \}
+        sources \{ source_Constituant champ_fonc_fonction 1 concentration 0 \}
+    \}
+    Postraitement
+    \{
+        Sondes
+        \{
+            sonde_pres pression periode 0.01 points 1 0.45 0.45
+            sonde_vit  vitesse periode 0.01 points 1 0.4 0.45
+            sonde_conc concentration periode 0.01 points 1 0.55 0.45
+            sonde_conc_inlet     concentration periode 0.01 points 1 0 0.025
+            sonde_velocity_inlet vitesse periode 0.01 segment 5 0 0.021 0 0.029
+        \}
+        format lata
+        Champs dt_post 0.1
+        \{
+            pression elem
+            pression som
+            vitesse elem
+            vitesse som
+            concentration elem
+            concentration som
+        \}
+    \}
+\}
+Solve pb
+Fin
+\end{alltt}

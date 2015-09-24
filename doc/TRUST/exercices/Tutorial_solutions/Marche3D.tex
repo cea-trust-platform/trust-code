@@ -1,0 +1,106 @@
+\begin{alltt}
+# Hydraulique 3D turbulent sous maille #
+# PARALLEL RUNS #
+dimension 3
+Pb_Hydraulique_Turbulent pb
+Domaine dom
+# BEGIN MESH #
+Read_file Marche3D.geo ;
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+\{
+    Partitionneur tranche \{ tranches 2 1 1 \}
+    Larg_joint 1
+    Nom_Zones DOM
+\}
+Fin
+END PARTITION #
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+VDF dis
+schema_Euler_explicite sch
+Lire sch
+\{
+    tinit 0
+    tmax 80.
+    dt_min 0.2
+    dt_max 0.2
+    dt_impr 0.2
+    dt_sauv 100.
+    seuil_statio 1.e-8
+\}
+Fluide_Incompressible fluide
+Lire fluide
+\{
+    {\bf{mu Champ_Uniforme 1 2e-05}}
+    {\bf{rho Champ_Uniforme 1 1}}
+\}
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+Discretize pb dis
+Lire pb
+\{
+    Navier_Stokes_Turbulent
+    \{
+        solveur_pression cholesky \{ \}
+        {\bf{convection \{ quick \} }}
+        diffusion \{ \}
+        conditions_initiales \{ vitesse Champ_Uniforme 3  0. 0. 0. \}
+        boundary_conditions \{
+             Bas1 Paroi_Fixe
+             Haut1 Paroi_Fixe
+             Haut2 Paroi_Fixe
+             Haut3 Paroi_Fixe
+             Bas2 Paroi_Fixe
+             Gauche Paroi_Fixe
+             Bas3 Paroi_Fixe
+             Sud1 Paroi_Fixe 
+             Nord1 Paroi_Fixe
+             Sud2 Paroi_Fixe
+             Nord2 Paroi_Fixe
+             Sud3 Paroi_Fixe
+             Nord3 Paroi_Fixe
+             Sud4 Paroi_Fixe
+             Nord4 Paroi_Fixe
+             Sud5 Paroi_Fixe
+             Nord5 Paroi_Fixe
+             SortieBasse frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+             SortieHaute frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+             Entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 3  1. 0. 0.
+        \}
+        {\bf{modele_turbulence sous_maille_smago \{ }}
+            {\bf{cs 0.1}}
+            {\bf{turbulence_paroi loi_standard_hydr}}
+        {\bf{\} }}
+    \}
+    Postraitement 
+    \{
+        Sondes 
+        \{
+            sonde_pression pression periode 0.5 points 1 7.5 0.9 5.5
+            sonde_vitesse vitesse periode 0.5 points 1 8.0 0.9 5.5
+            sonde_visc viscosite_turbulente periode 0.5 points 2 7.5 0.9 5.5 7.5 1.1 4.5
+            sonde_k k periode 0.5 points 2 7.5 0.9 5.5 7.5 1.1 4.5
+        \}
+                format lata
+        Champs dt_post 50.
+        \{
+            {\bf{pressure elem}}
+            {\bf{pression som}}
+            {\bf{velocity elem}}
+            {\bf{vitesse som}}
+            {\bf{viscosite_turbulente elem}}
+            {\bf{viscosite_turbulente som}}
+            {\bf{vorticite elem}}
+            {\bf{vorticite som}}
+            k elem
+            k som
+        \}
+    \}
+\}
+Solve pb
+Fin
+\end{alltt}

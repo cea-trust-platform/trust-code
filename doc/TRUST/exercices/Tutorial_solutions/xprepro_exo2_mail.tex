@@ -1,0 +1,23 @@
+\begin{alltt}
+        real xomin,xomax,yomin,yomax,zomin,zomax,eps,radius,dx,dy, x0, y0
+C       Extremal sizes of the meshing
+        xomin=0.
+        xomax=10.
+        yomin=0.
+        yomax=2.
+        zomin=0.
+        zomax=0.01
+C       eps is useful for thickness of the blocks featuring boundaries
+        eps=0.0001
+        radius=0.2
+        dx=0.8
+        dy=0.3
+        x0=0.6
+        y0=0.4
+        XM(1)=xomin-eps
+        XM(nx)=xomax+eps
+        YM(1)=yomin-eps
+        YM(ny)=yomax+eps
+        ZM(1)=zomin-eps
+        ZM(nz)=zomax+eps
+\end{alltt}

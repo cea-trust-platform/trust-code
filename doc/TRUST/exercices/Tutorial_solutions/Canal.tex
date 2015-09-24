@@ -1,0 +1,141 @@
+\begin{alltt}
+Parameters \{
+        Title "Check the debit_impose option of canal_perio keyword"
+        Author "G.F."
+        TestCase . std.data
+        TestCase . debit.data
+        TestCase . debit2.data
+        TestCase . debit3.data
+        TestCase . debit4.data
+\}
+Chapter \{
+        Title "Comparison between flow rate specified by debit_impose option 
+            and computed flow rate by the initial condition on velocity"
+        Description "Data files differences:"
+        Description include_text_file("diff_deb.out")
+        Description "In the first data file, the flow rate will be 2 m3/s (Uo=1 m/s and S=2m). 
+            In the second one, flow rate is 4 m3/s, and then will decrease to 2 m3/s."
+        Figure \{
+                dimension 2
+                include_description_curves 0
+                labely debit
+                labelx time
+                Curve \{
+                        fichier std_pb_Debit.out
+                        legend std
+                        style lines
+                \}
+                Curve \{
+                        fichier debit_pb_Debit.out
+                        legend debit_impose
+                        style lines
+                \}
+        \}
+\}
+Chapter \{
+        
+        Title "Initial velocity is inclined into 2 directions, with a vertical flow 
+            rate which should be 0."
+        Description "When converged, the velocity profile reaches horizontality."
+        Description
+        Visu \{
+                blackVector debit2.lata dom VITESSE SOM
+                # operator_to_all no_databaseinfo
+                cycles 0 -1
+                width 7.5cm
+                nb_img_without_newline 2 
+        \}
+\}
+Chapter \{
+        
+        Title "Initial velocity is inclined into 2 directions, with a vertical flow rate 
+            which should be 0."
+        Description "When converged, the velocity profile reaches horizontality to 4 
+            (due to the porosity) ."
+        Description
+        Visu \{
+                Vector debit3.lata dom VITESSE SOM
+                # operator_to_all no_databaseinfo
+                cycles 0 -1
+                width 7.5cm
+                nb_img_without_newline 2 
+        \}
+\}
+{\bf{
+Chapter \{
+        Title "Additional information"
+        Visu \{
+                Title "Mesh visualization"
+                Mesh debit.lata dom blue
+                Width 9cm
+        \}
+        Figure \{
+                Title "Residus evolution"
+                LabelX "Time (s)"
+                LabelY "Residu"
+                LogX
+                LogY
+                Width 9cm
+                Include_description_curves 0
+                Curve \{
+                        legend "Test case debit.data"
+                        file debit.dt_ev
+                        columns $1 $4
+                        style lines
+                \}
+                Curve \{
+                        legend "Test case debit2.data"
+                        file debit2.dt_ev
+                        columns $1 $4
+                        style lines
+                \}
+                Curve \{
+                        legend "Test case debit3.data"
+                        file debit3.dt_ev
+                        columns $1 $4
+                        style lines
+                \}
+                Curve \{
+                        legend "Test case debit4.data"
+                        file debit4.dt_ev
+                        columns $1 $4
+                        style lines
+                \}
+                Curve \{
+                        legend "Test case std.data"
+                        file std.dt_ev
+                        columns $1 $4
+                        style lines
+                \}
+        \}
+        Visu \{
+                Title "Visualization of the pressure field at last time"
+                Description "Visualization of the pressure field at last time of the test case debit2.data."
+                Pseudocolor debit2.lata dom PRESSION ELEM
+                Cycles -1
+                Width 7.5cm
+        \}
+        Visu \{
+                Title "Vizualization of velocity field at last time, test case std"
+                Pseudocolor std.lata dom_dual_magnitude VITESSE FACES
+                Cycles -1
+                Width 7.5cm
+        \}
+        Table \{
+                Title "Number of cells and last time results"
+                Nb_columns 5
+                Label "std" | "debit" | "debit2" | "debit3" | "debit4"
+                Line \{
+                        legend "cell numbers"
+                        file nbcells.dat
+                        columns $1 $2 $3 $4 $5
+                \}
+                Line \{
+                        legend "last time (s)"
+                        file lastime.dat
+                        columns $1 $2 $3 $4 $5
+                \}
+        \}
+}}
+\}
+\end{alltt}
