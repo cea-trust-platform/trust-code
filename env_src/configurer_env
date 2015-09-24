@@ -1572,7 +1572,9 @@ then
    then
       GIT_ROOT=$TRUST_ROOT/.git
       # Activate and add Git hooks
-      for hook in `cd $TRUST_ROOT/bin/GIT/hooks;ls 2>/dev/null`
+      list_hooks=`cd $TRUST_ROOT/bin/GIT/hooks;ls 2>/dev/null`
+      list_hooks="" # Temporary: review what really make pre-commit and post-commit
+      for hook in $list_hooks
       do
           # Don't use source but . instead in .git/hooks commits
           command=". bin/GIT/hooks/$hook"
