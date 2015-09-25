@@ -109,7 +109,7 @@ postraitements {
 	 domaine dom_EF_boundaries_r_1000_2000 
 	 champs dt_post 0.05
 	 { 
-	pression_pa elem
+	# pression_pa elem #
 	vitesse som
 	 }
 	 }
