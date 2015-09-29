@@ -1,0 +1,112 @@
+\begin{alltt}
+# Thermohydraulique 2D VEF #
+dimension 2
+pb_thermohydraulique_qc pb
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+\{
+    Pave Plaques
+    \{
+        Origine 0. 0.
+        {\bf{Nombre_de_Noeuds 41 11}}
+        {\bf{Longueurs 4. 1.}}
+    \}
+    \{
+        Bord Gauche X = 0.  0. <= Y <= 1.
+        Bord Droit  X = 4.  0. <= Y <= 1.
+        Bord Bas    Y = 0.  0. <= X <= 4.
+        Bord Haut   Y = 1.  0. <= X <= 4.
+    \}
+\}
+Trianguler_H dom
+VEFPreP1B dis
+schema_Euler_implicite sch
+Lire sch
+\{
+    tinit 3.991476
+    dt_min 1.e-7
+    dt_max 0.1
+    dt_impr 1.e-7
+    dt_sauv 100.
+    {\bf{seuil_statio 10.}}
+    {\bf{facsec 10.}}
+    {\bf{facsec_max 90}}
+    {\bf{Solveur Implicite }}
+    {\bf{\{ }}
+        {\bf{solveur gmres \{ diag seuil 1e-30 nb_it_max 5 impr \} }}
+        {\bf{seuil_convergence_implicite 0.01 }}
+    {\bf{\} }}
+\}
+fluide_quasi_compressible helium
+Lire helium
+\{
+    mu      Champ_Fonc_fonction     1 temperature   3.95e-7*val^0.687
+    lambda  Champ_Fonc_fonction     1 temperature   2.774e-3*val^0.701
+    pression   7092750.
+    loi_etat gaz_parfait
+    \{
+        Prandtl   0.673
+        Cp        5193.
+        gamma     1.666
+    \}
+    Traitement_Pth          constant
+    Traitement_rho_gravite  moins_rho_moyen
+\}
+Associate pb dom
+Associate pb sch
+Associate pb helium
+Discretize pb dis
+Lire pb
+\{
+    Navier_Stokes_qc
+    \{
+        {\bf{solveur_pression Gcp \{ precond ssor \{ omega 1.5 \} seuil 1.e-8 impr \} }}
+        convection \{ EF_stab \{ TdivU \} \} # Test of TdivU, see documentation #
+        diffusion \{ \}    
+        conditions_initiales \{ vitesse Champ_Uniforme 2 1. 0. \}
+        boundary_conditions 
+        \{
+             Bas    Symetrie
+             Haut   Symetrie
+             Droit  frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+             Gauche frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2 1. 0.
+        \}
+        Traitement_particulier \{ temperature \{ Bord Droit Direction 0  \} \}
+    \}
+    Convection_diffusion_chaleur_qc
+    \{
+        convection \{ EF_stab \{ \} \}
+        diffusion \{ \}
+        boundary_conditions
+        \{
+            Bas    Paroi_flux_impose Champ_front_Uniforme 1 1.e6
+            Haut   Paroi_flux_impose Champ_front_Uniforme 1 1e6
+            Droit  frontiere_ouverte T_ext champ_front_uniforme  1 500.0
+            Gauche Frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 100.
+        \}
+        conditions_initiales \{ temperature Champ_Uniforme 1 100. \}
+    \}
+    Postraitement 
+    \{
+        Sondes
+        \{
+            sonde_vitesse   velocity        periode 1. points  1 4. 1.
+            {\bf{sonde_vitesse2  vitesse         periode 1. points  1 4. 1.}}
+            {\bf{sonde_masse_vol masse_volumique periode 1. points  1 4. 1.}}
+            {\bf{sonde_temp      temperature     periode 1. points  1 4. 1.}}
+            {\bf{sonde_temp2     temperature     periode 1. segment 9 4. 0.05    4. 0.95}}
+        \}
+        {\bf{format lata}}
+        {\bf{Champs dt_post 1.}}
+        \{
+            pression 
+            vitesse 
+            temperature
+        \}
+    \}
+    {\bf{reprise binaire TP_Temp_QC_VEF_pb.sauv }}
+\}
+Solve pb
+Fin
+\end{alltt}

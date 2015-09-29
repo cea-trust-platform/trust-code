@@ -603,7 +603,7 @@ echo "HOW TO USE TRUST ?" | tee -a $LOG
 echo "*******************" | tee -a $LOG
 echo "Initialize TRUST environment with:" | tee -a $LOG
 echo "source $TRUST_ROOT/env/env_TRUST.sh" | tee -a $LOG
-echo "And follow the tutorial $TRUST_ROOT/doc/TRUST/Tutorial_TRUST.pdf" | tee -a $LOG
+echo "And follow the tutorial $TRUST_ROOT/doc/TRUST/TRUST_tutorial.pdf" | tee -a $LOG
 echo "You can contact us at $TRUST_MAIL for a training session of 2 days." | tee -a $LOG
 echo " " | tee -a $LOG
 

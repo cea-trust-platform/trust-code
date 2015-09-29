@@ -1,0 +1,309 @@
+\begin{alltt}
+#  
+ Cas test Front-tracking discontinu VDF.
+
+  Cas test avec interface liquide-vapeur "interf"
+                solide mobile            "body"
+                concentration
+  Interface liquide-vapeur initiale : un demi-plan + une goutte
+  Remaillage, barycentrage, lissage, test collision, gravite, 
+  tension superficielle.
+  Ecriture des resultats au format lata: un fichier lata avec
+  les champs volumiques et les interfaces liquide-vapeur(lata1),
+  un fichier avec uniquement le solide mobile (lata2)
+ Les algorithmes de remaillage avec changement de connectivite
+ ne sont pas strictement equivalents entre sequentiel et parallele.
+ Il y a donc des ecarts entre le sequentiel et le parallele.
+ PARALLEL RUNS
+#
+dimension 3
+# Generic problem used for Front Tracking calculation # 
+Probleme_FT_Disc_gen pb
+Domaine DOM
+# BEGIN MESH #
+Mailler DOM
+\{
+    Pave pave1
+    \{
+        origine 0. 0. 0.
+        {\bf{longueurs 0.04 0.04 0.12 }}
+        nombre_de_noeuds 11 11 16
+    \}
+    \{
+        {\bf{bord paroi X = 0.   0. <= Y <= 0.04 0. <= Z <= 0.12 }}
+        {\bf{bord paroi X = 0.04 0. <= Y <= 0.04 0. <= Z <= 0.12 }}
+        {\bf{bord paroi Y = 0.   0. <= X <= 0.04 0. <= Z <= 0.12 }}
+        {\bf{bord paroi Y = 0.04 0. <= X <= 0.04 0. <= Z <= 0.12 }}
+        {\bf{bord bas   Z = 0.   0. <= X <= 0.04 0. <= Y <= 0.04 }}
+        {\bf{bord haut  Z = 0.12 0. <= X <= 0.04 0. <= Y <= 0.04 }}
+    \}
+\}
+# END MESH #
+# BEGIN PARTITION
+Partition DOM
+\{
+    Partitionneur tranche \{ tranches 2 1 1 \}
+    Larg_joint 2
+    Nom_Zones DOM
+\}
+Fin
+END PARTITION #
+# BEGIN SCATTER
+Scatter DOM.Zones DOM
+END SCATTER #
+VDF dis
+Schema_Euler_explicite  sch
+Lire sch
+\{
+    tinit 0.
+    tmax  0.1
+    dt_min 1.e-7
+    dt_max 0.5e-2
+    dt_impr 10.
+    dt_sauv 100
+    seuil_statio -1
+\}
+# First phase: liquid #
+Fluide_Incompressible liquide
+Lire liquide
+\{
+    mu  Champ_Uniforme 1 0.282e-3
+    rho Champ_Uniforme 1 1000.
+\}
+# Second phase: gas #
+Fluide_Incompressible gaz
+Lire gaz
+\{
+    mu  Champ_Uniforme 1 0.282e-3
+    rho Champ_Uniforme 1 100.
+\}
+# Definition of the two phase media #
+Fluide_Diphasique fluide
+Lire fluide
+\{
+    # Give a number for each phase #
+    fluide0 liquide
+    fluide1 gaz
+    # Surface tension #
+    sigma   Champ_Uniforme 1 0.05
+\}
+# Add a constituent #
+Constituant constituant
+Lire constituant \{ coefficient_diffusion Champ_Uniforme 1 1e-6 \}
+# Gravity field #
+Champ_Uniforme gravite
+Lire gravite 3 0. 0. -9.81
+Associate fluide gravite
+# Navier Stokes equation #
+Navier_Stokes_FT_Disc              hydraulique
+# One equation for the two phase flow interface #
+Transport_Interfaces_FT_Disc       interf
+# One equation for a moving body #
+Transport_Interfaces_FT_Disc       body
+# One equation for the constituent #
+Convection_Diffusion_Concentration concentration
+Associate pb hydraulique
+Associate pb interf
+Associate pb body
+Associate pb concentration
+Associate pb DOM
+Associate pb sch
+Associate pb fluide
+Associate pb constituant
+Discretize pb dis
+# Define the front tracking problem #
+Lire pb
+\{
+    hydraulique
+    \{
+        # Turbulence model needed and zeroed for laminar flow #
+        {\bf{# modele_turbulence nul #}}
+        modele_turbulence sous_maille_wale
+        \{
+            Cw               1.e-16
+            turbulence_paroi negligeable
+        \}
+        solveur_pression GCP \{ precond ssor \{ omega 1.5 \} seuil 1e-12 impr \}
+        convection           \{ quick \}
+        diffusion            \{ \}
+        conditions_initiales \{ vitesse champ_uniforme 3 0. 0. 0. \}
+        # Relation beetween Navier Stokes equation and interface equations #
+        # The velocity field moves the gas-liquid interface #
+        equation_interfaces_proprietes_fluide interf 
+        # The body has an imposed velocity field, so moves the fluid #
+        equation_interfaces_vitesse_imposee   body
+        boundary_conditions
+        \{
+            # Outlet boundary condition for FT model #
+            haut   Sortie_libre_rho_variable champ_front_uniforme 1 0.    
+            paroi  paroi_fixe
+            bas    Frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 0.0 0.0 0.001
+        \}
+        Traitement_particulier \{ Ec \{ Ec periode 1.e-7 \} \}
+    \}
+    interf
+    \{
+        # Definition of the transport method of the interface: velocity #
+        # from the Navier Stokes equation #
+        methode_transport vitesse_interpolee hydraulique
+        # Initial position of the water-gas interface and a drop of water #
+        conditions_initiales 
+        \{
+            fonction z-0.03-((x-0.02)^2+(y-0.02)^2)*10 ,
+            fonction ajout_phase0 (x-0.02)^2+(y-0.02)^2+(z-0.045)^2-(0.01)^2 {\bf{,}}
+            {\bf{fonction ajout_phase0 (x-0.02)^2+(y-0.02)^2+(z-0.08)^2-(0.01)^2 }}
+        \}
+        # Options for the meshing algorithm #
+        iterations_correction_volume 1
+        n_iterations_distance 2
+        remaillage 
+        \{
+            pas 0.000001
+            nb_iter_remaillage 1
+            critere_arete 0.35
+            critere_remaillage 0.2
+            pas_lissage 0.000001
+            lissage_courbure_iterations 3
+            lissage_courbure_coeff -0.1
+            nb_iter_barycentrage 3
+            relax_barycentrage 1
+            facteur_longueur_ideale 0.85
+            nb_iter_correction_volume 3
+            seuil_dvolume_residuel 1e-12
+        \}
+        # Algorithm for the collision algorithm between interfaces #
+        collisions
+        \{
+            active
+            juric_pour_tout
+            type_remaillage Juric \{ source_isovaleur indicatrice \}
+        \}
+        # Boundary condition, variable contact angle is possible #
+        boundary_conditions
+        \{
+            paroi Paroi_FT_disc symetrie
+            haut  Paroi_FT_disc symetrie
+            bas   Paroi_FT_disc symetrie
+        \}
+    \}
+    body
+    \{
+        # Initial position of the moving body #
+        conditions_initiales 
+            \{ fonction -(((x-0.02))^2+((y-0.02)/0.6)^2+((z-0.02)/0.6)^2-(0.015^2)) \}
+        remaillage 
+        \{
+            pas 1e8
+            nb_iter_remaillage 5
+            critere_arete 0.5
+            critere_remaillage 0.2
+            pas_lissage -1
+            nb_iter_barycentrage 5
+            relax_barycentrage 1
+            facteur_longueur_ideale 1
+        \}
+        boundary_conditions
+        \{
+            haut  Paroi_FT_disc symetrie
+            paroi Paroi_FT_disc symetrie
+            bas   Paroi_FT_disc symetrie
+        \}
+        # 2 methods to move the body: velocity(x,y,z)=f(x,y,z) or velocity(x,y,z)=f(t) #
+        methode_transport vitesse_imposee  -(y-0.02)*10  (x-0.02)*10  0.
+    \}
+    # Constituent equation #
+    concentration
+    \{
+        diffusion \{ negligeable \}
+        convection \{ quick \}
+        conditions_initiales \{ concentration champ_fonc_xyz DOM 1 
+                                    EXP(-((x-0.02)^2+(y-0.02)^2+(z-0.03)^2)/0.03^2) \}
+        boundary_conditions 
+        \{
+            haut  frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+            paroi paroi
+            bas   paroi
+        \}
+    \}
+    Postraitement
+    \{
+        Definition_champs 
+        \{
+            Energie_cinetique_hydro Reduction_0D
+            \{
+                methode somme_ponderee source Transformation 
+                \{
+                    # Ec=sum[0.5*rho*vol*(u^2+v^2+w^2)dV] #
+                    methode formule expression 1 0.5*rho*u2_plus_v2_plus_w2
+                    sources \{
+                        Transformation 
+                        \{
+                            methode produit_scalaire sources 
+                            \{
+                                Interpolation \{
+                                    localisation elem
+                                    source refChamp \{ Pb_champ pb vitesse \} \} ,
+                                Interpolation \{
+                                    localisation elem
+                                    source refChamp \{ Pb_champ pb vitesse \} \}
+                            \}
+                            nom_source u2_plus_v2_plus_w2
+                        \} ,
+                        refChamp \{ Pb_champ pb masse_volumique nom_source rho \}
+                    \}
+                \}
+            \}
+        \}
+        Sondes 
+        \{
+            vitesse vitesse periode 1.e-7 point 1 0.02 0.02 0.03
+            pression pression periode 1.e-7 point 1 0.02 0.02 0.03
+            indicatrice_interf indicatrice_interf periode 1.e-7 point 1 0.02 0.02 0.03
+            energie_cinetique energie_cinetique_hydro periode 1.e-7 point 1 0.02 0.02 0.03
+        \}
+        {\bf{format lata}}
+        {\bf{Champs dt_post 0.01 }}
+        \{
+            {\bf{indicatrice_interf elem}}
+            {\bf{concentration elem}}
+            masse_volumique
+        \}
+    \}
+    liste_postraitements
+    \{
+        # Another keywords to post process FT results #
+        Postraitement_ft_lata liquid_gas
+        \{
+            {\bf{dt_post 0.01 }}
+            nom_fichier liquid_gas
+            format binaire
+            print
+            champs sommets \{ vitesse \}
+            champs elements
+            \{
+                distance_interface_elem_interf
+                distance_interface_elem_body
+                indicatrice_interf
+                pression
+                concentration
+                vitesse
+            \}
+            # Post process the moving grid of the interface #
+            interfaces interf \{
+                champs sommets \{ courbure vitesse \}
+                champs elements \{ pe \}
+            \}
+        \}
+        Postraitement_ft_lata body
+        \{
+            {\bf{dt_post 0.01 }}
+            nom_fichier body
+            format binaire
+            print
+            interfaces body \{ champs sommets \{ courbure \} \}
+        \}
+    \}
+\}
+Solve pb
+Fin
+\end{alltt}

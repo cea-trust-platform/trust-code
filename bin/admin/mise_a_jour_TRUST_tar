@@ -87,6 +87,8 @@ then
       echo "Error !"
       exit -1
    fi
+   # ajout de la doc pdf non geree en gestion de configuration
+   echo doc/TRUST/TRUST_tutorial.pdf >> Src.files
    # Marquage de la version
    date > .DATE
    echo .DATE >> Src.files

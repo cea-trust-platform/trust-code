@@ -1,0 +1,157 @@
+\documentclass[english]{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{babel}
+%\usepackage{color}
+\usepackage{alltt}
+\usepackage{geometry}
+\geometry{verbose,tmargin=2cm,bmargin=2cm,lmargin=2.5cm,rmargin=2.5cm,headheight=2cm,headsep=1cm,footskip=1cm}
+\usepackage[unicode=true,pdfusetitle,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=true,linkcolor=blue]
+ {hyperref}
+\PassOptionsToPackage{normalem}{ulem}
+\usepackage{ulem}
+\usepackage{graphicx}
+
+\begin{document}
+
+\title{TRUST tutorial v1.7.1 solutions}
+\maketitle
+\tableofcontents{}
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Obstacle VDF}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Obstacle: Sequentiel calculation}
+\subsubsection{First part: basic calculation}
+\input{Obstacle_VDF}
+\subsubsection{Second part: "reprise"}
+\input{Obstacle_reprise}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Obstacle: Sequentiel calculation}
+\subsubsection{DEC\_Obstacle.data}
+\input{DEC_Obstacle}
+\subsubsection{PAR\_Obstacle.data}
+\input{PAR_Obstacle}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\subsection{Obstacle: Sequentiel calculation on a cluster}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Heat exchange VDF/VEF}
+\subsection{With diffusion\_implicite}
+\input{docond}
+\subsection{With schema\_euler\_implicite}
+\input{docond_impl}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Low mach number flow}
+\subsection{With schema\_euler\_explicite}
+\input{TP_Temp_QC_VEF}
+\subsection{With schema\_euler\_implicite}
+\input{TP_Temp_QC_VEF_impl}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Periodic 3D channel flow}
+\subsection{With schema\_euler\_explicite}
+\input{P1toP1Bulle}
+\subsection{With schema\_euler\_implicite}
+\input{P1toP1Bulle_impl}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Constituents and turbulent flow}
+\input{Marche}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{3D turbulent flow in a curved pipe}
+Minimal exercise, no need to put a solution
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Turbulent flow on a 3D step}
+\subsection{Turbulence model Smagorinsky}
+\input{Marche3D}
+\subsection{K-Eps Turbulence model}
+\input{Marche3D_keps}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Tank filling (2D-single phase flow)}
+\subsection{VDF}
+\input{diagonal}
+\subsection{VEF}
+\input{diagonal_VEF}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Tank filling (3D-two phases flow)}
+\input{FTD_all_VDF}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Meshing tools}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Salom\'e to create a 3D VEF mesh}
+cf hdf files in \$TRUST\_ROOT/doc/TRUST/exercices/salome directory.
+\begin{itemize}
+\item First exercise:
+\begin{itemize}
+\item \$TRUST\_ROOT/doc/TRUST/exercices/salome/mesh.hdf
+\item \$TRUST\_ROOT/doc/TRUST/exercices/salome/prism.hdf
+\end{itemize}
+\item Second exercise:\\
+\$TRUST\_ROOT/doc/TRUST/exercices/salome/revolution.hdf
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Gmsh to create a 2D VEF mesh}
+\subsubsection{2D VEF mesh}
+\input{gmsh}
+\subsubsection{3D VEF mesh}
+\input{gmsh_3D}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Xprepro to create 2D/3D VDF mesh}
+
+\subsubsection{3D VDF mesh}
+The "viewlist" file must look like:
+\begin{figure}[h]
+\includegraphics[width=1.1\textwidth]{xprepro_exo1_default_prep.png}
+\end{figure}
+
+If you open the file salome/exo1/model/defaut.prep which correspond to the previous picture, you must have some thing like:
+\input{xprepro_exo1_prep}
+
+which contain your salome/exo1/model/maillagedefaut file. If you open it, you must have:
+\input{xprepro_exo1_mail}
+
+\newpage
+\subsubsection{2D VDF mesh}
+The "viewlist" file must look like:
+\begin{figure}[h]
+\includegraphics[width=1.1\textwidth]{xprepro_exo2_default_prep.png}
+\end{figure}
+
+If you open the file salome/exo2/model/defaut.prep which correspond to the previous picture, you must have some thing like:
+\input{xprepro_exo2_prep}
+
+which contain your salome/exo2/model/maillagedefaut file. If you open it, you must have:
+\input{xprepro_exo2_mail}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Validation form}
+\subsection{Canal.prm}
+\input{Canal}
+\subsection{prepare}
+\input{prepare}
+\subsection{post\_run}
+\input{post_run}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}
+

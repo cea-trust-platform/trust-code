@@ -1,0 +1,117 @@
+\begin{alltt}
+# Canal 3D periodique a Re=200 depuis une reprise d'un calcul sur une discretisation plus lache (P1) #
+# PARALLEL OK #
+dimension 3
+Pb_hydraulique pb
+Domaine dom
+# BEGIN MESH #
+Read_file dom cylindre.geom
+VerifierCoin dom \{ \}
+Dilate dom 1000
+RegroupeBord dom perioz \{ Surfa Surfanz \}
+Reordonner_faces_periodiques dom perioz
+{\bf{RegroupeBord dom periox \{ Entree Sortie \} }}
+{\bf{Raffiner_Anisotrope dom}}
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+\{
+    Partitionneur metis \{ Nb_parts 2 \}
+    Larg_joint 2
+    Nom_Zones DOM
+    Periodique 1 perioz
+\}
+Fin
+END PARTITION #
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+# Je choisis une discretisation #
+VEFPreP1B dis
+Schema_Euler_explicite mon_schema
+Lire mon_schema
+\{
+    {\bf{nb_pas_dt_max 30}}
+    tinit 0
+    {\bf{tmax 100}}
+    dt_min 1.e-6
+    dt_max 1.e6
+    dt_impr 1.e-6
+    dt_sauv 100
+    seuil_statio 1.e-8
+    {\bf{diffusion_implicite 1}}
+\}
+# Je definis un milieu #
+Fluide_Incompressible milieu
+Lire milieu
+\{
+    mu  Champ_Uniforme 1 0.01
+    rho Champ_Uniforme 1 2.
+\}
+Associate pb dom
+Associate pb mon_schema
+Associate pb milieu
+Discretize pb dis
+Lire pb
+\{
+    Navier_Stokes_standard
+    \{
+        solveur_pression GCP 
+        \{ 
+            precond ssor \{ omega 1.5 \} 
+            seuil 1.e-6
+            impr 
+        \}
+        convection \{ muscl \}
+        diffusion \{ \}
+        {\bf{sources }}
+        {\bf{\{ }}
+            {\bf{canal_perio \{ bord periox \} ,}}
+            {\bf{Acceleration }}
+            {\bf{\{ }}
+                {\bf{omega           Champ_Fonc_t     3 0. 0. 1. }}
+                {\bf{domegadt        Champ_Fonc_t    3 0. 0. 0. }}
+                {\bf{centre_rotation Champ_Fonc_t     3 0. 0. 0. }}
+            {\bf{\} }}
+        {\bf{\} }}
+        conditions_initiales 
+        \{
+            vitesse champ_uniforme 3 1. 0. 0.
+        \}
+        boundary_conditions
+        \{
+            perioz periodique 
+            Bas  paroi_fixe
+            Haut paroi_fixe
+            {\bf{Cylindre paroi_fixe  periox periodique }}
+            {\bf{# Sortie frontiere_ouverte_pression_imposee    Champ_front_Uniforme 1 0.}}
+            {\bf{Entree frontiere_ouverte_vitesse_imposee    Champ_front_Uniforme 3 1. 0. 0. #}}
+        \}
+    \}
+    Postraitement
+    \{
+        Definition_champs
+        \{
+            Energie_cinetique_fluide predefini \{ pb_champ pb energie_cinetique \}
+        \}
+            Sondes
+            \{
+                sonde_ec Energie_cinetique_fluide periode 0.005 point 1 0.7 0. 0.
+                sonde_pression pression_pa periode 0.005 circle 11 0. 0. 0. 2 0.7 0. 360.
+               sonde_vitesse vitesse periode 0.005 point 1 0.7 0. 0.
+            \}
+            format lata
+            Champs dt_post 1.
+            \{ 
+                pression_pa som
+                {\bf{vitesse faces}}
+            \}
+            Statistiques dt_post 1.
+            \{
+                t_deb 1. t_fin 5.
+                moyenne vitesse faces
+            \}
+    \}
+\}
+Solve pb
+\end{alltt}
