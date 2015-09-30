@@ -1057,7 +1057,7 @@ then
 			        LML1=$NOM.lml
 				LML2=$NOM2.lml
 			    fi
-			    if [ -f $rep_tests/$REP/no_ref_comparison ]
+			    if [ -f $rep_tests/$REP/no_ref_comparison ] && [ $LML1 = ".reference.lml" ]
 			    then
 			       echo "Test $i not compared to the reference"
 	                       liste_no_ref_comparison=$liste_skipped" $i"
