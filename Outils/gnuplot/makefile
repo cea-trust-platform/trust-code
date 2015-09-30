@@ -1,4 +1,4 @@
-package=gnuplot-4.4.2.tar.gz
+package=gnuplot-4.6.6.tar.gz
 install=$(TRUST_ROOT)/exec/gnuplot/
 gnuplot=$(install)/bin/gnuplot
 all:$(gnuplot)

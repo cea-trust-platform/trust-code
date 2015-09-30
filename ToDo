@@ -3,7 +3,6 @@ Version	Qui				Tache
 1.7.2   triou@cea.fr            Portabilite baltik : separer Run.liste en 2 (machines cible et les autres)
 1.7.2   triou@cea.fr            Gerer run Etudes TRUST ou TrioCFD
 1.7.2   triou@cea.fr            Analyser le fichier de sortie datafile_petsc.TU (signification de count)
-1.7.2   triou@cea.fr            Augmenter la version de Gnuplot : passer de 4.4 a 4.6
 1.7.2   triou@cea.fr            Gauthier a demande d ajouter test Execute_parallel lors du configure pour verifier l'installation MPI
 1.7.2   triou@cea.fr            revoir comment activer ou non les mot cles dans vi car a adapter selon les baltiks charges
 1.7.2   triou@cea.fr            revoir le TRUST env qui teste beaucoup de chose (ex: dd.ksh,...) et trop long pour utilisateur
