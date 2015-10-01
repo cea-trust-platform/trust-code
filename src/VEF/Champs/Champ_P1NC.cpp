@@ -534,7 +534,7 @@ void Champ_P1NC::verifie_valeurs_cl()
   ch_tab.echange_espace_virtuel();
 }
 
-void Champ_P1NC::calcul_critere_Q(DoubleVect& Critere_Q)
+void Champ_P1NC::calcul_critere_Q(DoubleVect& Critere_Q) const
 {
   const Zone_VEF& zone_VEF = la_zone_VEF.valeur();
   const Zone_Cl_VEF& zone_Cl_VEF = ref_cast(Zone_Cl_VEF,equation().zone_Cl_dis().valeur() );
@@ -546,9 +546,9 @@ void Champ_P1NC::calcul_critere_Q(DoubleVect& Critere_Q)
   DoubleTab gradient_elem(nb_elem_tot,dimension,dimension);
   gradient_elem=0.;
 
-  Champ_P1NC& vit = *this;
+  //Champ_P1NC& vit = *this;
   const DoubleTab& vitesse = valeurs();
-  vit.calcul_gradient(vitesse,gradient_elem,zone_Cl_VEF);
+  Champ_P1NC::calcul_gradient(vitesse,gradient_elem,zone_Cl_VEF);
 
 
   for (num_elem=0; num_elem<nb_elem; num_elem++)
@@ -567,7 +567,7 @@ void Champ_P1NC::calcul_critere_Q(DoubleVect& Critere_Q)
 }
 
 
-void Champ_P1NC::calcul_y_plus(const Zone_Cl_VEF& zone_Cl_VEF, DoubleVect& y_plus)
+void Champ_P1NC::calcul_y_plus(const Zone_Cl_VEF& zone_Cl_VEF, DoubleVect& y_plus) const 
 {
   // On initialise le champ y_plus avec une valeur negative,
   // comme ca lorsqu'on veut visualiser le champ pres de la paroi,
@@ -702,7 +702,7 @@ void Champ_P1NC::calcul_y_plus(const Zone_Cl_VEF& zone_Cl_VEF, DoubleVect& y_plu
 }
 
 
-void Champ_P1NC::calcul_grad_T(const Zone_Cl_VEF& zone_Cl_VEF, DoubleTab& grad_T)
+void Champ_P1NC::calcul_grad_T(const Zone_Cl_VEF& zone_Cl_VEF, DoubleTab& grad_T) const
 {
   const DoubleTab& temp = valeurs();
   const Zone_VEF& zone_VEF = la_zone_VEF.valeur();
@@ -750,7 +750,7 @@ void Champ_P1NC::calcul_grad_T(const Zone_Cl_VEF& zone_Cl_VEF, DoubleTab& grad_T
 }
 
 // Calcul du coefficient d'echange
-void Champ_P1NC::calcul_h_conv(const Zone_Cl_VEF& zone_Cl_VEF, DoubleTab& h_conv, int temp_ref)
+void Champ_P1NC::calcul_h_conv(const Zone_Cl_VEF& zone_Cl_VEF, DoubleTab& h_conv, int temp_ref) const
 {
   const DoubleTab& temp = valeurs();
   const Zone_VEF& zone_VEF = la_zone_VEF.valeur();

@@ -180,7 +180,10 @@ Lire pb
 		    					  }
 		   					}	
 		}
-		
+		Sondes 
+		{	
+		moyt  chsom Moyenne_temperature   periode 1e-5 pointS 1 5e-3 5e-3 
+		}	
 		Champs dt_post 0.01
 		{
 			pression elem
