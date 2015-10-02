@@ -567,7 +567,7 @@ void Champ_P1NC::calcul_critere_Q(DoubleVect& Critere_Q) const
 }
 
 
-void Champ_P1NC::calcul_y_plus(const Zone_Cl_VEF& zone_Cl_VEF, DoubleVect& y_plus) const 
+void Champ_P1NC::calcul_y_plus(const Zone_Cl_VEF& zone_Cl_VEF, DoubleVect& y_plus) const
 {
   // On initialise le champ y_plus avec une valeur negative,
   // comme ca lorsqu'on veut visualiser le champ pres de la paroi,

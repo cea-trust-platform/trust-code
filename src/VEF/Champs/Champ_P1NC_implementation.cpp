@@ -2029,7 +2029,7 @@ valeur_aux_elems_compo_smooth(const DoubleTab& positions,
                               const IntVect& les_polys,
                               DoubleVect& val,int ncomp)
 {
-   if ((!sub_type(Champ_P1NC,le_champ()))&&(!sub_type(Champ_Fonc_P1NC,le_champ())))
+  if ((!sub_type(Champ_P1NC,le_champ()))&&(!sub_type(Champ_Fonc_P1NC,le_champ())))
     {
       Cerr << "L'option chsom des sondes ne s'applique pour le moment que pour les Champ_P1NC en VEF" << finl;
       Cerr << "or votre champ " << le_champ().le_nom() << " est de type " << le_champ().que_suis_je() << "." << finl;
