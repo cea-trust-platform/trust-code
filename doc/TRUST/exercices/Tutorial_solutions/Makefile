@@ -1,9 +1,19 @@
-all: clean
-	pdflatex Tutorial_solutions.tex
-	pdflatex Tutorial_solutions.tex
-	mv Tutorial_solutions.pdf ..
+FILE=Tutorial_solutions
+
+all: ../$(FILE).pdf
+../$(FILE).pdf: $(FILE).tex Makefile
+	$(MAKE) clean
+	pdflatex $(FILE).tex > LOG
+#	 makeindex $(FILE).idx >> LOG
+	pdflatex $(FILE).tex >> LOG
+	pdflatex $(FILE).tex >> LOG
+	mv $(FILE).pdf ..
+	$(MAKE) clean_build
 
 
-clean:
+clean_build:  
 	@echo "Removing compilation files and pdf"
-	@rm -f *.log *.aux *.dvi *.toc *.out *.pdf
+	@rm -f *.log *.aux *.dvi *.toc *.lot *.lof *.out *.pdf *.idx *.ilg *.ind *.nav *.snm LOG
+clean:  clean_build
+	@rm -f ../$(FILE).pdf
+.PHONY: clean clean_build
