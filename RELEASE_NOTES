@@ -1,9 +1,11 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.2_beta : Enhancements, modifications and corrected bugs since version 1.7.1 :
 --------------------------------------------------------------------------------------------------
+03/10/15 (TRUST)  Minor change: Update TRUST tutorial in latex version and its solutions
+02/10/15 (TRUST)  New feature : Ability to use the chsom option of Sondes keyword with a Champ_Fonc_P1NC (eg moyenne_temperature)
+01/10/15 (Tools)  Portability : Released version of Gnuplot is upgraded to 4.6.6
 23/09/15 (Kernel) Minor change: Diagonal preconditionning is unavailable for a parallel calculation, the CG used to solve the implicitation of the equation diffusion operator can not preconditioned
 17/08/15 (TRUST)  Bug fixed   : Correct the calculation of K for 2D in Boundary_field_uniform_keps_from_ud and Field_uniform_keps_from_ud
-
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.1 : Enhancements, modifications and corrected bugs since version 1.7.0 :
 --------------------------------------------------------------------------------------------------
