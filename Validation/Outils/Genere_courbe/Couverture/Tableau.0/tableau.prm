@@ -137,7 +137,15 @@ Table {
 		file ./test_ef_stab/Pressure_Gradient_pb_tail
 	}
 	}
-
+Table {
+	titre string in table
+	nb_columns 2 
+	label teta| fluide
+	Line {
+      legende cas 
+      valeurs  1.0 freon
+}
+}
 Table {
 	Title "essai_lignes"
 	nb_columns 2
@@ -155,15 +163,15 @@ Table {
 }
 Table {
 	Title "essai_lignes"
-	nb_columns 2
+	nb_columns 3
 	transposed_display 1
-	label  u_tau  | erreur en %
+	label  u_tau  | erreur en % |es
 	lines { 
 	file bon_tail
 	number_first_line -3
 	 number_last_line -2
-	nb_columns_file 3
-	columns $1 $2 $3
+	nb_columns_file 4
+#	columns $1 $2 $3
 	}	
 
 }
