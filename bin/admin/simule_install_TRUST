@@ -20,7 +20,7 @@ fi
 
 machine=localhost && [ "$2" = "-remote" ] && [ "$3" != "" ] && machine=$3
 cible=$WORKDIR/simule_install_${paquet%.tgz}
-ssh_ $machine -n pwd
+ssh_ $machine -n pwd 1>/dev/null 2>&1
 if [ $? = 0 ]
 then
   echo "Begin of the installation simulation of $version_arch at "`date '+%H:%M:%S'` on $machine:$cible

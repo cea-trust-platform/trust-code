@@ -46,14 +46,14 @@ fi
 # Creation du rapport NUIT.html
 ###############################
 REP_NUIT=/data/tmplgls/triou/Historique/NUIT
-[ ! -d $REP_NUIT ] && mkdir $REP_NUIT
+[ ! -d $REP_NUIT ] && mkdir -p $REP_NUIT
 NUIT=$REP_NUIT/NUIT.html
 NUIT_DIPHA=$REP_NUIT/NUIT_dipha.html
 echo > $NUIT
 ################################
 # Debut boucle sur les modules #
 ################################
-MODULES="TRUST Diphasique"
+#MODULES="TRUST Diphasique"
 MODULES="TRUST"
 for MODULE in $MODULES
 do
@@ -159,8 +159,7 @@ do
 	 done
          cd - 1>/dev/null 2>&1
       else
-         ssh_ $log@$adr -n pwd
-	 if [ $? != 0 ]
+         if  [ "`ssh_ -o ConnectTimeout=30 -o BatchMode=yes $log@$adr -n pwd 1>/dev/null 2>&1;echo $?`" != 0 ]
 	 then
 	    echo "$adr not accessible..."
 	 else
@@ -200,8 +199,7 @@ do
             else
                echo "  Recovery of libs and executables..."
 	       (cd $exec;rm -f *)
-               ssh_ $log@$adr -n pwd
-	       if [ $? != 0 ]
+	       if [ "`ssh_ -o ConnectTimeout=30 -o BatchMode=yes $log@$adr -n pwd 1>/dev/null 2>&1;echo $?`" != 0 ]
 	       then
 	          echo "Portage KO: $adr not accessible..."
 	       else	       
@@ -455,12 +453,13 @@ $TD_CR<A HREF="$CR">$HOST</A>$FTD
    mes=`echo $port_trust | $TRUST_Awk -v limite=$limite '{if ($1>limite) print "Portable version that can be livery if it is stable"}'`
 
    echo "Portability Components for $TRUST_VERSION version:<BR>" >> $NUIT2
+   echo "<A HREF="nuit_equation_convection_diffusion.html">Tuto</A> : equation_convection_diffusion baltik compilation portability<BR>" >> $NUIT2
+   echo "<A HREF="nuit_ICoCo.html">ICoCo</A> : ICoCo baltik compilation portability<BR>" >> $NUIT2
+   #echo "<A HREF="nuit_basic.html">TRUST</A> : TRUST test baltik portability<BR>" >> $NUIT2
+   echo "<A HREF="nuit_Test_Baltik.html">TRUST</A> : TRUST test baltik portability<BR>" >> $NUIT2
+   echo "<A HREF="nuit_MPCube.html">MPCube</A> : MPCube baltik compilation portability<BR>" >> $NUIT2
    echo "<A HREF="nuit_TrioCFD.html">TrioCFD</A> : TrioCFD baltik compilation portability<BR>" >> $NUIT2
    echo "<A HREF="nuit_ModeleCoeur.html">MC2</A> : ModeleCoeur baltik compilation portability<BR>" >> $NUIT2
-   echo "<A HREF="nuit_MPCube.html">MPCube</A> : MPCube baltik compilation portability<BR>" >> $NUIT2
-   echo "<A HREF="nuit_ICoCo.html">ICoCo</A> : ICoCo baltik compilation portability<BR>" >> $NUIT2
-   echo "<A HREF="nuit_equation_convection_diffusion.html">Tuto</A> : equation_convection_diffusion baltik compilation portability<BR>" >> $NUIT2
-   echo "<A HREF="nuit_basic.html">TRUST</A> : TRUST compilation portability<BR>" >> $NUIT2
    #echo "Release criteria of the $TRUST_VERSION version:<BR>" >> $NUIT2
    echo "$port_trust : $MODULE portability ( $portabilite/$nb_machine_cible > $limite ) $mes<BR>" >> $NUIT2
    echo "$port_atelier : $MODULE workshop compilation ( $portabilite_atelier/$nb_machine_atelier_cible )<BR>" >> $NUIT2

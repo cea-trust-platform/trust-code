@@ -328,7 +328,7 @@ do
    fi
    echo "------------------------------------"
 done
-if [ ! -z "$liste_machines_KO" ] # chaine non vide
+if [ ${#liste_machines_KO} != 0 ] # chaine non vide
 then
    echo "liste_machines_KO="$liste_machines_KO
 fi

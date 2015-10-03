@@ -45,7 +45,7 @@ void usage()
        << "TRUST_EXECUTABLE [CASE[.data]] [options]\n"
        << " CASE is the basename of the trust data file (must have .data extension)\n"
        << "   If no CASE given, the current directory name is used\n"
-       << " -help_triou => print options\n"
+       << " -help_trust => print options\n"
        << " -mpi => run in parallel with MPI (must run with mpirun)\n"
        << " -check_enabled=0|1  => enables or disables runtime checking of parallel messages\n"
        << " -debugscript=SCRIPT => execute \"SCRIPT n\" after parallel initialisation, n=processor rank\n"
@@ -82,6 +82,7 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
   int nproc = -1;
   int verbose_level = 1;
   int journal_master = 0;
+  int helptrust = 0;
   int ieee = 1;              // 1 => use of feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
   Nom data_file;
   data_file = "";
@@ -95,9 +96,9 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
     {
       // int error = 0;
       // Le -help est reserve par Petsc
-      if (strcmp(argv[i], "-help_triou") == 0)
+      if (strcmp(argv[i], "-help_trust") == 0)
         {
-          usage();
+          helptrust = 1;
         }
       else if (strcmp(argv[i], "-disable_ieee") == 0)
         {
@@ -266,6 +267,8 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
 
     if (master)
       {
+        if ( helptrust == 1 ) usage();
+
         // On affiche le resultat de la ligne de commande ici pour ne pas remplir stderr
         // avec tous les processeurs...
         cerr << arguments_info;

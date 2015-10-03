@@ -173,7 +173,7 @@ fi
 ##################################
 echo "Usage: `basename $0` [-rsync|-sftp|-kill]"
 
-if [ "`ps -efl | grep make | grep TRUST | grep -v grep`" != "" ]
+if [ "`ps -efl | grep make | grep TRUST | grep -v grep | grep trio`" != "" ] || [ "`ps -efl | grep make | grep TRUST | grep -v grep | grep ccapitai`" != "" ]
 then
    # mail_ command not found at this moment
    echo $ECHO_OPTS "\n\nSorry, $QUI is now running on the $HOST machine... Try later." #| mail_ $QUI
@@ -857,15 +857,15 @@ do
 	    cd $TRUST_ROOT/doc/TRUST/exercices/validation_form_exercise
 	    log=`pwd`/Run_fiche.log
 	    rm -f $log
+	    rm -r -f build Run.log
 	    visit_erreur=`$TRUST_ROOT/Outils/VisIt/bin/visit -help 1>/dev/null 2>&1;echo $?`
 	    if [ $visit_erreur = 0 ]
 	    then
-	       rm -r -f build
 	       Run_fiche 1>$log 2>&1
 	       Run_fiche_KO=$?
 	    else
 	       echo "VisIt is not working under $TRUST_ROOT/Outils/VisIt" 1>$log 2>&1
-	       #Run_fiche_KO=1
+	       Run_fiche_KO=1
 	    fi
 	    if [ $Run_fiche_KO = 0 ]
 	    then
@@ -873,7 +873,7 @@ do
 	    else
 	       echo "Script Run_fiche KO -> See $log"
 	    fi
-	    rm -r -f build
+	    #rm -r -f build
 	    cd - 1>/dev/null 2>&1
          fi	
 	 ###################################

@@ -120,7 +120,8 @@ help()
    echo "-gdb                   : Run under gdb debugger."
    echo "-prm                   : Write a prm file and generate the corresponding pdf file in the build directory."
    [ -d /ccc ] && echo "-ipm                   : Use ipm to report MPI statistics."
-   trust -help_triou
+   echo "-help_trust            : Print options of TRUST_EXECUTABLE [CASE[.data]] [options]."
+   #trust -help_trust
 
    echo "If no option is given, create a submission file and submit the job on the test class."
    exit 0
@@ -241,7 +242,7 @@ do
       exit $?
    elif [ "$1" = "-clean" ]
    then
-      for ext in lata son out lml dt_ev TU log stop err xyz sauv dump face out_err plan
+      for ext in lata sons son out lml dt_ev TU log stop err xyz sauv dump face out_err plan
       do 
 	 echo "rm *.$ext files."
 	 rm -f *.$ext

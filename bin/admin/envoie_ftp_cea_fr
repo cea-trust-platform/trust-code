@@ -162,15 +162,7 @@ then
    cd $TRUST_ROOT/exec
    cp_ftp .tests* $SECRET/NUIT
    sleep 1
-   cd $TRUST_ROOT/../Composants/TrioCFD
-   cp_ftp nuit_*.html $SECRET/NUIT
-   cp_ftp *_%_*.log $SECRET/NUIT
-   sleep 1
-   cd $TRUST_ROOT/../Composants/ModeleCoeur
-   cp_ftp nuit_*.html $SECRET/NUIT
-   cp_ftp *_%_*.log $SECRET/NUIT
-   sleep 1
-   cd $TRUST_ROOT/../Composants/MPCube
+   cd $TRUST_ROOT/doc/TRUST/exercices/equation_convection_diffusion
    cp_ftp nuit_*.html $SECRET/NUIT
    cp_ftp *_%_*.log $SECRET/NUIT
    sleep 1
@@ -178,7 +170,20 @@ then
    cp_ftp nuit_*.html $SECRET/NUIT
    cp_ftp *_%_*.log $SECRET/NUIT
    sleep 1
-   cd $TRUST_ROOT/doc/TRUST/exercices/equation_convection_diffusion
+   #cd $TRUST_ROOT/bin/baltik/templates/basic
+   cd $TRUST_ROOT/../Composants/Test_Baltik
+   cp_ftp nuit_*.html $SECRET/NUIT
+   cp_ftp *_%_*.log $SECRET/NUIT
+   sleep 1
+   cd $TRUST_ROOT/../Composants/MPCube
+   cp_ftp nuit_*.html $SECRET/NUIT
+   cp_ftp *_%_*.log $SECRET/NUIT
+   sleep 1
+   cd $TRUST_ROOT/../Composants/TrioCFD
+   cp_ftp nuit_*.html $SECRET/NUIT
+   cp_ftp *_%_*.log $SECRET/NUIT
+   sleep 1
+   cd $TRUST_ROOT/../Composants/ModeleCoeur
    cp_ftp nuit_*.html $SECRET/NUIT
    cp_ftp *_%_*.log $SECRET/NUIT
 fi

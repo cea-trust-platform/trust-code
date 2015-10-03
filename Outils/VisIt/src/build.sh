@@ -145,6 +145,9 @@ then
    export CFLAGS="-I$MISSING_GL_DIR/include"
    export CXXFLAGS="-I$MISSING_GL_DIR/include"
 fi
+# Installation plante sur is225222 en Fedora 18 avec OpenMPI 1.8.3
+export CFLAGS="$CFLAGS -ldl"
+export CXXFLAGS="$CXXFLAGS -ldl"
 
 if [ "$option" = parallel ]
 then

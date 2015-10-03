@@ -45,7 +45,7 @@ fi
 # Copie des fichiers et on met les droits d'ecriture
 for file in $files
 do
-   if [ $file = "./skipped" ] || [ $file = "./no_ref_comparison" ]
+   if [[ $file = *"skipped"* ]] || [[ $file = *"no_ref_comparison"* ]]
    then
       rm -f $file && [ -f $ref/$REP/$file ] && cp -f $ref/$REP/$file .
    else

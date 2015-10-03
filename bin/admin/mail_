@@ -16,8 +16,7 @@ cat > $tmp_file
 ###############################
 # NB: necessaire pour les machines de Grenoble (sitre, vonnes, gaillands, forchat)
 # et egalement pour envoyer mail via mailing lists saxifrage.saclay.cea.fr
-TRUST_SHARE="/net/dibona/users/dibona/triou"
-TRUST_SHARE="" # depuis 15/08/2015, mail non recu via dibona
+# TRUST_SHARE="/net/dibona/users/dibona/triou"
 if [ "$TRUST_SHARE" != "" ] && [ -d "$TRUST_SHARE" ] && [ "$attached" == "" ]
 then
    # Probleme de l'autentification donc copie sur dibona qui fera serveur de mail_

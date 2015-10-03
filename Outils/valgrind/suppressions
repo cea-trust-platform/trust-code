@@ -28,6 +28,26 @@
    fun:__dmumps_comm_buffer_MOD_dmumps_62
 }
 {
+   mumps_para_bis
+   Memcheck:User
+   fun:check_mem_is_defined_untyped
+   fun:walk_type_array
+   fun:check_mem_is_defined
+   fun:PMPI_Pack
+   fun:PMPI_PACK
+   fun:__dmumps_comm_buffer_MOD_dmumps_62
+}
+{
+   mumps_para_bis
+   Memcheck:User
+   fun:check_mem_is_defined_untyped
+   fun:walk_type_array
+   fun:check_mem_is_defined
+   fun:PMPI_Pack
+   fun:mpi_pack
+   fun:__dmumps_comm_buffer_MOD_dmumps_62
+}
+{
     mumps_leak_para
    Memcheck:Leak
    match-leak-kinds: reachable

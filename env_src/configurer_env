@@ -663,6 +663,7 @@ then
       #module="openmpi/gcc/64/1.8"
       #module="openmpi/gcc/64/1.8.3"
       module="openmpi/gcc/64/1.8.4"
+      #module="openmpi/gcc/64/1.8.8"
    else
       # Aero_192: 3.6s			
       #module="$intel openmpi/icc/64/1.8"    
@@ -823,14 +824,13 @@ fi
 if [ $HOST = occigen ]
 then
    # Load modules
-   # intel 14.0.4.211 15.0.0.090(default)
-   intel="intel/15.0.0.090"
-   # bullxmpi 1.2.8.3(default) 1.2.8.4
-   module="$intel bullxmpi/1.2.8.4"
-   # intelmpi 5.0.1.035(default)
+   # intel 14.0.4.211 15.0.3.187(default)
+   intel="intel/15.0.3.187"
+   # bullxmpi 1.2.8.4-mxm(default) bullxmpi/MPI3.gcc.4.9-beta bullxmpi_gnu/1.2.8.4
+   # module="bullxmpi_gnu/1.2.8.4"
+   module="$intel bullxmpi/1.2.8.4-mxm"
+   # intelmpi 5.0.1.035(default) intelmpi/5.0.3.048
    # module="$intel intelmpi/5.0.1.035"
-   # Librairie MPI compilee avec GNU
-   # module="/opt/modules/modulefiles/bullxmpi_gnu/bullxmpi_gnu-1.2.8.4"
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
    echo "module load $module 1>/dev/null" >> $env     
