@@ -14,4 +14,4 @@ domaine dom
 Lire_med family_names_from_group_names dom forme forme.med
 Discretiser_domaine dom
 # Write the TRUST mesh to post process it and check the boundaries #
-Postraiter_domaine { domaine dom format lata fichier Kernel_Gmsh2TRUST }
+Postraiter_domaine { domaine dom format lata fichier Kernel_Gmsh2Trio_U }

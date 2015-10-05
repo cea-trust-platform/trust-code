@@ -1,2 +1,2 @@
-grep GEOM Kernel_Gmsh2TRUST.lata | sort -u  > test.bord
+grep GEOM Kernel_Gmsh2Trio_U.lata | sort -u  > test.bord
 diff test.bord test.bord.ref
