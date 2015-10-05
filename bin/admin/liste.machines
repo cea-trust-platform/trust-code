@@ -16,17 +16,18 @@ linux 	rsync_ssh	cible		cezanne63.intra.cea.fr				-ModeleCoeur										# Debian
 linux	scp_ssh		cible		is227526.intra.cea.fr				-TRUST -MPCube										# Fedora 20	 		CEA Saclay	Bat 454	LMES	bureau Jerome Garcin (Couplage Cathare/TRUST)
 linux	sftp_ssh 	non		is227551.intra.cea.fr				-TrioCFD -ModeleCoeur									# Fedora 20			CEA Saclay	Bat 454	LMES	bureau Francois Dupouy
 linux   rsync_ssh       cible           is227246.intra.cea.fr	-rsync	-all		-TRUST -TrioCFD										# Fedora 22 			CEA Saclay	Bat 454 LMES	PC test Erwan Adam
-linux	rsync_ssh	cible		is213120.intra.cea.fr   			-TrioCFD										# Ubuntu 12.04  		CEA Saclay	Bat 454	LMEC	bureau TMA Flica4	
+linux	rsync_ssh	cible		is213120.intra.cea.fr   			-TrioCFD -ModeleCoeur									# Ubuntu 12.04  		CEA Saclay	Bat 454	LMEC	bureau TMA Flica4
+linux	rsync_ssh	non		is228666.intra.cea.fr   			-TRUST -MPCube	-remote_install_TRUST_with_source					# Ubuntu 14.04  		CEA Saclay	Bat 454	LMEC	bureau Mathieu Niezgoda
 linux	rsync_ssh	non		thor.hmg.inpg.fr															# openSUSE 11.4			CEA Grenoble
 linux 	rsync_ssh	non		ceres2.intra.cea.fr		-limited					 				-without-visit		# CentOS 6.4			CEA Marcoule
 linux	rsync_ssh	non		is210968.intra.cea.fr		-all		-ModeleCoeur			-avx							# Mandriva 2010 		CEA Saclay	Bat 454	LMEC	PC test Genepi2
 linux  	rsync_ssh       non             is143118.intra.cea.fr                           		                -force_provided_mpich 		-without-visit		# CentOS 5.2    MACHINE 32bits	CEA Saclay 	Bat 454		a la "cave" avec machines Flica4
-linux	rsync_ssh	non		is221931.intra.cea.fr				-TrioCFD							-without-visit		# CentOS 5.5			CEA Saclay	Bat ??
+linux	rsync_ssh	non		is221931.intra.cea.fr				-TRUST -TrioCFD							-without-visit		# CentOS 5.5			CEA Saclay	Bat ??
 linux	rsync_ssh	non		is211452.intra.cea.fr		-all		-MPCube				-avx							# CentOS 6.4			CEA Saclay	Bat 454		a la "cave" avec machines Flica4
 linux	rsync_ssh	non		is226426.intra.cea.fr				-ModeleCoeur			-force_provided_mpich					# CentOS 6.4    		CEA Saclay	Bat 451 LMSF	bureau Mathieu Peybernes
 linux	rsync_ssh	non		is223249.intra.cea.fr						-remote_install_TRUST_kernel_only		-disable-petsc		# CentOS 6.4			CEA Saclay	Bat 451	LMSF	bureau Pierre-Emmanuel Angeli
 linux	rsync_ssh	non		is223184.intra.cea.fr				-TRUST				-force_provided_openmpi					# CentOS 6.4    		CEA Saclay 	Bat 454	LATF	bureau Simon Li 
-linux   rsync_ssh       non            	is224593.intra.cea.fr				-TrioCFD -ModeleCoeur		-remote_install_TRUST_with_source			# Fedora 18			CEA Saclay	Bat 454 LMEC	bureau Sandrine Gyuran
+linux   rsync_ssh       non            	is224593.intra.cea.fr				-TrioCFD -ModeleCoeur		-g 							# Fedora 18			CEA Saclay	Bat 454 LMEC	bureau Sandrine Gyuran
 linux	rsync_ssh       tache           is225220.intra.cea.fr		-all				-prof									# Fedora 18 			CEA Saclay	Bat 451 LGLS	bureau 49 salle de formation
 linux	rsync_ssh       tache           is225221.intra.cea.fr		-all				-g 		-avx				-disable-optionals	# Fedora 18 			CEA Saclay	Bat 451 LGLS	bureau 49 salle de formation
 linux	rsync_ssh       non             is225222.intra.cea.fr								-force_latest_openmpi		-disable-petsc		# Fedora 18 			CEA Saclay	Bat 451 LGLS	bureau 49 salle de formation
@@ -34,5 +35,5 @@ linux	rsync_ssh       non             is225223.intra.cea.fr		-all		-ModeleCoeur	
 linux   rsync_ssh       tache           is223278.intra.cea.fr															# Fedora 18 			CEA Saclay	Bat 451 LGLS	bureau 49 salle de formation
 linux   rsync_ssh       non	        is223279.intra.cea.fr		-all						-force_provided_openmpi					# Fedora 18 			CEA Saclay	Bat 451 LGLS	bureau 49 salle de formation
 linux   rsync_ssh       non	        is223280.intra.cea.fr		-all		-TrioCFD	-g 		-force_provided_mpich		-download 		# Fedora 18 			CEA Saclay	Bat 451 LGLS	bureau 49 salle de formation
-linux   rsync_ssh       non	        is223281.intra.cea.fr															# Fedora 18 			CEA Saclay	Bat 451 LGLS	bureau 49 salle de formation
+linux   rsync_ssh       non	        is223281.intra.cea.fr												-without-doc		# Fedora 18 			CEA Saclay	Bat 451 LGLS	bureau 49 salle de formation
 linux   rsync_ssh       tache           is223282.intra.cea.fr		-all				-gcov						-download-salome	# Fedora 18 			CEA Saclay	Bat 451 LGLS	bureau 49 salle de formation

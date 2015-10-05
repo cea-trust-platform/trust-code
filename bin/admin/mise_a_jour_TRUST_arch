@@ -314,7 +314,7 @@ option_configure=""
 # OpenMPI ancien sur la machine ou l'on construit le binaire sinon ne trouve pas un fichier en local
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\get_binary" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -force_old_openmpi"
 # Compilation minimale avec -disable
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable " | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-med -disable-medcoupling -disable-mpi -without-visit"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable " | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-med -disable-medcoupling -disable-mpi -without-visit -without-doc"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-mpi" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-mpi"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-optionals" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -disable-optionals"
 # Salome
@@ -325,6 +325,8 @@ option_configure=""
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-without-visit" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -without-visit"
 # Gmsh
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-gmsh" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-gmsh"
+# Documentation
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-without-doc" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -without-doc"
 # Pour compiler cesium avec pgCC:
 # [ $HOST = cesium ] 												&& option_configure=$option_configure" -c++=pgCC -cc=pgcc -fc=pgf90 -disable-med"
 

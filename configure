@@ -68,6 +68,7 @@ echo "[-disable-ccache]                 Disable ccache detetction/installation."
 echo "[-disable-valgrind]               Disable valgrind installation and build."
 echo "[-disable-gnuplot]                Disable gnuplot installation and build."
 echo "[-disable-gmsh]                   Disable Gmsh installation and build."
+echo "[-without-doc]                    Do not build the documentation."
 echo "[-without-visit]                  Do not install VisIt."
 echo "[-download-visit]                 Download a sequential version of VisIt rather trying to build a parallel version."
 echo "[-download-salome]                Download the Salome `awk -F= '/version_salome=/ {print $2}' env_src/configurer_env` version in the TRUST environment."
@@ -87,7 +88,7 @@ echo $0 $* "\$"* >> configure.log
 if [ "$1" = "-disable-optionals" ]
 then
  shift
- $0 -disable-ccache -disable-med -disable-medcoupling -disable-petsc -disable-gnuplot -disable-valgrind -disable-mpi -disable-metis -without-visit -disable-gmsh $* 
+ $0 -disable-ccache -disable-med -disable-medcoupling -disable-petsc -disable-gnuplot -disable-valgrind -disable-mpi -disable-metis -without-visit -disable-gmsh -without-doc $* 
  exit $?
 fi
 
@@ -96,7 +97,7 @@ do
   command=TRUST_DISABLE_$THIRD_PARTY=0   
   eval $command       
 done
-
+export TRUST_WITHOUT_DOC=0
 export TRUST_WITHOUT_VISIT=0
 export TRUST_DOWNLOAD_VISIT=0
 export TRUST_DOWNLOAD_SALOME=0
@@ -164,6 +165,16 @@ do
    then
       export TRUST_FORCE_PETSC_HAVE_OPENMP=1
 
+   elif [ "${1#-without-doc}" != $1 ]
+   then
+      export TRUST_WITHOUT_DOC=1
+      THIRD_PARTY="DOC"
+      REP_THIRD_PARTY=$TRUST_ROOT/doc
+      ([ -d $REP_THIRD_PARTY ] && [ $first -eq 0 ] && cd $REP_THIRD_PARTY && echo "Disabling $THIRD_PARTY, so make clean:" && make clean)
+      THIRD_PARTY="COVERAGE"
+      REP_THIRD_PARTY=$TRUST_ROOT/doc/Coverage
+      ([ -d $REP_THIRD_PARTY ] && [ $first -eq 0 ] && cd $REP_THIRD_PARTY && echo "Disabling $THIRD_PARTY, so make clean:" && make clean)
+
    elif [ "${1#-without-visit}" != $1 ]
    then
       export TRUST_WITHOUT_VISIT=1
@@ -221,6 +232,7 @@ do
    VAR=TRUST_DISABLE_$THIRD_PARTY
    echo "$VAR=${!VAR} && export $VAR 	# Disable/enable $THIRD_PARTY"  						>> $var 
 done
+echo "TRUST_WITHOUT_DOC=$TRUST_WITHOUT_DOC && export TRUST_WITHOUT_DOC			# Disable/enable Documentation"	>> $var
 echo "TRUST_WITHOUT_VISIT=$TRUST_WITHOUT_VISIT && export TRUST_WITHOUT_VISIT		# Disable/enable VisIt" 	>> $var
 echo "TRUST_DOWNLOAD_VISIT=$TRUST_DOWNLOAD_VISIT && export TRUST_DOWNLOAD_VISIT 	# Download or build VisIt" 	>> $var
 echo "TRUST_DOWNLOAD_SALOME=$TRUST_DOWNLOAD_SALOME && export TRUST_DOWNLOAD_SALOME 	# Download Salome" 		>> $var   
