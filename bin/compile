@@ -38,8 +38,7 @@ make_tools()
    echo "==========================="
    reps="Outils/lance_test_seq_par Outils/triou2doxygen Outils/lata2dx Outils/TRIOXDATA Outils/doxygen"
    [ "$TRUST_DISABLE_MEDCOUPLING" = 0 ] && [ "$TRUST_DISABLE_MED" = 0 ] && [ "$TRUST_DISABLE_MPI" = 0 ] && reps=$reps" Outils/ICoCo"
-   reps=$reps" doc/Coverage doc"
-   reps=$reps" doc/TRUST/Tutorial" # Temporary
+   reps=$reps" doc"
    [ "$TRUST_DISABLE_VALGRIND" != 1 ] && reps=$reps" Outils/valgrind"
    [ "$TRUST_DISABLE_GNUPLOT" != 1 ] && reps=$reps" Outils/gnuplot"
    [ "$TRUST_DISABLE_MED" = 0 ] && [ "$TRUST_DISABLE_GMSH" != 1 ] && reps=$reps" Outils/Gmsh"
