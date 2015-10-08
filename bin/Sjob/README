@@ -1,0 +1,24 @@
+Un petit server de jobs pour ne pas saturer sa machine.....
+
+
+Sserver Nb
+ -> demare le serveur si necessaire, et alloue Nb procs accesibles au serveur
+->  si Nb<0, on arrete le serveur
+
+Salloc [ -n N ] commande 
+-> demande N procs, attend leur disponibilité et lance la commande  
+-> si N > Nb , alors on autorise quand meme le job a tourne
+
+Squeue
+ -> affiche les jobs et leur status
+	R    Running
+	W    Waiting
+	S_n  Suspend by job n (Salloc in Salloc)
+
+
+Le port est fixe a 5001+uid.
+
+
+Pour activer dans TRUST, utilisation automatique dans le script trust, 
+export TRUST_USE_Sjob=1
+Sserver 3

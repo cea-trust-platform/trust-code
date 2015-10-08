@@ -1,0 +1,31 @@
+#!/bin/bash
+
+
+DIR=`dirname $0`
+DIR=`(cd $DIR;pwd)`
+
+[ "$1" = "" ] && echo usage $0 nb_proc
+if [ $1 -le -1 ]
+then
+echo on arrete le serveur
+python $DIR/lib/client.py stop
+exit 0 
+fi
+
+# on teste le serveur
+$DIR/Squeue 1> /dev/null 2>&1
+if [ $? -ne 0 ]
+then
+echo we start the server
+python $DIR/lib/test_server.py  &
+sleep 1
+fi
+python $DIR/lib/client.py set_nb_proc $1
+
+
+$DIR/Squeue
+status=$?
+[ $status -ne 0 ] && exit $status
+
+# on attend la fin du server
+wait

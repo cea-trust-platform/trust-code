@@ -1,0 +1,25 @@
+#!/bin/bash
+
+DIR=`dirname $0`
+DIR=`(cd $DIR;pwd)`
+trap "python $DIR/lib/client.py finish $$;exit 1" HUP INT PIPE QUIT TERM KILL ABRT
+NB=1
+if [ $1 = "-n" ]
+then
+ shift
+ NB=$1
+ shift
+fi
+
+if [ "$RUNNING_IN_SALLOC" != "" ]
+then
+PERE=$RUNNING_IN_SALLOC
+fi
+export RUNNING_IN_SALLOC=$$
+python $DIR/lib/client.py srun $NB $$ $PERE
+[ $? -ne 0 ] && echo pb with server && exit -1
+eval "$@"
+status=$?
+python $DIR/lib/client.py finish $$
+exit $status
+

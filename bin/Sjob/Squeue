@@ -1,0 +1,8 @@
+#!/bin/bash
+
+DIR=`dirname $0`
+DIR=`(cd $DIR;pwd)`
+python $DIR/lib/client.py squeue
+
+
+
