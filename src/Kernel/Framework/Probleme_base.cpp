@@ -487,6 +487,12 @@ Entree& Probleme_base::readOn(Entree& is)
               double last_time = get_last_time(fic);
               // Set the time to restart the calculation
               schema_temps().set_temps_courant()=last_time;
+              // Initialize tinit and current time according last_time
+              if (schema_temps().temps_init()>-DMAXFLOAT)
+                {
+                  Cerr<<"tinit was defined in .data file to "<< schema_temps().temps_init()<< ". The value is fixed to "<<last_time<<" accroding to resume_last_time_option" <<finl;
+                }
+              schema_temps().set_temps_init()=last_time;
               Cerr << "==================================================================================================" << finl;
               Cerr << "In the " << nomfic << " file, we find the last time: " << last_time << " and read the fields." << finl;
               fic->close();
@@ -578,24 +584,12 @@ Entree& Probleme_base::readOn(Entree& is)
       Cerr << "We expected formatte, binaire or xyz." << finl;
       exit();
     }
-  // Initialize tinit and current time according
-  // resume last time or not.
-  if (resume_last_time)
+  if (schema_temps().temps_init()<=-DMAXFLOAT)
     {
-      if (schema_temps().temps_init()>-DMAXFLOAT)
-        // tinit is defined
-        schema_temps().set_temps_courant()=schema_temps().temps_init();
-      else
-        schema_temps().set_temps_init()=schema_temps().temps_courant();
+      schema_temps().set_temps_init()=0;
+      schema_temps().set_temps_courant()=0;
     }
-  else
-    {
-      if (schema_temps().temps_init()<=-DMAXFLOAT)
-        {
-          schema_temps().set_temps_init()=0;
-          schema_temps().set_temps_courant()=0;
-        }
-    }
+
   return is ;
 }
 
