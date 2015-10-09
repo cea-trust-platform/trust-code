@@ -1,4 +1,15 @@
 #!/bin/bash
+ssh_command()
+{
+    command=`mktemp_`
+    echo > $command
+    echo ". ~/.bashrc 1>/dev/null 2>&1" >> $command
+    echo $* >> $command
+    scp -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $command $log@$adr:~/command_$machine 1>/dev/null 2>&1
+    rm -f $command
+    # Add -X to have DISPLAY ?
+    ssh -X -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $log@$adr -n 'chmod +x ./command_'$machine';./command_'$machine 2>/dev/null
+}
 check_components()
 {
    for Composant in $Composants
@@ -80,21 +91,21 @@ check_components()
                echo "******************************************************"
                echo " "
 	       echo "  See `pwd`/Run.liste"
-	       # Toutes les machines
-	       all_machines=`liste_machines | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Machines en mode debug
 	       debug_machines=`liste_machines "\-g " | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Machines en mode valgrind
 	       valgrind_machines=`liste_machines "\-valgrind" | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Clusters
 	       updated_machines=`liste_machines updated | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
+	       # Toutes les machines
+	       all_machines=`liste_machines`
 	       # Liste des machines a tester selon le baltik en question
 	       if [ "$Composant" = ICoCo ]
 	       then
 	          # Machines en mode sequentiel
-	          wompi_machines=`liste_machines "\-disable-mpi" | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
-	          wompi_machines=$wompi_machines" `liste_machines "\-disable-optionals" | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`"
-	          wompi_machines=$wompi_machines" `liste_machines "\-disable " | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`"
+	          wompi_machines=`liste_machines "\-disable-mpi"`
+	          wompi_machines=$wompi_machines" `liste_machines "\-disable-optionals"`"
+	          wompi_machines=$wompi_machines" `liste_machines "\-disable "`"
 	          # Machines en mode parallele
 		  machines=""
 		  for machine in $all_machines
@@ -103,22 +114,23 @@ check_components()
 		  done
 	       elif [ "$Composant" = TrioCFD ]
 	       then
-	          machines=`liste_machines "\-TrioCFD" | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
+	          machines=`liste_machines "\-TrioCFD"`
 	       elif [ "$Composant" = ModeleCoeur ]
 	       then
-	          machines=`liste_machines "\-ModeleCoeur" | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
+	          machines=`liste_machines "\-ModeleCoeur"`
 	       elif [ "$Composant" = MPCube ]
 	       then
-	          machines=`liste_machines "\-MPCube" | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
+	          machines=`liste_machines "\-MPCube"`
 	       elif [ "$Composant" = basic ] || [ "$Composant" = Test_Baltik ]
 	       then
-	          machines=`liste_machines "\-TRUST" | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
+	          machines=`liste_machines "\-TRUST"`
 	       else
 	          machines=$all_machines
 	       fi
 	       liste_options="--with-efface-dir-before"
-	       for machine in $machines
+	       for adr in $machines
 	       do
+	          machine=`echo $adr | awk -F"." '{print $1}' | awk -F"-gw" '{print $1}'`
 	          if [[ "$liste_machines_KO" != *"$machine"* ]] # Test si machine n est pas dans la liste des machines KO
 		  then
 	             if [[ "$valgrind_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines valgrind
@@ -141,21 +153,9 @@ check_components()
 		           check_option="--without-run"
 			fi
 	             fi
-	             if [ "${machine:0:2}" = "is" ] || [ "${machine:0:10}" = "antoinette" ] # Test si machine est a Saclay ou a Cadarache
-		     then
-	                echo "$Composant.tar $WORKDIR/$WORKBASE$machine/Composants/$Composant triou@$machine --with-trio=$WORKDIR/$WORKBASE$machine/TRUST $liste_options $mode_option $check_option $valgrind_option" >> Run.liste
-	             elif [ "${machine:0:7}" = "cezanne" ] || [ "${machine:0:5}" = "ceres" ] # Test si machine est a Cadarache ou a Marcoule
-		     then
-	                echo "$Composant.tar /home/ccapitai/$WORKBASE$machine/Composants/$Composant ccapitai@$machine --with-trio=/home/ccapitai/$WORKBASE$machine/TRUST $liste_options $mode_option $check_option $valgrind_option" >> Run.liste
-		     elif [ "${machine:0:5}" = "sitre" ] || [ "${machine:0:6}" = "vonnes" ] # Test si machine est a Grenoble
-		     then
-	                echo "$Composant.tar /work/triou/$WORKBASE$machine/Composants/$Composant triou@$machine --with-trio=/work/triou/$WORKBASE$machine/TRUST $liste_options $mode_option $check_option $valgrind_option" >> Run.liste
-	             elif [ "${machine:0:4}" = "thor" ] # Test si machine est a Grenoble
-		     then
-	                echo "$Composant.tar /tmp_mnt/clusdata/trio/$WORKBASE$machine/Composants/$Composant trio@$machine --with-trio=/tmp_mnt/clusdata/trio/$WORKBASE$machine/TRUST $liste_options $mode_option $check_option $valgrind_option" >> Run.liste
-		     else # Test si machine est a Saclay (ex: callisto)
-	                echo "$Composant.tar $HOME/$WORKBASE$machine/Composants/$Composant triou@$machine --with-trio=$HOME/$WORKBASE$machine/TRUST $liste_options $mode_option $check_option $valgrind_option" >> Run.liste
-		     fi
+                     log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`
+                     WORKTMP=`ssh_command 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
+                     echo "$Composant.tar $WORKTMP/$WORKBASE$machine/Composants/$Composant $log@$adr --with-trio=$WORKTMP/$WORKBASE$machine/TRUST $liste_options $mode_option $check_option $valgrind_option" >> Run.liste
 		  fi
 	       done
                echo " "
@@ -283,8 +283,9 @@ echo "Call to "`echo ~`"/bin/backup_pc_tma.sh via crontab"
 echo "  See "`echo ~`"/bin/backup_pc_tma.log"
 # NB: Now via crontab
 #~/bin/backup_pc_tma.sh 1>~/bin/backup_pc_tma.log 2>&1
-grep -i error ~/bin/backup_pc_tma.log
-tail -n2 ~/bin/backup_pc_tma.log
+head -n1 ~/bin/backup_pc_tma.log
+grep "Backup " ~/bin/backup_pc_tma.log
+tail -n1 ~/bin/backup_pc_tma.log
 echo " "
 
 [ $HOST != $TRUST_HOST_ADMIN ] && echo "Error: You must be on $TRUST_HOST_ADMIN to do this action" && exit
@@ -485,7 +486,8 @@ echo " "
    echo " "
    echo "Call git push shared Livraison"
    git_push
-   cd externalpackages
+   cd $TRUST_ROOT/externalpackages
+   echo " git push shared Livraison in `pwd`"
    git push --tags shared Livraison
    cd - 1>/dev/null 2>&1
 )
@@ -547,10 +549,12 @@ echo "###############################################"
 	   echo "  See $rebase_log"
            echo "git rebase on $HOST the `date` ...">$rebase_log
            echo>>$rebase_log
-	   cd externalpackages
+           echo "externalpackages">>$rebase_log
+	   cd $TRUST_ROOT/externalpackages
 	   git rebase Livraison 1>>$rebase_log 2>&1
 	   [ $? != 0 ] && echo "  KO rebase externalpackages"
 	   cd - 1>/dev/null 2>&1
+           echo>>$rebase_log
 	   git commit doc/.dico src/CMakeLists.txt src/MAIN/instancie_appel.h src/MAIN/instancie_appel_c.h -m"Commit in Kernel before git rebase master" --u=no 1>>$rebase_log 2>&1
 	   git rebase Livraison 1>>$rebase_log 2>&1
 	   rebase_error=$?
@@ -593,8 +597,12 @@ echo "###############################################"
 	      echo " "
 	   fi
 	   cd - 1>/dev/null 2>&1
-           echo "Call git push shared Kernel"
-           git_push -force
+	   if [ $rebase_error = 0 ]
+	   then
+              echo "Call git push shared Kernel"
+              git_push -force
+	      echo " "
+	   fi
 	fi
 	echo "Call to configure $vue version in `pwd`"
 	./configure 1>/dev/null 2>&1
@@ -1272,6 +1280,7 @@ echo "##########################################"
 echo "# Verify the end of baltik portabilities #"
 echo "##########################################"
 echo "---> Begin at "`date '+%H:%M:%S'`
+echo " "
 for Composant in $Composants
 do
    if [ -d $TRUST_ROOT/../Composants/$Composant ]
@@ -1290,50 +1299,31 @@ do
 	 else
 	    cat kill.liste
 	    echo "  => KO: portability is NOT finished"
-	    while read line
+            old_IFS=$IFS  # sauvegarde du séparateur de champ  
+            IFS=$'\n'     # nouveau séparateur de champ, le caractère fin de ligne  
+	    for line in $(cat kill.liste)
 	    do
 	      (
 	       PID=`echo $line | awk '{print $(NF)}'`
-	       machine=`echo $line | awk -F"@" '{print $2}' | awk -F"_" '{print $1}'`
+	       adr=`echo $line | awk -F"@" '{print $2}' | awk -F"_" '{print $1}'`
+	       log=`echo $line | awk -F"@" '{print $1}' | awk -F"_" '{print $3}'`
+	       machine=`echo $adr | awk -F"." '{print $1}' | awk -F"-gw" '{print $1}'`
+               WORKTMP=`ssh_command 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
 	       echo "  Treatment of $PID on $machine"
-	       if [ "${machine:0:2}" = "is" ] || [ "${machine:0:10}" = "antoinette" ] # Test si machine est a Saclay ou a Cadarache
-	       then
-	          pids=$(ssh triou@$machine $WORKDIR/$WORKBASE$machine/TRUST/bin/baltik/share/baltik/bin/portability/list_pid_et_fils.sh $PID)
-		  echo "    ssh triou@$machine kill -9 $pids"
-	          ssh triou@$machine kill -19 $pids
-	          ssh triou@$machine kill -9 $pids
-	       elif [ "${machine:0:7}" = "cezanne" ] || [ "${machine:0:5}" = "ceres" ] # Test si machine est a Cadarache ou a Marcoule
-	       then
-	          pids=$(ssh ccapitai@$machine /home/ccapitai/$WORKBASE$machine/TRUST/bin/baltik/share/baltik/bin/portability/list_pid_et_fils.sh $PID)
-		  echo "    ssh ccapitai@$machine kill -9 $pids"
-	          ssh ccapitai@$machine kill -19 $pids
-	          ssh ccapitai@$machine kill -9 $pids
-	       elif [ "${machine:0:5}" = "sitre" ] || [ "${machine:0:6}" = "vonnes" ] # Test si machine est a Grenoble
-	       then
-	          pids=$(ssh triou@$machine /work/triou/$WORKBASE$machine/TRUST/bin/baltik/share/baltik/bin/portability/list_pid_et_fils.sh $PID)
-		  echo "    ssh triou@$machine kill -9 $pids"
-	          ssh triou@$machine kill -19 $pids
-	          ssh triou@$machine kill -9 $pids
-	       elif [ "${machine:0:4}" = "thor" ] # Test si machine est a Grenoble
-	       then
-	          pids=$(ssh trio@$machine /tmp_mnt/clusdata/trio/$WORKBASE$machine/TRUST/bin/baltik/share/baltik/bin/portability/list_pid_et_fils.sh $PID)
-		  echo "    ssh trio@$machine kill -9 $pids"
-	          ssh trio@$machine kill -19 $pids
-	          ssh trio@$machine kill -9 $pids
-	       else # Test si machine est a Saclay
-	          pids=$(ssh triou@$machine $HOME/$WORKBASE$machine/TRUST/bin/baltik/share/baltik/bin/portability/list_pid_et_fils.sh $PID)
-		  echo "    ssh triou@$machine kill -9 $pids"
-	          ssh triou@$machine kill -19 $pids
-	          ssh triou@$machine kill -9 $pids
-	       fi
+	       pids=$(ssh $log@$adr $WORKTMP/$WORKBASE$machine/TRUST/bin/baltik/share/baltik/bin/portability/list_pid_et_fils.sh $PID)
+	       echo "    ssh $log@$adr kill -9 $pids"
+	       ssh $log@$adr kill -19 $pids
+	       ssh $log@$adr kill -9 $pids
 	      ) 
-	    done < kill.liste
+	    done
+	    IFS=$old_IFS  # rétablissement du séparateur de champ par défaut
 	 fi 
 	 rm -f start.liste stop.liste kill.liste
       else
          echo "  => OK: portability is finished"
       fi 
    fi
+   echo " "
 done
 echo "<--- End at "`date '+%H:%M:%S'`
   
@@ -2552,7 +2542,7 @@ do
       then
          echo "Analysis of "$Composant_log" file" | tee -a tmp.log
          #grep "$Composant OK" $Composant_log | sed 1d | tee -a tmp.log # check only component without portability
-         grep "$Composant OK" $Composant_log | tee -a tmp.log
+         grep "$Composant OK" $Composant_log #| tee -a tmp.log
          (grep " KO" $Composant_log;grep KO $Composant_log | grep $Composant) | tee -a tmp.log
 	 nb=`grep "$Composant OK" $Composant_log | wc -l`
          OK=`echo $(($OK+$nb))`
@@ -2718,6 +2708,7 @@ echo "  criteria:  "$criteres_remplis" != "$total_criteres
 echo "  minimum:   "$criteres_remplis" -ge 15"
 echo "  stability: "$stabilite" = 1.000"
 echo "  baltikGIT: "$baltik_ok" = "$total_baltik
+cd $TRUST_ROOT
 if [ $criteres_remplis != $total_criteres ] && [ $criteres_remplis -ge 15 ] && [ $stabilite = "1.000" ] && [ $baltik_ok = $total_baltik ]
 then
    echo "Version $new : Currently $criteres_remplis criteria are OK on $total_criteres planned" >> $MESSAGES_NUIT
@@ -2745,17 +2736,31 @@ then
       # Push
       echo "  Call git push shared Livraison"
       git_push
-      # On pose le meme tag sur externalpackages
-      cd externalpackages
-      git commit --all -m"Commit for a Release $release $label_pose version."
-      git tag $label_pose
-      git push --tags shared Livraison
-      cd - 1>/dev/null 2>&1
       if [ $error_rc = 0 ]
       then  
          # On previent l'administrateur et le project leader
-         cat $TRUST_ROOT/RELEASE_NOTES | mail_ -s\"[lance_test_nuit] TRUST and externalpackages Release version - Tag a $release version: $label_pose\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+         cat $TRUST_ROOT/RELEASE_NOTES | mail_ -s\"[lance_test_nuit] TRUST Release version - Tag a $release version: $label_pose \(See shared/Livraison branch\)\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+      else
+         echo "" | mail_ -s\"[lance_test_nuit] TRUST - Tag a $release version: $label_pose KO\" $TRUST_MAIL
       fi
+      # On pose le meme tag sur externalpackages
+      echo "  Update externalpackages:"
+      cd $TRUST_ROOT/externalpackages
+      echo "    Call git commit --all -m Commit for a Release $release $label_pose version"
+      git commit --all -m"Commit for a Release $release $label_pose version."
+      echo "    Call git tag $label_pose"
+      git tag $label_pose
+      error_rc=$?
+      echo "    Call git push shared Livraison"
+      git push --tags shared Livraison
+      if [ $error_rc = 0 ]
+      then  
+         # On previent l'administrateur et le project leader
+         cat $TRUST_ROOT/externalpackages/RELEASE_NOTES | mail_ -s\"[lance_test_nuit] externalpackages Release version - Tag a $release version: $label_pose \(See shared/Livraison branch\)\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+      else
+         echo "" | mail_ -s\"[lance_test_nuit] externalpackages - Tag a $release version: $label_pose KO\" $TRUST_MAIL
+      fi
+      cd - 1>/dev/null 2>&1
       echo " "
       echo "Release of the $release version: $label_pose"
       echo "New version $label_pose : Not delivery" >> $MESSAGES_NUIT
@@ -2779,7 +2784,9 @@ then
          then  
             # On previent l'administrateur et les project leader
 	    BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
-            echo "See shared/TMA branch of $Composant baltik" | mail_ -s\"[lance_test_nuit] $Composant Release version - Tag a $release version: $label_pose\" $TRUST_MAIL $TRUST_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
+            cat $WORKDIR/sourceforge/Livraison/Composants/$Composant/share/RELEASE_NOTES | mail_ -s\"[lance_test_nuit] $Composant Release version - Tag a $release version: $label_pose \(See shared/TMA branch\)\" $TRUST_MAIL $TRUST_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
+         else
+            echo "" | mail_ -s\"[lance_test_nuit] $Composant - Tag a $release version: $label_pose KO\" $TRUST_MAIL
          fi
       done
       cd $TRUST_ROOT

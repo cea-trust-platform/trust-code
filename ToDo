@@ -1,6 +1,4 @@
 Version	Qui				Tache
-1.7.2   marthe.roux@cea.fr      tester copie_cas_test en precisant chemin et dans ce cas OK pour test TRUST avec environnement TrioCFD
-1.7.2   triou@cea.fr            nouvelle option du configure -without-doc
 1.7.2   triou@cea.fr            nouvelle option du configure -disable-mpiio
 1.7.2   gauthier.fauchet@cea.fr  Rechercher test MPIIO qui planterait sur machine Areva
 1.7.2   gauthier.fauchet@cea.fr  MC2 : patch anti-verbosite cf src/Kernel/Math/SolvSys/Solv_Gen.cpp de Antoine
@@ -17,15 +15,15 @@ Version	Qui				Tache
 1.7.2   triou@cea.fr            tester options du configure: -force_petsc_have_cuda -force_petsc_have_openmp
 1.7.2   triou@cea.fr            turbulence : si u_tau.dat reynolds_tau.dat et tauw.dat renommes en jdd_***.dat, alors ATTENTION car beaucoup de fiches de valid s'en servent + voir avec utilisateurs
 1.7.2   triou@cea.fr            revoir TESTS_MINIMUM dans lance_test en augmentant le nombre de tests 27/27
-1.7.2	triou@cea.fr			Do a git tag on each change of the branch patch_XYZ (patch_XYZ.n)
-1.7.3	triou@cea.fr			Champ_front_normal voir d'autres ne devrait pas heriter de Ch_front_var_instationnaire_dep (notion d'inconnue) ?
-1.7.3	triou@cea.fr			add_if_not dans Ch_base.cpp lent ?
-1.7.3	triou@cea.fr			Essayer de calculer auto direction quand la periodicite n'est pas orthogonale aux bords (eg: Canal_perio_incline_VEF) ?
-1.7.3	triou@cea.fr			Open a ME on checking diffusive fluxes between 2 domains (implicit schemes sanity check). Loop in mettre_a_jour ?
-1.7.3	triou@cea.fr			Try to suppress 2 REF in Equation_base zone_dis and schema_temps, keep problem shema_temps()=mon_probleme().schema_temps() ?
-1.7.3	triou@cea.fr			zone_dis()=mon_probleme().domaine_dis().zone_dis(0); ?
-1.7.3	triou@cea.fr			Check Champ_fonc_reprise with .sauv files produces a clear error message when partition is changed ?
+1.7.2	triou@cea.fr		Do a git tag on each change of the branch patch_XYZ (patch_XYZ.n)
+1.7.3	triou@cea.fr		Champ_front_normal voir d'autres ne devrait pas heriter de Ch_front_var_instationnaire_dep (notion d'inconnue) ?
+1.7.3	triou@cea.fr		add_if_not dans Ch_base.cpp lent ?
+1.7.3	triou@cea.fr		Essayer de calculer auto direction quand la periodicite n'est pas orthogonale aux bords (eg: Canal_perio_incline_VEF) ?
+1.7.3	triou@cea.fr		Open a ME on checking diffusive fluxes between 2 domains (implicit schemes sanity check). Loop in mettre_a_jour ?
+1.7.3	triou@cea.fr		Try to suppress 2 REF in Equation_base zone_dis and schema_temps, keep problem shema_temps()=mon_probleme().schema_temps() ?
+1.7.3	triou@cea.fr		zone_dis()=mon_probleme().domaine_dis().zone_dis(0); ?
+1.7.3	triou@cea.fr		Check Champ_fonc_reprise with .sauv files produces a clear error message when partition is changed ?
 1.7.3	triou@cea.fr            Renommer sous_maille en sous_maille_fonction_structure (in english) ?
 1.7.2	marthe.roux@cea.fr      Translate Ecrire->Write, and other main interpretors... Conditions_initiales,...
 1.7.2	marthe.roux@cea.fr  	Passer Doc (tuto, formation) en latex + user guide voir avec Gauthier
-1.7.2	triou@cea.fr  			Doc : mettre a jour index et table des matieres
+1.7.2	triou@cea.fr  		Doc : mettre a jour index et table des matieres

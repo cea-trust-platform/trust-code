@@ -1,8 +1,8 @@
 #!/bin/bash
 # 
 
-# on regarde ce que contient externalpackages
-(cd $TRUST_ROOT/externalpackages; md5sum * */* 2>/dev/null | sort -k 2) > md5.check
+# on regarde ce que contient externalpackages sans tenir compte du RELEASE_NOTES
+(cd $TRUST_ROOT/externalpackages; md5sum * */* 2>/dev/null | sort -k 2 | grep -v RELEASE_NOTES) > md5.check
 
 echo "Controm md5 of externalpackages"
 diff md5.ref md5.check
