@@ -22,6 +22,11 @@ else
   mv p.data $cas.data
   python $DIR/decoup_data.py $cas.data xyz
   status=$?
+[ $status -eq 0 ] &&   triou -clean > /dev/null
+  for f in `ls *_repr_*`
+  do
+   cp $f PAR_$f
+  done
   [ $status -ne 0 ] && echo $cas >> $DIR/pb_traduction
   echo "premiere partie"
   lan test_$cas 
