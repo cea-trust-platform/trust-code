@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.2_beta : Enhancements, modifications and corrected bugs since version 1.7.1 :
 -------------------------------------------------------------------------------------------------
+08/10/15 (TRUST)  Major change: With resume_last_time keyword in .data, tinit is set to last_time of saved files
 05/10/15 (Kernel) Minor change: Option -without-doc added to the Kernel/TRUST configure tool (Do not build the documentation)
 03/10/15 (TRUST)  Minor change: Update TRUST tutorial in latex version and its solutions
 02/10/15 (TRUST)  New feature : Ability to use the chsom option of Sondes keyword with a Champ_Fonc_P1NC (eg moyenne_temperature)

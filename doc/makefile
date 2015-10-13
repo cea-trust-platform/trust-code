@@ -3,8 +3,11 @@ TAGS=$(TRUST_ROOT)/tags
 ETAGS=$(TRUST_ROOT)/TAGS
 TRUST_FILES=tmp_files
 
-all:depend
+all:depend subdir
 
+subdir:
+	(cd TRUST ; $(MAKE) )
+	(cd Coverage ; $(MAKE) )
 doc:
 	@echo "HTML documentation under $(HTML) will be updated in few minutes..."
 	@make_Doxyfile 
@@ -34,3 +37,5 @@ depend:
 clean:
 	@echo "Cleaning..."
 	@rm -r -f $(HTML) *.tag
+	(cd TRUST; $(MAKE) clean)
+	(cd Coverage ; $(MAKE) clean )

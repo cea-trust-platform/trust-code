@@ -32,15 +32,13 @@
 class Champ_base;
 class Domaine;
 class DoubleTab;
-namespace ICoCo
 
-{
-class MEDField;
-}
+#include <ICoCoMEDField.hxx>
+#ifndef NO_MEDFIELD
 ICoCo::MEDField build_medfield(ICoCo::TrioField&);
 ICoCo::MEDField build_medfield_from_champ_base(const Champ_base&);
 ICoCo::TrioField buildTrioField_from_champ_base(const Champ_base&);
 ICoCo::TrioField build_ICoCoField(const std::string& name,const Domaine& dom,  const DoubleTab& values,const int is_p1, const double& t1,const double& t2 );
-
+#endif
 
 #endif
