@@ -342,7 +342,7 @@ void Navier_Stokes_std::associer_pb_base(const Probleme_base& pb)
 // Postcondition:
 void Navier_Stokes_std::completer()
 {
-  if ( (axi == 1))
+  if (axi == 1)
     {
       Source t;
       Source& so=les_sources.add(t);
