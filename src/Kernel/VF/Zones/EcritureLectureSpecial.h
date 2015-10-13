@@ -63,6 +63,7 @@ public:
   static int mode_lec;
   static Nom Input;
   static Nom Output;
+  static Nom& get_Output();
 };
 
 #endif

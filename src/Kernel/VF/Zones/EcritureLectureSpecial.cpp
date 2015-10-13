@@ -155,7 +155,7 @@ void ecrit(Sortie& fich, const ArrOfBit& items_to_write, const DoubleTab& pos, c
   const int nb_val = items_to_write.size_array();
   const int dim = pos.dimension(1);
 
-  if (EcritureLectureSpecial::Output.finit_par("MPIIO"))
+  if (EcritureLectureSpecial::get_Output().finit_par("MPIIO"))
     {
       // No bufferisation needed for Parallel IO
       int jmax = (dim + nb_comp) * nb_val;
@@ -533,4 +533,16 @@ void EcritureLectureSpecial::lecture_special(const Zone_VF& zvf, Entree& fich, D
 
   // On met a jour les parties virtuelles du tableau val
   val.echange_espace_virtuel();
+}
+
+// Description:
+//  Renvoie le mode d'ecriture utilise
+//  (pour pouvoir le modifier).
+//  Cette methode est statique.
+Nom& EcritureLectureSpecial::get_Output()
+{
+  static Nom option=Output;
+  // disable MPIIO in sequential mode
+  if (Output=="EcrFicPartageMPIIO" && Process::nproc()==1) option="EcrFicPartageBin";
+  return option;
 }

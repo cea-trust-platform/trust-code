@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.7.2_beta : Changes since version 1.7.1 :
 -------------------------------------------------------------
+13/10/15 (Kernel) EcritureLectureSpecial: disable MPIIO in sequential mode (new static function: get_Output)
 03/10/15 (Tools)  Update Genere_courbe: ability to strings in table of prm
 02/10/15 (TRUST)  Adding chsom for champ_fonc_p1nc
 01/10/15 (Tools)  Released version of Gnuplot is upgraded to 4.6.6
