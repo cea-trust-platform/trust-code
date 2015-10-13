@@ -1182,8 +1182,20 @@ else
       echo "***************************************************"
       exit
    fi
-   eval $run
-   err=$?
+   if [ "$TRUST_USE_Sjob" = "1" ]
+       then
+       # export PATH=$PATH:$TRUST_ROOT/bin/Sjob
+       sub_file=s${NB_PROCS}_$NOM
+       echo "#!/bin/bash" > $sub_file
+       echo $run  >> $sub_file
+       chmod +x  $sub_file
+       $TRUST_ROOT/bin/Sjob/Salloc -n $NB_PROCS $PWD/$sub_file
+       err=$?
+       [ $err -eq 0 ] && rm -f $sub_file
+   else
+       eval $run
+       err=$?
+   fi
 fi
 
 [ "$log_file" != "" ] && sleep 1 && cat $(ls -rt tmp_log* | tail -$NB_PROCS) 
