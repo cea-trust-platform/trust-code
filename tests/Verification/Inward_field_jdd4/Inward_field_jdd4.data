@@ -4,7 +4,7 @@ dimension 2
 Pb_Hydraulique pb
 Domaine dom
 # BEGIN MESH #
-Mesh dom
+Mailler dom
 {
 	Pave dom
 	{
