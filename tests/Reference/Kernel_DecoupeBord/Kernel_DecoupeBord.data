@@ -21,7 +21,7 @@ DecoupeBord_pour_rayonnement
 		Nom_fichier_sortie 	dom_tetra_decoupe_par_hexa.geom
 		Bords_a_decouper 4  	Arriere_Droit Avant_Gauche Haut Bas
 }
-System "echo -e '1,$ s?%?_?g\nw' | ed dom_tetra_decoupe_par_hexa.geom"
+System "sed 's?%?_?g'  -i dom_tetra_decoupe_par_hexa.geom"
 Domaine	dom_tetra_decoupe_par_hexa
 Read_file 		dom_tetra_decoupe_par_hexa	dom_tetra_decoupe_par_hexa.geom
 Postraiter_domaine { domaine dom_tetra_decoupe_par_hexa format lata fichier dom_tetra_decoupe_par_hexa.lata }
@@ -39,7 +39,7 @@ DecoupeBord_pour_rayonnement
 		Nom_fichier_sortie 	dom_tetra_decoupe_par_tetra.geom
 		Bords_a_decouper 4  	Arriere_Droit Avant_Gauche Haut Bas
 }
-System "echo -e '1,$ s?%?_?g\nw' | ed dom_tetra_decoupe_par_tetra.geom"
+System "sed 's?%?_?g' -i dom_tetra_decoupe_par_tetra.geom"
 Domaine	dom_tetra_decoupe_par_tetra
 Read_file 		dom_tetra_decoupe_par_tetra	dom_tetra_decoupe_par_tetra.geom
 Postraiter_domaine { domaine dom_tetra_decoupe_par_tetra format lata fichier dom_tetra_decoupe_par_tetra.lata }
