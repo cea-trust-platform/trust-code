@@ -260,6 +260,11 @@ Entree& Navier_Stokes_Turbulent::lire_op_diff_turbulent(Entree& is)
 // Postcondition:
 int Navier_Stokes_Turbulent::preparer_calcul()
 {
+
+  Turbulence_paroi& loipar=le_modele_turbulence.valeur().loi_paroi();
+  if (loipar.non_nul())
+    loipar.init_lois_paroi();
+
   Navier_Stokes_std::preparer_calcul();
   le_modele_turbulence.preparer_calcul();
   return 1;

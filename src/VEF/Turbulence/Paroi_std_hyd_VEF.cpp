@@ -111,9 +111,11 @@ int Paroi_std_hyd_VEF::init_lois_paroi()
   tab_u_star_.resize(la_zone_VEF->nb_faces_tot());
   dplus_.resize(la_zone_VEF->nb_faces_tot());
   uplus_.resize(la_zone_VEF->nb_faces_tot());
-  Cisaillement_paroi_.resize(0, dimension);
-  la_zone_VEF.valeur().creer_tableau_faces(Cisaillement_paroi_);
-
+  if (!Cisaillement_paroi_.get_md_vector().non_nul())
+    {
+      Cisaillement_paroi_.resize(0, dimension);
+      la_zone_VEF.valeur().creer_tableau_faces(Cisaillement_paroi_);
+    }
   seuil_LP.resize(la_zone_VEF->nb_faces_tot());
   iterations_LP.resize(la_zone_VEF->nb_faces_tot());
 

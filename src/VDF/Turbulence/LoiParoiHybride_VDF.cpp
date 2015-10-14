@@ -55,9 +55,11 @@ void LoiParoiHybride_VDF::associer(const Zone_dis& zd, const Zone_Cl_dis& zcl)
 int LoiParoiHybride_VDF::init_lois_paroi()
 {
   LoiParoiHybride::init_lois_paroi();
-
-  Cisaillement_paroi_.resize(0, dimension);
-  la_zone_VDF.valeur().creer_tableau_faces_bord(Cisaillement_paroi_);
+  if (!Cisaillement_paroi_.get_md_vector().non_nul())
+    {
+      Cisaillement_paroi_.resize(0, dimension);
+      la_zone_VDF.valeur().creer_tableau_faces_bord(Cisaillement_paroi_);
+    }
   return 1;
 }
 

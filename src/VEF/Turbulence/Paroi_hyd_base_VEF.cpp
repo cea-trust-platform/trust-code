@@ -66,8 +66,11 @@ void Paroi_hyd_base_VEF::init_lois_paroi_()
   const Zone_VF& zvf = la_zone_VEF.valeur();
   const int nb_faces_bord = la_zone_VEF->nb_faces_bord();
   tab_u_star_.resize(nb_faces_bord);
-  Cisaillement_paroi_.resize(0, dimension);
-  zvf.creer_tableau_faces_bord(Cisaillement_paroi_);
+  if (!Cisaillement_paroi_.get_md_vector().non_nul())
+    {
+      Cisaillement_paroi_.resize(0, dimension);
+      zvf.creer_tableau_faces_bord(Cisaillement_paroi_);
+    }
 }
 
 DoubleTab& Paroi_hyd_base_VEF::corriger_derivee_impl(DoubleTab& d) const
