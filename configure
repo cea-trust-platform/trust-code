@@ -68,6 +68,7 @@ echo "[-disable-ccache]                 Disable ccache detetction/installation."
 echo "[-disable-valgrind]               Disable valgrind installation and build."
 echo "[-disable-gnuplot]                Disable gnuplot installation and build."
 echo "[-disable-gmsh]                   Disable Gmsh installation and build."
+echo "[-disable-mpiio]                  Disable MPI-IO mode for writing of .xyz binary output file."
 echo "[-without-doc]                    Do not build the documentation."
 echo "[-without-visit]                  Do not install VisIt."
 echo "[-download-visit]                 Download a sequential version of VisIt rather trying to build a parallel version."
@@ -97,6 +98,7 @@ do
   command=TRUST_DISABLE_$THIRD_PARTY=0   
   eval $command       
 done
+export TRUST_DISABLE_MPIIO=0
 export TRUST_WITHOUT_DOC=0
 export TRUST_WITHOUT_VISIT=0
 export TRUST_DOWNLOAD_VISIT=0
@@ -192,7 +194,11 @@ do
        
    elif [ "${1#-clean}" != "$1" ]
    then
-      export clean="clean"
+      export clean="clean" 
+       
+   elif [ "${1#-disable-mpiio}" != "$1" ]
+   then
+      export TRUST_DISABLE_MPIIO=1 
 
    elif [ "${1#-disable-}" != "$1" ]
    then
@@ -232,6 +238,7 @@ do
    VAR=TRUST_DISABLE_$THIRD_PARTY
    echo "$VAR=${!VAR} && export $VAR 	# Disable/enable $THIRD_PARTY"  						>> $var 
 done
+echo "TRUST_DISABLE_MPIIO=$TRUST_DISABLE_MPIIO && export TRUST_DISABLE_MPIIO		# Disable/enable MPI-IO mode for writing of binary output file"	>> $var
 echo "TRUST_WITHOUT_DOC=$TRUST_WITHOUT_DOC && export TRUST_WITHOUT_DOC			# Disable/enable Documentation"	>> $var
 echo "TRUST_WITHOUT_VISIT=$TRUST_WITHOUT_VISIT && export TRUST_WITHOUT_VISIT		# Disable/enable VisIt" 	>> $var
 echo "TRUST_DOWNLOAD_VISIT=$TRUST_DOWNLOAD_VISIT && export TRUST_DOWNLOAD_VISIT 	# Download or build VisIt" 	>> $var

@@ -1,5 +1,4 @@
 Version	Qui				Tache
-1.7.2   triou@cea.fr            nouvelle option du configure -disable-mpiio
 1.7.2   gauthier.fauchet@cea.fr  Rechercher test MPIIO qui planterait sur machine Areva
 1.7.2   gauthier.fauchet@cea.fr  MC2 : patch anti-verbosite cf src/Kernel/Math/SolvSys/Solv_Gen.cpp de Antoine
 1.7.2   triou@cea.fr            Revoir configure: pourquoi cmake compile avant la verification du compilateur C++

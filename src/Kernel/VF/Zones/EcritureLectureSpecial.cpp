@@ -542,7 +542,16 @@ void EcritureLectureSpecial::lecture_special(const Zone_VF& zvf, Entree& fich, D
 Nom& EcritureLectureSpecial::get_Output()
 {
   static Nom option=Output;
+
   // disable MPIIO in sequential mode
   if (Output=="EcrFicPartageMPIIO" && Process::nproc()==1) option="EcrFicPartageBin";
+
+  // disable MPIIO if TRUST_DISABLE_MPIIO=1
+  char* theValue = getenv("TRUST_DISABLE_MPIIO");
+  if (theValue != NULL)
+    {
+      if (option=="EcrFicPartageMPIIO" && strcmp(theValue,"1")==0) option="EcrFicPartageBin";
+    }
+
   return option;
 }
