@@ -55,7 +55,7 @@ Lire sch
 	Solveur Implicite
 	   {
 		seuil_convergence_implicite 1.e-6
-		solveur Petsc BICGSTAB { precond diag { } seuil 1.e-12 save_matrice }
+		solveur Petsc BICGSTAB { precond diag { } seuil 1.e-12 save_matrice save_matrix_petsc_format }
 		# solveur Petsc CLI { -ksp_type bcgs -pc_type jacobi -ksp_atol 1.e-12 } #
 	   }
 }

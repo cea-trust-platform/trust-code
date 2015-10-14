@@ -327,14 +327,14 @@ void Solv_Petsc::create_solver(Entree& entree)
   if (motlu==accolade_ouverte)
     {
       // Temporaire essayer de faire converger les noms de parametres des differentes solveurs (GCP, GMRES,...)
-      Motcles les_parametres_solveur(15);
+      Motcles les_parametres_solveur(16);
       {
         les_parametres_solveur[0] = "impr";
         les_parametres_solveur[1] = "seuil";
         les_parametres_solveur[2] = "precond";
         les_parametres_solveur[3] = "precond_nul"; // To accept the TRUST syntax
         les_parametres_solveur[4] = "nb_it_max";
-        les_parametres_solveur[5] = "save_matrice|save_matrix";
+        les_parametres_solveur[5] = "save_matrix_petsc_format";
         les_parametres_solveur[6] = "factored_matrix"; // Experimental
         les_parametres_solveur[7] = "read_matrix";
         les_parametres_solveur[8] = "controle_residu";
@@ -344,6 +344,7 @@ void Solv_Petsc::create_solver(Entree& entree)
         les_parametres_solveur[12] = "aij";
         les_parametres_solveur[13] = "nb_cpus";
         les_parametres_solveur[14] = "divtol";
+	les_parametres_solveur[15] = "save_matrice";
       }
       option_double omega("omega",1.5);
       option_int    level("level",1);
@@ -464,8 +465,15 @@ void Solv_Petsc::create_solver(Entree& entree)
                 convergence_with_nb_it_max_=1;
                 break;
               }
+	    case 15:
+              {
+		//abort();
+                save_matrice_=1;
+                break;
+              }
             case 5:
               {
+		// on sauvegarde au format petsc
                 save_matrix_=1;
                 break;
               }
