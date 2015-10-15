@@ -59,7 +59,7 @@ fi
 
 # Determination si un repertoire a ete checkoute et donc
 # un fichier potentiellement renomme ou efface (auquel cas on doit faire un delete)
-# On le fait aussi le samedi
+# On le fait aussi le vendredi
 #VOBS="Doc_TRUST Pre_Post_TRUST Tests_TRUST TRUST"
 VOBS="TRUST"
 if [ "$delete_version_machine_cible" = "" ]
@@ -94,9 +94,8 @@ then
       fi
    fi
 fi
-# Versions distantes automatiquement effacees le vendredi/samedi
-#[ "`date '+%u'`" = 5 ] && delete_version_machine_cible=1 && echo "We delete the version on the machines of type cible on Friday."
-[ "`date '+%u'`" = 6 ] && delete_version_machine_cible=1 && echo "We delete the version on the machines of type cible on Saturday."
+# Versions distantes automatiquement effacees le vendredi
+[ "`date '+%u'`" = 5 ] && delete_version_machine_cible=1 && echo "We delete the version on the machines of type cible on Friday."
 # Versions distantes ponctuellement effacees avec un "touch ~/delete_version_machine_cible"
 [ -f ~/delete_version_machine_cible ] && delete_version_machine_cible=1 && echo "We delete the version on the machines of type cible promptly." && rm -f ~/delete_version_machine_cible
 

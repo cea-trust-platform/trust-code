@@ -148,7 +148,7 @@ check_components()
 	             check_option="--check-all"
 	             if [[ "$updated_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines updated
 		     then
-	                if [ "$Composant" = TrioCFD ] || [ "$Composant" = ModeleCoeur ] || [ "$Composant" = Test_Baltik ]
+	                if [ "$Composant" = TrioCFD ] || [ "$Composant" = Test_Baltik ] #|| [ "$Composant" = ModeleCoeur ]
 			then
 		           check_option="--without-run"
 			fi
@@ -328,6 +328,7 @@ echo "Call to "$TRUST_ROOT"/bin/KSH/credoc"
 echo "  See $credoc_log"
 echo "TRUST documentation creation on $HOST the `date` ...">$credoc_log
 echo>>$credoc_log
+# NB: Verification des includes avec Doxygen fait uniquement le vendredi
 $TRUST_ROOT/bin/KSH/credoc 1>>$credoc_log 2>&1
 echo "<--- End at "`date '+%H:%M:%S'`
 echo " "
@@ -404,7 +405,8 @@ echo "Call to "$TRUST_ROOT"/bin/gestion_externalpackages/Verify_liste_dep.sh"
 echo "  See $liste_log"
 echo "TRUST external packages liste dep on $HOST the `date` ...">$liste_log
 echo>>$liste_log
-[ "`date '+%u'`" = 6 ] && rm -r -f Test
+# NB: Verification complete (apres nettoyage) le vendredi
+[ "`date '+%u'`" = 5 ] && rm -r -f Test
 ./Verify_liste_dep.sh 1>>$liste_log 2>&1
 # les 3 paquets suivants different car
 # qt-everywhere-opensource-src-4.8.3 sans doc (taille passe de 685M a 352M)
@@ -503,6 +505,7 @@ echo "  See $envoie_log"
 echo "TRUST script on $HOST the `date` ...">$envoie_log
 echo>>$envoie_log
 touch liste_envoie_KO
+# NB: Versions distantes automatiquement effacees le vendredi
 envoie_TRUST_arch 1>>$envoie_log 2>&1
 export liste_machines_KO=`cat liste_envoie_KO`
 rm -f liste_envoie_KO
@@ -987,6 +990,12 @@ echo "#####################################"
 echo "# Validate and save the new version #"
 echo "#####################################"
 cd $TRUST_ROOT
+# Attente jusqu'a minuit le vendredi
+# pour certains tests faits que le week-end
+while [ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 20 ]
+do
+   sleep 30
+done
 echo " "
 echo "###################################"
 echo "# Create the matrix of validation #"
@@ -994,11 +1003,8 @@ echo "###################################"
 echo "---> Begin at "`date '+%H:%M:%S'`
 (
 matrice_validation=0 # Non actualise
-# Changement 164, on cree la matrice de validation le samedi uniquement
-# CC: 16/02/2015 => On ne passe jamais car via crontab, lance_test_nuit est lance du lundi au vendredi (pas le samedi !)
-# sauf si cette etape se passe le vendredi apres minuit
-# MAIS dans tous les cas matrice_validation ne verifie pas ==1 !!!
-if [ "$matrice_validation" = 1 ] && [ "`date '+%u'`" = 6 ]
+# Changement 164, on cree la matrice de validation le week-end
+if [ "$matrice_validation" = 1 ] && [ "`date '+%u'`" -gt 5 ]
 then
    cd $TRUST_ROOT/doc/Validation
    echo "-> Start of "$TRUST_ROOT"/doc/Validation/Matrice.sh"
@@ -1021,8 +1027,8 @@ echo "#####################################"
 echo "# Use and execute cpplint.py script #"
 echo "#####################################"
 echo "---> Begin at "`date '+%H:%M:%S'`
-# le samedi uniquement
-if [ "`date '+%u'`" = 6 ]
+# le week-end uniquement
+if [ "`date '+%u'`" -gt 5 ]
 then
    cd $TRUST_ROOT
    echo "Call to $TRUST_ROOT/bin/KSH/cpplint.py"
@@ -1086,6 +1092,11 @@ echo `date` >> $MESSAGES_NUIT
 echo "----------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 [ -f $TRUST_ROOT/RELEASE_NOTES ] && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/RELEASE_NOTES >> $MESSAGES_NUIT
 [ -f $TRUST_ROOT/DEVELOPER_NOTES ] && $TRUST_Awk '/Developer notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/DEVELOPER_NOTES >> $MESSAGES_NUIT
+echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TRUST/TrioCFD WEB site:      http://www-trio-u.cea.fr" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TRUST distribution site:     http://sourceforge.net/projects/trust-platform" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TrioCFD distribution site:   http://sourceforge.net/projects/triocfd" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "User TRUST TrioCFD      diffusion list http://saxifrage:3500/wws/info/trio_u_annonces" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "Developer TRUST TrioCFD diffusion list http://saxifrage:3500/wws/info/trio_u_dev" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "User TRUST ModeleCoeur  diffusion list http://saxifrage:3500/wws/info/mc2_annonces" >> $MESSAGES_NUIT
@@ -1110,6 +1121,7 @@ echo "--------------------------------------------------------------------------
 ##########################################################
 # On checkine dans la vue si criteres suivants respectes :
 ##########################################################
+echo "-------------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 echo "Release criteria of the $new version:" >> $MESSAGES_NUIT
 
 criteres_remplis=0
@@ -1265,12 +1277,22 @@ echo "<--- End at "`date '+%H:%M:%S'`
 #####################################################################
 # Attente jusqu'a pour attendre le retour des compilations eloignees:
 #####################################################################
-#while [ `date '+%H'` -lt 6 ] || [ `date '+%H'` -gt 21 ]
-# Augmentation d une heure car avec la portabilite des baltiks dont TrioCFD, c est plus long
-while [ `date '+%H'` -lt 7 ] || [ `date '+%H'` -gt 21 ]
-do
-   sleep 30
-done
+# sauf le week-end (on attend le dimanche car lance_test_nuit via crontab non lance le week-end)
+if [ "`date '+%u'`" -lt 6 ]
+then
+   #while [ `date '+%H'` -lt 6 ] || [ `date '+%H'` -gt 21 ]
+   # Augmentation d une heure car avec la portabilite des baltiks dont TrioCFD, c est plus long
+   while [ `date '+%H'` -lt 7 ] || [ `date '+%H'` -gt 21 ]
+   do
+      sleep 30
+   done
+else
+   # Attente jusqu'au lundi matin
+   while [ "`date '+%u'`" -gt 5 ]
+   do
+      sleep 30
+   done
+fi
   
 #####################################################
 # Arret de la portabilite des baltik si non terminee:  
@@ -1280,7 +1302,6 @@ echo "##########################################"
 echo "# Verify the end of baltik portabilities #"
 echo "##########################################"
 echo "---> Begin at "`date '+%H:%M:%S'`
-echo " "
 for Composant in $Composants
 do
    if [ -d $TRUST_ROOT/../Composants/$Composant ]
@@ -1323,7 +1344,6 @@ do
          echo "  => OK: portability is finished"
       fi 
    fi
-   echo " "
 done
 echo "<--- End at "`date '+%H:%M:%S'`
   
@@ -2300,10 +2320,10 @@ force_check_decoupage=~/force_check_decoupage && [ -f $force_check_decoupage ] &
 echo "$parallelism  Parallelism $resultat_parallelisme=$stabilite_parallelisme (=1.000)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+$parallelism
-# Desormais le samedi sur pc tma, on met a jour les cas tests
+# Desormais le week-end sur pc tma, on met a jour les cas tests
 # pour la balise PARALLEL OK
 # Dangereux car blocages possibles
-#if [ "`date '+%w'`" = 6 ]
+#if [ "`date '+%u'`" -gt 5 ]
 #then
 #   Check_decoupage.ksh -all -update
 #fi
@@ -2355,7 +2375,8 @@ then
    tail -n1 $bench_log
    if [ -f $TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/build/rapport.pdf ]
    then
-      if [ "`date '+%u'`" = 6 ]
+       # Envoi du rapport genere le week-end au project leader
+      if [ "`date '+%u'`" -gt 5 ]
       then
          echo "$TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/Run_fiche" | mail_ -a\"$TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/build/rapport.pdf\" -s\"[lance_test_nuit] Benchmark report generated `date '+%d/%m/%y'`\" $TRUST_MAIL $TRUST_PROJECT_LEADER
       else
@@ -2401,14 +2422,14 @@ echo "Analysis of $TRUST_ROOT/ToDo file"
 nb_todo=`grep -c ${TRUST_VERSION%_beta} $TRUST_ROOT/ToDo`
 echo "$nb_todo requests to do before the release of the next version"
 nothing_todo=0 && [ "`grep ${TRUST_VERSION%_beta} $TRUST_ROOT/ToDo`" = "" ] && nothing_todo=1
-# Envoi aux personnes concernees
+# Envoi aux personnes concernees le mardi
 for qui in `$TRUST_Awk '!/Qui/ {print $2}' $TRUST_ROOT/ToDo | sort -u`
 do
    grep $qui $TRUST_ROOT/ToDo | grep ${TRUST_VERSION%_beta} > $TRUST_TMP/ToDo
-   [ -s $TRUST_TMP/ToDo ] && [ "`date '+%u'`" = 6 ] && cat $TRUST_TMP/ToDo | mail_ -s \"[lance_test_nuit] ToDo list for the version ${TRUST_VERSION%_beta}\" $qui
+   [ -s $TRUST_TMP/ToDo ] && [ "`date '+%u'`" = 2 ] && cat $TRUST_TMP/ToDo | mail_ -s \"[lance_test_nuit] ToDo list for the version ${TRUST_VERSION%_beta}\" $qui
 done
-# Envoi tous les samedis au chef de projet pour planning debut de semaine
-[ "`date '+%u'`" = 6 ] && cat $TRUST_ROOT/ToDo | mail_ -s \"[lance_test_nuit] ToDo list for the version ${TRUST_VERSION%_beta}\" $TRUST_PROJECT_LEADER $TRUST_TODO_MAIL
+# Envoi le week-end au chef de projet pour planning debut de semaine
+[ "`date '+%u'`" -gt 5 ] && cat $TRUST_ROOT/ToDo | mail_ -s \"[lance_test_nuit] ToDo list for the version ${TRUST_VERSION%_beta}\" $TRUST_PROJECT_LEADER $TRUST_TODO_MAIL
 rm -f $TRUST_TMP/ToDo
 #
 echo " "
@@ -2450,7 +2471,8 @@ else
 fi
 if [ "$NB" -gt 0 ] && [ -f $ETUDES/Rapport/build/rapport.pdf ]
 then
-   if [ "`date '+%u'`" = 6 ]
+   # Envoi du rapport genere le week-end au project leader
+   if [ "`date '+%u'`" -gt 5 ]
    then
       echo "$ETUDES/Rapport/Run_fiche" | mail_ -a\"$ETUDES/Rapport/build/rapport.pdf\" -s\"[lance_test_nuit] Studies report generated `date '+%d/%m/%y'`\" $TRUST_MAIL $TRUST_PROJECT_LEADER
    else
@@ -2699,7 +2721,7 @@ fi
 ####################################################################################################
 # Si un certain nombre de criteres sont remplis, on propose une release (candidate ou intermediaire)
 # Tous les jours si accord_admin = 1, label_rc=X.Y.Z_rc
-# Le samedi seulement si accord_admin = 0, label_rc=X.Y.Z_beta
+# Le week-end seulement si accord_admin = 0, label_rc=X.Y.Z_beta
 ####################################################################################################
 echo " "
 echo "Analysis of $MESSAGES_NUIT file"
@@ -2713,8 +2735,9 @@ if [ $criteres_remplis != $total_criteres ] && [ $criteres_remplis -ge 15 ] && [
 then
    echo "Version $new : Currently $criteres_remplis criteria are OK on $total_criteres planned" >> $MESSAGES_NUIT
    echo -e "=> release OK\c"
-   [ "`date '+%u'`" = 6 ] && accord_beta=1
+   [ "`date '+%u'`" -gt 5 ] && accord_beta=1
    [ -f ~/force_version_beta ] && accord_beta=1 && rm -f ~/force_version_beta
+   [ -f ~/no_version_beta ] && accord_beta=0 #&& rm -f ~/no_version_beta
    if [ $accord_admin = 1 ] || [ $accord_beta = 1 ]
    then
       # On decide du nom du label specifique

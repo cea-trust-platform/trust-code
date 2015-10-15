@@ -644,33 +644,34 @@ if [ $HOST = callisto ]
 then
    # Load modules
    module=slurm
-   #intel="intel/compiler/64/14.0/2013_sp1.2.144 intel/mkl/64/11.1/2013_sp1.2.144"
-   intel="intel/compiler/64/15.0/2015.3.187 intel/mkl/64/11.2/2015.3.187"
    echo "# Module $module detected and loaded on $HOST."
    echo "source /cm/local/apps/environment-modules/3.2.10/init/bash" >> $env
    echo "module load $module 1>/dev/null" >> $env
+   #INTEL 2013_sp1.2.144 2013_sp1.4.211 2015.3.187
+   if [ $HOST_BUILD = callisto-intel15 ]
+   then
+     intel="intel/compiler/64/15.0/2015.3.187 intel/mkl/64/11.2/2015.3.187 intel/tbb/64/4.3/2015.3.187"
+   else
+     intel="intel/compiler/64/14.0/2013_sp1.2.144 intel/mkl/64/11.1/2013_sp1.2.144 intel/tbb/64/4.2/2013_sp1.4.211"
+   fi
    if [ $HOST_BUILD = callisto-mvapich ]
    then
+      #MVAPICH2 module mvapich2/gcc/64/1.9_psm mvapich2/gcc/64/2.0.1_mlx mvapich2/gcc/64/2.0.1_psm
       # Aero_192: 4.0s
-      #module=mvapich2/gcc/64/1.9
-      module=mvapich2/gcc/64/2.0.1
+      module=mvapich2
       # Aero_192: 3.8s
-      #module="$intel mvapich2/gcc/64/1.9"
-      module="$intel mvapich2/gcc/64/2.0.1"
+      module="$intel mvapich2"
    elif [ $HOST_BUILD = callisto-openmpi ]
    then
+      #OPENMPI module openmpi/gcc/64/1.8 openmpi/gcc/64/1.8.3 openmpi/gcc/64/1.8.4 
       # Aero_192: 3.7s
-      #module="openmpi/gcc/64/1.8"
-      #module="openmpi/gcc/64/1.8.3"
       module="openmpi/gcc/64/1.8.4"
-      #module="openmpi/gcc/64/1.8.8"
    else
-      # Aero_192: 3.6s			
-      #module="$intel openmpi/icc/64/1.8"    
+      #OPENMPI module openmpi/icc/64/1.8 openmpi/icc/64/1.8.3 openmpi/icc/64/1.8.4 
+      # Aero_192: 3.6s
 	  # module load qt/4.8.6 temporary, time to fix the Qt4 build failed with VisIt 2.8.2
       # module="$intel openmpi/icc/64/1.8 qt/4.8.6"    
       module="$intel openmpi/icc/64/1.8.3"    
-      #module="$intel openmpi/icc/64/1.8.4"    
    fi
    echo "# Module $module detected and loaded on $HOST."
    echo "module unload mpich openmpi mvapich mvapich2 intel/compiler intel/mkl 1>/dev/null" >> $env
@@ -754,27 +755,27 @@ module () {
    then
       echo "So we create the collection of modules $collection_modules:"
       # Changing strategy, we load a version for each module (not the last one)
-      # MPI module 1.1.16.6 1.2.8.2(default)
-      [ $HOST = airain ] 	&& module="bullxmpi/1.2.8.2"
-      [ $HOST = curie-ccrt ] 	&& module="bullxmpi/1.2.8.2"
-      [ $HOST = curie-fr ] 	&& module="bullxmpi/1.2.8.2"
+      # MPI module 1.1.16.6 1.2.8.2 1.2.8.4(default)
+      [ $HOST = airain ] 	&& module="bullxmpi/1.2.8.4"
+      [ $HOST = curie-ccrt ] 	&& module="bullxmpi/1.2.8.4"
+      [ $HOST = curie-fr ] 	&& module="bullxmpi/1.2.8.4"
       echo "Module $module detected and loaded on $HOST."
       module unload bullxmpi
       module load $module
       # Intel compiler (WARNING: Intel 12.x provoque plusieurs problemes (voir FA1445))
-	  # Intel 13.1.3.192 14.0.3.174(default) 15.0.2.164
-      [ $HOST = airain ] 	&& module="intel/13.1.3.192"
-      [ $HOST_BUILD = airain-intel15 ] && module="intel/15.0.2.164"
-      [ $HOST = curie-ccrt ] 	&& module="intel/13.1.3.192"
-      [ $HOST = curie-fr ] 	&& module="intel/13.1.3.192"
+	  # Intel 13.1.3.192 14.0.3.174(default) 15.0.2.164 15.0.3.187
+      [ $HOST = airain ] 	&& module="intel/14.0.3.174"
+      [ $HOST_BUILD = airain-intel15 ] && module="intel/15.0.3.187"
+      [ $HOST = curie-ccrt ] 	&& module="intel/14.0.3.174"
+      [ $HOST = curie-fr ] 	&& module="intel/14.0.3.174"
       echo "Module $module detected and loaded on $HOST."
       module unload intel
       module load $module
       # Cuda
       if [ "$TRUST_FORCE_PETSC_HAVE_CUDA" = 1 ]
       then
-	     # CUDA module cuda/5.0 cuda/6.0.37
-         module="cuda/5.0"
+	     # CUDA module cuda/5.0 cuda/5.5.22 cuda/6.0.37 cuda/6.5.14
+         module="cuda"
          echo "Module $module detected and loaded on $HOST."
          module unload cuda
          module load $module
@@ -791,6 +792,8 @@ module () {
       fi
       if [ "$VAMPIR_SUPPORTED" = 1 ]
       then
+	     # VAMPIRTRACE module vampirtrace/5.14.4
+	     # VAMPIR module vampir/8.2.1 vampir/8.4.1
          module="vampirtrace vampir"
          echo "Module $module detected and loaded on $HOST."
          module load $module
@@ -826,7 +829,7 @@ then
    # Load modules
    # intel 14.0.4.211 15.0.3.187(default)
    intel="intel/15.0.3.187"
-   # bullxmpi 1.2.8.4-mxm(default) bullxmpi/MPI3.gcc.4.9-beta bullxmpi_gnu/1.2.8.4
+   # bullxmpi/1.2.8.4 bullxmpi/1.2.8.4-mxm(default) bullxmpi/MPI3.gcc.4.9-beta bullxmpi_gnu/1.2.8.4
    # module="bullxmpi_gnu/1.2.8.4"
    module="$intel bullxmpi/1.2.8.4-mxm"
    # intelmpi 5.0.1.035(default) intelmpi/5.0.3.048
@@ -1094,18 +1097,6 @@ then
    make_ $TRUST_ROOT/Outils/Python python
 fi
 
-
-######################################################################
-# On va avoir besoin de cmake 2.8 pour Metis et 2.8.10.2 pour VisIt 2.7.0
-# Update to 3.0.1 to fix recursive cmake
-######################################################################
-e="`cherche_file cmake cmake`";eval $e
-CMAKE_VERSION_OK=`$cmake --version 2>&1 | awk '/cmake version/ {split($3,a,".");v=a[1]*100+a[2]*10+a[3];print (v>=301?1:0)}'`
-if [ "$CMAKE_VERSION_OK" != 1 ]
-then
-   make_ $TRUST_ROOT/Outils/cmake
-fi
-
 ##############################
 # Installation de makedepend #
 ##############################
@@ -1140,6 +1131,18 @@ compiler_found=1
 [ "$TRUST_cc_BASE" = "" ] && echo "C compiler not found. Please install a C compiler." && compiler_found=0
 [ "$TRUST_F77_BASE" = "" ] && echo "Fortran compiler not found. Please install a Fortran compiler." && compiler_found=0
 [ "$compiler_found" = 0 ] && echo "Then install again the code." && exit -1
+
+######################################################################
+# On va avoir besoin de cmake 2.8 pour Metis et 2.8.10.2 pour VisIt 2.7.0
+# Update to 3.0.1 to fix recursive cmake
+######################################################################
+e="`cherche_file cmake cmake`";eval $e
+CMAKE_VERSION_OK=`$cmake --version 2>&1 | awk '/cmake version/ {split($3,a,".");v=a[1]*100+a[2]*10+a[3];print (v>=301?1:0)}'`
+if [ "$CMAKE_VERSION_OK" != 1 ]
+then
+   make_ $TRUST_ROOT/Outils/cmake
+fi
+
 
 # Mal fait : a ameliorer
 # Pour toutes les arch SLD=$TRUST_CC sauf RS6000 et sun prendre ld ?

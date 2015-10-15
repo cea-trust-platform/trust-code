@@ -172,8 +172,8 @@ do
             ssh_ $log@$adr -n "rm $ROOT/MAKE_* 2>/dev/null" 
             scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o BatchMode=yes $log@$adr:$ROOT/PERF_* $REP_NUIT/. 2>/dev/null
             ssh_ $log@$adr -n "rm $ROOT/PERF_* 2>/dev/null" 
-	    # New, mise_a_jour_TRUST_arch is killed except the Sunday:
-	    if [ "`date '+%u'`" != 7 ]
+	    # New, mise_a_jour_TRUST_arch is killed except the Week-end:
+	    if [ "`date '+%u'`" -lt 6 ]
 	    then
 	       echo "ls_arch -kill $adr" >> $REP_NUIT/$CR
 	       ls_arch -kill $adr >> $REP_NUIT/$CR
