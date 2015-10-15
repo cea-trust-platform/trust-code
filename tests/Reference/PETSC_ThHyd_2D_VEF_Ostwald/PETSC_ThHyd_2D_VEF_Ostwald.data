@@ -73,7 +73,7 @@ Lire pb
 {
 	Navier_Stokes_Standard
 	{
-		solveur_pression Petsc Cholesky { save_matrice }
+		solveur_pression Petsc Cholesky { save_matrice save_matrix_petsc_format }
 		convection { amont }
 		diffusion { }	
 		conditions_initiales { vitesse Champ_Uniforme 2 0. 0. }		
