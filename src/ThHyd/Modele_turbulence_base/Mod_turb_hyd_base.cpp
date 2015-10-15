@@ -32,6 +32,10 @@
 #include <Operateur.h>
 #include <Param.h>
 #include <Debog.h>
+#include <EcrFicPartage.h>
+
+extern void convert_to(const char *s, double& ob);
+extern void convert_to(const char *s, int& ob);
 
 Implemente_base_sans_constructeur(Mod_turb_hyd_base,"Mod_turb_hyd_base",Objet_U);
 
@@ -103,10 +107,12 @@ void Mod_turb_hyd_base::set_param(Param& param)
 {
   param.ajouter_non_std("turbulence_paroi",(this),Param::REQUIRED);
   param.ajouter_non_std("dt_impr_ustar",(this));
+  param.ajouter_non_std("dt_impr_ustar_mean_only",(this));
   param.ajouter("nut_max",&XNUTM);
   param.ajouter_flag("Correction_visco_turb_pour_controle_pas_de_temps",&calcul_borne_locale_visco_turb_);
   param.ajouter("Correction_visco_turb_pour_controle_pas_de_temps_parametre",&dt_diff_sur_dt_conv_);
 }
+
 
 int Mod_turb_hyd_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
@@ -118,17 +124,90 @@ int Mod_turb_hyd_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
       is >> loipar.valeur();
       return 1;
     }
-  else if (mot=="dt_impr_ustar")
+  else if (loipar.valeur().que_suis_je()!="negligeable_VDF" && loipar.valeur().que_suis_je()!="negligeable_VEF")
     {
-      if (loipar.valeur().que_suis_je()!="negligeable_VDF" && loipar.valeur().que_suis_je()!="negligeable_VEF")
-        is >> dt_impr_ustar;
+      if (mot=="dt_impr_ustar")
+        {
+          is >> motlu;
+          convert_to(motlu, dt_impr_ustar);
+        }
+      else if (mot=="dt_impr_ustar_mean_only")
+        {
+          Nom accolade_ouverte="{";
+          Nom accolade_fermee="}";
+          nom_fichier_=Objet_U::nom_du_cas()+"_"+equation().probleme().le_nom()+"_ustar_mean_only";
+          Domaine& dom=equation().probleme().domaine();
+          Zone& zone=dom.zone(0);
+          LIST(Nom) nlistbord_dom;                      //!< liste stockant tous les noms de frontiere du domaine
+          int nbfr=zone.nb_front_Cl();
+          for (int b=0; b<nbfr; b++)
+            {
+              Frontiere& org=zone.frontiere(b);
+              nlistbord_dom.add(org.le_nom());
+            }
+          is >> motlu;
+          if ( motlu != accolade_ouverte )
+            {
+              Cerr << motlu << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
+              Cerr << "A specification of kind : dt_impr_ustar_mean_only { periode [boundaries nb_boundaries boundary_name1 boundary_name2 ... ] } was expected."<<finl;
+              exit();
+            }
+          is >> motlu;
+          convert_to(motlu, dt_impr_ustar_mean_only);
+
+          is >> motlu; // boundaries ou accolade_fermee ou pasbon
+          if ( motlu != accolade_fermee )
+            {
+              if ( motlu == "boundaries" )
+                {
+                  boundaries_=1;
+                  int nb_bords=0;
+                  Nom nom_bord_lu;
+
+                  // read boundaries number
+                  is >> motlu;
+                  convert_to(motlu, nb_bords);
+                  if ( nb_bords != 0 )
+                    {
+                      // read boundaries
+                      for ( int i=0; i<nb_bords; i++ )
+                        {
+                          is >> nom_bord_lu;
+                          boundaries_list.add(Nom(nom_bord_lu));
+                          //  verif nom bords
+                          if (!nlistbord_dom.contient(boundaries_list[i]))
+                            {
+                              Cerr << "Problem in the dt_impr_ustar_mean_only instruction:" << finl;
+                              Cerr << "The boundary named '" << boundaries_list[i] << "' is not a boundary of the domain " << dom.le_nom() << "." << finl;
+                              exit();
+                            }
+                        }
+                    }
+                  // lecture accolade fermee
+                  is >> motlu;
+                  if ( motlu != accolade_fermee )
+                    {
+                      Cerr << "Problem in the dt_impr_ustar_mean_only instruction:" << finl;
+                      Cerr << "TRUST wants to read a '" << accolade_fermee << "' but find '" << motlu << "'!!" << finl;
+                      exit();
+                    }
+                }
+              else
+                {
+                  Cerr << motlu << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
+                  Cerr << "A specification of kind : dt_impr_ustar_mean_only { periode [boundaries nb_boundaries boundary_name1 boundary_name2 ... ] } was expected."<<finl;
+                  exit();
+                }
+            }
+          loipar.imprimer_premiere_ligne_ustar(boundaries_, boundaries_list, nom_fichier_, nlistbord_dom);
+        } // fin dt_impr_ustar_mean_only
       else
         {
           Cerr << "Please remove dt_impr_ustar option if the wall law if of Negligeable type." << finl;
           exit();
         }
-      return 1;
-    }
+    } // fin loi paroi negligeable
+
   else
     {
       Cerr << mot << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
@@ -352,8 +431,17 @@ void Mod_turb_hyd_base::imprimer(Sortie& os) const
   const Schema_Temps_base& sch = mon_equation->schema_temps();
   double temps_courant = sch.temps_courant();
   double dt= sch.pas_de_temps() ;
-  if (loipar.non_nul() && limpr_ustar(temps_courant,sch.temps_precedent(),dt) )
-    loipar.imprimer_ustar(os);
+  if (loipar.non_nul() && limpr_ustar(temps_courant,sch.temps_precedent(),dt))
+    {
+      if (dt_impr_ustar!=1.e20)
+        {
+          loipar.imprimer_ustar(os);
+        }
+      if (dt_impr_ustar_mean_only!=1.e20)
+        {
+          loipar.imprimer_ustar_mean_only(os, boundaries_, boundaries_list, nom_fichier_);
+        }
+    }
 }
 
 int Mod_turb_hyd_base::limpr_ustar(double temps_courant, double temps_prec, double dt) const
@@ -361,15 +449,35 @@ int Mod_turb_hyd_base::limpr_ustar(double temps_courant, double temps_prec, doub
   const Schema_Temps_base& sch = mon_equation->schema_temps();
   if (sch.nb_pas_dt()==0)
     return 0;
-  if (dt_impr_ustar<=dt || ((sch.temps_final_atteint() || sch.nb_pas_dt_max_atteint() || sch.nb_pas_dt()==1 || sch.stationnaire_atteint()) && dt_impr_ustar!=1.e20))
+
+  if (dt_impr_ustar<=dt || dt_impr_ustar_mean_only<=dt)
+    return 1;
+
+  if (    ((sch.temps_final_atteint() || sch.nb_pas_dt_max_atteint() || sch.nb_pas_dt()==1 || sch.stationnaire_atteint()) && dt_impr_ustar!=1.e20)
+          || ((sch.temps_final_atteint() || sch.nb_pas_dt_max_atteint() || sch.nb_pas_dt()==1 || sch.stationnaire_atteint()) && dt_impr_ustar_mean_only!=1.e20) )
     return 1;
   else
     {
-      // Voir Schema_Temps_base::limpr pour information sur epsilon et modf
-      double i, j, epsilon = 1.e-8;
-      modf(temps_courant/dt_impr_ustar + epsilon, &i);
-      modf(temps_prec/dt_impr_ustar + epsilon, &j);
-      return ( i>j );
+      if (dt_impr_ustar!=1.e20)
+        {
+          // Voir Schema_Temps_base::limpr pour information sur epsilon et modf
+          double i, j, epsilon = 1.e-8;
+          modf(temps_courant/dt_impr_ustar + epsilon, &i);
+          modf(temps_prec/dt_impr_ustar + epsilon, &j);
+          return ( i>j );
+        }
+      else if (dt_impr_ustar_mean_only!=1.e20)
+        {
+          // Voir Schema_Temps_base::limpr pour information sur epsilon et modf
+          double i, j, epsilon = 1.e-8;
+          modf(temps_courant/dt_impr_ustar_mean_only + epsilon, &i);
+          modf(temps_prec/dt_impr_ustar_mean_only + epsilon, &j);
+          return ( i>j );
+        }
+      else
+        {
+          return 0;
+        }
     }
 }
 

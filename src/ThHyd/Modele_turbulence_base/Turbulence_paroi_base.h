@@ -29,6 +29,7 @@
 #include <Ref_Mod_turb_hyd_base.h>
 #include <Champs_compris.h>
 #include <Champs_compris_interface.h>
+#include <List_Nom.h>
 
 class Mod_turb_hyd;
 class Zone_dis;
@@ -75,6 +76,8 @@ public :
     return d;
   };
   inline virtual void imprimer_ustar(Sortie& ) const ;
+  inline virtual void imprimer_ustar_mean_only(Sortie&, int, const LIST(Nom)&, const Nom&) const ;
+  inline virtual void imprimer_premiere_ligne_ustar(int, const LIST(Nom)&, const Nom&, const LIST(Nom)& ) const;
   // rajout pour prendre en compte Cisaillement_paroi dans la classe
   // de base
 
@@ -100,6 +103,7 @@ public :
   /////////////////////////////////////////////////////
   // Ecriture dans un fichier separe de u_star, Cisaillement_paroi etc...
   void ouvrir_fichier_partage(EcrFicPartage&,const Nom&) const;
+  void ouvrir_fichier_partage(EcrFicPartage&, const Nom&, const Nom&) const;
   // indique si on utilise le cisaillement ou non
   virtual bool use_shear() const;
 
@@ -111,6 +115,7 @@ protected:
   DoubleVect tab_u_star_;                // valeurs des u* calculees localement
   mutable Champ_Fonc champ_u_star_;                                // Champ pour postraitement
   mutable int nb_impr_;                        // Compteur d'impression
+  mutable int nb_impr0_;                        // Compteur d'impression
 
 protected:
 
@@ -122,6 +127,13 @@ inline void Turbulence_paroi_base::imprimer_ustar(Sortie& ) const
 {
 }
 
+inline void Turbulence_paroi_base::imprimer_ustar_mean_only(Sortie&, int, const LIST(Nom)&, const Nom&) const
+{
+}
+
+inline void Turbulence_paroi_base::imprimer_premiere_ligne_ustar(int, const LIST(Nom)&, const Nom&, const LIST(Nom)& ) const
+{
+}
 // Description:
 //    Associe un modele de turbulence a l'objet.
 // Precondition:
