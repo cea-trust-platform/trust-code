@@ -6,8 +6,8 @@ TRUST_FILES=tmp_files
 all:depend subdir
 
 subdir:
-	(cd TRUST ; $(MAKE) )
-	(cd Coverage ; $(MAKE) )
+	(if [ -d TRUST ] && [ "`ls TRUST/*akefile 2>/dev/null`" != "" ]; then cd TRUST; $(MAKE); fi)
+	(if [ -d Coverage ] && [ "`ls Coverage/*akefile 2>/dev/null`" != "" ]; then cd Coverage; $(MAKE); fi)
 doc:
 	@echo "HTML documentation under $(HTML) will be updated in few minutes..."
 	@make_Doxyfile 
@@ -37,5 +37,5 @@ depend:
 clean:
 	@echo "Cleaning..."
 	@rm -r -f $(HTML) *.tag
-	(cd TRUST; $(MAKE) clean)
-	(cd Coverage ; $(MAKE) clean )
+	(if [ -d TRUST ] && [ "`ls TRUST/*akefile 2>/dev/null`" != "" ]; then cd TRUST; $(MAKE) clean; fi)
+	(if [ -d Coverage ] && [ "`ls Coverage/*akefile 2>/dev/null`" != "" ]; then cd Coverage; $(MAKE) clean; fi)
