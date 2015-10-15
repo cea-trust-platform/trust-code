@@ -329,11 +329,26 @@ fi
 ################
 if [ "$copy" = 1 ]
 then
-   echo "Try to extract $NOM test case from database..."
+   echo "Try to extract $NOM test case from $TRUST_TESTS database..."
    copie_cas_test $NOM
    err=$?
-   echo "Directory `pwd`/$NOM created with files inside:"
-   ls $NOM
+   if [ "$err" = 0 ]
+   then
+      echo "Directory `pwd`/$NOM created with files inside:" && ls $NOM
+   elif  [ "$TRUST_TESTS" != "$TRUST_ROOT/tests" ]
+   then
+      echo "... and from $TRUST_ROOT/tests database..."
+      copie_cas_test $NOM $TRUST_ROOT/tests
+      err=$?
+      if [ "$err" = 0 ]
+      then
+         echo "Directory `pwd`/$NOM created with files inside:" && ls $NOM
+      else
+         echo "ERROR: Directory `pwd`/$NOM NOT created !!!"
+      fi
+   else
+      echo "ERROR: Directory `pwd`/$NOM NOT created !!!"
+   fi
    exit $err
 fi
 
