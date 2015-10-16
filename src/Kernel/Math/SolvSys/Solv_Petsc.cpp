@@ -344,7 +344,7 @@ void Solv_Petsc::create_solver(Entree& entree)
         les_parametres_solveur[12] = "aij";
         les_parametres_solveur[13] = "nb_cpus";
         les_parametres_solveur[14] = "divtol";
-        les_parametres_solveur[15] = "save_matrice";
+        les_parametres_solveur[15] = "save_matrice|save_matrix";
       }
       option_double omega("omega",1.5);
       option_int    level("level",1);

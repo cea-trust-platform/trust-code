@@ -3,8 +3,8 @@
 # On quitte si la variable nomail mise a 1 par lance_test
 [ "$nomail" = 1 ] && exit 0
 [ "$HOST" = "" ] && echo "TRUST environment should be initialized to use mail_" && exit -1
-# On n'execute mail_ qu'a l'interieur de cea.fr ou sur jade
-[ "`domainname 2>/dev/null | grep 'cea.fr'`" = "" ] && [ $HOST != jade ] && [ "`grep 'cea.fr' /etc/mtab 2>/dev/null`" = "" ] && [ "`echo $HOSTNAME | grep 'cea.fr'`" = "" ] && [ "`ping_ $HOST | grep '132.16'`" = "" ] && [ $HOST != callisto ] && exit 
+# On n'execute mail_ qu'a l'interieur de cea.fr et sur les clusters ou mis_a_jour_TRUST_arch est lance
+[ "`domainname 2>/dev/null | grep 'cea.fr'`" = "" ] && [ "`grep 'cea.fr' /etc/mtab 2>/dev/null`" = "" ] && [ "`echo $HOSTNAME | grep 'cea.fr'`" = "" ] && [ $HOST != callisto ] && [ $HOST != cezanne63 ] && [ $HOST != antoinette3 ] && [ $HOST != thor ] && [ $HOST != ceres2 ] && exit 
 
 commande=$*
 attached=`echo $commande | awk -F\" '/-a/ {print $2}'`
@@ -16,7 +16,7 @@ cat > $tmp_file
 ###############################
 # NB: necessaire pour les machines de Grenoble (sitre, vonnes, gaillands, forchat)
 # et egalement pour envoyer mail via mailing lists saxifrage.saclay.cea.fr
-# TRUST_SHARE="/net/dibona/users/dibona/triou"
+# ajouter export TRUST_SHARE="/net/dibona/users/dibona/triou" dans .perso_TRUST.env
 if [ "$TRUST_SHARE" != "" ] && [ -d "$TRUST_SHARE" ] && [ "$attached" == "" ]
 then
    # Probleme de l'autentification donc copie sur dibona qui fera serveur de mail_

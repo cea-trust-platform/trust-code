@@ -2,7 +2,6 @@ Version	Qui				Tache
 1.7.2   triou@cea.fr            en test: ajouter 16 et 32 proc pour visIt via HPCDrive dans host_ccrt.xml
 1.7.2   triou@cea.fr            revoir la configuration de Visit mode client/serveur sur curie via HPCDrive (PAS DU TOUT optimise!!!!)
 1.7.2   gauthier.fauchet@cea.fr  Rechercher test MPIIO qui planterait sur machine Areva
-1.7.2   gauthier.fauchet@cea.fr  MC2 : patch anti-verbosite cf src/Kernel/Math/SolvSys/Solv_Gen.cpp de Antoine
 1.7.2   triou@cea.fr            Passer en job de soumission mise_a_jour_TRUST_arch sur cluster pour eviter de charger les frontales
 1.7.2   triou@cea.fr            Analyser le fichier de sortie datafile_petsc.TU (signification de count)
 1.7.2   triou@cea.fr            Gauthier a demande d ajouter test Execute_parallel lors du configure pour verifier l'installation MPI

@@ -7,7 +7,7 @@ Pb_Thermohydraulique pb
 # Define the domain (a square cavity 0.01m*0.01m with 10*10 cells): #
 Domaine dom
 # BEGIN MESH #
-Mesh dom
+Mailler dom
 {
         Pave Cavite
         {

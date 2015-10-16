@@ -376,6 +376,8 @@ verif_error=$?
 tail -n1 $verif_log
 if [ $verif_error != 0 ]
 then
+   echo>>$verif_log
+   cat $TRUST_TMP/Verifie_pere/LOG>>$verif_log
    cat $verif_log | mail_ -s\"[lance_test_nuit] Verifie_pere KO on $HOST:$TRUST_ROOT\" $TRUST_MAIL $TRUST_PROJECT_LEADER
 fi
 echo>>$verif_log
@@ -2138,7 +2140,8 @@ grep KO $credoc_log
 #echo "    See $TRUST_ROOT/Outils/TRIOXDATA/pdf_par_xdata.log"
 echo "    See $TRUST_TMP/motcles file"
 echo "    "`wc -l $TRUST_TMP/motcles | awk '{ print $1 }'`" keywords without test cases!"
-[ "`date | $TRUST_Awk '{print $1}'`" = "Fri" ] && [ -f $TRUST_TMP/motcles ] && cat $TRUST_TMP/motcles | mail_ -s \"[lance_test_nuit] Tests coverage credoc\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+# Mail de verification uniquement le week-end
+[ "`date '+%u'`" -gt 5 ] && [ -f $TRUST_TMP/motcles ] && cat $TRUST_TMP/motcles | mail_ -s \"[lance_test_nuit] Tests coverage credoc\" $TRUST_MAIL $TRUST_PROJECT_LEADER
 error_log=`grep 'error Doxygen' $credoc_log`
 [ ${#error_log} != 0 ] && mail_ -s\"[check_include] Doxygen: Study of TRUST includes under `pwd`\" $TRUST_MAIL #$TRUST_PROJECT_LEADER
 #

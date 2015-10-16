@@ -5,7 +5,7 @@ Pb_Thermohydraulique pb
 Domaine dom
 Domaine dom_lu
 # BEGIN MESH #
-Mesh dom
+Mailler dom
 {
 	Pave Cavite 
 		{

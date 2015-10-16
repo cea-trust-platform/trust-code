@@ -666,12 +666,14 @@ then
       #OPENMPI module openmpi/gcc/64/1.8 openmpi/gcc/64/1.8.3 openmpi/gcc/64/1.8.4 
       # Aero_192: 3.7s
       module="openmpi/gcc/64/1.8.4"
+      #module="openmpi/gcc/64/1.8.8"
    else
       #OPENMPI module openmpi/icc/64/1.8 openmpi/icc/64/1.8.3 openmpi/icc/64/1.8.4 
       # Aero_192: 3.6s
 	  # module load qt/4.8.6 temporary, time to fix the Qt4 build failed with VisIt 2.8.2
       # module="$intel openmpi/icc/64/1.8 qt/4.8.6"    
-      module="$intel openmpi/icc/64/1.8.3"    
+      #module="$intel openmpi/icc/64/1.8.3"    
+      module="$intel openmpi/icc/64/1.8.4"
    fi
    echo "# Module $module detected and loaded on $HOST."
    echo "module unload mpich openmpi mvapich mvapich2 intel/compiler intel/mkl 1>/dev/null" >> $env
@@ -833,7 +835,7 @@ then
    # module="bullxmpi_gnu/1.2.8.4"
    module="$intel bullxmpi/1.2.8.4-mxm"
    # intelmpi 5.0.1.035(default) intelmpi/5.0.3.048
-   # module="$intel intelmpi/5.0.1.035"
+   # module="$intel intelmpi/5.0.3.048"
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
    echo "module load $module 1>/dev/null" >> $env     
@@ -1097,11 +1099,6 @@ then
    make_ $TRUST_ROOT/Outils/Python python
 fi
 
-##############################
-# Installation de makedepend #
-##############################
-make_ $TRUST_ROOT/Outils/makedepend
-
 ####################
 # Compilateurs C/C++
 ####################
@@ -1143,6 +1140,11 @@ then
    make_ $TRUST_ROOT/Outils/cmake
 fi
 
+##############################
+# Installation de makedepend #
+##############################
+make_ $TRUST_ROOT/Outils/makedepend
+
 
 # Mal fait : a ameliorer
 # Pour toutes les arch SLD=$TRUST_CC sauf RS6000 et sun prendre ld ?
@@ -1160,16 +1162,18 @@ m="# Path to dtterm command";e="`cherche_file Dtterm $Dtterm`";ecrit $m"|"$e"|"$
 m="# Path to xterm command";e="`cherche_file Xterm xterm rxvt konsole`";ecrit $m"|"$e"|"$env;eval $e
 [ ${#Dtterm} = 0 ] || [ ${#Xterm} = 0 ] && echo "Warning. The TRUST GUI (Graphical User Interface) will not work cause Dtterm or Xterm not found. " # Not found on mezel2, nevermind GUI not supported anymore...
 m="# Path to a debugger";e="`cherche_file DEBUG $DEBUG`";ecrit $m"|"$e"|"$env
+
+#################################################################
+# Si on ne trouve pas la librairie graphique Tcl/Tk on l'installe
+#################################################################
 m="# Path to Tcl/Tk";e="`cherche_file WISH /usr/bin/wish /bin/wish wish`";eval $e
-##########################################
-# Si on ne trouve pas Tcl/Tk on l'installe
-##########################################
 if [ "$WISH" = "" ]
 then
    make_ $TRUST_ROOT/Outils/tcl_tk Tcl/Tk
    e="`cherche_file WISH $TRUST_ROOT/exec/tcl_tk/bin/wish`";
 fi
 ecrit $m"|"$e"|"$env
+
 ###############################
 # Recherche et test de gnuplot:
 ###############################

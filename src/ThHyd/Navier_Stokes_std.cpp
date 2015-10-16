@@ -1073,8 +1073,19 @@ int Navier_Stokes_std::preparer_calcul()
           for (int op=0; op<nombre_d_operateurs(); op++)
             operateur(op).ajouter(vpoint);
         if (methode_calcul_pression_initiale_>=1)
-          sources().ajouter(vpoint);
-
+          {
+            int mod=0;
+            if (le_schema_en_temps->pas_de_temps()==0)
+              {
+                double dt = max(le_schema_en_temps->pas_temps_min(),calculer_pas_de_temps());
+                dt = min(dt, le_schema_en_temps->pas_temps_max());
+                le_schema_en_temps->set_dt()=(dt);
+                mod=1;
+              }
+            sources().ajouter(vpoint);
+            if (mod)
+              le_schema_en_temps->set_dt()=0;
+          }
         solveur_masse.appliquer(vpoint);
         vpoint.echange_espace_virtuel();
         divergence.calculer(vpoint, secmem);

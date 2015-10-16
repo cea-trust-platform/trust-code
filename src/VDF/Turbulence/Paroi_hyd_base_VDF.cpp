@@ -63,6 +63,9 @@ void Paroi_hyd_base_VDF::associer(const Zone_dis& zone_dis,const Zone_Cl_dis& zo
 void Paroi_hyd_base_VDF::init_lois_paroi_()
 {
   tab_u_star_.resize(la_zone_VDF->nb_faces_bord());
-  Cisaillement_paroi_.resize(0, dimension);
-  la_zone_VDF.valeur().creer_tableau_faces_bord(Cisaillement_paroi_);
+  if (!Cisaillement_paroi_.get_md_vector().non_nul())
+    {
+      Cisaillement_paroi_.resize(0, dimension);
+      la_zone_VDF.valeur().creer_tableau_faces_bord(Cisaillement_paroi_);
+    }
 }
