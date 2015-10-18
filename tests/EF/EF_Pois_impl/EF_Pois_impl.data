@@ -51,7 +51,7 @@ Lire sch2
 		seuil_convergence_solveur  1e-10
 		solveur gmres { diag seuil 1e-10 }
 		solveur optimal { seuil 1e-10 }
-		solveur Gen { seuil 1e-10 solv_elem BiCGStab precond ILU { type 2 filling 20 }  } 
+		solveur Gen { seuil 1e-10 solv_elem BiCGStab precond ILU { type 2 filling 20 }  quiet } 
 
 		 }
 	nb_pas_dt_max 100

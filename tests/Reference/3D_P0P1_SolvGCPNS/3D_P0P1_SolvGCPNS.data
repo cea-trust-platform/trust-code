@@ -78,7 +78,7 @@ Lire pb
 	Navier_Stokes_standard
 		{
                 Solveur_Pression GCP_NS {
-                        seuil 1.e-8 impr
+                        seuil 1.e-8 quiet
                         solveur1 GCP { precond ssor { omega 1.651 } seuil 1.e-10 }
                         solveur0 GCP { precond ssor { omega 1.651 } seuil 1.e-9 }
                 }

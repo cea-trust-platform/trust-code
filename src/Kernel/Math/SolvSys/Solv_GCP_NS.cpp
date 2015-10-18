@@ -38,13 +38,14 @@ Entree& Solv_GCP_NS::readOn(Entree& is )
 {
   Motcle accolade_ouverte("{");
   Motcle accolade_fermee("}");
-  Motcles les_parametres(5);
+  Motcles les_parametres(6);
   {
     les_parametres[0] = "seuil";
     les_parametres[1] = "solveur1";
     les_parametres[2] = "solveur0";
     les_parametres[3] = "impr";
     les_parametres[4] = "precond";
+    les_parametres[5] = "quiet";
   }
   int rang;
 
@@ -87,6 +88,11 @@ Entree& Solv_GCP_NS::readOn(Entree& is )
         case 4:
           {
             is >> le_precond_;
+            break;
+          }
+        case 5:
+          {
+            fixer_limpr(-1);
             break;
           }
         default :
@@ -214,7 +220,8 @@ int Solv_GCP_NS::resoudre_systeme(const Matrice_Base& matrice,
 
   dold = mp_prodscal(residu,g);
   dnew = dold;
-  Cout << "GCP NS residue = " << norme << " " << finl;
+  if (limpr()>-1)
+    Cout << "GCP NS residue = " << norme << " " << finl;
   double s=0;
   while ( ( norme > seuil_ ) && (niter++ < nmax) )
     {
@@ -222,7 +229,7 @@ int Solv_GCP_NS::resoudre_systeme(const Matrice_Base& matrice,
       p.echange_espace_virtuel();
       A01.multvectT(p, F1);
       // X1=-A11^(-1) A10p
-      if ((limpr())&& (je_suis_maitre())) Cout << "Solveur1: " ;
+      if ((limpr()==1)&& (je_suis_maitre())) Cout << "Solveur1: " ;
       solveur_poisson1.resoudre_systeme(A11, F1, X1);
       X1*=-1.;
       //F0=(A00  -A01 A11^(-1) A10) p
@@ -236,7 +243,7 @@ int Solv_GCP_NS::resoudre_systeme(const Matrice_Base& matrice,
       norme = mp_norme_vect(residu);
       if(norme>seuil_ && dnew>0)
         {
-          if ((limpr())&& (je_suis_maitre())) Cout << "Solveur0: " ;
+          if ((limpr()==1)&& (je_suis_maitre())) Cout << "Solveur0: " ;
           if(le_precond_.non_nul())
             le_precond_.preconditionner(A00,residu,g);
           else
@@ -253,7 +260,7 @@ int Solv_GCP_NS::resoudre_systeme(const Matrice_Base& matrice,
               exit();
             }
         }
-      if ((limpr())&& (je_suis_maitre()))
+      if ((limpr()==1)&& (je_suis_maitre()))
         {
           Cout << "GCP NS residue = " << norme << " " << finl;
           if ((niter % 15) == 0) Cout << finl ;

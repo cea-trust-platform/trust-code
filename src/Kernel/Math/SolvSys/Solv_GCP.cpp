@@ -50,7 +50,8 @@ Sortie& Solv_GCP::printOn(Sortie& s ) const
     s<<" precond " <<le_precond_;
   else
     s<<" precond_nul ";
-  if (limpr()) s<<" impr ";
+  if (limpr()==1) s<<" impr ";
+  if (limpr()==-1) s<<" quiet ";
   if (save_matrice_) s<<" save_matrice ";
   s<<" } ";
   return s ;
@@ -59,10 +60,11 @@ Sortie& Solv_GCP::printOn(Sortie& s ) const
 Entree& Solv_GCP::readOn(Entree& is )
 {
   int precond_nul;
-  int impr;
+  int impr,quiet;
   Param param((*this).que_suis_je());
   param.ajouter("seuil",&seuil_,Param::REQUIRED);
   param.ajouter_flag("impr",&impr);
+  param.ajouter_flag("quiet",&quiet);
   param.ajouter_flag("save_matrice",&save_matrice_);
   param.ajouter("precond",&le_precond_);
   param.ajouter_flag("precond_nul",&precond_nul);
@@ -83,6 +85,8 @@ Entree& Solv_GCP::readOn(Entree& is )
     }
   assert(seuil_>0);
   fixer_limpr(impr);
+  if (quiet)
+    fixer_limpr(-1);
   return is;
 }
 
@@ -468,7 +472,7 @@ int Solv_GCP::resoudre_(const Matrice_Base& matrice,
   double norme = mp_norme_vect(residu_);
   double norme_b = mp_norme_vect(resu_);
 
-  if (limpr())
+  if (limpr()==1)
     {
       double norme_relative=(norme_b>0?norme/norme_b:norme);
       Cout << "Norm of the residue: " << norme << " (" << norme_relative << ")" << finl;
@@ -533,7 +537,7 @@ int Solv_GCP::resoudre_(const Matrice_Base& matrice,
         }
       norme = sqrt(norme);
 
-      if (limpr())
+      if (limpr()==1)
         {
           Cout << norme << " ";
           if ((niter % 15) == 0) Cout << finl ;
@@ -557,7 +561,7 @@ int Solv_GCP::resoudre_(const Matrice_Base& matrice,
 
   // On affiche quand meme le nombre d'iterations
   double norme_relative=(norme_b>0?norme/norme_b:norme);
-  if (limpr())
+  if (limpr()==1)
     {
       Cout << finl;
       Cout << "Final residue: " << norme << " ( " << norme_relative << " )";
