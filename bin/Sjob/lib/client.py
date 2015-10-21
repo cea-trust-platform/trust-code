@@ -1,6 +1,11 @@
 # Echo client program
 import socket
 import sys
+try: 
+    sys.dont_write_bytecode = True
+except:
+    pass
+
 HOST = ''    # The remote host
 #PORT = 50007              # The same port as used by the server
 from port import PORT
