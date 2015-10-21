@@ -218,7 +218,7 @@ echo " "
 echo "##########################"
 echo "# Initialize environment #"
 echo "##########################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 if [ -f ~/.profile ]
 then
    echo "Call to "`echo ~`"/.profile"
@@ -307,7 +307,7 @@ rm -f $REP_NUIT/.nfs*
 [ ! -d $REP_NUIT ] && mkdir $REP_NUIT
 [ ! -d $REP_HIST ] && mkdir $REP_HIST
 ls -a $REP_NUIT
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 echo " "
 echo "------------------------------------------------------"
 echo " "
@@ -322,7 +322,7 @@ echo " "
 echo "############################"
 echo "# Create the documentation #"
 echo "############################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 credoc_log=$REP_NUIT/credoc_$HOST.log
 echo "Call to "$TRUST_ROOT"/bin/KSH/credoc"
 echo "  See $credoc_log"
@@ -330,12 +330,12 @@ echo "TRUST documentation creation on $HOST the `date` ...">$credoc_log
 echo>>$credoc_log
 # NB: Verification des includes avec Doxygen fait uniquement le vendredi
 $TRUST_ROOT/bin/KSH/credoc 1>>$credoc_log 2>&1
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 echo " "
 echo "######################"
 echo "# Update the sources #"
 echo "######################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 cd $TRUST_ROOT
 # Mise a jour des includes, des makefile de TRUST
 config_log=$REP_NUIT/configure_$HOST.log
@@ -495,12 +495,12 @@ echo " "
    git push --tags shared Livraison
    cd - 1>/dev/null 2>&1
 )
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 echo " "
 echo "#######################################"
 echo "# Send the sources to remote machines #"
 echo "#######################################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 envoie_log=$REP_NUIT/envoie_TRUST_arch_$HOST.log
 echo "Call to "$TRUST_ROOT"/bin/admin/envoie_TRUST_arch"
 echo "  See $envoie_log"
@@ -524,7 +524,7 @@ then
    echo "  liste_machines_KO:"
    echo $liste_machines_KO
 fi
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 echo " "
 echo "------------------------------------------------------"
 echo " "
@@ -544,7 +544,7 @@ echo "###############################################"
         echo "#############################"
         echo "# On workdir: "$TRUST_ROOT
         echo "#############################"
-        echo "---> Begin at "`date '+%H:%M:%S'`
+        echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 	if [ $vue = sourceforge/Kernel ]
 	then
            # Kernel desormais workdir Git:
@@ -797,7 +797,7 @@ echo "###############################################"
 	   fi
  	   rm -f $to_merge
 	fi
-        echo "<--- End at "`date '+%H:%M:%S'`
+        echo "<--- End at "`date '+%H:%M:%S %d/%m'`
      fi
   done
 )
@@ -819,7 +819,7 @@ echo " "
 echo "##################"
 echo "# On study cases #"
 echo "##################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 etude_activation=1
 etude_test=0
 disable_etudes=~/disable_etudes && [ -f $disable_etudes ] && etude_test=1 && rm -f $disable_etudes
@@ -870,7 +870,7 @@ if [ "$etude_activation" = 0 ]
 then
    echo "NOT executed"
 fi
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 #####################################
 # Lancement des tests sur Livraison #
@@ -884,7 +884,7 @@ echo " "
 echo "##########################"
 echo "# On no-regression tests #"
 echo "##########################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 echo "  See $lance_test_log"
 for exec in $liste_exec
 do
@@ -971,7 +971,7 @@ do
    # Suite au test `$exec 2>&1 | grep TRUST`
    rm -f convert_jdd hierarchie.dump TRUST.log
 done
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 #################################################
 # Verification de la portabilite des composants #
@@ -981,10 +981,10 @@ echo " "
 echo "#################"
 echo "# On components #"
 echo "#################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 echo "Call check_components for $TRUST_VERSION version from `pwd`"
 check_components $vue
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 echo " "
 echo "------------------------------------------------------"
 echo " "
@@ -1002,7 +1002,7 @@ echo " "
 echo "###################################"
 echo "# Create the matrix of validation #"
 echo "###################################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 (
 matrice_validation=0 # Non actualise
 # Changement 164, on cree la matrice de validation le week-end
@@ -1022,13 +1022,13 @@ else
    echo "NOT executed"
 fi
 ) &
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 echo " "
 echo "#####################################"
 echo "# Use and execute cpplint.py script #"
 echo "#####################################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 # le week-end uniquement
 if [ "`date '+%u'`" -gt 5 ]
 then
@@ -1050,13 +1050,13 @@ Running cpplint by filtering with --filter=$filter
 else
    echo "NOT executed"
 fi
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 echo " "
 echo "######################"
 echo "# Build the packages #"
 echo "######################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 GRAVAGE=$WORKDIR/A_GRAVER_CD_TRUST
 echo "Deleting of _build_ packages in $GRAVAGE"
 ls -f $GRAVAGE/*_build_*
@@ -1082,7 +1082,7 @@ echo "Move $version_arch packages to $GRAVAGE"
 mv $TRUST_ROOT/$version_arch $GRAVAGE/.
 ls $GRAVAGE/$version_arch
 cd $TRUST_ROOT
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 #
 #
 #
@@ -1103,7 +1103,7 @@ echo $ECHO_OPTS "User TRUST TrioCFD      diffusion list http://saxifrage:3500/ww
 echo $ECHO_OPTS "Developer TRUST TrioCFD diffusion list http://saxifrage:3500/wws/info/trio_u_dev" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "User TRUST ModeleCoeur  diffusion list http://saxifrage:3500/wws/info/mc2_annonces" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "TRUST Kernel              mailing list http://saxifrage:3500/wws/info/trio_u_kernel" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "TRUST Post processing     mailing list http://saxifrage:3500/wws/info/trio_u_post_traitement" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TRUST Post Processing     mailing list http://saxifrage:3500/wws/info/trio_u_post_traitement" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "TrioCFD Front Tracking    mailing list http://saxifrage:3500/wws/info/trio_u_front_tracking" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "TRUST ftp site:              ftp://$TRUST_FTP/$PUBLIC/index.html" >> $MESSAGES_NUIT
@@ -1112,9 +1112,10 @@ echo $ECHO_OPTS "Latest User's manual:        ftp://$TRUST_FTP/$SECRET/doc/User_
 echo $ECHO_OPTS "Latest list of builds:       ftp://$TRUST_FTP/$SECRET/NUIT/NUIT.html" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 echo "Binaries of TRUST $new version are available here:" >> $MESSAGES_NUIT
-for machine in `liste_machines updated`
+for machine in `liste_machines updated | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 do 
-   ssh_ $machine -n 'echo -e "'$machine:'\n\c";ls ${WORKDIR:-$HOME}/$WORKBASE*/TRUST/exec/TRUST_mpi_opt 2>/dev/null || echo' 2>/dev/null
+#   ssh_ $machine -n 'echo -e "'$machine:'\n\c";ls ${WORKDIR:-$HOME}/$WORKBASE*/TRUST/exec/TRUST_mpi_opt 2>/dev/null || echo' 2>/dev/null
+   ssh_ $machine -n 'echo -e "'$machine: '\c";ls ${WORKDIR:-$HOME}/$WORKBASE"'$machine'"/TRUST/exec/TRUST_mpi_opt 2>/dev/null || echo' 2>/dev/null
 done >> $MESSAGES_NUIT
 echo "Older binaries (> v1.7.1) are available here: ftp://$TRUST_FTP/$PUBLIC/" >> $MESSAGES_NUIT
 echo "Older binaries (< v1.7.1) are available here: ftp://ftp.cea.fr/pub/Trio_U/a87pour/" >> $MESSAGES_NUIT
@@ -1138,7 +1139,7 @@ echo " "
 echo "############################################"
 echo "# Test the installation to remote machines #"
 echo "############################################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 version_arch=TRUST_$TRUST_VERSION".tgz"
 installation=1
 remote1="-remote "`liste_machines "\-remote_install_TRUST_with_source" 		| head -1 | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'`
@@ -1274,7 +1275,7 @@ else
 fi
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+$installation
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 #####################################################################
 # Attente jusqu'a pour attendre le retour des compilations eloignees:
@@ -1303,7 +1304,7 @@ echo " "
 echo "##########################################"
 echo "# Verify the end of baltik portabilities #"
 echo "##########################################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 for Composant in $Composants
 do
    if [ -d $TRUST_ROOT/../Composants/$Composant ]
@@ -1347,7 +1348,7 @@ do
       fi 
    fi
 done
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
   
 #######################################################
 # Arret des etudes lancees a distance si non terminees:  
@@ -1356,7 +1357,7 @@ echo " "
 echo "#################################"
 echo "# Verify the end of studies run #"
 echo "#################################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 cd $ETUDES
 echo "Check $ETUDES"
 if [ "$etude_activation" = 0 ] 
@@ -1378,7 +1379,7 @@ else
    fi
 fi
 cd $TRUST_ROOT
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
  
 ##########################################################
 # Recupere les executables et divers fichiers sur machines
@@ -1387,7 +1388,7 @@ echo " "
 echo "#####################################################"
 echo "# Receive from remote machines and copy on ftp site #"
 echo "#####################################################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 cd $TRUST_ROOT
 export binaire=1
 recupere_log=$REP_NUIT/recupere_TRUST_arch_$HOST.log
@@ -1427,7 +1428,7 @@ do
    grep "Successful tests cases" $fic_test
 done
 
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 ##################
 # Stabilite TRUST
@@ -1436,7 +1437,7 @@ echo " "
 echo "############################"
 echo "# Test the TRUST stability #"
 echo "############################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 fic_test=$TRUST_ROOT"/exec/.tests_TRUST"$COMM
 echo "Analysis of "$fic_test" file"
 grep "Successful tests cases" $fic_test
@@ -1463,7 +1464,7 @@ force_stabilite=~/force_stabilite && [ -f $force_stabilite ] && stabilite="1.000
 echo `if [ "$stabilite" = "1.000" ]; then echo 1;else echo 0;fi`"  Stability $rstab=$stabilite (=1.000)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+`if [ "$stabilite" = "1.000" ]; then echo 1;else echo 0;fi`
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 ####################
 # Portabilite TRUST
@@ -1472,7 +1473,7 @@ echo " "
 echo "###############################"
 echo "# Test the TRUST portability #"
 echo "###############################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 echo "Analysis of $recupere_log file"
 grep "step TRUST" $recupere_log
 echo "Analysis of $REP_NUIT/NUIT.html file"
@@ -1492,7 +1493,7 @@ limite=0.99 # cf recupere_TRUST_arch
 echo "$portabilite  Portability $portabilite_trust=$portabilite_trio (>$limite)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+$portabilite
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 ###################
 # Test d'un atelier
@@ -1501,7 +1502,7 @@ echo " "
 echo "######################################"
 echo "# Test the compilation of a workshop #"
 echo "######################################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 echo "Analysis of $recupere_log file"
 grep "step workshop" $recupere_log
 echo "Analysis of $REP_NUIT/NUIT.html file"
@@ -1519,7 +1520,7 @@ force_make_atelier=~/force_make_atelier && [ -f $force_make_atelier ] && make_at
 echo `if [ "$make_atelier" = "1.000" ]; then echo 1;else echo 0;fi`"  Workshop $port_atelier=$make_atelier (=1.000)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+`if [ "$make_atelier" = "1.000" ]; then echo 1;else echo 0;fi`
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 #####################
 # Portabilite Xprepro
@@ -1528,7 +1529,7 @@ echo " "
 echo "################################"
 echo "# Test the Xprepro portability #"
 echo "################################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 echo "Analysis of $recupere_log file"
 grep "step Xprepro" $recupere_log
 echo "Analysis of $REP_NUIT/NUIT.html file"
@@ -1547,7 +1548,7 @@ force_portabilite_Xprepro=~/force_portabilite_Xprepro && [ -f $force_portabilite
 echo "$portabilite_Xprepro  Xprepro $port_Xprepro=$Xprepro (>=1)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+$portabilite_Xprepro
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 #######################
 # Portabilite de BALTIK
@@ -1556,7 +1557,7 @@ echo " "
 echo "###############################"
 echo "# Test the Baltik portability #"
 echo "###############################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 echo "Analysis of $recupere_log file"
 grep "step Baltik" $recupere_log
 echo "Analysis of $REP_NUIT/NUIT.html file"
@@ -1574,7 +1575,7 @@ force_portabilite_baltik=~/force_portabilite_baltik && [ -f $force_portabilite_b
 echo `if [ "$portabilite_baltik" = "1.000" ]; then echo 1;else echo 0;fi`"  Baltik $port_baltik=$portabilite_baltik (=1.000)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+`if [ "$portabilite_baltik" = "1.000" ]; then echo 1;else echo 0;fi`
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 ################################
 # Test des assert de compilation
@@ -1583,7 +1584,7 @@ echo " "
 echo "###############################"
 echo "# Test the compilation assert #"
 echo "###############################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 echo "Analysis of $recupere_log file"
 grep "step assert" $recupere_log
 echo "Analysis of $REP_NUIT/NUIT.html file"
@@ -1601,7 +1602,7 @@ force_test_assert=~/force_test_assert && [ -f $force_test_assert ] && test_asser
 echo `if [ "$test_assert" = "1.000" ]; then echo 1;else echo 0;fi`"  Assert $port_assert=$test_assert (=1.000)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+`if [ "$test_assert" = "1.000" ]; then echo 1;else echo 0;fi`
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 ############################
 # Disponibilite des binaires
@@ -1610,7 +1611,7 @@ echo " "
 echo "######################################"
 echo "# Test the disponibility of binaries #"
 echo "######################################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 nb_binaires=0
 porta_binaires=0
 dispo_binaires=0
@@ -1650,7 +1651,7 @@ force_disponibilite_binaires=~/force_disponibilite_binaires && [ -f $force_dispo
 echo "$disponibilite_binaires  Binairies $porta_binaires/$nb_binaires=$dispo_binaires (=1)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+$disponibilite_binaires
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 ############
 # Test XData
@@ -1659,7 +1660,7 @@ echo " "
 echo "##################################"
 echo "# Verify the validation of XData #"
 echo "##################################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 validation_xdata=""
 machines=`liste_machines "\-xdata" | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'`
 echo "Validation by -xdata on $machines"
@@ -1711,7 +1712,7 @@ force_validation_xdata=~/force_validation_xdata && [ -f $force_validation_xdata 
 echo "$validation_xdata  XData $validation_xdata (=1)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+$validation_xdata
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 ##########################
 # Verification des modules
@@ -1720,7 +1721,7 @@ echo " "
 echo "####################################"
 echo "# Verify the validation of Modules #"
 echo "####################################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 activation_verification_modules=0 # Non actualise
 if [ "$activation_verification_modules" = 1 ]
 then
@@ -1814,7 +1815,7 @@ then
 else
    echo "NOT executed"
 fi
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 ##########
 # Valgrind
@@ -1823,7 +1824,7 @@ echo " "
 echo "#####################################"
 echo "# Verify the validation of Valgrind #"
 echo "#####################################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 # Recuperer le ANA.log sur les machines valgrind
 cd $TRUST_ROOT/Validation/Valgrind
 rm -f ANA_*.log casmem_* caserr_*
@@ -1916,7 +1917,7 @@ force_valgrind=~/force_valgrind && [ -f $force_valgrind ] && valgrind=1 && rm -f
 echo "$valgrind  Valgrind $valgrind (=1)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+$valgrind
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 #
 #
 #
@@ -1924,7 +1925,7 @@ echo " "
 echo "############################"
 echo "# Verify the code coverage #"
 echo "############################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 #############
 # GCOV/LCOV #
 #############
@@ -2141,7 +2142,7 @@ grep KO $credoc_log
 echo "    See $TRUST_TMP/motcles file"
 echo "    "`wc -l $TRUST_TMP/motcles | awk '{ print $1 }'`" keywords without test cases!"
 # Mail de verification uniquement le week-end
-[ "`date '+%u'`" -gt 5 ] && [ -f $TRUST_TMP/motcles ] && cat $TRUST_TMP/motcles | mail_ -s \"[lance_test_nuit] Tests coverage credoc\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+[ "`date '+%u'`" = 1 ] && [ `date '+%H'` -lt 8 ] && [ -f $TRUST_TMP/motcles ] && cat $TRUST_TMP/motcles | mail_ -s \"[lance_test_nuit] Tests coverage credoc\" $TRUST_MAIL $TRUST_PROJECT_LEADER
 error_log=`grep 'error Doxygen' $credoc_log`
 [ ${#error_log} != 0 ] && mail_ -s\"[check_include] Doxygen: Study of TRUST includes under `pwd`\" $TRUST_MAIL #$TRUST_PROJECT_LEADER
 #
@@ -2256,7 +2257,7 @@ fi
 echo "$coverage  Coverage $couverture_de_code% (>=$couverture_minimale% of lines)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+$coverage
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 #
 #
 #
@@ -2267,7 +2268,7 @@ echo " "
 echo "#####################################"
 echo "# Test the stability of parallelism #"
 echo "#####################################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 machine=`liste_machines "\-Check_decoupage" | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'`
 echo "Validation by -Check_decoupage on $machine"
 if  [ "`ssh_ -o ConnectTimeout=30 -o BatchMode=yes $machine -n pwd 1>/dev/null 2>&1;echo $?`" != 0 ]
@@ -2330,7 +2331,7 @@ let criteres_remplis=$criteres_remplis+$parallelism
 #then
 #   Check_decoupage.ksh -all -update
 #fi
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 ##############
 # Performances
@@ -2339,7 +2340,7 @@ echo " "
 echo "########################"
 echo "# Test the performance #"
 echo "########################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 total=0
 machines=`liste_machines "\-benchmark" | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'`
 echo "Validation by -benchmarck on"
@@ -2379,7 +2380,7 @@ then
    if [ -f $TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/build/rapport.pdf ]
    then
        # Envoi du rapport genere le week-end au project leader
-      if [ "`date '+%u'`" -gt 5 ]
+      if [ "`date '+%u'`" = 1 ] && [ `date '+%H'` -lt 8 ]
       then
          echo "$TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/Run_fiche" | mail_ -a\"$TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/build/rapport.pdf\" -s\"[lance_test_nuit] Benchmark report generated `date '+%d/%m/%y'`\" $TRUST_MAIL $TRUST_PROJECT_LEADER
       else
@@ -2411,7 +2412,7 @@ else
 fi
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+$performances
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 ###########
 # ToDo list
@@ -2420,7 +2421,7 @@ echo " "
 echo "########################"
 echo "# Verify the ToDo list #"
 echo "########################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 echo "Analysis of $TRUST_ROOT/ToDo file"
 nb_todo=`grep -c ${TRUST_VERSION%_beta} $TRUST_ROOT/ToDo`
 echo "$nb_todo requests to do before the release of the next version"
@@ -2432,7 +2433,7 @@ do
    [ -s $TRUST_TMP/ToDo ] && [ "`date '+%u'`" = 2 ] && cat $TRUST_TMP/ToDo | mail_ -s \"[lance_test_nuit] ToDo list for the version ${TRUST_VERSION%_beta}\" $qui
 done
 # Envoi le week-end au chef de projet pour planning debut de semaine
-[ "`date '+%u'`" -gt 5 ] && cat $TRUST_ROOT/ToDo | mail_ -s \"[lance_test_nuit] ToDo list for the version ${TRUST_VERSION%_beta}\" $TRUST_PROJECT_LEADER $TRUST_TODO_MAIL
+[ "`date '+%u'`" = 1 ] && [ `date '+%H'` -lt 8 ] && cat $TRUST_ROOT/ToDo | mail_ -s \"[lance_test_nuit] ToDo list for the version ${TRUST_VERSION%_beta}\" $TRUST_PROJECT_LEADER $TRUST_TODO_MAIL
 rm -f $TRUST_TMP/ToDo
 #
 echo " "
@@ -2445,7 +2446,7 @@ fi
 echo "$nothing_todo  ToDo $nb_todo (=0)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+$nothing_todo
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 ########
 # Etudes
@@ -2454,7 +2455,7 @@ echo " "
 echo "#####################################"
 echo "# Verify the results of study cases #"
 echo "#####################################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 echo "Analysis of $REP_NUIT/run_Etudes.log file"
 grep "Study OK " $REP_NUIT/run*.log 2>/dev/null
 grep "Study KO " $REP_NUIT/run*.log 2>/dev/null
@@ -2475,7 +2476,7 @@ fi
 if [ "$NB" -gt 0 ] && [ -f $ETUDES/Rapport/build/rapport.pdf ]
 then
    # Envoi du rapport genere le week-end au project leader
-   if [ "`date '+%u'`" -gt 5 ]
+   if [ "`date '+%u'`" = 1 ] && [ `date '+%H'` -lt 8 ]
    then
       echo "$ETUDES/Rapport/Run_fiche" | mail_ -a\"$ETUDES/Rapport/build/rapport.pdf\" -s\"[lance_test_nuit] Studies report generated `date '+%d/%m/%y'`\" $TRUST_MAIL $TRUST_PROJECT_LEADER
    else
@@ -2495,7 +2496,7 @@ fi
 [ "$NB" -eq -1 ] && NB=0 
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+$validation_etudes
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 ###########################################
 # PROJETS BALTIK BASES SUR LE KERNEL ONLY #
@@ -2505,7 +2506,7 @@ echo "<--- End at "`date '+%H:%M:%S'`
 #echo "#########################################"
 #echo "# Test the portability of baltik MPCube #"
 #echo "#########################################"
-#echo "---> Begin at "`date '+%H:%M:%S'`
+#echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 ## Voir si dans le futur on ne peut pas faire converger la procedure check_components sur
 ## les projets Baltik place sous la VOBS Composants et ce projet Baltik.
 #PROJECT_ROOT=$WORKDIR/MPCube/mpcube-portage166	# MPCube a porter pour 1.6.2
@@ -2541,7 +2542,7 @@ echo "<--- End at "`date '+%H:%M:%S'`
 #echo "$validation_projets_baltik  MPCube $validation_projets_baltik (=1) Baltik=$HOST:$PROJECT_ROOT" >> $MESSAGES_NUIT
 #let total_criteres=$total_criteres+1
 #let criteres_remplis=$criteres_remplis+$validation_projets_baltik
-#echo "<--- End at "`date '+%H:%M:%S'`
+#echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 ##########
 # PROJETS
@@ -2553,7 +2554,7 @@ do
    echo "###################################"
    echo "# Verify the portability of baltik $Composant "
    echo "###################################"
-   echo "---> Begin at "`date '+%H:%M:%S'`
+   echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
    PROJECT_ROOT=`dirname $TRUST_ROOT`/Composants/$Composant
    validation_composant=1
    # Check if component is OK on $HOST:
@@ -2612,7 +2613,7 @@ do
    then
       let baltik_ok=$baltik_ok+$validation_composant
    fi
-   echo "<--- End at "`date '+%H:%M:%S'`
+   echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 done
 rm -f $force_composant
 
@@ -2623,7 +2624,7 @@ echo " "
 echo "####################################"
 echo "# Verify the validation of scripts #"
 echo "####################################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 echo "Analysis of $REP_NUIT/CR_* files"
 grep "Script " $REP_NUIT/CR_* | grep OK 2>/dev/null
 grep "Script " $REP_NUIT/CR_* | grep KO 2>/dev/null
@@ -2655,7 +2656,7 @@ else
 fi
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+$validation_scripts
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 #########
 # Doxygen
@@ -2664,7 +2665,7 @@ echo " "
 echo "####################################"
 echo "# Verify the Doxygen documentation #"
 echo "####################################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 echo "Search of $TRUST_ROOT/doc/doxygen*.err file"
 if [ -f $TRUST_ROOT/doc/doxygen*.err ]
 then
@@ -2683,7 +2684,7 @@ fi
 echo "$validation_doxygen  Doxygen $validation_doxygen (=1)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+$validation_doxygen
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 echo "Total: $criteres_remplis/$total_criteres criteria for the $new version" >> $MESSAGES_NUIT
 echo "-------------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
@@ -2700,7 +2701,7 @@ echo " "
 echo "###########################"
 echo "# Test if Release version #"
 echo "###########################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 
 ########################################################################
 # Feu vert de l'administrateur TRUST d'apres l'en tete de RELEASE_NOTES
@@ -2869,7 +2870,7 @@ then
 	 echo "New version $label : Delivery in progress..." >> $MESSAGES_NUIT
 	 livraison=1
 	 accord_beta=0
-	 echo "  Call git tag $label at "`date '+%H:%M:%S'`
+	 echo "  Call git tag $label at "`date`
          git tag $label
 	 # On pose le meme tag sur externalpackages
          cd externalpackages
@@ -2959,7 +2960,7 @@ grep -A `echo $(($total_criteres+2))` -B 1 "Release criteria of the" $MESSAGES_N
 sed 's/$/ <BR>/g' tmp_NUIT.txt > tmp_NUIT.html
 cat tmp_NUIT.html >> $REP_NUIT/NUIT.html
 rm -f tmp_NUIT.txt tmp_NUIT.html
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 
 
@@ -2970,7 +2971,7 @@ echo " "
 echo "####################"
 echo "# Send to ftp site #"
 echo "####################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 envoie_ftp_log=$REP_NUIT/envoie_ftp_cea_fr_$HOST.log
 echo "Call to "$TRUST_ROOT"/bin/admin/envoie_ftp_cea_fr"
 echo "  See $envoie_ftp_log"
@@ -2993,14 +2994,14 @@ echo " "
 echo "Call to "$TRUST_ROOT"/bin/admin/cree_index.html"
 echo "from `pwd`"
 cree_index.html
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 #-------------------------------------------------------
 echo " "
 echo "###########################"
 echo "# Send announcements mail #"
 echo "###########################"
-echo "---> Begin at "`date '+%H:%M:%S'`
+echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 
 ################################################################################################
 # Le mail des RELEASES NOTES est envoye aux developpeurs tous les mardis ou lors de la livraison
@@ -3009,7 +3010,7 @@ echo "---> Begin at "`date '+%H:%M:%S'`
 if [ "`date '+%u'`" = 2 ] || [ $livraison = 1 ] || [ $accord_beta = 1 ]
 then
    export TRUST_SHARE="/net/dibona/users/dibona/triou"
-   ALL_DEVELOPERS_TRUST_MAIL="trio_u_dev@saxifrage.saclay.cea.fr $TRUST_MAIL"
+   ALL_DEVELOPERS_TRUST_MAIL="trio_u_dev@saxifrage.saclay.cea.fr"
 else
    export TRUST_SHARE=""
    ALL_DEVELOPERS_TRUST_MAIL=$TRUST_MAIL" "$TRUST_PROJECT_LEADER
@@ -3040,11 +3041,10 @@ export TRUST_SHARE=""
 if [ $livraison = 1 ]
 then
    export TRUST_SHARE="/net/dibona/users/dibona/triou"
-   ALL_USERS_TRUST_MAIL="trio_u_annonces@saxifrage.saclay.cea.fr $TRUST_MAIL"
-   echo "!!! mail not sent to trio_u_annonces !!!" | mail_ -s \"[lance_test_nuit] WARNING! TRUST v$new released: Ensure that git push origin has been done manually...\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+   ALL_USERS_TRUST_MAIL="trio_u_annonces@saxifrage.saclay.cea.fr"
    push_error=1 # Temporary
-   if [ $push_error = 0 ]
-   then
+   [ $push_error = 1 ] && ALL_USERS_TRUST_MAIL=$TRUST_MAIL
+   echo "!!! mail not sent to trio_u_annonces !!!" | mail_ -s \"[lance_test_nuit] WARNING! TRUST v$new released: Ensure that git push origin has been done manually...\" $TRUST_MAIL $TRUST_PROJECT_LEADER
    for dest in $ALL_USERS_TRUST_MAIL
    do
       echo "Stable release announcement sent to $dest"
@@ -3057,10 +3057,13 @@ Please, do not give the ftp address without permission.
 TRUST support team. mailto:$TRUST_MAIL
 
 To unsubscribe: Reply to this message.
+
+http://www-trio-u.cea.fr
+http://sourceforge.net/projects/trust-platform
+http://sourceforge.net/projects/triocfd
 EOF
       sleep 5
    done
-   fi   
    ########################################################
    # On change les NOTES en augmentant le numero de version
    # car sinon on risque des ennuis le lendemain (Version1.5.3.tar+cle effaces dans A_GRAVER_CD_TRUST)
@@ -3120,7 +3123,7 @@ Developer notes version $next_new : Changes since version $new :
 fi
 echo `echo ~`"/CR sent to $TRUST_MAIL"
 #mail_ -s \"[lance_test_nuit] Night report of TRUST workshop  on `date '+%d/%m/%y'`\" $TRUST_MAIL < ~/CR
-echo "<--- End at "`date '+%H:%M:%S'`
+echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 echo " "
 echo "****************************************************"

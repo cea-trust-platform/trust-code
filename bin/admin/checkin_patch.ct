@@ -44,13 +44,12 @@ then
    then
       touch $TRUST_ROOT/.RELEASE_NOTES
       export TRUST_SHARE="/net/dibona/users/dibona/triou"
-      dest="trio_u_annonces@saxifrage.saclay.cea.fr $TRUST_MAIL"
+      dest="trio_u_annonces@saxifrage.saclay.cea.fr"
+      push_error=1 # Temporary
+      [ $push_error = 1 ] && dest=$TRUST_MAIL
       patch_branch=patch_`echo $TRUST_VERSION | awk '{gsub("\\\.","",$0);print $0}'`
       echo "  New TRUST v$TRUST_VERSION patch released"
       echo "!!! mail not sent to trio_u_annonces !!!" | mail_ -s \"[checking_patch.ct] WARNING! New TRUST v$TRUST_VERSION patch released: Ensure that git push origin has been done manually...\" $TRUST_MAIL $TRUST_PROJECT_LEADER
-      push_error=1 # Temporary
-      if [ $push_error = 0 ]
-      then
       mail_ -s \"New TRUST v$TRUST_VERSION patch released\" $dest << EOF
 `$TRUST_Awk '// {print $0} /-------/ {exit}' $TRUST_ROOT/RELEASE_NOTES`
 
@@ -76,8 +75,11 @@ Please, do not give the ftp address without permission.
 TRUST support team. mailto:$TRUST_MAIL
 
 To unsubscribe: Reply to that message.
+
+http://www-trio-u.cea.fr
+http://sourceforge.net/projects/trust-platform
+http://sourceforge.net/projects/triocfd
 EOF
-      fi
    fi
 fi
 exit 0

@@ -335,17 +335,6 @@ then
    if [ "$err" = 0 ]
    then
       echo "Directory `pwd`/$NOM created with files inside:" && ls $NOM
-   elif  [ "$TRUST_TESTS" != "$TRUST_ROOT/tests" ]
-   then
-      echo "... and from $TRUST_ROOT/tests database..."
-      copie_cas_test $NOM $TRUST_ROOT/tests
-      err=$?
-      if [ "$err" = 0 ]
-      then
-         echo "Directory `pwd`/$NOM created with files inside:" && ls $NOM
-      else
-         echo "ERROR: Directory `pwd`/$NOM NOT created !!!"
-      fi
    else
       echo "ERROR: Directory `pwd`/$NOM NOT created !!!"
    fi
@@ -404,22 +393,23 @@ fi
 
 ###############################################
 # Utilisation de Petsc dans le jeu de donnees ?
+# et eventuellement dans le JDD du baltik MC2 ?
 ###############################################
 USE_PETSC=0
 if [ -f $NOM.data ]
 then 
    # To avoid dos problems:
    dos2unix_ $NOM.data
-   USE_PETSC=`$TRUST_Awk 'BEGIN {IGNORECASE=1;use_petsc=0} \
+   USE_PETSC=`sed "s/\t/ /g" $NOM.data | $TRUST_Awk 'BEGIN {IGNORECASE=1;use_petsc=0} \
                             // {n=split($0,a,"#")-1;if (n>0) dieses+=n} \
                             /^fin/ && (dieses%2==0) && (NF==1) {exit} \
-                            / petsc / || / petsc_gpu / || / optimal / {use_petsc=1;exit}
-	                    END {print use_petsc}' $NOM.data`
-   USE_PETSC_GPU=`$TRUST_Awk 'BEGIN {IGNORECASE=1;use_petsc_gpu=0} \
+                            / petsc / || / petsc_gpu / || / optimal / || / resoudremultiassemblage / {use_petsc=1;exit}
+	                    END {print use_petsc}'`
+   USE_PETSC_GPU=`sed "s/\t/ /g" $NOM.data | $TRUST_Awk 'BEGIN {IGNORECASE=1;use_petsc_gpu=0} \
                             // {n=split($0,a,"#")-1;if (n>0) dieses+=n} \
                             /^fin/ && (dieses%2==0) && (NF==1) {exit} \
                             / petsc_gpu / {use_petsc_gpu=1;exit}
-	                    END {print use_petsc_gpu}' $NOM.data`
+	                    END {print use_petsc_gpu}'`
 fi
 if [ $PETSC_HAVE_CUDA = 1 ] && [ $USE_PETSC = 1 ]
 then

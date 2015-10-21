@@ -64,9 +64,10 @@ echo "[-disable-med]                    Disable MED library installation."
 echo "[-disable-metis]                  Disable metis library installation."
 echo "[-disable-medcoupling]            Disable MEDCoupling library installation."
 echo "[-disable-mpi]                    Disable MPI library detection/installation and build a non-parallel version of the application."
-echo "[-disable-ccache]                 Disable ccache detetction/installation."
+echo "[-disable-ccache]                 Disable ccache detection/installation."
 echo "[-disable-valgrind]               Disable valgrind installation and build."
 echo "[-disable-gnuplot]                Disable gnuplot installation and build."
+echo "[-disable-tcl_tk]                 Disable Tcl/Tk detection/installation."
 echo "[-disable-gmsh]                   Disable Gmsh installation and build."
 echo "[-disable-mpiio]                  Disable MPI-IO mode for writing of .xyz binary output file."
 echo "[-without-doc]                    Do not build the documentation."
@@ -80,7 +81,7 @@ cc=""
 F77=""
 clean=""
 
-LIST_THIRD_PARTY="PETSC MED MPI METIS MEDCOUPLING CCACHE GMSH VALGRIND GNUPLOT"
+LIST_THIRD_PARTY="PETSC MED MPI METIS MEDCOUPLING CCACHE GMSH VALGRIND GNUPLOT TCL_TK"
 
 #[ -f configure.log ] && sed "s/^/# /" -i  configure.log
 [ -f configure.log ] && sed "s/# //" -i  configure.log && sed "s/^/# /" -i  configure.log
@@ -89,7 +90,7 @@ echo $0 $* "\$"* >> configure.log
 if [ "$1" = "-disable-optionals" ]
 then
  shift
- $0 -disable-ccache -disable-med -disable-medcoupling -disable-petsc -disable-gnuplot -disable-valgrind -disable-mpi -disable-metis -without-visit -disable-gmsh -without-doc $* 
+ $0 -disable-ccache -disable-med -disable-medcoupling -disable-petsc -disable-gnuplot -disable-tcl_tk -disable-valgrind -disable-mpi -disable-metis -without-visit -disable-gmsh -without-doc $* 
  exit $?
 fi
 
@@ -209,6 +210,7 @@ do
       [ "$THIRD_PARTY" = "CCACHE" ] && REP_THIRD_PARTY=$TRUST_ROOT/env_src/ccache
       [ "$THIRD_PARTY" = "VALGRIND" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/valgrind
       [ "$THIRD_PARTY" = "GNUPLOT" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/gnuplot
+      [ "$THIRD_PARTY" = "TCL_TK" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/tcl_tk
       if [ ! -d $REP_THIRD_PARTY ]
       then
          echo "$1 option not available cause $REP_THIRD_PARTY is not installed."

@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.2_beta : Enhancements, modifications and corrected bugs since version 1.7.1 :
 -------------------------------------------------------------------------------------------------
+21/10/15 (Kernel) Minor change: Option -disable-tcl_tk added to the Kernel/TRUST configure tool (Do not detect/install the GUI Tcl/Tk librairy)
 14/10/15 (Kernel) Minor change: Option -disable-mpiio added to the Kernel/TRUST configure tool (Do not use MPI-IO mode for writing of .xyz binary output file)
 08/10/15 (TRUST)  Major change: With resume_last_time keyword in .data, tinit is set to last_time of saved files
 05/10/15 (Kernel) Minor change: Option -without-doc added to the Kernel/TRUST configure tool (Do not build the documentation)

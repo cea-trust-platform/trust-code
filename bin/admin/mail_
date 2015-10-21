@@ -4,7 +4,7 @@
 [ "$nomail" = 1 ] && exit 0
 [ "$HOST" = "" ] && echo "TRUST environment should be initialized to use mail_" && exit -1
 # On n'execute mail_ qu'a l'interieur de cea.fr et sur les clusters ou mis_a_jour_TRUST_arch est lance
-[ "`domainname 2>/dev/null | grep 'cea.fr'`" = "" ] && [ "`grep 'cea.fr' /etc/mtab 2>/dev/null`" = "" ] && [ "`echo $HOSTNAME | grep 'cea.fr'`" = "" ] && [ $HOST != callisto ] && [ $HOST != cezanne63 ] && [ $HOST != antoinette3 ] && [ $HOST != thor ] && [ $HOST != ceres2 ] && exit 
+[ "`domainname 2>/dev/null | grep 'cea.fr'`" = "" ] && [ "`grep 'cea.fr' /etc/mtab 2>/dev/null`" = "" ] && [ "`echo $HOSTNAME | grep 'cea.fr'`" = "" ] && [ "`ping_ $HOST | grep '132.16'`" = "" ] && [ $HOST != callisto ] && [ $HOST != cezanne63 ] && [ $HOST != antoinette3 ] && [ $HOST != thor ] && [ $HOST != ceres2 ] && exit 
 
 commande=$*
 attached=`echo $commande | awk -F\" '/-a/ {print $2}'`

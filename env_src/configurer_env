@@ -645,15 +645,12 @@ then
    # Load modules
    module=slurm
    echo "# Module $module detected and loaded on $HOST."
+   # Initialisation de l environnement module $MODULE_PATH 
    echo "source /cm/local/apps/environment-modules/3.2.10/init/bash" >> $env
    echo "module load $module 1>/dev/null" >> $env
    #INTEL 2013_sp1.2.144 2013_sp1.4.211 2015.3.187
-   if [ $HOST_BUILD = callisto-intel15 ]
-   then
-     intel="intel/compiler/64/15.0/2015.3.187 intel/mkl/64/11.2/2015.3.187 intel/tbb/64/4.3/2015.3.187"
-   else
-     intel="intel/compiler/64/14.0/2013_sp1.2.144 intel/mkl/64/11.1/2013_sp1.2.144 intel/tbb/64/4.2/2013_sp1.4.211"
-   fi
+   #intel="intel/compiler/64/14.0/2013_sp1.2.144 intel/mkl/64/11.1/2013_sp1.2.144 intel/tbb/64/4.2/2013_sp1.4.211"
+   intel="intel/compiler/64/15.0/2015.3.187 intel/mkl/64/11.2/2015.3.187 intel/tbb/64/4.3/2015.3.187"
    if [ $HOST_BUILD = callisto-mvapich ]
    then
       #MVAPICH2 module mvapich2/gcc/64/1.9_psm mvapich2/gcc/64/2.0.1_mlx mvapich2/gcc/64/2.0.1_psm
@@ -666,17 +663,15 @@ then
       #OPENMPI module openmpi/gcc/64/1.8 openmpi/gcc/64/1.8.3 openmpi/gcc/64/1.8.4 
       # Aero_192: 3.7s
       module="openmpi/gcc/64/1.8.4"
-      #module="openmpi/gcc/64/1.8.8"
    else
       #OPENMPI module openmpi/icc/64/1.8 openmpi/icc/64/1.8.3 openmpi/icc/64/1.8.4 
       # Aero_192: 3.6s
 	  # module load qt/4.8.6 temporary, time to fix the Qt4 build failed with VisIt 2.8.2
       # module="$intel openmpi/icc/64/1.8 qt/4.8.6"    
-      #module="$intel openmpi/icc/64/1.8.3"    
-      module="$intel openmpi/icc/64/1.8.4"
+      module="$intel openmpi/icc/64/1.8.3"    
    fi
    echo "# Module $module detected and loaded on $HOST."
-   echo "module unload mpich openmpi mvapich mvapich2 intel/compiler intel/mkl 1>/dev/null" >> $env
+   echo "module unload mpich openmpi mvapich mvapich2 intel/compiler intel/mkl intel/tbb 1>/dev/null" >> $env
    echo "module load $module 1>/dev/null" >> $env     
    . $env
    # Creation wrapper qstat -> squeue
@@ -749,7 +744,7 @@ module () {
   
    # New restore/save collection of modules (faster to load) 
    # Try to generalize to other clusters...
-   collection_modules=TRUST_$TRUST_VERSION-$HOST`[ "$TRUST_FORCE_PETSC_HAVE_CUDA" = 1 ] && echo -CUDA``[ "VAMPIR_SUPPORTED" = 1 ] && echo -VAMPIR``[ $HOST_BUILD = airain-intel15 ] && echo -intel15`
+   collection_modules=TRUST_$TRUST_VERSION-$HOST`[ "$TRUST_FORCE_PETSC_HAVE_CUDA" = 1 ] && echo -CUDA``[ "VAMPIR_SUPPORTED" = 1 ] && echo -VAMPIR`
    module savelist
    echo "Trying to restore collection of modules named $collection_modules:"
    module restore $collection_modules
@@ -766,10 +761,9 @@ module () {
       module load $module
       # Intel compiler (WARNING: Intel 12.x provoque plusieurs problemes (voir FA1445))
 	  # Intel 13.1.3.192 14.0.3.174(default) 15.0.2.164 15.0.3.187
-      [ $HOST = airain ] 	&& module="intel/14.0.3.174"
-      [ $HOST_BUILD = airain-intel15 ] && module="intel/15.0.3.187"
-      [ $HOST = curie-ccrt ] 	&& module="intel/14.0.3.174"
-      [ $HOST = curie-fr ] 	&& module="intel/14.0.3.174"
+      [ $HOST = airain ] 	&& module="intel/15.0.3.187"
+      [ $HOST = curie-ccrt ] 	&& module="intel/15.0.3.187"
+      [ $HOST = curie-fr ] 	&& module="intel/15.0.3.187"
       echo "Module $module detected and loaded on $HOST."
       module unload intel
       module load $module
@@ -1167,7 +1161,7 @@ m="# Path to a debugger";e="`cherche_file DEBUG $DEBUG`";ecrit $m"|"$e"|"$env
 # Si on ne trouve pas la librairie graphique Tcl/Tk on l'installe
 #################################################################
 m="# Path to Tcl/Tk";e="`cherche_file WISH /usr/bin/wish /bin/wish wish`";eval $e
-if [ "$WISH" = "" ]
+if [ "$WISH" = "" ] && [ "$TRUST_DISABLE_TCL_TK" != "1" ]
 then
    make_ $TRUST_ROOT/Outils/tcl_tk Tcl/Tk
    e="`cherche_file WISH $TRUST_ROOT/exec/tcl_tk/bin/wish`";

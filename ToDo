@@ -1,13 +1,17 @@
 Version	Qui				Tache
+1.7.2   gauthier.fauchet@cea.fr  Revoir le PATH pour module load TRUST sous occigen (passer par SET)
+1.7.2   gauthier.fauchet@cea.fr  Mise a jour du script translate.sh pour pourvoir ensuite etre utilise par la TMA
+1.7.2   gauthier.fauchet@cea.fr  copie_cas_test en mode full (pas seulement lie a un projet ; exemple TRUST et TrioCFD)
+1.7.2   gauthier.fauchet@cea.fr  Revoir Diagonal preconditionning for a parallel calculation
+1.7.2   gauthier.fauchet@cea.fr  BUILD_TOOLS=KO si make debug fait avant make optim
+1.7.2   gauthier.fauchet@cea.fr  Rechercher test MPIIO qui planterait sur machine Areva (tester sur occigen => MPIIO plante)
 1.7.2   triou@cea.fr            en test: ajouter 16 et 32 proc pour visIt via HPCDrive dans host_ccrt.xml
 1.7.2   triou@cea.fr            revoir la configuration de Visit mode client/serveur sur curie via HPCDrive (PAS DU TOUT optimise!!!!)
-1.7.2   gauthier.fauchet@cea.fr  Rechercher test MPIIO qui planterait sur machine Areva
 1.7.2   triou@cea.fr            Passer en job de soumission mise_a_jour_TRUST_arch sur cluster pour eviter de charger les frontales
 1.7.2   triou@cea.fr            Analyser le fichier de sortie datafile_petsc.TU (signification de count)
 1.7.2   triou@cea.fr            Gauthier a demande d ajouter test Execute_parallel lors du configure pour verifier l'installation MPI
 1.7.2   triou@cea.fr            revoir comment activer ou non les mot cles dans vi car a adapter selon les baltiks charges
 1.7.2   triou@cea.fr            revoir le TRUST env qui teste beaucoup de chose (ex: dd.ksh,...) et trop long pour utilisateur
-1.7.2   gauthier.fauchet@cea.fr  configure disable-optionals essaie d installer tcl/tk non necessaire mais plante si non dispo
 1.7.2   triou@cea.fr            completer benchmark avec et sans Petsc
 1.7.2   triou@cea.fr            Avoir un fichier avec la liste des fichiers deleted sur git pour faire un rm a distance
 1.7.2   triou@cea.fr            Probleme avec pre-commit et post-commit qui modifie des fichiers lors du commit apres nos tests !!! Le faire lors du compile et si modif alors arret...
