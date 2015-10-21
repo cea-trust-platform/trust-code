@@ -47,7 +47,7 @@ Lire sch
    dt_start dt_calc
    dt_max 5.0
    dt_sauv 100
-   seuil_statio 1.e-6
+   seuil_statio 1.e-16
    max_iter_implicite 10
    solveur simpler
    {

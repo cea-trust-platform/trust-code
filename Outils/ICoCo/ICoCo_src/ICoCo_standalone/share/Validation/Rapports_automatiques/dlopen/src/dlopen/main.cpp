@@ -63,13 +63,17 @@ int main(int argc, char** argv) {
   for (unsigned int ii=0;ii<outputnames.size();ii++)
     cout<<my_data.data_file<<"  Field Output " <<outputnames[ii]<<endl;
   cout<<endl;
-
+  vector<string> inputnames= T->getInputFieldsNames();
+  for (unsigned int ii=0;ii<inputnames.size();ii++)
+    cout<<my_data.data_file<<"  Field Input " <<inputnames[ii]<<endl;
+  cout<<endl;
   bool stop=false;  // Trio wants to stop
   bool ok=true;     // Trio transient runned OK
 
-  while (1) {                     // Loop on timesteps
+  while (!stop) {                     // Loop on timesteps
     
-      
+    ok=false;
+    while (!ok && !stop) {
       double dt=T->computeTimeStep(stop);
       if (stop)
 	break;
@@ -168,7 +172,11 @@ int main(int argc, char** argv) {
       else {
 	T->validateTimeStep();
       }
-
+    }
+    // Stop the resolution if the Problem is stationnary
+    bool stat=T->isStationary();
+    if (stat)
+      stop=true;
   }                                   // End loop on timesteps
   
   T->terminate();
