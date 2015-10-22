@@ -1,4 +1,4 @@
-# Cas test multi-sequentiel avec Execute_parallel #
+# Cas test multi-sequentiel avec Execute_parallel with Petsc #
 Execute_parallel {
   liste_cas 2 VAHL_DAVIS VAHL_DAVIS_VEF
   nb_procs 2 1 1

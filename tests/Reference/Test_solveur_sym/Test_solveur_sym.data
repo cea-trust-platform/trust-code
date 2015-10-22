@@ -1,4 +1,4 @@
-# Test de la sauvegarde des matrices secmme et du test_sovleur #
+# Test de la sauvegarde des matrices secmme et du test_sovleur  Optimal #
 # PARALLEL OK #
 # BEGIN PARTITION 
 system "touch DOM_0000.Zones"
