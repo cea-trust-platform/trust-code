@@ -169,5 +169,5 @@ do
    echo "$TRUST_ENV/$fic updated."
 done
 
-python -c "import sys;sys.path.insert(0,'$TRUST_ROOT/bin/KSH');from Createcmakefile import read_libs_from_makeliba;read_libs_from_makeliba()"
+python -c "import sys;sys.path.insert(0,'$TRUST_ROOT/bin/KSH');sys.dont_write_bytecode = True;from Createcmakefile import read_libs_from_makeliba;read_libs_from_makeliba()"
 

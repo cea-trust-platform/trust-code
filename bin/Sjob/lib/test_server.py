@@ -6,6 +6,11 @@ def main2():
 
     import socket
 
+    import sys
+    try: 
+        sys.dont_write_bytecode = True
+    except:
+        pass
 
     from port import PORT
     HOST = ''                 # Symbolic name meaning all available interfaces

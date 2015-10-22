@@ -17,6 +17,11 @@
 
 import sys, os, getopt, shutil
 
+try: 
+	sys.dont_write_bytecode = True
+except:
+        pass
+
 from lib import GestionMessages
 from lib import getNomFonction
 from lib import extraireMotcleValeur,print_description
