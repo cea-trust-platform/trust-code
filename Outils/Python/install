@@ -2,7 +2,7 @@
 ln -sf $TRUST_ROOT/externalpackages/Python* .
 Python=$1 && [ "$1" = "" ] && exit -1
 cible=$2 && [ "$2" = "" ] && exit -1
-[ "$Python" = "" ] && echo "Python non trouve ici: "`pwd` && exit
+[ "$Python" = "" ] && echo "Python not found here: "`pwd` && exit
 Python=${Python%.tgz}
 rm -r -f $Python
 gunzip -f -c $Python.tgz | tar -xf -
@@ -12,7 +12,7 @@ export OPT=""
 # --enable-shared pour le build de VisIt
 ./configure --prefix=$cible --disable-ipv6 --enable-shared 
 $TRUST_MAKE || exit -1
-$TRUST_MAKE python-config || exit -1 # Pour le build de VisIt
+$TRUST_MAKE python-config || exit -1 # For the build of VisIt
 make install || exit -1
 echo "export PATH=\$TRUST_ROOT${cible#$TRUST_ROOT}/bin:\$PATH" > $2/env.sh
 echo "export LD_LIBRARY_PATH=\$TRUST_ROOT${cible#$TRUST_ROOT}/lib:\$LD_LIBRARY_PATH" >> $2/env.sh

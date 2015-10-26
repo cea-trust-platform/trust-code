@@ -1,9 +1,12 @@
-# Lance la configuration et la compilation de ccache
-ccache=$(TRUST_ROOT)/exec/ccache/bin/ccache
-all:$(ccache)
-$(ccache): $(TRUST_ROOT)/externalpackages/ccache-3.1.4.tar.gz makefile Installer_ccache
+name=ccache
+version=3.1.4
+package=$(name)-$(version).tar.gz
+install=$(TRUST_ROOT)/exec/$(name)
+cible=$(install)/bin/$(name)
+all:$(cible)
+$(cible): $(TRUST_ROOT)/externalpackages/$(package) makefile Installer_ccache
 	make clean
-	./Installer_ccache
+	@./Installer_ccache
 clean:
-	rm -rf $(TRUST_ROOT)/exec/ccache
+	rm -rf $(install)
 

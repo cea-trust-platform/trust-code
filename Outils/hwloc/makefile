@@ -1,8 +1,10 @@
-hwloc=$(TRUST_ROOT)/exec/hwloc/bin/lstopo
-all:$(hwloc)
-$(hwloc): Installer_hwloc makefile
+name=hwloc
+install=$(TRUST_ROOT)/exec/$(name)
+cible=$(install)/bin/lstopo
+all:$(cible)
+$(cible): Installer_hwloc makefile
 	make clean
-	./Installer_hwloc
+	@./Installer_hwloc
 
 clean:
-	rm -r -f hwloc hwloc-?.?.?
+	rm -r -f $(install) $(name)-?.?.?

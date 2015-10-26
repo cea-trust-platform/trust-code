@@ -207,7 +207,7 @@ do
       
       REP_THIRD_PARTY=$TRUST_ROOT/ThirdPart/src/LIB$THIRD_PARTY
       [ "$THIRD_PARTY" = "GMSH" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/Gmsh
-      [ "$THIRD_PARTY" = "CCACHE" ] && REP_THIRD_PARTY=$TRUST_ROOT/env_src/ccache
+      [ "$THIRD_PARTY" = "CCACHE" ] && REP_THIRD_PARTY=$TRUST_ROOT/env/ccache
       [ "$THIRD_PARTY" = "VALGRIND" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/valgrind
       [ "$THIRD_PARTY" = "GNUPLOT" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/gnuplot
       [ "$THIRD_PARTY" = "TCL_TK" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/tcl_tk

@@ -1,10 +1,12 @@
-# Lance la configuration et la compilation de gmake
-gmake=$(TRUST_ROOT)/exec/gmake/bin/gmake
-version=make-4.0.tar.gz
-all:$(gmake)
-$(gmake): makefile
+name=gmake
+version=4.0
+package=make-$(version).tar.gz
+install=$(TRUST_ROOT)/exec/$(name)
+cible==$(install)/bin/$(name)
+all:$(cible)
+$(cible): makefile
 	make clean
-	./Installer $(version)
+	@./Installer $(version)
 clean:
-	rm -rf $(TRUST_ROOT)/exec/gmake
+	rm -rf $(install)
 

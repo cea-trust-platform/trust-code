@@ -87,6 +87,6 @@ $TRUST_MAKE || exit -1 # Yes, parallel build supported since MPICH 1.5
 make install || exit -1
 
 cd ..
-rm -r -f $src
+rm -r -f $src configure.help
 
 exit 0

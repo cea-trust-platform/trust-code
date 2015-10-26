@@ -13,15 +13,15 @@ make_()
    directory_package=$1
    cd $directory_package 
    package_name=$2 && [ "$package_name" = "" ] && package_name=`basename $directory_package`
-   package=`basename $directory_package`
+   package_log=$3 && [ "$package_log" = "" ] && package_log=`pwd`/`basename $directory_package`".log"
    echo $ECHO_OPTS "Trying to install $package_name...\c"
    # On lance la compilation
-   make 1>$package.log 2>&1
+   make 1>$package_log 2>&1
    if [ $? = 0 ]
    then
       echo "OK"
    else
-      echo "KO (See `pwd`/$package.log)"
+      echo "KO (See $package_log)"
       echo "You need $1 installed correctly. Contact TRUST support."
       exit -1
    fi
@@ -567,6 +567,7 @@ then
       done
    fi
    rm -rf $TRUST_ROOT/env/ $TRUST_ROOT/lib $TRUST_ROOT/exec $TRUST_ROOT/include $TRUST_ROOT/Makefile $TRUST_ROOT/MonoDir*
+   rm -f $TRUST_ROOT/env_TRUST.sh
    # Plus on efface le $TRUST_TMP
    rm -r -f $TRUST_TMP
    exit 0
@@ -1073,10 +1074,10 @@ INSTALL_CCACHE=0 # Pas ccache sur ceres/themis car blocage sur ceres de ccache -
 [ "$TRUST_DISABLE_CCACHE" != "1" ] && [ $TRUST_ARCH = linux ] && [ $HOST != ceres ] && [ $HOST != themis ] && INSTALL_CCACHE=1
 if [ $INSTALL_CCACHE =  1 ]
 then
-   make_ ccache
+   make_ $TRUST_ROOT/env/ccache ccache $TRUST_ROOT/exec/ccache.log
 fi
-
 rm -f $TRUST_ROOT/exec/ccache/g??
+
 ###################################################################################################
 # On a besoin d'un python complet pour VisIt 2.7.0 (python-config, lib.so) et PETSc, Run_fiche, MED
 ###################################################################################################
@@ -1090,7 +1091,7 @@ PYTHON_VERSION_OK=`$python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1
 if [ "$PYTHON_VERSION_OK" != 1 ] || [ "`python-config 2>&1 | grep Usage`" = "" ] || [ "`ls /usr/lib*/libpython*.so   /usr/lib*/*/libpython*.so 2>/dev/null`" = "" ]  || [ "`ls /usr/lib*/python*/config/Makefile 2>/dev/null`" = "" ] || [ "`python ./test.py 1>/dev/null 2>&1;echo $?`" != 0 ]
 
 then
-   make_ $TRUST_ROOT/Outils/Python python
+   make_ $TRUST_ROOT/Outils/Python python $TRUST_ROOT/exec/python.log
 fi
 
 ####################
@@ -1131,13 +1132,13 @@ e="`cherche_file cmake cmake`";eval $e
 CMAKE_VERSION_OK=`$cmake --version 2>&1 | awk '/cmake version/ {split($3,a,".");v=a[1]*100+a[2]*10+a[3];print (v>=301?1:0)}'`
 if [ "$CMAKE_VERSION_OK" != 1 ]
 then
-   make_ $TRUST_ROOT/Outils/cmake
+   make_ $TRUST_ROOT/Outils/cmake cmake $TRUST_ROOT/exec/cmake.log
 fi
 
 ##############################
 # Installation de makedepend #
 ##############################
-make_ $TRUST_ROOT/Outils/makedepend
+make_ $TRUST_ROOT/Outils/makedepend makedepend $TRUST_ROOT/exec/makedepend.log
 
 
 # Mal fait : a ameliorer
@@ -1163,22 +1164,10 @@ m="# Path to a debugger";e="`cherche_file DEBUG $DEBUG`";ecrit $m"|"$e"|"$env
 m="# Path to Tcl/Tk";e="`cherche_file WISH /usr/bin/wish /bin/wish wish`";eval $e
 if [ "$WISH" = "" ] && [ "$TRUST_DISABLE_TCL_TK" != "1" ]
 then
-   make_ $TRUST_ROOT/Outils/tcl_tk Tcl/Tk
+   make_ $TRUST_ROOT/Outils/tcl_tk Tcl/Tk $TRUST_ROOT/exec/tcl_tk.log
    e="`cherche_file WISH $TRUST_ROOT/exec/tcl_tk/bin/wish`";
 fi
 ecrit $m"|"$e"|"$env
-
-###############################
-# Recherche et test de gnuplot:
-###############################
-# GF: Deplacer dans Outils => cf. bin/compile
-# e="`cherche_file gnuplot gnuplot`";eval $e
-# # On essaie de rajouter le support des iterations avec for:
-# if [ "`echo "set key box bottom center;set term png;set output 'out';plot for[i=0:1] x" | gnuplot 1>/dev/null 2>&1;echo $?`" != 0 ]
-# then
-#    # On installe GNUPLOT si le gnuplot trouve ne fonctionne pas
-#    make_ $TRUST_ROOT/Outils/gnuplot
-# fi
 
 #################################################################
 # Recherche de GNU make>=3.81 (3.80 ne marche pas avec Metis 5.0)
@@ -1187,7 +1176,7 @@ e="`cherche_file gmake gmake make`";eval $e
 GMAKE_VERSION_OK=`$gmake --version 2>&1 | awk '/GNU Make/ && ($3>=3.81) {print 1}'`
 if [ "$GMAKE_VERSION_OK" != 1 ]
 then
-   make_ gmake
+   make_ $TRUST_ROOT/env/gmake gmake $TRUST_ROOT/exec/gmake.log
 fi
 
 # On efface les paquets inutiles si installation
@@ -1419,7 +1408,7 @@ else
       export MPI_ROOT # Car sinon pas retenu dans le makefile de LIBMPI
       # Installation du MPI livre
       SRC_MPI=`dirname $MPI_ROOT | sed "s?lib/src?ThirdPart/src?"`
-      make_ $SRC_MPI `basename $MPI_ROOT`
+      make_ $SRC_MPI `basename $MPI_ROOT` $TRUST_ROOT/lib/`basename $SRC_MPI`".log"
 
       MPI_ROOT="\$TRUST_ROOT/lib/src/LIBMPI/`basename $MPI_ROOT`";export MPI_ROOT  
       MPI_INCLUDE="\$TRUST_ROOT/lib/src/LIBMPI/`basename $MPI_ROOT`/include";export MPI_INCLUDE  
@@ -1478,28 +1467,12 @@ fi
 [ "$TRUST_cc" = "" ] && m="# Path to C compiler"	&& e="TRUST_cc=\"$TRUST_cc_BASE\" && export TRUST_cc" && ecrit $m"|"$e"|"$env && eval $e
 [ "$TRUST_F77" = "" ] && m="# Path to F77 compiler"	&& e="TRUST_F77=\"$TRUST_F77_BASE\" && export TRUST_F77" && ecrit $m"|"$e"|"$env && eval $e
 
-##########################
-# Installation de valgrind
-##########################
-# GF: deplacer dans Outils
-# Valgrind s'installe APRES MPI (wrapper MPI)
-# if [ $TRUST_ARCH = linux_uuuuuuu ] && [ "$VAMPIR_SUPPORTED" != 1 ]
-# then
-#    # Probleme vu sur Ubuntu 14.04:
-#    if [ -f $TRUST_ROOT/Outils/valgrind/valgrind-3.9.0.tar.bz2 ] && [ "`ldd --version | awk '(NR==1) {print $NF}'`" = 2.19 ]
-#    then
-#       echo $ECHO_OPTS "Warning: valgrind 3.9.0 not installed cause GLIBC_VERSION=2.19"
-#    else
-#       make_ $TRUST_ROOT/Outils/valgrind
-#    fi
-# fi
-
 ########################
 # Installation de astyle
 ########################
 if [ $TRUST_ARCH = linux ]
 then
-   make_ $TRUST_ROOT/Outils/astyle
+   make_ $TRUST_ROOT/Outils/astyle astyle $TRUST_ROOT/exec/astyle.log
 fi
 
 ########################
@@ -2143,8 +2116,8 @@ fi
 ############
 if [ "$TRUST_DISABLE_MPI" != 1 ]
 then
-make_ $TRUST_ROOT/Outils/hwloc
-echo "ADD_PATH $TRUST_ROOT/exec/hwloc/bin" >> $env
+   make_ $TRUST_ROOT/Outils/hwloc hwloc $TRUST_ROOT/exec/hwloc.log
+   echo "ADD_PATH $TRUST_ROOT/exec/hwloc/bin" >> $env
 fi
 
 ###################

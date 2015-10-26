@@ -78,6 +78,6 @@ $TRUST_MAKE || exit -1
 #######################
 make install || exit -1
 cd ..
-rm -r -f $src
+rm -r -f $src configure.help
 
 exit 0

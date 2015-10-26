@@ -1,7 +1,7 @@
 #!/bin/bash
 # Installation de gmake
 Gmake=$1
-[ "$Gmake" = "" ] && echo "Gmake non trouve ici: "`pwd` && exit
+[ "$Gmake" = "" ] && echo "Gmake not found here: "`pwd` && exit
 Gmake=${Gmake%.tar.gz}
 gunzip -f -c $TRUST_ROOT/externalpackages/$Gmake.tar.gz | tar -xf -
 rm -f $Gmake.tar

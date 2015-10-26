@@ -1,6 +1,8 @@
-package=Python-2.7.6.tgz
-install=$(TRUST_ROOT)/exec/python
-cible=$(install)/bin/python
+name=python
+version=2.7.6
+package=Python-$(version).tgz
+install=$(TRUST_ROOT)/exec/$(name)
+cible=$(install)/bin/$(name)
 all:$(cible)
 $(cible): install makefile
 	make clean
