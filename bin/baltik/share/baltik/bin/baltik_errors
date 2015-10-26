@@ -8,7 +8,7 @@ TRUST_environnement_error() {
     echo "ERROR : undefined variable TRUST_ROOT   "
     echo ""
     echo "Please, install TRUST and run :  "
-    echo "  source /path/to/TRUST/env/env_TRUST.sh "
+    echo "  source /path/to/TRUST/env_TRUST.sh "
     echo "-----------------------------------------"
     echo ""
     exit 1

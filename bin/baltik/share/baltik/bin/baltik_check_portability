@@ -24,7 +24,7 @@ org=\`pwd\`
 proj=`basename $1 .tar.gz`
 tar zxf `basename $1`
 cd $3
-source env/env_TRUST.sh
+source env_TRUST.sh
 cd \$org
 chmod -R +w baltik \$proj
 cd \$proj

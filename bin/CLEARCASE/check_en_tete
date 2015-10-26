@@ -60,7 +60,7 @@ version=`$TRUST_Awk '/\/\/ Version: / {print $3}' $file`
 
 if [ "$TRUST_TMP" = "" ]
 then
-   source env/env_TRUST.sh 1>/dev/null 2>&1
+   source env_TRUST.sh 1>/dev/null 2>&1
 fi
 
 # Si file est un fichier non vide, on met a jour l'en tete

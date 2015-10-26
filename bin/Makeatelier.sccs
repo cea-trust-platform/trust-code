@@ -33,7 +33,7 @@ fi
 cd $rep_dev
 opt_spec=""
 [ "$PROGRAM" != "" ] && opt_spec="env PROGRAM=$PROGRAM"
-echo $ECHO_OPTS "all:\n\t@export rep_dev=\`pwd\`;[ ! -d $TRUST_ROOT/bin ] && echo && echo "Version $TRUST_ROOT non installee." && echo && exit;cd $TRUST_ROOT/env;. ./env_TRUST.sh;echo ${choix} | ${opt_spec} Makeatelier.sccs\n\ntest:\n\t@export rep_dev=\`pwd\`;[ ! -d $TRUST_ROOT/bin ] && echo && echo "Version $TRUST_ROOT non installee." && echo && exit;cd $TRUST_ROOT/env;. ./env_TRUST.sh;lance_test $rep_dev/exec/TRUST$COMM $rep_dev/exec\n\ninit:\n\t@export rep_dev=\`pwd\`;[ ! -d $TRUST_ROOT/bin ] && echo && echo "Version $TRUST_ROOT non installee." && echo && exit;cd $TRUST_ROOT/env;. ./env_TRUST.sh;cd $rep_dev;initatelier" > Makefile
+echo $ECHO_OPTS "all:\n\t@export rep_dev=\`pwd\`;[ ! -d $TRUST_ROOT/bin ] && echo && echo "Version $TRUST_ROOT non installee." && echo && exit;cd $TRUST_ROOT;. ./env_TRUST.sh;echo ${choix} | ${opt_spec} Makeatelier.sccs\n\ntest:\n\t@export rep_dev=\`pwd\`;[ ! -d $TRUST_ROOT/bin ] && echo && echo "Version $TRUST_ROOT non installee." && echo && exit;cd $TRUST_ROOT;. ./env_TRUST.sh;lance_test $rep_dev/exec/TRUST$COMM $rep_dev/exec\n\ninit:\n\t@export rep_dev=\`pwd\`;[ ! -d $TRUST_ROOT/bin ] && echo && echo "Version $TRUST_ROOT non installee." && echo && exit;cd $TRUST_ROOT;. ./env_TRUST.sh;cd $rep_dev;initatelier" > Makefile
 
 if [ -f $rep_dev/exec/.pcs_compile ]
 then

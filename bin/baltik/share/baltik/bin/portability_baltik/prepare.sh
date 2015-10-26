@@ -85,7 +85,7 @@ export project_directory
 MODE=$MODE
 #ORIG=`pwd`
 cd \$TRUST_ROOT
-source env/env_TRUST.sh
+source env_TRUST.sh
 # [ \$? -ne 0 ] && echo KO , TRUST_ROOT: $TRUST_ROOT false ? 
 cd $ORIG" > env.sh
 [ "$VALGRIND" != "0" ] &&  echo "# VALGRIND=1 ; export VALGRIND" >> env.sh

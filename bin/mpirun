@@ -14,7 +14,7 @@ if [ "$Mpirun" = "" ]
 then
    depart=`pwd`
    cd ${0%/bin/mpirun}
-   source env/env_TRUST.sh
+   source env_TRUST.sh
    cd $depart
 fi
 # Passer progressivement tous les cas dans le script trust...

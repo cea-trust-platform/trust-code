@@ -344,9 +344,9 @@ HOST=$HOST_tmp
 ###############################
 # Initialize TRUST environment
 ###############################
-source env/env_TRUST.sh # necessaire pour connaitre le nom de $TRUST_TMP
+source env_TRUST.sh # necessaire pour connaitre le nom de $TRUST_TMP
 rm -r -f $TRUST_TMP # suppression des anciens log sur machine distante
-source env/env_TRUST.sh 1>/dev/null 2>&1 # necessaire pour creer le dossier $TRUST_TMP
+source env_TRUST.sh 1>/dev/null 2>&1 # necessaire pour creer le dossier $TRUST_TMP
 
 echo "--------------------------------------------------------"
 echo "End configure on $HOST_BUILD at "`date '+%H:%M:%S'`
@@ -365,7 +365,7 @@ for MODULE in $MODULES
 do
    ROOT=$version/$MODULE
    cd $ROOT
-   [ $MODULE = TRUST ] && code=TRUST && exec=$ROOT/exec/TRUST$COMM$OPT && source env/env_TRUST.sh 
+   [ $MODULE = TRUST ] && code=TRUST && exec=$ROOT/exec/TRUST$COMM$OPT && source env_TRUST.sh 
    [ $MODULE = Diphasique ] && code=dipha && exec=$ROOT/exec/dipha$COMM$OPT && . bin/Init_Dipha 
 # Nettoyage
    [ ! $SHARE_LIBS ] && rm -f $ROOT/lib/lib*.s? 
@@ -434,7 +434,7 @@ do
       then
          echo "VisIt=KO"
       else
-         visit_help=`source $TRUST_ROOT/env/env_TRUST.sh;$TRUST_ROOT/Outils/VisIt/bin/visit -help 2>&1`
+         visit_help=`source $TRUST_ROOT/env_TRUST.sh;$TRUST_ROOT/Outils/VisIt/bin/visit -help 2>&1`
          if [ $? = 0 ]
          then
             if [ "`ls $TRUST_ROOT/Outils/VisIt/current/*/bin/engine_par 2>/dev/null`" != "" ]
@@ -577,7 +577,7 @@ do
       if [ $MODULE = TRUST ]
       then
 	 cd $TRUST_ROOT
-	 source env/env_TRUST.sh 1>/dev/null 2>&1
+	 source env_TRUST.sh 1>/dev/null 2>&1
          
 	 ###################
 	 # Test du MPI livre

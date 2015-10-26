@@ -11,7 +11,7 @@ dirdipha=$HOME/Version_Dipha_$v
 version=$HOME/$WORKBASE$v/TRUST
 export version
 cd $version
-source env/env_TRUST.sh
+source env_TRUST.sh
 [ ! -d $dirdipha ] && mkdir $dirdipha 
 cd $dirdipha
 [ -f archdiphatar ] && mv archdiphatar archdipha.tar

@@ -1,5 +1,5 @@
 #!/bin/bash
-source $TRUST_ROOT/env/env_TRUST.sh
+source $TRUST_ROOT/env_TRUST.sh
 trust -copy Obstacle
 cd Obstacle
 trust -clean

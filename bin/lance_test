@@ -488,7 +488,7 @@ add_test_case_from_validation()
 # Debut du script #
 ###################
 
-[ ${#TRUST_ROOT} = 0 ] && echo "TRUST environment not initialized. Go to the env directory of TRUST installation and run: source ./env_TRUST.sh" && exit
+[ ${#TRUST_ROOT} = 0 ] && echo "TRUST environment not initialized. Go to the directory of TRUST installation and run: source ./env_TRUST.sh" && exit
 
 LANG=C
 PETSC_DEBUG=0 && [ $PETSC_DEBUG = 1 ] && echo "ATTENTION PETSC_DEBUG MIS A 1 !!!" 

@@ -348,8 +348,8 @@ echo>>$config_log
 grep KO $config_log
 tail -n8 $config_log | head -n1
 echo " "
-echo "Call to "$TRUST_ROOT"/env/env_TRUST.sh"
-source env/env_TRUST.sh #1>/dev/null 2>&1
+echo "Call to "$TRUST_ROOT"/env_TRUST.sh"
+source env_TRUST.sh #1>/dev/null 2>&1
 
 # Verifie la qualite de la version
 # Verifie si plusieurs classes ne sont pas instanciees avec le meme nom
@@ -611,7 +611,7 @@ echo "###############################################"
 	fi
 	echo "Call to configure $vue version in `pwd`"
 	./configure 1>/dev/null 2>&1
-        source env/env_TRUST.sh 1>/dev/null 2>&1
+        source env_TRUST.sh 1>/dev/null 2>&1
 	echo "TRUST_ROOT=$TRUST_ROOT"
 	###################################################
 	# Boucle sur les differentes options de compilation
@@ -803,7 +803,7 @@ echo "###############################################"
 )
 TRUST_ROOT=${0%/bin/admin/lance_test_nuit}
 cd $TRUST_ROOT
-source env/env_TRUST.sh 1>/dev/null 2>&1
+source env_TRUST.sh 1>/dev/null 2>&1
 echo " "
 echo "------------------------------------------------------"
 echo " "
@@ -1142,8 +1142,20 @@ echo "############################################"
 echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 version_arch=TRUST_$TRUST_VERSION".tgz"
 installation=1
-remote1="-remote "`liste_machines "\-remote_install_TRUST_with_source" 		| head -1 | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'`
-remote2="-remote "`liste_machines "\-remote_install_TRUST_kernel_only" 		| head -1 | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'`
+machine1=`liste_machines "\-remote_install_TRUST_with_source" 		| head -1 | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'`
+if [[ "$liste_machines_KO" != *"$machine1"* ]] # Test si machine n est pas dans la liste des machines KO
+then
+   remote1="-remote "`liste_machines "\-remote_install_TRUST_with_source" 		| head -1 | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'`
+else
+   remote1="-remote "`liste_machines "\-remote_install_TRUST_with_source" 		| tail -1 | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'`
+fi
+machine2=`liste_machines "\-remote_install_TRUST_kernel_only" 		| head -1 | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'`
+if [[ "$liste_machines_KO" != *"$machine2"* ]] # Test si machine n est pas dans la liste des machines KO
+then
+   remote2="-remote "`liste_machines "\-remote_install_TRUST_kernel_only" 		| head -1 | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'`
+else
+   remote2="-remote "`liste_machines "\-remote_install_TRUST_kernel_only" 		| tail -1 | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'`
+fi
 # Version sans source devenue inutile depuis le passage en OpenSource
 #remote3="-remote "`liste_machines "\-remote_install_TRUST_without_source" 		| head -1 | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'`
 remote1_log=$REP_NUIT"/simule_install_TRUST_with_source_"`echo ${remote1##* }`".log"
@@ -2375,7 +2387,7 @@ then
    echo "TRUST benchmarh report on $HOST the `date` ...">$bench_log
    echo>>$bench_log
    rm -f $TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/build/rapport.pdf
-   (cd $TRUST_ROOT/tests/Reference/BENCHMARK/Rapport;rm -f Run.log;Run_fiche 1>>$bench_log 2>&1)
+   (cd $TRUST_ROOT/tests/Reference/BENCHMARK/Rapport;rm -r -f Run.log build;Run_fiche 1>>$bench_log 2>&1)
    tail -n1 $bench_log
    if [ -f $TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/build/rapport.pdf ]
    then
@@ -2514,7 +2526,7 @@ echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 #log=$REP_NUIT"/baltik_MPCube_"$HOST"_Kernel.log"
 ## Necessaire de mettre entre () car initialisation du projet Baltik
 #(
-#source $WORKDIR/sourceforge/Kernel/TRUST/env/env_TRUST.sh 1>/dev/null 2>&1
+#source $WORKDIR/sourceforge/Kernel/TRUST/env_TRUST.sh 1>/dev/null 2>&1
 #cd $PROJECT_ROOT
 #echo "Call to $WORKDIR/sourceforge/Kernel/TRUST/bin/admin/check_baltik_project"
 #echo "from `pwd`"
@@ -2915,7 +2927,7 @@ then
 	 echo "Creation of the packages of each Baltik component"
 	 # Creation des packages de chaque composant BALTIK
 	 cd $WORKDIR/sourceforge/Livraison/TRUST
-	 source env/env_TRUST.sh 1>/dev/null 2>&1
+	 source env_TRUST.sh 1>/dev/null 2>&1
 	 for Composant in $ComposantsGit 
 	 do
 	    cd $WORKDIR/sourceforge/Livraison/Composants/$Composant
@@ -3058,9 +3070,12 @@ TRUST support team. mailto:$TRUST_MAIL
 
 To unsubscribe: Reply to this message.
 
-http://www-trio-u.cea.fr
-http://sourceforge.net/projects/trust-platform
-http://sourceforge.net/projects/triocfd
+--
+*TRUST/TrioCFD support team*
+triou@cea.fr
+www-trio-u.cea.fr
+sourceforge.net/projects/trust-platform
+sourceforge.net/projects/triocfd
 EOF
       sleep 5
    done

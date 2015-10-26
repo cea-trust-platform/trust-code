@@ -427,7 +427,7 @@ check_nvidia_cuda()
 	 cd ..
 	 (
 	    # On utilise le script trust en specifiant -gpu
-	    source ../env/env_TRUST.sh 1>/dev/null 2>&1
+	    source ../env_TRUST.sh 1>/dev/null 2>&1
 	    LD_LIBRARY_PATH=$CUDA_LIB:$LD_LIBRARY_PATH
 	    export exec=`pwd`/nvc_get_devices/nvc_get_devices
 	    trust -gpu dummy_file 1>$TRUST_ENV/card.log &

@@ -59,13 +59,13 @@ cd \$TRUST_ROOT
 git pull origin $patch_branch
 Then rebuild the version with:
 ./configure
-source env/env_TRUST.sh
+source env_TRUST.sh
 make
 
 -For users with a downloaded TRUST version, you can download, apply the patch and rebuild
 with the single command:
 cd \$TRUST_ROOT
-source env/env_TRUST.sh
+source env_TRUST.sh
 ./bin/Installer_TRUST -patch
 
 
@@ -76,9 +76,12 @@ TRUST support team. mailto:$TRUST_MAIL
 
 To unsubscribe: Reply to that message.
 
-http://www-trio-u.cea.fr
-http://sourceforge.net/projects/trust-platform
-http://sourceforge.net/projects/triocfd
+--
+*TRUST/TrioCFD support team*
+triou@cea.fr
+www-trio-u.cea.fr
+sourceforge.net/projects/trust-platform
+sourceforge.net/projects/triocfd
 EOF
    fi
 fi

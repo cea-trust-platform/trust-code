@@ -98,7 +98,7 @@ echo "Usage: `basename $0` liste_de_cas_test_a_mettre_a_jour|cas_test_a_creer"
 cass=$*
 [ ${#cass} = 0 ] && exit
 ici=`pwd`
-cd $TRUST_ROOT/env;. ./env_TRUST.sh 1>/dev/null 2>&1
+cd $TRUST_ROOT;. ./env_TRUST.sh 1>/dev/null 2>&1
 cd $ici
 if [ "$TRUST_LOGIN" != "`whoami`" ]
 then

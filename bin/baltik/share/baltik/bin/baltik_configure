@@ -567,7 +567,7 @@ done
 
 echo "Creation $env_file"
 
-echo " . $TRUST_ROOT/env/env_TRUST.sh
+echo " . $TRUST_ROOT/env_TRUST.sh
 export project_directory=${project_directory}
 export PATH=\${project_directory}/build/xdata:\$PATH
 export TRUST_TESTS=\${project_directory}/build/tests/all/

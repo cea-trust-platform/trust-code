@@ -172,7 +172,7 @@ do
       echo>$LOG
       if [ -d $TRUST_ROOT ]
       then
-         source $TRUST_ROOT/env/env_TRUST.sh 1>/dev/null
+         source $TRUST_ROOT/env_TRUST.sh 1>/dev/null
       else
          echo "TRUST environment not initialized." && exit -1
       fi
@@ -195,7 +195,7 @@ do
       patch=`pwd`/$patch
       cd $TRUST_ROOT
       tar tvf $patch && tar xvfz $patch | xargs chmod +w
-      ./configure && source env/env_TRUST.sh 1>/dev/null && make
+      ./configure && source env_TRUST.sh 1>/dev/null && make
       change_droits
       cd `dirname $TRUST_ROOT`
       rm -f $patch
@@ -370,7 +370,7 @@ then
    echo "./configure ..." | tee -a $LOG
    echo "Then check/modify the environment values in the \$TRUST_ROOT/env/machine.env created." | tee -a $LOG
    echo "Initialize the environment:" | tee -a $LOG
-   echo "source env/env_TRUST.sh" | tee -a $LOG
+   echo "source env_TRUST.sh" | tee -a $LOG
    echo "Compile the code:" | tee -a $LOG
    echo "make" | tee -a $LOG
    exit 0
@@ -401,7 +401,7 @@ then
    cd $TRUST_ROOT
 fi
 echo | tee -a $LOG
-source $TRUST_ROOT/env/env_TRUST.sh
+source $TRUST_ROOT/env_TRUST.sh
 mklibs >> $LOG
 
 # Message de detection :
@@ -495,7 +495,7 @@ do
    # Efface les autres binaires
    rm -f exec.*.tar.gz
    # Initialise le code
-   cd `dirname $code`/../env
+   cd `dirname $code`/..
    [ -f env_TRUST.sh ] && source ./env_TRUST.sh 1>>$LOG 2>&1
    cd `dirname $code`/../bin
    [ -f Init_Dipha ] && source ./Init_Dipha 1>>$LOG 2>&1
@@ -532,7 +532,7 @@ do
       make >> $LOG 2>&1
       err=$?
       # Pour recuperer $exec
-      cd `dirname $code`/../env
+      cd `dirname $code`/..
       source ./env_TRUST.sh
       if [ $err != 0 ] || [ ! -f $exec ]
       then
@@ -574,7 +574,7 @@ echo "**************************" | tee -a $LOG
 echo "Add the following lines in your $HOME/.profile or $HOME/.bashrc file:" | tee -a $LOG
 echo "# TRUST environment:" | tee -a $LOG
 echo "export TRUST_ROOT=$TRUST_ROOT" | tee -a $LOG
-echo "source \$TRUST_ROOT/env/env_TRUST.sh 1>/dev/null 2>&1" | tee -a $LOG
+echo "source \$TRUST_ROOT/env_TRUST.sh 1>/dev/null 2>&1" | tee -a $LOG
 cd $ROOT
 echo  | tee -a $LOG
 echo "********************" | tee -a $LOG
@@ -595,14 +595,14 @@ echo "************************" | tee -a $LOG
 echo $ECHO_OPTS "If you want to build again TRUST, run:" | tee -a $LOG
 echo $ECHO_OPTS "cd $TRUST_ROOT" | tee -a $LOG
 echo $ECHO_OPTS "./configure -help       # Than check and/or change the detected values into the \$TRUST_ROOT/env/machine.env file" | tee -a $LOG
-echo $ECHO_OPTS "source env/env_TRUST.sh # Initialize the new environment" | tee -a $LOG
+echo $ECHO_OPTS "source env_TRUST.sh # Initialize the new environment" | tee -a $LOG
 echo $ECHO_OPTS "make clean;make # Then clean and rebuild TRUST" | tee -a $LOG
 echo | tee -a $LOG
 echo "*******************" | tee -a $LOG
 echo "HOW TO USE TRUST ?" | tee -a $LOG
 echo "*******************" | tee -a $LOG
 echo "Initialize TRUST environment with:" | tee -a $LOG
-echo "source $TRUST_ROOT/env/env_TRUST.sh" | tee -a $LOG
+echo "source $TRUST_ROOT/env_TRUST.sh" | tee -a $LOG
 echo "And follow the tutorial $TRUST_ROOT/doc/TRUST/TRUST_tutorial.pdf" | tee -a $LOG
 echo "You can contact us at $TRUST_MAIL for a training session of 2 days." | tee -a $LOG
 echo " " | tee -a $LOG
