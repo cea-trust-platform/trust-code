@@ -8,9 +8,11 @@ SONDE=$(TRUST_ROOT)/exec/compare_sonde
 all: $(PROGRAM) $(SONDE)
 $(PROGRAM): lance_test_seq_par.cpp
 	$(TRUST_CC) -g $(CppFlags) -c lance_test_seq_par.cpp
-	$(TRUST_CC) -g -o $(PROGRAM) lance_test_seq_par.o $(SYSLIBS)
+	$(TRUST_CC) -g -o $(PROGRAM) lance_test_seq_par.o $(SYSLIBS) || exit -1
+	rm -f lance_test_seq_par.o
 $(SONDE): compare_sonde.cpp
 	$(TRUST_CC) -g $(CppFlags) -c compare_sonde.cpp
-	$(TRUST_CC) -g -o $(SONDE) compare_sonde.o $(SYSLIBS)
+	$(TRUST_CC) -g -o $(SONDE) compare_sonde.o $(SYSLIBS) || exit -1
+	rm -f compare_sonde.o
 clean:
 	rm -f $(PROGRAM) $(SONDE) *.o

@@ -7,4 +7,4 @@ $(cible): Installer_hwloc makefile
 	@./Installer_hwloc
 
 clean:
-	rm -r -f $(install) $(name)-?.?.?
+	rm -r -f $(install) $(name)-*.*.*

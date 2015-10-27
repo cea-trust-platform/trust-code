@@ -14,7 +14,7 @@ prepare_sources()
    cd baltik
    for file in `ls $project_directory/build/src/*.cpp  $project_directory/build/src/*.h`
      do 
-     $TRUST_ROOT/Outils/triou2doxygen/triou2doxygen $file > `basename $file `
+     $TRUST_ROOT/exec/triou2doxygen $file > `basename $file `
    done
    
    cd $TRUST_TMP/TRUST_dox
@@ -26,7 +26,7 @@ prepare_sources()
       do
 	if	[ ! -f $TRUST_TMP/TRUST_dox/baltik/`basename $file` ] 
 	    then
-         $TRUST_ROOT/Outils/triou2doxygen/triou2doxygen $file > `basename $file`
+         $TRUST_ROOT/exec/triou2doxygen $file > `basename $file`
 	else
 	    echo $file modifie par le projet baltik
 	fi

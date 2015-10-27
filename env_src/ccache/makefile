@@ -7,6 +7,6 @@ all:$(cible)
 $(cible): $(TRUST_ROOT)/externalpackages/$(package) makefile Installer_ccache
 	make clean
 	@./Installer_ccache
-clean:
-	rm -rf $(install)
 
+clean:
+	rm -r -f $(install)
