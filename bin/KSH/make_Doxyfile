@@ -147,7 +147,7 @@ do
 	    # TRUST comments to Doxygen comments
 	    ########################################################
 	    # Rebuild the program if needed
-	    if [ ! -f $TRUST_ROOT/exec/triou2doxygen ]
+	    if [ ! -f $TRUST_ROOT/Outils/triou2doxygen/triou2doxygen ]
 	    then
 	       (cd $TRUST_ROOT/Outils/triou2doxygen;make)
 	    fi
@@ -158,7 +158,7 @@ do
 	       cd $TRUST_DOXYGEN/$dir
 	       for file in `cd $PROJECT_ROOT/$dir;ls *.cpp *.h 2>/dev/null`
 	       do
-        	  $TRUST_ROOT/exec/triou2doxygen $PROJECT_ROOT/$dir/$file > $file
+        	  $TRUST_ROOT/Outils/triou2doxygen/triou2doxygen $PROJECT_ROOT/$dir/$file > $file
 	       done
 	    done
 	    echo "OK"

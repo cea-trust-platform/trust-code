@@ -52,6 +52,6 @@ if [ $err != 0 ]
 then
    make clean 
 else
-   rm -r -f valgrind-$version configure.help
+   rm -r -f valgrind-?.?.?
 fi
 OK $err

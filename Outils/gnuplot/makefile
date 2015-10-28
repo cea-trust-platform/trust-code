@@ -1,12 +1,10 @@
-name=gnuplot
-version=4.6.6
-package=$(name)-$(version).tar.gz
-install=$(TRUST_ROOT)/exec/$(name)
-cible=$(install)/bin/$(name)
-all:$(cible)
-$(cible): install_gnuplot makefile
+package=gnuplot-4.6.6.tar.gz
+install=$(TRUST_ROOT)/exec/gnuplot/
+gnuplot=$(install)/bin/gnuplot
+all:$(gnuplot)
+$(gnuplot): install_gnuplot makefile
 	make clean
 	@./install_gnuplot $(package)
 	
 clean:
-	rm -r -f $(install)*
+	rm -r -f gd $(install) $(TRUST_ROOT)/exec/gnuplot*

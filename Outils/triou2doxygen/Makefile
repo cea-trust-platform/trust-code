@@ -1,6 +1,6 @@
 INCLUDES	= 
 OBJS		= triou2doxygen.o
-PROG		= $(TRUST_ROOT)/exec/triou2doxygen
+PROG		= triou2doxygen
 
 LIBDIR        = 
 INCDIR        = 
@@ -13,8 +13,7 @@ all: $(PROG)
 	#strip $?
 
 $(PROG): $(OBJS)
-	$(CC) -o $@ $(LFLAGS) $(OBJS) || exit -1
-	rm -f $(OBJS)
+	$(CC) -o $@ $(LFLAGS) $(OBJS)
 
 clean:
 	rm -f $(OBJS) $(PROG) *~ core
