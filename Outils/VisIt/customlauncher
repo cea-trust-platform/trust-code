@@ -19,7 +19,7 @@ class SiteSpecificLauncher(MainLauncher):
     def Customize(self):
         if 0:
            # Loading TRUST environment... Slow ?
-           p = subprocess.Popen(["-c", "source TRUST_ROOT/env/env_TRUST.sh 1>/dev/null 2>&1 && env " ],
+           p = subprocess.Popen(["-c", "source TRUST_ROOT/env_TRUST.sh 1>/dev/null 2>&1 && env " ],
                                 stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE,
                                 shell=True )

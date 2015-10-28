@@ -611,8 +611,10 @@ echo "###############################################"
 	fi
 	echo "Call to configure $vue version in `pwd`"
 	./configure 1>/dev/null 2>&1
-        source env_TRUST.sh 1>/dev/null 2>&1
+        source env/env_TRUST.sh 1>/dev/null 2>&1 # Temporary pour Maintenance
+        #source env_TRUST.sh 1>/dev/null 2>&1
 	echo "TRUST_ROOT=$TRUST_ROOT"
+	echo "TRUST_VERSION=$TRUST_VERSION"
 	###################################################
 	# Boucle sur les differentes options de compilation
 	###################################################
@@ -685,70 +687,74 @@ echo "###############################################"
 		 echo " "
 		 echo "Construction of the $patch patch..."
 		 echo "from `pwd`"
-		 (
-		    # Git (On ne scrute que les VOBs TRUST):
-		    cd $TRUST_ROOT
-                    echo "  Call git push shared Maintenance"
-		    git_push
-		    echo "  Files contained in the patch"
-		    echo "    See $TRUST_ROOT/patch.files"
-		    git diff --name-only v$TRUST_VERSION > patch.files
-		    if [ -s patch.files ]
-		    then
-                       # ajout du log pour identifier l'archive
-		       git log -1 > .git_patch_log
-                       echo .git_patch_log >> patch.files
-		       # Ajout de Patch au fichier
-		       #BASE=`basename $TRUST_ROOT`
-		       #for file in `cat patch.files`
-		       #do
-		       #   if [ -f $file ]
-		       #   then
-		       #      echo $BASE/$file
-        	       #   fi
-		       #done > Patch.files
-		       # creation des archives
-		       echo "  Files compressed in $patch"
-		       tar zcf $patch `cat patch.files`
-		       #cd ..
-		       #tar zcf $patch  --transform=s?$BASE?Patch_${patch_version}? `cat $BASE/Patch.files`
-		       #md5sum  $patch > $patch.md5
-		    fi
-		    cd $TRUST_ROOT
-		    cat patch.files 
-		    rm -f Patch.files
-		 )
-		 # Envoi immediat sur ftp.cea.fr
-                 echo "  Call to "$TRUST_ROOT"/bin/admin/connect_ftp"
-                 . $TRUST_ROOT/bin/admin/connect_ftp
-                 echo "  Call to "$TRUST_ROOT"/bin/admin/cp_ftp"
-		 $TRUST_ROOT/bin/admin/cp_ftp $patch $PUBLIC/patch
-		 # Mise a jour des versions patchees
-		 echo " "
-                 echo "Call to "$TRUST_ROOT"/bin/admin/Installer_TRUST.ssh on:"
-		 liste_machines updated
-		 for machine in `liste_machines updated`
-		 do
-		    (
-		    install_patch_log=$REP_NUIT"/install_patch_"`echo $machine | awk -F"." '{print $1}' | awk -F"-gw" '{print $1}'`"_"${vue#*/}".log"
-		    echo "-> Start of Installer_TRUST.ssh $machine $patch_version -patch -compile..."
-	            echo "  See $install_patch_log"
-		    )
-		 done
-		 for machine in `liste_machines updated`
-		 do
-		    (
-		    install_patch_log=$REP_NUIT"/install_patch_"`echo $machine | awk -F"." '{print $1}' | awk -F"-gw" '{print $1}'`"_"${vue#*/}".log"
-                    echo "TRUST script on $HOST the `date` ...">$install_patch_log
-		    echo>>$install_patch_log
-		    $TRUST_ROOT/bin/admin/Installer_TRUST.ssh $machine $patch_version -patch -compile 1>>$install_patch_log 2>&1
-		    if [ $? != 0 ] || [ "`grep :error $install_patch_log | grep -iv warning | grep -v TRIOXDATA | grep -v Gmsh`" != "" ]
-		    then
-                       cat $install_patch_log | mail_ -s\"[lance_test_nuit] Failed to install patch version on $machine\" $TRUST_MAIL
-		    fi
-		    ) &
-		    # Quels sont les conflits ?
-		 done
+		 # Git (On ne scrute que les VOBs TRUST):
+		 cd $TRUST_ROOT
+                 echo "  Call git push shared Maintenance"
+		 git_push
+		 echo "  Files contained in the patch"
+		 echo "    See $TRUST_ROOT/patch.files"
+		 git diff --name-only v$TRUST_VERSION > patch.files
+                 patch_error=$?
+		 if [ -s patch.files ]
+		 then
+                    # ajout du log pour identifier l'archive
+		    git log -1 > .git_patch_log
+                    echo .git_patch_log >> patch.files
+		    # Ajout de Patch au fichier
+		    #BASE=`basename $TRUST_ROOT`
+		    #for file in `cat patch.files`
+		    #do
+		    #   if [ -f $file ]
+		    #   then
+		    #      echo $BASE/$file
+        	    #   fi
+		    #done > Patch.files
+		    # creation des archives
+		    echo "  Files compressed in $patch"
+		    tar zcf $patch `cat patch.files`
+		    #cd ..
+		    #tar zcf $patch  --transform=s?$BASE?Patch_${patch_version}? `cat $BASE/Patch.files`
+		    #md5sum  $patch > $patch.md5
+		 fi
+		 cd $TRUST_ROOT
+		 cat patch.files 
+		 rm -f Patch.files
+                 if [ $patch_error != 0 ]
+                 then
+		    # Envoi immediat sur ftp.cea.fr
+                    echo "  Call to "$TRUST_ROOT"/bin/admin/connect_ftp"
+                    . $TRUST_ROOT/bin/admin/connect_ftp
+                    echo "  Call to "$TRUST_ROOT"/bin/admin/cp_ftp"
+		    $TRUST_ROOT/bin/admin/cp_ftp $patch $PUBLIC/patch
+		    # Mise a jour des versions patchees
+		    echo " "
+                    echo "Call to "$TRUST_ROOT"/bin/admin/Installer_TRUST.ssh on:"
+		    liste_machines updated
+		    for machine in `liste_machines updated`
+		    do
+		       (
+		       install_patch_log=$REP_NUIT"/install_patch_"`echo $machine | awk -F"." '{print $1}' | awk -F"-gw" '{print $1}'`"_"${vue#*/}".log"
+		       echo "-> Start of Installer_TRUST.ssh $machine $patch_version -patch -compile..."
+	               echo "  See $install_patch_log"
+		       )
+		    done
+		    for machine in `liste_machines updated`
+		    do
+		       (
+		       install_patch_log=$REP_NUIT"/install_patch_"`echo $machine | awk -F"." '{print $1}' | awk -F"-gw" '{print $1}'`"_"${vue#*/}".log"
+                       echo "TRUST script on $HOST the `date` ...">$install_patch_log
+		       echo>>$install_patch_log
+		       $TRUST_ROOT/bin/admin/Installer_TRUST.ssh $machine $patch_version -patch -compile 1>>$install_patch_log 2>&1
+		       if [ $? != 0 ] || [ "`grep :error $install_patch_log | grep -iv warning | grep -v TRIOXDATA | grep -v Gmsh`" != "" ]
+		       then
+                          cat $install_patch_log | mail_ -s\"[lance_test_nuit] Failed to install patch version on $machine\" $TRUST_MAIL
+		       fi
+		       ) &
+		       # Quels sont les conflits ?
+		    done
+		 else
+                    echo "Not install on remote machine!" | mail_ -s\"[lance_test_nuit] Failed to create $TRUST_VERSION patch version\" $TRUST_MAIL
+		 fi
 	         echo "End special treatment."
 	      fi
 	   fi
@@ -1420,7 +1426,7 @@ echo "  Creation of $REP_NUIT/NUIT.html"
 ls -la $REP_NUIT"/NUIT.html"
 cd $TRUST_ROOT
 
-for file in `ls $REP_NUIT/install_patch_*.log`
+for file in `ls $REP_NUIT/install_patch_*.log 2>/dev/null`
 do
    echo " "
    echo "Analysis of $file file"
@@ -1431,7 +1437,7 @@ do
    grep KO $file
 done
 
-for file in `ls $REP_NUIT/lance_test_*.log`
+for file in `ls $REP_NUIT/lance_test_*.log 2>/dev/null`
 do
    echo " "
    echo "Analysis of $file file"

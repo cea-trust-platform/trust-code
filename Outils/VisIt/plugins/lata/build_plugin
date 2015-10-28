@@ -1,7 +1,7 @@
 #!/bin/bash
 prepsrc=0
 # On initialise l'environnement
-source $TRUST_ROOT/env/env_TRUST.sh 1>/dev/null 2>&1
+source $TRUST_ROOT/env_TRUST.sh 1>/dev/null 2>&1
 LATASRC=Outils/lata2dx/lata2dx
 local=$TRUST_ROOT/Outils/VisIt/bin
 plugin=lata

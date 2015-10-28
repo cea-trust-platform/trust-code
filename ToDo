@@ -4,7 +4,7 @@ Version	Qui				Tache
 1.7.2   gauthier.fauchet@cea.fr  copie_cas_test en mode full (pas seulement lie a un projet ; exemple TRUST et TrioCFD)
 1.7.2   gauthier.fauchet@cea.fr  Revoir Diagonal preconditionning for a parallel calculation
 1.7.2   gauthier.fauchet@cea.fr  BUILD_TOOLS=KO si make debug fait avant make optim
-1.7.2   gauthier.fauchet@cea.fr  Rechercher test MPIIO qui planterait sur machine Areva (tester sur occigen => MPIIO plante)
+1.7.2   gauthier.fauchet@cea.fr  Rechercher test MPIIO qui planterait sur machine Areva (tester sur occigen => MPIIO plante sur upwind en sequentiel)
 1.7.2   triou@cea.fr            en test: ajouter 16 et 32 proc pour visIt via HPCDrive dans host_ccrt.xml
 1.7.2   triou@cea.fr            revoir la configuration de Visit mode client/serveur sur curie via HPCDrive (PAS DU TOUT optimise!!!!)
 1.7.2   triou@cea.fr            Passer en job de soumission mise_a_jour_TRUST_arch sur cluster pour eviter de charger les frontales
@@ -30,3 +30,4 @@ Version	Qui				Tache
 1.7.2	marthe.roux@cea.fr      Translate Ecrire->Write, and other main interpretors... Conditions_initiales,...
 1.7.2	marthe.roux@cea.fr  	Passer Doc (tuto, formation) en latex + user guide voir avec Gauthier
 1.7.2	triou@cea.fr  		Doc : mettre a jour index et table des matieres
+1.7.2	celine.capitaine@cea.fr Mettre a jour la notice de maintenance TRUST/TrioCFD

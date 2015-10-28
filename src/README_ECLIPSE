@@ -70,7 +70,7 @@ Launching
 Configuration
 ============= 
 > cd eclipse
-> source /data/tmpletr/triou/installations/TRUST_X.Y.Z/OS_machine/TRUST_X.Y.Z/env/env_TRUST.sh
+> source /data/tmpletr/triou/installations/TRUST_X.Y.Z/OS_machine/TRUST_X.Y.Z/env_TRUST.sh
 > ./eclipse &
 > Project Explorer
   Right click TRUST_X.Y.Z/Debug As/Debug configurarions...

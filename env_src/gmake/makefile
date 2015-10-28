@@ -7,6 +7,6 @@ all:$(cible)
 $(cible): makefile
 	make clean
 	@./Installer $(version)
-clean:
-	rm -rf $(install)
 
+clean:
+	rm -r -f $(install)

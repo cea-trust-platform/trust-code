@@ -17,7 +17,7 @@ linux	scp_ssh		cible		is227526.intra.cea.fr				-TRUST -MPCube										# Fedora 
 linux	sftp_ssh 	non		is227551.intra.cea.fr				-TrioCFD -ModeleCoeur									# Fedora 20			CEA Saclay	Bat 454	LMES	bureau Francois Dupouy
 linux   rsync_ssh       cible           is227246.intra.cea.fr	-rsync	-all		-TRUST -TrioCFD	-prof									# Fedora 22 			CEA Saclay	Bat 454 LMES	PC test Erwan Adam
 linux	rsync_ssh	cible		is209011.intra.cea.fr   			-TrioCFD -ModeleCoeur						-disable-gmsh		# Ubuntu 12.04  		CEA Saclay	Bat ??
-linux	sftp_ssh	non		is228666.intra.cea.fr   			-TRUST -MPCube							-disable-gmsh		# Ubuntu 14.04  		CEA Saclay	Bat 454	LMEC	bureau Mathieu Niezgoda
+linux	sftp_ssh	non		is228666.intra.cea.fr   			-TRUST -MPCube					-without-visit  -disable-gmsh		# Ubuntu 14.04  		CEA Saclay	Bat 454	LMEC	bureau Mathieu Niezgoda
 linux	rsync_ssh	non		thor.hmg.inpg.fr															# openSUSE 11.4			CEA Grenoble
 linux 	rsync_ssh	non		ceres2.intra.cea.fr		-limited					-benchmark			-without-visit		# CentOS 6.5			CEA Marcoule
 linux	rsync_ssh	non		is210968.intra.cea.fr		-all		-ModeleCoeur			-avx							# Mandriva 2010 		CEA Saclay	Bat 454	LMEC	PC test Genepi2

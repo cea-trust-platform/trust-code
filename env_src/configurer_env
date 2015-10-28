@@ -567,7 +567,6 @@ then
       done
    fi
    rm -rf $TRUST_ROOT/env/ $TRUST_ROOT/lib $TRUST_ROOT/exec $TRUST_ROOT/include $TRUST_ROOT/Makefile $TRUST_ROOT/MonoDir*
-   rm -f $TRUST_ROOT/env_TRUST.sh
    # Plus on efface le $TRUST_TMP
    rm -r -f $TRUST_TMP
    exit 0
