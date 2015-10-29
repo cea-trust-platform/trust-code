@@ -611,8 +611,7 @@ echo "###############################################"
 	fi
 	echo "Call to configure $vue version in `pwd`"
 	./configure 1>/dev/null 2>&1
-        source env/env_TRUST.sh 1>/dev/null 2>&1 # Temporary pour Maintenance
-        #source env_TRUST.sh 1>/dev/null 2>&1
+        source env_TRUST.sh 1>/dev/null 2>&1
 	echo "TRUST_ROOT=$TRUST_ROOT"
 	echo "TRUST_VERSION=$TRUST_VERSION"
 	###################################################
@@ -719,7 +718,7 @@ echo "###############################################"
 		 cd $TRUST_ROOT
 		 cat patch.files 
 		 rm -f Patch.files
-                 if [ $patch_error != 0 ]
+                 if [ $patch_error = 0 ]
                  then
 		    # Envoi immediat sur ftp.cea.fr
                     echo "  Call to "$TRUST_ROOT"/bin/admin/connect_ftp"

@@ -18,4 +18,5 @@ debug:
 
 clean:
 	cd lata2dx ; rm -rf build install $(lata2dx) $(TRUST_ROOT)/exec/lata2dx $(TRUST_ROOT)/exec/compare_lata
+	rm -f $(TRUST_ROOT)/exec/lance_dx $(TRUST_ROOT)/exec/lata_get_nb_timesteps.sh $(TRUST_ROOT)/exec/clean_trio_data
 	cd lata2dx_reactor ; rm -rf build test/build $(lata2dx_reactor) $(TRUST_ROOT)/exec/lata2dx_reactor

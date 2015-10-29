@@ -74,5 +74,5 @@ do
    $TRUST_MAKE || exit -1
    make install  || echo error on installation, but we hope that is ok
    cd ..
-   rm -r -f ${package%.tar.gz}
+   rm -r -f ${package%.tar.gz} gd
 done

@@ -39,7 +39,7 @@ do
    fi
 done
 
-[ ! -d externalpackages ] && [ ! -L externalpackages ] && echo "You need to download externalpackages before configuring"&& export TRUST_ROOT_VERSION=`awk '/version/ && /Release notes/ {print $4;exit}' $TRUST_ROOT/RELEASE_NOTES`&& echo wget http://downloads.sourceforge.net/project/trust-platform/externalpackages_$TRUST_ROOT_VERSION.tar && exit -1
+[ ! -d externalpackages ] && [ ! -L externalpackages ] && echo "You need to download externalpackages before configuring" && export TRUST_ROOT_VERSION=`awk '/version/ && /Release notes/ {print $4;exit}' $TRUST_ROOT/RELEASE_NOTES`&& echo wget http://downloads.sourceforge.net/project/trust-platform/externalpackages_$TRUST_ROOT_VERSION.tar && exit -1
 
 echo "----------------------------------------------------------------------------------------------------------------------------"
 echo "Usage: `basename $0` "
@@ -174,9 +174,6 @@ do
       THIRD_PARTY="DOC"
       REP_THIRD_PARTY=$TRUST_ROOT/doc
       ([ -d $REP_THIRD_PARTY ] && [ $first -eq 0 ] && cd $REP_THIRD_PARTY && echo "Disabling $THIRD_PARTY, so make clean:" && make clean)
-      THIRD_PARTY="COVERAGE"
-      REP_THIRD_PARTY=$TRUST_ROOT/doc/Coverage
-      ([ -d $REP_THIRD_PARTY ] && [ $first -eq 0 ] && cd $REP_THIRD_PARTY && echo "Disabling $THIRD_PARTY, so make clean:" && make clean)
 
    elif [ "${1#-without-visit}" != $1 ]
    then
@@ -220,12 +217,12 @@ do
       testv="echo \$TRUST_DISABLE_$THIRD_PARTY"
       res=`eval $testv`
       if [ "$res" = "" ] 
-	  then
+      then
 	  echo "$1 option not available cause $THIRD_PARTY is not in list"
 	  exit -1
       fi
       
-      (cd $REP_THIRD_PARTY && [ $first -eq 0 ] && echo "Disabling $THIRD_PARTY, so make clean:"&&make clean)
+      (cd $REP_THIRD_PARTY && [ $first -eq 0 ] && echo "Disabling $THIRD_PARTY, so make clean:" && make clean)
       command=TRUST_DISABLE_$THIRD_PARTY=1   
       eval $command       
        

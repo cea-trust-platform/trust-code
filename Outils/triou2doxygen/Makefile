@@ -1,6 +1,6 @@
 INCLUDES	= 
 OBJS		= triou2doxygen.o
-PROG		= triou2doxygen
+PROG		= $(TRUST_ROOT)/exec/triou2doxygen
 
 LIBDIR        = 
 INCDIR        = 

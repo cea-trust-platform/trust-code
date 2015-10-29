@@ -1,11 +1,11 @@
-# Lance la configuration et la compilation de valgrind
-valgrind=$(TRUST_ROOT)/exec/valgrind/bin/valgrind
+name=valgrind
 version=3.10.1
-all:$(valgrind)
-$(valgrind): Installer_valgrind $(TRUST_cc) makefile
+install=$(TRUST_ROOT)/exec/$(name)
+cible=$(install)/bin/$(name)
+all:$(cible)
+$(cible): Installer_valgrind $(TRUST_cc) makefile
 	make clean
-	./Installer_valgrind $(version)
+	@./Installer_valgrind $(version) | tee $(install).log
 		
 clean:
-	rm -rf $(TRUST_ROOT)/exec/valgrind $(valgrind) valgrind-?.??.?
-
+	rm -r -f $(install)* $(name)-*.*.*

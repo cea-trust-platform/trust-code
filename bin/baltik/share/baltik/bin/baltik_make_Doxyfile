@@ -14,7 +14,7 @@ prepare_sources()
    cd baltik
    for file in `ls $project_directory/build/src/*.cpp  $project_directory/build/src/*.h`
      do 
-     $TRUST_ROOT/Outils/triou2doxygen/triou2doxygen $file > `basename $file `
+     $TRUST_ROOT/exec/triou2doxygen $file > `basename $file `
    done
    
    cd $TRUST_TMP/TRUST_dox
@@ -26,7 +26,7 @@ prepare_sources()
       do
 	if	[ ! -f $TRUST_TMP/TRUST_dox/baltik/`basename $file` ] 
 	    then
-         $TRUST_ROOT/Outils/triou2doxygen/triou2doxygen $file > `basename $file`
+         $TRUST_ROOT/exec/triou2doxygen $file > `basename $file`
 	else
 	    echo $file modifie par le projet baltik
 	fi
@@ -91,7 +91,7 @@ else
    ######################
    # Suppression de $TRUST_ROOT/include dans EXCLUDE et INCLUDE du fichier
    # Doxyfile car fait atteindre plus de 500Mo en RAM   
-   doxygen=`ls -rt $TRUST_ROOT/Outils/doxygen/doxygen*/bin/doxygen`
+   doxygen=`ls -rt $TRUST_ROOT/exec/doxygen*/bin/doxygen`
    echo $ECHO_OPTS "Running doxygen `$doxygen --version` (output in `pwd`/doxygen.out|err)...\c" | tee doxygen.out
    $doxygen $TRUST_TMP/Doxyfile 1>>doxygen.out 2>doxygen.err || exit -1
    # On cree l'index si le fichier suivant existe:

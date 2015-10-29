@@ -36,6 +36,7 @@ do
     if [ -f $pref.med ]
     then
        echo $ECHO_OPTS "File $pref.med is ready for use"
+       rm -f $pref.gmsh.log
     else
        echo $ECHO_OPTS "Error with Gmsh !"
        cat $pref.gmsh.log
@@ -52,6 +53,7 @@ do
         echo $ECHO_OPTS "Error with your mesh"
         exit -1
     else
+        rm -f $pref.log
         echo $ECHO_OPTS "Test Gmsh->converter->TRUST ok" 
     fi
     sleep 1
@@ -66,6 +68,6 @@ do
     echo $ECHO_OPTS "        "
 done
 # Clean
-rm -f *.med ssz*.geo *.file convert_jdd
+rm -f *.med *ssz*.geo *.file convert_jdd
 exit 0
 
