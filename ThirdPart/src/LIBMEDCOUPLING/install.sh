@@ -11,13 +11,14 @@ echo "#define NO_MEDFIELD " > $DEST/include/ICoCoMEDField.hxx
 exit 0
 fi
 tar zxf MED_SRC.tgz
+#echo patching MEDCouplingDataArrayTypemaps.i
+#sed "s/NPY_ARRAY_OWNDATA/NPY_OWNDATA/g" -i MED_SRC/src/MEDCoupling_Swig/MEDCouplingDataArrayTypemaps.i
 
-echo patching MPIAcces.h
+#echo patching MPIAcces.h
+#sed -i  "s/return (MPI_Datatype ) NULL /return MPI_DATATYPE_NULL /"    MED_SRC/src/ParaMEDMEM/MPIAccess.hxx
 
-sed -i  "s/return (MPI_Datatype ) NULL /return MPI_DATATYPE_NULL /"    MED_SRC/src/ParaMEDMEM/MPIAccess.hxx
-
-echo patching MPIProcessorGroup.cxx
-sed -i "s?_comm_interface.commCreate(_world_comm, _group, &_comm);?_comm_interface.commCreate(_world_comm, _group, \&_comm);MPI_Group_free(\&group_world);?"  MED_SRC/src/ParaMEDMEM/MPIProcessorGroup.cxx 
+#echo patching MPIProcessorGroup.cxx
+#sed -i "s?_comm_interface.commCreate(_world_comm, _group, &_comm);?_comm_interface.commCreate(_world_comm, _group, \&_comm);MPI_Group_free(\&group_world);?"  MED_SRC/src/ParaMEDMEM/MPIProcessorGroup.cxx 
 mkdir build
 cd build
 
@@ -70,6 +71,7 @@ echo "export LD_LIBRARY_PATH=$PWD/lib/salome:$TRUST_MED_ROOT/lib:\${LD_LIBRARY_P
 echo "export PYTHONPATH=$PWD/bin/salome:$PWD/lib/python$version/site-packages/salome:\$PYTHONPATH" >> env.sh
 echo "export MED_COUPLING_PYTHON=$MED_COUPLING_PYTHON" >> env.sh
 
+touch include/salome/*
 for dir in include lib
 do
 mkdir -p $dir

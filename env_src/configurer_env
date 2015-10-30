@@ -1088,7 +1088,6 @@ PYTHON_VERSION_OK=`$python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1
 # Le test "ls /usr/lib*/python*/config/Makefile 2>/dev/null" est pour MED 3.0.7
 # 1.6.8: Add a more complex test (test.py) for python if python is not well installed
 if [ "$PYTHON_VERSION_OK" != 1 ] || [ "`python-config 2>&1 | grep Usage`" = "" ] || [ "`ls /usr/lib*/libpython*.so   /usr/lib*/*/libpython*.so 2>/dev/null`" = "" ]  || [ "`ls /usr/lib*/python*/config/Makefile 2>/dev/null`" = "" ] || [ "`python ./test.py 1>/dev/null 2>&1;echo $?`" != 0 ]
-
 then
    make_ $TRUST_ROOT/Outils/Python python $TRUST_ROOT/exec/python.log
 fi
