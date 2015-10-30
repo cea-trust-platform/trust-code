@@ -25,7 +25,8 @@ echo "patching configure"
 cat ../configure_valgrind_3.10.1_patched > configure
 echo patching mpiwrap
 cp mpi/libmpiwrap.c mpi/libmpiwrap.c.org
-sed 's?before(\"Finalize\");?before(\"Finalize\");if (sReqs) { free(sReqs); sReqs=0; }?' -i mpi/libmpiwrap.c
+sed 's?before(\"Finalize\");?before(\"Finalize\");if (sReqs) { free(sReqs); sReqs=0; }?;s?before("Allreduce");?before("Allreduce"); if (sendbuf!=MPI_IN_PLACE)? ' -i mpi/libmpiwrap.c
+ 
 diff mpi/libmpiwrap.c.org mpi/libmpiwrap.c
 [ $? -eq 0 ] && echo erreur patch&& exit
 ./configure -help 1>../configure.help 2>&1
