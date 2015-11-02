@@ -554,6 +554,7 @@ then
       python $TRUST_ROOT/bin/KSH/Createcmakefile.py
       MonoDir_base=${MonoDir%$OPT}
       opt=$OPT
+      compile_opt=0
       [ "$opt" = "" ] && opt="_debug"      
       [ "${cibles}" = "" ] && cibles=$opt     
       for opt in ${cibles}
@@ -573,7 +574,7 @@ then
 	 mkdir -p $MonoDir/src
 	 \cd $MonoDir/src || (echo "BUILD_EXEC=KO" | tee -a $COMPILE && exit -1)
          case $opt in
-          _opt) build_type="Release" ;;
+          _opt) build_type="Release"; compile_opt=1 ;;
           _debug) build_type="Debug" ;;
           _prof) build_type="Profil" ;;
           _gcov)  build_type="Coverage" ;;
@@ -606,6 +607,7 @@ then
    echo >>$COMPILE
    echo "cibles="$cibles | tee -a $COMPILE
    echo "BUILD_EXEC=OK" | tee -a $COMPILE
+   [ $compile_opt -eq 0 ] && echo "No opt compilation, so stop"  | tee -a $COMPILE && exit 0
    echo >>$COMPILE
 fi
 #
