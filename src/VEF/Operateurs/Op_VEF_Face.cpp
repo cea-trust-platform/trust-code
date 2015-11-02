@@ -39,6 +39,7 @@
 #include <Debog.h>
 #include <communications.h>
 #include <DoubleTrav.h>
+#include <Matrice_Morse_Diag.h>
 
 // Description
 // Dimensionnement de la matrice qui devra recevoir les coefficients provenant de
@@ -791,6 +792,9 @@ void modif_matrice_pour_periodique_apres_contribuer(Matrice_Morse& matrice,const
 
 void Op_VEF_Face::modifier_matrice_pour_periodique_avant_contribuer(Matrice_Morse& matrice,const Equation_base& eqn) const
 {
+  // si matrice_morse_diag pas de contribution n0 n0perio 
+  if (sub_type(Matrice_Morse_Diag,matrice))
+    return;
   modif_matrice_pour_periodique_avant_contribuer(matrice,eqn);
 }
 // Description: Somme  les 2 lignes des faces periodiques associees
@@ -800,7 +804,11 @@ void Op_VEF_Face::modifier_matrice_pour_periodique_avant_contribuer(Matrice_Mors
 
 void Op_VEF_Face::modifier_matrice_pour_periodique_apres_contribuer(Matrice_Morse& matrice,const Equation_base& eqn) const
 {
-  modif_matrice_pour_periodique_apres_contribuer(matrice,eqn);
+  // si matrice_morse_diag pas de contribution n0 n0perio 
+  if (sub_type(Matrice_Morse_Diag,matrice))
+    return;
+ 
+   modif_matrice_pour_periodique_apres_contribuer(matrice,eqn);
 
   // verification que la matrice est bien periodique
 #ifndef  NDEBUG
