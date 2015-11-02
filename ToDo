@@ -10,6 +10,7 @@ Version	Qui				Tache
 1.7.2   triou@cea.fr            Passer en job de soumission mise_a_jour_TRUST_arch sur cluster pour eviter de charger les frontales
 1.7.2   triou@cea.fr            Analyser le fichier de sortie datafile_petsc.TU (signification de count)
 1.7.2   triou@cea.fr            Gauthier a demande d ajouter test Execute_parallel lors du configure pour verifier l'installation MPI
+1.7.2   triou@cea.fr            au changement de version de VisIt, deplacer de bin/visit dans exec/visit/bin/visit
 1.7.2   triou@cea.fr            revoir comment activer ou non les mot cles dans vi car a adapter selon les baltiks charges
 1.7.2   triou@cea.fr            revoir le TRUST env qui teste beaucoup de chose (ex: dd.ksh,...) et trop long pour utilisateur
 1.7.2   triou@cea.fr            completer benchmark avec et sans Petsc

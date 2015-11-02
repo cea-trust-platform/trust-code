@@ -9,4 +9,4 @@ $(cible): install_gnuplot makefile
 	@./install_gnuplot $(package) | tee $(install).log
 	
 clean:
-	rm -r -f $(install)*
+	rm -r -f $(install)* gd

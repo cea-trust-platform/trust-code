@@ -277,7 +277,6 @@ ln -s -f env/env_TRUST.sh .
 cd env
 ./configurer_env $clean || exit -1
 cd ..
-echo
 source ./env_TRUST.sh 1>/dev/null 2>&1
 
 ##########################################
@@ -306,8 +305,9 @@ then
    # Desormais on recree les makefile
    ##################################   
    #make depend 
-   echo $ECHO_OPTS "# File \$TRUST_ROOT/Makefile is created."
-   echo $ECHO_OPTS "# File \$TRUST_ROOT/configure.log is created."
+   echo $ECHO_OPTS "File Makefile created."
+   echo $ECHO_OPTS "File configure.log created."
+   echo
    echo $ECHO_OPTS "# To initialize the TRUST environment, run:"
    echo $ECHO_OPTS "source env_TRUST.sh"
    echo $ECHO_OPTS "# To build TRUST, run:"

@@ -893,7 +893,7 @@ case $arch in
 	TRUST_cc_BASE="cc"
 	Dtterm="hpterm dtterm xterm"
 	DEBUG="softdebug softdde ddd xdb dde"
-	IP=`$TRUST_ROOT/bin/admin/ping_ $HOST | awk '/bytes/ {print $4}'`
+	IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/bytes/ {print $4}'`
         ;;
    IRIX*) TRUST_ARCH=SGI
 	EDITEUR="nedit xedit jot dtpad"
@@ -904,7 +904,7 @@ case $arch in
 	# Dtterm="dtterm winterm xterm"
         Dtterm="dtterm xterm"
 	DEBUG="cvd ddd dbx"
-	IP=`$TRUST_ROOT/bin/admin/ping_ $HOST | awk '/ bytes / {print $4}'`
+	IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/ bytes / {print $4}'`
 	;;
    SunOS) TRUST_ARCH=sun5
 	EDITEUR="nedit textedit xedit dtpad"
@@ -913,7 +913,7 @@ case $arch in
 	TRUST_cc_BASE="cc"	
 	Dtterm="dtterm xterm"
 	DEBUG="dbxtool debugger ddd dbx gdb"
-	#IP=`$TRUST_ROOT/bin/admin/ping_ $HOST | awk '/bytes/ {print $4}'`
+	#IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/bytes/ {print $4}'`
         ;;
    AIX) TRUST_ARCH=RS6000
 	# mpCC_r, mpxlf_r, mpcc_r compilateurs de zahir a l'IDRIS ou zeus au CINES
@@ -924,7 +924,7 @@ case $arch in
 	TRUST_cc_BASE="mpcc_r cc"
 	Dtterm="xterm dtterm"
 	DEBUG="ddd xdb"
-	IP=`$TRUST_ROOT/bin/admin/ping_ $HOST | awk '/ bytes / {print $4}'`
+	IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/ bytes / {print $4}'`
 	;;
    OSF1) TRUST_ARCH=DECalpha
 	EDITEUR="nedit xedit dtpad"
@@ -933,10 +933,10 @@ case $arch in
 	TRUST_cc_BASE="cc"
 	Dtterm="xterm dtterm"
 	DEBUG="ddd dbx xdb"
-	IP=`$TRUST_ROOT/bin/admin/ping_ $HOST | awk '/ bytes / {print $4}'`
+	IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/ bytes / {print $4}'`
 	;;
    Linux) TRUST_ARCH=linux
-	EDITEUR="nedit kedit xemacs xedit emacs"
+	EDITEUR="nedit kedit xemacs xedit emacs gedit"
 	# Compilos Intel plus performants sont desormais en priorite sur archi 64 bits (exx)
 	# Sur 32 bits on laisse Gnu prioritaires par rapport a Intel (ixx)
 	# pgCC en dernier car +50% sur Opteron par rapport a gcc
@@ -970,7 +970,7 @@ case $arch in
 	
 	Dtterm="xterm dtterm nxterm rxvt konsole"
 	DEBUG="ddd gdb"
-	IP=`$TRUST_ROOT/bin/admin/ping_ $HOST | awk '/PING/ {print $3}'`
+	IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/PING/ {print $3}'`
 	;;
    CYGWIN*) TRUST_ARCH=cygwin
 	EDITEUR="nedit kedit xemacs xedit emacs"
@@ -985,7 +985,7 @@ case $arch in
 	
 	Dtterm="xterm dtterm nxterm rxvt konsole"
 	DEBUG="ddd gdb"
-	IP=`$TRUST_ROOT/bin/admin/ping_ $HOST | awk '/PING/ {print $3}'`
+	IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/PING/ {print $3}'`
 	;;
    Darwin) TRUST_ARCH=linux	# Portage en cours de la v1.4.5 sur Power MacIntosh G5
 	EDITEUR="nedit xedit emacs dtpad"
@@ -2285,7 +2285,7 @@ m="# Path to makedepend command";e="`cherche_file TRUST_MD $TRUST_MD`";ecrit $m"
 # Fin creation machine.env #
 ############################
 #m="# Mail user user@mail.fr ";e="TRUST_PROJECT_LEADER= && export TRUST_PROJECT_LEADER";ecrit $m"|"$e"|"$env
-echo "File machine.env created"
+echo "File machine.env created."
 
 # Generation de Cmake.env a partir des make.$TRUST_ARCH
 find_flags()
@@ -2321,7 +2321,7 @@ do
   fi
 done
 echo "SET( CMAKE_BUILD_TYPE \"\${CMAKE_BUILD_TYPE}\" CACHE STRING \"Choose the type of build, options are: Debug Release Profil Coverage semi_opt. \"    FORCE )" >> Cmake.env
-echo "File Cmake.env created"
+echo "File Cmake.env created."
 
 cd $TRUST_ROOT/bin
 # Mise a jour du fichier rep.TRUST
