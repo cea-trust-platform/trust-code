@@ -116,7 +116,12 @@ then
     [ "$param" = "deps" ] && mode=$param &&shift && shift && TRUST_TESTS=$project_test_directory/deps&& Rapports_auto_root=$project_test_directory/share/deps
     [ "$param" = "trio" ] && mode=$param &&shift && shift && TRUST_TESTS=$TRUST_ROOT/tests && Rapports_auto_root=$TRUST_ROOT
     [ "$param" = "all" ] && mode=$param &&shift && shift && TRUST_TESTS=$project_test_directory/all&& Rapports_auto_root=$project_test_directory/share/all
-    [ "$param" = "" ] && mode=$param &&shift && shift 
+    [ "$param" = "full" ] && mode=$param &&shift && shift && TRUST_TESTS=$project_test_directory/full&& Rapports_auto_root=$project_test_directory/share/full
+    [ "$param" = "" ] && mode=$param &&shift && shift
+    
+    [ $# -ne 0 ] && echo "Error in $0 with option: $* " && exit -1
+    
+    
 fi
 export TRUST_TESTS
 export Rapports_auto_root

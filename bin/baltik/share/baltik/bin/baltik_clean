@@ -126,5 +126,6 @@ if [ $ALL -eq 1 ]
     rm -rf ${project_directory}/local
     project_name=`extract_field "$project_description" name`
     env_file=$project_directory/env_${project_name}.sh
-    rm -f  $env_file
+    env_file_full=$project_directory/full_env_${project_name}.sh
+    rm -f  $env_file $env_file_full
 fi
