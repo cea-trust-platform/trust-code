@@ -5,7 +5,7 @@ verbose=0
 list_machine=`ls ${project}_%_*_%_time.log |sed "s/_%_time.log//; s/${project}_%_//"`
 [ $verbose -eq 1 ] && echo machines ${list_machine}
 list_info_res=`grep Info_global ${project}_%_*.log | awk '{print $2}' | sort -u `
-list_info_base="date_debut date_fin Os model release prepare configure make make_check make_install"
+list_info_base="date_debut date_fin Os model release cible prepare configure make make_check make_install"
 
 list_info=${list_info_base}
 
@@ -38,8 +38,15 @@ do
 echo '<TD>'$info'</TD>'
 done >>nuit_${project}.html
 echo '</TR>' >> nuit_${project}.html
+nb_machines=0
+nb_ok=0
+nb_ok_cible=0
+nb_cibles=0
 for machine in $list_machine
   do
+   let nb_machines=nb_machines+1
+   tot_ok=1
+   cible=0
 	   file=`ls -tr  ${project}_%_${machine}_%_*.log| grep -vi time|tail -1`;
 	   [ $verbose -eq 1 ] && echo last_file $machine ${file}
 	   echo "<TR> <TD><A HREF=${file} >$machine</A></TD>" >>nuit_${project}.html
@@ -55,13 +62,22 @@ for machine in $list_machine
     [ "$res" = "" ] && res="&nbsp;"
     color=""
     [ "$res" = "OK" ] && color=BGCOLOR=3D"#E47833" &&  res="<A HREF=$file> $res </A>"
-    [ "$res" = "KO" ] && color=BGCOLOR="#C42111" && res="<A HREF=$file> $res </A>"
+    [ "$res" = "KO" ] && color=BGCOLOR="#C42111" && res="<A HREF=$file> $res </A>" && tot_ok=0
  #   [ "`echo $res|awk '{print $1}`" = "file" ] && res="<A HREF=$file> $res </A>"
     echo "<TD $color>$res</TD>" >> nuit_${project}.html 
+   [ "$info" = "cible" ] && cible=$res
   done
+  if [ "$cible" = "1" ]
+  then
+   let nb_cibles=nb_cibles+1 
+  [ $tot_ok -eq 1 ] && let nb_ok_cible=nb_ok_cible+1
+  fi
+  [ $tot_ok -eq 1 ] && let nb_ok=nb_ok+1
   echo "</TR>" >> nuit_${project}.html
 done
-echo '</TABLE>
+echo "</TABLE>
+<p>Nb_OK/Nb_test $nb_ok/$nb_machines &nbsp;</p>
+<p>Nb_OK_cible/Nb_cible $nb_ok_cible/$nb_cibles</p>
 </BODY>
-</HTML>' >> nuit_${project}.html
+</HTML>" >> nuit_${project}.html
 

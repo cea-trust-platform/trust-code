@@ -35,6 +35,8 @@ doclean=0
 norun=0
 last_pb="";
 cases=""
+clean_after=0
+cible=0
 for word in $*
   do
   case $word in
@@ -51,7 +53,9 @@ for word in $*
       --without-run) norun=1 ;;
       --with-case*) cases=`right $word`;  last_pb="_last_pb"  ;;
       --last-pb) last_pb="_last_pb";;
-      --check-all) last_pb="_all";; 
+      --check-all) last_pb="_all";;
+      --clean-after-if-ok) clean_after=1 ;;
+      --cible) cible=1;;
       *) echo $word non compris;echo options possibles ; grep '\-\-' $0| awk -F\) '{print $1}'  ;exit 1;;
   esac
 done
@@ -128,7 +132,17 @@ if [ $norun -eq 0 ]
 else
     echo "echo Info_global make_check OFF" >> make_check.sh
 fi
-echo "echo do nothing " >> make_install.sh
+if [ $clean_after -eq 0 ]
+then
+    echo "echo do nothing " >> make_install.sh
+else
+    echo "cd ..; if [ -d $projet ]
+     then
+           rm -rf $projet *.sh  update_report  $archive $projet.tar.gz baltik
+ echo repertoire $projet efface
+ pwd;ls 
+fi " >> make_install.sh    
+fi
 # on prepare le projet
 
 
@@ -173,3 +187,4 @@ echo Info_global CC `basename $TRUST_CC_BASE` `$TRUST_CC_BASE --version 2>&1 | h
 OS=`uname -s` && [ $TRUST_ARCH = linux ] && [ -f /etc/issue ] && OS=`awk '(NF>0) {gsub("Welcome to ","",$0);print $0}' /etc/issue | head -1`
 #OS="Os "`uname -s` && [ $TRUST_ARCH = linux ] && OS=$OS" "`cat /proc/cpuinfo | $TRUST_Awk '/MHz/ {print $4"Mhz";exit}'`
 echo Info_global Os $OS 
+echo Info_global cible $cible
