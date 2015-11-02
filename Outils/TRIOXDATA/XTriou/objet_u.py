@@ -607,7 +607,7 @@ class objet_u(XObject):
             return chaine2
         
         type=type_val2.classes[0]
-	typem=split(str(type),".")[1]
+	typem=split(str(type),".")[-1]
 	type2=split(typem,"'" )[0]
     
         if (val==None):
@@ -2351,15 +2351,22 @@ def gen_doc_base(fr=1):
 
     # on change la liste pour mettre d'abord et dans cette ordre les classes suivantes
     list_prefere=['interprete','pb_gen_base','mor_eqn']
+    list_p2=[]
     for x in list_prefere:
-        l.remove(x)
+        if x in l:
+            l.remove(x)
+            list_p2.append(x)
+            pass
         pass
-    l=list_prefere+l
+    l=list_p2+l
     
-    l.remove('objet_lecture')
-    l.remove('listobj_impl')
-    l.append('listobj_impl')
-    l.append('objet_lecture')
+   
+    if 'listobj_impl' in l:
+        l.remove('listobj_impl')
+        l.append('listobj_impl')
+    if 'objet_lecture' in l:
+        l.remove('objet_lecture')
+        l.append('objet_lecture')
     for name in l:
         s1.write('\input{'+name+'}\n')
         tstr="\section{"
