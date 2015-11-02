@@ -429,7 +429,7 @@ void Zone_Cl_EF::imposer_symetrie_partiellement(DoubleTab& values,const Noms& a_
               for (int s=0; s<nb_som_face; s++)
                 {
                   int som=faces_sommets(face,s);
-                  if (( type_sommet_bis(som)==1))  //|| ( tous_les_sommets_sym&&(type_sommet_(som)%2==1)))
+                  if ( type_sommet_bis(som)==1)  //|| ( tous_les_sommets_sym&&(type_sommet_(som)%2==1)))
                     {
                       for (int dir=0; dir<dirmax; dir++)
                         {

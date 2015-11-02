@@ -92,6 +92,9 @@ rm -r -f ${version%.tgz}
 echo "Install $version..." 
 tar mxfz $version
 cd ${version%.tgz}
+
+echo Patching ratio.c for clang
+sed "s?if ( abs(mesh->info.imprim) < 5 )  return;?if ( abs(mesh->info.imprim) < 5 )  return 1;?" -i ./contrib/mmg3d/build/sources/ratio.c
 mkdir -p build
 cd build
 

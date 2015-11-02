@@ -55,8 +55,13 @@
 #define IOS_OPEN_MODE std::ios_base::openmode
 #define IOS_FORMAT std::ios_base::fmtflags
 #else
+#ifdef _COMPILE_AVEC_CLANG
+#define IOS_OPEN_MODE std::ios_base::openmode
+#define IOS_FORMAT std::ios_base::fmtflags
+#else
 #define IOS_OPEN_MODE int
 #define IOS_FORMAT int
+#endif
 #endif
 #endif
 

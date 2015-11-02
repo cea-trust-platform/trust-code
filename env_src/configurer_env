@@ -1103,7 +1103,7 @@ TRUST_ARCH_CC="$TRUST_ARCH"_`echo $TRUST_CC_BASE | awk -F/ '{print $NF}'`
 ###########
 # Cas gcc 3
 ###########
-if [ "${TRUST_CC_BASE%g++}" != "$TRUST_CC_BASE" ]
+if [ "${TRUST_CC_BASE%/g++}" != "$TRUST_CC_BASE" ]
 then
    # On trouve sur RedHat 5.3 une sortie de g++ -v: gcc driver version 4.1.2 20070626 (Red Hat 4.1.2-14) executing gcc version 3.4.6 
    # NB: g++ --version n'est pas terrible non plus (peyrolle retournera gcc-4.0.1)
@@ -1830,6 +1830,40 @@ case $TRUST_ARCH_CC in
 	ShLibFlag="\$(TRUST_CC) -shared"
 	cherche_include_systeme
 	;;
+linux_clang++) TRUST_SUPPORTED=1 
+   	Defines="-D_COMPILE_AVEC_CLANG"
+   	# 26/03/10, passage enfin a -03
+	CppFlags="-O3 -fPIC -fno-common -Wno-long-long -Wall -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth"
+	# 06/02/14, Added -Wshadow
+	CppFlags=$CppFlags" -Wshadow"
+	CppFlags=$CppFlags" -Wextra  -Qunused-arguments -Wno-unused-parameter"
+	# GF pas convaincu des erreurs trouvees
+	CppFlags=$CppFlags" -pedantic"
+	CppFlags=$CppFlags" -Wno-tautological-compare"
+	
+	CppFlags=$CppFlags" -Werror"
+	if [ "`basename $TRUST_F77_BASE`" = g77 ]
+        then
+	   SYSLIBS=$SYSLIBS"-lg2c"
+        fi
+	if [ "`basename $TRUST_F77_BASE`" = gfortran ]
+	then
+	   # Parfois libgfortran non trouve (castor, kata,...), on teste et on prend la version 64 bits:
+	   touch test.cpp
+	   if [ "`$TRUST_CC -o test test.cpp -lgfortran 2>&1 | grep gfortran | grep ld`" != "" ]
+	   then
+	      L=`ls /usr/lib/gcc/*/*/libgfortran.a 2>/dev/null | grep 64`
+	      SYSLIBS="-L"`dirname $L`" "
+	   fi
+	   rm -f test.cpp
+	   SYSLIBS=$SYSLIBS"-lgfortran"
+	fi
+	# Support d'Absoft mais n'accepte que -O comme flag
+	F77Flags="-O3 -fPIC" && [ "`echo $TRUST_F77_BASE | grep absoft`" != "" ] && F77Flags="-O"
+	ccFLAGS="-O3 -fPIC"
+	ShLibFlag="\$(TRUST_CC) -shared"
+#	cherche_include_systeme
+	;;
    linux_pgCC) TRUST_SUPPORTED=1
    	Defines="-D_COMPILE_AVEC_PGCC"
 	CppFlags="-O3 -fPIC"
@@ -1942,8 +1976,8 @@ fi
 ###################################
 # Cas du compilateur gnu 2.x et 3.x
 ###################################
-[ ${TRUST_ARCH_CC%g++}  != $TRUST_ARCH_CC ] && Defines=$Defines" -D_COMPILE_AVEC_GCC_"
-[ ${TRUST_ARCH_CC%g++3} != $TRUST_ARCH_CC ] && Defines=$Defines" -D_COMPILE_AVEC_GCC_3"
+[ ${TRUST_ARCH_CC%/g++}  != $TRUST_ARCH_CC ] && Defines=$Defines" -D_COMPILE_AVEC_GCC_"
+[ ${TRUST_ARCH_CC%/g++3} != $TRUST_ARCH_CC ] && Defines=$Defines" -D_COMPILE_AVEC_GCC_3"
 ###############
 # Cas de IA64 #
 ###############
