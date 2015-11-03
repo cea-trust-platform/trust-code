@@ -292,7 +292,7 @@ bool Matrice_Dense::is_the_same( const Matrice_Dense& other_matrix , const doubl
     {
       for(int j=0; j<nb_cols; j++)
         {
-          if( dabs( other_matrix( i , j ) - Matrix_( i , j ) >= tol ) )
+          if( dabs( other_matrix( i , j ) - Matrix_( i , j )) >= tol  )
             {
               same = false;
             }

@@ -51,7 +51,7 @@ public :
 
 private :
 
-  double temps_;
+//  double temps_;
 };
 
 

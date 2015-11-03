@@ -298,7 +298,10 @@ void  Chimie::mettre_a_jour(double temps)
               liw=20+nbc;
               lrw=22+9*nbc+nbc*nbc;
             }
+          else
+            throw;
           assert(mf==21);
+
 
           ArrOfDouble rwork(lrw);
           ArrOfInt iwork(liw);

@@ -470,7 +470,7 @@ int Solv_GCP::resoudre_(const Matrice_Base& matrice,
 
   if (limpr())
     {
-      double norme_relative=(norme_b>0?norme/norme_b:norme);
+      double norme_relative=(norme_b>DMINFLOAT?norme/(norme_b+DMINFLOAT):norme);
       Cout << "Norm of the residue: " << norme << " (" << norme_relative << ")" << finl;
     }
   int niter = 0;
@@ -556,9 +556,9 @@ int Solv_GCP::resoudre_(const Matrice_Base& matrice,
     solution.echange_espace_virtuel();
 
   // On affiche quand meme le nombre d'iterations
-  double norme_relative=(norme_b>0?norme/norme_b:norme);
   if (limpr())
     {
+      double norme_relative=(norme_b>0?norme/(norme_b+DMINFLOAT):norme);
       Cout << finl;
       Cout << "Final residue: " << norme << " ( " << norme_relative << " )";
     }

@@ -35,19 +35,20 @@
 #include <DoubleTabs.h>
 #include <stat_counters.h>
 
-static inline double vanleer(double r)
+/*
+  static inline double vanleer(double r)
 {
   if(r<=0.) return 0.;
   return 2.*r/(1.+r);//VanLeer
 }
-
+*/
 static inline double minmod(double r)
 {
   if (r<=0.) return 0.;
   if (r<=1.) return r;
   else return 1.;
 }
-
+/*
 static inline double superbee(double r)
 {
   if (r<=0.) return 0.;
@@ -56,7 +57,7 @@ static inline double superbee(double r)
   if (r<=2) return r;
   else return 2.;
 }
-
+*/
 static inline double optimum(double a, double b)
 {
   if (a>=0.)
@@ -248,27 +249,32 @@ Entree& Op_Conv_Muscl_New_VEF_Face::readOn(Entree& s )
   return s;
 }
 
-static inline int maximum(const int& i, const int& j)
+/*
+ static inline int maximum(const int& i, const int& j)
 {
   if (i<j) return j;
   return i;
 }
+*/
 
-static inline double maximum(const double& x,
+/*
+ static inline double maximum(const double& x,
                              const double& y)
 {
   if(x<y)
     return y;
   return x;
 }
-
+*/
+/*
 static inline double maximum(const double& x,
                              const double& y,
                              const double& z)
 {
   return maximum(maximum(x,y),z);
 }
-
+*/
+/*
 static inline double minimum(const double& x,
                              const double& y)
 {
@@ -276,15 +282,17 @@ static inline double minimum(const double& x,
     return y;
   return x;
 }
-
+*/
+/*
 static inline double minimum(const double& x,
                              const double& y,
                              const double& z)
 {
   return minimum(minimum(x,y),z);
 }
-
-static inline double Dij(int elem,
+*/
+/*
+  static inline double Dij(int elem,
                          int face_loc_i,
                          int face_loc_j,
                          const DoubleTab& Kij)
@@ -293,7 +301,7 @@ static inline double Dij(int elem,
   const double& kji=Kij(elem,face_loc_j,face_loc_i);
   return maximum(-kij,-kji,0);
 }
-
+*/
 
 ////////////////////////////////////////////////////////////////////
 //

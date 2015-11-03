@@ -261,7 +261,7 @@ void remplir_face_keps_imposee_gen(int& flag_face_keps_imposee_,
                   test.add(sommet);
               }
             int test_size=test.size();
-            if ((test_size==0)) //||(test_size==nb_som_face))
+            if (test_size==0) //||(test_size==nb_som_face))
               {
                 ; // on a rien a faire pour ce type de face (touche pas le bord ou sont confondus avec une face de bord (et non cas tordu ou une face est constituee que de sommets de bord mais pas sur le meme bord...
               }

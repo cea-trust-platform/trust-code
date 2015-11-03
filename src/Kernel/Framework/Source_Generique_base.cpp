@@ -94,7 +94,7 @@ void Source_Generique_base::completer()
       || ((loc==FACE) && (localisation_source()!="faces")))
     {
       Nom nom_loc;
-      if ((loc==ELEMENT))
+      if (loc==ELEMENT)
         nom_loc ="elem";
       else if (loc==FACE)
         nom_loc = "faces";

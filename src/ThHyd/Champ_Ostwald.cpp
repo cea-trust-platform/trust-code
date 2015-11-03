@@ -242,5 +242,6 @@ const Zone_dis_base& Champ_Ostwald::zone_dis_base() const
 {
   Cerr<<"const Zone_dis_base& Champ_Ostwald::zone_dis_base() const non code"<<finl;
   exit();
+  throw;
   return zone_dis_base() ;
 }

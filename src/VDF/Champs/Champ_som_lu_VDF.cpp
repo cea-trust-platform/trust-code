@@ -103,6 +103,7 @@ DoubleVect& Champ_som_lu_VDF::valeur_a(const DoubleVect& positions,
 {
   // a coder
   assert(0);
+  throw;
   return valeur_a(positions, tab_valeurs, le_poly, ncomp);
 }
 

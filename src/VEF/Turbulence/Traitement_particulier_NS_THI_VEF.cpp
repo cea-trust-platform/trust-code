@@ -373,13 +373,13 @@ void Traitement_particulier_NS_THI_VEF::renorm_Ec(void)
       }
     default :
       {
-        if(je_suis_maitre())
-          {
-            Cerr << "Traitement_particulier_NS_THI_VEF::renorm_Ec" << finl;
-            Cerr << "Impossible de trouver la methode demandee pour initialiser l'energie cinetique : fac_init = " << fac_init << finl;
-            assert( 0 );
-            Process::exit();
-          }
+        {
+          Cerr << "Traitement_particulier_NS_THI_VEF::renorm_Ec" << finl;
+          Cerr << "Impossible de trouver la methode demandee pour initialiser l'energie cinetique : fac_init = " << fac_init << finl;
+          assert( 0 );
+          Process::exit();
+          throw;
+        }
       }
     }
 

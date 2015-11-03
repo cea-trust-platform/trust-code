@@ -77,7 +77,7 @@ FLTK_ROOT=`pwd`/fltk
 ########
 # GMSH #
 ########   
-version=gmsh-2.6.1-source.tgz
+version=gmsh-2.10.1-source.tgz
 if [ ! -f $version ]
 then
    echo "Downloading $version..." 
@@ -92,6 +92,9 @@ rm -r -f ${version%.tgz}
 echo "Install $version..." 
 tar mxfz $version
 cd ${version%.tgz}
+
+#echo Patching ratio.c for clang
+#sed "s?if ( abs(mesh->info.imprim) < 5 )  return;?if ( abs(mesh->info.imprim) < 5 )  return 1;?" -i ./contrib/mmg3d/build/sources/ratio.c
 mkdir -p build
 cd build
 
@@ -104,7 +107,7 @@ then
    [ $HOST != castor ] && options="-DCMAKE_CXX_LINK_FLAGS=-lgfortran"
 fi
 # Gmsh 2.6.1 is not compatible with PETSc>=3.5
-[ "$version" = gmsh-2.6.1-source.tgz ] && options=$options" -DENABLE_PETSC=0"
+[ "$version" = gmsh-2.10.1-source.tgz ] && options=$options" -DENABLE_PETSC=0"
 # Build avec GUI (FLTK), et support MED,LAPACK
 [ "$MISSING_GL" != "" ] && MISSING_GL=$TRUST_ROOT/Outils/Gmsh/missing
 cmake $options -DENABLE_FLTK=1 -DENABLE_MED=1 \

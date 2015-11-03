@@ -112,7 +112,8 @@ DoubleVect& Champ_som_lu::valeur_a(const DoubleVect& positions,
                                    int le_poly, int ncomp) const
 {
   // a coder
-  assert(0);
+  exit();
+  throw;
   return valeur_a(positions, tab_valeurs, le_poly, ncomp);
 }
 

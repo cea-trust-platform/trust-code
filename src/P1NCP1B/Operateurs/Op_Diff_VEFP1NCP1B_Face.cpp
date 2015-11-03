@@ -49,14 +49,14 @@ static inline double maximum(const double& x,
     return y;
   return x;
 }
-
+/*
 static inline double maximum(const double& x,
                              const double& y,
                              const double& z)
 {
   return maximum(maximum(x,y),z);
 }
-
+*/
 Op_Diff_VEFP1NCP1B_Face::Op_Diff_VEFP1NCP1B_Face()
 {
   //Initialisation des attributs

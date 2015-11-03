@@ -1066,7 +1066,7 @@ void Champ_front_recyclage::lire_fichier_format1(DoubleTab& moyenne,
   int dir_ortho = -1;
   if ((ndir==1) || (ndir==2))
     dir_ortho = ndir;
-  else if ((ndir==3))
+  else if (ndir==3)
     dir_ortho = 0;
   else
     {

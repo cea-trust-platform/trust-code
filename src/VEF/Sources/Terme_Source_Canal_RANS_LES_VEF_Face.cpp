@@ -141,7 +141,7 @@ Entree& Terme_Source_Canal_RANS_LES_VEF_Face::readOn(Entree& is )
               Cerr << " Pertinence de la moyenne spatiale en VEF ? -> ARRET (non code)" << finl;
               exit();
             }
-          if((moyenne==1))
+          if(moyenne==1)
             {
               Cerr << " YOUNES, YOUNES !!! !"  << finl;
               Cerr << " YOUNES EST PARTI !!!"  << finl;

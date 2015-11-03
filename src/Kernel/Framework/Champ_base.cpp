@@ -1507,6 +1507,7 @@ const Zone_dis_base& Champ_base::zone_dis_base() const
   Cerr << "::zone_dis_base is not coded\n";
   Cerr << " or the field does not possess a zone_dis_base." << finl;
   exit();
+  throw;
   return zone_dis_base();
 }
 

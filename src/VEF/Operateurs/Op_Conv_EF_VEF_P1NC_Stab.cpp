@@ -162,11 +162,6 @@ Entree& Op_Conv_EF_VEF_P1NC_Stab::readOn(Entree& s )
   return s ;
 }
 
-static inline int maximum(const int& i, const int& j)
-{
-  if (i<j) return j;
-  return i;
-}
 
 static inline double maximum(const double& x,
                              const double& y)
@@ -191,12 +186,6 @@ static inline double minimum(const double& x,
   return x;
 }
 
-static inline double minimum(const double& x,
-                             const double& y,
-                             const double& z)
-{
-  return minimum(minimum(x,y),z);
-}
 
 static inline double Dij(int elem,
                          int face_loc_i,
