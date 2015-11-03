@@ -1976,8 +1976,8 @@ fi
 ###################################
 # Cas du compilateur gnu 2.x et 3.x
 ###################################
-[ ${TRUST_ARCH_CC%/g++}  != $TRUST_ARCH_CC ] && Defines=$Defines" -D_COMPILE_AVEC_GCC_"
-[ ${TRUST_ARCH_CC%/g++3} != $TRUST_ARCH_CC ] && Defines=$Defines" -D_COMPILE_AVEC_GCC_3"
+[ ${TRUST_ARCH_CC%_g++}  != $TRUST_ARCH_CC ] && Defines=$Defines" -D_COMPILE_AVEC_GCC_"
+[ ${TRUST_ARCH_CC%_g++3} != $TRUST_ARCH_CC ] && Defines=$Defines" -D_COMPILE_AVEC_GCC_3"
 ###############
 # Cas de IA64 #
 ###############
