@@ -981,7 +981,7 @@ postraiter_domaine interprete postraiter_domaine 1 To write one or more domains 
   attr fichier|file chaine fichier 1 The file name can be changed with the fichier option.
   attr domaine ref_domaine domain 1 Name of domain
   attr domaines bloc_lecture domaines 1 Names of domains : { name1 name2 }
-  attr joints_non_postraites rien joints_non_postraites 1 The joints_non_postraites will not write the boundaries between the partitioned mesh.
+  attr joints_non_postraites entier joints_non_postraites 1 The joints_non_postraites will not write the boundaries between the partitioned mesh.
   attr binaire entier(into=[0,1]) binaire 1 Binary (binaire 1) or ASCII (binaire 0) may be used. By default, it is 0 for LATA and only ASCII is available for LML and only binary is available for MED.
   attr ecrire_frontiere entier(into=[0,1]) ecrire_frontiere 1 This option will write (if set to 1, the default) or not (if set to 0) the boundaries as fields into the file (it is useful to not add the boundaries when writing a domain extracted from another domain)
 modif_bord_to_raccord interprete modif_bord_to_raccord -1 Keyword to convert a boundary of domain_name domain of kind Bord to a boundary of kind Raccord (named boundary_name). It is useful when using meshes with boundaries of kind Bord defined and to run a coupled calculation.

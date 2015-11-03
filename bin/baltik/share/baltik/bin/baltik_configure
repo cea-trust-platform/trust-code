@@ -347,6 +347,7 @@ exec_debug=`pwd`"/"${project_executable_name}
 
 project_makefile="${project_directory}/Makefile"
 env_file=$project_directory/env_${project_name}.sh
+env_file_full=$project_directory/full_env_${project_name}.sh
 if [ -e $project_makefile ]
 then
     rm -f $project_makefile
@@ -395,6 +396,14 @@ printf "\t@echo \"####################################\"\n"     >> $project_make
 printf "\t@echo \"# Running all test suite in `human_name_from_name $type` mode #\"\n"     >> $project_makefile
 printf "\t@echo \"####################################\"\n"     >> $project_makefile
 printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check $type all \n"               >> $project_makefile
+printf "\n" >> $project_makefile
+
+printf "# help check_full_$type : Running full test suite in `human_name_from_name $type` mode (all test of project + all test of TRUST)\n" >>$project_makefile
+printf "check_full_$type : $type\n"                                  >> $project_makefile
+printf "\t@echo \"####################################\"\n"     >> $project_makefile
+printf "\t@echo \"# Running full test suite in `human_name_from_name $type` mode #\"\n"     >> $project_makefile
+printf "\t@echo \"####################################\"\n"     >> $project_makefile
+printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check $type full \n"               >> $project_makefile
 printf "\n" >> $project_makefile
 
 printf "# help check_last_pb_$type : Running last pb test suite in `human_name_from_name $type` mode \n" >>$project_makefile
@@ -488,11 +497,19 @@ printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_make_distrib -
 printf "\n"                                                     >> $project_makefile
 
 printf "# help gui \t\t: Building gui \n" >> $project_makefile
-printf "gui :\n"                                              >> $project_makefile
+printf "gui : optim\n"                                              >> $project_makefile
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
 printf "\t@echo \"# building gui         #\"\n"                 >> $project_makefile
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
-printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_make_xdata\n"                >> $project_makefile
+printf "\t@source $env_file; env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_make_xdata\n"                >> $project_makefile
+printf "\n"                                                     >> $project_makefile
+
+printf "# help check_gui \t\t: Checking gui \n" >> $project_makefile
+printf "check_gui : gui\n"                                              >> $project_makefile
+printf "\t@echo \"########################\"\n"                 >> $project_makefile
+printf "\t@echo \"# Checking gui         #\"\n"                 >> $project_makefile
+printf "\t@echo \"########################\"\n"                 >> $project_makefile
+printf "\t@source $env_file; check_jdd\n"                       >> $project_makefile
 printf "\n"                                                     >> $project_makefile
 
 printf "# help doxygen \t\t: Building doxygen documentation \n" >> $project_makefile
@@ -524,8 +541,8 @@ echo "Done."
 echo ""
 
 echo "Creating tests/deps and tests/all"
-mkdir -p ${project_directory}/build/tests/deps ${project_directory}/build/tests/all
-rm -rf  ${project_directory}/build/tests/deps/* ${project_directory}/build/tests/all/*
+mkdir -p ${project_directory}/build/tests/deps ${project_directory}/build/tests/all 
+rm -rf  ${project_directory}/build/tests/deps/* ${project_directory}/build/tests/all/* ${project_directory}/build/tests/full  ${project_directory}/build/tests/share/full
 mkdir -p ${project_directory}/build/tests/share/deps/Validation/Rapports_automatiques/
 mkdir -p ${project_directory}/build/tests/share/all/Validation/Rapports_automatiques/
 
@@ -563,6 +580,25 @@ do
     ln -sf $path//share/Validation/Rapports_automatiques/$dir ${project_directory}/build/tests/share/all/Validation/Rapports_automatiques/.
   done
 done
+cp -a ${project_directory}/build/tests/share/all  ${project_directory}/build/tests/share/full
+cp -a ${project_directory}/build/tests/all ${project_directory}/build/tests/full
+
+for  path in $TRUST_ROOT 
+do
+  for dir in `ls $path/tests 2>/dev/null`
+    do
+    [ ! -d  $path/tests/$dir ] && continue  
+    mkdir -p ${project_directory}/build/tests/full/$dir
+    for cas in `ls $path/tests/$dir 2>/dev/null`
+      do
+      ln -sf $path/tests/$dir/$cas ${project_directory}/build/tests/full/$dir/.
+    done
+  done
+  for dir in `ls $path/Validation/Rapports_automatiques// 2>/dev/null`
+    do
+    ln -sf $path//Validation/Rapports_automatiques/$dir ${project_directory}/build/tests/share/full/Validation/Rapports_automatiques/.
+  done
+done
 
 
 echo "Creation $env_file"
@@ -578,6 +614,8 @@ export exec_semi_opt=\${project_directory}/${project_executable_name}_semi_opt
 export exec_pg=\${project_directory}/${project_executable_name}_opt_pg
 export exec_gcov=\${project_directory}/${project_executable_name}_opt_gcov
 export exec_debug=\${project_directory}/${project_executable_name}" > $env_file
+
+sed "s/\/all\//\/full\//g"  $env_file > $env_file_full
 echo "Done."
 echo ""
 

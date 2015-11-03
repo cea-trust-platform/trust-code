@@ -54,6 +54,8 @@ double zmax = 0.0;
 
 int max_delta=0;
 
+double seuil=1e-12;
+
 int Ecart(double x, double y, double ymax,double gepsilon=1e-5)
 {
   int flag = 1;
@@ -62,7 +64,7 @@ int Ecart(double x, double y, double ymax,double gepsilon=1e-5)
   /* Erreur relative : en %, multiplier par 100; */
   /* Si le max est inferieur a 1.e-12 on ne compare pas */
   /* GF et si maintenant on compare */
-  double seuil=1e-12;
+  //  double seuil=1e-12;
   if (ymax<=seuil)
     {
       if( (fabs(x)>seuil)||(fabs(y)>seuil))
@@ -103,7 +105,7 @@ void open(Nom& filename, LataFilter& filter, LataOptions& opt, LataDB& lata_db)
 
 void usage(const char* arg0)
 {
-  cerr<<"usage "<<arg0<<" file1 file2 [--dernier] [--seuil val] [--max_delta]"<<endl;
+  cerr<<"usage "<<arg0<<" file1 file2 [--dernier] [--seuil val] [--valmin val] [--max_delta]"<<endl;
 }
 
 
@@ -697,9 +699,19 @@ int main(int argc,char **argv)
 		}
 	      else
 		{
-		  cerr<<argv[i]<<" incompris "<<endl;;
-		  usage(argv[0]);
-		  exit(-1);
+		   if(strcmp(argv[i],"--valmin")==0)
+		     {
+		       i++;
+		       seuil=atof(argv[i]);
+		     }
+		   
+		   
+		   else
+		     {
+		       cerr<<argv[i]<<" incompris "<<endl;;
+		       usage(argv[0]);
+		       exit(-1);
+		     }
 		}
 	    }
 	}

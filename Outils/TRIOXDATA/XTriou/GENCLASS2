@@ -114,5 +114,6 @@ done
 sed "s/; gen_class/;\ngen_class/g" gencl.py > gencles.py
 python sort_gen_cl.py
 status=$?
-[ $status -ne 0 ] && exit 1
+[ $status -ne 0 ] && rm gencl.py && exit 1
 echo gencl.py genere
+exit $status
