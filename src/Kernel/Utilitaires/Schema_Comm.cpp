@@ -51,12 +51,12 @@ inline InputCommBuffer&   Schema_Comm::ebuffer(int pe)
   return buffers_.ebuffers_[pe];
 }
 
-static const int SET_GROUP_TAG = 0;
+//static const int SET_GROUP_TAG = 0;
 static const int BEGIN_COMM_TAG = 1;
 static const int ECHANGE_MESSAGES_COMM_TAG = 2;
 static const int END_COMM_TAG = 3;
 static const int COPY_OPERATOR_TAG = 4;
-static const int CHECK_SEND_RCV_TAG = 5;
+//static const int CHECK_SEND_RCV_TAG = 5;
 
 // Description:
 // Construction d'un nouveau schema de communication.

@@ -58,6 +58,7 @@ Motcle MorEqn::get_localisation_pour_post(const Nom& option) const
 {
   Cerr<<"MorEqn : the method get_localisation_pour_post is not coded"<<finl;
   Process::exit();
+  throw;
   return MorEqn::get_localisation_pour_post(option);
 }
 

@@ -1836,7 +1836,7 @@ linux_clang++) TRUST_SUPPORTED=1
 	CppFlags="-O3 -fPIC -fno-common -Wno-long-long -Wall -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth"
 	# 06/02/14, Added -Wshadow
 	CppFlags=$CppFlags" -Wshadow"
-	CppFlags=$CppFlags" -Wextra  -Qunused-arguments -Wno-unused-parameter"
+	CppFlags=$CppFlags" -Wextra  -Qunused-arguments -Wno-unused-parameter" #  -Wno-infinite-recursion"
 	# GF pas convaincu des erreurs trouvees
 	CppFlags=$CppFlags" -pedantic"
 	CppFlags=$CppFlags" -Wno-tautological-compare"

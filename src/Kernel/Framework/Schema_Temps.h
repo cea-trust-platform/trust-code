@@ -70,7 +70,7 @@ public :
   inline int impr(Sortie& ) const;
   inline int lsauv() const;
   inline Schema_Temps& operator=(const Schema_Temps_base&);
-  inline Schema_Temps& operator=(const Schema_Temps&);
+  //inline Schema_Temps& operator=(const Schema_Temps&);
 };
 
 
@@ -96,13 +96,13 @@ inline Schema_Temps& Schema_Temps::operator=(const Schema_Temps_base& sch)
   DERIV(Schema_Temps_base)::operator=(sch);
   return *this;
 }
-
+/*
 inline Schema_Temps& Schema_Temps::operator=(const Schema_Temps& sch)
 {
   *this=sch;
   return *this;
 }
-
+*/
 // Description:
 //    Appel a l'objet sous-jacent.
 //    Sauvegarde le schema en temps sur un flot de sortie.

@@ -71,6 +71,7 @@ inline void Eval_Puiss_Th_EF::calculer_terme_source_standard(int num_elem, Doubl
 {
   Cerr<<"Non code"<<__FILE__<<__LINE__<<finl;
   Process::exit();
+  throw;
   return calculer_terme_source_standard(num_elem,d);
 }
 

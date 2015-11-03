@@ -244,6 +244,7 @@ int StringTokenizer::nextToken(void)
             {
               Cerr << "  The syntax " << tok << " is not allowed." << finl;
               Process::exit();
+              throw;
             }
           else
             {

@@ -2283,6 +2283,7 @@ const Operateur& Equation_base::operateur_fonctionnel(int i) const
 {
   Cerr<<"The method operateur_fonctionnel is not coded for equation "<<que_suis_je()<<finl;
   exit();
+  throw;
   return Equation_base::operateur_fonctionnel(i);
 }
 
@@ -2290,6 +2291,7 @@ Operateur& Equation_base::operateur_fonctionnel(int i)
 {
   Cerr<<"The method operateur_fonctionnel is not coded for equation "<<que_suis_je()<<finl;
   exit();
+  throw;
   return Equation_base::operateur_fonctionnel(i);
 }
 

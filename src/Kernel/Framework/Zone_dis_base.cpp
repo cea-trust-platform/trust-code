@@ -202,6 +202,7 @@ IntTab& Zone_dis_base::face_sommets()
   Cerr << que_suis_je() << "does not implement the method face_sommets()"
        << finl;
   exit();
+  throw;
   return face_sommets();
 }
 
@@ -210,6 +211,7 @@ const IntTab& Zone_dis_base::face_sommets() const
   Cerr << que_suis_je() << "does not implement the method face_sommets()"
        << finl;
   exit();
+  throw;
   return face_sommets();
 }
 
@@ -218,6 +220,7 @@ IntTab& Zone_dis_base::face_voisins()
   Cerr << que_suis_je() << "does not implement the method face_voisins()"
        << finl;
   exit();
+  throw;
   return face_voisins();
 }
 
@@ -226,5 +229,6 @@ const IntTab& Zone_dis_base::face_voisins() const
   Cerr << que_suis_je() << "does not implement the method face_voisins()"
        << finl;
   exit();
+  throw;
   return face_voisins();
 }

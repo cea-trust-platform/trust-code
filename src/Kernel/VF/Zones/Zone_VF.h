@@ -583,6 +583,7 @@ inline const IntVect& Zone_VF::orientation() const
   Cerr<<"Method coded only for Zone_VDF"<<finl;
   Cerr<<"The orientation of the faces is not defined for another discretization as VDF"<<finl;
   exit();
+  throw;
   return orientation();
 }
 

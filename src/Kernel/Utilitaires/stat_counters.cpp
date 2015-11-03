@@ -23,6 +23,7 @@
 #include <math.h>
 #include <EcrFicCollecte.h>
 #include <Nom.h>
+#include <Double.h>
 // Declaration des identifiants de compteurs
 
 Stat_Counter_Id mpi_sendrecv_counter_;
@@ -276,7 +277,7 @@ void print_statistics_analyse(const char * message, int mode_append)
       statistiques().get_stats(mpi_sendrecv_counter_, sendrecv);
       double bandwidth = 1.1e30;
       if (sendrecv.time > 0)
-        bandwidth = sendrecv.quantity / sendrecv.time;
+        bandwidth = sendrecv.quantity / (sendrecv.time+DMINFLOAT);
       double max_bandwidth = Process::mp_max(bandwidth);
 
       // Calcul du temps d'attente du aux synchronisations
@@ -291,7 +292,7 @@ void print_statistics_analyse(const char * message, int mode_append)
       if (temps_total.time == 0)
         wait_fraction = 0.;
       else
-        wait_fraction = wait_time / temps_total.time;
+        wait_fraction = wait_time / (temps_total.time+DMINFLOAT);
       wait_fraction = 0.1 * floor(wait_fraction * 1000);
       if (wait_fraction < 0.) wait_fraction = 0.;
       if (wait_fraction > 100.) wait_fraction = 100.;

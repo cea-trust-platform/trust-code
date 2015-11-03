@@ -258,7 +258,7 @@ DoubleTab& Matrice_Morse_Sym::ajouter_multTab_(const DoubleTab& x, DoubleTab& re
       for(comp=0; comp<nb_com; comp++)
         resu(i,comp) += t[comp] ;
     }
-  delete t;
+  delete [] t;
   return resu;
 }
 

@@ -63,6 +63,7 @@ public :
   inline const IntVect& orientation() const
   {
     exit();
+    throw;
     return orientation();
   };
 

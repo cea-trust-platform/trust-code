@@ -1876,5 +1876,6 @@ const Champ_Inc& Navier_Stokes_std::rho_la_vitesse() const
   Cerr<<" Navier_Stokes_std::rho_la_vitesse() must be overloaded "<<finl;
   assert(0);
   exit();
+  throw;
   return rho_la_vitesse();
 }

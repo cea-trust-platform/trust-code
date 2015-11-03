@@ -62,6 +62,7 @@ Objet_U* vect_impl::cree_une_instance() const
 {
   Cerr<<"cree_une_instance() must be redefined in "<<que_suis_je()<<finl;
   exit();
+  throw;
   return cree_une_instance() ;
 }
 /* VECT constructors */
