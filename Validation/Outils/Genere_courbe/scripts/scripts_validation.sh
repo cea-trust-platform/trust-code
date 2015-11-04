@@ -124,8 +124,10 @@ compare_pdf()
 	  ko=1
 	  difffile=`echo $file | sed "s?_oo?_diff?"`
 	  echo compare $file K0 : voir $difffile
-	  compare $file $f2 $difffile 
-	  echo display $difffile >> avoir
+	  compare $file $f2 $difffile
+	  montfile=`echo $file | sed "s?_oo?_mont?"`
+	  montage -geometry 630x900  -tile 3x1  $file  $difffile  $f2 $montfile
+	  echo display $montfile >> avoir
       fi
     done
     return $ko
