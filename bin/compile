@@ -636,18 +636,6 @@ then
    do
       rm -rf lib/src/$rep_lib
    done
-   # Atelier
-   if [ -d $rep_dev ]
-   then
-      \cd $rep_dev
-      for rep_exec in `ls $rep_dev | grep exec`
-      do
-         \cd $rep_dev/$rep_exec
-         make clean 2>/dev/null
-         \cd -
-      done
-      \cd -
-   fi
    # Le travail est deja fait mais on en profite pour rappeler le configure clean possible
    echo "---------------------------------------------------------------------------------"
    echo "To do a complete make clean, you should also clean all the the programs installed"
