@@ -6,7 +6,7 @@ fichier=$rep_dev/.Atelier.html
 # On dezippe les atelier fait avec TRUST<v1.4
 gunzip -f $fichier".gz" 1>/dev/null 2>&1
 
-cree_en_tete.ihm > $fichier
+$TRUST_ROOT/bin/IHM/cree_en_tete.ihm > $fichier
 echo $ECHO_OPTS "<PRE>
 <HR><h1>Development for user `whoami`   <a href=$rep_dev/.Fichiers_atelier.html>Modified files</a> </h1><HR>\c" >> $fichier
 if [ ${#TRUST_ATELIER} != 0 ] && [ $TRUST_ATELIER = 1 ]

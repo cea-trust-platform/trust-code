@@ -662,7 +662,8 @@ then
    then
       #OPENMPI module openmpi/gcc/64/1.8 openmpi/gcc/64/1.8.3 openmpi/gcc/64/1.8.4 
       # Aero_192: 3.7s
-      module="openmpi/gcc/64/1.8.4"
+      module="openmpi/gcc/64/1.8.3"
+      #module="openmpi/gcc/64/1.8.4"
    else
       #OPENMPI module openmpi/icc/64/1.8 openmpi/icc/64/1.8.3 openmpi/icc/64/1.8.4 
       # Aero_192: 3.6s
@@ -1598,7 +1599,8 @@ then
    done
 fi
 # Ajout du PATH eventuel vers le bin des outils d'installation pour Linux
-[ -d $TRUST_ROOT/../bin ] && echo "ADD_PATH $TRUST_ROOT/../bin" >> $env
+# devenu inutile en version open source
+#[ -d $TRUST_ROOT/../bin ] && echo "ADD_PATH $TRUST_ROOT/../bin" >> $env
 
 ###############################
 # Construction de make.$TRUST_ARCH_CC

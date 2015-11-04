@@ -96,7 +96,7 @@ $TRUST_Awk 'BEGIN {en_tete=1}
 !(en_tete) {print $0}
 ' $file >> $tmp_file
    # on ajoute la license
-$TRUST_ROOT/bin/CLEARCASE/check_license_in_file.sh --mode c -add $tmp_file || exit -1
+$TRUST_ROOT/bin/KSH/check_license_in_file.sh --mode c -add $tmp_file || exit -1
    if [ "`diff $tmp_file $file`" != "" ]
    then
       mv -f $tmp_file $file
