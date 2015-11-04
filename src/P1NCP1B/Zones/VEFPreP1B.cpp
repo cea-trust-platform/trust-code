@@ -109,7 +109,7 @@ void VEFPreP1B::discretiser_champ(
   Nature_du_champ nature,
   const Noms& noms, const Noms& unites,
   int nb_comp, int nb_pas_dt, double temps,
-  Champ_Inc& champ) const
+  Champ_Inc& champ, const Nom& sous_type) const
 {
   Motcles motcles(2);
   motcles[0] = "pression";    // Choix standard pour la pression

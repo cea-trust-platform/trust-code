@@ -67,7 +67,7 @@ void VDF_discretisation::discretiser_champ(
   Nature_du_champ nature,
   const Noms& noms, const Noms& unites,
   int nb_comp, int nb_pas_dt, double temps,
-  Champ_Inc& champ) const
+  Champ_Inc& champ, const Nom& sous_type) const
 {
   const Zone_VDF& zone_vdf = ref_cast(Zone_VDF, z);
 
@@ -121,6 +121,9 @@ void VDF_discretisation::discretiser_champ(
   if (directive == demande_description)
     Cerr << "VDF_discretisation : " << motcles;
 
+  if (sous_type != nom_vide)
+    rang = verifie_sous_type(type,sous_type,directive);
+
   // Si on n'a pas compris la directive (ou si c'est une demande_description)
   // alors on appelle l'ancetre :
   if (rang < 0)
@@ -133,8 +136,8 @@ void VDF_discretisation::discretiser_champ(
 
   // Calcul du nombre de ddl
   int nb_ddl = 0;
-  if (type == "Champ_P0_VDF")    nb_ddl = z.nb_elem();
-  else if (type == "Champ_Face") nb_ddl = zone_vdf.nb_faces();
+  if (type.debute_par("Champ_P0_VDF"))    nb_ddl = z.nb_elem();
+  else if (type.debute_par("Champ_Face")) nb_ddl = zone_vdf.nb_faces();
   else assert(0);
 
   if (nb_comp < 0)
