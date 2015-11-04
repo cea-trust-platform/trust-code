@@ -66,7 +66,9 @@ public:
   Nom& operator +=(const char *);
   Nom& operator +=(char x);
   Nom& suffix(const char* const) ;
+  const Nom getSuffix(const char* const) const ;
   Nom& prefix(const char* const) ;
+  const Nom getPrefix(const char* const) const ;
   Nom nom_me(int) const;
   Nom substr_old(const int, const int) const;
   Nom basename() const;

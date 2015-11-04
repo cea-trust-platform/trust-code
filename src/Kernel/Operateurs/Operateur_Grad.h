@@ -48,6 +48,7 @@ public :
   DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const;
   DoubleTab& calculer(const DoubleTab&, DoubleTab& ) const;
   void typer ();
+  void typer_direct(const Nom&);
   virtual inline int op_non_nul() const;
 
 };

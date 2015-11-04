@@ -97,6 +97,11 @@ void Operateur_Grad::typer()
   Cerr << valeur().que_suis_je() << finl ;
 }
 
+void Operateur_Grad::typer_direct(const Nom& un_type)
+{
+  DERIV(Operateur_Grad_base)::typer(un_type);
+}
+
 // Description:
 //    Ajoute la contribution de l'operateur au tableau
 //    passe en parametre

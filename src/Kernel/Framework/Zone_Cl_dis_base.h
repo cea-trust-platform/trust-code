@@ -28,7 +28,7 @@
 
 #include <Zone_dis.h>
 #include <Conds_lim.h>
-class Champ_Inc;
+#include <Ref_Champ_Inc.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -56,6 +56,8 @@ class Zone_Cl_dis_base : public MorEqn, public Objet_U
 
 public:
 
+  // Methode surchargee de Objet_U:
+  void nommer(const Nom& nom);
   const Cond_lim&  les_conditions_limites(int ) const;
   Cond_lim&        les_conditions_limites(int );
   Conds_lim&       les_conditions_limites();
@@ -71,6 +73,7 @@ public:
   const Zone&      zone() const;
 
   virtual int   calculer_coeffs_echange(double temps);
+  // !SC : passage du Champ_Inc n'est plus necessaire car il y a une ref maintenant
   virtual void     imposer_cond_lim(Champ_Inc&,double ) = 0;
   int           nb_faces_Cl() const;
 
@@ -86,12 +89,24 @@ public:
   int avancer(double temps);
   int reculer(double temps);
   virtual int initialiser(double temps);
+  inline const Nom& le_nom() const;
+
+  virtual void associer_inconnue(const Champ_Inc&);
+  virtual const Champ_Inc& inconnue() const;
+  virtual Champ_Inc& inconnue();
+
 protected:
-
+  
+  Nom nom_;
   Conds_lim  les_conditions_limites_;
-  virtual void completer(const Zone_dis& ) = 0;
-
+  Ref_Champ_Inc mon_inconnue;
+  virtual void completer(const Zone_dis& ) = 0;  
 };
+
+inline const Nom& Zone_Cl_dis_base::le_nom() const
+{
+  return nom_;
+}
 
 #endif
 

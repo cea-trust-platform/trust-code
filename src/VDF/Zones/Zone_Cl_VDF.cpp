@@ -412,6 +412,8 @@ void Zone_Cl_VDF::imposer_cond_lim(Champ_Inc& ch, double temps)
   DoubleTab& ch_tab = ch_base.valeurs(temps);
   if (sub_type(Champ_P0_VDF,ch_base))
     ;
+  else if(ch_base.nature_du_champ()==scalaire)
+    ;
   else if (sub_type(Champ_Face,ch_base))
     {
       Champ_Face& ch_face = ref_cast(Champ_Face, ch_base);
@@ -491,7 +493,7 @@ void Zone_Cl_VDF::imposer_cond_lim(Champ_Inc& ch, double temps)
     }
   else
     {
-      Cerr << "Le type de Champ_Inc" <<  ch->que_suis_je() << " n'est pas prevu en VDF\n";
+      Cerr << "Le type de Champ_Inc " <<  ch->que_suis_je() << " n'est pas prevu en VDF\n";
       exit();
     }
   ch_tab.echange_espace_virtuel();

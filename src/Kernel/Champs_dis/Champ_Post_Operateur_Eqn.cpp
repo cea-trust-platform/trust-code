@@ -105,7 +105,8 @@ void Champ_Post_Operateur_Eqn::completer(const Postraitement_base& post)
   ref_eq_=Pb.equation(numero_eq_);
 
   int ok=0;
-  const MD_Vector& md = ref_eq_.valeur().inconnue().valeurs().get_md_vector();
+  const Equation_base& eqn=ref_eq_.valeur();
+  const MD_Vector& md = eqn.inconnue().valeurs().get_md_vector();
   const Zone_VF& zvf= ref_cast( Zone_VF,ref_eq_.valeur().zone_dis().valeur());
   if (md== zvf.face_sommets().get_md_vector())
     {
@@ -140,10 +141,27 @@ const Champ_base& Champ_Post_Operateur_Eqn::get_champ(Champ& espace_stockage) co
   //  const Champ_Inc_base& ch_inc=ref_cast(Champ_Inc_base,source);
   double temps=0.;
   Nom directive;
-  directive=ref_eq_->inconnue().le_nom();
+// directive=ref_eq_->inconnue().le_nom();
   // bidouille EF
-  if (directive=="enthalpie") directive="temperature";
-  ref_eq_.valeur().discretisation().discretiser_champ(directive,ref_eq_->zone_dis().valeur(),"oooo","unit", -1,temps,espace_stockage_fonc);
+  //if (directive=="enthalpie") directive="temperature";
+  switch (localisation_inco_)
+    {
+    case ELEMENT:
+      directive="CHAMP_ELEM";
+      break;
+    case NODE:
+      directive="CHAMP_SOMMETS";
+      break;
+    case FACE:
+      directive="CHAMP_FACE";
+      break;
+    default:
+      Cerr<<"error in Champ_Post_Operateur_Eqn::get_champ"<<finl;
+      exit();
+
+   }
+  int nb_comp=ref_eq_.valeur().inconnue().valeur().nb_comp();
+  ref_eq_.valeur().discretisation().discretiser_champ(directive,ref_eq_->zone_dis().valeur(),"oooo","unit", nb_comp,temps,espace_stockage_fonc);
   espace_stockage=espace_stockage_fonc;
   DoubleTab& es =(espace_stockage.valeurs());
   //if (ref_eq_->schema_temps().temps_courant()!=0)

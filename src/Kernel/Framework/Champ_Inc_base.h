@@ -27,6 +27,7 @@
 #include <Champ_base.h>
 #include <Roue.h>
 #include <MorEqn.h>
+#include <Ref_Zone_Cl_dis.h>
 class DoubleTab;
 class Frontiere_dis_base;
 class MD_Vector;
@@ -108,12 +109,16 @@ public:
 
   int lire_donnees(Entree& ) ;
 
-  void associer_eqn(const Equation_base&);
+  virtual void associer_eqn(const Equation_base&);
+  virtual void associer_zone_cl_dis(const Zone_Cl_dis&);
   virtual int imprime(Sortie& , int ) const;
   virtual int a_une_zone_dis_base() const
   {
     return 1;
   };
+
+  const Zone_Cl_dis& zone_Cl_dis() const;
+  Zone_Cl_dis& zone_Cl_dis();
 
   DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&) const;
   virtual DoubleTab& trace(const Frontiere_dis_base&, DoubleTab& , double ) const;
@@ -133,7 +138,7 @@ protected:
                                        Array_base::Resize_Options = Array_base::COPY_INIT);
 
   Roue_ptr les_valeurs ;
-
+  Ref_Zone_Cl_dis ma_zone_cl_dis;
 };
 
 #endif

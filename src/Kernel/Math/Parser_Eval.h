@@ -25,6 +25,7 @@
 
 #include <Vect_Parser_U.h>
 #include <DoubleTab.h>
+#include <DoubleTabs.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -69,6 +70,11 @@ public :
   //
   void eval_fct(const DoubleTab& positions,const double& tps,const DoubleTab& val_param,DoubleTab& val) const;
   void eval_fct(const DoubleTab& positions,const double& tps,const DoubleTab& val_param,DoubleVect& val,const int& ncomp) const;
+
+  // Fonction generale qui depend de plusieurs champs inconnus
+  //
+  void eval_fct(const DoubleTabs& variables, DoubleTab& val) const;
+
 
 protected :
 

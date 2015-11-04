@@ -65,6 +65,8 @@ public:
   inline DoubleTab& valeurs() ;
   inline const DoubleTab& valeurs() const ;
 
+  inline const Noms& get_synonyms() const;
+  inline void add_synonymous(const Nom& nom);
 };
 
 
@@ -342,4 +344,13 @@ inline const DoubleTab& Champ_front::valeurs() const
   return valeur().valeurs();
 }
 
+inline const Noms& Champ_front::get_synonyms() const
+{
+  return valeur().get_synonyms();
+}
+
+inline void Champ_front::add_synonymous(const Nom& nom)
+{
+  valeur().add_synonymous(nom);
+}
 #endif

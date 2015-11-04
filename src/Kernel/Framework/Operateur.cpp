@@ -198,8 +198,15 @@ const Discretisation_base& Operateur::discretisation() const
 // Postcondition:
 void Operateur::completer()
 {
-  le_champ_inco=mon_equation->inconnue();
-  l_op_base().completer();
+  if (!le_champ_inco.non_nul())
+    le_champ_inco=mon_equation->inconnue().valeur();
+
+      l_op_base().completer();
+}
+
+void Operateur::associer_champ(const Champ_Inc_base& ch)
+{
+  le_champ_inco = ch;
 }
 
 // Description:
@@ -424,7 +431,7 @@ DoubleTab& Operateur::calculer(const Champ_Inc& ch,DoubleTab& resu) const
 // Postcondition: la methode ne modifie pas l'objet
 DoubleTab& Operateur::ajouter(DoubleTab& resu) const
 {
-  return ajouter(le_champ_inco->valeurs(), resu);
+  return ajouter(le_champ_inco.valeur().valeurs(), resu);
 }
 
 // Description:
@@ -446,7 +453,7 @@ DoubleTab& Operateur::ajouter(DoubleTab& resu) const
 DoubleTab& Operateur::calculer(DoubleTab& resu) const
 {
   resu=0.;
-  return ajouter(le_champ_inco->valeurs(), resu);
+  return ajouter(le_champ_inco.valeur().valeurs(), resu);
 }
 
 

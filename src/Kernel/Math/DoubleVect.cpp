@@ -1635,7 +1635,7 @@ double local_imin_vect(const DoubleVect & vx, Mp_vect_options opt)
 #endif
   return ; 
 }
-                                          void operator_divide(DoubleVect & resu, const DoubleVect & vx, Mp_vect_options opt)
+void operator_divide(DoubleVect & resu, const DoubleVect & vx, Mp_vect_options opt)
 {
    
     // Master vect donne la structure de reference, les autres vecteurs
@@ -1985,6 +1985,10 @@ void DoubleVect::operator-=(const DoubleVect & v)
 {
   operator_sub(*this, v);
 }
+void DoubleVect::operator*=(const DoubleVect & v)
+{
+  operator_multiply(*this, v);
+}
 void DoubleVect::operator+=(const double x)
 {
   operator_add(*this, x);
@@ -2024,6 +2028,10 @@ double mp_min_abs_vect(const DoubleVect & x, Mp_vect_options opt)
 void DoubleVect::operator/=(const double x)
 {
   operator_divide(*this, x);
+}
+void DoubleVect::operator/=(const DoubleVect & v)
+{
+  operator_divide(*this, v);
 }
 void DoubleVect::abs(Mp_vect_options opt)
 {

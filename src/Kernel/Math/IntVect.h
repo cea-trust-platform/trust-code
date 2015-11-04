@@ -73,8 +73,8 @@ public:
   void operator+=(const int);
   void operator-=(const IntVect&);
   void operator-=(const int);
+  void operator*=(const IntVect&);
   void operator*= (const int);
-
 
   inline int size() const;
   inline int size_totale() const;

@@ -28,6 +28,7 @@
 #include <Champ_Proto.h>
 #include <Ref_Frontiere_dis_base.h>
 #include <Roue.h>
+#include <Noms.h>
 
 class Champ_Inc_base;
 
@@ -124,10 +125,20 @@ public:
   virtual int avancer(double temps);
   virtual int reculer(double temps);
 
+  inline const Noms& get_synonyms() const
+  {
+    return noms_synonymes_;
+  };
+  inline void add_synonymous(const Nom& nom)
+  {
+    noms_synonymes_.add(nom);
+  };
+
 protected:
 
   Nom nom_ ;
   Nom unite_;
+  Noms noms_synonymes_;
   int nb_compo_ ;
   double temps_defaut ; // Le temps pris par defaut quand le parametre
   // n'est pas specifie. Ce sera en particulier

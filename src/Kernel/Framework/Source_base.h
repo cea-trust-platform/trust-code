@@ -29,6 +29,7 @@
 #include <Champs_compris_interface.h>
 
 class DoubleTab;
+class DoubleTabs;
 class Probleme_base;
 class Zone_dis;
 class Zone_Cl_dis;
@@ -51,6 +52,8 @@ public :
 
   virtual DoubleTab& ajouter(DoubleTab& ) const=0;
   virtual DoubleTab& calculer(DoubleTab& ) const=0;
+  virtual DoubleTab& calculer_derivee(DoubleTab& ch) const;
+  virtual DoubleTab& ajouter_derivee(DoubleTab& ch) const;
   virtual void mettre_a_jour(double temps);
   virtual void completer();
   virtual void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const ;

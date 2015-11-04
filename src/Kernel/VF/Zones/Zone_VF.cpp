@@ -386,10 +386,8 @@ void Zone_VF::calculer_porosites()
 void Zone_VF::calculer_diametres_hydrauliques()
 {
   // les diametres hydrauliques valent 1
-
-  int nbfaces = xv_.dimension(0);
-  diametre_hydraulique_face_.resize(nbfaces);
-  diametre_hydraulique_face_ = 1;
+  creer_tableau_faces(diametre_hydraulique_face_, Array_base::NOCOPY_NOINIT);
+  diametre_hydraulique_face_ = 0.;
 }
 
 // remplissage des coefficients d'echange_thermique

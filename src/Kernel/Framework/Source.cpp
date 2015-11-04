@@ -27,6 +27,7 @@
 #include <Champ_Uniforme.h>
 #include <Discretisation_base.h>
 #include <stat_counters.h>
+#include <DoubleTabs.h>
 
 Implemente_deriv(Source_base);
 Implemente_instanciable(Source,"Source",DERIV(Source_base));
@@ -207,6 +208,14 @@ DoubleTab& Source::ajouter(DoubleTab& xx) const
   return tmp;
 }
 
+DoubleTab& Source::ajouter_derivee(DoubleTab& xx) const
+{
+  statistiques().begin_count(source_counter_);
+  DoubleTab& tmp = valeur().ajouter_derivee(xx);
+  statistiques().end_count(source_counter_);
+  return tmp;
+}
+
 // Description:
 //    Appel a l'objet sous-jacent.
 //    Affecte le terme source au tableau passe en parametre.
@@ -230,3 +239,10 @@ DoubleTab& Source::calculer(DoubleTab& xx) const
   return tmp;
 }
 
+DoubleTab& Source::calculer_derivee(DoubleTab& xx) const
+{
+  statistiques().begin_count(source_counter_);
+  DoubleTab& tmp = valeur().calculer_derivee(xx);
+  statistiques().end_count(source_counter_);
+  return tmp;
+}

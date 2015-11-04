@@ -48,6 +48,8 @@ class Sources : public LIST(Source), public MorEqn
 public:
   DoubleTab& ajouter(DoubleTab& ) const;
   DoubleTab& calculer(DoubleTab& ) const;
+  DoubleTab& calculer_derivee(DoubleTab& ) const;
+  DoubleTab& ajouter_derivee(DoubleTab& ) const;
   void mettre_a_jour(double temps);
   void completer();
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;

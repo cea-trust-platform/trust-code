@@ -142,8 +142,8 @@ public :
 
   const Discretisation_base& discretisation() const;
 
-  inline Zone_Cl_dis& zone_Cl_dis();
-  inline const Zone_Cl_dis& zone_Cl_dis() const;
+  virtual inline Zone_Cl_dis& zone_Cl_dis();
+  virtual inline const Zone_Cl_dis& zone_Cl_dis() const;
   Zone_dis& zone_dis();
   const Zone_dis& zone_dis() const;
   //
@@ -231,6 +231,7 @@ protected :
   virtual Entree& lire_cond_init(Entree&);
   virtual Entree& lire_cl(Entree&);
   virtual int verif_Cl() const;
+  mutable DoubleList dt_op_bak;
   //Methode lire avec signature specifique pour faire echouer
   //la compilation en cas de presence de l'ancienne methode lire
   //virtual Entree& lire(const Motcle&, Entree&)
@@ -246,6 +247,7 @@ protected :
 
   LIST(RefObjU) liste_modeles_; //Le premier element de la liste est le modele nul
   Champs_compris champs_compris_;
+  Champs_Fonc list_champ_combi;
 
 private :
   void Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& solution, int size_terme_mul, const DoubleTab& term_mul);
@@ -258,8 +260,8 @@ private :
   int nombre_champ_xyz;
   int ecrit_champ_xyz_bin;
 
-  Champs_Fonc list_champ_combi;
-  mutable DoubleList dt_op_bak;
+  //!SC: passage en protected (surcharge de get_champ dans Equation_Diphasique_base)
+//  Champs_Fonc list_champ_combi;
   DoubleVect residu_;
   DoubleVect residu_initial_;
   mutable DoubleTab NULL_;

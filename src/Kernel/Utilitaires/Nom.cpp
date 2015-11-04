@@ -423,6 +423,19 @@ Nom& Nom::suffix(const char* const s)
   return *this;
 }
 
+const Nom Nom::getSuffix(const char* const s) const
+{
+  if (debute_par(s))
+    {
+      const int n1 = strlen(s);
+      const int n2 = nom_.size();
+      const std::string str1 = nom_.substr(n1,n2);
+      return Nom(str1.c_str());
+
+    }
+  return *this;
+}
+
 int Nom::debute_par(const char* const ch) const
 {
   int result = 1;
@@ -466,6 +479,20 @@ Nom& Nom::prefix(const char* const s)
   return *this;
 }
 
+const Nom Nom::getPrefix(const char* const s) const
+{
+  if (finit_par(s))
+    {
+      //int n = strlen(s_.c_str());
+
+      const int n1 = nom_.size();
+      const int n2 = strlen(s);
+      const std::string str1 = nom_.substr(0,n1-n2);
+      return Nom(str1.c_str());
+
+    }
+  return *this;
+}
 // Description:
 //    Concatenation avec un Nom
 // Precondition:

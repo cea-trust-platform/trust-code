@@ -75,9 +75,11 @@ public:
   void operator+=(const double);
   void operator-=(const DoubleVect&);
   void operator-=(const double);
+  void operator*=(const DoubleVect&);
   void operator*= (const double);
-
+  void operator/=(const DoubleVect&);
   void operator/= (const double); 
+
   // Options par defaut choisies pour compatibilite avec la version precedente
   // Attention: il y avait un echange_espace_virtuel avant, ce n'est pas strictement equivalent
   void abs(Mp_vect_options opt = VECT_ALL_ITEMS);

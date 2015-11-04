@@ -139,6 +139,16 @@ DoubleTab& Sources::ajouter(DoubleTab& xx) const
   return xx;
 }
 
+DoubleTab& Sources::ajouter_derivee(DoubleTab& xx) const
+{
+  CONST_LIST_CURSEUR(Source) curseur(*this);
+  while(curseur)
+    {
+      curseur->ajouter_derivee(xx);
+      ++curseur;
+    }
+  return xx;
+}
 
 // Description:
 //    Calcule la contribution de toutes les sources de la
@@ -169,6 +179,17 @@ DoubleTab& Sources::calculer(DoubleTab& xx) const
   return xx;
 }
 
+DoubleTab& Sources::calculer_derivee(DoubleTab& xx) const
+{
+  xx=0;
+  CONST_LIST_CURSEUR(Source) curseur(*this);
+  while(curseur)
+    {
+      curseur->ajouter_derivee(xx);
+      ++curseur;
+    }
+  return xx;
+}
 
 // Description:
 //    Mise a jour en temps, de toute les sources de la liste

@@ -27,6 +27,7 @@
 #include <Schema_Temps_base.h>
 #include <SFichier.h>
 #include <communications.h>
+#include <DoubleTabs.h>
 
 Implemente_base(Source_base,"Source_base",Objet_U);
 
@@ -339,3 +340,12 @@ void Source_base::set_fichier(const Nom& nom)
   out_+=equation().probleme().le_nom()+"_"+nom;
 }
 
+// !SC: revoir tout ca !
+DoubleTab& Source_base::calculer_derivee(DoubleTab& ch) const
+{
+  return ch;
+}
+DoubleTab& Source_base::ajouter_derivee(DoubleTab& ch) const
+{
+  return ch;
+}

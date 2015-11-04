@@ -197,3 +197,11 @@ void Champ_front_instationnaire_base::Gpoint(double t1, double t2)
   for (int i=0; i<dim; i++)
     Gpoint_(i) = (v2(0,i)-v1(0,i)) / (t2-t1);
 }
+
+void Champ_front_instationnaire_base::valeurs_face(int face,DoubleVect& var) const
+{
+  var.resize(nb_compo_);
+  int i;
+  for (i=0 ; i<nb_compo_ ; i++)
+    var(i) = valeurs()(0,i);
+}
