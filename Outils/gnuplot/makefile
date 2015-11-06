@@ -6,7 +6,7 @@ cible=$(install)/bin/$(name)
 all:$(cible)
 $(cible): install_gnuplot makefile
 	make clean
-	@./install_gnuplot $(package) | tee $(install).log
+	@./install_gnuplot $(package) #1>$(install).log 2>&1
 	
 clean:
 	rm -r -f $(install)* gd

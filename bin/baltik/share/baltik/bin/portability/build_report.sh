@@ -76,8 +76,8 @@ for machine in $list_machine
   echo "</TR>" >> nuit_${project}.html
 done
 echo "</TABLE>
-<p>Nb_OK/Nb_test $nb_ok/$nb_machines &nbsp;</p>
-<p>Nb_OK_cible/Nb_cible $nb_ok_cible/$nb_cibles</p>
+<p>total_OK: $nb_ok / $nb_machines &nbsp;</p>
+<p>cible_OK: $nb_ok_cible / $nb_cibles </p>
 </BODY>
 </HTML>" >> nuit_${project}.html
 
