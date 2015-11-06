@@ -1777,14 +1777,15 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
       if (param.crank())
         aCKN=0.5;
       precond_diag=param.precoditionnement_diag();
-      if (precond_diag==1 && Process::nproc()>1)
-        {
-          Cerr << "Error with the value of preconditionnement_diag option which is set to " << precond_diag << "." << endl;
-          Cerr << "The diagonal preconditionning is unavailable for a parallel calculation." << endl;
-          Cerr << "The CG used to solve the implicitation of the equation diffusion operator can not preconditioned." << endl;
-          Cerr << "So edit your .data file with preconditionnement_diag = 0 and run your case." << endl;
-          exit();
-        }
+      // Bug fixed : Diagonal preconditionning is fixed with periodic BC (it is OK for a parallel calculation)
+      //if (precond_diag==1 && Process::nproc()>1)
+      //  {
+      //    Cerr << "Error with the value of preconditionnement_diag option which is set to " << precond_diag << "." << endl;
+      //    Cerr << "The diagonal preconditionning is unavailable for a parallel calculation." << endl;
+      //    Cerr << "The CG used to solve the implicitation of the equation diffusion operator can not preconditioned." << endl;
+      //    Cerr << "So edit your .data file with preconditionnement_diag = 0 and run your case." << endl;
+      //    exit();
+      //  }
       if (param.seuil_diffusion_implicite()>0)
         seuil_diffusion_implicite=param.seuil_diffusion_implicite();
       if (param.nb_it_max()>0)
