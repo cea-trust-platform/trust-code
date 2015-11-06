@@ -519,16 +519,94 @@ also visualize a field only on a selected part (block) with the menu Control $\r
 
 \begin{itemize}
 \item The existing tool \textbf{make\_PAR.data\index{make\_PAR.data}} is useful on the data files \underline{which have} the marks MAILLAGE/MESH, DECOUPAGE/PARTITION and LECTURE/SCATTER. If you run the following commands: \\
+\vspace{0.2cm}
+
+\item First we will create a new working directory with our data files:\\
 \textbf{cd $\sim$/test/yourname/Obstacle} \\
 \textbf{mkdir PARA2} \\
 \textbf{cd PARA2} \\
 \textbf{cp ../Obstacle.data exemple.data}\\
 \textbf{cp ../Obstacle.geo .}\\
-\textbf{make\_PAR.data\index{make\_PAR.data} exemple 3}\\
-\textbf{ls *.data *.Zones}\\
+\vspace{0.2cm}
 
-\item It will create a DEC\_exemple.data file and will immediately run this file to create a partition with 3 sub zones. The command make\_PAR.data will also create PAR\_exemple.data file and then you will run the calculation by the usual command:\\
+\item Then we can run the command:\\
+\textbf{make\_PAR.data\index{make\_PAR.data} exemple 3}\\
+\textbf{ls}
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Parallel calculation: method 2}
+\begin{block}{}
+
+\begin{itemize}
+\item It creates:
+    \begin{itemize} 
+    \item [$\circ$] a \underline{SEQ\_exemple.data} file which is a copy of the sequential data file exemple.data,
+    \item [$\circ$] a \underline{DEC\_exemple.data} file which is the first data file to be run. It is immediately run by the command line \textbf{make\_PAR.data} to create a partition (with 3 sub zones here), located in the ***.Zones files. \\
+    \textbf{ls *.Zones}\\
+    Note that the code stops reading this file at the keyword "End" just before the "\# END PARTITION \#" block.
+    \item [$\circ$] a \underline{PAR\_exemple.data} file which is the data file for the parallel calculation. It uses the ***.Zones files to read the mesh through the line "Scatter DOM.Zones dom". Note that the meshing and cut of the mesh are commented here.
+    \end{itemize}
+
+\item Then you have to run the calculation by the usual command completed by the number of processors needed:\\
 \textbf{trust PAR\_exemple 3}
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Parallel calculation: method 2}
+\begin{block}{Useful informations:}
+
+\begin{itemize}
+\item Be careful when you want to modify you data file! You have two possibilities:
+    \begin{itemize} 
+    \item [$\circ$] you want to modify your mesh,
+    \item [$\circ$] you want to modify the calculation parameters.
+    \end{itemize}
+
+\item For the first one, you can modify:
+    \begin{itemize} 
+    \item [$\circ$] the file exemple.data and run \textbf{make\_PAR.data}. But it will \underline{erase} the DEC\_exemple.data, SEQ\_exemple.data and PAR\_exemple.data files and create new ones. Then it will run the new DEC\_exemple.data file which gives your new ***.Zones files \underline{or},
+    \item [$\circ$] the meshing part of file DEC\_exemple.data and run it with:\\
+    \textbf{trust DEC\_exemple.data} \\
+    \end{itemize}
+Then run the parallel calculation normally, on the new ***.Zones files.\\
+\textbf{trust PAR\_exemple 3}
+
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Parallel calculation: method 2}
+\begin{block}{}
+
+\begin{itemize}
+\item For the second possibility, you can modify:
+    \begin{itemize} 
+    \item [$\circ$] the file exemple.data and run \textbf{make\_PAR.data}. But it will \underline{erase} the DEC\_exemple.data, SEQ\_exemple.data and PAR\_exemple.data files and create new ones. Then it will run the new DEC\_exemple.data file. \underline{Note that in that} \underline{case, you don't need to re-create the mesh so you can use the second point} \underline{below:}
+    \item [$\circ$] modify the PAR\_exemple.data file \underline{without} running \textbf{make\_PAR.data}.
+    \end{itemize}
+Then run the PAR\_exemple.data file with:\\
+\textbf{trust PAR\_exemple 3}
+
+\item \underline{Notice that if after a certain time, you want to reopen an old case} and understand want you did in it without any doubts, you may create two files by your hands:
+    \begin{itemize} 
+    \item [$\circ$] one "BuildMeshes.data" file only for the mesh and the cut of the mesh, and
+    \item [$\circ$] one "calculation.data" file for the parallel calculation. 
+    \end{itemize}
+You will run it like:\\
+\textbf{trust BuildMeshes}\\
+\textbf{trust calculation nb\_procs}\\
 \end{itemize}
 
 \end{block}
@@ -1633,9 +1711,11 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Cylinder}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Salom\'e to create a 3D VEF mesh}
+\frametitle{Salom\'e to create a 3D VEF mesh: Cylinder}
 %\begin{block}{}
 
 \begin{figure}
@@ -1648,8 +1728,8 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Salom\'e to create a 3D VEF mesh}
-\begin{block}{First exercise: Create a geometry}
+\frametitle{Cylinder}
+\begin{block}{Create a geometry}
 
 \begin{itemize}
 \item Create a directory and run Salom\'e (we suppose it is installed):\\
@@ -1675,8 +1755,8 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Salom\'e to create a 3D VEF mesh}
-\begin{block}{First exercise: Create a geometry}
+\frametitle{Cylinder}
+\begin{block}{Create a geometry}
 
 \begin{itemize}
 \item Specify Radius $R=100$ and Height $H=300$ for the cylinder (the default values). Then Apply and Close.
@@ -1697,8 +1777,8 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Salom\'e to create a 3D VEF mesh}
-\begin{block}{First exercise: Create a geometry}
+\frametitle{Cylinder}
+\begin{block}{Create a geometry}
 
 \begin{itemize}
 \item Give a Group Name for the top: "Inlet".
@@ -1718,44 +1798,45 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Salom\'e to create a 3D VEF mesh}
-\begin{block}{First exercise: Create a mesh}
+\frametitle{Cylinder}
 
+\begin{block}{Create a geometry}
 \begin{itemize}
 \item Do the same for the two other parts:
     \begin{itemize}
     \item [$\circ$] For the lateral: "Wall"
     \item [$\circ$] For the bottom: "Outlet" (you can rotate the cylinder to click on the bottom).
     \end{itemize}
-
 \item Close the window once the 3 groups has been created. Check that they appear in the Object Browser (by clicking on the "$\triangleright$" in front of the "Cylinder\_1" object).
+\end{itemize}
+\end{block}
 
+\begin{block}{Create a mesh}
+\begin{itemize}
 \item \label{salome_mesh} Now, switch to the Mesh module in the SALOME drop-down menu.
 \item Select the Cylinder\_1 in the Object Browser and Right Click $\rightarrow$ 'Show' to visualize the geometry or click on the 'eye' next to the Cylindre\_1 object.
 \item Create a mesh with: Mesh $\rightarrow$ Create Mesh
 \item Select the Geometry used for the mesh if not selected by clicking on the Cylinder\_1 object in the Object Browser.
-\item Choose Netgen 1D-2D-3D algorithm ans click on "Apply and Close".
-\item Select the object Mesh\_1 in the Object Browser and Right Click $\rightarrow$ Compute (or Mesh $\rightarrow$ Compute).
 \end{itemize}
-
 \end{block}
+
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Salom\'e to create a 3D VEF mesh}
-\begin{block}{First exercise: Create a mesh}
+\frametitle{Cylinder}
+\begin{block}{Create a mesh}
 
 \begin{itemize}
+\item Choose Netgen 1D-2D-3D algorithm and click on "Apply and Close".
+\item Select the object Mesh\_1 in the Object Browser and Right Click $\rightarrow$ Compute (or Mesh $\rightarrow$ Compute).
 \item A tabular must appear with the number of triangles, quadrangles... Click on "Close".
 \item Hide the geometry by selecting the Cylinder\_1 in the Object Browser and Right Click $\rightarrow$ Hide (or click on the eye).
-
 \begin{tabular}{cc}
-\includegraphics[width=0.4\textwidth]{PICTURES/salome4} & \includegraphics[width=0.23\textwidth]{PICTURES/salome5}\tabularnewline
+\includegraphics[width=0.39\textwidth]{PICTURES/salome4} & \includegraphics[width=0.21\textwidth]{PICTURES/salome5}\tabularnewline
 Mesh & Create Groups from Geometry \tabularnewline
 \end{tabular}
 
-\item Now, we are going to create groups for the mesh, by using the geometry groups: Mesh $\rightarrow$ Create Groups from Geometry.
 \end{itemize}
 
 \end{block}
@@ -1763,10 +1844,11 @@ Mesh & Create Groups from Geometry \tabularnewline
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Salom\'e to create a 3D VEF mesh}
-\begin{block}{First exercise: Export your mesh in MED format}
+\frametitle{Cylinder}
+\begin{block}{Export your mesh in MED format}
 
 \begin{itemize}
+\item Now, we are going to create groups for the mesh, by using the geometry groups: Mesh $\rightarrow$ Create Groups from Geometry.
 \item Click on "Mesh\_1" object in the Object Browser to select it.
 \item Then push the arrow button of Elements/Geometry if it's not already done.
 \item Select together the 3 groups (Inlet, Wall and Outlet) with CTRL+left click in the Cylinder\_1 object of the Object Browser, then press Apply and Close.
@@ -1780,8 +1862,8 @@ Select the Mesh\_1 object then Right Click $\rightarrow$ Export $\rightarrow$ ME
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Salom\'e to create a 3D VEF mesh}
-\begin{block}{First exercise: Read your mesh with TRUST}
+\frametitle{Cylinder}
+\begin{block}{Read your mesh with TRUST}
 
 \begin{itemize}
 \item \label{read_mesh} Now build a data file named dom.data for TRUST:\\
@@ -1811,8 +1893,8 @@ Select the Mesh\_1 object then Right Click $\rightarrow$ Export $\rightarrow$ ME
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Salom\'e to create a 3D VEF mesh}
-\begin{block}{First exercise: Refine your mesh and use viscous layers}
+\frametitle{Cylinder}
+\begin{block}{Refine your mesh and use viscous layers}
 
 Goal: Improve the mesh for TRUST near the wall by using viscous layers.
 
@@ -1840,8 +1922,8 @@ Goal: Improve the mesh for TRUST near the wall by using viscous layers.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Salom\'e to create a 3D VEF mesh}
-\begin{block}{First exercise: Refine your mesh and use viscous layers}
+\frametitle{Cylinder}
+\begin{block}{Refine your mesh and use viscous layers}
 
 \begin{itemize}
 \item Click on the wheel of "Hypothesis" $\rightarrow$ "Netgen 2D parameters":
@@ -1866,8 +1948,8 @@ Goal: Improve the mesh for TRUST near the wall by using viscous layers.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Salom\'e to create a 3D VEF mesh}
-\begin{block}{First exercise: Refine your mesh and use viscous layers}
+\frametitle{Cylinder}
+\begin{block}{Refine your mesh and use viscous layers}
 
 \begin{itemize}
 \item As TRUST accepted only tetras elements, you can quickly tetraedrize:
@@ -1889,9 +1971,7 @@ Goal: Improve the mesh for TRUST near the wall by using viscous layers.
     \item [$\circ$] Save into a Refined\_Mesh.med file.
     \end{itemize}
 
-\item Change or create a new data file for TRUST to read and visualize your refined mesh.\\
-\textbf{N.B.}: The solutions of the exercise (mesh.hdf file for the first mesh and prism.hdf file for the second mesh) are located here: \$TRUST\_ROOT/doc/TRUST/exercices/salome.
-
+\item Save your work in hdf format ("File" $\rightarrow$ "Save/Save As..."), and in python format with "File" $\rightarrow$ "Dump Study..."
 \end{itemize}
 
 \end{block}
@@ -1899,8 +1979,48 @@ Goal: Improve the mesh for TRUST near the wall by using viscous layers.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Salom\'e to create a 3D VEF mesh}
-\begin{block}{Second exercise}
+\frametitle{Cylinder}
+\begin{block}{Run with TRUST}
+
+\begin{itemize}
+\item Change or create a new data file for TRUST to read and visualize your refined mesh.
+
+\item \textbf{N.B.}: The solutions of the exercise (mesh.py file for the first mesh and prism.py file for the second mesh) are located here: \$TRUST\_ROOT/doc/TRUST/exercices/salome.
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\subsubsection{Revolution}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-7},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={8-13},currentsection, currentsubsection]
+\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Salom\'e to create a 3D VEF mesh: Revolution}
+%\begin{block}{}
+
+\begin{figure}
+\includegraphics[width=0.7\textwidth]{PICTURES/salome9.jpg}
+%\caption{Obstacle}
+\end{figure}
+
+%\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Salom\'e to create a 3D VEF mesh: Revolution}
+\begin{block}{Create a geometry}
 
 \begin{itemize}
 \item Create a directory and run Salom\'e (we suppose it is installed):\\
@@ -1931,8 +2051,8 @@ Then "Apply and Close"
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Salom\'e to create a 3D VEF mesh}
-\begin{block}{Second exercise}
+\frametitle{Revolution}
+\begin{block}{Create a geometry}
 
 \begin{figure}
 \includegraphics[width=0.28\textwidth]{PICTURES/salome7.jpg}
@@ -1962,8 +2082,8 @@ Then "Apply and Close"
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Salom\'e to create a 3D VEF mesh}
-\begin{block}{Second exercise}
+\frametitle{Revolution}
+\begin{block}{Create a geometry}
 
 \begin{itemize}
 \item Create edges:
@@ -2000,24 +2120,313 @@ Then "Apply and Close"
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Salom\'e to create a 3D VEF mesh}
-\begin{block}{Second exercise}
+\frametitle{Revolution}
+\begin{block}{Create a geometry}
 
 \begin{figure}
-\includegraphics[width=0.32\textwidth]{PICTURES/salome8.jpg}
+\includegraphics[width=0.28\textwidth]{PICTURES/salome8.jpg}
 %\caption{Obstacle}
 \end{figure}
 
 \begin{itemize}
 \item Create groups for the geometry to define the top, the bottom and the lateral parts of the cylinder: New Entity $\rightarrow$ Group $\rightarrow$ Create Group.
-\item Save your study in hdf format.
+\item Save your study in hdf format ("File" $\rightarrow$ "Save/Save As..."), and in python format with "File" $\rightarrow$ "Dump Study..."
 \item Now you can create the mesh in the same way than page \pageref{salome_mesh}.
+\item \textbf{N.B.}: You can find the solutions of this exercise (revolution.py) in \$TRUST\_ROOT/doc/TRUST/exercices/salome.
 \end{itemize}
 
 \end{block}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+\subsubsection{T-shape}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-7},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={8-13},currentsection, currentsubsection]
+\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Salom\'e to create a 3D VEF mesh: T-shape}
+%\begin{block}{}
+
+\begin{figure}
+\includegraphics[width=0.7\textwidth]{PICTURES/salome17.jpg}
+%\caption{Obstacle}
+\end{figure}
+
+%\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Salom\'e to create a 3D VEF mesh: T-shape}
+\begin{block}{Create a geometry}
+
+\begin{itemize}
+\item Create a directory and run Salom\'e (we suppose it is installed):\\
+\textbf{mkdir -p $\sim$/test/yourname/salome/exo3} \\
+\textbf{cd $\sim$/test/yourname/salome/exo3} \\
+\textbf{/home/salome/salome7} \\
+\# or for example: {\scriptsize{\textbf{/export/home/salome/V7\_4\_0\_FD18\_64/salome740}}} \\
+\# or {\scriptsize{\textbf{source /data/tmpsalome/salome/installations/salome\_7.3.0\_FD18\_64/env\_products.sh} + \textbf{runSalome} or \textbf{runAppli}.}} \\
+\# it depends of the Salom\'e installation/configuration.
+
+\item Create a new study: File $\rightarrow$ New.
+
+\item Select the Geometry module into the SALOME drop-down menu.
+
+\item Create two cylinders: New Entity $\rightarrow$ Primitives $\rightarrow$ Cylinders:\\
+Cylinder\_1: radius 0.5, height 5. Then "Apply".\\
+Cylinder\_2: radius 0.3, height 3. Then "Apply and Close".
+\item Save your study in hdf format (Salome format) frequently.
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{T-shape}
+\begin{block}{Create a geometry}
+
+\begin{itemize}
+\item Rotate Cylinder\_2: Operations $\rightarrow$ Transformation $\rightarrow$ Rotation\\
+Name:Rotation\_1, Object: Cylinder\_2, Axis: 'OY', Angle: 90° \\
+Then "Apply and Close".
+
+\item Translate Rotation\_1: Operations $\rightarrow$ Transformation $\rightarrow$ Translation\\
+Name: Translation\_1, Object: Rotation\_1, Dx=Dy=0, Dz=1.5 \\
+Then "Apply and Close".
+\end{itemize}
+
+\begin{center}
+\begin{tabular}{ccc}
+\includegraphics[width=0.25\textwidth]{PICTURES/salome11} & \includegraphics[width=0.25\textwidth]{PICTURES/salome12} & \includegraphics[width=0.28\textwidth]{PICTURES/salome13} \tabularnewline
+Rotation & Translation & Fuse \tabularnewline
+\end{tabular}
+\end{center}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{T-shape}
+\begin{block}{Create a geometry}
+
+\begin{itemize}
+\item Fuse Cylinder\_1 and Translation\_1: Operations $\rightarrow$ Boolean $\rightarrow$ Fuse\\
+Name: Fuse\_1, Selected Objects: 2\_Objects (use Ctrl key to select Cylinder\_1 and Translation\_1 in the Object Browser). \\
+Then "Apply and Close".
+
+\begin{figure}
+\includegraphics[width=0.5\textwidth]{PICTURES/salome14.jpg}
+%\caption{Obstacle}
+\end{figure}
+
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{T-shape}
+\begin{block}{Create a geometry}
+
+\begin{itemize}
+\item We are now going to create the boundaries: New Entity $\rightarrow$ Explode \\
+    \begin{itemize}
+    \item [$\circ$] Main Object: Fuse\_1, Sub-shape type: Face, select "Select sub-shape" and click on the surface Outlet and "Apply".
+    \item [$\circ$] This will create a face named "Face\_1" in the Fuse\_1 object (click on the "$\blacktriangleright$"), rename it "Outlet" (by right-clicking and "rename").
+    \end{itemize}
+
+\begin{figure}
+\includegraphics[width=0.48\textwidth]{PICTURES/salome15.jpg}
+%\caption{Obstacle}
+\end{figure}
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{T-shape}
+\begin{block}{Create a geometry}
+
+\begin{itemize}
+\item Do the same for "Inlet\_x" and "Inlet\_z".
+\item We are now going to create the boundary Wall: New Entity $\rightarrow$ Group $\rightarrow$ Create group:\\
+Shape Type: surface, Name: Wall, Main Shape: Fuse\_1.\\
+Click on the surface of the Cylinder\_1 then "Add", click on the surface of Translation\_1 then "Add" and "Apply and Close".
+\begin{figure}
+\includegraphics[width=0.25\textwidth]{PICTURES/salome16.jpg}
+%\caption{Obstacle}
+\end{figure}
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{T-shape}
+
+\begin{block}{Create a geometry}
+\begin{itemize}
+\item We are now going to create the point "Corner": New Entity $\rightarrow$ Explode \\
+    \begin{itemize}
+    \item [$\circ$] Main Object: Fuse\_1, Sub-shape type: Vertex, select "Select sub-shape" and click on the choosen point and "Apply and Close".
+    \item [$\circ$] This will create a vertex name "Vertex\_1", rename it "Corner" (by right-clicking and "rename").
+    \end{itemize}
+\end{itemize}
+\end{block}
+
+\begin{block}{Create a mesh}
+\begin{itemize}
+\item \label{salome_mesh} Now, switch to the Mesh module in the SALOME drop-down menu.
+\item Select the Fuse\_1 in the Object Browser and Right Click $\rightarrow$ 'Show' to visualize the geometry or click on the 'eye' next to the Fuse\_1 object.
+\item Create a mesh with: Mesh $\rightarrow$ Create Mesh.
+\item Select the Geometry used for the mesh if not selected by clicking on the Fuse\_1 object in the Object Browser.
+\end{itemize}
+\end{block}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{T-shape}
+\begin{block}{Create a mesh}
+
+\begin{itemize}
+\item Choose "Tetrahedron (Netgen)" for 3D algorithm.
+\item Click on the wheel of "Add. Hypothesis" $\rightarrow$ "Viscous Layers" and set:
+    \begin{itemize}
+    \item [$\circ$] Total thickness: 0.05
+    \item [$\circ$] Number of layers: 3
+    \item [$\circ$] Stretch factor: 1.1
+    \item [$\circ$] Extrusion method: Node Offset
+    \item [$\circ$] Add to "Faces with layers (Wall)" the geometry group "Wall" of Fuse\_1 object in the Object Browser (select or unselect the mouse icon). Click on "Add".
+    \item [$\circ$] Click "OK".
+    \end{itemize}
+\item Choose "Netgen 1D-2D" for 2D algorithm.
+\item Click on the wheel of "Hypothesis" $\rightarrow$ "Netgen 2D parameters" and set for "Arguments" menu:
+    \begin{itemize}
+    \item [$\circ$] Max. Size: 0.6
+    \item [$\circ$] Min. Size: 0
+    \item [$\circ$] without "Second Order"
+    \item [$\circ$] Finess: Custom
+    \end{itemize}
+
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{T-shape}
+\begin{block}{Create a mesh}
+
+\hspace{1cm} $\color{darkblue}\circ$ {\small{Growth rate: 0.1}}\\
+\hspace{1cm} $\color{darkblue}\circ$ {\small{Nb. segs per Edge: 2}}\\
+\hspace{1cm} $\color{darkblue}\circ$ {\small{Nb. segs per Radius: 4}}\\
+\hspace{1cm} $\color{darkblue}\circ$ {\small{Select "Limit size by Surface Curvature", "Optimize", "Fuse Coincident Nodes \\
+\hspace{1,3cm} on Edges and Vertices".}}\\
+\hspace{1cm} $\color{darkblue}\circ$ {\small{Unselect "Allow Quadrangles".}}\\
+
+\begin{itemize}
+\item For "Local Size" menu:
+    \begin{itemize}
+    \item [$\circ$] Select "Corner" object in the Object Browser and click on "On Vertex" in the "Hypothesis Construction" window.
+    \item [$\circ$] Double-click on the value in the table and set it to "0.01".
+    \item [$\circ$] Click "OK".
+    \end{itemize}
+\item Click on "Apply and Close".
+\item Select the Mesh\_1 object in the Object Browser and Right click $\rightarrow$ Compute.
+\item You should have a mesh with a mix of tetra and prism elements.
+
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{T-shape}
+\begin{block}{Create a mesh}
+
+\begin{itemize}
+\item As TRUST accepted only tetras elements, you can quickly tetraedrize:
+    \begin{itemize}
+    \item [$\circ$] Select Mesh\_1 in the Object Browser.
+    \item [$\circ$] "Modification" $\rightarrow$ "Split Volums" and select "Tetrahedron".
+    \item [$\circ$] Don't change the parameters, and click "Apply and Close".
+    \end{itemize}
+
+\item Define the mesh boundaries with Groups:
+    \begin{itemize}
+    \item [$\circ$] Select the Mesh\_1, Right click $\rightarrow$ Create Groups from Geometry.
+    \item [$\circ$] Select "Inlet\_x", "Inlet\_z", "Outlet" and "Wall" with Ctrl+click in the Fuse\_1 object.
+    \item [$\circ$] Then Apply and Close.
+    \end{itemize}
+
+\item Export the mesh:
+    \begin{itemize}
+    \item [$\circ$] Select the Mesh\_1, Right click $\rightarrow$ Export $\rightarrow$ MED file.
+    \item [$\circ$] Save into a Mesh\_1.med file.
+    \end{itemize}
+
+\item Save your study in hdf format ("File" $\rightarrow$ "Save/Save As..."), and in python format with "File" $\rightarrow$ "Dump Study..."
+
+\item \textbf{N.B.}: You can find the solutions of this exercise (T\_shape.py) in \$TRUST\_ROOT/doc/TRUST/exercices/salome.
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{T-shape}
+\begin{block}{Run with TRUST}
+
+\begin{itemize}
+\item Copy the T\_shape.data file in your directory:\\
+\textbf{cp \$TRUST\_ROOT/doc/TRUST/exercices/salome/T\_shape.data  .}
+
+\item Run it with TRUST:\\
+\textbf{trust T\_shape}\\
+or in parallel with:\\
+\textbf{make\_PAR.data T\_shape}\\
+\textbf{trust PAR\_T\_shape 4}\\
+
+\item You can visualize the results with Visit or Salom\'e by opening the T\_shape\_0000.med file for sequential calculation or PAR\_T\_shape\_0000.med for parallel calculation.
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{T-shape}
+\begin{block}{Visu with Visit}
+
+\begin{figure}
+\includegraphics[width=0.5\textwidth]{PICTURES/salome18.jpg}
+%\caption{Obstacle}
+\end{figure}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 \subsection{Gmsh}
