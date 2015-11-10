@@ -100,7 +100,8 @@ public:
   // interface FieldIO
 
   virtual void getInputFieldsNames(Noms& noms) const;
-
+  virtual void getOutputFieldsNames(Noms& noms) const;
+  
   // interface Probleme_U
 
   virtual int postraiter(int force=1);
@@ -112,6 +113,7 @@ public:
   virtual double futureTime() const;
 
   virtual REF(Field_base) findInputField(const Nom& name) const;
+  virtual REF(Champ_Generique_base) findOutputField(const Nom& name) const;
 
   ///////////////////////////////////////////////////////////
   //                                                       //

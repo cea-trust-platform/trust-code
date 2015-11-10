@@ -22,27 +22,17 @@
 
 #include <ProblemTrio.h>
 #include <Probleme_U.h>
-#include <Interprete.h>
 #include <Exceptions.h>
 #include <Noms.h>
 #include <stdlib.h>
 #include <Comm_Group_MPI.h>
 #include <MAIN.h>
 #include <mon_main.h>
-#include <Probleme_base.h>
-#include <Couplage_U.h>
-#include <Champs_compris.h>
-#include <Champ_Generique_base.h>
 #include <ICoCoTrioField.h>
 
-#include <Domaine.h>
-#include <Zone.h>
-
-#include <Postraitement.h>
-#include <List_Nom.h>
 #include <Init_Params.h>
-#include <PE_Groups.h>
 
+#include <Motcle.h>
 #include <ICoCoMEDField.hxx>
 #include <Convert_ICoCoTrioField.h>
 #include <stat_counters.h>
@@ -543,46 +533,12 @@ void ProblemTrio::setInputField(const std::string& name, const TrioField& afield
 }
 
 
-//  a remonter dans pb_base + equivalent dans couplage_u probleme_U
-void get_noms_champs_post_pb(LIST(Nom)& noms,const Probleme_base& pb)
-{
-  for (int i=0; i<pb.postraitements().size(); i++)
-    {
-      if (sub_type(Postraitement,pb.postraitements()(i).valeur()))
-        {
-          LIST(Nom) suite;
-          const Liste_Champ_Generique& liste_champ= ref_cast(Postraitement,pb.postraitements()(i).valeur()).champs_post_complet();
-          for (int ii=0; ii<liste_champ.size(); ii++)
-            suite.add(liste_champ(ii).valeur().get_nom_post() );
-          noms.add(suite);
-        }
-    }
-}
-void get_noms_champs_post(LIST(Nom)& noms,const Probleme_U& pb)
-{
-
-  if (sub_type(Probleme_base,pb))
-    {
-      const Probleme_base& pb_base=ref_cast(Probleme_base,pb);
-      get_noms_champs_post_pb(noms,pb_base);
-    }
-  else if (sub_type(Couplage_U,pb))
-    {
-      const Couplage_U& coupl=ref_cast(Couplage_U, pb);
-      for (int i=0; i<coupl.nb_problemes(); i++)
-        {
-          get_noms_champs_post(noms,coupl.probleme(i));
-        }
-    }
-}
-
-
 vector<string> ProblemTrio::getOutputFieldsNames() const
 {
 
   // const Probleme_base& pb_base=ref_cast(Probleme_base,*pb);
-  LIST(Nom) my_names;
-  get_noms_champs_post(my_names,*pb);
+  Noms my_names;
+  pb->getOutputFieldsNames(my_names);
   vector<string> output_names;
   for (int i=0; i<my_names.size(); i++)
     output_names.push_back(my_names(i).getChar());
@@ -591,174 +547,10 @@ vector<string> ProblemTrio::getOutputFieldsNames() const
 }
 
 
-
-void affecte_double_avec_doubletab(double** p, const ArrOfDouble& trio)
-{
-  *p=new double[trio.size_array()];
-  memcpy(*p,trio.addr(),trio.size_array()*sizeof(double));
-}
-
-void affecte_int_avec_inttab(int** p, const ArrOfInt& trio)
-{
-  *p=new int[trio.size_array()];
-  memcpy(*p,trio.addr(),trio.size_array()*sizeof(int));
-}
-//  get_champ coder equivalent dans couplage_u probleme_U
-// + corriger ref_cast dans Pb_base
-
-const Champ_Generique_base* get_field(const Probleme_U& pb,const Motcle& name,int& ok)
-{
-  ok=0;
-  if (sub_type(Probleme_base,pb))
-    {
-      const Probleme_base& pb_base=ref_cast(Probleme_base,pb);
-      if (pb_base.comprend_champ_post(name))
-        {
-          ok=1;
-          const Champ_Generique_base& ch =pb_base.get_champ_post(name);
-          return &ch;
-        }
-    }
-  else if (sub_type(Couplage_U,pb))
-    {
-      const Couplage_U& coupl=ref_cast(Couplage_U, pb);
-      for (int i=0; i<coupl.nb_problemes(); i++)
-        {
-          const Champ_Generique_base* ch=get_field(coupl.probleme(i), name, ok);
-          if (ok)
-            return ch;
-        }
-    }
-  else
-    {
-      Cerr<<"non prevu "<<finl;
-      Process::exit();
-    }
-  ok=0;
-  return NULL;
-}
-
 void ProblemTrio::getOutputField(const std::string& name_, TrioField& afield) const
 {
   Motcle name(name_.c_str());
-  /*
-    const Probleme_base& pb_base=ref_cast(Probleme_base,*pb);
-    const Champ_Generique_base& ch =pb_base.get_champ_post(name);
-  */
-  int ok=0;
-  const Champ_Generique_base* ch_ptr= get_field(*pb,name,ok);
-  if (ok==0)
-    {
-      cerr<<name <<" not found in"<< (*pb).le_nom()<<endl;
-      Process::exit();
-    }
-  const Champ_Generique_base& ch = *ch_ptr;
-
-  Domaine dom;
-  ch.get_copy_domain(dom);
-
-  Champ espace_stockage;
-  const Champ_base& champ_ecriture = ch.get_champ(espace_stockage);
-  const DoubleTab& values = champ_ecriture.valeurs();
-
-  Entity loc=ch.get_localisation();
-  if (loc==NODE)
-    //if (values.dimension_tot(0)==coord.dimension_tot(0))
-    {
-      Cerr<<name<<" type "<<ch.que_suis_je() <<" P1 ?? "<<finl;
-      //      afield._type=1;
-    }
-  else if (loc!=ELEMENT)
-    {
-      throw WrongArgument(name_," "," "," wrong localisation type for field ");
-    }
-
-
-#if 1
-  double t1=pb->presentTime();
-  double t2=pb->futureTime();
-  int is_p1=0;
-  if (loc==NODE)
-    is_p1=1;
-  afield= build_ICoCoField(name_, dom, values, is_p1,  t1, t2 );
-#else
-  afield.clear();
-  afield._space_dim=Probleme_base::dimension;
-  afield.setName(name_);
-
-  afield._mesh_dim=afield._space_dim;
-
-  // const Domaine& dom= ch.get_ref_domain();
-  const DoubleTab& coord=dom.les_sommets();
-  //ch.get_copy_coordinates(coord);
-  affecte_double_avec_doubletab(&afield._coords,coord);
-
-  afield._nbnodes=coord.dimension(0);
-  Motcle type_elem_=dom.zone(0).type_elem()->que_suis_je();
-  Motcle type_elem(type_elem_);
-  type_elem.prefix("_AXI");
-  if (type_elem!=Motcle(type_elem_))
-    {
-      if (type_elem=="QUADRILATERE_2D")
-        type_elem="SEGMENT_2D";
-      if (type_elem=="RECTANGLE_2D")
-        type_elem="RECTANGLE";
-
-    }
-  if ((type_elem=="RECTANGLE") ||(type_elem=="QUADRANGLE")||(type_elem=="TRIANGLE")|| (type_elem=="TRIANGLE_3D")||(type_elem=="QUADRANGLE_3D"))
-    afield._mesh_dim=2;
-  else if ((type_elem=="HEXAEDRE")|| (type_elem=="HEXAEDRE_VEF")||(type_elem=="POLYEDRE")||(type_elem=="PRISME")||  (type_elem=="TETRAEDRE"))
-    afield._mesh_dim=3;
-  else if ((type_elem=="SEGMENT_2D")||(type_elem=="SEGMENT"))
-    afield._mesh_dim=1;
-  else
-    {
-      Cerr<<type_elem<< " not coded" <<finl;
-      Process::exit();
-    }
-
-
-  const IntTab& les_elems=dom.zone(0).les_elems();
-  //ch.get_copy_connectivity(ELEMENT,NODE,les_elems);
-  affecte_int_avec_inttab(&afield._connectivity,les_elems);
-
-  if (les_elems.dimension(1)==4)
-    {
-      //    exit();
-      for (int f=0; f<les_elems.dimension_tot(0); f++)
-        {
-          *(afield._connectivity+f*4+2)=les_elems(f,3);
-          *(afield._connectivity+f*4+3)=les_elems(f,2);
-
-        }
-    }
-
-  if (loc==NODE)
-    {
-      afield._type=1;
-    }
-
-
-  afield._nodes_per_elem=les_elems.dimension(1);
-  afield._nb_elems=les_elems.dimension(0);
-
-  afield._itnumber=0;
-  afield._time1=pb->presentTime();
-  afield._time2=pb->futureTime();
-
-
-  //DoubleTab values;
-  //ch.get_copy_values(values);
-
-
-  afield._has_field_ownership=true;
-  affecte_double_avec_doubletab(&afield._field,values);
-  if (values.nb_dim()>1)
-    afield._nb_field_components=values.dimension(1);
-  else
-    afield._nb_field_components=(1);
-
-#endif
+  pb->getOutputField(name,afield);
 }
 
 

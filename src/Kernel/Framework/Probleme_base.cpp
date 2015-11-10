@@ -208,6 +208,22 @@ void Probleme_base::getInputFieldsNames(Noms& noms) const
     noms.add(nouveaux_noms);
 }
 
+// Adds the input fields names this pb understands to noms
+void Probleme_base::getOutputFieldsNames(Noms& noms) const
+{
+  for (int i=0; i<postraitements().size(); i++)
+    {
+      if (sub_type(Postraitement,postraitements()(i).valeur()))
+        {
+	  // LIST(Nom) suite;
+          const Liste_Champ_Generique& liste_champ= ref_cast(Postraitement,postraitements()(i).valeur()).champs_post_complet();
+          for (int ii=0; ii<liste_champ.size(); ii++)
+            noms.add(liste_champ(ii).valeur().get_nom_post() );
+         
+        }
+    }
+}
+
 
 // Description:
 //  Si force=1, effectue le postraitement sans tenir compte des
@@ -310,7 +326,15 @@ REF(Field_base) Probleme_base::findInputField(const Nom& name) const
   return ch;
 }
 
-
+REF(Champ_Generique_base) Probleme_base::findOutputField(const Nom& name) const
+{
+  REF(Champ_Generique_base) ch;
+  if (comprend_champ_post(name))
+    {
+      ch=get_champ_post(name);
+    }
+  return ch;
+}
 ///////////////////////////////////////////////////////////
 //                                                       //
 // Fin de l'implementation de l'interface de Probleme_U  //

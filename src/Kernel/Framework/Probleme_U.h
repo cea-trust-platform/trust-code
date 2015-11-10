@@ -24,7 +24,7 @@
 #define Probleme_U_included
 
 #include <Ref_Field_base.h>
-
+#include <Ref_Champ_Generique_base.h>
 class Noms;
 
 namespace ICoCo
@@ -73,6 +73,7 @@ public :
   virtual void getOutputFieldsNames(Noms& noms) const;
   virtual void getOutputField(const Nom& nameField, ICoCo::TrioField& afield) const;
 
+  
 
   // Complements a l'API de Problem
 
@@ -87,7 +88,7 @@ public :
   virtual bool runUntil(double time);
 
   virtual REF(Field_base) findInputField(const Nom& name) const;
-
+  virtual REF(Champ_Generique_base) findOutputField(const Nom& name) const;
   // Methodes d'acces aux membres :
 
   inline void nommer(const Nom&);
