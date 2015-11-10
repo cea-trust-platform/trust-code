@@ -169,7 +169,7 @@ int Memoire::suppr(int num)
   prems=num;
   data[num].set(0);
   compteur--;
-  if((size>2*compteur)&&(size>step))
+  if((size>4*compteur)&&(size>step))
     //if((size-compteur)>step)
     {
       compacte();

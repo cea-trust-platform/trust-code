@@ -41,6 +41,7 @@ public :
   int rang(const char* const ch) const;
   int contient_(const char* const ch) const;
   int search(const Nom& t ) const ;
+  int search_without_checking_Motcle(const Nom& t ) const ;
 };
 
 

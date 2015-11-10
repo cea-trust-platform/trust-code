@@ -233,7 +233,7 @@ inline double Matrice_Morse::operator()(int i, int j) const
   assert( (symetrique_==0 && que_suis_je()=="Matrice_Morse")
           || (symetrique_==1 && que_suis_je()=="Matrice_Morse_Sym")
           || (symetrique_==2 && que_suis_je()=="Matrice_Morse_Diag") );
-  if (symetrique_==1 && j<i) std::swap(i,j);
+  if ((symetrique_==1) && ((j-i)<0)) std::swap(i,j);
   int k1=tab1_[i]-1;
   int k2=tab1_[i+1]-1;
   for (int k=k1; k<k2; k++)
@@ -248,7 +248,7 @@ inline double& Matrice_Morse::operator()(int i, int j)
           || (symetrique_==1 && que_suis_je()=="Matrice_Morse_Sym")
           || (symetrique_==2 && que_suis_je()=="Matrice_Morse_Diag") );
   //if (symetrique_==1 && j<i) std::swap(i,j); // Do not use, possible error during compile: "signed overflow does not occur when assuming that (X + c) < X is always false"
-  if (symetrique_==1 && j-i<0) std::swap(i,j);
+  if ((symetrique_==1) && ((j-i)<0)) std::swap(i,j);
   int k1=tab1_[i]-1;
   int k2=tab1_[i+1]-1;
   for (int k=k1; k<k2; k++)
