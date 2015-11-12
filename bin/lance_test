@@ -669,13 +669,15 @@ then
 		#lmlgz=`ls */$cas/$cas.lml.gz 2>/dev/null`
 		#if [ -f ${lmlgz%lml.gz}data ] || [ "`ls */$cas/lien_fiche_validation 2>/dev/null`" != "" ]
                 lmlgz=`find ./ -follow -name $cas.lml.gz -print 2>/dev/null | sed 's#'"./"'##' | sort`
-		if [ -f ${lmlgz%lml.gz}data ] || [ "`find ./ -follow -name lien_fiche_validation -print 2>/dev/null | sed 's#'"./"'##' | sort`" != "" ]
+		if [ -f ${lmlgz%lml.gz}data ]   # || [ "`find ./ -follow -name lien_fiche_validation -print 2>/dev/null | sed 's#'"./"'##' | sort`" != "" ]
 		then
 		   liste=$liste" "$lmlgz
+		else
+		    echo Case $cas not exist in $TRUST_TESTS 
 		fi
 	     done
 	  else
-	     liste=`\cd $ref; find . -name '*'.lml.gz -size -100 -exec basename {} \;`
+	     liste=`\cd $ref; find . -name '*'.lml.gz -size -100 ` # -exec basename {} \;`
 	  fi
        fi
     elif [ $print = 0 ]
@@ -688,17 +690,19 @@ then
     # l option -a n est pas disponible sur toutes les machines donc passage a une boucle for
     #fulllist=`echo $liste | xargs dirname | xargs basename -a`
     #uniqlist=`echo $liste | xargs dirname | xargs basename -a | sort -u`
-    fulllist=""
-    for i in `echo $liste`
+    duplist=` for i in $(echo $liste)
     do
-       j=`dirname $i`
-       fulllist=$fulllist" "`basename $j`
-    done
-    uniqlist=`echo $fulllist | sort -u`
-    nbold=`echo $fulllist | wc -w`
-    nbnew=`echo $uniqlist | wc -w`
-    nbdif=`echo "$nbnew-$nbold" | bc -l`
-    [ $nbdif != 0 ] && echo "Error: Test cases duplicate => Check that $nbdif test cases don't have the same name!" && exit -1
+       j=$(dirname $i)
+       
+       echo $(basename $j)
+    done | sort | uniq -d`
+    nbnew=`echo $liste | wc -w`
+    if [ "$duplist" != "" ]
+	then
+	echo "Error: Test cases duplicate => Check that test cases don't have the same name!"
+	echo $duplist
+	exit -1
+    fi
     k=0
     succes=0
     succes_par=0
@@ -836,7 +840,7 @@ then
            fi
 	fi
 	# Discard PARALLEL ONLY test case if no MPI capabilities
-	if [ "$TRUST_DISABLE_MPI" = 1 ]
+	if [ "$i" != "" ] && [ "$TRUST_DISABLE_MPI" = 1 ]
 	then
            iisa=$i
 	   [ "`grep -i 'PARALLEL ONLY' $REP/* 2>/dev/null`" != "" ] 	&& i=""
@@ -1060,7 +1064,7 @@ then
 			    if [ -f $rep_tests/$REP/no_ref_comparison ] && [ $LML1 = ".reference.lml" ]
 			    then
 			       echo "Test $i not compared to the reference"
-	                       liste_no_ref_comparison=$liste_skipped" $i"
+	                       liste_no_ref_comparison=$liste_no_ref_comparison" $i"
 			    else		    
 			    # lance_test_seq_par will be replaced by compare_lata
 			    tool=lance_test_seq_par	# older program soon retired
@@ -1276,6 +1280,7 @@ then
 	    rm -f .reference* core*
 	fi
     done
+
 fi
 # Efface les repertoires dependances
 for file in `find $rep_tests -name .effacer`
