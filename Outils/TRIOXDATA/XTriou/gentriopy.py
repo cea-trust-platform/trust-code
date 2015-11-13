@@ -473,7 +473,9 @@ e.write('dicobases='+str(dico)+'\n\n')
 e.close()
 # on attend une seconde pour etre sur que triou.py sera correct
 os.system("sleep 1")
-os.system("cat dico.py classes_utilisateurs.py >> triou.py")
+# classes_utilisateurs.py No such file
+#os.system("cat dico.py classes_utilisateurs.py >> triou.py")
+os.system("cat dico.py >> triou.py")
 
 cmd="sed \"s/ //g\" sedfile| sed \"s/\[/\\\\\[/g\" | sed \"s/\]/\\\\\]/g\" > sed2"
 print cmd

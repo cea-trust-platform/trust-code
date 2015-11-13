@@ -5,7 +5,7 @@ cible=$(install)/bin/$(name)
 all:$(cible)
 $(cible): Installer_valgrind $(TRUST_cc) makefile
 	make clean
-	@./Installer_valgrind $(version) | tee $(install).log
+	@./Installer_valgrind $(version) #1>$(install).log 2>&1
 
 clean:
 	rm -r -f $(install)* $(name)-*.*.*

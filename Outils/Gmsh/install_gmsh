@@ -110,7 +110,7 @@ fi
 [ "$version" = gmsh-2.10.1-source.tgz ] && options=$options" -DENABLE_PETSC=0"
 # Build avec GUI (FLTK), et support MED,LAPACK
 [ "$MISSING_GL" != "" ] && MISSING_GL=$TRUST_ROOT/Outils/Gmsh/missing
-cmake $options -DENABLE_FLTK=1 -DENABLE_MED=1 \
+cmake $options -DENABLE_FLTK=1 -DENABLE_MED=1 -DENABLE_CAIRO=OFF \
 -DCMAKE_C_COMPILER=$TRUST_cc -DCMAKE_CXX_COMPILER=$TRUST_CC -DCMAKE_Fortran_COMPILER=$TRUST_F77 \
 -DCMAKE_INSTALL_PREFIX=$TRUST_ROOT/exec/gmsh \
 -DCMAKE_PREFIX_PATH="$TRUST_ROOT/lib/src/LIBMED/MED;$TRUST_ROOT/lib/src/LIBLAPACK;$FLTK_ROOT;$MISSING_GL" .. 2>&1 || exit -1

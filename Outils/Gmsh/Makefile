@@ -7,8 +7,8 @@ all : $(cible)
 
 $(cible) : Makefile install_gmsh Demo_Gmsh.ksh $(TRUST_ROOT)/lib/src/LIBMED/MED/lib/libmed.so
 	make clean
-	@./install_gmsh 2>&1 | tee $(install).log
-	make demo  | tee -a $(install).log
+	@./install_gmsh #1>$(install).log 2>&1
+	make demo #1>>$(install).log 2>&1
 demo:
 	./Demo_Gmsh.ksh
 

@@ -1,5 +1,5 @@
 # Hydraulique 2D pertes de charges singulieres #
-# PARALLEL NOT #
+# PARALLEL OK #
 dimension 2
 
 Pb_hydraulique pb

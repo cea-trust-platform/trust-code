@@ -73,7 +73,7 @@ then
    # Axi 2D ?
    [ $is2DAxi = 1 ] && echo $ECHO_OPTS "Bidim_axi" >> $file
    
-   [ ${#geoms} = 0 ] && Erreur.ihm "Files containing meshes not generated !"
+   [ ${#geoms} = 0 ] && $TRUST_ROOT/bin/IHM/Erreur.ihm "Files containing meshes not generated !"
    n=0
    for geom in $geoms
    do

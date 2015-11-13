@@ -11,39 +11,39 @@
 
 Implemente_instanciable(Ecrire_fic_lml_2,"Ecrire_fic_lml_2",Interprete);
 
-  // Description: 
-  //    Simple appel a: Interprete::printOn(Sortie&)
-  // Precondition: 
-  // Parametre: Sortie& os
-  //    Signification: un flot de sortie
-  //    Valeurs par defaut: 
-  //    Contraintes: 
-  //    Acces: entree/sortie
-  // Retour: Sortie& 
-  //    Signification: le flot de sortie modifie
-  //    Contraintes: 
-  // Exception: 
-  // Effets de bord: 
-  // Postcondition: la methode ne modifie pas l'objet
-  Sortie& Ecrire_fic_lml_2::printOn(Sortie& os) const
+// Description:
+//    Simple appel a: Interprete::printOn(Sortie&)
+// Precondition:
+// Parametre: Sortie& os
+//    Signification: un flot de sortie
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces: entree/sortie
+// Retour: Sortie&
+//    Signification: le flot de sortie modifie
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition: la methode ne modifie pas l'objet
+Sortie& Ecrire_fic_lml_2::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
-// Description: 
+// Description:
 //    Simple appel a: Interprete::readOn(Entree&)
-// Precondition: 
+// Precondition:
 // Parametre: Entree& is
 //    Signification: un flot d'entree
-//    Valeurs par defaut: 
-//    Contraintes: 
+//    Valeurs par defaut:
+//    Contraintes:
 //    Acces: entree/sortie
-// Retour: Entree& 
+// Retour: Entree&
 //    Signification: le flot d'entree modifie
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 Entree& Ecrire_fic_lml_2::readOn(Entree& is)
 {
   return Interprete::readOn(is);
@@ -51,23 +51,23 @@ Entree& Ecrire_fic_lml_2::readOn(Entree& is)
 
 // Description:
 //    Fonction principale de l'interprete.
-// Precondition: 
+// Precondition:
 // Parametre: Entree& is
 //    Signification: un flot d'entree
-//    Valeurs par defaut: 
-//    Contraintes: 
+//    Valeurs par defaut:
+//    Contraintes:
 //    Acces: entree/sortie
-// Retour: Entree& 
+// Retour: Entree&
 //    Signification: le flot d'entree
-//    Contraintes: 
-// Exception: 
-// Effets de bord: 
-// Postcondition: 
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 Entree& Ecrire_fic_lml_2::interpreter(Entree& is)
-{ 
+{
   toto="essai";
   Ecrire_fic_lml::interpreter(is);
-  return is;     
+  return is;
 }
 
 

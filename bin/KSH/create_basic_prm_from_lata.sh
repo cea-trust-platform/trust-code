@@ -37,7 +37,7 @@ dim=`grep -i dimension ../$data | cut -d " " -f 2`
 echo -e "Parameters {
 	Title \"$1 $dim"D" calculation\"
 	Author \"`whoami`\"
-	VersionTRUST $TRUST_VERSION
+	VersionTrio_U $TRUST_VERSION
  	TestCase . $data
 }\n" > $prm
 if [ -f ../$dtev ]

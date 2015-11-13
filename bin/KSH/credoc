@@ -78,14 +78,14 @@ ihm()
    # Creation de certains fichiers du repertoire IHM :
    ###################################################
    # Le fichier des cas tests de reference :
-   cree_References.html
+   $TRUST_ROOT/bin/HTML/cree_References.html
    # Le fichier des caracteristiques des milieux :
-   cree_Milieux.html
+   $TRUST_ROOT/bin/HTML/cree_Milieux.html
    # On ne supporte plus GIBI depuis la 1.6.7:
    # Le fichier des maillages VDF GIBI disponible :
-   # cree_Maillages_VDF.html
+   # $TRUST_ROOT/bin/HTML/cree_Maillages_VDF.html
    # Le fichier des maillages VEF GIBI disponible :
-   # cree_Maillages_VEF.html
+   # $TRUST_ROOT/bin/HTML/cree_Maillages_VEF.html
    echo "End ihm at `date '+%H:%M:%S'`"
 }
 
@@ -154,13 +154,13 @@ pdf_par_xdata()
    cd $TRUST_ROOT/Outils/TRIOXDATA
    . ./XDATA.sh
    cd XTriou
-   echo "See $TRUST_ROOT/Outils/TRIOXDATA/pdf_par_xdata.log"
+   echo "See $TRUST_ROOT/Outils/TRIOXDATA/XTriou/pdf_par_xdata.log"
    # Nettoyage
    make clean > pdf_par_xdata.log
    # Creation de triou.py
    make >> pdf_par_xdata.log
    # Verification sur 5 cas tests
-   make test >> pdf_par_xdata.log
+   make test 2>/dev/null >> pdf_par_xdata.log
    # Verification sur tous les cas tests
    # make test_ref >> pdf_par_xdata.log
    # Creation de la doc PDF et LATEX

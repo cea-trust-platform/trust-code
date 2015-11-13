@@ -97,6 +97,9 @@ check_components()
 	       valgrind_machines=`liste_machines "\-valgrind" | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Clusters
 	       updated_machines=`liste_machines updated | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
+	       # Machines cible pour la sortie de version
+	       cible_machines=`liste_machines cible | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
+	       cible_machines=$cible_machines" "`liste_machines get_binary | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Toutes les machines
 	       all_machines=`liste_machines`
 	       # Liste des machines a tester selon le baltik en question
@@ -127,10 +130,10 @@ check_components()
 	       else
 	          machines=$all_machines
 	       fi
-	       liste_options="--with-efface-dir-before"
 	       for adr in $machines
 	       do
 	          machine=`echo $adr | awk -F"." '{print $1}' | awk -F"-gw" '{print $1}'`
+	          liste_options="--with-efface-dir-before --clean-after-if-ok"
 	          if [[ "$liste_machines_KO" != *"$machine"* ]] # Test si machine n est pas dans la liste des machines KO
 		  then
 	             if [[ "$valgrind_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines valgrind
@@ -151,7 +154,12 @@ check_components()
 	                if [ "$Composant" = TrioCFD ] || [ "$Composant" = Test_Baltik ] #|| [ "$Composant" = ModeleCoeur ]
 			then
 		           check_option="--without-run"
+	                   liste_options="--with-efface-dir-before"
 			fi
+	             fi
+	             if [[ "$cible_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines cible
+		     then
+		        liste_options=$liste_options" --cible"
 	             fi
                      log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`
                      WORKTMP=`ssh_command 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
@@ -1494,11 +1502,14 @@ echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 echo "Analysis of $recupere_log file"
 grep "step TRUST" $recupere_log
 echo "Analysis of $REP_NUIT/NUIT.html file"
+grep "Total number portability" $REP_NUIT/NUIT.html
 grep "TRUST portability" $REP_NUIT/NUIT.html
-echo " "
+all_cible=`$TRUST_Awk '/Total number portability/ {print $9}' $REP_NUIT/NUIT.html`
+nb_cible=`$TRUST_Awk '/Total number portability/ {print $7}' $REP_NUIT/NUIT.html`
 portabilite_trio=`$TRUST_Awk '/TRUST portability/ {print $1}' $REP_NUIT/NUIT.html`
 portabilite_trust=`$TRUST_Awk '/TRUST portability/ {print $6}' $REP_NUIT/NUIT.html`
 portabilite=0 && [ "`grep "Portable version" $REP_NUIT/NUIT.html`" != "" ] && portabilite=1
+echo " "
 if [ "$portabilite" = 1 ]
 then
    echo "Release criterion: TRUST  OK"
@@ -1507,7 +1518,7 @@ else
 fi
 force_portabilite=~/force_portabilite && [ -f $force_portabilite ] && portabilite=1 && rm -f $force_portabilite
 limite=0.99 # cf recupere_TRUST_arch
-echo "$portabilite  Portability $portabilite_trust=$portabilite_trio (>$limite)" >> $MESSAGES_NUIT
+echo "$portabilite  Portability $portabilite_trust=$portabilite_trio + nb=$nb_cible (>$limite+nb=$all_cible)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+$portabilite
 echo "<--- End at "`date '+%H:%M:%S %d/%m'`
@@ -1523,18 +1534,21 @@ echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 echo "Analysis of $recupere_log file"
 grep "step workshop" $recupere_log
 echo "Analysis of $REP_NUIT/NUIT.html file"
+grep "Total number portability" $REP_NUIT/NUIT.html
 grep "TRUST workshop compilation" $REP_NUIT/NUIT.html
 make_atelier=`$TRUST_Awk '/workshop compilation/ && /TRUST/ {print $1}' $REP_NUIT/NUIT.html`
 port_atelier=`$TRUST_Awk '/workshop compilation/ && /TRUST/ {print $7}' $REP_NUIT/NUIT.html`
+workshop=0
+[ "$make_atelier" = "1.000" ] && [ "$nb_cible" = "$all_cible" ] && workshop=1
 echo " "
-if [ "$make_atelier" = "1.000" ]
+if [ "$workshop" = 1 ]
 then
    echo "Release criterion: Workshop OK"
 else
    echo "Release criterion: Workshop KO"
 fi
-force_make_atelier=~/force_make_atelier && [ -f $force_make_atelier ] && make_atelier="1.000" && rm -f $force_make_atelier
-echo `if [ "$make_atelier" = "1.000" ]; then echo 1;else echo 0;fi`"  Workshop $port_atelier=$make_atelier (=1.000)" >> $MESSAGES_NUIT
+force_make_atelier=~/force_make_atelier && [ -f $force_make_atelier ] && workshop=1 && rm -f $force_make_atelier
+echo "$workshop  Workshop $port_atelier=$make_atelier (=1.000)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+`if [ "$make_atelier" = "1.000" ]; then echo 1;else echo 0;fi`
 echo "<--- End at "`date '+%H:%M:%S %d/%m'`
@@ -1550,11 +1564,13 @@ echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 echo "Analysis of $recupere_log file"
 grep "step Xprepro" $recupere_log
 echo "Analysis of $REP_NUIT/NUIT.html file"
+grep "Total number portability" $REP_NUIT/NUIT.html
 grep "Xprepro portability" $REP_NUIT/NUIT.html
-echo " "
 Xprepro=`$TRUST_Awk '/Xprepro portability with TRUST/ {print $1}' $REP_NUIT/NUIT.html`
 port_Xprepro=`$TRUST_Awk '/Xprepro portability with TRUST/ {print $8}' $REP_NUIT/NUIT.html`
 portabilite_Xprepro=`echo $Xprepro | $TRUST_Awk '{if ($1>=1) print 1;else print 0}'`
+[ "$nb_cible" != "$all_cible" ] && portabilite_Xprepro=0
+echo " "
 if [ "$portabilite_Xprepro" = 1 ]
 then
    echo "Release criterion: Xprepro OK"
@@ -1578,18 +1594,21 @@ echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 echo "Analysis of $recupere_log file"
 grep "step Baltik" $recupere_log
 echo "Analysis of $REP_NUIT/NUIT.html file"
+grep "Total number portability" $REP_NUIT/NUIT.html
 grep "Baltik portability" $REP_NUIT/NUIT.html
-echo " "
 portabilite_baltik=`$TRUST_Awk '/Baltik portability/ && /TRUST/ {print $1}' $REP_NUIT/NUIT.html`
 port_baltik=`$TRUST_Awk '/Baltik portability/ && /TRUST/ {print $8}' $REP_NUIT/NUIT.html`
-if [ "$portabilite_baltik" = "1.000" ]
+testbaltik=0
+[ "$portabilite_baltik" = "1.000" ] && [ "$nb_cible" = "$all_cible" ] && testbaltik=1
+echo " "
+if [ "$testbaltik" = 1 ]
 then
    echo "Release criterion: Baltik  OK"
 else
    echo "Release criterion: Baltik  KO"
 fi
-force_portabilite_baltik=~/force_portabilite_baltik && [ -f $force_portabilite_baltik ] && portabilite_baltik="1.000" && rm -f $force_portabilite_baltik
-echo `if [ "$portabilite_baltik" = "1.000" ]; then echo 1;else echo 0;fi`"  Baltik $port_baltik=$portabilite_baltik (=1.000)" >> $MESSAGES_NUIT
+force_portabilite_baltik=~/force_portabilite_baltik && [ -f $force_portabilite_baltik ] && testbaltik=1 && rm -f $force_portabilite_baltik
+echo "$testbaltik  Baltik $port_baltik=$portabilite_baltik (=1.000)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+`if [ "$portabilite_baltik" = "1.000" ]; then echo 1;else echo 0;fi`
 echo "<--- End at "`date '+%H:%M:%S %d/%m'`
@@ -1605,18 +1624,21 @@ echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 echo "Analysis of $recupere_log file"
 grep "step assert" $recupere_log
 echo "Analysis of $REP_NUIT/NUIT.html file"
+grep "Total number portability" $REP_NUIT/NUIT.html
 grep "Compilation assert test" $REP_NUIT/NUIT.html
 test_assert=`$TRUST_Awk '/Compilation assert/ {print $1}' $REP_NUIT/NUIT.html`
 port_assert=`$TRUST_Awk '/Compilation assert/ {print $7}' $REP_NUIT/NUIT.html`
+assert=0
+[ "$test_assert" = "1.000" ] && [ "$nb_cible" = "$all_cible" ] && assert=1
 echo " "
-if [ "$test_assert" = "1.000" ]
+if [ "$assert" = 1 ]
 then
    echo "Release criterion: Assert OK"
 else
    echo "Release criterion: Assert KO"
 fi
-force_test_assert=~/force_test_assert && [ -f $force_test_assert ] && test_assert="1.000" && rm -f $force_test_assert
-echo `if [ "$test_assert" = "1.000" ]; then echo 1;else echo 0;fi`"  Assert $port_assert=$test_assert (=1.000)" >> $MESSAGES_NUIT
+force_test_assert=~/force_test_assert && [ -f $force_test_assert ] && assert=1 && rm -f $force_test_assert
+echo "$assert  Assert $port_assert=$test_assert (=1.000)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+`if [ "$test_assert" = "1.000" ]; then echo 1;else echo 0;fi`
 echo "<--- End at "`date '+%H:%M:%S %d/%m'`
@@ -2596,14 +2618,25 @@ do
    let NB=$OK+$KO
    [ $NB = 0 ] && validation_composant=0
    # Check if portability is OK:
+   nuit_log=$PROJECT_ROOT/nuit_$Composant.html
+   nb_cible=0
+   tot_cible=0
+   if [ -f $nuit_log ]
+   then
+      echo "Analysis of "$nuit_log" file" | tee -a tmp.log
+      grep "_OK" $nuit_log | tee -a tmp.log
+      nb_cible=`$TRUST_Awk '/cible_OK/ {print $2}' $nuit_log`
+      tot_cible=`$TRUST_Awk '/cible_OK/ {print $4}' $nuit_log`
+   fi
+   [ $tot_cible != 0 ] && [ $nb_cible != $tot_cible ] && validation_composant=0
    #if [ "`grep KO $PROJECT_ROOT/*.log | grep Info_global 2>/dev/null`" != "" ]
    if [ $KO != 0 ]
    then
       validation_composant=0
-      if [ -f $PROJECT_ROOT/nuit_$Composant.html ]
+      if [ -f $nuit_log ]
       then
          echo " " | tee -a tmp.log
-         echo "Run: konqueror $PROJECT_ROOT/nuit_$Composant.html" | tee -a tmp.log	 
+         echo "Run: konqueror $nuit_log" | tee -a tmp.log	 
       fi
       cat tmp.log | mail_ -s \"[lance_test_nuit] Portability KO on Baltik $Composant\" $TRUST_MAIL $TRUST_PROJECT_LEADER
    fi
@@ -2616,13 +2649,23 @@ do
       echo "Release criterion: $Composant KO"
    fi
    [ -f $force_composant ] && validation_composant=1
+   # Test sur l'ensemble des machines
    [ "$NB" -eq 0 ] && NB=-1
    if [ "$NB" -eq -1 ]
    then
-      echo "$validation_composant  $Composant $OK/0="`echo $ECHO_OPTS "scale=3;$OK/$NB" | bc -l`" (=1)" >> $MESSAGES_NUIT
+      echo "$validation_composant  $Composant $OK/0="`echo $ECHO_OPTS "scale=3;$OK/$NB" | bc -l`" (=1)" #>> $MESSAGES_NUIT
       NB=0
    else
-      echo "$validation_composant  $Composant $OK/$NB="`echo $ECHO_OPTS "scale=3;$OK/$NB" | bc -l`" (=1)" >> $MESSAGES_NUIT
+      echo "$validation_composant  $Composant $OK/$NB="`echo $ECHO_OPTS "scale=3;$OK/$NB" | bc -l`" (=1)" #>> $MESSAGES_NUIT
+   fi
+   # Test sur les machines cible
+   [ "$tot_cible" -eq 0 ] && tot_cible=-1
+   if [ "$tot_cible" -eq -1 ]
+   then
+      echo "$validation_composant  $Composant $nb_cible/0="`echo $ECHO_OPTS "scale=3;$nb_cible/$tot_cible" | bc -l`" (=1)" | tee -a $MESSAGES_NUIT
+      tot_cible=0
+   else
+      echo "$validation_composant  $Composant $nb_cible/$tot_cible="`echo $ECHO_OPTS "scale=3;$nb_cible/$tot_cible" | bc -l`" (=1)" | tee -a $MESSAGES_NUIT
    fi
    let total_criteres=$total_criteres+1
    let criteres_remplis=$criteres_remplis+$validation_composant

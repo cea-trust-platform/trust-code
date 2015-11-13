@@ -10,7 +10,7 @@ sed "s/# END MESH/trianguler_h dom_fluide trianguler_h dom_solide # END MESH/; s
 for dis in VDF VEF 
 do
   sed "s/diffusion_implicite 1/diffusion_implicite 0/" ${dis}_diff_impl.data > ${dis}_expl.data
-  sed "s/preconditionnement_diag 1/preconditionnement_diag 0/g;s/PARALLEL NOT/PARALLEL OK 8/"  ${dis}_diff_impl.data > ${dis}_diff_impl_non_precond.data 
+  sed "s/preconditionnement_diag 1/preconditionnement_diag 0/g"  ${dis}_diff_impl.data > ${dis}_diff_impl_non_precond.data 
   sed "s/crank 0/crank 1/g"  ${dis}_diff_impl.data > ${dis}_crank.data
   
 done

@@ -13,5 +13,5 @@ then
 else
    exec $WISH $DIR/xprepro.tcl
 fi
-#Erreur.ihm toto
+#$TRUST/ROOT/bin/IHM/Erreur.ihm toto
 #wait $!
