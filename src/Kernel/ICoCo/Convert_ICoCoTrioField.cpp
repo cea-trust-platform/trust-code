@@ -28,9 +28,18 @@
 #include <Champ_base.h>
 #include <Zone_dis_base.h>
 
-void affecte_double_avec_doubletab(double** p, const ArrOfDouble& trio);
 
-void affecte_int_avec_inttab(int** p, const ArrOfInt& trio);
+void affecte_double_avec_doubletab(double** p, const ArrOfDouble& trio)
+{
+  *p=new double[trio.size_array()];
+  memcpy(*p,trio.addr(),trio.size_array()*sizeof(double));
+}
+
+void affecte_int_avec_inttab(int** p, const ArrOfInt& trio)
+{
+  *p=new int[trio.size_array()];
+  memcpy(*p,trio.addr(),trio.size_array()*sizeof(int));
+}
 
 ICoCo::TrioField build_ICoCoField(const std::string& name,const Domaine& dom,  const DoubleTab& values,const int is_p1, const double& t1,const double& t2 )
 {

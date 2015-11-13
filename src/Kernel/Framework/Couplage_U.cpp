@@ -117,6 +117,13 @@ void Couplage_U::getInputFieldsNames(Noms& noms) const
   for (int i=0; i<nb_problemes(); i++)
     probleme(i).getInputFieldsNames(noms);
 }
+// Adds the output fields names this pb understands to noms
+void Couplage_U::getOutputFieldsNames(Noms& noms) const
+{
+  for (int i=0; i<nb_problemes(); i++)
+    probleme(i).getOutputFieldsNames(noms);
+}
+
 
 int Couplage_U::postraiter(int force)
 {
@@ -168,6 +175,17 @@ REF(Field_base) Couplage_U::findInputField(const Nom& name) const
   for (int i=0; i<nb_problemes(); i++)
     {
       ch=probleme(i).findInputField(name);
+      if (ch.non_nul())
+        return ch;
+    }
+  return ch;
+}
+REF(Champ_Generique_base) Couplage_U::findOutputField(const Nom& name) const
+{
+  REF(Champ_Generique_base) ch;
+  for (int i=0; i<nb_problemes(); i++)
+    {
+      ch=probleme(i).findOutputField(name);
       if (ch.non_nul())
         return ch;
     }

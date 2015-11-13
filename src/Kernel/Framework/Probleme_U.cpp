@@ -30,6 +30,13 @@
 #ifdef VTRACE
 #include <vt_user.h>
 #endif
+
+#include <Domaine.h>
+#include <Zone.h>
+#include <Champ_Generique_base.h>
+#include <Convert_ICoCoTrioField.h>
+
+
 Implemente_base(Probleme_U,"Probleme_U",Objet_U);
 
 using ICoCo::WrongArgument;
@@ -615,6 +622,36 @@ REF(Field_base) Probleme_U::findInputField(const Nom& name) const
   return ch;
 }
 
+
+
+
+// Description:
+// This method is used to find the names of output fields understood by the Problem
+// Precondition: initTimeStep
+// Parametre: Noms
+//    Signification: list of names where the Problem appends its output field names.
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+// Problem unchanged
+void Probleme_U::getOutputFieldsNames(Noms& noms) const
+{
+}
+
+REF(Champ_Generique_base) Probleme_U::findOutputField(const Nom& name) const
+{
+  REF(Champ_Generique_base) ch;
+  return ch;
+}
+
+
+
 // Description:
 // This method is used to get a template of a field expected for the given name.
 // Precondition: initTimeStep, name is one of getInputFieldsNames
@@ -709,12 +746,39 @@ void Probleme_U::setInputField(const Nom& name, const TrioField& afield)
     throw WrongArgument(le_nom().getChar(),"setInputField","name","field of this name is not an input field");
 }
 
-void Probleme_U::getOutputFieldsNames(Noms& noms) const
+void Probleme_U::getOutputField(const Nom& name,  TrioField& afield) const
 {
-  throw WrongArgument("pp","getOutputFieldsNames","name","no inplementation available in class Problem");
-}
-void Probleme_U::getOutputField(const Nom& nameField,  TrioField& afield) const
-{
-  throw WrongArgument("pp","getOutputField","name","no inplementation available in class Problem");
+  
+  REF(Champ_Generique_base) ref_ch=findOutputField(name);
+  if (!ref_ch.non_nul())
+    throw WrongArgument(le_nom().getChar(),"getOutputField",name.getChar(),"no output field of that name");
+
+  const Champ_Generique_base& ch = ref_ch.valeur();
+  
+  Domaine dom;
+  ch.get_copy_domain(dom);
+
+  Champ espace_stockage;
+  const Champ_base& champ_ecriture = ch.get_champ(espace_stockage);
+  const DoubleTab& values = champ_ecriture.valeurs();
+  
+  Entity loc=ch.get_localisation();
+  if (loc==NODE)
+    //if (values.dimension_tot(0)==coord.dimension_tot(0))
+    {
+      Cerr<<name<<" type "<<ch.que_suis_je() <<" P1 ?? "<<finl;
+      //      afield._type=1;
+    }
+  else if (loc!=ELEMENT)
+    {
+      throw WrongArgument(name.getString()," "," "," wrong localisation type for field ");
+    }
+  double t1=presentTime();
+  double t2=futureTime();
+  int is_p1=0;
+  if (loc==NODE)
+    is_p1=1;
+  afield= build_ICoCoField(name.getString(), dom, values, is_p1,  t1, t2 );
+
 }
 

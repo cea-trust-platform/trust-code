@@ -55,7 +55,7 @@ then
 	 else
 	     if [ "`grep lmpifort $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ]
 		 then
-		 PETSC=$PETSC"-L\$(MPI_ROOT)/lib -lmpifort "
+		 PETSC=$PETSC" -L\$(MPI_ROOT)/lib -lmpifort "
 	     fi
 	 fi
 	 if [ "`grep lssl $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ]
