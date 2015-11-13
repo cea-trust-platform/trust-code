@@ -285,7 +285,7 @@ const Champ_Proto& Champ_Face::affecter(const DoubleTab& v)
 // en vis a vis sont identiques. Pour cela on prend la demi somme des deux valeurs.
 void Champ_Face::verifie_valeurs_cl()
 {
-  const Zone_Cl_dis_base& zcl = equation().zone_Cl_dis().valeur();
+  const Zone_Cl_dis_base& zcl = zone_Cl_dis().valeur();
   int nb_cl = zcl.nb_cond_lim();
   DoubleTab& ch_tab = valeurs();
   int ndeb,nfin,num_face;

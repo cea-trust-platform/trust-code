@@ -74,14 +74,15 @@ Entree& Discretisation_base::readOn(Entree& is)
 void Discretisation_base::discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
                                             const Nom& nom, const Nom& unite,
                                             int nb_comp, int nb_pas_dt, double temps,
-                                            Champ_Inc& champ) const
+                                            Champ_Inc& champ, const Nom& sous_type) const
+
 {
   Noms noms;
   Noms unites;
   noms.add(nom);
   unites.add(unite);
 
-  discretiser_champ(directive, z, scalaire, noms, unites, nb_comp, nb_pas_dt, temps, champ);
+  discretiser_champ(directive, z, scalaire, noms, unites, nb_comp, nb_pas_dt, temps, champ, sous_type);
 }
 
 void Discretisation_base::discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
@@ -141,14 +142,14 @@ Discretisation_base::discretiser_champ(const Motcle& directive, const Zone_dis_b
                                        Nature_du_champ nature,
                                        const Noms& noms, const Noms& unites,
                                        int nb_comp, int nb_pas_dt, double temps,
-                                       Champ_Inc& champ) const
+                                       Champ_Inc& champ, const Nom& sous_type) const
 {
   test_demande_description(directive, champ.que_suis_je());
   // Appel recursif pour produire l'affichage des directives :
   exit();
   throw;
   discretiser_champ(demande_description, z, nature, noms, unites, nb_comp,
-                    nb_pas_dt, temps, champ);
+                    nb_pas_dt, temps, champ, sous_type);
 }
 
 // Description: idem
@@ -421,6 +422,13 @@ Nom Discretisation_base::get_name_of_type_for(const Nom& class_operateur, const 
       Nom type_ch=eqn.inconnue()->que_suis_je();
       if (type_ch == "Champ_Q1NC")
         type_ch = "Champ_P1NC";
+
+      if (type_ch.debute_par("Champ_P0_VDF"))
+        type_ch = "Champ_P0_VDF";
+
+      if (type_ch.debute_par("Champ_Face"))
+        type_ch = "Champ_Face";
+
       type_ch.suffix("Champ");
       type+=type_ch;
 
@@ -568,6 +576,12 @@ Nom Discretisation_base::get_name_of_type_for(const Nom& class_operateur, const 
               if (type_inco == "Champ_Q1NC")
                 type_inco = "Champ_P1NC";
 
+              if (type_inco.debute_par("Champ_P0_VDF"))
+                type_inco = "Champ_P0_VDF";
+
+              if (type_inco.debute_par("Champ_Face"))
+                type_inco = "Champ_Face";
+
               type+=(type_inco.suffix("Champ_"));
 
               if (axi == 1)
@@ -599,4 +613,27 @@ return type;
 
 */
 
+int Discretisation_base::verifie_sous_type(Nom& type, const Nom& sous_type, const Motcle& directive) const
+{
+  const Type_info * base_info = Type_info::type_info_from_name(sous_type);
 
+    if (base_info)
+      {
+        if (base_info->has_base(type)) 
+          {
+            type = sous_type;
+            return 0;
+          }
+        Cerr << "Error in VDF_discretisation::discretiser_champ" << finl;
+        Cerr << sous_type << " is not a sub type of " << type << " for " << que_suis_je() << " discretization";
+        Cerr << "( directive : \""<< directive << "\")"<<finl;
+        exit(); 
+      }
+    else
+      {
+        Cerr << "Error in VDF_discretisation::discretiser_champ" << finl;
+        Cerr << "Unknown class type " << sous_type << finl;
+        exit();                
+      }
+  return -1;
+}

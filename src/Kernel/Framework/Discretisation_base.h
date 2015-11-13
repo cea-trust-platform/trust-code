@@ -102,7 +102,7 @@ public :
   void discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
                          const Nom& nom, const Nom& unite,
                          int nb_comp, int nb_pas_dt, double temps,
-                         Champ_Inc& champ) const;
+                         Champ_Inc& champ, const Nom& sous_type = nom_vide) const;
   void discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
                          const Nom& nom, const Nom& unite,
                          int nb_comp, double temps,
@@ -122,7 +122,7 @@ public :
                                  Nature_du_champ nature,
                                  const Noms& nom, const Noms& unite,
                                  int nb_comp, int nb_pas_dt, double temps,
-                                 Champ_Inc& champ) const;
+                                 Champ_Inc& champ, const Nom& sous_type = nom_vide) const;
   virtual void discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
                                  Nature_du_champ nature,
                                  const Noms& nom, const Noms& unite,
@@ -135,6 +135,7 @@ public :
                                  Champ_Don& champ) const;
 
   void nommer_completer_champ_physique(const Zone_dis_base& zone_vdf,const Nom& nom_champ, const Nom& unite, Champ_base& champ,const Probleme_base& pbi) const;
+  int verifie_sous_type(Nom& type, const Nom& sous_type, const Motcle& directive) const;
 
 
   void volume_maille(const Schema_Temps_base& sch,

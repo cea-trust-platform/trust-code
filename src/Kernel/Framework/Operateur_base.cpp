@@ -343,7 +343,7 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int& fla
       fic << (Nom)"# Printing on the boundaries of the equation "+equation().que_suis_je()+" of the problem "+equation().probleme().le_nom() << finl;
       fic << "# " << (type=="moment" ? "Moment of " : "") << description() << finl;
       fic << "# Boundary:";
-      const Conds_lim& les_cls=equation().zone_Cl_dis().les_conditions_limites();
+      const Conds_lim& les_cls=equation().inconnue()->zone_Cl_dis().les_conditions_limites();
       if (flux_bords_.nb_dim()!=2)
         {
           Cerr << "flux_bords_ not dimensioned for the operator " << que_suis_je() << finl;

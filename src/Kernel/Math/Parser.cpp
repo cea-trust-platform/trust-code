@@ -659,7 +659,8 @@ int Parser::searchCst(const String2& v)
   while(curseur)
     {
       Constante& cst = ref_cast(Constante,curseur.valeur());
-      if (nv == cst.le_nom()) return i;
+      const String2 ss(cst.le_nom());
+      if (nv == Nom(ss.toChar())) return i;
       ++curseur;
       i++;
     }

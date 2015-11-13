@@ -64,6 +64,10 @@ public:
   {
     return value;
   }
+  const double& getValue() const
+  {
+    return value;
+  }
   void setValue(double x)
   {
     value = x;

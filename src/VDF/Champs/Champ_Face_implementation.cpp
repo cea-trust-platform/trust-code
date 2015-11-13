@@ -513,14 +513,24 @@ DoubleTab& Champ_Face_implementation::trace(const Frontiere_dis_base& fr, const 
       Cerr << "Please, check if the boundary condition is not applied on wrong boundaries." << finl;
       Process::exit();
     }
-  assert(x.dimension(1)==Objet_U::dimension);
-  //   x.resize(fr_vf.nb_faces(), dimension);
+//  assert(x.dimension(1)==Objet_U::dimension);
+  
+  if (x.dimension(1) == 1)
+    {
+    for (i=0; i<fr_vf.nb_faces(); i++)
+      {
+        face=fr_vf.num_premiere_face()+i;
+        x(i,0)=y(face);
+      }
+    return x;
+    }
 
   for (i=0; i<fr_vf.nb_faces(); i++)
     {
       face=fr_vf.num_premiere_face()+i;
       x(i,ori[face])=y(face);
     }
+
   for (i=0; i<fr_vf.nb_faces(); i++)
     {
       face=fr_vf.num_premiere_face()+i;
