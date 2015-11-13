@@ -90,7 +90,7 @@ install_HDF() {
     then
 	# defining the HDF archive
 	case "x_${HDF_version}_x" in
-	    "x_1.8_x") HDF_archive="hdf5-1.8.13"     ;;
+	    "x_1.8_x") HDF_archive="hdf5-1.8.14"     ;;
 	    "x_1.6_x") HDF_archive="hdf5-1.6.9"     ;;
 	    *) raise_invalid_HDF_version_exception ;;
 	esac
