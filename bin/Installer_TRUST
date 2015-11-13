@@ -580,7 +580,8 @@ echo  | tee -a $LOG
 echo "********************" | tee -a $LOG
 echo "HOW TO TEST TRUST ?" | tee -a $LOG
 echo "********************" | tee -a $LOG
-echo $ECHO_OPTS "[Fast] Run the command 'trust -check VAHL_DAVIS', if you want to check the TRUST binary on a single test.\n" | tee -a $LOG
+#echo $ECHO_OPTS "[Fast] Run the command 'trust -check VAHL_DAVIS', if you want to check the TRUST binary on a single test.\n" | tee -a $LOG
+echo $ECHO_OPTS "[Fast] Run the command 'trust -check Kernel', if you want to check the TRUST binary on a single test.\n" | tee -a $LOG
 echo $ECHO_OPTS "[Long] Run the command 'trust -check all', if you want to check the TRUST binary on test cases. It may take several hours." | tee -a $LOG
 echo  | tee -a $LOG
 echo "**********************************" | tee -a $LOG
@@ -594,16 +595,16 @@ echo "HOW TO RE-BUILD TRUST ?" | tee -a $LOG
 echo "************************" | tee -a $LOG
 echo $ECHO_OPTS "If you want to build again TRUST, run:" | tee -a $LOG
 echo $ECHO_OPTS "cd $TRUST_ROOT" | tee -a $LOG
-echo $ECHO_OPTS "./configure -help       # Than check and/or change the detected values into the \$TRUST_ROOT/env/machine.env file" | tee -a $LOG
+echo $ECHO_OPTS "./configure -help   # Than check and/or change the detected values into the \$TRUST_ROOT/env/machine.env file" | tee -a $LOG
 echo $ECHO_OPTS "source env_TRUST.sh # Initialize the new environment" | tee -a $LOG
-echo $ECHO_OPTS "make clean;make # Then clean and rebuild TRUST" | tee -a $LOG
+echo $ECHO_OPTS "make clean;make     # Then clean and rebuild TRUST" | tee -a $LOG
 echo | tee -a $LOG
 echo "*******************" | tee -a $LOG
 echo "HOW TO USE TRUST ?" | tee -a $LOG
 echo "*******************" | tee -a $LOG
 echo "Initialize TRUST environment with:" | tee -a $LOG
 echo "source $TRUST_ROOT/env_TRUST.sh" | tee -a $LOG
-echo "And follow the tutorial $TRUST_ROOT/doc/TRUST/TRUST_tutorial.pdf" | tee -a $LOG
+[ -f $TRUST_ROOT/doc/TRUST/TRUST_tutorial.pdf ] && echo "And follow the tutorial $TRUST_ROOT/doc/TRUST/TRUST_tutorial.pdf" | tee -a $LOG
 echo "You can contact us at $TRUST_MAIL for a training session of 2 days." | tee -a $LOG
 echo " " | tee -a $LOG
 

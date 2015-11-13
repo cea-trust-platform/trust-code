@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.7.2_beta : Changes since version 1.7.1 :
 -------------------------------------------------------------
+13/11/15 (TRUST)  Released version of cmake upgrated to 3.0.2
 04/11/15 (TRUST)  New check full in baltik and new option --cible and --clean-after-if-ok in portability_baltik
 04/11/15 (Tools)  New option -valmin to compare_lata and compare_sonde
 13/10/15 (Kernel) EcritureLectureSpecial: disable MPIIO in sequential mode (new static function: get_Output)

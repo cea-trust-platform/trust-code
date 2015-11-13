@@ -854,7 +854,7 @@ do
 	 # Etre une machine cible (si on teste sur toutes les machines en meme temps, on a un message "trop de clients X11"
 	 ###########################################
 	 test_run_fiche=1
-	 if [ "$test_run_fiche" = 1 ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable" | grep ^$HOST_BUILD"\."`" = "" ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-limited" | grep ^$HOST_BUILD"\."`" = "" ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-without-visit" | grep ^$HOST_BUILD"\."`" = "" ]
+	 if [ "$test_run_fiche" = 1 ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable " | grep ^$HOST_BUILD"\."`" = "" ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-optionals" | grep ^$HOST_BUILD"\."`" = "" ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-without-visit" | grep ^$HOST_BUILD"\."`" = "" ]
 	 then
             echo "--------------------------------------------------------"
             echo "Test of Run_fiche at `date '+%H:%M:%S'`"

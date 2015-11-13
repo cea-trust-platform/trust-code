@@ -1,5 +1,3 @@
- PAR_CANAL_QC_Turb_Timposees_dt293K_VEF_impl 
- PAR_Canal_perio_incline_VEF 
  PAR_Moyenne_convergee 
  PAR_PETSC_Canal_VEF_2D_LongMelange 
  PAR_PETSC_GCP_ILU_P0P1 
@@ -7,5 +5,4 @@
  PAR_PETSC_cpu_3D_CGILU 
  PAR_PETSC_cpu_3D_GMRESILU 
  PAR_ThHyd_keps_VEF_impl 
- PAR_U_in_var_impl_vef_QC 
  PAR_VAHL_DAVIS_VEFPreP1B_impl 

@@ -3,7 +3,7 @@ echo "Commande admin!" && exit
 fichier=$TRUST_TMP/References.html
 tmp=$HOME/.tmp_file
 # Ecriture du fichier :
-cree_en_tete.ihm > $fichier
+$TRUST_ROOT/bin/IHM/cree_en_tete.ihm > $fichier
 echo "<HR><h1>Reference test cases for TRUST</h1><HR>" >> $fichier
 i=0
 cd $TRUST_TESTS

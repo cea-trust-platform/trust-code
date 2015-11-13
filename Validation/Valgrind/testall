@@ -8,18 +8,19 @@ MACHINE_VALGRIND=1 	&& [ "$1" != "" ] && MACHINE_VALGRIND=$1 && shift
 NB_MACHINES_VALGRIND=1 	&& [ "$1" != "" ] && NB_MACHINES_VALGRIND=$1 && shift
 
 # On cherche les cas tests en supprimant certains cas tests (mis dans BLACK_LIST avec la raison)
+# NB: ce ne sont que des tests TrioCFD et non pas TRUST
 BLACK_LIST=`mktemp_`
-echo Jet_impingement_on_a_hot_flat_plate_jdd1 	>> $BLACK_LIST	# Crash valgrind avec OpenMPI 1.2.9
-echo Jet_impingement_on_a_hot_flat_plate_jdd2 	>> $BLACK_LIST	# Idem
-echo les_Re395Pr071_T0Q_jdd5 			>> $BLACK_LIST  # Idem
+#echo Jet_impingement_on_a_hot_flat_plate_jdd1 	>> $BLACK_LIST	# Crash valgrind avec OpenMPI 1.2.9 (OK sur vonnes le 09/10/15)
+#echo Jet_impingement_on_a_hot_flat_plate_jdd2 	>> $BLACK_LIST	# Idem                              (OK sur vonnes le 09/10/15)
+echo les_Re395Pr071_T0Q_jdd5 			>> $BLACK_LIST  # Crash valgrind avec OpenMPI 1.2.9
 echo les_Re395Pr0025_T0Q_jdd5			>> $BLACK_LIST  # Idem
-echo ContractionTurbFlow_3D_VEF_jdd6 		>> $BLACK_LIST	# Idem
-echo ContractionTurbFlow_3D_VEF_jdd5		>> $BLACK_LIST  # Idem
+#echo ContractionTurbFlow_3D_VEF_jdd6 		>> $BLACK_LIST	# Crash valgrind avec OpenMPI 1.2.9 (OK sur vonnes le 09/10/15)
+#echo ContractionTurbFlow_3D_VEF_jdd5		>> $BLACK_LIST  # Idem                              (OK sur vonnes le 09/10/15)
 echo FTD_hanging_drop_jdd1 			>> $BLACK_LIST	# Utilisation de Xprepro qui ne marche pas si DISPLAY non fixe
 echo FTD_hanging_drop_jdd2			>> $BLACK_LIST	# Idem
-echo sloshing_jdd1				>> $BLACK_LIST	# Idem
-echo Two_Layers_Stratif_jdd1			>> $BLACK_LIST	# Bloque la nuit
-echo PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd19 >> $BLACK_LIST	# Idem
+#echo sloshing_jdd1				>> $BLACK_LIST	# 10/10/15 : Cas renomme en FTD_sloshing_jdd1 et n utilise plus Xprepro
+#echo Two_Layers_Stratif_jdd1			>> $BLACK_LIST	# Bloque la nuit (OK sur is226425 le 05/10/15)
+#echo PoiseuillePerio3DVDFVEF_fRe_tetrafin_jdd19 >> $BLACK_LIST	# Idem           (OK sur is226425 le 05/10/15)
 
 find $TRUST_TESTS -follow -name '*.lml.gz' -exec basename {} .lml.gz \; | sort -u | awk '{print (" "$1" ")}' | grep -v -f $BLACK_LIST > TESTS_MINIMUM
 rm -f $BLACK_LIST

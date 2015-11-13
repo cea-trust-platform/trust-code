@@ -27,8 +27,11 @@ do
    # PL: On s'accroche bien fort a la chaise : tail +2 non portable sur mars (Linux) !
    #tail +2 $file > $file.tmp
    #tail +2 $fic > $fic.tmp
-   tail -`wc -l $file | awk '{print $1-1}'` $file > $file.tmp
-   tail -`wc -l $fic | awk '{print $1-1}'` $fic > $fic.tmp   
+   #tail -`wc -l $file | awk '{print $1-1}'` $file > $file.tmp
+   #tail -`wc -l $fic | awk '{print $1-1}'` $fic > $fic.tmp
+   # CC: On a sur ceres2 le message : "tail: inotify cannot be used, reverting to polling" donc on redirige vers 2>/dev/null
+   tail -`wc -l $file | awk '{print $1-1}'` $file 1> $file.tmp 2>/dev/null
+   tail -`wc -l $fic | awk '{print $1-1}'` $fic 1> $fic.tmp 2>/dev/null
    diff $file.tmp $fic.tmp
    err=$?
    if [ $err -ne 0 ]

@@ -76,13 +76,18 @@ then
   
    # On efface la documentation qui est relative a TRUST
    rm -f doc/html.tar.gz doc/doxygen*
-   rm -f -r doc/html doc/TRUST doc/Validation
+   rm -f -r doc/html doc/Validation
    cd doc/Coverage
    tar xfz cpp.gcov.tar.gz
    find . -name '*'.gcov -exec grep -L TRUST_ROOT/src/Kernel {} \; | xargs rm -f
    rm -f cpp.gcov.tar.gz
    tar cfz cpp.gcov.tar.gz *.gcov
    rm -f *.gcov
+   cd -
+   # On garde doc/TRUST/Keywords.txt utilise dans les scripts
+   # Language_mode_TRUST.sh, configure_vim.sh et configure_emacs.sh
+   cd doc/TRUST
+   ls | grep -v Keywords.txt | xargs rm -f -r
    cd -
   
    # On efface les binaires de TRUST
