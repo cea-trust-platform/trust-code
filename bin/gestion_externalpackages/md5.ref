@@ -3,7 +3,7 @@
 a482686e733514a51cde12d6fe5c5d95  MED/hdf5-1.8.14.tar.gz
 1134e91bc3f98b847dd5e1f952770009  MED/med-3.1.0.tar.gz
 b304f9826b5438117bff5f7317534439  MEDCoupling_Standalone_770.tgz
-9c5d5d4fe1e17dd12153f40bc5b6dbc0  MPI/mpich-3.0.4.tar.gz
+2ab544607986486562e076b83937bba2  MPI/mpich-3.1.4.tar.gz
 0095ceecb19bbb7fb262131cb9c2cdd6  MPI/mvapich2-2.1.tgz
 70aa9b6271d904c6b337ca326e6613d1  MPI/openmpi-1.6.4.tar.gz
 ec1224a216a084684bab6cd0dbf592f8  MPI/osu-micro-benchmarks-3.8.tar

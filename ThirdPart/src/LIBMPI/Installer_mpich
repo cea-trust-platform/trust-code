@@ -19,7 +19,7 @@ else
   #########
   # MPICH #
   #########
-  version=3.0.4
+  version=3.1.4
   package=mpich-$version.tar.gz
   src=${package%.tar.gz}
   http=http://www.mpich.org/static/downloads/$version
@@ -33,7 +33,12 @@ else
   # OK problem solved with --enable-yield=sched_yield which fixes the performance problem: https://svn.mcs.anl.gov/repos/mpi/mpich2/trunk/CHANGES
   # --enable-g=dbg,meminit http://wiki.mpich.org/mpich/index.php/Support_for_Debugging_Memory_Allocation
   # --enable-shared is added cause static MPICH library cause a crash during Cathare-TRUST couplings
-  option_configure="--enable-shared --enable-g=dbg,meminit --disable-fc --enable-fast=all,O3 --enable-yield=sched_yield"
+NOFC="--disable-fc"
+
+# disable-fc  ne compile pas depuis 3.1.4 on ne peut pas desactiver le fortran pour petsc 
+NOFC=""
+
+  option_configure="--enable-shared --enable-g=dbg,meminit $NOFC --enable-fast=all,O3 --enable-yield=sched_yield"
   # Try to build MPICH with valgrind include: Nothing is changed to avoid warnings with MPICH&Valgrind in //
   #option_configure="--enable-g=meminit --disable-fc --enable-fast=all,O3 --enable-yield=sched_yield $CPPFLAGS"
   #INCLUDE_VALGRIND=$TRUST_ROOT/exec/valgrind/include/valgrind && [ -d $INCLUDE_VALGRIND ] && option_configure=$option_configure" CPPFLAGS=-I$INCLUDE_VALGRIND"
