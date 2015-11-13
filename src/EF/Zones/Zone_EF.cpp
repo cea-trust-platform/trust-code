@@ -645,7 +645,7 @@ void Zone_EF::calculer_Bij(DoubleTab& bij)
                             porosite_sommets_, ip,
                             npgau, xgau, frgau, dfrgau,
                             poigau,detj, ajm1, aj, df,vol,volumes_sommets_,iphi);
-          if (!est_egal(volumes_(elem),vol,1e-12))
+          if (!est_egal(volumes_(elem),vol,1e-6))
             {
               Cerr<<"Erreur volume "<<elem<< " vol: "<<volumes_(elem)<<" new "<<vol<<" delta "<<volumes_(elem)-vol;
               exit();

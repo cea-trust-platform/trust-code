@@ -76,6 +76,21 @@ int Noms::search(const Nom& t ) const
   return -1;
 }
 
+int Noms::search_without_checking_Motcle(const Nom& t ) const
+{
+  assert(size()>=0);
+  int i=size();
+  while(i--)
+    {
+      const Nom& unnom=operator()(i);
+      if (unnom.getString().compare(t)==0)
+      {
+        return i;
+      }
+    }
+  return -1;
+}
+
 int Noms::contient_(const char* const ch) const
 {
   return (rang(ch)!=-1);
@@ -84,12 +99,5 @@ int Noms::contient_(const char* const ch) const
 int Noms::rang(const char* const ch) const
 {
   Nom nom(ch);
-  assert(size()>=0);
-  int i=size();
-  while(i--)
-    if (operator()(i)==nom)
-      {
-        return i;
-      }
-  return -1;
+  return search(nom);
 }

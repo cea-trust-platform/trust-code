@@ -68,7 +68,8 @@ double Op_Conv_VDF_base::calculer_dt_stab() const
   const IntTab& face_voisins = zone_VDF.face_voisins();
   const DoubleVect& volumes = zone_VDF.volumes();
   const DoubleVect& face_surfaces = zone_VDF.face_surfaces();
-  const DoubleVect& vit = vitesse().valeurs();
+  const DoubleVect& vit_associe = vitesse().valeurs();
+  const DoubleVect& vit= (vitesse_pour_pas_de_temps_.non_nul()?vitesse_pour_pas_de_temps_.valeur().valeurs(): vit_associe);
   DoubleTab fluent;
   // fluent est initialise a zero par defaut:
   zone_VDF.zone().creer_tableau_elements(fluent);

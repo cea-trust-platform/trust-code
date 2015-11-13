@@ -80,3 +80,7 @@ void Operateur_Conv_base::associer_norme_vitesse(const Champ_base& norme_vitesse
     }
   la_norme_vitesse = norme_vitesse;
 }
+void Operateur_Conv_base::associer_vitesse_pour_pas_de_temps(const Champ_base& vitesse)
+{
+  vitesse_pour_pas_de_temps_=vitesse;
+}
