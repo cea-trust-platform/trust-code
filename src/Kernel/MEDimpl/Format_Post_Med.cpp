@@ -112,7 +112,7 @@ int Format_Post_Med::ecrire_entete(double temps_courant,int reprise,const int& e
 
 int Format_Post_Med::finir(int& est_le_dernier_post)
 {
-
+  return 1;
   Nom nom_fich(med_basename_);
   nom_fich +=".";
   Nom format="med";
@@ -129,7 +129,7 @@ int Format_Post_Med::completer_post(const Domaine& dom,const int is_axi,
                                     const Nature_du_champ& nature,const int nb_compo,const Noms& noms_compo,
                                     const Motcle& loc_post,const Nom& le_nom_champ_post)
 {
-
+  return 1;
   Nom nom_fich2(med_basename_);
   Nom format="med";
   nom_fich2 += ".";
@@ -166,7 +166,7 @@ int Format_Post_Med::preparer_post(const Nom& id_du_domaine,const int& est_le_pr
                                    const int& reprise,
                                    const double& t_init)
 {
-
+  return 1;
   Nom nom_fich1(med_basename_);
   Nom nom_fich2(med_basename_);
   Nom nom_fich3(med_basename_);

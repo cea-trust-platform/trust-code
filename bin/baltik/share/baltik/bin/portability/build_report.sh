@@ -45,7 +45,7 @@ nb_cibles=0
 for machine in $list_machine
   do
    let nb_machines=nb_machines+1
-   tot_ok=1
+   tot_ok=0
    cible=0
 	   file=`ls -tr  ${project}_%_${machine}_%_*.log| grep -vi time|tail -1`;
 	   [ $verbose -eq 1 ] && echo last_file $machine ${file}
@@ -59,10 +59,14 @@ for machine in $list_machine
       file=$f
       [ "$res" != "" ] && break
     done
+    
+    [ "$res" = "OK" ] &&  [ ${info} = "make_install" ] && tot_ok=1 
     [ "$res" = "" ] && res="&nbsp;"
     color=""
     [ "$res" = "OK" ] && color=BGCOLOR=3D"#E47833" &&  res="<A HREF=$file> $res </A>"
-    [ "$res" = "KO" ] && color=BGCOLOR="#C42111" && res="<A HREF=$file> $res </A>" && tot_ok=0
+    
+    [ "$res" = "KO" ] && color=BGCOLOR="#C42111" && res="<A HREF=$file> $res </A>" 
+    
  #   [ "`echo $res|awk '{print $1}`" = "file" ] && res="<A HREF=$file> $res </A>"
     echo "<TD $color>$res</TD>" >> nuit_${project}.html 
    [ "$info" = "cible" ] && cible=$res

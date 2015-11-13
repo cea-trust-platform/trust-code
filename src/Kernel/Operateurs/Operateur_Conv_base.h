@@ -49,9 +49,11 @@ public :
   inline double dt_stab_conv() const;
   inline void fixer_dt_stab_conv(double dt);
   virtual void associer_norme_vitesse(const Champ_base& norme_vitesse);
+  virtual void associer_vitesse_pour_pas_de_temps(const Champ_base& vitesse);
 
 protected :
   REF(Champ_base) la_norme_vitesse;
+  REF(Champ_base) vitesse_pour_pas_de_temps_;
   double dt_stab_conv_;
 };
 
