@@ -3,7 +3,7 @@ Dimension 2
 Pbc_MED pbmed 
 Lire pbmed 
 { 
-MED_docond.med dom_solide 
+MED_Docond.med dom_solide 
 { 
 Postraitement 
 { 
@@ -15,7 +15,7 @@ TEMPERATURE_SOM SOM
 } 
 } 
 , 
-MED_docond.med dom_fluide 
+MED_Docond.med dom_fluide 
 { 
 Postraitement 
 { 
