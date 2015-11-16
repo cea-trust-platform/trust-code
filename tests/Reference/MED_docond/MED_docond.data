@@ -160,6 +160,7 @@ Lire pb1
 				0.15 0.55 
 				0.55 0.15 
 		}
+		fichier MED_Docond
 		format med Champs dt_post 10.
 		{
 			temperature elem
@@ -226,6 +227,7 @@ Lire pb2
 				0.55 0.55
 			sonde_seg temperature periode 5. segment 10 0. 0.75 1. 0.75
 		}
+		fichier MED_Docond
 		format med Champs dt_post 10.
 		{
 			pression elem
