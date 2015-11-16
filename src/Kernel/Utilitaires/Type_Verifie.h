@@ -94,7 +94,7 @@ inline void verifie(const Nom& type)
   motcle_obsolete[i++] = "Alternant";
   motcle_obsolete[i++] = "Alter_interp";
   motcle_obsolete[i++] = "Boussinesq";
-  motcle_obsolete[i++] = "Temperature_paroi";
+  motcle_obsolete[i++] = "Temperature_paroi_NOPASPOURGENEPI";
   assert(i==n);
 
   // GF on ne constuit les noms de la nouvelle syntaxe que si necessaire

@@ -324,3 +324,41 @@ void Parser_Eval::eval_fct(const DoubleTab& positions,const double& tps,const Do
 
 
 }
+
+void Parser_Eval::eval_fct(const DoubleTabs& variables, DoubleTab& val) const
+{
+  int dim;
+  int pos_size = val.dimension(0);
+
+  assert(fonction_.size() == 1);
+
+  int nb_dim = val.nb_dim();
+  int nbvars = variables.size();
+
+  Parser_U& fct = parser(0);
+
+  if (nb_dim==1)
+    {
+      for (int i=0; i<pos_size; i++)
+        { 
+          for (int ivar=0; ivar<nbvars;ivar++)
+            fct.setVar(ivar,variables[ivar](i));
+
+          val(i) = fct.eval();
+        }
+    }
+  else
+    {
+      dim = val.dimension(1);
+      for (int i=0; i<pos_size; i++)
+        {
+          for(int k=0; k<dim; k++)
+            {
+              for (int ivar=0; ivar<nbvars;ivar++)
+                  fct.setVar(ivar,variables[ivar](i,k));
+              val(i,k) = fct.eval();
+            }
+        }
+    }
+}
+

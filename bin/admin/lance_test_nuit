@@ -354,7 +354,7 @@ echo>>$config_log
 ./configure 1>>$config_log || exit -1
 #grep -i error $config_log
 grep KO $config_log
-tail -n8 $config_log | head -n1
+tail -n9 $config_log | head -n1
 echo " "
 echo "Call to "$TRUST_ROOT"/env_TRUST.sh"
 source env_TRUST.sh #1>/dev/null 2>&1
@@ -1355,7 +1355,7 @@ do
 	      (
 	       PID=`echo $line | awk '{print $(NF)}'`
 	       adr=`echo $line | awk -F"@" '{print $2}' | awk -F"_" '{print $1}'`
-	       log=`echo $line | awk -F"@" '{print $1}' | awk -F"_" '{print $3}'`
+	       log=`echo $line | awk -F"@" '{print $1}' | awk -F"%" '{print $2}' | awk -F"_" '{print $2}'`
 	       machine=`echo $adr | awk -F"." '{print $1}' | awk -F"-gw" '{print $1}'`
                WORKTMP=`ssh_command 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
 	       echo "  Treatment of $PID on $machine"
@@ -2632,7 +2632,7 @@ do
    #if [ "`grep KO $PROJECT_ROOT/*.log | grep Info_global 2>/dev/null`" != "" ]
    if [ $KO != 0 ]
    then
-      validation_composant=0
+      #validation_composant=0
       if [ -f $nuit_log ]
       then
          echo " " | tee -a tmp.log

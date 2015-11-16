@@ -155,7 +155,11 @@ void Equation_base::completer()
   for(int i=0; i<nb_op; i++)
     operateur(i).completer();
 
-  la_zone_Cl_dis->completer();
+  if (la_zone_Cl_dis.non_nul()) 
+    la_zone_Cl_dis->completer();
+
+  inconnue()->associer_zone_cl_dis(la_zone_Cl_dis);
+
   les_sources.completer();
   schema_temps().completer();
 
@@ -1016,6 +1020,8 @@ void Equation_base::discretiser()
 {
   discretisation().zone_Cl_dis(zone_dis(), la_zone_Cl_dis);
   la_zone_Cl_dis->associer_eqn(*this);
+  la_zone_Cl_dis->associer_inconnue(inconnue());
+
   solveur_masse.typer();
   solveur_masse->associer_zone_dis_base(zone_dis().valeur());
   solveur_masse->associer_zone_cl_dis_base(la_zone_Cl_dis.valeur());

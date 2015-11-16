@@ -1,4 +1,4 @@
-$(TRUST_MEDCOUPLING_ROOT)/env.sh : makefile install.sh MED_SRC.tgz
+$(TRUST_MEDCOUPLING_ROOT)/env.sh : makefile install.sh MED_SRC.tgz $(TRUST_MED_ROOT)/include/med++.h
 	./install.sh
 MED_SRC.tgz:
 	ln -sf $(TRUST_ROOT)/externalpackages/MEDCoupling_Standalone_770.tgz MED_SRC.tgz

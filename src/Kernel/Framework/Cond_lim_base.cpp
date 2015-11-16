@@ -134,7 +134,7 @@ int Cond_lim_base::reculer(double temps)
 // Postcondition:
 int Cond_lim_base::initialiser(double temps)
 {
-  return le_champ_front->initialiser(temps,zone_Cl_dis().equation().inconnue());
+  return le_champ_front->initialiser(temps,zone_Cl_dis().inconnue());
 }
 
 

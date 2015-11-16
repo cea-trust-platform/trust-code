@@ -107,13 +107,17 @@ Lire pb
 	Postraitement
 	{
         	format lata  
-			
+		Definition_champs {
+		p_elem interpolation { localisation ELEM sources {  refChamp { Pb_champ pb pression } } }
+                x    transformation { methode formule expression 1 x sources_reference { p_elem }  }
+}	
 		Champs dt_post 2.
 			{
-			vitesse elem
+			vitesse faces
 			viscosite_turbulente elem
 			viscosite_turbulente som
 			pression elem
+			x
 			}
 		}
 	}

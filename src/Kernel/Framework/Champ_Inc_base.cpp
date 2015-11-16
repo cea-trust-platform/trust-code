@@ -1124,4 +1124,30 @@ void Champ_Inc_base::associer_eqn(const Equation_base& eqn)
   MorEqn::associer_eqn(eqn);
 }
 
+void Champ_Inc_base::associer_zone_cl_dis(const Zone_Cl_dis& zcl)
+{
+  ma_zone_cl_dis=zcl;
+}
 
+const Zone_Cl_dis& Champ_Inc_base::zone_Cl_dis() const
+{
+  if (!ma_zone_cl_dis.non_nul())
+    {
+      Cerr << "There is no object of type Zone_Cl_dis associated to the field of type " << que_suis_je() << finl;
+      exit();
+    }
+
+  return ma_zone_cl_dis.valeur();
+}
+
+Zone_Cl_dis& Champ_Inc_base::zone_Cl_dis()
+{
+  if (!ma_zone_cl_dis.non_nul())
+    {
+      Cerr << "There is no object of type Zone_Cl_dis associated to the field of type " << que_suis_je() << finl;
+      Cerr << "This means that the problem has not been discretized" << finl;
+      exit();
+    }
+
+  return ma_zone_cl_dis.valeur();
+}

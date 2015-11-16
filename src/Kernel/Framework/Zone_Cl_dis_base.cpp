@@ -649,3 +649,23 @@ const Cond_lim& Zone_Cl_dis_base::la_cl_de_la_face(int num_face) const
     }
   return les_conditions_limites_[i];
 }
+
+void Zone_Cl_dis_base::nommer(const Nom& un_nom)
+{
+  nom_ = un_nom;
+}
+
+void Zone_Cl_dis_base::associer_inconnue(const Champ_Inc& inco)
+{
+  mon_inconnue=inco;
+}
+
+const Champ_Inc& Zone_Cl_dis_base::inconnue() const
+{
+  return mon_inconnue;
+}
+
+ Champ_Inc& Zone_Cl_dis_base::inconnue()
+{
+  return mon_inconnue;
+}

@@ -1,7 +1,7 @@
 #!/bin/bash
 fichier=$TRUST_ROOT/IHM/.Milieux.html
 # Ecriture du fichier :
-cree_en_tete.ihm > $fichier
+$TRUST_ROOT/bin/IHM/cree_en_tete.ihm > $fichier
 echo "<PRE><HR><h1>Physical caracteristics of some fluids and solids</h1><HR>" >> $fichier
 cd $TRUST_ROOT/doc
 for fic in ../Milieux_reference/*.prop

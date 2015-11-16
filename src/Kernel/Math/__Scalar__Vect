@@ -55,10 +55,12 @@ public:
   void operator+=(const __scalar__);
   void operator-=(const __Scalar__Vect&);
   void operator-=(const __scalar__);
+  void operator*=(const __Scalar__Vect&);
   void operator*= (const __scalar__);
-
 #Pif("__scalar__"=="double")
+  void operator/=(const __Scalar__Vect&);
   void operator/= (const __scalar__); 
+
   // Options par defaut choisies pour compatibilite avec la version precedente
   // Attention: il y avait un echange_espace_virtuel avant, ce n'est pas strictement equivalent
   void abs(Mp_vect_options opt = VECT_ALL_ITEMS);
@@ -857,7 +859,7 @@ __scalar__ local_imin_vect(const __Scalar__Vect & vx, Mp_vect_options opt)
 #Pusemacro(patternVect)( , p_resu = sqrt(p_resu);, "with_resu", "no_any_shape", "without_vx", "without_vy", opt,)
                                         void carre(__Scalar__Vect & resu, Mp_vect_options opt)
 #Pusemacro(patternVect)( , p_resu *= p_resu;, "with_resu", "no_any_shape", "without_vx", "without_vy", opt,)
-                                          void operator_divide(__Scalar__Vect & resu, const __Scalar__Vect & vx, Mp_vect_options opt)
+void operator_divide(__Scalar__Vect & resu, const __Scalar__Vect & vx, Mp_vect_options opt)
 #Pusemacro(patternVect)( , p_resu /= x;, "with_resu", "no_any_shape", "with_vx", "without_vy", opt,)
                                             void operator_inverse(__Scalar__Vect & resu, Mp_vect_options opt)
 #Pusemacro(patternVect)( , p_resu = 1. / p_resu;, "with_resu", "no_any_shape", "without_vx", "without_vy", opt,)
@@ -945,6 +947,10 @@ void __Scalar__Vect::operator-=(const __Scalar__Vect & v)
 {
   operator_sub(*this, v);
 }
+void __Scalar__Vect::operator*=(const __Scalar__Vect & v)
+{
+  operator_multiply(*this, v);
+}
 void __Scalar__Vect::operator+=(const __scalar__ x)
 {
   operator_add(*this, x);
@@ -985,6 +991,10 @@ __scalar__ mp_min_abs_vect(const __Scalar__Vect & x, Mp_vect_options opt)
 void __Scalar__Vect::operator/=(const __scalar__ x)
 {
   operator_divide(*this, x);
+}
+void __Scalar__Vect::operator/=(const __Scalar__Vect & v)
+{
+  operator_divide(*this, v);
 }
 void __Scalar__Vect::abs(Mp_vect_options opt)
 {

@@ -62,6 +62,7 @@ done
 FF=$FF"]"
 #echo $FF
 python -c "from Couv import traite_tout;traite_tout($FF)"
+echo ""
 echo $ECHO_OPTS "Creation du dico Python: \c"
 update_version dico.pkl
 

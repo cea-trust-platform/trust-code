@@ -55,6 +55,7 @@ public:
 
   Evaluateur_VDF(const Evaluateur_VDF& );
   virtual void associer_zones(const Zone_VDF& , const Zone_Cl_VDF& );
+  virtual void associer_porosite(const DoubleVect&);
 
 protected:
 

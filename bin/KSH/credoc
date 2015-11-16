@@ -4,14 +4,15 @@
 ##################################################################
 doxygen()
 {
+   echo "See $TRUST_ROOT/doc/doxygen*.* files"
    rm -r -f $TRUST_ROOT/doc/doxygen*.*
    make_Doxyfile
-   echo "End doxygen at `date '+%H:%M:%S'`";
+   echo "End doxygen at `date '+%H:%M:%S %d/%m'`";
    # Verification des includes avec Doxygen (fait uniquement le vendredi soir)
    if [ "`date '+%u'`" = 5 ]
    then
       cd $TRUST_ROOT/MonoDir$COMM;
-      (echo "Begin check_include at `date '+%H:%M:%S'`";check_include 1>check_include.log 2>&1;echo "End check_include at `date '+%H:%M:%S'`")&
+      (echo "Begin check_include at `date '+%H:%M:%S %d/%m'`";echo "See $TRUST_ROOT/MonoDir$COMM/check_include.log";check_include 1>check_include.log 2>&1;echo "End check_include at `date '+%H:%M:%S %d/%m'`")#&
    fi
 } 
 
@@ -22,7 +23,9 @@ doxygen()
 ##############################################################################
 tests()
 {
-echo "Begin keyword index at `date '+%H:%M:%S'`"
+echo "Begin keyword index at `date '+%H:%M:%S %d/%m'`"
+echo "From $TRUST_ROOT/doc/TRUST/Keywords.txt file"
+echo " and $TRUST_TESTS/Reference directory"
 keywords=$TRUST_ROOT/doc/TRUST/Keywords.txt
 tests=$TRUST_ROOT/doc/TRUST/Tests.txt
 rm -f $tests $TRUST_TMP/motcles
@@ -61,7 +64,8 @@ do
    fi
    echo "</tr>" >> $html
 done
-echo "End keyword index at `date '+%H:%M:%S'`"
+echo "-> Update $TRUST_ROOT/doc/TRUST/Tests.txt file (keywords have test cases)"
+echo "-> Update $TRUST_TMP/motcles file (keywords have NO test cases)"
 echo "</html>" >> $html
 CHECKOUT ${html%.tmp} 1>/dev/null 2>&1
 if [ "`diff $html ${html%.tmp}`" != "" ]
@@ -70,6 +74,8 @@ then
 else
    rm -f $html
 fi
+echo "-> Update $TRUST_TESTS/Reference/index_keywords_tests.html file"
+echo "End keyword index at `date '+%H:%M:%S %d/%m'`"
 }
 
 ihm()
@@ -86,7 +92,7 @@ ihm()
    # $TRUST_ROOT/bin/HTML/cree_Maillages_VDF.html
    # Le fichier des maillages VEF GIBI disponible :
    # $TRUST_ROOT/bin/HTML/cree_Maillages_VEF.html
-   echo "End ihm at `date '+%H:%M:%S'`"
+   echo "End ihm at `date '+%H:%M:%S %d/%m'`"
 }
 
 pdf_par_office()
@@ -102,11 +108,14 @@ pdf_par_office()
 # Desormais toute la documentaion est au format ODP et ODT
 ooffice=/usr/bin/soffice
 formats="odp odt" # Formats supportes
-echo "Start converting documents in pdf format at `date '+%H:%M:%S'`"
+echo "Start converting documents in pdf format at `date '+%H:%M:%S %d/%m'`"
 if [ -f $ooffice ]
 then
    tmp=`mktemp_ -d`
    cd $tmp
+   echo "-> List of *.od* documents"
+   ls -rt $TRUST_ROOT/doc/TRUST/*.od* | grep -v ods 2>/dev/null
+   echo "-> Update *.pdf documents"
    for fichier in `ls -rt $TRUST_ROOT/doc/TRUST/*.od* | grep -v ods 2>/dev/null`
    do
       pdf=$fichier
@@ -139,10 +148,10 @@ then
 	 fi
       fi
    done
-   cd -
+   cd - 1>/dev/null 2>&1
    rm -r -f $tmp
 fi
-echo "End pdf_par_office at `date '+%H:%M:%S'`"
+echo "End pdf_par_office at `date '+%H:%M:%S %d/%m'`"
 }
 
 pdf_par_xdata()
@@ -165,14 +174,14 @@ pdf_par_xdata()
    # make test_ref >> pdf_par_xdata.log
    # Creation de la doc PDF et LATEX
    make doc >> pdf_par_xdata.log
-   cd -
-   echo "End pdf_par_xdata at `date '+%H:%M:%S'`"
+   cd - 1>/dev/null 2>&1
+   echo "End pdf_par_xdata at `date '+%H:%M:%S %d/%m'`"
 }
 
 ###################
 # Debut du script #
 ###################
-echo "Begin credoc at `date '+%H:%M:%S'`"
+echo "Begin credoc at `date '+%H:%M:%S %d/%m'`"
 if [ "$1" = -pdf ]
 then
    pdf_par_office
@@ -184,22 +193,22 @@ then
    tests 
 else
    echo "####################################################"
-   echo "# Begin doxygen at `date '+%H:%M:%S'`"
+   echo "# Begin doxygen at `date '+%H:%M:%S %d/%m'`"
    doxygen
+   #echo "####################################################"
+   #echo "# Begin ihm at `date '+%H:%M:%S'`"
+   #ihm
    echo "####################################################"
-   echo "# Begin ihm at `date '+%H:%M:%S'`"
-   ihm
-   echo "####################################################"
-   echo "# Begin pdf_par_office at `date '+%H:%M:%S'`"
+   echo "# Begin pdf_par_office at `date '+%H:%M:%S %d/%m'`"
    pdf_par_office
    echo "####################################################"
-   echo "# Begin pdf_par_xdata at `date '+%H:%M:%S'`"
+   echo "# Begin pdf_par_xdata at `date '+%H:%M:%S %d/%m'`"
    pdf_par_xdata
    echo "####################################################"
-   echo "# Launch tests at `date '+%H:%M:%S'`"
+   echo "# Launch tests at `date '+%H:%M:%S %d/%m'`"
    # On lance en batch car tests est lent (a optimiser)
    tests &
 fi
 echo "####################################################"
-echo "End credoc at `date '+%H:%M:%S'`"
+echo "End credoc at `date '+%H:%M:%S %d/%m'`"
 echo " "

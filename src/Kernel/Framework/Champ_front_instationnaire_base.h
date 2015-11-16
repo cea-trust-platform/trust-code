@@ -56,6 +56,7 @@ public :
   virtual const DoubleTab& valeurs_au_temps(double temps) const;
   virtual int avancer(double temps);
   virtual int reculer(double temps);
+  virtual void valeurs_face(int,DoubleVect&) const;
 
 protected :
   DoubleTab Gpoint_; // Derivee en temps des valeurs conditons limites

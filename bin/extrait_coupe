@@ -69,7 +69,7 @@ then
       cat $fic_son | $TRUST_Awk -v T=$temps 'BEGIN {last_ecart=10000000000} {if ($1=="#") {print $0} else { ecart=T-$1;if (ecart<0) { ecart=-ecart} ;if (ecart<last_ecart) {print $0;last_ecart=ecart}}}' > $fic_son2
    fi
    tail -$nl $fic_son2 | $TRUST_Awk -v NOM=$NOM -v num=$num -v fic_coupe=$fic -f $TRUST_AWK/Run_coupe_awk
-   #rm $fic_son2
+   rm $fic_son2
    echo "Creation de $DIR/$fic"
 fi 
 rm -f gnuplot/$NOM.courbe*

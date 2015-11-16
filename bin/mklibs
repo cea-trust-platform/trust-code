@@ -51,6 +51,12 @@ then
 	 if [ "$TRUST_DISABLE_MPI" = 1 ]
 	 then
             PETSC=$PETSC" -lmpiseq -lpthread"
+
+	 else
+	     if [ "`grep lmpifort $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ]
+		 then
+		 PETSC=$PETSC" -L\$(MPI_ROOT)/lib -lmpifort "
+	     fi
 	 fi
 	 if [ "`grep lssl $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ]
 	 then

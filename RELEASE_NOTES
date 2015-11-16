@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.2_beta : Enhancements, modifications and corrected bugs since version 1.7.1 :
 -------------------------------------------------------------------------------------------------
+13/11/15 (TRUST)  Portability : Released version of mpich upgrated to 3.1.4
 06/11/15 (TRUST)  Bug fixed   : Diagonal preconditionning is fixed with periodic BC (it is OK for a parallel calculation)
 04/11/15 (TRUST)  Portability : Compiler clang 3.7.0 supported
 04/11/15 (Tools)  Portability : Released version of Gmsh upgrated to 2.10.1
