@@ -5,7 +5,7 @@ Probleme_Convection_Diffusion pb
 
 Domaine dom
 # BEGIN MESH #
-Mesh dom
+mailler dom
 {
 	Pave Plaques
 	{
