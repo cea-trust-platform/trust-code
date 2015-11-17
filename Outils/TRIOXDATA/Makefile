@@ -1,4 +1,4 @@
-IHMTRIO.sh: all Installer  Makefile XDATA.sh XTriou/update_xd
+IHMTRIO.sh:  Installer  Makefile XDATA.sh XTriou/update_xd
 	./Installer TRIOU 1>>TRIOXDATA.log 2>&1
 
 XDATA.sh: Installer Makefile 
@@ -11,4 +11,5 @@ check: IHMTRIO.sh
 clean:
 	@echo "cleaning..."
 	rm -rf XDATA   TRIOU/dist TRIOU/build XDATA.sh IHMTRIO.sh *.log
+	rm -f TRIOU/TRIOU_SRC/src/menu_* TRIOU/TRIOU_SRC/src/test_* TRIOU/TRIOU_SRC/src/triou.py
 	(cd XTriou; make clean)
