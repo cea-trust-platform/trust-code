@@ -34,21 +34,21 @@ VisIt,Imaging-1.1.6.tar.gz,,SV,"voir remarque",http://www.pythonware.com/product
 VisIt,requests-2.5.1.tar.gz,,GF,"?","?",http://portal.nersc.gov/svn/visit/tags/2.9.1/third_party/requests-2.5.1.tar.gz,
 VisIt,seedme-seedme-python-client-0a365da9c861.tar.gz,,GF,"?","?",http://portal.nersc.gov/svn/visit/tags/2.9.1/third_party/seedme-seedme-python-client-0a365da9c861.tar.gz,
 lapack,lapack-3.4.1.tgz,,SV,BSD,http://www.netlib.org/lapack/,http://www.netlib.org/lapack/lapack-3.4.1.tgz,
-petsc,SuiteSparse-4.2.1.tar.gz,,,"voir remarque",http://faculty.cse.tamu.edu/davis/suitesparse.html,http://ftp.mcs.anl.gov/pub/petsc/externalpackages/SuiteSparse-4.2.1.tar.gz,"je ne sais pas quel est le type de licence, on peut voir http://www.netlib.org/linalg/SuiteSparse-README.txt"
+petsc,SuiteSparse-4.4.3.tar.gz,,,"voir remarque",http://faculty.cse.tamu.edu/davis/suitesparse.html,http://ftp.mcs.anl.gov/pub/petsc/externalpackages/SuiteSparse-4.4.3.tar.gz,"je ne sais pas quel est le type de licence, on peut voir http://www.netlib.org/linalg/SuiteSparse-README.txt"
 petsc,ViennaCL-1.5.1.tar.gz,,,"MIT License",http://viennacl.sourceforge.net/,http://downloads.sourceforge.net/project/viennacl/1.5.x/ViennaCL-1.5.1.tar.gz,"Hum option utilisée ????"
 petsc,scotch_6.0.3.tar.gz,,SV," CeCILL-C license",http://scotch.gforge.inria.fr/,https://gforge.inria.fr/frs/download.php/file/34099/scotch_6.0.3.tar.gz,
 petsc,bison-2.7.tar.gz,,SV,"GNU GPL",https://www.gnu.org/software/bison/,http://ftp.gnu.org/gnu/bison/bison-2.7.tar.gz,
 petsc,flex-2.5.37.tar.gz,,SV,"BSD Unix",http://flex.sourceforge.net/,https://sourceforge.net/projects/flex/files/flex-2.5.37.tar.gz/download,"d'après https://sourceforge.net/projects/flex/files/ flex is distributed under a copyright very similar to that of BSD Unix, and not under the GNU General Public License (GPL)"
-petsc,parmetis-4.0.2-p5.tar.gz,,SV+GF,"Freely distributed as described in the FAQ section of the site http://glaros.dtc.umn.edu/gkhome/metis/parmetis/download",http://glaros.dtc.umn.edu/gkhome/metis/parmetis/overview,http://ftp.mcs.anl.gov/pub/petsc/externalpackages/parmetis-4.0.2-p5.tar.gz,"pour la licence (je ne sais pas ce que c'est) voir http://glaros.dtc.umn.edu/gkhome/metis/parmetis/download"
-petsc,superlu_dist_3.3.tar.gz,,GF,BSD,http://www.cs.berkeley.edu/~demmel/SuperLU.html,http://crd-legacy.lbl.gov/~xiaoye/SuperLU/superlu_dist_3.3.tar.gz,
-petsc,hypre-2.9.1a.tar.gz,,GF,LGPL,http://acts.nersc.gov/hypre/,http://ftp.mcs.anl.gov/pub/petsc/externalpackages/hypre-2.9.1a.tar.gz,
+petsc,parmetis-4.0.3-p2.tar.gz,,SV+GF,"Freely distributed as described in the FAQ section of the site http://glaros.dtc.umn.edu/gkhome/metis/parmetis/download",http://glaros.dtc.umn.edu/gkhome/metis/parmetis/overview,http://ftp.mcs.anl.gov/pub/petsc/externalpackages/parmetis-4.0.3-p2.tar.gz,"pour la licence (je ne sais pas ce que c'est) voir http://glaros.dtc.umn.edu/gkhome/metis/parmetis/download"
+petsc,superlu_dist_3.3-p1.tar.gz,,GF,BSD,http://www.cs.berkeley.edu/~demmel/SuperLU.html,http://ftp.mcs.anl.gov/pub/petsc/externalpackages/superlu_dist_3.3-p1.tar.gz,
+petsc,hypre-2.10.0b-p2.tar.gz,,GF,LGPL,http://acts.nersc.gov/hypre/,http://ftp.mcs.anl.gov/pub/petsc/externalpackages/hypre-2.10.0b-p2.tar.gz,
 petsc,cusplibrary-0.4.0.tgz,,SV,"Apache License",http://cusplibrary.github.io/,https://github.com/cusplibrary/cusplibrary/archive/v0.4.0.tar.gz,
-petsc,petsc-3.5.3.tar.gz,,"GF SV",BSD,http://www.mcs.anl.gov/research/projects/petsc/index.html,http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-3.5.3.tar.gz,
-petsc,MUMPS_4.10.0-p3.tar.gz,,GF,CeCILL-C,http://mumps.enseeiht.fr/index.php?page=home,http://ftp.mcs.anl.gov/pub/petsc/externalpackages/MUMPS_4.10.0-p3.tar.gz,
+petsc,petsc-3.5.4.tar.gz,,"GF SV",BSD,http://www.mcs.anl.gov/research/projects/petsc/index.html,http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-3.5.4.tar.gz,
+petsc,MUMPS_5.0.0-p1.tar.gz,,GF,CeCILL-C,http://mumps.enseeiht.fr/index.php?page=home,http://ftp.mcs.anl.gov/pub/petsc/externalpackages/MUMPS_5.0.0-p1.tar.gz,
 petsc,m4-1.4.17.tar.gz,,SV,"GNU GPL",https://www.gnu.org/software/m4/,http://ftp.gnu.org/gnu/m4/m4-1.4.17.tar.gz,
 petsc,scalapack-2.0.2.tgz,,GF,"BSD modified",http://www.netlib.org/scalapack/,http://www.netlib.org/scalapack/scalapack-2.0.2.tgz,
-petsc,metis-5.0.2-p3.tar.gz,,GF,"Freely distributed as described in the FAQ section of the site http://glaros.dtc.umn.edu/gkhome/metis/metis/faq",http://glaros.dtc.umn.edu/gkhome/metis/metis/overview,http://ftp.mcs.anl.gov/pub/petsc/externalpackages/metis-5.0.2-p3.tar.gz,
-petsc,pastix_5.2.2.12.tar.bz2,,GF,"CeCILL-C license",http://pastix.gforge.inria.fr/files/README-txt.html,https://gforge.inria.fr/frs/download.php/file/33841/pastix_5.2.2.12.tar.bz2,
+petsc,metis-5.1.0-p1.tar.gz,,GF,"Freely distributed as described in the FAQ section of the site http://glaros.dtc.umn.edu/gkhome/metis/metis/faq",http://glaros.dtc.umn.edu/gkhome/metis/metis/overview,http://ftp.mcs.anl.gov/pub/petsc/externalpackages/metis-5.1.0-p1.tar.gz,
+petsc,pastix_5.2.2.20.tar.bz2,,GF,"CeCILL-C license",http://pastix.gforge.inria.fr/files/README-txt.html,https://gforge.inria.fr/frs/download.php/file/33841/pastix_5.2.2.20.tar.bz2,
 gnuplot,zlib-1.2.5.tar.gz,,GF,"free zlib/libpng license",http://www.zlib.net/,http://sourceforge.net/projects/libpng/files/zlib/1.2.5/zlib-1.2.5.tar.gz/download,
 gnuplot,gnuplot-4.6.6.tar.gz,outil,AC,specifique,http://gnuplot.sourceforge.net/,http://sourceforge.net/projects/gnuplot/files/gnuplot/4.6.6/gnuplot-4.6.6.tar.gz/download,
 gnuplot,gd-2.0.36RC1.tar.gz,,GF,BSD,http://www.libgd.org/,https://lamefox-linux.googlecode.com/files/gd-2.0.36RC1.tar.gz,"version non trouvable: changer de version"
