@@ -283,8 +283,8 @@ void Solv_Petsc::create_solver(Entree& entree)
         solveur_direct_=4;
         // Umfpack, sequential only but fast...
         KSPSetType(SolveurPetsc_, KSPPREONLY);
-	//more robustness
-	add_option("mat_umfpack_pivot_tolerance","1.0");
+        //more robustness
+        add_option("mat_umfpack_pivot_tolerance","1.0");
         break;
       }
     case 13:
@@ -1570,15 +1570,16 @@ int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
   if (solveur_direct_==1)
     {
       // Message pour prevenir
-      if (message_affi) {
-      Cout << "The LU decomposition of a matrix with ";
-      Cout << "Cholesky from MUMPS may take several minutes, please wait..." << finl;
-      Cout << "If the decomposition fails/crashes cause a lack of memory, then increase the number of CPUs for your calculation" << finl;
-      Cout << "or use Cholesky_out_of_core keyword to write the decomposition on the disk, thus saving memory but with an extra CPU cost during solve." << finl;
-      Cout << "To see the RAM required by the decomposition in the .out file, add impr option to the solver: petsc cholesky { impr }" << finl;
-      Cout << "If an error INFOG(1)=-8|-9|-17|-20 is returned, you can try to increase the ICNTL(14) parameter of MUMPS by using the -mat_mumps_icntl_14 command line option." << finl;
-      message_affi=0;
-      }
+      if (message_affi)
+        {
+          Cout << "The LU decomposition of a matrix with ";
+          Cout << "Cholesky from MUMPS may take several minutes, please wait..." << finl;
+          Cout << "If the decomposition fails/crashes cause a lack of memory, then increase the number of CPUs for your calculation" << finl;
+          Cout << "or use Cholesky_out_of_core keyword to write the decomposition on the disk, thus saving memory but with an extra CPU cost during solve." << finl;
+          Cout << "To see the RAM required by the decomposition in the .out file, add impr option to the solver: petsc cholesky { impr }" << finl;
+          Cout << "If an error INFOG(1)=-8|-9|-17|-20 is returned, you can try to increase the ICNTL(14) parameter of MUMPS by using the -mat_mumps_icntl_14 command line option." << finl;
+          message_affi=0;
+        }
       PCFactorSetMatSolverPackage(PreconditionneurPetsc_, MATSOLVERMUMPS);
     }
   else if (solveur_direct_==2)

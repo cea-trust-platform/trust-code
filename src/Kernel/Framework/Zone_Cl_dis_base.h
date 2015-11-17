@@ -96,11 +96,11 @@ public:
   virtual Champ_Inc& inconnue();
 
 protected:
-  
+
   Nom nom_;
   Conds_lim  les_conditions_limites_;
   Ref_Champ_Inc mon_inconnue;
-  virtual void completer(const Zone_dis& ) = 0;  
+  virtual void completer(const Zone_dis& ) = 0;
 };
 
 inline const Nom& Zone_Cl_dis_base::le_nom() const

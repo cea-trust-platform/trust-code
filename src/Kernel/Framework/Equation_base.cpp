@@ -155,7 +155,7 @@ void Equation_base::completer()
   for(int i=0; i<nb_op; i++)
     operateur(i).completer();
 
-  if (la_zone_Cl_dis.non_nul()) 
+  if (la_zone_Cl_dis.non_nul())
     la_zone_Cl_dis->completer();
 
   inconnue()->associer_zone_cl_dis(la_zone_Cl_dis);

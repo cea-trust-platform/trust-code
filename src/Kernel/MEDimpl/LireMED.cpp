@@ -1855,9 +1855,9 @@ Nom medinfo1champ(const Nom& nom_fic, const char* nomchamp_utilisateur,int& nume
       if (MEDfieldnValue(fid,nomchamp,numdt,numo,type_ent,type_geo)<=0)
         {
           type_ent=MED_NODE;
-	  // type_geo=MED_NONE;
+          // type_geo=MED_NONE;
           if (MEDfieldnValue(fid,nomchamp,numdt,numo,type_ent,type_geo)<=0)
-	    abort();
+            abort();
         }
     }
 #else

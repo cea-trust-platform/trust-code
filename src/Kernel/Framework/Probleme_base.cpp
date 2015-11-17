@@ -215,11 +215,11 @@ void Probleme_base::getOutputFieldsNames(Noms& noms) const
     {
       if (sub_type(Postraitement,postraitements()(i).valeur()))
         {
-	  // LIST(Nom) suite;
+          // LIST(Nom) suite;
           const Liste_Champ_Generique& liste_champ= ref_cast(Postraitement,postraitements()(i).valeur()).champs_post_complet();
           for (int ii=0; ii<liste_champ.size(); ii++)
             noms.add(liste_champ(ii).valeur().get_nom_post() );
-         
+
         }
     }
 }

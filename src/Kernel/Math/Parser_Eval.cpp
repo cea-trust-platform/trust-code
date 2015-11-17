@@ -340,8 +340,8 @@ void Parser_Eval::eval_fct(const DoubleTabs& variables, DoubleTab& val) const
   if (nb_dim==1)
     {
       for (int i=0; i<pos_size; i++)
-        { 
-          for (int ivar=0; ivar<nbvars;ivar++)
+        {
+          for (int ivar=0; ivar<nbvars; ivar++)
             fct.setVar(ivar,variables[ivar](i));
 
           val(i) = fct.eval();
@@ -354,8 +354,8 @@ void Parser_Eval::eval_fct(const DoubleTabs& variables, DoubleTab& val) const
         {
           for(int k=0; k<dim; k++)
             {
-              for (int ivar=0; ivar<nbvars;ivar++)
-                  fct.setVar(ivar,variables[ivar](i,k));
+              for (int ivar=0; ivar<nbvars; ivar++)
+                fct.setVar(ivar,variables[ivar](i,k));
               val(i,k) = fct.eval();
             }
         }

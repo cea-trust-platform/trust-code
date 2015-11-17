@@ -665,7 +665,7 @@ const Champ_Inc& Zone_Cl_dis_base::inconnue() const
   return mon_inconnue;
 }
 
- Champ_Inc& Zone_Cl_dis_base::inconnue()
+Champ_Inc& Zone_Cl_dis_base::inconnue()
 {
   return mon_inconnue;
 }

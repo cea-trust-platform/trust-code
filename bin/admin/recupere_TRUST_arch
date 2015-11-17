@@ -458,13 +458,13 @@ $TD_CR<A HREF="$CR">$HOST</A>$FTD
    [ "$port_cible_all" = 0 ] && mes=""
 
    echo "Portability Components for $TRUST_VERSION version:<BR>" >> $NUIT2
-   echo "<A HREF="nuit_equation_convection_diffusion.html">Tuto</A> : equation_convection_diffusion baltik compilation portability<BR>" >> $NUIT2
-   echo "<A HREF="nuit_ICoCo.html">ICoCo</A> : ICoCo baltik compilation portability<BR>" >> $NUIT2
-   #echo "<A HREF="nuit_basic.html">TRUST</A> : TRUST test baltik portability<BR>" >> $NUIT2
-   echo "<A HREF="nuit_Test_Baltik.html">TRUST</A> : TRUST test baltik portability<BR>" >> $NUIT2
-   echo "<A HREF="nuit_MPCube.html">MPCube</A> : MPCube baltik compilation portability<BR>" >> $NUIT2
-   echo "<A HREF="nuit_TrioCFD.html">TrioCFD</A> : TrioCFD baltik compilation portability<BR>" >> $NUIT2
-   echo "<A HREF="nuit_ModeleCoeur.html">MC2</A> : ModeleCoeur baltik compilation portability<BR>" >> $NUIT2
+   [ -f $REP_NUIT/nuit_equation_convection_diffusion.html ] && echo "<A HREF="nuit_equation_convection_diffusion.html">Tuto</A> : equation_convection_diffusion baltik compilation portability<BR>" >> $NUIT2
+   [ -f $REP_NUIT/nuit_ICoCo.html ] && echo "<A HREF="nuit_ICoCo.html">ICoCo</A> : ICoCo baltik compilation portability<BR>" >> $NUIT2
+   #[ -f $REP_NUIT/nuit_basic.html ] && echo "<A HREF="nuit_basic.html">TRUST</A> : TRUST test baltik portability<BR>" >> $NUIT2
+   [ -f $REP_NUIT/nuit_Test_Baltik.html ] && echo "<A HREF="nuit_Test_Baltik.html">TRUST</A> : TRUST test baltik portability<BR>" >> $NUIT2
+   [ -f $REP_NUIT/nuit_MPCube.html ] && echo "<A HREF="nuit_MPCube.html">MPCube</A> : MPCube baltik compilation portability<BR>" >> $NUIT2
+   [ -f $REP_NUIT/nuit_TrioCFD.html ] && echo "<A HREF="nuit_TrioCFD.html">TrioCFD</A> : TrioCFD baltik compilation portability<BR>" >> $NUIT2
+   [ -f $REP_NUIT/nuit_ModeleCoeur.html ] && echo "<A HREF="nuit_ModeleCoeur.html">MC2</A> : ModeleCoeur baltik compilation portability<BR>" >> $NUIT2
    #echo "Release criteria of the $TRUST_VERSION version:<BR>" >> $NUIT2
    echo "$port_cible_all : Total number portability ( $nb_machine_cible = $nb_machine_total_cible )<BR>" >> $NUIT2
    echo "$port_trust : $MODULE portability ( $portabilite/$nb_machine_cible > $limite ) $mes<BR>" >> $NUIT2

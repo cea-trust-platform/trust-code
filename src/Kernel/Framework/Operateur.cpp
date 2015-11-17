@@ -201,7 +201,7 @@ void Operateur::completer()
   if (!le_champ_inco.non_nul())
     le_champ_inco=mon_equation->inconnue().valeur();
 
-      l_op_base().completer();
+  l_op_base().completer();
 }
 
 void Operateur::associer_champ(const Champ_Inc_base& ch)

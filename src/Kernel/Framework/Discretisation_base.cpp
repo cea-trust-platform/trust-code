@@ -617,23 +617,23 @@ int Discretisation_base::verifie_sous_type(Nom& type, const Nom& sous_type, cons
 {
   const Type_info * base_info = Type_info::type_info_from_name(sous_type);
 
-    if (base_info)
-      {
-        if (base_info->has_base(type)) 
-          {
-            type = sous_type;
-            return 0;
-          }
-        Cerr << "Error in VDF_discretisation::discretiser_champ" << finl;
-        Cerr << sous_type << " is not a sub type of " << type << " for " << que_suis_je() << " discretization";
-        Cerr << "( directive : \""<< directive << "\")"<<finl;
-        exit(); 
-      }
-    else
-      {
-        Cerr << "Error in VDF_discretisation::discretiser_champ" << finl;
-        Cerr << "Unknown class type " << sous_type << finl;
-        exit();                
-      }
+  if (base_info)
+    {
+      if (base_info->has_base(type))
+        {
+          type = sous_type;
+          return 0;
+        }
+      Cerr << "Error in VDF_discretisation::discretiser_champ" << finl;
+      Cerr << sous_type << " is not a sub type of " << type << " for " << que_suis_je() << " discretization";
+      Cerr << "( directive : \""<< directive << "\")"<<finl;
+      exit();
+    }
+  else
+    {
+      Cerr << "Error in VDF_discretisation::discretiser_champ" << finl;
+      Cerr << "Unknown class type " << sous_type << finl;
+      exit();
+    }
   return -1;
 }

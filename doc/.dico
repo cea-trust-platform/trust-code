@@ -654,7 +654,6 @@
  Op_Dift_VEF_Var_P1NC_stab Op_Dift_Stab_VEF_Face_Var Op_Dift_Stab_VEF_Face_Var.h
  Op_Dift_VEF_Var_P1NC_standard Op_Dift_standard_VEF_Face_Var Op_Dift_standard_VEF_Face_Var.h
  Op_Div_EF Op_Div_EF Op_Div_EF.h
- Op_Div_EF_fois_rho Op_Div_EF_fois_rho Op_Div_EF_fois_rho.h
  Op_Div_VDF_base Op_Div_VDF_base Op_Div_VDF_base.h
  Op_Div_VDF_Face Op_Div_VDF_Elem Op_Div_VDF_Elem.h
  Op_Div_VEFPreP1B_P1NC Op_Div_VEFP1B_Elem Op_Div_VEFP1B_Elem.h

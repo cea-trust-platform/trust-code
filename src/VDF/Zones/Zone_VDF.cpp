@@ -522,15 +522,15 @@ void Zone_VDF::genere_aretes()
             if(face_vois(*this, ma_zone, face24, 1) != face_vois(*this, ma_zone, face34, 1))
               {
                 // WARNING : pour les plaques ?
-		/*
-                Cerr << el1 << el2 << " " << el3 << finl;
-                Cerr << face24 << " " << face34 << finl;
-                Cerr << face_vois(*this, ma_zone, face24, 1) << " " << face_vois(*this, ma_zone, face34, 1) << finl;
-		*/
+                /*
+                            Cerr << el1 << el2 << " " << el3 << finl;
+                            Cerr << face24 << " " << face34 << finl;
+                            Cerr << face_vois(*this, ma_zone, face24, 1) << " " << face_vois(*this, ma_zone, face34, 1) << finl;
+                */
                 el4=max(face_vois(*this, ma_zone, face24, 1),face_vois(*this, ma_zone, face34, 1));
                 //Cerr << el4 << finl;
-		
-		Cerr<<"arete special "<<finl;
+
+                Cerr<<"arete special "<<finl;
               }
             //assert(face_vois(*this, la_zone, face24, 1) == face_vois(*this, la_zone, face34, 1));
             else
@@ -587,12 +587,12 @@ void Zone_VDF::genere_aretes()
                 else // arete mixte
                   {
                     face34=elem_faces(el4, gauche(dir));
-		    if  (face_vois(*this, ma_zone, face34, 0)==-1)
+                    if  (face_vois(*this, ma_zone, face34, 0)==-1)
 
-                    les_aretes.affecter(nb_aretes_, dir, mixte, nb_f,
-                                        face13, face24, face34, face12);
-		    else
-		      Cerr<<" find again arete special"<<finl;
+                      les_aretes.affecter(nb_aretes_, dir, mixte, nb_f,
+                                          face13, face24, face34, face12);
+                    else
+                      Cerr<<" find again arete special"<<finl;
                   }
               }
             else // arete coin

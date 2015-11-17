@@ -748,20 +748,20 @@ void Probleme_U::setInputField(const Nom& name, const TrioField& afield)
 
 void Probleme_U::getOutputField(const Nom& name,  TrioField& afield) const
 {
-  
+
   REF(Champ_Generique_base) ref_ch=findOutputField(name);
   if (!ref_ch.non_nul())
     throw WrongArgument(le_nom().getChar(),"getOutputField",name.getChar(),"no output field of that name");
 
   const Champ_Generique_base& ch = ref_ch.valeur();
-  
+
   Domaine dom;
   ch.get_copy_domain(dom);
 
   Champ espace_stockage;
   const Champ_base& champ_ecriture = ch.get_champ(espace_stockage);
   const DoubleTab& values = champ_ecriture.valeurs();
-  
+
   Entity loc=ch.get_localisation();
   if (loc==NODE)
     //if (values.dimension_tot(0)==coord.dimension_tot(0))

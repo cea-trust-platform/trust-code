@@ -261,7 +261,7 @@ void mon_main::dowork(const Nom& nom_du_cas)
     SFichier ficstop( nomfic );
     ficstop << "Running..."<<finl;
   }
-  
+
   //---------------------------------------------//
   // Chargement des modules : //
   // on ne les charges que pour le cas nul, pour verifier avec valgrind
@@ -332,7 +332,7 @@ void mon_main::dowork(const Nom& nom_du_cas)
   {
     SFichier ficstop ( nomfic);
     ficstop  << "Finished correctly"<<finl;
-  }    
+  }
   //  end_stat_counters();
 }
 

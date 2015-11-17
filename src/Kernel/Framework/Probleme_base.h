@@ -101,7 +101,7 @@ public:
 
   virtual void getInputFieldsNames(Noms& noms) const;
   virtual void getOutputFieldsNames(Noms& noms) const;
-  
+
   // interface Probleme_U
 
   virtual int postraiter(int force=1);

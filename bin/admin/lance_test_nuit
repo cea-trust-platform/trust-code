@@ -422,13 +422,13 @@ echo>>$liste_log
 # qt-everywhere-opensource-src-4.8.3 sans doc (taille passe de 685M a 352M)
 # med-3.0.7 sans doc et sans python (taille passe de 162M a 19M)
 # osu-micro-benchmarks-3.8 version initiale non retrouvee
-nb_error=`grep "FAILED" $liste_log | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.0.7 | grep -v osu-micro-benchmarks-3.8 | wc -l`
+nb_error=`grep "FAILED" $liste_log | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.1.0 | grep -v osu-micro-benchmarks-3.8 | wc -l`
 if [ $nb_error != 0 ]
 then
    # qt-everywhere-opensource-src-4.8.3 sans doc (taille passe de 685M a 352M)
    # med-3.0.7 sans doc et sans python (taille passe de 162M a 19M)
    # osu-micro-benchmarks-3.8 version initiale non retrouvee
-   liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.0.7 | grep -v osu-micro-benchmarks-3.8`
+   liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.1.0 | grep -v osu-micro-benchmarks-3.8`
    cd Test
    rm -r -f old new
    for package in $liste_failed
@@ -1370,6 +1370,7 @@ do
 	 rm -f start.liste stop.liste kill.liste
       else
          echo "  => OK: portability is finished"
+	 cp nuit_$Composant.html $REP_NUIT/nuit_$Composant.html
       fi 
    fi
 done

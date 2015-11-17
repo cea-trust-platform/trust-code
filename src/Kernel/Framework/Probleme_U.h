@@ -73,7 +73,7 @@ public :
   virtual void getOutputFieldsNames(Noms& noms) const;
   virtual void getOutputField(const Nom& nameField, ICoCo::TrioField& afield) const;
 
-  
+
 
   // Complements a l'API de Problem
 

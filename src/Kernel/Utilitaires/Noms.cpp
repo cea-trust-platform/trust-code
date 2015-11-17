@@ -84,9 +84,9 @@ int Noms::search_without_checking_Motcle(const Nom& t ) const
     {
       const Nom& unnom=operator()(i);
       if (unnom.getString().compare(t)==0)
-      {
-        return i;
-      }
+        {
+          return i;
+        }
     }
   return -1;
 }

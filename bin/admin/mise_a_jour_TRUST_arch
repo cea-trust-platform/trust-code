@@ -748,7 +748,7 @@ do
 	 # Ajout de Canal_perio_VDF_3D_Keps pour discretisation VDF
 	 echo PETSC_ThHyd_2D_VEF_Ostwald >> liste_cherche && echo FTD_instab2D >> liste_cherche && echo Canal_perio_VDF_3D_Keps >> liste_cherche 
 	 # Autres ajouts
-	 echo cpu_3D >> liste_cherche #& echo PETSC_VDF >> liste_cherche && echo PETSC_VEF >> liste_cherche
+	 echo cpu_3D >> liste_cherche & echo PETSC_VDF >> liste_cherche && echo PETSC_VEF >> liste_cherche
 	 echo VAHL_DAVIS >> liste_cherche && echo upwind >> liste_cherche && echo Cx >> liste_cherche 
 	 # Test outils Gmsh et VisIt
 	 echo Kernel_Gmsh2Trio_U >> liste_cherche && echo Extrait_plan >> liste_cherche

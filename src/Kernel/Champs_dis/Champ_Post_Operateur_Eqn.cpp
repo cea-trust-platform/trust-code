@@ -159,7 +159,7 @@ const Champ_base& Champ_Post_Operateur_Eqn::get_champ(Champ& espace_stockage) co
       Cerr<<"error in Champ_Post_Operateur_Eqn::get_champ"<<finl;
       exit();
 
-   }
+    }
   int nb_comp=ref_eq_.valeur().inconnue().valeur().nb_comp();
   ref_eq_.valeur().discretisation().discretiser_champ(directive,ref_eq_->zone_dis().valeur(),"oooo","unit", nb_comp,temps,espace_stockage_fonc);
   espace_stockage=espace_stockage_fonc;

@@ -1621,7 +1621,7 @@ void IntVect::operator-=(const IntVect& v)
 {
   operator_sub(*this, v);
 }
-void IntVect::operator*=(const IntVect & v)
+void IntVect::operator*=(const IntVect& v)
 {
   operator_multiply(*this, v);
 }

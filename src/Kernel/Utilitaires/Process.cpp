@@ -198,10 +198,10 @@ void Process::exit(const Nom& message ,int i)
       Nom nomfic( Objet_U::nom_du_cas() );
       nomfic += ".stop";
       {
-	SFichier ficstop( nomfic );
-	ficstop <<message<<finl;
+        SFichier ficstop( nomfic );
+        ficstop <<message<<finl;
       }
-  
+
     }
   Journal() << message << finl;
   if (exception_sur_exit)

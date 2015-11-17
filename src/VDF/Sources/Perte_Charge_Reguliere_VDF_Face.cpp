@@ -119,19 +119,19 @@ void Perte_Charge_Reguliere_VDF_Face::remplir_num_faces(Nom& nom_sous_zone)
               face_associee = elem_faces(num_poly,dir_a_faire+dimension);
               int num_poly_vois1 = face_voisins(face_associee,1);
               if (num_poly_vois1 != -1)
-		{
-                if (num_loc[num_poly_vois1] == -1)  // le poly voisin n'est pas dans la sous_zone
-                  {
-                    num_faces[nfac++] = face_associee;
-                    for (int ifa=0; ifa<dimension; ifa++) xv_(ifa) = xv(face_associee,ifa) ;
-                    corr_front_ss[nfac-1] *= correction_direction( xv_, dir_a_faire);
-                    corr_front_ss[nfac-1] *= volumes(num_poly)/(volumes(num_poly)+volumes(num_poly_vois1)) ;
-                  }
-		}
-	      else 
-		{
-		  num_faces[nfac++]=face_associee;
-		}
+                {
+                  if (num_loc[num_poly_vois1] == -1)  // le poly voisin n'est pas dans la sous_zone
+                    {
+                      num_faces[nfac++] = face_associee;
+                      for (int ifa=0; ifa<dimension; ifa++) xv_(ifa) = xv(face_associee,ifa) ;
+                      corr_front_ss[nfac-1] *= correction_direction( xv_, dir_a_faire);
+                      corr_front_ss[nfac-1] *= volumes(num_poly)/(volumes(num_poly)+volumes(num_poly_vois1)) ;
+                    }
+                }
+              else
+                {
+                  num_faces[nfac++]=face_associee;
+                }
             }
         }
     }
