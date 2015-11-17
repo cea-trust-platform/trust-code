@@ -64,7 +64,7 @@ check_src_in_gc()
    ############
    # Git checks
    ############
-   $TRUST_ROOT/bin/GIT/check_sources.sh ; erreur $?
+   $TRUST_ROOT/bin/GIT/check_sources_GIT.sh ; erreur $?
 }
 
 check_recent_src()
