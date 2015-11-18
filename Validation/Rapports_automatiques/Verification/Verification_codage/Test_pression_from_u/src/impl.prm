@@ -1,0 +1,187 @@
+parametres {
+	titre "pression sortie  dependant de la vitesse moyenne"
+	auteur "G.F."
+	casTest . first /* jdd */
+	casTest . second /* jdd */
+	inclureData 1
+}
+Chapitre {
+	titre Cas avec champ_front_from_u
+	# definition figure 0
+	Figure {
+		titre "Tracé de la pression de sortie  au cours du temps"
+		labelX "s"
+		labelY "Pa"
+		inclureDescCourbes 0
+		width  12cm
+		Courbe {
+			legende "first.out1"
+			fichier first.out1
+			colonnes ($3) ($7)
+			style linespoints
+		}
+		Courbe {
+			legende "first.out2"
+			fichier first.out2
+			colonnes ($3) ($7)
+			style linespoints
+		}
+	}
+	# definition figure 1
+	Figure {
+		titre "Tracé de la pression de sortie  au cours du temps"
+		rangeX 0 2
+		labelX "s"
+		labelY "Pa"
+		inclureDescCourbes 0
+		width  12cm
+		Courbe {
+			legende "first.out1"
+			fichier first.out1
+			colonnes ($3) ($7)
+			style linespoints
+		}
+		Courbe {
+			legende "first.out2"
+			fichier first.out2
+			colonnes ($3) ($7)
+			style linespoints
+		}
+	}
+	# definition figure 2
+	Figure {
+		titre "Tracé de la vitesse moyenne de sortie  au cours du temps"
+		labelX "s"
+		labelY u_moy
+		inclureDescCourbes 0
+		width  12cm
+		Courbe {
+			legende "first.out1"
+			fichier first.out1
+			colonnes ($3) ($5)
+			style linespoints
+		}
+		Courbe {
+			legende "first.out2"
+			fichier first.out2
+			colonnes ($3) ($5)
+			style linespoints
+		}
+	}
+	# definition figure 3
+	Figure {
+		titre "Tracé de la vitesse moyenne de sortie  au cours du temps"
+		rangeX 0 2
+		labelX "s"
+		labelY u_moy
+		inclureDescCourbes 0
+		width  12cm
+		Courbe {
+			legende "first.out1"
+			fichier first.out1
+			colonnes ($3) ($5)
+			style linespoints
+		}
+		Courbe {
+			legende "first.out2"
+			fichier first.out2
+			colonnes ($3) ($5)
+			style linespoints
+		}
+	}
+  Visu 
+	{
+
+	vector first.lata DOM_DOM VITESSE ELEM
+}	
+}
+Chapitre {
+	titre Cas avec perte charge singulier
+	# definition figure 0
+	Figure {
+		titre "Tracé de la pression de sortie  au cours du temps"
+		labelX "s"
+		labelY "Pa"
+		inclureDescCourbes 0
+		width  12cm
+		Courbe {
+			legende "second.out1"
+			fichier second.out1
+			colonnes ($3) ($7)
+			style linespoints
+		}
+		Courbe {
+			legende "second.out2"
+			fichier second.out2
+			colonnes ($3) ($7)
+			style linespoints
+		}
+	}
+	# definition figure 1
+	Figure {
+		titre "Tracé de la pression de sortie  au cours du temps"
+		rangeX 0 2
+		labelX "s"
+		labelY "Pa"
+		inclureDescCourbes 0
+		width  12cm
+		Courbe {
+			legende "second.out1"
+			fichier second.out1
+			colonnes ($3) ($7)
+			style linespoints
+		}
+		Courbe {
+			legende "second.out2"
+			fichier second.out2
+			colonnes ($3) ($7)
+			style linespoints
+		}
+	}
+	# definition figure 2
+	Figure {
+		titre "Tracé de la vitesse moyenne de sortie  au cours du temps"
+		labelX "s"
+		labelY u_moy
+		inclureDescCourbes 0
+		width  12cm
+		Courbe {
+			legende "second.out1"
+			fichier second.out1
+			colonnes ($3) ($5)
+			style linespoints
+		}
+		Courbe {
+			legende "second.out2"
+			fichier second.out2
+			colonnes ($3) ($5)
+			style linespoints
+		}
+	}
+	# definition figure 3
+	Figure {
+		titre "Tracé de la vitesse moyenne de sortie  au cours du temps"
+		rangeX 0 2
+		labelX "s"
+		labelY u_moy
+		inclureDescCourbes 0
+		width  12cm
+		Courbe {
+			legende "second.out1"
+			fichier second.out1
+			colonnes ($3) ($5)
+			style linespoints
+		}
+		Courbe {
+			legende "second.out2"
+			fichier second.out2
+			colonnes ($3) ($5)
+			style linespoints
+		}
+	}
+  Visu 
+	{
+
+	vector second.lata DOM_DOM VITESSE ELEM
+}	
+}

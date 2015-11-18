@@ -25,6 +25,7 @@
 #define Champ_front_normal_included
 
 #include <Ch_front_var_instationnaire_dep.h>
+#include <Parser_U.h>
 //.DESCRIPTION  class Champ_front_normal
 //
 
@@ -39,7 +40,7 @@ public:
 
 protected :
 
-  double vit_norm;
+  Parser_U vit_norm;
 
 };
 

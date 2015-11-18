@@ -7,6 +7,7 @@ Parameters {
 	TestCase .  test_opt2.data
 	TestCase .  test_opt3.data
 	TestCase .  Champ_front_debit.data
+	TestCase .  champ_normal_var.data
 }
 Chapter {
 	Title "VEF test: calculated flow rate "
@@ -39,6 +40,14 @@ Chapter {
 			nb_columns_file 6
 		}
 		line {
+			legend calcul avec  Boundary_field_inward variable
+			alias champ_normal_var
+			file champ_normal_var_pb_Debit.out
+			last_line
+			columns $1 (-$5)
+			nb_columns_file 6
+		}
+		line {
 			legend voulu
 			alias voulu
 			origin jdd
@@ -66,6 +75,11 @@ Chapter {
 		width 10cm
 		Curve {
 			file test_opt3_pb_Debit.out
+			columns 1 (-$5)
+			style linespoints
+		}
+		Curve {
+			file champ_normal_var_pb_Debit.out
 			columns 1 (-$5)
 			style linespoints
 		}

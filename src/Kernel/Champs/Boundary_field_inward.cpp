@@ -24,7 +24,8 @@
 #include <Motcle.h>
 #include <Zone_VF.h>
 #include <Linear_algebra_tools.h>
-
+#include <Parser_U.h>
+#include <EChaine.h>
 
 Implemente_instanciable(Boundary_field_inward,"Boundary_field_inward",Champ_front_normal);
 
@@ -55,7 +56,12 @@ int Boundary_field_inward::initialiser(double tps, const Champ_Inc_base& inco)
 {
   if( !Champ_front_normal::initialiser(tps,inco) )
     return 0;
+  mettre_a_jour(tps);
+  return 1;
+}
 
+void Boundary_field_inward::mettre_a_jour(double tps)
+{
   const Zone_VF& zone_VF = ref_cast(Zone_VF,zone_dis());
   const Front_VF& le_bord= ref_cast(Front_VF,frontiere_dis());
   int first=le_bord.num_premiere_face();
@@ -63,6 +69,10 @@ int Boundary_field_inward::initialiser(double tps, const Champ_Inc_base& inco)
   int nb_cases=les_valeurs->nb_cases();
 
   DoubleTab tab_normal_vector(le_bord.nb_faces(),dimension);
+
+  // Evaluation de vit_norm:
+  vit_norm.setVar("t",tps);
+  double value = vit_norm.eval();
 
   for(int i=0; i<le_bord.nb_faces(); i++)
     {
@@ -84,13 +94,11 @@ int Boundary_field_inward::initialiser(double tps, const Champ_Inc_base& inco)
           for(int j=0; j<dimension; j++)
             {
               tab(i,j)=tab_normal_vector(i,j);
-              tab(i,j)*=vit_norm;
+              tab(i,j)*=value;
             }
         }
     }
-  return 1;
 }
-
 
 // Obsolete soon:
 Implemente_instanciable(Champ_front_normal_VEF,"Champ_front_normal_VEF",Boundary_field_inward);
@@ -112,8 +120,12 @@ Entree& Champ_front_normal_VEF::readOn(Entree& is)
       Cerr << "We expected " << les_mots[0] << " instead of " << motlu << finl;
       exit();
     }
-
-  is >> vit_norm;
-  fixer_nb_comp(dimension);
+  Nom debit;
+  is >> debit;
+  Nom exp("{ normal_value ");
+  exp+=debit;
+  exp+=" } ";
+  EChaine E(exp);
+  return Boundary_field_inward::readOn(E);
   return is;
 }

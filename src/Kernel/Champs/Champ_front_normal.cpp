@@ -39,10 +39,17 @@ Sortie& Champ_front_normal::printOn(Sortie& os) const
 
 Entree& Champ_front_normal::readOn(Entree& is)
 {
+  Nom expr_vit_norm;
+
   Param param(que_suis_je());
-  param.ajouter("normal_value", &vit_norm);
+  param.ajouter("normal_value", &expr_vit_norm);
   param.lire_avec_accolades(is);
   fixer_nb_comp(dimension);
+
+  vit_norm.setNbVar(1);
+  vit_norm.addVar("t");
+  vit_norm.setString(expr_vit_norm);
+  vit_norm.parseString();
   return is;
 }
 
