@@ -33,7 +33,7 @@ Reordonner_faces_periodiques dom PerioZ
 # BEGIN PARTITION
 Partition dom
 {
-        Partitionneur metis { Nb_parts 2 }
+        Partitionneur metis { Nb_parts 3 }
         Larg_joint 2
 	periodique 2 PerioX PerioZ
         Nom_Zones DOM
