@@ -298,15 +298,15 @@ void Zone_Cl_EF::remplir_type_elem_Cl(const Zone_EF& la_zone_EF)
                     }
 
                   //Cerr<<" vv"<< v<<" "<<norme_array(t1)<<" "<<norm_n<<finl;
-                  if (norme_array(t1)/s>1e-4)
+                  if (norme_array(t1)>(1e-4*sqrt(s)))
                     {
                       t1/=norme_array(t1);
                       //	    Cerr<<som<<" on doit annuler une deuxieme direction "<<t1(0) << " " <<t1(1)<<" "<<t1(dimension==3?2:1)<<finl;
                       f=nbf;
-                    }
-                  for (int d=0; d<dimension; d++)
-                    normales_symetrie_bis_.valeur().valeurs()(som,d)=t1(d);
-                  //assert(v==0);
+		      for (int d=0; d<dimension; d++)
+			normales_symetrie_bis_.valeur().valeurs()(som,d)=t1(d);
+		      //assert(v==0);
+		    }
 
                 }
               for (int f=0; f<nbf; f++)
@@ -323,10 +323,11 @@ void Zone_Cl_EF::remplir_type_elem_Cl(const Zone_EF& la_zone_EF)
                     }
                   for (int d=0; d<dimension; d++)
                     t2(d)=face_normales(face,d)-n(d)*prod-t1(d)*prod1;
-                  if (norme_array(t2)/s>1e-4)
+                  
+                  if (norme_array(t2)>(1e-4*sqrt(s)))
                     {
                       t2/=norme_array(t2);
-                      Cerr<<som<<" on doit annuler une troiseme direction"<<t2(0) << " " <<t2(1)<<" "<<t2(2)<<finl;
+                      Cerr<<face<<" "<<nbf<<" sommet "<<som<<" "<<norme_array(t2)/s<<" on doit annuler une troiseme direction"<<t2(0) << " " <<t2(1)<<" "<<t2(2)<<finl;
                       Cerr<<som<<" "<<t1(0) << " " <<t1(1)<<" "<<t1(2)<<finl;
                       Cerr<<som<<" "<<n(0) << " " <<n(1)<<" "<<n(2)<<finl;
                       f=nbf;
