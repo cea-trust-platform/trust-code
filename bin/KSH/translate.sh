@@ -35,6 +35,7 @@ do
    #motcle='grep -i \"$french\" $MonoDir/src/*.cpp $MonoDir/include/*.h | grep -v "typer(" | grep -e "\.ajouter(" -e "if (" -e _instanciable'
    motcle='find $TRUST_ROOT/src -name '*'.cpp -or -name '*'.h | xargs  grep -i \"$french\" | grep -v "typer(" | grep -e "\.ajouter(" -e "if (" -e _instanciable'
    keyword=`find $TRUST_ROOT/src -name '*'.cpp | xargs grep -i -e \"$french\" -e \"$french\|  | grep _instanciable`
+   
    if [ "$keyword" != "" ] || [ $english = end ]
    then
       # First letter is upper for some keywords (interpretors):
@@ -43,6 +44,10 @@ do
       english=$English
       french=`upper $french`
    fi
+   if  [ $english = End ]
+       then
+       continue
+       fi
    #instanciable='grep -i -e "_"$french"_" -e "_"$french\" -e \"$french"_" $MonoDir/src/*.cpp $MonoDir/include/*.h | grep -i "_instanciable"'
    instanciable=""
    nb_motcle=`eval $motcle | wc -l`
@@ -54,7 +59,7 @@ do
       echo "--------------------------------------------"
       if [ "$nb_instanciable" = 1 ]
       then
-	 echo "-> Several files found for keyword=$french :"
+	 echo "-> Several files found for instance=$french :"
 	 for file in `eval $instanciable | awk -F":" '{print $1}' | sort -u`
 	 do       
 	    echo "-> File `basename $file` found for keyword=$french :"
@@ -71,15 +76,45 @@ do
 	 for file in `eval $motcle | awk -F":" '{print $1}' | sort -u`
 	 do
 	    echo `basename $file`
-	    sed "s/\""$french"\"/\""$french"|"$english"\"/I" $file > $tmp
+	    # on essaye d'abord les majuscules (pour les motcles)
+	    FR=`echo $french  | awk '{print toupper($1)}'`
+	    EN=`echo $english | awk '{print toupper($1)}'`
+
+	    sed "s/\""$FR"\"/\""$FR"|"$EN"\"/" $file > $tmp
+	    sed "s/\""$french"\"/\""$french"|"$english"\"/I" -i $tmp
             diff $file $tmp 
+
 	    [ $fix = -fix_sources ] && cat $tmp > $file
 	 done
       fi
    fi
 done
 echo
-echo "Return to see data files now or enter -fix_sources to fix the sources:"
+echo "Return to see xdata  or enter -fix_sources to fix the sources:"
+read return
+[ "$return" != "" ] && $0 $return
+
+
+
+echo "xdata updated ? "
+xd=$TRUST_ROOT/Outils/TRIOXDATA/XTriou/TRAD_2
+cat $xd > $tmp
+for french in `cat $dictionary | awk -F"|" '{print $2}'`
+do
+   english=`awk -F"|" -v french=$french '($2==french) {print $1}' $dictionary`
+   ligne=`grep "attr $french " -i $tmp`
+   if [ "$ligne" != "" ]
+       then
+       #set -xv
+       #ligne2=`echo $ligne | awk -v eng=$english '{gsub($2,$2"|"eng,$2);print $0}'`
+       
+       sed "s?attr $french ?attr $french|$english ?" -i $tmp
+   fi
+done
+diff $xd $tmp
+[ $fix = -fix_xdata ] && cat $tmp > $xd
+
+echo "Return to see data files now or enter -fix_xdata to fix xdata:"
 read return
 [ "$return" != "" ] && $0 $return
 # Data files
@@ -96,7 +131,7 @@ echo "s/DEBUT LECTURE/BEGIN SCATTER/" >> $translation
 echo "s/FIN LECTURE/END SCATTER/" >> $translation
 # Add translation french -> english
 awk -F"|" '{print "s/\\([ \\t]\\)"$2"\\([ \\t]\\)/\\1"$1"\\2/I\ns/^"$2"\\([ \\t]\\)/"$1"\\1/I\ns/\\([ \\t]\\)"$2"$/\\1"$1"/I\ns/^"$2"$/"$1"/I"}' $dictionary >> $translation || exit -1
-#nedit $translation
+nedit $translation
 
 # If data files not given, parse recursively the data files...
 if [ "$files" = "" ]
@@ -112,7 +147,7 @@ do
    do
       if [ -f $file ]
       then
-	 CHECKOUT $file 1>/dev/null 2>&1
+	 # CHECKOUT $file 1>/dev/null 2>&1
 	 sed -f $translation $file > $tmp
 	 if [ "`diff $file $tmp`" != "" ]
 	 then
