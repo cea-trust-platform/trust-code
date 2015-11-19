@@ -134,6 +134,7 @@ void generate_defaut(const Matrice_Base& matrice, const double& seuil, Sortie& s
 {
   Nom impr(" impr " );
   if (limpr==0) impr=" ";
+  if (limpr==-1) impr=" quiet ";
   if (Process::je_suis_maitre())
     {
       if((!sub_type(Matrice_Morse_Sym,matrice))&&(!sub_type(Matrice_Bloc,matrice)))
@@ -283,16 +284,20 @@ Sortie& Solv_Optimal::printOn(Sortie& s ) const
 
 Entree& Solv_Optimal::readOn(Entree& is )
 {
-  int impr;
+  int impr,quiet;
   Param param((*this).que_suis_je());
   param.ajouter("seuil",&seuil_,Param::REQUIRED); // seuil de resolution
   param.ajouter_flag("impr",&impr); // active impression des solveurs
+  param.ajouter_flag("quiet",&quiet);
   param.ajouter_flag("save_matrice",&save_matrice_); // pour sauvegarder A,x,b
   param.ajouter("frequence_recalc",&freq_recalc_); // frequence pour reevaluer le solveur optimal
   param.ajouter("nom_fichier_solveur",&fichier_solveur_); //nom du fichier contenant les solveurs testes
   param.ajouter_flag("fichier_solveur_non_recree",&fichier_solveur_non_recree_); //  si flag mis alors le fichier n'est pas cree au debut du calcul
   param.lire_avec_accolades_depuis(is);
   fixer_limpr(impr);
+  if (quiet)
+    fixer_limpr(-1);
+
   return is;
 }
 
@@ -334,6 +339,13 @@ void Solv_Optimal::prepare_resol(const Matrice_Base& matrice, const DoubleVect& 
       Cout <<"Best solver : number "<<numero_best<<" "<<le_solveur_<<finl;
       Cout <<"Best CPU time = "<<temps(0)<<finl;
       Cout <<"------------------------------------------------"<<finl;
+      if (je_suis_maitre())
+        {
+          Nom best("best_");
+          best+=fichier_solveur_;
+          SFichier sf(best);
+          sf << le_solveur_ <<finl;
+        }
     }
 }
 int Solv_Optimal::resoudre_systeme(const Matrice_Base& matrice, const DoubleVect& secmem, DoubleVect& solution)

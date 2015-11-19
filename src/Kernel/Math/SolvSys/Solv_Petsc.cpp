@@ -183,7 +183,8 @@ void Solv_Petsc::create_solver(Entree& entree)
               }
           }
         // Pour faciliter le debugage:
-        fixer_limpr(1); // On imprime le residu si CLI
+        if (limpr()>-1)
+          fixer_limpr(1); // On imprime le residu si CLI
         add_option("ksp_view","");
         add_option("options_table","");
         add_option("options_left","");
@@ -329,7 +330,7 @@ void Solv_Petsc::create_solver(Entree& entree)
   if (motlu==accolade_ouverte)
     {
       // Temporaire essayer de faire converger les noms de parametres des differentes solveurs (GCP, GMRES,...)
-      Motcles les_parametres_solveur(16);
+      Motcles les_parametres_solveur(17);
       {
         les_parametres_solveur[0] = "impr";
         les_parametres_solveur[1] = "seuil";
@@ -347,6 +348,7 @@ void Solv_Petsc::create_solver(Entree& entree)
         les_parametres_solveur[13] = "nb_cpus";
         les_parametres_solveur[14] = "divtol";
         les_parametres_solveur[15] = "save_matrice|save_matrix";
+        les_parametres_solveur[16] = "quiet";
       }
       option_double omega("omega",1.5);
       option_int    level("level",1);
@@ -359,6 +361,11 @@ void Solv_Petsc::create_solver(Entree& entree)
         {
           switch(les_parametres_solveur.search(motlu))
             {
+            case 16:
+              {
+                fixer_limpr(-1);
+                break;
+              }
             case 0:
               {
                 fixer_limpr(1);
@@ -534,7 +541,8 @@ void Solv_Petsc::create_solver(Entree& entree)
                       }
                   }
                 // Pour faciliter le debugage:
-                fixer_limpr(1); // On imprime le residu si CLI
+                if (limpr()>-1)
+                  fixer_limpr(1); // On imprime le residu si CLI
                 add_option("ksp_view","");
                 add_option("options_table","");
                 add_option("options_left","");
@@ -1261,7 +1269,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
   // Affichage par MyKSPMonitor
   if (!solveur_direct_)
     {
-      if (limpr())
+      if (limpr()==1)
         KSPMonitorSet(SolveurPetsc_, MyKSPMonitor, PETSC_NULL, PETSC_NULL);
       else
         KSPMonitorCancel(SolveurPetsc_);
@@ -1330,7 +1338,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
   int nbiter;
   KSPGetIterationNumber(SolveurPetsc_, &nbiter);
 
-  if (limpr())
+  if (limpr()>-1)
     {
       // MyKSPMonitor ne marche pas pour certains solveurs (residu(0) n'est pas calcule):
       if (solveur_direct_ || type_ksp_==KSPIBCGS)
@@ -1351,7 +1359,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
         }
       // Affichage residu final absolu et (relatif)
       double residu_relatif=(residu(0)>0?residu(nbiter)/residu(0):residu(nbiter));
-      Cout << finl << "Final residue: " << residu(nbiter) << " ( " << residu_relatif << " )";
+      Cout << finl << "Final residue: " << residu(nbiter) << " ( " << residu_relatif << " )"<<finl;
     }
   return nbiter;
 #else
@@ -1529,7 +1537,8 @@ int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
           MatDestroy(&MatricePetscComplete);
         }
     }
-  Cerr << "Order of the PETSc matrix : " << nb_rows_tot_ << " (~ " << (petsc_cpus_selection_?int(nb_rows_tot_/petsc_nb_cpus_):nb_rows_) << " unknowns per PETSc process )" << finl;
+  if (limpr()==1)
+    Cerr << "Order of the PETSc matrix : " << nb_rows_tot_ << " (~ " << (petsc_cpus_selection_?int(nb_rows_tot_/petsc_nb_cpus_):nb_rows_) << " unknowns per PETSc process )" << finl;
   /* Seems petsc_decide=1 have no interest. On PETSC_GCP with n=2 (20000cell/n), the ratio is 99%-101% and petsc_decide is slower
   Even with n=9, ratio is 97%-103%, and petsc_decide is slower by 10%. Better load balance but increased MPI cost and lower convergence...
   Hope it will be better with GPU

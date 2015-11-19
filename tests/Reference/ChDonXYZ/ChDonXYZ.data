@@ -76,7 +76,7 @@ Lire pb
 {
         Navier_Stokes_standard
         {
-                solveur_pression Cholesky {   }
+                solveur_pression Cholesky { quiet  }
                 convection { amont }
                 diffusion { }
                 sources { boussinesq_temperature { T0 0. } }

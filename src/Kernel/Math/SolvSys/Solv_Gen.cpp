@@ -44,8 +44,10 @@ void Solv_Gen::reinit()
 Sortie& Solv_Gen::printOn(Sortie& s ) const
 {
   s<<" { seuil "<<seuil_<< " solv_elem "<<le_solveur_elem_ << " precond "<< le_precond_;
-  if (limpr())
+  if (limpr()==1)
     s<< " impr ";
+  if (limpr()==-1)
+    s<< " quiet ";
   s <<" } ";
   return s ;
 }
@@ -54,13 +56,14 @@ Entree& Solv_Gen::readOn(Entree& is )
 {
   Motcle accolade_ouverte("{");
   Motcle accolade_fermee("}");
-  Motcles les_parametres(5);
+  Motcles les_parametres(6);
   {
     les_parametres[0] = "seuil";
     les_parametres[1] = "impr";
     les_parametres[2] = "solv_elem";
     les_parametres[3] = "precond";
     les_parametres[4] = "save_matrice";
+    les_parametres[5] = "quiet";
   }
   int rang;
 
@@ -102,6 +105,11 @@ Entree& Solv_Gen::readOn(Entree& is )
         case 4:
           {
             save_matrice_=1;
+            break;
+          }
+        case 5:
+          {
+            fixer_limpr(-1);
             break;
           }
         default :
@@ -352,7 +360,7 @@ int Solv_Gen::solve(const Matrice_Base& matrice,
           return(-1);
         }
       ret = ipar[0];
-      if(limpr())
+      if(limpr()==1)
         {
           // Cerr<<"++ Cas : "<<ret<<finl;
           //Cerr<<"fpar(5) -- current residual norm (if available) : "<<fpar[4]<<finl;
@@ -366,7 +374,8 @@ int Solv_Gen::solve(const Matrice_Base& matrice,
     {
 
       //      Cerr<<"--------------------------------------------------"<<finl;
-      Cout<<finl<<"End of the resolution by SolvGen after "<<niter <<" iterations, current residual/error norm "<<fpar[5]<<" initial residual/error norm "<<fpar[2]<<finl;
+      if (limpr()>-1)
+        Cout<<finl<<"End of the resolution by SolvGen after "<<niter <<" iterations, current residual/error norm "<<fpar[5]<<" initial residual/error norm "<<fpar[2]<<finl;
       //Cerr<<"fpar(3) -- initial residual/error norm : "<<fpar[2]<<finl;
       //Cerr<<"fpar(4) -- target residual/error norm : "<<fpar[3]<<finl;
       //Cerr<<"fpar(5) -- current residual norm (if available) : "<<fpar[4]<<finl;
