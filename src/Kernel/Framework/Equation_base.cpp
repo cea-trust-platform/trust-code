@@ -23,6 +23,8 @@
 #include <Equation_base.h>
 #include <Milieu_base.h>
 #include <Operateur_base.h>
+#include <Operateur_Conv_base.h>
+#include <Operateur_Diff_base.h>
 #include <Operateur.h>
 #include <Avanc.h>
 #include <Debog.h>
@@ -1524,21 +1526,17 @@ double Equation_base::calculer_pas_de_temps() const
                   Cout << " " << finl;
                   Cout << "Printing of the time steps for the equation: " << que_suis_je() << finl;
                 }
-              switch(i)
-                {
-                case 0:
-                  {
-                    Cout << "   diffusive time step : " << dt_op_bak[i] << finl;
-                    break;
-                  }
-                case 1:
-                  {
-                    Cout << "   convective time step : " << dt_op_bak[i] << finl;
-                    break;
-                  }
-                default :
-                  break;
-                }
+	      const Operateur_base& op=operateur(i).l_op_base();
+	      if (sub_type(Operateur_Conv_base,op))
+		  Cout << "   convective";
+	      else
+		{
+		  if (sub_type(Operateur_Diff_base,op))
+		    Cout <<  "   diffusive";
+		  else
+		    Cout <<  "   operator ";
+		}
+	      Cout<<" time step : "<< dt_op_bak[i] << finl;
             }
           dt_op_bak[i]=dt_op;
         }
