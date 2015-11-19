@@ -737,7 +737,9 @@ champ_front_normal_vef front_field_base champ_front_normal_vef 0 Field to define
   attr mot chaine(into=["valeur_normale"]) mot 0 Name of vector field.
   attr vit_tan floattant vit_tan 0 normal vector value (positive value for a vector oriented outside to inside).
 boundary_field_inward front_field_base boundary_field_inward 1 not_set
-  attr normal_value floattant normal_value 0 not_set
+  attr normal_value chaine normal_value 0 not_set
+champ_front_pression_from_u front_field_base champ_front_pression_from_u 0 not_set
+  attr expression chaine expression 0 not_set
 champ_front_debit front_field_base champ_front_debit 0 This field is used to define a flow rate field instead of a velocity field for a Dirichlet boundary condition on Navier Stokes equation in VEF discretization.
   attr ch front_field_base ch 0 field (champ_uniforme) to define the flow rate.
 milieu_base objet_u milieu_base -1 Basic class for medium (physics properties of medium).
