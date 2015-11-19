@@ -403,7 +403,7 @@ avttriofieldFileFormat::GetMesh(int domain, const char *meshname)
 
       ugrid->Allocate(ncells);
       for (i = 0; i < ncells; i++) {
-	/*
+	
 	if (type_cell==VTK_QUAD) {
 	  // Nodes order is different in visit than in trio_u
 	  verts[0]=conn(i,0);
@@ -420,52 +420,13 @@ avttriofieldFileFormat::GetMesh(int domain, const char *meshname)
 	  verts[5]=conn(i,5);
 	  verts[6]=conn(i,7);
 	  verts[7]=conn(i,6);
-	} else if (type_cell==VTK_CONVEX_POINT_SET) {
-	  int nverts_loc=nverts;
-	  for (int j = 0; j < nverts; j++) 
-	    {
-	      verts[j] = conn(i,j);
-	     
-	      if (verts[j]==-1)
-		{  
-		  nverts_loc=j; 
-		  break;
-		}    
-	    }
-	  int  nb_som_max_to_regularize=0;
-	  if (filter_.get_options().regularize_polyedre!=0)
-	    {
-	      nb_som_max_to_regularize=8;
-	      if (filter_.get_options().regularize_polyedre==-1)
-		  nb_som_max_to_regularize=32000;
-	    }
-	  if ((nb_som_max_to_regularize>=6) && (nverts_loc==6))
-	    ugrid->InsertNextCell(VTK_WEDGE, nverts_loc, verts);
-	  else if ((nb_som_max_to_regularize>=12)&&(nverts_loc==12))
-	    ugrid->InsertNextCell(VTK_HEXAGONAL_PRISM, nverts_loc, verts);
-	  else if ((nb_som_max_to_regularize>=8)&&(nverts_loc==8))
-	    {
-	      	  // Nodes order is different in visit than in trio_u
-	      verts[0]=conn(i,0);
-	      verts[1]=conn(i,1);
-	      verts[2]=conn(i,3);
-	      verts[3]=conn(i,2);
-	      verts[4]=conn(i,4);
-	      verts[5]=conn(i,5);
-	      verts[6]=conn(i,7);
-	      verts[7]=conn(i,6);
-	      ugrid->InsertNextCell(VTK_HEXAHEDRON, nverts_loc, verts);
-	       
-	    }
-	  else
-	    ugrid->InsertNextCell(type_cell, nverts_loc, verts);
-	}
-	*/
-	 {
+	} 
+	else
+	  {
 	  
-	  for (int j = 0; j < nverts; j++) 
-	    verts[j] = conn(i,j);
-	}    
+	    for (int j = 0; j < nverts; j++) 
+	      verts[j] = conn(i,j);
+	  }    
 	 //	if (type_cell!=VTK_CONVEX_POINT_SET)	  
 	 
 	  ugrid->InsertNextCell(type_cell, nverts, verts);

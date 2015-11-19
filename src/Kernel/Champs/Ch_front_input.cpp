@@ -101,16 +101,6 @@ void Ch_front_input::getTemplate(TrioField& afield) const
   afield._connectivity=new int[faces.size()];
   // Cerr<<" ici "<<faces.max()<< " "<<sommets.dimension(0)<<finl;
   memcpy(afield._connectivity,faces.addr(),faces.size()*sizeof(int));
-  if (faces.dimension(1)==4)
-    {
-      //    exit();
-      for (int f=0; f<faces.dimension(0); f++)
-        {
-          *(afield._connectivity+f*4+2)=faces(f,3);
-          *(afield._connectivity+f*4+3)=faces(f,2);
-
-        }
-    }
 }
 
 // Description

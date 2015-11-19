@@ -151,16 +151,6 @@ void Ch_front_input_P1::getTemplate(TrioField& afield) const
   assert (sizeof(int)==sizeof(int));
   afield._connectivity=new int[faces.size()];
   memcpy(afield._connectivity,faces.addr(),faces.size()*sizeof(int));
-  if (faces.dimension(1)==4)
-    {
-      //    exit();
-      for (int f=0; f<faces.dimension(0); f++)
-        {
-          *(afield._connectivity+f*4+2)=faces(f,3);
-          *(afield._connectivity+f*4+3)=faces(f,2);
-
-        }
-    }
 
 }
 
