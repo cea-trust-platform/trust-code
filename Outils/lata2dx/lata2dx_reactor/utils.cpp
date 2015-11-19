@@ -8,7 +8,7 @@
 using namespace std;
 
 /* Functions that help code developpement */
-string IntToString(int i)
+string IntToString2(int i)
 {
   stringstream s;
   s << i;

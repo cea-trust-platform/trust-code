@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include "reactor.h"
 #include "component_builder.h"
-extern string IntToString(int);
+extern string IntToString2(int);
 extern char* c_string(const string&);
 extern string extract_label(const string&);
 extern string delete_label(const string&);
@@ -365,15 +365,15 @@ void building_criterion::build_parsers()
 
   for (unsigned int i=0; i<size; i++)
     {
-      String parser_String( c_string(vector_of_parsers_string_[i]) );
-      parsers_[i] = new Parser(parser_String,6);
+      String2 parser_String2( c_string(vector_of_parsers_string_[i]) );
+      parsers_[i] = new Parser(parser_String2,6);
       parsers_[i]->addVar( c_string("x") );
       parsers_[i]->addVar( c_string("y") );
       parsers_[i]->addVar( c_string("z") );
       parsers_[i]->addVar( c_string("r") );
       parsers_[i]->addVar( c_string("theta") );
       parsers_[i]->addVar( c_string("phi") );
-      parsers_[i]->parseString();
+      parsers_[i]->parseString2();
     }
 }
 

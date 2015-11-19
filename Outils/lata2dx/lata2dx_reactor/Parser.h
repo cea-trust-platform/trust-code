@@ -2,7 +2,7 @@
 #ifndef Parser_inclus
 #define Parser_inclus
 
-#include "String.h"
+#include "String2.h"
 #include "StringTokenizer.h"
 #include "Stack.h"
 #include "PNode.h"
@@ -24,21 +24,21 @@ Parser();
 /**
 * Construit un objet Parser avec une chaine specifiee et un nb max de variables a indiquer avec la methode addVar.
 */
-Parser(String&,int n =1);
+Parser(String2&,int n =1);
 
 
 /**
 * Construit l'arbre correspondant a la chaine de caracteres. Cet arbre doit etre construit une seule fois et la chaine de caractere est evaluee en parcourant cet arbre par la methode eval() autant de fois qu'on le souhaite.
 */
-void parseString();
+void parseString2();
 
 
 /**
-* Sert a evaluer l'expression mathematique correspondante a la chaine de caracteres. Poru cela il faut avant toute chose construire l'arbre par la methode parseString(). 
+* Sert a evaluer l'expression mathematique correspondante a la chaine de caracteres. Poru cela il faut avant toute chose construire l'arbre par la methode parseString2(). 
 */double eval();
 
 /**
-* Fixe la valeur de la variable representee par une chaine String v.
+* Fixe la valeur de la variable representee par une chaine String2 v.
 */
 void setVar(char* sv, double val);
 
@@ -67,7 +67,7 @@ double evalFunc(PNode*);
 void parserState0(StringTokenizer*,Stack<PNode*>* ,Stack<int>*);
 void parserState1(StringTokenizer*,Stack<PNode*>* ,Stack<int>*);
 void parserState2(StringTokenizer*,Stack<PNode*>* ,Stack<int>*);
-int searchVar(const String&v);
+int searchVar(const String2&v);
 
 
 int state;
@@ -100,7 +100,7 @@ static const char* SQRT_;
 static const char* ABS_;     
 
 PNode* root;
-String* str;
+String2* str;
 Variable** les_var;
 int maxvar,ivar;
 };
