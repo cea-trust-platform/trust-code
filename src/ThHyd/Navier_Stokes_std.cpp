@@ -979,6 +979,9 @@ void Navier_Stokes_std::projeter()
           solv_iteratif& solv_iter=ref_cast(solv_iteratif,solveur_pression_.valeur());
           solv_iter.set_seuil(normal_seuil);
         }
+      divergence.calculer(la_vitesse.valeurs(),divergence_U.valeurs());
+      divergence_U.valeurs()=0.;  // on remet les bons flux bords
+
     }
   projection_initiale = 0;
 }
@@ -1047,8 +1050,6 @@ int Navier_Stokes_std::preparer_calcul()
   gradient.calculer(la_pression.valeurs(), gradient_P.valeurs());
   gradient_P.changer_temps(temps);
 
-  divergence_U.valeurs()=0.;
-  divergence_U.changer_temps(temps);
 
   Debog::verifier("Navier_Stokes_std::preparer_calcul, la_pression av projeter", la_pression.valeurs());
   if (projection_a_faire())
@@ -1056,6 +1057,18 @@ int Navier_Stokes_std::preparer_calcul()
       Cerr << "Projection of initial and boundaries conditions " << finl;
       projeter();
     }
+  else
+    {
+      divergence.calculer(la_vitesse.valeurs(),divergence_U.valeurs());
+      divergence_U.valeurs()=0.;  // on remet les bons flux bords
+    }
+  divergence_U.changer_temps(temps);
+
+
+  // Au cas ou une cl de pression depend de u que l'on vient de modifier
+  la_zone_Cl_dis->mettre_a_jour(temps);
+  gradient.calculer(la_pression.valeurs(), gradient_P.valeurs());
+
   Debog::verifier("Navier_Stokes_std::preparer_calcul, la_pression ap projeter", la_pression.valeurs());
 
   // Initialisation du champ de pression (resolution de Laplacien(P)=0 avec les conditions limites en pression)
@@ -1098,6 +1111,9 @@ int Navier_Stokes_std::preparer_calcul()
         operator_add(la_pression.valeurs(), inc_pre, VECT_ALL_ITEMS);
 
         gradient.calculer(la_pression.valeurs(),gradient_P.valeurs());
+
+        divergence.calculer(la_vitesse.valeurs(),divergence_U.valeurs());
+        divergence_U.valeurs()=0.;  // on remet les bons flux bords pour div
       }
   calculer_la_pression_en_pa();
 

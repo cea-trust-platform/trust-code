@@ -133,13 +133,15 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
     {
       /* Surface algorithm */
       algo=1;
-      if (zvf.dimension!=3)
-        {
-          Cerr << "Error in Perte_Charge_Singuliere::lire_surfaces" << finl;
-          Cerr << "The keyword " << method << " specified for plan definition is only possible in 3D !" << finl;
-          Cerr << "You must used the method of intersection between subzone and location of plane." << finl;
-          Process::exit();
-        }
+      /*
+            if (zvf.dimension!=3)
+              {
+                Cerr << "Error in Perte_Charge_Singuliere::lire_surfaces" << finl;
+                Cerr << "The keyword " << method << " specified for plan definition is only possible in 3D !" << finl;
+                Cerr << "You must used the method of intersection between subzone and location of plane." << finl;
+                Process::exit();
+              }
+      */
       if (!zone_dis.que_suis_je().debute_par("Zone_VEF"))
         {
           Cerr << "Error in Perte_Charge_Singuliere::lire_surfaces" << finl;
@@ -221,7 +223,10 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
         {
           // Fill elem_list_vol by elements surrounding the center of gravity
           ArrOfInt elem_list_vol;
-          octree_vol.rang_elems_sommet(elem_list_vol,xv2D(ind_face,0),xv2D(ind_face,1),xv2D(ind_face,2));
+          double zv2d=0;
+          if (Objet_U::dimension>2)
+            zv2d=xv2D(ind_face,2);
+          octree_vol.rang_elems_sommet(elem_list_vol,xv2D(ind_face,0),xv2D(ind_face,1),zv2d);
           int nb_elem_vol = elem_list_vol.size_array();
           // Loop on elements on the volume domain
           for (int ind_elem=0; ind_elem<nb_elem_vol; ind_elem++)
@@ -239,13 +244,19 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
                       int numso = face_sommets(numfa,k);
                       double xcoord_vol=coord_sommets(numso,0);
                       double ycoord_vol=coord_sommets(numso,1);
-                      double zcoord_vol=coord_sommets(numso,2);
+                      //double zcoord_vol=coord_sommets(numso,2);
+                      double  zcoord_vol=0;
+                      if (Objet_U::dimension>2)
+                        zcoord_vol=coord_sommets(numso,2);
+
                       for (int i=0; i<nse2D ; i++)
                         {
                           int numso2D = zone_2D.sommet_elem(ind_face,i);
                           double xcoord_2D=coord_sommets_2D(numso2D,0);
                           double ycoord_2D=coord_sommets_2D(numso2D,1);
-                          double zcoord_2D=coord_sommets_2D(numso2D,2);
+                          double zcoord_2D=0;
+                          if (Objet_U::dimension>2)
+                            zcoord_2D=coord_sommets_2D(numso2D,2);
                           if ( est_egal(xcoord_vol,xcoord_2D)
                                && est_egal(ycoord_vol,ycoord_2D)
                                && est_egal(zcoord_vol,zcoord_2D))
@@ -255,7 +266,7 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
                             }
                         }
                     }
-                  if (coincide==3)
+                  if (coincide==nse2D)
                     {
                       bool trouve=0;
                       for (int i=0; i<compteur ; i++)

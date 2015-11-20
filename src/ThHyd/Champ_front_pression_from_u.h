@@ -14,35 +14,44 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Boundary_field_inward.h
-// Directory:   $TRUST_ROOT/src/Kernel/Champs
-// Version:     /main/6
+// File:        Champ_front_pression_from_u.h
+// Directory:   $TRUST_ROOT/src/ThHyd
+// Version:     /main/3
 //
 //////////////////////////////////////////////////////////////////////////////
 
+// .NOM champ_front_normal : Champ a la frontiere uniforme normal
+// .ENTETE Trio_U VEF/Champs
+// .LIBRAIRIE libchvef
+// .FILE Champ_front_pression_from_u.h
+// .FILE Champ_front_pression_from_u.cpp
 
-#ifndef Boundary_field_inward_included
-#define Boundary_field_inward_included
+#ifndef Champ_front_pression_from_u_included
+#define Champ_front_pression_from_u_included
 
-#include <Champ_front_normal.h>
-//.DESCRIPTION  class Boundary_field_inward
+#include <Ch_front_var_instationnaire_dep.h>
+#include <Ref_Champ_Inc_base.h>
+#include <Parser_U.h>
+
+//.DESCRIPTION  class Champ_front_pression_from_u
 //
+// Classe derivee de Champ_front_base qui represente les
+// champs aux frontieres normaux :
 
+//.SECTION voir aussi
+// Champ_front_base
 
-class Boundary_field_inward : public Champ_front_normal
+class Champ_front_pression_from_u : public Ch_front_var_instationnaire_dep
 {
-  Declare_instanciable(Boundary_field_inward);
+  Declare_instanciable(Champ_front_pression_from_u);
 
 public:
 
-  int initialiser(double tps, const Champ_Inc_base& inco);
-  void mettre_a_jour(double tps);
-};
-
-// Obsolete class to support old Champ_front_normal_VEF syntax...
-class Champ_front_normal_VEF : public Boundary_field_inward
-{
-  Declare_instanciable(Champ_front_normal_VEF);
+  virtual int initialiser(double temps, const Champ_Inc_base& inco);
+  void mettre_a_jour(double temps) ;
+protected:
+  REF(Champ_Inc_base) ref_inco_;
+  Parser_U fonction_;
 };
 
 #endif

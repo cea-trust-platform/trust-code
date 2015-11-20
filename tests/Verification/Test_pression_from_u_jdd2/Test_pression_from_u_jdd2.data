@@ -1,0 +1,124 @@
+# TEST pression sortie fonction de u moyen #
+# PARALLEL OK 8 #
+
+dimension 3
+
+Pb_Hydraulique pb
+
+Domaine DOM_DOM
+# DEBUT MAILLAGE #
+Read_unsupported_ASCII_file_from_ICEM DOM_DOM  trio_DOM_geo.asc
+VerifierCoin DOM_DOM { }
+# FIN MAILLAGE #
+# DEBUT DECOUPAGE
+
+
+Decouper DOM_DOM
+{
+        Partitionneur tranche { tranches 8 1 1 }
+        Larg_joint 2
+        Nom_Zones DOM
+}
+Fin
+FIN DECOUPAGE #
+
+
+# DEBUT LECTURE 
+Scatter DOM.Zones DOM_DOM
+FIN LECTURE #
+
+
+
+
+VEFPreP1B dis
+
+Schema_Euler_implicite sch
+Lire sch
+{
+        tinit 0.0
+	nb_pas_dt_max 3
+        tmax  20
+        dt_start dt_fixe 1.e-5
+        dt_max 1.5
+        dt_impr 0.00001
+        dt_sauv 1000.
+        seuil_statio 1.e-8
+        facsec  5. 
+        periode_sauvegarde_securite_en_heures 5
+        solveur implicite
+        {
+	solveur gmres { diag seuil 1e-20 impr nb_it_max 3 }
+        }
+}
+
+Fluide_Incompressible fluide
+Lire fluide
+{
+        mu Champ_Uniforme 1 1.e-5
+        rho Champ_Uniforme 1 2
+}
+
+Associer pb DOM_DOM
+Associer pb sch
+Associer pb fluide
+lire dis { P0 P1 cl_pression_sommet_faible 0 changement_de_base_P1bulle 1 }
+
+Discretiser pb dis
+
+Lire pb
+{
+        Navier_Stokes_standard
+        {
+                solveur_pression petsc cholesky {  }
+                convection { amont }
+                diffusion { }
+                conditions_initiales {
+                        vitesse Champ_Uniforme 3 0. 0.5 1
+                                        }
+	sources 
+	{
+		 Perte_Charge_Singuliere KY 1e0 { Surface DOM_DOM_boundaries_out1 } ,
+	Perte_Charge_Singuliere KY 2e0 { Surface DOM_DOM_boundaries_out2 }
+}	
+                conditions_limites {
+                        in frontiere_ouverte_vitesse_imposee
+                                champ_front_Uniforme 3 0. 0.5 0.0
+                        out1 frontiere_ouverte_pression_imposee
+                                Champ_front_pression_from_u 0
+                        out2 frontiere_ouverte_pression_imposee
+                                Champ_front_pression_from_u 0
+                        wall symetrie
+                                        }
+        }
+        Postraitement
+        {
+	Definition_champs
+{
+
+	 pdc1 operateur_eqn
+                        {
+                                sources { refchamp { pb_champ pb vitesse } }
+                                numero_source 0
+                        }
+ pdc2 operateur_eqn
+                        {
+                                sources { refchamp { pb_champ pb vitesse } }
+                                numero_source 1
+                        }
+}
+                Format lml
+                Champs binaire dt_post 10.
+                       {
+                        pression_pa elem
+                        gradient_pression elem
+                        vitesse elem
+                       }
+        }
+Sauvegarde_simple binaire TEST_CL.sauv
+
+}
+
+Resoudre pb
+Fin
+
+
