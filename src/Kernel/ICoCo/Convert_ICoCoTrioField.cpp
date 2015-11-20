@@ -82,24 +82,6 @@ ICoCo::TrioField build_ICoCoField(const std::string& name,const Domaine& dom,  c
   //ch.get_copy_connectivity(ELEMENT,NODE,les_elems);
   affecte_int_avec_inttab(&afield._connectivity,les_elems);
 
-  if (les_elems.dimension(1)==4)
-    {
-      for (int f=0; f<les_elems.dimension_tot(0); f++)
-        {
-          afield._connectivity[f*4+2]=les_elems(f,3);
-          afield._connectivity[f*4+3]=les_elems(f,2);
-        }
-    }
-  if (les_elems.dimension(1)==8)
-    {
-      for (int f=0; f<les_elems.dimension_tot(0); f++)
-        {
-          afield._connectivity[f*8+2]=les_elems(f,3);
-          afield._connectivity[f*8+3]=les_elems(f,2);
-          afield._connectivity[f*8+6]=les_elems(f,7);
-          afield._connectivity[f*8+7]=les_elems(f,6);
-        }
-    }
   afield._nodes_per_elem=les_elems.dimension(1);
   afield._nb_elems=les_elems.dimension(0);
 
@@ -233,15 +215,42 @@ MEDField build_medfield(TrioField& triofield)
   int *conn(new int[triofield._nodes_per_elem]);
   for (int i=0; i<triofield._nb_elems; i++)
     {
+
       for(int j=0; j<triofield._nodes_per_elem; j++)
         {
           conn[j]=triofield._connectivity[i*triofield._nodes_per_elem+j];
+        }
+      if (elemtype==INTERP_KERNEL::NORM_QUAD4)
+        {
+          // dans trio pas la meme numerotation
+          int tmp=conn[3];
+          conn[3]=conn[2];
+          conn[2]=tmp;
+        }
+      if (elemtype==INTERP_KERNEL::NORM_HEXA8)
+        {
+          // dans trio pas la meme numerotation
+          int tmp=conn[3];
+          conn[3]=conn[2];
+          conn[2]=tmp;
+          tmp=conn[7];
+          conn[7]=conn[6];
+          conn[6]=tmp;
         }
       mesh->insertNextCell(elemtype,triofield._nodes_per_elem,conn);
     }
   delete [] conn;
   mesh->finishInsertingCells();
   //
+
+
+  std::vector<int> cells;
+  mesh->checkButterflyCells(cells);
+  if (!cells.empty())
+    {
+      cerr<<" cells are butterflyed "<<cells[0]<<endl;
+      Process::exit();
+    }
   //field on the sending end
   int nb_case=triofield.nb_values();
   if (triofield._type==0)
@@ -283,6 +292,8 @@ MEDField build_medfield(TrioField& triofield)
 MEDField build_medfield_from_champ_base(const Champ_base& ch)
 {
   TrioField fl =  buildTrioField_from_champ_base(ch);
+
+
   return build_medfield(fl);
 }
 

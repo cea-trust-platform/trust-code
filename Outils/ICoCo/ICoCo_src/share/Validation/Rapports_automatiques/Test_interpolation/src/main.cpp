@@ -102,12 +102,12 @@ void init_quad(TrioField& champ_quad,int is_master)
       champ_quad._connectivity=new int[champ_quad._nb_elems*champ_quad._nodes_per_elem];
       champ_quad._connectivity[0*champ_quad._nodes_per_elem+0]=0;
       champ_quad._connectivity[0*champ_quad._nodes_per_elem+1]=1;
-      champ_quad._connectivity[0*champ_quad._nodes_per_elem+2]=3;
-      champ_quad._connectivity[0*champ_quad._nodes_per_elem+3]=2;
+      champ_quad._connectivity[0*champ_quad._nodes_per_elem+2]=2;
+      champ_quad._connectivity[0*champ_quad._nodes_per_elem+3]=3;
       champ_quad._connectivity[1*champ_quad._nodes_per_elem+0]=4;
       champ_quad._connectivity[1*champ_quad._nodes_per_elem+1]=5;
-      champ_quad._connectivity[1*champ_quad._nodes_per_elem+2]=7;
-      champ_quad._connectivity[1*champ_quad._nodes_per_elem+3]=6;
+      champ_quad._connectivity[1*champ_quad._nodes_per_elem+2]=6;
+      champ_quad._connectivity[1*champ_quad._nodes_per_elem+3]=7;
       
     }
   else
