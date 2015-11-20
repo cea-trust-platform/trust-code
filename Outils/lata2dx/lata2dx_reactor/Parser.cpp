@@ -2,7 +2,7 @@
 #include <iostream>
 #include <math.h>
 #include "PNode.h"
-#include "String.h"
+#include "String2.h"
 #include "StringTokenizer.h"
 #include "Parser.h"
 #include "Stack.h"
@@ -44,18 +44,18 @@ Parser::Parser()
 cerr << "bponjour" << endl;
 state=0;
 root=NULL;
-str=new String((char*)"0");
+str=new String2((char*)"0");
 maxvar=1;
 ivar=0;
 les_var = new Variable*[maxvar];
 }
 
 
-Parser::Parser(String& s,int n)
+Parser::Parser(String2& s,int n)
 {
 state=0;
 root=NULL;
-str=new String(s);
+str=new String2(s);
 maxvar=n;
 ivar=0;
 les_var = new Variable*[maxvar];
@@ -84,7 +84,7 @@ delete [] les_var;
 }
 
 	
-void Parser::parseString()
+void Parser::parseString2()
 {
 Stack<PNode*>* st_ob = new Stack<PNode*>(20);
 Stack<int>* st_op = new Stack<int>(20);
@@ -319,7 +319,7 @@ if (tokenizer->type == StringTokenizer::STRING)
 		}
 	else
 		{
-		const String & func = tokenizer->getSValue();
+		const String2 & func = tokenizer->getSValue();
 		if (func.compare(COS_) == 0)
 			{
 			op->push(COS);
@@ -403,7 +403,7 @@ if (tokenizer->type == StringTokenizer::STRING)
 		}
 	else
 		{
-		const String & func = tokenizer->getSValue();
+		const String2 & func = tokenizer->getSValue();
 		if (func.compare(COS_) == 0)
 			{
 			op->push(COS);
@@ -650,8 +650,8 @@ else
 
 void Parser::setVar(char * sv, double val)
 	{
-	//cerr << " Dans Parser::setVar(const String& v, double val " << endl;
-	String v(sv);
+	//cerr << " Dans Parser::setVar(const String2& v, double val " << endl;
+	String2 v(sv);
 	int i = searchVar(v);
 	if (i>-1) les_var[i]->setValue(val);
 	else
@@ -682,10 +682,10 @@ void Parser::addVar(char *vv)
 		}
 	}
 	
-int Parser::searchVar(const String&v) 
+int Parser::searchVar(const String2&v) 
 {
 for (int i=0;i<ivar;i++)
-	if (les_var[i]->getString().compare(v) == 0 ) return i;
+	if (les_var[i]->getString2().compare(v) == 0 ) return i;
 return -1;
 }
 

@@ -1,7 +1,7 @@
 #include "StringTokenizer.h"
 #include <iostream>
-#include "String.h"
-#include <strstream>
+#include "String2.h"
+#include <sstream>
 #include <string.h>
 #include <stdlib.h>
 using namespace std;
@@ -14,26 +14,26 @@ StringTokenizer::StringTokenizer()
 {
 //cerr << "bonjour" << endl;
 sval =NULL;
-str = new String((char*)"0");
+str = new String2((char*)"0");
 separateur=new char[strlen("+-*/()^<>")+1];
 strcpy(separateur,"+-*/()^<>");
 reste = str->s;
 }
 
-StringTokenizer::StringTokenizer(String& s)
+StringTokenizer::StringTokenizer(String2& s)
 {
 sval =NULL;
 //cerr << "bonjour" << sval << endl;
-str = new String(s);
+str = new String2(s);
 separateur=new char[strlen("+-*/()^<>")+1];
 strcpy(separateur,"+-*/()^<>");
 reste = str->s;
 }
 
-StringTokenizer::StringTokenizer(String s, String sep)
+StringTokenizer::StringTokenizer(String2 s, String2 sep)
 {
 sval =NULL;
-str = new String(s);
+str = new String2(s);
 separateur = new char[sep.length()];
 strcpy(separateur,sep.s);
 reste = str->s;
@@ -68,7 +68,7 @@ if (tmp == NULL)
 			{
 			//cerr << "c'est un nb !!" << endl;
 			type = NUMBER;
-			strstream stream;
+			stringstream stream;
 			stream << reste << endl;
 			stream >> nval;
 			//cerr << "le nb est " << nval << endl;
@@ -78,7 +78,7 @@ if (tmp == NULL)
 			//cerr << "c'est une chaine !!" << endl;
 			type=STRING;
 			if ( sval != NULL) delete sval;
-			sval = new String(reste);
+			sval = new String2(reste);
 			}
 		while ((*reste++) != '\0') ;
 		reste--;
@@ -105,7 +105,7 @@ else
 		{
 		//cerr << "c'est un nb !!" << endl;
 		type = NUMBER;
-		strstream stream;
+		stringstream stream;
 		stream << tok << endl;
 		stream >> nval;
 		//cerr << "le nb est " << nval << endl;
@@ -119,7 +119,7 @@ else
 			//cerr << " delete sval !! " << sval << endl;
 			delete sval;
 			}
-		sval = new String(tok);
+		sval = new String2(tok);
 		}
 	reste=tmp;
 	delete [] tok;
@@ -134,8 +134,8 @@ return type;
 /*
 int main()
 {
-//String s("23+34*12-13+COS ( 12 )* 2^3");
-String s("2+3");
+//String2 s("23+34*12-13+COS ( 12 )* 2^3");
+String2 s("2+3");
 StringTokenizer tk(s);
 cerr << StringTokenizer::NUMBER << endl;
 cerr << StringTokenizer::EOS << endl;

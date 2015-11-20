@@ -43,10 +43,11 @@ Entree& Solv_Cholesky::readOn(Entree& is )
 {
   Motcle accolade_ouverte("{");
   Motcle accolade_fermee("}");
-  Motcles les_parametres(2);
+  Motcles les_parametres(3);
   {
     les_parametres[0] = "impr";
     les_parametres[1] = "save_matrice";
+    les_parametres[2] = "quiet";
   }
   int rang;
 
@@ -72,6 +73,11 @@ Entree& Solv_Cholesky::readOn(Entree& is )
         case 1:
           {
             save_matrice_ = 1;
+            break;
+          }
+        case 2:
+          {
+            fixer_limpr(-1);
             break;
           }
         default :

@@ -57,7 +57,7 @@ do
   prm=`basename $1`
   if [ $prem -eq -999 ]
       then
-       cd preserve;  modif_prm $prm ;[ -f prepare ] && chmod +x prepare && ./prepare; modif_prm $prm;$DIR/src/genererCourbes.py -p  $prm -v 1 --get_cmd_to_run=yes 1>/dev/null;prem=`grep  " definition figure" test_lu.prm|tail -1| awk '{print -$NF}'`; rm test_lu.prm ;cd - && [ "$prem" = "" ] && prem=1
+       origp=`pwd`;cd preserve;  modif_prm $prm ;[ -f prepare ] && chmod +x prepare && ./prepare; modif_prm $prm;$DIR/src/genererCourbes.py -p  $prm -v 1 --get_cmd_to_run=yes 1>/dev/null;prem=`grep  " definition figure" test_lu.prm|tail -1| awk '{print -$NF}'`; rm test_lu.prm ;cd $origp && [ "$prem" = "" ] && prem=1
       
   fi
   

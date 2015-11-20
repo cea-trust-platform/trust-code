@@ -43,6 +43,7 @@ verif_BUILD()
   fi
   for f in `ls BUILD`
     do
+    [ ! -d BUILD/$f ]  && continue
     echo $f
     f2=`find  $Rapports_auto_root/Validation/Rapports_automatiques -follow  -name $f -type d | grep -v $f/src`
     diff -r BUILD/$f/src $f2/src
@@ -283,3 +284,53 @@ done
 }
 
 
+echo def Generate_makefile_validation [ -without_deps_exe ]
+
+
+Generate_makefile_validation()
+{
+deps="\$(exec)"
+[ "$1" = "-without_deps_exe" ] && deps=""
+LANCE=$TRUST_ROOT/Validation/Outils/Genere_courbe/scripts/Lance_gen_fiche
+. $LANCE
+
+prm=`get_list_prm`
+
+echo "all:\t `get_list_prm`" > makefile
+
+res=`for  cas in $prm
+do
+  basename $cas
+done`
+resb=""
+res2=""
+for  cas in $res
+do
+  res2=$res2" "archives/$cas.pdf
+  resb=$resb" "$cas
+done
+echo $ECHO_OPTS "all_tgz: $resb" >makefile
+
+echo $ECHO_OPTS "all:\t $res2" >> makefile
+
+for p in $prm
+do
+cas=$(basename $p)
+pdf="archives/$(basename $p).pdf"
+echo $ECHO_OPTS "BUILD/deps_$cas: $deps \$(shell find $p/src -newer $pdf 2>/dev/null)" 
+echo $ECHO_OPTS "\t mkdir -p BUILD;touch BUILD/deps_$cas"
+echo "${pdf}: BUILD/deps_$cas"
+echo $ECHO_OPTS "\t$LANCE \$(option_fast) -pdf_only  $p"
+done >> makefile
+
+
+for p in $prm
+do
+cas=$(basename $p)
+echo $cas: archives/$cas.tgz
+echo archives/$cas.tgz: archives/$cas.pdf
+echo $ECHO_OPTS "\tenv OPTIONS_PRM=-suite_run $LANCE \$(option_fast) $p"
+done >> makefile
+
+
+}

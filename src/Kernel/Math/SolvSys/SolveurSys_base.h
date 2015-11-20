@@ -51,7 +51,9 @@ public :
   // Print solver convergence if impr option set in the solver AND if time scheme gives authorization
   inline int limpr() const
   {
-    return (schema_temps_limpr_ && limpr_==1);
+    if (!schema_temps_limpr_)
+      return 0;
+    return  limpr_;
   };
   virtual inline void reinit()
   {

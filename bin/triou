@@ -1191,6 +1191,7 @@ else
        then
        # export PATH=$PATH:$TRUST_ROOT/bin/Sjob
        sub_file=s${NB_PROCS}_$NOM
+       sub_file=`echo $sub_file | sed "s/\//_/g"`
        echo "#!/bin/bash" > $sub_file
        echo $run  >> $sub_file
        chmod +x  $sub_file

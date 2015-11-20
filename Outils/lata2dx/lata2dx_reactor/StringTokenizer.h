@@ -1,7 +1,7 @@
 #ifndef StringTokenizer_inclus
 #define StringTokenizer_inclus
 
-#include "String.h"
+#include "String2.h"
 
 
 class StringTokenizer
@@ -16,22 +16,22 @@ static const int EOS;
 int type;
 
 StringTokenizer();
-StringTokenizer(String& );
-StringTokenizer(String,String);
+StringTokenizer(String2& );
+StringTokenizer(String2,String2);
 ~StringTokenizer();
 
 int nextToken(void);
 
 inline double getNValue() { return nval; }
-inline const String& getSValue() { return *sval; }
+inline const String2& getSValue() { return *sval; }
 
 
 
 private :
 
 double nval;
-String* sval;
-String* str;
+String2* sval;
+String2* str;
 char* token, *reste;
 char* separateur;
 };

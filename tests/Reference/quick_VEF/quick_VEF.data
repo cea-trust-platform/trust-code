@@ -65,7 +65,7 @@ Lire pb
 	Navier_Stokes_standard
 	{
 		equation_non_resolue 1
-		solveur_pression petsc cholesky { }
+		solveur_pression petsc cholesky {  quiet }
 		convection { kquick }
 		diffusion { }
 		conditions_initiales {

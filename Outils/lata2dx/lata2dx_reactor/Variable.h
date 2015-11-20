@@ -5,7 +5,7 @@ class Variable
 {
 private:
  double value;
- String *s;
+ String2 *s;
 
 
 	
@@ -13,37 +13,37 @@ public:
 Variable()
 	{
 	value =0.;
-	s = new String((char*)"x");
+	s = new String2((char*)"x");
 	}
 ~Variable() { delete s; }
 Variable(Variable& v)
 	{
 	value =v.value;
-	s = new String(v.s);
+	s = new String2(v.s);
 	}
 
-Variable(String& ss)
+Variable(String2& ss)
 	{
 	value = 0.;
-	s = new String(ss);
+	s = new String2(ss);
 	}
 
 Variable(char* ss)
 	{
 	value = 0.;
-	s = new String(ss);
+	s = new String2(ss);
 	}
 
 
 double getValue() { return value;}
 void setValue(double x) { value = x; }
-String& getString() { return *s;}
+String2& getString2() { return *s;}
 
-/*void setValue(String s) 
+/*void setValue(String2 s) 
 	{
 	System.out.println(s);
 	Parser p = new Parser(s);
-	p.parseString();
+	p.parseString2();
 	value = p.eval();
 	}
 */

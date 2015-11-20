@@ -3,7 +3,7 @@
 #include "component_builder.h"
 #include "reactor_component.h"
 
-extern string IntToString(int);
+extern string IntToString2(int);
 extern char* c_string(const string&);
 extern string delete_label(const string&);
 extern string extract_label(const string&);
@@ -230,16 +230,16 @@ void component_builder::read_function_definition(istream& is)
 
   while ( (is >> read_function) && (read_function!="}") ) 
     {
-      String read_function_String( c_string(read_function) );
-      parsersPtr.push_back( new Parser(read_function_String,maximum_number_of_unknown) );
+      String2 read_function_String2( c_string(read_function) );
+      parsersPtr.push_back( new Parser(read_function_String2,maximum_number_of_unknown) );
 
       for (unsigned int j=0; j<data_size; j++)
 	{
-	  unknown_sign = "x"+IntToString(j);
+	  unknown_sign = "x"+IntToString2(j);
 	  parsersPtr.back()->addVar( c_string(unknown_sign) );
 	}//end for on j
 
-      parsersPtr.back()->parseString();
+      parsersPtr.back()->parseString2();
       size++;
     }//end of while loop
 
@@ -474,7 +474,7 @@ void component_builder::build_components()
 
 		  const int parameter_shape = otherfld_ptr->data_.dimension(1);
 		  const FloatTab& parameter_values = otherfld_ptr->data_;
-		  const string parameter_sign = "x"+IntToString(l);
+		  const string parameter_sign = "x"+IntToString2(l);
 
 		  //If function to build is of VECTOR type and parameters 
 		  //are a mixing of SCALAR and VECTOR types
@@ -678,7 +678,7 @@ LataField_base::Elem_som component_builder::identity(const string& s) const
   if (lower_s=="faces") return LataField_base::FACES;
 
   cerr << "Error in component_builder::identity()" << endl;
-  cerr << "String " << lower_s << " is not a known Elem_som members" << endl;
+  cerr << "String2 " << lower_s << " is not a known Elem_som members" << endl;
   cerr << "Elem_som members known are : elem, som, faces" << endl;
   cerr << "Exiting program" << endl;
   exit(-1);

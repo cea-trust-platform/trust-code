@@ -936,6 +936,7 @@ precond_local precond_base precond_local 0 This keyword can be used with the con
 optimal solveur_sys_base optimal 1 Optimal is a solver which tests several solvers of the previous list to choose the fastest one for the considered linear system.
   attr seuil floattant seuil 0 Convergence threshold
   attr impr rien impr 1 To print the convergency of the fastest solver
+  attr quiet rien quiet 1 To disable printing of information
   attr save_matrice rien save_matrice 1 To save the linear system (A, x, B) into a file
   attr frequence_recalc entier frequence_recalc 1 To set a time step period (by default, 100) for re-checking the fatest solver
   attr nom_fichier_solveur chaine nom_fichier_solveur 1 To specify the file containing the list of the tested solvers
@@ -962,6 +963,7 @@ solv_gcp solveur_sys_base gcp 1 Preconditioned conjugated gradient.
   attr precond_nul rien precond_nul 1 Keyword to not use a preconditioning method. If no precond keyword is give, the GCP solver selects an appropriate preconditioning method (usually SSOR with omega=1.6) which works well in most cases. Many parallel preconditioning methods are not equivalent to their sequential counterpart, and you should therefore expect differences, especially when you select a high value of the final residue (seuil). The result depends on the number of processors and on the mesh splitting. It is sometimes useful to run the solver with no preconditioning at all. In particular: NL2 - when the solver does not converge during initial projection, NL2 - when comparing sequential and parallel computations. NL2 With no preconditioning, except in some particular cases (no open boundary), the sequential and the parallel computations should provide exactly the same results within fpu accuracy. If not, there might be a coding error or the system of equations is singular.
   attr seuil floattant seuil 0 Value of the final residue. The gradient ceases iteration when the Euclidean residue standard ||Ax-B|| is less than this value.
   attr impr rien impr 1 Keyword which is used to request display of the Euclidean residue standard each time this iterates through the conjugated gradient (display to the standard outlet).
+  attr quiet rien quiet 1 To disable printing of information
   attr save_matrice rien save_matrice 1 to save the matrix in a file.
   attr optimized rien optimized 1 This keyword triggers a memory and network optimized algorithms useful for strong scaling (when computing less than 100 000 elements per processor). The matrix and the vectors are duplicated, common items removed and only virtual items really used in the matrix are exchanged.NL2 Warning: this is experimental and known to fail in some VEF computations (L2 projection step will not converge). Works well in VDF.
 gcp_ns solv_gcp gcp_ns -1 not_set
@@ -969,8 +971,10 @@ gcp_ns solv_gcp gcp_ns -1 not_set
   attr solveur1 solveur_sys_base solveur1 0 Solver type.
 cholesky solveur_sys_base cholesky -1 Cholesky direct method.
   attr impr rien impr 1 Keyword which may be used to print the resolution time.
+  attr quiet rien quiet 1 To disable printing of information	
 gmres solveur_sys_base gmres -1 Gmres method (for non symetric matrix).
   attr impr rien impr 1 Keyword which may be used to print the convergence.
+  attr quiet rien quiet 1 To disable printing of information
   attr seuil floattant seuil 1 Convergence value.
   attr diag rien diag 1 Keyword to use diagonal preconditionner (in place of pilut that is not parallel).
   attr nb_it_max entier nb_it_max 1 Keyword to set the maximum iterations number for the Gmres.

@@ -51,7 +51,8 @@ Sortie& Solv_Gmres::printOn(Sortie& s ) const
 
   if (controle_residu_) s<< " controle_residu "<<controle_residu_;
   if (nb_it_max_!=1000000) s<<" nb_it_max "<<nb_it_max_;
-  if (limpr()) s<<" impr ";
+  if (limpr()==1) s<<" impr ";
+  if (limpr()==-1) s<<" quiet ";
   if (save_matrice_) s<< " save_matrice ";
   s<<" dim_espace_krilov "<<dim_espace_Krilov_;
   s<<" } ";
@@ -62,7 +63,7 @@ Entree& Solv_Gmres::readOn(Entree& is )
 {
   Motcle accolade_ouverte("{");
   Motcle accolade_fermee("}");
-  Motcles les_parametres(8);
+  Motcles les_parametres(9);
   {
     les_parametres[0] = "impr";
     les_parametres[1] = "seuil";
@@ -72,6 +73,7 @@ Entree& Solv_Gmres::readOn(Entree& is )
     les_parametres[5] = "controle_residu";
     les_parametres[6] = "save_matrice";
     les_parametres[7] = "dim_espace_krilov";
+    les_parametres[8] = "quiet";
   }
   int rang;
 
@@ -93,6 +95,11 @@ Entree& Solv_Gmres::readOn(Entree& is )
         case 0:
           {
             fixer_limpr(1);
+            break;
+          }
+        case 8:
+          {
+            fixer_limpr(-1);
             break;
           }
         case 1:
@@ -260,7 +267,7 @@ int gmres_local( const Matrice_Morse& A, const DoubleVect& b,DoubleVect& x1,doub
 
   res = mp_norme_vect(v0);
   double res0 = res;
-  if (limpr_)
+  if (limpr_==1)
     Cout<<"Gmres : initial residual = "<<res0<<finl;
   // See http://stackoverflow.com/questions/3437085/check-nan-number
   // May be could be interesting to implement isnan function somewhere
@@ -355,7 +362,7 @@ l5:
         }
 
       res2_old = res2;
-      if (limpr_)
+      if (limpr_==1)
         Cout<<" - At it = "<< it+1 <<", residu scalar = "<< res2 << finl;
 
       // Test d'arret sur le residu
@@ -363,7 +370,7 @@ l5:
         {
           // Ajoute par DJ
           //--------------
-          if (limpr_)
+          if (limpr_>-1)
             {
               Cout << "Gmres : Number of iterations to reach convergence : " << it+1 << finl;
               double residu_relatif = (res0>0?res2/res0:res2);
@@ -380,7 +387,7 @@ l5:
 
           // x=x1;
           //--------------
-          if (limpr_)
+          if (limpr_>-1)
             {
               Cout << "Gmres : Stopped after "<< it+1 <<" iterations (=nb_it_max)"<< finl;
               double residu_relatif = (res0>0?res2/res0:res2);
