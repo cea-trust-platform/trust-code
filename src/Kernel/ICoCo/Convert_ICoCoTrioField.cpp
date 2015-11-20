@@ -150,8 +150,9 @@ ICoCo::TrioField buildTrioField_from_champ_base(const Champ_base& ch)
 #include <iostream>
 #include <iomanip>
 
-using namespace ICoCo;
-using namespace std;
+using ICoCo::TrioField;
+using ICoCo::MEDField;
+using std::vector;
 
 
 /*!

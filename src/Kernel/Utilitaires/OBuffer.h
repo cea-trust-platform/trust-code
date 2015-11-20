@@ -26,7 +26,7 @@
 
 #include <Sortie.h>
 #include <sstream>
-using namespace std;
+//using namespace std;
 
 class OBuffer : public Sortie
 {
@@ -48,8 +48,8 @@ protected:
 
 private:
   int precision_; // used to keep current precision when new_buffer() is called
-  ostringstream* buf_;
-  string string_;
+  std::ostringstream* buf_;
+  std::string string_;
 };
 
 #endif

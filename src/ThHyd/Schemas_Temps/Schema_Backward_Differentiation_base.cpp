@@ -21,7 +21,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Schema_Backward_Differentiation_base.h>
-#include <string>
 #include <Equation.h>
 #include <Equation_base.h>
 #include <Navier_Stokes_std.h>

@@ -25,8 +25,7 @@
 
 #include <Nom.h>
 #include <sstream>
-using namespace std;
-
+using std::istringstream;
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
@@ -64,7 +63,7 @@ public:
 
 protected:
   istringstream* istrstream_;
-  string string_;
+  std::string string_;
 private:
 
 };

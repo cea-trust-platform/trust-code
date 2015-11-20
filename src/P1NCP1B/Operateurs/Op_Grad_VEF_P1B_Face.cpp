@@ -31,7 +31,6 @@
 #include <Probleme_base.h>
 #include <Schema_Temps_base.h>
 #include <EcrFicPartage.h>
-#include <Check_espace_virtuel.h>
 #include <communications.h>
 
 Implemente_instanciable(Op_Grad_VEF_P1B_Face,"Op_Grad_VEFPreP1B_P1NC",Op_Grad_VEF_Face);

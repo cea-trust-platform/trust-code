@@ -35,7 +35,6 @@
 #include <Param.h>
 #include <Debog.h>
 #include <communications.h>
-#include <string>
 #include <Matrice_Morse.h>
 
 Implemente_instanciable(Schema_Adams_Moulton_order_3,"Schema_Adams_Moulton_order_3",Schema_Adams_Moulton_base);

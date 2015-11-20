@@ -21,9 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Paroi_negligeable_VDF.h>
-#include <Zone_Cl_VDF.h>
 #include <Zone_Cl_dis.h>
-#include <Zone_Cl_VDF.h>
 //
 // printOn et readOn
 

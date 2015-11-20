@@ -186,5 +186,5 @@ int It_Sou_EF(_TYPE_)::impr(Sortie& os) const\
    }\
    return 1;\
 } \
-class __dummy
+class __dummy2
 #endif

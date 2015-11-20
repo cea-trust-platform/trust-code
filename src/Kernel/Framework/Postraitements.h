@@ -34,8 +34,6 @@
 //     Postraitement
 ///////////////////////////////////////////////////////////////////
 
-#include <List.h>
-
 class Probleme_base;
 class Postraitement_base;
 class Entree;

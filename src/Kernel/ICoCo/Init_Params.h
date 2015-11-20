@@ -23,8 +23,8 @@
 #ifndef Init_Params_included
 #define Init_Params_included
 
-#include <vector>
 #include <comm_incl.h>
+#include <vector>
 #include <string>
 
 
@@ -43,7 +43,7 @@ public:
 #endif
   int is_mpi;
 };
-}
+} // namespace ICoCo
 #endif
 
 

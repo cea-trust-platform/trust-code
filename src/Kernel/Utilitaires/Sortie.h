@@ -23,10 +23,12 @@
 #ifndef Sortie_included
 #define Sortie_included
 
+#include <arch.h>
+
 #ifdef IO_avec_string
 #include <stdio.h>
 #include <string>
-using namespace std;
+using std::string;
 #endif
 #include <iostream>
 using std::ios;
@@ -37,7 +39,7 @@ using std::cin;
 using std::endl;
 using std::flush;
 using std::ends;
-#include <arch.h>
+
 class Objet_U;
 class Separateur;
 

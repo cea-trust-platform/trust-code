@@ -292,7 +292,7 @@ DoubleTab& Op_Diff_EF::ajouter_vectoriel_dim3_nbn_8(const DoubleTab& tab_inconnu
 #define resu_(som,a) resu(som,a)
 #endif
   {
-    double pr[nb_comp];
+    double pr[3];
     for (int elem=0; elem<nb_elem_tot; elem++)
       if (elem_contribue(elem))
         {
@@ -383,7 +383,7 @@ DoubleTab& Op_Diff_EF::ajouter_scalaire_dim3_nbn_8(const DoubleTab& tab_inconnue
 #define resu_(som,a) resu(som,a)
 #endif
   {
-    double pr[nb_comp];
+    double pr[1];
     for (int elem=0; elem<nb_elem_tot; elem++)
       if (elem_contribue(elem))
         {
@@ -470,7 +470,7 @@ DoubleTab& Op_Diff_EF::ajouter_vectoriel_dim2_nbn_4(const DoubleTab& tab_inconnu
 #define resu_(som,a) resu(som,a)
 #endif
   {
-    double pr[nb_comp];
+    double pr[2];
     for (int elem=0; elem<nb_elem_tot; elem++)
       if (elem_contribue(elem))
         {
@@ -561,7 +561,7 @@ DoubleTab& Op_Diff_EF::ajouter_scalaire_dim2_nbn_4(const DoubleTab& tab_inconnue
 #define resu_(som,a) resu(som,a)
 #endif
   {
-    double pr[nb_comp];
+    double pr[1];
     for (int elem=0; elem<nb_elem_tot; elem++)
       if (elem_contribue(elem))
         {

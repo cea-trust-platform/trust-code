@@ -29,7 +29,6 @@
 #include <Param.h>
 #include <Debog.h>
 #include <communications.h>
-#include <string>
 #include <Matrice_Morse.h>
 
 Implemente_instanciable(Schema_Backward_Differentiation_order_3,"Schema_Backward_Differentiation_order_3",Schema_Backward_Differentiation_base);

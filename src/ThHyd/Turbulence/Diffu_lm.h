@@ -40,6 +40,9 @@
 
 class Diffu_lm : public Diffu_totale_hyd_base
 {
+private:
+
+  const static double A_plus;
   Declare_instanciable(Diffu_lm);
 
 public :
@@ -47,9 +50,6 @@ public :
   double calculer_a_local(int ind);
   double calculer_D_local(int ind);
 
-private:
-
-  const static double A_plus;
 
 };
 

@@ -21,9 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Paroi_TAU_NUL_VDF.h>
-#include <Zone_Cl_VDF.h>
 #include <Zone_Cl_dis.h>
-#include <Zone_Cl_VDF.h>
 // printOn et readOn
 
 Implemente_instanciable_sans_constructeur(Paroi_TAU_NUL_VDF,"tau_nul_VDF",Paroi_std_hyd_VDF);

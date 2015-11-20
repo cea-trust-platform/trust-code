@@ -21,7 +21,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Schema_Backward_Differentiation_order_2.h>
-#include <string>
 #include <Equation.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>

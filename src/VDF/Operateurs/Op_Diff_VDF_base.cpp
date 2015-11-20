@@ -23,7 +23,6 @@
 #include <Op_Diff_VDF_base.h>
 #include <Eval_Diff_VDF.h>
 #include <Motcle.h>
-#include <Eval_Diff_VDF.h>
 #include <Champ_Don.h>
 #include <DoubleTrav.h>
 #include <Check_espace_virtuel.h>

@@ -30,7 +30,9 @@
   #include <string>
   #include <iostream>
 */
-using namespace std;
+//using namespace std;
+using std::string;
+using std::vector;
 using ICoCo::ProblemTrio;
 using ICoCo::TrioField;
 

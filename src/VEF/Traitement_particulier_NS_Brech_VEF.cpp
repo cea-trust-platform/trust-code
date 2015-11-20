@@ -27,7 +27,6 @@
 #include <DoubleTrav.h>
 #include <Periodique.h>
 #include <Champ_P1NC.h>
-#include <DoubleTrav.h>
 
 Implemente_instanciable_sans_constructeur(Traitement_particulier_NS_Brech_VEF,"Traitement_particulier_NS_Brech_VEF",Traitement_particulier_NS_VEF);
 

@@ -21,10 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <arch.h>
-#include <iostream>
 #include <unistd.h>
-using std::cerr;
-using std::endl;
 #ifdef MICROSOFT
 #include <math.h>
 #include <direct.h>
@@ -48,6 +45,9 @@ double atanh(const double& x)
 }
 #endif
 #include <Process.h>
+#include <iostream>
+using std::cerr;
+using std::endl;
 
 static char* buf=0;  //new char[801];
 // pwd :

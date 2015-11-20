@@ -23,10 +23,10 @@
 #ifndef ProblemTrio_included
 #define ProblemTrio_included
 
+#include <Problem.h>
 #include <vector>
 #include <string>
 
-#include <Problem.h>
 class mon_main;
 class Objet_U;
 
@@ -121,7 +121,7 @@ protected :
   mon_main* p;
 
 };
-}
+} // namespace ICoCo
 Objet_U& get_obj(const char *) ;
 #endif
 

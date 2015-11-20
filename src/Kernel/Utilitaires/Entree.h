@@ -32,7 +32,7 @@ using std::ios;
 using std::istream;
 #ifdef IO_avec_string
 #include <string>
-using namespace std;
+//using namespace std;
 #endif
 class Objet_U;
 class Nom;

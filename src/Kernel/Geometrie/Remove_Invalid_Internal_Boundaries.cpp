@@ -24,7 +24,6 @@
 #include <Domaine.h>
 #include <Param.h>
 #include <Static_Int_Lists.h>
-#include <Static_Int_Lists.h>
 #include <Connectivite_som_elem.h>
 #include <Scatter.h>
 

@@ -24,7 +24,7 @@
 #include <Domaine.h>
 #include <IntList.h>
 #include <algorithm>
-using namespace std;
+using std::swap;
 
 Implemente_instanciable_sans_constructeur(Polyedre,"Polyedre",Elem_geom_base);
 

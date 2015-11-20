@@ -1759,7 +1759,7 @@ void Postraitement::creer_champ_post(const Motcle& motlu1,const Motcle& motlu2,E
       source_compos = champ_ref->noms_compo();
       composantes = champ_ref->noms_compo();
       source_syno = champ_ref->get_synonyms();
-      if ((source_compos.size()==1) and (source_compos[0]==motlu1))
+      if ((source_compos.size()==1) && (source_compos[0]==motlu1))
         {
           nom_champ_ref=motlu1;
         }
