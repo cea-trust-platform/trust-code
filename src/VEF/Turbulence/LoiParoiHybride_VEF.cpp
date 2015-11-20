@@ -27,7 +27,7 @@
 #include <Zone_dis.h>
 #include <Zone_Cl_dis.h>
 
-Implemente_instanciable(LoiParoiHybride_VEF,"Loi_Paroi_Hybride_VEF",Turbulence_paroi_base);
+Implemente_instanciable(LoiParoiHybride_VEF,"Loi_Paroi_Hybride_VEF",Paroi_hyd_base_VEF);
 
 Sortie& LoiParoiHybride_VEF::printOn(Sortie& s) const
 {

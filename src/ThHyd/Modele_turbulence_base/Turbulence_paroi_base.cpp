@@ -35,6 +35,7 @@
 Implemente_base_sans_constructeur(Turbulence_paroi_base,"Turbulence_paroi_base",Objet_U);
 Turbulence_paroi_base::Turbulence_paroi_base()
 {
+  nb_impr0_=0;
   nb_impr_=0;
   champs_compris_.ajoute_nom_compris("u_star");
 }
@@ -209,3 +210,37 @@ void Turbulence_paroi_base::ouvrir_fichier_partage(EcrFicPartage& Ustar,const No
 
   nb_impr_++;
 }
+
+// Description:
+//    Ouverture/creation d'un fichier d'impression de
+//    moyennes de uplus_, dplus_, tab_u_star
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition: la methode ne modifie pas l'objet
+void Turbulence_paroi_base::ouvrir_fichier_partage(EcrFicPartage& fichier,const Nom& nom_fichier,const Nom& extension) const
+{
+  const Probleme_base& pb=mon_modele_turb_hyd->equation().probleme();
+  Nom nom_fic=nom_fichier+"."+extension;
+
+  // On cree le fichier nom_fichier au premier pas de temps si il n'y a pas reprise
+  if (nb_impr0_==0 && !pb.reprise_effectuee())
+    {
+      fichier.ouvrir(nom_fic);
+    }
+  // Sinon on l'ouvre
+  else
+    {
+      fichier.ouvrir(nom_fic,ios::app);
+    }
+  nb_impr0_++;
+}
+

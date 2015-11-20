@@ -61,6 +61,8 @@ public:
   inline int calculer_hyd(Champ_Inc_base& );
   inline int calculer_hyd(Champ_Fonc_base& ,Champ_Fonc_base& );
   inline void imprimer_ustar(Sortie& ) const;
+  inline void imprimer_ustar_mean_only(Sortie&, int, const LIST(Nom)&, const Nom&) const;
+  inline void imprimer_premiere_ligne_ustar(int, const LIST(Nom)&, const Nom&, const LIST(Nom)& ) const;
   // rajout pour prendre en compte Cisaillement_paroi dans la classe
   // generique
   inline const DoubleTab& Cisaillement_paroi() const ;
@@ -131,6 +133,48 @@ inline int Turbulence_paroi::init_lois_paroi()
 inline void Turbulence_paroi::imprimer_ustar(Sortie& os) const
 {
   valeur().imprimer_ustar(os);
+}
+
+
+// Description:
+//    Appel a l'objet sous-jacent.
+//    Imprime les u* moyens de la loi de paroi
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour: int
+//    Signification: code de retour propage
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+inline void Turbulence_paroi::imprimer_ustar_mean_only(Sortie& os, int boundaries_, const LIST(Nom)& boundaries_list, const Nom& nom_fichier_) const
+{
+  valeur().imprimer_ustar_mean_only(os, boundaries_, boundaries_list, nom_fichier_);
+}
+
+
+// Description:
+//    Appel a l'objet sous-jacent.
+//    Imprime la premiere ligne du fichier ***ustar_mean_only.out
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour: int
+//    Signification: code de retour propage
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+inline void Turbulence_paroi::imprimer_premiere_ligne_ustar(int boundaries_, const LIST(Nom)& boundaries_list, const Nom& nom_fichier_, const LIST(Nom)& nlistbord_dom ) const
+{
+  valeur().imprimer_premiere_ligne_ustar(boundaries_, boundaries_list, nom_fichier_, nlistbord_dom);
 }
 
 // Description:

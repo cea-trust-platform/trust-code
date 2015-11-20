@@ -115,6 +115,10 @@ protected:
   REF(Equation_base) mon_equation;
   Turbulence_paroi loipar;
   double dt_impr_ustar;
+  double dt_impr_ustar_mean_only;
+  int boundaries_;
+  LIST(Nom) boundaries_list ;
+  Nom nom_fichier_;
   void limiter_viscosite_turbulente();
 
   Champs_compris champs_compris_;
@@ -132,6 +136,9 @@ inline Mod_turb_hyd_base::Mod_turb_hyd_base()
 {
   LeCmu = CMU ;
   dt_impr_ustar=1.e20;
+  dt_impr_ustar_mean_only=1.e20;
+  boundaries_=0;
+  nom_fichier_="";
   XNUTM = 1.E8 ;
   calcul_borne_locale_visco_turb_ = 0;
   dt_diff_sur_dt_conv_ = -1;

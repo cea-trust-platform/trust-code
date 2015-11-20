@@ -25,6 +25,7 @@
 #ifndef LoiParoiHybride_VEF_included
 #define LoiParoiHybride_VEF_included
 
+#include <Paroi_hyd_base_VEF.h>
 #include <LoiParoiHybride.h>
 #include <Ref_Zone_VEF.h>
 #include <Ref_Zone_Cl_VEF.h>
@@ -40,7 +41,7 @@ class Zone_Cl_dis_base;
 //.SECTION  voir aussi
 // Turbulence_paroi_base
 
-class LoiParoiHybride_VEF : public Turbulence_paroi_base, LoiParoiHybride
+class LoiParoiHybride_VEF : public Paroi_hyd_base_VEF, LoiParoiHybride
 {
 
   Declare_instanciable(LoiParoiHybride_VEF);
