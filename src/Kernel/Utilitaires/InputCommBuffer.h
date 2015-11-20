@@ -24,7 +24,7 @@
 #include <Entree.h>
 #include <sstream>
 class OutputCommBuffer;
-using namespace std;
+using std::istringstream;
 // .DESCRIPTION        :
 //  Classe outil utilisee exclusivement par Schema_Comm. C'est une classe
 //  derivee de Entree dont le stream est de type istringstream (les donnees

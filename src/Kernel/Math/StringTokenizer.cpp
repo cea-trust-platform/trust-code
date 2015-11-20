@@ -25,7 +25,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sstream>
-using namespace std;
+//using namespace std;
+using std::stringstream;
 
 const int StringTokenizer::NUMBER=-2;
 const int StringTokenizer::STRING=-3;

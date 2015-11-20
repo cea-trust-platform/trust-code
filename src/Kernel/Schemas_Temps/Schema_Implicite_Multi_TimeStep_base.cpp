@@ -21,7 +21,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Schema_Implicite_Multi_TimeStep_base.h>
-#include <string>
 #include <Equation_base.h>
 #include <Probleme_base.h>
 #include <Probleme_Couple.h>

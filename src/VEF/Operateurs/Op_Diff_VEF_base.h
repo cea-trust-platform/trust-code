@@ -29,7 +29,6 @@
 #include <Ref_Champ_Inc_base.h>
 #include <Ref_Zone_VEF.h>
 #include <Ref_Zone_Cl_VEF.h>
-#include <Operateur_Diff_base.h>
 #include <Op_VEF_Face.h>
 #include <Zone_VEF.h>
 class Zone_dis;

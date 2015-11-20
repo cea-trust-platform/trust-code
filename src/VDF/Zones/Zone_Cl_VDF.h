@@ -57,7 +57,7 @@ enum type_arete
   FLUIDE_SYM = 6,
   NSCBC_NSCBC = 7
 };
-}
+} // namespace TypeAreteBordVDF
 
 namespace TypeAreteCoinVDF
 {
@@ -76,7 +76,7 @@ enum type_arete
   PAROI_FLUIDE = 14,
   FLUIDE_PAROI = 15
 };
-}
+} // namespace TypeAreteCoinVDF
 
 
 class Zone_Cl_VDF : public Zone_Cl_dis_base

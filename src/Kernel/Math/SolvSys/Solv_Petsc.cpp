@@ -1098,10 +1098,10 @@ void Solv_Petsc::lecture(Entree& is)
 }
 
 
-int Solv_Petsc::add_option(const Nom& string, const Nom& value)
+int Solv_Petsc::add_option(const Nom& astring, const Nom& value)
 {
   Nom option="-";
-  option+=string;
+  option+=astring;
   // Attention il ne retourne pas de code d'erreur si l'option est mal orthographiee!!
   // Il ne dit pas non plus qu'elle est unused avec -options_left
   // Nouveau 1.6.3 pour la ligne de commande reste prioritaire, on ne change une option

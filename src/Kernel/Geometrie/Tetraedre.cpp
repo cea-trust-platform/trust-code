@@ -24,7 +24,7 @@
 #include <Domaine.h>
 #include <Linear_algebra_tools_impl.h>
 #include <algorithm>
-using namespace std;
+using std::swap;
 
 static int faces_sommets_tetra[4][3] =
 {

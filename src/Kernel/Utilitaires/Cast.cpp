@@ -21,14 +21,15 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Cast.h>
-#include <iostream>
 #include <assert.h>
-using std::cerr;
-using std::endl;
-using std::flush;
 #include <Type_info.h>
 #include <Process.h>
 #include <Nom.h>
+
+#include <iostream>
+using std::cerr;
+using std::endl;
+using std::flush;
 
 int* bad_ref_cast(const Type_info* t1, const Type_info* t2)
 {

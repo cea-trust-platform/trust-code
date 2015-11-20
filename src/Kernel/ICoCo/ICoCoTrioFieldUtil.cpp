@@ -27,8 +27,7 @@
 #include <iostream>
 #include <iomanip>
 
-using namespace ICoCo;
-using namespace std;
+using ICoCo::TrioField;
 
 
 // Ajoute 1 a 1 les valeurs du TrioField donnee en parametre a celles de this

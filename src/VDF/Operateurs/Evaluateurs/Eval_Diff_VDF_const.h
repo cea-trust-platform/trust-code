@@ -29,7 +29,6 @@
 #include <Champ_base.h>
 #include <Ref_Champ_Uniforme.h>
 #include <Champ_Uniforme.h>
-#include <Champ_Uniforme.h>
 #include <Zone_VDF.h>
 class Champ_base;
 

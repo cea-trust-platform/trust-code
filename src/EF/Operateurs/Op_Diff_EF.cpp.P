@@ -324,7 +324,7 @@ DoubleTab& Op_Diff_EF::ajouter_nature_gen(const DoubleTab& tab_inconnue, DoubleT
 #Pif(general==1)
             ArrOfDouble pr(nb_comp);
 #Pelse
-            double pr[nb_comp];
+            double pr[__nb_comp__];
 #Pendif
             for (int elem=0; elem<nb_elem_tot; elem++)
               if (elem_contribue(elem))

@@ -22,7 +22,7 @@
 #include <SChaine.h>
 #include <EChaine.h>
 #include <sstream>
-using namespace std;
+using std::ostringstream;
 
 void SChaine::self_test()
 {
@@ -82,7 +82,7 @@ const char* SChaine::get_str() const
 {
   ostringstream& os= *((ostringstream*)(&((SChaine*)this)->get_ostream()));
   // Need a copy
-  string_=os.str();
+  string_=string(os.str());
   return string_.c_str();
 }
 

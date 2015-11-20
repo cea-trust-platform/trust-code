@@ -110,7 +110,7 @@ Entree& Op_Conv_EF::readOn(Entree& s )
 
 
   if ((type_op==amont)
-      and  (type_op_lu!="amont2"))
+      &&  (type_op_lu!="amont2"))
     {
       f_lu_=0.036585;
       hourglass=1;

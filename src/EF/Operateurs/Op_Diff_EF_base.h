@@ -29,7 +29,6 @@
 #include <Ref_Champ_Inc_base.h>
 #include <Ref_Zone_EF.h>
 #include <Ref_Zone_Cl_EF.h>
-#include <Operateur_Diff_base.h>
 #include <Op_EF_base.h>
 #include <Zone_EF.h>
 class Zone_dis;

@@ -26,7 +26,6 @@
 #include <IntLists.h>
 #include <Conds_lim.h>
 #include <Les_Cl.h>
-#include <Scatter.h>
 #include <Debog.h>
 #include <EcrFicPartageBin.h>
 #include <EFichierBin.h>

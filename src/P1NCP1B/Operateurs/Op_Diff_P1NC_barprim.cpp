@@ -39,7 +39,6 @@
 #include <DoubleLists.h>
 #include <Periodique.h>
 #include <EFichier.h>
-#include <Periodique.h>
 #include <Schema_Temps_base.h>
 
 Implemente_instanciable(Op_Diff_P1NC_barprim,"Op_Diff_VEFBARPRIM_const_P1NC",Operateur_Diff_base);

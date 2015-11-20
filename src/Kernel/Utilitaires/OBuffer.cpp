@@ -42,7 +42,7 @@ void OBuffer::new_buffer()
 {
   if(buf_)
     delete buf_;
-  buf_ = new ostringstream();
+  buf_ = new std::ostringstream();
   set_ostream(buf_);
   buf_->setf(ios::scientific);
   buf_->precision(precision_);

@@ -29,8 +29,6 @@
 #include <Tri_EF.h>
 #include <Tetra_EF.h>
 #include <Quadri_EF.h>
-#include <Hexa_EF.h>
-#include <Hexa_EF.h>
 #include <Equation_base.h>
 #include <Champ_front_txyz.h>
 #include <Champ_front_softanalytique.h>

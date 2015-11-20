@@ -23,7 +23,7 @@
 #define OutputCommBuffer_included
 #include <Sortie.h>
 #include <sstream>
-using namespace std;
+using  std::ostringstream;
 
 // .DESCRIPTION        :
 //  Classe outil utilisee exclusivement par Schema_Comm. C'est une classe
@@ -52,6 +52,6 @@ public:
   };
 private:
   ostringstream stream_;
-  string string_;
+  std::string string_;
 };
 #endif

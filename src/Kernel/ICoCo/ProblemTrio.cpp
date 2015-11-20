@@ -37,7 +37,9 @@
 #include <Convert_ICoCoTrioField.h>
 #include <stat_counters.h>
 
-using namespace ICoCo;
+using ICoCo::Problem;
+using ICoCo::ProblemTrio;
+using ICoCo::TrioField;
 using std::string;
 using std::vector;
 

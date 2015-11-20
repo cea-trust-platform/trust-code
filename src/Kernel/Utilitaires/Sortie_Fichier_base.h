@@ -24,13 +24,12 @@
 #define Sortie_Fichier_base_included
 
 #include <Sortie.h>
-
+#include <Objet_U.h>
 #include <fstream>
 using std::ifstream;
 using std::ofstream;
 using std::streampos;
 
-#include <Objet_U.h>
 
 class Sortie_Fichier_base :  public Sortie, public Objet_U
 {

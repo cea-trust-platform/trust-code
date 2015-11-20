@@ -23,7 +23,7 @@
 #define SChaine_included
 #include <Sortie.h>
 #include <Process.h>
-using namespace std;
+using std::string;
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
