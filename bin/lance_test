@@ -414,12 +414,8 @@ add_test_case_from_validation()
 			[ ! -d $TRUST_TESTS/$DIRECTORY/$test ] && echo "Unable to cd $TRUST_TESTS/$DIRECTORY/$test" && exit -1
 			cd $TRUST_TESTS/$DIRECTORY/$test
 			echo ${FICHE_ROOT#$Rapports_auto_root/}/build/$jeu > lien_fiche_validation
-			if [ "$TRUST_SCM" = 1 ] 
-			then
-			   CHECKOUT . 1>/dev/null 2>&1
-			   MKELEM lien_fiche_validation 
-			   [ $? != 0 ] && echo "Error during the creation of `pwd`/lien_fiche_validation" &&  exit -1	     
-			fi
+			MKELEM lien_fiche_validation 
+			[ $? != 0 ] && echo "Error during the creation of `pwd`/lien_fiche_validation" &&  exit -1	     
 			echo "Creation of $test/lien_fiche_validation"  
 			cd $org 1>/dev/null 2>&1
 		     fi
@@ -464,14 +460,10 @@ add_test_case_from_validation()
 			else
 			   echo "Creation of the file $test.lml.gz"
 			   gzip -c $test.lml > $TRUST_TESTS/$DIRECTORY/$test/$test.lml.gz
-			   if [ "$TRUST_SCM" = 1 ]
-			   then
-			      cd $TRUST_TESTS/$DIRECTORY/$test
-			      CHECKOUT . 1>/dev/null 2>&1
-			      MKELEM $test.lml.gz 
-			      [ $? != 0 ] && echo "Error when creating the file `pwd`/$test.lml.gz" && exit -1	 
-			   fi
-			      cd $TRUST_TESTS
+			   cd $TRUST_TESTS/$DIRECTORY/$test
+			   MKELEM $test.lml.gz 
+			   [ $? != 0 ] && echo "Error when creating the file `pwd`/$test.lml.gz" && exit -1	 
+			   cd $TRUST_TESTS
 			   rm -r -f $REP_TMP
 			fi
 		     fi	 
