@@ -27,7 +27,8 @@
 #include <Domaine.h>
 #include <Champ_base.h>
 #include <Zone_dis_base.h>
-
+#include <PE_Groups.h>
+#include <Comm_Group.h>
 
 void affecte_double_avec_doubletab(double** p, const ArrOfDouble& trio)
 {
@@ -250,6 +251,8 @@ MEDField build_medfield(TrioField& triofield)
   if (!cells.empty())
     {
       cerr<<" cells are butterflyed "<<cells[0]<<endl;
+      PE_Groups::groupe_TRUST().abort();
+      Process::abort();
       Process::exit();
     }
   //field on the sending end
