@@ -1419,11 +1419,17 @@ echo
 echo "Complete results into the file:"
 echo $SORTIE
 echo 
+if [ "$TRUST_TESTS" = "$TRUST_ROOT/tests" ]
+then
 # Cas gprof on lance
 [ "$coverage_gprof" = 1 ] && make_Couverture 2>&1 | tee make_Couverture.log
 # Cas gcov on lance
 [ "$coverage_gcov" = 1 ] && analyse_couverture 2>&1 | tee analyse_couverture.log
-
+else
+# on a un projet baltik
+[ "$coverage_gprof" = 1 ] && make_dicopkl_baltik 2>&1 | tee make_Couverture.log
+[ "$coverage_gcov" = 1 ] && analyse_gcov_baltik 2>&1 | tee analyse_couverture.log
+fi
 if [ -d ${Rapports_auto_root}/Validation/Rapports_automatiques ]
 then
    ######################

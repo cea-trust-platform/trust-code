@@ -2,7 +2,7 @@
 # Simule "tggcov -R summary_all file"
 # Ameliorer se baser sur tggcov --annotate pour generer
 # des rapports plus fiables...
-HTML_ROOT=$TRUST_ROOT/doc/Coverage/html
+[ "$HTML_ROOT" = "" ] && HTML_ROOT=$TRUST_ROOT/doc/Coverage/html
 cd $HTML_ROOT
 if [ "$1" != -short ]
 then
@@ -12,7 +12,7 @@ Reports code coverage of the whole code, a file, or a module build the `date '+%
 Warning: Lines beginning by a comment or containing Cerr or exit or assert or Implemente_ are not counted.
 Please wait...
 -------------------------------------------------
-%Lines tested \ttested/total \t\tComponent:"
+%Lines tested \ttested/total\t not_tested \t\tComponent:"
 else
    shift
 fi
@@ -148,16 +148,19 @@ fi
 # Ligne avec /*EOF*/
 # Ligne avec un seul caractere }
 [ -s $file ] && cat $file | awk -v what="$what" -F: 'BEGIN {not_tested=0;line=0} 
-($1!="        -") && !/Cerr/ && !/exit/ && !/assert/ && !/Implemente_/ && ($3!="") && ($3!="/*EOF*/") {
+($1!="        -") && !/Cerr/ && !/exit/ && !/assert/ && !/Implemente_/ && !/Declare_/ && ($3!="") && ($3!="/*EOF*/") {
   gsub(" ","",$3);
   gsub("\t","",$3);
   if ($3!="}") { line++;if ($1=="    #####") not_tested++}; 
 }
 END {
   tested=line-not_tested;
-  percent=(line>0?tested/line*100:0);
+  percent=(line>0?tested/line*100:100.);
   printf("%.2f",percent);
-  if (tested>0) printf(" \t\t%6.i/%i",tested,line);
-  else printf(" \t\t     0/%i",line);
+  if (tested>0)
+   printf(" \t\t%6.i/%i\t\t%i",tested,line,not_tested);
+  else
+    printf(" \t\t     0/%i\t\t%i",line,not_tested);
+  
   print " \t\t"what
 }'
