@@ -328,7 +328,7 @@ void Pb_MED::creer_champ(const Motcle& motlu)
     }
   Champ_Fonc_MED& chmed=ref_cast(Champ_Fonc_MED,le_ch_fonc.valeur());
   const  Domaine& dom_med = domaine();
-  chmed.creer(nom_fic,dom_med,localisation,ref_cast_non_const(ArrOfDouble, temps_sauv_));
+  chmed.creer(nom_fic,dom_med,localisation, temps_sauv_);
 
   if (flag)
     {

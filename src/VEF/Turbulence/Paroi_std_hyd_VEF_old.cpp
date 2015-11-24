@@ -149,7 +149,7 @@ int Paroi_std_hyd_VEF_old::calculer_hyd(DoubleTab& tab_k_eps)
   const Fluide_Incompressible& le_fluide = ref_cast(Fluide_Incompressible, eqn_hydr.milieu());
   const Champ_Don& ch_visco_cin = le_fluide.viscosite_cinematique();
   const DoubleTab& vit = eqn_hydr.inconnue().valeurs();
-  DoubleTab& tab_visco = ref_cast_non_const(DoubleTab,ch_visco_cin->valeurs());
+  const DoubleTab& tab_visco = ref_cast(DoubleTab,ch_visco_cin->valeurs());
   const Zone& zone = zone_VEF.zone();
   int nfac = zone.nb_faces_elem();
 
@@ -166,7 +166,12 @@ int Paroi_std_hyd_VEF_old::calculer_hyd(DoubleTab& tab_k_eps)
 
   // preparer_calcul_hyd(tab_k_eps);
   if ((!l_unif) && (tab_visco.local_min_vect()<DMINFLOAT))
-    tab_visco+=DMINFLOAT;
+    //   on ne doit pas changer tab_visco ici !
+    {
+      Cerr<<" visco <=0 ?"<<finl;
+      exit();
+    }
+  //    tab_visco+=DMINFLOAT;
 
   int ndeb,nfin,nfc;
   double norm_v=-1;//,norm_v1,norm_v2;
@@ -462,8 +467,7 @@ int Paroi_std_hyd_VEF_old::calculer_hyd(DoubleTab& tab_nu_t,DoubleTab& tab_k)
   const Fluide_Incompressible& le_fluide = ref_cast(Fluide_Incompressible, eqn_hydr.milieu());
   const Champ_Don& ch_visco_cin = le_fluide.viscosite_cinematique();
   const DoubleTab& vit = eqn_hydr.inconnue().valeurs();
-  DoubleTab& tab_visco = ref_cast_non_const(DoubleTab,ch_visco_cin->valeurs());
-  //  const IntTab& elem_faces = zone_VEF.elem_faces();
+  const DoubleTab& tab_visco = ref_cast(DoubleTab,ch_visco_cin->valeurs());
   const Zone& zone = zone_VEF.zone();
   int nfac = zone.nb_faces_elem();
 
@@ -485,7 +489,12 @@ int Paroi_std_hyd_VEF_old::calculer_hyd(DoubleTab& tab_nu_t,DoubleTab& tab_k)
 
   // preparer_calcul_hyd(tab);
   if ((!l_unif) && (tab_visco.local_min_vect()<DMINFLOAT))
-    tab_visco+=DMINFLOAT;
+    //   on ne doit pas changer tab_visco ici !
+    {
+      Cerr<<" visco <=0 ?"<<finl;
+      exit();
+    }
+  //tab_visco+=DMINFLOAT;
 
   int ndeb,nfin;
   double norm_v=-1;

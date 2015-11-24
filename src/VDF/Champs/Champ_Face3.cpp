@@ -570,7 +570,7 @@ void Champ_Face::calcul_y_plus(DoubleTab& y_plus, const Zone_Cl_VDF& zone_Cl_VDF
   const Equation_base& eqn_hydr = equation();
   const Fluide_Incompressible& le_fluide = ref_cast(Fluide_Incompressible, eqn_hydr.milieu());
   const Champ_Don& ch_visco_cin = le_fluide.viscosite_cinematique();
-  DoubleTab& tab_visco = ref_cast_non_const(DoubleTab,ch_visco_cin->valeurs());
+  const DoubleTab& tab_visco = ref_cast(DoubleTab,ch_visco_cin->valeurs());
   //DoubleTab& tab_visco = ch_visco_cin.valeur().valeurs();
 
   if (sub_type(Champ_Uniforme, ch_visco_cin.valeur()))
@@ -582,6 +582,7 @@ void Champ_Face::calcul_y_plus(DoubleTab& y_plus, const Zone_Cl_VDF& zone_Cl_VDF
     l_unif = 0;
 
   // Changer uniquement les valeurs < DMINFLOAT (l'ancien code n'est pas parallele)
+  /* GF on a pas a change tab_visco ici !
   if (!l_unif)
     {
       const int n = tab_visco.size_array();
@@ -590,7 +591,7 @@ void Champ_Face::calcul_y_plus(DoubleTab& y_plus, const Zone_Cl_VDF& zone_Cl_VDF
         if (v[i] < DMINFLOAT)
           v[i] = DMINFLOAT;
     }
-
+  */
   DoubleTab cisaillement(1,1);
   int lp=0;
 
@@ -699,10 +700,10 @@ void Champ_Face::calcul_y_plus(DoubleTab& y_plus, const Zone_Cl_VDF& zone_Cl_VDF
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-DoubleTab& Champ_Face::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gij, const Zone_Cl_VDF& zone_Cl_VDF)
+DoubleTab& Champ_Face::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gij, const Zone_Cl_VDF& zone_Cl_VDF) const
 {
 
-  Champ_Face& vit = ref_cast(Champ_Face, mon_equation->inconnue().valeur());
+  const Champ_Face& vit = ref_cast(Champ_Face, mon_equation->inconnue().valeur());
   const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
   int nb_elem = zone_VDF.zone().nb_elem_tot();
   const IntTab& face_voisins = zone_VDF.face_voisins();
@@ -1011,7 +1012,7 @@ DoubleTab& Champ_Face::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gij, c
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-DoubleTab& Champ_Face::calcul_duidxj(const DoubleTab& in_vel, DoubleTab& gij)
+DoubleTab& Champ_Face::calcul_duidxj(const DoubleTab& in_vel, DoubleTab& gij) const
 {
 
   const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
@@ -1145,7 +1146,7 @@ return Sij;
 //SMA_barre = Sij*Sij (sommation sur les indices i et j)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-DoubleVect& Champ_Face::calcul_S_barre_sans_contrib_paroi(const DoubleTab& vitesse, DoubleVect& SMA_barre, const Zone_Cl_VDF& zone_Cl_VDF)
+DoubleVect& Champ_Face::calcul_S_barre_sans_contrib_paroi(const DoubleTab& vitesse, DoubleVect& SMA_barre, const Zone_Cl_VDF& zone_Cl_VDF) const
 {
   // On calcule directement S_barre(num_elem)!!!!!!!!!!
   // Le parametre contribution_paroi (ici fixe a 0) permet de ne pas prendre en compte
@@ -1154,7 +1155,7 @@ DoubleVect& Champ_Face::calcul_S_barre_sans_contrib_paroi(const DoubleTab& vites
   int contribution_paroi;
   contribution_paroi=0;
 
-  Champ_Face& vit = ref_cast(Champ_Face, mon_equation->inconnue().valeur());
+  const Champ_Face& vit = ref_cast(Champ_Face, mon_equation->inconnue().valeur());
   const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
 
   int nb_elem = zone_VDF.zone().nb_elem();
@@ -1444,7 +1445,7 @@ DoubleVect& Champ_Face::calcul_S_barre_sans_contrib_paroi(const DoubleTab& vites
   return SMA_barre;
 }
 
-DoubleVect& Champ_Face::calcul_S_barre(const DoubleTab& vitesse,DoubleVect& SMA_barre,const Zone_Cl_VDF& zone_Cl_VDF)
+DoubleVect& Champ_Face::calcul_S_barre(const DoubleTab& vitesse,DoubleVect& SMA_barre,const Zone_Cl_VDF& zone_Cl_VDF) const
 {
   const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
   const int nb_elem_tot = zone_VDF.nb_elem_tot();

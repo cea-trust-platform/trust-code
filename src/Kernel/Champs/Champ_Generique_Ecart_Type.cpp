@@ -59,7 +59,7 @@ void Champ_Generique_Ecart_Type::completer(const Postraitement_base& post)
   nom_champ_moyenne += "_";
   nom_champ_moyenne += Nom(tstat_fin_,"%e");
 
-  Postraitement& mon_post = ref_cast_non_const(Postraitement,post);
+  const Postraitement& mon_post = ref_cast(Postraitement,post);
   if (mon_post.comprend_champ_post(nom_champ_moyenne))
     {
       const Champ_Generique_base& champ_stat_base = mon_post.get_champ_post(nom_champ_moyenne);
@@ -92,8 +92,7 @@ const Champ_base& Champ_Generique_Ecart_Type::get_champ(Champ& espace_stockage) 
   espace_stockage = creer_espace_stockage(nature_source,nb_comp,es_tmp);
 
   DoubleTab& tab_ecart_type = espace_stockage.valeurs();
-  Operateur_Statistique_tps_base& operateur = ref_cast_non_const(Operateur_Statistique_tps_base,Op_Ecart_Type_);
-  tab_ecart_type = operateur.calculer_valeurs();
+  tab_ecart_type = Op_Ecart_Type_.calculer_valeurs();
   tab_ecart_type.echange_espace_virtuel();
   return espace_stockage.valeur();
 }

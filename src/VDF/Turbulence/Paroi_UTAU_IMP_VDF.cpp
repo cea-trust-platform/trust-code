@@ -92,7 +92,7 @@ int Paroi_UTAU_IMP_VDF::calculer_hyd(DoubleTab& tab1,int isKeps,DoubleTab& tab2)
   const Fluide_Incompressible& le_fluide = ref_cast(Fluide_Incompressible, eqn_hydr.milieu());
   const Champ_Don& ch_visco_cin = le_fluide.viscosite_cinematique();
 
-  DoubleTab& tab_visco = ref_cast_non_const(DoubleTab,ch_visco_cin->valeurs());
+  const DoubleTab& tab_visco = ref_cast(DoubleTab,ch_visco_cin->valeurs());
   int l_unif;
   double visco=-1;
   if (sub_type(Champ_Uniforme,ch_visco_cin.valeur()))
@@ -104,7 +104,12 @@ int Paroi_UTAU_IMP_VDF::calculer_hyd(DoubleTab& tab1,int isKeps,DoubleTab& tab2)
     l_unif = 0;
 
   if ((!l_unif) && (tab_visco.local_min_vect()<DMINFLOAT))
-    tab_visco+=DMINFLOAT;
+    //   on ne doit pas changer tab_visco ici !
+    {
+      Cerr<<" visco <=0 ?"<<finl;
+      exit();
+    }
+  //    tab_visco+=DMINFLOAT;
 
 
 

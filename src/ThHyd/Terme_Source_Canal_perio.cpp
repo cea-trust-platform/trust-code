@@ -371,7 +371,7 @@ ArrOfDouble Terme_Source_Canal_perio::source() const
               // Source = -u*Sum(imposed_heat_flux)/(Volume*Rho*Cp*Ubulk)
               // Ubulk=FlowRate/Area(PeriodicBoundary)
               // Loop on the faces
-              const DoubleTab& vitesse = ref_cast_non_const(Convection_Diffusion_std,equation()).vitesse_transportante().valeurs();
+              const DoubleTab& vitesse = ref_cast(Convection_Diffusion_std,equation()).vitesse_transportante().valeurs();
               for (int num_face=0; num_face<size; num_face++)
                 {
                   double velocity = 0;

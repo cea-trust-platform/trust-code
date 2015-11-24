@@ -330,7 +330,7 @@ int Assembleur_P_VEFPreP1B::assembler_mat(Matrice& la_matrice,const DoubleVect& 
       changer_base_matrice(la_matrice_de_travail_); // A->A~
 
       // Si pas deja fait, on prends un solveur (SolveurPP1B) qui fera les changements de base pour la solution et le second membre
-      SolveurSys& solveur_pression_=ref_cast_non_const(Navier_Stokes_std,equation()).solveur_pression();
+      SolveurSys& solveur_pression_=ref_cast(Navier_Stokes_std,mon_equation.valeur()).solveur_pression();
       if(solveur_pression_.valeur().que_suis_je()!="SolveurPP1B")
         {
           SolveurSys solveur_pression_lu=solveur_pression_;
@@ -356,7 +356,7 @@ int Assembleur_P_VEFPreP1B::assembler_mat(Matrice& la_matrice,const DoubleVect& 
 
       if (conversion_matrice_morse
           && zone_vef.get_alphaE()!=nombre_supports // On n'est pas en P0
-          && ref_cast_non_const(Navier_Stokes_std,equation()).solveur_pression().supporte_matrice_morse_sym())
+          && ref_cast(Navier_Stokes_std,mon_equation.valeur()).solveur_pression().supporte_matrice_morse_sym())
         {
           //////////////////////////////////////////////////////////
           // La matrice retournee est une Matrice_Morse_Sym nettoyee

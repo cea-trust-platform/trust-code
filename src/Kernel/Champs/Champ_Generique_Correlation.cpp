@@ -56,7 +56,7 @@ void Champ_Generique_Correlation::completer(const Postraitement_base& post)
   const Zone_dis_base& zdis = get_ref_zone_dis_base();
 
   Op_Correlation_.associer(zdis,ch_integre,ch_integre2,tstat_deb_,tstat_fin_);
-  Postraitement& mon_post = ref_cast_non_const(Postraitement,post);
+  const Postraitement& mon_post = ref_cast(Postraitement,post);
 
   Motcle nom_champ_moyenne("Moyenne_");
   nom_champ_moyenne += nom_champ;
@@ -109,8 +109,7 @@ const Champ_base& Champ_Generique_Correlation::get_champ(Champ& espace_stockage)
   espace_stockage = creer_espace_stockage(nature_source,nb_comp,es_tmp);
 
   DoubleTab& tab_correlation = espace_stockage.valeurs();
-  Operateur_Statistique_tps_base& operateur = ref_cast_non_const(Operateur_Statistique_tps_base,Op_Correlation_);
-  tab_correlation = operateur.calculer_valeurs();
+  tab_correlation = Op_Correlation_.calculer_valeurs();
   tab_correlation.echange_espace_virtuel();
   return espace_stockage.valeur();
 }
@@ -206,7 +205,8 @@ const Motcle Champ_Generique_Correlation::get_directive_pour_discr() const
 {
   Motcle directive;
 
-  int support_corr = ref_cast_non_const(Integrale_tps_produit_champs,integrale()).support_different();
+  int support_corr = ref_cast(Integrale_tps_produit_champs,integrale()).get_support_different();
+
   if (support_corr==1)
     directive = "champ_elem";
   else

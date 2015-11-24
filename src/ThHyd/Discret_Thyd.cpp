@@ -294,7 +294,7 @@ void Discret_Thyd::h_conv(const Zone_dis& z,const Zone_Cl_dis& zcl, const Champ_
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-void Discret_Thyd::proprietes_physiques_fluide_Ostwald(Zone_dis& , Fluide_Ostwald& ,
+void Discret_Thyd::proprietes_physiques_fluide_Ostwald(const Zone_dis& , Fluide_Ostwald& ,
                                                        const Navier_Stokes_std& ,
                                                        const Champ_Inc& ) const
 {

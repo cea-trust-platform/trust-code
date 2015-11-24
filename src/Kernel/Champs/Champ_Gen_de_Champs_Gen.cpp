@@ -194,6 +194,13 @@ const Champ_Generique_base& Champ_Gen_de_Champs_Gen::get_source(int i) const
     return sources_[i-n_sources_ref].valeur();
 }
 
+Champ_Generique_base& Champ_Gen_de_Champs_Gen::set_source(int i)
+{
+  // POur eviter de recoder la meme chose que get_source
+  return ref_cast_non_const(Champ_Generique_base,get_source(i));
+}
+
+
 int Champ_Gen_de_Champs_Gen::get_nb_sources() const
 {
   return sources_reference_.size()+sources_.size();
@@ -231,7 +238,7 @@ void Champ_Gen_de_Champs_Gen::completer(const Postraitement_base& post)
   const int n = get_nb_sources();
   for (int i = n_sources_ref ; i < n; i++)
     {
-      Champ_Generique_base& source_a_completer = ref_cast_non_const(Champ_Generique_base,get_source(i));
+      Champ_Generique_base& source_a_completer = ref_cast(Champ_Generique_base,set_source(i));
       source_a_completer.completer(post);
     }
 
@@ -399,7 +406,7 @@ void Champ_Gen_de_Champs_Gen::fixer_serie(const double& t1, const double& t2)
     {
       if (sub_type(Champ_Gen_de_Champs_Gen,get_source(i)))
         {
-          Champ_Gen_de_Champs_Gen& source = ref_cast_non_const(Champ_Gen_de_Champs_Gen,get_source(i));
+          Champ_Gen_de_Champs_Gen& source = ref_cast(Champ_Gen_de_Champs_Gen,set_source(i));
           source.fixer_serie(t1,t2);
         }
     }
@@ -412,7 +419,7 @@ void Champ_Gen_de_Champs_Gen::fixer_tstat_deb(const double& t1, const double& t2
     {
       if (sub_type(Champ_Gen_de_Champs_Gen,get_source(i)))
         {
-          Champ_Gen_de_Champs_Gen& source = ref_cast_non_const(Champ_Gen_de_Champs_Gen,get_source(i));
+          Champ_Gen_de_Champs_Gen& source = ref_cast(Champ_Gen_de_Champs_Gen,set_source(i));
           source.fixer_tstat_deb(t1,t2);
         }
     }
@@ -426,7 +433,7 @@ void Champ_Gen_de_Champs_Gen::lire_bidon(Entree& is) const
     {
       if (sub_type(Champ_Gen_de_Champs_Gen,get_source(i)))
         {
-          Champ_Gen_de_Champs_Gen& source = ref_cast_non_const(Champ_Gen_de_Champs_Gen,get_source(i));
+          const Champ_Gen_de_Champs_Gen& source = ref_cast(Champ_Gen_de_Champs_Gen,get_source(i));
           source.lire_bidon(is);
         }
     }

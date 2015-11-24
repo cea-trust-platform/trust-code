@@ -66,9 +66,14 @@ void Echange_contact_ODVM_VDF::calculer_Teta_equiv(DoubleTab& La_T_ext,const Dou
   const Modele_turbulence_scal_base& modele_turbulence = ref_cast(Modele_turbulence_scal_base,eq.get_modele(TURBULENCE).valeur());
   const Turbulence_paroi_scal& loipar = modele_turbulence.loi_paroi();
 
-  Paroi_ODVM_scal_VDF& paroi_vdf = ref_cast_non_const(Paroi_ODVM_scal_VDF,loipar.valeur());
+  const Paroi_ODVM_scal_VDF& paroi_vdf = ref_cast(Paroi_ODVM_scal_VDF,loipar.valeur());
   // Initialise la loi de paroi si necessaire:
-  if (paroi_vdf.get_Tf0().size_array()==0) paroi_vdf.init_lois_paroi();
+// GF non pas ici	// paroi_vdf.init_lois_paroi();
+  if (paroi_vdf.get_Tf0().size_array()==0)
+    {
+      Cerr<<"pb !!!!!!!!"<<finl;
+      exit() ;
+    }
 
   for (int numfa=0; numfa<nb_faces_bord; numfa++)
     {

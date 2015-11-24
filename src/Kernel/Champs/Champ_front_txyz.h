@@ -58,7 +58,7 @@ public:
   };
 
 private :
-  VECT(Parser_U) fxyz;
+  mutable VECT(Parser_U) fxyz;
 
 };
 

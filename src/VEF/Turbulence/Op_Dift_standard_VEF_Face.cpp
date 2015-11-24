@@ -337,8 +337,6 @@ DoubleTab& Op_Dift_standard_VEF_Face::ajouter(const DoubleTab& inconnue,
   int nb_dim = resu.nb_dim();
   if(nb_dim==2)
     nb_comp=resu.dimension(1);
-  //Curieux
-  ref_cast_non_const(Op_Dift_standard_VEF_Face,(*this)).mettre_a_jour(0.);
 
   //  if(nb_comp==1)
   //    ajouter_cas_scalaire(inconnue, resu,ref_cast(DoubleTab,flux_bords, nu, nu_turb, zone_Cl_VEF, zone_VEF);

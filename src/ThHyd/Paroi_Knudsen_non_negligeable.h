@@ -45,11 +45,11 @@ class Paroi_Knudsen_non_negligeable : public Dirichlet_paroi_defilante
   Declare_instanciable(Paroi_Knudsen_non_negligeable);
 
 public :
-  inline const DoubleTab& vitesse_paroi()
+  inline const DoubleTab& vitesse_paroi() const
   {
     return vitesse_paroi_.valeurs();
   };
-  inline const DoubleTab& k()
+  inline const DoubleTab& k() const
   {
     return k_.valeurs();
   } ;

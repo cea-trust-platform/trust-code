@@ -74,7 +74,7 @@ public :
                      Champ_Inc&, int =1) const;
   virtual void creer_champ_vorticite(const Schema_Temps_base&,const Champ_Inc& ,
                                      Champ_Fonc& ) const;
-  virtual void proprietes_physiques_fluide_Ostwald(Zone_dis& ,Fluide_Ostwald&,
+  virtual void proprietes_physiques_fluide_Ostwald(const Zone_dis& ,Fluide_Ostwald&,
                                                    const Navier_Stokes_std& ,
                                                    const Champ_Inc& ) const ;
   //pour VEF implemente const =0;

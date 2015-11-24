@@ -161,7 +161,7 @@ public:
   int calculer_valeurs_som_compo_post(DoubleTab& valeurs,int ncomp,int nbsom,Nom& nom_post,const Domaine& dom,int appliquer_cl=0) const ;
   int calculer_valeurs_elem_post(DoubleTab& valeurs,int nbelem,Nom& nom_post,const Domaine& dom) const ;
   int calculer_valeurs_elem_compo_post(DoubleTab& valeurs,int ncomp,int nbelem,Nom& nom_post,const Domaine& dom) const ;
-  void corriger_unite_nom_compo() const;
+  void corriger_unite_nom_compo() ;
   virtual int completer_post_champ(const Domaine& dom,const int axi,const Nom& loc_post,
                                    const Nom& le_nom_champ_post,Format_Post_base& format) const;
   virtual void completer(const Zone_Cl_dis_base& zcl);

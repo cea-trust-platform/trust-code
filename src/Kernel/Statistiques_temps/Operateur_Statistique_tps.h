@@ -54,7 +54,7 @@ public:
   {
     valeur().completer(pb);
   };
-  inline DoubleTab calculer_valeurs()
+  inline DoubleTab calculer_valeurs() const
   {
     return valeur().calculer_valeurs();
   };

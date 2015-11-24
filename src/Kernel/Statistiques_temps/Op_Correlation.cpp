@@ -202,7 +202,7 @@ void Op_Correlation::completer(const Probleme_base& Pb)
   integrale_tps_ab_.changer_temps(Pb.schema_temps().temps_courant());
 }
 
-DoubleTab Op_Correlation::calculer_valeurs()
+DoubleTab Op_Correlation::calculer_valeurs() const
 {
   Integrale_tps_produit_champs correlation(integrale_tps_ab_);
   const double& dt_ab = dt_integration_ab();

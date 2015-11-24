@@ -50,9 +50,9 @@ protected:
   Calcul_Production_K_VDF() {}
 
   DoubleVect& calculer_terme_production_K(const Zone_VDF& ,const Zone_Cl_VDF&, DoubleVect& , const DoubleTab& ,
-                                          const DoubleTab& , Champ_Face& , const DoubleTab& ) const;
+                                          const DoubleTab& , const Champ_Face& , const DoubleTab& ) const;
 
-  DoubleVect& calculer_terme_production_K_Axi(const Zone_VDF& , Champ_Face& , DoubleVect& ,
+  DoubleVect& calculer_terme_production_K_Axi(const Zone_VDF& , const Champ_Face& , DoubleVect& ,
                                               const DoubleTab& , const DoubleTab& ) const;
 
   DoubleVect& calculer_terme_destruction_K(const Zone_VDF& , const Zone_Cl_VDF& , DoubleVect& ,

@@ -614,7 +614,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter(const DoubleTab& vitesse_face_absolue, Do
   nb_degres_liberte.resize(zone_VEF.zone().nb_som_tot());
   nb_degres_liberte=-1;
 
-  DoubleTab& flux_b = ref_cast_non_const(DoubleTab,flux_bords_);
+  DoubleTab& flux_b = flux_bords_;
   flux_b.resize(zone_VEF.nb_faces_bord(),1);
   flux_b = 0.;
 

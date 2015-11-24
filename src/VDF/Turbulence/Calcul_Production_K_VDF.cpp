@@ -43,7 +43,7 @@
 /////////////////////////////////////////////////////////////////////////////
 DoubleVect& Calcul_Production_K_VDF::
 calculer_terme_production_K(const Zone_VDF& zone_VDF, const Zone_Cl_VDF& zone_Cl_VDF , DoubleVect& S,  const DoubleTab& K_eps,
-                            const DoubleTab& vitesse,Champ_Face& vit,  const DoubleTab& visco_turb )  const
+                            const DoubleTab& vitesse,const Champ_Face& vit,  const DoubleTab& visco_turb )  const
 {
   int nb_elem = zone_VDF.zone().nb_elem();
   const IntTab& elem_faces = zone_VDF.elem_faces();
@@ -93,7 +93,7 @@ calculer_terme_production_K(const Zone_VDF& zone_VDF, const Zone_Cl_VDF& zone_Cl
 
 DoubleVect& Calcul_Production_K_VDF::
 calculer_terme_production_K_Axi(const Zone_VDF& zone_VDF,
-                                Champ_Face& vitesse,
+                                const Champ_Face& vitesse,
                                 DoubleVect& P,
                                 const DoubleTab& K_Eps,
                                 const DoubleTab& visco_turb) const
@@ -112,8 +112,8 @@ calculer_terme_production_K_Axi(const Zone_VDF& zone_VDF,
   int nb_aretes = zone_VDF.nb_aretes();
   const IntTab& face_voisins = zone_VDF.face_voisins();
   const IntTab& Qdm = zone_VDF.Qdm();
-  DoubleTab& tau_diag = vitesse.tau_diag();
-  DoubleTab& tau_croises = vitesse.tau_croises();
+  const DoubleTab& tau_diag = vitesse.tau_diag();
+  const DoubleTab& tau_croises = vitesse.tau_croises();
   double d_visco_turb,k_elem,P_arete;
 
   // Calcul des composantes du tenseur de Reynolds a partir du tenseur GradU

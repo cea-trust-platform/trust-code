@@ -78,7 +78,7 @@ int Paroi_Cisaillement_Imp_VEF::calculer_hyd_commun()
   const Fluide_Incompressible& le_fluide = ref_cast(Fluide_Incompressible, eqn_hydr.milieu());
   const Champ_Don& ch_visco_cin = le_fluide.viscosite_cinematique();
   const DoubleTab& vit = eqn_hydr.inconnue().valeurs();
-  DoubleTab& tab_visco = ref_cast_non_const(DoubleTab,ch_visco_cin->valeurs());
+  const DoubleTab& tab_visco = ref_cast(DoubleTab,ch_visco_cin->valeurs());
   const Zone& zone = zone_VEF.zone();
   int nfac = zone.nb_faces_elem();
   const DoubleTab& xv = zone_VEF.xv();    // centre de gravite des faces
@@ -102,7 +102,12 @@ int Paroi_Cisaillement_Imp_VEF::calculer_hyd_commun()
     l_unif = 0;
 
   if ((!l_unif) && (tab_visco.local_min_vect()<DMINFLOAT))
-    tab_visco+=DMINFLOAT;
+    //   on ne doit pas changer tab_visco ici !
+    {
+      Cerr<<" visco <=0 ?"<<finl;
+      exit();
+    }
+  //tab_visco+=DMINFLOAT;
 
   int ndeb,nfin;
   double norm_v=-1;

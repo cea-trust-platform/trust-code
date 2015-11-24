@@ -934,7 +934,7 @@ void Champ_front_recyclage::calcul_moyenne_recyclee(const DoubleTab& tab,double 
       const Front_VF& fr_vf2 = ref_cast(Front_VF,la_frontiere_dis.valeur());
       int nb_faces_bord2 = fr_vf2.nb_faces();
       DoubleVect face_surfaces;
-      Faces& les_faces_bord = ref_cast_non_const(Faces,fr_vf2.frontiere().faces());
+      const Faces& les_faces_bord = fr_vf2.frontiere().faces();
       les_faces_bord.calculer_surfaces(face_surfaces);
 
       DoubleVect moyenne(nb_compo_);

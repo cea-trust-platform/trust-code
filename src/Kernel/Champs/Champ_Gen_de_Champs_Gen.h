@@ -62,6 +62,7 @@ public:
                                             Champ_Fonc& es_tmp) const;
 
   virtual const Champ_Generique_base&      get_source(int i) const;
+  virtual Champ_Generique_base&      set_source(int i) ;
   virtual int                      get_nb_sources() const;
   virtual int            get_dimension() const;
   virtual void              get_property_names(Motcles& list) const;

@@ -705,11 +705,12 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
               ++curseur;
             }
           // On parcourt les zones pour renommer
-          const Zones& les_zones=dom.zones();
-          CONST_LIST_CURSEUR(Zone) curseur2=les_zones;
+          Zones& les_zones=dom.zones();
+          LIST_CURSEUR(Zone) curseur2=les_zones;
           while (curseur2)
             {
-              if (curseur2->le_nom()==(Nom)izone) ref_cast_non_const(Zone,curseur2.valeur()).nommer(nom_zone);
+              if (curseur2->le_nom()==(Nom)izone)
+                ref_cast(Zone,curseur2.valeur()).nommer(nom_zone);
               ++curseur2;
             }
 

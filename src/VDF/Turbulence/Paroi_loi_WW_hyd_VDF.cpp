@@ -97,7 +97,7 @@ int Paroi_loi_WW_hyd_VDF::calculer_hyd(DoubleTab& tab_nu_t,DoubleTab& tab_k)
 
   // la vitesse resolue par l'equation hydr
   const DoubleVect& vit = eqn_hydr.inconnue().valeurs();
-  DoubleTab& tab_visco = ref_cast_non_const(DoubleTab,ch_visco_cin->valeurs());
+  const DoubleTab& tab_visco = ref_cast(DoubleTab,ch_visco_cin->valeurs());
   double visco=-1;
 
   // l_unif est le parametre de controle
@@ -122,7 +122,12 @@ int Paroi_loi_WW_hyd_VDF::calculer_hyd(DoubleTab& tab_nu_t,DoubleTab& tab_k)
 
   // Cas ou la viscosite est nulle !!!!
   if ((!l_unif) && (tab_visco.local_min_vect()<DMINFLOAT))
-    tab_visco+=DMINFLOAT;
+    //   on ne doit pas changer tab_visco ici !
+    {
+      Cerr<<" visco <=0 ?"<<finl;
+      exit();
+    }
+  //    tab_visco+=DMINFLOAT;
 
   int ndeb,nfin;
   int elem,ori;

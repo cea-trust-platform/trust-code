@@ -370,7 +370,7 @@ int ParoiVDF_TBLE::calculer_hyd(DoubleTab& tab1,int isKeps,DoubleTab& tab2)
 
   const Fluide_Incompressible& le_fluide = ref_cast(Fluide_Incompressible,eqn_hydr.milieu());
   const Champ_Don& ch_visco_cin = le_fluide.viscosite_cinematique();
-  DoubleTab& tab_visco = ref_cast_non_const(DoubleTab,ch_visco_cin->valeurs());
+  const DoubleTab& tab_visco = ref_cast(DoubleTab,ch_visco_cin->valeurs());
 
   if (source_boussinesq==1)
     {
@@ -395,7 +395,12 @@ int ParoiVDF_TBLE::calculer_hyd(DoubleTab& tab1,int isKeps,DoubleTab& tab2)
 
   // preparer_calcul_hyd(tab);
   if ((!l_unif) && (tab_visco.local_min_vect()<DMINFLOAT))
-    tab_visco+=DMINFLOAT;
+    //   on ne doit pas changer tab_visco ici !
+    {
+      Cerr<<" visco <=0 ?"<<finl;
+      exit();
+    }
+  //    tab_visco+=DMINFLOAT;
 
   int ndeb=0,nfin=0;
   int ori;

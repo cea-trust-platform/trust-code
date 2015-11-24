@@ -29,11 +29,10 @@
 #include <Discretisation_base.h>
 #include <Loi_Etat_Melange_GP.h>
 #include <Zone_Cl_dis.h>
-#include <Sortie_libre_pression_imposee_QC.h>
 #include <SFichier.h>
 #include <Param.h>
 #include <Champ_Fonc_Fonction.h>
-
+#include <Neumann_sortie_libre.h>
 
 Implemente_instanciable_sans_constructeur(Fluide_Quasi_Compressible,"Fluide_Quasi_Compressible",Fluide_Incompressible);
 

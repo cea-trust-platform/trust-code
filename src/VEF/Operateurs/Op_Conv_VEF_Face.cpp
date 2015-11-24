@@ -216,7 +216,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
   int nfac = zone.nb_faces_elem();
   int nsom = zone.nb_som_elem();
   const IntTab& sommet_elem = zone.les_elems();
-  DoubleTab& vecteur_face_facette = ref_cast_non_const(Zone_VEF,zone_VEF).vecteur_face_facette();
+  const DoubleTab& vecteur_face_facette = ref_cast_non_const(Zone_VEF,zone_VEF).vecteur_face_facette();
   const  DoubleTab& vecteur_face_facette_Cl = zone_Cl_VEF.vecteur_face_facette_Cl();
   int nb_bord = zone_VEF.nb_front_Cl();
   const IntTab& les_elems=zone.les_elems();

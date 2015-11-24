@@ -485,11 +485,11 @@ void VDF_discretisation::zone_Cl_dis(Zone_dis& z,
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
 void VDF_discretisation::proprietes_physiques_fluide_Ostwald
-(Zone_dis& z, Fluide_Ostwald& le_fluide, const Navier_Stokes_std& eqn_hydr,
+(const Zone_dis& z, Fluide_Ostwald& le_fluide, const Navier_Stokes_std& eqn_hydr,
  const Champ_Inc&  ) const
 {
   Cerr << "Discretisation du fluide_Ostwald" << finl;
-  Zone_VDF& zone_vdf=ref_cast(Zone_VDF, z.valeur());
+  const Zone_VDF& zone_vdf=ref_cast(Zone_VDF, z.valeur());
   const Champ_Inc& ch_vitesse = eqn_hydr.inconnue();
   const Champ_Face& vit = ref_cast(Champ_Face,ch_vitesse.valeur());
 

@@ -159,8 +159,8 @@ DoubleTab& Op_Dift_VDF_Face_Axi::ajouter(const DoubleTab& inco, DoubleTab& resu)
       exit();
     }
 
-  double temps=equation().schema_temps().temps_courant();
-  ref_cast_non_const(Op_Dift_VDF_Face_Axi, (*this)).mettre_a_jour(temps);
+// double temps=equation().schema_temps().temps_courant();
+  //ref_cast_non_const(Op_Dift_VDF_Face_Axi, (*this)).mettre_a_jour(temps);
   const Zone_VDF& zvdf = la_zone_vdf.valeur();
   const Zone_Cl_VDF& zclvdf = la_zcl_vdf.valeur();
   //  int nb_elem = zvdf.nb_elem();
@@ -698,8 +698,8 @@ void Op_Dift_VDF_Face_Axi::ajouter_contribution(const DoubleTab& inco,          
       exit();
     }
   int l;
-  double temps=equation().schema_temps().temps_courant();
-  ref_cast_non_const(Op_Dift_VDF_Face_Axi, (*this)).mettre_a_jour(temps);
+  //double temps=equation().schema_temps().temps_courant();
+  //ref_cast_non_const(Op_Dift_VDF_Face_Axi, (*this)).mettre_a_jour(temps);
   const Zone_VDF& zvdf = la_zone_vdf.valeur();
   const Zone_Cl_VDF& zclvdf = la_zcl_vdf.valeur();
   //  int nb_elem = zvdf.nb_elem();
