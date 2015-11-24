@@ -125,12 +125,10 @@ static void construire_graph_from_segment(const Domaine& dom,
 
   // ****************************************************************
   // PREMIERE ETAPE: calcul du nombre de vertex et edges du graph:
-  const int nb_edges = liaisons.size_array(); // 2 liens par liaison
+  int nb_edges = liaisons.size_array(); // 2 liens par liaison
   int nb_elem=liaisons.local_max_vect()+1;  // mouif
   graph.nvtxs = nb_elem;
-  graph.nedges = nb_edges;
   graph.xadj = imalloc(nb_elem+1, "readgraph: xadj");
-  graph.adjncy = imalloc(nb_edges, "readgraph: adjncy");
   graph.vwgts = NULL;
   if (! use_weights)
     {
@@ -169,13 +167,17 @@ static void construire_graph_from_segment(const Domaine& dom,
   Matrice_Morse A;
   Matrix_tools::allocate_morse_matrix(nb_elem,nb_elem,stencyl,A);
 
+  nb_edges=A.tab2_.size_array(); // des liens peuvent etre doubles
+  graph.nedges = nb_edges;
+  graph.adjncy = imalloc(nb_edges, "readgraph: adjncy");
+
   //
   assert(A.tab1_.size_array()==graph.nvtxs+1);
   for (int c=0; c<graph.nvtxs+1; c++)
     {
       graph.xadj[c]=A.tab1_[c]-1;
     }
-  assert(A.tab2_.size_array()==graph.nedges);
+  // assert(A.tab2_.size_array()==graph.nedges);
   for (int c=0; c<graph.nedges; c++)
     {
       graph.adjncy[c]=A.tab2_[c]-1;

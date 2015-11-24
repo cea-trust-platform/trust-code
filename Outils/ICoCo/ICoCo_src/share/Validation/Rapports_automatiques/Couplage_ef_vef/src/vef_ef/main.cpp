@@ -26,6 +26,8 @@ void synchronize_bool(bool& stop, synctype s)
     MPI_Allreduce(&my_stop_temp,&my_stop,1,MPI_INTEGER,MPI_MIN,MPI_COMM_WORLD);
   else if (s==sync_or)
     MPI_Allreduce(&my_stop_temp,&my_stop,1,MPI_INTEGER,MPI_MAX,MPI_COMM_WORLD);
+  else
+     throw;
   stop =(my_stop==1);
 }
 

@@ -128,7 +128,7 @@ Lire pb2
         Navier_Stokes_standard
         {
                 
-      solveur_pression gcp  { precond ssor { omega -2 } SEUIl 1e10 }       
+      solveur_pression gcp  { precond ssor { omega -2 } SEUIl 1e10 quiet }       
                 convection { negligeable }
                 diffusion { negligeable }
                 

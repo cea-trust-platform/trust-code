@@ -83,9 +83,6 @@ genere_fiche()
 		fi
 	    fi
 	fi
-	ls 
-	echo $ko
-	xterm
 	if [ $ko -eq 0 ]
 	then
 	    mv 	Running$OPTIONS_PRM ../deps_$(basename $dir)

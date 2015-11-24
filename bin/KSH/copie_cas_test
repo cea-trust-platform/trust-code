@@ -221,14 +221,11 @@ then
 	 cd `dirname $cible`
 	 if [ ! -f $cible ] 
 	 then
-	    CHECKOUT . 1>/dev/null 2>&1
 	    touch $cible
 	    chmod +w $cible
-	    if [ "$TRUST_SCM" = 1 ] 
-	    then
 	       MKELEM `basename $cible` 1>mkelem.log 2>&1
 	       [ $? != 0 ] && echo "Echec when creating `basename $cible`" && cat mkelem.log && exit -1
-	    fi
+               rm mkelem.log
 	 else
 	    msg="Changement du jeu de donnees $cible\n
 suite a une modification d'un jeu de donnees de la fiche de validation associee.\n
@@ -236,7 +233,6 @@ Mise a jour du jeu de donnees seulement... A vous de voir pour le .lml.gz"
 	    echo $ECHO_OPTS $msg
 	    touch $DEST/check_lml_gz	    
 	 fi
-	 CHECKOUT `basename $cible` 1>/dev/null 2>&1
 	 cd - 1>/dev/null 2>&1
 	 cat $test.data > $cible
       fi

@@ -18,25 +18,6 @@ using namespace ICoCo;
 
 //utility methods for synchronizing
 //data from the the two trio instance
-typedef enum {sync_and,sync_or} synctype;
-void synchronize_bool(bool& stop, synctype s)
-{
-  int my_stop;
-  int my_stop_temp = stop?1:0;
-	
-  if (s==sync_and)
-    MPI_Allreduce(&my_stop_temp,&my_stop,1,MPI_INTEGER,MPI_MIN,MPI_COMM_WORLD);
-  else if (s==sync_or)
-    MPI_Allreduce(&my_stop_temp,&my_stop,1,MPI_INTEGER,MPI_MAX,MPI_COMM_WORLD);
-  stop =(my_stop==1);
-}
-
-void synchronize_dt(double& dt)
-{
-  double dttemp=dt;
-  MPI_Allreduce(&dttemp,&dt,1,MPI_DOUBLE,MPI_MIN,MPI_COMM_WORLD);
-}
-
 
 void affiche( const TrioField&   field,const char* name)
 {

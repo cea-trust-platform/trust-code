@@ -256,6 +256,7 @@ add_package()
 {
    echo $ECHO_OPTS "Looking for package $1... \c"   
    external_package=`cd ..;ls -rt $1*.tar.gz $1*.tgz $1*.tar.bz2 2>/dev/null | tail -1`
+   external_package=`grep petsc $TRUST_ROOT/bin/gestion_externalpackages/liste_dep.csv  | awk -F, '{print "/"$2}' | grep "/"$1`
    name=`echo $1 | awk '{print tolower($1)}'`
    if [ "$external_package" = "" ]
    then
@@ -600,6 +601,7 @@ then
 fi
 
 # On efface la distribution sur les machines ou Petsc a ete compile uniquement en optimise
+cp $package/config.log .
 [ "$liste_debug" = "0" ] && rm -r -f $package
 echo "Leaving install PETSc, it seems OK."
 exit 0

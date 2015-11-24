@@ -566,7 +566,7 @@ then
          cd -
       done
    fi
-   rm -rf $TRUST_ROOT/env/ $TRUST_ROOT/lib $TRUST_ROOT/exec $TRUST_ROOT/include $TRUST_ROOT/Makefile $TRUST_ROOT/MonoDir*
+   rm -r -f $TRUST_ROOT/env_TRUST.sh $TRUST_ROOT/env/ $TRUST_ROOT/lib $TRUST_ROOT/exec $TRUST_ROOT/include $TRUST_ROOT/Makefile $TRUST_ROOT/MonoDir*
    # Plus on efface le $TRUST_TMP
    rm -r -f $TRUST_TMP
    exit 0
@@ -1860,7 +1860,7 @@ linux_clang++) TRUST_SUPPORTED=1
 	fi
 	# Support d'Absoft mais n'accepte que -O comme flag
 	F77Flags="-O3 -fPIC" && [ "`echo $TRUST_F77_BASE | grep absoft`" != "" ] && F77Flags="-O"
-	ccFLAGS="-O3 -fPIC"
+	ccFLAGS="-Qunused-arguments -O3 -fPIC"
 	ShLibFlag="\$(TRUST_CC) -shared"
 #	cherche_include_systeme
 	;;

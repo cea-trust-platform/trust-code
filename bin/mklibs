@@ -62,10 +62,13 @@ then
 	 then
 	    PETSC=$PETSC" "$L"-lssl -lcrypto"
 	 fi
+	 if [ "`grep lpthread $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ]
+	 then
+	    PETSC=$PETSC" "$L"-lpthread"
+	 fi
       fi
-      # Bizarre sur supermuc, MUMPS switche sur gfortran:
-      # Ameliorer ?
-      [ $HOST = supermuc ] && PETSC=$PETSC" -lgfortran"
+      # Bizarre, MUMPS switche sur gfortran: Ameliorer ?
+      #PETSC=$PETSC" -lgfortran"
       #PETSC="-L\$(PETSC_ROOT)/\$(TRUST_ARCH)\$(OPT)/lib "`awk '/Using libraries/ {for (i=1;i<=NF;i++) if (index($i,"-l")) print $i}' $petscmachineinfo`
    fi
    \cd - 1>/dev/null 2>&1
