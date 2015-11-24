@@ -39,7 +39,7 @@ do
    fi
 done
 
-[ ! -d externalpackages ] && [ ! -L externalpackages ] && echo "You need to download externalpackages before configuring" && export TRUST_ROOT_VERSION=`awk '/version/ && /Release notes/ {print $4;exit}' $TRUST_ROOT/RELEASE_NOTES`&& echo wget http://downloads.sourceforge.net/project/trust-platform/externalpackages_$TRUST_ROOT_VERSION.tar && exit -1
+[ ! -d externalpackages ] && [ ! -L externalpackages ] && echo "You need to download externalpackages before configuring" && export TRUST_ROOT_VERSION=`awk '/version/ && /Release notes/ {print $4;exit}' $TRUST_ROOT/RELEASE_NOTES | sed "s/_beta//"`&& echo wget http://downloads.sourceforge.net/project/trust-platform/$TRUST_ROOT_VERSION/externalpackages_$TRUST_ROOT_VERSION.tar && exit -1
 
 echo "----------------------------------------------------------------------------------------------------------------------------"
 echo "Usage: `basename $0` "
