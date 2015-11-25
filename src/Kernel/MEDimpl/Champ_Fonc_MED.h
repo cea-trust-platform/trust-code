@@ -58,7 +58,7 @@ public :
       double moyenne(int ) const;
       int imprime(Sortie& , int ) const ;
   */
-  void creer(const Nom&,const Domaine& dom,const Nom& localisation,ArrOfDouble& temps_sauv);
+  void creer(const Nom&,const Domaine& dom,const Motcle& localisation,ArrOfDouble& temps_sauv);
   const Domaine& domaine() const;
   void lire(double tps,int nn=-1);
   int nb_pas_temps()
