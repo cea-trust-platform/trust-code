@@ -260,7 +260,6 @@ Chapter {
 			file ./EF_stab/y20/nx5/Moyennes_spatiales_vitesse_rho_mu.last
 			columns 1 2
 			Style lines
-			TypeLigne 1
 		}
 		Curve {
 			legend " Amont "
@@ -268,7 +267,6 @@ Chapter {
 			file ./Amont/y20/nx5/Moyennes_spatiales_vitesse_rho_mu.last
 			columns 1 2
 			Style lines
-			TypeLigne 2
 		}
 		Curve {
 			legend " Muscl "
@@ -276,7 +274,6 @@ Chapter {
 			file ./Muscl/y20/nx5/Moyennes_spatiales_vitesse_rho_mu.last
 			columns 1 2
 			Style lines
-			TypeLigne 3
 		}
 	}
 #
@@ -295,7 +292,6 @@ Chapter {
 			file ./EF_stab/y20/nx13/Moyennes_spatiales_vitesse_rho_mu.last
 			columns 1 2
 			Style lines
-			TypeLigne 1
 		}
 		Curve {
 			legend " Amont "
@@ -303,7 +299,6 @@ Chapter {
 			file ./Amont/y20/nx13/Moyennes_spatiales_vitesse_rho_mu.last
 			columns 1 2
 			Style lines
-			TypeLigne 2
 		}
 		Curve {
 			legend " Muscl "
@@ -311,7 +306,6 @@ Chapter {
 			file ./Muscl/y20/nx13/Moyennes_spatiales_vitesse_rho_mu.last
 			columns 1 2
 			Style lines
-			TypeLigne 3
 		}
 	}
 #
@@ -330,7 +324,6 @@ Chapter {
 			file ./EF_stab/y20/nx17/Moyennes_spatiales_vitesse_rho_mu.last
 			columns 1 2
 			Style lines
-			TypeLigne 1
 		}
 		Curve {
 			legend " Amont "
@@ -338,7 +331,6 @@ Chapter {
 			file ./Amont/y20/nx17/Moyennes_spatiales_vitesse_rho_mu.last
 			columns 1 2
 			Style lines
-			TypeLigne 2
 		}
 		Curve {
 			legend " Muscl "
@@ -346,7 +338,6 @@ Chapter {
 			file ./Muscl/y20/nx17/Moyennes_spatiales_vitesse_rho_mu.last
 			columns 1 2
 			Style lines
-			TypeLigne 3
 		}
 	}
 #
@@ -365,7 +356,6 @@ Chapter {
 			file ./EF_stab/y20/nx33/Moyennes_spatiales_vitesse_rho_mu.last
 			columns 1 2
 			Style lines
-			TypeLigne 1
 		}
 		Curve {
 			legend " Amont "
@@ -373,7 +363,6 @@ Chapter {
 			file ./Amont/y20/nx33/Moyennes_spatiales_vitesse_rho_mu.last
 			columns 1 2
 			Style lines
-			TypeLigne 2
 		}
 		Curve {
 			legend " Muscl "
@@ -381,7 +370,6 @@ Chapter {
 			file ./Muscl/y20/nx33/Moyennes_spatiales_vitesse_rho_mu.last
 			columns 1 2
 			Style lines
-			TypeLigne 3
 		}
 	}
 #
@@ -402,7 +390,6 @@ Chapter {
 			file expvisc.dat
 			columns 1 2
 			Style points
-			TypeLigne -1
 		}
 		Curve {
 			legend " EF_stab "
@@ -410,7 +397,6 @@ Chapter {
 			file ./EF_stab/y20/nx5/Moyennes_spatiales_nut.last
 			columns 1 2
 			Style lines
-			TypeLigne 1
 		}
 		Curve {
 			legend " Amont "
@@ -418,7 +404,6 @@ Chapter {
 			file ./Amont/y20/nx5/Moyennes_spatiales_nut.last
 			columns 1 2
 			Style lines
-			TypeLigne 2
 		}
 		Curve {
 			legend " Muscl "
@@ -426,7 +411,6 @@ Chapter {
 			file ./Muscl/y20/nx5/Moyennes_spatiales_nut.last
 			columns 1 2
 			Style lines
-			TypeLigne 3
 		}
 	}
 #
@@ -445,7 +429,6 @@ Chapter {
 			file expvisc.dat
 			columns 1 2
 			Style points
-			TypeLigne -1
 		}
 		Curve {
 			legend " EF_stab "
@@ -453,7 +436,6 @@ Chapter {
 			file ./EF_stab/y20/nx13/Moyennes_spatiales_nut.last
 			columns 1 2
 			Style lines
-			TypeLigne 1
 		}
 		Curve {
 			legend " Amont "
@@ -461,7 +443,6 @@ Chapter {
 			file ./Amont/y20/nx13/Moyennes_spatiales_nut.last
 			columns 1 2
 			Style lines
-			TypeLigne 2
 		}
 		Curve {
 			legend " Muscl "
@@ -469,7 +450,6 @@ Chapter {
 			file ./Muscl/y20/nx13/Moyennes_spatiales_nut.last
 			columns 1 2
 			Style lines
-			TypeLigne 3
 		}
 	}
 #
@@ -488,7 +468,6 @@ Chapter {
 			file expvisc.dat
 			columns 1 2
 			Style points
-			TypeLigne -1
 		}
 		Curve {
 			legend " EF_stab "
@@ -496,7 +475,6 @@ Chapter {
 			file ./EF_stab/y20/nx17/Moyennes_spatiales_nut.last
 			columns 1 2
 			Style lines
-			TypeLigne 1
 		}
 		Curve {
 			legend " Amont "
@@ -504,7 +482,6 @@ Chapter {
 			file ./Amont/y20/nx17/Moyennes_spatiales_nut.last
 			columns 1 2
 			Style lines
-			TypeLigne 2
 		}
 		Curve {
 			legend " Muscl "
@@ -512,7 +489,6 @@ Chapter {
 			file ./Muscl/y20/nx17/Moyennes_spatiales_nut.last
 			columns 1 2
 			Style lines
-			TypeLigne 3
 		}
 	}
 #
@@ -531,7 +507,6 @@ Chapter {
 			file expvisc.dat
 			columns 1 2
 			Style points
-			TypeLigne -1
 		}
 		Curve {
 			legend " EF_stab "
@@ -539,7 +514,6 @@ Chapter {
 			file ./EF_stab/y20/nx33/Moyennes_spatiales_nut.last
 			columns 1 2
 			Style lines
-			TypeLigne 1
 		}
 		Curve {
 			legend " Amont "
@@ -547,7 +521,6 @@ Chapter {
 			file ./Amont/y20/nx33/Moyennes_spatiales_nut.last
 			columns 1 2
 			Style lines
-			TypeLigne 2
 		}
 		Curve {
 			legend " Muscl "
@@ -555,7 +528,6 @@ Chapter {
 			file ./Muscl/y20/nx33/Moyennes_spatiales_nut.last
 			columns 1 2
 			Style lines
-			TypeLigne 3
 		}
 	}
 #####
@@ -575,7 +547,6 @@ Chapter {
 			origin "Theorie"
 			Fonction (1/0.415)*log(x)+5.5
 			Style points
-			TypePoints -1
 		}
 		Curve {
 			legend " EF_stab "
@@ -583,7 +554,6 @@ Chapter {
 			file EF_stab/y20/nx5/UNORM.dat
 			columns 1 2
 			Style lines
-			TypeLigne 4
 		}
 		Curve {
 			legend " Amont "
@@ -591,7 +561,6 @@ Chapter {
 			file Amont/y20/nx5/UNORM.dat
 			columns 1 2
 			Style lines
-			TypeLigne 2
 		}
 		Curve {
 			legend " Muscl "
@@ -599,7 +568,6 @@ Chapter {
 			file Muscl/y20/nx5/UNORM.dat
 			columns 1 2
 			Style lines
-			TypeLigne 3
 		}
 	}
 
@@ -620,7 +588,6 @@ Chapter {
 			origin "Theorie"
 			Fonction (1/0.415)*log(x)+5.5
 			Style points
-			TypePoints -1
 		}
 		Curve {
 			legend " EF_stab "
@@ -628,7 +595,6 @@ Chapter {
 			file EF_stab/y20/nx13/UNORM.dat
 			columns 1 2
 			Style lines
-			TypeLigne 4
 		}
 		Curve {
 			legend " Amont "
@@ -636,7 +602,6 @@ Chapter {
 			file Amont/y20/nx13/UNORM.dat
 			columns 1 2
 			Style lines
-			TypeLigne 2
 		}
 		Curve {
 			legend " Muscl "
@@ -644,7 +609,6 @@ Chapter {
 			file Muscl/y20/nx13/UNORM.dat
 			columns 1 2
 			Style lines
-			TypeLigne 3
 		}
 	}
 #####
@@ -664,7 +628,6 @@ Chapter {
 			origin "Theorie"
 			Fonction (1/0.415)*log(x)+5.5
 			Style points
-			TypePoints -1
 		}
 		Curve {
 			legend " EF_stab "
@@ -672,7 +635,6 @@ Chapter {
 			file EF_stab/y20/nx17/UNORM.dat
 			columns 1 2
 			Style lines
-			TypeLigne 4
 		}
 		Curve {
 			legend " Amont "
@@ -680,7 +642,6 @@ Chapter {
 			file Amont/y20/nx17/UNORM.dat
 			columns 1 2
 			Style lines
-			TypeLigne 2
 		}
 		Curve {
 			legend " Muscl "
@@ -688,7 +649,6 @@ Chapter {
 			file Muscl/y20/nx17/UNORM.dat
 			columns 1 2
 			Style lines
-			TypeLigne 3
 		}
 	}
 #####
@@ -708,7 +668,6 @@ Chapter {
 			origin "Theorie"
 			Fonction (1/0.415)*log(x)+5.5
 			Style points
-			TypePoints -1
 		}
 		Curve {
 			legend " EF_stab "
@@ -716,7 +675,6 @@ Chapter {
 			file EF_stab/y20/nx33/UNORM.dat
 			columns 1 2
 			Style lines
-			TypeLigne 4
 		}
 		Curve {
 			legend " Amont "
@@ -724,7 +682,6 @@ Chapter {
 			file Amont/y20/nx33/UNORM.dat
 			columns 1 2
 			Style lines
-			TypeLigne 2
 		}
 		Curve {
 			legend " Muscl "
@@ -732,7 +689,6 @@ Chapter {
 			file Muscl/y20/nx33/UNORM.dat
 			columns 1 2
 			Style lines
-			TypeLigne 3
 		}
 	}
 
@@ -889,7 +845,6 @@ Chapter {
 			file ./EF_stab/y40/nx5/Moyennes_spatiales_vitesse_rho_mu.last
 			columns 1 2
 			Style lines
-			TypeLigne 1
 		}
 		Curve {
 			legend " Amont "
@@ -897,7 +852,6 @@ Chapter {
 			file ./Amont/y40/nx5/Moyennes_spatiales_vitesse_rho_mu.last
 			columns 1 2
 			Style lines
-			TypeLigne 2
 		}
 		Curve {
 			legend " Muscl "
@@ -905,7 +859,6 @@ Chapter {
 			file ./Muscl/y40/nx5/Moyennes_spatiales_vitesse_rho_mu.last
 			columns 1 2
 			Style lines
-			TypeLigne 3
 		}
 	}
 #
@@ -924,7 +877,6 @@ Chapter {
 			file ./EF_stab/y40/nx13/Moyennes_spatiales_vitesse_rho_mu.last
 			columns 1 2
 			Style lines
-			TypeLigne 1
 		}
 		Curve {
 			legend " Amont "
@@ -932,7 +884,6 @@ Chapter {
 			file ./Amont/y40/nx13/Moyennes_spatiales_vitesse_rho_mu.last
 			columns 1 2
 			Style lines
-			TypeLigne 2
 		}
 		Curve {
 			legend " Muscl "
@@ -940,7 +891,6 @@ Chapter {
 			file ./Muscl/y40/nx13/Moyennes_spatiales_vitesse_rho_mu.last
 			columns 1 2
 			Style lines
-			TypeLigne 3
 		}
 	}
 #
@@ -959,7 +909,6 @@ Chapter {
 			file ./EF_stab/y40/nx17/Moyennes_spatiales_vitesse_rho_mu.last
 			columns 1 2
 			Style lines
-			TypeLigne 1
 		}
 		Curve {
 			legend " Amont "
@@ -967,7 +916,6 @@ Chapter {
 			file ./Amont/y40/nx17/Moyennes_spatiales_vitesse_rho_mu.last
 			columns 1 2
 			Style lines
-			TypeLigne 2
 		}
 		Curve {
 			legend " Muscl "
@@ -975,7 +923,6 @@ Chapter {
 			file ./Muscl/y40/nx17/Moyennes_spatiales_vitesse_rho_mu.last
 			columns 1 2
 			Style lines
-			TypeLigne 3
 		}
 	}
 #
@@ -994,7 +941,6 @@ Chapter {
 			file ./EF_stab/y40/nx33/Moyennes_spatiales_vitesse_rho_mu.last
 			columns 1 2
 			Style lines
-			TypeLigne 1
 		}
 		Curve {
 			legend " Amont "
@@ -1002,7 +948,6 @@ Chapter {
 			file ./Amont/y40/nx33/Moyennes_spatiales_vitesse_rho_mu.last
 			columns 1 2
 			Style lines
-			TypeLigne 2
 		}
 		Curve {
 			legend " Muscl "
@@ -1010,7 +955,6 @@ Chapter {
 			file ./Muscl/y40/nx33/Moyennes_spatiales_vitesse_rho_mu.last
 			columns 1 2
 			Style lines
-			TypeLigne 3
 		}
 	}
 #
@@ -1032,7 +976,6 @@ Chapter {
 			file expvisc.dat
 			columns 1 2
 			Style points
-			TypeLigne -1
 		}
 		Curve {
 			legend " EF_stab "
@@ -1040,7 +983,6 @@ Chapter {
 			file ./EF_stab/y40/nx5/Moyennes_spatiales_nut.last
 			columns 1 2
 			Style lines
-			TypeLigne 1
 		}
 		Curve {
 			legend " Amont "
@@ -1048,7 +990,6 @@ Chapter {
 			file ./Amont/y40/nx5/Moyennes_spatiales_nut.last
 			columns 1 2
 			Style lines
-			TypeLigne 2
 		}
 		Curve {
 			legend " Muscl "
@@ -1056,7 +997,6 @@ Chapter {
 			file ./Muscl/y40/nx5/Moyennes_spatiales_nut.last
 			columns 1 2
 			Style lines
-			TypeLigne 3
 		}
 	}
 #
@@ -1075,7 +1015,6 @@ Chapter {
 			file expvisc.dat
 			columns 1 2
 			Style points
-			TypeLigne -1
 		}
 		Curve {
 			legend " EF_stab "
@@ -1083,7 +1022,6 @@ Chapter {
 			file ./EF_stab/y40/nx13/Moyennes_spatiales_nut.last
 			columns 1 2
 			Style lines
-			TypeLigne 1
 		}
 		Curve {
 			legend " Amont "
@@ -1091,7 +1029,6 @@ Chapter {
 			file ./Amont/y40/nx13/Moyennes_spatiales_nut.last
 			columns 1 2
 			Style lines
-			TypeLigne 2
 		}
 		Curve {
 			legend " Muscl "
@@ -1099,7 +1036,6 @@ Chapter {
 			file ./Muscl/y40/nx13/Moyennes_spatiales_nut.last
 			columns 1 2
 			Style lines
-			TypeLigne 3
 		}
 	}
 #
@@ -1118,7 +1054,6 @@ Chapter {
 			file expvisc.dat
 			columns 1 2
 			Style points
-			TypeLigne -1
 		}
 		Curve {
 			legend " EF_stab "
@@ -1126,7 +1061,6 @@ Chapter {
 			file ./EF_stab/y40/nx17/Moyennes_spatiales_nut.last
 			columns 1 2
 			Style lines
-			TypeLigne 1
 		}
 		Curve {
 			legend " Amont "
@@ -1134,7 +1068,6 @@ Chapter {
 			file ./Amont/y40/nx17/Moyennes_spatiales_nut.last
 			columns 1 2
 			Style lines
-			TypeLigne 2
 		}
 		Curve {
 			legend " Muscl "
@@ -1142,7 +1075,6 @@ Chapter {
 			file ./Muscl/y40/nx17/Moyennes_spatiales_nut.last
 			columns 1 2
 			Style lines
-			TypeLigne 3
 		}
 	}
 #
@@ -1161,7 +1093,6 @@ Chapter {
 			file expvisc.dat
 			columns 1 2
 			Style points
-			TypeLigne -1
 		}
 		Curve {
 			legend " EF_stab "
@@ -1169,7 +1100,6 @@ Chapter {
 			file ./EF_stab/y40/nx33/Moyennes_spatiales_nut.last
 			columns 1 2
 			Style lines
-			TypeLigne 1
 		}
 		Curve {
 			legend " Amont "
@@ -1177,7 +1107,6 @@ Chapter {
 			file ./Amont/y40/nx33/Moyennes_spatiales_nut.last
 			columns 1 2
 			Style lines
-			TypeLigne 2
 		}
 		Curve {
 			legend " Muscl "
@@ -1185,7 +1114,6 @@ Chapter {
 			file ./Muscl/y40/nx33/Moyennes_spatiales_nut.last
 			columns 1 2
 			Style lines
-			TypeLigne 3
 		}
 	}
 #####
@@ -1205,7 +1133,6 @@ Chapter {
 			origin "Theorie"
 			Fonction (1/0.415)*log(x)+5.5
 			Style points
-			TypePoints -1
 		}
 		Curve {
 			legend " EF_stab "
@@ -1213,7 +1140,6 @@ Chapter {
 			file EF_stab/y40/nx5/UNORM.dat
 			columns 1 2
 			Style lines
-			TypeLigne 4
 		}
 		Curve {
 			legend " Amont "
@@ -1221,7 +1147,6 @@ Chapter {
 			file Amont/y40/nx5/UNORM.dat
 			columns 1 2
 			Style lines
-			TypeLigne 2
 		}
 		Curve {
 			legend " Muscl "
@@ -1229,7 +1154,6 @@ Chapter {
 			file Muscl/y40/nx5/UNORM.dat
 			columns 1 2
 			Style lines
-			TypeLigne 3
 		}
 	}
 
@@ -1250,7 +1174,6 @@ Chapter {
 			origin "Theorie"
 			Fonction (1/0.415)*log(x)+5.5
 			Style points
-			TypePoints -1
 		}
 		Curve {
 			legend " EF_stab "
@@ -1258,7 +1181,6 @@ Chapter {
 			file EF_stab/y40/nx13/UNORM.dat
 			columns 1 2
 			Style lines
-			TypeLigne 4
 		}
 		Curve {
 			legend " Amont "
@@ -1266,7 +1188,6 @@ Chapter {
 			file Amont/y40/nx13/UNORM.dat
 			columns 1 2
 			Style lines
-			TypeLigne 2
 		}
 		Curve {
 			legend " Muscl "
@@ -1274,7 +1195,6 @@ Chapter {
 			file Muscl/y40/nx13/UNORM.dat
 			columns 1 2
 			Style lines
-			TypeLigne 3
 		}
 	}
 #####
@@ -1294,7 +1214,6 @@ Chapter {
 			origin "Theorie"
 			Fonction (1/0.415)*log(x)+5.5
 			Style points
-			TypePoints -1
 		}
 		Curve {
 			legend " EF_stab "
@@ -1302,7 +1221,6 @@ Chapter {
 			file EF_stab/y40/nx17/UNORM.dat
 			columns 1 2
 			Style lines
-			TypeLigne 4
 		}
 		Curve {
 			legend " Amont "
@@ -1310,7 +1228,6 @@ Chapter {
 			file Amont/y40/nx17/UNORM.dat
 			columns 1 2
 			Style lines
-			TypeLigne 2
 		}
 		Curve {
 			legend " Muscl "
@@ -1318,7 +1235,6 @@ Chapter {
 			file Muscl/y40/nx17/UNORM.dat
 			columns 1 2
 			Style lines
-			TypeLigne 3
 		}
 	}
 #####
@@ -1338,7 +1254,6 @@ Chapter {
 			origin "Theorie"
 			Fonction (1/0.415)*log(x)+5.5
 			Style points
-			TypePoints -1
 		}
 		Curve {
 			legend " EF_stab "
@@ -1346,7 +1261,6 @@ Chapter {
 			file EF_stab/y40/nx33/UNORM.dat
 			columns 1 2
 			Style lines
-			TypeLigne 4
 		}
 		Curve {
 			legend " Amont "
@@ -1354,7 +1268,6 @@ Chapter {
 			file Amont/y40/nx33/UNORM.dat
 			columns 1 2
 			Style lines
-			TypeLigne 2
 		}
 		Curve {
 			legend " Muscl "
@@ -1362,7 +1275,6 @@ Chapter {
 			file Muscl/y40/nx33/UNORM.dat
 			columns 1 2
 			Style lines
-			TypeLigne 3
 		}
 	}
 

@@ -231,8 +231,6 @@ Chapter {
 			file ./TrioU/alpha_1/profil_velocity.dat
 			columns 1 2
 			Style points
-			TypeLigne -1
-			TypePoints 7
 			PointSize 1.5
 			}
 		Curve {
@@ -242,8 +240,6 @@ Chapter {
 			Segment ./TrioU/alpha_1/laminar_coupled_pb.data SEG_VITESSE_FLUIDE
 			columns 1 2
 			Style linespoints
-			TypeLigne 1
-			TypePoints 1
 			linewidth 1.5
 			PointSize 1.5
 			}
@@ -254,8 +250,6 @@ Chapter {
 			Segment ./TrioU/alpha_02/laminar_coupled_pb.data SEG_VITESSE_FLUIDE
 			columns 1 2
 			Style linespoints
-			TypeLigne 2
-			TypePoints 2
 			linewidth 1.5
 			PointSize 1.5
 			}
@@ -279,8 +273,6 @@ Chapter {
 			file ./TrioU/alpha_1/laminar_coupled_pb_TEMP_MAX.son
 			columns 1 2
 			Style linespoints
-			TypeLigne 1
-			Typepoints 1
 			linewidth 1.5
 			PointSize 1.5
 			}
@@ -291,8 +283,6 @@ Chapter {
 			file ./TrioU/alpha_02/laminar_coupled_pb_TEMP_MAX.son
 			columns 1 2
 			Style linespoints
-			TypeLigne 2
-			Typepoints 2
 			linewidth 1.5
 			PointSize 1.5
 			}
@@ -331,8 +321,6 @@ Chapter {
 			file ./TrioU/alpha_1/profil_temp_fluide.dat
 			columns 1 2
 			Style points
-			TypeLigne -1
-			TypePoints 7
 			PointSize 1.5
 			}		
 		Curve {
@@ -342,8 +330,6 @@ Chapter {
 			Segment ./TrioU/alpha_1/laminar_coupled_pb.data seg_temp_fluide
 			columns 1 2
 			Style linespoints
-			TypeLigne 1
-			Typepoints 1
 			linewidth 1.5
 			PointSize 1.5
 			}
@@ -354,8 +340,6 @@ Chapter {
 			Segment ./TrioU/alpha_02/laminar_coupled_pb.data seg_temp_fluide
 			columns 1 2
 			Style linespoints
-			TypeLigne 2
-			Typepoints 2
 			linewidth 1.5
 			PointSize 1.5
 			}
@@ -374,8 +358,6 @@ Chapter {
 			file ./TrioU/alpha_1/profil_temp_solide.dat
 			columns 1 2
 			Style points
-			TypeLigne -1
-			TypePoints 7
 			PointSize 1.5
 			}
 		Curve {
@@ -385,8 +367,6 @@ Chapter {
 			Segment ./TrioU/alpha_1/laminar_coupled_pb.data seg_temp_solide
 			columns 1 2
 			Style linespoints
-			TypeLigne 1
-			Typepoints 1
 			linewidth 1.5
 			PointSize 1.5
 			}
@@ -397,8 +377,6 @@ Chapter {
 			Segment ./TrioU/alpha_02/laminar_coupled_pb.data seg_temp_solide
 			columns 1 2
 			Style linespoints
-			TypeLigne 2
-			Typepoints 2
 			linewidth 1.5
 			PointSize 1.5
 			}
