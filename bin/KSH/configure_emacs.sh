@@ -2,6 +2,7 @@
 # Configure emacs
 VERSION=`echo $TRUST_VERSION | awk '{gsub("\\\.","",$0);print $0}'`
 file=~/.emacs.d/TRUST_$VERSION.emacs
+echo "Configure emacs: $file"
 
 # Grab the TRUST keywords
 KeywordsTRUST=`$TRUST_Awk '!/\|/ {k=k" "$1} /\|/ {gsub("\\\|"," ",$0);k=k" "$0} END {print k}' $TRUST_ROOT/doc/TRUST/Keywords.txt`
@@ -46,7 +47,7 @@ then
    if [ ! -f $file ] || [ "`diff $file $file.tmp`" != "" ]
    then
       mv -f $file.tmp $file
-      echo "$file updated"
+      echo "$file updated..."
    fi
    rm -f $file.tmp
 fi   

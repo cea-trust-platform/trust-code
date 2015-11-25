@@ -36,9 +36,7 @@ then
       else
          if [ $verbose  = 1 ]
 	 then
-	    echo ""
-	    echo "La Version actuelle de Nedit n'est pas supportee !"
-	    echo ""
+	    echo "The current version of Nedit is not supported."
 	 fi
 	 exit
       fi
@@ -46,9 +44,7 @@ then
 else
    if [ $verbose = 1 ]
    then
-      echo ""
-      echo "Il n'existe pas de Version de Nedit !"
-      echo ""
+      echo "There is no version of Nedit."
    fi
    exit
 fi
@@ -73,17 +69,15 @@ then
       # Sinon, le fichier de configuration Nedit n'existe pas
          if [ $verbose = 1 ]
 	 then
-           echo ""
            echo "There is no Nedit configuration file."
-           echo ""
            echo "To create this file :	- Run \"nedit\""
            echo "			- In the menu \"Preferences->Save Defaults...\""
            echo "			- Click on \"OK\" and quit nedit"
-           echo ""
          fi
 	 exit
       fi
    fi
+   echo "Configure Nedit: $Nedit_file"
    # Add tags to the Nedit configuration
    if [ "`grep 'nedit.tagFile: tags' $Nedit_file`" = "" ]
    then
@@ -109,9 +103,7 @@ else
 # Sinon, j'arrete le process
    if [ $verbose = 1 ]
    then
-      echo ""
-      echo "L'environnement TRUST n'est pas charge !"
-      echo ""
+      echo "TRUST environment not initialized."
    fi
    exit
 fi
