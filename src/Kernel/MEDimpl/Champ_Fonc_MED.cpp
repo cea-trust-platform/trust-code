@@ -40,7 +40,8 @@ Sortie& Champ_Fonc_MED::printOn(Sortie& s) const
 
 Entree& Champ_Fonc_MED::readOn(Entree& s)
 {
-  Nom nom_fic2,nom_dom,nom_champ,localisation;
+  Nom nom_fic2,nom_dom,nom_champ;
+  Motcle localisation;
   double un_temps;
   s>>nom_fic2;
   int use_existing_domain=0;
@@ -284,7 +285,7 @@ const Domaine& Champ_Fonc_MED::domaine() const
 med_geometry_type type_geo_trio_to_type_med(const Nom& type);
 #endif
 
-void Champ_Fonc_MED::creer(const Nom& nomfic,const Domaine& un_dom,const Nom& localisation,ArrOfDouble& temps_sauv)
+void Champ_Fonc_MED::creer(const Nom& nomfic,const Domaine& un_dom,const Motcle& localisation,ArrOfDouble& temps_sauv)
 {
 #ifdef MED_
 

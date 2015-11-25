@@ -212,8 +212,10 @@ class Figure:
 				ficPlot.write('set yrange %s\n' % range)
 			if self.logX:
 				ficPlot.write('set log x\n')
+			        ficPlot.write('set format x "%g"\n')
 			if self.logY:
 				ficPlot.write('set log y\n')
+			        ficPlot.write('set format y "%g"\n')
 			ficPlot.write('set xlabel "%s"\n' % chaine2Ascii(self.labelX))
 			ficPlot.write('set ylabel "%s"\n' % chaine2Ascii(self.labelY))
 			if self.legende!='Undefined':

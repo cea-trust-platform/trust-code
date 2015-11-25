@@ -235,6 +235,9 @@ tracee dans le rapport de validation de TRUST.'''
 		if self.style!='Undefined':
 			cmd += ' with %s' % (self.style)
 		if self.typeLigne!='Undefined':
+		   if self.style=="points":
+		        print "On a defini des points avec un stylelines..., on ignore"
+		   else:
 			cmd += ' linetype %s' % (self.typeLigne)
 		if self.typePoints!='Undefined':
 			cmd += ' pointtype %s' % (self.typePoints)

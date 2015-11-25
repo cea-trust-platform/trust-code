@@ -86,7 +86,7 @@ Lire pb
 		diffusion { }
 		sources { boussinesq_temperature { T0 5.*(1+t) } }
 		conditions_initiales {
-			vitesse Champ_Fonc_MED last_time prepare.med dom vitesse elem 0
+			vitesse Champ_Fonc_MED last_time prepare.med dom vitesse ELEM 0
 			}
 		boundary_conditions {
 			Haut paroi_fixe

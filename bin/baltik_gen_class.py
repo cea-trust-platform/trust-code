@@ -418,6 +418,8 @@ def main( ):
     sourcefile = open( keywords[ "source_filename" ], 'w' )
     sourcefile.write( source )
     sourcefile.close( )
-
+    import os
+    os.system("check_license_in_file.sh --mode c -add "+keywords[ "header_filename" ])
+    os.system("check_license_in_file.sh --mode c -add "+keywords[ "source_filename" ])
 if __name__ == '__main__':
     main( )
