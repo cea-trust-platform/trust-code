@@ -63,7 +63,7 @@ verif_archives()
     else
 	echo "Use of $Rapports_auto_root directory for validation insteed of \$TRUST_ROOT"
     fi
-    DIR=`dirname $0`
+    DIR=`dirname -- $0`
     DIR=`(cd $DIR;pwd)`
     cat /dev/null > nettoie
     cd archives
@@ -290,12 +290,15 @@ echo def Generate_makefile_validation [ -without_deps_exe ]
 Generate_makefile_validation()
 {
 deps="\$(exec)"
-[ "$1" = "-without_deps_exe" ] && deps=""
+[ "$1" = "-without_deps_exe" ] && deps="" && shift
 LANCE=$TRUST_ROOT/Validation/Outils/Genere_courbe/scripts/Lance_gen_fiche
 . $LANCE
-
+if [ "$1" = "" ]
+then
 prm=`get_list_prm`
-
+else
+prm=`get_list_prm_from_Times $1`
+fi
 echo "all:\t `get_list_prm`" > makefile
 
 res=`for  cas in $prm

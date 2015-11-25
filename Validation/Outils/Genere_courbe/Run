@@ -54,7 +54,7 @@ prm=`basename $prm .prm`.prm
 if [ "$1" = "-archive" ] 
 then
   sh $DIR/archive_resultat $prm
-  exit
+  exit $?
 fi
 if [ ! -d $orig/src ]
 then
