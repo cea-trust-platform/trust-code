@@ -100,28 +100,28 @@ help()
 {
    echo "Usage: `basename $0` [option] datafile [nb_cpus] [1>file.out] [2>file.err]"
    echo "Where option may be:"
-   echo "-help|-h               : List options."
-   echo "-doc                   : Access to TRUST user's manual."
-   echo "-index                 : Access to TRUST ressources index."
-   echo "-clean                 : Clean the current directory from all the generated files by TRUST."
-   echo "-monitor               : Run and monitor the progress of the TRUST calculation."
-   echo "-probes                : Monitor the TRUST calculation only."
-   echo "-mesh                  : Visualize the mesh(es) contained in the data file."
-   echo "-copy                  : Copy the test case datafile from the TRUST database under the present directory."
-   echo "-check all|testcase|function|class|method::class : Check the non regression of all the test cases or a single test case or a list of tests cases covering a function, a class or a class method."   
-   echo "-c n                   : Use n cores per task for a parallel calculation."
-   echo "-create_sub_file       : Create a submission file only."
-   echo "-prod                  : Create a submission file and submit the job on the main production class."
-   [ "$PETSC_HAVE_CUDA" = 1 ] && echo "-gpu                   : Create a submission file and submit the job on production class with GPU cards."			: 
-   echo "-bigmem                : Create a submission file and submit the job on the big memory production class."
-   echo "-queue queue           : Create a submission file with the specified queue and submit the job." 
-   echo "-valgrind              : Run under valgrind."
-   echo "-valgrind_strict       : Run under valgrind with no suppressions."
-   echo "-gdb                   : Run under gdb debugger."
-   echo "-prm                   : Write a prm file and generate the corresponding pdf file in the build directory."
-   [ -d /ccc ] && echo "-ipm                   : Use ipm to report MPI statistics."
-   echo "-help_trust            : Print options of TRUST_EXECUTABLE [CASE[.data]] [options]."
-   #trust -help_trust
+   echo "-help|-h                : List options."
+   echo "-index                  : Access to TRUST ressources index."
+   echo "-doc                    : Access to TRUST user's manual."
+   echo "-config nedit|vim|emacs : Configure nedit or vim or emacs with TRUST keywords."
+   echo "-mesh                   : Visualize the mesh(es) contained in the data file."
+   echo "-monitor                : Run and monitor the progress of the TRUST calculation."
+   echo "-probes                 : Monitor the TRUST calculation only."
+   echo "-prm                    : Write a prm file and generate the corresponding pdf file in the build directory."
+   echo "-clean                  : Clean the current directory from all the generated files by TRUST."
+   echo "-copy                   : Copy the test case datafile from the TRUST database under the present directory."
+   echo "-check all|testcase|function|class|method::class : Check the non regression of all the test cases or a single test case or a list of tests cases covering a function, a class or a class method."
+   echo "-gdb                    : Run under gdb debugger."
+   echo "-valgrind               : Run under valgrind."
+   echo "-valgrind_strict        : Run under valgrind with no suppressions."
+   echo "-create_sub_file        : Create a submission file only."
+   echo "-c n                    : Use n cores per task for a parallel calculation."
+   echo "-prod                   : Create a submission file and submit the job on the main production class."
+   echo "-queue queue            : Create a submission file with the specified queue and submit the job."
+   echo "-bigmem                 : Create a submission file and submit the job on the big memory production class."
+   [ "$PETSC_HAVE_CUDA" = 1 ] && echo "-gpu                    : Create a submission file and submit the job on production class with GPU cards."
+   [ -d /ccc ] && echo "-ipm                    : Use ipm to report MPI statistics."
+   echo "-help_trust             : Print options of TRUST_EXECUTABLE [CASE[.data]] [options]."
 
    echo "If no option is given, create a submission file and submit the job on the test class."
    exit 0
@@ -155,6 +155,25 @@ do
    then
       help
       exit 0
+   elif [ "$1" = "-config" ]
+   then
+      shift
+      if [ "$1" = nedit ]
+      then
+         # Configure nedit
+	 Language_mode_TRUST.sh #-no_verbose
+	 exit 0
+      elif [ "$1" = vim ]
+      then
+         # Configure vim
+	 configure_vim.sh && exit 0
+      elif [ "$1" = emacs ]
+      then
+         # Configure emacs
+	 configure_emacs.sh && exit 0
+      else
+         help
+      fi
    elif [ "$1" = "-doc" ]
    then
       doc=$TRUST_ROOT/doc/TRUST/User_Manual_TRUST.pdf

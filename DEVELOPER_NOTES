@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.7.2_beta : Changes since version 1.7.1 :
 -------------------------------------------------------------
+20/11/15 (Tools)  Connectivity ICoCoField = connectivity TRUST
 13/11/15 (Kernel) Modifications TRUST from CoreComponent (Discretisation_base)
 13/11/15 (Kernel) Implementation of getOutputField in Probleme_U
 13/11/15 (Kernel) Upadte HDF (1.8.13 vers 1.8.14) and MED (3.0.7 vers 3.1.0)

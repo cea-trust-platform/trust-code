@@ -5,6 +5,7 @@ file=~/.vim/syntax/TRUST_$VERSION.vim
 ftdetect=~/.vim/ftdetect/TRUST.vim
 # Delete old configurations which caused issues:
 rm -f ~/.vim/ftdetect/TRUST_*.vim
+echo "Configure vim:   $file"
 
 # Grab the TRUST keywords
 KeywordsTRUST=`$TRUST_Awk '!/\|/ {k=k" "$1} /\|/ {gsub("\\\|"," ",$0);k=k" "$0} END {print k}' $TRUST_ROOT/doc/TRUST/Keywords.txt`
@@ -43,10 +44,10 @@ then
    # Configure vim to apply on .data files:   
    mkdir -p `dirname $ftdetect`
    echo "au BufRead,BufNewFile *.data set filetype=TRUST_$VERSION" > $ftdetect
-   echo "$ftdetect updated"
+   echo "$ftdetect updated..."
 elif [ "`grep filetype=TRUST_$VERSION $ftdetect`" = "" ]
 then 
    # Change the load:
    echo $ECHO_OPTS "1,$ s?filetype=TRUST_\(.*\)?filetype=TRUST_$VERSION?g\nw" | ed $ftdetect 1>/dev/null 2>&1
-   echo "$ftdetect updated"
+   echo "$ftdetect updated..."
 fi
