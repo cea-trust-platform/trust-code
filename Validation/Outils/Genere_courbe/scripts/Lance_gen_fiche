@@ -16,7 +16,7 @@ file=$1
 list=""
 for cas in `awk '{print $NF}' $file`
 do
-cadt=`find $Rapports_auto_root/Validation/Rapports_automatiques -name $cas -follow`
+cadt=`find $Rapports_auto_root/Validation/Rapports_automatiques -name $cas -follow | grep -v '/src/'`
 list=$list" "$cadt
 done
 echo $list
@@ -102,7 +102,7 @@ org=`pwd`
 
 # echo `basename $0`
 
-if [ "`basename $0`" = "Lance_gen_fiche" ]
+if [ "`basename -- $0`" = "Lance_gen_fiche" ]
 then
 concurent=0
 [ "$1" = "-concurent" ] && concurent=1 && shift
