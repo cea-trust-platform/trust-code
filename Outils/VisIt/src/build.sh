@@ -130,6 +130,8 @@ options_build="$zlib $mesa --python  --no-pyside --console $compilateurs $prefix
 # S'il manque des librairies dev 
 ################################
 export MISSING_GL_DIR=$TRUST_ROOT/Outils/Gmsh/missing
+# essai pour mpi3.1.4
+export PROFILE_POSTLIB=-lpthread
 if [ -d $MISSING_GL_DIR/lib ]
 then
    echo "Using includes and librairies under \$TRUST_ROOT/Outils/Gmsh/missing..."
