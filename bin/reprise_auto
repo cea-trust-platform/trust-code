@@ -303,14 +303,6 @@ running()
    [ $sub = SLURM ] && squeue -u $qui 2>/dev/null | grep " $job " | $TRUST_Awk 'BEGIN {run=0} ($5=="R")       {run++} END {print run}'
 }
 
-# qsub special pour jade, on doit utiliser qsub depuis l'interactif
-qsub_jade()
-{
-   rep=$PBS_O_WORKDIR && [ "$rep" = "" ] && rep=`pwd`
-   command="cd $rep;/opt/pbs/default/bin/qsub $*"
-   /usr/bin/ssh $USER@service1 $command || /usr/bin/ssh $USER@service2 $command || /usr/bin/ssh $USER@service3 $command
-}
-
 # S'assure qu'il y'a qu'un sol JOB en plus du JOB calcul en cours (celui donne par LAST_JOBID)
 # sinon on delete les JOBS excedentaires
 check_max_jobs()
@@ -446,13 +438,10 @@ elif [ "`ls /*/pbs 2>/dev/null`" != "" ]
 then
    sub="PBS"
    qsub=`find /*/pbs -name qsub | tail -1`
-   # Sur jade il faut soumettre qsub depuis le noeud interactif
-   [ $HOST = jade ] && qsub=qsub_jade
    export PATH=${qsub%/qsub}:$PATH
-elif [ "`ccc_msub -help 1>/dev/null 2>&1;echo $?`" = 0 ] && [ $HOST != platine ]
+elif [ "`ccc_msub -help 1>/dev/null 2>&1;echo $?`" = 0 ]
 then
-   # Pas sur que #MSUB fonctionne sur platine, meme si ccc_msub existe
-   # On laisse donc platine en LSF...
+   # Pas sur que #MSUB fonctionne, meme si ccc_msub existe
    sub="CCC"
 elif [ "`squeue --help 1>/dev/null 2>&1;echo $?`" = 0 ]
 then
@@ -462,11 +451,14 @@ else
 fi
 
 # Verifie si la machine a ete testee
-if [ $HOST != nickel ] && [ $HOST != chrome ] && [ $HOST != tantale ] && [ $HOST != castor ] && [ $HOST != platine ] && [ $HOST != jade ] && [ $HOST != titane ] && [ $HOST != curie-ccrt ] && [ $HOST != curie-fr ] && [ $HOST != airain ] && [ $HOST != occigen ] # Supported
+if [ $HOST != curie-ccrt ] && [ $HOST != curie-fr ] && [ $HOST != airain ] && [ $HOST != occigen ] # Supported
 then
    if [ $HOST = mars ] || [ $HOST = eris ]
    then
       mes=$mes"Cluster $HOST is not supported for $0 because it is useless: there is no CPU limit on $0.\nContact TRUST support for more information.\n" && message && exit -1
+   elif [ $HOST = nickel ] && [ $HOST = chrome ] && [ $HOST = tantale ] && [ $HOST = castor ] && [ $HOST = platine ] && [ $HOST = jade ] && [ $HOST = titane ]
+   then
+      mes=$mes"Cluster $HOST is no longer tested for $0\nContact TRUST support.\n" && message && exit -1
    else
       mes=$mes"Cluster $HOST is not supported yet for $0\nContact TRUST support.\n" && message && exit -1
    fi
@@ -613,14 +605,10 @@ else
    # Lancement d'une commande differee pour arreter le calcul dans $periode
    # Sur 30 minutes, le at est execute au bout de 20 minutes.
    # Sur N heures, le at sera execute a N heures - 30 minutes
-   # Mise en commentaire car forte suspicion de blocage sur castor et platine? (tantale OK)
-   if [ $HOST = titane ]
-   then
-      # Reactivation sur titane pour voir
-      minutes=`echo $cpu | $TRUST_Awk -F: '{h=$1;m=$2;if (h>1) {print (h-1)*60+m+30} else if (m>25) {print m-10}}'`
-      mes=$mes"Running a delayed command to stop the calculation after $minutes minutes.\n"
-      mes=$mes"The calculation should be stopped at the date: "`echo "echo 1 > ${data%.data}.stop" | at -v now + $minutes minutes 2>&1`" \n"
-   fi 
+   # Mise en commentaire car forte suspicion de blocage
+   #minutes=`echo $cpu | $TRUST_Awk -F: '{h=$1;m=$2;if (h>1) {print (h-1)*60+m+30} else if (m>25) {print m-10}}'`
+   #mes=$mes"Running a delayed command to stop the calculation after $minutes minutes.\n"
+   #mes=$mes"The calculation should be stopped at the date: "`echo "echo 1 > ${data%.data}.stop" | at -v now + $minutes minutes 2>&1`" \n"
 fi
 
 # Verifie le nombre maximum de JOBS qui tournent

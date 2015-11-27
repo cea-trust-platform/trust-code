@@ -1,0 +1,12 @@
+#!/bin/bash 
+#MSUB -r mise_a_jour_TRUST_arch
+#MSUB -n 1
+#MSUB -T 43200
+#MSUB -E "--no-requeue"
+#MSUB -Q normal
+#MSUB -q ivybridge
+#MSUB -o out.%J
+#MSUB -e err.%J
+set -x 
+cd ${BRIDGE_MSUB_PWD}
+ccc_mprun ./mise_a_jour_TRUST_arch -rsync 1>~/CR_airain 2>&1

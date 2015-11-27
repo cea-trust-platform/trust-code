@@ -10,8 +10,6 @@ fi
 test=`mktemp -p $TRUST_TMP 2>/dev/null`
 if [ $? = 0 ]
 then
-   # Provisoire
-   debug=1 && [ "$HOST" != veymont ] && debug=0
    debug=0
    # Pour creer un item temporaire sous $TRUST_TMP et pas $TMPDIR par defaut
    if [ $debug = 0 ]

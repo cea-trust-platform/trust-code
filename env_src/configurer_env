@@ -67,22 +67,6 @@ configure_compilateur_ccache()
 }
 
 ########################################################
-zeus()
-{
-   # Ajout d'un fichier host.list pour qu'un code compile avec mpXX tourne en interactif
-   MP_HOSTFILE=~/host.list
-   zeus=zeus.cines.fr
-   echo $zeus > $MP_HOSTFILE
-   i=1
-   while [ $i -lt 8 ]
-   do
-     let i=$i+1
-     echo $zeus >> $MP_HOSTFILE
-   done
-   m="# Fichier HOSTFILE";e="MP_HOSTFILE=$MP_HOSTFILE && export MP_HOSTFILE";ecrit $m"|"$e"|"$env;eval $e
-}
-
-########################################################
 whence_()
 {
    # Existe ?
@@ -276,9 +260,6 @@ xxx()
 		   [ "`basename $f`" = mpicxx ] && [ -f /opt/hpmpi/bin/mpiCC ] && ok=0;	
 		   # Elimination si mpif77 n'est pas trouve au meme endroit (ex: buda)
 		   [ ! -f "`dirname $f`"/mpif77 ] && [ ! -f "`dirname $f`"/mpxlf_r ] && ok=0;
-		   # Elimination du MPI natif sur certaines machines qui ne marche pas
-		   [ $HOST = buda ] && ok=0;
-		   [ $HOST = thor ] && ok=0;
 		   # Elimination du OpenMPI 1.3.3 trouve (blocages vus sur is212958)
 		   [ -f /usr/bin/mpirun ] && [ "`/usr/bin/mpirun --version 2>&1 | grep 'mpirun (Open MPI) 1.3.3'`" != "" ] && ok=0;
 		   # Elimination du OpenMPI 1.7.2 trouve (blocages cas test PETSc)
@@ -532,19 +513,9 @@ then
    TRUST_NB_PROCS=1
    if [ -f /proc/cpuinfo ]
    then
-	 # Exception pour jade (Erreur: can't fork process si on compile avec plusieurs processeurs)
-      if [ "$HOST" = jade ]
-      then
-	 TRUST_NB_PROCS=1
-	 # Exception pour CCRT: Message du support pour reduire le nombre de coeurs demandes
-	 # Idem callisto 2 builds en meme temps
-      elif [ -d /ccc ] || [ $HOST = callisto ]
+      if [ -d /ccc ] || [ $HOST = callisto ]
       then
 	 #TRUST_NB_PROCS=16
-	 TRUST_NB_PROCS=4
-	 # Idem mezel2 (cmake plante sur VisIt)
-      elif [ $HOST = mezel2 ]
-      then
 	 TRUST_NB_PROCS=4
       else   
 	 TRUST_NB_PROCS=`$TRUST_Awk '/processor/ {n++} END {print n}' /proc/cpuinfo`
@@ -679,41 +650,6 @@ then
    echo "#!/bin/bash
 squeue" > $TRUST_ROOT/bin/qstat
    chmod +x $TRUST_ROOT/bin/qstat
-fi
-# Eris cluster
-if [ $HOST = eris ]
-then
-  # Commande qsub pour eris (car environnement par defaut ne contient pas ce qu'il faut)
-  # et en plus VisIt mode client serveur marche mieux...
-  qsub=$TRUST_ROOT/bin/qsub  
-   echo "#!/bin/bash
-source /etc/profile.d/sge.sh
-export PATH=/product_local/sge/bin/lx24-amd64:\$PATH
-   qsub \$*" > $qsub
-   chmod +x $qsub  
-   echo "Command qsub created on $HOST"
-fi
-# Mars cluster
-if [ $HOST = mars ]
-then
-   # Load OpenMPI module and load SGE environment too on mars cluster
-   module=mpi/openmpi-1.3.2-gnu
-   echo "# Module $module detected and loaded on $HOST."
-   echo "source /etc/profile.d/sge.sh" >> $env
-   echo "source /usr/share/Modules/init/bash;module load $module 1>/dev/null" >> $env
-   . $env
-fi
-# Mezel cluster
-if [ $HOST = mezel2_shit ]
-then
-   # Load OpenMPI module
-   module=mpich2-x86_64 # OK but all processes on ONE node
-   module=openmpi-x86_64 # Slow above 2 cores (warning IB not found)
-   module=mvapich2-x86_64 # MPI_Init fail
-   module=mvapich2-psm-x86_64 # configure refuse (libpsm... not found)
-   echo "# Module $module detected and loaded on $HOST."
-   echo "source /usr/share/Modules/init/bash;module load $module 1>/dev/null" >> $env
-   . $env
 fi
 # CCRT
 if [ -d /ccc ]
@@ -917,7 +853,7 @@ case $arch in
 	#IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/bytes/ {print $4}'`
         ;;
    AIX) TRUST_ARCH=RS6000
-	# mpCC_r, mpxlf_r, mpcc_r compilateurs de zahir a l'IDRIS ou zeus au CINES
+	# mpCC_r, mpxlf_r, mpcc_r compilateurs de zahir a l'IDRIS
 	EDITEUR="nedit xedit dtpad"
 	TRUST_CC_BASE="mpCC_r xlC g++"
 	SLD="makeC++SharedLib"
@@ -949,8 +885,8 @@ case $arch in
 	# En outre, il semble que icc=ecc,ifort=efc,...
 	# 1.5.3: on place gfortran devant g77 si GCC>=4.x
 	#fortran_gnu="g77 gfortran" && [ "`/usr/bin/gcc --version 2>/dev/null | head -1 | awk '/ 4\./ {print 1}'`" = 1 ] && fortran_gnu="gfortran g77"
-	# 1.6.1: on place gfortran devant g77 pour profiter de MUMPS au maximum (sauf sur une machine ou le MPI natif+gfortran ne marche pas...
-        fortran_gnu="gfortran g77" && [ $HOST = ioulia ] && fortran_gnu="g77 gfortran"
+	# 1.6.1: on place gfortran devant g77 pour profiter de MUMPS au maximum
+        fortran_gnu="gfortran g77"
 	# On met icpc en 1er/GNU car sur titane (x86_64, icpc 10% plus rapide que gcc sur le cas cpu_3D...)
 	# si une version recente (>=v10) d'icpc existe car sur ecrins la 8.x ne marche pas bien...
 	# 1.6.9: On interdit strictement Intel 12.x qui fait crasher/bloquer MUMPS (voir MC1520)
@@ -975,7 +911,7 @@ case $arch in
 	;;
    CYGWIN*) TRUST_ARCH=cygwin
 	EDITEUR="nedit kedit xemacs xedit emacs"
-        fortran_gnu="gfortran g77" && [ $HOST = ioulia ] && fortran_gnu="g77 gfortran"
+        fortran_gnu="gfortran g77"
 	   TRUST_CC_BASE="g++ icpc icc ecc"
 	   TRUST_F77_BASE="$fortran_gnu ifort ifc efc"
 	   TRUST_cc_BASE="gcc icc ecc"
@@ -1029,8 +965,6 @@ TRUST_cc_BASE=$TRUST_FORCE_cc" "$TRUST_cc_BASE
 TRUST_F77_BASE=$TRUST_FORCE_F77" "$TRUST_F77_BASE
 echo "# IP machine: $IP" | tee -a $env
 m="# Simplified machine name ";e="HOST=$HOST && export HOST";ecrit $m"|"$e"|"$env
-###### Cas special pour des machines #########
-[ "`hostname 2>/dev/null`" = "r41" ] && zeus
 ##############################################
 shell=`basename $SHELL` && echo "# The login shell is : $shell"
 m="# Machine architecture";e="TRUST_ARCH=$TRUST_ARCH && export TRUST_ARCH";ecrit $m"|"$e"|"$env;eval $e
@@ -1070,8 +1004,8 @@ export CCACHE_DISABLE=1 # pas de ccache lors de la configuration
 ########################################################################################
 # Installation de ccache pour instaurer un cache du preprocessing lors de la compilation
 ########################################################################################
-INSTALL_CCACHE=0 # Pas ccache sur ceres/themis car blocage sur ceres de ccache -M
-[ "$TRUST_DISABLE_CCACHE" != "1" ] && [ $TRUST_ARCH = linux ] && [ $HOST != ceres ] && [ $HOST != themis ] && INSTALL_CCACHE=1
+INSTALL_CCACHE=0
+[ "$TRUST_DISABLE_CCACHE" != "1" ] && [ $TRUST_ARCH = linux ] && INSTALL_CCACHE=1
 if [ $INSTALL_CCACHE =  1 ]
 then
    make_ $TRUST_ROOT/env/ccache ccache $TRUST_ROOT/exec/ccache.log
@@ -1154,7 +1088,7 @@ then
 fi
 m="# Path to dtterm command";e="`cherche_file Dtterm $Dtterm`";ecrit $m"|"$e"|"$env;eval $e
 m="# Path to xterm command";e="`cherche_file Xterm xterm rxvt konsole`";ecrit $m"|"$e"|"$env;eval $e
-[ ${#Dtterm} = 0 ] || [ ${#Xterm} = 0 ] && echo "Warning. The TRUST GUI (Graphical User Interface) will not work cause Dtterm or Xterm not found. " # Not found on mezel2, nevermind GUI not supported anymore...
+[ ${#Dtterm} = 0 ] || [ ${#Xterm} = 0 ] && echo "Warning. The TRUST GUI (Graphical User Interface) will not work cause Dtterm or Xterm not found. "
 m="# Path to a debugger";e="`cherche_file DEBUG $DEBUG`";ecrit $m"|"$e"|"$env
 
 #################################################################
@@ -1202,7 +1136,7 @@ then
    if [ -d /usr/lib64/atlas ]
    then
       # Atlas Blas seems faster on Cx test case
-      TRUST_BLAS_LAPACK=/usr/lib64 # Example: mezel
+      TRUST_BLAS_LAPACK=/usr/lib64
    else
       TRUST_BLAS_LAPACK="" # Possible but not a good idea if not Atlas (eg: slower than Netlib on Cx test case for cezanne27)
    fi
@@ -1313,7 +1247,7 @@ else
 	 if [ $err = 0 ]
 	 then
 	    # Test du MPI trouve avec mpif90 ou mpif77 (nouveau pour la 1.6.3 car certains Linux avec LAM/MPI n'ont pas le support fortran)
-	    if [ -f $MPI_BIN/mpif90 ] && [ $HOST != castor ] # F90 mal installe sur castor
+	    if [ -f $MPI_BIN/mpif90 ]
 	    then
 	       mpif=$MPI_BIN/mpif90
 	    else
@@ -1802,7 +1736,7 @@ case $TRUST_ARCH_CC in
 	   CppFlags=$CppFlags" -pedantic"
 	fi
 	# include <sstream> fait un warning sur gcc 2.96, impossible d'utiliser #pragma supporte dans 4.2.x:
-	# Idem OpenMPI 1.3.2 sur mezel provoque un warning: type-punning to incomplete type might break strict-aliasing rules
+	# Idem OpenMPI 1.3.2 sur certaines clusters provoque un warning: type-punning to incomplete type might break strict-aliasing rules
 	[ $TRUST_ARCH_CC = linux_g++3 ] && [ "`echo $Mpirun | grep 1.3.2`" = "" ] && CppFlags=$CppFlags" -Werror"
 	# Attention fort77&f2c et g77&g2c sinon pb avec Blas !
 	# On ne met pas -static car plante en // sur dom1 avec scali meme avec -ldl
@@ -2023,8 +1957,7 @@ echo "
 echo $ECHO_OPTS "Is $TRUST_F77_BASE fortran 90 compliant to compile MUMPS ? \c"
 $TRUST_F77 -c testf90.f 1>testf90.log 2>&1
 # 12/02/10: Ajout test sur la version de gfortran car la compilation de MUMPS fait planter gfortran 4.0.1
-# 20/07/10: Ajout test sur platine car MUMPS segmentation fault en optimise avec petsc 3.1-p3
-if [ $? = 0 ] && [ "`$TRUST_F77_BASE -v 2>&1 | $TRUST_Awk '/gcc version / {print $3}'`" != "4.0.1" ] && [ $HOST != platine ]
+if [ $? = 0 ] && [ "`$TRUST_F77_BASE -v 2>&1 | $TRUST_Awk '/gcc version / {print $3}'`" != "4.0.1" ]
 then
    TRUST_USE_MUMPS=1
    echo "Yes"

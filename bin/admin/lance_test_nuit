@@ -84,7 +84,8 @@ check_components()
 	    rm -f nuit_$Composant.html
 	    rm -f $Composant_%_*.log
 	    # On teste la portabilite uniquement si tout a fonctionne en local (pour eviter de bloquer d'autres PCs)
-	    if [ "$COMPOSANT_OK" = 1 ] && [ $TRUST_ROOT = $TRUST_ROOT_MASTER ]
+	    #if [ "$COMPOSANT_OK" = 1 ] && [ $TRUST_ROOT = $TRUST_ROOT_MASTER ]
+	    if [ $TRUST_ROOT = $TRUST_ROOT_MASTER ]
 	    then
                echo "Portability $Composant Component for $TRUST_VERSION version"
                echo " "
@@ -134,8 +135,8 @@ check_components()
 	       do
 	          machine=`echo $adr | awk -F"." '{print $1}' | awk -F"-gw" '{print $1}'`
 	          liste_options="--with-efface-dir-before --clean-after-if-ok"
-	          if [[ "$liste_machines_KO" != *"$machine"* ]] # Test si machine n est pas dans la liste des machines KO
-		  then
+	          #if [[ "$liste_machines_KO" != *"$machine"* ]] # Test si machine n est pas dans la liste des machines KO
+		  #then
 	             if [[ "$valgrind_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines valgrind
 		     then
 		        valgrind_option="--with-valgrind"
@@ -164,7 +165,7 @@ check_components()
                      log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`
                      WORKTMP=`ssh_command 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
                      echo "$Composant.tar $WORKTMP/$WORKBASE$machine/Composants/$Composant $log@$adr --with-trio=$WORKTMP/$WORKBASE$machine/TRUST $liste_options $mode_option $check_option $valgrind_option" >> Run.liste
-		  fi
+		  #fi
 	       done
                echo " "
 	       cat Run.liste
@@ -309,7 +310,7 @@ echo "Cleaning of $REP_NUIT directory"
 rm -f $REP_NUIT/CR_* $REP_NUIT/PERF_* $REP_NUIT/MAKE_* $REP_NUIT/*.log
 rm -f $REP_NUIT/rsync_include_from $REP_NUIT/NUIT.html
 rm -f $REP_NUIT/os $REP_NUIT/CC $REP_NUIT/CR
-rm -f $MESSAGES_NUIT
+rm -f $MESSAGES_NUIT $REP_NUIT/nuit_*.html
 rm -f $REP_NUIT/.nfs*
 # On cree :
 [ ! -d $REP_NUIT ] && mkdir $REP_NUIT
@@ -1528,28 +1529,28 @@ echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 # Test d'un atelier
 ###################
 echo " "
-echo "######################################"
-echo "# Test the compilation of a workshop #"
-echo "######################################"
+echo "#####################################"
+echo "# Test the compilation of a atelier #"
+echo "#####################################"
 echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 echo "Analysis of $recupere_log file"
-grep "step workshop" $recupere_log
+grep "step atelier" $recupere_log
 echo "Analysis of $REP_NUIT/NUIT.html file"
 grep "Total number portability" $REP_NUIT/NUIT.html
-grep "TRUST workshop compilation" $REP_NUIT/NUIT.html
-make_atelier=`$TRUST_Awk '/workshop compilation/ && /TRUST/ {print $1}' $REP_NUIT/NUIT.html`
-port_atelier=`$TRUST_Awk '/workshop compilation/ && /TRUST/ {print $7}' $REP_NUIT/NUIT.html`
+grep "TRUST atelier compilation" $REP_NUIT/NUIT.html
+make_atelier=`$TRUST_Awk '/atelier compilation/ && /TRUST/ {print $1}' $REP_NUIT/NUIT.html`
+port_atelier=`$TRUST_Awk '/atelier compilation/ && /TRUST/ {print $7}' $REP_NUIT/NUIT.html`
 workshop=0
 [ "$make_atelier" = "1.000" ] && [ "$nb_cible" = "$all_cible" ] && workshop=1
 echo " "
 if [ "$workshop" = 1 ]
 then
-   echo "Release criterion: Workshop OK"
+   echo "Release criterion: Atelier OK"
 else
-   echo "Release criterion: Workshop KO"
+   echo "Release criterion: Atelier KO"
 fi
 force_make_atelier=~/force_make_atelier && [ -f $force_make_atelier ] && workshop=1 && rm -f $force_make_atelier
-echo "$workshop  Workshop $port_atelier=$make_atelier (=1.000)" >> $MESSAGES_NUIT
+echo "$workshop  Atelier $port_atelier=$make_atelier (=1.000)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+`if [ "$make_atelier" = "1.000" ]; then echo 1;else echo 0;fi`
 echo "<--- End at "`date '+%H:%M:%S %d/%m'`
@@ -2271,8 +2272,8 @@ do
       new_coverage=`tggcov_ -short -file $file`
       old_coverage=`export TRUST_ROOT=$MAINTENANCE;tggcov_ -short -file $file`
       # Regression de la couverture de code (Le nombre de lignes non testees augmente si la couverture est pas nulle)
-      couverture=`echo $old | awk '{print $1}'`
-      lignes_non_testees_en_plus=`echo $new_coverage $old_coverage | awk '{split($2,new,"/");split($6,old,"/");print (new[2]-new[1])-(old[2]-old[1])}'`
+      couverture=`echo $old_coverage | awk '{print $1}'`
+      lignes_non_testees_en_plus=`echo $new_coverage $old_coverage | awk '{split($2,new,"/");split($6,old,"/");print (new_coverage[2]-new_coverage[1])-(old_coverage[2]-old_coverage[1])}'`
       if [ $lignes_non_testees_en_plus -gt 0 ] && [ $couverture != 0.00 ]
       then
          echo $ECHO_OPTS "$lignes_non_testees_en_plus lines not tested more in $file"
@@ -2394,13 +2395,18 @@ do
    then
       # Aucune efficacite en dessous de 0.60 sur 4 processeurs et aucun cpu au dessus de 8s sur 1 processeur:
       perf=`$TRUST_Awk 'BEGIN {p=0} ($1==4) && (NF==12) && /\|/ {if ($(NF-1)>0.60) p=p+0.25} ($1==1) && (NF==12) && /\|/ {if ($3<8) p=p+0.25} END {print p}' $PERF`
-      total=`echo "$total+$perf" | bc -l`
+      [ "`liste_machines cible | grep $machine`" != "" ] && total=`echo "$total+$perf" | bc -l`
       echo "Time VDF and VEF on 1 CPU: < 8s ?"
       $TRUST_Awk '($1==1) && (NF==12) && /\|/ {print $3}' $PERF
       echo "Speed-UP VDF and VEF on 4 CPUs: > 0.60 ?"
       $TRUST_Awk '($1==4) && (NF==12) && /\|/ {print $(NF-1)}' $PERF
-      echo "=> perf+=$perf (total=$total)"  
-      let nb_machines=$nb_machines+1
+      if [ "`liste_machines cible | grep $machine`" != "" ]
+      then
+         echo "=> perf+=$perf (total=$total)"  
+         let nb_machines=$nb_machines+1
+      else
+         echo "=> perf+=$perf"  
+      fi
       [ $(echo " $perf < 1 " | bc) -eq 1 ] && cat $PERF | mail_ -s\"[lance_test_nuit] Benchmark on $machine KO\" $TRUST_MAIL
    else
       echo "File not exist => benchmark not executed on the machine: $machine"
@@ -2445,10 +2451,10 @@ force_performances=~/force_performances && [ -f $force_performances ] && perform
 [ "$nb_machines" -eq 0 ] && nb_machines=-1
 if [ "$nb_machines" -eq -1 ]
 then
-  echo "$performances  Performance $total/0="`echo $ECHO_OPTS "scale=3;$total/$nb_machines" | bc -l`" (=1)" >> $MESSAGES_NUIT
+  echo "$performances  Performance $total/0="`echo $ECHO_OPTS "scale=3;$total/$nb_machines" | bc -l`" (=1)" | tee -a $MESSAGES_NUIT
   nb_machines=0
 else
-   echo "$performances  Performance $total/$nb_machines="`echo $ECHO_OPTS "scale=3;$total/$nb_machines" | bc -l`" (=1)" >> $MESSAGES_NUIT
+   echo "$performances  Performance $total/$nb_machines="`echo $ECHO_OPTS "scale=3;$total/$nb_machines" | bc -l`" (=1)" | tee -a $MESSAGES_NUIT
 fi
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+$performances
@@ -2690,6 +2696,20 @@ echo "Analysis of $REP_NUIT/CR_* files"
 grep "Script " $REP_NUIT/CR_* | grep OK 2>/dev/null
 grep "Script " $REP_NUIT/CR_* | grep KO 2>/dev/null
 validation_scripts=0
+OKt=0
+KOt=0
+machines=`liste_machines cible | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'`
+for machine in $machines
+do
+   if [ "`grep "Script " $REP_NUIT/CR_$machine`" != "" ]
+   then
+      OKm=`grep "Script " $REP_NUIT/CR_$machine | grep OK 2>/dev/null | wc -l`
+      KOm=`grep "Script " $REP_NUIT/CR_$machine | grep KO 2>/dev/null | wc -l`
+      OKt=`echo "$OKt+$OKm" | bc -l`
+      KOt=`echo "$KOt+$KOm" | bc -l`
+   fi
+done
+let NBt=$OKt+$KOt
 OK=`grep "Script " $REP_NUIT/CR_* | grep OK 2>/dev/null | wc -l`
 KO=`grep "Script " $REP_NUIT/CR_* | grep KO 2>/dev/null | wc -l`
 let NB=$OK+$KO
@@ -2699,6 +2719,7 @@ then
 else
    grep "Script " $REP_NUIT/CR_* | grep KO | mail_ -s\"[lance_test_nuit] Validation of scripts KO\" $TRUST_MAIL
 fi
+[ "$KOt" -eq 0 ] && validation_scripts=1
 echo " "
 if [ "$validation_scripts" = 1 ]
 then
@@ -2710,10 +2731,18 @@ force_validation_scripts=~/force_validation_scripts && [ -f $force_validation_sc
 [ "$NB" -eq 0 ] && NB=-1
 if [ "$NB" -eq -1 ]
 then
-   echo "$validation_scripts  Scripts $OK/0="`echo $ECHO_OPTS "scale=3;$OK/$NB" | bc -l`" (=1)" >> $MESSAGES_NUIT
+   echo "$validation_scripts  Scripts $OK/0="`echo $ECHO_OPTS "scale=3;$OK/$NB" | bc -l`" (=1)"
    NB=0
 else
-   echo "$validation_scripts  Scripts $OK/$NB="`echo $ECHO_OPTS "scale=3;$OK/$NB" | bc -l`" (=1)" >> $MESSAGES_NUIT
+   echo "$validation_scripts  Scripts $OK/$NB="`echo $ECHO_OPTS "scale=3;$OK/$NB" | bc -l`" (=1)"
+fi
+[ "$NBt" -eq 0 ] && NBt=-1
+if [ "$NBt" -eq -1 ]
+then
+   echo "$validation_scripts  Scripts $OKt/0="`echo $ECHO_OPTS "scale=3;$OKt/$NBt" | bc -l`" (=1)" | tee -a $MESSAGES_NUIT
+   NB=0
+else
+   echo "$validation_scripts  Scripts $OKt/$NBt="`echo $ECHO_OPTS "scale=3;$OKt/$NBt" | bc -l`" (=1)" | tee -a $MESSAGES_NUIT
 fi
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+$validation_scripts
@@ -3186,7 +3215,6 @@ Developer notes version $next_new : Changes since version $new :
    echo " "
 fi
 echo `echo ~`"/CR sent to $TRUST_MAIL"
-#mail_ -s \"[lance_test_nuit] Night report of TRUST workshop  on `date '+%d/%m/%y'`\" $TRUST_MAIL < ~/CR
 echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 echo " "
@@ -3195,7 +3223,7 @@ echo "End of the `basename $0` script at `date '+%H:%M:%S'`."
 echo `date`
 echo "****************************************************"
 
-mail_ -s \"[lance_test_nuit] Night report of TRUST workshop  on `date '+%d/%m/%y'`\" $TRUST_MAIL < ~/CR
+mail_ -s \"[lance_test_nuit] Night report of TRUST ATELIER  on `date '+%d/%m/%y'`\" $TRUST_MAIL < ~/CR
 # On deplace le CR
 mv -f ~/CR $REP_NUIT/CR
 cp -f $REP_NUIT/CR $REP_HIST/CR.$DATE

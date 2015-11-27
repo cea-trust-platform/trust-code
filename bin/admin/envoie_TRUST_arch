@@ -13,10 +13,13 @@ ssh_command()
     # Sur certaines machines un Killed by signal 1 empeche l'execution (supermuc par exemple)
     [ $adr != supermuc.lrz.de ] && echo ". ~/.bashrc 1>/dev/null 2>&1" >> $command
     echo $* >> $command
-    scp -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $command $log@$adr:~/command_$machine 1>/dev/null 2>&1
+    if [ "`ssh_ -o ConnectTimeout=30 -o BatchMode=yes $log@$adr -n pwd 1>/dev/null 2>&1;echo $?`" = 0 ]
+    then
+       scp -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $command $log@$adr:~/command_$machine 1>/dev/null 2>&1
+       # Add -X to have DISPLAY ?
+       ssh -X -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $log@$adr -n 'chmod +x ./command_'$machine';./command_'$machine 2>/dev/null
+    fi
     rm -f $command
-    # Add -X to have DISPLAY ?
-    ssh -X -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $log@$adr -n 'chmod +x ./command_'$machine';./command_'$machine 2>/dev/null
 }
 echo "Usage: `basename $0` [machine1 machine2 ...]"
 all=1 && [ ${#1} != 0 ] && all=0 && machines=$*
@@ -94,8 +97,8 @@ then
       fi
    fi
 fi
-# Versions distantes automatiquement effacees le vendredi
-[ "`date '+%u'`" = 5 ] && delete_version_machine_cible=1 && echo "We delete the version on the machines of type cible on Friday."
+# Versions distantes automatiquement effacees le vendredi soir
+[ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 18 ] && delete_version_machine_cible=1 && echo "We delete the version on the machines of type cible on Friday."
 # Versions distantes ponctuellement effacees avec un "touch ~/delete_version_machine_cible"
 [ -f ~/delete_version_machine_cible ] && delete_version_machine_cible=1 && echo "We delete the version on the machines of type cible promptly." && rm -f ~/delete_version_machine_cible
 
@@ -241,9 +244,13 @@ do
 	       option="sh -xv "
                option=""
 	       # machine=$machine".bak" # Pourquoi CR_$machine est abime?
-            fi
-	    ssh_command "export WORKBASE=$WORKBASE;cd $WORKDIR/$version/TRUST/bin/admin;$option./mise_a_jour_TRUST_arch -rsync 1>~/CR_$machine 2>&1" &
-	    echo "Launching in background the update by ssh on $log@$adr at "`date '+%H:%M:%S'`
+	       # On ne lance plus sur la frontale
+	       ssh_command "export WORKBASE=$WORKBASE;cd $WORKDIR/$version/TRUST/bin/admin;ccc_msub sub_maj_$machine" &
+	       echo "Launching in background the update by ssh then ccc_msub on $log@$adr at "`date '+%H:%M:%S'`
+	    else
+	       ssh_command "export WORKBASE=$WORKBASE;cd $WORKDIR/$version/TRUST/bin/admin;$option./mise_a_jour_TRUST_arch -rsync 1>~/CR_$machine 2>&1" &
+	       echo "Launching in background the update by ssh on $log@$adr at "`date '+%H:%M:%S'`
+	    fi
 	 
 	 else
             rsync -e 'ssh -o StrictHostKeyChecking=no' --dirs --delete --dry-run $TRUST_ROOT/RELEASE_NOTES $log@$adr:/tmp 1>>$rsyn_log 2>&1

@@ -38,7 +38,7 @@ then
      echo "Installation OK!"
      echo " "
      cat '$cible'/../Installer_TRUST.log
-     #rm -r -f '$cible'
+     rm -r -f '$cible'
      exit 0
   else
      echo "Installation KO! See '$cible'/../Installer_TRUST.log"
