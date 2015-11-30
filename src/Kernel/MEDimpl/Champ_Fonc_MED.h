@@ -60,7 +60,7 @@ public :
   */
   void creer(const Nom&,const Domaine& dom,const Nom& localisation,ArrOfDouble& temps_sauv);
   const Domaine& domaine() const;
-  void lire(double tps,int nn=-1);
+  virtual void lire(double tps,int nn=-1);
   int nb_pas_temps()
   {
     return nb_dt;
@@ -87,7 +87,7 @@ public :
   inline virtual const Champ_Fonc_base& le_champ() const;
   inline virtual Champ_Fonc_base& le_champ();
   const ArrOfDouble& get_saved_times(void) const;
-private:
+protected:
   REF(Domaine) mon_dom;
   Domaine dom;
   Zone_VF_inst zonebidon_inst;

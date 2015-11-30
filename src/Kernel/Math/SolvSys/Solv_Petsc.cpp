@@ -329,7 +329,7 @@ void Solv_Petsc::create_solver(Entree& entree)
   if (motlu==accolade_ouverte)
     {
       // Temporaire essayer de faire converger les noms de parametres des differentes solveurs (GCP, GMRES,...)
-      Motcles les_parametres_solveur(16);
+      Motcles les_parametres_solveur(17);
       {
         les_parametres_solveur[0] = "impr";
         les_parametres_solveur[1] = "seuil";
@@ -347,6 +347,7 @@ void Solv_Petsc::create_solver(Entree& entree)
         les_parametres_solveur[13] = "nb_cpus";
         les_parametres_solveur[14] = "divtol";
 	les_parametres_solveur[15] = "save_matrice";
+	les_parametres_solveur[16] = "restart";
       }
       option_double omega("omega",1.5);
       option_int    level("level",1);
@@ -622,6 +623,20 @@ void Solv_Petsc::create_solver(Entree& entree)
             case 14:
               {
                 is >> divtol_; // See http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/KSP/KSPSetTolerances.html
+                break;
+              }
+            case 16:
+              {
+                KSPType type_ksp_method;
+                KSPGetType(SolveurPetsc_, &type_ksp_method);
+                if ((Nom)type_ksp_method != Nom("gmres"))
+                {
+                    Cerr << "restart option is available only with gmres method" << finl;
+                    exit();
+                }
+		int restart_gmres;
+                is >> restart_gmres;
+                KSPGMRESSetRestart(SolveurPetsc_,restart_gmres);
                 break;
               }
             default:
