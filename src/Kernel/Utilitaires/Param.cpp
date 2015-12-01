@@ -47,8 +47,16 @@ int Param::lire_avec_accolades_depuis(Entree& is)
   return 1;
 }
 
-int Param::read(Entree& is)
+int Param::lire_sans_accolade(Entree& is)
 {
+
+  Cerr<<"not yet implemented"<<finl;
+  Process::exit();
+  return 1;
+}
+int Param::read(Entree& is,int with_acco)
+{
+  assert(with_acco==1);
   Motcle motlu;
   Motcle accolade_ouverte("{");
   Motcle accolade_fermee("}");
