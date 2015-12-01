@@ -79,13 +79,14 @@ public:
   }  ;
 
   int lire_avec_accolades_depuis(Entree& is);
+  int lire_sans_accolade(Entree& is);
   inline int lire_avec_accolades(Entree& is)
   {
     return lire_avec_accolades_depuis(is);
   } ;
   //int verifier_avant_ajout(const char*);
 
-  int read(Entree& is);
+  int read(Entree& is,int with_acco=1);
   void print(Sortie& s) const;
 
   inline const LIST(Nom)& get_list_mots_lus() const

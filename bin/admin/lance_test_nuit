@@ -2122,7 +2122,7 @@ echo "Verification of the coverage in `pwd`:"
 # Creation des classes appellees ou non
 (
 cd $TRUST_ROOT/doc/Coverage
-echo "  Call to $TRUST_ROOT/bin/admin/tggcov_ -file"
+echo "  Call to $TRUST_ROOT/bin/KSH/tggcov_ -file"
 listing=`mktemp_`
 export PYTHONPATH=$PYTHONPATH:$TRUST_ROOT/bin/KSH
 python -c "from Couv import nombre_de_cas_par_classe;nombre_de_cas_par_classe()" > $listing
@@ -2148,7 +2148,7 @@ do
    echo "    "`wc -l $file | awk '{ print $1 }'`" $file"
 done
 # Classes testees
-echo "  Call to $TRUST_ROOT/bin/admin/tggcov_ -short -file"
+echo "  Call to $TRUST_ROOT/bin/KSH/tggcov_ -short -file"
 html=liste_classes_testees.html
 echo $ECHO_OPTS "<HTML><PRE>Critere\tCouvert\tTests\tClasse" > $html
 for string in `$TRUST_Awk '!/ 0 0/ {print $1"|"$2"|"$3}' $listing`
@@ -2195,10 +2195,10 @@ error_log=`grep 'error Doxygen' $credoc_log`
 cd $repertoire_gcov
 #On n'utilise plus ggcov car il faut le meme compilateur pour exploiter les .gcda et .gcno
 #couverture_de_code=`tggcov -R all | $TRUST_Awk 'BEGIN {lines="??"} /Summary/ && /src/ {for (i=0;i<7;i++) getline;lines=$1} END {gsub("%","",lines);print lines}'`
-echo "  Call to $TRUST_ROOT/bin/admin/tggcov_"
+echo "  Call to $TRUST_ROOT/bin/KSH/tggcov_"
 echo "from `pwd`"
 echo "    See $REP_NUIT/tggcov.log"
-$TRUST_ROOT/bin/admin/tggcov_ 1>$REP_NUIT/tggcov.log 2>&1
+$TRUST_ROOT/bin/KSH/tggcov_ 1>$REP_NUIT/tggcov.log 2>&1
 #tail -n2 $REP_NUIT/tggcov.log
 couverture_de_code=`tggcov_ | $TRUST_Awk '/TRUST code/ {print $1}'`
 cd - 1>/dev/null 2>&1
@@ -2215,10 +2215,10 @@ fi
 # Creation du rapport html
 cd $TRUST_ROOT/doc/Coverage
 cd html
-echo "  Call to $TRUST_ROOT/bin/admin/tggcov_ -html"
+echo "  Call to $TRUST_ROOT/bin/KSH/tggcov_ -html"
 echo "from `pwd`"
 echo "    See $REP_NUIT/tggcov_html.log"
-$TRUST_ROOT/bin/admin/tggcov_ -html 1>$REP_NUIT/tggcov_html.log 2>&1
+$TRUST_ROOT/bin/KSH/tggcov_ -html 1>$REP_NUIT/tggcov_html.log 2>&1
 tail -n1 $REP_NUIT/tggcov_html.log
 echo "    Update html.tgz on $TRUST_ROOT/doc/Coverage"
 tar cfz html.tgz *.html
@@ -2261,7 +2261,7 @@ echo " "
 echo "Comparison of code coverage between new and old versions"
 echo "from `pwd`"
 echo " and $MAINTENANCE/doc/Coverage/html/cpp.gcov"
-echo "Call to bin/admin/tggcov_ -short -file *.gcov"
+echo "Call to bin/KSH/tggcov_ -short -file *.gcov"
 [ ! -d $MAINTENANCE ] && echo "  Verification of test coverage impossible because $MAINTENANCE not exist." #&& coverage=0
 log=`mktemp_`
 for gcov in *.gcov
@@ -2829,7 +2829,8 @@ if [ $criteres_remplis != $total_criteres ] && [ $criteres_remplis -ge 15 ] && [
 then
    echo "Version $new : Currently $criteres_remplis criteria are OK on $total_criteres planned" >> $MESSAGES_NUIT
    echo -e "=> release OK\c"
-   [ "`date '+%u'`" -gt 5 ] && accord_beta=1
+   [ "`date '+%u'`" -gt 5 ] && accord_beta=1 # week-end
+   [ "`date '+%u'`" = 1 ] && [ "`date '+%H'`" -lt 8 ] && accord_beta=1 # lundi matin
    [ -f ~/force_version_beta ] && accord_beta=1 && rm -f ~/force_version_beta
    [ -f ~/no_version_beta ] && accord_beta=0 #&& rm -f ~/no_version_beta
    if [ $accord_admin = 1 ] || [ $accord_beta = 1 ]

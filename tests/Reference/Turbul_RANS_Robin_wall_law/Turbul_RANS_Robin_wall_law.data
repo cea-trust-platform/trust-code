@@ -111,7 +111,7 @@ Read pb
 						}
 					turbulence_paroi loi_standard_hydr
 					dt_impr_ustar 20
-					dt_impr_ustar_mean_only { 20 boundaries 2 Haut Bas }
+					dt_impr_ustar_mean_only { dt_impr 20 boundaries 2 Haut Bas }
 					}
 		Traitement_particulier	{
 					canal	{

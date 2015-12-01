@@ -74,9 +74,9 @@ echo "Analysis of the coverage of $cas part "
 tout 1>monana_out 2>&1
 echo "`pwd`/monana_out file created" 
 export HTML_ROOT=$GCOV_PREFIX/../ana
-$TRUST_ROOT/bin/admin/tggcov_   | sed "s/TRUST/$cas/"        | tee monana_glob
+$TRUST_ROOT/bin/KSH/tggcov_   | sed "s/TRUST/$cas/"        | tee monana_glob
 echo more details in monana_sort
-$TRUST_ROOT/bin/admin/tggcov_ -file all  | sed "s/TRUST/$cas/"  > monana_sort
+$TRUST_ROOT/bin/KSH/tggcov_ -file all  | sed "s/TRUST/$cas/"  > monana_sort
 cd ..
 DEST=../${cas}_cpp.gcov 
 rm -rf $DEST
