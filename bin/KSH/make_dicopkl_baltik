@@ -16,12 +16,18 @@ update_version()
       echo "$1"
    fi  
 }
+for titi in baltik trust
+do
+exec=$exec_pg
+exec_run=$exec
 export PYTHONPATH=$TRUST_ROOT/bin/KSH:$PYTHONPATH
-rep=$project_directory/build/Coverage
+rep=$project_directory/build/Coverage_$titi
 mkdir -p $rep
 rm -f dico.pkl
 echo "fin" > nul.data
-#exec=$exec_pg
+exec_run=$exec
+
+[ "$titi" = "trust" ] && exec=$TRUST_ROOT/exec/TRUST*_opt_pg
 echo $exec
 if [ ! -f $exec ] || [ "`$exec nul 1>/dev/null 2>&1;echo $?`" != 0 ]
 then
@@ -40,7 +46,7 @@ python -c "from Couv import create_dico;create_dico()"
 cat /dev/null > cpu
 FF="["
 listfichier_a_retirer=""
-for file in `find $project_directory/build/tests/tests_$(basename $exec) -name cpu'.*'.seq -newer $exec -or -name cpu.'*'.par -newer $exec -or -name cpu.'*'.dec -newer $exec`
+for file in `find $project_directory/build/tests/tests_$(basename ${exec_run}) -name cpu'.*'.seq -newer $exec -or -name cpu.'*'.par -newer $exec -or -name cpu.'*'.dec -newer $exec`
 do
    name=`basename $file .seq |sed "s/cpu\.//"`
    if [ `basename $name .par` != $name ]
@@ -67,5 +73,5 @@ update_version dico.pkl
 python -c "from Couv import util;util()" | sort -u > list_methodes_non_appelees
 echo $ECHO_OPTS "Creation d'un fichier contenant les methodes non appelees par les cas tests: \c"
 update_version list_methodes_non_appelees
-
-echo rm -f $listfichier_a_retirer
+done
+# echo rm -f $listfichier_a_retirer

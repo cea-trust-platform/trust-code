@@ -113,7 +113,7 @@ Lire pb
 }	
 		Champs dt_post 2.
 			{
-			vitesse faces
+			vitesse elem
 			viscosite_turbulente elem
 			viscosite_turbulente som
 			pression elem

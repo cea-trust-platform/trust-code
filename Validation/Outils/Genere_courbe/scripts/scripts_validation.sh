@@ -95,8 +95,9 @@ verif_archives()
 }
 
 
+echo def compare_pdf_batch 
 echo def compare_pdf
-compare_pdf()
+compare_pdf_batch()
 {
     ref=$1
     new=$2
@@ -134,7 +135,12 @@ compare_pdf()
     return $ko
 }
 
-
+compare_pdf()
+{
+rm -f avoir
+compare_pdf_batch $*
+[ -f avoir ] && sh ./avoir 
+}
 
 echo "def comp_fiche"
 comp_fiche()
@@ -148,7 +154,7 @@ echo "testing $fiche"
 rm -rf avoir 
 
 
-compare_pdf new_rap/$fiche old_rap/$fiche
+compare_pdf_batch new_rap/$fiche old_rap/$fiche
 
 if [ ! -f avoir ] 
 then
