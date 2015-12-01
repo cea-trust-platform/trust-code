@@ -338,7 +338,7 @@ do
 	   [ "`grep BALTIK= $CR`" != "" ]  && let nb_machine_baltik_cible=$nb_machine_baltik_cible+1
 	   echo " step Baltik: total nb file "$portabilite_baltik" "$nb_machine_baltik_cible" "$CR
 	   [ "`grep ATELIER= $CR`" != "" ] && let nb_machine_atelier_cible=$nb_machine_atelier_cible+1
-	   echo " step workshop: total nb file "$portabilite_atelier" "$nb_machine_atelier_cible" "$CR
+	   echo " step atelier: total nb file "$portabilite_atelier" "$nb_machine_atelier_cible" "$CR
 	   [ "`grep ASSERT= $CR`" != "" ] && let nb_machine_assert_cible=$nb_machine_assert_cible+1
 	   echo " step assert: total nb file "$portabilite_assert" "$nb_machine_assert_cible" "$CR
 	fi
@@ -458,17 +458,23 @@ $TD_CR<A HREF="$CR">$HOST</A>$FTD
    [ "$port_cible_all" = 0 ] && mes=""
 
    echo "Portability Components for $TRUST_VERSION version:<BR>" >> $NUIT2
-   [ -f $REP_NUIT/nuit_equation_convection_diffusion.html ] && echo "<A HREF="nuit_equation_convection_diffusion.html">Tuto</A> : equation_convection_diffusion baltik compilation portability<BR>" >> $NUIT2
-   [ -f $REP_NUIT/nuit_ICoCo.html ] && echo "<A HREF="nuit_ICoCo.html">ICoCo</A> : ICoCo baltik compilation portability<BR>" >> $NUIT2
+   #[ -f $REP_NUIT/nuit_equation_convection_diffusion.html ] && echo "<A HREF="nuit_equation_convection_diffusion.html">Tuto</A> : equation_convection_diffusion baltik compilation portability<BR>" >> $NUIT2
+   #[ -f $REP_NUIT/nuit_ICoCo.html ] && echo "<A HREF="nuit_ICoCo.html">ICoCo</A> : ICoCo baltik compilation portability<BR>" >> $NUIT2
    #[ -f $REP_NUIT/nuit_basic.html ] && echo "<A HREF="nuit_basic.html">TRUST</A> : TRUST test baltik portability<BR>" >> $NUIT2
-   [ -f $REP_NUIT/nuit_Test_Baltik.html ] && echo "<A HREF="nuit_Test_Baltik.html">TRUST</A> : TRUST test baltik portability<BR>" >> $NUIT2
-   [ -f $REP_NUIT/nuit_MPCube.html ] && echo "<A HREF="nuit_MPCube.html">MPCube</A> : MPCube baltik compilation portability<BR>" >> $NUIT2
-   [ -f $REP_NUIT/nuit_TrioCFD.html ] && echo "<A HREF="nuit_TrioCFD.html">TrioCFD</A> : TrioCFD baltik compilation portability<BR>" >> $NUIT2
-   [ -f $REP_NUIT/nuit_ModeleCoeur.html ] && echo "<A HREF="nuit_ModeleCoeur.html">MC2</A> : ModeleCoeur baltik compilation portability<BR>" >> $NUIT2
+   #[ -f $REP_NUIT/nuit_Test_Baltik.html ] && echo "<A HREF="nuit_Test_Baltik.html">TRUST</A> : TRUST test baltik portability<BR>" >> $NUIT2
+   #[ -f $REP_NUIT/nuit_MPCube.html ] && echo "<A HREF="nuit_MPCube.html">MPCube</A> : MPCube baltik compilation portability<BR>" >> $NUIT2
+   #[ -f $REP_NUIT/nuit_TrioCFD.html ] && echo "<A HREF="nuit_TrioCFD.html">TrioCFD</A> : TrioCFD baltik compilation portability<BR>" >> $NUIT2
+   #[ -f $REP_NUIT/nuit_ModeleCoeur.html ] && echo "<A HREF="nuit_ModeleCoeur.html">MC2</A> : ModeleCoeur baltik compilation portability<BR>" >> $NUIT2
+   echo "<A HREF="nuit_equation_convection_diffusion.html">Tuto</A> : equation_convection_diffusion baltik compilation portability<BR>" >> $NUIT2
+   echo "<A HREF="nuit_ICoCo.html">ICoCo</A> : ICoCo baltik compilation portability<BR>" >> $NUIT2
+   echo "<A HREF="nuit_Test_Baltik.html">TRUST</A> : TRUST test baltik portability<BR>" >> $NUIT2
+   echo "<A HREF="nuit_MPCube.html">MPCube</A> : MPCube baltik compilation portability<BR>" >> $NUIT2
+   echo "<A HREF="nuit_TrioCFD.html">TrioCFD</A> : TrioCFD baltik compilation portability<BR>" >> $NUIT2
+   echo "<A HREF="nuit_ModeleCoeur.html">MC2</A> : ModeleCoeur baltik compilation portability<BR>" >> $NUIT2
    #echo "Release criteria of the $TRUST_VERSION version:<BR>" >> $NUIT2
    echo "$port_cible_all : Total number portability ( $nb_machine_cible = $nb_machine_total_cible )<BR>" >> $NUIT2
    echo "$port_trust : $MODULE portability ( $portabilite/$nb_machine_cible > $limite ) $mes<BR>" >> $NUIT2
-   echo "$port_atelier : $MODULE workshop compilation ( $portabilite_atelier/$nb_machine_atelier_cible )<BR>" >> $NUIT2
+   echo "$port_atelier : $MODULE atelier compilation ( $portabilite_atelier/$nb_machine_atelier_cible )<BR>" >> $NUIT2
    echo "$port_xprepro : Xprepro portability with $MODULE ( $portabilite_xprepro/$nb_machine_xprepro_cible )<BR>" >> $NUIT2
    echo "$port_baltik : Baltik portability with $MODULE ( $portabilite_baltik/$nb_machine_baltik_cible )<BR>" >> $NUIT2
    echo "$port_assert : Compilation assert test ( $portabilite_assert/$nb_machine_assert_cible )<BR>" >> $NUIT2

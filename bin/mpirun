@@ -37,7 +37,7 @@ case $Mpirun in
                 #################
 		if [ $MPI = "MPICH2" ] 
 		then
-		   # Attention, toujours d'actualite (eg: mezel2)
+		   # Attention, toujours d'actualite
 		   mpd=`ls $MPI_ROOT/bin/mpd /usr/bin/mpd 2>/dev/null | head -1`
                    if [ "$mpd" != "" ]
                    then

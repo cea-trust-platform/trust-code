@@ -59,19 +59,6 @@ version=$1
 what=$2
 echo $version $what
 
-#########################
-# Changement de version #
-#########################
-# ToDo: remove if not necessary:
-if [ "$version" = 2_5_2 ]
-then
-   if [ $HOST = mezel2 ]
-   then
-      # Sur mezel2 car les versions download et build crashent depuis PC TMA
-      version=2_6_1
-   fi
-fi
-
 ########################
 # Encore des variables #
 ########################

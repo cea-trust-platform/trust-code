@@ -5,7 +5,7 @@ if [ "$test_visit" = 1 ]
 then
    # Teste que le format Visit+Lata fonctionne
    # Initialisation environnement TRUST pour mise a jour de PYTHON_PATH sinon probleme avec ALLIANCES
-   source $TRUST_ROOT/env_TRUSTenh 1>/dev/null 2>&1
+   source $TRUST_ROOT/env_TRUST.sh 1>/dev/null 2>&1
 
    # Plantage OpenMPI sur thor car TRUST_TMP est sur un montage NFS
    [ $HOST = thor ] && TRUST_TMP=/tmp

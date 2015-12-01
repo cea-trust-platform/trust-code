@@ -14,7 +14,7 @@ Read_file Obstacle.geo ;
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partitionneur metis { nb_parts 2 }
 	Larg_joint 2
 	Nom_Zones DOM
 }

@@ -36,10 +36,10 @@ make_tools()
    echo "==========================="
    echo "$MESSAGE tools and plugins:"
    echo "==========================="
-   reps="Outils/lance_test_seq_par Outils/triou2doxygen Outils/lata2dx Outils/TRIOXDATA Outils/doxygen"
+   reps="Outils/lance_test_seq_par Outils/triou2doxygen Outils/lata2dx"
    [ "$TRUST_DISABLE_MEDCOUPLING" = 0 ] && [ "$TRUST_DISABLE_MED" = 0 ] && [ "$TRUST_DISABLE_MPI" = 0 ] && reps=$reps" Outils/ICoCo"
-   [ "$TRUST_WITHOUT_DOC" != 1 ] && reps=$reps" doc"
    [ "$TRUST_DISABLE_VALGRIND" != 1 ] && reps=$reps" Outils/valgrind"
+   [ "$TRUST_WITHOUT_DOC" != 1 ] && reps=$reps" Outils/TRIOXDATA Outils/doxygen doc"
    [ "$TRUST_DISABLE_GNUPLOT" != 1 ] && reps=$reps" Outils/gnuplot"
    [ "$TRUST_DISABLE_MED" = 0 ] && [ "$TRUST_DISABLE_GMSH" != 1 ] && reps=$reps" Outils/Gmsh"
    [ "$TRUST_WITHOUT_VISIT" != 1 ] && reps=$reps" Outils/VisIt"
@@ -74,32 +74,6 @@ make_tools()
    fi
 }
 
-make_jade_batch()
-{
-   ############################################################
-   # Lancement en batch sur cette machine de la commande make #
-   ############################################################
-   echo "#PBS -N make
-#PBS -l select=8:ncpus=8:mpiprocs=1
-#PBS -l walltime=02:00:00
-cd $TRUST_ROOT
-cd \$PBS_O_WORKDIR
-export HOST=jade
-export TRUST_MAKE=\"make -j8\"
-make 1>make.log 2>&1" > sub_file
-   id=`cat sub_file | qsub | $TRUST_Awk -F . '{print $1}'`
-   echo > make.log
-   tail -f make.log &
-   pcs=$!
-   echo "make submitted by qsub. Wait..."
-   while [ "`qstat -a | grep $id`" != "" ]
-   do
-      sleep 3
-   done
-   kill -9 $pcs
-   rm -f sub_file
-   cat make.log
-}
 
 ###################
 # DEBUT DU SCRIPT #
@@ -201,15 +175,8 @@ then
 	 echo $ECHO_OPTS $rep":\c "
 	 OLD_OPT=$OPT
 	 OPT="_opt"
-	 if [ "$CLEAN" = "" ] && [ $rep = LIBPETSC ] && [ $HOST = jade_desactive ]
-	 then
-	    # Probleme sur jade avec la librairie PETSc en interactif 
-	    make_jade_batch 1>>$COMPILE 2>&1
-	    err=$?
-	 else
-   	    $MAKE $CLEAN 1>>$COMPILE 2>&1
-	    err=$?
-	 fi
+	 $MAKE $CLEAN 1>>$COMPILE 2>&1
+	 err=$?
 	 OPT=$OLD_OPT
          OK $err
          if [ $err != 0 ]
@@ -339,7 +306,7 @@ then
         	  $MAKE 1>>$COMPILE 2>&1
         	  error=$?
                done
-               # Probleme aleatoire sur jade
+               # Probleme aleatoire
 	       while [ "`tail -6 $COMPILE | $TRUST_Awk '/t fork process/ {print 1}'`" != "" ]
                do
         	  $MAKE 1>>$COMPILE 2>&1

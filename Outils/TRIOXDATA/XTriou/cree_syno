@@ -3,7 +3,7 @@
 cree_syno()
 {
     # On chrche les synonymes dans la hierarchie
-    #triou existepas 2>/dev/null 1>/dev/null
+    #trust existepas 2>/dev/null 1>/dev/null
     # Pour eviter des blocages sur machine jade:
 	exec=$1
     $exec existepas 2>/dev/null 1>/dev/null

@@ -235,36 +235,18 @@ done
 for THIRD_PARTY in $LIST_THIRD_PARTY 
 do
    VAR=TRUST_DISABLE_$THIRD_PARTY
-   echo "$VAR=${!VAR} && export $VAR 	# Disable/enable $THIRD_PARTY"  						>> $var 
+   echo "$VAR=${!VAR} && export $VAR 	# Disable/enable $THIRD_PARTY"  					>> $var 
 done
-echo "TRUST_DISABLE_MPIIO=$TRUST_DISABLE_MPIIO && export TRUST_DISABLE_MPIIO		# Disable/enable MPI-IO mode for writing of binary output file"	>> $var
-echo "TRUST_WITHOUT_DOC=$TRUST_WITHOUT_DOC && export TRUST_WITHOUT_DOC			# Disable/enable Documentation"	>> $var
-echo "TRUST_WITHOUT_VISIT=$TRUST_WITHOUT_VISIT && export TRUST_WITHOUT_VISIT		# Disable/enable VisIt" 	>> $var
-echo "TRUST_DOWNLOAD_VISIT=$TRUST_DOWNLOAD_VISIT && export TRUST_DOWNLOAD_VISIT 	# Download or build VisIt" 	>> $var
-echo "TRUST_DOWNLOAD_SALOME=$TRUST_DOWNLOAD_SALOME && export TRUST_DOWNLOAD_SALOME 	# Download Salome" 		>> $var   
+echo "TRUST_DISABLE_MPIIO=$TRUST_DISABLE_MPIIO && export TRUST_DISABLE_MPIIO	# Disable/enable MPI-IO mode for writing of binary output file"	>> $var
+echo "TRUST_WITHOUT_DOC=$TRUST_WITHOUT_DOC && export TRUST_WITHOUT_DOC		# Disable/enable Documentation"	>> $var
+echo "TRUST_WITHOUT_VISIT=$TRUST_WITHOUT_VISIT && export TRUST_WITHOUT_VISIT	# Disable/enable VisIt" 	>> $var
+echo "TRUST_DOWNLOAD_VISIT=$TRUST_DOWNLOAD_VISIT && export TRUST_DOWNLOAD_VISIT 	# Download or build VisIt" >> $var
+echo "TRUST_DOWNLOAD_SALOME=$TRUST_DOWNLOAD_SALOME && export TRUST_DOWNLOAD_SALOME # Download Salome" 		>> $var   
 
 ################################
 # Check options for some hosts #
 ################################
 HOST=`hostname`
-#Since 1.6.9, MPICH is the default MPI installed.
-#if [ "$TRUST_DOWNLOAD_VISIT" != 1 ] && [ "$TRUST_WITHOUT_VISIT" != 1 ] && [ "$TRUST_FORCE_PROVIDED_MPICH" != 1 ]
-#then
-#   if [ $HOST = aline2 ] || [ $HOST = bellety ]
-#   then
-#      echo
-#      echo "You need to run the configure with the option -force_provided_mpich to build a parallel version for VisIt on $HOST."
-#      echo "OpenMPI version for MPI will crash for VisIt 2.5.2 and 2.6.0."
-#      exit -1
-#   fi
-#fi
-if [ ${HOST#mezel} != $HOST ] && [ "$TRUST_FORCE_PROVIDED_MPICH" != 1 ]
-then
-   echo
-   echo "You need to run the configure with the option -force_provided_mpich on $HOST cause MPI native are too old/buggy"
-   echo "and the provided OpenMPI does not use correctly Infiniband network."
-   exit -1
-fi
 
 ####################################################
 # Configuration et initialisation de l'environnement

@@ -226,7 +226,7 @@ check_src()
    non_ascii_sources=`file *.cpp *.h | grep -v ASCII | awk -F: '{print $1}'`
    if [ "$non_ascii_sources" != "" ] && [ $TRUST_HOST_ADMIN = $HOST ]
    then
-      # On ne lance que sur la machine TMA pour le moment car bloque sur cezanne27 !
+      # On ne lance que sur la machine TMA pour le moment
       command="python $TRUST_ROOT/bin/KSH/cpplint.py $non_ascii_sources 2>&1"
       if [ "`eval $command | grep UTF`" != "" ]
       then
