@@ -644,8 +644,8 @@ void Parser::addVar(const char *vv)
 {
   if (searchVar(vv)!=-1)
     {
-      Cerr<<"Error in Parser::addVar "<< vv << " already in Parser"<<finl;
-      Process::exit();
+      Cerr<<"Warning in Parser::addVar "<< vv << " already in Parser"<<finl;
+      //Process::exit();
     }
   if (ivar<maxvar)
     les_var[ivar++] = new Variable(vv);
