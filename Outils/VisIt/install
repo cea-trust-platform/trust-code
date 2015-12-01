@@ -124,7 +124,7 @@ then
       echo "# Trying to build a $parallel version for VisIt..."
       echo "#################################################"
       cd src
-      ./build.sh $package $parallel || TRUST_DOWNLOAD_VISIT=1 # La construction a echoue on telecharge une version sequentielle
+      ./build.sh $package $parallel || ./build.sh $package #  La construction a echoue on compile une version sequentielle
       cd - 1>/dev/null 2>&1	
    fi
    # Telechargement demande ou suite echec de construction (sauf si une configuration parallele existe
