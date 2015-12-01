@@ -34,8 +34,6 @@
 #include <Debog.h>
 #include <EcrFicPartage.h>
 
-extern void convert_to(const char *s, double& ob);
-extern void convert_to(const char *s, int& ob);
 
 Implemente_base_sans_constructeur(Mod_turb_hyd_base,"Mod_turb_hyd_base",Objet_U);
 
@@ -128,8 +126,7 @@ int Mod_turb_hyd_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
     {
       if (mot=="dt_impr_ustar")
         {
-          is >> motlu;
-          convert_to(motlu, dt_impr_ustar);
+          is >>  dt_impr_ustar;
         }
       else if (mot=="dt_impr_ustar_mean_only")
         {
@@ -153,7 +150,12 @@ int Mod_turb_hyd_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
               exit();
             }
           is >> motlu;
-          convert_to(motlu, dt_impr_ustar_mean_only);
+          if (motlu!="dt_impr")
+            {
+              Cerr<<"We expected dt_impr..."<<finl;
+              exit();
+            }
+          is >>  dt_impr_ustar_mean_only;
 
           is >> motlu; // boundaries ou accolade_fermee ou pasbon
           if ( motlu != accolade_fermee )
@@ -165,8 +167,7 @@ int Mod_turb_hyd_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
                   Nom nom_bord_lu;
 
                   // read boundaries number
-                  is >> motlu;
-                  convert_to(motlu, nb_bords);
+                  is >> nb_bords;
                   if ( nb_bords != 0 )
                     {
                       // read boundaries

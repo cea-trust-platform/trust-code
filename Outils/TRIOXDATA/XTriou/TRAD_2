@@ -537,11 +537,15 @@ pb_thermohydraulique Pb_base pb_thermohydraulique -1 Resolution of thermohydraul
 pb_hydraulique Pb_base pb_hydraulique -1 Resolution of the NAVIER STOKES equations.
   attr navier_stokes_standard navier_stokes_standard navier_stokes_standard 0 NAVIER STOKES equations.
 turbulence_paroi_base objet_u turbulence_paroi_base -1 Basic class for wall laws for NAVIER STOKES equations.
+dt_impr_ustar_mean_only objet_lecture nul 1 not_set
+  attr dt_impr floattant dt_impr 0 not_set
+  attr boundaries listchaine boundaries 1 not_set
 modele_turbulence_hyd_deriv objet_lecture modele_turbulence_hyd_deriv -1 Basic class for turbulence model for NAVIER STOKES equations.
   attr correction_visco_turb_pour_controle_pas_de_temps rien correction_visco_turb_pour_controle_pas_de_temps 1 Keyword to set a limitation to low time steps due to high values of turbulent viscosity. The limit for turbulent viscosity is calculated so that diffusive time-step is equal or higher than convective time-step. For a stationary flow, the correction for turbulent viscosity should apply only during the first time steps and not when permanent state is reached. To check that, we could post process the corr_visco_turb field which is the correction of turbulent viscosity: it should be 1. on the whole domain.
   attr correction_visco_turb_pour_controle_pas_de_temps_parametre floattant correction_visco_turb_pour_controle_pas_de_temps_parametre 1 Keyword to set a limitation to low time steps due to high values of turbulent viscosity. The limit for turbulent viscosity is the ratio between diffusive time-step and convective time-step is higher or equal to the given value [0-1]
   attr turbulence_paroi turbulence_paroi_base turbulence_paroi 1 Keyword to set the wall law.
   attr dt_impr_ustar floattant dt_impr_ustar 1 This keyword is used to print the values (U +, d+, u$\star$) obtained with the wall laws into a file named datafile_ProblemName_Ustar.face and periode refers to the printing period, this value is expressed in seconds.
+  attr dt_impr_ustar_mean_only dt_impr_ustar_mean_only dt_impr_ustar_mean_only 0 not_set
   attr nut_max floattant nut_max 1 Upper limitation of turbulent viscosity (default value 1.e8).
   attr eps_min floattant eps_min 1 Lower limitation of epsilon (default value 1.e-10).
   attr k_min floattant k_min 1 Lower limitation of k (default value 1.e-10).
