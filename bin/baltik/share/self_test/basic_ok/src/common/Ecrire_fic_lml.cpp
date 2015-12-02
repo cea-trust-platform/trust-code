@@ -10,6 +10,8 @@
 #include <EcrFicPartage.h>
 #include <Format_Post_Lml.h>
 Implemente_instanciable(Ecrire_fic_lml,"Ecrire_fic_lml",Interprete);
+// XD Ecrire_fic_lml interprete Ecrire_fic_lml 0 description de   la classe
+// XD attr nom_domaine ref_domaine nom_domaine 0 not_set
 
 // Description:
 //    Simple appel a: Interprete::printOn(Sortie&)
