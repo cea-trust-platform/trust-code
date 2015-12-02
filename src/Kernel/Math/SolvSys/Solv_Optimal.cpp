@@ -289,7 +289,7 @@ Entree& Solv_Optimal::readOn(Entree& is )
   param.ajouter("seuil",&seuil_,Param::REQUIRED); // seuil de resolution
   param.ajouter_flag("impr",&impr); // active impression des solveurs
   param.ajouter_flag("quiet",&quiet);
-  param.ajouter_flag("save_matrice",&save_matrice_); // pour sauvegarder A,x,b
+  param.ajouter_flag("save_matrice|save_matrix",&save_matrice_); // pour sauvegarder A,x,b
   param.ajouter("frequence_recalc",&freq_recalc_); // frequence pour reevaluer le solveur optimal
   param.ajouter("nom_fichier_solveur",&fichier_solveur_); //nom du fichier contenant les solveurs testes
   param.ajouter_flag("fichier_solveur_non_recree",&fichier_solveur_non_recree_); //  si flag mis alors le fichier n'est pas cree au debut du calcul

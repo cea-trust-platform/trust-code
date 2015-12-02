@@ -253,7 +253,7 @@ Entree& Equation_base::readOn(Entree& is)
 void Equation_base::set_param(Param& param)
 {
   param.ajouter_non_std("conditions_limites|boundary_conditions",(this),Param::REQUIRED);
-  param.ajouter_non_std("conditions_initiales",(this),Param::REQUIRED);
+  param.ajouter_non_std("conditions_initiales|initial_conditions",(this),Param::REQUIRED);
   param.ajouter_non_std("sources",(this));
   param.ajouter_non_std("ecrire_fichier_xyz_valeur_bin",(this));
   param.ajouter_non_std("ecrire_fichier_xyz_valeur",(this));
@@ -274,7 +274,7 @@ int Equation_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
       verif_Cl();
       return 1;
     }
-  else if (mot=="conditions_initiales")
+  else if (mot=="conditions_initiales|initial_conditions")
     {
       lire_cond_init(is);
       return 1;

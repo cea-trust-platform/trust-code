@@ -26,7 +26,7 @@
 #include <Debog.h>
 
 
-Implemente_instanciable(Schema_Euler_explicite,"Schema_Euler_explicite",Schema_Temps_base);
+Implemente_instanciable(Schema_Euler_explicite,"Schema_euler_explicite|Scheme_euler_explicit",Schema_Temps_base);
 
 
 // Description:

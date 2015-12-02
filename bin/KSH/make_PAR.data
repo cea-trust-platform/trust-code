@@ -68,7 +68,8 @@ rm -f $tmpdec
 [ $TRUST_ARCH = linux ] && echo $ECHO_OPTS "1,$ s?Nom_Zones?Nom_Zones?i\nw" | ed $DEC_NOM.data 1>/dev/null 2>&1
 
 # On cherche le nom des zones
-nom_zones=`grep -i Nom_Zones $DEC_NOM.data | $TRUST_Awk '{print $2}'`
+nom_zones=`grep -i ZoneS_name $DEC_NOM.data | $TRUST_Awk '{print $2}'`
+[ "$nom_zones" = "" ] && nom_zones=`grep -i Nom_Zones  $DEC_NOM.data | $TRUST_Awk '{print $2}'`
 # On efface les .Zones precedantes
 for nom_zone in $nom_zones
 do

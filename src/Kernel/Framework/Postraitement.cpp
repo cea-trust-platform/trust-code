@@ -36,7 +36,7 @@
 #include <Param.h>
 
 
-Implemente_instanciable_sans_constructeur_ni_destructeur(Postraitement,"Postraitement",Postraitement_base);
+Implemente_instanciable_sans_constructeur_ni_destructeur(Postraitement,"Postraitement|Post_processing",Postraitement_base);
 
 Postraitement::~Postraitement()
 {
@@ -357,8 +357,8 @@ void Postraitement::set_param(Param& param)
   param.ajouter("Fichier",&nom_fich_);
   param.ajouter("Format",&format);
   param.ajouter("Parallele",&option_para);
-  param.ajouter_non_std("Sondes",(this));
-  param.ajouter_non_std("Champs",(this));
+  param.ajouter_non_std("Sondes|Probes",(this));
+  param.ajouter_non_std("champs|fields",(this));
   param.ajouter_non_std("Statistiques",(this));
   param.ajouter_non_std("Domaine",(this));
   param.ajouter_non_std("Sondes_Int",(this));
@@ -370,7 +370,7 @@ void Postraitement::set_param(Param& param)
 int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
 {
   Motcle motlu;
-  if (mot=="Sondes")
+  if (mot=="Sondes|Probes")
     {
       Cerr << "Reading of probes" << finl;
       les_sondes_.associer_post(*this);
@@ -378,7 +378,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       sondes_demande_ = 1;
       return 1;
     }
-  else if (mot=="Champs")
+  else if (mot=="champs|fields")
     {
       Cerr << "Reading of fields to be postprocessed" << finl;
       Noms liste_noms;

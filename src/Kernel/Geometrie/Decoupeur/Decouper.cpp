@@ -186,10 +186,10 @@ Entree& Decouper::interpreter(Entree& is)
   domaine.imprimer();
 
   Param param(que_suis_je());
-  param.ajouter_non_std("partitionneur",(this),Param::REQUIRED);
+  param.ajouter_non_std("partitionneur|partition_tool",(this),Param::REQUIRED);
   param.ajouter("larg_joint",&epaisseur_joint);
   param.ajouter_condition("value_of_larg_joint_ge_1","The joint thickness must greater or equal to 1.");
-  param.ajouter("nom_zones",&nom_zones_decoup);
+  param.ajouter("nom_zones|zones_name",&nom_zones_decoup);
   param.ajouter("ecrire_decoupage",&nom_fichier_decoupage);
   param.ajouter("ecrire_lata",&nom_fichier_lata);
   param.ajouter("nb_parts_tot",&nb_parts_tot);
@@ -245,7 +245,7 @@ Entree& Decouper::interpreter(Entree& is)
 int Decouper::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
   Motcle motlu;
-  if (mot=="partitionneur")
+  if (mot=="partitionneur|partition_tool")
     {
       Cerr<<"domaine = "<<nom_domaine<<finl;
       const Domaine& domaine = find_domain(nom_domaine);

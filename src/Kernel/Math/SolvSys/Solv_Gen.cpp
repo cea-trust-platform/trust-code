@@ -62,7 +62,7 @@ Entree& Solv_Gen::readOn(Entree& is )
     les_parametres[1] = "impr";
     les_parametres[2] = "solv_elem";
     les_parametres[3] = "precond";
-    les_parametres[4] = "save_matrice";
+    les_parametres[4] = "save_matrice|save_matrix";
     les_parametres[5] = "quiet";
   }
   int rang;

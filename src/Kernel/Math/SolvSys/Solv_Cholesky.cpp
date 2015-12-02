@@ -46,7 +46,7 @@ Entree& Solv_Cholesky::readOn(Entree& is )
   Motcles les_parametres(3);
   {
     les_parametres[0] = "impr";
-    les_parametres[1] = "save_matrice";
+    les_parametres[1] = "save_matrice|save_matrix";
     les_parametres[2] = "quiet";
   }
   int rang;

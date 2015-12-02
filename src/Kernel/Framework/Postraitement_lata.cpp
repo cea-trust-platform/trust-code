@@ -237,7 +237,7 @@ void Postraitement_lata::set_param(Param& param)
   param.ajouter("fichiers_multiples",&fichiers_multiples_);
   param.ajouter("skip_header",&skip_header_);
   param.ajouter_non_std("format",(this));
-  param.ajouter_non_std("champs",(this));
+  param.ajouter_non_std("champs|fields",(this));
   param.ajouter_non_std("print",(this));
   param.ajouter_non_std("dt_post",(this));
 }
@@ -249,7 +249,7 @@ int Postraitement_lata::lire_motcle_non_standard(const Motcle& mot, Entree& is)
       lire_format(is);
       return 1;
     }
-  else if (mot=="champs")
+  else if (mot=="champs|fields")
     {
       lire_champs(is);
       return 1;

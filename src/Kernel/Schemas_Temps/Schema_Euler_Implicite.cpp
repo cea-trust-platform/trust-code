@@ -30,7 +30,7 @@
 #include <LecFicDiffuse.h>
 #include <communications.h>
 #include <string>
-Implemente_instanciable(Schema_Euler_Implicite,"Schema_Euler_Implicite",Schema_Implicite_base);
+Implemente_instanciable(Schema_Euler_Implicite,"Schema_euler_implicite|Scheme_euler_implicit",Schema_Implicite_base);
 
 //     printOn()
 /////

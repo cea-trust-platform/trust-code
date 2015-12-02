@@ -65,7 +65,7 @@ Entree& Solv_GCP::readOn(Entree& is )
   param.ajouter("seuil",&seuil_,Param::REQUIRED);
   param.ajouter_flag("impr",&impr);
   param.ajouter_flag("quiet",&quiet);
-  param.ajouter_flag("save_matrice",&save_matrice_);
+  param.ajouter_flag("save_matrice|save_matrix",&save_matrice_);
   param.ajouter("precond",&le_precond_);
   param.ajouter_flag("precond_nul",&precond_nul);
   param.ajouter_flag("precond_diagonal", &precond_diag_);
