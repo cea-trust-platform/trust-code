@@ -17,7 +17,7 @@ mailler dom {
 	}
 }
 
-Schema_Euler_implicite sch 
+Scheme_euler_implicit sch 
 Read sch 
 { 
 	tinit 0

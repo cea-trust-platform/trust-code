@@ -6,7 +6,7 @@ dimension 2
 domaine dom 
 
 # BEGIN MESH #
-lire_fichier dom dom2D.geom
+Read_file dom dom2D.geom
 
 Trianguler_H dom
 /* rotation of angle theta : */
@@ -18,8 +18,8 @@ Transformer dom x*cos(pi/4)+y*sin(pi/4) -x*sin(pi/4)+y*cos(pi/4)
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 2 }
-	Nom_Zones DOM
+	Partition_tool tranche { tranches 2 2 }
+	zones_name DOM
         Larg_joint 2
 }
 End
@@ -29,8 +29,8 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-schema_euler_implicite sch 
-Lire sch
+Scheme_euler_implicit sch 
+Read sch
   { 
     solveur implicite 
       { 
@@ -46,13 +46,13 @@ Lire sch
  VEFPreP1B dis 
 
 pb_thermohydraulique_turbulent pb 
-Associer pb dom
-Associer pb sch
+Associate pb dom
+Associate pb sch
 fluide_incompressible eau 
 champ_uniforme gravite 
-Lire gravite 2 0.0 0.0
-Associer eau gravite
-Lire eau
+Read gravite 2 0.0 0.0
+Associate eau gravite
+Read eau
   { 
     beta_th champ_uniforme  1 0.0002
     mu champ_uniforme  1 8.951e-05
@@ -60,9 +60,9 @@ Lire eau
     cp champ_uniforme  1 5483.0
     lambda champ_uniforme  1 0.02495
   }
-Associer pb eau
-discretiser pb dis
-Lire pb
+Associate pb eau
+Discretize pb dis
+Read pb
   { 
     navier_stokes_turbulent 
       { 
@@ -73,8 +73,8 @@ Lire pb
                 convection    { amont 
                   }
                 diffusion    {   }
-                conditions_initiales    {  k_Eps Field_uniform_keps_from_ud { U 100 D 1 } }
-                conditions_limites 
+                initial_conditions    {  k_Eps Field_uniform_keps_from_ud { U 100 D 1 } }
+                boundary_conditions 
                   {
                     1 frontiere_ouverte_k_eps_impose Boundary_field_uniform_keps_from_ud { U 100 D 1 }
                     2 Paroi
@@ -100,8 +100,8 @@ Lire pb
         convection    { amont 
           }
         diffusion    {   }
-        conditions_initiales    {  vitesse champ_fonc_xyz dom 2 0 0 }
-        conditions_limites 
+        initial_conditions    {  vitesse champ_fonc_xyz dom 2 0 0 }
+        boundary_conditions 
           {
             1 frontiere_ouverte_vitesse_imposee champ_front_uniforme  2 1.0 0.0
             2 paroi_fixe 
@@ -120,8 +120,8 @@ Lire pb
           }
         convection    { amont }
         diffusion    {   }
-        conditions_initiales    {  temperature champ_fonc_xyz dom 1 20 }
-        conditions_limites 
+        initial_conditions    {  temperature champ_fonc_xyz dom 1 20 }
+        boundary_conditions 
           {
             1 frontiere_ouverte_temperature_imposee champ_front_uniforme  1 300.0
             2 paroi_adiabatique 
@@ -133,10 +133,10 @@ Lire pb
           }
       }
 
-      Postraitement
+      Post_processing
       { 
 	    format lml
-        champs  dt_post 0.1 
+        fields  dt_post 0.1 
         {
            	vitesse elem
            	vitesse som
@@ -151,12 +151,12 @@ Lire pb
 	    }
 	  }
 
-      Postraitements
+      Post_processings
       { 
       	volumic	
       	{
 	    format lml
-            champs  dt_post 0.1 
+            fields  dt_post 0.1 
             {
             	vitesse elem
            	vitesse som
@@ -173,5 +173,5 @@ Lire pb
 	
       }
 }
-resoudre pb
-fin 
+Solve pb
+End 

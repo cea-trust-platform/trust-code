@@ -26,8 +26,8 @@ Trianguler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
-	Nom_Zones DOM
+	Partition_tool metis { Nb_parts 2 }
+	zones_name DOM
 	Periodique 1 periox
         Larg_joint 2
 }
@@ -81,7 +81,7 @@ Read pb
 		solveur_pression petsc cholesky { }
 		convection { negligeable }
 		diffusion {  }
-		conditions_initiales
+		initial_conditions
 			{
 			vitesse champ_fonc_xyz dom 2 y 0. 
 			}
@@ -96,7 +96,7 @@ Read pb
 			}
 		}
 
-	Postraitement
+	Post_processing
         	{       
 		Definition_champs
 		{
@@ -112,11 +112,11 @@ Read pb
 				}
 			}
 		}
-		Sondes {
+		Probes {
 			max_v max_v periode 0.001 numero_elem_sur_maitre 0
 		}
 		format lml
-		Champs dt_post 100.
+		fields dt_post 100.
 		{
 			vitesse elem
 			pression elem

@@ -3,29 +3,29 @@
 dimension 3
 Pb_Hydraulique pb
 Domaine dom
-# DEBUT MAILLAGE #
-Lire_fichier dom model/grossier/Pb1.geom
+# BEGIN MESH #
+Read_file dom model/grossier/Pb1.geom
 dilate dom 1e-3
 transformer dom x y z/50.
 tetraedriser_homogene dom
-# FIN MAILLAGE #
-# DEBUT DECOUPAGE
-Decouper dom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 }
-Fin
-FIN DECOUPAGE #
+End
+END PARTITION #
 
-# DEBUT LECTURE
+# BEGIN SCATTER
 Scatter DOM.Zones dom
-FIN LECTURE #
+END SCATTER #
 
 VEFprep1b dis
-schema_Euler_implicite sch
-Lire sch
+Scheme_euler_implicit sch
+Read sch
 {
 	tinit 0
 	tmax 10.
@@ -40,17 +40,17 @@ facsec 1
 	solveur implicite { solveur gmres { diag seuil 1e-18 impr nb_it_max 3 } }
 }
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
 	mu Champ_Uniforme 1 1e-3
 	rho Champ_Uniforme 1 781
 }
-Associer pb dom
-Associer pb sch
-Associer pb fluide
-Discretiser pb dis
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard
 	{
@@ -59,10 +59,10 @@ Lire pb
 solveur_pression petsc cholesky { }
 		convection { Amont }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 3 0. 0. 0.
 			}
-		conditions_limites {
+		boundary_conditions {
 			 
 			symetrie symetrie
 			coude_defaut paroi_fixe
@@ -70,7 +70,7 @@ solveur_pression petsc cholesky { }
 			r_1000_2000 frontiere_ouverte_pression_imposee  ch_front_input { nb_comp 1 nom Pression_chaude probleme pb }
 		}	
 	}
-Postraitement 
+Post_processing 
 {
 	Definition_champs {
 			vitesse_out Champ_post_interpolation {
@@ -84,12 +84,12 @@ Postraitement
                         }
 	
 	}
-	Sondes 
+	Probes 
 	{
 		sonde_vitesse grav vitesse periode 1 segment 300 1.56 0. 0. 1.56 0.27  0.
 		}
 	format lata
-	Champs dt_post 0.1
+	fields dt_post 0.1
 	{
 			pression_pa elem
 			pression_pa som
@@ -98,11 +98,11 @@ Postraitement
 		
 }	
 }
-postraitements { 
+Post_processings { 
 	 bord {
 	 format lata
 	 domaine dom_boundaries_r_1000_2000 
-	 champs dt_post 0.05
+	 fields dt_post 0.05
 	 { 
 	# pression_pa elem #
 	vitesse som
@@ -110,6 +110,6 @@ postraitements {
 	 }
 	 }
 }
-# Resoudre pb #
-Fin
-Fin
+# Solve pb #
+End
+End

@@ -9,7 +9,7 @@ Read_file dom dom.geom
 
 VEFPreP1b dis
 
-Schema_Euler_explicite sch
+Scheme_euler_explicit sch
 Read sch 
 {
         tinit 0.

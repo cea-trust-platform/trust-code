@@ -23,7 +23,7 @@ Scatter DOM.Zones dom
 END SCATTER #
 
 VDF dis
-Schema_Euler_explicite sch
+Scheme_euler_explicit sch
 Read sch
 {
         tinit 0.0

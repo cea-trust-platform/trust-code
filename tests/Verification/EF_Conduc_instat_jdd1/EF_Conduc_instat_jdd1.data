@@ -8,7 +8,7 @@ dimension 2
 
 Pb_conduction pb
 Domaine dom
-# DEBUT MAILLAGE #
+# BEGIN MESH #
 Mailler dom
 {
 	Pave Cavite 
@@ -25,25 +25,25 @@ Mailler dom
 	}
 } 
 
-# FIN MAILLAGE #
-# DEBUT DECOUPAGE
-Decouper dom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 }
-Fin
-FIN DECOUPAGE #
+End
+END PARTITION #
 
-# DEBUT LECTURE
+# BEGIN SCATTER
 Scatter DOM.Zones dom
-FIN LECTURE #
+END SCATTER #
 
 EF dis
 
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0.
 	nb_pas_dt_max 3
@@ -55,27 +55,27 @@ Lire sch
 }
 
 Solide sol
-Lire sol
+Read sol
 {
 	rho Champ_Uniforme 1 0.5
 	lambda Champ_Uniforme 1 0.5
 	Cp Champ_Uniforme 1 1000.
 }
-Associer pb dom
-Associer pb sch
-Associer pb sol
+Associate pb dom
+Associate pb sch
+Associate pb sol
 
-Discretiser pb dis
+Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Conduction
 	{
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			temperature Champ_Fonc_XYZ dom 1 (-100./0.5*x+20.*sin(3.141592654*x/(2.*0.05)))
 			}
-		conditions_limites {
+		boundary_conditions {
 			Haut paroi_adiabatique
 			Bas symetrie
 			Gauche paroi_temperature_imposee
@@ -85,14 +85,14 @@ Lire pb
 		}
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			temperature_x temperature periode 0.5 segment 42  0. 0.025 0.05 0.025
 		}
 		format lml
-		Champs dt_post 0.5
+		fields dt_post 0.5
 		{
 			temperature elem
 			temperature som
@@ -100,6 +100,6 @@ Lire pb
 	}
 }
 
-Resoudre pb
+Solve pb
 
-Fin
+End

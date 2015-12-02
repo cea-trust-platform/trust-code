@@ -34,7 +34,7 @@ Partition dom
 	Nom_Zones DOM
 	Periodique 1 perioz
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -44,7 +44,7 @@ END SCATTER #
 VDF dis
 
 Sch_CN_EX_iteratif sch
-Lire sch 
+Read sch 
 {
         tinit 0.
         tmax 20.
@@ -62,7 +62,7 @@ Lire sch
 
 
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
 	mu Champ_Uniforme 1 0.00514
 	rho Champ_Uniforme 1 2
@@ -74,7 +74,7 @@ Associate pb fluide
 
 Discretize pb dis
 
-Lire pb
+Read pb
 	{
 	Navier_Stokes_Turbulent
 		{
@@ -123,4 +123,4 @@ Lire pb
 	}
 
 Solve pb
-Fin
+End

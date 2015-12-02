@@ -47,7 +47,7 @@ END SCATTER #
 
 
 # Le schema en temps #
-Schema_Euler_explicite sch
+Scheme_euler_explicit sch
 Read sch {
 	tinit   0
 	tmax    10.
@@ -57,7 +57,7 @@ Read sch {
 	dt_sauv 100
 	seuil_statio 1e-10
 }
-Schema_Euler_implicite sch_impl
+Scheme_euler_implicit sch_impl
 Read sch_impl {
 	tinit   0
 	tmax    10.

@@ -1,5 +1,5 @@
 Nom ok
 
-Lire_fichier ok is_ok
+Read_file ok is_ok
 ecrire ok
 system "cp pipo.lml Test_interpolation_jdd1.lml"

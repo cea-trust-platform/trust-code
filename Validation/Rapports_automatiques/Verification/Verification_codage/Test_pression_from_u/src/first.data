@@ -6,34 +6,34 @@ dimension 3
 Pb_Hydraulique pb
 
 Domaine DOM_DOM
-# DEBUT MAILLAGE #
+# BEGIN MESH #
 Read_unsupported_ASCII_file_from_ICEM DOM_DOM  trio_DOM_geo.asc
 VerifierCoin DOM_DOM { }
-# FIN MAILLAGE #
-# DEBUT DECOUPAGE
+# END MESH #
+# BEGIN PARTITION
 
 
-Decouper DOM_DOM
+Partition DOM_DOM
 {
         Partitionneur tranche { tranches 8 1 1 }
         Larg_joint 2
         Nom_Zones DOM
 }
-Fin
-FIN DECOUPAGE #
+End
+END PARTITION #
 
 
-# DEBUT LECTURE 
+# BEGIN SCATTER 
 Scatter DOM.Zones DOM_DOM
-FIN LECTURE #
+END SCATTER #
 
 
 
 
 VEFPreP1B dis
 
-Schema_Euler_implicite sch
-Lire sch
+Scheme_euler_implicit sch
+Read sch
 {
         tinit 0.0
         tmax  20
@@ -51,20 +51,20 @@ Lire sch
 }
 
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
         mu Champ_Uniforme 1 1.e-5
         rho Champ_Uniforme 1 2
 }
 
-Associer pb DOM_DOM
-Associer pb sch
-Associer pb fluide
-lire dis { P0 P1 cl_pression_sommet_faible 0 changement_de_base_P1bulle 1 }
+Associate pb DOM_DOM
+Associate pb sch
+Associate pb fluide
+Read dis { P0 P1 cl_pression_sommet_faible 0 changement_de_base_P1bulle 1 }
 
-Discretiser pb dis
+Discretize pb dis
 
-Lire pb
+Read pb
 {
         Navier_Stokes_standard
         {
@@ -74,7 +74,7 @@ Lire pb
                 conditions_initiales {
                         vitesse Champ_Uniforme 3 0. 0.5 1
                                         }
-                conditions_limites {
+                boundary_conditions {
                         in frontiere_ouverte_vitesse_imposee
                                 champ_front_Uniforme 3 0. 0.5 0.0
                         out1 frontiere_ouverte_pression_imposee
@@ -98,7 +98,7 @@ Sauvegarde_simple binaire TEST_CL.sauv
 
 }
 
-Resoudre pb
-Fin
+Solve pb
+End
 
 

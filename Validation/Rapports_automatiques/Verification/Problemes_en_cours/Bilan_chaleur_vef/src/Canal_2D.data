@@ -41,7 +41,7 @@ Scatter DOM.Zones dom_pb2
 END SCATTER #
 
 Pb_thermohydraulique pb2
-Schema_euler_explicite sch
+Scheme_euler_explicit sch
 Read sch 
 {
         tinit 0

@@ -28,10 +28,10 @@ Reordonner_faces_periodiques dom_pb2 periox
 # BEGIN PARTITION
 Partition dom_pb2
 {
-	Partitionneur metis { nb_parts 2  }
+	Partition_tool metis { nb_parts 2  }
 	periodique 1 periox
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -41,7 +41,7 @@ Scatter DOM.Zones dom_pb2
 END SCATTER #
 
 Pb_thermohydraulique pb2
-Schema_euler_explicite sch
+Scheme_euler_explicit sch
 Read sch 
 {
         tinit 0
@@ -90,7 +90,7 @@ Read pb2
 
                 convection {      amont }
                 diffusion  {  }
-                conditions_initiales {
+                initial_conditions {
                         vitesse Champ_Uniforme 2 2  0
                         }
        		Sources { Canal_perio { bord periox  }  }
@@ -104,7 +104,7 @@ Read pb2
         {
                 diffusion {  }
                 convection { amont }
-                conditions_initiales { Temperature Champ_Fonc_xyz dom_pb2 1 -1/0.344964*y/2*(y-2) }
+                initial_conditions { Temperature Champ_Fonc_xyz dom_pb2 1 -1/0.344964*y/2*(y-2) }
                 Sources {
                         Puissance_Thermique Champ_Uniforme 1 1.
                         }
@@ -114,8 +114,8 @@ Read pb2
                                    }
         }
 
-        Postraitement {
-                Sondes
+        Post_processing {
+                Probes
                 {
                         sonde_sortie_vite  vitesse     periode 100.   points 1  4.5  1 
                          prof_sortie_vite  vitesse     periode 1000.   segment 40  4.5  0.0  4.5 2.
@@ -124,7 +124,7 @@ Read pb2
                 }
                 
 		format lml
-                Champs dt_post 10000.
+                fields dt_post 10000.
                 {
                    vitesse elem
 		   pression elem

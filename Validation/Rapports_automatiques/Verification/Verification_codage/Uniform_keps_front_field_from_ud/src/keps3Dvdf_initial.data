@@ -31,8 +31,8 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-schema_euler_implicite sch 
-Lire sch
+Scheme_euler_implicit sch 
+Read sch
   { 
     solveur implicite 
       { 
@@ -48,13 +48,13 @@ Lire sch
 vdf dis 
 
 pb_thermohydraulique_turbulent pb 
-Associer pb dom
-Associer pb sch
+Associate pb dom
+Associate pb sch
 fluide_incompressible eau 
 champ_uniforme gravite 
-Lire gravite 3 0.0 0.0 0.0
-Associer eau gravite
-Lire eau
+Read gravite 3 0.0 0.0 0.0
+Associate eau gravite
+Read eau
   { 
     beta_th champ_uniforme  1 0.0002
     mu champ_uniforme  1 8.951e-05
@@ -62,9 +62,9 @@ Lire eau
     cp champ_uniforme  1 5483.0
     lambda champ_uniforme  1 0.02495
   }
-Associer pb eau
-discretiser pb dis
-Lire pb
+Associate pb eau
+Discretize pb dis
+Read pb
   { 
     navier_stokes_turbulent 
       { 
@@ -76,7 +76,7 @@ Lire pb
                   }
                 diffusion    {   }
                 conditions_initiales    {  k_Eps Field_uniform_keps_from_ud { U 100 D 1 } }
-                conditions_limites 
+                boundary_conditions 
                   {
 		    1 frontiere_ouverte_k_eps_impose Boundary_field_uniform_keps_from_ud { U 100 D 1 }
                     2 Paroi
@@ -104,7 +104,7 @@ Lire pb
         convection    { amont }
         diffusion    {   }
         conditions_initiales    {  vitesse champ_fonc_xyz dom 3 0 0 0 }
-        conditions_limites 
+        boundary_conditions 
           {
             1 frontiere_ouverte_vitesse_imposee champ_front_uniforme  3 1.0 0.0 0.0
             2 paroi_fixe 
@@ -126,7 +126,7 @@ Lire pb
         convection    { amont }
         diffusion    {   }
         conditions_initiales    {  temperature champ_fonc_xyz dom 1 20 }
-        conditions_limites 
+        boundary_conditions 
           {
             1 frontiere_ouverte_temperature_imposee champ_front_uniforme  1 300.0
             2 paroi_adiabatique 
@@ -181,5 +181,5 @@ Lire pb
 	
       }
 }
-resoudre pb
-fin 
+Solve pb
+End 

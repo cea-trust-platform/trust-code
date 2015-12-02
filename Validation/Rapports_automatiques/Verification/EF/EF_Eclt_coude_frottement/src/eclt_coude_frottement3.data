@@ -26,8 +26,8 @@ transformer dom (1.+x)*cos(0.3141592653589793E1*y/2.) (1.+x)*sin(0.3141592653589
 
 EF dis
 
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0
 	tmax 1.
@@ -39,19 +39,19 @@ Lire sch
 }
 
 Fluide_Incompressible eau
-Lire eau
+Read eau
 {
 	mu Champ_Fonc_XYZ dom 1 1.5
 	rho Champ_Uniforme 1 2.
 }
 
-Associer pb dom
-Associer pb sch
-Associer pb eau
+Associate pb dom
+Associate pb sch
+Associate pb eau
 
-Discretiser pb dis
+Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard
 	{
@@ -66,7 +66,7 @@ Lire pb
 		conditions_initiales {
 			vitesse Champ_Fonc_XYZ dom 2 10.*(-y) 10.*(x)
 			}
-		conditions_limites {
+		boundary_conditions {
 			Gauche frontiere_ouverte_vitesse_imposee 
 				Champ_Front_Fonc_tXYZ 2 10.*(-y) 10.*(x)
 			Droit frontiere_ouverte_vitesse_imposee 
@@ -89,7 +89,7 @@ Lire pb
 	}
 }
 
-Resoudre pb
+Solve pb
 
-Fin
+End
 

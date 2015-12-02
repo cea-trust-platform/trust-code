@@ -16,9 +16,9 @@ mailler canal {
 	}	
 }
 tetraedriser_homogene_compact canal
-Decouper canal {
-        Partitionneur tranche { tranches 1 2 1 }
+Partition canal {
+        Partition_tool tranche { tranches 1 2 1 }
         Larg_joint 2
-        Nom_Zones canal
+        zones_name canal
  }
 

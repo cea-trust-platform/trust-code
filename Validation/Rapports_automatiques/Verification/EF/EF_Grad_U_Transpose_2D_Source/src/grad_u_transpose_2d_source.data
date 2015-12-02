@@ -5,7 +5,7 @@ dimension 2
 Pb_hydraulique pb
 
 Domaine dom
-# DEBUT MAILLAGE #
+# BEGIN MESH #
 Mailler dom
 {
         Pave Cavite
@@ -21,26 +21,26 @@ Mailler dom
                 Bord Haut     Y =  1.  -1. <= X <= 1.
         }
 }
-# FIN MAILLAGE #
-# DEBUT DECOUPAGE
-Decouper dom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
 {
 	Partitionneur tranche { tranches 2 1 }
 	
 	Larg_joint 1
 	Nom_Zones DOM
 }
-Fin
-FIN DECOUPAGE #
+End
+END PARTITION #
 
-# DEBUT LECTURE
+# BEGIN SCATTER
 Scatter DOM.Zones dom
-FIN LECTURE #
+END SCATTER #
 
 EF dis
 
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0
 	tmax 2.5
@@ -53,19 +53,19 @@ Lire sch
 }
 
 Fluide_Incompressible eau
-Lire eau
+Read eau
 {
 	mu Champ_Fonc_XYZ dom 1 x+y
 	rho Champ_Uniforme 1 2
 }
 
-Associer pb dom
-Associer pb sch
-Associer pb eau
+Associate pb dom
+Associate pb sch
+Associate pb eau
 
-Discretiser pb dis
+Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard
 	{
@@ -81,7 +81,7 @@ Lire pb
 		conditions_initiales {
 			vitesse Champ_Fonc_XYZ dom 2 x -y
 			}
-		conditions_limites {
+		boundary_conditions {
 			Gauche frontiere_ouverte_vitesse_imposee 
 			     Champ_Front_Fonc_tXYZ 2 x -y
 			Droit frontiere_ouverte_vitesse_imposee 
@@ -105,7 +105,7 @@ Lire pb
 
 }
 
-Resoudre pb
+Solve pb
 
-Fin
+End
 

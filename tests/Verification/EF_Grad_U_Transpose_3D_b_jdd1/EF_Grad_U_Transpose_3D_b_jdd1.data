@@ -26,8 +26,8 @@ Mailler dom
 
 EF dis
 
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0
 	nb_pas_dt_max 3
@@ -49,19 +49,19 @@ Lire sch
 }
 #
 Fluide_Incompressible eau
-Lire eau
+Read eau
 {
 	mu Champ_Fonc_XYZ dom 1 (10.+x+y+z)
 	rho Champ_Uniforme 1 1.
 }
 
-Associer pb dom
-Associer pb sch
-Associer pb eau
+Associate pb dom
+Associate pb sch
+Associate pb eau
 
-Discretiser pb dis
+Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard
 	{
@@ -73,10 +73,10 @@ Lire pb
 		convection { negligeable }
 		diffusion {  }
 		sources { source_qdm Champ_Fonc_XYZ dom 3 (-4.*(x*y+x*z+2.*y*z)) (-2.*x*z+6.*y*z+y*y+3.*z*z+10.*2.*z) (-2.*x*y+6.*y*z+3.*y*y+z*z+10.*2.*y) }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Fonc_XYZ dom 3 (4.*x*y*z) (-y*y*z) (-y*z*z)
 			}
-		conditions_limites {
+		boundary_conditions {
 			Gauche frontiere_ouverte_vitesse_imposee 
 			     Champ_front_fonc_tXYZ 3 (4.*x*y*z) (-y*y*z) (-y*z*z)
 			Droit frontiere_ouverte_vitesse_imposee 
@@ -92,10 +92,10 @@ Lire pb
 		}
 	}
 
-	Postraitement
+	Post_processing
 	{
 		format lml
-		Champs dt_post 1.3
+		fields dt_post 1.3
 		{
 			pression_pa elem
 			vitesse som
@@ -103,18 +103,18 @@ Lire pb
 	}
 }
 
-Resoudre pb
+Solve pb
 
-Fin
+End
 
 	mu Champ_Fonc_XYZ dom 1 (x+y+z)
 		diffusion { option { grad_u_transpose 1 } }
 		sources { source_qdm Champ_Fonc_XYZ dom 3 (-4) (2.) (2.) }
 
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Fonc_XYZ dom 3 x*(y+z) -y*z -y*z
 			}
-		conditions_limites {
+		boundary_conditions {
 			Gauche frontiere_ouverte_vitesse_imposee 
 			     Champ_front_fonc_tXYZ 3 x*(y+z) -y*z -y*z
 			Droit frontiere_ouverte_vitesse_imposee 

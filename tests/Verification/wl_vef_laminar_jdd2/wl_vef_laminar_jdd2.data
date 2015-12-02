@@ -32,9 +32,9 @@ Reordonner_Faces_Periodiques dom perioz
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 2 1 }
+	Partition_tool tranche { tranches 2 2 1 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 	Periodique 1 periox
 }
 End
@@ -46,7 +46,7 @@ END SCATTER #
 
 VEFPreP1B dis
 
-Schema_Euler_explicite sch
+Scheme_euler_explicit sch
 Read sch
 {
 	tinit 0.
@@ -82,7 +82,7 @@ Read pb
 		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e8 impr }	
 		convection { negligeable }
 		diffusion { negligeable }
-		conditions_initiales { vitesse champ_uniforme 3 0. 0. 0. }
+		initial_conditions { vitesse champ_uniforme 3 0. 0. 0. }
 		boundary_conditions 
 		 {
                      entree  frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 3 0. 0. 0.
@@ -111,11 +111,11 @@ Read pb
 			bas    Paroi_temperature_imposee Champ_Front_Uniforme 1 500
 			    
 		 }
-		conditions_initiales { Temperature Champ_Uniforme 1 502.5 }
+		initial_conditions { Temperature Champ_Uniforme 1 502.5 }
 		Modele_turbulence Prandtl { turbulence_paroi  negligeable_scalaire }
 	}
 	      
-	Postraitement
+	Post_processing
 	{
 		Definition_champs {
 			erreur Transformation {
@@ -129,7 +129,7 @@ Read pb
 	     }
 	
 	
-	     Sondes
+	     Probes
 	      {
 	           sonde_pression pression periode 100 points 1 2.5 0.5 0.5
 		   sonde_vit vitesse periode 100 points 1  2.5 0.5 0.5
@@ -145,7 +145,7 @@ Read pb
 		   sonde_seg_temp_haut temperature periode 100 segment 10  0. 0.9 0.5 5. 0.9 0.5
 	      }
 	     Format lml
-	     Champs dt_post 20000.
+	     fields dt_post 20000.
 	      {			
 		   pression elem			
 		   vitesse som

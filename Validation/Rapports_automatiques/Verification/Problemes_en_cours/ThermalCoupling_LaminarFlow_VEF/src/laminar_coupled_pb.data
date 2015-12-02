@@ -60,7 +60,7 @@ Corriger_frontiere_periodique
  direction 3 0.5 0. 0.
  }
 
-Schema_Euler_implicite sch
+Scheme_euler_implicit sch
 Read sch {
 	tinit   0.
 	tmax    40.
