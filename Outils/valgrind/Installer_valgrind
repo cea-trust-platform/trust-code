@@ -10,7 +10,7 @@ OK()
    fi
 }
 # 3.9.0 valgrind do not build on castor (old gcc 3.4.6)
-version=$1 && [ "$HOST" = castor ] && version=3.8.1
+version=$1
 CC=""
 AWK=""
 [ "$TRUST_ARCH" != linux ] && echo "valgrind installed on Linux only." && exit

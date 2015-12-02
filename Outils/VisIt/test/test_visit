@@ -7,9 +7,6 @@ then
    # Initialisation environnement TRUST pour mise a jour de PYTHON_PATH sinon probleme avec ALLIANCES
    source $TRUST_ROOT/env_TRUST.sh 1>/dev/null 2>&1
 
-   # Plantage OpenMPI sur thor car TRUST_TMP est sur un montage NFS
-   [ $HOST = thor ] && TRUST_TMP=/tmp
-
    tmp_visit=`mktemp_ -d`
    cd $tmp_visit
    [ ! -f $TRUST_ROOT/Outils/VisIt/test/test.tar.gz ] && echo "test.tar.gz not found!" && exit -1

@@ -38,8 +38,9 @@ options=""
 pdf=build/rapport.pdf
 save=""
 ici=`pwd`
-# Changement par defaut, on utilise -np 2 si parallele et MPI non natif ou sur certaines machines ou le parallelisme marche sur la frontale
-if [ "`echo $MPI_ROOT | grep TRUST`" != "" ] || [ $HOST = curie-ccrt ] || [ $HOST = curie-fr ] || [ $HOST = airain ]
+# Changement par defaut, on utilise -np 2 si parallele et MPI non natif
+#if [ "`echo $MPI_ROOT | grep TRUST`" != "" ]
+if [ "`echo $MPI_ROOT`" != "" ]
 then
    visit_help=`$TRUST_ROOT/Outils/VisIt/bin/visit -help 2>&1`
    [ $? = 0 ] && [ "`echo $visit_help | grep parallel`" != "" ] && export TRUST_VISIT_NP="-np 2"

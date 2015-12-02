@@ -1,7 +1,7 @@
 #!/bin/bash
 # Install MPICH (standard or Infiniband tuned version)
 
-if [ -f /usr/lib64/libibverbs.so ] && [ -f /usr/include/infiniband/verbs.h ] && [ -f /usr/include/infiniband/mad.h ] && [ $HOST != mezel2 ]
+if [ -f /usr/lib64/libibverbs.so ] && [ -f /usr/include/infiniband/verbs.h ] && [ -f /usr/include/infiniband/mad.h ]
 then
   # Find infiniband so prefer mvapich to mpich: 
   echo $ECHO_OPTS "Detecting Infiniband. So installing mvapich...\c"

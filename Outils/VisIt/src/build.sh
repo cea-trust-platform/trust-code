@@ -87,14 +87,6 @@ fi
 #################
 # Mesa or not ? #
 #################
-mesa=""
-#if [ $HOST = callisto ]
-#then
-#   # See https://wci.llnl.gov/codes/visit/relnotes2.4.2.html about mesa
-#   # and also https://elist.ornl.gov/pipermail/visit-users/2012-July/012539.html
-#   # Cause remote visualization had issues on callisto
-#   mesa="--mesa"
-#fi
 mesa="--mesa"
 # Zlib (libz.so is needed not libz.so.1...)
 # Built also in gnuplot...

@@ -57,8 +57,8 @@ echo "[-force_provided_openmpi]         Use the provided OpenMPI `awk '/default_
 echo "[-force_old_openmpi]              Download and use the OpenMPI 1.2.9 version (valgrind free)."
 echo "[-force_latest_openmpi]           Download and use the OpenMPI `awk '/latest_version=/ {gsub("latest_version=","",$0);print $0}' ThirdPart/src/LIBMPI/Installer_openmpi` version."
 echo "[-force_even_unsupported]         Force the configure even the compiler/OS is not supported."
-echo "[-force_petsc_have_cuda]          Use the latest PETSc version (petsc-dev) and try to activate the GPU support."
-echo "[-force_petsc_have_openmp]        Use the latest PETSc version (petsc-dev) and try to activate the OpenMP support."
+#echo "[-force_petsc_have_cuda]          Use the latest PETSc version (petsc-dev) and try to activate the GPU support."
+#echo "[-force_petsc_have_openmp]        Use the latest PETSc version (petsc-dev) and try to activate the OpenMP support."
 echo "[-disable-petsc]                  Disable PETSc library installation."
 echo "[-disable-med]                    Disable MED library installation."
 echo "[-disable-metis]                  Disable metis library installation."
@@ -251,7 +251,7 @@ HOST=`hostname`
 ####################################################
 # Configuration et initialisation de l'environnement
 ####################################################
-rm -f env/env_TRUST.sh
+rm -f env_TRUST.sh env/env_TRUST.sh
 sed "s?TRUST_ROOT=path_to_trio?TRUST_ROOT=$TRUST_ROOT?" env_src/env_TRUST.sh.in > env/env_TRUST.sh
 chmod gou+x env/env_TRUST.sh
 ln -s -f env/env_TRUST.sh .

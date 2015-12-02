@@ -120,8 +120,8 @@ help()
    echo "-valgrind_strict        : Run under valgrind with no suppressions."
    echo "-create_sub_file        : Create a submission file only."
    echo "-c n                    : Use n cores per task for a parallel calculation."
-   echo "-prod                   : Create a submission file and submit the job on the main production class."
    echo "-queue queue            : Create a submission file with the specified queue and submit the job."
+   echo "-prod                   : Create a submission file and submit the job on the main production class."
    echo "-bigmem                 : Create a submission file and submit the job on the big memory production class."
    [ "$PETSC_HAVE_CUDA" = 1 ] && echo "-gpu                    : Create a submission file and submit the job on production class with GPU cards."
    [ -d /ccc ] && echo "-ipm                    : Use ipm to report MPI statistics."
@@ -135,19 +135,20 @@ help()
 binary=$exec
 ici=`pwd`   
 me=`whoami`
-soumission=999
-queue_choisie=""
-cpu=""
-sub=""
-copy=""
 mesh=""
 monitor=""
 probes=""
-mail=""
-gdb=""
 prm=""
-USE_MPIRUN=0
+copy=""
+gdb=""
+mail=""
+core_per_task=""
+queue_choisie=""
 [ "$prod" = "" ] && prod=0
+bigmem=0
+gpu=0
+node=0
+USE_MPIRUN=0
 
 ####################
 # Loop for options #
@@ -443,157 +444,19 @@ fi
 ######################
 # Selon les machines #
 ######################
-if [ $HOST = curie-ccrt ] || [ $HOST = curie-fr ] || [ $HOST = airain ]
-then
-   soumission=2
-   #mpirun="mpirun -n $NB_PROCS" ne marche pas au dela de 32 procs ?
-   mpirun="ccc_mprun -n $NB_PROCS"
-   [ "`basename $MPI_ROOT`" = mpich ] && mpirun="$Mpirun -np $NB_PROCS" # Try support of MVAPICH...
-   # On selectionne la queue la moins occupee
-   # On attend de voir, certains plantages sur standard
-   #queue=`ccc_mpinfo | awk '/up/ {if ($10>free) {free=$10;queue=$1}} END {print queue}'`
-   # On force la queue standard (processeurs@2.27Ghz au lieu de 1.00Ghz sur la xlarge)
-   queue=standard
-   if [ $HOST = airain ] && [ "`id -g`" = 50003 ] # groupe DEN
-   then
-      # Partition ivybridge sur airain (fin 2013, accessible a DEN, 7180 cores)
-      queue=ivybridge
-      [ "$NB_PROCS" -gt 2048 ] && echo "$NB_PROCS cores is too high for $HOST:" && ccc_mqinfo && exit -1
-   fi
-   # Select hybrid partition for GPU calculation
-   if [ "$gpu" = 1 ]
-   then
-      soumission=1
-      queue=hybrid
-      # Change automatically core_per_task to optimize GPU use (1 CPU <-> 1 GPU for PETSc) if $core_per_task is not defined
-      if [ "$USE_PETSC_GPU" = 1 ] && [ "$core_per_task" = 1 ]
-      then
-         [ $HOST = curie-ccrt ] && core_per_task=4
-         [ $HOST = curie-fr ] && core_per_task=4
-	 [ $HOST = airain ] && core_per_task=8
-	 echo "You are using PETSc GPU solvers on $HOST. core_per_task is changed automatically"
-	 echo "to $core_per_task to use CPU per GPU for optimal performances."
-      fi
-   fi
-   if [ "$prod" = 1 ]
-   then
-      qos=normal
-      cpu=86400 # 24 heures
-   elif [ "$bigmem" = 1 ]
-   then
-      soumission=1
-      qos=normal
-      cpu=86400 
-      # -M ram with ram>4000 is not supported anymore (06/2014)
-      # ram=64000 # 64 GB asked
-      # So we use now n cores for one task to have 4*n GB per task
-      core_per_task=16 # To have 64GB per task
-   else
-      # Priorite superieure avec test si pas plus de 8 nodes (2*8 cores)
-      qos=test && [ "$NB_PROCS" -gt 128 ] && qos=normal
-      cpu=1800 # 30mn
-   fi
-   sub=CCC
-elif [ $HOST = callisto ]
-then
-   soumission=2 && [ "$prod" = 1 ] && soumission=1
-   # sacctmgr list qos format=Name,Priority,MaxSubmit,MaxWall,MaxNodes :      
-   # Name   Priority MaxSubmit     MaxWall MaxNodes 
-   #---------- ---------- --------- ----------- -------- 
-   # normal         20            2-00:00:00       20 
-   #   test         40         2    01:00:00        2 
-   #   long         10           14-00:00:00       10 
-   cpu=60 && qos=test				# Qos test   1 hour (2 nodes max=20 CPUs)	Priority 40
-   if [ "$prod" = 1 ] || [ $NB_PROCS -gt 20 ]
-   then
-      cores_per_node=20
-      if [ "`echo $NB_PROCS | awk -v n=$cores_per_node '{print $1%n}'`" != 0 ]
-      then
-         echo "=================================================================================================================="
-         echo "Warning: the allocated nodes of $cores_per_node cores will not be shared with other jobs (--exclusive option used)"
-	 echo "so please try to fill the allocated nodes by partitioning your mesh with multiple of $cores_per_node."
-	 echo "=================================================================================================================="
-      fi
-      if [ "$NB_PROCS" -gt 200 ]
-      then
-         qos=normal && cpu=2880 		# Qos normal 2 days (20 nodes max=400 CPUs)	Priority 20
-      else
-         qos=long && cpu=20160   		# Qos long  14 days (10 nodes max=200 CPUs)	Priority 10
-      fi
-      qos=normal && cpu=2880 # By default, cause qos long is a small priority
-   fi
-   # Partition:
-   queue=slim 					# 40*2*10=800 cores  6.4Go/core, 128GO/node
-   if [ "$bigmem" = 1 ]
-   then
-      queue=large 				# 16*2*10=320 cores 12.8Go/core, 256Go/node
-      queue=fat 				#  2*4*6 =48  cores 21.3Go/core, 512Go/node
-   fi
-   #project=stmf
-   if [ "`basename $Mpirun`" = srun ]
-   then
-      # Slurm srun support
-      mpirun="srun -n $NB_PROCS"
-   else
-      mpirun="mpirun -np $NB_PROCS"
-   fi
-   # 01/07/2014: Regression when using mpirun with openmpi (very bad performance *3) so:
-   # srun for everyone (even if it is slightly slower, binding ?)
-   #mpirun="srun --cpu_bind=verbose,cores -n $NB_PROCS"
-   # 18/08/2015: avec openmpi 1.8.4 srun ne passe pas... donc on repasse a mpirun -np
-   if [ $HOST_BUILD = callisto ]
-   then
-      mpirun="srun"
-   fi
-   sub=SLURM
-elif [ $HOST = ceres2 ]
-then
-   soumission=2 && [ "$prod" = 1 ] && soumission=1
-   # sacctmgr list qos format=Name,Priority,MaxSubmit,MaxWall,MaxNodes :
-   #      Name   Priority MaxSubmit     MaxWall MaxNodes
-   #---------- ---------- --------- ----------- --------
-   #    normal          0
-   cpu=60 && qos=normal         # Qos normal  1 hour (?? nodes max=??? CPUs)    Priority ??
-   cpu=2880 && qos=normal       # Qos normal  2 days (?? nodes max=??? CPUs)    Priority ??
-   # sinfo :
-   #PARTITION    AVAIL  TIMELIMIT  NODES  STATE NODELIST
-   #prod*           up   infinite     10   idle ceres[231-240]
-   #prod_E5-2680    up   infinite     10   idle ceres[231-240]
-   #gpu             up   infinite      1   idle ceres241
-   #visu            up   infinite      1   idle ceres2-visu
-   queue=prod
-   if [ "`basename $Mpirun`" = srun ]
-   then
-      # Slurm srun support
-      mpirun="srun -n $NB_PROCS"
-   else
-      mpirun="mpirun -np $NB_PROCS"
-   fi
-   sub=SLURM
-elif [ $HOST = occigen ]
-then
-   soumission=2 && [ "$prod" = 1 ] && soumission=1
-   cpu=24:00:00 # 1 day
-   # core_per_task=1
-   ram=120GB    # large memory nodes with 128Go of RAM
-   ram=60GB     # small memory nodes with  64Go of RAM
-   tasks_per_node=24 # 24 cores per node
-   nnodes=`echo "$NB_PROCS/$tasks_per_node+1" | bc`
-   if [ "`basename $Mpirun`" = srun ]
-   then
-      # Slurm srun support
-      mpirun="srun -n $NB_PROCS"
-   else
-      mpirun="mpirun -np $NB_PROCS"
-   fi
-   # srun Run a parallel job on cluster managed by SLURM
-   # option --mpi Identify the type of MPI to be used : pmi2 load the library lib/slurm/mpi_pmi2.so
-   # option -K = --kill-on-bad-exit 0|1
-   # option --resv-ports Reserve communication ports for this job. Used for OpenMPI. 
-   # mpirun="srun --mpi=pmi2 -K1 --resv-ports -n $NB_PROCS"
-   mpirun="srun --mpi=pmi2 -K1 --resv-ports -n \$SLURM_NTASKS"
-   sub=SLURM
-fi
+soumission=999
+sub="" 
+queue=""
+qos=""
+cpu=""
+project=""
+ram=""
+noeuds=""
+export prod
+export bigmem
+export gpu
+# See HOST_???.sh file called in TRUST.env
+define_soumission_batch
 
 ######################################
 # Check the datafile with VerifData on 
@@ -675,7 +538,7 @@ then
 		echo "#SBATCH -e myjob.%j.e"				>> $sub_file	# Error log
 		[ "$project" != "" ] && echo "#SBATCH -A $project"	>> $sub_file	# Account
 		echo "#SBATCH -n $NB_PROCS"				>> $sub_file	# Number of tasks
-		[ "$nnodes" != "" ] && echo "#SBATCH -N $nnodes"        >> $sub_file    # Number of nodes
+		[ "$noeuds" != "" ] && echo "#SBATCH -N $noeuds"        >> $sub_file    # Number of nodes
 		[ "$core_per_task" != "" ] && echo "#SBATCH -c $core_per_task"	>> $sub_file	# Number of cores per task	
 		[ "$qos" != test ] && echo "#SBATCH --exclusive"	>> $sub_file	# Exclusive use of nodes during production run	
 		[ "$ram" != "" ] && echo "#SBATCH --mem=$ram"           >> $sub_file    # Real memory required per node in MegaBytes
@@ -807,12 +670,7 @@ then
    else
       if [ "$mpirun" != "" ]
       then
-         if [ $HOST = occigen ]
-         then
-            echo "$mpirun $machinefile $exec $NOM \$SLURM_NTASKS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
-         else
-            echo "$mpirun $machinefile $exec $NOM $NB_PROCS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
-         fi
+         echo "$mpirun $machinefile $exec $NOM \$SLURM_NTASKS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
       else
          echo "$TRUST_ROOT/bin/mpirun -np $NB_PROCS $machinefile $exec $NOM $NB_PROCS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
       fi

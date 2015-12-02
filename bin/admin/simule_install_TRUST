@@ -20,6 +20,7 @@ fi
 
 machine=localhost && [ "$2" = "-remote" ] && [ "$3" != "" ] && machine=$3
 cible=$WORKDIR/simule_install_${paquet%.tgz}
+install_log=$cible/../Installer_TRUST.log
 ssh_ $machine -n pwd 1>/dev/null 2>&1
 if [ $? = 0 ]
 then
@@ -32,18 +33,18 @@ then
   tar xvfz '$paquet';
   rm -f '$paquet';
   export TRUST_VERSION='$version';
-  ./TRUST_'$version'/bin/Installer_TRUST 1>'$cible'/../Installer_TRUST.log 2>&1;
-  if [ $? = 0 ]
+  ./TRUST_'$version'/bin/Installer_TRUST 1>'$install_log' 2>&1;
+  if [ $? = 0 ] && [ "`grep "BUILD_" '$install_log' | grep "KO" 2>/dev/null`" = "" ]
   then
      echo "Installation OK!"
      echo " "
-     cat '$cible'/../Installer_TRUST.log
+     cat '$install_log'
      rm -r -f '$cible'
      exit 0
   else
-     echo "Installation KO! See '$cible'/../Installer_TRUST.log"
+     echo "Installation KO! See '$install_log'"
      echo " "
-     cat '$cible'/../Installer_TRUST.log
+     cat '$install_log'
      exit 1
   fi;
 '

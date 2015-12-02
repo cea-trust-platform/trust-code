@@ -280,8 +280,8 @@ with_packages=""
 #################################################   
 if [ "$TRUST_DISABLE_MPI" = 0 ]
 then
-   # Probleme sur jade lors du link, donc on n'utilise pas
-   if [ "$TRUST_BLAS_LAPACK" != "" ] && [ -d $TRUST_BLAS_LAPACK ] && [ $HOST != jade ] 
+   # Probleme lors du link, donc on n'utilise pas
+   if [ "$TRUST_BLAS_LAPACK" != "" ] && [ -d $TRUST_BLAS_LAPACK ]
    then
       ############################
       # Choix de Scalapack natif #
@@ -379,15 +379,7 @@ then
    add_package SuiteSparse
 
    # New (Pastix)
-   if [ $HOST != vrh014376 ]
-   then
-      # pastix_5.2.2.12 ne compile pas sur vrh014376 (CentOS 7 ?)
-      # Located
-      add_package pastix
-   else
-      # Download     
-      with_packages=$with_packages" --dowload-pastix=yes"
-   fi
+   add_package pastix
 
    # New (Pardiso)
    [ -f $MKLROOT/include/mkl_pardiso.h ] && with_packages=$with_packages" --with-mkl_pardiso=1 --with-mkl_pardiso-dir=$MKLROOT"
@@ -398,8 +390,6 @@ then
    ##########
    # SCOTCH #
    ##########
-   if [ $HOST != castor ]
-   then
       # On ajoute PT-Scotch sur certaines machines (ne compile pas sur castor, compilateur trop vieux?)
       add_package ptscotch
       # PT-Scotch necessite bison
@@ -455,7 +445,6 @@ then
 	 fi
 	 export PATH=$PATH:$ROOT/flex/bin
       fi 
-   fi
 
    #######
    # Hypre

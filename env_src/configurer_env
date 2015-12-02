@@ -513,13 +513,7 @@ then
    TRUST_NB_PROCS=1
    if [ -f /proc/cpuinfo ]
    then
-      if [ -d /ccc ] || [ $HOST = callisto ]
-      then
-	 #TRUST_NB_PROCS=16
-	 TRUST_NB_PROCS=4
-      else   
-	 TRUST_NB_PROCS=`$TRUST_Awk '/processor/ {n++} END {print n}' /proc/cpuinfo`
-      fi 
+      TRUST_NB_PROCS=`$TRUST_Awk '/processor/ {n++} END {print n}' /proc/cpuinfo`
    fi
    echo $TRUST_NB_PROCS
    exit 0
@@ -605,198 +599,21 @@ echo "# domainname : `domainname 2>/dev/null`" | tee -a $env
 # Variable HOST #
 #################
 . ./HOST.env
+# Variables define_modules_config
+if [ -f HOST_$HOST_BUILD.sh ]
+then
+   . ./HOST_$HOST_BUILD.sh
+else
+   . ./HOST_default.sh
+fi
 
 #####################
 # Modules ou config #
 #####################
 TRUST_VERSION=`awk '/version/ && /Release notes/ {print $4;exit}' $TRUST_ROOT/RELEASE_NOTES`
-# Callisto cluster
-if [ $HOST = callisto ]
-then
-   # Load modules
-   module=slurm
-   echo "# Module $module detected and loaded on $HOST."
-   # Initialisation de l environnement module $MODULE_PATH 
-   echo "source /cm/local/apps/environment-modules/3.2.10/init/bash" >> $env
-   echo "module load $module 1>/dev/null" >> $env
-   #INTEL 2013_sp1.2.144 2013_sp1.4.211 2015.3.187
-   #intel="intel/compiler/64/14.0/2013_sp1.2.144 intel/mkl/64/11.1/2013_sp1.2.144 intel/tbb/64/4.2/2013_sp1.4.211"
-   intel="intel/compiler/64/15.0/2015.3.187 intel/mkl/64/11.2/2015.3.187 intel/tbb/64/4.3/2015.3.187"
-   if [ $HOST_BUILD = callisto-mvapich ]
-   then
-      #MVAPICH2 module mvapich2/gcc/64/1.9_psm mvapich2/gcc/64/2.0.1_mlx mvapich2/gcc/64/2.0.1_psm
-      # Aero_192: 4.0s
-      module=mvapich2
-      # Aero_192: 3.8s
-      module="$intel mvapich2"
-   elif [ $HOST_BUILD = callisto-openmpi ]
-   then
-      #OPENMPI module openmpi/gcc/64/1.8 openmpi/gcc/64/1.8.3 openmpi/gcc/64/1.8.4 
-      # Aero_192: 3.7s
-      module="openmpi/gcc/64/1.8.3"
-      #module="openmpi/gcc/64/1.8.4"
-   else
-      #OPENMPI module openmpi/icc/64/1.8 openmpi/icc/64/1.8.3 openmpi/icc/64/1.8.4 
-      # Aero_192: 3.6s
-	  # module load qt/4.8.6 temporary, time to fix the Qt4 build failed with VisIt 2.8.2
-      # module="$intel openmpi/icc/64/1.8 qt/4.8.6"    
-      module="$intel openmpi/icc/64/1.8.3"    
-   fi
-   echo "# Module $module detected and loaded on $HOST."
-   echo "module unload mpich openmpi mvapich mvapich2 intel/compiler intel/mkl intel/tbb 1>/dev/null" >> $env
-   echo "module load $module 1>/dev/null" >> $env     
-   . $env
-   # Creation wrapper qstat -> squeue
-   echo "#!/bin/bash
-squeue" > $TRUST_ROOT/bin/qstat
-   chmod +x $TRUST_ROOT/bin/qstat
-fi
-# CCRT
-if [ -d /ccc ]
-then
-   # Create ROMIO_HINTS file for MPI IO optimizations on Lustre file system
-   echo "# ROMIO HINTS
-# Select the max OST available:
-striping_factor -1
-# Collective comm between nodes before write:
-romio_cb_write enable
-# Collective comm between nodes before read:
-romio_cb_read  enable
-# One process on each node do the coll comm task:
-cb_config_list *:1" > ROMIO_HINTS.env
-   echo "export ROMIO_HINTS=\$TRUST_ROOT/env/ROMIO_HINTS.env # ROMIO HINTS" >> $env
-   # qstat inexistente sur les dernieres machines du CCRT/TGCC
-   echo "Command qstat created on $HOST"
-   cp $TRUST_ROOT/bin/KSH/qstat_wrapper $TRUST_ROOT/bin/KSH/qstat
-   modulecmd=`ls /opt/Modules/bin/modulecmd.tcl /usr/bin/modulecmd.tcl 2>/dev/null`
-   echo "# For $HOST cluster:
-module () { 
-   eval \`tclsh $modulecmd sh \$*\` 
-}" >> $env   
-
-   # VAMPIR tracing tool support
-   # For the moment, not a configure option
-   # Based on the name of version...
-   [ "`echo $TRUST_ROOT | grep vampir`" != "" ] && VAMPIR_SUPPORTED=1
-  
-   # New restore/save collection of modules (faster to load) 
-   # Try to generalize to other clusters...
-   collection_modules=TRUST_$TRUST_VERSION-$HOST`[ "$TRUST_FORCE_PETSC_HAVE_CUDA" = 1 ] && echo -CUDA``[ "VAMPIR_SUPPORTED" = 1 ] && echo -VAMPIR`
-   module savelist
-   echo "Trying to restore collection of modules named $collection_modules:"
-   module restore $collection_modules
-   if [ $? != 0 ]
-   then
-      echo "So we create the collection of modules $collection_modules:"
-      # Changing strategy, we load a version for each module (not the last one)
-      # MPI module 1.1.16.6 1.2.8.2 1.2.8.4(default)
-      [ $HOST = airain ] 	&& module="bullxmpi/1.2.8.4"
-      [ $HOST = curie-ccrt ] 	&& module="bullxmpi/1.2.8.4"
-      [ $HOST = curie-fr ] 	&& module="bullxmpi/1.2.8.4"
-      echo "Module $module detected and loaded on $HOST."
-      module unload bullxmpi
-      module load $module
-      # Intel compiler (WARNING: Intel 12.x provoque plusieurs problemes (voir FA1445))
-	  # Intel 13.1.3.192 14.0.3.174(default) 15.0.2.164 15.0.3.187
-      [ $HOST = airain ] 	&& module="intel/15.0.3.187"
-      [ $HOST = curie-ccrt ] 	&& module="intel/15.0.3.187"
-      [ $HOST = curie-fr ] 	&& module="intel/15.0.3.187"
-      echo "Module $module detected and loaded on $HOST."
-      module unload intel
-      module load $module
-      # Cuda
-      if [ "$TRUST_FORCE_PETSC_HAVE_CUDA" = 1 ]
-      then
-	     # CUDA module cuda/5.0 cuda/5.5.22 cuda/6.0.37 cuda/6.5.14
-         module="cuda"
-         echo "Module $module detected and loaded on $HOST."
-         module unload cuda
-         module load $module
-         module="opencl/intel"
-         echo "Module $module detected and loaded on $HOST."
-         module load $module
-      fi
-      # If libccc_user module found, load it (this module helps to know the CPU)
-      module=libccc_user
-      if [ "`tclsh $modulecmd sh show $module 2>&1`" != "" ]
-      then
-         echo "Module $module detected and loaded on $HOST."
-         module load $module
-      fi
-      if [ "$VAMPIR_SUPPORTED" = 1 ]
-      then
-	     # VAMPIRTRACE module vampirtrace/5.14.4
-	     # VAMPIR module vampir/8.2.1 vampir/8.4.1
-         module="vampirtrace vampir"
-         echo "Module $module detected and loaded on $HOST."
-         module load $module
-      fi
-      # Save the collection:
-      module save $collection_modules
-   fi
-   # Add the restore module command:
-   echo "[ ! -f ~/.module/$collection_modules ] && ln -s -f $HOME/.module/$collection_modules ~/.module/$collection_modules" >> $env
-   echo "module restore $collection_modules 1>/dev/null" >> $env
-fi
-# ceres2 cluster
-if [ $HOST = ceres2 ]
-then
-   # Load modules
-   # GNU:
-   # MPI module openmpi-1.8.3-gcc.env openmpi-1.8.5-gcc.env
-   # echo "source /softs/_environnement/openmpi-1.8.5-gcc.env" >> $env
-   # INTEL:
-   echo "source /softs/intel/bin/compilervars.sh intel64" >> $env
-   # MPI module impi-5.0.3.048 openmpi-1.8.5-intel.env
-   echo "source /softs/intel/impi/5.0.3.048/bin64/mpivars.sh" >> $env
-   # echo "source /softs/_environnement/openmpi-1.8.5-intel.env" >> $env
-   . $env
-   # Creation wrapper qstat -> squeue
-   echo "#!/bin/bash
-squeue" > $TRUST_ROOT/bin/qstat
-   chmod +x $TRUST_ROOT/bin/qstat
-fi
-# occigen cluster
-if [ $HOST = occigen ]
-then
-   # Load modules
-   # intel 14.0.4.211 15.0.3.187(default)
-   intel="intel/15.0.3.187"
-   # bullxmpi/1.2.8.4 bullxmpi/1.2.8.4-mxm(default) bullxmpi/MPI3.gcc.4.9-beta bullxmpi_gnu/1.2.8.4
-   # module="bullxmpi_gnu/1.2.8.4"
-   module="$intel bullxmpi/1.2.8.4-mxm"
-   # intelmpi 5.0.1.035(default) intelmpi/5.0.3.048
-   # module="$intel intelmpi/5.0.3.048"
-   echo "# Module $module detected and loaded on $HOST."
-   echo "module purge 1>/dev/null" >> $env
-   echo "module load $module 1>/dev/null" >> $env     
-   . $env
-   # Creation wrapper qstat -> squeue
-   echo "#!/bin/bash
-squeue" > $TRUST_ROOT/bin/qstat
-   chmod +x $TRUST_ROOT/bin/qstat
-fi
-# 2nd TMA PC is configured with advanced GNU compilers (4.9.1):
 ligne_supp=""
-if [ "$HOST" = is223196 ]
-then
-   GNU_ENV=`ls /export/home/triou/g++-last/env.sh 2>/dev/null`
-   if [ "$GNU_ENV" != "" ]
-   then
-      ligne_supp="source $GNU_ENV # Last GNU compilers"
-      echo $ligne_supp  >> $env
-      source $GNU_ENV  
-   if [ "$TRUST_FORCE_PROVIDED_OPENMPI" != 1 ] && [ "$TRUST_FORCE_OLD_OPENMPI" != 1 ] && [ "$TRUST_FORCE_LATEST_OPENMPI" != 1 ] && [ "$TRUST_FORCE_PROVIDED_MPICH" != 1 ]
-   then
-     echo "You must use provided mpi on this host"
-     exit -1
-   fi
-   else
-      echo "No GNU environment found under /export/home/triou"
-	  echo "Contact TRUST support."
-	  exit -1
-   fi
-fi
+# See HOST_???.sh file called above
+define_modules_config
 
 #######################
 # Variable TRUST_TMP #
@@ -810,6 +627,7 @@ if [ -f configure.env ]
 then
    . ./configure.env
 fi
+
 #######################
 # Quelle architecture ?
 #######################
@@ -965,6 +783,7 @@ TRUST_cc_BASE=$TRUST_FORCE_cc" "$TRUST_cc_BASE
 TRUST_F77_BASE=$TRUST_FORCE_F77" "$TRUST_F77_BASE
 echo "# IP machine: $IP" | tee -a $env
 m="# Simplified machine name ";e="HOST=$HOST && export HOST";ecrit $m"|"$e"|"$env
+m="# Building machine name ";e="HOST_BUILD=$HOST_BUILD && export HOST_BUILD";ecrit $m"|"$e"|"$env
 ##############################################
 shell=`basename $SHELL` && echo "# The login shell is : $shell"
 m="# Machine architecture";e="TRUST_ARCH=$TRUST_ARCH && export TRUST_ARCH";ecrit $m"|"$e"|"$env;eval $e

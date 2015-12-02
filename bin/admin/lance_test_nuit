@@ -2002,7 +2002,8 @@ do
       fi
       # Copie cpp.gcov.tar.gz 
       file=cpp.gcov.tar.gz  
-      echo "    Copy $file to $TRUST_ROOT/doc/Coverage/"
+      #echo "    Copy $file to $TRUST_ROOT/doc/Coverage/" # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
+      echo "    Copy $file to $TRUST_TMP/"
       rm -f $TRUST_TMP/$file
       #scp triou@$machine_gcov:~/$WORKBASE$hostname/TRUST/doc/Coverage/$file $TRUST_TMP/$file
       if  [ "${hostname:0:2}" = "is" ]
@@ -2014,13 +2015,13 @@ do
       if [ "`diff $TRUST_TMP/$file $TRUST_ROOT/doc/Coverage/$file`" != "" ]
       then
          echo "    => updated"
-         CHECKOUT $TRUST_ROOT/doc/Coverage/$file 1>/dev/null 2>&1
-         mv -f $TRUST_TMP/$file $TRUST_ROOT/doc/Coverage/$file
+         #CHECKOUT $TRUST_ROOT/doc/Coverage/$file 1>/dev/null 2>&1 # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
+         #mv -f $TRUST_TMP/$file $TRUST_ROOT/doc/Coverage/$file    # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
       else
          echo "    => NOT updated"
       fi
-      rm -f $TRUST_TMP/$file
-      ls -la $TRUST_ROOT"/doc/Coverage/"$file
+      #rm -f $TRUST_TMP/$file                  # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
+      #ls -la $TRUST_ROOT"/doc/Coverage/"$file # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
       # Copie apres menage des fichiers .gcda et .gcno pour pouvoir utiliser tggcov_ plus loin
       #echo "    Copy *.gcda and *.gcno files to $repertoire_gcov"
       #for suffixe in gcda gcno
@@ -2074,7 +2075,8 @@ do
       # Copie file 
       for file in list_methodes.gz list_methodes_non_appelees.gz dico.pkl.gz 
       do
-         echo "    Copy $file to $TRUST_ROOT/doc/Coverage/"
+         #echo "    Copy $file to $TRUST_ROOT/doc/Coverage/" # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
+         echo "    Copy $file to $TRUST_TMP/"
          rm -f $TRUST_TMP/$file
          #scp triou@$machine:~/$WORKBASE$hostname/TRUST/doc/Coverage/$file $TRUST_TMP/$file
          if [ "${hostname:0:2}" = "is" ]
@@ -2086,13 +2088,13 @@ do
          if [ -f $TRUST_TMP/$file ] && [ "`diff $TRUST_TMP/$file $TRUST_ROOT/doc/Coverage/$file`" != "" ]
          then
             echo "    => updated"
-            CHECKOUT $TRUST_ROOT/doc/Coverage/$file 1>/dev/null 2>&1
-            mv -f $TRUST_TMP/$file $TRUST_ROOT/doc/Coverage/$file
+            #CHECKOUT $TRUST_ROOT/doc/Coverage/$file 1>/dev/null 2>&1 # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
+            #mv -f $TRUST_TMP/$file $TRUST_ROOT/doc/Coverage/$file    # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
          else
             echo "    => NOT updated"
          fi
-         rm -f $TRUST_TMP/$file
-         ls -la $TRUST_ROOT"/doc/Coverage/"$file
+         #rm -f $TRUST_TMP/$file                  # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
+         #ls -la $TRUST_ROOT"/doc/Coverage/"$file # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
          # Recuperation du rapport gprof de l'ensemble des cas tests de non regression si cree
          if [ "`grep 'GMON_DIR=""' $TRUST_ROOT/bin/lance_test`" = "" ]
          then
@@ -2220,19 +2222,20 @@ echo "from `pwd`"
 echo "    See $REP_NUIT/tggcov_html.log"
 $TRUST_ROOT/bin/KSH/tggcov_ -html 1>$REP_NUIT/tggcov_html.log 2>&1
 tail -n1 $REP_NUIT/tggcov_html.log
-echo "    Update html.tgz on $TRUST_ROOT/doc/Coverage"
+#echo "    Update html.tgz on $TRUST_ROOT/doc/Coverage" # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
+echo "    Update html.tgz on $TRUST_ROOT/doc/Coverage/html"
 tar cfz html.tgz *.html
 # Mise a jour si different
 if [ "`diff -a html.tgz ../html.tgz 2>/dev/null;echo $?`" != 0 ]
 then
    echo "    => updated"
-   CHECKOUT ../html.tgz 1>/dev/null 2>&1
-   mv -f html.tgz ../html.tgz
+   #CHECKOUT ../html.tgz 1>/dev/null 2>&1 # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
+   #mv -f html.tgz ../html.tgz            # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
 else
    echo "    => NOT updated"
-   rm -f html.tgz
+   #rm -f html.tgz   # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
 fi
-ls -la ../html.tgz
+#ls -la ../html.tgz  # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
 )
 cd $TRUST_ROOT/doc/Coverage
 echo "  Call to make in $TRUST_ROOT/doc/Coverage"
@@ -2395,12 +2398,12 @@ do
    then
       # Aucune efficacite en dessous de 0.60 sur 4 processeurs et aucun cpu au dessus de 8s sur 1 processeur:
       perf=`$TRUST_Awk 'BEGIN {p=0} ($1==4) && (NF==12) && /\|/ {if ($(NF-1)>0.60) p=p+0.25} ($1==1) && (NF==12) && /\|/ {if ($3<8) p=p+0.25} END {print p}' $PERF`
-      [ "`liste_machines cible | grep $machine`" != "" ] && total=`echo "$total+$perf" | bc -l`
+      [ "`liste_machines tache | grep $machine`" != "" ] && total=`echo "$total+$perf" | bc -l`
       echo "Time VDF and VEF on 1 CPU: < 8s ?"
       $TRUST_Awk '($1==1) && (NF==12) && /\|/ {print $3}' $PERF
       echo "Speed-UP VDF and VEF on 4 CPUs: > 0.60 ?"
       $TRUST_Awk '($1==4) && (NF==12) && /\|/ {print $(NF-1)}' $PERF
-      if [ "`liste_machines cible | grep $machine`" != "" ]
+      if [ "`liste_machines tache | grep $machine`" != "" ]
       then
          echo "=> perf+=$perf (total=$total)"  
          let nb_machines=$nb_machines+1
