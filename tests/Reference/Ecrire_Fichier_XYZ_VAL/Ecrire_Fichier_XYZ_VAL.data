@@ -50,7 +50,7 @@ Partition dom_pbF1
 	Larg_joint 1
 	Nom_Zones DOM2
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -65,7 +65,7 @@ Pb_Thermohydraulique pbF1
 Runge_Kutta_ordre_3 schG
 
 
-Lire schG
+Read schG
 {
         tinit 0.
         tmax 2
@@ -82,7 +82,7 @@ Lire schG
 VDF cubesregu
 
 Fluide_Incompressible eau
-Lire eau
+Read eau
 {
         mu Champ_Uniforme 1 1.
         rho Champ_Uniforme 1 1. 
@@ -93,13 +93,13 @@ Lire eau
 
 
 Champ_Uniforme gravite
-Lire gravite 2 0.  -9.81
+Read gravite 2 0.  -9.81
 Associate eau  gravite
 Associate pbF1 dom_pbF1
 Associate pbF1 eau   
   
 Solide ceramique    
-Lire ceramique  
+Read ceramique  
 {
         rho Champ_Uniforme 1 1.
         lambda Champ_Uniforme 1 1.    
@@ -121,7 +121,7 @@ Discretize pbMG_global cubesregu
 
 
 
-Lire pbF1
+Read pbF1
 {
  Navier_Stokes_standard
         {
@@ -196,7 +196,7 @@ Lire pbF1
 
 
 
-Lire pbG
+Read pbG
 {
         Conduction
         {
@@ -233,5 +233,5 @@ Lire pbG
 
 
 Solve pbMG_global
-Fin
+End
 

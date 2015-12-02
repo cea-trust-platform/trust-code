@@ -30,7 +30,7 @@ Pave Cavite
 # BEGIN PARTITION
 Sous_Zone sous_zone
 Associate sous_zone dom
-Lire sous_zone
+Read sous_zone
 {
       Boite
       Origine 2.  0. 1.
@@ -43,7 +43,7 @@ Partition dom
 	Nom_Zones DOM
 	Periodique 2 periox perioz
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -53,7 +53,7 @@ END SCATTER #
 VDF dis
 
 Runge_Kutta_ordre_3 sch
-Lire sch
+Read sch
 {
         tinit 0.
 	tmax 10.
@@ -66,7 +66,7 @@ Lire sch
 }
 
 Fluide_Incompressible air
-Lire air
+Read air
 {
 	mu Champ_Uniforme 1 0.01
 	rho Champ_Uniforme 1 2
@@ -78,7 +78,7 @@ Associate pb air
 
 Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard
 	{
@@ -111,4 +111,4 @@ perioz periodique
 
 }
 Solve pb
-Fin
+End

@@ -15,7 +15,7 @@ Partition dom
 	Larg_joint 2
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -26,7 +26,7 @@ VEFPreP1B dis
 
 # Schema_MacCormack sch #
 Runge_Kutta_ordre_3 sch
-Lire sch
+Read sch
 {
 	nb_pas_dt_max 10
 	tinit 0.
@@ -40,7 +40,7 @@ Lire sch
 }
 
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
 	mu Champ_Uniforme 1 0.001094
 	rho Champ_Uniforme 1 2
@@ -50,7 +50,7 @@ Lire fluide
 }
 
 Champ_Uniforme gravite
-Lire gravite 2 0 -9.81
+Read gravite 2 0 -9.81
 
 Associate fluide gravite
 Associate pb dom
@@ -59,7 +59,7 @@ Associate pb fluide
 
 Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard
 	{
@@ -167,5 +167,5 @@ Lire pb
 }
 
 Solve pb
-Fin
-Fin
+End
+End

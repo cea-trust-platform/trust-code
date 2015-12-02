@@ -15,7 +15,7 @@ Partition dom
 	Larg_joint 2
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -23,10 +23,10 @@ Scatter DOM.Zones dom
 END SCATTER #
 
 VEFPreP1B dis
-Lire dis { P0 P1 Pa }
+Read dis { P0 P1 Pa }
 
 schema_Predictor_Corrector  sch
-Lire sch
+Read sch
 {
 	nb_pas_dt_max 0
 	tinit 0.001
@@ -40,7 +40,7 @@ Lire sch
 }
 
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
 	mu Champ_Uniforme 1 2e-05
 	rho Champ_Uniforme 1 2
@@ -52,7 +52,7 @@ Associate pb fluide
 
 Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard
 	{
@@ -94,4 +94,4 @@ Lire pb
 }
 
 Solve pb
-Fin
+End

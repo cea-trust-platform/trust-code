@@ -25,7 +25,7 @@ Mailler dom_pb1
 trianguler_h dom_pb1
 Sous_zone Suz1001
 Associate Suz1001 dom_pb1
-Lire Suz1001
+Read Suz1001
 {
       rectangle
       Origine 0.3 0.
@@ -39,19 +39,19 @@ Partition dom_pb1
 	Larg_joint 2
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
 Scatter DOM.Zones dom_pb1
 Sous_Zone Suz1001
 Associate Suz1001 dom_pb1
-Lire Suz1001 { Fichier Suz1001.ssz }
+Read Suz1001 { Fichier Suz1001.ssz }
 END SCATTER #
 
 VEFPreP1B dis
-schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0.
 	tmax 10.
@@ -64,7 +64,7 @@ Lire sch
 	facsec 0.5
 }
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
 	mu Champ_Uniforme 1 2
 	rho Champ_Uniforme 1 2
@@ -76,7 +76,7 @@ Associate pb fluide
 Discretize pb dis
 
 Porosites_champ pb champ_uniforme_morceaux dom_pb1 1 { defaut 1 Suz1001 0.5 }
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard      
 	{
@@ -118,5 +118,5 @@ Postraitement
 
 }
 Solve pb
-Fin
-Fin
+End
+End

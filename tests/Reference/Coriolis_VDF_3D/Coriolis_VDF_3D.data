@@ -31,7 +31,7 @@ Partition dom
     Larg_joint 1
     Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -40,7 +40,7 @@ END SCATTER #
 
 VDF dis
 Runge_Kutta_ordre_3 sch
-Lire sch
+Read sch
 {
         tinit 0.
         tmax 10. 
@@ -52,7 +52,7 @@ Lire sch
         diffusion_implicite 0
 }
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
         mu Champ_Uniforme 1 1
         rho Champ_Uniforme 1 1
@@ -61,7 +61,7 @@ Associate pb dom
 Associate pb sch
 Associate pb fluide
 Discretize pb dis
-Lire pb
+Read pb
 {
         Navier_Stokes_standard
         {
@@ -107,4 +107,4 @@ Lire pb
         }
 }
 Solve pb
-Fin
+End

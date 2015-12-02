@@ -25,7 +25,7 @@ Mailler dom
 Trianguler_h dom
 Sous_Zone SSZ
 Associate SSZ dom
-Lire SSZ {  
+Read SSZ {  
    Rectangle
    Origine 0 0
    Cotes 1 1
@@ -39,19 +39,19 @@ Partition dom
 	Larg_joint 2
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
 Scatter DOM.Zones dom
 Sous_Zone SSZ
 Associate SSZ dom
-Lire SSZ { Fichier SSZ.ssz }
+Read SSZ { Fichier SSZ.ssz }
 END SCATTER #
 VEFPrep1b dis
 
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0
 	tmax 5000.
@@ -63,14 +63,14 @@ Lire sch
 
 
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
 	mu Champ_Uniforme 1 0.001
 	rho Champ_Uniforme 1 2.
 }
 
 Champ_Uniforme gravite
-Lire gravite 2 0 0
+Read gravite 2 0 0
 Associate pb dom
 Associate pb sch
 Associate pb fluide
@@ -87,7 +87,7 @@ Sources {
 			}
 		}
 #
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard
 	{
@@ -125,5 +125,5 @@ Lire pb
 	}
 }
 Solve pb
-Fin
+End
 

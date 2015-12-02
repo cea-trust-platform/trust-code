@@ -49,7 +49,7 @@ Partition dom
 	Periodique 1 perio
         Larg_joint 2
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -58,8 +58,8 @@ END SCATTER #
 
 VEFPreP1b dis
 
-Schema_Euler_Explicite sch
-Lire sch 
+Scheme_euler_explicit sch
+Read sch 
 {
         tinit 0.
         tmax 20.
@@ -74,7 +74,7 @@ Lire sch
 }
 
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
 	mu Champ_Uniforme 1 0.00514
 	rho Champ_Uniforme 1 2
@@ -86,7 +86,7 @@ Associate pb fluide
 
 Discretize pb dis
 
-Lire pb
+Read pb
 	{
 	Navier_Stokes_Standard
 		{
@@ -115,7 +115,7 @@ Lire pb
 	}
 
 Solve pb
-Fin
+End
 
 			entree frontiere_ouverte_vitesse_imposee champ_front_uniforme 3  2. 0. 0.
 			sortie frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.

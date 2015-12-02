@@ -35,7 +35,7 @@ Partition dom
 	Nom_Zones DOM
 	Periodique 2 perioy perioz
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -44,7 +44,7 @@ END SCATTER #
 
 VEFPreP1B dis
 Runge_Kutta_ordre_3 sch
-Lire sch
+Read sch
 {
         tinit 9.00
 	tmax 19.99
@@ -54,7 +54,7 @@ Lire sch
 }
 
 Fluide_Incompressible air
-Lire air
+Read air
 {
 	mu Champ_Uniforme 1 0.01
 	rho Champ_Uniforme 1 1
@@ -68,7 +68,7 @@ Discretize pb dis
 
 # On impose U(t)=1+cos(t*Pi) #
 # Donc Moy(U)(n*dt_integr)=1 et Ect(U)(n*dt_integr)=Sqr(2)/2 #
-Lire pb
+Read pb
 {
 	Navier_Stokes_Standard
 	{
@@ -108,4 +108,4 @@ Lire pb
 }
 
 Solve pb
-Fin
+End

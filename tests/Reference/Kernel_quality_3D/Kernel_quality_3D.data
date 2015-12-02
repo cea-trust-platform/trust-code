@@ -3,7 +3,7 @@
 dimension 3
 
 Domaine domain
-Lire_Fichier domain mesh.geom
+Read_file domain mesh.geom
 
 ecrire_fichier domain domain_0.geom
 
@@ -29,12 +29,12 @@ Domaine domain_3
 Domaine domain_4
 Domaine domain_5
 
-Lire_Fichier domain_0 domain_0.geom
-Lire_Fichier domain_1 domain_1.geom
-Lire_Fichier domain_2 domain_2.geom
-Lire_Fichier domain_3 domain_3.geom
-Lire_Fichier domain_4 domain_4.geom
-Lire_Fichier domain_5 domain_5.geom
+Read_file domain_0 domain_0.geom
+Read_file domain_1 domain_1.geom
+Read_file domain_2 domain_2.geom
+Read_file domain_3 domain_3.geom
+Read_file domain_4 domain_4.geom
+Read_file domain_5 domain_5.geom
 
 Verifier_Qualite_Raffinements 6 domain_0 domain_1 domain_2 domain_3 domain_4 domain_5
 
@@ -52,4 +52,4 @@ postraiter_domaine
    format lml 
 }
 
-FIN
+End

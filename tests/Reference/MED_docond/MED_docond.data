@@ -2,8 +2,8 @@
 # PARALLEL OK #
 
 dimension 2
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0.
 	tmax 300.
@@ -84,7 +84,7 @@ Partition dom_fluide
 	Larg_joint 1
 	Nom_Zones DOM2
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -95,7 +95,7 @@ END SCATTER #
 VDF dis
 
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
 	mu Champ_Uniforme 1 0.001
 	rho Champ_Uniforme 1 1.
@@ -105,7 +105,7 @@ Lire fluide
 }
 
 Solide sol
-Lire sol
+Read sol
 {
 	rho Champ_Uniforme 1 1000.
 	lambda Champ_Uniforme 1 250.    
@@ -113,7 +113,7 @@ Lire sol
 }
 
 Champ_Uniforme gravite
-Lire gravite 2 0 -9.81
+Read gravite 2 0 -9.81
 Associate sol gravite
 Associate fluide gravite
 
@@ -129,7 +129,7 @@ Associate pbc pb2
 Associate pbc sch
 Discretize pbc dis
 
-Lire pb1
+Read pb1
 {
 	Conduction
 	{
@@ -170,7 +170,7 @@ Lire pb1
 	sauvegarde formatte solide.rep
 }
 
-Lire pb2
+Read pb2
 {
 	Navier_Stokes_standard
 	{
@@ -244,5 +244,5 @@ Imprimer_flux dom_fluide { Entree Haut2 }
 Imprimer_flux dom_solide { Bas1 Haut2 }
 Solve pbc
 Read_file postmed.data ;
-Fin
+End
 

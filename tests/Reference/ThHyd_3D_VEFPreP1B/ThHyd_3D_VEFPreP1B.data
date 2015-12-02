@@ -2,8 +2,8 @@
 # Thermohydraulique 3D VEFPreP1B #
 # PARALLEL OK 5 #
 dimension 3    
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0.
 	tmax 1000000.
@@ -29,7 +29,7 @@ Partition dom_fluide
 	Larg_joint 2
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -39,7 +39,7 @@ END SCATTER #
 VEFPreP1B dis
 
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
 	mu Champ_Uniforme 1 2e-09
 	rho Champ_Uniforme 1 2
@@ -50,7 +50,7 @@ Lire fluide
 
 
 Champ_Uniforme gravite
-Lire gravite 3 0. -9.81 0.
+Read gravite 3 0. -9.81 0.
 Associate fluide gravite
 
 Associate pb dom_fluide
@@ -75,7 +75,7 @@ Extraire_plan
 	via_extraire_surface
 }
 
-Lire pb
+Read pb
 {
         Navier_Stokes_standard
         {
@@ -155,4 +155,4 @@ Lire pb
 }
 
 Solve pb
-Fin
+End

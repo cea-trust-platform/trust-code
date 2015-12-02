@@ -3,7 +3,7 @@ Dimension 2
 export Domaine dom_solide 
 export Domaine dom_fluide 
 Pbc_MED pbmed 
-Lire pbmed 
+Read pbmed 
 { 
    MED_docond.med 
    dom_solide 
@@ -35,4 +35,4 @@ Lire pbmed
       } 
    } 
 } 
-fin 
+End 

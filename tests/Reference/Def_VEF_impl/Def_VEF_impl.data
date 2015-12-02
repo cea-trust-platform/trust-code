@@ -31,7 +31,7 @@ Partition dom
 	Larg_joint 2
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -41,8 +41,8 @@ END SCATTER #
 
 VEFPreP1B dis
 
-Schema_Euler_Implicite sch
-Lire sch
+Scheme_euler_implicit sch
+Read sch
 {
 	tinit 0.
 	tmax 1.
@@ -55,20 +55,20 @@ Lire sch
 	Solveur Implicite
 	   {
 		seuil_convergence_implicite 1.e-6
-		solveur Petsc BICGSTAB { precond diag { } seuil 1.e-12 save_matrice save_matrix_petsc_format }
+		solveur Petsc BICGSTAB { precond diag { } seuil 1.e-12 save_matrix save_matrix_petsc_format }
 		# solveur Petsc CLI { -ksp_type bcgs -pc_type jacobi -ksp_atol 1.e-12 } #
 	   }
 }
 
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
 	mu Champ_Uniforme 1 1.e-5
 	rho Champ_Uniforme 1 1.
 }
 
 Champ_Uniforme gravite
-Lire gravite 2 0 -9.81
+Read gravite 2 0 -9.81
 
 Associate fluide gravite
 Associate pb dom
@@ -77,7 +77,7 @@ Associate pb fluide
 
 Discretize pb dis
 
-Lire pb
+Read pb
 {  
 	Navier_Stokes_standard
 	{
@@ -113,8 +113,8 @@ Lire pb
 }
 
 Solve pb
-Fin
-Fin
+End
+End
 
 
 

@@ -27,9 +27,9 @@ Pave fpt4
 
 VDF dis
 
-schema_Euler_explicite sch
+Scheme_euler_explicit sch
 
-Lire sch
+Read sch
 {
 	tinit   0.
 	tmax    3.
@@ -42,7 +42,7 @@ Lire sch
 }
 
 Fluide_Incompressible oel
-Lire oel
+Read oel
 {
 	mu  Champ_Uniforme 1 1.0e-4 
 	rho Champ_Uniforme 1 1.0
@@ -54,7 +54,7 @@ Associate pb oel
 
 Discretize pb dis
 
-Lire pb
+Read pb
 {
     Navier_Stokes_Turbulent
     {
@@ -104,4 +104,4 @@ Lire pb
 }
 
 Solve pb
-Fin
+End

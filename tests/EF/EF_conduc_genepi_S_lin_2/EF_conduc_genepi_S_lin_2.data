@@ -9,7 +9,7 @@ dimension 2
 
 Pb_conduction pb
 Domaine dom
-# DEBUT MAILLAGE #
+# BEGIN MESH #
 Mailler dom
 {
 	Pave Cavite 
@@ -27,25 +27,25 @@ Mailler dom
 } 
 
 
-# FIN MAILLAGE #
-# DEBUT DECOUPAGE
-Decouper dom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
 {
 	Partitionneur tranche { tranches 2 1 }
 	Larg_joint 1
 	Nom_Zones DOM
 }
-Fin
-FIN DECOUPAGE #
+End
+END PARTITION #
 
-# DEBUT LECTURE
+# BEGIN SCATTER
 Scatter DOM.Zones dom
-FIN LECTURE #
+END SCATTER #
 
 EF dis
 
-Schema_Euler_implicite sch
-Lire sch
+Scheme_euler_implicit sch
+Read sch
 {
 	tinit 0
 	tmax 300.
@@ -59,19 +59,19 @@ Lire sch
 }
 
 Solide sol
-Lire sol
+Read sol
 {
 	rho Champ_Uniforme 1 1.
 	lambda Champ_Uniforme 1 1.
 	Cp Champ_Uniforme 1 1.
 }
-Associer pb dom
-Associer pb sch
-Associer pb sol
+Associate pb dom
+Associate pb sch
+Associate pb sol
 
-Discretiser pb dis
+Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Conduction
 	{
@@ -82,7 +82,7 @@ Lire pb
 		conditions_initiales {
 			temperature Champ_Uniforme 1 0. 
 			}
-		conditions_limites {
+		boundary_conditions {
 			Haut paroi_temperature_imposee
 			        Champ_Front_Fonc_tXYZ 1 (-(0.4-1./3.)*x-x*(x*x-1.)/6.)
 			Bas paroi_temperature_imposee
@@ -109,6 +109,6 @@ Lire pb
 	}
 }
 
-Resoudre pb
+Solve pb
 
-Fin
+End

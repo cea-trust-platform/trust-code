@@ -27,7 +27,7 @@ Partition dom
     Larg_joint 2
     Nom_Zones DOM
   }
-Fin
+End
 END PARTITION #
 # BEGIN SCATTER
 Scatter DOM.Zones dom
@@ -35,10 +35,10 @@ END SCATTER #
 
 VEFPreP1B dis
 
-Lire dis { P1 }
+Read dis { P1 }
 
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0.000
 	tmax 20.
@@ -51,7 +51,7 @@ Lire sch
 }
 
 Fluide_Incompressible eau
-Lire eau
+Read eau
 {
    mu      Champ_Uniforme 1 0.000134
    lambda  Champ_Uniforme 1 0.668
@@ -62,7 +62,7 @@ Lire eau
 
 
 Champ_Uniforme gravite
-Lire gravite 2 0. -9.81 
+Read gravite 2 0. -9.81 
 Associate eau gravite
 
 Associate pb dom
@@ -84,7 +84,7 @@ extraire_surface
    avec_les_bords
   }
 postraiter_domaine { domaine surface format lata_v2 fichier surface }
-Lire pb
+Read pb
 {
      Navier_Stokes_turbulent
 	{
@@ -232,4 +232,4 @@ Lire pb
 	}
 }
 Solve pb
-Fin
+End

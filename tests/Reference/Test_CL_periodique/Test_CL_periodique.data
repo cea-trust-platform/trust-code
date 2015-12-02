@@ -3,35 +3,35 @@ Pb_Hydraulique_Turbulent pb
 
 Domaine dom
 
-# DEBUT MAILLAGE #
+# BEGIN MESH #
 Lire_med family_names_from_group_names dom geometry geometry.med
 Tetraedriser_homogene_fin dom
 Regroupebord dom section { INLET OUTLET }
 Regroupebord dom wall { INNER_WALL OUTER_WALL }
 Corriger_frontiere_periodique { domaine dom bord section }
-# Fin MAILLAGE #
+# End MAILLAGE #
 
-# DEBUT DECOUPAGE
-Decouper dom
+# BEGIN PARTITION
+Partition dom
 {
     Periodique 1 section
     Partitionneur Metis { nb_parts 6 }
     larg_joint 2
     nom_zones DOM
 }
-FIN MAILLAGE #
+END MESH #
 
-# DEBUT LECTURE
+# BEGIN SCATTER
 Scatter DOM.Zones dom
-FIN LECTURE #
+END SCATTER #
 
 # SPATIAL Discretization #
 VEFPreP1B dis
-Lire dis { P0 P1 Changement_de_base_P1Bulle 1 Modif_div_face_dirichlet 1 }
+Read dis { P0 P1 Changement_de_base_P1Bulle 1 Modif_div_face_dirichlet 1 }
 
 # TIME DISCRETIZATION #
-Schema_Euler_implicite sch
-Lire sch {
+Scheme_euler_implicit sch
+Read sch {
     tinit   0.
     tmax    10.
     nb_pas_dt_max 1
@@ -49,20 +49,20 @@ Lire sch {
 
 # FLUID DEFINITION #
 Fluide_Incompressible water
-Lire water {
+Read water {
     mu  Champ_Uniforme 1 1.002e-3
     rho Champ_Uniforme 1 998.2
 }
 
 # DEFINE THE ASSOCIATION OF PREVIOUSLY DEFINED OBJECTS #
-Associer pb dom
-Associer pb water
-Associer pb sch 
-Discretiser pb dis
+Associate pb dom
+Associate pb water
+Associate pb sch 
+Discretize pb dis
 
 
 # READ THE PROBLEM #
-Lire pb
+Read pb
 {
     Navier_Stokes_Turbulent {
         solveur_pression petsc cholesky {  }
@@ -70,7 +70,7 @@ Lire pb
         diffusion { }
         conditions_initiales { vitesse Champ_Uniforme 3 0. 0. 0.298 }
         sources { Canal_perio { bord section } }
-        conditions_limites {
+        boundary_conditions {
             section     periodique
             wall        paroi_fixe
         }
@@ -78,7 +78,7 @@ Lire pb
             Transport_K_Epsilon {
                 Diffusion { }
                 Convection { Amont }
-                Conditions_limites {
+                boundary_conditions {
                     section     Frontiere_ouverte_K_Eps_impose Champ_front_Uniforme 2 1.33e-3 .023
                     wall        paroi
                 }
@@ -94,5 +94,5 @@ Lire pb
         champs dt_post 1.e-3 { vitesse faces }
     }
 }
-Resoudre pb
-Fin
+Solve pb
+End

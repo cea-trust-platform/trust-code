@@ -26,7 +26,7 @@ Trianguler dom
 # BEGIN PARTITION
 Sous_Zone processeur_0
 Associate processeur_0 dom
-Lire processeur_0
+Read processeur_0
 {
       Rectangle
       Origine 0.75 0.
@@ -40,7 +40,7 @@ Partition dom
 	Periodique 2 Perio Perio2
 	Larg_joint 2
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -51,7 +51,7 @@ VEFPreP1B dis
 Runge_Kutta_ordre_3 sch
 Fluide_Incompressible eau
 Pb_Hydraulique pb
-Lire sch
+Read sch
 {
 	tinit 0
         tmax 1.
@@ -63,7 +63,7 @@ Lire sch
 	nb_pas_dt_max 3
 }
 
-Lire eau
+Read eau
 {
 	mu Champ_Uniforme 1 0.002
 	rho Champ_Uniforme 1 2
@@ -74,7 +74,7 @@ Associate pb sch
 Associate pb eau
 
 Discretize pb dis
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard
 	{
@@ -112,7 +112,7 @@ Perio2 periodique
 }
 
 Solve pb
-FIN
+End
 
 
 

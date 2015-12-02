@@ -30,14 +30,14 @@ tetraedriser dom_pb
 verifiercoin dom_pb { }
 Sous_zone Grille
 Associate Grille dom_pb
-Lire Grille {
+Read Grille {
           Boite
           Origine 0.4 0.3 0.3
           Cotes   0.2 0.4 0.4
           }
 Sous_zone tout_domaine
 Associate tout_domaine dom_pb
-Lire tout_domaine {
+Read tout_domaine {
           Boite
           Origine 0. 0. 0.
           Cotes   1. 1. 1.
@@ -51,25 +51,25 @@ Partition dom_pb
 	Larg_joint 2
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
 Scatter DOM.Zones dom_pb
 Sous_Zone Grille
 Associate Grille dom_pb
-Lire Grille { Fichier Grille.ssz }
+Read Grille { Fichier Grille.ssz }
 Sous_Zone tout_domaine
 Associate tout_domaine dom_pb
-Lire tout_domaine { Fichier tout_domaine.ssz }
+Read tout_domaine { Fichier tout_domaine.ssz }
 END SCATTER #
 
 # Definition de la discretisation #
 VEFPreP1B dis
 
 # Definition du schema en temps #
-schema_Euler_Implicite sch
-Lire sch
+Scheme_euler_implicit sch
+Read sch
 {
 	nb_pas_dt_max 5
 	tinit 0
@@ -94,7 +94,7 @@ Lire sch
 
 # Definition des proprietes du fluide (air) #
 Fluide_Quasi_Compressible fluide
-Lire fluide
+Read fluide
 {
 	sutherland mu0 1.716e-5 T0 273.15 Slambda 194.4 C 110.6
 	pression 100000.
@@ -108,7 +108,7 @@ Lire fluide
 
 # Prise en compte de la gravite #
 Champ_uniforme gravite
-lire gravite 3 0. 0. -9.81
+Read gravite 3 0. 0. -9.81
 
 # Association des differents objets au probleme #
 Associate fluide gravite
@@ -118,7 +118,7 @@ Associate pb fluide
 Discretize pb dis
 
 # Definition des parametres du probleme traite #
-Lire pb
+Read pb
 {
 	Navier_Stokes_Turbulent_QC
 	{
@@ -194,5 +194,5 @@ Lire pb
 	}
 }
 Solve pb
-Fin
+End
 

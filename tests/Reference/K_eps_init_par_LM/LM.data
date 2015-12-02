@@ -36,7 +36,7 @@ Partition dom
         Larg_joint 2
         Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -47,10 +47,10 @@ END SCATTER #
 VEFPreP1b dis
 # La ligne suivante n'a pas d'interet si ce n'est de tester changement_de_base_P1Bulle et cl_pression_sommet_faible #
 # Sinon c'est equivalent a VEFPreP1b #
-Lire dis { P0 P1 changement_de_base_P1Bulle 1 cl_pression_sommet_faible 0 } 
+Read dis { P0 P1 changement_de_base_P1Bulle 1 cl_pression_sommet_faible 0 } 
 
-Schema_Euler_implicite sch
-Lire sch 
+Scheme_euler_implicit sch
+Read sch 
 {
 	nb_pas_dt_max 10
         tinit 0.
@@ -68,7 +68,7 @@ Lire sch
 }
 
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
 	mu Champ_Uniforme 1 0.00001
 	rho Champ_Uniforme 1 1
@@ -80,7 +80,7 @@ Associate pb fluide
 
 Discretize pb dis
 
-Lire pb
+Read pb
 	{
 	Navier_Stokes_Turbulent
 		{
@@ -125,4 +125,4 @@ Lire pb
 	}
 
 Solve pb
-Fin
+End

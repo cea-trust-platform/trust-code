@@ -21,8 +21,8 @@ Pave Entree
                 }
 }
 Sous_Zone zone1
-Associer zone1 dom
-Lire zone1
+Associate zone1 dom
+Read zone1
 {
    Boite
    Origine -1. -0.1 -0.1
@@ -32,21 +32,21 @@ ecrire_fic_lml dom
 # END MESH #
 
 # BEGIN PARTITION
-Decouper dom
+Partition dom
 {
-	Partitionneur Metis { Nb_parts 2 }
+	Partition_tool Metis { Nb_parts 2 }
         Larg_joint 1
-        Nom_Zones DOM
+        zones_name DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
 Scatter DOM.Zones dom
 Sous_Zone zone1
-Associer zone1 dom
-Lire zone1 { Fichier zone1.ssz }
+Associate zone1 dom
+Read zone1 { Fichier zone1.ssz }
 ecrire_fic_lml dom 
 END SCATTER #
 
-fin
+End

@@ -3,31 +3,31 @@
 dimension 3
 Domaine interass
 
-# DEBUT MAILLAGE #
-Lire_fichier interass collecteur_chaud.geom 
+# BEGIN MESH #
+Read_file interass collecteur_chaud.geom 
 Modif_bord_to_raccord interass virole_IA
 Modif_bord_to_raccord interass virole_CC
-# FIN MAILLAGE #
+# END MESH #
 
-# DEBUT DECOUPAGE
-Decouper interass
+# BEGIN PARTITION
+Partition interass
 {
    	partitionneur metis { nb_parts 5 }
         Larg_joint 2
         Nom_Zones DOM_interass
 }
-Fin
-FIN DECOUPAGE #
+End
+END PARTITION #
 
-# DEBUT LECTURE 
+# BEGIN SCATTER 
 Scatter DOM_interass.Zones interass
-FIN LECTURE #
+END SCATTER #
 
 
 VEFPREP1B dis
 
-Schema_Euler_implicite sch
-Lire sch
+Scheme_euler_implicit sch
+Read sch
 {
 	nb_pas_dt_max 3
 	tinit 0
@@ -48,7 +48,7 @@ Lire sch
 
 
 Fluide_Incompressible sodium
-Lire sodium
+Read sodium
 {
        mu Champ_Uniforme 1 .000245
        rho Champ_Uniforme 1 840.
@@ -59,14 +59,14 @@ Lire sodium
 
 
 Champ_Uniforme gravite
-Lire gravite 3 0 0 -9.81
-Associer sodium gravite
+Read gravite 3 0 0 -9.81
+Associate sodium gravite
 
 Pb_thermohydraulique  pb
-Associer pb interass
-Associer pb sodium
-Associer pb sch
-Discretiser pb dis
+Associate pb interass
+Associate pb sodium
+Associate pb sch
+Discretize pb dis
 
 
 Domaine coeur_env
@@ -75,7 +75,7 @@ extraire_surface { domaine coeur_env probleme pb avec_certains_bords 1 sortie_co
 Domaine coupl_extraction
 extraire_surface { domaine coupl_extraction probleme pb avec_certains_bords 1 coupl }
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard
 	{
@@ -83,7 +83,7 @@ Lire pb
 		convection { amont }
 		diffusion {  }
   		conditions_initiales { vitesse Champ_Uniforme 3 0. 0. 0. }
-		conditions_limites {
+		boundary_conditions {
 			sortie_coeur 	frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 3 0. 0. 1.
 			echg		frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
 			coupl		symetrie
@@ -98,7 +98,7 @@ Lire pb
 		convection { amont }
 		diffusion { }
 		conditions_initiales { temperature Champ_Uniforme 1 303.7 }
-		conditions_limites {
+		boundary_conditions {
 			sortie_coeur 	frontiere_ouverte T_ext Champ_Front_Uniforme 1 400 
 			echg		frontiere_ouverte T_ext Champ_Front_Uniforme 1 400
 			coupl		paroi_temperature_imposee Champ_front_fonc_XYZ 1 300+200*(z>1.5)
@@ -119,4 +119,4 @@ Lire pb
 }
 
 Solve pb
-Fin
+End

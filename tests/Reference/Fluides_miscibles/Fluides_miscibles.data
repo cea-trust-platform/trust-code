@@ -31,7 +31,7 @@ Partition dom
 	Larg_joint 2
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -40,8 +40,8 @@ END SCATTER #
 
 VDF dis
 
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0
 	tmax 2.
@@ -58,7 +58,7 @@ Lire sch
 # Use a fraction dependant law: mu=mu(water)+(mu(alcohol)-mu(water))*C #
 # 2.e-3 is an example, not the real value! #
 Fluide_Incompressible water_alcohol
-Lire water_alcohol
+Read water_alcohol
 {
 	mu Champ_Fonc_tabule 1 concentration { 2 0 1 1.7e-3 2.e-3 } 
 	rho Champ_Uniforme 1 1000
@@ -67,13 +67,13 @@ Lire water_alcohol
 
 # We need the diffusivity of alocol in water (0.1 is an example, not the real value!) #
 Constituant alcohol
-Lire alcohol
+Read alcohol
 {
 	coefficient_diffusion Champ_Uniforme 1 0.1
 }
 
 Champ_Uniforme gravite
-Lire gravite 2 0 -9.81
+Read gravite 2 0 -9.81
 
 Associate water_alcohol gravite
 Associate pb dom
@@ -84,7 +84,7 @@ Associate pb alcohol
 Discretize pb dis
 
 # Define initial condition: rather down for alcohol (C=1) and rather up for water (C=0) #
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard
 	{
@@ -139,4 +139,4 @@ Lire pb
 }
 
 Solve pb
-Fin
+End

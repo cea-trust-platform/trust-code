@@ -25,7 +25,7 @@ Trianguler_H dom
 
 Sous_zone ssz_amont
 Associate ssz_amont dom
-Lire ssz_amont
+Read ssz_amont
 {
    Rectangle
    Origine 0.7 0.
@@ -40,20 +40,20 @@ Partition dom
 	Larg_joint 2
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
 Scatter DOM.Zones dom
 Sous_Zone ssz_amont
 Associate ssz_amont dom
-Lire ssz_amont { Fichier ssz_amont.ssz }
+Read ssz_amont { Fichier ssz_amont.ssz }
 END SCATTER #
 
 VEFPreP1B dis
 
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0.
 	tmax 2
@@ -65,7 +65,7 @@ Lire sch
 }
 
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
 	mu  Champ_Uniforme 1 1.85e-5
 	rho Champ_Uniforme 1 1.17
@@ -79,7 +79,7 @@ Discretize pb dis
 
 # Debog pb seq faces 1.e-6 0 #
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard
 	{
@@ -118,4 +118,4 @@ Lire pb
 	}
 }
 Solve pb
-Fin
+End

@@ -57,7 +57,7 @@ Partition solide4
 	Larg_joint 1
 	Nom_Zones SOL4
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -69,10 +69,10 @@ END SCATTER #
 
 Champ_Uniforme gravite
 
-Lire gravite 3  0. 0. -9.81 
+Read gravite 3  0. 0. -9.81 
 
 Fluide_Incompressible sodium1
-Lire sodium1
+Read sodium1
 {
    mu 	   Champ_Uniforme 1  2.3e-4
    lambda  Champ_Uniforme 1 67.
@@ -82,7 +82,7 @@ Lire sodium1
 }
 
 Fluide_Incompressible sodium2
-Lire sodium2
+Read sodium2
 {
    mu 	   Champ_Uniforme 1  2.3e-4
    lambda  Champ_Uniforme 1 67.
@@ -92,7 +92,7 @@ Lire sodium2
 }
 
 Solide acier_cloison
-Lire acier_cloison
+Read acier_cloison
 {
 	rho Champ_Uniforme 1 7900.
 	lambda Champ_Uniforme 1 20.
@@ -100,7 +100,7 @@ Lire acier_cloison
 }
 
 Solide acier_paroi
-Lire acier_paroi
+Read acier_paroi
 {
 	rho Champ_Uniforme 1 7900
 	lambda Champ_Uniforme 1 40
@@ -127,9 +127,9 @@ Associate pbc pb2
 Associate pbc pb3
 Associate pbc pb4
 
-Schema_Euler_explicite sch
+Scheme_euler_explicit sch
 
-Lire sch
+Read sch
 {
 	nb_pas_dt_max 2
  	tinit 0.
@@ -147,7 +147,7 @@ Associate pbc sch
 VEFPreP1B dis
 Discretize pbc dis
 
-Lire pb1
+Read pb1
 { 
  
    Navier_Stokes_turbulent
@@ -278,7 +278,7 @@ Lire pb1
 }
 
 
-Lire pb2
+Read pb2
 { 
  
    Navier_Stokes_turbulent
@@ -378,7 +378,7 @@ Lire pb2
 
 }
 
-Lire pb3
+Read pb3
 {
 	Conduction
 	{
@@ -417,7 +417,7 @@ Lire pb3
 
 
 
-Lire pb4
+Read pb4
 {
 	Conduction
 	{
@@ -453,4 +453,4 @@ Lire pb4
 
 
 Solve pbc
-Fin
+End

@@ -15,7 +15,7 @@ Partition dom
 	Larg_joint 2
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -24,8 +24,8 @@ END SCATTER #
 
 VEFPreP1B dis
 
-Schema_euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	nb_pas_dt_max 10
 	tmax 0.5
@@ -35,7 +35,7 @@ Lire sch
 }
 
 Fluide_Incompressible air
-Lire air
+Read air
 {
 	mu  Champ_Uniforme 1 0.00129
 	rho Champ_Uniforme 1 1000.
@@ -45,14 +45,14 @@ Lire air
 }
 
 Champ_Uniforme gravite
-Lire gravite 2 0 0
+Read gravite 2 0 0
 Associate air gravite
 Associate pb dom
 Associate pb sch
 Associate pb air
 Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_Turbulent
 	{
@@ -143,4 +143,4 @@ Lire pb
 }
 
 Solve pb
-Fin
+End

@@ -2,8 +2,8 @@
 # Test de la condition limite de contact en VEF pour un champ de concentration #
 # PARALLEL OK 8 #
 dimension 2
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0.
 	tmax 0.1
@@ -76,7 +76,7 @@ Partition dom_fluide2
 	Larg_joint 2
 	Nom_Zones DOM2
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -87,34 +87,34 @@ END SCATTER #
 VEFPreP1b dis
 
 Fluide_Incompressible fluide1
-Lire fluide1
+Read fluide1
 {
 	mu Champ_Uniforme 1 0.004
 	rho Champ_Uniforme 1 8.
 }
 
 Fluide_Incompressible fluide2
-Lire fluide2
+Read fluide2
 {
 	mu Champ_Uniforme 1 0.002
 	rho Champ_Uniforme 1 2
 }
 
 Constituant particule1
-Lire particule1
+Read particule1
 {
  coefficient_diffusion Champ_Uniforme 1 0.03
 }
 
 Constituant particule2
-Lire particule2
+Read particule2
 {
  coefficient_diffusion Champ_Uniforme 1 0.03
 }
 
 
 Champ_Uniforme gravite
-Lire gravite 2 0 -9.81
+Read gravite 2 0 -9.81
 Associate fluide1 gravite
 Associate fluide2 gravite
 
@@ -132,7 +132,7 @@ Associate pbc pb2
 Associate pbc sch
 Discretize pbc dis
 
-Lire pb1
+Read pb1
 {
 	Navier_Stokes_standard
 	{
@@ -188,7 +188,7 @@ Lire pb1
 	}
 }
 
-Lire pb2
+Read pb2
 {
 	Navier_Stokes_standard
 	{
@@ -246,6 +246,6 @@ Lire pb2
 	}
 }
 Solve pbc
-Fin
+End
 
 Sources { source_Constituant Champ_fonc_xyz dom 1 2*x*y }

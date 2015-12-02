@@ -31,7 +31,7 @@ Partition dom_solide
 	Nom_Zones DOM2
 }
 
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -41,8 +41,8 @@ END SCATTER #
 
 VEFPreP1B dis
 
-Schema_Euler_Implicite sch
-Lire sch
+Scheme_euler_implicit sch
+Read sch
 {
 	tinit	0.
 	tmax	0.01
@@ -66,7 +66,7 @@ Lire sch
 # solveur petsc gmres { seuil 1.e-12 precond ilu { level 2 }  } #
 
 Fluide_Quasi_Compressible fluide
-Lire fluide
+Read fluide
 {
 	mu	Champ_Fonc_fonction	1 temperature	3.95e-7*val^0.687
 	lambda	Champ_Fonc_fonction	1 temperature	2.774e-3*val^0.701
@@ -82,7 +82,7 @@ Lire fluide
 }
 
 Solide solide
-Lire solide
+Read solide
 {
 	rho	Champ_Uniforme		1		8000.
 	lambda  Champ_Fonc_Fonction	1 temperature	(val<773)*(273+(17.5-(0.00565*val)+(0.00000814*val*val)))+(val>773)*(273+(12.76+(0.00871*val)-(0.00000188*val*val)))
@@ -90,7 +90,7 @@ Lire solide
 }
 
 Champ_Uniforme gravite
-Lire gravite 3 0 0 -9.81
+Read gravite 3 0 0 -9.81
 
 Associate fluide gravite
 Associate solide gravite
@@ -111,7 +111,7 @@ Discretize pbc dis
 
 # Debog pb_C seq faces 1.e-5 0 #
 
-Lire pb_Th
+Read pb_Th
 {
 	Navier_Stokes_turbulent_QC
 	{
@@ -180,7 +180,7 @@ Lire pb_Th
 	}
 }
 
-Lire pb_C
+Read pb_C
 {
 	Conduction
 	{
@@ -205,4 +205,4 @@ Lire pb_C
 }
 
 Solve pbc
-Fin
+End

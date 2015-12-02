@@ -18,15 +18,15 @@ Partition dom
 	Larg_joint 2
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER  
 Scatter DOM.Zones dom
 END SCATTER #
 
-Schema_Euler_explicite sch 
-Lire sch 
+Scheme_euler_explicit sch 
+Read sch 
 { 
    nb_pas_dt_max 1
    tinit 0.
@@ -39,13 +39,13 @@ Lire sch
 } 
 
 Champ_Uniforme gravite
-Lire gravite 3  0.  0. -9.81
+Read gravite 3  0.  0. -9.81
 
 Fluide_Quasi_Compressible heliumQC_plenum
 # Coefficients Sutherland recuperes chez stagiaire Berthoux : a creuser #
 # Traitement Pth constant a creuser #
 # beta=1/T #
-Lire heliumQC_plenum
+Read heliumQC_plenum
 { 
         pression 7000000.
         Sutherland mu0 1.6E-5 T0 273.15 Slambda 235. C 235.
@@ -63,7 +63,7 @@ Associate pb_plenum sch
 Associate pb_plenum heliumQC_plenum
 Discretize pb_plenum dis 
 
-Lire pb_plenum { 
+Read pb_plenum { 
  Navier_Stokes_turbulent_QC 
  { 
     solveur_pression Gcp {
@@ -164,4 +164,4 @@ Lire pb_plenum {
 }
 
 Solve pb_plenum
-Fin
+End

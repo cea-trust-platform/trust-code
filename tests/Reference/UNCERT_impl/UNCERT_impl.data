@@ -17,8 +17,8 @@ dilate dom 0.1
 
 VEFPreP1B dis
 
-Schema_Euler_implicite sch
-Lire sch
+Scheme_euler_implicit sch
+Read sch
 {
 	nb_pas_dt_max 1000000
  	nb_pas_dt_max 10
@@ -38,7 +38,7 @@ Lire sch
 }
 
 Fluide_Incompressible eau
-Lire eau
+Read eau
 {
    mu      Champ_Uniforme 1 0.000134
    lambda  Champ_Uniforme 1 0.668
@@ -49,7 +49,7 @@ Lire eau
 
 
 Champ_Uniforme gravite
-Lire gravite 2 0. -9.81 
+Read gravite 2 0. -9.81 
 Associate eau gravite
 
 Associate pb dom
@@ -58,7 +58,7 @@ Associate pb eau
 
 Discretize pb dis
 
-Lire pb
+Read pb
 {
      Navier_Stokes_turbulent
 	{
@@ -169,5 +169,5 @@ Lire pb
 }
 
 Solve pb
-Fin
+End
 

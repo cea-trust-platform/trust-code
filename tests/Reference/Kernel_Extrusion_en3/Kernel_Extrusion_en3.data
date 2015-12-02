@@ -25,7 +25,7 @@ ecrire_fichier_bin dom dom3D.geom
 
 # Passer en 3D et le relire #
 dimension 3
-lire_fichier_bin dom dom3D.geom
+Read_file_binary dom dom3D.geom
 Postraiter_domaine { domaine dom format lml }
 Discretiser_domaine dom
-fin
+End

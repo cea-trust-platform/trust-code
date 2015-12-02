@@ -22,25 +22,25 @@ Mailler dom
 
 Sous_Zone zone1
 Associate zone1 dom
-Lire zone1 {
+Read zone1 {
    Rectangle
       Origine 0. 0.
       Cotes 0.005 0.01 }
 Sous_Zone zone2
 Associate zone2 dom
-Lire zone2 {
+Read zone2 {
    Rectangle
       Origine 0.005 0.
       Cotes 0.005 0.01 }
 Sous_Zone zone3
 Associate zone3 dom
-Lire zone3 {
+Read zone3 {
    Rectangle
       Origine 0.007 0.002
       Cotes   0.001 0.001 }
 Sous_Zone zone4
 Associate zone4 dom
-Lire zone4 {
+Read zone4 {
    Rectangle
       Origine 0.002 0.007
       Cotes   0.001 0.001 }
@@ -54,29 +54,29 @@ Partition dom
 	Larg_joint 2
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
 Scatter DOM.Zones dom
 Sous_Zone zone1
 Associate zone1 dom
-Lire zone1 { Fichier zone1.ssz }
+Read zone1 { Fichier zone1.ssz }
 Sous_Zone zone2
 Associate zone2 dom
-Lire zone2 { Fichier zone2.ssz }
+Read zone2 { Fichier zone2.ssz }
 Sous_Zone zone3
 Associate zone3 dom
-Lire zone3 { Fichier zone3.ssz }
+Read zone3 { Fichier zone3.ssz }
 Sous_Zone zone4
 Associate zone4 dom
-Lire zone4 { Fichier zone4.ssz }
+Read zone4 { Fichier zone4.ssz }
 END SCATTER #
 
 VDF dis
 
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	nb_pas_dt_max 2
 	tinit 0.
@@ -89,7 +89,7 @@ Lire sch
 }
 
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
 	mu Champ_Uniforme 1 1.85e-5
 	rho Champ_Uniforme 1 1.17
@@ -99,7 +99,7 @@ Lire fluide
 }
 
 Champ_Uniforme gravite
-Lire gravite 2 0 -9.81
+Read gravite 2 0 -9.81
 
 Associate fluide gravite
 Associate pb dom
@@ -108,7 +108,7 @@ Associate pb fluide
 
 Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard
 	{
@@ -179,5 +179,5 @@ Lire pb
 }
 
 Solve pb
-Fin
+End
 

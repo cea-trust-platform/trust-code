@@ -36,7 +36,7 @@ Partition dom
 	Nom_Zones DOM
 	periodique 1 paroiY
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -45,8 +45,8 @@ END SCATTER #
 
 VEFPreP1b dis
 
-Schema_Euler_Explicite sch
-Lire sch 
+Scheme_euler_explicit sch
+Read sch 
 {
 	nb_pas_dt_max 10
         tinit 0.
@@ -61,7 +61,7 @@ Lire sch
 	diffusion_implicite 0
 }
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
 	mu Champ_Fonc_xyz	dom 1 1+cos(x)*cos(y)*cos(z)  
 	rho Champ_Uniforme	1 1.
@@ -73,7 +73,7 @@ Associate pb sch
 Associate pb fluide
 
 Discretize pb dis
-Lire pb
+Read pb
 	{
 	Navier_Stokes_standard
 		{
@@ -104,4 +104,4 @@ Lire pb
 	}
 }
 Solve pb
-Fin
+End

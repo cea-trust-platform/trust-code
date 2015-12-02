@@ -31,7 +31,7 @@ Partition dom
 	Larg_joint 1
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -41,13 +41,13 @@ END SCATTER #
 VDF dis
 # Runge_Kutta_ordre_3 sch #
 Runge_Kutta_Rationnel_ordre_2 sch
-# Schema_euler_explicite sch #
+# Scheme_euler_explicit sch #
 
 Nom coucou
-Lire coucou coucou
+Read coucou coucou
 Ecrire coucou
 
-Lire sch
+Read sch
 {
         tmax 1.
 	tinit 0.
@@ -62,7 +62,7 @@ Lire sch
 Ecrire coucou
 
 Solide sol
-Lire sol
+Read sol
 {
 	rho Champ_Uniforme 1 2
 	lambda Champ_Uniforme 1 1.0
@@ -74,7 +74,7 @@ Associate pb sol
 
 Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Conduction
 	{
@@ -107,4 +107,4 @@ Lire pb
 }
 
 Solve pb
-Fin
+End

@@ -9,4 +9,4 @@ Ecrire_fichier dom2 dom2.geom
 discretiser_domaine dom2
 Postraiter_domaine { domaine dom2 format lml }
 Postraiter_domaine { domaine dom2 format med }
-fin
+End

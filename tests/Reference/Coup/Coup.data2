@@ -1,5 +1,5 @@
 
-Lire pb2
+Read pb2
 {
    Conduction
    {
@@ -7,7 +7,7 @@ Lire pb2
       conditions_initiales {
          temperature Champ_Uniforme 1 30
       }	
-      conditions_limites {
+      boundary_conditions {
          gauche Paroi_Echange_contact_VDF  pb1 droit temperature 100.
          droit paroi_echange_externe_impose 
 	       T_ext Champ_Front_Uniforme 1 20

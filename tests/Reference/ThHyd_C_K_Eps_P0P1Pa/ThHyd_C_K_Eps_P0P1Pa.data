@@ -5,7 +5,7 @@ dimension 3
 Pb_Hydraulique_Concentration_Turbulent pb1
 
 Domaine dom
-# DEBUT MAILLAGE #
+# BEGIN MESH #
 Mailler dom
 {
 	Pave Cavite 
@@ -24,26 +24,26 @@ Mailler dom
 		}
 }      
 Tetraedriser_homogene dom
-# FIN MAILLAGE #
-# DEBUT DECOUPAGE
-Decouper dom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
 {
 	Partitionneur Metis { nb_parts 3 }
 	Larg_joint 2
 	Nom_Zones DOM
 }
-Fin
-FIN DECOUPAGE #
+End
+END PARTITION #
 
-# DEBUT LECTURE
+# BEGIN SCATTER
 Scatter DOM.Zones dom
-FIN LECTURE #
+END SCATTER #
 
 VEFPreP1B dis
-lire dis { P0 P1 Pa } 
+Read dis { P0 P1 Pa } 
 
 Schema_Backward_Differentiation_order_2 sch 
-Lire sch
+Read sch
 { 
 	tinit 0
 	nb_pas_dt_max 10
@@ -71,7 +71,7 @@ Lire sch
 
 Fluide_Incompressible air
 
-Lire air           
+Read air           
 {
      mu         Champ_Uniforme 1 1.7894e-5
      rho        Champ_Uniforme 1 1.225 
@@ -81,24 +81,24 @@ Lire air
 # Wasserdampf in Luft #
 
 Constituant Helium
-Lire Helium           
+Read Helium           
 {
      Coefficient_diffusion Champ_Uniforme 1 7.3e-5
 }
 
 Champ_Uniforme gravite
-Lire gravite 3 0 0. -9.81
+Read gravite 3 0 0. -9.81
 
-Associer air gravite
+Associate air gravite
 
-Associer pb1 dom
-Associer pb1 air
-Associer pb1 Helium
+Associate pb1 dom
+Associate pb1 air
+Associate pb1 Helium
 
-Associer pb1 sch                          
-Discretiser pb1 dis                       
+Associate pb1 sch                          
+Discretize pb1 dis                       
 
-Lire pb1
+Read pb1
 {
         Navier_Stokes_turbulent
         {
@@ -112,7 +112,7 @@ Lire pb1
                         {                           
                                vitesse Champ_Uniforme 3 0. 0. 0.
                         }                                        
-                conditions_limites                               
+                boundary_conditions                               
                 {                                                
                          wall symetrie                         
                          in   frontiere_ouverte_vitesse_imposee  Champ_front_Uniforme 3 0. 0. 3.2
@@ -129,7 +129,7 @@ Lire pb1
                                  {
                                       k_eps Champ_Uniforme 2 1.e-5 1.e-4
                                  }
-                               conditions_limites
+                               boundary_conditions
                                  {
                                        wall symetrie
                                        in  frontiere_ouverte_K_Eps_impose  Champ_front_Uniforme 2 0.01  0.1
@@ -148,7 +148,7 @@ Lire pb1
                         {                           
                                concentration Champ_Fonc_xyz dom 1 x+y+z
                         }                                        
-                conditions_limites                               
+                boundary_conditions                               
                 {                                                
                          wall symetrie                         
                          in   frontiere_ouverte_concentration_imposee  Champ_front_Uniforme 1 0.0
@@ -175,5 +175,5 @@ Lire pb1
                                                                                                                                   
         }
 }
-Resoudre pb1
-Fin
+Solve pb1
+End

@@ -16,6 +16,6 @@ lire_med family_names_from_group_names dom3d Gmsh2D 2D.med
 postraiter_domaine { domaine dom3d format lata ecrire_frontiere 0 }
 
 
-fin
+End
 
 

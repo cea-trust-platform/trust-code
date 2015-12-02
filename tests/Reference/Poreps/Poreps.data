@@ -36,7 +36,7 @@ Mailler dom
 Sous_zone sous_zone1
 Associate sous_zone1 dom
 
-Lire sous_zone1
+Read sous_zone1
 {
    Rectangle
       Origine 0.3 0.3
@@ -45,7 +45,7 @@ Lire sous_zone1
 
 Sous_zone sous_zone2
 Associate sous_zone2 dom
-Lire sous_zone2
+Read sous_zone2
 {
    Rectangle
      Origine 0.3 1.0
@@ -60,23 +60,23 @@ Partition dom
 	Larg_joint 1
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
 Scatter DOM.Zones dom
 Sous_zone sous_zone1
 Associate sous_zone1 dom
-Lire sous_zone1 { Fichier sous_zone1.ssz }
+Read sous_zone1 { Fichier sous_zone1.ssz }
 Sous_zone sous_zone2
 Associate sous_zone2 dom
-Lire sous_zone2 { Fichier sous_zone2.ssz }
+Read sous_zone2 { Fichier sous_zone2.ssz }
 END SCATTER #
 
 VDF dis
 
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	nb_pas_dt_max 10
 	tinit 0
@@ -90,7 +90,7 @@ Lire sch
 }
 
 Fluide_Incompressible eau
-Lire eau
+Read eau
 {
 	mu Champ_Uniforme 1 0.02
 	rho Champ_Uniforme 1 2
@@ -118,7 +118,7 @@ Porosites pb sous_zone1
  SURFACIQUE 2 1.0 1.0
 }
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard
 	{
@@ -182,5 +182,5 @@ Lire pb
 }
 
 Solve pb
-Fin
-Fin
+End
+End

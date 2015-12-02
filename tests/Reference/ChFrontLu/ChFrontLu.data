@@ -48,9 +48,9 @@ PrecisionGeom 4.e-8
 
 VEFPreP1B dis
 
-Schema_Euler_implicite sch
+Scheme_euler_implicit sch
 
-Lire sch
+Read sch
 {
 	nb_pas_dt_max 0
 	tinit 0.
@@ -72,7 +72,7 @@ Lire sch
 
 Fluide_Incompressible fluide
 
-Lire fluide
+Read fluide
 {
    mu           Champ_Uniforme 1    1.96e-05
    rho          Champ_Uniforme 1    1.3
@@ -82,7 +82,7 @@ Lire fluide
 }
 
 Champ_Uniforme gravite
-Lire gravite 3  0. 0. -9.81
+Read gravite 3  0. 0. -9.81
 
 Associate fluide gravite
 
@@ -92,7 +92,7 @@ Associate pb fluide
 
 Discretize pb dis
 
-Lire pb
+Read pb
 {
         Navier_Stokes_turbulent
         {
@@ -171,5 +171,5 @@ Sauvegarde_simple binaire pb.sauv
 EcritureLectureSpecial 0
 
 Solve pb
-Fin
+End
  

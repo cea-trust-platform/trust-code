@@ -30,7 +30,7 @@ Partition dom
         Larg_joint 2
         Nom_Zones dom
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -41,8 +41,8 @@ END SCATTER #
 VDF dis
 
 # Time scheme #
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
         tinit 0.
         tmax 1.2
@@ -56,7 +56,7 @@ Lire sch
 
 # Incompressible fluid #
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
         mu Champ_Uniforme 1 1.85e-5
         rho Champ_Uniforme 1 1.17
@@ -68,7 +68,7 @@ Lire fluide
 
 # Gravity is mandatory here: #
 Champ_Uniforme gravite
-Lire gravite 2 0 -9.81
+Read gravite 2 0 -9.81
 
 # Link all the objects #
 Associate fluide gravite
@@ -85,7 +85,7 @@ extraire_surface
         avec_certains_bords 1 Gauche
 }
 
-Lire pb
+Read pb
 {
         Navier_Stokes_standard
         {

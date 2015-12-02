@@ -3,7 +3,7 @@
 dimension 2
 
 Sch_CN_iteratif sch
-Lire sch
+Read sch
 {
 	nb_pas_dt_max 100
         tinit 0.
@@ -85,7 +85,7 @@ Partition dom_fluide
 	Nom_Zones DOM2
         Larg_joint 2
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -96,7 +96,7 @@ END SCATTER #
 VEFPreP1B dis
 
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
 	mu Champ_Uniforme 1 0.002
 	rho Champ_Uniforme 1 2
@@ -106,7 +106,7 @@ Lire fluide
 }
 
 Solide sol
-Lire sol
+Read sol
 {
         rho Champ_Uniforme 1 1000.
         lambda Champ_Uniforme 1 250.    
@@ -114,7 +114,7 @@ Lire sol
 }
 
 Champ_Uniforme gravite
-Lire gravite 2 0 -9.81
+Read gravite 2 0 -9.81
 Associate sol gravite
 Associate fluide gravite
 
@@ -130,7 +130,7 @@ Associate pbc pb2
 Associate pbc sch
 Discretize pbc dis
 
-Lire pb1
+Read pb1
 {
         Conduction
         {
@@ -173,7 +173,7 @@ Lire pb1
         sauvegarde formatte solide.rep
 }
 
-Lire pb2
+Read pb2
 {
         Navier_Stokes_standard
         {
@@ -242,4 +242,4 @@ Lire pb2
 }
 
 Solve pbc
-Fin
+End

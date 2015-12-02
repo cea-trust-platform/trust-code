@@ -22,8 +22,8 @@ Mailler dom
 }
 VDF dis
 
-Schema_Euler_implicite implicite
-Lire implicite
+Scheme_euler_implicit implicite
+Read implicite
 {
         tinit 0.
         tmax 50.
@@ -41,8 +41,8 @@ Lire implicite
 	}
 }
 
-Schema_Euler_explicite explicite
-Lire explicite
+Scheme_euler_explicit explicite
+Read explicite
 {
         tinit 0.
         tmax 50.
@@ -54,7 +54,7 @@ Lire explicite
 }
 
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
         mu Champ_uniforme 1 2
 	rho champ_uniforme 1 0.5        
@@ -66,7 +66,7 @@ Associate pb implicite
 Associate pb fluide
 Discretize pb dis
 
-Lire pb
+Read pb
 {
         Navier_Stokes_standard
         {
@@ -103,4 +103,4 @@ Lire pb
 	}
 }
 Solve pb
-Fin
+End

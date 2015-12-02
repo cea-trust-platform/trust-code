@@ -53,7 +53,7 @@ Partition dom2
 	Larg_joint 1
 	Nom_Zones DOM2
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -64,8 +64,8 @@ END SCATTER #
 VDF dis  
 
 # On choisit un schema commun aux deux problemes #
-Schema_Euler_explicite sch  
-Lire sch
+Scheme_euler_explicit sch  
+Read sch
 {
    tinit 0
    tmax 50.
@@ -80,13 +80,13 @@ Lire sch
 # On choisit un Solide commun aux deux problemes #
 Solide acier1
 Solide acier2
-Lire acier1
+Read acier1
 {
 	rho Champ_Uniforme 1 100.
 	lambda Champ_Uniforme 1 100.
 	Cp Champ_Uniforme 1 10.
 }
-Lire acier2
+Read acier2
 {
 	rho Champ_Uniforme 1 2
 	lambda Champ_Uniforme 1 100.
@@ -94,7 +94,7 @@ Lire acier2
 }
 
 Champ_Uniforme gravite
-Lire gravite 2 0. 9.81
+Read gravite 2 0. 9.81
 Associate acier1 gravite
 Associate acier2 gravite
 
@@ -118,7 +118,7 @@ Associate pbc sch
 
 Discretize pbc dis 
 
-Lire pb1
+Read pb1
 {
    Conduction
    {
@@ -148,7 +148,7 @@ Lire pb1
    }
 }
 
-Lire pb2
+Read pb2
 {
    Conduction
    {
@@ -179,4 +179,4 @@ Lire pb2
 
 
 Solve pbc
-Fin
+End

@@ -30,7 +30,7 @@ Partition dom
 	Larg_joint 2
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -38,8 +38,8 @@ Scatter DOM.Zones dom
 END SCATTER #
 
 VEFPreP1B dis
-schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0.
 	tmax 0.01
@@ -51,7 +51,7 @@ Lire sch
 }
 
 Fluide_Ostwald fluide
-Lire fluide
+Read fluide
 {
 	K Champ_Fonc_Tabule 1 temperature  { 2 0. 60. 17.1e-6 17.1e-6 }
 	rho Champ_Uniforme 1 1.277
@@ -69,11 +69,11 @@ Associate pb fluide
 
 Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_Standard
 	{
-		solveur_pression Petsc Cholesky { save_matrice save_matrix_petsc_format }
+		solveur_pression Petsc Cholesky { save_matrix save_matrix_petsc_format }
 		convection { amont }
 		diffusion { }	
 		conditions_initiales { vitesse Champ_Uniforme 2 0. 0. }		
@@ -120,4 +120,4 @@ Lire pb
 }
 
 Solve pb
-Fin
+End

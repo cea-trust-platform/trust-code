@@ -46,14 +46,14 @@ Partition DOM
     Larg_joint 2
     Nom_Zones DOM
 \}
-Fin
+End
 END PARTITION #
 # BEGIN SCATTER
 Scatter DOM.Zones DOM
 END SCATTER #
 VDF dis
-Schema_Euler_explicite  sch
-Lire sch
+Scheme_euler_explicit  sch
+Read sch
 \{
     tinit 0.
     tmax  0.1
@@ -65,21 +65,21 @@ Lire sch
 \}
 # First phase: liquid #
 Fluide_Incompressible liquide
-Lire liquide
+Read liquide
 \{
     mu  Champ_Uniforme 1 0.282e-3
     rho Champ_Uniforme 1 1000.
 \}
 # Second phase: gas #
 Fluide_Incompressible gaz
-Lire gaz
+Read gaz
 \{
     mu  Champ_Uniforme 1 0.282e-3
     rho Champ_Uniforme 1 100.
 \}
 # Definition of the two phase media #
 Fluide_Diphasique fluide
-Lire fluide
+Read fluide
 \{
     # Give a number for each phase #
     fluide0 liquide
@@ -89,10 +89,10 @@ Lire fluide
 \}
 # Add a constituent #
 Constituant constituant
-Lire constituant \{ coefficient_diffusion Champ_Uniforme 1 1e-6 \}
+Read constituant \{ coefficient_diffusion Champ_Uniforme 1 1e-6 \}
 # Gravity field #
 Champ_Uniforme gravite
-Lire gravite 3 0. 0. -9.81
+Read gravite 3 0. 0. -9.81
 Associate fluide gravite
 # Navier Stokes equation #
 Navier_Stokes_FT_Disc              hydraulique
@@ -112,7 +112,7 @@ Associate pb fluide
 Associate pb constituant
 Discretize pb dis
 # Define the front tracking problem #
-Lire pb
+Read pb
 \{
     hydraulique
     \{
@@ -305,5 +305,5 @@ Lire pb
     \}
 \}
 Solve pb
-Fin
+End
 \end{alltt}

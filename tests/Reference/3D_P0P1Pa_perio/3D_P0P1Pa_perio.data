@@ -33,10 +33,10 @@ Scatter DOM.Zones dom
 END SCATTER #
 
 VEFPreP1B dis
-Lire dis { P0 P1 Pa cl_pression_sommet_faible 1 }
+Read dis { P0 P1 Pa cl_pression_sommet_faible 1 }
 
-Schema_Euler_implicite sch
-Lire sch
+Scheme_euler_implicit sch
+Read sch
 {
 	nb_pas_dt_max 5
 	tinit 0
@@ -56,14 +56,14 @@ Lire sch
 }
 
 Fluide_Incompressible air
-Lire air
+Read air
 {
 	mu Champ_Fonc_xyz dom 1 8.e-4
 	rho Champ_Uniforme 1 2.
 }
 
 Champ_Uniforme gravite
-Lire gravite 3 0. 0. 0.
+Read gravite 3 0. 0. 0.
 Associate air gravite
 
 
@@ -73,7 +73,7 @@ Associate pb air
 
 Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard 
 	{ 	
@@ -113,5 +113,5 @@ Postraitement
 
 }
 Solve pb
-Fin
+End
 

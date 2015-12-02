@@ -64,7 +64,7 @@ VEFPreP1B dis
 Read dis { P0 }
 
 # Runge_Kutta_Rationnel_ordre_2 sch #
-Schema_Euler_explicite sch
+Scheme_euler_explicit sch
 Read sch
 {
         tinit 0

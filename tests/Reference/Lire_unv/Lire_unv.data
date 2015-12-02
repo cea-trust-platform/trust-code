@@ -12,8 +12,8 @@ Pb_thermohydraulique_turbulent pb_plenum
 VEFPreP1B dis
 
 # Runge_Kutta_Rationnel_ordre_2 sch # 
-Schema_Euler_explicite sch 
-Lire sch 
+Scheme_euler_explicit sch 
+Read sch 
 { 
         tinit 0.
         tmax 60.
@@ -29,14 +29,14 @@ Lire sch
 
 
 Champ_Uniforme gravite
-Lire gravite 3  0.  0. -9.81
+Read gravite 3  0.  0. -9.81
 
 
 
 Fluide_Incompressible helium_plenum
 # Proprietes a T=809K calculees avec Sutherland et Godmann #
 # beta=1/T #
-Lire helium_plenum
+Read helium_plenum
 { 
         rho    Champ_Uniforme 1  3.37
         mu     Champ_Uniforme 1  3.93e-5
@@ -55,7 +55,7 @@ Associate pb_plenum helium_plenum
 Discretize pb_plenum dis 
 
 # Attention les conditions limites ne sont pas realistes #
-Lire pb_plenum 
+Read pb_plenum 
 { 
  Navier_Stokes_turbulent
  { 
@@ -182,5 +182,5 @@ Lire pb_plenum
 }
 
 Solve pb_plenum
-Fin
+End
 

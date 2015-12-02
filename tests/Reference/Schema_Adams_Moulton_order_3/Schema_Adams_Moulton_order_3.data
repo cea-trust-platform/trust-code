@@ -5,7 +5,7 @@ Pb_hydraulique pb
 Domaine dom
 
 # Read the mesh #
-# DEBUT MAILLAGE #
+# BEGIN MESH #
 Mailler dom
 {
 	Pave Cavite 
@@ -23,25 +23,25 @@ Mailler dom
 }
 dilate dom 0.5
 Trianguler_H dom
-# FIN MAILLAGE #
+# END MESH #
 
-# DEBUT DECOUPAGE
+# BEGIN PARTITION
 Partition dom
 {
 	Partitionneur metis { Nb_parts 2 }
 	Larg_joint 2
 	Nom_Zones DOM
 }
-Fin
-FIN DECOUPAGE #
+End
+END PARTITION #
 
-# DEBUT LECTURE
+# BEGIN SCATTER
 Scatter DOM.Zones dom
-FIN LECTURE #
+END SCATTER #
 
 VEFPreP1B dis
 schema_Adams_Moulton_order_3 sch
-Lire sch
+Read sch
 {
 	tmax 0.15
 	seuil_statio -1
@@ -51,7 +51,7 @@ Lire sch
 }
 
 Fluide_Incompressible air
-Lire air
+Read air
 {
 	mu  Champ_Uniforme 1 0.01
 	rho Champ_Uniforme 1 1
@@ -62,7 +62,7 @@ Associate pb sch
 Associate pb air
 Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_Standard
 	{
@@ -91,4 +91,4 @@ Lire pb
 }
 
 Solve pb
-Fin
+End

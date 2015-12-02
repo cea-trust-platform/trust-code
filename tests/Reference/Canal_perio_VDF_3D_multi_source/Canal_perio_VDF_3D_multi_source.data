@@ -34,7 +34,7 @@ Partition dom
 	Nom_Zones DOM
 	periodique 2 periox perioz
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -43,8 +43,8 @@ END SCATTER #
 VDF dis
 
 
-Schema_Euler_explicite  sch
-Lire sch
+Scheme_euler_explicit  sch
+Read sch
 {
 	tinit 0.0
 	tmax 0.08
@@ -56,7 +56,7 @@ Lire sch
 }
 
 Fluide_Incompressible air
-Lire air
+Read air
 {
 	mu Champ_Uniforme 1 1.0
  	rho Champ_Uniforme 1 1.0
@@ -68,7 +68,7 @@ Associate pb air
 
 Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard
 	{
@@ -107,4 +107,4 @@ Lire pb
 }
 
 Solve pb
-Fin
+End

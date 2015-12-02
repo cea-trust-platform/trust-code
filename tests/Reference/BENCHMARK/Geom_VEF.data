@@ -1,5 +1,5 @@
 # Thermohydraulique 3D turbulent sous maille et Boussinesq #
-# fin  #
+# End  #
 dimension 3
 Pb_Thermohydraulique_Turbulent pb
 Domaine dom
@@ -24,4 +24,4 @@ Mailler dom
 Dilate dom 1.e-3
 Tetraedriser_homogene dom
 Ecrire_fichier_bin dom dom.geom
-Fin
+End

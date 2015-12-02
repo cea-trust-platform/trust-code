@@ -3,7 +3,7 @@
 dimension 2
 Pb_Thermohydraulique pb
 Domaine dom
-# DEBUT MAILLAGE #
+# BEGIN MESH #
 Mailler dom
 {
 	Pave Cavite 
@@ -20,24 +20,24 @@ Mailler dom
 		}
 }
 
-# FIN MAILLAGE #
-# DEBUT DECOUPAGE
-Decouper dom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
 {
 	Partitionneur tranche { tranches 2 1 }
 	Larg_joint 2
 	Nom_Zones DOM
 }
-Fin
-FIN DECOUPAGE #
+End
+END PARTITION #
 
-# DEBUT LECTURE
+# BEGIN SCATTER
 Scatter DOM.Zones dom
-FIN LECTURE #
+END SCATTER #
 
 VDF dis
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0.2
 	tmax 1.2
@@ -49,7 +49,7 @@ Lire sch
 }
 
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
 	mu Champ_Uniforme 1 1.85e-5
 	rho Champ_Uniforme 1 1.17
@@ -58,16 +58,16 @@ Lire fluide
 	beta_th Champ_Uniforme 1 3.41e-3
 }
 Champ_Uniforme gravite
-Lire gravite 2 0 -9.81
+Read gravite 2 0 -9.81
 
-Associer fluide gravite
-Associer pb dom
-Associer pb sch
-Associer pb fluide
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
 
-Discretiser pb dis
+Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard
 	{
@@ -82,7 +82,7 @@ Lire pb
 		conditions_initiales {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
-		conditions_limites {
+		boundary_conditions {
 			Haut paroi_fixe
 			Bas paroi_fixe
 			Gauche paroi_fixe
@@ -93,7 +93,7 @@ Lire pb
 	{
 		diffusion { }
 		convection { quick }
-		conditions_limites 
+		boundary_conditions 
 		{
 			Haut paroi_adiabatique
 			Bas paroi_adiabatique
@@ -142,6 +142,6 @@ Lire pb
 	resume_last_time xyz sauve.rep
 }
 
-Resoudre pb
-Fin
-Fin
+Solve pb
+End
+End

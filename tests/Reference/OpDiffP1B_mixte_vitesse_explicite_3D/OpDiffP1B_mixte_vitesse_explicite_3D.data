@@ -36,7 +36,7 @@ Partition dom_pbF1
         Nom_Zones DOM
 	periodique 1 perio
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -44,8 +44,8 @@ Scatter DOM.Zones dom_pbF1
 END SCATTER #
 
 
-schema_euler_explicite schG
-Lire schG
+Scheme_euler_explicit schG
+Read schG
 {
        tinit 0.
        tmax 1000.
@@ -61,7 +61,7 @@ Lire schG
 VEFPreP1b cubesregu
 
 Fluide_Incompressible eau
-Lire eau
+Read eau
 {
        rho Champ_Uniforme 1 1.
        mu Champ_Uniforme 1 1.
@@ -74,7 +74,7 @@ Associate pbF1 schG
 
 Discretize pbF1 cubesregu
 
-Lire pbF1
+Read pbF1
 {
 Navier_Stokes_standard
        {
@@ -118,6 +118,6 @@ Navier_Stokes_standard
 }
 
 Solve pbF1
-Fin
+End
 
 

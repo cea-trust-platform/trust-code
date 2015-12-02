@@ -18,4 +18,4 @@ sqrt(x*x+y*y)*COS(Atan(y/x)+PI/3.)
 sqrt(x*x+y*y)*SIN(Atan(y/x)+PI/3.)
 
 Postraiter_domaine { format lata fichier dom.lata domaine dom }
-Fin
+End

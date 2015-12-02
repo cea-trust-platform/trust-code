@@ -5,8 +5,8 @@ Scatter DOM.Zones dom
 VEFPreP1B dis 
 
  # Runge_Kutta_ordre_3 #
-schema_euler_explicite  sch 
-Lire sch 
+Scheme_euler_explicit  sch 
+Read sch 
 { 
         tinit 0.
         tmax 2. 
@@ -20,7 +20,7 @@ Lire sch
 } 
 
 Fluide_Incompressible air 
-Lire air 
+Read air 
 { 
         mu Champ_Uniforme       1 2.21799454e-04
         rho Champ_Uniforme      1 943.112976
@@ -34,7 +34,7 @@ Associate pb sch
 Associate pb air 
 
 Discretize pb dis 
-Lire pb 
+Read pb 
 { 
  Navier_Stokes_Turbulent 
  { 
@@ -57,4 +57,4 @@ Lire pb
 } 
 EcritureLectureSpecial 0
 Solve pb 
-Fin 
+End 

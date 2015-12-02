@@ -28,7 +28,7 @@ END SCATTER #
 # I select a discretization #
 VDF ma_discretisation
 
-Schema_Euler_explicite mon_schema
+Scheme_euler_explicit mon_schema
 Read mon_schema
 {
 	tinit 0

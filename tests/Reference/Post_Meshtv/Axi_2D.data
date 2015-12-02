@@ -5,10 +5,10 @@ Pb_Hydraulique pb
 Domaine dom
 Read_file Hyd_Axi.geo ;
 VDF dis
-Schema_Euler_explicite sch
+Scheme_euler_explicit sch
 Fluide_Incompressible eau
 
-Lire sch
+Read sch
 {
 	tinit 0
 	nb_pas_dt_max 10
@@ -21,7 +21,7 @@ Lire sch
 	facsec 1.
 }
 Ecrire sch
-Lire eau
+Read eau
 {
        mu Champ_Uniforme 1 1.85e-2
        rho Champ_Uniforme 1 1.
@@ -33,7 +33,7 @@ Associate pb eau
 
 Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard
 	{
@@ -69,4 +69,4 @@ Lire pb
 
 Ecrire pb
 Solve pb
-Fin
+End

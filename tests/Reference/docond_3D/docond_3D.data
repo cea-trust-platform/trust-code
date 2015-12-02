@@ -1,8 +1,8 @@
 # Thermohydraulique 3D couplage solide-fluide #
 # PARALLEL OK 3 #
 dimension 3
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0.
 	tmax 1000. 
@@ -27,15 +27,15 @@ Read_file dom_pb1 Pb1.geom
 Read_file dom_pb2 Pb2.geom
 Sous_Zone Suz1300
 Associate Suz1300 dom_pb1
-lire Suz1300 { Fichier Suz1300 }
+Read Suz1300 { Fichier Suz1300 }
 
 Sous_Zone Suz1600
 Associate Suz1600 dom_pb1
-lire Suz1600 { Fichier Suz1600 }
+Read Suz1600 { Fichier Suz1600 }
 
 Sous_Zone Suz1900
 Associate Suz1900 dom_pb1
-lire Suz1900 { Fichier Suz1900 }
+Read Suz1900 { Fichier Suz1900 }
 
 # END MESH #
 
@@ -52,7 +52,7 @@ Partition dom_pb2
 	Larg_joint 2
 	Nom_Zones DOM2
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -60,21 +60,21 @@ Scatter DOM1.Zones dom_pb1
 Scatter DOM2.Zones dom_pb2
 Sous_Zone Suz1300
 Associate Suz1300 dom_pb1
-lire Suz1300 { Fichier Suz1300.ssz }
+Read Suz1300 { Fichier Suz1300.ssz }
 
 Sous_Zone Suz1600
 Associate Suz1600 dom_pb1
-lire Suz1600 { Fichier Suz1600.ssz }
+Read Suz1600 { Fichier Suz1600.ssz }
 
 Sous_Zone Suz1900
 Associate Suz1900 dom_pb1
-lire Suz1900 { Fichier Suz1900.ssz }
+Read Suz1900 { Fichier Suz1900.ssz }
 END SCATTER #
 
 VDF cubesregu
 
 Fluide_Incompressible air
-Lire air
+Read air
 {
         mu Champ_Uniforme 1 2.3E-4  
 	rho Champ_Uniforme 1 .882
@@ -84,14 +84,14 @@ Lire air
 }
 
 Champ_Uniforme gravite
-Lire gravite 3 0. 0. -9.81
+Read gravite 3 0. 0. -9.81
 Associate air gravite
 Associate pb2 dom_pb2
 Associate pb2 air  
 
 
 Solide acier    
-Lire acier  
+Read acier  
 {
 	rho Champ_Uniforme 1 8000.
 	lambda Champ_Uniforme 1 20.     
@@ -110,7 +110,7 @@ Associate Conduccouplethermoh sch
 Discretize Conduccouplethermoh cubesregu
 
 
-Lire pb1
+Read pb1
 {
 	Conduction
 	{
@@ -151,7 +151,7 @@ Lire pb1
 
 }
 
-Lire pb2
+Read pb2
 {
 	Navier_Stokes_standard
 	{
@@ -220,4 +220,4 @@ Lire pb2
 Imprimer_flux dom_pb2 { bord1 bord2 bord4 }
 
 Solve Conduccouplethermoh
-Fin
+End

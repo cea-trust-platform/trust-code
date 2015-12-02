@@ -21,8 +21,8 @@ Mailler dom
 \}
 Trianguler_H dom
 VEFPreP1B dis
-schema_Euler_implicite sch
-Lire sch
+Scheme_euler_implicit sch
+Read sch
 \{
     tinit 3.991476
     dt_min 1.e-7
@@ -39,7 +39,7 @@ Lire sch
     {\bf{\} }}
 \}
 fluide_quasi_compressible helium
-Lire helium
+Read helium
 \{
     mu      Champ_Fonc_fonction     1 temperature   3.95e-7*val^0.687
     lambda  Champ_Fonc_fonction     1 temperature   2.774e-3*val^0.701
@@ -57,7 +57,7 @@ Associate pb dom
 Associate pb sch
 Associate pb helium
 Discretize pb dis
-Lire pb
+Read pb
 \{
     Navier_Stokes_qc
     \{
@@ -108,5 +108,5 @@ Lire pb
     {\bf{reprise binaire TP_Temp_QC_VEF_pb.sauv }}
 \}
 Solve pb
-Fin
+End
 \end{alltt}

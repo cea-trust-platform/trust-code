@@ -20,7 +20,7 @@ Partition domain
    Larg_joint 1
    Nom_Zones DOM 
 } 
-Fin 
+End 
 END PARTITION #
 
 # BEGIN SCATTER 
@@ -29,8 +29,8 @@ Read_file domain_ssz_par.geo ;
 END SCATTER #
 
 Champ_Fonc_MED field
-Lire field last_time data.med COUPLEX1 HEAD elem 0.0
+Read field last_time data.med COUPLEX1 HEAD elem 0.0
 
 discretiser_domaine domain
 postraiter_domaine { domaine domain format lml ecrire_frontiere 0 }
-FIN
+End

@@ -32,7 +32,7 @@ Partition dom
 	Larg_joint 1
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -41,4 +41,4 @@ END SCATTER #
 
 Discretiser_domaine dom
 Postraiter_domaine { domaine dom fichier Kernel_Remove_elem format lml }
-Fin
+End

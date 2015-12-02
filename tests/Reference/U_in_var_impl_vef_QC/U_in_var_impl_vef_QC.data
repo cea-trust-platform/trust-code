@@ -30,7 +30,7 @@ Partition dom
 	Larg_joint 2
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -38,8 +38,8 @@ Scatter DOM.Zones dom
 END SCATTER #
 VEFPrep1b dis
 
-Schema_Euler_implicite sch
-Lire sch
+Scheme_euler_implicit sch
+Read sch
 {
    nb_pas_dt_max 200
    tinit 0
@@ -66,7 +66,7 @@ Lire sch
 
 
 Fluide_Quasi_compressible eau
-Lire eau
+Read eau
 {
 	mu Champ_Uniforme 1 1.
   	pression 325542.1336
@@ -79,13 +79,13 @@ Lire eau
 }
 
 Champ_Uniforme gravite
-Lire gravite 2 0 0
+Read gravite 2 0 0
 Associate pb dom
 Associate pb sch
 Associate pb eau
 Discretize pb dis
 # Debog pb seq faces 1.e-6 0 #
-Lire pb
+Read pb
 {
 	Navier_Stokes_QC
 	{

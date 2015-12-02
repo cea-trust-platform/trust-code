@@ -4,10 +4,10 @@ dimension 2
 
 # lecture du champ par le temps #
 champ_Fonc_med ch
-lire ch cInit_tDiffu.med Face concentrationInitialeC1 elem  0.
+Read ch cInit_tDiffu.med Face concentrationInitialeC1 elem  0.
 # lecture du champ par numero de pas de temps (ici 1 ) #
 champ_Fonc_med ch2
-lire ch2 cInit_tDiffu.med Face concentrationInitialeC1 elem  -1
+Read ch2 cInit_tDiffu.med Face concentrationInitialeC1 elem  -1
 
 domaine dom
 domaine dom2
@@ -25,7 +25,7 @@ Partition dom
 	Larg_joint 1
 	Nom_Zones DOM
 }
-Fin 
+End 
 END PARTITION #
 
 # BEGIN SCATTER  
@@ -38,8 +38,8 @@ Pb_conduction pb_champ_med_interpole
 Probleme_couple pbc
 VDF dis
 
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
         tinit 0
 	dt_min 0.1
@@ -47,14 +47,14 @@ Lire sch
 	nb_pas_dt_max 1
 }
 Solide sol_test_sous_zone
-Lire sol_test_sous_zone
+Read sol_test_sous_zone
 {
         rho Champ_Uniforme 1 2
         lambda Champ_Uniforme 1 0.01
         Cp Champ_Uniforme 1 0.5
 }
 Solide sol_champ_med_interpole
-Lire sol_champ_med_interpole
+Read sol_champ_med_interpole
 {
         rho Champ_Uniforme 1 2
         lambda Champ_Uniforme 1 0.01
@@ -75,7 +75,7 @@ Associate pbc sch
 
 Discretize pbc dis
 
-Lire pb_test_sous_zone
+Read pb_test_sous_zone
 {
     Conduction
         {
@@ -102,7 +102,7 @@ Lire pb_test_sous_zone
                  }
         }
 }
-Lire pb_champ_med_interpole
+Read pb_champ_med_interpole
 {
     Conduction
         {
@@ -133,5 +133,5 @@ Lire pb_champ_med_interpole
 
 Solve pbc
 
-Fin
+End
 

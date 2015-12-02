@@ -1,7 +1,7 @@
 # Thermohydraulique 3D couplage solide-fluide #
 dimension 3
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0.
 	tmax 1000. 
@@ -30,7 +30,7 @@ VDF cubesregu
 
 Sous_Zone Suz1300
 Associate Suz1300 dom_pb1
-Lire Suz1300
+Read Suz1300
 { liste      466
       75
       76
@@ -501,7 +501,7 @@ Lire Suz1300
 }
 Sous_Zone Suz1600
 Associate Suz1600 dom_pb1
-Lire Suz1600
+Read Suz1600
 { liste      500
      635
      636
@@ -1006,7 +1006,7 @@ Lire Suz1600
 }
 Sous_Zone Suz1900
 Associate Suz1900 dom_pb1
-Lire Suz1900
+Read Suz1900
 { liste       12
      625
      626
@@ -1023,7 +1023,7 @@ Lire Suz1900
 }
 
 Fluide_Incompressible air
-Lire air
+Read air
 {
         mu Champ_Uniforme 1 2.3E-4  
 	rho Champ_Uniforme 1 .882
@@ -1033,14 +1033,14 @@ Lire air
 }
 
 Champ_Uniforme gravite
-Lire gravite 3 0. 0. -9.81
+Read gravite 3 0. 0. -9.81
 Associate air gravite
 Associate pb2 dom_pb2
 Associate pb2 air  
 
 
 Solide acier    
-Lire acier  
+Read acier  
 {
 	rho Champ_Uniforme 1 8000.
 	lambda Champ_Uniforme 1 20.     
@@ -1059,7 +1059,7 @@ Associate Conduccouplethermoh sch
 Discretize Conduccouplethermoh cubesregu
 
 
-Lire pb1
+Read pb1
 {
 	Conduction
 	{
@@ -1101,7 +1101,7 @@ Lire pb1
 
 }
 
-Lire pb2
+Read pb2
 {
 	Navier_Stokes_standard
 	{

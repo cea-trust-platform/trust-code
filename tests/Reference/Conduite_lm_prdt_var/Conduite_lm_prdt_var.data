@@ -18,7 +18,7 @@ Partition dom
         Nom_Zones DOM
 	Periodique 1 perioz
 }
-Fin
+End
 
 END PARTITION #
 # BEGIN MESH #
@@ -33,8 +33,8 @@ END SCATTER #
 
 VEFPreP1B dis
 
-Schema_Euler_implicite sch
-Lire sch
+Scheme_euler_implicit sch
+Read sch
 {
 	tinit 0.
 	tmax 3500.e3
@@ -52,7 +52,7 @@ Lire sch
 }
 
 Fluide_Incompressible sodium
-Lire sodium
+Read sodium
 {
 	mu Champ_Uniforme       1 2.484e-4
  	rho Champ_Uniforme      1 900.
@@ -62,7 +62,7 @@ Lire sodium
 }
 
 Champ_Uniforme gravite
-Lire gravite 3 0 0 0
+Read gravite 3 0 0 0
  
 Associate sodium gravite
 Associate pb dom
@@ -71,7 +71,7 @@ Associate pb sodium
 
 Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_Turbulent	
 	{
@@ -142,5 +142,5 @@ Lire pb
 }
 EcritureLectureSpecial 0
 Solve pb
-Fin
+End
 

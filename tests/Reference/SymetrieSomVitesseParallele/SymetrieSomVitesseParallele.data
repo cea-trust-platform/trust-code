@@ -33,7 +33,7 @@ Partition dom
 	Larg_joint 2
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -41,8 +41,8 @@ Scatter DOM.Zones dom
 END SCATTER #
 
 VEFprep1b dis
-Schema_Euler_implicite sch2
-Lire sch2
+Scheme_euler_implicit sch2
+Read sch2
 {
 	tinit 0
 	nb_pas_dt_max 3
@@ -65,8 +65,8 @@ dt_max 2.439e-1
 	facsec 5000
 
 }
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
         tinit 0
 	nb_pas_dt_max 3
@@ -79,7 +79,7 @@ dt_max 1.e-1
 
 Fluide_incompressible freon
 
-Lire freon
+Read freon
 {
 rho champ_uniforme 1 1 
 mu champ_uniforme 1 1e-3
@@ -92,7 +92,7 @@ Discretize pb dis
 
 postraiter_domaine { domaine dom format lml fichier geom }
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard
 	{
@@ -128,4 +128,4 @@ frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 9.e5
 	}
 }
 Solve pb
-fin
+End

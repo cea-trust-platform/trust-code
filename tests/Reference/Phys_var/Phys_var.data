@@ -30,7 +30,7 @@ Partition dom
 	Larg_joint 1
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -39,8 +39,8 @@ END SCATTER #
 
 VDF dis
 
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0
 	tmax 1.
@@ -52,7 +52,7 @@ Lire sch
 }
 
 Solide sol
-Lire sol
+Read sol
 {
 	rho Champ_Uniforme 1 2
 	lambda Champ_Fonc_Tabule 1 temperature { 3 0. 0.5 1.
@@ -65,7 +65,7 @@ Associate pb sol
 
 Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Conduction
 	{
@@ -101,4 +101,4 @@ Lire pb
 
 Solve pb
 
-Fin
+End

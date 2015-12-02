@@ -27,7 +27,7 @@ Pave Cavite
 
 Sous_zone interface
 Associate interface dom
-Lire interface {
+Read interface {
           Rectangle
           Origine 0.8  0
           Cotes   0.4  1
@@ -42,7 +42,7 @@ Partition dom
         Larg_joint 1
         Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 
@@ -50,14 +50,14 @@ END PARTITION #
 Scatter DOM.Zones dom
 Sous_Zone  interface
 Associate interface dom
-Lire interface { Fichier interface.ssz }
+Read interface { Fichier interface.ssz }
 END SCATTER #
 
 
 VDF dis
 
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0
 	tmax 2000.
@@ -72,7 +72,7 @@ Lire sch
 }
 
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
        mu Champ_Uniforme 1 1.
        rho Champ_Uniforme 1 4
@@ -88,7 +88,7 @@ Associate pb sch
 Discretize pb dis
 
 porosites_champ pb champ_fonc_xyz dom 1 1.-0.5*(x<1.)
-Lire pb
+Read pb
 {
         Navier_Stokes_standard
         {
@@ -132,5 +132,5 @@ Lire pb
 
 
 Solve pb
-Fin
+End
 

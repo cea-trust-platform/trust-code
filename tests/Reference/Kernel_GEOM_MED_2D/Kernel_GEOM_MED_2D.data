@@ -62,7 +62,7 @@ postraiter_domaine {
      domaines { rectangle triangle quadrangle }
      fichier Kernel_GEOM_MED_2D.lata
      format lata }
-fin
+End
 
 
 

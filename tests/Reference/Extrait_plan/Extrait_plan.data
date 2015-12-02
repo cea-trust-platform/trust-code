@@ -16,14 +16,14 @@ Partition dom
     Larg_joint 2
     Nom_Zones DOM 
   } 
-Fin 
+End 
 END PARTITION #
 # BEGIN SCATTER 
 Scatter DOM.Zones dom 
 END SCATTER #
 vefprep1b dis 
-schema_euler_explicite sch 
-Lire sch
+Scheme_euler_explicit sch 
+Read sch
   { 
     tinit 0.0
     dt_min 1e-06
@@ -33,7 +33,7 @@ Lire sch
     seuil_statio 0.001
   }
 fluide_incompressible fluide 
-Lire fluide
+Read fluide
   { 
     mu champ_uniforme  1 0.00054613
     rho champ_uniforme  1 987.888
@@ -120,7 +120,7 @@ extraire_surface
   }	
 
 Postraiter_domaine { domaine in format lata fichier in }
-Lire pb
+Read pb
   { 
     navier_stokes_standard 
       { 
@@ -252,24 +252,24 @@ Solve pb
 # BEGIN MESH #
 lata_to_med plan.lata plan.med
 champ_fonc_med champ_plan 
-Lire champ_plan last_time plan.med plan vitesse elem 0.0
+Read champ_plan last_time plan.med plan vitesse elem 0.0
 lata_to_med plan_in.lata plan_in.med
 champ_fonc_med champ_plan_in 
-Lire champ_plan_in last_time plan_in.med plan_in vitesse elem 0.0
+Read champ_plan_in last_time plan_in.med plan_in vitesse elem 0.0
 lata_to_med plan_qcq.lata plan_qcq.med
 champ_fonc_med champ_plan_qcq 
-Lire champ_plan_qcq last_time plan_qcq.med plan_qcq vitesse elem 0.0
+Read champ_plan_qcq last_time plan_qcq.med plan_qcq vitesse elem 0.0
 
 
 lata_to_med surface.lata surface.med
 champ_fonc_med champ_surface 
-Lire champ_surface last_time surface.med surface vitesse elem 0.0
+Read champ_surface last_time surface.med surface vitesse elem 0.0
 lata_to_med surface_out.lata surface_out.med
 champ_fonc_med champ_surface_out 
-Lire champ_surface_out last_time surface_out.med surface_out vitesse elem 0.0
+Read champ_surface_out last_time surface_out.med surface_out vitesse elem 0.0
 lata_to_med surface_qcq.lata surface_qcq.med
 champ_fonc_med champ_surface_qcq 
-Lire champ_surface_qcq last_time surface_qcq.med surface_qcq vitesse elem 0.0
+Read champ_surface_qcq last_time surface_qcq.med surface_qcq vitesse elem 0.0
 
 integrer_champ_med 
   { 
@@ -328,4 +328,4 @@ integrer_champ_med
 
 
 # END MESH #
-fin 
+End 

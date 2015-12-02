@@ -16,7 +16,7 @@ dilate DOM 0.001
 
 Sous_zone Z1
 Associate Z1 DOM
-Lire Z1 { Boite Origine -10. -10. -10. Cotes 100. 100. 100. }
+Read Z1 { Boite Origine -10. -10. -10. Cotes 100. 100. 100. }
 # END MESH #
 
 # BEGIN PARTITION
@@ -26,7 +26,7 @@ Partition DOM
 	Larg_joint 2
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -34,8 +34,8 @@ Scatter DOM.Zones DOM
 END SCATTER #
 
 VEFPreP1B dis
-Schema_Euler_implicite sch
-Lire sch {
+Scheme_euler_implicit sch
+Read sch {
 	nb_pas_dt_max 10
 	tinit   0
 	tmax    2.
@@ -51,7 +51,7 @@ Lire sch {
 
 
 Fluide_Incompressible liquide
-Lire liquide
+Read liquide
 {
 	mu  Champ_Uniforme 1 0.001
  	rho Champ_Uniforme 1 1000.
@@ -66,7 +66,7 @@ Associate pb sch
 Discretize pb dis
 
 
-Lire pb
+Read pb
 { 
  Navier_Stokes_standard 
  { 
@@ -125,4 +125,4 @@ sauvegarde binaire couronne.sauv
 }
 
 Solve pb
-Fin
+End

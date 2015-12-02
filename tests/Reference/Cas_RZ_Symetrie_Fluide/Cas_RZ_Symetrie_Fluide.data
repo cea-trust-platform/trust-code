@@ -2,8 +2,8 @@
 # PARALLEL OK 8 #
 dimension 2
 bidim_axi
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0.           
 	tmax 1000.
@@ -28,7 +28,7 @@ Partition dom_pb
 	Larg_joint 2
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -38,7 +38,7 @@ END SCATTER #
 VDF cubesregu
 
 Fluide_Incompressible eau
-Lire eau
+Read eau
 {
 	mu Champ_Uniforme 1 0.02
 	rho Champ_Uniforme 1 2
@@ -49,14 +49,14 @@ Lire eau
 }
 
 Champ_Uniforme gravite
-Lire gravite 2 0.  -9.81
+Read gravite 2 0.  -9.81
 Associate eau  gravite
 Associate pb dom_pb
 Associate pb  eau
 Associate pb sch
 Discretize pb cubesregu
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard
 	{
@@ -87,4 +87,4 @@ Lire pb
 }
 
 Solve pb
-fin
+End
