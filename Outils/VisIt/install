@@ -111,7 +111,21 @@ then
       echo "# Trying to build a $parallel version for VisIt..."
       echo "#################################################"
       cd src
-      ./build.sh $package $parallel || ./build.sh $package #  La construction a echoue on compile une version sequentielle
+      ./build.sh $package $parallel 
+      status=$?
+      if [ $status -ne 0 ]
+       then
+         echo  patch Mesa for clang
+  	 sed -i "s/float 0f+1.0/float 1.0/" Mesa-7.10.2/src/mesa/x86-64/xform4.S  
+         ./build.sh $package $parallel
+          status=$?
+      if [ $status -ne 0 ] && [ "$parallel" != "" ]
+        then
+          echo "Try sequentiel compilation"
+	 ./build.sh clean
+         ./build.sh $package
+        fi
+       fi 
       cd - 1>/dev/null 2>&1	
    fi
    # Telechargement demande ou suite echec de construction (sauf si une configuration parallele existe

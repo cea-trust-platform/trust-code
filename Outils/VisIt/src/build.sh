@@ -177,6 +177,9 @@ then
          fi
       fi
    fi
+else
+  # si pas parallele on ne prend pas le compilo para de TRUST
+ [ "$compilateurs" != "" ]  && compilateurs="--cc $TRUST_cc_BASE --cxx $TRUST_CC_BASE"
 fi
 
 #############

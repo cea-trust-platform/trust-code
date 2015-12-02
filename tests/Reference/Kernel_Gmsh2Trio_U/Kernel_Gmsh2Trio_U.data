@@ -6,7 +6,7 @@
 # Option -format med is to write a MED mesh file #
 # Autres options, voir gmsh -help #
 # lance_test crash possible si Gmsh pas installe #
-system "gmsh -2 -order 1 -clscale 1. -format med forme.geo"
+system "gmsh -2 -order 1 -clscale 1. -format med forme.geo||echo .gmshrc old ?"
 
 # Read the MED mesh by TRUST #
 dimension 2

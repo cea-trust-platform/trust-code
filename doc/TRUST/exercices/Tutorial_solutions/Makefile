@@ -3,10 +3,10 @@ FILE=Tutorial_solutions
 all: ../$(FILE).pdf
 ../$(FILE).pdf: $(FILE).tex Makefile
 	$(MAKE) clean
-	pdflatex $(FILE).tex > LOG
+	pdflatex -interaction=nonstopmode $(FILE).tex > LOG
 #	 makeindex $(FILE).idx >> LOG
-	pdflatex $(FILE).tex >> LOG
-	pdflatex $(FILE).tex >> LOG
+	pdflatex -interaction=nonstopmode  $(FILE).tex >> LOG
+	pdflatex -interaction=nonstopmode  $(FILE).tex >> LOG
 	mv $(FILE).pdf ..
 	$(MAKE) clean_build
 

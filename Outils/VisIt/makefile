@@ -18,8 +18,8 @@ all: $(cible)
 
 $(cible): ./makefile ./install ./src/build.sh $(MPI_INCLUDE)/mpi.h
 	make clean
-	# gf on essaye 2 fois a cause de mesa 
-	./install $(version) visit || ./install $(version) visit
+	# 
+	./install $(version) visit 
 
 $(check): *.xml install customlauncher $(TRUST_ROOT)/RELEASE_NOTES
 	# On ajoute la mise a jour des host profiles et on test
