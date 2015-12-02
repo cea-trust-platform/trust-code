@@ -29,13 +29,13 @@ Mailler hexaedre
 }
 Sous_zone milieu 
 Associate milieu hexaedre
-Lire milieu
+Read milieu
 {
 fonction_sous_zone ((z>0.25)_and_(z<0.75))
 }
 Sous_zone sous_zone_milieu
 Associate sous_zone_milieu hexaedre
-Lire sous_zone_milieu
+Read sous_zone_milieu
 {
 restriction milieu
 fonction_sous_zone (((x-0.3)^2+(y-0.5)^2)<(0.25*0.25))
@@ -43,7 +43,7 @@ fonction_sous_zone (((x-0.3)^2+(y-0.5)^2)<(0.25*0.25))
 
 Sous_zone union 
 Associate union hexaedre
-Lire union
+Read union
 {
 fonction_sous_zone (z>0.5)
 union sous_zone_milieu
@@ -60,7 +60,7 @@ postraiter_domaine {
 		domaine  hexaedre 
 		fichier Kernel_Sous_Zone_Fonction.lml
 		format lml }
-fin
+End
 
 
 

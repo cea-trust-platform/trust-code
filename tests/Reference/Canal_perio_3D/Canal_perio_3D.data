@@ -24,7 +24,7 @@ Partition DOM_DOM {
         Nom_Zones DOM                      
         periodique 3 PERX PERY PERZ
 }
-fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -33,11 +33,11 @@ END SCATTER #
 
 VEFPreP1B dis
 
-lire dis { P0 P1 changement_de_base_P1bulle 1 CL_pression_sommet_faible 0 modif_div_face_dirichlet 1 }
+Read dis { P0 P1 changement_de_base_P1bulle 1 CL_pression_sommet_faible 0 modif_div_face_dirichlet 1 }
 
 # implicit scheme #
-Schema_Euler_implicite sch
-Lire sch
+Scheme_euler_implicit sch
+Read sch
 {
 	nb_pas_dt_max 5
 	tinit 0
@@ -54,7 +54,7 @@ Lire sch
 
 # So here, change water to sodium caracteristics #
 Fluide_Incompressible Na
-Lire Na
+Read Na
 {
         mu  Champ_Uniforme 1 2.7e-4 	# Uniform dynamic viscosity #
         rho Champ_Uniforme 1 838.	# Uniform density #
@@ -63,7 +63,7 @@ Lire Na
 	beta_th champ_uniforme 1 0.0002
 }
 Champ_Uniforme gravite
-Lire gravite 3 0 0 -9.81
+Read gravite 3 0 0 -9.81
 Associate Na gravite
  
 # Association between TRUST objects #
@@ -72,7 +72,7 @@ Associate pbF Na
 Associate pbF sch
 Discretize pbF dis
 
-Lire pbF
+Read pbF
 {
    Navier_Stokes_turbulent
         {
@@ -134,4 +134,4 @@ Lire pbF
 }
 
 Solve pbF
-Fin
+End

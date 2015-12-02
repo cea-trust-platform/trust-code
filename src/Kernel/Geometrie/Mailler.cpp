@@ -27,7 +27,7 @@
 #include <NettoieNoeuds.h>
 #include <Scatter.h>
 
-Implemente_instanciable(Mailler,"Mailler|Mesh",Interprete_geometrique_base);
+Implemente_instanciable(Mailler,"Mailler",Interprete_geometrique_base);
 
 // Description:
 //    Simple appel a: Interprete::printOn(Sortie&)

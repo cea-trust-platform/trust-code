@@ -24,7 +24,7 @@ Partition dom
         Nom_Zones DOM
         Periodique 2 Periox Perioz
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -33,8 +33,8 @@ END SCATTER #
 
 VEFPreP1B dis
 
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	nb_pas_dt_max 20
 	tinit	0.
@@ -47,7 +47,7 @@ Lire sch
 }
 
 Fluide_Quasi_Compressible fluide
-Lire fluide
+Read fluide
 {
 	mu	Champ_Fonc_fonction	1 temperature	3.95e-7*val^0.687
 	lambda	Champ_Fonc_fonction	1 temperature	2.774e-3*val^0.701
@@ -67,7 +67,7 @@ Associate pb fluide
 
 Discretize pb dis
 # Debog pb seq faces 1.e-4 0 #
-Lire pb
+Read pb
 {
 	Navier_Stokes_turbulent_QC
 	{
@@ -145,6 +145,6 @@ Lire pb
 }
 
 Solve pb 
-Fin
+End
 
 

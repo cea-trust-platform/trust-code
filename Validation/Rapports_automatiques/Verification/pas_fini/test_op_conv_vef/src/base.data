@@ -44,7 +44,7 @@ Pb_Thermohydraulique pb_canal
 
 VEFpreP1b dis
 
-Schema_euler_explicite sch_qc   
+Scheme_euler_explicit sch_qc   
 Read sch_qc
 
 {

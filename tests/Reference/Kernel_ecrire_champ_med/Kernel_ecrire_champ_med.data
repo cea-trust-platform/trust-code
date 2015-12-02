@@ -9,10 +9,10 @@ lire_med short_family_names dom essai ess.med
 ecrire_fichier dom ess.geom
 discretiser_domaine dom
 champ_fonc_xyz fct 
-Lire fct dom 1 2-(x*x+y*y)
+Read fct dom 1 2-(x*x+y*y)
 ecrire_champ_med dom fct crit.med
 pbc_med pbmed2
-Lire pbmed2
+Read pbmed2
   {
     crit.med dom 
       { 
@@ -24,7 +24,7 @@ Lire pbmed2
       }
   }
 pbc_med pbmed 
-Lire pbmed 
+Read pbmed 
   {
     crit.med dom 
       { 
@@ -35,4 +35,4 @@ Lire pbmed
       }
   }
 # END MESH #
-fin 
+End 

@@ -77,7 +77,7 @@ END SCATTER #
 
 VEFPREP1B dis
 
-Schema_Euler_Implicite sch
+Scheme_euler_implicit sch
 Read sch 
 {
 	tinit   0.
@@ -94,7 +94,7 @@ Read sch
 	max_iter_implicite 10000
 }
 #
-Schema_Euler_Explicite sch
+Scheme_euler_explicit sch
 Read sch 
 {
 	tinit   0.

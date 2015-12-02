@@ -27,7 +27,7 @@ Trianguler_H dom
 
 Sous_zone z_interface
 Associate z_interface dom
-Lire z_interface {
+Read z_interface {
           Rectangle
           Origine 0.9  0
           Cotes   0.2  1
@@ -42,7 +42,7 @@ Partition dom
         Larg_joint 2
         Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 
@@ -50,14 +50,14 @@ END PARTITION #
 Scatter DOM.Zones dom
 Sous_Zone  z_interface
 Associate z_interface dom
-Lire z_interface { Fichier z_interface.ssz }
+Read z_interface { Fichier z_interface.ssz }
 END SCATTER #
 
 
 VeFprep1b dis
 
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0
 	tmax 100000.
@@ -71,7 +71,7 @@ Lire sch
 }
 
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
        mu Champ_Uniforme 1 1.
        rho Champ_Uniforme 1 40
@@ -85,7 +85,7 @@ Associate pb sch
 Discretize pb dis
 
 porosites_champ pb champ_fonc_xyz dom 1 0.2
-Lire pb
+Read pb
 {
         Navier_Stokes_standard
         {
@@ -131,5 +131,5 @@ Lire pb
 }
 
 Solve pb
-Fin
+End
 

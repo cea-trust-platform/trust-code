@@ -9,7 +9,7 @@ Read_file dom dom.geom
 
 VEFPreP1b dis
 
-Schema_Euler_explicite sch
+Scheme_euler_explicit sch
 Read sch 
 {
         tinit 0.
@@ -50,7 +50,7 @@ Read pb
                 convection { EF_stab {  } }
                 diffusion  {  }
                 Sources  { Canal_perio { bord periox } }
-		conditions_initiales
+		initial_conditions
 			{
                         vitesse Champ_fonc_xyz dom 2  1. 0. 
 			}
@@ -65,7 +65,7 @@ Read pb
 		dt_impr_moy_spat 5.e-1 } }
 	}
 
-	Postraitement
+	Post_processing
         	{
 		format lml
 		Definition_champs {
@@ -77,7 +77,7 @@ Read pb
 				}
 			}
 		} 	       
-		Champs dt_post 100.
+		fields dt_post 100.
 			{
 			vitesse elem
 			pression elem

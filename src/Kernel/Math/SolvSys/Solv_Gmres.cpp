@@ -71,7 +71,7 @@ Entree& Solv_Gmres::readOn(Entree& is )
     les_parametres[3] = "sans_precond";
     les_parametres[4] = "nb_it_max";
     les_parametres[5] = "controle_residu";
-    les_parametres[6] = "save_matrice";
+    les_parametres[6] = "save_matrice|save_matrix";
     les_parametres[7] = "dim_espace_krilov";
     les_parametres[8] = "quiet";
   }

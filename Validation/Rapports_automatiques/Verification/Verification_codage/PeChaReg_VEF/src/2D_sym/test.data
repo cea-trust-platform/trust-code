@@ -33,7 +33,7 @@ Read zone_tout {
 
 VEFPreP1b dis
 
-Schema_Euler_explicite sch
+Scheme_euler_explicit sch
 
 Read sch 
 {

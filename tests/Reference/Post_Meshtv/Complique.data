@@ -87,7 +87,7 @@ Partition canal2
 	Nom_Zones DOM2
         PERIODIQUE_1PROC 2 periox2 perioz2 0 2
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -100,7 +100,7 @@ VDF dis
 
 
 Runge_Kutta_ordre_3 sch
-Lire sch
+Read sch
 	{
 	tinit 0.
         tmax 50.
@@ -113,19 +113,19 @@ Lire sch
 	}
 
 Fluide_Incompressible fluide1
-Lire fluide1
+Read fluide1
 {
 	mu Champ_Uniforme	1 1.e-5
 	rho Champ_Uniforme	1 1.
 }
 Fluide_Incompressible fluide2
-Lire fluide2
+Read fluide2
 {
 	mu Champ_Uniforme	1 1.e-5
 	rho Champ_Uniforme	1 1.
 }
 Fluide_Incompressible fluide3
-Lire fluide3
+Read fluide3
 {
 	mu Champ_Uniforme	1 1.e-5
 	rho Champ_Uniforme	1 1.
@@ -155,7 +155,7 @@ Associate pb sch
 
 Discretize pb dis
 
-Lire pb1
+Read pb1
 	{
 	Navier_Stokes_Turbulent
 		{
@@ -247,7 +247,7 @@ Sauvegarde formatte pb1.sauv
 }
 
 
-Lire pb2
+Read pb2
 	{
 	Navier_Stokes_Turbulent
 		{
@@ -341,7 +341,7 @@ Sauvegarde formatte pb2.sauv
 
 
 
-Lire pb3
+Read pb3
 	{
 	Navier_Stokes_Turbulent
 		{
@@ -431,4 +431,4 @@ Sauvegarde formatte pb3.sauv
 }
 
 Solve pb
-Fin
+End

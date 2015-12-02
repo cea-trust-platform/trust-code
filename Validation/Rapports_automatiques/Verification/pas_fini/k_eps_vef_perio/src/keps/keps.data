@@ -26,7 +26,7 @@ Tetraedriser_homogene_compact dom0
 
 Reordonner_faces_periodiques dom0 perio
 Reordonner_faces_periodiques dom0 perioz
-Schema_euler_explicite sch
+Scheme_euler_explicit sch
 Read sch 
 { 
         tinit 0.

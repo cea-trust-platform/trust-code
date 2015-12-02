@@ -28,9 +28,9 @@ Trianguler_h dom_canal
 # BEGIN PARTITION
 Partition dom_canal
 {
-        Partitionneur metis { nb_parts 2 }
+        Partition_tool metis { nb_parts 2 }
         Larg_joint 2
-        Nom_Zones DOM
+        zones_name DOM
 	Periodique 2 perioy periox
 }
 End
@@ -44,7 +44,7 @@ Pb_Thermohydraulique pb_canal
 
 VEFpreP1b dis
 
-Schema_euler_explicite sch_qc   
+Scheme_euler_explicit sch_qc   
 Read sch_qc
 
 {
@@ -86,7 +86,7 @@ Read pb_canal
 
 		#  #
 
-		conditions_initiales 
+		initial_conditions 
 		{   
 			vitesse champ_fonc_xyz dom_canal 2 0.1*sin(x-y)+1 0.1*sin(x-y)
 		}
@@ -106,7 +106,7 @@ Read pb_canal
 		diffusion { negligeable }
 		convection { amont_old }
 
-		conditions_initiales {
+		initial_conditions {
 			Temperature Champ_Fonc_xyz dom_canal 1 (1+0.1*sin(x-y))
 	 	} 
 
@@ -117,7 +117,7 @@ Read pb_canal
 		}
         }
 
-	Postraitement
+	Post_processing
         {
 		Definition_champs 
 		{
@@ -160,7 +160,7 @@ Read pb_canal
 			}
 		}
       	 	format lml
-                Champs dt_post 1
+                fields dt_post 1
                 {
                 	temperature elem
 			vitesse
@@ -172,7 +172,7 @@ Read pb_canal
 			erreur_conv_qdm  
 			*/	
  		}  	
-		Sondes 
+		Probes 
 		{ 
 			max_erreur_conv_qdm 	max_erreur_conv_qdm 	periode 1e-7 numero_elem_sur_maitre 0	
 			max_erreur_conv_T 	max_erreur_conv_T 	periode 1e-7 numero_elem_sur_maitre 0	

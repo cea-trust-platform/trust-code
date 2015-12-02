@@ -23,7 +23,7 @@ Mailler dom
 }
 Sous_Zone SSZ
 Associate SSZ dom
-Lire SSZ
+Read SSZ
 {
 	Tube
 	Origine 0.5 0.5 0.4
@@ -41,20 +41,20 @@ Partition dom
 	Larg_joint 2
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
 Scatter DOM.Zones dom
 Sous_Zone SSZ
 Associate SSZ dom
-Lire SSZ { Fichier SSZ.ssz }
+Read SSZ { Fichier SSZ.ssz }
 END SCATTER #
 
 VDF dis
 
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit	0.
 	tmax	5.
@@ -66,7 +66,7 @@ Lire sch
 }
 
 Solide sol
-Lire sol
+Read sol
 {
 	rho	Champ_Uniforme 1 1000.
 	lambda	Champ_Uniforme 1 250.    
@@ -79,7 +79,7 @@ Associate pb sol
 
 Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Conduction
 	{
@@ -106,4 +106,4 @@ Lire pb
 	}
 }
 Solve pb
-Fin
+End

@@ -10,7 +10,7 @@ Pb_thermohydraulique_turbulent pb2
 
 
 Sch_CN_EX_iteratif sch
-Lire sch 
+Read sch 
 {
 	nb_pas_dt_max 5
         tinit 0.
@@ -57,7 +57,7 @@ Partition dom_pb2
 	Nom_Zones DOM2
 	Periodique 2 periox perioz
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -67,7 +67,7 @@ END SCATTER #
 VEFPreP1b cubesregu
 # Proprietes He vers 700°C #
 Fluide_Incompressible He
-Lire He
+Read He
 {
         mu Champ_Uniforme 1 4.46437e-05 
         rho Champ_Uniforme 1 4.40684
@@ -76,7 +76,7 @@ Lire He
         beta_th Champ_Uniforme 1 0.0014285714
 }
 Champ_Uniforme gravite
-Lire gravite 3 -9 0. 0
+Read gravite 3 -9 0. 0
 Associate He gravite
 
 Associate pb2 dom_pb2
@@ -87,7 +87,7 @@ Associate pb2 He
 Associate pb2 sch
 Discretize pb2 cubesregu
 
-Lire pb2
+Read pb2
 {
         Navier_Stokes_turbulent
         {
@@ -153,4 +153,4 @@ Lire pb2
 }
 
 Solve pb2
-Fin
+End

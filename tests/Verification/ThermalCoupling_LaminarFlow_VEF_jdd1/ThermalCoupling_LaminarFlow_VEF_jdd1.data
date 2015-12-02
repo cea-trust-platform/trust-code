@@ -60,7 +60,7 @@ Corriger_frontiere_periodique
  direction 3 0.5 0. 0.
  }
 
-Schema_Euler_implicite sch
+Scheme_euler_implicit sch
 Read sch {
 	tinit   0.
 	nb_pas_dt_max 3
@@ -126,7 +126,7 @@ Read pb1
        convection { ef_stab { alpha 1. } }
        diffusion  { }
        
-       conditions_initiales { 
+       initial_conditions { 
 				Vitesse champ_fonc_xyz dom_fluide 3 30.*(1-4*(z-1.)*(z-1.)) 0. 0.
        			    }
        
@@ -150,7 +150,7 @@ Convection_Diffusion_Temperature
 		diffusion { }
 		convection { EF_STAB { alpha 1. } }
 
-		conditions_initiales { Temperature Champ_uniforme 1 0. }
+		initial_conditions { Temperature Champ_uniforme 1 0. }
 		boundary_conditions 
 		{
 			PerioX periodique
@@ -162,10 +162,10 @@ Convection_Diffusion_Temperature
 }
         
 	 
-	Postraitement 
+	Post_processing 
 	{
 		format lml
-		champs binaire dt_post 5.
+		fields binaire dt_post 5.
 		{
 			vitesse elem
 			pression_pa elem	
@@ -175,9 +175,9 @@ Convection_Diffusion_Temperature
 	
 liste_de_postraitements 
 {
-	Sonde Postraitement 
+	Sonde Post_processing 
 	{
-		Sondes
+		Probes
 		{
 			Temp_contact_fluide nodes temperature periode 0.2 points 1 0.25 0. 0.5
 			
@@ -198,7 +198,7 @@ Read pb2
 	Conduction
 	{
 		diffusion { }
-                conditions_initiales 
+                initial_conditions 
                         {
 			temperature Champ_Uniforme  1 0.
 			}
@@ -214,9 +214,9 @@ Read pb2
 				Gauche2 symetrie
 		        }
 	}
-	Postraitement 
+	Post_processing 
         {
-		Sondes
+		Probes
 		{
 			Temp_max nodes temperature periode 0.2 points 1 0.25 0. 0.  
 			Temp_contact_solide nodes temperature periode 0.2 points 1 0.25 0. 0.5
@@ -224,7 +224,7 @@ Read pb2
 			seg_temp_solide nodes temperature periode 0.2 segment 11 0.25 0. 0. 0.25 0. 0.5
 		}
 		format lml
-		Champs binaire dt_post 5.
+		fields binaire dt_post 5.
 		{
 			temperature elem
 		}

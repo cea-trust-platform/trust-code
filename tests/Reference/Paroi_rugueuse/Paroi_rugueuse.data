@@ -36,7 +36,7 @@ Partition dom
 	periodique 2 periox perioz
         Nom_Zones dom
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -47,7 +47,7 @@ Pb_Hydraulique_Turbulent pb
 VEFPreP1b dis
 
 Sch_CN_EX_iteratif sch
-Lire sch 
+Read sch 
 {
         tinit 0.
 	nb_pas_dt_max 3
@@ -63,7 +63,7 @@ Lire sch
 }
 
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
 	mu Champ_Uniforme	1 2.84e-5
 	rho Champ_Uniforme	1 0.0976
@@ -75,7 +75,7 @@ Associate pb fluide
 
 Discretize pb dis
 
-Lire pb
+Read pb
 	{
 	Navier_Stokes_Turbulent
 		{
@@ -119,4 +119,4 @@ Lire pb
 	}
 EcritureLectureSpecial 0
 Solve pb
-Fin
+End

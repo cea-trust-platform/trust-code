@@ -33,14 +33,14 @@ Partition assemblage
 	Larg_joint 1
 	Nom_Zones Assemblage
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
 Scatter Assemblage.Zones assemblage
 Sous_Zone dom1
 Associate dom1 assemblage
-Lire dom1 { Fichier dom1.ssz }
+Read dom1 { Fichier dom1.ssz }
 END SCATTER #
 
 
@@ -50,11 +50,11 @@ Pb_conduction pb_conduction
 
 # --------- DISCRETISATION --------- #
 VEFPreP1B dis
-Lire dis { P0 }
+Read dis { P0 }
 
 # --------- DEFINITION DU SOLIDE --------- #
 Solide verre
-Lire verre
+Read verre
 {
         rho Champ_Uniforme 1 2500.
         lambda Champ_Uniforme 1 1.35
@@ -62,8 +62,8 @@ Lire verre
 }
 
 # --------- SCHEMA EN TEMPS --------- #
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0 
         tmax 10000.	
@@ -83,7 +83,7 @@ Associate pb_conduction sch
 Discretize pb_conduction dis
 
 # --------- LECTURE DES CONDITIONS DE CALCUL CONDUCTION --------- #
-Lire pb_conduction
+Read pb_conduction
 {
 	Conduction
 	{
@@ -140,4 +140,4 @@ Lire pb_conduction
 # --------- LANCEMENT DU CALCUL --------- #
 Solve pb_conduction
 
-Fin
+End

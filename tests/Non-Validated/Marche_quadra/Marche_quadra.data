@@ -75,7 +75,7 @@ END SCATTER #
 
 VEFPreP1B dis
 Read dis { P0 }
-schema_Euler_explicite sch
+Scheme_euler_explicit sch
 Read sch
 {
         tinit 0

@@ -4,13 +4,13 @@ Domaine dom_combustible
 Domaine dom_revetement
 Domaine dom_lame
 
-Lire_Fichier_Bin dom_combustible plaque_Pb1.geom
-Lire_Fichier_Bin dom_revetement plaque_Pb2.geom
-Lire_Fichier_Bin dom_lame plaque_Pb3.geom
+Read_file_binary dom_combustible plaque_Pb1.geom
+Read_file_binary dom_revetement plaque_Pb2.geom
+Read_file_binary dom_lame plaque_Pb3.geom
 
 
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	nb_pas_dt_max 3
 	tinit 0.
@@ -40,7 +40,7 @@ VDF cubesregu
 
 # Fluide_Incompressible helium #
 Fluide_Quasi_Compressible helium
-Lire helium
+Read helium
 {
         mu Champ_Uniforme 1 4.e-5 
 	pression 70.e5	
@@ -54,7 +54,7 @@ Lire helium
 }
 
 Solide combustible    
-Lire combustible
+Read combustible
 {
 	rho Champ_Uniforme 1 8000.
 	lambda Champ_Fonc_fonction 1 temperature 12.76+0.00871*(val-273)-0.00000188*(val-273)*(val-273)
@@ -62,7 +62,7 @@ Lire combustible
 }
 
 Solide revetement
-Lire revetement
+Read revetement
 {
 	rho Champ_Uniforme 1 8000.
 	lambda Champ_Uniforme 1 20.     
@@ -70,7 +70,7 @@ Lire revetement
 }
 
 Champ_Uniforme gravite
-Lire gravite 3 0. 0. -9.81
+Read gravite 3 0. 0. -9.81
 
 Associate helium gravite
 
@@ -93,7 +93,7 @@ Associate Conduccouplethermoh sch
 
 Discretize Conduccouplethermoh cubesregu
 
-Lire pb_lame
+Read pb_lame
 {
 	Navier_Stokes_Turbulent_QC
 	{
@@ -171,7 +171,7 @@ Lire pb_lame
 }
 
 
-Lire pb_combustible
+Read pb_combustible
 {
 	Conduction
 	{
@@ -200,7 +200,7 @@ Lire pb_combustible
 	}
 }
 
-Lire pb_revetement
+Read pb_revetement
 {
 	Conduction
 	{
@@ -230,4 +230,4 @@ Lire pb_revetement
 }
 
 Solve Conduccouplethermoh
-Fin
+End

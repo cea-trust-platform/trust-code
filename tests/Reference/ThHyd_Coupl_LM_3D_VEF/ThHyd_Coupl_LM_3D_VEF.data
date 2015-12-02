@@ -69,7 +69,7 @@ Corriger_frontiere_periodique { Domaine parois Bord perioz }
 Sous_Zone sous_zone1
 Associate sous_zone1 dom
 
-Lire sous_zone1
+Read sous_zone1
 {
       Boite
       Origine 2. -1. 1.
@@ -83,7 +83,7 @@ Lire sous_zone1
 Sous_Zone sous_zone2
 Associate sous_zone2 parois
 
-Lire sous_zone2
+Read sous_zone2
 {
       Boite     
       Origine 2. -1. 1. 
@@ -104,7 +104,7 @@ Partition parois
 	Nom_Zones PAROIS
 	Periodique 2 perioz periox
 }
-Fin
+End
  END PARTITION #
 
 # BEGIN SCATTER
@@ -112,7 +112,7 @@ Scatter DOM.Zones dom
 Scatter PAROIS.Zones parois
 Sous_Zone sous_zone1
 Associate sous_zone1 dom
-Lire sous_zone1 { Fichier sous_zone1.ssz }
+Read sous_zone1 { Fichier sous_zone1.ssz }
 
 END SCATTER #
 
@@ -121,7 +121,7 @@ VEFPreP1B dis
 
 Sch_CN_EX_iteratif sch
 
-Lire sch
+Read sch
 {
 	tinit  0
         nb_pas_dt_max 2 
@@ -137,7 +137,7 @@ Lire sch
 
 
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
 	mu Champ_Uniforme	1 2.84e-5
 	rho Champ_Uniforme	1 0.0976
@@ -147,7 +147,7 @@ Lire fluide
 }
 
 Solide cuivre
-Lire cuivre
+Read cuivre
 {
         rho     Champ_Uniforme 1 1000.
         Cp      Champ_Uniforme 1 0.507
@@ -155,7 +155,7 @@ Lire cuivre
 }
 
 Champ_Uniforme gravite
-Lire gravite 3 0 0 0
+Read gravite 3 0 0 0
 
 Associate fluide gravite
 
@@ -175,7 +175,7 @@ Associate pb_couplage sch
 
 Discretize pb_couplage dis
 
-Lire pb2
+Read pb2
 	{
 	Navier_Stokes_Turbulent
 		{
@@ -275,7 +275,7 @@ Lire pb2
 }
 
 
-Lire pb1
+Read pb1
         {
         Conduction
                 {
@@ -311,4 +311,4 @@ Lire pb1
         }
 
 Solve pb_couplage
-Fin
+End

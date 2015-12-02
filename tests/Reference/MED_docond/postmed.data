@@ -1,7 +1,7 @@
 { 
 Dimension 2 
 Pbc_MED pbmed 
-Lire pbmed 
+Read pbmed 
 { 
 MED_Docond.med dom_solide 
 { 

@@ -57,8 +57,8 @@ Mailler dom
 }
 
 VDF dis
-schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0
 	nb_pas_dt_max 10
@@ -70,7 +70,7 @@ Lire sch
 	seuil_statio 1.e-8
 }
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
 	mu Champ_Uniforme 1 1.85e-5
 	rho Champ_Uniforme 1 1.
@@ -79,7 +79,7 @@ Associate pb dom
 Associate pb sch
 Associate pb fluide
 Discretize pb dis
-Lire pb
+Read pb
 {
 	Navier_Stokes_turbulent
 	{
@@ -152,5 +152,5 @@ Postraitement
 }
 }
 Solve pb
-Fin
-Fin
+End
+End

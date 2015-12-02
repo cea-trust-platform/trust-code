@@ -35,7 +35,7 @@ Partition dom
 	Nom_Zones DOM
 	Periodique 1 periox
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -45,9 +45,9 @@ END SCATTER #
 Pb_Thermohydraulique_Turbulent pb
 VEFPreP1b dis
 
-# Schema_Euler_explicite sch #
+# Scheme_euler_explicit sch #
 Runge_Kutta_ordre_3 sch
-Lire sch
+Read sch
 	{
 	nb_pas_dt_max 1
 	tinit 0.
@@ -60,7 +60,7 @@ Lire sch
 	}
 
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
 	mu Champ_Uniforme	1 2.e-5
 	rho Champ_Uniforme	1 0.1
@@ -70,7 +70,7 @@ Lire fluide
 }
 
 Champ_Uniforme gravite
-Lire gravite 3 0 0 0
+Read gravite 3 0 0 0
 
 Associate fluide gravite
 Associate pb dom
@@ -79,7 +79,7 @@ Associate pb fluide
 
 Discretize pb dis
 
-Lire pb
+Read pb
 	{
 	Navier_Stokes_Turbulent
 		{
@@ -135,5 +135,5 @@ Lire pb
 		}
 	}
 Solve pb
-Fin
+End
 

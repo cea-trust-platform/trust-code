@@ -21,7 +21,7 @@ Partition dom
 	Larg_joint 2
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -31,8 +31,8 @@ END SCATTER #
 # Je choisis une discretisation #
 VEFPreP1B ma_discretisation
 
-Schema_Euler_implicite mon_schema
-Lire mon_schema
+Scheme_euler_implicit mon_schema
+Read mon_schema
 {
 	tinit 442.766972
 	nb_pas_dt_max 1
@@ -50,7 +50,7 @@ Lire mon_schema
 
 # Je definis un milieu #
 Fluide_Incompressible milieu
-Lire milieu
+Read milieu
 {
 	mu  Champ_Uniforme 1 1.e-5
 	rho Champ_Uniforme 1 2.	
@@ -61,7 +61,7 @@ Associate pb mon_schema
 Associate pb milieu
 Discretize pb ma_discretisation
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_turbulent
 	{
@@ -141,5 +141,5 @@ Imprimer_flux dom { Cylindre }
 Solve pb
 # Affichage du Cx #
 System "./verifie -v"
-Fin
+End
 tinit 442.766972

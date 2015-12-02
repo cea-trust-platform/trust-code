@@ -6,31 +6,31 @@ dimension 3
 Pb_hydraulique pb
 Domaine dom
 
-# DEBUT MAILLAGE #
-Lire_fichier dom cylindre.geom
+# BEGIN MESH #
+Read_file dom cylindre.geom
 VerifierCoin dom { }
 Dilate dom 1000
-# FIN MAILLAGE #
+# END MESH #
 
-# DEBUT DECOUPAGE
-Decouper dom
+# BEGIN PARTITION
+Partition dom
 {
 	Partitionneur metis { Nb_parts 2 }
 	Larg_joint 2
 	Nom_Zones DOM
 }
-Fin
-FIN DECOUPAGE #
+End
+END PARTITION #
 
-# DEBUT LECTURE
+# BEGIN SCATTER
 Scatter DOM.Zones dom
-FIN LECTURE #
+END SCATTER #
 
 # Je choisis une discretisation #
 VEFPreP1B ma_discretisation
 
-Schema_Euler_explicite mon_schema
-Lire mon_schema
+Scheme_euler_explicit mon_schema
+Read mon_schema
 {
 	nb_pas_dt_max 3
 	tinit 0
@@ -45,18 +45,18 @@ Lire mon_schema
 
 # Je definis un milieu #
 Fluide_Incompressible milieu
-Lire milieu
+Read milieu
 {
 	mu  Champ_Uniforme 1 0.01
 	rho Champ_Uniforme 1 2.
 }
 
-Associer pb dom
-Associer pb mon_schema
-Associer pb milieu
-Discretiser pb ma_discretisation
+Associate pb dom
+Associate pb mon_schema
+Associate pb milieu
+Discretize pb ma_discretisation
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard
 	{
@@ -66,7 +66,7 @@ Lire pb
 		conditions_initiales {
 			vitesse Champ_Uniforme 3 1. 0. 0.
 			}
-		conditions_limites {
+		boundary_conditions {
 			Cylindre paroi_fixe
 			Surfanz symetrie
 			Surfa  symetrie
@@ -85,4 +85,4 @@ Lire pb
 	 }
 	}
 }
-Resoudre pb
+Solve pb

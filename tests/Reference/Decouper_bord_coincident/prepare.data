@@ -41,8 +41,8 @@ Trianguler_H dom_fluide
 Ecrire_fichier dom_fluide dom_fluide.geom
 # END MESH #
 
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0.
 	tmax 30.
@@ -57,7 +57,7 @@ Lire sch
 VEFPreP1B dis
 
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
 	mu Champ_Uniforme 1 0.002
 	rho Champ_Uniforme 1 2.
@@ -67,7 +67,7 @@ Lire fluide
 }
 
 Solide sol
-Lire sol
+Read sol
 {
 	rho Champ_Uniforme 1 1000.
 	lambda Champ_Uniforme 1 250.    
@@ -75,7 +75,7 @@ Lire sol
 }
 
 Champ_Uniforme gravite
-Lire gravite 2 0 -9.81
+Read gravite 2 0 -9.81
 Associate sol gravite
 Associate fluide gravite
 
@@ -91,7 +91,7 @@ Associate pbc pb_fluide
 Associate pbc sch
 Discretize pbc dis
 
-Lire pb_solide
+Read pb_solide
 {
 	Conduction
 	{
@@ -111,7 +111,7 @@ Lire pb_solide
 	}
 }
 
-Lire pb_fluide
+Read pb_fluide
 {
 	Navier_Stokes_standard
 	{
@@ -151,4 +151,4 @@ Lire pb_fluide
 	}
 }
 Solve pbc
-Fin
+End

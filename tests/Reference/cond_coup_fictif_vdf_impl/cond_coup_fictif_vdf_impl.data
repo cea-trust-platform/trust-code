@@ -2,8 +2,8 @@
 # PARALLEL OK 4 #
 dimension 2    
 
-Schema_euler_implicite sch 
-Lire sch
+Scheme_euler_implicit sch 
+Read sch
 {
         tinit 0.
         tmax 30
@@ -81,7 +81,7 @@ Partition dom_fluide
 	Larg_joint 1
 	Nom_Zones DOM2
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -92,7 +92,7 @@ END SCATTER #
 VDF dis
 
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
         mu Champ_Uniforme 1 0.001
         rho Champ_Uniforme 1 1.
@@ -102,7 +102,7 @@ Lire fluide
 }
 
 Solide sol
-Lire sol
+Read sol
 {
  rho Champ_Uniforme 1 1.
         lambda Champ_Uniforme 1 10.
@@ -122,7 +122,7 @@ Associate pbc sch
 Discretize pbc dis
 
 
-Lire pb2
+Read pb2
 {
         Navier_Stokes_standard
         {
@@ -185,7 +185,7 @@ Lire pb2
                 }
         }
 }
-Lire pb1
+Read pb1
 {
         Conduction
         {
@@ -228,4 +228,4 @@ Lire pb1
 }
 
 Solve pbc
-Fin
+End

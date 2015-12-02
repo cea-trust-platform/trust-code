@@ -24,7 +24,7 @@ Mailler dom
 
 Sous_zone interface
 Associate interface dom
-Lire interface {
+Read interface {
           Rectangle
           Origine 0.46  0.08
           Cotes   0.08  0.06
@@ -34,24 +34,24 @@ Lire interface {
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
 Scatter DOM.Zones dom
 Sous_Zone interface
 Associate interface dom
-Lire interface { Fichier interface.ssz }
+Read interface { Fichier interface.ssz }
 END SCATTER #
 
 VDF dis
 
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0
 	nb_pas_dt_max 3
@@ -65,7 +65,7 @@ Lire sch
 }
 
 Fluide_Incompressible eau
-Lire eau
+Read eau
 {
 	mu Champ_Uniforme 1 0.02
 	rho Champ_Uniforme 1 2
@@ -77,7 +77,7 @@ Associate pb eau
 
 Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard
 	{
@@ -92,7 +92,7 @@ Lire pb
 		Perte_Charge_Singuliere KX 5e4 { X = 0.5 interface }
 		}
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -103,15 +103,15 @@ Lire pb
 		}
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_pression pression periode 0.001 points 2 0.01 0.105 0.91 0.105
 			sonde_vitesse vitesse periode 0.001 points 2 0.12 0.105 0.12 0.115
 		}
 		format lml
-		Champs dt_post 0.1
+		fields dt_post 0.1
 		{
 			pression elem
 			vitesse elem
@@ -120,4 +120,4 @@ Lire pb
 }
 
 Solve pb
-Fin
+End

@@ -9,8 +9,8 @@ Pb_conduction pb1
 Pb_thermohydraulique_turbulent  pb2
 
 
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0.
 	tmax 2.
@@ -84,7 +84,7 @@ Partition dom_pb2
 	Larg_joint 1
 	Nom_Zones DOM2
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -96,7 +96,7 @@ VDF cubesregu
 
 # Proprietes He vers 700°C #
 Fluide_Incompressible He
-Lire He
+Read He
 {
         mu Champ_Uniforme 1 4.46437e-05 
         rho Champ_Uniforme 1 4.40684
@@ -106,14 +106,14 @@ Lire He
 }
 
 Champ_Uniforme gravite
-Lire gravite 2 0. -9.81
+Read gravite 2 0. -9.81
 Associate He gravite
 Associate pb2 dom_pb2
 Associate pb2 He  
 
 
 Solide ceramique    
-Lire ceramique  
+Read ceramique  
 {
         rho Champ_Uniforme 1 7009.
         lambda Champ_Uniforme 1 15.8     
@@ -132,7 +132,7 @@ Associate Conduccouplethermoh pb1
 Associate Conduccouplethermoh sch
 Discretize Conduccouplethermoh cubesregu
 
-Lire pb2
+Read pb2
 {
         Navier_Stokes_turbulent
         {
@@ -217,7 +217,7 @@ Lire pb2
 }
 
 
-Lire pb1
+Read pb1
 {
         Conduction
         {
@@ -253,4 +253,4 @@ Lire pb1
 }
 
 Solve Conduccouplethermoh
-Fin
+End

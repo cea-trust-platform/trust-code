@@ -505,7 +505,7 @@ XXX|longueur_maille
 XXXmixing_length|longueur_melange
 XXXlengths|longueurs
 XXXmesh|maillage
-mesh|mailler
+XXXmesh|mailler
 XXXparallel_meshXXX|maillerparallel
 XXX|maintien_temperature
 XXX|masse_ajoutee
@@ -822,8 +822,8 @@ XXXscatter_med|scattermed
 XXX|sch_cn_ex_iteratif
 XXX|sch_cn_iteratif
 XXXscheme_ch|schema_ch
-XXXscheme_euler_explicit|schema_euler_explicite
-XXXscheme_euler_implicit|schema_euler_implicite
+scheme_euler_explicit|schema_euler_explicite
+scheme_euler_implicit|schema_euler_implicite
 XXXscheme_ns|schema_ns
 XXXscheme_phase_field|schema_phase_field
 XXXscheme_predictor_corrector|schema_predictor_corrector

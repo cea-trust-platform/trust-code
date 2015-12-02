@@ -76,7 +76,7 @@ VDF dis
 
 
 Pb_conduction pb_1
-schema_euler_explicite sch_1
+Scheme_euler_explicit sch_1
 Read sch_1
 {
 	tinit	0.

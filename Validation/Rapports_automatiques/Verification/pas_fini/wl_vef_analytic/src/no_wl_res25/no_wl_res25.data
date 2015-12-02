@@ -44,7 +44,7 @@ END SCATTER #
 
 VEFPreP1B dis
 
-Schema_Euler_explicite sch
+Scheme_euler_explicit sch
 Read sch
 {
 	nb_pas_dt_max 200000

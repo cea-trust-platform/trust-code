@@ -58,7 +58,7 @@ postraiter_domaine {
      format lata }
 
 lata_to_other lml NOM_DU_CAS NOM_DU_CAS
-fin
+End
 
 
 

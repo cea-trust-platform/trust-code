@@ -1,11 +1,11 @@
 dimension 3
 
-Nom ICoCoProblemName Lire ICoCoProblemName pb_ch 
+Nom ICoCoProblemName Read ICoCoProblemName pb_ch 
 
 Domaine canal
 
-Schema_Euler_Explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
         tinit 0.
         dt_start dt_fixe 7.e-06
@@ -23,7 +23,7 @@ Scatter canal.Zones canal
 VEFpreP1B dis
 
 Fluide_Incompressible Eau
-Lire Eau
+Read Eau
 {
         mu Champ_Uniforme 1 1e-04
         lambda  Champ_Uniforme 1 1.e-9
@@ -34,12 +34,12 @@ Lire Eau
 
 
 Pb_Hydraulique_Turbulent pb_ch
-Associer pb_ch canal
-Associer pb_ch Eau
-Associer pb_ch sch
-Discretiser pb_ch dis
+Associate pb_ch canal
+Associate pb_ch Eau
+Associate pb_ch sch
+Discretize pb_ch dis
 
-Lire pb_ch
+Read pb_ch
 {
  Navier_Stokes_Turbulent
  {
@@ -53,8 +53,8 @@ Lire pb_ch
                             }
        convection { EF_Stab { } }
        diffusion  {  }
-       conditions_initiales {  vitesse champ_Uniforme 3 10. 0. 0. }
-       conditions_limites {
+       initial_conditions {  vitesse champ_Uniforme 3 10. 0. 0. }
+       boundary_conditions {
          entree frontiere_ouverte_vitesse_imposee Ch_front_input { nb_comp 3 nom vitesse_entree probleme pb_ch }
          sortie frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
          paroi  paroi_fixe
@@ -66,13 +66,13 @@ Lire pb_ch
                         dt_impr_ustar 0.5
                         } 
 }
-Postraitements
+Post_processings
 {
          pb_ch_post
         {
             fichier Post1
             format lml
-            Champs dt_post 0.01
+            fields dt_post 0.01
             {
              vitesse
             }
@@ -80,7 +80,7 @@ Postraitements
 		in { 
 	  domaine canal_boundaries_entree 
 	format lata
-	champs dt_post 1e-7
+	fields dt_post 1e-7
 		{
 		vitesse elem
 	}

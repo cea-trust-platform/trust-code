@@ -23,13 +23,13 @@ Mailler dom
 }
 # END MESH #
 # BEGIN PARTITION
-Decouper dom
+Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN READ
@@ -37,8 +37,8 @@ Scatter DOM.Zones dom
 END READ #
 VDF dis
 
-Schema_Euler_implicite sch
-Lire sch
+Scheme_euler_implicit sch
+Read sch
 {
    nb_pas_dt_max 200
    tinit 0
@@ -60,21 +60,21 @@ Lire sch
 
 
 Fluide_Incompressible eau
-Lire eau
+Read eau
 {
 	mu Champ_Uniforme 1 1.
 	rho Champ_Uniforme 1 4.
 }
 
 Champ_Uniforme gravite
-Lire gravite 2 0 0
-Associer pb dom
-Associer pb sch
-Associer pb eau
-Discretiser pb dis
+Read gravite 2 0 0
+Associate pb dom
+Associate pb sch
+Associate pb eau
+Discretize pb dis
 # Debog pb seq faces 1.e-6 0 #
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard
 	{
@@ -82,20 +82,20 @@ Lire pb
 
 		convection { negligeable }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
-		conditions_limites {
+		boundary_conditions {
 			Haut symetrie
 			Entree frontiere_ouverte_vitesse_imposee ch_front_input_uniforme { nb_comp 2 nom vitesse_entree probleme pb }
 			Sortie frontiere_ouverte_pression_imposee ch_front_input { nb_comp 1 nom pression_sortie probleme pb }
 		}
 	}
-	Postraitement
+	Post_processing
 	{
 	
 		
-		Sondes
+		Probes
 		{
 		 seg_P pression periode 0.1 segment 20 0.025 0.5 0.975 0.5
 		 seg_U1 vitesse periode 0.1 segment 11 0. 0.5 1.0 0.5
@@ -105,14 +105,14 @@ Lire pb
 		}
 format lml
 fichier post
-		Champs dt_post 50.
+		fields dt_post 50.
 		{
 			pression elem
 			pression som
 			vitesse elem
 		}
 	}
-	Postraitements 	{
+	Post_processings 	{
 		sortie {
 		Definition_champs
 		{
@@ -131,9 +131,9 @@ fichier post
 
 	toto { 	domaine dom_boundaries_Sortie
 		format lata
-		champs dt_post 1e6 { vitesse  elem  
+		fields dt_post 1e6 { vitesse  elem  
 					viscosite_dynamique elem }		
 		}
 }	
 }
-Fin
+End

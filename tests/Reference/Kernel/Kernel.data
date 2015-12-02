@@ -8,10 +8,10 @@ dimension 3
 
 /* commentaire au milieu de la lecture */
 nom toto
-lire toto  # pourquoi pas # mais_si 
+Read toto  # pourquoi pas # mais_si 
 ecrire toto
 Nom toto2
-lire toto2 /* mais si */ mais_non 
+Read toto2 /* mais si */ mais_non 
 ecrire toto2
 
 Domaine dom
@@ -35,7 +35,7 @@ Mailler dom {
 }
 Sous_Zone zone1
 Associate zone1 dom
-Lire zone1
+Read zone1
 {
   Boite
     Origine -1. -0.1 -0.1
@@ -52,15 +52,15 @@ Partition dom
   Larg_joint 1
     Nom_Zones DOM
     }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
 Scatter DOM.Zones dom
 Sous_Zone zone1
 Associate zone1 dom
-Lire zone1 { Fichier zone1.ssz }
+Read zone1 { Fichier zone1.ssz }
 Postraiter_domaine { fichier PAR_Kernel.lata format lata domaine dom } 
 END SCATTER #
 
-fin
+End

@@ -1,6 +1,6 @@
 Nom ok
 
-Lire_fichier ok is_ok
+Read_file ok is_ok
 ecrire ok
 system "mv post.lml dlopen_jdd1.lml"
 system "ln -sf dlopen_jdd1.lml dlopen_jdd2.lml"

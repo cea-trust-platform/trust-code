@@ -74,7 +74,7 @@ Scatter DOM.Zones dom
 END SCATTER #
 
 VEFPreP1B dis
-schema_Euler_explicite sch
+Scheme_euler_explicit sch
 Read sch
 {
 	nb_pas_dt_max 20

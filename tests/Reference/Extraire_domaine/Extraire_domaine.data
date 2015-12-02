@@ -15,14 +15,14 @@ Partition dom
     Larg_joint 2
     Nom_Zones DOM 
   } 
-Fin 
+End 
 END PARTITION #
 # BEGIN SCATTER 
 Scatter DOM.Zones dom 
 END SCATTER #
 vefprep1b dis 
-schema_euler_explicite sch 
-Lire sch
+Scheme_euler_explicit sch 
+Read sch
   { 
     tinit 0.0
     dt_min 1e-06
@@ -32,7 +32,7 @@ Lire sch
     seuil_statio 0.001
   }
 fluide_incompressible fluide 
-Lire fluide
+Read fluide
   { 
     mu champ_uniforme  1 0.00054613
     rho champ_uniforme  1 987.888
@@ -65,7 +65,7 @@ extraire_surface
    avec_certains_bords 1 IN
   }
 
-Lire pb
+Read pb
   { 
     navier_stokes_standard 
       { 
@@ -186,4 +186,4 @@ Solve pb
 # afin de ne faire cela qu en sequentiel , le // est teste dans verifie #
 # BEGIN MESH #
 # END MESH #
-fin 
+End 

@@ -32,13 +32,13 @@ Tetraedriser_homogene_fin DOM_DOM
 
 Sous_Zone SS1
 Associate SS1 DOM_DOM
-Lire SS1 {  
+Read SS1 {  
    Boite
       Origine 1 1 1
       Cotes 0.3 0.3 0.3 }
 Sous_Zone SS2
 Associate SS2 DOM_DOM
-Lire SS2 {
+Read SS2 {
    Boite
       Origine 2 0.5 0.5
       Cotes 0.5 0.5 0.5 }
@@ -50,7 +50,7 @@ Partition DOM_DOM
 	Larg_joint 2
 	Nom_Zones DOM
 }
-Fin 
+End 
 END PARTITION #
 
 # BEGIN SCATTER 
@@ -58,17 +58,17 @@ Scatter DOM.Zones DOM_DOM
 
 Sous_Zone SS1
 Associate SS1 DOM_DOM
-Lire SS1 { Fichier SS1.ssz }
+Read SS1 { Fichier SS1.ssz }
 
 Sous_Zone SS2
 Associate SS2 DOM_DOM
-Lire SS2 { Fichier SS2.ssz }
+Read SS2 { Fichier SS2.ssz }
 END SCATTER #
 
 VEFPreP1b dis
 
-Schema_Euler_explicite sch
-Lire sch 
+Scheme_euler_explicit sch
+Read sch 
 {
 	nb_pas_dt_max 10
         tinit 0.
@@ -85,7 +85,7 @@ Lire sch
 
 
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
 	mu Champ_Uniforme	1 0.54613e-3
 	rho Champ_Uniforme	1 987.888
@@ -97,7 +97,7 @@ Associate pb fluide
 
 Discretize pb dis
 # Debog pb seq faces 1.e-6 0 #
-Lire pb
+Read pb
 {
      Navier_Stokes_Turbulent
      {
@@ -190,4 +190,4 @@ sauvegarde formatte hybou3.sauv
 EcritureLectureSpecial 0
 
 Solve pb
-Fin
+End

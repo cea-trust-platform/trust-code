@@ -25,7 +25,7 @@ Trianguler_H dom
 # BEGIN PARTITION
 Sous_Zone processeur_0
 Associate processeur_0 dom
-Lire processeur_0
+Read processeur_0
 {
       Rectangle
       Origine -0.25 -0.5
@@ -39,7 +39,7 @@ Partition dom
 	Nom_Zones nom_zone
 	Periodique 2 periox perioy
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -47,8 +47,8 @@ Scatter nom_zone.Zones dom
 END SCATTER #
 
 VEFPreP1B dis
-schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0.
 	tmax 0.01
@@ -60,7 +60,7 @@ Lire sch
 }
 
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
 	mu Champ_Uniforme 1 1.
 	rho Champ_Uniforme 1 1000.
@@ -76,7 +76,7 @@ Associate pb fluide
 
 Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_Standard
 	{
@@ -115,4 +115,4 @@ Lire pb
 }
 
 Solve pb
-Fin
+End

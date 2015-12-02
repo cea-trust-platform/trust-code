@@ -3,7 +3,7 @@
 # PARALLEL OK 8 #
 dimension 2
 {\bf{Schema_Euler_implicite sch}}
-Lire sch
+Read sch
 \{
     tinit 0.
     tmax 300.
@@ -87,7 +87,7 @@ Partition dom_fluide
     Larg_joint 1
     Nom_Zones DOM2
 \}
-Fin
+End
 END PARTITION #
 # BEGIN SCATTER
 Scatter DOM1.Zones dom_solide
@@ -95,7 +95,7 @@ Scatter DOM2.Zones dom_fluide
 END SCATTER #
 {\bf{VEFPreP1B dis}}
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 \{
     mu Champ_Uniforme 1 0.002
     rho Champ_Uniforme 1 2
@@ -104,14 +104,14 @@ Lire fluide
     beta_th Champ_Uniforme 1 0.0001
 \}
 Solide sol
-Lire sol
+Read sol
 \{
     rho Uniform_Field 1 1000.
     lambda Champ_Uniforme 1 250.
     Cp Champ_Uniforme 1 100
 \}
 Uniform_field gravite
-Lire gravite 2 0 -9.81
+Read gravite 2 0 -9.81
 Associate sol gravite
 Associate fluide gravite
 Associate pb1 dom_solide
@@ -123,7 +123,7 @@ Associate pbc pb1
 Associate pbc pb2
 Associate pbc sch
 Discretize pbc dis
-Lire pb1
+Read pb1
 \{
     Conduction
     \{
@@ -168,7 +168,7 @@ Lire pb1
     \}
     sauvegarde formatte solide.rep
 \}
-Lire pb2
+Read pb2
 \{
     Navier_Stokes_standard
     \{
@@ -243,5 +243,5 @@ Lire pb2
 Imprimer_flux dom_fluide \{ Entree Haut2 \}
 Imprimer_flux dom_solide \{ Bas1 Haut2 \}
 Solve pbc
-Fin
+End
 \end{alltt}

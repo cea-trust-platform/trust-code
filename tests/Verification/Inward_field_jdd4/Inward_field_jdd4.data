@@ -29,8 +29,8 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 2 }
-	Nom_Zones DOM
+	Partition_tool tranche { tranches 2 2 }
+	zones_name DOM
         Larg_joint 2
 }
 End
@@ -44,7 +44,7 @@ vdf dis
 
 Domaine boundary_Bottom
 
-Schema_Euler_explicite sch
+Scheme_euler_explicit sch
 Read sch
 {
 	tinit 0.0
@@ -72,7 +72,7 @@ Read pb
 		solveur_pression petsc cholesky { }
 		convection { negligeable }
 		diffusion { }
-		conditions_initiales { vitesse champ_uniforme 2 0. 0. }
+		initial_conditions { vitesse champ_uniforme 2 0. 0. }
 		boundary_conditions 
 		{
 		     Left paroi_fixe
@@ -82,22 +82,22 @@ Read pb
 		}
      	}
 	      
-	Postraitement
+	Post_processing
 	{
 	    format lml
-		Champs dt_post 0.0
+		fields dt_post 0.0
 		{			
 			pression elem			
 			vitesse som
 			vitesse elem
 		}	
 	}
-	Postraitements
+	Post_processings
 	{
 	   volumic
 	   {
 	        format lml
-		Champs dt_post 0.0
+		fields dt_post 0.0
 		{			
 			pression elem			
 			vitesse som
@@ -128,7 +128,7 @@ Read pb
 	  	 error_norm Transformation { methode norme source_reference error }
 
               }
-	      champs dt_post 0.0
+	      fields dt_post 0.0
 	      {
 		 velocity_trio
 		 true_vector_interp

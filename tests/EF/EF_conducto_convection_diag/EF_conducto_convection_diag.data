@@ -6,7 +6,7 @@ dimension 2
 
 Pb_thermohydraulique pb
 Domaine dom
-# DEBUT MAILLAGE #
+# BEGIN MESH #
 Mailler dom
 {
 	Pave Cavite 
@@ -23,25 +23,25 @@ Mailler dom
 	}
 } 
 
-# FIN MAILLAGE #
-# DEBUT DECOUPAGE
-Decouper dom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
 {
 	Partitionneur tranche { tranches 2 1 }
 	Larg_joint 1
 	Nom_Zones DOM
 }
-Fin
-FIN DECOUPAGE #
+End
+END PARTITION #
 
-# DEBUT LECTURE
+# BEGIN SCATTER
 Scatter DOM.Zones dom
-FIN LECTURE #
+END SCATTER #
 
 EF dis
 
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0
 	dt_min 0.00001
@@ -51,7 +51,7 @@ Lire sch
 }
 
 Fluide_incompressible fluide
-Lire fluide
+Read fluide
 {
 	rho Champ_Uniforme 1 2.
 	mu Champ_Uniforme 1 1.
@@ -60,13 +60,13 @@ Lire fluide
 	beta_th Champ_Uniforme 1 1.
 }
 
-Associer pb dom
-Associer pb sch
-Associer pb fluide
+Associate pb dom
+Associate pb sch
+Associate pb fluide
 
-Discretiser pb dis
+Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard
 	{
@@ -80,7 +80,7 @@ Lire pb
 		conditions_initiales {
 			vitesse Champ_Fonc_xyz dom 2 (0.147313912747197) (0.147313912747197)
 			}
-		conditions_limites {
+		boundary_conditions {
 			Gauche frontiere_ouverte_vitesse_imposee 
 				Champ_Front_Uniforme 2 0.147313912747197 0.147313912747197
 			Droit frontiere_ouverte_vitesse_imposee 
@@ -98,7 +98,7 @@ Lire pb
 		conditions_initiales {
 			temperature Champ_Fonc_xyz dom 1 (-0.0135673098126085+0.0135673098126085*exp(3.3333333333333333*(x+y)/sqrt(2.)))
 			}
-		conditions_limites {
+		boundary_conditions {
 			Haut frontiere_ouverte_temperature_imposee
 				Champ_Front_fonc_txyz 1 (-0.0135673098126085+0.0135673098126085*exp(3.3333333333333333*(x+y)/sqrt(2.)))
 			Bas  frontiere_ouverte_temperature_imposee
@@ -125,9 +125,9 @@ Lire pb
 	}
 }
 
-Resoudre pb
+Solve pb
 
-Fin
+End
 
                 methode_calcul_pression_initiale avec_sources_et_operateurs
 		solveur_pression GCP { 

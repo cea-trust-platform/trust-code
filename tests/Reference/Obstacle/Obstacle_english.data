@@ -22,8 +22,8 @@ VDF ma_discretisation
 The following lines
 define the characteristics of the TIME DISCRETISATION scheme
 #
-Schema_Euler_explicite mon_schema
-Lire mon_schema
+Scheme_euler_explicit mon_schema
+Read mon_schema
 {
 	tinit 0
 	tmax 5.0
@@ -39,7 +39,7 @@ The following lines define the PHYSICAL PROPERTIES of the solid or fluid medium
 for which the problem will be solved
 #
 Fluide_Incompressible milieu
-Lire milieu
+Read milieu
 {
 	mu  Champ_Uniforme 1 1.85e-5
 	rho Champ_Uniforme 1 1.
@@ -61,7 +61,7 @@ The following lines define all the characteristics of the TYPE OF PROBLEM, this 
 -the information needed for POST-PROCESSING  
 -the information needed for job SAVE and RESTART 
 #
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard
 	{

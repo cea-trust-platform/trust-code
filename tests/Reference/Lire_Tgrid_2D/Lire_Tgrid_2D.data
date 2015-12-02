@@ -7,8 +7,8 @@ lire_tgrid dom1 Test_2D_TRI.msh
 
 VEFPreP1B dis
 
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
  	nb_pas_dt_max 2
 	tinit 0.
@@ -21,7 +21,7 @@ Lire sch
 }
 
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
 	mu Champ_Uniforme 1 1.85e-5
 	rho Champ_Uniforme 1 1.17
@@ -34,7 +34,7 @@ Associate pb1 fluide
 Associate pb1 sch
 Discretize pb1 dis
 
-Lire pb1
+Read pb1
 {
 	Navier_Stokes_standard
 	{
@@ -82,4 +82,4 @@ Lire pb1
 	}
 }
 Solve pb1
-Fin
+End

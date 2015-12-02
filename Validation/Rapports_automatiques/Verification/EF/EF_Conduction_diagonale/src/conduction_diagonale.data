@@ -7,7 +7,7 @@ dimension 3
 
 Pb_conduction pb
 Domaine dom
-# DEBUT MAILLAGE #
+# BEGIN MESH #
 Mailler dom
 {
 	Pave Cavite 
@@ -29,25 +29,25 @@ Mailler dom
 
 transformer dom (x/2.0-y/2.0-sqrt(2.0)*z/2.0) (sqrt(2.0)*x/2.0+sqrt(2.0)*y/2.0) (x/2.0-y/2.0+sqrt(2.0)*z/2.0)
 
-# FIN MAILLAGE #
-# DEBUT DECOUPAGE
-Decouper dom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
 {
 	Partitionneur tranche { tranches 2 1 1 }
 	Larg_joint 1
 	Nom_Zones DOM
 }
-Fin
-FIN DECOUPAGE #
+End
+END PARTITION #
 
-# DEBUT LECTURE
+# BEGIN SCATTER
 Scatter DOM.Zones dom
-FIN LECTURE #
+END SCATTER #
 
 EF dis
 
-Schema_Euler_implicite sch
-Lire sch
+Scheme_euler_implicit sch
+Read sch
 {
 	tinit 0
 	tmax 300.
@@ -59,24 +59,24 @@ solveur piso { seuil_convergence_solveur 1e-8 }
 facsec 1e2
 }
 #
-champ_fonc_xyz ll lire ll dom 1 1+1.125*x
+champ_fonc_xyz ll Read ll dom 1 1+1.125*x
 ecrire_champ_med dom ll ll.med
 	lambda Champ_fonc_med  last_time ll.med dom ll elem 0.
 #
 Solide sol
-Lire sol
+Read sol
 {
 	rho Champ_Uniforme 1 1.
 	lambda Champ_Uniforme 1 1.
 	Cp Champ_Uniforme 1 1.
 }
-Associer pb dom
-Associer pb sch
-Associer pb sol
+Associate pb dom
+Associate pb sch
+Associate pb sol
 
-Discretiser pb dis
+Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Conduction
 	{
@@ -84,7 +84,7 @@ Lire pb
 		conditions_initiales {
 			temperature Champ_Uniforme 1 2. 
 			}
-		conditions_limites {
+		boundary_conditions {
 			Haut paroi_adiabatique
 			Bas symetrie
 			Devant paroi_temperature_imposee
@@ -106,6 +106,6 @@ Lire pb
 	}
 }
 
-Resoudre pb
+Solve pb
 
-Fin
+End

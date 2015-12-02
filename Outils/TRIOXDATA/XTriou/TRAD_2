@@ -44,7 +44,7 @@ champs_posts objet_lecture nul 0 Field\'s write mode.
   attr format chaine(into=["binaire","formatte"]) format 1 Type of file.
   attr mot chaine(into=["dt_post","nb_pas_dt_post"]) mot 0 Keyword to set the kind of the field\'s write frequency. Either a time period or a time step period.
   attr period chaine period 0 Value of the period.
-  attr champs champs_a_post champs 0 Post-processed fields.
+  attr champs|fields champs_a_post champs 0 Post-processed fields.
 stat_post_deriv objet_lecture stat_post_deriv 0 not_set
 stat_post_t_deb stat_post_deriv t_deb 0 not_set
   attr val floattant val 0 not_set
@@ -64,7 +64,7 @@ list_stat_post listobj nul -1 stat_post_deriv 0 Post-processing for statistics
 stats_posts objet_lecture nul 0 Field\'s write mode.
   attr mot chaine(into=["dt_post","nb_pas_dt_post"]) mot 0 Keyword to set the kind of the field\'s write frequency. Either a time period or a time step period.
   attr period chaine period 0 Value of the period.
-  attr champs list_stat_post champs 0 Post-processed fields.
+  attr champs|fields list_stat_post champs 0 Post-processed fields.
 stats_serie_posts objet_lecture nul 0 Post-processing for statistics.
   attr mot chaine(into=["dt_integr"]) mot 0 Keyword is used to set the statistics period of integration and write period.
   attr dt_integr floattant dt_integr 0 Average on dt_integr time interval is post-processed every dt_integr seconds.
@@ -177,10 +177,10 @@ definition_champs listobj nul 1 definition_champ 0 List of definition champ
 postraitement_base  objet_lecture postraitement_base -1 not_set
 postraitement postraitement_base postraitement -1 An object of post-processing (without name).
   attr definition_champs definition_champs definition_champs 1 Keyword to create new or more complex field for advanced postprocessing.
-  attr sondes sondes sondes 1 Probe.
+  attr sondes|Probes sondes sondes 1 Probe.
   attr domaine chaine domaine 1 This optional parameter specifies the domain on which the data should be interpolated before it is written in the output file. The default is to write the data on the domain of the current problem (no interpolation).
   attr format chaine(into=["lml","meshtv","lata","lata_v1","lata_v2","med"]) format 1 This optional parameter specifies the format of the output file. The basename used for the output file is the basename of the data file. For the fmt parameter, choices are lml, lata, or meshtv. A short description of each format can be found below. The default value is lml.
-  attr champs champs_posts champs 1 Field\'s write mode.
+  attr champs|fields champs_posts champs 1 Field\'s write mode.
   attr statistiques stats_posts statistiques 1 Statistics between two points fixed : start of integration time and end of integration time.
   attr fichier chaine fichier 1 Name of file.
   attr statistiques_en_serie stats_serie_posts statistiques_en_serie 1 Statistics between two points not fixed : on period of integration.
@@ -209,8 +209,8 @@ nom_postraitement objet_lecture nul 0
 liste_post_ok listobj liste_post_ok -1 nom_postraitement 0 Keyword to use several results files. List of objects of post-processing (with name)
 pb_gen_base objet_u pb_gen_base -1 Basic class for problems.
 Pb_base pb_gen_base Pb_base -3 Resolution of equations on a domain. A problem is defined by creating an object and assigning the problem type that the user wishes to resolve. To enter values for the problem objects created, the Lire (Read) interpretor is used with a data block.
-  attr postraitement corps_postraitement postraitement 1 One post-processing (without name).
-  attr postraitements postraitements postraitements 1 List of Postraitement objects (with name).
+  attr postraitement|Post_processing corps_postraitement postraitement 1 One post-processing (without name).
+  attr postraitements|Post_processings postraitements postraitements 1 List of Postraitement objects (with name).
   attr liste_de_postraitements liste_post_ok liste_de_postraitements 1 This
   attr liste_postraitements liste_post liste_postraitements 1 This block defines the output files to be written during the computation. The output format is lata in order to use OpenDX to draw the results. This block can be divided in one or several sub-blocks that can be written at different frequencies and in different directories. Attention. The directory lata used in this example should be created before running the computation or the lata files will be lost.
   attr sauvegarde format_file sauvegarde 1 Keyword used when calculation results are to be backed up. When a coupling is performed, the backup-recovery file name must be well specified for each problem. In this case, you must save to different files and correctly specify these files when restarting the calculation.
@@ -506,7 +506,7 @@ bloc_diffusion objet_lecture nul 0 not_set
 eqn_base mor_eqn eqn_base -3 Basic class for equations.
   attr convection bloc_convection convection 1 Keyword to alter the convection scheme.
   attr diffusion bloc_diffusion diffusion 1 Keyword to specify the diffusion operator.
-  attr conditions_initiales condinits conditions_initiales 1 Initial conditions.
+  attr conditions_initiales|initial_conditions condinits conditions_initiales 1 Initial conditions.
   attr conditions_limites|boundary_conditions condlims conditions_limites 1 Boundary conditions.
   attr sources sources sources 1 To introduce a source term into an equation (in case of several source terms into the same equation, the blocks corresponding to the various terms need to be separated by a comma)
   attr ecrire_fichier_xyz_valeur ecrire_fichier_xyz_valeur_param ecrire_fichier_xyz_valeur 1 This keyword is used to write the values of a field for the whole domain or only for some boundaries in a text file with the following format: n_valeur NL2 x_1 y_1 [z_1] val_1 NL2 ... NL2 x_n y_n [z_n] val_n NL2 The created files are named : pbname_fieldname_[boundaryname]_time.dat
@@ -943,7 +943,7 @@ optimal solveur_sys_base optimal 1 Optimal is a solver which tests several solve
   attr seuil floattant seuil 0 Convergence threshold
   attr impr rien impr 1 To print the convergency of the fastest solver
   attr quiet rien quiet 1 To disable printing of information
-  attr save_matrice rien save_matrice 1 To save the linear system (A, x, B) into a file
+  attr save_matrice|save_matrix rien save_matrice 1 To save the linear system (A, x, B) into a file
   attr frequence_recalc entier frequence_recalc 1 To set a time step period (by default, 100) for re-checking the fatest solver
   attr nom_fichier_solveur chaine nom_fichier_solveur 1 To specify the file containing the list of the tested solvers
   attr fichier_solveur_non_recree rien fichier_solveur_non_recree 1 To avoid the creation of the file containing the list
@@ -970,7 +970,7 @@ solv_gcp solveur_sys_base gcp 1 Preconditioned conjugated gradient.
   attr seuil floattant seuil 0 Value of the final residue. The gradient ceases iteration when the Euclidean residue standard ||Ax-B|| is less than this value.
   attr impr rien impr 1 Keyword which is used to request display of the Euclidean residue standard each time this iterates through the conjugated gradient (display to the standard outlet).
   attr quiet rien quiet 1 To disable printing of information
-  attr save_matrice rien save_matrice 1 to save the matrix in a file.
+  attr save_matrice|save_matrix rien save_matrice 1 to save the matrix in a file.
   attr optimized rien optimized 1 This keyword triggers a memory and network optimized algorithms useful for strong scaling (when computing less than 100 000 elements per processor). The matrix and the vectors are duplicated, common items removed and only virtual items really used in the matrix are exchanged.NL2 Warning: this is experimental and known to fail in some VEF computations (L2 projection step will not converge). Works well in VDF.
 gcp_ns solv_gcp gcp_ns -1 not_set
   attr solveur0 solveur_sys_base solveur0 0 Solver type.
@@ -985,7 +985,7 @@ gmres solveur_sys_base gmres -1 Gmres method (for non symetric matrix).
   attr diag rien diag 1 Keyword to use diagonal preconditionner (in place of pilut that is not parallel).
   attr nb_it_max entier nb_it_max 1 Keyword to set the maximum iterations number for the Gmres.
   attr controle_residu entier(into=["0","1"]) controle_residu 1 Keyword of Boolean type (by default 0). If set to 1, the convergence occurs if the residu suddenly increases.
-  attr save_matrice rien save_matrice 1 to save the matrix in a file.
+  attr save_matrice|save_matrix rien save_matrice 1 to save the matrix in a file.
 postraiter_domaine interprete postraiter_domaine 1 To write one or more domains in a file with a specified format (MED,LML,LATA).
   attr format chaine(into=["lml","meshtv","lata","lata_v1","lata_v2","med"]) format 0 File format.
   attr fichier|file chaine fichier 1 The file name can be changed with the fichier option.
@@ -1408,9 +1408,9 @@ partitionneur_fichier_decoupage partitionneur_deriv fichier_decoupage -1 This al
   attr fichier chaine fichier 0 FILENAME
   attr corriger_partition rien corriger_partition 1 not_set
 bloc_decouper objet_lecture nul 1 Auxiliary class to cut a domain.
-  attr partitionneur partitionneur_deriv partitionneur 1 Defines the partitionning algorithm (the effective C++ object used is \'Partitionneur_ALGORITHM_NAME\').
+  attr partitionneur|Partition_tool partitionneur_deriv partitionneur 1 Defines the partitionning algorithm (the effective C++ object used is \'Partitionneur_ALGORITHM_NAME\').
   attr larg_joint entier larg_joint 1 This keyword specifies the thickness of the virtual ghost zone (data known by one processor though not owned by it). The default value is 1 and is generally correct for all algorithms except the QUICK convection scheme that require a thickness of 2. Since the 1.5.5 version, the VEF discretization imply also a thickness of 2 (except VEF P0). Any non-zero positive value can be used, but the amount of data to store and exchange between processors grows quickly with the thickness.
-  attr nom_zones chaine nom_zones 1 Name of the files containing the different partition of the domain. The files will be : NL2 name_0001.Zones NL2 name_0002.Zones NL2 ... NL2 name_000n.Zones. If this keyword is not specified, the geometry is not written on disc (you might just want to generate a \'ecrire_decoupage\' or \'ecrire_lata\').
+  attr nom_zones|zones_name chaine nom_zones 1 Name of the files containing the different partition of the domain. The files will be : NL2 name_0001.Zones NL2 name_0002.Zones NL2 ... NL2 name_000n.Zones. If this keyword is not specified, the geometry is not written on disc (you might just want to generate a \'ecrire_decoupage\' or \'ecrire_lata\').
   attr ecrire_decoupage chaine ecrire_decoupage 1 After having called the partitionning algorithm, the resulting partition is written on disc in the specified filename. See also partitionneur Fichier_Decoupage. This keyword is useful to change the partition numbers (for example, to do manually the task of the keyword Echange_domcut): first, you write the partition into a file with the option ecrire_decoupage. This file contains the zone number for each element\'s mesh. Then you can easily permute zone numbers in this file. Then read the new partition to create the .Zones files with the Fichier_Decoupage keyword.
   attr ecrire_lata chaine ecrire_lata 1 not_set
   attr nb_parts_tot entier nb_parts_tot 1 Keyword to generates N .Zone files, instead of the default number M obtained after the partitionning algorithm. N must be greater or equal to M. This option might be used to perform coupled parallel computations. Supplemental empty zones from M to N-1 are created. This keyword is used when you want to run a parallel calculation on several domains with for example, 2 processors on a first domain and 10 on the second domain because the first domain is very small compare to second one. You will write Nb_parts 2 and Nb_parts_tot 10 for the first domain and Nb_parts 10 for the second domain.
@@ -1666,7 +1666,7 @@ interpolation_champ_face_lineaire interpolation_champ_face_deriv lineaire 1 not_
 parcours_interface objet_lecture nul 1 allows you to configure the algorithm that computes the surface mesh to volume mesh intersection. This algorithm has some serious trouble when the surface mesh points coincide with some faces of the volume mesh. Effects are visible on the indicator function, in VDF when a plane interface coincides with a volume mesh surface.NL2 To overcome these problems, the keyword correction_parcours_thomas keyword can be used: it allows the algorithm to slightly move some mesh points. This algorithm, which is experimental and is NOT activated by default, triggers a correction that avoids some errors in the computation of the indicator function for surface meshes that exactly cross some eulerian mesh edges (strongly suggested !).
   attr correction_parcours_thomas rien correction_parcours_thomas 1 not_set
 transport_interfaces_ft_disc eqn_base transport_interfaces_ft_disc -1 Interface tracking equation for Front-Tracking problem in the discontinuous version.
-  attr conditions_initiales bloc_lecture conditions_initiales 1 The keyword conditions_initiales is used to define the shape of the initial interfaces through the zero level-set of a function, or through a mesh fichier_geom. Indicator function is set to 0, that is fluide0, where the function is negative; indicator function is set to 1, that is fluide1, where the function is positive; the interfaces are the level-set 0 of that function: NL2 NL2 conditions_initiales { fonction NL2 $(-((x-0.002)^2+(y-0.002)^2+z^2-(0.00125)^2))*((x-0.005)^2+(y-0.007)^2+z^2 (0.00150)^2))*(0.020-z))$ NL2 } NL2 NL2 In the above example, there are three interfaces: two bubbles in a liquid with a free surface. One bubble has a radius of 0.00125, i.e. 1.25 mm, and its center is {0.002, 0.002, 0.000}. The other bubble has a radius of 0.00150, i.e. 1.5 mm, and its center is {0.005, 0.007, 0.000}. The free surface is above the two bubble, at a level z=0.02. NL2 NL2 Additional feature in this block concerns the keywords ajout_phase0 and ajout_phase1. They can be used to simplify the composition of different interfaces. When using these keywords, the initial function defines the indicator function; ajout_phase0 and ajout_phase1 are used to modify this initial field. Each time ajout_phase0 is used, the field is untouched where the function is positive whereas the indicator field is set to 0 where the function is negative. The keyword ajout_phase1 has the symmetrical use, keeping the field value where the function is negative and setting the indicator field to 1 where the function is positive. The previous example can also be written: NL2 NL2 conditions_initiales { NL2 fonction z-0.020 , NL fonction ajout_phase1 $(x-0.002)^2+(y-0.002)^2+z^2-(0.00125)^2$ , NL2 fonction ajout_phase1 $(x-0.005)^2+(y-0.007)^2+z^2-(0.00150)^2$ NL2 }
+  attr conditions_initiales|initial_conditions bloc_lecture conditions_initiales 1 The keyword conditions_initiales is used to define the shape of the initial interfaces through the zero level-set of a function, or through a mesh fichier_geom. Indicator function is set to 0, that is fluide0, where the function is negative; indicator function is set to 1, that is fluide1, where the function is positive; the interfaces are the level-set 0 of that function: NL2 NL2 conditions_initiales { fonction NL2 $(-((x-0.002)^2+(y-0.002)^2+z^2-(0.00125)^2))*((x-0.005)^2+(y-0.007)^2+z^2 (0.00150)^2))*(0.020-z))$ NL2 } NL2 NL2 In the above example, there are three interfaces: two bubbles in a liquid with a free surface. One bubble has a radius of 0.00125, i.e. 1.25 mm, and its center is {0.002, 0.002, 0.000}. The other bubble has a radius of 0.00150, i.e. 1.5 mm, and its center is {0.005, 0.007, 0.000}. The free surface is above the two bubble, at a level z=0.02. NL2 NL2 Additional feature in this block concerns the keywords ajout_phase0 and ajout_phase1. They can be used to simplify the composition of different interfaces. When using these keywords, the initial function defines the indicator function; ajout_phase0 and ajout_phase1 are used to modify this initial field. Each time ajout_phase0 is used, the field is untouched where the function is positive whereas the indicator field is set to 0 where the function is negative. The keyword ajout_phase1 has the symmetrical use, keeping the field value where the function is negative and setting the indicator field to 1 where the function is positive. The previous example can also be written: NL2 NL2 conditions_initiales { NL2 fonction z-0.020 , NL fonction ajout_phase1 $(x-0.002)^2+(y-0.002)^2+z^2-(0.00125)^2$ , NL2 fonction ajout_phase1 $(x-0.005)^2+(y-0.007)^2+z^2-(0.00150)^2$ NL2 }
   attr methode_transport methode_transport_deriv methode_transport 1 Method of transport of interface.
   attr iterations_correction_volume entier iterations_correction_volume 1 Keyword to specify the number or iterations requested for the correction process that can be used to keep the volume of the phases constant during the transport process.
   attr n_iterations_distance entier n_iterations_distance 1 Keyword to specify the number or iterations requested for the smoothing process of computing the field corresponding to the signed distance to the interfaces and located at the center of the Eulerian elements. This smoothing is necessary when there are more Lagrangian nodes than Eulerian two-phase cells.
@@ -1706,7 +1706,7 @@ injection_marqueur objet_lecture nul -1 not_set
   attr t_debut_injection floattant t_debut_injection 1 not_set
   attr dt_injection floattant dt_injection 1 not_set
 transport_marqueur_ft eqn_base transport_marqueur_ft -1 not_set
-  attr conditions_initiales bloc_lecture conditions_initiales 1 ne semble pas standard
+  attr conditions_initiales|initial_conditions bloc_lecture conditions_initiales 1 ne semble pas standard
   attr injection injection_marqueur injection 1 The keyword injection can be used to inject periodically during the calculation some other particles. The syntax for ensemble_points and proprietes_particles is the same than the initial conditions for the particles. The keyword t_debut_injection give the injection initial time (by default, given by t_debut_integration) and dt_injection gives the injection time period (by default given by dt_min).
   attr transformation_bulles bloc_lecture transformation_bulles 1 This keyword will activate the transformation of an inclusion (small bubbles) into a particle. localisation gives the sub-zones (N number of sub-zones and their names) where the transformation may happen. The diameter size for the inclusion transformation is given by either diameter_min option, in this case the inclusion will be suppressed for a diameter less than diameter_size, either by the beta_transfo option, in this case the inclusion will be suppressed for a diameter less than diameter_size*cell_volume (cell_volume is the volume of the cell containing the inclusion). interface specifies the name of the inclusion interface and t_debut_transfo is the beginning time for the inclusion transformation operation (by default, it is t_debut_integr value) and dt_transfo is the period transformation (by default, it is dt_min value). In a two phase flow calculation, the particles will be suppressed when entring into the non marked phase
   attr phase_marquee entier phase_marquee 1 Phase number giving the marked phase, where the particles are located (when they leave this phase, they are suppressed). By default, for a the two phase fluide, the particles are supposed to be into the phase 0 (liquid).

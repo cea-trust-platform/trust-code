@@ -26,8 +26,8 @@ Mailler dom
 
 EF dis
 
-Schema_Euler_implicite sch
-Lire sch
+Scheme_euler_implicit sch
+Read sch
 {
 	tinit 0
 	tmax 2.5
@@ -43,19 +43,19 @@ Lire sch
 	facsec 1.
 }
 Fluide_Incompressible eau
-Lire eau
+Read eau
 {
 	mu Champ_Fonc_XYZ dom 1 (10.+x+y+z)
 	rho Champ_Uniforme 1 1.
 }
 
-Associer pb dom
-Associer pb sch
-Associer pb eau
+Associate pb dom
+Associate pb sch
+Associate pb eau
 
-Discretiser pb dis
+Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard
 	{
@@ -69,7 +69,7 @@ Lire pb
 		conditions_initiales {
 			vitesse Champ_Fonc_XYZ dom 3 (2.*x) (-y) (-z)
 			}
-		conditions_limites {
+		boundary_conditions {
 			Gauche frontiere_ouverte_vitesse_imposee 
 			     Champ_front_fonc_tXYZ 3 (2.*x) (-y) (-z)
 			Droit frontiere_ouverte_vitesse_imposee 
@@ -96,9 +96,9 @@ Lire pb
 	}
 }
 
-Resoudre pb
+Solve pb
 
-Fin
+End
 
 	mu Champ_Fonc_XYZ dom 1 (x+y+z)
 		diffusion { option { grad_u_transpose 0 grad_u_transpose_partout 2 } }
@@ -107,7 +107,7 @@ Fin
 		conditions_initiales {
 			vitesse Champ_Fonc_XYZ dom 3 x*(y+z) -y*z -y*z
 			}
-		conditions_limites {
+		boundary_conditions {
 			Gauche frontiere_ouverte_vitesse_imposee 
 			     Champ_front_fonc_tXYZ 3 x*(y+z) -y*z -y*z
 			Droit frontiere_ouverte_vitesse_imposee 

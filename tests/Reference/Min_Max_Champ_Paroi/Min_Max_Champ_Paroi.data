@@ -9,8 +9,8 @@ Corriger_frontiere_periodique { Domaine dom01234 Bord sortie   }
 
 VEFPreP1B dis
 
-Schema_Euler_implicite sch
-Lire sch
+Scheme_euler_implicit sch
+Read sch
 {
 	tinit 0.
 	tmax 600.
@@ -30,7 +30,7 @@ Lire sch
 }
 
 Fluide_Incompressible helium
-Lire helium
+Read helium
 {
 	mu Champ_Uniforme       1 3.93e-5
  	rho Champ_Uniforme      1 3.
@@ -40,7 +40,7 @@ Lire helium
 }
 
 Champ_Uniforme gravite
-Lire gravite 3 0 0 0
+Read gravite 3 0 0 0
  
 Associate helium gravite
 Associate pb dom01234
@@ -58,7 +58,7 @@ extraire_surface {
 
 
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_Turbulent	
 	{
@@ -209,5 +209,5 @@ Lire pb
 }
 EcritureLectureSpecial 0
 Solve pb
-Fin
+End
 

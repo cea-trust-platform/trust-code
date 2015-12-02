@@ -53,7 +53,7 @@ Partition dom_solide
 	Larg_joint 1
 	Nom_Zones DOM_SOLIDE
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -63,8 +63,8 @@ END SCATTER #
 
 VEFPreP1B dis
 
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0
 	tmax 15.0
@@ -77,7 +77,7 @@ Lire sch
 }
 
 Fluide_Quasi_Compressible fluide
-Lire fluide
+Read fluide
 {
 	mu Champ_Uniforme 1 1.85e-5
         pression 162684.57148045
@@ -91,7 +91,7 @@ Lire fluide
 	traitement_pth constant
 }
 Solide sol
-Lire sol
+Read sol
 {
         rho Champ_Uniforme 1 1000.
         lambda Champ_Uniforme 1 250.
@@ -100,7 +100,7 @@ Lire sol
 
 
 Champ_Uniforme gravite
-Lire gravite 2 0 0
+Read gravite 2 0 0
 
 Associate sol gravite
 Associate fluide gravite
@@ -117,7 +117,7 @@ Associate pbc pb_solide
 Associate pbc sch
 Discretize pbc dis
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_QC
 	{
@@ -159,7 +159,7 @@ Lire pb
 		}
 	}
 }
-Lire pb_solide
+Read pb_solide
 {
         Conduction
         {
@@ -183,4 +183,4 @@ Lire pb_solide
         }
 }
 Solve pbc
-Fin
+End

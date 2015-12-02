@@ -29,21 +29,21 @@ Mailler dom
 Trianguler_H dom
 Sous_Zone zone1
 Associate zone1 dom
-Lire zone1 {
+Read zone1 {
     Rectangle
       Origine 0.4 0.
       Cotes   0.2 0.8 } 
            
 Sous_Zone zone2
 Associate zone2 dom
-Lire zone2 {
+Read zone2 {
     Rectangle
       Origine 0.7 0.
       Cotes   0.3 0.4 }   
 
 Sous_Zone zone3
 Associate zone3 dom
-Lire zone3 {
+Read zone3 {
     Rectangle
       Origine 0.75 0.4
       Cotes   0.25 0.4 }
@@ -57,28 +57,28 @@ Partition dom
 	Larg_joint 1
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
 Scatter DOM.Zones dom
 Sous_Zone zone1
 Associate zone1 dom
-Lire zone1 { Fichier zone1.ssz }
+Read zone1 { Fichier zone1.ssz }
 
 Sous_Zone zone2
 Associate zone2 dom
-Lire zone2 { Fichier zone2.ssz }
+Read zone2 { Fichier zone2.ssz }
 
 Sous_Zone zone3
 Associate zone3 dom
-Lire zone3 { Fichier zone3.ssz }
+Read zone3 { Fichier zone3.ssz }
 END SCATTER #
 
 VEFPreP1B dis
 
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0
 	tmax 0.1
@@ -92,7 +92,7 @@ Lire sch
 }
 
 Solide sol
-Lire sol
+Read sol
 {
 	rho Champ_Uniforme 1 2
 	lambda Champ_Uniforme 1 2.
@@ -104,7 +104,7 @@ Associate pb sol
 
 Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Conduction
 	{
@@ -140,7 +140,7 @@ Lire pb
 
 Solve pb
 Ecrire sol    
-Fin
+End
 Droit  paroi_temperature_impose Champ_Front_Uniforme 1 1.
 Gauche  paroi_temperature_imposee Champ_Front_Uniforme 1 0.
 

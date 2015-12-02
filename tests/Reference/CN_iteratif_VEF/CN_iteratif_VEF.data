@@ -52,7 +52,7 @@ Partition dom2
 	Larg_joint 1
 	Nom_Zones DOM2
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -61,13 +61,13 @@ Scatter DOM2.Zones dom2
 END SCATTER #
 
 VEFPreP1B dis
-Lire dis { P0 }
+Read dis { P0 }
 
 Pb_conduction pb1
 Pb_conduction pb2
 
 Sch_CN_iteratif sch
-Lire sch {
+Read sch {
   tinit 0
   nb_pas_dt_max 10
   dt_start dt_calc
@@ -78,14 +78,14 @@ Lire sch {
 
 
 Solide sol1
-Lire sol1 {
+Read sol1 {
   rho Champ_Uniforme 1 10
   lambda Champ_Uniforme 1 1 
   Cp Champ_Uniforme 1 1000
 }
 
 Solide sol2
-Lire sol2 {
+Read sol2 {
   rho Champ_Uniforme 1 20
   lambda Champ_Uniforme 1 1
   Cp Champ_Uniforme 1 1000
@@ -103,7 +103,7 @@ Associate pbc pb2
 Associate pbc sch
 Discretize pbc dis
 
-Lire pb1 {
+Read pb1 {
   Conduction {
     diffusion { }
     conditions_initiales {
@@ -124,7 +124,7 @@ Lire pb1 {
   sauvegarde formatte pb1.sauv
 }
 
-Lire pb2 {
+Read pb2 {
   Conduction {
     diffusion { }
     conditions_initiales {
@@ -146,4 +146,4 @@ Lire pb2 {
 }
 
 Solve pbc
-Fin
+End

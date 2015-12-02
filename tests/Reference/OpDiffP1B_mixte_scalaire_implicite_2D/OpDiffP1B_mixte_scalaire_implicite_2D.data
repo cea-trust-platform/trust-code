@@ -31,7 +31,7 @@ Partition dom_pbF1
         Nom_Zones DOM
 	periodique 1 perio 
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -40,8 +40,8 @@ END SCATTER #
 
 Pb_Conduction pbF1
 
-Schema_Euler_implicite sch
-Lire sch
+Scheme_euler_implicit sch
+Read sch
 {
         tinit 0.
         tmax  20.
@@ -64,7 +64,7 @@ Lire sch
 VEFPreP1b cubesregu
 
 Solide eau
-Lire eau
+Read eau
 {
        rho Champ_Uniforme 1 1.
        lambda Champ_Uniforme 1 1.                 
@@ -78,7 +78,7 @@ Associate pbF1 sch
 Discretize pbF1 cubesregu
 # Debog pbF1 seq faces 1.e-6 0 #
 
-Lire pbF1
+Read pbF1
 {
 Conduction
        {
@@ -121,4 +121,4 @@ Conduction
 
 
 Solve pbF1
-Fin 
+End 

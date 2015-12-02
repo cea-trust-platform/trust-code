@@ -66,7 +66,7 @@ Partition dom
 	Larg_joint 1
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -74,8 +74,8 @@ Scatter DOM.Zones dom
 END SCATTER #
 
 VDF dis
-schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0
 	tmax 32.
@@ -86,7 +86,7 @@ Lire sch
 	seuil_statio 1.e-8
 }
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
 	mu Champ_Uniforme 1 3.7e-05
 	rho Champ_Uniforme 1 2
@@ -95,7 +95,7 @@ Associate pb dom
 Associate pb sch
 Associate pb fluide
 Discretize pb dis
-Lire pb
+Read pb
 {
 	Navier_Stokes_turbulent
 	{
@@ -171,5 +171,5 @@ Postraitement
 }
 }
 Solve pb
-Fin
-Fin
+End
+End

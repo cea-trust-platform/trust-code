@@ -2,7 +2,7 @@
 # PARALLEL OK 8 #
 dimension 2
 Schema_Adams_Bashforth_order_2 sch
-Lire sch
+Read sch
 {
 	tinit 0.
 	tmax 300.
@@ -20,7 +20,7 @@ Pb_Thermohydraulique pb2
 Domaine dom_solide
 Domaine dom_fluide
 
-# DEBUT MAILLAGE #
+# BEGIN MESH #
 Mailler dom_solide
 {
 	Pave Cavite1
@@ -66,9 +66,9 @@ Mailler dom_fluide
 		}
 }
 Postraiter_domaine { format lata fichier dom.lata domaines { dom_solide dom_fluide } }
-# FIN MAILLAGE #
+# END MESH #
 
-# DEBUT DECOUPAGE
+# BEGIN PARTITION
 Partition dom_solide
 {
 	Partitionneur tranche { tranches 3 1 }
@@ -81,18 +81,18 @@ Partition dom_fluide
 	Larg_joint 1
 	Nom_Zones DOM2
 }
-Fin
-FIN DECOUPAGE #
+End
+END PARTITION #
 
-# DEBUT LECTURE
+# BEGIN SCATTER
 Scatter DOM1.Zones dom_solide
 Scatter DOM2.Zones dom_fluide
-FIN LECTURE #
+END SCATTER #
 
 VDF dis
 
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
 	mu Champ_Uniforme 1 0.002
 	rho Champ_Uniforme 1 2
@@ -102,7 +102,7 @@ Lire fluide
 }
 
 Solide sol
-Lire sol
+Read sol
 {
 	rho Uniform_Field 1 1000.
 	lambda Champ_Uniforme 1 250.    
@@ -110,7 +110,7 @@ Lire sol
 }
 
 Uniform_field gravite
-Lire gravite 2 0 -9.81
+Read gravite 2 0 -9.81
 Associate sol gravite
 Associate fluide gravite
 
@@ -126,7 +126,7 @@ Associate pbc pb2
 Associate pbc sch
 Discretize pbc dis
 
-Lire pb1
+Read pb1
 {
 	Conduction
 	{
@@ -180,7 +180,7 @@ Lire pb1
 	sauvegarde formatte solide.rep
 }
 
-Lire pb2
+Read pb2
 {
 	Navier_Stokes_standard
 	{
@@ -266,5 +266,5 @@ Lire pb2
 Imprimer_flux dom_fluide { Entree Haut2 }
 Imprimer_flux dom_solide { Bas1 Haut2 }
 Solve pbc
-Fin
+End
 

@@ -16,8 +16,8 @@ END PARTITION #
 Scatter DOM.Zones dom 
 END SCATTER #
 VEFPreP1B ma_discretisation 
-Schema_Euler_Implicite mon_schema
-Lire mon_schema
+Scheme_euler_implicit mon_schema
+Read mon_schema
 {
     tinit 0
     tmax 0.2
@@ -33,7 +33,7 @@ Lire mon_schema
 }
 # I define a medium #
 fluide_incompressible milieu 
-Lire milieu
+Read milieu
 {
     mu champ_uniforme         1 3.7e-05
     rho champ_uniforme        1 2.0
@@ -43,11 +43,11 @@ Lire milieu
 }
 # Association between the different objects #
 Pb_ThermoHydraulique pb 
-Associer pb dom
-Associer pb mon_schema
-Associer pb milieu
-discretiser pb ma_discretisation
-Lire pb
+Associate pb dom
+Associate pb mon_schema
+Associate pb milieu
+Discretize pb ma_discretisation
+Read pb
 {
     navier_stokes_standard
     {
@@ -55,7 +55,7 @@ Lire pb
         convection  { amont }
         diffusion   { }
         conditions_initiales    { vitesse champ_uniforme  3 0.0 0.0 0.0 }
-        conditions_limites
+        boundary_conditions
         {
             Wall paroi_fixe 
             Outlet frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0
@@ -103,7 +103,7 @@ Lire pb
     }
 }
 # The problem is solved with #
-resoudre pb
+Solve pb
 lata_to_other med NOM_DU_CAS NOM_DU_CAS
 # Not necessary keyword to finish #
-fin
+End

@@ -28,7 +28,7 @@ Trianguler_H dom_fluide
 VEFPreP1B dis
 
 Runge_Kutta_ordre_3 sch
-Lire sch
+Read sch
 {
 	tinit	0.
 	nb_pas_dt_max 3
@@ -41,7 +41,7 @@ Lire sch
 }
 
 Fluide_Quasi_Compressible fluide
-Lire fluide
+Read fluide
 {
 	mu	Champ_Uniforme 1 5.e-5
 	lambda	Champ_Uniforme 1 5.e-1
@@ -56,7 +56,7 @@ Lire fluide
 }
 
 Champ_Uniforme gravite
-Lire gravite 2 0 0
+Read gravite 2 0 0
 
 Associate fluide gravite
 Associate pb_Th dom_fluide
@@ -65,7 +65,7 @@ Associate pb_Th sch
 
 Discretize pb_Th dis
 
-Lire pb_Th
+Read pb_Th
 {
 	Navier_Stokes_QC
 	{
@@ -151,4 +151,4 @@ Lire pb_Th
 }
 
 Solve pb_Th
-Fin
+End

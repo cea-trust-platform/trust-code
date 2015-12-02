@@ -38,7 +38,7 @@ END SCATTER #
 
 VEFPreP1B dis
 
-Schema_Euler_implicite sch
+Scheme_euler_implicit sch
 Read sch
 {
 	tinit 0
@@ -86,7 +86,7 @@ Read pb
 					
 		convection { EF_stab { } }
 		diffusion { }
-		conditions_initiales 
+		initial_conditions 
 				{
 			 	vitesse Champ_Uniforme 3 0.1 0. 0.
 				}
@@ -100,15 +100,15 @@ Read pb
 		traitement_particulier { Canal { dt_impr_moy_spat 390. } }
 }		
 		
-Postraitement
+Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_mil vitesse periode 100 segment 30 0.11 0. 0.07 0.11 2. 0.07 
 			sonde_entre vitesse periode 100 segment 30 0.115 0. 0.075 0.115 2. 0.075 
 			sonde_point vitesse periode 10 point 1 0.115 1. 0.075
 		}	
-		format lml Champs dt_post 500
+		format lml fields dt_post 500
 		{
 			vitesse
                  }

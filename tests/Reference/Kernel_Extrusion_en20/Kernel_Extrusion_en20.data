@@ -24,4 +24,4 @@ Extruder_en20 { domaine dom nb_tranches 20 direction 0 0 10 }
 dimension 3
 Postraiter_domaine { domaine dom format lml }
 discretiser_domaine dom
-fin 
+End 

@@ -26,7 +26,7 @@
 #include <Postraitement.h>
 Implemente_deriv(Postraitement_base);
 Implemente_liste(DERIV(Postraitement_base));
-Implemente_instanciable(Postraitements,"Postraitements",LIST(DERIV(Postraitement_base)));
+Implemente_instanciable(Postraitements,"Postraitements|Post_processings",LIST(DERIV(Postraitement_base)));
 
 Entree& Postraitements::readOn(Entree& s)
 {
@@ -103,8 +103,8 @@ int Postraitements::lire_postraitements(Entree& is, const Motcle& motlu,
                                         const Probleme_base& mon_pb)
 {
   Motcles motcles(4);
-  motcles[0] = "postraitement";
-  motcles[1] = "postraitements";
+  motcles[0] = "Postraitement|Post_processing";
+  motcles[1] = "Postraitements|Post_processings";
   motcles[2] = "liste_postraitements";
   motcles[3] = "liste_de_postraitements";
 

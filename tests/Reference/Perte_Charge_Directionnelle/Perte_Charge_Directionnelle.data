@@ -23,7 +23,7 @@ Trianguler_H dom
 
 Sous_Zone zone1
 Associate zone1 dom
-Lire zone1 {
+Read zone1 {
    Rectangle
       Origine 10 2
       Cotes   10 6
@@ -38,20 +38,20 @@ Partition dom
 	Larg_joint 2
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
 Scatter DOM.Zones dom
 Sous_Zone  zone1
 Associate zone1 dom
-Lire zone1 { Fichier zone1.ssz }
+Read zone1 { Fichier zone1.ssz }
 END SCATTER #
 
 
 # Le schema en temps #
-Schema_Euler_explicite sch
-Lire sch {
+Scheme_euler_explicit sch
+Read sch {
 	tinit   0
 	tmax    10
 	dt_min  1e-10
@@ -65,7 +65,7 @@ VEFPreP1B dis
 
 # Le Fluide #
 Fluide_Incompressible eau
-Lire eau {
+Read eau {
 	mu Champ_Uniforme 1 0.01
 	rho Champ_Uniforme 1 1000
 }
@@ -78,7 +78,7 @@ Associate pb sch
 Associate pb eau
 Discretize pb dis
 
-Lire pb {
+Read pb {
 
 	Navier_Stokes_standard {
 		solveur_pression GCP {
@@ -124,7 +124,7 @@ Lire pb {
 
 Solve pb
 
-Fin
+End
 
 
 

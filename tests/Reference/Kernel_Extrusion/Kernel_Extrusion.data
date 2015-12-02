@@ -24,5 +24,5 @@ ecrire_fichier dom dom3D.geom
 Postraiter_domaine { format lata fichier Extrusion.lata domaine dom }
 
 
-fin
+End
 

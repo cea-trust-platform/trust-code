@@ -23,7 +23,7 @@
 #include <Sondes.h>
 
 Implemente_liste(Sonde);
-Implemente_instanciable(Sondes,"Sondes",LIST(Sonde));
+Implemente_instanciable(Sondes,"Sondes|Probes",LIST(Sonde));
 
 
 

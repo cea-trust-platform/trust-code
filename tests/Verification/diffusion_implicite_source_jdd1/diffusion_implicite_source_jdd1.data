@@ -24,7 +24,7 @@ Mailler dom
 
 Sous_zone interface
 Associate interface dom
-Lire interface {
+Read interface {
           Rectangle
           Origine 0.46  0.08
           Cotes   0.08  0.06
@@ -38,20 +38,20 @@ Partition dom
 	Larg_joint 1
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
 Scatter DOM.Zones dom
 Sous_Zone interface
 Associate interface dom
-Lire interface { Fichier interface.ssz }
+Read interface { Fichier interface.ssz }
 END SCATTER #
 
 VDF dis
 
-Schema_Euler_implicite sch
-Lire sch
+Scheme_euler_implicit sch
+Read sch
 {
 	tinit 0
 	nb_pas_dt_max 3
@@ -65,7 +65,7 @@ Lire sch
 }
 
 Fluide_Incompressible eau
-Lire eau
+Read eau
 {
 	mu Champ_Uniforme 1 0.02
 	rho Champ_Uniforme 1 2
@@ -77,7 +77,7 @@ Associate pb eau
 
 Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard
 	{
@@ -119,4 +119,4 @@ Lire pb
 }
 
 Solve pb
-Fin
+End

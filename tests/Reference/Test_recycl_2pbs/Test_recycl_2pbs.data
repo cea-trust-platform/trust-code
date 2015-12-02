@@ -61,15 +61,15 @@ Partition dom_pb2
 	Larg_joint 2
 	Nom_Zones DOM2
 }
-Fin
+End
 END PARTITION #
 # BEGIN SCATTER
 Scatter DOM1.Zones dom_pb1
 Scatter DOM2.Zones dom_pb2
 END SCATTER #
 
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
         tinit 0.
         tmax 1000. 
@@ -85,7 +85,7 @@ Lire sch
 VDF dis
 
 Fluide_Incompressible air1
-Lire air1
+Read air1
 {
         mu Champ_Uniforme 1 2.3E-4  
         rho Champ_Uniforme 1 .882
@@ -95,7 +95,7 @@ Lire air1
 }
 
 Fluide_Incompressible air2
-Lire air2
+Read air2
 {
         mu Champ_Uniforme 1 2.3E-4  
         rho Champ_Uniforme 1 .882
@@ -118,7 +118,7 @@ Associate pbc sch
 Discretize pbc dis
 
 
-Lire pb1
+Read pb1
 {
 Navier_Stokes_standard
 {
@@ -155,7 +155,7 @@ Postraitement
 sauvegarde formatte pb1.sauv 
 }
 
-Lire pb2
+Read pb2
 {
 Navier_Stokes_standard
 {
@@ -196,4 +196,4 @@ sauvegarde formatte pb2.sauv
 
 
 Solve pbc
-Fin
+End

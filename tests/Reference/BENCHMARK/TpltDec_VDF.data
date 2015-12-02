@@ -1,11 +1,11 @@
 dimension 3
 Domaine dom
-Lire_fichier_Bin dom dom.geom
+Read_file_binary dom dom.geom
 Partition dom
 {
 	Larg_joint 2
 	Nom_Zones DOM
 	Partitionneur metis { nb_parts n }
 }
-fin
+End
 

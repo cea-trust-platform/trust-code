@@ -3,7 +3,7 @@
 # BEGIN PARTITION 
 system "touch DOM_0000.Zones"
 system "touch DOM_0001.Zones"
-fin
+End
 END PARTITION #
 /*
 pour faire marcher make_PAR.data
@@ -16,4 +16,4 @@ test_solveur {
 	 impr
 	 }
 
-fin 
+End 

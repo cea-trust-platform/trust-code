@@ -13,7 +13,7 @@ Partition dom
 	Larg_joint 2
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -21,11 +21,11 @@ Scatter DOM.Zones dom
 END SCATTER #
 
 VEFPreP1B dis
-# Lire dis { P0 P1 changement_de_base_P1Bulle 1 cl_pression_sommet_faible 1 } #
+# Read dis { P0 P1 changement_de_base_P1Bulle 1 cl_pression_sommet_faible 1 } #
 
 # Schema_MacCormack sch #
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0.
 	tmax 5
@@ -38,7 +38,7 @@ Lire sch
 }
 
 Fluide_Quasi_Compressible fluide
-Lire fluide
+Read fluide
 {
 	mu Champ_Uniforme 1 1.85e-5
 	pression 93539.4608571
@@ -52,7 +52,7 @@ Lire fluide
 }
 
 Champ_Uniforme gravite
-Lire gravite 2 0 -9.81
+Read gravite 2 0 -9.81
 
 Associate fluide gravite
 Associate pb dom
@@ -61,7 +61,7 @@ Associate pb fluide
 
 Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_QC
 	{
@@ -117,9 +117,9 @@ Lire pb
 }
 
 Solve pb
-Fin
+End
 
 nb_pas_dt_max 100
 convection { amont }
 convection { amont }
-Schema_Euler_explicite sch
+Scheme_euler_explicit sch

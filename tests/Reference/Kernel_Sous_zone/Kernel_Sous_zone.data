@@ -47,7 +47,7 @@ Partition dom
 	Larg_joint 2
 	Nom_Zones dom
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -56,19 +56,19 @@ END SCATTER #
 
 Sous_Zone zone0
 Associate zone0 dom
-Lire zone0 { Couronne  Origine  1.0  0. ri 0. re 0.2 }
+Read zone0 { Couronne  Origine  1.0  0. ri 0. re 0.2 }
 
 Sous_Zone zone1
 Associate zone1 dom
-Lire zone1 { Fonction_sous_zone (x-1.)^2+y^2<0.2 }
+Read zone1 { Fonction_sous_zone (x-1.)^2+y^2<0.2 }
 
 Sous_Zone zone2
 Associate zone2 dom
-Lire zone2 { Segment Origine 1.0 0. cotes 0. 0.2 }
+Read zone2 { Segment Origine 1.0 0. cotes 0. 0.2 }
 
 Discretiser_domaine dom
 
 Postraiter_domaine { domaine dom format lml }
 
-fin
+End
 

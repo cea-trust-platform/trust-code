@@ -29,7 +29,7 @@ Partition dom
 	Larg_joint 1
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -37,8 +37,8 @@ Scatter DOM.Zones dom
 END SCATTER #
 
 VDF dis
-schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0.
 	tmax 0.02
@@ -50,7 +50,7 @@ Lire sch
 }
 
 Fluide_Ostwald fluide
-Lire fluide
+Read fluide
 {
 	K Champ_Fonc_Tabule 1 temperature  { 9 20. 25. 30. 35. 40. 45. 50. 55. 60. 4.983711 3.842698  2.962919  2.284563  1.761516  1.358222  1.047257  0.807490  0.622616 }
 	rho Champ_Uniforme 1 995
@@ -68,7 +68,7 @@ Associate pb fluide
 
 Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_Standard
 	{
@@ -116,4 +116,4 @@ Lire pb
 }
 
 Solve pb
-Fin
+End

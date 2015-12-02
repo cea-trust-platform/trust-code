@@ -2,10 +2,10 @@
 # PARALLEL RUNS #
 # lance_test 1 ecart #
 dimension 2    
-  schema_euler_implicite sch 
+  Scheme_euler_implicit sch 
 # Runge_Kutta_ordre_3 sch #
 Runge_Kutta_Rationnel_ordre_2 sch2
-Lire sch
+Read sch
 {
         tinit 0.
         tmax 30
@@ -62,7 +62,7 @@ Partition dom_fluide
 	Larg_joint 2
 	Nom_Zones DOM2
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -72,7 +72,7 @@ END SCATTER #
 VeFPrep1B dis
 
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
         mu Champ_Uniforme 1 0.001
         rho Champ_Uniforme 1 1.
@@ -89,7 +89,7 @@ Associate pb2 sch
 Discretize pb2 dis
 
 
-Lire pb2
+Read pb2
 {
         Navier_Stokes_standard
         {
@@ -151,4 +151,4 @@ Lire pb2
 }
 
 Solve pb2
-Fin
+End

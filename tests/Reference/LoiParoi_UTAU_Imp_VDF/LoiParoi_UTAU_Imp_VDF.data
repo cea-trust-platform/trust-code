@@ -35,7 +35,7 @@ Partition dom_pb2
 	Larg_joint 1
 	Nom_Zones dom_pb2
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -48,8 +48,8 @@ Pb_hydraulique_turbulent  pbf
 
 
 
-schema_euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
         tinit 0 
         tmax 10.
@@ -64,7 +64,7 @@ Lire sch
 VDF cubes
 
 Fluide_Incompressible He
-Lire He
+Read He
 {
         mu Champ_Uniforme 1 4.46437e-05 
         rho Champ_Uniforme 1 4.40684
@@ -81,7 +81,7 @@ Associate pbf sch
 Discretize pbf cubes
 
 
-Lire pbf
+Read pbf
 {
         Navier_Stokes_turbulent
         {
@@ -119,6 +119,6 @@ Lire pbf
 }
 
 Solve pbf
-Fin
+End
 
 		        turbulence_paroi UTAU_IMP { u_tau Champ_uniforme 1 0.1 }

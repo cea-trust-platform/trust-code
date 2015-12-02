@@ -17,8 +17,8 @@ mailler boite {
 }
 tetraedriser_homogene_compact boite
 Corriger_frontiere_periodique { Domaine boite Bord perio }
-Decouper boite {
-	Partitionneur tranche { tranches 1 1 2 }
+Partition boite {
+	Partition_tool tranche { tranches 1 1 2 }
 	Larg_joint 2
-	Nom_Zones boite
+	zones_name boite
 }

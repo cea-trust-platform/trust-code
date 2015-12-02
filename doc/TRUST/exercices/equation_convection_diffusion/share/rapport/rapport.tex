@@ -501,10 +501,10 @@ Le traitement de cette nouvelle référence nécessite les actions suivantes:
 
  \item la surcharge des méthodes suivantes \footnote{Seul les fonctionnalités spécifiques de la nouvelle classe \texttt{Convection\_Diffusion} sont décrites.}:
   \begin{itemize}
-\item \texttt{associer\_milieu\_base}: associer le milieu à l'équation de convection diffusion et plus précisément associer le  nouveau constituant \texttt{Constituant\_Avec\_Vitesse} 
+\item \texttt{associer\_milieu\_base}: Associate le milieu à l'équation de convection diffusion et plus précisément associer le  nouveau constituant \texttt{Constituant\_Avec\_Vitesse} 
 à l'équation.
-\item  \texttt{associer\_constituant}: associer le constituant à l'équation \texttt{Convection\_Diffusion}. Cette méthode est appelée par la méthode précédente \texttt{associer\_milieu\_base}.
-\item \texttt{lire\_motcle\_non\_standard}: lire les mots clé non standard du jeu de données tel que \texttt{convection} pour associer la vitesse de convection à l'équation de convection diffusion
+\item  \texttt{associer\_constituant}: Associate le constituant à l'équation \texttt{Convection\_Diffusion}. Cette méthode est appelée par la méthode précédente \texttt{associer\_milieu\_base}.
+\item \texttt{lire\_motcle\_non\_standard}: Read les mots clé non standard du jeu de données tel que \texttt{convection} pour Associate la vitesse de convection à l'équation de convection diffusion
 \end{itemize}
 \item le développement des méthodes \texttt{printOn} et \texttt{readOn}.
 \end{enumerate}
@@ -531,7 +531,7 @@ Pour utiliser cette nouvelle classe de problème \texttt{Probleme\_Convection\_Di
   \item \texttt{equation}: renvoie l'attribut contenant l'équation de convection-diffusion (\texttt{eq\_conv\_diff}).
  \end{itemize}
 
- \item surcharger la méthode \texttt{associer\_milieu\_base} pour associer le milieu à l'équation de convection de diffusion \texttt{eq\_conv\_diff}.
+ \item surcharger la méthode \texttt{associer\_milieu\_base} pour Associate le milieu à l'équation de convection de diffusion \texttt{eq\_conv\_diff}.
 
  \item le développement des méthodes \texttt{printOn} et \texttt{readOn}.
 

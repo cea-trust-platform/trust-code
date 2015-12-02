@@ -7,8 +7,8 @@ Domaine dom
 Read_file dom RT.geom
 VEF dis
 
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0.
 	tmax 20.0
@@ -21,14 +21,14 @@ Lire sch
 }
 
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
 	mu Champ_Uniforme 1 1e-4
 	rho Champ_Uniforme 1 1.
 }
 Sous_Zone zone1
 Associate zone1 dom
-Lire zone1
+Read zone1
 {
    Rectangle
    Origine -1. -0.1
@@ -36,7 +36,7 @@ Lire zone1
 }
 
 Champ_Uniforme gravite
-Lire gravite 2 0 -9.81
+Read gravite 2 0 -9.81
 
 Associate fluide gravite
 Associate pb dom
@@ -45,7 +45,7 @@ Associate pb fluide
 
 Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_turbulent
 	{
@@ -104,4 +104,4 @@ Lire pb
 }
 
 Solve pb
-Fin
+End

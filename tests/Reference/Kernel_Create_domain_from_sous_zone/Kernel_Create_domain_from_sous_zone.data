@@ -19,7 +19,7 @@ Partition dom
    Larg_joint 1
    Nom_Zones DOM 
 } 
-Fin 
+End 
 END PARTITION #
 
 # BEGIN SCATTER 
@@ -40,4 +40,4 @@ discretiser_domaine new2
 discretiser_domaine new3
 postraiter_domaine { domaines { new1 new2 new3 }  format lml }
 
-fin
+End

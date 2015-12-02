@@ -48,6 +48,6 @@ Postraiter_domaine { domaine DOMF format lml fichier Extract_2D_from_3D }
 
 # BEGIN PARTITION #
 
-Fin
+End
 # END PARTITION #
 

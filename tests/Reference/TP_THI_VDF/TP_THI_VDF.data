@@ -33,7 +33,7 @@ Partition dom
 	Nom_Zones DOM
 	Periodique 3 periox perioy perioz
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -42,7 +42,7 @@ END SCATTER #
 
 VDF dis
 Runge_Kutta_ordre_3 sch
-Lire sch
+Read sch
 {
 	tinit 0.
 	tmax 2.0
@@ -55,7 +55,7 @@ Lire sch
 }
 
 Fluide_Incompressible air
-Lire air
+Read air
 {
 	mu Champ_Uniforme 1 2e-20
 	rho Champ_Uniforme 1 2
@@ -67,7 +67,7 @@ Associate pb air
 
 Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard
 
@@ -111,5 +111,5 @@ perioz periodique
 }
 
 Solve pb
-Fin
+End
 

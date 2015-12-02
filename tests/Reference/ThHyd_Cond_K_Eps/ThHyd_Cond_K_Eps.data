@@ -7,8 +7,8 @@
 # 16/09/1999 #
 
 Dimension 2
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	nb_pas_dt_max 10
 	tinit 0.0
@@ -96,7 +96,7 @@ Partition dom_fluide
 	Larg_joint 2
 	Nom_Zones DOM2
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -107,7 +107,7 @@ END SCATTER #
 VDF dis
 
 Solide sol
-Lire sol
+Read sol
 {
 	rho champ_uniforme 1 2700.
 	lambda Champ_Fonc_xyz dom_solide 1 400
@@ -115,7 +115,7 @@ Lire sol
 }
 
 Fluide_Incompressible air
-Lire air
+Read air
 {
 	mu Champ_Fonc_Tabule 1 Temperature 
 		{
@@ -138,7 +138,7 @@ Lire air
 }
 		
 Champ_Uniforme gravite
-Lire gravite 2 -9.81 0
+Read gravite 2 -9.81 0
 
 Associate air gravite
 Associate sol gravite
@@ -156,7 +156,7 @@ Associate pbc pb_solide
 Associate pbc sch
 Discretize pbc dis
 
-Lire Coppec
+Read Coppec
 {
 	Navier_Stokes_Turbulent
 	{
@@ -261,7 +261,7 @@ Postraitement
 	
 }
 
-Lire pb_solide
+Read pb_solide
 {
 	Conduction
 	{
@@ -295,5 +295,5 @@ Postraitement
 
 }
 Solve pbc
-Fin
+End
 

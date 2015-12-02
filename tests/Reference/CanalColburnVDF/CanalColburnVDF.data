@@ -14,7 +14,7 @@ Partition dom_pb1
 	Larg_joint 1
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -23,8 +23,8 @@ END SCATTER #
 
 Pb_conduction pb_solide
 
-schema_euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
         tinit 0 
         tmax 0.2
@@ -39,7 +39,7 @@ Lire sch
 VDF cubes
 
 Solide ceramique    
-Lire ceramique  
+Read ceramique  
 {
 
         rho Champ_Uniforme 1 2225.
@@ -56,7 +56,7 @@ Discretize pb_solide cubes
 
 
 
-Lire pb_solide
+Read pb_solide
 {
         Conduction
         {
@@ -112,4 +112,4 @@ Lire pb_solide
 }
 
 Solve pb_solide
-Fin
+End

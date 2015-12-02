@@ -12,7 +12,7 @@ system "echo 'on essaye medsplitter --ndomains=2 --input-file=obst.med --meshnam
 system "medsplitter --ndomains=2 --input-file=obst.med --meshname=dom --output-file=obst --create-boundary-faces --empty-groups --family-splitting" 
 
 system "touch bidon_0000.Zones bidon_0002.Zones" 
-fin
+End
 astuce pour make_PAR
 Nom_Zones bidon
 END PARTITION #
@@ -24,4 +24,4 @@ discretiser_domaine dom
 
 postraiter_domaine { domaine dom format lata  }
 postraiter_domaine { domaine dom format lml }
-fin
+End

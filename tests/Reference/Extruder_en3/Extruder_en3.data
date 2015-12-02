@@ -40,8 +40,8 @@ VerifierCoin dom_IA { }
 
 VeFprep1b dis
 
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0
 	tmax 2.
@@ -55,7 +55,7 @@ Lire sch
 }
 
 Fluide_Incompressible sodium1
-Lire sodium1
+Read sodium1
 {
        mu Champ_Uniforme 1 .000245
        rho Champ_Uniforme 1 840.
@@ -65,7 +65,7 @@ Lire sodium1
 }
 
 Fluide_Incompressible sodium3
-Lire sodium3
+Read sodium3
 {
        mu Champ_Uniforme 1 .000245
        rho Champ_Uniforme 1 840.
@@ -75,7 +75,7 @@ Lire sodium3
 }
 
 Solide acier
-Lire acier
+Read acier
 {
         rho     Champ_Uniforme 1 7800.
         Cp      Champ_Uniforme 1 500.
@@ -83,7 +83,7 @@ Lire acier
 }
 
 Champ_Uniforme gravite
-Lire gravite 3 0 0 0
+Read gravite 3 0 0 0
 
 Pb_thermohydraulique pb1
 Associate pb1 dom
@@ -109,7 +109,7 @@ Discretize pbc dis
 
 # Debog pb seq faces 1.e-6 0 #
 porosites_champ pb1 champ_fonc_xyz dom 1 1-(z>1)*(z<2)*0.74
-Lire pb1
+Read pb1
 {
 	Navier_Stokes_standard
 	{
@@ -155,7 +155,7 @@ Lire pb1
 	}
 }
 
-Lire pb2
+Read pb2
 {
         Conduction
                 {
@@ -178,7 +178,7 @@ Lire pb2
 	}
 }
 
-Lire pb3
+Read pb3
 {
 	Navier_Stokes_standard
 	{

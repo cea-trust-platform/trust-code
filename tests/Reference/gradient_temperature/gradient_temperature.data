@@ -61,7 +61,7 @@ Partition dom
         Larg_joint 2
         Nom_Zones dom
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -70,8 +70,8 @@ END SCATTER #
 
 VDF dis
 
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	nb_pas_dt_max 10
 	tinit 0
@@ -86,7 +86,7 @@ Lire sch
 }
 
 Solide sodium_liquide_500K
-Lire sodium_liquide_500K
+Read sodium_liquide_500K
 {
 	rho Champ_Uniforme 1 900
 	lambda Champ_Uniforme 1 80
@@ -98,7 +98,7 @@ Associate pb sch
 Associate pb sodium_liquide_500K
 Discretize pb dis 
 
-Lire pb
+Read pb
 {
 	Conduction
 		{
@@ -138,4 +138,4 @@ Lire pb
 
 Solve pb
 
-Fin
+End

@@ -33,7 +33,7 @@ Partition dom_pbGros
 	Larg_joint 2
 	Nom_Zones DOM
 }
-Fin 
+End 
 END PARTITION #
 
 # BEGIN SCATTER
@@ -44,7 +44,7 @@ END SCATTER #
 VDF dis
 
 Runge_Kutta_ordre_3 sch
-Lire sch
+Read sch
 {
 	tinit 0.
 	tmax 0.1
@@ -57,7 +57,7 @@ Lire sch
 
 
 Fluide_Incompressible air
-Lire air
+Read air
 {
 	mu Champ_Uniforme 1 0.0019862
 	rho Champ_Uniforme 1 2
@@ -67,7 +67,7 @@ Lire air
 }
 
 Champ_Uniforme gravite
-Lire gravite 3 0 0 0
+Read gravite 3 0 0 0
 
 Associate air gravite
 
@@ -80,7 +80,7 @@ Discretize pbGros dis
 # Ampli_bruit mis a 0 car cela cree des differences entre sequentiel et parallele ou sur entre machines #
 # Sinon mettre Ampli_bruit 1. #
 # definition du probleme grossier #
- Lire pbGros
+ Read pbGros
 {
 	Navier_Stokes_Turbulent	
 	{
@@ -140,6 +140,6 @@ perioz periodique
 }
 
 Solve pbGros
-Fin
+End
 
 

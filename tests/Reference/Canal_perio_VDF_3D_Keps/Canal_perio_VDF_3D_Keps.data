@@ -36,7 +36,7 @@ Partition dom
 	Nom_Zones dom
 	Periodique 2 periox perioz
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -46,7 +46,7 @@ END SCATTER #
 VDF dis
 Runge_Kutta_ordre_3 sch
 # nb_pas_dt_max 10 #
-Lire sch
+Read sch
 {
 	nb_pas_dt_max 10
 	tinit 0. 
@@ -60,7 +60,7 @@ Lire sch
 
 
 Fluide_Incompressible air
-Lire air
+Read air
 {
 	mu Champ_Uniforme 1 0.0001108
 	rho Champ_Uniforme 1 2
@@ -70,7 +70,7 @@ Lire air
 }
 
 Champ_Uniforme gravite
-Lire gravite 3 0 0 0
+Read gravite 3 0 0 0
  
 Associate air gravite
 
@@ -83,7 +83,7 @@ Discretize pb dis
 # vitesse champ_init_canal_sinal 3 { Ucent 50. h 1.0  ampli_sin 1. omega 1. ampli_bruit 1. } #
 # La condition initiale precedente n'a pas ete prise car une comparaison sequentielle-parallele #
 # pour les cas de non regression est impossible a cause du tirage aleatoire utilise pour le bruit #
-Lire pb
+Read pb
 {
 	Navier_Stokes_Turbulent	
 	{
@@ -160,4 +160,4 @@ perioz periodique
 }
 
 Solve pb
-Fin
+End

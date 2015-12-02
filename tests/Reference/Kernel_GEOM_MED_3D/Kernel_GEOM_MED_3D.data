@@ -66,7 +66,7 @@ postraiter_domaine {
 		domaines { hexaedre tetra hexaedre_vef } 
 		fichier Kernel_GEOM_MED_3D.lml
 		format lml }
-fin
+End
 
 
 

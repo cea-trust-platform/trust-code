@@ -29,7 +29,7 @@ Partition dom
 	Larg_joint 2
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 # BEGIN SCATTER
 Scatter DOM.Zones dom
@@ -38,7 +38,7 @@ END SCATTER #
 VEFprep1b dis  
 
 Schema_Predictor_Corrector sch  
-Lire sch
+Read sch
 {
 	tinit 0.
 	nb_pas_dt_max 10
@@ -54,7 +54,7 @@ Lire sch
 }
 
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
 	mu Champ_Uniforme 1 0.0925371 
 	rho Champ_Uniforme 1 900.
@@ -64,7 +64,7 @@ Lire fluide
 }
 
 Champ_Uniforme gravite
-Lire gravite 2 0 -9.81
+Read gravite 2 0 -9.81
 
 Associate fluide gravite
 Associate pb dom
@@ -73,7 +73,7 @@ Associate pb fluide
 
 Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard
 	{
@@ -136,4 +136,4 @@ Lire pb
 }
 	
 Solve pb
-Fin
+End

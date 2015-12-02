@@ -36,7 +36,7 @@ Mailler dom
 Sous_Zone sous_zone1
 Associate sous_zone1 dom
 
-Lire sous_zone1
+Read sous_zone1
 {
       Rectangle
       Origine 0. 0.
@@ -49,7 +49,7 @@ Partition dom
 	Larg_joint 1
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -58,8 +58,8 @@ END SCATTER #
 
 VDF dis
 
-Schema_Euler_explicite sch
-Lire sch
+Scheme_euler_explicit sch
+Read sch
 {
 	tinit 0
 	tmax 10. 
@@ -71,7 +71,7 @@ Lire sch
 }
 
 Fluide_Incompressible eau
-Lire eau
+Read eau
 {
 	mu Champ_Uniforme 1 0.02
 	rho Champ_Uniforme 1 2
@@ -87,7 +87,7 @@ Associate pb eau
 
 Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard
 	{
@@ -157,7 +157,7 @@ Lire pb
 }
 
 Solve pb
-Fin
+End
 seuil 1.e-10
 vitesse Champ_Uniforme 2 0. 0.
 Sortie frontiere_ouverte_pression_imposee 

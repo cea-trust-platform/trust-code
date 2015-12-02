@@ -22,7 +22,7 @@ Partition dom
 	Nom_Zones DOM
 	Periodique 1 perioz
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -32,8 +32,8 @@ END SCATTER #
 # Je choisis une discretisation #
 VEFPreP1B dis
 
-Schema_Euler_explicite mon_schema
-Lire mon_schema
+Scheme_euler_explicit mon_schema
+Read mon_schema
 {
 	nb_pas_dt_max 30
 	tinit 0
@@ -47,7 +47,7 @@ Lire mon_schema
 
 # Je definis un milieu #
 Fluide_Incompressible milieu
-Lire milieu
+Read milieu
 {
 	mu  Champ_Uniforme 1 0.01
 	rho Champ_Uniforme 1 2.
@@ -58,7 +58,7 @@ Associate pb mon_schema
 Associate pb milieu
 Discretize pb dis
 
-Lire pb
+Read pb
 {
 	Navier_Stokes_standard
 	{

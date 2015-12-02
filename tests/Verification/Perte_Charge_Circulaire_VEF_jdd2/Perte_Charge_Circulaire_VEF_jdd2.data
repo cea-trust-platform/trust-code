@@ -31,9 +31,9 @@ Read zone1 {
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -47,7 +47,7 @@ END SCATTER #
 
 
 # Le schema en temps #
-Schema_Euler_explicite sch
+Scheme_euler_explicit sch
 Read sch {
 	tinit   0
 	nb_pas_dt_max 3
@@ -58,7 +58,7 @@ Read sch {
 	dt_sauv 100
 	seuil_statio 1e-10
 }
-Schema_Euler_implicite sch_impl
+Scheme_euler_implicit sch_impl
 Read sch_impl {
 	tinit   0
 	nb_pas_dt_max 3
@@ -114,7 +114,7 @@ Read pb {
 		
 		convection { amont }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0 0
 		}
 		
@@ -127,19 +127,19 @@ Read pb {
 
 	}
 
-	Postraitement {
+	Post_processing {
 	    Definition_champs {
 	min_gradient Reduction_0D { methode min
 		source refChamp { pb_champ pb gradient_pression  }
 		}
 	}
-		sondes 
+		Probes 
 		{  
 		   min_gradient min_gradient periode 1.e-9 numero_elem_sur_maitre 0
 		   sonde_vitesse vitesse periode 0.1 point 1 15 5
 		     sonde_gradient_pression gradient_pression periode 0.1 point 1 15 5	
 		}
-		Champs dt_post 1 {
+		fields dt_post 1 {
 			pression_pa elem
 			pression elem
 			vitesse elem

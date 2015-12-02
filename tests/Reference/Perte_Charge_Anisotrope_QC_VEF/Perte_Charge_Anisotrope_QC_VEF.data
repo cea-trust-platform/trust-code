@@ -20,7 +20,7 @@ Trianguler_H dom
 
 Sous_Zone zone1
 Associate zone1 dom
-Lire zone1 {
+Read zone1 {
    Rectangle
       Origine 0 0
       Cotes   30 10
@@ -35,20 +35,20 @@ Partition dom
 	Larg_joint 2
 	Nom_Zones DOM
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
 Scatter DOM.Zones dom
 Sous_Zone  zone1
 Associate zone1 dom
-Lire zone1 { Fichier zone1.ssz }
+Read zone1 { Fichier zone1.ssz }
 END SCATTER #
 
 
 # Le schema en temps #
-Schema_Euler_explicite sch
-Lire sch {
+Scheme_euler_explicit sch
+Read sch {
 	tinit   0
 	nb_pas_dt_max 3
 	tmax    10.
@@ -58,8 +58,8 @@ Lire sch {
 	dt_sauv 100
 	seuil_statio 1e-10
 }
-Schema_Euler_implicite sch_impl
-Lire sch_impl {
+Scheme_euler_implicit sch_impl
+Read sch_impl {
 	tinit   0
 	nb_pas_dt_max 3
 	tmax    10.
@@ -75,13 +75,13 @@ VEFPreP1B dis
 
 # Le Fluide 
 Fluide_Incompressible eau
-Lire eau {
+Read eau {
 	mu Champ_Uniforme 1 0.001
 	rho Champ_Uniforme 1 1000
 } #
 
 Fluide_Quasi_Compressible eau
-Lire eau {
+Read eau {
 	mu Champ_Uniforme 1 0.001
         pression 3.5e8
         lambda Champ_Uniforme 1 0.597
@@ -98,7 +98,7 @@ Lire eau {
 Pb_Thermohydraulique_QC pb
 
 Champ_Uniforme gravite
-Lire gravite 2 0 -9.81
+Read gravite 2 0 -9.81
 
 Associate eau gravite
 Associate pb dom
@@ -106,7 +106,7 @@ Associate pb sch
 Associate pb eau
 Discretize pb dis
 
-Lire pb {
+Read pb {
 
 	Navier_Stokes_QC {
 		methode_calcul_pression_initiale avec_sources	
@@ -177,4 +177,4 @@ Lire pb {
 }
 
 Solve pb
-Fin
+End

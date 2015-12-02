@@ -1,6 +1,6 @@
 Nom ok
 
-Lire_fichier ok is_ok
+Read_file ok is_ok
 ecrire ok
 system "mv Post1.lml CasCouplage_jdd1.lml"
 system "ln -sf CasCouplage_jdd1.lml CasCouplage_jdd2.lml"

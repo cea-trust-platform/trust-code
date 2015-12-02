@@ -37,7 +37,7 @@ Partition dom
 	Nom_Zones canalQCdt20K
 	Periodique 2 periox perioz
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -45,8 +45,8 @@ Scatter canalQCdt20K.Zones dom
 END SCATTER #
 VDF dis
 
-Schema_Euler_explicite sch_ex 
-Lire sch_ex
+Scheme_euler_explicit sch_ex 
+Read sch_ex
 {
         tinit 0.
         tmax 50.
@@ -61,8 +61,8 @@ Lire sch_ex
 	nb_pas_dt_max 20
 }
 
-Schema_Euler_Implicite sch
-Lire sch
+Scheme_euler_implicit sch
+Read sch
 {
         tinit 0.
         tmax 50.
@@ -85,7 +85,7 @@ Lire sch
 }
 
 Fluide_Quasi_Compressible fluide
-Lire fluide
+Read fluide
 {
         mu Champ_Fonc_Fonction 1 temperature (1.461e-6*(val^1.5)/(val+111.))
         pression 100000.
@@ -101,7 +101,7 @@ Lire fluide
 }
 
 Champ_Uniforme gravite
-Lire gravite 3 0. -9.81 0.
+Read gravite 3 0. -9.81 0.
 
 Associate fluide gravite
 Associate pb dom
@@ -110,7 +110,7 @@ Associate pb fluide
 
 Discretize pb dis
 
-Lire pb
+Read pb
 {
         Navier_Stokes_QC
         {
@@ -170,4 +170,4 @@ Lire pb
 }
 
 Solve pb
-Fin
+End

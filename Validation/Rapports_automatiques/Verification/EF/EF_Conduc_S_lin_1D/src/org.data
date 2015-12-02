@@ -9,7 +9,7 @@ dimension 2
 Pb_conduction pb
 Domaine dom
 Domaine dom2
-# DEBUT MAILLAGE #
+# BEGIN MESH #
 Mailler dom
 {
 	Pave Cavite 
@@ -25,25 +25,25 @@ Mailler dom
 		Bord Droit  X = 2. 0. <= Y <= 1.
 	}
 } 
-# FIN MAILLAGE #
-# DEBUT DECOUPAGE
-Decouper dom
+# END MESH #
+# BEGIN PARTITION
+Partition dom
 {
 	Partitionneur tranche { tranches 2 1 }
 	Larg_joint 1
 	Nom_Zones DOM
 }
-Fin
-FIN DECOUPAGE #
+End
+END PARTITION #
 
-# DEBUT LECTURE
+# BEGIN SCATTER
 Scatter DOM.Zones dom
-FIN LECTURE #
+END SCATTER #
 
 EF dis
 
-Schema_Euler_implicite sch
-Lire sch
+Scheme_euler_implicit sch
+Read sch
 {
 	tinit 0
 	dt_min 0.00001
@@ -54,22 +54,22 @@ facsec 1e4
 }
 
 Solide sol
-Lire sol
+Read sol
 {
 	rho Champ_Uniforme 1 1.
 	lambda Champ_Uniforme 1 0.25
 	Cp Champ_Uniforme 1 1.
 }
-Associer pb dom
-Associer pb sch
-Associer pb sol
+Associate pb dom
+Associate pb sch
+Associate pb sol
 
-Discretiser pb dis
+Discretize pb dis
 
 extraire_surface  { domaine dom2 probleme pb avec_certains_bords 1 Bas }
 ecrire_fichier_formatte dom2 dom2.geom
-fin
-Lire pb
+End
+Read pb
 {
 	Conduction
 	{
@@ -80,7 +80,7 @@ Lire pb
 		conditions_initiales {
 			temperature Champ_Uniforme 1 0. 
 			}
-		conditions_limites {
+		boundary_conditions {
 			Haut paroi_adiabatique
 			Bas symetrie
 			Droit paroi_temperature_imposee
@@ -104,6 +104,6 @@ Lire pb
 	}
 }
 
-Resoudre pb
+Solve pb
 
-Fin
+End
