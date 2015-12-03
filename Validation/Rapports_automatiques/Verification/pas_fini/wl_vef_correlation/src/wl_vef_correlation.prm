@@ -15,27 +15,22 @@ Chapter {
 Figure {
 	Title "Time evolution of temperature at the point (2.5;0.5;0.5)"
 	Dimension 2
-	RangeX 0. 3000
+	# RangeX 0. 3000
 	LabelX "Time (s)"
 	LabelY "Temperature (K)"
+	include_description_curves 0
 	Curve {
 		legend "Re=2E4"
-		origin "Trio_U"
-		Version "1.5.4"
 		file ./wl_Re_2E4/wl_Re_2E4_SONDE_TEMP_MIL_M.son
 	Style lines
 	}
 	Curve {
 		legend "Re=1E5"
-		origin "Trio_U"
-		Version "1.5.4"
 		file ./wl_Re_1E5/wl_Re_1E5_SONDE_TEMP_MIL_M.son
 	Style lines
 	}
 	Curve {
 		legend "Re=5E5"
-		origin "Trio_U"
-		Version "1.5.4"
 		file ./wl_Re_5E5/wl_Re_5E5_SONDE_TEMP_MIL_M.son
 	Style lines
 	}
@@ -45,31 +40,26 @@ Figure {
 Figure {
 	Title "Velocity profiles (u component) for section x=2.1"
 	Dimension 2
-	RangeY 0. 1.5
+	# RangeY 0. 1.5
 	LabelX "y (m)"
 	LabelY "u/u(t=0) "
+	include_description_curves 0
 	Curve {
 		legend "Re=2E4"
-		origin "Trio_U"
-		Version "1.5.4"
-		segment ./wl_Re_2E4/wl_Re_2E4 sonde_seg_vit_mil_dec 8201
+		segment ./wl_Re_2E4/wl_Re_2E4 sonde_seg_vit_mil_dec 
 		columns $1 $2/0.33333
 	Style lines
 	}
 	Curve {
 		legend "Re=1E5"
-		origin "Trio_U"
-		Version "1.5.4"
-		segment ./wl_Re_1E5/wl_Re_1E5 sonde_seg_vit_mil_dec 1750
+		segment ./wl_Re_1E5/wl_Re_1E5 sonde_seg_vit_mil_dec
 		columns $1 $2/1.66665
 	Style points
 	#TypePoint 2
 	}
 	Curve {
 		legend "Re=5E5"
-		origin "Trio_U"
-		Version "1.5.4"
-		segment ./wl_Re_5E5/wl_Re_5E5 sonde_seg_vit_mil_dec 726
+		segment ./wl_Re_5E5/wl_Re_5E5 sonde_seg_vit_mil_dec 
 		columns $1 $2/8.33325
 	Style lines
 	}
@@ -78,29 +68,24 @@ Figure {
 Figure {
 	Title "Temperature profiles for section x=2.1"
 	Dimension 2
-	RangeY 500. 500.3
+	#RangeY 500. 500.3
 	LabelX "y (m)"
 	LabelY "Temperature (K)"
+	include_description_curves 0
 	Curve {
 		legend "Re=2E4"
-		origin "Trio_U"
-		Version "1.5.4"
-		segment ./wl_Re_2E4/wl_Re_2E4  sonde_seg_temp_milx_dec 8201
+		segment ./wl_Re_2E4/wl_Re_2E4  sonde_seg_temp_milx_dec 
 	Style lines
 	}
 	Curve {
 		legend "Re=1E5"
-		origin "Trio_U"
-		Version "1.5.4"
-		segment ./wl_Re_1E5/wl_Re_1E5  sonde_seg_temp_milx_dec 1750
+		segment ./wl_Re_1E5/wl_Re_1E5  sonde_seg_temp_milx_dec 
 	Style points
 	#TypePoint 2
 	}
 	Curve {
 		legend "Re=5E5"
-		origin "Trio_U"
-		Version "1.5.4"
-		segment ./wl_Re_5E5/wl_Re_5E5  sonde_seg_temp_milx_dec 726
+		segment ./wl_Re_5E5/wl_Re_5E5  sonde_seg_temp_milx_dec
 	Style lines
 	}
 }
@@ -111,17 +96,14 @@ Table {
 	label  "Flux at the wall (W)" | "Tb(K)" | "Nu(alpha)" | "Nu(calculation)" | "y0"
 	line {
 	legend Re=2e4
-	origin "Trio_U v1.5.4"
 	file ./wl_Re_2E4/val_out
 	}
 	line {
 	legend Re=1e5
-	origin "Trio_U v1.5.4"
 	file ./wl_Re_1E5/val_out
 	}
 	line {
 	legend Re=5e5
-	origin "Trio_U v1.5.4"
 	file ./wl_Re_5E5/val_out
 	}
 }
@@ -134,31 +116,50 @@ Chapter {
 
 
 Figure {
-	Title "Temperature profiles for section x=2.1"
+	Title "Time evolution of temperature at the point (2.5;0.5;0.5)"
 	Dimension 2
-	RangeY 500. 501.
-	LabelX "y (m)"
+	# RangeX 0. 3000
+	LabelX "Time (s)"
 	LabelY "Temperature (K)"
+	include_description_curves 0
 	Curve {
 		legend "Pr=0.3"
-		origin "Trio_U"
-		Version "1.5.4"
-		segment ./wl_Pr_03/wl_Pr_03  sonde_seg_temp_milx_dec 8138
+		file ./wl_Pr_03/wl_Pr_03_SONDE_TEMP_MIL_M.son
 	Style lines
 	}
 	Curve {
 		legend "Pr=1"
-		origin "Trio_U"
-		Version "1.5.4"
-		segment ./wl_Re_2E4/wl_Re_2E4  sonde_seg_temp_milx_dec 8201
+		file ./wl_Re_1E5/wl_Re_1E5_SONDE_TEMP_MIL_M.son
+	Style lines
+	}
+	Curve {
+		legend "Pr=10"
+		file ./wl_Pr_10/wl_Pr_10_SONDE_TEMP_MIL_M.son
+	Style lines
+	}
+	
+}
+Figure {
+	Title "Temperature profiles for section x=2.1"
+	Dimension 2
+	# RangeY 500. 501.
+	LabelX "y (m)"
+	LabelY "Temperature (K)"
+	include_description_curves 0
+	Curve {
+		legend "Pr=0.3"
+		segment ./wl_Pr_03/wl_Pr_03  sonde_seg_temp_milx_dec 
+	Style lines
+	}
+	Curve {
+		legend "Pr=1"
+		segment ./wl_Re_2E4/wl_Re_2E4  sonde_seg_temp_milx_dec
 	Style points
 	#TypePoint 2
 	}
 	Curve {
 		legend "Pr=10"
-		origin "Trio_U"
-		Version "1.5.4"
-		segment ./wl_Pr_10/wl_Pr_10  sonde_seg_temp_milx_dec 13709
+		segment ./wl_Pr_10/wl_Pr_10  sonde_seg_temp_milx_dec 
 	Style lines
 	}
 }
@@ -169,17 +170,14 @@ Table {
 	label  "Flux at the wall (W)" | "Tb(K)" | "Nu(alpha)" | "Nu(calculation)" | "y0"
 	line {
 	legend Pr=0.3
-	origin "Trio_U v1.5.4"
 	file ./wl_Pr_03/val_out
 	}
 	line {
 	legend Pr=1
-	origin "Trio_U v1.5.4"
 	file ./wl_Re_2E4/val_out
 	}
 	line {
 	legend Pr=10
-	origin "Trio_U v1.5.4"
 	file ./wl_Pr_10/val_out
 	}
 }

@@ -30,9 +30,9 @@ Reordonner_Faces_Periodiques dom perioz
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur Metis { Nb_parts 2 }
+	Partition_tool Metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 	Periodique 1 periox
 }
 End
@@ -44,7 +44,7 @@ END SCATTER #
 
 VEFPreP1B dis
 
-Scheme_euler_explicit sch
+Scheme_euler_implicit sch
 Read sch
 {
 	nb_pas_dt_max 100000
@@ -54,7 +54,10 @@ Read sch
 	dt_max 100.
 	dt_impr 10
 	dt_sauv 20000
-	seuil_statio 1.e-6
+	seuil_statio 1.e-8
+solveur implicite  { solveur gmres { diag seuil -1 nb_it_max 5 }
+}
+facsec 100.
 }
 
 Fluide_Incompressible fluide
@@ -77,10 +80,11 @@ Read pb
 {
 	Navier_Stokes_Turbulent
 	{
+	      equation_non_resolue 1
 		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e8 impr }	
 		convection { negligeable }
 		diffusion { negligeable }
-		conditions_initiales { vitesse champ_uniforme 3 0. 0. 0. }
+		initial_conditions { vitesse champ_uniforme 3 0. 0. 0. }
 		boundary_conditions 
 		 {
                      entree  frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 3 0. 0. 0.
@@ -94,8 +98,7 @@ Read pb
 		     fonction 0.16666667e-3*(y*(y<0.5)+(1-y)*(y>0.5)*(y<1))
 		     turbulence_paroi negligeable
 		  }
-	#	 combinaison_champ { erreur { 1 temperature temperature-((0.74413543*ln(0.33333333e-5+(y/5.4e3))+509.3846923)*(y[0.5))-((-0.74413543*ln(0.33333333e-5-(y-1.)/5.4e3)+495.61531)*(y>0.5)) } ,
-		  solution { 1 temperature ((0.74413543*ln(0.33333333e-5+(y/5.4e3))+509.3846923)*(y[0.5))+((-0.74413543*ln(0.33333333e-5-(y-1.)/5.4e3)+495.61531)*(y>0.5)) } } Provisoire #
+	
        }
        
        Convection_Diffusion_Temperature_Turbulent
@@ -111,11 +114,11 @@ Read pb
 			bas    Paroi_temperature_imposee Champ_Front_Uniforme 1 500
 			    
 		 }
-		conditions_initiales { Temperature Champ_Uniforme 1 502.5 }
+		initial_conditions { Temperature Champ_Uniforme 1 502.5 }
 		Modele_turbulence Prandtl { turbulence_paroi  negligeable_scalaire }
 	}
 	      
-	Postraitement
+	Post_processing
 	{		
 		Definition_champs {
 			erreur Transformation {
@@ -129,7 +132,7 @@ Read pb
 				methode formule expression 1 ((0.74413543*ln(0.33333333e-5+(y/5.4e3))+509.3846923)*(y[0.5))+((-0.74413543*ln(0.33333333e-5-(y-1.)/5.4e3)+495.61531)*(y>0.5))
 			}
 		} 
-	     Sondes
+	     Probes
 	      {
 	           sonde_pression pression periode 100 points 1 2.5 0.5 0.5
 		   sonde_vit vitesse periode 100 points 1  2.5 0.5 0.5
@@ -138,7 +141,7 @@ Read pb
 		   sonde_temp_bas temperature periode 100 points 1  2.5 0.1 0.5
 		   sonde_temp_haut temperature periode 100 points 1  2.5 0.9 0.5
 		   sonde_seg_temp_ent temperature periode 100 segment 30  0.1 0.0 0.5 0.1 1. 0.5
-		   sonde_seg_temp_milx temperature periode 100 segment 30  2.5 0.0 0.5 2.5 1. 0.5 
+		   sonde_seg_temp_milx temperature periode 100 segment 30  2.5 0.0 0.5 2.5 1. 0.5
 		   sonde_seg_temp_milx_dec nodes temperature periode 100 segment 30  2.1 0.0 0.5 2.1 1. 0.5 
 		   sonde_seg_temp_sor temperature periode 100 segment 30  4.9 0.0 0.5 4.9 1. 0.5 
 		   sonde_seg_temp_bas temperature periode 100 segment 30  0. 0.1 0.5 5. 0.1 0.5
@@ -152,7 +155,7 @@ Read pb
 		   sonde_seg_sol_mily solution periode 100 segment 30 0. 0.5 0.5 5. 0.5 0.5 
 		   sonde_seg_sol_haut solution periode 100 segment 30  0. 0.9 0.5 5. 0.9 0.5
 		   sonde_seg_err_ent erreur periode 100 segment 30  0.1 0.0 0.5 0.1 1. 0.5
-		   sonde_seg_err_milx erreur periode 100 segment 30  2.5 0.0 0.5 2.5 1. 0.5
+		   sonde_seg_err_milx erreur periode 100 segment 30  2.5 0.0 0.5 2.5 1. 0.5 
 		   sonde_seg_err_milx_nod nodes erreur periode 100 segment 30  2.5 0.0 0.5 2.5 1. 0.5
 		   sonde_seg_err_milx_grav grav erreur periode 100 segment 30  2.5 0.0 0.5 2.5 1. 0.5
 		   sonde_seg_err_milx_dec nodes erreur periode 100 segment 30  2.1 0.0 0.5 2.1 1. 0.5
@@ -162,7 +165,7 @@ Read pb
 		   sonde_seg_err_haut erreur periode 100 segment 30  0. 0.9 0.5 5. 0.9 0.5
 	      }
 	     Format lata
-	     Champs dt_post 1000
+	     fields dt_post 1000
 	      {			
 		   temperature elem
 		   erreur elem
@@ -173,5 +176,6 @@ Read pb
 
 Solve pb
 End
-
 reprise formatte SANS_LP_pb.sauv
+
+

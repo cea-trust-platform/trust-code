@@ -25,12 +25,10 @@ Table {
 	}
 	line {
 	legend no WL
-	origin "Trio_U v1.5.4"
 	file ./no_wl_res2/val_no_wl_out
 	}
 	line {
 	legend WL (u*=0.001054)
-	origin "Trio_U v1.5.4"
 	file ./wl_res2/val_wl_out
 	}
 }
@@ -54,17 +52,14 @@ Figure {
 	Dimension 2
 	LabelX "y (m)"
 	LabelY "Temperature (K)"
+	include_description_curves 0
 	Curve {
 		legend "no WL"
-		origin "Trio_U"
-		Version "1.5.4"
 		segment ./no_wl_res2/no_wl_res2 sonde_seg_temp_milx_dec 
 	Style lines
 	}
 	Curve {
 		legend "WL"
-		origin "Trio_U"
-		Version "1.5.4"
 		segment ./wl_res2/wl_res2 sonde_seg_temp_milx_dec 
 	Style points
 	#TypePoint 2
@@ -83,17 +78,14 @@ Figure {
 	Dimension 2
 	LabelX "y (m)"
 	LabelY "T-Tanalytique (K)"
+	include_description_curves 0
 	Curve {
 		legend "no WL"
-		origin "Trio_U"
-		Version "1.5.4"
 		segment ./no_wl_res2/no_wl_res2 sonde_seg_err_milx_dec 
 	Style lines
 	}
 	Curve {
 		legend "WL"
-		origin "Trio_U"
-		Version "1.5.4"
 		segment ./wl_res2/wl_res2 sonde_seg_err_milx_dec 
 	Style points
 	#TypePoint 2
@@ -105,17 +97,14 @@ Figure {
 	Dimension 2
 	LabelX "y (m)"
 	LabelY "Temperature (K)"
+	include_description_curves 0
 	Curve {
 		legend "no WL"
-		origin "Trio_U"
-		Version "1.5.4"
 		segment ./no_wl_res7/no_wl_res7 sonde_seg_temp_milx_dec 
 	Style lines
 	}
 	Curve {
 		legend "WL"
-		origin "Trio_U"
-		Version "1.5.4"
 		segment ./wl_res7/wl_res7 sonde_seg_temp_milx_dec 
 	Style points
 	#TypePoint 2
@@ -134,17 +123,14 @@ Figure {
 	Dimension 2
 	LabelX "y (m)"
 	LabelY "T-Tanalytique (K)"
+	include_description_curves 0
 	Curve {
 		legend "no WL"
-		origin "Trio_U"
-		Version "1.5.4"
 		segment ./no_wl_res7/no_wl_res7 sonde_seg_err_milx_dec
 	Style lines
 	}
 	Curve {
 		legend "WL"
-		origin "Trio_U"
-		Version "1.5.4"
 		segment ./wl_res7/wl_res7 sonde_seg_err_milx_dec 
 	Style points
 	#TypePoint 2
@@ -156,17 +142,15 @@ Figure {
 	Dimension 2
 	LabelX "y (m)"
 	LabelY "Temperature (K)"
+	include_description_curves 0
+	include_description_curves 0
 	Curve {
 		legend "no WL"
-		origin "Trio_U"
-		Version "1.5.4"
 		segment ./no_wl_res25/no_wl_res25 sonde_seg_temp_milx_dec 
 	Style lines
 	}
 	Curve {
 		legend "WL"
-		origin "Trio_U"
-		Version "1.5.4"
 		segment ./wl_res25/wl_res25 sonde_seg_temp_milx_dec 
 	Style points
 	#TypePoint 2
@@ -185,17 +169,14 @@ Figure {
 	Dimension 2
 	LabelX "y (m)"
 	LabelY "T-Tanalytique (K)"
+	include_description_curves 0
 	Curve {
 		legend "no WL"
-		origin "Trio_U"
-		Version "1.5.4"
 		segment ./no_wl_res25/no_wl_res25 sonde_seg_err_milx_dec 
 	Style lines
 	}
 	Curve {
 		legend "WL"
-		origin "Trio_U"
-		Version "1.5.4"
 		segment ./wl_res25/wl_res25 sonde_seg_err_milx_dec 
 	Style points
 	#TypePoint 2
@@ -209,25 +190,20 @@ Figure {
 	Dimension 2
 	LabelX "y (m)"
 	LabelY "T-Tanalytique (K)"
+	include_description_curves 0
 	Curve {
 		legend "y0=53"
-		origin "Trio_U"
-		Version "1.5.4"
 		segment ./wl_res2/wl_res2 sonde_seg_err_milx_dec 
 	Style lines
 	}
 	Curve {
 		legend "y0=9"
-		origin "Trio_U"
-		Version "1.5.4"
 		segment ./wl_res7/wl_res7 sonde_seg_err_milx_dec
 	Style points
 	#TypePoint 2
 	}
 	Curve {
 		legend "y0=2"
-		origin "Trio_U"
-		Version "1.5.4"
 		segment ./wl_res25/wl_res25 sonde_seg_err_milx_dec
 		
 	Style lines
