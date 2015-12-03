@@ -1,4 +1,5 @@
 jdd=`pwd`
 jdd=`basename $jdd`
-sed "1,$ s?Associer pb implicite?Associer pb explicite?" $jdd.data > explicite.data
+sed "1,$ s?Associate pb implicite?Associate pb explicite?" $jdd.data > explicite.data
+[ "`diff $jdd.data  explicite.data`" = "" ] && exit -1
 trust explicite
