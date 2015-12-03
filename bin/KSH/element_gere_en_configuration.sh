@@ -14,7 +14,7 @@ if [ -d $TRUST_ROOT/.git ]
 then
    # Git
    rep=`dirname $1`
-   if [ "`cd $rep;git-ls-files $1 2>/dev/null`" != "" ]
+   if [ "`cd $rep;git ls-files $1 2>/dev/null`" != "" ]
    then
       SCM=git
    fi

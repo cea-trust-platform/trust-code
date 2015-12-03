@@ -167,8 +167,8 @@ liste()
    # Pour eviter les problemes des .lml.gz sortis de gestion de conf
    if [ "`element_gere_en_configuration.sh .`" = git ]
    then
-      #liste=`\cd $ref;git-ls-files */*/*.lml.gz` 
-      liste=`\cd $ref;git-ls-files $testslist | sort`
+      #liste=`\cd $ref;git ls-files */*/*.lml.gz` 
+      liste=`\cd $ref;git ls-files $testslist | sort`
       nbold=`echo $liste | wc -w`
       nbnew=`echo $testslist | wc -w`
       nbdif=`echo "$nbnew-$nbold" | bc -l`

@@ -81,7 +81,7 @@ fonction
 
 if [ -d $TRUST_ROOT/.git ]
 then
-   git-ls-files | grep -v $filtre > Src.files
+   git ls-files | grep -v $filtre > Src.files
    if [ $? != 0 ]
    then
       echo "Error !"
@@ -100,7 +100,7 @@ then
    if [ $src_only = 0 ]
    then
       cd externalpackages
-      git-ls-files 1>/dev/null
+      git ls-files 1>/dev/null
       if [ $? != 0 ]
       then
          echo "Error !"
@@ -109,7 +109,7 @@ then
       # ajout du log pour identifier l'archive
       git log -1 > .git_log
       echo "externalpackages/".git_log > ../External.files
-      for file in `git-ls-files`
+      for file in `git ls-files`
       do
          echo "externalpackages/"$file >> ../Src.files
          echo "externalpackages/"$file >> ../External.files
