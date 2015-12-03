@@ -15,9 +15,9 @@ VerifierCoin DOM_DOM { }
 
 Partition DOM_DOM
 {
-        Partitionneur tranche { tranches 8 1 1 }
+        Partition_tool tranche { tranches 8 1 1 }
         Larg_joint 2
-        Nom_Zones DOM
+        zones_name DOM
 }
 End
 END PARTITION #
@@ -71,7 +71,7 @@ Read pb
                 solveur_pression petsc cholesky {  }
                 convection { amont }
                 diffusion { }
-                conditions_initiales {
+                initial_conditions {
                         vitesse Champ_Uniforme 3 0. 0.5 1
                                         }
                 boundary_conditions {
@@ -84,10 +84,10 @@ Read pb
                         wall symetrie
                                         }
         }
-        Postraitement
+        Post_processing
         {
                 Format lata
-                Champs binaire dt_post 10.
+                fields binaire dt_post 10.
                        {
                         pression_pa elem
                         gradient_pression elem

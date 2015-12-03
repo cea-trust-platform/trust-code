@@ -66,7 +66,7 @@ Read pb
 		}
 		convection { negligeable }
 		diffusion {  option { grad_u_transpose 1 grad_u_transpose_partout 1 }  }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Fonc_XYZ dom 3 (2.*x) (-y) (-z)
 			}
 		boundary_conditions {
@@ -85,10 +85,10 @@ Read pb
 		}
 	}
 
-	Postraitement
+	Post_processing
 	{
 		format lata
-		Champs dt_post 1.3
+		fields dt_post 1.3
 		{
 			pression_pa elem
 			vitesse som
@@ -104,7 +104,7 @@ End
 		diffusion { option { grad_u_transpose 0 grad_u_transpose_partout 2 } }
 		sources { source_qdm Champ_Fonc_XYZ dom 3 (-4) (2.) (2.) }
 
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Fonc_XYZ dom 3 x*(y+z) -y*z -y*z
 			}
 		boundary_conditions {

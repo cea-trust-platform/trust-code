@@ -69,7 +69,7 @@ Read pb
                         {
                         Canal_perio { bord periox  }
                         }
-		conditions_initiales
+		initial_conditions
 			{
                         vitesse Champ_fonc_xyz dom 2  -3*y*y+6*y 0. 
 			}
@@ -92,16 +92,16 @@ Read pb
                 }
 	}
 
-	Postraitement
+	Post_processing
         	{        
                 format lml
-                Sondes
+                Probes
                 	{ 
                         sonde_vit  vitesse periode 0.1 segment 50 5. 0. 5. 2.
 			sonde_visc_turb  viscosite_turbulente periode 0.1 segment 50	5. 0.
 									5. 2.
 			}
-		Champs dt_post 10.
+		fields dt_post 10.
 			{
 			vitesse elem
 			viscosite_turbulente elem

@@ -29,9 +29,9 @@ Pave Cavite
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 1 }
+	Partition_tool tranche { tranches 2 1 1 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 	Periodique 1 perioz
 }
 End
@@ -84,7 +84,7 @@ Read pb
 
                 convection { amont }
                 diffusion  { }
-		conditions_initiales
+		initial_conditions
 			{
                         vitesse Champ_fonc_xyz dom 3  20. 0. 0. 
 			}
@@ -104,14 +104,14 @@ Read pb
                          
 	}
 
-	Postraitement
+	Post_processing
 	{
         	format lata  
 		Definition_champs {
 		p_elem interpolation { localisation ELEM sources {  refChamp { Pb_champ pb pression } } }
                 x    transformation { methode formule expression 1 x sources_reference { p_elem }  }
 }	
-		Champs dt_post 2.
+		fields dt_post 2.
 			{
 			vitesse elem
 			viscosite_turbulente elem

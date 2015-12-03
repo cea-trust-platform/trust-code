@@ -64,7 +64,7 @@ Read pb
 		convection { negligeable }
 		diffusion {  }
 		sources { source_qdm Champ_Fonc_XYZ dom 3 (0.) (-1.) (1.) }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Fonc_XYZ dom 3 0. y -z
 			}
 		boundary_conditions {
@@ -83,10 +83,10 @@ Read pb
 		}
 	}
 
-	Postraitement
+	Post_processing
 	{
 		format lata
-		Champs dt_post 5e-1
+		fields dt_post 5e-1
 		{
 			pression_pa elem
 			vitesse som

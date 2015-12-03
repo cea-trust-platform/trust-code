@@ -22,9 +22,9 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -61,7 +61,7 @@ Read pb
 		solveur_pression petsc cholesky { }
 		convection { quick }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -72,10 +72,10 @@ Read pb
 					
 		}
 	}
-	Postraitement
+	Post_processing
 	{
 	 	format lml
-		Champs dt_post 1.
+		fields dt_post 1.
 		{
 			vitesse elem
 		}			

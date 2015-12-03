@@ -63,7 +63,7 @@ Read pb
 		convection { negligeable }
 		diffusion { negligeable }
 		sources { source_qdm Champ_Fonc_XYZ dom 2 1000.*(y/sqrt(x*x+y*y)/sqrt(x*x+y*y)/2.) 1000.*(-x/sqrt(x*x+y*y)/sqrt(x*x+y*y)/2.) }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Fonc_XYZ dom 2 10.*(-y/sqrt(x*x+y*y)) 10.*(x/sqrt(x*x+y*y))
 			}
 		boundary_conditions {
@@ -78,10 +78,10 @@ Read pb
 		}
 	}
 
-	Postraitement
+	Post_processing
 	{
                 format lata
-		Champs dt_post 1.e-1
+		fields dt_post 1.e-1
 		{
 			pression_pa elem
 			vitesse som

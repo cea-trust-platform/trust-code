@@ -25,10 +25,10 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -78,7 +78,7 @@ Read pb
 		convection { negligeable }
 		diffusion {  }
 		sources { source_qdm Champ_Fonc_XYZ dom 2 -1. 1. }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Fonc_XYZ dom 2 x -y
 			}
 		boundary_conditions {
@@ -93,10 +93,10 @@ Read pb
 		}
 	}
 
-	Postraitement
+	Post_processing
 	{
                 format lata
-		Champs dt_post 5e-1
+		fields dt_post 5e-1
 		{
 			pression_pa elem
 			vitesse som

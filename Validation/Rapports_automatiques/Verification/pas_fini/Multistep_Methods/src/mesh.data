@@ -26,8 +26,8 @@ Trianguler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
-	Nom_Zones DOM
+	Partition_tool metis { Nb_parts 2 }
+	zones_name DOM
 	Periodique 1 periox
         Larg_joint 2
 }

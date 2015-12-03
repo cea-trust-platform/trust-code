@@ -80,7 +80,7 @@ Read pb
 	 Perte_charge_reguliere Longitudinale Y 2. A 1. B 3.  zone_tout ,
 	 Perte_charge_reguliere Longitudinale Z 2. A 1. B 3.  zone_tout 
 	}
-		conditions_initiales { vitesse Champ_fonc_xyz dom 3  0. 0. 0. }
+		initial_conditions { vitesse Champ_fonc_xyz dom 3  0. 0. 0. }
 		boundary_conditions
 			{
             		sym    symetrie
@@ -88,14 +88,14 @@ Read pb
             		bas    frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 2. }  
 			}
  	}
-	Postraitement
+	Post_processing
         	{       
-                Sondes
+                Probes
                 {
                  vit vitesse periode 0.5 point 1 0. 0. 1
 		 p pression_pa periode 0.5 point 1 0. 0. 0.
                 }
-		champs dt_post 1.
+		fields dt_post 1.
 		{
 		pression elem
 		}

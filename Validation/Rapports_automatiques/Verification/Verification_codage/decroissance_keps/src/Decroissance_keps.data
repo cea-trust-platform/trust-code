@@ -24,9 +24,9 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -65,7 +65,7 @@ Read pb
 		solveur_pression  gcp { precond ssor { omega 1.6 } seuil 1e15 }
 		convection { negligeable }
 		diffusion { negligeable }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -80,7 +80,7 @@ Read pb
 				boundary_conditions {
 				sym symetrie
 			   	}
-			   	conditions_initiales {
+			   	initial_conditions {
 			      		k_Eps Champ_fonc_xyz dom  2 1 1./(1.92-1.)
 			  	}
 			 }
@@ -89,16 +89,16 @@ Read pb
 			 turbulence_paroi loi_standard_hydr dt_impr_ustar 10. eps_min 1.e-15
 		} 
 	}
-Postraitement 
+Post_processing 
 {
-	Sondes 
+	Probes 
 	{
 		sonde_vitesse vitesse periode 0.01 points 1 0.5 0.5
 		sonde_k k periode 0.01 points 1 0.5 0.5
 		sonde_eps eps periode 0.01 points 1 0.5 0.5
 		sonde_visc viscosite_turbulente periode 0.01 points 1 0.5 0.5
 	}
-	Champs dt_post 200.
+	fields dt_post 200.
 	{
 			vitesse elem
 			k elem

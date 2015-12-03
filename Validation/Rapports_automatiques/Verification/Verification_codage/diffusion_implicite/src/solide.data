@@ -45,9 +45,9 @@ transformer dom_solide x y*0.2
 # BEGIN PARTITION
 Partition dom_solide
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 1
-	Nom_Zones DOM1
+	zones_name DOM1
 }
 
 End
@@ -83,7 +83,7 @@ Read pb1
 	{
 		diffusion { }
 		sources { puissance_thermique champ_fonc_xyz  dom_solide 1  1e5*x }	
-		conditions_initiales {
+		initial_conditions {
 			temperature Champ_Uniforme 1 0.
 			}
 		boundary_conditions {
@@ -98,16 +98,16 @@ Read pb1
 		}
 	}
 	
-	Postraitement
+	Post_processing
 	{
 	format lata
-		Sondes
+		Probes
 		{
 			sonde_tsol temperature periode 1. segment 10  
 				0. 0.1
 				1 .1
 		}
-		Champs dt_post 10.
+		fields dt_post 10.
 		{
 			temperature elem
 			temperature som
