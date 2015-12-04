@@ -28,9 +28,9 @@ Corriger_frontiere_periodique { Domaine dom Bord perioY }
 # BEGIN PARTITION
 Partition dom
 {
-        Partitionneur Metis { Nb_parts 3 }
+        Partition_tool Metis { Nb_parts 3 }
         Larg_joint 2
-        Nom_Zones DOM
+        zones_name DOM
 	periodique 1 perioY
 }
 End
@@ -78,7 +78,7 @@ Read pb
 		}
 		diffusion {  }
                 convection { EF_stab { } }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 3 1. 1. 1.
 			}
 		boundary_conditions {
@@ -89,18 +89,18 @@ Read pb
 
 	}
 
-	Postraitements
+	Post_processings
 	{
 		lml
 		{
 			fichier P0P1Pa_perio
 			format lml
-			Champs dt_post 100.
+			fields dt_post 100.
 			{
 				vitesse elem
                        		 pression elem
 			}
-                	Sondes 
+                	Probes 
                 	{
 				vitx_moyenne vitesse  periode 0.5 segment 20  1. 1. 1. 2. 2. 2.
                 	}
@@ -109,7 +109,7 @@ Read pb
 		{
 			fichier P0P1Pa_perio
 			format lata
-			Champs dt_post 100.
+			fields dt_post 100.
 			{
 				vitesse elem
 			}

@@ -40,15 +40,15 @@ Mailler dom_pbF1
 # BEGIN PARTITION
 Partition dom_pbG
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 1
-	Nom_Zones DOM1
+	zones_name DOM1
 }
 Partition dom_pbF1
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 1
-	Nom_Zones DOM2
+	zones_name DOM2
 }
 End
 END PARTITION #
@@ -129,7 +129,7 @@ Read pbF1
                 convection { amont }
                 diffusion { }
                 sources { boussinesq_temperature { T0 20. } }
-                conditions_initiales {
+                initial_conditions {
                         vitesse Champ_Uniforme 2 0. 0.
                         }
                 boundary_conditions {
@@ -143,7 +143,7 @@ Read pbF1
         {
                 diffusion { }
                 convection { amont }
-                conditions_initiales { Temperature Champ_Uniforme 1 20. }
+                initial_conditions { Temperature Champ_Uniforme 1 20. }
                 boundary_conditions 
                 {
                 	HautF 		frontiere_ouverte T_ext Champ_front_Uniforme 1 20.
@@ -154,10 +154,10 @@ Read pbF1
 	ecrire_fichier_xyz_valeur temperature 1  bords 2 interface BasF
         }
 
-        Postraitement
+        Post_processing
         {
 		format lml
-                Sondes
+                Probes
                 {
                         sonde_V vitesse periode 0.01 segment 10 0. -3. 0. 3.
                         sonde_pression pression periode 0.01 points 1 0. 0.
@@ -171,7 +171,7 @@ Read pbF1
 			
                 }
 		
-                Champs dt_post 1
+                fields dt_post 1
                 {
                         pression elem   
                         vitesse elem
@@ -201,7 +201,7 @@ Read pbG
         Conduction
         {
                 diffusion { }
-                conditions_initiales {
+                initial_conditions {
                         temperature Champ_Uniforme 1 30.
                         }
                 sources {
@@ -215,14 +215,14 @@ Read pbG
                         interface      	paroi_contact pbF1 interface
                 }	  
         }
-        Postraitement
+        Post_processing
         {
 		format lml
-                Sondes
+                Probes
                 {
                         sond_combustible_sortie    temperature periode 5.E-3   points   1 -0.003 1.4 
                 }
-                Champs dt_post 1
+                fields dt_post 1
                 {
                    temperature elem
                 }

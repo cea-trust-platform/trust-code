@@ -9,9 +9,9 @@ Read_file dom tranche.geom
 # BEGIN PARTITION
 Partition dom
 {
-        Partitionneur metis { Nb_parts 2 }
+        Partition_tool metis { Nb_parts 2 }
         Larg_joint 2
-        Nom_Zones DOM
+        zones_name DOM
 }
 End
 END PARTITION #
@@ -82,7 +82,7 @@ Read pb1
 				entree_chaude frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 3 0. 0. 1
 				sorti frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.		
 		}
-		conditions_initiales  { vitesse Champ_Uniforme 3 0. 0. 0. }
+		initial_conditions  { vitesse Champ_Uniforme 3 0. 0. 0. }
 		Modele_turbulence K_epsilon
 		{
 			Transport_K_Epsilon 
@@ -99,7 +99,7 @@ Read pb1
 				  
 				  }
 				
-				conditions_initiales { k_eps Champ_Uniforme 2 0.002 0.001 }
+				initial_conditions { k_eps Champ_Uniforme 2 0.002 0.001 }
 		    	}
 			
 		  	turbulence_paroi loi_standard_hydr eps_min 1.e-15
@@ -120,15 +120,15 @@ Read pb1
 			sorti	  		Frontiere_ouverte T_ext Champ_Front_Uniforme 1 545
 			
 		}
-		conditions_initiales { Temperature Champ_Uniforme 1 526. }
+		initial_conditions { Temperature Champ_Uniforme 1 526. }
                 Modele_turbulence Prandtl
                         { Turbulence_paroi loi_standard_hydr_scalaire 
 			}
             
         }
-        Postraitement  {
+        Post_processing  {
 
-                Sondes
+                Probes
                 {
 			 
 			 sonde_ptV_entreefroide    vitesse periode  0.1  point  1 0 0. 0.01
@@ -157,7 +157,7 @@ Read pb1
 										   0.2 0. 0.4
 		  }
 
-                Champs dt_post 0.1
+                fields dt_post 0.1
                 {                   
                    temperature elem
 		   vitesse elem		  

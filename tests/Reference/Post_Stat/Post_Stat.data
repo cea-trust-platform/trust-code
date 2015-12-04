@@ -11,9 +11,9 @@ Read_file dom dom.geom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -69,7 +69,7 @@ Read pb
 		parametre_equation parametre_implicite { }
 		convection { amont }
 		diffusion { }
-		conditions_initiales { vitesse Champ_fonc_xyz dom 2 0. 0. }
+		initial_conditions { vitesse Champ_fonc_xyz dom 2 0. 0. }
 		boundary_conditions
 		{
 			IN_P	frontiere_ouverte_vitesse_imposee	Champ_Front_fonc_xyz 2	0.	-0.07*0.06510945275		
@@ -85,7 +85,7 @@ Read pb
 		parametre_equation parametre_implicite { }
 		convection { amont }
 		diffusion { }
-		conditions_initiales { Temperature  champ_fonc_xyz dom 1 323+1*200*(y>0)*((x*x)<(0.043*0.043)) }
+		initial_conditions { Temperature  champ_fonc_xyz dom 1 323+1*200*(y>0)*((x*x)<(0.043*0.043)) }
 		boundary_conditions
 		{
 			IN_P	frontiere_ouverte_temperature_imposee	Champ_front_Uniforme 1 523.
@@ -96,12 +96,12 @@ Read pb
 		}
 	}
 
-	Postraitements
+	Post_processings
 	{
 	   Premier_post
 	   {
 		Format lata_v1
-		Champs dt_post 0.1
+		fields dt_post 0.1
 		{
 			vitesse		elem
 			temperature	elem
@@ -119,7 +119,7 @@ Read pb
 	   Deuxieme_post
 	   {
 		fichier Post_Stat
-		Champs dt_post 1.
+		fields dt_post 1.
 		{
 			temperature	elem
 		}

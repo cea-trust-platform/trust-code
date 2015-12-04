@@ -1064,7 +1064,7 @@ Read pb1
 	Conduction
 	{
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			temperature Champ_Uniforme 1 20.
 			}
                 sources {
@@ -1081,9 +1081,9 @@ Read pb1
 			raccord5             paroi_echange_contact_vdf  pb2 raccord5 temperature -4. 
 		}
 	}
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_Tpuits        temperature periode 1.E-5   points 4
                            .44  .01  2.
@@ -1092,7 +1092,7 @@ Read pb1
                            .44  .01  11.
 		}
 		format lml
-		Champs dt_post 500.
+		fields dt_post 500.
 		{
 		   temperature elem
 		}
@@ -1109,7 +1109,7 @@ Read pb2
 		convection { quick }
 		diffusion { }
 		sources { boussinesq_temperature { T0 20. } }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 3 0. 0. 0.
 			}
 		boundary_conditions {
@@ -1125,7 +1125,7 @@ Read pb2
 	{
 		diffusion { }
 		convection { quick }
-		conditions_initiales {
+		initial_conditions {
 			temperature Champ_Uniforme 1 20.
 			}
 		boundary_conditions {
@@ -1135,8 +1135,8 @@ Read pb2
 			raccord5      paroi_echange_contact_vdf  pb1 raccord5     temperature -4. 
                                    }
 	}
-	Postraitement {
-		Sondes
+	Post_processing {
+		Probes
 		{
 			sonde_Vair         vitesse periode 1.E-5 points 4
                         .46 .01  2. 
@@ -1155,7 +1155,7 @@ Read pb2
                         .84 .01  11. 
 		}
 		format lml
-		Champs dt_post 500.
+		fields dt_post 500.
 		{
                    vitesse elem
 		   temperature elem

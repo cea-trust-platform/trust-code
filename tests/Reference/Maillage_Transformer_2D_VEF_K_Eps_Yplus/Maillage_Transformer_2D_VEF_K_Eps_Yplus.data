@@ -126,9 +126,9 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -177,7 +177,7 @@ Read pb
 		} 
 		convection { amont }
 		diffusion  { }
-		conditions_initiales
+		initial_conditions
 			{
        				vitesse Champ_Uniforme 2 0. 0.
 			}
@@ -213,15 +213,15 @@ Read pb
 							Paroi_Ghaut	Paroi 
 							Paroi_Dhaut	Paroi 
 		      				}
-			   		conditions_initiales { K_Eps Champ_Uniforme 2 1.e-2 1.e-1 }
+			   		initial_conditions { K_Eps Champ_Uniforme 2 1.e-2 1.e-1 }
 				}
 				Turbulence_paroi Loi_standard_hydr dt_impr_ustar 0.01
 			}     
 	}            
 	
-	Postraitement 
+	Post_processing 
 	{
-		Sondes 
+		Probes 
 		{ 
 			Sonde_Pression_P1	pression	periode	0.001	segment 100	0.04 0.10  0.04 0.22
 			Sonde_P1		vitesse		periode	0.001	segment 100	0.04 0.10  0.04 0.22
@@ -236,7 +236,7 @@ Read pb
 			Sonde_Y+_Paroi_Ghaut	Y_plus		periode	0.001	segment 100     0.10 0.26  0.10 0.36
 			Sonde_Y+_Paroi_Dhaut	Y_plus		periode	0.001	segment 100     0.12 0.26  0.12 0.36
 		} 
-		Champs dt_post 0.01 
+		fields dt_post 0.01 
 		{ 
 		pression	elem
 		vitesse		elem

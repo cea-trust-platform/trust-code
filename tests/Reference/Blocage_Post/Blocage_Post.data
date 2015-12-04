@@ -15,9 +15,9 @@ VerifierCoin DOM_DOM { }
 
 Partition DOM_DOM
 {
-        Partitionneur tranche { tranches 8 1 1 }
+        Partition_tool tranche { tranches 8 1 1 }
         Larg_joint 2
-        Nom_Zones DOM
+        zones_name DOM
 }
 End
 END PARTITION #
@@ -64,7 +64,7 @@ Read pb
                 solveur_pression GCP { precond ssor { omega 1.65 } seuil 1.e-7 impr }
                 convection { muscl }
                 diffusion { }
-                conditions_initiales {
+                initial_conditions {
                         vitesse Champ_Uniforme 3 0. 0.5 1
                 }
                 boundary_conditions {
@@ -77,12 +77,12 @@ Read pb
                         wall paroi_fixe
                 }
         }
-        Postraitement
+        Post_processing
         {
                 Format lml
 		# Le blocage etait avec vitesse som, disparaissait avec vitesse elem #
 		# Donc ne pas enlever vitesse som ! #
-                Champs dt_post 10.
+                fields dt_post 10.
                        {
                         vitesse som
                        }

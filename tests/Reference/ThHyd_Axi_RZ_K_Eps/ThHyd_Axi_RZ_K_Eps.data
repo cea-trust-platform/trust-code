@@ -114,21 +114,21 @@ Read panierhau { rectangle Origine .171 4.862667 Cotes .01 1.563   }
 # BEGIN PARTITION
 Partition dom_pb1
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM1
+	zones_name DOM1
 }
 Partition dom_pb2
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM2
+	zones_name DOM2
 }
 Partition dom_pb3
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM3
+	zones_name DOM3
 }
 End
 END PARTITION #
@@ -210,7 +210,7 @@ Read pb1
 		convection { quick }
 		diffusion { }
 		sources { boussinesq_temperature { T0 35.5 } }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -224,7 +224,7 @@ Read pb1
 		    Transport_K_Epsilon {
 		         Convection { amont }
 			 Diffusion { }
-			 Conditions_initiales { K_Eps Champ_Uniforme 2 .02 .5  }   
+			 initial_conditions { K_Eps Champ_Uniforme 2 .02 .5  }   
                          boundary_conditions {
 			   entree frontiere_ouverte_k_eps_impose champ_front_uniforme 2 .02 .5
 			   sortie frontiere_ouverte_k_eps_impose champ_front_uniforme 2 .02 .5
@@ -248,12 +248,12 @@ Read pb1
 			peau            paroi_contact pb2  peau
 			plaf            paroi_contact pb3  plaf
 		}
-		conditions_initiales { temperature Champ_Uniforme 1 35.5 }
+		initial_conditions { temperature Champ_Uniforme 1 35.5 }
 	        Modele_turbulence Prandtl { Turbulence_paroi loi_standard_hydr_scalaire } 
 	}
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_teau   temperature periode .001  points 3
 			.182 5.5  
@@ -264,7 +264,7 @@ Read pb1
 			.300 5.5  
 			.422 5.5  
 		}
-                Champs dt_post 1000000.
+                fields dt_post 1000000.
 		{
 		   temperature elem
 		   vitesse elem
@@ -282,20 +282,20 @@ Read pb2
 		sources { puissance_thermique Champ_uniforme_morceaux dom_pb2 1
 		          { defaut 0. panierbas 28918. paniermil 28918. panierhau 28918. }
 			}  
-		conditions_initiales { temperature Champ_uniforme 1 35.5 }
+		initial_conditions { temperature Champ_uniforme 1 35.5 }
 		boundary_conditions {
 			adia               paroi_adiabatique
 			peau               paroi_contact pb1  peau
                  	cont               paroi_contact pb3  cont
 		}
 	}
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_tpeau        temperature periode 1.     segment 10 .176 .01 .176 7.39 
 		}
-                Champs dt_post 1000000.
+                fields dt_post 1000000.
 		{
 		   temperature elem
 		}
@@ -309,20 +309,20 @@ Read pb3
 	Conduction
 	{
 		diffusion { }
-		conditions_initiales { temperature Champ_uniforme 1 35.5 }
+		initial_conditions { temperature Champ_uniforme 1 35.5 }
 		boundary_conditions {
 			adia               paroi_adiabatique
 			cont               paroi_contact pb2  cont
          			plaf               paroi_contact pb1  plaf
 		}
 	}
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_plaf         temperature periode 1.     segment 10 .182 7.21 .422 7.21
 		}
-                Champs dt_post 1000000.
+                fields dt_post 1000000.
 		{
 		   temperature elem
 		}

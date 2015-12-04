@@ -25,9 +25,9 @@ Mailler dom1
 # BEGIN PARTITION
 Partition dom1
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -88,7 +88,7 @@ Read pb1
                 }
                 convection { amont }
                 diffusion { }
-                conditions_initiales {
+                initial_conditions {
                         vitesse Champ_Uniforme 2 0. 0.
                         }
                 boundary_conditions {
@@ -114,7 +114,7 @@ Read pb1
                                         Sortie frontiere_ouverte K_EPS_EXT
 												Champ_Front_Uniforme 2 10. 1.
                                 }
-                                conditions_initiales {
+                                initial_conditions {
                                         k_Eps Champ_Uniforme 2 10. 1.
                                 }
                          }
@@ -135,7 +135,7 @@ Read pb1
                         Sortie frontiere_ouverte T_Ext Champ_Front_Uniforme 1 1.
                 }
                 Modele_Turbulence Prandtl { turbulence_paroi loi_standard_hydr_scalaire Prdt 0.9+0.1*(x>1) dt_impr_nusselt 1.e-4 }
-                conditions_initiales {
+                initial_conditions {
                         temperature Champ_Uniforme 1 1.
                 }
 
@@ -154,14 +154,14 @@ Read pb1
                 } 
               
                 Modele_Turbulence Schmidt { turbulence_paroi loi_standard_hydr_scalaire ScTurb 0.7 }
-                conditions_initiales {
+                initial_conditions {
                         concentration Champ_Uniforme 1 0.
                 }
                 
         }
-        Postraitement
+        Post_processing
         {
-                Sondes
+                Probes
                 {
                         sonde_pression pression periode 0.001 segment 12 0.13 0.11 0.13 0.22
                         sonde_vitesse vitesse periode 0.001 segment 12 0.13 0.11 0.13 0.22
@@ -197,7 +197,7 @@ Read pb1
 		  
 		}
 		
-                Champs dt_post 0.05
+                fields dt_post 0.05
                 {
                         pression elem
                         concentration elem

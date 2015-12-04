@@ -42,15 +42,15 @@ Mailler dom_post
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Ecrire_decoupage DEC_Post_Eclate_dom.dec
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 }
 Partition dom_post
 {
-	Partitionneur Partition { Domaine dom }
-	Nom_Zones DOMP
+	Partition_tool Partition { Domaine dom }
+	zones_name DOMP
 }
 End
 END PARTITION #
@@ -99,7 +99,7 @@ Read pb
 		}
 		convection { amont }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 1. 0.
 			}
 		boundary_conditions {
@@ -110,13 +110,13 @@ Read pb
 		}
 	}
 
-	Postraitements
+	Post_processings
 	{
 		first_post
 		{
 			Format lata
 			Domaine dom_post
-			Champs dt_post 0.1
+			fields dt_post 0.1
 			{
 				pression som
 				pression elem
@@ -136,7 +136,7 @@ Read pb
 		 
 			fichier Post_Eclate
 			Domaine dom_post
-			Champs dt_post 0.1
+			fields dt_post 0.1
 			{
 				pression elem
 				vitesse elem

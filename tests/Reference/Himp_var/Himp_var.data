@@ -28,9 +28,9 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 1 }
+	Partition_tool tranche { tranches 2 1 1 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -83,7 +83,7 @@ Read pb
 		convection { Quick }
 		diffusion { }
 		sources {  }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 3 0 0. 0.
 			}
 		boundary_conditions {
@@ -116,14 +116,14 @@ Read pb
 			Droit  paroi_temperature_imposee 
 				 Champ_Front_Uniforme 1  0.
 		}
-		conditions_initiales { Temperature Champ_fonc_xyz dom 1 5.*(1+x)*(1+y) }
+		initial_conditions { Temperature Champ_fonc_xyz dom 1 5.*(1+x)*(1+y) }
 	}
 
-	Postraitement
+	Post_processing
 	{
 	
 	
-		Champs dt_post 0.1
+		fields dt_post 0.1
 		{
 			temperature elem
 		}

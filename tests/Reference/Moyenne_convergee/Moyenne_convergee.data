@@ -26,9 +26,9 @@ Read_file_binary dom_lu fichier_bin.geom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur trAnche {  tranchEs   2  	1 }
+	Partition_tool trAnche {  tranchEs   2  	1 }
 	Larg_joint 2
-	Nom_Zones dom
+	zones_name dom
 }
 End
 END PARTITION #
@@ -89,7 +89,7 @@ Read pb
 		convection { quick }
 		diffusion { }
 		sources { boussinesq_temperature { T0 5. } }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -110,10 +110,10 @@ Read pb
  			Gauche paroi_temperature_imposee Champ_Front_Uniforme 1 10. 
 			Droit  paroi_temperature_imposee Champ_Front_Uniforme 1 0.  
 		}
-		conditions_initiales { Temperature Champ_Uniforme 1 5. }
+		initial_conditions { Temperature Champ_Uniforme 1 5. }
 	}
 
-	Postraitements
+	Post_processings
 	{		
 	   post_dom {
 	   
@@ -132,7 +132,7 @@ Read pb
                  		}	
 		}
 		
-		Sondes
+		Probes
 		{
 			sonde_P pression periode 0.01 points 1 0.0045 0.0045
 			sonde_V vitesse periode 0.01 points 1 0.0045 0.0045
@@ -140,7 +140,7 @@ Read pb
 		}	
 		format lml
 		fichier Moyenne_convergee
-		Champs dt_post 0.1
+		fields dt_post 0.1
 		{
 			pression elem
 			vitesse elem

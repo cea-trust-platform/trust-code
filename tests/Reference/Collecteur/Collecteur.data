@@ -12,9 +12,9 @@ Modif_bord_to_raccord interass virole_CC
 # BEGIN PARTITION
 Partition interass
 {
-   	partitionneur metis { nb_parts 5 }
+   	Partition_tool metis { nb_parts 5 }
         Larg_joint 2
-        Nom_Zones DOM_interass
+        zones_name DOM_interass
 }
 End
 END PARTITION #
@@ -82,7 +82,7 @@ Read pb
 		solveur_pression Petsc Cholesky  { }
 		convection { amont }
 		diffusion {  }
-  		conditions_initiales { vitesse Champ_Uniforme 3 0. 0. 0. }
+  		initial_conditions { vitesse Champ_Uniforme 3 0. 0. 0. }
 		boundary_conditions {
 			sortie_coeur 	frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 3 0. 0. 1.
 			echg		frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
@@ -97,7 +97,7 @@ Read pb
         {
 		convection { amont }
 		diffusion { }
-		conditions_initiales { temperature Champ_Uniforme 1 303.7 }
+		initial_conditions { temperature Champ_Uniforme 1 303.7 }
 		boundary_conditions {
 			sortie_coeur 	frontiere_ouverte T_ext Champ_Front_Uniforme 1 400 
 			echg		frontiere_ouverte T_ext Champ_Front_Uniforme 1 400
@@ -108,10 +108,10 @@ Read pb
 			bas_coeur_int 	paroi_temperature_imposee champ_front_uniforme 1 400
 			}
 	}
-	Postraitement
+	Post_processing
 	{
 		format lml
-		Champs dt_post 1.
+		fields dt_post 1.
 		{
 			temperature elem
 		}

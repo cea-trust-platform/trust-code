@@ -31,8 +31,8 @@ Trianguler_Fin dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 2 }
-	Nom_Zones DOM
+	Partition_tool tranche { tranches 2 2 }
+	zones_name DOM
 	Periodique 1 periox
         Larg_joint 2
 }
@@ -80,7 +80,7 @@ Read pb
 		solveur_pression petsc cholesky { }	
 		convection { muscl }
 		diffusion { }
-		conditions_initiales { vitesse champ_uniforme 2 0.5 0. }
+		initial_conditions { vitesse champ_uniforme 2 0.5 0. }
 		sources { Canal_perio { bord periox } }
 		boundary_conditions
 		{
@@ -90,7 +90,7 @@ Read pb
 		}
 	}
 	      
-	Postraitement
+	Post_processing
 	{
 		Definition_champs { 
 			solution Transformation {
@@ -100,13 +100,13 @@ Read pb
 		
 		}
 
-		Sondes
+		Probes
 		{
 	           	sonde_pres	pression	periode 0.01 points  1  0.05	-1.85  
 			sonde_vit_trans	vitesse		periode 0.01 segment 20 2. -2.0	2. 0.
 			sonde_solution	 solution 	periode 0.01 segment 20 2. -2.0	2. 0.
 	        }
-		Champs dt_post 2.
+		fields dt_post 2.
 		{			
 			pression	elem			
 			vitesse		som		

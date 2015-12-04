@@ -23,9 +23,9 @@ Transformer dom
 # BEGIN PARTITION
 Partition dom
 {
-        Partitionneur Metis { Nb_parts 2 }
+        Partition_tool Metis { Nb_parts 2 }
         Larg_joint 2
-        Nom_Zones DOM
+        zones_name DOM
 }
 End
 END PARTITION #
@@ -88,7 +88,7 @@ Read pb
 		centre_rotation	Champ_Fonc_t	3	0.	0.	0.
 	}
     }
-    conditions_initiales
+    initial_conditions
     {
 	vitesse Champ_Uniforme 3 0. 0. 0.
     }
@@ -101,17 +101,17 @@ Read pb
     Traitement_particulier { Ec { Ec_dans_repere_fixe periode 1.e-5 } }
   }
 
-  Postraitements
+  Post_processings
   {
   	lata {
-    		Sondes { 
+    		Probes { 
        			profil_pression	pression 	periode 0.01 segment	20 0.05 -0.1 0. 0.05 0.1 0.     
        			profil_vitesse	vitesse 	periode 0.01 segment	10 0.05 -0.1 0. 0.05 0.1 0.   
 			sonde_pression pression		periode 0.01 point	1 0.05 0. 0.  
     			}
     		format lata
     		fichier Cylindre_tournant
-    		Champs dt_post 1.e-1
+    		fields dt_post 1.e-1
     		{
 			acceleration_terme_source	elem
 			pression			som
@@ -121,7 +121,7 @@ Read pb
 	{
     		format lml
     		fichier Cylindre_tournant
-    		Champs dt_post 1.e-1
+    		fields dt_post 1.e-1
     		{
 			acceleration_terme_source	elem
 			pression			som

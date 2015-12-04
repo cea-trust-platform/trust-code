@@ -11,9 +11,9 @@ Read_file dom_pb1 croix_Pb1.geom
 # BEGIN PARTITION
 Partition dom_pb1
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -57,7 +57,7 @@ Read pb
 		solveur_pression cholesky { }
 		convection { amont }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 3 0. 0. 0.
 			}
 		boundary_conditions {
@@ -73,14 +73,14 @@ paroi Paroi_Knudsen_non_negligeable vitesse_paroi Champ_front_uniforme 3 0. 0.
 		}
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_pression pression periode 0.0001 
 				points 1 1. 0. 0.
 		}
-		Champs dt_post 0.5
+		fields dt_post 0.5
 		{
 			pression elem
 			vitesse som

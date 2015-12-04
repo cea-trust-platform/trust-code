@@ -43,7 +43,7 @@ Read pb
 		solveur_pression cholesky { }	
 		convection { muscl }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 		        vitesse Champ_Uniforme 2 0. 0.
 			}
                 boundary_conditions {
@@ -54,9 +54,9 @@ Read pb
                 }
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_pression pression periode 0.1 points 1 0.5 0.5
 			sonde_vitesse   vitesse periode 0.1 points 1 0.5 0.5
@@ -64,7 +64,7 @@ Read pb
 			sonde_V vitesse periode 0.1 segment 71 0.0 0.5 1.0 0.5
 			sonde_P pression periode 1. plan 30 30 0. 0. 1. 0. 0. 1.
 		}
-		Champs dt_post 2.
+		fields dt_post 2.
 		{
 			pression elem
 			pression som

@@ -43,9 +43,9 @@ Tetraedriser_homogene_compact dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -93,7 +93,7 @@ Read pb
                 solveur_pression Gcp { precond ssor { omega 1.6 } seuil 1.e-12 }
 		convection { amont }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 3  0. 0. 0.
 			}
 		boundary_conditions {
@@ -109,9 +109,9 @@ Read pb
                         }
 	}
 
-	Postraitement 
+	Post_processing 
 	{
-		Champs dt_post 50.
+		fields dt_post 50.
 		{
 			viscosite_turbulente elem
 			viscosite_turbulente som

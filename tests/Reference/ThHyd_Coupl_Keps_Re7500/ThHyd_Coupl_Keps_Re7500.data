@@ -74,15 +74,15 @@ Mailler dom_pb2
 # BEGIN PARTITION
 Partition dom_pb1
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 1
-	Nom_Zones DOM1
+	zones_name DOM1
 }
 Partition dom_pb2
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 1
-	Nom_Zones DOM2
+	zones_name DOM2
 }
 End
 END PARTITION #
@@ -140,7 +140,7 @@ Read pb2
 		convection { amont }
                 diffusion { }
                 sources { boussinesq_temperature { T0 480. } }
-                conditions_initiales {
+                initial_conditions {
                         vitesse Champ_Uniforme 2 0. 38.12
                         }
                 boundary_conditions {
@@ -167,7 +167,7 @@ Read pb2
                        		        Plaque              paroi
                         		Gauche_CL           paroi
 		      			}
-			   	conditions_initiales { k_eps Champ_Uniforme 2 1.e-2 1.e-1 }
+			   	initial_conditions { k_eps Champ_Uniforme 2 1.e-2 1.e-1 }
 			}
                           turbulence_paroi loi_standard_hydr dt_impr_ustar 0.001
 		} 
@@ -178,7 +178,7 @@ Read pb2
         {
                 diffusion { }
                 convection { amont }
-                conditions_initiales {
+                initial_conditions {
                         temperature Champ_Uniforme 1 480.
                         }
                 boundary_conditions {
@@ -192,8 +192,8 @@ Read pb2
                                    }
                 Modele_Turbulence Prandtl { turbulence_paroi loi_standard_hydr_scalaire }
         }
-        Postraitement {
-                Sondes
+        Post_processing {
+                Probes
                 {
                         sonde_He_entree_p pression    periode 1.E-3   points   1  0.001  0.
                         prof_sortie_vite  vitesse     periode 1.E-1   segment 10  0.  1.4   0.002 1.4
@@ -203,7 +203,7 @@ Read pb2
                         prof_sortie_temp  temperature periode 1.E-1   segment 10  0.  1.4   0.002 1.4
                         prof_canal_temp   temperature periode 1.E-1   segment 20  0.001 0.  0.001 1.4
                 }
-                Champs dt_post .05
+                fields dt_post .05
                 {
                    vitesse elem
                    vitesse som
@@ -222,7 +222,7 @@ Read pb1
         Conduction
         {
                 diffusion { }
-                conditions_initiales {
+                initial_conditions {
                         temperature Champ_Uniforme 1 900.
                         }
                 sources {
@@ -236,14 +236,14 @@ Read pb1
                         Plaque            paroi_contact  pb2  Plaque
                 }
         }
-        Postraitement
+        Post_processing
         {
-                Sondes
+                Probes
                 {
                         sond_Tcombustible_sortie    temperature periode 1.E-3   points   1 -0.003 1.4 
                         prof_Tcombustible_sortie    temperature periode 1.E-1   segment 10 -0.003 1.4   0.  1.4
                 }
-                Champs dt_post .05
+                fields dt_post .05
                 {
                    temperature elem
                    temperature som

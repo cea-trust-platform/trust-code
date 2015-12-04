@@ -16,9 +16,9 @@ OrienteFacesBord dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 9 }
+	Partition_tool metis { Nb_parts 9 }
 	Larg_joint 2
-	Nom_Zones DOM1
+	zones_name DOM1
 }
 End
 END PARTITION #
@@ -66,7 +66,7 @@ Read pb
 		solveur_pression Petsc Cholesky_Lapack { factored_matrix disk }
 		convection { muscl }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 3 1. 0. 0.
 		}
 		boundary_conditions {
@@ -87,11 +87,11 @@ Read pb
 			Sortie 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
 			Entree 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
                 }
-                conditions_initiales { Temperature Champ_Uniforme 1 20. }
+                initial_conditions { Temperature Champ_Uniforme 1 20. }
         }
-	Postraitement
+	Post_processing
 	{
-	      	Champs dt_post 1.
+	      	fields dt_post 1.
 	      	{ 
 		      	pression_pa elem
 		      	pression_pa som

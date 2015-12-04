@@ -12,9 +12,9 @@ Read_file dom_1 double01_2d1fois_Pb1_2D.geom
 # BEGIN PARTITION 
 Partition dom_1
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 2
-	Nom_Zones DOM1
+	zones_name DOM1
 }
 End
 END PARTITION #
@@ -74,7 +74,7 @@ Read pb
                 }
 		convection { quick }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 		}
 		boundary_conditions {
@@ -105,15 +105,15 @@ Read pb
 			defaut paroi
 			tube_gint_tube_dint paroi
 			}
-		conditions_initiales {
+		initial_conditions {
 			concentration Champ_Uniforme 1 0.55
 		}
                 modele_turbulence Schmidt { Turbulence_paroi loi_standard_hydr_scalaire }
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_pres pression periode 0.01 points 1 0. 0.2
 			sonde_vit vitesse periode 0.01 points 1 0. 0.2
@@ -126,7 +126,7 @@ Read pb
 		 concentration_elem_dom_1 refChamp { Pb_champ pb concentration }
 		}
 		
-		Champs dt_post 0.1
+		fields dt_post 0.1
 		{
 			pression_elem_dom_1
 			concentration_elem_dom_1

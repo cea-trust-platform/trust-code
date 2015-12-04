@@ -28,9 +28,9 @@ Corriger_frontiere_periodique { Domaine dom Bord Perio direction 2 2. 1. }
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur Metis { nb_parts 2 }
+	Partition_tool Metis { nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones dom
+	zones_name dom
 	periodique 1 Perio
 }
 End
@@ -77,7 +77,7 @@ Read pb
 		}
 		diffusion { }
                 convection { muscl }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 2 1
 			}
 		boundary_conditions {
@@ -87,9 +87,9 @@ Read pb
 		}
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Champs dt_post 100.
+		fields dt_post 100.
 		{
 			vitesse elem
 		}

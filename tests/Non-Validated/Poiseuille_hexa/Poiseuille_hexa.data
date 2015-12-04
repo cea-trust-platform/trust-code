@@ -28,9 +28,9 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -77,7 +77,7 @@ Read pb
 		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1e-11 impr }	
 		convection { Amont }
 		diffusion {  }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 3 0. 0. 0.
 			}
 		boundary_conditions {
@@ -90,16 +90,16 @@ Read pb
 		}
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_pres pression periode 0.00001 point 1  1. 0.25 0.25  
 			sonde_vit vitesse periode 0.00001 point 1  1. 0.25 0.25  
 			sonde_press pression periode 0.00001 segment 9  2. 0. 0.25  2. 0. 0.25
 			sonde_vits vitesse periode 0.00001 segment 9    2. 0. 0.25  2. 0.5 0.25
 		}
-		Champs dt_post 0.1
+		fields dt_post 0.1
 		{
 			pression elem
 			pression som

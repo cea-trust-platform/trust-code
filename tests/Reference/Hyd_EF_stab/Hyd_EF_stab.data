@@ -11,9 +11,9 @@ Read_file dom dom.geom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur Metis { Nb_parts 3 }
+	Partition_tool Metis { Nb_parts 3 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -64,7 +64,7 @@ Read pb
                 }
                 convection { EF_stab { alpha 0.5 } }
                 diffusion  { negligeable }
-		conditions_initiales
+		initial_conditions
 			{
                         vitesse Champ_fonc_xyz dom 2  0. 0. 
 			}
@@ -77,15 +77,15 @@ Read pb
 			}
 	}
 
-	Postraitement
+	Post_processing
         	{
 		format lml       
-		Champs dt_post 1.e-1
+		fields dt_post 1.e-1
 			{
 			vitesse elem
 			pression elem
 			}
-		Sondes
+		Probes
 		{
 		 sonde_pression pression periode  1.e-7  segment 60  
 			 					    -0.029 -0.027 

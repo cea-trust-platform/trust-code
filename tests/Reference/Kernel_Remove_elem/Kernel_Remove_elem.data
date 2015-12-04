@@ -28,9 +28,9 @@ Remove_elem dom { fonction 0.2*0.2-(x-0.5)^2-(y-0.5)^2>0 }
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #

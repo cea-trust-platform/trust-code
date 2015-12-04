@@ -1,5 +1,5 @@
 # Thermohydraulique 2D : Couplage Boussinesq et schema quick #
-# Test du postraitement sur un domaine d interpolation different du domaine de calcul #
+# Test du Post_processing sur un domaine d interpolation different du domaine de calcul #
 # PARALLEL NOT #
 dimension 2
 Pb_Thermohydraulique pb
@@ -59,22 +59,22 @@ Mailler dom_post2
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 2
-	Nom_Zones dom
+	zones_name dom
 }
 Partition dom_post1
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 2
-	Nom_Zones dom_post1
+	zones_name dom_post1
 }
 
 Partition dom_post2
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 2
-	Nom_Zones dom_post2
+	zones_name dom_post2
 }
 
 End
@@ -134,7 +134,7 @@ Read pb
 		convection { quick }
 		diffusion { }
 		sources { boussinesq_temperature { T0 5. } }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -155,14 +155,14 @@ Read pb
  			Gauche paroi_temperature_imposee Champ_Front_Uniforme 1 10.
 			Droit  paroi_temperature_imposee Champ_Front_Uniforme 1 0.  
 		}
-		conditions_initiales { Temperature Champ_Uniforme 1 5. }
+		initial_conditions { Temperature Champ_Uniforme 1 5. }
 	}
 
-	Postraitements
+	Post_processings
 	{
 	      first_post
 	      {
-		Sondes
+		Probes
 		{
 			sonde_V vitesse periode 0.01 segment 10 0.0005 0.005 0.0095 0.005
 			sonde_pression pression periode 0.01 points 1 0.0045 0.0045
@@ -172,7 +172,7 @@ Read pb
 
 		}
 		Format lata
-		Champs dt_post 0.1
+		fields dt_post 0.1
 		{
 			pression_pa elem
 			pression_pa som
@@ -185,7 +185,7 @@ Read pb
 	     }
 	    second_post
 	    {
-	      Sondes
+	      Probes
 	      {
 		  sonde_temp_interp temperature_elem_dom_post2 periode 0.01 points 1 0.008 0.008
 	      }
@@ -206,7 +206,7 @@ Read pb
 		}
 	     
 	      Domaine dom_post2 
-	      Champs dt_post 0.1 {
+	      fields dt_post 0.1 {
 		  temperature_elem_dom_post2
 	      }
 	    }

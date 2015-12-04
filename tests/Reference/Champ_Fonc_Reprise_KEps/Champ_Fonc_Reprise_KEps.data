@@ -11,9 +11,9 @@ VerifierCoin dom { }
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -69,7 +69,7 @@ Read pb
 		solveur_pression GCP { precond ssor { omega 1.6 } seuil 1e-06 impr }
 		convection { muscl }
 		diffusion { }
-		conditions_initiales { vitesse Champ_Fonc_Reprise keps_2D_VEF_Def_pb.xyz pb vitesse fonction 2 1000*val 1000*val last_time }
+		initial_conditions { vitesse Champ_Fonc_Reprise keps_2D_VEF_Def_pb.xyz pb vitesse fonction 2 1000*val 1000*val last_time }
                 boundary_conditions {
 			HAUT paroi_defilante Champ_Front_Uniforme 2 1000. 1.
 			BAS paroi_fixe
@@ -87,7 +87,7 @@ Read pb
 			        EST paroi
 			        OUEST paroi
                          }
-                         conditions_initiales { k_Eps Champ_Fonc_Reprise keps_2D_VEF_Def_pb.xyz pb K_Eps fonction 2 1000*val 1000*val last_time }
+                         initial_conditions { k_Eps Champ_Fonc_Reprise keps_2D_VEF_Def_pb.xyz pb K_Eps fonction 2 1000*val 1000*val last_time }
                          }
                          turbulence_paroi loi_standard_hydr
                 } 
@@ -104,20 +104,20 @@ Read pb
                         EST Paroi_temperature_imposee Champ_Front_Uniforme 1 283
                         OUEST Paroi_temperature_imposee Champ_Front_Uniforme 1 273
                 }
-                conditions_initiales { Temperature Champ_Fonc_Reprise keps_2D_VEF_Def_pb.xyz pb temperature fonction 1 val+273 last_time }
+                initial_conditions { Temperature Champ_Fonc_Reprise keps_2D_VEF_Def_pb.xyz pb temperature fonction 1 val+273 last_time }
 		modele_turbulence prandtl {  turbulence_paroi loi_standard_hydr_scalaire }
         }
 
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			K 		K   		periode 0.001 segment 51 0.5 0.0 0.5 1.0
 			Eps 		Eps		periode 0.001 segment 51 0.5 0.0 0.5 1.0
 			vitesse 	vitesse   	periode 0.001 segment 51 0.0 0.5 1.0 0.5
 			temperature 	temperature 	periode 0.001 segment 51 0.0 0.5 1.0 0.5
 		}
-		Champs dt_post 2.
+		fields dt_post 2.
 		{
 			k elem
 			eps elem

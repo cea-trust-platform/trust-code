@@ -42,9 +42,9 @@ Mailler dom_pb2
 # BEGIN PARTITION
 Partition dom_pb2
 {
-	Partitionneur tranche { tranches 1 1 2 }
+	Partition_tool tranche { tranches 1 1 2 }
 	Larg_joint 1
-	Nom_Zones DOM2
+	zones_name DOM2
 	Periodique 2 periox perioz
 }
 End
@@ -86,7 +86,7 @@ Read pb2
                 solveur_pression petsc Cholesky { }
 		convection { amont }
                 diffusion { }
-                conditions_initiales {
+                initial_conditions {
                         vitesse Champ_Uniforme 3 -2 0 0
                         }
        		Sources { Canal_perio { bord periox }  }
@@ -106,7 +106,7 @@ Read pb2
 	                        	perioz	periodique  
                        		        Plaque	paroi
 		      			}
-			   	conditions_initiales { k_eps Champ_Uniforme 2 1.e-2 1.e-3 }
+			   	initial_conditions { k_eps Champ_Uniforme 2 1.e-2 1.e-3 }
 			}
                         Turbulence_paroi Paroi_TBLE { kappa 0.415 N 50 facteur 1.0  sonde_tble 1 x3625 4.5 0. 0 } dt_impr_ustar 10
 		} 
@@ -115,7 +115,7 @@ Read pb2
         {
                 diffusion { }
                 convection { amont }
-                conditions_initiales { Temperature Champ_Fonc_xyz dom_pb2 1 1 }
+                initial_conditions { Temperature Champ_Fonc_xyz dom_pb2 1 1 }
                 Sources {
                         Puissance_Thermique Champ_Uniforme 1 1.
                         }
@@ -130,15 +130,15 @@ Read pb2
 			}
         }
 
-        Postraitement {
-                Sondes
+        Post_processing {
+                Probes
                 {
 			sonde_sortie_vite  vitesse     periode 1.   points 1  4.5  1 2.5
 			prof_sortie_vite  vitesse     periode 1.   segment 40  4.5  0.025 2.5  4.5 1.975 2.5
 			sonde_sortie_temperature  temperature     periode 1.   points 1  4.5  1 2.5
 			prof_sortie_temperature  temperature     periode 1.   segment 40  4.5  0.025 2.5  4.5 1.975 2.5
                 }
-                Champs dt_post 50
+                fields dt_post 50
                 {
                    vitesse elem
                    vitesse som

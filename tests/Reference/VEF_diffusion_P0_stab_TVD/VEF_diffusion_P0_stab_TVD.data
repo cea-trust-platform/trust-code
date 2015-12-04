@@ -28,9 +28,9 @@ Trianguler_h dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 1 4 }
+	Partition_tool tranche { tranches 1 4 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -75,7 +75,7 @@ Read pb
 		solveur_pression GCP  { precond ssor { omega 1.6 } seuil 1e12 }
 		convection { negligeable }
 		diffusion { stab { standard 0 } }
-		conditions_initiales { vitesse Champ_fonc_xyz dom 2 (x>0.45)*(x<0.55)*(y>0.45)*(y<0.55) 0 }
+		initial_conditions { vitesse Champ_fonc_xyz dom 2 (x>0.45)*(x<0.55)*(y>0.45)*(y<0.55) 0 }
 		boundary_conditions
 		{
 			Haut 	frontiere_ouverte_vitesse_imposee Champ_Front_fonc_xyz 2 0 0
@@ -84,10 +84,10 @@ Read pb
 			Droite 	frontiere_ouverte_vitesse_imposee Champ_Front_fonc_xyz 2 0 0
 		}
 	}
-	Postraitement
+	Post_processing
 	{
 		format lml
-		Champs dt_post 1.e-8
+		fields dt_post 1.e-8
 		{
 			vitesse		som
 		}

@@ -32,9 +32,9 @@ Pave fpt4
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 1 }
+	Partition_tool tranche { tranches 2 1 1 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -89,7 +89,7 @@ Read pb
 	convection { amont }
 	diffusion { }
 	sources { boussinesq_temperature { T0 20. } }
-	conditions_initiales { vitesse Champ_Uniforme 3  0. 0.1 0. }
+	initial_conditions { vitesse Champ_Uniforme 3  0. 0.1 0. }
 	boundary_conditions 
 	{
             Airli frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
@@ -118,13 +118,13 @@ Read pb
             b2 symetrie
 
 	}
-	conditions_initiales { Temperature Champ_Uniforme 1 20. }
+	initial_conditions { Temperature Champ_Uniforme 1 20. }
     }
 
 
-    Postraitement 
+    Post_processing 
     {
-	Sondes 
+	Probes 
 	{
 		segment_T  temperature periode 1.   point 1 0.6  0.5 6.0
 		segment_T1 temperature periode 1. segment 12 0.47 0.1 0.5 .47 .1 11.5
@@ -134,7 +134,7 @@ Read pb
 		segment_WH       vitesse periode 1 segment 12 0.47 0.1  0.5 .83 0.1  0.5
 		segment_WB       vitesse periode 1 segment 12 0.47 0.1 11.5 .83 0.1 11.5
         }	
-	Champs dt_post 20.   
+	fields dt_post 20.   
 	{
 		vitesse som
 		temperature elem

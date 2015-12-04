@@ -80,15 +80,15 @@ Tetraedriser_homogene_compact dom_fluide
 # BEGIN PARTITION
 Partition dom_solide
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 1
-	Nom_Zones DOM1
+	zones_name DOM1
 }
 Partition dom_fluide
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM2
+	zones_name DOM2
 }
 End
 END PARTITION #
@@ -140,7 +140,7 @@ Read pb1
 	{
 		diffusion { }
 		sources { Puissance_Thermique champ_uniforme 1 1000 }
-		conditions_initiales {
+		initial_conditions {
 			temperature Champ_Uniforme 1 30.
 			}
 		boundary_conditions {
@@ -155,9 +155,9 @@ Read pb1
 			Derriere2 Paroi_temperature_imposee Champ_Front_Uniforme 1 40.
 		}
 	}
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_tsol temperature periode 1. points 2 
 				0.15 0.55 0.5
@@ -168,7 +168,7 @@ Read pb1
 
 		}
 		
-		Champs dt_post 20.
+		fields dt_post 20.
 		{
 			temperature elem
 			temperature som
@@ -189,7 +189,7 @@ Read pb2
 		convection { amont }
 		diffusion { }
 		sources { boussinesq_temperature { T0 30. } }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 3 0. 0. 0.
 			}
 		boundary_conditions {
@@ -221,11 +221,11 @@ Read pb2
 			Devant3 Paroi_temperature_imposee Champ_Front_Uniforme 1 20.
 			Derriere3 Paroi_temperature_imposee Champ_Front_Uniforme 1 20.
 		}
-		conditions_initiales { Temperature Champ_Uniforme 1 30. }
+		initial_conditions { Temperature Champ_Uniforme 1 30. }
 	}
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_pression pression periode 1. points 1
 				0.55 0.55 0.5
@@ -339,7 +339,7 @@ Read pb2
 		}
 		
 		Format lml
-		Champs dt_post 20.
+		fields dt_post 20.
 		{
 			pression
 			pression elem 

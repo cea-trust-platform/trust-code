@@ -52,9 +52,9 @@ Corriger_frontiere_periodique { Domaine dom_pb2 Bord perioz }
 # BEGIN PARTITION
 Partition dom_pb2
 {
-	Partitionneur Metis { nb_parts 2 }
+	Partition_tool Metis { nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM2
+	zones_name DOM2
 	Periodique 2 periox perioz
 }
 End
@@ -97,7 +97,7 @@ Read pb2
                 convection { EF defaut_bar }
                 diffusion  { standard  defaut_bar }
                 Sources { Source_Qdm_lambdaup { lambda 2 } }
-                conditions_initiales {
+                initial_conditions {
                         vitesse Champ_Uniforme 3 2 0 0
                         }
        		Sources { Canal_perio { bord periox  }  }
@@ -119,7 +119,7 @@ Read pb2
         {
                 diffusion {  }
                 convection { EF_stab { } }
-                conditions_initiales { Temperature Champ_Fonc_xyz dom_pb2 1 1 }
+                initial_conditions { Temperature Champ_Fonc_xyz dom_pb2 1 1 }
                 Sources {
                         Puissance_Thermique Champ_Uniforme 1 1.
                         }
@@ -134,15 +134,15 @@ Read pb2
 			}
         }
 
-        Postraitement {
-                Sondes
+        Post_processing {
+                Probes
                 {
                         sonde_sortie_vite  vitesse     periode 0.01   points 1  4.5  1 2.5
                          prof_sortie_vite  vitesse     periode 0.01   segment 40  4.5  0.025 2.5  4.5 1.975 2.5
                         sonde_sortie_T  temperature     periode 0.01   points 1  4.5  1 2.5
                          prof_sortie_T  temperature     periode 0.01   segment 40  4.5  0.025 2.5  4.5 1.975 2.5
                 }
-                Champs dt_post 5
+                fields dt_post 5
                 {
                    vitesse elem
                    vitesse som

@@ -35,9 +35,9 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -88,7 +88,7 @@ Read pb
 		}
 		convection { amont }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -122,12 +122,12 @@ Read pb
 			Entree2 frontiere_ouverte_temperature_imposee 
 			Champ_Front_Uniforme 1 0.
 		}
-		conditions_initiales { Temperature Champ_Uniforme 1 5. }
+		initial_conditions { Temperature Champ_Uniforme 1 5. }
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_temperature temperature 
 			periode 0.1 points 2 0.45 1.45 1.55 1.05
@@ -136,7 +136,7 @@ Read pb
 			sonde_vitesse vitesse 
 			periode 0.1 points 2 0.55 1.4 0.6 1.45
 		}
-		Champs dt_post 10.
+		fields dt_post 10.
 		{
 			pression elem
 			temperature elem

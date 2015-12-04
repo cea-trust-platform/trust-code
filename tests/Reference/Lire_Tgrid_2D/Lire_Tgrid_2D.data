@@ -41,7 +41,7 @@ Read pb1
 		solveur_pression cholesky { }
 		convection { muscl }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 1 0
 			}
 		boundary_conditions {
@@ -53,17 +53,17 @@ Read pb1
 		}
 	}
 
-	Postraitements
+	Post_processings
 	{
 		lata
 		{
 			format lata
 			fichier Lire_Tgrid_2D
-			Sondes
+			Probes
 			{
 				sonde_vit1 vitesse periode 0.01 point 1 0 0
 			}
-			Champs dt_post 0.01
+			fields dt_post 0.01
 			{
 				pression elem
 				vitesse som
@@ -73,7 +73,7 @@ Read pb1
 		{
 			format lml
 			fichier Lire_Tgrid_2D
-			Champs dt_post 0.01
+			fields dt_post 0.01
 			{
 				pression elem
 				vitesse som

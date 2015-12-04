@@ -12,12 +12,12 @@ Read_file dom_ssz.geo ;
 # BEGIN PARTITION 
 Partition dom
 {
-   Partitionneur metis
+   Partition_tool metis
    {
       nb_parts 2
    } 
    Larg_joint 1
-   Nom_Zones DOM 
+   zones_name DOM 
 } 
 End 
 END PARTITION #

@@ -31,9 +31,9 @@ dilate dom 1e-6
 # BEGIN PARTITION
 Partition dom
 {
-        Partitionneur metis { Nb_parts 2 }
+        Partition_tool metis { Nb_parts 2 }
         Larg_joint 2
-        Nom_Zones DOM
+        zones_name DOM
 }
 End
 END PARTITION #
@@ -85,7 +85,7 @@ Read pb
 	    solveur_pression  petsc cholesky { }
 	    convection           { amont }
 	    diffusion            {  }
-	    conditions_initiales { vitesse champ_uniforme 2 0. 0. }
+	    initial_conditions { vitesse champ_uniforme 2 0. 0. }
 	    boundary_conditions 	 { 
 	    				paroi symetrie
 					axe   symetrie
@@ -93,9 +93,9 @@ Read pb
 					haut  frontiere_ouverte_vitesse_imposee champ_front_fonc_txyz 2 0. t>0					
 				 }
      }
-     Postraitement
+     Post_processing
      {
-         Sondes
+         Probes
          {
                   sonde_vit_max vit_max periode 1.e-10  numero_elem_sur_maitre 0
          }
@@ -104,7 +104,7 @@ Read pb
             	vit_max Interpolation { localisation elem source Reduction_0D { methode max source refChamp { Pb_champ pb vitesse }  } }
          }
 	 format lml
-	 Champs dt_post 0.001
+	 fields dt_post 0.001
 	 {
 	 	divergence_u elem
 		vitesse elem

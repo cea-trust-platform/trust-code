@@ -14,7 +14,7 @@ system "medsplitter --ndomains=2 --input-file=obst.med --meshname=dom --output-f
 system "touch bidon_0000.Zones bidon_0002.Zones" 
 End
 astuce pour make_PAR
-Nom_Zones bidon
+zones_name bidon
 END PARTITION #
 
 # BEGIN SCATTER 

@@ -96,7 +96,7 @@ Read pb_solide
 	Conduction
 	{
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			temperature Champ_Uniforme 1 30.
 			}
 		boundary_conditions {
@@ -106,7 +106,7 @@ Read pb_solide
 		 	Haut 	paroi_contact pb_fluide Bas
 		}
 	}
-	Postraitement
+	Post_processing
 	{
 	}
 }
@@ -123,7 +123,7 @@ Read pb_fluide
 		convection { amont }
 		diffusion { }
 		sources { boussinesq_temperature { T0 30. } }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -144,9 +144,9 @@ Read pb_fluide
 			Haut 	paroi_temperature_imposee Champ_Front_Uniforme 1 20.
 		 	Bas 	paroi_contact pb_solide Haut
 		}
-		conditions_initiales { Temperature Champ_Uniforme 1 30. }
+		initial_conditions { Temperature Champ_Uniforme 1 30. }
 	}
-	Postraitement
+	Post_processing
 	{
 	}
 }

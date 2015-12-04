@@ -27,9 +27,9 @@ Mailler Canal
 # BEGIN PARTITION
 Partition Canal
 {
-	Partitionneur tranche { tranches 1 2 }
+	Partition_tool tranche { tranches 1 2 }
 	Larg_joint 2
-	Nom_Zones CANAL
+	zones_name CANAL
 }
 End
 END PARTITION #
@@ -79,7 +79,7 @@ Read pb
                 solveur_pression Cholesky { }
                 convection { quick }
                 diffusion { }
-                conditions_initiales { vitesse Champ_Fonc_XYZ Canal 2
+                initial_conditions { vitesse Champ_Fonc_XYZ Canal 2
 		tanh(4*y)*(0.95+0.1*rnd(1)) 0. }
                 boundary_conditions {
                         Paroi paroi_fixe
@@ -95,16 +95,16 @@ Perio periodique
                         Paroi paroi_adiabatique
 Perio periodique 
                 }
-                conditions_initiales { Temperature Champ_Fonc_XYZ Canal 1 tanh(4*y) }
+                initial_conditions { Temperature Champ_Fonc_XYZ Canal 1 tanh(4*y) }
         }
 
-        Postraitement
+        Post_processing
         {
-                Sondes
+                Probes
                 {
                         sonde_pression pression periode 1 points 1 2.5 0.
                 }
-                Champs dt_post 1
+                fields dt_post 1
                 {
                         pression elem
                         vitesse som

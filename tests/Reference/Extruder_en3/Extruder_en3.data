@@ -123,7 +123,7 @@ Read pb1
                                 direction champ_uniforme 3 0. 0. 1.
                                 }
                         }
-  		conditions_initiales {
+  		initial_conditions {
 			vitesse Champ_Uniforme 3 0. 0. 1.
 			}
 		boundary_conditions {
@@ -136,7 +136,7 @@ Read pb1
         {
 		convection { amont }
 		diffusion { }
-		conditions_initiales { temperature Champ_Uniforme 1 395. }
+		initial_conditions { temperature Champ_Uniforme 1 395. }
                 sources { Puissance_thermique Champ_fonc_xyz dom 1  (z>1)*(z<2)*226e6 }
 		boundary_conditions {
 			Entree frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 395.
@@ -144,9 +144,9 @@ Read pb1
 			paroi  paroi_contact pb2 paroi_int
 		}
 	}
-	Postraitement
+	Post_processing
 	{
-		Champs dt_post 1.
+		fields dt_post 1.
 		{
 			pression_pa elem
 			vitesse elem
@@ -160,7 +160,7 @@ Read pb2
         Conduction
                 {
                 diffusion { }
-                Conditions_initiales { Temperature Champ_fonc_xyz dom_TH 1 395 }
+                initial_conditions { Temperature Champ_fonc_xyz dom_TH 1 395 }
                 boundary_conditions
                         {
 			Entree frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 395.
@@ -169,9 +169,9 @@ Read pb2
 			paroi_ext  paroi_contact pb3 paroi
                         }
                 }
-	Postraitement
+	Post_processing
 	{
-		Champs dt_post 1.
+		fields dt_post 1.
 		{
 			temperature elem
 		}
@@ -192,7 +192,7 @@ Read pb3
                                 direction champ_uniforme 3 0. 0. 1.
                                 }
                         }
-  		conditions_initiales {
+  		initial_conditions {
 			vitesse Champ_Uniforme 3 1. 0. 0.
 			}
 		boundary_conditions {
@@ -206,7 +206,7 @@ Read pb3
         {
 		convection { amont }
 		diffusion { }
-		conditions_initiales { temperature Champ_Uniforme 1 395. }
+		initial_conditions { temperature Champ_Uniforme 1 395. }
 		boundary_conditions {
 			Entree frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 395.
 			Sortie frontiere_ouverte T_ext Champ_Front_Uniforme 1 550
@@ -214,9 +214,9 @@ Read pb3
 			sym    paroi_adiabatique
 		}
 	}
-	Postraitement
+	Post_processing
 	{
-		Champs dt_post 1.
+		fields dt_post 1.
 		{
 			pression_pa elem
 			vitesse elem

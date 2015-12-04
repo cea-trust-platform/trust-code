@@ -64,7 +64,7 @@ Read pb
 		}		
 		convection { generic centre }
 		diffusion { negligeable }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Fonc_XYZ dom 2 (4.*x) (-4.*y)
 			}
 		boundary_conditions {
@@ -79,7 +79,7 @@ Read pb
 		}
 	}
 
-	Postraitement
+	Post_processing
 	{
 		Definition_champs 
 			{
@@ -93,7 +93,7 @@ vitesse_convection_som_dom  Champ_Post_Interpolation {
 
 			
 }	
-		Champs dt_post 1.e-1
+		fields dt_post 1.e-1
 		{
 			pression_pa elem
 			vitesse som

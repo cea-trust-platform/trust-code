@@ -28,9 +28,9 @@ Corriger_frontiere_periodique { domaine dom bord perio }
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur Tranche { tranches 2 1 2 }
+	Partition_tool Tranche { tranches 2 1 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -77,7 +77,7 @@ Read pb
 				
                 
                 Sources { Source_Qdm Champ_fonc_xyz dom 3 0 1 0 }  
-		conditions_initiales
+		initial_conditions
 			{
                         vitesse Champ_fonc_xyz dom 3  1. 0. 0.
 			}
@@ -92,9 +92,9 @@ Read pb
 	         }
 
 
-	Postraitement
+	Post_processing
 	{
-		Champs dt_post 2.
+		fields dt_post 2.
 			{
 			}
 	}

@@ -25,9 +25,9 @@ Trianguler_H dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 2 }
+	Partition_tool tranche { tranches 2 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 	Periodique 2 Gauche Haut
 }
 End
@@ -68,7 +68,7 @@ Read pb
                solveur_pression gcp { precond ssor { omega 1.6 } seuil 1.e-10 impr }
                 convection { muscl }
                 diffusion {  }
-                conditions_initiales {
+                initial_conditions {
                         vitesse Tayl_Green 1 
                         }
                 boundary_conditions {
@@ -76,11 +76,11 @@ Read pb
 			Gauche periodique 
                 }
         }
-        Postraitements
+        Post_processings
         {
 		lml
 		{
-                Sondes
+                Probes
                 {
                         sonde_vitx     vitesse          periode 0.0001  segment 41  0. 3.1415927   6.2831853  3.1415927  
                         sonde_vity     vitesse          periode 0.0001  segment 41  3.1415927  0.  3.1415927  6.2831853  
@@ -91,7 +91,7 @@ Read pb
                 }
 		format lml
 		fichier periodique_P1B
-                Champs dt_post 0.0001 
+                fields dt_post 0.0001 
                 {
                     vitesse
                     pression elem
@@ -102,7 +102,7 @@ Read pb
 		{
 		format lata
 		fichier periodique_P1B
-                Champs dt_post 0.0001 
+                fields dt_post 0.0001 
                 {
                     vitesse
                     pression elem

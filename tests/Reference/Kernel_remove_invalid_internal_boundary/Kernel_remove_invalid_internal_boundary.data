@@ -13,12 +13,12 @@ Remove_Invalid_Internal_Boundaries domain
 # BEGIN PARTITION 
 Partition domain
 {
-   Partitionneur metis
+   Partition_tool metis
    {
       nb_parts 2
    } 
    Larg_joint 1
-   Nom_Zones DOM 
+   zones_name DOM 
 } 
 End 
 END PARTITION #

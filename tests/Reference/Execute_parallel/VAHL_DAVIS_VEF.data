@@ -27,9 +27,9 @@ VerifierCoin dom { }
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -92,7 +92,7 @@ Read pb
 		convection { generic amont }
 		diffusion { }
 		sources { boussinesq_temperature { T0 5. } }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -113,13 +113,13 @@ Read pb
  			Gauche Paroi_temperature_imposee Champ_Front_Uniforme 1 10.
 			Droit Paroi_temperature_imposee Champ_Front_Uniforme 1 0
 		}
-		conditions_initiales { Temperature Champ_Uniforme 1 5. }
+		initial_conditions { Temperature Champ_Uniforme 1 5. }
 	}
 
-	Postraitements
+	Post_processings
 	{
 	    first_post {
-		Sondes
+		Probes
 		{
 			sonde_pression pression periode 0.01 points 1 0.0045 0.0045
 			sonde_vitesse vitesse periode 0.01 segment 10 0.0005 0.005 0.0095 0.005
@@ -211,7 +211,7 @@ Read pb
 		   					}	
 		}
 		
-		Champs dt_post 0.01
+		fields dt_post 0.01
 		{
 			pression elem
 			pression som
@@ -242,14 +242,14 @@ Read pb
 	     }
 	  second_post
 	     {
-	    	Sondes
+	    	Probes
 		  {
 		    sonde_dt_diff pbConvection_Diffusion_Temperature_Diffusion_dt periode 0.0000001 points 1 0.0045 0.0045
 		    sonde_dt_conv pbConvection_Diffusion_Temperature_Convection_dt periode 0.0000001 points 1 0.0045 0.0045
 		  }
 		 
 		Format lata
-		Champs dt_post 0.01
+		fields dt_post 0.01
 		{
 			pas_de_temps
 		}
@@ -344,7 +344,7 @@ Read pb
 	     			       			       
 	    }
 	    
-	   Sondes
+	   Probes
 		{
 			debit_gauche debit_sum periode 0.0001 numero_elem_sur_maitre 0
 			diffuX_gauche diffU_X_sum periode 0.0001 numero_elem_sur_maitre 0
@@ -357,7 +357,7 @@ Read pb
 		 
 	   domaine front	
 	   format lata
-	   Champs dt_post 0.1
+	   fields dt_post 0.1
 	    {
 	     vitesse elem
              temperature elem 

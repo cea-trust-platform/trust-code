@@ -26,9 +26,9 @@ trianguler_H dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -87,7 +87,7 @@ Read pb
 		}
 		convection { muscl }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 1. 1.
 		}
 		boundary_conditions {
@@ -104,7 +104,7 @@ Read pb
 		diffusion { negligeable }
 		convection { muscl }
 		
-		conditions_initiales {
+		initial_conditions {
 			concentration Champ_Uniforme 1 0.
 		}
 		boundary_conditions {
@@ -115,9 +115,9 @@ Read pb
 		}
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_pres pression periode 0.01 points 1 0.45 0.45
 			sonde_vit vitesse periode 0.01 points 1 0.4 0.45
@@ -140,7 +140,7 @@ Read pb
 		 }
 		}
 		
-		Champs dt_post 0.3
+		fields dt_post 0.3
 		{
 			pression elem
 			pression som

@@ -28,9 +28,9 @@ Tetraedriser_homogene dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur Metis { nb_parts 3 }
+	Partition_tool Metis { nb_parts 3 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -108,7 +108,7 @@ Read pb1
                 sources {
                          Boussinesq_concentration { C0 1 0.0 }
                          }                   
-                conditions_initiales                
+                initial_conditions                
                         {                           
                                vitesse Champ_Uniforme 3 0. 0. 0.
                         }                                        
@@ -125,7 +125,7 @@ Read pb1
                                convection { ef_stab { alpha 1.0 } }
                                diffusion { }
                                sources { Source_Transport_K_Eps_aniso_concen { C1_eps 1.60 C2_eps 1.92 C3_eps 1 } }  
-                               conditions_initiales
+                               initial_conditions
                                  {
                                       k_eps Champ_Uniforme 2 1.e-5 1.e-4
                                  }
@@ -144,7 +144,7 @@ Read pb1
         {
                 convection { ef_stab { alpha 1.0 } }
                 diffusion { }                       
-                conditions_initiales                
+                initial_conditions                
                         {                           
                                concentration Champ_Fonc_xyz dom 1 x+y+z
                         }                                        
@@ -161,10 +161,10 @@ Read pb1
                 }  
 
         }
-        Postraitement
+        Post_processing
         {
 		format lml                                                                                                                    
-                Champs dt_post 5.0                                                                     
+                fields dt_post 5.0                                                                     
                   {
 		  	k elem
 			eps elem

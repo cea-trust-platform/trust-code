@@ -23,9 +23,9 @@ dilate dom 0.1
 Partition dom
   {
 
-    Partitionneur metis   { nb_parts 2   }
+    Partition_tool metis   { nb_parts 2   }
     Larg_joint 2
-    Nom_Zones DOM
+    zones_name DOM
   }
 End
 END PARTITION #
@@ -111,7 +111,7 @@ Read pb
 			OUTG  frontiere_ouverte K_EPS_EXT 
 			      Champ_Front_Uniforme 2  0.005 5.8E-5 
                                 }
-                                conditions_initiales {
+                                initial_conditions {
                                         k_Eps Champ_Uniforme 2  0.005 5.8E-5
                                 }
                          }
@@ -122,7 +122,7 @@ Read pb
                          turbulence_paroi loi_standard_hydr dt_impr_ustar 100. eps_min 1.e-10
                 } 
   
-		conditions_initiales
+		initial_conditions
 		        {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
@@ -147,7 +147,7 @@ Read pb
 	{
 		diffusion { }
 		convection { ef_stab { alpha 1.0 } }
-		conditions_initiales
+		initial_conditions
 		        {
 			temperature Champ_Uniforme 1 200.
 			}
@@ -173,7 +173,7 @@ Read pb
 		 	   Turbulence_paroi loi_standard_hydr_scalaire
 		 	}
 	}	
-         Postraitement
+         Post_processing
 	 {
 
 	     Definition_champs
@@ -208,26 +208,26 @@ Read pb
                      sources_reference { vitesse_elem_bas } 
         	   }
 	     } 
-	     Sondes {
+	     Probes {
 			    vitesse_elem_min_bas vitesse_elem_min_bas Periode 1e-6 numero_elem_sur_maitre 0
 			    vitesse_min_bas vitesse_min_bas Periode 1e-6 numero_elem_sur_maitre 0
 			    T_fimp grav temperature Periode 0.0001 Segment  89 0.01 -1.05  0.01 -9.95 
 			    T_Timp grav temperature Periode 0.0001 Segment 109 0.59 +0.95  0.59 -9.95
 			    T_exit grav temperature Periode 0.0001 Segment  10 0.01 -9.50  0.59 -9.50
 	     }
-	     domaine bas champs dt_post 0.2 { vitesse_elem_bas } 
+	     domaine bas fields dt_post 0.2 { vitesse_elem_bas } 
         } 	
-	postraitements
+	Post_processings
 	{
 	    surface	
 	    {
 		format lata domaine surface
-		champs dt_post 0.2 { temperature elem }
+		fields dt_post 0.2 { temperature elem }
 	    }
 	    bas 
 	    { 	
 		format lata
-		champs dt_post 0.2 { vitesse faces } 		
+		fields dt_post 0.2 { vitesse faces } 		
 	    }
 	}
 }

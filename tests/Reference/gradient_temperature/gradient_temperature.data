@@ -56,10 +56,10 @@ Pave pave4
 # BEGIN PARTITION
 Partition dom
 {
-        Partitionneur Metis { Nb_parts 6 }
+        Partition_tool Metis { Nb_parts 6 }
 	periodique 1 PerioX
         Larg_joint 2
-        Nom_Zones dom
+        zones_name dom
 }
 End
 END PARTITION #
@@ -103,7 +103,7 @@ Read pb
 	Conduction
 		{
 		diffusion		{ }
-		conditions_initiales 	{ temperature Champ_Uniforme 1 0 }
+		initial_conditions 	{ temperature Champ_Uniforme 1 0 }
 		boundary_conditions 	{
 			 		PerioX 		periodique
 					Paroi_Haut 	paroi_flux_impose Champ_Front_Uniforme 1 -1
@@ -112,7 +112,7 @@ Read pb
 					}
 		}
 		
-	Postraitement
+	Post_processing
 		{
 		definition_champs
 		{
@@ -121,13 +121,13 @@ Read pb
      				source refChamp { Pb_champ pb temperature }
   			}
 		}
-		Sondes			{
+		Probes			{
 					Temp0			temperature	periode 10	Points	1 	0	0.1
 					Temp_profil_Y	nodes	temperature	periode 10	Segment	40	0	0.0025	0	0.1975
 					Temp_paroi_H	nodes	temperature	periode 10	Segment	40	0.0025	0.2	0.1975	0.2
 					Temp_paroi_B	nodes	temperature	periode 10	Segment	40	0.0025	0	0.1975	0
 					}
-		Champs dt_post 1000
+		fields dt_post 1000
 					{
 					temperature elem
 					gradient_temperature elem

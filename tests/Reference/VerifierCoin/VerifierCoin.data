@@ -71,7 +71,7 @@ Read pb
 		diffusion { }
 		sources { boussinesq_temperature { T0 5. } }
 		sources { boussinesq_temperature { T0 5. } }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -92,12 +92,12 @@ Read pb
  			Gauche paroi_temperature_imposee Champ_Front_Uniforme 1 10. 
 			Droit  paroi_temperature_imposee Champ_Front_Uniforme 1 0.  
 		}
-		conditions_initiales { Temperature Champ_Uniforme 1 5. }
+		initial_conditions { Temperature Champ_Uniforme 1 5. }
 	}
 
-	Postraitement
+	Post_processing
 	{		
-		Sondes
+		Probes
 		{
 			sonde_V vitesse periode 0.01 segment 10 0.0005 0.005 0.0095 0.005
 			sonde_pression pression periode 0.01 points 1 0.0045 0.0045
@@ -106,7 +106,7 @@ Read pb
 			sonde_p pression periode 0.1 plan 10 10 0.0005 0.0005 0.0095 0.0005 0.0005 0.0095
 			sonde_circle temperature periode 0.01 circle 20 0.005 0.005 0.0045 0. 360.
 		}		
-		Champs dt_post 1.2
+		fields dt_post 1.2
 		{
 			pression elem
 			vitesse elem

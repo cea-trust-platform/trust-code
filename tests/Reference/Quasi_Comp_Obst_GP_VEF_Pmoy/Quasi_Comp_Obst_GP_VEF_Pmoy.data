@@ -9,9 +9,9 @@ Read_file dom obstacle_vef.geom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -67,7 +67,7 @@ Read pb
 		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-9 }	
 		convection { muscl }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -91,16 +91,16 @@ Read pb
                         Sortie frontiere_ouverte T_ext Champ_Front_Uniforme 1 283.15
                         Entree  frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 283.15
                 }
-                conditions_initiales { Temperature Champ_Uniforme 1 283.15 }
+                initial_conditions { Temperature Champ_Uniforme 1 283.15 }
         }
 
-	Postraitement
+	Post_processing
 	{
-               Sondes {
+               Probes {
                         vitesse vitesse periode 0.001 point 1 1.0 0.4
                         temperature temperature periode 0.001 point 1 1.0 0.4
                 }
-		Champs dt_post 10.
+		fields dt_post 10.
 		{
 			pression som
 			vitesse som

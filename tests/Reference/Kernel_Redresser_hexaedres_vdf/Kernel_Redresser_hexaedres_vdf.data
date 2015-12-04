@@ -8,7 +8,7 @@ lire_tgrid dom default_id2228.msh
 # Transformation en rectangles #
 Redresser_hexaedres_vdf dom
 
-# Postraitement du domaine #
+# Post_processing du domaine #
 Postraiter_domaine { domaine dom fichier dom format lata }
 
 # On reordonne et on discretise pour verifier #

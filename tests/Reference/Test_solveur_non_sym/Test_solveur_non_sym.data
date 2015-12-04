@@ -7,7 +7,7 @@ End
 END PARTITION #
 /*
 pour faire marcher make_PAR.data
-Nom_Zones DOM
+zones_name DOM
 */
 
 test_solveur { 

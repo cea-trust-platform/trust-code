@@ -5,9 +5,9 @@ Read pbmed
 { 
 MED_Docond.med dom_solide 
 { 
-Postraitement 
+Post_processing 
 { 
-Champs dt_post 1e-9 
+fields dt_post 1e-9 
 { 
 TEMPERATURE_ELEM ELEM 
 TEMPERATURE_SOM SOM 
@@ -17,9 +17,9 @@ TEMPERATURE_SOM SOM
 , 
 MED_Docond.med dom_fluide 
 { 
-Postraitement 
+Post_processing 
 { 
-Champs dt_post 1e-9 
+fields dt_post 1e-9 
 { 
 PRESSION_ELEM ELEM 
 PRESSION_SOM SOM 

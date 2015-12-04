@@ -25,9 +25,9 @@ Trianguler_H dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -78,7 +78,7 @@ Read pb
 		}
 		convection { EF_stab { old volumes_etendus } }
 		diffusion { }
-		conditions_initiales { vitesse Champ_Uniforme 2 0. 0. }
+		initial_conditions { vitesse Champ_Uniforme 2 0. 0. }
 		boundary_conditions
 		{
 			Haut	paroi_fixe
@@ -88,14 +88,14 @@ Read pb
 		}
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_pression	pression periode 0.01 points   1   0.45 0.45
 			sonde_vitesse	vitesse  periode 0.01 segment 10   0.05 0.5	0.95 0.5
 		}
-		Champs dt_post 10.
+		fields dt_post 10.
 		{
 			pression elem
 			pression som

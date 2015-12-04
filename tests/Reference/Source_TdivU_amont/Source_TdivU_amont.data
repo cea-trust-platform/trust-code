@@ -34,9 +34,9 @@ Read processeur_0
 
 Partition dom
 {
-	Partitionneur sous_zones { sous_zones 1 processeur_0 }
+	Partition_tool sous_zones { sous_zones 1 processeur_0 }
 	Larg_joint 2
-	Nom_Zones nom_zone
+	zones_name nom_zone
 	Periodique 2 periox perioy
 }
 End
@@ -84,7 +84,7 @@ Read pb
 		solveur_pression petsc cholesky { }
 		convection { amont }
 		diffusion { }	
-		conditions_initiales { vitesse Champ_fonc_xyz dom 2 2.*(1+COS(2.*3.14159*x)) 2.*(1+COS(2.*3.14159*y)) }		
+		initial_conditions { vitesse Champ_fonc_xyz dom 2 2.*(1+COS(2.*3.14159*x)) 2.*(1+COS(2.*3.14159*y)) }		
 		boundary_conditions 
 		{
 			periox periodique 
@@ -101,12 +101,12 @@ Read pb
 			periox periodique 
 			perioy periodique 
 		}		
-		conditions_initiales { temperature Champ_Uniforme 1 10. }
+		initial_conditions { temperature Champ_Uniforme 1 10. }
 	}
 		
-	Postraitement 
+	Post_processing 
 	{
-		Champs dt_post 0.001
+		fields dt_post 0.001
 		{
 			vitesse elem 
 			temperature elem 

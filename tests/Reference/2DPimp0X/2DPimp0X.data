@@ -24,9 +24,9 @@ Trianguler_h dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur Tranche { tranches 2 1 }
+	Partition_tool Tranche { tranches 2 1 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -79,7 +79,7 @@ Read pb
 				
                 Sources { Source_Qdm Champ_fonc_xyz dom  2 x 0 
                         }
-		conditions_initiales
+		initial_conditions
 			{
                         vitesse Champ_fonc_xyz dom 2  0.  0. 
 			}
@@ -91,19 +91,19 @@ Read pb
 			}
 	         }
 
-	Postraitements
+	Post_processings
         {
 	 	lml
 		{
 			fichier 2DPimp0X
 			format lml  
-                	Sondes
+                	Probes
             		{ 
 				sonde_gradient_pression gradient_pression periode 0.01 segment 10 0 0.5 1 0.5
 				sonde_vitesse vitesse periode 0.01 segment 10 0 0.5 1 0.5
 				sonde_pression pression periode 0.01 segment 10 0 0.5 1 0.5
 			}
-			Champs dt_post 2.
+			fields dt_post 2.
 			{
 				pression elem
 				pression som
@@ -113,7 +113,7 @@ Read pb
 		{
 			fichier 2DPimp0X
 			format lata  
-			Champs dt_post 2.
+			fields dt_post 2.
 			{
 				vitesse elem
 				vitesse som

@@ -37,9 +37,9 @@ trianguler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -90,7 +90,7 @@ Read pb
 	Conduction
 	{
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			temperature Champ_Uniforme 1 0. 
 			}
 		boundary_conditions {
@@ -107,9 +107,9 @@ Read pb
 		}
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Champs dt_post 30.
+		fields dt_post 30.
 		{
 			temperature elem
 		}

@@ -11,9 +11,9 @@ Read_file dom dom.geom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 3 }
+	Partition_tool metis { Nb_parts 3 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -59,7 +59,7 @@ Read pb
 		solveur_pression petsc cholesky { }
 		convection { amont }
 		diffusion { }
-		conditions_initiales 
+		initial_conditions 
 		{
 			vitesse Champ_Fonc_xyz dom 2 0.44 0.01*sin(x) 
 		}
@@ -83,7 +83,7 @@ Read pb
 				OUTLET  	frontiere_ouverte K_EPS_EXT 	Champ_Front_Uniforme 2 .00004356000000000000 .00001314267428444000
 				
                              }
-                             conditions_initiales { k_Eps Champ_Uniforme 2 .00004356000000000000 .00001314267428444000 }
+                             initial_conditions { k_Eps Champ_Uniforme 2 .00004356000000000000 .00001314267428444000 }
                       }
                       turbulence_paroi loi_standard_hydr
 		}
@@ -99,10 +99,10 @@ Read pb
                         INLET           Frontiere_ouverte_temperature_imposee           Champ_Front_Uniforme 1 0
                         OUTLET          Frontiere_ouverte T_Ext                         Champ_Front_Uniforme 1 0
                 }
-                conditions_initiales { Temperature Champ_Uniforme 1 0 }
+                initial_conditions { Temperature Champ_Uniforme 1 0 }
                 modele_turbulence Prandtl { Turbulence_paroi loi_standard_hydr_scalaire }
         }
-        Postraitement
+        Post_processing
 	{
 		Definition_champs 
 		{
@@ -117,7 +117,7 @@ Read pb
 			    source refChamp { Pb_champ pb temperature }	
 		    }
 		}
-		Sondes
+		Probes
 		{
 			temperature_minimale	temperature_minimale	periode 1.e-10 NUMERO_ELEM_SUR_MAITRE 0
 			temperature_maximale	temperature_maximale	periode 1.e-10 NUMERO_ELEM_SUR_MAITRE 0		
@@ -125,7 +125,7 @@ Read pb
 
 		Format lata
 		Fichier Scalaire_muscl_2D
-                Champs dt_post 0.00001
+                fields dt_post 0.00001
 		{
 		    temperature			faces
 		    temperature			som

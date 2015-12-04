@@ -62,7 +62,7 @@ Read pb
                 solveur_pression Gcp { precond ssor { omega 1.5 } seuil 1.e-8  }
 		convection { EF_stab { TdivU } } # Test of TdivU, see documentation #
 		diffusion { }	
-		conditions_initiales { vitesse Champ_Uniforme 2 1. 0. }		
+		initial_conditions { vitesse Champ_Uniforme 2 1. 0. }		
 		boundary_conditions 
 		{
 			 Bas Symetrie
@@ -83,12 +83,12 @@ Read pb
                 Droit frontiere_ouverte T_ext champ_front_uniforme  1 500.0
 		Gauche Frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 100.
 		}		
-		conditions_initiales { temperature Champ_Uniforme 1 100. }
+		initial_conditions { temperature Champ_Uniforme 1 100. }
 	}
 		
-	Postraitement 
+	Post_processing 
 	{
-		Champs dt_post 10.
+		fields dt_post 10.
 		{
 			pression 
 			vitesse 

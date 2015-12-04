@@ -26,9 +26,9 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 1 }
+	Partition_tool tranche { tranches 2 1 1 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -84,7 +84,7 @@ Read pb
                 solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-4 impr }        
                 convection { amont }
                 diffusion { }
-                conditions_initiales {
+                initial_conditions {
                         vitesse Champ_Uniforme 3 .1 0. 0.
                         }
                 boundary_conditions {
@@ -108,7 +108,7 @@ Read pb
 		                        Bas     paroi
 		                        Haut    paroi
                                 }
-                                conditions_initiales {
+                                initial_conditions {
                                         k_eps Champ_Uniforme 2 1e-4 2e-4
                                 }
                         }
@@ -128,20 +128,20 @@ Read pb
                         Gauche  frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 303.
                         Droite  frontiere_ouverte T_ext Champ_Front_Uniforme 1 303.
                 }
-                conditions_initiales { Temperature Champ_Uniforme 1 303. }
+                initial_conditions { Temperature Champ_Uniforme 1 303. }
                 modele_turbulence Prandtl { turbulence_paroi loi_standard_hydr_scalaire }
         }
 
-        Postraitement
+        Post_processing
         {
-		Sondes {
+		Probes {
 			vitesse vitesse periode 0.0001 point 1 0.06 0.00075 0.005
 			temperature temperature periode 0.0001 point 1 0.06 0.00075 0.005
 			masse_volumique masse_volumique periode 0.0001 point 1 0.06 0.00075 0.005
 			viscosite_turbulente viscosite_turbulente periode 0.0001 point 1 0.06 0.00075 0.005
 		}
 		
-                Champs dt_post 10.
+                fields dt_post 10.
                 {
                         vitesse som
                         temperature som

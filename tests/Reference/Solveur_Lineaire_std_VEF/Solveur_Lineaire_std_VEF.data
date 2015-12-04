@@ -26,9 +26,9 @@ Trianguler_H dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -74,7 +74,7 @@ Read pb
     Conduction
     {
 	diffusion { }
-	conditions_initiales { temperature Champ_Uniforme 1 0. }
+	initial_conditions { temperature Champ_Uniforme 1 0. }
 	boundary_conditions
 	{
 		Haut	paroi_adiabatique
@@ -83,13 +83,13 @@ Read pb
 		Droite	paroi_temperature_imposee Champ_Front_Uniforme 1 0.
 	}
     }
-    Postraitement
+    Post_processing
     {
-	Sondes
+	Probes
 	{
 		sonde_T temperature periode 1.e-5 point 1	0. 0.5
 	}
-	Champs dt_post 0.1
+	fields dt_post 0.1
 	{
               	temperature elem
 	}

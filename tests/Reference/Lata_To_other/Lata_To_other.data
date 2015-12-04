@@ -1,4 +1,4 @@
-# Test lecture maillage lata et postraitement format lml que sequentiel # 
+# Test lecture maillage lata et Post_processing format lml que sequentiel # 
 # PARALLEL OK #
 dimension 2
 Scheme_euler_explicit sch
@@ -69,15 +69,15 @@ Mailler dom_fluide
 # BEGIN PARTITION
 Partition dom_solide
 {
-partitionneur 	Tranche { tranches 2 1 }
+Partition_tool 	Tranche { tranches 2 1 }
 	Larg_joint 1
-	Nom_Zones DOM1
+	zones_name DOM1
 }
 Partition dom_fluide
 {
-partitionneur 	Tranche { tranches 2 1 }
+Partition_tool 	Tranche { tranches 2 1 }
 	Larg_joint 1
-	Nom_Zones DOM2
+	zones_name DOM2
 }
 End
 END PARTITION #
@@ -129,7 +129,7 @@ Read pb1
 	Conduction
 	{
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			temperature Champ_Uniforme 1 30.
 			}
 		boundary_conditions {
@@ -147,15 +147,15 @@ Read pb1
 				Champ_Front_Uniforme 1 20.
 		}
 	}
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_tsol temperature periode 1. points 2 
 				0.15 0.55 
 				0.55 0.15 
 		}
-		format lata Champs dt_post 10.
+		format lata fields dt_post 10.
 		{
 			temperature elem
 			temperature som
@@ -176,7 +176,7 @@ Read pb2
 		convection { amont }
 		diffusion { }
 		sources { boussinesq_temperature { T0 30. } }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -207,11 +207,11 @@ Read pb2
 			Droit2 paroi_temperature_imposee
 				Champ_front_Uniforme 1 20.
 		}
-		conditions_initiales { Temperature Champ_Uniforme 1 30. }
+		initial_conditions { Temperature Champ_Uniforme 1 30. }
 	}
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_pression pression periode 1. points 1
 				0.55 0.55
@@ -221,7 +221,7 @@ Read pb2
 				0.55 0.55
 			sonde_seg temperature periode 5. segment 10 0. 0.75 1. 0.75
 		}
-		format lata Champs dt_post 10.
+		format lata fields dt_post 10.
 		{
 			pression elem
 			pression som

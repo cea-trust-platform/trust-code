@@ -27,9 +27,9 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -95,7 +95,7 @@ Read pb
 		}
 		convection { quick }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 		}
 		boundary_conditions {
@@ -115,21 +115,21 @@ Read pb
 			Gauche  Paroi
 			Bas  Paroi
 		}
-		conditions_initiales {
+		initial_conditions {
 			concentration champ_fonc_xyz dom 1 (x-y[0)
 		}
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_pres pression periode 0.01 points 1 0.45 0.45
 			sonde_vit vitesse periode 0.01 points 1 0.4 0.45
 			sonde_conc concentration periode 0.01 points 1 0.55 0.45
 		}
 		format lml
-		Champs dt_post 0.1
+		fields dt_post 0.1
 		{
 			viscosite_dynamique elem
 			vitesse elem

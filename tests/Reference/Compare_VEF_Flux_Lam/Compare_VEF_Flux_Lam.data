@@ -43,15 +43,15 @@ Trianguler_H dom_solide
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 Partition dom_solide
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 1
-	Nom_Zones DOM_SOLIDE
+	zones_name DOM_SOLIDE
 }
 End
 END PARTITION #
@@ -124,7 +124,7 @@ Read pb
 		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-9 }	
 		convection { muscl } 
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -146,12 +146,12 @@ Read pb
                         Sortie 		frontiere_ouverte T_ext Champ_Front_Uniforme 1 283
                         Entree  	frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 283
                 }
-                conditions_initiales { Temperature Champ_Uniforme 1 283 }
+                initial_conditions { Temperature Champ_Uniforme 1 283 }
         }
 
-	Postraitement
+	Post_processing
 	{
-		Champs dt_post 10.
+		fields dt_post 10.
 		{
 			pression_pa som
 			vitesse som
@@ -164,7 +164,7 @@ Read pb_solide
         Conduction
         {
                 diffusion { }
-                conditions_initiales {
+                initial_conditions {
                         temperature Champ_Uniforme 1 303.
                         }
                 boundary_conditions {
@@ -173,10 +173,10 @@ Read pb_solide
 			Contact	Paroi_contact pb Contact
                 }
         }
-        Postraitement
+        Post_processing
         {
-		Sondes { temperature temperature periode 0.001 point 1 0.05 0.05 }
-                Champs dt_post 10.
+		Probes { temperature temperature periode 0.001 point 1 0.05 0.05 }
+                fields dt_post 10.
                 {
                         temperature som
                 }

@@ -69,7 +69,7 @@ Read pb
 		diffusion { }
 		sources { boussinesq_temperature { T0 5. } }
 		sources { Canal_perio { bord PerioZ } }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 3 0. 0. 0.005
 			}
 		boundary_conditions {
@@ -92,12 +92,12 @@ Read pb
 			Droit  paroi_temperature_imposee Champ_Front_Uniforme 1 0.  
 			PerioZ periodique
 		}
-		conditions_initiales { Temperature Champ_Uniforme 1 5. }
+		initial_conditions { Temperature Champ_Uniforme 1 5. }
 	}
 
-	Postraitement
+	Post_processing
 	{		
-		Sondes
+		Probes
 		{
 			sonde_V vitesse periode 0.01 segment 10 0.0005 0.005 0.005 0.0095 0.005 0.005
 			sonde_pression pression periode 0.01 points 1 0.0045 0.0045 0.005
@@ -107,7 +107,7 @@ Read pb
 			sonde_V2 vitesse periode 0.01 segmentpoints 5 0.005 0.0075 0.005 3.01661665e-03 6.52190357e-03 0.005 0.0025 0.005 0.005 3.01661665e-03 3.47809643e-03 0.005 0.005 0.0025 0.005
 		}	
 		format lml
-		Champs dt_post 0.1
+		fields dt_post 0.1
 		{
 			pression elem
 			vitesse elem

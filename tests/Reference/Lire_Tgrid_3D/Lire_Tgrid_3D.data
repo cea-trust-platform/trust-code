@@ -74,7 +74,7 @@ Read pb1
 		solveur_pression GCP { precond ssor { omega 1.65 } seuil 1.e-12 }
 		convection { muscl }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 3 0 0 0
 			}
 		boundary_conditions {
@@ -85,17 +85,17 @@ Read pb1
 		}
 	}
 
-	Postraitements
+	Post_processings
 	{
 		lata
 		{
 			format lata
 			fichier Lire_Tgrid_3D
-			Sondes
+			Probes
 			{
 				sonde_vit1 vitesse periode 0.01 point 1 0 0 0
 			}
-			Champs dt_post 0.01
+			fields dt_post 0.01
 			{
 				pression elem
 				vitesse som
@@ -105,7 +105,7 @@ Read pb1
 		{
 			format lml
 			fichier Lire_Tgrid_3D
-			Champs dt_post 0.01
+			fields dt_post 0.01
 			{
 				pression elem
 				vitesse som
@@ -120,7 +120,7 @@ Read pb2
 		solveur_pression GCP { precond ssor { omega 1.65 } seuil 1.e-12 }
 		convection { muscl }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 3 0 0 0
 			}
 		boundary_conditions {
@@ -131,17 +131,17 @@ Read pb2
 		}
 	}
 
-	Postraitements
+	Post_processings
 	{
 		lata
 		{
 			format lata
 			fichier Lire_Tgrid_3D
-			Sondes
+			Probes
 			{
 				sonde_vit2 vitesse periode 0.01 point 1 0 0 0
 			}
-			Champs dt_post 0.01
+			fields dt_post 0.01
 			{
 				pression elem
 				vitesse som
@@ -151,7 +151,7 @@ Read pb2
 		{
 			format lml
 			fichier Lire_Tgrid_3D
-			Champs dt_post 0.01
+			fields dt_post 0.01
 			{
 				pression elem
 				vitesse som

@@ -1,4 +1,4 @@
-# Thermohydraulique 2D : Champs par morceaux #
+# Thermohydraulique 2D : fields par morceaux #
 # PARALLEL OK #
 dimension 2
 Pb_Thermohydraulique pb
@@ -52,7 +52,7 @@ Partition dom
 	Tranche 2 1
 	Nb_parts 2
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -120,7 +120,7 @@ Read pb
 		convection { Quick }
 		diffusion { }
 		sources { boussinesq_temperature { T0 5. } }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme_Morceaux dom 2
 			{
 				defaut 0. 0.
@@ -150,15 +150,15 @@ Read pb
  			Gauche paroi_echange_externe_impose T_ext Champ_Front_Uniforme 1 0.  H_imp Champ_Front_Uniforme 1  1.e11
 			Droit  paroi_echange_externe_impose T_ext Champ_Front_Uniforme 1 0.  H_imp Champ_Front_Uniforme 1  1.e11
 		}
-		conditions_initiales {
+		initial_conditions {
 			Temperature Champ_Uniforme_Morceaux dom 1
 				{ defaut 0. zone4 10. }
 		}
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 		   sonde_V vitesse periode 0.01 segment 10 0.0005 0.005 0.0095 0.005
 			sonde_pression pression periode 0.01 points 1 0.0045 0.0045
@@ -166,7 +166,7 @@ Read pb
 			sonde_temp temperature periode 0.01 points 2 0.0075 0.0025 0.0025 0.0075
 		}
 		format lml
-		Champs dt_post 0.7
+		fields dt_post 0.7
 		{
 			pression elem
 			pression som

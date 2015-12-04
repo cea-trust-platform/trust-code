@@ -28,8 +28,8 @@ Corriger_frontiere_periodique { Domaine dom Bord Perio2 }
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 1 1 2 }
-	Nom_Zones nom_zone
+	Partition_tool tranche { tranches 1 1 2 }
+	zones_name nom_zone
 	Periodique 2 Perio Perio2
 	Larg_joint 2
 }
@@ -78,7 +78,7 @@ Read pb
 		}
 		diffusion {  }
                 convection { EF_stab { } }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 3 1. 1. 1.
 			}
 		boundary_conditions {
@@ -91,14 +91,14 @@ Read pb
 
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Champs dt_post 100.
+		fields dt_post 100.
 		{
 			vitesse elem
                         pression elem
 		}
-                Sondes 
+                Probes 
                 {
 			vitx_moyenne vitesse  periode 0.5 segment 20  1. 1. 1. 2. 2. 2.
                 }

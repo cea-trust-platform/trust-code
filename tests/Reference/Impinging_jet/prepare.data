@@ -72,7 +72,7 @@ Read pb
 		convection { ef_stab { alpha 0.2 } }
 		diffusion { }
                 Sources { Canal_perio { bord PERIO } }
-		conditions_initiales { vitesse Champ_Uniforme 3 0. 0. -13.019 } # Re = 23000 #
+		initial_conditions { vitesse Champ_Uniforme 3 0. 0. -13.019 } # Re = 23000 #
 		boundary_conditions
 		{
 			PERIO	Periodique
@@ -91,16 +91,16 @@ Read pb
 					PIPE	paroi
 					SYM	symetrie
 				}
-				conditions_initiales { k_Eps Champ_Uniforme 2 0.427 13.538 } # k=3/2(U*t)² (t=4.1% voir doc), eps=Cmu/0.07/Dh*k^1.5 #
+				initial_conditions { k_Eps Champ_Uniforme 2 0.427 13.538 } # k=3/2(U*t)² (t=4.1% voir doc), eps=Cmu/0.07/Dh*k^1.5 #
             		}
 			turbulence_paroi loi_standard_hydr dt_impr_ustar 0.05
 		}
 		Ecrire_fichier_xyz_valeur_bin k_eps		1. bords 1 PERIO
 		Ecrire_fichier_xyz_valeur_bin vitesse	1. bords 1 PERIO
 	}
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_Ventree nodes	vitesse	periode 1.e-4 segment 30 0.	0.	0.053	0.01170	0.00676	0.053
 			sonde_Kentree nodes	K	periode 1.e-4 segment 30 0.	0.	0.053	0.01170	0.00676	0.053
@@ -108,7 +108,7 @@ Read pb
 			sonde_Nutentree nodes	Viscosite_turbulente	periode 1.e-4 segment 30 0.	0.	0.053	0.01170	0.00676	0.053
 		}
 		Format lata
-		Champs dt_post 0.1
+		fields dt_post 0.1
 		{
 			pression	elem
 			vitesse		faces

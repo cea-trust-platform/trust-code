@@ -25,9 +25,9 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -83,7 +83,7 @@ Read pb
 		diffusion { }
 		convection { quick }
 		Sources { Boussinesq_Temperature { T0 0. } }
-		conditions_initiales { vitesse Champ_Uniforme 2 0. 0. }
+		initial_conditions { vitesse Champ_Uniforme 2 0. 0. }
 		boundary_conditions
 		{
 			Haut	paroi_fixe
@@ -98,7 +98,7 @@ Read pb
 		diffusion { }
 		convection { quick }
 		Sources { dirac 2 0.002 0.005 Champ_fonc_t 1 50.*(t<0.1) }
-		conditions_initiales { temperature Champ_Uniforme 1 0. }
+		initial_conditions { temperature Champ_Uniforme 1 0. }
 		boundary_conditions
 		{
 			Haut	paroi_adiabatique
@@ -108,9 +108,9 @@ Read pb
 		}
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Champs dt_post 0.01
+		fields dt_post 0.01
 		{
 			pression	elem
 			vitesse		elem

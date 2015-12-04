@@ -17,9 +17,9 @@ Dilate dom 1000
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 9 }
+	Partition_tool metis { Nb_parts 9 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -72,7 +72,7 @@ Read pb
 		}
 		convection { muscl }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 3 1. 0. 0.
 			}
 		boundary_conditions {
@@ -99,24 +99,24 @@ Read pb
 					Sortie 		frontiere_ouverte K_EPS_EXT Champ_Front_Uniforme 2 0. 0.
 					Entree 		frontiere_ouverte_K_eps_impose Champ_front_Uniforme 2 0.01 0.01
                         	 }
-                        	 conditions_initiales {
+                        	 initial_conditions {
                                 	 k_Eps Champ_Uniforme 2 0.01 0.01
                         	 }
                 	  }
                 	  turbulence_paroi loi_standard_hydr dt_impr_ustar 1.e-6
         	 }
         }
-	Postraitements
+	Post_processings
 	{
 		lml
 		{
 			format lml
 			fichier Cx_impl
-			Sondes
+			Probes
 			{
 				sonde_vitesse vitesse periode 0.005 point 1 0.7 0. 0.
 			}
-			Champs dt_post 1.
+			fields dt_post 1.
 			{ 
 				pression_pa elem
 			}
@@ -125,7 +125,7 @@ Read pb
 		{
 			format lata
 			fichier Cx_impl
-			Champs dt_post 1.
+			fields dt_post 1.
 			{ 
 				pression_pa elem
 				vitesse elem

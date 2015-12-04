@@ -103,7 +103,7 @@ Read pb_lame
 		}
 		convection { quick }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 3 0. 0. 56.
 			}
 		boundary_conditions {
@@ -125,7 +125,7 @@ Read pb_lame
 					entree 				frontiere_ouverte_k_eps_impose champ_front_uniforme 2 3.e1 3.e4 
 					sortie				frontiere_ouverte k_eps_ext Champ_Front_Uniforme 2 3.e1 3.e4 		
                                 }
-                                conditions_initiales {
+                                initial_conditions {
                                         k_eps Champ_Uniforme 2 3.e1 3.e4 
                                 }
                         }
@@ -138,7 +138,7 @@ Read pb_lame
 	{
 		diffusion { }
 		convection { quick }
-		conditions_initiales {
+		initial_conditions {
 			temperature Champ_Uniforme 1 753.
 			}
 		boundary_conditions {
@@ -153,14 +153,14 @@ Read pb_lame
           	}
 	       modele_turbulence Prandtl { turbulence_paroi loi_standard_hydr_scalaire }
 	}
-	Postraitement {
-		Sondes
+	Post_processing {
+		Probes
 		{
 			sonde_lame_vitesse  	vitesse periode 1.e-5 		point 1 5.7e-3 0 0
 			sonde_lame_temperature  temperature periode 1.e-5 	point 1 5.7e-3 0 0
 			sonde_lame_rho		masse_volumique periode 1.e-5		point 1 5.7e-3 0 -0.975
 		}
-		Champs dt_post 500.
+		fields dt_post 500.
 		{
                   	vitesse elem
 		   	temperature elem
@@ -176,7 +176,7 @@ Read pb_combustible
 	Conduction
 	{
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			temperature Champ_Uniforme 1 753
 			}
                 sources {  Puissance_Thermique Champ_Fonc_XYZ dom_combustible 1 6.23e6*COS(2.6*z/1.9) }
@@ -187,13 +187,13 @@ Read pb_combustible
 			r_1000_2000			paroi_contact pb_revetement  r_1000_2000
 		}
 	}
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_combustible temperature periode 1.E-5 segment 20 0. 0. 0.50  0. 0. 0.80
 		}
-		Champs dt_post 500.
+		fields dt_post 500.
 		{
 		   	temperature elem
 		}
@@ -205,7 +205,7 @@ Read pb_revetement
 	Conduction
 	{
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			temperature Champ_Uniforme 1 753
 			}
 		boundary_conditions {
@@ -216,13 +216,13 @@ Read pb_revetement
 			r_2000_3000			paroi_contact pb_lame  r_2000_3000
 		}
 	}
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_revetement temperature periode 1.E-5 segment 20 0.002355 0. 0.50  0.002355 0. 0.80
 		}
-		Champs dt_post 500.
+		fields dt_post 500.
 		{
 		   	temperature elem
 		}

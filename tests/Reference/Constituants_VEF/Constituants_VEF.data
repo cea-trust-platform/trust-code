@@ -26,9 +26,9 @@ trianguler_H dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -87,7 +87,7 @@ Read pb
 		}
 		convection { muscl }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 1. 1.
 		}
 		boundary_conditions {
@@ -108,24 +108,24 @@ Read pb
 			Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 12 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 
 			Bas Symetrie
 		}
-		conditions_initiales {
+		initial_conditions {
 			concentration Champ_Uniforme 12 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 
 		}
 	}
 
-	Postraitements
+	Post_processings
 	{
 	
 	      post_champs
 	      {
-		Sondes
+		Probes
 		{
 			sonde_pres pression periode 0.01 points 1 0.45 0.45
 			sonde_vit vitesse periode 0.01 points 1 0.4 0.45
 			sonde_conc concentration1 periode 0.01 points 1 0.55 0.45
 		}
 		fichier Constituants_VEF	
-		Champs dt_post 0.3
+		fields dt_post 0.3
 		{
 			pression elem
 			pression som
@@ -148,7 +148,7 @@ Read pb
 	     post_flux
 	     {
 	  	Format lata
-	        Champs dt_post 0.3
+	        fields dt_post 0.3
 		{
 		 flux_bords
 		}

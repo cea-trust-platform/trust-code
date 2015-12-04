@@ -35,8 +35,8 @@ Read processeur_0
 
 Partition dom
 {
-	Partitionneur sous_zones { sous_zones 1 processeur_0 }
-	Nom_Zones nom_zone
+	Partition_tool sous_zones { sous_zones 1 processeur_0 }
+	zones_name nom_zone
 	Periodique 2 Perio Perio2
 	Larg_joint 2
 }
@@ -85,7 +85,7 @@ Read pb
 		}
 		diffusion {  }
                 convection { amont }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 1. 1.
 			}
 		boundary_conditions {
@@ -94,14 +94,14 @@ Perio2 periodique
 		}
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Champs dt_post 100.
+		fields dt_post 100.
 		{
 			vitesse elem
                         pression elem
 		}
-                Sondes 
+                Probes 
                 {
 			vitx_moyenne vitesse  periode 0.5 segment 57   0. 0.   28. 0.
                         vit_sortie   vitesse  periode 0.5 segment 28   28. -7. 28. 7.

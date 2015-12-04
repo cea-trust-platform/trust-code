@@ -31,9 +31,9 @@ Corriger_frontiere_periodique { domaine dom bord paroiY }
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur Metis { nb_parts 9 }
+	Partition_tool Metis { nb_parts 9 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 	periodique 1 paroiY
 }
 End
@@ -81,7 +81,7 @@ Read pb
                 convection { muscl }
                 diffusion  {  }
                 Sources { Source_Qdm Champ_fonc_txyz dom 3  sin(x*y*z+t) cos(x*y*z+t) tan(x*y*z+t) }
-		conditions_initiales { vitesse Champ_fonc_xyz dom 3  sin(x*y*z) cos(x*y*z) tan(x*y*z) }
+		initial_conditions { vitesse Champ_fonc_xyz dom 3  sin(x*y*z) cos(x*y*z) tan(x*y*z) }
 		boundary_conditions
 		{
 			Sud paroi_fixe
@@ -93,9 +93,9 @@ Read pb
 	}
 
 
-	Postraitement
+	Post_processing
 	{
-		Champs dt_post 2.
+		fields dt_post 2.
 			{
 			pression elem
 			vitesse elem

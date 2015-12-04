@@ -12,9 +12,9 @@ verifiercoin dom { }
 Partition dom 
   { 
     
-    Partitionneur metis   { nb_parts 2   } 
+    Partition_tool metis   { nb_parts 2   } 
     Larg_joint 2
-    Nom_Zones DOM 
+    zones_name DOM 
   } 
 End 
 END PARTITION #
@@ -135,7 +135,7 @@ Read pb
           }
         convection    { amont   } 
         diffusion    {   } 
-        conditions_initiales 
+        initial_conditions 
           {
             vitesse champ_uniforme  3 0.0 0.0 0.3
           }
@@ -146,7 +146,7 @@ Read pb
             PAR paroi_fixe 
           }
       }
-    postraitement 
+    Post_processing 
       { 
 
 	Definition_champs {
@@ -160,7 +160,7 @@ Read pb
                   }
 		}
 	}
-        sondes 
+        Probes 
           {
             Sonde1 vitesse periode 0.01 points 1  0.005 0.015 0.02
             Sonde2 vitesse periode 0.01 segment 31  0.02 0.0 0.0
@@ -170,18 +170,18 @@ Read pb
           }
 	domaine plan
 	
-        champs  dt_post 50.0 
+        fields  dt_post 50.0 
           {
             vitesse elem
           }
       }
-    postraitements 
+    Post_processings 
       {
         plan 
           { 
             domaine plan
             format lata
-            champs  dt_post 50.0 
+            fields  dt_post 50.0 
               {
                 pression elem
                 vitesse elem
@@ -192,7 +192,7 @@ Read pb
           { 
             domaine plan_in
             format lata
-            champs  dt_post 50.0 
+            fields  dt_post 50.0 
               {
                 pression elem
                 vitesse elem
@@ -203,7 +203,7 @@ Read pb
           { 
             domaine plan_qcq
             format lata
-            champs  dt_post 50.0 
+            fields  dt_post 50.0 
               {
                 pression elem
                 vitesse elem
@@ -214,7 +214,7 @@ Read pb
           { 
             domaine surface
             format lata
-            champs  dt_post 50.0 
+            fields  dt_post 50.0 
               {
                 pression elem
                 vitesse elem
@@ -225,7 +225,7 @@ Read pb
           { 
             domaine surface_out
             format lata
-            champs  dt_post 50.0 
+            fields  dt_post 50.0 
               {
                 pression elem
                 vitesse elem
@@ -236,7 +236,7 @@ Read pb
           { 
             domaine surface_qcq
             format lata
-            champs  dt_post 50.0 
+            fields  dt_post 50.0 
               {
                 pression elem
                 vitesse elem

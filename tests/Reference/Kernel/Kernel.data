@@ -48,9 +48,9 @@ Postraiter_domaine { domaine dom format lata fichier dom }
 # BEGIN PARTITION
 Partition dom
 {
-  Partitionneur metis { Nb_parts 2 }
+  Partition_tool metis { Nb_parts 2 }
   Larg_joint 1
-    Nom_Zones DOM
+    zones_name DOM
     }
 End
 END PARTITION #

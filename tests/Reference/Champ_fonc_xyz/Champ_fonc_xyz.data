@@ -27,9 +27,9 @@ Corriger_frontiere_periodique { domaine dom bord periox }
 # BEGIN PARTITION 
 Partition dom
 {
-        Partitionneur Metis { nb_parts 5 }
+        Partition_tool Metis { nb_parts 5 }
         Larg_joint 2
-        Nom_Zones DOM
+        zones_name DOM
 }
 End
 END PARTITION #
@@ -79,7 +79,7 @@ Read pb
 		sources { source_Qdm Champ_Fonc_txyz dom 2 0. 0. }
 		convection { negligeable }
 		diffusion { } 
-		conditions_initiales 
+		initial_conditions 
 				{
 			 	vitesse Champ_fonc_txyz dom 2 ln(1+y) 0.
 				}
@@ -92,9 +92,9 @@ Read pb
 		traitement_particulier { Canal { dt_impr_moy_spat 500. } }
 }		
 		
-Postraitement
+Post_processing
 	{
-		format lml Champs dt_post 1.e-1
+		format lml fields dt_post 1.e-1
 		{
 			pression elem
 		}

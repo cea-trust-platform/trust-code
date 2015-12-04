@@ -31,10 +31,10 @@ Corriger_frontiere_periodique { Domaine dom Bord perioz }
 # BEGIN PARTITION
 Partition dom
 {
-        Partitionneur Metis { nb_parts 3 }
+        Partition_tool Metis { nb_parts 3 }
         Larg_joint 2
 	periodique 2 periox perioz
-        Nom_Zones dom
+        zones_name dom
 }
 End
 END PARTITION #
@@ -88,7 +88,7 @@ Read pb
                         {
                         Canal_perio { bord periox }
                         }
-		conditions_initiales
+		initial_conditions
 			{
                         vitesse Champ_fonc_xyz dom 3  -3*y*y+6*y 0. 0. 
 			}
@@ -105,10 +105,10 @@ Read pb
                         canalx 2.
 			}
 	}
-	Postraitement
+	Post_processing
         	{       
                 format lml
-		Champs dt_post 15.
+		fields dt_post 15.
 			{
 			vitesse elem
 			viscosite_turbulente elem

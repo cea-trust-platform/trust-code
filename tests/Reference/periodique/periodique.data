@@ -27,9 +27,9 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 1 2 }
+	Partition_tool tranche { tranches 1 2 }
 	Larg_joint 2
-	Nom_Zones dom
+	zones_name dom
 	periodique 1 Perio
 	formatte
 }
@@ -77,7 +77,7 @@ Read pb
 		}
 		diffusion { }
                 convection { quick }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Don_lu dom 2 periodique.rep
 			}
 		boundary_conditions {
@@ -87,15 +87,15 @@ Read pb
 		}
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Champs dt_post 100.
+		fields dt_post 100.
 		{
 			vitesse som
                         pression elem
                         vorticite som 
 		}
-                Sondes 
+                Probes 
                 {
 			vitx_moyenne vitesse  periode 0.5 segment 57   0. 0.   28. 0.
                         vit_sortie   vitesse  periode 0.5 segment 28   28. -7. 28. 7.

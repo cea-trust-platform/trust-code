@@ -28,9 +28,9 @@ Trianguler_H dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur Metis { Nb_parts 2 }
+	Partition_tool Metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -75,7 +75,7 @@ Read pb
 		solveur_pression GCP { precond ssor { omega 1.65 } seuil 1.e-10 impr }
 		convection { amont }
 		diffusion { }
-		conditions_initiales 
+		initial_conditions 
 		        {
 			vitesse Champ_Uniforme 2 0.0 0.1
 			}
@@ -88,17 +88,17 @@ Read pb
 		}
 	}
 
-	Postraitements
+	Post_processings
 	{
 	lata
 	{
-		Sondes
+		Probes
 		{
 		   sonde_vitesse vitesse periode 1.e-5 point 1 0.05 0.05
 		}
 		format lata
 		fichier 2D_P1NCP1P0Pa
-		Champs dt_post 0.1
+		fields dt_post 0.1
 		{	
 			divergence_U elem	
 			vitesse elem
@@ -111,7 +111,7 @@ Read pb
 	{
 		format lml
 		fichier 2D_P1NCP1P0Pa
-		Champs dt_post 0.1
+		fields dt_post 0.1
 		{		
 			vitesse elem
 			vitesse som

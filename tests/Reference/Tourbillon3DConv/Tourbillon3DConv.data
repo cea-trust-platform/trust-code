@@ -31,9 +31,9 @@ z
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur Metis { Nb_parts 3 }
+	Partition_tool Metis { Nb_parts 3 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -86,7 +86,7 @@ Read pb
                 convection { EF filtrer_resu 0 antisym 0 transporte_bar 0 transportant_bar 0 }
                 diffusion  {  }
 			
-		conditions_initiales
+		initial_conditions
 			{
                         vitesse Champ_fonc_xyz dom 3  x-0.5 0.5-y 0
 			}
@@ -97,17 +97,17 @@ Read pb
 			}
 	         }
 
-	Postraitements
+	Post_processings
         	{
 		lata	
 		{
 		fichier Tourbillon3DConv
 		format lata  
-                Sondes
+                Probes
                 	{ 
                         sonde_vit1  vitesse periode 0.01 points 1 0.5 0.5 0.5 
 			}
-		Champs dt_post 0.1
+		fields dt_post 0.1
 			{
 			vitesse elem
 			pression elem
@@ -118,7 +118,7 @@ Read pb
 		{
 		fichier Tourbillon3DConv
 		format lml  
-		Champs dt_post 0.1
+		fields dt_post 0.1
 			{
 			vitesse elem
 			pression elem

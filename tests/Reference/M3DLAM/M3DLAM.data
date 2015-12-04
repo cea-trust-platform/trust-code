@@ -11,9 +11,9 @@ Read_file M3DLAM.geo ;
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -53,7 +53,7 @@ Read pb
 
 		convection { amont }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 3  0. 0. 0.
 			}
 		boundary_conditions {
@@ -81,14 +81,14 @@ Read pb
 		}
 	}
 
-	Postraitement 
+	Post_processing 
 	{
-		Sondes 
+		Probes 
 		{
 			sonde_pression pression periode 0.1 points 1 7.5 0.9 5.5
 			sonde_vitesse vitesse periode 0.1 points 1 8.0 0.9 5.5
 		}
-		Champs dt_post 80.
+		fields dt_post 80.
 		{
 			vitesse elem
 			taux_cisaillement elem

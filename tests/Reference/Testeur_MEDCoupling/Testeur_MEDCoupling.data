@@ -26,9 +26,9 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -69,7 +69,7 @@ Read pb
 	Conduction
 	{
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			temperature Champ_fonc_xyz dom  1 5+y 
 			}
 		boundary_conditions {
@@ -84,13 +84,13 @@ Read pb
 		}
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde temperature periode 5. points 1 0.45 0.45
 		}
-		Champs dt_post 30.
+		fields dt_post 30.
 		{
 			temperature elem
 			temperature som

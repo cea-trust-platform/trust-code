@@ -43,9 +43,9 @@ trianguler_H dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur Tranche { tranches 2 2 }
+	Partition_tool Tranche { tranches 2 2 }
 	Larg_joint 2
-	Nom_Zones dom
+	zones_name dom
 }
 End
 END PARTITION #

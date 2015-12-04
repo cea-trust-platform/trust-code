@@ -30,9 +30,9 @@ Trianguler_H dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -85,7 +85,7 @@ Read pb
 		solveur_pression GCP { precond ssor { omega 1.6 } seuil 1.e-10 impr  }	
 		convection { muscl }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse champ_fonc_xyz dom 2  2.*(1.-y)*y 0.
 			}
 		boundary_conditions {
@@ -107,12 +107,12 @@ Read pb
  			ENTREE frontiere_ouverte T_ext Champ_Front_Uniforme 1 1.00
 			SORTIE frontiere_ouverte T_ext Champ_Front_Uniforme 1 0.00
 		}
-		conditions_initiales { Temperature Champ_Uniforme 1 0. }
+		initial_conditions { Temperature Champ_Uniforme 1 0. }
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
                   sonde0 	vitesse periode 0.00001 segment 60 2. 0. 2. 1.
                   sonde1 	vitesse periode 0.00001 segment 60 0. 0. 2. 1.
@@ -196,7 +196,7 @@ Read pb
 		
 		}
 		
-		Champs dt_post 5
+		fields dt_post 5
 		{
 		  moyenne_vitesse_som_dom
 		  moyenne_pression_som_dom

@@ -29,9 +29,9 @@ Pave Cavite
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 1 2 1 }
+	Partition_tool tranche { tranches 1 2 1 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 	Periodique 2 periox perioz
 }
 End
@@ -88,7 +88,7 @@ Read pb
                         {
                         Canal_perio { bord periox }
                         }
-		conditions_initiales
+		initial_conditions
 			{
                         vitesse Champ_fonc_xyz dom 3  20. 0. 0. 
 			}
@@ -107,7 +107,7 @@ Read pb
                          
 	}
 
-	Postraitement
+	Post_processing
 	{
         	Definition_champs {  
 			Energie_cinetique_fluide reduction_0D
@@ -118,13 +118,13 @@ Read pb
 				}
 			} 
 		}    
-                Sondes
+                Probes
                 	{ 
 			Sonde_ec Energie_cinetique_fluide Periode 0.025 Point 1  5. 2. 5.
                         sonde_vit  vitesse periode 0.0001 segment 50	5. 0. 5.   5. 2. 5.
 			sonde_visc_turb  viscosite_turbulente periode 0.0001 segment 50	5. 0. 5.   5. 2. 5.
 			}
-		Champs dt_post 2.
+		fields dt_post 2.
 			{
 			vitesse elem
 			vitesse som

@@ -12,9 +12,9 @@ dilate dom_3D 1.e-3
 # BEGIN PARTITION
 Partition dom_3D
 {
-        Partitionneur metis { Nb_parts 2 }
+        Partition_tool metis { Nb_parts 2 }
         Larg_joint 2
-        Nom_Zones DOM
+        zones_name DOM
 }
 End
 END PARTITION #
@@ -75,7 +75,7 @@ Read pb
 		convection { ef_stab { } }
 		diffusion { }
 		sources { boussinesq_temperature { T0 321.9 } }
-		conditions_initiales { vitesse Champ_Uniforme 3 0. 0. 0. }
+		initial_conditions { vitesse Champ_Uniforme 3 0. 0. 0. }
 		boundary_conditions
 		{
 			IN	frontiere_ouverte_vitesse_imposee	champ_front_Uniforme 3 0. 0.0415  0.
@@ -101,7 +101,7 @@ Read pb
 					SYMZ0	symetrie
 					SYMZ1	symetrie
 				}
-				conditions_initiales { k_Eps Champ_Uniforme 2 2e-5 1e-5 }
+				initial_conditions { k_Eps Champ_Uniforme 2 2e-5 1e-5 }
             		}
 			turbulence_paroi Paroi_TBLE { N 50 facteur 1 }
 	       }
@@ -119,15 +119,15 @@ Read pb
 			SYMZ0	symetrie
 			SYMZ1	symetrie
 		}
-		conditions_initiales { Temperature Champ_Uniforme 1 321.9 }	
+		initial_conditions { Temperature Champ_Uniforme 1 321.9 }	
 		modele_turbulence Prandtl
 		{
 			turbulence_paroi Paroi_TBLE_scal { N 50 facteur 1. }
 		}
 	}
-	Postraitement
+	Post_processing
 	{
-		Champs dt_post 10.
+		fields dt_post 10.
 		{
 			viscosite_turbulente	elem
 		}

@@ -105,7 +105,7 @@ Read pb
                                  { bord OUTLE direction 2 }
                                }
 
-                conditions_initiales
+                initial_conditions
                         {
                         vitesse Champ_Uniforme 3 0. 0. 443.
                         }
@@ -128,7 +128,7 @@ Read pb
 					INLET  frontiere_ouverte_K_eps_impose  Champ_front_lu DOM_DOM 2 pb1_K_EPS_PERIO.dat
                                         OUTLE frontiere_ouverte K_EPS_EXT Champ_Front_Uniforme 2 0. 0.
                          	 }
-                                conditions_initiales { k_Eps Champ_Uniforme 2  1962. 3.2e8 }
+                                initial_conditions { k_Eps Champ_Uniforme 2  1962. 3.2e8 }
                          }
                         turbulence_paroi loi_standard_hydr dt_impr_ustar 0.00030
                  }
@@ -145,18 +145,18 @@ Read pb
                                 SYM   symetrie
                                 INLET frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 300.
                       }
-                     Conditions_initiales { temperature Champ_Uniforme 1 300. }
+                     initial_conditions { temperature Champ_Uniforme 1 300. }
                      Modele_turbulence Prandtl
                       {
                         Turbulence_paroi loi_standard_hydr_scalaire dt_impr_nusselt 3.e-4
                       }
         }
 
-        Postraitement
+        Post_processing
         {
 		format lata
-		Champs dt_post 1000 { }
-		Sondes 
+		fields dt_post 1000 { }
+		Probes 
 		   { 
 			sonde_vitb vitesse periode 1.e-6 segment 25 8.e-3   1.e-4 0.009 9.6e-3 1.e-4   0.009
                         sonde_vith vitesse periode 1.e-6 segment 35 6.94e-3 4.e-3 0.009 9.6e-3 5.53e-3 0.009

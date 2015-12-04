@@ -30,9 +30,9 @@ Corriger_frontiere_periodique { Domaine dom Bord periox }
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 1 2 1 }
+	Partition_tool tranche { tranches 1 2 1 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 	Periodique 1 periox
 }
 End
@@ -95,7 +95,7 @@ Read pb
 			{
 			Canal_perio { bord periox }
 			}
-		conditions_initiales
+		initial_conditions
 			{
 			vitesse champ_uniforme 3 1. 0. 0.
 			}
@@ -122,13 +122,13 @@ Read pb
 			periox periodique 
  			paroi   Paroi_temperature_imposee Champ_Front_Uniforme 1 500		    
 			}
-		conditions_initiales { Temperature champ_uniforme 1 500. }
+		initial_conditions { Temperature champ_uniforme 1 500. }
 		}
 
 
-	Postraitement
+	Post_processing
         	{       		
-		Champs dt_post 20.
+		fields dt_post 20.
 			{
 			temperature elem
 			}
