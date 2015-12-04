@@ -1,14 +1,14 @@
 dimension 3
 domaine dom
 # BEGIN MESH #
-Lire_med family_names_from_group_names dom Mesh_1 Mesh_1.med
+Read_med family_names_from_group_names dom Mesh_1 Mesh_1.med
 # END MESH #
 # BEGIN PARTITION 
 Partition dom 
 {
-    Partitionneur metis   { nb_parts 4  }
+    Partition_tool metis   { nb_parts 4  }
     Larg_joint 2 
-    Nom_Zones DOM 
+    zones_name DOM 
 }
 End 
 END PARTITION #
@@ -54,7 +54,7 @@ Read pb
         solveur_pression PETSc Cholesky {  }
         convection  { amont }
         diffusion   { }
-        conditions_initiales    { vitesse champ_uniforme  3 0.0 0.0 0.0 }
+        initial_conditions      { vitesse champ_uniforme  3 0.0 0.0 0.0 }
         boundary_conditions
         {
             Wall paroi_fixe 
@@ -75,13 +75,13 @@ Read pb
             Inlet_z    frontiere_ouverte_temperature_imposee Champ_front_uniforme 1 30.0
             Outlet     frontiere_ouverte T_EXT champ_front_uniforme 1 20.
         }
-        conditions_initiales { Temperature Champ_uniforme 1 20.0 }
+        initial_conditions   { Temperature Champ_uniforme 1 20.0 }
     }
 
-    Postraitement 
+    Post_processing
     {
         format lata
-        champs  dt_post 0.001 
+        fields  dt_post 0.001 
         {
             pression elem
             pression som

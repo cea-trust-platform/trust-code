@@ -1,10 +1,13 @@
 Version	Qui				Tache
+1.7.2   gauthier.fauchet@cea.fr  Couverture de tests a partir de tous les baltiks a fournir pour la sortie de version
 1.7.3   gauthier.fauchet@cea.fr  Reprendre Mod_turb_hyd_base.cpp limitation mut
 1.7.3   gauthier.fauchet@cea.fr  Revoir le PATH pour module load TRUST sous occigen (passer par SET)
 1.7.2   triou@cea.fr            proposer un tutorial ICoCo
-1.7.3   triou@cea.fr            en test: ajouter 16 et 32 proc pour visIt via HPCDrive dans host_ccrt.xml
+1.7.3   triou@cea.fr            en test: ajouter 16 et 32 proc pour visIt via HPCDrive dans host_ccrt.xml (see DI 3888)
 1.7.3   triou@cea.fr            revoir la configuration de Visit mode client/serveur sur curie via HPCDrive (PAS DU TOUT optimise!!!!)
 1.7.2   triou@cea.fr            Passer en job de soumission mise_a_jour_TRUST_arch sur cluster pour eviter de charger les frontales
+1.7.3   triou@cea.fr            Passer a la version Petsc 3.6... et revoir euclid + doc
+1.7.3   triou@cea.fr            Reprendre verif_cl avec branche de Marthe
 1.7.3   triou@cea.fr            Analyser le fichier de sortie datafile_petsc.TU (signification de count)
 1.7.2   gauthier.fauchet@cea.fr revoir le TRUST env qui teste beaucoup de chose (ex: dd.ksh,...) et trop long pour utilisateur
 1.7.3   triou@cea.fr            completer benchmark avec et sans Petsc
@@ -17,15 +20,14 @@ Version	Qui				Tache
 1.7.3   triou@cea.fr            tester options du configure: -force_petsc_have_cuda -force_petsc_have_openmp + VAMPIR_SUPPORTED
 1.7.3   triou@cea.fr            Probleme avec pre-commit et post-commit qui modifie des fichiers lors du commit apres nos tests !!! Le faire lors du compile et si modif alors arret...
 1.7.3   triou@cea.fr            turbulence : si u_tau.dat reynolds_tau.dat et tauw.dat renommes en jdd_***.dat, alors ATTENTION car beaucoup de fiches de valid s'en servent + voir avec utilisateurs
-1.7.3	triou@cea.fr		Champ_front_normal voir d'autres ne devrait pas heriter de Ch_front_var_instationnaire_dep (notion d'inconnue) ?
-1.7.3	triou@cea.fr		add_if_not dans Ch_base.cpp lent ?
-1.7.3	triou@cea.fr		Essayer de calculer auto direction quand la periodicite n'est pas orthogonale aux bords (eg: Canal_perio_incline_VEF) ?
-1.7.3	triou@cea.fr		Open a ME on checking diffusive fluxes between 2 domains (implicit schemes sanity check). Loop in mettre_a_jour ?
-1.7.3	triou@cea.fr		Try to suppress 2 REF in Equation_base zone_dis and schema_temps, keep problem shema_temps()=mon_probleme().schema_temps() ?
-1.7.3	triou@cea.fr		zone_dis()=mon_probleme().domaine_dis().zone_dis(0); ?
-1.7.3	triou@cea.fr		Check Champ_fonc_reprise with .sauv files produces a clear error message when partition is changed ?
-1.7.3	triou@cea.fr            Renommer sous_maille en sous_maille_fonction_structure (in english) ?
-1.7.3	marthe.roux@cea.fr      Translate Ecrire->Write, and other main interpretors... Conditions_initiales,...
-1.7.2	marthe.roux@cea.fr  	Passer Doc (tuto, formation) en latex + user guide voir avec Gauthier
+1.7.0	triou@cea.fr		Champ_front_normal voir d'autres ne devrait pas heriter de Ch_front_var_instationnaire_dep (notion d'inconnue) ?
+1.7.0	triou@cea.fr		add_if_not dans Ch_base.cpp lent ?
+1.7.0	triou@cea.fr		Essayer de calculer auto direction quand la periodicite n'est pas orthogonale aux bords (eg: Canal_perio_incline_VEF) ?
+1.7.0	triou@cea.fr		Open a ME on checking diffusive fluxes between 2 domains (implicit schemes sanity check). Loop in mettre_a_jour ?
+1.7.0	triou@cea.fr		Try to suppress 2 REF in Equation_base zone_dis and schema_temps, keep problem shema_temps()=mon_probleme().schema_temps() ?
+1.7.0	triou@cea.fr		zone_dis()=mon_probleme().domaine_dis().zone_dis(0); ?
+1.7.0	triou@cea.fr		Check Champ_fonc_reprise with .sauv files produces a clear error message when partition is changed ?
+1.7.0	triou@cea.fr            Renommer sous_maille en sous_maille_fonction_structure (in english) ?
+1.7.3	triou@cea.fr        	Passer Doc (formation) en latex + user guide voir avec Gauthier
 1.7.2	triou@cea.fr  		Doc : mettre a jour index et table des matieres
 1.7.3	celine.capitaine@cea.fr Mettre a jour la notice de maintenance TRUST/TrioCFD

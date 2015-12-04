@@ -117,6 +117,9 @@ then
        then
          echo  patch Mesa for clang
   	 sed -i "s/float 0f+1.0/float 1.0/" Mesa-7.10.2/src/mesa/x86-64/xform4.S  
+	LDADD=$(find $PWD/visit/python/ -name python | grep bin | sed "s?/bin/python?/lib?")
+         export LD_LIBRARY_PATH=$LDADD:$LD_LIBRARY_PATH
+
          ./build.sh $package $parallel
           status=$?
       if [ $status -ne 0 ] && [ "$parallel" != "" ]

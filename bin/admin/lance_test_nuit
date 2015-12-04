@@ -575,8 +575,10 @@ echo "###############################################"
 	   if [ $rebase_error != 0 ]
 	   then
 	      deleted_item=deleted_item
-	      while [ $rebase_error != 0 ] && [ "$deleted_item" != "" ]
+	      compt=10
+	      while [ $rebase_error != 0 ] && [ "$deleted_item" != "" ] && [ $comp != 0 ]
 	      do
+	         let compt=$compt-1
 	         for deleted_item in `git status | awk '/deleted by them/ || /added by us/ {print $5}'`
 	         do
 		    git rm $deleted_item #1>>$rebase_log 2>&1
