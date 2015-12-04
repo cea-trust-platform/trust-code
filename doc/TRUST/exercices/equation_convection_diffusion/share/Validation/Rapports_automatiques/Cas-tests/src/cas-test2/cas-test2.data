@@ -24,9 +24,9 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-        Partitionneur tranche { tranches 2 1 }
+        Partition_tool tranche { tranches 2 1 }
         Larg_joint 1
-        Nom_Zones DOM
+        zones_name DOM
         periodique 2 Bas Gauche
 }
 End
@@ -70,7 +70,7 @@ Read pb
    {
 	diffusion {  }
 	convection { amont }
-	conditions_initiales 
+	initial_conditions 
         { 
          Concentration champ_fonc_xyz dom 1 ((x-0.5)^2+(y-0.75)^2<(0.15)^2) 
         }
@@ -81,10 +81,10 @@ Read pb
 	}
    }
 
-   Postraitement
+   Post_processing
    {
 		format lata
-        	champs dt_post 1.e-7
+        	fields dt_post 1.e-7
 		{
 			Concentration elem
 			vitesse_convection elem

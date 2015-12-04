@@ -2,7 +2,7 @@ Convection_Diffusion
 {
   diffusion { }
   convection { amont }
-  conditions_initiales 
+  initial_conditions 
   { 
    Concentration champ_fonc_xyz dom 1 (x-0.2)^2+(y-0.2)^2<(0.1)^2 
   }
