@@ -29,9 +29,9 @@ Trianguler_H dom
 # BEGIN PARTITION
 Partition dom
 {
-        Partitionneur metis { Nb_parts 2 }
+        Partition_tool metis { Nb_parts 2 }
         Larg_joint 2
-        Nom_Zones DOM
+        zones_name DOM
 }
 End
 END PARTITION #
@@ -82,7 +82,7 @@ Read pb
 		projection_initiale 0
 		convection { amont }
 		diffusion { }
-		conditions_initiales { vitesse Champ_Uniforme 2 0. 0. }
+		initial_conditions { vitesse Champ_Uniforme 2 0. 0. }
 		boundary_conditions
 		{
 			Haut	symetrie
@@ -102,9 +102,9 @@ Read pb
  			Gauche	symetrie
 			Droit	symetrie
 		}
-		conditions_initiales { Temperature Champ_fonc_xyz dom 1 2000.-2000*x }
+		initial_conditions { Temperature Champ_fonc_xyz dom 1 2000.-2000*x }
 	}
-	Postraitement
+	Post_processing
 	{
 		Definition_champs 
 		{
@@ -137,14 +137,14 @@ Read pb
 			source refChamp { Pb_champ pb temperature }
 		   }	
 		}
-		Sondes
+		Probes
 		{
 			sonde_mean_temperature_elem mean_temperature_elem_ponderee periode 0.01 point 1 0.5 0.5
 			sonde_mean_temperature_som  mean_temperature_som_ponderee  periode 0.01 point 1 0.5 0.5
 			sonde_mean_temperature_face mean_temperature_face_ponderee periode 0.01 point 1 0.5 0.5
 			sonde_mean_temperature      mean_temperature_pas_ponderee  periode 0.01 point 1 0.5 0.5
 		}
-		Champs dt_post 0.01
+		fields dt_post 0.01
 		{
 			temperature	elem
 			mean_temperature_elem_ponderee

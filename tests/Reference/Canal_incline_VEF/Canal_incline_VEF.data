@@ -28,8 +28,8 @@ Transformer dom x+1*y y
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 2 }
-	Nom_Zones DOM
+	Partition_tool tranche { tranches 2 2 }
+	zones_name DOM
 	Periodique 1 periox
         Larg_joint 2
 }
@@ -71,7 +71,7 @@ Read pb
 		solveur_pression petsc cholesky { }
 		convection { muscl }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse champ_uniforme 2 1 0
 		}
 		sources { Canal_perio { bord periox } }
@@ -82,15 +82,15 @@ Read pb
 		}
      }
 	      
-	Postraitement
+	Post_processing
 	{
-	     Sondes
+	     Probes
 	          {
 	           	sonde_pression pression periode 0.001 points 1 0.05 0.15  
 			sonde_vit40 vitesse periode 0.001 segment 20   2. 0.05   2. 1.95 
 			sonde_vit_x vitesse periode 0.001 segment 20   0.157 1.      6.123 1. 
 	        }
-		Champs dt_post 4.0
+		fields dt_post 4.0
 		{			
 			pression som				
 	}

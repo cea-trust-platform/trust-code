@@ -66,7 +66,7 @@ Read pb
 		Turbulence_paroi loi_standard_hydr 
 		
 	}
-	conditions_initiales {	vitesse Champ_Uniforme 3  0. 0.5 0. }
+	initial_conditions {	vitesse Champ_Uniforme 3  0. 0.5 0. }
 	boundary_conditions 
 	{
 	    Wand1  paroi_fixe
@@ -76,9 +76,9 @@ Read pb
 	}
     }
 
-    Postraitement 
+    Post_processing 
     {
-	Sondes 
+	Probes 
 	{
 		pression pression    periode  1.e-8 points  1 0.011 0.0 0.05 
 		vitesse_en_z vitesse periode  1.e-8 segment 9 0.04 0.5 0.0001
@@ -87,7 +87,7 @@ Read pb
 		                                              0.098 0.5 0.05
 	}	
 	format lml
-	Champs dt_post 5.0
+	fields dt_post 5.0
 	{
 		pression elem
 		pression som

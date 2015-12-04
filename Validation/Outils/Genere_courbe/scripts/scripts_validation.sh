@@ -217,7 +217,7 @@ done
 }
 
 
-echo def genere_new_rap_old_rap  [ -perf ] newarchives oldarchives
+echo def genere_new_rap_old_rap  [ -perf ] [-data]  newarchives oldarchives
 gen_fiche()
 {
 cd preserve
@@ -233,14 +233,18 @@ perf=""
 
 perf=""
 [ "$1" = "-perf" ] && perf=$1 && shift
-
+[ "$1" = "-data" ] && data=$1 && shift
 fiche=$1
 [ "$fiche" = "" ] && exit -1
 [ ! -f $ref/$fiche ] && echo $ref/$fiche absent #  &&  return
 pdf=`basename $fiche .tgz`.pdf
-if [ -f new_rap/$pdf ] || [ -f new_rap/OK/$pdf ] || [ -f new_rap/KO/$pdf ]
+pdf_new=`find new_rap -name $pdf`
+#if [ -f new_rap/$pdf ] || [ -f new_rap/OK/$pdf ] || [ -f new_rap/KO/$pdf ]
+if [ "$pdf_new" != "" ]
 then
 echo on  a deja la fiche  $pdf
+[ $pdf_new -ot $new/$fiche ] && echo $pdf_new a refaire ?
+
 return
 fi
 echo on traite la fiche $pdf
@@ -265,9 +269,19 @@ then
  tar xvf ../new/perf.tar
  cd ..
 fi
+if [ "$data" != "" ]
+then
+ cd new
+ tar cvf data.tar `find . -name '*'.data` 
+ cd ../preserve
+ tar cvf data.tar `find . -name '*'.data` 
+ tar xvf ../new/data.tar
+ cd ..
+fi
 gen_fiche
-mv preserve/rapport.pdf old_rap/$pdf
-
+mv -f preserve/rapport.pdf old_rap/$pdf
+rm -f perf.tar data.tar 
+rm -rf new preserve
 
 }
 
@@ -275,6 +289,7 @@ genere_new_rap_old_rap()
 {
 perf=""
 [ "$1" = "-perf" ] && perf=$1 && shift
+[ "$1" = "-data" ] && data=$1 && shift
 NEW=$1
 REF=$2
 [ "$NEW" = "" ] && exit
@@ -284,7 +299,7 @@ cd $NEW/; fiches=`ls *.tgz`; cd -
 mkdir -p new_rap old_rap
 for fiche in $fiches
  do
-  gen_rap_fiche $perf $fiche
+  gen_rap_fiche $perf $data $fiche
 done
 
 }

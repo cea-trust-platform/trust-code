@@ -25,9 +25,9 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 2
-	Nom_Zones dom
+	zones_name dom
 }
 End
 END PARTITION #
@@ -82,7 +82,7 @@ Read pb
 		convection { quick }
 		diffusion { }
 		sources { boussinesq_temperature { T0 5. } , acceleration { omega Champ_fonc_t 3 0. 0. 1. domegadt Champ_fonc_t 3 0. 0. 0. centre_rotation Champ_fonc_t 2 0.005 0.005 } }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -103,12 +103,12 @@ Read pb
   			Gauche paroi_temperature_imposee Champ_Front_Uniforme 1 10.
 			Droit  paroi_temperature_imposee Champ_Front_Uniforme 1 0.
 		}
-		conditions_initiales { Temperature Champ_Uniforme 1 5. }
+		initial_conditions { Temperature Champ_Uniforme 1 5. }
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{ 
 			sonde_acceleration_terme_source acceleration_terme_source periode 0.01 points 1 0.0045 0.0045
 			sonde_V vitesse periode 0.01 segment 10 0.0005 0.005 0.0095 0.005
@@ -117,7 +117,7 @@ Read pb
 			sonde_temp temperature periode 0.01 points 1 0.0045 0.0045
 			sonde_p pression periode 0.1 plan 10 10 0.0005 0.0005 0.0095 0.0005 0.0005 0.0095
 		}
-		Champs dt_post 0.1
+		fields dt_post 0.1
 		{
 			acceleration_terme_source elem
 			pression elem

@@ -13,9 +13,9 @@ Read_file SOLIDE dom_SOLIDE.geom
 # BEGIN PARTITION
 Partition SOLIDE
 {
-	Partitionneur tranche { tranches 1 1 2 }
+	Partition_tool tranche { tranches 1 1 2 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -64,7 +64,7 @@ Read pb_solide
         Conduction
         {
                 diffusion { }
-                conditions_initiales {
+                initial_conditions {
                         temperature Champ_Uniforme 1 751.
                         }
                 sources {
@@ -94,9 +94,9 @@ Read pb_solide
 					}
                 }
         }
-        Postraitement
+        Post_processing
         {
-                Sondes
+                Probes
                 {
                          coupe_combustible_long_canal_1_Tparoi    temperature periode  0.1  segment 100  0.0085 0.034 0. 0.0085 0.034      0.8 
 			 sonde_combustible_entree    temperature periode 0.1   points 5 
@@ -107,7 +107,7 @@ Read pb_solide
 				0.01 0.16 0.75
                        
                }
-                Champs dt_post .2
+                fields dt_post .2
                 {
                    temperature elem
                 }

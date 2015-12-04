@@ -61,9 +61,9 @@ ecrire dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -110,7 +110,7 @@ Read pb
 		}
 		convection { amont }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -128,15 +128,15 @@ Read pb
 			Entree frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1  0. 
 		}
 	}
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 		 sonde_P pression periode 0.005 segment 46 0.01 0.105 0.91 0.105
 		 sonde_pression pression periode 0.005 points 2 0.13 0.105 0.13 0.115
 		 sonde_vitesse vitesse periode 0.005 points 2 0.14 0.105 0.14 0.115
 		}
-		Champs dt_post 3.
+		fields dt_post 3.
 		{
 			pression elem
 			pression som

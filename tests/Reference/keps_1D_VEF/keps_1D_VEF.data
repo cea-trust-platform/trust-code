@@ -24,9 +24,9 @@ Trianguler_H dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -78,7 +78,7 @@ Read pb
 		}
 		convection { muscl }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse champ_uniforme 2 10. 0.
 			}
 		boundary_conditions {
@@ -101,7 +101,7 @@ Read pb
 			Haut symetrie
 			Bas symetrie
                                 }
-                                conditions_initiales {
+                                initial_conditions {
                                         k_Eps Champ_Uniforme 2 5. 11.25
                                 }
                          }
@@ -109,9 +109,9 @@ Read pb
                 } 
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_vitesse vitesse periode 0.1 segment 21 0. 0.5 10. 0.5
 			s1 k periode 0.1 point 1 5. 0.5
@@ -121,7 +121,7 @@ Read pb
 			sonde_nut viscosite_turbulente periode 0.1 segment 20 0.25 0.5 9.75 0.5
 			sonde_eps1 eps periode 0.1 point 1 0.25 0.0
 		}
-		Champs dt_post 1.0
+		fields dt_post 1.0
 		{
 			vitesse som
 			viscosite_turbulente elem

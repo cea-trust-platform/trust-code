@@ -37,7 +37,7 @@ rm -f * 2>/dev/null
 ###############################################
 if [ "`element_gere_en_configuration.sh $ref/$REP`" = git ]
 then
-   files=`cd $ref/$REP;git-ls-files`
+   files=`cd $ref/$REP;git ls-files`
 else
    # Cas ou les tests ne sont pas geres par Git
    files=`cd $ref/$REP;find . -type f`

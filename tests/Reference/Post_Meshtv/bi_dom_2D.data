@@ -110,7 +110,7 @@ Read pb1
 	Conduction
 	{
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			temperature Champ_Uniforme 1 30.
 			}
 		boundary_conditions {
@@ -133,16 +133,16 @@ Read pb1
 				T_ext Champ_Front_Uniforme 1 20.
 		}
 	}
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_tsol temperature periode 1. points 2 
 				0.15 0.55 
 				0.55 0.15 
 		}
 		format lml
-		Champs dt_post 0.0005
+		fields dt_post 0.0005
 		{
 			temperature elem
 			temperature som
@@ -159,7 +159,7 @@ Read pb2
 		convection { amont }
 		diffusion { }
 		sources { boussinesq_temperature { T0 30. } }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -192,11 +192,11 @@ Read pb2
 				H_imp Champ_front_Uniforme 1 1e10
 				T_ext Champ_front_Uniforme 1 20.
 		}
-		conditions_initiales { Temperature Champ_Uniforme 1 30. }
+		initial_conditions { Temperature Champ_Uniforme 1 30. }
 	}
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_pression pression periode 1. points 1
 				0.55 0.55
@@ -207,7 +207,7 @@ Read pb2
 			sonde_seg temperature periode 5. segment 10 0. 0.75 1. 0.75
 		}
 		format lml
-		Champs dt_post 0.0005
+		fields dt_post 0.0005
 		{
 			pression elem
 			pression som

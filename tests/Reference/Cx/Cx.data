@@ -17,10 +17,10 @@ OrienteFacesBord dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 9 }
+	Partition_tool metis { Nb_parts 9 }
 	Ecrire_decoupage Cx.metis
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -75,7 +75,7 @@ Read pb
 		solveur_pression Petsc Cholesky { impr }
 		convection { muscl }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 3 1. 0. 0.
 		}
 		boundary_conditions {
@@ -96,9 +96,9 @@ Read pb
 			Sortie 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
 			Entree 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
                 }
-                conditions_initiales { Temperature Champ_Uniforme 1 20. }
+                initial_conditions { Temperature Champ_Uniforme 1 20. }
         }
-	Postraitements
+	Post_processings
 	{
 		lml
 		{
@@ -113,13 +113,13 @@ Read pb
                                         }
                                 }
 			}
-			Sondes
+			Probes
 			{
 				sonde_pression 	pression_pa 	periode 0.005 	circle 11 0. 0. 0. 2 0.7 0. 360.
 				sonde_vitesse 	vitesse 	periode 0.005 	point 1 0.7 0. 0.
 				pressure_inlet 	pressure_inlet 	periode 1 	numero_elem_sur_maitre 0
 			}
-			Champs dt_post 1.
+			fields dt_post 1.
 			{ 
 				pression_pa elem
 				pression_pa som
@@ -188,7 +188,7 @@ Read pb
                                         }
 				} 
 			}
-			Sondes
+			Probes
 			{
 				FVx FVx periode 0.005 numero_elem_sur_maitre 0
 				FVy FVy periode 0.005 numero_elem_sur_maitre 0
@@ -198,7 +198,7 @@ Read pb
 				FPz FPz periode 0.005 numero_elem_sur_maitre 0		
 				FPx_cylinder FPx_cylinder periode 0.005 numero_elem_sur_maitre 0 		
 			}
-			Champs dt_post 1.
+			fields dt_post 1.
 			{ 
 				pression_pa elem
 				pression_pa som

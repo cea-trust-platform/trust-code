@@ -18,8 +18,8 @@ Read_file dom dom2D.geom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 2 }
-	Nom_Zones DOM
+	Partition_tool tranche { tranches 2 2 }
+	zones_name DOM
         Larg_joint 2
 }
 End
@@ -73,7 +73,7 @@ Read pb
                 convection    { amont 
                   }
                 diffusion    {   }
-                conditions_initiales    {  k_Eps Field_uniform_keps_from_ud { U 100 D 1 } }
+                initial_conditions    {  k_Eps Field_uniform_keps_from_ud { U 100 D 1 } }
                 boundary_conditions 
                   {
                     1 frontiere_ouverte_k_eps_impose Boundary_field_uniform_keps_from_ud { U 100 D 1 }
@@ -100,7 +100,7 @@ Read pb
         convection    { amont 
           }
         diffusion    {   }
-        conditions_initiales    {  vitesse champ_fonc_xyz dom 2 0 0 }
+        initial_conditions    {  vitesse champ_fonc_xyz dom 2 0 0 }
         boundary_conditions 
           {
             1 frontiere_ouverte_vitesse_imposee champ_front_uniforme  2 1.0 0.0
@@ -120,7 +120,7 @@ Read pb
           }
         convection    { amont }
         diffusion    {   }
-        conditions_initiales    {  temperature champ_fonc_xyz dom 1 20 }
+        initial_conditions    {  temperature champ_fonc_xyz dom 1 20 }
         boundary_conditions 
           {
             1 frontiere_ouverte_temperature_imposee champ_front_uniforme  1 300.0
@@ -133,10 +133,10 @@ Read pb
           }
       }
 
-      Postraitement
+      Post_processing
       { 
 	    format lata
-        champs  dt_post 0.1 
+        fields  dt_post 0.1 
         {
            	vitesse elem
            	vitesse som
@@ -151,12 +151,12 @@ Read pb
 	    }
 	  }
 
-      Postraitements
+      Post_processings
       { 
       	volumic	
       	{
 	    format lata
-            champs  dt_post 0.1 
+            fields  dt_post 0.1 
             {
             	vitesse elem
            	vitesse som

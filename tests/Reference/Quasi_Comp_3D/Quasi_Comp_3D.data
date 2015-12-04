@@ -17,9 +17,9 @@ VEFPreP1B dis
 # BEGIN PARTITION 
 Partition dom
 {
-	Partitionneur Metis { Nb_parts 3 }
+	Partition_tool Metis { Nb_parts 3 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -90,7 +90,7 @@ Read pb_plenum {
 
     diffusion { }
     
-    conditions_initiales {  vitesse champ_uniforme  3 0. 0. 0.  }
+    initial_conditions {  vitesse champ_uniforme  3 0. 0. 0.  }
 
     boundary_conditions { 
 
@@ -113,7 +113,7 @@ Read pb_plenum {
           {
             convection { amont }
             diffusion { }
-            conditions_initiales { k_eps Champ_uniforme 2 18. 2700 }
+            initial_conditions { k_eps Champ_uniforme 2 18. 2700 }
 
             boundary_conditions {
                     paroi   paroi
@@ -145,7 +145,7 @@ Read pb_plenum {
      }
 
 
-    conditions_initiales { Temperature Champ_Uniforme 1 976. }
+    initial_conditions { Temperature Champ_Uniforme 1 976. }
 
     boundary_conditions {
 
@@ -163,8 +163,8 @@ Read pb_plenum {
     }
   }
 
-  Postraitement {
-      Sondes {
+  Post_processing {
+      Probes {
 
 	point_vit0        vitesse       periode 1.e-4  point 1     0.    0.     0.
 	point_vit1        vitesse       periode 1.e-4  point 1     0.    0.     0.4
@@ -208,7 +208,7 @@ Read pb_plenum {
 
       }
       
-      Champs dt_post 0.5 {
+      fields dt_post 0.5 {
         masse_volumique elem
         viscosite_dynamique_turbulente elem
 	viscosite_turbulente elem

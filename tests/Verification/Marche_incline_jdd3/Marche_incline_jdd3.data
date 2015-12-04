@@ -66,9 +66,9 @@ transformer dom -y x
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur Tranche { Tranches 2 1 }
+	Partition_tool Tranche { Tranches 2 1 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -107,7 +107,7 @@ Read pb
 		solveur_pression cholesky { }
 		convection { Amont }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -140,7 +140,7 @@ Read pb
 		       			SortieBasse frontiere_ouverte K_EPS_EXT Champ_Front_Uniforme 2 0. 0.
 		      			SortieHaute frontiere_ouverte K_EPS_EXT Champ_Front_Uniforme 2 0. 0.
 			   	}
-			   	conditions_initiales {
+			   	initial_conditions {
 			      		k_Eps Champ_Uniforme 2 0. 0.
 			  	}
 			 }
@@ -150,10 +150,10 @@ Read pb
 			 turbulence_paroi loi_standard_hydr dt_impr_ustar 10. eps_min 1.e-15
 		} 
 	}
-Postraitement 
+Post_processing 
 {
 
-	format lml Champs formatte dt_post 20.
+	fields dt_post 20.
 	{
 			vitesse elem pression elem
 			pression som

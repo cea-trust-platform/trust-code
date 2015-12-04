@@ -31,9 +31,9 @@ z
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur Metis { Nb_parts 2 }
+	Partition_tool Metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -81,7 +81,7 @@ Read pb
 				
                 Sources { Source_Qdm Champ_fonc_xyz dom 3 x 0 0
                         }
-		conditions_initiales
+		initial_conditions
 			{
                         vitesse Champ_fonc_xyz dom 3 0. 0. 0. 
 			}
@@ -91,13 +91,13 @@ Read pb
 			}
 	}
 
-	Postraitement
+	Post_processing
 	{
-                Sondes
+                Probes
                 { 
                         sonde_pression pression periode 0.01 segment 10 0. 0.5 0.5 	1. 0.5 0.5
 		}
-		Champs dt_post 2.
+		fields dt_post 2.
 			{
 			pression som
 			}

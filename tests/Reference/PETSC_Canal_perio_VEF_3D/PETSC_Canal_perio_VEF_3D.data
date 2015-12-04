@@ -33,9 +33,9 @@ Corriger_frontiere_periodique { Domaine dom Bord perioz }
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur Metis { nb_parts 2 }
+	Partition_tool Metis { nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 	Periodique 2 periox perioz
 }
 End
@@ -80,7 +80,7 @@ Read pb
 		solveur_pression petsc cholesky { }
 		convection { muscl }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse champ_fonc_xyz dom 3 0.5*cos(45/360*(8*atan(1))) 0 -0.5*sin(45/360*(8*atan(1)))
 			}
 		sources { Canal_perio { bord periox } }
@@ -92,13 +92,13 @@ Read pb
 		}
      	}
 	      
-	Postraitement
+	Post_processing
 	{
-	     	Sondes
+	     	Probes
 	   	{
 	           	sonde_pression pression periode 0.001 points 1 0.05 0.15 1. 
 		}
-		Champs dt_post 4.0
+		fields dt_post 4.0
 		{			
 			pression elem			
 			vitesse som

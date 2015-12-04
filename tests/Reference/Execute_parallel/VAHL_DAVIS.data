@@ -26,9 +26,9 @@ Read_file_binary dom_lu fichier_bin.geom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur trAnche {  tranchEs   2  	1 }
+	Partition_tool trAnche {  tranchEs   2  	1 }
 	Larg_joint 2
-	Nom_Zones dom
+	zones_name dom
 }
 End
 END PARTITION #
@@ -89,7 +89,7 @@ Read pb
 		convection { quick }
 		diffusion { }
 		sources { boussinesq_temperature { T0 5. } }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -110,10 +110,10 @@ Read pb
  			Gauche paroi_temperature_imposee Champ_Front_Uniforme 1 10. 
 			Droit  paroi_temperature_imposee Champ_Front_Uniforme 1 0.  
 		}
-		conditions_initiales { Temperature Champ_Uniforme 1 5. }
+		initial_conditions { Temperature Champ_Uniforme 1 5. }
 	}
 
-	Postraitements
+	Post_processings
 	{		
 	   post_dom {
 	   fichier VAHL_DAVIS
@@ -208,7 +208,7 @@ Read pb
 		  mean_temperature1 Reduction_0D { methode moyenne source refChamp { Pb_champ pb temperature } }	
 		  mean_temperature2 Reduction_0D { methode moyenne_ponderee source refChamp { Pb_champ pb temperature } }				
 		}
-		Sondes
+		Probes
 		{
 			temperature_transformation temperature_transformation periode 0.01 points 1 0.0045 0.0045
 			sonde_V vitesse periode 0.01 segment 10 0.0005 0.005 0.0095 0.005
@@ -224,7 +224,7 @@ Read pb
 			sonde_moyenne_temperature2 mean_temperature2 periode 0.01 numero_elem_sur_maitre 0
 		}	
 		format lml
-		Champs nb_pas_dt_post 10
+		fields nb_pas_dt_post 10
 		{
 			pression elem
 			pression_som_dom
@@ -329,7 +329,7 @@ Read pb
 	     			       			       
 	    }
 	    
-	    Sondes
+	    Probes
 		{
 			debit_gauche debit_sum periode 0.01 numero_elem_sur_maitre 0
 			diffuX_gauche diffU_X_sum periode 0.01 numero_elem_sur_maitre 0
@@ -341,7 +341,7 @@ Read pb
 		}
 	   domaine front	
 	   format lata
-	   Champs dt_post 0.1
+	   fields dt_post 0.1
 	    {
 	     vitesse elem
              temperature elem 

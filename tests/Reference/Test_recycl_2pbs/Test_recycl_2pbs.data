@@ -49,17 +49,17 @@ Mailler dom_pb2
 # BEGIN PARTITION
 Partition dom_pb1
 {
-	Partitionneur tranche { tranches 1 2 1 }
+	Partition_tool tranche { tranches 1 2 1 }
 	Larg_joint 2
 	periodique 1 entree1
-	Nom_Zones DOM1
+	zones_name DOM1
 }
 
 Partition dom_pb2
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM2
+	zones_name DOM2
 }
 End
 END PARTITION #
@@ -129,7 +129,7 @@ Navier_Stokes_standard
     		}
     convection { quick }  
     diffusion { }            
-    conditions_initiales { vitesse Champ_Uniforme 3 1. 0. 0. }
+    initial_conditions { vitesse Champ_Uniforme 3 1. 0. 0. }
     boundary_conditions 
     {
      paroi1   paroi_fixe                                                        
@@ -138,15 +138,15 @@ Navier_Stokes_standard
                          
     }
 }    
-Postraitement
+Post_processing
 {
-    Sondes
+    Probes
     {
       sonde_vitesse_sortie1 vitesse periode 1.E-5 
       		segment 20 0.0055 0.00025 0.00525 0.0055 0.00975 0.00525
     } 
     format lata          
-    Champs dt_post 1.
+    fields dt_post 1.
     {
      vitesse elem
      vitesse som
@@ -166,7 +166,7 @@ Navier_Stokes_standard
     		}
     convection { quick }
     diffusion { }
-    conditions_initiales { vitesse Champ_Uniforme 3 1. 0. 0. }
+    initial_conditions { vitesse Champ_Uniforme 3 1. 0. 0. }
     boundary_conditions 
     {
      entree2  frontiere_ouverte_vitesse_imposee Champ_front_recyclage
@@ -177,15 +177,15 @@ Navier_Stokes_standard
      sortie2  frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.                   
     }
 }                      
-Postraitement
+Post_processing
 {
-    Sondes
+    Probes
     {
       sonde_vitesse_entree2 vitesse periode 1.E-5 
       		segment 20 0. 0.00025 0.00525 0. 0.00975 0.00525
     }            
     Format lml        
-    Champs dt_post 1.
+    fields dt_post 1.
     {
      vitesse elem
      vitesse som

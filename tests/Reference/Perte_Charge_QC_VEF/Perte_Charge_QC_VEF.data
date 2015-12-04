@@ -47,9 +47,9 @@ Read tout_domaine {
 # BEGIN PARTITION 
 Partition dom_pb
 {
-	Partitionneur metis { Nb_parts 3 }
+	Partition_tool metis { Nb_parts 3 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -130,7 +130,7 @@ Read pb
 			Perte_Charge_Singuliere KZ 1. { Z = 0.4 Grille } , Perte_Charge_Reguliere Longitudinale Y 2. A 1. B 1. tout_domaine 
 		}
 			
-		conditions_initiales
+		initial_conditions
 		{
 			vitesse Champ_Uniforme 3 0. 0. 9.8
 		}
@@ -148,7 +148,7 @@ Read pb
 				parametre_equation parametre_implicite { resolution_explicite }
 				convection { amont }
 				Diffusion { }
-				Conditions_initiales { k_eps Champ_uniforme 2 0.8 100 }
+				initial_conditions { k_eps Champ_uniforme 2 0.8 100 }
 				boundary_conditions 
 				{
 					entree Frontiere_ouverte_k_eps_impose
@@ -173,7 +173,7 @@ Read pb
 		    	Bords paroi_adiabatique
 		    	Plaques paroi_adiabatique
 		}
-		Conditions_initiales
+		initial_conditions
 		{
 			Temperature Champ_Uniforme 1 300.
 		}
@@ -183,9 +183,9 @@ Read pb
 		}
 	}	
 
-	Postraitement 
+	Post_processing 
 	{
-		Champs dt_post 0.001
+		fields dt_post 0.001
 		{
 			pression_pa elem
 			vitesse elem

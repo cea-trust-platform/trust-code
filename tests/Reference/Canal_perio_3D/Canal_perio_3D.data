@@ -19,9 +19,9 @@ Corriger_frontiere_periodique { domaine DOM_DOM bord PERX direction 3  0.012 0. 
 
 # BEGIN PARTITION
 Partition DOM_DOM {
-        Partitionneur Metis { kmetis nb_parts 2 }   
+        Partition_tool Metis { kmetis nb_parts 2 }   
         Larg_joint 2                   
-        Nom_Zones DOM                      
+        zones_name DOM                      
         periodique 3 PERX PERY PERZ
 }
 End
@@ -88,7 +88,7 @@ Read pbF
 				PERY periodique
 				PERZ periodique				
                 }		
-                conditions_initiales  { vitesse Champ_Uniforme 3 0. 0.0 5 } 
+                initial_conditions  { vitesse Champ_Uniforme 3 0. 0.0 5 } 
 		sources { canal_perio { bord PERZ } }
 			
                 # Modele_turbulence sous_maille { turbulence_paroi loi_standard_hydr } #
@@ -105,7 +105,7 @@ Read pbF
 					PERY periodique
 					PERZ periodique
 				}
-				conditions_initiales { k_Eps champ_uniforme 2 3.75e-3 0.02296 }	
+				initial_conditions { k_Eps champ_uniforme 2 3.75e-3 0.02296 }	
 			}
 			turbulence_paroi loi_standard_hydr 		
                  }
@@ -114,7 +114,7 @@ Read pbF
         {
                 diffusion {  }
                 convection { EF_stab { } }
-                conditions_initiales { Temperature Champ_Uniforme 1 400 }
+                initial_conditions { Temperature Champ_Uniforme 1 400 }
                 boundary_conditions {
 				WALL paroi_flux_impose champ_front_uniforme 1 1.e8
                                 PERX periodique
@@ -126,10 +126,10 @@ Read pbF
                 Modele_Turbulence Prandtl { Turbulence_paroi loi_standard_hydr_scalaire }
         } 
 	# Post processing #
-        Postraitement
+        Post_processing
         {
                 format lml
-                champs dt_post 0.05 { vitesse elem }
+                fields dt_post 0.05 { vitesse elem }
       }
 }
 

@@ -24,9 +24,9 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { nb_parts 2 }
+	Partition_tool metis { nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones dom
+	zones_name dom
 }
 End
 END PARTITION #
@@ -79,7 +79,7 @@ Read pb
 		convection { quick }
 		diffusion { }
 		sources { boussinesq_temperature { T0 5. } }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -100,11 +100,11 @@ Read pb
  			Gauche paroi_temperature_imposee Champ_Front_Uniforme 1 10. 
 			Droit  paroi_temperature_imposee Champ_Front_Uniforme 1 0.  
 		}
-		conditions_initiales { Temperature Champ_Uniforme 1 5. }
+		initial_conditions { Temperature Champ_Uniforme 1 5. }
 	}
-	Postraitement
+	Post_processing
 	{
-		champs dt_post 1 { pression elem }
+		fields dt_post 1 { pression elem }
 	}
 }
 Solve pb

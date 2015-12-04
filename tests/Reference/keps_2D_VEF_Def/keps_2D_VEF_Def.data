@@ -11,9 +11,9 @@ VerifierCoin dom { }
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -65,7 +65,7 @@ Read pb
 		solveur_pression petsc cholesky { }
 		convection { muscl }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 		        vitesse Champ_Uniforme 2 0. 0.
 			}
                 boundary_conditions {
@@ -85,7 +85,7 @@ Read pb
 			        EST paroi
 			        OUEST paroi
                          }
-                         conditions_initiales {
+                         initial_conditions {
                                         k_Eps Champ_Uniforme 2 1. 1.
                                 }
                          }
@@ -93,9 +93,9 @@ Read pb
                 } 
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_pression pression periode 0.001 points 1 0.5 0.5
 			sonde_vitesse   vitesse periode 0.001 points 1 0.5 0.5
@@ -107,7 +107,7 @@ Read pb
 			sonde_KH k   periode 0.001 segment 51 0.0 0.5 1.0 0.5
 			sonde_EH eps periode 0.001 segment 51 0.0 0.5 1.0 0.5
 		}
-		Champs dt_post 2.
+		fields dt_post 2.
 		{
 			pression elem
 			vitesse som

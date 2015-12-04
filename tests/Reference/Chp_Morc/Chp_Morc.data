@@ -1,4 +1,4 @@
-# Conduction 2D : Champs par morceaux #
+# Conduction 2D : fields par morceaux #
 # PARALLEL OK 8 #
 dimension 2
 Pb_conduction pb
@@ -39,9 +39,9 @@ Read zone2 {
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -93,7 +93,7 @@ Read pb
 	Conduction
 	{
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			temperature Champ_Uniforme 1 0. 
 			}
 		boundary_conditions {
@@ -106,13 +106,13 @@ Read pb
 		}
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde temperature periode 0.01 points 1 0.05 0.5
 		}
-		Champs dt_post 1.
+		fields dt_post 1.
 		{
 			temperature elem
 			temperature som

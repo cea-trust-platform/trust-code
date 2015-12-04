@@ -22,9 +22,9 @@ Read Z1 { Boite Origine -10. -10. -10. Cotes 100. 100. 100. }
 # BEGIN PARTITION
 Partition DOM
 {
-	Partitionneur Metis { Nb_parts 2 }
+	Partition_tool Metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -78,7 +78,7 @@ Read pb
        diffusion  { }
              
 
-       conditions_initiales { 
+       initial_conditions { 
        			    Vitesse champ_uniforme 3 0. 0. 0.
        			    }
        
@@ -99,19 +99,19 @@ Read pb
 
 Liste_postraitements
 {
-	Postraitement TEST
+	Post_processing TEST
 	{
 		fichier Symetrie_Implicite
 		format lml
-		champs binaire dt_post 1.
+		fields binaire dt_post 1.
 		{
 			vitesse elem
 		}
 	}
 	
-	Postraitement Sondes
+	Post_processing Probes
 	{
-		Sondes
+		Probes
 		{
 			gradP_2 gradient_pression periode 0.5 segment 21 0.5 0. 0. 1. 0. 0.
 			vitesse_2 vitesse periode 0.5 segment 21 0.5 0. 0. 1. 0. 0.

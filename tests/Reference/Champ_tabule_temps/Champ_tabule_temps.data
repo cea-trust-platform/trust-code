@@ -27,9 +27,9 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 1 2 }
+	Partition_tool tranche { tranches 1 2 }
 	Larg_joint 2
-	Nom_Zones dom
+	zones_name dom
 	periodique 1 Perio
 }
 End
@@ -92,7 +92,7 @@ Read pb
 			}
 		}
 
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -101,9 +101,9 @@ Read pb
 			Perio Periodique 
 		}
 	}
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{ 
 			sonde_acceleration_terme_source acceleration_terme_source periode 0.01 points 1 0.0045 0.0045
 			sonde_V vitesse periode 0.01 segment 10 0.0005 0.005 0.0095 0.005
@@ -111,7 +111,7 @@ Read pb
 			sonde_vitesse vitesse periode 0.01 points 1 0.0045 0.0045
 			sonde_p pression periode 0.1 plan 10 10 0.0005 0.0005 0.0095 0.0005 0.0005 0.0095
 		}
-		Champs dt_post 0.1
+		fields dt_post 0.1
 		{
 			acceleration_terme_source elem
 			pression elem

@@ -1,4 +1,4 @@
-# Conduction 3D : Champs par morceaux sur sous zones en VDF #
+# Conduction 3D : fields par morceaux sur sous zones en VDF #
 # PARALLEL OK #
 dimension 3
 Pb_Conduction pb
@@ -37,9 +37,9 @@ Read SSZ
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -85,7 +85,7 @@ Read pb
 	{
 		sources { Puissance_Thermique Champ_uniforme_Morceaux dom 1 { defaut 0. SSZ 1e5 } }
 		diffusion { }
-		conditions_initiales { temperature Champ_Uniforme 1 30. }
+		initial_conditions { temperature Champ_Uniforme 1 30. }
 		boundary_conditions
 		{
 			Gauche	paroi_temperature_imposee Champ_Front_Uniforme 1 30.
@@ -96,9 +96,9 @@ Read pb
 			Arriere	paroi_temperature_imposee Champ_Front_Uniforme 1 30.
 		}
 	}
-	Postraitement
+	Post_processing
 	{		
-		Champs dt_post 5.
+		fields dt_post 5.
 		{
 			temperature elem
 			temperature som

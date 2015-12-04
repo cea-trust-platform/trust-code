@@ -69,18 +69,18 @@ Mailler dom_solide
 # BEGIN PARTITION
 Partition dom_solide
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 1
-	Nom_Zones DOM1
+	zones_name DOM1
 }
 
 
 
 Partition dom_fluide
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 1
-	Nom_Zones DOM2
+	zones_name DOM2
 }
 End
 END PARTITION #
@@ -132,7 +132,7 @@ Read pb2
                 convection { negligeable }
                 diffusion { negligeable }
                 
-                conditions_initiales {
+                initial_conditions {
                         vitesse Champ_Uniforme 2 0. 0.
                         }
                 boundary_conditions {
@@ -154,9 +154,9 @@ Read pb2
                         Gauche paroi_contact_fictif  pb1 Gauche 5. 0.1 
                         Bas Paroi_ADIABATIQUE
                 }
-                conditions_initiales { Temperature  champ_fonc_xyz dom_fluide 1 (x_ge_0)*(20.00-401.*x)+(x<0)*20.00-40.*x  }
+                initial_conditions { Temperature  champ_fonc_xyz dom_fluide 1 (x_ge_0)*(20.00-401.*x)+(x<0)*20.00-40.*x  }
         }
-        Postraitement
+        Post_processing
         {                
 	
 	 Definition_champs {
@@ -168,7 +168,7 @@ Read pb2
 			} 
   	} 
               
-         Champs dt_post 1.
+         fields dt_post 1.
                 {
 		
 	 
@@ -176,7 +176,7 @@ Read pb2
                         temperature elem
 			
                 }
-	  Sondes
+	  Probes
                 { 
 		T_FLUIDE temperature periode 2.e-3 segment 10 2.5e-3 2.5e-2 4.75e-2 2.5e-2
 		erreur_f combinaison_champ periode 2.e-3 segment 10 2.5e-3 2.5e-2 4.75e-2 2.5e-2
@@ -191,7 +191,7 @@ Read pb1
         Conduction
         {
                 diffusion { }
-                conditions_initiales { Temperature  champ_fonc_xyz dom_fluide 1 (x_ge_0)*(20.00-401.*x)+(x<0)*20.00-40.*x  }
+                initial_conditions { Temperature  champ_fonc_xyz dom_fluide 1 (x_ge_0)*(20.00-401.*x)+(x<0)*20.00-40.*x  }
 
                 boundary_conditions {
                        
@@ -201,7 +201,7 @@ Read pb1
 			Haut_Gauche paroi_adiabatique
                 }
         }
-        Postraitement
+        Post_processing
         {		
 		Definition_champs {
   			combinaison_champ Transformation {
@@ -211,7 +211,7 @@ Read pb1
 				}
 			} 
   		} 
-                Sondes
+                Probes
                 {
                 T_SOLIDE_GAUCHE temperature periode 100. segment 2 -7.5e-3 2.5e-2 -2.5e-3 2.5e-2
 		erreur_s  combinaison_champ periode 100. segment 2 -7.5e-3 2.5e-2 -2.5e-3 2.5e-2
@@ -220,7 +220,7 @@ Read pb1
 		TEST1D_SOLGAUCH temperature periode 100. segment 2 -2.5e-3 5.e-3 -2.5e-3 4.5e-2
 		TEST1D_SOLDROIT temperature periode 100. segment 2 5.25e-2 5.e-3 5.25e-2 4.5e-2
                 }
-                Champs dt_post 1.
+                fields dt_post 1.
                 {
                         temperature elem
 			combinaison_champ elem

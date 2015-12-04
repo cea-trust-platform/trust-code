@@ -30,9 +30,9 @@ z
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur Tranche { tranches 1 2 1 }
+	Partition_tool Tranche { tranches 1 2 1 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -83,7 +83,7 @@ Read pb
 
                 convection { negligeable  }
                 diffusion  {  }
-		conditions_initiales
+		initial_conditions
 			{
                         vitesse Champ_fonc_xyz dom 3  0. 0. 0.
 			}
@@ -101,18 +101,18 @@ Read pb
 			}
 		}
 
-	Postraitements
+	Post_processings
 	{
 		lml
         	{
 		fichier Chmoy_faceperio
 		format lml  
-                Sondes
+                Probes
                 	{ 
                         sonde_vit1  vitesse periode 0.01 points 1 0.5 0.5 0.5 
 			sonde_pression pression periode 0.01 segment 10 0. 0.5 0.5      1. 0.5 0.5
 			}
-		Champs dt_post 2.
+		fields dt_post 2.
 			{
 			vitesse elem
 			}
@@ -121,7 +121,7 @@ Read pb
 		{
 		fichier Chmoy_faceperio
 		format lata
-		Champs dt_post 2.
+		fields dt_post 2.
 			{
 			vitesse elem
 			}		

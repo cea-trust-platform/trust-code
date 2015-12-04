@@ -34,7 +34,7 @@ Partition dom
 {
         Tranche 1 2
         Larg_joint 2
-        Nom_Zones DOM
+        zones_name DOM
 }
 End
 END PARTITION #
@@ -91,7 +91,7 @@ Read pb
                 convection { EF_stab { } }
                 diffusion  {  }
                 Sources { Canal_perio { bord periox } }
-		conditions_initiales
+		initial_conditions
 			{
                         vitesse Champ_fonc_xyz dom 2  10. 0 
 			}
@@ -110,10 +110,10 @@ Read pb
 			}
 	}
 
-	Postraitement
+	Post_processing
         	{       
 		format lata
-		Champs dt_post 1.
+		fields dt_post 1.
 			{
 			vitesse elem
 			viscosite_turbulente elem

@@ -25,9 +25,9 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -83,7 +83,7 @@ Read pb
 		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1e-10 }
 		convection { amont }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -104,18 +104,18 @@ Read pb
                         Gauche paroi_temperature_imposee Champ_Front_Uniforme 1 283.15 
                         Droit  paroi_temperature_imposee Champ_Front_Uniforme 1 273.15 
  		}
-		conditions_initiales { Temperature Champ_Uniforme 1 278.15 }
+		initial_conditions { Temperature Champ_Uniforme 1 278.15 }
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Sondes {
+		Probes {
 			pression_tot pression_tot periode 0.001 point 1 0.005 0.005
 			pression pression periode 0.001 point 1 0.005 0.005
                         vitesse vitesse periode 0.001 point 1 0.005 0.005
                         temperature temperature periode 0.001 point 1 0.005 0.005
                 }
-		Champs dt_post 10.
+		fields dt_post 10.
 		{
 			pression_tot som
 			pression som

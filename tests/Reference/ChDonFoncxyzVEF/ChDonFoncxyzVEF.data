@@ -26,9 +26,9 @@ VerifierCoin dom { }
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -85,7 +85,7 @@ Read pb
 		convection { generic amont }
 		diffusion { }
 		sources { boussinesq_temperature { T0 5. } }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -106,12 +106,12 @@ Read pb
  			Gauche Paroi_temperature_imposee Champ_Front_Uniforme 1 10.
 			Droit Paroi_temperature_imposee Champ_Front_Uniforme 1 0
 		}
-		conditions_initiales { Temperature Champ_Uniforme 1 5. }
+		initial_conditions { Temperature Champ_Uniforme 1 5. }
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Champs dt_post 0.01
+		fields dt_post 0.01
 		{
 			vitesse som
 			temperature som

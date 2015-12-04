@@ -11,6 +11,9 @@ files=$*
 dictionary=`mktemp_`
 awk -F"|" '{if ($1!="" && gsub("XXX","",$1)==0) print length($2)" "$0}' $TRUST_ROOT/doc/TRUST/Keywords.txt | sort -nr | awk '{print $2}' > $dictionary
 
+   [ "$SRC_DIR" = "" ] && SRC_DIR=$TRUST_ROOT/src
+   echo "cherching in $SRC_DIR, you can define SRC_DIR"
+
 # MonoDir=$TRUST_ROOT/MonoDir_mpi_opt && [ ! -d $MonoDir ] && make opt
 tmp=`mktemp_`
 # Check the sources with the dictionary (we start with the longest keywords to avoid some obvious problems...)
@@ -32,10 +35,9 @@ do
    # instanciable(...,"$french",...)
    # param.ajouter("$french");
    # if (a=="$french") ...
-   #motcle='grep -i \"$french\" $MonoDir/src/*.cpp $MonoDir/include/*.h | grep -v "typer(" | grep -e "\.ajouter(" -e "if (" -e _instanciable'
-   motcle='find $TRUST_ROOT/src -name \*.cpp -or -name \*.h | xargs  grep -i \"$french\" | grep -v "typer("  | grep -e "\.ajouter(" -e "\.ajouter_non_std(" -e "if (" -e _instanciable  -e "\.ajouter_flag("  -e "\[" | grep -v champ' 
+   motcle='find $SRC_DIR -name \*.cpp -or -name \*.h | xargs  grep -i \"$french\" | grep -v "typer("  | grep -e "\.ajouter(" -e "\.ajouter_non_std(" -e "if (" -e _instanciable  -e "\.ajouter_flag("  -e "\[" | grep -v champ' 
    
-   keyword=`find $TRUST_ROOT/src -name '*'.cpp | xargs grep -i -e \"$french\" -e \"$french\|  | grep _instanciable`
+   keyword=`find $SRC_DIR -name '*'.cpp | xargs grep -i -e \"$french\" -e \"$french\|  | grep _instanciable`
    
    if [ "$keyword" != "" ] || [ $english = end ]
    then
@@ -49,7 +51,6 @@ do
        then
        continue
        fi
-   #instanciable='grep -i -e "_"$french"_" -e "_"$french\" -e \"$french"_" $MonoDir/src/*.cpp $MonoDir/include/*.h | grep -i "_instanciable"'
    instanciable=""
    nb_motcle=`eval $motcle | wc -l`
    nb_instanciable=`eval $instanciable | wc -l`
@@ -134,6 +135,16 @@ echo "s/FIN LECTURE/END SCATTER/" >> $translation
 awk -F"|" '{print "s/\\([ \\t]\\)"$2"\\([ \\t]\\)/\\1"$1"\\2/I\ns/^"$2"\\([ \\t]\\)/"$1"\\1/I\ns/\\([ \\t]\\)"$2"$/\\1"$1"/I\ns/^"$2"$/"$1"/I"}' $dictionary >> $translation || exit -1
 
 cp  $translation $TRUST_TMP/translation
+echo $TRUST_TMP/translation substitution file created
+cat $dictionary 
+
+echo liste mot
+cat $dictionary | awk -F"|" '{printf("%s ", $2)}; END {printf("\n")}'
+
+
+
+rm -f $translation $tmp $dictionary
+
 exit 
 # If data files not given, parse recursively the data files...
 if [ "$files" = "" ]

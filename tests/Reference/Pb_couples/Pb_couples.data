@@ -28,34 +28,34 @@ Read_file solide4 paro.geom
 # BEGIN PARTITION
 Partition liquide1
 {
-	Partitionneur Metis { Nb_parts 1 }
+	Partition_tool Metis { Nb_parts 1 }
 	Nb_parts_tot 4
 	Larg_joint 1
-	Nom_Zones LIQ1
+	zones_name LIQ1
 }
 
 Partition liquide2
 {
-	Partitionneur Metis { Nb_parts 1 }
+	Partition_tool Metis { Nb_parts 1 }
 	Nb_parts_tot 4
 	Larg_joint 1
-	Nom_Zones LIQ2
+	zones_name LIQ2
 }
 
 Partition solide3
 {
-	Partitionneur Metis { Nb_parts 1 }
+	Partition_tool Metis { Nb_parts 1 }
 	Nb_parts_tot 4
 	Larg_joint 1
-	Nom_Zones SOL3
+	zones_name SOL3
 }
 
 Partition solide4
 {
-	Partitionneur Metis { Nb_parts 1 }
+	Partition_tool Metis { Nb_parts 1 }
 	Nb_parts_tot 4
 	Larg_joint 1
-	Nom_Zones SOL4
+	zones_name SOL4
 }
 End
 END PARTITION #
@@ -174,7 +174,7 @@ Read pb1
 				sortie_chaude frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.		
 		}
 		
-		conditions_initiales  { vitesse Champ_Uniforme 3 0. 0. 0. }
+		initial_conditions  { vitesse Champ_Uniforme 3 0. 0. 0. }
 		
 		Modele_turbulence K_epsilon
 		{
@@ -192,7 +192,7 @@ Read pb1
 				  
 				  }
 				
-				conditions_initiales { k_eps Champ_Uniforme 2 1.05e-4 1.1e-4 }
+				initial_conditions { k_eps Champ_Uniforme 2 1.05e-4 1.1e-4 }
 		    	}
 			
 		  	turbulence_paroi loi_standard_hydr
@@ -214,14 +214,14 @@ Read pb1
 			
 		}
 		
-		conditions_initiales { Temperature Champ_Uniforme 1 573. }
+		initial_conditions { Temperature Champ_Uniforme 1 573. }
             
                 Modele_turbulence Prandtl
                         { Turbulence_paroi loi_standard_hydr_scalaire }
         }
-        Postraitement
+        Post_processing
         {
-                Sondes
+                Probes
                 {
 
 			 sonde_ptT_entree     temperature periode  0.00001  point  1 0.02 0.1 0.75
@@ -267,7 +267,7 @@ Read pb1
 										   0.25 0.1 1.2   
                          
                }
-                Champs dt_post .1
+                fields dt_post .1
                 {                   
 
                 }
@@ -304,7 +304,7 @@ Read pb2
 				sortie_froide		frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
 		}
 		
-		conditions_initiales  { vitesse Champ_Uniforme 3 0. 0. 0. }
+		initial_conditions  { vitesse Champ_Uniforme 3 0. 0. 0. }
 		
 		Modele_turbulence K_epsilon
 		{
@@ -321,7 +321,7 @@ Read pb2
 				  
 				  }
 				
-				conditions_initiales { k_eps Champ_Uniforme 2 2.6e-5 4.46e-4 }
+				initial_conditions { k_eps Champ_Uniforme 2 2.6e-5 4.46e-4 }
 		    	}
 			
 		  	turbulence_paroi loi_standard_hydr
@@ -342,14 +342,14 @@ Read pb2
 			
 		}
 		
-		conditions_initiales { Temperature Champ_Uniforme 1 573. }
+		initial_conditions { Temperature Champ_Uniforme 1 573. }
             
                 Modele_turbulence Prandtl
                         { Turbulence_paroi loi_standard_hydr_scalaire }
         }
-        Postraitement
+        Post_processing
         {
-	        Sondes
+	        Probes
                 {
 			sonde_ptY_paroid    Y_plus       periode  0.00001  point  1 0.506 0.1 0.4
 
@@ -368,7 +368,7 @@ Read pb2
 		 	sonde_ptP_d         Pression     periode  0.00001  point 1 0.52 0.1 1.2
 	
                 }
-                Champs dt_post .1
+                fields dt_post .1
                 {                   
                    temperature elem
                 }
@@ -383,7 +383,7 @@ Read pb3
 	Conduction
 	{
 		diffusion { }
-		conditions_initiales 
+		initial_conditions 
 			{
 			temperature Champ_Uniforme 1 573.
 			}
@@ -393,9 +393,9 @@ Read pb3
 			face		paroi_adiabatique	
 		}
 	}
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_cloisonbas_tsol temperature periode 1. segment 24 
 								  0.02 0. 0.21 
@@ -404,7 +404,7 @@ Read pb3
 								  0.02 0. 1.03 
 								  0.48 0. 1.03 
 		}
-                Champs dt_post 0.1
+                fields dt_post 0.1
 		{
 			temperature elem
 		}
@@ -422,7 +422,7 @@ Read pb4
 	Conduction
 	{
 		diffusion { }
-		conditions_initiales 
+		initial_conditions 
 			{
 			temperature Champ_Uniforme 1 573.
 			}
@@ -433,15 +433,15 @@ Read pb4
 			face		paroi_adiabatique
 		}
 	}
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde5_tsol temperature periode 1. segment 24 
 								  0.02 0. 1.03 
 								  0.48 0. 1.03 
 		}
-		Champs dt_post 0.1
+		fields dt_post 0.1
 		{
 			temperature elem
 		}

@@ -25,9 +25,9 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -75,7 +75,7 @@ Read pb
 		solveur_pression petsc cholesky { }
 		convection { amont }
 		diffusion { }	
-		conditions_initiales { vitesse Champ_Uniforme 2 1.2 0. }		
+		initial_conditions { vitesse Champ_Uniforme 2 1.2 0. }		
 		boundary_conditions 
 		{
 			 Bas Paroi_Fixe
@@ -95,18 +95,18 @@ Read pb
 		Droit Frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 20.
 		Gauche Frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 20.
 		}		
-		conditions_initiales { temperature Champ_Uniforme 1 20. }
+		initial_conditions { temperature Champ_Uniforme 1 20. }
 	}
 		
-	Postraitement 
+	Post_processing 
 	{
-		Sondes 
+		Probes 
 		{
 			coupe_vitesse1  Vitesse  periode 0.001 segment 26 1. 0.  1. 0.0076
 			coupe_vitesse2  Vitesse  periode 0.001 segment 26 2. 0.  2. 0.0076
 			sonde_temperature  Temperature  periode 0.001 segment 26 1. 0.  1. 0.0076
 		}
-		Champs Dt_post 0.3
+		fields Dt_post 0.3
 		{			
 			vitesse 
 			temperature

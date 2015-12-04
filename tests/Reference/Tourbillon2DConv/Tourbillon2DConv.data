@@ -27,9 +27,9 @@ y+x*(1-x)*y*(1-y)*(0.5+x)
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur Tranche { tranches 2 1 }
+	Partition_tool Tranche { tranches 2 1 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -82,7 +82,7 @@ Read pb
                 convection { EF filtrer_resu 0 antisym 0 transporte_bar 0 transportant_bar 0  }
                 diffusion  { negligeable }
 			
-		conditions_initiales
+		initial_conditions
 			{
                         vitesse Champ_fonc_xyz dom 2  x-0.5 0.5-y
 			}
@@ -93,17 +93,17 @@ Read pb
 			}
 	         }
 
-	Postraitements
+	Post_processings
         	{
 		lml
 		{
 		fichier Tourbillon2DConv
 		format lml  
-                Sondes
+                Probes
                 	{ 
                         sonde_vit1  vitesse periode 0.01 points 1 0.5 0.5 
 			}
-		Champs dt_post 2.
+		fields dt_post 2.
 			{
 			vitesse elem
 			vitesse som
@@ -115,7 +115,7 @@ Read pb
 		{
 		fichier Tourbillon2DConv
 		format lata
-		Champs dt_post 2.
+		fields dt_post 2.
 			{
 			vitesse elem
 			vitesse som

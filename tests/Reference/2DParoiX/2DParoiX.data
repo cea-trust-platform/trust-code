@@ -27,9 +27,9 @@ y+4*x*(1-x)*y*(1-y)*(0.5+x)
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur Metis { Nb_parts 2 }
+	Partition_tool Metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -85,7 +85,7 @@ Read pb
 				
                 Sources { Source_Qdm Champ_fonc_xyz dom  2 x 0 
                         }
-		conditions_initiales
+		initial_conditions
 			{
                         vitesse Champ_fonc_xyz dom 2  0.  0. 
 			}
@@ -95,16 +95,16 @@ Read pb
 			}
 	         }
 
-	Postraitements
+	Post_processings
         	{
                 lata {	
                 fichier 2dParoiX
                 format lata  
-                Sondes
+                Probes
                 	{ 
                         sonde_pression pression periode 0.01 segment 10 0 0.5 1 0.5
 			}
-		Champs dt_post 2.
+		fields dt_post 2.
 			{
 			vitesse elem
 			vitesse som
@@ -115,7 +115,7 @@ Read pb
                 lml {
                 fichier 2DParoiX
 		format lml
-                Champs dt_post 2.
+                fields dt_post 2.
                         {
                         vitesse elem
                         vitesse som

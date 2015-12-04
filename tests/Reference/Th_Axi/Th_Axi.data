@@ -11,9 +11,9 @@ Read_file Th_Axi.geo ;
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -53,7 +53,7 @@ Read pb
    Conduction
    {
     	diffusion { }
-     	conditions_initiales {
+     	initial_conditions {
       		temperature Champ_Uniforme 1 0.
     	}
       	boundary_conditions {
@@ -64,14 +64,14 @@ Read pb
  	}
    }
 
-   Postraitement
+   Post_processing
    {
-	Sondes
+	Probes
 	{
 	 sonde temperature periode 0.01 segment 10 1. 0. 2. 0.
 	}
 
-	Champs dt_post 0.1 
+	fields dt_post 0.1 
 	{
 			Temperature elem
 			Temperature som

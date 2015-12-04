@@ -41,7 +41,7 @@ Read pb
        solveur_pression petsc gcp { precond spai { } seuil 1.e-8 impr }
        convection { muscl }
        diffusion  {  }
-       conditions_initiales {  vitesse Champ_Uniforme 3  0. 0. 0. }
+       initial_conditions {  vitesse Champ_Uniforme 3  0. 0. 0. }
        boundary_conditions {
                    entree    Frontiere_ouverte_vitesse_imposee  Champ_front_fonc_xyz 3 0.1145*(2.44*LN((0.077-SQRT(x*x+y*y))*0.1145/2.35e-7)+5.1) 0. 0.
                    sortie    Frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.

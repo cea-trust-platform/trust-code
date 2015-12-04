@@ -69,15 +69,15 @@ Mailler dom_fluide
 # BEGIN PARTITION
 Partition dom_solide
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 1
-	Nom_Zones DOM1
+	zones_name DOM1
 }
 Partition dom_fluide
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 1
-	Nom_Zones DOM2
+	zones_name DOM2
 }
 End
 END PARTITION #
@@ -130,7 +130,7 @@ Read pb1
 	{
 		Sources { puissance_thermique champ_fonc_xyz dom_solide 1 1000 }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			temperature Champ_Uniforme 1 30.
 			}
 		boundary_conditions {
@@ -141,14 +141,14 @@ Read pb1
 			Gauche 	paroi_contact pb2 Gauche
 		}
 	}
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_temperature temperature periode 1. points 1 0.5 0.5
 		}
 		format lata
-		Champs dt_post 10.
+		fields dt_post 10.
 		{
 			temperature elem
 			temperature som
@@ -168,7 +168,7 @@ Read pb2
 		convection { amont }
 		diffusion { }
 		sources { boussinesq_temperature { T0 20. } }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -197,18 +197,18 @@ Read pb2
 			Gauche1	 	paroi_adiabatique
 			Gauche	 	paroi_contact pb1 Gauche
 		}
-		conditions_initiales { Temperature Champ_Uniforme 1 20. }
+		initial_conditions { Temperature Champ_Uniforme 1 20. }
 	}
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_pression 	pression 	periode 1. points 2 -0.5 0.5 1.5 0.5
 			sonde_vitesse 	vitesse 	periode 1. points 2 -0.5 0.5 1.5 0.5
 			sonde_tflu 	temperature 	periode 1. points 2 -0.5 0.5 1.5 0.5
 		}
 		format lata
-		Champs dt_post 10.
+		fields dt_post 10.
 		{
 			pression elem
 			pression som

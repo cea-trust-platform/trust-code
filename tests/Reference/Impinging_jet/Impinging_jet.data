@@ -14,9 +14,9 @@ VerifierCoin dom { }
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 9 }
+	Partition_tool metis { Nb_parts 9 }
 	Larg_joint 2
-	Nom_Zones dom
+	zones_name dom
 }
 End
 END PARTITION #
@@ -76,7 +76,7 @@ Read pb
 		solveur_pression GCP { precond SSOR { omega 1.5 } seuil 1e-10 }
 		convection { ef_stab { } }
 		diffusion { }
-		conditions_initiales { vitesse Champ_Uniforme 3 0. 0. 0. } # Re = 23000 #
+		initial_conditions { vitesse Champ_Uniforme 3 0. 0. 0. } # Re = 23000 #
 		boundary_conditions
 		{
 			INLET	frontiere_ouverte_vitesse_imposee	Champ_Front_Lu dom 3 pb_VITESSE_PERIO_0.000676.dat
@@ -100,7 +100,7 @@ Read pb
 					PLATE	paroi                                             
 					SYM	symetrie
 				}
-				conditions_initiales { k_Eps Champ_Uniforme 2 0.427 13.538 } # k=3/2(U*t)^2 (t=4.1% voir doc), eps=Cmu/0.07/Dh*k^1.5 #
+				initial_conditions { k_Eps Champ_Uniforme 2 0.427 13.538 } # k=3/2(U*t)^2 (t=4.1% voir doc), eps=Cmu/0.07/Dh*k^1.5 #
             		}
 			turbulence_paroi loi_standard_hydr dt_impr_ustar 0.05
 	       }
@@ -117,15 +117,15 @@ Read pb
   			PLATE	paroi_temperature_imposee		champ_Front_Uniforme 1 323
 			SYM	symetrie
 		}
-		conditions_initiales { Temperature Champ_Uniforme 1 293 }	
+		initial_conditions { Temperature Champ_Uniforme 1 293 }	
 		modele_turbulence Prandtl
 		{
 			turbulence_paroi loi_standard_hydr_scalaire dt_impr_nusselt 0.05
 		}
 	}
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_Vjet    nodes	vitesse periode 1.e-4 segment 30	0.	0.	0.053		0.01170	0.00676	0.053
 			sonde_V_rD0.0		vitesse periode 1.e-4 segment 50	0.	0.	-1e-8		0.	0.	0.0265
@@ -138,7 +138,7 @@ Read pb
 			sonde_temperature   temperature periode 1.e-4 segment 100	0.	0.	0.		0.20655	0.11925	0.
 		}
 		format lata
-		Champs dt_post 0.01
+		fields dt_post 0.01
 		{
 			pression	elem
 			vitesse		elem

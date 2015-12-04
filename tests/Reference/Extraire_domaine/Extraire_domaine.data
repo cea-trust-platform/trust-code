@@ -11,9 +11,9 @@ verifiercoin dom { }
 Partition dom 
   { 
     
-    Partitionneur metis   { nb_parts 2   } 
+    Partition_tool metis   { nb_parts 2   } 
     Larg_joint 2
-    Nom_Zones DOM 
+    zones_name DOM 
   } 
 End 
 END PARTITION #
@@ -80,7 +80,7 @@ Read pb
           }
         convection    { amont   } 
         diffusion    {   } 
-        conditions_initiales 
+        initial_conditions 
           {
             vitesse champ_uniforme  3 0.0 0.0 0.3
           }
@@ -91,7 +91,7 @@ Read pb
             PAR paroi_fixe 
           }
       }
-    postraitement 
+    Post_processing 
       { 
        
         
@@ -135,7 +135,7 @@ Read pb
               }	
           }
 
-    sondes 
+    Probes 
           {
             Sonde1 vitesse_min_sous periode 1e-6 numero_elem_sur_maitre 1
             Sonde2 vitesse_min periode 1e-6  numero_elem_sur_maitre 1
@@ -146,19 +146,19 @@ Read pb
           }
 	 domaine sous_domaine
     
-        champs  dt_post 50.0 
+        fields  dt_post 50.0 
           {
             vitesse elem
 	    vitesse_min_sous
           }
       }
-    postraitements 
+    Post_processings 
       {
         sous_domaine 
           { 
             domaine sous_domaine
             format lata
-            champs  dt_post 50.0 
+            fields  dt_post 50.0 
               {
                 pression elem
                 vitesse elem
@@ -171,7 +171,7 @@ Read pb
 	{
 	 domaine surface
             format lata
-            champs  dt_post 50.0 
+            fields  dt_post 50.0 
               {
                
                 vitesse elem
@@ -179,7 +179,7 @@ Read pb
               
               }
 	}	
-	verif { format lata champs dt_post 50. { vitesse faces } }
+	verif { format lata fields dt_post 50. { vitesse faces } }
       }
   }
 Solve pb

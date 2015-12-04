@@ -28,9 +28,9 @@ Trianguler_h dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -82,7 +82,7 @@ Read pb
 				direction champ_uniforme 2 1 0
 			}
 		}
-		conditions_initiales { vitesse Champ_Uniforme 2 10. 0. }
+		initial_conditions { vitesse Champ_Uniforme 2 10. 0. }
 		boundary_conditions
 		{
 			Haut 	symetrie
@@ -91,20 +91,20 @@ Read pb
 			Sortie 	frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
 		}
 	}
-	Postraitement
+	Post_processing
 	{	
 		Definition_champs {
 			solution Transformation {
 				methode formule expression 1 -320.*x+320
 			} 
   		}
-		Sondes
+		Probes
 		{
 		 seg_vitesse		nodes	vitesse		periode 0.5 segment 10 1. -0.45	1. 0.45
 		 seg_solution			solution	periode 0.5 segment 10 0.  0.   1.  0.
 		 seg_pression_pa		pression_pa	periode 0.5 segment 10 0.  0.   1.  0.
 		}
-		Champs dt_post 1.
+		fields dt_post 1.
 		{
 			pression elem
 			pression som

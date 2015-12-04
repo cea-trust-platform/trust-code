@@ -14,5 +14,5 @@ ExtrudeBord {
 RegroupeBord canal PERIO { devant derriere }
 
 Ecrire_fichier canal canal.geom
-# Postraitement du domaine canal au format lml binaire dans le fichier Extrude.lml #
+# Post_processing du domaine canal au format lml binaire dans le fichier Extrude.lml #
 Postraiter_domaine { binaire 1 format lml domaine canal fichier Kernel_Extrude.lml }

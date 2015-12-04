@@ -66,15 +66,15 @@ format lata }
 # BEGIN PARTITION
 Partition dom_fluide1
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 2
-	Nom_Zones DOM1
+	zones_name DOM1
 }
 Partition dom_fluide2
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 2
-	Nom_Zones DOM2
+	zones_name DOM2
 }
 End
 END PARTITION #
@@ -143,7 +143,7 @@ Read pb1
 		}
 		convection { muscl }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 2. 0.
 		}
 		boundary_conditions {
@@ -160,7 +160,7 @@ Read pb1
 		diffusion { }
 		convection { muscl }
 		
-		conditions_initiales {
+		initial_conditions {
 			concentration Champ_Uniforme 1 1.
 		}
 		boundary_conditions {
@@ -172,14 +172,14 @@ Read pb1
 		}
 	}
 	
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 		 sonde_conc_fluide1 concentration periode 1. points 1 0.45 0.55
 		}
 		
-		Champs dt_post 0.1
+		fields dt_post 0.1
 		{
 		   vitesse elem
 		   pression elem
@@ -199,7 +199,7 @@ Read pb2
 		}
 		convection { muscl }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -217,7 +217,7 @@ Read pb2
 		diffusion { }
 		convection { muscl }
 		
-		conditions_initiales {
+		initial_conditions {
 		     concentration Champ_Uniforme 1 0.
 		}
 		boundary_conditions {
@@ -230,14 +230,14 @@ Read pb2
 		}
 	}
 	
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 		    sonde_conc_fluide2 concentration periode 1. points 1 1.55 0.55
 		}
 		
-		Champs dt_post 0.1
+		fields dt_post 0.1
 		{
 			pression elem
 			vitesse elem

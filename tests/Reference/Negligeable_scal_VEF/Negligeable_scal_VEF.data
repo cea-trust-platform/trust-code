@@ -62,9 +62,9 @@ Trianguler_H dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -112,7 +112,7 @@ Read pb
 		convection { Amont }
 		diffusion { }
 		sources { boussinesq_temperature { T0 20.*(1+t) } }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -145,7 +145,7 @@ Read pb
 		       			SortieBasse frontiere_ouverte K_EPS_EXT Champ_Front_Uniforme 2 0. 0.
 		      			SortieHaute frontiere_ouverte K_EPS_EXT Champ_Front_Uniforme 2 0. 0.
 			   	}
-			   	conditions_initiales {
+			   	initial_conditions {
 			      		k_Eps Champ_Uniforme 2 1.e-2 1.e-3
 			  	}
 			 }
@@ -156,7 +156,7 @@ Read pb
 	{
 		convection { Amont }
                 diffusion { }
-		conditions_initiales {
+		initial_conditions {
                         temperature Champ_Uniforme 1 20.
                 }
                 boundary_conditions {
@@ -173,16 +173,16 @@ Read pb
                 }
                 modele_turbulence Prandtl { Turbulence_paroi negligeable_scalaire }
 	}
-Postraitement 
+Post_processing 
 {
-	Sondes 
+	Probes 
 	{
 		sonde_vitesse vitesse periode 0.01 points 1 10. 0.5
 		sonde_k k periode 0.01 points 1 9.5 0.5
 		sonde_eps eps periode 0.01 points 1 9.5 0.5
 		sonde_visc viscosite_turbulente periode 0.01 points 1 9.5 0.5
 	}
-	Champs dt_post 20.
+	fields dt_post 20.
 	{
 			pression elem
 			vitesse elem

@@ -1,4 +1,4 @@
-# Test du postraitement sur un domaine different du domaine de calcul #
+# Test du Post_processing sur un domaine different du domaine de calcul #
 # PARALLEL RUNS #
 
 dimension 3
@@ -53,15 +53,15 @@ Corriger_frontiere_periodique { Domaine domaine_post Bord perioz }
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 1 2 1 }
-	Nom_Zones DOM
+	Partition_tool tranche { tranches 1 2 1 }
+	zones_name DOM
 	Periodique 2 periox perioz
         Larg_joint 2
 }
 Partition domaine_post
 {
-	Partitionneur tranche { tranches 1 2 1 }
-	Nom_Zones DOM_post
+	Partition_tool tranche { tranches 1 2 1 }
+	zones_name DOM_post
 	Periodique 2 periox perioz
         Larg_joint 2
 }
@@ -120,7 +120,7 @@ Read pb
                         {
                         Canal_perio { bord periox }
                         }
-		conditions_initiales
+		initial_conditions
 			{
                         vitesse Champ_fonc_xyz dom 3  20. 0. 0. 
 			}
@@ -139,10 +139,10 @@ perioz periodique
 			}
 	}
 
-	Postraitement
+	Post_processing
         	{       
 		Domaine domaine_post
-		Champs dt_post 2.
+		fields dt_post 2.
 			{
 			vitesse elem
 			viscosite_turbulente som

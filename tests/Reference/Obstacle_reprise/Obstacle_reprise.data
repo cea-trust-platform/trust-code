@@ -82,15 +82,15 @@ Mailler dom_conduction
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 Partition dom_conduction
 {
-	Partitionneur tranche { tranches 1 2 }
+	Partition_tool tranche { tranches 1 2 }
 	Larg_joint 1
-	Nom_Zones DOM_conduction
+	zones_name DOM_conduction
 }
 End
 END PARTITION #
@@ -152,10 +152,10 @@ Associate pbc mon_schema
 Discretize pbc ma_discretisation
 
 # Exemples de reprises possible :
-conditions_initiales { vitesse Champ_Fonc_Reprise Obstacle_pb.xyz pb vitesse 5.005 }
-conditions_initiales { temperature Champ_Fonc_Reprise Conduc.xyz pb temperature 5.005 }
+initial_conditions { vitesse Champ_Fonc_Reprise Obstacle_pb.xyz pb vitesse 5.005 }
+initial_conditions { temperature Champ_Fonc_Reprise Conduc.xyz pb temperature 5.005 }
 Ne peut pas Read un Champ_Fonc pour le moment, excepte les moyennes:
-conditions_initiales { vitesse Champ_Fonc_Reprise Obstacle_pb.xyz pb moyenne_vitesse 5.005 }
+initial_conditions { vitesse Champ_Fonc_Reprise Obstacle_pb.xyz pb moyenne_vitesse 5.005 }
 #
 
 Read pb
@@ -169,7 +169,7 @@ Read pb
 		}
 		convection { quick }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Fonc_Reprise Obstacle_pb.xyz pb moyenne_vitesse last_time
 			}
 		boundary_conditions {
@@ -191,12 +191,12 @@ Read pb
 			Sortie frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
 			Entree frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
 		}
-		conditions_initiales { Temperature Champ_Uniforme 1 20. }
+		initial_conditions { Temperature Champ_Uniforme 1 20. }
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_pression pression periode 0.005 points 2 0.13 0.105 0.13 0.115
 			sonde_vitesse vitesse periode 0.005 points 2 0.14 0.105	0.14 0.115
@@ -209,7 +209,7 @@ Read pb
 		
 		
 		
-		Champs dt_post 1.
+		fields dt_post 1.
 		{
 			vitesse elem
 			temperature elem
@@ -232,20 +232,20 @@ Read pb_conduction
 	Conduction
 	{
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			temperature Champ_Uniforme 1 30.
 			}
 		boundary_conditions {
 			Solide paroi_contact pb  Solide
 		}
 	}
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_tsol temperature periode 1. point 1 0.11 0.11
 		}
-		Champs dt_post 1.
+		fields dt_post 1.
 		{
 			temperature elem
 		}

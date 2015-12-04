@@ -31,9 +31,9 @@ Reordonner_Faces_Periodiques dom perioz
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 2 1 }
+	Partition_tool tranche { tranches 2 2 1 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 	Periodique 1 periox
 }
 End
@@ -45,18 +45,21 @@ END SCATTER #
 
 VEFPreP1B dis
 
-Scheme_euler_explicit sch
+Scheme_euler_implicit sch
 Read sch
 {
 	nb_pas_dt_max 150000
 	tinit 0.
-	tmax 100000
+	tmax 10000
 	dt_min 1.e-7
 	dt_max 100.
 	dt_impr 100
 	dt_sauv 20000
 	seuil_statio 1.e-6
 	precision_impr 6 
+solveur implicite { solveur gmres { diag seuil -1 nb_it_max 5 }
+}
+facsec 5
 }
 
 Fluide_Incompressible fluide
@@ -90,7 +93,7 @@ Read pb
 		 {
 		  Canal_perio { bord periox }
 		 }
-		conditions_initiales { vitesse champ_uniforme 3 0.33333 0. 0. }
+		initial_conditions { vitesse champ_uniforme 3 0.33333 0. 0. }
 		boundary_conditions 
 		 {
                      periox  periodique 
@@ -110,7 +113,7 @@ Read pb
 				   bas      paroi
 				   perioz periodique 
 		      		}
-			   	conditions_initiales { k_eps Champ_Uniforme 2 5.e-4 1.e-5 }
+			   	initial_conditions { k_eps Champ_Uniforme 2 5.e-4 1.e-5 }
 			}
 		     turbulence_paroi loi_standard_hydr dt_impr_ustar 1000
 		  }
@@ -130,13 +133,13 @@ Read pb
 			bas    Paroi_temperature_imposee Champ_Front_Uniforme 1 500
 			    
 		 }
-		conditions_initiales { Temperature Champ_uniforme 1 500  }
+		initial_conditions { Temperature Champ_uniforme 1 500  }
 		Modele_turbulence Prandtl { turbulence_paroi loi_standard_hydr_scalaire dt_impr_nusselt 1000 }
 	}
 	      
-	Postraitement
+	Post_processing
 	{
-	     Sondes
+	     Probes
 	      {
 	           sonde_pression nodes pression periode 100 points 1 2.5 0.5 0.5
 		   sonde_vit_mil_b nodes vitesse periode 100 points 1  2.5 0.1 0.5
@@ -168,7 +171,7 @@ Read pb
 		   
 	      }
 	     Format lata
-	     Champs dt_post 100
+	     fields dt_post 100
 	      {			
 		   pression elem
 		   pression som
@@ -204,7 +207,7 @@ Modele_turbulence K_Epsilon
 				   bas      paroi
 				   perioz periodique 
 		      		}
-			   	conditions_initiales { k_eps Champ_Uniforme 2 5.e-4 1.e-5 }
+			   	initial_conditions { k_eps Champ_Uniforme 2 5.e-4 1.e-5 }
 			}
 		     turbulence_paroi loi_standard_hydr dt_impr_ustar 1000
 		  }

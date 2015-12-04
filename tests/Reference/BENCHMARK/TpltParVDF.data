@@ -47,7 +47,7 @@ Read pb
 		convection { quick }
 		diffusion { }
 		sources { boussinesq_temperature { T0 5. } }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 3 0. 0. 0.
 			}
 		boundary_conditions {
@@ -76,7 +76,7 @@ Read pb
 			Sud Symetrie
 			Nord Symetrie
 		}
-		conditions_initiales { Temperature Champ_Uniforme 1 5. }
+		initial_conditions { Temperature Champ_Uniforme 1 5. }
 		modele_turbulence Prandtl { Turbulence_paroi loi_standard_hydr_scalaire }
 	}
 }

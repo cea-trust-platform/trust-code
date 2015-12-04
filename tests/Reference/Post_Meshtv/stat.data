@@ -43,7 +43,7 @@ Read pb
 		}
 		convection { quick }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 3  0. 0. 0.
 			}
 		boundary_conditions {
@@ -74,15 +74,15 @@ Read pb
 		}
 	}
 
-	Postraitement 
+	Post_processing 
 	{
-		Sondes 
+		Probes 
 		{
 			sonde_pression pression periode 0.1 points 1 0.5 1.1 0.5
 			sonde_vitesse vitesse periode 0.1 points 1 0. 1.1 0.5
 		}
 		format lml
-		Champs dt_post 1.1
+		fields dt_post 1.1
 		{
 			pression elem
 		}

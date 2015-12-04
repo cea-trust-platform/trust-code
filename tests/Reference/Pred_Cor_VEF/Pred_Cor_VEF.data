@@ -40,9 +40,9 @@ Trianguler_H dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -92,7 +92,7 @@ Read pb
                 solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-8 impr } 
                 convection { muscl }
                 diffusion { }
-                conditions_initiales 
+                initial_conditions 
                 {
                         vitesse Champ_Uniforme 2 0. 0. 
                 }
@@ -115,7 +115,7 @@ Read pb
 	{
 		diffusion { }
 		convection { muscl }
-		conditions_initiales 
+		initial_conditions 
 		     { 
 		     Temperature Champ_Uniforme 1  0. 
 		     }
@@ -135,9 +135,9 @@ Read pb
 		     }
 	}
         
-        Postraitement
+        Post_processing
         {
-                Sondes
+                Probes
                 {
 			sonde 		vitesse 	periode 1.e-6 
 point 1 1. 0.5
@@ -154,7 +154,7 @@ segment 11  5. 0.   5.  1.
                         sonde3_tem     temperature      periode 1.e-6 
 segment 11  2. 3.   3.  3. 
                 }
-                Champs dt_post 10.0 
+                fields dt_post 10.0 
                 {
                     vitesse
                     pression

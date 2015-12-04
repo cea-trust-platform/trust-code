@@ -11,9 +11,9 @@ Read_file dom MacCormack_3D.geom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur Metis { Nb_parts 2 }
+	Partition_tool Metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -63,7 +63,7 @@ Read pb
 		}
 		convection { muscl }
 		diffusion { }
-		conditions_initiales 
+		initial_conditions 
 		        {
 			vitesse Champ_Uniforme 3 0. 0. 0.
 			}
@@ -76,14 +76,14 @@ Read pb
 		}
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 		  sonde_vit1 vitesse periode 1.e-6 segment 20 0. 0.06 0. 0. 0.06 0.06
 		  sonde_vit2 vitesse periode 1.e-6 segment  6 0. 0.05 0.04 0. 0.0653 0.04
 		}
-		Champs dt_post 0.01
+		fields dt_post 0.01
 		{
 			vitesse elem
 	                pression elem	

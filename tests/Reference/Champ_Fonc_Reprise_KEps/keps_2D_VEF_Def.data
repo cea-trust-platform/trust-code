@@ -11,9 +11,9 @@ VerifierCoin dom { }
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur Metis { Nb_parts 2 }
+	Partition_tool Metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -64,7 +64,7 @@ Read pb
 		solveur_pression GCP { precond ssor { omega 1.6 } seuil 1.e-7 }
 		convection { muscl }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 		        vitesse Champ_Uniforme 2 0. 0.
 			}
                 boundary_conditions {
@@ -84,7 +84,7 @@ Read pb
 			        EST paroi
 			        OUEST paroi
                          }
-                         conditions_initiales {
+                         initial_conditions {
                                         k_Eps Champ_Uniforme 2 1 1
                                 }
                          }
@@ -102,14 +102,14 @@ Read pb
                         EST Paroi_temperature_imposee Champ_Front_Uniforme 1 10.
                         OUEST Paroi_temperature_imposee Champ_Front_Uniforme 1 0
                 }
-                conditions_initiales { Temperature Champ_Uniforme 1 5. }
+                initial_conditions { Temperature Champ_Uniforme 1 5. }
 		modele_turbulence prandtl {  turbulence_paroi loi_standard_hydr_scalaire }
         }
 
-	Postraitement
+	Post_processing
 	{
 		format lata
-		Champs dt_post 2.
+		fields dt_post 2.
 		{
 			pression elem
 			vitesse som

@@ -43,15 +43,15 @@ Mailler dom2
 # BEGIN PARTITION
 Partition dom1
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 1
-	Nom_Zones DOM1
+	zones_name DOM1
 }
 Partition dom2
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 1
-	Nom_Zones DOM2
+	zones_name DOM2
 }
 End
 END PARTITION #
@@ -123,7 +123,7 @@ Read pb1
    Conduction
    {
       diffusion {  }	
-      conditions_initiales {
+      initial_conditions {
          temperature Champ_Uniforme 1 30
       }	
       boundary_conditions {
@@ -134,13 +134,13 @@ Read pb1
          bas symetrie
       }
    }
-   Postraitement
+   Post_processing
    {
-   Sondes	      
+   Probes	      
    {
      sonde_temp1 temperature periode 0.01 segment 5 0. 0.5 0.5 0.5   
    }
-    Champs dt_post 1.
+    fields dt_post 1.
    {
       temperature elem
       temperature som
@@ -153,7 +153,7 @@ Read pb2
    Conduction
    {
       diffusion {  }	
-      conditions_initiales {
+      initial_conditions {
          temperature Champ_Uniforme 1 30
       }	
       boundary_conditions {
@@ -164,13 +164,13 @@ Read pb2
          bas symetrie
       }
    }
-   Postraitement
+   Post_processing
    {
-   Sondes	      
+   Probes	      
    {
      sonde_temp2 temperature periode 0.01 segment 5 0.51 0.5 0.99 0.5 
    }
-    Champs dt_post 1. {
+    fields dt_post 1. {
       temperature elem
       temperature som
       }

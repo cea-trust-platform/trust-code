@@ -28,9 +28,9 @@ Trianguler_H dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -91,7 +91,7 @@ Read pb
      convection { amont }
      diffusion  { }
 
-     conditions_initiales {  vitesse champ_uniforme  2 0. 0.  }
+     initial_conditions {  vitesse champ_uniforme  2 0. 0.  }
 
     boundary_conditions {
       paroi paroi_fixe
@@ -103,7 +103,7 @@ Read pb
 {
     convection { amont }
     diffusion { }
-    conditions_initiales { Temperature Champ_Uniforme 1 300 }
+    initial_conditions { Temperature Champ_Uniforme 1 300 }
 
     boundary_conditions {
       paroi Paroi_adiabatique
@@ -111,8 +111,8 @@ Read pb
     }
   }
  
-  Postraitement {
-    Champs dt_post 1e-10 {
+  Post_processing {
+    fields dt_post 1e-10 {
       pression elem
       vitesse elem
       temperature elem

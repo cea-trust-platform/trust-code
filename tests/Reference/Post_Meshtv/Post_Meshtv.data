@@ -44,15 +44,15 @@ Mailler dom_post
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 }
 Partition dom_post
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 1
-	Nom_Zones DOMP
+	zones_name DOMP
 }
 End
 END PARTITION #
@@ -97,7 +97,7 @@ Read pb
 		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1e-11 impr }	
 		convection { amont }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -108,17 +108,17 @@ Read pb
 		}
 	}
 
-	Postraitements
+	Post_processings
 	{
 		first_post
 		{
-			Sondes
+			Probes
 			{
 				sonde_pression pression periode 0.001 points 2 0.13 0.105 0.13 0.115
 				sonde_vitesse vitesse periode 0.001 points 2 0.12 0.105 0.12 0.115
 			}
 			format lata
-			Champs dt_post 0.001
+			fields dt_post 0.001
 			{
 				pression som
 				pression elem
@@ -136,7 +136,7 @@ Read pb
 		second_post
 		{
 			fichier Post_Meshtv
-			Champs dt_post 0.1
+			fields dt_post 0.1
 			{
 				pression elem
 				vitesse elem

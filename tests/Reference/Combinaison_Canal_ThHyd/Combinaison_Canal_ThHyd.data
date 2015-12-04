@@ -32,12 +32,12 @@ Corriger_frontiere_periodique { Domaine dom Bord perioz }
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 1 2 1 }
+	Partition_tool tranche { tranches 1 2 1 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 	Periodique 2 periox perioz
 }
-Fin
+End
 END PARTITION #
 
 # BEGIN SCATTER
@@ -47,9 +47,9 @@ END SCATTER #
 Pb_Thermohydraulique_Turbulent pb
 VEFPreP1b dis
 
-# Schema_Euler_explicite sch #
+# Scheme_euler_explicit sch #
 Runge_Kutta_ordre_3 sch
-Lire sch
+Read sch
 	{
 	nb_pas_dt_max 5
 	tinit 0.
@@ -63,7 +63,7 @@ Lire sch
 	}
 
 Fluide_Incompressible fluide
-Lire fluide
+Read fluide
 {
 	mu Champ_Uniforme	1 2.84e-5
 	rho Champ_Uniforme	1 0.0976
@@ -73,7 +73,7 @@ Lire fluide
 }
 
 Champ_Uniforme gravite
-Lire gravite 3 0 0 0
+Read gravite 3 0 0 0
 
 Associate fluide gravite
 Associate pb dom
@@ -82,7 +82,7 @@ Associate pb fluide
 
 Discretize pb dis
 
-Lire pb
+Read pb
 	{
 	Navier_Stokes_Turbulent
 		{
@@ -99,7 +99,7 @@ Lire pb
 			Canal_perio { bord periox } ,
 			Boussinesq_temperature { T0 500 }
 			}
-		conditions_initiales
+		initial_conditions
 			{
 			vitesse champ_init_canal_sinal 3  { Ucent 1.2062 h 1.0  ampli_sin 0.3 omega 2. ampli_bruit 0 }
 			}
@@ -131,13 +131,13 @@ Lire pb
 			bas    Paroi_temperature_imposee Champ_Front_Uniforme 1 500
 			    
 			}
-		conditions_initiales { Temperature Champ_Fonc_xyz dom 1 500.+y*(505.-500.)/2. }
+		initial_conditions { Temperature Champ_Fonc_xyz dom 1 500.+y*(505.-500.)/2. }
 		}
 
 
-	Postraitement
+	Post_processing
         	{       
-                Sondes
+                Probes
                 	{ 
                         sonde_vit  vitesse periode 10. segment 65	4. 0. 1.
 									4. 2. 1.
@@ -145,7 +145,7 @@ Lire pb
 									4. 2. 1. 
 			}
 		
-		Champs dt_post 20.
+		fields dt_post 20.
 			{
 			temperature elem
 			vitesse som
@@ -155,5 +155,5 @@ Lire pb
 	}
 
 Solve pb
-Fin
+End
 

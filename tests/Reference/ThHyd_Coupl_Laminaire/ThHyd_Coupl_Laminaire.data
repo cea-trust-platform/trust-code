@@ -80,15 +80,15 @@ Read_file_binary dom_pb1 binaire.geom
 # BEGIN PARTITION
 Partition dom_pb1
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 1
-	Nom_Zones DOM1
+	zones_name DOM1
 }
 Partition dom_pb2
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 1
-	Nom_Zones DOM2
+	zones_name DOM2
 }
 End
 END PARTITION #
@@ -147,7 +147,7 @@ Read pb2
 		convection { amont }
                 diffusion { }
                 sources { boussinesq_temperature { T0 480. } }
-                conditions_initiales {
+                initial_conditions {
                         vitesse Champ_Uniforme 2 0. 400.
                         }
                 boundary_conditions {
@@ -165,7 +165,7 @@ Read pb2
         {
                 diffusion { }
                 convection { amont }
-                conditions_initiales {
+                initial_conditions {
                         temperature Champ_Uniforme 1 480.
                         }
                 boundary_conditions {
@@ -179,15 +179,15 @@ Read pb2
                                    }
         }
 
-        Postraitement {
-                Sondes
+        Post_processing {
+                Probes
                 {
                         sonde_He_entree_p pression    periode 1.E-5   points   1  0.001  0.
                         prof_sortie_vite  vitesse     periode 1.E-5   segment 25  0.  0.014   0.002 0.014
                         prof_sortie_temp  temperature periode 1.E-5   segment 25  0.  0.014   0.002 0.014
                         prof_canal_temp   temperature periode 1.E-5   segment 25  0.001 0.  0.001 0.014
                 }
-                Champs dt_post .05
+                fields dt_post .05
                 {
                    vitesse elem
                    vitesse som
@@ -207,7 +207,7 @@ Read pb1
         Conduction
         {
                 diffusion { }
-                conditions_initiales {
+                initial_conditions {
                         temperature Champ_Uniforme 1 900.
                         }
                 sources {
@@ -221,14 +221,14 @@ Read pb1
                         Contact             paroi_contact  pb2  Contact
                 }
         }
-        Postraitement
+        Post_processing
         {
-                Sondes
+                Probes
                 {
                         sond_Tcombustible_sortie    temperature periode 1.E-5   points   1 -0.003 0.014 
                         prof_Tcombustible_sortie    temperature periode 1.E-5   segment 10 -0.003 0.014   0.  0.014
                 }
-                Champs dt_post .05
+                fields dt_post .05
                 {
                    temperature elem
                    temperature som

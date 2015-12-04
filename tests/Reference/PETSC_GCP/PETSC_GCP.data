@@ -16,9 +16,9 @@ Dilate dom 1000
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 9 }
+	Partition_tool metis { Nb_parts 9 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -64,7 +64,7 @@ Read pb
 		solveur_pression Petsc GCP { precond ssor { omega 1.5 } seuil 1.e-6 impr petsc_decide 1 }
 		convection { muscl }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 3 1. 0. 0.
 			}
 		boundary_conditions {
@@ -78,9 +78,9 @@ Read pb
 		}
 
 	}
-	Postraitement
+	Post_processing
 	{
-	 Champs dt_post 10
+	 fields dt_post 10
 	 {
 	    pression som
 	 }

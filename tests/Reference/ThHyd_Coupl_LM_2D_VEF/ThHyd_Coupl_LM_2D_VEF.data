@@ -80,15 +80,15 @@ Read sous_zone2
 
 Partition dom
 {
-	Partitionneur sous_zones { sous_zones 1 sous_zone1 }
-	Nom_Zones DOM
+	Partition_tool sous_zones { sous_zones 1 sous_zone1 }
+	zones_name DOM
         Larg_joint 2
 }
 Partition parois
 {
-	Partitionneur sous_zones { sous_zones 1 sous_zone2 }
+	Partition_tool sous_zones { sous_zones 1 sous_zone2 }
 	Larg_joint 1
-	Nom_Zones PAROIS
+	zones_name PAROIS
 	Periodique 1 periox
 }
 
@@ -171,7 +171,7 @@ Read pb2
 			{
 			Canal_perio { bord periox }
 			}
-		conditions_initiales
+		initial_conditions
 			{
 			vitesse  Champ_fonc_xyz dom 2 -3*y*y+6*y 0.
 			}
@@ -202,19 +202,19 @@ Read pb2
  			haut   paroi_contact pb1 haut
 			bas    paroi_contact pb1 bas
 			}
-		conditions_initiales { Temperature Champ_fonc_xyz dom 1  -0.2*y*y+0.4*y  }
+		initial_conditions { Temperature Champ_fonc_xyz dom 1  -0.2*y*y+0.4*y  }
 			
 		}
 
-	Postraitement
+	Post_processing
         	{       
-                Sondes
+                Probes
                 	{ 
 			profil_vitesse vitesse                periode 5.e-1 segment 20 3. 0. 3. 2.
 			profil_viscosite viscosite_turbulente periode 5.e-1 segment 20 3. 0. 3. 2. 
 			sonde_temp_fluide_paroi temperature   periode 5.e-1 segment 20 3. 0. 3. 2. 
 			}
-		Champs dt_post 10
+		fields dt_post 10
 			{
 			vitesse elem
 			temperature elem
@@ -230,7 +230,7 @@ Read pb1
         Conduction
                 {
                 diffusion { }
-                Conditions_initiales { Temperature Champ_fonc_xyz parois 1 0. }
+                initial_conditions { Temperature Champ_fonc_xyz parois 1 0. }
 		Sources { Puissance_Thermique Champ_Uniforme 1 -1. }
                 boundary_conditions
                         {
@@ -240,9 +240,9 @@ Read pb1
 			bas      paroi_contact pb2 bas
                         }
                 }
-	 Postraitement
+	 Post_processing
         		{
-                	Sondes
+                	Probes
                 		{
 				profil_T_paroi_1 temperature periode 5.e-1 segment 50 3. -0.0000  3. -0.1270 
                                 profil_T_paroi_2 temperature periode 5.e-1 segment 50 3.  2.0000  3.  2.1270 
@@ -251,7 +251,7 @@ Read pb1
 				profil_T_paroi_5 temperature periode 5.e-1 segment 50 5. -0.0000  5. -0.1270 
                                 profil_T_paroi_6 temperature periode 5.e-1 segment 50 5.  2.0000  5.  2.1270 
         	        	}
-                	Champs dt_post 10 { temperature elem }
+                	fields dt_post 10 { temperature elem }
         		}
         }
 

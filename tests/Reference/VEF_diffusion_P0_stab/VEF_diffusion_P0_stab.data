@@ -30,9 +30,9 @@ Tetraedriser_homogene dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 4 1 1 }
+	Partition_tool tranche { tranches 4 1 1 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -76,7 +76,7 @@ Read pb
 		solveur_pression GCP  { precond ssor { omega 1.6 } seuil 1e12 }
 		convection { negligeable }
 		diffusion { stab { standard 0 } }
-		conditions_initiales { vitesse Champ_fonc_xyz dom 3 x y z }
+		initial_conditions { vitesse Champ_fonc_xyz dom 3 x y z }
 		boundary_conditions
 		{
 			Haut 	frontiere_ouverte_vitesse_imposee Champ_Front_fonc_xyz 3 x y z
@@ -87,10 +87,10 @@ Read pb
 			S1 	frontiere_ouverte_vitesse_imposee Champ_Front_fonc_xyz 3 x y z
 		}
 	}
-	Postraitement
+	Post_processing
 	{
 		format lml
-		Champs dt_post 1.
+		fields dt_post 1.
 		{
 			vitesse		som
 		}

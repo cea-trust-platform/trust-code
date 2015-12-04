@@ -28,9 +28,9 @@ Trianguler_H dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -80,7 +80,7 @@ Read pb
                 convection { amont }
                 diffusion { }
                 sources { boussinesq_temperature { T0 0. } }
-                conditions_initiales {
+                initial_conditions {
                         vitesse Champ_Uniforme 2 0. 0.
                         }
                 boundary_conditions {
@@ -104,17 +104,17 @@ Read pb
 			Gauche frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 1.
                         Droit  frontiere_ouverte T_ext Champ_Front_Uniforme 1 1.
                 }
-                conditions_initiales { Temperature Champ_Uniforme 1 1. }
+                initial_conditions { Temperature Champ_Uniforme 1 1. }
         }
 
-        Postraitement
+        Post_processing
         {
-                Sondes
+                Probes
                 {
                         sonde_pression pression periode 0.01 points 1 0.0045 0.0045
                 }
 		Format lml
-                Champs dt_post 1.0
+                fields dt_post 1.0
                 {
                         vitesse elem
                         temperature elem

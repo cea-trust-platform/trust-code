@@ -74,7 +74,7 @@ Read pb_Th
 		solveur_pression GCP { precond ssor { omega 1.651 } seuil 1.e-12 }
 		convection { centre }
 		diffusion { }
-		conditions_initiales { vitesse champ_uniforme 2 0. 0. }
+		initial_conditions { vitesse champ_uniforme 2 0. 0. }
 		boundary_conditions
 		{
 			Haut		frontiere_ouverte_pression_imposee	Champ_Front_Uniforme 1 0.
@@ -96,10 +96,10 @@ Read pb_Th
 			Gauche		Symetrie
 			Droit		Symetrie
 		}
-		conditions_initiales { Temperature Champ_Uniforme 1 1000. }
+		initial_conditions { Temperature Champ_Uniforme 1 1000. }
 	}
 
-	Postraitement
+	Post_processing
         {       	  
 		Definition_champs {
 		
@@ -124,7 +124,7 @@ Read pb_Th
 				}
 			}
 		}  
-                Sondes
+                Probes
 		{
 			pression		grav	pression	periode 1. point   1  0.45 0.55
 			sonde_p			grav	pression	periode 1. segment 10 0.45 0.	0.45 1.
@@ -136,7 +136,7 @@ Read pb_Th
 			erreur_vitesse		nodes	erreur_vit	periode 1. point   1  0.45 1.
 			erreur_temperature	grav	erreur_temp	periode 1. point   1  0.45 0.95
 		}
-		Champs dt_post 1.
+		fields dt_post 1.
 		{
 			pression	      elem
 			pression	      som

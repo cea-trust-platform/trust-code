@@ -26,9 +26,9 @@ trianguler dom_pbF1
 # BEGIN PARTITION
 Partition dom_pbF1
 {
-        Partitionneur tranche { tranches 1 4 }
+        Partition_tool tranche { tranches 1 4 }
         Larg_joint 2
-        Nom_Zones DOM
+        zones_name DOM
 	periodique 1 perio 
 }
 End
@@ -78,7 +78,7 @@ Conduction
                diffusion { 
 	                   P1NCP1B {  } 
 			  }
-               conditions_initiales {
+               initial_conditions {
                        temperature Champ_fonc_txyz dom_pbF1 1 0
                        }
                boundary_conditions {
@@ -89,13 +89,13 @@ Conduction
 
 
        }
-       Postraitements
+       Post_processings
        {
        		lml
 		{
        			format lml
        			fichier OpDiffP1B_mixte_scalaire_explicite_2D
-       			Champs dt_post 1.e-1
+       			fields dt_post 1.e-1
                		{
                  	temperature elem
                		}
@@ -103,7 +103,7 @@ Conduction
 		lata
 		{
 		       	format lata
-       			Champs dt_post 1.e-1
+       			fields dt_post 1.e-1
                		{
                  	temperature faces
                		}

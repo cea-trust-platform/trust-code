@@ -28,9 +28,9 @@ Trianguler_H dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -70,7 +70,7 @@ Read pb
 		solveur_pression petsc cholesky { }
 		convection { muscl }
 		diffusion {  }
-		conditions_initiales 
+		initial_conditions 
 		{
 			vitesse 	Champ_Fonc_txyz dom 2 -cos(2*Pi*x)*sin(2*Pi*y)*exp(-8*Pi*Pi*0.01*t) sin(2*Pi*x)*cos(2*Pi*y)*exp(-8*Pi*Pi*0.01*t)
 		}
@@ -79,10 +79,10 @@ Read pb
 			BOUNDARY symetrie
 		}
 	}
-        Postraitement
+        Post_processing
 	{
 		Format lml
-                Champs dt_post 2
+                fields dt_post 2
 		{
 		    pression 				som
 		    vitesse 				elem

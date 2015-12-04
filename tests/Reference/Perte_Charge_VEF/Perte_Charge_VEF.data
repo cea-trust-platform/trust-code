@@ -35,9 +35,9 @@ Read SSZ {
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -94,7 +94,7 @@ Read pb
 		solveur_pression GCP  { precond ssor { omega 1.65 } seuil 1e-10 impr }
 		convection { amont }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -104,9 +104,9 @@ Read pb
 			Sortie 	frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
 		}
 	}
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 		 seg_P pression periode 0.1 segment 20 0.025 0.5 0.975 0.5
 		 seg_U1 vitesse periode 0.1 segment 11 0. 0.5 1.0 0.5
@@ -115,7 +115,7 @@ Read pb
 		 sonde_vitesse  vitesse periode 0.1 points 1 0.5 0.5
 		}
 		format lml
-		Champs dt_post .1
+		fields dt_post .1
 		{
 			pression_pa elem
 			pression_pa som

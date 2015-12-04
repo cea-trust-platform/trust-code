@@ -30,9 +30,9 @@ Corriger_frontiere_periodique { Domaine dom Bord Perio3 }
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 1 }
+	Partition_tool tranche { tranches 2 1 1 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 	Periodique 1 Perio3
 }
 End
@@ -73,7 +73,7 @@ Read pb
                 solveur_pression GCP { precond ssor { omega 1.65 } seuil 1.e-12 }
                 convection { negligeable }
                 diffusion { }
-                conditions_initiales 
+                initial_conditions 
                 {
                         vitesse Champ_uniforme 3 0. 0. 0.
                 }
@@ -92,9 +92,9 @@ Read pb
                 }                
                 
         }
-Postraitement
+Post_processing
         {
-                Sondes       
+                Probes       
                 {
 			sonde_pression pression periode 1.e-9 points 2 0.0005 0.0045 0.005 
 			                                               0.005 0.005 0.005
@@ -104,7 +104,7 @@ Postraitement
 			                                             0.0035 0.0049 0.005 
 			                                             0.005 0.005 0.005
 		}
-                Champs dt_post 0.05
+                fields dt_post 0.05
 		{ 
 			y_plus elem
 			vitesse 

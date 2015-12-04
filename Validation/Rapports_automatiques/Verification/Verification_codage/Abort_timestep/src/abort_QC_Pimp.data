@@ -76,9 +76,9 @@ Trianguler_fin dom_fluid
 # BEGIN PARTITION
 Partition dom_fluid
 {
-        Partitionneur metis { nb_parts 2 }
+        Partition_tool metis { nb_parts 2 }
         Larg_joint 2
-        Nom_Zones DOM
+        zones_name DOM
 }
 End
 END PARTITION #
@@ -149,7 +149,7 @@ Read pb1
 		}
 		convection { amont }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2  30.  0.
 		}
 		boundary_conditions {
@@ -190,7 +190,7 @@ Read pb1
 			wall paroi_adiabatique
 			P_imp frontiere_ouverte t_ext champ_front_uniforme 1 600
 		}
-		conditions_initiales { Temperature Champ_Uniforme 1 600. }
+		initial_conditions { Temperature Champ_Uniforme 1 600. }
 
 		sources	
 		{ 	
@@ -202,10 +202,10 @@ Read pb1
 
 	}
 
-	Postraitement
+	Post_processing
 	{
 	
-		Sondes
+		Probes
 		{
 			sonde_pression1 pression periode 0.05 segment 31    0.1  0    0.1 5.8
 			sonde_pression2 pression periode 0.05 segment 31    1.5  0    0.1 5.8
@@ -221,7 +221,7 @@ Read pb1
 
 		format lata
 
-		Champs dt_post 1e-10
+		fields dt_post 1e-10
 		{
 			pression elem
 			pression som
@@ -231,7 +231,7 @@ Read pb1
 
 		}
 	}
-	Postraitements
+	Post_processings
       {
 	 dp {
 	definition_champs
@@ -242,7 +242,7 @@ Read pb1
 		}
 	}
 	format lata
-		Champs dt_post 1e-10
+		fields dt_post 1e-10
 	{
 		delta_pression elem
 	}

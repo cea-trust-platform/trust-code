@@ -27,9 +27,9 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -77,7 +77,7 @@ Read pb
 		}
 		convection { negligeable }
 		diffusion { negligeable }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Fonc_xyz dom 2 (0.147313912747197) (0.147313912747197)
 			}
 		boundary_conditions {
@@ -95,7 +95,7 @@ Read pb
 	{
 		diffusion { }
 		convection { generic amont }
-		conditions_initiales {
+		initial_conditions {
 			temperature Champ_Fonc_xyz dom 1 (-0.0135673098126085+0.0135673098126085*exp(3.3333333333333333*(x+y)/sqrt(2.)))
 			}
 		boundary_conditions {
@@ -110,13 +110,13 @@ Read pb
 		}
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			temperature_x temperature periode 5. segment 100  0. 0. 1.06066017177982 1.06066017177982
 		}
-		Champs dt_post 5.
+		fields dt_post 5.
 		{
 			temperature som
 			vitesse som

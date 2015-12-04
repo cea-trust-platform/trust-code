@@ -8,9 +8,9 @@ Read pbmed
    MED_docond.med 
    dom_solide 
    { 
-      Postraitement 
+      Post_processing 
       { 
-	 Champs dt_post 1e-9 
+	 fields dt_post 1e-9 
 	 { 
 	 temperature_ELEM ELEM 
 	 temperature_SOM SOM 
@@ -21,9 +21,9 @@ Read pbmed
    MED_docond.med 
    dom_fluide 
    {  
-      Postraitement 
+      Post_processing 
       { 
-         Champs dt_post 1e-9 
+         fields dt_post 1e-9 
          { 
 	    pression_ELEM ELEM 
 	    pression_SOM SOM 

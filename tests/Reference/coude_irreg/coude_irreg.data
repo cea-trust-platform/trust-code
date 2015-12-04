@@ -52,9 +52,9 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -101,7 +101,7 @@ Read pb
 		}
 		convection { amont }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 		        vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -116,9 +116,9 @@ Read pb
                 }
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_pression pression periode 0.1 points 2 0.45 1.45 0.45 1.55
 			sonde_vitesse vitesse periode 0.1 points 1 9.44709226e-01 0.112030
@@ -141,7 +141,7 @@ Read pb
 		  }  
 		}
 		
-		Champs dt_post 5.
+		fields dt_post 5.
 		{
 			pression elem
 			vitesse som

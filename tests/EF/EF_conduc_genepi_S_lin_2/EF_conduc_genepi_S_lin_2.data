@@ -31,9 +31,9 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -79,7 +79,7 @@ Read pb
 		sources { 
 			Puissance_thermique Champ_Fonc_XYZ dom 1 x
    			}
-		conditions_initiales {
+		initial_conditions {
 			temperature Champ_Uniforme 1 0. 
 			}
 		boundary_conditions {
@@ -94,14 +94,14 @@ Read pb
 		}
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde temperature periode 5. points 1 0.45 0.45
 			temperature_x temperature periode 5. segment 42  0. 0.5 1. 0.5
 		}
-		Champs dt_post 30.
+		fields dt_post 30.
 		{
 			temperature elem
 			temperature som

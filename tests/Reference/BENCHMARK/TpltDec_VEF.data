@@ -4,7 +4,7 @@ Read_file_binary dom dom.geom
 Partition dom
 {
 	Larg_joint 2
-	Nom_Zones DOM
-	Partitionneur metis { nb_parts n }
+	zones_name DOM
+	Partition_tool metis { nb_parts n }
 }
 End

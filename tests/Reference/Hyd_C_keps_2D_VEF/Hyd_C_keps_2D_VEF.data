@@ -25,9 +25,9 @@ trianguler_h dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur Tranche { tranches 2 1 }
+	Partition_tool Tranche { tranches 2 1 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -81,7 +81,7 @@ Read pb
 		solveur_pression petsc cholesky { }
 		convection { ef_stab { alpha 0.2 } }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -103,7 +103,7 @@ Read pb
                                        	Sortie frontiere_ouverte K_EPS_EXT    Champ_Front_Uniforme 2 0.045 0.02
                                        	
                                 }
-                                conditions_initiales {
+                                initial_conditions {
                                         k_Eps Champ_Uniforme 2 0.045 0.02
                                 }
 				# To change the default constant #
@@ -124,19 +124,19 @@ Read pb
 			Sortie frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.	
                 } 
 		Modele_Turbulence Schmidt { turbulence_paroi loi_standard_hydr_scalaire }
-		conditions_initiales {
+		initial_conditions {
 			concentration Champ_Fonc_xyz dom 1 x*x+y*y
 		}
 		sources { source_Constituant champ_fonc_fonction 1 concentration val }
 	}
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_pression pression periode 0.001 segment 12 0.13 0.11 0.13 0.22
 			sonde_vitesse vitesse periode 0.001 segment 12 0.13 0.11 0.13 0.22
 		}
-		Champs dt_post 0.1
+		fields dt_post 0.1
 		{
 			pression elem
 			concentration elem

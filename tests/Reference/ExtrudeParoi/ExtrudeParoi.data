@@ -44,8 +44,8 @@ Postraiter_domaine { domaine dom format lata fichier apres }
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur Metis { Nb_parts 2 }
-	Nom_Zones DOM
+	Partition_tool Metis { Nb_parts 2 }
+	zones_name DOM
 	Periodique 1 perio
         Larg_joint 2
 }
@@ -93,7 +93,7 @@ Read pb
                 solveur_pression Gcp { precond ssor { omega 1.5 } seuil 1.e-08 impr }
                 convection { amont }
                 diffusion  { }
-		conditions_initiales { vitesse Champ_fonc_xyz dom 3  2. 0. 0. }
+		initial_conditions { vitesse Champ_fonc_xyz dom 3  2. 0. 0. }
 		boundary_conditions
 			{
 			perio  periodique 
@@ -101,10 +101,10 @@ Read pb
 			}
  	}
 
-	Postraitement
+	Post_processing
         	{       
 		format lml
-		Champs dt_post 2.
+		fields dt_post 2.
 			{
 			vitesse elem
 			vitesse som

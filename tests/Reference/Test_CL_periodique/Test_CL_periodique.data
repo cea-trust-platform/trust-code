@@ -15,9 +15,9 @@ Corriger_frontiere_periodique { domaine dom bord section }
 Partition dom
 {
     Periodique 1 section
-    Partitionneur Metis { nb_parts 6 }
+    Partition_tool Metis { nb_parts 6 }
     larg_joint 2
-    nom_zones DOM
+    zones_name DOM
 }
 END MESH #
 
@@ -68,7 +68,7 @@ Read pb
         solveur_pression petsc cholesky {  }
         convection { EF_stab { alpha 0.2 } }
         diffusion { }
-        conditions_initiales { vitesse Champ_Uniforme 3 0. 0. 0.298 }
+        initial_conditions { vitesse Champ_Uniforme 3 0. 0. 0.298 }
         sources { Canal_perio { bord section } }
         boundary_conditions {
             section     periodique
@@ -82,16 +82,16 @@ Read pb
                     section     Frontiere_ouverte_K_Eps_impose Champ_front_Uniforme 2 1.33e-3 .023
                     wall        paroi
                 }
-                conditions_initiales { K_eps Champ_Uniforme 2 1.33e-3 .023 }
+                initial_conditions { K_eps Champ_Uniforme 2 1.33e-3 .023 }
             }
             Correction_visco_turb_pour_controle_pas_de_temps
             Turbulence_paroi Loi_standard_hydr dt_impr_ustar 0.5
         }
     }
 
-    Postraitement {
+    Post_processing {
         format lata
-        champs dt_post 1.e-3 { vitesse faces }
+        fields dt_post 1.e-3 { vitesse faces }
     }
 }
 Solve pb

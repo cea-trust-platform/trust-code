@@ -37,9 +37,9 @@ Read Suz1001
 # BEGIN PARTITION
 Partition dom_pb1
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -87,7 +87,7 @@ Read pb
 		impr }
 		convection { amont }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.	
 			}
 		boundary_conditions {
@@ -99,16 +99,16 @@ Read pb
 	}
 	
 	
-Postraitement 
+Post_processing 
 {
-	Sondes 
+	Probes 
 	{
 		pres pression   periode 1e-2  segment 20 0. 0.5 1. 0.5
 		vit  vitesse    periode 1e-2  segment 20 0.5 0. 0.5  1.
 		vit_L  vitesse    periode 1e-2  segment 20 0. 0.5 1. 0.5
 	
 	}
-	Champs dt_post 0.1
+	fields dt_post 0.1
 	{
 			pression elem
 			vitesse elem                    

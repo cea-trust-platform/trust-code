@@ -30,9 +30,9 @@ Trianguler_fin dom
 # BEGIN PARTITION
 Partition dom
 {
-        Partitionneur tranche { tranches 1 2 }
+        Partition_tool tranche { tranches 1 2 }
         Larg_joint 2
-        Nom_Zones DOM
+        zones_name DOM
 	Periodique 1 periox
 }
 End
@@ -85,7 +85,7 @@ Read pb
                 convection { EF_stab { } }
                 diffusion  {  }
                 Sources { Canal_perio { bord periox } }
-		conditions_initiales
+		initial_conditions
 			{
                         vitesse Champ_fonc_reprise LM_pb.xyz pb vitesse last_time
 			}
@@ -106,7 +106,7 @@ Read pb
 					haut     paroi
 					bas      paroi
                          }
-                         conditions_initiales {
+                         initial_conditions {
 			    k_Eps Champ_fonc_med last_time init_K_eps.med dom K_eps_from_nut elem 0
                                 }
 			}
@@ -115,11 +115,11 @@ Read pb
 		}
 	}
 
-	Postraitements
+	Post_processings
         {       
         	lml {           
 			fichier K_eps_init_par_LM
-			format lml Champs dt_post 100
+			format lml fields dt_post 100
 			{
 			vitesse elem
 			K elem
@@ -129,7 +129,7 @@ Read pb
 			}
 		}
 		lata {          
-			format lata Champs dt_post 100
+			format lata fields dt_post 100
 			{
 			K faces
 			Eps faces

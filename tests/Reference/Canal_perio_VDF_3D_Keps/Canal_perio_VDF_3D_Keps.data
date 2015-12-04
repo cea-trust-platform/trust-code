@@ -31,9 +31,9 @@ Pave Cavite
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur Metis { nb_parts 5 use_weights }
+	Partition_tool Metis { nb_parts 5 use_weights }
 	Larg_joint 2
-	Nom_Zones dom
+	zones_name dom
 	Periodique 2 periox perioz
 }
 End
@@ -90,7 +90,7 @@ Read pb
 		solveur_pression petsc cholesky { }
 		convection { Centre  }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse champ_uniforme 3 50. 0. 0.
 			}
         	Sources {
@@ -116,7 +116,7 @@ Read pb
                				haut             paroi
                				bas             paroi
 		      			}
-			   	conditions_initiales { k_eps Champ_Uniforme 2 25 625 }
+			   	initial_conditions { k_eps Champ_Uniforme 2 25 625 }
 			}
                  turbulence_paroi loi_standard_hydr dt_impr_ustar 5.
 
@@ -139,18 +139,18 @@ perioz periodique
                         haut   paroi_temperature_imposee Champ_Front_Uniforme 1 300
                         bas    paroi_temperature_imposee Champ_Front_Uniforme 1 300 
                         }
-                conditions_initiales { Temperature Champ_Fonc_xyz dom 1 (300+2.759e-4*((y<1.01)*(2.12*LN(y*20000)+3.7316)+(y>1.01)*(2.12*LN((2-y)*20000)+3.7316))) }
+                initial_conditions { Temperature Champ_Fonc_xyz dom 1 (300+2.759e-4*((y<1.01)*(2.12*LN(y*20000)+3.7316)+(y>1.01)*(2.12*LN((2-y)*20000)+3.7316))) }
                 }
 
 
 
-	Postraitement
+	Post_processing
 	{
-	     Sondes
+	     Probes
 	        {
 			point_Tg    temperature periode 1e-5 points 1     2. 1. 1.
 	        }
-		Champs dt_post 2.
+		fields dt_post 2.
 		{
 			vitesse elem
 			temperature elem

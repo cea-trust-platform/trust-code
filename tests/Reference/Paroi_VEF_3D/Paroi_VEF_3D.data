@@ -13,10 +13,10 @@ VEFPreP1B dis
 # BEGIN PARTITION 
 Partition dom
 {
-	partitionneur Metis
+	Partition_tool Metis
 	{ Nb_parts 2 } 
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -72,7 +72,7 @@ Read pb_plenum {
     }
     convection { amont }
     diffusion { }   
-    conditions_initiales { vitesse champ_uniforme 3 0. 0. 0. }
+    initial_conditions { vitesse champ_uniforme 3 0. 0. 0. }
     boundary_conditions {
       cl_par_int paroi_fixe
       cl_par_ext_dhr paroi_fixe
@@ -91,7 +91,7 @@ Read pb_plenum {
           {
             convection { amont }
             diffusion { }
-            conditions_initiales { k_eps Champ_uniforme 2 50. 100. }
+            initial_conditions { k_eps Champ_uniforme 2 50. 100. }
             boundary_conditions {
 	       cl_par_int paroi
 	       cl_par_ext_dhr paroi
@@ -123,7 +123,7 @@ Read pb_plenum {
      }
 
 
-    conditions_initiales { Temperature  champ_uniforme 1 673. }
+    initial_conditions { Temperature  champ_uniforme 1 673. }
 
     boundary_conditions {
       cl_par_int Paroi_adiabatique
@@ -138,9 +138,9 @@ Read pb_plenum {
     }
   }
 
-  Postraitement {
+  Post_processing {
 
-       Sondes {
+       Probes {
 	point_vit0        vitesse       periode 1.e-4  point 1     0.    0.     0.4
 	point_vit1        vitesse       periode 1.e-4  point 1     0.    0.     1.5
 	point_vit2        vitesse       periode 1.e-4  point 1     0.    0.     3.2
@@ -154,7 +154,7 @@ Read pb_plenum {
 
       }
       format lata
-      Champs dt_post 0.5 {
+      fields dt_post 0.5 {
 	pression_pa elem
 	vitesse elem
 	temperature elem

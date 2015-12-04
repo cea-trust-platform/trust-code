@@ -38,9 +38,9 @@ Read z_interface {
 # BEGIN PARTITION
 Partition dom
 {
-        Partitionneur tranche { tranches 2 1 }
+        Partition_tool tranche { tranches 2 1 }
         Larg_joint 2
-        Nom_Zones DOM
+        zones_name DOM
 }
 End
 END PARTITION #
@@ -97,7 +97,7 @@ Read pb
                 sources {
                         Perte_Charge_Singuliere KX 0.5 { X = 1 z_interface }
                         }
-                conditions_initiales {
+                initial_conditions {
                         vitesse Champ_Uniforme 2 0. 0.
                         }
                 boundary_conditions {
@@ -106,7 +106,7 @@ Read pb
                         paroi symetrie
                 }
         }
-        Postraitement
+        Post_processing
         {	
 		Definition_champs {
 			erreur_pression_pa Transformation {
@@ -117,11 +117,11 @@ Read pb
 				localisation elem
 			} 
   		}
-		Sondes {
+		Probes {
 			vitesse vitesse periode 0.0001 point 1 1. 0.5
 		}
                 format lml
-                Champs dt_post 1.
+                fields dt_post 1.
                 {
                         erreur_pression_pa elem
 			pression_pa elem

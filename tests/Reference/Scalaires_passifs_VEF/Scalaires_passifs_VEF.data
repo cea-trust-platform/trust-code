@@ -27,10 +27,10 @@ Trianguler_H dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur Metis {
+	Partition_tool Metis {
 	Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -89,7 +89,7 @@ Read pb
 		}
 		convection { muscl }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 1. 1.
 		}
 		boundary_conditions {
@@ -108,7 +108,7 @@ Read pb
 			Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 1.
 			Bas frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
 		}
-		conditions_initiales {
+		initial_conditions {
 			concentration Champ_Uniforme 1 0.5
 		}
 	}
@@ -124,7 +124,7 @@ Read pb
 				Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 1.
 				Bas frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
 			}
-			conditions_initiales {
+			initial_conditions {
 				concentration0 Champ_Uniforme 1 0.5
 			}
 		}
@@ -137,23 +137,23 @@ Read pb
 				Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 1.
 				Bas frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
 			}
-			conditions_initiales {
+			initial_conditions {
 				concentration1 Champ_Uniforme 1 0.5
 			}
 		}
 
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_pres pression periode 0.01 points 1 0.45 0.45
 			sonde_vit vitesse periode 0.01 points 1 0.4 0.45
 			sonde_conc concentration periode 0.01 points 1 0.55 0.45
 			sonde_conc0 concentration0 periode 0.01 points 1 0.55 0.45
 		}
-		Champs dt_post 0.1
+		fields dt_post 0.1
 		{
 			concentration elem
 			concentration0 elem

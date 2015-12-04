@@ -25,9 +25,9 @@ Trianguler_H dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur Metis { Nb_pArts  3  }
+	Partition_tool Metis { Nb_pArts  3  }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -77,7 +77,7 @@ Read pb
 		}
 		convection { EF_stab { alpha 0.2 } }
 		diffusion { }
-		conditions_initiales
+		initial_conditions
 		        {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
@@ -88,9 +88,9 @@ Read pb
 		}
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Champs dt_post 0.01
+		fields dt_post 0.01
 		{
 			vitesse
 	                pression	

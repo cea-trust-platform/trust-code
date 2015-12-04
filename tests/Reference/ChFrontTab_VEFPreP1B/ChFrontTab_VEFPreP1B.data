@@ -24,9 +24,9 @@ Trianguler_H dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -72,7 +72,7 @@ Read pb
                 solveur_pression GCP { precond ssor { omega 1.65 } seuil 1.e-12 } 
                 convection { amont }
                 diffusion { }
-                conditions_initiales {
+                initial_conditions {
                         vitesse Champ_Uniforme 2 0. 0.
                         }
                 boundary_conditions {
@@ -85,15 +85,15 @@ Read pb
                         Droit paroi_fixe
                 }
         }
-        Postraitement
+        Post_processing
         {
-                Sondes
+                Probes
                 {
                         sonde_pres   pression periode 0.01 points 1 0.55  0.
                         sonde_vit     vitesse periode 0.01 points 1 0.55  0.
 
                 }
-                Champs dt_post 100. 
+                fields dt_post 100. 
                 {
                         pression
                         vitesse

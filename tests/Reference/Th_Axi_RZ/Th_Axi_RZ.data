@@ -30,9 +30,9 @@ Pave fpt4
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -84,20 +84,20 @@ Read pb
              Bas    Symetrie
 
         }
-        conditions_initiales { 	Temperature Champ_Uniforme 1 0. }
+        initial_conditions { 	Temperature Champ_Uniforme 1 0. }
     }
 
 
-    Postraitement 
+    Post_processing 
     {
-        Sondes 
+        Probes 
         {
                 segment_T  temperature periode 4.e-2   point 1 0.05  0.05
 		segment_T1 temperature periode 4.e-2 segment 24 0.05 0. 0.05 0.1
                 segment_T2 temperature periode 4.e-2 segment 10 0. 0.05 0.1 0.05 
 		
         }       
-        Champs dt_post 3.   
+        fields dt_post 3.   
         {
                 temperature elem
         }

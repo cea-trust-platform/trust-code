@@ -26,9 +26,9 @@ VerifierCoin dom { }
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -85,7 +85,7 @@ Read pb
 		convection { muscl }
 		diffusion { }
 		sources { boussinesq_temperature { T0 5.*(1+t) } }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Fonc_MED last_time prepare.med dom vitesse ELEM 0
 			}
 		boundary_conditions {
@@ -106,21 +106,21 @@ Read pb
  			Gauche Paroi_temperature_imposee Champ_Front_Uniforme 1 10.
 			Droit Paroi_temperature_imposee Champ_Front_Uniforme 1 0
 		}
-		conditions_initiales { Temperature Champ_Fonc_MED last_time prepare.med dom temperature elem 0 }
+		initial_conditions { Temperature Champ_Fonc_MED last_time prepare.med dom temperature elem 0 }
 	}
 
-	Postraitements
+	Post_processings
 	{
 	     lml
 	     {
-		     Sondes
+		     Probes
 		     {
 			     sonde_pression pression periode 0.01 points 1 0.0045 0.0045
 			     sonde_vitesse vitesse periode 0.01 segment 10 0.0005 0.005 0.0095 0.005
 			     sonde_vit vitesse periode 0.01 segment 11 0.0005 0. 0.0005 0.01
 			     sonde_temp temperature periode 0.01 segment 21 0. 0.0055 0.01 0.0055
 		     }
-		     fichier Champ_fonc_MED format lml Champs dt_post 0.01
+		     fichier Champ_fonc_MED format lml fields dt_post 0.01
 		     {
 			     pression elem
 			     pression som
@@ -131,7 +131,7 @@ Read pb
 	     }
 	     lata
 	     {
-		     fichier Champ_fonc_MED format lata Champs dt_post 0.01
+		     fichier Champ_fonc_MED format lata fields dt_post 0.01
 		     {
 			     vitesse elem
 			     temperature elem

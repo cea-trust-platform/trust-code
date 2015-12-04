@@ -65,7 +65,7 @@ Read pb
 		solveur_pression GCP { precond ssor { omega 1.6 } seuil 1.e-8 }	
 		convection { EF_stab { } }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse champ_fonc_xyz dom01234 3  0. 0. 1.31*(1-x*x-y*y)
 			}
         	Sources {
@@ -85,7 +85,7 @@ Read pb
 			     sortie  periodique 
                              paroi  paroi
                             }
-                         conditions_initiales
+                         initial_conditions
                            {
                              k_Eps Champ_Uniforme 2 4.23e-3 3.740e-3
                            }
@@ -110,13 +110,13 @@ Read pb
                         sortie periodique  
                         paroi   paroi_flux_impose Champ_Front_Uniforme 1 1000.
                         }
-                conditions_initiales { Temperature Champ_Fonc_xyz dom01234 1 0. }
+                initial_conditions { Temperature Champ_Fonc_xyz dom01234 1 0. }
 		Ecrire_fichier_xyz_valeur temperature 3000. bords 1 sortie
                 }
 
 
 
-	Postraitements
+	Post_processings
 	{
 		volumique
 		{
@@ -125,7 +125,7 @@ Read pb
         		 	temperature_max Reduction_0D { methode max sources_reference { temperature_physique  } }
         		 	temperature_moy Reduction_0D { methode moyenne sources_reference { temperature_physique  } }	
         		}
- 			Sondes
+ 			Probes
 	       		{
 			    sonde_v vitesse periode 10. point     3 -0.5 0. 1.0     0. 0. 1.0   0.5 0. 1.0	
 			    sonde_t temperature periode 10. point 3 -0.5 0. 1.0     0. 0. 1.0   0.5 0. 1.0	
@@ -142,7 +142,7 @@ Read pb
 			    sonde_t_phys_moy temperature_moy periode 10. point 1     -1. 0. 1.0 	
             		}
               		format lata
-	       		Champs dt_post 150.0
+	       		fields dt_post 150.0
 	       		{
 			       vitesse elem
 			       temperature elem
@@ -181,7 +181,7 @@ Read pb
                 	      sources_reference { temperature_paroi_chauf } 
         		    }	
         		}
-			Sondes
+			Probes
 	       		{	
 			    sonde_t_phys_paroi_max 		temperature_max_paroi_chauf 		periode 10. numero_elem_sur_maitre 0
 			    sonde_t_phys_paroi_moy 		temperature_moy_paroi_chauf 		periode 10. numero_elem_sur_maitre 0
@@ -189,7 +189,7 @@ Read pb
              		}
                		format lata
 			domaine paroi_chauf
-	       		Champs dt_post 150.0
+	       		fields dt_post 150.0
 	       		{
  			       temperature_paroi_chauf
 			       temperature_max_paroi_chauf
@@ -199,7 +199,7 @@ Read pb
 		lml
 		{
 			fichier Min_Max_Champ_Paroi
-	       		Champs dt_post 150.0
+	       		fields dt_post 150.0
 	       		{
  			       temperature
 			}			

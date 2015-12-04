@@ -58,9 +58,9 @@ Trianguler_h dom_fluide
 
 Partition dom_fluide
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM2
+	zones_name DOM2
 }
 End
 END PARTITION #
@@ -98,7 +98,7 @@ Read pb2
                 convection { negligeable }
                 diffusion { negligeable }
                 
-                conditions_initiales {
+                initial_conditions {
                         vitesse Champ_Uniforme 2 0. 0.
                         }
                 boundary_conditions {
@@ -120,9 +120,9 @@ Read pb2
                         Droit paroi_flux_impose Champ_Front_uniforme 1 400
                         Bas Paroi_ADIABATIQUE
                 }
-                conditions_initiales { Temperature champ_fonc_xyz dom_fluide 1 (18.31179308*SIN(31.4159264*x)*EXP(-0.986904404*0)+400.*x) }
+                initial_conditions { Temperature champ_fonc_xyz dom_fluide 1 (18.31179308*SIN(31.4159264*x)*EXP(-0.986904404*0)+400.*x) }
         }
-        Postraitement
+        Post_processing
         {
                Definition_champs {
   			erreur Transformation {
@@ -134,7 +134,7 @@ Read pb2
 			} 
   		} 
 		format lml
-                Champs dt_post 1.
+                fields dt_post 1.
                 {
 		
 	 
@@ -142,7 +142,7 @@ Read pb2
                         temperature elem
 			
                 }
-	  Sondes
+	  Probes
                 { 
 			erreur erreur periode 2.e-3 points 1 0.025 0.025
 			T temperature periode 2.e-3 points 1 0.025 0.025

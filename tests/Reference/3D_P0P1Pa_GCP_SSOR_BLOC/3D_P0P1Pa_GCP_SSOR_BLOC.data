@@ -29,9 +29,9 @@ Corriger_frontiere_periodique { domaine dom bord perioz }
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur Tranche { tranches 1 1 2 }
+	Partition_tool Tranche { tranches 1 1 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 	periodique 3 periox perioy perioz
 }
 End
@@ -96,7 +96,7 @@ Read pb
                 convection { negligeable }
                 diffusion  { }
 				
-		conditions_initiales
+		initial_conditions
 			{
                         vitesse Champ_fonc_xyz dom 3  
 			     100*x
@@ -111,10 +111,10 @@ Read pb
 			}
 	}
 
-	Postraitement
+	Post_processing
         {     
 		format lml
-		Champs dt_post 0.001
+		fields dt_post 0.001
 			{
 			vitesse som
 			pression som

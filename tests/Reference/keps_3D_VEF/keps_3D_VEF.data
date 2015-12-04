@@ -46,9 +46,9 @@ Read SS2 {
 # BEGIN PARTITION
 Partition DOM_DOM
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End 
 END PARTITION #
@@ -105,7 +105,7 @@ Read pb
 		seuil 5.e-5 impr }
         convection { muscl }
         diffusion  { }
-        conditions_initiales
+        initial_conditions
                 {
                 vitesse Champ_Uniforme 3 0. 0. 2.
                 }
@@ -141,7 +141,7 @@ Read pb
 	      WALL paroi
 	      SYM symetrie
 	    }
-	    conditions_initiales 
+	    initial_conditions 
 	    { 
 	      K_Eps Champ_Uniforme 2 0.1 10.0 
 	    } 
@@ -167,16 +167,16 @@ Read pb
 	  Z 0.010131 A 1.20 B 0.13169 SS2                        
 	}
     }
-    Postraitement
+    Post_processing
     {       
-    	Sondes
+    	Probes
     	{
     		Segment1 vitesse Periode 0.0001
     		Segment 100 0.00197 0.05670 -0.77800 0.00197 0.05670 -0.27210
     		Segment2 vitesse Periode 0.00001
    		Segment 100 0.21703 0.05670 -0.77800 0.21703 0.05670 -0.27120
     	}
-    	Champs dt_post 0.01
+    	fields dt_post 0.01
       	{
       		vitesse 
       		viscosite_turbulente 

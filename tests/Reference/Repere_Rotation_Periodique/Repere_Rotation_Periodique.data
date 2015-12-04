@@ -17,9 +17,9 @@ Reordonner_faces_periodiques dom periox
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 	Periodique 1 periox
 }
 End
@@ -73,7 +73,7 @@ Read pb
 		{
 			Acceleration { option entrainement_seul omega Champ_fonc_t 3 0 0 1 domegadt champ_fonc_t 3 0 0 0 centre_rotation champ_fonc_t 3 0 0 -1.5 }
 		}
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Fonc_xyz dom 3 cos(x) sin(y) cos(x)*sin(y)
 			}
 		boundary_conditions {
@@ -86,14 +86,14 @@ Read pb
 			
 		}
 	}
-	Postraitement
+	Post_processing
 	{
-	       Sondes
+	       Probes
 	       {
 		       	sonde_pression pression_pa periode 0.005 circle 11 0. 0. 0. 2 0.7 0. 360.
 		       	sonde_vitesse vitesse periode 0.005 point 1 0.7 0. 0.
 	       }
-		Champs dt_post 1.
+		fields dt_post 1.
 	       { 	
   	          	pression som
 	       }

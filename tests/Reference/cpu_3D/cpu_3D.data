@@ -27,9 +27,9 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 1 }
+	Partition_tool tranche { tranches 2 1 1 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -82,7 +82,7 @@ Read pb
 		convection { quick }
 		diffusion { }
 		sources { boussinesq_temperature { T0 5. } }
-		conditions_initiales {
+		initial_conditions {
 			vitesse champ_fonc_xyz dom 3 y -x 0
 			}
 		boundary_conditions {
@@ -111,14 +111,14 @@ Read pb
 			Sud Symetrie
 			Nord Symetrie
 		}
-		conditions_initiales { Temperature Champ_Uniforme 1 5. }
+		initial_conditions { Temperature Champ_Uniforme 1 5. }
 		modele_turbulence Prandtl { Turbulence_paroi loi_standard_hydr_scalaire }
 	}
 
-	Postraitement
+	Post_processing
 	{
 		format lata
-		Champs dt_post 0.1
+		fields dt_post 0.1
 		{
 			temperature elem
 		}

@@ -17,9 +17,9 @@ Pb_Thermohydraulique pb
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 4 }
+	Partition_tool metis { Nb_parts 4 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -71,7 +71,7 @@ Read pb
 		}
 		convection { muscl }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 3 0. 0. 0.
 			}
 		boundary_conditions {
@@ -93,13 +93,13 @@ Read pb
 			INZ frontiere_ouverte_temperature_imposee 	Champ_front_Uniforme 1 1.
 			OUT frontiere_ouverte T_ext 			Champ_front_Uniforme 1 0.
                 }
-                conditions_initiales { Temperature Champ_Uniforme 1 0. }
+                initial_conditions { Temperature Champ_Uniforme 1 0. }
         }
 
-	Postraitement
+	Post_processing
 	{
 			format lata
-			Champs dt_post 1.
+			fields dt_post 1.
 			{ 
 				temperature elem
 			}

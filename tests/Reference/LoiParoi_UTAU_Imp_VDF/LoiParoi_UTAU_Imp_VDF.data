@@ -31,9 +31,9 @@ Pave Cavite
 # BEGIN PARTITION
 Partition dom_pb2
 {
-	Partitionneur tranche { tranches 2 1 1 }
+	Partition_tool tranche { tranches 2 1 1 }
 	Larg_joint 1
-	Nom_Zones dom_pb2
+	zones_name dom_pb2
 }
 End
 END PARTITION #
@@ -88,7 +88,7 @@ Read pbf
                 solveur_pression Cholesky { }
 		convection { amont }
                 diffusion {  }
-                conditions_initiales {
+                initial_conditions {
                         vitesse Champ_Uniforme 3 2 0. 0.
                         }
                 boundary_conditions {
@@ -104,13 +104,13 @@ Read pbf
 				}
         }
 
-        Postraitement {
+        Post_processing {
 		format lml
-                Sondes
+                Probes
                 {
                         coupe_He_V vitesse    periode 1.E-3   segment 10   0.05  2e-3 0.04 0.05 2e-3 0.76 
                 }
-                Champs dt_post 2
+                fields dt_post 2
                 {
                    vitesse elem
                 }

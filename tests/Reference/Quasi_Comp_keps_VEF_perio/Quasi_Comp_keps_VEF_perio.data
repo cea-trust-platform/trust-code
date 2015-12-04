@@ -19,9 +19,9 @@ Corriger_frontiere_periodique { Domaine dom Bord Perioz }
 # BEGIN PARTITION
 Partition dom
 {
-        Partitionneur tranche { tranches 1 2 1 }
+        Partition_tool tranche { tranches 1 2 1 }
         Larg_joint 2
-        Nom_Zones DOM
+        zones_name DOM
         Periodique 2 Periox Perioz
 }
 End
@@ -75,7 +75,7 @@ Read pb
 		convection { muscl }
 		diffusion { }
 		Sources { Canal_perio { bord Periox } }
-		conditions_initiales { vitesse champ_uniforme 3 80. 0. 0. }
+		initial_conditions { vitesse champ_uniforme 3 80. 0. 0. }
 		boundary_conditions
 		{
 			Periox	periodique 
@@ -96,7 +96,7 @@ Read pb
 					Bas	Paroi
 					Haut	Paroi
 				}
-                                conditions_initiales { k_Eps Champ_Uniforme 2 64. 1.4e6 }
+                                initial_conditions { k_Eps Champ_Uniforme 2 64. 1.4e6 }
 			}
 			turbulence_paroi loi_standard_hydr dt_impr_ustar 0.001
 		}
@@ -113,16 +113,16 @@ Read pb
 			Bas	paroi_temperature_imposee Champ_Front_Uniforme 1 673.
 			Haut	paroi_temperature_imposee Champ_Front_Uniforme 1 1073.
 		}
-		conditions_initiales { Temperature Champ_fonc_xyz dom 1 673. }
+		initial_conditions { Temperature Champ_fonc_xyz dom 1 673. }
 		Modele_turbulence Prandtl
 		{   
                         Turbulence_paroi loi_standard_hydr_scalaire  dt_impr_nusselt 0.001                
  		}
 	}
 
-	Postraitement
+	Post_processing
         {       
-		Sondes
+		Probes
                 {
 		  sonde_pression		pression		periode 0.0001 segment 50  0.00025 0.0 0.00025	0.00025 0.004 0.00025
 		  sonde_vitesse		nodes	vitesse			periode 0.0001 segment 50  0.00025 0.0 0.00025	0.00025 0.004 0.00025
@@ -134,7 +134,7 @@ Read pb
 		  sonde_eps		nodes	eps			periode 0.0001 segment 50  0.00025 0.0 0.00025	0.00025 0.004 0.00025
 		  sonde_visco_turb	nodes	viscosite_turbulente	periode 0.0001 segment 50  0.00025 0.0 0.00025	0.00025 0.004 0.00025
 		}
-                Champs dt_post 0.01
+                fields dt_post 0.01
 		{
 		  pression		elem
 		  vitesse		elem

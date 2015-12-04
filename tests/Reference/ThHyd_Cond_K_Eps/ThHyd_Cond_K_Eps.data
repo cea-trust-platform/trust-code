@@ -86,15 +86,15 @@ Mailler dom_fluide
 # BEGIN PARTITION
 Partition dom_solide
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 2
-	Nom_Zones DOM1
+	zones_name DOM1
 }
 Partition dom_fluide
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 2
-	Nom_Zones DOM2
+	zones_name DOM2
 }
 End
 END PARTITION #
@@ -164,7 +164,7 @@ Read Coppec
 	Convection { quick }
 	diffusion { }
 	sources { boussinesq_temperature { T0 21.0 verif_boussinesq 0 }  }
-	conditions_initiales
+	initial_conditions
 	{
 	vitesse Champ_uniforme 2 1.84 0.0
 	}
@@ -198,7 +198,7 @@ Read Coppec
 			Bas_froid frontiere_ouverte_K_Eps_impose Champ_Front_Uniforme 2 1.0e-2 4.e-2
 			Haut_froid frontiere_ouverte K_EPS_EXT Champ_Front_Uniforme 2 0.0 0.0
 			}
-		conditions_initiales
+		initial_conditions
 			{
 			k_eps Champ_Uniforme 2 1.e-2 4.e-2
 			}
@@ -212,7 +212,7 @@ Read Coppec
 	{
 	Convection { Quick }
 	diffusion { }
-	conditions_initiales
+	initial_conditions
 	{
 	temperature Champ_uniforme 1 21.0
 	}
@@ -236,15 +236,15 @@ Read Coppec
 	}
 	
 
-Postraitement
+Post_processing
 {
-	Sondes
+	Probes
 	{
 	Sonde_vitesse_sortie vitesse periode 0.01 point 1 6.247 0.1
 	}
 
 	
-	Champs dt_post 1.
+	fields dt_post 1.
 	{
 	vitesse som
 	temperature som
@@ -266,7 +266,7 @@ Read pb_solide
 	Conduction
 	{
 	diffusion { }
-	conditions_initiales { temperature champ_uniforme 1 51.0 }
+	initial_conditions { temperature champ_uniforme 1 51.0 }
 	boundary_conditions
 		{
 		Gauche_plaque paroi_temperature_imposee
@@ -280,13 +280,13 @@ Read pb_solide
 	}
 
 	
-Postraitement
+Post_processing
 {
-	Sondes
+	Probes
 	{
 		Sonde_temperature_plaque temperature periode 0.01 points 1 6.0 -0.0005
 	}
-	champs dt_post 1.
+	fields dt_post 1.
 	{
 		temperature som
 	}

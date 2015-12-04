@@ -14,9 +14,9 @@ VerifierCoin dom { }
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 4 }
+	Partition_tool metis { Nb_parts 4 }
     Larg_joint 2
-    Nom_Zones DOM
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -74,7 +74,7 @@ Read pb
 		solveur_pression Petsc Cholesky  { }
 		convection { amont }
 		diffusion {  }
-  		conditions_initiales { vitesse Champ_Uniforme 3 0. 0. 0. }
+  		initial_conditions { vitesse Champ_Uniforme 3 0. 0. 0. }
 		sources
         {
         	Boussinesq_temperature { T0 470. verif_boussinesq 0 }
@@ -91,7 +91,7 @@ Read pb
     {
 		convection { amont }
 		diffusion { }
-		conditions_initiales { temperature Champ_Uniforme 1 550. }
+		initial_conditions { temperature Champ_Uniforme 1 550. }
 		boundary_conditions
 		{
 			Inlet    frontiere_ouverte T_ext Champ_Front_Uniforme 1 400.
@@ -99,10 +99,10 @@ Read pb
 			Adiab	 paroi_adiabatique
 		}
 	}
-	Postraitement
+	Post_processing
 	{
 		format lml
-		Champs Binaire dt_post 1.
+		fields Binaire dt_post 1.
 		{
 			vitesse     som
 			vitesse     elem

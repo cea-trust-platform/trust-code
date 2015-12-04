@@ -33,8 +33,8 @@ Reordonner_Faces_Periodiques dom perioz
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 1 }
-	Nom_Zones DOM
+	Partition_tool tranche { tranches 2 1 1 }
+	zones_name DOM
 	Periodique 3 periox perioy perioz
         Larg_joint 2
 }
@@ -84,7 +84,7 @@ Read pb
                                         }   	
 		convection { EF_stab { } }
 		diffusion { }
-		conditions_initiales {  
+		initial_conditions {  
                	vitesse champ_uniforme 3 1 1 1
 		}
 		boundary_conditions {
@@ -93,15 +93,15 @@ Read pb
                    perioz periodique 
 		}
         }
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			pression pression periode 0.001 points 1 3.14 3.14 3.14
 			vitesse vitesse  periode 0.001 points 1 3.14 3.14 3.14
 			profil vitesse  periode 0.001 segment 10 0. 3.14 3.14 6.28 3.14 3.14
 		}
-		Champs dt_post 5.
+		fields dt_post 5.
 		{
 			vitesse elem	
 		}

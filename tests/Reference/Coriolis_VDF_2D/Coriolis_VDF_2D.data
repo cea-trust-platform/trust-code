@@ -24,9 +24,9 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -72,7 +72,7 @@ Read pb
                            }
                 diffusion { negligeable }
 		sources { Coriolis { omega 2 5. } }
-                conditions_initiales { 
+                initial_conditions { 
                         vitesse champ_uniforme 2 10. 0.
                         }
                 boundary_conditions {
@@ -83,16 +83,16 @@ Read pb
 
                 }
         }
-        Postraitement
+        Post_processing
         {
-                Sondes
+                Probes
                 {
                         sonde_vitx     vitesse          periode 0.0001  segment 41  0. 3.1415927   6.2831853  3.1415927  
                         sonde_vity     vitesse          periode 0.0001  segment 41  3.1415927  0.  3.1415927  6.2831853  
                         sonde_prex     pression         periode 0.0001  segment 41  0. 3.1415927   6.2831853  3.1415927  
                         sonde_prey     pression         periode 0.0001  segment 41  0.  0.         6.2831853  6.2831853  
                 }
-                Champs dt_post 0.5
+                fields dt_post 0.5
                 {
                     vitesse elem
                     vitesse som

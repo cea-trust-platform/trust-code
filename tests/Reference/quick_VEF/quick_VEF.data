@@ -14,9 +14,9 @@ VerifierCoin dom { }
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -68,7 +68,7 @@ Read pb
 		solveur_pression petsc cholesky {  quiet }
 		convection { kquick }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse champ_fonc_xyz dom 2 y -x
 			}
 		boundary_conditions {
@@ -89,14 +89,14 @@ Read pb
  			OUEST paroi_adiabatique
 			EST paroi_adiabatique
 		}
-		conditions_initiales {
+		initial_conditions {
 			temperature champ_fonc_xyz dom 1 cos(sqrt(x^2+(y+0.6)^2)/0.25)*(sqrt(x^2+(y+0.6)^2)<0.25)
 		}
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_vit vitesse periode 0.05 point 1 0. -0.6
 			sonde_tempH temperature periode 0.05 segment 11 -1.5 -0.6 1.5 -0.6
@@ -104,7 +104,7 @@ Read pb
 			sonde_temp temperature periode 1. plan 21 21 -1.5 -1.5 1.5 -1.5 -1.5 1.5
 			sonde_t temperature periode 0.05 point 1 0. -0.6
 		}
-		Champs dt_post 11.
+		fields dt_post 11.
 		{
 			pression elem
 			vitesse som

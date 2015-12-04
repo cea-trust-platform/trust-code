@@ -38,9 +38,9 @@ Trianguler_fin dom
 # BEGIN PARTITION 
 Partition dom
 {
-	Partitionneur metis { nb_parts 2 }
+	Partition_tool metis { nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -95,7 +95,7 @@ Read pb
 		convection { Ef_stab { TdivU } } # Test TdivU option, do not use without understanding the reason, see doc #
 		diffusion { }
 		sources { boussinesq_temperature { T0 26.0 } }
-		conditions_initiales { vitesse Champ_Uniforme 2 0. 0. }
+		initial_conditions { vitesse Champ_Uniforme 2 0. 0. }
 		boundary_conditions
 		{
 			Gauche1 symetrie  
@@ -120,12 +120,12 @@ Read pb
 			Droite2 paroi_adiabatique 
 			Gauche2  paroi_flux_impose Champ_Front_Uniforme 1  3125.0
 		}
-		conditions_initiales { Temperature Champ_Uniforme 1 26. }
+		initial_conditions { Temperature Champ_Uniforme 1 26. }
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{       
 			
 			sonde_temp1  temperature periode 10.0 point 1 0.025 0.125 
@@ -139,7 +139,7 @@ Read pb
 			sonde_temp9  temperature periode 10.0 point 1 0.175 0.205 
                         sonde_Y_plus Y_plus periode 10.0 segment 10 0.000 0.025 0.00 .220 
 		}
-		Champs dt_post 20.0
+		fields dt_post 20.0
 		{
 			pression elem
 			pression som

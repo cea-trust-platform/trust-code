@@ -16,9 +16,9 @@ Postraiter_domaine
 
 Partition dom
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -65,7 +65,7 @@ Read pb
 		}
 		convection { negligeable }
 		diffusion {   }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -80,9 +80,9 @@ Read pb
 		}
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 		sonde_pression pression periode 0.005 points 2 0.13 0.105 0.13 0.115
 		sonde_vitesse vitesse periode 0.005 points 2 0.14 0.105 0.14 0.115
@@ -90,7 +90,7 @@ Read pb
                 sonde_vitesse_ter vitesse periode 1e-5 position_like sonde_vitesse
 
 		}
-		Champs dt_post 1.3
+		fields dt_post 1.3
 		{
 			pression elem
 			vitesse elem

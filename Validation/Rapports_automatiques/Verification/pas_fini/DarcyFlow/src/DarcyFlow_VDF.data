@@ -11,9 +11,9 @@ Read_file dom conic_Pb1.geom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -66,7 +66,7 @@ Read pb
 			Darcy { porosite 0.4 modele_K ErgunDarcy { diametre 1.5e-3 } } ,
 			Forchheimer { porosite 0.4 Cf 1. modele_K ErgunForchheimer { diametre 1.5e-3 } }
 		}	 
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 3 0.0 0.2 0.0
                	}
                 boundary_conditions {
@@ -75,14 +75,14 @@ Read pb
 			Bord paroi_fixe
                 }
         }
-        Postraitement
+        Post_processing
         {
-                Sondes
+                Probes
                 {
 			sonde_vitesse 		nodes 	vitesse periode 0.0001 point 1 0.08 0.10 0.08 
                         segment_pression 	grav	pression_pa periode 0.0001 segment 50 0.08 0.05 0.08 0.08 0.20 0.08
                 }
-                format lata Champs dt_post 0.1
+                format lata fields dt_post 0.1
                 {
                         pression_pa elem
                 }

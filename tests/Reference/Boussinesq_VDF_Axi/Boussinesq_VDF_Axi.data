@@ -113,9 +113,9 @@ Postraiter_domaine
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -173,7 +173,7 @@ Read pb
 		diffusion { }
 		sources { boussinesq_temperature { T0 2900. } }
 		
-		conditions_initiales
+		initial_conditions
 		{
 			vitesse Champ_Uniforme 2 0. 0.
 		}
@@ -195,7 +195,7 @@ Read pb
 		diffusion { }
 		sources { puissance_thermique Champ_uniforme 1 1.738e6 }
 		
-		conditions_initiales
+		initial_conditions
 		{
 			Temperature Champ_Uniforme 1 2900
 		}
@@ -210,10 +210,10 @@ Read pb
 	}
 	
 	
-	Postraitement
+	Post_processing
 	{
 		Format lml
-		Champs dt_post 10.
+		fields dt_post 10.
 		{
 			vitesse elem
 			temperature elem

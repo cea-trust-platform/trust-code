@@ -42,15 +42,15 @@ Read Suz1900 { Fichier Suz1900 }
 # BEGIN PARTITION
 Partition dom_pb1
 {
-	Partitionneur tranche { tranches 2 1 1 }
+	Partition_tool tranche { tranches 2 1 1 }
 	Larg_joint 1
-	Nom_Zones DOM1
+	zones_name DOM1
 }
 Partition dom_pb2
 {
-	Partitionneur tranche { tranches 2 1 1 }
+	Partition_tool tranche { tranches 2 1 1 }
 	Larg_joint 2
-	Nom_Zones DOM2
+	zones_name DOM2
 }
 End
 END PARTITION #
@@ -115,7 +115,7 @@ Read pb1
 	Conduction
 	{
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			temperature Champ_Uniforme 1 20.
 			}
                 sources {
@@ -132,9 +132,9 @@ Read pb1
 			raccord5             paroi_echange_contact_vdf  pb2 raccord5 temperature -4. 
 		}
 	}
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 			sonde_Tpuits        temperature periode 1.E-5   points 4
                            .44  .01  2.
@@ -142,7 +142,7 @@ Read pb1
                            .44  .01  8.
                            .44  .01  11.
 		}
-		Champs dt_post 500.
+		fields dt_post 500.
 		{
 		   temperature elem
 		}
@@ -163,7 +163,7 @@ Read pb2
 		convection { quick }
 		diffusion { }
 		sources { boussinesq_temperature { T0 20. } }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 3 0. 0. 0.
 			}
 		boundary_conditions {
@@ -179,7 +179,7 @@ Read pb2
 	{
 		diffusion { }
 		convection { quick }
-		conditions_initiales {
+		initial_conditions {
 			temperature Champ_Uniforme 1 20.
 			}
 		boundary_conditions {
@@ -189,8 +189,8 @@ Read pb2
 			raccord5      paroi_echange_contact_vdf  pb1 raccord5     temperature -4. 
                                    }
 	}
-	Postraitement {
-		Sondes
+	Post_processing {
+		Probes
 		{
 			sonde_Vair         vitesse periode 1.E-5 points 4
                         .46 .01  2. 
@@ -208,7 +208,7 @@ Read pb2
                         .84 .01  8. 
                         .84 .01  11. 
 		}
-		Champs dt_post 500.
+		fields dt_post 500.
 		{
                    vitesse elem
 		   temperature elem

@@ -64,7 +64,7 @@ Read pb
 
        convection { negligeable }
        diffusion  {  }
-       conditions_initiales {  vitesse Champ_Fonc_xyz dom0 3 80*y*(2-y) 0. 0. }
+       initial_conditions {  vitesse Champ_Fonc_xyz dom0 3 80*y*(2-y) 0. 0. }
        boundary_conditions { 
                    perio  periodique 
 		   perioz periodique 
@@ -87,7 +87,7 @@ Sources
 						bas  paroi
 						haut paroi
                                                 }
-                             conditions_initiales { k_eps Champ_Uniforme 2 0.1 0.1 }
+                             initial_conditions { k_eps Champ_Uniforme 2 0.1 0.1 }
                             }
         turbulence_paroi loi_standard_hydr dt_impr_ustar 0.1 nut_max 1.
        } 
@@ -97,11 +97,11 @@ Sources
 
 }            
 
- Postraitement 
+ Post_processing 
          { 
 	 format lml
            
-            Champs dt_post 0.1
+            fields dt_post 0.1
             { 
              vitesse elem
 	     k elem

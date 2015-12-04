@@ -40,9 +40,9 @@ Mailler dom_pb
 # BEGIN PARTITION
 Partition dom_pb
 {
-	Partitionneur tranche { tranches 2 1 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -79,7 +79,7 @@ Read pb
 		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1e-13 }
 		convection { quick }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -91,9 +91,9 @@ Read pb
                         gauche paroi_fixe
 		}
         }
-	Postraitement
+	Post_processing
 	{
-                Champs dt_post 100000.
+                fields dt_post 100000.
 		{
 		   pression elem
 		   vitesse som

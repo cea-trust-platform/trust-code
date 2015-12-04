@@ -10,9 +10,9 @@ Read_file DOM_EXTR DOM_EXTR.geom
 # BEGIN PARTITION
 Partition DOM_EXTR
 {
-	Partitionneur Tranche { Tranches 1 2 1 }
+	Partition_tool Tranche { Tranches 1 2 1 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 	periodique 1 PERIO
 }
 End 
@@ -61,7 +61,7 @@ Read pb
 	solveur_pression GCP { precond ssor { omega 1.4 } seuil 1.e-10 impr }
         convection { muscl }
         diffusion  { }
-        conditions_initiales
+        initial_conditions
                 {
                 vitesse Champ_Uniforme 3 0.01 0. 0.
                 }
@@ -84,7 +84,7 @@ Read pb
 	      PERIO periodique  
 	      paroi paroi
 	    }
-	    conditions_initiales 
+	    initial_conditions 
 	    { 
 	      K_Eps Champ_Uniforme 2 1.e-6 1.e-9
 	    } 
@@ -97,10 +97,10 @@ Read pb
 	Ecrire_fichier_xyz_valeur vitesse 100. bords 1 PERIO	
 	Ecrire_fichier_xyz_valeur K_Eps 100. bords 1 PERIO		
     }
-    Postraitement
+    Post_processing
     {       
     	   format lml
-	   Champs dt_post 10.
+	   fields dt_post 10.
       	   {
       		   vitesse elem 
       		   K elem  

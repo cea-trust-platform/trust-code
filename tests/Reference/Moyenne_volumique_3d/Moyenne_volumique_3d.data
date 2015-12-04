@@ -27,13 +27,13 @@ mailler dom_post {
 
 # BEGIN PARTITION 
 Partition dom {
-	partitionneur metis { Nb_parts 4 }
+	Partition_tool metis { Nb_parts 4 }
 	larg_joint 1
-	Nom_Zones dom
+	zones_name dom
 }
 Partition dom_post {
-	partitionneur metis { Nb_parts 4 }
-	Nom_Zones dom_post
+	Partition_tool metis { Nb_parts 4 }
+	zones_name dom_post
 }
 End
 END PARTITION #
@@ -86,7 +86,7 @@ Read pb
 		}
 		diffusion { }
 		convection { amont }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 3 0. 0. 0.
 			}
 		boundary_conditions {
@@ -107,14 +107,14 @@ Read pb
 			sortie frontiere_ouverte T_ext Champ_Front_Uniforme 1 0.
 			obstacle paroi_flux_impose Champ_Front_Uniforme 1 1.
 		}
-		conditions_initiales {
+		initial_conditions {
 			Temperature Champ_Fonc_xyz dom 1 y+(x>0.4)*(x<0.7)*(z>0.2)*(z<0.5)
 		}
 	}
-	Postraitement
+	Post_processing
 	{
 		format lata
-		Champs dt_post 0.1
+		fields dt_post 0.1
 		{
 			temperature elem
 			pression elem

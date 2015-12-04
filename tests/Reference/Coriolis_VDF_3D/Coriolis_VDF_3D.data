@@ -29,7 +29,7 @@ Partition dom
     PMetis
     Nb_parts 2
     Larg_joint 1
-    Nom_Zones DOM
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -75,7 +75,7 @@ Read pb
                            }
                 diffusion { negligeable }
 		sources { Coriolis { omega 3 0. 0. 5. } }
-                conditions_initiales { 
+                initial_conditions { 
                         vitesse champ_uniforme 3 10. 0. 0.
                         }
                 boundary_conditions {
@@ -88,16 +88,16 @@ Read pb
 
                 }
         }
-        Postraitement
+        Post_processing
         {
-                Sondes
+                Probes
                 {
                         sonde_vitx     vitesse          periode 0.0001  segment 41  0. 3.1415927 2. 6.2831853  3.1415927  2.
                         sonde_vity     vitesse          periode 0.0001  segment 41  3.1415927  0. 2.  3.1415927  6.2831853  2.
                         sonde_prex     pression         periode 0.0001  segment 41  0. 3.1415927 2.  6.2831853  3.1415927 2. 
                         sonde_prey     pression         periode 0.0001  segment 41  0.  0.  2.       6.2831853  6.2831853 2. 
                 }
-                Champs dt_post 0.5
+                fields dt_post 0.5
                 {
                     vitesse elem
                     vitesse som

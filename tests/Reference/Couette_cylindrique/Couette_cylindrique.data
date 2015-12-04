@@ -23,9 +23,9 @@ VerifierCoin dom { }
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -72,7 +72,7 @@ Read pb
 		solveur_pression GCP { precond ssor { omega 1.651 } seuil 1.e-12 }
 		convection { muscl }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 		}
 		boundary_conditions {
@@ -80,7 +80,7 @@ Read pb
 			cl_2 	paroi_fixe
 		}	
 	}
-	Postraitement
+	Post_processing
 	{	
 		Definition_champs {
 			solution Transformation {
@@ -92,7 +92,7 @@ Read pb
 				localisation elem
 			}  
   		}  	
-		Sondes
+		Probes
 		{
 			sonde_vorticite		vorticite 	periode 0.0001 points  1  0.0015 0.005
 			sonde_pression		pression 	periode 0.0001 segment 15 0.008  0.005 0.011 0.005
@@ -100,7 +100,7 @@ Read pb
 			sonde_solution nodes	solution 	periode 0.0001 segment 15 0.008  0.005 0.011 0.005
 			sonde_taux_cisaillement taux_cisaillement periode 0.0001 segment 15 0.008  0.005 0.011 0.005
 		}
-		Champs dt_post 0.005
+		fields dt_post 0.005
 		{
 			pression	elem
 			pression	som

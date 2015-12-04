@@ -25,9 +25,9 @@ Trianguler_h dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur Metis { Nb_parts 2 }
+	Partition_tool Metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -78,7 +78,7 @@ Read pb
                 convection { negligeable  }
                 diffusion  {  }
 			
-		conditions_initiales
+		initial_conditions
 			{
                         vitesse Champ_fonc_xyz dom 2  x-0.5 0.5-y
 			}
@@ -89,13 +89,13 @@ Read pb
 			}
 	         }
 
-	Postraitement
+	Post_processing
         	{
-                Sondes
+                Probes
                 	{ 
                         sonde_vit1  vitesse periode 0.01 points 1 0.5 0.5 
 			}
-		Champs dt_post 2.
+		fields dt_post 2.
 			{
 			vitesse elem
 			vitesse som

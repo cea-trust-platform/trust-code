@@ -109,7 +109,7 @@ XXXboundary_field|champ_frontiere
 XXXfield_channel_XXX|champ_init_canal_sinal
 XXXfield_med|champ_med
 XXXfield_ostwald|champ_ostwald
-XXXfields|champs
+fields|champs
 XXXfield_nodes_read_vefXXX|champ_som_lu_vef
 XXXfield_time_tabulated|champ_tabule_temps
 XXXfield_uniform|champ_uniforme
@@ -144,7 +144,7 @@ XXX|coeff
 XXX|condition_elements
 XXX|condition_faces
 XXX|condition_geometrique
-XXXinitial_conditions|conditions_initiales
+initial_conditions|conditions_initiales
 boundary_conditions|conditions_limites
 |conduction
 XXXconductivity|conductivite
@@ -603,7 +603,7 @@ XXXunknown_name|nom_inconnue
 XXXproblem_name|nom_pb
 XXXradiation_problem_name|nom_pb_rayonnant
 XXXsource_name|nom_source
-XXXzones_name|nom_zones
+zones_name|nom_zones
 XXXfield_names|noms_champs
 XXXnorm|norme
 XXXl2_norm|norme_l2
@@ -660,7 +660,7 @@ XXX|paroi_tble_scal
 XXXimposed_temperature_wall|paroi_temperature_imposee
 XXX|parser
 |partition
-XXXpartition_tool|partitionneur
+partition_tool|partitionneur
 XXXtime_step|pas_de_temps
 XXXsmoothing_time_step|pas_lissage
 XXXstep|pas
@@ -730,9 +730,9 @@ XXX|porosite_volumique
 XXXlift|portance
 |position
 |position_like
-XXXpost_processing|postraitement
+post_processing|postraitement
 XXXpost_processing_ft_lata|postraitement_ft_lata
-XXXpost_processings|postraitements
+post_processings|postraitements
 XXXpost_process_domain|postraiter_domaine
 XXX|potentiel_chimique_generalise
 |prandtl_eps
@@ -873,7 +873,7 @@ XXXsum|somme
 XXXweighted_sum|somme_ponderee
 XXX|sommets
 XXX|som
-XXXprobes|sondes
+probes|sondes
 XXXopen_boundary_XXX|sortie_libre_rho_variable
 XXX|source_con_phase_field
 XXX|source_constituant

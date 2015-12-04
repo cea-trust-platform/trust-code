@@ -33,8 +33,8 @@ Corriger_frontiere_periodique { Domaine dom Bord perioz }
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 1 2 1 }
-	Nom_Zones DOM
+	Partition_tool tranche { tranches 1 2 1 }
+	zones_name DOM
 	Periodique 2 periox perioz
         Larg_joint 2
 }
@@ -93,7 +93,7 @@ Read pb
                         {
                         Canal_perio { bord periox }
                         }
-		conditions_initiales
+		initial_conditions
 			{
                         vitesse Champ_fonc_xyz dom 3  -20. 0. 0. 
 			}
@@ -112,14 +112,14 @@ Read pb
 			}
  	}
 
-	Postraitement
+	Post_processing
         	{       
-                Sondes
+                Probes
                 	{ 
                         sonde_vit  vitesse periode 0.0001 segment 50	5. 0. 5.   5. 2. 5.
 			sonde_visc_turb  viscosite_turbulente periode 0.0001 segment 50	5. 0. 5.   5. 2. 5.
 			}
-		Champs dt_post 2.
+		fields dt_post 2.
 			{
 			vitesse elem
 			vitesse som

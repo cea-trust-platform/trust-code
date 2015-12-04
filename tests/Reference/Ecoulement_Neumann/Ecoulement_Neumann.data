@@ -45,7 +45,7 @@ Read pb
                 }
                 convection { EF_stab { volumes_etendus } }
                 diffusion  { negligeable }
-		conditions_initiales
+		initial_conditions
 			{
                         vitesse Champ_fonc_xyz dom 2  0. 0. 
 			}
@@ -58,12 +58,12 @@ Read pb
 			}
 	}
 
-	Postraitements
+	Post_processings
         {
 	     lata {
 		     fichier Ecoulement_Neumann
 		     format lata
-		     Champs dt_post 1.e-1
+		     fields dt_post 1.e-1
 		     {
 			     vitesse elem
 			     pression elem
@@ -73,7 +73,7 @@ Read pb
 	     lml {
 		     fichier Ecoulement_Neumann
 		     format lml
-		     Champs dt_post 1.e-1
+		     fields dt_post 1.e-1
 		     {
 			     vitesse elem
 			     pression elem

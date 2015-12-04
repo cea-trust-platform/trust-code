@@ -16,10 +16,10 @@ Read pbmed2
   {
     crit.med dom 
       { 
-        postraitement 
+        Post_processing 
           { 
             format lata
-            champs  dt_post 1e-09   {  fct elem  }
+            fields  dt_post 1e-09   {  fct elem  }
           }
       }
   }
@@ -28,9 +28,9 @@ Read pbmed
   {
     crit.med dom 
       { 
-        postraitement 
+        Post_processing 
           { 
-            champs  dt_post 1e-09   {   fct elem }
+            fields  dt_post 1e-09   {   fct elem }
           }
       }
   }

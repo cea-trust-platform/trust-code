@@ -13,9 +13,9 @@ Read_file dom tube_3D.geom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -61,7 +61,7 @@ Read pb
 		solveur_pression GCP { precond ssor { omega 1.65 } seuil 1.e-12 }
 		convection { amont }
 		diffusion { }
-		conditions_initiales 
+		initial_conditions 
 		        {
 			vitesse Champ_Uniforme 3 0.00 0.0 0.1
 			}
@@ -74,15 +74,15 @@ Read pb
 		}
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 		   sonde_vit1 vitesse  periode 1.e-5 segment 10 0. 0. 0. 0. 0. 0.1
 		   sonde_vit2 vitesse  periode 1.e-5 segment 15 0. -0.01 0.08 0. 0.01 0.08
 	           sonde_pre1 pression periode 1.e-5 segment 10 0. 0.0 0. 0. 0.0 0.1
 		}
-		Champs dt_post 0.1
+		fields dt_post 0.1
 		{		
 			vitesse
 	                pression	

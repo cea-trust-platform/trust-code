@@ -27,9 +27,9 @@ Pave Cavite
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 1 2 }
+	Partition_tool tranche { tranches 1 2 }
 	Larg_joint 1
-	Nom_Zones DOM
+	zones_name DOM
 	Periodique 1 periox
 }
 End
@@ -72,7 +72,7 @@ Read pb
 		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-8 impr }	
 		convection { negligeable  }
 		diffusion {  }
-		conditions_initiales {
+		initial_conditions {
 			vitesse champ_init_canal_sinal  2 { Ucent 0.5 h 1.0 ampli_bruit 0. ampli_sin 0. omega 2. }
 			}
 		sources { Canal_perio { bord periox } }
@@ -83,9 +83,9 @@ periox periodique
 		}
      }
 	      
-	Postraitement
+	Post_processing
 	{
-	     Sondes
+	     Probes
 	          {
 	           	sonde_pression pression periode 0.001 points 1 0.05 0.15  
 			sonde_vit40 vitesse periode 0.05 segment 20   2. 0.05   2. 1.95 
@@ -126,7 +126,7 @@ periox periodique
                                 }
                         }			
 		}
-		Champs dt_post 4.0
+		fields dt_post 4.0
 		{
 			pression som			
 			pression elem			

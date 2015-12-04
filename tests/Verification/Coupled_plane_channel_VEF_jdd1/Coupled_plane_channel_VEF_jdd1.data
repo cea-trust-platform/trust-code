@@ -19,15 +19,15 @@ Transformer dom_solide 100*x y z
 # BEGIN PARTITION
 Partition dom_solide
 {
-	Partitionneur Tranche { Tranches 2 1 1 }
+	Partition_tool Tranche { Tranches 2 1 1 }
 	Larg_joint 2
-	Nom_Zones DOM2
+	zones_name DOM2
 }
 Partition dom_fluide
 {
-	Partitionneur Tranche { Tranches 2 1 1 }
+	Partition_tool Tranche { Tranches 2 1 1 }
 	Larg_joint 2
-	Nom_Zones DOM1
+	zones_name DOM1
 }
 End
 END PARTITION #
@@ -112,7 +112,7 @@ Read pb_Th
      		solveur_pression GCP { precond ssor { omega 1.651 } seuil 1.e-11 } 
 		convection { muscl }
 		diffusion { }
-		conditions_initiales { vitesse champ_uniforme 3 80. 0. 0. }
+		initial_conditions { vitesse champ_uniforme 3 80. 0. 0. }
 		boundary_conditions
 		{
 			Entree		frontiere_ouverte_vitesse_imposee	Champ_Front_Uniforme 3 80. 0. 0.
@@ -136,7 +136,7 @@ Read pb_Th
 					Haut		Paroi
 					Bas		Paroi
 				}
-                                conditions_initiales { k_Eps Champ_Uniforme 2 302. 6.61e6 }
+                                initial_conditions { k_Eps Champ_Uniforme 2 302. 6.61e6 }
 			}
 			turbulence_paroi loi_standard_hydr dt_impr_ustar 1.e-2
 		}
@@ -154,16 +154,16 @@ Read pb_Th
 			Haut		paroi_contact pb_C Haut
 			Bas		paroi_contact pb_C Bas
 		}
-		conditions_initiales { Temperature Champ_Uniforme 1 673. }
+		initial_conditions { Temperature Champ_Uniforme 1 673. }
 		Modele_turbulence Prandtl
 		{   
                         Turbulence_paroi loi_standard_hydr_scalaire  dt_impr_nusselt 1.e-2
  		}
 	}
 
-	Postraitement
+	Post_processing
         {       
-		Sondes
+		Probes
                 {
 		  sonde_pression			pression		periode 0.001 segment 50  0.025 0.0   0.00025  0.025 0.004 0.00025
 
@@ -186,7 +186,7 @@ Read pb_Th
 		  sonde_eps			nodes	eps			periode 0.001 segment 50  0.025 0.0   0.00025  0.025 0.004 0.00025
 		  sonde_visco_turb		nodes	viscosite_turbulente	periode 0.001 segment 50  0.462 0.0   0.00025  0.462 0.004 0.00025
 		}
-                format lml Champs dt_post 0.01
+                format lml fields dt_post 0.01
 		{
 		  pression		elem
 		  pression		som
@@ -212,7 +212,7 @@ Read pb_C
 	{
 		diffusion { }
 		sources { Puissance_Thermique champ_uniforme 1 163626000 }
-		conditions_initiales { temperature Champ_Uniforme 1 673. }
+		initial_conditions { temperature Champ_Uniforme 1 673. }
 		boundary_conditions
 		{
 			Wall_bas	paroi_adiabatique
@@ -221,9 +221,9 @@ Read pb_C
 			Bas		paroi_contact pb_Th Bas
 		}
 	}
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 		  sonde_temperature_sol_entree	nodes	temperature		periode 0.001 segment 50  0.0	-0.004 0.001	       0.0   0.008 0.001
 		  sonde_temperature_sol_1tiers	nodes	temperature		periode 0.001 segment 50  0.154 -0.004 0.001	       0.154 0.008 0.001
@@ -231,7 +231,7 @@ Read pb_C
 		  sonde_temperature_sol_sortie	nodes	temperature		periode 0.001 segment 50  0.462 -0.004 0.001	       0.462 0.008 0.001
 		}
 		
-		format lml Champs dt_post 0.01
+		format lml fields dt_post 0.01
 		{
 		  temperature		elem
 		  temperature		som

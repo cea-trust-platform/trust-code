@@ -26,9 +26,9 @@ Tetraedriser_homogene dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur Metis { Nb_parts 2 }
+	Partition_tool Metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -80,7 +80,7 @@ Read pb
 			
                 Sources { Source_Qdm Champ_fonc_xyz dom 3 2*x 0 0
                         }
-		conditions_initiales
+		initial_conditions
 			{
                         vitesse Champ_fonc_xyz dom 3  0.  0. 0. 
 			}
@@ -92,11 +92,11 @@ Read pb
 			}
 	         }
 
-	Postraitements
+	Post_processings
 	{
 		lml
         	{  
-                Sondes
+                Probes
                 	{ 
 			sonde_gradient_pression	gradient_pression periode 0.0001 segment 10 0. 0.5 0.5 1. 0.5 0.5
 			sonde_vitesse	vitesse	periode 0.0001	segment 10 0. 0.5 0.5 1. 0.5 0.5
@@ -104,7 +104,7 @@ Read pb
 			}
 		format lml
 		fichier 3DPimp0X
-		Champs dt_post 0.1
+		fields dt_post 0.1
 			{
 			pression elem
 			pression som
@@ -114,7 +114,7 @@ Read pb
         	{  
 		format lata
 		fichier 3DPimp0X
-		Champs dt_post 0.1
+		fields dt_post 0.1
 			{
 			vitesse elem
 			vitesse som

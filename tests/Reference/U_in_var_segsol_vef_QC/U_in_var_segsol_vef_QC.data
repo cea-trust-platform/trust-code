@@ -26,9 +26,9 @@ Trianguler_h dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur Tranche { tranches 2 1 }
+	Partition_tool Tranche { tranches 2 1 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -91,7 +91,7 @@ Read pb
 
 		convection { negligeable }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -111,11 +111,11 @@ Read pb
 		 Sortie frontiere_ouverte T_ext Champ_Front_Uniforme 1 283.15 
 
 		}
-		 conditions_initiales { Temperature Champ_Uniforme 1 283.15 }
+		 initial_conditions { Temperature Champ_Uniforme 1 283.15 }
 	}
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 		 seg_P pression periode 0.1 segment 20 0.025 0.5 0.975 0.5
 		 seg_U1 vitesse periode 0.1 segment 11 0. 0.5 1.0 0.5
@@ -124,7 +124,7 @@ Read pb
 		 sonde_vitesse  vitesse periode 0.1 points 1 0.5 0.5
 		}
 		Format lml
-		Champs dt_post 50.
+		fields dt_post 50.
 		{
 			pression elem
 			pression som

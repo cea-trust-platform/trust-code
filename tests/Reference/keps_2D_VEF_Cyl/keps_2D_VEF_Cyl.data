@@ -19,9 +19,9 @@ Read zone1
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -75,7 +75,7 @@ Read pb
 		}
 		convection { muscl }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse champ_fonc_xyz dom 2 y -x
 			}
 		boundary_conditions {
@@ -91,7 +91,7 @@ Read pb
                                         CERCLE paroi
                                         INTER symetrie
                                 }
-                                conditions_initiales {
+                                initial_conditions {
                                         k_Eps Champ_Uniforme_Morceaux dom 2
 					    { defaut 0. 0 zone1 0.1 0.01 }
                                 }
@@ -100,9 +100,9 @@ Read pb
                 } 
 	}
 
-	Postraitement
+	Post_processing
 	{
-		Sondes
+		Probes
 		{
 		s1 k periode 0.0001 point 3 -1.494 -0.077 -1.442 -0.103 -1.39 -0.128
 		s2 eps periode 0.0001 point 3 -1.494 -0.077 -1.442 -0.103 -1.39 -0.128
@@ -111,7 +111,7 @@ Read pb
 			plan_eps eps periode 0.0001 plan 20 20 -1.5 -1.5 1.5 -1.5 -1.5 1.5
 			plan_nut viscosite_turbulente periode 0.0001 plan 20 20 -1.5 -1.5 1.5 -1.5 -1.5 1.5
 		}
-		Champs dt_post 0.007
+		fields dt_post 0.007
 		{
 			pression elem
 			pression som

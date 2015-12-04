@@ -72,7 +72,7 @@ Read pb_plenum {
 
     diffusion { negligeable }
     
-    conditions_initiales { vitesse champ_uniforme 2 0. 0. }
+    initial_conditions { vitesse champ_uniforme 2 0. 0. }
 
     boundary_conditions {
       paroi    paroi_fixe
@@ -89,7 +89,7 @@ Read pb_plenum {
 
     diffusion { negligeable }
 
-    conditions_initiales { Temperature  champ_uniforme 1 673. }
+    initial_conditions { Temperature  champ_uniforme 1 673. }
 
     boundary_conditions {
       paroi    Paroi_adiabatique
@@ -99,9 +99,9 @@ Read pb_plenum {
                
     }
  }
- Postraitement {
+ Post_processing {
       format lata
-      Champs binaire dt_post 0.2 {
+      fields binaire dt_post 0.2 {
 	pression elem
 	pression_pa elem
 	vitesse faces

@@ -68,7 +68,7 @@ Partition canal0
 	Tranche 2 1 1
 	Nb_parts 2
 	Larg_joint 1
-	Nom_Zones DOM0
+	zones_name DOM0
         PERIODIQUE_1PROC 2 periox0 perioz0 0 2
 }
 Partition canal1
@@ -76,7 +76,7 @@ Partition canal1
 	Tranche 1 2 1
 	Nb_parts 2
 	Larg_joint 1
-	Nom_Zones DOM1
+	zones_name DOM1
         PERIODIQUE_1PROC 2 perioy1 perioz1 1 2
 }
 Partition canal2
@@ -84,7 +84,7 @@ Partition canal2
 	Tranche 1 1 2
 	Nb_parts 2
 	Larg_joint 1
-	Nom_Zones DOM2
+	zones_name DOM2
         PERIODIQUE_1PROC 2 periox2 perioz2 0 2
 }
 End
@@ -171,7 +171,7 @@ Read pb1
 			{
 			Canal_perio { bord periox0 }
 			}
-		conditions_initiales
+		initial_conditions
 			{
 			vitesse champ_init_canal_sinal 3 
 				{
@@ -200,12 +200,12 @@ Read pb1
 			}
 		}
 
-	Postraitements
+	Post_processings
         {     
 		first_post
 		{
 			format lml
-			Champs dt_post 0.5 { vitesse elem vorticite som }
+			fields dt_post 0.5 { vitesse elem vorticite som }
 			Statistiques dt_post 0.5
 			{
 				t_deb 0. t_fin 2.
@@ -219,7 +219,7 @@ Read pb1
 		{
 			format lml
 			fichier Complique_Post_Meshtv
-			Champs dt_post 0.1 { pression elem vitesse elem vorticite som }
+			fields dt_post 0.1 { pression elem vitesse elem vorticite som }
                 	Statistiques_en_serie dt_integr 0.1
                 	{
 				t_deb 0. t_fin 2.
@@ -231,7 +231,7 @@ Read pb1
 		troisieme_post
 		{
 			fichier Complique_Post_lml
-			Champs dt_post 0.1 { pression elem vitesse elem vorticite som }
+			fields dt_post 0.1 { pression elem vitesse elem vorticite som }
                 	Statistiques_en_serie dt_integr 0.1
                 	{
 				t_deb 0. t_fin 2.
@@ -263,7 +263,7 @@ Read pb2
 			{
 			Canal_perio { bord perioy1 }
 			}
-		conditions_initiales
+		initial_conditions
 			{
 			vitesse champ_init_canal_sinal 3 
 				{
@@ -293,12 +293,12 @@ Read pb2
 		}
 
 
-	Postraitements
+	Post_processings
         {     
 		first_post
 		{
 			format lml
-			Champs dt_post 0.5 { vitesse elem vorticite som }
+			fields dt_post 0.5 { vitesse elem vorticite som }
 			Statistiques dt_post 0.5
 			{
 				t_deb 0. t_fin 2.
@@ -312,7 +312,7 @@ Read pb2
 		{
 			format lml
 			fichier Complique_Post_Meshtv
-			Champs dt_post 0.1 { pression elem vitesse elem vorticite som }
+			fields dt_post 0.1 { pression elem vitesse elem vorticite som }
                 	Statistiques_en_serie dt_integr 0.1
                 	{
 				t_deb 0. t_fin 2.
@@ -324,7 +324,7 @@ Read pb2
 		troisieme_post
 		{
 			fichier Complique_Post_lml
-			Champs dt_post 0.1 { pression elem vitesse elem vorticite som }
+			fields dt_post 0.1 { pression elem vitesse elem vorticite som }
                 	Statistiques_en_serie dt_integr 0.1
                 	{
 				t_deb 0. t_fin 2.
@@ -357,7 +357,7 @@ Read pb3
 			{
 			Canal_perio { bord perioz2 }
 			}
-		conditions_initiales
+		initial_conditions
 			{
 			vitesse champ_init_canal_sinal 3 
 				{
@@ -386,12 +386,12 @@ Read pb3
 			}
 		}
 
-	Postraitements
+	Post_processings
         {     
 		first_post
 		{
 			format lml
-			Champs dt_post 0.5 { vitesse elem vorticite som }
+			fields dt_post 0.5 { vitesse elem vorticite som }
 			Statistiques dt_post 0.5
 			{
 				t_deb 0. t_fin 2.
@@ -405,7 +405,7 @@ Read pb3
 		{
 			format lml
 			fichier Complique_Post_Meshtv
-			Champs dt_post 0.1 { pression elem vitesse elem vorticite som }
+			fields dt_post 0.1 { pression elem vitesse elem vorticite som }
                 	Statistiques_en_serie dt_integr 0.1
                 	{
 				t_deb 0. t_fin 2.
@@ -417,7 +417,7 @@ Read pb3
 		troisieme_post
 		{
 			fichier Complique_Post_lml
-			Champs dt_post 0.1 { pression elem vitesse elem vorticite som }
+			fields dt_post 0.1 { pression elem vitesse elem vorticite som }
                 	Statistiques_en_serie dt_integr 0.1
                 	{
 				t_deb 0. t_fin 2.

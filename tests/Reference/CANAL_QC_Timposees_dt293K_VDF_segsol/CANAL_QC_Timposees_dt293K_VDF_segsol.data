@@ -32,9 +32,9 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur tranche { tranches 1 4 1 }
+	Partition_tool tranche { tranches 1 4 1 }
 	Larg_joint 2
-	Nom_Zones canalQCdt20K
+	zones_name canalQCdt20K
 	Periodique 2 periox perioz
 }
 End
@@ -122,7 +122,7 @@ Read pb
 	    { 
 	     Canal_perio { bord periox } 
 	    }	
-	   conditions_initiales 
+	   initial_conditions 
 	    {
              vitesse champ_init_canal_sinal 3  { Ucent 10.06 h 0.0149  ampli_sin 0. omega 2. ampli_bruit 0.0 dir_wall 1 dir_flow 0 }
             }
@@ -140,7 +140,7 @@ Read pb
             diffusion { }
             convection { amont }
             Sources {	}	
-	    conditions_initiales { Temperature Champ_Uniforme 1 400. }
+	    initial_conditions { Temperature Champ_Uniforme 1 400. }
 	    boundary_conditions 
              {
                periox periodique 
@@ -150,16 +150,16 @@ Read pb
 	     }
         }
 
-	Postraitement
+	Post_processing
         {
-            Sondes
+            Probes
              { 
                sonde_vit vitesse periode 0.00005 segment 121  0.0469 0. 0.0234 0.0469 0.02984 0.0234
                sonde_temp temperature periode 0.00005 segment 121	0.0469 0. 0.0234 0.0469 0.02984 0.0234 
 	     }
 		
 	    Format lml
-       	    Champs dt_post 0.01
+       	    fields dt_post 0.01
              {
                vitesse elem
                masse_volumique elem

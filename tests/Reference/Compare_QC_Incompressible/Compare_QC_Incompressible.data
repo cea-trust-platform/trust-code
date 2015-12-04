@@ -62,9 +62,9 @@ Trianguler_H dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partitionneur metis { Nb_parts 2 }
+	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	Nom_Zones DOM
+	zones_name DOM
 }
 End
 END PARTITION #
@@ -105,7 +105,7 @@ Read pb
 		solveur_pression cholesky { }
 		convection { Amont }
 		diffusion { }
-		conditions_initiales {
+		initial_conditions {
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
@@ -121,13 +121,13 @@ Read pb
 			 Entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  1. 0.
 		}
 	}
-	Postraitement 
+	Post_processing 
 	{
-	       Sondes 
+	       Probes 
 	       {
 		       sonde_vitesse vitesse periode 0.01 points 1 10. 0.5
 	       }
-	       Champs dt_post 20.
+	       fields dt_post 20.
 	       {
 			       pression_pa elem
 			       vitesse elem
