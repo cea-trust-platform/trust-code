@@ -191,7 +191,7 @@ un_postraitement objet_lecture nul 0 An object of post-processing (with name).
   attr post corps_postraitement post 0 Definition of the post-processing.
 postraitements listobj postraitements -1 un_postraitement 0 Keyword to use several results files. List of objects of post-processing (with name).
 type_un_post objet_lecture nul 0 not_set
-  attr type chaine(into=["postraitement"]) type 0 not_set
+  attr type chaine(into=["postraitement","post_processing"]) type 0 not_set
   attr post un_postraitement post 0 not_set
 postraitement_ft_lata postraitement_base postraitement_ft_lata 0 not_set
   attr bloc chaine bloc 0 not_set
