@@ -50,7 +50,7 @@ public:
 
   void associer(const Zone_dis& ,const Zone_Cl_dis& );
   void init_lois_paroi_();
-  void imprimer_premiere_ligne_ustar(int boundaries_, const LIST(Nom)& boundaries_list, const Nom& nom_fichier_, const LIST(Nom)& nlistbord_dom) const;
+  void imprimer_premiere_ligne_ustar(int boundaries_, const LIST(Nom)& boundaries_list, const Nom& nom_fichier_) const;
   void imprimer_ustar_mean_only(Sortie&, int, const LIST(Nom)&, const Nom& ) const;
 
   /**

@@ -200,7 +200,6 @@ int Mod_turb_hyd_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
                   exit();
                 }
             }
-          loipar.imprimer_premiere_ligne_ustar(boundaries_, boundaries_list, nom_fichier_, nlistbord_dom);
         } // fin dt_impr_ustar_mean_only
       else
         {
@@ -360,7 +359,8 @@ int Mod_turb_hyd_base::preparer_calcul()
   int res = 1;
   if (loipar.non_nul())
     res = loipar.init_lois_paroi();
-
+  if (boundaries_list.size()>0)
+    loipar.imprimer_premiere_ligne_ustar(boundaries_, boundaries_list, nom_fichier_);
   return res;
 }
 
