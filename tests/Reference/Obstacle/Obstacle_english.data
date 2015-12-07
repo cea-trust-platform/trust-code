@@ -76,20 +76,11 @@ Read pb
 			vitesse Champ_Uniforme 2 0. 0.
 			}
 		boundary_conditions {
-			Gauche paroi_fixe
-			Droit paroi_fixe
-			Bas2  paroi_fixe
-			Haut3  paroi_fixe
-			Haut1 symetrie
-			Bas1  symetrie
-			Haut2 symetrie
-			Bas3  symetrie
-		      	Bas4  symetrie
-			Haut4 symetrie
-			Sortie frontiere_ouverte_pression_imposee 
-			    Champ_front_Uniforme 1 0.
-			Entree frontiere_ouverte_vitesse_imposee 
-			    Champ_front_Uniforme 2 1. 0.
+			Square  paroi_fixe
+			Upper   symetrie
+			Lower   symetrie
+			Outlet  frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
+			Inlet   frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 2 1. 0.
 		}
 
 	}

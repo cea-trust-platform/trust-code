@@ -47,9 +47,9 @@ RegroupeBord dom Wall \{ Left1 Bottom3 Right1 Right2 Right3 Left3 \}
 # BEGIN PARTITION
 Partition dom
 \{
-    Partitionneur tranche \{ tranches 2 1 \}
+    Partition_tool tranche \{ tranches 2 1 \}
     Larg_joint 2
-    Nom_Zones DOM
+    zones_name DOM
 \}
 End
 END PARTITION #
@@ -90,7 +90,7 @@ Read pb
         {\bf{solveur_pression Petsc Cholesky \{ \} }}
         {\bf{convection \{ muscl \} }}
         diffusion \{ \}
-        conditions_initiales \{ vitesse Champ_Uniforme 2 1. 1. \}
+        initial_conditions \{ vitesse Champ_Uniforme 2 1. 1. \}
         boundary_conditions \{
             Inlet   frontiere_ouverte_vitesse_imposee Champ_Front_Fonc_txyz 2 (1-((y-0.025)/0.005)^2)*(t<0.5)  0.
             Wall    paroi_fixe
@@ -105,12 +105,12 @@ Read pb
             Wall    paroi
             Outlet  frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
         \}
-        conditions_initiales \{ concentration Champ_Uniforme 1 0.5 \}
+        initial_conditions \{ concentration Champ_Uniforme 1 0.5 \}
         sources \{ source_Constituant champ_fonc_fonction 1 concentration 0 \}
     \}
-    Postraitement
+    Post_processing
     \{
-        Sondes
+        Probes
         \{
             sonde_pres pression periode 0.01 points 1 0.45 0.45
             sonde_vit  vitesse periode 0.01 points 1 0.4 0.45
@@ -119,7 +119,7 @@ Read pb
             sonde_velocity_inlet vitesse periode 0.01 segment 5 0 0.021 0 0.029
         \}
         format lata
-        Champs dt_post 0.1
+        fields dt_post 0.1
         \{
             pression elem
             pression som

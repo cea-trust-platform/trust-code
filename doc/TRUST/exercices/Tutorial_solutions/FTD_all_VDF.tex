@@ -42,9 +42,9 @@ Mailler DOM
 # BEGIN PARTITION
 Partition DOM
 \{
-    Partitionneur tranche \{ tranches 2 1 1 \}
+    Partition_tool tranche \{ tranches 2 1 1 \}
     Larg_joint 2
-    Nom_Zones DOM
+    zones_name DOM
 \}
 End
 END PARTITION #
@@ -126,7 +126,7 @@ Read pb
         solveur_pression GCP \{ precond ssor \{ omega 1.5 \} seuil 1e-12 impr \}
         convection           \{ quick \}
         diffusion            \{ \}
-        conditions_initiales \{ vitesse champ_uniforme 3 0. 0. 0. \}
+        initial_conditions \{ vitesse champ_uniforme 3 0. 0. 0. \}
         # Relation beetween Navier Stokes equation and interface equations #
         # The velocity field moves the gas-liquid interface #
         equation_interfaces_proprietes_fluide interf 
@@ -147,7 +147,7 @@ Read pb
         # from the Navier Stokes equation #
         methode_transport vitesse_interpolee hydraulique
         # Initial position of the water-gas interface and a drop of water #
-        conditions_initiales 
+        initial_conditions 
         \{
             fonction z-0.03-((x-0.02)^2+(y-0.02)^2)*10 ,
             fonction ajout_phase0 (x-0.02)^2+(y-0.02)^2+(z-0.045)^2-(0.01)^2 {\bf{,}}
@@ -189,7 +189,7 @@ Read pb
     body
     \{
         # Initial position of the moving body #
-        conditions_initiales 
+        initial_conditions
             \{ fonction -(((x-0.02))^2+((y-0.02)/0.6)^2+((z-0.02)/0.6)^2-(0.015^2)) \}
         remaillage 
         \{
@@ -216,7 +216,7 @@ Read pb
     \{
         diffusion \{ negligeable \}
         convection \{ quick \}
-        conditions_initiales \{ concentration champ_fonc_xyz DOM 1 
+        initial_conditions \{ concentration champ_fonc_xyz DOM 1 
                                     EXP(-((x-0.02)^2+(y-0.02)^2+(z-0.03)^2)/0.03^2) \}
         boundary_conditions 
         \{
@@ -225,7 +225,7 @@ Read pb
             bas   paroi
         \}
     \}
-    Postraitement
+    Post_processing
     \{
         Definition_champs 
         \{
@@ -254,7 +254,7 @@ Read pb
                 \}
             \}
         \}
-        Sondes 
+        Probes 
         \{
             vitesse vitesse periode 1.e-7 point 1 0.02 0.02 0.03
             pression pression periode 1.e-7 point 1 0.02 0.02 0.03
@@ -262,7 +262,7 @@ Read pb
             energie_cinetique energie_cinetique_hydro periode 1.e-7 point 1 0.02 0.02 0.03
         \}
         {\bf{format lata}}
-        {\bf{Champs dt_post 0.01 }}
+        {\bf{fields dt_post 0.01 }}
         \{
             {\bf{indicatrice_interf elem}}
             {\bf{concentration elem}}
@@ -278,8 +278,8 @@ Read pb
             nom_fichier liquid_gas
             format binaire
             print
-            champs sommets \{ vitesse \}
-            champs elements
+            fields sommets \{ vitesse \}
+            fields elements
             \{
                 distance_interface_elem_interf
                 distance_interface_elem_body

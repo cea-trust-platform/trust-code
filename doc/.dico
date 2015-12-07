@@ -758,10 +758,10 @@
  Polynome Polynome Polynome.h
  Porosites Porosites Porosites.h
  Porosites_champ Porosites_champ Porosites_champ.h
- Postraitement Postraitement Postraitement.h
- Postraitements Postraitements Postraitements.h
+ Postraitements|Post_processings Postraitements Postraitements.h
  Postraitement_base Postraitement_base Postraitement_base.h
  Postraitement_lata Postraitement_lata Postraitement_lata.h
+ Postraitement|Post_processing Postraitement Postraitement.h
  Postraiter_domaine Postraiter_domaine Postraiter_domaine.h
  PrecisionGeom PrecisionGeom PrecisionGeom.h
  Precond Precond Precond.h
@@ -833,8 +833,8 @@
  Schema_Backward_Differentiation_base Schema_Backward_Differentiation_base Schema_Backward_Differentiation_base.h
  Schema_Backward_Differentiation_order_2 Schema_Backward_Differentiation_order_2 Schema_Backward_Differentiation_order_2.h
  Schema_Backward_Differentiation_order_3 Schema_Backward_Differentiation_order_3 Schema_Backward_Differentiation_order_3.h
- Schema_Euler_explicite Schema_Euler_explicite Schema_Euler_explicite.h
- Schema_Euler_Implicite Schema_Euler_Implicite Schema_Euler_Implicite.h
+ Schema_euler_explicite|Scheme_euler_explicit Schema_Euler_explicite Schema_Euler_explicite.h
+ Schema_euler_implicite|Scheme_euler_implicit Schema_Euler_Implicite Schema_Euler_Implicite.h
  Schema_Explicite_Multi_TimeStep_base Schema_Explicite_Multi_TimeStep_base Schema_Explicite_Multi_TimeStep_base.h
  Schema_Implicite_base Schema_Implicite_base Schema_Implicite_base.h
  Schema_Implicite_Multi_TimeStep_base Schema_Implicite_Multi_TimeStep_base Schema_Implicite_Multi_TimeStep_base.h
@@ -876,8 +876,8 @@
  Solv_Petsc Solv_Petsc Solv_Petsc.h
  Solv_Petsc_GPU Solv_Petsc_GPU Solv_Petsc.h
  Sonde Sonde Sonde.h
- Sondes Sondes Sondes.h
  Sondes_Int Sondes_Int Sondes_Int.h
+ Sondes|Probes Sondes Sondes.h
  Sonde_Int Sonde_Int Sonde_Int.h
  Sortie_Fichier_base Sortie_Fichier_base Sortie_Fichier_base.h
  Sortie_libre_temperature_imposee_H Neumann_sortie_libre_Temp_H Neumann_sortie_libre_Temp_H.h

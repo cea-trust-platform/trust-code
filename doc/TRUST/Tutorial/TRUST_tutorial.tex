@@ -101,7 +101,7 @@
 %	TITLE PAGE
 %----------------------------------------------------------------------------------------
 %\title[Short title]{Long title}
-\title[TRUST tutorial v1.7.1]{TRUST tutorial v1.7.1} % The short title appears at the bottom of every slide, the full title is only on the title page
+\title[TRUST tutorial v1.7.2]{TRUST tutorial v1.7.2} % The short title appears at the bottom of every slide, the full title is only on the title page
 
 %\author{John Smith} % Your name
 \institute[CEA/DEN/DANS/DM2S/STMF] % Your institution as it will appear on the bottom of every slide, may be shorthand to save space
@@ -160,16 +160,16 @@ CEA Saclay \\ % Your institution for the title page
 \begin{block}{}
 
 \begin{itemize}
-\item First, initialize the TRUST environment. On CEA Saclay PCs, TRUST versions are available with (e.g. X.Y.Z=1.7.1):\\
+\item First, initialize the TRUST environment. On CEA Saclay PCs and callisto cluster, TRUST versions are available with (e.g. X.Y.Z=1.7.2):\\
 \vspace{0.2cm}
 \textbf{source  /home/triou/env\_TRUST\_X.Y.Z\_patch.sh}
 \vspace{0.5cm}
 
-\item Second, several editors (vi, emacs, nedit) are configured to highlight TRUST keywords in the data files. If you prefer using \textbf{nedit}, please do the following:
+\item Second, several editors (vim, emacs, nedit) can be configured to highlight TRUST keywords in the data files. If you prefer using \textbf{nedit}, please do the following:
 
     \begin{itemize}
     \item [$\circ$] Run \textbf{nedit}, and select Preferences $\rightarrow$ Save Defaults.
-    \item [$\circ$] Then re-initialize the TRUST environment (cf first point), the message "nedit.rc updated" should appear.
+    \item [$\circ$] Then run \textbf{trust -config\index{trust -config} nedit}, the message "nedit.rc updated" should appear.
     \end{itemize}
 \end{itemize}
 
@@ -265,12 +265,12 @@ CEA Saclay \\ % Your institution for the title page
     \textbf{trust -doc \&\index{trust -doc \&}}
     \vspace{0.1cm}
 
-    \item [$\circ$] Add the keyword "\textbf{format lata\index{format lata}}" inside the block, just before the keyword \textbf{Champs} in order to use the post processing tool VisIt during and/or after the calculation.
+    \item [$\circ$] Add the keyword "\textbf{format lata\index{format lata}}" inside the block, just before the keyword \textbf{fields} in order to use the post processing tool VisIt during and/or after the calculation.
     \vspace{0.1cm}
 
     \item [$\rightarrow$] You have access to useful resources in the \$TRUST\_ROOT/index.html file with your favourite browser (eg: firefox). Take few minutes to find test case examples containing a particular keyword thanks to the \underline{Keywords} link: \\
-    \textbf{firefox \$TRUST\_ROOT/index.html} \\
-    or \textbf{trust -index\index{trust -index}}\\
+    \textbf{firefox \$TRUST\_ROOT/index.html \&} \\
+    or \textbf{trust -index \&\index{trust -index \&}}\\
     \end{itemize}
 \end{itemize}
 
@@ -467,10 +467,10 @@ The goal of this exercise is to introduce parallelism in the data file of the pr
 \begin{itemize}
 \item In this file, uncomment the block around the \textbf{Partition} keyword.
     \begin{itemize}
-    \item [$\circ$] Here, the partitioning tool \textbf{Tranche\index{Tranche}} is used. We cut in 2 bands according to X axis and 1 band according to Y axis. 
+    \item [$\circ$] Here, the partitioning tool \textbf{Metis\index{Metis}} is used. We cut in \textbf{nb\_parts\index{nb\_parts}} blocks, here in 2.
     \item [$\circ$] The overlapping width \textbf{Larg\_joint\index{Larg\_joint}} between two parts of the partition should be defined according to the numerical scheme higher order, generally the convective scheme. Its value is generally 1 for the two order scheme, and 2 for the three or four-order scheme like Quick\index{quick} scheme.
     \item [$\circ$] In VEF, you should use \textbf{2} for \textbf{Larg\_joint\index{Larg\_joint}} except when partitioning a domain where only the conduction equation will be solved.
-    \item [$\circ$] At least, the keyword \textbf{Nom\_Zones\index{Nom\_Zones}} is useful to define the name of the files containing the partitioned mesh and to write these files.
+    \item [$\circ$] At least, the keyword \textbf{zones\_name\index{zones\_name}} is useful to define the name of the files containing the partitioned mesh and to write these files.
     \item [$\circ$] Notice the presence of the keyword \textbf{End} in the "Partition" block: the code will stop to read the dta file at this point!
     \end{itemize}
 
@@ -573,7 +573,7 @@ also visualize a field only on a selected part (block) with the menu Control $\r
 
 \item For the first one, you can modify:
     \begin{itemize} 
-    \item [$\circ$] the file exemple.data and run \textbf{make\_PAR.data}. But it will \underline{erase} the DEC\_exemple.data, SEQ\_exemple.data and PAR\_exemple.data files and create new ones. Then it will run the new DEC\_exemple.data file which gives your new ***.Zones files \underline{or},
+    \item [$\circ$] the file exemple.data and run \textbf{make\_PAR.data}. But it will \underline{erase} the DEC\_exemple.data, SEQ\_exemple.data and PAR\_exemple.data files and create new zones. Then it will run the new DEC\_exemple.data file which gives your new ***.Zones files \underline{or},
     \item [$\circ$] the meshing part of file DEC\_exemple.data and run it with:\\
     \textbf{trust DEC\_exemple.data} \\
     \end{itemize}
@@ -632,13 +632,13 @@ You will run it like:\\
 \begin{block}{}
 
 \begin{itemize}
-\item Log onto the cluster callisto and initialize the TRUT version: \\
+\item Log on to the cluster callisto and initialize the TRUT version: \\
 \vspace{0.2cm}
 {\small{
 \textbf{ssh -X login@callisto-login1(.intra.cea.fr)} \\
-\textbf{source /panfs/ixion/home/triou/TRUST-X\_Y\_Z/TRUST/env/env\_TRUST.sh}\\
+\textbf{source /panfs/ixion/home/triou/TRUST/TRUST\_X.Y.Z/env\_TRUST.sh}\\
 or 
-\textbf{source /home/triou/env\_TRUST\_X\_Y\_Z.sh}\\
+\textbf{source /home/triou/env\_TRUST\_X.Y.Z\_patch.sh}\\
 }}
 \vspace{0.2cm}
 
@@ -684,7 +684,7 @@ or
 \item Submit the job with: \textbf{sbatch sub\_file}
 \vspace{0.2cm}
 
-\item Check the state of the job with: \textbf{"squeue"} or \textbf{"squeue $|$ grep login"}
+\item Check the state of the job with: \textbf{"squeue"} or \textbf{"squeue -u login"}
 \vspace{0.2cm}
 
 \item You could run VisIt from the cluster but it is not recommanded. But you can run VisIt on your PC and access/visualize the result file on callisto cluster, with File $\rightarrow$ Open File and select callisto in the localhost menu.
@@ -807,7 +807,7 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 
 \item Accelerate the calculation by impliciting the diffusion operators of each equation with \textbf{diffusion\_implicite\index{diffusion\_implicite}} option in the explicit Euler scheme (check again the User's manual: \textbf{trust -doc \&\index{trust -doc \&}}). Run the calculation.
 
-\item \label{schema_impl} Use a full implicit scheme now (suppress \textbf{diffusion\_implicite\index{diffusion\_implicite}}), by substituting \textbf{Schema\_Euler\_Explicite} by \textbf{Schema\_Euler\_implicite\index{schema\_euler\_implicite}} and adding the \textbf{Implicite} solver. Have a look at the User's manual for the \textbf{gmres\index{gmres}} options and define accordingly to the advices given into the User's manual, a value for \textbf{facsec\index{facsec}, facsec\_max\index{facsec\_max}}. You block will looks like:\\
+\item \label{schema_impl} Use a full implicit scheme now (suppress \textbf{diffusion\_implicite\index{diffusion\_implicite}}), by substituting \textbf{Scheme\_Euler\_Explicit} by \textbf{Schema\_Euler\_implicite\index{schema\_euler\_implicite}} and adding the \textbf{Implicite} solver. Have a look at the User's manual for the \textbf{gmres\index{gmres}} options and define accordingly to the advices given into the User's manual, a value for \textbf{facsec\index{facsec}, facsec\_max\index{facsec\_max}}. You block will looks like:\\
 \textbf{Solveur Implicite\index{Solveur Implicite} \{ solveur gmres\index{gmres} \{ diag seuil 1e-30 nb\_it\_max 5 impr \}  seuil\_convergence\_implicite\index{seuil\_convergence\_implicite} 0.01  \} }
 
 \item Run the calculation.
@@ -1143,13 +1143,13 @@ Upper and lower walls: No slip wall ($U=0$) and non-porous wall ($\partial C_i/\
 
 \item Run the calculation to see if it is ok.
 
-\item Define a sub domain (in grey on the previous picture) with the keyword \textbf{Sous\_Zone\index{Sous\_Zone}} (like in PCR data file).
+\item Define a sub domain (in grey on the previous picture) with the keyword \textbf{Sous\_Zone\index{Sous\_Zone}} (like in \textbf{PCR} data file).
 
 \item Add a source term for the second constituent only ($S_2=1m^{-3}$) applied on the sub domain thanks to the keyword \textbf{Champ\_Uniforme\_Morceaux\index{Champ\_Uniforme\_Morceaux}}.
 
 \item Add \textbf{format lata\index{format lata}} in te post-processing block.
 
-\item Add the keyword \textbf{concentration0, concentration1, concentration2} in the \textbf{Champs} of the post-processing block to write the 3 concentrations into the .lata results file.
+\item Add the keyword \textbf{concentration0, concentration1, concentration2} in the \textbf{fields} of the post-processing block to write the 3 concentrations into the .lata results file.
 
 \item Run the calculation and check the results.
 \end{itemize}
@@ -1200,9 +1200,9 @@ Goals:
 \begin{itemize}
 \item First initialize TrioCFD environnement :\\
 {\small{
-\textbf{source /home/triou/env\_TrioCFD\_X\_Y\_Z(\_patch).sh }\\
+\textbf{source /home/triou/env\_TrioCFD\_X.Y.Z\_patch.sh }\\
 \textbf{echo \$exec} \\
-\textbf{export TrioCFD\_ROOT=\`\,dirname \$exec \`} \\
+\textbf{export TrioCFD\_ROOT=\`\,dirname \$exec\`} \\
 \textbf{echo \$TrioCFD\_ROOT} \\
 }}
 
@@ -1336,9 +1336,9 @@ Outlet: $P_0=0$
 \begin{itemize}
 \item First initialize TrioCFD environnement :\\
 {\small{
-\textbf{source /home/triou/env\_TrioCFD\_X\_Y\_Z(\_patch).sh }\\
+\textbf{source /home/triou/env\_TrioCFD\_X.Y.Z\_patch.sh }\\
 \textbf{echo \$exec} \\
-\textbf{export TrioCFD\_ROOT=\`\,dirname \$exec \`} \\
+\textbf{export TrioCFD\_ROOT=\`\,dirname \$exec\`} \\
 \textbf{echo \$TrioCFD\_ROOT} \\
 }}
 
@@ -1439,7 +1439,7 @@ Outlet: $P_0=0$
 
 \begin{itemize}
 \item Source the TRUST environnement:\\
-\textbf{source /home/triou/env\_TRUST\_X\_Y\_Z(\_patch).sh}
+\textbf{source /home/triou/env\_TRUST\_X.Y.Z\_patch.sh}
 \item Copy the study named \textbf{diagonale}. This test case deals with a 2D flow with Navier Stokes and the equation for one constituent.
 \item Edit the data file and modify the fluid characteristics to the previous ones ($\mu, \rho, D$).
 \item We want to modify the geometry of this problem to the previous picture. So we want to create 3 blocks like:
@@ -1575,7 +1575,7 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
     \begin{itemize}
     \item [$\circ$] change the \textbf{trianguler\index{trianguler}} keyword to \textbf{trianguler\_h\index{Trianguler\_H}}, 
     \item [$\circ$] or use the \textbf{VerifierCoin\index{VerifierCoin}} keyword. For this, after this first error you must find a "diagonale\_VEF.decoupage\_som" file in your directory, so you can use it by adding:\\
-    \textbf{VerifierCoin dom \{ lire\_fichier diagonale\_VEF.decoupage\_som \} }\\
+    \textbf{VerifierCoin dom \{ read\_file diagonale\_VEF.decoupage\_som \} }\\
     just after "trianguler\index{trianguler} dom". This will subdivides inconsistent 2D/3D cells used with VEFPreP1B\index{VEFPreP1B} discretization (cf User's Manual).
     \end{itemize}
 
@@ -1639,7 +1639,7 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 
 \begin{itemize}
 \item First initialize TrioCFD environnement :\\
-\textbf{source /home/triou/env\_TrioCFD\_X\_Y\_Z(\_patch).sh }\\
+\textbf{source /home/triou/env\_TrioCFD\_X.Y.Z\_patch.sh }\\
 \textbf{echo \$exec} 
 
 \item Copy the study named \textbf{FTD\_all\_VDF}: \textbf{trust -copy\index{trust -copy} FTD\_all\_VDF}
@@ -2456,8 +2456,8 @@ or in parallel with:\\
 {\footnotesize{
 \textbf{mkdir \, -p \, $\sim$/test/yourname/gmsh} \\
 \textbf{cd \, $\sim$/test/yourname/gmsh} \\
-\textbf{source /home/triou/env\_TrioCFD\_X\_Y\_Z(\_patch).sh }\\
-\textbf{export TrioCFD\_ROOT=\`\,dirname \$exec \`} \\
+\textbf{source /home/triou/env\_TrioCFD\_X.Y.Z\_patch.sh }\\
+\textbf{export TrioCFD\_ROOT=\`\,dirname \$exec\`} \\
 \textbf{echo \$TrioCFD\_ROOT} \\
 \textbf{dir=\$TrioCFD\_ROOT/validation/share/Validation/Rapports\_automatiques/Validant} \\
 \textbf{cp \, \$dir/pas\_fini/Drag/src/shape.geo \, file.geo} \\
@@ -2660,7 +2660,7 @@ Note that in Xprepro, we dig a geometry in an initial block of matter.
 \item Create a directory:\\
 \textbf{mkdir \, -p \, $\sim$/test/yourname/Xprepro/exo1} \\
 \textbf{cd \, $\sim$/test/yourname/Xprepro/exo1} \\
-\textbf{source /home/triou/env\_TRUST\_X\_Y\_Z(\_patch).sh }\\
+\textbf{source /home/triou/env\_TRUST\_X.Y.Z\_patch.sh }\\
 \textbf{Xprepro \&} 
 \end{itemize}
 
@@ -2849,7 +2849,7 @@ The radius of the cylinders is 0.2m and the distances between cylinders are 0.2m
 \item Create a directory: Run Xprepro in the TRUST environment:\\
 \textbf{mkdir \, -p \, $\sim$/test/yourname/Xprepro/exo2} \\
 \textbf{cd \, $\sim$/test/yourname/Xprepro/exo2} \\
-\textbf{source /home/triou/env\_TRUST\_X\_Y\_Z(\_patch).sh }\\
+\textbf{source /home/triou/env\_TRUST\_X.Y.Z\_patch.sh }\\
 \textbf{Xprepro \&} 
 \end{itemize}
 

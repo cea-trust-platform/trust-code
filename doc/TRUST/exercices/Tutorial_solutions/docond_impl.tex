@@ -77,15 +77,15 @@ Postraiter_domaine \{ format lata fichier dom.lata domaines \{ dom_solide dom_fl
 # BEGIN PARTITION
 Partition dom_solide
 \{
-    Partitionneur tranche \{ tranches 3 1 \}
+    Partition_tool tranche \{ tranches 3 1 \}
     Larg_joint 1
-    Nom_Zones DOM1
+    zones_name DOM1
 \}
 Partition dom_fluide
 \{
-    Partitionneur tranche \{ tranches 3 1 \}
+    Partition_tool tranche \{ tranches 3 1 \}
     Larg_joint 1
-    Nom_Zones DOM2
+    zones_name DOM2
 \}
 End
 END PARTITION #
@@ -128,7 +128,7 @@ Read pb1
     Conduction
     \{
         diffusion \{ \}
-        conditions_initiales \{ temperature Champ_Uniforme 1 30. \}
+        initial_conditions \{ temperature Champ_Uniforme 1 30. \}
         boundary_conditions
         \{
             Gauche1 paroi_temperature_imposee   Champ_Front_Uniforme 1 40.
@@ -139,9 +139,9 @@ Read pb1
             Droit2  paroi_temperature_imposee   Champ_Front_Uniforme 1 20.
         \}
     \}
-    Postraitement
+    Post_processing
     \{
-        Sondes
+        Probes
         \{
             sonde_tsol temperature periode 1. points 2     0.15 0.55     0.55 0.15 
         \}
@@ -159,7 +159,7 @@ Read pb1
             \}
         \}
         {\bf{Format lata}}
-        Champs dt_post 20.+2.*t
+        fields dt_post 20.+2.*t
         \{
             temperature_elem_dom_solide
             temperature_som_dom_solide
@@ -176,7 +176,7 @@ Read pb2
         convection \{ amont \}
         diffusion \{ \}
         sources \{ boussinesq_temperature \{ T0 30. \} \}
-        conditions_initiales \{ vitesse Champ_Uniforme 2 0. 0. \}
+        initial_conditions \{ vitesse Champ_Uniforme 2 0. 0. \}
         boundary_conditions \{
             Entree frontiere_ouverte_vitesse_imposee    Champ_front_Uniforme 2 0. -0.01
             Sortie frontiere_ouverte_pression_imposee   Champ_front_Uniforme 1 0.
@@ -199,11 +199,11 @@ Read pb2
             Haut2  paroi_contact pb1  Haut2
             Droit2 paroi_temperature_imposee    Champ_front_Uniforme 1 20.
         \}
-        conditions_initiales \{ Temperature Champ_Uniforme 1 30. \}
+        initial_conditions \{ Temperature Champ_Uniforme 1 30. \}
     \}
-    Postraitement
+    Post_processing
     \{
-        Sondes
+        Probes
         \{
             sonde_pression  pression periode 1.     points 1    0.55 0.55
             sonde_vitesse   vitesse periode 1.      points 1    0.55 0.55
@@ -228,7 +228,7 @@ Read pb2
             \}
         \}
         {\bf{Format lata}}
-        Champs dt_post 20.+2.*t
+        fields dt_post 20.+2.*t
         \{
             pression elem
             pression som

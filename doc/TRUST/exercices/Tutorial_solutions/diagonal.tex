@@ -45,9 +45,9 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 \{
-    Partitionneur tranche \{ tranches 2 1 \}
+    Partition_tool tranche \{ tranches 2 1 \}
     Larg_joint 2
-    Nom_Zones DOM
+    zones_name DOM
 \}
 End
 END PARTITION #
@@ -74,9 +74,9 @@ Read fluide
     beta_co Champ_Uniforme 1 0.
 \}
 Constituant c1
-{\bf{Lire c1 \{ coefficient_diffusion Champ_Uniforme 1 1.e-09 \} }}
+{\bf{Read c1 \{ coefficient_diffusion Champ_Uniforme 1 1.e-09 \} }}
 Champ_Uniforme gravite
-{\bf{Lire gravite 2 0 -9.81}}
+{\bf{Read gravite 2 0 -9.81}}
 Associate fluide gravite
 Associate pb dom
 Associate pb sch
@@ -94,7 +94,7 @@ Read pb
         \}
         {\bf{convection \{ quick \} }}
         diffusion \{ \}
-        {\bf{conditions_initiales \{ vitesse Champ_Uniforme 2 0. 0. \} }}
+        {\bf{initial_conditions \{ vitesse Champ_Uniforme 2 0. 0. \} }}
         boundary_conditions \{
             {\bf{Inlet   frontiere_ouverte_vitesse_imposee Champ_Front_Fonc_txyz 2 }}
                                                 {\bf{(1-((y-0.025)/0.005)^2)*(t<0.5)  0.}}
@@ -111,12 +111,12 @@ Read pb
             {\bf{Wall    paroi}}
             {\bf{Outlet  frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.}}
         \}
-        {\bf{conditions_initiales \{ concentration Champ_Uniforme 1 0. \} }}
+        {\bf{initial_conditions \{ concentration Champ_Uniforme 1 0. \} }}
         sources \{ source_Constituant champ_fonc_fonction 1 concentration 0 \}
     \}
-    Postraitement
+    Post_processing
     \{
-        Sondes
+        Probes
         \{
             sonde_pres pression periode 0.01 points 1 0.45 0.45
             sonde_vit vitesse periode 0.01 points 1 0.4 0.45
@@ -125,7 +125,7 @@ Read pb
             {\bf{sonde_velocity_inlet vitesse periode 0.01 segment 5 0 0.021 0 0.029}}
         \}
         format lata
-        Champs dt_post 0.1
+        fields dt_post 0.1
         \{
             pression elem
             pression som

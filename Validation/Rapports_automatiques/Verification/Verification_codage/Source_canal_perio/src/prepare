@@ -1,4 +1,10 @@
 
+if [ "$TRUST_DISABLE_PETSC" = "1" ]
+then
+   echo "Disabling petsc in std.data"
+   grep -v petsc std.data > p.data
+   mv p.data std.data
+fi
 
 
 sed "s/champ_uniforme 2 1. 0./ champ_uniforme 2 2 0./;s/bord periox/ bord periox debit_impose 2./" std.data >  debit.data

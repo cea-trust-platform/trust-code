@@ -11,9 +11,9 @@ Read_file Obstacle.geo ;
 # BEGIN PARTITION 
 Partition dom 
 \{ 
-    Partitionneur metis \{ tranches 2 1 \} 
+    Partition_tool metis \{ nb_parts 2 \} 
     Larg_joint 2 
-    Nom_Zones DOM 
+    zones_name DOM 
 \} 
 End 
 END PARTITION # 
@@ -62,7 +62,7 @@ Read pb
         convection \{ quick \} 
         diffusion \{ \} 
         # Uniform initial condition for velocity # 
-        conditions_initiales \{ vitesse Champ_Uniforme 2 0. 0. \}
+        initial_conditions \{ vitesse Champ_Uniforme 2 0. 0. \}
         # Boundary conditions # 
         boundary_conditions 
         \{ 
@@ -74,10 +74,10 @@ Read pb
         \} 
     \} 
     # Post processing block # 
-    Postraitement 
+    Post_processing
     \{ 
         # Probes # 
-        Sondes 
+        Probes 
         \{ 
             sonde_pression  pression     periode 0.005   points 2 0.13 0.105 0.13 0.115 
             sonde_vitesse   vitesse      periode 0.005   points 2 0.14 0.105    0.14 0.115 
@@ -90,7 +90,7 @@ Read pb
         \} 
         # Fields # 
         format lata 
-        Champs dt_post 0.5 
+        fields dt_post 0.5 
         \{ 
             pression elem 
             pression som 

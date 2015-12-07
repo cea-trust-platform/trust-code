@@ -15,9 +15,9 @@ Reordonner_faces_periodiques dom perioz
 # BEGIN PARTITION
 Partition dom
 \{
-    Partitionneur metis \{ Nb_parts 2 \}
+    Partition_tool metis \{ Nb_parts 2 \}
     Larg_joint 2
-    Nom_Zones DOM
+    zones_name DOM
     Periodique 1 perioz
 \}
 End
@@ -80,7 +80,7 @@ Read pb
                 centre_rotation Champ_Fonc_t     3 0. 0. 0. 
             \} 
         \}
-        conditions_initiales 
+        initial_conditions
         \{
             {\bf{vitesse champ_fonc_reprise P1toP1Bulle_pb.xyz  pb  vitesse  last_time }}
         \}
@@ -94,20 +94,20 @@ Read pb
             {\bf{Entree frontiere_ouverte_vitesse_imposee    Champ_front_Uniforme 3 1. 0. 0. #}}
         \}
     \}
-    Postraitement
+    Post_processing
     \{
         Definition_champs
         \{
             Energie_cinetique_fluide predefini \{ pb_champ pb energie_cinetique \}
         \}
-            Sondes
+            Probes
             \{
                 sonde_ec Energie_cinetique_fluide periode 0.005 point 1 0.7 0. 0.
                 sonde_pression pression_pa periode 0.005 circle 11 0. 0. 0. 2 0.7 0. 360.
-               sonde_vitesse vitesse periode 0.005 point 1 0.7 0. 0.
+                sonde_vitesse vitesse periode 0.005 point 1 0.7 0. 0.
             \}
             format lata
-            Champs dt_post 1.
+            fields dt_post 1.
             \{ 
                 pression_pa som
                 vitesse faces

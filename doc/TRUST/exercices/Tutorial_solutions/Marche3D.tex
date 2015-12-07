@@ -10,9 +10,9 @@ Read_file Marche3D.geo ;
 # BEGIN PARTITION
 Partition dom
 \{
-    Partitionneur tranche \{ tranches 2 1 1 \}
+    Partition_tool tranche \{ tranches 2 1 1 \}
     Larg_joint 1
-    Nom_Zones DOM
+    zones_name DOM
 \}
 End
 END PARTITION #
@@ -48,7 +48,7 @@ Read pb
         solveur_pression cholesky \{ \}
         {\bf{convection \{ quick \} }}
         diffusion \{ \}
-        conditions_initiales \{ vitesse Champ_Uniforme 3  0. 0. 0. \}
+        initial_conditions \{ vitesse Champ_Uniforme 3  0. 0. 0. \}
         boundary_conditions \{
              Bas1 Paroi_Fixe
              Haut1 Paroi_Fixe
@@ -76,17 +76,17 @@ Read pb
             {\bf{turbulence_paroi loi_standard_hydr}}
         {\bf{\} }}
     \}
-    Postraitement 
+    Post_processing
     \{
-        Sondes 
+        Probes 
         \{
             sonde_pression pression periode 0.5 points 1 7.5 0.9 5.5
             sonde_vitesse vitesse periode 0.5 points 1 8.0 0.9 5.5
             sonde_visc viscosite_turbulente periode 0.5 points 2 7.5 0.9 5.5 7.5 1.1 4.5
             sonde_k k periode 0.5 points 2 7.5 0.9 5.5 7.5 1.1 4.5
         \}
-                format lata
-        Champs dt_post 50.
+        format lata
+        fields dt_post 50.
         \{
             {\bf{pressure elem}}
             {\bf{pression som}}

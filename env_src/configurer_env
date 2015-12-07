@@ -514,6 +514,12 @@ then
    if [ -f /proc/cpuinfo ]
    then
       TRUST_NB_PROCS=`$TRUST_Awk '/processor/ {n++} END {print n}' /proc/cpuinfo`
+      if [ -d /ccc ] || [ $HOST = callisto ]
+      then
+         #TRUST_NB_PROCS=16
+	 TRUST_NB_PROCS=8
+	 #TRUST_NB_PROCS=4
+      fi      
    fi
    echo $TRUST_NB_PROCS
    exit 0
