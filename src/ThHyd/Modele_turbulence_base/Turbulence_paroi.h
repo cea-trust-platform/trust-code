@@ -62,7 +62,7 @@ public:
   inline int calculer_hyd(Champ_Fonc_base& ,Champ_Fonc_base& );
   inline void imprimer_ustar(Sortie& ) const;
   inline void imprimer_ustar_mean_only(Sortie&, int, const LIST(Nom)&, const Nom&) const;
-  inline void imprimer_premiere_ligne_ustar(int, const LIST(Nom)&, const Nom&, const LIST(Nom)& ) const;
+  inline void imprimer_premiere_ligne_ustar(int, const LIST(Nom)&, const Nom& ) const;
   // rajout pour prendre en compte Cisaillement_paroi dans la classe
   // generique
   inline const DoubleTab& Cisaillement_paroi() const ;
@@ -172,9 +172,9 @@ inline void Turbulence_paroi::imprimer_ustar_mean_only(Sortie& os, int boundarie
 // Exception:
 // Effets de bord:
 // Postcondition:
-inline void Turbulence_paroi::imprimer_premiere_ligne_ustar(int boundaries_, const LIST(Nom)& boundaries_list, const Nom& nom_fichier_, const LIST(Nom)& nlistbord_dom ) const
+inline void Turbulence_paroi::imprimer_premiere_ligne_ustar(int boundaries_, const LIST(Nom)& boundaries_list, const Nom& nom_fichier_ ) const
 {
-  valeur().imprimer_premiere_ligne_ustar(boundaries_, boundaries_list, nom_fichier_, nlistbord_dom);
+  valeur().imprimer_premiere_ligne_ustar(boundaries_, boundaries_list, nom_fichier_);
 }
 
 // Description:

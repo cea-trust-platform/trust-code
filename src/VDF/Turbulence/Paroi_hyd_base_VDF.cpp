@@ -77,7 +77,7 @@ void Paroi_hyd_base_VDF::init_lois_paroi_()
     }
 }
 
-void Paroi_hyd_base_VDF::imprimer_premiere_ligne_ustar(int boundaries_, const LIST(Nom)& boundaries_list, const Nom& nom_fichier_, const LIST(Nom)& nlistbord_dom) const
+void Paroi_hyd_base_VDF::imprimer_premiere_ligne_ustar(int boundaries_, const LIST(Nom)& boundaries_list, const Nom& nom_fichier_) const
 {
   EcrFicPartage fichier;
   ouvrir_fichier_partage(fichier, nom_fichier_, "out");
@@ -89,18 +89,19 @@ void Paroi_hyd_base_VDF::imprimer_premiere_ligne_ustar(int boundaries_, const LI
   for (int n_bord=0; n_bord<zone_VDF.nb_front_Cl(); n_bord++)
     {
       const Cond_lim& la_cl = la_zone_Cl_VDF->les_conditions_limites(n_bord);
+      const Nom& nom_bord = la_cl.frontiere_dis().le_nom();
       if( je_suis_maitre()
-          && ( boundaries_list.contient(nlistbord_dom[n_bord]) || boundaries_list.size()==0 ) )
+          && ( boundaries_list.contient(nom_bord) || boundaries_list.size()==0 ) )
         {
           if ( sub_type(Dirichlet_paroi_fixe,la_cl.valeur()) || sub_type(Dirichlet_paroi_defilante,la_cl.valeur()) )
             {
               ligne+="\t\t\t";
-              ligne+=nlistbord_dom[n_bord];
+              ligne+=nom_bord;
             }
           else
             {
               err+="The boundary named '";
-              err+=nlistbord_dom[n_bord];
+              err+=nom_bord;
               err+="' is not of type Dirichlet_paroi_fixe or Dirichlet_paroi_defilante.\n";
               err+="So TRUST will not write his u_star means.\n\n";
             }
