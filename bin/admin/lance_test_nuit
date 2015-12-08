@@ -2902,6 +2902,7 @@ then
          error_rcb=$?
          echo "    Call git push shared TMA"
          git push --tags shared Livraison:TMA
+	 [ "$Composant" = TrioCFD ] && git push --tags shared Livraison
          error_rcb=$?
          if [ $error_rcb = 0 ]
          then  
@@ -2947,13 +2948,13 @@ then
       # Checkin et verification que tous les fichiers sont checkines
       erreur_checkin=""
       # Track again all files which were --assume-unchanged before:
-      cd $TRUST_ROOT/..
-      echo "  Call git update-index --no-assume-unchanged"
-      for unchanged in `git ls-files -v | grep '^[[:lower:]]' | awk '{print $2}'`
-      do
-         git update-index --no-assume-unchanged $unchanged
-      done
-      cd - 1>/dev/null 2>&1
+      cd $TRUST_ROOT
+      #Couverture de code genere sur l ensemble des baltiks et pas que sur TRUST donc on n ecrase pas...
+      #echo "  Call git update-index --no-assume-unchanged"
+      #for unchanged in `git ls-files -v | grep '^[[:lower:]]' | awk '{print $2}'`
+      #do
+      #   git update-index --no-assume-unchanged $unchanged
+      #done
       # Commit & Push
       echo "  Call git commit --all -m Commit for an official Release $label version."
       git commit --all -m"Commit for an official Release $label version."
@@ -3023,6 +3024,7 @@ then
             git tag $label
             echo "    Call git push shared TMA"
             git push --tags shared Livraison:TMA
+	    [ "$Composant" = TrioCFD ] && git push --tags shared Livraison
 	    # Appel du make distrib
 	    echo "    Call make distrib"
 	    make distrib

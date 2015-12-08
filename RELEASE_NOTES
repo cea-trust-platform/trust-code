@@ -1,6 +1,6 @@
 --------------------------------------------------------------------------------------------------
-Release notes version 1.7.2_beta : Enhancements, modifications and corrected bugs since version 1.7.1 :
--------------------------------------------------------------------------------------------------
+Release notes version 1.7.2 : Enhancements, modifications and corrected bugs since version 1.7.1 :
+--------------------------------------------------------------------------------------------------
 02/11/15 (TRUST)  Translation : Several keywords in .data files are now in English. All the TRUST validation forms have been updated.
 25/10/15 (TRUST)  Minor change: Option -config added to the trust script (Configure nedit, vim or emacs editor with keywords TRUST)
 20/11/15 (Kernel) New keyword : New keyword champ_front_pression_from_u + boundary_field_inward normal_value (function of time)
