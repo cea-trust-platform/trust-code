@@ -456,6 +456,12 @@ export prod
 export bigmem
 export gpu
 # See HOST_???.sh file called in TRUST.env
+if [ -f $TRUST_ROOT/env/HOST_$HOST_BUILD.sh ]
+then
+   source $TRUST_ROOT/env/HOST_$HOST_BUILD.sh
+else
+   source $TRUST_ROOT/env/HOST_default.sh
+fi
 define_soumission_batch
 
 ######################################
