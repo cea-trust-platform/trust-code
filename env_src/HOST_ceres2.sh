@@ -66,6 +66,6 @@ define_soumission_batch()
    #else
    #   mpirun="mpirun -np $NB_PROCS"
    #fi
-   mpirun="mpirun -np $NB_PROCS"
+   mpirun="mpirun -np \$SLURM_NTASKS"
    sub=SLURM
 }

@@ -96,6 +96,6 @@ define_soumission_batch()
    # 18/08/2015: avec openmpi 1.8.4 srun ne passe pas... donc on repasse a mpirun -np
    #mpirun="mpirun -np $NB_PROCS"
    # retour en arriere openmpi 1.8.3
-   mpirun="srun -n $NB_PROCS"
+   mpirun="srun -n \$SLURM_NTASKS"
    sub=SLURM
 }

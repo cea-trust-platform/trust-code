@@ -97,6 +97,6 @@ define_soumission_batch()
    # 01/07/2014: Regression when using mpirun with openmpi (very bad performance *3) so:
    # srun for everyone (even if it is slightly slower, binding ?)
    #mpirun="srun --cpu_bind=verbose,cores -n $NB_PROCS"
-   mpirun="srun -n $NB_PROCS"
+   mpirun="srun -n \$SLURM_NTASKS"
    sub=SLURM
 }

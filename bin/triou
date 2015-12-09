@@ -676,7 +676,12 @@ then
    else
       if [ "$mpirun" != "" ]
       then
-         echo "$mpirun $machinefile $exec $NOM \$SLURM_NTASKS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
+         if [ "$sub" = "SLURM" ]
+	 then
+            echo "$mpirun $machinefile $exec $NOM \$SLURM_NTASKS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
+	 else
+            echo "$mpirun $machinefile $exec $NOM $NB_PROCS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
+	 fi
       else
          echo "$TRUST_ROOT/bin/mpirun -np $NB_PROCS $machinefile $exec $NOM $NB_PROCS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
       fi

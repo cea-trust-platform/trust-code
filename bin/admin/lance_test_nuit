@@ -569,6 +569,19 @@ echo "###############################################"
 	   [ $? != 0 ] && echo "  KO rebase externalpackages"
 	   cd - 1>/dev/null 2>&1
            echo>>$rebase_log
+	   for Composant in $ComposantsGit 
+	   do
+              if [ -d $TRUST_ROOT/../Composants/$Composant ]
+              then
+                 echo "Composants/$Composant">>$rebase_log
+	         cd $TRUST_ROOT/../Composants/$Composant
+	         git rebase Livraison 1>>$rebase_log 2>&1
+	         [ $? != 0 ] && echo "  KO rebase Composants/$Composant"
+	         cd - 1>/dev/null 2>&1
+                 echo>>$rebase_log
+	      fi
+	   done
+	   cd $TRUST_ROOT
 	   git commit doc/.dico src/CMakeLists.txt src/MAIN/instancie_appel.h src/MAIN/instancie_appel_c.h -m"Commit in Kernel before git rebase master" --u=no 1>>$rebase_log 2>&1
 	   git rebase Livraison 1>>$rebase_log 2>&1
 	   rebase_error=$?
@@ -2650,16 +2663,17 @@ do
          echo " " | tee -a tmp.log
          echo "Run: konqueror $nuit_log" | tee -a tmp.log	 
       fi
-      cat tmp.log | mail_ -s \"[lance_test_nuit] Portability KO on Baltik $Composant\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+      cat tmp.log | mail_ -s \"[lance_test_nuit] Portability KO on Baltik $Composant\" $TRUST_MAIL
    fi
-   rm -f tmp.log
    echo " "
    if [ "$validation_composant" = 1 ]
    then
       echo "Release criterion: $Composant OK"
    else
       echo "Release criterion: $Composant KO"
+      cat tmp.log | mail_ -s \"[lance_test_nuit] Cible portability KO on Baltik $Composant\" $TRUST_MAIL $TRUST_PROJECT_LEADER
    fi
+   rm -f tmp.log
    [ -f $force_composant ] && validation_composant=1
    # Test sur l'ensemble des machines
    [ "$NB" -eq 0 ] && NB=-1
@@ -2992,20 +3006,38 @@ then
             # Creation de la branche depuis le tag (example: patch_XYZ depuis vX.Y.Z)
 	    echo "  Call git checkout -b $patch_new $label"
             git checkout -b $patch_new $label
-            # Positionnement de HEAD sur la branche (exemple: patch_XYZ)
-	    echo "  Call git symbolic-ref HEAD refs/heads/$patch_new"
-            git symbolic-ref HEAD refs/heads/$patch_new
-            # Push
-	    echo "  Call git push shared Maintenance"
-            git_push -all
-            # Le repo officiel pointe desormais sur la branche (exemple: patch_XYZ) # Temporary
-	    #echo "  Update $TRUST_GIT_REPOS repos on $TRUST_GIT_SERVER server"
-            #ssh triou@$TRUST_GIT_SERVER -n 'cd '$TRUST_GIT_REPOS';git symbolic-ref HEAD refs/heads/'$patch_new
+	    if [ $? != 0 ]
+	    then
+               # Positionnement de HEAD sur la branche (exemple: patch_XYZ)
+               #git symbolic-ref HEAD refs/heads/$patch_new
+	       git branch -D Maintenance
+	       git branch -m $patch_new Maintenance
+	       echo "  Call git symbolic-ref HEAD refs/heads/Maintenance"
+               git symbolic-ref HEAD refs/heads/Maintenance
+               # Push
+	       echo "  Call git push shared Maintenance"
+               git_push -all
+               # Le repo officiel pointe desormais sur la branche (exemple: patch_XYZ) # Temporary
+	       #echo "  Update $TRUST_GIT_REPOS repos on $TRUST_GIT_SERVER server"
+               #ssh triou@$TRUST_GIT_SERVER -n 'cd '$TRUST_GIT_REPOS';git symbolic-ref HEAD refs/heads/'$patch_new
+	    else
+	       echo "" | mail_ -s\"[lance_test_nuit] Error for git checkout \-b $patch_new $label in Maintenance view\" $TRUST_MAIL
+	    fi
 	    # externalpackages
+	    echo " "
+            echo "Changing the Maintenance/externalpackages view"
 	    cd externalpackages
 	    git fetch --all
 	    git checkout -b $patch_new $label
-	    git symbolic-ref HEAD refs/heads/$patch_new
+	    if [ $? != 0 ]
+	    then
+	       #git symbolic-ref HEAD refs/heads/$patch_new
+	       git branch -D Maintenance
+	       git branch -m $patch_new Maintenance
+	       git symbolic-ref HEAD refs/heads/Maintenance
+	    else
+	       echo "" | mail_ -s\"[lance_test_nuit] Error for git checkout \-b $patch_new $label in Maintenance/externalpackages view\" $TRUST_MAIL
+	    fi
 	    cd - 1>/dev/null 2>&1
 	 )
 	 echo " "
@@ -3040,8 +3072,17 @@ then
 	       echo "from `pwd`"
 	       git fetch --all
 	       git checkout -b $patch_new $label
-	       git symbolic-ref HEAD refs/heads/$patch_new
-	    fi
+	       if [ $? != 0 ]
+	       then
+	          #git symbolic-ref HEAD refs/heads/$patch_new
+	          git branch -D Maintenance
+	          git branch -m $patch_new Maintenance
+	          git symbolic-ref HEAD refs/heads/Maintenance
+	       else
+	          echo "" | mail_ -s\"[lance_test_nuit] Error for git checkout \-b $patch_new $label in Maintenance/Composants/$Composant view\" $TRUST_MAIL
+	       fi
+	       cd - 1>/dev/null 2>&1
+	    fi 
 	    echo " "
 	 done
 	 cd $WORKDIR/sourceforge/Livraison/TRUST
@@ -3120,15 +3161,18 @@ fi
 cd $TRUST_ROOT
 for dest in $ALL_DEVELOPERS_TRUST_MAIL
 do
+   echo "$MESSAGES_NUIT sent to $dest"
    if [ $livraison = 0 ]
    then
-      echo "$MESSAGES_NUIT sent to $dest"
       if [ $accord_beta = 0 ]
       then
          mail_ -s \"[Diffusion list dev TRUST] Release criteria of TRUST $new on `date '+%d/%m/%y'`\" $dest < $MESSAGES_NUIT
       else
          mail_ -s \"[Diffusion list dev TRUST] Tagged release criteria of TRUST $label_pose on `date '+%d/%m/%y'`\" $dest < $MESSAGES_NUIT
       fi
+   elif [ $livraison = 1 ]
+   then
+      mail_ -s \"[Diffusion list dev TRUST] Tagged release criteria of TRUST $label_pose on `date '+%d/%m/%y'`\" $dest < $MESSAGES_NUIT
    fi
 done
 
@@ -3152,7 +3196,7 @@ Look at ftp://$TRUST_FTP/$PUBLIC/index.html
 to read the release notes or to download TRUST distribution.
 Please, do not give the ftp address without permission.
 
-TRUST support team. mailto:$TRUST_MAIL
+TRUST support team. mailto: $TRUST_MAIL
 
 To unsubscribe: Reply to this message.
 
@@ -3219,7 +3263,7 @@ Developer notes version $next_new : Changes since version $new :
       fi
       ) &
    done
-   wait
+   #wait
    echo " "
 fi
 echo `echo ~`"/CR sent to $TRUST_MAIL"
