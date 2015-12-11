@@ -589,7 +589,7 @@ echo "###############################################"
 	   then
 	      deleted_item=deleted_item
 	      compt=10
-	      while [ $rebase_error != 0 ] && [ "$deleted_item" != "" ] && [ $comp != 0 ]
+	      while [ $rebase_error != 0 ] && [ "$deleted_item" != "" ] && [ $compt != 0 ]
 	      do
 	         let compt=$compt-1
 	         for deleted_item in `git status | awk '/deleted by them/ || /added by us/ {print $5}'`
@@ -606,7 +606,7 @@ echo "###############################################"
 	   fi
 	   if [ $rebase_error != 0 ]
 	   then
-	      cat $rebase_log | mail_ -s\"[lance_test_nuit] Error when rebasing $vue workdir. Check.\" $TRUST_PROJECT_LEADER $TRUST_MAIL
+	      cat $rebase_log | mail_ -s\"[lance_test_nuit] Error when rebasing $vue workdir. Check.\" $TRUST_MAIL #$TRUST_PROJECT_LEADER
 	   fi
 	   grep -i error $rebase_log
 	   echo "  rebase_error=$rebase_error"
@@ -1294,6 +1294,10 @@ then
    rm -f $tmp
    installation=0
    echo "  Size $package_size > "$limite_Mo"Mo KO"
+elif [ "$package_size" = 0 ]
+then
+   installation=0
+   echo "  Size $package_size >< "$limite_Mo"Mo KO"
 else
    echo "  Size $package_size < "$limite_Mo"Mo OK"
 fi
@@ -2652,8 +2656,11 @@ do
       grep "_OK" $nuit_log | tee -a tmp.log
       nb_cible=`$TRUST_Awk '/cible_OK/ {print $2}' $nuit_log`
       tot_cible=`$TRUST_Awk '/cible_OK/ {print $4}' $nuit_log`
+   else
+      validation_composant=0
    fi
    [ $tot_cible != 0 ] && [ $nb_cible != $tot_cible ] && validation_composant=0
+   [ $tot_cible = 0 ] && [ $nb_cible = 0 ] && validation_composant=0
    #if [ "`grep KO $PROJECT_ROOT/*.log | grep Info_global 2>/dev/null`" != "" ]
    if [ $KO != 0 ]
    then
@@ -3150,6 +3157,10 @@ if [ "`date '+%u'`" = 2 ] || [ $livraison = 1 ] || [ $accord_beta = 1 ]
 then
    export TRUST_SHARE="/net/dibona/users/dibona/triou"
    ALL_DEVELOPERS_TRUST_MAIL="trio_u_dev@saxifrage.saclay.cea.fr"
+   echo " " >> $MESSAGES_NUIT
+   echo "TRUST/TrioCFD support team. mailto: $TRUST_MAIL  Web: http://www-trio-u.cea.fr" >> $MESSAGES_NUIT
+   echo " " >> $MESSAGES_NUIT
+   echo "To unsubscribe from http://saxifrage:3500/wws/info/trio_u_dev list: Reply to this message." >> $MESSAGES_NUIT
 else
    export TRUST_SHARE=""
    ALL_DEVELOPERS_TRUST_MAIL=$TRUST_MAIL" "$TRUST_PROJECT_LEADER
@@ -3166,13 +3177,13 @@ do
    then
       if [ $accord_beta = 0 ]
       then
-         mail_ -s \"[Diffusion list dev TRUST] Release criteria of TRUST $new on `date '+%d/%m/%y'`\" $dest < $MESSAGES_NUIT
+         mail_ -s \"Release criteria of TRUST $new on `date '+%d/%m/%y'`\" $dest < $MESSAGES_NUIT
       else
-         mail_ -s \"[Diffusion list dev TRUST] Tagged release criteria of TRUST $label_pose on `date '+%d/%m/%y'`\" $dest < $MESSAGES_NUIT
+         mail_ -s \"Tagged release criteria of TRUST $label_pose on `date '+%d/%m/%y'`\" $dest < $MESSAGES_NUIT
       fi
    elif [ $livraison = 1 ]
    then
-      mail_ -s \"[Diffusion list dev TRUST] Tagged release criteria of TRUST $label_pose on `date '+%d/%m/%y'`\" $dest < $MESSAGES_NUIT
+      mail_ -s \"Tagged release criteria of TRUST $label_pose on `date '+%d/%m/%y'`\" $dest < $MESSAGES_NUIT
    fi
 done
 
@@ -3190,22 +3201,26 @@ then
    for dest in $ALL_USERS_TRUST_MAIL
    do
       echo "Stable release announcement sent to $dest"
-      mail_ -s \"TRUST v$new released\" $dest << EOF
-New TRUST version released (v$new).
-Look at ftp://$TRUST_FTP/$PUBLIC/index.html
-to read the release notes or to download TRUST distribution.
-Please, do not give the ftp address without permission.
+      mail_ -s \"TRUST/TrioCFD v$new released\" $dest << EOF
+TrioCFD is a programmable software for Computational Fluid Dynamics (CFD) code, 
+based on the TRUST platform (TRrio_U Software for Thermohydraulics).
+These softwares are OpenSource (license BSD).
 
-TRUST support team. mailto: $TRUST_MAIL
+New TrioCFD (previously named \"Trio_U\") version released (v$new).
+Look at http://sourceforge.net/projects/triocfd/files/  
+to read the README and to download Installer_TrioCFD.sh.
+Changes compared to the $old version are detailed in the RELEASE_NOTES file 
+attached to the TrioCFD.tar.gz archive.
 
-To unsubscribe: Reply to this message.
+New TRUST (\"Trio_U\" without Front_Tracking, Radiation, Zoom and LES models) version released (v$new).
+Look at http://sourceforge.net/projects/trust-platform/files/
+to read the README and to download Installer_TRUST.sh.
+Changes compared to the $old version are detailed in the RELEASE_NOTES file 
+attached to the TRUST_$new.tgz archive.
 
---
-*TRUST/TrioCFD support team*
-triou@cea.fr
-www-trio-u.cea.fr
-sourceforge.net/projects/trust-platform
-sourceforge.net/projects/triocfd
+TRUST/TrioCFD support team. mailto: $TRUST_MAIL  Web: http://www-trio-u.cea.fr
+
+To unsubscribe from http://saxifrage:3500/wws/info/trio_u_annonces list: Reply to this message.
 EOF
       sleep 5
    done

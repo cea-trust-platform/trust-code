@@ -15,6 +15,7 @@ then
    echo "package: "$paquet
    echo "version: "$version
 else
+   echo "Installation KO! cannot access $1: No such file"
    exit -1
 fi
 
