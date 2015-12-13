@@ -26,4 +26,4 @@ $(check): *.xml install customlauncher $(TRUST_ROOT)/RELEASE_NOTES
 	./install $(version) check
 
 clean:
-	rm -r -f $(install)* bin data current ?.* plugins/*/build $(check)
+	rm -r -f $(install)* bin data current ?.* plugins/*/build src/*.help $(check)

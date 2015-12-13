@@ -2,8 +2,6 @@ Version	Qui				Tache
 1.7.3   gauthier.fauchet@cea.fr  Reprendre Mod_turb_hyd_base.cpp limitation mut
 1.7.3   gauthier.fauchet@cea.fr  Revoir le PATH pour module load TRUST sous occigen (passer par SET)
 1.7.3   triou@cea.fr            proposer un tutorial ICoCo
-1.7.3   triou@cea.fr            en test: ajouter 16 et 32 proc pour visIt via HPCDrive dans host_ccrt.xml (see DI 3888)
-1.7.3   triou@cea.fr            revoir la configuration de Visit mode client/serveur sur curie via HPCDrive (PAS DU TOUT optimise!!!!)
 1.7.3   triou@cea.fr            Passer en job de soumission mise_a_jour_TRUST_arch sur cluster pour eviter de charger les frontales
 1.7.3   triou@cea.fr            Passer a la version Petsc 3.6... et revoir euclid + doc
 1.7.3   triou@cea.fr            Reprendre verif_cl avec branche de Marthe

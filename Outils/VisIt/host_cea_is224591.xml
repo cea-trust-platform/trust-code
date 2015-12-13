@@ -4,7 +4,7 @@
     <Field name="host" type="string">is224591</Field>
     <Field name="userName" type="string">notset</Field>
     <Field name="hostAliases" type="string"></Field>
-    <Field name="directory" type="string">/data/tmpletr/triou/installations/TRUST_1.7.1/CentOS_6_64/TRUST_1.7.1/Outils/VisIt</Field>
+    <Field name="directory" type="string">/data/tmplgls/triou/installations/TRUST_1.7.2/CentOS_6_64/TRUST_1.7.2/Outils/VisIt</Field>
     <Field name="shareOneBatchJob" type="bool">false</Field>
     <Field name="sshCommandSpecified" type="bool">true</Field>
     <Field name="sshCommand" type="stringVector">"ssh" "-X" </Field>    
