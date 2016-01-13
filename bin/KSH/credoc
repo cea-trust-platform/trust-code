@@ -78,22 +78,6 @@ echo "-> Update $TRUST_TESTS/Reference/index_keywords_tests.html file"
 echo "End keyword index at `date '+%H:%M:%S %d/%m'`"
 }
 
-ihm()
-{
-   ###################################################
-   # Creation de certains fichiers du repertoire IHM :
-   ###################################################
-   # Le fichier des cas tests de reference :
-   $TRUST_ROOT/bin/HTML/cree_References.html
-   # Le fichier des caracteristiques des milieux :
-   $TRUST_ROOT/bin/HTML/cree_Milieux.html
-   # On ne supporte plus GIBI depuis la 1.6.7:
-   # Le fichier des maillages VDF GIBI disponible :
-   # $TRUST_ROOT/bin/HTML/cree_Maillages_VDF.html
-   # Le fichier des maillages VEF GIBI disponible :
-   # $TRUST_ROOT/bin/HTML/cree_Maillages_VEF.html
-   echo "End ihm at `date '+%H:%M:%S %d/%m'`"
-}
 
 pdf_par_office()
 {
@@ -195,9 +179,6 @@ else
    echo "####################################################"
    echo "# Begin doxygen at `date '+%H:%M:%S %d/%m'`"
    doxygen
-   #echo "####################################################"
-   #echo "# Begin ihm at `date '+%H:%M:%S'`"
-   #ihm
    echo "####################################################"
    echo "# Begin pdf_par_office at `date '+%H:%M:%S %d/%m'`"
    pdf_par_office

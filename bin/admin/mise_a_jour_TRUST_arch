@@ -615,7 +615,7 @@ do
 	    export rep_dev=$TRUST_TMP/atelier_test_$HOST_BUILD
 	    rm -r -f $rep_dev
 	    mkdir $rep_dev
-	    $TRUST_ROOT/bin/HTML/cree_Atelier.html
+	    # $TRUST_ROOT/bin/HTML/cree_Atelier.html
 	    cd $rep_dev
 	    # Modication d'un .cpp du Kernel:
 	    sed "s?Construction of?TEST_ATELIER_OK Construction of?g" $TRUST_ROOT/src/Kernel/Geometrie/Octree.cpp > Octree.cpp
