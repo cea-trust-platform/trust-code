@@ -136,7 +136,7 @@ fi
 # Construction des fichiers $TRUST_ENV/make.lib?
 #################################################
 cd $TRUST_ENV
-for fic in make.libsl make.libso make.liba
+for fic in make.libsl make.libso make.liba make.libdll
 do   
    suffixe=${fic#make.lib}
    if [ $suffixe = a ]
