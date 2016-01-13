@@ -9,8 +9,9 @@ mkdir -p lib exec env
 ( cd env; ln -sf ../env_src/* .)
 
 # Check prerequis
-bin/Installer_TRUST -check_prerequis || exit -1
 
+bin/Installer_TRUST -check_prerequis || exit -1
+export PATH=$PATH:$TRUST_ROOT/exec/utils/bin
 
 ###############################
 # Clean old directories (<v169)
