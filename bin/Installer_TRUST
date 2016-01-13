@@ -4,13 +4,38 @@
 ########################################################
 check_prerequis()
 {
-   prerequis=1
-#   [ -f /usr/bin/gcc ] && [ ! -f /usr/bin/g++ ] 		&& echo "You need g++ installed." 		&& prerequis=0
-#   [ -f /usr/bin/gcc ] && [ ! -f /usr/bin/gfortran ] 		&& echo "You need gfortran installed." 		&& prerequis=0
-   #[ ! -f /usr/include/X11/X.h ] 				&& echo "You need X11-devel installed."	&& prerequis=0 && echo "On Ubuntu for example, run: sudo apt-get install libx11-dev"
-   [ "`ed --help 1>/dev/null 2>&1;echo $?`" != 0 ] 		&& echo "You need ed installed." 		&& prerequis=0
-#   [ ! -f /usr/bin/wget ] 					&& echo "You need wget installed." 		&& prerequis=0
-#   [ ! -f /usr/bin/patch ]					&& echo "You need /usr/bin/patch installed." 	&& prerequis=0  # Installation de IceT pour VisIt echoue sinon...
+
+list_prerequis="bc ed sed awk"
+prerequis=1
+export PATH=$PATH:$TRUST_ROOT/exec/utils/bin
+for p in $list_prerequis
+do
+if  [ "`$p --help 1>/dev/null 2>&1;echo $?`" != 0 ] || [ "$force_utils" = "1" ]
+then	
+    echo "You need $p installed. Try to install it"
+
+    dest=tmp_$p
+    q=$p
+    [ "$p" = "awk" ] && q=gawk
+    mkdir $dest
+    cd $dest
+    tar zxf $TRUST_ROOT/externalpackages/utils/$q*.tar.gz
+    cd *$q*
+    ./configure --prefix=$TRUST_ROOT/exec/utils >config.log 2>&1  && make >make.log 2>&1  && make install > install.log 2>&1
+    if [ $? -eq 0 ]
+	then
+	echo install completed
+	fi
+    cd ../..
+    rm -rf $dest
+    export PATH=$PATH:$TRUST_ROOT/exec/utils/bin
+    [ "`$p --help 1>/dev/null 2>&1;echo $?`" != 0 ] &&  prerequis=0
+  fi
+done
+
+
+
+ 
    # Vu sur Ubuntu 13.04: Probleme de compilation m4 pour compiler bison -> bison prerequis
    [ "`grep 'Ubuntu 13.04' /etc/issue 2>/dev/null`" != "" ] && [ ! -f /usr/bin/bison ] && echo "You need bison installed." 	&& prerequis=0
    [ $prerequis = 0 ] && echo "Install and restart the operation." && exit -1
@@ -111,7 +136,7 @@ teste_atelier()
       mkdir $rep_dev
       cp $TRUST_ROOT/src/MAIN/MAIN.cpp $rep_dev/.
       echo >> $rep_dev/MAIN.cpp
-      echo $ECHO_OPTS "2\n\n" | Makeatelier.sccs 1>>atelier.log 2>&1
+      Makeatelier.sccs -2 1>>atelier.log 2>&1
       [ ! -f $rep_dev/exec_opt/TRUST$COMM"_opt" ] && err=1
       if [ "$1" = -print ]
       then
