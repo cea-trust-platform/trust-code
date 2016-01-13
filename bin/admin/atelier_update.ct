@@ -24,7 +24,7 @@ do
    if [ -f $file ]
    then
       # Fichier dans la version TRUST:
-      fichier=`Find $file`
+      fichier=`Find.sh $file`
       if [ "$fichier" != "" ]
       then
 	 if [ "`diff $fichier $file`" = "" ]

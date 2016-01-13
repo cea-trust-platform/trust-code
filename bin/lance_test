@@ -408,7 +408,7 @@ add_test_case_from_validation()
 			if [ ! -d $TRUST_TESTS/$DIRECTORY/$test ]
 			then
 		           cd $TRUST_TESTS/$DIRECTORY
-		           MKDIR $test
+		           mkdir -p $test
 			   echo "Creation of $test"
 			fi
 			[ ! -d $TRUST_TESTS/$DIRECTORY/$test ] && echo "Unable to cd $TRUST_TESTS/$DIRECTORY/$test" && exit -1

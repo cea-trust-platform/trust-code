@@ -11,7 +11,7 @@ listef=`ls *.h *.cpp *.f`
 [ "$1" != "" ] && listef="$*"
 for file in  $listef
 do
-  file2="`$TRUST_ROOT/bin/Find $file`"
+  file2="`$TRUST_ROOT/bin/Find.sh $file`"
 
   # on determine le niveau de modification (0 pas modifie, 1 modifie, 2 cree, 3 modifie par entete
   m=0

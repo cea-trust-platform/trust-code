@@ -133,7 +133,7 @@ for file in `cd $rep_dev;ls *.h *.cpp 2>/dev/null`
 do
    # On renomme les fichiers identiques a la version standard et on previent
    # 21/05/07: On ne renomme que si c'est un fichier include
-   file_standard=`Find $file`
+   file_standard=`Find.sh $file`
    if [ ${file%.h} != $file ] && [ ${#file_standard} != 0 ] && [ "`diff $file_standard $rep_dev/$file`" = "" ]
    then
       echo "Le fichier $file est renomme car identique a la version standard de TRUST"
@@ -196,7 +196,7 @@ do
    echo $ECHO_OPTS $nom >> .liste_sources_atelier
    [ $choix -ne -2 ] && rm -f $rep_exec/$nom && ln -s -f $rep_dev/$nom $rep_exec/$nom
    # Verification Version
-   # ref=`Find $liste`
+   # ref=`Find.sh $liste`
    # GF plus de verification de numero
    ref=""
    if [ "$ref" != "" ]

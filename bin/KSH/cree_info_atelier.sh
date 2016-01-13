@@ -23,7 +23,7 @@ nbnew=0
 for f in $files
   do
   ff=`basename $f`
-  ftrio=`Find $ff`
+  ftrio=`Find.sh $ff`
   if [ "$ftrio" != "" ]
       then
       nb=`echo $nb+1|bc`

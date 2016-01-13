@@ -31,7 +31,7 @@ cd \$proj
 \$org/baltik/bin/baltik_build_configure 2>&1 | tee config.log
 ./configure  2>&1 | tee -a config.log
 echo on retire les fichiers inutils pas fait par baltik | tee -a config.log
-env rep_dev=\$org/\$proj/build/src DIFF NET | grep -v cree   | tee -a config.log
+env rep_dev=\$org/\$proj/build/src DIFF.sh NET | grep -v cree   | tee -a config.log
 
 make optim | tee make.log
 make check_all_optim 
