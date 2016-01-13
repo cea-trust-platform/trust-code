@@ -23,7 +23,7 @@
 }
 
 /Convergence/ { nst++
-	it = $9
+	it = $3
 	s+=it
 	printf("%d %d\n",nst,it) > convU;
 }
