@@ -1,6 +1,9 @@
 #!/bin/bash
 # Script d'installation de PETSC
 package=$1
+
+minimal_mumps=0
+[ $TRUST_ARCH = cygwin ] && minimal_mumps=1
 if [ "$1" = "" ]
 then
    echo "Usage: `basename $0` package.tar.gz"
@@ -150,16 +153,7 @@ CONFIG=config/PETSc/packages
 if [ -d $CONFIG ]
 then
    #echo "Change some python scripts to force parallel build of external packages..."
-   echo $ECHO_OPTS "1,$ s?make install?$TRUST_MAKE install?g\nw" | ed $CONFIG/hypre.py 	1>/dev/null 2>&1 || exit -1
-   # Le build parallel ne marche pas avec Scalapack:
-   #echo $ECHO_OPTS "1,$ s? make'? $TRUST_MAKE'?g\nw" | ed $CONFIG/SCALAPACK.py		1>/dev/null 2>&1 || exit -1
-   #echo $ECHO_OPTS "1,$ s? make lib ? $TRUST_MAKE lib ?g\nw" | ed $CONFIG/ParMetis.py	1>/dev/null 2>&1 || exit -1
-   # Doute aussi que cela marche sur SuperLU_DIST (parfois cela echoue...)
-   #echo $ECHO_OPTS "1,$ s? make lib ? $TRUST_MAKE lib ?g\nw" | ed $CONFIG/SuperLU_DIST.py	1>/dev/null 2>&1 || exit -1
-   # Doute aussi avec MUMPS (eg: gre027058)
-   #echo $ECHO_OPTS "1,$ s? make alllib? $TRUST_MAKE alllib ?g\nw" | ed $CONFIG/MUMPS.py	1>/dev/null 2>&1 || exit -1
-   # PETSc ne detecte pas toujours correctement le nombre de cores:
-   #echo $ECHO_OPTS "1,$ s?make_np = 2?make_np = $TRUST_NB_PROCS?g\nw" | ed $CONFIG/programs.py	1>/dev/null 2>&1 || exit -1
+   echo $ECHO_OPTS "1,$ s?make install?$TRUST_MAKE install?g\nw" | ed $CONFIG/hypre.py 	1>/dev/null 2>&1  #  on ne sarrete plus car si pas hypre...|| exit -1 
 else
    # Config directory has moved (for PETSc 3.6?)
    CONFIG=config/BuildSystem/config/packages
@@ -373,13 +367,13 @@ fi
 if [ "$TRUST_DISABLE_MPI" = 0 ]
 then
    # SUPERLU_DIST
-   add_package superlu_dist
+   [ $minimal_mumps = 0 ] &&  add_package superlu_dist
 
    # New (Cholmod):
-   add_package SuiteSparse
+   [ $minimal_mumps = 0 ] && add_package SuiteSparse
 
    # New (Pastix)
-   add_package pastix
+   [ $minimal_mumps = 0 ] && add_package pastix
 
    # New (Pardiso)
    [ -f $MKLROOT/include/mkl_pardiso.h ] && with_packages=$with_packages" --with-mkl_pardiso=1 --with-mkl_pardiso-dir=$MKLROOT"
@@ -390,6 +384,8 @@ then
    ##########
    # SCOTCH #
    ##########
+   if [ $minimal_mumps = 0 ] 
+   then
       # On ajoute PT-Scotch sur certaines machines (ne compile pas sur castor, compilateur trop vieux?)
       add_package ptscotch
       # PT-Scotch necessite bison
@@ -445,11 +441,11 @@ then
 	 fi
 	 export PATH=$PATH:$ROOT/flex/bin
       fi 
-
+   fi
    #######
    # Hypre
    #######
-   add_package hypre
+   [ $minimal_mumps = 0 ]  && add_package hypre
 fi
 
 ##########

@@ -843,13 +843,10 @@ rm -f $TRUST_ROOT/exec/ccache/g??
 [ -f $TRUST_ROOT/exec/python/env.sh ] && source $TRUST_ROOT/exec/python/env.sh
 e="`cherche_file python python`";eval $e
 PYTHON_VERSION_OK=`$python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1]*100+a[2]*10+a[3];print (v>=273?1:0)}'`
-# Le script de VisIt ne cherche que dans /usr/lib/libpython*.so et pas /lib*/libpython*.so...
-# En fait, vtk cherche sous /usr/lib/libpython*.so et visit sous /usr/lib/*/libpython*.so 
-# Le test "ls /usr/lib*/python*/config/Makefile 2>/dev/null" est pour MED 3.0.7
 # 1.6.8: Add a more complex test (test.py) for python if python is not well installed
-if [ "$PYTHON_VERSION_OK" != 1 ] || [ "`python-config 2>&1 | grep Usage`" = "" ] || [ "`ls /usr/lib*/libpython*.so   /usr/lib*/*/libpython*.so 2>/dev/null`" = "" ]  || [ "`ls /usr/lib*/python*/config/Makefile 2>/dev/null`" = "" ] || [ "`python ./test.py 1>/dev/null 2>&1;echo $?`" != 0 ]
+if [ "$PYTHON_VERSION_OK" != 1 ]  || [ "`python ./test.py 1>/dev/null 2>&1;echo $?`" != 0 ]
 then
-   make_ $TRUST_ROOT/Outils/Python python $TRUST_ROOT/exec/python.log
+    make_ $TRUST_ROOT/Outils/Python python $TRUST_ROOT/exec/python.log
 fi
 
 ####################
@@ -890,14 +887,23 @@ e="`cherche_file cmake cmake`";eval $e
 CMAKE_VERSION_OK=`$cmake --version 2>&1 | awk '/cmake version/ {split($3,a,".");v=a[1]*100+a[2]*10+a[3];print (v>=301?1:0)}'`
 if [ "$CMAKE_VERSION_OK" != 1 ]
 then
+  if [ $TRUST_ARCH = cygwin ]
+  then
+   echo "cmake not ok  but on cygwin we dont try to compile cmake"
+  else
    make_ $TRUST_ROOT/Outils/cmake cmake $TRUST_ROOT/exec/cmake.log
+ fi
 fi
 
 ##############################
 # Installation de makedepend #
 ##############################
+e="`cherche_file TRUST_MD makedepend`";eval $e
+if [ "$TRUST_MD" = ""  ]
+then
+ehco Compilation of makedepend
 make_ $TRUST_ROOT/Outils/makedepend makedepend $TRUST_ROOT/exec/makedepend.log
-
+fi
 
 # Mal fait : a ameliorer
 # Pour toutes les arch SLD=$TRUST_CC sauf RS6000 et sun prendre ld ?
@@ -1228,7 +1234,8 @@ fi
 ########################
 # Installation de astyle
 ########################
-if [ $TRUST_ARCH = linux ]
+#if [ $TRUST_ARCH = linux ]
+if [ 1 -eq 1 ]
 then
    make_ $TRUST_ROOT/Outils/astyle astyle $TRUST_ROOT/exec/astyle.log
 fi
@@ -1368,6 +1375,8 @@ LINK_MALIB="\$(OBJS)"
 Defines=""
 SYSINC=""
 SL_EXTENSION="so" && [ ${TRUST_ARCH#HPPA} != $TRUST_ARCH ] && SL_EXTENSION="sl"
+[ ${TRUST_ARCH} = cygwin ] && SL_EXTENSION="dll"
+
 OPTIMIZE="-O3"
 TRUST_SUPPORTED=0
 case $TRUST_ARCH_CC in
@@ -2070,7 +2079,7 @@ rm $TRUST_ROOT/src/Kernel/Framework/makefile
 echo "makedepend: $time_makedepend s"
 [ "`echo $time_ccmakedep $time_makedepend | awk '{print ($1>$2)}'`" = 1 ] && TRUST_MD="$TRUST_ROOT/exec/makedepend/bin/makedepend ccmakedep" # makedepend plus rapide
 else
-TRUST_MD="$TRUST_ROOT/exec/makedepend/bin/makedepend"
+TRUST_MD="makedepend $TRUST_ROOT/exec/makedepend/bin/makedepend makedepend"
 fi
 m="# Path to makedepend command";e="`cherche_file TRUST_MD $TRUST_MD`";ecrit $m"|"$e"|"$env;eval $e
 [ "$ligne_supp" != "" ] &&       echo $ligne_supp  >> $env

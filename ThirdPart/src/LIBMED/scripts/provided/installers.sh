@@ -109,7 +109,7 @@ configure_package() {
     if [ "${name}" = MED ]
     then
        modified_file="${TRUST_MED_workdir}/Makefile.in"
-       sed_ "${modified_file}" "s?tools doc?tools?g"
+       sed_ "${modified_file}" "s?tests tools doc?tools?g"
     fi
 
     # calling configure

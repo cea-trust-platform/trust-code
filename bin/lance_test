@@ -617,7 +617,8 @@ echo $ECHO_OPTS "Choice:Filename -A file containing the names of test cases"
 echo $ECHO_OPTS "Choice:P_XXX    -All test cases with state XXX=(OK,STOPS,RUNS,BLOCKS)"
 echo $ECHO_OPTS "--------------------------------------------------------------------------"
 echo $ECHO_OPTS "All test cases are run in sequential mode and some tests in parallel mode if possible."
-if [ "`nm $exec 2>/dev/null | grep ' MPI_Init'`" = "" ]
+#if [ "`nm $exec 2>/dev/null | grep ' MPI_Init'`" = "" ]
+if [ "$TRUST_DISABLE_MPI" = "1" ]
 then
     ######################################
     # Detection d'un binaire non parallele
