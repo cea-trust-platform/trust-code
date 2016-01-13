@@ -12,7 +12,7 @@ theStudy = salome.myStudy
 
 import salome_notebook
 notebook = salome_notebook.NoteBook(theStudy)
-sys.path.insert( 0, r'/export/home/mr757596/Documents/Trio_U/DI/2015/DI3886_tuto_latex/test/MR/salome/exo3')
+#sys.path.insert( 0, r'/export/home/mr757596/Documents/Trio_U/DI/2015/DI3886_tuto_latex/test/MR/salome/exo3')
 
 ###
 ### GEOM component
@@ -96,7 +96,7 @@ Inlet_x_1 = Mesh_1.GroupOnGeom(Inlet_x,'Inlet_x',SMESH.FACE)
 Inlet_z_1 = Mesh_1.GroupOnGeom(Inlet_z,'Inlet_z',SMESH.FACE)
 Wall_1 = Mesh_1.GroupOnGeom(Wall,'Wall',SMESH.FACE)
 smesh.SetName(Mesh_1, 'Mesh_1')
-Mesh_1.ExportMED( r'/export/home/mr757596/Documents/Trio_U/DI/2015/DI3886_tuto_latex/test/MR/salome/exo3/Mesh_1.med', 0, SMESH.MED_V2_2, 1, None ,1)
+Mesh_1.ExportMED( r'Mesh_1.med', 0, SMESH.MED_V2_2, 1, None ,1)
 
 
 ## Set names of Mesh objects

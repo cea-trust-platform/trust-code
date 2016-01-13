@@ -33,18 +33,19 @@ echo "
 <BR><BR>Visit TRUST website at <A HREF=http://www-trio-u.cea.fr>http://www-trio-u.cea.fr</A></LI>
 <BR><BR>Help ? Question ? Contact TRUST support team at <A HREF=mailto:$TRUST_MAIL>$TRUST_MAIL</A>
 <BR>You can also subscribe to TRUST <A HREF=http://saxifrage:3500/wws/info/trio_u_annonces>user</A> or <A HREF=http://saxifrage:3500/wws/info/trio_u_dev>developer</A> mailing lists.</LI>
-<BR><BR><B>Download the latest available TRUST package $stable version ($release_date):</B> <A HREF=Version$stable/$package>$package</A>`[ "$patch" != "" ] && echo " and the latest installation patch <A HREF=patch/Patch_$stable.tgz>Patch_$stable.tgz</A>"`
-<LI>It contains the TRUST binaries (for "$os_supported"), tests and source files.
+<BR><BR><B>Download the latest available TRUST package $stable version ($release_date):</B> <A HREF=http://downloads.sourceforge.net/project/trust-platform/$stable/$package>$package</A>`[ "$patch" != "" ] && echo " and the latest installation patch <A HREF=patch/Patch_$stable.tgz>Patch_$stable.tgz</A>"`
+<LI>It contains the TRUST tests and source files.
 <LI>The package size is ~"$package_size"Mo.
-<LI>See <A HREF=Version$stable/README_INSTALL>here</A> the requirements and how to install/build TRUST $stable stable version.
+<LI>See <A HREF=http://sourceforge.net/projects/trust-platform/files/>here</A> the requirements and how to install/build TRUST $stable stable version.
 <LI>On a cluster, to reach high parallel performances, it is recommended that the TRUST support team install/configure/build the code.<BR> 
 <BR><B>Use TRUST on PC and callisto cluster at CEA Saclay:</B>
-<pre>source /home/triou/env_TRUST_"$stable"_patch.sh</pre>
+<pre>source /home/triou/env_TRUST_"$stable".sh</pre>
 <BR><B>Download TRUST with Git:</B>
 <LI>For developers who have Git installed, you can get the sources of the latest $stable patched version and build the code with the following commands:<BR>
 <pre>git clone $TRUST_GIT_OFFICIAL TRUST</pre>
 <pre>cd TRUST</pre>
-<pre>git clone git://$TRUST_GIT_SERVER:9090/official/externalpackages externalpackages</pre>
+<pre>wget http://downloads.sourceforge.net/project/trust-platform/$stable/externalpackages_$stable.tar</pre>
+<pre>tar xvf externalpackages_$stable.tar</pre>
 <pre>./configure # Configure </pre>
 <pre>source env_TRUST.sh # Initialize environment</pre>
 <pre>make # Build the code</pre>

@@ -186,14 +186,21 @@ check_components()
 # Push to repos (called several times, once at the beginning and sometimes at the end...)
 git_push()
 {
-   all=0 && [ "$1" = -all ] && all=1
-   force=0 && [ "$1" = -force ] && force=1
+   tags=0
+   force=0
+   while [ "$1" != "" ]
+   do
+      if [ "${1%-tags}" != $1 ]
+      then
+         tags=1
+      elif [ "${1%-force}" != $1 ]
+      then
+         force=1
+      fi
+      shift
+   done
    git_branch=`git branch 2>/dev/null | awk '($1=="*") {print $2}'`
-   # git remote add official ssh://triou@sedna/applicatifs_dm2s/triou/GIT_REPOS/official/trio_u
    repos=`git remote`
-   # Si branche patch_XYZ, on ne pousse pas automatiquement sur official (demande par Gauthier):
-   # sauf si -all (sortie de version)
-   #[ "$all" != 1 ] && [ ${git_branch#patch_} != $git_branch ] && repos=`git remote | grep -v official`
    # => nouveau depot GIT: on ne pousse rien sur origin, seulement sur shared
    repos=`git remote | grep -v origin`
    for repo in $repos
@@ -202,11 +209,21 @@ git_push()
       echo "TRUST git push on $HOST the `date` ...">$repo_log
       echo>>$repo_log
       echo "  git push $repo $git_branch. See $repo_log"
-      if [ "$force" != 1 ]
+      if [ "$tags" != 1 ]
       then
-         git push --tags $repo $git_branch 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] Error for git push $repo $git_branch\" $TRUST_MAIL
+         if [ "$force" != 1 ]
+         then
+            git push $repo $git_branch 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] Error for git push $repo $git_branch\" $TRUST_MAIL
+         else
+            git push --force $repo $git_branch 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] Error for git push force $repo $git_branch\" $TRUST_MAIL
+         fi
       else
-         git push --force --tags $repo $git_branch 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] Error for git push $repo $git_branch\" $TRUST_MAIL
+         if [ "$force" != 1 ]
+         then
+            git push --tags $repo $git_branch 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] Error for git push tags $repo $git_branch\" $TRUST_MAIL
+         else
+            git push --force --tags $repo $git_branch 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] Error for git push force tags $repo $git_branch\" $TRUST_MAIL
+         fi
       fi
       cat $repo_log | tail -n +3
       [ "`cat $repo_log | tail -n +3`" != "Everything up-to-date" ] && cat $repo_log | mail_ -s\"[lance_test_nuit] git push $repo $git_branch\" $TRUST_MAIL $TRUST_PROJECT_LEADER
@@ -498,7 +515,7 @@ echo " "
    # Push to repos
    echo " "
    echo "Call git push shared Livraison"
-   git_push
+   git_push -tags
    cd $TRUST_ROOT/externalpackages
    echo " git push shared Livraison in `pwd`"
    git push --tags shared Livraison
@@ -567,6 +584,8 @@ echo "###############################################"
 	   cd $TRUST_ROOT/externalpackages
 	   git rebase Livraison 1>>$rebase_log 2>&1
 	   [ $? != 0 ] && echo "  KO rebase externalpackages"
+	   git rebase --continue 1>>$rebase_log 2>&1
+	   [ "`git rebase --continue 2>&1`" != "No rebase in progress?" ] && echo "  KO rebase externalpackages"
 	   cd - 1>/dev/null 2>&1
            echo>>$rebase_log
 	   for Composant in $ComposantsGit 
@@ -577,6 +596,8 @@ echo "###############################################"
 	         cd $TRUST_ROOT/../Composants/$Composant
 	         git rebase Livraison 1>>$rebase_log 2>&1
 	         [ $? != 0 ] && echo "  KO rebase Composants/$Composant"
+	         git rebase --continue 1>>$rebase_log 2>&1
+	         [ "`git rebase --continue 2>&1`" != "No rebase in progress?" ] && echo "  KO rebase Composants/$Composant"
 	         cd - 1>/dev/null 2>&1
                  echo>>$rebase_log
 	      fi
@@ -629,7 +650,7 @@ echo "###############################################"
 	   if [ $rebase_error = 0 ]
 	   then
               echo "Call git push shared Kernel"
-              git_push -force
+              git_push -tags -force
 	      echo " "
 	   fi
 	fi
@@ -713,7 +734,7 @@ echo "###############################################"
 		 # Git (On ne scrute que les VOBs TRUST):
 		 cd $TRUST_ROOT
                  echo "  Call git push shared Maintenance"
-		 git_push
+		 git_push -tags
 		 echo "  Files contained in the patch"
 		 echo "    See $TRUST_ROOT/patch.files"
 		 git diff --name-only v$TRUST_VERSION > patch.files
@@ -1571,7 +1592,7 @@ fi
 force_make_atelier=~/force_make_atelier && [ -f $force_make_atelier ] && workshop=1 && rm -f $force_make_atelier
 echo "$workshop  Atelier $port_atelier=$make_atelier (=1.000)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
-let criteres_remplis=$criteres_remplis+`if [ "$make_atelier" = "1.000" ]; then echo 1;else echo 0;fi`
+let criteres_remplis=$criteres_remplis+$workshop
 echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 #####################
@@ -1631,7 +1652,7 @@ fi
 force_portabilite_baltik=~/force_portabilite_baltik && [ -f $force_portabilite_baltik ] && testbaltik=1 && rm -f $force_portabilite_baltik
 echo "$testbaltik  Baltik $port_baltik=$portabilite_baltik (=1.000)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
-let criteres_remplis=$criteres_remplis+`if [ "$portabilite_baltik" = "1.000" ]; then echo 1;else echo 0;fi`
+let criteres_remplis=$criteres_remplis+$testbaltik
 echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 ################################
@@ -1661,7 +1682,7 @@ fi
 force_test_assert=~/force_test_assert && [ -f $force_test_assert ] && assert=1 && rm -f $force_test_assert
 echo "$assert  Assert $port_assert=$test_assert (=1.000)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
-let criteres_remplis=$criteres_remplis+`if [ "$test_assert" = "1.000" ]; then echo 1;else echo 0;fi`
+let criteres_remplis=$criteres_remplis+$assert
 echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 ############################
@@ -2650,12 +2671,16 @@ do
    nuit_log=$PROJECT_ROOT/nuit_$Composant.html
    nb_cible=0
    tot_cible=0
+   nb_total=0
+   tot_total=0
    if [ -f $nuit_log ]
    then
       echo "Analysis of "$nuit_log" file" | tee -a tmp.log
       grep "_OK" $nuit_log | tee -a tmp.log
       nb_cible=`$TRUST_Awk '/cible_OK/ {print $2}' $nuit_log`
       tot_cible=`$TRUST_Awk '/cible_OK/ {print $4}' $nuit_log`
+      nb_total=`$TRUST_Awk '/total_OK/ {print $2}' $nuit_log`
+      tot_total=`$TRUST_Awk '/total_OK/ {print $4}' $nuit_log`
    else
       validation_composant=0
    fi
@@ -2681,6 +2706,7 @@ do
       cat tmp.log | mail_ -s \"[lance_test_nuit] Cible portability KO on Baltik $Composant\" $TRUST_MAIL $TRUST_PROJECT_LEADER
    fi
    rm -f tmp.log
+   [ $KO != 0 ] && [ $nb_total = $tot_total ] && validation_composant=0
    [ -f $force_composant ] && validation_composant=1
    # Test sur l'ensemble des machines
    [ "$NB" -eq 0 ] && NB=-1
@@ -2863,14 +2889,14 @@ then
    then
       # On decide du nom du label specifique
       label_rc=$label"_rc" && release=candidate && [ $accord_admin = 0 ] && label_rc=$label"_beta" && release=beta
-      echo " with label "$label_rc
+      numero=`git tag | grep $label_rc | wc -l` && [ "$numero" = "" ] && numero=0
+      let numero=$numero+1
+      label_pose=$label_rc$numero 
+      echo " with label "$label_pose
       echo " "
       error_rc=0
       
       # Commit
-      numero=`git tag | grep $label_rc | wc -l` && [ "$numero" = "" ] && numero=0
-      let numero=$numero+1
-      label_pose=$label_rc$numero 
       echo "  Call git commit --all -m Commit for a Release $release $label_pose version"
       git commit --all -m"Commit for a Release $release $label_pose version."
       # On pose le tag:
@@ -2879,7 +2905,7 @@ then
       error_rc=$?
       # Push
       echo "  Call git push shared Livraison"
-      git_push
+      git_push -tags
       if [ $error_rc = 0 ]
       then  
          # On previent l'administrateur et le project leader
@@ -2923,8 +2949,8 @@ then
          error_rcb=$?
          echo "    Call git push shared TMA"
          git push --tags shared Livraison:TMA
-	 [ "$Composant" = TrioCFD ] && git push --tags shared Livraison
          error_rcb=$?
+	 [ "$Composant" = TrioCFD ] && git push --tags shared Livraison
          if [ $error_rcb = 0 ]
          then  
             # On previent l'administrateur et les project leader
@@ -2964,6 +2990,12 @@ then
       [ $deja_livre = 0 ] && echo "New version $label : Delivery possible if agreement of $TRUST_MAIL" >> $MESSAGES_NUIT
       [ $deja_livre = 1 ] && echo "New version $label : Delivery already made" >> $MESSAGES_NUIT
    else
+      # On decide du nom du label specifique
+      label_rc=$label"_rc" && release=candidate && [ $accord_admin = 0 ] && label_rc=$label"_beta" && release=beta
+      numero=`git tag | grep $label_rc | wc -l` && [ "$numero" = "" ] && numero=0
+      let numero=$numero+1
+      label_pose=$label_rc$numero 
+      # Le tag label est pose par Gauthier sur origin sinon conflit
       echo " with label "$label
       echo " "
       # Checkin et verification que tous les fichiers sont checkines
@@ -2980,7 +3012,8 @@ then
       echo "  Call git commit --all -m Commit for an official Release $label version."
       git commit --all -m"Commit for an official Release $label version."
       echo "  Call git push shared Livraison"
-      git_push -all
+      git tag $label_pose
+      git_push -tags
       if [ "$erreur_checkin" != "" ]
       then
          echo "New version $label : Delivery canceled because some files could not be checkined: $erreur_checkin" >> $MESSAGES_NUIT
@@ -2993,8 +3026,10 @@ then
 	 # On pose le meme tag sur externalpackages
          cd externalpackages
          git commit --all -m"Commit for an official Release $label version."
-         git tag $label
+         git tag $label_pose
          git push --tags shared Livraison
+         git tag $label
+	 git push --tags ssh://triou@sedna${TRUST_GIT_REPOS%TRUST}externalpackages Livraison:master
          cd - 1>/dev/null 2>&1
 	 # Creation des packages TRUST et externalpackages
 	 echo " "
@@ -3023,7 +3058,7 @@ then
                git symbolic-ref HEAD refs/heads/Maintenance
                # Push
 	       echo "  Call git push shared Maintenance"
-               git_push -all
+               git_push
                # Le repo officiel pointe desormais sur la branche (exemple: patch_XYZ) # Temporary
 	       #echo "  Update $TRUST_GIT_REPOS repos on $TRUST_GIT_SERVER server"
                #ssh triou@$TRUST_GIT_SERVER -n 'cd '$TRUST_GIT_REPOS';git symbolic-ref HEAD refs/heads/'$patch_new
@@ -3059,11 +3094,12 @@ then
 	    # On pose le meme tag sur les BALTIK
             echo "    Call git commit --all -m Commit for an official Release $label version."
             git commit --all -m"Commit for an official Release $label version."
-	    echo "    Call git tag $label"
-            git tag $label
             echo "    Call git push shared TMA"
+	    git tag $label_pose
             git push --tags shared Livraison:TMA
 	    [ "$Composant" = TrioCFD ] && git push --tags shared Livraison
+	    echo "    Call git tag $label"
+            git tag $label
 	    # Appel du make distrib
 	    echo "    Call make distrib"
 	    make distrib
