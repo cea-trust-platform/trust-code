@@ -1361,7 +1361,7 @@ then
    echo "# PATH added" >> $env
    for path in $paths
    do
-      echo "ADD_PATH $path" >> $env
+      echo "ADD_PATH_AFTER $path" >> $env
    done
 fi
 # Ajout du PATH eventuel vers le bin des outils d'installation pour Linux
