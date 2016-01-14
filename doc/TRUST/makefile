@@ -5,5 +5,5 @@ Keywords.Vim: Keywords.txt
 	configure_vim.sh build_syntax
 
 clean:
-	rm Keywords.Vim
+	rm -f Keywords.Vim
 	@for d in $(dirs) ;do (cd $$d; $(MAKE) clean ); done

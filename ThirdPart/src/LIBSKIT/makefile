@@ -6,4 +6,4 @@ $(skit):  Installer makefile
 	./Installer ${MAKE} 
 
 clean:
-	rm -r -f SPARSKIT2 $(skit)
+	rm -r -f SPARSKIT2 $(skit) SPARSKIT2.tar.gz

@@ -15,3 +15,4 @@ check:
 
 clean:
 	rm -r -f $(petsc) petsc.log petsc-3.?-p? petsc-?.?.? petsc-dev cusp thrust tm4 bison flex
+	rm -f *.gz *.tgz *bz2 mpi_init.log configure.help configure.log

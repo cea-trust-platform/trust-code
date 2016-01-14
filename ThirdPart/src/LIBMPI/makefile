@@ -9,3 +9,4 @@ $(mpi): Installer_mpi Installer_openmpi Installer_mpich makefile
 
 clean:
 	rm -r -f hwloc openmpi openmpi-?.?.? mpich2 mpich 
+	rm -f *.gz *.tar *.tgz

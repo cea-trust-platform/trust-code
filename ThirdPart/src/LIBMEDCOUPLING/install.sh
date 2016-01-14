@@ -1,5 +1,5 @@
 #!/bin/bash
-make clean
+make clean_build
 DEST=$TRUST_MEDCOUPLING_ROOT
 
 if  [ "$TRUST_DISABLE_MED" = "1" ] || [ "$TRUST_DISABLE_MEDCOUPLING" = "1" ] 

@@ -9,7 +9,7 @@ $(lib2): Installer makefile
 	./Installer
 
 clean:
-	rm -r -f *.a *.log  xianyi-OpenBLAS*  $(lib1) $(lib2)
+	rm -r -f *.a *.log  xianyi-OpenBLAS*  $(lib1) $(lib2) lapack-*.tgz
 	# Il sera necessaire de recompiler PETSc
 	#if [ "$(TRUST_DISABLE_PETSC)" != 1 ]; then \
 	#cd ../LIBPETSC;make clean;fi

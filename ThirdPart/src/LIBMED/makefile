@@ -34,5 +34,6 @@ $(HDF) : $(HDF_INSTALLER) $(HDF_ARCHIVES) makefile
 
 clean :
 	@rm -rf build
-	@rm -rf $(TRUST_MED_ROOT) MED
-	@rm -rf ./install
+	@rm -rf $(TRUST_MED_ROOT)/../install
+	@rm -rf $(TRUST_MED_ROOT)/../MED
+	@rm -f archives scripts/generated/*.sh

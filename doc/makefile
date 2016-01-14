@@ -36,6 +36,6 @@ depend:
 
 clean:
 	@echo "Cleaning..."
-	@rm -r -f $(HTML) *.tag
+	@rm -r -f $(HTML) *.tag doxygen0.out doxygen0.err
 	(if [ -d TRUST ] && [ "`ls TRUST/*akefile 2>/dev/null`" != "" ]; then cd TRUST; $(MAKE) clean; fi)
 	(if [ -d Coverage ] && [ "`ls Coverage/*akefile 2>/dev/null`" != "" ]; then cd Coverage; $(MAKE) clean; fi)

@@ -9,4 +9,4 @@ $(cible): install makefile
 	@./install $(package) $(install)
 	
 clean:
-	rm -r -f $(install)
+	rm -r -f $(install) Python*gz
