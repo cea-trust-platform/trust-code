@@ -227,7 +227,7 @@ if (NOT ${kernel} STREQUAL "full")
   set(listdir ${listdirmod})
 endif()
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6 FATAL_ERROR)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0 FATAL_ERROR)
     
 
 
@@ -518,7 +518,7 @@ set_target_properties(exe PROPERTIES  OUTPUT_NAME  ${PROGRAM} )
 set(LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/exec${OPT} )
 
 
-add_library(module MODULE EXCLUDE_FROM_ALL $<TARGET_OBJECTS:list_obj>  )
+add_library(module SHARED EXCLUDE_FROM_ALL $<TARGET_OBJECTS:list_obj>  )
 target_link_libraries(module ${libdeps} ${libTrio} ${syslib})
 set_target_properties(module PROPERTIES OUTPUT_NAME _TRUSTModule${OPT} PREFIX "" )
 
