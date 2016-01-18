@@ -39,15 +39,17 @@ cat $makeincludeatelier | grep -v project_directory >>makefile
 
 echo "# on refait a chaque fois l executable" >>makefile
 
-echo "couplage: $lib_dyn main.cpp makefile ld_env.sh $build/exec\$(OPT)/_TRUSTModule\$(OPT).$(SL_EXTENSION)
+echo "couplage: $lib_dyn main.cpp makefile ld_env.sh $build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION)
 	touch couplage.data
 	@echo Linking.. 
-	@\$(TRUST_CC) main.cpp -o couplage -I$build \$(Includes) -Wl,-R $build/exec\$(OPT) $build/exec\$(OPT)/_TRUSTModule\$(OPT).$(SL_EXTENSION) \$(CppFlags) \$(Libs) \$(SYSLIBS)
-$build/exec\$(OPT)/_TRUSTModule\$(OPT).$(SL_EXTENSION): $lib_dyn
-dynamique: $lib_dyn main.cpp makefile ld_env.sh $build/exec\$(OPT)/_TRUSTModule\$(OPT).$(SL_EXTENSION)
+	@if [ \"\$(TRUST_ARCH)\" = \"cygwin\" ] ; then cp  $build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION)  .; fi
+	@\$(TRUST_CC) main.cpp -o couplage -I$build \$(Includes) -Wl,-R $build/exec\$(OPT) $build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION) \$(CppFlags) \$(Libs) \$(SYSLIBS)
+$build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION): $lib_dyn
+dynamique: $lib_dyn main.cpp makefile ld_env.sh $build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION)
 	touch dynamique.data
 	@echo Linking.. 
-	@\$(TRUST_CC) main.cpp -o dynamique -I$build \$(Includes) -D_libtrio_='\"$build/exec\$(OPT)/_TRUSTModule\$(OPT).$(SL_EXTENSION)\"' -Wl,-R $build/exec\$(OPT) $build/exec\$(OPT)/_TRUSTModule\$(OPT).$(SL_EXTENSION) \$(CppFlags) \$(Libs) \$(SYSLIBS)
+	@if [ \"\$(TRUST_ARCH)\" = \"cygwin\" ] ; then cp  $build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION)  .; fi
+	@\$(TRUST_CC) main.cpp -o dynamique -I$build \$(Includes) -D_libtrio_='\"$build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION)\"' -Wl,-R $build/exec\$(OPT) $build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION) \$(CppFlags) \$(Libs) \$(SYSLIBS)
 lib_dyn:
 	@if [ \"\$(TRUST_ROOT)\" = \"\" ] ; then echo error TRUST_ROOT not set ; exit -1; fi
 	(cd $build; [ -O . ] && (cd ../..;\$(TRUST_ROOT)/bin/baltik/share/baltik/bin/baltik_build module_from_OPT ) ||( [ ! -O . ] && echo  No Compilation  ))" >>makefile
