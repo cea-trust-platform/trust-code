@@ -29,13 +29,13 @@ Partition dom
 {
 	Partition_tool metis { Nb_parts 2 }
 	Larg_joint 2
-	zones_name DOM
+	zones_name DOMVEF
 }
 End
 END PARTITION #
 
 # BEGIN SCATTER
-Scatter DOM.Zones dom
+Scatter DOMVEF.Zones dom
 END SCATTER #
 
 VEFPreP1B dis
