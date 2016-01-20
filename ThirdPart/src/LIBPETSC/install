@@ -3,7 +3,9 @@
 package=$1
 
 minimal_mumps=0
-[ $TRUST_ARCH = cygwin ] && minimal_mumps=1
+scotch=1
+# [ $TRUST_ARCH = cygwin ] && minimal_mumps=1
+[ $minimal_mumps = 1 ] && scotch=0
 if [ "$1" = "" ]
 then
    echo "Usage: `basename $0` package.tar.gz"
@@ -372,8 +374,8 @@ then
    # New (Cholmod):
    [ $minimal_mumps = 0 ] && add_package SuiteSparse
 
-   # New (Pastix)
-   [ $minimal_mumps = 0 ] && add_package pastix
+   # New (Pastix) pb sous cygwin
+   [  $TRUST_ARCH != cygwin ] &&  [ $minimal_mumps = 0 ] && [ $scotch -eq 1 ] &&add_package pastix
 
    # New (Pardiso)
    [ -f $MKLROOT/include/mkl_pardiso.h ] && with_packages=$with_packages" --with-mkl_pardiso=1 --with-mkl_pardiso-dir=$MKLROOT"
@@ -384,7 +386,7 @@ then
    ##########
    # SCOTCH #
    ##########
-   if [ $minimal_mumps = 0 ] 
+   if [  $scotch -eq 1 ]
    then
       # On ajoute PT-Scotch sur certaines machines (ne compile pas sur castor, compilateur trop vieux?)
       add_package ptscotch
@@ -397,7 +399,8 @@ then
 	    if [ "`m4 --version 2>/dev/null | head -1 | awk '/[mM]4 / {print $NF}' | grep -v 1.4.[0-5]$ | grep -v 1.4.1[1-5]`" = "" ]
 	    then
                echo "bison build needs a correct m4 installed. So installing it..."
-		  m4=m4-1.4.17
+		  #m4=m4-1.4.17
+		  m4=`(cd ..; ls m4-*.tar.gz | sed "s/.tar.gz//")`
                if [ ! -d $ROOT/m4/bin ]
                then
 		  gunzip -f -c ../$m4.tar.gz | tar -xf -
@@ -413,7 +416,7 @@ then
 	      export PATH=$PATH:$ROOT/m4/bin
 	    fi		 
             echo "PT-Scotch needs bison installed. So installing it..."
-	    bison=bison-2.7
+	    bison=`(cd ..; ls bison-*.tar.gz | sed "s/.tar.gz//")`
 	    gunzip -f -c ../$bison.tar.gz | tar -xf -
 	    cd $bison
 	    ./configure --prefix=$ROOT/bison || exit -1
@@ -430,7 +433,7 @@ then
 	 if [ ! -d $ROOT/flex/bin ]
 	 then
             echo "PT-Scotch needs flex installed. So installing it..."
-	    flex=flex-2.5.37
+	    flex=`(cd ..; ls flex-*.tar.gz | sed "s/.tar.gz//")`
 	    gunzip -f -c ../$flex.tar.gz | tar -xf -
 	    cd $flex
 	    ./configure --prefix=$ROOT/flex || exit -1
