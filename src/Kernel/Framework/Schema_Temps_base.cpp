@@ -51,7 +51,8 @@ void Schema_Temps_base::initialize()
       if (nb_pas_dt_==0 && ((stat(fichier,&f)) || !pb_base().reprise_effectuee()))
         {
           SFichier fic(fichier,(schema_impr() ? (ios::out) : (ios::app)));
-          fic << "# temps\t\t dt\t\t facsec\t\t residu=max|Ri|\t dt_stab\t ";
+          if (schema_impr())
+            fic << "# temps\t\t dt\t\t facsec\t\t residu=max|Ri|\t dt_stab\t ";
           for (int i=0; i<pb_base().nombre_d_equations(); i++)
             fic << pb_base().equation(i).expression_residu();
         }

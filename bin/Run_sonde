@@ -21,6 +21,7 @@
 #
 # TESTER ENCORE ET ENCORE !
 #
+multi=1
 Run_calculation()
 {
    rm -f $NOM.err

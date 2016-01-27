@@ -14,8 +14,9 @@ else
    else 
       EXEC_TRUST=$1
    fi
+   shift
 fi
 export reprise=0
 LANG=C
 export LANG
-Run_sonde $EXEC_TRUST
+Run_sonde $EXEC_TRUST $*
