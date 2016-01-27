@@ -111,6 +111,7 @@ help()
    echo "-mesh                   : Visualize the mesh(es) contained in the data file."
    echo "-monitor                : Run and monitor the progress of the TRUST calculation."
    echo "-probes                 : Monitor the TRUST calculation only."
+   echo "-evol                   : Monitor the TRUST calculation only (new)."
    echo "-prm                    : Write a prm file and generate the corresponding pdf file in the build directory."
    echo "-clean                  : Clean the current directory from all the generated files by TRUST."
    echo "-copy                   : Copy the test case datafile from the TRUST database under the present directory."
@@ -130,8 +131,6 @@ help()
    echo "If no option is given, create a submission file and submit the job on the test class."
    exit 0
 }
-[ "$exec" = "" ] && echo "Error: the variable \$exec containing TRUST binary path is undefined." && exit -1
-[ ! -f $exec ] && echo "Error: the binary pointed by the variable \$exec=$exec does NOT exist." && exit -1  
 binary=$exec
 ici=`pwd`   
 me=`whoami`
@@ -212,6 +211,9 @@ do
    elif [ "$1" = "-probes" ]
    then
       probes=1
+   elif [ "$1" = "-evol" ]
+   then
+      probes=2
    elif [ "$1" = "-create_sub_file" ]
    then
       create_sub_file=1 && prod=1 && mail=1
@@ -284,6 +286,9 @@ do
    # Option is known, jump to next
    [ "$supported_option" = 1 ] && shift
 done
+# deplace pas besoin d exec pour clean help ....
+[ "$exec" = "" ] && echo "Error: the variable \$exec containing TRUST binary path is undefined." && exit -1
+[ ! -f $exec ] && echo "Error: the binary pointed by the variable \$exec=$exec does NOT exist." && exit -1  
 
 ############
 # Filename #
@@ -330,7 +335,11 @@ then
    Run_sonde $NOM
    exit $?
 fi
-
+if [ "$probes" = 2 ]
+then 
+  $TRUST_ROOT/exec/PLOT_2D/Plot2d.sh  `dirname $NOM` "residu=max|Ri|"
+  exit $?
+fi
 #################
 # Visu maillage #
 #################
