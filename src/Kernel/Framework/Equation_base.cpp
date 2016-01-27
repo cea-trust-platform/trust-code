@@ -2241,10 +2241,17 @@ void Equation_base::imprime_residu(SFichier& fic)
 Nom Equation_base::expression_residu()
 {
   int size = residu_.size_array();
-  Nom tmp("");
+  Nom tmp(""),ajout("");
+  if (probleme().get_coupled())
+    {
+      ajout="_";
+      ajout+=probleme().le_nom();
+    }
   for (int i=0; i<size; i++)
     {
-      tmp+="Ri=max|d";
+      tmp+="Ri=max";
+      tmp+=ajout;
+      tmp+="|d";
       // Comment nommer de facon claire ET concise
       // le champ de l'expression:
       if (size==1)
