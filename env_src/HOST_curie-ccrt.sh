@@ -93,7 +93,6 @@ define_soumission_batch()
    #queue=`ccc_mpinfo | awk '/up/ {if ($10>free) {free=$10;queue=$1}} END {print queue}'`
    # On force la queue standard (processeurs@2.27Ghz au lieu de 1.00Ghz sur la xlarge)
    queue=standard
-   queue=hybrid # Temporaire 10/12/2015 car plus d heures sur noeuds fins pour projet genden
    if [ "$prod" = 1 ]
    then
       qos=normal

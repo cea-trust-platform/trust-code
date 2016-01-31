@@ -10,8 +10,10 @@ prerequis=1
 export PATH=$PATH:$TRUST_ROOT/exec/utils/bin
 for p in $list_prerequis
 do
-if  [ "`$p --help 1>/dev/null 2>&1;echo $?`" != 0 ] || [ "$force_utils" = "1" ]
-then	
+  opt="--help"
+  [ "$p" = "awk" ] && opt=""
+  if  [ "`$p $opt 1>/dev/null 2>&1;echo $?`" != 0 ] || [ "$force_utils" = "1" ]
+  then	
     echo "You need $p installed. Try to install it"
 
     dest=tmp_$p

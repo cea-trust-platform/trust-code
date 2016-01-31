@@ -6,7 +6,7 @@ cible==$(install)/bin/$(name)
 all:$(cible)
 $(cible): makefile
 	make clean
-	@./Installer $(version)
+	@./Installer $(package)
 
 clean:
 	rm -r -f $(install)

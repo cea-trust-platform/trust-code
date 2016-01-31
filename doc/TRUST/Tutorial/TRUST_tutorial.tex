@@ -162,7 +162,7 @@ CEA Saclay \\ % Your institution for the title page
 \begin{itemize}
 \item First, initialize the TRUST environment. On CEA Saclay PCs and callisto cluster, TRUST versions are available with (e.g. X.Y.Z=1.7.2):\\
 \vspace{0.2cm}
-\textbf{source  /home/triou/env\_TRUST\_X.Y.Z\_patch.sh}
+\textbf{source  /home/triou/env\_TRUST\_X.Y.Z.sh}
 \vspace{0.5cm}
 
 \item Second, several editors (vim, emacs, nedit) can be configured to highlight TRUST keywords in the data files. If you prefer using \textbf{nedit}, please do the following:
@@ -222,7 +222,6 @@ CEA Saclay \\ % Your institution for the title page
 
 \begin{itemize}
 \item First, you must have already done the commands of the first section.
-%we are going to configure the Nedit editor to recognize the Trio\_U keywords in a data file. So run nedit, and select Preferences $\rightarrow$ Save Defaults, then re-initialize the Trio\_U environment (source \$TRIO\_U\_ROOT/bin/Init\_Trio\_U), the message "nedit.rc updated" should appear).
 \vspace{0.2cm}
 
 \item Open a terminal and run the commands to create a directory for your studies: \\
@@ -638,7 +637,7 @@ You will run it like:\\
 \textbf{ssh -X login@callisto-login1(.intra.cea.fr)} \\
 \textbf{source /panfs/ixion/home/triou/TRUST/TRUST\_X.Y.Z/env\_TRUST.sh}\\
 or 
-\textbf{source /home/triou/env\_TRUST\_X.Y.Z\_patch.sh}\\
+\textbf{source /home/triou/env\_TRUST\_X.Y.Z.sh}\\
 }}
 \vspace{0.2cm}
 
@@ -1200,7 +1199,7 @@ Goals:
 \begin{itemize}
 \item First initialize TrioCFD environnement :\\
 {\small{
-\textbf{source /home/triou/env\_TrioCFD\_X.Y.Z\_patch.sh }\\
+\textbf{source /home/triou/env\_TrioCFD\_X.Y.Z.sh }\\
 \textbf{echo \$exec} \\
 \textbf{export TrioCFD\_ROOT=\`\,dirname \$exec\`} \\
 \textbf{echo \$TrioCFD\_ROOT} \\
@@ -1336,7 +1335,7 @@ Outlet: $P_0=0$
 \begin{itemize}
 \item First initialize TrioCFD environnement :\\
 {\small{
-\textbf{source /home/triou/env\_TrioCFD\_X.Y.Z\_patch.sh }\\
+\textbf{source /home/triou/env\_TrioCFD\_X.Y.Z.sh }\\
 \textbf{echo \$exec} \\
 \textbf{export TrioCFD\_ROOT=\`\,dirname \$exec\`} \\
 \textbf{echo \$TrioCFD\_ROOT} \\
@@ -1439,7 +1438,7 @@ Outlet: $P_0=0$
 
 \begin{itemize}
 \item Source the TRUST environnement:\\
-\textbf{source /home/triou/env\_TRUST\_X.Y.Z\_patch.sh}
+\textbf{source /home/triou/env\_TRUST\_X.Y.Z.sh}
 \item Copy the study named \textbf{diagonale}. This test case deals with a 2D flow with Navier Stokes and the equation for one constituent.
 \item Edit the data file and modify the fluid characteristics to the previous ones ($\mu, \rho, D$).
 \item We want to modify the geometry of this problem to the previous picture. So we want to create 3 blocks like:
@@ -1639,7 +1638,7 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 
 \begin{itemize}
 \item First initialize TrioCFD environnement :\\
-\textbf{source /home/triou/env\_TrioCFD\_X.Y.Z\_patch.sh }\\
+\textbf{source /home/triou/env\_TrioCFD\_X.Y.Z.sh }\\
 \textbf{echo \$exec} 
 
 \item Copy the study named \textbf{FTD\_all\_VDF}: \textbf{trust -copy\index{trust -copy} FTD\_all\_VDF}
@@ -1736,11 +1735,9 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 \textbf{mkdir -p $\sim$/test/yourname/salome/exo1} \\
 \textbf{cd $\sim$/test/yourname/salome/exo1} \\
 
-\textbf{/home/salome/salome7} \\
-\# or for example: {\scriptsize{\textbf{/home/salome/Products/installations/SALOME-7.7.1-FD18/salome}}} \\
-\# or {\scriptsize{\textbf{/export/home/salome/V7\_5\_1\_FD18\_64/salome751}}} \\
-\# or {\scriptsize{\textbf{source /data/tmpsalome/salome/installations/SALOME-7.7.1-FD18/env\_products.sh} + \textbf{runSalome} or \textbf{runAppli}.}} \\
-\# it depends of the Salom\'e installation/configuration.
+\textbf{/export/home/salome/SALOME-7.7.1-FD18/salome} \\
+\# or if no local version: {\scriptsize{\textbf{/home/salome/salome}}} \\
+\# take the network version but to be used for testing NOT for work.
 
 \item Create a new study: File $\rightarrow$ New
 
@@ -1880,7 +1877,7 @@ Select the Mesh\_1 object then Right Click $\rightarrow$ Export $\rightarrow$ ME
 \end{tabular}
 
 \item Run the data file and post process the mesh with VisIt:\\
-\textbf{source  /home/triou/env\_TRUST\_X.Y.Z\_patch.sh} \\
+\textbf{source  /home/triou/env\_TRUST\_X.Y.Z.sh} \\
 \textbf{trust dom} \\
 \textbf{visit\index{visit} -o mesh.lata} \\
 \vspace{0.2cm}
@@ -2026,10 +2023,10 @@ Goal: Improve the mesh for TRUST near the wall by using viscous layers.
 \item Create a directory and run Salom\'e (we suppose it is installed):\\
 \textbf{mkdir -p $\sim$/test/yourname/salome/exo2} \\
 \textbf{cd $\sim$/test/yourname/salome/exo2} \\
-\textbf{/home/salome/salome7} \\
-\# or for example: {\scriptsize{\textbf{/export/home/salome/V7\_4\_0\_FD18\_64/salome740}}} \\
-\# or {\scriptsize{\textbf{source /data/tmpsalome/salome/installations/salome\_7.3.0\_FD18\_64/env\_products.sh} + \textbf{runSalome} or \textbf{runAppli}.}} \\
-\# it depends of the Salom\'e installation/configuration.
+
+\textbf{/export/home/salome/SALOME-7.7.1-FD18/salome} \\
+\# or if no local version: {\scriptsize{\textbf{/home/salome/salome}}} \\
+\# take the network version but to be used for testing NOT for work.
 
 \item Create a new study: File $\rightarrow$ New.
 
@@ -2173,10 +2170,10 @@ Then "Apply and Close"
 \item Create a directory and run Salom\'e (we suppose it is installed):\\
 \textbf{mkdir -p $\sim$/test/yourname/salome/exo3} \\
 \textbf{cd $\sim$/test/yourname/salome/exo3} \\
-\textbf{/home/salome/salome7} \\
-\# or for example: {\scriptsize{\textbf{/export/home/salome/V7\_4\_0\_FD18\_64/salome740}}} \\
-\# or {\scriptsize{\textbf{source /data/tmpsalome/salome/installations/salome\_7.3.0\_FD18\_64/env\_products.sh} + \textbf{runSalome} or \textbf{runAppli}.}} \\
-\# it depends of the Salom\'e installation/configuration.
+
+\textbf{/export/home/salome/SALOME-7.7.1-FD18/salome} \\
+\# or if no local version: {\scriptsize{\textbf{/home/salome/salome}}} \\
+\# take the network version but to be used for testing NOT for work.
 
 \item Create a new study: File $\rightarrow$ New.
 
@@ -2456,7 +2453,7 @@ or in parallel with:\\
 {\footnotesize{
 \textbf{mkdir \, -p \, $\sim$/test/yourname/gmsh} \\
 \textbf{cd \, $\sim$/test/yourname/gmsh} \\
-\textbf{source /home/triou/env\_TrioCFD\_X.Y.Z\_patch.sh }\\
+\textbf{source /home/triou/env\_TrioCFD\_X.Y.Z.sh }\\
 \textbf{export TrioCFD\_ROOT=\`\,dirname \$exec\`} \\
 \textbf{echo \$TrioCFD\_ROOT} \\
 \textbf{dir=\$TrioCFD\_ROOT/validation/share/Validation/Rapports\_automatiques/Validant} \\
@@ -2660,7 +2657,7 @@ Note that in Xprepro, we dig a geometry in an initial block of matter.
 \item Create a directory:\\
 \textbf{mkdir \, -p \, $\sim$/test/yourname/Xprepro/exo1} \\
 \textbf{cd \, $\sim$/test/yourname/Xprepro/exo1} \\
-\textbf{source /home/triou/env\_TRUST\_X.Y.Z\_patch.sh }\\
+\textbf{source /home/triou/env\_TRUST\_X.Y.Z.sh }\\
 \textbf{Xprepro \&} 
 \end{itemize}
 
@@ -2849,7 +2846,7 @@ The radius of the cylinders is 0.2m and the distances between cylinders are 0.2m
 \item Create a directory: Run Xprepro in the TRUST environment:\\
 \textbf{mkdir \, -p \, $\sim$/test/yourname/Xprepro/exo2} \\
 \textbf{cd \, $\sim$/test/yourname/Xprepro/exo2} \\
-\textbf{source /home/triou/env\_TRUST\_X.Y.Z\_patch.sh }\\
+\textbf{source /home/triou/env\_TRUST\_X.Y.Z.sh }\\
 \textbf{Xprepro \&} 
 \end{itemize}
 

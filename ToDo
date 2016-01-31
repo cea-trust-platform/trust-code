@@ -1,4 +1,5 @@
 Version	Qui				Tache
+1.7.3   triou@cea.fr            nouvelle option configure -no-host (ne lit pas env/HOST_....sh) cf bench CCRT 16000 32000 CPUs
 1.7.3   gauthier.fauchet@cea.fr  Reprendre Mod_turb_hyd_base.cpp limitation mut
 1.7.3   gauthier.fauchet@cea.fr  Revoir le PATH pour module load TRUST sous occigen (passer par SET)
 1.7.3   triou@cea.fr            proposer un tutorial ICoCo
