@@ -147,10 +147,10 @@ else
     echo "To build exe without cmake set variable TRUST_ATELIER_CMAKE to 0"
     if [ $module -eq 0 ]
 	then
-	env PROGRAM=${project_executable_name_org} PATH=$BALTIK_ROOT/bin:${PATH} Makeatelier.sccs -2 exe
+	env PROGRAM=${project_executable_name_org}  Makeatelier.sccs -2 exe
 	status=$?
     else
-	env PROGRAM=${project_executable_name_org} PATH=$BALTIK_ROOT/bin:${PATH} Makeatelier.sccs -2 module
+	env PROGRAM=${project_executable_name_org} Makeatelier.sccs -2 module
 	status=$?
     fi
 fi

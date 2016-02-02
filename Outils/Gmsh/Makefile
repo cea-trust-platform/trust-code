@@ -18,4 +18,4 @@ check:
 clean:
 	rm -f *.o 
 	rm -r -f $(install)* fltk gmsh fltk*/ gmsh*/
-	rm -f *med *log *ssz*geo carre*file *gz
+	rm -f *med *log *ssz*geo carre*file *gz *.stop

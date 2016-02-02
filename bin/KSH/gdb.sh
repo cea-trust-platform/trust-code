@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Usage: gdb [-valgrind] \$exec"
+echo "Usage: gdb.sh [-valgrind] \$exec"
 valgrind=0 && [ "$1" = -valgrind ] && valgrind=1 && shift
 directory=""
 if [ "$1" != "" ] && [ -f $1 ]

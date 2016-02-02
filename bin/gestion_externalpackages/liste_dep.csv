@@ -31,8 +31,8 @@ VisIt,visit2.9.1.tar.gz,outil,SV,BSD,https://wci.llnl.gov/simulation/computer-co
 VisIt,cmake-3.0.2.tar.gz,,GF,BSD,http://www.cmake.org/,http://www.cmake.org/files/v3.0/cmake-3.0.2.tar.gz,
 VisIt,qt-everywhere-opensource-src-4.8.3.tar.gz,,," GPL Version 3  LGPL 2.1",http://www.qt.io/,https://download.qt.io/archive/qt/4.8/4.8.3/qt-everywhere-opensource-src-4.8.3.tar.gz,"C'est quoi la page qu'on veut ? qt.io? qt ?"
 VisIt,Imaging-1.1.6.tar.gz,,SV,"voir remarque",http://www.pythonware.com/products/pil/,http://effbot.org/downloads/Imaging-1.1.6.tar.gz,"pour la licence voir http://www.pythonware.com/products/pil/license.htm (je ne sais pas de quel type de licence il s'agit)"
-VisIt,requests-2.5.1.tar.gz,,GF,"?","?",http://portal.nersc.gov/svn/visit/tags/2.9.1/third_party/requests-2.5.1.tar.gz,
-VisIt,seedme-seedme-python-client-0a365da9c861.tar.gz,,GF,"?","?",http://portal.nersc.gov/svn/visit/tags/2.9.1/third_party/seedme-seedme-python-client-0a365da9c861.tar.gz,
+VisIt,requests-2.5.1.tar.gz,,GF,"?","?",http://visit.ilight.com/svn/visit/tags/2.9.1/third_party/requests-2.5.1.tar.gz,
+VisIt,seedme-seedme-python-client-0a365da9c861.tar.gz,,GF,"?","?",http://visit.ilight.com/svn/visit/tags/2.9.1/third_party/seedme-seedme-python-client-0a365da9c861.tar.gz,
 lapack,lapack-3.4.1.tgz,,SV,BSD,http://www.netlib.org/lapack/,http://www.netlib.org/lapack/lapack-3.4.1.tgz,
 petsc,SuiteSparse-4.2.1.tar.gz,,,"voir remarque",http://faculty.cse.tamu.edu/davis/suitesparse.html,http://ftp.mcs.anl.gov/pub/petsc/externalpackages/SuiteSparse-4.2.1.tar.gz,"je ne sais pas quel est le type de licence, on peut voir http://www.netlib.org/linalg/SuiteSparse-README.txt"
 petsc,ViennaCL-1.5.1.tar.gz,,,"MIT License",http://viennacl.sourceforge.net/,http://downloads.sourceforge.net/project/viennacl/1.5.x/ViennaCL-1.5.1.tar.gz,"Hum option utilisée ????"

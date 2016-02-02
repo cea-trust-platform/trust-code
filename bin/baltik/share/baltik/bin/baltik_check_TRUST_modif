@@ -5,7 +5,7 @@
 org=`mktemp_ -d `
 for f in `ls build/src/*.{cpp,h,f}| grep -v info_atelier`
 do
-  f2=`Find $(basename $f)`
+  f2=`Find.sh $(basename $f)`
  [ "$f2" != "" ] &&  cp $f2 $org; 
 done
 

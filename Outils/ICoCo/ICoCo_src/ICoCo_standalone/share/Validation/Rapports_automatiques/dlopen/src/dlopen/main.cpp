@@ -3,7 +3,9 @@
 #include <dlfcn.h>
 #include <iostream>
 #include <vector>
+#ifdef linux
 #include <fpu_control.h>
+#endif
 #include <mpi.h>
 #include <Init_Params.h>
 
@@ -24,8 +26,10 @@ extern "C"  Problem* getProblem();
 int main(int argc, char** argv) {
   MPI_Init(&argc,&argv);
   {
+#ifdef linux
   fpu_control_t cw = _FPU_DEFAULT & ~(_FPU_MASK_IM | _FPU_MASK_ZM | _FPU_MASK_OM);
   _FPU_SETCW(cw);
+#endif
   Init_Params my_data;
   my_data.data_file="U_in_var_impl_ICoCo.data";
   my_data.problem_name="pb";

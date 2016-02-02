@@ -238,7 +238,7 @@ do
       VALGRIND_STRICT=1
    elif [ "$1" = "-gdb" ]
    then
-      gdb=gdb && mpirun_options="-gdb"
+      gdb=gdb.sh && mpirun_options="-gdb"
    elif [ "$1" = "-prm" ]
    then
       prm=1 

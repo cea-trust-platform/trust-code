@@ -2,7 +2,7 @@
 # On n'installe que pour Linux
 #./Installer.old $* 
 #exit
-[ $TRUST_ARCH != "linux" ] && exit
+#[ $TRUST_ARCH != "linux" ] && exit
 if [ $1 = "TRIOU" ]
 then
 . ./XDATA.sh
@@ -33,7 +33,7 @@ cd ..
 mkdir build
 cd build
 #../$1_SRC/configure --prefix=`pwd`/../dist
-cmake ../$1_SRC -DCMAKE_INSTALL_PREFIX=`pwd`/../dist
+cmake ../$1_SRC -DCMAKE_INSTALL_PREFIX=`pwd`/../dist -DCMAKE_BUILD_TYPE=Release
 
 make install || exit -1
 cd ../..

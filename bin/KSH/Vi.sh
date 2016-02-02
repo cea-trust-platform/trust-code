@@ -1,5 +1,5 @@
 #!/bin/bash
 file=`basename $1`
-file=`Find $file`
+file=`Find.sh $file`
 vi $file
 echo $file

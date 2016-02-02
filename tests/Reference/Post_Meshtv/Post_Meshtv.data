@@ -46,7 +46,7 @@ Partition dom
 {
 	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 1
-	zones_name DOM
+	zones_name DOMORG
 }
 Partition dom_post
 {
@@ -59,7 +59,7 @@ END PARTITION #
 
 # BEGIN SCATTER
 Scatter DOMP.Zones dom_post
-Scatter DOM.Zones dom
+Scatter DOMORG.Zones dom
 END SCATTER #
 
 VDF dis

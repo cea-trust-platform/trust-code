@@ -5,5 +5,7 @@ MED_SRC.tgz:
 
 test:
 	./test.sh
-clean:
-	rm -rf build install MED_SRC *~ $(TRUST_MEDCOUPLING_ROOT) 
+clean_build:
+	rm -rf build install MED_SRC *~ $(TRUST_MEDCOUPLING_ROOT)
+clean: clean_build
+	rm -rf  MED_SRC.tgz

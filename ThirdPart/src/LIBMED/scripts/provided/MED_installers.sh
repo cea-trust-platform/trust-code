@@ -194,6 +194,8 @@ install_MED() {
         LIBS="-lm"
         # Add -lz (problem on curie)
         [ "`ls /usr/*/libz.so 2>/dev/null`" != "" ] && LIBS=$LIBS" -lz"
+	# cygwin
+        [ "`ls /lib/libz.dll.a 2>/dev/null`" != "" ] && LIBS=$LIBS" -lz"
         export LIBS
 
 	# configuring MED

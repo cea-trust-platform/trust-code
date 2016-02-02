@@ -109,7 +109,7 @@ configure_package() {
     if [ "${name}" = MED ]
     then
        modified_file="${TRUST_MED_workdir}/Makefile.in"
-       sed_ "${modified_file}" "s?tools doc?tools?g"
+       sed_ "${modified_file}" "s?tests tools doc?tools?g"
     fi
 
     # calling configure
@@ -193,7 +193,8 @@ install_package() {
 
     # calling make install
     cd "${TRUST_MED_HDF_BUILD}/${archive}"
-    ${TRUST_MAKE} install 1>install_${archive}.log 2>&1 || exit -1
+    # ${TRUST_MAKE} make -j ne semble pas marcher si on ne fait pas les test med
+    make  install 1>install_${archive}.log 2>&1 || exit -1
 
     # applying corrections for med
     if test "x_${name}_x" = "x_MED_x"

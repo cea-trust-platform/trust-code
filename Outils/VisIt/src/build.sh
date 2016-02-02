@@ -3,15 +3,15 @@ clean()
 {
    # Nettoyage des paquets
    echo $ECHO_OPTS "Cleaning...\c"
-   # Do not delete cmake cause it is used by TRUST plugins for VisIt !
-   for paquet in `\ls *.tar.gz *.tgz 2>/dev/null | grep -v cmake`
+   # 
+   for paquet in `\ls *.tar.gz *.tgz 2>/dev/null `
    do
       [ -d ${paquet%.tar.gz} ] && rm -r -f ${paquet%.tar.gz}
       [ -d ${paquet%.tgz} ]    && rm -r -f ${paquet%.tgz}
+      rm -f $paquet
    done
-   # Do not delete cmake cause it is used by TRUST plugins for VisIt !
-   rm -r -f VTK-?.?.? VTK-*-build visit visit?.?.? visit-vtk-?.? visit-vtk-*-build Mesa-?.? Mesa-?.*.? qt-everywhere-opensource-src-?.?.?  cmake-?.?.?
-   rm -f build_visit2_5_2*
+   rm -r -f VTK-?.?.? VTK-*-build visit visit?.?.? visit-vtk-?.? visit-vtk-*-build Mesa-?.? Mesa-?.*.? qt-everywhere-opensource-src-?.?.?  
+   rm -f build_visit2_5_2* build_visit*help
    rm -f build_visit*"_log" *.cmake *.conf tmp* *.py
    echo "OK"
 }

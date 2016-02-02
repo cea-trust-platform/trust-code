@@ -262,6 +262,7 @@ check_all()
 #########
 if [ "`basename $0`" != "bash" ] &&   [ "`basename $0`" != "baltik_check_sources" ]
 then
+  [ $TRUST_ARCH != linux ] && exit 0
    # make.include detectes we are in a TRUST source directory
    org=`pwd`
    reffile=".check_sources.ok"

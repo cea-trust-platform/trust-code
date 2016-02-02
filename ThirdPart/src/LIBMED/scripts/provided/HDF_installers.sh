@@ -120,7 +120,8 @@ install_HDF() {
 
     # finalizing installation
     finalize_installation
-
+    # pour cygwin pb avec hdf5 
+    rm -f ${TRUST_MED_ROOT}/lib/libhdf5.la
     # generating report on HDF installation
     generate_HDF_report "${HDF_version}" "${HDF_location}"
 }
