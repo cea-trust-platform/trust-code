@@ -1,8 +1,8 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.3_beta : Enhancements, modifications and corrected bugs since version 1.7.2 :
 --------------------------------------------------------------------------------------------------
+03/02/16 (TRUST)  Minor change: Option -disable-check added to the TRUST configure tool (Disable checks for external packages)
 15/12/15 (Tools)  Optimization: New configuration TGCC to client/serveur mode of VisIt on Curie and Airain via HPCDrive
-
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.2 : Enhancements, modifications and corrected bugs since version 1.7.1 :
 --------------------------------------------------------------------------------------------------

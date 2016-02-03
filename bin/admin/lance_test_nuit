@@ -2703,7 +2703,7 @@ do
       echo "Release criterion: $Composant OK"
    else
       echo "Release criterion: $Composant KO"
-      cat tmp.log | mail_ -s \"[lance_test_nuit] Cible portability KO on Baltik $Composant\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+      [$KO != 0 ] && cat tmp.log | mail_ -s \"[lance_test_nuit] Cible portability KO on Baltik $Composant\" $TRUST_MAIL $TRUST_PROJECT_LEADER
    fi
    rm -f tmp.log
    [ $KO != 0 ] && [ $nb_total = $tot_total ] && validation_composant=0

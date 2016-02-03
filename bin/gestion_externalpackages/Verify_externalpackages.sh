@@ -7,7 +7,7 @@
 echo "Controm md5 of externalpackages"
 diff md5.ref md5.check
 ko=$?
-echo
+#echo
 echo Control of liste_dep.csv
 # on verifie que les fichiers sont bien indiqus dans liste_dep.csv
 for f in `awk '{print $2}' md5.check`
