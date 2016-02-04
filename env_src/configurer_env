@@ -538,8 +538,7 @@ then
       done
    fi
    rm -r -f $TRUST_ROOT/env_TRUST.sh $TRUST_ROOT/env/ $TRUST_ROOT/lib $TRUST_ROOT/exec $TRUST_ROOT/include $TRUST_ROOT/Makefile $TRUST_ROOT/MonoDir*
-   # Ne pas effacer pour garder l'historique des options passees au configure
-   #rm -f $TRUST_ROOT/configure.log
+   rm -f $TRUST_ROOT/configure.log
    rm -f  $TRUST_ROOT/tags $TRUST_ROOT/TAGS  $TRUST_ROOT/compile*log $TRUST_ROOT/License.txt_*
    # Plus on efface le $TRUST_TMP
    rm -r -f $TRUST_TMP
@@ -609,7 +608,7 @@ echo "# domainname : `domainname 2>/dev/null`" | tee -a $env
 #################
 . ./HOST.env
 # Variables define_modules_config
-if [ -f HOST_$HOST_BUILD.sh ]
+if [ "$TRUST_WITHOUT_HOST" = 0 ]
 then
    . ./HOST_$HOST_BUILD.sh
 else
@@ -634,6 +633,7 @@ define_modules_config
 ###################################
 if [ -f configure.env ]
 then
+   echo "TRUST_WITHOUT_HOST=$TRUST_WITHOUT_HOST && export TRUST_WITHOUT_HOST	# Disable/enable reading of HOST file"	>> configure.env
    . ./configure.env
 fi
 

@@ -45,7 +45,7 @@ then
 echo "----------------------------------------------------------------------------------------------------------------------------"
 echo "Usage: `basename $0` "
 echo "[-help]                           Print help of the different configure options."
-echo "[-disable-optionals]              Disable all optionals librairies and tools" 
+echo "[-disable-optionals]              Disable all optionals librairies and tools." 
 echo "[-add_search=<dir>]               Add a directory to the defaults path to search a tool."
 echo "[-c++=<prog>]                     Force the use of a specified C++ compiler."
 echo "[-cc=<prog>]                      Force the use of a specified C compiler."
@@ -72,6 +72,7 @@ echo "[-disable-tcl_tk]                 Disable Tcl/Tk detection/installation."
 echo "[-disable-gmsh]                   Disable Gmsh installation and build."
 echo "[-disable-mpiio]                  Disable MPI-IO mode for writing of .xyz binary output file."
 echo "[-disable-check]                  Disable checks for external packages."
+echo "[-without-host_file]              Do not load the environnement variables specified in an env_src/HOST_`hostname | awk -F. '{print $1}'`.sh file."
 echo "[-without-doc]                    Do not build the documentation."
 echo "[-without-visit]                  Do not install VisIt."
 echo "[-download-visit]                 Download a sequential version of VisIt rather trying to build a parallel version."
@@ -108,6 +109,7 @@ export TRUST_WITHOUT_DOC=0
 export TRUST_WITHOUT_VISIT=0
 export TRUST_DOWNLOAD_VISIT=0
 export TRUST_DOWNLOAD_SALOME=0
+export TRUST_WITHOUT_HOST=0
 var=env/configure.env && rm -f $var
 echo "$0 called with options: $*"
 
@@ -233,7 +235,11 @@ do
       
       (cd $REP_THIRD_PARTY && [ $first -eq 0 ] && echo "Disabling $THIRD_PARTY, so make clean:" && make clean)
       command=TRUST_DISABLE_$THIRD_PARTY=1   
-      eval $command       
+      eval $command
+
+   elif [ "${1#-without-host_file}" != $1 ]
+   then
+      export TRUST_WITHOUT_HOST=1
        
    else   
       echo "Unknown option $1." 
@@ -242,14 +248,15 @@ do
    shift
 done
 
+export TRUST_ROOT_VERSION=`awk '/version/ && /Release notes/ {print $4;exit}' $TRUST_ROOT/RELEASE_NOTES | sed "s/_beta//"`
 if [ "$TRUST_DISABLE_CHECK" = 0 ] && [ "$clean" != "clean" ]
 then
-   [ ! -d externalpackages ] && [ ! -L externalpackages ] && echo "You need to download externalpackages before configuring" && export TRUST_ROOT_VERSION=`awk '/version/ && /Release notes/ {print $4;exit}' $TRUST_ROOT/RELEASE_NOTES | sed "s/_beta//"`&& echo wget http://downloads.sourceforge.net/project/trust-platform/$TRUST_ROOT_VERSION/externalpackages_$TRUST_ROOT_VERSION.tar && exit -1
+   [ ! -d externalpackages ] && [ ! -L externalpackages ] && echo "You need to download externalpackages before configuring" && echo wget http://downloads.sourceforge.net/project/trust-platform/$TRUST_ROOT_VERSION/externalpackages_$TRUST_ROOT_VERSION.tar && exit -1
    # Gestion externalpackages
    echo "Verify externalpackages..."
    cd $TRUST_ROOT/bin/gestion_externalpackages
    export LC_ALL=C && ./Verify_externalpackages.sh 
-   [ $? != 0 ] && export TRUST_ROOT_VERSION=`awk '/version/ && /Release notes/ {print $4;exit}' $TRUST_ROOT/RELEASE_NOTES | sed "s/_beta//"` && echo "" && echo "Error: You need to update externalpackages directory to $TRUST_ROOT_VERSION version" && exit -1
+   [ $? != 0 ] && echo "" && echo "Error: You need to update externalpackages directory to $TRUST_ROOT_VERSION version" && exit -1
    cd $TRUST_ROOT
 elif [ "$clean" != "clean" ]
 then

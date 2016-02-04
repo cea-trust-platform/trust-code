@@ -465,7 +465,7 @@ export prod
 export bigmem
 export gpu
 # See HOST_???.sh file called in TRUST.env
-if [ -f $TRUST_ROOT/env/HOST_$HOST_BUILD.sh ]
+if [ "$TRUST_WITHOUT_HOST" = 0 ]
 then
    source $TRUST_ROOT/env/HOST_$HOST_BUILD.sh
 else

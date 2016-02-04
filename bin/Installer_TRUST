@@ -186,6 +186,7 @@ echo "====================================================================="
 check_prerequis
 #
 configure=0
+opt=""
 export error_exit=0
 while [ "$1" != "" ]
 do
