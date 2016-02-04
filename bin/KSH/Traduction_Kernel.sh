@@ -156,7 +156,7 @@ CMD_CLEARCASE()
       ((label==1)) && CHECKOUT $dir 1>/dev/null 2>&1
       ((label==1)) && [ -f $dir.trad_kernel.save ] && mv -f $dir.trad_kernel.save $dir
       ((label==0)) && [ -f $dir.trad_kernel.save ] && mv -f $dir.trad_kernel.save $dir.traduit
-      ((label==1)) && MKLABEL -nc Traduction_Kernel_Anglais $dir 1>/dev/null 2>&1
+    #  ((label==1)) && MKLABEL -nc Traduction_Kernel_Anglais $dir 1>/dev/null 2>&1
    fi
 }
 
