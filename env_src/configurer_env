@@ -904,7 +904,7 @@ fi
 e="`cherche_file TRUST_MD makedepend`";eval $e
 if [ "$TRUST_MD" = ""  ]
 then
-ehco Compilation of makedepend
+echo "Compilation of makedepend"
 make_ $TRUST_ROOT/Outils/makedepend makedepend $TRUST_ROOT/exec/makedepend.log
 fi
 

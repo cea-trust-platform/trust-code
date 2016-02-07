@@ -10,6 +10,8 @@ linux	rsync_ssh 	get_binary	vonnes.intra.cea.fr		-all		-TrioCFD	-xdata		-force_o
 linux	rsync_ssh	cible		is223196.intra.cea.fr		-all		-TRUST		-gcov		-force_provided_openmpi		-disable-gmsh		# CentOS 6.4 			CEA Saclay	Bat 451 LMSF	bureau 43 CS Marthe Roux
 linux	scp_ssh		non		is229107.intra.cea.fr		-all	 									-disable 		# Fedora 20			CEA Saclay	Bat ??		(Teste la compilation de TRUST allegee)
 linux	rsync_ssh	cible		is226549.intra.cea.fr		 		-TRUST -MPCube	-g 		-force_provided_mpich		-Check_decoupage	# Fedora 18 			CEA Saclay	Bat ??  	(Couplage Cathare/TRUST)
+linux	rsync_ssh	cible		airain.ccc.cea.fr	 updated -limited 					-benchmark	 					# RedHat 6.7			CEA CCRT
+linux	rsync_ssh	cible		curie-ccrt.ccc.cea.fr    updated -limited 					-benchmark						# RedHat 6.7			CEA TGCC
 linux	rsync_ssh	tache		callisto.intra.cea.fr	 updated		-TrioCFD -ModeleCoeur		-benchmark						# CentOS 6.4			CEA DM2S 	Bat 458		salle serveur 
 linux	rsync_ssh	non		callisto-openmpi.intra.cea.fr			-ModeleCoeur			-benchmark			-without-visit		# CentOS 6.4			CEA DM2S 	Bat 458 	salle serveur (Teste OpenMPI 1.8.4)
 linux 	rsync_ssh	non   		is142348.intra.cea.fr       							-force_provided_mpich					# Mandriva 2008 MACHINE 32bits	CEA Saclay	Bat ??	

@@ -78,6 +78,7 @@ fi
 # Variable ECHO_OPTS #
 ######################
 [ "`echo -e`" != "-e" ] && ECHO_OPTS="-e"
+export LC_ALL=C
 
 #################
 # Variable HOST #

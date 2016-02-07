@@ -86,7 +86,7 @@ configure_package() {
 	"x_HDF_1.6_x") configure_options="${configure_options} --disable-stream-vfd --enable-using-memchecker" ;;
 	"x_HDF_1.8_x") configure_options="${configure_options} --disable-stream-vfd --enable-using-memchecker --enable-debug=yes  " ;;
 	"x_MED_2.3_x") configure_options="${configure_options} --enable-static"                                ;;
-	"x_MED_3.0_x") configure_options="${configure_options} --enable-static"                                ;;
+	"x_MED_3.0_x") configure_options="${configure_options} --enable-static --disable-python"               ;;
 	* ) raise_invalid_package_version_exception "${name}" "${version}"                                     ;;
     esac
 

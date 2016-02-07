@@ -251,8 +251,9 @@ do
 	          echo "Launching in background the update by ssh on $log@$adr at "`date '+%H:%M:%S'`
 	       else
 	          # On ne lance plus sur la frontale
-	          ssh_command "export WORKBASE=$WORKBASE;cd $WORKDIR/$version/TRUST/bin/admin;ccc_msub sub_maj_$machine" &
-	          echo "Launching in background the update by ssh then ccc_msub on $log@$adr at "`date '+%H:%M:%S'`
+	          #ssh_command "export WORKBASE=$WORKBASE;cd $WORKDIR/$version/TRUST/bin/admin;ccc_msub sub_maj_$machine" &
+	          #echo "Launching in background the update by ssh then ccc_msub on $log@$adr at "`date '+%H:%M:%S'`
+	          echo "NO launching in background the update by ssh then KO on $log@$adr at "`date '+%H:%M:%S'`
 	       fi
 	    #elif [ "$machine" = callisto ]
 	    #then
