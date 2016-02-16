@@ -1589,7 +1589,7 @@ case $TRUST_ARCH_CC in
 	      SYSLIBS="-L"`dirname $L`" "
 	   fi
 	   rm -f test.cpp
-	   SYSLIBS=$SYSLIBS"-lgfortran"
+	   SYSLIBS=$SYSLIBS"-lgfortran -Wl,--allow-multiple-definition"
 	elif [ "`echo $TRUST_F77_BASE | grep absoft`" != "" ]
 	then
 	   SYSLIBS=$SYSLIBS"-L/usr/local/absoft/lib -lfio -lf77math"
