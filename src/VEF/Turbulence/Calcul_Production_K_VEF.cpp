@@ -254,7 +254,8 @@ DoubleTab& Calcul_Production_K_VEF::calculer_terme_destruction_K_gen(
   const DoubleTab& inconnue,
   const DoubleTab& alpha_turb,
   const Champ_Don& ch_beta,
-  const DoubleVect& gravite ) const
+  const DoubleVect& gravite,
+  int nb_consti ) const
 {
   // G est discretise comme K et Eps i.e au centre des faces
   // G(face) = beta alpha_t(face) G . gradT(face)
@@ -266,7 +267,6 @@ DoubleTab& Calcul_Production_K_VEF::calculer_terme_destruction_K_gen(
   const DoubleVect& volumes  = zone_VEF.volumes();
   int elem1,elem2,fac=0;
   int n_bord;
-  int nb_consti=0;
   int nb_compo=0;
 
   int dimension=Objet_U::dimension;
@@ -278,12 +278,6 @@ DoubleTab& Calcul_Production_K_VEF::calculer_terme_destruction_K_gen(
   if ( ! sub_type(Champ_Uniforme,ch_beta.valeur()) )
     {
       nb_compo=ch_beta.nb_comp() ;
-    }
-
-  if (sub_type(Convection_Diffusion_Concentration, inconnue) )
-    {
-      const Convection_Diffusion_Concentration& eq_concen = ref_cast(Convection_Diffusion_Concentration, inconnue) ;
-      nb_consti = eq_concen.nb_constituants();
     }
 
   if (nb_consti==0 || nb_consti==1)
@@ -466,7 +460,7 @@ DoubleTab& Calcul_Production_K_VEF::calculer_terme_destruction_K_gen(
   else if (nb_consti>1)
     {
       DoubleTrav u_teta(nb_faces_tot,dimension,nb_consti);
-      DoubleTrav gradient_elem(nb_elem_tot,dimension,nb_consti);
+      DoubleTrav gradient_elem(nb_elem_tot,nb_consti,dimension);
       u_teta=0;
       gradient_elem=0;
       // Calcul du gradient de l'inconnue
@@ -489,9 +483,9 @@ DoubleTab& Calcul_Production_K_VEF::calculer_terme_destruction_K_gen(
                       elem2 = face_voisins(fac,1);
                       double a=volumes(elem1)/(volumes(elem1)+volumes(elem2));
                       double b=volumes(elem2)/(volumes(elem1)+volumes(elem2));
-                      for (int i=0; i<dimension; i++)
+                      for (int i=0; i<nb_consti; i++)
                         {
-                          for (int k=0; k<nb_consti; k++)
+                          for (int k=0; k<dimension; k++)
                             u_teta(fac,i,k) = a*tab_beta(0,0)*alpha_turb(elem1)*gradient_elem(elem1,i,k)
                                               + b*tab_beta(0,0)*alpha_turb(elem2)*gradient_elem(elem2,i,k);
                         }
@@ -502,9 +496,9 @@ DoubleTab& Calcul_Production_K_VEF::calculer_terme_destruction_K_gen(
                   for (fac=ndeb; fac< nfin; fac++)
                     {
                       elem1 = face_voisins(fac,0);
-                      for (int i=0; i<dimension; i++)
+                      for (int i=0; i<nb_consti; i++)
                         {
-                          for (int k=0; k<nb_consti; k++)
+                          for (int k=0; k<dimension; k++)
                             u_teta(fac,i,k)=tab_beta(0,0)*alpha_turb(elem1)*gradient_elem(elem1,i,k);
                         }
                     }
@@ -519,9 +513,9 @@ DoubleTab& Calcul_Production_K_VEF::calculer_terme_destruction_K_gen(
                 {
                   double a=volumes(elem1)/(volumes(elem1)+volumes(elem2));
                   double b=volumes(elem2)/(volumes(elem1)+volumes(elem2));
-                  for (int i=0; i<dimension; i++)
+                  for (int i=0; i<nb_consti; i++)
                     {
-                      for (int k=0; k<nb_consti; k++)
+                      for (int k=0; k<dimension; k++)
                         u_teta(fac,i,k) = a*tab_beta(0,0)*alpha_turb(elem1)*gradient_elem(elem1,i,k)
                                           + b*tab_beta(0,0)*alpha_turb(elem2)*gradient_elem(elem2,i,k);
                     }
@@ -545,9 +539,9 @@ DoubleTab& Calcul_Production_K_VEF::calculer_terme_destruction_K_gen(
                       elem2 = face_voisins(fac,1);
                       double a=volumes(elem1)/(volumes(elem1)+volumes(elem2));
                       double b=volumes(elem2)/(volumes(elem1)+volumes(elem2));
-                      for (int i=0; i<dimension; i++)
+                      for (int i=0; i<nb_consti; i++)
                         {
-                          for (int k=0; k<nb_consti; k++)
+                          for (int k=0; k<dimension; k++)
                             u_teta(fac,i,k) = a*tab_beta(elem1)*alpha_turb(elem1)*gradient_elem(elem1,i,k)
                                               + b*tab_beta(elem2)*alpha_turb(elem2)*gradient_elem(elem2,i,k);
                         }
@@ -558,9 +552,9 @@ DoubleTab& Calcul_Production_K_VEF::calculer_terme_destruction_K_gen(
                   for (fac=ndeb; fac< nfin; fac++)
                     {
                       elem1 = face_voisins(fac,0);
-                      for (int i=0; i<dimension; i++)
+                      for (int i=0; i<nb_consti; i++)
                         {
-                          for (int k=0; k<nb_consti; k++)
+                          for (int k=0; k<dimension; k++)
                             u_teta(fac,i,k)=tab_beta(elem1)*alpha_turb(elem1)*gradient_elem(elem1,i,k);
                         }
                     }
@@ -575,9 +569,9 @@ DoubleTab& Calcul_Production_K_VEF::calculer_terme_destruction_K_gen(
                 {
                   double a=volumes(elem1)/(volumes(elem1)+volumes(elem2));
                   double b=volumes(elem2)/(volumes(elem1)+volumes(elem2));
-                  for (int i=0; i<dimension; i++)
+                  for (int i=0; i<nb_consti; i++)
                     {
-                      for (int k=0; k<nb_consti; k++)
+                      for (int k=0; k<dimension; k++)
                         u_teta(fac,i,k) = a*tab_beta(elem1)*alpha_turb(elem1)*gradient_elem(elem1,i,k)
                                           + b*tab_beta(elem2)*alpha_turb(elem2)*gradient_elem(elem2,i,k);
                     }
@@ -601,9 +595,9 @@ DoubleTab& Calcul_Production_K_VEF::calculer_terme_destruction_K_gen(
                       elem2 = face_voisins(fac,1);
                       double a=volumes(elem1)/(volumes(elem1)+volumes(elem2));
                       double b=volumes(elem2)/(volumes(elem1)+volumes(elem2));
-                      for (int i=0; i<dimension; i++)
+                      for (int i=0; i<nb_consti; i++)
                         {
-                          for (int k=0; k<nb_consti; k++)
+                          for (int k=0; k<dimension; k++)
                             u_teta(fac,i,k) = a*tab_beta(elem1,0)*alpha_turb(elem1)*gradient_elem(elem1,i,k)
                                               + b*tab_beta(elem2,0)*alpha_turb(elem2)*gradient_elem(elem2,i,k);
                         }
@@ -614,9 +608,9 @@ DoubleTab& Calcul_Production_K_VEF::calculer_terme_destruction_K_gen(
                   for (fac=ndeb; fac< nfin; fac++)
                     {
                       elem1 = face_voisins(fac,0);
-                      for (int i=0; i<dimension; i++)
+                      for (int i=0; i<nb_consti; i++)
                         {
-                          for (int k=0; k<nb_consti; k++)
+                          for (int k=0; k<dimension; k++)
                             u_teta(fac,i,k)=tab_beta(elem1,0)*alpha_turb(elem1)*gradient_elem(elem1,i,k);
                         }
                     }
@@ -631,9 +625,9 @@ DoubleTab& Calcul_Production_K_VEF::calculer_terme_destruction_K_gen(
                 {
                   double a=volumes(elem1)/(volumes(elem1)+volumes(elem2));
                   double b=volumes(elem2)/(volumes(elem1)+volumes(elem2));
-                  for (int i=0; i<dimension; i++)
+                  for (int i=0; i<nb_consti; i++)
                     {
-                      for (int k=0; k<nb_consti; k++)
+                      for (int k=0; k<dimension; k++)
                         u_teta(fac,i,k) = a*tab_beta(elem1,0)*alpha_turb(elem1)*gradient_elem(elem1,i,k)
                                           + b*tab_beta(elem2,0)*alpha_turb(elem2)*gradient_elem(elem2,i,k);
                     }

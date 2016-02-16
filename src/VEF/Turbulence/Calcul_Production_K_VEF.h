@@ -52,7 +52,7 @@ protected:
 
   DoubleTab& calculer_terme_destruction_K_gen(const Zone_VEF& , const Zone_Cl_VEF& , DoubleTab& ,
                                               const DoubleTab& , const DoubleTab& ,
-                                              const Champ_Don& ,const DoubleVect& ) const;
+                                              const Champ_Don& ,const DoubleVect& ,int ) const;
 
   void mettre_a_jour(double temps)
   {

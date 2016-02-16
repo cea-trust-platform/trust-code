@@ -40,6 +40,7 @@
 #include <Pb_Thermohydraulique_Turbulent.h>
 #include <Pb_Thermohydraulique_Concentration_Turbulent.h>
 #include <Param.h>
+#include <Constituant.h>
 
 Implemente_instanciable_sans_constructeur(Source_Transport_K_Eps_VEF_Face,"Source_Transport_K_Eps_VEF_P1NC",Source_base);
 Implemente_instanciable_sans_constructeur(Source_Transport_K_Eps_anisotherme_VEF_Face,"Source_Transport_K_Eps_anisotherme_VEF_P1NC",Source_Transport_K_Eps_VEF_Face);
@@ -318,7 +319,7 @@ DoubleTab& Source_Transport_K_Eps_anisotherme_VEF_Face::ajouter(DoubleTab& resu)
 
   // C'est l'objet de type zone_Cl_dis de l'equation thermique
   // qui est utilise dans le calcul de G
-  calculer_terme_destruction_K_gen(zone_VEF,zcl_VEF_th,G,scalaire,alpha_turb,ch_beta,g);
+  calculer_terme_destruction_K_gen(zone_VEF,zcl_VEF_th,G,scalaire,alpha_turb,ch_beta,g,0);
 
   double LeK_MIN = mon_eq_transport_K_Eps->modele_turbulence().get_LeK_MIN();
 
@@ -359,7 +360,9 @@ DoubleTab& Source_Transport_K_Eps_aniso_concen_VEF_Face::ajouter(DoubleTab& resu
 
   DoubleTrav G(nb_face);
 
-  calculer_terme_destruction_K_gen(zone_VEF,zcl_VEF_co,G,concen,alpha_turb,ch_beta_concen,g);
+  int nb_consti = eq_concentration->constituant().nb_constituants();
+
+  calculer_terme_destruction_K_gen(zone_VEF,zcl_VEF_co,G,concen,alpha_turb,ch_beta_concen,g,nb_consti);
 
   double C3_loc;
   double LeK_MIN = mon_eq_transport_K_Eps->modele_turbulence().get_LeK_MIN() ;
@@ -408,8 +411,10 @@ DoubleTab& Source_Transport_K_Eps_aniso_therm_concen_VEF_Face::ajouter(DoubleTab
   DoubleTrav G_t(nb_face);
   DoubleTrav G_c(nb_face);
 
-  calculer_terme_destruction_K_gen(zone_VEF,zcl_VEF_th,G_t,temper,alpha_turb,ch_beta_temper,g);
-  calculer_terme_destruction_K_gen(zone_VEF,zcl_VEF_co,G_c,concen,alpha_turb,ch_beta_concen,g);
+  int nb_consti = eq_concentration->constituant().nb_constituants();
+
+  calculer_terme_destruction_K_gen(zone_VEF,zcl_VEF_th,G_t,temper,alpha_turb,ch_beta_temper,g,0);
+  calculer_terme_destruction_K_gen(zone_VEF,zcl_VEF_co,G_c,concen,alpha_turb,ch_beta_concen,g,nb_consti);
 
   double C3_loc, G_sum ;
   double LeK_MIN = mon_eq_transport_K_Eps->modele_turbulence().get_LeK_MIN();

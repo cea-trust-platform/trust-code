@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.3_beta : Enhancements, modifications and corrected bugs since version 1.7.2 :
 --------------------------------------------------------------------------------------------------
+16/02/16 (TRUST)  Bug fixed   : k-eps turbulence model with concentration (it is OK now with several constituents)
 04/02/16 (TRUST)  Minor change: Option -without-host_file added to the TRUST configure tool (Do not load the environnement variables specified in an env_src/HOST_*.sh file)
 03/02/16 (TRUST)  Minor change: Option -disable-check added to the TRUST configure tool (Disable checks for external packages)
 15/12/15 (Tools)  Optimization: New configuration TGCC to client/serveur mode of VisIt on Curie and Airain via HPCDrive
