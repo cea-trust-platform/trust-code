@@ -79,7 +79,10 @@ then
       then
          # Si oui on va la copier pour gagner du temps
          echo "Copy $rep_stable to $rep_patch..."
-         ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=60 -o BatchMode=yes $log@$adr -n 'cd '$rep';mkdir -p '$rep_patch';cp -R '$rep_stable'/. '$rep_patch'/. 2>/dev/null'
+         ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=60 -o BatchMode=yes $log@$adr -n 'cd '$rep';mkdir -p '$rep_patch';cp -R '$rep_stable'/. '$rep_patch'/. 2>/dev/null;
+              [ -f .profile ] && . ./.profile;
+	       cd '$rep_patch';./configure -clean;export TRUST_VERSION='$v'_patch;export TRUST_ROOT=`pwd`;./configure;
+	 '
       else
          echo "Error: It must already be installed a stable version on $adr." && exit -1
       fi
@@ -87,7 +90,7 @@ then
    # Installation du patch sur la copie de la version stable
    echo "Launch Installer_TRUST -patch from $rep_patch"
    ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=60 -o BatchMode=yes $log@$adr -n '[ -f .profile ] && . ./.profile;
-	cd '$rep_patch';source env_TRUST.sh;export TRUST_ROOT=`pwd`;'$rep_patch'/bin/Installer_TRUST -patch;
+	cd '$rep_patch';export TRUST_VERSION='$v'_patch;export TRUST_ROOT=`pwd`;cd ..;'$rep_patch'/bin/Installer_TRUST -patch;
    '
 else
    # Installation d'une version stable

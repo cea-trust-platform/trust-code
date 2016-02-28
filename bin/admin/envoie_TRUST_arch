@@ -98,7 +98,7 @@ then
    fi
 fi
 # Versions distantes automatiquement effacees le vendredi soir
-[ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 18 ] && delete_version_machine_cible=1 && echo "We delete the version on the machines of type cible on Friday."
+[ "`date '+%u'`" -ge 5 ] && delete_version_machine_cible=1 && echo "We delete the version on the machines of type cible on Friday."
 # Versions distantes ponctuellement effacees avec un "touch ~/delete_version_machine_cible"
 [ -f ~/delete_version_machine_cible ] && delete_version_machine_cible=1 && echo "We delete the version on the machines of type cible promptly." && rm -f ~/delete_version_machine_cible
 
@@ -244,7 +244,7 @@ do
 	       option="sh -xv "
                option=""
 	       # machine=$machine".bak" # Pourquoi CR_$machine est abime?
-	       if [ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 18 ]
+	       if [ `date '+%u'` -ge 5 ]
 	       then
 	          # le vendredi soir on lance sur la frontale car encore des problèmes avec lance_test en soumission de job
 	          ssh_command "export WORKBASE=$WORKBASE;cd $WORKDIR/$version/TRUST/bin/admin;$option./mise_a_jour_TRUST_arch -rsync 1>~/CR_$machine 2>&1" &

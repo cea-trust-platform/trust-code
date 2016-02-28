@@ -2244,7 +2244,7 @@ $TRUST_ROOT/bin/KSH/tggcov_ 1>$REP_NUIT/tggcov.log 2>&1
 #tail -n2 $REP_NUIT/tggcov.log
 couverture_de_code=`tggcov_ | $TRUST_Awk '/TRUST code/ {print $1}'`
 cd - 1>/dev/null 2>&1
-couverture_minimale=65.26 #66
+couverture_minimale=69.28 #65.26
 coverage=`echo $couverture_de_code | $TRUST_Awk -v m=$couverture_minimale '{if ($1>=m) print 1;else print 0}'`
 if [ "$coverage" = 1 ]
 then
@@ -2872,12 +2872,13 @@ fi
 echo " "
 echo "Analysis of $MESSAGES_NUIT file"
 grep "Total:" $MESSAGES_NUIT
-echo "  criteria:  "$criteres_remplis" != "$total_criteres
-echo "  minimum:   "$criteres_remplis" -ge 15"
-echo "  stability: "$stabilite" = 1.000"
-echo "  baltikGIT: "$baltik_ok" = "$total_baltik
+echo "  criteria:    "$criteres_remplis" != "$total_criteres
+echo "  minimum:     "$criteres_remplis" -ge 18"
+echo "  stability:   "$stabilite" = 1.000"
+echo "  portability: "$portabilite" = 1"
+echo "  baltikGIT:   "$baltik_ok" = "$total_baltik
 cd $TRUST_ROOT
-if [ $criteres_remplis != $total_criteres ] && [ $criteres_remplis -ge 15 ] && [ $stabilite = "1.000" ] && [ $baltik_ok = $total_baltik ]
+if [ $criteres_remplis != $total_criteres ] && [ $criteres_remplis -ge 18 ] && [ $stabilite = "1.000" ] && [ $portabilite = "1" ] && [ $baltik_ok = $total_baltik ]
 then
    echo "Version $new : Currently $criteres_remplis criteria are OK on $total_criteres planned" >> $MESSAGES_NUIT
    echo -e "=> release OK\c"

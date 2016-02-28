@@ -9,29 +9,31 @@ Download
 ========
 > Go to the website of the Eclipse Foundation: http://www.eclipse.org/downloads/
 > Select Eclipse for Parallel Application Developers Linux 64 Bit
-> Download the eclipse-parallel-luna-SR2-linux-gtk-x86_64.tar.gz file in your directory
+> Download the eclipse-parallel-mars-1-linux-gtk-x86_64.tar.gz file in your directory
 
 Installation
 ============
 > cd /export/home/login
-> gunzip eclipse-parallel-luna-SR2-linux-gtk-x86_64.tar.gz
-> tar xvf eclipse-parallel-luna-SR2-linux-gtk-x86_64.tar
-> rm  eclipse-parallel-luna-SR2-linux-gtk-x86_64.tar
+> gunzip eclipse-parallel-mars-1-linux-gtk-x86_64.tar.gz
+> tar xvf eclipse-parallel-mars-1-linux-gtk-x86_64.tar
+> rm  eclipse-parallel-mars-1-linux-gtk-x86_64.tar
 > cd eclipse
 
 Configuration
 =============
 > Change the end of the eclipse.ini file
 > vi eclipse.ini
--Dhelp.lucene.tokenizer=standard
--XX:PermSize=256m
+org.eclipse.platform
+--launcher.XXMaxPermSize
+256m
+--launcher.defaultAction
+openFile
+--launcher.appendVmargs
+-vmargs
+-Dosgi.requiredJavaVersion=1.7
 -XX:MaxPermSize=1024m
--XX:+UseParallelGC
--Xmn256m
--Xss2m
 -Xms512m
 -Xmx2048m
--server
 
 Launching
 =========
@@ -52,8 +54,7 @@ Launching
   => From directory: /data/tmpletr/triou/installations/TRUST_X.Y.Z/OS_machine/TRUST_X.Y.Z/src
   => Select All  
   => Into folder: TRUST_X.Y.Z
-  => Advanced: check Create links in workspace
-  =>           not check Create virtual folders
+  => Advanced: check Create links in workspace 
   => Finish 
 > Project Explorer
   Right click TRUST_X.Y.Z/Properties
@@ -83,7 +84,7 @@ Configuration
 
 View debug
 ==========
-> Window/Open Perspective/Debug
+> Window/Perspective/Open Perspective/Debug
   => New button at the top right of the window: view Debug side view C/C++
 
 Case selection
@@ -96,7 +97,7 @@ Case selection
 
 Launching
 =========
-> Run/Debog (F11)         (Wait to have 100% on the bottom right corner of the window)
+> Run/Debug (F11)         (Wait to have 100% on the bottom right corner of the window)
 > Run/Resume (F8)
 > Run/Terminate (Ctrl+F2)
 > File/Exit

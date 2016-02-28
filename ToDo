@@ -1,4 +1,8 @@
 Version	Qui				Tache
+1.7.3   triou@cea.fr            penser a recuperer cas test du baltik pour qingqing dans version beta
+1.7.3   triou@cea.fr            revoir script trust avec nouvelle option pour sub_file (ex: occigen avec petit temps pour devenir prioritaire car pas de queue test)
+1.7.3   triou@cea.fr            nouvelle option dans configure pour forcer BLAS et LAPACK du package TRUST (NB Debian 8)
+1.7.3   triou@cea.fr            faire nettoyage dans bin/admin si scripts non utilises ; a mettre dans Old_scripts
 1.7.3   gauthier.fauchet@cea.fr  MC2 : de facon non systematique et sur differents OS le cas test CALCUL_COUPLE_jdd2 plante
 1.7.3   gauthier.fauchet@cea.fr  Reprendre Mod_turb_hyd_base.cpp limitation mut
 1.7.3   gauthier.fauchet@cea.fr  Revoir le PATH pour module load TRUST sous occigen (passer par SET)
