@@ -86,9 +86,9 @@ double atanh(const double&);
 // avec les appels Fortran a partir du C++
 // on definit les integer comme des int (4 octets)
 // et non plus des long int (4 octets sur 32bits ou 8 octets sur 64bits)
-typedef int integer;
 // typedef mieux que #define pour definir un type
-typedef int entier;
+typedef long long int;
+typedef int integer;
 typedef int True_int;
 #define INT_is_64_
 extern char* pwd();

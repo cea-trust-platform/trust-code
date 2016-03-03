@@ -282,7 +282,7 @@ void IntVect::echange_espace_virtuel()
 void IntVect::ecrit(Sortie& os) const
 {
   ArrOfInt::printOn(os);
-  os << -1 << finl; // le marqueur -1 indique que c'est le nouveau format "ecrit", sans structure parallele
+  os << (int)-1 << finl; // le marqueur -1 indique que c'est le nouveau format "ecrit", sans structure parallele
 }
 
 void IntVect::jump(Entree& is)

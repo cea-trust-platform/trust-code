@@ -44,18 +44,18 @@ public:
 protected:
   int calculer_int_size(int taille) const;
   int taille;
-  unsigned int *data;
-  static const unsigned int SIZE_OF_INT_BITS;
-  static const unsigned int DRAPEAUX_INT;
+  unsigned short *data;
+  static const unsigned short SIZE_OF_INT_BITS;
+  static const unsigned short DRAPEAUX_INT;
 };
 
 // Description: Renvoie 1 si le bit e est mis, 0 sinon.
 inline int ArrOfBit::operator[](int e) const
 {
   assert(e >= 0 && e < taille);
-  unsigned int i = (unsigned int) e;
-  unsigned int x = data[i >> SIZE_OF_INT_BITS];
-  unsigned int flag = 1 << (i & DRAPEAUX_INT);
+  unsigned short i = (unsigned short) e;
+  unsigned short x = data[i >> SIZE_OF_INT_BITS];
+  unsigned short flag = 1 << (i & DRAPEAUX_INT);
   int resultat = ((x & flag) != 0) ? 1 : 0;
   return resultat;
 }
@@ -64,8 +64,8 @@ inline int ArrOfBit::operator[](int e) const
 inline void ArrOfBit::setbit(int e) const
 {
   assert(e >= 0 && e < taille);
-  unsigned int i = (unsigned int) e;
-  unsigned int flag = 1 << (i & DRAPEAUX_INT);
+  unsigned short i = (unsigned short) e;
+  unsigned short flag = 1 << (i & DRAPEAUX_INT);
   data[i >> SIZE_OF_INT_BITS] |= flag;
 }
 
@@ -73,10 +73,10 @@ inline void ArrOfBit::setbit(int e) const
 inline int ArrOfBit::testsetbit(int e) const
 {
   assert(e >= 0 && e < taille);
-  unsigned int i = (unsigned int) e;
-  unsigned int flag = 1 << (i & DRAPEAUX_INT);
+  unsigned short i = (unsigned short) e;
+  unsigned short flag = 1 << (i & DRAPEAUX_INT);
   int index = i >> SIZE_OF_INT_BITS;
-  unsigned int old = data[index];
+  unsigned short old = data[index];
   data[index] = old | flag;
   return ((old & flag) != 0) ? 1 : 0;
 }
@@ -85,8 +85,8 @@ inline int ArrOfBit::testsetbit(int e) const
 inline void ArrOfBit::clearbit(int e) const
 {
   assert(e >= 0 && e < taille);
-  unsigned int i = (unsigned int) e;
-  unsigned int flag = 1 << (i & DRAPEAUX_INT);
+  unsigned short i = (unsigned short) e;
+  unsigned short flag = 1 << (i & DRAPEAUX_INT);
   data[i >> SIZE_OF_INT_BITS] &= ~flag;
 }
 

@@ -540,7 +540,7 @@ void __Scalar__Vect::echange_espace_virtuel()
 void __Scalar__Vect::ecrit(Sortie & os) const
 {
   ArrOf__Scalar__::printOn(os);
-  os << -1 << finl; // le marqueur -1 indique que c'est le nouveau format "ecrit", sans structure parallele
+  os << (int)-1 << finl; // le marqueur -1 indique que c'est le nouveau format "ecrit", sans structure parallele
 }
 
 void __Scalar__Vect::jump(Entree & is)

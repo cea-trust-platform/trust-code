@@ -283,7 +283,7 @@ void DoubleVect::echange_espace_virtuel()
 void DoubleVect::ecrit(Sortie& os) const
 {
   ArrOfDouble::printOn(os);
-  os << -1 << finl; // le marqueur -1 indique que c'est le nouveau format "ecrit", sans structure parallele
+  os << (int)-1 << finl; // le marqueur -1 indique que c'est le nouveau format "ecrit", sans structure parallele
 }
 
 void DoubleVect::jump(Entree& is)

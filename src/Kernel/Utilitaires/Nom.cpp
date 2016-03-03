@@ -140,7 +140,7 @@ Nom::Nom(int i)
 
   char chaine[22];
 #ifdef INT_is_64_
-  sprintf(chaine, "%ld", i);
+  sprintf(chaine, "%lld", i);
 #else
   sprintf(chaine, "%d", i);
 #endif

@@ -62,6 +62,7 @@ Entree& Entree::operator >>(ios& (*f)(ios&))
 Entree::Entree()
 {
   bin_=0;
+  is_int32_=0;
   istream_ = 0;
   check_types_ = 0;
   error_action_ = ERROR_CONTINUE;
@@ -71,6 +72,7 @@ Entree::Entree()
 Entree::Entree(istream& is)
 {
   bin_=0;
+  is_int32_=0;
   istream_ = new istream(is.rdbuf());
   check_types_ = 0;
   error_action_ = ERROR_CONTINUE;
@@ -80,6 +82,7 @@ Entree::Entree(istream& is)
 Entree::Entree(const Entree& is)
 {
   bin_=0;
+  is_int32_=0;
   istream_ = new istream(is.get_istream().rdbuf());
   check_types_ = 0;
   error_action_ = ERROR_CONTINUE;
@@ -169,24 +172,24 @@ void convert_to(const char *s, int& ob)
   ob = strtol(s, &errorptr, 0 /* base 10 par defaut */);
   if (errno || *errorptr != 0)
     {
-      Cerr << "Error converting a string to type long int : string = " << s << finl;
+      Cerr << "Error converting a string to type long : string = " << s << finl;
       Process::exit();
     }
 }
 
-void convert_to(const char *s, long int& ob)
+void convert_to(const char *s, long& ob)
 {
   errno = 0;
   char * errorptr = 0;
   ob = strtol(s, &errorptr, 0 /* base 10 par defaut */);
   if (errno || *errorptr != 0)
     {
-      Cerr << "Error converting a string to type long int : string = " << s << finl;
+      Cerr << "Error converting a string to type long : string = " << s << finl;
       Process::exit();
     }
 }
-
-void convert_to(const char *s, long long int& ob)
+#ifndef INT_is_64_
+void convert_to(const char *s, long long& ob)
 {
   errno = 0;
   char * errorptr = 0;
@@ -201,11 +204,11 @@ void convert_to(const char *s, long long int& ob)
 #endif /* NO_PROCESS */
   if (errno || *errorptr != 0)
     {
-      Cerr << "Error converting a string to type long long int : string = " << s << finl;
+      Cerr << "Error converting a string to type long long : string = " << s << finl;
       Process::exit();
     }
 }
-
+#endif
 void convert_to(const char *s, float& ob)
 {
   errno = 0;

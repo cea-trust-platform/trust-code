@@ -22,7 +22,7 @@
 
 // fichier genere en cas d'atelier par cree_info_atelier.sh
 #include <info_atelier.h>
-int info_atelier(Sortie& s)
+True_int info_atelier(Sortie& s)
 {
 
   return 0;

@@ -23,8 +23,9 @@
 #ifndef info_atelier_H
 #define info_atelier_H
 class Sortie;
+#include <arch.h>
 // Description: donne le nombre et le nom des fichiers modifies
-int info_atelier(Sortie&);
+True_int info_atelier(Sortie&);
 // Description: permet de stocker l'atelier et de le reecrire
 void restore_atelier(Sortie& );
 #endif

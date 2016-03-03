@@ -175,24 +175,24 @@ void convert_to(const char *s, int& ob)
   ob = strtol(s, &errorptr, 0 /* base 10 par defaut */);
   if (errno || *errorptr != 0)
     {
-      Cerr << "Error converting a string to type long int : string = " << s << finl;
+      Cerr << "Error converting a string to type long : string = " << s << finl;
       Process::exit();
     }
 }
 
-void convert_to(const char *s, long int& ob)
+void convert_to(const char *s, long& ob)
 {
   errno = 0;
   char * errorptr = 0;
   ob = strtol(s, &errorptr, 0 /* base 10 par defaut */);
   if (errno || *errorptr != 0)
     {
-      Cerr << "Error converting a string to type long int : string = " << s << finl;
+      Cerr << "Error converting a string to type long : string = " << s << finl;
       Process::exit();
     }
 }
-
-void convert_to(const char *s, long long int& ob)
+#ifndef INT_is_64_
+void convert_to(const char *s, long long& ob)
 {
   errno = 0;
   char * errorptr = 0;
@@ -207,11 +207,11 @@ void convert_to(const char *s, long long int& ob)
 #endif /* NO_PROCESS */
   if (errno || *errorptr != 0)
     {
-      Cerr << "Error converting a string to type long long int : string = " << s << finl;
+      Cerr << "Error converting a string to type long long : string = " << s << finl;
       Process::exit();
     }
 }
-
+#endif
 void convert_to(const char *s, float& ob)
 {
   errno = 0;

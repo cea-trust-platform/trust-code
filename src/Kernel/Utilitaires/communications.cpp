@@ -368,10 +368,12 @@ int envoyer_broadcast(long&     t, int source)
 {
   return envoyer_broadcast_(&t, 1, source);
 }
+#ifndef INT_is_64_
 int envoyer_broadcast(long long&     t, int source)
 {
   return envoyer_broadcast_(&t, 1, source);
 }
+#endif
 int envoyer_broadcast(float&    t, int source)
 {
   return envoyer_broadcast_(&t, 1, source);
