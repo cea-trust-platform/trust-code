@@ -69,7 +69,7 @@ inline Eval_Puiss_Th_EF::Eval_Puiss_Th_EF():rho_ref_(-123.),Cp_(-123.)  {}
 
 inline void Eval_Puiss_Th_EF::calculer_terme_source_standard(int num_elem, DoubleVect& d) const
 {
-  Cerr<<"Non code"<<__FILE__<<__LINE__<<finl;
+  Cerr<<"Non code"<<__FILE__<<(int)__LINE__<<finl;
   Process::exit();
   throw;
   return calculer_terme_source_standard(num_elem,d);

@@ -209,7 +209,7 @@ void Schema_Temps_base::validateTimeStep()
           double nb_pas_avant_fin= dmin(nb_pas_selon_tmax,nb_pas_selon_nb_pas_dt_max);
           double seconds_to_finish  = nb_pas_avant_fin * cpu_per_timestep;
           int percent=int((1.-nb_pas_avant_fin/(nb_pas_avant_fin+ nb_pas_dt()))*100);    // marche meme si c'est ltemps max qui limite
-          int integer_limit=(int)(pow(2.0,(double)((sizeof(int)*8)-1))-1);
+          int integer_limit=(int)(pow(2.0,(double)((sizeof(True_int)*8)-1))-1);
           if (seconds_to_finish<integer_limit)
             {
               int h  = int(seconds_to_finish/3600);
@@ -499,7 +499,7 @@ Schema_Temps_base::Schema_Temps_base()
   mode_dt_start_=-2; // Nouveau 1.5.6 : desormais le premier pas de temps est calcule et ne vaut donc plus dt_min (par defaut, donc est equivalent a dt_start dt_calc)
   nb_pas_dt_ = 0;
   nb_impr_ = 0;
-  nb_pas_dt_max_ = (int)(pow(2.0,(double)((sizeof(int)*8)-1))-1);
+  nb_pas_dt_max_ = (int)(pow(2.0,(double)((sizeof(True_int)*8)-1))-1);
   seuil_statio_ = 1.e-12;
   seuil_statio_relatif_deconseille_ = 0;
   facsec_ = 1.;

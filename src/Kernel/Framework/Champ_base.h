@@ -74,7 +74,7 @@ public:
   Champ_base();
   virtual int nb_valeurs_nodales() const
   {
-    cerr<<"We do not have to pass here "<<__FILE__<<__LINE__<<endl;
+    cerr<<"We do not have to pass here "<<__FILE__<<(int)__LINE__<<endl;
     exit();
     return -1;
   };

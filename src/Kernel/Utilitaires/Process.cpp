@@ -213,6 +213,11 @@ void Process::exit(const Nom& message ,int i)
     {
       int abort=0;
 #ifdef MPI_
+#ifdef INT_is_64_
+#define MPI_ENTIER MPI_LONG
+#else
+#define MPI_ENTIER MPI_INT
+#endif
       if (Process::nproc()>1)
         {
           const MPI_Comm& mpi_comm=ref_cast(Comm_Group_MPI,PE_Groups::groupe_TRUST()).get_mpi_comm();
@@ -222,17 +227,17 @@ void Process::exit(const Nom& message ,int i)
 
           // Envoi non bloquant vers me()+1
           int to_pe = (me()==nproc()-1?0:me()+1);
-          MPI_Isend(buffer, 1, MPI_INT, to_pe, tag, mpi_comm, &request);
+          MPI_Isend(buffer, 1, MPI_ENTIER, to_pe, tag, mpi_comm, &request);
 
           // Reception non bloquante depuis me()-1
           int from_pe = (me()==0?nproc()-1:me()-1);
-          MPI_Irecv(buffer, 1, MPI_INT, from_pe, tag, mpi_comm, &request);
+          MPI_Irecv(buffer, 1, MPI_ENTIER, from_pe, tag, mpi_comm, &request);
 
           // Attente
           sleep(1);
 
           // Test si me() a recu de me()-1
-          int ok;
+          True_int ok;
           MPI_Status status;
           MPI_Test(&request,&ok,&status);
           if (!ok)

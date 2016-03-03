@@ -108,7 +108,7 @@ class liste_curseur
 {
 public :
   inline liste_curseur(const liste&);
-  inline operator int() const;
+  inline operator bool() const;
   inline void operator ++();
   inline const Objet_U& valeur() const;
   inline Objet_U& valeur();
@@ -513,7 +513,7 @@ inline liste_curseur::liste_curseur(const liste& a_list)
 // Exception:
 // Effets de bord:
 // Postcondition:
-inline liste_curseur::operator int() const
+inline liste_curseur::operator bool() const
 {
   return (curseur!=0);
 }

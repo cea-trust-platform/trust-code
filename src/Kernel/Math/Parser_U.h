@@ -72,7 +72,12 @@ public :
    * Fixe la valeur de la variable de numero specifie. Ce numero correspondt a l'ordre de l'ajout des variables par la methode addVar().
    */
   inline void setVar(int i, double val);
-
+#ifdef INT_is_64_
+  inline void setVar(True_int i, double val)
+  {
+    parser->setVar((int)i, val);
+  };
+#endif
   /**
    * Fixe le nombre max de variables a indiquer avec la methode addVar.
    */

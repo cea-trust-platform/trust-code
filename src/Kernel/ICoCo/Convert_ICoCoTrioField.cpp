@@ -36,10 +36,15 @@ void affecte_double_avec_doubletab(double** p, const ArrOfDouble& trio)
   memcpy(*p,trio.addr(),trio.size_array()*sizeof(double));
 }
 
-void affecte_int_avec_inttab(int** p, const ArrOfInt& trio)
+void affecte_int_avec_inttab(True_int** p, const ArrOfInt& trio)
 {
-  *p=new int[trio.size_array()];
-  memcpy(*p,trio.addr(),trio.size_array()*sizeof(int));
+  int sz=trio.size_array();
+  *p=new True_int[sz];
+  if (sizeof(int)==sizeof(True_int))
+    memcpy(*p,trio.addr(),sz*sizeof(int));
+  else
+    for (int i=0; i<sz; i++)
+      (*p)[i]=True_int(trio[i]);
 }
 
 ICoCo::TrioField build_ICoCoField(const std::string& name,const Domaine& dom,  const DoubleTab& values,const int is_p1, const double& t1,const double& t2 )
@@ -214,7 +219,7 @@ MEDField build_medfield(TrioField& triofield)
   //creating a connectivity table that complies to MED (1 indexing)
   //and passing it to _mesh
   ParaMEDMEM::MEDCouplingAutoRefCountObjectPtr<ParaMEDMEM::MEDCouplingFieldDouble> field;
-  int *conn(new int[triofield._nodes_per_elem]);
+  True_int *conn(new True_int[triofield._nodes_per_elem]);
   for (int i=0; i<triofield._nb_elems; i++)
     {
 
@@ -225,14 +230,14 @@ MEDField build_medfield(TrioField& triofield)
       if (elemtype==INTERP_KERNEL::NORM_QUAD4)
         {
           // dans trio pas la meme numerotation
-          int tmp=conn[3];
+          True_int tmp=conn[3];
           conn[3]=conn[2];
           conn[2]=tmp;
         }
       if (elemtype==INTERP_KERNEL::NORM_HEXA8)
         {
           // dans trio pas la meme numerotation
-          int tmp=conn[3];
+          True_int tmp=conn[3];
           conn[3]=conn[2];
           conn[2]=tmp;
           tmp=conn[7];
@@ -246,7 +251,7 @@ MEDField build_medfield(TrioField& triofield)
   //
 
 
-  std::vector<int> cells;
+  std::vector<True_int> cells;
   mesh->checkButterflyCells(cells);
   if (!cells.empty())
     {

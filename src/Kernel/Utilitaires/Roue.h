@@ -62,7 +62,7 @@ struct Roue_ptr
   {
     ptr=0;
   }
-  inline operator int() const
+  inline operator bool() const
   {
     return (ptr!=0);
   }

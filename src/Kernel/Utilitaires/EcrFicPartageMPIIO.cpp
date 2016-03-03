@@ -75,6 +75,19 @@ int EcrFicPartageMPIIO::ouvrir(const char* name,IOS_OPEN_MODE mode)
   MPI_File_set_errhandler(mpi_file_,MPI_ERRORS_ARE_FATAL);
   // Set initial displacement:
   disp_=0;
+  if (mode==ios::out)
+    {
+      if (je_suis_maitre())
+        {
+          Nom marq("INT_is_64_");
+          (*this)<<marq;
+        }
+    }
+  else
+    {
+      Cerr<<"not coded in EcrFicPartageMPIIO::ouvrir"<<finl;
+      exit();
+    }
   return 0;
 }
 void EcrFicPartageMPIIO::close()
@@ -104,7 +117,7 @@ void EcrFicPartageMPIIO::check()
 // Function write used in all the operator<< to avoid to duplicate the code
 void EcrFicPartageMPIIO::write(MPI_Datatype MPI_TYPE, const void* ob)
 {
-  int size;
+  True_int size;
   MPI_Type_size(MPI_TYPE, &size);
   MPI_File_write(mpi_file_, (void*)ob, 1, MPI_TYPE, &mpi_status_);
   disp_+=size;
@@ -159,7 +172,7 @@ int EcrFicPartageMPIIO::put(MPI_Datatype MPI_TYPE, const void* ob, int n)
 {
   MPI_Datatype etype;
   etype=MPI_TYPE;
-  int sizeof_etype;
+  True_int sizeof_etype;
   MPI_Type_size(etype,&sizeof_etype);
 
   // filetype is n etype contigous:

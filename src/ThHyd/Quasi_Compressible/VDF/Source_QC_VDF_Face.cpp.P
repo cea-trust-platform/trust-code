@@ -44,7 +44,7 @@ Entree& class_name::readOn(Entree& is)
 }
 void class_name::contribuer_a_avec(const DoubleTab& present, Matrice_Morse& matrice) const
 {
-  // Cerr<<__FILE__<< " "<<__LINE__<<" non code "<<finl;
+  // Cerr<<__FILE__<< " "<<(int)__LINE__<<" non code "<<finl;
   // on ne fait rien pour l'instant ....
   return;
   DoubleTrav toto(present);

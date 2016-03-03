@@ -89,7 +89,8 @@ double atanh(const double&);
 typedef int integer;
 // typedef mieux que #define pour definir un type
 typedef int entier;
-
+typedef int True_int;
+#define INT_is_64_
 extern char* pwd();
 
 #endif // _ARCH_H_

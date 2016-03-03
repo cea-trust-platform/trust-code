@@ -2043,7 +2043,7 @@ void Equation_base::reculer(int i)
 // FIN MODIF ELI LAUCOIN (22/11/2007)
 
 
-#define BLOQUE Cerr<<__PRETTY_FUNCTION__<< " "<<__FILE__<<":"<<__LINE__<<" not coded, retrieves coding simpler" <<finl;exit()
+#define BLOQUE Cerr<<__PRETTY_FUNCTION__<< " "<<__FILE__<<":"<<(int)__LINE__<<" not coded, retrieves coding simpler" <<finl;exit()
 
 // methodes pour l'implicite
 

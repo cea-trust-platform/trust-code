@@ -509,7 +509,7 @@ int medecrgeom(const Nom& nom_fic,const Nom& nom_dom,int dimension,const DoubleT
         if (ret<0)
           {
             Cerr<<"Problem when writing the family " <<i+1<<" in "<<nom_fic<<finl;
-            Cerr<<nom_dom<<" "<<noms_bords[i]<<" "<<attide[0]<<" "<<attval[0]<<" "<<attdes<<" natt "<<natt<<finl;
+            Cerr<<nom_dom<<" "<<noms_bords[i]<<" "<<(int)attide[0]<<" "<<(int)attval[0]<<" "<<attdes<<" natt "<<natt<<finl;
             Process::exit();
           }
       }

@@ -531,8 +531,8 @@ void Traitement_particulier_NS_THI_VEF::sorties_globales(void)
         }
       else
         {
-          fic_eps << temps_old << " " << 0 << finl;
-          fic_eps_ret << temps_old_ret << " " << 0 << finl;
+          fic_eps << temps_old << " " << (int)0 << finl;
+          fic_eps_ret << temps_old_ret << " " << (int)0 << finl;
         }
 
     }
@@ -1189,10 +1189,10 @@ void Traitement_particulier_NS_THI_VEF::calcul_spectre_3D(const DoubleTab& vites
     }
 
   // mise en evidence de la frequence de coupure
-  fic_spectre << kc-1 << " " << 0 << " " << 0 << " " << 0 << finl;
-  fic_spectre << kc << " " << 0 << " " << 0 << " " << 0 << finl;
-  fic_spectre_k << kc-1 << " " << 0 << " " << 0 << " " << 0 << finl;
-  fic_spectre_k << kc << " " << 0 << " " << 0 << " " << 0 << finl;
+  fic_spectre << kc-1 << " " << (int)0 << " " << (int)0 << " " << (int)0 << finl;
+  fic_spectre << kc << " " << (int)0 << " " << (int)0 << " " << (int)0 << finl;
+  fic_spectre_k << kc-1 << " " << (int)0 << " " << (int)0 << " " << (int)0 << finl;
+  fic_spectre_k << kc << " " << (int)0 << " " << (int)0 << " " << (int)0 << finl;
 
   for (int ii=kc; ii<nb_points_3D+1; ii++)
     {
@@ -1409,12 +1409,12 @@ void Traitement_particulier_NS_THI_VEF::calcul_spectre_1D(const DoubleTab& vites
         }
 
       // mise en evidence de la frequence de coupure
-      fic_spectre_u << kc-1 << " " << 0 << " " << 0 << " " << 0 << finl;
-      fic_spectre_k_u << kc-1 << " " << 0 << " " << 0 << " " << 0 << finl;
-      fic_spectre_v << kc-1 << " " << 0 << " " << 0 << " " << 0 << finl;
-      fic_spectre_k_v << kc-1 << " " << 0 << " " << 0 << " " << 0 << finl;
-      fic_spectre_w << kc-1 << " " << 0 << " " << 0 << " " << 0 << finl;
-      fic_spectre_k_w << kc-1 << " " << 0 << " " << 0 << " " << 0 << finl;
+      fic_spectre_u << kc-1 << " " << (int)0 << " " << (int)0 << " " << (int)0 << finl;
+      fic_spectre_k_u << kc-1 << " " << (int)0 << " " << (int)0 << " " << (int)0 << finl;
+      fic_spectre_v << kc-1 << " " << (int)0 << " " << (int)0 << " " << (int)0 << finl;
+      fic_spectre_k_v << kc-1 << " " << (int)0 << " " << (int)0 << " " << (int)0 << finl;
+      fic_spectre_w << kc-1 << " " << (int)0 << " " << (int)0 << " " << (int)0 << finl;
+      fic_spectre_k_w << kc-1 << " " << (int)0 << " " << (int)0 << " " << (int)0 << finl;
 
 
       // calcul de l'energie et l'enstrophie par integration sur le spectre jusqu a kc

@@ -39,7 +39,7 @@ inline void decompression(Nom& nom_fichier)
       Cerr << "Unzipping file " << nom_fichier << " ..." << finl;
       Nom cmd="gunzip -c ";
       cmd+=nom_fichier+" > "+tmp;
-      Cerr << system(cmd) << finl;
+      Cerr << (int)system(cmd) << finl;
       nom_fichier=tmp;
     }
 }

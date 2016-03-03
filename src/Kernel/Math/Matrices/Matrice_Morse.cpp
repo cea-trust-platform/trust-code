@@ -460,7 +460,7 @@ void Matrice_Morse::dimensionner(int n, int m, int nnz)
 void Matrice_Morse::unite()
 {
   coeff_ = 0.0;
-  long i,n  = ordre();
+  int i,n  = ordre();
   for (i=0; i<n; i++)
     operator()(i,i) = 1.0;
 }
@@ -1270,7 +1270,7 @@ precond :
           goto resol ;
           }*/
       case -1:
-        Cerr << "convergence reached after " << 0 << "iterations !! " << finl;
+        Cerr << "convergence reached after " << (int)0 << "iterations !! " << finl;
         Cerr << "'stationnary state may be obtened' dixit us " << finl;
         break;
       default :
@@ -1451,7 +1451,7 @@ int Matrice_Morse::inverse(const DoubleVect& secmem, DoubleVect& solution,
           goto resol ;
           }*/
       case -1:
-        Cerr << "Convergence after " << 0 << "iterations !! " << finl;
+        Cerr << "Convergence after " << (int)0 << "iterations !! " << finl;
         Cerr << "'stationnary state may be obtened' dixit us " << finl;
         break;
       default :

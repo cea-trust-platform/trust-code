@@ -173,7 +173,7 @@ static double estimate_allreduce(double max_bench_time)
   int howmany = 100;
   int i = 0;
   for (i = 0; i < howmany; i++)
-    Process::mp_sum(1);
+    Process::mp_sum((int)1);
   t2 = Statistiques::get_time_now();
   t2 = Process::mp_min(t2-t1);
   return t2 / (double) howmany;

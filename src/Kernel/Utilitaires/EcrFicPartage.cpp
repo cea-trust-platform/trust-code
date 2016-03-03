@@ -88,6 +88,8 @@ int EcrFicPartage::ouvrir(const char* name,IOS_OPEN_MODE mode)
       // Seul le maitre ouvre le fichier
       ok = SFichier::ouvrir((const char *)nom_fic_, mode);
     }
+  syncfile();
+
   // Modif B.Math. 22/09/2004: tous les processeurs passent par le buffer,
   //  y compris le maitre.
   get_obuffer().new_buffer();

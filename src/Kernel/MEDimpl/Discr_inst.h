@@ -42,17 +42,17 @@ public:
   //
   virtual void zone_Cl_dis(Zone_dis& , Zone_Cl_dis& ) const
   {
-    Cerr<<__FILE__<<__LINE__<<" not coded"<<finl;
+    Cerr<<__FILE__<<(int)__LINE__<<" not coded"<<finl;
     exit();
   };
   void volume_maille(const Schema_Temps_base& sch, const Zone_dis& z,Champ_Fonc& ch) const
   {
-    Cerr<<__FILE__<<__LINE__<<" not coded"<<finl;
+    Cerr<<__FILE__<<(int)__LINE__<<" not coded"<<finl;
     exit();
   };
   void modifier_champ_tabule(const Zone_dis_base& zone_vdf,Champ_Fonc_Tabule& lambda_tab,const Champ_base&  ch_temper) const
   {
-    Cerr<<__FILE__<<__LINE__<<" not coded"<<finl;
+    Cerr<<__FILE__<<(int)__LINE__<<" not coded"<<finl;
     Process::exit();
   };
 

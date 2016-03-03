@@ -339,7 +339,7 @@ void Discretisation_base::volume_maille(const Schema_Temps_base& sch,
 void Discretisation_base::modifier_champ_tabule(const Zone_dis_base& zone_dis,Champ_Fonc_Tabule& ch_tab,const Champ_base& ch_inc) const
 {
   Cerr<<que_suis_je()<<" must overload Discretisation_base::modifier_champ_tabule"<<finl;
-  Cerr<<__FILE__<<__LINE__<<" uncoded"<<finl;
+  Cerr<<__FILE__<<(int)__LINE__<<" uncoded"<<finl;
   Process::exit();
 
 }
@@ -596,7 +596,7 @@ Nom Discretisation_base::get_name_of_type_for(const Nom& class_operateur, const 
   else
     {
       Cerr<<class_operateur<< " not understood in get_name_of_type_for of  "<<que_suis_je()<<finl;
-      Cerr<<__FILE__<<" "<<__LINE__<<finl;
+      Cerr<<__FILE__<<" "<<(int)__LINE__<<finl;
       exit();
     }
   return type;

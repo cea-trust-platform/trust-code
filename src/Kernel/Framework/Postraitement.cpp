@@ -544,7 +544,7 @@ Postraitement::Postraitement()
   est_le_dernier_postraitement_pour_nom_fich_=-1;
   temps_=-1;
   dt_post_ch_=dt_post_stat_=dt_post_tab=dt_integr_serie_=1.e6;
-  nb_pas_dt_post_ = (int)(pow(2.0,(double)((sizeof(int)*8)-1))-1);
+  nb_pas_dt_post_ = (int)(pow(2.0,(double)((sizeof(True_int)*8)-1))-1);
   sondes_demande_ = champs_demande_ = stat_demande_ = stat_demande_definition_champs_ =tableaux_demande_=0;
   binaire=-1;
   tstat_deb_=tstat_fin_=tstat_dernier_calcul_=-1;

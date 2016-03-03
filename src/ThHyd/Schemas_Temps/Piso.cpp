@@ -317,7 +317,7 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
 
       //Calcul de U*** = U** + U''
       current += correction_en_vitesse;
-      test_imposer_cond_lim(eqn,current,"apres correction __LINE__",0);
+      test_imposer_cond_lim(eqn,current,"apres correction (int)__LINE__",0);
 
       Debog::verifier("Piso::iterer_NS apres correction pression",pression);
       Debog::verifier("Piso::iterer_NS apres correction vitesse",current);

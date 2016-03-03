@@ -65,6 +65,7 @@ Entree& Entree::operator >>(ios& (*f)(ios&))
 Entree::Entree()
 {
   bin_=0;
+  is_int32_=0;
   istream_ = 0;
   check_types_ = 0;
   error_action_ = ERROR_CONTINUE;
@@ -74,6 +75,7 @@ Entree::Entree()
 Entree::Entree(istream& is)
 {
   bin_=0;
+  is_int32_=0;
   istream_ = new istream(is.rdbuf());
   check_types_ = 0;
   error_action_ = ERROR_CONTINUE;
@@ -83,6 +85,7 @@ Entree::Entree(istream& is)
 Entree::Entree(const Entree& is)
 {
   bin_=0;
+  is_int32_=0;
   istream_ = new istream(is.get_istream().rdbuf());
   check_types_ = 0;
   error_action_ = ERROR_CONTINUE;

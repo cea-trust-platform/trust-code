@@ -31,7 +31,7 @@ class Noms;
 class Sortie;
 
 // Macro to declare A and B synonyms:
-#define Add_synonym(A,B) const Synonyme_info name2(name2(synonym_,A),__LINE__)(B,A::info_obj.name())
+#define Add_synonym(A,B) const Synonyme_info name2(name2(synonym_,A),(int)__LINE__)(B,A::info_obj.name())
 
 //////////////////////////////////////////////////////////////////////////////
 //

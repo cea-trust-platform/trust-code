@@ -716,7 +716,7 @@ void Echange_contact_Correlation_VDF::mettre_a_jour(double temps)
               recevoir(T_tmp,p,0,p);                                                // Je recupere les temperature de chaque processeur
               for (int i=0; i<T_tmp.size(); i++)
                 {
-                  fprintf(Fichier_sauv,"T(%i)\t=\t%f\n",j,T_tmp(i));        // J'imprime les temperatures dans le fichier de sauvegarde
+                  fprintf(Fichier_sauv,"T(%i)\t=\t%f\n",(True_int)j,T_tmp(i));        // J'imprime les temperatures dans le fichier de sauvegarde
                   j=j+1;
                 }
             }
@@ -729,7 +729,7 @@ void Echange_contact_Correlation_VDF::mettre_a_jour(double temps)
       fprintf(Fichier_sauv,"Temps\t=\t%f\n",temps);
       for (int i=0; i<N; i++)
         {
-          fprintf(Fichier_sauv,"T(%i)\t=\t%f\n",i,T(i));
+          fprintf(Fichier_sauv,"T(%i)\t=\t%f\n",(True_int)i,T(i));
         }
       fclose(Fichier_sauv);
     }

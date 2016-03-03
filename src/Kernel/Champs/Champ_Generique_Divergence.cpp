@@ -115,7 +115,7 @@ const Noms Champ_Generique_Divergence::get_property(const Motcle& query) const
     case 0:
       {
         Noms compo(1);
-        Nom nume(0);
+        Nom nume((int)0);
         compo[0] = nom_post_+nume;
 
         return compo;

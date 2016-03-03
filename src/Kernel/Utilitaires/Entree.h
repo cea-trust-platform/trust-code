@@ -112,6 +112,7 @@ protected:
   inline int error_handle(int fail_flag);
   virtual int error_handle_(int fail_flag);
   int bin_;
+  int is_int32_;
   int check_types_;
   Error_Action error_action_;
   int diffuse_; // By default 1, but some child classes (eg: LecFicDiffuse) could set temporary to 0 to not diffuse to other processes

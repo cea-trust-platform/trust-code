@@ -255,7 +255,7 @@ void  Champ_Fonc_MED::lire(double t,int nn)
           exit();
         }
       //Cerr<<"la"<<finl;
-      Cerr<<"reading of the "<<numdt<< " time step of field "<<le_nom_du_champ<<" time "<<t<<" type ent "<<(int)type_ent<<finl;
+      Cerr<<"reading of the "<<(int)numdt<< " time step of field "<<le_nom_du_champ<<" time "<<t<<" type ent "<<(int)type_ent<<finl;
 #ifdef MED30
       ret=MEDfieldValueRd(fid,le_nom_du_champ,numdt,numo,type_ent,type_geo,MED_FULL_INTERLACE,MED_ALL_CONSTITUENT,(unsigned char*)le_champ().valeurs().addr());
 #else

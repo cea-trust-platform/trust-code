@@ -325,7 +325,7 @@ Entree& latatoother::interpreter(Entree& is)
                         else
                           {
                             Cerr<<nom_type<<" not coded ...... "<<finl;
-                            Cerr<<__FILE__<<":"<<__LINE__<<finl;
+                            Cerr<<__FILE__<<":"<<(int)__LINE__<<finl;
                             exit();
 
                           }
@@ -385,13 +385,13 @@ Entree& latatoother::interpreter(Entree& is)
 
 Entree& latatoother::readOn(Entree& is)
 {
-  Cerr<<__FILE__<<__LINE__<<" not coded"<<finl;
+  Cerr<<__FILE__<<(int)__LINE__<<" not coded"<<finl;
   Process::exit();
   return is;
 }
 Sortie& latatoother::printOn(Sortie& is) const
 {
-  Cerr<<__FILE__<<__LINE__<<" not coded"<<finl;
+  Cerr<<__FILE__<<(int)__LINE__<<" not coded"<<finl;
   Process::exit();
   return is;
 }

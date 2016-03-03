@@ -43,7 +43,7 @@ typedef enum {MED_MAILLE, MED_FACE, MED_ARETE, MED_NOEUD} med_entite_maillage;
 
 typedef enum {MED_COOR, MED_CONN, MED_NOM, MED_NUM, MED_FAM} med_table;
 
-typedef enum {MED_REEL64=6, MED_INT32=24,MED_INT64=26, MED_INT} med_type_champ;
+typedef enum {MED_REEL64=6, MED_INT32=24,MED_INT_is_64_=26, MED_INT} med_type_champ;
 
 #define MED_NBR_GEOMETRIE_MAILLE 15
 #define MED_NBR_GEOMETRIE_FACE 4
@@ -78,7 +78,7 @@ typedef enum {MED_HDF_VERSION, MED_VERSION, MED_FICH_DES} med_fich_info;
 
 #if defined(SUN4SOL2) || defined(PCLINUX) || defined(OSF1) || defined(IRIX64_32) || defined(RS6000)
 /* interface C/FORTRAN */
-/* this true only with g77 and gcc : we must change it to use directly NOMF_... and INT32 or INT64 - it will be more simple to understand and to use ! */
+/* this true only with g77 and gcc : we must change it to use directly NOMF_... and INT32 or INT_is_64_ - it will be more simple to understand and to use ! */
 #define NOMF_POST_UNDERSCORE
 /*
   piratage typedef hdf

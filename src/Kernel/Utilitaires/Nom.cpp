@@ -137,8 +137,13 @@ Nom::Nom(int i)
   nb_noms++;
   nom_ = "";
   // 20 caracteres suffisent pour stocker n'importe quel entier
-  char chaine[20];
+
+  char chaine[22];
+#ifdef INT_is_64_
+  sprintf(chaine, "%ld", i);
+#else
   sprintf(chaine, "%d", i);
+#endif
   operator=(chaine);
 }
 // Description:

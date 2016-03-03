@@ -222,7 +222,7 @@ DoubleTab& Op_Diff_EF::ajouter(const DoubleTab& tab_inconnue, DoubleTab& resu) c
         }
       else
         {
-          Cerr<<__FILE__<<__LINE__<< "cas non optimise "<<finl;
+          Cerr<<__FILE__<<(int)__LINE__<< "cas non optimise "<<finl;
           return ajouter_vectoriel_gen(tab_inconnue,resu);
         }
     }
@@ -230,7 +230,7 @@ DoubleTab& Op_Diff_EF::ajouter(const DoubleTab& tab_inconnue, DoubleTab& resu) c
     {
       if (nb_comp!=1)
         {
-          Cerr<<__FILE__<<__LINE__<< "cas non prevu "<<finl;
+          Cerr<<__FILE__<<(int)__LINE__<< "cas non prevu "<<finl;
           assert(0);
           exit();
           return ajouter(tab_inconnue,resu);
@@ -243,7 +243,7 @@ DoubleTab& Op_Diff_EF::ajouter(const DoubleTab& tab_inconnue, DoubleTab& resu) c
         }
       else
         {
-          Cerr<<__FILE__<<__LINE__<< "cas non optimise "<<finl;
+          Cerr<<__FILE__<<(int)__LINE__<< "cas non optimise "<<finl;
           return ajouter_scalaire_gen(tab_inconnue,resu);
         }
 

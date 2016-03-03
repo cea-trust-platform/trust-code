@@ -574,9 +574,9 @@ void Convection_Diffusion_Chaleur_QC::assembler( Matrice_Morse& matrice,const Do
   // on a la matrice approchee on recalcule le residu;
   resu=0;
   derivee_en_temps_inco_sans_solveur_masse(resu);
-  //double max_resu=max_abs(resu);Cerr<<__LINE__<< "resu "<<max_resu<<finl;
+  //double max_resu=max_abs(resu);Cerr<<(int)__LINE__<< "resu "<<max_resu<<finl;
   matrice.ajouter_multvect(inco,resu);
-  //max_resu=max_abs(resu);Cerr<<__LINE__<< "resu "<<max_resu<<finl;
+  //max_resu=max_abs(resu);Cerr<<(int)__LINE__<< "resu "<<max_resu<<finl;
   //if (max_resu>1e5) exit();
 
   if (test_op)

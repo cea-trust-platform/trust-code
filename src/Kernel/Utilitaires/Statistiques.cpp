@@ -464,7 +464,7 @@ static void print_stat(Sortie& perfs,
     {
       double percent_time = (temps_total_max==0 ? 0 : time / temps_total_max * 100.);
       sprintf(tampon, "%50s (%02d) %10.2f %5.1f%% %10.3g %10.3g",
-              description, level, time, percent_time, nb, quantity);
+              description, (True_int)level, time, percent_time, nb, quantity);
       perfs << tampon << finl;
     }
 
@@ -496,7 +496,7 @@ static void print_stat(Sortie& perfs,
 
           sprintf(tampon,
                   "%50s (%02d) %10.2f  %5.1f%% %-23s %10.3g %-23s %10.3g %-23s",
-                  description, level,
+                  description, (True_int)level,
                   avg_time, percent_time, s1,
                   avg_nb, s2,
                   avg_quantity, s3);

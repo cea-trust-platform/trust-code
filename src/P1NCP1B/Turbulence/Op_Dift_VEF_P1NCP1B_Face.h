@@ -73,7 +73,7 @@ public:
   double calculer_dt_stab() const;
   inline void remplir_nu(DoubleTab& ) const
   {
-    Cerr<<__FILE__<<":"<<__LINE__<<finl;
+    Cerr<<__FILE__<<":"<<(int)__LINE__<<finl;
     exit();
   } ;
 

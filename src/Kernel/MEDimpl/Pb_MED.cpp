@@ -367,7 +367,7 @@ const Champ_base& Pb_MED::get_champ(const Motcle& un_nom) const
       Champ_Fonc_MED& ch_med = ref_cast_non_const(Champ_Fonc_MED,curseur.valeur().valeur());
       nom_champ = Motcle(curseur.valeur().le_nom());
       // nom_champ=ch_med.le_champ().le_nom();
-      //  Cerr<<__LINE__<<nom_champ<<finl;
+      //  Cerr<<(int)__LINE__<<nom_champ<<finl;
       // nom_champ = Motcle(curseur.valeur().valeur().le_nom());
       if ((nom_champ==un_nom) && (ok_post==1))
         {

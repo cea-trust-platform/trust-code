@@ -23,7 +23,7 @@
 #include <MAIN.h>
 #include <mon_main.h>
 
-int main(int argc, char** argv)
+True_int main(True_int argc, char** argv)
 {
   mon_main* p=NULL;
 

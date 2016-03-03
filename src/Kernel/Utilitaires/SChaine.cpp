@@ -51,8 +51,8 @@ void SChaine::self_test()
     {
       Cerr<<"Problem with Echaine SChaine"<<finl;
       Cerr<<"ref: "<<ref<<"#"<<finl;
-      Cerr<<"SChaine: "<< s2<<"#"<<strcmp(s2,ref)<<finl;
-      Cerr<<"EChaine: "<< test.get_str()<<"#"<<strcmp(test.get_str(),ref)<<finl;
+      Cerr<<"SChaine: "<< s2<<"#"<<(int)strcmp(s2,ref)<<finl;
+      Cerr<<"EChaine: "<< test.get_str()<<"#"<<(int)strcmp(test.get_str(),ref)<<finl;
       Process::exit();
     }
 

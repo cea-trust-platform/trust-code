@@ -85,7 +85,7 @@ Fichier_Lata::Fichier_Lata(const char * basename, const char * extension,
         is_parallel_ = 0;
         fichier_ = new SFichier;
         const int moi = Process::me();
-        sprintf(s, "_%05d", moi);
+        sprintf(s, "_%05d", (True_int)moi);
         break;
       }
     default:
@@ -925,7 +925,7 @@ int Format_Post_Lata::ecrire_domaine(const Domaine& domaine,const int& est_le_pr
             sfichier << " format=INT32"<<finl;;
             break;
           case 8:
-            sfichier << " format=INT64"<<finl;
+            sfichier << " format=INT_is_64_"<<finl;
             break;
           default:
             Cerr << "Error in Format_Post_Lata::ecrire_entete\n"
@@ -1231,7 +1231,7 @@ int Format_Post_Lata::ecrire_entete_lata(const Nom& base_name,const Options_Para
               sfichier << "INT32,";
               break;
             case 8:
-              sfichier << "INT64,";
+              sfichier << "INT_is_64_,";
               break;
             default:
               Cerr << "Error in Format_Post_Lata::ecrire_entete\n"

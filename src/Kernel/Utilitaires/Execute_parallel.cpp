@@ -120,7 +120,7 @@ Entree& Execute_parallel::interpreter(Entree& is)
       Nom log1(Objet_U::nom_du_cas());
       log1+="_";
       char s[20];
-      sprintf(s, "%05d", count);
+      sprintf(s, "%05d", (True_int)count);
       log1+=s;
       log1+=".log";
       if (n==1)
@@ -133,7 +133,7 @@ Entree& Execute_parallel::interpreter(Entree& is)
           Nom log2(Objet_U::nom_du_cas());
           log2+="_";
           char s2[20];
-          sprintf(s2, "%05d", count+n-1);
+          sprintf(s2, "%05d", (True_int)(count+n-1));
           log2+=s2;
           log2+=".log";
           log="log files from ";

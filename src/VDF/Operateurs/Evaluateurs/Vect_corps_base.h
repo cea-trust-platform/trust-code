@@ -264,7 +264,7 @@ inline void CLASSNAME::flux_face(const DoubleTab& inco, int boundary_index, int 
   // La C.L fournit h_imp ; il faut calculer e/diffusivite
 
 #ifdef ISQUASI
-  Cerr<<__FILE__<< " QC BORD non code ligne "<<__LINE__<<finl;
+  Cerr<<__FILE__<< " QC BORD non code ligne "<<(int)__LINE__<<finl;
   Process::exit();
 #endif
   double h_total_inv,e;
@@ -378,7 +378,7 @@ inline void CLASSNAME::flux_face(const DoubleTab& inco, int face ,
                                  int num1,DoubleVect& flux) const
 {
 #ifdef ISQUASI
-  Cerr<<__FILE__<< " QC BORD non code ligne "<<__LINE__<<finl;
+  Cerr<<__FILE__<< " QC BORD non code ligne "<<(int)__LINE__<<finl;
   Process::exit();
 #endif
   int n0 = elem_(face,0);

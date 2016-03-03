@@ -119,8 +119,8 @@ double portion_surface(const ArrOfDouble& point0,const ArrOfDouble& point1, cons
 
 
 
-static int fonction_tri_data(const void *ptr1,
-                             const void *ptr2)
+static True_int fonction_tri_data(const void *ptr1,
+                                  const void *ptr2)
 {
   const double * tab1 = (const double *) ptr1;
   const double * tab2 = (const double *) ptr2;

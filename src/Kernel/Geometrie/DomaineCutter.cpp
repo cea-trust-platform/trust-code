@@ -1132,9 +1132,9 @@ static void construire_nom_fichier_sous_domaine(const Nom& basename,
     }
   char s[20];
   if (nb_parties_ > 10000)
-    sprintf(s, "_%05d.Zones", partie);
+    sprintf(s, "_%05d.Zones", (True_int)partie);
   else
-    sprintf(s, "_%04d.Zones", partie);
+    sprintf(s, "_%04d.Zones",(True_int) partie);
   fichier += Nom(s);
 }
 
@@ -1182,7 +1182,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const int binaire, ArrOfIn
             Cerr << "  Number of nodes    : " << sous_domaine.nb_som() << finl;
             Cerr << "  Number of elements : " << zone.nb_elem() << finl;
             Cerr << "  Number of joints   : " << nb_joints << finl;
-            char s[200];
+            //            char s[200];
             int nbfaces_total=0;
             int nbelemdist_total=0;
             int nbsom_total=0;
@@ -1198,13 +1198,10 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const int binaire, ArrOfIn
                 nbelemdist_total+=nbelemdist;
                 // Beurk: sprintf pas beau et dangereux, mais c'est plus simple...
                 assert(sizeof(int)==sizeof(int));
-                sprintf(s, "  Joint %2d PeVoisin %4d NbSommets %5d NbFaces %5d NbElemDist %5d\n",
-                        i, pe, nbsom, nbfaces, nbelemdist);
-                Cerr << s;
+                Cerr<< "  Joint "<<i<<" PeVoisin "<<pe<<" NbSommets "<<nbsom<<" NbFaces "<<nbfaces<<" NbElemDist "<<nbelemdist<<finl;
               }
-            sprintf(s, "               Total:    NbSommets %5d NbFaces %5d NbElemDist %5d\n",
-                    nbsom_total,nbfaces_total,nbelemdist_total);
-            Cerr << s;
+            Cerr<<"               Total:    NbSommets "<<nbsom_total<<" NbFaces "<<nbfaces_total<<" NbElemDist "<<nbelemdist_total<<finl;
+
           }
           if (reorder && loop==0)
             {

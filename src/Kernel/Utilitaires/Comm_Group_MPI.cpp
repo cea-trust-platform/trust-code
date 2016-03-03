@@ -29,6 +29,11 @@ Implemente_instanciable_sans_constructeur_ni_destructeur(Comm_Group_MPI,"Comm_Gr
 
 
 #ifdef MPI_
+#ifdef INT_is_64_
+#define MPI_ENTIER MPI_LONG
+#else
+#define MPI_ENTIER MPI_INT
+#endif
 MPI_Status  * Comm_Group_MPI::mpi_status_ = 0;
 MPI_Request * Comm_Group_MPI::mpi_requests_ = 0;
 int Comm_Group_MPI::mpi_nrequests_ = -1;
@@ -44,7 +49,7 @@ static void mpi_print_error(int error_code)
 {
   Cerr << "mpi_error in Comm_Group_MPI : error_code = " << error_code << finl;
   Process::Journal() << "mpi_error in Comm_Group_MPI : error_code = " << error_code << finl;
-  int length = 0;
+  True_int length = 0;
   char message[MPI_MAX_ERROR_STRING];
   MPI_Error_string(error_code, message, & length);
   if (length > 0)
@@ -198,17 +203,17 @@ void Comm_Group_MPI::mp_collective_op(const int *x, int *resu, int n, Collective
       // (x ne sera jamais modifie par la librairie, sauf bug !)
     case COLL_SUM:
       statistiques().begin_count(mpi_sumint_counter_);
-      mpi_error(MPI_Allreduce((int*) x, resu, n, MPI_INT, MPI_SUM, mpi_comm_));
+      mpi_error(MPI_Allreduce((int*) x, resu, n, MPI_ENTIER, MPI_SUM, mpi_comm_));
       statistiques().end_count(mpi_sumint_counter_);
       break;
     case COLL_MIN:
       statistiques().begin_count(mpi_minint_counter_);
-      mpi_error(MPI_Allreduce((int*) x, resu, n, MPI_INT, MPI_MIN, mpi_comm_));
+      mpi_error(MPI_Allreduce((int*) x, resu, n, MPI_ENTIER, MPI_MIN, mpi_comm_));
       statistiques().end_count(mpi_minint_counter_);
       break;
     case COLL_MAX:
       statistiques().begin_count(mpi_maxint_counter_);
-      mpi_error(MPI_Allreduce((int*) x, resu, n, MPI_INT, MPI_MAX, mpi_comm_));
+      mpi_error(MPI_Allreduce((int*) x, resu, n, MPI_ENTIER, MPI_MAX, mpi_comm_));
       statistiques().end_count(mpi_maxint_counter_);
       break;
     case COLL_PARTIAL_SUM:
@@ -246,8 +251,8 @@ void Comm_Group_MPI::barrier(int tag) const
       // ATTENTION : il faut "int" et pas "entier" !!!
       int tag_complet = get_new_tag() * max_tag + tag;
       int min_tag, amax_tag;
-      mpi_error(MPI_Allreduce(& tag_complet, & min_tag, 1, MPI_INT, MPI_MIN, mpi_comm_));
-      mpi_error(MPI_Allreduce(& tag_complet, & amax_tag, 1, MPI_INT, MPI_MAX, mpi_comm_));
+      mpi_error(MPI_Allreduce(& tag_complet, & min_tag, 1, MPI_ENTIER, MPI_MIN, mpi_comm_));
+      mpi_error(MPI_Allreduce(& tag_complet, & amax_tag, 1, MPI_ENTIER, MPI_MAX, mpi_comm_));
       if (min_tag != tag_complet || amax_tag != tag_complet)
         {
           Cerr << "Error in Comm_Group_MPI::barrier(int tag)\n";
@@ -298,7 +303,7 @@ void Comm_Group_MPI::send_recv_start(const ArrOfInt& send_list,
 
   int divisor = 0;
   MPI_Datatype datatype = MPI_CHAR;
-  assert(sizeof(int) == sizeof(int)); // Sinon il faut changer MPI_INT !!!
+  assert(sizeof(int) == sizeof(int)); // Sinon il faut changer MPI_ENTIER !!!
   switch(typehint)
     {
     case CHAR:
@@ -306,7 +311,7 @@ void Comm_Group_MPI::send_recv_start(const ArrOfInt& send_list,
       break;
     case INT:
       divisor = sizeof(int);
-      datatype = MPI_INT;
+      datatype = MPI_ENTIER;
       break;
     case DOUBLE:
       divisor = sizeof(double);
@@ -466,7 +471,7 @@ void Comm_Group_MPI::init_group_trio()
           exit();
         }
       must_finalize_ = 1;
-      int argc=0;
+      True_int argc=0;
       char** argv=NULL;
       int errcode = MPI_Init(&argc, &argv);
       //int errcode = MPI_Init(0,0); Message d'erreur sur MPI Voltaire
@@ -478,8 +483,8 @@ void Comm_Group_MPI::init_group_trio()
         }
     }
 
-  int arank;
-  int nbproc;
+  True_int arank;
+  True_int nbproc;
 
   mpi_error(MPI_Comm_size (trio_u_world_, & nbproc));
   mpi_error(MPI_Comm_rank (trio_u_world_, & arank));
@@ -508,7 +513,7 @@ void Comm_Group_MPI::init_group_trio()
         }
       else
         {
-          Cerr << "Initialized MPI with communicator!=MPI_COMM_WORLD: using " << nbproc << " processors" << finl;
+          Cerr << "Initialized MPI with communicator!=MPI_COMM_WORLD: using " << (int)nbproc << " processors" << finl;
         }
     }
 }
@@ -528,8 +533,9 @@ void Comm_Group_MPI::all_to_allv(const void *src_buffer, int *send_data_size, in
   statistiques().begin_count(mpi_alltoall_counter_);
   assert(src_buffer != dest_buffer);
   void * ptr = (void *) src_buffer; // Cast a cause de l'interface de MPI_Alltoall
-  mpi_error(MPI_Alltoallv(ptr, send_data_size, send_data_offset, MPI_CHAR,
-                          dest_buffer, recv_data_size, recv_data_offset, MPI_CHAR, mpi_comm_));
+
+  mpi_error(MPI_Alltoallv(ptr, (True_int *)send_data_size, (True_int *)send_data_offset, MPI_CHAR,
+                          dest_buffer, (True_int* )recv_data_size, (True_int *)recv_data_offset, MPI_CHAR, mpi_comm_));
   const int n = nproc()-1;
   const int size = send_data_offset[n] + send_data_size[n] + recv_data_size[n] + recv_data_offset[n];
   statistiques().end_count(mpi_alltoall_counter_, size);
@@ -618,8 +624,8 @@ void Comm_Group_MPI::init_group(const ArrOfInt& pe_list)
   const MPI_Group& current_mpi_group = cg.mpi_group_;
   const MPI_Comm& current_mpi_comm  = cg.mpi_comm_;
   // Copie de pe_list au cas ou int != int...
-  const int nbproc = this->nproc();
-  int *ranks = new int[nbproc];
+  const True_int nbproc = this->nproc();
+  True_int *ranks = new True_int[nbproc];
   for (int i = 0; i < nbproc; i++)
     ranks[i] = pe_list[i];
   assert(mpi_group_==MPI_GROUP_NULL);
@@ -678,14 +684,14 @@ int Comm_Group_MPI::mppartial_sum(int x) const
   if (rang > 0)
     {
       // Recoit la somme partielle du precedent
-      mpi_error(MPI_Recv(& somme, 1, MPI_INT, rang-1, tag, mpi_comm_, &status));
+      mpi_error(MPI_Recv(& somme, 1, MPI_ENTIER, rang-1, tag, mpi_comm_, &status));
     }
   if (rang+1 < np)
     {
       // Envoie la somme partielle au suivant
       // ATTENTION : il faut "int" et pas "entier" !!!
       int s = somme + x;
-      mpi_error(MPI_Send(& s, 1, MPI_INT, rang+1, tag, mpi_comm_));
+      mpi_error(MPI_Send(& s, 1, MPI_ENTIER, rang+1, tag, mpi_comm_));
     }
   statistiques().end_count(mpi_partialsum_counter_);
   return somme;

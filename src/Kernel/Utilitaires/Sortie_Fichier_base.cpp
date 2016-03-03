@@ -22,7 +22,10 @@
 
 #include <Sortie_Fichier_base.h>
 #include <Process.h>
+#include <Nom.h>
+
 Implemente_base_sans_constructeur_ni_destructeur(Sortie_Fichier_base,"Sortie_Fichier_base",Objet_U);
+
 Entree& Sortie_Fichier_base::readOn(Entree& s)
 {
   throw;
@@ -47,17 +50,21 @@ Sortie_Fichier_base::Sortie_Fichier_base(const char* name, IOS_OPEN_MODE mode)
 {
   bin_=0;
   internalBuff_=0;
-  ofstream_ = new ofstream(name,mode);
+  ofstream_ = 0;
+  ouvrir(name,mode);
+  /*
+  new ofstream(name,mode);
   set_toFlush();
   set_buffer();
   set_ostream(ofstream_);
-#ifdef ver_file
+  #ifdef ver_file
   if (Process::me()!=0)
     {
-      Cerr<<Process::me()<<name<<" :"<<__FILE__<<__LINE__<<finl;
+      Cerr<<Process::me()<<name<<" :"<<__FILE__<<(int)__LINE__<<finl;
       ::abort();
     }
-#endif
+  #endif
+  */
 }
 
 Sortie_Fichier_base::~Sortie_Fichier_base()
@@ -185,7 +192,7 @@ int Sortie_Fichier_base::ouvrir(const char* name,IOS_OPEN_MODE mode)
         }
       if (error)
         {
-          Cerr<<Process::me()<<name<<" strange :"<<__FILE__<<__LINE__<<finl;
+          Cerr<<Process::me()<<name<<" strange :"<<__FILE__<<(int)__LINE__<<finl;
           cerr<<name<<endl;
           ::abort();
         }
@@ -196,8 +203,16 @@ int Sortie_Fichier_base::ouvrir(const char* name,IOS_OPEN_MODE mode)
   if(ofstream_)
     delete ofstream_;
   IOS_OPEN_MODE ios_mod=mode;
+  int new_bin=0;
   if (bin_)
     {
+
+      if (ios_mod==ios::out)
+        {
+          new_bin=1;
+        }
+      else
+        assert(ios_mod==ios::app);
       ios_mod=ios_mod|ios::binary;
     }
   ofstream_ = new ofstream(name,ios_mod);
@@ -209,6 +224,11 @@ int Sortie_Fichier_base::ouvrir(const char* name,IOS_OPEN_MODE mode)
       cerr << "Error when opening the file " << name << endl;
       cerr << "Check if this file can be opened." << endl;
       Process::exit();
+    }
+  if (new_bin)
+    {
+      Nom marq("INT_is_64_");
+      (*this)<<marq;
     }
   return 1;
 }

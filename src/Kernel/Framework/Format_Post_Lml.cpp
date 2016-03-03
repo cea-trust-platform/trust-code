@@ -434,7 +434,7 @@ int Format_Post_Lml::ecrire_domaine_lml(const Domaine& domaine,Nom& nom_fich)
   if(je_suis_maitre())
     {
       s <<  "FACE" << finl ;
-      s << 0 << "" << finl;
+      s << (int)0 << "" << finl;
     }
 
 
@@ -614,7 +614,7 @@ int Format_Post_Lml::ecrire_champ_lml(const Domaine& domaine,const Noms& unite_,
                     {
                       os << "CHAMPMAILLE ";
                       os << noms_post[ncomp2]  << " " << nom_top << " " << temps_ << finl;
-                      os << noms_post[ncomp2] << " " << 1 << " " << unite_[ncomp2] << " " ;
+                      os << noms_post[ncomp2] << " " << (int)1 << " " << unite_[ncomp2] << " " ;
                       os << "type0" << " " << nb_elem_tot << finl;
                     }
                   os.lockfile();
@@ -675,7 +675,7 @@ int Format_Post_Lml::ecrire_champ_lml(const Domaine& domaine,const Noms& unite_,
             {
               if(je_suis_maitre())
                 {
-                  os << nom_post << " " << 1 << " " << unite_[ncomp] << " "
+                  os << nom_post << " " << (int)1 << " " << unite_[ncomp] << " "
                      << "type0" << " " << nb_som_tot << finl;
                 }
               os.lockfile();
@@ -690,7 +690,7 @@ int Format_Post_Lml::ecrire_champ_lml(const Domaine& domaine,const Noms& unite_,
             {
               if(je_suis_maitre())
                 {
-                  os << nom_post << " " << 1 << " " << unite_[ncomp] << " "
+                  os << nom_post << " " << (int)1 << " " << unite_[ncomp] << " "
                      << "type0" << " " << 2*nb_som_tot << finl;
                 }
               os.lockfile();
@@ -714,7 +714,7 @@ int Format_Post_Lml::ecrire_champ_lml(const Domaine& domaine,const Noms& unite_,
             {
               os << "CHAMPMAILLE ";
               os << nom_post << " " << nom_top << " " << temps_ << finl;
-              os << nom_post << " " << 1 << " " << unite_[ncomp] << " " ;
+              os << nom_post << " " << (int)1 << " " << unite_[ncomp] << " " ;
               os << "type0" << " " << nb_elem_tot << finl;
             }
           os.lockfile();

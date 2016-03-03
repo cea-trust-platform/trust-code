@@ -116,7 +116,12 @@ public:
 };
 
 // Taille en bytes d'un bloc de sz ints, arrondi aux 8 octets superieurs
+#ifdef INT_is_64_
+#define BLOCSIZE_INT(sz) (sz<<3)
+#else
 #define BLOCSIZE_INT(sz) (sz<<2)
+#endif
+
 #define BLOCSIZE_DOUBLE(sz) (sz<<3)
 #define ALIGN_SIZE(ptr,sz) ptr=sdata_.buffer_base_+((ptr-sdata_.buffer_base_+(sz-1))&(~(sz-1)))
 

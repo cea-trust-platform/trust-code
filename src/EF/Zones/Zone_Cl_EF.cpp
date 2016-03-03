@@ -230,7 +230,7 @@ void Zone_Cl_EF::remplir_type_elem_Cl(const Zone_EF& la_zone_EF)
         }
       else
         {
-          Cerr<<__FILE__<<":" <<__LINE__<<" non code pour cette cl "<<la_cl.que_suis_je()<<finl;
+          Cerr<<__FILE__<<":" <<(int)__LINE__<<" non code pour cette cl "<<la_cl.que_suis_je()<<finl;
         }
 
     }
@@ -398,7 +398,7 @@ void Zone_Cl_EF::imposer_symetrie_partiellement(DoubleTab& values,const Noms& a_
 
       if (sub_type(Symetrie,la_cl)&&(a_exclure.rang(nom_bord)>-1))
         {
-          Cerr<<__FILE__<<__LINE__<<" on  impose pas symetrie sur "<<nom_bord<<finl;
+          Cerr<<__FILE__<<(int)__LINE__<<" on  impose pas symetrie sur "<<nom_bord<<finl;
           for (int ind_face=0; ind_face<num2; ind_face++)
             {
               int face=le_bord.num_face(ind_face);
@@ -421,7 +421,7 @@ void Zone_Cl_EF::imposer_symetrie_partiellement(DoubleTab& values,const Noms& a_
 
       if (sub_type(Symetrie,la_cl)&&(a_exclure.rang(nom_bord)<0))
         {
-          Cerr<<__FILE__<<__LINE__<<" on impose symetrie sur "<<nom_bord<<finl;
+          Cerr<<__FILE__<<(int)__LINE__<<" on impose symetrie sur "<<nom_bord<<finl;
           for (int ind_face=0; ind_face<num2; ind_face++)
             {
               int face=le_bord.num_face(ind_face);

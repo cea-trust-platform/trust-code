@@ -272,12 +272,12 @@ void EcritureLectureSpecial::ecriture_special(const Zone_VF& zvf, Sortie& fich, 
 
 
   if (Process::je_suis_maitre())
-    fich << 1 << finl << n << finl << 1 << finl << n << finl << n <<finl;
+    fich << (int)1 << finl << n << finl << (int)1 << finl << n << finl << n <<finl;
 
   ecriture_special_part2(zvf, fich, val);
 
   if (Process::je_suis_maitre())
-    fich << n << finl << 0 << finl << 0 << finl << 0 << finl << 1 << finl << 0 << finl << n << finl << finl << 1 << finl << 0 << finl << 0 <<finl;
+    fich << n << finl << (int)0 << finl << (int)0 << finl << (int)0 << finl << (int)1 << finl << (int)0 << finl << n << finl << finl << (int)1 << finl << (int)0 << finl << (int)0 <<finl;
 
   fich.syncfile();
 
