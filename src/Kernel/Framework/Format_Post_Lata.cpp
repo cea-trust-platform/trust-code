@@ -1231,7 +1231,7 @@ int Format_Post_Lata::ecrire_entete_lata(const Nom& base_name,const Options_Para
               sfichier << "INT32,";
               break;
             case 8:
-              sfichier << "INT_is_64_,";
+              sfichier << "INT64,";
               break;
             default:
               Cerr << "Error in Format_Post_Lata::ecrire_entete\n"

@@ -86,7 +86,7 @@ class IntList_Curseur
 public :
   inline IntList_Curseur(const IntList& a_list);
   inline IntList_Curseur(const IntListElem& a_list);
-  inline operator bool() const;
+  inline operator int() const;
   inline void operator++();
   inline int valeur() const;
   inline int& valeur();
@@ -177,7 +177,7 @@ inline IntList_Curseur::IntList_Curseur(const IntListElem& a_list)
 // Exception:
 // Effets de bord:
 // Postcondition:
-inline IntList_Curseur::operator bool() const
+inline IntList_Curseur::operator int() const
 {
   return (curseur!=0);
 }

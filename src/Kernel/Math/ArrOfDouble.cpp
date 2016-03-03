@@ -889,7 +889,7 @@ double min_abs_array(const ArrOfDouble& dx)
 // Description:
 //   Fonction de comparaison utilisee pour trier le tableau
 //   dans ArrOfDouble::trier(). Voir man qsort
-static int fonction_compare_arrofdouble_ordonner(const void * data1, const void * data2)
+static True_int  fonction_compare_arrofdouble_ordonner(const void * data1, const void * data2)
 {
   const double x = *(const double*)data1;
   const double y = *(const double*)data2;
@@ -899,6 +899,7 @@ static int fonction_compare_arrofdouble_ordonner(const void * data1, const void 
     return 1;
   else
     return 0;
+
 }
 
 // Description:

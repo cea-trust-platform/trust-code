@@ -79,7 +79,7 @@ int EcrFicPartageMPIIO::ouvrir(const char* name,IOS_OPEN_MODE mode)
     {
       if (je_suis_maitre())
         {
-          Nom marq("INT_is_64_");
+          Nom marq("INT64");
           (*this)<<marq;
         }
     }

@@ -873,11 +873,12 @@ int min_abs_array(const ArrOfInt& dx)
 // Description:
 //   Fonction de comparaison utilisee pour trier le tableau
 //   dans ArrOfInt::trier(). Voir man qsort
-static int fonction_compare_arrofint_ordonner(const void * data1, const void * data2)
+static True_int  fonction_compare_arrofint_ordonner(const void * data1, const void * data2)
 {
   const int x = *(const int*)data1;
   const int y = *(const int*)data2;
   return x - y;
+
 }
 
 // Description:

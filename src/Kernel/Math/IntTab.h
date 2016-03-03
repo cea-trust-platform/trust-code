@@ -55,6 +55,9 @@ public:
   // Les DoubleTab peuvent prendre un argument de plus dans la signature: valeur de remplissage
   // Pour les IntTab on ne peut pas: sinon confusion entre dimension et valeur de remplissage
   IntTab(int n);
+#ifdef INT_is_64_
+  IntTab(int n1, True_int n2);
+#endif
   IntTab(int n1, int n2);
   IntTab(int n1, int n2, int n3);
   IntTab(int n1, int n2, int n3, int n4);

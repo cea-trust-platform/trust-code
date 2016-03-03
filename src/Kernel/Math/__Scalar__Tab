@@ -32,12 +32,18 @@ public:
   // Pour les IntTab on ne peut pas: sinon confusion entre dimension et valeur de remplissage
 #Pif("__scalar__"=="double")
   __Scalar__Tab(int n, __scalar__ x = 0);
+#ifdef INT_is_64_
+  __Scalar__Tab(int n1, True_int n2, __scalar__ x = 0);
+#endif
   __Scalar__Tab(int n1, int n2, __scalar__ x = 0);
   __Scalar__Tab(int n1, int n2, int n3, __scalar__ x = 0);
   __Scalar__Tab(int n1, int n2, int n3, int n4, __scalar__ x = 0);
 #Pendif
 #Pif("__scalar__"=="int")
   __Scalar__Tab(int n);
+#ifdef INT_is_64_
+  __Scalar__Tab(int n1, True_int n2);
+#endif
   __Scalar__Tab(int n1, int n2);
   __Scalar__Tab(int n1, int n2, int n3);
   __Scalar__Tab(int n1, int n2, int n3, int n4);
@@ -429,6 +435,26 @@ __Scalar__Tab::__Scalar__Tab(int n1, int n2 PARAM_X)
   dimensions_[1]=n2;
   set_line_size_(n2);
 }
+#ifdef INT_is_64_
+__Scalar__Tab::__Scalar__Tab(int n1, True_int n2 PARAM_X)
+  : __Scalar__Vect(n1*n2 PARAM_X2), 
+    nb_dim_(2),
+    dimension_tot_0_(n1)
+{
+  assert(n1 >= 0 && n2 >= 0);
+#Pif("__scalar__"=="int")
+  if (n1*n2<0)
+  {
+     Cerr << "n1*n2 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n1 << " and n2=" <<(int) n2 << finl;
+     exit(); 
+  }
+#Pendif
+  init_dimensions(dimensions_);
+  dimensions_[0]=n1;
+  dimensions_[1]=n2;
+  set_line_size_(n2);
+}
+#endif
 
 __Scalar__Tab::__Scalar__Tab(int n1, int n2, int n3 PARAM_X)
   : __Scalar__Vect(n1*n2*n3 PARAM_X2), 

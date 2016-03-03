@@ -159,6 +159,19 @@ DoubleTab::DoubleTab(int n1, int n2 PARAM_X)
   dimensions_[1]=n2;
   set_line_size_(n2);
 }
+#ifdef INT_is_64_
+DoubleTab::DoubleTab(int n1, True_int n2 PARAM_X)
+  : DoubleVect(n1*n2 PARAM_X2),
+    nb_dim_(2),
+    dimension_tot_0_(n1)
+{
+  assert(n1 >= 0 && n2 >= 0);
+  init_dimensions(dimensions_);
+  dimensions_[0]=n1;
+  dimensions_[1]=n2;
+  set_line_size_(n2);
+}
+#endif
 
 DoubleTab::DoubleTab(int n1, int n2, int n3 PARAM_X)
   : DoubleVect(n1*n2*n3 PARAM_X2),

@@ -227,7 +227,7 @@ int Sortie_Fichier_base::ouvrir(const char* name,IOS_OPEN_MODE mode)
     }
   if (new_bin)
     {
-      Nom marq("INT_is_64_");
+      Nom marq("INT64");
       (*this)<<marq;
     }
   return 1;

@@ -162,6 +162,24 @@ IntTab::IntTab(int n1, int n2 PARAM_X)
   dimensions_[1]=n2;
   set_line_size_(n2);
 }
+#ifdef INT_is_64_
+IntTab::IntTab(int n1, True_int n2 PARAM_X)
+  : IntVect(n1*n2 PARAM_X2),
+    nb_dim_(2),
+    dimension_tot_0_(n1)
+{
+  assert(n1 >= 0 && n2 >= 0);
+  if (n1*n2<0)
+    {
+      Cerr << "n1*n2 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n1 << " and n2=" <<(int) n2 << finl;
+      exit();
+    }
+  init_dimensions(dimensions_);
+  dimensions_[0]=n1;
+  dimensions_[1]=n2;
+  set_line_size_(n2);
+}
+#endif
 
 IntTab::IntTab(int n1, int n2, int n3 PARAM_X)
   : IntVect(n1*n2*n3 PARAM_X2),

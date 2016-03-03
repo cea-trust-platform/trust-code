@@ -80,7 +80,7 @@ int Entree_Fichier_base::ouvrir(const char* name,IOS_OPEN_MODE mode)
     {
       Nom test;
       (*this) >> test;
-      if (test!="INT_is_64_")
+      if (test!="INT64")
         {
           Cerr<<"Probem "<<name<< "is binary and with int32 "<<finl;
           delete ifstream_;
