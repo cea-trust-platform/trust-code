@@ -925,7 +925,7 @@ int Format_Post_Lata::ecrire_domaine(const Domaine& domaine,const int& est_le_pr
             sfichier << " format=INT32"<<finl;;
             break;
           case 8:
-            sfichier << " format=INT_is_64_"<<finl;
+            sfichier << " format=INT64"<<finl;
             break;
           default:
             Cerr << "Error in Format_Post_Lata::ecrire_entete\n"

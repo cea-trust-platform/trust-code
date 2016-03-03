@@ -338,11 +338,13 @@ Sortie& EcrFicPartage::operator <<(const int& ob)
   get_obuffer() << ob;
   return *this;
 }
+#ifndef INT_is_64_
 Sortie& EcrFicPartage::operator <<(const long& ob)
 {
   get_obuffer() << ob;
   return *this;
 }
+#endif
 Sortie& EcrFicPartage::operator <<(const float& ob)
 {
   get_obuffer() << ob;
@@ -353,11 +355,13 @@ Sortie& EcrFicPartage::operator <<(const double& ob)
   get_obuffer() << ob;
   return *this;
 }
+#ifndef INT_is_64_
 int EcrFicPartage::put(const int* ob, int n, int pas)
 {
   get_obuffer().put(ob,n,pas);
   return 1;
 }
+#endif
 int EcrFicPartage::put(const long* ob, int n, int pas)
 {
   get_obuffer().put(ob,n,pas);

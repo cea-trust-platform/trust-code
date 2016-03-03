@@ -176,7 +176,7 @@ void convert_to(const char *s, int& ob)
       Process::exit();
     }
 }
-
+#ifndef INT_is_64_
 void convert_to(const char *s, long& ob)
 {
   errno = 0;
@@ -188,7 +188,7 @@ void convert_to(const char *s, long& ob)
       Process::exit();
     }
 }
-#ifndef INT_is_64_
+#endif
 void convert_to(const char *s, long long& ob)
 {
   errno = 0;
@@ -208,7 +208,6 @@ void convert_to(const char *s, long long& ob)
       Process::exit();
     }
 }
-#endif
 void convert_to(const char *s, float& ob)
 {
   errno = 0;
@@ -306,7 +305,9 @@ int Entree::get(_TYPE_ * ob, int n)
 #Pendmacro(get_entree)
 
 #Pusemacro(get_entree)(int)
+#ifndef INT_is_64_
 #Pusemacro(get_entree)(long)
+#endif
 #Pusemacro(get_entree)(float)
 #Pusemacro(get_entree)(double)
 

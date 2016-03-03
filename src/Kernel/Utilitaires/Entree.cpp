@@ -175,11 +175,11 @@ void convert_to(const char *s, int& ob)
   ob = strtol(s, &errorptr, 0 /* base 10 par defaut */);
   if (errno || *errorptr != 0)
     {
-      Cerr << "Error converting a string to type long : string = " << s << finl;
+      Cerr << "Error converting a string to type long int : string = " << s << finl;
       Process::exit();
     }
 }
-
+#ifndef INT_is_64_
 void convert_to(const char *s, long& ob)
 {
   errno = 0;
@@ -191,7 +191,7 @@ void convert_to(const char *s, long& ob)
       Process::exit();
     }
 }
-#ifndef INT_is_64_
+#endif
 void convert_to(const char *s, long long& ob)
 {
   errno = 0;
@@ -211,7 +211,6 @@ void convert_to(const char *s, long long& ob)
       Process::exit();
     }
 }
-#endif
 void convert_to(const char *s, float& ob)
 {
   errno = 0;
@@ -306,6 +305,7 @@ int Entree::get(int * ob, int n)
     }
   return (!istream_->fail());
 }
+#ifndef INT_is_64_
 // Description: methode virtuelle pour lire un int ou un reel.
 //  Dans cette classe de base, on lit dans le istream avec read() (si is_bin() == 1)
 //   ou avec operator>>() (si is_bin() == 0). Si le drapeau check_types est mis,
@@ -369,6 +369,7 @@ int Entree::get(long * ob, int n)
     }
   return (!istream_->fail());
 }
+#endif
 // Description: methode virtuelle pour lire un int ou un reel.
 //  Dans cette classe de base, on lit dans le istream avec read() (si is_bin() == 1)
 //   ou avec operator>>() (si is_bin() == 0). Si le drapeau check_types est mis,

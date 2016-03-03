@@ -877,8 +877,16 @@ static True_int  fonction_compare_arrofint_ordonner(const void * data1, const vo
 {
   const int x = *(const int*)data1;
   const int y = *(const int*)data2;
+#ifndef INT_is_64_
   return x - y;
-
+#else
+  if (x < y)
+    return -1;
+  else if (x > y)
+    return 1;
+  else
+    return 0;
+#endif
 }
 
 // Description:

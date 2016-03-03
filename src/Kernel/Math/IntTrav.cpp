@@ -31,6 +31,7 @@ Implemente_instanciable_sans_constructeur_ni_destructeur(IntTrav,"IntTrav",IntTa
 
 #define zero_double 0.
 #define zero_int 0
+#define zero_long 0
 // Description: Appel a IntTab::printOn
 Sortie& IntTrav::printOn(Sortie& os) const
 {

@@ -338,7 +338,11 @@ inline void OPERATION_ITEMBLOCS(const int line_size,
 #Pelse
       const int nb_elems = (idx_end_of_list - idx) * line_size;
 #Pendif
+#Pif ("DATATYPE"=="int")
+      ARRAYTYPE& buffer = buffers.get_next_area_int(voisins[i_voisin], nb_elems);
+#Pelse
       ARRAYTYPE& buffer = buffers.get_next_area_DATATYPE(voisins[i_voisin], nb_elems);
+#Pendif
       DATATYPE * bufptr = buffer.addr();
       assert(idx_end_of_list <= list.get_data().size_array());
       while (idx < idx_end_of_list)

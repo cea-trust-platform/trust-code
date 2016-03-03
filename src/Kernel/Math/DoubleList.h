@@ -86,7 +86,7 @@ class DoubleList_Curseur
 public :
   inline DoubleList_Curseur(const DoubleList& a_list);
   inline DoubleList_Curseur(const DoubleListElem& a_list);
-  inline operator int() const;
+  inline operator bool() const;
   inline void operator++();
   inline double valeur() const;
   inline double& valeur();
@@ -177,7 +177,7 @@ inline DoubleList_Curseur::DoubleList_Curseur(const DoubleListElem& a_list)
 // Exception:
 // Effets de bord:
 // Postcondition:
-inline DoubleList_Curseur::operator int() const
+inline DoubleList_Curseur::operator bool() const
 {
   return (curseur!=0);
 }

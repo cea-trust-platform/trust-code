@@ -1096,7 +1096,7 @@ Matrice_Morse operator+(const Matrice_Morse& A , const Matrice_Morse& B )
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
 int Matrice_Morse::inverse(const DoubleVect& secmem, DoubleVect& solution,
-                           double coeff_seuil) const
+                            double coeff_seuil) const
 {
   // B.Mat: au 20/4/2005, DoubleVect::norme() est bugge, donc la methode n'a
   // sans doute jamais ete validee en parallele. Je retire norme() et je mets
@@ -1285,7 +1285,7 @@ precond :
 //et si ce nb d'iterations est atteint, return(0), au lieu de recommencer preconditionnement
 //utilise pour l'implicite hyperbolique (si recoit 0 : divise le dt par 2 et recommence)
 int Matrice_Morse::inverse(const DoubleVect& secmem, DoubleVect& solution,
-                           double coeff_seuil, int max_iter) const
+                            double coeff_seuil, int max_iter) const
 {
   // B.Mat: au 20/4/2005, DoubleVect::norme() est bugge, donc la methode n'a
   // sans doute jamais ete validee en parallele. Je retire norme() et je mets

@@ -104,6 +104,7 @@ int Lec_Diffuse_base::get(int* ob, int n)
     }
   return error_handle(!ok);
 }
+#ifndef INT_is_64_
 Entree& Lec_Diffuse_base::operator>>(long& ob)
 {
   int ok = 0;
@@ -151,6 +152,7 @@ int Lec_Diffuse_base::get(long* ob, int n)
     }
   return error_handle(!ok);
 }
+#endif
 Entree& Lec_Diffuse_base::operator>>(float& ob)
 {
   int ok = 0;

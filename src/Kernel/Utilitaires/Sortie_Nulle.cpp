@@ -50,10 +50,12 @@ Sortie& Sortie_Nulle::operator<<(const int&     ob)
 {
   return *this;
 }
+#ifndef INT_is_64_
 Sortie& Sortie_Nulle::operator<<(const long&       ob)
 {
   return *this;
 }
+#endif
 Sortie& Sortie_Nulle::operator<<(const float&      ob)
 {
   return *this;
@@ -67,10 +69,12 @@ Sortie& Sortie_Nulle::operator<<(const char      * ob)
   return *this;
 }
 
+#ifndef INT_is_64_
 int Sortie_Nulle::put(const int* ob, int n, int pas)
 {
   return 1;
 }
+#endif
 int Sortie_Nulle::put(const long  * ob, int n, int pas)
 {
   return 1;

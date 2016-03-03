@@ -67,12 +67,16 @@ public:
   Entree& operator >>(ios& (*f)(ios&));
 
   virtual Entree& operator>>(int&      ob);
+#ifndef INT_is_64_
   virtual Entree& operator>>(long&     ob);
+#endif
   virtual Entree& operator>>(float&    ob);
   virtual Entree& operator>>(double&   ob);
 
   virtual int get(int* ob, int n);
+#ifndef INT_is_64_
   virtual int get(long* ob, int n);
+#endif
   virtual int get(float* ob, int n);
   virtual int get(double* ob, int n);
   virtual int get(char * buf, int bufsize);

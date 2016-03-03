@@ -899,7 +899,6 @@ static True_int  fonction_compare_arrofdouble_ordonner(const void * data1, const
     return 1;
   else
     return 0;
-
 }
 
 // Description:

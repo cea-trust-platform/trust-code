@@ -63,7 +63,9 @@ public:
 
   Sortie& operator <<(const Separateur& );
   Sortie& operator <<(const int& ob);
+#ifndef INT_is_64_
   Sortie& operator <<(const long& ob);
+#endif
   Sortie& operator <<(const float& ob);
   Sortie& operator <<(const double& ob);
   Sortie& operator <<(const char* ob);
@@ -72,7 +74,9 @@ public:
   Sortie& operator <<(const string& ob);
 #endif
   int put(const int* ob, int n, int pas);
-  int put(const long* ob, int n, int pas);
+#ifndef INT_is_64_
+  int put(const int* ob, int n, int pas);
+#endif
   int put(const float* ob, int n, int pas);
   int put(const double* ob, int n, int pas);
 

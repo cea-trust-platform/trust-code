@@ -201,10 +201,12 @@ int envoyer(const int&   t, int source, int cible, int canal )
 {
   return envoyer_array_(&t, 1, source, cible, canal);
 }
+#ifndef INT_is_64_
 int envoyer(const long&     t, int source, int cible, int canal )
 {
   return envoyer_array_(&t, 1, source, cible, canal);
 }
+#endif
 int envoyer(const float&    t, int source, int cible, int canal )
 {
   return envoyer_array_(&t, 1, source, cible, canal);
@@ -222,10 +224,12 @@ int envoyer(const int&   t, int cible, int canal )
 {
   return envoyer_array_(&t, 1, Process::me(), cible, canal);
 }
+#ifndef INT_is_64_
 int envoyer(const long&     t, int cible, int canal )
 {
   return envoyer_array_(&t, 1, Process::me(), cible, canal);
 }
+#endif
 int envoyer(const float&    t, int cible, int canal )
 {
   return envoyer_array_(&t, 1, Process::me(), cible, canal);
@@ -243,10 +247,12 @@ int recevoir(int& t, int source, int cible, int canal )
 {
   return recevoir_array_(&t, 1, source, cible, canal);
 }
+#ifndef INT_is_64_
 int recevoir(long&     t, int source, int cible, int canal )
 {
   return recevoir_array_(&t, 1, source, cible, canal);
 }
+#endif
 int recevoir(float&    t, int source, int cible, int canal )
 {
   return recevoir_array_(&t, 1, source, cible, canal);
@@ -264,10 +270,12 @@ int recevoir(int& t, int source, int canal )
 {
   return recevoir_array_(&t, 1, source, Process::me(), canal);
 }
+#ifndef INT_is_64_
 int recevoir(long&     t, int source, int canal )
 {
   return recevoir_array_(&t, 1, source, Process::me(), canal);
 }
+#endif
 int recevoir(float&    t, int source, int canal )
 {
   return recevoir_array_(&t, 1, source, Process::me(), canal);
@@ -285,10 +293,12 @@ int envoyer_array(const int  * t, int n, int source, int cible, int canal )
 {
   return envoyer_array_(t, n, source, cible, canal);
 }
+#ifndef INT_is_64_
 int envoyer_array(const long    * t, int n, int source, int cible, int canal )
 {
   return envoyer_array_(t, n, source, cible, canal);
 }
+#endif
 int envoyer_array(const double  * t, int n, int source, int cible, int canal )
 {
   return envoyer_array_(t, n, source, cible, canal);
@@ -302,10 +312,12 @@ int recevoir_array(const int  * t, int n, int source, int cible, int canal )
 {
   return recevoir_array_(t, n, source, cible, canal);
 }
+#ifndef INT_is_64_
 int recevoir_array(const long    * t, int n, int source, int cible, int canal )
 {
   return recevoir_array_(t, n, source, cible, canal);
 }
+#endif
 int recevoir_array(const double  * t, int n, int source, int cible, int canal )
 {
   return recevoir_array_(t, n, source, cible, canal);
@@ -364,16 +376,16 @@ int envoyer_broadcast(int& t, int source)
 {
   return envoyer_broadcast_(&t, 1, source);
 }
+#ifndef INT_is_64_
 int envoyer_broadcast(long&     t, int source)
 {
   return envoyer_broadcast_(&t, 1, source);
 }
-#ifndef INT_is_64_
+#endif
 int envoyer_broadcast(long long&     t, int source)
 {
   return envoyer_broadcast_(&t, 1, source);
 }
-#endif
 int envoyer_broadcast(float&    t, int source)
 {
   return envoyer_broadcast_(&t, 1, source);
@@ -391,10 +403,12 @@ int envoyer_broadcast_array(int  * t, int n, int source)
 {
   return envoyer_broadcast_(t, n, source);
 }
+#ifndef INT_is_64_
 int envoyer_broadcast_array(long    * t, int n, int source)
 {
   return envoyer_broadcast_(t, n, source);
 }
+#endif
 int envoyer_broadcast_array(float   * t, int n, int source)
 {
   return envoyer_broadcast_(t, n, source);

@@ -87,7 +87,9 @@ int Entree_complete::get(_TYPE_ * ob, int n)
 #Pendmacro(macroentree)
 
 #Pusemacro(macroentree)(int)
+#ifndef INT_is_64_
 #Pusemacro(macroentree)(long)
+#endif
 #Pusemacro(macroentree)(float)
 #Pusemacro(macroentree)(double)
 

@@ -1223,9 +1223,7 @@ static True_int  fonction_compare_arrof__scalar___ordonner(const void * data1, c
 {
   const __scalar__ x = *(const __scalar__*)data1;
   const __scalar__ y = *(const __scalar__*)data2;
-#Pif("__scalar__"=="int")
-  return x - y;
-#Pelse
+#Pif("__scalar__"=="double")
   if (x < y)
     return -1;
   else if (x > y)
@@ -1233,7 +1231,18 @@ static True_int  fonction_compare_arrof__scalar___ordonner(const void * data1, c
   else
     return 0;
 #Pendif
-
+#Pif("__scalar__"=="int")
+#ifndef INT_is_64_
+  return x - y;
+#else
+  if (x < y)
+    return -1;
+  else if (x > y)
+    return 1;
+  else
+    return 0;
+#endif
+#Pendif
 }
 
 // Description: 

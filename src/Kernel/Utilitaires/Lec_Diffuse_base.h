@@ -50,12 +50,16 @@ class Lec_Diffuse_base : public EFichier
   Declare_base_sans_constructeur(Lec_Diffuse_base);
 public:
   Entree& operator>>(int& ob);
+#ifndef INT_is_64_
   Entree& operator>>(long& ob);
+#endif
   Entree& operator>>(float& ob);
   Entree& operator>>(double& ob);
 
   int get(int* ob, int n);
+#ifndef INT_is_64_
   int get(long*   ob, int n);
+#endif
   int get(float*  ob, int n);
   int get(double* ob, int n);
   int get(char*   buf, int bufsize);

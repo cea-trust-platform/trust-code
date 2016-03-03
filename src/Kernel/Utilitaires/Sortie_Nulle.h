@@ -45,13 +45,17 @@ public:
   Sortie& operator <<(const Separateur& );
   Sortie& operator <<(const Objet_U& ob);
   Sortie& operator <<(const int& ob);
+#ifndef INT_is_64_
   Sortie& operator <<(const long& ob);
+#endif
   Sortie& operator <<(const float& ob);
   Sortie& operator <<(const double& ob);
   Sortie& operator <<(const char* ob);
 
   int put(const int* ob, int n, int pas=1);
+#ifndef INT_is_64_
   int put(const long* ob, int n, int pas=1);
+#endif
   int put(const float* ob, int n, int pas=1);
   int put(const double* ob, int n, int pas=1);
 };
