@@ -24,8 +24,8 @@
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(ArrOfBit,"ArrOfBit",Objet_U);
 
-const unsigned short ArrOfBit::SIZE_OF_INT_BITS = 5;
-const unsigned short ArrOfBit::DRAPEAUX_INT = 31;
+const unsigned int ArrOfBit::SIZE_OF_INT_BITS = 5;
+const unsigned int ArrOfBit::DRAPEAUX_INT = 31;
 
 // Description: Constructeur d'un tableau de taille n, non initialise
 ArrOfBit::ArrOfBit(int n)
@@ -76,7 +76,7 @@ ArrOfBit& ArrOfBit::resize_array(int n)
     {
       int oldsize = calculer_int_size(taille);
       int newsize = calculer_int_size(n);
-      unsigned short * newdata = new unsigned short[newsize];
+      unsigned int * newdata = new unsigned int[newsize];
       int size_copy = (newsize > oldsize) ? oldsize : newsize;
       if (size_copy)
         {
@@ -107,11 +107,11 @@ ArrOfBit& ArrOfBit::operator=(const ArrOfBit& array)
           data = 0;
         }
       if (newsize > 0)
-        data = new unsigned short[newsize];
+        data = new unsigned int[newsize];
     }
   taille = array.taille;
   if (taille)
-    memcpy(data, array.data, newsize * sizeof(unsigned short));
+    memcpy(data, array.data, newsize * sizeof(unsigned int));
   return *this;
 }
 
@@ -120,7 +120,7 @@ ArrOfBit& ArrOfBit::operator=(const ArrOfBit& array)
 
 ArrOfBit& ArrOfBit::operator=(int val)
 {
-  unsigned short valeur = val ? (~((unsigned short) 0)) : 0;
+  unsigned int valeur = val ? (~((unsigned int) 0)) : 0;
   int size = calculer_int_size(taille);
   int i;
   for (i = 0; i < size; i++)

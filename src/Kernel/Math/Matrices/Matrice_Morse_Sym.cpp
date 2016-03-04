@@ -891,7 +891,7 @@ int Matrice_Morse_Sym_test()
 
 
 int Matrice_Morse_Sym::inverse(const DoubleVect& secmem, DoubleVect& solution,
-                                double coeff_seuil) const
+                               double coeff_seuil) const
 {
   Cerr << "Not coded." << finl;
   exit();
@@ -899,7 +899,7 @@ int Matrice_Morse_Sym::inverse(const DoubleVect& secmem, DoubleVect& solution,
 }
 
 int Matrice_Morse_Sym::inverse(const DoubleVect& secmem, DoubleVect& solution,
-                                double coeff_seuil, int max_iter) const
+                               double coeff_seuil, int max_iter) const
 {
   Cerr << "Not coded." << finl;
   exit();

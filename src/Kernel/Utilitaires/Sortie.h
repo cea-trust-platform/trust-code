@@ -96,7 +96,7 @@ public:
 #endif
   virtual int put(const int* ob, int n, int nb_colonnes=1);
 #ifndef INT_is_64_
-  virtual int put(const int  * ob, int n, int nb_colonnes=1);
+  virtual int put(const long  * ob, int n, int nb_colonnes=1);
 #endif
   virtual int put(const float * ob, int n, int nb_colonnes=1);
   virtual int put(const double* ob, int n, int nb_colonnes=1);

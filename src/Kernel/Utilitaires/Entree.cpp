@@ -175,7 +175,7 @@ void convert_to(const char *s, int& ob)
   ob = strtol(s, &errorptr, 0 /* base 10 par defaut */);
   if (errno || *errorptr != 0)
     {
-      Cerr << "Error converting a string to type long int : string = " << s << finl;
+      Cerr << "Error converting a string to type long : string = " << s << finl;
       Process::exit();
     }
 }

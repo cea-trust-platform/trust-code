@@ -76,6 +76,7 @@ int Entree_Fichier_base::ouvrir(const char* name,IOS_OPEN_MODE mode)
   ifstream_ = new ifstream(name,ios_mod);
   int ok = ifstream_->good();
   set_istream(ifstream_);
+#ifdef INT_is_64_
   if (bin_)
     {
       Nom test;
@@ -92,6 +93,7 @@ int Entree_Fichier_base::ouvrir(const char* name,IOS_OPEN_MODE mode)
 
         }
     }
+#endif
   return ok;
 }
 

@@ -75,7 +75,7 @@ public:
 #endif
   int put(const int* ob, int n, int pas);
 #ifndef INT_is_64_
-  int put(const int* ob, int n, int pas);
+  int put(const long* ob, int n, int pas);
 #endif
   int put(const float* ob, int n, int pas);
   int put(const double* ob, int n, int pas);

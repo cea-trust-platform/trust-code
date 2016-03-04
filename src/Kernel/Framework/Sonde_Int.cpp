@@ -583,9 +583,15 @@ void Sonde_Int::postraiter(double un_temps)
               for(int i=0; i<n1; i++)
                 for(k=0; k<n2; k++)
                   {
+#ifdef INT_is_64_
                     val_max = max(labs(valeurs(i,k)),labs(valeurs_pe(i,k)));
                     if(val_max==(labs(valeurs_pe(i,k))))
                       valeurs(i,k)=valeurs_pe(i,k);
+#else
+                    val_max = max(abs(valeurs(i,k)),abs(valeurs_pe(i,k)));
+                    if(val_max==(abs(valeurs_pe(i,k))))
+                      valeurs(i,k)=valeurs_pe(i,k);
+#endif
                   }
             }
 
@@ -665,9 +671,15 @@ void Sonde_Int::postraiter(double un_temps)
 
               for(int i=0; i<valeurs.dimension(0); i++)
                 {
+#ifdef INT_is_64_
                   val_max = max(labs(valeurs(i)),labs(valeurs_pe(i)));
+                  if(val_max==(labs(valeurs_pe(i))))
+                    valeurs(i)=valeurs_pe(i);
+#else
+                  val_max = max(abs(valeurs(i)),abs(valeurs_pe(i)));
                   if(val_max==(abs(valeurs_pe(i))))
                     valeurs(i)=valeurs_pe(i);
+#endif
                 }
             }
           if (dim==0 || dim==1)

@@ -906,6 +906,9 @@ int Format_Post_Lata::ecrire_domaine(const Domaine& domaine,const int& est_le_pr
         sfichier << " type_elem=" << type_elem<<finl;
         sfichier << "CHAMP SOMMETS "<< remove_path(nom_fichier_geom);
         sfichier << " geometrie="<<id_domaine;
+#ifdef INT_is_64_
+        sfichier << " file_offset=6";
+#endif
         sfichier << " size=" << nb_som_tot;
         sfichier << " composantes=" << dim << finl;
         sfichier << "CHAMP ELEMENTS "<< remove_path(nom_fichier_geom);
@@ -913,7 +916,9 @@ int Format_Post_Lata::ecrire_domaine(const Domaine& domaine,const int& est_le_pr
         sfichier<<".elem";
 #endif
         sfichier << " geometrie="<<id_domaine;
-
+#ifdef INT_is_64_
+        sfichier << " file_offset=6";
+#endif
         sfichier << " size=" << nb_elem_tot<<" composantes="<<elements.dimension(1);
 
 #ifdef un_seul_fichier_data
@@ -1049,6 +1054,9 @@ int Format_Post_Lata::ecrire_champ(const Domaine& domaine,const Noms& unite_,con
       sfichier << "Champ " << id_champ << " ";
       sfichier << remove_path(filename_champ);
       sfichier << " geometrie=" << id_du_domaine;
+#ifdef INT_is_64_
+      sfichier << " file_offset=6";
+#endif
       sfichier << " localisation=" << localisation;
       sfichier << " size=" << size_tot;
       sfichier << " nature=" << nature;
@@ -1135,6 +1143,9 @@ int Format_Post_Lata::ecrire_item_int(//const Nom    & id_champ,
         sfichier << "Champ " << id_item << " ";
         sfichier << remove_path(filename_champ);
         sfichier << " geometrie=" << id_du_domaine;
+#ifdef INT_is_64_
+        sfichier << " file_offset=6";
+#endif
         if (localisation!="")
           sfichier << " localisation=" << localisation;
         sfichier << " size=" << size_tot;
