@@ -252,11 +252,25 @@ Entree& Entree::operator>>(_TYPE_ & ob)
 {
   assert(istream_!=0);
   if (bin_)
+{
+#Pif("_TYPE_"=="int")
+#ifdef INT_is_64_
+      if (is_int32_)
+        {
+          True_int pr;
+          char * ptr = (char*) &pr;
+          istream_->read(ptr, sizeof(True_int));
+          ob=pr;
+        }
+      else
+#endif
+#Pendif
     {
       char * ptr = (char*) &ob;
       istream_->read(ptr, sizeof(_TYPE_));
       error_handle(istream_->fail());
     }
+}
   else
     {
       if (check_types_)
@@ -284,6 +298,17 @@ int Entree::get(_TYPE_ * ob, int n)
   assert(n >= 0);
   if (bin_)
     {
+#Pif("_TYPE_"=="int")
+#ifdef INT_is_64_
+if (is_int32_)
+        {
+          for (int i=0; i<n; i++)
+            (*this)>> ob[i];
+        }
+      else
+#endif
+#Pendif
+{
       char * ptr = (char*) ob;
       // En binaire: lecture optimisee en bloc:
       std::streamsize sz = sizeof(_TYPE_);
@@ -293,6 +318,7 @@ int Entree::get(_TYPE_ * ob, int n)
       istream_->read(ptr, sz);
       error_handle(istream_->fail());
     }
+}
   else
     {
       // En ascii : on passe par operator>> pour verifier les conversions
