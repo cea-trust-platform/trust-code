@@ -546,6 +546,7 @@ then
           _prof) build_type="Profil" ;;
           _gcov)  build_type="Coverage" ;;
           _semi_opt) build_type="semi_opt";;
+          _custom) build_type="custom";;
           _opt_avx)  build_type="Release_avx";;
 	  *) echo $opt not for cmake in $0; echo "BUILD_EXEC=KO" | tee -a $COMPILE; exit -1 ;;
          esac;

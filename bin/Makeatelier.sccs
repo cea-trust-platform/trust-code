@@ -352,6 +352,7 @@ case $switchopt in
          _opt_pg) build_type="Profil" ;;
          _opt_gcov)  build_type=Coverage ;;
          _semi_opt) build_type="semi_opt";; 
+         _custom) build_type="custom";; 
 	 *) echo $opt not for cmake in $0;  exit -1 ;;
       esac;
 

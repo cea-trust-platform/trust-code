@@ -2134,7 +2134,7 @@ $TRUST_ROOT/lib/src/LIBLATAFILTER/include/LmlReader.h
 $TRUST_ROOT/lib/src/LIBLATAFILTER/include/LataFilter.h
 $MPI_INCLUDE/mpi.h
 "
-for petsc_option in _ _opt _opt_pg _opt_gcov _semi_opt _opt_avx
+for petsc_option in _ _opt _opt_pg _opt_gcov _semi_opt _opt_avx _custom
 do
    [ $petsc_option = "_" ] && petsc_option=""
    includes=$includes" "$TRUST_ROOT/lib/src/LIBPETSC/petsc/$TRUST_ARCH$petsc_option/include/petsc_for_kernel.h" "$TRUST_ROOT/lib/src/LIBPETSC/petsc/$TRUST_ARCH$petsc_option/include/metis.h
