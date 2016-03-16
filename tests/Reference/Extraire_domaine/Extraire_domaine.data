@@ -37,6 +37,12 @@ Read fluide
     mu champ_uniforme  1 0.00054613
     rho champ_uniforme  1 987.888
   }
+Sous_zone test
+associer test dom
+lire test {
+fonction_sous_zone (x>y)
+
+}
 pb_hydraulique pb 
 Associate pb dom
 Associate pb sch
@@ -55,6 +61,14 @@ extraire_domaine
     probleme pb
     condition_elements (x>y)
   }
+domaine sous_domaine_bis
+extraire_domaine
+{
+  domaine sous_domaine_bis
+    probleme pb
+   sous_zone test
+
+}
 domaine surface 
 extraire_surface 
   { 
@@ -166,6 +180,19 @@ Read pb
               
               }
             fichier sous_domaine
+          }
+        sous_domaine_bis
+          { 
+            domaine sous_domaine_bis
+            format lata
+            fields  dt_post 50.0 
+              {
+                pression elem
+                vitesse elem
+	
+              
+              }
+            fichier sous_domaine_bis
           }
         surface 
 	{

@@ -1792,6 +1792,7 @@ extraire_domaine interprete extraire_domaine -3 Keyword to create a new new doma
   attr domaine ref_domaine domaine 0 domaine dans lequel stocke les faces
   attr probleme ref_Pb_base probleme 0 Probleme duquel il faut extraire les faces
   attr condition_elements chaine condition_elements 1 not_set
+  attr sous_zone ref_sous_zone sous_zone 1 not_set
 extraire_surface interprete extraire_surface -3 This keyword extract a surface mesh named domain_name (this domain should have be declared before) from the mesh of the pb_name problem. The surface mesh is defined by one or two conditions. The first condition is about elements with Condition_elements. For example: Condition_elements x*x+y*y+z*z<1 NL2 Will define a surface mesh with external faces of the mesh elements inside the sphere of radius 1 located at (0,0,0). The second conditions Condition_faces is useful to give a restriction.NL2 By default, the faces from the boundaries are not added to the surface mesh excepted if option avec_les_bords is given (all the boundaries are added), or if the option avec_certains_bords is used to add only some boundaries.
   attr domaine ref_domaine domaine 0 domaine dans lequel stocke les faces
   attr probleme ref_Pb_base probleme 0 Probleme duquel il faut extraire les faces

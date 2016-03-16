@@ -29,6 +29,7 @@
 #include <NettoieNoeuds.h>
 #include <Parser_U.h>
 #include <Scatter.h>
+#include <Sous_Zone.h>
 
 Implemente_instanciable(Extraire_domaine,"Extraire_Domaine",Interprete_geometrique_base);
 
@@ -51,6 +52,7 @@ Entree& Extraire_domaine::interpreter_(Entree& is)
 {
   Nom nom_pb;
   Nom nom_dom;
+  Nom nom_sous_zone;
   Parser_U condition_elements;
   Nom expr_elements("1");
   condition_elements.setNbVar(dimension);
@@ -65,6 +67,7 @@ Entree& Extraire_domaine::interpreter_(Entree& is)
   param.ajouter("domaine",&nom_dom,Param::REQUIRED);
   param.ajouter("probleme",&nom_pb,Param::REQUIRED);
   param.ajouter("condition_elements",&expr_elements);
+  param.ajouter("sous_zone",&nom_sous_zone);
   //param.ajouter("condition_faces",&expr_faces);
   // param.ajouter_flag("avec_les_bords",&avec_les_bords);
   param.lire_avec_accolades_depuis(is);
@@ -103,21 +106,37 @@ Entree& Extraire_domaine::interpreter_(Entree& is)
   // on marque les elts qui nous interessent
   zone_vf.zone().creer_tableau_elements(marq_elem);
   int nb_elem_m=0;
-  for (int elem=0; elem<nb_elem; elem++)
+  if (nom_sous_zone== Nom())
     {
-      condition_elements.setVar("x",xp(elem,0));
-      condition_elements.setVar("y",xp(elem,1));
-      if (dimension==3)
-        condition_elements.setVar("z",xp(elem,2));
-      double res=condition_elements.eval();
-      if (dabs(res)>1e-5)
+      for (int elem=0; elem<nb_elem; elem++)
         {
-          marq_elem(elem)=1;
-          nb_elem_m++;
-        }
-      else
-        marq_elem(elem)=0;
+          condition_elements.setVar("x",xp(elem,0));
+          condition_elements.setVar("y",xp(elem,1));
+          if (dimension==3)
+            condition_elements.setVar("z",xp(elem,2));
+          double res=condition_elements.eval();
+          if (dabs(res)>1e-5)
+            {
+              marq_elem(elem)=1;
+              nb_elem_m++;
+            }
+          else
+            marq_elem(elem)=0;
 
+        }
+    }
+  else
+    {
+      const Sous_Zone& ssz= ref_cast(Sous_Zone,objet(nom_sous_zone));
+      int npol=ssz.nb_elem_tot();
+      for (int i=0; i<npol; i++)
+        {
+          if (ssz(i)<nb_elem)
+            {
+              marq_elem(ssz(i))=1;
+              nb_elem_m++;
+            }
+        }
     }
   // Attention grosse ruse on echange pas les espaces virtuels pour que le joint devienne un bord
   //marq_elem.echange_espace_virtuel();
