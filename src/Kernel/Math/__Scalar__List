@@ -66,7 +66,7 @@ class __Scalar__List_Curseur{
 public :
   inline __Scalar__List_Curseur(const __Scalar__List& a_list);
   inline __Scalar__List_Curseur(const __Scalar__ListElem& a_list);
-  inline operator int() const;
+  inline operator bool() const;
   inline void operator++();
   inline __scalar__ valeur() const;
   inline __scalar__& valeur();
@@ -162,7 +162,8 @@ inline __Scalar__List_Curseur::__Scalar__List_Curseur(const __Scalar__ListElem& 
 // Exception: 
 // Effets de bord: 
 // Postcondition: 
-inline __Scalar__List_Curseur::operator int() const
+
+inline __Scalar__List_Curseur::operator bool() const
 {
   return (curseur!=0);
 }
