@@ -44,10 +44,13 @@ Implemente_instanciable(Probleme_Couple,"Probleme_Couple",Couplage_U);
 
 bool Probleme_Couple::initTimeStep(double dt)
 {
+  /*
   double& residu_max = schema_temps().residu();
+  double test=residu_max;
   for (int i=1; i<nb_problemes(); i++)
     residu_max = max(residu_max,sch_clones[i]->residu());
-
+  if (test!=residu_max) abort();
+  */
   bool ok =  Couplage_U::initTimeStep(dt);
   return ok;
 }
@@ -88,6 +91,9 @@ bool Probleme_Couple::solveTimeStep()
     }
 
   bool ok=Couplage_U::solveTimeStep();
+  double& residu_max = schema_temps().residu();
+  for (int i=1; i<nb_problemes(); i++)
+    residu_max = max(residu_max,sch_clones[i]->residu());
   return ok;
 }
 
