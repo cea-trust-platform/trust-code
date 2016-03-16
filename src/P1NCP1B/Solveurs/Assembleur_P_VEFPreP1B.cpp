@@ -686,6 +686,8 @@ int Assembleur_P_VEFPreP1B::modifier_secmem_aretes(const DoubleTab& Gpoint, Doub
 
 int Assembleur_P_VEFPreP1B::modifier_solution(DoubleTab& pression)
 {
+
+  //  if (!has_P_ref) exit();
   const Zone_VEF_PreP1b& la_zone = zone_Vef();
 
   // Verification sur les aretes
@@ -897,6 +899,7 @@ int Assembleur_P_VEFPreP1B::modifier_matrice(Matrice& la_matrice)
   int Pa = P1 + zone_VEF.get_alphaS();
 
 
+
   int CL_neumann=has_P_ref;
   ////////////
   // Partie P0
@@ -904,6 +907,12 @@ int Assembleur_P_VEFPreP1B::modifier_matrice(Matrice& la_matrice)
   if (zone_VEF.get_alphaE())
     {
       // On impose une pression de reference sur un element si pas de CL de Neumann
+      if (has_P_ref)
+        {
+          Matrice_Bloc& mat_bloc=ref_cast(Matrice_Bloc,matrice.get_bloc(P0,P0).valeur());
+          Matrice_Morse_Sym& A00RR = ref_cast(Matrice_Morse_Sym,mat_bloc.get_bloc(0,0).valeur());
+          A00RR.set_est_definie(1);
+        }
       matrice_modifiee=Assembleur_P_VEF::modifier_matrice(matrice.get_bloc(P0,P0));
     }
 
@@ -934,7 +943,7 @@ int Assembleur_P_VEFPreP1B::modifier_matrice(Matrice& la_matrice)
             }
           //Cerr << "On modifie la ligne (sommet) " << sommet_referent << finl;
           A11RR(sommet_referent,sommet_referent)*=2;
-          has_P_ref=1;
+          // has_P_ref=1;
           matrice_modifiee=1;
         }
       A11RR.set_est_definie(1);
@@ -967,7 +976,7 @@ int Assembleur_P_VEFPreP1B::modifier_matrice(Matrice& la_matrice)
             }
           //Cerr << "On modifie la ligne (arete) " << arete_referente << finl;
           A22RR(arete_referente,arete_referente)*=2;
-          has_P_ref=1;
+          //has_P_ref=1;
           matrice_modifiee=1;
         }
       A22RR.set_est_definie(1);
