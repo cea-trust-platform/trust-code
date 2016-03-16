@@ -172,7 +172,7 @@ inline void va_a_la_parenthese_fermante(EFichier& fic)
 {
   int parenthese_ouverte=1;
   Nom lu;
-  while (parenthese_ouverte!=0)
+  while ((parenthese_ouverte!=0)&&(fic.good()))
     {
       fic >> lu;
       const char* chaine = lu.getChar();
@@ -192,8 +192,14 @@ inline void va_a_la_parenthese_fermante(EFichier& fic)
             }
         }
     }
-}
 
+  if (parenthese_ouverte!=0)
+    {
+      Cerr<< "Error in file"<<finl;
+      Process::exit();
+    }
+
+}
 inline void va_a_la_parenthese_ouvrante(EFichier& fic)
 {
   int ok=0;
@@ -687,7 +693,19 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
           fic >> motlu;        // Type de la zone
           Nom Nomzone;
           fic >> Nomzone;        // Nom de la zone)())
-          Nom nom_zone=Nomzone.prefix(")())");
+          Nom nom_zone=Nomzone;
+          nom_zone.prefix(")())");
+          if (nom_zone==Nomzone)
+            if (1)
+              {
+                // retour a la ligne ?
+                Nom app;
+                fic >> app;
+                Nomzone+=app;
+                nom_zone=Nomzone;
+                nom_zone.prefix(")())");
+
+              }
           Cerr << "The area " << izone << " is called " << nom_zone << finl;
           // On parcourt les bords pour renommer
           Bords& les_bords=dom.zone(0).faces_bord();
