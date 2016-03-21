@@ -45,6 +45,12 @@ Chapitre {
 			Fichier ceres2.cpu
 			colonnes $1 $3
 		}	
+		Courbe { 
+			Legende "mezel"
+			Style points
+			Fichier mezel.cpu
+			colonnes $1 $3
+		}	
 		Courbe {
 			Legende "Acceptance limit"
 			Style lines
@@ -86,6 +92,12 @@ Chapitre {
 			Legende "ceres2"
 			Style points
 			Fichier ceres2.cpu
+			colonnes $1 $8
+		}
+		Courbe { 
+			Legende "mezel"
+			Style points
+			Fichier mezel.cpu
 			colonnes $1 $8
 		}
 		Courbe {
@@ -135,6 +147,12 @@ Chapitre {
 			Fichier ceres2.cpu
 			colonnes $1 $9
 		}		
+		Courbe { 
+			Legende "mezel"
+			Style points
+			Fichier mezel.cpu
+			colonnes $1 $9
+		}		
 		Courbe {
 			Legende "Acceptance limit"
 			Style lines
@@ -176,6 +194,12 @@ Chapitre {
 			Legende "ceres2"
 			Style points
 			Fichier ceres2.cpu
+			colonnes $1 $14
+		}
+		Courbe { 
+			Legende "mezel"
+			Style points
+			Fichier mezel.cpu
 			colonnes $1 $14
 		}
 		Courbe {

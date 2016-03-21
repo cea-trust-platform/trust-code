@@ -555,7 +555,7 @@ then
 		echo "#SBATCH -n $NB_PROCS"				>> $sub_file	# Number of tasks
 		[ "$noeuds" != "" ] && echo "#SBATCH -N $noeuds"        >> $sub_file    # Number of nodes
 		[ "$core_per_task" != "" ] && echo "#SBATCH -c $core_per_task"	>> $sub_file	# Number of cores per task	
-		[ "$qos" != test ] && echo "#SBATCH --exclusive"	>> $sub_file	# Exclusive use of nodes during production run	
+		[ "$qos" != "test" ] && echo "#SBATCH --exclusive"	>> $sub_file	# Exclusive use of nodes during production run	
 		[ "$ram" != "" ] && echo "#SBATCH --mem=$ram"           >> $sub_file    # Real memory required per node in MegaBytes
 		echo "cd \$SLURM_SUBMIT_DIR" >> $sub_file # Submit directory for reprise_auto script
 		;;
@@ -639,13 +639,18 @@ then
 		[ "$core_per_task" != "" ] 	&& echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
                 echo "cd $ici" >> $sub_file
 		;;
-	PBS) 	echo "#PBS -N `echo $NOM | cut -c 1-15`
-#PBS -o out.log
-#PBS -e err.log
-#PBS -l select=$select:ncpus=$ncpus:mpiprocs=$mpiprocs
-#PBS -l walltime=$cpu" >> $sub_file
-		[ "$core_per_task" != "" ] 	&& echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
-		[ "$ram" != "" ] && echo "#PBS -l mem=$ram" >> $sub_file
+	PBS)
+		echo "#!/bin/sh"                                        >> $sub_file    # Shell
+		echo "#PBS -N `echo $NOM | cut -c 1-15`"                >> $sub_file    # Job name
+		[ "$queue" != "" ] && echo "#PBS -q $queue"             >> $sub_file    # Partition
+		[ "$qos" != "" ] && echo "#PBS -l qos=$qos"             >> $sub_file    # Quality of service
+		echo "#PBS -l walltime=$cpu"                            >> $sub_file    # Time in minutes
+		echo "#PBS -o out.log"                                  >> $sub_file    # Output log
+		echo "#PBS -e err.log"                                  >> $sub_file    # Error log
+		#echo "#PBS -l select=$noeuds:ncpus=$ncpus:mpiprocs=$mpiprocs" >> $sub_file
+		echo "#PBS -l nodes=$noeuds:ppn=$ncpus"                 >> $sub_file    # Number of nodes and tasks
+		[ "$core_per_task" != "" ]      && echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
+		[ "$ram" != "" ] && echo "#PBS -l mem=$ram"             >> $sub_file    # Real memory required per node in MegaBytes
 		echo "cd \$PBS_O_WORKDIR" >> $sub_file
 		;;
 	*) echo "sub=$sub non prevu." && exit -1

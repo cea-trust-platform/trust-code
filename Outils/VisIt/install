@@ -184,10 +184,10 @@ then
    #####################################################################
    # Build plugins if the VisIt version is built and hence is parallel #
    #####################################################################
-   if [ "`ls current/*/bin/engine_par 2>/dev/null`" != "" ]
+   if [ "`ls current/*/bin/engine_par 2>/dev/null`" != "" ] && [ "$TRUST_DOWNLOAD_VISIT" != 1 ]
    then
       # Add path to use VisIt cmake
-      export PATH=$TRUST_ROOT/Outils/VisIt/src/cmake-2.8.10.2/bin:$PATH
+      export PATH=$TRUST_ROOT/Outils/VisIt/src/cmake-3.0.2/bin:$PATH
       for plugin in `ls plugins/*/build_plugin 2>/dev/null`
       do
 	 rep=`dirname $plugin`
