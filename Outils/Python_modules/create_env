@@ -1,0 +1,13 @@
+#!/bin/bash
+dest=$1
+mkdir -p $1
+echo > $dest/env.sh
+
+[ -f $TRUST_ROOT/exec/python/env.sh ] && echo ". \$TRUST_ROOT/exec/python/env.sh" > $dest/env.sh
+ 
+echo "export PATH=\$TRUST_ROOT${cible#$TRUST_ROOT}/exec/python_modules/bin::\$PATH" > $dest/env.sh
+echo "export PYTHONPATH=\$TRUST_ROOT${cible#$TRUST_ROOT}/exec/python_modules/lib/python`python  -c "import sys; print sys.version[:3]"`/site-packages:\$PYTHONPATH" >> $dest/env.sh
+echo "export PYTHONPATH=\$TRUST_ROOT${cible#$TRUST_ROOT}/exec/python_modules/lib64/python`python  -c "import sys; print sys.version[:3]"`/site-packages:\$PYTHONPATH" >> $dest/env.sh
+mkdir -p $TRUST_ROOT/exec/python_modules/lib/python`python  -c "import sys; print sys.version[:3]"`/site-packages
+
+#echo "export LD_LIBRARY_PATH=\$TRUST_ROOT${cible#$TRUST_ROOT}/lib:\$LD_LIBRARY_PATH" >> $dest/env.sh

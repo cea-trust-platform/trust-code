@@ -7,10 +7,10 @@ mkdir -p Test
 cd Test
 cp  ../Data/* .
 chmod +w *
-runSalome --modules=YACS,Problem  --execute=test.py  -t $*
+runSalome --modules=YACS,Problem  test.py  -t $*
 status=$?
 
-runSalome --modules=YACS,Problem  --execute=Test_Yacs.py  -t $*
+runSalome --modules=YACS,Problem  Test_Yacs.py  -t $*
 stat=$?
 status=`echo $status + $stat| bc -l`
 

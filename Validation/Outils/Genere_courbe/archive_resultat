@@ -43,7 +43,7 @@ grep -iv prerequis $prm > test_provisoire.prm; mv test_provisoire.prm $prm
 cd build
 rm -f core*
 # de mettre f en dernier eszt important car il attend le nom de l'archive apres
-ls | xargs tar --hard-dereference  -rhf   ../all.tar  
+# ls | xargs tar --hard-dereference  -rhf   ../all.tar  
 cd ..
 cp build/version_utilisee build/temps_total preserve
 cp -r src/* preserve
@@ -93,10 +93,15 @@ do
   if [ "$files" != "" ]
       then
       files=`ajoute_file_meshtv "$files"`
-      cmd="tar xf ../all.tar $files"
-      echo $cmd
-      eval $cmd
-      # [ $? != 0 ] && exit
+      # cmd="tr xf ../all.tar $files"
+      for file in $files
+      do
+	dir=`echo $file |xargs dirname`
+	mkdir -p $dir
+	cmd="cp ../build/$file $dir"
+	echo $cmd
+	eval $cmd	
+      done
       ok=0
   else
       if [ $prem -le 1 ]

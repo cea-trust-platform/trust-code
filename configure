@@ -303,7 +303,7 @@ then
    echo $ECHO_OPTS "all:\n\t(. ./env_TRUST.sh ;env cibles=\"micro_kernel_opt numeric_kernel_opt standard_kernel_opt opt micro_kernel_debug numeric_kernel_debug standard_kernel_debug debug\" monodir)"  > $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "tools:\n\t(. ./env_TRUST.sh ;compile tools)" >> $TRUST_ROOT/Makefile
    echo  $ECHO_OPTS "optim:\t opt" 	>> $TRUST_ROOT/Makefile
-   for cible in opt debug prof gcov opt_avx semi_opt
+   for cible in opt debug prof gcov opt_avx semi_opt custom
    do
      echo $ECHO_OPTS "${cible}:\n\t(. ./env_TRUST.sh ;env cibles=\"micro_kernel_${cible} numeric_kernel_${cible} standard_kernel_${cible} ${cible}\" monodir)" >> $TRUST_ROOT/Makefile
    done

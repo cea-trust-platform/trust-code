@@ -189,9 +189,13 @@ tracee dans le rapport de validation de TRUST.'''
 			if temps!="":
 				self.fichier=self.fichier+'.'+temps
 				# print "DEBG", self.fichier
+			if not os.path.isfile(ficSon):
+				print "Generating failed File not found",ficSon
 			if not os.path.isfile(self.fichier) or os.path.getmtime(self.fichier)<os.path.getmtime(ficSon):
 				#si la sonde est plus recente que la coupe : on la regenere
 				res = os.system('extrait_coupe %s %s %s' % (param[0], (param[1]).upper(),temps))
+				if not os.path.isfile(self.fichier):
+					print "Generating failed File not found",self.fichier
 			else:
 				if (self.verbose>2):
 					self.gestMsg.ecrire(GestionMessages._DEBOG, 'T(%s)=%d  > T(%s)=%d' % (self.fichier, os.path.getmtime(self.fichier),  ficSon, os.path.getmtime(ficSon)))

@@ -238,6 +238,7 @@ enable_language(Fortran OPTIONAL)
 
 SET (MPI_INCLUDE $ENV{MPI_INCLUDE})
 SET (TRUST_ARCH $ENV{TRUST_ARCH})
+SET (TRUST_ROOT $ENV{TRUST_ROOT})
 # OPT sert a petsc pour l instant
 #SET(OPT $ENV{OPT})
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
@@ -252,8 +253,11 @@ elseif (CMAKE_BUILD_TYPE STREQUAL "Coverage")
     set(OPT "_opt_gcov")
 elseif (CMAKE_BUILD_TYPE STREQUAL "semi_opt")
     set(OPT "_semi_opt")
+elseif (CMAKE_BUILD_TYPE STREQUAL "custom")
+    set(OPT "_custom")
+    include (${TRUST_ROOT}/env/Cmake.custom)
 else(CMAKE_BUILD_TYPE STREQUAL "Release") 
-   message(FATAL_ERROR  "unknown build_type ${CMAKE_BUILD_TYPE} !, use -DCMAKE_BUILD_TYPE=Release,Debug,Profil,Coverage,semi_opt")
+   message(FATAL_ERROR  "unknown build_type ${CMAKE_BUILD_TYPE} !, use -DCMAKE_BUILD_TYPE=Release,Debug,Profil,Coverage,semi_opt,Release_avx,custom")
 endif(CMAKE_BUILD_TYPE STREQUAL "Release")
 message("Mode: ${OPT}")
 
@@ -265,7 +269,6 @@ SET (TRUST_LATAFILTER $ENV{TRUST_LATAFILTER})
 SET (TRUST_ICOCOAPI $ENV{TRUST_ICOCOAPI})
 SET (TRUST_MED_ROOT $ENV{TRUST_MED_ROOT})
 SET (TRUST_MEDCOUPLING_ROOT $ENV{TRUST_MEDCOUPLING_ROOT})
-SET (TRUST_ROOT $ENV{TRUST_ROOT})
 
 
 

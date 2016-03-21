@@ -452,6 +452,8 @@ int Assembleur_P_VEF::remplir(Matrice& la_matrice, const DoubleTab& inverse_quan
       if (sub_type(Neumann_sortie_libre,la_cl.valeur()) )
         {
           has_P_ref=1;
+          MBrr.set_est_definie(1);
+
           for(int ind_face=0; ind_face<nb_faces_bord_tot; ind_face++)
             {
               int num_face = le_bord.num_face(ind_face);
@@ -708,7 +710,7 @@ int Assembleur_P_VEF::modifier_matrice(Matrice& matrice)
   Matrice_Bloc& mat_bloc = ref_cast(Matrice_Bloc, matrice.valeur());
   Matrice_Morse_Sym& A00RR = ref_cast(Matrice_Morse_Sym,mat_bloc.get_bloc(0,0).valeur());
   // Recherche de l'element sur lequel on impose la pression de reference
-  if (Process::je_suis_maitre() && !has_P_ref)
+  if (Process::je_suis_maitre() && !A00RR.get_est_definie())
     {
       int element_referent=0;
       double distance=DMAXFLOAT;
@@ -729,7 +731,7 @@ int Assembleur_P_VEF::modifier_matrice(Matrice& matrice)
       A00RR(element_referent,element_referent)*=2;
       matrice_modifiee=1;
     }
-  has_P_ref=1;
+  // has_P_ref=1;
   A00RR.set_est_definie(1);
   return matrice_modifiee;
 }

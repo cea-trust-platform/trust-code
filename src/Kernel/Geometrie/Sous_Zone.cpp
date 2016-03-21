@@ -892,7 +892,7 @@ Entree& Sous_Zone::readOn(Entree& is)
           DoubleVect x(dimension);
           int compteur=0;
           Cerr << "Construction of the subarea " << le_nom()<< finl;
-
+          double inv_nbsom=1./((double)(nbsom));
           les_polys_.resize(nb_pol_possible);
           for (int n_pol=0; n_pol<nb_pol_possible; n_pol++)
             {
@@ -903,11 +903,11 @@ Entree& Sous_Zone::readOn(Entree& is)
                   for(int k=0; k<dimension; k++)
                     x(k)+=dom.coord(lazone.sommet_elem(le_poly,le_som),k);
                 }
-              x/=((double)(nbsom));
-              F.setVar("x",x[0]);
-              F.setVar("y",x[1]);
+              x*=inv_nbsom;
+              F.setVar(0,x[0]);
+              F.setVar(1,x[1]);
               if (dimension==3)
-                F.setVar("z",x[2]);
+                F.setVar(2,x[2]);
               double test=F.eval();
               // attention le test absolu est voulu
               // si on fait une fonction qui vaut 0 ou 1 ....

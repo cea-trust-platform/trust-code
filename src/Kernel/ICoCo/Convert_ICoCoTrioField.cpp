@@ -245,8 +245,7 @@ MEDField build_medfield(TrioField& triofield)
   mesh->finishInsertingCells();
   //
 
-
-  if ( elemtype!=INTERP_KERNEL::NORM_SEG2)
+  if (elemtype!=INTERP_KERNEL::NORM_SEG2)
     {
       std::vector<int> cells;
       mesh->checkButterflyCells(cells);

@@ -1,5 +1,5 @@
 #!/bin/bash
-ln -sf $TRUST_ROOT/externalpackages/Python* .
+ln -sf $TRUST_ROOT/externalpackages/Python-* .
 Python=$1 && [ "$1" = "" ] && exit -1
 cible=$2 && [ "$2" = "" ] && exit -1
 [ "$Python" = "" ] && echo "Python not found here: "`pwd` && exit
@@ -14,7 +14,6 @@ export OPT=""
 $TRUST_MAKE || exit -1
 $TRUST_MAKE python-config || exit -1 # For the build of VisIt
 make install || exit -1
-echo "export PATH=\$TRUST_ROOT${cible#$TRUST_ROOT}/bin:\$PATH" > $2/env.sh
-echo "export LD_LIBRARY_PATH=\$TRUST_ROOT${cible#$TRUST_ROOT}/lib:\$LD_LIBRARY_PATH" >> $2/env.sh
 cd ..
+./create_env $2
 rm -r -f $Python

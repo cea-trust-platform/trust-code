@@ -2,7 +2,7 @@
 (cd ../../build/src/exec${OPT}/; make module)
 mkdir -p Problem/lib Problem/include
 cp ../../build/src/Problem.h Problem/include/Problem.hxx
-[ $? -ne 0 ] && cp $TRUST_ROOT/Kernel/ICoCo/Problem.h  Problem/include/Problem.hxx
+[ $? -ne 0 ] && cp $TRUST_ICOCOAPI/include/Problem.h  Problem/include/Problem.hxx
 
 chmod -R +w Problem
 DIR=`pwd`

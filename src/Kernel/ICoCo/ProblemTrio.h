@@ -65,12 +65,6 @@ public :
   // interface specifique
   bool initialize_pb(Probleme_U& pb);
 
-#if 0
-  // a retirer
-  ProblemTrio(void* data);
-  virtual void set_data(void* data);
-  virtual void set_data_file(const std::string& file);
-#endif
   // interface Problem
   ProblemTrio();
   virtual void setDataFile(const std::string& datafile);
