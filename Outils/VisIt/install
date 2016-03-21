@@ -151,7 +151,7 @@ then
 	    # linux-euclid
 	    rhel=rhel5 
 	    ARCH=linux-$rhel && [ "`uname -m`" = x86_64 ] && ARCH=linux-x86_64-$rhel
-	 elif [ $version = 2_9_1 ]
+	 elif [ $version = 2_10_0 ]
 	 then
             # No 32bits version...
             ARCH=linux-x86_64-rhel6

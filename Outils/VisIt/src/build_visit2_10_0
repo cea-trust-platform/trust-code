@@ -1,13 +1,13 @@
 #!/bin/bash
-export VISIT_VERSION=${VISIT_VERSION:-"2.9.1"}
+export VISIT_VERSION=${VISIT_VERSION:-"2.10.0"}
 export TRUNK_BUILD="no"
-export SVN_SOURCE_PATH=${SVN_SOURCE_PATH-"tags/2.9.1/src"}
-export SVN_THIRDPARTY_PATH=${SVN_THIRDPARTY_PATH-"tags/2.9.1/third_party"}
+export SVN_SOURCE_PATH=${SVN_SOURCE_PATH-"tags/2.10.0/src"}
+export SVN_THIRDPARTY_PATH=${SVN_THIRDPARTY_PATH-"tags/2.10.0/third_party"}
 export INITIAL_PWD=$PWD
 export bv_PATH=.
 export bv_PREFIX=$bv_PATH/bv_support/
 export build_version=""
-export webroot="http://portal.nersc.gov/svn/visit/"
+export webroot="http://visit.ilight.com/svn/visit/"
 export webaddr="${webroot}/trunk/src/svn_bin/bv_support/"
 declare -a reqlibs
 declare -a optlibs
@@ -228,13 +228,17 @@ if [[ "$OPSYS" == "Darwin" ]]; then
       export MACOSX_DEPLOYMENT_TARGET=10.9
       export C_COMPILER=${C_COMPILER:-"clang"}
       export CXX_COMPILER=${CXX_COMPILER:-"clang++"}
+   elif [[ ${VER%%.*} == 14 ]] ; then
+      export MACOSX_DEPLOYMENT_TARGET=10.10
+      export C_COMPILER=${C_COMPILER:-"clang"}
+      export CXX_COMPILER=${CXX_COMPILER:-"clang++"}
    else
-      export MACOSX_DEPLOYMENT_TARGET=10.9
+      export MACOSX_DEPLOYMENT_TARGET=10.10
       export C_COMPILER=${C_COMPILER:-"clang"}
       export CXX_COMPILER=${CXX_COMPILER:-"clang++"}
    fi
-   
-   
+
+
    export C_COMPILER=${C_COMPILER:-"gcc"}
    export CXX_COMPILER=${CXX_COMPILER:-"g++"}
 
@@ -489,7 +493,7 @@ if [[ "$CXX_COMPILER" == "g++" ]] ; then
 fi
 
 
-export SVN_ANON_ROOT_PATH="http://portal.nersc.gov/svn/visit"
+export SVN_ANON_ROOT_PATH="http://visit.ilight.com/svn/visit"
 # Setup svn path: use SVN_NERSC_NAME if set
 if test -z "$SVN_NERSC_NAME" ; then
     export SVN_REPO_ROOT_PATH="svn+ssh://portal-auth.nersc.gov/project/projectdirs/visit/svn/visit"
@@ -1160,12 +1164,12 @@ done
 #error check to make sure that next arg is not left blank..
 if [[ $next_arg != "" ]] ; then
     echo "command line arguments are used incorrectly: argument $next_arg not fullfilled"
-    exit 0
+    exit 1
 fi
 
 if [[ "$ANY_ERRORS" == "yes" ]] ; then
     echo "command line arguments are used incorrectly. unrecognized options..."
-    exit 0
+    exit 1
 fi
 
 if test -n "${deprecated}" ; then
@@ -1174,7 +1178,7 @@ if test -n "${deprecated}" ; then
     echo "$summary"
     echo ""
     echo "$0 ${deprecated}"
-    exit 0
+    exit 1
 fi
 
 if test -n "${next_action}" ; then
@@ -1984,8 +1988,10 @@ function uncompress_untar
         COMPRESSTYPE="targzip"
     elif [[ $(echo $1 | egrep "\.tar.gz$" ) != "" ]] ; then
         COMPRESSTYPE="targzip"
+    elif [[ $(echo $1 | egrep "\.zip$" ) != "" ]] ; then
+        COMPRESSTYPE="zip"
     else
-        warn "unsupported uncompression method"
+        warn "unsupported decompression method"
         return 1
     fi
     TARVERSION=$($TAR --version >/dev/null 2>&1)
@@ -1993,7 +1999,14 @@ function uncompress_untar
         case $COMPRESSTYPE in
             gzip|targzip) $TAR zxf $1;;
             bzip) $TAR jxf $1;;
+            zip) unzip $1;;
         esac
+        
+        if [[ $? != 0 ]]; then
+            warn "error decompressing $1"
+            return 1
+        fi
+
     else
         case $COMPRESSTYPE in
             gzip) 
@@ -2008,7 +2021,15 @@ function uncompress_untar
                bunzip2 $1
                $TAR xf ${1%.bz2}
                ;;
+            zip)
+               unzip $1
+               ;;
         esac
+        
+        if [[ $? != 0 ]]; then
+            warn "error decompressing $1"
+            return 1
+        fi
     fi
 }
 
@@ -2403,6 +2424,10 @@ function ensure_built_or_ready
 # Programmer: Cyrus Harrison                                                  #
 # Date: Thu Nov 13 09:28:26 PST 2008                                          #
 #                                                                             #
+# Modifications:                                                              #
+#                                                                             #
+#   Paul Selby, Wed  4 Feb 17:25:22 GMT 2015                                  #
+#   Fixed typo which prevented verify_checksum being called                   #
 # *************************************************************************** #
 function prepare_build_dir
 {
@@ -2418,8 +2443,8 @@ function prepare_build_dir
        info "Found ${BUILD_DIR} . . ."
        untarred_src=0
     elif [[ -f ${SRC_FILE} ]] ; then
-       if [[ $CHECKSUM != "" && $CHECKSUM_TYPE != "" ]]; then
-            verify_checksum $CHECKSUM_TYPE $CHECKSUM ${SRC_FILE}
+       if [[ $CHECKSUM_VALUE != "" && $CHECKSUM_TYPE != "" ]]; then
+            verify_checksum $CHECKSUM_TYPE $CHECKSUM_VALUE ${SRC_FILE}
             if [[ $? != 0 ]]; then
                 return 2
             fi
@@ -4755,14 +4780,15 @@ function build_ADIOS
     
     info "Invoking command to configure ADIOS"
     if [[ "$VISIT_MPI_COMPILER" != "" ]] ; then
-        ADIOS_MPI_OPTS="MPICC=\"$VISIT_MPI_COMPILER\"  MPICXX=\"$VISIT_MPI_COMPILER_CXX\""
+        ADIOS_MPI_OPTS="MPICC=\"$VISIT_MPI_COMPILER\"  MPICXX=\"$VISIT_MPI_COMPILER_CXX\" LDFLAGS=\"$PAR_LINKER_FLAGS\""
+        ADIOS_MPI_INC="$PAR_INCLUDE"
 
     else
         ADIOS_MPI_OPTS="--without-mpi"
     fi
        info     ./configure ${OPTIONAL} CXX="$CXX_COMPILER" \
-                  CC="$C_COMPILER" CFLAGS=\"$CFLAGS $C_OPT_FLAGS\" \
-                  CXXFLAGS=\"$CXXFLAGS $CXX_OPT_FLAGS\" \
+                  CC="$C_COMPILER" CFLAGS=\"$CFLAGS $C_OPT_FLAGS $ADIOS_MPI_INC\" \
+                  CXXFLAGS=\"$CXXFLAGS $CXX_OPT_FLAGS $ADIOS_MPI_INC\" \
                   $ADIOS_MPI_OPTS \
                   --disable-fortran \
 	              --without-netcdf --without-nc4par --without-hdf5 --without-phdf5 \
@@ -4770,7 +4796,7 @@ function build_ADIOS
                   --prefix="$VISITDIR/adios/$ADIOS_VERSION/$VISITARCH"
         
         sh -c "./configure ${OPTIONAL} CXX=\"$CXX_COMPILER\" CC=\"$C_COMPILER\" \
-                CFLAGS=\"$CFLAGS $C_OPT_FLAGS\" CXXFLAGS=\"$CXXFLAGS $CXX_OPT_FLAGS\" \
+                CFLAGS=\"$CFLAGS $C_OPT_FLAGS $ADIOS_MPI_INC\" CXXFLAGS=\"$CXXFLAGS $CXX_OPT_FLAGS $ADIOS_MPI_INC\" \
                 $ADIOS_MPI_OPTS \
                 --disable-fortran \
 	            --without-netcdf --without-nc4par --without-hdf5 --without-phdf5 \
@@ -5265,13 +5291,25 @@ function build_boost
 
     if [[ "$DO_NEKTAR_PLUS_PLUS" == "yes" ]] ; then
 	libs="$libs \
-              iostreams thread date_time filesystem \
-              system program_options regex"
+              chrono iostreams thread date_time filesystem \
+              system program_options regex timer"
 
-        build_libs="$build_libs --with-libraries=\"iostreams,thread,date_time,filesystem,system,program_options,regex\" "
+        build_libs="chrono,iostreams,thread,date_time,filesystem,system,program_options,regex,timer"
+    fi
+
+    if [[ "$DO_DAMARIS" == "yes" ]] ; then
+        libs="$libs \
+              date_time system filesystem"
+        if [[ "$build_libs" != ""  ]] ; then
+          build_libs="$build_libs,date_time,system,filesystem"
+        else
+          build_libs="date_time,system,filesystem"
+        fi
     fi
 
     if [[ "$build_libs" != ""  ]] ; then
+
+        build_libs=" --with-libraries=\"$build_libs\" "
 
         info "Configuring BOOST . . . $build_libs"
 
@@ -7214,6 +7252,243 @@ if [[ "$DO_CMAKE" == "yes" && "$USE_SYSTEM_CMAKE" == "no" ]]; then
         info "Done building CMake"
     fi
 fi
+}
+
+function bv_damaris_initialize
+{
+    export DO_DAMARIS="no"
+    export ON_DAMARIS="off"
+}
+
+function bv_damaris_enable
+{ 
+    DO_DAMARIS="yes"
+    ON_DAMARIS="on"
+}
+
+function bv_damaris_disable
+{
+    DO_DAMARIS="no"
+    ON_DAMARIS="off"
+}
+
+function bv_damaris_depends_on
+{
+    if [[ "$DO_MPICH" == "yes" ]] ; then
+        echo "cmake xsd xercesc boost mpich"
+    else
+        echo "cmake xsd xercesc boost"        
+    fi
+
+}
+
+function bv_damaris_info
+{
+    export DAMARIS_VERSION=${DAMARIS_VERSION:-"1.0.1"}
+    export DAMARIS_FILE=${DAMARIS_FILE:-"damaris-${DAMARIS_VERSION}.tgz"}
+    export DAMARIS_COMPATIBILITY_VERSION=${DAMARIS_COMPATIBILITY_VERSION:-"1.0"}
+    export DAMARIS_URL=${DAMARIS_URL:-"https://gforge.inria.fr/frs/download.php/file/34263"}
+    export DAMARIS_BUILD_DIR=${DAMARIS_BUILD_DIR:-"damaris-${DAMARIS_VERSION}"}
+    export DAMARIS_MD5_CHECKSUM=""
+    export DAMARIS_SHA256_CHECKSUM=""
+}
+
+function bv_damaris_print
+{
+    printf "%s%s\n" "DAMARIS_FILE=" "${DAMARIS_FILE}"
+    printf "%s%s\n" "DAMARIS_VERSION=" "${DAMARIS_VERSION}"
+    printf "%s%s\n" "DAMARIS_COMPATIBILITY_VERSION=" "${DAMARIS_COMPATIBILITY_VERSION}"
+    printf "%s%s\n" "DAMARIS_BUILD_DIR=" "${DAMARIS_BUILD_DIR}"
+}
+
+function bv_damaris_print_usage
+{
+    printf "%-15s %s [%s]\n" "--damaris"   "Build DAMARIS" "$DO_DAMARIS"
+}
+
+function bv_damaris_graphical
+{
+    local graphical_out="DAMARIS    $DAMARIS_VERSION($DAMARIS_FILE)    $ON_DAMARIS"
+    echo $graphical_out
+}
+
+function bv_damaris_host_profile
+{
+    if [[ "$DO_DAMARIS" == "yes" ]] ; then
+        echo "##" >> $HOSTCONF
+        echo "## DAMARIS" >> $HOSTCONF
+        echo "##" >> $HOSTCONF
+        echo "VISIT_OPTION_DEFAULT(VISIT_DAMARIS_DIR \${VISITHOME}/damaris/$DAMARIS_VERSION/\${VISITARCH})" \
+        >> $HOSTCONF
+    fi
+}
+
+function bv_damaris_ensure
+{
+    if [[ "$DO_DAMARIS" == "yes" ]] ; then
+        ensure_built_or_ready "damaris" $DAMARIS_VERSION $DAMARIS_BUILD_DIR $DAMARIS_FILE $DAMARIS_URL
+        if [[ $? != 0 ]] ; then
+            ANY_ERRORS="yes"
+            DO_DAMARIS="no"
+            error "Unable to build DAMARIS.  ${DAMARIS_FILE} not found."
+        fi
+    fi
+}
+
+function bv_damaris_dry_run
+{
+    if [[ "$DO_DAMARIS" == "yes" ]] ; then
+        echo "Dry run option not set for Damaris."
+    fi
+}
+
+function apply_damaris_patch
+{
+   return 0
+}
+
+function build_damaris
+{
+    # Checking that we have a parallel compiler
+    if [ -z ${PAR_COMPILER+x} ]; then 
+        warn "Damaris requires PAR_COMPILER to be set."
+        warn "For instance, PAR_COMPILER=mpicxx"
+        warn "Giving up."
+        return 1
+    fi 
+
+
+    
+    export PAR_CXX_COMPILER="${PAR_COMPILER}"
+    
+
+    #
+    # The build dir of VisIt is required to get the headers of libsimV2
+    # so we create it now. This is pretty much a copy-past of some
+    # content from bv_visit.sh.
+    #
+    if [[ "$DO_SVN" != "yes" || "$USE_VISIT_FILE" == "yes" ]] ; then
+    #
+    # Unzip the file, provided a gzipped file exists.
+    #
+    if [[ -f ${VISIT_FILE} ]] ; then
+        info "Unzipping/untarring ${VISIT_FILE} because Damaris needs it . . ."
+        uncompress_untar ${VISIT_FILE}
+        if [[ $? != 0 ]] ; then
+        warn "Unable to untar ${VISIT_FILE}.  Corrupted file or out of space on device?"
+        return 1
+        fi
+    elif [[ -f ${VISIT_FILE%.*} ]] ; then
+        info "Unzipping ${VISIT_FILE%.*} because Damaris needs it . . ."
+        $TAR xf ${VISIT_FILE%.*}
+        if [[ $? != 0 ]] ; then
+        warn "Unable to untar ${VISIT_FILE%.*}.  Corrupted file or out of space on device?"
+        return 1
+        fi
+    fi
+    fi
+
+    local LIBSIMV2_INCLUDE="../${VISIT_FILE%.tar*}/src/sim/V2/lib"
+    if [[ "$DO_SVN" == "yes" && "$USE_VISIT_FILE" == "no" ]] ; then
+    LIBSIMV2_INCLUDE="../src/sim/V2/lib"
+    fi
+    
+    #
+    # Prepare build dir for Damaris
+    #
+    prepare_build_dir $DAMARIS_BUILD_DIR $DAMARIS_FILE
+    untarred_damaris=$?
+    if [[ $untarred_damaris == -1 ]] ; then
+       warn "Unable to prepare Damaris build directory. Giving Up!"
+    fi
+    cd $DAMARIS_BUILD_DIR
+
+    #
+    # Applying Patches
+    #
+    apply_damaris_patch
+    if [[ $? != 0 ]] ; then
+       warn "Unable to prepare Damaris build directory. Giving Up"
+       return 1
+    fi
+
+    #
+    # Calling Cmake
+    #
+    
+    sh -c "$CMAKE_COMMAND -G \"Unix Makefiles\" \
+    -DPAR_CXX_COMPILER:PATH=$PAR_CXX_COMPILER \
+    -DCMAKE_INSTALL_PREFIX:PATH=$VISITDIR/damaris/$DAMARIS_VERSION/$VISITARCH \
+    -DVISIT_INCLUDE:PATH=$LIBSIMV2_INCLUDE \
+    -DXERCESC_ROOT:PATH=$VISITDIR/xerces-c/$XERCESC_VERSION/$VISITARCH \
+    -DXSD_ROOT:PATH=$VISITDIR/xsd/$XSD_VERSION/$VISITARCH \
+    -DXSD_INCLUDE_DIR:PATH=$VISITDIR/xsd/$XSD_VERSION/$VISITARCH/include \
+    -DBOOST_ROOT=$VISITDIR/boost/$BOOST_VERSION/$VISITARCH \
+    -DBOOST_INCLUDEDIR=$VISITDIR/boost/$BOOST_VERSION/$VISITARCH/include \
+    -DENABLE_EXAMPLES:BOOL=false \
+    -DENABLE_TESTS:BOOL=false"
+
+    if [[ $? != 0 ]] ; then
+    warn "Cmake failed to create build files for Damaris.  Giving up."
+    return 1
+    fi
+
+    #
+    # Building Damaris
+    #
+    $MAKE
+
+    if [[ $? != 0 ]] ; then
+        warn "Failed to build Damaris.  Giving up."
+        return 1
+    fi
+
+    #
+    # Installing Damaris
+    #
+    $MAKE install
+
+    if [[ $? != 0 ]] ; then
+        warn "Failed to install Damaris.  Giving up."
+        return 1
+    fi
+
+    return 0
+}
+
+function bv_damaris_is_enabled
+{
+    if [[ $DO_DAMARIS == "yes" ]]; then
+        return 1
+    fi
+    return 0
+}
+
+function bv_damaris_is_installed
+{
+    check_if_installed "damaris" $DAMARIS_VERSION
+    if [[ $? == 0 ]] ; then
+        return 1
+    fi
+    return 0
+}
+
+function bv_damaris_build
+{
+    if [[ "$DO_DAMARIS" == "yes" ]] ; then
+        check_if_installed "damaris" $DAMARIS_VERSION
+        if [[ $? == 0 ]] ; then
+            info "Skipping Damaris build.  Damaris is already installed."
+        else
+            info "Building Damaris (~6 minutes)"
+
+            build_damaris
+            if [[ $? != 0 ]] ; then
+                error "Unable to build or install Damaris.  Bailing out."
+            fi
+            info "Done building Damaris"
+       fi
+    fi
 }
 
 
@@ -9779,14 +10054,14 @@ function bv_hdf5_initialize_vars
 
 function bv_hdf5_info
 {
-export HDF5_VERSION=${HDF5_VERSION:-"1.8.7"}
+export HDF5_VERSION=${HDF5_VERSION:-"1.8.14"}
 export HDF5_FILE=${HDF5_FILE:-"hdf5-${HDF5_VERSION}.tar.gz"}
 export HDF5_COMPATIBILITY_VERSION=${HDF5_COMPATIBILITY_VERSION:-"1.8"}
 export HDF5_BUILD_DIR=${HDF5_BUILD_DIR:-"hdf5-${HDF5_VERSION}"}
 # Note: Versions of HDF5 1.6.5 and earlier DO NOT have last path component
 export HDF5_URL=${HDF5_URL:-"http://www.hdfgroup.org/ftp/HDF5/prev-releases/hdf5-${HDF5_VERSION}/src"}
-export HDF5_MD5_CHECKSUM="37711d4bcb72997e93d495f97c76c33a"
-export HDF5_SHA256_CHECKSUM=""
+export HDF5_MD5_CHECKSUM="a482686e733514a51cde12d6fe5c5d95"
+export HDF5_SHA256_CHECKSUM="1dbefeeef7f591897c632b2b090db96bb8d35ad035beaa36bc39cb2bc67e0639"
 }
 
 function bv_hdf5_print
@@ -10563,7 +10838,7 @@ function bv_itaps_host_profile
 function bv_itaps_info
 {
 export ITAPS_VERSION=${ITAPS_VERSION:-"1.4"}
-export ITAPS_MOAB_VERSION=${ITAPS_MOAB_VERSION:-"4.6.0"}
+export ITAPS_MOAB_VERSION=${ITAPS_MOAB_VERSION:-"4.8.1"}
 export ITAPS_MOAB_FILE=${ITAPS_MOAB_FILE:-"moab-${ITAPS_MOAB_VERSION}.tar.gz"}
 export ITAPS_MOAB_URL=${ITAPS_MOAB_URL:-http://ftp.mcs.anl.gov/pub/fathom}
 export ITAPS_MOAB_BUILD_DIR=${ITAPS_MOAB_BUILD_DIR:-"moab-${ITAPS_MOAB_VERSION}"}
@@ -12106,7 +12381,7 @@ function bv_mfem_info
 export MFEM_VERSION=${MFEM_VERSION:-"3.0.1"}
 export MFEM_FILE=${MFEM_FILE:-"mfem-${MFEM_VERSION}.tgz"}
 export MFEM_BUILD_DIR=${MFEM_BUILD_DIR:-"mfem-${MFEM_VERSION}"}
-export MFEM_URL=${MFEM_URL:-"https://mfem.googlecode.com/files/mfem-${MFEM_VERSION}.tgz"}
+export MFEM_URL=${MFEM_URL:-"http://mfem.github.io/releases"}
 }
 
 function bv_mfem_print
@@ -12270,12 +12545,12 @@ echo ""
 
 function bv_mili_info
 {
-export MILI_FILE=${MILI_FILE:-"Mili-13.1.1-patch.tar.gz"}
-export MILI_VERSION=${MILI_VERSION:-"13.1.1-patch"}
-export MILI_COMPATIBILITY_VERSION=${MILI_COMPATIBILITY_VERSION:-"13.1.1-patch"}
+export MILI_FILE=${MILI_FILE:-"mili_15_1.tar.gz"}
+export MILI_VERSION=${MILI_VERSION:-"15.1"}
+export MILI_COMPATIBILITY_VERSION=${MILI_COMPATIBILITY_VERSION:-"15.1"}
 export MILI_BUILD_DIR=${MILI_BUILD_DIR:-"mili"}
-export MILI_MD5_CHECKSUM=""
-export MILI_SHA256_CHECKSUM=""
+export MILI_MD5_CHECKSUM="115c6aaf742f151aea6c644d719ee067"
+export MILI_SHA256_CHECKSUM="564c50b003aded7ec33977f8192fbf6ec2f5dc22a41c9551a8fa492c484031bf"
 }
 
 function bv_mili_print
@@ -12537,7 +12812,7 @@ function build_mili
             warn "Mili build failed.  Giving up"
             return 1
         fi
-    elif [[ ${MILI_VERSION} == 13.1.1-patch ]] ; then
+    elif [[ ${MILI_VERSION} == 13.1.1-patch || ${MILI_VERSION} == 15.1 ]] ; then
         cd MILI-*-*
         make opt fortran=false
     fi
@@ -12556,7 +12831,7 @@ function build_mili
         cp mili.h mili_enum.h  "$VISITDIR/mili/$MILI_VERSION/$VISITARCH/include"
     elif [[ ${MILI_VERSION} == 1.11.1 ]] ; then
         cp mili.h mili_enum.h misc.h  "$VISITDIR/mili/$MILI_VERSION/$VISITARCH/include"
-    elif [[ ${MILI_VERSION} == 13.1.1-patch ]] ; then
+    elif [[ ${MILI_VERSION} == 13.1.1-patch || ${MILI_VERSION} == 15.1 ]] ; then
         cp src/{mili.h,mili_enum.h,misc.h}  "$VISITDIR/mili/$MILI_VERSION/$VISITARCH/include"
     fi
     if [[ "$DO_STATIC_BUILD" == "no" && "$OPSYS" == "Darwin" ]]; then
@@ -12573,7 +12848,7 @@ function build_mili
         fi
         cp libmili.$SO_EXT "$VISITDIR/mili/$MILI_VERSION/$VISITARCH/lib"
     else
-        if [[ ${MILI_VERSION} != 13.1.1-patch ]] ; then
+        if [[ ${MILI_VERSION} != 13.1.1-patch && ${MILI_VERSION} != 15.1 ]] ; then
             ar -rc libmili.a *.o 
             if [[ $? != 0 ]] ; then
               warn "Mili install failed.  Giving up"
@@ -13180,16 +13455,16 @@ function bv_nektarpp_alt_nektarpp_dir
 
 function bv_nektarpp_depends_on
 {
-    depends_on="cmake boost"
+    depends_on="cmake boost zlib"
 
     if [[ "$USE_SYSTEM_NEKTAR_PLUS_PLUS" == "yes" ]]; then
         echo ""
-    else
-        if [[ "$DO_ZLIB" == "yes" ]] ; then
-           depends_on="$depends_on zlib"    
-        fi
+#    else
+#        if [[ "$DO_ZLIB" == "yes" ]] ; then
+#           depends_on="$depends_on zlib"    
+#        fi
 
-        echo $depends_on
+#        echo $depends_on
     fi
 }
 
@@ -13202,7 +13477,7 @@ function bv_nektarpp_initialize_vars
 
 function bv_nektarpp_info
 {
-export NEKTAR_PLUS_PLUS_VERSION=${NEKTAR_PLUS_PLUS_VERSION:-"4.0.1"}
+export NEKTAR_PLUS_PLUS_VERSION=${NEKTAR_PLUS_PLUS_VERSION:-"4.1.0"}
 export NEKTAR_PLUS_PLUS_FILE=${NEKTAR_PLUS_PLUS_FILE:-"nektar++-${NEKTAR_PLUS_PLUS_VERSION}.tar.gz"}
 export NEKTAR_PLUS_PLUS_COMPATIBILITY_VERSION=${NEKTAR_PLUS_PLUS_COMPATIBILITY_VERSION:-"1.8"}
 export NEKTAR_PLUS_PLUS_BUILD_DIR=${NEKTAR_PLUS_PLUS_BUILD_DIR:-"nektar++-${NEKTAR_PLUS_PLUS_VERSION}"}
@@ -14501,9 +14776,9 @@ export PYPARSING_BUILD_DIR=${PYPARSING_BUILD_DIR:-"pyparsing-1.5.2"}
 export PYREQUESTS_FILE=${PYREQUESTS_FILE:-"requests-2.5.1.tar.gz"}
 export PYREQUESTS_BUILD_DIR=${PYREQUESTS_BUILD_DIR:-"requests-2.5.1"}
 
-export SEEDME_FILE=${SEEDME_FILE:-"seedme-seedme-python-client-0a365da9c861.tar.gz"}
-export SEEDME_BUILD_DIR=${SEEDME_BUILD_DIR:-"seedme-seedme-python-client-0a365da9c861"}
-
+export SEEDME_URL=${SEEDME_URL:-"https://seedme.org/sites/seedme.org/files/downloads/clients/"}
+export SEEDME_FILE=${SEEDME_FILE:-"seedme-python-client-v1.1.0.zip"}
+export SEEDME_BUILD_DIR=${SEEDME_BUILD_DIR:-"seedme-python-client-v1.1.0"}
 
 }
 
@@ -14966,7 +15241,7 @@ function build_seedme
         info "Extracting seedme python module ..."
         uncompress_untar ${SEEDME_FILE}
         if test $? -ne 0 ; then
-            warn "Could not extract ${SEEDME_BUILD_DIR}"
+            warn "Could not extract ${SEEDME_FILE}"
             return 1
         fi
     fi
@@ -15049,7 +15324,7 @@ if [[ "$DO_PYTHON" == "yes" && "$USE_SYSTEM_PYTHON" == "no" ]] ; then
         if [[ $? != 0 ]] ; then
             warn "seedme python module build failed."
         fi
-        info "Done building the requests seedme python module."
+        info "Done building the seedme python module."
 
     fi
 fi
@@ -16509,8 +16784,7 @@ function build_uintah
     if [[ "$FC_COMPILER" == "no" ]] ; then
 
         warn "Uintah may require fortran to be enabled. It does not appear that the --fortran "
-        warn "agrument was set. If Uintah fails to build try adding the --fortra
-	n argument"
+        warn "agrument was set. If Uintah fails to build try adding the --fortran argument"
         FORTRANARGS="--without-fortran"
         #return 1
 
@@ -17289,14 +17563,7 @@ EOF
 }
 
 function apply_vtk_patch
-{
-    if [[ ${VTK_VERSION} == 6.0.0 ]] ; then
-        apply_vtk_600_patch
-        if [[ $? != 0 ]] ; then
-            return 1
-        fi
-    fi
-    
+{  
     # also apply objc flag patch to 6.1.0
     
     if [[ ${VTK_VERSION} == 6.1.0 ]] ; then
@@ -17309,7 +17576,14 @@ function apply_vtk_patch
             return 1
         fi
     fi
-    
+
+    if [[ ${VTK_VERSION} == 6.2.0 ]] ; then
+        apply_vtk_600_patch
+        if [[ $? != 0 ]] ; then
+            return 1
+        fi
+    fi
+
     return 0
 }
 
@@ -17478,6 +17752,16 @@ function build_vtk
     if test "${OPSYS}" = "Darwin" ; then
         vopts="${vopts} -DVTK_USE_COCOA:BOOL=ON"
         vopts="${vopts} -DCMAKE_INSTALL_NAME_DIR:PATH=${vtk_inst_path}/lib"
+        if test "${MACOSX_DEPLOYMENT_TARGET}" = "10.10"; then
+            # If building on 10.10 (Yosemite) check if we are building with Xcode 7 ...
+            XCODE_VER=$(xcodebuild -version | head -n 1 | awk '{print $2}')
+            if test ${XCODE_VER%.*} == 7; then
+                # Workaround for Xcode 7 not having a 10.10 SDK: Prevent CMake from linking to 10.11 SDK
+                # by using Frameworks installed in root directory.
+                echo "Xcode 7 on MacOS 10.10 detected: Enabling CMake workaround"
+                vopts="${vopts} -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=\"\" -DCMAKE_OSX_SYSROOT:STRING=/"
+            fi
+        fi
     fi
 
     # allow VisIt to override any of vtk's classes
@@ -17863,6 +18147,337 @@ if [[ "$DO_XDMF" == "yes" ]] ; then
    fi
 fi
 }
+function bv_xercesc_initialize
+{
+    export DO_XERCESC="no"
+    export ON_XERCESC="off"
+}
+
+function bv_xercesc_enable
+{
+    DO_XERCESC="yes"
+    ON_XERCESC="on"
+}
+
+function bv_xercesc_disable
+{
+    DO_XERCESC="no"
+    ON_XERCESC="off"
+}
+
+function bv_xercesc_depends_on
+{
+    echo ""
+}
+
+function bv_xercesc_info
+{
+    export XERCESC_FILE=${XERCESC_FILE:-"xerces-c-3.1.2.tar.gz"}
+    export XERCESC_VERSION=${XERCESC_VERSION:-"3.1.2"}
+    export XERCESC_COMPATIBILITY_VERSION=${XERCESC_COMPATIBILITY_VERSION:-"3.1"}
+    export XERCESC_BUILD_DIR=${XERCESC_BUILD_DIR:-"xerces-c-${XERCESC_VERSION}"}
+    export XERCESC_URL=${XERCESC_URL:-"http://www.webhostingjams.com/mirror/apache//xerces/c/3/sources"}
+    export XERCESC_MD5_CHECKSUM="9eb1048939e88d6a7232c67569b23985"
+}
+
+function bv_xercesc_print
+{
+    printf "%s%s\n" "XERCESC_FILE=" "${XERCESC_FILE}"
+    printf "%s%s\n" "XERCESC_VERSION=" "${XERCESC_VERSION}"
+    printf "%s%s\n" "XERCESC_COMPATIBILITY_VERSION=" "${XERCESC_COMPATIBILITY_VERSION}"
+    printf "%s%s\n" "XERCESC_BUILD_DIR=" "${XERCESC_BUILD_DIR}"
+    printf "%s%s\n" "XERCESC_URL=" "${XERCESC_URL}"
+    printf "%s%s\n" "XERCESC_MD5_CHECKSUM=" "${XERCESC_MD5_CHECKSUM}"
+}
+
+function bv_xercesc_print_usage
+{
+    printf "%-15s %s [%s]\n" "--xercesc"   "Build XERCESC" "$DO_XERCESC"
+}
+
+function bv_xercesc_graphical
+{
+    local graphical_out="XERCESC    $XERCESC_VERSION($XERCESC_FILE)    $ON_XERCESC"
+    echo $graphical_out
+}
+
+function bv_xercesc_host_profile
+{
+    if [[ "$DO_XERCESC" == "yes" ]] ; then
+        echo >> $HOSTCONF
+        echo "##" >> $HOSTCONF
+        echo "## XERCESC" >> $HOSTCONF
+        echo "##" >> $HOSTCONF
+        echo \
+        "VISIT_OPTION_DEFAULT(VISIT_XERCESC_DIR \${VISITHOME}/xerces-c/$XERCESC_VERSION/\${VISITARCH})" \
+    >> $HOSTCONF
+    fi
+}
+
+function bv_xercesc_ensure
+{
+    if [[ "$DO_XERCESC" == "yes" ]] ; then
+        ensure_built_or_ready "xerces-c" $XERCESC_VERSION $XERCESC_BUILD_DIR $XERCESC_FILE $XERCESC_URL
+        if [[ $? != 0 ]] ; then
+            ANY_ERRORS="yes"
+            DO_XERCESC="no"
+            error "Unable to build XERCESC.  ${XERCESC_FILE} not found."
+        fi
+    fi
+}
+
+function bv_xercesc_dry_run
+{
+   if [[ "$DO_XERCESC" == "yes" ]] ; then
+     echo "Dry run option not set for Xerces-C"
+   fi
+}
+
+function build_xercesc
+{
+
+    #
+    # Prepare build dir
+    #
+    prepare_build_dir $XERCESC_BUILD_DIR $XERCESC_FILE
+    untarred_xc=$?
+    if [[ $untarred_xc == -1 ]] ; then
+       warn "Unable to prepare Xerces-C build directory. Giving Up!"
+       return 1
+    fi
+
+    #
+    # Call configure
+    #
+    info "Configuring Xerces-C . . ."
+    cd $XERCESC_BUILD_DIR || error "Can't cd to Xerces-C build dir."
+
+    info "env CXX=$CXX_COMPILER CC=$C_COMPILER ./configure \
+    --prefix=$VISITDIR/xerces-c/$XERCESC_VERSION/$VISITARCH \
+    --disable-threads --disable-network --disable-shared \
+    --enable-transcoder-iconv"
+    
+    env CXX=$CXX_COMPILER CC=$C_COMPILER ./configure \
+    --prefix=$VISITDIR/xerces-c/$XERCESC_VERSION/$VISITARCH \
+    --disable-threads --disable-network --disable-shared \
+    --enable-transcoder-iconv
+
+    if [[ $? != 0 ]] ; then
+    warn "Xerces-C configuration failed. Giving up"
+    return 1
+    fi
+
+    #
+    # Build Xerces-C
+    #
+    info "Building Xerces-C . . . (~10 minute)"
+    $MAKE $MAKE_OPT_FLAGS
+    if [[ $? != 0 ]] ; then
+       warn "Xerces-C build failed.  Giving up"
+       return 1
+    fi
+
+    #
+    # Install into the VisIt third party location
+    #
+    info "Installing Xerces-C"
+    $MAKE install
+    if [[ $? != 0 ]] ; then
+       warn "Xerces-C install failed.  Giving up"
+       return 1
+    fi
+
+    if [[ "$DO_GROUP" == "yes" ]] ; then
+     chmod -R ug+w,a+rX "$VISITDIR/xerces-c"
+     chgrp -R ${GROUP} "$VISITDIR/xerces-c"
+    fi
+    cd "$START_DIR"
+    return 0
+}
+
+function bv_xercesc_is_enabled
+{
+    if [[ $DO_XERCESC == "yes" ]]; then
+        return 1
+    fi
+    return 0
+}
+
+function bv_xercesc_is_installed
+{
+    check_if_installed "xerces-c" $XERCESC_VERSION
+    if [[ $? == 0 ]] ; then
+        return 1
+    fi
+    return 0
+}
+
+function bv_xercesc_build
+{
+
+    if [[ "$DO_XERCESC" == "yes" ]] ; then
+        check_if_installed "xerces-c" $XERCESC_VERSION
+        if [[ $? == 0 ]] ; then
+            info "Skipping Xerces-C build.  Xerces-C is already installed."
+        else
+            build_xercesc
+            if [[ $? != 0 ]] ; then
+                error "Unable to build or install Xerces-C.  Bailing out."
+            fi
+            info "Done building Xerces-C"
+       fi
+    fi
+}
+function bv_xsd_initialize
+{
+    export DO_XSD="no"
+    export ON_XSD="off"
+}
+
+function bv_xsd_enable
+{ 
+    DO_XSD="yes"
+    ON_XSD="on"
+}
+
+function bv_xsd_disable
+{
+    DO_XSD="no"
+    ON_XSD="off"
+}
+
+function bv_xsd_depends_on
+{
+    echo "xercesc"
+}
+
+function bv_xsd_info
+{
+    export XSD_FILE=${XSD_FILE:-"xsd-4.0.0+dep.tar.bz2"}
+    export XSD_VERSION=${XSD_VERSION:-"4.0.0"}
+    export XSD_COMPATIBILITY_VERSION=${XSD_COMPATIBILITY_VERSION:-"4.0"}
+    export XSD_BUILD_DIR=${XSD_BUILD_DIR:-"xsd-${XSD_VERSION}+dep"}
+    export XSD_URL=${XSD_URL:-"http://www.codesynthesis.com/download/xsd/4.0"}
+    export XSD_SHA1_CHECKSUM="ad3de699eb140e747a0a214462d95fc81a21b494"
+}
+
+function bv_xsd_print
+{
+    printf "%s%s\n" "XSD_FILE=" "${XSD_FILE}"
+    printf "%s%s\n" "XSD_VERSION=" "${XSD_VERSION}"
+    printf "%s%s\n" "XSD_COMPATIBILITY_VERSION=" "${XSD_COMPATIBILITY_VERSION}"
+    printf "%s%s\n" "XSD_BUILD_DIR=" "${XSD_BUILD_DIR}"
+}
+
+function bv_xsd_print_usage
+{
+    printf "%-15s %s [%s]\n" "--xsd"   "Build XSD" "$DO_XSD"
+}
+
+function bv_xsd_graphical
+{
+    local graphical_out="XSD    $XSD_VERSION($XSD_FILE)    $ON_XSD"
+    echo $graphical_out
+}
+
+function bv_xsd_host_profile
+{
+    if [[ "$DO_XSD" == "yes" ]] ; then
+        echo >> $HOSTCONF
+        echo "##" >> $HOSTCONF
+        echo "## XSD" >> $HOSTCONF
+        echo "##" >> $HOSTCONF
+        echo "VISIT_OPTION_DEFAULT(VISIT_XSD_DIR \${VISITHOME}/xsd/$XSD_VERSION/\${VISITARCH})" \
+        >> $HOSTCONF
+    fi
+}
+
+function bv_xsd_ensure
+{
+    if [[ "$DO_XSD" == "yes" ]] ; then
+        ensure_built_or_ready "XSD" $XSD_VERSION $XSD_BUILD_DIR $XSD_FILE $XSD_URL
+        if [[ $? != 0 ]] ; then
+            ANY_ERRORS="yes"
+            DO_XSD="no"
+            error "Unable to build XSD.  ${XSD_FILE} not found."
+        fi
+    fi
+}
+
+function bv_xsd_dry_run
+{
+  if [[ "$DO_XSD" == "yes" ]] ; then
+    echo "Dry run option not set for XSD."
+  fi
+}
+
+function  apply_xsd_patch
+{  
+    #for any future patches
+    return 0
+}
+
+
+function build_xsd
+{
+    #
+    # Prepare build dir
+    #
+    prepare_build_dir $XSD_BUILD_DIR $XSD_FILE
+    untarred_xsd=$?
+    if [[ $untarred_xsd == -1 ]] ; then
+      warn "Unable to prepare XSD build directory. Giving Up!"
+      return 1
+    fi
+    cd $XSD_BUILD_DIR/xsd
+
+    #
+    # For Damaris, we only need to install the XSD headers
+    #
+    mkdir -p $VISITDIR/xsd/$XSD_VERSION/$VISITARCH/include
+    cp -r libxsd/xsd $VISITDIR/xsd/$XSD_VERSION/$VISITARCH/include/
+
+    if [[ "$DO_GROUP" == "yes" ]] ; then
+    chmod -R ug+w,a+rX "$VISITDIR/xsd"
+    chgrp -R ${GROUP} "$VISITDIR/xsd"
+    fi
+    cd "$START_DIR"
+    return 0
+}
+
+function bv_xsd_is_enabled
+{
+    if [[ $DO_XSD == "yes" ]]; then
+        return 1
+    fi
+    return 0
+}
+
+function bv_xsd_is_installed
+{
+    check_if_installed "xsd" $XSD_VERSION
+    if [[ $? == 0 ]] ; then
+        return 1
+    fi
+    return 0
+}
+
+function bv_xsd_build
+{
+
+    if [[ "$DO_XSD" == "yes" ]] ; then
+        check_if_installed "xsd" $XSD_VERSION
+        if [[ $? == 0 ]] ; then
+            info "Skipping XSD build.  XSD is already installed."
+        else
+            build_xsd
+            if [[ $? != 0 ]] ; then
+                error "Unable to build or install XSD.  Bailing out."
+            fi
+            info "Done building XSD"
+       fi
+    fi
+}
 function bv_zlib_initialize
 {
 export DO_ZLIB="no"
@@ -18198,58 +18813,68 @@ xmlp_filecontents[138]="<lib name=\"vtk\"/>"
 xmlp_filecontents[139]="<lib name=\"qt\"/>"
 xmlp_filecontents[140]="</required>"
 xmlp_filecontents[141]="<optional>"
-xmlp_filecontents[142]="<lib name=\"szip\"/>"
-xmlp_filecontents[143]="<lib name=\"netcdf\"/>"
-xmlp_filecontents[144]="<lib name=\"hdf5\"/>"
-xmlp_filecontents[145]="<lib name=\"icet\"/>"
-xmlp_filecontents[146]="<lib name=\"pyqt\"/>"
-xmlp_filecontents[147]="<lib name=\"uintah\"/>"
-xmlp_filecontents[148]="</optional>"
-xmlp_filecontents[149]="<group name=\"required\" comment=\"All required libraries\">"
-xmlp_filecontents[150]="<lib name=\"cmake\"/>"
-xmlp_filecontents[151]="<lib name=\"python\"/>"
-xmlp_filecontents[152]="<lib name=\"mesa\"/>"
-xmlp_filecontents[153]="<lib name=\"R\"/>"
-xmlp_filecontents[154]="<lib name=\"vtk\"/>"
-xmlp_filecontents[155]="<lib name=\"qt\"/>"
-xmlp_filecontents[156]="</group>"
-xmlp_filecontents[157]="<group name=\"optional\" comment=\"All optional libraries\">"
-xmlp_filecontents[158]="<lib name=\"hdf5\"/>"
-xmlp_filecontents[159]="<lib name=\"netcdf\"/>"
-xmlp_filecontents[160]="<lib name=\"szip\"/>"
-xmlp_filecontents[161]="<lib name=\"uintah\"/>"
-xmlp_filecontents[162]="</group>"
-xmlp_filecontents[163]="<group name=\"no-thirdparty\" comment=\"Do not build required 3rd party libraries\">"
-xmlp_filecontents[164]="<lib name=\"no-cmake\"/>"
-xmlp_filecontents[165]="<lib name=\"no-python\"/>"
-xmlp_filecontents[166]="<lib name=\"no-qt\" />"
-xmlp_filecontents[167]="<lib name=\"no-vtk\"/>"
-xmlp_filecontents[168]="</group>"
-xmlp_filecontents[169]="<group name=\"dbio-only\" comment=\"Disables EVERYTHING but I/O.\">"
-xmlp_filecontents[170]="<lib name=\"hdf5\"/>"
-xmlp_filecontents[171]="<lib name=\"netcdf\"/>"
-xmlp_filecontents[172]="<lib name=\"szip\"/>"
-xmlp_filecontents[173]="<lib name=\"uintah\"/>"
-xmlp_filecontents[174]="<lib name=\"no-mesa\"/>"
+xmlp_filecontents[142]="<lib name=\"boost\"/>"
+xmlp_filecontents[143]="<lib name=\"szip\"/>"
+xmlp_filecontents[144]="<lib name=\"netcdf\"/>"
+xmlp_filecontents[145]="<lib name=\"hdf5\"/>"
+xmlp_filecontents[146]="<lib name=\"icet\"/>"
+xmlp_filecontents[147]="<lib name=\"mpich\"/>"
+xmlp_filecontents[148]="<lib name=\"pyqt\"/>"
+xmlp_filecontents[149]="<lib name=\"uintah\"/>"
+xmlp_filecontents[150]="<lib name=\"damaris\"/>"
+xmlp_filecontents[151]="<lib name=\"xercesc\"/>"
+xmlp_filecontents[152]="<lib name=\"xsd\"/>"
+xmlp_filecontents[153]="</optional>"
+xmlp_filecontents[154]="<group name=\"required\" comment=\"All required libraries\">"
+xmlp_filecontents[155]="<lib name=\"cmake\"/>"
+xmlp_filecontents[156]="<lib name=\"python\"/>"
+xmlp_filecontents[157]="<lib name=\"mesa\"/>"
+xmlp_filecontents[158]="<lib name=\"R\"/>"
+xmlp_filecontents[159]="<lib name=\"vtk\"/>"
+xmlp_filecontents[160]="<lib name=\"qt\"/>"
+xmlp_filecontents[161]="</group>"
+xmlp_filecontents[162]="<group name=\"optional\" comment=\"All optional libraries\">"
+xmlp_filecontents[163]="<lib name=\"boost\"/>"
+xmlp_filecontents[164]="<lib name=\"hdf5\"/>"
+xmlp_filecontents[165]="<lib name=\"netcdf\"/>"
+xmlp_filecontents[166]="<lib name=\"mpich\"/>"
+xmlp_filecontents[167]="<lib name=\"szip\"/>"
+xmlp_filecontents[168]="<lib name=\"uintah\"/>"
+xmlp_filecontents[169]="<lib name=\"damaris\"/>"
+xmlp_filecontents[170]="<lib name=\"xercesc\"/>"
+xmlp_filecontents[171]="<lib name=\"xsd\"/>"
+xmlp_filecontents[172]="</group>"
+xmlp_filecontents[173]="<group name=\"no-thirdparty\" comment=\"Do not build required 3rd party libraries\">"
+xmlp_filecontents[174]="<lib name=\"no-cmake\"/>"
 xmlp_filecontents[175]="<lib name=\"no-python\"/>"
-xmlp_filecontents[176]="<lib name=\"no-qt\"/>"
-xmlp_filecontents[177]="</group>"
-xmlp_filecontents[178]="<group name=\"all-io\" comment=\"Build all available I/O libraries\">"
-xmlp_filecontents[179]="<lib name=\"hdf5\"/>"
-xmlp_filecontents[180]="<lib name=\"netcdf\"/>"
-xmlp_filecontents[181]="<lib name=\"szip\"/>"
-xmlp_filecontents[182]="<lib name=\"uintah\"/>"
-xmlp_filecontents[183]="</group>"
-xmlp_filecontents[184]="<group name=\"nonio\" comment=\"Build non I/O libraries\">"
-xmlp_filecontents[185]="<lib name=\"icet\"/>"
-xmlp_filecontents[186]="<lib name=\"mesa\"/>"
+xmlp_filecontents[176]="<lib name=\"no-qt\" />"
+xmlp_filecontents[177]="<lib name=\"no-vtk\"/>"
+xmlp_filecontents[178]="</group>"
+xmlp_filecontents[179]="<group name=\"dbio-only\" comment=\"Disables EVERYTHING but I/O.\">"
+xmlp_filecontents[180]="<lib name=\"hdf5\"/>"
+xmlp_filecontents[181]="<lib name=\"netcdf\"/>"
+xmlp_filecontents[182]="<lib name=\"szip\"/>"
+xmlp_filecontents[183]="<lib name=\"uintah\"/>"
+xmlp_filecontents[184]="<lib name=\"no-mesa\"/>"
+xmlp_filecontents[185]="<lib name=\"no-python\"/>"
+xmlp_filecontents[186]="<lib name=\"no-qt\"/>"
 xmlp_filecontents[187]="</group>"
-xmlp_filecontents[188]="</license>"
-xmlp_filecontents[189]="</modules>"
+xmlp_filecontents[188]="<group name=\"all-io\" comment=\"Build all available I/O libraries\">"
+xmlp_filecontents[189]="<lib name=\"hdf5\"/>"
+xmlp_filecontents[190]="<lib name=\"netcdf\"/>"
+xmlp_filecontents[191]="<lib name=\"szip\"/>"
+xmlp_filecontents[192]="<lib name=\"uintah\"/>"
+xmlp_filecontents[193]="</group>"
+xmlp_filecontents[194]="<group name=\"nonio\" comment=\"Build non I/O libraries\">"
+xmlp_filecontents[195]="<lib name=\"icet\"/>"
+xmlp_filecontents[196]="<lib name=\"mesa\"/>"
+xmlp_filecontents[197]="</group>"
+xmlp_filecontents[198]="</license>"
+xmlp_filecontents[199]="</modules>"
 xmlp_licenses[0]="bsd|mit|lgpl"
 xmlp_licenses_range[0]="1 131"
 xmlp_licenses[1]="gpl"
-xmlp_licenses_range[1]="132 188"
+xmlp_licenses_range[1]="132 198"
 defaultLicenses=$(xmlp_get_license "$@")
 for license in `echo $defaultLicenses`
 do

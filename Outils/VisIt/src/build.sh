@@ -4,10 +4,11 @@ clean()
    # Nettoyage des paquets
    echo $ECHO_OPTS "Cleaning...\c"
    # 
-   for paquet in `\ls *.tar.gz *.tgz 2>/dev/null `
+   for paquet in `\ls *.tar.gz *.tgz *.zip 2>/dev/null `
    do
       [ -d ${paquet%.tar.gz} ] && rm -r -f ${paquet%.tar.gz}
       [ -d ${paquet%.tgz} ]    && rm -r -f ${paquet%.tgz}
+      [ -d ${paquet%.zip} ]    && rm -r -f ${paquet%.zip}
       rm -f $paquet
    done
    rm -r -f VTK-?.?.? VTK-*-build visit visit?.?.? visit-vtk-?.? visit-vtk-*-build Mesa-?.? Mesa-?.*.? qt-everywhere-opensource-src-?.?.?  

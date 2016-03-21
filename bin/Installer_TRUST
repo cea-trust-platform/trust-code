@@ -4,7 +4,7 @@
 ########################################################
 check_prerequis()
 {
-list_prerequis="bc ed sed awk"
+list_prerequis="bc ed sed awk unzip"
 prerequis=1
 export PATH=$PATH:$TRUST_ROOT/exec/utils/bin
 for p in $list_prerequis

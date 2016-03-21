@@ -27,12 +27,12 @@ VisIt,VTK-6.1.0.tar.gz,,SV,BSD,http://www.vtk.org/,http://www.vtk.org/files/rele
 VisIt,pyparsing-1.5.2.tar.gz,,SV,"MIT License",https://pypi.python.org/pypi/pyparsing,https://pypi.python.org/packages/source/p/pyparsing/pyparsing-1.5.2.tar.gz#md5=13aed3cb21a427f8aeb0fe7ca472ba42,
 VisIt,MesaLib-7.10.2.tar.gz,,SV,"MIT license",http://www.mesa3d.org/,ftp://ftp.freedesktop.org/pub/mesa/older-versions/7.x/7.10.2/MesaLib-7.10.2.tar.gz,"pour la licence voir : http://www.mesa3d.org/license.html"
 VisIt,IceT-1-0-0.tar.gz,,SV,BSD,http://icet.sandia.gov/index.html,http://icet.sandia.gov/downloads/IceT-1-0-0.tar.gz,
-VisIt,visit2.9.1.tar.gz,outil,SV,BSD,https://wci.llnl.gov/simulation/computer-codes/visit/,http://portal.nersc.gov/svn/visit/trunk/releases/2.9.1/visit2.9.1.tar.gz,
+VisIt,visit2.10.0.tar.gz,outil,SV,BSD,https://wci.llnl.gov/simulation/computer-codes/visit/,http://portal.nersc.gov/svn/visit/trunk/releases/2.10.0/visit2.10.0.tar.gz,
 VisIt,cmake-3.0.2.tar.gz,,GF,BSD,http://www.cmake.org/,http://www.cmake.org/files/v3.0/cmake-3.0.2.tar.gz,
 VisIt,qt-everywhere-opensource-src-4.8.3.tar.gz,,," GPL Version 3  LGPL 2.1",http://www.qt.io/,https://download.qt.io/archive/qt/4.8/4.8.3/qt-everywhere-opensource-src-4.8.3.tar.gz,"C'est quoi la page qu'on veut ? qt.io? qt ?"
 VisIt,Imaging-1.1.6.tar.gz,,SV,"voir remarque",http://www.pythonware.com/products/pil/,http://effbot.org/downloads/Imaging-1.1.6.tar.gz,"pour la licence voir http://www.pythonware.com/products/pil/license.htm (je ne sais pas de quel type de licence il s'agit)"
 VisIt,requests-2.5.1.tar.gz,,GF,"?","?",http://visit.ilight.com/svn/visit/tags/2.9.1/third_party/requests-2.5.1.tar.gz,
-VisIt,seedme-seedme-python-client-0a365da9c861.tar.gz,,GF,"?","?",http://visit.ilight.com/svn/visit/tags/2.9.1/third_party/seedme-seedme-python-client-0a365da9c861.tar.gz,
+VisIt,seedme-python-client-v1.1.0.zip,,GF,"?","?",http://visit.ilight.com/svn/visit/tags/2.10.0/third_party/seedme-python-client-v1.1.0.zip,
 lapack,lapack-3.4.1.tgz,,SV,BSD,http://www.netlib.org/lapack/,http://www.netlib.org/lapack/lapack-3.4.1.tgz,
 petsc,SuiteSparse-4.2.1.tar.gz,,,"voir remarque",http://faculty.cse.tamu.edu/davis/suitesparse.html,http://ftp.mcs.anl.gov/pub/petsc/externalpackages/SuiteSparse-4.2.1.tar.gz,"je ne sais pas quel est le type de licence, on peut voir http://www.netlib.org/linalg/SuiteSparse-README.txt"
 petsc,ViennaCL-1.5.1.tar.gz,,,"MIT License",http://viennacl.sourceforge.net/,http://downloads.sourceforge.net/project/viennacl/1.5.x/ViennaCL-1.5.1.tar.gz,"Hum option utilisée ????"
@@ -58,6 +58,7 @@ General,nvc_get_devices.tgz,,GF,LGPL,http://files.salome-platform.org,http://dow
 utils,bc-1.06.tar.gz,outil,GF,GPL,http://www.gnu.org/software/bc,http://ftp.gnu.org/gnu/bc/bc-1.06.tar.gz,
 utils,gawk-4.1.3.tar.gz,outil,GF,GPL,http://www.gnu.org/software/gawk,http://ftp.gnu.org/gnu/gawk/gawk-4.1.3.tar.gz,
 utils,ed-1.9.tar.gz,outil,GF,GPL,http://www.gnu.org/software/ed,http://ftp.gnu.org/gnu/ed/ed-1.9.tar.gz,
+utils,unzip-60.tar.gz,outil,GF,GPL,http://www.info-zip.org,ftp://ftp.info-zip.org/pub/infozip/src/unzip60.tgz, 
 utils,sed-4.2.tar.gz,outil,GF,GPL,http://www.gnu.org/software/sed,http://ftp.gnu.org/gnu/sed/sed-4.2.tar.gz,
 Python_modules,PySide-1.2.4.tar.gz,,GF,LGPL,http://pypi.python.org,https://pypi.python.org/packages/source/P/PySide/PySide-1.2.4.tar.gz,
 Python_modules,distribute-0.6.28.tar.gz,,GF,LGPL,http://pypi.python.org,http://pypi.python.org/packages/source/d/distribute/distribute-0.6.28.tar.gz,

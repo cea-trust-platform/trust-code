@@ -6,7 +6,7 @@
 # d) Essayer d'expurger (ex doc/demos/examples dans QT) pour des questions de place
 
 name=visit
-version=2_9_1
+version=2_10_0
 install=$(TRUST_ROOT)/exec/$(name)
 cible=$(install)/bin/$(name)
 cible=bin/$(name)
