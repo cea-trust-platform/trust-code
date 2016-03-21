@@ -246,14 +246,17 @@ MEDField build_medfield(TrioField& triofield)
   //
 
 
-  std::vector<int> cells;
-  mesh->checkButterflyCells(cells);
-  if (!cells.empty())
+  if ( elemtype!=INTERP_KERNEL::NORM_SEG2)
     {
-      cerr<<" cells are butterflyed "<<cells[0]<<endl;
-      PE_Groups::groupe_TRUST().abort();
-      Process::abort();
-      Process::exit();
+      std::vector<int> cells;
+      mesh->checkButterflyCells(cells);
+      if (!cells.empty())
+        {
+          cerr<<" cells are butterflyed "<<cells[0]<<endl;
+          PE_Groups::groupe_TRUST().abort();
+          Process::abort();
+          Process::exit();
+        }
     }
   //field on the sending end
   int nb_case=triofield.nb_values();
