@@ -203,7 +203,7 @@ void main2 (int argc,char **argv) {
   for (int send=0;send<2;send++)
     for (int rec=0;rec<2;rec++)
     {
-  TrioDEC dec_emetteur(emetteur_group, recepteur_group);
+  TrioDEC dec_emetteur(emetteur_ids, recepteur_ids);
 #ifndef med_old
   dec_emetteur.setOrientation(2);
   dec_emetteur.setMaxDistance3DSurfIntersect(1e-3);

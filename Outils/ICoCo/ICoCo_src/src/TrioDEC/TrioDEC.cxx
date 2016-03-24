@@ -17,6 +17,8 @@ TrioDEC::TrioDEC():_my_traduced_field(0)
 
 TrioDEC::TrioDEC(ProcessorGroup& source_group, ProcessorGroup& target_group):InterpKernelDEC(source_group,target_group),_my_traduced_field(0)
 {
+  std::cerr<<"Warning with TrioDEC::TrioDEC(ProcessorGroup&,ProcessorGroup&)" <<std::endl;
+  std::cerr<<"If error, use TrioDEC::TrioDEC(const std::set<int>&,const std::set<int>&) in your main.cpp file" <<std::endl;
 }
 void TrioDEC::attachLocalField(ICoCo::Field *field) 
 { 

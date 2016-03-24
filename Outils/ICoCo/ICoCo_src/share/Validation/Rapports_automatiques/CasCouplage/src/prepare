@@ -18,10 +18,10 @@ sed "s/define MM/undef MM/" Couple/main.cpp > Couple2/main.cpp
 cp -r Couple Couple3
 sed "s/define MM/define testvector/" Couple/main.cpp > Couple3/main.cpp
 
-cp -r Couple CoupleMEDField
-sed "s/define MM/undef MM/;s/TrioField/MEDField/g" Couple/main.cpp > CoupleMEDField/main.cpp
-cp -r Couple CoupleVectorMEDField
-sed "s/define MM/define testvector/;s/TrioField/MEDField/g;s/TrioDEC/InterpKernelDEC/g" Couple/main.cpp > CoupleVectorMEDField/main.cpp
+#cp -r Couple CoupleMEDField
+#sed "s/define MM/undef MM/;s/TrioField/MEDField/g" Couple/main.cpp > CoupleMEDField/main.cpp
+#cp -r Couple CoupleVectorMEDField
+#sed "s/define MM/define testvector/;s/TrioField/MEDField/g;s/TrioDEC/InterpKernelDEC/g" Couple/main.cpp > CoupleVectorMEDField/main.cpp
 ./configure
 #make couplage
 

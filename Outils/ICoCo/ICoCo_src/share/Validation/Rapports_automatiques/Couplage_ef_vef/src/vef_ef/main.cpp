@@ -114,9 +114,9 @@ int main(int argc,char **argv) {
   synchronize_bool(stop,sync_or);
 
   
-  TrioDEC dec_vit_in_chaude(entree_vef_group, EF_group);
+  TrioDEC dec_vit_in_chaude(entree_vef_ids, EF_ids);
 
-  TrioDEC pression_chaude(EF_group, entree_vef_group);
+  TrioDEC pression_chaude(EF_ids, entree_vef_ids);
 
 
   modifie_TrioDEC(dec_vit_in_chaude);

@@ -114,7 +114,7 @@ int main(int argc,char **argv) {
   // Creation of an interpolator from boite procs to canal procs
   // If several fields are to be exchanged, create one DEC for each
 #ifndef testvector
-  TrioDEC dec(boite_group, canal_group);
+  TrioDEC dec(boite_ids, canal_ids);
 #else
   vector<TrioDEC> decu(1);
   decu[0]=TrioDEC(boite_group, canal_group);
