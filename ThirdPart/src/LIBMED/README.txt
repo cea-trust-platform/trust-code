@@ -45,9 +45,9 @@ en definissant differentes variables d'environnement :
 
  - USE_MED_VERSION  : cette variable  permet de  choisir le  couple de
    numeros de versions de MED et de HDF5 que l'on desire utiliser.
-    - si elle vaut 3.0, on choisit le couple (MED-3.0, HDF5-1.8) ;
+    - si elle vaut 3.1, on choisit le couple (MED-3.1, HDF5-1.8) ;
     - si elle vaut 2.3, on choisit le couple (MED-2.3, HDF5-1.6) ;
-    - si elle n'est pas definie, on choisit  (MED-3.0, HDF5-1.8). 
+    - si elle n'est pas definie, on choisit  (MED-3.1, HDF5-1.8). 
 
 
 Remarque 1

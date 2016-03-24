@@ -23,7 +23,7 @@ check_internal_HDF_version() {
 
     # defining TRUST_HDF_VERSION
     case "x_${USE_MED_VERSION}_x" in
-	"x_3.0_x") TRUST_HDF_VERSION="1.8"                ;;
+	"x_3.1_x") TRUST_HDF_VERSION="1.8"                ;;
 	"x_2.3_x") TRUST_HDF_VERSION="1.6"                ;;
 	"x__x")    TRUST_HDF_VERSION="1.8"                ;;
 	*)         raise_invalid_USE_MED_VERSION_exception ;;
@@ -46,12 +46,12 @@ check_external_HDF_version() {
     test -d "${EXTERNAL_HDF_HOME}" || raise_invalid_external_HDF_installation_directory_exception
 
     # checking that directory HDF5HOME contains installation directories of HDF5
-    test -d "${EXTERNAL_HDF_HOME}/bin"     || raise_invalid_external_HDF_installation_directory_exception
+    # test -d "${EXTERNAL_HDF_HOME}/bin"     || raise_invalid_external_HDF_installation_directory_exception
     test -d "${EXTERNAL_HDF_HOME}/include" || raise_invalid_external_HDF_installation_directory_exception
     test -d "${EXTERNAL_HDF_HOME}/lib"     || raise_invalid_external_HDF_installation_directory_exception
 
     # checking that external HDF5 library exists
-    test -f "${EXTERNAL_HDF_HOME}/lib/libhdf5.a" || raise_invalid_external_HDF_installation_directory_exception
+    test -f "${EXTERNAL_HDF_HOME}/lib/libhdf5.a" || test -f "${EXTERNAL_HDF_HOME}/lib/libhdf5.so" || raise_invalid_external_HDF_installation_directory_exception
 
     # checking that external HDF5 header exists
     HDF5_header="${EXTERNAL_HDF_HOME}/include/H5public.h"
@@ -81,9 +81,9 @@ check_internal_MED_version() {
 
     # defining TRUST_MED_VERSION
     case "x_${USE_MED_VERSION}_x" in
-	"x_3.0_x") TRUST_MED_VERSION="3.0"                ;;
+	"x_3.1_x") TRUST_MED_VERSION="3.1"                ;;
 	"x_2.3_x") TRUST_MED_VERSION="2.3"                ;;
-	"x__x")    TRUST_MED_VERSION="3.0"                ;;
+	"x__x")    TRUST_MED_VERSION="3.1"                ;;
 	*)         raise_invalid_USE_MED_VERSION_exception ;;
     esac
 
@@ -110,7 +110,7 @@ check_external_MED_version() {
     test -d "${EXTERNAL_MED_HOME}/lib"     || raise_invalid_external_MED_installation_directory_exception
 
     # checking that external MED library exists
-    test -f "${EXTERNAL_MED_HOME}/lib/libmed.a" || raise_invalid_external_MED_installation_directory_exception
+    test -f "${EXTERNAL_MED_HOME}/lib/libmed.a" || test -f "${EXTERNAL_MED_HOME}/lib/libmed.so" || raise_invalid_external_MED_installation_directory_exception
 
     # checking that external MED header exists
     MED_header="${EXTERNAL_MED_HOME}/include/med.h"
@@ -128,7 +128,7 @@ check_external_MED_version() {
     fi
     TRUST_MED_VERSION="${external_MED_major_version_number}.${external_MED_minor_version_number}"
 
-    test "x_${TRUST_MED_VERSION}_x" = "x_3.0_x" || test "x_${TRUST_MED_VERSION}_x" = "x_2.3_x" || raise_invalid_external_MED_version_exception 
+    # test "x_${TRUST_MED_VERSION}_x" = "x_3.1_x" || test "x_${TRUST_MED_VERSION}_x" = "x_2.3_x" || raise_invalid_external_MED_version_exception 
 
     # exporting TRUST_MED_LOCATION and TRUST_MED_VERSION
     export TRUST_MED_LOCATION
@@ -148,7 +148,7 @@ check_versions_compatibility() {
     
     # checking that HDF5 version corresponds to USE_MED_VERSION
     case "x_${USE_MED_VERSION}_${TRUST_HDF_VERSION}_x" in
-	"x_3.0_1.8_x")                                                                                              ;;
+	"x_3.1_1.8_x")                                                                                              ;;
 	"x_2.3_1.6_x")                                                                                              ;;
 	"x__1.8_x")                                                                                                 ;;
 	"x__1.6_x")                                                                                                 ;;
@@ -157,16 +157,16 @@ check_versions_compatibility() {
 
     # checking that MED version corresponds to USE_MED_VERSION
     case "x_${USE_MED_VERSION}_${TRUST_MED_VERSION}_x" in
-	"x_3.0_3.0_x")                                                                                              ;;
+	"x_3.1_3.1_x")                                                                                              ;;
 	"x_2.3_2.3_x")                                                                                              ;;
-	"x__3.0_x")                                                                                                 ;;
+	"x__3.1_x")                                                                                                 ;;
 	"x__2.3_x")                                                                                                 ;;
 	*) raise_MED_version_incompatible_with_specification_exception "${USE_MED_VERSION}" "${TRUST_MED_VERSION}" ;;
     esac
 
     # checking that MED and HDF versions are compatible
     case "x_${TRUST_HDF_VERSION}_${TRUST_MED_VERSION}_x" in
-	"x_1.8_3.0_x")                                                                                   ;;
+	"x_1.8_3.1_x")                                                                                   ;;
 	"x_1.6_2.3_x")                                                                                   ;;
 	*) raise_incompatible_MED_HDF_versions_exception "${TRUST_MED_VERSION}" "${TRUST_HDF_VERSION}" ;;
     esac

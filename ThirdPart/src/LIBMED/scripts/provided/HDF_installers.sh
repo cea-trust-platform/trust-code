@@ -8,7 +8,9 @@
 
 # removing any HDF5 previous installation
 uninstall_HDF() {
-    if test -f "${TRUST_MED_ROOT}/lib/libhdf5.a" && test -d "${TRUST_MED_HDF_INSTALL}/HDF"
+    library=${TRUST_MED_ROOT}/lib/libhdf5.a
+    test ! -e "${library}"  && library=${TRUST_MED_ROOT}/lib/libhdf5.so
+    if test -f "${library}" && test -d "${TRUST_MED_HDF_INSTALL}/HDF"
     then
 	uninstall_package HDF
     fi
@@ -31,7 +33,9 @@ generate_HDF_report() {
     ok="yes"
 
     # checking that libhdf5.a exists in installation directory
-    if test "x_${ok}_x" = "x_yes_x" && test -e "${TRUST_MED_HDF_INSTALL}/HDF/lib/libhdf5.a"
+    library=${TRUST_MED_ROOT}/lib/libhdf5.a
+    test ! -e "${library}"  && library=${TRUST_MED_ROOT}/lib/libhdf5.so
+    if test "x_${ok}_x" = "x_yes_x" && test -e "${library}"
     then
 	ok="yes"
     else
@@ -39,7 +43,8 @@ generate_HDF_report() {
     fi
 
     # checking that libhdf5.a exists in TRUST_MED_ROOT directory
-    if test "x_${ok}_x" = "x_yes_x" && test -e "${TRUST_MED_ROOT}/lib/libhdf5.a"
+    
+    if test "x_${ok}_x" = "x_yes_x" && test -e "${library}"
     then
 	ok="yes"
     else
