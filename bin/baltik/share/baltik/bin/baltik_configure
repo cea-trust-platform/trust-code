@@ -446,7 +446,9 @@ printf "\t@echo \"# Generate validation report #\"\n"                 >> $projec
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
 printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_validation\n"                     >> $project_makefile
 printf "\n"                                                     >> $project_makefile
-
+printf "# help check_validation \t: like validation\n">>$project_makefile
+printf "check_validation : validation\n"                                              >> $project_makefile
+printf "\n"       
 
 printf "# help check_sources_strict \t: check_sources with new rules\n">>$project_makefile
 printf "check_sources_strict :\n"                                              >> $project_makefile

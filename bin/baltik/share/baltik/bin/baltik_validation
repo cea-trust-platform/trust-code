@@ -110,7 +110,27 @@ Rapports_auto_root=${project_directory}/build/tests/share/deps
 export Rapports_auto_root
 ${Validation_outil}/scripts/Lance_gen_fiche
 
-sh ${Validation_outil}/scripts/rapport_global archives
 
-mv archives/build_prov/fic.pdf ${project_directory}/validation.pdf && rm -rf archives/build_prov
 
+Rapports_auto_root=${project_directory}/build/tests/share/all
+export Rapports_auto_root
+echo
+echo
+echo Checking pdf and tgz
+echo
+
+. ${Validation_outil}/scripts/scripts_validation.sh 1>/dev/null
+
+verif_archives
+
+status=$PB
+ rm -f ${project_directory}/validation.pdf
+if [ $status -eq 0 ]
+then
+ sh ${Validation_outil}/scripts/rapport_global archives
+ mv archives/build_prov/fic.pdf ${project_directory}/validation.pdf && rm -rf archives/build_prov
+else
+echo 
+echo "Check   $project_validation_directory}/BUILD/*/run.log and  $project_validation_directory}/BUILD/*/arc.log"
+fi
+exit $status

@@ -54,6 +54,7 @@ verif_BUILD()
 echo def verif_archives
 verif_archives()
 {
+  PB=0
  org=`pwd`
 
     if [ "$Rapports_auto_root" = "" ]
@@ -71,12 +72,13 @@ verif_archives()
       do
       if [ ! -f `basename $f .pdf`.tgz ] 
 	  then
-	  echo $f pb ?
+	  echo "$f pb ? (no `basename $f .pdf`.tgz  file)"
+	  PB=2
       else
 	  
 	  [ -d ../BUILD/`basename $f .pdf`/build ] && echo "rm -rf BUILD/`basename $f .pdf`/build" >> ../nettoie
       fi
-      [ "`find $Rapports_auto_root/Validation/Rapports_automatiques/ -follow -type d -name  $(basename $f .pdf)`" = "" ] && [ "`find $Rapports_auto_root/Validation/Rapports_automatiques/ -follow -type l -name  $(basename $f .pdf)`" = "" ] &&echo $f n existe plus ?  
+      [ "`find $Rapports_auto_root/Validation/Rapports_automatiques/ -follow -type d -name  $(basename $f .pdf)`" = "" ] && [ "`find $Rapports_auto_root/Validation/Rapports_automatiques/ -follow -type l -name  $(basename $f .pdf)`" = "" ] &&echo $f not in Validation/Rapports_automatiques ?  && PB=3
     done
 
     for file in `find  $Rapports_auto_root/Validation/Rapports_automatiques/$1 -follow -name '*'.prm`
@@ -86,12 +88,14 @@ verif_archives()
       f=`basename $f`
       if [ ! -f $f.pdf ] 
 	  then
-	  echo il manque $f ? 
+	  echo $f not run ? 
+	  PB=1
       fi
     done
-    echo `wc -l ../nettoie` repertoires a effacer
+    # echo `wc -l ../nettoie` repertoires a effacer
     chmod +x ../nettoie
     cd $org
+    return $PB
 }
 
 
