@@ -198,7 +198,7 @@ int& Traitement_particulier_NS_THI::calcul_nb_som_dir(const Zone& zone)
   nb_som = mp_sum(nb_som);
 
   double nb=pow(nb_som*1.,1./3.);
-  nb_som_dir = int(nb);
+  nb_som_dir = (int)(nb);
   if (nb_som_dir*nb_som_dir*nb_som_dir != nb_som)
     {
       nb_som_dir=nb_som_dir+1;
@@ -218,7 +218,7 @@ int& Traitement_particulier_NS_THI::calcul_nb_elem_dir(const Zone& zone)
   nb_elem=mp_sum(nb_elem);
 
   double nb=pow(nb_elem*1.,1./3.);
-  nb_elem_dir = int(nb);
+  nb_elem_dir = (int)(nb);
   if (nb_elem_dir*nb_elem_dir*nb_elem_dir != nb_elem)
     {
       nb_elem_dir=nb_elem_dir+1;

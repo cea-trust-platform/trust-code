@@ -188,7 +188,7 @@ Entree& Traitement_particulier_NS_THI_VEF::lire(Entree& is)
                 {
                   is >> periode_calc_spectre;
                   double temps_courant = mon_equation->inconnue().temps();
-                  compteur_perio_spectre = int(temps_courant / periode_calc_spectre) + 1;
+                  compteur_perio_spectre = (int)(temps_courant / periode_calc_spectre) + 1;
                   if (calc_sp_3D)
                     {
                       if(je_suis_maitre())
@@ -721,7 +721,7 @@ void Traitement_particulier_NS_THI_VEF::determine_tab_fft_VEF_3D(IntTab& tab_zon
 
   for (int dim=0; dim<dimension; dim++)
     {
-      ecart_min_dir_int(dim) = int( ecart_min_dir(dim) / ecart_min + 0.5 );
+      ecart_min_dir_int(dim) = (int)( ecart_min_dir(dim) / ecart_min + 0.5 );
     }
   // on a besoin du plus petit commun multiple des 3 ints pour avoir une chance de construire une grille cartesienne
   int ecart_base_int = ppcm(ecart_min_dir_int(0),
@@ -761,7 +761,7 @@ void Traitement_particulier_NS_THI_VEF::determine_tab_fft_VEF_3D(IntTab& tab_zon
             }
         }
 
-      nb_points = int(L_BOITE/pas + 0.5);
+      nb_points = (int)(L_BOITE/pas + 0.5);
 
       tab_calc_fft_3D.resize(nb_dans_hexa, nb_points+1,nb_points+1,nb_points+1); // tableau avec les centres des faces ordonnees pour le calcul de spectre par FFT
       tab_calc_fft_3D = -1;
@@ -781,7 +781,7 @@ void Traitement_particulier_NS_THI_VEF::determine_tab_fft_VEF_3D(IntTab& tab_zon
                 {
                   double ratio_double =
                     ( coord_zone(ii,dim)-coord_centre(hexa(num_face),dim) ) / pas;
-                  int ratio_int = int(ratio_double + 0.5);
+                  int ratio_int = (int)(ratio_double + 0.5);
                   if ( dabs(ratio_double - ratio_int) < epsilon )
                     {
                       coord_zone_ok(ii,dim) = 1;

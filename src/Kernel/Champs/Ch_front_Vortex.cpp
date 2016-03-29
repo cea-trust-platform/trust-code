@@ -464,7 +464,7 @@ int Ch_front_Vortex::initialiser(double un_temps, const Champ_Inc_base& inco)
       sigma_moy /= surf;
       // On ne peut pas utiliser modf (voir Schema_Temps_base::limpr) car
       // nb_vortex sert a dimensionner des tableaux !
-      nb_vortex = int ( surf / (M_PI * sigma_moy *sigma_moy) );
+      nb_vortex = (int) ( surf / (M_PI * sigma_moy *sigma_moy) );
     }
   Cerr << "nb_vortex " <<nb_vortex << finl;
 
@@ -521,7 +521,7 @@ int Ch_front_Vortex::initialiser(double un_temps, const Champ_Inc_base& inco)
 
   for (int i=0; i<nb_vortex; i++) // random identique a chaque nouveau tirage
     {
-      int face = int(nb_faces*drand48());
+      int face = (int)(nb_faces*drand48());
       xvort(i)=xv(face,0);
       yvort(i)=xv(face,1);
       zvort(i)=xv(face,2);
@@ -872,7 +872,7 @@ void Ch_front_Vortex::mettre_a_jour(double tps)
             if (rand2<0.5) svort(i)=-1.;
             else svort(i)=1.;
           */
-          int face = int(nb_faces*drand48());       // random identique a chaque execution
+          int face = (int)(nb_faces*drand48());       // random identique a chaque execution
           xvort(i)=xv(face,0);
           yvort(i)=xv(face,1);
           zvort(i)=xv(face,2);

@@ -201,7 +201,7 @@ void create_listb_from_xyz(const Domaine& dom1,const Noms& nomdec,const Noms& ex
               if (Objet_U::dimension==3)
                 parser.setVar("z",xg1(2));
               double res=parser.eval();
-              int face_min=int(res+0.5);
+              int face_min=(int)(res+0.5);
               nb=max(nb,face_min);
               //faces_associees.dimensionner_force(nb+1);
               faces_associees[face_min].set_smart_resize(1);

@@ -300,7 +300,7 @@ void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_calcul_flu
       double dr    = ( r_out(ii) - r_int(ii) ) /delta_r(ii) ;
       double dteta = 2.*3.14159/delta_teta(ii) ;
 
-      taille = int(delta_r(ii)) * int(delta_teta(ii)) ;
+      taille = (int)(delta_r(ii)) * (int)(delta_teta(ii)) ;
       coord_trace.resize(taille,3) ;
       Surf_trace.resize(taille,3) ;
       valeurs_.resize(taille,3);

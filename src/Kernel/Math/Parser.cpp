@@ -247,7 +247,7 @@ double Parser::evalOp(PNode* node)
         }
       return x/y;
     case 4: // POWER
-      if (y != int(y) && x<0)
+      if (y != (int)(y) && x<0)
         {
           Cerr << "Error in the Parser : x^y calculated with negative value for x and y real." << finl;
           Process::exit();

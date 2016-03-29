@@ -196,7 +196,7 @@ int& Traitement_particulier_NS_THI_new::calcul_nb_som_dir(const Zone& zone)
   // Somme sur tous les processeurs
 
   double nb=pow(nb_som*1.,1./3.);
-  nb_som_dir = int(nb);
+  nb_som_dir = (int)(nb);
   if (nb_som_dir*nb_som_dir*nb_som_dir != nb_som)
     {
       nb_som_dir=nb_som_dir+1;
