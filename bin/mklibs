@@ -112,7 +112,8 @@ fi
 # MED
 #####
 MEDLDFLAGS=""
-if [ -f $TRUST_MED_ROOT/lib/libmed.a ] && [ -f $TRUST_MED_ROOT/lib/libhdf5.a ]
+#if [ -f $TRUST_MED_ROOT/lib/libmed.a ] && [ -f $TRUST_MED_ROOT/lib/libhdf5.a ]
+if [ "$TRUST_DISABLE_MED" != "1" ]
 then
    # Cela devient complique pour trouve s'il faut ajouter -lz ou pas...
    lz="" 

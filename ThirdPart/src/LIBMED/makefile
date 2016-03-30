@@ -10,7 +10,6 @@ HDF=$(TRUST_MED_ROOT)/lib/libhdf5.a
 MED_ARCHIVES= ./archives/med-3.1.0.tar.gz
 HDF_ARCHIVES= ./archives/hdf5-1.8.14.tar.gz
 
-MED_ADDITIONNAL_FILES=./data/med++.h.in  ./data/nomed++.h.in
 
 HDF_CONFIG=scripts/generated/install_HDF.sh
 MED_CONFIG=scripts/generated/install_MED.sh	
@@ -25,7 +24,7 @@ $(MED_CONFIG) : $(MED_INSTALL_BUILDER) $(HDF_INSTALLER) archives
 $(HDF_CONFIG) : $(HDF_INSTALL_BUILDER) makefile
 	@sh $(HDF_INSTALL_BUILDER)
 
-$(MED) : $(HDF) $(MED_ARCHIVES) $(MED_ADDITIONNAL_FILES) makefile
+$(MED) : $(HDF) $(MED_ARCHIVES) makefile
 	@sh $(MED_INSTALLER)
 
 $(HDF) : $(HDF_INSTALLER) $(HDF_ARCHIVES) makefile
