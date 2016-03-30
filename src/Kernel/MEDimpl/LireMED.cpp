@@ -350,8 +350,8 @@ int medliregeom(Nom& nom_fic,const Nom& nom_dom,const Nom& nom_dom_trio,int& dim
     }
   if (monmaillage==-1)
     {
-      Cerr<<"But the mesh "<<nom_dom<<" is not found into the file " << nom_fic << "." << finl;
-      Cerr<<"Check the MED file or change the mesh_name." << finl;
+      Cerr<<"But the mesh_name "<<nom_dom<<" is not found into the file " << nom_fic << "." << finl;
+      Cerr<<"Check the MED file or change the "<<nom_dom<<" name by "<<maa<<" name of Lire_MED interpreter in your .data file." << finl;
       Process::exit();
       return -1;
     }
