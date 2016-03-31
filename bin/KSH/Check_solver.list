@@ -12,7 +12,8 @@ let i=$i+1;solver[$i]="Petsc GMRES    { seuil $seuil precond DIAG { } impr }"			
 
 # BICGSTAB
 let i=$i+1;solver[$i]="Petsc CLI { -ksp_type bcgs -pc_type sor -ksp_atol $seuil }"	
-let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond ILU { level 0 } impr }"
+#let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond ILU { level 0 } impr }"
+let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond PILUT { level 1 } impr }"	# PILUT instead ILUT because CHANGES in the PETSc 3.6 Version: Removed -pc_hypre_type euclid due to bit-rot
 let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond BLOCK_JACOBI_ICC { level 1 } impr }"				
 let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond BLOCK_JACOBI_ICC { level 1 ordering rcm } impr }"			;rank[$i]=1;
 let i=$i+1;solver[$i]="Petsc BICGSTAB { seuil $seuil precond DIAG { } impr }"							;rank[$i]=3;
@@ -73,7 +74,8 @@ let i=$i+1;solver[$i]="Petsc CLI      { -ksp_type cg -pc_type asm -sub_pc_type s
 let i=$i+1;solver[$i]="Petsc CLI      { -ksp_type cg -pc_type asm -sub_pc_type sor -sub_pc_sor_omega 1.65 -pc_asm_overlap 0 -ksp_atol $seuil }"	;sym[$i]=1 # Identique a SSOR
 
 # CG + ILU HYPRE
-let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond ILU { level 1 } impr }"				;sym[$i]=1	# Hypre decevant, on prend ILU petsc meilleur
+#let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond ILU { level 1 } impr }"				;sym[$i]=1	# Hypre decevant, on prend ILU petsc meilleur
+let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond PILUT { level 20 epsilon 0.01 } impr }"		;sym[$i]=1	# PILUT instead ILUT because CHANGES in the PETSc 3.6 Version: Removed -pc_hypre_type euclid due to bit-rot
 
 # CG + BLOCK JACOBI ILU PETSC
 let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond BLOCK_JACOBI_ICC { level 1 } impr }"		;sym[$i]=1	;rank[$i]=8;		

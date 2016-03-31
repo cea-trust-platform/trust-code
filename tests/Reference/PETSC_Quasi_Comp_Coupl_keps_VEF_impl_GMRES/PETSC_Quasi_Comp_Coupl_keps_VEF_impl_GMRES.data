@@ -57,7 +57,7 @@ Read sch
         seuil_statio 1.e-8
 	solveur piso
 	{
-	   solveur Petsc GMRES { seuil 1.e-12 precond ilu { level 2 } impr }
+	   solveur Petsc GMRES { seuil 1.e-12 precond pilut { level 20 epsilon 0.01 } impr }
 	   seuil_convergence_solveur	1.e-5 
 	   seuil_convergence_implicite	1.e-1
 	}

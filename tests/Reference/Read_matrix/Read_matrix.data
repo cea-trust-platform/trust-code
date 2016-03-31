@@ -63,7 +63,7 @@ Read pb
 {
 	Navier_Stokes_standard
 	{
-		solveur_pression Petsc GCP { precond ssor { omega 1.6 } seuil 1.e-9 impr read_matrix }
+		solveur_pression Petsc GCP { precond ssor { omega 1 } seuil 1.e-9 impr read_matrix }
 		convection { muscl }
 		diffusion { }
 		initial_conditions {
