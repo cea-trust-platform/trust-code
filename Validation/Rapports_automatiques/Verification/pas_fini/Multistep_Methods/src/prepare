@@ -31,7 +31,7 @@ do
        cat ../$kind.data 		>> 	test.data
        cat ../template.data 		>> 	test.data
        [ "$kind" = "SemiImplicit" ] && echo $ECHO_OPTS "1,$ s?diffusion {?Parametre_equation Parametre_diffusion_implicite { crank 1 } diffusion {?g\nw" | ed test.data 1>/dev/null 2>&1
-       ln -s -f ../post_run .
+       ln -sf ../post_run .
        cd ..
    done
 done 

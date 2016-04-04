@@ -18,7 +18,7 @@ elif [ ${#1} != 0 ] && prep=$1 && [ -f $prep ]
 then
     [ ! -d model ] && mkdir model 2>/dev/null
     \cd model
-    ln -s -f ../$prep $prep
+    ln -sf ../$prep $prep
     [ -f defaut.prep ] && chmod 775 defaut.prep
 else
     [ ! -d model ] && mkdir model 2>/dev/null

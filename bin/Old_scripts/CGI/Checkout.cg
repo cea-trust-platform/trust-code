@@ -7,7 +7,7 @@ fic=`extrait_nom $1`
 CHECKOUT $fic
 # Lien dans l'atelier:
 file=$rep_dev/`basename $fic`
-rm -f $file && ln -s -f $fic $file
+rm -f $file && ln -sf $fic $file
 
 # Edition du fichier 
 execute.ksh "$EDITEUR $fic &"

@@ -19,14 +19,14 @@ cd PAR1
 cat ../TpltPar.data > bench1-1.data
 ECHO_OPTS="" && [ "`uname -s`" = Linux ]  && ECHO_OPTS="-e"
 echo $ECHO_OPTS "1,$ s?Scatter DOM.Zones dom?Lire_fichier_bin dom dom.geom?g\nw" | ed ./bench1-1.data 1>/dev/null 2>&1
-ln -s -f ../dom.geom .
+ln -sf ../dom.geom .
 cd ..
 
 # Partition
 mkdir -p DEC
 cd DEC
 cat ../TpltDec.data > TpltDec.data 
-ln -s -f  ../dom.geom .
+ln -sf  ../dom.geom .
 
 # Parallel
 cd ..

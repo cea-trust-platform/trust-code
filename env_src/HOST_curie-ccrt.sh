@@ -76,7 +76,7 @@ module () {
       module save $collection_modules
    fi
    # Add the restore module command:
-   echo "[ ! -f ~/.module/$collection_modules ] && ln -s -f $HOME/.module/$collection_modules ~/.module/$collection_modules" >> $env
+   echo "[ ! -f ~/.module/$collection_modules ] && ln -sf $HOME/.module/$collection_modules ~/.module/$collection_modules" >> $env
    echo "module restore $collection_modules 1>/dev/null" >> $env
 }
 

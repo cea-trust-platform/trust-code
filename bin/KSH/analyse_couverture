@@ -49,8 +49,8 @@ for dir in $dirs
 do
 [ "`ls  ../$dir/*.gcda 2>/dev/null`" =  "" ] && continue
 srcdir=`echo $dir| sed "s/trace//"` 
-ln -s ../$dir/*.gcda . 2>/dev/null
-ln -s /$srcdir/*.gcno . 2>/dev/null
+ln -sf ../$dir/*.gcda . 2>/dev/null
+ln -sf /$srcdir/*.gcno . 2>/dev/null
 
 done
 

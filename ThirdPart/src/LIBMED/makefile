@@ -14,14 +14,14 @@ HDF_ARCHIVES= ./archives/hdf5-1.8.14.tar.gz
 HDF_CONFIG=scripts/generated/install_HDF.sh
 MED_CONFIG=scripts/generated/install_MED.sh	
 
-all : $(HDF_CONFIG) $(MED_CONFIG) $(HDF) $(MED) ./scripts/provided/MED_installers.sh scripts/provided/installers.sh 
+all : $(HDF_CONFIG) $(MED_CONFIG) $(HDF) $(MED)
 
 archives:
 	@ln -sf $(TRUST_ROOT)/externalpackages/MED archives
 $(MED_CONFIG) : $(MED_INSTALL_BUILDER) $(HDF_INSTALLER) archives
 	@sh $(MED_INSTALL_BUILDER)
 
-$(HDF_CONFIG) : $(HDF_INSTALL_BUILDER) makefile
+$(HDF_CONFIG) : $(HDF_INSTALL_BUILDER) makefile ./scripts/provided/HDF_installers.sh ./scripts/provided/MED_installers.sh ./scripts/provided/checkers.sh ./scripts/provided/exceptions.sh ./scripts/provided/install_HDF_builder.sh ./scripts/provided/install_MED_builder.sh ./scripts/provided/installers.sh ./scripts/provided/utils.sh
 	@sh $(HDF_INSTALL_BUILDER)
 
 $(MED) : $(HDF) $(MED_ARCHIVES) makefile

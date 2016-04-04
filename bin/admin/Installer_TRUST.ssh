@@ -47,7 +47,7 @@ then
    # $HOME/TRUST/machine/TRUST_$v -> $WORKDIR/TRUST/TRUST_$v
    #machine=`echo $adr | $TRUST_Awk -F. '{print $1}'` 
    machine=`echo $adr | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'` # 09/2015 Modification des acces SSH au TGCC *-gw.ccc.cea.fr
-   ssh_ -o BatchMode=yes $log@$adr -n '. ./.profile 1>/dev/null 2>&1;mkdir -p $WORKDIR/'$rep'/'$rep_patch';mkdir -p '$rep_patch';rm -f '$rep_patch'/'$machine';ln -s -f $WORKDIR/'$rep'/'$rep_patch' '$rep_patch'/'$machine''
+   ssh_ -o BatchMode=yes $log@$adr -n '. ./.profile 1>/dev/null 2>&1;mkdir -p $WORKDIR/'$rep'/'$rep_patch';mkdir -p '$rep_patch';rm -f '$rep_patch'/'$machine';ln -sf $WORKDIR/'$rep'/'$rep_patch' '$rep_patch'/'$machine''
 else
    machine=""
    ssh_ -o BatchMode=yes $log@$adr -n '. ./.profile 1>/dev/null 2>&1;mkdir -p '$rep'/'$rep_patch''

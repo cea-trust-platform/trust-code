@@ -22,7 +22,7 @@ then
 	shift
 	for i in commun_triou/*.h triou_compat/*.h
 	do
-	  ln -f -s ../$i build/`basename $i`
+	  ln -sf ../$i build/`basename $i`
 	done
 	for i in commun_triou/*.cpp triou_compat/*.cpp lata2dx.cpp
 	do
@@ -31,10 +31,10 @@ then
 else	
 	for i in commun_triou/*.{h,cpp} triou_compat/*.{h,cpp}
 	do
-	  ln -f -s ../$i build/`basename $i`
+	  ln -sf ../$i build/`basename $i`
 	done
-	ln -f -s ../lata2dx.cpp build/lata2dx.cpp
-	ln -f -s ../compare_lata.cpp build/compare_lata.cpp
+	ln -sf ../lata2dx.cpp build/lata2dx.cpp
+	ln -sf ../compare_lata.cpp build/compare_lata.cpp
 fi
 cp Makefile.in build/Makefile
 cd build

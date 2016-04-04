@@ -211,7 +211,7 @@ void PrintComment(string& comment) {
 }
 
 // Returns the number of times pattern is in s
-int nfind(string& s, char* pattern) {
+int nfind(string& s, const char* pattern) {
   int n=0;
   string::size_type pos=0;
   while (pos!=string::npos) {

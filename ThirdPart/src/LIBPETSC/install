@@ -69,7 +69,7 @@ then
 	 # On cree le lien
 	 cd $PETSC_ROOT 1>/dev/null 2>&1
 	 rm -r -f $TRUST_ARCH_OPT
-	 ln -s -f $PETSC_ARCH_OPT $TRUST_ARCH_OPT
+	 ln -sf $PETSC_ARCH_OPT $TRUST_ARCH_OPT
 	 echo "Link $TRUST_ARCH_OPT created to $PETSC_ARCH_OPT"
 	 cd - 1>/dev/null 2>&1
       fi

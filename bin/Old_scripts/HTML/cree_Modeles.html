@@ -23,7 +23,7 @@ cd $rep_modeles
 for modele in `ls *.modele`
 do
    nom=`basename $modele .modele`
-   rm -f .$nom"_modele.data" 2>/dev/null && ln -s -f $nom"_modele_h" .$nom"_modele.data" 2>/dev/null
+   rm -f .$nom"_modele.data" 2>/dev/null && ln -sf $nom"_modele_h" .$nom"_modele.data" 2>/dev/null
    type=`$TRUST_Awk '(NR==1) {print $1}' $modele`
    case $type in
       classe) un="une";
@@ -56,4 +56,4 @@ echo $ECHO_OPTS "<HR>
 </body>
 </html> " >> $fichier
 
-rm -f $fichier"?" && ln -s -f $fichier $fichier"?"
+rm -f $fichier"?" && ln -sf $fichier $fichier"?"

@@ -990,7 +990,7 @@ cp $distributiondir/bin/mkgrdbl             "$dir"/bin/mkgrdbl+
 
 if [ -e "$dir"/$version ]; then
    mv "$dir"/$version "$dir"/$version+
-   ln -s $version+ "$dir"/$version
+   ln -sf $version+ "$dir"/$version
 fi
 [ ! -e "$dir"/$version+ ] &&             mkdir "$dir"/$version+
 
@@ -1228,7 +1228,7 @@ programs="curv3dprep makemili mpeg2encode surfcomp text2polys time_annotation vi
 cd "$dir"/bin
 for prog in $programs; do
     rm -f $prog
-    ln -s frontendlauncher $prog
+    ln -sf frontendlauncher $prog
 done
 
 #
@@ -1263,11 +1263,11 @@ mv bin/mkgrdbl+ bin/mkgrdbl
 if [ "$beta" = "true" ]; then
    [ -e $version+ ] &&           mv $version+ $version
    [ -e beta ] &&                rm -f beta
-   ln -s $version beta
+   ln -sf $version beta
 elif [ "$private" = "false" ]; then
    [ -e $version+ ] &&           mv $version+ $version
    [ -e current ] &&             rm -f current
-   ln -s $version current
+   ln -sf $version current
 fi
 
 #

@@ -44,11 +44,11 @@ if [ "$2" != "" ]
 then
 	rm -rf "/tmp/"$user
 	mkdir -p "/tmp/"$user/Tests_reference
-	ln -s $exec $EXEC
-	ln -s $TRUST_ROOT/bin/lance_test $LANCE
+	ln -sf $exec $EXEC
+	ln -sf $TRUST_ROOT/bin/lance_test $LANCE
 	[ ! -d $HOME/Version_test_localhost ] && mkdir $HOME/Version_test_localhost
 	[ -L $HOME/Version_test_localhost/TRUST ] && rm -f $HOME/Version_test_localhost/TRUST
-	ln -s $TRUST_ROOT $HOME/Version_test_localhost/TRUST
+	ln -sf $TRUST_ROOT $HOME/Version_test_localhost/TRUST
 fi
 	echo "mv /tmp/"$user"/tests_"`basename $exec`"/* \`pwd\`/tests_"`basename  $exec` >> RECUP
 	echo "mv /tmp/"$user"/prov_out \`pwd\`/prov_out_"$host >> RECUP

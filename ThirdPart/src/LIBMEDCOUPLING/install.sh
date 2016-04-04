@@ -76,7 +76,7 @@ for dir in include lib
 do
 mkdir -p $dir
 cd $dir
-#ln -s $MED_ROOT_DIR/$dir/salome .
+#ln -sf $MED_ROOT_DIR/$dir/salome .
 ln -sf salome/* .
 cd -
 done

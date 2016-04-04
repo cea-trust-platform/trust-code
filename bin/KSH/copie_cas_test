@@ -63,10 +63,10 @@ do
    # Si oui on fait un lien absolu
    if [ -s `dirname $depart`/$arrivee ]
    then
-      ln -s -f `dirname $depart`/$arrivee `basename $depart`
+      ln -sf `dirname $depart`/$arrivee `basename $depart`
    else
       # Sinon lien relatif
-      ln -s -f $arrivee `basename $depart`
+      ln -sf $arrivee `basename $depart`
    fi
 done	
 

@@ -39,7 +39,7 @@ archivage()
       if [ "$STOREDIR" != "" ] && [ -d $STOREDIR ] && [ "$ARCHIVAGE" != "FAST_LOCAL" ]
       then
 	 DIRSAUV=`pwd | $TRUST_Awk -F"/" -v p=$STOREDIR -v h=$HOME '{n=split(h,a,"/")+1;for (i=n;i<=NF;i++) p=p"/"$i;print p}'`"/SAUV-$temps"
-	 ln -s -f $DIRSAUV . 2>/dev/null
+	 ln -sf $DIRSAUV . 2>/dev/null
       else
 	 DIRSAUV=`pwd`"/SAUV-$temps"
       fi

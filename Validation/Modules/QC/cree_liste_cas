@@ -43,8 +43,8 @@
       echo ""
    }
    # Utilise des scripts situes ailleurs:
-   ln -s -f $TRUST_ROOT/doc/Validation/modif.py .
-   ln -s -f $TRUST_ROOT/doc/Validation/modif .
+   ln -sf $TRUST_ROOT/doc/Validation/modif.py .
+   ln -sf $TRUST_ROOT/doc/Validation/modif .
    echo "Recherche de tous les cas tests modifiables en QC"
    echo ""
    CREE_LISTS

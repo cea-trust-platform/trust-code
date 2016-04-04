@@ -194,7 +194,7 @@ etude=`pwd`
 cd $tmp
 for file in `ls $etude`
 do
-   ln -s -f $etude/$file .
+   ln -sf $etude/$file .
 done
 trust .$NOM $NB_CPUS 1>.$NOM.out 2>.$NOM.err
 erreur=$?

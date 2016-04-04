@@ -17,10 +17,10 @@ $BASE/info.cl $1 $2 1> infobord
 $BASE/info.cl $1 $2
 [ "`uname -s`" = "Linux" ] && CPPOPT="-I. -I$1 -traditional" 
 [ "$FLUSHOK" = "1" ] && CPPOPT="$CPPOPT -DFLUSHOK"
-ln -s ../model/avs/model.xi .
-ln -s ../model/avs/model.yi .
-ln -s ../model/avs/model.zi .
-ln -s ../model/avs/model.val .
+ln -sf ../model/avs/model.xi .
+ln -sf ../model/avs/model.yi .
+ln -sf ../model/avs/model.zi .
+ln -sf ../model/avs/model.val .
 #if [ ! -f ../model/avs/model.rac ]
 #then
 #    
@@ -29,10 +29,10 @@ ln -s ../model/avs/model.val .
 #convert
 #rm convert convert.f
 #else
-    ln -s ../model//avs/model.rac .
+    ln -sf ../model//avs/model.rac .
 if [ -f ../model/avs/model.dec ]
 then
-ln -s ../model/avs/model.dec .
+ln -sf ../model/avs/model.dec .
 CPPOPT2=$CPPOPT 
 CPPOPT="$CPPOPT  -DDECOUPAGE"
 echo $CPPOPT
@@ -287,12 +287,12 @@ do
       
       mkdir Probleme$num
       cp infobord Probleme$num/.
-      ln -s ../../model/avs/model.dec Probleme$num/.
-      ln -s ../../model/avs/model.val Probleme$num/.
-      ln -s ../../model/avs/model.rac Probleme$num/.
-      ln -s ../../model/avs/model.zi Probleme$num/.
-      ln -s ../../model/avs/model.yi Probleme$num/.
-      ln -s ../../model/avs/model.xi Probleme$num/.
+      ln -sf ../../model/avs/model.dec Probleme$num/.
+      ln -sf ../../model/avs/model.val Probleme$num/.
+      ln -sf ../../model/avs/model.rac Probleme$num/.
+      ln -sf ../../model/avs/model.zi Probleme$num/.
+      ln -sf ../../model/avs/model.yi Probleme$num/.
+      ln -sf ../../model/avs/model.xi Probleme$num/.
       mv prepro* Probleme$num/.
       echo '   ****************************************'
       echo '   ** LANCEMENT DU PREPRO SOUS Probleme'$num' **'
@@ -343,9 +343,9 @@ if [ -d 'Probleme1' ]
      do
      comt=${i#Probleme}
      #echo Probleme $i
-     # ln -s -s $truc/$i/Pb$comt.geom trans_geom/Pb$comt.geom
+     # ln -sf $truc/$i/Pb$comt.geom trans_geom/Pb$comt.geom
      # cp $truc/$i/Pb$comt.geos trans_geom/Pb$comt.geos
-	ln  -s $truc/$i/* trans_geom/.
+	ln  -sf $truc/$i/* trans_geom/.
 	[ ! -s $truc/$i/Suz_def_pb$comt ] && rm trans_geom/Def_Suz_def_pb$comt
 	 echo "Domaine dom_pb$comt ">> trans_geom/trans_geom.data  
 	 echo "Lire_fichier dom_pb$comt Pb$comt.geom" >> trans_geom/trans_geom.data  

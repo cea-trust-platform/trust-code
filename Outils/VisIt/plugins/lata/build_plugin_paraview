@@ -45,17 +45,17 @@ cd build_paraview
 echo Creating symlink to source files
 if [ -d ../../plugin_visit ]
     then
-    ln -s ../../plugin_visit/src/avtlataFileFormat.* .
+    ln -sf ../../plugin_visit/src/avtlataFileFormat.* .
 else
-    ln -s ../src/avtlataFileFormat.* .
+    ln -sf ../src/avtlataFileFormat.* .
 fi
 for i in $LATASRC/commun_triou/*.cpp $LATASRC/triou_compat/*.cpp
   do
-  ln -s $i `basename $i .cpp`.C
+  ln -sf $i `basename $i .cpp`.C
 done
 for i in $LATASRC/commun_triou/*.h $LATASRC/triou_compat/*.h
   do
-  ln -s $i `basename $i`
+  ln -sf $i `basename $i`
 done
 
 

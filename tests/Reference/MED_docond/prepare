@@ -4,5 +4,5 @@
 
 mkdir MESH
 cd MESH
-ln -s -f ../maillage.med geom.med
+ln -sf ../maillage.med geom.med
 cd ..

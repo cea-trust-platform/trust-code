@@ -448,7 +448,7 @@ then
 	        relative_path=../../$dir/$file
         	if [ "`ls -l $file 2>/dev/null | awk '{print $NF}'`" != $relative_path ]
 		then
-		   ln -f -s $relative_path .
+		   ln -sf $relative_path .
 		   depend=1
 		   [ ! -h $TRUST_ROOT/include/$file ] && cree_include=1
 		fi
@@ -460,7 +460,7 @@ then
 	       relative_path=../../$dir/$file
                if [ "`ls -l $file 2>/dev/null | awk '{print $NF}'`" != $relative_path ]
 	       then
-	          ln -f -s $relative_path .
+	          ln -sf $relative_path .
 		  depend=1
 	       fi
             done

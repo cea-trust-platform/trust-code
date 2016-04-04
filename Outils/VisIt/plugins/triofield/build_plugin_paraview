@@ -43,7 +43,7 @@ mkdir -p build_para
 cp CMakeLists.txt.para build_para/CMakeLists.txt
 cd build_para
 echo Creating symlink to source files
-    ln -s ../src/* .
+    ln -sf ../src/* .
 
 if [ $prepsrc -eq 1 ] 
     then

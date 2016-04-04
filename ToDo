@@ -1,4 +1,7 @@
 Version	Qui				Tache
+1.7.3   triou@cea.fr            revoir build dans tmp, visit dans exec et verif clean du config et du make
+1.7.3   triou@cea.fr            mettre a jour README_ECLIPSE sans chemin en dur + ajouter baltik + lancer en parallele
+1.7.3   triou@cea.fr            revoir tuto salome de TRUST sans mailleur Netgen + ajouter correction coquille de Tassadit pour Gmsh + supprimer Xprepro
 1.7.3   triou@cea.fr            probleme avec gdb sur is223196 avec GNU 5.1.0 (par exemple refuse de creer break sur fonction par contre ok avec numero de ligne)
 1.7.3   triou@cea.fr            tester resume_last_time avec cas couple (ex priodic box)
 1.7.3   gauthier.fauchet@cea.fr  modification pour initialisation des tableaux A(1,1.0) ou A(1,1)

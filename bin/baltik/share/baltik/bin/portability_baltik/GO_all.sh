@@ -31,7 +31,7 @@ echo sh f_$file \& >> cmds
 done < `basename $list` 
 
 [ "`basename $0`" = "NOGO.sh" ] && exit
-ln -s $org/*.tar
+ln -sf $org/*.tar
 touch debut
 
 eval `sort -u cmds `

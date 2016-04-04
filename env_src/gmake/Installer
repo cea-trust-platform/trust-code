@@ -13,4 +13,4 @@ cd ..
 rm -r -f $Gmake
 # Creation d'un lien make->gmake
 cd $TRUST_ROOT/exec/gmake/bin
-[ -f make ] && ln -s -f make gmake
+[ -f make ] && ln -sf make gmake

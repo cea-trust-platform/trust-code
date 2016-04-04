@@ -4,7 +4,7 @@ cd build
 echo "Building application lata2dx_reactor..."
 for i in ../*.{h,cpp} ../../lata2dx/commun_triou/*.{h,cpp} ../../lata2dx/triou_compat/*.{h,cpp}
 do
-  ln -f -s $i .
+  ln -sf $i .
 done
 cp ../Makefile.in Makefile
 

@@ -55,7 +55,7 @@ else
    then
       NOMGCA=`echo $NOMGCA | $TRUST_Awk '{print substr($1,1,11)}'`.GCA
    fi
-   rm -f $STUDIES_DIR/CAD/$NOMGCA && ln -s -f $NOM.GCA $STUDIES_DIR/CAD/$NOMGCA
+   rm -f $STUDIES_DIR/CAD/$NOMGCA && ln -sf $NOM.GCA $STUDIES_DIR/CAD/$NOMGCA
 # Lancement du PREPRO :
    pretrio=$MAILLEUR_TRIO/exe/Trio
    #   $Xterm $HautDroit_geometrie -title "PREPRO" -e $pretrio

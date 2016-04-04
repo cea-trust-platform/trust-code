@@ -25,14 +25,14 @@ cd ..
 rm -r -f build
 mkdir -p build
 cd build
-ln -s ../src/* . 2>/dev/null
+ln -sf ../src/* . 2>/dev/null
 for i in `cd $TRUST_ROOT/$LATASRC;ls commun_triou/*.cpp triou_compat/*.cpp 2>/dev/null`
 do
-   ln -s ../../../../../$LATASRC/$i `basename $i .cpp`.C
+   ln -sf ../../../../../$LATASRC/$i `basename $i .cpp`.C
 done
 for i in `cd $TRUST_ROOT/$LATASRC;ls commun_triou/*.h triou_compat/*.h 2>/dev/null`
 do
-   ln -s ../../../../../$LATASRC/$i `basename $i`
+   ln -sf ../../../../../$LATASRC/$i `basename $i`
 done
 cd ..
 

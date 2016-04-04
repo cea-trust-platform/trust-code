@@ -165,7 +165,7 @@ do
 			then
 			echo "ok we replace ${file_link} with ${sourcefile}"
 			rm -f ${linkfile}
-			ln -s ${sourcefile} ${linkfile}
+			ln -sf ${sourcefile} ${linkfile}
 		    else
 			echo "File in directory ${sourcefile} not newer that" ${file_link}
 			conflicting_files_error ${filename} ${file_link} ${sourcefile}
@@ -189,7 +189,7 @@ do
 		fi
           fi
 	else
-	    ln -s ${sourcefile} ${linkfile}
+	    ln -sf ${sourcefile} ${linkfile}
         fi
       done
     done
@@ -215,7 +215,7 @@ if [ "$father_description" != "" ]
      mkdir -p ${project_directory}/local
      local_father_dir=${project_directory}/local/${father_name}
      [ -h  ${local_father_dir} ] && rm ${local_father_dir}
-     cmd='ln -s  ${father_location}/install ${local_father_dir}'
+     cmd='ln -sf ${father_location}/install ${local_father_dir}'
      echo "Ajouter des verifs de coherence name location..."
      echo $cmd 
      eval $cmd

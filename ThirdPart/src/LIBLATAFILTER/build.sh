@@ -1,7 +1,7 @@
 mkdir -p include  build
 mkdir -p $TRUST_LATAFILTER/lib
 cd build
-ln -s ../commun_triou/* . 1>/dev/null 2>&1
+ln -sf ../commun_triou/* . 1>/dev/null 2>&1
 if [ ! -f makefile ] || [ ../makefile.sa -nt makefile ]
 then
    
@@ -13,7 +13,7 @@ $TRUST_MAKE || exit -1
 
 # Construction du repertoire include
 cd ../include
-ln -s -f ../commun_triou/*.h .
+ln -sf ../commun_triou/*.h .
 cd ..
 mkdir -p $TRUST_LATAFILTER/include
 for f in `ls include/*.h`

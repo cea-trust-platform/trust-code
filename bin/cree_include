@@ -30,7 +30,7 @@ do
          echo "s?include/$ff\.h?$dir/$ff\.h?g" >> .tmp$num
          if [ ! -L $file ] || [ "`ls -la $file | $TRUST_Awk '{print $NF}'`" != "../$dir/$file" ]
          then
-            ln -s -f ../$dir/$file $file 2>/dev/null        
+            ln -sf ../$dir/$file $file 2>/dev/null        
          fi
       done
    fi

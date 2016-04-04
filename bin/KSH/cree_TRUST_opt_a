@@ -13,7 +13,7 @@ do
    for file in `ls $TRUST_ROOT/$dir/*.o 2>/dev/null`
    do
       source=${file%.o}
-      [ -f $source.cpp ] || [ -f $source.f ] || [ -f $source.c ] && ln -s -f $file . 2>/dev/null
+      [ -f $source.cpp ] || [ -f $source.f ] || [ -f $source.c ] && ln -sf $file . 2>/dev/null
    done
 done
 # Efface l'archive car certains fichiers .o sont supprimes

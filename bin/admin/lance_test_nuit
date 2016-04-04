@@ -20,15 +20,15 @@ check_components()
 	 cd $TRUST_ROOT/../Composants
 	 if [ -d ../TRUST/doc/TRUST/exercices/$Composant ]   # baltik equation_convection_diffusion
 	 then
-	    ln -s -f ../TRUST/doc/TRUST/exercices/$Composant .
+	    ln -sf ../TRUST/doc/TRUST/exercices/$Composant .
 	 fi
 	 if [ -d ../TRUST/Outils/$Composant/$Composant_src ] # baltik ICoCo
 	 then
-	    ln -s -f ../TRUST/Outils/$Composant/$Composant"_src" $Composant
+	    ln -sf ../TRUST/Outils/$Composant/$Composant"_src" $Composant
 	 fi
 	 if [ -d ../TRUST/bin/baltik/templates/$Composant ] # baltik basic ou Test_Baltik
 	 then
-	    ln -s -f ../TRUST/bin/baltik/templates/$Composant .
+	    ln -sf ../TRUST/bin/baltik/templates/$Composant .
 	 fi
 	 cd - 1>/dev/null 2>&1
       fi

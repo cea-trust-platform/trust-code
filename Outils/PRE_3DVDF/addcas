@@ -24,6 +24,6 @@ ici=`pwd`
 echo $ici
 [ `basename $ici ` != "trans_geom" ] &&xterm&& exit
 rm -f *[1-9] 
-ln -s ../Probleme[1-9]/*[1-9].
+ln -sf ../Probleme[1-9]/*[1-9].
 cd ../../..
 tar zcvf test2_new.tgz test_[1-9] testref_[1-9]

@@ -244,9 +244,9 @@ activate_package() {
         if [ "`echo $package_directory |grep $TRUST_ROOT `" != "" ]
         then
 	# to create relative path
-	    ln -s ../../install/`basename ${package_directory}`/${directory}/${f} .
+	    ln -sf ../../install/`basename ${package_directory}`/${directory}/${f} .
         else
-	    ln -s ${package_directory}/${directory}/${f} .
+	    ln -sf ${package_directory}/${directory}/${f} .
 	fi
         
       done

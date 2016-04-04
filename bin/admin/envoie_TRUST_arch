@@ -234,7 +234,7 @@ do
 	    cd $TRUST_ROOT	 
             
 	    # Creation eventuelle du lien:
-	    ssh_command '[ "$WORKDIR" != "" ] && [ "$WORKDIR" != "$HOME" ] && cd $HOME && rm -f '$version' && ln -s -f $WORKDIR/'$version' .'
+	    ssh_command '[ "$WORKDIR" != "" ] && [ "$WORKDIR" != "$HOME" ] && cd $HOME && rm -f '$version' && ln -sf $WORKDIR/'$version' .'
 	    
 	    # Lancement par ssh:
 	    option=""
@@ -307,7 +307,7 @@ do
          sftp -o ConnectTimeout=10 -o BatchMode=yes -b $TRUST_TMP/ssh_com $log@$adr 1>/dev/null 2>&1	 
          
 	 # Creation eventuelle du lien:
-	 ssh_command '[ "$WORKDIR" != "" ] && [ "$WORKDIR" != "$HOME" ] && cd $HOME && rm -f '$version' && ln -s -f $WORKDIR/'$version' .'
+	 ssh_command '[ "$WORKDIR" != "" ] && [ "$WORKDIR" != "$HOME" ] && cd $HOME && rm -f '$version' && ln -sf $WORKDIR/'$version' .'
 	 
 	 # Lancement par ssh à partir de $HOMEDIR
          ssh_command "export WORKBASE=$WORKBASE;./mise_a_jour_TRUST_arch -sftp 1>~/CR_$machine 2>&1" &
@@ -338,7 +338,7 @@ do
 	 ssh_command "cd ~; chmod 755 mise_a_jour_TRUST_arch"	 
          
 	 # Creation eventuelle du lien:
-	 ssh_command '[ "$WORKDIR" != "" ] && [ "$WORKDIR" != "$HOME" ] && cd $HOME && rm -f '$version' && ln -s -f $WORKDIR/'$version' .'
+	 ssh_command '[ "$WORKDIR" != "" ] && [ "$WORKDIR" != "$HOME" ] && cd $HOME && rm -f '$version' && ln -sf $WORKDIR/'$version' .'
 	 
 	 # Lancement par ssh
          ssh_command "export WORKBASE=$WORKBASE;./mise_a_jour_TRUST_arch -sftp 1>~/CR_$machine 2>&1" &

@@ -36,7 +36,7 @@ do
    if [ -d $rep ]
    then
       r=`basename $rep`
-      [ ! -d $r ]  && ln -s -f $rep $r && echo "Link created: $rep ->" $r
+      [ ! -d $r ]  && ln -sf $rep $r && echo "Link created: $rep ->" $r
    fi
 done
 
@@ -286,7 +286,7 @@ HOST=`hostname`
 rm -f env_TRUST.sh env/env_TRUST.sh
 sed "s?TRUST_ROOT=path_to_trio?TRUST_ROOT=$TRUST_ROOT?" env_src/env_TRUST.sh.in > env/env_TRUST.sh
 chmod gou+x env/env_TRUST.sh
-ln -s -f env/env_TRUST.sh .
+ln -sf env/env_TRUST.sh .
 
 cd env
 ./configurer_env $clean || exit -1

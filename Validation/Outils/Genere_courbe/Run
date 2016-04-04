@@ -104,7 +104,7 @@ else
 # $DIR/prepare_gen $orig
     mkdir -p build
     cd build
-    ln -s $orig/src/* .
+    ln -sf $orig/src/* .
     cd ..
 fi
 # If "run" requested, run trust testcases and PreRequis command found in the

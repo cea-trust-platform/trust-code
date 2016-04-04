@@ -194,7 +194,7 @@ for liste in $sources
 do
    nom=`basename $liste`
    echo $ECHO_OPTS $nom >> .liste_sources_atelier
-   [ $choix -ne -2 ] && rm -f $rep_exec/$nom && ln -s -f $rep_dev/$nom $rep_exec/$nom
+   [ $choix -ne -2 ] && rm -f $rep_exec/$nom && ln -sf $rep_dev/$nom $rep_exec/$nom
    # Verification Version
    # ref=`Find.sh $liste`
    # GF plus de verification de numero
@@ -292,7 +292,7 @@ then
 	    then
 	       # Creation d'un lien avec le fichier cpp afin de modifier le Makefile
 	       # seulement si ce fichier n'est pas deja dans l'atelier
-	       rm -f $rep_exec/$cpp && ln -s -f $version/$dir/$cpp $rep_exec/$cpp
+	       rm -f $rep_exec/$cpp && ln -sf $version/$dir/$cpp $rep_exec/$cpp
 	    fi
          done | sort -u
       fi
@@ -303,7 +303,7 @@ then
        filedeps=`Cherchefileatelier.py $(ls $rep_dev/*.{h,c,cpp} 2>/dev/null)`
        for file in `echo $filedeps|sed "s/;/ /g"`
 	 do
-	 ln -s -f $file $rep_exec/
+	 ln -sf $file $rep_exec/
 	 done
    fi
    # Renomme les .prov (astuce pour eviter les ctrl-c intempestifs):

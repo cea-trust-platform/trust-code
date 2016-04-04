@@ -4,7 +4,7 @@ cd prov
 cp ../Installer .
 cp ../XDATA.tgz ../TRIOU.tgz .
 chmod +w *
-ln -s ../XTriou .
+ln -sf ../XTriou .
 for module in XDATA TRIOU
 do
     ./Installer $module PASCLEAN

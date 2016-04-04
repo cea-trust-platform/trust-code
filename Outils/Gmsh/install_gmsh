@@ -17,13 +17,13 @@ check_gl()
 	 if [ -f $rep/$lib.so.1 ] && [ ! -f $rep/$lib.so ]
 	 then
             echo "$lib partially installed..."
-            (mkdir -p missing/lib;cd missing/lib;ln -s -f $rep/$lib.so.1 $lib.so)
+            (mkdir -p missing/lib;cd missing/lib;ln -sf $rep/$lib.so.1 $lib.so)
 	    MISSING_GL="--x-libraries=$TRUST_ROOT/Outils/Gmsh/missing/lib --x-includes=$TRUST_ROOT/Outils/Gmsh/missing/include"
 	 fi
 	 if [ -f $rep/$lib.so.6 ] && [ ! -f $rep/$lib.so ]
 	 then
             echo "$lib partially installed..."
-            (mkdir -p missing/lib;cd missing/lib;ln -s -f $rep/$lib.so.6 $lib.so)
+            (mkdir -p missing/lib;cd missing/lib;ln -sf $rep/$lib.so.6 $lib.so)
 	 fi
       done
    done

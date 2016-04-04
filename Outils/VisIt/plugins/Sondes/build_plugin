@@ -22,7 +22,7 @@ then
    mkdir -p build
    cd build
    echo Creating symlink to source files
-   ln -s ../src/* . 2>/dev/null
+   ln -sf ../src/* . 2>/dev/null
    $local/xml2info sonde.xml
   
    $local/xml2cmake sonde.xml

@@ -6074,7 +6074,7 @@ function build_ccmio
     mkdir $VISITDIR/ccmio/${CCMIO_VERSION}/$VISITARCH
     mkdir $VISITDIR/ccmio/${CCMIO_VERSION}/$VISITARCH/lib
     mkdir $VISITDIR/ccmio/${CCMIO_VERSION}/$VISITARCH/include
-    ln -s $VISITDIR/ccmio/${CCMIO_VERSION}/$VISITARCH/include \
+    ln -sf $VISITDIR/ccmio/${CCMIO_VERSION}/$VISITARCH/include \
         $VISITDIR/ccmio/${CCMIO_VERSION}/$VISITARCH/include/libccmio
     cp libccmio/ccmio*.h $VISITDIR/ccmio/${CCMIO_VERSION}/$VISITARCH/include
 
@@ -15805,7 +15805,7 @@ function build_qt
 
     if [[ "$DO_STATIC_BUILD" == "no" && "$OPSYS" == "AIX" ]]; then
         cd ${VISITDIR}/qt/${QT_VERSION}/${VISITARCH}/lib/
-        for f in *.a; do ln -s $f ${f%\.*}.so; done
+        for f in *.a; do ln -sf $f ${f%\.*}.so; done
 
     fi
 

@@ -59,8 +59,8 @@ chmod +x .run_ansys
 # Efface le fichier .lock eventuel
 rm -f file.lock
 # Cree des liens vers /dev/null
-ln -s -f /dev/null file.db
-ln -s -f /dev/null trash
+ln -sf /dev/null file.db
+ln -sf /dev/null trash
 [ ! -f $exec ] && echo "exec=$exec is not existent." && eval $FIN && exit -1
 # Execution de TRUST
 trust $data 2>&1

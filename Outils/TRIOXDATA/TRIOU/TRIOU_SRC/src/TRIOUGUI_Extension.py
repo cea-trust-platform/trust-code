@@ -145,7 +145,7 @@ def ImportDataFile():
             theWorkingDir = '/tmp'
             theWorkingDir = os.tempnam( theWorkingDir, "TRIOU" )
             os.makedirs( theWorkingDir )
-            os.system("ln -s  "+str(aFile)+' '+theWorkingDir)
+            os.system("ln -sf "+str(aFile)+' '+theWorkingDir)
             import sys
             syspath=sys.path
             print theWorkingDir
@@ -196,7 +196,7 @@ def ExportDataFile():
             theWorkingDir = '/tmp'
             theWorkingDir = os.tempnam( theWorkingDir, "TRIOU" )
             os.makedirs( theWorkingDir )
-            #os.system("ln -s  "+str(aFile)+' '+theWorkingDir)
+            #os.system("ln -sf "+str(aFile)+' '+theWorkingDir)
             # sauvegarde en python
             from xtree import getMainXTree
             axtree = getMainXTree()

@@ -120,7 +120,7 @@ python rotate_dom.py $vitesse  $nl    >rot_$vitesse
 done
 for file in `ls $lata.*`
 do
-[ ! -f rot_$file ] && ln -s $file rot_$file
+[ ! -f rot_$file ] && ln -sf $file rot_$file
 done
 mv rot_$lata $2
 exit

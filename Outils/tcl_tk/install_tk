@@ -36,7 +36,7 @@ do
 done
 cd $1/exec/tcl_tk/bin
 rm -f wish
-ln -s -f `\ls wish*` wish
+ln -sf `\ls wish*` wish
 cd - 
 
 	

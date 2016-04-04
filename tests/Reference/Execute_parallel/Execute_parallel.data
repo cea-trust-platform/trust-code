@@ -9,5 +9,5 @@ Execute_parallel {
   nb_procs 2 2 3
 }
 
-system "ln -f -s PAR_VAHL_DAVIS.lml Execute_parallel.lml"
+system "ln -sf PAR_VAHL_DAVIS.lml Execute_parallel.lml"
 End

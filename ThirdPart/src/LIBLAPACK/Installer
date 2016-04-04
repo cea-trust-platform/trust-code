@@ -15,7 +15,7 @@ install_OpenBlas()
    cd *-OpenBLAS-*
    # Necessaire d'avoir le paquet lapack sinon il le telecharge par wget (impossible sur machine CCRT)
    # OpenBlas 0.2.8 a Lapack 3.4.2 integre donc desormais inutile:
-   # ln -s -f ../lapack-$version_lapack.tgz .
+   # ln -sf ../lapack-$version_lapack.tgz .
 
    # Attention, le multithreading peut faire tourner plus vite les BLAS dans la decomposition A=LU
    # mais ensuite cela ralentit plus loin par exemple dans x=A-1.B donc on n'active pas.
@@ -42,8 +42,8 @@ install_OpenBlas()
       # On efface les sources
       rm -r -f *-OpenBLAS-*
       # On fait des liens
-      ln -s -f $lib libblas.a
-      ln -s -f $lib liblapack.a
+      ln -sf $lib libblas.a
+      ln -sf $lib liblapack.a
    else
       cd ..
       rm -r -f *-OpenBLAS-*
