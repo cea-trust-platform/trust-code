@@ -2227,7 +2227,7 @@ echo "    "`wc -l $TRUST_TMP/motcles | awk '{ print $1 }'`" keywords without tes
 # Mail de verification uniquement le week-end
 [ "`date '+%u'`" = 1 ] && [ `date '+%H'` -lt 8 ] && [ -f $TRUST_TMP/motcles ] && cat $TRUST_TMP/motcles | mail_ -s \"[lance_test_nuit] Tests coverage credoc\" $TRUST_MAIL $TRUST_PROJECT_LEADER
 error_log=`grep 'error Doxygen' $credoc_log`
-[ ${#error_log} != 0 ] && mail_ -s\"[check_include] Doxygen: Study of TRUST includes under `pwd`\" $TRUST_MAIL #$TRUST_PROJECT_LEADER
+[ ${#error_log} != 0 ] && mail_ -s\"[credoc] Doxygen: Study of TRUST includes under `pwd`\" $TRUST_MAIL #$TRUST_PROJECT_LEADER
 #
 ##########
 # TGGCOV #

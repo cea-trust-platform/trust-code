@@ -9,11 +9,11 @@ doxygen()
    make_Doxyfile
    echo "End doxygen at `date '+%H:%M:%S %d/%m'`";
    # Verification des includes avec Doxygen (fait uniquement le vendredi soir)
-   if [ "`date '+%u'`" = 5 ]
-   then
-      cd $TRUST_ROOT/MonoDir$COMM;
-      (echo "Begin check_include at `date '+%H:%M:%S %d/%m'`";echo "See $TRUST_ROOT/MonoDir$COMM/check_include.log";check_include 1>check_include.log 2>&1;echo "End check_include at `date '+%H:%M:%S %d/%m'`")#&
-   fi
+   #if [ "`date '+%u'`" = 5 ]
+   #then
+   #   cd $TRUST_ROOT/MonoDir$COMM;
+   #   (echo "Begin check_include at `date '+%H:%M:%S %d/%m'`";echo "See $TRUST_ROOT/MonoDir$COMM/check_include.log";check_include 1>check_include.log 2>&1;echo "End check_include at `date '+%H:%M:%S %d/%m'`")#&
+   #fi
 } 
 
 

@@ -57,10 +57,14 @@ then
       cat $log
       echo "error Doxygen: Etude des includes TRUST sous `pwd`"
    fi
+   echo "See `pwd`/doxygen.log"
 fi
 if [ "$1" = -fix ]
 then
+   echo "Call add_first_include_in_cpp_files..."
    add_first_include_in_cpp_files
+   echo "Call suppress_include_duplicated..."
    suppress_include_duplicated
+   echo "End"
 fi
 
