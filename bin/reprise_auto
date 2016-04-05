@@ -464,7 +464,7 @@ then
    fi
 fi
 # Scrit Run_reprise KO pour version 1.7.2
-mes=$mes"Cluster $HOST is not supported for $0 with $TRUST_VERSION version.\nContact TRUST support.\n" && message && exit -1
+#mes=$mes"Cluster $HOST is not supported for $0 with $TRUST_VERSION version.\nContact TRUST support.\n" && message && exit -1
 
 # Verifie la presence du fichier de soumission
 sub_file=sub_file

@@ -6,7 +6,6 @@ Version	Qui				Tache
 1.7.3   triou@cea.fr            tester resume_last_time avec cas couple (ex priodic box)
 1.7.3   gauthier.fauchet@cea.fr  modification pour initialisation des tableaux A(1,1.0) ou A(1,1)
 1.7.3   triou@cea.fr            revoir "Building Outils/ICoCo: OK" or ICoCo_src/ICoCo_opt: No such file
-1.7.3   triou@cea.fr            tester reprise_auto au CCRT
 1.7.3   triou@cea.fr            penser a recuperer cas test du baltik pour qingqing et najla dans version beta pour augmenter cov
 1.7.3   triou@cea.fr            revoir script trust avec nouvelle option pour sub_file (ex: occigen avec petit temps pour devenir prioritaire car pas de queue test)
 1.7.3   triou@cea.fr            nouvelle option dans configure pour forcer BLAS et LAPACK du package TRUST (NB Debian 8)

@@ -88,13 +88,13 @@ then
    read tmax
 fi
 cp $NOM.data $NOM.data.old
-# J'insere le terme "indicateur_de_post" avant toute ligne comportant "ostraitement" (independant de la casse)
-sed '/ostraitement/I i\indicateur_de_post' $NOM.data.old > $NOM.data.old.tmp
-$TRUST_Awk -v NOM=$NOM -v type=$type -v newtinit=$tinit -v newtmax=$tmax -v IGNORECASE=1 '!/tinit[ ]*/ && !/tmax[ ]*/ && !/indicateur_de_post/ && !/ostraitement/ {print $0} \
+# J'insere le terme "indicateur_de_post" avant toute ligne comportant "ostraitement" ou "ost_processing" (independant de la casse)
+sed '/ostraitement/I i\indicateur_de_post' $NOM.data.old | sed '/ost_processing/I i\indicateur_de_post' > $NOM.data.old.tmp
+$TRUST_Awk -v NOM=$NOM -v type=$type -v newtinit=$tinit -v newtmax=$tmax -v IGNORECASE=1 '!/tinit[ ]*/ && !/tmax[ ]*/ && !/indicateur_de_post/ && !/ostraitement/ && !/ost_processing/ {print $0} \
 /tinit[ ]*/ {print "\ttinit "newtinit} \
 /tmax[ ]*/  {print "\ttmax "newtmax}  \
 /Read[ ]*/ || /read / || /Lire[ ]*/ || /lire /{sauv=NOM"_"$2".sauv"} \
-/ostraitement/ {b=0;d=1; \
+/ostraitement/ || /ost_processing/ {b=0;d=1; \
    while (b>0 || d==1) \
    { \
       i=0;ligne=""; \
