@@ -212,7 +212,7 @@ int Sortie_Fichier_base::ouvrir(const char* name,IOS_OPEN_MODE mode)
           new_bin=1;
         }
       else
-        assert(ios_mod==ios::app);
+        assert((ios_mod==ios::app)||(ios_mod==(ios::app|ios::out)));
       ios_mod=ios_mod|ios::binary;
     }
   ofstream_ = new ofstream(name,ios_mod);

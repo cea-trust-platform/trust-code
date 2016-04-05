@@ -256,9 +256,21 @@ Entree& Entree::operator>>(int& ob)
   assert(istream_!=0);
   if (bin_)
     {
-      char * ptr = (char*) &ob;
-      istream_->read(ptr, sizeof(int));
-      error_handle(istream_->fail());
+#ifdef INT_is_64_
+      if (is_int32_)
+        {
+          True_int pr;
+          char * ptr = (char*) &pr;
+          istream_->read(ptr, sizeof(True_int));
+          ob=pr;
+        }
+      else
+#endif
+        {
+          char * ptr = (char*) &ob;
+          istream_->read(ptr, sizeof(int));
+          error_handle(istream_->fail());
+        }
     }
   else
     {
@@ -287,14 +299,24 @@ int Entree::get(int * ob, int n)
   assert(n >= 0);
   if (bin_)
     {
-      char * ptr = (char*) ob;
-      // En binaire: lecture optimisee en bloc:
-      std::streamsize sz = sizeof(int);
-      sz *= n;
-      // Overflow checking :
-      assert(sz / (std::streamsize)sizeof(int) == (std::streamsize)n);
-      istream_->read(ptr, sz);
-      error_handle(istream_->fail());
+#ifdef INT_is_64_
+      if (is_int32_)
+        {
+          for (int i=0; i<n; i++)
+            (*this)>> ob[i];
+        }
+      else
+#endif
+        {
+          char * ptr = (char*) ob;
+          // En binaire: lecture optimisee en bloc:
+          std::streamsize sz = sizeof(int);
+          sz *= n;
+          // Overflow checking :
+          assert(sz / (std::streamsize)sizeof(int) == (std::streamsize)n);
+          istream_->read(ptr, sz);
+          error_handle(istream_->fail());
+        }
     }
   else
     {
@@ -320,9 +342,11 @@ Entree& Entree::operator>>(long& ob)
   assert(istream_!=0);
   if (bin_)
     {
-      char * ptr = (char*) &ob;
-      istream_->read(ptr, sizeof(long));
-      error_handle(istream_->fail());
+      {
+        char * ptr = (char*) &ob;
+        istream_->read(ptr, sizeof(long));
+        error_handle(istream_->fail());
+      }
     }
   else
     {
@@ -351,14 +375,16 @@ int Entree::get(long * ob, int n)
   assert(n >= 0);
   if (bin_)
     {
-      char * ptr = (char*) ob;
-      // En binaire: lecture optimisee en bloc:
-      std::streamsize sz = sizeof(long);
-      sz *= n;
-      // Overflow checking :
-      assert(sz / (std::streamsize)sizeof(long) == (std::streamsize)n);
-      istream_->read(ptr, sz);
-      error_handle(istream_->fail());
+      {
+        char * ptr = (char*) ob;
+        // En binaire: lecture optimisee en bloc:
+        std::streamsize sz = sizeof(long);
+        sz *= n;
+        // Overflow checking :
+        assert(sz / (std::streamsize)sizeof(long) == (std::streamsize)n);
+        istream_->read(ptr, sz);
+        error_handle(istream_->fail());
+      }
     }
   else
     {
@@ -384,9 +410,11 @@ Entree& Entree::operator>>(float& ob)
   assert(istream_!=0);
   if (bin_)
     {
-      char * ptr = (char*) &ob;
-      istream_->read(ptr, sizeof(float));
-      error_handle(istream_->fail());
+      {
+        char * ptr = (char*) &ob;
+        istream_->read(ptr, sizeof(float));
+        error_handle(istream_->fail());
+      }
     }
   else
     {
@@ -415,14 +443,16 @@ int Entree::get(float * ob, int n)
   assert(n >= 0);
   if (bin_)
     {
-      char * ptr = (char*) ob;
-      // En binaire: lecture optimisee en bloc:
-      std::streamsize sz = sizeof(float);
-      sz *= n;
-      // Overflow checking :
-      assert(sz / (std::streamsize)sizeof(float) == (std::streamsize)n);
-      istream_->read(ptr, sz);
-      error_handle(istream_->fail());
+      {
+        char * ptr = (char*) ob;
+        // En binaire: lecture optimisee en bloc:
+        std::streamsize sz = sizeof(float);
+        sz *= n;
+        // Overflow checking :
+        assert(sz / (std::streamsize)sizeof(float) == (std::streamsize)n);
+        istream_->read(ptr, sz);
+        error_handle(istream_->fail());
+      }
     }
   else
     {
@@ -447,9 +477,11 @@ Entree& Entree::operator>>(double& ob)
   assert(istream_!=0);
   if (bin_)
     {
-      char * ptr = (char*) &ob;
-      istream_->read(ptr, sizeof(double));
-      error_handle(istream_->fail());
+      {
+        char * ptr = (char*) &ob;
+        istream_->read(ptr, sizeof(double));
+        error_handle(istream_->fail());
+      }
     }
   else
     {
@@ -478,14 +510,16 @@ int Entree::get(double * ob, int n)
   assert(n >= 0);
   if (bin_)
     {
-      char * ptr = (char*) ob;
-      // En binaire: lecture optimisee en bloc:
-      std::streamsize sz = sizeof(double);
-      sz *= n;
-      // Overflow checking :
-      assert(sz / (std::streamsize)sizeof(double) == (std::streamsize)n);
-      istream_->read(ptr, sz);
-      error_handle(istream_->fail());
+      {
+        char * ptr = (char*) ob;
+        // En binaire: lecture optimisee en bloc:
+        std::streamsize sz = sizeof(double);
+        sz *= n;
+        // Overflow checking :
+        assert(sz / (std::streamsize)sizeof(double) == (std::streamsize)n);
+        istream_->read(ptr, sz);
+        error_handle(istream_->fail());
+      }
     }
   else
     {

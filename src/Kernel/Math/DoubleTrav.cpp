@@ -201,4 +201,5 @@ int DoubleTrav_test()
 }
 #undef zero_double
 #undef zero_int
+#undef zero_long
 
