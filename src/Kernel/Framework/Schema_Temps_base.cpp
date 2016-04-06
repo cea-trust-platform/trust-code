@@ -208,13 +208,13 @@ void Schema_Temps_base::validateTimeStep()
           double nb_pas_selon_nb_pas_dt_max = nb_pas_dt_max() - nb_pas_dt();
           double nb_pas_avant_fin= dmin(nb_pas_selon_tmax,nb_pas_selon_nb_pas_dt_max);
           double seconds_to_finish  = nb_pas_avant_fin * cpu_per_timestep;
-          int percent=int((1.-nb_pas_avant_fin/(nb_pas_avant_fin+ nb_pas_dt()))*100);    // marche meme si c'est ltemps max qui limite
-          int integer_limit=(int)(pow(2.0,(double)((sizeof(int)*8)-1))-1);
+          int percent=(int)((1.-nb_pas_avant_fin/(nb_pas_avant_fin+ nb_pas_dt()))*100);    // marche meme si c'est ltemps max qui limite
+          int integer_limit=(int)(pow(2.0,(double)((sizeof(True_int)*8)-1))-1);
           if (seconds_to_finish<integer_limit)
             {
-              int h  = int(seconds_to_finish/3600);
-              int mn = int((seconds_to_finish-3600*h)/60);
-              int s  = int(seconds_to_finish-3600*h-60*mn);
+              int h  = (int)(seconds_to_finish/3600);
+              int mn = (int)((seconds_to_finish-3600*h)/60);
+              int s  = (int)(seconds_to_finish-3600*h-60*mn);
               Cout << finl << "Estimated CPU time to finish the run (according to " << (nb_pas_selon_tmax<nb_pas_selon_nb_pas_dt_max?"tmax":"nb_pas_dt_max") << " value) : ";
               if (seconds_to_finish<1)
                 Cout << seconds_to_finish << " s";
@@ -499,7 +499,7 @@ Schema_Temps_base::Schema_Temps_base()
   mode_dt_start_=-2; // Nouveau 1.5.6 : desormais le premier pas de temps est calcule et ne vaut donc plus dt_min (par defaut, donc est equivalent a dt_start dt_calc)
   nb_pas_dt_ = 0;
   nb_impr_ = 0;
-  nb_pas_dt_max_ = (int)(pow(2.0,(double)((sizeof(int)*8)-1))-1);
+  nb_pas_dt_max_ = (int)(pow(2.0,(double)((sizeof(True_int)*8)-1))-1);
   seuil_statio_ = 1.e-12;
   seuil_statio_relatif_deconseille_ = 0;
   facsec_ = 1.;
@@ -630,9 +630,9 @@ int Schema_Temps_base::mettre_a_jour()
       int error = ccc_tremain(&second_remain);
       if(!error)
         {
-          int hour_remain = int(second_remain/3600);
+          int hour_remain = (int)(second_remain/3600);
           second_remain-=hour_remain*3600;
-          int minute_remain = int(second_remain/60);
+          int minute_remain = (int)(second_remain/60);
           second_remain-=minute_remain*60;
           Cout << hour_remain <<"h"<<minute_remain<<"mn"<<second_remain<<"s before job is killed on CCRT." << finl;
         }
@@ -1007,7 +1007,7 @@ void Schema_Temps_base::update_critere_statio(const DoubleTab& tab_critere, Equa
 void Schema_Temps_base::imprimer_temps_courant(SFichier& os) const
 {
   int precision_actuelle=os.get_precision();
-  int precision_temps=max(precision_actuelle,int(2+log10(1/pas_de_temps())+int(log10(temps_courant()))));
+  int precision_temps=max(precision_actuelle,(int)(2+log10(1/pas_de_temps())+(int)(log10(temps_courant()))));
   os.precision(precision_temps);
   os << temps_courant();
   os.precision(precision_actuelle);

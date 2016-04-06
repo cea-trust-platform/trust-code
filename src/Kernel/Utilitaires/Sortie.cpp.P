@@ -175,7 +175,9 @@ int Sortie::put(const _TYPE_ * ob, int n, int nb_col)
 #Pendmacro(deffonctions)
 
 #Pusemacro(deffonctions)(int)
+#ifndef INT_is_64_
 #Pusemacro(deffonctions)(long)
+#endif
 #Pusemacro(deffonctions)(float)
 #Pusemacro(deffonctions)(double)
 

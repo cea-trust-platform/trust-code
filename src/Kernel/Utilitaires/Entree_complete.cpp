@@ -87,6 +87,7 @@ int Entree_complete::get(int * ob, int n)
     }
   return 1;
 }
+#ifndef INT_is_64_
 Entree& Entree_complete::operator>>(long& ob)
 {
   Entree& is = get_input();
@@ -106,6 +107,7 @@ int Entree_complete::get(long * ob, int n)
     }
   return 1;
 }
+#endif
 Entree& Entree_complete::operator>>(float& ob)
 {
   Entree& is = get_input();

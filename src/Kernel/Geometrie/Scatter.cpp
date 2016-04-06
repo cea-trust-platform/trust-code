@@ -208,21 +208,21 @@ Entree& Scatter::interpreter(Entree& is)
         {
           Cerr << "Enter \"return\" to this window after" << finl;
           Cerr << "typing \"cont\" in other gdb windows." << finl;
-          Cerr << system ("sh -c read ok") << finl;
+          Cerr << (int)system ("sh -c read ok") << finl;
         }
       else
         {
-          Nom getpidn(getpid());
+          Nom getpidn((int)getpid());
           Nom cmdfile=getpidn;
           Nom command0="echo attach ";
           command0+=getpidn;
           command0+=" > ";
           command0+=cmdfile;
-          Cerr << system(command0) << finl;
+          Cerr << (int)system(command0) << finl;
           command0=" ls -l /proc/";
           command0+=getpidn;
           command0+="/exe | awk '{print $NF}' > execname";
-          Cerr << system(command0) << finl;
+          Cerr << (int)system(command0) << finl;
           Nom command="[ -f /usr/X11R6/bin/xterm ] && x=\"/usr/X11R6/bin/xterm -exec gdb -x \";";
           command+="[ -f /usr/bin/konsole ] && x=\"/usr/bin/konsole -e gdb -x \";";
           command+="$x ";
@@ -230,7 +230,7 @@ Entree& Scatter::interpreter(Entree& is)
           command+=" `cat execname` ";
           command+=" &";
           Cerr<<"command: " <<command<<finl;
-          Cerr << system(command) << finl;
+          Cerr << (int)system(command) << finl;
         }
     }
 #endif
@@ -1168,11 +1168,20 @@ void Scatter::construire_md_vector(const Domaine& dom, int nb_items_reels, const
 }
 
 // Fonction tri (selon la premiere colonne du tableau)
-static int fct_tri_table_inverse(const void *ptr1, const void *ptr2)
+static True_int fct_tri_table_inverse(const void *ptr1, const void *ptr2)
 {
   const int i1 = *(int*)ptr1;
   const int i2 = *(int*)ptr2;
+#ifdef INT_is_64_
+  if (i1 == i2)
+    return 0;
+  if (i1>i2)
+    return 1;
+  return -1;
+#else
   return i1 - i2;
+#endif
+
 }
 
 // .DESCRIPTION
@@ -2108,7 +2117,7 @@ void Scatter::calculer_espace_distant_elements(Domaine& dom)
 static int fct_cmp_coord_dimension = -1;
 static double fct_cmp_coord_epsilon = -1.;
 
-static inline int fct_cmp_coordonnees(const double * s1, const double *s2)
+static inline True_int fct_cmp_coordonnees(const double * s1, const double *s2)
 {
   const int dim = fct_cmp_coord_dimension;
   const double epsilon = fct_cmp_coord_epsilon;
@@ -2136,13 +2145,13 @@ static const DoubleTab * fct_cmp_coord_tableau = 0;
 // des coordonnees de sommets. Fonction appelee par qsort.
 // ptr1 et ptr2 sont des adresses de deux entiers dans le tableau "index"
 // Les coordonnees comparees sont dans le tableau *fct_cmp_coord_tableau
-static int fct_cmp_index_coord(const void * ptr1, const void * ptr2)
+static True_int fct_cmp_index_coord(const void * ptr1, const void * ptr2)
 {
   const int i1 = *(const int *)ptr1;
   const int i2 = *(const int *)ptr2;
   const double * s1 = & (*fct_cmp_coord_tableau)(i1,0);
   const double * s2 = & (*fct_cmp_coord_tableau)(i2,0);
-  const int resu = fct_cmp_coordonnees(s1, s2);
+  const True_int resu = fct_cmp_coordonnees(s1, s2);
   return resu;
 }
 

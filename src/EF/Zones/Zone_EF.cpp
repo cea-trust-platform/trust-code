@@ -617,7 +617,7 @@ void Zone_EF::calculer_Bij(DoubleTab& bij)
       int npgau=27;
       // npgau=1;
       int nbnn=nbsom_elem;
-      DoubleTab xgau(npgau,3),frgau(npgau,nbnn),dfrgau(npgau,nbnn,3),poigau(npgau);
+      DoubleTab xgau(npgau,3),frgau(npgau,nbnn),dfrgau(npgau,nbnn,(int)3),poigau(npgau);
       DoubleVect volumes_sommets_(volumes_sommets_thilde_);
       int dim=3;
       //      init_gauss.compute(&dim,&nbnn,&npgau,xgau.addr(),frgau.addr(),dfrgau.addr(),poigau.addr());

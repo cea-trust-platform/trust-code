@@ -141,7 +141,7 @@ void ajouter_bord(DoubleTab& resu,const Zone_EF& zone_EF,const  Zone_Cl_EF& zone
           interface_INITGAUSS init_gauss;
           int npgau=9;
           int nbnn=4;
-          DoubleTab xgau(npgau,3),frgau(npgau,nbnn),dfrgau(npgau,nbnn,3),poigau(npgau);
+          DoubleTab xgau(npgau,3),frgau(npgau,nbnn),dfrgau(npgau,nbnn,(int)3),poigau(npgau);
           int dim=2;
           //	  init_gauss.compute(&dim,&nbnn,&npgau,xgau.addr(),frgau.addr(),dfrgau.addr(),poigau.addr());
           init_gauss.Compute(dim,nbnn,npgau,xgau,frgau,dfrgau,poigau);

@@ -1060,7 +1060,7 @@ void Champ_front_contact_VEF::connectivity_failed(const Zone_VEF& zvef1, int& nb
       fic << chp_val(elem2) << " " << fac << " " << elem2 << " " << j << finl;
     }
 
-  fic << -1;
+  fic <<(int) -1;
   // pour forcer l ecriture
   fic.close();
   /////////////////////////////////////////////////////////

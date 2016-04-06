@@ -82,7 +82,7 @@ void Op_EF_base::dimensionner(const Zone_EF& la_zone,
   //int nb_elem=la_zone.zone().nb_elem();
   int nb_elem_tot=la_zone.zone().nb_elem_tot();
   int nb_som_elem=la_zone.zone().nb_som_elem();
-  int nb_coeff=int(nb_elem_tot*(nb_som_elem*(nb_som_elem)));
+  int nb_coeff=(int)(nb_elem_tot*(nb_som_elem*(nb_som_elem)));
   la_matrice.dimensionner(nb_som*nb_comp,nfin*nb_comp,0);
   IntTab Indice(nb_coeff,2),p(1,2);
   int tot=0;

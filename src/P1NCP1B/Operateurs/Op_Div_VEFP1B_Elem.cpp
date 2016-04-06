@@ -200,7 +200,7 @@ double calculer_coef_som(int elem, int& nb_face_diri, ArrOfInt& indice_diri, con
               break;
             default:
               nb_face_diri=10000;
-              Cerr<<__FILE__<<__LINE__<<" impossible "<<finl;
+              Cerr<<__FILE__<<(int)__LINE__<<" impossible "<<finl;
               Process::exit();
               break;
             }
@@ -281,7 +281,7 @@ double calculer_coef_som(int elem, int& nb_face_diri, ArrOfInt& indice_diri, con
               break;
             default:
               nb_face_diri=10000;
-              Cerr<<__FILE__<<__LINE__<<" impossible "<<finl;
+              Cerr<<__FILE__<<(int)__LINE__<<" impossible "<<finl;
               Process::exit();
               break;
             }

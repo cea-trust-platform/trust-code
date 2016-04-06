@@ -635,7 +635,7 @@ int medliregeom(Nom& nom_fic,const Nom& nom_dom,const Nom& nom_dom_trio,int& dim
 #endif
           if (err4 != 0)
             {
-              Cerr<<": MEDpolyedreConnLire returns "<<err4;
+              Cerr<<": MEDpolyedreConnLire returns "<<(int)err4;
               Process::exit();
             }
           convert_med_int_to_inttab(Nodes,med_Nodes);
@@ -989,7 +989,7 @@ int medliregeom(Nom& nom_fic,const Nom& nom_dom,const Nom& nom_dom_trio,int& dim
                   {
 
                     // Cerr<<ret<<finl;
-                    Cerr<< " Family of name "<<nomfam<<" , number "<<numfam<<finl;
+                    Cerr<< " Family of name "<<nomfam<<" , number "<<(int)numfam<<finl;
                     Indice_bords[i]=numfam;
                     if (isfamilyshort==2)
                       {
@@ -1002,7 +1002,7 @@ int medliregeom(Nom& nom_fic,const Nom& nom_dom,const Nom& nom_dom_trio,int& dim
                         else
                           {
                             noms_bords[i]=nomfam;
-                            Cerr<<noms_bords[i]<<" is not seen as a boundary "<< numfam<<finl;
+                            Cerr<<noms_bords[i]<<" is not seen as a boundary "<< (int)numfam<<finl;
                             if (numfam<0)
                               Indice_bords[i]=-numfam;
                             Indice_bords[i]+=10000;
@@ -1053,14 +1053,14 @@ int medliregeom(Nom& nom_fic,const Nom& nom_dom,const Nom& nom_dom_trio,int& dim
                           {
                             assert(in_bord==0);
                             // on met un numero de famille >10000 pour que la famille ne soit pas convertie en bord
-                            Cerr<<noms_bords[i]<<" is not seen as a boundary "<< numfam<<finl;
+                            Cerr<<noms_bords[i]<<" is not seen as a boundary "<< (int)numfam<<finl;
                             if (numfam<0)
                               Indice_bords[i]=-numfam;
                             Indice_bords[i]+=10000;
                           }
                         else
                           {
-                            Cerr<< noms_bords[i]<<" is seen to be empty "<< numfam<<finl;
+                            Cerr<< noms_bords[i]<<" is seen to be empty "<< (int)numfam<<finl;
                             if (numfam>0)  Indice_bords[i]+=10000;
                           }
                       }
@@ -1236,7 +1236,7 @@ void recuperer_info_des_joints(Noms& noms_des_joints, const Nom& nom_fic, const 
       MEDjointInfo(fid, nom_dom, j+1, name_of_joint, desc,
                    &num_dom, maa_dist);
 #endif
-      Cerr<<" ici "<<name_of_joint<<" "<<num_dom<< " "<<desc<<" "<<maa_dist<<finl;
+      Cerr<<" ici "<<name_of_joint<<" "<<(int)num_dom<< " "<<desc<<" "<<maa_dist<<finl;
       tab_pe_voisin[j]=num_dom;
       noms_des_joints[j]=name_of_joint;
       // Lecture de la correspondance sommet/sommet
@@ -1264,7 +1264,7 @@ void recuperer_info_des_joints(Noms& noms_des_joints, const Nom& nom_fic, const 
 #else
       med_int nc= MEDjointnCorres(fid, nom_dom, name_of_joint,typ_ent_local,typ_geo_local,typ_ent_distant, typ_geo_distant);
 #endif
-      Cerr<<nc <<" connecting vertices " <<finl;
+      Cerr<<(int)nc <<" connecting vertices " <<finl;
       // lecture de la correspondance
       ArrOfInt& corres_joint_j =corres_joint[j];
       corres_joint_j.resize_array(nc);

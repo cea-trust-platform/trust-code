@@ -50,6 +50,7 @@ Implemente_instanciable_sans_constructeur_ni_destructeur(__Scalar__Trav,"__Scala
 
 #define zero_double 0.
 #define zero_int 0
+#define zero_long 0
 // Description: Appel a __Scalar__Tab::printOn
 Sortie& __Scalar__Trav::printOn(Sortie& os) const 
 {
@@ -218,4 +219,5 @@ int __Scalar__Trav_test()
 }
 #undef zero_double 
 #undef zero_int 
+#undef zero_long
 #Pendmacro(implementeTrav)

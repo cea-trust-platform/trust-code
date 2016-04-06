@@ -305,7 +305,7 @@ void Traitement_particulier_NS_THI_VEF_new::renorm_Ec(void)
   double nb=pow(nb_som*1.,1./3.);
   int nsize, nsizes2, nl;
 
-  nl = int(nb); // anciennement nb_som_dir
+  nl = (int)(nb); // anciennement nb_som_dir
   nsize = 3*nl;
   nsizes2=nsize/2;
 
@@ -535,16 +535,16 @@ void Traitement_particulier_NS_THI_VEF_new::determine_new_tab_fft_VEF()
       yy=xv(num_face,1);
       zz=xv(num_face,2);
 
-      ix=int((xx+eps)/d3);
-      iy=int((yy+eps)/d3);
-      iz=int((zz+eps)/d3);
+      ix=(int)((xx+eps)/d3);
+      iy=(int)((yy+eps)/d3);
+      iz=(int)((zz+eps)/d3);
 
       if( iz%3==1 && iy%3==1)
         {
           compteurx+=1;
           ii=ix;
-          jj=int(iy/3);
-          kk=int(iz/3);
+          jj=(int)(iy/3);
+          kk=(int)(iz/3);
 
           tab_calc_fft(jj,kk,ii)=num_face;
         }
@@ -552,9 +552,9 @@ void Traitement_particulier_NS_THI_VEF_new::determine_new_tab_fft_VEF()
       if( iz%3==1 && ix%3==2) // le nombre 2 dans le second test n'est pas une erreur :)
         {
           compteury+=1;
-          ii=int(ix/3);
+          ii=(int)(ix/3);
           jj=iy;
-          kk=int(iz/3);
+          kk=(int)(iz/3);
 
           tab_calc_fft_1(ii,kk,jj)=num_face;
         }
@@ -562,8 +562,8 @@ void Traitement_particulier_NS_THI_VEF_new::determine_new_tab_fft_VEF()
       if( ix%3==1 && iy%3==1)
         {
           compteurz+=1;
-          ii=int(ix/3);
-          jj=int(iy/3);
+          ii=(int)(ix/3);
+          jj=(int)(iy/3);
           kk=iz;
 
           tab_calc_fft_2(ii,jj,kk)=num_face;
@@ -576,9 +576,9 @@ void Traitement_particulier_NS_THI_VEF_new::determine_new_tab_fft_VEF()
       yy=coord(num_som,1);
       zz=coord(num_som,2);
 
-      ii=int((xx+eps)/d);
-      jj=int((yy+eps)/d);
-      kk=int((zz+eps)/d);
+      ii=(int)((xx+eps)/d);
+      jj=(int)((yy+eps)/d);
+      kk=(int)((zz+eps)/d);
 
       tab_calc_fft_s(ii,jj,kk)=num_som;
     }

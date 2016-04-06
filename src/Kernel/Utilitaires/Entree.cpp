@@ -65,6 +65,7 @@ Entree& Entree::operator >>(ios& (*f)(ios&))
 Entree::Entree()
 {
   bin_=0;
+  is_int32_=0;
   istream_ = 0;
   check_types_ = 0;
   error_action_ = ERROR_CONTINUE;
@@ -74,6 +75,7 @@ Entree::Entree()
 Entree::Entree(istream& is)
 {
   bin_=0;
+  is_int32_=0;
   istream_ = new istream(is.rdbuf());
   check_types_ = 0;
   error_action_ = ERROR_CONTINUE;
@@ -83,6 +85,7 @@ Entree::Entree(istream& is)
 Entree::Entree(const Entree& is)
 {
   bin_=0;
+  is_int32_=0;
   istream_ = new istream(is.get_istream().rdbuf());
   check_types_ = 0;
   error_action_ = ERROR_CONTINUE;
@@ -172,24 +175,24 @@ void convert_to(const char *s, int& ob)
   ob = strtol(s, &errorptr, 0 /* base 10 par defaut */);
   if (errno || *errorptr != 0)
     {
-      Cerr << "Error converting a string to type long int : string = " << s << finl;
+      Cerr << "Error converting a string to type long : string = " << s << finl;
       Process::exit();
     }
 }
-
-void convert_to(const char *s, long int& ob)
+#ifndef INT_is_64_
+void convert_to(const char *s, long& ob)
 {
   errno = 0;
   char * errorptr = 0;
   ob = strtol(s, &errorptr, 0 /* base 10 par defaut */);
   if (errno || *errorptr != 0)
     {
-      Cerr << "Error converting a string to type long int : string = " << s << finl;
+      Cerr << "Error converting a string to type long : string = " << s << finl;
       Process::exit();
     }
 }
-
-void convert_to(const char *s, long long int& ob)
+#endif
+void convert_to(const char *s, long long& ob)
 {
   errno = 0;
   char * errorptr = 0;
@@ -204,11 +207,10 @@ void convert_to(const char *s, long long int& ob)
 #endif /* NO_PROCESS */
   if (errno || *errorptr != 0)
     {
-      Cerr << "Error converting a string to type long long int : string = " << s << finl;
+      Cerr << "Error converting a string to type long long : string = " << s << finl;
       Process::exit();
     }
 }
-
 void convert_to(const char *s, float& ob)
 {
   errno = 0;
@@ -254,9 +256,21 @@ Entree& Entree::operator>>(int& ob)
   assert(istream_!=0);
   if (bin_)
     {
-      char * ptr = (char*) &ob;
-      istream_->read(ptr, sizeof(int));
-      error_handle(istream_->fail());
+#ifdef INT_is_64_
+      if (is_int32_)
+        {
+          True_int pr;
+          char * ptr = (char*) &pr;
+          istream_->read(ptr, sizeof(True_int));
+          ob=pr;
+        }
+      else
+#endif
+        {
+          char * ptr = (char*) &ob;
+          istream_->read(ptr, sizeof(int));
+          error_handle(istream_->fail());
+        }
     }
   else
     {
@@ -285,14 +299,24 @@ int Entree::get(int * ob, int n)
   assert(n >= 0);
   if (bin_)
     {
-      char * ptr = (char*) ob;
-      // En binaire: lecture optimisee en bloc:
-      std::streamsize sz = sizeof(int);
-      sz *= n;
-      // Overflow checking :
-      assert(sz / (std::streamsize)sizeof(int) == (std::streamsize)n);
-      istream_->read(ptr, sz);
-      error_handle(istream_->fail());
+#ifdef INT_is_64_
+      if (is_int32_)
+        {
+          for (int i=0; i<n; i++)
+            (*this)>> ob[i];
+        }
+      else
+#endif
+        {
+          char * ptr = (char*) ob;
+          // En binaire: lecture optimisee en bloc:
+          std::streamsize sz = sizeof(int);
+          sz *= n;
+          // Overflow checking :
+          assert(sz / (std::streamsize)sizeof(int) == (std::streamsize)n);
+          istream_->read(ptr, sz);
+          error_handle(istream_->fail());
+        }
     }
   else
     {
@@ -303,6 +327,7 @@ int Entree::get(int * ob, int n)
     }
   return (!istream_->fail());
 }
+#ifndef INT_is_64_
 // Description: methode virtuelle pour lire un int ou un reel.
 //  Dans cette classe de base, on lit dans le istream avec read() (si is_bin() == 1)
 //   ou avec operator>>() (si is_bin() == 0). Si le drapeau check_types est mis,
@@ -317,9 +342,11 @@ Entree& Entree::operator>>(long& ob)
   assert(istream_!=0);
   if (bin_)
     {
-      char * ptr = (char*) &ob;
-      istream_->read(ptr, sizeof(long));
-      error_handle(istream_->fail());
+      {
+        char * ptr = (char*) &ob;
+        istream_->read(ptr, sizeof(long));
+        error_handle(istream_->fail());
+      }
     }
   else
     {
@@ -348,14 +375,16 @@ int Entree::get(long * ob, int n)
   assert(n >= 0);
   if (bin_)
     {
-      char * ptr = (char*) ob;
-      // En binaire: lecture optimisee en bloc:
-      std::streamsize sz = sizeof(long);
-      sz *= n;
-      // Overflow checking :
-      assert(sz / (std::streamsize)sizeof(long) == (std::streamsize)n);
-      istream_->read(ptr, sz);
-      error_handle(istream_->fail());
+      {
+        char * ptr = (char*) ob;
+        // En binaire: lecture optimisee en bloc:
+        std::streamsize sz = sizeof(long);
+        sz *= n;
+        // Overflow checking :
+        assert(sz / (std::streamsize)sizeof(long) == (std::streamsize)n);
+        istream_->read(ptr, sz);
+        error_handle(istream_->fail());
+      }
     }
   else
     {
@@ -366,6 +395,7 @@ int Entree::get(long * ob, int n)
     }
   return (!istream_->fail());
 }
+#endif
 // Description: methode virtuelle pour lire un int ou un reel.
 //  Dans cette classe de base, on lit dans le istream avec read() (si is_bin() == 1)
 //   ou avec operator>>() (si is_bin() == 0). Si le drapeau check_types est mis,
@@ -380,9 +410,11 @@ Entree& Entree::operator>>(float& ob)
   assert(istream_!=0);
   if (bin_)
     {
-      char * ptr = (char*) &ob;
-      istream_->read(ptr, sizeof(float));
-      error_handle(istream_->fail());
+      {
+        char * ptr = (char*) &ob;
+        istream_->read(ptr, sizeof(float));
+        error_handle(istream_->fail());
+      }
     }
   else
     {
@@ -411,14 +443,16 @@ int Entree::get(float * ob, int n)
   assert(n >= 0);
   if (bin_)
     {
-      char * ptr = (char*) ob;
-      // En binaire: lecture optimisee en bloc:
-      std::streamsize sz = sizeof(float);
-      sz *= n;
-      // Overflow checking :
-      assert(sz / (std::streamsize)sizeof(float) == (std::streamsize)n);
-      istream_->read(ptr, sz);
-      error_handle(istream_->fail());
+      {
+        char * ptr = (char*) ob;
+        // En binaire: lecture optimisee en bloc:
+        std::streamsize sz = sizeof(float);
+        sz *= n;
+        // Overflow checking :
+        assert(sz / (std::streamsize)sizeof(float) == (std::streamsize)n);
+        istream_->read(ptr, sz);
+        error_handle(istream_->fail());
+      }
     }
   else
     {
@@ -443,9 +477,11 @@ Entree& Entree::operator>>(double& ob)
   assert(istream_!=0);
   if (bin_)
     {
-      char * ptr = (char*) &ob;
-      istream_->read(ptr, sizeof(double));
-      error_handle(istream_->fail());
+      {
+        char * ptr = (char*) &ob;
+        istream_->read(ptr, sizeof(double));
+        error_handle(istream_->fail());
+      }
     }
   else
     {
@@ -474,14 +510,16 @@ int Entree::get(double * ob, int n)
   assert(n >= 0);
   if (bin_)
     {
-      char * ptr = (char*) ob;
-      // En binaire: lecture optimisee en bloc:
-      std::streamsize sz = sizeof(double);
-      sz *= n;
-      // Overflow checking :
-      assert(sz / (std::streamsize)sizeof(double) == (std::streamsize)n);
-      istream_->read(ptr, sz);
-      error_handle(istream_->fail());
+      {
+        char * ptr = (char*) ob;
+        // En binaire: lecture optimisee en bloc:
+        std::streamsize sz = sizeof(double);
+        sz *= n;
+        // Overflow checking :
+        assert(sz / (std::streamsize)sizeof(double) == (std::streamsize)n);
+        istream_->read(ptr, sz);
+        error_handle(istream_->fail());
+      }
     }
   else
     {

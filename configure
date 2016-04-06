@@ -94,6 +94,7 @@ echo $0 $* "\$"* >> configure.log
 if [ "$1" = "-disable-optionals" ]
 then
  shift
+ export TRUST_ROOT=$TRUST_ROOT_SA
  $0 -disable-ccache -disable-med -disable-medcoupling -disable-petsc -disable-gnuplot -disable-tcl_tk -disable-valgrind -disable-mpi -disable-metis -without-visit -disable-gmsh -without-doc -disable-check $* 
  exit $?
 fi

@@ -27,6 +27,7 @@
 #include <Domaine.h>
 #include <Frontiere_dis_base.h>
 #include <communications.h>
+#include <Convert_ICoCoTrioField.h>
 
 Implemente_instanciable(Ch_front_input,"Ch_front_input",Ch_front_var_instationnaire_dep);
 
@@ -94,13 +95,10 @@ void Ch_front_input::getTemplate(TrioField& afield) const
 
   // Includes all the nodes, even those not used in connectivity
   // order is  x y z  x y z  x y z
-  afield._coords=new double[sommets.size()];
-  memcpy(afield._coords,sommets.addr(),sommets.size()*sizeof(double));
+  affecte_double_avec_doubletab(&afield._coords,sommets);
 
   assert (sizeof(int)==sizeof(int));
-  afield._connectivity=new int[faces.size()];
-  // Cerr<<" ici "<<faces.max()<< " "<<sommets.dimension(0)<<finl;
-  memcpy(afield._connectivity,faces.addr(),faces.size()*sizeof(int));
+  affecte_int_avec_inttab(&afield._connectivity,faces);
 }
 
 // Description

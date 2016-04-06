@@ -23,6 +23,7 @@
 #include <Entree_Fichier_base.h>
 #include <Process.h>
 #include <EntreeSortie.h>
+#include <Nom.h>
 
 Implemente_base_sans_constructeur_ni_destructeur(Entree_Fichier_base,"Entree_Fichier_base",Objet_U);
 
@@ -75,6 +76,24 @@ int Entree_Fichier_base::ouvrir(const char* name,IOS_OPEN_MODE mode)
   ifstream_ = new ifstream(name,ios_mod);
   int ok = ifstream_->good();
   set_istream(ifstream_);
+#ifdef INT_is_64_
+  if (bin_)
+    {
+      Nom test;
+      (*this) >> test;
+      if (test!="INT64")
+        {
+          Cerr<<"Probem "<<name<< "is binary and with int32 "<<finl;
+          delete ifstream_;
+          // on rechareg le fichier
+          ifstream_ = new ifstream(name,ios_mod);
+          is_int32_=1;
+          ok = ifstream_->good();
+          set_istream(ifstream_);
+
+        }
+    }
+#endif
   return ok;
 }
 

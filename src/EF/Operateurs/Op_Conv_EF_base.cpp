@@ -82,7 +82,7 @@ void Op_Conv_EF_base::abortTimeStep()
 
 double Op_Conv_EF_base::calculer_dt_stab() const
 {
-  Cerr<<__FILE__<<__LINE__<<" dt_stab mal code "<<finl;
+  Cerr<<__FILE__<<(int)__LINE__<<" dt_stab mal code "<<finl;
   double dt_stab=1e30;
   /*  const Zone_Cl_EF& zone_Cl_EF = la_zcl_EF.valeur();
   const Zone_EF& zone_EF = la_zone_EF.valeur();
@@ -152,7 +152,7 @@ double Op_Conv_EF_base::calculer_dt_stab() const
 
 void Op_Conv_EF_base::calculer_pour_post(Champ& espace_stockage,const Nom& option,int) const
 {
-  Cerr<<__FILE__<<__LINE__<<" dt_stab mal code "<<finl;
+  Cerr<<__FILE__<<(int)__LINE__<<" dt_stab mal code "<<finl;
   exit();
 
 }

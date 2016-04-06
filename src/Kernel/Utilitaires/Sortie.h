@@ -85,7 +85,9 @@ public:
   virtual Sortie& operator<<(const Separateur& );
   virtual Sortie& operator<<(const Objet_U&    ob);
   virtual Sortie& operator<<(const int&     ob);
+#ifndef INT_is_64_
   virtual Sortie& operator<<(const long&       ob);
+#endif
   virtual Sortie& operator<<(const float&      ob);
   virtual Sortie& operator<<(const double&     ob);
   virtual Sortie& operator<<(const char      * ob);
@@ -93,7 +95,9 @@ public:
   virtual Sortie& operator <<(const string& ob);
 #endif
   virtual int put(const int* ob, int n, int nb_colonnes=1);
+#ifndef INT_is_64_
   virtual int put(const long  * ob, int n, int nb_colonnes=1);
+#endif
   virtual int put(const float * ob, int n, int nb_colonnes=1);
   virtual int put(const double* ob, int n, int nb_colonnes=1);
 

@@ -28,6 +28,8 @@
 #include <Frontiere_dis_base.h>
 #include <communications.h>
 #include <Roue.h>
+#include <Convert_ICoCoTrioField.h>
+
 
 Implemente_instanciable(Ch_front_input_P1,"Ch_front_input_P1",Ch_front_input);
 
@@ -145,12 +147,11 @@ void Ch_front_input_P1::getTemplate(TrioField& afield) const
 
   // Includes all the nodes, even those not used in connectivity
   // order is  x y z  x y z  x y z
-  afield._coords=new double[sommets.size()];
-  memcpy(afield._coords,sommets.addr(),sommets.size()*sizeof(double));
+  affecte_double_avec_doubletab(&afield._coords,sommets);
+
 
   assert (sizeof(int)==sizeof(int));
-  afield._connectivity=new int[faces.size()];
-  memcpy(afield._connectivity,faces.addr(),faces.size()*sizeof(int));
+  affecte_int_avec_inttab(&afield._connectivity,faces);
 
 }
 

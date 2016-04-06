@@ -1,0 +1,2174 @@
+#!/bin/bash
+# Script de recherche automatique de
+# certaines variables d'environnement
+# Strategie : 
+# Une liste de variable par defaut :
+# On verifie qu'une d'entre elle existe par whence
+# Puis eventuellement, on fait un find.... Dans le cas ou le compte
+# est mal configure
+
+########################################################
+make_()
+{
+   directory_package=$1
+   cd $directory_package 
+   package_name=$2 && [ "$package_name" = "" ] && package_name=`basename $directory_package`
+   package_log=$3 && [ "$package_log" = "" ] && package_log=`pwd`/`basename $directory_package`".log"
+   echo $ECHO_OPTS "Trying to install $package_name...\c"
+   # On lance la compilation
+   make 1>$package_log 2>&1
+   if [ $? = 0 ]
+   then
+      echo "OK"
+   else
+      echo "KO (See $package_log)"
+      echo "You need $1 installed correctly. Contact TRUST support."
+      exit -1
+   fi
+   # On ecrit dans prog.log pour la desinstallation
+   echo `pwd` >> $TRUST_ROOT/env/prog.log
+   cd - 1>/dev/null 2>&1
+}
+
+########################################################
+run_test_mpi()
+{
+   rm -f test_mpi.log
+   # Pour aider on ajoute le LD_LIBRARY_PATH de MPI (ex: mars,eris)
+   lib=`dirname $mpiCC`
+   lib=$lib/../`\ls $lib/.. | grep lib`
+   # On essaie d'executer en sequentiel
+   LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$lib ./test_mpi 1>test_mpi.log 2>&1 &
+   $TRUST_ROOT/bin/KSH/wait_for $! 30
+   if [ ! -s test_mpi.log ]
+   then
+      err=0
+   elif [ "`grep coucou test_mpi.log`" = "" ]
+   then
+      err=1
+   fi  
+}
+
+########################################################
+configure_compilateur_ccache()
+{
+   if [ -d $TRUST_ROOT/exec/ccache ]
+   then
+      variable=`echo $e | awk -F= '{print $1}'`
+      chemin=`echo $e | awk -F\" '{print $2}'`
+      compilateur=`basename $chemin`
+      # On cree un script g++ et gcc
+      eval $e
+      script=$TRUST_ROOT/exec/ccache/$compilateur
+      echo $ECHO_OPTS "#!/bin/bash\n\$TRUST_ROOT/exec/ccache/bin/ccache $chemin \"\$@\"" > $script
+      chmod +x $script
+      e=$variable=\""\$TRUST_ROOT/exec/ccache/$compilateur\" && export $variable"
+   fi
+}
+
+########################################################
+whence_()
+{
+   # Existe ?
+   if [ -f $1 ]
+   then
+      echo $1
+   else
+      # Test de whence sinon whereis -b
+      if [ "`uname -s`" = OSF1 ]
+      then
+	 err=1
+      else
+	 a=`whence ls 2>/dev/null`
+	 err=$?
+      fi
+      if [ $err = 0 ]
+      then
+	 # Comportement etrange sur DEC de `whence $file` !
+	 # Si `whence $file` = "" alors a=`whence $file` contient n'importe quoi !
+	 #w=`whence $file`
+	 # Solution : Passer par un fichier :
+	 whence $1 > .toto
+	 cat .toto
+      else
+	 # On essaie type car cherche aussi 
+	 # dans le PATH contrairement a whereis...
+	 a=`type $1 2>/dev/null | awk '{print $NF}'`
+	 if [ $? = 0 ] && [ -f $a ]
+	 then
+            echo $a
+	 else
+            whereis -b $1 | awk '{if (NF>1) print $2}'
+	 fi
+      fi
+   fi
+}
+
+########################################################
+update_file()
+{
+   # Usage: update_file file1 file2
+   if [ "$1" = "" ] || [ ! -f $1 ]
+   then
+      echo "$1 not defined or not found!"
+   else
+      if [ ! -f $2 ]
+      then
+         # mv -f $1 $2
+	 # cat et pas mv car mktemp ne suit pas le umask !
+         cat $1 > $2
+	 rm -f $1
+	 echo "File $2 created."
+      elif [ "`diff $1 $2 2>/dev/null`" != "" ]
+      then
+	 #mv -f $1 $2
+	 # cat et pas mv car mktemp ne suit pas le umask !
+         cat $1 > $2
+	 rm -f $1	 
+	 echo "File $2 updated. TRUST version built with $2 will be cleaned now or later and rebuilt."
+	 # On efface de suite la version (pour les librairies si make.$TRUST_ARCH"_opt" ou make.$TRUST_ARCH"_semi_opt" modifie
+	 if [ ${2%_opt} != $2 ]
+	 then
+	    echo "Cleaning now..."
+	    (cd $TRUST_ROOT;make clean 1>/dev/null 2>&1)
+	 fi  
+      else
+	 rm -f $1
+      fi
+   fi
+}
+
+########################################################
+OK()
+{
+   if [ $1 = 0 ]
+   then
+      echo $ECHO_OPTS "OK!"
+   else
+      echo $ECHO_OPTS "KO!"
+   fi
+}
+
+########################################################
+cherche_file()
+{
+   word=$1
+   liste=$*
+   liste=${liste#$word}
+   for file in $liste
+   do
+      fic=`whence_ $file` 
+      if [ ${#fic} != 0 ] && [ "`xxx $fic`" = 1 ]
+      then
+	 # Set TRUST_ROOT in the path if necessary:
+	 [ $fic != ${fic#$TRUST_ROOT} ] && fic="\$TRUST_ROOT"${fic#$TRUST_ROOT}
+	 # New 1.6.8: We do NOT take a path from other TRUST installation 
+	 if [ "`echo $fic | grep /TRUST/`" = "" ]
+         then	 
+	    echo "$word=\"$fic\" && export $word" && exit
+	 fi
+      fi
+      for rep in `cat $TRUST_ROOT/env/.rep`
+      do
+	 fic=$rep/$file
+	 if [ -f $fic ]
+	 then
+            # On detecte desormais les includes et les librairies aussi
+            include=0 && [ $fic != ${fic%.h} ] && include=1
+	    library=0 && [ $fic != ${fic%.a} ] && library=1;[ $fic != ${fic%.so} ] && library=1
+            binary=0 && [ "`xxx $fic`" = 1 ] && binary=1
+            if [ $include = 1 ] || [ $binary = 1 ] || [ $library = 1 ] 
+            then
+	       # Eviter les chemins en dur dans le fichier machine.env
+	       [ $fic != ${fic#$TRUST_ROOT} ] && fic="\$TRUST_ROOT"${fic#$TRUST_ROOT}
+               echo "$word=\"$fic\" && export $word"
+               [ "`grep $rep .path`" = "" ] && echo $ECHO_OPTS $rep >> .path
+	       exit
+            fi
+	 fi
+      done
+   done
+   echo "$word=\"\" && export $word"
+}
+
+########################################################
+ecrit()
+{
+   chaine=$*
+   m=`echo $chaine | cut -f1 -d"|"`
+   e=`echo $chaine | cut -f2 -d"|"`
+   env=`echo $chaine | cut -f3 -d"|"`
+   echo $m" : "$e;echo $e"       "$m >> $env
+}
+
+########################################################
+# Pour verifier que l'on a bien un executable :
+xxx()
+   {
+   f=$1
+   # Faux si lien absolu :
+   #[ -L $f ] && f=`dirname $f`/`ls -la $f | awk '{print $NF}'`
+   l=`ls -la $f`;ok=1
+   # Bug decouvert: un compilo peut etre installe root et ne pas etre executable par root
+   # Donc il faut x pour group et other
+   # if [ "`echo $l | cut -c7`" != x ] || [ "`echo $l | cut -c10`" != x ]
+   # on ne verifie plus other 
+   if [ "`echo $l | cut -c4`" = - ] || [ "`echo $l | cut -c7`" = - ] # || [ "`echo $l | cut -c10`" = - ]
+   then
+      ok=0
+   else
+   # Verifie en plus si les compilos marchent ou le browser marche :
+      log=`basename $f`.log
+      case $word in
+	   TRUST_CC_BASE) if [ "`echo $f | grep /ccache/`" != "" ]
+	   then
+	      ok=0 # We don't take ccache/g++ version for the moment (eg:Fedora 18)
+	   else 
+	      echo $ECHO_OPTS "#include <string>\nint main() {std::string foo = \"Hello, world\";return 0;}" > main.cpp;$f -o test_exec main.cpp 1>$log 2>&1;./test_exec 1>>$log 2>&1;[ $? != 0 ] && ok=0
+	   fi;;
+	   TRUST_cc_BASE) if [ "`echo $f | grep /ccache/`" != "" ]
+	   then
+	      ok=0 # We don't take ccache/gcc version for the moment (eg:Fedora 18)
+	   else
+	      echo "main() {return 0;}" > main.c;$f -o test_exec main.c 1>$log 2>&1;./test_exec 1>>$log 2>&1;[ $? != 0 ] && ok=0
+	   fi;;
+	   TRUST_F77_BASE) echo $ECHO_OPTS "      PROGRAM main\n      END\n      SUBROUTINE TOTO\n      RETURN\n      END" > $TRUST_ENV/main.f;$f -o test_exec_f $TRUST_ENV/main.f 1>$log 2>&1;./test_exec_f 1>>$log 2>&1;[ $? != 0 ] && ok=0;;
+	   # GUI plus supporte: on ne teste plus le browser trouve.
+	   #WEBBROWSER) if [ "`echo $f | grep -i acrobat`" != "" ]
+	   #then
+	      # On passe le script netscape livre avec Acrobat
+	      # car cela bloque la configuration (ex: PC verde...)
+	      # Attention, il semble aussi que mozilla -v bloque
+	      # aussi parfois (ex: PC verde...)
+	      #ok=0
+	   #else
+	   #   rm -f $log
+           #   $f -v 1>$log 2>&1 &
+	   #   $TRUST_ROOT/bin/KSH/wait_for $! 2
+	   #   [ $! != 0 ] && ok=0 		# Blocage 
+	   #   [ ! -s $log ] && ok=0	# Si le navigateur fonctionne, un log doit etre ecrit 
+	   #fi;;
+	   # On cherche le MPI natif donc pas celui livre:
+	   Mpirun) [ $f = $TRUST_ROOT/bin/mpirun ] && ok=0;;
+	   mpiCC) 	[ "`echo $f | grep lib/src/LIBMPI`" != "" ] && ok=0; # Elimination d'une version MPI livree avec TRUST
+		   # Elimination de LAM qui n est pas supporte par TRUST et en voie d obsolescence:
+		   [ "`echo $f | grep LAM6`" != "" ] && ok=0;
+		   [ -f /usr/bin/mpirun ] && [ "`/usr/bin/mpirun -v 2>&1 | grep LAM/MPI`" != "" ] && ok=0;
+		   # Elimination de mpiCC sur RedHat Enterprise qui compile en 32 bits (-m32) sur des machines 64 bits		
+		   [ "`$f --show 2>/dev/null | grep m32`" != "" ] && ok=0;	
+		   # Elimination de mpicxx sur tantale
+		   [ "`basename $f`" = mpicxx ] && [ -f /opt/hpmpi/bin/mpiCC ] && ok=0;	
+		   # Elimination si mpif77 n'est pas trouve au meme endroit (ex: buda)
+		   [ ! -f "`dirname $f`"/mpif77 ] && [ ! -f "`dirname $f`"/mpxlf_r ] && ok=0;
+		   # Elimination du OpenMPI 1.3.3 trouve (blocages vus sur is212958)
+		   [ -f /usr/bin/mpirun ] && [ "`/usr/bin/mpirun --version 2>&1 | grep 'mpirun (Open MPI) 1.3.3'`" != "" ] && ok=0;
+		   # Elimination du OpenMPI 1.7.2 trouve (blocages cas test PETSc)
+		   [ -f /usr/lib64/openmpi/bin/mpirun ] && [ "`/usr/lib64/openmpi/bin/mpirun --version 2>&1 | grep 'mpirun (Open MPI) 1.7.2'`" != "" ] && ok=0;
+		   ;;	
+	   *);;
+      esac
+   fi
+   # Detruit car sinon pb de droit pour les autres users
+   rm -f main.c test_exec
+   echo $ok
+}
+
+########################################################
+cherche_include_systeme()
+{
+   # Nouveau: recherche des repertoires includes systemes pour la commande makedepend -I.... 
+   # PL: 1.5.7 ftsream.h->fstream, iostream.h->iostream, new.h supprime
+   echo $ECHO_OPTS "#include<fstream>\n#include<iostream>\n#include<stdarg.h>\n#include<stddef.h>\n#include<strstream>" > es.cxx
+   includes=`$TRUST_CC -M es.cxx | grep -v es.cxx | awk '{print $1}'`
+   Y=/usr/include/sys 
+   # -Y ne marche que pour 1 repertoire (et on prend astucieusement /usr/include/sys pour eviter des nested includes) 
+   SYSINC_DEP="-Y$Y "`for include in $includes
+   do
+      dir=\`dirname $include\`
+      cd $dir # Astuce pour ne pas avoir de chemins trops longs en ../../..
+      dir=\`pwd\` && [ "$dir" != $Y ] && echo $dir
+   done | sed "s/\/bits//g" | sort -u | awk '{printf("-I%s ",$1)}'`
+   rm -f es.cxx
+}
+
+########################################################
+check_nvidia_cuda()
+{
+   # Ne marche pas car donne la carte de l'ecran depuis lequel l'installation est lancee:
+   #nvidia_card=`nvidia-settings -g 2>&1 | awk -F: '/renderer string/ {print $2}'`
+   #[ "$nvidia_card" != "" ] && echo "NVIDIA card found:"$nvidia_card
+   #########################
+   # To active CUDA support:
+   #########################
+   # -Drivers NVidia installed
+   # -Cuda Compilateur found or installed
+   export PETSC_HAVE_CUDA=0
+   NVIDIA_VERSION=`\ls /usr/lib*/libcuda.so.*.* /usr/lib*/nvidia/libcuda.so.*.* 2>/dev/null | awk -Flibcuda.so. '{print $2}' | tail -1`
+   if [ "$NVIDIA_VERSION" = "" ]
+   then
+      echo "No NVIDIA drivers detected on $HOSTNAME."
+   else
+      echo "NVIDIA drivers detected on $HOSTNAME: Version $NVIDIA_VERSION"
+      BITS=32 && [ "`uname -m`" = x86_64 ] && BITS=64
+      #########################################################################
+      # CUDA detecte? On ne doit pas prendre CUDA d'une autre version TRUST...
+      #########################################################################
+      if [ "`nvcc --version 2>/dev/null`" != "" ] && [ "`which nvcc | grep -v TRUST`" != "" ]
+      then
+	 CUDA_ROOT=`which nvcc`
+	 CUDA_ROOT=`dirname $CUDA_ROOT`
+	 CUDA_ROOT=`dirname $CUDA_ROOT`
+      else
+	 ########################################
+	 # Sinon, installation du toolkit de CUDA
+	 ########################################
+	 CUDA_VERSION_XY=5.5 		# Needs 319.xx drivers   
+         CUDA_DRIVER_XYZ=319
+         CUDA_VERSION_XYZ=5.5.22
+	 CUDA_URL=http://developer.download.nvidia.com/compute/cuda/`echo $CUDA_VERSION_XY | awk '{gsub("\\\.","_",$1);print $1}'`/rel/installers
+	 CUDA_TOOLKIT=cuda_$CUDA_VERSION_XYZ"_linux_"$BITS.run
+	 if [ "$CUDA_VERSION_XY" = 6.0 ]
+	 then
+	    CUDA_VERSION_XY=6.0
+	    CUDA_DRIVER_XYZ=319
+	    CUDA_VERSION_XYZ=6.0.26_rc
+	    CUDA_URL=http://developer.download.nvidia.com/assets/cuda/secure/CUDA`echo $CUDA_VERSION_XY | awk '{gsub("\\\.","",$1);print $1}'`/RC/installers
+	    CUDA_TOOLKIT=cuda_$CUDA_VERSION_XYZ"_linux"$BITS.run
+	 fi 
+         if [ "`echo $NVIDIA_VERSION | awk -F. -v CUDA_DRIVER_XYZ=$CUDA_DRIVER_XYZ '{print ($1<CUDA_DRIVER_XYZ)}'`" = 1 ]
+         then
+            echo "NVIDIA drivers detected but version ($NVIDIA_VERSION) is too old." 
+            echo "An update to $CUDA_DRIVER_XYZ.x version is necessary to use CUDA $CUDA_VERSION_XY"	 
+	 else                  
+	    CUDA_ROOT=$TRUST_ROOT/exec/cuda$CUDA_VERSION_XY
+	    if [ ! -f $CUDA_ROOT/bin/nvcc ]
+	    then
+               echo "PETSc need C CUDA compiler $CUDA_VERSION_XY, so we try to install it:"
+	       # Telechargement
+	       if [ ! -f $CUDA_TOOLKIT ]
+	       then
+		  echo $ECHO_OPTS "Downloading $CUDA_URL/$CUDA_TOOLKIT ...\c"
+		  wget_ $CUDA_URL/$CUDA_TOOLKIT 1>wget.log 2>&1
+		  if [ $? != 0 ]
+		  then
+		     echo "Download of $CUDA_TOOLKIT failed at:"
+		     echo $CUDA_URL
+		  else
+		     echo "OK"
+		  fi
+	       fi
+	       # Installation
+	       if [ -s $CUDA_TOOLKIT ]
+	       then
+		  rm -r -f $TRUST_ROOT/exec/cuda*
+		  rm -r -f $CUDA_ROOT
+		  mkdir -p $CUDA_ROOT
+		  chmod +x $CUDA_TOOLKIT
+		  # DISPLAT set to "" avoid cuda installer remotely open a terminal...
+		  DISPLAY="" ./$CUDA_TOOLKIT -silent -verbose -toolkit -toolkitpath=$CUDA_ROOT -samples -samplespath=$CUDA_ROOT/samples 1>toolkit.log 2>&1
+		  if [ $? = 0 ]
+		  then
+	             echo "OK"
+		  else
+	             echo "KO. See `pwd`/toolkit.log" 
+		  fi
+               fi
+	       # Test
+	       if [ "`$CUDA_ROOT/bin/nvcc --version 2>/dev/null | grep $CUDA_VERSION_XY`" = "" ]
+	       then
+		  echo "$CUDA_ROOT/bin/nvcc not well installed!"
+		  CUDA_ROOT=""
+	       fi
+	    fi
+	 fi 
+      fi    
+      # Test CUDA compiler
+      if [ "$CUDA_ROOT" = "" ]
+      then
+	 echo "No C CUDA compiler found."
+      else
+	 # On prend le run time livre 3.2 que s'il n'y a pas de runtime installe
+	 # (ex sur gre027058, il faut cuda 3.2 mais on utilise le runtime 3.0 installe)
+	 if [ "`\ls /usr/lib*/libcudart.so.*.* 2>/dev/null`"  = "" ]
+	 then
+	    CUDA_LIB=$CUDA_ROOT/lib`[ $BITS = 64 ] && echo 64`
+	 else
+	    CUDA_LIB=/usr/lib`[ $BITS = 64 ] && echo 64`
+	 fi      
+	 #########################################
+	 # Test CUDA encore plus leger qu'avec SDK
+	 # Voir: http://code.google.com/p/gpulammps/source/browse/trunk/lib/gpu/?r=313
+	 #########################################
+	 # NB: Le test ne fonctionne pas sur les machines du CCRT...
+	 echo $ECHO_OPTS "Is it a double precision NVIDIA card ? \c"
+	 rm -r -f nvc_get_devices
+	 tar xfz $TRUST_ROOT/externalpacakges/nvc_get_devices.tgz
+	 cd nvc_get_devices
+	 $CUDA_ROOT/bin/nvcc -o nvc_get_devices *.cu
+	 cd ..
+	 (
+	    # On utilise le script trust en specifiant -gpu
+	    source ../env_TRUST.sh 1>/dev/null 2>&1
+	    LD_LIBRARY_PATH=$CUDA_LIB:$LD_LIBRARY_PATH
+	    export exec=`pwd`/nvc_get_devices/nvc_get_devices
+	    trust -gpu dummy_file 1>$TRUST_ENV/card.log &
+            $TRUST_ROOT/bin/KSH/wait_for $! 60 # Pour eviter blocage (vu sur airain, queue hybrid desactivee...)
+	 )
+	 COMPUTE_CAPABILITY="`awk '/Revision number/ {print $NF}' $TRUST_ENV/card.log | head -1`"
+	 # On ne supporte que les cartes double precision car les simple precision oblige a compiler
+	 # PETSc sans Hypre, MUMPS, etc et il faudrait modifier pas mal SolvPetsc.cpp
+	 PETSC_HAVE_CUDA="`echo $COMPUTE_CAPABILITY | awk '{if ($1>=1.3) print 1;else print 0}'`"
+	 if [ "$PETSC_HAVE_CUDA" = 0 ]
+	 then
+	    echo "No"
+	 else
+	    echo "Yes. The NVIDIA card is:"
+	    grep Device $TRUST_ENV/card.log
+	    if [ ${TRUST_CC_BASE%g++} = $TRUST_CC_BASE ]
+	    then
+	       echo "But it will not be used cause you should use GNU compilers to build PETSc with CUDA."
+	       echo "So try to run: ./configure -force_petsc_have_cuda -c++=g++ -cc=gcc -fc=gfortran"
+	       echo "To force using GNU compilers."
+	       PETSC_HAVE_CUDA=0
+	    fi
+	 fi
+      fi
+   fi
+}
+
+########################################################
+print_OS()
+{
+   for file in /etc/system-release /etc/release /etc/issue.net /etc/issue
+   do
+      if [ -f $file ]
+      then
+         echo "# OS for the machine : `head -1 $file`"
+	 break
+         # En 2 fois pour supprimer les \n \l qui empechent une comparaison correcte
+         #chaine=`head -1 /etc/issue`
+         #echo "# OS for the machine : `echo $ECHO_OPTS $chaine | head -1`"
+      fi
+   done
+}
+
+########################################################
+print_GNU_VERSION()
+{
+   # Verifie que le compilateur est bien GNU:
+   [ "${TRUST_CC_BASE%g++}" != "$TRUST_CC_BASE" ] && $TRUST_CC_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'
+}
+#
+#########################################################################################################################################################################
+#########################################################################################################################################################################
+#
+###################
+# Debut du script #
+###################
+if [ "$1" = -check ]
+then
+   # On verifie que le machine.env est correct
+   if [ -f $TRUST_ROOT/env/machine.env ]
+   then
+      err=""
+      # Check if the OS has changed:
+      OS=`print_OS`
+      if [ "$OS" != "" ] && [ "`grep 'OS for the machine' $TRUST_ROOT/env/machine.env`" != "" ] && [ "`grep "$OS" $TRUST_ROOT/env/machine.env`" = "" ]
+      then
+         err="The OS of your machine has changed"
+      else 
+	 GNU_VERSION=`print_GNU_VERSION`
+	 if [ "$GNU_VERSION" != "" ]
+	 then
+	    GNU_VERSION_ENV=`awk '/TRUST_VERSION_GNU/ {print $1}' $TRUST_ROOT/env/machine.env | awk -F= '{print $2}'`  
+            # Check if the machine.env file is corrupted:
+	    if [ "$GNU_VERSION_ENV" = "" ]
+	    then
+	       err="The configure has failed (machine.env is incomplete)."
+	    # Check if the GNU compiler has changed:
+	    elif [ "$GNU_VERSION" != "$GNU_VERSION_ENV" ]
+	    then
+	       err="The compiler of your machine has changed ($GNU_VERSION_ENV -> $GNU_VERSION) since the TRUST installation."
+	    fi
+	 fi
+      fi
+      if [ "$err" != "" ]
+      then
+         echo "**********************************************************************"
+	 echo "$err"
+	 echo "The TRUST installation (or configure) MUST be done again"
+	 echo "cause it is now broken because of the previous change."
+	 echo "**********************************************************************"
+	 exit -1
+      fi
+      exit 0
+   else
+      echo "machine.env file not found. Please run: ./configure under $TRUST_ROOT"
+      exit -1
+   fi
+fi
+
+if [ "$1" = -TRUST_NB_PROCS ]
+then
+   TRUST_NB_PROCS=1
+   if [ -f /proc/cpuinfo ]
+   then
+      TRUST_NB_PROCS=`$TRUST_Awk '/processor/ {n++} END {print n}' /proc/cpuinfo`
+      if [ -d /ccc ] || [ $HOST = callisto ]
+      then
+         #TRUST_NB_PROCS=16
+	 TRUST_NB_PROCS=8
+	 #TRUST_NB_PROCS=4
+      fi      
+   fi
+   echo $TRUST_NB_PROCS
+   exit 0
+fi
+
+# Nettoyage des programmes installes par le configure
+if [ "$1" = clean ]
+then
+   if [ -f prog.log ]
+   then
+      for prog in `cat prog.log`
+      do
+         cd $prog
+         make clean
+         cd -
+      done
+   fi
+   rm -r -f $TRUST_ROOT/env_TRUST.sh $TRUST_ROOT/env/ $TRUST_ROOT/lib $TRUST_ROOT/exec $TRUST_ROOT/include $TRUST_ROOT/Makefile $TRUST_ROOT/MonoDir*
+   # Plus on efface le $TRUST_TMP
+   rm -r -f $TRUST_TMP
+   exit 0
+else
+   rm -f prog.log
+fi
+
+###########################
+# Definition de TRUST_ROOT
+###########################
+export TRUST_ROOT=`pwd`
+TRUST_ROOT=${TRUST_ROOT%/env}
+echo TRUST_ROOT=$TRUST_ROOT
+export TRUST_ENV=$TRUST_ROOT/env
+# Pour des commandes comme mktemp_
+export PATH=$TRUST_ROOT/bin/KSH:$PATH
+liste="pwd whoami uname find cut"
+for com in $liste
+do
+   if [ "`whence_ $com`" = "" ]; then
+      echo "$com command not accessible: host misconfigured."
+      exit
+   fi
+done
+
+rm -f $TRUST_ENV/.path
+touch $TRUST_ENV/.path
+# Probleme du echo /usr/ucb/echo "\c" -> /usr/bin/echo "\c" OK
+# Probleme du grep ?
+rep=/usr/bin
+[ -d $rep ] && [ -d /usr/ucb ] && PATH=$rep:$PATH && export PATH
+
+##################################
+# Cherche la liste des repertoires
+##################################
+echo "/" > $TRUST_ROOT/env/.rep
+echo "Looking for system directories..."
+#liste="/bin /etc /lib /opt /product /sbin /usr /var"
+# Rajout /usr/lpp pour IBM Orleans (14/10/03)
+# On supprime /usr/local et /usr/lpp trop longs sur IBM Orleans
+
+# Ajout des paths dans le PATH 
+for d in  $TRUST_FORCE_SEARCH
+do
+export PATH=$d:${PATH}
+done
+
+liste=$TRUST_FORCE_SEARCH" /bin /sbin /usr/bin /usr/ibmcxx /usr/sbin /usr/dt /usr/bsd /usr/etc /usr/X11R6 /usr/freeware /usr/ccs /usr/lib /usr/lib32 /usr/lib64"
+for rep in $liste
+do
+   # Essai avec -follow ?
+   # Certaines machines ne connaissent pas follow
+   # Rajout du -print necessaire pour Fujitsu
+   # F="" && find . -follow -print 1>/dev/null 2>/dev/null && F="-follow"
+   # Essayer sans follow pour accelerer...
+   F=""
+   [ -d $rep ] && echo $rep && find $rep $F -type d -print 2>/dev/null | grep -v ".snapshot" 1>>$TRUST_ROOT/env/.rep
+done
+
+######################
+# Fichier machine.env:
+######################
+env=$TRUST_ROOT/env/machine.env
+[ -f $env ] && cp -f $env $env".old"
+echo "# Environment file created during the install" > $env
+echo "# uname -a : `uname -a`" | tee -a $env
+print_OS | tee -a $env
+echo "# hostname : `hostname`" | tee -a $env
+echo "# domainname : `domainname 2>/dev/null`" | tee -a $env
+
+#################
+# Variable HOST #
+#################
+. ./HOST.env
+# Variables define_modules_config
+if [ -f HOST_$HOST_BUILD.sh ]
+then
+   . ./HOST_$HOST_BUILD.sh
+else
+   . ./HOST_default.sh
+fi
+
+#####################
+# Modules ou config #
+#####################
+TRUST_VERSION=`awk '/version/ && /Release notes/ {print $4;exit}' $TRUST_ROOT/RELEASE_NOTES`
+ligne_supp=""
+# See HOST_???.sh file called above
+define_modules_config
+
+#######################
+# Variable TRUST_TMP #
+#######################
+. ./TRUST_TMP.env
+
+###################################
+# Si configure a cree des variables
+###################################
+if [ -f configure.env ]
+then
+   . ./configure.env
+fi
+
+#######################
+# Quelle architecture ?
+#######################
+arch=`uname -s`
+case $arch in
+   HP-UX)
+        # Nouveau HP 11, on privilegie la recherche de f90 par rapport a f77
+        if [ "`uname -r | grep 11.`" != "" ]
+        then
+           TRUST_ARCH=HPPA_11
+           TRUST_F77_BASE="f90 f77"
+        else
+           TRUST_ARCH=HPPA
+           TRUST_F77_BASE="f77 f90"
+        fi
+	EDITEUR="nedit softedit xedit dtpad"
+	TRUST_CC_BASE="aCC CC g++"
+	TRUST_cc_BASE="cc"
+	Dtterm="hpterm dtterm xterm"
+	DEBUG="softdebug softdde ddd xdb dde"
+	IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/bytes/ {print $4}'`
+        ;;
+   IRIX*) TRUST_ARCH=SGI
+	EDITEUR="nedit xedit jot dtpad"
+	TRUST_CC_BASE="CC g++"
+	TRUST_F77_BASE="f77"
+	TRUST_cc_BASE="cc"		
+        # winterm supprime car incompatible avec -sb....	
+	# Dtterm="dtterm winterm xterm"
+        Dtterm="dtterm xterm"
+	DEBUG="cvd ddd dbx"
+	IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/ bytes / {print $4}'`
+	;;
+   SunOS) TRUST_ARCH=sun5
+	EDITEUR="nedit textedit xedit dtpad"
+	TRUST_CC_BASE="g++ CC"				# TRUST plante avec CC natif sur SUN
+	TRUST_F77_BASE="g77 f77"			# Vaut mieux chercher g77 en premier
+	TRUST_cc_BASE="cc"	
+	Dtterm="dtterm xterm"
+	DEBUG="dbxtool debugger ddd dbx gdb"
+	#IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/bytes/ {print $4}'`
+        ;;
+   AIX) TRUST_ARCH=RS6000
+	# mpCC_r, mpxlf_r, mpcc_r compilateurs de zahir a l'IDRIS
+	EDITEUR="nedit xedit dtpad"
+	TRUST_CC_BASE="mpCC_r xlC g++"
+	SLD="makeC++SharedLib"
+	TRUST_F77_BASE="mpxlf_r xlf f77 xlf90"
+	TRUST_cc_BASE="mpcc_r cc"
+	Dtterm="xterm dtterm"
+	DEBUG="ddd xdb"
+	IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/ bytes / {print $4}'`
+	;;
+   OSF1) TRUST_ARCH=DECalpha
+	EDITEUR="nedit xedit dtpad"
+	TRUST_CC_BASE="cxx g++"
+	TRUST_F77_BASE="f77"
+	TRUST_cc_BASE="cc"
+	Dtterm="xterm dtterm"
+	DEBUG="ddd dbx xdb"
+	IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/ bytes / {print $4}'`
+	;;
+   Linux) TRUST_ARCH=linux
+	EDITEUR="nedit kedit xemacs xedit emacs gedit"
+	# Compilos Intel plus performants sont desormais en priorite sur archi 64 bits (exx)
+	# Sur 32 bits on laisse Gnu prioritaires par rapport a Intel (ixx)
+	# pgCC en dernier car +50% sur Opteron par rapport a gcc
+	# f90 Absoft trouve sur une machine (bach.lasef.ist.utl.pt)
+	# 24/11/04 Rajout de ifort : Compilateur Intel 8.x qui remplace ifc (7.x)
+	# 14/09/05 f90 place devant f77 car f77 Absoft trouve sur bach est tres exigeant: bcp de modifs a faire dans les .f
+	# 09/12/05 gfortran (ne remplace pas encore g77) c'est plutot un f95
+	# 21/02/07 Sur ia64 on place en priorite Intel par rapport a GNU (beaucoup plus performant 22s/37s, raisons?)
+	# En outre, il semble que icc=ecc,ifort=efc,...
+	# 1.5.3: on place gfortran devant g77 si GCC>=4.x
+	#fortran_gnu="g77 gfortran" && [ "`/usr/bin/gcc --version 2>/dev/null | head -1 | awk '/ 4\./ {print 1}'`" = 1 ] && fortran_gnu="gfortran g77"
+	# 1.6.1: on place gfortran devant g77 pour profiter de MUMPS au maximum
+        fortran_gnu="gfortran g77"
+	# On met icpc en 1er/GNU car sur titane (x86_64, icpc 10% plus rapide que gcc sur le cas cpu_3D...)
+	# si une version recente (>=v10) d'icpc existe car sur ecrins la 8.x ne marche pas bien...
+	# 1.6.9: On interdit strictement Intel 12.x qui fait crasher/bloquer MUMPS (voir MC1520)
+	if [ "`icpc -v 2>&1 | awk 'BEGIN {ok=0} /Version/ && ($2>10) {ok=1} /version/ && (($3>10 && $3<12) || $3>=13) {ok=1} END {print ok}'`" = 1 ]
+	then
+	   TRUST_CC_BASE="icpc icc ecc g++"
+	   TRUST_F77_BASE="ifort ifc efc $fortran_gnu"
+	   TRUST_cc_BASE="icc ecc gcc"
+	else
+	   TRUST_CC_BASE="g++ icpc icc ecc"
+	   TRUST_F77_BASE="$fortran_gnu ifort ifc efc"
+	   TRUST_cc_BASE="gcc icc ecc"
+	fi
+	# On rajoute les autres compilateurs
+	TRUST_CC_BASE=$TRUST_CC_BASE" pgCC"
+	TRUST_F77_BASE=$TRUST_F77_BASE" pgf90 f90 pgf77 f77"
+	TRUST_cc_BASE=$TRUST_cc_BASE" pgcc cc"
+	
+	Dtterm="xterm dtterm nxterm rxvt konsole"
+	DEBUG="ddd gdb"
+	IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/PING/ {print $3}'`
+	;;
+   CYGWIN*) TRUST_ARCH=cygwin
+	EDITEUR="nedit kedit xemacs xedit emacs"
+        fortran_gnu="gfortran g77"
+	   TRUST_CC_BASE="g++ icpc icc ecc"
+	   TRUST_F77_BASE="$fortran_gnu ifort ifc efc"
+	   TRUST_cc_BASE="gcc icc ecc"
+	# On rajoute les autres compilateurs
+	TRUST_CC_BASE=$TRUST_CC_BASE" pgCC"
+	TRUST_F77_BASE=$TRUST_F77_BASE" pgf90 f90 pgf77 f77"
+	TRUST_cc_BASE=$TRUST_cc_BASE" pgcc cc"
+	
+	Dtterm="xterm dtterm nxterm rxvt konsole"
+	DEBUG="ddd gdb"
+	IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/PING/ {print $3}'`
+	;;
+   Darwin) TRUST_ARCH=linux	# Portage en cours de la v1.4.5 sur Power MacIntosh G5
+	EDITEUR="nedit xedit emacs dtpad"
+	TRUST_CC_BASE="g++ gcc"
+	TRUST_F77_BASE="g77 f77"
+	TRUST_cc_BASE="gcc cc"
+	Dtterm="xterm dtterm nxterm"
+	DEBUG="ddd gdb"
+	;;
+   cobea) TRUST_ARCH=CRAY
+        EDITEUR="nedit xemacs emacs xedit dtpad"
+        TRUST_CC_BASE="CC g++"
+	TRUST_F77_BASE="fort77"
+	TRUST_cc_BASE="cc"
+        Dtterm="xterm"
+        DEBUG="totalview dbx xdb ddd gdb"
+        ;;
+   UNIX_System_V) TRUST_ARCH=F5000
+        EDITEUR="nedit xedit"
+        TRUST_CC_BASE="CC g++"
+        TRUST_F77_BASE="frt f77"
+	TRUST_cc_BASE="cc"
+        Dtterm="xterm"
+        DEBUG="totalview fdb"
+        ;;
+   *) TRUST_ARCH=autre
+	EDITEUR="nedit xedit dtpad xemacs"
+	TRUST_CC_BASE="g++ CC"
+	TRUST_F77_BASE="g77 f77 fort77"
+	TRUST_cc_BASE="gcc cc"
+	Dtterm="dtterm xterm"
+	DEBUG="ddd"
+	;;
+esac
+# Si on ne trouve pas f77, on essaie avec g77 et f90 (TRUST a deja marche sur HP avec f90)
+TRUST_F77_BASE=$TRUST_F77_BASE" g77 f90"
+# On ajoute en priorite le compilateur donne par option
+TRUST_CC_BASE=$TRUST_FORCE_CC" "$TRUST_CC_BASE
+TRUST_cc_BASE=$TRUST_FORCE_cc" "$TRUST_cc_BASE
+TRUST_F77_BASE=$TRUST_FORCE_F77" "$TRUST_F77_BASE
+echo "# IP machine: $IP" | tee -a $env
+m="# Simplified machine name ";e="HOST=$HOST && export HOST";ecrit $m"|"$e"|"$env
+m="# Building machine name ";e="HOST_BUILD=$HOST_BUILD && export HOST_BUILD";ecrit $m"|"$e"|"$env
+##############################################
+shell=`basename $SHELL` && echo "# The login shell is : $shell"
+m="# Machine architecture";e="TRUST_ARCH=$TRUST_ARCH && export TRUST_ARCH";ecrit $m"|"$e"|"$env;eval $e
+ECHO_OPTS="" && [ "`echo -e`" != "-e" ] && ECHO_OPTS="-e" && export ECHO_OPTS
+m="# Echo option";e="ECHO_OPTS=\"$ECHO_OPTS\" && export ECHO_OPTS";ecrit $m"|"$e"|"$env
+m="# Login of the TRUST install";e="TRUST_LOGIN=`whoami` && export TRUST_LOGIN";ecrit $m"|"$e"|"$env
+# Verification de l'existence de certaines variables :
+m="# Path to awk command";e="`cherche_file TRUST_Awk gawk awk nawk oawk`";ecrit $m"|"$e"|"$env;eval $e
+m="# Path to an text editor";e="`cherche_file EDITEUR $EDITEUR`";ecrit $m"|"$e"|"$env
+
+# Nouveau 2010, on regarde le nombre de processeurs disponibles des machines Linux:   
+TRUST_NB_PROCS=`./configurer_env -TRUST_NB_PROCS`
+# Variable TRUST_MAKE for the parallel builds:
+TRUST_MAKE="make -j $TRUST_NB_PROCS"
+if [ -f /proc/cpuinfo ]
+then
+   # Nombre de processeurs physiques:
+   procs=`grep "physical id" /proc/cpuinfo | sort -u | wc -l` && [ "$procs" = 0 ] && procs=1
+   cores_per_proc=`grep "core id" /proc/cpuinfo | sort -u | wc -l` && [ "$cores_per_proc" = 0 ] && cores_per_proc=1
+   total_cores=`echo $procs $cores_per_proc | awk '{print $1*$2}'`
+   echo "# Detected $procs processors of $cores_per_proc cores means a total of $total_cores physical cores." | tee -a $env
+   CACHE_SIZE=`awk '/cache size/ {print $(NF-1)}' /proc/cpuinfo | sort -u` 
+   echo "# Detected a size cache of $CACHE_SIZE KB." | tee -a $env
+   m="# Number of physical cores";e="TRUST_NB_PHYSICAL_CORES=$total_cores && export TRUST_NB_PHYSICAL_CORES";ecrit $m"|"$e"|"$env;eval $e
+fi
+m="# Number of logical cores used for build";e="TRUST_NB_PROCS=$TRUST_NB_PROCS && export TRUST_NB_PROCS";ecrit $m"|"$e"|"$env;eval $e
+m="# Path to make command used";e="TRUST_MAKE=\"$TRUST_MAKE\" && export TRUST_MAKE";ecrit $m"|"$e"|"$env;eval $e
+
+###############################################################################################################
+# Contournement d'un probleme rencontre sur Fedora 18 ou ccache/gcc trouve en premier au lieu de /usr/bin/gcc #
+# Le CCACHE_DIR pointait vers un repertoire inexistant suite a un configure clean et le ccache/gcc plantait...#
+###############################################################################################################
+unset CCACHE_DIR
+unset CCACHE_PREFIX
+export CCACHE_DISABLE=1 # pas de ccache lors de la configuration
+
+########################################################################################
+# Installation de ccache pour instaurer un cache du preprocessing lors de la compilation
+########################################################################################
+INSTALL_CCACHE=0
+[ "$TRUST_DISABLE_CCACHE" != "1" ] && [ $TRUST_ARCH = linux ] && INSTALL_CCACHE=1
+if [ $INSTALL_CCACHE =  1 ]
+then
+   make_ $TRUST_ROOT/env/ccache ccache $TRUST_ROOT/exec/ccache.log
+fi
+rm -f $TRUST_ROOT/exec/ccache/g??
+
+###################################################################################################
+# On a besoin d'un python complet pour VisIt 2.7.0 (python-config, lib.so) et PETSc, Run_fiche, MED
+###################################################################################################
+[ -f $TRUST_ROOT/exec/python/env.sh ] && source $TRUST_ROOT/exec/python/env.sh
+e="`cherche_file python python`";eval $e
+PYTHON_VERSION_OK=`$python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1]*100+a[2]*10+a[3];print (v>=273?1:0)}'`
+# Le script de VisIt ne cherche que dans /usr/lib/libpython*.so et pas /lib*/libpython*.so...
+# En fait, vtk cherche sous /usr/lib/libpython*.so et visit sous /usr/lib/*/libpython*.so 
+# Le test "ls /usr/lib*/python*/config/Makefile 2>/dev/null" est pour MED 3.0.7
+# 1.6.8: Add a more complex test (test.py) for python if python is not well installed
+if [ "$PYTHON_VERSION_OK" != 1 ] || [ "`python-config 2>&1 | grep Usage`" = "" ] || [ "`ls /usr/lib*/libpython*.so   /usr/lib*/*/libpython*.so 2>/dev/null`" = "" ]  || [ "`ls /usr/lib*/python*/config/Makefile 2>/dev/null`" = "" ] || [ "`python ./test.py 1>/dev/null 2>&1;echo $?`" != 0 ]
+then
+   make_ $TRUST_ROOT/Outils/Python python $TRUST_ROOT/exec/python.log
+fi
+
+####################
+# Compilateurs C/C++
+####################
+m="# Path to C++ compiler";e="`cherche_file TRUST_CC_BASE $TRUST_CC_BASE`";configure_compilateur_ccache;ecrit $m"|"$e"|"$env;eval $e
+m="# Path to C compiler";e="`cherche_file TRUST_cc_BASE $TRUST_cc_BASE`";configure_compilateur_ccache;ecrit $m"|"$e"|"$env;eval $e
+TRUST_ARCH_CC="$TRUST_ARCH"_`echo $TRUST_CC_BASE | awk -F/ '{print $NF}'`
+###########
+# Cas gcc 3
+###########
+if [ "${TRUST_CC_BASE%/g++}" != "$TRUST_CC_BASE" ]
+then
+   # On trouve sur RedHat 5.3 une sortie de g++ -v: gcc driver version 4.1.2 20070626 (Red Hat 4.1.2-14) executing gcc version 3.4.6 
+   # NB: g++ --version n'est pas terrible non plus (peyrolle retournera gcc-4.0.1)
+   TRUST_VERSION_GNU=`print_GNU_VERSION`
+   [ "$TRUST_VERSION_GNU" = "" ] && echo "`$TRUST_CC_BASE -v 2>&1`" && echo "GNU version not found. Contact TRUST support." && exit -1
+   [ ${TRUST_VERSION_GNU#2} = $TRUST_VERSION_GNU ] && TRUST_ARCH_CC=$TRUST_ARCH_CC"3"
+fi
+m="# Machine-compiler architecture";e="TRUST_ARCH_CC=$TRUST_ARCH_CC && export TRUST_ARCH_CC";ecrit $m"|"$e"|"$env
+m="# Path to Fortran compiler";e="`cherche_file TRUST_F77_BASE $TRUST_F77_BASE`";ecrit $m"|"$e"|"$env;eval $e
+####################################################
+# Verification que les compilateurs ont ete trouves.
+####################################################
+compiler_found=1
+# csh plus necessaire pour VisIt
+#[ ! -f /bin/csh ] && [ "$TRUST_WITHOUT_VISIT" != 1 ] && echo "/bin/csh not found. Please install the C shell." && compiler_found=0
+[ "$TRUST_CC_BASE" = "" ] && echo "C++ compiler not found. Please install a C++ compiler." && compiler_found=0
+[ "$TRUST_cc_BASE" = "" ] && echo "C compiler not found. Please install a C compiler." && compiler_found=0
+[ "$TRUST_F77_BASE" = "" ] && echo "Fortran compiler not found. Please install a Fortran compiler." && compiler_found=0
+[ "$compiler_found" = 0 ] && echo "Then install again the code." && exit -1
+
+######################################################################
+# On va avoir besoin de cmake 2.8 pour Metis et 2.8.10.2 pour VisIt 2.7.0
+# Update to 3.0.1 to fix recursive cmake
+######################################################################
+e="`cherche_file cmake cmake`";eval $e
+CMAKE_VERSION_OK=`$cmake --version 2>&1 | awk '/cmake version/ {split($3,a,".");v=a[1]*100+a[2]*10+a[3];print (v>=301?1:0)}'`
+if [ "$CMAKE_VERSION_OK" != 1 ]
+then
+   make_ $TRUST_ROOT/Outils/cmake cmake $TRUST_ROOT/exec/cmake.log
+fi
+
+##############################
+# Installation de makedepend #
+##############################
+make_ $TRUST_ROOT/Outils/makedepend makedepend $TRUST_ROOT/exec/makedepend.log
+
+
+# Mal fait : a ameliorer
+# Pour toutes les arch SLD=$TRUST_CC sauf RS6000 et sun prendre ld ?
+if [ $TRUST_ARCH = RS6000 ]
+then
+   m="# Path to the share libs linker";e="`cherche_file SLD $SLD`";ecrit $m"|"$e"|"$env
+   # Portage sur zahir (IDRIS): la variable OBJECT_MODE est egale a 64 par defaut.
+   # NB: -q64 fonctionne mais il faut aussi donner des options par ar donc OBJECT_MODE mieux
+   if [ "`ls -lart /unix | grep 64`" != "" ]
+   then
+      m="# Force 64 bits architecture";e="OBJECT_MODE=64 && export OBJECT_MODE";ecrit $m"|"$e"|"$env;eval $e
+   fi
+fi
+m="# Path to dtterm command";e="`cherche_file Dtterm $Dtterm`";ecrit $m"|"$e"|"$env;eval $e
+m="# Path to xterm command";e="`cherche_file Xterm xterm rxvt konsole`";ecrit $m"|"$e"|"$env;eval $e
+[ ${#Dtterm} = 0 ] || [ ${#Xterm} = 0 ] && echo "Warning. The TRUST GUI (Graphical User Interface) will not work cause Dtterm or Xterm not found. "
+m="# Path to a debugger";e="`cherche_file DEBUG $DEBUG`";ecrit $m"|"$e"|"$env
+
+#################################################################
+# Si on ne trouve pas la librairie graphique Tcl/Tk on l'installe
+#################################################################
+m="# Path to Tcl/Tk";e="`cherche_file WISH /usr/bin/wish /bin/wish wish`";eval $e
+if [ "$WISH" = "" ] && [ "$TRUST_DISABLE_TCL_TK" != "1" ]
+then
+   make_ $TRUST_ROOT/Outils/tcl_tk Tcl/Tk $TRUST_ROOT/exec/tcl_tk.log
+   e="`cherche_file WISH $TRUST_ROOT/exec/tcl_tk/bin/wish`";
+fi
+ecrit $m"|"$e"|"$env
+
+#################################################################
+# Recherche de GNU make>=3.81 (3.80 ne marche pas avec Metis 5.0)
+#################################################################
+e="`cherche_file gmake gmake make`";eval $e
+GMAKE_VERSION_OK=`$gmake --version 2>&1 | awk '/GNU Make/ && ($3>=3.81) {print 1}'`
+if [ "$GMAKE_VERSION_OK" != 1 ]
+then
+   make_ $TRUST_ROOT/env/gmake gmake $TRUST_ROOT/exec/gmake.log
+fi
+
+# On efface les paquets inutiles si installation
+[ "$install" = 1 ] && \ls *gz | grep -v $TRUST_ARCH | xargs rm -f
+cd $TRUST_ROOT/env
+# Mozilla est desormais supporte mais Konqueror pas encore completement ...
+#echo $ECHO_OPTS "Trying to find and test a browser...\c"
+m="# Path to a browser";e="`cherche_file WEBBROWSER google-chrome firefox mozilla-firefox mozilla netscape`";ecrit $m"|"$e"|"$env
+#echo OK
+###############
+# NATIVE BLAS #
+###############
+TRUST_BLAS_LAPACK=""
+# Try to improve detection of MKL (Intel):
+[ "$MKLROOT" = "" ] && MKLROOT=`type -p icpc 2>/dev/null | awk -F/bin '{print $1}'`
+if [ "$MKLROOT" != "" ]
+then
+   # MKL: Math Kernel Library d'INTEL detecte (seems to work with Intel or Gnu compilers)
+   TRUST_BLAS_LAPACK=`ls $MKLROOT/lib/*64*/libmkl_core.a $MKL_BASE/lib/*64*/libmkl_core.a 2>/dev/null | head -1`
+   [ "$TRUST_BLAS_LAPACK" != "" ] && TRUST_BLAS_LAPACK=`dirname $TRUST_BLAS_LAPACK`
+elif [ "`ls /usr/lib64/libblas.* 1>/dev/null 2>&1;echo $?`" = 0 ]
+then
+   # Try Blas under /usr/lib64
+   if [ -d /usr/lib64/atlas ]
+   then
+      # Atlas Blas seems faster on Cx test case
+      TRUST_BLAS_LAPACK=/usr/lib64
+   else
+      TRUST_BLAS_LAPACK="" # Possible but not a good idea if not Atlas (eg: slower than Netlib on Cx test case for cezanne27)
+   fi
+   TRUST_BLAS_LAPACK="" # Not enough test to confirm it is faster or not...
+fi
+m="# Path to optimized BLAS";e="TRUST_BLAS_LAPACK=\"$TRUST_BLAS_LAPACK\" && export TRUST_BLAS_LAPACK";ecrit $m"|"$e"|"$env
+
+#############
+# Debut MPI #
+#############
+COMLIBS=""    
+MPI_ROOT=""
+MPI_INCLUDE="\$TRUST_ROOT/lib/src/LIBMPI/no_mpi"
+MPI_LIB=""
+TRUST_CC=""
+TRUST_cc=""
+TRUST_F77=""
+COMM=""
+if [ "$TRUST_DISABLE_MPI" = 1 ]
+then
+   m="# Path to MPI";e="MPI_ROOT=\"$MPI_ROOT\" && export MPI_ROOT";	ecrit $m"|"$e"|"$env;eval $e
+   m="# Path to MPI include directory";e="MPI_INCLUDE=\"$MPI_INCLUDE\" && export MPI_INCLUDE"; ecrit $m"|"$e"|"$env;eval $e
+   m="# COMM variable";e="COMM=\"$COMM\" && export COMM";		ecrit $m"|"$e"|"$env
+else
+   rep_test_mpi=`mktemp_ -d`
+   echo "#include <mpi.h>
+   #include <iostream>
+   using std::cout;
+   using std::endl;
+   int main(int argc, char** argv)
+   {
+     if (argc>1)
+     {
+       MPI_Init(&argc,&argv);
+       int mytid;
+       MPI_Comm_rank(MPI_COMM_WORLD,&mytid);
+       cout<<\"[PE \"<<mytid<<\"] coucou\"<<endl;
+       MPI_Finalize();
+     }
+     else
+     {
+       cout<<\"[PE 0] coucou\"<<endl;
+     }
+     return 0;
+   }" > $rep_test_mpi/test_mpi.cpp
+   echo "      program main 
+      include 'mpif.h'
+      integer ierr
+      integer argc
+      argc=iargc()      
+      if (argc.gt.1) then
+         call mpi_init(ierr)
+         print*,\" coucou\"
+         call mpi_finalize(ierr)
+      else
+         print*,\" coucou\"
+      endif
+      end program" > $rep_test_mpi/test_mpi.f
+   # A minima:
+   COMM="_mpi";export COMM
+   COMFLAGS=" -DMPI_"
+   mpi_detecte=0
+   if [ "$TRUST_FORCE_PROVIDED_OPENMPI" != 1 ] && [ "$TRUST_FORCE_OLD_OPENMPI" != 1 ] && [ "$TRUST_FORCE_LATEST_OPENMPI" != 1 ] && [ "$TRUST_FORCE_PROVIDED_MPICH" != 1 ]
+   then
+      ############################################
+      # Detection de MPI par le wrapper C++ trouve
+      ############################################
+      ec="`cherche_file mpiCC mpCC_r mpicxx mpiCC`";eval $ec
+      if [ "$mpiCC" != "" ]
+      then   
+         MPI_BIN=`dirname $mpiCC` # Variable temporaire utile ensuite
+	 # On a besoin de specifier le compilateur utilise par mpiCC
+	 if [ "`$mpiCC -show | grep openmpi`" != "" ] || [ "`$mpiCC -show | grep bullxmpi`" != "" ]
+	 then
+            m="# Compiler for mpiCC"  && e="OMPI_CXX=\"\$TRUST_CC_BASE\"  && export OMPI_CXX" 	&& ecrit $m"|"$e"|"$env;eval $e
+            m="# Compiler for mpicc"  && e="OMPI_CC=\"\$TRUST_cc_BASE\"   && export OMPI_CC" 	&& ecrit $m"|"$e"|"$env;eval $e
+            m="# Compiler for mpif77" && e="OMPI_F77=\"\$TRUST_F77_BASE\" && export OMPI_F77" 	&& ecrit $m"|"$e"|"$env;eval $e     
+	    m="# Compiler for mpif90" && e="OMPI_FC=\"\$TRUST_F77_BASE\" && export OMPI_FC" 	&& ecrit $m"|"$e"|"$env;eval $e  
+	 elif [ "`$mpiCC -show | grep mpibull`" != "" ]
+	 then
+            m="# Compiler for mpiCC"  && e="MPIBULL_CXX=\"\$TRUST_CC_BASE\"  && export MPIBULL_CXX" 	&& ecrit $m"|"$e"|"$env;eval $e
+            m="# Compiler for mpicc"  && e="MPIBULL_CC=\"\$TRUST_cc_BASE\"   && export MPIBULL_CC" 	&& ecrit $m"|"$e"|"$env;eval $e
+            m="# Compiler for mpif77" && e="MPIBULL_F77=\"\$TRUST_F77_BASE\" && export MPIBULL_F77" 	&& ecrit $m"|"$e"|"$env;eval $e     
+	 elif [ "`$mpiCC -show | grep mpich`" != "" ]
+	 then
+	    # MPICH_CCC peut etre obsolete, a remplacer par MPICH_CXX ?
+	    m="# Compiler for mpicxx" && e="MPICH_CXX=\"\$TRUST_CC_BASE\"  && export MPICH_CXX" 	&& ecrit $m"|"$e"|"$env;eval $e
+            m="# Compiler for mpiCC"  && e="MPICH_CCC=\"\$TRUST_CC_BASE\"  && export MPICH_CCC" 	&& ecrit $m"|"$e"|"$env;eval $e
+            m="# Compiler for mpicc"  && e="MPICH_CC=\"\$TRUST_cc_BASE\"   && export MPICH_CC" 	&& ecrit $m"|"$e"|"$env;eval $e
+            m="# Compiler for mpif77" && e="MPICH_F77=\"\$TRUST_F77_BASE\" && export MPICH_F77" 	&& ecrit $m"|"$e"|"$env;eval $e
+	    m="# Compiler for mpif90" && e="MPICH_F90=\"\$TRUST_F77_BASE\" && export MPICH_F90" 	&& ecrit $m"|"$e"|"$env;eval $e
+            # Bizarrerie pour ioulia, il faut specifier le linker en fortran sinon NP ne compile pas:
+            m="# Linker pour mpif77"      && e="MPICH_FLINKER=\"\$TRUST_F77_BASE\" && export MPICH_FLINKER" && ecrit $m"|"$e"|"$env;eval $e
+	 elif [ "`$mpiCC -show | grep intel/mpi`" != "" ]
+	 then
+	    m="# Compiler for mpiCC"  && e="I_MPI_CXX=\"\$TRUST_CC_BASE\"  && export I_MPI_CXX" 	&& ecrit $m"|"$e"|"$env;eval $e
+	    m="# Compiler for mpicc"  && e="I_MPI_CC=\"\$TRUST_cc_BASE\"  && export I_MPI_CC" 		&& ecrit $m"|"$e"|"$env;eval $e
+	    m="# Compiler for mpif77" && e="I_MPI_F77=\"\$TRUST_F77_BASE\" && export I_MPI_F77" 	&& ecrit $m"|"$e"|"$env;eval $e
+	    m="# Compiler for mpif90" && e="I_MPI_F90=\"\$TRUST_F77_BASE\" && export I_MPI_F90" 	&& ecrit $m"|"$e"|"$env;eval $e
+	 fi 
+	 # Test du MPI trouve avec mpiCC
+	 echo $ECHO_OPTS "# Check `basename $mpiCC` (mpiCC.log file): "
+	 echo $mpiCC -o ./test_mpi $rep_test_mpi/test_mpi.cpp
+	 $mpiCC -o ./test_mpi $rep_test_mpi/test_mpi.cpp 1>mpiCC.log 2>&1 
+	 err=$?
+	 [ $err = 0 ] && run_test_mpi 1>mpiCC.log 2>&1 
+	 OK $err
+	 if [ $err = 0 ]
+	 then
+	    # Test du MPI trouve avec mpif90 ou mpif77 (nouveau pour la 1.6.3 car certains Linux avec LAM/MPI n'ont pas le support fortran)
+	    if [ -f $MPI_BIN/mpif90 ]
+	    then
+	       mpif=$MPI_BIN/mpif90
+	    else
+  	       mpif=$MPI_BIN/mpif77
+	    fi
+	    echo $ECHO_OPTS "# Check `basename $mpif` (mpif.log file): "
+	    echo $mpif -o ./test_mpi $rep_test_mpi/test_mpi.f
+	    $mpif -o ./test_mpi $rep_test_mpi/test_mpi.f 1>mpif.log 2>&1 
+	    err=$?
+	    [ $err = 0 ] && run_test_mpi 1>mpif.log 2>&1 
+	    OK $err
+	 fi
+	 # On definit TRUST_CC et TRUST_cc si on trouve un mpiCC/mpi77 qui fonctionne:
+	 if [ $err = 0 ]
+	 then
+	    mpi_detecte=1
+	    mpicc=$MPI_BIN/mpicc
+	    if [ "$VAMPIR_SUPPORTED" = 1 ]
+	    then
+	       VTCC="vtc++ -vt:cxx "
+	       VTcc="vtcc -vt:cc "
+	       VTF77="vtf77 -vt:f77 "
+	    else
+	       VTCC=""
+	       VTcc=""
+	       VTF77=""
+	    fi
+	    m="# Path to C++ compiler"     && e="TRUST_CC=\"$VTCC$mpiCC\" && export TRUST_CC"  && ecrit $m"|"$e"|"$env;eval $e
+	    m="# Path to C compiler"       && e="TRUST_cc=\"$VTcc$mpicc\" && export TRUST_cc"  && ecrit $m"|"$e"|"$env;eval $e
+	    m="# Path to Fortran compiler" && e="TRUST_F77=\"$VTF77$mpif\" && export TRUST_F77" && ecrit $m"|"$e"|"$env;eval $e
+	    # On ameliore pour la determination de MPI_INCLUDE
+	    MPI_INCLUDE=`$mpiCC -show 2>/dev/null | awk '{for(i=1;i<=NF;i++) if (gsub("-I","",$i)) print $i}' | grep /include`
+	    for MPI_INCLUDE in $MPI_INCLUDE `dirname $MPI_BIN`/include
+	    do
+	       [ -f $MPI_INCLUDE/mpi.h ] && break # On trouve l'include mpi.h
+	    done
+	    if [ ! -f $MPI_INCLUDE/mpi.h ]
+	    then
+	       echo "mpi.h not found for $mpiCC ..."
+	       mpi_detecte=0 # On n'a pas trouve l'include
+	    else 	
+	       # On recherche maintenant MPI_ROOT en se basant MPI_ROOT/lib 
+	       MPI_LIBS=`$mpiCC -show 2>/dev/null | awk '{for(i=1;i<=NF;i++) if (gsub("-L","",$i)) print $i}' | sort -u`
+	       for MPI_LIB in $MPI_LIBS
+	       do
+	          [ -d $MPI_LIB ] && [ "`ls $MPI_LIB/libmpi*.* 2>/dev/null`" != "" ] && break # On trouve le repertoire de la librairie MPI
+	       done
+	       for MPI_ROOT in $MPI_LIB $MPI_BIN $MPI_INCLUDE
+	       do
+	          MPI_ROOT=`dirname $MPI_ROOT`
+	          [ -d $MPI_ROOT/lib ] && break # On trouve le repertoire pour MPI_ROOT
+	       done	       
+	       export MPI_ROOT	
+	       # Recherche de mpirun
+	       em="`cherche_file Mpirun $MPI_BIN/mpirun $MPI_ROOT/bin/mpirun $MPI_ROOT/bin/poe dmpirun prun mpirun mpiexec srun`";eval $em
+	       # Si pas trouve (comme sur is213120) alors on quitte:
+	       [ "$Mpirun" = "" ] && mpi_detecte=0 && echo "mpiexec/mpirun not found for MPI_ROOT=$MPI_ROOT..."	       
+	       # Pb decouvert sur machine is202803 et ioulia : il ne faut pas inclure mpi++.h dans le mpi.h sinon warning qui font des erreurs avec -Wall -Werror:
+	       [ -f `dirname $mpiCC`/mpicxx ] && COMFLAGS=$COMFLAGS" -DMPICH_SKIP_MPICXX"
+	    fi	
+	 fi
+      fi
+   fi
+   [ "$err" != 1 ] && rm -r -f $rep_test_mpi
+   # MPI sur IBM (Idris) cas special, trop complique pour le moment a faire rentrer
+   # dans le moule mpiCC, mpicc, mpixlf avec mpCC_r, mpCC_r, mpxlf_r...
+   [ $TRUST_ARCH_CC = RS6000_mpCC_r ] && mpi_detecte=1 && export MPI_ROOT=/usr/lpp/ppe.poe && export Mpirun=$MPI_ROOT/bin/poe
+
+   if [ $mpi_detecte = 0 ]
+   then
+      if [ "$TRUST_FORCE_PROVIDED_OPENMPI" != 1 ] && [ "$TRUST_FORCE_PROVIDED_MPICH" != 1 ] && [ "$TRUST_MPI_NATIF" = 1 ]
+      then
+         echo "Native MPI SHOULD be used on $HOST for optimal performances."
+         echo "Contact $HOST administrator to find native MPI libraries." 
+         echo "Or use ./configure -force_provided_openmpi|mpich to force basic OpenMPI|MPICH installation."
+         exit -1
+      fi
+      mpi_detecte=1   
+      ###########################################
+      # Pas de MPI detecte, on prend le MPI livre
+      ########################################### 
+      COMM="_mpi"
+      # Switch possible entre OpenMPI et MPICH
+      # MPI_ROOT="$TRUST_ROOT/lib/src/LIBMPI/openmpi" && [ "$TRUST_FORCE_PROVIDED_MPICH" = 1 ] && MPI_ROOT="$TRUST_ROOT/lib/src/LIBMPI/mpich"
+      # New 1.6.9 -> MPICH by default instead of OpenMPI (hangs on several cases, eg: UJV_32 on gudy)
+      MPI_ROOT="$TRUST_ROOT/lib/src/LIBMPI/mpich"
+      if [ "$TRUST_FORCE_PROVIDED_OPENMPI" = 1 ] || [ "$TRUST_FORCE_OLD_OPENMPI" = 1 ] || [ "$TRUST_FORCE_LATEST_OPENMPI" = 1 ]
+      then
+         MPI_ROOT="$TRUST_ROOT/lib/src/LIBMPI/openmpi"
+      fi
+      export MPI_ROOT # Car sinon pas retenu dans le makefile de LIBMPI
+      # Installation du MPI livre
+      SRC_MPI=`dirname $MPI_ROOT | sed "s?lib/src?ThirdPart/src?"`
+      make_ $SRC_MPI `basename $MPI_ROOT` $TRUST_ROOT/lib/`basename $SRC_MPI`".log"
+
+      MPI_ROOT="\$TRUST_ROOT/lib/src/LIBMPI/`basename $MPI_ROOT`";export MPI_ROOT  
+      MPI_INCLUDE="\$TRUST_ROOT/lib/src/LIBMPI/`basename $MPI_ROOT`/include";export MPI_INCLUDE  
+      Mpirun="\$MPI_ROOT/bin/mpirun";export Mpirun
+      mpiCC="\$MPI_ROOT/bin/mpiCC";export mpiCC   
+      COMFLAGS="-DMPI_"   
+      if [ "`basename $MPI_ROOT`" = openmpi ]
+      then      
+	 COMLIBS=""
+	 # Pour OpenMPI on prend desormais mpiCC pour compiler en changeant le compilateur
+	 m="# Compiler for mpiCC" && e="OMPI_CXX=\"\$TRUST_CC_BASE\" && export OMPI_CXX" && ecrit $m"|"$e"|"$env;eval $e
+	 m="# Compiler for mpicc" && e="OMPI_CC=\"\$TRUST_cc_BASE\" && export OMPI_CC" && ecrit $m"|"$e"|"$env;eval $e
+	 m="# Compiler for mpif77" && e="OMPI_F77=\"\$TRUST_F77_BASE\" && export OMPI_F77" && ecrit $m"|"$e"|"$env;eval $e
+	 m="# Compiler C++" && e="TRUST_CC=\"$MPI_ROOT/bin/mpiCC\" && export TRUST_CC" && ecrit $m"|"$e"|"$env;eval $e
+	 m="# Compiler C" && e="TRUST_cc=\"$MPI_ROOT/bin/mpicc\" && export TRUST_cc" && ecrit $m"|"$e"|"$env;eval $e
+	 m="# Compiler F77" && e="TRUST_F77=\"$MPI_ROOT/bin/mpif77\" && export TRUST_F77" && ecrit $m"|"$e"|"$env;eval $e
+	 echo "ADD_PATH $MPI_ROOT/bin" >> $env
+	 MPI_LIB="";export MPI_LIB
+      elif [ "`basename $MPI_ROOT`" = mpich ]  
+      then 
+	 COMLIBS=""
+	 # Pour MPICH on prend desormais mpicxx (mpiCC n'existe plus) pour compiler en changeant le compilateur
+	 m="# Compiler for mpiCC" && e="MPICH_CCC=\"\$TRUST_CC_BASE\" && export MPICH_CCC" && ecrit $m"|"$e"|"$env;eval $e
+	 m="# Compiler for mpicc" && e="MPICH_CC=\"\$TRUST_cc_BASE\" && export MPICH_CC" && ecrit $m"|"$e"|"$env;eval $e
+	 m="# Compiler for mpif77" && e="MPICH_F77=\"\$TRUST_F77_BASE\" && export MPICH_F77" && ecrit $m"|"$e"|"$env;eval $e
+	 m="# Compiler C++" && e="TRUST_CC=\"$MPI_ROOT/bin/mpicxx\" && export TRUST_CC" && ecrit $m"|"$e"|"$env;eval $e
+	 m="# Compiler C" && e="TRUST_cc=\"$MPI_ROOT/bin/mpicc\" && export TRUST_cc" && ecrit $m"|"$e"|"$env;eval $e
+	 m="# Compiler F77" && e="TRUST_F77=\"$MPI_ROOT/bin/mpif77\" && export TRUST_F77" && ecrit $m"|"$e"|"$env;eval $e
+	 echo "ADD_PATH $MPI_ROOT/bin" >> $env
+	 MPI_LIB="";export MPI_LIB
+      else
+         echo "$MPI_ROOT not supported yet."
+	 exit -1
+      fi
+      export COMM        
+   fi
+
+   # Ecriture des variables
+   m="# Path to MPI";		e="MPI_ROOT=\"$MPI_ROOT\" && export MPI_ROOT";	ecrit $m"|"$e"|"$env;eval $e
+   m="# Path to MPI includes directory";	e="MPI_INCLUDE=\"$MPI_INCLUDE\" && export MPI_INCLUDE";	ecrit $m"|"$e"|"$env;eval $e
+   # On fait attention si MPI_LIB est vide (-L peut causer des soucis...)
+   if [ "$MPI_LIB" != "" ]
+   then
+      m="# Path to MPI libraries directory";e="MPI_LIB=\"$MPI_LIB\" && export MPI_LIB";	ecrit $m"|"$e"|"$env
+      MPI_LIB="-L\$(MPI_LIB)" 
+   fi
+   m="# Path to mpirun command";	e="Mpirun=\"$Mpirun\" && export Mpirun";	ecrit $m"|"$e"|"$env
+   m="# COMM variable";		e="COMM=\"$COMM\" && export COMM";		ecrit $m"|"$e"|"$env
+fi
+###########
+# Fin MPI #
+###########
+
+# Pas de MPI, on fixe TRUST_CC a TRUST_CC_BASE et TRUST_cc a TRUST_cc_BASE
+[ "$TRUST_CC" = "" ] && m="# Path to C++ compiler" 	&& e="TRUST_CC=\"$TRUST_CC_BASE\" && export TRUST_CC" && ecrit $m"|"$e"|"$env && eval $e
+[ "$TRUST_cc" = "" ] && m="# Path to C compiler"	&& e="TRUST_cc=\"$TRUST_cc_BASE\" && export TRUST_cc" && ecrit $m"|"$e"|"$env && eval $e
+[ "$TRUST_F77" = "" ] && m="# Path to F77 compiler"	&& e="TRUST_F77=\"$TRUST_F77_BASE\" && export TRUST_F77" && ecrit $m"|"$e"|"$env && eval $e
+
+########################
+# Installation de astyle
+########################
+if [ $TRUST_ARCH = linux ]
+then
+   make_ $TRUST_ROOT/Outils/astyle astyle $TRUST_ROOT/exec/astyle.log
+fi
+
+########################
+# Installation de Salome
+########################
+version_salome=7.6.0
+if [ $TRUST_DOWNLOAD_SALOME = 1 ]
+then
+   version_salome_=`echo $version_salome | awk '{gsub("\\\.","_",$0);print $0}'`
+   package=Salome$version_salome
+   run_salome=Salome-V$version_salome_-LGPL-x86_64.run
+   echo $ECHO_OPTS "Trying to install $package...\c"
+   if [ -f $TRUST_ROOT/Outils/Salome/appli_V$version_salome_/runAppli ]
+   then
+      err=0
+   else
+      rm -f $run_salome
+      wget_ http://files.salome-platform.org/Salome/$package/$run_salome 1>$package.log 2>&1
+      chmod +x $run_salome
+      mkdir -p $TRUST_ROOT/Outils/Salome
+      echo $ECHO_OPTS "Y" | ./$run_salome -t $TRUST_ROOT/Outils/Salome 1>>$package.log 2>&1
+      err=$?
+   fi 
+   if [ $err = 0 ]
+   then
+      echo "OK"
+      echo "ADD_PATH \$TRUST_ROOT/Outils/Salome/appli_V$version_salome_" >> $env
+   else
+      echo "KO (See `pwd`/$package.log)"
+      echo "Contact TRUST support."
+      exit -1
+   fi
+   rm -f $run_salome
+else
+   # Try to detect last Salome version
+   X=`echo $version_salome | awk -F. '{print $1}'`
+   SALOME_BIN_ROOT=`ls -rt /export/home/salome/V$X"_"*/APPLI/runAppli 2>/dev/null | tail -1`
+   if [ "$SALOME_BIN_ROOT" != "" ]
+   then
+      SALOME_BIN_ROOT=`dirname $SALOME_BIN_ROOT`
+      echo "Salome $version_salome detected under $SALOME_BIN_ROOT and added to the TRUST environment."
+      echo "ADD_PATH $SALOME_BIN_ROOT" >> $env
+   fi
+fi
+
+# Shares libs possibles ?
+SHARE_LIBS=1
+# Cas provisoire special pour certaines TRUST_ARCH, compilation avec lib statique :
+# Car compilation en share-libs plante a l'execution vers Cout=cout(process.cpp)
+# Plante pour IBM immediatement (Memory fault)
+# Sur Sun s'arrete au bout d'un moment
+# Sur CRAY pas de share libs
+# Sur fujitsu, plante sur certains fortrans (relocation type 54)
+if [ $TRUST_ARCH = CRAY ] || [ $TRUST_ARCH = sun5 ] || [ $TRUST_ARCH = RS6000 ] || [ $TRUST_ARCH = F5000 ]
+then
+   SHARE_LIBS=0
+fi
+# Nouveau depuis la v1.2, ne marchent plus en share libs :
+# DECalpha : coredump des le debut (sauf ixia)
+# HPPA_g++ : coredump un peu plus loin
+# SGI_g++ : ne trouve pas certaines libs pour mallinfo
+if [ $TRUST_ARCH = DECalpha ] || [ $TRUST_ARCH_CC = HPPA_g++ ] || [ $TRUST_ARCH_CC = SGI_g++ ]
+then
+   SHARE_LIBS=0
+fi
+# Detect an software configuration management tool -> means a developer version
+if [ -d $TRUST_ROOT/.git ]
+then
+   TRUST_SCM=1
+   if [ -d $TRUST_ROOT/.git ]
+   then
+      GIT_ROOT=$TRUST_ROOT/.git
+      # Activate and add Git hooks
+      list_hooks=`cd $TRUST_ROOT/bin/GIT/hooks;ls 2>/dev/null`
+      list_hooks="" # Temporary: review what really make pre-commit and post-commit
+      for hook in $list_hooks
+      do
+          # Don't use source but . instead in .git/hooks commits
+          command=". bin/GIT/hooks/$hook"
+	  if [ "`grep "$command" $GIT_ROOT/hooks/$hook 2>/dev/null`" = "" ]
+	  then
+             echo "Activating and changing the $hook hook in $GIT_ROOT/hooks/$hook"
+	     echo "If you want to deny the involved action, then comment the line into this file."
+	     # I have seen some git version, where post-pre commit file do not exist and are named post-pre-commit.sample
+	     # So we create if necessary:
+	     [ ! -f $GIT_ROOT/hooks/$hook ] && echo "#" > $GIT_ROOT/hooks/$hook
+	     # Clean previous TRUST changes
+	     sed -i "/TRUST/d" $GIT_ROOT/hooks/$hook
+	     #nedit $GIT_ROOT/hooks/$hook
+	     # Add new one after last comment:
+	     last_comment=`grep '^#' $GIT_ROOT/hooks/$hook | tail -1`
+	     sed -i "s?$last_comment?$last_comment\n\n# TRUST hook (may be commented):\n$command?" $GIT_ROOT/hooks/$hook
+	     #nedit $GIT_ROOT/hooks/$hook
+	     chmod +x $GIT_ROOT/hooks/$hook
+	  fi
+      done
+   fi
+else
+   TRUST_SCM=0
+fi
+m="# Using an SCM ?";e="TRUST_SCM=\"$TRUST_SCM\" && export TRUST_SCM";ecrit $m"|"$e"|"$env
+# Share libs are not use if not using an SCM:
+[ "$TRUST_SCM" != 1 ] && SHARE_LIBS=0
+export SHARE_LIBS
+m="# Shared libs activated ?";e="SHARE_LIBS=\"$SHARE_LIBS\" && export SHARE_LIBS";ecrit $m"|"$e"|"$env
+# Apache ?
+UTILISE_APPACHE=0 && [ $TRUST_ARCH = linux ] && UTILISE_APPACHE=1
+m="# Apache server activated ?";e="UTILISE_APPACHE=\"$UTILISE_APPACHE\" && export UTILISE_APPACHE";ecrit $m"|"$e"|"$env
+# Bloquage parfois sur linux ....
+#echo "Press return if necessary..."
+# Questions possibles :
+# OPT COMM
+# Chercher libF77'*' et libsunmath pour sun5 dans /opt/SUNWspro ...
+
+# Rajout des PATH si la configuration est mal fait sur le compte.
+paths=`cat $TRUST_ENV/.path`
+if [ ${#paths} != 0 ]
+then
+   # m="# PATH a rajouter";e="PATH=\$PATH$path && export PATH";ecrit $m"|"$e"|"$env
+   # On ajoute proprement les nouveaux PATH:
+   echo "# PATH added" >> $env
+   for path in $paths
+   do
+      echo "ADD_PATH $path" >> $env
+   done
+fi
+# Ajout du PATH eventuel vers le bin des outils d'installation pour Linux
+# devenu inutile en version open source
+#[ -d $TRUST_ROOT/../bin ] && echo "ADD_PATH $TRUST_ROOT/../bin" >> $env
+
+###############################
+# Construction de make.$TRUST_ARCH_CC
+############################
+LINK_MALIB="\$(OBJS)"
+Defines=""
+SYSINC=""
+SL_EXTENSION="so" && [ ${TRUST_ARCH#HPPA} != $TRUST_ARCH ] && SL_EXTENSION="sl"
+OPTIMIZE="-O3"
+TRUST_SUPPORTED=0
+case $TRUST_ARCH_CC in
+   HPPA_11_aCC) TRUST_SUPPORTED=0
+   	Defines="-D_COMPILE_AVEC_aCC_"
+	# +DA2.0 pour optimiser sur PA8000 2.0
+	# +O2 au lieu de +03 car pb de maxdsiz sur jungfrau
+	F77Flags="+O3 +DA2.0W +Z"
+	CppFlags="+O2 +DA2.0W +Z -Aa -Wl,+s"
+	ccFLAGS="+O3 +DA2.0W +Z -Aa -Ae"
+	# On rajoute le +DA2.0W dans SYSLIBS pour le link...
+	# et -L/opt/fortran90/lib/pa20_64 car pb sur montets
+	SYSLIBS="+DA2.0W -lnsl -L/opt/fortran90/lib/pa20_64 -lF90"
+	ShLibFlag="\$(TRUST_CC) -b"
+        ;;
+   HPPA_aCC) TRUST_SUPPORTED=0
+	Defines="-D_COMPILE_AVEC_aCC_"
+	# Option +Z obligatoire pour share libs !
+	# Option -Wl,+s obligatoire pour share libs portables !
+	CppFlags="+O3 +DAportable +Z -Aa -Wl,+s"
+	SYSLIBS="-L/opt/fortran/lib -lm -lU77"
+	F77Flags="+O3 +DAportable +Z"
+	ccFLAGS="+O3 +DAportable -Aa -Ae"
+	ShLibFlag="\$(TRUST_CC) -b"	
+        ;;
+   HPPA_CC) TRUST_SUPPORTED=0
+	# Option +Z obligatoire pour share libs !
+	# Option -Wl,+s obligatoire pour share libs portables !
+	CppFlags="+O3 +DAportable +Z -Aa -Wl,+s -Wp,-H30000"
+	SYSLIBS="-L/opt/fortran/lib -lm -lU77"
+	F77Flags="+O3 +DAportable +Z"
+	ccFLAGS="+O3 +DAportable -Aa -Ae"
+	ShLibFlag="\$(TRUST_CC) -b"
+        ;;	
+   HPPA_g++*) TRUST_SUPPORTED=0
+	CppFlags="-O2 -fPIC -Wp,-H30000"
+	#SYSLIBS="-lcl -lf -lg2c"
+	SYSLIBS="-lg2c -ldce"
+	F77Flags="-O2 -fPIC"
+	ccFLAGS="+O2 -Aa -Ae"
+	ShLibFlag="ld -b"
+	;;   
+   SGI_CC) TRUST_SUPPORTED=0
+	SYSINC="-I/usr/include/CC"
+	# G8 car sinon marche pas sur picasso
+	CppFlags="-O3 -n32 -mips4 -G8 -OPT:Olimit=11000 -OPT:alias=restrict -LANG:ansi-for-init-scope=ON"
+	#-n32 pour 32 bits, -64 pour 64 bits (pas teste)
+	# -lmalloc pour la reference a mallinfo
+	SYSLIBS="-lftn -lm -lmalloc"
+	F77Flags="-O3 -n32 -mips4"
+	ccFLAGS="-O3 -n32 -mips4"
+	ShLibFlag="\$(TRUST_CC) -shared"
+	LINK_MALIB="-all \$(MALIB) -none"
+	;;
+   SGI_g++*) TRUST_SUPPORTED=0
+	# -n32 pas accepte pour g++
+	CppFlags="-O3"
+	SYSLIBS="-lg2c"
+	F77Flags="-O3"
+	ccFLAGS="-O3"
+	ShLibFlag="ld -shared"
+	LINK_MALIB="-all \$(MALIB) -none"
+   	;;
+   sun5_g++*) TRUST_SUPPORTED=0
+	CppFlags="-O3 -w"
+	# SYSLIBS="-lsocket -lnsl -lg2c si TRUST_F77_BASE=g77 sinon TRUST_F77_BASE=f77 :
+	# -lrt suite passage mpich 1.2.1 a 1.2.4
+	if [ "`basename $TRUST_F77_BASE`" = f77 ]
+	then
+	   SYSLIBS="-L/product/SUNWspro/lib -lF77 -lsunmath -lsocket -lnsl -lmapmalloc -lrt"
+	elif [ "`basename $TRUST_F77_BASE`" = g77 ]
+	then
+	   SYSLIBS="-lg2c -lsocket -lnsl -lmapmalloc -lrt"
+	fi
+	F77Flags="-O3"
+	# Le nouveau cc de Sun n'accepte pas -O2 mais -O ou -xO2 
+	ccFLAGS="-O"
+	# Attention g++ -shared ne marche pas meme si g++ !!!
+	ShLibFlag="ld -G"
+   	;;
+   sun5_CC) TRUST_SUPPORTED=0
+	# DO NOT USE CC Sun !!!
+	# Option pour CC Sun en Share libs (-PIC important)
+	# compat=4 pour SC4.x sur SC5.0 
+	CppFlags="-O3 -PIC -w -noex -compat=4"
+	#SYSLIBS="-L/product/SUNWspro/SC5.0/lib -lF77 -lsunmath -lsocket -lnsl"
+	SYSLIBS="-L/opt/SUNWspro/SC4.0/lib -lF77 -lsunmath -lsocket -lnsl"
+	F77Flags="-O3 -PIC"
+	# Le nouveau cc de Sun n'accepte pas -O2 mais -O ou -xO2
+	ccFLAGS="-O"
+	ShLibFlag="ld -G"
+        ;;
+   RS6000_xlC | RS6000_mpCC_r) TRUST_SUPPORTED=0
+	SYSINC="-I/usr/ibmcxx/include"
+	#CppFlags="-O2 -qtune=pwr2 -qarch=pwr2"
+	# Passage en O3 lors du portage sur zahir (rajout de -qstrict)
+	CppFlags="-Wl,-bbigtoc -qstrict -O3"
+	# -bmaxdata pour allouer la RAM disponible 0x80000000 2Go (32bits) sinon 4Go en 64bits ?
+	bmaxdata=" -bmaxdata:0x80000000" && [ "$OBJECT_MODE" = 64 ] && bmaxdata=" -bmaxdata:0x160000000"
+	SYSLIBS="-Wl,-bbigtoc -lm -lxlf -lxlf90 -lpthread"$bmaxdata
+	#F77Flags="-O2 -qtune=pwr2 -qarch=pwr2"
+	F77Flags="-qstrict -O3"
+	ccFLAGS="-qstrict -O3"
+	# Attention xlC ne marche pas pour AIX 4.1 :(xlC -G pour AIX > 4.1)
+	# Remarque : l'ordre -berok est important pour supprimer unsatisfied symbols
+	# Remarque : -p 2000 est important car sinon 
+	# Remarque : makeC++SharedLib peut se trouver dans /usr/lpp/xlC/bin
+	# On arrive toujours pas a faire un exec share libs qui marche :
+	# ar ruv *.so *.a puis link ok mais plante a l'execution
+	ShLibFlag="\$(SLD) -berok -p 2000"
+	LINK_MALIB="\$(MALIB)"
+	;;   
+   RS6000_g++*) TRUST_SUPPORTED=0
+	#CppFlags="-O3 -qtune=pwr2 -qarch=pwr2"
+	CppFlags="-O3 -fPIC -w -mminimal-toc"
+	SYSLIBS="-lg2c"
+	#F77Flags="-O3 -qtune=pwr2 -qarch=pwr2"
+	F77Flags="-O3 -mminimal-toc"
+	ccFLAGS="-O3 -mminimal-toc"
+	# Attention xlC ne marche pas pour AIX 4.1 :(xlC -G pour AIX > 4.1)
+	# Remarque : l'ordre -berok est important pour supprimer unsatisfied symbols
+	# Remarque : -p 2000 est important car sinon 
+	# Remarque : makeC++SharedLib peut se trouver dans /usr/lpp/xlC/bin
+	# On arrive toujours pas a faire un exec share libs qui marche :
+	# ar ruv *.so *.a puis link ok mais plante a l'execution
+	# Probleme aussi avec gnu : toujours pas trouve le bon
+	# g++ -shared ne marche pas (undefined...)
+	# gld -i donne quelque chose mais est ce une share lib ?
+	ShLibFlag="gld -i"
+	;;
+   RS6000_KCC) TRUST_SUPPORTED=0
+	#CppFlags="-O3 -qtune=pwr2 -qarch=pwr2"
+	CppFlags="-O3"
+	SYSLIBS="-lm -lxlf -lxlf90"
+	#F77Flags="-O3 -qtune=pwr2 -qarch=pwr2"
+	F77Flags="-O3"
+	ccFLAGS="-03"
+	ShLibFlag="/usr/lpp/xlC/bin/makeC++SharedLib -berok -p 2000"
+        ;;	
+   DECalpha_cxx) TRUST_SUPPORTED=0
+	Defines="-D__STDC__"
+	SYSINC="-I/usr/include/cxx"
+	#CppFlags="-O3 -Aa"
+	CppFlags="-O3 -Aa"
+	# Options perfs pour Compaq alpha
+	# CppFlags="-O3 -Aa -fast -arch ev6 -tune ev6"
+	# -lelan pour _pi !
+	# SYSLIBS="-lm -lUfor -lFutil -lfor -lelan
+	# Pour linker en statique (pratique si libmpi.so pas installee)
+	# Il semble qu'il faille rajouter avant -lmach :  -lots3 -lpthread -lnuma -lpset pour avoir Numerical Platon
+	# 090904: On supprime -non_shared pour avoir un binaire semi-statique et augmenter la portabilite en // au detriment de celle en sequentiel
+	SYSLIBS="-lm -lUfor -lfor -lFutil"
+	# Suite probleme installation v1.4.9 sur DEC sans libelan:
+	[ -f /usr/lib/libelan.a ] && SYSLIBS=$SYSLIBS" -lelan -lelan3 -lmld -lrmscall -lots3 -lpthread -lnuma -lpset -lmach"
+	# Suite probleme installation v1.4.5 sur imhotep (undefined references sur elan_...):
+	[ -f /usr/lib/libelanctrl.a ] && SYSLIBS=$SYSLIBS" -lelanctrl"
+	F77Flags="-O3"
+	ccFLAGS="-O3"
+	ShLibFlag="\$(TRUST_CC) -shared"
+	;;
+   DECalpha_KCC) TRUST_SUPPORTED=0
+	Defines="-D__STDC__"
+	CppFlags="-O3"
+	# Options perfs pour Compaq alpha
+	# CppFlags="-O3 -fast -arch ev6 -tune ev6"
+	# -lelan pour _pi !
+	SYSLIBS="-lm -lUfor -lFutil -lfor -lelan"
+	F77Flags="-O3"
+	ccFLAGS="-O3"
+	ShLibFlag="\$(TRUST_CC) -shared"
+   	;; 	
+   linux_g++*|cygw*g++*) TRUST_SUPPORTED=1 
+        # Les quotes autour de X.Y sont importants car sinon dependant des variables telles que LC_NUMERIC,....
+   # 08/06/15 : pour portabilite sur Fedora22, passage de v5.1.1 a v5.1.2 sur test GNU
+   #     TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk '{if ($1<"5.1.1" && $1>="3.4") print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
+        TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk '{if ($1<"5.1.2" && $1>="3.4") print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
+   	m="# GNU compiler version";e="TRUST_VERSION_GNU=$TRUST_VERSION_GNU && export TRUST_VERSION_GNU";ecrit $m"|"$e"|"$env
+	[ "`echo $TRUST_SUPPORTED | grep -i Not`" != "" ] && TRUST_SUPPORTED=0
+	# Passage en -O2 car plantages suspects en -O3 avec egcs sur linux
+	# Options TRES severes a ajouter peut etre un jour : -W -Weffc++ -Wfloat-equal
+	# 03/02/06 : on ajoute -pedantic -Wno-long-long a la compilation sauf si 3.4.6 ou 4.0.1 car sinon pb avec Petsc 3.1.x
+	# 26/03/10, passage enfin a -03
+	CppFlags="-O3 -fPIC -fno-common -Wno-long-long -Wall -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth"
+	# 06/02/14, Added -Wshadow
+	CppFlags=$CppFlags" -Wshadow"
+	[ "`echo $TRUST_VERSION_GNU | awk '{if ($1>="3.4") print 1}'`" = 1 ] && CppFlags=$CppFlags" -Wextra -Wno-unused-parameter"
+	# GF pas convaincu des erreurs trouvees
+	[ "`echo $TRUST_VERSION_GNU | awk '{if ($1>="5.1") print 1}'`" = 1 ] && CppFlags=$CppFlags" -Wno-array-bounds"
+	if [ "$TRUST_VERSION_GNU" != 3.4.6 ] && [ "$TRUST_VERSION_GNU" != 4.0.1 ]
+	then
+	   CppFlags=$CppFlags" -pedantic"
+	fi
+	# include <sstream> fait un warning sur gcc 2.96, impossible d'utiliser #pragma supporte dans 4.2.x:
+	# Idem OpenMPI 1.3.2 sur certaines clusters provoque un warning: type-punning to incomplete type might break strict-aliasing rules
+	[ $TRUST_ARCH_CC = linux_g++3 ] && [ "`echo $Mpirun | grep 1.3.2`" = "" ] && CppFlags=$CppFlags" -Werror"
+	# Attention fort77&f2c et g77&g2c sinon pb avec Blas !
+	# On ne met pas -static car plante en // sur dom1 avec scali meme avec -ldl
+	if [ "`basename $TRUST_F77_BASE`" = gfortran ]
+	then
+	   # Parfois libgfortran non trouve (castor, kata,...), on teste et on prend la version 64 bits:
+	   touch test.cpp
+	   if [ "`$TRUST_CC -o test test.cpp -lgfortran 2>&1 | grep gfortran | grep ld`" != "" ]
+	   then
+	      L=`ls /usr/lib/gcc/*/*/libgfortran.a 2>/dev/null | grep 64`
+	      SYSLIBS="-L"`dirname $L`" "
+	   fi
+	   rm -f test.cpp
+	   SYSLIBS=$SYSLIBS"-lgfortran"
+	elif [ "`echo $TRUST_F77_BASE | grep absoft`" != "" ]
+	then
+	   SYSLIBS=$SYSLIBS"-L/usr/local/absoft/lib -lfio -lf77math"
+        elif [ "`basename $TRUST_F77_BASE`" = g77 ]
+        then
+	   SYSLIBS=$SYSLIBS"-lg2c"
+        fi
+	# Support d'Absoft mais n'accepte que -O comme flag
+	F77Flags="-O3 -fPIC -fdefault-integer-8" && [ "`echo $TRUST_F77_BASE | grep absoft`" != "" ] && F77Flags="-O"
+	ccFLAGS="-O3 -fPIC"
+	ShLibFlag="\$(TRUST_CC) -shared"
+	cherche_include_systeme
+	;;
+linux_clang++) TRUST_SUPPORTED=1 
+   	Defines="-D_COMPILE_AVEC_CLANG"
+   	# 26/03/10, passage enfin a -03
+	CppFlags="-O3 -fPIC -fno-common -Wno-long-long -Wall -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth"
+	# 06/02/14, Added -Wshadow
+	CppFlags=$CppFlags" -Wshadow"
+	CppFlags=$CppFlags" -Wextra  -Qunused-arguments -Wno-unused-parameter" #  -Wno-infinite-recursion"
+	# GF pas convaincu des erreurs trouvees
+	CppFlags=$CppFlags" -pedantic"
+	CppFlags=$CppFlags" -Wno-tautological-compare"
+	
+	CppFlags=$CppFlags" -Werror"
+	if [ "`basename $TRUST_F77_BASE`" = g77 ]
+        then
+	   SYSLIBS=$SYSLIBS"-lg2c"
+        fi
+	if [ "`basename $TRUST_F77_BASE`" = gfortran ]
+	then
+	   # Parfois libgfortran non trouve (castor, kata,...), on teste et on prend la version 64 bits:
+	   touch test.cpp
+	   if [ "`$TRUST_CC -o test test.cpp -lgfortran 2>&1 | grep gfortran | grep ld`" != "" ]
+	   then
+	      L=`ls /usr/lib/gcc/*/*/libgfortran.a 2>/dev/null | grep 64`
+	      SYSLIBS="-L"`dirname $L`" "
+	   fi
+	   rm -f test.cpp
+	   SYSLIBS=$SYSLIBS"-lgfortran"
+	fi
+	# Support d'Absoft mais n'accepte que -O comme flag
+	F77Flags="-O3 -fPIC" && [ "`echo $TRUST_F77_BASE | grep absoft`" != "" ] && F77Flags="-O"
+	ccFLAGS="-Qunused-arguments -O3 -fPIC"
+	ShLibFlag="\$(TRUST_CC) -shared"
+#	cherche_include_systeme
+	;;
+   linux_pgCC) TRUST_SUPPORTED=1
+   	Defines="-D_COMPILE_AVEC_PGCC"
+	CppFlags="-O3 -fPIC"
+	SYSLIBS="-lpgftnrtl -lrt" && [ "`basename $TRUST_F77_BASE`" = pgf90 ] && SYSLIBS="-lpgf90 -lpgf90rtl -lpghpf_mpi -lpghpf2 "$SYSLIBS
+	F77Flags="-O3 -fPIC"
+	ccFLAGS="-O3 -fPIC"
+	ShLibFlag="\$(TRUST_CC) -shared"
+	;;	
+   linux_icpc) TRUST_SUPPORTED=1
+   	# Par defaut O3, mais cas test CN_iteratif_VEF ne marche pas sauf si on empeche l'inline (voir methode Champ_Inc_base::avancer) !
+	# Intel 13.x semblerait OK
+        Cpp_flag_optim="-O3"
+	if [ "`$TRUST_CC_BASE --version 2>&1 | grep '12\.'`" != "" ]
+	then
+	   echo "Warning! Intel 12.x detected... Possible too agressive inlining bug."  
+	   Cpp_flag_optim="-O3 -inline-level=0"
+	   echo "C++ flags changed to $Cpp_flag_optim"
+        fi
+	# Options de compilation aggressives mais alors tres lentes a la compilation
+	# En outre -ipo genere des .il (Versioned Intermediate Files) a effacer ?
+	# Voir aussi xild pour linker ?
+	# 16/01/07 ecc passe en 5.5, pas mal de changements...
+   	Defines="-D_COMPILE_AVEC_INTEL"
+	#SYSINC="-I\$(IA32ROOT)/include"
+	# CppFlags="-O3 -ansi -unroll -tpp2 -ipo -ipo_obj"
+	# -Werror supprime pour Intel 12.1 car warning sur les accents dans les chaines de caracteres...
+	#CppFlags="-O3 -fPIC -ansi -unroll -Wno-deprecated -Werror"
+	CppFlags="$Cpp_flag_optim -fPIC -ansi -unroll"
+	#SYSLIBS="-lF90 -lc -limf -lcxa -lCEPCF90"
+	#SYSLIBS="-lF90 -lCEPCF90"
+	# -lguide pour OpenMP sur argent (et -lkitcompat -lnuma en plus sur mercure)
+	# -lguide -lpthread pour OpenMP sur jade
+	LIB_INTEL=`dirname $TRUST_F77_BASE`
+	# Recherche du repertoire /lib
+	for lib in lib compiler/lib
+	do
+	   [ -d $LIB_INTEL/../../$lib ] && LIB_INTEL=`echo $LIB_INTEL | sed -e 's;/bin;/'$lib';g'`
+        done
+	SYSLIBS="-L$LIB_INTEL -lifcore -lstdc++"
+	if [ "`ls $LIB_INTEL/libguide.* 2>/dev/null`" != "" ]
+	then
+	   SYSLIBS=$SYSLIBS" -lguide -lpthread" # Intel 10&11
+	else
+	   SYSLIBS=$SYSLIBS" -liomp5"		# Intel 12
+	fi 
+	# Test si la librairie libguide.so existe car -lguide est deprecated avec Intel 12.x et doit etre remplace par -liomp5
+	[ "`$TRUST_CC --version | grep NEC`" != "" ] && SYSLIBS=$SYSLIBS" /usr/lib/libnuma.so -lkitcompat"
+	F77Flags="-O3 -fPIC"
+	ccFLAGS="-O3 -fPIC -unroll"
+	ShLibFlag="\$(TRUST_CC) -shared"
+	cherche_include_systeme
+	;;	
+   FreeBSD_g++*) TRUST_SUPPORTED=0
+	SYSINC="-I/usr/include/g++"
+	# Passage en -O2 car plantages suspects en -O3 avec egcs sur linux
+	CppFlags="-O2 -Wall"
+	# Attention fort77&f2c et g77&g2c sinon pb avec Blas !
+	SYSLIBS="-lf2c"
+	F77Flags="-O2"
+	ccFLAGS="-O2"
+	ShLibFlag="\$(TRUST_CC) -shared"
+   	;;	
+   CRAY_CC) TRUST_SUPPORTED=0
+	Defines="-D_T3E_"
+	SYSINC="-I/opt/ctl/CC/3.0.2.0/include"
+	CppFlags="-O3 -Aa -h msglevel_4 -h exceptions"
+	# CppFlags="-Aa -h msglevel_4 -O2"
+	SYSLIBS=""
+	F77Flags="-O3"
+	ccFLAGS="-O3 -Aa"
+	ShLibFlag="\$(TRUST_CC) -b"
+        ;;
+   F5000_CC) TRUST_SUPPORTED=0
+	Defines=""
+	CppFlags="-Kvp -O3 -w"
+	# Les options -Wl,-dy -Wg,-f sont placees pour que socket et nsl soit recupere en .so !!
+	# SYSLIBS="-Wl,-dy -Wg,-f -lmp -llapackvp -lfj95 -lfj95f -lfj95fv -lvfl -lm -lnsl -lsocket"
+	SYSLIBS="-Wl,-dy -Wg,-f -lsocket -lnsl -lblasvp"
+	F77Flags="-O3 -Ss"
+	ccFLAGS="-O3 -w"
+	# ShLibFlag="$(TRUST_CC) -G" ne marche pas ! message _main() not found 
+	ShLibFlag="ld -G"
+        ;;
+   F300_CC) TRUST_SUPPORTED=0
+	CppFlags="-O3"
+	SYSLIBS="-lfj90 -lfj90f -lfj90fv -lvfl -lm"
+	F77Flags="-O3"
+	ccFLAGS="-O3"
+	# ShLibFlag="$(TRUST_CC) -G" ne marche pas ! message _main() not found
+	ShLibFlag="ld -G"
+        ;;
+   *) TRUST_SUPPORTED=0
+        [ "$TRUST_CC_BASE" = "" ] && echo "Pas de compilateur C++ trouve!"
+	echo "TRUST_ARCH_CC=$TRUST_ARCH_CC non reconnu. Modifier $0 pour faire reconnaitre"
+	echo "cette nouvelle plateforme."
+	exit -1
+   	;;
+esac
+
+if [ $TRUST_SUPPORTED = 0 ] && [ "$TRUST_FORCE_SUPPORTED" != 1 ]
+then
+   echo "\$TRUST_ARCH_CC=$TRUST_ARCH_CC is an unsupported platform for TRUST cause"
+   echo "the OS and/or the compiler version have not been tested yet. Please, contact TRUST support."
+   echo "You can also force the configure with ./configure -force_even_unsupported"
+   exit -1 
+elif [ $TRUST_SUPPORTED = 1 ]
+then
+   echo "\$TRUST_ARCH_CC=$TRUST_ARCH_CC is a supported platform for TRUST."
+fi
+###################################
+# Cas du compilateur gnu 2.x et 3.x
+###################################
+[ ${TRUST_ARCH_CC%_g++}  != $TRUST_ARCH_CC ] && Defines=$Defines" -D_COMPILE_AVEC_GCC_"
+[ ${TRUST_ARCH_CC%_g++3} != $TRUST_ARCH_CC ] && Defines=$Defines" -D_COMPILE_AVEC_GCC_3"
+###############
+# Cas de IA64 #
+###############
+[ $TRUST_ARCH = linux ] && [ "`uname -m`" = ia64 ] && Defines=$Defines" -Dia64"
+###############################################################
+# On recompile un programme simple avec F77FLAGS (en effet sur HP, +DA2.0W change l'appel en _)
+# -DF77CALLWITHOUT_ si l'appel a FORTRAN ne necessite pas d'_
+# -DF77_Majuscule si l'appel a FORTRAN necessite des majuscules
+###############################################################
+$TRUST_F77_BASE $F77Flags -o test_exec_f $TRUST_ENV/main.f
+[  -f test_exec_f.exe ] && mv test_exec_f.exe test_exec_f # pour cygwin
+if [ -f test_exec_f ]
+then
+   [ "`nm test_exec_f | grep -i toto_`" = "" ] && Defines=$Defines" -DF77CALLWITHOUT_"
+   [ "`nm test_exec_f | grep TOTO`" != "" ] && Defines=$Defines" -DF77_Majuscule"
+fi
+rm -f test_exec_f $TRUST_ENV/main.f
+
+#########################################################################################
+# On link une application Fortran-C++ donc il faut parfois des librairies Fortran en plus
+#########################################################################################
+# Attention: pas tout a fait portable --showme:link n'est pas reconnu partout...
+fortran_link=`$TRUST_F77 --showme:link 2>/dev/null`
+cpp_link=`$TRUST_CC --showme:link 2>/dev/null`
+for item1 in $fortran_link
+do
+   ok=0
+   for item2 in $cpp_link
+   do
+      [ $item1 = $item2 ] && ok=1 # Found in $cpp_link
+      [ ${item1#-I} != $item1 ] && ok=1 # Suppress -I cause useless in SYSLIBS 
+   done
+   [ $ok = 0 ] && SYSLIBS=$SYSLIBS" "$item1
+done
+#################################################
+# test si $TRUST_F77 peut compiler du Fortran 90
+#################################################
+echo "
+      subroutine test
+      real(kind=8) a
+      return
+      end" > testf90.f
+echo $ECHO_OPTS "Is $TRUST_F77_BASE fortran 90 compliant to compile MUMPS ? \c"
+$TRUST_F77 -c testf90.f 1>testf90.log 2>&1
+# 12/02/10: Ajout test sur la version de gfortran car la compilation de MUMPS fait planter gfortran 4.0.1
+if [ $? = 0 ] && [ "`$TRUST_F77_BASE -v 2>&1 | $TRUST_Awk '/gcc version / {print $3}'`" != "4.0.1" ]
+then
+   TRUST_USE_MUMPS=1
+   echo "Yes"
+else
+   TRUST_USE_MUMPS=0
+   echo "No"
+fi
+   TRUST_USE_MUMPS=0
+m="# MUMPS will be used ?";e="TRUST_USE_MUMPS=\"$TRUST_USE_MUMPS\" && export TRUST_USE_MUMPS";ecrit $m"|"$e"|"$env
+
+####################################
+# Test le support optimization AVX #
+####################################
+AVX_FLAGS=""
+if [ "${TRUST_CC_BASE%icpc}" != "$TRUST_CC_BASE" ]
+then
+   # INTEL
+   AVX_FLAGS="-axavx -xavx -xssse3"
+else
+   # GNU (il vaut mieux verifier dans le /proc/cpuinfo que l'extension existe
+   # car le test de compilation ne suffit pas). A se demander si ce n'est pas
+   # plus simple de l'enlever
+   # Autre pb: sse4_x n'est pas gere par valgrind en 32 bits
+   model=`uname -m`
+   for flag in avx `[ "$model" != i686 ] && echo sse4_2 sse4_1` ssse3
+   do
+      if  [ "`grep $flag /proc/cpuinfo 2>/dev/null`" != "" ]
+      then
+         flag=`echo $flag | awk '{gsub("_",".",$0);print $0}'`
+         AVX_FLAGS=$AVX_FLAGS" -m$flag"
+      fi
+   done
+fi 
+# Tester la compilation et l'execution
+AVX_SUPPORTED=0
+for AVX_FLAG in $AVX_FLAGS
+do
+   file=${AVX_FLAG#-}
+   echo $ECHO_OPTS "AVX support on C/C++ code with $AVX_FLAG ? \c" 
+   echo "#include <iostream>
+int main() {
+    double sum = 0.0;
+    for (unsigned int i = 0; i < 1024; i++) {
+        sum += static_cast<double>(i);
+    }
+    std::cout << sum << std::endl;
+    return 0;
+}" > $file.cpp
+   $TRUST_CC_BASE -o $file $AVX_FLAG $file.cpp 1>$file.log 2>&1 && ./$file 1>>$file.log 2>&1 && rm -f $file $file.cpp $file.log && echo "Yes" && break
+   echo "No" && AVX_FLAG=""
+done
+# Ajout d'une option de log de vectorization sur Intel (pas trouve sur GNU)
+if [ "$AVX_FLAG" != "" ]
+then
+   [ "${TRUST_CC_BASE%icpc}" != "$TRUST_CC_BASE" ] && AVX_FLAG=$AVX_FLAG" -vec-report1" 
+fi
+[ "$AVX_SUPPORTED" != 1 ] && echo "AVX support not activated yet by default. But you can build a version with:  make opt_avx"
+
+################################################
+# Test si le support GPU est possible avec PETSc
+################################################
+PETSC_HAVE_CUDA=0
+# Si la machine est utilisee pour construire un binaire semi-statique (get_binary), on ne met pas le support
+# car les shared libraries Cuda font que le binaire ne sera pas portable...
+if [ "$TRUST_FORCE_PETSC_HAVE_CUDA" = 1 ] && [ "$TRUST_DISABLE_PETSC" = 0 ] && [ "`$TRUST_ROOT/bin/admin/liste_machines get_binary | grep $HOST`" = "" ]
+then
+   check_nvidia_cuda
+   # Defines prend en compte eventuellement:
+   [ "$PETSC_HAVE_CUDA" = 1 ] && Defines=$Defines" -DPETSC_HAVE_CUDA -DPETSC_SKIP_COMPLEX"
+fi
+# 1.6.8 , disable CUDA cause some strange crash with PETSc sometimes on PC with CUDA...
+# May be screen and video card dependant : install on a PC, run and crash on another screen...
+m="# PETSc will use CUDA ?";e="PETSC_HAVE_CUDA=\"$PETSC_HAVE_CUDA\" && export PETSC_HAVE_CUDA";ecrit $m"|"$e"|"$env
+if [ "$PETSC_HAVE_CUDA" = 1 ]
+then
+   m="# PATH to CUDA";
+   if [ ${CUDA_ROOT#$TRUST_ROOT} = $CUDA_ROOT ]
+   then
+      # CUDA installe
+      e="CUDA_ROOT=\"$CUDA_ROOT\" && export CUDA_ROOT";
+   else
+      # CUDA downloade
+      e="CUDA_ROOT=\"\$TRUST_ROOT${CUDA_ROOT#$TRUST_ROOT}\" && export CUDA_ROOT";
+   fi   
+   ecrit $m"|"$e"|"$env
+   echo "ADD_PATH $CUDA_ROOT/bin" >> $env
+   echo "ADD_LD_LIBRARY_PATH $CUDA_LIB" >> $env
+fi
+##########
+# VAMPIR #
+##########
+if [ "$VAMPIR_SUPPORTED" = 1 ]
+then
+   # If you want to instrument MPI events only (this creates smaller trace files and less overhead) use the option -vt:inst manual to disable automatic instrumentation of user functions 
+   # See http://tu-dresden.de/die_tu_dresden/zentrale_einrichtungen/zih/forschung/projekte/vampirtrace/dateien/VT-UserManual-5.14.4.pdf
+   VT_OPTION="-vt:inst manual"
+   CppFlags=$CppFlags" "$VT_OPTION
+   ccFLAGS=$ccFLAGS" "$VT_OPTION 
+   F77Flags=$F77Flags" "$VT_OPTION
+   Defines=$Defines" -DVTRACE"
+fi
+
+##########
+# OpenMP #
+##########
+if [ "$TRUST_FORCE_PETSC_HAVE_OPENMP" = 1 ]
+then
+   if [ "`basename $TRUST_CC_BASE`" = icpc ]
+   then
+      openmp=-openmp # Take care, "man icpc" says if -openmp misunderstood, it creates an object name penmp so:
+      openmp=-fopenmp
+   else
+      openmp=-fopenmp
+   fi
+   CppFlags=$CppFlags" "$openmp
+   SYSLIBS=$SYSLIBS" "$openmp
+   PETSC_HAVE_OPENMP=1
+else
+   PETSC_HAVE_OPENMP=0
+fi
+
+############
+# Topology #
+############
+if [ "$TRUST_DISABLE_MPI" != 1 ]
+then
+   make_ $TRUST_ROOT/Outils/hwloc hwloc $TRUST_ROOT/exec/hwloc.log
+   echo "ADD_PATH $TRUST_ROOT/exec/hwloc/bin" >> $env
+fi
+
+###################
+# Memory bandwith #
+###################
+#cd stream
+#./check_stream
+#cd - 1>/dev/null 2>&1
+m="# PETSc will use OpenMP ?";e="PETSC_HAVE_OPENMP=\"$PETSC_HAVE_OPENMP\" && export PETSC_HAVE_OPENMP";ecrit $m"|"$e"|"$env
+
+#################################################################
+# Creation des cas tests ou non a partir des fiches de validation
+#################################################################
+TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS=0
+# 0 by default, except for the TRUST_ROOT which is building the code (<=> $TRUST_ROOT used in the crontab)
+[ "`crontab -l 2>/dev/null | grep $TRUST_ROOT`" != "" ] && TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS=1
+m="# Create tests from validation forms with lance_test ?";e="TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS=\"$TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS\" && export TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS";ecrit $m"|"$e"|"$env
+
+############################
+# LIBCCC_USER support (CCRT)
+############################
+# Access to:
+# remaining time of the current batch application
+# time already used by the current batch application
+# usable time of the current batch application
+# curent resident memory usage of the program
+# max virtual memory usage of the program
+# Seems to crash with mvapich:
+if [ "$LIBCCC_USER_ROOT" != "" ] && [ "`echo $MPI_ROOT | grep -i bullxmpi`" != "" ]
+then
+   Defines=$Defines" -DLIBCCC_USER"
+   SYSLIBS=$SYSLIBS" "$LIBCCC_USER_LDFLAGS
+fi
+
+#######################
+# Ecriture des fichiers
+#######################
+Defines=$Defines" $COMFLAGS -D\$(TRUST_ARCH) -D_INLINE_EVALUATEURS_ -DNDEBUG"
+
+#####################################################
+# Ajout de variables eventuelles creees par configure
+#####################################################
+if [ -f configure.env ] 
+then
+   cat configure.env >> machine.env
+fi
+suffixes=`echo $TRUST_ARCH_CC"_opt" $TRUST_ARCH_CC`
+for suffixe in $suffixes
+do
+   tmp=`mktemp_`
+   echo "Defines = $Defines
+SYSINC = $SYSINC
+SYSINC_DEP = $SYSINC_DEP
+CppFlags = $TRUST_ADD_CXXFLAGS `[ "$AVX_SUPPORTED" = 1 ] && echo $AVX_FLAG` $CppFlags $MPI_Flags \$(Includes) \$(SYSINC) \$(Defines)
+SYSLIBS = $MPI_LIB $COMLIBS $SYSLIBS
+F77Flags = $TRUST_ADD_FFLAGS $F77Flags 
+ccFLAGS = $TRUST_ADD_CFLAGS `[ "$AVX_SUPPORTED" = 1 ] && echo $AVX_FLAG` $ccFLAGS 
+ShLibFlag = $ShLibFlag
+SL_EXTENSION = $SL_EXTENSION
+LINK_MALIB = $LINK_MALIB" > $tmp
+   update_file $tmp make.$suffixe
+   
+   # On supprime -D_INLINE_EVALUATEURS_ -DNDEBUG
+   Defines=${Defines% -D_INLINE_EVALUATEURS_ -DNDEBUG}
+   # On remplace -O par -g
+   O=`echo $CppFlags | awk '{print $1}'`
+   CppFlags="-g"${CppFlags#$O}
+   O=`echo $F77Flags | awk '{print $1}'`
+   F77Flags="-g"${F77Flags#$O}
+   # 16/03/2010: Ajout de -fbounds-check en debug sur gfortran
+   # D'apres http://gcc.gnu.org/bugzilla/show_bug.cgi?id=33745 -fbounds-check ne marche pas bien pour gfortran ancien 
+   # On a eu des problemes sur 4.0.1 (peyrolle: TAB(N,*) annonce un depassement tableau, TAB(N,M) non) et 4.1 (castor)
+   # On a aussi un pb sur Fedora 18 At line 1 of file pilaenv.f : Fortran runtime error: Actual string length is shorter than the declared one for... (MC2 en debug)
+   if [ $TRUST_F77_BASE != ${TRUST_F77_BASE%gfortran} ] && [ "`$TRUST_F77_BASE -v 2>&1 | awk '/gcc / && /version / {print ($3>=4.2?1:0)}'`" = 1 ] && [ "`grep 'Fedora release' /etc/issue`" = "" ]
+   then
+      F77Flags=$F77Flags" -fbounds-check"
+   fi
+   O=`echo $ccFLAGS | awk '{print $1}'`
+   ccFLAGS="-g"${ccFLAGS#$O}
+   #############################
+   # Creation du fichier profile 
+   #############################
+   tmp=`mktemp_`
+   cp -f make.$suffixe $tmp
+   # 30/08/04: Pour les makefile avec profile, rajout de -a (profile par ligne avec gprof -l) : non gcc 3.2 n'accepte pas...
+   # Il semble qu'il faille utiliser -g pour cela ou -fprofile-arcs -ftest-coverage pour gcov (en tout -g pour valgrind --tool=cachegrind
+   # et de -fno-inline pour Linux afin de voir le + plus precisement possible ou est depense le CPU
+   #echo $ECHO_OPTS "1,$ s?$O?-pg `[ $TRUST_ARCH = linux ] && echo "-fno-inline -fprofile-arcs -ftest-coverage"` $O?g\nw" | ed make.$suffixe2 1>/dev/null 2>&1
+   # On vire -fprofile-arcs -ftest-coverage car plante sur tantale en parallele....
+   # On vire -fno-inline car on peut compiler fichier par fichier
+   #echo $ECHO_OPTS "1,$ s?$O?-g -pg `[ $TRUST_ARCH = linux ] && echo "-fno-inline"` $O?g\nw" | ed make.$suffixe2 1>/dev/null 2>&1   
+   option_profile="-pg" && [ "`uname -m`" = ia64 ] && option_profile="-p" # -qp devient obsolete Intel 10
+   if [ "`uname -m`" = i686 ] || [ "`uname -m`" = x86_64 ]
+   then
+      # le -gstab1 booste litteralement l'analyse par gprof avec GNU (>*10)
+      # http://www.arcknowledge.com/gmane.comp.gnu.binutils.bugs/2006-04/msg00030.html
+      [ "`basename $TRUST_CC_BASE`" = g++ ] && option_profile=$option_profile" -gstabs1"
+      # Avec icpc l'inlining ne se fait pas avec -pg on le force:
+      [ "`basename $TRUST_CC_BASE`" = icpc ] && option_profile=$option_profile" -inline-forceinline"
+   fi 
+   echo $ECHO_OPTS "1,$ s?$O?-g $option_profile $O?g\nw" | ed $tmp 1>/dev/null 2>&1
+   # Pour le link il faut -pg !
+   echo $ECHO_OPTS "1,$ s?SYSLIBS =?SYSLIBS = $option_profile?g\nw" | ed $tmp 1>/dev/null 2>&1
+   
+   suffixe2=$TRUST_ARCH_CC${suffixe#$TRUST_ARCH_CC}"_pg"
+   update_file $tmp make.$suffixe2
+   O="-g"
+   ##############################
+   # Creation du fichier coverage 
+   ##############################
+   if [ ${TRUST_CC_BASE%g++} != $TRUST_CC_BASE ]
+   then
+      tmp=`mktemp_`
+      # Creation d'un fichier d'environnement pour la compilation avec -ftest-coverage -fprofile-arcs
+      cp -f make.$suffixe $tmp
+      GCOV_FLAG="-fno-inline -ftest-coverage -fprofile-arcs"
+      echo $ECHO_OPTS "1,$ s?CppFlags =?CppFlags = $GCOV_FLAG?g\nw" | ed $tmp 1>/dev/null 2>&1
+      echo $ECHO_OPTS "1,$ s?F77Flags =?F77Flags = $GCOV_FLAG?g\nw" | ed $tmp 1>/dev/null 2>&1
+      echo $ECHO_OPTS "1,$ s?ccFLAGS =?ccFLAGS = $GCOV_FLAG?g\nw"   | ed $tmp 1>/dev/null 2>&1
+      # Attention mpiCC --showme:link depend de MPI (-link_info sur castor): a ameliorer si necessaire
+      echo $ECHO_OPTS "1,$ s?SYSLIBS =?SYSLIBS = `$TRUST_CC --showme:link 2>/dev/null` -ftest-coverage -fprofile-arcs ?g\nw" | ed $tmp 1>/dev/null 2>&1
+      suffixe3=$TRUST_ARCH_CC${suffixe#$TRUST_ARCH_CC}"_gcov"
+      update_file $tmp make.$suffixe3
+   fi
+done
+# Creation d'une version make.$ARCH_semi_opt pour avoir une version qui tourne
+# vite pour les tests de non regression
+tmp=`mktemp_`
+cp -f make.$TRUST_ARCH_CC"_opt" $tmp
+echo $ECHO_OPTS "1,$ s?-DNDEBUG??g\nw"  | ed $tmp 1>/dev/null 2>&1
+echo $ECHO_OPTS "1,$ s?-O3?-g -O3?g\nw" | ed $tmp 1>/dev/null 2>&1
+suffixe4=$TRUST_ARCH_CC"_semi_opt"
+update_file $tmp make.$suffixe4
+
+# Creation d'une version make.$ARCH_opt_avx pour tester le support de AVX
+if [ "$AVX_SUPPORTED" = 0 ]
+then
+   tmp=`mktemp_`
+   cp -f make.$TRUST_ARCH_CC"_opt" $tmp
+   echo $ECHO_OPTS "1,$ s?-O3?-O3 $AVX_FLAG?g\nw" | ed $tmp 1>/dev/null 2>&1
+   echo $ECHO_OPTS "1,$ s?Defines =?Defines = -DWITH_SSE?g\nw" | ed $tmp 1>/dev/null 2>&1
+   suffixe5=$TRUST_ARCH_CC"_opt_avx"
+   update_file $tmp make.$suffixe5
+fi
+
+############################################################
+# Liste des outils possibles pour la creation de dependances
+############################################################
+# Fait a la fin car pour les tests de rapidite les make.*opt doivent etre crees
+if [ 0 -eq 1 ]
+then
+TRUST_MD="ccmakedep $TRUST_ROOT/exec/makedepend/bin/makedepend"
+echo "Test between $TRUST_MD to pick the fastest command:"
+time_ccmakedep=` (time -p env TRUST_MD=ccmakedep fait_makefile $TRUST_ROOT/src/Kernel/Framework 2>&1) 2>&1 | awk '/real / {print $2}'` 
+echo "ccmakedep: $time_ccmakedep s"
+time_makedepend=`(time -p env TRUST_MD=$TRUST_ROOT/exec/makedepend/bin/makedepend fait_makefile $TRUST_ROOT/src/Kernel/Framework 2>&1) 2>&1 | awk '/real / {print $2}'` 
+rm $TRUST_ROOT/src/Kernel/Framework/makefile
+echo "makedepend: $time_makedepend s"
+[ "`echo $time_ccmakedep $time_makedepend | awk '{print ($1>$2)}'`" = 1 ] && TRUST_MD="$TRUST_ROOT/exec/makedepend/bin/makedepend ccmakedep" # makedepend plus rapide
+else
+TRUST_MD="$TRUST_ROOT/exec/makedepend/bin/makedepend"
+fi
+m="# Path to makedepend command";e="`cherche_file TRUST_MD $TRUST_MD`";ecrit $m"|"$e"|"$env;eval $e
+[ "$ligne_supp" != "" ] &&       echo $ligne_supp  >> $env
+
+############################
+# Fin creation machine.env #
+############################
+#m="# Mail user user@mail.fr ";e="TRUST_PROJECT_LEADER= && export TRUST_PROJECT_LEADER";ecrit $m"|"$e"|"$env
+echo "File machine.env created."
+
+# Generation de Cmake.env a partir des make.$TRUST_ARCH
+find_flags()
+{
+    What=$1
+    marq=$2
+    shift;shift
+    ajout=$*
+    echo "SET(CMAKE_${What}_FLAGS_${MODE} \""$ajout `grep "$marq =" make.${TRUST_ARCH_CC}$suf | sed "s/\\$(Includes) \\$(SYSINC) \\$(Defines)//" |sed "s/$marq =//"` "\" CACHE STRING \"from make.${TRUST_ARCH_CC}$suf\" FORCE)" >> Cmake.env
+    echo "MARK_AS_ADVANCED(CMAKE_${What}_FLAGS_${MODE})" >> Cmake.env
+}
+defines_base=`grep "Defines ="  make.${TRUST_ARCH_CC}| sed "s/Defines =//"`
+echo "SET(ADD_CPPFLAGS \""`grep "Defines ="  make.${TRUST_ARCH_CC} | sed "s/Defines =//" | awk -F\$ '{print $1}'` "-D$TRUST_ARCH \")"| sed "s/-D //" > Cmake.env
+for mode in Debug Release Profil Coverage semi_opt Release_avx
+do
+  case $mode in
+      Debug) suf="" ;;
+      Release) suf="_opt";;
+      Release_avx) suf="_opt_avx";;
+      Profil) suf="_opt_pg";;
+      Coverage) suf="_opt_gcov";;
+      semi_opt) suf="_semi_opt";;
+      *) echo $mode inconnue ; exit -1 ;;
+  esac;
+  if [ -f make.${TRUST_ARCH_CC}$suf ]
+      then
+      MODE=`echo $mode | awk '{print toupper($0)}'`
+      ajout=`grep "Defines =" make.${TRUST_ARCH_CC}$suf | sed "s/$defines_base//;s/Defines =//"`
+      find_flags CXX CppFlags  $ajout
+      find_flags Fortran F77Flags 
+      find_flags C ccFLAGS 
+      find_flags EXE_LINKER SYSLIBS 
+  fi
+done
+echo "SET( CMAKE_BUILD_TYPE \"\${CMAKE_BUILD_TYPE}\" CACHE STRING \"Choose the type of build, options are: Debug Release Profil Coverage semi_opt. \"    FORCE )" >> Cmake.env
+echo "File Cmake.env created."
+
+cd $TRUST_ROOT/bin
+# Mise a jour du fichier rep.TRUST
+./mkrep
+# Mise a jour des fichiers make.lib$SO_EXTENSION 
+./mklibs
+# Cree le repertoire $TRUST_ROOT/include pour l'atelier
+./cree_include
+
+# Fichier include non existant, on cree un fichier vide
+includes="
+$TRUST_ROOT/lib/src/LIBMETIS/include/metis.h
+$TRUST_ROOT/lib/src/LIBMED/MED/include/med++.h
+$TRUST_ROOT/lib/src/LIBLATAFILTER/include/LataV1_field_definitions.h
+$TRUST_ROOT/lib/src/LIBLATAFILTER/include/LmlReader.h
+$TRUST_ROOT/lib/src/LIBLATAFILTER/include/LataFilter.h
+$MPI_INCLUDE/mpi.h
+"
+for petsc_option in _ _opt _opt_pg _opt_gcov _semi_opt _opt_avx
+do
+   [ $petsc_option = "_" ] && petsc_option=""
+   includes=$includes" "$TRUST_ROOT/lib/src/LIBPETSC/petsc/$TRUST_ARCH$petsc_option/include/petsc_for_kernel.h" "$TRUST_ROOT/lib/src/LIBPETSC/petsc/$TRUST_ARCH$petsc_option/include/metis.h
+done
+
+for include in $includes
+do
+   dir_include=`dirname $include`
+   [ ! -d $dir_include ] && mkdir -p $dir_include
+   [ ! -f $include ] && echo > $include
+done
+
+# Pour MPI c'est un peu special
+comm_incl=$TRUST_ROOT/src/Kernel/Utilitaires/comm_incl.h
+# Si MPI_ROOT a change depuis le dernier configure
+# on fait un touch du comm_incl.h si celui ci est modifiable
+# ou on previent au moins...
+if [ -f machine.env.old ] && [ "`diff machine.env machine.env.old | grep MPI_ROOT=`" != "" ]
+then
+   if [ "`ls -l $comm_incl | cut -c3`" = "w" ]
+   then
+      echo "MPI distribution has changed since last configure so $comm_incl.h is touched..."
+      touch $comm_incl
+   else
+      echo "MPI distribution has changed since last configure so a make clean should be done."
+   fi
+fi
+# Menage
+rm -f $TRUST_ENV/.rep $TRUST_ENV/.path 

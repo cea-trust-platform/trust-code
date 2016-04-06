@@ -247,7 +247,7 @@ void Remove_elem::Remove_elem_(Zone& zone)
               f.setVar(1,xg(i,1));
               if(dimension==3) f.setVar(2,xg(i,2));
               //if(f.eval()) listelem.add(i);
-              if(int(f.eval()+0.5)) marq_remove[i]=1; //listelem.add(i); // pour etre conforme a ce qui est fait dans DecoupeBord
+              if((int)(f.eval()+0.5)) marq_remove[i]=1; //listelem.add(i); // pour etre conforme a ce qui est fait dans DecoupeBord
             }
         }
       else

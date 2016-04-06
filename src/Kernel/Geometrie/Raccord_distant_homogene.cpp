@@ -50,7 +50,7 @@ Implemente_instanciable_sans_constructeur(Raccord_distant_homogene,"Raccord_dist
 Sortie& Raccord_distant_homogene::printOn(Sortie& s ) const
 {
   Raccord_distant::printOn(s) << finl;
-  s << 1 <<finl;
+  s << (int)1 <<finl;
   s << tab_envoi << finl;
   s << tab_recep << finl;
   s << nom_frontiere_voisine_ << finl;

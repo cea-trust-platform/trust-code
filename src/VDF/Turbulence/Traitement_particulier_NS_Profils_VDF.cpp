@@ -343,8 +343,8 @@ void Traitement_particulier_NS_Profils_VDF::init_calcul_moyenne(void)
 
   delta_Um=delta_Up=delta_Wm=delta_Wp=delta_Vm=delta_Vp=delta_UVm=delta_UVp=10000000.;
 
-  Cerr << system("mkdir Space_Avg") << finl;
-  Cerr << system("mkdir Time_Avg") << finl;
+  Cerr << (int)system("mkdir Space_Avg") << finl;
+  Cerr << (int)system("mkdir Time_Avg") << finl;
 
   // remplissage des tableaux ci-dessus
 

@@ -1,0 +1,11 @@
+#!/bin/sh
+for f in $*
+do
+ [ ! -f $f ] && continue
+ [ "`grep int $f`" = "" ] && continue
+ python replace_int_entier.py $f > $f.p
+#	xterm
+ cat $f.p > $f
+rm $f.p
+
+done 

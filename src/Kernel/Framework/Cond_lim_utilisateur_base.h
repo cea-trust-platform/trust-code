@@ -52,7 +52,7 @@ public:
 
   inline int compatible_avec_eqn(const Equation_base&) const
   {
-    Cerr<<"we should not be here"<<__LINE__<<__FILE__ <<finl;
+    Cerr<<"we should not be here"<<(int)__LINE__<<__FILE__ <<finl;
     exit();
     return 0;
   };

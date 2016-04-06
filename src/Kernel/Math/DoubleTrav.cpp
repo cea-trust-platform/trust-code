@@ -31,6 +31,7 @@ Implemente_instanciable_sans_constructeur_ni_destructeur(DoubleTrav,"DoubleTrav"
 
 #define zero_double 0.
 #define zero_int 0
+#define zero_long 0
 // Description: Appel a DoubleTab::printOn
 Sortie& DoubleTrav::printOn(Sortie& os) const
 {
@@ -200,4 +201,5 @@ int DoubleTrav_test()
 }
 #undef zero_double
 #undef zero_int
+#undef zero_long
 

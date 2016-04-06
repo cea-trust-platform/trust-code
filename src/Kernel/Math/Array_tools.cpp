@@ -179,16 +179,25 @@ int array_bsearch(const ArrOfInt& tab, int valeur)
 
 static int fct_qsort_nbcolonnes;
 
-int fct_qsort_tableau_2(const void *ptr1, const void *ptr2)
+True_int fct_qsort_tableau_2(const void *ptr1, const void *ptr2)
 {
   const int *t1 = (const int *) ptr1;
   const int *t2 = (const int *) ptr2;
   int delta = t1[0] - t2[0];
   int delta2 = t1[1] - t2[1];
+#ifdef INT_is_64_
+  delta= delta ? delta : delta2;
+  if (delta==0)
+    return 0;
+  if (delta<0)
+    return -1;
+  return 1;
+#else
   return delta ? delta : delta2;
+#endif
 }
 
-int fct_qsort_tableau_n(const void *ptr1, const void *ptr2)
+True_int fct_qsort_tableau_n(const void *ptr1, const void *ptr2)
 {
   const int *t1 = (const int *) ptr1;
   const int *t2 = (const int *) ptr2;
@@ -198,9 +207,26 @@ int fct_qsort_tableau_n(const void *ptr1, const void *ptr2)
     {
       int delta = t1[i] - t2[i];
       if (delta)
-        return delta;
+        {
+#ifdef INT_is_64_
+          if (delta<0)
+            return -1;
+          return 1;
+#else
+          return delta;
+#endif
+        }
     }
+#ifdef INT_is_64_
+  int delta= t1[i] - t2[i];
+  if (delta==0)
+    return 0;
+  if (delta<0)
+    return -1;
+  return 1;
+#else
   return t1[i] - t2[i];
+#endif
 }
 
 // Description: tri lexicographique du tableau tab (par ordre croissant
@@ -234,26 +260,44 @@ int tri_lexicographique_tableau(IntTab& tab)
 
 static const IntVect *fct_qsort_tab_ptr = 0;
 
-int fct_qsort_tableau_1_indirect(const void *ptr1, const void *ptr2)
+True_int fct_qsort_tableau_1_indirect(const void *ptr1, const void *ptr2)
 {
   const int t1 = *((const int *) ptr1);
   const int t2 = *((const int *) ptr2);
   const IntVect& tab = *fct_qsort_tab_ptr;
   int delta = tab[t1] - tab[t2];
+#ifdef INT_is_64_
+  if (delta==0)
+    return 0;
+  if (delta<0)
+    return -1;
+  return 1;
+#else
   return delta;
+#endif
 }
 
-int fct_qsort_tableau_2_indirect(const void *ptr1, const void *ptr2)
+True_int fct_qsort_tableau_2_indirect(const void *ptr1, const void *ptr2)
 {
   const int t1 = *((const int *) ptr1) * 2;
   const int t2 = *((const int *) ptr2) * 2;
   const IntVect& tab = *fct_qsort_tab_ptr;
   int delta = tab[t1] - tab[t2];
   int delta2 = tab[t1+1] - tab[t2+1];
+#ifdef INT_is_64_
+  delta= delta ? delta : delta2;
+  if (delta==0)
+    return 0;
+  if (delta<0)
+    return -1;
+  return 1;
+#else
   return delta ? delta : delta2;
+#endif
+
 }
 
-int fct_qsort_tableau_n_indirect(const void *ptr1, const void *ptr2)
+True_int fct_qsort_tableau_n_indirect(const void *ptr1, const void *ptr2)
 {
   const int nc = fct_qsort_nbcolonnes;
   int t1 = *((const int *) ptr1) * nc;
@@ -265,9 +309,27 @@ int fct_qsort_tableau_n_indirect(const void *ptr1, const void *ptr2)
     {
       int delta = tab[t1++] - tab[t2++];
       if (delta)
-        return delta;
+        {
+#ifdef INT_is_64_
+          if (delta<0)
+            return -1;
+          return 1;
+#else
+          return delta;
+#endif
+        }
     }
+#ifdef INT_is_64_
+  int delta=tab[t1] - tab[t2];
+  if (delta==0)
+    return 0;
+  if (delta<0)
+    return -1;
+  return 1;
+#else
   return tab[t1] - tab[t2];
+#endif
+
 }
 
 // Description:

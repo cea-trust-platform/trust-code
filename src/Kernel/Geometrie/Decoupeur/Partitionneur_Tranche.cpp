@@ -88,7 +88,7 @@ static int            static_qsort_DoubleTab_colonne;
 
 // Description: fonction outil pour tri quicksort
 //  (comparaison de deux reels avec un index)
-static int trier_index_compare_fct(const void *i_, const void *j_)
+static True_int trier_index_compare_fct(const void *i_, const void *j_)
 {
   const int i = *((int*)i_);
   const int j = *((int*)j_);
@@ -96,7 +96,7 @@ static int trier_index_compare_fct(const void *i_, const void *j_)
   const DoubleTab& tab = *static_qsort_DoubleTab_ptr;
   const double x = tab(i,k);
   const double y = tab(j,k);
-  int resu = 0;
+  True_int resu = 0;
   if (x > y)
     resu = 1;
   else if (x < y)

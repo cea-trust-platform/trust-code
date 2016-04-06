@@ -24,11 +24,11 @@
 #define Polyedre_included
 
 #ifdef linux
-#define BLOQUE Cerr<<__PRETTY_FUNCTION__<< " "<<__FILE__<<":"<<__LINE__<<" not coded" <<finl;exit()
-#define WARN Cerr<<"Warning: "<<__PRETTY_FUNCTION__<< " "<<__FILE__<<":"<<__LINE__<<" bad coded" <<finl
+#define BLOQUE Cerr<<__PRETTY_FUNCTION__<< " "<<__FILE__<<":"<<(int)__LINE__<<" not coded" <<finl;exit()
+#define WARN Cerr<<"Warning: "<<__PRETTY_FUNCTION__<< " "<<__FILE__<<":"<<(int)__LINE__<<" bad coded" <<finl
 #else
-#define BLOQUE Cerr<<__FILE__<<":"<<__LINE__<<" not coded" <<finl;exit()
-#define WARN Cerr<<"Warning: "<<__FILE__<<":"<<__LINE__<<" bad coded" <<finl
+#define BLOQUE Cerr<<__FILE__<<":"<<(int)__LINE__<<" not coded" <<finl;exit()
+#define WARN Cerr<<"Warning: "<<__FILE__<<":"<<(int)__LINE__<<" bad coded" <<finl
 #endif
 
 #include <Elem_geom_base.h>

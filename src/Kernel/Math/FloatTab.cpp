@@ -81,7 +81,7 @@ Entree& FloatTab::readOn(Entree& is)
 
 Sortie& FloatTab::printOn(Sortie& os) const
 {
-  os << 2 << finl;
+  os << (int)2 << finl;
   os << ni_ << nj_ << finl;
   os << size_ << finl;
   if (size_ > 0)

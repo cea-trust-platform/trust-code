@@ -159,7 +159,7 @@ void Simpler::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pressio
   if (eqn.probleme().is_QC())
     {
       Cerr<<" Simpler cannot be used with a quasi-compressible fluid."<<finl;
-      Cerr<<__FILE__<<__LINE__<<" non code" <<finl;
+      Cerr<<__FILE__<<(int)__LINE__<<" non code" <<finl;
       exit();
     }
 

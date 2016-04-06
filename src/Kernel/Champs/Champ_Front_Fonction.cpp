@@ -118,7 +118,7 @@ int Champ_Front_Fonction::initialiser(double temps, const Champ_Inc_base& inco)
 }
 Champ_front_base& Champ_Front_Fonction::affecter_(const Champ_front_base& ch)
 {
-  Cerr<<__FILE__<<__LINE__<<" not coded" <<finl;
+  Cerr<<__FILE__<<(int)__LINE__<<" not coded" <<finl;
   exit();
   return (*this);
 }

@@ -275,17 +275,17 @@ void Faces_builder::check_erreur_faces(const char * message,
         {
           char *sptr = s;
           const int iface = liste_faces[i];
-          sptr += sprintf(sptr, "%4d ", iface);
+          sptr += sprintf(sptr, "%4ld ",(long) iface);
           for (int j = 0; j < nb_som_faces; j++)
             {
               const int isom = faces(iface,j);
-              sptr += sprintf(sptr, "%5d(", isom);
+              sptr += sprintf(sptr, "%5ld(", (long)isom);
               for (int k = 0; k < dim; k++)
                 if (isom!=-1)
                   sptr += sprintf(sptr, "%10.6f", coord(isom, k));
               sptr += sprintf(sptr, ")");
             }
-          sptr += sprintf(sptr, "%4d %4d", face_elem(iface,0), face_elem(iface,1));
+          sptr += sprintf(sptr, "%4ld %4ld", (long)face_elem(iface,0),(long) face_elem(iface,1));
           J << s << finl;
         }
       NettoieNoeuds::verifie_noeuds(ref_zone_.valeur().domaine());

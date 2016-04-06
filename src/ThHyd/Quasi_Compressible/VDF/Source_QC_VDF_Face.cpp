@@ -47,7 +47,7 @@ Entree& Acceleration_QC_VDF_Face::readOn(Entree& is)
 }
 void Acceleration_QC_VDF_Face::contribuer_a_avec(const DoubleTab& present, Matrice_Morse& matrice) const
 {
-  // Cerr<<__FILE__<< " "<<__LINE__<<" non code "<<finl;
+  // Cerr<<__FILE__<< " "<<(int)__LINE__<<" non code "<<finl;
   // on ne fait rien pour l'instant ....
   return;
   DoubleTrav toto(present);
@@ -91,7 +91,7 @@ Entree& Source_qdm_QC_VDF_Face::readOn(Entree& is)
 }
 void Source_qdm_QC_VDF_Face::contribuer_a_avec(const DoubleTab& present, Matrice_Morse& matrice) const
 {
-  // Cerr<<__FILE__<< " "<<__LINE__<<" non code "<<finl;
+  // Cerr<<__FILE__<< " "<<(int)__LINE__<<" non code "<<finl;
   // on ne fait rien pour l'instant ....
   return;
   DoubleTrav toto(present);
@@ -135,7 +135,7 @@ Entree& Perte_Charge_Reguliere_QC_VDF_Face::readOn(Entree& is)
 }
 void Perte_Charge_Reguliere_QC_VDF_Face::contribuer_a_avec(const DoubleTab& present, Matrice_Morse& matrice) const
 {
-  // Cerr<<__FILE__<< " "<<__LINE__<<" non code "<<finl;
+  // Cerr<<__FILE__<< " "<<(int)__LINE__<<" non code "<<finl;
   // on ne fait rien pour l'instant ....
   return;
   DoubleTrav toto(present);
@@ -179,7 +179,7 @@ Entree& Perte_Charge_Singuliere_QC_VDF_Face::readOn(Entree& is)
 }
 void Perte_Charge_Singuliere_QC_VDF_Face::contribuer_a_avec(const DoubleTab& present, Matrice_Morse& matrice) const
 {
-  // Cerr<<__FILE__<< " "<<__LINE__<<" non code "<<finl;
+  // Cerr<<__FILE__<< " "<<(int)__LINE__<<" non code "<<finl;
   // on ne fait rien pour l'instant ....
   return;
   DoubleTrav toto(present);
@@ -223,7 +223,7 @@ Entree& Darcy_QC_VDF_Face::readOn(Entree& is)
 }
 void Darcy_QC_VDF_Face::contribuer_a_avec(const DoubleTab& present, Matrice_Morse& matrice) const
 {
-  // Cerr<<__FILE__<< " "<<__LINE__<<" non code "<<finl;
+  // Cerr<<__FILE__<< " "<<(int)__LINE__<<" non code "<<finl;
   // on ne fait rien pour l'instant ....
   return;
   DoubleTrav toto(present);
@@ -267,7 +267,7 @@ Entree& Forchheimer_QC_VDF_Face::readOn(Entree& is)
 }
 void Forchheimer_QC_VDF_Face::contribuer_a_avec(const DoubleTab& present, Matrice_Morse& matrice) const
 {
-  // Cerr<<__FILE__<< " "<<__LINE__<<" non code "<<finl;
+  // Cerr<<__FILE__<< " "<<(int)__LINE__<<" non code "<<finl;
   // on ne fait rien pour l'instant ....
   return;
   DoubleTrav toto(present);

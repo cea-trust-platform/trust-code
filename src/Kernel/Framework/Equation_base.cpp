@@ -1681,7 +1681,7 @@ DoubleTab& Equation_base::derivee_en_temps_conv(DoubleTab& secmem, const DoubleT
       // Several steps (nstep) are done if the convective time step
       // is smaller than the time step (dt) :
       double epsilon = 1.e-10;
-      int nstep = int((dt / dt_convection)*(1+epsilon)) + 1 ;
+      int nstep = (int)((dt / dt_convection)*(1+epsilon)) + 1 ;
       if (( nstep % 2 ) != 0 ) nstep += 1 ;
       double dt_loc = dt/double(nstep) ;
       Cout << "Convection Semi Implicite: Number of Sub-Cycles : " << nstep << " with dt_loc = " << dt_loc << " dt =" << dt << finl ;
@@ -2043,7 +2043,7 @@ void Equation_base::reculer(int i)
 // FIN MODIF ELI LAUCOIN (22/11/2007)
 
 
-#define BLOQUE Cerr<<__PRETTY_FUNCTION__<< " "<<__FILE__<<":"<<__LINE__<<" not coded, retrieves coding simpler" <<finl;exit()
+#define BLOQUE Cerr<<__PRETTY_FUNCTION__<< " "<<__FILE__<<":"<<(int)__LINE__<<" not coded, retrieves coding simpler" <<finl;exit()
 
 // methodes pour l'implicite
 

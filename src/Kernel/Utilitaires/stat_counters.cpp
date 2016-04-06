@@ -173,7 +173,7 @@ static double estimate_allreduce(double max_bench_time)
   int howmany = 100;
   int i = 0;
   for (i = 0; i < howmany; i++)
-    Process::mp_sum(1);
+    Process::mp_sum((int)1);
   t2 = Statistiques::get_time_now();
   t2 = Process::mp_min(t2-t1);
   return t2 / (double) howmany;
@@ -185,7 +185,7 @@ inline void write_stat_file(const Nom& msg, const Stat_Results& stat, const Stat
     {
       stat_file << "Dont " << msg << " ";
       stat_file << stat.max_time/pas_de_temps.max_count;
-      stat_file << " " << int(stat.max_time/pas_de_temps.max_time*100) << "%";
+      stat_file << " " << (int)(stat.max_time/pas_de_temps.max_time*100) << "%";
       double n = stat.max_count/pas_de_temps.max_count;
       if (stat.max_count>0) stat_file << " (" << n << " " << (n==1?"appel":"appels") << "/pas de temps)";
       stat_file << "\n";
@@ -357,7 +357,7 @@ void print_statistics_analyse(const char * message, int mode_append)
               stat_file << "Secondes / sauvegarde  : " << sauvegarde.max_time/sauvegarde.max_count << "\n";
               sprintf(s,"%2.2f",total_quantity/(1024*1024));
               stat_file << "Donnees ecrites [Mo]   : " << s << "\n";
-              stat_file << "Debit           [Mo/s] : " << int(total_quantity/(1024*1024)/sauvegarde.max_time) << "\n";
+              stat_file << "Debit           [Mo/s] : " << (int)(total_quantity/(1024*1024)/sauvegarde.max_time) << "\n";
             }
           if (comm_sendrecv.max_count > 0)
             {

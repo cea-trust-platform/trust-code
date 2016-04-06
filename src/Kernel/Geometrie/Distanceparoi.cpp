@@ -290,9 +290,9 @@ Entree& Distanceparoi::interpreter_(Entree& is)
   fic_sauv<<nom_paroi<<finl;
   int ntot=(nb_elem_tot*(1+Objet_U::dimension));
   // entete pour  pouvoir passer les blocs
-  //    fic_sauv<<1 <<finl<<ntot << finl<< 1 <<ntot<<finl<<ntot<<finl;
-  fic_sauv << 1 <<ntot <<  1 << ntot << finl << ntot << finl;
-  //    fic_sauv << 1 << ntot << 1 << ntot << ntot;
+  //    fic_sauv<<1 <<finl<<ntot << finl<< (int)1 <<ntot<<finl<<ntot<<finl;
+  fic_sauv << (int)1 <<ntot << (int)1 << ntot << finl << ntot << finl;
+  //    fic_sauv << (int)1 << ntot << (int)1 << ntot << ntot;
   for (int p=0; p<nb_elem_tot; p++)
     {
       fic_sauv<<xp(p,0)<<" "<<xp(p,1);
@@ -300,7 +300,7 @@ Entree& Distanceparoi::interpreter_(Entree& is)
       fic_sauv<<" "<<wall_length(p)<<finl;
     }
 
-  fic_sauv << ntot << 0 << 0 << 0 <<1 << 0 << finl << ntot << finl << 1 << 0 << 0 <<finl;
+  fic_sauv << ntot << (int)0 << (int)0 << (int)0 << (int)1 << (int)0 << finl << ntot << finl << (int)1 << (int)0 << (int)0 <<finl;
   //    fic_sauv<<ntot<<finl<<0<<finl<< 0<<finl<< 0<<finl<<1 <<finl<<0 <<finl<<ntot<<finl<<1 <<finl<<0<<finl<< 0<<finl;
 
   if (format=="formatte")
@@ -311,14 +311,14 @@ Entree& Distanceparoi::interpreter_(Entree& is)
       fic_sauv_format<<nom_paroi<<finl;
       int ntot2=(nb_elem_tot*(1+Objet_U::dimension));
       // entete pour  pouvoir passer les blocs
-      fic_sauv_format << 1 <<ntot2 <<  1 << ntot2 << finl << ntot2 << finl;
+      fic_sauv_format << (int)1 <<ntot2 << (int)1 << ntot2 << finl << ntot2 << finl;
       for (int p=0; p<nb_elem_tot; p++)
         {
           fic_sauv_format<<xp(p,0)<<" "<<xp(p,1);
           if (Objet_U::dimension==3) fic_sauv_format<<" "<<xp(p,2);
           fic_sauv_format<<" "<<wall_length(p)<<finl;
         }
-      fic_sauv_format << ntot2 << 0 << 0 << 0 <<1 << 0 << finl << ntot2 << finl << 1 << 0 << 0 <<finl;
+      fic_sauv_format << ntot2 << (int)0 << (int)0 << (int)0 << (int)1 << (int)0 << finl << ntot2 << finl << (int)1 << (int)0 << (int)0 <<finl;
     }
 
   delete les_faces_ptr;

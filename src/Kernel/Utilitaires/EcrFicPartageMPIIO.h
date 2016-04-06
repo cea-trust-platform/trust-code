@@ -69,23 +69,27 @@ public:
 
   Sortie& operator <<(const Separateur& ob);
   Sortie& operator <<(const int& ob);
+#ifndef INT_is_64_
   Sortie& operator <<(const long& ob)
   {
     Cerr << "EcrFicPartageMPIIO::operator<<(...) not implemented." << finl;
     exit();
     return *this;
   };
+#endif
   Sortie& operator <<(const float& ob);
   Sortie& operator <<(const double& ob);
   Sortie& operator <<(const Objet_U& ob);
   Sortie& operator <<(const char* ob);
   int put(const int* ob, int n, int pas);
+#ifndef INT_is_64_
   int put(const long* ob, int n, int pas)
   {
     Cerr << "EcrFicPartageMPIIO::put(...) not implemented." << finl;
     exit();
     return 1;
   };
+#endif
   int put(const float* ob, int n, int pas)
   {
     Cerr << "EcrFicPartageMPIIO::put(...) not implemented." << finl;

@@ -248,7 +248,7 @@ void Reaction::reagir(VECT(REF(Champ_Inc_base))& liste_C,double deltat) const
 {
   // il faut savoir e que l'on veut faire ....
 
-  //  Cerr<<__FILE__<<" "<<__LINE__<<" non  code "<<finl;  exit();
+  //  Cerr<<__FILE__<<" "<<(int)__LINE__<<" non  code "<<finl;  exit();
   int size=liste_C.size();
 
   ArrOfDouble C(size),C0(size);

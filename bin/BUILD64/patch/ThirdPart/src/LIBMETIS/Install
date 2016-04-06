@@ -1,0 +1,57 @@
+#!/bin/bash
+package=$1
+
+
+
+
+
+DEST=$METIS_ROOT
+
+if  [ "$TRUST_DISABLE_METIS" = "1" ] 
+then
+mkdir -p $DEST/include
+rm -rf $DEST/lib
+echo "METIS DISABLE"
+echo "#define NO_METIS " > $DEST/include/metis.h
+exit 0
+fi
+
+
+
+[ ! -f $TRUST_ROOT/externalpackages/$package.tar.gz ] && echo "$1.tar.gz inexistant!" && exit
+
+gunzip -c $TRUST_ROOT/externalpackages/$package.tar.gz > $package.tar
+tar xf $package.tar
+rm -f $package.tar
+cd $package 
+sed "s/#define IDXTYPEWIDTH 32/#define IDXTYPEWIDTH 64/g" -i include/metis.h
+
+# Desactivation de distcc car il semble que cela bloque avec cmake
+DISTCC_HOSTS=""
+
+# Configuration
+export CMAKE_C_FLAGS=`$TRUST_Awk '/ccFLAGS =/ {gsub("ccFLAGS =","",$0);print $0}' $TRUST_ROOT/env/make.$TRUST_ARCH_CC"_opt"`
+
+# Modification du Makefile de Metis pour dire renseigner CMAKE_C_FLAGS 
+echo $ECHO_OPTS "1,$ s?DCMAKE_VERBOSE_MAKEFILE=1?DCMAKE_VERBOSE_MAKEFILE=1 -DCMAKE_C_FLAGS=\"$CMAKE_C_FLAGS\"?g\nw" | ed Makefile 1>/dev/null 2>&1 || exit -1
+
+make config cc=$TRUST_cc prefix=$TRUST_LIB/src/LIBMETIS || exit -1
+#On prend $TRUST_cc_BASE au lieu de $TRUST_cc car sur platine cela plante...
+#make config cc=$TRUST_cc_BASE prefix=`pwd`/.. || exit -1
+
+# Compilation
+$TRUST_MAKE #|| exit -1 # Car erreur bizarre (clearmake marche pas make...)
+
+# Installation
+make install #|| exit -1 # Car meme erreur bizarre
+cd ..
+# On efface les sources
+rm -r -f $package
+
+# Correction d'une virgule mal placee dans metis.h
+echo $ECHO_OPTS "1,$ s?2048,?2048?g\nw" | ed $METIS_ROOT/include/metis.h 1>/dev/null 2>&1 || exit -1
+
+# touch des includes Metis pour les makefiles 
+touch  $METIS_ROOT/include/*
+
+exit 0

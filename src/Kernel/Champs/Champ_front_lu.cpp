@@ -287,6 +287,13 @@ int Champ_front_lu::is_bin(Nom name)
   EFichier fichier(name);
   Nom format;
   fichier >> format;
+
+#ifdef INT_is_64_
+  // In case of INT_64, first Nom can be INT64 ...
+  if(format=="INT64")
+    format="binary";
+#endif
+
   if(format=="binary")
     return 1;
   else

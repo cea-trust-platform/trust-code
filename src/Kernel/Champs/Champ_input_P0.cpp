@@ -27,6 +27,7 @@
 #include <Domaine.h>
 #include <Exceptions.h>
 #include <communications.h>
+#include <Convert_ICoCoTrioField.h>
 
 Implemente_instanciable(Champ_input_P0,"Champ_input_P0",Champ_Fonc_P0_base);
 
@@ -103,15 +104,14 @@ void Champ_input_P0::getTemplate(TrioField& afield) const
 
   // Includes all the nodes, even those not used in connectivity
   // order is  x y z  x y z  x y z
-  afield._coords=new double[sommets.size()];
-  memcpy(afield._coords,sommets.addr(),sommets.size()*sizeof(double));
+  affecte_double_avec_doubletab(&afield._coords,sommets);
 
   assert (sizeof(int)==sizeof(int));
   if (ma_sous_zone.non_nul())
     {
       const Sous_Zone& ssz=ma_sous_zone.valeur();
       afield._nb_elems=ssz.nb_elem_tot();
-      afield._connectivity=new int[afield._nb_elems*npe];
+      afield._connectivity=new True_int[afield._nb_elems*npe];
       for (int i=0; i<afield._nb_elems; i++)
         for (int j=0; j<npe; j++)
           afield._connectivity[i*npe+j]=elems(ssz[i],j);
@@ -119,8 +119,8 @@ void Champ_input_P0::getTemplate(TrioField& afield) const
   else
     {
       afield._nb_elems=elems.dimension(0);
-      afield._connectivity=new int[elems.size()];
-      memcpy(afield._connectivity,elems.addr(),elems.size()*sizeof(int));
+      affecte_int_avec_inttab(&afield._connectivity,elems);
+
     }
 }
 

@@ -62,12 +62,10 @@ struct Roue_ptr
   {
     ptr=0;
   }
-  /*
-    inline operator int() const
-    {
-      return (ptr!=0);
-    }
-  */
+  inline operator bool() const
+  {
+    return (ptr!=0);
+  }
   inline Roue& operator =(Roue& x)
   {
     ptr=&x;

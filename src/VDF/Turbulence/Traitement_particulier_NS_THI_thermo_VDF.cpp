@@ -117,7 +117,7 @@ void Traitement_particulier_NS_THI_thermo_VDF::calcul_spectre(void)
   const Zone& zone = zdis.zone();
   int nb_elem = zone.nb_elem();
   //  double nb=pow(nb_elem*1.,1./3.);
-  //  int nb_elem_dir = int(nb)+1;
+  //  int nb_elem_dir = (int)(nb)+1;
   calcul_nb_elem_dir(zone);
 
   double temps_crt = mon_equation->inconnue().temps();
@@ -213,7 +213,7 @@ void Traitement_particulier_NS_THI_thermo_VDF::sorties_fichiers(void)
   for (i=0; i<nb_elem; i++)
     {
       // On ne peut pas utiliser modf (voir Schema_Temps_base::limpr) car k sert d'indice de tableau
-      k=int(((Temp(i)/Tmean)-Tmin_mean)/delta);
+      k=(int)(((Temp(i)/Tmean)-Tmin_mean)/delta);
       if(k>=ni) k=ni-1;
       if(k<0)  k=0;
       PDF[k]+=1.;

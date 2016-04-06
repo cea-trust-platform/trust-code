@@ -171,7 +171,7 @@ void ArrOfFloat::invalidate(int first_element, int nb_elements)
 // Description:
 //   Fonction de comparaison utilisee pour trier le tableau
 //   dans ArrOfDouble::trier(). Voir man qsort
-static int fonction_compare_arroffloat_ordonner(const void * data1, const void * data2)
+static True_int fonction_compare_arroffloat_ordonner(const void * data1, const void * data2)
 {
   const float x = *(const float*)data1;
   const float y = *(const float*)data2;

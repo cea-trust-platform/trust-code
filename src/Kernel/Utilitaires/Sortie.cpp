@@ -175,6 +175,7 @@ int Sortie::put(const int * ob, int n, int nb_col)
     }
   return ostream_->good();
 }
+#ifndef INT_is_64_
 // Description:
 //  Methode de bas niveau pour ecrire un int ou flottant dans le stream.
 //  Dans l'implementation de la classe de base, on ecrit dans ostream_.
@@ -232,6 +233,7 @@ int Sortie::put(const long * ob, int n, int nb_col)
     }
   return ostream_->good();
 }
+#endif
 // Description:
 //  Methode de bas niveau pour ecrire un int ou flottant dans le stream.
 //  Dans l'implementation de la classe de base, on ecrit dans ostream_.

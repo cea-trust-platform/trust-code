@@ -155,7 +155,7 @@ const Noms Champ_Generique_Morceau_Equation::get_property(const Motcle& query) c
     case 0:
       {
         Noms compo(1);
-        Nom nume(1);
+        Nom nume((int)1);
         compo[0] = nom_post_+nume;
 
         return compo;

@@ -1,0 +1,37 @@
+ORG=`pwd`
+
+[ !  -d env_src ] && echo no env_src && exit 1
+
+cp -r bin/BUILD64/patch/*  .
+cp bin/BUILD64/* .
+
+#exit
+
+./Modifie $(find src)
+./Modifie $(find src)
+ export TRUST_ROOT=$PWD
+for d in $(find src/ -type d) ;do echo $d; (cd $d ; check_sources.sh) ; done
+
+ ./Modifie $(find ThirdPart/src/LIBMFFT_C)
+
+./Modifie $(find Outils/lata2dx)
+./Modifie $(find Outils/lata2dx)
+
+sed "s/long long long/long long/" -i Outils/lata2dx//lata2dx/commun_triou/LataDB.cpp
+sed s"/long compare_indirect/int compare_indirect/" -i  Outils/lata2dx//lata2dx/commun_triou/Lata_tools.cpp
+
+
+ sed "s/long fonction/int fonction/" -i Outils/lata2dx/lata2dx/triou_compat/ArrOf*.cpp 
+sed "s/long main(long/int main(int/" -i  Outils/lata2dx/lata2dx//*cpp
+
+
+cp  bin/BUILD64/patch/src/Kernel/Utilitaires/arch.h  src/Kernel/Utilitaires/arch.h
+#cp arch.h64 src/Kernel/Utilitaires/arch.h
+#cp configurer_env64 env_src/configurer_env
+
+#cp ThirdPart/src/LIBMETIS/Install64 ThirdPart/src/LIBMETIS/Install
+#cp ThirdPart/src/LIBSKIT/Installer64 ThirdPart/src/LIBSKIT/Installer
+
+# color.f
+# configurer_env les 64
+# configure

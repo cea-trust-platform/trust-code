@@ -26,6 +26,8 @@
 #include <Schema_Temps_base.h>
 #include <Interprete.h>
 #include <Exceptions.h>
+#include <Convert_ICoCoTrioField.h>
+
 
 using ICoCo::WrongArgument;
 

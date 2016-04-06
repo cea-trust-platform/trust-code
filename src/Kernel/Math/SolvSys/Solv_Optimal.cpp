@@ -265,7 +265,7 @@ Entree& Test_solveur::interpreter(Entree& is)
 static int numero_solv_optimal=0; // numero du solveur pour avoir des noms de fichiers solveurs par defaut differents pour chaque solveur
 Solv_Optimal::Solv_Optimal():n_resol_(0),n_reinit_(0)
 {
-  freq_recalc_ = (int)(pow(2.0,(double)((sizeof(int)*8)-1))-1);
+  freq_recalc_ = (int)(pow(2.0,(double)((sizeof(True_int)*8)-1))-1);
   freq_recalc_ = 100;
   fichier_solveur_="solveurs_";
   fichier_solveur_+=Nom(numero_solv_optimal);

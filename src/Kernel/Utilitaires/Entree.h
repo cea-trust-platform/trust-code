@@ -67,12 +67,16 @@ public:
   Entree& operator >>(ios& (*f)(ios&));
 
   virtual Entree& operator>>(int&      ob);
+#ifndef INT_is_64_
   virtual Entree& operator>>(long&     ob);
+#endif
   virtual Entree& operator>>(float&    ob);
   virtual Entree& operator>>(double&   ob);
 
   virtual int get(int* ob, int n);
+#ifndef INT_is_64_
   virtual int get(long* ob, int n);
+#endif
   virtual int get(float* ob, int n);
   virtual int get(double* ob, int n);
   virtual int get(char * buf, int bufsize);
@@ -112,6 +116,7 @@ protected:
   inline int error_handle(int fail_flag);
   virtual int error_handle_(int fail_flag);
   int bin_;
+  int is_int32_;
   int check_types_;
   Error_Action error_action_;
   int diffuse_; // By default 1, but some child classes (eg: LecFicDiffuse) could set temporary to 0 to not diffuse to other processes

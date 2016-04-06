@@ -50,7 +50,7 @@ mon_main::mon_main(int verbose_level, int journal_master)
   trio_began_mpi_=0;
 }
 
-static int init_petsc(int argc, char **argv, int with_mpi,int& trio_began_mpi_)
+static int init_petsc(True_int argc, char **argv, int with_mpi,int& trio_began_mpi_)
 {
 #ifdef __PETSCKSP_H
   static char help[] = "TRUST may solve linear systems with Petsc library.\n\n" ;
@@ -90,7 +90,7 @@ static int init_petsc(int argc, char **argv, int with_mpi,int& trio_began_mpi_)
   // correctement et pas comme dans Comm_Group_MPI::init_group_trio
   // sinon message: xm_348262:  p4_error: Command-line arguments are missing: 0
 #ifdef MPI_
-  int flag;
+  True_int flag;
   MPI_Initialized(&flag);
   if (!flag)
     {
@@ -200,7 +200,7 @@ void mon_main::finalize()
   if (trio_began_mpi_)
     {
       // On MPI_Finalize si MPI_Initialized and not MPI_Finalized
-      int flag;
+      True_int flag;
       MPI_Initialized(&flag);
       if (flag)
         {
@@ -243,7 +243,7 @@ void mon_main::dowork(const Nom& nom_du_cas)
       {
         filename += "_";
         char s[20];
-        sprintf(s, "%05d", Process::me());
+        sprintf(s, "%05d", (True_int)Process::me());
         filename += s;
       }
     filename += ".log";

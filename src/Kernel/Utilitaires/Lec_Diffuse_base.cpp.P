@@ -104,7 +104,9 @@ int Lec_Diffuse_base::get(_TYPE_* ob, int n)
 #Pendmacro(macrolec)
 
 #Pusemacro(macrolec)(int)
+#ifndef INT_is_64_
 #Pusemacro(macrolec)(long)
+#endif
 #Pusemacro(macrolec)(float)
 #Pusemacro(macrolec)(double)
 

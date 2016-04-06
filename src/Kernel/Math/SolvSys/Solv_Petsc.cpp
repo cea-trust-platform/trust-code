@@ -910,7 +910,7 @@ void Solv_Petsc::create_solver(Entree& entree)
 
 int Solv_Petsc::instance=-1;
 #ifdef __PETSCKSP_H
-int Solv_Petsc::KSPSolve_Stage_=0;
+PetscLogStage Solv_Petsc::KSPSolve_Stage_=0;
 
 // Sortie Maple d'une matrice morse
 void sortie_maple(Sortie& s, const Matrice_Morse& M)
@@ -1346,7 +1346,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
       else if (Reason==KSP_DIVERGED_INDEFINITE_PC)       Cerr << "KSP_DIVERGED_INDEFINITE_PC" << finl;
       else if (Reason==KSP_DIVERGED_NANORINF)            Cerr << "KSP_DIVERGED_NANORINF" << finl;
       else if (Reason==KSP_DIVERGED_INDEFINITE_MAT)      Cerr << "KSP_DIVERGED_INDEFINITE_MAT" << finl;
-      else Cerr << Reason << finl;
+      else Cerr << (int)Reason << finl;
       exit();
     }
   // Recuperation du nombre d'iterations
@@ -1553,7 +1553,7 @@ int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
         }
     }
   if (limpr()==1)
-    Cerr << "Order of the PETSc matrix : " << nb_rows_tot_ << " (~ " << (petsc_cpus_selection_?int(nb_rows_tot_/petsc_nb_cpus_):nb_rows_) << " unknowns per PETSc process )" << finl;
+    Cerr << "Order of the PETSc matrix : " << nb_rows_tot_ << " (~ " << (petsc_cpus_selection_?(int)(nb_rows_tot_/petsc_nb_cpus_):nb_rows_) << " unknowns per PETSc process )" << finl;
   /* Seems petsc_decide=1 have no interest. On PETSC_GCP with n=2 (20000cell/n), the ratio is 99%-101% and petsc_decide is slower
   Even with n=9, ratio is 97%-103%, and petsc_decide is slower by 10%. Better load balance but increased MPI cost and lower convergence...
   Hope it will be better with GPU
