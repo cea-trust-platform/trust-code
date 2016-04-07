@@ -34,5 +34,6 @@ include(${XDATA_INSTALLATION_DIR}/share/xdata/salome/cmake_base.cmake)
 include(${XDATA_INSTALLATION_DIR}/share/xdata/salome/cmake_begin.cmake)
 
 add_subdirectory(src)
+add_subdirectory(templates)
 
 include(${XDATA_INSTALLATION_DIR}/share/xdata/salome/cmake_end.cmake)

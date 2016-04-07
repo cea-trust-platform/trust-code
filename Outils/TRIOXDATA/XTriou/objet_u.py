@@ -62,10 +62,17 @@ try:
     XGUIQProgressDialog.importPythonFile_Org=XGUIQProgressDialog.importPythonFile
     def myImport(self,*args,**kargs):
         global is_import_file,file_name_import
-        is_import_file=2
+        is_import_file=0
+        from xcontext import setContext,getContext
+        context=getContext()
+        while (getContext()!="quiet"):
+           # print "on change de contexte",getContext()
+           setContext("quiet")
+	   pass
         file_name_import=args[0]
         self.importPythonFile_Org(*args,**kargs)
         is_import_file=0
+        setContext(context)
         from Menu_solver import verifyihm
         verifyihm()
         return
@@ -136,7 +143,7 @@ try:
                         pass
                     pass
                 else:
-                    print "PB",xtree.name,xtree.parent.node
+                    # print "PB",xtree.name,xtree.parent.node
                     pass
             if not_ok:
                 self.status="NoValid"
@@ -155,7 +162,10 @@ try:
     updateObjectBrowser_sa=cls.updateObjectBrowser
     def my_updateObjectBrowser(self):
         from Menu_solver import verifyihm
-        verifyihm()
+        from xcontext import getContext
+ 
+        if (getContext()!="quiet"): 
+            verifyihm()
         return updateObjectBrowser_sa(self)
     cls.updateObjectBrowser=my_updateObjectBrowser
     
@@ -1769,16 +1779,21 @@ class listobj_impl(objet_u):
         if self.listobj==None:
 	    self.listobj=[]	
             pass
-        cmd="tst="+self.__class__.class_type+"()"
+        cmd="tst_titi="+self.__class__.class_type+"()"
         exec(cmd)
-	    
+	is_class_generic=isinstance(tst_titi,class_generic)
+        if 0:
+            from xmetaclass import removeXObject
+            removeXObject(tst_titi)
+            del tst_titi
+       
         while (chaine[0]!= '}') and (i2!=0):
             i2=i2-1
             #   print "lecture ",i2
             self.listobj.append(None)
             newob="self.listobj[-1]"
 	    special=1
-	    if (self.__class__.class_type[-6:]=='_deriv') or isinstance(tst,class_generic):
+	    if (self.__class__.class_type[-6:]=='_deriv') or (is_class_generic):
                 # on va lire un derive
 		type2_=self.__class__.class_type
                 mot0=type2_+'___'

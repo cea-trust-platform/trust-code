@@ -72,7 +72,7 @@ class Schema_Temps_base : public Objet_U
 
 public :
   virtual void initialize();
-  virtual void terminate() {}
+  virtual void terminate() ;
   virtual double computeTimeStep(bool& stop) const;
   virtual bool initTimeStep(double dt);
   virtual void validateTimeStep();
@@ -348,7 +348,10 @@ protected :
   double dt_impr_;                        // Pas de temps d'impression
   int precision_impr_;                // Nombre de chiffres significatifs impression
   double mode_dt_start_;                // mode calcul du pas de temps de depart
-  double residu_;                        // Residu
+  double residu_;        // Residu
+  double residu_old_;
+  double cumul_slope_;
+
   int ind_tps_final_atteint;
   int ind_nb_pas_dt_max_atteint;
   int ind_temps_cpu_max_atteint;

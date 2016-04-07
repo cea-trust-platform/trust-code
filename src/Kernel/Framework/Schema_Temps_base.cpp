@@ -199,33 +199,71 @@ void Schema_Temps_base::validateTimeStep()
       for (int i=0; i<pb_base().nombre_d_equations(); i++)
         pb_base().equation(i).imprime_residu(fic);
       // Impression du temps CPU estime restant
-      if (limpr() && nb_pas_dt()>0 && pas_de_temps()>0)
+
+
+      if (schema_impr())
+        {
+          if ((residu_>0)&&(residu_old_>0))
+            cumul_slope_+=(log(residu_)-log(residu_old_))/dt_;
+          residu_old_=residu_;
+
+        }
+      if (schema_impr()&&(nb_pas_dt()>0 && pas_de_temps()>0))
         {
           // On calcule le temps CPU moyen par pas de temps, inconvenient il peut varier fortement au cours du temps si divergence du calcul ou au contraire acceleration
           // Mais Statistiques ne permet pas d'avoir le temps CPU du dernier pas de temps (last_time appele ici renverrait le temps CPU depuis le debut du pas de temps)
-          double cpu_per_timestep           = statistiques().last_time(temps_total_execution_counter_) / nb_pas_dt();
+          //double cpu_per_timestep           = statistiques().last_time(temps_total_execution_counter_) / nb_pas_dt();
           double nb_pas_selon_tmax          = (temps_max()-temps_courant()) / pas_de_temps();
           double nb_pas_selon_nb_pas_dt_max = nb_pas_dt_max() - nb_pas_dt();
           double nb_pas_avant_fin= dmin(nb_pas_selon_tmax,nb_pas_selon_nb_pas_dt_max);
-          double seconds_to_finish  = nb_pas_avant_fin * cpu_per_timestep;
-          int percent=int((1.-nb_pas_avant_fin/(nb_pas_avant_fin+ nb_pas_dt()))*100);    // marche meme si c'est ltemps max qui limite
-          int integer_limit=(int)(pow(2.0,(double)((sizeof(int)*8)-1))-1);
-          if (seconds_to_finish<integer_limit)
+          //double seconds_to_finish  = nb_pas_avant_fin * cpu_per_timestep;
+          double dpercent=(1.-nb_pas_avant_fin/(nb_pas_avant_fin+ nb_pas_dt()));    // marche meme si c'est ltemps max qui limite
+
+          if (seuil_statio_>0)
             {
-              int h  = int(seconds_to_finish/3600);
-              int mn = int((seconds_to_finish-3600*h)/60);
-              int s  = int(seconds_to_finish-3600*h-60*mn);
-              Cout << finl << "Estimated CPU time to finish the run (according to " << (nb_pas_selon_tmax<nb_pas_selon_nb_pas_dt_max?"tmax":"nb_pas_dt_max") << " value) : ";
-              if (seconds_to_finish<1)
-                Cout << seconds_to_finish << " s";
-              else
-                Cout << h << "h" << mn << "mn" << s << "s";
-              Cout << ". Progress: "<<percent<< finl;
+              double distance= (-log(residu_+1e-20)+log(seuil_statio_))/cumul_slope_* nb_pas_dt();
+
+              //Cerr<<distance<<" DDDDDD"<<finl;
+              double dpercent2=temps_courant()/(temps_courant()+distance);
+              dpercent=dmax(dpercent,dpercent2);
             }
+          int percent=int(dpercent*100);
+
+          if (limpr() )
+            {
+              double seconds_to_finish  =  statistiques().last_time(temps_total_execution_counter_)/dpercent;
+              int integer_limit=(int)(pow(2.0,(double)((sizeof(int)*8)-1))-1);
+              if (seconds_to_finish<integer_limit)
+                {
+                  int h  = int(seconds_to_finish/3600);
+                  int mn = int((seconds_to_finish-3600*h)/60);
+                  int s  = int(seconds_to_finish-3600*h-60*mn);
+                  Cout << finl << "Estimated CPU time to finish the run (according to " << (nb_pas_selon_tmax<nb_pas_selon_nb_pas_dt_max?"tmax":"nb_pas_dt_max") << " value) : ";
+                  if (seconds_to_finish<1)
+                    Cout << seconds_to_finish << " s";
+                  else
+                    Cout << h << "h" << mn << "mn" << s << "s";
+
+                  Cout << ". Progress: "<<(percent)<< finl;
+                }
+            }
+          Nom prg(nom_du_cas());
+          prg+=".progress";
+          SFichier toto(prg);
+          toto<< (percent)<< finl;
+
         }
     }
   // Update time scheme:
   mettre_a_jour();
+}
+void Schema_Temps_base::terminate()
+{
+  Nom prg(nom_du_cas());
+  prg+=".progress";
+  SFichier toto(prg);
+  toto<< 100<< finl;
+
 }
 
 // Description:
@@ -514,6 +552,8 @@ Schema_Temps_base::Schema_Temps_base()
   niter_max_diff_impl_ = 1000; // Above 100 iterations, diffusion implicit algorithm is may be diverging
   schema_impr_=1;
   file_allocation_=0; // Desactive car pose probleme sur platine sur les gros maillages
+  residu_old_=-1000;
+  cumul_slope_=1e-20;
 }
 // Description:
 //    Impression du numero du pas de temps, la valeur du pas de temps.

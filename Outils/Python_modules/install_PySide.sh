@@ -1,10 +1,18 @@
 #!/bin/bash
 cible=$1 && [ "$1" = "" ] && exit -1
+
+
+if [ -f  $cible/env.sh ]
+    then
+    .  $cible/env.sh
+    python -c "import PySide"
+    [ $? -eq 0 ] && echo OK && exit 0
+fi
+
 export OPT=""
 . $cible/env.sh
 package=PySide
-python -c "import $package"
-[ $? -eq 0 ] && echo $package ok && continue
+
 pac=`ls $TRUST_ROOT/externalpackages/Python_modules/$package*.gz`
 pac=`basename $pac .tar.gz`
 rm -rf $pac
