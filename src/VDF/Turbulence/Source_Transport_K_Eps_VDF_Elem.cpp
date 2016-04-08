@@ -41,6 +41,7 @@
 #include <Pb_Thermohydraulique_Turbulent.h>
 #include <Pb_Thermohydraulique_Concentration_Turbulent.h>
 #include <Param.h>
+#include <Constituant.h>
 
 Implemente_instanciable_sans_constructeur(Source_Transport_K_Eps_VDF_Elem,"Source_Transport_K_Eps_VDF_P0_VDF",Source_base);
 Implemente_instanciable_sans_constructeur(Source_Transport_K_Eps_anisotherme_VDF_Elem,"Source_Transport_K_Eps_anisotherme_VDF_P0_VDF",Source_Transport_K_Eps_VDF_Elem);
@@ -376,7 +377,7 @@ DoubleTab& Source_Transport_K_Eps_concen_VDF_Elem::ajouter(DoubleTab& resu) cons
   const DoubleVect& volumes = zone_VDF.volumes();
   const DoubleVect& porosite_vol = zone_VDF.porosite_elem();
   int nb_elem = zone_VDF.nb_elem();
-  int nb_consti = eq_concentration->nb_constituants();
+  int nb_consti = eq_concentration->constituant().nb_constituants();
 
   // Ajout d'un espace virtuel au tableau G
   DoubleVect G;
@@ -502,7 +503,7 @@ DoubleTab& Source_Transport_K_Eps_aniso_therm_concen_VDF_Elem::ajouter(DoubleTab
   const DoubleVect& volumes = zone_VDF.volumes();
   const DoubleVect& porosite_vol = zone_VDF.porosite_elem();
   int nb_elem = zone_VDF.nb_elem();
-  int nb_consti = eq_concentration->nb_constituants();
+  int nb_consti = eq_concentration->constituant().nb_constituants();
 
   // Ajout d'un espace virtuel au tableaux Gt et Gc
   DoubleVect G_t;

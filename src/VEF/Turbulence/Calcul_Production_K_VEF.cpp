@@ -459,7 +459,7 @@ DoubleTab& Calcul_Production_K_VEF::calculer_terme_destruction_K_gen(
 
   else if (nb_consti>1)
     {
-      DoubleTrav u_teta(nb_faces_tot,dimension,nb_consti);
+      DoubleTrav u_teta(nb_faces_tot,nb_consti,dimension);
       DoubleTrav gradient_elem(nb_elem_tot,nb_consti,dimension);
       u_teta=0;
       gradient_elem=0;
@@ -646,9 +646,9 @@ DoubleTab& Calcul_Production_K_VEF::calculer_terme_destruction_K_gen(
           for (int k=0; k<nb_consti; k++)
             {
               if (dimension == 2)
-                G[fac] = gravite(0)*u_teta(fac,0,k) + gravite(1)*u_teta(fac,1,k);
+                G[fac] = gravite(0)*u_teta(fac,k,0) + gravite(1)*u_teta(fac,k,1);
               else if (dimension == 3)
-                G[fac] = gravite(0)*u_teta(fac,0,k) + gravite(1)*u_teta(fac,1,k) + gravite(2)*u_teta(fac,2,k);
+                G[fac] = gravite(0)*u_teta(fac,k,0) + gravite(1)*u_teta(fac,k,1) + gravite(2)*u_teta(fac,k,2);
               else
                 Process::exit();
             }
