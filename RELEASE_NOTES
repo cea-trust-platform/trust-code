@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.3_beta : Enhancements, modifications and corrected bugs since version 1.7.2 :
 --------------------------------------------------------------------------------------------------
+XX/XX/16 (TRUST)  Portability : Released version of metis upgrated to 5.1.0
 XX/XX/16 (TRUST)  Portability : Released version of PETSc upgrated to 3.6.3 (and some packages whose MUMPS and METIS)
 16/02/16 (TRUST)  Bug fixed   : k-eps turbulence model with concentration (it is OK now with several constituents)
 04/02/16 (TRUST)  Minor change: Option -without-host_file added to the TRUST configure tool (Do not load the environnement variables specified in an env_src/HOST_*.sh file)
