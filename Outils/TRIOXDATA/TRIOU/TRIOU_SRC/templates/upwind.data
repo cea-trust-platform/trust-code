@@ -1,0 +1,97 @@
+# Hydraulique 2D laminaire avec "trou" dans le maillage #
+# PARALLEL OK 8 #
+dimension 2
+domaine dom 
+# BEGIN MESH #
+lire_med family_names_from_group_names dom dom2 mesh.med
+# END MESH #
+# BEGIN PARTITION 
+
+Partition dom 
+  { 
+    Partition_tool metis   { nb_parts 2   } 
+    Larg_joint 2 
+    zones_name DOM 
+  } 
+End 
+END PARTITION #
+# BEGIN SCATTER 
+Scatter DOM.Zones dom 
+END SCATTER #
+vdf dis 
+schema_euler_explicite sch 
+Lire sch
+  { 
+    tinit 0.0
+    nb_pas_dt_max 0
+  }
+schema_euler_implicite sch_statio
+Lire sch_statio
+  { 
+    tinit 0.0
+    solveur implicite { solveur gmres { diag seuil -1 nb_it_max 3 } }
+    facsec 5
+    facsec_max 50
+    dt_impr 0.1
+  }
+champ_uniforme gravity
+lire gravity 
+2 0. 0.
+fluide_incompressible eau 
+Lire eau
+  { 
+    mu champ_uniforme  1 3.7e-05
+    rho champ_uniforme  1 2.0
+  }
+associer eau gravity
+pb_thermohydraulique pb 
+Associer pb dom
+Associer pb sch
+Associer pb eau
+discretiser pb dis
+Lire pb
+  { 
+    navier_stokes_standard 
+      { 
+        solveur_pression gcp 
+          { 
+            precond ssor 
+              { 
+                omega 1.5
+              }
+            seuil 1e-08
+          }
+        convection    { amont 
+          }
+        diffusion    {   }
+        conditions_initiales    {  vitesse champ_uniforme  2 0.0 0.0
+          }
+        conditions_limites 
+          {
+            Obstacle paroi_fixe 
+            Symetrie symetrie 
+            Sortie frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0
+            Entree frontiere_ouverte_vitesse_imposee champ_front_uniforme  2 1.0 0.0
+          }
+      }
+    convection_diffusion_temperature 
+      { 
+        convection    { amont 
+          }
+        diffusion    {   }
+        conditions_initiales    {  temperature champ_uniforme  1 10.0
+          }
+      }
+    postraitement 
+      { 
+        format lata
+        champs  dt_post 1.
+          {
+            pression
+            vitesse 
+            temperature 
+          }
+      }
+  }
+resoudre pb
+fin 

@@ -1,8 +1,7 @@
 name=python
 install=$(TRUST_ROOT)/exec/$(name)_modules
-cible=$(install)/bin/$(name)
 all: matplotlib PySide
-python:$(cible)
+
 
 matplotlib: ./install_addon.sh makefile
 	@./install_addon.sh $(package) $(install)

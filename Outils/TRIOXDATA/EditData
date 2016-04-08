@@ -3,6 +3,8 @@
 DIR=`dirname $0`
 DIR=`(cd $DIR; pwd)`
 . $DIR/IHMTRIO.sh
+batch=""
+[ "$1" = "-batch" ] && batch=$1 && shift
 org=`dirname $1`
 org=`(cd $org;pwd)`
 file=$org/`basename $1 .data`.data
@@ -56,6 +58,7 @@ if [ $status -ne 0 ]
 fi
 echo "iii" $file2 $file3
 res=`diff $file2 $file3`
+ok="y"
 if [ "$res" != "" ]
     then
     diff $file2 $file3
@@ -63,9 +66,10 @@ if [ "$res" != "" ]
 	then
 
 	echo "You have make a mistake"
+        ok="R"
     fi
     echo "Do you accept the differences ? (y/n/R)"
-    read ok
+[ "$batch" = "" ] && read ok
     if [ "$ok" = "y" ] || [ "$ok" = "Y" ]
 	then
 	
@@ -80,8 +84,8 @@ if [ "$res" != "" ]
 	    echo "on reedite"
 	    cp __sa__$filepy $filepy	
 	    
-	    echo $0 $* 1
-	    $0 $* 1
+	    echo $0 $batch $* 1
+	    $0 $batch $* 1
 	    
 	fi
     fi	

@@ -268,7 +268,7 @@ do
       exit $?
    elif [ "$1" = "-clean" ]
    then
-      for ext in lata sons son out lml dt_ev TU log stop err xyz sauv dump face out_err plan
+      for ext in lata sons son out lml dt_ev TU log stop err xyz sauv dump face out_err plan progress
       do 
 	 echo "rm *.$ext files."
 	 rm -f *.$ext
@@ -277,7 +277,8 @@ do
       # rm -f *.lata.* core.* err.* out.*
 	  # A priori c est un peu fort : err.* out.* ne sont pas crees au run. 
       echo "rm *.lata.* core.* convert_jdd"
-      rm -f *.lata.* core.* convert_jdd
+      rm -f  core.* convert_jdd
+      find . -maxdepth 1 -name '*.lata.*' -exec  rm  {} \;
       exit 0
    else
       # Unknown option
@@ -337,7 +338,22 @@ then
 fi
 if [ "$probes" = 2 ]
 then 
-  $TRUST_ROOT/exec/PLOT_2D/Plot2d.sh  `dirname $NOM` "residu=max|Ri|"
+ DIR=`dirname $NOM`
+DIR=`(cd $DIR;pwd)`
+cd $DIR
+dt_ev=$DIR/`basename $NOM`.dt_ev
+#[ ! -f $dt_ev ] && echo "# temps          dt              facsec          residu=max|Ri| dt_stab i1 I2" >$dt_ev && echo 0 1 1 1 1  1 1>> dt_ev
+let i=1
+while [ $i -le 0 ]
+  do
+  let i=i+1
+# break
+  [ -f $dt_ev ] && break
+  echo waiting for $dt_ev
+  sleep 0.1
+done
+#[ ! -f $dt_ev ] && exit 1
+sh  $TRUST_ROOT/exec/TRUST_PLOT2D/Plot2d.sh $DIR/`basename $NOM`.data "residu=max|Ri|"
   exit $?
 fi
 #################
