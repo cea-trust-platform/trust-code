@@ -1,4 +1,5 @@
 Version	Qui				Tache
+1.7.3   triou@cea.fr            voir avec Gauthier pour definir baltik_ROOT (cf baltik de baltik, ex AG MATHYS de MC2 et MP Triodev de TrioCFD)
 1.7.3   antoine.scoliege@cea.fr  Passer cas test de NR du baltik de Pierre en fiche verfication prm  + verif VEF ou VDF, 3D ou 2D (DI 3997)
 1.7.3   antoine.scoliege@cea.fr  Reprendre tests d Etienne cavite ouverte en QC + commencer a preparer validation prm avec cas de feu d Ulrich en comparant aux mesures (DI 3862 + DI 3988)
 1.7.3   triou@cea.fr            revoir build dans tmp, visit dans exec et verif clean du config et du make
@@ -39,10 +40,4 @@ Version	Qui				Tache
 1.7.0	triou@cea.fr            Renommer sous_maille en sous_maille_fonction_structure (in english) ?
 1.7.3	triou@cea.fr  		Doc : mettre a jour index et table des matieres
 1.7.3	celine.capitaine@cea.fr Mettre a jour la notice de maintenance TRUST/TrioCFD
-1.7.3   antoine.scoliege@cea.fr  suivre le retour de Romain Guichard et au besoin voir avec lui le post traitement des coefficients de pression (DI 3975)
-1.7.3   antoine.scoliege@cea.fr  suivre le retour de Alexander Grahn et au besoin voir avec lui son probleme si ce n est pas couplage ICoCo (DI 4010 + DI 3989)
-1.7.3   antoine.scoliege@cea.fr  suivre le retour de Frederic Bouyer et voir si on peut lui apporter une aide sur l ecriture de son data (DI 4004)
-1.7.3   tassadit.sidaek@gmail.com  commencer a debugguer Paroi_TBLE sur cas de Sofiane (DI 4005)
-1.7.3   tassadit.sidaek@gmail.com  suivre le retour des indiens et leur repondre (DI 4003)
-1.7.3   tassadit.sidaek@gmail.com  corriger cherche.ksh avec * (DI 3987)
 1.7.3   tassadit.sidaek@gmail.com  synthese post traitement Nusselt (DI 3999)

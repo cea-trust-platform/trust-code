@@ -85,13 +85,15 @@ Entree& Convection_Diffusion_Chaleur_QC::readOn(Entree& is)
   assert(l_inco_ch.non_nul());
   assert(le_fluide.non_nul());
   Convection_Diffusion_std::readOn(is);
-  Nom unite;
-  if (dimension+bidim_axi==2) unite="[W/m]";
-  else unite="[W]";
+  //Nom unite;
+  //if (dimension+bidim_axi==2) unite="[W/m]";
+  //else unite="[W]";
   terme_convectif.set_fichier("Convection_chaleur");
-  terme_convectif.set_description((Nom)"Convective heat transfer rate=Integral(-rho*cp*T*u*ndS) "+unite);
+  //terme_convectif.set_description((Nom)"Convective heat transfer rate=Integral(-rho*cp*T*u*ndS) "+unite);
+  terme_convectif.set_description((Nom)"Convective heat transfer rate=Integral(-rho*cp*T*u*ndS) [W] if SI units used");
   terme_diffusif.set_fichier("Diffusion_chaleur");
-  terme_diffusif.set_description((Nom)"Conduction heat transfer rate=Integral(lambda*grad(T)*ndS) "+unite);
+  //terme_diffusif.set_description((Nom)"Conduction heat transfer rate=Integral(lambda*grad(T)*ndS) "+unite);
+  terme_diffusif.set_description((Nom)"Conduction heat transfer rate=Integral(lambda*grad(T)*ndS) [W] if SI units used");
 
   //On modifie le nom ici pour que le champ puisse etre reconnu si une sonde d enthalpie est demandee
   if (le_fluide->type_fluide()=="Gaz_Reel")

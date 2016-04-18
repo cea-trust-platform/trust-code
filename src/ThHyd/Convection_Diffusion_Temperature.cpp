@@ -90,19 +90,21 @@ Entree& Convection_Diffusion_Temperature::readOn(Entree& is)
   assert(la_temperature.non_nul());
   assert(le_fluide.non_nul());
   Convection_Diffusion_std::readOn(is);
-  Nom unite;
-  if (dimension+bidim_axi==2) unite="[W/m]";
-  else unite="[W]";
+  //Nom unite;
+  //if (dimension+bidim_axi==2) unite="[W/m]";
+  //else unite="[W]";
   Nom num=inconnue().le_nom(); // On prevoir le cas d'equation de scalaires passifs
   num.suffix("temperature");
   Nom nom="Convection_chaleur";
   nom+=num;
   terme_convectif.set_fichier(nom);
-  terme_convectif.set_description((Nom)"Convective heat transfer rate=Integral(-rho*cp*T*u*ndS) "+unite);
+  //terme_convectif.set_description((Nom)"Convective heat transfer rate=Integral(-rho*cp*T*u*ndS) "+unite);
+  terme_convectif.set_description((Nom)"Convective heat transfer rate=Integral(-rho*cp*T*u*ndS) [W] if SI units used");
   nom="Diffusion_chaleur";
   nom+=num;
   terme_diffusif.set_fichier(nom);
-  terme_diffusif.set_description((Nom)"Conduction heat transfer rate=Integral(lambda*grad(T)*ndS) "+unite);
+  //terme_diffusif.set_description((Nom)"Conduction heat transfer rate=Integral(lambda*grad(T)*ndS) "+unite);
+  terme_diffusif.set_description((Nom)"Conduction heat transfer rate=Integral(lambda*grad(T)*ndS) [W] if SI units used");
   return is;
 }
 

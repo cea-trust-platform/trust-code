@@ -71,11 +71,12 @@ Entree& Conduction::readOn(Entree& is )
 {
   Equation_base::readOn(is);
 
-  Nom unite;
-  if (dimension+bidim_axi==2) unite="[W/m]";
-  else unite="[W]";
+  //Nom unite;
+  //if (dimension+bidim_axi==2) unite="[W/m]";
+  //else unite="[W]";
   terme_diffusif.set_fichier("Diffusion_chaleur");
-  terme_diffusif.set_description((Nom)"Conduction heat transfer rate=Integral(lambda*grad(T)*ndS) "+unite);
+  //terme_diffusif.set_description((Nom)"Conduction heat transfer rate=Integral(lambda*grad(T)*ndS) "+unite);
+  terme_diffusif.set_description((Nom)"Conduction heat transfer rate=Integral(lambda*grad(T)*ndS) [W] if SI units used");
   return is;
 }
 
