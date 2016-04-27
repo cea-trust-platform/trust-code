@@ -55,12 +55,15 @@ define_soumission_batch()
    #---------- ---------- --------- ----------- -------- 
    #    normal          0            7-00:00:00          
    #      long          0           30-00:00:00 
-   cpu=2880 && qos=normal       # Qos normal  2 days (?? nodes max=??? CPUs)    Priority ??
+   qos=normal
+   cpu=30 && [ "$prod" = 1 ] && cpu=1440 # 30 minutes or 1 day
    # sinfo :
-   #PARTITION    AVAIL  TIMELIMIT  NODES  STATE NODELIST
-   #prod*           up   infinite     30  down* mezel[029-033,036,038-041,101-103,106-115],mezelocto100,mezelquad[100-105]
-   #amd4184-12c     up   infinite      1  alloc mezel100
-   #intelE5-2697v3- up   infinite      2   idle mezel[034-035]
+   #PARTITION    AVAIL  TIMELIMIT  NODES  STATE
+   #prod*           up   infinite     31    mix
+   #prod_intel      up   infinite      5    mix
+   #prod_amd_12c    up   infinite     20    mix
+   #prod_amd_48c    up   infinite      6    mix
+   #mono            up   infinite      1    mix
    queue=prod
    # Slurm srun support
    #mpirun="srun -n \$SLURM_NTASKS"

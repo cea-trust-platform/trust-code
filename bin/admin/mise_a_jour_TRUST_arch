@@ -539,7 +539,16 @@ do
    echo "TRUST performance on $HOST_BUILD the `date` ...">$PERF
    echo "--------------------------------------------------------" >> $PERF
    echo "hostname="$HOST_BUILD >> $PERF
-   os=`uname -s` && [ $TRUST_ARCH = linux ] && [ -f /etc/issue ] && os=`awk -F"(" '(NF>0) {gsub("Welcome to ","",$1);print $1}' /etc/issue | head -1`
+   #os=`uname -s` && [ $TRUST_ARCH = linux ] && [ -f /etc/issue ] && os=`awk -F"(" '(NF>0) {gsub("Welcome to ","",$1);print $1}' /etc/issue | head -1`
+   os=`uname -s` && [ $TRUST_ARCH = linux ]
+   for file in /etc/system-release /etc/release /etc/issue.net /etc/issue
+   do
+      if [ -f $file ]
+      then
+         os=`awk -F"(" '(NF>0) {gsub("Welcome to ","",$1);print $1}' $file | head -1`
+	 break
+      fi
+   done
    echo "os="$os >> $PERF
    kernel=`uname -r` && [ $TRUST_ARCH = RS6000 ] && kernel=`uname -r`
    echo "release="$kernel >> $PERF

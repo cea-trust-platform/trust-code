@@ -64,12 +64,23 @@ squeue" > $TRUST_ROOT/bin/qstat
 define_soumission_batch()
 {
    soumission=2 && [ "$prod" = 1 ] && soumission=1
-   cpu=24:00:00 # 1 day
-   # core_per_task=1
-   #ram=120GB    # large memory nodes with 128Go of RAM
-   ram=60GB     # small memory nodes with  64Go of RAM
-   tasks_per_node=24 # 24 cores per node
-   noeuds=`echo "$NB_PROCS/$tasks_per_node+1" | bc`
+   cpu=00:30:00 && [ "$prod" = 1 ] && cpu=24:00:00 # 30 minutes or 1 day
+   #ram=60GB # Memory nodes with 64Go (small) or 120Go (large) of RAM
+   [ "$bigmem" = 1 ] && ram=120GB && soumission=1
+   ntasks=24    # 24 cores per node
+   if [ "$prod" = 1 ] || [ $NB_PROCS -gt $ntasks ]
+   then
+      if [ "`echo $NB_PROCS | awk -v n=$ntasks '{print $1%n}'`" != 0 ]
+      then
+         echo "=================================================================================================================="
+         echo "Warning: the allocated nodes of $ntasks cores will not be shared with other jobs (--exclusive option used)"
+         echo "so please try to fill the allocated nodes by partitioning your mesh with multiple of $ntasks."
+         echo "=================================================================================================================="
+      fi
+      node=1
+   fi
+   noeuds=`echo "$NB_PROCS/$ntasks+1" | bc`
+   [ `echo "$NB_PROCS%$ntasks" | bc -l` = 0 ] && noeuds=`echo "$NB_PROCS/$ntasks" | bc`
    #if [ "`basename $Mpirun`" = srun ]
    #then
    #   # Slurm srun support

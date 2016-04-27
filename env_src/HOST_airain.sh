@@ -85,10 +85,36 @@ module () {
 ##############################
 define_soumission_batch()
 {
-   soumission=2
-   #mpirun="mpirun -n $NB_PROCS" ne marche pas au dela de 32 procs ?
-   mpirun="ccc_mprun -n $NB_PROCS"
-   [ "`basename $MPI_ROOT`" = mpich ] && mpirun="$Mpirun -np $NB_PROCS" # Try support of MVAPICH...
+   soumission=2 && [ "$prod" = 1 ] && soumission=1
+   # -M ram with ram>4000 is not supported anymore (06/2014)
+   # ram=64000 # 64 GB asked
+   # So we use now n cores for one task to have 4*n GB per task
+   [ "$bigmem" = 1 ] && cpus_per_task=16 && soumission=1 # To have 64GB per task
+   # ccc_mqinfo : 
+   #Name     Partition  Priority  MaxCPUs  SumCPUs  MaxNodes  MaxRun  MaxSub     MaxTime
+   #-------  ---------  --------  -------  -------  --------  ------  ------  ----------
+   #big              *        20                                   1       4  1-00:00:00
+   #long             *        20     1024     2048                        32  3-00:00:00
+   #normal           *        20     2048                                128  1-00:00:00
+   #test             *        40                           8               2    00:30:00
+   cpu=1800 && [ "$prod" = 1 ] && cpu=86400 # 30 minutes or 1 day
+   # Priorite superieure avec test si pas plus de 8 nodes (2*8 cores)
+   if [ "$prod" = 1 ] || [ $NB_PROCS -gt 128 ]
+   then
+      qos=normal
+      [ "$prod" = 1 ] && cpu=86400
+   else
+      qos=test
+      cpu=1800
+   fi
+   # ccc_mpinfo : 
+   #PARTITION    STATUS TOT_CPUS TOT_NODES    MpC  CpN SpN CpS TpC
+   #standard     up         9504       594    4000  16   2   8   1
+   #ivybridge    up         7060       353    3200  20   2  10   1
+   #large        up         2880       180    8000  16   2   8   1
+   #xlarge       up          320         2   12800 160  16  10   1
+   #hybrid       up          128         8    6000  16   2   8   1
+   #hybrid       up          128         8    3000  16   2   8   1
    # On selectionne la queue la moins occupee
    # On attend de voir, certains plantages sur standard
    #queue=`ccc_mpinfo | awk '/up/ {if ($10>free) {free=$10;queue=$1}} END {print queue}'`
@@ -97,26 +123,11 @@ define_soumission_batch()
    if [ "`id -g`" = 50003 ] # groupe DEN
    then
       # Partition ivybridge sur airain (fin 2013, accessible a DEN, 7180 cores)
-      queue=ivybridge
+      queue=ivybridge && [ "$bigmem" = 1 ] && queue=large
       [ "$NB_PROCS" -gt 2048 ] && echo "$NB_PROCS cores is too high for $HOST:" && ccc_mqinfo && exit -1
    fi
-   if [ "$prod" = 1 ]
-   then
-      qos=normal
-      cpu=86400 # 24 heures
-   elif [ "$bigmem" = 1 ]
-   then
-      soumission=1
-      qos=normal
-      cpu=86400 
-      # -M ram with ram>4000 is not supported anymore (06/2014)
-      # ram=64000 # 64 GB asked
-      # So we use now n cores for one task to have 4*n GB per task
-      core_per_task=16 # To have 64GB per task
-   else
-      # Priorite superieure avec test si pas plus de 8 nodes (2*8 cores)
-      qos=test && [ "$NB_PROCS" -gt 128 ] && qos=normal
-      cpu=1800 # 30mn
-   fi
-   sub=CCC 
+   #mpirun="mpirun -np $NB_PROCS" ne marche pas au dela de 32 procs ?
+   mpirun="ccc_mprun -n $NB_PROCS"
+   [ "`basename $MPI_ROOT`" = mpich ] && mpirun="$Mpirun -np $NB_PROCS" # Try support of MVAPICH...
+   sub=CCC
 }

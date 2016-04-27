@@ -43,6 +43,7 @@ define_modules_config()
    # Creation wrapper qstat -> squeue
    echo "#!/bin/bash
 squeue" > $TRUST_ROOT/bin/qstat
+   chmod +x $TRUST_ROOT/bin/qstat
 }
 
 ##############################
@@ -55,13 +56,17 @@ define_soumission_batch()
    #      Name   Priority MaxSubmit     MaxWall MaxNodes
    #---------- ---------- --------- ----------- --------
    #    normal          0
-   cpu=2880 && qos=normal       # Qos normal  2 days (?? nodes max=??? CPUs)    Priority ??
+   #      visu          0
+   #      lila          0
+   qos=normal
+   cpu=30 && [ "$prod" = 1 ] && cpu=1440 # 30 minutes or 1 day
    # sinfo :
-   #PARTITION    AVAIL  TIMELIMIT  NODES  STATE NODELIST
-   #prod*           up   infinite     10   idle ceres[231-240]
-   #prod_E5-2680    up   infinite     10   idle ceres[231-240]
-   #gpu             up   infinite      1   idle ceres241
-   #visu            up   infinite      1   idle ceres2-visu
+   #PARTITION      AVAIL  TIMELIMIT  NODES  STATE
+   #prod*             up   infinite      7    mix
+   #prod_X5675        up   infinite      1    mix
+   #prod_E5-2680v2    up   infinite      3    mix
+   #prod_E5-2670      up   infinite      3    mix
+   #lila              up   infinite      2    mix
    queue=prod
    #if [ "`basename $Mpirun`" = srun ]
    #then

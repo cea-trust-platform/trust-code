@@ -1,7 +1,6 @@
 # Thermohydraulique 3D turbulent sous maille et Boussinesq #
 # End  #
 dimension 3
-Pb_Thermohydraulique_Turbulent pb
 Domaine dom
 
 Mailler dom

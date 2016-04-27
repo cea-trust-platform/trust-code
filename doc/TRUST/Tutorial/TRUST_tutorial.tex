@@ -2471,8 +2471,8 @@ or in parallel with:\\
 \begin{block}{}
 
 \begin{itemize}
-\item First configure gmsh to show points, lines, and surface numbers of the geometry. In menu Tools $\rightarrow$ Options $\rightarrow$ Geometry $\rightarrow$ Visibility, select Lines, Surfaces, Point numbers, Line numbers, Surface numbers, Volum numbers close this window. 
-\item Save definitively your choices with File $\rightarrow$ Save Options $\rightarrow$ As default.
+\item First configure gmsh to show points, lines, and surface numbers of the geometry. In menu Tools $\rightarrow$ Options $\rightarrow$ Geometry $\rightarrow$ Visibility, select Lines, Surfaces, Point labels, Line labels, Surface labels, Volume labels close this window. 
+\item Save definitively your choices with File $\rightarrow$ Save Options As default.
 
 \item Now, look at the file.geo file, you can see the definition of parameters, points, lines... You can see the position of the points and lines with theirs numbers in gmsh.
 
@@ -2499,10 +2499,10 @@ or in parallel with:\\
 \hspace{1cm} $\color{darkblue}\circ$ {\small{ set H to 2 and L to 10. (You can comment D, E, param and X definitions.)}}
 
 \begin{itemize}
-\item Press "Reload" in the gmsh GUI to update the geometry visualization.
+\item Press "Reload" in the gmsh GUI $\rightarrow$ Geometry to update the geometry visualization.
 \item Now we will had the circle. Note that you can only create circle arcs with angle strictly smaller than $\pi$!
     \begin{itemize}
-    \item [$\circ$] create the middle of the circle like "Point(10)=\{1,1,0,lc\};" where the triplet "1,1,0" are the coordinates of the point and "lc2" the thickness of the cells next this point.
+    \item [$\circ$] create the middle of the circle like "Point(10)=\{1,1,0,lc\};" where the triplet "1,1,0" are the coordinates of the point and "lc" the thickness of the cells next this point.
     \item [$\circ$] create 4 points around this point, which will correspond to the 4 arc of the circle: \\
 Point(11)=\{1.25,1,0,lc2\};\\
 Point(12)=\{1,1.25,0,lc2\};\\

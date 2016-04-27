@@ -2,7 +2,6 @@
 # PARALLEL OK #
 
 dimension 3
-Pb_Hydraulique_Turbulent pb1
 Domaine dom01234 
 
 # BEGIN MESH #
