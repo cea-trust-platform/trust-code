@@ -331,6 +331,7 @@ option_configure=""
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-without-doc" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -without-doc"
 # Compilateur clang
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-clang" | grep ^$HOST"\."`" != "" ]				&& option_configure=$option_configure" -c++=/usr/bin/clang++ -cc=/usr/bin/clang"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_even_unsupported" | grep ^$HOST"\."`" != "" ]		&& option_configure=$option_configure" -force_even_unsupported"
 
 ########################
 # Lancement du configure
@@ -829,7 +830,23 @@ do
 	    then
 	       echo "--------------------------------------------------------" 
 	       echo "Run_bench script launched on $HOST_BUILD at "`date '+%H:%M:%S'`" ..."
-	       (cd $TRUST_TESTS/Reference/BENCHMARK;rm -f Run_bench.log;echo "Run_bench script launched on $HOST_BUILD at "`date '+%H:%M:%S'`" ..." >> $PERF;echo " " >> $PERF;echo "TRUST Run_bench on $HOST the `date` ...">Run_bench.log;./Run_bench 1>>Run_bench.log 2>&1;cat par >> $PERF;echo " " >> $PERF;echo "--------------------------------------------------------" >> $PERF)&
+	       (cd $TRUST_TESTS/Reference/BENCHMARK;
+	        rm -f Run_bench.log;
+		echo "Run_bench script launched on $HOST_BUILD at "`date '+%H:%M:%S'`" ..." >> $PERF;
+		echo " " >> $PERF;
+		echo "TRUST Run_bench on $HOST the `date` ...">Run_bench.log;
+		./Run_bench 1>>Run_bench.log 2>&1;
+		cat par >> $PERF;
+		echo " " >> $PERF;
+		echo "--------------------------------------------------------" >> $PERF;
+		perf=`$TRUST_Awk 'BEGIN {p=0} ($1==4) && (NF==12) && /\|/ {if ($(NF-1)>0.60) p=p+0.25} ($1==1) && (NF==12) && /\|/ {if ($3<8) p=p+0.25} END {print p}' $PERF`;
+	        if [ $(echo " $perf < 1 " | bc) -eq 1 ]
+	        then
+	           echo "BENCHMARK=KO"
+	        else
+	           echo "BENCHMARK=OK"
+	        fi
+		)&
 	    fi
 	 fi	 
 	 ##########################################################
@@ -888,9 +905,9 @@ do
 	    fi
 	    if [ $Run_fiche_KO = 0 ]
 	    then
-	       echo "Script Run_fiche OK"
+	       echo "Script Run_fiche=OK"
 	    else
-	       echo "Script Run_fiche KO -> See $log"
+	       echo "Script Run_fiche=KO -> See $log"
 	    fi
 	    #rm -r -f build
 	    cd - 1>/dev/null 2>&1

@@ -855,7 +855,7 @@ then
 	[ $choix != "0" ] && [ ${choix#P_} = $choix ] && [ $choix != $k ] && [ $choix != "M" ] && i=""
 	if [ ${#i} != 0 ]
 	then
-	    let tests=tests+1
+	    let tests=$tests+1
 	    NOM=`basename ${i%.lml.gz}`
 	    REP=`dirname $i`
 	    reference=$ref/$i
@@ -923,7 +923,7 @@ then
 		    DEC=0
 		else
 		    DEC=1
-		    let tests_par=tests_par+1
+		    let tests_par=$tests_par+1
 		    ###############################
 		    # preparation pour le parallele
 		    ###############################
@@ -1173,9 +1173,9 @@ then
 			    then
 				if [ "$type" = "seq" ]
 				then
-				    let succes=succes+1
+				    let succes=$succes+1
 				else
-				    let succes_par=succes_par+1
+				    let succes_par=$succes_par+1
 				    s=`analyse $NOM.TU`
 				    p=`analyse $NOM2.TU`
 				    # On teste si bc existe (pas livre par defaut sur Mandrake 10.1) #
@@ -1323,7 +1323,7 @@ then
    # Liste des cas tests non lances
    for file_skipped in $liste_skipped
    do
-      let nb_skipped=nb_skipped+1
+      let nb_skipped=$nb_skipped+1
    done
    echo $ECHO_OPTS "$nb_skipped test cases skipped\n" >> $SORTIE
    (echo $ECHO_OPTS "$nb_skipped test cases skipped\n" >> $fichier) 2>/dev/null
@@ -1333,7 +1333,7 @@ then
    # Liste des cas tests non compares a la reference
    for file_no_ref_comparison in $liste_no_ref_comparison
    do
-      let nb_no_ref_comparison=nb_no_ref_comparisons+1
+      let nb_no_ref_comparison=$nb_no_ref_comparison+1
    done
    echo $ECHO_OPTS "$nb_no_ref_comparison test cases not compared to the reference\n" >> $SORTIE
    (echo $ECHO_OPTS "$nb_no_ref_comparison test cases not compared to the reference\n" >> $fichier) 2>/dev/null

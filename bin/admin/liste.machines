@@ -20,6 +20,7 @@ linux 	rsync_ssh	cible		cezanne43.intra.cea.fr				-ModeleCoeur										# Debian
 linux	scp_ssh		cible		is227526.intra.cea.fr				-TRUST -MPCube			-remote_install_TRUST_kernel_only			# Fedora 20	 		CEA Saclay	Bat 454	LMES	bureau Jerome Garcin (Couplage Cathare/TRUST)
 linux	sftp_ssh 	non		is227551.intra.cea.fr				-TrioCFD -ModeleCoeur									# Fedora 20			CEA Saclay	Bat 454	LMES	bureau Francois Dupouy
 linux   rsync_ssh       cible           is227246.intra.cea.fr	-rsync	-all		-TRUST -TrioCFD	-prof		-remote_install_TRUST_with_source			# Fedora 22 			CEA Saclay	Bat 454 LMES	PC test Erwan Adam
+linux	rsync_ssh	non		is229106.intra.cea.fr	 	-all										-force_even_unsupported # Ubuntu 16.04  		CEA Saclay	Bat ??
 linux	sftp_ssh	cible		is228666.intra.cea.fr   			-TRUST -MPCube							  			# Ubuntu 14.04  		CEA Saclay	Bat 454	LMEC	bureau Mathieu Niezgoda
 linux	rsync_ssh	non		is213120.intra.cea.fr   			-TrioCFD -ModeleCoeur									# Ubuntu 12.04  		CEA Saclay	Bat 454		TMA flica4
 linux	rsync_ssh	non		thor.hmg.inpg.fr								-force_provided_mpich					# openSUSE 11.4			CEA Grenoble

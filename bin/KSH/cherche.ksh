@@ -13,7 +13,12 @@ do
     if [ $TRUST_ARCH = linux ]
     then
        # Le \\* est important car * ne marche pas sur ioulia...
-       echo $mot | $TRUST_Awk '{gsub("@"," ",$0);gsub("\\*","[a-z0-9_]\\*",$0);print $0}' > $TMP_REP/mot$i
+       # echo $mot | $TRUST_Awk '{gsub("@"," ",$0);gsub("\\*","[a-z0-9_]\\*",$0);print $0}' > $TMP_REP/mot$i
+       # 2016/04/28
+       # avec \\*, "cherche.ksh VEF*" renvoie rien
+       # avec \*, ca renvoie bien la liste souhaitee mais avec message "gawk: cmd. line:1: warning: escape sequence `\*' treated as plain `*'"
+       # avec * seul, ca renvoie la liste sans warning
+       echo $mot | $TRUST_Awk '{gsub("@"," ",$0);gsub("*","[a-z0-9_]*",$0);print $0}' > $TMP_REP/mot$i
     else
        echo $mot | $TRUST_Awk '{gsub("@"," ",$0);print $0}' > $TMP_REP/mot$i
     fi

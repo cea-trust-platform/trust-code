@@ -97,12 +97,14 @@ do
 <TD>ICoCo</TD>
 <TD>Gmsh</TD>
 <TD>VisIt</TD>
+<TD>fiche</TD>
 <TD>Ate</TD>
 <TD>Xpr</TD>
 <TD>assert</TD>
 <TD>Baltik</TD>
 <TD>Tests</TD>
-<TD>CPU_3D</TD>
+<TD>CPU3D</TD>
+<TD>Bench</TD>
 </TR>" >> $NUIT
    
    #########################
@@ -254,7 +256,7 @@ do
 	PERF=$REP_NUIT/PERF_$NOM
 	EXEC=${NOM%_$HOST}
 	EXEC=${EXEC%_$arch}
-	host="";os="";rel="";mod="";taille="";cpu="";cpu3d="<TD $BLANC>NOT</TD>"
+	host="";os="";rel="";mod="";taille="";cpu="";cpu3d="<TD $BLANC>NOT</TD>";bench="<TD $BLANC>NOT</TD>";runfich="<TD $BLANC>NOT</TD>"
 	BLANC="BGCOLOR=#FEFEFE";ROUGE="BGCOLOR=#C42111";VERT="BGCOLOR=3D\"#E47833\""
 	comp="Echec";COL1=$ROUGE
 	[ "`grep BUILD_EXEC=OK $CR`" != "" ] && comp="Succes" && COL1=$VERT
@@ -277,6 +279,12 @@ do
 	   cpu3d=$cpu3d && [ "`grep CPU_3D=KO $CR`" != "" ] && cpu3d="<TD $ROUGE>KO</TD>"
 	   cpu=`cat $CR | grep "Mo|" | $TRUST_Awk -F"|" '/cpu_3D / && !/PAR_/ && !/NP/{print $4}'`
 	   cpu3d=$cpu3d && [ "`grep CPU_3D=OK $CR`" != "" ] && cpu3d="<TD $VERT>$cpu</TD>"
+	   # BENCHMARK
+	   bench=$bench && [ "`grep BENCHMARK=KO $CR`" != "" ] && bench="<TD $ROUGE>KO</TD>"
+	   bench=$bench && [ "`grep BENCHMARK=OK $CR`" != "" ] && bench="<TD $VERT>OK</TD>"
+	   # Run_fiche
+	   runfich=$runfich && [ "`grep Run_fiche=KO $CR`" != "" ] && runfich="<TD $ROUGE>KO</TD>"
+	   runfich=$runfich && [ "`grep Run_fiche=OK $CR`" != "" ] && runfich="<TD $VERT>OK</TD>"
 	   # Taux sequentiel:
 	   staux=`cat $PERF | $TRUST_Awk '/succes/ && (NF==2) {print $2;exit}'`
 	   # Taux parallele:
@@ -383,12 +391,14 @@ $LATA2DX
 $ICOCO
 $GMSH
 $VISIT
+$runfich
 $ATELIER
 $XPREPRO
 $ASSERT
 $BALTIK
 <TD $COL2><A HREF="`basename $tests_html`">$taux</A>$FTD
 $cpu3d$FTD
+$bench
 </TR>" >> $NUIT2
       echo "<BR><LI>"$os >> /tmp/os
       echo "<BR><LI>"$TRUST_CC >> /tmp/CC
@@ -400,6 +410,8 @@ $cpu3d$FTD
         echo "
 <TR>
 $TD_CR<A HREF="$CR">$HOST</A>$FTD
+<TD>$vide</TD>
+<TD>$vide</TD>
 <TD>$vide</TD>
 <TD>$vide</TD>
 <TD>$vide</TD>
@@ -464,13 +476,13 @@ $TD_CR<A HREF="$CR">$HOST</A>$FTD
    #[ -f $REP_NUIT/nuit_Test_Baltik.html ] && echo "<A HREF="nuit_Test_Baltik.html">TRUST</A> : TRUST test baltik portability<BR>" >> $NUIT2
    #[ -f $REP_NUIT/nuit_MPCube.html ] && echo "<A HREF="nuit_MPCube.html">MPCube</A> : MPCube baltik compilation portability<BR>" >> $NUIT2
    #[ -f $REP_NUIT/nuit_TrioCFD.html ] && echo "<A HREF="nuit_TrioCFD.html">TrioCFD</A> : TrioCFD baltik compilation portability<BR>" >> $NUIT2
-   #[ -f $REP_NUIT/nuit_ModeleCoeur.html ] && echo "<A HREF="nuit_ModeleCoeur.html">MC2</A> : ModeleCoeur baltik compilation portability<BR>" >> $NUIT2
+   #[ -f $REP_NUIT/nuit_ModeleCoeur.html ] && echo "<A HREF="nuit_ModeleCoeur.html">TrioMC2</A> : TrioCFD baltik compilation portability<BR>" >> $NUIT2
    echo "<A HREF="nuit_equation_convection_diffusion.html">Tuto</A> : equation_convection_diffusion baltik compilation portability<BR>" >> $NUIT2
    echo "<A HREF="nuit_ICoCo.html">ICoCo</A> : ICoCo baltik compilation portability<BR>" >> $NUIT2
    echo "<A HREF="nuit_Test_Baltik.html">TRUST</A> : TRUST test baltik portability<BR>" >> $NUIT2
    echo "<A HREF="nuit_MPCube.html">MPCube</A> : MPCube baltik compilation portability<BR>" >> $NUIT2
    echo "<A HREF="nuit_TrioCFD.html">TrioCFD</A> : TrioCFD baltik compilation portability<BR>" >> $NUIT2
-   echo "<A HREF="nuit_ModeleCoeur.html">MC2</A> : ModeleCoeur baltik compilation portability<BR>" >> $NUIT2
+   echo "<A HREF="nuit_ModeleCoeur.html">TrioMC2</A> : TrioMC2 baltik compilation portability<BR>" >> $NUIT2
    #echo "Release criteria of the $TRUST_VERSION version:<BR>" >> $NUIT2
    echo "$port_cible_all : Total number portability ( $nb_machine_cible = $nb_machine_total_cible )<BR>" >> $NUIT2
    echo "$port_trust : $MODULE portability ( $portabilite/$nb_machine_cible > $limite ) $mes<BR>" >> $NUIT2

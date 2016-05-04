@@ -509,7 +509,7 @@ then
        echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
        VerifData $NOM.data
        echo "Error: Check your $NOM.data file."
-       exit -1
+       #exit -1
    else
        echo OK
    fi

@@ -1,11 +1,12 @@
 Version	Qui				Tache
+1.7.3   triou@cea.fr            Mettre a jour le script install de visit avec TRUST_DOWNLOAD_VISIT (pas necessairement sequentiel)
+1.7.3   triou@cea.fr            Probleme avec post_processings si les noms sont POST_1 et POST_2 lors de la lecture sous VisIt
+1.7.3   triou@cea.fr            baltik: renommer make check_trio_optim en make check_trust_optim
 1.7.3   triou@cea.fr            revoir host visit sur CCRT avec configuration sub_file de Gauthier
 1.7.3   triou@cea.fr            revoir l utilisation de dt_impr_ustar et dt_impr_ustar_mean_only ensemble
 1.7.3   triou@cea.fr            revoir build dans tmp, visit dans exec et verif clean du config et du make
 1.7.3   triou@cea.fr            revoir tuto salome de TRUST sans mailleur Netgen + supprimer Xprepro
-1.7.3   triou@cea.fr            tester resume_last_time avec cas couple (ex priodic box)
 1.7.3   gauthier.fauchet@cea.fr  modification pour initialisation des tableaux A(1,1.0) ou A(1,1)
-1.7.3   gauthier.fauchet@cea.fr  MC2 : de facon non systematique et sur differents OS le cas test CALCUL_COUPLE_jdd2 plante
 1.7.3   gauthier.fauchet@cea.fr  Reprendre Mod_turb_hyd_base.cpp limitation mut
 1.7.3   gauthier.fauchet@cea.fr  Revoir le PATH pour module load TRUST sous occigen (passer par SET)
 1.7.3   triou@cea.fr            proposer un tutorial ICoCo
@@ -29,5 +30,5 @@ Version	Qui				Tache
 1.7.0	triou@cea.fr		zone_dis()=mon_probleme().domaine_dis().zone_dis(0); ?
 1.7.0	triou@cea.fr		Check Champ_fonc_reprise with .sauv files produces a clear error message when partition is changed ?
 1.7.0	triou@cea.fr            Renommer sous_maille en sous_maille_fonction_structure (in english) ?
-1.7.3	triou@cea.fr  		Doc : mettre a jour index et table des matieres
+1.7.3	triou@cea.fr  		Doc : mettre a jour index et table des matieres (ajouter buildInnerBoundary dans formation users sur commentaire CL interne)
 1.7.3	celine.capitaine@cea.fr Mettre a jour la notice de maintenance TRUST/TrioCFD
