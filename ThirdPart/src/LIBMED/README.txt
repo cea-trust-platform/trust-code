@@ -1,8 +1,8 @@
 22/11/2013 Update:
-In archives/med-3.1.0.tar.gz, the .html,.map,.jpg files
+In archives/med-3.2.0.tar.gz, the .html,.map,.jpg files
 have been removed to gain space disk and, above all, avoid
 a slowness during install (/usr/bin/install so slow...)
-on CCRT clusters (cd med-3.1.0/doc/html.dox ; rm -f *.html *.map *.jpg; Makefile.in et Makefile.am modified)
+on CCRT clusters (cd med-3.2.0/doc/html.dox ; rm -f *.html *.map *.jpg; Makefile.in et Makefile.am modified)
 
 
 
@@ -15,7 +15,7 @@ pre-installee (par  exemple par un environnement  Salome ou Alliances)
 et l'installation d'une version fournie par le noyau.
 
 Par ailleurs, Trio-U  est livre avec les archives  de deux versions de
-MED (med-3.1.0 et med-2.3.6) ainsi que celles de deux versions de HDF5
+MED (med-3.2.0 et med-2.3.6) ainsi que celles de deux versions de HDF5
 (hdf5-1.8.14  et  hdf5-1.6.9).    La  procedure  d'installation  permet
 egalement a  l'utilisateur de specifier  la version de MED  qu'il veut
 utiliser.
@@ -45,9 +45,9 @@ en definissant differentes variables d'environnement :
 
  - USE_MED_VERSION  : cette variable  permet de  choisir le  couple de
    numeros de versions de MED et de HDF5 que l'on desire utiliser.
-    - si elle vaut 3.1, on choisit le couple (MED-3.1, HDF5-1.8) ;
+    - si elle vaut 3.2, on choisit le couple (MED-3.2, HDF5-1.8) ;
     - si elle vaut 2.3, on choisit le couple (MED-2.3, HDF5-1.6) ;
-    - si elle n'est pas definie, on choisit  (MED-3.1, HDF5-1.8). 
+    - si elle n'est pas definie, on choisit  (MED-3.2, HDF5-1.8). 
 
 
 Remarque 1
