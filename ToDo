@@ -1,24 +1,17 @@
 Version	Qui				Tache
-1.7.3   triou@cea.fr            voir avec Gauthier pour definir baltik_ROOT (cf baltik de baltik, ex AG MATHYS de MC2 et MP Triodev de TrioCFD)
-1.7.3   antoine.scoliege@cea.fr  Passer cas test de NR du baltik de Pierre en fiche verfication prm  + verif VEF ou VDF, 3D ou 2D (DI 3997)
-1.7.3   antoine.scoliege@cea.fr  Reprendre tests d Etienne cavite ouverte en QC + commencer a preparer validation prm avec cas de feu d Ulrich en comparant aux mesures (DI 3862 + DI 3988)
+1.7.3   triou@cea.fr            Mettre a jour le script install de visit avec TRUST_DOWNLOAD_VISIT (pas necessairement sequentiel)
+1.7.3   triou@cea.fr            Probleme avec post_processings si les noms sont POST_1 et POST_2 lors de la lecture sous VisIt
+1.7.3   triou@cea.fr            baltik: renommer make check_trio_optim en make check_trust_optim
+1.7.3   triou@cea.fr            revoir host visit sur CCRT avec configuration sub_file de Gauthier
+1.7.3   triou@cea.fr            revoir l utilisation de dt_impr_ustar et dt_impr_ustar_mean_only ensemble
 1.7.3   triou@cea.fr            revoir build dans tmp, visit dans exec et verif clean du config et du make
-1.7.3   tassadit.sidaek@gmail.com  mettre a jour README_ECLIPSE sans chemin en dur + ajouter baltik + lancer en parallele (DI 3996)
-1.7.3   tassadit.sidaek@gmail.com  revoir tuto TRUST : ajouter correction coquille dans late pour Gmsh + sortir pdf (cf DI 3992)
 1.7.3   triou@cea.fr            revoir tuto salome de TRUST sans mailleur Netgen + supprimer Xprepro
-1.7.3   triou@cea.fr            probleme avec gdb sur is223196 avec GNU 5.1.0 (par exemple refuse de creer break sur fonction par contre ok avec numero de ligne)
-1.7.3   triou@cea.fr            tester resume_last_time avec cas couple (ex priodic box)
 1.7.3   gauthier.fauchet@cea.fr  modification pour initialisation des tableaux A(1,1.0) ou A(1,1)
-1.7.3   triou@cea.fr            revoir "Building Outils/ICoCo: OK" or ICoCo_src/ICoCo_opt: No such file
-1.7.3   triou@cea.fr            revoir script trust avec nouvelle option pour sub_file (ex: occigen avec petit temps pour devenir prioritaire car pas de queue test)
-1.7.3   triou@cea.fr            nouvelle option dans configure pour forcer BLAS et LAPACK du package TRUST (NB Debian 8)
-1.7.3   gauthier.fauchet@cea.fr  MC2 : de facon non systematique et sur differents OS le cas test CALCUL_COUPLE_jdd2 plante
 1.7.3   gauthier.fauchet@cea.fr  Reprendre Mod_turb_hyd_base.cpp limitation mut
 1.7.3   gauthier.fauchet@cea.fr  Revoir le PATH pour module load TRUST sous occigen (passer par SET)
 1.7.3   triou@cea.fr            proposer un tutorial ICoCo
 1.7.3   triou@cea.fr            Passer en job de soumission mise_a_jour_TRUST_arch sur cluster pour eviter de charger les frontales
 1.7.3   triou@cea.fr            Passer a la version Petsc 3.6... et revoir euclid + doc
-1.7.3   tassadit.sidaek@gmail.com  Reprendre verif_cl de Marthe + preparer branche git avec modif + compare pdf sur fiches prm impactees (cf DI 3939)
 1.7.3   triou@cea.fr            Analyser le fichier de sortie datafile_petsc.TU (signification de count)
 1.7.3   gauthier.fauchet@cea.fr revoir le TRUST env qui teste beaucoup de chose (ex: dd.ksh,...) et trop long pour utilisateur
 1.7.3   triou@cea.fr            completer benchmark avec et sans Petsc
@@ -29,7 +22,6 @@ Version	Qui				Tache
 1.7.3   triou@cea.fr            Gauthier a demande d ajouter test Execute_parallel lors du configure pour verifier l'installation MPI
 1.7.3   triou@cea.fr            au changement de version de VisIt, deplacer de bin/visit dans exec/visit/bin/visit + maj du PATH dans TRUST.env et mise_a_jour_TRUST_arch
 1.7.3   triou@cea.fr            Probleme avec pre-commit et post-commit qui modifie des fichiers lors du commit apres nos tests !!! Le faire lors du compile et si modif alors arret...
-1.7.3   triou@cea.fr            turbulence : si u_tau.dat reynolds_tau.dat et tauw.dat renommes en jdd_***.dat, alors ATTENTION car beaucoup de fiches de valid s'en servent + voir avec utilisateurs
 1.7.0	triou@cea.fr		Champ_front_normal voir d'autres ne devrait pas heriter de Ch_front_var_instationnaire_dep (notion d'inconnue) ?
 1.7.0	triou@cea.fr		add_if_not dans Ch_base.cpp lent ?
 1.7.0	triou@cea.fr		Essayer de calculer auto direction quand la periodicite n'est pas orthogonale aux bords (eg: Canal_perio_incline_VEF) ?
@@ -38,6 +30,5 @@ Version	Qui				Tache
 1.7.0	triou@cea.fr		zone_dis()=mon_probleme().domaine_dis().zone_dis(0); ?
 1.7.0	triou@cea.fr		Check Champ_fonc_reprise with .sauv files produces a clear error message when partition is changed ?
 1.7.0	triou@cea.fr            Renommer sous_maille en sous_maille_fonction_structure (in english) ?
-1.7.3	triou@cea.fr  		Doc : mettre a jour index et table des matieres
+1.7.3	triou@cea.fr  		Doc : mettre a jour index et table des matieres (ajouter buildInnerBoundary dans formation users sur commentaire CL interne)
 1.7.3	celine.capitaine@cea.fr Mettre a jour la notice de maintenance TRUST/TrioCFD
-1.7.3   tassadit.sidaek@gmail.com  synthese post traitement Nusselt (DI 3999)

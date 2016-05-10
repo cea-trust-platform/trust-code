@@ -120,12 +120,12 @@ help()
    echo "-valgrind               : Run under valgrind."
    echo "-valgrind_strict        : Run under valgrind with no suppressions."
    echo "-create_sub_file        : Create a submission file only."
-   echo "-c n                    : Use n cores per task for a parallel calculation."
-   echo "-queue queue            : Create a submission file with the specified queue and submit the job."
-   echo "-prod                   : Create a submission file and submit the job on the main production class."
+   echo "-prod                   : Create a submission file and submit the job on the main production class with exclusive resource."
    echo "-bigmem                 : Create a submission file and submit the job on the big memory production class."
-   [ "$PETSC_HAVE_CUDA" = 1 ] && echo "-gpu                    : Create a submission file and submit the job on production class with GPU cards."
-   [ -d /ccc ] && echo "-ipm                    : Use ipm to report MPI statistics."
+   echo "-queue queue            : Create a submission file with the specified queue and submit the job."
+   echo "-c ncpus                : Use ncpus CPUs allocated per task for a parallel calculation."
+#   [ "$PETSC_HAVE_CUDA" = 1 ] && echo "-gpu                    : Create a submission file and submit the job on production class with GPU cards."
+#   [ -d /ccc ] && echo "-ipm                    : Use ipm to report MPI statistics."
    echo "-help_trust             : Print options of TRUST_EXECUTABLE [CASE[.data]] [options]."
 
    echo "If no option is given, create a submission file and submit the job on the test class."
@@ -140,11 +140,11 @@ probes=""
 prm=""
 copy=""
 gdb=""
-mail=""
-core_per_task=""
+taches=""
+cpus_per_task=""
 queue_choisie=""
 [ "$prod" = "" ] && prod=0
-bigmem=0
+[ "$bigmem" = "" ] && bigmem=0
 gpu=0
 node=0
 USE_MPIRUN=0
@@ -204,7 +204,7 @@ do
       mesh=1
    elif [ "$1" = "-c" ]
    then
-      shift && core_per_task=$1
+      shift && cpus_per_task=$1
    elif [ "$1" = "-monitor" ]
    then
       monitor=1
@@ -216,13 +216,13 @@ do
       probes=2
    elif [ "$1" = "-create_sub_file" ]
    then
-      create_sub_file=1 && prod=1 && mail=1
+      create_sub_file=1 && prod=1 && node=1
    elif [ "$1" = "-queue" ]
    then
       shift && queue_choisie=$1
    elif [ "$1" = "-prod" ]
    then
-      prod=1
+      prod=1 && node=1
    elif [ "$1" = "-gpu" ]
    then
       gpu=1
@@ -338,23 +338,23 @@ then
 fi
 if [ "$probes" = 2 ]
 then 
- DIR=`dirname $NOM`
-DIR=`(cd $DIR;pwd)`
-cd $DIR
-dt_ev=$DIR/`basename $NOM`.dt_ev
-#[ ! -f $dt_ev ] && echo "# temps          dt              facsec          residu=max|Ri| dt_stab i1 I2" >$dt_ev && echo 0 1 1 1 1  1 1>> dt_ev
-let i=1
-while [ $i -le 0 ]
-  do
-  let i=i+1
-# break
-  [ -f $dt_ev ] && break
-  echo waiting for $dt_ev
-  sleep 0.1
-done
-#[ ! -f $dt_ev ] && exit 1
-sh  $TRUST_ROOT/exec/TRUST_PLOT2D/Plot2d.sh $DIR/`basename $NOM`.data "residu=max|Ri|"
-  exit $?
+   DIR=`dirname $NOM`
+   DIR=`(cd $DIR;pwd)`
+   cd $DIR
+   dt_ev=$DIR/`basename $NOM`.dt_ev
+   #[ ! -f $dt_ev ] && echo "# temps          dt              facsec          residu=max|Ri| dt_stab i1 I2" >$dt_ev && echo 0 1 1 1 1  1 1>> dt_ev
+   let i=1
+   while [ $i -le 0 ]
+   do
+      let i=i+1
+     # break
+      [ -f $dt_ev ] && break
+      echo waiting for $dt_ev
+     sleep 0.1
+   done
+   #[ ! -f $dt_ev ] && exit 1
+   sh  $TRUST_ROOT/exec/TRUST_PLOT2D/Plot2d.sh $DIR/`basename $NOM`.data "residu=max|Ri|"
+   exit $?
 fi
 #################
 # Visu maillage #
@@ -479,6 +479,7 @@ ram=""
 noeuds=""
 export prod
 export bigmem
+export node
 export gpu
 # See HOST_???.sh file called in TRUST.env
 if [ "$TRUST_WITHOUT_HOST" = 0 ]
@@ -494,18 +495,21 @@ define_soumission_batch
 # clusters with job scheduling if exec
 # is a TRUST binary
 ######################################
-if [ $soumission != 999 ] && [ ${binary#TRUST} != $binary ] && [ "`VerifData 1>/dev/null 2>&1;echo $?`" = 0 ]
+#if [ $soumission != 999 ] && [ ${binary#TRUST} != $binary ] && [ "`VerifData 1>/dev/null 2>&1;echo $?`" = 0 ]
+shortbin=${binary##*/}
+if [ $soumission != 999 ] && [ ${shortbin#TRUST} != $shortbin ] && [ "`VerifData 1>/dev/null 2>&1;echo $?`" = 0 ]
 then
-   echo $ECHO_OPTS "Checking the syntax of the data file before submitting the job...\c"
+   echo $ECHO_OPTS "Checking the syntax of the $NOM.data file before submitting the job...\c"
    VerifData $NOM.data 1>/dev/null 2>&1
    if [ $? != 0 ]
    then
        echo KO
        echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
        echo "Check your data file. Syntax error detected:"
-       echo "============================================"
+       echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
        VerifData $NOM.data
-       exit -1
+       echo "Error: Check your $NOM.data file."
+       #exit -1
    else
        echo OK
    fi
@@ -570,90 +574,84 @@ then
 		[ "$project" != "" ] && echo "#SBATCH -A $project"	>> $sub_file	# Account
 		echo "#SBATCH -n $NB_PROCS"				>> $sub_file	# Number of tasks
 		[ "$noeuds" != "" ] && echo "#SBATCH -N $noeuds"        >> $sub_file    # Number of nodes
-		[ "$core_per_task" != "" ] && echo "#SBATCH -c $core_per_task"	>> $sub_file	# Number of cores per task	
-		[ "$qos" != "test" ] && echo "#SBATCH --exclusive"	>> $sub_file	# Exclusive use of nodes during production run	
+		[ "$cpus_per_task" != "" ] && echo "#SBATCH -c $cpus_per_task"	>> $sub_file	# Number of cores per task	
+		[ "$node" = 1 ] && echo "#SBATCH --exclusive"		>> $sub_file	# Exclusive use of nodes during production run	
 		[ "$ram" != "" ] && echo "#SBATCH --mem=$ram"           >> $sub_file    # Real memory required per node in MegaBytes
-		echo "cd \$SLURM_SUBMIT_DIR" >> $sub_file # Submit directory for reprise_auto script
+		echo "cd \$SLURM_SUBMIT_DIR" 				>> $sub_file    # Submit directory for reprise_auto script
 		;;
-   	POE)	echo "#!/bin/bash" 					>> $sub_file
-		echo "#@ job_name = $NOM"				>> $sub_file
-		echo "#@ job_type = parallel"				>> $sub_file
-		echo "#@ wall_clock_limit = $cpu"			>> $sub_file
-		echo "#@ class = $queue" 				>> $sub_file
-		echo "#@ network.MPI = sn_all,,us"			>> $sub_file
-		echo "#@ total_tasks = $NB_PROCS"			>> $sub_file
-		[ "$core_per_task" != "" ] 	&& echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
-		echo "#@ node = `echo "1+($NB_PROCS-1)/16" | bc`"	>> $sub_file 	# ceil($NB_PROCS/16)
-		echo "#@ output = job\$(jobid).out"			>> $sub_file
-		echo "#@ error = job\$(jobid).err"			>> $sub_file
-		echo "#@ initialdir = $ici"				>> $sub_file
-		echo "#@ node_topology = island"			>> $sub_file
-		echo "#@ island_count = `echo "1+($NB_PROCS-1)/8192" | bc`" 	>> $sub_file	#  ceil($NB_PROCS/8192)
-		echo "#@ energy_policy_tag = NONE"			>> $sub_file
-		echo "#@ queue"						>> $sub_file
+   	POE)
+		echo "#!/bin/bash" 					>> $sub_file
+		echo "#@ job_name=$NOM"					>> $sub_file
+		[ "$queue" != "" ] && echo "#@ class=$queue"		>> $sub_file
+		echo "#@ wall_clock_limit=$cpu"				>> $sub_file
+		echo "#@ output=myjob.\$(jobid).o"			>> $sub_file
+		echo "#@ error=myjob.\$(jobid).e"			>> $sub_file
+		#echo "#@ job_type=parallel"				>> $sub_file
+		#echo "#@ network.MPI=sn_all,,us"			>> $sub_file
+		#echo "#@ node_topology=island"				>> $sub_file
+		#echo "#@ island_count=`echo "1+($NB_PROCS-1)/8192" | bc`" >> $sub_file # ceil($NB_PROCS/8192)
+		#echo "#@ energy_policy_tag=NONE"			>> $sub_file
+		#echo "#@ queue"					>> $sub_file
+		echo "#@ total_tasks=$NB_PROCS"				>> $sub_file
+		#echo "#@ node=`echo "1+($NB_PROCS-1)/16" | bc`" 	>> $sub_file # ceil($NB_PROCS/16)
+		[ "$noeuds" != "" ] && echo "#@ node=$noeuds"		>> $sub_file 
+		[ "$node" = 1 ] && echo "#@ node_usage=not_shared"	>> $sub_file
+		[ "$ram" != "" ] && echo "#@ requirements=(Memory >= $ram)" >> $sub_file
+		[ "$cpus_per_task" != "" ] && echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
+		#echo "#@ initialdir=$ici"				>> $sub_file
+		echo "cd \$LOADL_STEP_INITDIR" 				>> $sub_file
 		;;		
-   	LSF) 	echo "#BSUB -J $NOM
-#BSUB -n $NB_PROCS
-#BSUB -o out.%J
-#BSUB -e err.%J" >> $sub_file
-		[ "$core_per_task" != "" ] 	&& echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
-		[ ${#mail} != 0 ] 		&& echo "#BSUB -B -N" 		>> $sub_file
-      		[ ${#queue} != 0 ] 		&& echo "#BSUB -q $queue" 	>> $sub_file
-      		[ ${#cpu} != 0 ]		&& echo "#BSUB -W $cpu" 	>> $sub_file      		
-      		[ ${#ram} != 0 ] 		&& echo "#BSUB -M $ram" 	>> $sub_file
-      		[ ${#node} != 0 ] 		&& echo "#BSUB -ext \"SLURM[mincpus=4]\"" 	>> $sub_file	
-		echo "cd \$LS_SUBCWD" >> $sub_file
+   	LSF)
+	 	echo "#BSUB -J $NOM"				>> $sub_file
+      		[ "$queue" != "" ] && echo "#BSUB -q $queue" 	>> $sub_file
+      		echo "#BSUB -W $cpu" 				>> $sub_file 
+		echo "#BSUB -o myjob.%J.o" 			>> $sub_file
+		echo "#BSUB -e myjob.%J.e" 			>> $sub_file 
+		echo "#BSUB -n $NB_PROCS"			>> $sub_file
+		[ "$node" = 1 ] && echo "#BSUB -x"		>> $sub_file
+      		[ "$ram" != "" ] && echo "#BSUB -M $ram" 	>> $sub_file
+		[ "$cpus_per_task" != "" ] && echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
+		echo "cd \$LS_SUBCWD" 				>> $sub_file
  		;;
-	CCC)	echo "#!/bin/bash" 				>> $sub_file 
-		echo "#MSUB -r $NOM" 				>> $sub_file 
-		[ ${#noeuds} != 0 ] && echo "#MSUB -N $noeuds" 	>> $sub_file 
-		echo "#MSUB -n $NB_PROCS" 			>> $sub_file 
-      		if [ ${#cpu} != 0 ]
-		then
-		   if [ "`echo $cpu | grep :`" != "" ]
-		   then
-		      # Exprime en HH:MM:SS
-		      echo "#BSUB -W $cpu" 			>> $sub_file 
-                   else
-		      # Exprime en SSSSS
-		      echo "#MSUB -T $cpu" 			>> $sub_file 
-		   fi
-		fi 
-		if [ "$core_per_task" != "" ]
-		then
-		   echo "#MSUB -c $core_per_task" 		>> $sub_file 
-		fi
-		# RAM
-		[ "$ram" != "" ] && echo "#MSUB -M $ram" 	>> $sub_file 
-		# Ajout projet
-		project=`ccc_myproject 2>/dev/null | $TRUST_Awk '/project/ {print $4;exit}'`
-		if [ "$project" != "" ]
-		then
-		   echo "#MSUB -A $project" 			>> $sub_file 
-		fi
-		# Prevent from restart:
-		echo "#MSUB -E \"--no-requeue\""                >> $sub_file
-		[ ${#qos} != 0 ]   && echo "#MSUB -Q $qos"	>> $sub_file 
-		[ ${#queue} != 0 ] && echo "#MSUB -q $queue"	>> $sub_file     	
-		echo "#MSUB -o out.%J"				>> $sub_file
-		echo "#MSUB -e err.%J" 				>> $sub_file
-		echo "cd \$BRIDGE_MSUB_PWD" 			>> $sub_file
+	CCC)
+		echo "#!/bin/bash" 						>> $sub_file 
+		echo "#MSUB -r $NOM" 						>> $sub_file 
+		[ "$queue" != "" ] && echo "#MSUB -q $queue"			>> $sub_file 
+		[ "$qos" != "" ] && echo "#MSUB -Q $qos"			>> $sub_file 
+		[ "`echo $cpu | grep :`" != "" ] && echo "#BSUB -W $cpu" 	>> $sub_file # Exprime en HH:MM:SS !!! BSUB !!!
+		[ "`echo $cpu | grep :`" = "" ] && echo "#MSUB -T $cpu" 	>> $sub_file # Exprime en SSSSS      	
+		echo "#MSUB -o myjob.%J.o"					>> $sub_file
+		echo "#MSUB -e myjob.%J.e" 					>> $sub_file
+		project=`ccc_myproject 2>/dev/null | $TRUST_Awk '/project/ {print $4;exit}'` # Ajout projet
+		[ "$project" != "" ] && echo "#MSUB -A $project" 		>> $sub_file 
+		echo "#MSUB -E \"--no-requeue\""            			>> $sub_file # Prevent from restart
+		echo "#MSUB -n $NB_PROCS" 					>> $sub_file 
+		[ "$noeuds" != "" ] && echo "#MSUB -N $noeuds" 			>> $sub_file 
+		[ "$cpus_per_task" != "" ] && echo "#MSUB -c $cpus_per_task"	>> $sub_file
+		[ "$ram" != "" ] && echo "#MSUB -M $ram" 			>> $sub_file 
+		echo "cd \$BRIDGE_MSUB_PWD" 					>> $sub_file
  		;;
-	SGE) 	echo "#$ -N $NOM"				>> $sub_file
-		[ "$reseau" != "" ] && echo "#$ -pe $reseau"	>> $sub_file
-		echo "#$ -cwd" 					>> $sub_file
-		echo "#$ -S /bin/bash"				>> $sub_file
-		[ "$balise" != "" ]	&& echo $balise		>> $sub_file
-		[ "$mail" != "" ] 	&& echo "#$ -m be" 	>> $sub_file
-      		[ "$queue" != "" ] 	&& echo "#$ -q $queue" 	>> $sub_file
-		[ "$core_per_task" != "" ] 	&& echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
-		echo "cd \$SGE_CWD_PATH" 			>> $sub_file
-		;;
-	NQS) 	echo "#QSUB -r $NOM
-#QSUB -lt $cpu
-#QSUB -n $NB_PROCS" >> $sub_file
-		[ "$core_per_task" != "" ] 	&& echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
-                echo "cd $ici" >> $sub_file
+	SGE)
+	 	echo "#$ -N $NOM"				>> $sub_file
+      		[ "$queue" != "" ] && echo "#$ -q $queue" 	>> $sub_file
+		echo "#$ -l h_rt=$cpu"                          >> $sub_file
+		echo "#$ -o myjob.%J.o"                         >> $sub_file
+		echo "#$ -e myjob.%J.e"                         >> $sub_file
+		#echo "#$ -cwd" 				>> $sub_file
+		#echo "#$ -S /bin/bash"				>> $sub_file
+		#[ "$balise" != "" ]	&& echo $balise		>> $sub_file
+		[ "$taches" != "" ] && echo "#$ -pe $taches"	>> $sub_file
+		[ "$node" = 1 ] && echo "#$ -l exclusive"	>> $sub_file
+		[ "$ram" != "" ] && echo "#$ -l mem_free=$ram"  >> $sub_file
+		[ "$cpus_per_task" != "" ] && echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
+		echo "cd \$SGE_O_WORKDIR" 			>> $sub_file
+		;;	
+	NQS)
+	 	echo "#QSUB -r $NOM"		>> $sub_file
+		echo "#QSUB -lt $cpu"		>> $sub_file
+		echo "#QSUB -n $NB_PROCS" 	>> $sub_file
+		[ "$cpus_per_task" != "" ] && echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
+                echo "cd $ici" 			>> $sub_file
 		;;
 	PBS)
 		echo "#!/bin/sh"                                        >> $sub_file    # Shell
@@ -661,15 +659,17 @@ then
 		[ "$queue" != "" ] && echo "#PBS -q $queue"             >> $sub_file    # Partition
 		[ "$qos" != "" ] && echo "#PBS -l qos=$qos"             >> $sub_file    # Quality of service
 		echo "#PBS -l walltime=$cpu"                            >> $sub_file    # Time in minutes
-		echo "#PBS -o out.log"                                  >> $sub_file    # Output log
-		echo "#PBS -e err.log"                                  >> $sub_file    # Error log
-		#echo "#PBS -l select=$noeuds:ncpus=$ncpus:mpiprocs=$mpiprocs" >> $sub_file
-		echo "#PBS -l nodes=$noeuds:ppn=$ncpus"                 >> $sub_file    # Number of nodes and tasks
-		[ "$core_per_task" != "" ]      && echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
+		echo "#PBS -o myjob.%J.o"                               >> $sub_file    # Output log
+		echo "#PBS -e myjob.%J.e"                               >> $sub_file    # Error log
+		echo "#PBS -l nodes=$noeuds:ppn=$taches"                >> $sub_file    # Number of nodes and tasks
+		#echo "#PBS -l ppn=$taches"      		        >> $sub_file    # Number of tasks
+		#echo "#PBS -l nodes=$noeuds"           		>> $sub_file    # Number of nodes	
+		#[ "$node" = 1 ] && echo "#PBS -l naccesspolicy=singlejob" >> $sub_file	# Exclusive use of nodes during production run	
 		[ "$ram" != "" ] && echo "#PBS -l mem=$ram"             >> $sub_file    # Real memory required per node in MegaBytes
-		echo "cd \$PBS_O_WORKDIR" >> $sub_file
+		[ "$cpus_per_task" != "" ] && echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
+		echo "cd \$PBS_O_WORKDIR" 				>> $sub_file
 		;;
-	*) echo "sub=$sub non prevu." && exit -1
+	*) echo "sub=$sub not planned." && exit -1
 		;;
    esac	   
    #######
@@ -776,7 +776,7 @@ then
    fi
    exit $err
 else
-   [ "$core_per_task" != "" ] 	&& echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
+   [ "$cpus_per_task" != "" ] 	&& echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
    if [ $NB_PROCS = 1 ] && [ $USE_MPIRUN = 0 ]
    then
       ###############################

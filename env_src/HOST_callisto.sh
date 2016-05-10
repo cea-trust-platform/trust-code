@@ -55,37 +55,38 @@ define_soumission_batch()
 {
    soumission=2 && [ "$prod" = 1 ] && soumission=1
    # sacctmgr list qos format=Name,Priority,MaxSubmit,MaxWall,MaxNodes :      
-   # Name   Priority MaxSubmit     MaxWall MaxNodes 
-   #---------- ---------- --------- ----------- -------- 
-   # normal         20            2-00:00:00       20 
-   #   test         40         2    01:00:00        2 
-   #   long         10           14-00:00:00       10 
-   cpu=60 && qos=test				# Qos test   1 hour (2 nodes max=20 CPUs)	Priority 40
-   if [ "$prod" = 1 ] || [ $NB_PROCS -gt 20 ]
+   # Name     Priority MaxSubmit     MaxWall 
+   #------- ---------- --------- -----------
+   # normal         20            2-00:00:00
+   #   test         40         2    01:00:00
+   #   long         10           14-00:00:00
+   # project_r+     40           31-00:00:00
+   cpu=30 && [ "$prod" = 1 ] && cpu=1440 # 30 minutes or 1 day
+   ntasks=20 # 20 cores per node
+   if [ "$prod" = 1 ] || [ $NB_PROCS -gt $ntasks ]
    then
-      cores_per_node=20
-      if [ "`echo $NB_PROCS | awk -v n=$cores_per_node '{print $1%n}'`" != 0 ]
+      if [ "`echo $NB_PROCS | awk -v n=$ntasks '{print $1%n}'`" != 0 ]
       then
          echo "=================================================================================================================="
-         echo "Warning: the allocated nodes of $cores_per_node cores will not be shared with other jobs (--exclusive option used)"
-	 echo "so please try to fill the allocated nodes by partitioning your mesh with multiple of $cores_per_node."
+         echo "Warning: the allocated nodes of $ntasks cores will not be shared with other jobs (--exclusive option used)"
+	 echo "so please try to fill the allocated nodes by partitioning your mesh with multiple of $ntasks."
 	 echo "=================================================================================================================="
       fi
-      if [ "$NB_PROCS" -gt 200 ]
-      then
-         qos=normal && cpu=2880 		# Qos normal 2 days (20 nodes max=400 CPUs)	Priority 20
-      else
-         qos=long && cpu=20160   		# Qos long  14 days (10 nodes max=200 CPUs)	Priority 10
-      fi
-      qos=normal && cpu=2880 # By default, cause qos long is a small priority
+      node=1
+      qos=normal
+      [ "$prod" = 1 ] && cpu=2880 # 2 days
+   else
+      qos=test
+      [ "$prod" = 1 ] && cpu=60 # 1 hour
    fi
-   # Partition:
-   queue=slim 					# 40*2*10=800 cores  6.4Go/core, 128GO/node
-   if [ "$bigmem" = 1 ]
-   then
-      queue=large 				# 16*2*10=320 cores 12.8Go/core, 256Go/node
-      queue=fat 				#  2*4*6 =48  cores 21.3Go/core, 512Go/node
-   fi
+   # sinfo :
+   #PARTITION AVAIL  TIMELIMIT  NODES  STATE
+   #slim*        up   infinite     37    mix
+   #fat          up   infinite      1    mix
+   #large        up   infinite     13    mix
+   #eris         up   infinite     30  alloc
+   #pluton       up   infinite      4    mix
+   queue=slim && [ "$bigmem" = 1 ] && queue=large,fat && soumission=1
    #project=stmf
    #if [ "`basename $Mpirun`" = srun ]
    #then

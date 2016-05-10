@@ -73,7 +73,7 @@ check_components()
 	    if [ "$COMPOSANT_OK" = 0 ]
 	    then
 	       echo $ECHO_OPTS "KO."
-	       cat $Composant_log | mail_ -s\"[lance_test_nuit] check_components $Composant $TRUST_VERSION KO\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+	       cat $Composant_log | mail_ -s\"[lance_test_nuit] check_components $Composant $TRUST_VERSION KO\" $TRUST_MAIL #$TRUST_PROJECT_LEADER
 	    else
 	       echo $ECHO_OPTS "OK"
 	    fi	    
@@ -1151,7 +1151,7 @@ echo $ECHO_OPTS "TrioCFD distribution site:   http://sourceforge.net/projects/tr
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "User TRUST TrioCFD      diffusion list http://saxifrage:3500/wws/info/trio_u_annonces" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "Developer TRUST TrioCFD diffusion list http://saxifrage:3500/wws/info/trio_u_dev" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "User TRUST ModeleCoeur  diffusion list http://saxifrage:3500/wws/info/mc2_annonces" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "User TRUST TrioMC2      diffusion list http://saxifrage:3500/wws/info/mc2_annonces" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "TRUST Kernel              mailing list http://saxifrage:3500/wws/info/trio_u_kernel" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "TRUST Post Processing     mailing list http://saxifrage:3500/wws/info/trio_u_post_traitement" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "TrioCFD Front Tracking    mailing list http://saxifrage:3500/wws/info/trio_u_front_tracking" >> $MESSAGES_NUIT
