@@ -54,10 +54,14 @@ then
   # relocation R_X86_64_32S against `ompi_request_null' can not be used when making
   # a shared object; recompile with -fPIC
   # Peut etre a utiliser partout ?
-  export CXXFLAGS="-fPIC"
-  export CFLAGS="-fPIC"
-  export FFLAGS="-fPIC"
-  export FCFLAGS="-fPIC"
+  # 12/05/2005 add -ldl -fno-strict-aliasing -Wl,--no-as-needed
+  # else PETSc 3.5.3 fails to build with OpenMPI 1.8.3...
+  export CXXFLAGS="-fPIC -fno-strict-aliasing"
+  export CFLAGS="-fPIC -fno-strict-aliasing"
+  export FFLAGS="-fPIC -fno-strict-aliasing"
+  export FCFLAGS="-fPIC -fno-strict-aliasing"
+  export LDFLAGS="-Wl,--no-as-needed"
+  export LIBS="-ldl"
 fi
 # Configuration:
 ./configure --help 2>&1 > ../configure.help

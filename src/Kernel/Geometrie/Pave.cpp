@@ -206,10 +206,26 @@ Entree& Pave::readOn(Entree& is)
                     {
                       a_tanh+=pow(10.,-decimale);
                       a_tanh = min(a_tanh,1-Objet_U::precision_geom);
+                      if ( dabs(a_tanh) < Objet_U::precision_geom)
+                        {
+                          Cerr << "Error: The coefficient a_tanh has a value of : " << a_tanh << finl ;
+                          Cerr << "So the mesh can't be generated with tanh (hyperbolic tangent) variation!" << finl ;
+                          Cerr << "You must decrease either the tanh_taille_premiere_maille size of the first cell of the mesh " << finl;
+                          Cerr << "or the nombre_de_noeuds Ny node number in the Y direction." << finl;
+                          exit();
+                        }
                       y_tmp=Longueurs(1)/fac_sym*(1.+tanh((-1.+fac_sym*1./((My-1)*1.))*atanh(a_tanh))/a_tanh);
                     }
                   a_tanh-=pow(10.,-decimale);
                   a_tanh = min(a_tanh,1-Objet_U::precision_geom);
+                  if ( dabs(a_tanh) < Objet_U::precision_geom)
+                    {
+                      Cerr << "Error: The coefficient a_tanh has a value of : " << a_tanh << finl ;
+                      Cerr << "So the mesh can't be generated with tanh (hyperbolic tangent) variation!" << finl ;
+                      Cerr << "You must decrease either the tanh_taille_premiere_maille size of the first cell of the mesh " << finl;
+                      Cerr << "or the nombre_de_noeuds Ny node number in the Y direction." << finl;
+                      exit();
+                    }
                 }
               Cerr << "The coefficient a_tanh has a value of : " << a_tanh << finl ;
               break;

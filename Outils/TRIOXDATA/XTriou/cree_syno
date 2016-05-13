@@ -2,11 +2,14 @@
 
 cree_syno()
 {
-    # On chrche les synonymes dans la hierarchie
+    # On cherche les synonymes dans la hierarchie
     #trust existepas 2>/dev/null 1>/dev/null
     # Pour eviter des blocages sur machine jade:
-	exec=$1
-    $exec existepas 2>/dev/null 1>/dev/null
+    #exec=$1
+    #$exec existepas 2>/dev/null 1>/dev/null
+    # on generalise
+    export exec=$1
+    trust existepas 2>/dev/null 1>/dev/null
     listsyno=`grep "<=>" hierarchie.dump| sed "s/ <=> /%/"`
     rm -f *dump existepas.log
     echo -n "synonyme={ 'end':'fin',"

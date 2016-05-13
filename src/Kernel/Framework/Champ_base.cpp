@@ -643,7 +643,7 @@ int Champ_base::calculer_valeurs_elem_compo_post(DoubleTab& les_valeurs,int ncom
 // Ajoute la contribution des autres processeurs a valeurs et compteur
 inline void add_sommets_communs(const Domaine& dom, DoubleTab& les_valeurs, IntTab& compteur, IntList& sommets_dirichlet)
 {
-  if (Process::nproc()>9) return;
+//  if (Process::nproc()>9) return;
   int nb_compo_ = 0;
   if (les_valeurs.nb_dim()==2)
     nb_compo_ = les_valeurs.dimension(1);
@@ -1014,6 +1014,7 @@ int Champ_base::calculer_valeurs_som_compo_post(DoubleTab& les_valeurs,int ncomp
                               int sommet=faces.sommet(num_face, num_som);
                               sommets_dirichlet.add_if_not(sommet);
                               les_valeurs(sommet) = diri.val_imp(num_face,ncomp);
+                              compteur(sommet) += 1;
                             }
                         }
                     }

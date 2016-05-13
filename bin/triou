@@ -497,7 +497,7 @@ define_soumission_batch
 ######################################
 #if [ $soumission != 999 ] && [ ${binary#TRUST} != $binary ] && [ "`VerifData 1>/dev/null 2>&1;echo $?`" = 0 ]
 shortbin=${binary##*/}
-if [ $soumission != 999 ] && [ ${shortbin#TRUST} != $shortbin ] && [ "`VerifData 1>/dev/null 2>&1;echo $?`" = 0 ]
+if [ $soumission != 999 ] && [ ${shortbin#TRUST} != $shortbin ] && [ "`VerifData 1>/dev/null 2>&1;echo $?`" = 0 ] && [ $NB_PROCS -gt 1 ]
 then
    echo $ECHO_OPTS "Checking the syntax of the $NOM.data file before submitting the job...\c"
    VerifData $NOM.data 1>/dev/null 2>&1
