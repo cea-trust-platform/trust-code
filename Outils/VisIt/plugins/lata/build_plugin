@@ -20,7 +20,9 @@ fi
 
 # Regroupement des sources du plugin depuis le Kernel:
 cd src
-./generate_lata_xml.sh $TRUST_ROOT/$LATASRC $1 -with_med
+MED="-with_med"
+[ ! -f $TRUST_MED_ROOT/lib/limed.a ] || [ -! $TRUST_MEDCOUPLING_ROOT/lib/libmedloader.a ] && MED=""
+./generate_lata_xml.sh $TRUST_ROOT/$LATASRC $1 $MED
 cd ..
 rm -r -f build
 mkdir -p build

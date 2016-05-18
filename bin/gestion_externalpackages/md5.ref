@@ -2,7 +2,6 @@
 392874c62b18abe978443f9641330c40  Gmsh/gmsh-2.10.1-source.tgz
 a482686e733514a51cde12d6fe5c5d95  MED/hdf5-1.8.14.tar.gz
 5a741da8a0e7fd99469ed7c7df213c2c  MED/med-3.2.0.tar.gz
-b304f9826b5438117bff5f7317534439  MEDCoupling_Standalone_770.tgz
 2ab544607986486562e076b83937bba2  MPI/mpich-3.1.4.tar.gz
 0095ceecb19bbb7fb262131cb9c2cdd6  MPI/mvapich2-2.1.tgz
 167f4e8e2291ea0349e3dbe9fba13829  MPI/openmpi-1.8.3.tar.gz
@@ -47,6 +46,7 @@ c735eab2d659a96e5a594c9e8541ad63  gnuplot/zlib-1.2.5.tar.gz
 44c3869c38c8335c2b9c2a8bb276eb55  lapack/lapack-3.4.1.tgz
 b5e558f981326d9ca1bfdb841640721a  make-4.0.tar.gz
 0475638eb40a3920d0d3f14482c924a4  makedepend-1.0.5.tar.bz2
+2b8e6cf7c6405812a8dfb4c27db82e5c  medcoupling-7.8.0.tar.gz
 125ea640cac0bb76207562b615c2a1f8  metis-5.0.3.tar.gz
 015526f7328f746407f10a0a211f0c0a  nvc_get_devices.tgz
 462b0bae64f70663b79e110f8da5b320  petsc/MUMPS_4.10.0-p3.tar.gz
