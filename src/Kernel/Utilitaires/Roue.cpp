@@ -178,8 +178,11 @@ Roue::Roue() : temps_(0), nb_cases_(1), valeurs_(), passe_(this), futur_(this)
 Roue::Roue(const Roue& roue) : temps_(roue.temps_), nb_cases_(1), valeurs_(roue.valeurs_), passe_(this), futur_(this)
 {
   fixer_nb_cases(roue.nb_cases_);
-  for(int i=1; i<nb_cases_-1; i++)
-    futur(i).valeurs_ = roue.futur(i).valeurs_;
+  for(int i=1; i<nb_cases_; i++)
+    {
+      futur(i).valeurs_ = roue.futur(i).valeurs_;
+      // abort();
+    }
 }
 
 
@@ -532,8 +535,11 @@ Roue& Roue::operator=(const Roue& roue)
   temps_ = roue.temps_;
   valeurs_ = roue.valeurs_;
   fixer_nb_cases(roue.nb_cases_);
-  for(int i=1; i<nb_cases_-1; i++)
-    futur(i).valeurs_ = roue.futur(i).valeurs_;
+  for(int i=1; i<nb_cases_; i++)
+    {
+      futur(i).valeurs_ = roue.futur(i).valeurs_;
+      // abort();
+    }
   return *this;
 }
 
