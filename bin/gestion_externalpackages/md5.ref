@@ -52,9 +52,9 @@ b5e558f981326d9ca1bfdb841640721a  make-4.0.tar.gz
 462b0bae64f70663b79e110f8da5b320  petsc/MUMPS_4.10.0-p3.tar.gz
 4628df9eeae10ae5f0c486f1ac982fce  petsc/SuiteSparse-4.2.1.tar.gz
 488e231775fe827aea9d13e019b01ee1  petsc/ViennaCL-1.5.1.tar.gz
-ded660799e76fb1667d594de1f7a0da9  petsc/bison-2.7.tar.gz
+a586e11cd4aff49c3ff6d3b6a4c9ccf8  petsc/bison-3.0.4.tar.gz
 41d8342631256935dcfb063d281b7dd4  petsc/cusplibrary-0.4.0.tgz
-6c16fa35ba422bf809effa106d022a39  petsc/flex-2.5.37.tar.gz
+5724bcffed4ebe39e9b55a9be80859ec  petsc/flex-2.6.0.tar.gz
 6237367d33faa4a1ee2a68d6428073dc  petsc/hypre-2.9.1a.tar.gz
 a5e9954b1dae036762f7b13673a2cf76  petsc/m4-1.4.17.tar.gz
 fad6e916885661638a0d85a1f9978cb7  petsc/metis-5.0.2-p3.tar.gz
