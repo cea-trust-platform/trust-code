@@ -7,10 +7,8 @@ PROGRAM=$(TRUST_ROOT)/exec/lance_test_seq_par
 SONDE=$(TRUST_ROOT)/exec/compare_sonde
 all: $(PROGRAM) $(SONDE)
 $(PROGRAM): lance_test_seq_par.cpp
-	$(TRUST_CC) -g $(CppFlags) -c lance_test_seq_par.cpp
-	$(TRUST_CC) -g -o $(PROGRAM) lance_test_seq_par.o $(SYSLIBS)
+	$(TRUST_CC) -g $(CppFlags)  lance_test_seq_par.cpp -o $(PROGRAM)  $(SYSLIBS)
 $(SONDE): compare_sonde.cpp
-	$(TRUST_CC) -g $(CppFlags) -c compare_sonde.cpp
-	$(TRUST_CC) -g -o $(SONDE) compare_sonde.o $(SYSLIBS)
+	$(TRUST_CC) -g $(CppFlags)  compare_sonde.cpp -g -o $(SONDE) $(SYSLIBS)
 clean:
-	rm -f $(PROGRAM) $(SONDE) *.o
+	rm -f $(PROGRAM) $(SONDE) 

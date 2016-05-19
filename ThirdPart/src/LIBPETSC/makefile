@@ -10,7 +10,7 @@ $(petsc): install makefile $(mpi)
 	# On ne supporte PETSc que sur Linux pour le moment
 	if [ $(TRUST_ARCH) = "linux" ];then \
 	make clean; \
-	./install $(package_petsc).tar.gz 1>petsc.log 2>&1;fi
+	./install $(package_petsc).tar.gz ;fi
 
 check: 
 	./install check

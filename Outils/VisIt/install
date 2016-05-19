@@ -228,7 +228,7 @@ then
       # On change egalement le chemin vers la version de VisIt si la version TRUST est de type stable ou beta
       # La version TRUST sera toujours de type beta si on est sous la vue Livraison
       ligne=1 && [ $machine = $HOST ] && ligne=2
-      if [ ${TRUST_VERSION%_beta} != $TRUST_VERSION ] || [ "$MA_VUE" = triou_admin ] || [ "`echo $TRUST_ROOT | grep $WORKBASE`" != "" ]
+      if [ ${TRUST_VERSION%_beta} != $TRUST_VERSION ] || [ "$MA_VUE" = triou_admin ] || [ "`echo $TRUST_ROOT | grep $WORKBASE 2>&1`" != "" ]
       then
          VERSION=$WORKBASE$machine/TRUST
       else

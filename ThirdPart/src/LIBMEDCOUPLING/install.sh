@@ -1,16 +1,28 @@
 #!/bin/bash
-make clean
 DEST=$TRUST_MEDCOUPLING_ROOT
+dest=$DEST/include/ICoCoMEDField.hxx
+cp -af $dest .
+make clean
 
 if  [ "$TRUST_DISABLE_MED" = "1" ] || [ "$TRUST_DISABLE_MEDCOUPLING" = "1" ] 
 then
-mkdir -p $DEST/include
-rm -rf $DEST/lib
-echo "MED or MEDCOUPLING DISABLE"
-echo "#define NO_MEDFIELD " > $DEST/include/ICoCoMEDField.hxx
-exit 0
+    mkdir -p $DEST/include
+    rm -rf $DEST/lib
+    echo "MED or MEDCOUPLING DISABLE"
+    echo "#define NO_MEDFIELD " > prov.h
+
+    if [ "`diff ICoCoMEDField.hxx prov.h 2>&1`" != "" ]
+	then
+	cp prov.h $dest
+    else
+	cp -a ICoCoMEDField.hxx $dest
+    fi
+    rm -f prov.h ICoCoMEDField.hxx
+    exit 0
 fi
 tar zxf MED_SRC.tgz
+
+
 #echo patching MEDCouplingDataArrayTypemaps.i
 #sed "s/NPY_ARRAY_OWNDATA/NPY_OWNDATA/g" -i MED_SRC/src/MEDCoupling_Swig/MEDCouplingDataArrayTypemaps.i
 
@@ -35,10 +47,10 @@ cmake ../MED_SRC/ $OPTIONS
 
 status=$?
 if [ $status -ne 0 ]
-then
-echo "we tried to compile without python"
-cmake ../MED_SRC/ $OPTIONS -DSALOME_MED_ENABLE_PYTHON=OFF
-MED_COUPLING_PYTHON="OFF"
+    then
+    echo "we tried to compile without python"
+    cmake ../MED_SRC/ $OPTIONS -DSALOME_MED_ENABLE_PYTHON=OFF
+    MED_COUPLING_PYTHON="OFF"
 fi
 
 
@@ -48,19 +60,19 @@ make -j $TRUST_NB_PROCS
 make install
 status=$?
 if [ $status -ne 0 ]
-then
-echo "we tried to compile without python"
-cmake ../MED_SRC/ $OPTIONS -DSALOME_MED_ENABLE_PYTHON=OFF
-MED_COUPLING_PYTHON="OFF"
-make install
+    then
+    echo "we tried to compile without python"
+    cmake ../MED_SRC/ $OPTIONS -DSALOME_MED_ENABLE_PYTHON=OFF
+    MED_COUPLING_PYTHON="OFF"
+    make install
 fi
 status=$?
 
 ar cru $DEST/lib/libParaMEDMEM.a  `find src -name '*'.o`
 if [ $status -eq 0 ]
 then
-cd ..
-rm -rf build MED_SRC
+    cd ..
+    rm -rf build MED_SRC
 fi
 
 cd $DEST
@@ -74,11 +86,10 @@ echo "export MED_COUPLING_PYTHON=$MED_COUPLING_PYTHON" >> env.sh
 touch include/salome/*
 for dir in include lib
 do
-mkdir -p $dir
-cd $dir
-#ln -s $MED_ROOT_DIR/$dir/salome .
-ln -sf salome/* .
-cd -
+  mkdir -p $dir
+  cd $dir
+  ln -sf salome/* .
+  cd -
 done
 [ ! -f $DEST/include/ICoCoMEDField.hxx ] && echo "#define NO_MEDFIELD " > $DEST/include/ICoCoMEDField.hxx
 
