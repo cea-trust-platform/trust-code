@@ -249,7 +249,8 @@ int gmres_local( const Matrice_Morse& A, const DoubleVect& b,DoubleVect& x1,doub
   DoubleVect v0(x1);
   DoubleVect v1(x1) ;
   int ns2=ns;
-  DoubleVect Diag(ns,1.);
+  DoubleVect Diag(ns);
+  Diag=1.;
   if (precond_diag)
     for ( i=0; i<ns; i++)
       Diag[i]=1./A(i,i);

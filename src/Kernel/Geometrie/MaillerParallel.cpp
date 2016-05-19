@@ -242,8 +242,10 @@ void find_matching_coordinates(const DoubleTab& coords,
   DoubleTab bounding_boxes(nproc, dim*2);
   {
     const double big_val = 1.e36;
-    ArrOfDouble min_coord(dim, big_val);
-    ArrOfDouble max_coord(dim, -big_val);
+    ArrOfDouble min_coord(dim);
+    min_coord= big_val;
+    ArrOfDouble max_coord(dim);
+    max_coord= -big_val;
 
     for (i = 0; i < ncoord; i++)
       {
