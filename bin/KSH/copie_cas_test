@@ -106,7 +106,7 @@ then
       rm -r -f $TMP_BUILD/build
       # $TRUST_ROOT/Validation/Outils/Genere_courbe/Run $prm -dest $TMP_BUILD -not_run --get_cmd_to_run=yes 1>$TMP_BUILD/command
       )
-      echo $ECHO_OPTS "Extracting test case...\c"
+      echo $ECHO_OPTS "Extracting test case ($jeu) ...\c"
       # jeux=`cat $TMP_BUILD/command 2>&1 | grep get_total_time | sed "s/\.perf/.data/g" | sed "s/get_total_time//" | sed "s/\.\///g"` 
       jeux=`( cd $FICHE_ROOT;$TRUST_ROOT/Validation/Outils/Genere_courbe/scripts/get_list_cas_nr src/*prm -dest $TMP_BUILD)` 
       echo "End."

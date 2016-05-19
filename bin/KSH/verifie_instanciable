@@ -82,14 +82,18 @@ done
 echo "  Check unicity:"
 # GF ajout de -f pour ignorer majuscule minuscule
 sort -u -f $TRUST_TMP/st > $TRUST_TMP/stb
-$TRUST_Awk '{print $1 }'  $TRUST_TMP/stb | sort > $TRUST_TMP/st1
-sort -u  -f $TRUST_TMP/st1 > $TRUST_TMP/st2b
-diff $TRUST_TMP/st1 $TRUST_TMP/st2b | sort -u -f
-echo "  Update of $TRUST_ROOT/doc/.dico file"
+if [ 1 -eq 1 ]
+then
+    $TRUST_Awk '{print $1 }'  $TRUST_TMP/stb | sort -f > $TRUST_TMP/st1
+    sort -u  -f $TRUST_TMP/st1 > $TRUST_TMP/st2b
+    diff $TRUST_TMP/st1 $TRUST_TMP/st2b | sort -u -f
+fi
+
 if [ "`diff $TRUST_TMP/stb $TRUST_ROOT/doc/.dico`" != "" ]
 then
-   CHECKOUT $TRUST_ROOT/doc/.dico 1>/dev/null 2>&1
+    echo "  Update of $TRUST_ROOT/doc/.dico file"
    mv -f $TRUST_TMP/stb $TRUST_ROOT/doc/.dico
 fi
+rm -f $TRUST_TMP/st  $TRUST_TMP/st2 $TRUST_TMP/stb   $TRUST_TMP/st1 $TRUST_TMP/st2b 
 }
 verif $1
