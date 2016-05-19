@@ -36,6 +36,6 @@
 #include <math.h>
 
 #define Cerr Journal()
-#define finl endl
+#define finl std::endl
 
 #endif

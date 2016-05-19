@@ -52,6 +52,11 @@ template <class C_Tab> void LataDB::read_data2_med_(
 #include <CellModel.hxx>
 #include <MEDFileField.hxx>
 
+using std::vector;
+using std::pair;
+using std::string;
+
+
 Nom latadb_name_from_type_geo(const med_geometry_type& type_geo)
 {
   Nom type_elem;

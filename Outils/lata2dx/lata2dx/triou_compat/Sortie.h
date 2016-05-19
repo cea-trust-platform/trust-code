@@ -30,7 +30,9 @@
 #ifndef Sortie_h_inclu
 #define Sortie_h_inclu
 #include <ostream>
-using namespace std;
+//using namespace std;
+using std::cerr;
+using std::endl;
 #define Sortie std::ostream
 class ArrOfInt;
 // for Static_Int_Lists
