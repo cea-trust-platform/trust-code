@@ -882,7 +882,7 @@ class objet_u(XObject):
                     pb_mg_existe=0
                     pass
                 if (pb_mg_existe==0) or (not isinstance(self,pb_mg)):
-                    a=a+"Associer "+self.name_u+" "+clref.name_u+"\n"
+                    a=a+"Associate "+self.name_u+" "+clref.name_u+"\n"
                     pass
                 pass
             pass
@@ -896,7 +896,7 @@ class objet_u(XObject):
 	# sauf pour les objets de base
 	lec=0
         if (bloclire==0) and (self in list_class):
-            stri="Lire "+self.name_u
+            stri="Read "+self.name_u
         else:
             stri=""
 	    lec=1
@@ -1156,7 +1156,7 @@ def read_data_read(self,chaine,niveau,listclass=[]):
     cl=trouve_class_list(mot,listclass)
     #self.name_obj_=mot
     #self.obj_=cl
-    print "lire ",cl.name_u,cl
+    print "read ",cl.name_u,cl
     # on remet cl a la fin de la list
     listclass.remove(cl)
     listclass.append(cl)
@@ -1857,7 +1857,7 @@ class listobj_impl(objet_u):
     def print_lu(self,listclass=[]):
         stri=""
         if self in listclass:
-            stri+=self.name_trio_+" "+ self.name_u+"\nlire "+ self.name_u
+            stri+=self.name_trio_+" "+ self.name_u+"\nread "+ self.name_u
         bizarre=0
         if type(self.__class__.virgule)!=type(1):
             bizarre=1

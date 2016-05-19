@@ -252,12 +252,12 @@ def gen_class(**args):
          tri='        Tr_Attribute(\"'+list_mot_ex[i]+'\",'
          tri=tri+'xtype='+type_trio_vers_xdata(list_type_ex[i])+','
          mots_trio=list_mot_trio_ex[i].split('|')
-         tri=tri+'name_trio=\"'+mots_trio[0]+'\",'
+         tri=tri+'name_trio=\"'+mots_trio[-1]+'\",'
          tri=tri+'optional='+str(list_optional_ex[i])+','
          tri=tri+'descr_=\"'+list_descr_ex[i]+'\",'
          if (len(mots_trio)>1):
-            print str(mots_trio[1:])
-            tri+="syno="+str(mots_trio[1:])+','
+            print str(mots_trio[:-1])
+            tri+="syno="+str(mots_trio[:-1])+','
          
 	 defaultv="None"
          # on regarde si il y a un into et si il est de longueur 1

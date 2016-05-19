@@ -330,7 +330,6 @@ write_file interprete ecrire_fichier -1 Keyword to write the object of name name
   attr name_obj chaine name_obj 0 Name of the object to be written.
   attr filename chaine filename 0 Name of the file.
 ecrire_fichier_formatte write_file ecrire_fichier_formatte -1 Keyword to write the object of name name_obj to a file filename in ASCII format.
-write_file_bin write_file ecrire_fichier_bin -1 Keyword to write in binary format the object of name name_obj to a file filename. It is interesting to write in binary format big meshes for example cause it is very quick to read it compare to formatted format and it needs more than twice less memory on disc.
 write interprete ecrire -1 Keyword to write the object of name name_obj to a standard outlet.
   attr name_obj chaine name_obj 0 Name of the object to be written.
 read_file interprete lire_fichier -1 Keyword to read the object name_obj contained in the file filename. NL2 This is notably used when the calculation domain has already been meshed and the mesh contains the file filename, simply write lire_fichier dom filename (where dom is the name of the meshed domain). NL2 If the filename is ;, is to execute a data set given in the file of name name_obj (a space must be entered between the semi-colon and the file name).
@@ -1910,8 +1909,6 @@ probleme_ft_disc_gen problem_read_generic probleme_ft_disc_gen -1 The generic Fr
   ref mm milieu_v2_base
   ref chimie chimie
   ref constituant constituant
-raffiner_simplexes interprete raffiner_simplexes -1 Keyword to raffine a mesh
-  attr domain_name ref_domaine domain_name 0 Name of domain.
 rectify_mesh interprete rectify_mesh -1 Keyword to raffine a mesh
   attr domain_name ref_domaine domain_name 0 Name of domain.
 verifier_simplexes interprete verifier_simplexes -1 Keyword to raffine a simplexes
@@ -1941,6 +1938,6 @@ convection_btd convection_deriv btd 1 not_set
 testeur_medcoupling interprete testeur_medcoupling 0 not_set
   attr pb_name chaine pb_name 0 Name of domain.
   attr field_name chaine filed_name 0 Name of domain.
-test_supr raffiner_simplexes test_supr -1 Keyword to raffine a simplexes
+test_supr raffiner_isotrope test_supr -1 Keyword to raffine a simplexes
   attr domain2_name suppress_param domain2_name 0 Name of domain.
 
