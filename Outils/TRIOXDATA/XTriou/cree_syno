@@ -12,13 +12,15 @@ cree_syno()
     trust existepas 2>/dev/null 1>/dev/null
     listsyno=`grep "<=>" hierarchie.dump| sed "s/ <=> /%/"`
     rm -f *dump existepas.log
-    echo -n "synonyme={ 'end':'fin',"
+    #echo -n "synonyme={ 'end':'fin',"
+    echo -n "synonyme={ 'fin':'end',"
     for syn in $listsyno
       do
       #syn2=`echo $syn|awk '{print $2}' `
       mottrio=`echo $syn | awk -F\% '{print tolower($2) }'`
       new=`echo $syn | awk -F\% '{print tolower($1)}'`	
-      echo -n \"$new"\":\""$mottrio"\"",
+      #echo -n \"$new"\":\""$mottrio"\"",
+      echo -n \"$mottrio"\":\""$new"\"",
     done
     echo "}" 
 }

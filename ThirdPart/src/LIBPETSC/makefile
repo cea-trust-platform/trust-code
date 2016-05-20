@@ -7,8 +7,12 @@ all:$(petsc) check
 
 
 $(petsc): install makefile $(mpi)
-	make clean; 
-	./install $(package_petsc).tar.gz 1>petsc.log 2>&1
+	#make clean; 
+	#./install $(package_petsc).tar.gz 1>petsc.log 2>&1
+	# On ne supporte PETSc que sur Linux pour le moment
+	if [ $(TRUST_ARCH) = "linux" ];then \
+	make clean; \
+	./install $(package_petsc).tar.gz ;fi
 
 check: 
 	./install check

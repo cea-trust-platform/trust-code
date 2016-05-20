@@ -67,10 +67,10 @@ def build_location_in_baltik_mode( error_manager ):
     config_parser.read( project_configuration_file )
     project_name = config_parser.get( "description", "name" )
 
-    directories.append( project_name )
+    directories.append( "$"+project_name.upper()+"_ROOT" )
     directories.reverse( )
     project_location = os.path.join( *directories )
-    return "{0} {1}".format( project_name, project_location )
+    return "{0}".format( project_location )
 
 # classname analysis utility function
 def classname_analysis( classname, error_manager ):

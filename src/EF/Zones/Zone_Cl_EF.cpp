@@ -193,7 +193,7 @@ void Zone_Cl_EF::remplir_type_elem_Cl(const Zone_EF& la_zone_EF)
                 {
                   int som=faces_sommets(face,s);
                   titi(som)++;
-                  if (type_sommet_(som)!=1)
+                  if ((type_sommet_(som)!=1)&& (type_sommet_(som)!=3))
                     type_sommet_(som)=2;
                   else
                     type_sommet_(som)=3;
@@ -298,7 +298,13 @@ void Zone_Cl_EF::remplir_type_elem_Cl(const Zone_EF& la_zone_EF)
                   //Cerr<<" vv"<< v<<" "<<norme_array(t1)<<" "<<norm_n<<finl;
                   if (norme_array(t1)>(1e-4*sqrt(s)))
                     {
+
+                      // facilite le debugage
+                      if (dabs(min_array(t1))>max_array(t1))
+                        t1*=-1;
                       t1/=norme_array(t1);
+
+
                       //	    Cerr<<som<<" on doit annuler une deuxieme direction "<<t1(0) << " " <<t1(1)<<" "<<t1(dimension==3?2:1)<<finl;
                       f=nbf;
                       for (int d=0; d<dimension; d++)
@@ -324,6 +330,9 @@ void Zone_Cl_EF::remplir_type_elem_Cl(const Zone_EF& la_zone_EF)
 
                   if (norme_array(t2)>(1e-4*sqrt(s)))
                     {
+                      // facilite le debugage
+                      if (dabs(min_array(t2))>max_array(t2))
+                        t2*=-1;
                       t2/=norme_array(t2);
                       Cerr<<face<<" "<<nbf<<" sommet "<<som<<" "<<norme_array(t2)/s<<" on doit annuler une troiseme direction"<<t2(0) << " " <<t2(1)<<" "<<t2(2)<<finl;
                       Cerr<<som<<" "<<t1(0) << " " <<t1(1)<<" "<<t1(2)<<finl;

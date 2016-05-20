@@ -61,4 +61,4 @@ do
 done
 chmod -R +w Org_files
 [ "$MODE" = "RECUP" ] &&  echo executer cmd pour installer
-[ "$MODE" = "NET" ] &&  DIFF DIFF > $rep_dev/DIFF.out
+[ "$MODE" = "NET" ] &&  DIFF.sh DIFF > $rep_dev/DIFF.out

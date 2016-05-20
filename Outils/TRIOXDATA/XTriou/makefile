@@ -2,9 +2,9 @@ triou.py: objet_u.py objet_u_spec.py gencl.py gentriopy.py syno.py
 	python gentriopy.py
 	rm dico.py triouint.py triouint2.py
 	sort -u trace > traces
-syno.py : $(exec)
+syno.py : $(exec) cree_syno
 	@./cree_syno $(exec)
-gencl.py: GENCLASS2 TRAD_2
+gencl.py: GENCLASS2 TRAD_2 sort_gen_cl.py
 	./GENCLASS2
 triou_old.py: objet_u.py objet_u_spec.py genclold.py gentriopy.py
 	python gentriopy.py 1

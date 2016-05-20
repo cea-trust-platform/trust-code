@@ -112,8 +112,10 @@ void Octree_Double::compute_origin_factors(const DoubleTab& coords,
   dim_ = dim;
   origin_.resize_array(3);
   factor_.resize_array(3);
-  ArrOfDouble xmin(dim, 1.e37);
-  ArrOfDouble xmax(dim, -1.e-37);
+  ArrOfDouble xmin(dim);
+  xmin= 1.e37;
+  ArrOfDouble xmax(dim);
+  xmax= -1.e-37;
   assert(dim >= 1 && dim <= 3);
   int i, j;
   for (i = 0; i < nb_som; i++)

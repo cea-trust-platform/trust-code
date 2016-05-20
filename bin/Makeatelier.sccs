@@ -318,7 +318,7 @@ then
 fi
 
 # Cree la liste des fichiers de l'atelier :
-(cd $rep_dev;cree_Fichiers_atelier.html) &
+#(cd $rep_dev;cree_Fichiers_atelier.html) &
 
 cd $rep_exec
 if [ $makedepend = 1 ]

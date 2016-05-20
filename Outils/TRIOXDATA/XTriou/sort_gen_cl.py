@@ -16,7 +16,7 @@ for ob in 'suppress_param','objet_u','listobj_impl','chaine','floattant','entier
     dico[ob]=[1,"yy"]
     pass
 while (line):
-    # print line
+    print line
 
     es=line.replace("gen_class","add_class")
     #  print dir(line)
@@ -57,6 +57,13 @@ def get_deps(*args,**kwargs):
         deps.append(kwargs["class_type"])
     return deps
 
+def transforme(chaine):
+   import syno
+   print "kkk",chaine
+   for key in syno.synonyme.keys():
+     chaine=chaine.replace("name_trio='"+key+"'","name_trio='"+syno.synonyme[key]+"'")
+     print key,syno.synonyme[key],chaine
+   return chaine
 def gen_class(cl,dico):
     val=dico[cl]
     
@@ -73,7 +80,7 @@ def gen_class(cl,dico):
                 gen_class(cl_d,dico)
                 pass
             pass
-        f2.write(val[1])
+        f2.write(transforme(val[1]))
         dico[cl]=[1,val[1]]
         # print "fin",cl
     else:

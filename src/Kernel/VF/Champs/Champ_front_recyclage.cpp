@@ -653,7 +653,7 @@ int Champ_front_recyclage::initialiser(double temps, const Champ_Inc_base& inco)
 
   // Check that each coordinate is received from at least one processor:
   const int nb_faces2 = remote_coords[moi].dimension(0);
-  ArrOfDouble count(nb_faces2, 0);
+  ArrOfDouble count(nb_faces2);
   for (int pe = 0; pe < nprocs; pe++)
     {
       const ArrOfInt index_to_recv = inconnues2_faces_[pe];
