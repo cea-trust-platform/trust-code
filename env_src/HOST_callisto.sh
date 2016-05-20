@@ -37,6 +37,7 @@ define_modules_config()
    # module load qt/4.8.6 temporary, time to fix the Qt4 build failed with VisIt 2.8.2
    # module="$intel openmpi/icc/64/1.8 qt/4.8.6"    
    module="$intel openmpi/icc/64/1.8.3"
+   #module="$intel openmpi/icc/64/1.8.4"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module unload mpich openmpi mvapich mvapich2 intel/compiler intel/mkl intel/tbb 1>/dev/null" >> $env
@@ -87,6 +88,7 @@ define_soumission_batch()
    #eris         up   infinite     30  alloc
    #pluton       up   infinite      4    mix
    queue=slim && [ "$bigmem" = 1 ] && queue=large,fat && soumission=1
+   #queue=defq # 18/05/2016 suite maintenance, sinfo ne renvoie que defq
    #project=stmf
    #if [ "`basename $Mpirun`" = srun ]
    #then

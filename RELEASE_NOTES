@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.3_beta : Enhancements, modifications and corrected bugs since version 1.7.2 :
 --------------------------------------------------------------------------------------------------
+18/05/16 (Kernel) Portability : MEDCoupling updated to 780 version
 21/03/16 (Tools)  Portability : Released version of VisIt is upgraded to 2.10.0
 21/03/16 (TRUST)  Bug fixed   : Fixed bug in Traitement_particulier of Canal with QC fluid and VDF discretization
 16/02/16 (TRUST)  Bug fixed   : k-eps turbulence model with concentration (it is OK now with several constituents)

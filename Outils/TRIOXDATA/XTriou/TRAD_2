@@ -399,7 +399,7 @@ schema_temps_base objet_u schema_temps_base -1 Basic class for time schemes. Thi
   attr precision_impr entier precision_impr 1 Optional keyword to define the digit number for flux values printed into .out files (by default 3).
   attr no_error_if_not_converged_diffusion_implicite entier(into=[0,1]) no_error_if_not_converged_diffusion_implicite 1 not_set 
   attr no_conv_subiteration_diffusion_implicite entier(into=[0,1]) no_conv_subiteration_diffusion_implicite 1 not_set 
-  attr periode_sauvegarde_securite_en_heures entier periode_sauvegarde_securite_en_heures 1 To change the default period (10 hours) between the save of the fields in .sauv file.
+  attr periode_sauvegarde_securite_en_heures entier periode_sauvegarde_securite_en_heures 1 To change the default period (23 hours) between the save of the fields in .sauv file.
   attr no_check_disk_space rien no_check_disk_space 1 To disable the check of the available amount of disk space during the calculation.
 euler_scheme schema_temps_base schema_euler_explicite -1 This is the Euler explicite scheme.
 schema_predictor_corrector schema_temps_base schema_predictor_corrector -1 This is the predictor-corrector scheme (second order).

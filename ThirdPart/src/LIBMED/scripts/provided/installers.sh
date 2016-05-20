@@ -113,7 +113,8 @@ configure_package() {
     fi
 
     # calling configure
-    ${TRUST_MED_workdir}/configure ${configure_options} 1>configure_${archive}.log 2>&1 || exit -1
+    #${TRUST_MED_workdir}/configure ${configure_options} 1>configure_${archive}.log 2>&1 || exit -1
+    ${TRUST_MED_workdir}/configure ${configure_options} || exit -1
 
     # applying various corrections to generated files
     modified_file="${TRUST_MED_workdir}/bin/install-sh"
@@ -175,7 +176,8 @@ build_package() {
 
     # calling make
     cd "${TRUST_MED_HDF_BUILD}/${archive}"
-    ${TRUST_MAKE} 1>make_${archive}.log 2>&1 || exit -1
+    #${TRUST_MAKE} 1>make_${archive}.log 2>&1 || exit -1
+    ${TRUST_MAKE} || exit -1
     cd "${here}"
 }
 
@@ -194,7 +196,8 @@ install_package() {
     # calling make install
     cd "${TRUST_MED_HDF_BUILD}/${archive}"
     # ${TRUST_MAKE} make -j ne semble pas marcher si on ne fait pas les test med
-    make  install 1>install_${archive}.log 2>&1 || exit -1
+    #make  install 1>install_${archive}.log 2>&1 || exit -1
+    make  install || exit -1
 
     # applying corrections for med
     if test "x_${name}_x" = "x_MED_x"

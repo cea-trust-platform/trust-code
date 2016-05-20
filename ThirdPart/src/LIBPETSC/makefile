@@ -8,7 +8,7 @@ all:$(petsc) check
 
 $(petsc): install makefile $(mpi)
 	#make clean; 
-	#./install $(package_petsc).tar.gz 1>petsc.log 2>&1
+	#./install $(package_petsc).tar.gz #1>petsc.log 2>&1
 	# On ne supporte PETSc que sur Linux pour le moment
 	if [ $(TRUST_ARCH) = "linux" ];then \
 	make clean; \
@@ -18,5 +18,5 @@ check:
 	./install check
 
 clean:
-	rm -r -f $(petsc) petsc.log petsc-3.?-p? petsc-?.?.? petsc-dev cusp thrust tm4 bison flex
+	rm -r -f $(petsc) petsc-3.?-p? petsc-?.?.? petsc-dev cusp thrust tm4 bison flex #petsc.log
 	rm -f *.gz *.tgz *bz2 mpi_init.log configure.help configure.log

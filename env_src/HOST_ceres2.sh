@@ -34,7 +34,6 @@ define_modules_config()
    echo "source /softs/intel/bin/compilervars.sh intel64" >> $env
    # MPI module impi-5.0.3.048 impi-5.1.3.181
    #echo "source /softs/_environnement/intel_mpi.env" >> $env
-   #echo "source /softs/intel/impi/5.0.3.048/bin64/mpivars.sh" >> $env
    echo "source /softs/intel/impi/5.1.3.181/bin64/mpivars.sh" >> $env
    # MPI module openmpi-1.8.3-intel.env openmpi-1.8.5-intel.env
    # echo "source /softs/_environnement/openmpi-1.8.5-intel.env" >> $env
