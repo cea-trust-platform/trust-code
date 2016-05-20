@@ -208,7 +208,7 @@ do
       . connect_ftp -no_ftp 1>/dev/null 2>&1
       # Try to download the patch
       cd `dirname $TRUST_ROOT`
-      patch=Patch_$TRUST_VERSION.tgz
+      patch=Patch_$TRUST_VERSION.tar.gz
       echo "Try to download or find the patch $patch..." | tee -a $LOG
       wget_ ftp://$TRUST_FTP/$PUBLIC/patch/$patch 1>/dev/null 2>&1
       if [ ! -f $patch ]
@@ -283,7 +283,7 @@ fi
 # Dossier Diphasique ???
 DIPHA_ROOT="" && [ -d $ROOT/Diphasique ] && DIPHA_ROOT=$ROOT/Diphasique && export DIPHA_ROOT
 # Existence d'une version
-if [ -f $TRUST_ROOT/TRUST.tgz ]
+if [ -f $TRUST_ROOT/TRUST.tar.gz ]
 then
    if [ -f .DATE ] || [ -f $TRUST_ROOT/.DATE ]
    then
@@ -299,15 +299,15 @@ echo "If install fails, please send the $LOG file to TRUST support." | tee -a $L
 # Installe le Noyau
 ###################
 cd $TRUST_ROOT
-if [ -f TRUST.tgz ]
+if [ -f TRUST.tar.gz ]
 then
    echo | tee -a $LOG
    echo "Please wait now ..." | tee -a $LOG
    echo | tee -a $LOG
    echo $ECHO_OPTS "Extract TRUST source files ...\c" | tee -a $LOG
-   tar xfz TRUST.tgz 1>>$LOG 2>&1
+   tar xfz TRUST.tar.gz 1>>$LOG 2>&1
    OK $? | tee -a $LOG
-   rm -f TRUST.tgz
+   rm -f TRUST.tar.gz
    ##################################
    # Acceptation de la licence TRUST
    ##################################

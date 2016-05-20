@@ -3,18 +3,18 @@
 # Soit d'une version sans les sources TRUST
 # Soit d'une version avec le Noyau uniquement
 
-echo "Usage: `basename $0` ./TRUST_X.Y.Z.tgz [-install [-remote hostname]] [-without_source | -kernel_only]"
+echo "Usage: `basename $0` ./TRUST_X.Y.Z.tar.gz [-install [-remote hostname]] [-without_source | -kernel_only]"
 [ ${#1} = 0 ] && exit
 [ ${#2} = 0 ] && exit
 paquet=`basename $1`
-version=`echo $paquet | sed 's/TRUST_//' | sed 's/.tgz//'`
+version=`echo $paquet | sed 's/TRUST_//' | sed 's/.tar.gz//'`
 paquet=`pwd`/$paquet
 [ ! -f $paquet ] && echo "$paquet file not found" && exit
 export install=0 	&& [ "$2" = -install ]	&& install=1 	&& shift
 export remote=0 	&& [ "$2" = -remote ]	&& remote="-remote $3" && shift && shift
 export kind=""	 	&& [ "$2" != "" ] 	&& kind=$2
 [ "$kind" != "-without_source" ] && [ "$kind" != "-kernel_only" ] && echo "No option: -without_source or -kernel_only" && exit
-new_paquet=${paquet%.tgz}"-"${kind#-}".tgz"
+new_paquet=${paquet%.tar.gz}"-"${kind#-}".tar.gz"
 #
 export rep=`mktemp_ -d`
 cd $rep

@@ -727,7 +727,7 @@ echo "###############################################"
 		 patch_version=`awk '/version/ && /Release notes/ {print $4;exit}' RELEASE_NOTES`
 		 rm -f $TRUST_TMP/patch
 		 GRAVAGE=$WORKDIR/A_GRAVER_CD_TRUST
-		 patch=$GRAVAGE/Patch_$patch_version".tgz" && rm -f $patch
+		 patch=$GRAVAGE/Patch_$patch_version".tar.gz" && rm -f $patch
 		 echo " "
 		 echo "Construction of the $patch patch..."
 		 echo "from `pwd`"
@@ -1112,7 +1112,7 @@ echo "Deleting of _build_ packages in $GRAVAGE"
 ls -f $GRAVAGE/*_build_*
 rm -f $GRAVAGE/*_build_*
 v=${Version#Version}
-version_arch=TRUST_$v".tgz"
+version_arch=TRUST_$v".tar.gz"
 package_log=$REP_NUIT"/package_$HOST.log"
 # Dans le paquet officiel, on ne met pas les tests de validation car cela prend trop de place
 echo " "
@@ -1190,7 +1190,7 @@ echo "############################################"
 echo "# Test the installation to remote machines #"
 echo "############################################"
 echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
-version_arch=TRUST_$TRUST_VERSION".tgz"
+version_arch=TRUST_$TRUST_VERSION".tar.gz"
 installation=1
 machine1=`liste_machines "\-remote_install_TRUST_with_source" 		| head -1 | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'`
 if [[ "$liste_machines_KO" != *"$machine1"* ]] # Test si machine n est pas dans la liste des machines KO
@@ -3253,7 +3253,7 @@ New TRUST (\"Trio_U\" without Front_Tracking, Radiation, Zoom and LES models) ve
 Look at http://sourceforge.net/projects/trust-platform/files/
 to read the README and to download Installer_TRUST.sh.
 Changes compared to the $old version are detailed in the RELEASE_NOTES file 
-attached to the TRUST_$new.tgz archive.
+attached to the TRUST_$new.tar.gz archive.
 
 TRUST/TrioCFD support team. mailto: $TRUST_MAIL  Web: http://www-trio-u.cea.fr
 

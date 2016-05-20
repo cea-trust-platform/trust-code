@@ -5,7 +5,7 @@ test=0 && [ ${#1} != 0 ] && test=$1
 stable=`awk '/Release notes/ && !/beta/ {print $4;exit}' $TRUST_ROOT/RELEASE_NOTES`
 # Ne donne que la derniere version stable du site !!!
 stable=`ls_ftp $PUBLIC | $TRUST_Awk '/Version/ {gsub("Version","",$NF);v=$NF} END {print v}'`
-patch=`ls_ftp $PUBLIC/patch/Patch_$stable.tgz`
+patch=`ls_ftp $PUBLIC/patch/Patch_$stable.tar.gz`
 patch="" # Temporary
 patch_branch=patch_`echo $stable | awk '{gsub("\\\.","",$0);print $0}'`
 beta=`awk '/Release notes/ && /beta/ {print $4;exit}' $TRUST_ROOT/RELEASE_NOTES`
@@ -16,7 +16,7 @@ REP_NUIT=/data/tmplgls/triou/Historique/NUIT
 release_date=`ls --full-time $WORKDIR/PORTAGE_$stable/linux/TRUST/exec/TRUST$COMM"_opt" 2>/dev/null | $TRUST_Awk '{print $6}'`
 [ ${#release_date} = 0 ] && release_date=`grep " "$stable" version released" $TRUST_ROOT/RELEASE_NOTES | $TRUST_Awk '{print $1}'`
 os_supported=`cat $TRUST_ROOT/bin/admin/liste.machines | $TRUST_Awk '/get_binary/ {print $1}'`
-package=`ls_ftp $PUBLIC/Version$stable | awk '/.tgz/ {print $NF}'`
+package=`ls_ftp $PUBLIC/Version$stable | awk '/.tar.gz/ {print $NF}'`
 echo "
 <HTML>
 <HEAD>
@@ -33,7 +33,7 @@ echo "
 <BR><BR>Visit TRUST website at <A HREF=http://www-trio-u.cea.fr>http://www-trio-u.cea.fr</A></LI>
 <BR><BR>Help ? Question ? Contact TRUST support team at <A HREF=mailto:$TRUST_MAIL>$TRUST_MAIL</A>
 <BR>You can also subscribe to TRUST <A HREF=http://saxifrage:3500/wws/info/trio_u_annonces>user</A> or <A HREF=http://saxifrage:3500/wws/info/trio_u_dev>developer</A> mailing lists.</LI>
-<BR><BR><B>Download the latest available TRUST package $stable version ($release_date):</B> <A HREF=http://downloads.sourceforge.net/project/trust-platform/$stable/$package>$package</A>`[ "$patch" != "" ] && echo " and the latest installation patch <A HREF=patch/Patch_$stable.tgz>Patch_$stable.tgz</A>"`
+<BR><BR><B>Download the latest available TRUST package $stable version ($release_date):</B> <A HREF=http://downloads.sourceforge.net/project/trust-platform/$stable/$package>$package</A>`[ "$patch" != "" ] && echo " and the latest installation patch <A HREF=patch/Patch_$stable.tar.gz>Patch_$stable.tar.gz</A>"`
 <LI>It contains the TRUST tests and source files.
 <LI>The package size is ~"$package_size"Mo.
 <LI>See <A HREF=http://sourceforge.net/projects/trust-platform/files/>here</A> the requirements and how to install/build TRUST $stable stable version.

@@ -36,11 +36,11 @@ fonction()
    else
       if [ $without_version = 1 ]
       then
-         echo "Creation of "$VOB".tgz (See "$contenu")"
-         [ $src_only = 0 ] && echo "Creation of External.tar (See External.files)"
+         echo "Creation of "$VOB".tar.gz (See "$contenu")"
+         [ $src_only = 0 ] && echo "Creation of externalpackages.tar (See External.files)"
       else
-         echo "Creation of "$VOB"_"$TRUST_VERSION".tgz (See "$contenu")"
-         [ $src_only = 0 ] && echo "Creation of External_"$TRUST_VERSION".tar (See External.files)"
+         echo "Creation of "$VOB"_"$TRUST_VERSION".tar.gz (See "$contenu")"
+         [ $src_only = 0 ] && echo "Creation of externalpackages_"$TRUST_VERSION".tar (See External.files)"
       fi
    fi
 }
@@ -49,7 +49,7 @@ echo "Usage: `basename $0` [-src_only] [-without_test_validation] [-files_only] 
 echo `basename $0` $*
 
 rm -f $TRUST_ROOT/*.files
-rm -f $TRUST_ROOT/*.tgz
+rm -f $TRUST_ROOT/*.tar.gz
 rm -f $TRUST_ROOT/externalpackages*.tar
 #rm -f $TRUST_ROOT/*.md5
 
@@ -123,7 +123,7 @@ then
    #   tar_ $VOB.tar Src.files
    #   gzip_ $VOB.tar
    #fi
-   # New creation *.tgz
+   # New creation *.tar.gz
    BASE=`basename $TRUST_ROOT`
    for file in `cat Src.files`
    do
@@ -138,13 +138,13 @@ then
       cd ..
       if [ $without_version = 1 ]
       then
-         tar zcf $BASE/TRUST.tgz  `cat $BASE/$contenu`
+         tar zcf $BASE/TRUST.tar.gz  `cat $BASE/$contenu`
          cd $BASE
          [ $src_only = 0 ] && tar cf externalpackages.tar  `cat External.files`
       else
-         tar zcf $BASE/TRUST_${TRUST_VERSION}.tgz  --transform=s?$BASE?${BASE}_${TRUST_VERSION}? `cat $BASE/$contenu`
+         tar zcf $BASE/TRUST_${TRUST_VERSION}.tar.gz  --transform=s?$BASE?${BASE}_${TRUST_VERSION}? `cat $BASE/$contenu`
          cd $BASE
-         #md5sum TRUST_${TRUST_VERSION}.tgz > TRUST_${TRUST_VERSION}.tgz.md5
+         #md5sum TRUST_${TRUST_VERSION}.tar.gz > TRUST_${TRUST_VERSION}.tar.gz.md5
          if [ $src_only = 0 ]
          then
             tar cf externalpackages_${TRUST_VERSION}.tar  `cat External.files`

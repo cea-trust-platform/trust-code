@@ -56,7 +56,7 @@ change_droits()
 # DEBUT #
 #########
 # Mise a jour des sources par:
-# sftp de paquets .tgz de la machine TMA vers la machine meme     (sftp=1)
+# sftp de paquets .tar.gz de la machine TMA vers la machine meme  (sftp=1)
 # rsync de la machine TMA vers la machine meme                    (rsync=1 mode par defaut)
 # git depuis la machine meme                                      (git=1)   => no updated with TRUST
 # kill: permet de detruire tous les processes lances par ce script
@@ -213,7 +213,7 @@ then
       exit_ -1
    fi
 fi
-[ "$sftp" = 1 ] && [ ! -f $version/TRUST.tgz ] && echo "No update on $HOST because $version/TRUST.tgz missing." && exit_
+[ "$sftp" = 1 ] && [ ! -f $version/TRUST.tar.gz ] && echo "No update on $HOST because $version/TRUST.tar.gz missing." && exit_
 
 # Creation des repertoires necessaires :
 [ ! -d $TRUST_ROOT/env ] && mkdir $TRUST_ROOT/env
@@ -273,11 +273,11 @@ do
       #####################################
       # Paquet $MODULE : traitement special
       #####################################
-      if [ -f $version/$MODULE.tgz ]
+      if [ -f $version/$MODULE.tar.gz ]
       then
-	 #tar tvf $MODULE.tgz 
-	 tar xvfz $MODULE.tgz 1>/dev/null
-	 rm -f $MODULE.tgz
+	 #tar tvf $MODULE.tar.gz 
+	 tar xvfz $MODULE.tar.gz 1>/dev/null
+	 rm -f $MODULE.tar.gz
       fi
    fi
 done

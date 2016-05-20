@@ -1,6 +1,6 @@
 #!/bin/bash
 # Test d'installation d'une version specifie par parametre
-echo "Usage: `basename $0` package.tgz [-remote hostname]"
+echo "Usage: `basename $0` package.tar.gz [-remote hostname]"
 if [ ${#1} != 0 ] && [ -f $1 ]
 then
    if [ ${1#/} != $1 ]
@@ -10,7 +10,7 @@ then
       version_arch=`pwd`/$1	# Chemin relatif
    fi
    paquet=`basename $version_arch`
-   version=`echo $paquet | sed 's/TRUST_//' | sed 's/.tgz//'` # version stable ou beta
+   version=`echo $paquet | sed 's/TRUST_//' | sed 's/.tar.gz//'` # version stable ou beta
    version=`echo ${version%-*}` # si version extraite
    echo "package: "$paquet
    echo "version: "$version
@@ -20,7 +20,7 @@ else
 fi
 
 machine=localhost && [ "$2" = "-remote" ] && [ "$3" != "" ] && machine=$3
-cible=$WORKDIR/simule_install_${paquet%.tgz}
+cible=$WORKDIR/simule_install_${paquet%.tar.gz}
 install_log=$cible/../Installer_TRUST.log
 ssh_ $machine -n pwd 1>/dev/null 2>&1
 if [ $? = 0 ]

@@ -20,13 +20,13 @@ echo "Usage: $0 machine version [-patch] [-compile]"
 adr=$1
 v=$2   
 [ ${#1} = 0 ] || [ ${#2} = 0 ] && echo "Error on parameters" && exit
-patch="" && [ "$3" = "-patch" ] && patch=Patch_$v.tgz && shift
+patch="" && [ "$3" = "-patch" ] && patch=Patch_$v.tar.gz && shift
 compile=0 && [ "$3" = "-compile" ] && compile=1 && shift
 
 #[ "`liste_machines | grep $adr`" != $adr ] && echo "$adr no accessible by ssh..." && exit
 # Est ce que la version existe ?
 GRAVAGE=$WORKDIR/A_GRAVER_CD_TRUST
-file=TRUST_$v".tgz" && [ ! -f $GRAVAGE/$file ] && echo "$GRAVAGE/$file not exists." && exit
+file=TRUST_$v".tar.gz" && [ ! -f $GRAVAGE/$file ] && echo "$GRAVAGE/$file not exists." && exit
 
 rep=TRUST
 rep_stable=TRUST_$v
@@ -97,7 +97,7 @@ else
    echo "Launch Installer_TRUST from $rep"
    ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=60 -o BatchMode=yes $log@$adr -n '[ -f .profile ] && . ./.profile;
    	cd '$rep';rm -r -f '$rep_stable' 2>/dev/null;
-  	tar xvfz '$file';export TRUST_VERSION='$v';'$rep_stable'/bin/Installer_TRUST -configure;rm -f *.tgz 2>/dev/null;
+  	tar xvfz '$file';export TRUST_VERSION='$v';'$rep_stable'/bin/Installer_TRUST -configure;rm -f *.tar.gz 2>/dev/null;
    	[ "'$compile'" != "0" ] && cd '$rep_stable' && ./configure && source env_TRUST.sh && make;
    '
 fi

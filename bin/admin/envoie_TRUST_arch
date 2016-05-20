@@ -32,9 +32,9 @@ eval `/usr/bin/ssh-agent` 1>/dev/null 2>&1
 
 echo "------------------------------------"
 # Ne marche pas : !!!
-#LISTE_TRUST_ROOT="*.tgz"
-a_jour_TRUST_tgz_files=0
-a_jour_TRUST_tgz=0
+#LISTE_TRUST_ROOT="*.tar"
+a_jour_TRUST_tar_files=0
+a_jour_TRUST_tar=0
 
 #LISTE_DIPHA_ROOT="Diphasique.tar.gz lib.tar.gz"
 [ ${#DIPHA_ROOT} = 0 ] && DIPHA_ROOT=`dirname $TRUST_ROOT`/Diphasique && export DIPHA_ROOT
@@ -186,11 +186,11 @@ do
 	 echo "rsync on $machine the `date` ...">$rsync_log
          if [ "`rsync -e 'ssh -o StrictHostKeyChecking=no' --dirs --delete --dry-run $TRUST_ROOT/RELEASE_NOTES $log@$adr:/tmp 1>/dev/null 2>&1;echo $?`" = 0 ]
          then
-	    if [ "$a_jour_TRUST_tgz_files" != 1 ]
+	    if [ "$a_jour_TRUST_tar_files" != 1 ]
 	    then
 	       echo " "
 	       echo "Searching for files to rsync..."
-	       a_jour_TRUST_tgz_files=1
+	       a_jour_TRUST_tar_files=1
 	       mise_a_jour_TRUST_tar -files_only -without_version
 	       # Creation du fichier pattern pour --include-from
 	       cd $TRUST_ROOT
@@ -288,7 +288,7 @@ do
          fi	 
 	 
 	 # Construction des paquets si necessaire
-	 [ "$a_jour_TRUST_tgz" != 1 ] && echo " " && mise_a_jour_TRUST_tar -without_version && echo " " && a_jour_TRUST_tgz=1	
+	 [ "$a_jour_TRUST_tar" != 1 ] && echo " " && mise_a_jour_TRUST_tar -without_version && echo " " && a_jour_TRUST_tar=1	
 	  
 	 echo "Sending by sftp of sources on $log@$adr:$WORKDIR/$version at "`date '+%H:%M:%S'`
 	 echo "
@@ -296,8 +296,8 @@ do
 -mkdir $version  
 -cd $version
 -lcd $TRUST_ROOT
--rm *.tgz
--mput *.tgz" > $TRUST_TMP/ssh_com
+-rm *.tar.gz
+-mput *.tar.gz" > $TRUST_TMP/ssh_com
           sftp -o ConnectTimeout=10 -o BatchMode=yes -b $TRUST_TMP/ssh_com $log@$adr 1>/dev/null 2>&1
           # On coupe en deux car cd ou cd $HOME pas reconnu par sftp: copie de mise_a_jour* sous ~/ ie $HOMEDIR
           echo "
@@ -329,11 +329,11 @@ do
          fi
 	 
 	 # Construction des paquets si necessaire
-	 [ "$a_jour_TRUST_tgz" != 1 ] && echo " " && mise_a_jour_TRUST_tar -without_version && echo " " && a_jour_TRUST_tgz=1
+	 [ "$a_jour_TRUST_tar" != 1 ] && echo " " && mise_a_jour_TRUST_tar -without_version && echo " " && a_jour_TRUST_tar=1
 	 
 	 echo "Sending by scp of sources on $log@$adr:$WORKDIR/$version at "`date '+%H:%M:%S'`
-	 ssh_command "cd $WORKDIR; mkdir $version; cd $version; rm *.tgz"
-	 scp -o ConnectTimeout=10 -o BatchMode=yes $TRUST_ROOT/*.tgz $log@$adr:$WORKDIR/$version/.
+	 ssh_command "cd $WORKDIR; mkdir $version; cd $version; rm *.tar.gz"
+	 scp -o ConnectTimeout=10 -o BatchMode=yes $TRUST_ROOT/*.tar.gz $log@$adr:$WORKDIR/$version/.
 	 scp -o ConnectTimeout=10 -o BatchMode=yes $TRUST_ROOT/bin/admin/mise_a_jour_TRUST_arch $log@$adr:~/.
 	 ssh_command "cd ~; chmod 755 mise_a_jour_TRUST_arch"	 
          

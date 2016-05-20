@@ -14,7 +14,7 @@ echo "
 <BR>" > /tmp/index.html
 [ ${#Version} = 0 ] && echo "What version?" && exit
 v=${Version#Version}
-version_arch=TRUST_$v".tgz"
+version_arch=TRUST_$v".tar.gz"
 PORTAGE=$WORKDIR/PORTAGE_$v
 GRAVAGE=$WORKDIR/A_GRAVER_CD_TRUST
 
@@ -72,11 +72,11 @@ else
    vbeta=$v"_build_"$DATE
    cd $GRAVAGE
    [ "$accord_admin" = 1 ] && v=${v%_beta} # Version demandee mais non sortie
-   for file in `ls TRUST_$v.*tgz 2>/dev/null`
+   for file in `ls TRUST_$v.*tar.gz 2>/dev/null`
    do
-      what=${file%.tgz}
+      what=${file%.tar.gz}
       what=${what#TRUST_$v}
-      mv $file TRUST_$vbeta$what".tgz"
+      mv $file TRUST_$vbeta$what".tar.gz"
    done
    cd -
 fi
