@@ -18,7 +18,7 @@ clean()
 }
 
 # recuperation des packages
-ln -sf $TRUST_ROOT/externalpackages/Python* .
+ln -sf $TRUST_ROOT/externalpackages/Python-* .
 
 for file in `ls $TRUST_ROOT/externalpackages/VisIt/*`
 do

@@ -86,7 +86,7 @@ configure_package() {
 	"x_HDF_1.6_x") configure_options="${configure_options} --disable-stream-vfd --enable-using-memchecker" ;;
 	"x_HDF_1.8_x") configure_options="${configure_options} --disable-stream-vfd --enable-using-memchecker --enable-debug=yes  " ;;
 	"x_MED_2.3_x") configure_options="${configure_options} --enable-static"                                ;;
-	"x_MED_3.1_x") configure_options="${configure_options} --enable-static --disable-python"               ;;
+	"x_MED_3.2_x") configure_options="${configure_options} --enable-static --disable-python"               ;;
 	* ) raise_invalid_package_version_exception "${name}" "${version}"                                     ;;
     esac
 
@@ -157,7 +157,7 @@ configure_package() {
 	    fi
 	    ;;
 
-	"x_MED_3.1_x")
+	"x_MED_3.2_x")
 	    # a priori rien a faire
 	    ;;
 
@@ -211,7 +211,7 @@ install_package() {
 	      cd "${TRUST_MED_workdir}"
 	    done
 	fi
-	# TODO : faut-il propager les memes corrections pour med-3.1 ?
+	# TODO : faut-il propager les memes corrections pour med-3.2 ?
     fi
 
     cd "${here}"

@@ -1,5 +1,5 @@
 #!/bin/bash
-. ./install/env.sh
+. $TRUST_MEDCOUPLING_ROOT/env.sh
 copie_cas_test Kernel_Post_MED
 
 python test.py

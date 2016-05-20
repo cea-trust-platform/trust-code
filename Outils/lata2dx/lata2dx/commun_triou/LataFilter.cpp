@@ -991,7 +991,7 @@ void LataFilter::release_cached_operator(const Domain_Id& id)
 void LataOptions::extract_path_basename(const char * s, Nom & path_prefix, Nom & basename)
 {
   int i;
-  for (i=strlen(s)-1;i>=0;i--)
+  for (i=(int)strlen(s)-1;i>=0;i--)
     if ((s[i]==PATH_SEPARATOR) ||(s[i]=='\\'))
       break;
   path_prefix = "";
@@ -1000,7 +1000,7 @@ void LataOptions::extract_path_basename(const char * s, Nom & path_prefix, Nom &
     path_prefix += Nom(s[j]);
   
   // Parse basename : if extension given, remove it
-  int n = strlen(s);
+  int n = (int)strlen(s);
   if (n > 5 && strcmp(s+n-5,".lata") == 0)
     n -= 5;
   basename = "";

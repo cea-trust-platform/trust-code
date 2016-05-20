@@ -1,6 +1,6 @@
 /*****************************************************************************
  *
- * Copyright (c) 2000 - 2012, Lawrence Livermore National Security, LLC
+ * Copyright (c) 2000 - 2015, Lawrence Livermore National Security, LLC
  * Produced at the Lawrence Livermore National Laboratory
  * All rights reserved.
  *
@@ -41,35 +41,31 @@
 
 #include <avtlataFileFormat.h>
 
-#include <string>
-#include <fstream>
-#include <iostream>
-#include <vtkFloatArray.h>
-#include <vtkRectilinearGrid.h>
-#include <vtkStructuredGrid.h>
-#include <vtkUnstructuredGrid.h>
-#include <vtkRectilinearGrid.h>
-#include <vtkCellType.h>
+#include <LmlReader.h>
+#include <LataJournal.h>
+
 #include <avtDatabaseMetaData.h>
+#include <avtGhostData.h>
 #include <DebugStream.h>
 #include <Expression.h>
-#include <avtGhostData.h>
-#include <vtkUnsignedCharArray.h>
 #include <InvalidVariableException.h>
+
 #include <vtkCellData.h>
 #include <vtkCellType.h>
 #include <vtkFloatArray.h>
 #include <vtkInformation.h>
 #include <vtkIntArray.h>
-#include <vtkRectilinearGrid.h> 
+#include <vtkRectilinearGrid.h>
 #include <vtkStreamingDemandDrivenPipeline.h>
 #include <vtkStructuredGrid.h>
 #include <vtkUnsignedCharArray.h>
 #include <vtkUnstructuredGrid.h>
-#include <vtkIntArray.h>
 
-#include <LmlReader.h>
-#include <LataJournal.h>
+#include <string>
+#include <fstream>
+#include <iostream>
+#include <visitstream.h>
+
 
 // ****************************************************************************
 //  Method: avtlata constructor
@@ -220,6 +216,9 @@ avtlataFileFormat::PopulateDatabaseMetaData(avtDatabaseMetaData *md, int timeSta
     case Domain::hexa:      topo_dim = 3; break;
     default:
       cerr << "avtlataFileFormat::PopulateDatabaseMetaData error: unknown element type" << endl;
+      topo_dim = 3; ///TODO: this should be an error in default case!
+      EXCEPTION1(InvalidVariableException, 
+                 "avtlataFileFormat::PopulateDatabaseMetaData error: unknown element type");
       throw;
     }
 
@@ -284,7 +283,7 @@ avtlataFileFormat::PopulateDatabaseMetaData(avtDatabaseMetaData *md, int timeSta
           v.SetType(Expression::ScalarMeshVar);
           md->AddExpression(&v);
         }
-	if (varname.find_first_of("/",0)==string::npos)
+	if (varname.find_first_of("/",0)==std::string::npos)
 	{
 	   // On calcule la norme des vecteurs de premier niveau (pas de / dans le chemin)
            Expression norme_v;
@@ -604,7 +603,6 @@ avtlataFileFormat::GetMesh(int timestate, int block, const char *meshname)
       unsigned char invalid = 0; // Sera modifie par AddGhostZoneType
       unsigned char ghost   = 0;
       avtGhostData::AddGhostZoneType(invalid, ZONE_NOT_APPLICABLE_TO_PROBLEM);
-      //avtGhostData::AddGhostZoneType(invalid, ZONE_EXTERIOR_TO_PROBLEM);
       avtGhostData::AddGhostZoneType(ghost, DUPLICATED_ZONE_INTERNAL_TO_PROBLEM);
       vtkUnsignedCharArray *ghostcells = vtkUnsignedCharArray::New();
       ghostcells->SetName("avtGhostZones");

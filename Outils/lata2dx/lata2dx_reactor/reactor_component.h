@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <assert.h>
+using namespace std;
 
 class reactor_component {
 

@@ -47,7 +47,7 @@ void set_Journal_level(entier level)
 
 static std::ostringstream junk_journal;
 
-ostream & Journal(entier level)
+std::ostream & Journal(entier level)
 {
   if (level <= journal_level) {
     cerr << "[" << level << "] ";
@@ -95,7 +95,7 @@ BigEntier memory_size(const ArrOfBit & tab)
 void split_path_filename(const char *s, Nom & path, Nom & filename)
 {
   int i;
-  for (i=strlen(s)-1;i>=0;i--)
+  for (i=(int)strlen(s)-1;i>=0;i--)
     if ((s[i]==PATH_SEPARATOR) || (s[i]=='\\'))
       break;
   path = "";

@@ -117,7 +117,7 @@ int main(int argc,char **argv) {
   TrioDEC dec(boite_ids, canal_ids);
 #else
   vector<TrioDEC> decu(1);
-  decu[0]=TrioDEC(boite_group, canal_group);
+  decu[0]=TrioDEC(boite_ids, canal_ids);
   TrioDEC& dec=decu[0];
 #endif
  

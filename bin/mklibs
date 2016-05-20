@@ -170,9 +170,17 @@ do
    echo $ECHO_OPTS "-L\$(TRUST_ICOCOAPI)/lib -licocoapi\\"	>> $fic
    [ "$PETSC" != "" ] && echo $ECHO_OPTS "$PETSC \\"				>> $fic
    [ "$LAPACK" != "" ] && echo $ECHO_OPTS "$LAPACK \\"				>> $fic
-   [ "$TRUST_DISABLE_MED" != "1" ] && [ "$TRUST_DISABLE_MEDCOUPLING" != "1" ] && echo $ECHO_OPTS "\$(TRUST_MEDCOUPLING_ROOT)/lib/libParaMEDMEM.a \\" >> $fic
-   [ "$MEDLDFLAGS" != "" ] && echo $ECHO_OPTS "$MEDLDFLAGS  \\"  		>> $fic
+   LIBS_MEDC=""
+   for ll in medloader medcouplingremapper medcoupling paramedmem paramedloader interpkernel
+    do
+    LIBS_MEDC=${LIBS_MEDC}" \$(TRUST_MEDCOUPLING_ROOT)/lib/lib${ll}.a"
+   done
+  # echo $LIBS_MEDC
+   [ "$TRUST_DISABLE_MED" != "1" ] && [ "$TRUST_DISABLE_MEDCOUPLING" != "1" ] && echo $ECHO_OPTS "${LIBS_MEDC} \\" >> $fic
+   [ "$MEDLDFLAGS" != "" ] && echo $ECHO_OPTS "$MEDLDFLAGS \\"  	>> $fic
+   
    [ "$MPIFORT" != "" ] && echo $ECHO_OPTS "$MPIFORT "  		>> $fic
+
    # Verification qu'une librairie n'est pas en double
    a=`cat $fic | sort | uniq -c | grep -v 1`
    if [ ${#a} != 0 ]
