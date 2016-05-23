@@ -1779,13 +1779,10 @@ class listobj_impl(objet_u):
         if self.listobj==None:
 	    self.listobj=[]	
             pass
-        cmd="tst_titi="+self.__class__.class_type+"()"
-        exec(cmd)
-	is_class_generic=isinstance(tst_titi,class_generic)
-        if 0:
-            from xmetaclass import removeXObject
-            removeXObject(tst_titi)
-            del tst_titi
+        
+        cmd2="tst_titi2="+self.__class__.class_type
+        exec(cmd2)
+        is_class_generic=issubclass(tst_titi2,class_generic)
        
         while (chaine[0]!= '}') and (i2!=0):
             i2=i2-1

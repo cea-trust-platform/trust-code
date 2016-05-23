@@ -4,11 +4,10 @@
 # Install de SPARSKIT2
 ###################
 MAKE=$1
-ln -sf $TRUST_ROOT/externalpackages/SKIT/SPARSKIT2.tar.gz .
 rm -r -f SPARSKIT2
 echo "Installation de SPARSKIT2 pour architecture $TRUST_ARCH"
 # gunzip a la volee
-gunzip -f -c SPARSKIT2.tar.gz | tar -xf -
+gunzip -f -c $TRUST_ROOT/externalpackages/SKIT/SPARSKIT2.tar.gz | tar -xf -
 # Correction du fichier inout.f pour eviter les warnings
 cp patch/inout.f SPARSKIT2/INOUT/inout.f && echo SPARSKIT2/INOUT/inout.f patche
 # modification du makefile pour les options de compile

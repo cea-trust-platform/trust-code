@@ -2,6 +2,13 @@
 # Script d'installation de PETSC
 package=$1
 
+mkdir -p ${PETSC_ROOT}
+cd ${PETSC_ROOT}
+mkdir build
+cd build
+DIR=`dirname $0`
+DIR=`(cd $DIR;pwd)`
+
 minimal_mumps=0
 scotch=1
 # [ $TRUST_ARCH = cygwin ] && minimal_mumps=1
@@ -578,7 +585,7 @@ cd $ROOT
 ###########
 if [ "$PETSC_HAVE_CUDA" = 1 ]
 then
-   ./test_gpu || exit -1
+   $DIR/test_gpu || exit -1
 fi
 
 ##############
@@ -586,7 +593,7 @@ fi
 ##############
 if [ "$PETSC_HAVE_OPENMP" = 1 ]
 then
-   ./test_openmp || exit -1
+   $DIR/test_openmp || exit -1
 fi
 
 # On efface la distribution sur les machines ou Petsc a ete compile uniquement en optimise

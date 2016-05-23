@@ -138,7 +138,10 @@ def modif(l,nom):
                 atr=getattr(cl,x.name)
                 if isinstance(atr,eqn_base):
                     #print atr.conditions_limites
-		    
+		    try:
+			atr.traitement_particulier=None
+		    except:
+                        pass 
                     cond=atr.conditions_initiales.condinit
                     if (lower(cond.nom)=="vitesse"):
                             modifie_champ_unif(cond.ch)
@@ -194,7 +197,7 @@ def test_cas(nom):
     theta=asin(1.)/3.
 
     #if is_vdf:
-    if 1:
+    if 0:
         theta=asin(1)
     phi=theta
     alpha=theta
