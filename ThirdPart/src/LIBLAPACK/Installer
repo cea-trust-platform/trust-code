@@ -61,9 +61,9 @@ install_NetLib()
       wget_ http://www.netlib.org/lapack/$package.tgz || exit -1
    fi
    echo "Installation of $package..."
-   gunzip -c $package.tgz > $package.tar
+   #gunzip -c $package.tgz > $package.tar
    gunzip -f -c $package.tgz | tar -xf -
-   rm -f $package.tar
+   #rm -f $package.tar
    cd $package 
 
    option=`$TRUST_Awk '/F77Flags/  {gsub("F77Flags =" ,"",$0);o=$0} END {print o}' $TRUST_ROOT/env/make.$TRUST_ARCH_CC"_opt"`

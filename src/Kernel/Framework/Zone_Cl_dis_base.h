@@ -99,7 +99,7 @@ protected:
 
   Nom nom_;
   Conds_lim  les_conditions_limites_;
-  Ref_Champ_Inc mon_inconnue;
+  REF(Champ_Inc) mon_inconnue;
   virtual void completer(const Zone_dis& ) = 0;
 };
 

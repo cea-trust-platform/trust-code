@@ -5,7 +5,7 @@ then
 echo "on active le support med"
 med_extension="*.med"
 med_cxx_flags="-DNDEBUG -DWITH_MEDLOADER -I"${TRUST_MEDCOUPLING_ROOT}"/include/ -I"${TRUST_MED_ROOT}"/include"
-med_libs=""${TRUST_MEDCOUPLING_ROOT}"/lib/libParaMEDMEM.a ${TRUST_MED_ROOT}/lib/libmed.a ${TRUST_MED_ROOT}/lib/libmedimport.a ${TRUST_MED_ROOT}/lib/libmedC.a ${TRUST_MED_ROOT}/lib/libhdf5.a -lz -lm  "  
+med_libs="${TRUST_MEDCOUPLING_ROOT}/lib/libmedloader.a    ${TRUST_MEDCOUPLING_ROOT}/lib/libmedcouplingremapper.a ${TRUST_MEDCOUPLING_ROOT}/lib/libmedcoupling.a  ${TRUST_MEDCOUPLING_ROOT}/lib/libinterpkernel.a ${TRUST_MED_ROOT}/lib/libmed.a ${TRUST_MED_ROOT}/lib/libmedimport.a ${TRUST_MED_ROOT}/lib/libmedC.a ${TRUST_MED_ROOT}/lib/libhdf5.a -lz -lm  "  
 fi
 
 

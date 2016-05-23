@@ -171,7 +171,9 @@ do
    [ "$PETSC" != "" ] && echo $ECHO_OPTS "$PETSC \\"				>> $fic
    [ "$LAPACK" != "" ] && echo $ECHO_OPTS "$LAPACK \\"				>> $fic
    LIBS_MEDC=""
-   for ll in medloader medcouplingremapper medcoupling paramedmem paramedloader interpkernel
+   LISTP=""
+   [ $TRUST_DISABLE_MPI = 0 ] && LISTP="paramedmem paramedloader" 
+   for ll in medloader medcouplingremapper medcoupling $LISTP  interpkernel
     do
     LIBS_MEDC=${LIBS_MEDC}" \$(TRUST_MEDCOUPLING_ROOT)/lib/lib${ll}.a"
    done

@@ -16,7 +16,7 @@ for ob in 'suppress_param','objet_u','listobj_impl','chaine','floattant','entier
     dico[ob]=[1,"yy"]
     pass
 while (line):
-    print line
+    # print line
 
     es=line.replace("gen_class","add_class")
     #  print dir(line)

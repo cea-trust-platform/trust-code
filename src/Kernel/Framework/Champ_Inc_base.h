@@ -138,7 +138,7 @@ protected:
                                        Array_base::Resize_Options = Array_base::COPY_INIT);
 
   Roue_ptr les_valeurs ;
-  Ref_Zone_Cl_dis ma_zone_cl_dis;
+  REF(Zone_Cl_dis) ma_zone_cl_dis;
 };
 
 #endif
