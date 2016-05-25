@@ -867,7 +867,7 @@ void Raffiner_Simplexes::refine_domain(const Domaine& src,
     const int nb_boundaries = boundaries_src.size();
     for (int boundary=0; boundary<nb_boundaries; ++boundary)
       {
-        boundaries_dest.add(Faces_Internes());
+        boundaries_dest.add(Faces_Interne());
         const Type_Face& face_type = boundaries_src[boundary].faces().type_face();
         build_frontier(boundaries_src[boundary],
                        face_type,
@@ -878,6 +878,185 @@ void Raffiner_Simplexes::refine_domain(const Domaine& src,
                        face_refinement_pattern,
                        dest.zone(0),
                        boundaries_dest[boundary]);
+      }
+  }
+  //marq_front_nodes=0;
+  {
+    const Joints& boundaries_src  = src.zone(0).faces_joint();
+    Joints&       boundaries_dest = dest.zone(0).faces_joint();
+    boundaries_dest.vide();
+    const int nb_boundaries = boundaries_src.size();
+    for (int boundary=0; boundary<nb_boundaries; ++boundary)
+      {
+        boundaries_dest.add(Joint());
+        const Type_Face& face_type = boundaries_src[boundary].faces().type_face();
+        build_frontier(boundaries_src[boundary],
+                       face_type,
+                       nodes_of_cells_src,
+                       cells_of_nodes_src,
+                       edges_of_cells_src,
+                       faces_pattern,
+                       face_refinement_pattern,
+                       dest.zone(0),
+                       boundaries_dest[boundary]);
+      }
+    for (int boundary=0; boundary<nb_boundaries; ++boundary)
+      {
+        Joint& joint_dest=boundaries_dest[boundary];
+        joint_dest.affecte_PEvoisin(boundaries_src[boundary].PEvoisin());
+        joint_dest.affecte_epaisseur(boundaries_src[boundary].epaisseur());
+
+        // creation des SOMMETS communs
+        ArrOfInt& liste_sommets = joint_dest.set_joint_item(Joint::SOMMET).set_items_communs();
+        joint_dest.set_joint_item(Joint::ELEMENT).set_items_distants();
+
+        liste_sommets.set_smart_resize(1);
+        // On prend tous les sommets des faces de joint:
+        const IntTab& som_faces = joint_dest.faces().les_sommets();
+        liste_sommets = ref_cast(ArrOfInt,som_faces);
+        // on ajoute les sommets du joint d'origine pour
+        // les sommets isoles
+        const ArrOfInt& som_isoles = boundaries_src[boundary].joint_item(Joint::SOMMET).items_communs();
+        const int n = som_isoles.size_array();
+        array_trier_retirer_doublons(liste_sommets);
+        int n0=liste_sommets.size_array();
+        ArrOfInt liste_sommets_old(liste_sommets);
+        for (int i = 0; i < n; i++)
+          liste_sommets.append_array(som_isoles[i]);
+        // Retirer les doublons de la liste
+        array_trier_retirer_doublons(liste_sommets);
+        int n1=liste_sommets.size_array();
+
+        Journal()<<" du boulot "<<boundaries_src[boundary].PEvoisin()<<finl;
+
+        //if (n0!=liste_sommets.size_array())
+        {
+
+          ArrOfInt sommets_to_find(2);
+          ArrOfInt incident_cells;
+          incident_cells.set_smart_resize(1);
+
+          // on doit trouver tous les sommets oublies, c'est ceux en plus.
+          ArrOfInt oublie;// (n1-n0);
+          const ArrOfInt& liste_sommets_org= som_isoles;
+          int norg=som_isoles.size_array();
+          // les liste sont tries
+          //  if (n0==0)
+          if (1)
+            {
+              oublie=liste_sommets;
+            }
+          else
+            {
+              Cerr<<liste_sommets<<finl;
+              Cerr<<liste_sommets_old<<finl;
+              Cerr<<" a trier" <<finl;
+              int i=0;
+              int i_old=0;
+              int t=0;
+              while (t<n1-n0)
+                {
+                  if (liste_sommets[i]!=liste_sommets_old[i_old])
+                    {
+                      Cerr<<"iiiii"<<i<<finl;
+                      oublie[t++]=liste_sommets[i];
+                      i++;
+                    }
+                  else
+                    {
+                      i++;
+                      i_old++;
+                    }
+                }
+              Cerr<<oublie<<finl;
+              //abort();
+            }
+
+          // pour chaque sommet oblie on regarde si on a une arrete commune en regardant tous les sommets de la liste
+          for (int nio=0; nio<n1; nio++)
+            {
+              int io=oublie[nio];
+              sommets_to_find[0]=io;
+              // if (marq_front_nodes(io)==0)         continue;
+              for (int ns=nio+1; ns<norg; ns++)
+                {
+                  int s=liste_sommets_org(ns);
+                  if (s==io)
+                    continue;
+                  //  if (marq_front_nodes(s)==0) continue;
+                  sommets_to_find[1]=s;
+                  find_adjacent_elements(cells_of_nodes_src,sommets_to_find,incident_cells);
+                  //Cerr<<"uuuuu"<<incident_cells<<finl;
+                  // Cerr<<"pos "<<nodes_dest(io,0)<<" "<<nodes_dest(io,1)<<" "<<nodes_dest(io,2)<<finl;
+                  //Cerr<<"pos "<<nodes_dest(s,0)<<" "<<nodes_dest(s,1)<<" "<<nodes_dest(s,2)<<finl;
+                  int         nb_nodes_src               = cells_of_nodes_src.get_nb_lists();
+                  if (incident_cells.size_array()>0)
+                    {
+                      for (int ne=0; ne<incident_cells.size_array(); ne++)
+                        {
+                          int elem=incident_cells(ne);
+                          int nb_nodes_per_cells=nodes_of_cells_src.dimension(1);
+                          int local0=-1,local1=-1;
+                          for (int i=0; i<nb_nodes_per_cells; i++)
+                            {
+                              if (nodes_of_cells_src(elem,i)==io)
+                                local0=i;
+                              if (nodes_of_cells_src(elem,i)==s)
+                                local1=i;
+                            }
+                          if ((local0==-1)||(local1==-1))
+                            {
+                              Cerr<<" pB arrete ?"<<finl;
+                              exit();
+                            }
+                          if (local1<local0)
+                            {
+                              std::swap(local0,local1);
+                            }
+                          int nb_edegs_pattern=edges_pattern.dimension(0);
+                          int ok=-1;
+                          for (int e=0; e<nb_edegs_pattern; e++)
+                            {
+                              //                            const int node  = find_refined_node_index(nodes_of_cells_src,edges_of_cells_src,nb_nodes_src,elem,-e);
+                              if ((local0==edges_pattern(e,0))&&(local1==edges_pattern(e,1)))
+                                {
+                                  ok=e;
+                                  break;
+                                }
+                            }
+                          if (ok==-1)
+                            {
+                              Cerr<<" pB edge ?"<<finl;
+                              exit();
+                            }
+
+                          const int node  = find_refined_node_index(nodes_of_cells_src,edges_of_cells_src,nb_nodes_src,elem,-(ok+1));
+                          for (int dir=0; dir<dimension; dir++)
+                            {
+                              double test=nodes_dest(node,dir)-(nodes_dest(io,dir)+nodes_dest(s,dir))*0.5;
+                              if (dabs(test)>1e-7)
+                                {
+                                  Cerr<<" pB position ?"<<test <<finl;
+                                  exit();
+                                }
+                            }
+                          Journal()<<io<<" sommets "<<s<<" Node "<<node ;
+                          for (int dir=0; dir<dimension; dir++)
+                            Journal()<<" "<<nodes_dest(node,dir);
+                          Journal()<<finl;
+
+                          liste_sommets.append_array(node);
+                        }
+                    }
+                }
+
+            }
+          array_trier_retirer_doublons(liste_sommets);
+          Journal()<<liste_sommets<<" old "<<liste_sommets_old<<finl;
+          //abort();
+
+        }
+
       }
   }
 }

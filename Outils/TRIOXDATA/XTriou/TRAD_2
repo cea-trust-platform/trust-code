@@ -1940,4 +1940,8 @@ testeur_medcoupling interprete testeur_medcoupling 0 not_set
   attr field_name chaine filed_name 0 Name of domain.
 test_supr raffiner_isotrope test_supr -1 Keyword to raffine a simplexes
   attr domain2_name suppress_param domain2_name 0 Name of domain.
+Raffiner_isotrope_parallele interprete Raffiner_isotrope_parallele::interpreter 1 Refine parallel mesh in parallel 
+  attr name_of_initial_zones chaine name_of_initial_zones 0 name of initial Zones
+  attr ascii rien ascii 1 writing Zones in ascii format
+  attr name_of_new_zones chaine name_of_new_zones 0 name of new Zones
 
