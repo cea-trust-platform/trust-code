@@ -187,7 +187,7 @@ Read pb_fluide
 		parametre_equation parametre_implicite
                 {
 			seuil_convergence_implicite 0.00001 # 0.001 is TOO high to insure proper balances! # 
-			solveur petsc bicgstab { precond ilu { level 1 } seuil 1e-16 impr }
+			solveur petsc bicgstab { precond pilut { level 20 epsilon 0.01 } seuil 1e-16 impr }
 	        }
 		diffusion { }
 		convection { muscl }

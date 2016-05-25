@@ -1,6 +1,9 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.3_beta : Enhancements, modifications and corrected bugs since version 1.7.2 :
 --------------------------------------------------------------------------------------------------
+25/05/16 (TRUST)  Portability : Released version of metis upgrated to 5.1.0
+25/05/16 (TRUST)  Portability : Released version of PETSc upgrated to 3.6.3 (and some packages whose MUMPS and METIS)
+25/05/16 (TRUST)  Minor change: Option -disable-check_sources and -for_appli_salome added to the TRUST configure tool
 18/05/16 (Kernel) Portability : MEDCoupling updated to 780 version
 21/03/16 (Tools)  Portability : Released version of VisIt is upgraded to 2.10.0
 21/03/16 (TRUST)  Bug fixed   : Fixed bug in Traitement_particulier of Canal with QC fluid and VDF discretization

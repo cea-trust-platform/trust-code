@@ -722,17 +722,23 @@ void Solv_Petsc::create_solver(Entree& entree)
               }
             case 1:
               {
-                Cout << "See http://www.ncsa.uiuc.edu/UserInfo/Resources/Software/Math/HYPRE/docs-1.6.0/HYPRE_usr_manual/node33.html" << finl;
-                Cout << "to have some advices on the incomplete LU factorisation level: ILU(level)" << finl;
+                //Cout << "See http://www.ncsa.uiuc.edu/UserInfo/Resources/Software/Math/HYPRE/docs-1.6.0/HYPRE_usr_manual/node33.html" << finl;
+                //Cout << "to have some advices on the incomplete LU factorisation level: ILU(level)" << finl;
                 // On n'attaque pas le ILU de Petsc qui n'est pas parallele
                 // On prend celui de Hypre (Euclid=PILU(k)) en passant par les commandes en ligne
                 // car peu de parametres peuvent etre fixes sinon
-                PCSetType(PreconditionneurPetsc_, PCHYPRE);
-                PCHYPRESetType(PreconditionneurPetsc_, "euclid");
-                add_option("pc_hypre_euclid_levels",(Nom)level.value());
-                check_not_defined(omega);
-                check_not_defined(epsilon);
-                check_not_defined(ordering);
+                //PCSetType(PreconditionneurPetsc_, PCHYPRE);
+                //PCHYPRESetType(PreconditionneurPetsc_, "euclid");
+                //add_option("pc_hypre_euclid_levels",(Nom)level.value());
+                //check_not_defined(omega);
+                //check_not_defined(epsilon);
+                //check_not_defined(ordering);
+                //
+                // CHANGES in the PETSc 3.6 Version: Removed -pc_hypre_type euclid due to bit-rot
+                Cerr << "Error: CHANGES in the PETSc 3.6 Version: Removed -pc_hypre_type euclid due to bit-rot." << finl;
+                Cerr << "So the ILU { level k } preconditionner no longer available. " << finl;
+                Cerr << "Change your data file." << finl;
+                Process::exit();
                 break;
               }
             case 2:

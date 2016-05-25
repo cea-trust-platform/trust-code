@@ -77,8 +77,8 @@ Read pb
 	{
 	Navier_Stokes_Turbulent
 		{
-                solveur_pression Petsc GCP { precond ilu { level 1 } seuil 1.e-08 impr }
-		solveur_bar Petsc GCP { precond ilu { level 1 } seuil 1.e-08 impr } 		
+                solveur_pression Petsc GCP { precond ssor { omega 1.5 } seuil 1.e-08 impr }
+		solveur_bar Petsc GCP { precond pilut { level 20 epsilon 0.01 } seuil 1.e-08 impr } 		
                 convection { EF defaut_bar }
                 diffusion  { standard grad_Ubar 1 nu 1 nut 1 nu_transp 1 nut_transp 1 filtrer_resu 1 }
                              
