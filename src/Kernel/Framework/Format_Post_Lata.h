@@ -144,6 +144,7 @@ protected:
 
   static int write_inttab(Fichier_Lata& fichier,
                           int         decalage,
+                          int         decalage_partiel,
                           const IntTab& tab,
                           int&        nb_colonnes,const Options_Para& option);
 

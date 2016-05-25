@@ -59,24 +59,16 @@ Sortie& Champ_Generique_Interpolation::printOn(Sortie& os) const
 //  methode          : type de methode de calcul "calculer_champ_post" (optionnel, une seule methode disponible)
 void Champ_Generique_Interpolation::set_param(Param& param)
 {
+// XD interpolation champ_post_de_champs_post interpolation -1 To create a field which is an interpolation of the field given by the keyword source.
   Champ_Gen_de_Champs_Gen::set_param(param);
-  param.ajouter("localisation",&localisation_,Param::REQUIRED);
-  param.ajouter("methode",&methode_);
-  param.ajouter_non_std("domaine",(this));
-}
+  param.ajouter("localisation",&localisation_,Param::REQUIRED); // XD_ADD_P chaine type_loc indicate where is done the interpolation (elem for element or som for node).
+  param.ajouter("methode",&methode_); //  XD_ADD_P chaine The optional keyword methode is limited to calculer_champ_post for the moment.
+  param.ajouter("domaine",&nom_domaine_lu_);  //  XD_ADD_P chaine  the domain name where the interpolation is done (by default, the calculation domain)
+  param.ajouter("optimisation_sous_maillage",&optimisation_demande_); // XD_ADD_P dico not_set
+  param.dictionnaire("default",-1); // XD_ADD_DICO not_set
+  param.dictionnaire("yes",1);  // XD_ADD_DICO not_set
+  param.dictionnaire("no",0); // XD_ADD_DICO not_set
 
-int Champ_Generique_Interpolation::lire_motcle_non_standard(const Motcle& mot, Entree& is)
-{
-  if (mot=="domaine")
-    {
-      is >> nom_domaine_lu_;
-      return 1;
-    }
-  else
-    {
-      return Champ_Gen_de_Champs_Gen::lire_motcle_non_standard(mot,is);
-    }
-  return 1;
 }
 // Description: restore la configuration initiale de l'objet
 //  localisation non specifiee, source non specifiee, methode=calculer_champ_post, domaine natif
@@ -87,6 +79,8 @@ void Champ_Generique_Interpolation::reset()
   methode_      = "calculer_champ_post";
   domaine_.reset();
   Champ_Gen_de_Champs_Gen::reset();
+  optimisation_sous_maillage_=-1;
+  optimisation_demande_=-1;
 }
 
 // Description: Initialisation de la classe: initialisation de la localisation
@@ -199,8 +193,16 @@ const Champ_base& Champ_Generique_Interpolation::get_champ(Champ& espace_stockag
 const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_post(Champ& espace_stockage) const
 {
   Champ espace_stockage_source;
-  const Champ_base& source = get_source(0).get_champ(espace_stockage_source);
+  const Champ_base& source0 = get_source(0).get_champ(espace_stockage_source);
+  Champ source_bis;
 
+  if (optimisation_sous_maillage_==-1)
+    {
+      source_bis=source0;
+      //source.typer(source0.que_suis_je());
+
+    }
+  const Champ_base& source  = ((optimisation_sous_maillage_==-1)?source_bis.valeur():source0);
   Nom nom_champ_interpole;
 
   // Domaine sur lequel on interpole le champ :
@@ -278,9 +280,72 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
       espace_stockage->fixer_nature_du_champ(nature_source);
       espace_stockage->fixer_nb_valeurs_nodales(nb_ddl);
     }
+  //double default_value=-1e35;
+  //espace_stockage.valeurs()=default_value;
+  int decal=10;
+  if (optimisation_sous_maillage_==-1)
+    {
+      espace_stockage.valeurs()=0;
+      // premier appel avec maillage different (ou on a force) , on essaye de voir si on peut optimiser
+      // on champ la source on y met val(i)=i, pour recuperer le numero de la maille apres
+      DoubleTab& val=source_bis.valeurs();
+
+      int dim0 = val.dimension_tot(0);
+      if (val.nb_dim()==2)
+        {
+          for (int i=0; i<dim0; i++)
+            for (int j=0; j<nb_comp; j++)
+              val(i,j) = i+decal;
+        }
+      else
+        {
+          for (int i=0; i<dim0; i++)
+            val(i) = i+decal;
+        }
+    }
 
   //Evaluation des valeurs du champ espace_stockage
   DoubleTab& espace_valeurs = espace_stockage->valeurs();
+
+  if (optimisation_sous_maillage_==1)
+    {
+      const DoubleTab& val_temp= source.valeurs();
+      int dim0 = espace_valeurs.dimension(0);
+      if (ncomp==-1)
+        {
+          if (nb_comp==1)
+            for (int i=0; i<dim0; i++)
+              {
+                int n=renumerotation_maillage_[i];
+                if (n>=0)
+                  espace_valeurs(i) = val_temp(n);
+              }
+          else
+            for (int i=0; i<dim0; i++)
+              for (int j=0; j<nb_comp; j++)
+                {
+                  int n=renumerotation_maillage_[i];
+                  if (n>=0)
+                    espace_valeurs(i,j) = val_temp(n,j);
+                }
+        }
+      else
+        //On construit un tableau de valeurs a nb_comp composantes meme si ncomp!=-1
+        {
+          for (int i=0; i<dim0; i++)
+            for (int j=0; j<nb_comp; j++)
+              if (j==ncomp)
+                {
+                  espace_valeurs(i,j) = val_temp(renumerotation_maillage_[i]);
+                }
+        }
+
+
+
+
+      espace_valeurs.echange_espace_virtuel();
+      return espace_stockage.valeur();
+    }
 
   int imax=0;
   //  int jmax=0;;
@@ -387,6 +452,70 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
           Cerr << "Champ_Generique_Interpolation::get_champ localisation uncoded " << localisation_ << " for " <<source.que_suis_je()<<finl;
           exit();
         }
+    }
+
+
+  if (optimisation_sous_maillage_==-1)
+    {
+      // on recalcule le bon champ
+
+      DoubleTab& val=espace_valeurs;
+      int dim0 = val.dimension_tot(0);
+      ArrOfInt& renumerotation_maillage=ref_cast_non_const(ArrOfInt, renumerotation_maillage_);
+      renumerotation_maillage.resize_array(dim0);
+      int ok=1;
+
+      for (int i=0; (i<dim0)&& ok; i++)
+        {
+          double v;
+          if (val.nb_dim()==2)
+            v=espace_valeurs(i,0) ;
+          else
+            v=espace_valeurs(i) ;
+          int iproche=-1;
+          if (v>0)
+            {
+              iproche=int(v+0.1); // on ajoute 0.1 pour le cas ou v vaut i-epsilon
+              if (dabs(iproche-v)>1e-5)
+                {
+                  ok=0;
+                  Cerr<<nom_champ[0]<<" optimisation ko "<< finl;
+
+                }
+            }
+          renumerotation_maillage[i]=iproche-decal;
+
+        }
+
+      int test=mp_min(ok);
+      if (test)
+        {
+          ref_cast_non_const(Champ_Generique_Interpolation,(*this)).optimisation_sous_maillage_=0;
+          Champ espace_stockage_test;
+          get_champ_with_calculer_champ_post(espace_stockage_test);
+          ref_cast_non_const(Champ_Generique_Interpolation,(*this)).optimisation_sous_maillage_=test;
+          get_champ_with_calculer_champ_post(espace_stockage);
+          espace_stockage_test.valeurs()-=espace_stockage.valeurs();
+          double dmax= mp_max_abs_vect(espace_stockage_test.valeurs());
+          if (dmax > 1e-7)
+            {
+              Cerr<<nom_champ[0]<<" optimisation ko "<< dmax<<finl;
+              exit();
+            }
+          else
+            Cerr<<nom_champ[0]<<" optimisation ok "<< dmax<<finl;
+        }
+
+      else
+        {
+          if (optimisation_demande_==1)
+            {
+              Cerr<<nom_champ[0]<<" optimisation not allowed "<<finl;
+              exit();
+            }
+        }
+      ref_cast_non_const(Champ_Generique_Interpolation,(*this)).optimisation_sous_maillage_=test;
+      return get_champ_with_calculer_champ_post(espace_stockage);
     }
 
   espace_valeurs.echange_espace_virtuel();
@@ -544,8 +673,18 @@ void Champ_Generique_Interpolation::completer(const Postraitement_base& post)
     }
   // Si le domaine lu n'est pas le domaine de calcul, on fixe le domaine
   const Domaine& domaine_calcul = get_source(0).get_ref_domain();
+  if (optimisation_demande_==0)
+    optimisation_sous_maillage_=0;
   if ( (nom_domaine_lu_!="") && (nom_domaine_lu_!=domaine_calcul.le_nom()) )
-    set_domaine(nom_domaine_lu_);
+    {
+      set_domaine(nom_domaine_lu_);
+    }
+  else
+    {
+      // optimisation sous maillage inutile
+      if (optimisation_demande_==-1)
+        optimisation_sous_maillage_=0;
+    }
 
   discretiser_domaine();
 }

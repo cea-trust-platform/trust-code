@@ -455,7 +455,7 @@ LataLoader::GetMesh(const char *meshname, int timestate, int block)
             {
               verts[j] = conn(i,j);
              
-              if (verts[j]==-1)
+              if (verts[j]<=-1)
                 {  
                   nverts_loc=j; 
                   break;

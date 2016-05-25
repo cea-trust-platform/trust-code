@@ -1,0 +1,4 @@
+echo comparaison $1 Optimisation_force > diff_$1.out
+
+compare_lata $1.lata Optimisation_force.lata >> diff_$1.out
+#grep total $1.TU > $1.perf 

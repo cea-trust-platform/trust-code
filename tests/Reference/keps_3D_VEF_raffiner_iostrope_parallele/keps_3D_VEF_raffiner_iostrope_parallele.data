@@ -1,0 +1,196 @@
+# Jeu de donnees Keps VEF 3D + raffiner_isotrope #
+# PARALLEL OK #
+dimension 3
+
+Pb_Hydraulique_Turbulent pb
+
+Domaine DOM_DOM
+
+# BEGIN MESH #
+Mailler DOM_DOM
+{
+Pave Cavite
+        {
+                Origine 0. 0. 0.
+                Nombre_de_Noeuds 6 3 3
+                Longueurs 6.283185307 2. 2.
+        }
+        {
+                Bord ENTR  	X = 0.            0. <= Y <= 1.0           		0. <= Z <= 2.
+                Bord EINJ  	X = 6.283185307   0. <= Y <= 1.0           		0. <= Z <= 2.
+                Bord OSUT 	X = 0.            1. <= Y <= 2.0           		0. <= Z <= 2.
+                Bord OUT  	X = 6.283185307   1. <= Y <= 2.0           		0. <= Z <= 2.
+
+                Bord WALL     	Y = 0.            0. <= X <= 6.283185307            	0. <= Z <= 2.
+                Bord WALL    	Y = 2.            0. <= X <= 6.283185307            	0. <= Z <= 2.
+                Bord SYM  	Z = 0.            0. <= X <= 6.283185307            	0. <= Y <= 2.0
+                Bord SYM  	Z = 2.            0. <= X <= 6.283185307            	0. <= Y <= 2.0
+                }
+}
+Tetraedriser_homogene_fin DOM_DOM
+
+# END MESH #
+# BEGIN PARTITION
+Partition DOM_DOM
+{
+	Partition_tool metis { Nb_parts 9 }
+	Larg_joint 2
+	zones_name DOM
+}
+End 
+END PARTITION #
+
+
+# BEGIN MESH #
+raffiner_isotrope DOM_DOM
+# END MESH #
+# BEGIN SCATTER 
+raffiner_isotrope_parallele 
+{
+name_of_initial_zones DOM
+name_of_new_zones DOM_RAF
+
+}
+Scatter DOM_RAF.Zones DOM_DOM
+
+END SCATTER #
+
+Sous_Zone SS1
+Associate SS1 DOM_DOM
+Read SS1 {  
+   Boite
+      Origine 1 1 1
+      Cotes 0.3 0.3 0.3 }
+Sous_Zone SS2
+Associate SS2 DOM_DOM
+Read SS2 {
+   Boite
+      Origine 2 0.5 0.5
+      Cotes 0.5 0.5 0.5 }
+
+
+VEFPreP1b dis
+
+Scheme_euler_explicit sch
+Read sch 
+{
+	nb_pas_dt_max 10
+        tinit 0.
+        tmax 1.
+        dt_min 1.e-11
+        dt_max 2.e-4
+        dt_impr 1.e-11
+        dt_sauv 0.002
+        seuil_statio 1.e-9  
+        diffusion_implicite 1
+	niter_max_diffusion_implicite 50
+        facsec 1.
+}
+
+
+Fluide_Incompressible fluide
+Read fluide
+{
+	mu Champ_Uniforme	1 0.54613e-3
+	rho Champ_Uniforme	1 987.888
+}
+
+Associate pb DOM_DOM
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Read pb
+{
+     Navier_Stokes_Turbulent
+     {
+	solveur_pression GCP { precond ssor { omega 1.4 } 
+		seuil 5.e-5 impr }
+        convection { muscl }
+        diffusion  { }
+        initial_conditions
+                {
+                vitesse Champ_Uniforme 3 0. 0. 2.
+                }
+        boundary_conditions
+                {
+		ENTR frontiere_ouverte_vitesse_imposee
+			Champ_Front_Uniforme 3 0. 0. 8.6
+		EINJ frontiere_ouverte_vitesse_imposee
+			Champ_Front_Uniforme 3 -0.24 0. 0.12
+		OSUT frontiere_ouverte_vitesse_imposee
+			Champ_Front_Uniforme 3 -0.24 0. 0.12                   
+	   	OUT frontiere_ouverte_pression_imposee
+			Champ_Front_Uniforme 1 0. 
+		WALL  paroi_fixe
+		SYM  symetrie
+                }
+	Modele_turbulence K_Epsilon
+        {
+	  Transport_K_Epsilon
+	  {
+	    convection { muscl }
+	    diffusion  {   }
+	    boundary_conditions
+	    {
+	      ENTR frontiere_ouverte_K_Eps_impose
+	        Champ_Front_Uniforme 2 0.5  20.0
+	      EINJ frontiere_ouverte_K_Eps_impose
+	        Champ_Front_Uniforme 2 0.05 10.0
+	      OSUT frontiere_ouverte_K_Eps_impose
+	  	Champ_Front_Uniforme 2 0.05 10.0
+	      OUT frontiere_ouverte K_Eps_Ext
+	        Champ_Front_Uniforme 2 0.05 10.0
+	      WALL paroi
+	      SYM symetrie
+	    }
+	    initial_conditions 
+	    { 
+	      K_Eps Champ_Uniforme 2 0.1 10.0 
+	    } 
+	      
+	  }
+	  nut_max 0.0001
+	  turbulence_paroi loi_standard_hydr
+	
+	}
+	Sources
+	{
+	Perte_Charge_Reguliere longitudinale 
+	  X 0.010131 A 3.15 B 0.13169 SS1  ,
+	Perte_Charge_Reguliere longitudinale 
+	  Y 0.010131 A 3.15 B 0.13169 SS1 ,             
+	Perte_Charge_Reguliere longitudinale 
+	  Z 0.010131 A 1.20 B 0.13169 SS1 ,             
+	Perte_Charge_Reguliere longitudinale 
+	  X 0.010131 A 3.15 B 0.13169 SS2 ,              
+	Perte_Charge_Reguliere longitudinale 
+	  Y 0.010131 A 3.15 B 0.13169 SS2 ,
+	Perte_Charge_Reguliere longitudinale 
+	  Z 0.010131 A 1.20 B 0.13169 SS2                        
+	}
+    }
+    Post_processing
+    {       
+    	Probes
+    	{
+    		Segment1 vitesse Periode 0.0001
+    		Segment 100 0.00197 0.05670 -0.77800 0.00197 0.05670 -0.27210
+    		Segment2 vitesse Periode 0.00001
+   		Segment 100 0.21703 0.05670 -0.77800 0.21703 0.05670 -0.27120
+    	}
+        format lata
+    	fields dt_post 0.01
+      	{
+      		vitesse 
+      		viscosite_turbulente 
+      		K 
+      		eps 
+      	}
+    }
+}
+
+
+Solve pb
+End
