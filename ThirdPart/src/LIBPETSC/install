@@ -2,12 +2,12 @@
 # Script d'installation de PETSC
 package=$1
 
+DIR=`dirname $0`
+DIR=`(cd $DIR;pwd)`
 mkdir -p ${PETSC_ROOT}
 cd ${PETSC_ROOT}
 mkdir build
 cd build
-DIR=`dirname $0`
-DIR=`(cd $DIR;pwd)`
 
 minimal_mumps=0
 scotch=1
@@ -172,7 +172,7 @@ fi
 if [ "$TRUST_DISABLE_MPI" = 1 ]
 then
    # Need to be improved for the future changes:
-   cat ../MUMPS_SEQ.py > $CONFIG/MUMPS.py
+   cat $DIR/MUMPS_SEQ.py > $CONFIG/MUMPS.py
 fi    
     
 ################

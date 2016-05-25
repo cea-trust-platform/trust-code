@@ -40,7 +40,7 @@ do
    fi
 done
 
-if [ "$1" != "-disable-optionals" ]
+if [ "$1" != "-disable-optionals" ] && [ "$1" != "-for_appli_salome" ]
 then
 echo "----------------------------------------------------------------------------------------------------------------------------"
 echo "Usage: `basename $0` "
@@ -71,12 +71,14 @@ echo "[-disable-gnuplot]                Disable gnuplot installation and build."
 echo "[-disable-tcl_tk]                 Disable Tcl/Tk detection/installation."
 echo "[-disable-gmsh]                   Disable Gmsh installation and build."
 echo "[-disable-mpiio]                  Disable MPI-IO mode for writing of .xyz binary output file."
-echo "[-disable-check]                  Disable checks for external packages."
+echo "[-disable-check_sources]          No check sources before compiling."
+echo "[-disable-checks]                 Disable checks for external packages, sources, disk space and speed."
 echo "[-without-host_file]              Do not load the environnement variables specified in an env_src/HOST_`hostname | awk -F. '{print $1}'`.sh file."
 echo "[-without-doc]                    Do not build the documentation."
 echo "[-without-visit]                  Do not install VisIt."
 echo "[-download-visit]                 Download a version of VisIt rather trying to build a version."
-echo "[-download-salome]                Download the Salome `awk -F= '/version_salome=/ {print $2}' env_src/configurer_env` version in the TRUST environment."
+#echo "[-download-salome]                Download the Salome `awk -F= '/version_salome=/ {print $2}' env_src/configurer_env` version in the TRUST environment."
+echo "[-for_appli_salome]               Force the configuration for TRUST application in Salome platform."
 echo "[-clean]                          Clean the packages installed by configure."
 echo "----------------------------------------------------------------------------------------------------------------------------"
 fi
@@ -91,12 +93,20 @@ LIST_THIRD_PARTY="PETSC MED MPI METIS MEDCOUPLING CCACHE GMSH VALGRIND GNUPLOT T
 [ -f configure.log ] && sed "s/# //" -i  configure.log && sed "s/^/# /" -i  configure.log
 echo $0 $* "\$"* >> configure.log
 
+if [ "$1" = "-for_appli_salome" ]
+then
+  shift
+  export TRUST_ROOT=$TRUST_ROOT_SA
+  # RAF: forcer lien vers MED de Salome
+  $0 -disable-gnuplot -disable-tcl_tk -without-visit -disable-gmsh -disable-checks -disable-check_sources $* 
+  exit $?
+fi
 if [ "$1" = "-disable-optionals" ]
 then
- shift
- export TRUST_ROOT=$TRUST_ROOT_SA
- $0 -disable-ccache -disable-med -disable-medcoupling -disable-petsc -disable-gnuplot -disable-tcl_tk -disable-valgrind -disable-mpi -disable-metis -without-visit -disable-gmsh -without-doc -disable-check $* 
- exit $?
+  shift
+  export TRUST_ROOT=$TRUST_ROOT_SA
+  $0 -disable-ccache -disable-med -disable-medcoupling -disable-petsc -disable-gnuplot -disable-tcl_tk -disable-valgrind -disable-mpi -disable-metis -without-visit -disable-gmsh -without-doc -disable-checks -disable-check_sources $* 
+  exit $?
 fi
 
 for THIRD_PARTY in $LIST_THIRD_PARTY
@@ -105,7 +115,8 @@ do
   eval $command       
 done
 export TRUST_DISABLE_MPIIO=0
-export TRUST_DISABLE_CHECK=0
+export TRUST_DISABLE_CHECK_SRC=0
+export TRUST_DISABLE_CHECKS=0
 export TRUST_WITHOUT_DOC=0
 export TRUST_WITHOUT_VISIT=0
 export TRUST_DOWNLOAD_VISIT=0
@@ -206,9 +217,14 @@ do
    then
       export TRUST_DISABLE_MPIIO=1 
        
-   elif [ "${1#-disable-check}" != "$1" ]
+   elif [ "${1#-disable-check_sources}" != "$1" ]
    then
-      export TRUST_DISABLE_CHECK=1 
+      export TRUST_DISABLE_CHECK_SRC=1 
+
+   elif [ "${1#-disable-checks}" != "$1" ]
+   then
+      export TRUST_DISABLE_CHECKS=1 
+      export TRUST_DISABLE_CHECK_SRC=1 
 
    elif [ "${1#-disable-}" != "$1" ]
    then
@@ -250,7 +266,7 @@ do
 done
 
 export TRUST_ROOT_VERSION=`awk '/version/ && /Release notes/ {print $4;exit}' $TRUST_ROOT/RELEASE_NOTES | sed "s/_beta//"`
-if [ "$TRUST_DISABLE_CHECK" = 0 ] && [ "$clean" != "clean" ]
+if [ "$TRUST_DISABLE_CHECKS" = 0 ] && [ "$clean" != "clean" ]
 then
    [ ! -d externalpackages ] && [ ! -L externalpackages ] && echo "You need to download externalpackages before configuring" && echo wget http://downloads.sourceforge.net/project/trust-platform/$TRUST_ROOT_VERSION/externalpackages_$TRUST_ROOT_VERSION.tar && exit -1
    # Gestion externalpackages
@@ -261,7 +277,7 @@ then
    cd $TRUST_ROOT
 elif [ "$clean" != "clean" ]
 then
-   echo "Disabling CHECK, so no verify externalpackages."
+   echo "Disabling CHECKS, so no verify externalpackages."
 fi
 
 for THIRD_PARTY in $LIST_THIRD_PARTY 
@@ -270,7 +286,8 @@ do
    echo "$VAR=${!VAR} && export $VAR 	# Disable/enable $THIRD_PARTY"  					>> $var 
 done
 echo "TRUST_DISABLE_MPIIO=$TRUST_DISABLE_MPIIO && export TRUST_DISABLE_MPIIO	# Disable/enable MPI-IO mode for writing of binary output file"	>> $var
-echo "TRUST_DISABLE_CHECK=$TRUST_DISABLE_CHECK && export TRUST_DISABLE_CHECK	# Disable/enable checks for external packages"	>> $var
+echo "TRUST_DISABLE_CHECK_SRC=$TRUST_DISABLE_CHECK_SRC && export TRUST_DISABLE_CHECK_SRC # No check sources before compiling"	>> $var
+echo "TRUST_DISABLE_CHECKS=$TRUST_DISABLE_CHECKS && export TRUST_DISABLE_CHECKS	# Disable/enable checks for external packages, sources, disk space and speed" >> $var
 echo "TRUST_WITHOUT_DOC=$TRUST_WITHOUT_DOC && export TRUST_WITHOUT_DOC		# Disable/enable Documentation"	>> $var
 echo "TRUST_WITHOUT_VISIT=$TRUST_WITHOUT_VISIT && export TRUST_WITHOUT_VISIT	# Disable/enable VisIt" 	>> $var
 echo "TRUST_DOWNLOAD_VISIT=$TRUST_DOWNLOAD_VISIT && export TRUST_DOWNLOAD_VISIT 	# Download or build VisIt" >> $var
@@ -293,6 +310,20 @@ cd env
 ./configurer_env $clean || exit -1
 cd ..
 source ./env_TRUST.sh 1>/dev/null 2>&1
+
+###############################################
+# Verification des performances de TRUST_TMP #
+###############################################
+if [ "$TRUST_DISABLE_CHECKS" = 0 ]
+then
+   dd.ksh -speed $TRUST_TMP -silent
+   if [ $? != 0 ]
+   then
+      echo "TRUST_TMP=$TRUST_TMP"
+      echo "Please, specify a directory for the TRUST_TMP variable in the $perso file"
+      echo "in order to have good performances for TRUST." 
+   fi
+fi
 
 ##########################################
 # Creation d'un Makefile sous $TRUST_ROOT

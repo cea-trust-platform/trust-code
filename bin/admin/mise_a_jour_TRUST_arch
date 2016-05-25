@@ -412,7 +412,7 @@ do
       ##############################
       # MEDCOUPLING est il compile ?
       ##############################
-      if [ -f $TRUST_MEDCOUPLING_ROOT/lib/libParaMEDMEM.a ]
+      if [ -f $TRUST_MEDCOUPLING_ROOT/lib/libmedcoupling.a ]
       then
 	 echo "MEDCOUPLING=OK"
       else 
