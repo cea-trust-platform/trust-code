@@ -139,7 +139,8 @@ void Periodique::completer()
   // Creation d'un tableau qui donne, pour chaque face virtuelle des frontieres (toutes frontieres)
   // l'indice de la face dans la frontiere periodique courante (-1 sinon)
   const int nb_faces_front_tot = tab_face_associee.size_totale();
-  ArrOfInt index(nb_faces_front_tot, -2);
+  ArrOfInt index(nb_faces_front_tot);
+  index= -2;
   const int nb_faces_zone = zone_Cl_dis().zone_dis().valeur().face_sommets().dimension(0);
   for (i = 0; i < nb_faces_virt; i++)
     {

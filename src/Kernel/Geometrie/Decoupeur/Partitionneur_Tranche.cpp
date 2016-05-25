@@ -226,7 +226,8 @@ void Partitionneur_Tranche::construire_partition(ArrOfInt& elem_part, int& nb_pa
 
   // Nombre d'elements dans chaque partie
   //  (initialisation: une partie contenant nb_elem elements)
-  ArrOfInt nb_elem_part(1, nb_elem);
+  ArrOfInt nb_elem_part(1);
+  nb_elem_part= nb_elem;
 
   // Dans l'ordre croissant des parties, liste des elements
   // contenus dans la partie

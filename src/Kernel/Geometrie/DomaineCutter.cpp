@@ -760,7 +760,7 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie,
   ArrOfInt faces_pe_voisins;
   // Pour chaque processeur, nombre de faces de joint avec ce proc.
   // (on initialise a zero)
-  ArrOfInt nb_faces_joints(nb_parties_, 0);
+  ArrOfInt nb_faces_joints(nb_parties_);
   {
     faces_joints.set_smart_resize(1);
     faces_pe_voisins.set_smart_resize(1);
@@ -911,7 +911,7 @@ void  calculer_listes_elements_sous_domaines(const ArrOfInt& elem_part,
                                              const int nb_parts,
                                              Static_Int_Lists& liste_elems_sous_domaines)
 {
-  ArrOfInt sizes(nb_parts, 0);
+  ArrOfInt sizes(nb_parts);
   // Premier passage : comptage
   int i;
   const int nbelem = elem_part.size_array();
@@ -1150,7 +1150,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const int binaire, ArrOfIn
   DomaineCutter_Correspondance dc_correspondance;
 
   // Build temp arrays to eventually reorder the partition numbering
-  ArrOfInt ia(nb_parties_+1,0);
+  ArrOfInt ia(nb_parties_+1);
   ArrOfInt ja;
   ja.set_smart_resize(1);
   int nnz=0;

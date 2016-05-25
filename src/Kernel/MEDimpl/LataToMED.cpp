@@ -187,7 +187,7 @@ Entree& latatoother::interpreter(Entree& is)
   is >>format_post_supp>> nom_lata>>nom_fic ;
 
   // Creation d'un sous-groupe contenant uniquement le processeur maitre
-  ArrOfInt liste_pe(1, 0);
+  ArrOfInt liste_pe(1);
   DERIV(Comm_Group) group;
   // on se met en non axi le temps de la conversion
   int axi_sa=axi;

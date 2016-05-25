@@ -1516,7 +1516,8 @@ ajouter_contribution_som(const DoubleTab& inconnue,const DoubleVect& porosite_fa
   int n_bord=0;
   int num1=0,num2=0;
 
-  DoubleTab coeff_perio(nb_faces_tot,1.);
+  DoubleTab coeff_perio(nb_faces_tot);
+  coeff_perio=1.;
   for (n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);

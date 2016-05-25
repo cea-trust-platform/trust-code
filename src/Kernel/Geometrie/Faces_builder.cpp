@@ -857,9 +857,11 @@ static void echanger_tableau_aretes(const IntTab& elem_aretes, int nb_aretes_ree
   //  les processeurs qui ont un element adjacent a cette arete).
 
   // Tableau permettant de connaitre le processeur proprietaire d'une arete reele
-  ArrOfInt pe_arete(nb_aretes_reelles, moi);
+  ArrOfInt pe_arete(nb_aretes_reelles);
+  pe_arete= moi;
   // Tableau qui donne, pour chaque element, le processeur proprietaire
-  IntVect pe_elem(nb_elem_tot, moi); // initialise avec "moi"
+  IntVect pe_elem(nb_elem_tot);
+  pe_elem= moi; // initialise avec "moi"
   {
     pe_elem.set_md_vector(elem_aretes.get_md_vector());
     pe_elem.echange_espace_virtuel();
@@ -975,7 +977,8 @@ void Zone::creer_aretes()
     ArrOfInt chaine_aretes_sommets;
     chaine_aretes_sommets.set_smart_resize(1);
     // Indice de la premiere arete attachee a chaque sommet dans chaine_aretes_sommets
-    ArrOfInt premiere_arete_som(nb_som_tot(), -1);
+    ArrOfInt premiere_arete_som(nb_som_tot());
+    premiere_arete_som= -1;
     ArrOfInt tab_elem(nbsom_elem);
 
     for (int i_elem = 0; i_elem < nbelem_tot; i_elem++)
@@ -1031,7 +1034,8 @@ void Zone::creer_aretes()
   {
     // Pour chaque arete, indice du processeur proprietaire de l'arete
     const int moi = Process::me();
-    ArrOfInt pe_aretes(n_aretes_tot, moi);
+    ArrOfInt pe_aretes(n_aretes_tot);
+    pe_aretes=moi;
     echanger_tableau_aretes(Elem_Aretes, nb_aretes_reelles, pe_aretes);
 
     // Pour chaque arete, indice de l'arete sur le processeur proprietaire
@@ -1058,7 +1062,8 @@ void Zone::creer_aretes()
     array_trier_retirer_doublons(pe_voisins);
 
     int nb_voisins = pe_voisins.size_array();
-    ArrOfInt indices_pe(nproc(), -1);
+    ArrOfInt indices_pe(nproc());
+    indices_pe= -1;
     for (int i = 0; i < nb_voisins; i++)
       indices_pe[pe_voisins[i]] = i;
 

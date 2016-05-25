@@ -51,7 +51,7 @@ void construire_connectivite_som_elem(const int       nb_sommets,
 
   // Construction d'un tableau initialise a zero : pour chaque sommet,
   // nombre d'elements voisins de ce sommet
-  ArrOfInt nb_elements_voisins(nb_sommets, 0);
+  ArrOfInt nb_elements_voisins(nb_sommets);
 
   // Premier passage : on calcule le nombre d'elements voisins de chaque
   // sommet pour creer la structure de donnees

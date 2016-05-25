@@ -150,7 +150,8 @@ int Reordonner_faces_periodiques::reordonner_faces_periodiques(const Domaine& do
   // est decale de direction_perio).
 
   // Pour chaque face, son nouvel indice dans le tableau des faces
-  ArrOfInt renum_faces(nb_faces, -1);
+  ArrOfInt renum_faces(nb_faces);
+  renum_faces= -1;
   ArrOfInt nodes_list;
   nodes_list.set_smart_resize(1);
   ArrOfDouble coord(dim);

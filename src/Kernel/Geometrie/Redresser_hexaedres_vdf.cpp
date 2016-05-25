@@ -74,7 +74,7 @@ Entree& Redresser_hexaedres_vdf::interpreter_(Entree& is)
       // direction indique la coordonnee qu'on va corriger
       for (int direction = 0; direction < dimension; direction++)
         {
-          ArrOfInt marqueurs(nb_sommets, 0); // initialise a zero
+          ArrOfInt marqueurs(nb_sommets); // initialise a zero
           ArrOfInt liste_sommets;
           liste_sommets.set_smart_resize(1);
           int prochain_sommet = 0;
