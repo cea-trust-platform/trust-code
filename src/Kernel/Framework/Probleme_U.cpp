@@ -360,7 +360,9 @@ bool  Probleme_U::updateGivenFields()
 bool Probleme_U::run()
 {
   // Force the post process task at the beginning of the run
+  Cerr<<"First postprocessing, this can take some minutes"<<finl;
   postraiter(1);
+  Cerr<<"First postprocessing OK"<<finl;
 
   bool stop=false; // Does the Problem want to stop ?
   bool ok=true; // Is the time interval successfully solved ?

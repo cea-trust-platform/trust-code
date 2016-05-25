@@ -1,0 +1,2 @@
+  sed "s/optimisation_sous_maillage yes/optimisation_sous_maillage no/"  Optimisation_force.data  > Optimisation_no.data
+  sed "s/optimisation_sous_maillage yes//"  Optimisation_force.data  > Optimisation_default.data
