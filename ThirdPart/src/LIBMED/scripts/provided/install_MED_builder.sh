@@ -38,11 +38,11 @@ check_versions_compatibility
 
 # building MED's installer
 case "x_${TRUST_HDF_LOCATION}_${TRUST_HDF_VERSION}_${TRUST_MED_LOCATION}_${TRUST_MED_VERSION}_x" in
-    "x_internal_1.8_internal_3.2_x") install="install_MED 3.2 internal 1.8 internal" ;;
+    "x_internal_1.8_internal_3_x") install="install_MED 3 internal 1.8 internal" ;;
     "x_internal_1.6_internal_2.3_x") install="install_MED 2.3 internal 1.6 internal" ;;
-    "x_external_1.8_internal_3.2_x") install="install_MED 3.2 internal 1.8 external" ;;
+    "x_external_1.8_internal_3_x") install="install_MED 3 internal 1.8 external" ;;
     "x_external_1.6_internal_2.3_x") install="install_MED 2.3 internal 1.6 external" ;;
-    "x_external_1.8_external_3.2_x") install="install_MED 3.2 external 1.8 external" ;;
+    "x_external_1.8_external_3_x") install="install_MED 3 external 1.8 external" ;;
     "x_external_1.6_external_2.3_x") install="install_MED 2.3 external 1.6 external" ;;
     *) raise_invalid_MED_configuration_exception "${TRUST_HDF_VERSION}" "${TRUST_HDF_LOCATION}" "${TRUST_MED_VERSION}" "${TRUST_MED_LOCATION}" ;;
 esac
