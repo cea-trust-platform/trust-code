@@ -151,7 +151,7 @@ int Partitionneur_base::calculer_graphe_connexions_periodiques(const Zone& zone,
 {
   const int nb_elem = zone.nb_elem();
   // Pour chaque element, combient a-t-il de faces periodiques ?
-  ArrOfInt nb_faces_perio(nb_elem, 0);
+  ArrOfInt nb_faces_perio(nb_elem);
   // Liste de correspondances element0 <=> element1
   // entre l'element voisin d'une face et l'element voisin de la face periodique opposee
   IntTab correspondances(0,2);
@@ -424,11 +424,12 @@ int Partitionneur_base::corriger_multiperiodique(const Domaine& domaine,
   // Pour chaque sommet periodique, selectionner une partie a laquelle il appartient
   // (la plus petite parmi les parties des elements periodiques adjacents)
   // Initialise a -1
-  ArrOfInt partie_associee(nb_som, -1);
+  ArrOfInt partie_associee(nb_som);
+  partie_associee= -1;
   // Pour chaque sommet, a quel(s) bords periodiques appartient-il
   // (somme de 2^n ou n est l'indice du nom du bord dans la liste des bords periodiques)
   // Initialise a 0
-  ArrOfInt marqueur_bord(nb_som, 0);
+  ArrOfInt marqueur_bord(nb_som);
 
   const int nb_bords_perio = liste_bords_perio.size();
   int deux_puissance_i_bord = 1;

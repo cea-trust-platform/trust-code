@@ -541,7 +541,7 @@ int reverse_send_recv_pe_list(const ArrOfInt& src_list, ArrOfInt& dest_list)
   const int np = grp.nproc();
   assert(src_list.size_array() == 0 || max_array(src_list) < np);
   assert(src_list.size_array() == 0 || min_array(src_list) >= 0);
-  ArrOfInt flag(np, 0);
+  ArrOfInt flag(np);
   int i;
   const int src_size = src_list.size_array();
   for (i = 0; i < src_size; i++)

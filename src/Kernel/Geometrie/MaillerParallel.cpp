@@ -776,7 +776,8 @@ Entree& MaillerParallel::interpreter(Entree& is)
     }
   data.xmax_tot_ = nb_noeuds;
 
-  ArrOfInt nblocs(3, 1);
+  ArrOfInt nblocs(3);
+  nblocs= 1;
   for (int i = 0; i < 3; i++)
     {
       if (i_premier_element[i] < 0)

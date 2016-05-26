@@ -453,7 +453,7 @@ void Refine_Mesh::build_incidence_from_node_to_edges(int            nb_nodes,
   const int nb_edges          = nodes_of_edges.dimension(0);
   const int nb_nodes_per_edge = nodes_of_edges.dimension(1);
 
-  ArrOfInt nb_incident_edges(nb_nodes, 0);
+  ArrOfInt nb_incident_edges(nb_nodes);
 
   for (int edge=0; edge<nb_edges; ++edge)
     {

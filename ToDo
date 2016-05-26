@@ -1,26 +1,23 @@
 Version	Qui				Tache
-1.7.3   triou@cea.fr            Mettre a jour le script install de visit avec TRUST_DOWNLOAD_VISIT (pas necessairement sequentiel)
-1.7.3   triou@cea.fr            baltik: renommer make check_trio_optim en make check_trust_optim
-1.7.3   triou@cea.fr            revoir host visit sur CCRT avec configuration sub_file de Gauthier
+1.7.3   triou@cea.fr            VisIt, deplacer de bin/visit dans exec/visit/bin/visit + maj du PATH dans TRUST.env et mise_a_jour_TRUST_arch
+1.7.4   triou@cea.fr            baltik: renommer make check_trio_optim en make check_trust_optim
+1.7.4   triou@cea.fr            revoir host visit sur CCRT avec configuration sub_file de Gauthier
 1.7.3   triou@cea.fr            revoir l utilisation de dt_impr_ustar et dt_impr_ustar_mean_only ensemble
-1.7.3   triou@cea.fr            revoir build dans tmp, visit dans exec et verif clean du config et du make
 1.7.3   triou@cea.fr            revoir tuto salome de TRUST sans mailleur Netgen mais mg4furf2D ou mgtetra en 3D + supprimer Xprepro
 1.7.3   gauthier.fauchet@cea.fr  modification pour initialisation des tableaux A(1,1.0) ou A(1,1)
 1.7.3   gauthier.fauchet@cea.fr  Reprendre Mod_turb_hyd_base.cpp limitation mut
 1.7.3   gauthier.fauchet@cea.fr  Revoir le PATH pour module load TRUST sous occigen (passer par SET)
-1.7.3   triou@cea.fr            proposer un tutorial ICoCo
+1.7.4   triou@cea.fr            proposer un tutorial ICoCo
 1.7.3   triou@cea.fr            Passer en job de soumission mise_a_jour_TRUST_arch sur cluster pour eviter de charger les frontales
-1.7.3   triou@cea.fr            Passer a la version Petsc 3.6... et revoir euclid + doc
-1.7.3   triou@cea.fr            Analyser le fichier de sortie datafile_petsc.TU (signification de count)
+1.7.4   triou@cea.fr            Analyser le fichier de sortie datafile_petsc.TU (signification de count)
 1.7.3   gauthier.fauchet@cea.fr revoir le TRUST env qui teste beaucoup de chose (ex: dd.ksh,...) et trop long pour utilisateur
 1.7.3   triou@cea.fr            completer benchmark avec et sans Petsc
-1.7.3   triou@cea.fr            Avoir un fichier avec la liste des fichiers deleted sur git pour faire un rm a distance
-1.7.3   triou@cea.fr            revoir TESTS_MINIMUM dans lance_test en augmentant le nombre de tests 27/27
-1.7.3	triou@cea.fr		Do a git tag on each change of the branch patch_XYZ (patch_XYZ.n)
+1.7.4   triou@cea.fr            Avoir un fichier avec la liste des fichiers deleted sur git pour faire un rm a distance
+1.7.4   triou@cea.fr            revoir TESTS_MINIMUM dans lance_test en augmentant le nombre de tests 27/27
+1.7.4	triou@cea.fr		Do a git tag on each change of the branch patch_XYZ (patch_XYZ.n)
 1.7.3   gauthier.fauchet@cea.fr  Rechercher test MPIIO qui planterait sur machine Areva (tester sur occigen => MPIIO plante sur upwind en sequentiel)
-1.7.3   triou@cea.fr            Gauthier a demande d ajouter test Execute_parallel lors du configure pour verifier l'installation MPI
-1.7.3   triou@cea.fr            au changement de version de VisIt, deplacer de bin/visit dans exec/visit/bin/visit + maj du PATH dans TRUST.env et mise_a_jour_TRUST_arch
-1.7.3   triou@cea.fr            Probleme avec pre-commit et post-commit qui modifie des fichiers lors du commit apres nos tests !!! Le faire lors du compile et si modif alors arret...
+1.7.4   triou@cea.fr            Gauthier a demande d ajouter test Execute_parallel lors du configure pour verifier l'installation MPI
+1.7.4   triou@cea.fr            Probleme avec pre-commit et post-commit qui modifie des fichiers lors du commit apres nos tests !!! Le faire lors du compile et si modif alors arret...
 1.7.0	triou@cea.fr		Champ_front_normal voir d'autres ne devrait pas heriter de Ch_front_var_instationnaire_dep (notion d'inconnue) ?
 1.7.0	triou@cea.fr		add_if_not dans Ch_base.cpp lent ?
 1.7.0	triou@cea.fr		Essayer de calculer auto direction quand la periodicite n'est pas orthogonale aux bords (eg: Canal_perio_incline_VEF) ?

@@ -369,7 +369,7 @@ void Debog_Pb::read_geometry_data()
     // Il faut passer dans un groupe monoprocesseur pour Domaine::readOn:
     {
       DERIV(Comm_Group) group;
-      ArrOfInt liste_procs(1, 0); // Liste de 1 processeur contenant le proc 0
+      ArrOfInt liste_procs(1); // Liste de 1 processeur contenant le proc 0
       PE_Groups::create_group(liste_procs, group, 1);
       if (PE_Groups::enter_group(group.valeur()))
         {

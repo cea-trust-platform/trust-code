@@ -194,7 +194,7 @@ void Champ_implementation_P1::init_from_file(DoubleTab& val, const Domaine& dom,
   ArrOfInt node_list;
   node_list.set_smart_resize(1);
 
-  ArrOfInt count(dom.nb_som(), 0); // number of times this coordinate has been found
+  ArrOfInt count(dom.nb_som()); // number of times this coordinate has been found
 
   for (int i_val = 0; i_val < nb_val_lues; i_val++)
     {

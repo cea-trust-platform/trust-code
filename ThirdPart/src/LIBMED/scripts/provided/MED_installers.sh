@@ -103,7 +103,6 @@ install_MED() {
     export TRUST_MED_HDF_INSTALL
     export TRUST_MED_HDF_ARCHIVES
     
-    # Python cause MED 3.2.7 build fail with some incomplete Python install 
     env=$TRUST_ROOT/exec/python/env.sh
     #[ -f $env ] && source $env
     # Vu sur Ubuntu 12.04 (is213120) sh pointe vers un dash et non bash, donc le makefile faisant sh
@@ -120,7 +119,7 @@ install_MED() {
     then
 	# defining the MED archive
 	case "x_${MED_version}_x" in
-	    "x_3.2_x") MED_archive="med-3.2.0"     ;;
+	    "x_3_x") MED_archive="med-3.2.0"     ;;
 	    "x_2.3_x") MED_archive="med-2.3.6"     ;;
 	    *) raise_invalid_MED_version_exception ;;
 	esac

@@ -487,7 +487,7 @@ static void creer_md_vect_renum(const IntVect& renum, const MD_Vector_std& src, 
   ArrOfInt dest_items_send_index;
   dest_items_send_index.resize_array(nb_pe_voisins + 1, Array_base::NOCOPY_NOINIT);
   ArrOfInt dest_items_send_data;
-  ArrOfInt nb_items_to_items(nb_pe_voisins, 0); // Initialise a zero
+  ArrOfInt nb_items_to_items(nb_pe_voisins); // Initialise a zero
 
   // Allocation d'une taille par borne superieure:
   dest_items_send_data.resize_array(src.items_to_send_.get_data().size_array(), Array_base::NOCOPY_NOINIT);

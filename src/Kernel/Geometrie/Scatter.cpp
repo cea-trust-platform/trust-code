@@ -1926,7 +1926,7 @@ void Scatter::calculer_espace_distant_elements(Domaine& dom)
   // Remplissage : la structure n'est utilisee que si l'epaisseur de joint est > 1
   if (epaisseur_joint > 1)
     {
-      ArrOfInt count(dom.nb_som(), 0);
+      ArrOfInt count(dom.nb_som());
       // Etape 1 : avec combien de processeurs chaque sommet est-il partage ?
       for (int ijoint = 0; ijoint < nbjoints; ijoint++)
         {
