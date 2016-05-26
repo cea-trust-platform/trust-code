@@ -1,4 +1,4 @@
-Notes for Eclipse with TRUST (21/07/2015)
+Notes for Eclipse with TRUST (02/05/2016)
 -----------------------------------------
 
 ######################################
@@ -8,32 +8,35 @@ Notes for Eclipse with TRUST (21/07/2015)
 Download
 ========
 > Go to the website of the Eclipse Foundation: http://www.eclipse.org/downloads/
-> Select Eclipse for Parallel Application Developers Linux 64 Bit
-> Download the eclipse-parallel-mars-1-linux-gtk-x86_64.tar.gz file in your directory
+> Select the Foundation Eclipse Application
+> Select Eclipse for Linux 64 Bit (example: Parallel Application Developers)
+> Download the eclipse-*-linux*64.tar.gz package in your directory
 
 Installation
 ============
-> cd /export/home/login
-> gunzip eclipse-parallel-mars-1-linux-gtk-x86_64.tar.gz
-> tar xvf eclipse-parallel-mars-1-linux-gtk-x86_64.tar
-> rm  eclipse-parallel-mars-1-linux-gtk-x86_64.tar
-> cd eclipse
+> cd /export/home/login/...
+> tar xvfz eclipse-*.tar.gz
+> cd <eclipse_install>
 
 Configuration
 =============
-> Change the end of the eclipse.ini file
-> vi eclipse.ini
-org.eclipse.platform
+> Change the END of the eclipse.ini file
+> Add or modify in eclipse.ini
 --launcher.XXMaxPermSize
 256m
 --launcher.defaultAction
 openFile
---launcher.appendVmargs
 -vmargs
 -Dosgi.requiredJavaVersion=1.7
+-Dhelp.lucene.tokenizer=standard
+-XX:PermSize=256m
 -XX:MaxPermSize=1024m
+-XX:+UseParallelGC
+-Xmn256m
+-Xss2m
 -Xms512m
 -Xmx2048m
+-server
 
 Launching
 =========
@@ -43,22 +46,23 @@ Launching
   => Welcome: close X
 > File/New/C++ Project 
   => Profect name: TRUST_X.Y.Z
-  => Use default location
-  => Project type: Executable/Empty Project
+  => Use default location 
+  => Project type: Executable --> Empty Project
   => Toolchains: Linux GCC
   => Finish
 > Project Explorer
-  Right click TRUST_X-Y-Z/Import...
-  => General/File System
+  Right click TRUST_X-Y-Z --> Import...
+  => General --> File System
   => Next 
-  => From directory: /data/tmpletr/triou/installations/TRUST_X.Y.Z/OS_machine/TRUST_X.Y.Z/src
+  => From directory: $TRUST_ROOT/src
   => Select All  
   => Into folder: TRUST_X.Y.Z
   => Advanced: check Create links in workspace 
   => Finish 
 > Project Explorer
-  Right click TRUST_X.Y.Z/Properties
+  Right click TRUST_X.Y.Z --> Properties
   => Builders: not check CDT Builder => OK
+  => OK
   => OK
   => Wait to have 100% at the bottom right corner of the window.
 > File/Exit
@@ -70,35 +74,91 @@ Launching
 
 Configuration
 ============= 
-> cd eclipse
-> source /data/tmpletr/triou/installations/TRUST_X.Y.Z/OS_machine/TRUST_X.Y.Z/env_TRUST.sh
+> cd <eclipse_install>
+> source $TRUST_ROOT/env_TRUST.sh
 > ./eclipse &
 > Project Explorer
-  Right click TRUST_X.Y.Z/Debug As/Debug configurarions...
+  Right click TRUST_X.Y.Z --> Debug As --> Debug configurations...
   => Select C/C++ Application
   => Press the 'New' button to create a configuration of the selected type
-  => Main: C/C++ Application:  /data/tmpletr/triou/installations/TRUST_X.Y.Z/OS_machine/TRUST_X.Y.Z/exec/TRUST_mpi
-  => Arguments: not check Use default working directory
-  => Debugger: Main options GDB debugger: replace gdb by /usr/bin/gdb
-  => Close => Save Changes Yes
+  => Main --> C/C++ Application: $TRUST_ROOT/exec/TRUST_mpi
+  => Arguments --> not check Use default working directory
+  => Debugger--> Main options GDB debugger --> replace gdb by /usr/bin/gdb
+  => Apply
+  => Close
 
 View debug
 ==========
-> Window/Perspective/Open Perspective/Debug
+> Window --> Perspective --> Open Perspective --> Debug
   => New button at the top right of the window: view Debug side view C/C++
 
 Case selection
 ==============
-> Run/Debug configurations
+> Run --> Debug configurations
   => Select C/C++ application TRUST_X.Y.Z Debug
-  => Arguments: Program arguments: datafile               (for example Cx)
+  => Arguments: Program arguments: datafile               (for example datafile=Cx)
   =>            Working directoty: /export/home/login/... (for example /export/home/login/Cx : folder of Cx test case in your home-directories)
-  => Close => Save Changes Yes
+  => Apply
+  => Debug
 
 Launching
 =========
 > Run/Debug (F11)         (Wait to have 100% on the bottom right corner of the window)
 > Run/Resume (F8)
 > Run/Terminate (Ctrl+F2)
+> File/Exit
+
+
+###################################
+# Launch a calculation in Baltik  #
+###################################
+
+Configuration
+============= 
+> cd <eclipse_install>
+> source $Baltik_ROOT/env_Baltik.sh or source $Baltik_ROOT/full_Baltik.sh 
+> ./eclipse &
+> File/New/C++ Project 
+  => Profect name: Baltik
+  => Use default location 
+  => Project type: Executable --> Empty Project
+  => Toolchains: Linux GCC
+  => Finish
+> Project Explorer
+  Right click Baltik --> Import...
+  => General --> File System
+  => Next 
+  => From directory: $Baltik_ROOT/src
+  => Select All  
+  => Into folder: Baltik
+  => Advanced: check Create links in workspace 
+  => Finish 
+> Project Explorer
+  Right click Baltik --> Properties
+  => Builders: not check CDT Builder => OK
+  => OK
+  => Wait to have 100% at the bottom right corner of the window.
+> Project Explorer
+  Right click Baltik --> Debug As --> Debug configurarions...
+  => Select C/C++ Application
+  => Press the 'New' button to create a configuration of the selected type
+  => Main --> C/C++ Application: $Baltik_ROOT/Baltik
+  => Arguments --> not check Use default working directory
+  => Debugger--> Main options GDB debugger --> replace gdb by /usr/bin/gdb
+  => Apply
+  => Close
+
+Case selection
+==============
+> Run --> Debug configurations
+  => Select C/C++ application Baltik Debug
+  => Arguments: Program arguments: datafile               (for example datafile=Cx)
+  =>            Working directoty: /export/home/login/... (for example /export/home/login/Cx : folder of Cx test case in your home-directories)
+  => Apply
+  => Debug
+
+Launching
+=========
+> Run/Debug (F11)         (Wait to have 100% on the bottom right corner of the window)
 > File/Exit
 

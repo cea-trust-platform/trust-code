@@ -66,7 +66,8 @@ define_soumission_batch()
    #prod_E5-2680v2    up   infinite      3    mix
    #prod_E5-2670      up   infinite      3    mix
    #lila              up   infinite      2    mix
-   queue=prod
+   #queue=prod #NB benchmark KO with prod_E5-2680v2 and prod_E5-2670 so queue=prod_X5675
+   queue=prod_X5675
    #if [ "`basename $Mpirun`" = srun ]
    #then
    #   # Slurm srun support

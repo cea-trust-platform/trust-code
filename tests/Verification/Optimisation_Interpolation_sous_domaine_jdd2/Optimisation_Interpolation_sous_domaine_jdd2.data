@@ -1,0 +1,153 @@
+# Hydraulique 2D : Poiseuille 2D #
+# PARALLEL OK #
+# U(y)=|dP/dx|*Dh²/2/mu*(1-y²/Dh²) #
+# Valeurs prises pour trouver Uc=10m/s, Re=26.6666 #
+# P2-P1=20Pa, Dh=0.5, rho=2kg/m3, U(y)= 10*(1-4*y²) #
+dimension 2
+Pb_hydraulique_concentration pb
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+        Pave Entree
+                {
+                Origine 0. -0.5
+                Nombre_de_Noeuds  11 11
+                Longueurs 1. 1.
+                }
+                {
+                bord Entree X = 0.    -0.5 <= Y <= 0.5
+                bord Haut   Y = 0.5    0.  <= X <= 1.
+                bord Bas    Y = -0.5   0.  <= X <= 1.
+                bord Sortie X = 1.    -0.5 <= Y <= 0.5
+                }
+}
+Trianguler_h dom
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+	Partition_tool tranche { tranches 1 2 }
+	Larg_joint 2
+	zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+
+
+
+VEFPrep1b dis
+
+Scheme_euler_explicit sch
+Read sch
+{
+	tinit 0
+	nb_pas_dt_max 3
+	tmax 2.
+	dt_min 0.0001
+	dt_max 0.1
+	dt_sauv 100
+	seuil_statio 1.e-5
+	dt_impr 0.1
+}
+
+
+Fluide_Incompressible fluide
+Read fluide
+{
+	mu  Champ_Uniforme 1 0.25
+	rho Champ_Uniforme 1 2.
+}
+Constituant c1
+Lire c1
+{
+	coefficient_diffusion Champ_Uniforme 1 0.5e-9
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+associate pb c1
+Discretize pb dis
+
+
+
+domaine corei
+
+extraire_domaine { domaine corei probleme pb
+Condition_elements (y>0.25) }
+
+
+# La convection est neglige, car les resultats sont mauvais #
+Read pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP  { precond ssor { omega 1.65 } seuil 1e-12 impr }
+		convection { negligeable }
+		diffusion { }
+		initial_conditions { vitesse Champ_Uniforme 2 0. 0. }
+		boundary_conditions
+		{
+			Haut 	paroi_fixe
+			Bas 	paroi_fixe
+			Entree 	frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 20.
+			Sortie 	frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+		}
+	}
+	Convection_Diffusion_Concentration
+	{
+		convection { amont }
+		diffusion { }
+		initial_conditions { concentration Champ_fonc_xyz dom 1 x*y  }
+		boundary_conditions
+		{
+			Haut 	paroi
+			Bas 	paroi
+			Entree 	frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 1.
+			Sortie 	frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 0.
+		}
+	}
+	Post_processing
+	{
+		Definition_champs {
+         c_reduit_champ Interpolation 
+                                            { optimisation_sous_maillage no domaine corei localisation faces source refchamp { Pb_champ pb concentration } } 
+}
+	format lml
+	domaine corei
+		fields dt_post 1.
+		{
+			c_reduit_champ som
+		}
+	}
+	Post_processings
+{
+       probes 
+{
+		Definition_champs {
+         c_reduit Interpolation 
+                                            { optimisation_sous_maillage no domaine corei localisation faces source refchamp { Pb_champ pb concentration } } 
+	d_max  Reduction_0D { methode max sources_reference { c_reduit } }
+                             
+             d_moy Reduction_0D { methode moyenne_ponderee sources_reference { c_reduit } }
+}
+		Probes
+		{ 
+		d_max d_max periode 1e-12 numero_elem_sur_maitre 0
+		d_moy d_moy periode 1e-12 numero_elem_sur_maitre 0	
+		} 
+			 
+	
+} 
+}
+}
+Solve pb
+End
+

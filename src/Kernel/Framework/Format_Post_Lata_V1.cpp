@@ -196,13 +196,13 @@ int Format_Post_Lata_V1::ecrire_faces_lata_V1(const Nom& basename,
         decalage_faces = 1;
       }
     nb_faces_tot = Format_Post_Lata::write_inttab(fichier_geom,
-                                                  decal,
+                                                  1, decal,
                                                   faces,
                                                   nb_col,
                                                   option);
 
     Format_Post_Lata::write_inttab(fichier_geom,
-                                   decalage_faces,
+                                   1, decalage_faces,
                                    elem_faces,
                                    nb_col,
                                    option);
@@ -229,7 +229,7 @@ int Format_Post_Lata_V1::ecrire_faces_lata_V1(const Nom& basename,
         IntTab data(1,2);
         data(0, 0) = decalage_faces;
         data(0, 1) = faces.dimension(0);
-        Format_Post_Lata::write_inttab(fichier_champ, 0 /* ne pas ajouter de decalage */,
+        Format_Post_Lata::write_inttab(fichier_champ,0,  0 /* ne pas ajouter de decalage */,
                                        data, nb_col, option);
       }
     }
@@ -368,11 +368,11 @@ int Format_Post_Lata_V1::ecrire_domaine_lata_V1(const Nom& id_domaine,
                 elem2(i,j + nsomelem) = s + decalage_z1;
               }
           }
-        Format_Post_Lata::write_inttab(fichier_geom, decalage_sommets, elem2, nb_col, option);
+        Format_Post_Lata::write_inttab(fichier_geom, 1,decalage_sommets, elem2, nb_col, option);
       }
     else
       {
-        Format_Post_Lata::write_inttab(fichier_geom, decalage_sommets, elements, nb_col, option);
+        Format_Post_Lata::write_inttab(fichier_geom, 1,decalage_sommets, elements, nb_col, option);
       }
   }
   // En mode parallele, on ecrit en plus des fichiers contenant les donnees paralleles
@@ -409,7 +409,7 @@ int Format_Post_Lata_V1::ecrire_domaine_lata_V1(const Nom& id_domaine,
         IntTab data(1,2);
         data(0, 0) = decalage_sommets;
         data(0, 1) = sommets.dimension(0);
-        Format_Post_Lata::write_inttab(fichier_champ, 0 /* ne pas ajouter de decalage */,
+        Format_Post_Lata::write_inttab(fichier_champ,0, 0 /* ne pas ajouter de decalage */,
                                        data, nb_col, option);
       }
 
@@ -427,7 +427,7 @@ int Format_Post_Lata_V1::ecrire_domaine_lata_V1(const Nom& id_domaine,
         IntTab data(1,2);
         data(0, 0) = decalage_elements;
         data(0, 1) = elements.dimension(0);
-        Format_Post_Lata::write_inttab(fichier_champ, 0 /* ne pas ajouter de decalage */,
+        Format_Post_Lata::write_inttab(fichier_champ,0, 0 /* ne pas ajouter de decalage */,
                                        data, nb_col, option);
       }
     }

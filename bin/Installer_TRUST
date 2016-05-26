@@ -34,12 +34,10 @@ do
   fi
   opt=""
 done
-
-
-
  
    # Vu sur Ubuntu 13.04: Probleme de compilation m4 pour compiler bison -> bison prerequis
-   [ "`grep 'Ubuntu 13.04' /etc/issue 2>/dev/null`" != "" ] && [ ! -f /usr/bin/bison ] && echo "You need bison installed." 	&& prerequis=0
+   #[ "`grep 'Ubuntu 13.04' /etc/issue 2>/dev/null`" != "" ] && [ ! -f /usr/bin/bison ] && echo "You need bison installed." 	&& prerequis=0
+ 
    [ $prerequis = 0 ] && echo "Install and restart the operation." && exit -1
 }
 
@@ -331,24 +329,27 @@ fi
 #########################################
 # Regarde la place disponible et previent
 #########################################
-echo | tee -a $LOG
-echo "The disc is checked:" | tee -a $LOG
-# Check disk space:
-export LANG=C
-chmod +w $TRUST_ROOT/bin/KSH/dd.ksh
-$TRUST_ROOT/bin/KSH/dd.ksh -space
-if [ $? != 0 ]
+if [ "$TRUST_DISABLE_CHECKS" = 0 ]
 then
-   $TRUST_ROOT/bin/KSH/dd.ksh -space 1>>$LOG 2>&1
-   exit -1
-fi
-# Check disk speed:
-$TRUST_ROOT/bin/KSH/dd.ksh -speed
-if [ $? != 0 ]
-then
-   $TRUST_ROOT/bin/KSH/dd.ksh -speed 1>>$LOG 2>&1
-   # Disc too slow on SESI /soft so we bypass:
-   [ "`echo $HOME | grep /soft/`" = "" ] && exit -1
+   echo | tee -a $LOG
+   echo "The disc is checked:" | tee -a $LOG
+   # Check disk space:
+   export LANG=C
+   chmod +w $TRUST_ROOT/bin/KSH/dd.ksh
+   $TRUST_ROOT/bin/KSH/dd.ksh -space
+   if [ $? != 0 ]
+   then
+      $TRUST_ROOT/bin/KSH/dd.ksh -space 1>>$LOG 2>&1
+      exit -1
+   fi
+   # Check disk speed:
+   $TRUST_ROOT/bin/KSH/dd.ksh -speed
+   if [ $? != 0 ]
+   then
+      $TRUST_ROOT/bin/KSH/dd.ksh -speed 1>>$LOG 2>&1
+      # Disc too slow on SESI /soft so we bypass:
+      [ "`echo $HOME | grep /soft/`" = "" ] && exit -1
+   fi
 fi
 
 #####################

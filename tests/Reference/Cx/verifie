@@ -1,5 +1,5 @@
 # Verification du fichier de decoupage sur veymont
-if [ $HOST = $TRUST_HOST_ADMIN ] && [ -f decoupage.metis ]
+if [ $HOST = $TRUST_HOST_ADMIN ] && [ -f decoupage.metis ] && [ -f Cx.metis ]
 then
    diff Cx.metis decoupage.metis 1>/dev/null 2>&1
    [ $? != 0 ] && echo "Metis partitionning has changed!" && exit -1

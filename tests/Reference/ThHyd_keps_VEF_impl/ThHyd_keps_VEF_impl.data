@@ -89,7 +89,7 @@ Read sch
    {
       seuil_convergence_implicite 1e-5
       seuil_convergence_solveur 1e-9
-      solveur PETSC BICGSTAB { precond ilu { level 1 } seuil 1.e-9 impr }
+      solveur PETSC BICGSTAB { precond pilut { level 20 epsilon 0.01 } seuil 1.e-9 impr }
    }
    facsec 30.	 
    facsec_max 30.	 

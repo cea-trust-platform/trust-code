@@ -49,7 +49,7 @@ class Champ_Generique_Interpolation : public Champ_Gen_de_Champs_Gen
 public:
   void reset();
   void set_param(Param& param);
-  int lire_motcle_non_standard(const Motcle&, Entree&);
+  //int lire_motcle_non_standard(const Motcle&, Entree&);
   virtual int     set_localisation(const Motcle& localisation, int exit_on_error = 1);
   virtual int     set_methode(const Motcle& methode, int exit_on_error = 1);
   virtual int     set_domaine(const Nom& nom_domaine, int exit_on_error = 1);
@@ -89,6 +89,8 @@ private:
   REF(Domaine)         domaine_;                      // domaine sur lequel on veut interpoler le champ (domaine natif si reference nulle)
   Domaine_dis le_dom_dis;                     // rempli si domaine d interpolation different du domaine natif
   // ex : Sonde utilise valeur_aux...() qui necessite de disposer d une zone discretisee
+  int optimisation_sous_maillage_,optimisation_demande_;
+  ArrOfInt renumerotation_maillage_;
 };
 
 #endif

@@ -37,6 +37,7 @@ echo "
 <LI>It contains the TRUST tests and source files.
 <LI>The package size is ~"$package_size"Mo.
 <LI>See <A HREF=http://sourceforge.net/projects/trust-platform/files/>here</A> the requirements and how to install/build TRUST $stable stable version.
+<LI>See <A HREF=Version$stable/README_ECLIPSE>here</A> how to configure Eclipse with TRUST project.
 <LI>On a cluster, to reach high parallel performances, it is recommended that the TRUST support team install/configure/build the code.<BR> 
 <BR><B>Use TRUST on PC and callisto cluster at CEA Saclay:</B>
 <pre>source /home/triou/env_TRUST_"$stable".sh</pre>
@@ -73,6 +74,7 @@ echo "
 </BODY>
 </HTML>" >> $html
 cp_ftp $TRUST_ROOT/bin/README_INSTALL $PUBLIC/Version$stable
+cp_ftp $TRUST_ROOT/src/README_ECLIPSE $PUBLIC/Version$stable
 cp_ftp $TRUST_ROOT/bin/HTML/animation.gif $PUBLIC
 cp_ftp $TRUST_ROOT/bin/HTML/animation.gif $SECRET
 cp_ftp $html $PUBLIC

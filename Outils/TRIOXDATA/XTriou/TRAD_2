@@ -150,10 +150,6 @@ reduction_0d champ_post_de_champs_post reduction_0d -1 To calculate the min, max
 champ_post_operateur_base champ_post_de_champs_post champ_post_operateur_base -1 not_set
 gradient champ_post_operateur_base gradient -1 To calculate gradient of a given field.
 divergence champ_post_operateur_base divergence -1 To calculate divergency of a given field.
-interpolation champ_post_de_champs_post interpolation -1 To create a field which is an interpolation of the field given by the keyword source.
-  attr localisation chaine localisation 0 type_loc indicate where is done the interpolation (elem for element or som for node).
-  attr domaine chaine domaine 1 the domain name where the interpolation is done (by default, the calculation domain)
-  attr methode chaine methode 1 The optional keyword methode is limited to calculer_champ_post for the moment.
 champ_post_statistiques_base champ_post_de_champs_post champ_post_statistiques_base -1 not_set
   attr t_deb floattant t_deb 0 Start of integration time
   attr t_fin floattant t_fin 0 End of integration time
@@ -1940,4 +1936,13 @@ testeur_medcoupling interprete testeur_medcoupling 0 not_set
   attr field_name chaine filed_name 0 Name of domain.
 test_supr raffiner_isotrope test_supr -1 Keyword to raffine a simplexes
   attr domain2_name suppress_param domain2_name 0 Name of domain.
+Raffiner_isotrope_parallele interprete Raffiner_isotrope_parallele::interpreter 1 Refine parallel mesh in parallel 
+  attr name_of_initial_zones chaine name_of_initial_zones 0 name of initial Zones
+  attr ascii rien ascii 1 writing Zones in ascii format
+  attr name_of_new_zones chaine name_of_new_zones 0 name of new Zones
+interpolation champ_post_de_champs_post interpolation -1 To create a field which is an interpolation of the field given by the keyword source.
+  attr localisation chaine localisation 0 type_loc indicate where is done the interpolation (elem for element or som for node).
+  attr optimisation_sous_maillage chaine(into=["default","yes","no",]) optimisation_sous_maillage 1 not_set
+  attr methode chaine methode 1 The optional keyword methode is limited to calculer_champ_post for the moment.
+  attr domaine chaine domaine 1 the domain name where the interpolation is done (by default, the calculation domain)
 

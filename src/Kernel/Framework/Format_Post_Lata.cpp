@@ -399,10 +399,13 @@ int Format_Post_Lata::write_doubletab(Fichier_Lata& fichier,
 //  processeurs ecrivent sur le meme fichier ou pas).
 int Format_Post_Lata::write_inttab(Fichier_Lata& fichier,
                                    int decalage,
+                                   int decalage_partiel,
                                    const IntTab& tab,
                                    int& nb_colonnes,
                                    const Options_Para& option)
 {
+  assert(decalage_partiel>=decalage);
+  assert((decalage==0)||(decalage==1));
   int nb_lignes = 0;
   int line_size = 1;
   int i;
@@ -460,7 +463,13 @@ int Format_Post_Lata::write_inttab(Fichier_Lata& fichier,
       for (j = 0; j < j_max; j++)
         {
           // valeur a ecrire (conversion en numerotation fortran si besoin)
-          int x = data[i+j] + decalage;
+          int x = data[i+j];
+          if (x>-1)
+            x+=decalage_partiel;
+          else
+            x+=decalage;
+
+
           // conversion en type int pour ecriture
           _LATA_INT_TYPE_ y = (_LATA_INT_TYPE_) x;
           // reconversion en int pour comparaison
@@ -887,9 +896,9 @@ int Format_Post_Lata::ecrire_domaine(const Domaine& domaine,const int& est_le_pr
         decalage_elements += mppartial_sum(nbelem);
       }
 #ifdef un_seul_fichier_data
-    nb_elem_tot = write_inttab(fichier_geom     , decalage_sommets,elements, nb_col,options_para_);
+    nb_elem_tot = write_inttab(fichier_geom, 1 , decalage_sommets, elements, nb_col,options_para_);
 #else
-    nb_elem_tot = write_inttab(fichier_geom_elem, decalage_sommets, elements, nb_col,options_para_);
+    nb_elem_tot = write_inttab(fichier_geom_elem, 1, decalage_sommets,elements, nb_col,options_para_);
 #endif
   }
   {
@@ -1117,19 +1126,21 @@ int Format_Post_Lata::ecrire_item_int(//const Nom    & id_champ,
     // On suppose que si reference est non vide, c'est un indice
     // dans un autre tableau, donc numerotation fortran :
     int decal = 0;
+    int decal_partiel=0;
     if (reference != "")
       {
         decal = 1;
+        decal_partiel=1;
         if (options_para_ == SINGLE_FILE)
           {
             // Tous les processeurs ecrivent dans un fichier unique, il faut
             // renumeroter les indices pour passer en numerotation globale.
             // Decalage a ajouter aux indices pour avoir une numerotation globale.
-            decal += mppartial_sum(reference_size);
+            decal_partiel += mppartial_sum(reference_size);
           }
       }
     ////size_tot = write_inttab(fichier_champ, decal, valeurs, nb_compo);
-    size_tot = write_inttab(fichier_champ, decal, valeurs, nb_compo,options_para_);
+    size_tot = write_inttab(fichier_champ, decal,decal_partiel, valeurs, nb_compo,options_para_);
   }
   {
     // Ouverture du fichier .lata en mode append.
