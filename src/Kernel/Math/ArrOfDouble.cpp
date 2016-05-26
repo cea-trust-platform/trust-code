@@ -362,6 +362,7 @@ ArrOfDouble::ArrOfDouble(int n) :
 //    Signification: taille du tableau
 // Parametre: double x
 //    Signification: valeur pour initialiser le tableau
+/*
 ArrOfDouble::ArrOfDouble(int n, double x) :
   p_(0),
   data_(0),
@@ -370,14 +371,13 @@ ArrOfDouble::ArrOfDouble(int n, double x) :
   smart_resize_(0),
   storage_type_(STANDARD)
 {
-  if (n)
-    {
-      p_ = new VDoubledata(n, STANDARD);
-      data_ = p_->get_data();
-      *this = x;
-    }
+  if (n) {
+    p_ = new VDoubledata(n, STANDARD);
+    data_ = p_->get_data();
+    *this = x;
+  }
 }
-
+*/
 // Description:
 //     Constructeur par copie. On alloue une nouvelle zone de memoire
 //     et on copie le contenu du tableau (il s'agit d'un "deep copy").

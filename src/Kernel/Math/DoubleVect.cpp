@@ -80,7 +80,7 @@ DoubleVect::DoubleVect(int n) :
   line_size_(1)
 {
 }
-
+/*
 // Description: construction d'un vecteur de taille n.
 //  Les elements du vecteur sont initialises avec la valeur x.
 DoubleVect::DoubleVect(int n, double x) :
@@ -89,7 +89,7 @@ DoubleVect::DoubleVect(int n, double x) :
   line_size_(1)
 {
 }
-
+*/
 // Description: Constructeur par copie. Il s'agit d'un "deep copy"
 //   voir ArrOfDouble::ArrOfDouble(const ArrOfDouble &)
 //  Remarque: il n'y a pas de constructeur par copie a partir de ArrOfDouble

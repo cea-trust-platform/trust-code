@@ -81,7 +81,7 @@ public:
   //
   ArrOfDouble();
   ArrOfDouble(int size);
-  ArrOfDouble(int size, double initial_value);
+//  ArrOfDouble(int size, double initial_value);
   // Constructeur par copie : deep copy (on duplique les donnees)
   ArrOfDouble(const ArrOfDouble& );
   //

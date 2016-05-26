@@ -41,7 +41,7 @@ class DoubleVect : public ArrOfDouble
 public:
   DoubleVect() : size_reelle_(0), line_size_(1) {};
   DoubleVect(int n);
-  DoubleVect(int n, double x);
+//  DoubleVect(int n, double x);
   DoubleVect(const DoubleVect&);
   // Pas de constructeur par copie de ArrOfDouble, voir DoubleVect(const DoubleVect&)
   ~DoubleVect() {};

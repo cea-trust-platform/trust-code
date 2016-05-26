@@ -40,7 +40,7 @@ class IntVect : public ArrOfInt
 public:
   IntVect() : size_reelle_(0), line_size_(1) {};
   IntVect(int n);
-  IntVect(int n, int x);
+//  IntVect(int n, int x);
   IntVect(const IntVect&);
   // Pas de constructeur par copie de ArrOfInt, voir IntVect(const IntVect&)
   ~IntVect() {};

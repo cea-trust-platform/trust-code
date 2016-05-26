@@ -136,8 +136,8 @@ DoubleTab::DoubleTab(const DoubleTab& dbt) :
   for (int i = 0; i < MAXDIM_TAB; i++)
     dimensions_[i] = dbt.dimensions_[i];
 }
-#define PARAM_X , double x
-#define PARAM_X2 , x
+#define PARAM_X
+#define PARAM_X2
 
 DoubleTab::DoubleTab(int n PARAM_X)
   : DoubleVect(n PARAM_X2),
