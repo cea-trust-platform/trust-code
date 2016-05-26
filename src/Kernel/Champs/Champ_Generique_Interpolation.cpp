@@ -500,7 +500,7 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
           if (dmax > 1e-7)
             {
               Cerr<<nom_champ[0]<<" optimisation ko "<< dmax<<finl;
-              exit();
+              //exit();
             }
           else
             Cerr<<nom_champ[0]<<" optimisation ok "<< dmax<<finl;
