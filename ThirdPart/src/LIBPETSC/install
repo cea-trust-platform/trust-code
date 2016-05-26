@@ -5,8 +5,8 @@ package=$1
 DIR=`dirname $0`
 DIR=`(cd $DIR;pwd)`
 mkdir -p ${PETSC_ROOT}
-cd ${PETSC_ROOT}
-mkdir build
+cd ${PETSC_ROOT}/..
+mkdir -p build
 cd build
 
 minimal_mumps=0
