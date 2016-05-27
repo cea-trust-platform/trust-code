@@ -472,6 +472,7 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
             v=espace_valeurs(i,0) ;
           else
             v=espace_valeurs(i) ;
+
           int iproche=-1;
           if (v>0)
             {
@@ -673,7 +674,7 @@ void Champ_Generique_Interpolation::completer(const Postraitement_base& post)
     }
   // Si le domaine lu n'est pas le domaine de calcul, on fixe le domaine
   const Domaine& domaine_calcul = get_source(0).get_ref_domain();
-  if (optimisation_demande_==0)
+  if (optimisation_demande_!=1)
     optimisation_sous_maillage_=0;
   if ( (nom_domaine_lu_!="") && (nom_domaine_lu_!=domaine_calcul.le_nom()) )
     {
