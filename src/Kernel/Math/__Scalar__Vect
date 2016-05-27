@@ -237,9 +237,9 @@ int operator!=(const __Scalar__Vect& x, const __Scalar__Vect& y);
 //__Scalar__Vect operator / (const __Scalar__Vect&, __scalar__);
 //__Scalar__Vect operator * (__scalar__, const __Scalar__Vect&);
 
-__scalar__ local_imax_vect(const __Scalar__Vect &, Mp_vect_options opt = VECT_REAL_ITEMS);
+int local_imax_vect(const __Scalar__Vect &, Mp_vect_options opt = VECT_REAL_ITEMS);
 __scalar__ local_max_vect(const __Scalar__Vect &, Mp_vect_options opt = VECT_REAL_ITEMS);
-__scalar__ local_imin_vect(const __Scalar__Vect &, Mp_vect_options opt = VECT_REAL_ITEMS);
+int local_imin_vect(const __Scalar__Vect &, Mp_vect_options opt = VECT_REAL_ITEMS);
 __scalar__ local_min_vect(const __Scalar__Vect &, Mp_vect_options opt = VECT_REAL_ITEMS);
 __scalar__ mp_max_vect(const __Scalar__Vect &, Mp_vect_options opt = VECT_REAL_ITEMS);
 __scalar__ mp_min_vect(const __Scalar__Vect &, Mp_vect_options opt = VECT_REAL_ITEMS);
@@ -816,11 +816,11 @@ __scalar__ local_somme_vect(const __Scalar__Vect & vx)
   __scalar__ y = Process::mp_sum(x);
   return y;
 }
-__scalar__ local_imin_vect(const __Scalar__Vect & vx, Mp_vect_options opt)
+int local_imin_vect(const __Scalar__Vect & vx, Mp_vect_options opt)
 #Pusemacro(patternVect)( __scalar__ min_val = MAX_SCALAR; int i_min = -1;, if (x < min_val) { i_min = x_ptr - x_base; min_val = x; }, "without_resu", "no_any_shape", "with_vx", "without_vy", opt, i_min)
   __scalar__ local_min_vect(const __Scalar__Vect & vx, Mp_vect_options opt)
 #Pusemacro(patternVect)( __scalar__ min_val = MAX_SCALAR;, min_val = (x < min_val) ? x : min_val;, "without_resu", "no_any_shape", "with_vx", "without_vy", opt, min_val)
-    __scalar__ local_imax_vect(const __Scalar__Vect & vx, Mp_vect_options opt)
+   int local_imax_vect(const __Scalar__Vect & vx, Mp_vect_options opt)
 #Pusemacro(patternVect)( __scalar__ max_val = MIN_SCALAR; int i_max = -1;, if (x > max_val) { i_max = x_ptr - x_base; max_val = x; }, "without_resu", "no_any_shape", "with_vx", "without_vy", opt, i_max)
       __scalar__ local_max_vect(const __Scalar__Vect & vx, Mp_vect_options opt)
 #Pusemacro(patternVect)( __scalar__ max_val = MIN_SCALAR;, max_val = (x > max_val) ? x : max_val;, "without_resu", "no_any_shape", "with_vx", "without_vy", opt, max_val)

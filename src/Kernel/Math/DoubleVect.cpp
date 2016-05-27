@@ -600,7 +600,7 @@ double mp_somme_vect(const DoubleVect& vx)
   double y = Process::mp_sum(x);
   return y;
 }
-double local_imin_vect(const DoubleVect& vx, Mp_vect_options opt)
+int local_imin_vect(const DoubleVect& vx, Mp_vect_options opt)
 {
   double min_val = HUGE_VALL;
   int i_min = -1;
@@ -717,7 +717,7 @@ double local_min_vect(const DoubleVect& vx, Mp_vect_options opt)
     }
   return  min_val;
 }
-double local_imax_vect(const DoubleVect& vx, Mp_vect_options opt)
+int local_imax_vect(const DoubleVect& vx, Mp_vect_options opt)
 {
   double max_val = (-HUGE_VALL);
   int i_max = -1;
