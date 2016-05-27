@@ -27,8 +27,7 @@
 #include <Discretisation_base.h>
 #include <Synonyme_info.h>
 
-Implemente_instanciable(Champ_Generique_Ecart_Type,"Ecart_Type",Champ_Generique_Statistiques_base);
-Add_synonym(Champ_Generique_Ecart_Type,"Champ_Post_Statistiques_Ecart_Type");
+Implemente_instanciable(Champ_Generique_Ecart_Type,"Champ_Post_Statistiques_Ecart_Type|Ecart_Type",Champ_Generique_Statistiques_base);
 
 Sortie& Champ_Generique_Ecart_Type::printOn(Sortie& s ) const
 {

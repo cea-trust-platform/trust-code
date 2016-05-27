@@ -28,8 +28,7 @@
 #include <Synonyme_info.h>
 #include <Param.h>
 
-Implemente_instanciable(Champ_Generique_Moyenne,"Moyenne",Champ_Generique_Statistiques_base);
-Add_synonym(Champ_Generique_Moyenne,"Champ_Post_Statistiques_Moyenne");
+Implemente_instanciable(Champ_Generique_Moyenne,"Champ_Post_Statistiques_Moyenne|Moyenne",Champ_Generique_Statistiques_base);
 
 Sortie& Champ_Generique_Moyenne::printOn(Sortie& s ) const
 {
