@@ -39,6 +39,7 @@ update_xd: test
 	chmod +w ../TRIOU/TRIOU_SRC/src/test_*.py
 	#(cd ../TRIOU/build; make install)
 	touch update_xd
+	(cd ..; make)
 clean:
 	rm -f existepas.stop test doc.pdf doc_r.pdf triou.py *.pyc  syno.py gencl.py gencles.py gentriopy.py2 *.ver sed2 sedfile sedfile2 trace traces update_xd
 	rm -rf doc_r doc menu

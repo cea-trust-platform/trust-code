@@ -27,8 +27,7 @@
 #include <Discretisation_base.h>
 #include <Synonyme_info.h>
 
-Implemente_instanciable(Champ_Generique_Correlation,"Correlation",Champ_Generique_Statistiques_base);
-Add_synonym(Champ_Generique_Correlation,"Champ_Post_Statistiques_Correlation");
+Implemente_instanciable(Champ_Generique_Correlation,"Champ_Post_Statistiques_Correlation|Correlation",Champ_Generique_Statistiques_base);
 
 Sortie& Champ_Generique_Correlation::printOn(Sortie& s ) const
 {
