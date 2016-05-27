@@ -469,7 +469,7 @@ int Nom::find(const char * n) const
 {
   std::string s_(nom_);
   std::size_t x = s_.find(n);
-  return (x != std::string::npos) ? 1 : -1;
+  return (x != std::string::npos) ? x : -1;
 }
 
 Nom& Nom::prefix(const char* const s)

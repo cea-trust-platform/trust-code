@@ -158,9 +158,9 @@ const Noms Champ_Generique_refChamp::get_property(const Motcle& query) const
       }
     case 2 :
       {
-        const Noms mots0= ref_champ_.valeur().unites();
-        ref_cast_non_const(Champ_base,ref_champ_.valeur()).corriger_unite_nom_compo();
-        const Noms mots = ref_champ_.valeur().unites();
+        const Noms mots0= get_ref_champ_base().unites();
+        ref_cast_non_const(Champ_base,get_ref_champ_base()).corriger_unite_nom_compo();
+        const Noms mots = get_ref_champ_base().unites();
         if (mots.size()!=mots0.size())
           {
             Cerr<<"iuuuuuu"<<mots<<" "<<mots0<<finl;
@@ -179,7 +179,7 @@ const Noms Champ_Generique_refChamp::get_property(const Motcle& query) const
       }
     case 4 :
       {
-        const Noms mots = ref_champ_.valeur().get_synonyms();
+        const Noms mots = get_ref_champ_base().get_synonyms();
 
         return mots;
         break;
@@ -188,7 +188,7 @@ const Noms Champ_Generique_refChamp::get_property(const Motcle& query) const
       {
 
         {
-          const Noms mots = ref_champ_.valeur().noms_compo();
+          const Noms mots = get_ref_champ_base().noms_compo();
           int nb_comp = mots.size();
 
           Noms compo(nb_comp);
@@ -259,7 +259,7 @@ const DoubleTab& Champ_Generique_refChamp::get_ref_values() const
   // (multi-support ou non)
   get_localisation(0);
   // Renvoie les valeurs du champ
-  const DoubleTab& val = ref_champ_.valeur().valeurs();
+  const DoubleTab& val = get_ref_champ_base().valeurs();
   return val;
 }
 
@@ -414,7 +414,7 @@ const Champ_base& Champ_Generique_refChamp::get_champ(Champ& espace_stockage) co
   {
     Objet_U& ob = Interprete::objet(nom_pb_);
     const Probleme_base& pb = ref_cast(Probleme_base,ob);
-    const Nom& nom_cible = ref_champ_.valeur().le_nom();
+    const Nom& nom_cible = get_ref_champ_base().le_nom();
     pb.get_champ(nom_cible);
     return get_ref_champ_base();
   }
@@ -463,7 +463,7 @@ void Champ_Generique_refChamp::set_ref_champ(const Champ_base& champ)
 double Champ_Generique_refChamp::get_time() const
 {
   double temps;
-  temps = ref_champ_.valeur().temps();
+  temps = get_ref_champ_base().temps();
   return temps;
 }
 

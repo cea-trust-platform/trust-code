@@ -158,20 +158,21 @@ ROOT=`pwd`
 # Correction eventuelle des sources
 ###################################
 cd $ROOT/$package
-CONFIG=config/PETSc/packages
-if [ -d $CONFIG ]
-then
-   #echo "Change some python scripts to force parallel build of external packages..."
-   echo $ECHO_OPTS "1,$ s?make install?$TRUST_MAKE install?g\nw" | ed $CONFIG/hypre.py 	1>/dev/null 2>&1  #  on ne sarrete plus car si pas hypre...|| exit -1 
-else
+#CONFIG=config/PETSc/packages
+#if [ -d $CONFIG ]
+#then
+#   #echo "Change some python scripts to force parallel build of external packages..."
+#   echo $ECHO_OPTS "1,$ s?make install?$TRUST_MAKE install?g\nw" | ed $CONFIG/hypre.py 	1>/dev/null 2>&1  #  on ne sarrete plus car si pas hypre...|| exit -1 
+#else
    # Config directory has moved (for PETSc 3.6?)
-   CONFIG=config/BuildSystem/config/packages
-fi 
+#   CONFIG=config/BuildSystem/config/packages
+#fi 
 
 # Hack to have MUMPS sequential:
 if [ "$TRUST_DISABLE_MPI" = 1 ]
 then
    # Need to be improved for the future changes:
+   CONFIG=config/BuildSystem/config/packages
    cat $DIR/MUMPS_SEQ.py > $CONFIG/MUMPS.py
 fi    
     

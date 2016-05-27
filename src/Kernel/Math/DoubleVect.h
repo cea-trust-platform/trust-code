@@ -258,9 +258,9 @@ int operator!=(const DoubleVect& x, const DoubleVect& y);
 //DoubleVect operator / (const DoubleVect&, double);
 //DoubleVect operator * (double, const DoubleVect&);
 
-double local_imax_vect(const DoubleVect&, Mp_vect_options opt = VECT_REAL_ITEMS);
+int local_imax_vect(const DoubleVect&, Mp_vect_options opt = VECT_REAL_ITEMS);
 double local_max_vect(const DoubleVect&, Mp_vect_options opt = VECT_REAL_ITEMS);
-double local_imin_vect(const DoubleVect&, Mp_vect_options opt = VECT_REAL_ITEMS);
+int local_imin_vect(const DoubleVect&, Mp_vect_options opt = VECT_REAL_ITEMS);
 double local_min_vect(const DoubleVect&, Mp_vect_options opt = VECT_REAL_ITEMS);
 double mp_max_vect(const DoubleVect&, Mp_vect_options opt = VECT_REAL_ITEMS);
 double mp_min_vect(const DoubleVect&, Mp_vect_options opt = VECT_REAL_ITEMS);

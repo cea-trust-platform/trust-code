@@ -15,7 +15,7 @@ else
 
 fi
 
-
+[ $0 -nt build ] && rm -rf build 
 if [ ! -d build ]
 then
    echo Creating build directory
@@ -33,7 +33,7 @@ then
 	# tkdiff  CMakeLists.txt p
    mv p  CMakeLists.txt
    rm -f CMakeCache*
-   cmake . -DCMAKE_CXX_COMPILER=$TRUST_CC_BASE  -DCMAKE_C_COMPILER=$TRUST_cc_BASE
+   cmake . -DCMAKE_CXX_COMPILER=$TRUST_CC -DCMAKE_C_COMPILER=$TRUST_cc
 
    # fin modif makefile
   
@@ -45,47 +45,3 @@ fi
 # Compilation du plugin
 #######################
 make
-
-# Mise en gestion de configuration si necessaire
-if [ -z "$TRUST_ROOT" ]
-then
-	exit
-fi
-
-cd $TRUST_ROOT/Outils/VisIt
-if [ "$plugin" != "" ]
-then
-   ARCH=`echo $plugin | $TRUST_Awk -F. '{print $2}'`
-   update=0
-   if [ -f $plugin ]
-   then
-      TMP=`mktemp_ -d`
-      mkdir $TMP
-      cd $TMP
-      gunzip -c $TRUST_ROOT/Outils/VisIt/$plugin > tmp.tar
-      tar xf tmp.tar
-      # Bizarrerie, je compare les .so car si je compare les .tar.gz les tailles changent de facon aleatoire...
-      for lib in `ls current/*/plugins/databases/*lataData*.so 2>/dev/null`
-      do
-         [ "`diff $lib $TRUST_ROOT/Outils/VisIt/$lib`" != "" ] && update=1
-      done
-      rm -r -f $TMP
-      cd -
-   else
-      update=1
-   fi
-   if [ $update = 1 ]
-   then
-      old=`ls plugin*"."$ARCH.tar.gz 2>/dev/null | grep -v $plugin`
-      if [ "$old" != "" ]
-      then
-	 CHECKOUT . 1>/dev/null 2>&1
-	 cleartool mv $old $plugin
-      fi
-      [ "$MA_VUE" != "" ] && CHECKOUT $plugin 1>/dev/null 2>&1
-      tar cf tmp.tar current/$ARCH/plugins/databases/*sondeData*.so
-      gzip -f tmp.tar
-      mv -f tmp.tar.gz $plugin
-      echo "$plugin mis a jour."
-   fi
-fi

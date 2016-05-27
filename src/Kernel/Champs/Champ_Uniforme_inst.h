@@ -74,6 +74,7 @@ private :
 inline void Champ_Uniforme_inst::mettre_a_jour(double un_temps)
 {
   me_calculer(un_temps);
+  changer_temps(un_temps);
 }
 
 #endif
