@@ -121,6 +121,8 @@ Entree& Champ_Tabule_Temps::readOn(Entree& is)
       Cerr << "We expected keyword { instead of " << motlu << finl;
       exit();
     }
+  changer_temps(-1e9);
+  //mettre_a_jour(0.);
   return is;
 }
 

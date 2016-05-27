@@ -45,8 +45,9 @@ class Perte_Charge_Singuliere : public Perte_Charge
 
 public :
 
+  virtual ~Perte_Charge_Singuliere() {}
   Entree& lire_donnees(Entree& );
-  void lire_surfaces(Entree&, const Domaine&, const Zone_dis_base&, IntVect&);
+  virtual void lire_surfaces(Entree&, const Domaine&, const Zone_dis_base&, IntVect&);
   inline double K() const;
 
 protected :
