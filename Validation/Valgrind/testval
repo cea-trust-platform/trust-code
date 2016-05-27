@@ -109,7 +109,7 @@ lib=$TRUST_ROOT/lib/TRUST_mpi_opt.a
 export new=$rep_dev/exec${OPT}/TRUST${COMM}${OPT}
 # Creation d'un binaire modifie
 source_file=Schema_Temps_base.cpp
-source_file_from=`Find $source_file`
+source_file_from=`Find.sh $source_file`
 if [ ! -f $source_file ] || [ $source_file_from -nt $source_file ] || [ ! -f $new ] || [ ! -f $lib ] || [ $lib -nt $new ]
 then
    cp -f $source_file_from .
