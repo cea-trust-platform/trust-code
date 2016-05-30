@@ -192,7 +192,7 @@ then
    if [ "$TRUST_DOWNLOAD_VISIT" != 1 ]
    then
       # Add path to use VisIt cmake
-      export PATH=$TRUST_ROOT/Outils/VisIt/src/cmake-3.0.2/bin:$PATH
+      #export PATH=$TRUST_ROOT/Outils/VisIt/src/cmake-3.0.2/bin:$PATH
       for plugin in `ls plugins/*/build_plugin 2>/dev/null`
       do
 	 rep=`dirname $plugin`
