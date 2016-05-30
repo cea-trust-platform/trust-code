@@ -356,8 +356,8 @@ for p in $prm
 do
 cas=$(basename $p)
 echo $cas: archives/$cas.tgz
-echo archives/$cas.tgz: archives/$cas.pdf
-echo $ECHO_OPTS "\tenv OPTIONS_PRM=-suite_run $LANCE \$(option_fast) $p"
+echo archives/$cas.tgz: BUILD/deps_$cas
+echo $ECHO_OPTS "\t$LANCE \$(option_fast) $p"
 done >> makefile
 
 
