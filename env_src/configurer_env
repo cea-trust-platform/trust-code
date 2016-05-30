@@ -1238,7 +1238,7 @@ fi
 # Installation de astyle
 ########################
 #if [ $TRUST_ARCH = linux ]
-if [ 1 -eq 1 ]
+if [ "$TRUST_DISABLE_CHECK_SRC" != "1" ]
 then
    make_ $TRUST_ROOT/Outils/astyle astyle $TRUST_ROOT/exec/astyle.log
 fi

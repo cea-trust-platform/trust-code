@@ -319,6 +319,7 @@ option_configure=""
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable " | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-med -disable-medcoupling -disable-mpi -without-visit -without-doc"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-mpi" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-mpi"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-optionals" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -disable-optionals"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-check_sources" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -disable-check_sources"
 # Salome
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-download-salome" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -download-salome"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-download " | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -download-salome -download-visit"
