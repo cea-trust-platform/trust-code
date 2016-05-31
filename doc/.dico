@@ -139,6 +139,9 @@
  Champ_P1_EF Champ_P1_EF Champ_P1_EF.h
  Champ_P1_iso Champ_P1_iso Champ_P1_iso.h
  Champ_P1_isoP1Bulle Champ_P1_isoP1Bulle Champ_P1_isoP1Bulle.h
+ Champ_Post_Statistiques_Correlation|Correlation Champ_Generique_Correlation Champ_Generique_Correlation.h
+ Champ_Post_Statistiques_Ecart_Type|Ecart_Type Champ_Generique_Ecart_Type Champ_Generique_Ecart_Type.h
+ Champ_Post_Statistiques_Moyenne|Moyenne Champ_Generique_Moyenne Champ_Generique_Moyenne.h
  Champ_Q1NC Champ_Q1NC Champ_Q1NC.h
  Champ_Q1_EF Champ_Q1_EF Champ_Q1_EF.h
  Champ_som_lu Champ_som_lu Champ_som_lu.h
@@ -179,7 +182,6 @@
  Convection_Diffusion_Temperature_Turbulent Convection_Diffusion_Temperature_Turbulent Convection_Diffusion_Temperature_Turbulent.h
  Coriolis_QC_VDF_Face Terme_Source_Coriolis_QC_VDF_Face Terme_Source_Coriolis_VDF_Face.h
  Coriolis_VDF_Face Terme_Source_Coriolis_VDF_Face Terme_Source_Coriolis_VDF_Face.h
- Correlation Champ_Generique_Correlation Champ_Generique_Correlation.h
  Correlation_Vec_Sca_VDF Correlation_Vec_Sca_VDF Correlation_Vec_Sca_VDF.h
  Correlation_Vec_Sca_VEF Correlation_Vec_Sca_VEF Correlation_Vec_Sca_VEF.h
  Corriger_frontiere_periodique Corriger_frontiere_periodique Corriger_frontiere_periodique.h
@@ -234,7 +236,6 @@
  DoubleTrav DoubleTrav DoubleTrav.h
  DoubleVect DoubleVect DoubleVect.h
  DoubleVects DoubleVects DoubleVects.h
- Ecart_Type Champ_Generique_Ecart_Type Champ_Generique_Ecart_Type.h
  Echange_impose_base Echange_impose_base Echange_impose_base.h
  Echange_thermique_h_imp_VDF_P0_VDF Source_Echange_Th_VDF Source_Echange_Th_VDF.h
  EcrFicCollecte EcrFicCollecte EcrFicCollecte.h
@@ -500,7 +501,6 @@
  Morceau_Equation Champ_Generique_Morceau_Equation Champ_Generique_Morceau_Equation.h
  Motcle Motcle Motcle.h
  Motcles Motcles Motcle.h
- Moyenne Champ_Generique_Moyenne Champ_Generique_Moyenne.h
  Moyenne_volumique Moyenne_volumique Moyenne_volumique.h
  MuLambda_TBLE MuLambda_TBLE MuLambda_TBLE.h
  MuLambda_TBLE_base MuLambda_TBLE_base MuLambda_TBLE_base.h
