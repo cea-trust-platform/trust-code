@@ -234,7 +234,9 @@ Mise a jour du jeu de donnees seulement... A vous de voir pour le .lml.gz"
 	    touch $DEST/check_lml_gz	    
 	 fi
 	 cd - 1>/dev/null 2>&1
+	 chmod gu+w $cible
 	 cat $test.data > $cible
+	 chmod gu-w $cible
       fi
    fi
    rm -r -f $TMP_BUILD

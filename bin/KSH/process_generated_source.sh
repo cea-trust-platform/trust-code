@@ -33,6 +33,8 @@ then
     else
 	CHECKOUT $DESTFILE 1>/dev/null 2>&1
 	mv -f $TMP_DESTFILE $DESTFILE
+        chmod go+r $DESTFILE
+        chmod gu-w $DESTFILE
 	echo "$DESTFILE has been updated."
     fi
 else
