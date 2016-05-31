@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.7.3_beta : Changes since version 1.7.2 :
 -------------------------------------------------------------
+26/05/16 (Kernel  Fix optimisation Champ_Generique_Interpolation
 06/04/16 (TRUST)  Adapting sources for int 64 bits
 21/03/16 (Tools)  Add Python_modules
 03/02/16 (TRUST)  Portability: cygwin OS supported

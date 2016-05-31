@@ -41,7 +41,7 @@ petsc,bison-3.0.4.tar.gz,,SV,"GNU GPL",https://www.gnu.org/software/bison/,http:
 petsc,flex-2.6.0.tar.gz,,SV,"BSD Unix",http://flex.sourceforge.net/,https://sourceforge.net/projects/flex/files/flex-2.6.0.tar.gz/download,"d'après https://sourceforge.net/projects/flex/files/ flex is distributed under a copyright very similar to that of BSD Unix, and not under the GNU General Public License (GPL)"
 petsc,parmetis-4.0.3-p2.tar.gz,,SV+GF,"Freely distributed as described in the FAQ section of the site http://glaros.dtc.umn.edu/gkhome/metis/parmetis/download",http://glaros.dtc.umn.edu/gkhome/metis/parmetis/overview,http://ftp.mcs.anl.gov/pub/petsc/externalpackages/parmetis-4.0.3-p2.tar.gz,"pour la licence (je ne sais pas ce que c'est) voir http://glaros.dtc.umn.edu/gkhome/metis/parmetis/download"
 petsc,superlu_dist_4.1.tar.gz,,GF,BSD,http://www.cs.berkeley.edu/~demmel/SuperLU.html,http://crd-legacy.lbl.gov/~xiaoye/SuperLU/superlu_dist_4.1.tar.gz,
-petsc,hypre-2.10.0b-p2.tar.gz,,GF,LGPL,http://acts.nersc.gov/hypre/,http://ftp.mcs.anl.gov/pub/petsc/externalpackages/hypre-2.10.0b-p2.tar.gz,
+petsc,hypre-2.10.0b-p2-TRUST.tar.gz,,GF,LGPL,http://files.salome-platform.org,http://downloads.sourceforge.net/project/trust-platform/1.7.3/extra/hypre-2.10.0b-p2-TRUST.tar.gz,
 petsc,cusplibrary-0.4.0.tgz,,SV,"Apache License",http://cusplibrary.github.io/,https://github.com/cusplibrary/cusplibrary/archive/v0.4.0.tar.gz,
 petsc,petsc-3.6.3.tar.gz,,"GF SV",BSD,http://www.mcs.anl.gov/research/projects/petsc/index.html,http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-3.6.3.tar.gz,
 petsc,MUMPS_5.0.0-p1.tar.gz,,GF,CeCILL-C,http://mumps.enseeiht.fr/index.php?page=home,http://ftp.mcs.anl.gov/pub/petsc/externalpackages/MUMPS_5.0.0-p1.tar.gz,

@@ -794,6 +794,12 @@ void Solv_Petsc::create_solver(Entree& entree)
                 add_option("pc_hypre_pilut_tol",(Nom)epsilon.value());                // Values below the value are dropped in L and U (default 1.e-7)
                 check_not_defined(omega);
                 check_not_defined(ordering);
+                //
+                // ERROR VALGRIND
+                //Cerr << "Error VALGRIND with PETSc Dual Threashold Incomplete LU factorization." << finl;
+                //Cerr << "So the PILUT { level k epsilon thresh } preconditionner no longer available. " << finl;
+                //Cerr << "Change your data file." << finl;
+                //Process::exit();
                 break;
               }
             case 6:
