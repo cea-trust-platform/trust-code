@@ -17,6 +17,7 @@ release_date=`ls --full-time $WORKDIR/PORTAGE_$stable/linux/TRUST/exec/TRUST$COM
 [ ${#release_date} = 0 ] && release_date=`grep " "$stable" version released" $TRUST_ROOT/RELEASE_NOTES | $TRUST_Awk '{print $1}'`
 os_supported=`cat $TRUST_ROOT/bin/admin/liste.machines | $TRUST_Awk '/get_binary/ {print $1}'`
 package=`ls_ftp $PUBLIC/Version$stable | awk '/.tar.gz/ {print $NF}'`
+[ "$stable" = "1.7.2" ] && package=`ls_ftp $PUBLIC/Version$stable | awk '/.tgz/ {print $NF}'`
 echo "
 <HTML>
 <HEAD>
@@ -36,7 +37,8 @@ echo "
 <BR><BR><B>Download the latest available TRUST package $stable version ($release_date):</B> <A HREF=http://downloads.sourceforge.net/project/trust-platform/$stable/$package>$package</A>`[ "$patch" != "" ] && echo " and the latest installation patch <A HREF=patch/Patch_$stable.tar.gz>Patch_$stable.tar.gz</A>"`
 <LI>It contains the TRUST tests and source files.
 <LI>The package size is ~"$package_size"Mo.
-<LI>See <A HREF=http://sourceforge.net/projects/trust-platform/files/>here</A> the requirements and how to install/build TRUST $stable stable version.
+<LI>See <A HREF=http://sourceforge.net/projects/trust-platform/files/>here</A> how to install/build TRUST $stable stable version.
+<LI>See <A HREF=Version$stable/README_INSTALL>here</A> the requirements of TRUST $stable stable version.
 <LI>See <A HREF=Version$stable/README_ECLIPSE>here</A> how to configure Eclipse with TRUST project.
 <LI>On a cluster, to reach high parallel performances, it is recommended that the TRUST support team install/configure/build the code.<BR> 
 <BR><B>Use TRUST on PC and callisto cluster at CEA Saclay:</B>

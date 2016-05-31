@@ -1,6 +1,6 @@
-**************
+*************
 TRUST scripts
-**************
+*************
 
 To run the TRUST tools, TRUST environment must be initialized.
 
@@ -9,9 +9,9 @@ cd TRUST
 source ./env_TRUST.sh
 
 
-**********************
-data set support :
-**********************
+****************
+data set support
+****************
 
 Notice first that the reference manual which contains the information needed to carry out 
 a data set is User_Manual_TRUST.pdf (located in $TRUST_ROOT/doc/TRUST)
@@ -20,130 +20,132 @@ a data set is User_Manual_TRUST.pdf (located in $TRUST_ROOT/doc/TRUST)
 -EditData : to support user when carrying out a data set by indicating keywords specific to each object
 	    located in $TRUST_ROUT/Outils/TRIOXDATA
 	    
-	syntax : EditData jdd
+	syntax : EditData jdd.data
+
+
+-VerifData : to support user when writing a data by checking keywords specific to each object
+	     located in $TRUST_ROUT/Outils/TRIOXDATA
+	    
+	syntax : VerifData jdd.data
  
  
--cherche.ksh : to identify all the data sets from the no regression data base 
+-cherche.ksh : to identify all the data sets from the no regression data base (Reference, Validation, Verification, ...)
 	       which contain some sepcified keywords (word1 word2...wordn)
 	       located in $TRUST_ROOT/bin/KSH
 	
-	syntax : cherche.ksh word1 word2 ...wordn
-		the identified data set are listed in the file 'liste_cherche'
+	syntax : cherche.ksh [-reference_only] word1 word2 ...wordn
+		 The identified data set are listed in the file 'liste_cherche'
 		
 	remarks : Use the @ character to replace blank between two words
-		  Use the * character to look for incomplete words	
+		  Use the * character to look for incomplete words
+		  Use the -reference_only option to look for only from the Reference data base
+ 
+ 
+-Qui : to know the list of test cases to run for a class or method modified
+       located in $TRUST_ROOT/bin/KSH
+	
+	syntax : Qui class|class::method
+		 The identified data set are listed in the file 'liste_cas'
+
+
+-copie_cas_test : to copy a test case directory from the tests database under the present directory
+                  located in $TRUST_ROOT/bin/KSH
+       
+        syntax : copie_cas_test TEST [TRUST_TESTS]
 		  
 		  
 -make_PAR.data : to generate data sets used for sequential calculation - cutting domain - parallel calculation.
 		 located in $TRUST_ROOT/bin/KSH
 	
-	syntax : make_PAR.data jdd 
-		-creates SEQ_jdd.data : used to perform sequential calculation
-		-creates DEC_jdd.data : used to carry out domain cutting
-		(moreover the cript uses DEC_jdd data set to create the .Zones files)
-		-creates PAR_jdd.data : used to perform parallel calculation
+	syntax : make_PAR.data jdd [nb_procs]
+		 => creates SEQ_jdd.data : used to perform sequential calculation
+		 => creates DEC_jdd.data : used to carry out domain cutting
+		    (moreover the script uses DEC_jdd data set to create the .Zones files)
+		 => creates PAR_jdd.data : used to perform parallel calculation
 		
-		
-	remarks : the jdd (data set) must be previously prepared with the following markers
+	remarks : Use the nb_procs option to specify a number of parts other than that stated in the datafile
+		  The jdd (data set) must be previously prepared with the following markers
 		  (see a data set from the no regression data base as an example)
-		  
 		  # BEGIN MESH #
 		  ...
 		  # END MESH #
 		  # BEGIN PARTITION
 		  ...
 		  END PARTITION #
-		  # BEGIN READ
+		  # BEGIN SCATTER
 		  ...
-		  END READ #
+		  END SCATTER #
 		  
 		  
 		  
-***********************
+********************
 to run a calculation
-***********************
+********************
 
 -trust : to perform a calculation
 	 located in $TRUST_ROOT/bin
 	 
-	syntax : trust jdd [ 1>jdd.out 2>jdd.err ] for sequential calculation
+	syntax : trust [option] jdd [1>jdd.out 2>jdd.err] for sequential calculation
 		 identical to : $exec jdd [ 1>jdd.out 2>jdd.err ]
 		 
-	 	 trust PAR_jdd nb_procs [ 1>par_jdd.out 2>par_jdd.err ]
+	 	 trust PAR_jdd nb_procs [ 1>par_jdd.out 2>par_jdd.err ] for parallel calculation
 		 identical to : mpirun -np nb_procs $exec PAR_jdd nb_procs [ 1>par.out 2>par.err ]
+		
+	remarks : Use the -help option to list the available options
+                  source env_TRUST.sh       => access to TRUST's binary  + TRUST's cases tests
+                  source env_BALTIK.sh      => access to BALTIK's binary + BALTIK's cases test
+                  source full_env_BALTIK.sh => access to BALTIK's binary + BALTIK and TRUST's cases test
 		 		 	 
 		 
 -lance_test : to run a case from the no regression data base and compare the results to the reference ones.
 	      located in $TRUST_ROOT/bin
 
-	syntax : echo jdd | lance_test [ executable ]	
+	syntax : echo jdd | lance_test [-print] [-distant] [-nomail] [-efface] [-no_timeout] [$exec] [$directory]
 	
-	remark : -echo 0 | lance_test to apply lance_test to all the no regression cases
+	remarks : echo 0 | lance_test to apply lance_test to all the no regression cases
 		  echo liste | lance_test to apply lance_test to the cases listed in the liste file
-		  
-		 -the reporting file (.tests_TRUST_mpi[_opt]) of the comparison with the reference results is 
-		  located in /work/user/.tmp_TRUST_name_view/tests
+		  The reporting file (.tests_TRUST_mpi[_opt]) of the comparison with the reference results is 
+		  located in /home/user/.tmp_TRUST_name_view/tests
+
 
 -Run_fiche : to run a validation case
-       located in $TRUST_ROOT/Validation/Outils/Genere_Courbe
+             located in $TRUST_ROOT/bin
        
-       syntax : Run validation_file.prm
-       a rapport.pdf file is created in $TRUST_ROOT/Validation/Rapports_automatiques/Validant/.../.../build		 
-		 
-		 		 
-******************************
-to create or convert meshing
-******************************
-
--Xprepro : to generate structured meshing (or only model which may be used to crate unstructured 
-	   meshing with other tool-see Salome)
-	   located in $TRUST_ROOT/bin
-	   
-	   syntax : Xprepro
-	   
-	   	    an elementary sequence is a follows :
-		    -select default button->select OK in the opened window
-		    -fill up the fortran file (to specify the size of the domain)
-		    -fill up the view list
-		    -select the Modelling run button
-		    -select Pre mesh visualization button->plot pseudo-color ivar
-		    -select Pre-processing run button
-		    -select Get geom button 
-		    a meshing file (.geom) and a support file (.mesh) are created and copied in the study
-
-The manual Manuel_Xprepro_1.4.pdf is located in $TRUST_ROOT/doc/TRUST
+        syntax : Run_fiche
+		 A validation_file.prm must exist in $TRUST_ROOT/Validation/Rapports_automatiques/.../.../.../src
+                 A rapport.pdf file is created in $TRUST_ROOT/Validation/Rapports_automatiques/.../.../.../build
 		    
  
-******************************
+ 
+***************************
 to post-process some fields
-******************************
+***************************
 
 -Run_sonde : to post_process probes (and eventually run the calculation) 
 	     located in $TRUST_ROOT/bin
 	     
-	syntax : Run_sonde [ path_exec/exec ] 
-	
-	If executable file is specified it is necessary to specify the study and eventually the data set.
-	In that case the calculation is started and the post-processing tool is opened. If no executable
-	file is specified only the post-processing tool is activated.
-		-select the directory which contains the probes files ("." for current directory)
-		-select a number N to post-process the probe wich is associated to this number
-		-select -N to close the probe
-		-select # sign to close the Run_sonde post-processing tool 
+	syntax : Run_sonde [$exec] jdd
+		 If executable file is specified it is necessary to specify the study and eventually the data set.
+		 In that case the calculation is started and the post-processing tool is opened. If no executable
+		 file is specified only the post-processing tool is activated.
+		   -select the directory which contains the probes files ("." for current directory)
+		   -select a number N to post-process the probe wich is associated to this number
+		   -select -N to close the probe
+		   -select # sign to close the Run_sonde post-processing tool 
 		
 	remarks : -number N=0 is dedicated to visualization of the convergence criteria
-		  -in the case of a segment probe the vizualisation corresponds to the 
-		  last post-processed time
+		  -in the case of a segment probe the vizualisation corresponds to the last post-processed time
 		  -&n : scale the plot n
 		  -nF : animate the plot profile n
 		  -A: to rename result files  
 		  
+		  
 -extrait_coupe : to extract a segment probe at a specific time
 		 located in $TRUST_ROOT/bin
 		 
-	syntax : extrait_coupe jdd PROBE_NAME time 	
-		 a jdd_PROBE_NAME.coupe.time file is created	   
+	syntax : extrait_coupe jdd PROBE_NAME [time] 	
+		 A jdd_PROBE_NAME.coupe[.time] file is created	   
 		 
-	remark : PROBE_NAME corresponds to the name given to the probe in the data set (jdd)
-		 and caps must be used to indicate this name when using extrait_coupe tool 
+	remarks : PROBE_NAME corresponds to the name given to the probe in the data set (jdd)
+	 	  and caps must be used to indicate this name when using extrait_coupe tool 
 		 
