@@ -789,6 +789,7 @@
  Raccord_local Raccord_local Raccord_base.h
  Raccord_local_homogene Raccord_local_homogene Raccord_base.h
  Raffiner_anisotrope Raffiner_anisotrope Raffiner_anisotrope.h
+ Raffiner_isotrope_parallele Raffiner_isotrope_parallele Raffiner_isotrope_parallele.h
  Raffiner_Simplexes Raffiner_Simplexes Raffiner_Simplexes.h
  Reaction Reaction Reaction.h
  Read_unsupported_ASCII_file_from_ICEM Read_unsupported_ASCII_file_from_ICEM Read_unsupported_ASCII_file_from_ICEM.h

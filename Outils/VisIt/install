@@ -114,33 +114,37 @@ then
       ./build.sh $package $parallel 
       status=$?
       if [ $status -ne 0 ]
-       then
+      then
          echo  patch Mesa for clang
   	 sed -i "s/float 0f+1.0/float 1.0/" Mesa-7.10.2/src/mesa/x86-64/xform4.S  
-	LDADD=$(find $PWD/visit/python/ -name python | grep bin | sed "s?/bin/python?/lib?")
+	 LDADD=$(find $PWD/visit/python/ -name python | grep bin | sed "s?/bin/python?/lib?")
          export LD_LIBRARY_PATH=$LDADD:$LD_LIBRARY_PATH
 
          ./build.sh $package $parallel
-          status=$?
-      if [ $status -ne 0 ] && [ "$parallel" != "" ]
-        then
-          echo "Try sequentiel compilation"
-	 ./build.sh clean
-         ./build.sh $package
-        fi
-       fi 
+         status=$?
+         if [ $status -ne 0 ] && [ "$parallel" != "" ]
+         then
+            echo "Try sequentiel compilation"
+	    ./build.sh clean
+            ./build.sh $package
+         fi
+      fi 
       cd - 1>/dev/null 2>&1	
    fi
    # Telechargement demande ou suite echec de construction (sauf si une configuration parallele existe
    # auquel cas la construction parallele DOIT avoir fonctionne
    if [ "$TRUST_DOWNLOAD_VISIT" = 1 ]
    then
-      if [ "`grep parallel host_*$HOST.xml 2>/dev/null | grep true`" != "" ]
-      then
-         echo "Can't download a sequential version of VisIt on $HOST cause the file `ls host_*$HOST.xml`"
-	 echo "suppose VisIt should be parallel."
-	 exit -1
-      else
+      echo "###########################################"
+      echo "# Trying to download a version for VisIt..."
+      echo "###########################################"
+      # ce n est plus le cas: version telechargee est parallele
+#      if [ "`grep parallel host_*$HOST.xml 2>/dev/null | grep true`" != "" ]
+#      then
+#         echo "Can't download a sequential version of VisIt on $HOST cause the file `ls host_*$HOST.xml`"
+#	 echo "suppose VisIt should be parallel."
+#	 exit -1
+#      else
 	 if [ $version = 2_5_2 ]
 	 then
             # Pour 2.5.2, rhel4 n'existe plus, choix possibles:
@@ -172,7 +176,7 @@ then
 	    fi
 	 done
 	 [ $DOWNLOADED = 0 ] && echo "Fail to download $package" && exit -1
-      fi
+#      fi
    fi  
    #################
    # Install VisIt #
@@ -184,10 +188,11 @@ then
    #####################################################################
    # Build plugins if the VisIt version is built and hence is parallel #
    #####################################################################
-   if [ "`ls current/*/bin/engine_par 2>/dev/null`" != "" ] && [ "$TRUST_DOWNLOAD_VISIT" != 1 ]
+   #if [ "`ls current/*/bin/engine_par 2>/dev/null`" != "" ] && [ "$TRUST_DOWNLOAD_VISIT" != 1 ]
+   if [ "$TRUST_DOWNLOAD_VISIT" != 1 ]
    then
       # Add path to use VisIt cmake
-      export PATH=$TRUST_ROOT/Outils/VisIt/src/cmake-3.0.2/bin:$PATH
+      #export PATH=$TRUST_ROOT/Outils/VisIt/src/cmake-3.0.2/bin:$PATH
       for plugin in `ls plugins/*/build_plugin 2>/dev/null`
       do
 	 rep=`dirname $plugin`
@@ -305,9 +310,9 @@ then
    if [ $? != 0 ]
    then
       # GF si erreur test avec build VisIt on arrete et on propose de tester download VisIt (TRUST_DOWNLOAD_VISIT=1) manuellement et non automatiquement
-      echo "==========================================================================="
-      echo "Parallel VisIt does NOT work so you try to download a sequential version..."
-      echo "==========================================================================="
+      echo "======================================================="
+      echo "VisIt does NOT work so you try to download a version..."
+      echo "======================================================="
       echo "Error with build VisIt of $TRUST_ROOT/Outils/VisIt/test/test_visit"
       echo "You can test with download VisIt:"
       echo "cd $TRUST_ROOT/Outils/VisIt"
@@ -316,26 +321,26 @@ then
       echo "make"
       echo "==========================================================================="
       exit -1
-      if [ "`ls $TRUST_ROOT/Outils/VisIt/current/*/bin/engine_par 2>/dev/null`" != "" ]
-      then
-	 echo "=========================================================================="
-	 echo "Parallel VisIt does NOT work so we try to download a sequential version..."
-	 echo "=========================================================================="
-	 cd $TRUST_ROOT/Outils/VisIt
-	 make clean
-	 export TRUST_DOWNLOAD_VISIT=1
-	 make
-	 exit $?
-      fi      
+#      if [ "`ls $TRUST_ROOT/Outils/VisIt/current/*/bin/engine_par 2>/dev/null`" != "" ]
+#      then
+#	 echo "==============================================================="
+#	 echo "Parallel VisIt does NOT work so we try to download a version..."
+#	 echo "==============================================================="
+#	 cd $TRUST_ROOT/Outils/VisIt
+#	 make clean
+#	 export TRUST_DOWNLOAD_VISIT=1
+#	 make
+#	 exit $?
+#      fi      
    else
-      ####################################################
-      # Build of parallel VisIt is deleted if test is OK #
-      ####################################################
-      if [ "`ls $TRUST_ROOT/Outils/VisIt/current/*/bin/engine_par 2>/dev/null`" != "" ]
-      then
+      ###########################################
+      # Build of VisIt is deleted if test is OK #
+      ###########################################
+#      if [ "`ls $TRUST_ROOT/Outils/VisIt/current/*/bin/engine_par 2>/dev/null`" != "" ]
+#      then
 	 cd $TRUST_ROOT/Outils/VisIt/src 
 	 ./build.sh clean
-      fi      
+#      fi      
    fi
 else
    echo "$what unknown."

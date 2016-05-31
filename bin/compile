@@ -49,6 +49,8 @@ make_tools()
    do
       if [ -d $TRUST_ROOT/$rep ] && [ "`ls $TRUST_ROOT/$rep/*akefile 2>/dev/null`" != "" ]
       then
+         echo>>$COMPILE
+	 echo "$MESSAGE tool: $rep" 1>>$COMPILE 2>&1
 	 \cd $TRUST_ROOT/$rep && echo $ECHO_OPTS $rep":\c " && $MAKE $CLEAN 1>>$COMPILE 2>&1
 	 err=$?
 	 OK $err
@@ -102,7 +104,6 @@ CLEAN="" && MESSAGE="Building" && [ "${1%clean}" != "$1" ] && CLEAN=clean && MES
  
 COMPILE=$TRUST_ROOT/compile_TRUST$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD".log"
 echo "TRUST compilation on $HOST the `date` ...">$COMPILE
-echo>>$COMPILE
 
 # Nettoyage/Reconstruction des outils uniquement
 if [ "$1" = tools ]
@@ -173,6 +174,8 @@ then
       then
          # On compile TOUTES les librairies en optimise:
          \cd $rep
+         echo>>$COMPILE
+	 echo "$MESSAGE library: $rep" 1>>$COMPILE 2>&1
 	 echo $ECHO_OPTS $rep":\c "
 	 OLD_OPT=$OPT
 	 OPT="_opt"
@@ -202,6 +205,7 @@ then
    #   (cd $TRUST_ROOT/src/Kernel/MEDimpl;make depend)
    #fi
 fi
+echo>>$COMPILE
 if [ $monodir = 0 ]
 then
    #######################
@@ -344,6 +348,8 @@ then
 #####################
 # Compilation monodir
 #####################
+   echo>>$COMPILE
+   echo "Compiling sources" 1>>$COMPILE 2>&1
    # On fait le mklibs   
    mklibs=`ls $TRUST_ROOT/bin/mklibs* 2>/dev/null` && $mklibs 
    [ ${#MonoDir} = 0 ] && MonoDir=$TRUST_ROOT/MonoDir$COMM$OPT
@@ -594,6 +600,8 @@ make_tools
 if [ "$CLEAN" != "" ]
 then
    \cd $TRUST_ROOT
+   echo>>$COMPILE
+   echo "Cleaning sources" 1>>$COMPILE 2>&1
    # GF il ne faut pas effacer exec ici, sinon le configure risque de planter
    #rm -rf lib/ include/ MonoDir*
    # il ne faut pas effacer lib/src/LIBMPI ici, sinon l'installation Installer_TRUST plante, idem pour include/backward

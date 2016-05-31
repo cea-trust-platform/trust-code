@@ -383,7 +383,8 @@ then
    [ $minimal_mumps = 0 ] && add_package SuiteSparse
 
    # New (Pastix) pb sous cygwin
-   [  $TRUST_ARCH != cygwin ] &&  [ $minimal_mumps = 0 ] && [ $scotch -eq 1 ] &&add_package pastix
+   # Test (27/06/15 : probleme pour portabilite sur Ubuntu16 entre autre)
+   #[  $TRUST_ARCH != cygwin ] &&  [ $minimal_mumps = 0 ] && [ $scotch -eq 1 ] && add_package pastix
 
    # New (Pardiso)
    [ -f $MKLROOT/include/mkl_pardiso.h ] && with_packages=$with_packages" --with-mkl_pardiso=1 --with-mkl_pardiso-dir=$MKLROOT"
@@ -558,7 +559,7 @@ do
 	    # On fait un touch des fichiers include
 	    touch $PETSC_ROOT/$PETSC_ARCH/include/*.h
 	    # Copie des fichiers include pour PETSc sequentiel:
-	    [ "$TRUST_DISABLE_MPI" = 1 ] && cp $PETSC_ROOT/$PETSC_ARCH/include/mpiuni/*.h $PETSC_ROOT/$PETSC_ARCH/include/
+	    [ "$TRUST_DISABLE_MPI" = 1 ] && cp $PETSC_ROOT/$PETSC_ARCH/include/petsc/mpiuni/*.h $PETSC_ROOT/$PETSC_ARCH/include/
 	    # Copie de la doc
 	    [ -d docs ] && cp -r docs $PETSC_ROOT/$PETSC_ARCH/.
 	    # Copie des exemples

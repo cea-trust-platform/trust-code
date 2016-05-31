@@ -55,7 +55,7 @@ b2e6f2373d480aa6f0ea5ca3d5d531c3  petsc/SuiteSparse-4.4.3.tar.gz
 a586e11cd4aff49c3ff6d3b6a4c9ccf8  petsc/bison-3.0.4.tar.gz
 41d8342631256935dcfb063d281b7dd4  petsc/cusplibrary-0.4.0.tgz
 5724bcffed4ebe39e9b55a9be80859ec  petsc/flex-2.6.0.tar.gz
-c8c745d1bd186c9f924cb241ba1b8d0a  petsc/hypre-2.10.0b-p2.tar.gz
+ae061d962f7cb6b7395c312c4b8528d3  petsc/hypre-2.10.0b-p2-TRUST.tar.gz
 a5e9954b1dae036762f7b13673a2cf76  petsc/m4-1.4.17.tar.gz
 13d76f47d987b4815e18b8f865c1fc63  petsc/metis-5.1.0-p1.tar.gz
 90e98622c6c84803e0579faebde67f38  petsc/parmetis-4.0.3-p2.tar.gz

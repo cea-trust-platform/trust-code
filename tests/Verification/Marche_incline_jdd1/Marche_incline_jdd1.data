@@ -155,9 +155,9 @@ Read pb
 Post_processing 
 {
 
-	fields dt_post 20.
+	format lml fields formatte dt_post 20.
 	{
-			vitesse elem pression elem
+			vitesse elem Pression elem
 			pression som
 			critere_Q elem
 			k elem

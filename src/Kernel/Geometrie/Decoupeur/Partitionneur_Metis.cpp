@@ -499,6 +499,7 @@ void Partitionneur_Metis::construire_partition(ArrOfInt& elem_part, int& nb_part
         options[METIS_OPTION_NCUTS]=nb_essais_;         // Nombre de partitionnements testes pour en prendre le meilleur
         options[METIS_OPTION_NUMBERING]=0;              // Numerotation C qui demarre a 0
         options[METIS_OPTION_DBGLVL]=111111111;         // Mode verbose maximal
+        options[METIS_OPTION_NO2HOP]=1;                 // 5.1.0: not perform any 2-hop matchings (as 5.0.3)
         idx_t ncon=1;
 
         // Implementation reduite (plusieurs valeurs par defaut->NULL) pour METIS 5.0
