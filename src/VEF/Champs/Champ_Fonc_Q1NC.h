@@ -44,7 +44,7 @@ public :
   inline const Zone_VEF& zone_vef() const;
   int fixer_nb_valeurs_nodales(int );
   virtual void mettre_a_jour(double );
-  DoubleTab& trace(const Frontiere_dis_base& , DoubleTab& , double ) const;
+  DoubleTab& trace(const Frontiere_dis_base& , DoubleTab& , double,int distant ) const;
 
   inline DoubleVect& valeur_a_elem(const DoubleVect& position,
                                    DoubleVect& val,

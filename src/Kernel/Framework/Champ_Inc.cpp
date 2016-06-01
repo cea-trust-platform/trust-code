@@ -563,9 +563,9 @@ void Champ_Inc::associer_eqn(const Equation_base& eqn)
 // Exception:
 // Effets de bord:
 // Postcondition:
-DoubleTab& Champ_Inc::trace(const Frontiere_dis_base& fr, DoubleTab& x) const
+DoubleTab& Champ_Inc::trace(const Frontiere_dis_base& fr, DoubleTab& x,int distant) const
 {
-  return valeur().trace(fr, x);
+  return valeur().trace(fr, x,distant);
 }
 
 // Description:
@@ -590,8 +590,8 @@ DoubleTab& Champ_Inc::trace(const Frontiere_dis_base& fr, DoubleTab& x) const
 // Exception:
 // Effets de bord:
 // Postcondition:
-DoubleTab& Champ_Inc::trace(const Frontiere_dis_base& fr, DoubleTab& x, double tps) const
+DoubleTab& Champ_Inc::trace(const Frontiere_dis_base& fr, DoubleTab& x, double tps,int distant) const
 {
-  return valeur().trace(fr, x, tps);
+  return valeur().trace(fr, x, tps,distant);
 }
 

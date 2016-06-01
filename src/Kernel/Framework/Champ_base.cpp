@@ -1561,9 +1561,9 @@ const Zone_dis_base& Champ_base::zone_dis_base() const
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-DoubleTab& Champ_base::trace(const Frontiere_dis_base& fr, DoubleTab& x) const
+DoubleTab& Champ_base::trace(const Frontiere_dis_base& fr, DoubleTab& x,int distant) const
 {
-  return trace(fr,x,temps_);
+  return trace(fr,x,temps_,distant);
 }
 
 // Description:
@@ -1600,7 +1600,7 @@ DoubleTab& Champ_base::trace(const Frontiere_dis_base& fr, DoubleTab& x) const
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-DoubleTab& Champ_base::trace(const Frontiere_dis_base& , DoubleTab& x , double tps) const
+DoubleTab& Champ_base::trace(const Frontiere_dis_base& , DoubleTab& x , double tps,int distant) const
 {
   Cerr << que_suis_je() << "did not overloaded Champ_base::trace" << finl;
   exit();

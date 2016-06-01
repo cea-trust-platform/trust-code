@@ -46,7 +46,7 @@ public:
   int fixer_nb_valeurs_nodales(int);
   int imprime(Sortie& os, int ncomp) const;
   virtual void mettre_a_jour(double );
-  DoubleTab& trace(const Frontiere_dis_base& , DoubleTab&, double ) const;
+  DoubleTab& trace(const Frontiere_dis_base& , DoubleTab&, double ,int distant) const;
   Champ_base& affecter_(const Champ_base& );
   inline DoubleVect& valeur_a_elem(const DoubleVect& position,
                                    DoubleVect& val,

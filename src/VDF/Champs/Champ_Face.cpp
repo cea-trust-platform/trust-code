@@ -473,9 +473,9 @@ int Champ_Face::compo_normale_sortante(int num_face) const
   return (vit_norm > 0);
 }
 
-DoubleTab& Champ_Face::trace(const Frontiere_dis_base& fr, DoubleTab& x, double tps) const
+DoubleTab& Champ_Face::trace(const Frontiere_dis_base& fr, DoubleTab& x, double tps, int distant) const
 {
-  return Champ_Face_implementation::trace(fr, valeurs(tps), x);
+  return Champ_Face_implementation::trace(fr, valeurs(tps), x,distant);
 }
 
 void Champ_Face::mettre_a_jour(double un_temps)

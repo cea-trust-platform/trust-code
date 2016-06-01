@@ -608,7 +608,7 @@ DoubleVect& Champ_front_contact_VEF::trace_face_raccord(const Front_VF& fr_vf,co
 {
   // On verifie que la frontiere est de type Raccord_distant_homogene
   if (sub_type(Raccord_distant_homogene,fr_vf.frontiere()))
-    fr_vf.frontiere().trace_face(y,x);
+    fr_vf.frontiere().trace_face_distant(y,x);
   else
     {
       if (Process::nproc()>1)

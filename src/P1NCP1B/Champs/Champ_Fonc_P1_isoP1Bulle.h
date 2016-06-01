@@ -43,7 +43,7 @@ public :
   void associer_zone_dis_base(const Zone_dis_base&);
   inline const Zone_VEF_PreP1b& zone_vef() const;
   virtual void mettre_a_jour(double );
-  DoubleTab& trace(const Frontiere_dis_base& , DoubleTab& , double ) const;
+  DoubleTab& trace(const Frontiere_dis_base& , DoubleTab& , double,int distant ) const;
 
   inline DoubleVect& valeur_a_elem(const DoubleVect& position,
                                    DoubleVect& val,

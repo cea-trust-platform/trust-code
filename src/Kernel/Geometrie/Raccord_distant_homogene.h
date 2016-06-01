@@ -39,9 +39,9 @@ public:
   inline double& e() ;
   inline const int& est_initialise() const;
   inline const double& e() const;
-  virtual void trace_elem(const DoubleTab&, DoubleTab&) const;
-  virtual void trace_face(const DoubleTab&, DoubleTab&) const;
-  virtual void trace_face(const DoubleVect&, DoubleVect&) const;
+  virtual void trace_elem_distant(const DoubleTab&, DoubleTab&) const;
+  virtual void trace_face_distant(const DoubleTab&, DoubleTab&) const;
+  virtual void trace_face_distant(const DoubleVect&, DoubleVect&) const;
   void completer();
   void initialise(const Frontiere&, const Zone_dis_base&, const Zone_dis_base&);
 private :

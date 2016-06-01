@@ -178,7 +178,7 @@ protected :
   friend DoubleTab& valeur_P1_L2_H1(Champ_P1NC&,const Domaine&,DoubleTab& );
   friend int test(Champ_P1NC&,const Domaine&);
 
-  inline DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x) const;
+  inline DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x,int distant) const;
   //////////////////////////////////////////////////////////////
   // FIn des membres rajoutes
   //////////////////////////////////////////////////////////////
@@ -215,9 +215,12 @@ inline const SolveurSys& Champ_P1NC_implementation::get_solveur_L2_H1() const
   return solveur_L2_H1;
 }
 
-inline DoubleTab& Champ_P1NC_implementation::trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x) const
+inline DoubleTab& Champ_P1NC_implementation::trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x,int distant) const
 {
-  fr.frontiere().trace_face(y, x);
+  if (distant)
+    fr.frontiere().trace_face_distant(y, x);
+  else
+    fr.frontiere().trace_face_local(y, x);
   // useless ? x.echange_espace_virtuel();
   return x;
 }

@@ -496,8 +496,9 @@ int Champ_Face_implementation::imprime_Face(Sortie& os, int ncomp) const
   return 1;
 }
 
-DoubleTab& Champ_Face_implementation::trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x) const
+DoubleTab& Champ_Face_implementation::trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x,int distant) const
 {
+  assert(distant==0);
   const Front_VF& fr_vf=ref_cast(Front_VF, fr);
   const Zone_VDF& zvdf=zone_vdf();
   const IntVect& ori = zvdf.orientation();

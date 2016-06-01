@@ -76,8 +76,8 @@ public:
   double integrale_espace(int ) const;
   void mettre_a_jour(double temps);
   void associer_eqn(const Equation_base&);
-  DoubleTab& trace(const Frontiere_dis_base&, DoubleTab& ) const;
-  DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double ) const;
+  DoubleTab& trace(const Frontiere_dis_base&, DoubleTab& ,int distant) const;
+  DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double ,int distant) const;
   // Operateur de conversion implicite
   operator DoubleTab& ();
   operator const DoubleTab& () const ;

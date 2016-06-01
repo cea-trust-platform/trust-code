@@ -55,7 +55,7 @@ public :
   void associer_zone_dis_base(const Zone_dis_base&);
   inline const Zone_VEF& zone_vef() const;
   int compo_normale_sortante(int ) const;
-  DoubleTab& trace(const Frontiere_dis_base& , DoubleTab& , double ) const;
+  DoubleTab& trace(const Frontiere_dis_base& , DoubleTab& , double ,int distant) const;
   void cal_rot_ordre1(DoubleTab&) const;
   /*extern void calculer_gradientP1NC(const DoubleTab& ,
     const Zone_VEF&,

@@ -75,7 +75,7 @@ Champ_base& Champ_Inc_P0_base::affecter_(const Champ_base& ch)
 
 // Description :
 // Trace du champ P0 sur la frontiere
-DoubleTab& Champ_Inc_P0_base::trace(const Frontiere_dis_base& fr, DoubleTab& x, double tps) const
+DoubleTab& Champ_Inc_P0_base::trace(const Frontiere_dis_base& fr, DoubleTab& x, double tps,int distant) const
 {
-  return Champ_implementation_P0::trace(fr, valeurs(tps), x);
+  return Champ_implementation_P0::trace(fr, valeurs(tps), x,  distant);
 }
