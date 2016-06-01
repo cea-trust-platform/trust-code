@@ -18,6 +18,21 @@
    obj:/usr/lib64/ld-2.21.so
    }
 {
+   hypre_boomerang_mempara
+   Memcheck:User
+   fun:check_mem_is_defined_untyped
+   fun:walk_type_array
+   fun:check_mem_is_defined
+   fun:generic_Send
+   fun:PMPI_Send
+   fun:hypre_DataExchangeList
+   fun:hypre_NewCommPkgCreate_core
+   fun:hypre_MatvecCommPkgCreate
+   fun:hypre_BoomerAMGCreateS
+   fun:hypre_BoomerAMGSetup
+   fun:PCSetUp_HYPRE
+}
+{
    mumps_para
    Memcheck:User
    fun:check_mem_is_defined_untyped
