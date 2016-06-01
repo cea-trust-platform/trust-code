@@ -324,7 +324,7 @@ void Frontiere::creer_tableau_faces(Array_base& v, Array_base::Resize_Options op
 
 // Description:
 // Renvoie la trace sur la frontiere du tableau aux elements y
-void Frontiere::trace_elem(const DoubleTab& y, DoubleTab& x) const
+void Frontiere::trace_elem_local(const DoubleTab& y, DoubleTab& x) const
 {
   int size = nb_faces();
   int nb_compo_=1;
@@ -366,7 +366,7 @@ void Frontiere::trace_elem(const DoubleTab& y, DoubleTab& x) const
 
 // Description:
 // Renvoie la trace sur la frontiere du tableau aux faces y
-void Frontiere::trace_face(const DoubleVect& y, DoubleVect& x) const
+void Frontiere::trace_face_local(const DoubleVect& y, DoubleVect& x) const
 {
   Cerr << "Frontiere::trace_face(const DoubleVect& y, DoubleVect& x) const" << finl;
   Cerr << "not coded yet." << finl;
@@ -375,7 +375,7 @@ void Frontiere::trace_face(const DoubleVect& y, DoubleVect& x) const
 
 // Description:
 // Renvoie la trace sur la frontiere du tableau aux faces y
-void Frontiere::trace_face(const DoubleTab& y, DoubleTab& x) const
+void Frontiere::trace_face_local(const DoubleTab& y, DoubleTab& x) const
 {
   int size = nb_faces();
   int nb_compo_=1;
@@ -398,4 +398,20 @@ void Frontiere::trace_face(const DoubleTab& y, DoubleTab& x) const
         int face=num_premiere_face()+i;
         x(i,0)=y(face);
       }
+}
+
+void Frontiere::trace_elem_distant(const DoubleTab&, DoubleTab&) const
+{
+  Cerr<<que_suis_je()<<"::trace_elem_distant not implemented "<<finl;
+  exit();
+}
+void Frontiere::trace_face_distant(const DoubleTab&, DoubleTab&) const
+{
+  Cerr<<que_suis_je()<<"::trace_face_distant not implemented "<<finl;
+  exit();
+}
+void Frontiere::trace_face_distant(const DoubleVect&, DoubleVect&) const
+{
+  Cerr<<que_suis_je()<<"::trace_face_distant not implemented "<<finl;
+  exit();
 }

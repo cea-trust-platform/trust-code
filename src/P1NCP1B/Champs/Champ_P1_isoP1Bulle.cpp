@@ -243,7 +243,7 @@ DoubleVect& Champ_P1_isoP1Bulle::valeur_aux_elems_compo(const DoubleTab& positio
   return Champ_P1iP1B_implementation::valeur_aux_elems_compo(positions, les_polys, val, ncomp);
 }
 
-DoubleTab& Champ_P1_isoP1Bulle::trace(const Frontiere_dis_base& fr, DoubleTab& x, double tps) const
+DoubleTab& Champ_P1_isoP1Bulle::trace(const Frontiere_dis_base& fr, DoubleTab& x, double tps,int distant) const
 {
   if (!est_egal(temps_,tps))
     {
@@ -253,7 +253,7 @@ DoubleTab& Champ_P1_isoP1Bulle::trace(const Frontiere_dis_base& fr, DoubleTab& x
       Cerr<<"de ce champ qui ne correspond pas au temps passe en parametre "<<tps<<finl;
       exit();
     }
-  return Champ_P1iP1B_implementation::trace(fr, valeurs(tps), x);
+  return Champ_P1iP1B_implementation::trace(fr, valeurs(tps), x,distant);
 }
 
 double Champ_P1_isoP1Bulle::valeur_au_bord(int face) const

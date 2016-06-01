@@ -83,6 +83,6 @@ protected :
   void completer(const Zone_Cl_dis_base& zcl);
 
   virtual const Zone_VEF_PreP1b& zone_vef() const=0;
-  DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x) const;
+  DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x,int distant) const;
 };
 #endif

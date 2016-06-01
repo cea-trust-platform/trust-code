@@ -76,7 +76,7 @@ public:
 
 protected :
   virtual const Zone_VEF& zone_vef() const=0;
-  inline DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x) const;
+  inline DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x,int distant) const;
   //  virtual void dimensionner_array() = 0;
   //  DoubleVect dummy;
   DoubleTab tab_param;
@@ -216,9 +216,12 @@ inline double Champ_Q1NC_impl::fonction_forme_3D_normalise(double ksi, double et
   return fonction_de_forme_normalisee;
 }
 
-inline DoubleTab& Champ_Q1NC_impl::trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x) const
+inline DoubleTab& Champ_Q1NC_impl::trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x,int distant) const
 {
-  fr.frontiere().trace_face(y, x);
+  if (distant)
+    fr.frontiere().trace_face_distant(y, x);
+  else
+    fr.frontiere().trace_face_local(y, x);
   // useless ? x.echange_espace_virtuel();
   return x;
 }

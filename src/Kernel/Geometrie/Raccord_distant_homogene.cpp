@@ -111,7 +111,7 @@ Raccord_distant_homogene::Raccord_distant_homogene() : est_initialise_(0),e_(0)
 
 // Description:
 // Retourne dans le DoubleTab x la trace sur le raccord distant du DoubleTab y localise aux elements du domaine distant
-void Raccord_distant_homogene::trace_elem(const DoubleTab& y, DoubleTab& x) const
+void Raccord_distant_homogene::trace_elem_distant(const DoubleTab& y, DoubleTab& x) const
 {
   assert(est_initialise());
   int nb_compo_=1;
@@ -170,7 +170,7 @@ void Raccord_distant_homogene::trace_elem(const DoubleTab& y, DoubleTab& x) cons
 
 // Description:
 // Retourne dans le DoubleTab x la trace sur le raccord distant du DoubleTab y localise aux faces
-void Raccord_distant_homogene::trace_face(const DoubleTab& y, DoubleTab& x) const
+void Raccord_distant_homogene::trace_face_distant(const DoubleTab& y, DoubleTab& x) const
 {
   assert(est_initialise());
   int nb_compo_=1;
@@ -214,7 +214,7 @@ void Raccord_distant_homogene::trace_face(const DoubleTab& y, DoubleTab& x) cons
 
 // Description:
 // Retourne dans le DoubleVect x la trace sur le raccord distant du DoubleVect y localise aux faces du raccord distant
-void Raccord_distant_homogene::trace_face(const DoubleVect& y, DoubleVect& x) const
+void Raccord_distant_homogene::trace_face_distant(const DoubleVect& y, DoubleVect& x) const
 {
   // Verifie que l'on passe bien un tableau aux faces du raccord
   assert(y.size()==nb_faces());

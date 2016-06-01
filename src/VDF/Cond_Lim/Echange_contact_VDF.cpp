@@ -201,7 +201,7 @@ void calculer_h_distant(DoubleTab& tab,const Equation_base& une_eqn,const Zone_V
         {
           dequiv=true;
           DoubleVect d_equiv_tmp;
-          front_vf.frontiere().trace_face( loi_par.valeur().equivalent_distance_name(d_equiv_tmp,nom_racc2),e);
+          front_vf.frontiere().trace_face_distant( loi_par.valeur().equivalent_distance_name(d_equiv_tmp,nom_racc2),e);
           // const Paroi_scal_hyd_base_VDF& loip = ref_cast(Paroi_scal_hyd_base_VDF,loi_par.valeur());
           // front_vf.frontiere().trace_face(loip.d_equiv_nom(d_equiv_tmp,nom_racc2),e);
         }
@@ -209,7 +209,7 @@ void calculer_h_distant(DoubleTab& tab,const Equation_base& une_eqn,const Zone_V
   if( ! dequiv )
     {
       DoubleVect dist;
-      front_vf.frontiere().trace_face(zvdf_2.dist_norm_bord(dist,nom_racc2),e);
+      front_vf.frontiere().trace_face_distant(zvdf_2.dist_norm_bord(dist,nom_racc2),e);
     }
 
   // Calcul de tab = 1/(e/lambda + 1/h_paroi)=1/(e/lambda + invhparoi)
@@ -217,7 +217,7 @@ void calculer_h_distant(DoubleTab& tab,const Equation_base& une_eqn,const Zone_V
   if(!sub_type(Champ_Uniforme,le_milieu.conductivite().valeur()))
     {
       DoubleTab lambda;
-      front_vf.frontiere().trace_elem(le_milieu.conductivite().valeurs(),lambda);
+      front_vf.frontiere().trace_elem_distant(le_milieu.conductivite().valeurs(),lambda);
       if (lambda.nb_dim() == 1)
         {
           assert(nb_comp==1);

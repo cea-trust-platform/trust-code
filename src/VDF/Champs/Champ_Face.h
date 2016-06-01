@@ -79,7 +79,7 @@ public:
   void calculer_dercov_axi(const Zone_Cl_VDF& );
   void calculer_rotationnel_ordre2_centre_element(DoubleTab& ) const;
   int imprime(Sortie& , int ) const;
-  DoubleTab& trace(const Frontiere_dis_base& , DoubleTab&, double ) const;
+  DoubleTab& trace(const Frontiere_dis_base& , DoubleTab&, double,int distant ) const;
   virtual void mettre_a_jour(double temps);
 
   inline DoubleVect& valeur_a_elem(const DoubleVect& position,

@@ -63,9 +63,9 @@ int Ch_front_var_instationnaire_dep::initialiser(double temps, const Champ_Inc_b
     {
       const Frontiere& MaFrontiere = frontiere_dis().frontiere();
       if (inco.valeurs().dimension(0)==inco.zone_dis_base().nb_elem())
-        MaFrontiere.Frontiere::trace_elem(inco.valeurs(),tab);
+        MaFrontiere.Frontiere::trace_elem_local(inco.valeurs(),tab);
       else if (inco.valeurs().dimension(0)==ref_cast(Zone_VF,inco.zone_dis_base()).nb_faces())
-        MaFrontiere.Frontiere::trace_face(inco.valeurs(),tab);
+        MaFrontiere.Frontiere::trace_face_local(inco.valeurs(),tab);
       else
         {
           Cerr << "Warning: Field " << inco.que_suis_je() << " is not supported yet in Ch_front_var_instationnaire_dep::initialiser" << finl;

@@ -58,12 +58,15 @@ protected :
   virtual DoubleTab& valeur_aux_sommets_impl(DoubleTab& result) const;
   virtual DoubleVect& valeur_aux_sommets_compo_impl(DoubleVect& result, int ncomp) const;
   int affecter_(const Champ_base& ) ;
-  inline DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x) const;
+  inline DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x,int distant) const;
 };
 
-inline DoubleTab& Champ_implementation_P0::trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x) const
+inline DoubleTab& Champ_implementation_P0::trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x,int distant) const
 {
-  fr.frontiere().trace_elem(y, x);
+  if (distant)
+    fr.frontiere().trace_elem_distant(y, x);
+  else
+    fr.frontiere().trace_elem_local(y, x);
   // useless ? x.echange_espace_virtuel();
   return x;
 }

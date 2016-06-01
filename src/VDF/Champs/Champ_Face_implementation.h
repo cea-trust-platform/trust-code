@@ -55,6 +55,6 @@ public:
 protected :
   virtual const Zone_VDF& zone_vdf() const=0;
   double interpolation(const double , const double , const double ) const;
-  DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x) const;
+  DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x,int distant) const;
 };
 #endif

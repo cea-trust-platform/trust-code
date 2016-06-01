@@ -85,9 +85,9 @@ void Champ_Fonc_P1NC::mettre_a_jour(double t)
 
 // Description :
 //Voir Champ_base::trace
-DoubleTab& Champ_Fonc_P1NC::trace(const Frontiere_dis_base& fr, DoubleTab& x, double tps) const
+DoubleTab& Champ_Fonc_P1NC::trace(const Frontiere_dis_base& fr, DoubleTab& x, double tps,int distant) const
 {
-  return Champ_P1NC_implementation::trace(fr, valeurs(), x);
+  return Champ_P1NC_implementation::trace(fr, valeurs(), x,distant);
 }
 
 int Champ_Fonc_P1NC::imprime(Sortie& os, int ncomp) const

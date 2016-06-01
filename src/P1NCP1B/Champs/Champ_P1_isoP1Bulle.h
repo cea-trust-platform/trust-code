@@ -57,7 +57,7 @@ public :
   inline virtual DoubleVect& valeur_aux_sommets_compo(const Domaine&,
                                                       DoubleVect&, int) const;
 
-  DoubleTab& trace(const Frontiere_dis_base& , DoubleTab& , double ) const;
+  DoubleTab& trace(const Frontiere_dis_base& , DoubleTab& , double ,int distant) const;
   inline const Zone_VEF_PreP1b& zone_vef() const;
   double valeur_au_bord(int face) const;
   virtual Champ_base& affecter_(const Champ_base& ) ;

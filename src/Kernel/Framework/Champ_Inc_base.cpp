@@ -914,9 +914,9 @@ Champ_base& Champ_Inc_base::affecter_compo(const Champ_base& ch,
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-DoubleTab& Champ_Inc_base::trace(const Frontiere_dis_base& fr, DoubleTab& x) const
+DoubleTab& Champ_Inc_base::trace(const Frontiere_dis_base& fr, DoubleTab& x,int distant) const
 {
-  return trace(fr,x,les_valeurs->temps());
+  return trace(fr,x,les_valeurs->temps(),distant);
 }
 
 
@@ -928,7 +928,7 @@ DoubleTab& Champ_Inc_base::trace(const Frontiere_dis_base& fr, DoubleTab& x) con
 //    dimensionne sur le raccord associe.
 //
 
-DoubleTab& Champ_Inc_base::trace(const Frontiere_dis_base& , DoubleTab& x , double tps) const
+DoubleTab& Champ_Inc_base::trace(const Frontiere_dis_base& , DoubleTab& x , double tps,int distant) const
 {
   Cerr << que_suis_je() << "did not overloaded Champ_Inc_base::trace" << finl;
   return x;
