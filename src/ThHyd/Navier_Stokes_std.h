@@ -139,6 +139,8 @@ public :
   virtual void sauver() const;
 
   virtual void calculer_la_pression_en_pa();
+
+  virtual void calculer_pression_hydrostatique(Champ_base& pression_hydro) const;
   virtual int verif_Cl() const;
 
 
@@ -156,6 +158,7 @@ protected:
   Champ_Inc la_pression_en_pa;
   Champ_Fonc la_vorticite;
   Champ_Fonc critere_Q;
+  Champ_Fonc pression_hydrostatique_;
   Champ_Fonc porosite_volumique;
   Champ_Fonc combinaison_champ;
   Champ_Fonc y_plus;
