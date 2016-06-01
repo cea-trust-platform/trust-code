@@ -215,6 +215,7 @@ then
    if [ -O $cible ] 
    then
       cible=$cible/$test.data
+      chmod gu-w $cible
       if [ ! -f $cible ] || [ "`diff $test.data $cible`" != "" ] 
       then
          DEST=`pwd`

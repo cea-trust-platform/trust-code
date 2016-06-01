@@ -23,6 +23,8 @@ TMP2=`mktemp_`
 # GF on regarde si dans les 7 premieres c'est un commentaire ou pas... 
 $TRUST_Awk  '{if (FNR>7) {print $0} else {if (index($1,"//")!=1) {print $0}}}'  $DESTFILE > $TMP1
 $TRUST_Awk  '{if (FNR>7) {print $0} else {if (index($1,"//")!=1) {print $0}}}' $TMP_DESTFILE > $TMP2
+chmod go+r $DESTFILE
+chmod gu-w $DESTFILE
 if [ "`diff $TMP2 $TMP1`" ]
 then
     if [ $check_only -eq 1 ]

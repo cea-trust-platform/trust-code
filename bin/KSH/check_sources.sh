@@ -355,5 +355,5 @@ then
       cd $org
    fi
 else
-   echo "No check sources"
+   [ "$TRUST_DISABLE_CHECK_SRC" = "1" ] && echo "No check sources"
 fi

@@ -1,4 +1,4 @@
-# Calcul Hydraulique : Mise en mouvement par acceleration champ tabule temps #
+# Calcul Hydraulique : Mise en mouvement par acceleration champ fcn du temps #
 # PARALLEL OK 8 #
 dimension 2
 Pb_hydraulique pb
@@ -82,13 +82,7 @@ Read pb
 		{
 			acceleration
 			{
-				acceleration Champ_tabule_temps 2
-				{
-					2
-					0	0.5
-					0.01	0.
-					0.	0.
-				}
+				acceleration Champ_Fonc_t 2 (-0.02*t+0.01)*(t<0.5) 0.
 			}
 		}
 
