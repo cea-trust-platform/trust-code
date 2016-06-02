@@ -66,7 +66,7 @@ protected:
   virtual int init_lois_paroi_hydraulique();
   virtual int preparer_calcul_hyd(DoubleTab& );
   int calculer_u_star_sous_couche_visq(double ,double ,double ,int );
-  int calculer_sous_couche_visq(DoubleTab& ,int );
+  int calculer_sous_couche_visq(DoubleTab& ,double,int,double,int );
   int calculer_sous_couche_visq(DoubleTab& ,DoubleTab& , int );
   double calculer_u_star_sous_couche_visq(double ,double ,double );
   int calculer_u_star_sous_couche_tampon(double& ,double ,double,double ,int );

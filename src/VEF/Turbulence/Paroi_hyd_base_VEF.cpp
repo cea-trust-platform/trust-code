@@ -83,14 +83,17 @@ void Paroi_hyd_base_VEF::init_lois_paroi_()
 
 DoubleTab& Paroi_hyd_base_VEF::corriger_derivee_impl(DoubleTab& d) const
 {
-  int size=d.dimension_tot(0);
-  assert(size==face_keps_imposee_.size_array());
-  for (int face=0; face<size; face++)
+  if (flag_face_keps_imposee_)
     {
-      if (face_keps_imposee_(face)!=-2)
+      int size=d.dimension_tot(0);
+      assert(size==face_keps_imposee_.size_array());
+      for (int face=0; face<size; face++)
         {
-          d(face,0)=0;
-          d(face,1)=0;
+          if (face_keps_imposee_(face)!=-2)
+            {
+              d(face,0)=0;
+              d(face,1)=0;
+            }
         }
     }
   return d;

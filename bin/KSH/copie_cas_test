@@ -32,6 +32,7 @@ cd $REP
 ############################
 rm -f * 2>/dev/null
 
+export TRUST_IN_COPIE_CAS_TEST=1
 ###############################################
 # Copie des fichiers dans le repertoire courant
 ###############################################
@@ -292,3 +293,4 @@ then
    fi
 fi
 
+unset TRUST_IN_COPIE_CAS_TEST
