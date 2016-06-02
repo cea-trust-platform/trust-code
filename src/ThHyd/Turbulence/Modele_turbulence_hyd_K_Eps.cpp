@@ -30,6 +30,9 @@
 #include <Modele_turbulence_scal_base.h>
 #include <Param.h>
 #include <communications.h>
+#include <Fluide_Incompressible.h>
+#include <DoubleTrav.h>
+#include <Champ_Uniforme.h>
 
 Implemente_instanciable(Modele_turbulence_hyd_K_Eps,"Modele_turbulence_hyd_K_Epsilon",Mod_turb_hyd_RANS);
 
@@ -77,6 +80,7 @@ void Modele_turbulence_hyd_K_Eps::set_param(Param& param)
 {
   Mod_turb_hyd_RANS::set_param(param);
   param.ajouter_non_std("Transport_K_Epsilon",(this),Param::REQUIRED);
+  param.ajouter_non_std("Modele_Fonc_Bas_Reynolds",(this));
   param.ajouter("CMU",&LeCmu);
   param.ajouter("PRANDTL_K",&Prandtl_K);
   param.ajouter("PRANDTL_EPS",&Prandtl_Eps);
@@ -88,6 +92,17 @@ int Modele_turbulence_hyd_K_Eps::lire_motcle_non_standard(const Motcle& mot, Ent
     {
       eqn_transp_K_Eps().associer_modele_turbulence(*this);
       is >> eqn_transp_K_Eps();
+      return 1;
+    }
+  else if (mot=="Modele_Fonc_Bas_Reynolds")
+    {
+      Cerr << "Lecture du modele bas reynolds associe " << finl;
+      mon_modele_fonc.associer_eqn(eqn_transp_K_Eps());
+      is >> mon_modele_fonc;
+      Cerr << "mon_modele_fonc.que_suis_je() avant discretisation " << mon_modele_fonc.que_suis_je() << finl;
+      mon_modele_fonc.valeur().discretiser();
+      Cerr << "mon_modele_fonc.que_suis_je() " << mon_modele_fonc.valeur().que_suis_je() << finl;
+      mon_modele_fonc.valeur().lire_distance_paroi();
       return 1;
     }
   else
@@ -113,13 +128,67 @@ Champ_Fonc& Modele_turbulence_hyd_K_Eps::calculer_viscosite_turbulente(double te
 {
   const Champ_base& chK_Eps=eqn_transp_K_Eps().inconnue().valeur();
   Nom type=chK_Eps.que_suis_je();
+  const Zone_Cl_dis& la_zone_Cl_dis = eqn_transp_K_Eps().zone_Cl_dis();
   const DoubleTab& tab_K_Eps = chK_Eps.valeurs();
   DoubleTab& visco_turb =  la_viscosite_turbulente.valeurs();
 
+  DoubleTab Cmu(tab_K_Eps.dimension_tot(0)) ;
 
   // K_Eps(i,0) = K au noeud i
   // K_Eps(i,1) = Epsilon au noeud i
   int n = tab_K_Eps.dimension(0);
+
+  DoubleTrav Fmu,D(tab_K_Eps.dimension_tot(0));
+  D=0;
+  int is_modele_fonc=(mon_modele_fonc.non_nul());
+  // is_modele_fonc=0;
+  if (is_modele_fonc)
+    {
+      // pour avoir nu en incompressible et mu en QC
+      // et non comme on a divise K et eps par rho (si on est en QC)
+      // on veut toujours nu
+      const Champ_Don ch_visco=ref_cast(Fluide_Incompressible,eqn_transp_K_Eps().milieu()).viscosite_cinematique();
+      const Champ_Don& ch_visco_cin =ref_cast(Fluide_Incompressible,eqn_transp_K_Eps().milieu()).viscosite_cinematique();
+      // const Champ_Don& ch_visco_cin_ou_dyn =((const Op_Diff_K_Eps&) eqn_transp_K_Eps().operateur(0)).diffusivite();
+
+      const DoubleTab& tab_visco = ch_visco_cin->valeurs();
+      //      const DoubleTab& tab_visco = ch_visco.valeurs();
+      Fmu.resize(tab_K_Eps.dimension_tot(0));
+      const Zone_dis& la_zone_dis = eqn_transp_K_Eps().zone_dis();
+
+      mon_modele_fonc.Calcul_Fmu( Fmu,la_zone_dis,la_zone_Cl_dis,tab_K_Eps,ch_visco);
+      /*const DoubleTab& vit = eqn_transp_K_Eps().probleme().equation(0).inconnue().valeurs();
+      D=Fmu;
+      D=0;
+      if (0)
+        mon_modele_fonc.Calcul_D(D,la_zone_dis,eqn_transp_K_Eps().zone_Cl_dis(),vit,tab_K_Eps,ch_visco_cin);
+       */
+      int is_Cmu_constant = mon_modele_fonc.Calcul_is_Cmu_constant();
+      if (is_Cmu_constant==0)
+        {
+          Cerr<< " On utilise un Cmu non constant "<< finl;
+          const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
+          mon_modele_fonc.Calcul_Cmu(Cmu, la_zone_dis, la_zone_Cl_dis,
+                                     vitesse, tab_K_Eps, LeEPS_MIN);
+
+          /*Paroi*/
+          Nom lp=eqn_transp_K_Eps().modele_turbulence().loi_paroi().valeur().que_suis_je();
+          if (lp!="negligeable_VEF")
+            {
+              DoubleTab visco_tab(visco_turb.dimension_tot(0));
+              assert(sub_type(Champ_Uniforme,ch_visco_cin.valeur()));
+              visco_tab = tab_visco(0,0);
+              const int idt =  mon_equation->schema_temps().nb_pas_dt();
+              const DoubleTab& tab_paroi = loi_paroi().valeur().Cisaillement_paroi();
+              mon_modele_fonc.Calcul_Cmu_Paroi(Cmu, la_zone_dis, la_zone_Cl_dis,visco_tab, visco_turb, tab_paroi, idt,
+                                               vitesse, tab_K_Eps, LeEPS_MIN);
+            }
+        }
+      else
+        Cerr<< " On utilise un Cmu constant "<< finl;
+
+    }
+
 
   // dans le cas d'une zone nulle on doit effectuer le dimensionnement
   double non_prepare=1;
@@ -149,7 +218,6 @@ Champ_Fonc& Modele_turbulence_hyd_K_Eps::calculer_viscosite_turbulente(double te
                << " instead of " << n << finl;
           exit();
         }
-
       // A la fin de cette boucle, le tableau visco_turb_K_eps
       // contient les valeurs de la viscosite turbulente
       // au centre des faces du maillage.
@@ -159,7 +227,18 @@ Champ_Fonc& Modele_turbulence_hyd_K_Eps::calculer_viscosite_turbulente(double te
           if (tab_K_Eps(i,1) <= LeEPS_MIN)
             visco_turb_K_eps[i] = 0;
           else
-            visco_turb_K_eps[i] = LeCmu*tab_K_Eps(i,0)*tab_K_Eps(i,0)/tab_K_Eps(i,1);
+            {
+              if (is_modele_fonc)
+                {
+                  int is_Cmu_constant = mon_modele_fonc.Calcul_is_Cmu_constant();
+                  if (is_Cmu_constant)
+                    visco_turb_K_eps[i] = Fmu(i)*LeCmu*tab_K_Eps(i,0)*tab_K_Eps(i,0)/(tab_K_Eps(i,1)+D(i));
+                  else
+                    visco_turb_K_eps[i] = Fmu(i)*Cmu(i)*tab_K_Eps(i,0)*tab_K_Eps(i,0)/(tab_K_Eps(i,1)+D(i));
+                }
+              else
+                visco_turb_K_eps[i] = LeCmu*tab_K_Eps(i,0)*tab_K_Eps(i,0)/(tab_K_Eps(i,1)+D(i));
+            }
         }
       // Debog::verifier("Modele_turbulence_hyd_K_Eps::calculer_viscosite_turbulente visco_turb_K_eps after",visco_turb_K_eps);
 
@@ -179,7 +258,18 @@ Champ_Fonc& Modele_turbulence_hyd_K_Eps::calculer_viscosite_turbulente(double te
             }
           else
             {
-              visco_turb[i] = LeCmu*tab_K_Eps(i,0)*tab_K_Eps(i,0)/tab_K_Eps(i,1);
+              if (is_modele_fonc)
+                {
+                  int is_Cmu_constant = mon_modele_fonc.Calcul_is_Cmu_constant();
+                  if (is_Cmu_constant)
+                    visco_turb[i] =Fmu(i)*LeCmu*tab_K_Eps(i,0)*tab_K_Eps(i,0)/(tab_K_Eps(i,1)+D(i));
+                  else
+                    {
+                      visco_turb[i] =Fmu(i)*Cmu(i)*tab_K_Eps(i,0)*tab_K_Eps(i,0)/(tab_K_Eps(i,1)+D(i));
+                    }
+                }
+              else
+                visco_turb[i] = LeCmu*tab_K_Eps(i,0)*tab_K_Eps(i,0)/(tab_K_Eps(i,1)+D(i));
             }
         }
     }
@@ -356,7 +446,8 @@ void Modele_turbulence_hyd_K_Eps::mettre_a_jour(double temps)
   Schema_Temps_base& sch =eqn_transp_K_Eps().schema_temps();
   // Voir Schema_Temps_base::faire_un_pas_de_temps_pb_base
   eqn_transp_K_Eps().zone_Cl_dis().mettre_a_jour(temps);
-  sch.faire_un_pas_de_temps_eqn_base(eqn_transp_K_Eps());
+  if (!eqn_transp_K_Eps().equation_non_resolue())
+    sch.faire_un_pas_de_temps_eqn_base(eqn_transp_K_Eps());
   eqn_transp_K_Eps().mettre_a_jour(temps);
 
   statistiques().begin_count(nut_counter_);
@@ -383,4 +474,45 @@ const Equation_base& Modele_turbulence_hyd_K_Eps::equation_k_eps(int i) const
   assert ((i==0));
   return eqn_transport_K_Eps;
 
+}
+const Champ_base&  Modele_turbulence_hyd_K_Eps::get_champ(const Motcle& nom) const
+{
+
+  try
+    {
+      return Mod_turb_hyd_RANS::get_champ(nom);
+    }
+  catch (Champs_compris_erreur)
+    {
+    }
+  if (mon_modele_fonc.non_nul())
+    {
+      try
+        {
+          return  mon_modele_fonc.valeur().get_champ(nom);
+        }
+      catch (Champs_compris_erreur)
+        {
+        }
+    }
+  throw Champs_compris_erreur();
+
+}
+void Modele_turbulence_hyd_K_Eps::get_noms_champs_postraitables(Noms& nom,Option opt) const
+{
+  Mod_turb_hyd_RANS::get_noms_champs_postraitables(nom,opt);
+  if (mon_modele_fonc.non_nul())
+    mon_modele_fonc.valeur().get_noms_champs_postraitables(nom,opt);
+
+}
+void Modele_turbulence_hyd_K_Eps::verifie_loi_paroi()
+{
+  Nom lp=loipar.valeur().que_suis_je();
+  if (lp=="negligeable_VEF" || lp=="negligeable_VDF")
+    if (!associe_modele_fonction().non_nul())
+      {
+        Cerr<<"The turbulence model of type "<<que_suis_je()<<finl;
+        Cerr<<"must not be used with a wall law of type negligeable or with a modele_function."<<finl;
+        Cerr<<"Another wall law must be selected with this kind of turbulence model."<<finl;
+      }
 }

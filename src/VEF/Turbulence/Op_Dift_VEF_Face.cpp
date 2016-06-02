@@ -24,6 +24,7 @@
 #include <Champ_P1NC.h>
 #include <Les_Cl.h>
 #include <Champ_Uniforme.h>
+#include <Modele_turbulence_hyd_K_Eps.h>
 #include <Turbulence_hyd_sous_maille_VEF.h>
 #include <Mod_turb_hyd_RANS_0_eq.h>
 #include <Paroi_negligeable_VEF.h>
@@ -541,9 +542,11 @@ void Op_Dift_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
 {
   const IntTab& face_voisins = zone_VEF.face_voisins();
   int nb_faces = zone_VEF.nb_faces();
+  int nb_elem = zone_VEF.nb_elem();
   const DoubleTab& face_normale = zone_VEF.face_normales();
 
   assert(nbr_comp>1);
+
   // On dimensionne et initialise le tableau des bilans de flux:
   (ref_cast(DoubleTab,tab_flux_bords)).resize(zone_VEF.nb_faces_bord(),nbr_comp);
   tab_flux_bords=0.;
@@ -556,6 +559,11 @@ void Op_Dift_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
     }
   grad=0.;
 
+  const Equation_base& eqn_base = equation();
+  const Zone_dis& zone_dis = equation().zone_dis();
+  const Zone_Cl_dis& zone_Cl_dis = equation().zone_Cl_dis();
+  const Discretisation_base& dis = eqn_base.discretisation();
+  //  const DoubleTab& vit = eqn_base.inconnue().valeurs();
 
   const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
   int nb_cl=les_cl.size();
@@ -564,6 +572,40 @@ void Op_Dift_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
   Champ_P1NC::calcul_duidxj_paroi(grad,nu,nu_turb,tau_tan,indic_lp_neg,indic_bas_Re,zone_Cl_VEF);
 
   grad.echange_espace_virtuel();
+
+  DoubleTab Re;
+  Re.resize(0, Objet_U::dimension, Objet_U::dimension);
+  zone_VEF.zone().creer_tableau_elements(Re);
+  Re = 0.;
+
+  if sub_type(Modele_turbulence_hyd_K_Eps, le_modele_turbulence.valeur())
+    {
+      const Modele_turbulence_hyd_K_Eps& mod = ref_cast(Modele_turbulence_hyd_K_Eps, le_modele_turbulence.valeur());
+      if (mod.associe_modele_fonction().non_nul() && mod.associe_modele_fonction().Calcul_is_Reynolds_stress_isotrope()==0)
+        {
+          Cerr << "On utilise une diffusion turbulente non linaire dans NS" << finl;
+          const Champ_base& K_Eps = mod.eqn_transp_K_Eps().inconnue().valeur();
+          Re = mod.associe_modele_fonction().calcul_tenseur_Re(dis,zone_dis,zone_Cl_dis,grad,nu_turb,K_Eps);
+          for (int elem=0; elem<nb_elem; elem++)
+            for (int i=0; i<nbr_comp; i++)
+              for (int j=0; j<nbr_comp; j++)
+                Re(elem,i,j) *= nu_turb[elem];
+        }
+      else
+        {
+          for (int elem=0; elem<nb_elem; elem++)
+            for (int i=0; i<nbr_comp; i++)
+              for (int j=0; j<nbr_comp; j++)
+                Re(elem,i,j) = nu_turb[elem]*(grad(elem,i,j) + grad(elem,j,i));
+        }
+    }
+  else
+    for (int elem=0; elem<nb_elem; elem++)
+      for (int i=0; i<nbr_comp; i++)
+        for (int j=0; j<nbr_comp; j++)
+          Re(elem,i,j) = nu_turb[elem]*(grad(elem,i,j) + grad(elem,j,i));
+
+  Re.echange_espace_virtuel();
 
 
   // Calcul du terme diffusif
@@ -588,9 +630,7 @@ void Op_Dift_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
                   for (int i=0; i<nbr_comp; i++)
                     for (int j=0; j<nbr_comp; j++)
                       resu(num_face,i) -= ori*face_normale(num_face,j)
-                                          *((nu[elem]+nu_turb[elem])*grad(elem,i,j)
-                                            +(nu_turb[elem])*grad_transp(elem,i,j));
-
+                                          *(nu[elem]*grad(elem,i,j) + Re(elem,i,j));
                 } // Fin de la boucle sur les elements ayant la face comnune
             } // Fin de la boucle sur les faces
         } // Fin du cas periodique
@@ -603,9 +643,8 @@ void Op_Dift_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
               for (int i=0; i<nbr_comp; i++)
                 for (int j=0; j<nbr_comp; j++)
                   {
-                    double flux = face_normale(num_face,j)*
-                                  ((nu[elem]+nu_turb[elem])*grad(elem,i,j)
-                                   +(nu_turb[elem])*grad_transp(elem,i,j));
+                    double flux = face_normale(num_face,j)
+                                  *(nu[elem]*grad(elem,i,j) + Re(elem,i,j));
                     resu(num_face,i) -= flux;
                     tab_flux_bords(num_face,i) -= flux;
                   }
@@ -628,8 +667,7 @@ void Op_Dift_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
             for (int j=0; j<nbr_comp; j++)
               {
                 resu(num_face,i) -= ori*face_normale(num_face,j)
-                                    *((nu[elem]+nu_turb[elem])*grad(elem,i,j)
-                                      +(nu_turb[elem])*grad_transp(elem,i,j));
+                                    *(nu[elem]*grad(elem,i,j) + Re(elem,i,j));
               }
         } // Fin de la boucle sur les 2 elements comnuns a la face
     } // Fin de la boucle sur les faces internes

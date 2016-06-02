@@ -108,7 +108,7 @@ DoubleTab& It_Sou_EF(_TYPE_)::ajouter(DoubleTab& resu) const\
    {\
       const Milieu_base& milieu = la_zcl->equation().milieu();\
       const Champ_Don& rho = milieu.masse_volumique();\
-      if ( same_type(Champ_Uniforme,rho.valeur()))\
+      if ( sub_type(Champ_Uniforme,rho.valeur()))\
          coef = rho(0,0);\
       else\
       {\
@@ -121,7 +121,7 @@ DoubleTab& It_Sou_EF(_TYPE_)::ajouter(DoubleTab& resu) const\
       const Milieu_base& milieu = la_zcl->equation().milieu();\
       const Champ_Don& rho = milieu.masse_volumique();\
       const Champ_Don& Cp = milieu.capacite_calorifique();\
-      if ( (same_type(Champ_Uniforme,rho.valeur())) && (same_type(Champ_Uniforme,Cp.valeur())))\
+      if ( (sub_type(Champ_Uniforme,rho.valeur())) && (sub_type(Champ_Uniforme,Cp.valeur())))\
          coef = rho(0,0)*Cp(0,0);\
       else\
       {\

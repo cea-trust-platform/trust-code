@@ -14,108 +14,48 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Cal_std.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs
-// Version:     /main/5
+// File:        Modele_Fonc_Bas_Reynolds.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd/Turbulence
+// Version:     /main/14
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include <Modele_Fonc_Bas_Reynolds.h>
+#include <Motcle.h>
+#include <Equation_base.h>
+#include <Discretisation_base.h>
 
-//// calculer_flux_faces_echange_externe_impose
+Implemente_deriv(Modele_Fonc_Bas_Reynolds_Base);
+Implemente_instanciable(Modele_Fonc_Bas_Reynolds,"Modele_Fonc_Bas_Reynolds",DERIV(Modele_Fonc_Bas_Reynolds_Base));
+
 //
+// printOn et readOn
 
-inline int CLASSNAME::calculer_flux_faces_echange_externe_impose() const
+Sortie& Modele_Fonc_Bas_Reynolds::printOn(Sortie& s ) const
 {
-  return 1;
+  return  s << valeur().que_suis_je() << finl;
 }
 
-
-//// calculer_flux_faces_echange_global_impose
-//
-
-inline int CLASSNAME::calculer_flux_faces_echange_global_impose() const
+Entree& Modele_Fonc_Bas_Reynolds::readOn(Entree& is )
 {
-  return 1;
+  Motcle typ;
+  is >> typ;
+  Motcle nom1("Modele_");
+
+  nom1 += typ;
+  //  if ( (typ == "Jones_Launder") || (typ == "Nagano") || (typ == "Lam_Bremhorst")  )
+  //if ( (typ == "Jones_Launder") || (typ == "Nagano") || (typ == "launder_Sharma") )
+  {
+    nom1 += "_";
+    Cerr << nom1 << finl;
+    Nom discr = equation().discretisation().que_suis_je();
+    if (discr=="VEFPreP1B") discr = "VEF";
+    nom1 += discr;
+  }
+  DERIV(Modele_Fonc_Bas_Reynolds_Base)::typer(nom1);
+  valeur().associer_eqn(equation());
+  valeur().associer(equation().zone_dis(), equation().zone_Cl_dis());
+  valeur().associer_pb(equation().probleme());
+  is >> valeur();
+  return is;
 }
-
-
-//// calculer_flux_faces_entree_fluide
-//
-
-inline int CLASSNAME::calculer_flux_faces_entree_fluide() const
-{
-  return 1;
-}
-
-
-//// calculer_flux_faces_paroi
-//
-
-inline int CLASSNAME::calculer_flux_faces_paroi() const
-{
-  return 1;
-}
-
-
-//// calculer_flux_faces_paroi_adiabatique
-//
-
-inline int CLASSNAME::calculer_flux_faces_paroi_adiabatique() const
-{
-  return 0;
-}
-
-
-//// calculer_flux_faces_paroi_defilante
-//
-
-inline int CLASSNAME::calculer_flux_faces_paroi_defilante() const
-{
-  return 0;
-}
-
-
-//// calculer_flux_faces_paroi_fixe
-//
-
-inline int CLASSNAME::calculer_flux_faces_paroi_fixe() const
-{
-  return 1;
-}
-
-
-//// calculer_flux_faces_sortie_libre
-//
-
-inline int CLASSNAME::calculer_flux_faces_sortie_libre() const
-{
-  return 0;
-}
-
-
-//// calculer_flux_faces_symetrie
-//
-
-inline int CLASSNAME::calculer_flux_faces_symetrie() const
-{
-  return 0;
-}
-
-
-//// calculer_flux_faces_periodique
-//
-
-inline int CLASSNAME::calculer_flux_faces_periodique() const
-{
-  return 1;
-}
-
-//// calculer_flux_faces_NSCBC
-//
-
-inline int CLASSNAME::calculer_flux_faces_NSCBC() const
-{
-  return 0;
-}
-
-

@@ -34,6 +34,7 @@
 #include <Zone_Cl_VDF.h>
 #include <Fluide_Quasi_Compressible.h>
 #include <Debog.h>
+#include <Modele_turbulence_hyd_K_Eps.h>
 #include <DoubleTrav.h>
 #include <Pb_Hydraulique_Turbulent.h>
 #include <Pb_Hydraulique_Concentration_Turbulent.h>
@@ -176,6 +177,7 @@ DoubleTab& Source_Transport_K_Eps_VDF_Elem::ajouter(DoubleTab& resu) const
 
   // Ajout d'un espace virtuel au tableu P
   DoubleVect P;
+
   zone_VDF.zone().creer_tableau_elements(P);
 
   if (axi)
@@ -188,17 +190,76 @@ DoubleTab& Source_Transport_K_Eps_VDF_Elem::ajouter(DoubleTab& resu) const
       const Champ_Face& vitesse = ref_cast(Champ_Face,eq_hydraulique->inconnue().valeur());
       calculer_terme_production_K(zone_VDF,zcl_VDF,P,K_eps,vit,vitesse,visco_turb);
     }
-
-  double LeK_MIN = mon_eq_transport_K_Eps->modele_turbulence().get_LeK_MIN();
-  //const Mod_turb_hyd_RANS& mod_turb_RANS = ref_cast(Mod_turb_hyd_RANS,eq_hydraulique->modele_turbulence().valeur());
-  //double LeK_MIN = mod_turb_RANS.get_LeK_MIN() ;
-  for (int elem=0; elem<nb_elem; elem++)
+  const Modele_Fonc_Bas_Reynolds& mon_modele_fonc=ref_cast(Modele_turbulence_hyd_K_Eps,mon_eq_transport_K_Eps->modele_turbulence()).associe_modele_fonction();
+  int is_modele_fonc=(mon_modele_fonc.non_nul());
+  //is_modele_fonc=0;
+  if (is_modele_fonc)
     {
-      resu(elem,0) += (P(elem)-K_eps(elem,1))*volumes(elem)*porosite_vol(elem);
 
-      if (K_eps(elem,0) >= LeK_MIN)
-        resu(elem,1) += (C1*P(elem)- C2*K_eps(elem,1))*volumes(elem)*porosite_vol(elem)*K_eps(elem,1)/K_eps(elem,0);
+      DoubleTab& D=ref_cast_non_const(DoubleTab,mon_modele_fonc.valeur().get_champ("D").valeurs());
+      DoubleTab& E=ref_cast_non_const(DoubleTab,mon_modele_fonc.valeur().get_champ("E").valeurs());
+      DoubleTab& F1=ref_cast_non_const(DoubleTab,mon_modele_fonc.valeur().get_champ("F1").valeurs());
+      DoubleTab& F2=ref_cast_non_const(DoubleTab,mon_modele_fonc.valeur().get_champ("F2").valeurs());
+      const Fluide_Incompressible& fluide=ref_cast(Fluide_Incompressible,eq_hydraulique.valeur().milieu());
+      const Champ_Don& ch_visco_cin = fluide.viscosite_cinematique();
+      // const DoubleTab& tab_visco = ch_visco_cin->valeurs();
+      const Zone_Cl_dis& zcl_keps=mon_eq_transport_K_Eps->zone_Cl_dis();
+      const Zone_dis& zone_dis_keps =mon_eq_transport_K_Eps->zone_dis();
+      mon_modele_fonc.Calcul_D(D,zone_dis_keps,zcl_keps,vit,K_eps,ch_visco_cin);
+      mon_modele_fonc.Calcul_E(E,zone_dis_keps,zcl_keps,vit,K_eps,ch_visco_cin,visco_turb);
 
+      D.echange_espace_virtuel();
+      E.echange_espace_virtuel();
+      const Champ_base& ch_visco_cin_ou_dyn =ref_cast(Op_Diff_K_Eps_base, equation().operateur(0).l_op_base()).diffusivite();
+      DoubleTab P_tab;
+      P_tab.ref(P);
+      mon_modele_fonc.Calcul_F1(F1,zone_dis_keps,zcl_keps, P_tab, K_eps,ch_visco_cin_ou_dyn);
+
+
+      mon_modele_fonc.Calcul_F2(F2,D,zone_dis_keps,K_eps, ch_visco_cin_ou_dyn  );
+      Debog::verifier("D",D);
+      Debog::verifier("E",E);
+      Debog::verifier("F2",F2);
+      Debog::verifier("F1",F1);
+      Debog::verifier("avt",resu);
+      for (int elem=0; elem<nb_elem; elem++)
+        {
+          //if (K_eps(elem,0) > 1.e-10 && K_eps(elem,1) > 1.e-10)
+          {
+            // resu(elem,0) += (P(elem)-eps_sur_k(elem)*K_eps(elem,0))*volumes(elem)*porosite_vol(elem)-D(elem);
+            resu(elem,0) += (P(elem)-K_eps(elem,1)-D(elem))*volumes(elem)*porosite_vol(elem);
+            // on en profite pour diviser D  par le volume
+
+            //assert(eps_sur_k(elem)==K_eps(elem,1)/K_eps(elem,0));
+            //   if (K_eps(elem,0) >= 10.e-10)
+            {
+              double coef=1.;
+              //if (K_eps(elem,0)<2e-2)  coef=0;
+              //  D(elem)/=volumes(elem);
+
+              //ving directory `/users/fauchet/VUES/168/Baltik/BR/build/src/exec_opt'
+              //resu(elem,1) += ((C1*P(elem)*F1(elem)- C2*F2(elem)*coef*(K_eps(elem,1)-0*D(elem)))*eps_sur_k(elem)+E(elem))*volumes(elem)*porosite_vol(elem);
+              resu(elem,1) += ((C1*P(elem)*F1(elem)- C2*F2(elem)*coef*(K_eps(elem,1)))*K_eps(elem,1)/(K_eps(elem,0)+DMINFLOAT)+E(elem))*volumes(elem)*porosite_vol(elem);
+            }
+          }
+        }
+      Debog::verifier("ap",resu);
+
+      // int elem=0;
+      //Cerr<<" ici "<<D(elem)<< " "<<K_eps(elem,1)<<finl;
+    }
+  else
+    {
+      double LeK_MIN = mon_eq_transport_K_Eps->modele_turbulence().get_LeK_MIN();
+
+      for (int elem=0; elem<nb_elem; elem++)
+        {
+          resu(elem,0) += (P(elem)-K_eps(elem,1))*volumes(elem)*porosite_vol(elem);
+
+          if (K_eps(elem,0) >= LeK_MIN)
+            resu(elem,1) += (C1*P(elem)- C2*K_eps(elem,1))*volumes(elem)*porosite_vol(elem)*K_eps(elem,1)/K_eps(elem,0);
+
+        }
     }
 
   //Debog::verifier("Source_Transport_K_Eps_VDF_Elem::ajouter resu",resu);
@@ -579,6 +640,23 @@ void  Source_Transport_K_Eps_VDF_Elem::contribuer_a_avec(const DoubleTab& a,  Ma
   const DoubleVect& porosite = zone_VDF.porosite_elem();
   // on implicite le -eps et le -eps^2/k
 
+  const Modele_Fonc_Bas_Reynolds& mon_modele_fonc=ref_cast(Modele_turbulence_hyd_K_Eps,mon_eq_transport_K_Eps->modele_turbulence()).associe_modele_fonction();
+  int is_modele_fonc=(mon_modele_fonc.non_nul());
+  //is_modele_fonc=0;
+  DoubleTab F2;
+  if (is_modele_fonc)
+    {
+
+      DoubleTrav D(0);
+      F2.resize(val.dimension_tot(0));
+      const Zone_dis& zone_dis_keps =mon_eq_transport_K_Eps->zone_dis();
+
+      const Champ_base& ch_visco_cin_ou_dyn =ref_cast(Op_Diff_K_Eps_base, equation().operateur(0).l_op_base()).diffusivite();
+
+      mon_modele_fonc.Calcul_F2(F2,D,zone_dis_keps,val, ch_visco_cin_ou_dyn  );
+
+    }
+
   {
     const DoubleVect& volumes=zone_VDF.volumes();
     for (int c=0; c<size; c++)
@@ -592,10 +670,18 @@ void  Source_Transport_K_Eps_VDF_Elem::contribuer_a_avec(const DoubleTab& a,  Ma
             matrice(c*2,c*2)+=coef_k;
 
             double coef_eps=C2*coef_k;
-            //    if (is_modele_fonc) coef_eps*=F2(c);
+            if (is_modele_fonc) coef_eps*=F2(c);
             matrice(c*2+1,c*2+1)+=coef_eps;
           }
       }
   }
 }
 
+
+
+void Source_Transport_K_Eps_VDF_Elem::mettre_a_jour(double temps)
+{
+
+  Calcul_Production_K_VDF::mettre_a_jour(temps);
+
+}

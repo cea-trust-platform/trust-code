@@ -52,7 +52,7 @@ public:
   virtual const Transport_K_Eps_base& eqn_transp_K_Eps() const=0;
   virtual void completer();
 
-  void verifie_loi_paroi();
+  virtual void verifie_loi_paroi();
   int sauvegarder(Sortie& os) const;
   int reprendre(Entree& is);
 

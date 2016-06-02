@@ -109,6 +109,7 @@ void Mod_turb_hyd_base::set_param(Param& param)
   param.ajouter("nut_max",&XNUTM);
   param.ajouter_flag("Correction_visco_turb_pour_controle_pas_de_temps",&calcul_borne_locale_visco_turb_);
   param.ajouter("Correction_visco_turb_pour_controle_pas_de_temps_parametre",&dt_diff_sur_dt_conv_);
+  param.ajouter_condition("not(is_read_dt_impr_ustar_mean_only_and_is_read_dt_impr_ustar)","only one of dt_impr_ustar_mean_only and dt_impr_ustar can be used");
 }
 
 
@@ -126,22 +127,10 @@ int Mod_turb_hyd_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
     {
       if (mot=="dt_impr_ustar")
         {
-          if (dabs(dt_impr_ustar_mean_only-1.e20)<DMINFLOAT)
-            {
-              Cerr << "Problem with the dt_impr_ustar_mean_only keyword duplicate" << finl;
-              Cerr << "Please remove either dt_impr_ustar or dt_impr_ustar_mean_only in your datafile" << finl;
-              Process::exit ();
-            }
           is >>  dt_impr_ustar;
         }
       else if (mot=="dt_impr_ustar_mean_only")
         {
-          if (dabs(dt_impr_ustar-1.e20)<DMINFLOAT)
-            {
-              Cerr << "Problem with the dt_impr_ustar keyword duplicate" << finl;
-              Cerr << "Please remove either dt_impr_ustar or dt_impr_ustar_mean_only in your datafile" << finl;
-              Process::exit ();
-            }
           Nom accolade_ouverte="{";
           Nom accolade_fermee="}";
           nom_fichier_=Objet_U::nom_du_cas()+"_"+equation().probleme().le_nom()+"_ustar_mean_only";

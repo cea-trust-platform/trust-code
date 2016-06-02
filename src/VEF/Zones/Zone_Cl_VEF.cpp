@@ -497,6 +497,25 @@ void Zone_Cl_VEF::imposer_cond_lim(Champ_Inc& ch, double temps)
                           ch_tab(num_face,ncomp) =la_cl_diri.val_imp_au_temps(temps,num_face-ndeb,ncomp);
                     }
                 }
+              else if ( (sub_type(Dirichlet_paroi_fixe,la_cl) ) &&
+                        (ch->nature_du_champ()==multi_scalaire) )
+                {
+                  const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+                  ndeb = le_bord.num_premiere_face();
+                  nfin = ndeb + le_bord.nb_faces();
+                  if (nb_comp == 1)
+                    for (num_face=ndeb; num_face<nfin; num_face++)
+                      ch_tab[num_face] = 0;
+                  else
+                    {
+                      for (ncomp=0; ncomp<nb_comp; ncomp++)
+                        for (num_face=ndeb; num_face<nfin; num_face++)
+                          {
+                            ch_tab(num_face,0) = 0;
+                            ch_tab(num_face,1) = 0;
+                          }
+                    }
+                }
               else if ( sub_type(Dirichlet_paroi_fixe,la_cl) )
                 {
                   const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());

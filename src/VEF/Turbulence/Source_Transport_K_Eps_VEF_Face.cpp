@@ -21,6 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Source_Transport_K_Eps_VEF_Face.h>
+#include <Paroi_negligeable_VEF.h>
 #include <Mod_turb_hyd_base.h>
 #include <Transport_K_Eps.h>
 #include <Convection_Diffusion_Temperature.h>
@@ -41,6 +42,8 @@
 #include <Pb_Thermohydraulique_Concentration_Turbulent.h>
 #include <Param.h>
 #include <Constituant.h>
+
+#include <Modele_turbulence_hyd_K_Eps.h>
 
 Implemente_instanciable_sans_constructeur(Source_Transport_K_Eps_VEF_Face,"Source_Transport_K_Eps_VEF_P1NC",Source_base);
 Implemente_instanciable_sans_constructeur(Source_Transport_K_Eps_anisotherme_VEF_Face,"Source_Transport_K_Eps_anisotherme_VEF_P1NC",Source_Transport_K_Eps_VEF_Face);
@@ -281,18 +284,98 @@ DoubleTab& Source_Transport_K_Eps_VEF_Face::ajouter(DoubleTab& resu) const
   const DoubleTab& visco_turb = mon_eq_transport_K_Eps->modele_turbulence().viscosite_turbulente().valeurs();
   const DoubleTab& vit = eq_hydraulique->inconnue().valeurs();
   const DoubleVect& volumes_entrelaces = zone_VEF.volumes_entrelaces();
+  double LeK_MIN = mon_eq_transport_K_Eps->modele_turbulence().get_LeK_MIN();
+  /*Paroi*/
+  const Modele_turbulence_hyd_K_Eps& mod  =
+    ref_cast(Modele_turbulence_hyd_K_Eps,mon_eq_transport_K_Eps->modele_turbulence());
+  const DoubleTab& tab = mod.loi_paroi().valeur().Cisaillement_paroi();
+  /**/
   int nb_faces_ = zone_VEF.nb_faces();
   DoubleTrav P(nb_faces_);
 
   calculer_terme_production_K(zone_VEF,zone_Cl_VEF,P,K_eps,vit,visco_turb);
-  double LeK_MIN = mon_eq_transport_K_Eps->modele_turbulence().get_LeK_MIN();
 
-  for (int fac=0; fac<nb_faces_; fac++)
+
+  const Modele_Fonc_Bas_Reynolds& mon_modele_fonc=ref_cast(Modele_turbulence_hyd_K_Eps,mon_eq_transport_K_Eps->modele_turbulence()).associe_modele_fonction();
+  int is_modele_fonc=(mon_modele_fonc.non_nul());
+  //is_modele_fonc=0;
+  if (is_modele_fonc)
     {
-      resu(fac,0) += (P(fac)-K_eps(fac,1))*volumes_entrelaces(fac);
+      /*
+      DoubleTrav D(nb_faces_);
+      DoubleTrav E(nb_faces_);
+      DoubleTrav F1(nb_faces_);
+      DoubleTrav F2(nb_faces_); */
+      DoubleTab& D=ref_cast_non_const(DoubleTab,mon_modele_fonc.valeur().get_champ("D").valeurs());
+      DoubleTab& E=ref_cast_non_const(DoubleTab,mon_modele_fonc.valeur().get_champ("E").valeurs());
+      DoubleTab& F1=ref_cast_non_const(DoubleTab,mon_modele_fonc.valeur().get_champ("F1").valeurs());
+      DoubleTab& F2=ref_cast_non_const(DoubleTab,mon_modele_fonc.valeur().get_champ("F2").valeurs());
 
-      if (K_eps(fac,0) >= LeK_MIN)
-        resu(fac,1) += (C1*P(fac)-C2*K_eps(fac,1))*volumes_entrelaces(fac)*K_eps(fac,1)/K_eps(fac,0);
+      const Fluide_Incompressible& fluide=ref_cast(Fluide_Incompressible,eq_hydraulique.valeur().milieu());
+      const Champ_Don& ch_visco_cin = fluide.viscosite_cinematique();
+      // const DoubleTab& tab_visco = ch_visco_cin->valeurs();
+      const Zone_Cl_dis& zcl_keps=mon_eq_transport_K_Eps->zone_Cl_dis();
+      const Zone_dis& zone_dis_keps =mon_eq_transport_K_Eps->zone_dis();
+      mon_modele_fonc.Calcul_D(D,zone_dis_keps,zcl_keps,vit,K_eps,ch_visco_cin);
+      mon_modele_fonc.Calcul_E(E,zone_dis_keps,zcl_keps,vit,K_eps,ch_visco_cin,visco_turb);
+
+      D.echange_espace_virtuel();
+      E.echange_espace_virtuel();
+
+      const Champ_base& ch_visco_cin_ou_dyn =ref_cast(Op_Diff_K_Eps_base, equation().operateur(0).l_op_base()).diffusivite();
+      mon_modele_fonc.Calcul_F1(F1,zone_dis_keps,zcl_keps, P, K_eps,ch_visco_cin_ou_dyn);
+      mon_modele_fonc.Calcul_F2(F2,D,zone_dis_keps,K_eps, ch_visco_cin_ou_dyn  );
+
+      // Pour modele EASM
+      const Zone_dis& zone_dis = eq_hydraulique->zone_dis();
+      int nb_elem_tot = zone_VEF.nb_elem_tot();
+      const Zone_Cl_dis& zone_Cl_dis = eq_hydraulique->zone_Cl_dis();
+
+      int is_Reynolds_stress_isotrope = mon_modele_fonc.Calcul_is_Reynolds_stress_isotrope();
+      if (is_Reynolds_stress_isotrope==0)
+        {
+          Cerr << "On utilise une diffusion turbulente non linaire dans le terme source P" << finl;
+          const DoubleTab& visco_scal = ch_visco_cin->valeurs();
+          DoubleTab visco_tab(nb_elem_tot);
+          assert(sub_type(Champ_Uniforme,ch_visco_cin.valeur()));
+          visco_tab = visco_scal(0,0);
+          DoubleTab gradient_elem(nb_elem_tot,Objet_U::dimension,Objet_U::dimension);
+          gradient_elem=0.;
+          const Discretisation_base& dis = eq_hydraulique->discretisation();
+          const Champ_base& K_Eps = mon_eq_transport_K_Eps->inconnue().valeur();
+          Champ_P1NC::calcul_gradient(vit,gradient_elem,zone_Cl_VEF);
+          /*Paroi*/
+          Nom lp=mod.loi_paroi().valeur().que_suis_je();
+          if (lp!="negligeable_VEF")
+            {
+              if (mon_equation->schema_temps().nb_pas_dt()>0)
+                Champ_P1NC::calcul_duidxj_paroi(gradient_elem,visco_tab,visco_turb,tab,0,0,zone_Cl_VEF);
+            }
+          gradient_elem.echange_espace_virtuel();
+          DoubleTab Re = mon_modele_fonc.calcul_tenseur_Re(dis,zone_dis,zone_Cl_dis,gradient_elem,visco_turb,K_Eps);
+          Re.echange_espace_virtuel();
+
+          calculer_terme_production_K_EASM(zone_VEF,zone_Cl_VEF,P,K_eps,gradient_elem,visco_turb,Re);
+        }
+      // Fin pour modele EASM
+      for (int fac=0; fac<nb_faces_; fac++)
+        {
+          resu(fac,0) += (P(fac)-K_eps(fac,1)-D(fac))*volumes_entrelaces(fac);
+
+          if (K_eps(fac,0) >= LeK_MIN)
+            resu(fac,1) += ((C1*P(fac)*F1(fac)-C2*K_eps(fac,1)*F2(fac))*K_eps(fac,1)/(K_eps(fac,0))+E(fac)) *volumes_entrelaces(fac);
+        }
+    }
+  else
+    {
+
+      for (int fac=0; fac<nb_faces_; fac++)
+        {
+          resu(fac,0) += (P(fac)-K_eps(fac,1))*volumes_entrelaces(fac);
+
+          if (K_eps(fac,0) >= LeK_MIN)
+            resu(fac,1) += (C1*P(fac)-C2*K_eps(fac,1))*volumes_entrelaces(fac)*K_eps(fac,1)/K_eps(fac,0);
+        }
     }
   return resu;
 }
