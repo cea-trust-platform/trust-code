@@ -80,7 +80,7 @@ inline double Eval_Puiss_Th_EF::calculer_terme_source_standard(int num_elem) con
   assert(!est_egal(Cp_,-123.));
   assert(!est_egal(rho_ref_,-123.));
   double source;
-  if (same_type(Champ_Uniforme,la_puissance.valeur().valeur()))
+  if (sub_type(Champ_Uniforme,la_puissance.valeur().valeur()))
     source = puissance(0,0) / (Cp_*rho_ref_);
   else
     {
