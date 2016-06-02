@@ -126,10 +126,22 @@ int Mod_turb_hyd_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
     {
       if (mot=="dt_impr_ustar")
         {
+          if (dabs(dt_impr_ustar_mean_only-1.e20)<DMINFLOAT)
+            {
+              Cerr << "Problem with the dt_impr_ustar_mean_only keyword duplicate" << finl;
+              Cerr << "Please remove either dt_impr_ustar or dt_impr_ustar_mean_only in your datafile" << finl;
+              Process::exit ();
+            }
           is >>  dt_impr_ustar;
         }
       else if (mot=="dt_impr_ustar_mean_only")
         {
+          if (dabs(dt_impr_ustar-1.e20)<DMINFLOAT)
+            {
+              Cerr << "Problem with the dt_impr_ustar keyword duplicate" << finl;
+              Cerr << "Please remove either dt_impr_ustar or dt_impr_ustar_mean_only in your datafile" << finl;
+              Process::exit ();
+            }
           Nom accolade_ouverte="{";
           Nom accolade_fermee="}";
           nom_fichier_=Objet_U::nom_du_cas()+"_"+equation().probleme().le_nom()+"_ustar_mean_only";

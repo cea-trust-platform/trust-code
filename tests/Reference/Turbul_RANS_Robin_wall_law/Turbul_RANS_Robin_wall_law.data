@@ -110,7 +110,6 @@ Read pb
 						initial_conditions { k_Eps Champ_Uniforme 2 0.218 0.017 }
 						}
 					turbulence_paroi loi_standard_hydr
-					dt_impr_ustar 20
 					dt_impr_ustar_mean_only { dt_impr 20 boundaries 2 Haut Bas }
 					}
 		Traitement_particulier	{
