@@ -308,6 +308,7 @@ ln -sf env/env_TRUST.sh .
 
 cd env
 ./configurer_env $clean || exit -1
+[ "$clean" != "" ] && exit 0
 cd ..
 source ./env_TRUST.sh 1>/dev/null 2>&1
 
