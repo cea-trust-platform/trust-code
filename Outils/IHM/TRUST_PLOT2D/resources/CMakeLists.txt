@@ -1,0 +1,9 @@
+
+SALOME_CONFIGURE_FILE(SalomeApp.xml.in SalomeApp.xml)
+
+SET(_res_FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/SalomeApp.xml
+    icon.png
+ )
+
+INSTALL(FILES ${_res_FILES} DESTINATION ${SALOME_TRUST_PLOT2D_INSTALL_RES_DATA})

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+export TRUST_PLOT2D_ROOT_DIR=@CMAKE_INSTALL_PREFIX@
+. $TRUST_PLOT2D_ROOT_DIR/env.sh
+
+python $TRUST_PLOT2D_ROOT_DIR/bin/salome/TRUST_PLOT2D_Standalone.py $*

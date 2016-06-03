@@ -1,0 +1,12 @@
+#!/bin/bash
+python -c "import triou"
+if [ $? -ne 0 ] 
+then
+  source $TRUST_ROOT/Outils/TRIOXDATA/IHMTRIO.sh 
+  python -c "import triou"
+[ $? -ne 0 ] && exit
+fi
+export TRUST_WIZARD_ROOT_DIR=@CMAKE_INSTALL_PREFIX@
+. $TRUST_WIZARD_ROOT_DIR/../TRUST_PLOT2D/env.sh
+. $TRUST_WIZARD_ROOT_DIR/env.sh
+python $TRUST_WIZARD_ROOT_DIR/bin/salome/TRUST_WIZARD_Standalone.py $*

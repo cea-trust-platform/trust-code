@@ -1,0 +1,16 @@
+<!--
+
+-->
+<document>
+  <section name="TRUST_WIZARD">
+    <!-- Major module parameters -->
+    <parameter name="name"            value="TRUST_WIZARD"/>
+    <parameter name="icon"            value="icon.png"/>
+    <parameter name="library"         value="SalomePyQtGUILight"/>
+    <parameter name="version"         value="@SALOMETRUST_WIZARD_VERSION@"/>
+  </section>
+  <section name="resources">
+    <!-- Module resources -->
+    <parameter name="TRUST_WIZARD"    value="%TRUST_WIZARD_ROOT_DIR%/share/salome/resources/trust_wizard"/>
+  </section>
+</document>

@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "id": "trust_schemas:thermo_hydrau_pb.json",
+  "title": "Thermo hydraulic problem",
+  "description": "Data required for a turbulent hydraulic problem",
+
+  "type": "object",
+  "properties": 
+    { 
+      "thermo_hydrau_pb":
+        {
+          "type": "object", 
+          "title": "",  
+          "properties": 
+            { "turb_model": 
+                {
+                 "type": "string", 
+                 "enum": ["None", "Laminar","LM", "k-epsilon" ,"LES"], 
+                 "title": "Turbulent model", 
+                 "desc": "Turbulent model for the Navier-Stokes equation",
+                 "gui_order": 0
+                },
+              "domain":  { "$ref": "trust_schemas:domain.json#", "gui_order": 10 },
+              "medium":   { "$ref": "trust_schemas:medium.json#/definitions/incomp_flow" },
+              "gravity": 
+                { 
+                 "type": "array",
+                 "title": "Gravity",
+                 "items": { "type": "number" },
+                  "minItems": 1,
+                  "maxItems": 3
+                },
+              "init_cond":
+                {
+                  "type": "object",
+                  "title": "Initial conditions",
+                  "properties": 
+                  {
+                    "temperature":   { "$ref": "trust_schemas:equations.json#/definitions/temperature" },
+                    "velocity":      { "$ref": "trust_schemas:equations.json#/definitions/velocity" },
+                    "k-epsilon":     { "$ref": "trust_schemas:equations.json#/definitions/k-epsilon" }
+                  },
+                 "required": ["temperature", "velocity", "k-epsilon"], "additionalProperties": false
+                },
+              "bound_cond": 
+                { 
+                  "type": "array",
+                  "title": "Boundary conditions",
+                  "items": { "$ref": "trust_schemas:bc_thermo_hydrau.json#/definitions/bc" }
+                }             
+             },
+          "required": ["turb_model", "domain", "medium","gravity", "init_cond", "bound_cond"]
+         }
+     },
+    "required": ["thermo_hydrau_pb"]
+}

@@ -54,6 +54,7 @@ gnuplot,gnuplot-4.6.6.tar.gz,outil,AC,specifique,http://gnuplot.sourceforge.net/
 gnuplot,gd-2.0.36RC1.tar.gz,,GF,BSD,http://www.libgd.org/,https://lamefox-linux.googlecode.com/files/gd-2.0.36RC1.tar.gz,"version non trouvable: changer de version"
 gnuplot,libpng-1.5.6.tar.gz,lib,AC,"free zlib/libpng license",http://www.libpng.org/pub/png/,http://sourceforge.net/projects/libpng/files/libpng15/older-releases/1.5.6/libpng-1.5.6.tar.gz/download,
 General,MEDCoupling_Standalone_770.tgz,,GF,LGPL,http://files.salome-platform.org,http://downloads.sourceforge.net/project/trust-platform/1.7.2/extra/MEDCoupling_Standalone_770.tgz,
+General,CURVEPLOT.tgz,,GF,LGPL,http://files.salome-platform.org,http://downloads.sourceforge.net/project/trust-platform/1.7.3/extra/CURVEPLOT.tgz,
 General,nvc_get_devices.tgz,,GF,LGPL,http://files.salome-platform.org,http://downloads.sourceforge.net/project/trust-platform/1.7.2/extra/nvc_get_devices.tgz,
 Python_modules,PySide-1.2.4.tar.gz,,GF,LGPL,http://pypi.python.org,https://pypi.python.org/packages/source/P/PySide/PySide-1.2.4.tar.gz,
 Python_modules,distribute-0.6.28.tar.gz,,GF,LGPL,http://pypi.python.org,http://pypi.python.org/packages/source/d/distribute/distribute-0.6.28.tar.gz,

@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "id": "http://localhost/schema_leaf.json",
+  "title": "Simple schema example",
+  "description": "A description of simple schema",
+   "type": "object",
+     "properties":
+     { 
+      "tutu":  {"type": "string"},
+      "tata":  {"type": "integer"},
+      "titi":  {"type": "number", "default": 0.0},
+      "toto":  {"type": "string", "gui_type": "file_path", "default": "/tmp/toto.med"},
+      "combo1": {"type": "string", "enum": ["A", "B"]},
+      "combo2": {"type": "integer", "enum": [1, 2]}
+     }
+}
+

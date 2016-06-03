@@ -1,0 +1,21 @@
+
+SET(_all_SCRIPTS
+    dynamic_test.py
+)
+
+SET(_test_data
+    data/long.dt_ev
+    data/long_SONDE_PRESSION_3D.son
+    data/long_SONDE_PRESSION.son
+    data/long_SONDE_VITESSE.son
+    data/long_V.son
+)
+
+SALOME_INSTALL_SCRIPTS("${_all_SCRIPTS}" ${SALOME_INSTALL_SCRIPT_PYTHON}/test)
+INSTALL(FILES ${_test_data} DESTINATION ${SALOME_INSTALL_SCRIPT_PYTHON}/test)
+
+SALOME_ACCUMULATE_ENVIRONMENT(PYTHONPATH ${PROJECT_SOURCE_DIR}/src)  
+SALOME_GENERATE_TESTS_ENVIRONMENT(tests_env)
+
+ADD_TEST(TrustPlot2DUnitTests ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/dynamic_test.py)
+SET_TESTS_PROPERTIES(TrustPlot2DUnitTests PROPERTIES ENVIRONMENT "${tests_env}")
