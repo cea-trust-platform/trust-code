@@ -10,7 +10,7 @@ installation_visit()
       [ `echo $ECHO_OPTS "1\n"` != 1 ] && echo "Problem in installation_visit" && exit -1
       # Desormais le visit-install a le numero de version
       echo $ECHO_OPTS "1\nn" | ./$visit_install $version_visit $ARCH `pwd` 1>visit-install.log 2>&1
-      [ $? != 0 ] && echo "Installation of VisIt failed. See `pwd`/visit-install.log" && exit -1
+      [ $? != 0 ] && cat visit-install.log && echo "Installation of VisIt failed. See `pwd`/visit-install.log" && exit -1
       rm -f $package
    fi
    # Ajout en debut du script visit d'un appel a check_visit
@@ -63,7 +63,7 @@ echo $version $what
 # Encore des variables #
 ########################
 version_visit=`echo $version | $TRUST_Awk '{gsub("_",".",$1);print $1}'`
-export HTTPS="http://portal.nersc.gov/svn/visit/trunk/releases https://wci.llnl.gov/codes/visit"
+export HTTPS="http://portal.nersc.gov/project/visit/releases https://wci.llnl.gov/simulation/computer-codes/visit/executables"
 
 ##############################
 # Script visit-install a jour?

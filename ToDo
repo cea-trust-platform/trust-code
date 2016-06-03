@@ -1,17 +1,14 @@
 Version	Qui				Tache
-1.7.3   triou@cea.fr            VisIt, deplacer de bin/visit dans exec/visit/bin/visit + maj du PATH dans TRUST.env et mise_a_jour_TRUST_arch
+1.7.4   triou@cea.fr            VisIt, deplacer de bin/visit dans exec/visit/bin/visit + maj du PATH dans TRUST.env et mise_a_jour_TRUST_arch
 1.7.4   triou@cea.fr            baltik: renommer make check_trio_optim en make check_trust_optim
 1.7.4   triou@cea.fr            revoir host visit sur CCRT avec configuration sub_file de Gauthier
-1.7.3   triou@cea.fr            revoir l utilisation de dt_impr_ustar et dt_impr_ustar_mean_only ensemble
-1.7.3   triou@cea.fr            revoir tuto salome de TRUST sans mailleur Netgen mais mg4furf2D ou mgtetra en 3D + supprimer Xprepro
 1.7.3   gauthier.fauchet@cea.fr  modification pour initialisation des tableaux A(1,1.0) ou A(1,1)
 1.7.3   gauthier.fauchet@cea.fr  Reprendre Mod_turb_hyd_base.cpp limitation mut
 1.7.3   gauthier.fauchet@cea.fr  Revoir le PATH pour module load TRUST sous occigen (passer par SET)
 1.7.4   triou@cea.fr            proposer un tutorial ICoCo
-1.7.3   triou@cea.fr            Passer en job de soumission mise_a_jour_TRUST_arch sur cluster pour eviter de charger les frontales
+1.7.4   triou@cea.fr            Passer en job de soumission mise_a_jour_TRUST_arch sur cluster pour eviter de charger les frontales
 1.7.4   triou@cea.fr            Analyser le fichier de sortie datafile_petsc.TU (signification de count)
-1.7.3   gauthier.fauchet@cea.fr revoir le TRUST env qui teste beaucoup de chose (ex: dd.ksh,...) et trop long pour utilisateur
-1.7.3   triou@cea.fr            completer benchmark avec et sans Petsc
+1.7.4   triou@cea.fr            completer benchmark avec et sans Petsc
 1.7.4   triou@cea.fr            Avoir un fichier avec la liste des fichiers deleted sur git pour faire un rm a distance
 1.7.4   triou@cea.fr            revoir TESTS_MINIMUM dans lance_test en augmentant le nombre de tests 27/27
 1.7.4	triou@cea.fr		Do a git tag on each change of the branch patch_XYZ (patch_XYZ.n)
@@ -26,5 +23,6 @@ Version	Qui				Tache
 1.7.0	triou@cea.fr		zone_dis()=mon_probleme().domaine_dis().zone_dis(0); ?
 1.7.0	triou@cea.fr		Check Champ_fonc_reprise with .sauv files produces a clear error message when partition is changed ?
 1.7.0	triou@cea.fr            Renommer sous_maille en sous_maille_fonction_structure (in english) ?
-1.7.3	triou@cea.fr  		Doc : mettre a jour index et table des matieres (ajouter buildInnerBoundary dans formation users sur commentaire CL interne)
-1.7.3	celine.capitaine@cea.fr Mettre a jour la notice de maintenance TRUST/TrioCFD
+1.7.3	triou@cea.fr  		Doc : mettre a jour index et table des matieres (ajouter CEG + buildInnerBoundary dans formation users sur commentaire CL interne)
+1.7.4	triou@cea.fr  		Doc : mettre a jour index et table des matieres (ajouter pression hydro)
+1.7.4	celine.capitaine@cea.fr Mettre a jour la notice de maintenance TRUST/TrioCFD
