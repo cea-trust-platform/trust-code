@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "id": "trust_schemas:trust_schema.json",
+  
+  "description": "Choose your problem type",
+
+  "oneOf": [
+    { "title": "None", "$ref": "trust_schemas:bound_cond_def.json#/definitions/void_object" },
+    { "$ref": "trust_schemas:solid_pb.json#" },
+    { "$ref": "trust_schemas:hydrau_pb.json#" },
+    { "$ref": "trust_schemas:thermo_hydrau_pb.json#" }
+   ]
+}
+

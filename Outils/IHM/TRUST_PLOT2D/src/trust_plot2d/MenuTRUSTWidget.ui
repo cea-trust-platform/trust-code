@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MenuTRUSTWidget</class>
+ <widget class="QDockWidget" name="MenuTRUSTWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>192</width>
+    <height>262</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Menu TRUST</string>
+  </property>
+  <widget class="QWidget" name="dockWidgetContents">
+   <property name="maximumSize">
+    <size>
+     <width>16777215</width>
+     <height>229</height>
+    </size>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QPushButton" name="editButton">
+      <property name="text">
+       <string>Edit data</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="editXDATAButton">
+      <property name="text">
+       <string>Edit with xdata</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="editOutButton">
+      <property name="text">
+       <string>Edit .out</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="editErrButton">
+      <property name="text">
+       <string>Edit .err</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="terminalButton">
+      <property name="text">
+       <string>Open terminal</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="visuButton">
+      <property name="text">
+       <string>Visualisation</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>terminalButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MenuTRUSTWidget</receiver>
+   <slot>onTerminalButton()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>94</x>
+     <y>666</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>389</x>
+     <y>534</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>editXDATAButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MenuTRUSTWidget</receiver>
+   <slot>onEditXDATAButton()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>94</x>
+     <y>666</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>389</x>
+     <y>534</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>visuButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MenuTRUSTWidget</receiver>
+   <slot>onVisuButton()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>94</x>
+     <y>666</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>389</x>
+     <y>534</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>editButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MenuTRUSTWidget</receiver>
+   <slot>onEditButton()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>94</x>
+     <y>666</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>389</x>
+     <y>534</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>editErrButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MenuTRUSTWidget</receiver>
+   <slot>onEditErrButton()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>94</x>
+     <y>666</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>389</x>
+     <y>534</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>editOutButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MenuTRUSTWidget</receiver>
+   <slot>onEditOutButton()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>396</x>
+     <y>684</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>540</x>
+     <y>618</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>onTerminalButton()</slot>
+  <slot>onEditXDATAButton()</slot>
+  <slot>onEditButton()</slot>
+  <slot>onVisuButton()</slot>
+  <slot>onEditOutButton()</slot>
+  <slot>onEditErrButton()</slot>	
+ </slots>
+</ui>

@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>dirScanWidget</class>
+ <widget class="QDockWidget" name="dirScanWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>545</width>
+    <height>711</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Directory scanner</string>
+  </property>
+  <widget class="QWidget" name="dockWidgetContents">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_6">
+      <item>
+       <widget class="QLabel" name="label_2">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Trust case file</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_4">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QLineEdit" name="caseWidget"/>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton">
+        <property name="text">
+         <string>Choose case ...</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="Line" name="line">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_5">
+      <item>
+       <widget class="QLabel" name="label_5">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Plot entries</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Refresh period (s):</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="refreshWidget">
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>180</number>
+        </property>
+        <property name="value">
+         <number>2</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <item>
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Filter:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="filterEdit">
+        <property name="toolTip">
+         <string>Meta-characters *, ? and + are allowed</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="OutfileBox">
+        <property name="text">
+         <string>out files</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QListWidget" name="entryListWidget">
+      <property name="selectionMode">
+       <enum>QAbstractItemView::ExtendedSelection</enum>
+      </property>
+      <property name="sortingEnabled">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QPushButton" name="plotButton">
+        <property name="text">
+         <string>Plot</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="plotSameButton">
+        <property name="text">
+         <string>Plot on same</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="plotAllButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Plot all points</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QLabel" name="label_3">
+      <property name="text">
+       <string>Computation progress:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QProgressBar" name="progressBar">
+      <property name="value">
+       <number>0</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="stopButton">
+      <property name="text">
+       <string>Stop computation!</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="runButton">
+      <property name="text">
+       <string>Start computation!</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dirScanWidget</receiver>
+   <slot>onDirButton()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>536</x>
+     <y>77</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>315</x>
+     <y>52</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>refreshWidget</sender>
+   <signal>editingFinished()</signal>
+   <receiver>dirScanWidget</receiver>
+   <slot>onPeriodChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>536</x>
+     <y>172</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>326</x>
+     <y>15</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>caseWidget</sender>
+   <signal>editingFinished()</signal>
+   <receiver>dirScanWidget</receiver>
+   <slot>onCaseChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>140</x>
+     <y>76</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>149</x>
+     <y>5</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>plotButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dirScanWidget</receiver>
+   <slot>onPlotButton()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>40</x>
+     <y>564</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>60</x>
+     <y>577</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>plotSameButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dirScanWidget</receiver>
+   <slot>onPlotSameButton()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>358</x>
+     <y>564</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>150</x>
+     <y>600</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>plotAllButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dirScanWidget</receiver>
+   <slot>onPlotAllButton()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>536</x>
+     <y>564</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>243</x>
+     <y>544</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>stopButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dirScanWidget</receiver>
+   <slot>onStopButton()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>94</x>
+     <y>666</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>389</x>
+     <y>534</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>filterEdit</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>dirScanWidget</receiver>
+   <slot>onFilterChanged(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>323</x>
+     <y>210</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>307</x>
+     <y>114</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>entryListWidget</sender>
+   <signal>itemSelectionChanged()</signal>
+   <receiver>dirScanWidget</receiver>
+   <slot>onItemSelectionChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>123</x>
+     <y>332</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>205</x>
+     <y>113</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>runButton</sender>
+   <signal>clicked()</signal>
+   <receiver>dirScanWidget</receiver>
+   <slot>onRunButton()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>396</x>
+     <y>684</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>540</x>
+     <y>618</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>OutfileBox</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>dirScanWidget</receiver>
+   <slot>onOutStateChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>484</x>
+     <y>194</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>272</x>
+     <y>355</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>onDirButton()</slot>
+  <slot>onCaseChanged()</slot>
+  <slot>onPeriodChanged()</slot>
+  <slot>onPlotButton()</slot>
+  <slot>onPlotSameButton()</slot>
+  <slot>onPlotAllButton()</slot>
+  <slot>onStopButton()</slot>
+  <slot>onFilterChanged(QString)</slot>
+  <slot>onItemSelectionChanged()</slot>
+  <slot>onRunButton()</slot>
+ </slots>
+</ui>

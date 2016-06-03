@@ -1,0 +1,17 @@
+<!--
+
+-->
+<document>
+  <section name="TRUST_PLOT2D">
+    <!-- Major module parameters -->
+    <parameter name="name"            value="TRUST_PLOT2D"/>
+    <parameter name="icon"            value="icon.png"/>
+    <parameter name="library"         value="SalomePyQtGUILight"/>
+    <parameter name="version"         value="@SALOMETRUST_PLOT2D_VERSION@"/>
+  </section>
+  <section name="resources">
+    <!-- Module resources -->
+    <parameter name="TRUST_PLOT2D"    value="%TRUST_PLOT2D_ROOT_DIR%/share/salome/resources/trust_plot2d"/>
+    <parameter name="CURVEPLOT"          value="%CURVEPLOT_DIR%/share/salome/resources/curveplot"/>
+  </section>
+</document>

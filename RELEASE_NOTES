@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.3_beta : Enhancements, modifications and corrected bugs since version 1.7.2 :
 --------------------------------------------------------------------------------------------------
+03/06/16 (Tools)  Major change: Add TRUST_PLOT2D and TRUST_WIZZARD
 25/05/16 (TRUST)  Portability : Released version of metis upgrated to 5.1.0
 25/05/16 (TRUST)  Portability : Released version of PETSc upgrated to 3.6.3 (and some packages whose MUMPS and METIS)
 25/05/16 (TRUST)  Minor change: Option -disable-check_sources and -for_appli_salome added to the TRUST configure tool

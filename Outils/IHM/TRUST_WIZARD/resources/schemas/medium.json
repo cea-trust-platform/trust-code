@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "id": "trust_schemas:milieux.json",
+  "description": "Medium definitions",
+
+  "definitions": 
+    { 
+     "solid": 
+        { "title": "Solid medium",
+          "oneOf": [
+            { "title": "Predefined solid medium",
+              "properties": 
+                 { "preset":  {"title": "Choose a pre-defined material", "enum": ["Acier_inconel", "Super_duper_alloy"] } },
+              "required": ["preset"],
+              "additionalProperties": false
+            },    
+            { "title": "Custom solid medium",
+              "properties": 
+                 { "user-defined": 
+                     {
+                      "type": "object",
+                      "properties": 
+                        {
+                         "rho":    { "type": "number" },
+                         "lambda": { "type": "number" },
+                         "cp": { "type": "number" }
+                        }
+                     }
+                  },
+               "required": ["user-defined"],
+               "additionalProperties": false
+             }
+            ]
+        },
+      "incomp_flow":
+        { "title": "Incompressible flow",
+          "oneOf": [
+            { "title": "Predefined medium",
+              "properties": 
+                 { "preset":  {"title": "Choose a pre-defined fluid", "enum": ["Water 20 deg", "Super duper fluid"] } },
+              "required": ["preset"],
+              "additionalProperties": false
+            },    
+            { "title": "Custom flow",
+              "properties": 
+                 { "user-defined": 
+                     {
+                      "type": "object",
+                      "title": "User-defined flow",
+                      "properties": 
+                        {
+                         "rho":    { "type": "number" },
+                         "mu":     { "type": "number" },
+                         "lambda": { "type": "number" },
+                         "cp": { "type": "number" },
+                         "beta_th": { "type": "number" }
+                        }
+                     }
+                  },
+               "required": ["user-defined"],
+               "additionalProperties": false
+             }
+            ]
+        }
+    }
+}
