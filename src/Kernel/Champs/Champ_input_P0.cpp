@@ -52,6 +52,13 @@ Entree& Champ_input_P0::readOn(Entree& is)
           valeurs_(ele,c)=initial_value_(c);
     }
 
+  if (ma_sous_zone.non_nul())
+    {
+      const Sous_Zone& ssz=ma_sous_zone.valeur();
+      nb_elems_reels_loc_ = mon_pb->domaine().zone(0).les_elems().dimension(0);
+      for (int i = nb_elems_reels_sous_zone_ = 0; i < ssz.nb_elem_tot(); i++)
+        nb_elems_reels_sous_zone_ += (ssz[i] < nb_elems_reels_loc_);
+    }
   return is;
 }
 
@@ -110,11 +117,12 @@ void Champ_input_P0::getTemplate(TrioField& afield) const
   if (ma_sous_zone.non_nul())
     {
       const Sous_Zone& ssz=ma_sous_zone.valeur();
-      afield._nb_elems=ssz.nb_elem_tot();
+      afield._nb_elems = nb_elems_reels_sous_zone_;
       afield._connectivity=new True_int[afield._nb_elems*npe];
-      for (int i=0; i<afield._nb_elems; i++)
-        for (int j=0; j<npe; j++)
-          afield._connectivity[i*npe+j]=elems(ssz[i],j);
+      for (int i = 0, j, k = -1; i < ssz.nb_elem_tot(); i++)
+        if (ssz[i] < nb_elems_reels_loc_)
+          for (j = 0, k++; j<npe; j++)
+            afield._connectivity[k*npe+j]=elems(ssz[i],j);
     }
   else
     {
@@ -131,14 +139,15 @@ void Champ_input_P0::setValue(const TrioField& afield)
   if (ma_sous_zone.non_nul())
     {
       const Sous_Zone& ssz=ma_sous_zone.valeur();
-      if (afield._nb_elems!=ssz.nb_elem_tot())
+      if (afield._nb_elems != nb_elems_reels_sous_zone_)
         throw WrongArgument(mon_pb.le_nom().getChar(),"setInputField","afield","should have the same _nb_elems as returned by getInputFieldTemplate");
       assert(valeurs_.dimension(1)==nb_compo_);
       if (afield._nb_field_components!=valeurs_.dimension(1))
         throw WrongArgument(mon_pb.le_nom().getChar(),"setInputField","afield","should have the same _nb_field_components as returned by getInputFieldTemplate");
-      for (int i=0; i<afield._nb_elems; i++)
-        for (int j=0; j<nb_compo_; j++)
-          valeurs_(ssz[i],j)=afield._field[i*nb_compo_+j];
+      for (int i=0, j, k = -1; i<ssz.nb_elem_tot(); i++)
+        if (ssz[i] < nb_elems_reels_loc_)
+          for (j = 0, k++ ; j<nb_compo_; j++)
+            valeurs_(ssz[i],j)=afield._field[k*nb_compo_+j];
     }
   else
     Champ_Input_Proto::setValueOnTab(afield,valeurs_);

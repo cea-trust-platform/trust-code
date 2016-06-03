@@ -262,7 +262,7 @@ void Schema_Temps_base::terminate()
   Nom prg(nom_du_cas());
   prg+=".progress";
   SFichier toto(prg);
-  toto<< 100<< finl;
+  toto<< (int)100<< finl;
 
 }
 

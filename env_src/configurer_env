@@ -537,6 +537,7 @@ then
          cd -
       done
    fi
+   cd $TRUST_ROOT
    rm -r -f $TRUST_ROOT/env_TRUST.sh $TRUST_ROOT/env/ $TRUST_ROOT/lib $TRUST_ROOT/exec $TRUST_ROOT/include $TRUST_ROOT/Makefile $TRUST_ROOT/MonoDir*
    rm -f $TRUST_ROOT/configure.log
    rm -f  $TRUST_ROOT/tags $TRUST_ROOT/TAGS  $TRUST_ROOT/compile*log $TRUST_ROOT/License.txt_*

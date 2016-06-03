@@ -124,19 +124,29 @@ int trouve_nb_champ(const nom& nom_f,int& nl)
   return i;
 }
 
+//if absolute_gap = true that means that the function called "ecart" will return the absolute gap and not the relative gap
+bool absolute_gap = false;
+
 double valmin=1e-15;
 double ecart(double x, double y, double ymax)
 {
   double gerr = 0.0;
-  if(ymax != 0.0) gerr = fabs((x-y)/ymax);
+  if( absolute_gap )
+    {
+      gerr = fabs((x-y));
+    }
+  else
+    {
+      if(ymax != 0.0) gerr = fabs((x-y)/ymax);
+    }
   if (ymax<=valmin)
     {
       if( (fabs(x)>valmin)||(fabs(y)>valmin))
-	{
-	  gerr=1;
-	}
+  	{
+  	  gerr=1;
+  	}
       else 
-	gerr=0;
+  	gerr=0;
     }
   return gerr;
 }
@@ -352,7 +362,7 @@ void recupere_max(ifstream& entree,double* val_max,int nbc,int nl1, int max_val_
 }
 void usage()
 {
-  cerr<<"mauvais params: file1 file2 [-type evol|statio|evol_inter] [-seuil_erreur val] [-valmin val] [-max_par_compo] [ -max_delta ]"<<endl;
+  cerr<<"mauvais params: file1 file2 [-type evol|statio|evol_inter] [-seuil_erreur val] [-valmin val] [-max_par_compo] [ -max_delta ] [-absolute_gap] "<<endl;
   exit(-1);	
 }
 int main(int argc, char* argv[])
@@ -386,8 +396,12 @@ int main(int argc, char* argv[])
 	    else
 	      if (!strcmp(argv[arg],"-valmin"))
 		valmin=atof(argv[++arg]);
-	      else usage();
+	      else
+		if (!strcmp(argv[arg],"-absolute_gap"))
+		  absolute_gap = true;
+		else usage();
     }
+
   ifstream entree(file1.str);
   if (!entree) error(file1," non ouvrable");
 

@@ -97,7 +97,7 @@ void Champ_Front_Fonction::mettre_a_jour(double temps)
 
   DoubleTab& tab=valeurs_au_temps(temps);
   DoubleTab tab_ch(tab);
-  ch.trace(frontiere_dis(),tab_ch,temps);
+  ch.trace(frontiere_dis(),tab_ch,temps,0);
   assert(tab.dimension(0)==tab_ch.dimension(0));
   int nb_cas=tab.dimension_tot(0);
   for (int comp=0; comp<tab.dimension(1); comp++)
