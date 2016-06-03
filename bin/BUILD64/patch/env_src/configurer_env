@@ -538,6 +538,8 @@ then
       done
    fi
    rm -r -f $TRUST_ROOT/env_TRUST.sh $TRUST_ROOT/env/ $TRUST_ROOT/lib $TRUST_ROOT/exec $TRUST_ROOT/include $TRUST_ROOT/Makefile $TRUST_ROOT/MonoDir*
+   rm -f $TRUST_ROOT/configure.log
+   rm -f  $TRUST_ROOT/tags $TRUST_ROOT/TAGS  $TRUST_ROOT/compile*log $TRUST_ROOT/License.txt_*
    # Plus on efface le $TRUST_TMP
    rm -r -f $TRUST_TMP
    exit 0
@@ -613,7 +615,7 @@ echo "# domainname : `domainname 2>/dev/null`" | tee -a $env
 #################
 . ./HOST.env
 # Variables define_modules_config
-if [ -f HOST_$HOST_BUILD.sh ]
+if [ "$TRUST_WITHOUT_HOST" = 0 ]
 then
    . ./HOST_$HOST_BUILD.sh
 else
@@ -638,6 +640,7 @@ define_modules_config
 ###################################
 if [ -f configure.env ]
 then
+   echo "TRUST_WITHOUT_HOST=$TRUST_WITHOUT_HOST && export TRUST_WITHOUT_HOST	# Disable/enable reading of HOST file"	>> configure.env
    . ./configure.env
 fi
 
@@ -850,13 +853,10 @@ rm -f $TRUST_ROOT/exec/ccache/g??
 [ -f $TRUST_ROOT/exec/python/env.sh ] && source $TRUST_ROOT/exec/python/env.sh
 e="`cherche_file python python`";eval $e
 PYTHON_VERSION_OK=`$python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1]*100+a[2]*10+a[3];print (v>=273?1:0)}'`
-# Le script de VisIt ne cherche que dans /usr/lib/libpython*.so et pas /lib*/libpython*.so...
-# En fait, vtk cherche sous /usr/lib/libpython*.so et visit sous /usr/lib/*/libpython*.so 
-# Le test "ls /usr/lib*/python*/config/Makefile 2>/dev/null" est pour MED 3.0.7
 # 1.6.8: Add a more complex test (test.py) for python if python is not well installed
-if [ "$PYTHON_VERSION_OK" != 1 ] || [ "`python-config 2>&1 | grep Usage`" = "" ] || [ "`ls /usr/lib*/libpython*.so   /usr/lib*/*/libpython*.so 2>/dev/null`" = "" ]  || [ "`ls /usr/lib*/python*/config/Makefile 2>/dev/null`" = "" ] || [ "`python ./test.py 1>/dev/null 2>&1;echo $?`" != 0 ]
+if [ "$PYTHON_VERSION_OK" != 1 ]  || [ "`python ./test.py 1>/dev/null 2>&1;echo $?`" != 0 ]
 then
-   make_ $TRUST_ROOT/Outils/Python python $TRUST_ROOT/exec/python.log
+    make_ $TRUST_ROOT/Outils/Python python $TRUST_ROOT/exec/python.log
 fi
 
 ####################
@@ -897,14 +897,23 @@ e="`cherche_file cmake cmake`";eval $e
 CMAKE_VERSION_OK=`$cmake --version 2>&1 | awk '/cmake version/ {split($3,a,".");v=a[1]*100+a[2]*10+a[3];print (v>=301?1:0)}'`
 if [ "$CMAKE_VERSION_OK" != 1 ]
 then
+  if [ $TRUST_ARCH = cygwin ]
+  then
+   echo "cmake not ok  but on cygwin we dont try to compile cmake"
+  else
    make_ $TRUST_ROOT/Outils/cmake cmake $TRUST_ROOT/exec/cmake.log
+ fi
 fi
 
 ##############################
 # Installation de makedepend #
 ##############################
+e="`cherche_file TRUST_MD makedepend`";eval $e
+if [ "$TRUST_MD" = ""  ]
+then
+echo "Compilation of makedepend"
 make_ $TRUST_ROOT/Outils/makedepend makedepend $TRUST_ROOT/exec/makedepend.log
-
+fi
 
 # Mal fait : a ameliorer
 # Pour toutes les arch SLD=$TRUST_CC sauf RS6000 et sun prendre ld ?
@@ -1235,7 +1244,8 @@ fi
 ########################
 # Installation de astyle
 ########################
-if [ $TRUST_ARCH = linux ]
+#if [ $TRUST_ARCH = linux ]
+if [ "$TRUST_DISABLE_CHECK_SRC" != "1" ]
 then
    make_ $TRUST_ROOT/Outils/astyle astyle $TRUST_ROOT/exec/astyle.log
 fi
@@ -1243,7 +1253,7 @@ fi
 ########################
 # Installation de Salome
 ########################
-version_salome=7.6.0
+version_salome=7.7.1
 if [ $TRUST_DOWNLOAD_SALOME = 1 ]
 then
    version_salome_=`echo $version_salome | awk '{gsub("\\\.","_",$0);print $0}'`
@@ -1361,7 +1371,7 @@ then
    echo "# PATH added" >> $env
    for path in $paths
    do
-      echo "ADD_PATH $path" >> $env
+      echo "ADD_PATH_AFTER $path" >> $env
    done
 fi
 # Ajout du PATH eventuel vers le bin des outils d'installation pour Linux
@@ -1375,6 +1385,8 @@ LINK_MALIB="\$(OBJS)"
 Defines=""
 SYSINC=""
 SL_EXTENSION="so" && [ ${TRUST_ARCH#HPPA} != $TRUST_ARCH ] && SL_EXTENSION="sl"
+[ ${TRUST_ARCH} = cygwin ] && SL_EXTENSION="dll"
+
 OPTIMIZE="-O3"
 TRUST_SUPPORTED=0
 case $TRUST_ARCH_CC in
@@ -1549,15 +1561,17 @@ case $TRUST_ARCH_CC in
    linux_g++*|cygw*g++*) TRUST_SUPPORTED=1 
         # Les quotes autour de X.Y sont importants car sinon dependant des variables telles que LC_NUMERIC,....
    # 08/06/15 : pour portabilite sur Fedora22, passage de v5.1.1 a v5.1.2 sur test GNU
-   #     TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk '{if ($1<"5.1.1" && $1>="3.4") print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
-        TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk '{if ($1<"5.1.2" && $1>="3.4") print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
+   # 27/06/15 : pour portabilite sur Ubuntu16, passage de v5.1.2 a v5.3.2 sur test GNU
+        TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk '{if ($1<"5.3.2" && $1>="3.4") print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
    	m="# GNU compiler version";e="TRUST_VERSION_GNU=$TRUST_VERSION_GNU && export TRUST_VERSION_GNU";ecrit $m"|"$e"|"$env
 	[ "`echo $TRUST_SUPPORTED | grep -i Not`" != "" ] && TRUST_SUPPORTED=0
 	# Passage en -O2 car plantages suspects en -O3 avec egcs sur linux
 	# Options TRES severes a ajouter peut etre un jour : -W -Weffc++ -Wfloat-equal
 	# 03/02/06 : on ajoute -pedantic -Wno-long-long a la compilation sauf si 3.4.6 ou 4.0.1 car sinon pb avec Petsc 3.1.x
 	# 26/03/10, passage enfin a -03
-	CppFlags="-O3 -fPIC -fno-common -Wno-long-long -Wall -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth"
+        FPIC="-fPIC"
+	[ ${TRUST_ARCH} = cygwin ] && FPIC=""  # sous cygwin pas de -fPIC
+	CppFlags="-O3 $FPIC -fno-common -Wno-long-long -Wall -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth"
 	# 06/02/14, Added -Wshadow
 	CppFlags=$CppFlags" -Wshadow"
 	[ "`echo $TRUST_VERSION_GNU | awk '{if ($1>="3.4") print 1}'`" = 1 ] && CppFlags=$CppFlags" -Wextra -Wno-unused-parameter"
@@ -1582,7 +1596,7 @@ case $TRUST_ARCH_CC in
 	      SYSLIBS="-L"`dirname $L`" "
 	   fi
 	   rm -f test.cpp
-	   SYSLIBS=$SYSLIBS"-lgfortran"
+	   SYSLIBS=$SYSLIBS"-lgfortran -Wl,--allow-multiple-definition"
 	elif [ "`echo $TRUST_F77_BASE | grep absoft`" != "" ]
 	then
 	   SYSLIBS=$SYSLIBS"-L/usr/local/absoft/lib -lfio -lf77math"
@@ -1591,8 +1605,8 @@ case $TRUST_ARCH_CC in
 	   SYSLIBS=$SYSLIBS"-lg2c"
         fi
 	# Support d'Absoft mais n'accepte que -O comme flag
-	F77Flags="-O3 -fPIC -fdefault-integer-8" && [ "`echo $TRUST_F77_BASE | grep absoft`" != "" ] && F77Flags="-O"
-	ccFLAGS="-O3 -fPIC"
+	F77Flags="-O3 $FPIC -fdefault-integer-8" && [ "`echo $TRUST_F77_BASE | grep absoft`" != "" ] && F77Flags="-O"
+	ccFLAGS="-O3 $FPIC"
 	ShLibFlag="\$(TRUST_CC) -shared"
 	cherche_include_systeme
 	;;
@@ -2078,7 +2092,7 @@ rm $TRUST_ROOT/src/Kernel/Framework/makefile
 echo "makedepend: $time_makedepend s"
 [ "`echo $time_ccmakedep $time_makedepend | awk '{print ($1>$2)}'`" = 1 ] && TRUST_MD="$TRUST_ROOT/exec/makedepend/bin/makedepend ccmakedep" # makedepend plus rapide
 else
-TRUST_MD="$TRUST_ROOT/exec/makedepend/bin/makedepend"
+TRUST_MD="makedepend $TRUST_ROOT/exec/makedepend/bin/makedepend makedepend"
 fi
 m="# Path to makedepend command";e="`cherche_file TRUST_MD $TRUST_MD`";ecrit $m"|"$e"|"$env;eval $e
 [ "$ligne_supp" != "" ] &&       echo $ligne_supp  >> $env
@@ -2136,13 +2150,13 @@ cd $TRUST_ROOT/bin
 # Fichier include non existant, on cree un fichier vide
 includes="
 $TRUST_ROOT/lib/src/LIBMETIS/include/metis.h
-$TRUST_ROOT/lib/src/LIBMED/MED/include/med++.h
+$TRUST_ROOT/lib/src/LIBMED/MED/include/med.h
 $TRUST_ROOT/lib/src/LIBLATAFILTER/include/LataV1_field_definitions.h
 $TRUST_ROOT/lib/src/LIBLATAFILTER/include/LmlReader.h
 $TRUST_ROOT/lib/src/LIBLATAFILTER/include/LataFilter.h
 $MPI_INCLUDE/mpi.h
 "
-for petsc_option in _ _opt _opt_pg _opt_gcov _semi_opt _opt_avx
+for petsc_option in _ _opt _opt_pg _opt_gcov _semi_opt _opt_avx _custom
 do
    [ $petsc_option = "_" ] && petsc_option=""
    includes=$includes" "$TRUST_ROOT/lib/src/LIBPETSC/petsc/$TRUST_ARCH$petsc_option/include/petsc_for_kernel.h" "$TRUST_ROOT/lib/src/LIBPETSC/petsc/$TRUST_ARCH$petsc_option/include/metis.h

@@ -127,85 +127,85 @@ echo "$0 called with options: $*"
 
 while [ "$1" != "" ]
 do
-   if [ "${1%-help}" != $1 ]
+   if [ "${1%-help}" != "$1" ]
    then
       exit
             
-   elif [ "${1#-c++=}" != $1 ]
+   elif [ "${1#-c++=}" != "$1" ]
    then
       export TRUST_FORCE_CC=${1#-c++=}
       
-   elif [ "${1#-cc=}" != $1 ]
+   elif [ "${1#-cc=}" != "$1" ]
    then
       export TRUST_FORCE_cc=${1#-cc=}
       
-   elif [ "${1#-cxxflags=}" != $1 ]
+   elif [ "${1#-cxxflags=}" != "$1" ]
    then
       export TRUST_ADD_CXXFLAGS=${1#-cxxflags=}
       
-   elif [ "${1#-cflags=}" != $1 ]
+   elif [ "${1#-cflags=}" != "$1" ]
    then
       export TRUST_ADD_CFLAGS=${1#-cflags=}
       
-   elif [ "${1#-fflags=}" != $1 ]
+   elif [ "${1#-fflags=}" != "$1" ]
    then
       export TRUST_ADD_FFLAGS=${1#-fflags=}
          
-   elif [ "${1#-fc=}" != $1 ]
+   elif [ "${1#-fc=}" != "$1" ]
    then
       export TRUST_FORCE_F77=${1#-fc=}
       
-   elif [ "${1#-add_search=}" != $1 ]
+   elif [ "${1#-add_search=}" != "$1" ]
    then
-      export TRUST_FORCE_SEARCH=${1#-add_search=}
+      export TRUST_FORCE_SEARCH=$TRUST_FORCE_SEARCH" "${1#-add_search=}
       
-   elif [ "${1#-force_even_unsupported}" != $1 ]
+   elif [ "${1#-force_even_unsupported}" != "$1" ]
    then
       export TRUST_FORCE_SUPPORTED=1   
       
-   elif [ "${1#-force_provided_openmpi}" != $1 ]
+   elif [ "${1#-force_provided_openmpi}" != "$1" ]
    then
       export TRUST_FORCE_PROVIDED_OPENMPI=1
       
-   elif [ "${1#-force_old_openmpi}" != $1 ]
+   elif [ "${1#-force_old_openmpi}" != "$1" ]
    then
       export TRUST_FORCE_OLD_OPENMPI=1
 
-   elif [ "${1#-force_latest_openmpi}" != $1 ]
+   elif [ "${1#-force_latest_openmpi}" != "$1" ]
    then
       export TRUST_FORCE_LATEST_OPENMPI=1
 
-   elif [ "${1#-force_provided_mpich}" != $1 ]
+   elif [ "${1#-force_provided_mpich}" != "$1" ]
    then
       export TRUST_FORCE_PROVIDED_MPICH=1
       
-   elif [ "${1#-force_petsc_have_cuda}" != $1 ]
+   elif [ "${1#-force_petsc_have_cuda}" != "$1" ]
    then
       export TRUST_FORCE_PETSC_HAVE_CUDA=1
       
-   elif [ "${1#-force_petsc_have_openmp}" != $1 ]
+   elif [ "${1#-force_petsc_have_openmp}" != "$1" ]
    then
       export TRUST_FORCE_PETSC_HAVE_OPENMP=1
 
-   elif [ "${1#-without-doc}" != $1 ]
+   elif [ "${1#-without-doc}" != "$1" ]
    then
       export TRUST_WITHOUT_DOC=1
       THIRD_PARTY="DOC"
       REP_THIRD_PARTY=$TRUST_ROOT/doc
       ([ -d $REP_THIRD_PARTY ] && [ $first -eq 0 ] && cd $REP_THIRD_PARTY && echo "Disabling $THIRD_PARTY, so make clean:" && make clean)
 
-   elif [ "${1#-without-visit}" != $1 ]
+   elif [ "${1#-without-visit}" != "$1" ]
    then
       export TRUST_WITHOUT_VISIT=1
       THIRD_PARTY="VISIT"
       REP_THIRD_PARTY=$TRUST_ROOT/Outils/VisIt
       ([ -d $REP_THIRD_PARTY ] && [ $first -eq 0 ] && cd $REP_THIRD_PARTY && echo "Disabling $THIRD_PARTY, so make clean:" && make clean)
       
-   elif [ "${1#-download-visit}" != $1 ]
+   elif [ "${1#-download-visit}" != "$1" ]
    then
       export TRUST_DOWNLOAD_VISIT=1  
        
-   elif [ "${1#-download-salome}" != $1 ]
+   elif [ "${1#-download-salome}" != "$1" ]
    then
       export TRUST_DOWNLOAD_SALOME=1  
        

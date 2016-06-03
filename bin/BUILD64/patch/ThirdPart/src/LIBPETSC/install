@@ -1,6 +1,18 @@
 #!/bin/bash
 # Script d'installation de PETSC
 package=$1
+
+DIR=`dirname $0`
+DIR=`(cd $DIR;pwd)`
+mkdir -p ${PETSC_ROOT}
+cd ${PETSC_ROOT}/..
+mkdir -p build
+cd build
+
+minimal_mumps=0
+scotch=1
+# [ $TRUST_ARCH = cygwin ] && minimal_mumps=1
+[ $minimal_mumps = 1 ] && scotch=0
 if [ "$1" = "" ]
 then
    echo "Usage: `basename $0` package.tar.gz"
@@ -64,7 +76,7 @@ then
 	 # On cree le lien
 	 cd $PETSC_ROOT 1>/dev/null 2>&1
 	 rm -r -f $TRUST_ARCH_OPT
-	 ln -s -f $PETSC_ARCH_OPT $TRUST_ARCH_OPT
+	 ln -sf $PETSC_ARCH_OPT $TRUST_ARCH_OPT
 	 echo "Link $TRUST_ARCH_OPT created to $PETSC_ARCH_OPT"
 	 cd - 1>/dev/null 2>&1
       fi
@@ -146,30 +158,22 @@ ROOT=`pwd`
 # Correction eventuelle des sources
 ###################################
 cd $ROOT/$package
-CONFIG=config/PETSc/packages
-if [ -d $CONFIG ]
-then
-   #echo "Change some python scripts to force parallel build of external packages..."
-   echo $ECHO_OPTS "1,$ s?make install?$TRUST_MAKE install?g\nw" | ed $CONFIG/hypre.py 	1>/dev/null 2>&1 || exit -1
-   # Le build parallel ne marche pas avec Scalapack:
-   #echo $ECHO_OPTS "1,$ s? make'? $TRUST_MAKE'?g\nw" | ed $CONFIG/SCALAPACK.py		1>/dev/null 2>&1 || exit -1
-   #echo $ECHO_OPTS "1,$ s? make lib ? $TRUST_MAKE lib ?g\nw" | ed $CONFIG/ParMetis.py	1>/dev/null 2>&1 || exit -1
-   # Doute aussi que cela marche sur SuperLU_DIST (parfois cela echoue...)
-   #echo $ECHO_OPTS "1,$ s? make lib ? $TRUST_MAKE lib ?g\nw" | ed $CONFIG/SuperLU_DIST.py	1>/dev/null 2>&1 || exit -1
-   # Doute aussi avec MUMPS (eg: gre027058)
-   #echo $ECHO_OPTS "1,$ s? make alllib? $TRUST_MAKE alllib ?g\nw" | ed $CONFIG/MUMPS.py	1>/dev/null 2>&1 || exit -1
-   # PETSc ne detecte pas toujours correctement le nombre de cores:
-   #echo $ECHO_OPTS "1,$ s?make_np = 2?make_np = $TRUST_NB_PROCS?g\nw" | ed $CONFIG/programs.py	1>/dev/null 2>&1 || exit -1
-else
+#CONFIG=config/PETSc/packages
+#if [ -d $CONFIG ]
+#then
+#   #echo "Change some python scripts to force parallel build of external packages..."
+#   echo $ECHO_OPTS "1,$ s?make install?$TRUST_MAKE install?g\nw" | ed $CONFIG/hypre.py 	1>/dev/null 2>&1  #  on ne sarrete plus car si pas hypre...|| exit -1 
+#else
    # Config directory has moved (for PETSc 3.6?)
-   CONFIG=config/BuildSystem/config/packages
-fi 
+#   CONFIG=config/BuildSystem/config/packages
+#fi 
 
 # Hack to have MUMPS sequential:
 if [ "$TRUST_DISABLE_MPI" = 1 ]
 then
    # Need to be improved for the future changes:
-   cat ../MUMPS_SEQ.py > $CONFIG/MUMPS.py
+   CONFIG=config/BuildSystem/config/packages
+   cat $DIR/MUMPS_SEQ.py > $CONFIG/MUMPS.py
 fi    
     
 ################
@@ -352,7 +356,6 @@ fi
 ##################
 # Solveurs directs
 ##################
-
 if [ "$TRUST_USE_MUMPS" = 1 ]
 then
    # On prend MUMPS (plus performant)
@@ -374,13 +377,14 @@ fi
 if [ "$TRUST_DISABLE_MPI" = 0 ]
 then
    # SUPERLU_DIST
-   add_package superlu_dist
+   [ $minimal_mumps = 0 ] &&  add_package superlu_dist
 
    # New (Cholmod):
-   add_package SuiteSparse
+   [ $minimal_mumps = 0 ] && add_package SuiteSparse
 
-   # New (Pastix)
-   add_package pastix
+   # New (Pastix) pb sous cygwin
+   # Test (27/06/15 : probleme pour portabilite sur Ubuntu16 entre autre)
+   #[  $TRUST_ARCH != cygwin ] &&  [ $minimal_mumps = 0 ] && [ $scotch -eq 1 ] && add_package pastix
 
    # New (Pardiso)
    [ -f $MKLROOT/include/mkl_pardiso.h ] && with_packages=$with_packages" --with-mkl_pardiso=1 --with-mkl_pardiso-dir=$MKLROOT"
@@ -392,6 +396,8 @@ then
    ##########
    # SCOTCH #
    ##########
+   if [  $scotch -eq 1 ]
+   then
       # On ajoute PT-Scotch sur certaines machines (ne compile pas sur castor, compilateur trop vieux?)
       add_package ptscotch
       # PT-Scotch necessite bison
@@ -403,7 +409,8 @@ then
 	    if [ "`m4 --version 2>/dev/null | head -1 | awk '/[mM]4 / {print $NF}' | grep -v 1.4.[0-5]$ | grep -v 1.4.1[1-5]`" = "" ]
 	    then
                echo "bison build needs a correct m4 installed. So installing it..."
-		  m4=m4-1.4.17
+		  #m4=m4-1.4.17
+		  m4=`(cd ..; ls m4-*.tar.gz | sed "s/.tar.gz//")`
                if [ ! -d $ROOT/m4/bin ]
                then
 		  gunzip -f -c ../$m4.tar.gz | tar -xf -
@@ -419,7 +426,7 @@ then
 	      export PATH=$PATH:$ROOT/m4/bin
 	    fi		 
             echo "PT-Scotch needs bison installed. So installing it..."
-	    bison=bison-2.7
+	    bison=`(cd ..; ls bison-*.tar.gz | sed "s/.tar.gz//")`
 	    gunzip -f -c ../$bison.tar.gz | tar -xf -
 	    cd $bison
 	    ./configure --prefix=$ROOT/bison || exit -1
@@ -436,7 +443,7 @@ then
 	 if [ ! -d $ROOT/flex/bin ]
 	 then
             echo "PT-Scotch needs flex installed. So installing it..."
-	    flex=flex-2.5.37
+	    flex=`(cd ..; ls flex-*.tar.gz | sed "s/.tar.gz//")`
 	    gunzip -f -c ../$flex.tar.gz | tar -xf -
 	    cd $flex
 	    ./configure --prefix=$ROOT/flex || exit -1
@@ -447,11 +454,11 @@ then
 	 fi
 	 export PATH=$PATH:$ROOT/flex/bin
       fi 
-
+   fi
    #######
    # Hypre
    #######
-   add_package hypre
+   [ $minimal_mumps = 0 ]  && add_package hypre
 fi
 
 ##########
@@ -554,7 +561,7 @@ do
 	    # On fait un touch des fichiers include
 	    touch $PETSC_ROOT/$PETSC_ARCH/include/*.h
 	    # Copie des fichiers include pour PETSc sequentiel:
-	    [ "$TRUST_DISABLE_MPI" = 1 ] && cp $PETSC_ROOT/$PETSC_ARCH/include/mpiuni/*.h $PETSC_ROOT/$PETSC_ARCH/include/
+	    [ "$TRUST_DISABLE_MPI" = 1 ] && cp $PETSC_ROOT/$PETSC_ARCH/include/petsc/mpiuni/*.h $PETSC_ROOT/$PETSC_ARCH/include/
 	    # Copie de la doc
 	    [ -d docs ] && cp -r docs $PETSC_ROOT/$PETSC_ARCH/.
 	    # Copie des exemples
@@ -582,7 +589,7 @@ cd $ROOT
 ###########
 if [ "$PETSC_HAVE_CUDA" = 1 ]
 then
-   ./test_gpu || exit -1
+   $DIR/test_gpu || exit -1
 fi
 
 ##############
@@ -590,7 +597,7 @@ fi
 ##############
 if [ "$PETSC_HAVE_OPENMP" = 1 ]
 then
-   ./test_openmp || exit -1
+   $DIR/test_openmp || exit -1
 fi
 
 # On efface la distribution sur les machines ou Petsc a ete compile uniquement en optimise
