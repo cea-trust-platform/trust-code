@@ -1,17 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 
-nb1=`grep "Total number of elements" std.err | awk '{print $NF}'`
-nb2=`grep "Total number of elements" debit.err | awk '{print $NF}'`
-nb3=`grep "Total number of elements" debit2.err | awk '{print $NF}'`
-nb4=`grep "Total number of elements" debit3.err | awk '{print $NF}'`
-nb5=`grep "Total number of elements" debit4.err | awk '{print $NF}'`
+cas=`basename $1`
+nb=`grep "Total number of elements" $cas.err | awk '{print $NF}'`
+tp=`grep "Backup of the field"      $cas.err | awk '{print $NF}' | head -n 1`
 
-echo $nb1 $nb2 $nb3 $nb4 $nb5 > nbcells.dat
+echo -n $nb" " >> nbcells.dat
+echo -n $tp" " >> lastime.dat
 
-tp1=`grep "Backup of the field" std.err | awk '{print $NF}' | head -n 1`
-tp2=`grep "Backup of the field" debit.err | awk '{print $NF}' | head -n 1`
-tp3=`grep "Backup of the field" debit2.err | awk '{print $NF}' | head -n 1`
-tp4=`grep "Backup of the field" debit3.err | awk '{print $NF}' | head -n 1`
-tp5=`grep "Backup of the field" debit4.err | awk '{print $NF}' | head -n 1`
-
-echo $tp1 $tp2 $tp3 $tp4 $tp5 > lastime.dat
