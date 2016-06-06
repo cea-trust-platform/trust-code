@@ -5,6 +5,7 @@
 . $TRUST_ROOT/exec/python_modules/env.sh
 
 export MED_ROOT_DIR=$TRUST_MEDCOUPLING_ROOT
+export MEDCOUPLING_ROOT_DIR=$TRUST_MEDCOUPLING_ROOT
 export MAKELEVEL=0
 
 [ ! -d CURVEPLOT ] && tar zxf $TRUST_ROOT/externalpackages/CURVEPLOT.tgz
@@ -21,4 +22,5 @@ do
   make || exit -1
   make install | grep -v Up-to-date || exit -1
   export CURVEPLOT_ROOT_DIR=$TRUST_ROOT/exec/CURVEPLOT
+  cd -
 done

@@ -8,6 +8,10 @@ medcoupling=`basename $archive .tar.gz`
 DEST=$TRUST_MEDCOUPLING_ROOT
 mkdir -p $DEST 
 cd $DEST/.. 
+
+dest=$DEST/include/ICoCoMEDField.hxx
+cp -af $dest .
+
 rm -rf build install $medcoupling
 
 if  [ "$TRUST_DISABLE_MED" = "1" ] || [ "$TRUST_DISABLE_MEDCOUPLING" = "1" ] 
@@ -15,9 +19,18 @@ then
     mkdir -p $DEST/include
     rm -rf $DEST/lib
     echo "MED or MEDCOUPLING DISABLE"
-    echo "#define NO_MEDFIELD " > $DEST/include/ICoCoMEDField.hxx
+    echo "#define NO_MEDFIELD " >  prov.h
+
+    if [ "`diff ICoCoMEDField.hxx prov.h 2>&1`" != "" ]
+	then
+	cp prov.h $dest
+    else
+	cp -a ICoCoMEDField.hxx $dest
+    fi
+    rm -f prov.h ICoCoMEDField.hxx
     exit 0
 fi
+rm -f ICoCoMEDField.hxx
 [ ! -f $archive ] && echo $archive no such file && exit 1
 tar zxf $archive
 

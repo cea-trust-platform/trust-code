@@ -30,7 +30,6 @@
 #include <Ref_Champ_Inc.h>
 #include <Ref_Equation_base.h>
 #include <Ref_Champ_Don.h>
-#include <Ref_Equation_base.h>
 #include <Champs_compris.h>
 #include <Champs_compris_interface.h>
 
