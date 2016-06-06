@@ -15,7 +15,7 @@ def remove_job(job,liste_action):
                 print "fin suspend ",a.id,a.status
                 a.status="R"
     liste_action.remove(job)
-def traite(conn,data,liste_action,nb_proc,id):
+def traite(conn,data,liste_action,sjob_info):
     
     print data
     for job in liste_action:
@@ -29,7 +29,7 @@ def traite(conn,data,liste_action,nb_proc,id):
    
     if (data.split()[0]=="srun"):
         job=Job()
-        job.id=id
+        job.id=sjob_info.id
     
         job.pid=data.split()[2]
         if (len(data.split())>3):
@@ -41,9 +41,9 @@ def traite(conn,data,liste_action,nb_proc,id):
                 if a.pid==pere:
                     a.status="S_"
                     job.pere=a.id
-                    a.status+=str(id)
+                    a.status+=str(sjob_info.id)
             
-        id+=1
+        sjob_info.id+=1
         job.name="srun"
         job.nb=int(data.split()[1])
         job.conn=conn
@@ -54,7 +54,7 @@ def traite(conn,data,liste_action,nb_proc,id):
         OK="NO"
         for a in liste_action:
             if a.id==idj:
-                if a.status=="W":
+                if a.status[0]=="W":
                     a.conn.sendall("deleted "+data.split()[1])
                     a.conn.close()
                 import os
@@ -70,7 +70,7 @@ def traite(conn,data,liste_action,nb_proc,id):
         for a in liste_action:
             # print "iii",a.pid
             if a.pid==pidj:
-                if a.status=="W":
+                if a.status[0]=="W":
                     a.conn.sendall("deleted "+data.split()[1])
                     a.conn.close()
                 remove_job(a,liste_action)
@@ -86,37 +86,48 @@ def traite(conn,data,liste_action,nb_proc,id):
             msg+=job.affiche()
             if job.status=="R":
                 use+=job.nb
-        msg+=str(use)+" used of "+ str(nb_proc)
+        msg+=str(use)+" used of "+ str(sjob_info.nb_proc)
         conn.sendall(msg)
         conn.close()
     elif (data.split()[0]=="up"):
-        nb_proc+=1
-        conn.sendall("up %s"%nb_proc)
+        sjob_info.nb_proc+=1
+        conn.sendall("up %s"%sjob_info.nb_proc)
         conn.close()
     elif (data.split()[0]=="down"):
-        nb_proc-=1
-        conn.sendall("down %s"%nb_proc)
+        sjob_info.nb_proc-=1
+        conn.sendall("down %s"%sjob_info.nb_proc)
         conn.close()
     elif (data.split()[0]=="set_nb_proc"):
-        nb_proc=int(data.split()[1])
-        conn.sendall("nb_proc %s"%nb_proc)
-        conn.close()  
+        sjob_info.nb_proc=int(data.split()[1])
+        conn.sendall("nb_proc %s"%sjob_info.nb_proc)
+        conn.close()
+    elif (data.split()[0]=="set_nb_proc_max"):
+        sjob_info.nb_proc_max=int(data.split()[1])
+        conn.sendall("nb_proc_max %s"%sjob_info.nb_proc_max)
+        conn.close()
     elif (data.split()[0]=="stop"):
         conn.sendall("stop")
         conn.close()
-        return 0,nb_proc,id
+        return 0,sjob_info.nb_proc,sjob_info.id
     else:
         print "error",data
         conn.sendall('iii')
         conn.close()
-        return 1,nb_proc,id
+        return 1,sjob_info.nb_proc,sjob_info.id
 
 
     use=0
-    if nb_proc and len(liste_action):
+    if sjob_info.nb_proc and len(liste_action):
         for job in liste_action:
             if job.status=="W":
-                if (use+min(job.nb,nb_proc)<=nb_proc):
+                if (job.nb>sjob_info.nb_proc_max):
+                    job.status="WW"
+                    job.conn.sendall("Killing "+str(job.id)+ " two many process")
+                    import os
+                    os.system("kill -9 "+job.pid)
+                    remove_job(job,liste_action)
+            if job.status=="W":
+                if (use+min(job.nb,sjob_info.nb_proc)<=sjob_info.nb_proc):
                     job.status="R"
                     job.conn.sendall("Running "+str(job.id))
                     job.conn.close()
@@ -126,12 +137,19 @@ def traite(conn,data,liste_action,nb_proc,id):
             else:
                 print "supsend job ?",job.id
         pass
-    return 1,nb_proc,id
+    return 1,sjob_info.nb_proc,sjob_info.id
 
 def main():
     ok=1
-    nb_proc=0
-    id=0
+   
+    class Sjob_info:
+        pass
+    sjob_info=Sjob_info()
+    sjob_info.nb_proc=0
+    sjob_info.id=0
+    sjob_info.nb_proc_max=10000
+
+    
     liste_action=[]
 
     import socket
@@ -152,8 +170,9 @@ def main():
         data = conn.recv(1024)
         # if  not data: 
         #    break
-        ok,nb_proc,id=traite(conn,data,liste_action,nb_proc,id)
-        
+        ok,n,id=traite(conn,data,liste_action,sjob_info)
+        assert (id==sjob_info.id)
+        assert (n==sjob_info.nb_proc)
     s.close()
     pass
 

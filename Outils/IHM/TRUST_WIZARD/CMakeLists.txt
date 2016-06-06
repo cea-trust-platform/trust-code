@@ -41,6 +41,7 @@ IF( EXISTS ${MEDCOUPLING_ROOT_DIR} )
 ELSE()
   MESSAGE(FATAL_ERROR "We absolutely need Salome MEDCOUPLING, please define MEDCOUPLING_ROOT_DIR!")
 ENDIF()
+message ("MEDCOUPLING_INSTALL_PYTHON ${MEDCOUPLING_INSTALL_PYTHON}")
 # Prerequisites
 # =============
 

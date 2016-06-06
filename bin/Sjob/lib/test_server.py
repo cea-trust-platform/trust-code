@@ -1,7 +1,14 @@
 def main2():
     ok=1
-    nb_proc=0
-    id=0
+   
+    class Sjob_info:
+        pass
+    sjob_info=Sjob_info()
+    sjob_info.nb_proc=0
+    sjob_info.id=0
+    sjob_info.nb_proc_max=10000
+
+    
     liste_action=[]
 
     import socket
@@ -30,7 +37,10 @@ def main2():
         try:
             import server
             reload(server)
-            ok,nb_proc,id=server.traite(conn,data,liste_action,nb_proc,id)
+            ok,n,id=server.traite(conn,data,liste_action,sjob_info)
+            assert (id==sjob_info.id)
+            assert (n==sjob_info.nb_proc)
+            
         except :
             print "error", data 
             import sys
