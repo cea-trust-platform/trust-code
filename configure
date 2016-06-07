@@ -66,6 +66,7 @@ echo "[-with-med=dir]                   Force Using external MED library"
 echo "[-with-hdf=dir]                   Force Using external HDF library"
 echo "[-disable-metis]                  Disable metis library installation."
 echo "[-disable-medcoupling]            Disable MEDCoupling library installation."
+echo "[-with-medcoupling=dir]           Force Using external MEDCoupling library"
 echo "[-disable-mpi]                    Disable MPI library detection/installation and build a non-parallel version of the application."
 echo "[-disable-ccache]                 Disable ccache detection/installation."
 echo "[-disable-valgrind]               Disable valgrind installation and build."
@@ -100,7 +101,7 @@ then
   shift
   export TRUST_ROOT=$TRUST_ROOT_SA
   # RAF: forcer lien vers MED de Salome
-  $0 -disable-ccache -disable-gnuplot -disable-tcl_tk -disable-valgrind -without-visit -disable-gmsh -disable-checks -disable-check_sources -with-med=$MEDFILE_ROOT_DIR -with-hdf=$HDF5_ROOT_DIR  $* 
+  $0 -disable-ccache -disable-gnuplot -disable-tcl_tk -disable-valgrind -without-visit -disable-gmsh -disable-checks -disable-check_sources -with-med=$MEDFILE_ROOT_DIR -with-hdf=$HDF5_ROOT_DIR -with-medcoupling=$MEDCOUPLING_ROOT_DIR $* 
   exit $?
 fi
 if [ "$1" = "-disable-optionals" ]
@@ -126,6 +127,7 @@ export TRUST_DOWNLOAD_SALOME=0
 export TRUST_WITHOUT_HOST=0
 unset TRUST_USE_EXTERNAL_HDF
 unset TRUST_USE_EXTERNAL_MED
+unset TRUST_USE_EXTERNAL_MEDCOUPLING
 
 var=env/configure.env && rm -f $var
 echo "$0 called with options: $*"
@@ -163,7 +165,10 @@ do
    elif [ "${1#-add_search=}" != "$1" ]
    then
       export TRUST_FORCE_SEARCH=$TRUST_FORCE_SEARCH" "${1#-add_search=}
-      
+    elif [ "${1#-with-medcoupling=}" != "$1" ]
+   then
+      export TRUST_USE_EXTERNAL_MEDCOUPLING=${1#-with-medcoupling=}
+        
    elif [ "${1#-with-med=}" != "$1" ]
    then
       export TRUST_USE_EXTERNAL_MED=${1#-with-med=}
@@ -305,22 +310,32 @@ echo "TRUST_WITHOUT_DOC=$TRUST_WITHOUT_DOC && export TRUST_WITHOUT_DOC		# Disabl
 echo "TRUST_WITHOUT_VISIT=$TRUST_WITHOUT_VISIT && export TRUST_WITHOUT_VISIT	# Disable/enable VisIt" 	>> $var
 echo "TRUST_DOWNLOAD_VISIT=$TRUST_DOWNLOAD_VISIT && export TRUST_DOWNLOAD_VISIT 	# Download or build VisIt" >> $var
 echo "TRUST_DOWNLOAD_SALOME=$TRUST_DOWNLOAD_SALOME && export TRUST_DOWNLOAD_SALOME # Download Salome" 		>> $var   
+
+if [ "$TRUST_USE_EXTERNAL_MEDCOUPLING" != "" ]  
+then
+    echo "export TRUST_USE_EXTERNAL_MEDCOUPLING=1" >> $var
+    echo "export MEDCOUPLING_ROOT_DIR=$TRUST_USE_EXTERNAL_MEDCOUPLING" >> $var
+else
+    echo "unset TRUST_USE_EXTERNAL_MEDCOUPLING" >> $var
+    # echo "unset MEDFILE_ROOT_DIR" >> $var
+fi
 if [ "$TRUST_USE_EXTERNAL_MED" != "" ]  
 then
-echo "export TRUST_USE_EXTERNAL_MED=1" >> $var
-echo "export MEDFILE_ROOT_DIR=$TRUST_USE_EXTERNAL_MED" >> $var
+    echo "export TRUST_USE_EXTERNAL_MED=1" >> $var
+    echo "export MEDFILE_ROOT_DIR=$TRUST_USE_EXTERNAL_MED" >> $var
 else
-echo "unset TRUST_USE_EXTERNAL_MED" >> $var
-#echo "unset MEDFILE_ROOT_DIR" >> $var
+    echo "unset TRUST_USE_EXTERNAL_MED" >> $var
+    # echo "unset MEDFILE_ROOT_DIR" >> $var
 fi
 if [ "$TRUST_USE_EXTERNAL_HDF" != "" ]  
 then
-echo "export TRUST_USE_EXTERNAL_HDF=1" >> $var
-echo "export HDF5_ROOT_DIR=$TRUST_USE_EXTERNAL_HDF" >> $var
+    echo "export TRUST_USE_EXTERNAL_HDF=1" >> $var
+    echo "export HDF5_ROOT_DIR=$TRUST_USE_EXTERNAL_HDF" >> $var
 else
-echo "unset  TRUST_USE_EXTERNAL_HDF" >> $var
-#echo "unset HDF5_ROOT_DIR" >> $var
+    echo "unset  TRUST_USE_EXTERNAL_HDF" >> $var
+    #echo "unset HDF5_ROOT_DIR" >> $var
 fi
+
 
 ################################
 # Check options for some hosts #
