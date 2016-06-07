@@ -31,6 +31,12 @@ then
     exit 0
 fi
 rm -f ICoCoMEDField.hxx
+if [ "$TRUST_USE_EXTERNAL_MEDCOUPLING" = "1" ]
+then
+ echo $MEDCOUPLING_ROOT_DIR
+ ln -sf $MEDCOUPLING_ROOT_DIR $DEST
+ exit 0
+fi
 [ ! -f $archive ] && echo $archive no such file && exit 1
 tar zxf $archive
 

@@ -10,7 +10,9 @@ cp bin/BUILD64/* .
 ./Modifie $(find src)
 ./Modifie $(find src)
  export TRUST_ROOT=$PWD
-for d in $(find src/ -type d) ;do echo $d; (cd $d ; check_sources.sh) ; done
+#(cd Outils/astyle; make)
+
+#for d in $(find src/ -type d) ;do echo $d; (cd $d ; check_sources.sh) ; done
 
  ./Modifie $(find ThirdPart/src/LIBMFFT_C)
 

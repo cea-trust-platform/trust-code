@@ -22,23 +22,23 @@ raise_undefined_TRUST_MED_ROOT_exception() {
     exit -1
 }
 
-raise_invalid_USE_MED_VERSION_exception() {
+raise_invalid_TRUST_USE_MED_VERSION_exception() {
     echo "---------------------------------------------------"
-    echo "USAGE ERROR : invalid value of USE_MED_VERSION"
+    echo "USAGE ERROR : invalid value of TRUST_USE_MED_VERSION"
     echo ""
-    echo "  Current value : ${USE_MED_VERSION}"
+    echo "  Current value : ${TRUST_USE_MED_VERSION}"
     echo ""
     echo "  Valid values are : '3' and '2.3'"
     echo ""
-    echo "  If USE_MED_VERSION is not defined, default is 3"
+    echo "  If TRUST_USE_MED_VERSION is not defined, default is 3"
     echo "---------------------------------------------------"
     echo ""
     exit -1
 }
 
-raise_undefined_EXTERNAL_HDF_HOME_exception() {
+raise_undefined_HDF5_ROOT_DIR_exception() {
     echo "--------------------------------------------------"
-    echo "USAGE ERROR : undefined variable EXTERNAL_HDF_HOME"
+    echo "USAGE ERROR : undefined variable HDF5_ROOT_DIR"
     echo "--------------------------------------------------"
     echo ""
     exit -1
@@ -46,9 +46,9 @@ raise_undefined_EXTERNAL_HDF_HOME_exception() {
 
 raise_invalid_external_HDF_installation_directory_exception() {
     echo "---------------------------------------------------------------"
-    echo "USAGE ERROR : invalid variable EXTERNAL_HDF_HOME"
+    echo "USAGE ERROR : invalid variable HDF5_ROOT_DIR"
     echo ""
-    echo "  EXTERNAL_HDF_HOME must be a valid HDF5 installation directory"
+    echo "  HDF5_ROOT_DIR must be a valid HDF5 installation directory"
     echo "---------------------------------------------------------------"
     echo ""
     exit -1
@@ -58,7 +58,7 @@ raise_invalid_external_HDF_version_exception() {
     echo "--------------------------------------------------------------------"
     echo "USAGE ERROR : bad version of external installation of HDF5"
     echo ""
-    echo "  EXTERNAL_HDF_HOME must be a valid installation directory of either"
+    echo "  HDF5_ROOT_DIR must be a valid installation directory of either"
     echo "  version 1.8 or version 1.6 of HDF5"
     echo ""
     echo "  The need for version 1.8 or version 1.6 of HDF5 depends"
@@ -71,9 +71,9 @@ raise_invalid_external_HDF_version_exception() {
     exit -1
 }
 
-raise_undefined_EXTERNAL_MED_HOME_exception() {
+raise_undefined_MEDFILE_ROOT_DIR_exception() {
     echo "--------------------------------------------------"
-    echo "USAGE ERROR : undefined variable EXTERNAL_MED_HOME"
+    echo "USAGE ERROR : undefined variable MEDFILE_ROOT_DIR"
     echo "--------------------------------------------------"
     echo ""
     exit -1
@@ -81,9 +81,9 @@ raise_undefined_EXTERNAL_MED_HOME_exception() {
 
 raise_invalid_external_MED_installation_directory_exception() {
     echo "--------------------------------------------------------------"
-    echo "USAGE ERROR : invalid variable EXTERNAL_MED_HOME"
+    echo "USAGE ERROR : invalid variable MEDFILE_ROOT_DIR"
     echo ""
-    echo "  EXTERNAL_MED_HOME must be a valid MED installation directory"
+    echo "  MEDFILE_ROOT_DIR must be a valid MED installation directory"
     echo "--------------------------------------------------------------"
     echo ""
     exit -1
@@ -93,7 +93,7 @@ raise_invalid_external_MED_version_exception() {
     echo "--------------------------------------------------------------------"
     echo "USAGE ERROR : bad version of external installation of MED"
     echo ""
-    echo "  EXTERNAL_MED_HOME must be a valid installation directory of either"
+    echo "  MEDFILE_ROOT_DIR must be a valid installation directory of either"
     echo "  version 3 or version 2.3 of MED."
     echo "--------------------------------------------------------------------"
     echo ""
@@ -104,7 +104,7 @@ raise_internal_HDF_external_MED_exception() {
     echo "------------------------------------------------------------------------------------------"
     echo "USAGE ERROR : can't load an external version of MED while using a provided version of HDF5"
     echo ""
-    echo "  Please define USE_EXTERNAL_HDF and EXTERNAL_HDF_HOME, or reset USE_EXTERNAL_MED"
+    echo "  Please define TRUST_USE_EXTERNAL_HDF and HDF5_ROOT_DIR, or reset TRUST_USE_EXTERNAL_MED"
     echo "------------------------------------------------------------------------------------------"
     echo ""
     exit -1
@@ -114,8 +114,8 @@ raise_HDF_version_incompatible_with_specification_exception() {
     echo "USAGE ERROR : specified version of MED is incompatible"
     echo "              with detected external version of HDF5"
     echo ""
-    echo "  Specified version of MED (USE_MED_VERSION)                         : ${1}"
-    echo "  Detected version of HDF5 (USE_EXTERNAL_HDF5 and EXTERNAL_HDF_HOME) : ${2}"
+    echo "  Specified version of MED (TRUST_USE_MED_VERSION)                         : ${1}"
+    echo "  Detected version of HDF5 (TRUST_USE_EXTERNAL_HDF5 and HDF5_ROOT_DIR) : ${2}"
     echo ""
     echo " Trio-U accepts only one of the following associations :"
     echo "     MED version 3  and  HDF5 version 1.8"
@@ -130,8 +130,8 @@ raise_MED_version_incompatible_with_specification_exception() {
     echo "USAGE ERROR : specified version of MED is incompatible"
     echo "              with detected external version of MED"
     echo ""
-    echo "  Specified version of MED (USE_MED_VERSION)                        : ${1}"
-    echo "  Detected version of MED  (USE_EXTERNAL_MED and EXTERNAL_MED_HOME) : ${2}"
+    echo "  Specified version of MED (TRUST_USE_MED_VERSION)                        : ${1}"
+    echo "  Detected version of MED  (TRUST_USE_EXTERNAL_MED and MEDFILE_ROOT_DIR) : ${2}"
     echo "--------------------------------------------------------------------------"
     echo ""
     exit -1

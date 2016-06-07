@@ -66,12 +66,12 @@ generate_MED_report() {
     then
 	if test "x_${MED_location}_x" = "x_external_x"
         then
-	    MED_location="${MED_location} (${EXTERNAL_MED_HOME})"
+	    MED_location="${MED_location} (${MEDFILE_ROOT_DIR})"
 	fi
 
 	if test "x_${HDF_location}_x" = "x_external_x"
         then
-	    hdf_location="${HDF_location} (${EXTERNAL_HDF_HOME})"
+	    hdf_location="${HDF_location} (${HDF5_ROOT_DIR})"
 	fi
 
 	echo "MED has been successfully installed" >  "${TRUST_MED_HDF_INSTALL}/MED/report.txt"
@@ -163,10 +163,10 @@ install_MED() {
     elif test "${MED_location}" = "external"
     then
         # activating MED in installation directory
-	activate_package "${EXTERNAL_MED_HOME}" "${TRUST_MED_HDF_INSTALL}/MED"
+	activate_package "${MEDFILE_ROOT_DIR}" "${TRUST_MED_HDF_INSTALL}/MED"
 
         # activating MED in TRUST_MED_ROOT directory
-	activate_package "${EXTERNAL_MED_HOME}" "${TRUST_MED_ROOT}"
+	activate_package "${MEDFILE_ROOT_DIR}" "${TRUST_MED_ROOT}"
     else
 	raise_invalid_MED_location_exception
     fi

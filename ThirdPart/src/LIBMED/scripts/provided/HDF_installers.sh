@@ -57,7 +57,7 @@ generate_HDF_report() {
 
 	if test "x_${HDF_location}_x" = "x_external_x"
         then
-	    HDF_location="${HDF_location} (${EXTERNAL_HDF_HOME})"
+	    HDF_location="${HDF_location} (${HDF5_ROOT_DIR})"
 	fi
 
 	echo "HDF5 has been successfully installed" >  "${TRUST_MED_HDF_INSTALL}/HDF/report.txt"
@@ -115,10 +115,10 @@ install_HDF() {
     elif test "${HDF_location}" = "external"
     then
         # activating HDF in installation directory
-	activate_package "${EXTERNAL_HDF_HOME}" "${TRUST_MED_HDF_INSTALL}/HDF"
+	activate_package "${HDF5_ROOT_DIR}" "${TRUST_MED_HDF_INSTALL}/HDF"
 
         # activating HDF in TRUST_MED_ROOT directory
-	activate_package "${EXTERNAL_HDF_HOME}" "${TRUST_MED_ROOT}"
+	activate_package "${HDF5_ROOT_DIR}" "${TRUST_MED_ROOT}"
     else
 	raise_invalid_HDF_location_exception
     fi

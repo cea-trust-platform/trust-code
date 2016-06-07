@@ -61,7 +61,7 @@ analyse_fichier_colonne()
       seuil=1e-3
       if [ -f seuil_controle_bilan ]
 	  then
-	  seuil=`cat seuil_controle_bilan`
+	  seuil=`head -1 seuil_controle_bilan`
 	  echo "Control of out with $seuil"
       fi
 
