@@ -23,27 +23,27 @@ utiliser.
 L'utilisateur peut specifier la configuration de l'installation de MED
 en definissant differentes variables d'environnement :
 
- - USE_EXTERNAL_HDF :  cette variable permet d'indiquer  que l'on veut
+ - TRUST_USE_EXTERNAL_HDF :  cette variable permet d'indiquer  que l'on veut
    utiliser une version pre-installee de  HDF5. Si elle est definie et
    si sa valeur n'est pas  une chaine de caracteres vide, on utilisera
    une version pre-installee. Dans  le cas contraire, on utilisera une
    version fournie par le noyau Trio-U.
 
- - EXTERNAL_HDF_HOME : si on desire utiliser une version pre-installee
+ - HDF5_ROOT_DIR : si on desire utiliser une version pre-installee
    de  HDF5, cette variable  doit indiquer  le repertoire  dans lequel
    cette version a deja ete installee.
 
- - USE_EXTERNAL_MED :  cette variable permet d'indiquer  que l'on veut
+ - TRUST_USE_EXTERNAL_MED :  cette variable permet d'indiquer  que l'on veut
    utiliser une version  pre-installee de MED. Si elle  est definie et
    si sa valeur n'est pas  une chaine de caracteres vide, on utilisera
    une version pre-installee. Dans  le cas contraire, on utilisera une
    version fournie par le noyau Trio-U.
 
- - EXTERNAL_MED_HOME : si on desire utiliser une version pre-installee
+ - MEDFILE_ROOT_DIR : si on desire utiliser une version pre-installee
    de  MED, cette  variable doit  indiquer le  repertoire  dans lequel
    cette version a deja ete installee.
 
- - USE_MED_VERSION  : cette variable  permet de  choisir le  couple de
+ - TRUST_USE_MED_VERSION  : cette variable  permet de  choisir le  couple de
    numeros de versions de MED et de HDF5 que l'on desire utiliser.
     - si elle vaut 3.2, on choisit le couple (MED-3.2, HDF5-1.8) ;
     - si elle vaut 2.3, on choisit le couple (MED-2.3, HDF5-1.6) ;
@@ -54,19 +54,19 @@ Remarque 1
 ----------
 Les tests utilises sont du genre :
 
-if test "x_${USE_EXTERNAL_HDF}_x" = "x__x"
+if test "x_${TRUST_USE_EXTERNAL_HDF}_x" = "x__x"
 then
   ...
 fi
 
 Donc si on a :
 
-$ export USE_EXTERNAL_HDF=""
+$ export TRUST_USE_EXTERNAL_HDF=""
  
 alors  on utilise  la version  de HDF5  fournie par  le noyau.  Si par
 contre, si on a :
 
-$ export USE_EXTERNAL_HDF=1
+$ export TRUST_USE_EXTERNAL_HDF=1
  
 alors on utilise une version pre-existante.
 
@@ -79,7 +79,7 @@ la procedure d'installation :
  - est-ce que les numeros de version choisis sont coherents ?
 
  - est-ce  que, si  on utilise  un MED  ou un  HDF5  pre-installe, les
-   repertoires  indiques  par  EXTERNAL_MED_HOME ou  EXTERNAL_HDF_HOME
+   repertoires  indiques  par  MEDFILE_ROOT_DIR ou  HDF5_ROOT_DIR
    contiennent bien une installation valide de MED ou HDF5 ?
 
  - est-on en  train d'installer  une version fournie  par le  noyau de
@@ -92,11 +92,11 @@ la procedure d'installation :
 Remarque 3  
 ----------
 Lors  de l'utilisation  d'une  installation pre-existante  de MED,  il
-n'est  pas necessaire de  specifier la  variable USE_MED_VERSION  : le
+n'est  pas necessaire de  specifier la  variable TRUST_USE_MED_VERSION  : le
 numero  de   la  version  choisie  sera  detectee   par  la  procedure
-d'installation.   Cependant,   si  USE_MED_VERSION  est   definie,  la
+d'installation.   Cependant,   si  TRUST_USE_MED_VERSION  est   definie,  la
 procedure  d'installation  verifiera l'adequation  entre  le choix  de
-version  indique  par  USE_MED_VERSION,  et la  version  effectivement
-installee  dans  le  repertoire d'installation  (EXTERNAL_HDF_HOME  ou
-EXTERNAL_MED_HOME).
+version  indique  par  TRUST_USE_MED_VERSION,  et la  version  effectivement
+installee  dans  le  repertoire d'installation  (HDF5_ROOT_DIR  ou
+MEDFILE_ROOT_DIR).
 
