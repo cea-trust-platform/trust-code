@@ -101,7 +101,7 @@
 %	TITLE PAGE
 %----------------------------------------------------------------------------------------
 %\title[Short title]{Long title}
-\title[TRUST tutorial v1.7.2]{TRUST tutorial v1.7.2} % The short title appears at the bottom of every slide, the full title is only on the title page
+\title[TRUST tutorial v1.7.3]{TRUST tutorial v1.7.3} % The short title appears at the bottom of every slide, the full title is only on the title page
 
 %\author{John Smith} % Your name
 \institute[CEA/DEN/DANS/DM2S/STMF] % Your institution as it will appear on the bottom of every slide, may be shorthand to save space
@@ -160,7 +160,7 @@ CEA Saclay \\ % Your institution for the title page
 \begin{block}{}
 
 \begin{itemize}
-\item First, initialize the TRUST environment. On CEA Saclay PCs and callisto cluster, TRUST versions are available with (e.g. X.Y.Z=1.7.2):\\
+\item First, initialize the TRUST environment. On CEA Saclay PCs and callisto cluster, TRUST versions are available with (e.g. X.Y.Z=1.7.3):\\
 \vspace{0.2cm}
 \textbf{source  /home/triou/env\_TRUST\_X.Y.Z.sh}
 \vspace{0.5cm}
@@ -409,15 +409,19 @@ To quit this tool, close the plots and type "\#".
 
 \begin{itemize}
 \item Edit the different output (*.out) files to read the complete balances (mass, stress, energy, ...) on the whole domain or at the boundaries.
-\vspace{0.3cm}
+\vspace{0.1cm}
 \item  Change the data file to restart the calculation. You will modify \textbf{tinit\index{tinit}} (pick in the .err file the last backup time of the previous calculation) and \textbf{tmax\index{tmax}} values, and add in the problem definition just before the last "\}":\\
 \textbf{reprise binaire\index{reprise binaire} Obstacle\_pb.sauv}\\
 (The file "Obstacle\_pb.sauv" must have been created during the first run.)
-\vspace{0.3cm}
+\vspace{0.1cm}
 \item Restart the calculation again with:\\
 \textbf{trust -monitor\index{trust -monitor} Obstacle}\\
 to see that values are added to the first probes during the new calculation.
+\vspace{0.1cm}
+\item [$\color{green}\Rightarrow$] \textit{Remark :} to restart your calculation, you can also use the keyword \textbf{resume\_last\_time\index{resume\_last\_time}} instead of \textbf{reprise} and only change the \textbf{tmax\index{tmax}} value (cf User's manual).
 \end{itemize}
+
+
 
 \end{block}
 \end{frame}
@@ -1900,7 +1904,7 @@ Goal: Improve the mesh for TRUST near the wall by using viscous layers.
 
 \item Select the Cylinder\_1 geometry in the Object Browser.
 
-\item Select the "Tetrahedron (Netgen)" 3D algorithm.
+\item Select the "Tetrahedron (Netgen)" or "MG-Tetra" 3D algorithm.
 
 \item Click on the wheel of "Add. Hypothesis" $\rightarrow$ "Viscous Layers" with:
     \begin{itemize}
@@ -1911,7 +1915,7 @@ Goal: Improve the mesh for TRUST near the wall by using viscous layers.
     \item [$\circ$] Click OK
     \end{itemize}
 
-\item Add a 2D algorithm: Netgen 1D-2D
+\item Add a 2D algorithm: "Netgen 1D-2D" or "MG-CADSurf".
 \end{itemize}
 
 \end{block}
@@ -1923,21 +1927,18 @@ Goal: Improve the mesh for TRUST near the wall by using viscous layers.
 \begin{block}{Refine your mesh and use viscous layers}
 
 \begin{itemize}
-\item Click on the wheel of "Hypothesis" $\rightarrow$ "Netgen 2D parameters":
+\item Click on the wheel of "Hypothesis" $\rightarrow$ "Netgen 2D parameters" or "MG-CADSurf parameters":
     \begin{itemize}
-    \item [$\circ$] Change "Fineness" from "Moderate" to "Very Fine".
-    \item [$\circ$] Select "Allow Quadrangles".
-    \item [$\circ$] Click OK.
+    \item For "Netgen 2D parameters":
+        \begin{itemize}
+        \item [$\circ$] Change "Fineness" from "Moderate" to "Very Fine".
+        \item [$\circ$] Select "Allow Quadrangles".
+        \item [$\circ$] Click OK.
+        \end{itemize}
+    \item For "MG-CADSurf parameters", change "User size" to 20. Click OK.
     \end{itemize}
-\item "Apply and Close" the Create mesh window.
+\item "Apply and Close" the close mesh window.
 \item Select the Refined\_Mesh object in the Object Browser and Right click $\rightarrow$ Compute
-\item You should have a refined mesh with a mix of tetra, hexa, pyramid, prism elements:
-
-\begin{figure}
-\includegraphics[width=0.28\textwidth]{PICTURES/salome6.jpg}
-%\caption{Obstacle}
-\end{figure}
-
 \end{itemize}
 
 \end{block}
@@ -1949,13 +1950,35 @@ Goal: Improve the mesh for TRUST near the wall by using viscous layers.
 \begin{block}{Refine your mesh and use viscous layers}
 
 \begin{itemize}
+\item You should have a refined mesh with a mix of tetra, hexa, pyramid, prism elements for Netgen algorithms, and a mix of tetra and prisms for MG algorithms:
+
+\begin{center}
+\begin{tabular}{cc}
+\includegraphics[width=0.28\textwidth]{PICTURES/salome6a.jpg}
+ & 
+\includegraphics[width=0.28\textwidth]{PICTURES/salome6b.jpg}
+\tabularnewline
+Netgen & MG
+\end{tabular}
+\end{center}
+
 \item As TRUST accepted only tetras elements, you can quickly tetraedrize:
     \begin{itemize}
     \item [$\circ$] Select the Refined\_Mesh in the Object Browser.
     \item [$\circ$] "Modification" $\rightarrow$ "Split Volums" and select "Tetrahedron".
     \item [$\circ$] Don't change the parameters, and click "Apply and Close".
     \end{itemize}
+\end{itemize}
 
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Cylinder}
+
+\begin{block}{Refine your mesh and use viscous layers}
+\begin{itemize}
 \item As usual, define the mesh boundaries with Groups:
     \begin{itemize}
     \item [$\circ$] Select the Refined\_Mesh, Right click $\rightarrow$ Create Groups from Geometry.
@@ -1970,15 +1993,10 @@ Goal: Improve the mesh for TRUST near the wall by using viscous layers.
 
 \item Save your work in hdf format ("File" $\rightarrow$ "Save/Save As..."), and in python format with "File" $\rightarrow$ "Dump Study..."
 \end{itemize}
-
 \end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Cylinder}
-\begin{block}{Run with TRUST}
 
+
+\begin{block}{Run with TRUST}
 \begin{itemize}
 \item Change or create a new data file for TRUST to read and visualize your refined mesh.
 
@@ -2627,328 +2645,328 @@ Physical Volume("dom") = \{1\};
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\subsection{Xprepro}
-\subsubsection{3D VDF mesh}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\begin{columns}[c] 
-\column{.45\textwidth}
-\tableofcontents[sections={1-7},currentsection, currentsubsection]
-\column{.5\textwidth} 
-\tableofcontents[sections={8-13},currentsection, currentsubsection]
-\end{columns}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Xprepro to create a 3D VDF simple mesh}
-\begin{block}{First exercise}
+%%%%\subsection{Xprepro}
+%%%%\subsubsection{3D VDF mesh}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%\begin{frame}
+%%%%\begin{columns}[c] 
+%%%%\column{.45\textwidth}
+%%%%\tableofcontents[sections={1-7},currentsection, currentsubsection]
+%%%%\column{.5\textwidth} 
+%%%%\tableofcontents[sections={8-13},currentsection, currentsubsection]
+%%%%\end{columns}
+%%%%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%\begin{frame}
+%%%%\frametitle{Xprepro to create a 3D VDF simple mesh}
+%%%%\begin{block}{First exercise}
 
-\begin{figure}
-\includegraphics[width=0.7\textwidth]{PICTURES/xprepro0.pdf}
-%\caption{Obstacle}
-\end{figure}
+%%%%\begin{figure}
+%%%%\includegraphics[width=0.7\textwidth]{PICTURES/xprepro0.pdf}
+%%%%%\caption{Obstacle}
+%%%%\end{figure}
 
-In this exercise, you will learn how to create a 2D mesh with Xprepro. 
-Note that in Xprepro, we dig a geometry in an initial block of matter.
-\vspace{0.2cm}
+%%%%In this exercise, you will learn how to create a 2D mesh with Xprepro. 
+%%%%Note that in Xprepro, we dig a geometry in an initial block of matter.
+%%%%\vspace{0.2cm}
 
-\begin{itemize}
-\item Create a directory:\\
-\textbf{mkdir \, -p \, $\sim$/test/yourname/Xprepro/exo1} \\
-\textbf{cd \, $\sim$/test/yourname/Xprepro/exo1} \\
-\textbf{source /home/triou/env\_TRUST\_X.Y.Z.sh }\\
-\textbf{Xprepro \&} 
-\end{itemize}
+%%%%\begin{itemize}
+%%%%\item Create a directory:\\
+%%%%\textbf{mkdir \, -p \, $\sim$/test/yourname/Xprepro/exo1} \\
+%%%%\textbf{cd \, $\sim$/test/yourname/Xprepro/exo1} \\
+%%%%\textbf{source /home/triou/env\_TRUST\_X.Y.Z.sh }\\
+%%%%\textbf{Xprepro \&} 
+%%%%\end{itemize}
 
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Xprepro to create a 3D VDF simple mesh}
-\begin{block}{}
+%%%%\end{block}
+%%%%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%\begin{frame}
+%%%%\frametitle{Xprepro to create a 3D VDF simple mesh}
+%%%%\begin{block}{}
 
-\begin{itemize}
-\item You can see two windows: 
-    \begin{itemize}
-    \item [$\circ$] the command window: xprepro.tcl and 
-    \item [$\circ$] the list of existing objects: viewlist (empty for the moment).
-    \end{itemize}
-\item Click on "Default" button to begin from a cube. Read the pop-up window and click on "Ok". A new nedit window appears, opening a file named "maillagedefaut" in which we will set the values of the parameters used in our geometry.
-\item We want to create a cube of lenght L=10m, height H=1m and width l=1m with a cylinder of radius R=0.4m at one meter from the left side of the cube. So the center of the cylinder is located at the point $x=xomin+L/10$, $y=yomin+H/2$ with $(xomin, yomin, zomin)$ the origin of the frame.
-\item Set theses values in the window "maillagedefaut":
-\begin{itemize}
-    \item [$\circ$] Add the declaration of the parameter "radius" in the first line of the "maillagedefaut" file.
-    \item [$\circ$] Set the values of $xomin=0$, $xomax=10$, $yomin=0$, $yomax=2$, $zomin=0$ and $zomax=1$.
-    \item [$\circ$] Add the initialisation of the radius: $radius=0.4$.
-\end{itemize}
-\end{itemize}
+%%%%\begin{itemize}
+%%%%\item You can see two windows: 
+%%%%    \begin{itemize}
+%%%%    \item [$\circ$] the command window: xprepro.tcl and 
+%%%%    \item [$\circ$] the list of existing objects: viewlist (empty for the moment).
+%%%%    \end{itemize}
+%%%%\item Click on "Default" button to begin from a cube. Read the pop-up window and click on "Ok". A new nedit window appears, opening a file named "maillagedefaut" in which we will set the values of the parameters used in our geometry.
+%%%%\item We want to create a cube of lenght L=10m, height H=1m and width l=1m with a cylinder of radius R=0.4m at one meter from the left side of the cube. So the center of the cylinder is located at the point $x=xomin+L/10$, $y=yomin+H/2$ with $(xomin, yomin, zomin)$ the origin of the frame.
+%%%%\item Set theses values in the window "maillagedefaut":
+%%%%\begin{itemize}
+%%%%    \item [$\circ$] Add the declaration of the parameter "radius" in the first line of the "maillagedefaut" file.
+%%%%    \item [$\circ$] Set the values of $xomin=0$, $xomax=10$, $yomin=0$, $yomax=2$, $zomin=0$ and $zomax=1$.
+%%%%    \item [$\circ$] Add the initialisation of the radius: $radius=0.4$.
+%%%%\end{itemize}
+%%%%\end{itemize}
 
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Xprepro to create a 3D VDF simple mesh}
-\begin{block}{}
+%%%%\end{block}
+%%%%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%\begin{frame}
+%%%%\frametitle{Xprepro to create a 3D VDF simple mesh}
+%%%%\begin{block}{}
 
-\begin{figure}
-\includegraphics[width=0.8\textwidth]{PICTURES/xprepro1.pdf}
-%\caption{Obstacle}
-\end{figure}
+%%%%\begin{figure}
+%%%%\includegraphics[width=0.8\textwidth]{PICTURES/xprepro1.pdf}
+%%%%%\caption{Obstacle}
+%%%%\end{figure}
 
-\begin{itemize}
-\item Save your file.
-\item You can see the definition of $XM(1/nx)$, $YM(1/ny)$ and $ZM(1/nz)$, they represent the boundaries of the domain with a width of $\varepsilon=0.01$.
-\item You can see on the top of the "viewlist" window the values of $nx$, $ny$ and $nz$. For the moment they are fixed to $4$, it is the minimal number of nodes in an Xprepro mesh. Indeed the first point in x direction is on $XM(1)$, the second on $xomin$, the third on $xomax$ and the fourth $XM(nx)$.
-\item Note that the "real" number of cells in the final domain is: $Nx=nx-3$, $Ny=ny-3$ and $Nz=nz-3$.
-\end{itemize}
+%%%%\begin{itemize}
+%%%%\item Save your file.
+%%%%\item You can see the definition of $XM(1/nx)$, $YM(1/ny)$ and $ZM(1/nz)$, they represent the boundaries of the domain with a width of $\varepsilon=0.01$.
+%%%%\item You can see on the top of the "viewlist" window the values of $nx$, $ny$ and $nz$. For the moment they are fixed to $4$, it is the minimal number of nodes in an Xprepro mesh. Indeed the first point in x direction is on $XM(1)$, the second on $xomin$, the third on $xomax$ and the fourth $XM(nx)$.
+%%%%\item Note that the "real" number of cells in the final domain is: $Nx=nx-3$, $Ny=ny-3$ and $Nz=nz-3$.
+%%%%\end{itemize}
 
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Xprepro to create a 3D VDF simple mesh}
-\begin{block}{}
+%%%%\end{block}
+%%%%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%\begin{frame}
+%%%%\frametitle{Xprepro to create a 3D VDF simple mesh}
+%%%%\begin{block}{}
 
-\begin{itemize}
-\item Note that the "maillagefefaut" file and your prepro file are saved in the directory $\sim$/test/yourname/Xprepro/model.
-\item Click on "Modify" on the top of the "viewlist" window to change the values of $nx$, $ny$ and $nz$ to have $NX=100$, $Ny=20$ and $Nz=10$. Then "Ok". 
-\item Think to save your geometry with "Save file prepro"!
-\item You can see in this window that there are some "?", we will commplete them now.
-\item Note that the lines whom finish by a "(comm)" are commented lines.
-\item Choose the index number of the matter by double-clicking on the line 5 "filling up of the domain...", set the index of the matter to $1000$. (For matter, we must use positive numbers, matter with a negative number will be deleted.)
-\item Double-click on the line 7 "back boundary...", change the name of the boundary from "back boundary" to "Wall", and set the matter index to $-1000$. (Negative numbers for boundaries.)
-\end{itemize}
+%%%%\begin{itemize}
+%%%%\item Note that the "maillagefefaut" file and your prepro file are saved in the directory $\sim$/test/yourname/Xprepro/model.
+%%%%\item Click on "Modify" on the top of the "viewlist" window to change the values of $nx$, $ny$ and $nz$ to have $NX=100$, $Ny=20$ and $Nz=10$. Then "Ok". 
+%%%%\item Think to save your geometry with "Save file prepro"!
+%%%%\item You can see in this window that there are some "?", we will commplete them now.
+%%%%\item Note that the lines whom finish by a "(comm)" are commented lines.
+%%%%\item Choose the index number of the matter by double-clicking on the line 5 "filling up of the domain...", set the index of the matter to $1000$. (For matter, we must use positive numbers, matter with a negative number will be deleted.)
+%%%%\item Double-click on the line 7 "back boundary...", change the name of the boundary from "back boundary" to "Wall", and set the matter index to $-1000$. (Negative numbers for boundaries.)
+%%%%\end{itemize}
 
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Xprepro to create a 3D VDF simple mesh}
-\begin{block}{}
+%%%%\end{block}
+%%%%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%\begin{frame}
+%%%%\frametitle{Xprepro to create a 3D VDF simple mesh}
+%%%%\begin{block}{}
 
-\begin{itemize}
-\item Do the same for the lines 8 to 12:
-    \begin{itemize}
-    \item [$\circ$] line 8, change the "front boundary" name to "Wall", INDMAT=$-1000$,
-    \item [$\circ$] line 9, change the "left boundary" name to "Inlet", INDMAT=$-2000$,
-    \item [$\circ$] line 10, change the "right boundary" name to "Outlet", INDMAT=$-3000$,
-    \item [$\circ$] line 11, change the "bottom boundary" name to "Bottom", INDMAT=$-1000$,
-    \item [$\circ$] line 12, change the "top boundary" name to "Top", INDMAT=$-1000$.
-    \end{itemize}
-\item Add the cylinder, click on "Add", then click on the "? $\square$" button and select "cylinder".
-\item Name it "Obstacle", set the values of (AC) and (BC) with C the center of the cylinder so (AC, BC) are the coordinates of C in the plan xOy, so $AC=xomin+(xomax-xomin)/10$ and $BC=yomin+(yomax-yomin)/2$.
-\item Set the Radius to "radius".
-\item Set $CMIN=zomin$ and $CMAX=zomax$, $CMAX-CMIN$ correspond to the cylinder width.
-\item Set IDIR to $3$, the cylinder axe and INDMAT to $-9000$ (to make a hole) then "Ok".
+%%%%\begin{itemize}
+%%%%\item Do the same for the lines 8 to 12:
+%%%%    \begin{itemize}
+%%%%    \item [$\circ$] line 8, change the "front boundary" name to "Wall", INDMAT=$-1000$,
+%%%%    \item [$\circ$] line 9, change the "left boundary" name to "Inlet", INDMAT=$-2000$,
+%%%%    \item [$\circ$] line 10, change the "right boundary" name to "Outlet", INDMAT=$-3000$,
+%%%%    \item [$\circ$] line 11, change the "bottom boundary" name to "Bottom", INDMAT=$-1000$,
+%%%%    \item [$\circ$] line 12, change the "top boundary" name to "Top", INDMAT=$-1000$.
+%%%%    \end{itemize}
+%%%%\item Add the cylinder, click on "Add", then click on the "? $\square$" button and select "cylinder".
+%%%%\item Name it "Obstacle", set the values of (AC) and (BC) with C the center of the cylinder so (AC, BC) are the coordinates of C in the plan xOy, so $AC=xomin+(xomax-xomin)/10$ and $BC=yomin+(yomax-yomin)/2$.
+%%%%\item Set the Radius to "radius".
+%%%%\item Set $CMIN=zomin$ and $CMAX=zomax$, $CMAX-CMIN$ correspond to the cylinder width.
+%%%%\item Set IDIR to $3$, the cylinder axe and INDMAT to $-9000$ (to make a hole) then "Ok".
 
-\end{itemize}
+%%%%\end{itemize}
 
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Xprepro to create a 3D VDF simple mesh}
-\begin{block}{}
+%%%%\end{block}
+%%%%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%\begin{frame}
+%%%%\frametitle{Xprepro to create a 3D VDF simple mesh}
+%%%%\begin{block}{}
 
-\begin{itemize}
-\item The new line defining the cylinder appears in the "viewlist" window (save your prepro file).
-\item Click on "Modeling run..." in the command window. A pop-up window appears with the nodes list, click "Ok".
-\item Click on "Pre-mesh visualisation", VisIt opens. You can:
-    \begin{itemize}
-    \item [$\circ$] visualize your mesh with Add $\rightarrow$ Mesh $\rightarrow$ dom\_IJK and
-    \item [$\circ$] visualize the matter indexes with Add $\rightarrow$ Pseudocolor $\rightarrow$ INDMAT\_ELEM\_dom\_IJK.
-    \end{itemize}
-\item We have a box but no hole! In fact we cannot see the hole because it is inside the box and it doesn't pass through it.
-\end{itemize}
+%%%%\begin{itemize}
+%%%%\item The new line defining the cylinder appears in the "viewlist" window (save your prepro file).
+%%%%\item Click on "Modeling run..." in the command window. A pop-up window appears with the nodes list, click "Ok".
+%%%%\item Click on "Pre-mesh visualisation", VisIt opens. You can:
+%%%%    \begin{itemize}
+%%%%    \item [$\circ$] visualize your mesh with Add $\rightarrow$ Mesh $\rightarrow$ dom\_IJK and
+%%%%    \item [$\circ$] visualize the matter indexes with Add $\rightarrow$ Pseudocolor $\rightarrow$ INDMAT\_ELEM\_dom\_IJK.
+%%%%    \end{itemize}
+%%%%\item We have a box but no hole! In fact we cannot see the hole because it is inside the box and it doesn't pass through it.
+%%%%\end{itemize}
 
-\begin{figure}
-\includegraphics[width=0.63\textwidth]{PICTURES/xprepro2.pdf}
-%\caption{Obstacle}
-\end{figure}
+%%%%\begin{figure}
+%%%%\includegraphics[width=0.63\textwidth]{PICTURES/xprepro2.pdf}
+%%%%%\caption{Obstacle}
+%%%%\end{figure}
 
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Xprepro to create a 3D VDF simple mesh}
-\begin{block}{}
+%%%%\end{block}
+%%%%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%\begin{frame}
+%%%%\frametitle{Xprepro to create a 3D VDF simple mesh}
+%%%%\begin{block}{}
 
-\begin{itemize}
-\item So we must change the values of CMIN and CMAX in the cylinder parameters, to put $CMIN=zomin-\varepsilon$ and $CMAX=zomax+\varepsilon$
-\item Close VisIt, and click on "Modeling run..." and then "Pre-mesh visualization".
-\item Note that a cell is composed of a matter if its barycenter is in this matter's zone.
-\item Close VisIt, click on "Pre-processing run...", you can see the names of the boundaries in function of the indexes that we gave. For exemple, the boundary number 4 is made of the boundaries "Wall", "Wall", Bottom" and "Top" and it's TRUST name will be "Wall\_Wall\_Bottom\_Top".
-\item You can change the names of theses boundaries, to have the name you want.
-\item To give a name to a boundary is not mandatory for the boundaries with the same matter inder. You have just to name almost one of it.
-\item Click on "Get geom", a nedit window opens with a TRUST data file named "defaut.mesh".
-\end{itemize}
+%%%%\begin{itemize}
+%%%%\item So we must change the values of CMIN and CMAX in the cylinder parameters, to put $CMIN=zomin-\varepsilon$ and $CMAX=zomax+\varepsilon$
+%%%%\item Close VisIt, and click on "Modeling run..." and then "Pre-mesh visualization".
+%%%%\item Note that a cell is composed of a matter if its barycenter is in this matter's zone.
+%%%%\item Close VisIt, click on "Pre-processing run...", you can see the names of the boundaries in function of the indexes that we gave. For exemple, the boundary number 4 is made of the boundaries "Wall", "Wall", Bottom" and "Top" and it's TRUST name will be "Wall\_Wall\_Bottom\_Top".
+%%%%\item You can change the names of theses boundaries, to have the name you want.
+%%%%\item To give a name to a boundary is not mandatory for the boundaries with the same matter inder. You have just to name almost one of it.
+%%%%\item Click on "Get geom", a nedit window opens with a TRUST data file named "defaut.mesh".
+%%%%\end{itemize}
 
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Xprepro to create a 3D VDF simple mesh}
-\begin{block}{}
+%%%%\end{block}
+%%%%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%\begin{frame}
+%%%%\frametitle{Xprepro to create a 3D VDF simple mesh}
+%%%%\begin{block}{}
 
-\begin{itemize}
-\item Save this file with the name "channel.data", you can see that your geometry is in the file "defaut\_Pb1.geom".
-\item Quit Xprepro.
-\item Edit your channel.data file and add at the end of the file: \\
-{\small{
-\textbf{Postraiter\_domaine\index{Postraiter\_domaine} \{ domaine dom\_pb1 fichier dom\_pb1.lata format lata\index{format lata} \} \\
-discretiser\_domaine\index{discretiser\_domaine} dom\_pb1 \\
-End }
-}}
-\item Run the file: \textbf{trust channel}
-\item Visualize your mesh with: \textbf{visit\index{visit} -o dom\_pb1.lata \& }
-\end{itemize}
+%%%%\begin{itemize}
+%%%%\item Save this file with the name "channel.data", you can see that your geometry is in the file "defaut\_Pb1.geom".
+%%%%\item Quit Xprepro.
+%%%%\item Edit your channel.data file and add at the end of the file: \\
+%%%%{\small{
+%%%%\textbf{Postraiter\_domaine\index{Postraiter\_domaine} \{ domaine dom\_pb1 fichier dom\_pb1.lata format lata\index{format lata} \} \\
+%%%%discretiser\_domaine\index{discretiser\_domaine} dom\_pb1 \\
+%%%%End }
+%%%%}}
+%%%%\item Run the file: \textbf{trust channel}
+%%%%\item Visualize your mesh with: \textbf{visit\index{visit} -o dom\_pb1.lata \& }
+%%%%\end{itemize}
 
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%\end{block}
+%%%%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\subsubsection{2D VDF mesh}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\begin{columns}[c] 
-\column{.45\textwidth}
-\tableofcontents[sections={1-7},currentsection, currentsubsection]
-\column{.5\textwidth} 
-\tableofcontents[sections={8-13},currentsection, currentsubsection]
-\end{columns}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Xprepro to create a 2D VDF mesh}
-\begin{block}{Second exercise}
+%%%%\subsubsection{2D VDF mesh}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%\begin{frame}
+%%%%\begin{columns}[c] 
+%%%%\column{.45\textwidth}
+%%%%\tableofcontents[sections={1-7},currentsection, currentsubsection]
+%%%%\column{.5\textwidth} 
+%%%%\tableofcontents[sections={8-13},currentsection, currentsubsection]
+%%%%\end{columns}
+%%%%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%\begin{frame}
+%%%%\frametitle{Xprepro to create a 2D VDF mesh}
+%%%%\begin{block}{Second exercise}
 
-In this exercise, you will learn how to create a 2D mesh with Xprepro. 
+%%%%In this exercise, you will learn how to create a 2D mesh with Xprepro. 
 
-\begin{figure}
-\includegraphics[width=0.7\textwidth]{PICTURES/xprepro.pdf}
-%\caption{Obstacle}
-\end{figure}
+%%%%\begin{figure}
+%%%%\includegraphics[width=0.7\textwidth]{PICTURES/xprepro.pdf}
+%%%%%\caption{Obstacle}
+%%%%\end{figure}
 
-The radius of the cylinders is 0.2m and the distances between cylinders are 0.2m in the y direction and 0.6m in the x direction. \\
-%You will have a look at the "virus" example (button Examples) to see how to build a loop in the viewlist.
+%%%%The radius of the cylinders is 0.2m and the distances between cylinders are 0.2m in the y direction and 0.6m in the x direction. \\
+%%%%%You will have a look at the "virus" example (button Examples) to see how to build a loop in the viewlist.
 
-\begin{itemize}
-\item Create a directory: Run Xprepro in the TRUST environment:\\
-\textbf{mkdir \, -p \, $\sim$/test/yourname/Xprepro/exo2} \\
-\textbf{cd \, $\sim$/test/yourname/Xprepro/exo2} \\
-\textbf{source /home/triou/env\_TRUST\_X.Y.Z.sh }\\
-\textbf{Xprepro \&} 
-\end{itemize}
+%%%%\begin{itemize}
+%%%%\item Create a directory: Run Xprepro in the TRUST environment:\\
+%%%%\textbf{mkdir \, -p \, $\sim$/test/yourname/Xprepro/exo2} \\
+%%%%\textbf{cd \, $\sim$/test/yourname/Xprepro/exo2} \\
+%%%%\textbf{source /home/triou/env\_TRUST\_X.Y.Z.sh }\\
+%%%%\textbf{Xprepro \&} 
+%%%%\end{itemize}
 
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Xprepro to create a 2D VDF mesh}
-\begin{block}{}
+%%%%\end{block}
+%%%%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%\begin{frame}
+%%%%\frametitle{Xprepro to create a 2D VDF mesh}
+%%%%\begin{block}{}
 
-\begin{itemize}
-\item First, have a look at the "Examples..." ("Picture" button and if you are interested by one "Copy and Read" button).
-%\item First, have a look at the Examples (Copy and Read button on virus example) to understand how you will use fortran code in the viewlist to create loops for building your cylinders.
+%%%%\begin{itemize}
+%%%%\item First, have a look at the "Examples..." ("Picture" button and if you are interested by one "Copy and Read" button).
+%%%%%\item First, have a look at the Examples (Copy and Read button on virus example) to understand how you will use fortran code in the viewlist to create loops for building your cylinders.
 
-\item Then, click on the button "Default" to define the initial block and edit the dimensions file. 
-\item Note that the files "maillagedefaut" and "defaut.prep" are saved in your directory (with "save" in nedit for "maillagedefaut" and "Save file prepro" in Xprepro for defaut.prep).
+%%%%\item Then, click on the button "Default" to define the initial block and edit the dimensions file. 
+%%%%\item Note that the files "maillagedefaut" and "defaut.prep" are saved in your directory (with "save" in nedit for "maillagedefaut" and "Save file prepro" in Xprepro for defaut.prep).
 
-\item It is a 2D geometry, so we will define:
-    \begin{itemize}
-    \item [$\circ$] xomin=0.,
-    \item [$\circ$] xomax=10.,
-    \item [$\circ$] yomin=0.,
-    \item [$\circ$] yomax=2.,
-    \item [$\circ$] zomin=0.,
-    \item [$\circ$] zomax=0.01.,
-    \item [$\circ$] eps=0.0001 (tolerance) and
-    \item [$\circ$] radius=0.2 (don't forget to declare it).
-    \end{itemize}
-\item Save the file.
-\end{itemize}
+%%%%\item It is a 2D geometry, so we will define:
+%%%%    \begin{itemize}
+%%%%    \item [$\circ$] xomin=0.,
+%%%%    \item [$\circ$] xomax=10.,
+%%%%    \item [$\circ$] yomin=0.,
+%%%%    \item [$\circ$] yomax=2.,
+%%%%    \item [$\circ$] zomin=0.,
+%%%%    \item [$\circ$] zomax=0.01.,
+%%%%    \item [$\circ$] eps=0.0001 (tolerance) and
+%%%%    \item [$\circ$] radius=0.2 (don't forget to declare it).
+%%%%    \end{itemize}
+%%%%\item Save the file.
+%%%%\end{itemize}
 
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Xprepro to create a 2D VDF mesh}
-\begin{block}{}
+%%%%\end{block}
+%%%%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%\begin{frame}
+%%%%\frametitle{Xprepro to create a 2D VDF mesh}
+%%%%\begin{block}{}
 
-\begin{itemize}
-\item Click "Modify" on the viewlist to modify the nodes number NX=203, NY=43, NZ=4.
-\item Set the matter index to 1000, line 5.
-\item Build the boundary blocks:
-    \begin{itemize}
-    \item [$\circ$] line 7, change the "back boundary" name to \textbf{lateral}, INDMAT=$0$,
-    \item [$\circ$] line 8, change the "front boundary" name to \textbf{""}, INDMAT=$0$,
-    \item [$\circ$] line 9, change the "left boundary" name to \textbf{inlet}, INDMAT=$-1000$,
-    \item [$\circ$] line 10, change the "right boundary" name to \textbf{outlet}, INDMAT=$-2000$,
-    \item [$\circ$] line 11, change the "bottom boundary" name to \textbf{""}, INDMAT=$0$,
-    \item [$\circ$] line 12, change the "top boundary" name to \textbf{""}, INDMAT=$0$.
-    \end{itemize}
+%%%%\begin{itemize}
+%%%%\item Click "Modify" on the viewlist to modify the nodes number NX=203, NY=43, NZ=4.
+%%%%\item Set the matter index to 1000, line 5.
+%%%%\item Build the boundary blocks:
+%%%%    \begin{itemize}
+%%%%    \item [$\circ$] line 7, change the "back boundary" name to \textbf{lateral}, INDMAT=$0$,
+%%%%    \item [$\circ$] line 8, change the "front boundary" name to \textbf{""}, INDMAT=$0$,
+%%%%    \item [$\circ$] line 9, change the "left boundary" name to \textbf{inlet}, INDMAT=$-1000$,
+%%%%    \item [$\circ$] line 10, change the "right boundary" name to \textbf{outlet}, INDMAT=$-2000$,
+%%%%    \item [$\circ$] line 11, change the "bottom boundary" name to \textbf{""}, INDMAT=$0$,
+%%%%    \item [$\circ$] line 12, change the "top boundary" name to \textbf{""}, INDMAT=$0$.
+%%%%    \end{itemize}
 
-\item The coordinates of the centre of the first cylinder, which after will be duplicated, are (x0, y0)=(0.6, 0.4). So the distance between to cylinder center is $dx=0.8$ and $dy=0.3$. Declare and initialise this parameters $(x0, y0, dx, dy)$ in your "maillagedefaut" file.
+%%%%\item The coordinates of the centre of the first cylinder, which after will be duplicated, are (x0, y0)=(0.6, 0.4). So the distance between to cylinder center is $dx=0.8$ and $dy=0.3$. Declare and initialise this parameters $(x0, y0, dx, dy)$ in your "maillagedefaut" file.
 
-\item Think about how to create 2 Fortran nesteed loops to copy the first cylinder in the two directions X and Y.
-\end{itemize}
+%%%%\item Think about how to create 2 Fortran nesteed loops to copy the first cylinder in the two directions X and Y.
+%%%%\end{itemize}
 
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Xprepro to create a 2D VDF mesh}
-\begin{block}{}
+%%%%\end{block}
+%%%%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%\begin{frame}
+%%%%\frametitle{Xprepro to create a 2D VDF mesh}
+%%%%\begin{block}{}
 
-\begin{itemize}
-\item Create them with the button "Add", select "(fortran code)" instead of "?$\square$" and write your loops in fortran.
-\item Check the other objects in the viewlist and save your work with the button "Save file" prepro then check the name of the boundaries with "Boundaries informations".
-\item Run the model with "Modeling run...". A window is opened where you will check the nodes coordinates of the mesh.
-\item Click on "Pre-mesh visualization" to check your pre-mesh.
+%%%%\begin{itemize}
+%%%%\item Create them with the button "Add", select "(fortran code)" instead of "?$\square$" and write your loops in fortran.
+%%%%\item Check the other objects in the viewlist and save your work with the button "Save file" prepro then check the name of the boundaries with "Boundaries informations".
+%%%%\item Run the model with "Modeling run...". A window is opened where you will check the nodes coordinates of the mesh.
+%%%%\item Click on "Pre-mesh visualization" to check your pre-mesh.
 
-\item Create a 2D cut slice in the XY plane: with "Add" button, choose an object of "Meshing creation 2D" type and name it coupe\_2D. Set $POS=0$, $IDIR=3$, $INDMAT=-5000$.
-\item Click "Modeling run..." then "Pre-mesh visualization".
-\item Warning, it is always a 3D model in Xprepro, even if you wish a 2D mesh. By default, you see the indexes between 1000 and -3000. If you don't see the cylinders, create a 2D slice in the XY plane in VisIt to see inside the 3D pre-mesh.
-\end{itemize}
+%%%%\item Create a 2D cut slice in the XY plane: with "Add" button, choose an object of "Meshing creation 2D" type and name it coupe\_2D. Set $POS=0$, $IDIR=3$, $INDMAT=-5000$.
+%%%%\item Click "Modeling run..." then "Pre-mesh visualization".
+%%%%\item Warning, it is always a 3D model in Xprepro, even if you wish a 2D mesh. By default, you see the indexes between 1000 and -3000. If you don't see the cylinders, create a 2D slice in the XY plane in VisIt to see inside the 3D pre-mesh.
+%%%%\end{itemize}
 
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Xprepro to create a 2D VDF mesh}
-\begin{block}{}
+%%%%\end{block}
+%%%%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%\begin{frame}
+%%%%\frametitle{Xprepro to create a 2D VDF mesh}
+%%%%\begin{block}{}
 
-\begin{itemize}
-\item Zoom onto the boundaries to check the boundary blocks are all defined.
+%%%%\begin{itemize}
+%%%%\item Zoom onto the boundaries to check the boundary blocks are all defined.
 
-\item Click "Pre-processing run" to create the final mesh (check there is no error messages).
+%%%%\item Click "Pre-processing run" to create the final mesh (check there is no error messages).
 
-\item Click on "Get geom" to generate the TRUST .geom file in your study. It opens a nedit windows with a TRUST data file, save it in your repository with the name "dom\_1.data".
-\item Suppress the first lines in comments "\#" and the "\textbackslash{}n" ending a commentary line.
-\item Add at the end of the file:\\
-\textbf{Discretiser\_domaine\index{discretiser\_domaine} dom\_1} \\
-\textbf{Postraiter\_domaine\index{Postraiter\_domaine} \{ domaine dom\_1 fichier mesh format lata\index{format lata} \} }
-\item Visualize your 2D mesh with VisIt.
-\item If you wish, build a data file to read your mesh and run the flow around the cylinders.
-\end{itemize}
+%%%%\item Click on "Get geom" to generate the TRUST .geom file in your study. It opens a nedit windows with a TRUST data file, save it in your repository with the name "dom\_1.data".
+%%%%\item Suppress the first lines in comments "\#" and the "\textbackslash{}n" ending a commentary line.
+%%%%\item Add at the end of the file:\\
+%%%%\textbf{Discretiser\_domaine\index{discretiser\_domaine} dom\_1} \\
+%%%%\textbf{Postraiter\_domaine\index{Postraiter\_domaine} \{ domaine dom\_1 fichier mesh format lata\index{format lata} \} }
+%%%%\item Visualize your 2D mesh with VisIt.
+%%%%\item If you wish, build a data file to read your mesh and run the flow around the cylinders.
+%%%%\end{itemize}
 
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%\end{block}
+%%%%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 

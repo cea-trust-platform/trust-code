@@ -435,7 +435,8 @@ int Paroi_std_hyd_VDF::calculer_local(double u_plus_d_plus,double d_visco,
   if (u_plus_d_plus <= valmin)
     {
       calculer_u_star_sous_couche_visq(norm_vit,d_visco,dist,num_face);
-      calculer_sous_couche_visq(k_eps,elem);
+
+      calculer_sous_couche_visq(k_eps,dist,elem,d_visco,num_face);
     }
 
   else if ((u_plus_d_plus > valmin) && (u_plus_d_plus < valmax))
@@ -445,7 +446,7 @@ int Paroi_std_hyd_VDF::calculer_local(double u_plus_d_plus,double d_visco,
       calculer_sous_couche_tampon(k_eps,d_visco,d_plus,elem,num_face);
     }
 
-  else if (u_plus_d_plus >= valmax)
+  else  // if (u_plus_d_plus >= valmax)
     {
       calculer_u_star_sous_couche_log(norm_vit,d_visco,dist,num_face);
       calculer_sous_couche_log(k_eps,dist,elem,num_face);
@@ -529,16 +530,36 @@ int Paroi_std_hyd_VDF::calculer_u_star_sous_couche_visq(double norm_vit,
   // Dans la sous couche visqueuse:  u* = sqrt(u*nu/d)
 
   tab_u_star_(face) = sqrt(norm_vit*d_visco/dist);
+  //  Cerr<<" USTA "<<face<<" "<< tab_u_star_(face)<<finl;
   return 1;
 }
 
 
-int Paroi_std_hyd_VDF::calculer_sous_couche_visq(DoubleTab& K_eps,int elem)
+int Paroi_std_hyd_VDF::calculer_sous_couche_visq(DoubleTab& K_eps, double dist, int elem,double d_visco, int face )
 {
   // Dans la sous couche visqueuse: k = eps = 0
 
   K_eps(elem,0) = 0.;
   K_eps(elem,1) = 0.;
+
+  return 1;
+  double u_star= tab_u_star(face);
+  double d_plus=dist*u_star/d_visco;
+  double u_star_carre = u_star*u_star;
+  double C=0.08;
+  double alpha=0.06;
+  alpha=0.06550;
+  //  f1=f2=fmu=1
+  alpha=0.3;
+  // f1=f2+1 fmu de LS
+  alpha=0.05480;
+
+  K_eps(elem,0) = u_star_carre*d_plus*d_plus*C;
+  //K_eps(elem,1) = u_star_carre*u_star_carre/d_visco*(d_plus*0.005);
+  K_eps(elem,1) = u_star_carre*u_star_carre/d_visco*(d_plus*d_plus*C)*alpha;
+  Cerr<<" ici "<<  elem <<" " << K_eps(elem,0) <<" "<<K_eps(elem,1)<<finl;
+  //assert(0);
+  //exit();
   return 1;
 }
 

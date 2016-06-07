@@ -1541,30 +1541,6 @@ const Zone_dis_base& Champ_base::zone_dis_base() const
   return zone_dis_base();
 }
 
-// Description:
-//    Calcule la trace d'un champ sur une frontiere au temps du champ
-// Precondition: x doit etre dimensionne
-// Parametre: Frontiere_dis_base&
-//    Signification: frontiere discretisee sur laquelle on veut
-//                   calculer la trace du champ
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleTab& x
-//    Signification: les valeurs du champ sur la frontiere
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: DoubleTab&
-//    Signification: les valeurs du champ sur la frontiere
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-DoubleTab& Champ_base::trace(const Frontiere_dis_base& fr, DoubleTab& x) const
-{
-  return trace(fr,x,temps_);
-}
 
 // Description:
 //    Calcule la trace d'un champ sur une frontiere au temps tps
@@ -1600,7 +1576,7 @@ DoubleTab& Champ_base::trace(const Frontiere_dis_base& fr, DoubleTab& x) const
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-DoubleTab& Champ_base::trace(const Frontiere_dis_base& , DoubleTab& x , double tps) const
+DoubleTab& Champ_base::trace(const Frontiere_dis_base& , DoubleTab& x , double tps,int distant) const
 {
   Cerr << que_suis_je() << "did not overloaded Champ_base::trace" << finl;
   exit();

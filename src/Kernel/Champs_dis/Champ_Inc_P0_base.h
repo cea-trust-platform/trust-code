@@ -51,7 +51,7 @@ public :
   inline virtual int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const;
   inline virtual DoubleTab& valeur_aux_sommets(const Domaine& domain, DoubleTab& result) const;
   inline virtual DoubleVect& valeur_aux_sommets_compo(const Domaine& domain, DoubleVect& result, int ncomp) const;
-  virtual DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double ) const;
+  virtual DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double,int distant ) const;
   virtual Champ_base& affecter_(const Champ_base& ) ;
   int fixer_nb_valeurs_nodales(int n);
 };

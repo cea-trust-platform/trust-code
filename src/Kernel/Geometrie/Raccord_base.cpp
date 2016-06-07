@@ -188,3 +188,16 @@ Entree& Raccord_local_homogene::readOn(Entree& s)
 {
   return Raccord_local::readOn(s) ;
 }
+void Raccord_local_homogene::trace_elem_distant(const DoubleTab& x, DoubleTab& y) const
+{
+// en suppposant les numerotations des faces identiques sur le raccord des deux cotes
+  return trace_elem_local(x,y);
+}
+void Raccord_local_homogene::trace_face_distant(const DoubleTab& x, DoubleTab& y) const
+{
+  return trace_face_local(x,y);
+}
+void Raccord_local_homogene::trace_face_distant(const DoubleVect& x, DoubleVect& y) const
+{
+  return trace_face_local(x,y);
+}

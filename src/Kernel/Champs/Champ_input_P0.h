@@ -62,6 +62,9 @@ protected:
 
   REF(Zone_dis_base) zdb_;
 
+private:
+  int nb_elems_reels_sous_zone_; //if sous-zone : number of elements of the sous-zone on this proc
+  int nb_elems_reels_loc_;       //total number of local elements
 };
 
 inline void Champ_input_P0::associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base)

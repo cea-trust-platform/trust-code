@@ -33,7 +33,7 @@ Reordonner_faces_periodiques dom PerioZ
 # BEGIN PARTITION
 Partition dom
 {
-        Partition_tool metis { Nb_parts 3 }
+        Partition_tool metis { Nb_parts 3 use_weights }
         Larg_joint 2
 	periodique 2 PerioX PerioZ
         zones_name DOM
@@ -110,7 +110,6 @@ Read pb
 						initial_conditions { k_Eps Champ_Uniforme 2 0.218 0.017 }
 						}
 					turbulence_paroi loi_standard_hydr
-					dt_impr_ustar 20
 					dt_impr_ustar_mean_only { dt_impr 20 boundaries 2 Haut Bas }
 					}
 		Traitement_particulier	{

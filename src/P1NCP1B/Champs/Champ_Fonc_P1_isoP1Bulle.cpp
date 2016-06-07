@@ -83,9 +83,9 @@ void Champ_Fonc_P1_isoP1Bulle::mettre_a_jour(double t)
 
 // Description :
 //Voir Champ_base::trace
-DoubleTab& Champ_Fonc_P1_isoP1Bulle::trace(const Frontiere_dis_base& fr, DoubleTab& x, double tps) const
+DoubleTab& Champ_Fonc_P1_isoP1Bulle::trace(const Frontiere_dis_base& fr, DoubleTab& x, double tps,int distant) const
 {
-  return Champ_P1iP1B_implementation::trace(fr, valeurs(), x);
+  return Champ_P1iP1B_implementation::trace(fr, valeurs(), x,distant);
 }
 
 void Champ_Fonc_P1_isoP1Bulle::completer(const Zone_Cl_dis_base& zcl)

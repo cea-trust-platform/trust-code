@@ -1,0 +1,39 @@
+{
+    "pb_thermo_hydrau": {
+        "cond_init": {
+            "temperature": 0.0, 
+            "vitesse": [
+                0.0
+            ]
+        }, 
+        "turb_model": "LM", 
+        "cond_lim": [
+            {
+                "group_name": "cl1",
+                "bc_type": "wall", 
+                "vitesse": "adherent",
+                "temperature": {
+                    "wall_type": "forced_flux", 
+                    "value": 32.2
+                }
+            }, 
+            {
+                "group_name": "cl2", 
+                "bc_type": "symetry",
+                "vitesse": {},
+                "temperature": {}
+            }
+        ], 
+        "domaine": {
+            "geo_types": [
+                "NORM_TETRA4"
+            ], 
+            "dimension": 3, 
+            "mesh_name": "Maillage_1", 
+            "med_file": "/tmp/Maillage_test.med"
+        }, 
+        "milieu": {
+            "preset": "Water 20 deg"
+        }
+    }
+}

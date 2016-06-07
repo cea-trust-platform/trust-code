@@ -1,0 +1,8 @@
+def completeResPath(fileName):
+  import os
+  subPath = "@SALOME_INSTALL_PYTHON@/trust_plot2d"
+  rd = os.environ.get("TRUST_PLOT2D_ROOT_DIR", None)
+  if rd is None:
+    raise Exception("TRUST_PLOT2D_ROOT_DIR is not defined!")
+  filePath = os.path.join(rd, subPath, fileName)
+  return filePath

@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "id": "trust_schemas:equations.json",
+  "title": "Equations",
+  "definitions": 
+    {
+     "temperature" :
+      { 
+        "type": "number",
+        "minimum": -273.15,
+        "title": "Temperature"
+      },
+     "pressure" :
+      { 
+        "type": "number",
+        "title": "Pressure"
+      },
+     "velocity":
+      { 
+        "type": "array",
+        "title": "Velocity",
+        "items": { "type": "number" },
+        "minItems": 1,
+        "maxItems": 3
+      },
+     "k-epsilon":
+     { 
+        "type": "array",
+        "title": "k-epsilon",
+        "items": { "type": "number" },
+        "minItems": 2,
+        "maxItems": 2
+      }
+    }
+}
+

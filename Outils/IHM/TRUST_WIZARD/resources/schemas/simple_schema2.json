@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "id": "http://localhost/simple_schema2.json",
+  "title": "Simple schema example",
+  "description": "A description of simple schema",
+  "definitions": 
+    {
+     "string_def":  { "type": "string", "minLength": 1 },
+     "positiveInteger": { "type": "integer", "minValue": 0}
+     },
+
+  "type": "object",
+  "gui_type": "object_tab",
+  "properties": 
+    {
+      "problem":  { "type": "string", "enum": ["pb 1", "pb 2"],  "title": "Problem to compute", "description": "problem desc", "gui_order": 10}, 
+      "nb_layer": { "type": "integer", "title": "Number of layers", "description": "nb layers desc" , "gui_order": 20},
+      "file":   {"type": "string", "title": "The file", "minLength": 1, "gui_order": 25, "gui_type": "file_path", "gui_file_filter": "MED files (*.med)"},
+      "sub_prob": 
+        {
+          "type": "object",
+          "title": "Sub-problem",
+          "description": "Here you can enter a sub-problem",
+          "gui_order": 30,
+          "properties": 
+            {
+             "media_name": { "type": "string", "title": "Medium name", "gui_order": 20},
+             "nb_faces": { "type": "integer", "enum": [0, 3, 5], "title": "Number of faces", "default": 3, "gui_order": 10}
+             }
+         },
+      "ex_radio":
+         {
+          "title": "Radio example",
+          "description": "A long description of the one of radio choice:",
+          "gui_type": "oneOf_combo",
+          "oneOf": [
+              { "type": "integer", "title": "some int in radio", "default": 2, "minimum": 6},
+              { "title": "some string in radio", "$ref": "#/definitions/string_def"}
+            ]
+         } 
+    },
+  "required": ["problem"],
+  "additionalProperties": false
+}
+

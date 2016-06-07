@@ -120,8 +120,8 @@ public:
   const Zone_Cl_dis& zone_Cl_dis() const;
   Zone_Cl_dis& zone_Cl_dis();
 
-  DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&) const;
-  virtual DoubleTab& trace(const Frontiere_dis_base&, DoubleTab& , double ) const;
+  DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&,int distant) const;
+  virtual DoubleTab& trace(const Frontiere_dis_base&, DoubleTab& , double ,int distant) const;
   virtual int     remplir_coord_noeuds_et_polys(DoubleTab&, IntVect&) const;
   virtual int     remplir_coord_noeuds_et_polys_compo(DoubleTab&, IntVect&, int) const;
   virtual DoubleTab& remplir_coord_noeuds(DoubleTab& ) const=0;

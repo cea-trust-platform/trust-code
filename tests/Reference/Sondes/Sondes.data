@@ -204,6 +204,8 @@ Read pb
 		  Ecart_Type_vitesse_som_dom
 		  moyenne_interp_vitesse_elem_dom
 		  Ecart_Type_interp_vitesse_elem_dom
+		  pression_hydrostatique elem
+		  pression_hydrostatique som
 		}
 	}
 }

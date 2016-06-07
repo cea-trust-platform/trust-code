@@ -1,0 +1,22 @@
+def completeResPath(fileName):
+  import os
+  subPath = "@SALOME_INSTALL_PYTHON@/trust_wiz"
+  rd = os.environ.get("TRUST_WIZARD_ROOT_DIR", None)
+  if rd is None:
+    raise Exception("TRUST_WIZARD_ROOT_DIR is not defined!")
+  filePath = os.path.join(rd, subPath, fileName)
+  return filePath
+
+class ValueExchanger(object):
+  __ZE_DIC = {}  # class member
+
+  def __init__(self):
+    pass
+
+  @classmethod
+  def SetValue(cls, key, value):
+    cls.__ZE_DIC[key] = value
+
+  @classmethod
+  def GetValue(cls, key, default):
+    return cls.__ZE_DIC.get(key, default)

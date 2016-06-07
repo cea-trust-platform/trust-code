@@ -40,13 +40,13 @@ cb_config_list *:1" > ROMIO_HINTS.env
    echo "export ROMIO_HINTS=\$TRUST_ROOT/env/ROMIO_HINTS.env # ROMIO HINTS" >> $env
    #
    # Load modules
-   # intel 14.0.4.211 15.0.3.187(default)
-   intel="intel/15.0.3.187"
+   # intel 14.0.4.211 15.0.3.187(default) intel/15.6.233 intel/16.0.1
+   intel="intel/14.0.4.211"
    # bullxmpi/1.2.8.4 bullxmpi/1.2.8.4-mxm(default) bullxmpi/MPI3.gcc.4.9-beta bullxmpi_gnu/1.2.8.4
    # module="bullxmpi_gnu/1.2.8.4"
-   module="$intel bullxmpi/1.2.8.4-mxm"
-   # intelmpi 5.0.1.035(default) intelmpi/5.0.3.048
-   # module="$intel intelmpi/5.0.3.048"
+   module="$intel bullxmpi/1.2.8.4"
+   # intelmpi 5.0.1.035(default) intelmpi/5.0.3.048 intelmpi/5.1.2.150 
+   # module="$intel intelmpi/5.0.1.035"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env

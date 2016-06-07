@@ -39,7 +39,7 @@ public :
   void verifie_valeurs_cl();
   inline const Zone_VEF& zone_vef() const;
   int compo_normale_sortante(int ) const;
-  DoubleTab& trace(const Frontiere_dis_base& , DoubleTab& , double ) const;
+  DoubleTab& trace(const Frontiere_dis_base& , DoubleTab& , double ,int distant) const;
   void cal_rot_ordre1(DoubleTab&);
   void gradient(DoubleTab&);
 

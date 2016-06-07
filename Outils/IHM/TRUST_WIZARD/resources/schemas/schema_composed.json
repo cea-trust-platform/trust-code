@@ -1,0 +1,119 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "id": "http://localhost/schema_composed.json",
+  "title": "Simple schema example",
+  "description": "A description of simple schema",
+  "definitions": 
+    {
+     "string_def":  { "type": "string", "minLength": 1 },
+     "positiveInteger": { "type": "integer", "minValue": 0}
+     },
+
+  "type": "object",
+  "gui_type": "object_tab",
+  "properties": 
+    {
+      "problem":  { "type": "string", "enum": ["pb 1", "pb 2"],  "title": "Problem to compute", "description": "problem desc", "gui_order": 10}, 
+      "nb_layer": { "type": "integer", "title": "Number of layers", "description": "nb layers desc" , "gui_order": 20},
+      "file":   {"type": "string", "title": "The file", "minLength": 1, 
+                 "gui_order": 25, "gui_type": "file_path", "gui_file_filter": "MED files (*.med)", "default": "/tmp/toto.med"},
+      "sub_prob": 
+        {
+          "type": "object",
+          "title": "Sub-problem",
+          "description": "Here you can enter a sub-problem",
+          "gui_order": 30,
+          "properties": 
+            {
+             "media_name": { "type": "string", "title": "Medium name", "gui_order": 20},
+             "nb_faces": { "type": "integer", "enum": [0, 3, 5], "title": "Number of faces", "default": 3, "gui_order": 10},
+             "void_prop": {}
+             }
+         },
+      "ex_radio":
+         {
+          "title": "Radio example",
+          "description": "A long description of the one of radio choice:",
+          "oneOf": [
+              { "type": "integer", "title": "some int in radio", "default": 6, "minimum": 6},
+              { "title": "some string in radio", "$ref": "#/definitions/string_def"}
+            ]
+         },
+       "ex_allOf":
+         {
+          "title": "allOf example",
+          "description": "A long description of the allOf",
+          "allOf": [
+              { "type": "integer", "title": "some int in allOf", "default": 6, "minimum": 5},
+              { "type": "integer", "maximum": 18}
+            ]
+         },
+        "ex_radio_complex":
+         {
+          "title": "Radio complex example", "gui_order": 0,
+          "description": "A long description of the one of radio choice:",
+          "oneOf": 
+            [ { "type": "object", "title": "first choice", "description": "first choice desc", "properties": 
+                      { "tata" : { "type": "integer", "title": "some int in combo"},
+                        "tutu" : { "type": "integer", "title": "some int in combo2"}
+                      }
+               },
+              { "title": "some string in radio", "$ref": "#/definitions/string_def"}
+            ]
+         },
+       "ex_combo":
+         {
+          "title": "Combo example",
+          "gui_type": "oneOf_combo",
+          "description": "A long description of the one of combo choice:",
+          "oneOf": [
+              { "type": "integer", "title": "some int in combo", "default": 6, "minimum": 6},
+              { "title": "some string in combo", "$ref": "#/definitions/string_def"}
+            ]
+         },
+        "ex_combo_complex":
+         {
+          "title": "Combo complex",
+          "gui_type": "oneOf_combo",
+          "description": "A long description of the one of combo choice:",
+          "oneOf": [
+              { "title": "some string in combo", "$ref": "#/definitions/string_def", "default": "a"},
+              { "type": "object", "title": "first choice", "description": "first choice desc", "properties": 
+                      { "tata" : { "type": "integer", "title": "some int in combo"},
+                        "tutu" : { "type": "integer", "title": "some int in combo2"}
+                      }
+               }
+            ]
+         },
+
+        "ex_array_flat":
+          {
+           "title": "Array example", "description": "Desc of array example",
+           "type": "array",
+           "items": { 
+                     "type": "object", 
+                     "title": "Some obj in array", "description": "Desc of some obj in array", 
+                     "properties": { "tutu": { "type": "integer"}, "tata": {"type": "number" }}
+                     }
+          },
+         "ex_array_tab":
+          {
+           "title": "Array tab example", "description": "Desc of array tab example",
+           "type": "array",
+           "gui_type": "array_tab",
+           "items": { 
+                  "gui_type": "oneOf_combo",
+                  "oneOf": 
+                    [ { "type": "object", "title": "first choice", "description": "first choice desc", 
+                        "properties": 
+                          { "tata" : { "type": "integer", "title": "some int in combo"},
+                            "tutu" : { "type": "integer", "title": "some int in combo2"} }
+                       } ]
+                     },
+           "minItems": 1
+          }
+    },
+  "required": ["problem"],
+  "additionalProperties": false
+}
+

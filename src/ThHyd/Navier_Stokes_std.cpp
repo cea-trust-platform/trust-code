@@ -61,6 +61,7 @@ Navier_Stokes_std::Navier_Stokes_std():methode_calcul_pression_initiale_(0),div_
   champs_compris_.ajoute_nom_compris("reynolds_maille");
   champs_compris_.ajoute_nom_compris("courant_maille");
   champs_compris_.ajoute_nom_compris("taux_cisaillement");
+  champs_compris_.ajoute_nom_compris("pression_hydrostatique");
 }
 // Description:
 //    Simple appel a:  Equation_base::printOn(Sortie&)
@@ -1489,9 +1490,50 @@ void Navier_Stokes_std::creer_champ(const Motcle& motlu)
           champs_compris_.ajoute_champ(Taux_cisaillement);
         }
     }
+  else if (motlu == "pression_hydrostatique")
+    {
+      if (!pression_hydrostatique_.non_nul())
+        {
+          const Discret_Thyd& dis=ref_cast(Discret_Thyd,discretisation());
+          dis.discretiser_champ("Champ_sommets",zone_dis(),"pression_hydrostatique","Pa",1,0.,pression_hydrostatique_);
+          champs_compris_.ajoute_champ(pression_hydrostatique_);
+        }
+    }
+
 
   if (le_traitement_particulier.non_nul())
     le_traitement_particulier->creer_champ(motlu);
+}
+
+void  Navier_Stokes_std::calculer_pression_hydrostatique(Champ_base& pression_hydro) const
+{
+  //  abort();
+  DoubleTab& val= pression_hydro.valeurs();
+  const DoubleTab& coords = zone_dis().zone().domaine().les_sommets();
+  if (!milieu().a_gravite())
+    {
+      Cerr<<"postprocessing of presion_hydrostatique needs gravity"<<finl;
+      exit();
+    }
+  const Champ_Don& rho = milieu().masse_volumique();
+  if (!sub_type(Champ_Uniforme,rho.valeur()))
+    {
+      Cerr<<"postprocessing of presion_hydrostatique availabe only for incompressible flow"<<finl;
+      exit();
+    }
+  const DoubleTab& gravite = milieu().gravite().valeurs();
+
+  val=rho.valeurs()(0,0);
+  const int nb_som=val.dimension(0);
+
+  for (int som=0; som<nb_som; som++)
+    {
+      double gz=0;
+      for (int dir=0; dir<dimension; dir++)
+        gz+=coords(som,dir)*gravite(0,dir);
+      val[som]*=gz;
+    }
+  val.echange_espace_virtuel();
 }
 
 const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
@@ -1547,6 +1589,16 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
       Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,Taux_cisaillement.valeur());
       if (((ch.temps()!=la_vitesse->temps()) || (ch.temps()==temps_init)) && (la_vitesse->mon_equation_non_nul()))
         ch.mettre_a_jour(la_vitesse->temps());
+      return champs_compris_.get_champ(nom);
+    }
+  if (nom=="pression_hydrostatique")
+    {
+      Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,pression_hydrostatique_.valeur());
+      if (((ch.temps()!=la_vitesse->temps()) || (ch.temps()==temps_init)) && (la_vitesse->mon_equation_non_nul()))
+        {
+          calculer_pression_hydrostatique(ch);
+          ch.mettre_a_jour(la_vitesse->temps());
+        }
       return champs_compris_.get_champ(nom);
     }
 

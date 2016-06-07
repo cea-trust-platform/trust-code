@@ -100,6 +100,9 @@ class Raccord_local_homogene : public Raccord_local
 {
   Declare_instanciable(Raccord_local_homogene);
 public:
+  virtual void trace_elem_distant(const DoubleTab&, DoubleTab&) const;
+  virtual void trace_face_distant(const DoubleTab&, DoubleTab&) const;
+  virtual void trace_face_distant(const DoubleVect&, DoubleVect&) const;
 private :
 };
 

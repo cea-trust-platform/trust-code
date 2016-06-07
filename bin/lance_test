@@ -839,6 +839,7 @@ then
 	   [ "`grep -i 'PARALLEL ONLY' $REP/* 2>/dev/null`" != "" ] 	&& i=""
 	   [ "`grep -i ' spai ' $REP/* 2>/dev/null`" != "" ] 		&& i=""
 	   [ "`grep -i ' ilu ' $REP/* 2>/dev/null`" != "" ]		&& i=""
+	   [ "`grep -i ' pilut ' $REP/* 2>/dev/null`" != "" ]		&& i=""
 	   [ "`grep -i hypre $REP/* 2>/dev/null`" != "" ]		&& i=""
 	   [ "`grep -i boomeramg $REP/* 2>/dev/null`" != "" ]		&& i=""
 	   [ "`grep -i Check_solver.sh $REP/* 2>/dev/null`" != "" ]	&& i=""

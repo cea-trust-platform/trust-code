@@ -50,6 +50,14 @@ protected:
                                           DoubleTab& ,const DoubleTab& ,
                                           const DoubleTab& ,const DoubleTab& ) const;
 
+  DoubleTab&  calculer_terme_production_K_EASM(const Zone_VEF& ,const Zone_Cl_VEF& ,
+                                               DoubleTab& ,const DoubleTab& ,
+                                               const DoubleTab& , const DoubleTab&,
+                                               const DoubleTab&) const;
+
+  DoubleTab& calcul_tenseur_face(DoubleTab&, const DoubleTab&,
+                                 const Zone_VEF&, const Zone_Cl_VEF&) const;
+
   DoubleTab& calculer_terme_destruction_K_gen(const Zone_VEF& , const Zone_Cl_VEF& , DoubleTab& ,
                                               const DoubleTab& , const DoubleTab& ,
                                               const Champ_Don& ,const DoubleVect& ,int ) const;

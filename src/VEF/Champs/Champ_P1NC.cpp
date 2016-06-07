@@ -99,9 +99,9 @@ int Champ_P1NC::compo_normale_sortante(int num_face) const
 }
 
 
-DoubleTab& Champ_P1NC::trace(const Frontiere_dis_base& fr, DoubleTab& x, double tps) const
+DoubleTab& Champ_P1NC::trace(const Frontiere_dis_base& fr, DoubleTab& x, double tps,int distant) const
 {
-  return Champ_P1NC_implementation::trace(fr, valeurs(tps), x);
+  return Champ_P1NC_implementation::trace(fr, valeurs(tps), x,distant);
 }
 
 void Champ_P1NC::cal_rot_ordre1(DoubleTab& vorticite) const

@@ -109,6 +109,7 @@ void Mod_turb_hyd_base::set_param(Param& param)
   param.ajouter("nut_max",&XNUTM);
   param.ajouter_flag("Correction_visco_turb_pour_controle_pas_de_temps",&calcul_borne_locale_visco_turb_);
   param.ajouter("Correction_visco_turb_pour_controle_pas_de_temps_parametre",&dt_diff_sur_dt_conv_);
+  param.ajouter_condition("not(is_read_dt_impr_ustar_mean_only_and_is_read_dt_impr_ustar)","only one of dt_impr_ustar_mean_only and dt_impr_ustar can be used");
 }
 
 

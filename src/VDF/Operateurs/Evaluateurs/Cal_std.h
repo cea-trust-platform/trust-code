@@ -80,7 +80,7 @@ inline int CLASSNAME::calculer_flux_faces_paroi_defilante() const
 
 inline int CLASSNAME::calculer_flux_faces_paroi_fixe() const
 {
-  return 0;
+  return 1;
 }
 
 

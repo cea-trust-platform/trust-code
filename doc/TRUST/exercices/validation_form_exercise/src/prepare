@@ -6,7 +6,6 @@ then
    mv p.data std.data
 fi
 
-
 sed "s/champ_uniforme 2 1. 0./ champ_uniforme 2 2 0./;s/bord periox/ bord periox debit_impose 2./" std.data >  debit.data
 diff std.data debit.data > diff_deb.out
 
@@ -18,4 +17,6 @@ diff debit2.data debit3.data | grep -v balise > diff_deb3.out
 
 sed "s/champ_uniforme 2 1. 0./ champ_uniforme 2 0 0./;s/bord periox/ bord periox debit_impose 2./" std.data >  debit4.data
 diff std.data debit4.data  | grep -v balise > diff_deb4.out
+
+rm -f  nbcells.dat lastime.dat 2>/dev/null
 

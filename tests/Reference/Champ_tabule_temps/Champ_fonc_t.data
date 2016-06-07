@@ -1,0 +1,135 @@
+# Calcul Hydraulique : Mise en mouvement par acceleration champ fcn du temps #
+# PARALLEL OK 8 #
+dimension 2
+Pb_hydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Cavite 
+		{
+		Origine 0. 0.
+     		Nombre_de_Noeuds 11 11
+		Longueurs 0.01 0.01
+		}
+		{
+		Bord Perio X = 0.	0. <= Y <= 0.01
+		Bord Haut  Y = 0.01	0. <= X <= 0.01
+		Bord Bas   Y = 0.	0. <= X <= 0.01
+		Bord Perio X = 0.01	0. <= Y <= 0.01
+		}
+}
+
+
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+	Partition_tool tranche { tranches 1 2 }
+	Larg_joint 2
+	zones_name dom
+	periodique 1 Perio
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
+
+VDF dis
+
+Scheme_euler_explicit sch
+Read sch
+{
+	tinit 0.
+	tmax 2.
+	dt_min 1.e-8
+	dt_max 0.001
+	dt_impr 0.01
+	dt_sauv 100
+	seuil_statio 1.e-8
+}
+
+Fluide_Incompressible eau
+Read eau
+{
+	mu  Champ_Uniforme 1 1.e-3
+	rho Champ_Uniforme 1 1000
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb eau
+
+Discretize pb dis
+
+Read pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression GCP
+		{ 
+			precond ssor { omega 1.5 } 
+			seuil 1.e-10 
+			impr
+		}
+		convection { quick }
+		diffusion { negligeable }
+		sources
+		{
+			acceleration
+			{
+				acceleration Champ_Fonc_t 2 (-0.02*t+0.01)*(t<0.5) 0.
+			}
+		}
+
+		initial_conditions {
+			vitesse Champ_Uniforme 2 0. 0.
+			}
+		boundary_conditions {
+			Haut Paroi_fixe
+			Bas Paroi_fixe
+			Perio Periodique 
+		}
+	}
+	Post_processing
+	{
+		Definition_champs 
+		{
+		solution transformation { methode vecteur expression 2 -(-0.02*t*t/2+0.01*t)*(t<0.5)+(t_ge_0.5)*(-0.0025) 0
+		sources { refchamp { pb_champ pb pression } }
+		}
+		}		
+		Probes
+		{ 
+			sonde_acceleration_terme_source acceleration_terme_source periode 0.01 points 1 0.0045 0.0045
+			sonde_pression pression periode 0.01 points 1 0.0045 0.0045
+			sonde_vitesse vitesse periode 0.01 points 1 0.0045 0.0045
+			solution solution periode 0.01 points 1 0.0045 0.0045
+		}
+		fields dt_post 0.1
+		{
+			acceleration_terme_source elem
+			pression elem
+			vitesse elem
+		}
+	}
+}
+
+Solve pb
+End
+#				acceleration Champ_Fonc_t 2 (-0.02*t+0.01)*(t<0.5) 0.
+
+est equivalent a
+
+				acceleration Champ_tabule_temps 2
+				{
+					2
+					0	0.5
+					0.01	0.
+					0.	0.
+				}
+#

@@ -70,10 +70,7 @@ public:
   DoubleTab& ajouter(DoubleTab& ) const;
   DoubleTab& calculer(DoubleTab& ) const;
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const ;
-  void mettre_a_jour(double temps)
-  {
-    Calcul_Production_K_VDF::mettre_a_jour(temps);
-  }
+  void mettre_a_jour(double temps) ;
 
 protected:
 

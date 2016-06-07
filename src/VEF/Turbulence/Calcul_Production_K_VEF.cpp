@@ -246,6 +246,148 @@ calculer_terme_production_K(const Zone_VEF& zone_VEF,const Zone_Cl_VEF& zcl_VEF,
   return P;
 }
 
+DoubleTab& Calcul_Production_K_VEF::
+calculer_terme_production_K_EASM(const Zone_VEF& zone_VEF,const Zone_Cl_VEF& zcl_VEF,
+                                 DoubleTab& P,const DoubleTab& K_eps,
+                                 const DoubleTab& gradient_elem,const DoubleTab& visco_turb,const DoubleTab& Re) const
+{
+  //Cerr << "Calcul_Production_K_VEF::calculer_terme_production_K_EASM" << finl;
+
+  // P : Production
+  P= 0;
+
+  const IntTab& face_voisins = zone_VEF.face_voisins();
+  int premiere_face_int = zone_VEF.premiere_face_int();
+
+  int fac=0;
+  int poly1, poly2;
+  int nb_faces_ = zone_VEF.nb_faces();
+  int dimension=Objet_U::dimension;
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+  //                        <
+  // calcul des gradients;  < [ Ujp*np/vol(j) ]
+  //                         j
+  ////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+  ////////////////////////////////////////////////////////////////////////////////
+  //On remplace le calcul precedent par un appel a calcul_duidxj
+  ////////////////////////////////////////////////////////////////////////////////
+
+  int n_bord;
+
+  DoubleTab gradient_face(nb_faces_,dimension,dimension);
+  calcul_tenseur_face(gradient_face,gradient_elem,zone_VEF,zcl_VEF);
+  DoubleTab Re_face(nb_faces_,dimension,dimension);
+  calcul_tenseur_face(Re_face,Re,zone_VEF,zcl_VEF);
+  //gradient_face.echange_espace_virtuel();
+  //Re_face.echange_espace_virtuel();
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Calcul des du/dx dv/dy et des derivees croisees sur les faces de chaque elements dans le cas 2D
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  // Boucle sur les bords pour traiter les faces de bord
+  // en distinguant le cas periodicite
+  for (n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
+    {
+      const Cond_lim& la_cl = zcl_VEF.les_conditions_limites(n_bord);
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      int ndeb = le_bord.num_premiere_face();
+      int nfin = ndeb + le_bord.nb_faces();
+
+      if (sub_type(Periodique,la_cl.valeur()))
+        {
+          for (fac=ndeb; fac<nfin; fac++)
+            {
+              poly1 = face_voisins(fac,0);
+              poly2 = face_voisins(fac,1);
+              double visco_face;
+              visco_face=0.5*(visco_turb(poly1)+visco_turb(poly2));
+              //Formule au dessus + proche du VDF mais si instable remettre ca :
+              //if (visco_turb(poly1) > 1.e-10 && visco_turb(poly2) > 1.e-10)
+              //         visco_face=1./(1./visco_turb(poly1)+1./visco_turb(poly2));
+
+              // Determination du terme de production
+              for (int i=0; i<dimension; i++)
+                for (int j=0; j<dimension; j++)
+                  P(fac) += Re_face(fac,i,j)*gradient_face(fac,i,j);
+              P(fac) *= visco_face;
+
+            }
+        }
+      else
+        {
+          for (fac=ndeb; fac<nfin; fac++)
+            {
+              poly1 = face_voisins(fac,0);
+              double visco_face;
+              visco_face=visco_turb(poly1);
+
+              // Determination du terme de production
+              for (int i=0; i<dimension; i++)
+                for (int j=0; j<dimension; j++)
+                  P(fac) += Re_face(fac,i,j)*gradient_face(fac,i,j);
+              P(fac) *= visco_face;
+
+            }
+        }
+    }
+
+  // Traitement des faces internes
+  for (fac = premiere_face_int; fac<nb_faces_; fac++)
+    {
+      poly1 = face_voisins(fac,0);
+      poly2 = face_voisins(fac,1);
+      double visco_face;
+      visco_face=0.5*(visco_turb(poly1)+visco_turb(poly2));
+
+      //Formule au dessus + proche du VDF mais si instable remettre ca :
+      // if (visco_turb(poly1) > 1.e-10 && visco_turb(poly2) > 1.e-10)
+      //                visco_face=1./(1./visco_turb(poly1)+1./visco_turb(poly2));
+
+      // Determination du terme de production
+      for (int i=0; i<dimension; i++)
+        for (int j=0; j<dimension; j++)
+          P(fac) +=  Re_face(fac,i,j)*gradient_face(fac,i,j);
+      P(fac) *= visco_face;
+
+      // Pour Verification -----------------------------------------------------------------
+      /*Cerr << "face " << fac << " gradient_elem1 --> " << gradient_elem(poly1,0,0) << " "
+      <<  gradient_elem(poly1,0,1)
+      << " " << zone_VEF.xv(fac,0) << " " << zone_VEF.xv(fac,1) << finl;
+      Cerr << "face " << fac << " gradient_elem1 --> " << gradient_elem(poly1,1,0) << " "
+      <<  gradient_elem(poly1,1,1)
+      << " " << zone_VEF.xv(fac,0) << " " << zone_VEF.xv(fac,1) << finl;
+      Cerr << "face " << fac << " visco1 --> " << visco_turb[poly1]
+      << " " << zone_VEF.xv(fac,0) << " " << zone_VEF.xv(fac,1) << finl;
+      Cerr << "face " << fac << " Re1 --> " << Re(poly1,0,0) << " " <<  Re(poly1,0,1)
+      << " " << zone_VEF.xv(fac,0) << " " << zone_VEF.xv(fac,1) << finl;
+      Cerr << "face " << fac << " Re1 --> " << Re(poly1,1,0) << " " <<  Re(poly1,1,1)
+      	   << " " << zone_VEF.xv(fac,0) << " " << zone_VEF.xv(fac,1) << finl;
+      Cerr << "face " << fac << " gradient_elem2 --> " << gradient_elem(poly2,0,0) << " "
+      <<  gradient_elem(poly2,0,1)
+      << " " << zone_VEF.xv(fac,0) << " " << zone_VEF.xv(fac,1) << finl;
+      Cerr << "face " << fac << " gradient_elem2 --> " << gradient_elem(poly2,1,0) << " "
+      <<  gradient_elem(poly2,1,1)
+      << " " << zone_VEF.xv(fac,0) << " " << zone_VEF.xv(fac,1) << finl;
+      Cerr << "face " << fac << " visco2 --> " << visco_turb[poly2]
+      << " " << zone_VEF.xv(fac,0) << " " << zone_VEF.xv(fac,1) << finl;
+      Cerr << "face " << fac << " Re2 --> " << Re(poly2,0,0) << " " <<  Re(poly2,0,1)
+      << " " << zone_VEF.xv(fac,0) << " " << zone_VEF.xv(fac,1) << finl;
+      Cerr << "face " << fac << " Re2 --> " << Re(poly2,1,0) << " " <<  Re(poly2,1,1)
+      << " " << zone_VEF.xv(fac,0) << " " << zone_VEF.xv(fac,1) << finl;
+      Cerr << "face " << fac << " Re2 --> " << Re(poly2,1,0) << " " <<  Re(poly2,1,1)
+      << " " << zone_VEF.xv(fac,0) << " " << zone_VEF.xv(fac,1) << finl;
+      Cerr << "face " << fac << " K = " << K_eps(fac,0) << " , Eps = " << K_eps(fac,1)
+      << finl;
+      Cerr << "face " << fac << " --> P = " << P(fac)
+      << " " << zone_VEF.xv(fac,0) << " " << zone_VEF.xv(fac,1) << finl;
+      Cerr << finl;*/
+
+    }
+  return P;
+}
 
 DoubleTab& Calcul_Production_K_VEF::calculer_terme_destruction_K_gen(
   const Zone_VEF& zone_VEF,
@@ -663,4 +805,63 @@ DoubleTab& Calcul_Production_K_VEF::calculer_terme_destruction_K_gen(
     }
 
   return G;
+}
+
+// Calcul d'un tenseur aux faces a partir d'un tenseur aux elements
+DoubleTab& Calcul_Production_K_VEF::calcul_tenseur_face(DoubleTab& Tenseur_face, const DoubleTab& Tenseur_elem,
+                                                        const Zone_VEF& zone_VEF, const Zone_Cl_VEF& zone_Cl_VEF) const
+{
+
+  int dimension = Objet_U::dimension;
+  const IntTab& face_voisins = zone_VEF.face_voisins();
+  int nb_faces = zone_VEF.nb_faces();
+
+  const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
+  int nb_cl=les_cl.size();
+  const DoubleVect& volumes = zone_VEF.volumes();
+
+  for (int n_bord=0; n_bord<nb_cl; n_bord++)
+    {
+      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      int ndeb = le_bord.num_premiere_face();
+      int nfin = ndeb + le_bord.nb_faces();
+
+      if (sub_type(Periodique,la_cl.valeur()))
+        {
+          for (int fac=ndeb; fac<nfin; fac++)
+            {
+              int poly1 = face_voisins(fac,0);
+              int poly2 = face_voisins(fac,1);
+              double a=volumes(poly1)/(volumes(poly1)+volumes(poly2));
+              double b=volumes(poly2)/(volumes(poly1)+volumes(poly2));
+              for (int i=0; i<dimension; i++)
+                for (int j=0; j<dimension; j++)
+                  Tenseur_face(fac,i,j) = a*Tenseur_elem(poly1,i,j) + b*Tenseur_elem(poly2,i,j);
+            }
+        }
+      else
+        {
+          for (int fac=ndeb; fac<nfin; fac++)
+            {
+              int poly1 = face_voisins(fac,0);
+              for (int i=0; i<dimension; i++)
+                for (int j=0; j<dimension; j++)
+                  Tenseur_face(fac,i,j) = Tenseur_elem(poly1,i,j);
+            }
+        }
+    }
+  int n0 = zone_VEF.premiere_face_int();
+  for (int fac = n0; fac<nb_faces; fac++)
+    {
+      int poly1 = face_voisins(fac,0);
+      int poly2 = face_voisins(fac,1);
+      double a=volumes(poly1)/(volumes(poly1)+volumes(poly2));
+      double b=volumes(poly2)/(volumes(poly1)+volumes(poly2));
+      for (int i=0; i<dimension; i++)
+        for (int j=0; j<dimension; j++)
+          Tenseur_face(fac,i,j) = a*Tenseur_elem(poly1,i,j) + b*Tenseur_elem(poly2,i,j);
+    }
+
+  return Tenseur_face;
 }

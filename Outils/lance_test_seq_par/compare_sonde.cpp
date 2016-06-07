@@ -124,24 +124,35 @@ int trouve_nb_champ(const nom& nom_f,int& nl)
   return i;
 }
 
+//if absolute_gap = true that means that the function called "ecart" will return the absolute gap and not the relative gap
+bool absolute_gap = false;
+
 double valmin=1e-15;
-double ecart(double x, double y, double ymax)
+double ecart(const double& x,const double& y, const double& ymax1,const double& ymax2)
 {
   double gerr = 0.0;
-  if(ymax != 0.0) gerr = fabs((x-y)/ymax);
+  double ymax=0.5*(ymax1+ymax2); // pour retrouver l'ancien compare_sonde faire ymax=ymax1
+  if( absolute_gap )
+    {
+      gerr = fabs((x-y));
+    }
+  else
+    {
+      if(ymax != 0.0) gerr = fabs((x-y)/ymax);
+    }
   if (ymax<=valmin)
     {
       if( (fabs(x)>valmin)||(fabs(y)>valmin))
-	{
-	  gerr=1;
-	}
+  	{
+  	  gerr=1;
+  	}
       else 
-	gerr=0;
+  	gerr=0;
     }
   return gerr;
 }
 
-void traite_erreur(ifstream& entree,ifstream& entree2,double* val_max,int nbc,int nl1,int nl2,const nom& option)
+void traite_erreur(ifstream& entree,ifstream& entree2,double* val_max,double* val_max2,int nbc,int nl1,int nl2,const nom& option)
 {
   int mode;
   if (!strcmp(option,"evol"))
@@ -179,7 +190,7 @@ void traite_erreur(ifstream& entree,ifstream& entree2,double* val_max,int nbc,in
 	      entree >>f;
 	      entree2>>f2;
 	      {
-		double err1=ecart(f,f2,val_max[el]);
+		double err1=ecart(f,f2,val_max[el],val_max2[el]);
 		if (err1>err[el]) err[el]=err1;
 	      }
 	    }
@@ -214,7 +225,7 @@ void traite_erreur(ifstream& entree,ifstream& entree2,double* val_max,int nbc,in
 	  entree2>>f2;
 	  if (el>0)
 	    {
-	      double err1=ecart(f,f2,val_max[el]);
+	      double err1=ecart(f,f2,val_max[el],val_max2[el]);
 	      if (err1>err[el]) err[el]=err1;
 	    }
 	}
@@ -267,7 +278,7 @@ void traite_erreur(ifstream& entree,ifstream& entree2,double* val_max,int nbc,in
 		double f;
 		// f interpolation lineaire
 		f=valmoins1[el]+(valplus1[el]-valmoins1[el])*(val[0]-valmoins1[0])/(valplus1[0]-valmoins1[0]);
-		double err1=ecart(f,val[el],val_max[el]);
+		double err1=ecart(f,val[el],val_max[el],val_max2[el]);
 		if (err1>err[el]) err[el]=err1;
 	      }
 	  }
@@ -285,7 +296,7 @@ void traite_erreur(ifstream& entree,ifstream& entree2,double* val_max,int nbc,in
       {
 	
 	exit_=1;
-	cout<<"Erreur max colonne "<<el<<" : "<<err[el]*100<<" % (>"<<seuil_erreur*100<<"%), val_max "<<val_max[el]<<endl;
+	cout<<"Erreur max colonne "<<el<<" : "<<err[el]*100<<" % (>"<<seuil_erreur*100<<"%), val_max "<<val_max[el]<<" "<<val_max2[el]<<endl;
       }
     }
   cout<<" Erreur max sur toutes les colonnes "<< max_err<<endl;
@@ -352,7 +363,7 @@ void recupere_max(ifstream& entree,double* val_max,int nbc,int nl1, int max_val_
 }
 void usage()
 {
-  cerr<<"mauvais params: file1 file2 [-type evol|statio|evol_inter] [-seuil_erreur val] [-valmin val] [-max_par_compo] [ -max_delta ]"<<endl;
+  cerr<<"mauvais params: file1 file2 [-type evol|statio|evol_inter] [-seuil_erreur val] [-valmin val] [-max_par_compo] [ -max_delta ] [-absolute_gap] "<<endl;
   exit(-1);	
 }
 int main(int argc, char* argv[])
@@ -386,8 +397,12 @@ int main(int argc, char* argv[])
 	    else
 	      if (!strcmp(argv[arg],"-valmin"))
 		valmin=atof(argv[++arg]);
-	      else usage();
+	      else
+		if (!strcmp(argv[arg],"-absolute_gap"))
+		  absolute_gap = true;
+		else usage();
     }
+
   ifstream entree(file1.str);
   if (!entree) error(file1," non ouvrable");
 
@@ -404,16 +419,25 @@ int main(int argc, char* argv[])
       exit(-1);
     }
   double* val_max=new double[nb_champ];
+  double* val_max2=new double[nb_champ2];
   //double max_val_max=0;
   
   passe_entete(entree);
   recupere_max(entree,val_max,nb_champ,nl1,max_val_all_comp,max_delta);
   entree.close();
+
+  
+  passe_entete(entree2);
+  recupere_max(entree2,val_max2,nb_champ,nl2,max_val_all_comp,max_delta);
+  entree2.close();
+    
   entree.open(file1.str);
+  entree2.open(file2.str);
+ 
   passe_entete(entree);
   passe_entete(entree2);
 
-  traite_erreur(entree,entree2,val_max,nb_champ,nl1,nl2,option);
+  traite_erreur(entree,entree2,val_max,val_max2,nb_champ,nl1,nl2,option);
 
   //nom mot;
   //get_mot(entree,mot);
@@ -422,7 +446,9 @@ int main(int argc, char* argv[])
   // sortie<<"escape escape escape escape files new n escape escape escape escape"<<endl;
   // sortie<<"escape escape escape escape utilities variables CreateAlwaysNewPoint -1 escape escape"<<endl;
  
-  delete[] val_max;  
+
+  delete[] val_max;
+  delete[] val_max2;
   return exit_;
 } 
 

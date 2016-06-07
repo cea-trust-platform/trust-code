@@ -116,9 +116,9 @@ public:
   void                             affecter_erreur();
   virtual Champ_base&  affecter_compo(const Champ_base&, int compo ) =0;
   virtual int       imprime(Sortie& , int ) const =0;
-
-  DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&) const;
-  virtual DoubleTab& trace(const Frontiere_dis_base&, DoubleTab& , double ) const;
+  // methode supprime pour eviter confusion avec  trace(const Frontiere_dis_base&, DoubleTab&,,double)
+  //DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&,int distant) const;
+  virtual DoubleTab& trace(const Frontiere_dis_base&, DoubleTab& , double,int distant ) const;
 
   virtual DoubleVect&  valeur_a(const DoubleVect& position,
                                 DoubleVect& valeurs) const ;

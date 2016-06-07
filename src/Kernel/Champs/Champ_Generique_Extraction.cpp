@@ -168,7 +168,7 @@ const Champ_base& Champ_Generique_Extraction::get_champ(Champ& espace_stockage) 
 
   if (methode_=="trace")                         //On prend la trace du champ sur un bord
     {
-      source_stockage.trace(fr_dis,espace_valeurs,temps);
+      source_stockage.trace(fr_dis,espace_valeurs,temps,0);
     }
   else if (methode_=="champ_frontiere")                //On recupere le champ frontiere
     {

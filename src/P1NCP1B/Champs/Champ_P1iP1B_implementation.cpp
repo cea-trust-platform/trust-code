@@ -543,8 +543,9 @@ void Champ_P1iP1B_implementation::completer(const Zone_Cl_dis_base& zcl)
       Condition_Neumann_imposee_ = 1;
 }
 
-DoubleTab& Champ_P1iP1B_implementation::trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x) const
+DoubleTab& Champ_P1iP1B_implementation::trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x,int distant) const
 {
+  assert(distant==0);
   const Front_VF& fr_vf = ref_cast(Front_VF, fr);
   const Zone_VEF_PreP1b& zone_dis = zone_vef();
   const DoubleTab& cg_faces = zone_dis.xv();
