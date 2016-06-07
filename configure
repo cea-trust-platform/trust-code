@@ -73,6 +73,7 @@ echo "[-disable-valgrind]               Disable valgrind installation and build.
 echo "[-disable-gnuplot]                Disable gnuplot installation and build."
 echo "[-disable-tcl_tk]                 Disable Tcl/Tk detection/installation."
 echo "[-disable-gmsh]                   Disable Gmsh installation and build."
+echo "[-disable-plot2d]                 Disable PLOT2D and WIZZARD installation and build."
 echo "[-disable-mpiio]                  Disable MPI-IO mode for writing of .xyz binary output file."
 echo "[-disable-check_sources]          No check sources before compiling."
 echo "[-disable-checks]                 Disable checks for external packages, sources, disk space and speed."
@@ -90,7 +91,7 @@ cc=""
 F77=""
 clean=""
 
-LIST_THIRD_PARTY="PETSC MED MPI METIS MEDCOUPLING CCACHE GMSH VALGRIND GNUPLOT TCL_TK"
+LIST_THIRD_PARTY="PETSC MED MPI METIS MEDCOUPLING CCACHE GMSH VALGRIND GNUPLOT TCL_TK PLOT2D"
 
 #[ -f configure.log ] && sed "s/^/# /" -i  configure.log
 [ -f configure.log ] && sed "s/# //" -i  configure.log && sed "s/^/# /" -i  configure.log
@@ -100,7 +101,6 @@ if [ "$1" = "-for_appli_salome" ]
 then
   shift
   export TRUST_ROOT=$TRUST_ROOT_SA
-  # RAF: forcer lien vers MED de Salome
   $0 -disable-ccache -disable-gnuplot -disable-tcl_tk -disable-valgrind -without-visit -disable-gmsh -disable-checks -disable-check_sources -with-med=$MEDFILE_ROOT_DIR -with-hdf=$HDF5_ROOT_DIR -with-medcoupling=$MEDCOUPLING_ROOT_DIR $* 
   exit $?
 fi
@@ -108,7 +108,7 @@ if [ "$1" = "-disable-optionals" ]
 then
   shift
   export TRUST_ROOT=$TRUST_ROOT_SA
-  $0 -disable-ccache -disable-med -disable-medcoupling -disable-petsc -disable-gnuplot -disable-tcl_tk -disable-valgrind -disable-mpi -disable-metis -without-visit -disable-gmsh -without-doc -disable-checks -disable-check_sources $* 
+  $0 -disable-ccache -disable-med -disable-medcoupling -disable-petsc -disable-gnuplot -disable-tcl_tk -disable-valgrind -disable-mpi -disable-metis -without-visit -disable-gmsh -disable-plot2d -without-doc -disable-checks -disable-check_sources $* 
   exit $?
 fi
 
@@ -254,6 +254,7 @@ do
       [ "$THIRD_PARTY" = "VALGRIND" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/valgrind
       [ "$THIRD_PARTY" = "GNUPLOT" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/gnuplot
       [ "$THIRD_PARTY" = "TCL_TK" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/tcl_tk
+      [ "$THIRD_PARTY" = "PLOT2D" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/IHM
       if [ ! -d $REP_THIRD_PARTY ]
       then
          echo "$1 option not available cause $REP_THIRD_PARTY is not installed."

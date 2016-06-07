@@ -7,7 +7,7 @@ linux	rsync_ssh	non		is229954.intra.cea.fr		-all		-TrioCFD			-disable-mpi						#
 linux	rsync_ssh	get_binary	is226427.intra.cea.fr			-TRUST -MPCube -ModeleCoeur									# CentOS 6.4    		CEA Saclay 	Bat 451	LMSF	bureau 50 CS Antoine Scoliege
 linux	rsync_ssh	non		is221715.intra.cea.fr				-TRUST -MPCube			-force_provided_openmpi	 				# Mandriva 2010			CEA Saclay	Bat ??
 linux	rsync_ssh 	tache		is210968.intra.cea.fr		-all		-TrioCFD	-xdata									# Mandriva 2010			CEA Saclay	Bat 454 LMEC	PC test Genepi2 (Desormais on livre un binaire 64bits)
-linux	rsync_ssh	cible		is223196.intra.cea.fr		-all		-TRUST -TrioCFD	-gcov		-force_provided_openmpi					# CentOS 6.4 			CEA Saclay	Bat 451 LMSF	bureau 50 CS Marthe Roux
+linux	rsync_ssh	cible		is223196.intra.cea.fr		-all		-TRUST -TrioCFD	-gcov		-force_provided_openmpi		-disable-gmsh		# CentOS 6.4 			CEA Saclay	Bat 451 LMSF	bureau 50 CS Marthe Roux
 linux	scp_ssh		non		is229107.intra.cea.fr		-all	 									-disable 		# Fedora 20			CEA Saclay	Bat ??		(Teste la compilation de TRUST allegee)
 linux	rsync_ssh	cible		is221559.intra.cea.fr		 		-TRUST -MPCube	-g 		-force_provided_mpich		-Check_decoupage	# Fedora 18 			CEA Saclay	Bat 451 LGLS	bureau Gauthier Fauchet (PC of the Leader Project) (Couplage Cathare/TRUST)
 linux	rsync_ssh	cible		airain.ccc.cea.fr	 updated -limited 					-benchmark	 					# RedHat 6.7			CEA CCRT

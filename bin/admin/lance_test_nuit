@@ -440,16 +440,18 @@ echo>>$liste_log
 # qt-everywhere-opensource-src-4.8.3 sans doc (taille passe de 685M a 352M)
 # med-3.0.7 sans doc et sans python (taille passe de 162M a 19M)
 # osu-micro-benchmarks-3.8 version initiale non retrouvee
-# les 2 paquets suivants sont sous http://downloads.sourceforge.net/project/trust-platform/X.Y.Z/extra/
+# les 3 paquets suivants sont sous http://downloads.sourceforge.net/project/trust-platform/X.Y.Z/extra/
 # medcoupling-7.8.0.tar.gz
 # hypre-2.10.0b-p2-TRUST.tar.gz
-nb_error=`grep "FAILED" $liste_log | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.2.0 | grep -v osu-micro-benchmarks-3.8 | grep -v medcoupling-7.8.0 | grep -v hypre-2.10.0b-p2-TRUST | wc -l`
+# CURVEPLOT.tgz
+# nvc_get_devices.tgz
+nb_error=`grep "FAILED" $liste_log | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.2.0 | grep -v osu-micro-benchmarks-3.8 | grep -v medcoupling-7.8.0 | grep -v hypre-2.10.0b-p2-TRUST | grep -v CURVEPLOT | grep -v nvc_get_devices | wc -l`
 if [ $nb_error != 0 ]
 then
    # qt-everywhere-opensource-src-4.8.3 sans doc (taille passe de 685M a 352M)
    # med-3.0.7 sans doc et sans python (taille passe de 162M a 19M)
    # osu-micro-benchmarks-3.8 version initiale non retrouvee
-   liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.2.0 | grep -v osu-micro-benchmarks-3.8 | grep -v medcoupling-7.8.0 | grep -v hypre-2.10.0b-p2-TRUST`
+   liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.2.0 | grep -v osu-micro-benchmarks-3.8 | grep -v medcoupling-7.8.0 | grep -v hypre-2.10.0b-p2-TRUST | grep -v CURVEPLOT | grep -v nvc_get_devices`
    cd Test
    rm -r -f old new
    for package in $liste_failed
@@ -2247,7 +2249,7 @@ $TRUST_ROOT/bin/KSH/tggcov_ 1>$REP_NUIT/tggcov.log 2>&1
 #tail -n2 $REP_NUIT/tggcov.log
 couverture_de_code=`tggcov_ | $TRUST_Awk '/TRUST code/ {print $1}'`
 cd - 1>/dev/null 2>&1
-couverture_minimale=69.28 #65.26
+couverture_minimale=69.61 #v1.7.3 ; 69.28 v1.7.2 ; 65.26 v1.7.1
 coverage=`echo $couverture_de_code | $TRUST_Awk -v m=$couverture_minimale '{if ($1>=m) print 1;else print 0}'`
 if [ "$coverage" = 1 ]
 then
@@ -2441,12 +2443,12 @@ do
    then
       # Aucune efficacite en dessous de 0.60 sur 4 processeurs et aucun cpu au dessus de 8s sur 1 processeur:
       perf=`$TRUST_Awk 'BEGIN {p=0} ($1==4) && (NF==12) && /\|/ {if ($(NF-1)>0.60) p=p+0.25} ($1==1) && (NF==12) && /\|/ {if ($3<8) p=p+0.25} END {print p}' $PERF`
-      [ "`liste_machines tache | grep $machine`" != "" ] && total=`echo "$total+$perf" | bc -l`
+      [ "`liste_machines cible | grep $machine`" != "" ] && total=`echo "$total+$perf" | bc -l`
       echo "Time VDF and VEF on 1 CPU: < 8s ?"
       $TRUST_Awk '($1==1) && (NF==12) && /\|/ {print $3}' $PERF
       echo "Speed-UP VDF and VEF on 4 CPUs: > 0.60 ?"
       $TRUST_Awk '($1==4) && (NF==12) && /\|/ {print $(NF-1)}' $PERF
-      if [ "`liste_machines tache | grep $machine`" != "" ]
+      if [ "`liste_machines cible | grep $machine`" != "" ]
       then
          echo "=> perf+=$perf (total=$total)"  
          let nb_machines=$nb_machines+1

@@ -316,7 +316,7 @@ option_configure=""
 # OpenMPI ancien sur la machine ou l'on construit le binaire sinon ne trouve pas un fichier en local
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\get_binary" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -force_old_openmpi"
 # Compilation minimale avec -disable
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable " | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-med -disable-medcoupling -disable-mpi -without-visit -without-doc"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable " | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-med -disable-medcoupling -disable-mpi -without-visit -without-doc -disable-plot2d"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-mpi" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-mpi"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-optionals" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -disable-optionals"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-check_sources" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -disable-check_sources"
@@ -964,6 +964,7 @@ do
          cat $CR_TESTS | $TRUST_Awk -F":" '/ucces/ {print "succes "$2}' >> $PERF
          echo "--------------------------------------------------------" >> $PERF
       else
+         echo "File not found $CR_TESTS"
          echo "No test case passed KO!"
       fi
       # Verification si la non regression est OK :
