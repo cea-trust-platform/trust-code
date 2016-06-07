@@ -130,9 +130,13 @@ compare_pdf_batch()
 	  ko=1
 	  difffile=`echo $file | sed "s?_oo?_diff?"`
 	  echo compare $file K0 : voir $difffile
+
+if [ "$mode" != "batch" ]
+then
 	  compare $file $f2 $difffile
 	  montfile=`echo $file | sed "s?_oo?_mont?"`
 	  montage -geometry 630x900  -tile 3x1  $file  $difffile  $f2 $montfile
+fi
 	  echo display $montfile >> avoir
       fi
     done
