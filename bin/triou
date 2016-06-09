@@ -713,7 +713,7 @@ then
             echo "$mpirun $machinefile $exec $NOM $NB_PROCS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
 	 fi
       else
-         echo "$TRUST_ROOT/bin/mpirun -np $NB_PROCS $machinefile $exec $NOM $NB_PROCS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
+         echo "$TRUST_ROOT/bin/mpirun.sh -np $NB_PROCS $machinefile $exec $NOM $NB_PROCS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
       fi
    fi   
    #######
@@ -787,7 +787,7 @@ else
       ##############################
       # Calcul direct en parallele #
       ##############################     
-      run="$TRUST_ROOT/bin/mpirun `[ "$gdb" != "" ] && echo -gdb` -np $NB_PROCS $exec $NOM $NB_PROCS $PETSC_OPTIONS"
+      run="$TRUST_ROOT/bin/mpirun.sh `[ "$gdb" != "" ] && echo -gdb` -np $NB_PROCS $exec $NOM $NB_PROCS $PETSC_OPTIONS"
    fi
    if [ "$create_sub_file" ]
    then

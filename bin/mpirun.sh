@@ -2,7 +2,7 @@
 # Surcharge du script mpirun
 usage()
 {
-echo "Usage: mpirun [-gdb | -valgrind [-gdb]| -valgrind_strict [-gdb]] -np nb_procs binary_path test_case nb_procs" && exit
+echo "Usage: mpirun.sh [-gdb | -valgrind [-gdb]| -valgrind_strict [-gdb]] -np nb_procs binary_path test_case nb_procs" && exit
 }
 [ $# = 0 ] && usage
 
@@ -13,7 +13,7 @@ machinefile="" && [ -f machinefile ] && machinefile="-machinefile machinefile"
 if [ "$Mpirun" = "" ]
 then
    depart=`pwd`
-   cd ${0%/bin/mpirun}
+   cd ${0%/bin/mpirun.sh}
    source env_TRUST.sh
    cd $depart
 fi
