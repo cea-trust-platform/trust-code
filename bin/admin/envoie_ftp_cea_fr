@@ -32,16 +32,16 @@ mkdir_ftp $SECRET/exec
 mkdir_ftp $SECRET/doc
 
 # On envoie la RELEASE_NOTES pour futures updates :
-[ "$livraison" = 1 ] && cp_ftp $TRUST_ROOT/RELEASE_NOTES $PUBLIC/exec
+[ "$livraison" = 1 ] && cp_ftp $TRUST_ROOT/RELEASE_NOTES $PUBLIC/exec/.
 
 # On envoie la couverture de tests:
 #echo " "
 #echo "Send tests coverage at `date` ..."
 #mkdir_ftp $SECRET/doc/Coverage
 #cd $TRUST_ROOT/doc/Coverage
-#cp_ftp *.html $SECRET/doc/Coverage
+#cp_ftp *.html $SECRET/doc/Coverage/.
 #mkdir_ftp $SECRET/doc/Coverage/html
-#cp_ftp html/*.html $SECRET/doc/Coverage/html
+#cp_ftp html/*.html $SECRET/doc/Coverage/html/.
 #mkdir_ftp $SECRET/doc/Coverage/html/cpp.gcov
 #cp_ftp html/cpp.gcov/*.gcov $SECRET/doc/Coverage/html/cpp.gcov
 
@@ -49,7 +49,7 @@ mkdir_ftp $SECRET/doc
 echo " "
 echo "Send documentation at `date` ..."
 cd $TRUST_ROOT/doc/TRUST
-cp_ftp *.pdf $SECRET/doc
+cp_ftp *.pdf $SECRET/doc/.
 
 ##########################################################################
 # Copie de la doc de /homelinux vers le repertoire de gravage si livraison
@@ -63,7 +63,7 @@ then
    # Copie sur le site :
    # Si version officielle
    #######################
-   cp_ftp $GRAVAGE/$version_arch $PUBLIC/$Version	 
+   cp_ftp $GRAVAGE/$version_arch $PUBLIC/$Version/. 
 else
    ###############################
    # Version beta alors on renomme
@@ -113,7 +113,7 @@ do
       #done
       cp $PORTAGE/$arch/TRUST/exec/$exec $name_binary
       gzip -f $name_binary
-      cp_ftp $name_binary".gz" $SECRET/exec/$arch
+      cp_ftp $name_binary".gz" $SECRET/exec/$arch/.
       rm -f $name_binary".gz"    
       echo "<B>$arch</B><BR>" >> /tmp/index.html
       ls_ftp $SECRET/exec/$arch | $TRUST_Awk -v arch=$arch '{gsub($9,"<A HREF="arch"/"$NF">"$NF"</A>",$0);print $0"<BR>"}'>> /tmp/index.html
@@ -122,7 +122,7 @@ done
 
 cat $TRUST_ROOT/RELEASE_NOTES | $TRUST_Awk 'BEGIN {print "<UL>"} /Release notes/ {print "</UL><BR><B>"$0"</B><UL>"} !/Release notes/ && !/---/ {gsub($1,"<LI>"$1,$0);print $0"</LI>"}' >> $html/tmp/index.html
 
-cp_ftp /tmp/index.html $SECRET/exec
+cp_ftp /tmp/index.html $SECRET/exec/.
 
 #################################
 # Copie sur une machine de Saclay
@@ -154,38 +154,38 @@ then
    cd $REP_NUIT
    rmdir_ftp $SECRET/NUIT
    mkdir_ftp $SECRET/NUIT
-   cp_ftp NUIT.html $SECRET/NUIT
-   cp_ftp CR_* $SECRET/NUIT
-   cp_ftp PERF_* $SECRET/NUIT
-   cp_ftp MAKE_* $SECRET/NUIT
-   cp_ftp compile_* $SECRET/NUIT
+   cp_ftp NUIT.html $SECRET/NUIT/.
+   cp_ftp CR_* $SECRET/NUIT/.
+   cp_ftp PERF_* $SECRET/NUIT/.
+   cp_ftp MAKE_* $SECRET/NUIT/.
+   cp_ftp compile_* $SECRET/NUIT/.
    cd $TRUST_ROOT/exec
-   cp_ftp .tests* $SECRET/NUIT
+   cp_ftp .tests* $SECRET/NUIT/.
    sleep 1
    cd $TRUST_ROOT/doc/TRUST/exercices/equation_convection_diffusion
-   cp_ftp nuit_*.html $SECRET/NUIT
-   cp_ftp *_%_*.log $SECRET/NUIT
+   cp_ftp nuit_*.html $SECRET/NUIT/.
+   cp_ftp *_%_*.log $SECRET/NUIT/.
    sleep 1
    cd $TRUST_ROOT/Outils/ICoCo/ICoCo_src
-   cp_ftp nuit_*.html $SECRET/NUIT
-   cp_ftp *_%_*.log $SECRET/NUIT
+   cp_ftp nuit_*.html $SECRET/NUIT/.
+   cp_ftp *_%_*.log $SECRET/NUIT/.
    sleep 1
    #cd $TRUST_ROOT/bin/baltik/templates/basic
    cd $TRUST_ROOT/../Composants/Test_Baltik
-   cp_ftp nuit_*.html $SECRET/NUIT
-   cp_ftp *_%_*.log $SECRET/NUIT
+   cp_ftp nuit_*.html $SECRET/NUIT/.
+   cp_ftp *_%_*.log $SECRET/NUIT/.
    sleep 1
    cd $TRUST_ROOT/../Composants/MPCube
-   cp_ftp nuit_*.html $SECRET/NUIT
-   cp_ftp *_%_*.log $SECRET/NUIT
+   cp_ftp nuit_*.html $SECRET/NUIT/.
+   cp_ftp *_%_*.log $SECRET/NUIT/.
    sleep 1
    cd $TRUST_ROOT/../Composants/TrioCFD
-   cp_ftp nuit_*.html $SECRET/NUIT
-   cp_ftp *_%_*.log $SECRET/NUIT
+   cp_ftp nuit_*.html $SECRET/NUIT/.
+   cp_ftp *_%_*.log $SECRET/NUIT/.
    sleep 1
    cd $TRUST_ROOT/../Composants/ModeleCoeur
-   cp_ftp nuit_*.html $SECRET/NUIT
-   cp_ftp *_%_*.log $SECRET/NUIT
+   cp_ftp nuit_*.html $SECRET/NUIT/.
+   cp_ftp *_%_*.log $SECRET/NUIT/.
 fi
 cd $TRUST_ROOT
 

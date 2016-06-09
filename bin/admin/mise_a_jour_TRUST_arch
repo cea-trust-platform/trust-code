@@ -398,6 +398,7 @@ do
    [ "`liste_machines "\-cachegrind" | grep ^$HOST_BUILD"\."`" != "" ] && echo $ECHO_OPTS "1,$ s?-O3?-g -O3?g\nw" | ed $TRUST_ROOT/env/make.linux_g++3_opt
    make
    err_compile=$?
+   [ "`grep BUILD_EXEC=OK compile_$code$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD.log`" != "" ] && err_compile=0
    if [ $MODULE = TRUST ]
    then
       echo "==========================="
@@ -756,9 +757,10 @@ do
 	 mv tmp_liste_cherche liste_cherche
 	 rm -f tmp_liste_cherche
 	 # Ajout de PETSC_ThHyd_2D_VEF_Ostwald pour PETSc Cholesky
-	 # Ajout de FTD_instab2D car ce cas a pose des blocages sur OpenMPI 1.3.3 sur is212958
+	 # Ajout de FTD_instab2D car ce cas a pose des blocages sur OpenMPI 1.3.3 sur is212958 => n'existe pas dans TRUST mais TrioCFD
 	 # Ajout de Canal_perio_VDF_3D_Keps pour discretisation VDF
-	 echo PETSC_ThHyd_2D_VEF_Ostwald >> liste_cherche && echo FTD_instab2D >> liste_cherche && echo Canal_perio_VDF_3D_Keps >> liste_cherche 
+	 #echo PETSC_ThHyd_2D_VEF_Ostwald >> liste_cherche && echo FTD_instab2D >> liste_cherche && echo Canal_perio_VDF_3D_Keps >> liste_cherche 
+	 echo PETSC_ThHyd_2D_VEF_Ostwald >> liste_cherche && echo Canal_perio_VDF_3D_Keps >> liste_cherche 
 	 # Autres ajouts
 	 echo cpu_3D >> liste_cherche & echo PETSC_VDF >> liste_cherche && echo PETSC_VEF >> liste_cherche
 	 echo VAHL_DAVIS >> liste_cherche && echo upwind >> liste_cherche && echo Cx >> liste_cherche 

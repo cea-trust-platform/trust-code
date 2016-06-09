@@ -2,9 +2,9 @@ Version	Qui				Tache
 1.7.4   triou@cea.fr            VisIt, deplacer de bin/visit dans exec/visit/bin/visit + maj du PATH dans TRUST.env et mise_a_jour_TRUST_arch
 1.7.4   triou@cea.fr            baltik: renommer make check_trio_optim en make check_trust_optim  + renommer script triou en trust sans ln
 1.7.4   triou@cea.fr            revoir host visit sur CCRT avec configuration sub_file de Gauthier
-1.7.3   gauthier.fauchet@cea.fr  modification pour initialisation des tableaux A(1,1.0) ou A(1,1)
+1.7.4   gauthier.fauchet@cea.fr  modification pour initialisation des tableaux A(1,1.0) ou A(1,1)
 1.7.4   gauthier.fauchet@cea.fr  Reprendre Mod_turb_hyd_base.cpp limitation mut
-1.7.3   gauthier.fauchet@cea.fr  Revoir le PATH pour module load TRUST sous occigen (passer par SET)
+1.7.4   gauthier.fauchet@cea.fr  Revoir le PATH pour module load TRUST sous occigen (passer par SET)
 1.7.4   triou@cea.fr            proposer un tutorial ICoCo
 1.7.4   triou@cea.fr            Passer en job de soumission mise_a_jour_TRUST_arch sur cluster pour eviter de charger les frontales
 1.7.4   triou@cea.fr            Analyser le fichier de sortie datafile_petsc.TU (signification de count)
@@ -24,6 +24,6 @@ Version	Qui				Tache
 1.7.0	triou@cea.fr		Check Champ_fonc_reprise with .sauv files produces a clear error message when partition is changed ?
 1.7.0	triou@cea.fr            Renommer sous_maille en sous_maille_fonction_structure (in english) ?
 1.7.4	triou@cea.fr  		revoir test clang avec openmpi ou mpich ? idem avec machine test GNU > 5.3 ?)
-1.7.3	triou@cea.fr  		Doc : mettre a jour index et table des matieres (ajouter CEG + Bas_Reynolds ?)
-1.7.4	triou@cea.fr  		Doc : mettre a jour index et table des matieres (ajouter pression hydro + buildInnerBoundary dans formation users sur commentaire CL interne)
+1.7.4	triou@cea.fr  		Doc : mettre a jour index et table des matieres (ajouter pression hydro + buildInnerBoundary dans formation users sur commentaire CL interne + remplecer -monitor et -probes par -evol)
+1.7.4	triou@cea.fr  		License : verifier l annee pour entete fichier cpp et h
 1.7.4	celine.capitaine@cea.fr Mettre a jour la notice de maintenance TRUST/TrioCFD
