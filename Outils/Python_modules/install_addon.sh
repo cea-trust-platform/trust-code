@@ -16,7 +16,7 @@ fi
 export OPT=""
 ./create_env $cible
 . $cible/env.sh
-for package in numpy pytz pyparsing distribute pip wheel six  cycler python-dateutil  matplotlib functools32 vcversioner jsonschema 
+for package in numpy pytz pyparsing distribute Distribute2 pip wheel six  cycler python-dateutil  matplotlib functools32 vcversioner jsonschema 
 do
   ok=0
   . $cible/env.sh
@@ -28,15 +28,21 @@ do
       [ $? -ne 0 ] && ok=0 
   fi
   [ $ok -eq 1 ] && continue
+  if [ $package = "Distribute2" ]
+then
+   pac=distribute-0.7.3
+   unzip TRUST_ROOT/externalpackages/Python_modules/$pac.zip
+else
   pac=`ls $TRUST_ROOT/externalpackages/Python_modules/$package*.gz`
   pac=`basename $pac .tar.gz`
   rm -rf $pac
   tar zxvf $TRUST_ROOT/externalpackages/Python_modules/$pac.tar.gz
+fi
   cd $pac
   python setup.py build
-  [ $? -ne 0 ] && echo "Pb building $package" && exit -1
+  [ $? -ne 0 ] && echo "Pb building $package" 
   python setup.py install --prefix=$cible
-  [ $? -ne 0 ] && echo "Pb installing $package" && exit -1
+  [ $? -ne 0 ] && echo "Pb installing $package"
   cd ..
   rm -rf $pac
 done

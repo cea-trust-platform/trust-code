@@ -367,7 +367,8 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int& fla
             }
         }
       if (type!="sum")
-        fic << espace << "Total";
+        if (Objet_U::nom_du_cas()+"_"+equation().probleme().le_nom()+"_Force_pression"!=out_)
+          fic << espace << "Total";
       fic << finl << "# Time";
 
       for (int num_cl=0; num_cl<les_cls.size(); num_cl++)

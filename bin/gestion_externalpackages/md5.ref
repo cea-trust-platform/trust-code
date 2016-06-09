@@ -11,6 +11,7 @@ ec1224a216a084684bab6cd0dbf592f8  MPI/osu-micro-benchmarks-3.8.tar
 3cb7174c13bd45e3e8f77638926cb8c0  Python_modules/PySide-1.2.4.tar.gz
 0b418dbaded3aba6021af03246e2f7d0  Python_modules/cycler-0.9.0.tar.gz
 b400b532e33f78551e6847c1f5965e56  Python_modules/distribute-0.6.28.tar.gz
+c6c59594a7b180af57af8a0cc0cf5b4a  Python_modules/distribute-0.7.3.zip
 09f24ffd9af9f6cd0f63cb9f4e23d4b2  Python_modules/functools32-3.2.3-2.tar.gz
 374e848fdb69a3ce8b7e778b47c30640  Python_modules/jsonschema-2.5.1.tar.gz
 f51847d8692cb63df64cd0bd0304fd20  Python_modules/matplotlib-1.5.1.tar.gz

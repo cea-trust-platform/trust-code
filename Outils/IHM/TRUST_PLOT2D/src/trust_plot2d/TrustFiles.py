@@ -515,9 +515,9 @@ class OutFile(TrustFile):
           assert(hdr[3][3]=='Fz')
           dim=3
       
-      if (self._field=="Integral(P*ndS)"):
-        print "pb fichier pression"
-        nb_co-=1
+      #if (self._field=="Integral(P*ndS)"):
+      #  print "pb fichier pression"
+      #  nb_co-=1
       # nb_co-=1 # on a total par erreur dans les label
       # print "yyyyyyyyyy",(len(hdr[3])-1)/dim, nb_co 
       # print "dim",dim,nb_co

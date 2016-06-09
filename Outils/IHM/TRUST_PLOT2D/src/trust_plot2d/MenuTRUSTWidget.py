@@ -75,5 +75,5 @@ class MenuTRUSTWidget(QDockWidget):
       return
     case+=".lata"
     cmd="visit -o  "+case
-    cmd="paraview  "+case
+    #cmd="paraview  "+case
     self.execute(cmd)

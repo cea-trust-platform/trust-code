@@ -191,6 +191,15 @@ then
    #if [ "`ls current/*/bin/engine_par 2>/dev/null`" != "" ] && [ "$TRUST_DOWNLOAD_VISIT" != 1 ]
    if [ "$TRUST_DOWNLOAD_VISIT" != 1 ]
    then
+       # sometimes path to libz is verry strange !!!
+	file=current/linux-x86_64/include/VisItLibraryDependencies.cmake
+	res=`grep libz  $file |  awk -F\; '{for (i=1;i<=NF;i++) { printf($i"\n")}}'  | grep libz | sort -u | grep VisIt/src`
+	if [ "$res" != "" ] 
+	then
+		cp $file $file.sa
+		echo patching $file for libz
+		sed "s?$res??g" $file -i
+	fi
       # Add path to use VisIt cmake
       #export PATH=$TRUST_ROOT/Outils/VisIt/src/cmake-3.0.2/bin:$PATH
       for plugin in `ls plugins/*/build_plugin 2>/dev/null`
