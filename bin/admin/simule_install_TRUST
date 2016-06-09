@@ -10,7 +10,7 @@ then
       version_arch=`pwd`/$1	# Chemin relatif
    fi
    paquet=`basename $version_arch`
-   version=`echo $paquet | sed 's/TRUST_//' | sed 's/.tar.gz//'` # version stable ou beta
+   version=`echo $paquet | sed 's/TRUST-//' | sed 's/.tar.gz//'` # version stable ou beta
    version=`echo ${version%-*}` # si version extraite
    echo "package: "$paquet
    echo "version: "$version
