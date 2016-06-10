@@ -20,13 +20,13 @@ echo "Usage: $0 machine version [-patch] [-compile]"
 adr=$1
 v=$2   
 [ ${#1} = 0 ] || [ ${#2} = 0 ] && echo "Error on parameters" && exit
-patch="" && [ "$3" = "-patch" ] && patch=Patch-$v.tar.gz && shift
+patch="" && [ "$3" = "-patch" ] && patch=Patch_$v.tar.gz && shift
 compile=0 && [ "$3" = "-compile" ] && compile=1 && shift
 
 #[ "`liste_machines | grep $adr`" != $adr ] && echo "$adr no accessible by ssh..." && exit
 # Est ce que la version existe ?
 GRAVAGE=$WORKDIR/A_GRAVER_CD_TRUST
-file=TRUST-$v".tar.gz" && [ ! -f $GRAVAGE/$file ] && echo "$GRAVAGE/$file not exists." && exit
+file=TRUST_$v".tar.gz" && [ ! -f $GRAVAGE/$file ] && echo "$GRAVAGE/$file not exists." && exit
 
 rep=TRUST
 rep_stable=TRUST_$v

@@ -206,7 +206,7 @@ do
       . connect_ftp -no_ftp 1>/dev/null 2>&1
       # Try to download the patch
       cd `dirname $TRUST_ROOT`
-      patch=Patch-$TRUST_VERSION.tar.gz
+      patch=Patch_$TRUST_VERSION.tar.gz
       echo "Try to download or find the patch $patch..." | tee -a $LOG
       wget_ ftp://$TRUST_FTP/$PUBLIC/patch/$patch 1>/dev/null 2>&1
       if [ ! -f $patch ]
