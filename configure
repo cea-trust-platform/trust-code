@@ -101,7 +101,8 @@ if [ "$1" = "-for_appli_salome" ]
 then
   shift
   export TRUST_ROOT=$TRUST_ROOT_SA
-  $0 -disable-ccache -disable-gnuplot -disable-tcl_tk -disable-valgrind -without-visit -disable-gmsh -disable-checks -disable-check_sources -with-med=$MEDFILE_ROOT_DIR -with-hdf=$HDF5_ROOT_DIR -with-medcoupling=$MEDCOUPLING_ROOT_DIR $* 
+  $0 -disable-ccache -disable-gnuplot -disable-tcl_tk -disable-valgrind -without-visit -disable-gmsh -disable-checks -disable-check_sources -with-med=$MEDFILE_ROOT_DIR -with-hdf=$HDF5_ROOT_DIR $* 
+# pas encore pas ICoCoMEDField -with-medcoupling=$MEDCOUPLING_ROOT_DIR $* 
   exit $?
 fi
 if [ "$1" = "-disable-optionals" ]
