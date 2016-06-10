@@ -1,4 +1,6 @@
 Version	Qui				Tache
+1.7.4   triou@cea.fr            Revoir baltik avec possibilite de 2 statistiques commencant a des tdeb differents
+1.7.4   triou@cea.fr            Reprendre "Now MODULE-VERSION.tar.gz archive building rather than MODULE_VERSION.tar.gz" (attention collection_modules sur curie et airain)
 1.7.4   triou@cea.fr            VisIt, deplacer de bin/visit dans exec/visit/bin/visit + maj du PATH dans TRUST.env et mise_a_jour_TRUST_arch
 1.7.4   triou@cea.fr            baltik: renommer make check_trio_optim en make check_trust_optim  + renommer script triou en trust sans ln
 1.7.4   triou@cea.fr            revoir host visit sur CCRT avec configuration sub_file de Gauthier

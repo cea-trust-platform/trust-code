@@ -91,7 +91,8 @@ then
    cd -
   
    # On efface les binaires de TRUST
-   rm -f exec.*.gz
+   # Plus d executable dans archive depuis v1.7.3
+   #rm -f exec.*.gz
 
 fi
 

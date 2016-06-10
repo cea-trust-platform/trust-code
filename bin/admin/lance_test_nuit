@@ -898,18 +898,22 @@ then
 fi
 if [ "$etude_activation" = 1 ]  && [ ! -f run_Etudes.log ] && [ "$etude_test" = 1 ]
 then
-   echo "-> Start of "$ETUDES"/run -all"
+   #echo "-> Start of "$ETUDES"/run -all"
    touch $ETUDES/run_Etudes.log
-   echo "  See $REP_NUIT/run_Mistra_*.log"
+   #echo "  See $REP_NUIT/run_Mistra_*.log"
    #echo "TRUST script on airain the `date` ...">run_Mistra_airain.log
    #echo>>run_Mistra_airain.log
    #(./run Validation/Mistra -adr airain-gw.ccc.cea.fr 1>>run_Mistra_airain.log 2>&1;mv -f run_Mistra_airain.log $REP_NUIT/.) &
    #echo "TRUST script on curie the `date` ...">run_Mistra_curie.log
    #echo>>run_Mistra_curie.log
    #(./run Validation/Mistra -adr curie-ccrt-gw.ccc.cea.fr 1>>run_Mistra_curie.log 2>&1;mv -f run_Mistra_curie.log $REP_NUIT/.) &
-   echo "TRUST script on callisto the `date` ...">run_Mistra_callisto.log
-   echo>>run_Mistra_callisto.log
-   (./run Validation/Mistra -adr callisto.intra.cea.fr 1>>run_Mistra_callisto.log 2>&1;mv -f run_Mistra_callisto.log $REP_NUIT/.) &
+   #echo "TRUST script on callisto the `date` ...">run_Mistra_callisto.log
+   #echo>>run_Mistra_callisto.log
+   #(./run Validation/Mistra -adr callisto.intra.cea.fr 1>>run_Mistra_callisto.log 2>&1;mv -f run_Mistra_callisto.log $REP_NUIT/.) &
+   echo "  See $REP_NUIT/run_Cormoran_16_callisto.log"
+   echo "TRUST script on callisto the `date` ...">run_Cormoran_16_callisto.log
+   echo>>run_Cormoran_16_callisto.log
+   (./run Studies/Cormoran_16 -adr callisto.intra.cea.fr 1>>run_Cormoran_16_callisto.log 2>&1;mv -f run_Cormoran_16_callisto.log $REP_NUIT/.) &
    mv -f run_Etudes.log $REP_NUIT/.
 fi
 if [ "$etude_activation" = 1 ]  && [ ! -f run_Etudes.log ] && [ "$etude_test" = 0 ]
@@ -1169,7 +1173,7 @@ echo $ECHO_OPTS "---------------------------------------------------------------
 echo $ECHO_OPTS "TRUST ftp site:              ftp://$TRUST_FTP/$PUBLIC/index.html" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "Latest TRUST binary:         ftp://$TRUST_FTP/$SECRET/exec/linux/TRUST_mpi_opt"_"$new"_build_"$DATE.gz" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "Latest User's manual:        ftp://$TRUST_FTP/$SECRET/doc/User_Manual_TRUST.pdf" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "Latest User's manual:        ftp://$TRUST_FTP/$SECRET/doc/TRUST_tutorial.pdf" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "Latest Tutorial:             ftp://$TRUST_FTP/$SECRET/doc/TRUST_tutorial.pdf" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "Latest list of builds:       ftp://$TRUST_FTP/$SECRET/NUIT/NUIT.html" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 echo "Binaries of TRUST $new version are available here:" >> $MESSAGES_NUIT

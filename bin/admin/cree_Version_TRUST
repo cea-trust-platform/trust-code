@@ -63,19 +63,21 @@ do
 	 then
 	    echo "$PORTAGE/$TRUST_ARCH/$MODULE not exists."
 	 else
+	    # Plus d executable dans archive depuis v1.7.3
 	    # Cree le exec.tar
-	    echo "Construction of exec.$TRUST_ARCH.tar..."
-	    cd $PORTAGE/$TRUST_ARCH/$MODULE
-	    tar cf $ROOT/exec.$TRUST_ARCH.tar exec 1>/dev/null
-	    cd $ROOT
-	    gzip_ exec.$TRUST_ARCH.tar
+	    #echo "Construction of exec.$TRUST_ARCH.tar..."
+	    #cd $PORTAGE/$TRUST_ARCH/$MODULE
+	    #tar cf $ROOT/exec.$TRUST_ARCH.tar exec 1>/dev/null
+	    #cd $ROOT
+	    #gzip_ exec.$TRUST_ARCH.tar
 	 fi
       done
       cd $ROOT/..
-      ls $MODULE/exec.*.tar.gz > $MODULE/exec.files
+      #ls $MODULE/exec.*.tar.gz > $MODULE/exec.files
       # Construit le paquet
       echo $ECHO_OPTS "\nCreation of $fichier..."
-      tar zcf $fichier  --transform=s?$MODULE?${MODULE}_${v}? `cat $MODULE/TRUST.files;cat $MODULE/exec.files`
+      #tar zcf $fichier  --transform=s?$MODULE?${MODULE}_${v}? `cat $MODULE/TRUST.files;cat $MODULE/exec.files`
+      tar zcf $fichier  --transform=s?$MODULE?${MODULE}_${v}? `cat $MODULE/TRUST.files`
       echo $ECHO_OPTS "\nThe $fichier file is ready."
       cd $ROOT
    else
@@ -85,5 +87,5 @@ do
       echo $ECHO_OPTS "\nThe $TRUST_ROOT/TRUST_$TRUST_VERSION.tar.gz file is ready."   
    fi
    # FIN ET MENAGE
-   rm -f $ROOT/exec.*.tar.gz $ROOT/exec.files
+   #rm -f $ROOT/exec.*.tar.gz $ROOT/exec.files
 done
