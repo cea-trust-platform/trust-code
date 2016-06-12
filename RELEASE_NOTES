@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------------------------
-Release notes version 1.7.3_beta : Enhancements, modifications and corrected bugs since version 1.7.2 :
+Release notes version 1.7.3 : Enhancements, modifications and corrected bugs since version 1.7.2 :
 --------------------------------------------------------------------------------------------------
 03/06/16 (Tools)  Major change: Add TRUST_PLOT2D and TRUST_WIZZARD (Option -disable-plot2d added to configure)
 25/05/16 (TRUST)  Portability : Released version of metis upgrated to 5.1.0

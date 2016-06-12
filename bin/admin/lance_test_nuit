@@ -877,7 +877,7 @@ echo "##################"
 echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 etude_activation=1
 etude_test=0
-disable_etudes=~/disable_etudes && [ -f $disable_etudes ] && etude_test=1 && rm -f $disable_etudes
+disable_etudes=~/disable_etudes && [ -f $disable_etudes ] && etude_test=2 #etude_test=1 && rm -f $disable_etudes
 if [ "$etude_activation" = 1 ] 
 then
    cd $ETUDES 2>/dev/null
@@ -903,10 +903,10 @@ then
    #echo "  See $REP_NUIT/run_Mistra_*.log"
    #echo "TRUST script on airain the `date` ...">run_Mistra_airain.log
    #echo>>run_Mistra_airain.log
-   #(./run Validation/Mistra -adr airain-gw.ccc.cea.fr 1>>run_Mistra_airain.log 2>&1;mv -f run_Mistra_airain.log $REP_NUIT/.) &
+   #(./run Validation/Mistra -adr airain.ccc.cea.fr 1>>run_Mistra_airain.log 2>&1;mv -f run_Mistra_airain.log $REP_NUIT/.) &
    #echo "TRUST script on curie the `date` ...">run_Mistra_curie.log
    #echo>>run_Mistra_curie.log
-   #(./run Validation/Mistra -adr curie-ccrt-gw.ccc.cea.fr 1>>run_Mistra_curie.log 2>&1;mv -f run_Mistra_curie.log $REP_NUIT/.) &
+   #(./run Validation/Mistra -adr curie-ccrt.ccc.cea.fr 1>>run_Mistra_curie.log 2>&1;mv -f run_Mistra_curie.log $REP_NUIT/.) &
    #echo "TRUST script on callisto the `date` ...">run_Mistra_callisto.log
    #echo>>run_Mistra_callisto.log
    #(./run Validation/Mistra -adr callisto.intra.cea.fr 1>>run_Mistra_callisto.log 2>&1;mv -f run_Mistra_callisto.log $REP_NUIT/.) &

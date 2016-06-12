@@ -1,5 +1,5 @@
 -------------------------------------------------------------
-Developer notes version 1.7.3_beta : Changes since version 1.7.2 :
+Developer notes version 1.7.3 : Changes since version 1.7.2 :
 -------------------------------------------------------------
 31/05/16 (Kernel) Change API of frontiere::trace_elem frontiere::trace_face
 26/05/16 (Kernel) Fix optimisation Champ_Generique_Interpolation

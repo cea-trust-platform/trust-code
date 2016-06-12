@@ -1,10 +1,12 @@
 Version	Qui				Tache
+1.7.4   gauthier.fauchet@cea.fr  FIRST: revoir cmake -u * plus leger qu un configure clean (cmake ccache)
+1.7.4   triou@cea.fr            FIRST: portabilite Ubuntu 16 updated valgrind + cf gmsh
 1.7.4   triou@cea.fr            Revoir baltik avec possibilite de 2 statistiques commencant a des tdeb differents
-1.7.4   triou@cea.fr            Reprendre "Now MODULE-VERSION.tar.gz archive building rather than MODULE_VERSION.tar.gz" (attention collection_modules sur curie et airain)
-1.7.4   triou@cea.fr            VisIt, deplacer de bin/visit dans exec/visit/bin/visit + maj du PATH dans TRUST.env et mise_a_jour_TRUST_arch
+1.7.4   triou@cea.fr            FIRST: Reprendre "Now MODULE-VERSION.tar.gz archive building rather than MODULE_VERSION.tar.gz" (attention collection_modules sur curie et airain)
+1.7.4   triou@cea.fr            FIRST: VisIt, deplacer de bin/visit dans exec/visit/bin/visit + maj du PATH dans TRUST.env et mise_a_jour_TRUST_arch
 1.7.4   triou@cea.fr            baltik: renommer make check_trio_optim en make check_trust_optim  + renommer script triou en trust sans ln
 1.7.4   triou@cea.fr            revoir host visit sur CCRT avec configuration sub_file de Gauthier
-1.7.4   gauthier.fauchet@cea.fr  modification pour initialisation des tableaux A(1,1.0) ou A(1,1)
+1.7.4   gauthier.fauchet@cea.fr  FIRST: modification pour initialisation des tableaux A(1,1.0) ou A(1,1)
 1.7.4   gauthier.fauchet@cea.fr  Reprendre Mod_turb_hyd_base.cpp limitation mut
 1.7.4   gauthier.fauchet@cea.fr  Revoir le PATH pour module load TRUST sous occigen (passer par SET)
 1.7.4   triou@cea.fr            proposer un tutorial ICoCo
@@ -27,5 +29,6 @@ Version	Qui				Tache
 1.7.0	triou@cea.fr            Renommer sous_maille en sous_maille_fonction_structure (in english) ?
 1.7.4	triou@cea.fr  		revoir test clang avec openmpi ou mpich ? idem avec machine test GNU > 5.3 ?)
 1.7.4	triou@cea.fr  		Doc : mettre a jour index et table des matieres (ajouter pression hydro + buildInnerBoundary dans formation users sur commentaire CL interne + remplecer -monitor et -probes par -evol)
+1.7.4	triou@cea.fr  		FIRST: risque identifie mise a jour doc suite a nouvelle architecture
 1.7.4	triou@cea.fr  		License : verifier l annee pour entete fichier cpp et h
 1.7.4	celine.capitaine@cea.fr Mettre a jour la notice de maintenance TRUST/TrioCFD
