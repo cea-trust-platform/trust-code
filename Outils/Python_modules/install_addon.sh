@@ -46,3 +46,4 @@ fi
   cd ..
   rm -rf $pac
 done
+python -c "import matplotlib;import jsonschema"

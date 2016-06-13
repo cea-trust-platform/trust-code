@@ -55,6 +55,7 @@ make_tools()
 	 \cd $TRUST_ROOT/$rep && echo $ECHO_OPTS $rep":\c " && $MAKE $CLEAN 1>>$COMPILE 2>&1
 	 err=$?
 	 OK $err
+         [ $rep = Outils/IHM ] && [ $err != 0 ] && err=0 && echo "IHM is in experimetal state, so ..."
 	 if [ $err != 0 ]
          then
             if [ $rep = Outils/TRIOXDATA ] && [ "$CLEAN" = clean ]
