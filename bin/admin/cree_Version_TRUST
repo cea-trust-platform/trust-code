@@ -62,7 +62,7 @@ do
 	 if [ ! -d $PORTAGE/$TRUST_ARCH/$MODULE ]
 	 then
 	    echo "$PORTAGE/$TRUST_ARCH/$MODULE not exists."
-	 else
+	 #else
 	    # Plus d executable dans archive depuis v1.7.3
 	    # Cree le exec.tar
 	    #echo "Construction of exec.$TRUST_ARCH.tar..."
