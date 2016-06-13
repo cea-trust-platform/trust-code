@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 res=`tail -1 cas_MAX_ERREUR_CONV_QDM.son | awk '{print $2}'`
 echo $res RESOL FACSEC CAS > conv

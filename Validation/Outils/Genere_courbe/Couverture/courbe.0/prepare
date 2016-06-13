@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 [ ! -d cond_coup_fictif_vdf_impl ] && copie_cas_test cond_coup_fictif_vdf_impl
 [ ! -d cond_coup_fictif_vef_impl ] && copie_cas_test cond_coup_fictif_vef_impl
 [ ! -d cond_couple_vdf_impl ] && copie_cas_test cond_couple_vdf_impl

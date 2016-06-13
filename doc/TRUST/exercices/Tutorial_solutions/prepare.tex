@@ -1,5 +1,5 @@
 \begin{alltt}
-#!/bin/sh
+#!/bin/bash
 sed "s/champ_uniforme 2 1. 0./ champ_uniforme 2 2 0./;
     s/bord periox/ bord periox debit_impose 2./" std.data >  debit.data
 diff std.data debit.data > diff_deb.out

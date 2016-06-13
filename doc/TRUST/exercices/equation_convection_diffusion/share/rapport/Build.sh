@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 DIR=`dirname $0`
 proj=`(cd $DIR/../..;pwd)`

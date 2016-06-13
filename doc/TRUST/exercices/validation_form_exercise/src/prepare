@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 if [ "$TRUST_DISABLE_PETSC" = "1" ]
 then
    echo "Disabling petsc in std.data"

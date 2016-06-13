@@ -564,7 +564,7 @@ then
    ###########################################
    case $sub in
    	SLURM)
-		echo "#!/bin/sh"					>> $sub_file	# Shell
+		echo "#!/bin/bash"					>> $sub_file	# Shell
 		echo "#SBATCH -J $NOM" 					>> $sub_file	# Job name
 		[ "$queue" != "" ] && echo "#SBATCH -p $queue"		>> $sub_file	# Partition
 		[ "$qos" != "" ] && echo "#SBATCH --qos=$qos"		>> $sub_file	# Quality of service
@@ -654,7 +654,7 @@ then
                 echo "cd $ici" 			>> $sub_file
 		;;
 	PBS)
-		echo "#!/bin/sh"                                        >> $sub_file    # Shell
+		echo "#!/bin/bash"                                      >> $sub_file    # Shell (sh ou bash)
 		echo "#PBS -N `echo $NOM | cut -c 1-15`"                >> $sub_file    # Job name
 		[ "$queue" != "" ] && echo "#PBS -q $queue"             >> $sub_file    # Partition
 		[ "$qos" != "" ] && echo "#PBS -l qos=$qos"             >> $sub_file    # Quality of service

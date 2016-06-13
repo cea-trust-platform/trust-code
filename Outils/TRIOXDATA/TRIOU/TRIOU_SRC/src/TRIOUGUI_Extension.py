@@ -151,7 +151,7 @@ def ImportDataFile():
             print theWorkingDir
             s=open(theWorkingDir+"/trad","w")           
             syspath2=":".join(syspath)
-            s.write("#!/bin/sh\nexport PYTHONPATH="+syspath2+'\n')
+            s.write("#!/bin/bash\nexport PYTHONPATH="+syspath2+'\n')
             s.write('file1=`basename '+str(aFile)+'`\n')
             s.write('cd '+theWorkingDir+'\n')
             s.write('python -c \"from triou import *;list=read_file_data(\'$file1\');write_file_python(\'jdd.py\',list)\"\n')
@@ -207,7 +207,7 @@ def ExportDataFile():
             print theWorkingDir
             s=open(theWorkingDir+"/trad","w")           
             syspath2=":".join(syspath)
-            s.write("#!/bin/sh\nexport PYTHONPATH="+syspath2+'\n')
+            s.write("#!/bin/bash\nexport PYTHONPATH="+syspath2+'\n')
             s.write('file1=`basename '+str(aFile)+'`\n')
             s.write('cd '+theWorkingDir+'\n')
             s.write('python -c \"from triou import *;from prov import *;write_file_data(\''+str(aFile)+'\',list_instance)\"\n')

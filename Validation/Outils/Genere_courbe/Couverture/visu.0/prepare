@@ -1,2 +1,2 @@
-#!/bin/sh
+#!/bin/bash
 [ ! -d  FTD_all_VEF ] && copie_cas_test FTD_all_VEF
