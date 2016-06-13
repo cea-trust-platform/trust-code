@@ -3,6 +3,17 @@
 # Installation de hwloc pour avoir l'architecture de la machine
 ###############################################################
 package=hwloc-1.9
+
+if [ "$TRUST_BUILD_IN_TMP" = "1" ]
+then
+    
+    name=hwloc
+    build_dir=$TRUST_TMP/build/$name
+    mkdir -p $build_dir
+    cp * $build_dir
+    cd $build_dir
+fi
+
 gunzip -f -c $TRUST_ROOT/externalpackages/$package.tar.gz | tar -xf -
 rm -f $package.tar
 install=$TRUST_ROOT/exec/hwloc

@@ -41,12 +41,12 @@ then
 	    return 0;
 	 }" > $TRUST_TMP/mpi_init.cpp
 	 $TRUST_CC -o $TRUST_TMP/mpi_init $TRUST_TMP/mpi_init.cpp
-	 rm -f mpi_init.log
-	 $TRUST_TMP/mpi_init 1>mpi_init.log 2>&1 &
+	 rm -f $TRUST_TMP/mpi_init.log
+	 $TRUST_TMP/mpi_init 1>$TRUST_TMP/mpi_init.log 2>&1 &
 	 # Pour eviter les blocages, on attends quelques secondes
 	 $TRUST_ROOT/bin/KSH/wait_for $! 5
       fi
-      if [ "`grep OK mpi_init.log`" = "" ]
+      if [ "`grep OK $TRUST_TMP/mpi_init.log`" = "" ]
       then
 	 string="define MPI_INIT_NEEDS_MPIRUN"
       else
@@ -55,6 +55,7 @@ then
    else
       string="undef MPI_INIT_NEEDS_MPIRUN"
    fi
+   rm -f $TRUST_TMP/mpi_init $TRUST_TMP/mpi_init.cpp $TRUST_TMP/mpi_init.log
    ################################################################
    # Creation des liens pour avoir toutes les options OPT possibles
    ################################################################
@@ -98,6 +99,14 @@ then
 fi
 
 # recuperation des archives
+if [ "$TRUST_BUILD_IN_TMP" = "1" ]
+then
+    name=LIBPETSC
+    build_dir=$TRUST_TMP/build/$name
+    mkdir -p $build_dir
+    cp -r * $build_dir
+    cd $build_dir
+fi
 
 for file in `ls $TRUST_ROOT/externalpackages/petsc/*`
 do
@@ -524,6 +533,7 @@ do
    $with_blas \
    $with_gpu \
    $with_thread \
+   $with_openmp \
    $with_mpi \
    $options || exit -1
    
