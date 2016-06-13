@@ -4,6 +4,15 @@
 #########
 prefix=$1
 
+if [ "$TRUST_BUILD_IN_TMP" = "1" ]
+then
+    name=astyle
+    build_dir=$TRUST_TMP/build/$name
+    mkdir -p $build_dir
+    cp * $build_dir
+    cd $build_dir
+fi
+
 package="`ls $TRUST_ROOT/externalpackages/astyle_*_linux.tar.gz 2>/dev/null`" && [ "$package" = "" ] && echo "Package astyle not found!" && exit -1
 if [ ! -d astyle ]
 then

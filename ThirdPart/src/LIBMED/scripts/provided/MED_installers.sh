@@ -97,6 +97,10 @@ install_MED() {
 
     # defining several useful variables 
     TRUST_MED_HDF_BUILD="${TRUST_MED_HDF_ROOT}/build"
+    if [ "$TRUST_BUILD_IN_TMP" = "1" ]
+	then
+	TRUST_MED_HDF_BUILD="${TRUST_TMP}/build/MED/"
+    fi
     TRUST_MED_HDF_INSTALL="${TRUST_MED_HDF_ROOT}/install"
     TRUST_MED_HDF_ARCHIVES="${TRUST_MED_HDF_SRC}/archives"
     export TRUST_MED_HDF_BUILD

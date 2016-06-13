@@ -7,6 +7,20 @@ then
    exit -1
 fi
 
+if [ "$TRUST_BUILD_IN_TMP" = "1" ]
+then
+    name=MPI
+    build_dir=$TRUST_TMP/build/$name
+    mkdir -p $build_dir
+    cp * $build_dir
+    cd $build_dir
+fi
+
+
+
+
+
+
 ################################################################
 # On n'installe que si MPI natif n'a pas ete trouve par ailleurs
 ################################################################

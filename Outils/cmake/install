@@ -1,6 +1,14 @@
 #!/bin/bash
 name=$1 && [ "$1" = "" ] && exit -1
 cible=$2 && [ "$2" = "" ] && exit -1
+if [ "$TRUST_BUILD_IN_TMP" = "1" ]
+then
+
+    build_dir=$TRUST_TMP/build/cmake
+    mkdir -p $build_dir
+    cp * $build_dir
+    cd $build_dir
+fi
 name=${name%.tar.gz}
 rm -r -f $name
 echo $name

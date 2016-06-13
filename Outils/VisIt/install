@@ -110,6 +110,15 @@ then
       echo "#################################################"
       echo "# Trying to build a $parallel version for VisIt..."
       echo "#################################################"
+      org_dir=`pwd`
+      if [ "$TRUST_BUILD_IN_TMP" = "1" ]
+	  then
+	  name=visit
+	  build_dir=$TRUST_TMP/build/$name
+	  mkdir -p $build_dir
+	  cp -r src $build_dir
+	  cd $build_dir
+      fi
       cd src
       ./build.sh $package $parallel 
       status=$?
@@ -129,7 +138,7 @@ then
             ./build.sh $package
          fi
       fi 
-      cd - 1>/dev/null 2>&1	
+      cd $org_dir
    fi
    # Telechargement demande ou suite echec de construction (sauf si une configuration parallele existe
    # auquel cas la construction parallele DOIT avoir fonctionne

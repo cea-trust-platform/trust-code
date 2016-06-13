@@ -3,6 +3,17 @@
 name=$1 && [ "$1" = "" ] && exit -1
 cible=$2 && [ "$2" = "" ] && exit -1
 name=${name%.tar.bz2}
+
+
+if [ "$TRUST_BUILD_IN_TMP" = "1" ]
+then
+    build_dir=$TRUST_TMP/build/$name
+    mkdir -p $build_dir
+    cp * $build_dir
+    cd $build_dir
+fi
+
+
 bunzip2 -f -c $TRUST_ROOT/externalpackages/$name.tar.bz2 | tar -xf -
 cd $name
 # Hack pour compiler meme si librairies dev de X11 non installees

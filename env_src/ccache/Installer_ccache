@@ -14,6 +14,14 @@ version=$1
 [ $TRUST_ARCH != linux ] && echo "ccache installed on Linux only." && exit
 ccache=`ls -rt $TRUST_ROOT/externalpackages/ccache-*.tar.gz | tail -1 2>/dev/null`
 [ ! -f $ccache ] && exit
+
+if [ "$TRUST_BUILD_IN_TMP" = "1" ]
+    then
+    dir=${TRUST_TMP}/build/ccache
+    mkdir -p $dir
+    cd $dir
+fi
+   
 gunzip -c $ccache > tmp.tar
 tar xf tmp.tar
 rep=`ls | grep ccache- | grep -v tar`

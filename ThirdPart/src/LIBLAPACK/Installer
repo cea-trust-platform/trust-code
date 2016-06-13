@@ -97,6 +97,15 @@ install_NetLib()
 #########################
 # Debut de la procedure #
 #########################
+if [ "$TRUST_BUILD_IN_TMP" = "1" ]
+then
+    name=LIBLAPACK
+    build_dir=$TRUST_TMP/build/$name
+    mkdir -p $build_dir
+    cp -r * $build_dir
+    cd $build_dir
+fi
+
 
 # recuperation des archives
 for file in `ls $TRUST_ROOT/externalpackages/lapack/*`
