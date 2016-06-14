@@ -219,9 +219,9 @@ void Schema_Temps_base::validateTimeStep()
           //double seconds_to_finish  = nb_pas_avant_fin * cpu_per_timestep;
           double dpercent=(1.-nb_pas_avant_fin/(nb_pas_avant_fin+ nb_pas_dt()));    // marche meme si c'est ltemps max qui limite
 
-          if (seuil_statio_>0)
+          if ((seuil_statio_>0)&&(dabs(cumul_slope_)>1e-20))
             {
-              double distance= (-log(residu_+1e-20)+log(seuil_statio_))/cumul_slope_* nb_pas_dt();
+              double distance= (-log(residu_+1e-20)+log(seuil_statio_))/(cumul_slope_)* nb_pas_dt();
 
               //Cerr<<distance<<" DDDDDD"<<finl;
               double dpercent2=temps_courant()/(temps_courant()+distance);
@@ -232,7 +232,7 @@ void Schema_Temps_base::validateTimeStep()
           if (limpr() )
             {
               double seconds_to_finish  =  statistiques().last_time(temps_total_execution_counter_)/dpercent;
-              int integer_limit=(int)(pow(2.0,(double)((sizeof(int)*8)-1))-1);
+              int integer_limit=(int)(pow(2.0,(double)((sizeof(True_int)*8)-1))-1);
               if (seconds_to_finish<integer_limit)
                 {
                   int h  = int(seconds_to_finish/3600);
