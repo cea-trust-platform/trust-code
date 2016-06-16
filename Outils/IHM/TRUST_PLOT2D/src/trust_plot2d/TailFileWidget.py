@@ -70,6 +70,12 @@ class TailFileWidget(QDockWidget):
     textEdit.clear()
     if ( os.path.exists(aCaseOutputFile) and os.path.isfile(aCaseOutputFile) ):
         fd = open(aCaseOutputFile, 'r')
+	content=fd.readlines()
+        # on bloque a 10 000 lignes 
+        content2=' '.join(content[-10000:])
+        textEdit.append(content2)
+        fd.close()
+        return
         content = fd.read(1024)
         while ( content ):
             textEdit.append(content)

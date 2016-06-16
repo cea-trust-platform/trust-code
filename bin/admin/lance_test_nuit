@@ -3019,17 +3019,18 @@ then
       # Track again all files which were --assume-unchanged before:
       cd $TRUST_ROOT
       #Couverture de code genere sur l ensemble des baltiks et pas que sur TRUST donc on n ecrase pas...
-      #echo "  Call git update-index --no-assume-unchanged"
-      #for unchanged in `git ls-files -v | grep '^[[:lower:]]' | awk '{print $2}'`
-      #do
-      #   git update-index --no-assume-unchanged $unchanged
-      #done
+      echo "  Call git update-index --no-assume-unchanged"
+      for unchanged in `git ls-files -v | grep '^[[:lower:]]' | awk '{print $2}'`
+      do
+         git update-index --no-assume-unchanged $unchanged
+      done
       # Commit & Push
       echo "  Call git commit --all -m Commit for an official Release $label version."
       git commit --all -m"Commit for an official Release $label version."
       echo "  Call git push shared Livraison"
       git tag $label_pose
       git_push -tags
+      git push --tags shared Livraison:master
       if [ "$erreur_checkin" != "" ]
       then
          echo "New version $label : Delivery canceled because some files could not be checkined: $erreur_checkin" >> $MESSAGES_NUIT
@@ -3046,11 +3047,19 @@ then
          git push --tags shared Livraison
          git tag $label
 	 git push --tags ssh://triou@sedna${TRUST_GIT_REPOS%TRUST}externalpackages Livraison:master
+         git push --tags shared Livraison:master
+	 git fetch --all
          cd - 1>/dev/null 2>&1
 	 # Creation des packages TRUST et externalpackages
 	 echo " "
 	 echo "  Creation of the packages of TRUST and externalpackages"
          echo "!!! See A_GRAVER_CD_TRUST (Warning externalpackages) and A_GRAVER_CD_TrioCFD !!!" | mail_ -s \"[lance_test_nuit] WARNING! TRUST v$new released: Ensure that packages for sourceforge.net are correct...\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+         mise_a_jour_TRUST_tar
+         GRAVAGE=$WORKDIR/A_GRAVER_CD_TRUST
+         version_arch=TRUST_$new".tar.gz"
+         mv $TRUST_ROOT/$version_arch $GRAVAGE/.
+         version_arch=externalpackages_$new".tar"
+         mv $TRUST_ROOT/$version_arch $GRAVAGE/.
 	 # Changement de la vue Maintenance
 	 echo " "
 	 echo "Changing the Maintenance view"
@@ -3064,7 +3073,7 @@ then
             # Creation de la branche depuis le tag (example: patch_XYZ depuis vX.Y.Z)
 	    echo "  Call git checkout -b $patch_new $label"
             git checkout -b $patch_new $label
-	    if [ $? != 0 ]
+	    if [ $? = 0 ]
 	    then
                # Positionnement de HEAD sur la branche (exemple: patch_XYZ)
                #git symbolic-ref HEAD refs/heads/$patch_new
@@ -3087,7 +3096,7 @@ then
 	    cd externalpackages
 	    git fetch --all
 	    git checkout -b $patch_new $label
-	    if [ $? != 0 ]
+	    if [ $? = 0 ]
 	    then
 	       #git symbolic-ref HEAD refs/heads/$patch_new
 	       git branch -D Maintenance
@@ -3116,6 +3125,9 @@ then
 	    [ "$Composant" = TrioCFD ] && git push --tags shared Livraison
 	    echo "    Call git tag $label"
             git tag $label
+	    [ "$Composant" != TrioCFD ] && git push --tags ssh://triou@sedna${TRUST_GIT_REPOS%TRUST}$Composant Livraison:master
+            git push --tags shared Livraison:master
+	    git fetch --all
 	    # Appel du make distrib
 	    echo "    Call make distrib"
 	    make distrib
@@ -3131,7 +3143,7 @@ then
 	       echo "from `pwd`"
 	       git fetch --all
 	       git checkout -b $patch_new $label
-	       if [ $? != 0 ]
+	       if [ $? = 0 ]
 	       then
 	          #git symbolic-ref HEAD refs/heads/$patch_new
 	          git branch -D Maintenance
@@ -3286,14 +3298,12 @@ EOF
    echo "--------------------------------------------------------------------------------------------------
 Release notes version $next_new : Enhancements, modifications and corrected bugs since version $new :
 --------------------------------------------------------------------------------------------------
-
 " > $TRUST_TMP/RELEASE_NOTES
    cat $TRUST_ROOT/RELEASE_NOTES >> $TRUST_TMP/RELEASE_NOTES
    cat $TRUST_TMP/RELEASE_NOTES > $TRUST_ROOT/RELEASE_NOTES
    echo "-------------------------------------------------------------
 Developer notes version $next_new : Changes since version $new :
 -------------------------------------------------------------
-
 " > $TRUST_TMP/DEVELOPER_NOTES
    cat $TRUST_ROOT/DEVELOPER_NOTES >> $TRUST_TMP/DEVELOPER_NOTES
    cat $TRUST_TMP/DEVELOPER_NOTES > $TRUST_ROOT/DEVELOPER_NOTES  

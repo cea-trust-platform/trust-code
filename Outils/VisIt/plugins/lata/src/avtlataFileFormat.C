@@ -498,14 +498,14 @@ avtlataFileFormat::GetMesh(int timestate, int block, const char *meshname)
                   nverts_loc=j; 
                   break;
                 }    
-              else
+  /*            else
 		{
 		if (verts[j]<-1)
 		{
 		std::cerr<<i<<" iiiii "<< j<<" "<<verts[j]<<finl;
 }
 
-}	
+}	*/
             }
           int  nb_som_max_to_regularize=0;
           if (filter_.get_options().regularize_polyedre!=0)
