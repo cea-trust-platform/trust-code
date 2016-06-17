@@ -81,6 +81,8 @@ if [ "$1" = "-check_file" ]
     marqueur=${marqueur}"_check_file"
 fi
 
+if [ "$TRUST_DISABLE_CHECK_SRC" != "1" ]
+then
 for dir in $DIRS
 do
   
@@ -108,6 +110,7 @@ do
       fi
  
 done
+fi
 
 if [ $erreur -eq 0 ] 
     then
