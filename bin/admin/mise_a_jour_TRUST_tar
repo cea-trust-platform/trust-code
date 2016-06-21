@@ -94,8 +94,11 @@ then
    date > .DATE
    echo .DATE >> Src.files
    # ajout du log pour identifier l'archive
-   git log -1 > .git_log
-   echo .git_log >> Src.files
+   if [ $without_version = 1 ]
+   then
+      git log -1 > .git_log
+      echo .git_log >> Src.files
+   fi
    # external package
    if [ $src_only = 0 ]
    then
@@ -107,8 +110,11 @@ then
          exit -1
       fi
       # ajout du log pour identifier l'archive
-      git log -1 > .git_log
-      echo "externalpackages/".git_log > ../External.files
+      if [ $without_version = 1 ]
+      then
+         git log -1 > .git_log
+         echo "externalpackages/".git_log > ../External.files
+      fi
       for file in `git ls-files`
       do
          echo "externalpackages/"$file >> ../Src.files

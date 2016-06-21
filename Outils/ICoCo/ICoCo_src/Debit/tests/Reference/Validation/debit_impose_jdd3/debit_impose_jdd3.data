@@ -18,9 +18,9 @@ Partition dom
 End
 END PARTITION #
 
-# BEGIN READ
+# BEGIN SCATTER
 Scatter DOM.Zones dom
-END READ #
+END SCATTER #
 
 VEFprep1b dis
 
@@ -72,7 +72,7 @@ methode_calcul_pression_initiale avec_sources
 			}
 		
 		boundary_conditions {
-			IN frontiere_ouverte_vitesse_imposee champ_front_debit_VEF champ_front_fonc_txyz 1 (1+4*t/10)
+			IN frontiere_ouverte_vitesse_imposee champ_front_debit champ_front_fonc_txyz 1 (1+4*t/10)
 			sym symetrie
 			paroi symetrie
 			out frontiere_ouverte_pression_imposee champ_front_uniforme 1 0

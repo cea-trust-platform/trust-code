@@ -45,11 +45,12 @@ then
       touch $TRUST_ROOT/.RELEASE_NOTES
       export TRUST_SHARE="/net/dibona/users/dibona/triou"
       dest="trio_u_annonces@saxifrage.saclay.cea.fr"
+      dest="trio_u_dev@saxifrage.saclay.cea.fr"
       push_error=1 # Temporary
       [ $push_error = 1 ] && dest=$TRUST_MAIL
       patch_branch=patch_`echo $TRUST_VERSION | awk '{gsub("\\\.","",$0);print $0}'`
       echo "  New TRUST v$TRUST_VERSION patch released"
-      echo "!!! mail not sent to trio_u_annonces !!!" | mail_ -s \"[checking_patch.ct] WARNING! New TRUST v$TRUST_VERSION patch released: Ensure that git push origin has been done manually...\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+      echo "!!! mail not sent to trio_u_annonces !!!" | mail_ -s \"[checking_patch.ct] WARNING! New TRUST v$TRUST_VERSION patch released: Ensure that git push origin has been done manually...\" $TRUST_MAIL #$TRUST_PROJECT_LEADER
       mail_ -s \"New TRUST v$TRUST_VERSION patch released\" $dest << EOF
 `$TRUST_Awk '// {print $0} /-------/ {exit}' $TRUST_ROOT/RELEASE_NOTES`
 

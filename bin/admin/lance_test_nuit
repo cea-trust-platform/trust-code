@@ -768,7 +768,7 @@ echo "###############################################"
 		 cd $TRUST_ROOT
 		 cat patch.files 
 		 rm -f Patch.files
-                 if [ $patch_error = 0 ]
+                 if [ $patch_error = 0 ] && [ -s patch.files ]
                  then
 		    # Envoi immediat sur ftp.cea.fr
                     echo "  Call to "$TRUST_ROOT"/bin/admin/connect_ftp"
@@ -801,8 +801,11 @@ echo "###############################################"
 		       ) &
 		       # Quels sont les conflits ?
 		    done
-		 else
+		 elif [ $patch_error != 0 ]
+		 then
                     echo "Not install on remote machine!" | mail_ -s\"[lance_test_nuit] Failed to create $TRUST_VERSION patch version\" $TRUST_MAIL
+		 else
+		    echo "No patch"
 		 fi
 	         echo "End special treatment."
 	      fi
@@ -3270,17 +3273,17 @@ TrioCFD is a programmable software for Computational Fluid Dynamics (CFD) code,
 based on the TRUST platform (TRrio_U Software for Thermohydraulics).
 These softwares are OpenSource (license BSD).
 
-New TrioCFD (previously named \"Trio_U\") version released (v$new).
-Look at http://sourceforge.net/projects/triocfd/files/  
-to read the README and to download Installer_TrioCFD.sh.
-Changes compared to the $old version are detailed in the RELEASE_NOTES file 
-attached to the TrioCFD.tar.gz archive.
-
 New TRUST (\"Trio_U\" without Front_Tracking, Radiation, Zoom and LES models) version released (v$new).
 Look at http://sourceforge.net/projects/trust-platform/files/
 to read the README and to download Installer_TRUST.sh.
 Changes compared to the $old version are detailed in the RELEASE_NOTES file 
 attached to the TRUST_$new.tar.gz archive.
+
+New TrioCFD (previously named \"Trio_U\") version released (v$new).
+Look at http://sourceforge.net/projects/triocfd/files/  
+to read the README and to download Installer_TrioCFD.sh.
+Changes compared to the $old version are detailed in the RELEASE_NOTES file 
+attached to the TrioCFD.tar.gz archive.
 
 TRUST/TrioCFD support team. mailto: $TRUST_MAIL  Web: http://www-trio-u.cea.fr
 
