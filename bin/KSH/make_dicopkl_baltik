@@ -46,7 +46,7 @@ python -c "from Couv import create_dico;create_dico()"
 cat /dev/null > cpu
 FF="["
 listfichier_a_retirer=""
-for file in `find $project_directory/build/tests/tests_$(basename ${exec_run}) -name cpu'.*'.seq -newer $exec -or -name cpu.'*'.par -newer $exec -or -name cpu.'*'.dec -newer $exec`
+for file in `find $project_directory/build/tests/tests_$(basename ${exec_run}) -name cpu'.*'.seq -newer $exec -or -name cpu.'*'.par -newer $exec -or -name cpu.'*'.dec -newer $exec -or -name cpu.'*'.prepare -newer $exec `
 do
    name=`basename $file .seq |sed "s/cpu\.//"`
    if [ `basename $name .par` != $name ]
@@ -56,6 +56,10 @@ do
    if [ `basename $name .dec` != $name ]
    then
        name="DEC_"`basename $name .dec`
+   fi
+   if [ `basename $name .prepare` != $name ]
+   then
+       name="PREPARE_"`basename $name .prepare`
    fi
    # le sort -u permet de gagner du temps dans le python et avoir un dico juste
    $TRUST_Awk '(NR>5) {if (NF) print $0;else exit}' $file | cut -c 54- | sort -u >./$name

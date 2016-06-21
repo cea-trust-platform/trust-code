@@ -22,7 +22,7 @@ do
 done > $TRUST_TMP/out
 cd $rep_init
 cat $TRUST_TMP/out | grep -v CAS_liste
-cat $TRUST_TMP/out | grep CAS_liste | sed "s/PAR_//;s/DEC_//" | sort -u | sed "s/CAS_liste//" > liste_cas
+cat $TRUST_TMP/out | grep CAS_liste | sed "s/PAR_//;s/DEC_//;s/PREPARE_//" | sort -u | sed "s/CAS_liste//" > liste_cas
 nb_cas=`wc -l liste_cas | $TRUST_Awk '{print $1}'`
 nb_fiches=`grep _jdd liste_cas | awk -F"_jdd" '{print $1}' | sort -u | wc -l`
 

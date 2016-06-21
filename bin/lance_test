@@ -877,6 +877,9 @@ then
 		STATUS_PREPARE=$?
 		effacer=1
 		\cd $rep_tests/$REP;
+                type=prepare
+		gmon
+
 	    fi
 	    # On recupere le fichier reference
 	    touch .reference.lml && [ -s $reference ] && gunzip -c $reference > .reference.lml
