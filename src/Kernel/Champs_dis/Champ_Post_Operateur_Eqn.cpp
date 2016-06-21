@@ -186,12 +186,13 @@ const Noms Champ_Post_Operateur_Eqn::get_property(const Motcle& query) const
   motcles[1] = "unites";
 
   int rang = motcles.search(query);
+
   switch(rang)
     {
     case 0:
       {
 
-        int nb_comp = dimension;
+        int nb_comp= ref_eq_.valeur().inconnue().valeur().nb_comp();
         Noms compo(nb_comp);
         for (int i=0; i<nb_comp; i++)
           {
@@ -205,10 +206,11 @@ const Noms Champ_Post_Operateur_Eqn::get_property(const Motcle& query) const
 
     case 1:
       {
-        Noms unites(dimension);
+        int nb_comp= ref_eq_.valeur().inconnue().valeur().nb_comp();
+        Noms unites(nb_comp);
         //Noms source_unites = get_source(0).get_property("unites");
 
-        for (int i=0; i<dimension; i++)
+        for (int i=0; i<nb_comp; i++)
           {
             unites[i] = "unit";
           }
