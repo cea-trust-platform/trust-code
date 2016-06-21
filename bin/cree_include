@@ -15,6 +15,7 @@ echo "s?$TRUST_LATAFILTER/include/?\$(TRUST_LATAFILTER)/include/?g">>.tmp
 echo "s?$TRUST_ICOCOAPI/include/?\$(TRUST_ICOCOAPI)/include/?g">>.tmp
 echo "s?$TRUST_MED_ROOT/include/?\$(TRUST_MED_ROOT)/include/?g">>.tmp
 echo "s?$TRUST_MEDCOUPLING_ROOT/include/?\$(TRUST_MEDCOUPLING_ROOT)/include/?g">>.tmp
+echo "s?$PETSC_ROOT/$TRUST_ARCH$OPT/include/?\$(PETSC_ROOT)/\$(TRUST_ARCH)\$(OPT)/include/?g">>.tmp
 echo > .tmp1
 num=""
 for dir in `cat $TRUST_ENV/rep.TRUST`

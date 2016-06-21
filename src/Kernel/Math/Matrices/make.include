@@ -1,6 +1,7 @@
 Includes = -I. -I$(TRUST_ROOT)/include/backward\
+	-I$(MPI_INCLUDE)\
 	-I$(TRUST_ROOT)/src/Kernel/Math\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
-	-I$(MPI_INCLUDE)
+	
 
 Lib = $(TRUST_LIB)/libag

@@ -12,7 +12,8 @@ pour_un_make()
 {
 echo $ECHO_OPTS "Includes = -I. -I\$(TRUST_ROOT)/include/backward\\"
 $TRUST_Awk -F/ '{if ($1!=".") { printf "\t-I";for (i=1;i<NF-1;i++) {printf $i;printf "/"} printf $(NF-1)"\\\n" }}' $1 | sort -u | grep -v MPI_ROOT
-echo $ECHO_OPTS "\t-I\$(MPI_ROOT)/include"
+#echo $ECHO_OPTS "\t-I\$(MPI_ROOT)/include"
+echo $ECHO_OPTS "\t"
 echo
 }
 

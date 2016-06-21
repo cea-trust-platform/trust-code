@@ -1,6 +1,7 @@
 Includes = -I. -I$(TRUST_ROOT)/include/backward\
-  -I$(PETSC_ROOT)/$(TRUST_ARCH)$(OPT)/include\
-  -I$(TRUST_ROOT)/src/Kernel/Math\
-  -I$(MPI_INCLUDE) 
+	-I$(MPI_INCLUDE)\
+	-I$(PETSC_ROOT)/$(TRUST_ARCH)$(OPT)/include\
+	-I$(TRUST_ROOT)/src/Kernel/Math\
+	
 
-  Lib = $(TRUST_LIB)/libutilitaires
+Lib = $(TRUST_LIB)/libutilitaires
