@@ -17,7 +17,7 @@ LICENSE=$TRUST_ROOT/License.txt
 type=$1
 [ "$1" = "-add" ] && add=1 && shift
 [ "$1" = "-check" ] && check=1 && shift
-[ "$1" = "-upadte" ] && update=1 && shift
+[ "$1" = "-update" ] && update=1 && shift
 let test_opt=add+update+check
 if [ ${test_opt} -ne 1 ]
 then
