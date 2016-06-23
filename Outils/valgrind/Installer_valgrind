@@ -22,7 +22,7 @@ bzip2 -cd $valgrind | tar xf -
 
 cd `ls | grep valgrind- | grep -v tar`
 echo "patching configure"
-cat ../configure_valgrind_3.10.1_patched > configure
+[ -f ../configure_valgrind_$version"_patched" ] && cat ../configure_valgrind_$version"_patched" > configure
 echo patching mpiwrap
 cp mpi/libmpiwrap.c mpi/libmpiwrap.c.org
 sed 's?before(\"Finalize\");?before(\"Finalize\");if (sReqs) { free(sReqs); sReqs=0; }?;s?before("Allreduce");?before("Allreduce"); if (sendbuf!=MPI_IN_PLACE)? ' -i mpi/libmpiwrap.c
