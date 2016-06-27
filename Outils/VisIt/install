@@ -255,7 +255,7 @@ then
       then
          VERSION=$WORKBASE$machine/TRUST
       else
-         VERSION=TRUST/TRUST_$TRUST_VERSION
+         VERSION=TRUST/TRUST-$TRUST_VERSION
       fi
       $TRUST_Awk -v ligne=$ligne -v TRUST_VERSION=$VERSION '(ligne==2) && /<!--/ {getline} /"host"/ {n++;if (n==ligne) print $0} !/"host"/ {gsub("TRUST_VERSION",TRUST_VERSION,$0);print $0}' $xml > $xml.tmp
       if [ ! -f current/.visit/hosts/$xml ] || [ "`diff $xml.tmp current/.visit/hosts/$xml`" != "" ]

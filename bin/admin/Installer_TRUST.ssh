@@ -20,16 +20,16 @@ echo "Usage: $0 machine version [-patch] [-compile]"
 adr=$1
 v=$2   
 [ ${#1} = 0 ] || [ ${#2} = 0 ] && echo "Error on parameters" && exit
-patch="" && [ "$3" = "-patch" ] && patch=Patch_$v.tar.gz && shift
+patch="" && [ "$3" = "-patch" ] && patch=Patch-$v.tar.gz && shift
 compile=0 && [ "$3" = "-compile" ] && compile=1 && shift
 
 #[ "`liste_machines | grep $adr`" != $adr ] && echo "$adr no accessible by ssh..." && exit
 # Est ce que la version existe ?
 GRAVAGE=$WORKDIR/A_GRAVER_CD_TRUST
-file=TRUST_$v".tar.gz" && [ ! -f $GRAVAGE/$file ] && echo "$GRAVAGE/$file not exists." && exit
+file=TRUST-$v".tar.gz" && [ ! -f $GRAVAGE/$file ] && echo "$GRAVAGE/$file not exists." && exit
 
 rep=TRUST
-rep_stable=TRUST_$v
+rep_stable=TRUST-$v
 rep_patch=$rep_stable`[ "$patch" != "" ] && echo _patch`
 log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`
 
@@ -44,7 +44,7 @@ ssh_ -o BatchMode=yes $log@$adr -n pwd 1>/dev/null 2>&1
 if [ "`ssh_ -o BatchMode=yes $log@$adr -n '. ./.profile 1>/dev/null 2>&1;[ ${#WORKDIR} != 0 ] && [ -d $WORKDIR ] && echo yes'`" = "yes" ]
 then
    # New, if $WORKDIR is defined, then the PATH is changed:
-   # $HOME/TRUST/machine/TRUST_$v -> $WORKDIR/TRUST/TRUST_$v
+   # $HOME/TRUST/machine/TRUST-$v -> $WORKDIR/TRUST/TRUST-$v
    #machine=`echo $adr | $TRUST_Awk -F. '{print $1}'` 
    machine=`echo $adr | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'` # 09/2015 Modification des acces SSH au TGCC *-gw.ccc.cea.fr
    ssh_ -o BatchMode=yes $log@$adr -n '. ./.profile 1>/dev/null 2>&1;mkdir -p $WORKDIR/'$rep'/'$rep_patch';mkdir -p '$rep_patch';rm -f '$rep_patch'/'$machine';ln -sf $WORKDIR/'$rep'/'$rep_patch' '$rep_patch'/'$machine''
@@ -57,7 +57,7 @@ fi
 # et non depuis /home_ceres/Utilisateurs/mb124139)
 WORKDIR=`ssh_command 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
 rep=$WORKDIR/$rep
-rep_stable=$rep/TRUST_$v
+rep_stable=$rep/TRUST-$v
 rep_patch=$rep_stable`[ "$patch" != "" ] && echo _patch`
 
 echo "Remote installation of $v version on $adr at "`date '+%H:%M:%S'`

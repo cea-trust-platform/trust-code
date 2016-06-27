@@ -20,15 +20,15 @@ To install TRUST:
 -----------------
 
 1. To install version X.Y.Z of TRUST, create a directory to install TRUST. 
-Move into this directory the file TRUST_X.Y.Z.tar.gz.
+Move into this directory the file TRUST-X.Y.Z.tar.gz.
 Then run the following commands to untar the files:
 
-$ tar xvfz TRUST_X.Y.Z.tar.gz
+$ tar xvfz TRUST-X.Y.Z.tar.gz
 
 2. Run the Installer_TRUST script to install TRUST automatically.
 
 $ export TRUST_VERSION=X.Y.Z
-$ ./TRUST_X.Y.Z/bin/Installer_TRUST
+$ ./TRUST-X.Y.Z/bin/Installer_TRUST
 
 A LOG_TRUST file is created to analyse the progress of the compilation.
 
@@ -42,7 +42,7 @@ to configure your environment.
 
 To use TRUST:
 -------------
-cd TRUST_X.Y.Z
+cd TRUST-X.Y.Z
 source env_TRUST.sh -> Initialize TRUST environment
 
 

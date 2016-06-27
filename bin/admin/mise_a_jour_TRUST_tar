@@ -39,8 +39,8 @@ fonction()
          echo "Creation of "$VOB".tar.gz (See "$contenu")"
          [ $src_only = 0 ] && echo "Creation of externalpackages.tar (See External.files)"
       else
-         echo "Creation of "$VOB"_"$TRUST_VERSION".tar.gz (See "$contenu")"
-         [ $src_only = 0 ] && echo "Creation of externalpackages_"$TRUST_VERSION".tar (See External.files)"
+         echo "Creation of "$VOB"-"$TRUST_VERSION".tar.gz (See "$contenu")"
+         [ $src_only = 0 ] && echo "Creation of externalpackages-"$TRUST_VERSION".tar (See External.files)"
       fi
    fi
 }
@@ -148,13 +148,13 @@ then
          cd $BASE
          [ $src_only = 0 ] && tar cf externalpackages.tar  `cat External.files`
       else
-         tar zcf $BASE/TRUST_${TRUST_VERSION}.tar.gz  --transform=s?$BASE?${BASE}_${TRUST_VERSION}? `cat $BASE/$contenu`
+         tar zcf $BASE/TRUST-${TRUST_VERSION}.tar.gz  --transform=s?$BASE?${BASE}-${TRUST_VERSION}? `cat $BASE/$contenu`
          cd $BASE
-         #md5sum TRUST_${TRUST_VERSION}.tar.gz > TRUST_${TRUST_VERSION}.tar.gz.md5
+         #md5sum TRUST-${TRUST_VERSION}.tar.gz > TRUST-${TRUST_VERSION}.tar.gz.md5
          if [ $src_only = 0 ]
          then
-            tar cf externalpackages_${TRUST_VERSION}.tar  `cat External.files`
-	    #md5sum externalpackages_${TRUST_VERSION}.tar > externalpackages_${TRUST_VERSION}.tar.md5
+            tar cf externalpackages-${TRUST_VERSION}.tar  `cat External.files`
+	    #md5sum externalpackages-${TRUST_VERSION}.tar > externalpackages-${TRUST_VERSION}.tar.md5
          fi
       fi
    fi
