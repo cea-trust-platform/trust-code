@@ -218,7 +218,7 @@ void Mod_turb_hyd_RANS_0_eq::imprimer (Sortie& os )  const
   const Schema_Temps_base& sch = mon_equation->schema_temps();
   double temps_courant = sch.temps_courant();
   double dt= sch.pas_de_temps() ;
-  if ( limpr_ustar(temps_courant,sch.temps_precedent(),dt) )
+  if ( limpr_ustar(temps_courant,sch.temps_precedent(),dt,dt_impr_ustar) || limpr_ustar(temps_courant,sch.temps_precedent(),dt,dt_impr_ustar_mean_only) )
     if ( K_eps_sortie_.non_nul())
       {
         double temps=mon_equation->schema_temps().temps_courant();

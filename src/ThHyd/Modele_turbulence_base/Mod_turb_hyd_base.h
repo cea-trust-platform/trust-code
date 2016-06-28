@@ -105,7 +105,7 @@ public:
   void a_faire(Sortie&) const;
   virtual int sauvegarder(Sortie&) const;
 
-  int limpr_ustar(double , double, double ) const;
+  int limpr_ustar(double , double, double, double ) const;
   inline double get_Cmu() const;
 
 protected:

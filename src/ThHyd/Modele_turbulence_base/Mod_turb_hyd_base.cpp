@@ -109,7 +109,7 @@ void Mod_turb_hyd_base::set_param(Param& param)
   param.ajouter("nut_max",&XNUTM);
   param.ajouter_flag("Correction_visco_turb_pour_controle_pas_de_temps",&calcul_borne_locale_visco_turb_);
   param.ajouter("Correction_visco_turb_pour_controle_pas_de_temps_parametre",&dt_diff_sur_dt_conv_);
-  param.ajouter_condition("not(is_read_dt_impr_ustar_mean_only_and_is_read_dt_impr_ustar)","only one of dt_impr_ustar_mean_only and dt_impr_ustar can be used");
+  //param.ajouter_condition("not(is_read_dt_impr_ustar_mean_only_and_is_read_dt_impr_ustar)","only one of dt_impr_ustar_mean_only and dt_impr_ustar can be used");
 }
 
 
@@ -433,53 +433,26 @@ void Mod_turb_hyd_base::imprimer(Sortie& os) const
   const Schema_Temps_base& sch = mon_equation->schema_temps();
   double temps_courant = sch.temps_courant();
   double dt= sch.pas_de_temps() ;
-  if (loipar.non_nul() && limpr_ustar(temps_courant,sch.temps_precedent(),dt))
-    {
-      if (dt_impr_ustar!=1.e20)
-        {
-          loipar.imprimer_ustar(os);
-        }
-      if (dt_impr_ustar_mean_only!=1.e20)
-        {
-          loipar.imprimer_ustar_mean_only(os, boundaries_, boundaries_list, nom_fichier_);
-        }
-    }
+  if (loipar.non_nul() && limpr_ustar(temps_courant,sch.temps_precedent(),dt,dt_impr_ustar) )
+    loipar.imprimer_ustar(os);
+  if (loipar.non_nul() && limpr_ustar(temps_courant,sch.temps_precedent(),dt,dt_impr_ustar_mean_only) )
+    loipar.imprimer_ustar_mean_only(os, boundaries_, boundaries_list, nom_fichier_);
 }
 
-int Mod_turb_hyd_base::limpr_ustar(double temps_courant, double temps_prec, double dt) const
+int Mod_turb_hyd_base::limpr_ustar(double temps_courant, double temps_prec, double dt, double dt_ustar) const
 {
   const Schema_Temps_base& sch = mon_equation->schema_temps();
   if (sch.nb_pas_dt()==0)
     return 0;
-
-  if (dt_impr_ustar<=dt || dt_impr_ustar_mean_only<=dt)
-    return 1;
-
-  if (    ((sch.temps_final_atteint() || sch.nb_pas_dt_max_atteint() || sch.nb_pas_dt()==1 || sch.stationnaire_atteint()) && dt_impr_ustar!=1.e20)
-          || ((sch.temps_final_atteint() || sch.nb_pas_dt_max_atteint() || sch.nb_pas_dt()==1 || sch.stationnaire_atteint()) && dt_impr_ustar_mean_only!=1.e20) )
+  if (dt_ustar<=dt || ((sch.temps_final_atteint() || sch.nb_pas_dt_max_atteint() || sch.nb_pas_dt()==1 || sch.stationnaire_atteint()) && !est_egal(dt_ustar,1.e20) ) )
     return 1;
   else
     {
-      if (dt_impr_ustar!=1.e20)
-        {
-          // Voir Schema_Temps_base::limpr pour information sur epsilon et modf
-          double i, j, epsilon = 1.e-8;
-          modf(temps_courant/dt_impr_ustar + epsilon, &i);
-          modf(temps_prec/dt_impr_ustar + epsilon, &j);
-          return ( i>j );
-        }
-      else if (dt_impr_ustar_mean_only!=1.e20)
-        {
-          // Voir Schema_Temps_base::limpr pour information sur epsilon et modf
-          double i, j, epsilon = 1.e-8;
-          modf(temps_courant/dt_impr_ustar_mean_only + epsilon, &i);
-          modf(temps_prec/dt_impr_ustar_mean_only + epsilon, &j);
-          return ( i>j );
-        }
-      else
-        {
-          return 0;
-        }
+      // Voir Schema_Temps_base::limpr pour information sur epsilon et modf
+      double i, j, epsilon = 1.e-8;
+      modf(temps_courant/dt_ustar + epsilon, &i);
+      modf(temps_prec/dt_ustar + epsilon, &j);
+      return ( i>j );
     }
 }
 
