@@ -3,7 +3,6 @@ Version	Qui				Tache
 1.7.4   triou@cea.fr            Revoir sortie des fields a post traiter dans .err (energie_cinetique ? reynolds_maille en VEF ?)
 1.7.4   triou@cea.fr            Revoir maillage de validation pour modele turbulence de Mathieu dans TrioCFD
 1.7.4   triou@cea.fr            Reactiver VerifData avec HOST_ADMIN pour prochaine version
-1.7.4   gauthier.fauchet@cea.fr  FIRST: revoir cmake -u * plus leger qu un configure clean (cmake ccache)
 1.7.4   triou@cea.fr            Revoir baltik avec possibilite de 2 statistiques commencant a des tdeb differents
 1.7.4   gauthier.fauchet@cea.fr FIRST: VisIt, deplacer de bin/visit dans exec/visit/bin/visit + maj du PATH dans TRUST.env et mise_a_jour_TRUST_arch
 1.7.4   triou@cea.fr            baltik: renommer make check_trio_optim en make check_trust_optim  + renommer script triou en trust sans ln

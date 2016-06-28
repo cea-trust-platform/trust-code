@@ -1,5 +1,5 @@
 file(GLOB srcs [A-Z|a-z]*.cpp [A-Z|a-z]*.c [A-Z|a-z]*.f)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}  ${TRUST_ROOT}/include/backward   ${TRUST_LATAFILTER}/include    ${TRUST_MED_ROOT}/include   ${TRUST_ROOT}/src/Kernel/Champs   ${TRUST_ROOT}/src/Kernel/Champs_dis   ${TRUST_ROOT}/src/Kernel/Framework   ${TRUST_ROOT}/src/Kernel/Geometrie   ${TRUST_ROOT}/src/Kernel/Math   ${TRUST_ROOT}/src/Kernel/Statistiques_temps   ${TRUST_ROOT}/src/Kernel/Utilitaires   ${TRUST_ROOT}/src/Kernel/VF/Zones  )
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}  ${TRUST_ROOT}/include/backward  ${TRUST_LATAFILTER}/include  ${TRUST_MED_ROOT}/include  ${TRUST_ROOT}/src/Kernel/Champs  ${TRUST_ROOT}/src/Kernel/Champs_dis  ${TRUST_ROOT}/src/Kernel/Framework  ${TRUST_ROOT}/src/Kernel/Geometrie  ${TRUST_ROOT}/src/Kernel/Math  ${TRUST_ROOT}/src/Kernel/Statistiques_temps  ${TRUST_ROOT}/src/Kernel/Utilitaires  ${TRUST_ROOT}/src/Kernel/VF/Zones )
 add_library(obj_medi OBJECT  ${srcs} )
 set(listlibs ${listlibs} medi PARENT_SCOPE    )
 add_custom_target(check_sources_medi   COMMAND check_sources.sh ${CMAKE_CURRENT_SOURCE_DIR} ) #COMMENT  "checking code validity medi" )

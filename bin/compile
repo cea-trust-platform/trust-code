@@ -571,11 +571,17 @@ then
          $MAKE 
          status=$?
          if [ $status != 0 ] 
-         then
-	    echo 'Problem of compiling ->' 
-	    $MAKE 
-	    echo "BUILD_EXEC=KO" | tee -a $COMPILE && exit -1
-	    break
+	     then
+	     echo 'Problem of compiling -> try to suppress lib* of CmakeCache ' 
+	    # on retire les librairies du cache
+	     cmake . -Ulib*
+	     $MAKE 
+	     status=$?
+	     if [ $status != 0 ] 
+		 then
+		 echo "BUILD_EXEC=KO" | tee -a $COMPILE && exit -1
+		 break
+	     fi
          fi
       done
    fi
