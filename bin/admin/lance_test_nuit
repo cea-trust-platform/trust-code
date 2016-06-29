@@ -110,6 +110,7 @@ check_components()
 	          wompi_machines=`liste_machines "\-disable-mpi"`
 	          wompi_machines=$wompi_machines" `liste_machines "\-disable-optionals"`"
 	          wompi_machines=$wompi_machines" `liste_machines "\-disable "`"
+	          wompi_machines=$wompi_machines" `liste_machines "\-disable-medcoupling"`"
 	          # Machines en mode parallele
 		  machines=""
 		  for machine in $all_machines
@@ -3203,10 +3204,13 @@ grep local $envoie_ftp_log
 #####################################
 cd $TRUST_TMP
 # Update the index.html file of the FTP site:
-echo " "
-echo "Call to "$TRUST_ROOT"/bin/admin/cree_index.html"
-echo "from `pwd`"
-cree_index.html
+if [ $livraison = 1 ]
+then
+   echo " "
+   echo "Call to "$TRUST_ROOT"/bin/admin/cree_index.html"
+   echo "from `pwd`"
+   cree_index.html
+fi
 echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 #-------------------------------------------------------

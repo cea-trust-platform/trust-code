@@ -61,7 +61,8 @@ inline char read_write_string_from(EFichierBin& s,SFichierBin& o, const char* fi
       Cerr << (Nom)*first_caracter << finl;
       Cerr << " -> Read the bytes :";
 #endif
-      while (s.good() && s.get_istream().read(&octet,1)!=0 && octet!=*first_caracter)
+      //while (s.good() && s.get_istream().read(&octet,1)!=0 && octet!=*first_caracter)
+      while (s.good() && s.get_istream().read(&octet,1) && octet!=*first_caracter)
         {
 #ifndef NDEBUG
           fprintf(stderr," %02x",octet);
@@ -75,7 +76,8 @@ inline char read_write_string_from(EFichierBin& s,SFichierBin& o, const char* fi
 #ifndef NDEBUG
       Cerr << " -> Read the bytes :";
 #endif
-      while (s.good() && s.get_istream().read(&octet,1)!=0 && (octet==32 || octet==0 || octet==127) )
+      //while (s.good() && s.get_istream().read(&octet,1)!=0 && (octet==32 || octet==0 || octet==127) )
+      while (s.good() && s.get_istream().read(&octet,1) && (octet==32 || octet==0 || octet==127) )
         {
 #ifndef NDEBUG
           fprintf(stderr," %02x",octet);
@@ -89,7 +91,8 @@ inline char read_write_string_from(EFichierBin& s,SFichierBin& o, const char* fi
   last_caracter = octet;
   Nom chaine(octet);
   // On lit jusqu'a l'espace:
-  while (s.good() && s.get_istream().read(&octet,1)!=0 && octet!=32)
+  //while (s.good() && s.get_istream().read(&octet,1)!=0 && octet!=32)
+  while (s.good() && s.get_istream().read(&octet,1) && octet!=32)
     {
 #ifndef NDEBUG
       fprintf(stderr," %02x",octet);
