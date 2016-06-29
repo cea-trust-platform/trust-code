@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.4_beta : Enhancements, modifications and corrected bugs since version 1.7.3 :
 --------------------------------------------------------------------------------------------------
+29/06/16 (TRUST)  Bug fixed   : Fixed bug with "turbulence_paroi Paroi_TBLE" on output of tble_mesh.dat file in parallel mode
 28/06/16 (TRUST)  Bug fixed   : Fixed bug about using dt_impr_ustar and  dt_impr_ustar_mean_only together
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.3 : Enhancements, modifications and corrected bugs since version 1.7.2 :

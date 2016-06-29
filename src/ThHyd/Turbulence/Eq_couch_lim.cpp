@@ -90,7 +90,6 @@ void Eq_couch_lim::mailler_fin()
   // Mise en place du maillage fin *
   //********************************
 
-  SFichier fic_mesh("tble_mesh.dat",ios::app); // ouverture du fichier conv.dat
   double delta;
   y_(0)=y0;
   y_(N)=yn;
@@ -118,11 +117,15 @@ void Eq_couch_lim::mailler_fin()
       y_(i)=0.5*(yc(i)+yc(i-1));
     }
 
-  for(int i=0 ; i<N+1 ; i++)
+  if (Process::je_suis_maitre())
     {
-      fic_mesh << i << " " << y_(i) << finl;
+      SFichier fic_mesh("tble_mesh.dat",ios::app); // ouverture du fichier conv.dat
+      for(int i=0 ; i<N+1 ; i++)
+        {
+          fic_mesh << i << " " << y_(i) << finl;
+        }
+      fic_mesh << finl;
     }
-  fic_mesh << finl;
 
   //************************************
   // Fin mise en place du maillage fin *
