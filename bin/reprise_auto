@@ -34,14 +34,25 @@ archivage()
    # Archivage sauf si specifie par l'utilisateur:
    if [ "$ARCHIVAGE" != "NO" ]
    then
-      # On fait une sauvegarde sur $CCCSTOREDIR=$STOREDIR si le repertoire existe et si l'utilisateur n'a pas specifie d'options d'archivage
+      # On fait une sauvegarde sur $CCCSTOREDIR ou $STOREDIR si le repertoire existe et si l'utilisateur n'a pas specifie d'options d'archivage
       # sinon en local dans le repertoire d'etude
-      if [ "$STOREDIR" != "" ] && [ -d $STOREDIR ] && [ "$ARCHIVAGE" != "FAST_LOCAL" ]
+      if [ $sub = CCC ]
       then
-	 DIRSAUV=`pwd | $TRUST_Awk -F"/" -v p=$STOREDIR -v h=$HOME '{n=split(h,a,"/")+1;for (i=n;i<=NF;i++) p=p"/"$i;print p}'`"/SAUV-$temps"
-	 ln -sf $DIRSAUV . 2>/dev/null
+         if [ "$CCCSTOREDIR" != "" ] && [ -d $CCCSTOREDIR ] && [ "$ARCHIVAGE" != "FAST_LOCAL" ]
+         then
+	    DIRSAUV=`pwd | $TRUST_Awk -F"/" -v p=$CCCSTOREDIR -v h=$HOME '{n=split(h,a,"/")+1;for (i=n;i<=NF;i++) p=p"/"$i;print p}'`"/SAUV-$temps"
+	    ln -sf $DIRSAUV . 2>/dev/null
+         else
+	    DIRSAUV=`pwd`"/SAUV-$temps"
+         fi
       else
-	 DIRSAUV=`pwd`"/SAUV-$temps"
+         if [ "$STOREDIR" != "" ] && [ -d $STOREDIR ] && [ "$ARCHIVAGE" != "FAST_LOCAL" ]
+         then
+	    DIRSAUV=`pwd | $TRUST_Awk -F"/" -v p=$STOREDIR -v h=$HOME '{n=split(h,a,"/")+1;for (i=n;i<=NF;i++) p=p"/"$i;print p}'`"/SAUV-$temps"
+	    ln -sf $DIRSAUV . 2>/dev/null
+         else
+	    DIRSAUV=`pwd`"/SAUV-$temps"
+         fi
       fi
       mes=$mes"Saving files under $DIRSAUV (could take several minutes)...\n"
       message -i
