@@ -4,7 +4,7 @@
     <Field name="host" type="string">callisto-login1</Field>
     <Field name="userName" type="string">notset</Field>
     <Field name="hostAliases" type="string"></Field>
-    <Field name="directory" type="string">/panfs/ixion/home/triou/TRUST_VERSION/Outils/VisIt</Field>
+    <Field name="directory" type="string">/panfs/ixion/home/triou/TRUST_VERSION/exec/VisIt</Field>
     <Field name="shareOneBatchJob" type="bool">false</Field>
     <Field name="sshCommandSpecified" type="bool">true</Field>
     <Field name="sshCommand" type="stringVector">"ssh" "-X" </Field>    

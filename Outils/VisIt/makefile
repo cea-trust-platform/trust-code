@@ -7,9 +7,9 @@
 
 name=visit
 version=2_10_0
-install=$(TRUST_ROOT)/exec/$(name)
+install=$(TRUST_ROOT)/exec/VisIt
 cible=$(install)/bin/$(name)
-cible=bin/$(name)
+#cible=bin/$(name)
 check=test/ok   
 
 all: $(cible)
@@ -18,7 +18,6 @@ all: $(cible)
 
 $(cible): ./makefile ./install ./src/build.sh $(MPI_INCLUDE)/mpi.h
 	make clean
-	# 
 	./install $(version) visit 
 
 $(check): *.xml install customlauncher $(TRUST_ROOT)/RELEASE_NOTES
@@ -26,5 +25,5 @@ $(check): *.xml install customlauncher $(TRUST_ROOT)/RELEASE_NOTES
 	./install $(version) check
 
 clean:
-	rm -r -f $(install)* bin data current ?.* plugins/*/build src/*.help $(check)
+	rm -r -f $(install) plugins/*/build src/*.help $(check)
 	(cd src; ./build.sh clean)

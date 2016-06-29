@@ -19,7 +19,7 @@ else
 	ROOT=$TRUST_ROOT
        	echo "TRUST environment found. Rootdir=$ROOT"
 	LATASRC=$ROOT/Outils/lata2dx/lata2dx
-	local=$ROOT/Outils/VisIt/bin
+	local=$ROOT/exec/VisIt/bin
 
 fi
 

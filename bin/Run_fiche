@@ -42,7 +42,7 @@ ici=`pwd`
 #if [ "`echo $MPI_ROOT | grep TRUST`" != "" ]
 if [ "`echo $MPI_ROOT`" != "" ] && [ "$TRUST_WITHOUT_HOST" = 0 ]
 then
-   visit_help=`$TRUST_ROOT/Outils/VisIt/bin/visit -help 2>&1`
+   visit_help=`$TRUST_ROOT/exec/VisIt/bin/visit -help 2>&1`
    [ $? = 0 ] && [ "`echo $visit_help | grep parallel`" != "" ] && export TRUST_VISIT_NP="-np 2"
 fi
 while [ "$1" != "" ]

@@ -39,7 +39,7 @@ location.href=url;
 NOMCAS=`cat $NOM_DATA`
 echo $ECHO_OPTS "<PRE>
 <HR><h1> Study $NOMETUDE: results evolution</h1><HR><FORM METHOD="Stop" ACTION="$TRUST_ROOT/form/Stopper.ksh?"><input type="submit" value="Stop">\t   Stop solve process</FORM>\c" >> $fichier
-if [ -f $TRUST_ROOT/Outils/VisIt/bin/visit ]
+if [ -f $TRUST_ROOT/exec/VisIt/bin/visit ]
 then
    echo $ECHO_OPTS "<FORM METHOD="Postraiter" ACTION="$TRUST_ROOT/form/Postraiter_Visit.ksh?"><input type="submit" value="VisIt">\t   Post-processing display with <A HREF=javascript:viewer(\"http://www.llnl.gov/VisIt/home.html\")>Visit</A> <A HREF=\"file:$TRUST_ROOT/doc/visit/GettingStarted.pdf\">Getting started manual</A> <A HREF=\"file:$TRUST_ROOT/doc/visit/VisItUsersManual1.5.pdf\">User's manual 1.5</A></FORM>\c" >> $fichier
 fi

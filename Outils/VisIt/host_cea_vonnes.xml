@@ -4,7 +4,7 @@
     <Field name="host" type="string">vonnes.intra.cea.fr</Field>
     <Field name="userName" type="string">notset</Field>
     <Field name="hostAliases" type="string"></Field>
-    <Field name="directory" type="string">/work/triou/TRUST_VERSION/Outils/VisIt</Field>
+    <Field name="directory" type="string">/work/triou/TRUST_VERSION/exec/VisIt</Field>
     <Field name="shareOneBatchJob" type="bool">false</Field>
     <Field name="sshPortSpecified" type="bool">false</Field>
     <Field name="sshPort" type="int">22</Field>
