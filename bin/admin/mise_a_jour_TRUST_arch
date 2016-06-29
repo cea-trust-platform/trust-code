@@ -432,17 +432,17 @@ do
       ########################
       # VisIt est il compile ?
       ########################
-      if [ ! -d $TRUST_ROOT/Outils/VisIt/bin ]
+      if [ ! -d $TRUST_ROOT/exec/VisIt/bin ]
       then
          echo "VisIt=NOT"
-      elif [ ! -f $TRUST_ROOT/Outils/VisIt/bin/visit ]
+      elif [ ! -f $TRUST_ROOT/exec/VisIt/bin/visit ]
       then
          echo "VisIt=KO"
       else
-         visit_help=`source $TRUST_ROOT/env_TRUST.sh;$TRUST_ROOT/Outils/VisIt/bin/visit -help 2>&1`
+         visit_help=`source $TRUST_ROOT/env_TRUST.sh;$TRUST_ROOT/exec/VisIt/bin/visit -help 2>&1`
          if [ $? = 0 ]
          then
-            if [ "`ls $TRUST_ROOT/Outils/VisIt/current/*/bin/engine_par 2>/dev/null`" != "" ]
+            if [ "`ls $TRUST_ROOT/exec/VisIt/current/*/bin/engine_par 2>/dev/null`" != "" ]
             then
                echo "VisIt=PAR"
             else
@@ -450,7 +450,7 @@ do
 	    fi
          else
             echo "VisIt=KO"
-	    $TRUST_ROOT/Outils/VisIt/bin/visit -help
+	    $TRUST_ROOT/exec/VisIt/bin/visit -help
 	 fi
       fi
       ######################
@@ -897,7 +897,7 @@ do
 	    log=`pwd`/Run_fiche.log
 	    rm -f $log
 	    rm -r -f build Run.log
-	    visit_erreur=`$TRUST_ROOT/Outils/VisIt/bin/visit -help 1>/dev/null 2>&1;echo $?`
+	    visit_erreur=`$TRUST_ROOT/exec/VisIt/bin/visit -help 1>/dev/null 2>&1;echo $?`
 	    if [ $visit_erreur = 0 ]
 	    then
 	       Run_fiche 1>$log 2>&1

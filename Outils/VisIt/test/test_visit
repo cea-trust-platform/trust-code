@@ -15,17 +15,17 @@ then
    echo $ECHO_OPTS "quit()" > quit.py
    echo "OpenDatabase(\"$lata\", 0)
    quit()" > lata.py
-   visit=$TRUST_ROOT/Outils/VisIt/bin/visit
+   visit=$TRUST_ROOT/exec/VisIt/bin/visit
 
    # Pour eviter un blocage avec Alliances
-   traceback=`ls $TRUST_ROOT/Outils/VisIt/*/*/lib/python/lib/python*/traceback.py 2>/dev/null | head -1`
+   traceback=`ls $TRUST_ROOT/exec/VisIt/*/*/lib/python/lib/python*/traceback.py 2>/dev/null | head -1`
    [ "$traceback" != "" ] && export PYTHONPATH=`dirname $traceback`:$PYTHONPATH
 
    #####################################################
    # Loop: sequential test than parallel test of VisIt #
    #####################################################
    tests=sequential
-   if [ "${MPI_ROOT#$TRUST_ROOT}" != "$MPI_ROOT" ] && [ "`ls $TRUST_ROOT/Outils/VisIt/current/*/bin/engine_par 2>/dev/null`" != "" ]
+   if [ "${MPI_ROOT#$TRUST_ROOT}" != "$MPI_ROOT" ] && [ "`ls $TRUST_ROOT/exec/VisIt/current/*/bin/engine_par 2>/dev/null`" != "" ]
    then
       tests=$tests" parallel"
    fi
@@ -79,7 +79,7 @@ then
 	 uname -a
 	 echo "Compiler used for the LATA plugin: "`$TRUST_cc -v 2>&1 | grep version`
 	 echo "Compiler used to build VisIt: "
-	 find $TRUST_ROOT/Outils/VisIt -follow -name '*'lataDatabase'*'.so | xargs rm -f
+	 find $TRUST_ROOT/exec/VisIt -follow -name '*'lataDatabase'*'.so | xargs rm -f
 	 echo "See $tmp_visit/lata.log"
 	 echo "and VisIt debug files *.vlog under $tmp_visit." 
 	 exit -1

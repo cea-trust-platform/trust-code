@@ -24,7 +24,7 @@ fi
 
 # Avertissement si une version parallele est possible
 echo "########################################################################################"
-if [ "`ls $TRUST_ROOT/Outils/VisIt/current/*/bin/engine_par 2>/dev/null`" != "" ]
+if [ "`ls $TRUST_ROOT/exec/VisIt/current/*/bin/engine_par 2>/dev/null`" != "" ]
 then
    if [ "`grep $HOST $TRUST_ROOT/Outils/VisIt/*.xml 2>/dev/null`" != "" ]
    then

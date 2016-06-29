@@ -100,7 +100,8 @@ zlib="" && [ "`locate libz.so 2>/dev/null | grep ^/lib | grep lib.so$ 2>/dev/nul
 # --console pour desactiver la construction via une IHM
 # --parallel pour une construction du parallele
 # --version pour dire quelle version construire
-prefix="--prefix $TRUST_ROOT/Outils/VisIt" # Pour une installation directe
+mkdir -p $TRUST_ROOT/exec/VisIt  # important sinon current pas cree au premier make install
+prefix="--prefix $TRUST_ROOT/exec/VisIt" # Pour une installation directe
 #options_build="$zlib --python --system-cmake --system-python --no-pyside --console $compilateurs $prefix"
 # Using VisIt provided by cmake cause cmake 3.0.1 failed sometimes...
 options_build="$zlib $mesa --python  --no-pyside --console $compilateurs $prefix"
