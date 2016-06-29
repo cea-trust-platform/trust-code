@@ -288,7 +288,7 @@ done
 export TRUST_ROOT_VERSION=`awk '/version/ && /Release notes/ {print $4;exit}' $TRUST_ROOT/RELEASE_NOTES | sed "s/_beta//"`
 if [ "$TRUST_DISABLE_CHECKS" = 0 ] && [ "$clean" != "clean" ]
 then
-   [ ! -d externalpackages ] && [ ! -L externalpackages ] && echo "You need to download externalpackages before configuring" && echo wget http://downloads.sourceforge.net/project/trust-platform/$TRUST_ROOT_VERSION/externalpackages_$TRUST_ROOT_VERSION.tar && exit -1
+   [ ! -d externalpackages ] && [ ! -L externalpackages ] && echo "You need to download externalpackages before configuring" && echo "wget http://downloads.sourceforge.net/project/trust-platform/$TRUST_ROOT_VERSION/externalpackages-$TRUST_ROOT_VERSION.tar" && exit -1
    # Gestion externalpackages
    echo "Verify externalpackages..."
    cd $TRUST_ROOT/bin/gestion_externalpackages

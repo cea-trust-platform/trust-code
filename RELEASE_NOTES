@@ -1,4 +1,8 @@
 --------------------------------------------------------------------------------------------------
+Release notes version 1.7.4_beta : Enhancements, modifications and corrected bugs since version 1.7.3 :
+--------------------------------------------------------------------------------------------------
+28/06/16 (TRUST)  Bug fixed   : Fixed bug about using dt_impr_ustar and  dt_impr_ustar_mean_only together
+--------------------------------------------------------------------------------------------------
 Release notes version 1.7.3 : Enhancements, modifications and corrected bugs since version 1.7.2 :
 --------------------------------------------------------------------------------------------------
 03/06/16 (Tools)  Major change: Add TRUST_PLOT2D and TRUST_WIZZARD (Option -disable-plot2d added to configure)

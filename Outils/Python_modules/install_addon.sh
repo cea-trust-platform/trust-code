@@ -31,7 +31,7 @@ do
   if [ $package = "Distribute2" ]
 then
    pac=distribute-0.7.3
-   unzip TRUST_ROOT/externalpackages/Python_modules/$pac.zip
+   unzip $TRUST_ROOT/externalpackages/Python_modules/$pac.zip
 else
   pac=`ls $TRUST_ROOT/externalpackages/Python_modules/$package*.gz`
   pac=`basename $pac .tar.gz`

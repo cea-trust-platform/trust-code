@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015, CEA
+* Copyright (c) 2015 - 2016, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -105,7 +105,7 @@ public:
   void a_faire(Sortie&) const;
   virtual int sauvegarder(Sortie&) const;
 
-  int limpr_ustar(double , double, double ) const;
+  int limpr_ustar(double , double, double, double ) const;
   inline double get_Cmu() const;
 
 protected:

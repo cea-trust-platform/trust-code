@@ -170,7 +170,7 @@ cat /dev/null > $LOG
 echo "Usage: `basename $0` [options]" | tee -a $LOG 
 echo "Options:" | tee -a $LOG
    echo "  -help                 List options" | tee -a $LOG
-if [ -f KSH/wget_ ] || [ -f TRUST_$TRUST_VERSION/bin/KSH/wget_ ]
+if [ -f KSH/wget_ ] || [ -f TRUST-$TRUST_VERSION/bin/KSH/wget_ ]
 then
    # Version already installed
    echo "  -patch                Download and apply latest patch on the installed version" | tee -a $LOG
@@ -206,7 +206,7 @@ do
       . connect_ftp -no_ftp 1>/dev/null 2>&1
       # Try to download the patch
       cd `dirname $TRUST_ROOT`
-      patch=Patch_$TRUST_VERSION.tar.gz
+      patch=Patch-$TRUST_VERSION.tar.gz
       echo "Try to download or find the patch $patch..." | tee -a $LOG
       wget_ ftp://$TRUST_FTP/$PUBLIC/patch/$patch 1>/dev/null 2>&1
       if [ ! -f $patch ]
@@ -264,11 +264,11 @@ fi
 
 # Quelques verifications
 TRUST_ROOT=""
-if [ -d $ROOT/TRUST_$TRUST_VERSION ]
+if [ -d $ROOT/TRUST-$TRUST_VERSION ]
 then
-   TRUST_ROOT=$ROOT/TRUST_$TRUST_VERSION && export TRUST_ROOT
+   TRUST_ROOT=$ROOT/TRUST-$TRUST_VERSION && export TRUST_ROOT
 else
-   echo "The TRUST_$TRUST_VERSION directory must exist on $ROOT!" | tee -a $LOG
+   echo "The TRUST-$TRUST_VERSION directory must exist on $ROOT!" | tee -a $LOG
    exit -1
 fi
 # On arrete si la variable $HOME n'existe pas
@@ -393,7 +393,7 @@ then
    echo | tee -a $LOG
    echo "The installation is now stopped and should be finished:" | tee -a $LOG
    echo "Look at the configure options:" | tee -a $LOG
-   echo "cd TRUST_$TRUST_VERSION" | tee -a $LOG
+   echo "cd TRUST-$TRUST_VERSION" | tee -a $LOG
    echo "./configure -help" | tee -a $LOG
    echo "Run the configure and add desired options:" | tee -a $LOG
    echo "./configure ..." | tee -a $LOG

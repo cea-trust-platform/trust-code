@@ -390,7 +390,7 @@ void construit_corres(const DomainUnstructured& dom,const DomainUnstructured& do
 
           // Cerr<<octree.floor_elements()[k]<<finl;
         }
-
+      if (corres_l!=-1) 
       if ((Ecart(xp(corres_l,0), pos[0], xmax))
           ||(Ecart(xp(corres_l,1), pos[1], ymax))
           ||(Ecart(xp(corres_l,2), pos[2], zmax)))

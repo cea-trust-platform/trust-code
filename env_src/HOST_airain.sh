@@ -44,7 +44,7 @@ module () {
   
    # New restore/save collection of modules (faster to load) 
    # Try to generalize to other clusters...
-   collection_modules=TRUST_$TRUST_VERSION-$HOST
+   collection_modules=TRUST-$TRUST_VERSION-$HOST
    module savelist
    echo "Trying to restore collection of modules named $collection_modules:"
    module restore $collection_modules

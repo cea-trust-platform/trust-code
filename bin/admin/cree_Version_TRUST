@@ -41,7 +41,7 @@ fi
 #      |       |
 #    TRUST  Diphasique
 #
-fichier=$TRUST_ROOT/TRUST_$v.tar.gz
+fichier=$TRUST_ROOT/TRUST-$v.tar.gz
 rm -f $fichier
 
 ##########################
@@ -76,15 +76,15 @@ do
       #ls $MODULE/exec.*.tar.gz > $MODULE/exec.files
       # Construit le paquet
       echo $ECHO_OPTS "\nCreation of $fichier..."
-      #tar zcf $fichier  --transform=s?$MODULE?${MODULE}_${v}? `cat $MODULE/TRUST.files;cat $MODULE/exec.files`
-      tar zcf $fichier  --transform=s?$MODULE?${MODULE}_${v}? `cat $MODULE/TRUST.files`
+      #tar zcf $fichier  --transform=s?$MODULE?${MODULE}-${v}? `cat $MODULE/TRUST.files;cat $MODULE/exec.files`
+      tar zcf $fichier  --transform=s?$MODULE?${MODULE}-${v}? `cat $MODULE/TRUST.files`
       echo $ECHO_OPTS "\nThe $fichier file is ready."
       cd $ROOT
    else
       # Construit le paquet
       echo $ECHO_OPTS "\nCreation of $fichier..."
       mise_a_jour_TRUST_tar -without_test_validation
-      echo $ECHO_OPTS "\nThe $TRUST_ROOT/TRUST_$TRUST_VERSION.tar.gz file is ready."   
+      echo $ECHO_OPTS "\nThe $TRUST_ROOT/TRUST-$TRUST_VERSION.tar.gz file is ready."   
    fi
    # FIN ET MENAGE
    #rm -f $ROOT/exec.*.tar.gz $ROOT/exec.files

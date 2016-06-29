@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015, CEA
+* Copyright (c) 2015 - 2016, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -218,7 +218,7 @@ void Schema_Temps_base::validateTimeStep()
           double nb_pas_avant_fin= dmin(nb_pas_selon_tmax,nb_pas_selon_nb_pas_dt_max);
           //double seconds_to_finish  = nb_pas_avant_fin * cpu_per_timestep;
           double dpercent=(1.-nb_pas_avant_fin/(nb_pas_avant_fin+ nb_pas_dt()));    // marche meme si c'est ltemps max qui limite
-	  // si la pente est >0 on diverge ....
+          // si la pente est >0 on diverge ....
           if ((seuil_statio_>0)&&(cumul_slope_<-1e-20))
             {
               double distance= (-log(residu_+1e-20)+log(seuil_statio_))/(cumul_slope_)* nb_pas_dt();

@@ -10,7 +10,7 @@ then
       version_arch=`pwd`/$1	# Chemin relatif
    fi
    paquet=`basename $version_arch`
-   version=`echo $paquet | sed 's/TRUST_//' | sed 's/.tar.gz//'` # version stable ou beta
+   version=`echo $paquet | sed 's/TRUST-//' | sed 's/.tar.gz//'` # version stable ou beta
    version=`echo ${version%-*}` # si version extraite
    echo "package: "$paquet
    echo "version: "$version
@@ -34,7 +34,7 @@ then
   tar xvfz '$paquet';
   rm -f '$paquet';
   export TRUST_VERSION='$version';
-  ./TRUST_'$version'/bin/Installer_TRUST 1>'$install_log' 2>&1;
+  ./TRUST-'$version'/bin/Installer_TRUST 1>'$install_log' 2>&1;
   if [ $? = 0 ] && [ "`grep "BUILD_" '$install_log' | grep "KO" 2>/dev/null`" = "" ]
   then
      echo "Installation OK!"

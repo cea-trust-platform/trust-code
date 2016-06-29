@@ -732,7 +732,7 @@ echo "###############################################"
 		 patch_version=`awk '/version/ && /Release notes/ {print $4;exit}' RELEASE_NOTES`
 		 rm -f $TRUST_TMP/patch
 		 GRAVAGE=$WORKDIR/A_GRAVER_CD_TRUST
-		 patch=$GRAVAGE/Patch_$patch_version".tar.gz" && rm -f $patch
+		 patch=$GRAVAGE/Patch-$patch_version".tar.gz" && rm -f $patch
 		 echo " "
 		 echo "Construction of the $patch patch..."
 		 echo "from `pwd`"
@@ -762,13 +762,13 @@ echo "###############################################"
 		    echo "  Files compressed in $patch"
 		    tar zcf $patch `cat patch.files`
 		    #cd ..
-		    #tar zcf $patch  --transform=s?$BASE?Patch_${patch_version}? `cat $BASE/Patch.files`
+		    #tar zcf $patch  --transform=s?$BASE?Patch-${patch_version}? `cat $BASE/Patch.files`
 		    #md5sum  $patch > $patch.md5
 		 fi
 		 cd $TRUST_ROOT
 		 cat patch.files 
 		 rm -f Patch.files
-                 if [ $patch_error = 0 ]
+                 if [ $patch_error = 0 ] && [ -s patch.files ]
                  then
 		    # Envoi immediat sur ftp.cea.fr
                     echo "  Call to "$TRUST_ROOT"/bin/admin/connect_ftp"
@@ -801,8 +801,11 @@ echo "###############################################"
 		       ) &
 		       # Quels sont les conflits ?
 		    done
-		 else
+		 elif [ $patch_error != 0 ]
+		 then
                     echo "Not install on remote machine!" | mail_ -s\"[lance_test_nuit] Failed to create $TRUST_VERSION patch version\" $TRUST_MAIL
+		 else
+		    echo "No patch"
 		 fi
 	         echo "End special treatment."
 	      fi
@@ -1121,7 +1124,7 @@ echo "Deleting of _build_ packages in $GRAVAGE"
 ls -f $GRAVAGE/*_build_*
 rm -f $GRAVAGE/*_build_*
 v=${Version#Version}
-version_arch=TRUST_$v".tar.gz"
+version_arch=TRUST-$v".tar.gz"
 package_log=$REP_NUIT"/package_$HOST.log"
 # Dans le paquet officiel, on ne met pas les tests de validation car cela prend trop de place
 echo " "
@@ -1205,7 +1208,7 @@ echo "############################################"
 echo "# Test the installation to remote machines #"
 echo "############################################"
 echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
-version_arch=TRUST_$TRUST_VERSION".tar.gz"
+version_arch="TRUST-$TRUST_VERSION.tar.gz"
 installation=1
 machine1=`liste_machines "\-remote_install_TRUST_with_source" 		| head -1 | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'`
 if [[ "$liste_machines_KO" != *"$machine1"* ]] # Test si machine n est pas dans la liste des machines KO
@@ -3214,10 +3217,10 @@ echo "###########################"
 echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 
 ################################################################################################
-# Le mail des RELEASES NOTES est envoye aux developpeurs tous les mardis ou lors de la livraison
+# Le mail des RELEASES NOTES est envoye aux developpeurs tous les lundis ou lors de la livraison
 # sinon uniquement a l'admin TRUST et au chef de projet
 ################################################################################################
-if [ "`date '+%u'`" = 2 ] || [ $livraison = 1 ] || [ $accord_beta = 1 ]
+if [ "`date '+%u'`" = 1 ] || [ $livraison = 1 ] || [ $accord_beta = 1 ]
 then
    export TRUST_SHARE="/net/dibona/users/dibona/triou"
    ALL_DEVELOPERS_TRUST_MAIL="trio_u_dev@saxifrage.saclay.cea.fr"
@@ -3270,17 +3273,17 @@ TrioCFD is a programmable software for Computational Fluid Dynamics (CFD) code,
 based on the TRUST platform (TRrio_U Software for Thermohydraulics).
 These softwares are OpenSource (license BSD).
 
+New TRUST (\"Trio_U\" without Front_Tracking, Radiation, Zoom and LES models) version released (v$new).
+Look at http://sourceforge.net/projects/trust-platform/files/
+to read the README and to download Installer_TRUST.sh.
+Changes compared to the $old version are detailed in the RELEASE_NOTES file 
+attached to the TRUST-$new.tar.gz archive.
+
 New TrioCFD (previously named \"Trio_U\") version released (v$new).
 Look at http://sourceforge.net/projects/triocfd/files/  
 to read the README and to download Installer_TrioCFD.sh.
 Changes compared to the $old version are detailed in the RELEASE_NOTES file 
 attached to the TrioCFD.tar.gz archive.
-
-New TRUST (\"Trio_U\" without Front_Tracking, Radiation, Zoom and LES models) version released (v$new).
-Look at http://sourceforge.net/projects/trust-platform/files/
-to read the README and to download Installer_TRUST.sh.
-Changes compared to the $old version are detailed in the RELEASE_NOTES file 
-attached to the TRUST_$new.tar.gz archive.
 
 TRUST/TrioCFD support team. mailto: $TRUST_MAIL  Web: http://www-trio-u.cea.fr
 
