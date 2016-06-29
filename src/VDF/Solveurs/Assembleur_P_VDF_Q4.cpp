@@ -110,7 +110,8 @@ int Assembleur_P_VDF_Q4::assembler(Matrice& la_matrice)
 #ifdef _AFFDEBUG
       if (la_zone_VDF->nb_som()<400)
         {
-          Cerr<<"face="<<face<<"  ori="<<ori<<"  soms="<<som0<<"/"<<som1<<" coordsom="<<CoordSom(som0,0)<<"/"<<CoordSom(som0,1)<<" "<<CoordSom(som1,0)<<"/"<<CoordSom(som1,1)<<"  elems="<<FaceVois(face,0)<<"/"<<FaceVois(face,1)<<"  dim_elems/2=";
+          Cerr<<"face="<<face<<"  ori="<<ori<<"  soms="<<som0<<"/"<<som1<<" coordsom="<<CoordSom(som0,0)<<"/"<<CoordSom(som0,1);
+          Cerr<<" "<<CoordSom(som1,0)<<"/"<<CoordSom(som1,1)<<"  elems="<<FaceVois(face,0)<<"/"<<FaceVois(face,1)<<"  dim_elems/2=";
           if (FaceVois(face,0)>-1)
             Cerr<<la_zone_VDF->dim_elem(FaceVois(face,0),ori)/2.<<" / ";
           else
