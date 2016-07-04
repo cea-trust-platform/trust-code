@@ -1,3 +1,0 @@
-gunzip dom.geom.gz
-sed "s/champ_front_uniforme 1 5./ch_front_input_uniforme { probleme pb initial_value 1 5 nom debit nb_comp 1 }/" test_opt.data  >test_opt2.data
-sed "s?champ_front_uniforme 1 5.?champ_front_fonc_txyz 1 (1+4*t/10)?" test_opt.data  >test_opt3.data
