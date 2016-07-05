@@ -270,5 +270,23 @@ public :
 
 };
 
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// .DESCRIPTION
+//    classe Frontiere_ouverte_vitesse_imposee_sortie
+//    Cas particulier de la classe Entree_fluide_vitesse_imposee
+//    pour la vitesse imposee: impose la vitesse de sortie du fluide dans
+//    une equation de type Navier_Stokes
+// .SECTION voir aussi
+//    Dirichlet_entree_fluide Navier_Stokes_std
+//////////////////////////////////////////////////////////////////////////////
+class Frontiere_ouverte_vitesse_imposee_sortie  : public Entree_fluide_vitesse_imposee
+{
+
+  Declare_instanciable(Frontiere_ouverte_vitesse_imposee_sortie);
+
+};
+
 #endif
 

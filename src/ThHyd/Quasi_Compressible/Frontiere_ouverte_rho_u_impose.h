@@ -37,7 +37,7 @@
 // .SECTION voir aussi
 //    Dirichlet_entree_fluide
 //////////////////////////////////////////////////////////////////////////////
-class Frontiere_ouverte_rho_u_impose  : public Entree_fluide_vitesse_imposee
+class Frontiere_ouverte_rho_u_impose  : public Frontiere_ouverte_vitesse_imposee_sortie
 {
 
   Declare_instanciable(Frontiere_ouverte_rho_u_impose);

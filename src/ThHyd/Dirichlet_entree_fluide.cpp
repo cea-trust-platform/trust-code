@@ -34,6 +34,7 @@ Implemente_instanciable(Entree_fluide_V2_impose,"Frontiere_ouverte_V2_impose",Di
 Implemente_instanciable(Entree_fluide_T_h_imposee,"Frontiere_ouverte_T_h_imposee",Dirichlet_entree_fluide);
 Implemente_instanciable(Entree_fluide_Fluctu_Temperature_imposee,"Frontiere_ouverte_Fluctu_Temperature_imposee",Dirichlet_entree_fluide);
 Implemente_instanciable(Entree_fluide_Flux_Chaleur_Turbulente_imposee,"Frontiere_ouverte_Flux_Chaleur_Turbulente_imposee",Dirichlet_entree_fluide);
+Implemente_instanciable(Frontiere_ouverte_vitesse_imposee_sortie,"Frontiere_ouverte_vitesse_imposee_sortie",Entree_fluide_vitesse_imposee);
 
 // Description:
 //    Ecrit le type de l'objet sur un flot de sortie.
@@ -708,4 +709,43 @@ int Entree_fluide_V2_impose::compatible_avec_eqn(const Equation_base& eqn) const
       err_pas_compatible(eqn);
       return 0;
     }
+}
+
+
+// Description:
+//    Ecrit le type de l'objet sur un flot de sortie.
+// Precondition:
+// Parametre: Sortie& s
+//    Signification: un flot de sortie
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces: entree/sortie
+// Retour: Sortie&
+//    Signification: le flot de sortie modifie
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition: la methode ne modifie pas l'objet
+Sortie& Frontiere_ouverte_vitesse_imposee_sortie::printOn(Sortie& s ) const
+{
+  return s << que_suis_je() << "\n";
+}
+
+// Description:
+//    Simple appel a: Cond_lim_base::readOn(Entree& )
+// Precondition:
+// Parametre: Entree& s
+//    Signification: un flot d'entree
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces: entree/sortie
+// Retour: Entree& s
+//    Signification: le flot d'entree modifie
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+Entree& Frontiere_ouverte_vitesse_imposee_sortie::readOn(Entree& s)
+{
+  return Cond_lim_base::readOn(s);
 }

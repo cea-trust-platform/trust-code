@@ -82,7 +82,7 @@ Read pb_plenum {
       cl_IHX1 frontiere_ouverte_vitesse_imposee champ_front_fonc_xyz 3 -42.8633981 0. 0.
       cl_IHX2 frontiere_ouverte_vitesse_imposee champ_front_fonc_xyz 3 +21.4358031 -37.1256112 0.
       cl_IHX3 frontiere_ouverte_pression_imposee champ_front_uniforme 1  6.98e+06
-      cl_coeur frontiere_ouverte_vitesse_imposee champ_front_fonc_xyz 3 0. 0. ((SQRT(x*x+y*y)<0.493)*(19.54)+(SQRT(x*x+y*y)<0.854)*(SQRT(x*x+y*y)>0.493)*(19.10)+(SQRT(x*x+y*y)<1.208)*(SQRT(x*x+y*y)>0.854)*(18.28)+(SQRT(x*x+y*y)<1.395)*(SQRT(x*x+y*y)>1.208)*(17.02)+(SQRT(x*x+y*y)<1.586)*(SQRT(x*x+y*y)>1.395)*(18.78)+(SQRT(x*x+y*y)<1.824)*(SQRT(x*x+y*y)>1.586)*(15.13)+(SQRT(x*x+y*y)<3.2)*(SQRT(x*x+y*y)>1.824)*(0.917)+(SQRT(x*x+y*y)>3.2)*(0.))
+      cl_coeur frontiere_ouverte_vitesse_imposee_sortie champ_front_fonc_xyz 3 0. 0. ((SQRT(x*x+y*y)<0.493)*(19.54)+(SQRT(x*x+y*y)<0.854)*(SQRT(x*x+y*y)>0.493)*(19.10)+(SQRT(x*x+y*y)<1.208)*(SQRT(x*x+y*y)>0.854)*(18.28)+(SQRT(x*x+y*y)<1.395)*(SQRT(x*x+y*y)>1.208)*(17.02)+(SQRT(x*x+y*y)<1.586)*(SQRT(x*x+y*y)>1.395)*(18.78)+(SQRT(x*x+y*y)<1.824)*(SQRT(x*x+y*y)>1.586)*(15.13)+(SQRT(x*x+y*y)<3.2)*(SQRT(x*x+y*y)>1.824)*(0.917)+(SQRT(x*x+y*y)>3.2)*(0.))
     }
 
     modele_turbulence K_epsilon

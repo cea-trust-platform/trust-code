@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.4_beta : Enhancements, modifications and corrected bugs since version 1.7.3 :
 --------------------------------------------------------------------------------------------------
+05/07/16 (TRUST)  New keyword : Update Verif_Cl with new sub-class (Frontiere_ouverte_vitesse_imposee_sortie)
 29/06/15 (TRUST)  Portability : Linux distribution Fedora 24 and gcc 6.1.1 supported
 29/06/16 (TRUST)  Bug fixed   : Fixed bug with "turbulence_paroi Paroi_TBLE" on output of tble_mesh.dat file in parallel mode
 28/06/16 (TRUST)  Bug fixed   : Fixed bug about using dt_impr_ustar and  dt_impr_ustar_mean_only together

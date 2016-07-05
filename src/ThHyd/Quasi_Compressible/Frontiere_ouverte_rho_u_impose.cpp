@@ -26,7 +26,7 @@
 #include <Motcle.h>
 #include <Frontiere_dis_base.h>
 
-Implemente_instanciable(Frontiere_ouverte_rho_u_impose,"Frontiere_ouverte_rho_u_impose",Entree_fluide_vitesse_imposee);
+Implemente_instanciable(Frontiere_ouverte_rho_u_impose,"Frontiere_ouverte_rho_u_impose",Frontiere_ouverte_vitesse_imposee_sortie);
 
 
 Sortie& Frontiere_ouverte_rho_u_impose::printOn(Sortie& s ) const
@@ -37,7 +37,7 @@ Sortie& Frontiere_ouverte_rho_u_impose::printOn(Sortie& s ) const
 
 Entree& Frontiere_ouverte_rho_u_impose::readOn(Entree& s)
 {
-  return Entree_fluide_vitesse_imposee::readOn(s);
+  return Frontiere_ouverte_vitesse_imposee_sortie::readOn(s);
 }
 
 
@@ -49,7 +49,7 @@ void Frontiere_ouverte_rho_u_impose::completer()
 
 int Frontiere_ouverte_rho_u_impose::compatible_avec_eqn(const Equation_base& eqn) const
 {
-  if (!Entree_fluide_vitesse_imposee::compatible_avec_eqn(eqn))
+  if (!Frontiere_ouverte_vitesse_imposee_sortie::compatible_avec_eqn(eqn))
     return 0;
   if (!sub_type(Fluide_Quasi_Compressible,ma_zone_cl_dis->equation().milieu()))
     return 0;

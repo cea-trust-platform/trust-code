@@ -89,13 +89,27 @@ int tester_compatibilite_hydr_thermique(const Zone_Cl_dis& zone_Cl_hydr, const Z
     {
       const Cond_lim& la_cl_hydr = zone_Cl_hydr.les_conditions_limites(num_Cl);
       const Cond_lim& la_cl_th = zone_Cl_th.les_conditions_limites(num_Cl);
-      if (sub_type(Entree_fluide_vitesse_imposee,la_cl_hydr.valeur()))
+      if (sub_type(Frontiere_ouverte_vitesse_imposee_sortie,la_cl_hydr.valeur()))
         {
           if ( (sub_type(Entree_fluide_temperature_imposee,la_cl_th.valeur()))
                || (sub_type(Neumann_sortie_libre,la_cl_th.valeur())) )
             ;
           else if ( (sub_type(Entree_fluide_T_h_imposee,la_cl_th.valeur()))
                     || (sub_type(Neumann_sortie_libre,la_cl_th.valeur())) )
+            ;
+          else
+            {
+              Cerr << "Les conditions aux limites en hydraulique et en thermique" << finl;
+              Cerr << "ne sont pas toutes compatibles bord " <<la_cl_th.frontiere_dis().le_nom()<< finl;
+              Cerr<<la_cl_hydr.valeur().que_suis_je()<<" "<<la_cl_th.valeur().que_suis_je()<<finl;
+              Process::exit();
+            }
+        }
+      else if (sub_type(Entree_fluide_vitesse_imposee,la_cl_hydr.valeur()))
+        {
+          if (sub_type(Entree_fluide_temperature_imposee,la_cl_th.valeur()))
+            ;
+          else if (sub_type(Entree_fluide_T_h_imposee,la_cl_th.valeur()))
             ;
           else
             {

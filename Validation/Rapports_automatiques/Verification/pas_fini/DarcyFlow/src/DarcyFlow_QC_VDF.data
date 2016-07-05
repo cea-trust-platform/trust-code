@@ -86,7 +86,7 @@ Read pb
           	}
         	boundary_conditions 
           	{
-			Entree frontiere_ouverte T_ext champ_front_uniforme 1 300.0
+			Entree frontiere_ouverte_temperature_imposee champ_front_uniforme 1 300.0
 			Sortie frontiere_ouverte T_ext champ_front_uniforme 1 300.0
 			Bord paroi_adiabatique 
           	}
