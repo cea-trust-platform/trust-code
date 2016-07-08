@@ -149,7 +149,7 @@ Read pb
 			pression_min
 			pression_max
 			pression_moy
-			energie_cinetique
+			energie_cinetique_totale
                 }
         }
 }

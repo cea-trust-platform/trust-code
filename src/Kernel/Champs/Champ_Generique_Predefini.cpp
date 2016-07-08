@@ -90,7 +90,9 @@ const Noms Champ_Generique_Predefini::get_property(const Motcle& query) const
     case 0:
       {
         Noms mots(1);
-        if (Motcle(type_champ_)=="ENERGIE_CINETIQUE")
+        if (Motcle(type_champ_)=="ENERGIE_CINETIQUE_TOTALE")
+          mots[0] = "kg/(m.s2)";
+        else if (Motcle(type_champ_)=="ENERGIE_CINETIQUE_ELEM")
           mots[0] = "kg/(m.s2)";
         else if (Motcle(type_champ_)=="VISCOSITE_TURBULENTE")
           mots[0] = "m2/s";
@@ -118,10 +120,11 @@ void Champ_Generique_Predefini::nommer_source()
 
 Nom Champ_Generique_Predefini::construit_expression()
 {
-  Motcles les_mots(2);
+  Motcles les_mots(3);
   {
-    les_mots[0] = "energie_cinetique";
-    les_mots[1] = "viscosite_turbulente";
+    les_mots[0] = "energie_cinetique_totale";
+    les_mots[1] = "energie_cinetique_elem";
+    les_mots[2] = "viscosite_turbulente";
   }
 
   Nom expression("");
@@ -131,24 +134,27 @@ Nom Champ_Generique_Predefini::construit_expression()
     case 0:
       {
         expression  = " Reduction_0D { methode somme_ponderee ";
-        expression += " source Transformation { methode formule expression 1 0.5*rho*u2_plus_v2_plus_w2 ";
-        expression += " sources { ";
-        expression += " Transformation { methode produit_scalaire sources ";
-        expression += " { Interpolation { localisation elem source refChamp { Pb_champ ";
+        expression += " source Transformation { methode formule expression 1 0.5*rho*norme_u*norme_u ";
+        expression += " sources { Transformation { methode norme  localisation elem  source RefChamp { Pb_champ ";
         expression += nom_pb_;
-        expression += " vitesse } } , ";
-        expression += " Interpolation { localisation elem source refChamp { Pb_champ ";
+        expression += " vitesse }  nom_source norme_u } , refChamp { Pb_champ ";
         expression += nom_pb_;
-        expression += " vitesse } } } ";
-        expression += " nom_source u2_plus_v2_plus_w2 } , ";
-        expression += " refChamp { Pb_champ ";
-        expression += nom_pb_;
-        expression += " masse_volumique nom_source rho } ";
-        expression += " } } } ";
+        expression += " masse_volumique nom_source rho } } } } ";
         break;
       }
 
     case 1:
+      {
+        expression  = " Transformation { methode formule expression 1 0.5*rho*norme_u*norme_u ";
+        expression += " sources { Transformation { methode norme  localisation elem  source RefChamp { Pb_champ ";
+        expression += nom_pb_;
+        expression += " vitesse }  nom_source norme_u } , refChamp { Pb_champ ";
+        expression += nom_pb_;
+        expression += " masse_volumique nom_source rho } } } ";
+        break;
+      }
+
+    case 2:
       {
         expression  = " modifier_pour_QC { division source refChamp { Pb_champ ";
         expression += nom_pb_;

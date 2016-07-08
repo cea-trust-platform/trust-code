@@ -1,0 +1,585 @@
+Parameters {
+    Title "mini 2D calculation"
+    Author "MR"
+    VersionTrio_U 1.7.3_beta
+    TestCase VDF       PAR_VDF.data         2
+    TestCase VDF_g     PAR_VDF_g.data       2
+    TestCase VEF       PAR_VEF.data         2
+    TestCase VEF_g     PAR_VEF_g.data       2   dansrapport
+}
+
+Chapter {
+    Title "Geometry and physical properties" 
+    Description "Here we made calculs on a column of water."
+    Description "We can see in red and blue the two locations of the used probes."
+    visu {
+        title       "VDF Mesh and probes localisation"
+        Width       14cm
+        mesh        VDF/PAR_VDF.lata              dom
+        mesh        VDF/PAR_VDF_PRESSURE.son      MESH red
+        mesh        VDF_g/PAR_VDF_g_P_HYDRO2.son  MESH blue
+    }
+    visu {
+        title       "VEF Mesh and probes localisation"
+        Width       14cm
+        mesh        VEF/PAR_VEF.lata              dom
+        mesh        VEF/PAR_VEF_PRESSURE.son      MESH red
+        mesh        VEF_g/PAR_VEF_g_P_HYDRO2.son  MESH blue
+    }
+
+    Table {
+        Title "Physical Properties"
+        Description "Notice that the gravity moves to the right."
+        nb_columns 1
+        line {
+            legend " Density $\rho$ ($kg/m^3$)"
+            file VDF/propertiesGeometry.dat    
+            nb_columns_file 5
+            columns ($2)
+        }
+        line {
+            legend "Dynamic viscosity $\mu$ ($kg/(m.s)$)"
+            file VDF/propertiesGeometry.dat
+            nb_columns_file 5
+            columns ($1)
+        }
+        line {
+            legend "Thermal diffusivity a ($m^2/s$)"
+            file VDF/propertiesGeometry.dat    
+            nb_columns_file 5
+            columns ($4)
+        }
+        line {
+            legend "Heat capacity \latex_( $ C_p $ \latex_) ($J/(kg\;K)$)"
+            file VDF/propertiesGeometry.dat
+            nb_columns_file 5
+            columns ($3)
+        }
+        line {
+            legend "Thermal expansion coefficient $\beta$ ($1/K$)"
+            file VDF/propertiesGeometry.dat
+            nb_columns_file 5
+            columns ($5)
+        }
+        line {
+            legend "Gravity ( \latex_( $m.s^{-2}$ \latex_) )"
+            values 9.81
+        }
+    }
+}
+
+Chapter {
+    Title "What is 'Pression_Pa' ?" 
+    Description "The following graphe show us that with or without gravity field, 'Pression_Pa' field is the same. So hydrostatic pressure ( \latex_( $\rho g z$ \latex_) ) is not a composante of the fields 'Pression_Pa'."
+    Description "We can also see that Pression_Pa(h=5)=20 Pa, (the pressure field value at the top of the geometry is 20 Pa) which is the value imposed in the boundary conditions of the data file." 
+    Description "In the slides of the users training session, we can see that: \latex_( $P^{*}=\frac{P_{NS}}{\rho}+ g z$ \latex_) where \latex_($P_{NS}$ \latex_) is the pressure in the Navier-Stokes equations (in Pascals)."
+    Description "So we have Pression_Pa=\latex_($P_{NS}$ \latex_)."
+
+#    visu {
+#        title       "'Pression_Pa' at the element for VDF test case"
+#        Width       8cm
+#        pseudocolor VDF/VDF.lata dom PRESSION_PA ELEM
+#        mesh        VDF/VDF.lata dom
+#    }
+#    visu {
+#        title       "'Pression_Pa' at the element for VDF test case with gravity"
+#        Width       8cm
+#        pseudocolor VDF_g/VDF_g.lata dom PRESSURE ELEM
+#        mesh        VDF_g/VDF_g.lata dom
+#    }
+    figure { 
+        title "'Pression_Pa' probe for VDF test case at final time and x=5."
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "'Pression_Pa' (Pa)"
+        curve {
+            Segment VDF/PAR_VDF.data PRESSION_Pa 10.
+            columns ($1) ($2)
+            legend "'Pression_Pa'"
+            style linespoints
+        }
+        curve {
+            Segment VDF_g/PAR_VDF_g.data PRESSION_Pa 10.
+            columns ($1) ($2)
+            legend "'Pression_Pa' case with gravity"
+            style linespoints
+        }
+    }
+    figure { 
+        title "'Pression_Pa' probe for VEF test case at final time and x=5."
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "'Pression_Pa' (Pa)"
+        curve {
+            Segment VEF/PAR_VEF.data PRESSION_Pa 10.
+            columns ($1) ($2)
+            legend "'Pression_Pa'"
+            style linespoints
+        }
+        curve {
+            Segment VEF_g/PAR_VEF_g.data PRESSION_Pa 10.
+            columns ($1) ($2)
+            legend "'Pression_Pa' case with gravity"
+            style linespoints
+        }
+    }
+}
+
+
+Chapter {
+    Title "What is 'Pressure' ?" 
+    Description "Pressure = Pression_Pa"
+    figure { 
+        title "Pressure probe for VDF test case at final time and x=5."
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        curve {
+            Segment VDF/PAR_VDF.data PRESSURE 10.
+            columns ($1) ($2)
+            legend "Pressure"
+            style linespoints
+        }
+        curve {
+            Segment VDF/PAR_VDF.data PRESSION_PA 10.
+            columns ($1) ($2)
+            legend "Pression_Pa "
+            style lines
+        }
+    }
+
+    figure { 
+        title "Pressure probe for VEF test case at final time and x=5."
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        curve {
+            Segment VEF/PAR_VEF.data PRESSURE 10.
+            columns ($1) ($2)
+            legend "Pressure"
+            style linespoints
+        }
+        curve {
+            Segment VEF/PAR_VEF.data PRESSION_PA 10.
+            columns ($1) ($2)
+            legend "Pression_Pa "
+            style lines
+        }
+    }
+}
+
+Chapter {
+    Title "What is 'Pression' ?" 
+    Description "Pression = \latex_( $\frac{1}{\rho}$ \latex_) Pression_Pa"
+    figure { 
+        title "Pressure probe for VDF test case at final time and x=5."
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        curve {
+            Segment VDF/PAR_VDF.data PRESSION 10.
+            columns ($1) ($2)*10000
+            legend "Pression x rho"
+            style linespoints
+        }
+        curve {
+            Segment VDF/PAR_VDF.data PRESSION_PA 10.
+            columns ($1) ($2)
+            legend "Pression_Pa "
+            style lines
+        }
+    }
+
+    figure { 
+        title "Pressure probe for VEF test case at final time and x=5."
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        curve {
+            Segment VEF/PAR_VEF.data PRESSION 10.
+            columns ($1) ($2)*10000
+            legend "Pression x rho"
+            style linespoints
+        }
+        curve {
+            Segment VEF/PAR_VEF.data PRESSION_PA 10.
+            columns ($1) ($2)
+            legend "Pression_Pa "
+            style lines
+        }
+    }
+}
+
+
+
+Chapter {
+    Title "What is 'P_star' ?" 
+    Description "P_star = \latex_( $ \frac{1}{\rho} $ \latex_) Pression_pa = \latex_( $ \frac{1}{\rho} $ \latex_) Pressure = Pression "
+
+#    visu {
+#        title       "'P_star' at the element for VDF test case"
+#        Width       8cm
+#        pseudocolor VDF/VDF.lata dom P_STAR ELEM
+#        mesh        VDF/VDF.lata dom
+#    }
+#    visu {
+#        title       "'Pression' at the element for VDF test case"
+#        Width       8cm
+#        pseudocolor VDF/VDF.lata dom PRESSURE ELEM
+#        mesh        VDF/VDF.lata dom
+#    }
+#    visu {
+#        title       "'P_star' at the element for VDF test case with gravity"
+#        Width       8cm
+#        pseudocolor VDF_g/VDF_g.lata dom P_STAR ELEM
+#        mesh        VDF_g/VDF_g.lata dom
+#    }
+#    visu {
+#        title       "'Pression' at the element for VDF test case with gravity"
+#        Width       8cm
+#        pseudocolor VDF_g/VDF_g.lata dom PRESSURE ELEM
+#        mesh        VDF_g/VDF_g.lata dom
+#    }
+
+    figure { 
+        title "VDF test cases: Probes at final time and x=5."
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure (m2/s2)"
+        curve {
+            Segment VDF/PAR_VDF.data P_STAR 10.
+            columns ($1) ($2)*10000
+            legend "'P_star' x rho"
+            style linespoints
+        }
+        curve {
+            Segment VDF/PAR_VDF.data PRESSION_PA 10.
+            columns ($1) ($2)
+            legend "'Pression_pa'"
+            style linespoints
+        }
+    }
+
+    figure { 
+        title "VDF test cases with gravity: Probes at final time and x=5."
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure (m2/s2)"
+        curve {
+            Segment VDF_g/PAR_VDF_g.data P_STAR 10.
+            columns ($1) ($2)*10000
+            legend "'P_star' x rho"
+            style linespoints
+        }
+        curve {
+            Segment VDF_g/PAR_VDF_g.data PRESSION_PA 10.
+            columns ($1) ($2)
+            legend "'Pression_pa'"
+            style linespoints
+        }
+    }
+
+
+    figure { 
+        title "VEF test cases: Probes at final time and x=5."
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure (m2/s2)"
+        curve {
+            Segment VEF/PAR_VEF.data P_STAR 10.
+            columns ($1) ($2)*10000
+            legend "'P_star' x rho"
+            style linespoints
+        }
+        curve {
+            Segment VEF/PAR_VEF.data PRESSION_PA 10.
+            columns ($1) ($2)
+            legend "'Pression_pa'"
+            style linespoints
+        }
+    }
+
+    figure { 
+        title "VEF test cases with gravity: Probes at final time and x=5."
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure (m2/s2)"
+        curve {
+            Segment VEF_g/PAR_VEF_g.data P_STAR 10.
+            columns ($1) ($2)*10000
+            legend "'P_star' x rho"
+            style linespoints
+        }
+        curve {
+            Segment VEF_g/PAR_VEF_g.data PRESSION_PA 10.
+            columns ($1) ($2)
+            legend "'Pression_pa'"
+            style linespoints
+        }
+    }
+
+}
+
+
+Chapter {
+    Title "What is 'Pression_hydrostatique' ?" 
+    Description "Pression_hydrostatique = \latex_( $\rho g z$ \latex_)"
+    figure { 
+        title "Pressure_hydrostatique probe for VDF test case with gravity at final time and x=5."
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        curve {
+            Segment VDF_g/PAR_VDF_g.data P_HYDRO2 10.
+            columns ($1) ($2)
+            legend "Pression_hydro"
+            style linespoints
+        }
+    }
+    figure { 
+        title "Pressure_hydrostatique probe for VEF test case with gravity at final time and x=5."
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        curve {
+            Segment VEF_g/PAR_VEF_g.data P_HYDRO2 10.
+            columns ($1) ($2)
+            legend "Pression_hydro"
+            style linespoints
+        }
+    }
+}
+
+
+
+
+Chapter {
+    Title "Total pressure" 
+    Description ""
+    figure { 
+        title "Total Pressure probe at final time and x=5 for VDF test case with gravity"
+        Description "P_tot = \latex_( $ P_{NS} + \rho g (z-z_{0}) + \frac{1}{2} \rho \underbrace{\vec{u} \cdot \vec{u}}_{||\vec{u}||} $ \latex_)"
+        Description "P_tot = Pression_Pa + Pression_hydrostatique - \latex_( $ \rho g z_{0} $ \latex_) + Cinetic Energy at the elements"
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure (Pa)"
+        curve {
+            Segment VDF_g/PAR_VDF_g.data P_TOT 10.
+            columns ($1) ($2)
+            legend "'Pression_totale' VDF "
+            style linespoints
+        }
+        curve {
+            Segment VEF_g/PAR_VEF_g.data P_TOT 10.
+            columns ($1) ($2)
+            legend "'Pression_totale' VEF "
+            style linespoints
+        }
+    }
+
+}
+
+
+
+
+
+#Chapter {
+#    Title "Pressure probes in function of height" 
+
+#    figure { 
+#        title "Pressure probe P"
+#        Width 11cm
+#        include_description_curves 0
+#        labelX "Height"
+#        labelY "Pressure"
+#        curve {
+#            Segment mini.data PRESSION 0.
+#            columns ($1) ($2)
+#            legend "Pressure at t=0."
+#            style linespoints
+#        }
+#        curve {
+#            Segment mini.data PRESSION 2.
+#            columns ($1) ($2)
+#            legend "Pressure at t=2."
+#            style linespoints
+#        }
+#        curve {
+#            Segment mini.data PRESSION 4.
+#            columns ($1) ($2)
+#            legend "Pressure at t=4."
+#            style linespoints
+#        }
+#    }
+
+#    figure { 
+#        title "Pressure probe in Pascals"
+#        Description "\latex_( $ P_{pa} =  P \times \rho$ \latex_)"
+#        Width 11cm
+#        include_description_curves 0
+#        labelX "Height"
+#        labelY "Pressure"
+#        curve {
+#            Segment mini.data PRESSION_PA 0.
+#            columns ($1) ($2)
+#            legend "Pressure in Pascals at t=0."
+#            style linespoints
+#        }
+#        curve {
+#            Segment mini.data PRESSION_PA 2.
+#            columns ($1) ($2)
+#            legend "Pressure in Pascals at t=2."
+#            style linespoints
+#        }
+#        curve {
+#            Segment mini.data PRESSION_PA 4.
+#            columns ($1) ($2)
+#            legend "Pressure in Pascals at t=4."
+#            style linespoints
+#        }
+#    }
+
+##    figure { 
+##        title "Hydrostatic pressure probe"
+##        Description "\latex_( $ P_{hydro} =  \rho g z$ \latex_)"
+##        Width 12cm
+##        include_description_curves 0
+##        labelX "Height"
+##        labelY "Pressure"
+##        curve {
+##            Segment mini.data PRESSION_HYDRO 0.
+##            columns ($1) ($2)
+##            legend "Hydrostatic pressure at t=0."
+##            style linespoints
+##        }
+##        curve {
+##            Segment mini.data PRESSION_HYDRO 2.
+##            columns ($1) ($2)
+##            legend "Hydrostatic pressure at t=2."
+##            style linespoints
+##        }
+##        curve {
+##            Segment mini.data PRESSION_HYDRO 4.
+##            columns ($1) ($2)
+##            legend "Hydrostatic pressure at t=4."
+##            style linespoints
+##        }
+##    }
+
+#    figure { 
+#        title "Total pressure probe"
+#        Description "\latex_( $ P_{tot} =  P + P_{hydro}$ \latex_)"
+#        Width 12cm
+#        include_description_curves 0
+#        labelX "Height"
+#        labelY "Pressure"
+#        curve {
+#            Segment mini.data PRESSION_TOT 0.
+#            columns ($1) ($2)
+#            legend "Total pressure at t=0."
+#            style linespoints
+#        }
+#        curve {
+#            Segment mini.data PRESSION_TOT 2.
+#            columns ($1) ($2)
+#            legend "Total pressure at t=2."
+#            style linespoints
+#        }
+#        curve {
+#            Segment mini.data PRESSION_TOT 4.
+#            columns ($1) ($2)
+#            legend "Total pressure at t=4."
+#            style linespoints
+#        }
+#    }
+#}
+
+
+#Chapter {
+#    Title "Pressure probes in function of time" 
+#    figure { 
+#        title "Pressure probe in Pascals at z=10"
+#        Width 12cm
+#        include_description_curves 0
+#        labelX "Time (s)"
+#        labelY "Pressure"
+#        curve {
+#            File PRESSION_PA.son
+#            Columns $1 $11
+#            legend "Pressure in Pascals"
+#            style linespoints
+#        }
+#    }
+#    figure { 
+#        title "Pressure probe at z=10"
+#        Width 12cm
+#        include_description_curves 0
+#        labelX "Time (s)"
+#        labelY "Pressure"
+#        curve {
+#            File PRESSION.son
+#            Columns $1 $11
+#            legend "pressure"
+#            style linespoints
+#        }
+#    }
+##    figure { 
+##        title "Hydrostatic pressure probe at z=10"
+##        Width 12cm
+##        include_description_curves 0
+##        labelX "Time (s)"
+##        labelY "Pressure"
+##        curve {
+##            File PRESSION_HYDRO.son
+##            Columns $1 $11
+##            legend "Hydrostatic pressure"
+##            style linespoints
+##        }
+##    }
+#    figure { 
+#        title "Velocity belong Z at z=10"
+#        Width 12cm
+#        include_description_curves 0
+#        labelX "x"
+#        labelY "Velocity"
+#        curve {
+#            Segment mini.data VITESSEY_Z10 24.
+#            columns ($1) ($2)
+#            legend "Velocity"
+#            style linespoints
+#        }
+#    }
+
+#}
+
+#Chapter {
+#    Title "Convergence" 
+
+#    figure { 
+#        title "Evolution of residue"
+#        include_description_curves 0
+#        labelX "TIME"
+#        labelY "residu=max|Ri|"
+#        logX
+#        logY
+#        curve {
+#            file mini.dt_ev
+#            columns ($1) ($4)
+#            legend "column 4"
+#            style linespoints
+#        }
+#    }
+#}
