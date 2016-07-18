@@ -109,7 +109,7 @@ Post_processings {
 	 domaine dom_EF_boundaries_r_1000_2000 
 	 fields dt_post 0.05
 	 { 
-	# pression_pa elem #
+	 pression_pa elem 
 	vitesse som
 	 }
 	 }
