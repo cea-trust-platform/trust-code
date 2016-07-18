@@ -81,7 +81,7 @@ public:
   //
   ArrOfInt();
   ArrOfInt(int size);
-  ArrOfInt(int size, int initial_value);
+//  ArrOfInt(int size, int initial_value);
   // Constructeur par copie : deep copy (on duplique les donnees)
   ArrOfInt(const ArrOfInt& );
   //

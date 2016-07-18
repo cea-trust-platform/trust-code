@@ -54,13 +54,13 @@ public:
   DoubleTab(const DoubleTab&);
   // Les DoubleTab peuvent prendre un argument de plus dans la signature: valeur de remplissage
   // Pour les IntTab on ne peut pas: sinon confusion entre dimension et valeur de remplissage
-  DoubleTab(int n, double x = 0);
+  DoubleTab(int n);
 #ifdef INT_is_64_
-  DoubleTab(int n1, True_int n2, double x = 0);
+  DoubleTab(int n1, True_int n2);
 #endif
-  DoubleTab(int n1, int n2, double x = 0);
-  DoubleTab(int n1, int n2, int n3, double x = 0);
-  DoubleTab(int n1, int n2, int n3, int n4, double x = 0);
+  DoubleTab(int n1, int n2);
+  DoubleTab(int n1, int n2, int n3);
+  DoubleTab(int n1, int n2, int n3, int n4);
   virtual void ref(const DoubleVect&);
   virtual void ref(const DoubleTab&);
   virtual void ref_data(double* ptr, int size);
