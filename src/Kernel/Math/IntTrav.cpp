@@ -191,7 +191,8 @@ int IntTrav_test()
       }
     }
   {
-    IntTab y(10, 10, (int)1);
+    IntTab y(10, 10);
+    y=(int)1;
     IntTrav x(y);
     x(5,5) = (int)1;
     IntTab z(x);

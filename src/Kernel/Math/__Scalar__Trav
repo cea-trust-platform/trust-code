@@ -209,7 +209,8 @@ int __Scalar__Trav_test()
     }
   }
   {
-    __Scalar__Tab y(10, 10, (__scalar__)1);
+    __Scalar__Tab y(10, 10);
+    y=(__scalar__)1;
     __Scalar__Trav x(y);
     x(5,5) = (__scalar__)1;
     __Scalar__Tab z(x);
