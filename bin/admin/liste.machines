@@ -7,7 +7,7 @@ linux	rsync_ssh	non		is229954.intra.cea.fr		-all		-TrioCFD			-disable-mpi						#
 linux	rsync_ssh	get_binary	is226427.intra.cea.fr			-TRUST -MPCube -ModeleCoeur									# CentOS 6.4    		CEA Saclay 	Bat 451	LMSF	bureau 68G CS Antoine Scoliege
 linux	rsync_ssh	non		is221715.intra.cea.fr				-TRUST -MPCube			-force_provided_openmpi	 				# Mandriva 2010			CEA Saclay	Bat ??
 linux	rsync_ssh 	tache		is210968.intra.cea.fr		-all		-TrioCFD	-xdata									# Mandriva 2010			CEA Saclay	Bat 454 LMEC	PC test Genepi2 (Desormais on livre un binaire 64bits)
-linux	rsync_ssh	cible		is223196.intra.cea.fr		-all		-TRUST -TrioCFD	-gcov		-force_provided_mpich		-disable-gmsh		# CentOS 6.4 			CEA Saclay	Bat 451 LMSF	bureau 68B CS Marthe Roux
+linux	rsync_ssh	cible		is223196.intra.cea.fr		-all		-TRUST -TrioCFD	-gcov		-force_provided_mpich					# CentOS 6.4 			CEA Saclay	Bat 451 LMSF	bureau 68B CS Marthe Roux
 linux	scp_ssh		non		is229107.intra.cea.fr		-all	 									-disable 		# Fedora 20			CEA Saclay	Bat ??		(Teste la compilation de TRUST allegee)
 linux	rsync_ssh	cible		is221559.intra.cea.fr		 		-TRUST -MPCube	-g 		-force_provided_mpich		-Check_decoupage	# Fedora 18 			CEA Saclay	Bat 451 LGLS	bureau Gauthier Fauchet (PC of the Leader Project) (Couplage Cathare/TRUST)
 linux	rsync_ssh	cible		airain.ccc.cea.fr	 updated -limited 	-TrioCFD			-benchmark	 					# RedHat 6.7			CEA CCRT
@@ -18,8 +18,8 @@ linux 	rsync_ssh	non   		is142348.intra.cea.fr       							-force_provided_mpic
 linux 	rsync_ssh	cible		cezanne43.intra.cea.fr				-ModeleCoeur										# Debian 8			CEA Cadarache
 linux	scp_ssh		cible		is230004.intra.cea.fr				-TRUST -MPCube			-remote_install_TRUST_kernel_only			# Fedora 20	 		CEA Saclay	Bat 454	LMES	(ex is227526 Couplage Cathare/TRUST)
 linux	sftp_ssh 	non		is227551.intra.cea.fr				-TrioCFD -ModeleCoeur									# Fedora 20			CEA Saclay	Bat 454	LMES	bureau Francois Dupouy
-linux   rsync_ssh       cible           is227246.intra.cea.fr	-rsync	-all		-TRUST -TrioCFD	-prof		-remote_install_TRUST_with_source			# Fedora 22 			CEA Saclay	Bat 454 LMES	PC test Erwan Adam
-linux   rsync_ssh       non		is210376.intra.cea.fr				-TRUST -TrioCFD	-MPCube									# Fedora 24 			CEA Saclay	Bat 454 LMES	PC test Erwan Adam
+linux   rsync_ssh       cible           is227246.intra.cea.fr	-rsync	-all		-TRUST -TrioCFD	-prof		-force_provided_mpich -remote_install_TRUST_with_source	# Fedora 24 			CEA Saclay	Bat 454 LMES	PC test Erwan Adam
+linux   rsync_ssh       non		is210376.intra.cea.fr				-TRUST -TrioCFD	-MPCube		-force_provided_mpich					# Fedora 24 			CEA Saclay	Bat 454 LMES	PC test Erwan Adam
 linux	rsync_ssh	non		is229106.intra.cea.fr	 	-all						-force_provided_mpich					# Ubuntu 16.04  		CEA Saclay	Bat 454 LMES	bureau Marc Tajchman 
 linux	sftp_ssh	cible		is228666.intra.cea.fr   			-TRUST -MPCube							  			# Ubuntu 14.04  		CEA Saclay	Bat 454	LMEC	bureau Mathieu Niezgoda
 linux	rsync_ssh	non		is213120.intra.cea.fr   			-TrioCFD -ModeleCoeur									# Ubuntu 12.04  		CEA Saclay	Bat 454		TMA flica4
