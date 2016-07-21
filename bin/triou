@@ -453,7 +453,7 @@ then
    USE_PETSC=`sed "s/\t/ /g" $NOM.data | $TRUST_Awk 'BEGIN {IGNORECASE=1;use_petsc=0} \
                             // {n=split($0,a,"#")-1;if (n>0) dieses+=n} \
                             /^fin/ && (dieses%2==0) && (NF==1) {exit} \
-                            / petsc / || / petsc_gpu / || / optimal / || / resoudremultiassemblage / {use_petsc=1;exit}
+                            / petsc / || / petsc_gpu / || / optimal / || / resoudremultiassemblage / || / resoudre / {use_petsc=1;exit}
 	                    END {print use_petsc}'`
    USE_PETSC_GPU=`sed "s/\t/ /g" $NOM.data | $TRUST_Awk 'BEGIN {IGNORECASE=1;use_petsc_gpu=0} \
                             // {n=split($0,a,"#")-1;if (n>0) dieses+=n} \
