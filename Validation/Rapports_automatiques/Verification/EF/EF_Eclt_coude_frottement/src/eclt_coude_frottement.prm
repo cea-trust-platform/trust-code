@@ -1,20 +1,20 @@
-Parametres {
-	Titre "Ecoulement dans un coude avec frottement en volume"
+Parameters {
+	Title "Ecoulement dans un coude avec frottement en volume"
 	Description "\latex_( \input{\orig/presentation} \latex_)"
-	Auteur "D. Jamet"
-	CasTest "." "eclt_coude_frottement.data"
-	CasTest "." "eclt_coude_frottement2.data"
-	CasTest "." "eclt_coude_frottement3.data"
-	incluredata 1
+	Author "D. Jamet"
+	TestCase "." "eclt_coude_frottement.data"
+	TestCase "." "eclt_coude_frottement2.data"
+	TestCase "." "eclt_coude_frottement3.data"
+	IncludeData 1
 }
 
-Chapitre {
-	Titre "Coefficient de frottement constant"
+Chapter {
+	Title "Coefficient de frottement constant"
 	Description "\latex_( \input{\orig/presentation1} \latex_)"
 
 
 	visu {
-                titre "Champs de pression et de vitesse calculés"
+                Title "Champs de pression et de vitesse calculés"
                 description "Les champs de pression et de vitesse calculés par GENEPI sont tracés."
                 mesh ./eclt_coude_frottement.lata dom 
                 pseudocolor ./eclt_coude_frottement.lata dom PRESSION_PA ELEM
@@ -23,7 +23,7 @@ Chapitre {
 
 
 	visu {
-                titre "Erreur sur le champ de vitesse"
+                Title "Erreur sur le champ de vitesse"
                 mesh ./eclt_coude_frottement.lata dom 
 		instruction_visit DefineVectorExpression("V_ANALYTIQUE_SOM_dom","{10.*(-coord(dom)[1]/sqrt(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1])/sqrt(sqrt(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1]))),10.*(coord(dom)[0]/sqrt(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1])/sqrt(sqrt(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1])))}") 
 		instruction_visit DefineVectorExpression("ERREUR_VITESSE_SOM_dom","VITESSE_SOM_dom-V_ANALYTIQUE_SOM_dom")
@@ -31,35 +31,35 @@ Chapitre {
         }
 
 
-	Tableau {
-		Titre "Comparaison théorie/numérique"
-		nb_colonnes 1
+	Table {
+		Title "Comparaison théorie/numérique"
+		nb_columns 1
 		label  Perte de pression
-		Ligne {
-			Legende Analytique
+		line {
+			legend Analytique
 			alias ref
 			Version "1.5.3-beta_build_180907"
-			valeurs 1571.
+			values 1571.
 		}
-		Ligne {
-			Legende Calcul
+		line {
+			legend Calcul
 			alias calcul
-			Origine "Trio_U"
+			origin "Trio_U"
 			Version "1.5.3-beta_build_180907"
-			nb_colonnes_fichier 8
-			fichier ./eclt_coude_frottement_fin.out
-			colonnes (($8)-($7))
+			nb_columns_file 8
+			file ./eclt_coude_frottement_fin.out
+			columns (($8)-($7))
 		}
-		Ligne {
-			Legende Ecart_relatif
+		line {
+			legend Ecart_relatif
 			alias erreur
-			Origine "Trio_U"
+			origin "Trio_U"
 			Version "1.5.3-beta_build_180907"
 			difference ecart_relatif calcul ref
-			afficher_ligne 0	
+			display_line 0	
 		}
-		Ligne {
-	        	legende "Erreur en %"
+		line {
+	        	legend "Erreur en %"
 			alias err_relative
 		        difference formule erreur ref int(v1*10000)/100.
 	        }
@@ -67,13 +67,13 @@ Chapitre {
 }
 
 
-Chapitre {
-	Titre "Coefficient de frottement inversement proportionnel au rayon"
+Chapter {
+	Title "Coefficient de frottement inversement proportionnel au rayon"
 	Description "\latex_( \input{\orig/presentation2} \latex_)"
 
 
 	visu {
-                titre "Champs de pression et de vitesse calculés"
+                Title "Champs de pression et de vitesse calculés"
                 description "Les champs de pression et de vitesse calculés par GENEPI sont tracés."
                 mesh ./eclt_coude_frottement2.lata dom 
                 pseudocolor ./eclt_coude_frottement2.lata dom PRESSION_PA ELEM
@@ -82,42 +82,42 @@ Chapitre {
 
 
 	visu {
-                titre "Erreur sur le champ de vitesse"
+                Title "Erreur sur le champ de vitesse"
                 mesh ./eclt_coude_frottement2.lata dom 
 		instruction_visit DefineVectorExpression("V_ANALYTIQUE_SOM_dom","{10.*(-coord(dom)[1]/sqrt(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1])),10.*(coord(dom)[0]/sqrt(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1]))}")
 		instruction_visit DefineVectorExpression("ERREUR_VITESSE_SOM_dom","VITESSE_SOM_dom-V_ANALYTIQUE_SOM_dom")
 		vector  ./eclt_coude_frottement2.lata dom ERREUR_VITESSE SOM
         }
 
-	Tableau {
-		Titre "Comparaison théorie/numérique"
-		nb_colonnes 1
+	Table {
+		Title "Comparaison théorie/numérique"
+		nb_columns 1
 		label  Perte de pression
-		Ligne {
-			Legende Analytique
+		line {
+			legend Analytique
 			alias ref
 			Version "1.5.3-beta_build_180907"
-			valeurs 1571.
+			values 1571.
 		}
-		Ligne {
-			Legende Calcul
+		line {
+			legend Calcul
 			alias calcul
-			Origine "Trio_U"
+			origin "Trio_U"
 			Version "1.5.3-beta_build_180907"
-			nb_colonnes_fichier 8
-			fichier ./eclt_coude_frottement2_fin.out
-			colonnes (($8)-($7))
+			nb_columns_file 8
+			file ./eclt_coude_frottement2_fin.out
+			columns (($8)-($7))
 		}
-		Ligne {
-			Legende Ecart_relatif
+		line {
+			legend Ecart_relatif
 			alias erreur
-			Origine "Trio_U"
+			origin "Trio_U"
 			Version "1.5.3-beta_build_180907"
 			difference ecart_relatif calcul ref
-			afficher_ligne 0	
+			display_line 0	
 		}
-		Ligne {
-	        	legende "Erreur en %"
+		line {
+	        	legend "Erreur en %"
 			alias err_relative
 		        difference formule erreur ref int(v1*10000)/100.
 	        }
@@ -125,13 +125,13 @@ Chapitre {
 }
 
 
-Chapitre {
-	Titre "Coefficient de frottement inversement proportionnel au cube du rayon"
+Chapter {
+	Title "Coefficient de frottement inversement proportionnel au cube du rayon"
 	Description "\latex_( \input{\orig/presentation3} \latex_)"
 
 
 	visu {
-                titre "Champs de pression et de vitesse calculés"
+                Title "Champs de pression et de vitesse calculés"
                 description "Les champs de pression et de vitesse calculés par GENEPI sont tracés."
                 mesh ./eclt_coude_frottement3.lata dom 
                 pseudocolor ./eclt_coude_frottement3.lata dom PRESSION_PA ELEM
@@ -140,42 +140,42 @@ Chapitre {
 
 
 	visu {
-                titre "Erreur sur le champ de vitesse"
+                Title "Erreur sur le champ de vitesse"
                 mesh ./eclt_coude_frottement3.lata dom 
 		instruction_visit DefineVectorExpression("V_ANALYTIQUE_SOM_dom","{10.*(-coord(dom)[1]),10.*(coord(dom)[0])}")
 		instruction_visit DefineVectorExpression("ERREUR_VITESSE_SOM_dom","VITESSE_SOM_dom-V_ANALYTIQUE_SOM_dom")
 		vector  ./eclt_coude_frottement3.lata dom ERREUR_VITESSE SOM
         }
 
-	Tableau {
-		Titre "Comparaison théorie/numérique"
-		nb_colonnes 1
+	Table {
+		Title "Comparaison théorie/numérique"
+		nb_columns 1
 		label  Perte de pression
-		Ligne {
-			Legende Analytique
+		line {
+			legend Analytique
 			alias ref
 			Version "1.5.3-beta_build_180907"
-			valeurs 1571.
+			values 1571.
 		}
-		Ligne {
-			Legende Calcul
+		line {
+			legend Calcul
 			alias calcul
-			Origine "Trio_U"
+			origin "Trio_U"
 			Version "1.5.3-beta_build_180907"
-			nb_colonnes_fichier 8
-			fichier ./eclt_coude_frottement3_fin.out
-			colonnes (($8)-($7))
+			nb_columns_file 8
+			file ./eclt_coude_frottement3_fin.out
+			columns (($8)-($7))
 		}
-		Ligne {
-			Legende Ecart_relatif
+		line {
+			legend Ecart_relatif
 			alias erreur
-			Origine "Trio_U"
+			origin "Trio_U"
 			Version "1.5.3-beta_build_180907"
 			difference ecart_relatif calcul ref
-			afficher_ligne 0	
+			display_line 0	
 		}
-		Ligne {
-	        	legende "Erreur en %"
+		line {
+	        	legend "Erreur en %"
 			alias err_relative
 		        difference formule erreur ref int(v1*10000)/100.
 	        }

@@ -1,72 +1,72 @@
-Parametres {
-	Titre "Vérification de la conduction thermique instationnaire"
+Parameters {
+	Title "Vérification de la conduction thermique instationnaire"
 	Description "On considère un problème de conduction thermique instationnaire.  On compare la solution obtenue par GENEPI à la solution analytique.  La température est imposée en entrée et sortie du domaine (cf. jeu de données).  On compare le profil de température dans la direction $x$ ainsi que le champ de température bidimensionnel.  On compare également les flux conductifs sur les parois en entrée et sortie."
-	Auteur "D. Jamet"
-	CasTest "." "conduc_genepi_instat.data"
-	incluredata 1
+	Author "D. Jamet"
+	TestCase "." "conduc_genepi_instat.data"
+	IncludeData 1
 }
 
-Chapitre {
-	Titre "Champs de température"
+Chapter {
+	Title "Champs de température"
 	Description "On compare les champs de température calculé par GENEPI et analytique.  Cette comparaison se fait sur un profil en $y=cte$ et sur le champ 2D."
 
 	Figure {
-                incluredesccourbes 0
-		Titre "Comparaison des profils calculé et analytique"
+                Include_Description_Curves 0
+		Title "Comparaison des profils calculé et analytique"
 		Dimension 2
 		LabelX "x"
 		LabelY "T"
 
 		width 7cm
 
-		Courbe {
-			Legende "analytique"
-			fichier ./ref_gnuplot.dat
+		Curve {
+			legend "analytique"
+			file ./ref_gnuplot.dat
 			Style lines
 }
-		Courbe {
-			Legende "EF t= 0.0"
-			Origine "Trio_U"
+		Curve {
+			legend "EF t= 0.0"
+			origin "Trio_U"
 			segment ./conduc_genepi_instat.data temperature_x 0.
 			Style linespoints
-			colonnes ($1) ($2)
+			columns ($1) ($2)
                 }
 
-		Courbe {
-			Legende "EF t= 0.5"
-			Origine "Trio_U"
+		Curve {
+			legend "EF t= 0.5"
+			origin "Trio_U"
 			segment ./conduc_genepi_instat.data temperature_x 0.5
 			Style linespoints
-			colonnes ($1) ($2)
+			columns ($1) ($2)
                 }
 
-		Courbe {
-			Legende "EF t= 1.0"
-			Origine "Trio_U"
+		Curve {
+			legend "EF t= 1.0"
+			origin "Trio_U"
 			segment ./conduc_genepi_instat.data temperature_x 1.
 			Style linespoints
-			colonnes ($1) ($2)
+			columns ($1) ($2)
                 }
 
-		Courbe {
-			Legende "EF t= 2.0"
-			Origine "Trio_U"
+		Curve {
+			legend "EF t= 2.0"
+			origin "Trio_U"
 			segment ./conduc_genepi_instat.data temperature_x 2.
 			Style linespoints
-			colonnes ($1) ($2)
+			columns ($1) ($2)
                 }
 
-		Courbe {
-			Legende "EF t=10.0"
-			Origine "Trio_U"
+		Curve {
+			legend "EF t=10.0"
+			origin "Trio_U"
 			segment ./conduc_genepi_instat.data temperature_x 10.
 			Style linespoints
-			colonnes ($1) ($2)
+			columns ($1) ($2)
                 }
 	}
 
 	visu {
-                Titre "Champ de température à $t=0.5$"
+                Title "Champ de température à $t=0.5$"
                 description "On trace le champ d'écart entre la température calculée et la solution analytique.  La solution analytique est représentée par des isovaleurs du champ de température."
                 mesh ./conduc_genepi_instat.lata dom
 		cycles 1
@@ -78,67 +78,67 @@ Chapitre {
 }
 
 
-Chapitre {
-	Titre "Flux conductifs aux frontières du domaine"
+Chapter {
+	Title "Flux conductifs aux frontières du domaine"
 	Description "Les flux conductifs calculés par GENEPI en $x=0$ et $x=L$ sont comparés aux flux théoriques.  L'erreur correspondante est également donnée."
 
 
-	Tableau {
-		Titre "Comparaison théorie/numérique"
-		nb_colonnes 2
+	Table {
+		Title "Comparaison théorie/numérique"
+		nb_columns 2
 		label  flux  gauche  | flux droit
-		Ligne {
-			Legende theorie
+		line {
+			legend theorie
 			Version "1.5.3-beta_build_180907"
-			valeurs 5. -5.
+			values 5. -5.
 			alias ref
 		}
-		Ligne {
-			Legende calcul
-			Origine "Trio_U"
+		line {
+			legend calcul
+			origin "Trio_U"
 			Version "1.5.3-beta_build_180907"
-			nb_colonnes_fichier 6
-			fichier ./conduc_genepi_instat_fin.out
-			colonnes $2 $5
+			nb_columns_file 6
+			file ./conduc_genepi_instat_fin.out
+			columns $2 $5
 		}
-		Ligne {
-			Legende ecart_relatif
+		line {
+			legend ecart_relatif
 			alias erreur
-			Origine "Trio_U"
+			origin "Trio_U"
 			Version "1.5.3-beta_build_180907"
 			difference ecart_relatif calcul ref
-			 afficher_ligne 0	
+			 display_line 0	
 		}
-		Ligne {
-	        	legende "erreur en %"
+		line {
+	        	legend "erreur en %"
 			alias err_bis
 		        difference formule   erreur ref int(v1*10000)/100.
 	        }
 	}
 
 	Figure {
-                incluredesccourbes 0
-		Titre "Comparaison des profils calculé et analytique"
+                Include_Description_Curves 0
+		Title "Comparaison des profils calculé et analytique"
 		Dimension 2
 		LabelX "x"
 		LabelY "flux"
 
 		width 7cm
 
-		Courbe {
-			Legende "EF"
-			Origine "Trio_U"
-			fichier conduc_genepi_instat_pb_Diffusion_chaleur.out
+		Curve {
+			legend "EF"
+			origin "Trio_U"
+			file conduc_genepi_instat_pb_Diffusion_chaleur.out
 			Style linespoints
-			colonnes ($1) ($2)
+			columns ($1) ($2)
                 }
 	
-		Courbe {
-        	        Legende "analytique"
-                	Origine "ref"
-	                fichier conduc_genepi_instat_pb_Diffusion_chaleur.out
+		Curve {
+        	        legend "analytique"
+                	origin "ref"
+	                file conduc_genepi_instat_pb_Diffusion_chaleur.out
         	        Style lines
-			colonnes ($1) ((100.-0.5*20.*3.14159265358979/(2.*0.05)*exp(-(0.5/(0.5*1000.))*(3.14159265358979/(2.*0.05))*(3.14159265358979/(2.*0.05))*($1)))*0.05)
+			columns ($1) ((100.-0.5*20.*3.14159265358979/(2.*0.05)*exp(-(0.5/(0.5*1000.))*(3.14159265358979/(2.*0.05))*(3.14159265358979/(2.*0.05))*($1)))*0.05)
                 }
 	}
 }

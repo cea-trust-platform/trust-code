@@ -89,30 +89,30 @@ Chapter {
 		}
 	}
 }
-Chapitre {
-	titre "VDF test: calculated flow rate"
+Chapter {
+	Title "VDF test: calculated flow rate"
 	# definition figure 3
-	Tableau {
-		nb_colonnes 2
+	Table {
+		nb_columns 2
 		label  temps|debit
-		Ligne {
-			legende Calculation with imposed flow rate
-			fichier Champ_front_debit_pb_Debit.out
+		line {
+			legend Calculation with imposed flow rate
+			file Champ_front_debit_pb_Debit.out
 			derniere_ligne
-			colonnes $1 (-$2)
-			nb_colonnes_fichier 6
+			columns $1 (-$2)
+			nb_columns_file 6
 		}
-		Ligne {
-			legende Calculation with imposed velocity
-			fichier testCL_pb_Debit.out
+		line {
+			legend Calculation with imposed velocity
+			file testCL_pb_Debit.out
 			derniere_ligne
-			colonnes $1 (-$2)
-			nb_colonnes_fichier 6
+			columns $1 (-$2)
+			nb_columns_file 6
 		}
-		Ligne {
-			legende voulu
-			origine jdd
-			valeurs 1.2 5.
+		line {
+			legend voulu
+			origin jdd
+			values 1.2 5.
 		}
 	}
 }

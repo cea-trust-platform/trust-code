@@ -1,18 +1,18 @@
-Parametres {
-	Titre "Ecoulement avec force de frottement en volume"
+Parameters {
+	Title "Ecoulement avec force de frottement en volume"
 	Description "\latex_( \input{\orig/presentation} \latex_)"
-	Auteur "D. Jamet"
-	CasTest "." "frottement_incline.data"
-	incluredata 1
+	Author "D. Jamet"
+	TestCase "." "frottement_incline.data"
+	IncludeData 1
 }
 
-Chapitre {
-	Titre "Champs de vitesse et de pression"
+Chapter {
+	Title "Champs de vitesse et de pression"
 	Description "\latex_( \input{\orig/presentation1} \latex_)"
 
 
 	visu {
-                titre "Erreurs des champs de pression et de vitesse calculés"
+                Title "Erreurs des champs de pression et de vitesse calculés"
                 description "L'erreur des champs de pression et de vitesse calculés par GENEPI par rapport à la solution analytique est tracée."
 		instruction_visit DefineScalarExpression("P_ANALYTIQUE_ELEM_dom","((sqrt(3.)/4.)*coord(dom)[0]-7./4.*coord(dom)[1])") 
 		instruction_visit DefineScalarExpression("ERREUR_P_ELEM_dom","(PRESSION_PA_ELEM_dom-P_ANALYTIQUE_ELEM_dom)") 
