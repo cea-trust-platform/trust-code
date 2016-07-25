@@ -50,8 +50,8 @@ check_gl
 ########
 if [ ! -d fltk ]
 then
-   fltk_version=1.3.2
-   fltk=fltk-$fltk_version-source.tar.gz
+   fltk_version=1.3.3
+   fltk=fltk-$fltk_version"-source.tar.gz"
    if [ ! -f $fltk ]
    then
       echo "Downloading $fltk..." 
@@ -77,21 +77,22 @@ FLTK_ROOT=`pwd`/fltk
 ########
 # GMSH #
 ########   
-version=gmsh-2.10.1-source.tgz
-if [ ! -f $version ]
+gmsh_version=2.13.1
+gmsh=gmsh-$gmsh_version"-source.tgz"
+if [ ! -f $gmsh ]
 then
-   echo "Downloading $version..." 
-   wget_ http://geuz.org/gmsh/src/$version
+   echo "Downloading $gmsh..." 
+   wget_ http://geuz.org/gmsh/src/$gmsh
    if [ $? != 0 ]
    then
       echo "No Internet access. Install yourself Gmsh."
       exit 0
    fi      
 fi
-rm -r -f ${version%.tgz}
-echo "Install $version..." 
-tar mxfz $version
-cd ${version%.tgz}
+rm -r -f ${gmsh%.tgz}
+echo "Install $gmsh..." 
+tar mxfz $gmsh
+cd ${gmsh%.tgz}
 
 #echo Patching ratio.c for clang
 #sed "s?if ( abs(mesh->info.imprim) < 5 )  return;?if ( abs(mesh->info.imprim) < 5 )  return 1;?" -i ./contrib/mmg3d/build/sources/ratio.c
@@ -106,7 +107,7 @@ then
    options="-DCMAKE_CXX_LINK_FLAGS=-lgfortran"
 fi
 # Gmsh 2.6.1 is not compatible with PETSc>=3.5
-[ "$version" = gmsh-2.10.1-source.tgz ] && options=$options" -DENABLE_PETSC=0"
+options=$options" -DENABLE_PETSC=0"
 # Build avec GUI (FLTK), et support MED,LAPACK
 [ "$MISSING_GL" != "" ] && MISSING_GL=$TRUST_ROOT/Outils/Gmsh/missing
 cmake $options -DENABLE_FLTK=1 -DENABLE_MED=1 -DENABLE_CAIRO=OFF \
@@ -124,5 +125,5 @@ echo $ECHO_OPTS "1,$ s?target_link_libraries(gmsh \${LINK_LIBRARIES})?target_lin
 $TRUST_MAKE || exit -1
 make install || exit -1
 cd ../.. 
-rm -r -f fltk ${version%.tgz}
+rm -r -f fltk ${gmsh%.tgz}
 

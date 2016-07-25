@@ -31,13 +31,13 @@ public:
   // Les DoubleTab peuvent prendre un argument de plus dans la signature: valeur de remplissage
   // Pour les IntTab on ne peut pas: sinon confusion entre dimension et valeur de remplissage
 #Pif("__scalar__"=="double")
-  __Scalar__Tab(int n, __scalar__ x = 0);
+  __Scalar__Tab(int n);
 #ifdef INT_is_64_
-  __Scalar__Tab(int n1, True_int n2, __scalar__ x = 0);
+  __Scalar__Tab(int n1, True_int n2);
 #endif
-  __Scalar__Tab(int n1, int n2, __scalar__ x = 0);
-  __Scalar__Tab(int n1, int n2, int n3, __scalar__ x = 0);
-  __Scalar__Tab(int n1, int n2, int n3, int n4, __scalar__ x = 0);
+  __Scalar__Tab(int n1, int n2);
+  __Scalar__Tab(int n1, int n2, int n3);
+  __Scalar__Tab(int n1, int n2, int n3, int n4);
 #Pendif
 #Pif("__scalar__"=="int")
   __Scalar__Tab(int n);
@@ -400,8 +400,8 @@ __Scalar__Tab::__Scalar__Tab(const __Scalar__Tab & dbt) :
     dimensions_[i] = dbt.dimensions_[i];
 }
 #Pif("__scalar__"=="double")
-#define PARAM_X , double x
-#define PARAM_X2 , x
+#define PARAM_X 
+#define PARAM_X2 
 #Pendif
 #Pif("__scalar__"=="int")
 #define PARAM_X

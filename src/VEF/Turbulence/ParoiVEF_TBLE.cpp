@@ -713,8 +713,11 @@ int ParoiVEF_TBLE::calculer_hyd(DoubleTab& tab1,int isKeps,DoubleTab& tab2)
     }//Fin boucle sur les bords parietaux
 
 
-  SFichier fic("iter.dat",ios::app); // ouverture du fichier iter.dat
-  fic << tps << " " << itmax << finl;
+  if (Process::je_suis_maitre())
+    {
+      SFichier fic("iter.dat",ios::app); // ouverture du fichier iter.dat
+      fic << tps << " " << itmax << finl;
+    }
 
   if(oui_stats==1)
     calculer_stats();

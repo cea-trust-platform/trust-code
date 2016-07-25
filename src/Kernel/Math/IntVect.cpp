@@ -79,7 +79,7 @@ IntVect::IntVect(int n) :
   line_size_(1)
 {
 }
-
+/*
 // Description: construction d'un vecteur de taille n.
 //  Les elements du vecteur sont initialises avec la valeur x.
 IntVect::IntVect(int n, int x) :
@@ -88,7 +88,7 @@ IntVect::IntVect(int n, int x) :
   line_size_(1)
 {
 }
-
+*/
 // Description: Constructeur par copie. Il s'agit d'un "deep copy"
 //   voir ArrOfInt::ArrOfInt(const ArrOfInt &)
 //  Remarque: il n'y a pas de constructeur par copie a partir de ArrOfInt

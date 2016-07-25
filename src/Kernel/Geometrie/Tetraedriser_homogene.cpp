@@ -275,7 +275,6 @@ void Tetraedriser_homogene::trianguler(Zone& zone) const
           int i5=les_elems(i,5);
           int i6=les_elems(i,6);
           int i7=les_elems(i,7);
-          //Cerr<<"---Tetraedrisation de l'element "<<i<<"  som="<<i0<<" "<<i1<<" "<<i2<<" "<<i3<<" "<<i4<<" "<<i5<<" "<<i6<<" "<<i7<<endl;
 
           compteur = 0;
 

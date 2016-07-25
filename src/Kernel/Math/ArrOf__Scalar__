@@ -62,7 +62,7 @@ public:
   //   
   ArrOf__Scalar__();
   ArrOf__Scalar__(int size);
-  ArrOf__Scalar__(int size, __scalar__ initial_value);
+//  ArrOf__Scalar__(int size, __scalar__ initial_value);
   // Constructeur par copie : deep copy (on duplique les donnees)
   ArrOf__Scalar__(const ArrOf__Scalar__& );
   //
@@ -716,6 +716,7 @@ ArrOf__Scalar__::ArrOf__Scalar__(int n) :
 //    Signification: taille du tableau
 // Parametre: __scalar__ x
 //    Signification: valeur pour initialiser le tableau
+/*
 ArrOf__Scalar__::ArrOf__Scalar__(int n, __scalar__ x) :
   p_(0),
   data_(0),
@@ -730,7 +731,7 @@ ArrOf__Scalar__::ArrOf__Scalar__(int n, __scalar__ x) :
     *this = x;
   }
 }
-
+*/
 // Description:
 //     Constructeur par copie. On alloue une nouvelle zone de memoire
 //     et on copie le contenu du tableau (il s'agit d'un "deep copy"). 

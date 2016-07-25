@@ -19,7 +19,7 @@ class __Scalar__Vect : public ArrOf__Scalar__
 public:
   __Scalar__Vect() : size_reelle_(0), line_size_(1) {};
   __Scalar__Vect(int n);
-  __Scalar__Vect(int n, __scalar__ x);
+//  __Scalar__Vect(int n, __scalar__ x);
   __Scalar__Vect(const __Scalar__Vect&);
   // Pas de constructeur par copie de ArrOf__Scalar__, voir __Scalar__Vect(const __Scalar__Vect&)
   ~__Scalar__Vect() {};
@@ -342,7 +342,7 @@ __Scalar__Vect::__Scalar__Vect(int n) :
   line_size_(1)
 {
 }
-
+/*
 // Description: construction d'un vecteur de taille n.
 //  Les elements du vecteur sont initialises avec la valeur x.
 __Scalar__Vect::__Scalar__Vect(int n, __scalar__ x) :  
@@ -351,7 +351,7 @@ __Scalar__Vect::__Scalar__Vect(int n, __scalar__ x) :
   line_size_(1)
 {
 }
-
+*/
 // Description: Constructeur par copie. Il s'agit d'un "deep copy" 
 //   voir ArrOf__Scalar__::ArrOf__Scalar__(const ArrOf__Scalar__ &)
 //  Remarque: il n'y a pas de constructeur par copie a partir de ArrOf__Scalar__

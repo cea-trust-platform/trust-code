@@ -1410,10 +1410,11 @@ int ParoiVDF_TBLE_LRM::calculer_hyd(DoubleTab& tab_k_eps)
 
     }//fin boucle sur les bords
 
-  SFichier fic("iter.dat",ios::app); // ouverture du fichier iter.dat
-  fic << tps << " " << itmax << finl;
-
-
+  if (Process::je_suis_maitre())
+    {
+      SFichier fic("iter.dat",ios::app); // ouverture du fichier iter.dat
+      fic << tps << " " << itmax << finl;
+    }
 
 
   Cisaillement_paroi_.echange_espace_virtuel();

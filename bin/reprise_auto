@@ -34,14 +34,25 @@ archivage()
    # Archivage sauf si specifie par l'utilisateur:
    if [ "$ARCHIVAGE" != "NO" ]
    then
-      # On fait une sauvegarde sur $CCCSTOREDIR=$STOREDIR si le repertoire existe et si l'utilisateur n'a pas specifie d'options d'archivage
+      # On fait une sauvegarde sur $CCCSTOREDIR ou $STOREDIR si le repertoire existe et si l'utilisateur n'a pas specifie d'options d'archivage
       # sinon en local dans le repertoire d'etude
-      if [ "$STOREDIR" != "" ] && [ -d $STOREDIR ] && [ "$ARCHIVAGE" != "FAST_LOCAL" ]
+      if [ $sub = CCC ]
       then
-	 DIRSAUV=`pwd | $TRUST_Awk -F"/" -v p=$STOREDIR -v h=$HOME '{n=split(h,a,"/")+1;for (i=n;i<=NF;i++) p=p"/"$i;print p}'`"/SAUV-$temps"
-	 ln -sf $DIRSAUV . 2>/dev/null
+         if [ "$CCCSTOREDIR" != "" ] && [ -d $CCCSTOREDIR ] && [ "$ARCHIVAGE" != "FAST_LOCAL" ]
+         then
+	    DIRSAUV=`pwd | $TRUST_Awk -F"/" -v p=$CCCSTOREDIR -v h=$HOME '{n=split(h,a,"/")+1;for (i=n;i<=NF;i++) p=p"/"$i;print p}'`"/SAUV-$temps"
+	    ln -sf $DIRSAUV . 2>/dev/null
+         else
+	    DIRSAUV=`pwd`"/SAUV-$temps"
+         fi
       else
-	 DIRSAUV=`pwd`"/SAUV-$temps"
+         if [ "$STOREDIR" != "" ] && [ -d $STOREDIR ] && [ "$ARCHIVAGE" != "FAST_LOCAL" ]
+         then
+	    DIRSAUV=`pwd | $TRUST_Awk -F"/" -v p=$STOREDIR -v h=$HOME '{n=split(h,a,"/")+1;for (i=n;i<=NF;i++) p=p"/"$i;print p}'`"/SAUV-$temps"
+	    ln -sf $DIRSAUV . 2>/dev/null
+         else
+	    DIRSAUV=`pwd`"/SAUV-$temps"
+         fi
       fi
       mes=$mes"Saving files under $DIRSAUV (could take several minutes)...\n"
       message -i
@@ -55,25 +66,26 @@ archivage()
       then
          cp -f $ASCII_files $DIRSAUV/.
       else	
-         tar cf - $ASCII_files | gzip --fast -f -c > $DIRSAUV/ASCII_files.tar.gz
+         if [ "$ARCHIVAGE" = "NOT_GZIP" ]
+         then
+	    tar cf $DIRSAUV/ASCII_files.tar $ASCII_files
+         else
+            tar cf - $ASCII_files | gzip --fast -f -c > $DIRSAUV/ASCII_files.tar.gz
+         fi
       fi
       end=`date +%s`
       time_spent=`echo $end-$begin | bc 2>/dev/null`
-      mes=$mes"ASCII_files.tar.gz created in $time_spent seconds.\n"
-      # On copie en gzippant
-      #for file in *.data *.out *.err *.dat Channel_Flow_Rate_repr_* Pressure_Gradient_* *.son *.TU
-      #do
-      #	 if [ -f $file ]
-      # then
-	    # On ne gzippe pas si binaire (car sinon operation 3* plus lente que la copie directe) ou si archivage rapide
-            #if [ "`file -b $file | grep -i ascii`" != "" ] && [ "$ARCHIVAGE" != "FAST_LOCAL" ]
-            #then
-	    #   gzip --fast -f -c $file > $DIRSAUV/$file".gz"
-	    #else
-	    #   cp -f $file $DIRSAUV/.
-	    #fi
-	 #fi
-      #done
+      if [ "$ARCHIVAGE" = "FAST_LOCAL" ]
+      then
+         mes=$mes"ASCII_files copied in $time_spent seconds.\n"
+      else	
+         if [ "$ARCHIVAGE" = "NOT_GZIP" ]
+         then
+            mes=$mes"ASCII_files.tar created in $time_spent seconds.\n"
+         else
+            mes=$mes"ASCII_files.tar.gz created in $time_spent seconds.\n"
+         fi
+      fi
       # On fait un tar par format puis on efface (sauf fichiers de sauvegarde):
       formats="lml lata sauv xyz"
       for format in $formats
@@ -90,7 +102,7 @@ archivage()
 	    if [ "$ARCHIVAGE" = "FAST_LOCAL" ]
 	    then
 	       cp -f $files $DIRSAUV/.
-	    elif [ "`file -b $files | grep -i ascii`" != "" ]
+	    elif [ "`file -b $files | grep -i ascii`" != "" ] && [ "$ARCHIVAGE" != "NOT_GZIP" ]
 	    then
 	       tar cf - $files | gzip --fast -f -c > $DIRSAUV/$format.tar.gz
 	    else
@@ -98,7 +110,15 @@ archivage()
 	    fi
 	    end=`date +%s`
 	    time_spent=`echo $end-$begin | bc 2>/dev/null`
-	    mes=$mes"$format.tar created in $time_spent seconds.\n"
+	    if [ "$ARCHIVAGE" = "FAST_LOCAL" ]
+	    then
+	       mes=$mes"$format files copied in $time_spent seconds.\n"
+	    elif [ "`file -b $files | grep -i ascii`" != "" ] && [ "$ARCHIVAGE" != "NOT_GZIP" ]
+	    then
+	       mes=$mes"$format.tar.gz created in $time_spent seconds.\n"
+	    else
+	       mes=$mes"$format.tar created in $time_spent seconds.\n"
+            fi
 	    [ $format != sauv ] && [ $format != xyz ] && rm -f $files
 	 fi
       done
@@ -384,6 +404,7 @@ mes=""
 
 echo "
 #################################################################
+20/07/16: It is possible to put 'export ARCHIVAGE=NOT_GZIP' in the submission file to not gzip the tar archives
 13/05/15: CINES cluster occigen supported (SLURM)
 13/05/15: \$CCCSTOREDIR is equivalent to \$STOREDIR on CCRT clusters and \$STOREDIR exists on CINES cluster
 25/01/13: Messages translated in english

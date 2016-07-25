@@ -301,7 +301,6 @@ Entree& Distanceparoi::interpreter_(Entree& is)
     }
 
   fic_sauv << ntot << (int)0 << (int)0 << (int)0 << (int)1 << (int)0 << finl << ntot << finl << (int)1 << (int)0 << (int)0 <<finl;
-  //    fic_sauv<<ntot<<finl<<0<<finl<< 0<<finl<< 0<<finl<<1 <<finl<<0 <<finl<<ntot<<finl<<1 <<finl<<0<<finl<< 0<<finl;
 
   if (format=="formatte")
     {

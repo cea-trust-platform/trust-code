@@ -191,7 +191,8 @@ int DoubleTrav_test()
       }
     }
   {
-    DoubleTab y(10, 10, (double)1);
+    DoubleTab y(10, 10);
+    y=(double)1;
     DoubleTrav x(y);
     x(5,5) = (double)1;
     DoubleTab z(x);
