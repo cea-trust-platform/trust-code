@@ -14,83 +14,69 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Echange_externe_impose_H.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Quasi_Compressible
-// Version:     /main/8
+// File:        Echange_externe_impose.cpp
+// Directory:   $TRUST_ROOT/src/ThSol
+// Version:     /main/13
 //
 //////////////////////////////////////////////////////////////////////////////
-
-#ifndef Echange_externe_impose_H_included
-#define Echange_externe_impose_H_included
 
 #include <Echange_externe_impose.h>
-#include <Ref_Fluide_Quasi_Compressible.h>
+#include <Equation_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Echange_externe_impose_H:
-//    Cette classe represente le cas particulier de la classe
-//    Echange_externe_impose pour une equation en enthalpie..
-//
-// .SECTION voir aussi
-//    Echange_impose_base Echange_externe_impose
-//////////////////////////////////////////////////////////////////////////////
-class Echange_externe_impose_H  : public Echange_externe_impose
-{
+Implemente_instanciable(Echange_externe_impose,"Paroi_echange_externe_impose",Echange_impose_base);
 
-  Declare_instanciable(Echange_externe_impose_H);
-
-  int compatible_avec_eqn(const Equation_base&) const;
-  void completer();
-
-  double T_ext(int num) const;
-  double T_ext(int num,int k) const;
-  inline Champ_front& T_ext();
-  inline const Champ_front& T_ext() const;
-
-protected :
-  REF(Fluide_Quasi_Compressible) le_fluide;
-
-};
 
 // Description:
-//    Renvoie le champ T_ext de temperature imposee a la frontiere.
+//    Ecrit le type de l'objet sur un flot de sortie
 // Precondition:
-// Parametre:
-//    Signification:
+// Parametre: Sortie& s
+//    Signification: un flot de sortie
 //    Valeurs par defaut:
 //    Contraintes:
-//    Acces:
-// Retour: Champ_front&
-//    Signification: le champ T_ext de temperature imposee a la frontiere
+//    Acces: entree/sortie
+// Retour: Sortie&
+//    Signification: le flot de sortie modifie
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition: la methode ne modifie pas l'objet
+Sortie& Echange_externe_impose::printOn(Sortie& s ) const
+{
+  return s << que_suis_je() << "\n";
+}
+
+// Description:
+//    Simple appel a Echange_impose_base::readOn(Entree&)
+//    Lit les specifications des conditions aux limites
+//    a partir d'un flot d'entree.
+// Precondition:
+// Parametre: Entree& s
+//    Signification: un flot d'entree
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces: entree/sortie
+// Retour: Entree&
+//    Signification: le flot de sortie modifie
 //    Contraintes:
 // Exception:
 // Effets de bord:
 // Postcondition:
-inline Champ_front& Echange_externe_impose_H::T_ext()
+Entree& Echange_externe_impose::readOn(Entree& s )
 {
-  return le_champ_front;
+  return Echange_impose_base::readOn(s) ;
 }
 
-// Description:
-//    Renvoie le champ T_ext de temperature imposee a la frontiere.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_front&
-//    Signification: le champ T_ext de temperature imposee a la frontiere
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-inline const Champ_front& Echange_externe_impose_H::T_ext() const
+int Echange_externe_impose::compatible_avec_discr(const Discretisation_base& discr) const
 {
-  return le_champ_front;
+  return 1;
 }
 
-#endif
+void Echange_externe_impose::verifie_ch_init_nb_comp()
+{
+  if (le_champ_front.non_nul())
+    {
+      const Equation_base& eq = zone_Cl_dis().equation();
+      const int nb_comp = le_champ_front.valeur().nb_comp();
+      eq.verifie_ch_init_nb_comp(eq.inconnue(),nb_comp);
+    }
+}

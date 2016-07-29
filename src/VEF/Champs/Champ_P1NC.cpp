@@ -24,7 +24,7 @@
 #include <Periodique.h>
 #include <Dirichlet_paroi_fixe.h>
 #include <Dirichlet_paroi_defilante.h>
-#include <Echange_global_impose.h>
+#include <Echange_externe_impose.h>
 #include <Neumann_paroi.h>
 #include <Neumann_homogene.h>
 #include <Fluide_Incompressible.h>

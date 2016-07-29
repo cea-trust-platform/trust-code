@@ -26,7 +26,7 @@
 #include <Champ_Uniforme.h>
 #include <Periodique.h>
 #include <Neumann_paroi.h>
-#include <Echange_global_impose.h>
+#include <Echange_externe_impose.h>
 #include <Ref_Champ_Q1NC.h>
 
 Implemente_instanciable(Op_Diff_VEF_Face_Q1,"Op_Diff_VEF_const_Q1NC",Op_Diff_VEF_base);

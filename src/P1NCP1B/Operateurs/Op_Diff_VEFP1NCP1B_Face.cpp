@@ -29,7 +29,7 @@
 #include <Neumann_paroi.h>
 #include <Neumann_homogene.h>
 #include <Neumann_sortie_libre.h>
-#include <Echange_global_impose.h>
+#include <Echange_externe_impose.h>
 #include <Symetrie.h>
 #include <Champ_Uniforme.h>
 #include <Domaine.h>

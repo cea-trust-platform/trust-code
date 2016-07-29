@@ -33,6 +33,7 @@
 #include <Neumann_paroi_adiabatique.h>
 #include <Symetrie.h>
 #include <Echange_global_impose.h>
+#include <Echange_externe_impose.h>
 #include <Neumann_sortie_libre.h>
 #include <NSCBC.h>
 

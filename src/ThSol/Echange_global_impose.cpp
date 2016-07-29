@@ -21,10 +21,8 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Echange_global_impose.h>
-#include <Equation_base.h>
 
 Implemente_instanciable(Echange_global_impose,"Paroi_echange_global_impose",Echange_impose_base);
-Implemente_instanciable(Echange_externe_impose,"Paroi_echange_externe_impose",Echange_impose_base);
 
 
 // Postcondition:
@@ -43,26 +41,6 @@ Implemente_instanciable(Echange_externe_impose,"Paroi_echange_externe_impose",Ec
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
 Sortie& Echange_global_impose::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << "\n";
-}
-
-
-// Description:
-//    Ecrit le type de l'objet sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-Sortie& Echange_externe_impose::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << "\n";
 }
@@ -86,41 +64,4 @@ Sortie& Echange_externe_impose::printOn(Sortie& s ) const
 Entree& Echange_global_impose::readOn(Entree& s )
 {
   return Echange_impose_base::readOn(s) ;
-}
-
-
-// Description:
-//    Simple appel a Echange_impose_base::readOn(Entree&)
-//    Lit les specifications des conditions aux limites
-//    a partir d'un flot d'entree.
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-Entree& Echange_externe_impose::readOn(Entree& s )
-{
-  return Echange_impose_base::readOn(s) ;
-}
-
-int Echange_externe_impose::compatible_avec_discr(const Discretisation_base& discr) const
-{
-  return 1;
-}
-
-void Echange_externe_impose::verifie_ch_init_nb_comp()
-{
-  if (le_champ_front.non_nul())
-    {
-      const Equation_base& eq = zone_Cl_dis().equation();
-      const int nb_comp = le_champ_front.valeur().nb_comp();
-      eq.verifie_ch_init_nb_comp(eq.inconnue(),nb_comp);
-    }
 }

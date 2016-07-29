@@ -35,8 +35,8 @@
 #include <Neumann_homogene.h>
 #include <Symetrie.h>
 #include <Periodique.h>
-#include <Echange_global_impose.h>
 #include <Neumann_sortie_libre.h>
+#include <Echange_impose_base.h>
 #include <Domaine.h>
 #include <Navier_Stokes_std.h>
 #include <Op_VEF_Face.h>

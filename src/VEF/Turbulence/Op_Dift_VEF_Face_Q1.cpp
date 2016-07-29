@@ -27,7 +27,7 @@
 #include <Dirichlet_paroi_fixe.h>
 #include <Dirichlet_paroi_defilante.h>
 #include <Neumann_paroi.h>
-#include <Echange_global_impose.h>
+#include <Echange_externe_impose.h>
 #include <Champ_Uniforme.h>
 #include <Paroi_negligeable_VEF.h>
 #include <Debog.h>

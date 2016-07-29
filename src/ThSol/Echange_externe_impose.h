@@ -14,83 +14,57 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Echange_externe_impose_H.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Quasi_Compressible
-// Version:     /main/8
+// File:        Echange_externe_impose.h
+// Directory:   $TRUST_ROOT/src/ThSol
+// Version:     /main/13
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Echange_externe_impose_H_included
-#define Echange_externe_impose_H_included
+#ifndef Echange_externe_impose_included
+#define Echange_externe_impose_included
 
-#include <Echange_externe_impose.h>
-#include <Ref_Fluide_Quasi_Compressible.h>
+
+
+
+#include <Echange_impose_base.h>
+
+
+
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    Classe Echange_externe_impose_H:
+//    Classe Echange_externe_impose:
 //    Cette classe represente le cas particulier de la classe
-//    Echange_externe_impose pour une equation en enthalpie..
+//    Echange_impose_base ou l'echange de chaleur total est calcule grace
+//    au coefficient d'echange de chaleur a la paroi fourni par l'utilisateur.
 //
+//     h_total  : coefficient d'echange total
+//     h_imp    : coefficient d'echange a la paroi (donnee utilisateur)
+//     e/lambda : coefficient d'echange interne
+//                avec : lambda, conductivite dans le fluide
+//                       e = d,  en laminaire
+//                       e = d',  en turbulent
+//     (ou d' est la distance equivalente calculee lors de l'application
+//       des lois de paroi)
+//          1/h_total = (1/h_imp) + (e/lambda)
+//    Ce n'est pas la classe Echange_externe_impose qui gere le calcul
+//    de h_total. La classe fournit seulement h_imp et c'est l'evaluateur
+//    de flux diffusif qui calcule les termes e/lambda et h_total.
+//    Les classes Echange_global_impose et Echange_externe_impose ont
+//    exactement la meme interface; la classe Echange_externe_impose
+//    sert donc seulement a signaler a l'evaluateur de flux diffusif
+//    qu'il doit calculer un coefficient d'echange total.
 // .SECTION voir aussi
-//    Echange_impose_base Echange_externe_impose
+//    Echange_impose_base Echange_global_impose
 //////////////////////////////////////////////////////////////////////////////
-class Echange_externe_impose_H  : public Echange_externe_impose
+class Echange_externe_impose  : public Echange_impose_base
 {
 
-  Declare_instanciable(Echange_externe_impose_H);
-
-  int compatible_avec_eqn(const Equation_base&) const;
-  void completer();
-
-  double T_ext(int num) const;
-  double T_ext(int num,int k) const;
-  inline Champ_front& T_ext();
-  inline const Champ_front& T_ext() const;
-
-protected :
-  REF(Fluide_Quasi_Compressible) le_fluide;
-
+  Declare_instanciable(Echange_externe_impose);
+  virtual int compatible_avec_discr(const Discretisation_base& ) const;
+  void verifie_ch_init_nb_comp();
 };
 
-// Description:
-//    Renvoie le champ T_ext de temperature imposee a la frontiere.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_front&
-//    Signification: le champ T_ext de temperature imposee a la frontiere
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-inline Champ_front& Echange_externe_impose_H::T_ext()
-{
-  return le_champ_front;
-}
-
-// Description:
-//    Renvoie le champ T_ext de temperature imposee a la frontiere.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_front&
-//    Signification: le champ T_ext de temperature imposee a la frontiere
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-inline const Champ_front& Echange_externe_impose_H::T_ext() const
-{
-  return le_champ_front;
-}
 
 #endif

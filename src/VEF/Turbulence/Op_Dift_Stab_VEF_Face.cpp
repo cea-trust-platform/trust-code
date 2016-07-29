@@ -24,7 +24,7 @@
 #include <Champ_P1NC.h>
 #include <Periodique.h>
 #include <Neumann_paroi.h>
-#include <Echange_global_impose.h>
+#include <Echange_externe_impose.h>
 #include <Neumann_homogene.h>
 #include <Symetrie.h>
 #include <Neumann_sortie_libre.h>
