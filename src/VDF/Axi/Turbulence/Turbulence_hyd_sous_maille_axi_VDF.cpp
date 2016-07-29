@@ -21,7 +21,10 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Turbulence_hyd_sous_maille_axi_VDF.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
+#include <Dirichlet_entree_fluide.h>
+#include <Neumann_sortie_libre.h>
+#include <Symetrie.h>
 #include <DoubleTrav.h>
 #include <Debog.h>
 #include <Schema_Temps_base.h>

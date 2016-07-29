@@ -24,7 +24,8 @@
 #include <Paroi_std_hyd_VEF.h>
 #include <Probleme_base.h>
 #include <Champ_Uniforme.h>
-#include <Les_Cl.h>
+#include <Dirichlet_paroi_fixe.h>
+#include <Dirichlet_paroi_defilante.h>
 #include <Champ_Uniforme_Morceaux.h>
 #include <Champ_Fonc_Tabule.h>
 #include <Champ_Fonc_Tabule_P0_VEF.h>

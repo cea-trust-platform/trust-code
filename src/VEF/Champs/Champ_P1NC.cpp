@@ -21,8 +21,14 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Champ_P1NC.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
+#include <Dirichlet_paroi_fixe.h>
+#include <Dirichlet_paroi_defilante.h>
+#include <Echange_global_impose.h>
+#include <Neumann_paroi.h>
+#include <Neumann_homogene.h>
 #include <Fluide_Incompressible.h>
+#include <Scalaire_impose_paroi.h>
 #include <Champ_Uniforme.h>
 #include <Operateur.h>
 #include <Operateur_base.h>

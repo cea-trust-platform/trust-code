@@ -23,7 +23,7 @@
 #include <Terme_Boussinesq_VEFPreP1B_Face.h>
 #include <Fluide_Incompressible.h>
 #include <Champ_Uniforme.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
 #include <Zone_VEF.h>
 #include <Zone_Cl_VEF.h>
 #include <Navier_Stokes_std.h>

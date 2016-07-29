@@ -23,7 +23,12 @@
 #include <Op_Div_VEFP1B_Elem.h>
 #include <Domaine.h>
 #include <Zone_Cl_VEF.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
+#include <Dirichlet.h>
+#include <Dirichlet_homogene.h>
+#include <Dirichlet_entree_fluide.h>
+#include <Symetrie.h>
+#include <Neumann.h>
 #include <Zone_VEF_PreP1b.h>
 #include <Debog.h>
 #include <Probleme_base.h>

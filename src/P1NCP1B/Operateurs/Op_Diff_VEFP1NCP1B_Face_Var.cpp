@@ -24,7 +24,6 @@
 #include <Champ_P1NC.h>
 #include <Champ_Q1NC.h>
 #include <Champ_Uniforme.h>
-#include <Les_Cl.h>
 #include <Ref_Champ_P1NC.h>
 #include <Ref_Champ_Q1NC.h>
 #include <Milieu_base.h>

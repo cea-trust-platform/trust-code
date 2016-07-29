@@ -23,7 +23,7 @@
 #include <Op_Grad_P0_to_Face.h>
 #include <Champ_P0_VDF.h>
 #include <Zone_Cl_VDF.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
 #include <Navier_Stokes_std.h>
 #include <Probleme_base.h>
 #include <Option_VDF.h>

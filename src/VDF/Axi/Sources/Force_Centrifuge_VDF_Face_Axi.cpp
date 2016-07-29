@@ -24,7 +24,10 @@
 #include <Zone_VDF.h>
 #include <Zone_Cl_VDF.h>
 #include <Champ_Face.h>
-#include <Les_Cl.h>
+#include <Neumann_sortie_libre.h>
+#include <Dirichlet.h>
+#include <Dirichlet_homogene.h>
+#include <Symetrie.h>
 #include <DoubleTrav.h>
 #include <Equation_base.h>
 #include <Champ_Inc.h>

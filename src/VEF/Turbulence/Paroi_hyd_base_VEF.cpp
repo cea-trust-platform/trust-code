@@ -31,7 +31,8 @@
 #include <Equation_base.h>
 #include <DoubleTrav.h>
 #include <communications.h>
-#include <Les_Cl.h>
+#include <Dirichlet_paroi_fixe.h>
+#include <Dirichlet_paroi_defilante.h>
 
 Implemente_base_sans_constructeur(Paroi_hyd_base_VEF,"Paroi_hyd_base_VEF",Turbulence_paroi_base);
 Paroi_hyd_base_VEF::Paroi_hyd_base_VEF():flag_face_keps_imposee_(0)

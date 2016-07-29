@@ -24,7 +24,8 @@
 #include <Fluide_Quasi_Compressible.h>
 #include <Zone_VDF.h>
 #include <Zone_Cl_VDF.h>
-#include <Les_Cl.h>
+#include <Dirichlet.h>
+#include <Dirichlet_homogene.h>
 #include <Zone_Cl_dis.h>
 
 Implemente_instanciable(Source_Gravite_Quasi_Compressible_VDF,"Source_Gravite_Quasi_Compressible_VDF",Source_Gravite_Quasi_Compressible_base);

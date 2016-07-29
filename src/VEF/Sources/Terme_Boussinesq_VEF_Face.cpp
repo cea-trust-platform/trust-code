@@ -23,7 +23,6 @@
 #include <Terme_Boussinesq_VEF_Face.h>
 #include <Fluide_Incompressible.h>
 #include <Champ_Uniforme.h>
-#include <Les_Cl.h>
 #include <Zone_VEF.h>
 #include <Zone_Cl_VEF.h>
 #include <Debog.h>

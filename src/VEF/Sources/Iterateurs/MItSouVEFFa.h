@@ -24,7 +24,7 @@
 #define MItSouVEFFa_H
 
 #include <Iterateur_Source_VEF_base.h>
-#include <Les_Cl.h>
+#include <Dirichlet.h>
 #include <Zone_VEF.h>
 #include <Champ_Uniforme.h>
 

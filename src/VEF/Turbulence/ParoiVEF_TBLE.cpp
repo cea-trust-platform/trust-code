@@ -24,7 +24,7 @@
 #include <ParoiVEF_TBLE.h>
 #include <Paroi_std_hyd_VEF.h>
 #include <Champ_Q1NC.h>
-#include <Les_Cl.h>
+#include <Dirichlet_paroi_fixe.h>
 #include <Champ_Uniforme.h>
 #include <Fluide_Incompressible.h>
 #include <EFichier.h>

@@ -23,7 +23,7 @@
 #include <Terme_Source_Acceleration_VEF_Face.h>
 #include <Zone_VEF_PreP1b.h>
 #include <Zone_Cl_VEFP1B.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
 #include <Navier_Stokes_std.h>
 #include <Champ_Fonc_P0_VEF.h>
 

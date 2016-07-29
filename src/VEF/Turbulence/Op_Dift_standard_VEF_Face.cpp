@@ -22,7 +22,11 @@
 
 #include <Op_Dift_standard_VEF_Face.h>
 #include <Champ_P1NC.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
+#include <Dirichlet.h>
+#include <Dirichlet_homogene.h>
+#include <Dirichlet_paroi_fixe.h>
+#include <Dirichlet_paroi_defilante.h>
 #include <Debog.h>
 #include <DoubleTrav.h>
 

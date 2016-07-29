@@ -25,7 +25,8 @@
 #include <Zone_dis.h>
 #include <Zone_Cl_dis.h>
 #include <EChaine.h>
-#include <Les_Cl.h>
+#include <Dirichlet_paroi_fixe.h>
+#include <Dirichlet_paroi_defilante.h>
 #include <Front_VF.h>
 
 

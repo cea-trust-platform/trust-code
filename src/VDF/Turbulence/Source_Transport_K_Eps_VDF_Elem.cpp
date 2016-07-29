@@ -27,7 +27,6 @@
 #include <Modele_turbulence_scal_base.h>
 #include <Probleme_base.h>
 #include <IntTrav.h>
-#include <Les_Cl.h>
 #include <Champ_Uniforme.h>
 #include <Zone_VDF.h>
 #include <Champ_Face.h>

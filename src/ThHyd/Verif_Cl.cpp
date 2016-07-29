@@ -22,7 +22,22 @@
 
 #include <Verif_Cl.h>
 #include <Zone_Cl_dis.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
+#include <Dirichlet_paroi_fixe.h>
+#include <Dirichlet_paroi_defilante.h>
+#include <Entree_fluide_vitesse_imposee.h>
+#include <Entree_fluide_vitesse_imposee_libre.h>
+#include <Entree_fluide_temperature_imposee.h>
+#include <Entree_fluide_T_h_imposee.h>
+#include <Entree_fluide_concentration_imposee.h>
+#include <Entree_fluide_K_Eps_impose.h>
+#include <Neumann_paroi.h>
+#include <Neumann_paroi_adiabatique.h>
+#include <Neumann_paroi_flux_nul.h>
+#include <Symetrie.h>
+#include <Echange_global_impose.h>
+#include <Neumann_sortie_libre.h>
+#include <Scalaire_impose_paroi.h>
 #include <Motcle.h>
 #include <Frontiere_dis_base.h>
 

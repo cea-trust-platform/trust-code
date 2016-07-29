@@ -23,7 +23,11 @@
 #include <Op_Grad_VDF_Face.h>
 #include <Champ_P0_VDF.h>
 #include <Zone_Cl_VDF.h>
-#include <Les_Cl.h>
+#include <Neumann_sortie_libre.h>
+#include <Periodique.h>
+#include <Symetrie.h>
+#include <Dirichlet.h>
+#include <Dirichlet_homogene.h>
 #include <Navier_Stokes_std.h>
 #include <Probleme_base.h>
 #include <Option_VDF.h>

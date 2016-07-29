@@ -22,7 +22,12 @@
 
 #include <Zone_Cl_EF.h>
 #include <Zone_EF.h>
-#include <Les_Cl.h>
+#include <Dirichlet.h>
+#include <Dirichlet_homogene.h>
+#include <Symetrie.h>
+#include <Neumann.h>
+#include <Neumann_homogene.h>
+#include <Periodique.h>
 //#include <Champ_P0_EF.h>
 #include <Champ_P1_EF.h>
 #include <Domaine.h>

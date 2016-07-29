@@ -23,7 +23,8 @@
 #include <Op_Diff_K_Eps_VEF_Face.h>
 #include <Modele_turbulence_hyd_K_Eps.h>
 #include <Champ_P1NC.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
+#include <Neumann_paroi.h>
 #include <Paroi_hyd_base_VEF.h>
 #include <Champ_Don.h>
 #include <Champ_Uniforme.h>

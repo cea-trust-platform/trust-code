@@ -23,7 +23,14 @@
 #include <Op_Diff_VEFP1NCP1B_Face.h>
 #include <Champ_P1NC.h>
 #include <Champ_Don.h>
-#include <Les_Cl.h>
+#include <Dirichlet.h>
+#include <Dirichlet_homogene.h>
+#include <Periodique.h>
+#include <Neumann_paroi.h>
+#include <Neumann_homogene.h>
+#include <Neumann_sortie_libre.h>
+#include <Echange_global_impose.h>
+#include <Symetrie.h>
 #include <Champ_Uniforme.h>
 #include <Domaine.h>
 #include <Ref_Champ_P1NC.h>

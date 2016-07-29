@@ -20,28 +20,3 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Periodique.h>
-#include <Dirichlet_paroi_fixe.h>
-#include <Dirichlet_paroi_defilante.h>
-#include <Dirichlet_entree_fluide.h>
-#include <Entree_fluide_vitesse_imposee.h>
-#include <Entree_fluide_vitesse_imposee_libre.h>
-#include <Entree_fluide_temperature_imposee.h>
-#include <Entree_fluide_T_h_imposee.h>
-#include <Entree_fluide_Fluctu_Temperature_imposee.h>
-#include <Entree_fluide_Flux_Chaleur_Turbulente_imposee.h>
-#include <Entree_fluide_concentration_imposee.h>
-#include <Entree_fluide_fraction_massique_imposee.h>
-#include <Entree_fluide_K_Eps_impose.h>
-#include <Entree_fluide_V2_impose.h>
-#include <Neumann_homogene.h>
-#include <Neumann_paroi.h>
-#include <Neumann_paroi_adiabatique.h>
-#include <Neumann_paroi_flux_nul.h>
-#include <Symetrie.h>
-#include <Echange_global_impose.h>
-#include <Temperature_imposee_paroi.h>
-#include <Neumann_sortie_libre.h>
-#include <Sortie_libre_pression_imposee.h>
-#include <Sortie_libre_pression_moyenne_imposee.h>
-#include <NSCBC.h>

@@ -23,7 +23,12 @@
 #include <Assembleur_P_VDF.h>
 #include <Zone_Cl_VDF.h>
 #include <Zone_VDF.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
+#include <Symetrie.h>
+#include <Neumann_sortie_libre.h>
+#include <Entree_fluide_vitesse_imposee.h>
+#include <Dirichlet_paroi_fixe.h>
+#include <Dirichlet_paroi_defilante.h>
 #include <Champ_front_instationnaire_base.h>
 #include <Champ_front_var_instationnaire.h>
 #include <Matrice_Bloc.h>

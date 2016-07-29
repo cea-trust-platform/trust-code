@@ -29,7 +29,6 @@
 #include <Tetraedre.h>
 #include <Quadrangle_VEF.h>
 #include <Hexaedre_VEF.h>
-//#include <Les_Cl.h>
 #include <Periodique.h>
 #include <Tri_EF.h>
 #include <Segment_EF.h>

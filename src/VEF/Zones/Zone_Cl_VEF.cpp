@@ -22,7 +22,15 @@
 
 #include <Zone_Cl_VEF.h>
 #include <Zone_VEF.h>
-#include <Les_Cl.h>
+#include <Dirichlet.h>
+#include <Dirichlet_homogene.h>
+#include <Periodique.h>
+#include <Symetrie.h>
+#include <Dirichlet_paroi_fixe.h>
+#include <Dirichlet_paroi_defilante.h>
+#include <Dirichlet_entree_fluide.h>
+#include <Scalaire_impose_paroi.h>
+#include <Neumann_sortie_libre.h>
 #include <Champ_P0_VEF.h>
 #include <Champ_P1NC.h>
 #include <Domaine.h>

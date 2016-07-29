@@ -29,6 +29,7 @@
 #include <Loi_Etat_GP.h>
 #include <Debog.h>
 #include <Schema_Temps.h>
+#include <Dirichlet.h>
 #include <Neumann_sortie_libre.h>
 #include <Frontiere_ouverte_rho_u_impose.h>
 #include <Champ_P1NC.h>

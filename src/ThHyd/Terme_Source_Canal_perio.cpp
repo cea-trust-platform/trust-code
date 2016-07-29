@@ -30,7 +30,8 @@
 #include <communications.h>
 #include <Zone_VF.h>
 #include <Zone_Cl_dis_base.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
+#include <Neumann_paroi.h>
 #include <Convection_Diffusion_std.h>
 #include <Fluide_Incompressible.h>
 #include <Operateur_Diff_base.h>

@@ -34,7 +34,16 @@
 #include <Zone_VDF.h>
 #include <Zone_Cl_VDF.h>
 #include <Zone_Cl_dis.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
+#include <Dirichlet_paroi_fixe.h>
+#include <Dirichlet_paroi_defilante.h>
+#include <Dirichlet_entree_fluide.h>
+#include <Neumann_paroi.h>
+#include <Neumann_paroi_adiabatique.h>
+#include <Symetrie.h>
+#include <Echange_global_impose.h>
+#include <Neumann_sortie_libre.h>
+#include <NSCBC.h>
 #include <Evaluateur_VDF.h>
 #include <Matrice_Morse.h>
 #include <Ref_Operateur_base.h>

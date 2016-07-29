@@ -23,7 +23,10 @@
 #include <Loi_Paroi_Nu_Impose_VEF.h>
 #include <Champ_Uniforme.h>
 #include <Zone_Cl_VEF.h>
-#include <Les_Cl.h>
+#include <Dirichlet_paroi_fixe.h>
+#include <Dirichlet_paroi_defilante.h>
+#include <Symetrie.h>
+#include <Neumann_paroi.h>
 #include <Fluide_Incompressible.h>
 #include <Fluide_Quasi_Compressible.h>
 #include <Convection_Diffusion_std.h>
