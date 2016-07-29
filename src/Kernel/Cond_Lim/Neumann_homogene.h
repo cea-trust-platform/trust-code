@@ -14,69 +14,39 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Frontiere_ouverte_rho_u_impose.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Quasi_Compressible
-// Version:     /main/5
+// File:        Neumann_homogene.h
+// Directory:   $TRUST_ROOT/src/Kernel/Cond_Lim
+// Version:     /main/12
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Frontiere_ouverte_rho_u_impose.h>
-#include <Fluide_Quasi_Compressible.h>
-#include <Equation_base.h>
-#include <Motcle.h>
-#include <Frontiere_dis_base.h>
+#ifndef Neumann_homogene_included
+#define Neumann_homogene_included
 
-Implemente_instanciable(Frontiere_ouverte_rho_u_impose,"Frontiere_ouverte_rho_u_impose",Entree_fluide_vitesse_imposee_libre);
+#include <Cond_lim_base.h>
 
 
-Sortie& Frontiere_ouverte_rho_u_impose::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << "\n";
-}
-
-
-Entree& Frontiere_ouverte_rho_u_impose::readOn(Entree& s)
-{
-  return Entree_fluide_vitesse_imposee_libre::readOn(s);
-}
-
-
-void Frontiere_ouverte_rho_u_impose::completer()
-{
-  le_fluide = ref_cast(Fluide_Quasi_Compressible,ma_zone_cl_dis->equation().milieu());
-}
-
-
-int Frontiere_ouverte_rho_u_impose::compatible_avec_eqn(const Equation_base& eqn) const
-{
-  if (!Entree_fluide_vitesse_imposee_libre::compatible_avec_eqn(eqn))
-    return 0;
-  if (!sub_type(Fluide_Quasi_Compressible,ma_zone_cl_dis->equation().milieu()))
-    return 0;
-  return 1;
-}
-
-
-double Frontiere_ouverte_rho_u_impose::val_imp_au_temps(double temps, int i) const
-{
-  Cerr << "Acces a une condition limite en rho.u sans preciser la composante" << finl;
-  exit();
-  return 0;
-}
-
-double Frontiere_ouverte_rho_u_impose::val_imp_au_temps(double temps, int i,int j) const
+//////////////////////////////////////////////////////////////////////////////
+//
+// .DESCRIPTION
+//    Classe Neumann_homogene
+//    Cette classe est la classe de base de la hierarchie des conditions
+//    aux limites de type Neumann homogenes.
+//    Une condition aux limites de type Neumann_homogene impose une valeur nulle
+//    de la derivee d'un champ inconnue sur une frontiere, ce qui correspond a:
+//      - flux nul impose pour l'equation de transport d'un scalaire
+//      - contrainte nulle imposee pour l'equation de quantite de mouvement
+// .SECTION voir aussi
+//     Cond_lim_base Neumann
+//////////////////////////////////////////////////////////////////////////////
+class Neumann_homogene : public Cond_lim_base
 {
 
-  double rho_u, rho;
-  int ndeb=le_champ_front->frontiere_dis().frontiere().num_premiere_face();
-  const DoubleTab& tab_rho_u=le_champ_front->valeurs_au_temps(temps);
-  assert(tab_rho_u.nb_dim()==2);
-  if (tab_rho_u.dimension(0)==1)
-    rho_u=tab_rho_u(0,j);
-  else
-    rho_u=tab_rho_u(i,j);
+  Declare_base(Neumann_homogene);
 
-  rho=le_fluide->rho_face_np1()(i+ndeb);
+public:
+  inline double flux_impose(int i) const;
+  inline double flux_impose(int i,int j) const;
+};
 
-  return rho_u/rho;
-}
+#endif

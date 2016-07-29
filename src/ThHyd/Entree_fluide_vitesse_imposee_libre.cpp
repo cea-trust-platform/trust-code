@@ -14,69 +14,51 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Frontiere_ouverte_rho_u_impose.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Quasi_Compressible
-// Version:     /main/5
+// File:        Entree_fluide_vitesse_imposee_libre.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd
+// Version:     /main/17
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Frontiere_ouverte_rho_u_impose.h>
-#include <Fluide_Quasi_Compressible.h>
-#include <Equation_base.h>
-#include <Motcle.h>
-#include <Frontiere_dis_base.h>
+#include <Entree_fluide_vitesse_imposee_libre.h>
 
-Implemente_instanciable(Frontiere_ouverte_rho_u_impose,"Frontiere_ouverte_rho_u_impose",Entree_fluide_vitesse_imposee_libre);
+Implemente_instanciable(Entree_fluide_vitesse_imposee_libre,"Frontiere_ouverte_vitesse_imposee_sortie",Entree_fluide_vitesse_imposee);
 
 
-Sortie& Frontiere_ouverte_rho_u_impose::printOn(Sortie& s ) const
+// Description:
+//    Ecrit le type de l'objet sur un flot de sortie.
+// Precondition:
+// Parametre: Sortie& s
+//    Signification: un flot de sortie
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces: entree/sortie
+// Retour: Sortie&
+//    Signification: le flot de sortie modifie
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition: la methode ne modifie pas l'objet
+Sortie& Entree_fluide_vitesse_imposee_libre::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << "\n";
 }
 
-
-Entree& Frontiere_ouverte_rho_u_impose::readOn(Entree& s)
+// Description:
+//    Simple appel a: Cond_lim_base::readOn(Entree& )
+// Precondition:
+// Parametre: Entree& s
+//    Signification: un flot d'entree
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces: entree/sortie
+// Retour: Entree& s
+//    Signification: le flot d'entree modifie
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+Entree& Entree_fluide_vitesse_imposee_libre::readOn(Entree& s)
 {
-  return Entree_fluide_vitesse_imposee_libre::readOn(s);
-}
-
-
-void Frontiere_ouverte_rho_u_impose::completer()
-{
-  le_fluide = ref_cast(Fluide_Quasi_Compressible,ma_zone_cl_dis->equation().milieu());
-}
-
-
-int Frontiere_ouverte_rho_u_impose::compatible_avec_eqn(const Equation_base& eqn) const
-{
-  if (!Entree_fluide_vitesse_imposee_libre::compatible_avec_eqn(eqn))
-    return 0;
-  if (!sub_type(Fluide_Quasi_Compressible,ma_zone_cl_dis->equation().milieu()))
-    return 0;
-  return 1;
-}
-
-
-double Frontiere_ouverte_rho_u_impose::val_imp_au_temps(double temps, int i) const
-{
-  Cerr << "Acces a une condition limite en rho.u sans preciser la composante" << finl;
-  exit();
-  return 0;
-}
-
-double Frontiere_ouverte_rho_u_impose::val_imp_au_temps(double temps, int i,int j) const
-{
-
-  double rho_u, rho;
-  int ndeb=le_champ_front->frontiere_dis().frontiere().num_premiere_face();
-  const DoubleTab& tab_rho_u=le_champ_front->valeurs_au_temps(temps);
-  assert(tab_rho_u.nb_dim()==2);
-  if (tab_rho_u.dimension(0)==1)
-    rho_u=tab_rho_u(0,j);
-  else
-    rho_u=tab_rho_u(i,j);
-
-  rho=le_fluide->rho_face_np1()(i+ndeb);
-
-  return rho_u/rho;
+  return Cond_lim_base::readOn(s);
 }

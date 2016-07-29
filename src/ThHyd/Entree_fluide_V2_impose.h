@@ -14,69 +14,42 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Frontiere_ouverte_rho_u_impose.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Quasi_Compressible
-// Version:     /main/5
+// File:        Entree_fluide_V2_impose.h
+// Directory:   $TRUST_ROOT/src/ThHyd
+// Version:     /main/17
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Frontiere_ouverte_rho_u_impose.h>
-#include <Fluide_Quasi_Compressible.h>
-#include <Equation_base.h>
-#include <Motcle.h>
-#include <Frontiere_dis_base.h>
 
-Implemente_instanciable(Frontiere_ouverte_rho_u_impose,"Frontiere_ouverte_rho_u_impose",Entree_fluide_vitesse_imposee_libre);
+#ifndef Entree_fluide_V2_impose_included
+#define Entree_fluide_V2_impose_included
+
+#include <Dirichlet_entree_fluide.h>
 
 
-Sortie& Frontiere_ouverte_rho_u_impose::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << "\n";
-}
-
-
-Entree& Frontiere_ouverte_rho_u_impose::readOn(Entree& s)
-{
-  return Entree_fluide_vitesse_imposee_libre::readOn(s);
-}
-
-
-void Frontiere_ouverte_rho_u_impose::completer()
-{
-  le_fluide = ref_cast(Fluide_Quasi_Compressible,ma_zone_cl_dis->equation().milieu());
-}
-
-
-int Frontiere_ouverte_rho_u_impose::compatible_avec_eqn(const Equation_base& eqn) const
-{
-  if (!Entree_fluide_vitesse_imposee_libre::compatible_avec_eqn(eqn))
-    return 0;
-  if (!sub_type(Fluide_Quasi_Compressible,ma_zone_cl_dis->equation().milieu()))
-    return 0;
-  return 1;
-}
-
-
-double Frontiere_ouverte_rho_u_impose::val_imp_au_temps(double temps, int i) const
-{
-  Cerr << "Acces a une condition limite en rho.u sans preciser la composante" << finl;
-  exit();
-  return 0;
-}
-
-double Frontiere_ouverte_rho_u_impose::val_imp_au_temps(double temps, int i,int j) const
+//////////////////////////////////////////////////////////////////////////////
+//
+// .DESCRIPTION
+//    classe Entree_fluide_V2_impose
+//    Cas particulier de la classe Dirichlet_entree_fluide
+//    pour les fluctuation de vitesse du modele K_Eps_V2 imposee.
+//    C'est le meme type de classe que Entree_fluide_concentration_imposee
+//    en imposant des grandeurs turbulentes.
+//    Impose les valeurs de V2  d'entree du fluide dans une
+//    equation de type Transport_V2
+// .SECTION voir aussi
+//    Dirichlet_entree_fluide Entree_fluide_concentration_imposee
+//    Transport_V2
+//////////////////////////////////////////////////////////////////////////////
+class Entree_fluide_V2_impose  : public Dirichlet_entree_fluide
 {
 
-  double rho_u, rho;
-  int ndeb=le_champ_front->frontiere_dis().frontiere().num_premiere_face();
-  const DoubleTab& tab_rho_u=le_champ_front->valeurs_au_temps(temps);
-  assert(tab_rho_u.nb_dim()==2);
-  if (tab_rho_u.dimension(0)==1)
-    rho_u=tab_rho_u(0,j);
-  else
-    rho_u=tab_rho_u(i,j);
+  Declare_instanciable(Entree_fluide_V2_impose);
 
-  rho=le_fluide->rho_face_np1()(i+ndeb);
+public :
+  int compatible_avec_eqn(const Equation_base&) const;
 
-  return rho_u/rho;
-}
+};
+
+#endif
+

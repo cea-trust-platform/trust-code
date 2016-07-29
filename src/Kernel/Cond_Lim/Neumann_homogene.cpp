@@ -14,15 +14,15 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Neumann.cpp
+// File:        Neumann_homogene.cpp
 // Directory:   $TRUST_ROOT/src/Kernel/Cond_Lim
 // Version:     /main/14
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Neumann.h>
+#include <Neumann_homogene.h>
 
-Implemente_base(Neumann,"Neumann",Cond_lim_base);
+Implemente_base(Neumann_homogene,"Neumann_homogene",Cond_lim_base);
 
 
 // Description:
@@ -39,81 +39,75 @@ Implemente_base(Neumann,"Neumann",Cond_lim_base);
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-Sortie& Neumann::printOn(Sortie& s ) const
+Sortie& Neumann_homogene::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << "\n";
 }
 
 // Description:
-//    Simple appel a: Cond_lim_base::readOn(Entree& )
+//    Type le champ a la frontiere en "Champ_front_uniforme"
+//    N'ecrit rien sur le flot passe en parametre
 // Precondition:
 // Parametre: Entree& s
 //    Signification: un flot d'entree
 //    Valeurs par defaut:
 //    Contraintes:
-//    Acces: entree/sortie
+//    Acces: NON ACCEDE
 // Retour: Entree& s
-//    Signification: le flot d'entree modifie
+//    Signification: le flot d'entree
 //    Contraintes:
 // Exception:
 // Effets de bord:
 // Postcondition:
-Entree& Neumann::readOn(Entree& s )
+Entree& Neumann_homogene::readOn(Entree& s )
 {
-  return Cond_lim_base::readOn(s);
+  le_champ_front.typer("Champ_front_uniforme");
+  return s ;
 }
 
 // Description:
 //    Renvoie la valeur du flux impose sur la i-eme composante
 //    du champ representant le flux a la frontiere.
+//    Toujours 0 pour Neumann homogene.
 // Precondition:
-// Parametre: int i
+// Parametre: int
 //    Signification: indice suivant la premiere dimension du champ
 //    Valeurs par defaut:
 //    Contraintes:
-//    Acces: entree
+//    Acces: NON ACCEDE
 // Retour: double
-//    Signification: la valeur imposee sur la composante du champ specifiee
-//    Contraintes:
-// Exception: deuxieme dimension du champ de frontiere superieur a 1
+//    Signification: la valeur du flux imposee sur la composante specifiee
+//    Contraintes: toujours egal a 0
+// Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-double Neumann::flux_impose(int i) const
+inline double Neumann_homogene::flux_impose(int ) const
 {
-  if (le_champ_front.valeurs().size()==1)
-    return le_champ_front(0,0);
-  else if (le_champ_front.valeurs().dimension(1)==1)
-    return le_champ_front(i,0);
-  else
-    Cerr << "Neumann::flux_impose error" << finl;
-  exit();
-  return 0.;
+  return 0;
 }
 
 // Description:
 //    Renvoie la valeur du flux impose sur la (i,j)-eme composante
 //    du champ representant le flux a la frontiere.
+//    Toujours 0 pour Neumann homogene.
 // Precondition:
-// Parametre: int i
+// Parametre: int
 //    Signification: indice suivant la premiere dimension du champ
 //    Valeurs par defaut:
 //    Contraintes:
-//    Acces: entree
-// Parametre: int j
+//    Acces: NON ACCEDE
+// Parametre: int
 //    Signification: indice suivant la deuxieme dimension du champ
 //    Valeurs par defaut:
 //    Contraintes:
-//    Acces: entree
+//    Acces: NON ACCEDE
 // Retour: double
-//    Signification: la valeur imposee sur la composante du champ specifiee
-//    Contraintes:
+//    Signification: la valeur imposee sur la composante specifiee
+//    Contraintes: toujours egal a 0
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-double Neumann::flux_impose(int i,int j) const
+inline double Neumann_homogene::flux_impose(int ,int ) const
 {
-  if (le_champ_front.valeurs().dimension(0)==1)
-    return le_champ_front(0,j);
-  else
-    return le_champ_front(i,j);
+  return 0;
 }

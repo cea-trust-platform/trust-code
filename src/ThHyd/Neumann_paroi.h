@@ -23,8 +23,6 @@
 #ifndef Neumann_paroi_included
 #define Neumann_paroi_included
 
-
-
 #include <Neumann.h>
 
 
@@ -51,45 +49,5 @@ public :
   virtual double flux_impose(int i,int j) const;
   void verifie_ch_init_nb_comp();
 };
-
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Neumann_paroi_adiabatique
-//    Cette condition limite correspond a une paroi adiabatique dans une
-//    equation de type Convection_Diffusion_Temperature.
-//    Le flux de temperature est nul a la frontiere.
-// .SECTION voir aussi
-//    Neumann_homogene
-//////////////////////////////////////////////////////////////////////////////
-class Neumann_paroi_adiabatique : public Neumann_homogene
-{
-
-  Declare_instanciable(Neumann_paroi_adiabatique);
-
-public :
-  int compatible_avec_eqn(const Equation_base&) const;
-
-};
-
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Neumann_paroi_flux_nul
-//    Cette condition limite flux nul a la frontiere.
-// .SECTION voir aussi
-//    Neumann_homogene Neumann_paroi_adiabatique
-//////////////////////////////////////////////////////////////////////////////
-class Neumann_paroi_flux_nul : public Neumann_paroi_adiabatique
-{
-
-  Declare_instanciable(Neumann_paroi_flux_nul);
-
-public :
-  int compatible_avec_eqn(const Equation_base&) const;
-};
-
 
 #endif

@@ -14,15 +14,17 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Neumann.cpp
-// Directory:   $TRUST_ROOT/src/Kernel/Cond_Lim
-// Version:     /main/14
+// File:        Neumann_paroi_flux_nul.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd
+// Version:     /main/28
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Neumann.h>
+#include <Neumann_paroi_flux_nul.h>
+#include <Motcle.h>
+#include <Equation_base.h>
 
-Implemente_base(Neumann,"Neumann",Cond_lim_base);
+Implemente_instanciable(Neumann_paroi_flux_nul,"Paroi",Neumann_paroi_adiabatique);
 
 
 // Description:
@@ -39,13 +41,13 @@ Implemente_base(Neumann,"Neumann",Cond_lim_base);
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-Sortie& Neumann::printOn(Sortie& s ) const
+Sortie& Neumann_paroi_flux_nul::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << "\n";
 }
 
 // Description:
-//    Simple appel a: Cond_lim_base::readOn(Entree& )
+//    Simple appel a: Neumann_homogene::readOn(Entree& )
 // Precondition:
 // Parametre: Entree& s
 //    Signification: un flot d'entree
@@ -58,62 +60,47 @@ Sortie& Neumann::printOn(Sortie& s ) const
 // Exception:
 // Effets de bord:
 // Postcondition:
-Entree& Neumann::readOn(Entree& s )
+Entree& Neumann_paroi_flux_nul::readOn(Entree& s )
 {
-  return Cond_lim_base::readOn(s);
+  return Neumann_homogene::readOn(s) ;
 }
 
 // Description:
-//    Renvoie la valeur du flux impose sur la i-eme composante
-//    du champ representant le flux a la frontiere.
+//    Renvoie un booleen indiquant la compatibilite des conditions
+//    aux limites avec l'equation specifiee en parametre.
+//    Des CL de type Neumann_paroi_flux_nul sont compatibles
+//    avec une equation dont le domaine est la Concentration, la Fraction_massique
+//    le Transport_Keps, le Transport_Keps_V2, le Transport_V2, le Diphasique_moyenne
+//    ou bien indetermine.
 // Precondition:
-// Parametre: int i
-//    Signification: indice suivant la premiere dimension du champ
+// Parametre: Equation_base& eqn
+//    Signification: l'equation avec laquelle il faut verifier la compatibilite
 //    Valeurs par defaut:
-//    Contraintes:
+//    Contraintes: reference constante
 //    Acces: entree
-// Retour: double
-//    Signification: la valeur imposee sur la composante du champ specifiee
-//    Contraintes:
-// Exception: deuxieme dimension du champ de frontiere superieur a 1
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-double Neumann::flux_impose(int i) const
-{
-  if (le_champ_front.valeurs().size()==1)
-    return le_champ_front(0,0);
-  else if (le_champ_front.valeurs().dimension(1)==1)
-    return le_champ_front(i,0);
-  else
-    Cerr << "Neumann::flux_impose error" << finl;
-  exit();
-  return 0.;
-}
-
-// Description:
-//    Renvoie la valeur du flux impose sur la (i,j)-eme composante
-//    du champ representant le flux a la frontiere.
-// Precondition:
-// Parametre: int i
-//    Signification: indice suivant la premiere dimension du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Parametre: int j
-//    Signification: indice suivant la deuxieme dimension du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Retour: double
-//    Signification: la valeur imposee sur la composante du champ specifiee
+// Retour: int
+//    Signification: valeur booleenne,
+//                   1 si les CL sont compatibles avec l'equation
+//                   0 sinon
 //    Contraintes:
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-double Neumann::flux_impose(int i,int j) const
+int Neumann_paroi_flux_nul::compatible_avec_eqn(const Equation_base& eqn) const
 {
-  if (le_champ_front.valeurs().dimension(0)==1)
-    return le_champ_front(0,j);
+  Motcle dom_app=eqn.domaine_application();
+  Motcle Concentration="Concentration";
+  Motcle Fraction_massique="Fraction_massique";
+  Motcle K_Eps ="Transport_Keps";
+  Motcle K_Eps_V2 ="Transport_Keps_V2";
+  Motcle V2 ="Transport_V2";
+  Motcle Diphasique="Diphasique_moyenne";
+  Motcle indetermine="indetermine";
+  if ( (dom_app==Concentration) || (dom_app==K_Eps) || (dom_app==K_Eps_V2) || (dom_app==V2) || (dom_app==Diphasique) || (dom_app==indetermine) || (dom_app==Fraction_massique))
+    return 1;
   else
-    return le_champ_front(i,j);
+    {
+      err_pas_compatible(eqn);
+      return 0;
+    }
 }

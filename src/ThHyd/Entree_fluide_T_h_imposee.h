@@ -14,69 +14,58 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Frontiere_ouverte_rho_u_impose.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Quasi_Compressible
-// Version:     /main/5
+// File:        Entree_fluide_T_h_imposee.h
+// Directory:   $TRUST_ROOT/src/ThHyd
+// Version:     /main/17
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Frontiere_ouverte_rho_u_impose.h>
-#include <Fluide_Quasi_Compressible.h>
-#include <Equation_base.h>
-#include <Motcle.h>
-#include <Frontiere_dis_base.h>
 
-Implemente_instanciable(Frontiere_ouverte_rho_u_impose,"Frontiere_ouverte_rho_u_impose",Entree_fluide_vitesse_imposee_libre);
+#ifndef Entree_fluide_T_h_imposee_included
+#define Entree_fluide_T_h_imposee_included
+
+#include <Dirichlet_entree_fluide.h>
 
 
-Sortie& Frontiere_ouverte_rho_u_impose::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << "\n";
-}
-
-
-Entree& Frontiere_ouverte_rho_u_impose::readOn(Entree& s)
-{
-  return Entree_fluide_vitesse_imposee_libre::readOn(s);
-}
-
-
-void Frontiere_ouverte_rho_u_impose::completer()
-{
-  le_fluide = ref_cast(Fluide_Quasi_Compressible,ma_zone_cl_dis->equation().milieu());
-}
-
-
-int Frontiere_ouverte_rho_u_impose::compatible_avec_eqn(const Equation_base& eqn) const
-{
-  if (!Entree_fluide_vitesse_imposee_libre::compatible_avec_eqn(eqn))
-    return 0;
-  if (!sub_type(Fluide_Quasi_Compressible,ma_zone_cl_dis->equation().milieu()))
-    return 0;
-  return 1;
-}
-
-
-double Frontiere_ouverte_rho_u_impose::val_imp_au_temps(double temps, int i) const
-{
-  Cerr << "Acces a une condition limite en rho.u sans preciser la composante" << finl;
-  exit();
-  return 0;
-}
-
-double Frontiere_ouverte_rho_u_impose::val_imp_au_temps(double temps, int i,int j) const
+//////////////////////////////////////////////////////////////////////////////
+//
+// .DESCRIPTION
+//    classe Entree_fluide_temperature_imposee
+//    Cas particulier de la classe Dirichlet_entree_fluide
+//    pour la temperature imposee: impose la temperature d'entree du fluide
+//    dans une equation de type Convection_Diffusion_Temperature
+// .SECTION voir aussi
+//    Dirichlet_entree_fluide Convection_Diffusion_Temperature
+//////////////////////////////////////////////////////////////////////////////
+class Entree_fluide_T_h_imposee  : public Dirichlet_entree_fluide
 {
 
-  double rho_u, rho;
-  int ndeb=le_champ_front->frontiere_dis().frontiere().num_premiere_face();
-  const DoubleTab& tab_rho_u=le_champ_front->valeurs_au_temps(temps);
-  assert(tab_rho_u.nb_dim()==2);
-  if (tab_rho_u.dimension(0)==1)
-    rho_u=tab_rho_u(0,j);
-  else
-    rho_u=tab_rho_u(i,j);
+  Declare_instanciable(Entree_fluide_T_h_imposee);
 
-  rho=le_fluide->rho_face_np1()(i+ndeb);
+public :
+  double val_imp(int i) const;
+  double val_imp(int i,int j) const;
+  int compatible_avec_eqn(const Equation_base&) const;
+  inline void bascule_cond_lim_en_enthalpie();
+  inline void bascule_cond_lim_en_temperature();
 
-  return rho_u/rho;
+protected:
+
+  Champ_front le_champ_Text;
+  Champ_front le_champ_hext;
+  int type_cond_lim;
+
+};
+
+inline void Entree_fluide_T_h_imposee::bascule_cond_lim_en_enthalpie()
+{
+  type_cond_lim = 1;
 }
+
+inline void Entree_fluide_T_h_imposee::bascule_cond_lim_en_temperature()
+{
+  type_cond_lim = 0;
+}
+
+#endif
+
