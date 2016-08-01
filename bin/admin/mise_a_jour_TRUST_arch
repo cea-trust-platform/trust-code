@@ -104,6 +104,7 @@ then
    [ "${HOST#callisto}" != $HOST ] && HOST=callisto
    [ "${HOST#ceres2}"   != $HOST ] && HOST=ceres2
    [ "${HOST#mezel}"    != $HOST ] && HOST=mezel
+   [ "${HOST#cobalt}"   != $HOST ] && HOST=cobalt
 fi
 
 WHERE=$HOME && [ "$WORKDIR" != "" ] && WHERE=$WORKDIR

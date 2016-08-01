@@ -28,5 +28,5 @@ Version	Qui				Tache
 1.7.0	triou@cea.fr            Renommer sous_maille en sous_maille_fonction_structure (in english) ?
 1.7.4	triou@cea.fr  		revoir test clang avec openmpi ou mpich ? idem avec machine test GNU > 5.3 ?)
 1.7.4	triou@cea.fr  		Doc : mettre a jour index et table des matieres (ajouter pression hydro + buildInnerBoundary dans formation users sur commentaire CL interne + remplecer -monitor et -probes par -evol)
-1.7.4	triou@cea.fr  		FIRST: risque identifie mise a jour doc suite a nouvelle architecture
+1.7.4	marthe.roux@cea.f	FIRST: risque identifie mise a jour doc suite a nouvelle architecture
 1.7.4	celine.capitaine@cea.fr Mettre a jour la notice de maintenance TRUST/TrioCFD

@@ -238,23 +238,23 @@ do
 	    
 	    # Lancement par ssh:
 	    option=""
-	    if [ "$machine" = airain ] || [ "$machine" = curie-ccrt ]
+	    if [ "$machine" = airain ] || [ "$machine" = curie-ccrt ] || [ "$machine" = cobalt ]
 	    then
 	       # CR bugges sur CCRT, on debugge:
 	       option="sh -xv "
                option=""
 	       # machine=$machine".bak" # Pourquoi CR_$machine est abime?
-	       #if [ `date '+%u'` -ge 5 ]
-	       #then
-	          # le vendredi soir on lance sur la frontale car encore des problèmes avec lance_test en soumission de job
+	       if [ `date '+%u'` -ge 5 ]
+	       then
+	          # le vendredi soir on lance sur la frontale car encore des problemes avec lance_test en soumission de job
 	          ssh_command "export WORKBASE=$WORKBASE;cd $WORKDIR/$version/TRUST/bin/admin;$option./mise_a_jour_TRUST_arch -rsync 1>~/CR_$machine 2>&1" &
 	          echo "Launching in background the update by ssh on $log@$adr at "`date '+%H:%M:%S'`
-	       #else
-	       #   # On ne lance plus sur la frontale
-	       #   #ssh_command "export WORKBASE=$WORKBASE;cd $WORKDIR/$version/TRUST/bin/admin;ccc_msub sub_maj_$machine" &
-	       #   #echo "Launching in background the update by ssh then ccc_msub on $log@$adr at "`date '+%H:%M:%S'`
-	       #   echo "NO launching in background the update by ssh then KO on $log@$adr at "`date '+%H:%M:%S'`
-	       #fi
+	       else
+	          # On ne lance plus sur la frontale
+	          #ssh_command "export WORKBASE=$WORKBASE;cd $WORKDIR/$version/TRUST/bin/admin;ccc_msub sub_maj_$machine" &
+	          #echo "Launching in background the update by ssh then ccc_msub on $log@$adr at "`date '+%H:%M:%S'`
+	          echo "NO launching in background the update by ssh then KO on $log@$adr at "`date '+%H:%M:%S'`
+	       fi
 	    #elif [ "$machine" = callisto ]
 	    #then
 	    #   # On ne lance plus sur la frontale
@@ -341,8 +341,21 @@ do
 	 ssh_command '[ "$WORKDIR" != "" ] && [ "$WORKDIR" != "$HOME" ] && cd $HOME && rm -f '$version' && ln -sf $WORKDIR/'$version' .'
 	 
 	 # Lancement par ssh
-         ssh_command "export WORKBASE=$WORKBASE;./mise_a_jour_TRUST_arch -sftp 1>~/CR_$machine 2>&1" &
-	 echo "Launching in background the update by ssh on $log@$adr"
+	 if [ "$machine" = cobalt ]
+	 then
+	    if [ `date '+%u'` -ge 5 ]
+	    then
+	       # le vendredi soir on lance sur la frontale car encore des problemes avec lance_test en soumission de job
+	       ssh_command "export WORKBASE=$WORKBASE;./mise_a_jour_TRUST_arch -sftp 1>~/CR_$machine 2>&1" &
+	       echo "Launching in background the update by ssh on $log@$adr at "`date '+%H:%M:%S'`
+	    else
+	       # On ne lance plus sur la frontale
+	       echo "NO launching in background the update by ssh then KO on $log@$adr at "`date '+%H:%M:%S'`
+	    fi
+	 else
+	    ssh_command "export WORKBASE=$WORKBASE;./mise_a_jour_TRUST_arch -sftp 1>~/CR_$machine 2>&1" &
+	    echo "Launching in background the update by ssh on $log@$adr"
+	 fi
       fi
    fi
    echo "------------------------------------"
