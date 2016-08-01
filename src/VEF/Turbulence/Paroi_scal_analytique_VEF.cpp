@@ -24,7 +24,8 @@
 #include <Paroi_std_hyd_VEF.h>
 #include <Probleme_base.h>
 #include <Champ_Uniforme.h>
-#include <Les_Cl.h>
+#include <Dirichlet_paroi_fixe.h>
+#include <Dirichlet_paroi_defilante.h>
 #include <Fluide_Incompressible.h>
 #include <Mod_turb_hyd_base.h>
 #include <Convection_Diffusion_Concentration.h>

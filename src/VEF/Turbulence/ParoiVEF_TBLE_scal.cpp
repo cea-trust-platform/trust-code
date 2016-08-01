@@ -24,7 +24,7 @@
 #include <ParoiVEF_TBLE_scal.h>
 #include <ParoiVEF_TBLE.h>
 #include <Paroi_std_hyd_VEF.h>
-#include <Les_Cl.h>
+#include <Dirichlet_paroi_fixe.h>
 #include <Champ_Uniforme.h>
 #include <Champ_front_calc.h>
 #include <Convection_Diffusion_Temperature.h>

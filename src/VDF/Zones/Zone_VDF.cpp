@@ -26,7 +26,9 @@
 #include <Hexaedre.h>
 #include <Faces_VDF.h>
 #include <Aretes.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
+#include <Dirichlet_entree_fluide.h>
+#include <Neumann_sortie_libre.h>
 #include <EcrFicCollecte.h>
 #include <math.h>
 

@@ -23,7 +23,7 @@
 #include <Op_VDF_Elem.h>
 #include <Zone_VDF.h>
 #include <Zone_Cl_VDF.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
 #include <Matrice_Morse.h>
 #include <Equation_base.h>
 #include <Champ_Inc.h>

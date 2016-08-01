@@ -87,10 +87,10 @@ Read pb
 		convection { muscl_old }
 		boundary_conditions 
 		{
-			HAUT 	frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
-			BAS 	frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
- 			OUEST 	frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
-			EST 	frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
+			HAUT 	frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 0
+			BAS 	frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 0
+ 			OUEST 	frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 0
+			EST 	frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 0
 		}
 		initial_conditions {
 			temperature champ_fonc_xyz dom 1 cos(sqrt(x^2+(y+0.6)^2)/0.25)*(sqrt(x^2+(y+0.6)^2)<0.25)

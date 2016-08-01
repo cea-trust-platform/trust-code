@@ -88,8 +88,8 @@ Read pb
 		boundary_conditions {
 			Haut frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.0
 			Bas paroi_fixe
-			Gauche frontiere_ouverte_vitesse_imposee  Champ_Front_Uniforme 2 0.1 0.
-			Droit frontiere_ouverte_vitesse_imposee  Champ_Front_Uniforme 2 -0.1 0.
+			Gauche frontiere_ouverte_vitesse_imposee_sortie Champ_Front_Uniforme 2 0.1 0.
+			Droit frontiere_ouverte_vitesse_imposee_sortie Champ_Front_Uniforme 2 -0.1 0.
 		}
 	}
 	Convection_Diffusion_Temperature

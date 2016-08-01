@@ -23,7 +23,8 @@
 #include <Assembleur_P_EF.h>
 #include <Zone_Cl_EF.h>
 #include <Zone_EF.h>
-#include <Les_Cl.h>
+#include <Neumann_sortie_libre.h>
+#include <Dirichlet.h>
 #include <Champ_front_instationnaire_base.h>
 #include <Champ_front_var_instationnaire.h>
 #include <Matrice_Bloc.h>

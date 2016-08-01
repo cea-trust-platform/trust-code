@@ -29,7 +29,6 @@
 #include <Modele_turbulence_scal_base.h>
 #include <Fluide_Incompressible.h>
 #include <Probleme_base.h>
-#include <Les_Cl.h>
 #include <Champ_Uniforme.h>
 #include <Zone_VEF.h>
 #include <Champ_P1NC.h>

@@ -24,7 +24,6 @@
 #define MIt_Sou_EF_H
 
 #include <Iterateur_Source_EF_base.h>
-#include <Les_Cl.h>
 #include <Zone_EF.h>
 #include <Champ_Uniforme.h>
 

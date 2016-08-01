@@ -29,8 +29,6 @@
 #include <Convection_Diffusion_Concentration.h>
 
 Implemente_instanciable(Neumann_paroi,"Neumann_paroi",Neumann);
-Implemente_instanciable(Neumann_paroi_adiabatique,"Neumann_Paroi_adiabatique",Neumann_homogene);
-Implemente_instanciable(Neumann_paroi_flux_nul,"Paroi",Neumann_paroi_adiabatique);
 
 
 // Description:
@@ -53,44 +51,6 @@ Sortie& Neumann_paroi::printOn(Sortie& s ) const
 }
 
 // Description:
-//    Ecrit le type de l'objet sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-Sortie& Neumann_paroi_adiabatique::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << "\n";
-}
-
-// Description:
-//    Ecrit le type de l'objet sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-Sortie& Neumann_paroi_flux_nul::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << "\n";
-}
-
-// Description:
 //    Simple appel a: Cond_lim_base::readOn(Entree& )
 // Precondition:
 // Parametre: Entree& s
@@ -108,45 +68,6 @@ Entree& Neumann_paroi::readOn(Entree& s )
 {
   return Cond_lim_base::readOn(s) ;
 }
-
-// Description:
-//    Simple appel a: Neumann_homogene::readOn(Entree& )
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree& s
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-Entree& Neumann_paroi_adiabatique::readOn(Entree& s )
-{
-  return Neumann_homogene::readOn(s) ;
-}
-
-// Description:
-//    Simple appel a: Neumann_homogene::readOn(Entree& )
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree& s
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-Entree& Neumann_paroi_flux_nul::readOn(Entree& s )
-{
-  return Neumann_homogene::readOn(s) ;
-}
-
 
 // Description:
 //    Renvoie un booleen indiquant la compatibilite des conditions
@@ -192,82 +113,6 @@ void Neumann_paroi::verifie_ch_init_nb_comp()
       const Equation_base& eq = zone_Cl_dis().equation();
       const int nb_comp = le_champ_front.valeur().nb_comp();
       eq.verifie_ch_init_nb_comp(eq.inconnue(),nb_comp);
-    }
-}
-
-// Description:
-//    Renvoie un booleen indiquant la compatibilite des conditions
-//    aux limites avec l'equation specifiee en parametre.
-//    Des CL de type Neumann_paroi sont compatibles
-//    avec une equation dont le domaine est la Thermique
-//    ou bien indetermine.
-// Precondition:
-// Parametre: Equation_base& eqn
-//    Signification: l'equation avec laquelle il faut verifier la compatibilite
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: int
-//    Signification: valeur booleenne,
-//                   1 si les CL sont compatibles avec l'equation
-//                   0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-int Neumann_paroi_adiabatique::compatible_avec_eqn(const Equation_base& eqn) const
-{
-  Motcle dom_app=eqn.domaine_application();
-  Motcle Thermique="Thermique";
-  Motcle Diphasique="Diphasique_moyenne";
-  Motcle Thermique_H="Thermique_H";
-  Motcle indetermine="indetermine";
-  if ( (dom_app==Thermique) || (dom_app==Diphasique) || (dom_app==Thermique_H) || (dom_app==indetermine) )
-    return 1;
-  else
-    {
-      err_pas_compatible(eqn);
-      return 0;
-    }
-}
-
-// Description:
-//    Renvoie un booleen indiquant la compatibilite des conditions
-//    aux limites avec l'equation specifiee en parametre.
-//    Des CL de type Neumann_paroi_flux_nul sont compatibles
-//    avec une equation dont le domaine est la Concentration, la Fraction_massique
-//    le Transport_Keps, le Transport_Keps_V2, le Transport_V2, le Diphasique_moyenne
-//    ou bien indetermine.
-// Precondition:
-// Parametre: Equation_base& eqn
-//    Signification: l'equation avec laquelle il faut verifier la compatibilite
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: int
-//    Signification: valeur booleenne,
-//                   1 si les CL sont compatibles avec l'equation
-//                   0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-int Neumann_paroi_flux_nul::compatible_avec_eqn(const Equation_base& eqn) const
-{
-  Motcle dom_app=eqn.domaine_application();
-  Motcle Concentration="Concentration";
-  Motcle Fraction_massique="Fraction_massique";
-  Motcle K_Eps ="Transport_Keps";
-  Motcle K_Eps_V2 ="Transport_Keps_V2";
-  Motcle V2 ="Transport_V2";
-  Motcle Diphasique="Diphasique_moyenne";
-  Motcle indetermine="indetermine";
-  if ( (dom_app==Concentration) || (dom_app==K_Eps) || (dom_app==K_Eps_V2) || (dom_app==V2) || (dom_app==Diphasique) || (dom_app==indetermine) || (dom_app==Fraction_massique))
-    return 1;
-  else
-    {
-      err_pas_compatible(eqn);
-      return 0;
     }
 }
 

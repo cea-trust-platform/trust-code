@@ -28,7 +28,11 @@
 #include <Zone_VDF.h>
 #include <Zone_Cl_VDF.h>
 #include <Equation_base.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
+#include <Symetrie.h>
+#include <Dirichlet_entree_fluide.h>
+#include <Dirichlet_paroi_fixe.h>
+#include <Dirichlet_paroi_defilante.h>
 #include <Champ_front_var_instationnaire.h>
 #include <Champ_front_instationnaire_base.h>
 

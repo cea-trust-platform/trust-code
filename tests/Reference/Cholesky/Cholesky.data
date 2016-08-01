@@ -86,7 +86,7 @@ Read pb
 		boundary_conditions {
 			Haut paroi_fixe
 			Bas paroi_fixe
-			Gauche Frontiere_ouverte_vitesse_imposee
+			Gauche Frontiere_ouverte_vitesse_imposee_sortie
 				Champ_front_uniforme 2 1. 0.
 			Droit Frontiere_ouverte_pression_imposee 
                             Champ_front_Uniforme 1 0.

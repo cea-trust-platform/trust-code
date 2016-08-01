@@ -25,7 +25,7 @@
 #include <Scatter.h>
 #include <IntLists.h>
 #include <Conds_lim.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
 #include <Debog.h>
 #include <EcrFicPartageBin.h>
 #include <EFichierBin.h>

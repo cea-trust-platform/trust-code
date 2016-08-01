@@ -23,7 +23,6 @@
 #include <Masse_VDF_Elem.h>
 #include <Zone_Cl_VDF.h>
 #include <Zone_VDF.h>
-#include <Les_Cl.h>
 #include <Debog.h>
 
 Implemente_instanciable(Masse_VDF_Elem,"Masse_VDF_P0_VDF",Solveur_Masse_base);

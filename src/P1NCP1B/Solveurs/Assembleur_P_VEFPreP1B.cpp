@@ -23,7 +23,10 @@
 #include <Assembleur_P_VEFPreP1B.h>
 #include <Matrice_Bloc_Sym.h>
 #include <Domaine.h>
-#include <Les_Cl.h>
+#include <Dirichlet.h>
+#include <Dirichlet_homogene.h>
+#include <Entree_fluide_vitesse_imposee.h>
+#include <Neumann_sortie_libre.h>
 #include <LecFicDistribueBin.h>
 #include <Champ_front_instationnaire_base.h>
 #include <Champ_front_var.h>

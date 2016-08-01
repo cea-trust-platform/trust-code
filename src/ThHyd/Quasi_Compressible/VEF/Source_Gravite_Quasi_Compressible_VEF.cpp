@@ -25,7 +25,9 @@
 #include <Equation_base.h>
 #include <Zone_VEF.h>
 #include <Zone_Cl_VEF.h>
-#include <Les_Cl.h>
+#include <Neumann_sortie_libre.h>
+#include <Periodique.h>
+#include <Symetrie.h>
 #include <Discretisation_base.h>
 
 Implemente_instanciable(Source_Gravite_Quasi_Compressible_VEF,"Source_Gravite_Quasi_Compressible_VEF",Source_Gravite_Quasi_Compressible_base);

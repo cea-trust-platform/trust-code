@@ -30,7 +30,13 @@
 #include <Ref_Zone_Cl_VEF.h>
 #include <Zone_VEF.h>
 #include <Zone_Cl_VEF.h>
-#include <Les_Cl.h>
+#include <Dirichlet.h>
+#include <Dirichlet_homogene.h>
+#include <Neumann_homogene.h>
+#include <Symetrie.h>
+#include <Periodique.h>
+#include <Neumann_sortie_libre.h>
+#include <Echange_impose_base.h>
 #include <Domaine.h>
 #include <Navier_Stokes_std.h>
 #include <Op_VEF_Face.h>

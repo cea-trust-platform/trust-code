@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Turbulence_hyd_sous_maille_VEF.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
 #include <Debog.h>
 #include <Schema_Temps_base.h>
 #include <Equation_base.h>

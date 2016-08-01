@@ -23,9 +23,7 @@
 #ifndef Neumann_sortie_libre_included
 #define Neumann_sortie_libre_included
 
-
 #include <Neumann.h>
-#include <Ref_Champ_Inc.h>
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -66,7 +64,7 @@ public:
   virtual void associer_fr_dis_base(const Frontiere_dis_base& ) ;
   void verifie_ch_init_nb_comp();
 
-  virtual void         fixer_nb_valeurs_temporelles (int nb_cases);
+  virtual void fixer_nb_valeurs_temporelles (int nb_cases);
   virtual void mettre_a_jour(double temps);
   virtual void set_temps_defaut(double temps);
   virtual void changer_temps_futur(double temps, int i);
@@ -78,38 +76,5 @@ protected:
   Champ_front le_champ_ext;
 
 };
-
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Sortie_libre_pression_imposee
-//    Cette classe derive de Neumann_sortie_libre
-//    Elle represente une frontiere ouverte avec condition de pression imposee.
-//    L'objet de type Champ_bord le_champ_bord contient la pression et la
-//    fonction flux_impose() renvoie les valeurs de cette pression.
-//    champ_ext contient une valeur de la vitesse du fluide a l'exterieur
-//    accessible par la methode val_ext()
-// .SECTION voir aussi
-//     Neumann_sortie_libre
-//////////////////////////////////////////////////////////////////////////////
-class Sortie_libre_pression_imposee : public Neumann_sortie_libre
-{
-
-  Declare_instanciable(Sortie_libre_pression_imposee);
-
-public :
-
-  int compatible_avec_eqn(const Equation_base&) const;
-  double flux_impose(int i) const;
-  double flux_impose(int i,int j) const;
-  void completer();
-
-protected:
-
-  double d_rho;
-};
-
-
 
 #endif

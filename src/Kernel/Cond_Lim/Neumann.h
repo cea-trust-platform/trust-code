@@ -23,7 +23,6 @@
 #ifndef Neumann_included
 #define Neumann_included
 
-
 #include <Cond_lim_base.h>
 
 
@@ -46,85 +45,9 @@ class Neumann : public Cond_lim_base
   Declare_base(Neumann);
 
 public:
-
   virtual double flux_impose(int i) const;
   virtual double flux_impose(int i,int j) const;
 
 };
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Neumann_homogene
-//    Cette classe est la classe de base de la hierarchie des conditions
-//    aux limites de type Neumann homogenes.
-//    Une condition aux limites de type Neumann_homogene impose une valeur nulle
-//    de la derivee d'un champ inconnue sur une frontiere, ce qui correspond a:
-//      - flux nul impose pour l'equation de transport d'un scalaire
-//      - contrainte nulle imposee pour l'equation de quantite de mouvement
-// .SECTION voir aussi
-//     Cond_lim_base Neumann
-//////////////////////////////////////////////////////////////////////////////
-class Neumann_homogene : public Cond_lim_base
-{
-
-  Declare_base(Neumann_homogene);
-
-public:
-
-  inline double flux_impose(int i) const;
-  inline double flux_impose(int i,int j) const;
-};
-
-
-// Description:
-//    Renvoie la valeur du flux impose sur la i-eme composante
-//    du champ representant le flux a la frontiere.
-//    Toujours 0 pour Neumann homogene.
-// Precondition:
-// Parametre: int
-//    Signification: indice suivant la premiere dimension du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: NON ACCEDE
-// Retour: double
-//    Signification: la valeur du flux imposee sur la composante specifiee
-//    Contraintes: toujours egal a 0
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-inline double Neumann_homogene::flux_impose(int ) const
-{
-  return 0;
-}
-
-
-// Description:
-//    Renvoie la valeur du flux impose sur la (i,j)-eme composante
-//    du champ representant le flux a la frontiere.
-//    Toujours 0 pour Neumann homogene.
-// Precondition:
-// Parametre: int
-//    Signification: indice suivant la premiere dimension du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: NON ACCEDE
-// Parametre: int
-//    Signification: indice suivant la deuxieme dimension du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: NON ACCEDE
-// Retour: double
-//    Signification: la valeur imposee sur la composante specifiee
-//    Contraintes: toujours egal a 0
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-inline double Neumann_homogene::flux_impose(int ,int ) const
-{
-  return 0;
-}
-
-
 
 #endif

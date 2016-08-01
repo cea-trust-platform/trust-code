@@ -24,7 +24,9 @@
 #include <Zone_Cl_VEF.h>
 #include <Zone_VEF.h>
 #include <Front_VF.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
+#include <Dirichlet.h>
+#include <Dirichlet_homogene.h>
 
 void BilanQdmVEF::bilan_qdm(const DoubleTab& dudt, const Zone_Cl_VEF& zone_Cl_VEF, ArrOfDouble& bilan)
 {

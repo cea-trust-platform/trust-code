@@ -25,7 +25,11 @@
 #include <Zone_Cl_dis.h>
 #include <Zone_VDF.h>
 #include <Zone_Cl_VDF.h>
-#include <Les_Cl.h>
+#include <Neumann_sortie_libre.h>
+#include <Dirichlet.h>
+#include <Dirichlet_homogene.h>
+#include <Symetrie.h>
+#include <Periodique.h>
 
 Implemente_instanciable(Terme_Source_Qdm_VDF_Face,"Source_Qdm_VDF_Face",Source_base);
 

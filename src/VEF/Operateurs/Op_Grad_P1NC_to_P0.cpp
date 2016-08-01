@@ -21,7 +21,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Grad_P1NC_to_P0.h>
-#include <Les_Cl.h>
 #include <Champ_P1NC.h>
 
 Implemente_instanciable(Op_Grad_P1NC_to_P0,"Op_Grad_P1NC_to_P0",Operateur_Grad_base);

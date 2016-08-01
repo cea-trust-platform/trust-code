@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Paroi_negligeable_VEF.h>
-#include <Les_Cl.h>
+#include <Dirichlet_paroi_fixe.h>
 #include <DoubleTrav.h>
 
 Implemente_instanciable_sans_constructeur(Paroi_negligeable_VEF,"negligeable_VEF",Paroi_hyd_base_VEF);

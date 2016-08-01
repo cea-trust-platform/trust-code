@@ -23,7 +23,9 @@
 #include <Op_Dift_VEF_P1NCP1B_Face.h>
 #include <Champ_P1NC.h>
 #include <Champ_Don.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
+#include <Symetrie.h>
+#include <Neumann_sortie_libre.h>
 #include <Champ_Uniforme.h>
 #include <Modele_turbulence_hyd_K_Eps.h>
 #include <Turbulence_hyd_sous_maille_VEF.h>

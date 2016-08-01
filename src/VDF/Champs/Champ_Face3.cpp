@@ -23,7 +23,7 @@
 #include <Champ_Face.h>
 #include <Champ_Uniforme.h>
 #include <Zone_Cl_VDF.h>
-#include <Les_Cl.h>
+#include <Dirichlet_paroi_fixe.h>
 #include <Fluide_Incompressible.h>
 #include <Equation_base.h>
 #include <Mod_turb_hyd_base.h>

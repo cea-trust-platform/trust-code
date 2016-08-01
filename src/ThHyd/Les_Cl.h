@@ -20,13 +20,3 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Periodique.h>
-#include <Dirichlet_paroi_fixe.h>
-#include <Dirichlet_paroi_defilante.h>
-#include <Dirichlet_entree_fluide.h>
-#include <Neumann_paroi.h>
-#include <Symetrie.h>
-#include <Echange_global_impose.h>
-#include <Temperature_imposee_paroi.h>
-#include <Sortie_libre_pression_moyenne_imposee.h>
-#include <NSCBC.h>

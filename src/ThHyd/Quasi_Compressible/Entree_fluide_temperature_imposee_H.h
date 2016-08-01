@@ -24,7 +24,7 @@
 #ifndef Entree_fluide_temperature_imposee_H_included
 #define Entree_fluide_temperature_imposee_H_included
 
-#include <Dirichlet_entree_fluide.h>
+#include <Entree_fluide_temperature_imposee.h>
 #include <Ref_Fluide_Quasi_Compressible.h>
 
 //////////////////////////////////////////////////////////////////////////////

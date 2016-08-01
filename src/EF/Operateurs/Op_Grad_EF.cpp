@@ -21,7 +21,8 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Grad_EF.h>
-#include <Les_Cl.h>
+#include <Neumann_sortie_libre.h>
+#include <Dirichlet.h>
 #include <Navier_Stokes_std.h>
 #include <Probleme_base.h>
 #include <Schema_Temps_base.h>

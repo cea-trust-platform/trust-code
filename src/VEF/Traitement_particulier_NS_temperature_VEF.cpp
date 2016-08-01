@@ -22,7 +22,6 @@
 
 #include <Traitement_particulier_NS_temperature_VEF.h>
 #include <Zone_VEF.h>
-#include <Les_Cl.h>
 #include <Champ_P1NC.h>
 #include <Champ_Uniforme.h>
 #include <IntTrav.h>

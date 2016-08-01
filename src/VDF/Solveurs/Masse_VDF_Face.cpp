@@ -23,7 +23,9 @@
 #include <Masse_VDF_Face.h>
 #include <Zone_Cl_VDF.h>
 #include <Zone_VDF.h>
-#include <Les_Cl.h>
+#include <Dirichlet.h>
+#include <Dirichlet_homogene.h>
+#include <Symetrie.h>
 #include <Debog.h>
 
 Implemente_instanciable(Masse_VDF_Face,"Masse_VDF_Face",Solveur_Masse_base);

@@ -22,7 +22,23 @@
 
 #include <Verif_Cl.h>
 #include <Zone_Cl_dis.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
+#include <Dirichlet_paroi_fixe.h>
+#include <Dirichlet_paroi_defilante.h>
+#include <Entree_fluide_vitesse_imposee.h>
+#include <Entree_fluide_vitesse_imposee_libre.h>
+#include <Entree_fluide_temperature_imposee.h>
+#include <Entree_fluide_T_h_imposee.h>
+#include <Entree_fluide_concentration_imposee.h>
+#include <Entree_fluide_K_Eps_impose.h>
+#include <Neumann_paroi.h>
+#include <Neumann_paroi_adiabatique.h>
+#include <Neumann_paroi_flux_nul.h>
+#include <Symetrie.h>
+#include <Echange_global_impose.h>
+#include <Echange_externe_impose.h>
+#include <Neumann_sortie_libre.h>
+#include <Scalaire_impose_paroi.h>
 #include <Motcle.h>
 #include <Frontiere_dis_base.h>
 
@@ -35,7 +51,7 @@
 //    Hydraulique                      |       Thermique
 //    -----------------------------------------------------------------------
 //    Entree_fluide_vitesse_imposee ===> Entree_fluide_temperature_imposee
-//    =================================> Neumann_sortie_libre
+//    Entree_fluide_vitesse_imposee_libre => Neumann_sortie_libre
 //    -----------------------------------------------------------------------
 //    Dirichlet_paroi_fixe |
 //    Dirichlet_paroi_defilante =======> Neumann_paroi_adiabatique
@@ -80,8 +96,8 @@ int tester_compatibilite_hydr_thermique(const Zone_Cl_dis& zone_Cl_hydr, const Z
 
   if (zone_Cl_th.nb_cond_lim() != nb_Cl)
     {
-      Cerr << "Les deux objets de type Zone_Cl_dis n'ont pas" << finl;
-      Cerr << "le meme nombre de conditions aux limites" << finl;
+      Cerr << "The two objects of Zone_Cl_dis type don't have" << finl;
+      Cerr << "the same number of boundary conditions." << finl;
       Process::exit();
     }
 
@@ -89,7 +105,7 @@ int tester_compatibilite_hydr_thermique(const Zone_Cl_dis& zone_Cl_hydr, const Z
     {
       const Cond_lim& la_cl_hydr = zone_Cl_hydr.les_conditions_limites(num_Cl);
       const Cond_lim& la_cl_th = zone_Cl_th.les_conditions_limites(num_Cl);
-      if (sub_type(Entree_fluide_vitesse_imposee,la_cl_hydr.valeur()))
+      if (sub_type(Entree_fluide_vitesse_imposee_libre,la_cl_hydr.valeur()))
         {
           if ( (sub_type(Entree_fluide_temperature_imposee,la_cl_th.valeur()))
                || (sub_type(Neumann_sortie_libre,la_cl_th.valeur())) )
@@ -99,10 +115,18 @@ int tester_compatibilite_hydr_thermique(const Zone_Cl_dis& zone_Cl_hydr, const Z
             ;
           else
             {
-              Cerr << "Les conditions aux limites en hydraulique et en thermique" << finl;
-              Cerr << "ne sont pas toutes compatibles bord " <<la_cl_th.frontiere_dis().le_nom()<< finl;
-              Cerr<<la_cl_hydr.valeur().que_suis_je()<<" "<<la_cl_th.valeur().que_suis_je()<<finl;
-              Process::exit();
+              message_erreur_therm( la_cl_hydr, la_cl_th, num_Cl);
+            }
+        }
+      else if (sub_type(Entree_fluide_vitesse_imposee,la_cl_hydr.valeur()))
+        {
+          if (sub_type(Entree_fluide_temperature_imposee,la_cl_th.valeur()))
+            ;
+          else if (sub_type(Entree_fluide_T_h_imposee,la_cl_th.valeur()))
+            ;
+          else
+            {
+              message_erreur_therm( la_cl_hydr, la_cl_th, num_Cl);
             }
         }
       else if ( (sub_type(Dirichlet_paroi_fixe,la_cl_hydr.valeur())) ||
@@ -119,10 +143,7 @@ int tester_compatibilite_hydr_thermique(const Zone_Cl_dis& zone_Cl_hydr, const Z
             }
           else
             {
-              Cerr << "Les conditions aux limites en hydraulique et en thermique" << finl;
-              Cerr << "ne sont pas toutes compatibles bord " <<la_cl_th.frontiere_dis().le_nom()<< finl;
-              Cerr<<la_cl_hydr.valeur().que_suis_je()<<" "<<la_cl_th.valeur().que_suis_je()<<finl;
-              Process::exit();
+              message_erreur_therm( la_cl_hydr, la_cl_th, num_Cl);
             }
         }
       else if (sub_type(Neumann_sortie_libre,la_cl_hydr.valeur()))
@@ -134,10 +155,7 @@ int tester_compatibilite_hydr_thermique(const Zone_Cl_dis& zone_Cl_hydr, const Z
             }
           else
             {
-              Cerr << "Les conditions aux limites en hydraulique et en thermique" << finl;
-              Cerr << "ne sont pas toutes compatibles bord " <<la_cl_th.frontiere_dis().le_nom()<< finl;
-              Cerr<<la_cl_hydr.valeur().que_suis_je()<<" "<<la_cl_th.valeur().que_suis_je()<<finl;
-              Process::exit();
+              message_erreur_therm( la_cl_hydr, la_cl_th, num_Cl);
             }
         }
       else if (sub_type(Symetrie,la_cl_hydr.valeur()))
@@ -153,10 +171,7 @@ int tester_compatibilite_hydr_thermique(const Zone_Cl_dis& zone_Cl_hydr, const Z
             }
           else
             {
-              Cerr << "Les conditions aux limites en hydraulique et en thermique" << finl;
-              Cerr << "ne sont pas toutes compatibles bord " <<la_cl_th.frontiere_dis().le_nom()<< finl;
-              Cerr<<la_cl_hydr.valeur().que_suis_je()<<" "<<la_cl_th.valeur().que_suis_je()<<finl;
-              Process::exit();
+              message_erreur_therm( la_cl_hydr, la_cl_th, num_Cl);
             }
         }
       else if (sub_type(Periodique,la_cl_hydr.valeur()))
@@ -167,13 +182,43 @@ int tester_compatibilite_hydr_thermique(const Zone_Cl_dis& zone_Cl_hydr, const Z
             }
           else
             {
-              Cerr << "Les conditions aux limites en hydraulique et en thermique" << finl;
-              Cerr << "ne sont pas toutes compatibles bord " <<la_cl_th.frontiere_dis().le_nom()<< finl;
-              Cerr<<la_cl_hydr.valeur().que_suis_je()<<" "<<la_cl_th.valeur().que_suis_je()<<finl;
-              Process::exit();
+              message_erreur_therm( la_cl_hydr, la_cl_th, num_Cl);
             }
         }
     }
+  return 1;
+}
+
+
+// Description:
+//    Affiche un message d'erreur pour la fonction precedente
+// Precondition:
+// Parametre: Zone_Cl_dis& zone_Cl_hydr
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes: reference constante
+//    Acces: entree
+// Parametre: Zone_Cl_dis& zone_Cl_th
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes: reference constante
+//    Acces: entree
+// Parametre: int num_Cl
+//    Signification: numero de la CL
+//    Valeurs par defaut:
+//    Contraintes: reference constante
+//    Acces: entree
+// Retour: int
+//    Signification: renvoie toujours 1
+//    Contraintes:
+// Effets de bord:
+// Postcondition:
+int message_erreur_therm(const Cond_lim& la_cl_hydr, const Cond_lim& la_cl_th, int& num_Cl)
+{
+  Cerr << "The hydraulic and thermal boundary conditions are not consitent on border:" << finl;
+  Cerr << "Boundary conditions number " << num_Cl << " \"" << la_cl_th.frontiere_dis().le_nom() << "\" have been assigned to : " << finl;
+  Cerr << la_cl_hydr.valeur().que_suis_je() << " and " << la_cl_th.valeur().que_suis_je() << " !! " << finl;
+  Process::exit();
   return 1;
 }
 
@@ -224,8 +269,8 @@ int tester_compatibilite_hydr_concentration(const Zone_Cl_dis& zone_Cl_hydr,
 
   if (zone_Cl_co.nb_cond_lim() != nb_Cl)
     {
-      Cerr << "Les deux objets de type Zone_Cl_dis n'ont pas" << finl;
-      Cerr << "le meme nombre de conditions aux limites" << finl;
+      Cerr << "The two objects of Zone_Cl_dis type don't have" << finl;
+      Cerr << "the same number of boundary conditions." << finl;
       Process::exit();
     }
 
@@ -241,9 +286,7 @@ int tester_compatibilite_hydr_concentration(const Zone_Cl_dis& zone_Cl_hydr,
             ;
           else
             {
-              Cerr << "Les conditions aux limites en hydraulique et en concentration" << finl;
-              Cerr << "ne sont pas toutes compatibles" << finl;
-              Process::exit();
+              message_erreur_conc( la_cl_hydr, la_cl_co, num_Cl);
             }
         }
       else if ( (sub_type(Dirichlet_paroi_fixe,la_cl_hydr.valeur())) ||
@@ -252,9 +295,7 @@ int tester_compatibilite_hydr_concentration(const Zone_Cl_dis& zone_Cl_hydr,
           if ((!sub_type(Neumann_paroi_flux_nul,la_cl_co.valeur())) && (!sub_type(Neumann_paroi,la_cl_co.valeur()))
               && (!sub_type(Scalaire_impose_paroi,la_cl_co.valeur())))
             {
-              Cerr << "Les conditions aux limites en hydraulique et en concentration" << finl;
-              Cerr << "ne sont pas toutes compatibles" << finl;
-              Process::exit();
+              message_erreur_conc( la_cl_hydr, la_cl_co, num_Cl);
             }
         }
       else if (sub_type(Neumann_sortie_libre,la_cl_hydr.valeur()))
@@ -266,9 +307,7 @@ int tester_compatibilite_hydr_concentration(const Zone_Cl_dis& zone_Cl_hydr,
             }
           else
             {
-              Cerr << "Les conditions aux limites en hydraulique et en concentration" << finl;
-              Cerr << "ne sont pas toutes compatibles" << finl;
-              Process::exit();
+              message_erreur_conc( la_cl_hydr, la_cl_co, num_Cl);
             }
         }
       else if (sub_type(Symetrie,la_cl_hydr.valeur()))
@@ -280,9 +319,7 @@ int tester_compatibilite_hydr_concentration(const Zone_Cl_dis& zone_Cl_hydr,
             }
           else
             {
-              Cerr << "Les conditions aux limites en hydraulique et en concentration" << finl;
-              Cerr << "ne sont pas toutes compatibles" << finl;
-              Process::exit();
+              message_erreur_conc( la_cl_hydr, la_cl_co, num_Cl);
             }
         }
       else if (sub_type(Periodique,la_cl_hydr.valeur()))
@@ -293,13 +330,44 @@ int tester_compatibilite_hydr_concentration(const Zone_Cl_dis& zone_Cl_hydr,
             }
           else
             {
-              Cerr << "Les conditions aux limites en hydraulique et en concentration" << finl;
-              Cerr << "ne sont pas toutes compatibles" << finl;
-              Process::exit();
+              message_erreur_conc( la_cl_hydr, la_cl_co, num_Cl);
             }
         }
     }
 
+  return 1;
+}
+
+
+// Description:
+//    Affiche un message d'erreur pour la fonction precedente
+// Precondition:
+// Parametre: Zone_Cl_dis& zone_Cl_hydr
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes: reference constante
+//    Acces: entree
+// Parametre: Zone_Cl_dis& zone_Cl_co
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes: reference constante
+//    Acces: entree
+// Parametre: int num_Cl
+//    Signification: numero de la CL
+//    Valeurs par defaut:
+//    Contraintes: reference constante
+//    Acces: entree
+// Retour: int
+//    Signification: renvoie toujours 1
+//    Contraintes:
+// Effets de bord:
+// Postcondition:
+int message_erreur_conc(const Cond_lim& la_cl_hydr, const Cond_lim& la_cl_co, int& num_Cl)
+{
+  Cerr << "The hydraulic and concentration boundary conditions are not consitent  on border:" << finl;
+  Cerr << "Boundary conditions number " << num_Cl << " \"" << la_cl_co.frontiere_dis().le_nom() << "\" have been assigned to : " << finl;
+  Cerr << la_cl_hydr.valeur().que_suis_je() << " and " << la_cl_co.valeur().que_suis_je() << " !! " << finl;
+  Process::exit();
   return 1;
 }
 
@@ -354,7 +422,7 @@ int tester_compatibilite_hydr_turb(const Zone_Cl_dis& zone_Cl_hydr, const Zone_C
 
   if (zone_Cl_turb.nb_cond_lim() != nb_Cl)
     {
-      Cerr << "The two objects of type Zone_Cl_dis have not" << finl;
+      Cerr << "The two objects of Zone_Cl_dis type don't have" << finl;
       Cerr << "the same number of boundary conditions." << finl;
       Process::exit();
     }
@@ -369,7 +437,7 @@ int tester_compatibilite_hydr_turb(const Zone_Cl_dis& zone_Cl_hydr, const Zone_C
       if ( (sub_type(Periodique,la_cl_hydr.valeur()) || sub_type(Periodique,la_cl_turb.valeur())) &&
            ( ! ( sub_type(Periodique,la_cl_hydr.valeur()) && sub_type(Periodique,la_cl_turb.valeur()) ) ) )
         {
-          message_erreur( la_cl_hydr, la_cl_turb, num_Cl);
+          message_erreur_turb( la_cl_hydr, la_cl_turb, num_Cl);
         }
 
       // hyd symetrie et turb (symetrie ou Neumann_paroi_flux_nul("paroi"))
@@ -377,14 +445,14 @@ int tester_compatibilite_hydr_turb(const Zone_Cl_dis& zone_Cl_hydr, const Zone_C
            ! ( sub_type(Symetrie,la_cl_turb.valeur()) ||
                sub_type(Neumann_paroi_flux_nul,la_cl_turb.valeur()) ) )
         {
-          message_erreur( la_cl_hydr, la_cl_turb, num_Cl);
+          message_erreur_turb( la_cl_hydr, la_cl_turb, num_Cl);
         }
 
       // hyd (paroi_fixe ou defilante) et turb (paroi ou paroi_fixe)
       if ( (sub_type(Dirichlet_paroi_fixe,la_cl_hydr.valeur()) || sub_type(Dirichlet_paroi_defilante,la_cl_hydr.valeur())) &&
            ! ( sub_type(Neumann_paroi_flux_nul,la_cl_turb.valeur()) || sub_type(Dirichlet_paroi_fixe,la_cl_turb.valeur()) ) )
         {
-          message_erreur( la_cl_hydr, la_cl_turb, num_Cl);
+          message_erreur_turb( la_cl_hydr, la_cl_turb, num_Cl);
         }
 
       // hyd (sortie_libre) et turb (sortie_libre ou k_eps_impose)
@@ -392,7 +460,7 @@ int tester_compatibilite_hydr_turb(const Zone_Cl_dis& zone_Cl_hydr, const Zone_C
            ! ( sub_type(Neumann_sortie_libre,la_cl_turb.valeur()) ||
                sub_type(Entree_fluide_K_Eps_impose,la_cl_turb.valeur()) ) )
         {
-          message_erreur( la_cl_hydr, la_cl_turb, num_Cl);
+          message_erreur_turb( la_cl_hydr, la_cl_turb, num_Cl);
         }
 
       // hyd (Entree_fluide_vitesse_imposee ou Frontiere_ouverte_vitesse_imposee)
@@ -402,7 +470,7 @@ int tester_compatibilite_hydr_turb(const Zone_Cl_dis& zone_Cl_hydr, const Zone_C
                sub_type(Entree_fluide_K_Eps_impose,la_cl_turb.valeur()) ||
                sub_type(Symetrie,la_cl_turb.valeur()) ) )
         {
-          message_erreur( la_cl_hydr, la_cl_turb, num_Cl);
+          message_erreur_turb( la_cl_hydr, la_cl_turb, num_Cl);
         }
 
     }
@@ -434,9 +502,9 @@ int tester_compatibilite_hydr_turb(const Zone_Cl_dis& zone_Cl_hydr, const Zone_C
 //    Contraintes:
 // Effets de bord:
 // Postcondition:
-int message_erreur(const Cond_lim& la_cl_hydr, const Cond_lim& la_cl_turb, int& num_Cl)
+int message_erreur_turb(const Cond_lim& la_cl_hydr, const Cond_lim& la_cl_turb, int& num_Cl)
 {
-  Cerr << "The hydraulic and turbulent boundary conditions are not consitent !!" << finl;
+  Cerr << "The hydraulic and turbulent boundary conditions are not consitent on border:" << finl;
   Cerr << "Boundary conditions number " << num_Cl << " \"" << la_cl_turb.frontiere_dis().le_nom() << "\" have been assigned to : " << finl;
   Cerr << la_cl_hydr.valeur().que_suis_je() << " and " << la_cl_turb.valeur().que_suis_je() << " !! " << finl;
   Process::exit();

@@ -28,7 +28,8 @@
 #include <Champ_Fonc_Tabule.h>
 #include <Champ_Fonc_Tabule_P0_VDF.h>
 #include <Zone_Cl_VDF.h>
-#include <Les_Cl.h>
+#include <Dirichlet_paroi_fixe.h>
+#include <Dirichlet_paroi_defilante.h>
 #include <Probleme_base.h>
 #include <Fluide_Quasi_Compressible.h>
 #include <Mod_turb_hyd_base.h>

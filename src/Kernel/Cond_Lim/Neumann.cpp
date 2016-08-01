@@ -23,7 +23,6 @@
 #include <Neumann.h>
 
 Implemente_base(Neumann,"Neumann",Cond_lim_base);
-Implemente_base(Neumann_homogene,"Neumann_homogene",Cond_lim_base);
 
 
 // Description:
@@ -41,26 +40,6 @@ Implemente_base(Neumann_homogene,"Neumann_homogene",Cond_lim_base);
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
 Sortie& Neumann::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << "\n";
-}
-
-
-// Description:
-//    Ecrit le type de l'objet sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-Sortie& Neumann_homogene::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << "\n";
 }
@@ -83,28 +62,6 @@ Entree& Neumann::readOn(Entree& s )
 {
   return Cond_lim_base::readOn(s);
 }
-
-// Description:
-//    Type le champ a la frontiere en "Champ_front_uniforme"
-//    N'ecrit rien sur le flot passe en parametre
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: NON ACCEDE
-// Retour: Entree& s
-//    Signification: le flot d'entree
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-Entree& Neumann_homogene::readOn(Entree& s )
-{
-  le_champ_front.typer("Champ_front_uniforme");
-  return s ;
-}
-
 
 // Description:
 //    Renvoie la valeur du flux impose sur la i-eme composante

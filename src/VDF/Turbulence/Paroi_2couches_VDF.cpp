@@ -25,7 +25,8 @@
 #include <Fluide_Incompressible.h>
 #include <Champ_Uniforme.h>
 #include <Zone_Cl_VDF.h>
-#include <Les_Cl.h>
+#include <Dirichlet_paroi_fixe.h>
+#include <Dirichlet_paroi_defilante.h>
 #include <Paroi_std_hyd_VDF.h>
 #include <Debog.h>
 #include <EcrFicPartage.h>

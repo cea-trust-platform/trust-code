@@ -24,7 +24,8 @@
 #define MItSouVDFFa_H
 
 #include <Iterateur_Source_VDF_base.h>
-#include <Les_Cl.h>
+#include <Dirichlet.h>
+#include <Dirichlet_homogene.h>
 #include <Zone_VDF.h>
 #include <Champ_Uniforme.h>
 #include <Milieu_base.h>

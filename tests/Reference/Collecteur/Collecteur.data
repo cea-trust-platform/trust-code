@@ -84,7 +84,7 @@ Read pb
 		diffusion {  }
   		initial_conditions { vitesse Champ_Uniforme 3 0. 0. 0. }
 		boundary_conditions {
-			sortie_coeur 	frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 3 0. 0. 1.
+			sortie_coeur 	frontiere_ouverte_vitesse_imposee_sortie Champ_Front_Uniforme 3 0. 0. 1.
 			echg		frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
 			coupl		symetrie
                         virole_CC       symetrie

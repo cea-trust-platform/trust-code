@@ -28,7 +28,9 @@
 #include <Champ_Uniforme.h>
 #include <Fluide_Incompressible.h>
 #include <Fluide_Quasi_Compressible.h>
-#include <Les_Cl.h>
+#include <Dirichlet_paroi_fixe.h>
+#include <Dirichlet_paroi_defilante.h>
+#include <Neumann_paroi.h>
 #include <Probleme_base.h>
 #include <SFichier.h>
 #include <Modifier_pour_QC.h>
