@@ -1,20 +1,24 @@
 <?xml version="1.0"?>
 <Object name="MachineProfile">
     <Field name="hostNickname" type="string">callisto</Field>
-    <Field name="host" type="string">callisto-login1</Field>
+    <Field name="host" type="string">callisto*</Field>
     <Field name="userName" type="string">notset</Field>
     <Field name="hostAliases" type="string"></Field>
     <Field name="directory" type="string">/panfs/ixion/home/triou/TRUST_VERSION/exec/VisIt</Field>
     <Field name="shareOneBatchJob" type="bool">false</Field>
-    <Field name="sshCommandSpecified" type="bool">true</Field>
-    <Field name="sshCommand" type="stringVector">"ssh" "-X" </Field>    
-    <Field name="sshPortSpecified" type="bool">false</Field>
+    <Field name="sshPortSpecified" type="bool">true</Field>
     <Field name="sshPort" type="int">22</Field>
+    <Field name="sshCommandSpecified" type="bool">false</Field>
+    <Field name="sshCommand" type="stringVector">"ssh" </Field>
     <Field name="useGateway" type="bool">false</Field>
     <Field name="gatewayHost" type="string"></Field>
     <Field name="clientHostDetermination" type="string">MachineName</Field>
     <Field name="manualClientHostName" type="string"></Field>
     <Field name="tunnelSSH" type="bool">true</Field>
+    <Field name="maximumNodesValid" type="bool">false</Field>
+    <Field name="maximumNodes" type="int">1</Field>
+    <Field name="maximumProcessorsValid" type="bool">false</Field>
+    <Field name="maximumProcessors" type="int">1</Field>
     <Object name="LaunchProfile">
         <Field name="timeout" type="int">480</Field>
         <Field name="numProcessors" type="int">1</Field>
@@ -48,12 +52,16 @@
         <Field name="GPUsPerNode" type="int">1</Field>
         <Field name="XArguments" type="string"></Field>
         <Field name="launchXServers" type="bool">false</Field>
-        <Field name="XDisplay" type="string">:%l</Field>
-        <Field name="profileName" type="string">1cpu</Field>
-    </Object>    
+        <Field name="XDisplay" type="string">:0.0</Field>
+        <Field name="numThreads" type="int">0</Field>
+        <Field name="constrainNodeProcs" type="bool">false</Field>
+        <Field name="allowableNodes" type="intVector"></Field>
+        <Field name="allowableProcs" type="intVector"></Field>
+        <Field name="profileName" type="string">"login node (1CPU)"</Field>
+    </Object>
     <Object name="LaunchProfile">
         <Field name="timeout" type="int">480</Field>
-        <Field name="numProcessors" type="int">4</Field>
+        <Field name="numProcessors" type="int">1</Field>
         <Field name="numNodesSet" type="bool">false</Field>
         <Field name="numNodes" type="int">1</Field>
         <Field name="partitionSet" type="bool">false</Field>
@@ -77,120 +85,139 @@
         <Field name="sublaunchPreCmd" type="string"></Field>
         <Field name="sublaunchPostCmdSet" type="bool">false</Field>
         <Field name="sublaunchPostCmd" type="string"></Field>
-        <Field name="machinefileSet" type="bool">true</Field>
-        <Field name="machinefile" type="string"></Field>
-        <Field name="visitSetsUpEnv" type="bool">false</Field>
-        <Field name="canDoHWAccel" type="bool">false</Field>
-        <Field name="havePreCommand" type="bool">false</Field>
-        <Field name="hwAccelPreCommand" type="string"></Field>
-        <Field name="havePostCommand" type="bool">false</Field>
-        <Field name="hwAccelPostCommand" type="string"></Field>
-        <Field name="profileName" type="string">4cpusFrontal</Field>
-    </Object>    
-    <Object name="LaunchProfile">
-        <Field name="timeout" type="int">480</Field>
-        <Field name="numProcessors" type="int">4</Field>
-        <Field name="numNodesSet" type="bool">false</Field>
-        <Field name="numNodes" type="int">1</Field>
-        <Field name="partitionSet" type="bool">false</Field>
-        <Field name="bankSet" type="bool">false</Field>
-        <Field name="bank" type="string"></Field>
-        <Field name="timeLimitSet" type="bool">false</Field>
-        <Field name="timeLimit" type="string"></Field>
-        <Field name="launchMethodSet" type="bool">true</Field>
-        <Field name="launchMethod" type="string">sbatch/mpirun</Field>
-        <Field name="forceStatic" type="bool">true</Field>
-        <Field name="forceDynamic" type="bool">false</Field>
-        <Field name="active" type="bool">false</Field>
-        <Field name="arguments" type="stringVector"></Field>
-        <Field name="parallel" type="bool">true</Field>
-        <Field name="launchArgsSet" type="bool">true</Field>
-        <Field name="launchArgs" type="string">-p slim --qos=normal -c 1 -n 4</Field>
-        <Field name="sublaunchArgsSet" type="bool">false</Field>
-        <Field name="sublaunchArgs" type="string"></Field>
-        <Field name="sublaunchPreCmdSet" type="bool">true</Field>
-        <Field name="sublaunchPreCmd" type="string">export PATH=$PATH # Specify PATH to mpirun</Field>
-        <Field name="sublaunchPostCmdSet" type="bool">false</Field>
-        <Field name="sublaunchPostCmd" type="string"></Field>
         <Field name="machinefileSet" type="bool">false</Field>
         <Field name="machinefile" type="string"></Field>
         <Field name="visitSetsUpEnv" type="bool">false</Field>
         <Field name="canDoHWAccel" type="bool">false</Field>
-        <Field name="havePreCommand" type="bool">false</Field>
-        <Field name="hwAccelPreCommand" type="string"></Field>
-        <Field name="havePostCommand" type="bool">false</Field>
-        <Field name="hwAccelPostCommand" type="string"></Field>
-        <Field name="profileName" type="string">4cpusBatch</Field>
+        <Field name="GPUsPerNode" type="int">1</Field>
+        <Field name="XArguments" type="string"></Field>
+        <Field name="launchXServers" type="bool">false</Field>
+        <Field name="XDisplay" type="string">:%l</Field>
+        <Field name="numThreads" type="int">0</Field>
+        <Field name="constrainNodeProcs" type="bool">false</Field>
+        <Field name="allowableNodes" type="intVector"></Field>
+        <Field name="allowableProcs" type="intVector"></Field>
+        <Field name="profileName" type="string">"login node (4CPUmax)"</Field>
     </Object>
     <Object name="LaunchProfile">
         <Field name="timeout" type="int">480</Field>
         <Field name="numProcessors" type="int">8</Field>
         <Field name="numNodesSet" type="bool">false</Field>
         <Field name="numNodes" type="int">1</Field>
-        <Field name="partitionSet" type="bool">false</Field>
+        <Field name="partitionSet" type="bool">true</Field>
+        <Field name="partition" type="string">slim</Field>
         <Field name="bankSet" type="bool">false</Field>
         <Field name="bank" type="string"></Field>
-        <Field name="timeLimitSet" type="bool">false</Field>
-        <Field name="timeLimit" type="string"></Field>
+        <Field name="timeLimitSet" type="bool">true</Field>
+        <Field name="timeLimit" type="string">15</Field>
         <Field name="launchMethodSet" type="bool">true</Field>
-        <Field name="launchMethod" type="string">sbatch/mpirun</Field>
+        <Field name="launchMethod" type="string">srun</Field>
         <Field name="forceStatic" type="bool">true</Field>
         <Field name="forceDynamic" type="bool">false</Field>
         <Field name="active" type="bool">false</Field>
         <Field name="arguments" type="stringVector"></Field>
         <Field name="parallel" type="bool">true</Field>
-        <Field name="launchArgsSet" type="bool">true</Field>
-        <Field name="launchArgs" type="string">-p slim --qos=normal -c 1 -n 8</Field>
+        <Field name="launchArgsSet" type="bool">false</Field>
+        <Field name="launchArgs" type="string"></Field>
         <Field name="sublaunchArgsSet" type="bool">false</Field>
         <Field name="sublaunchArgs" type="string"></Field>
-        <Field name="sublaunchPreCmdSet" type="bool">true</Field>
-        <Field name="sublaunchPreCmd" type="string">export PATH=$PATH # Specify PATH to mpirun</Field>
+        <Field name="sublaunchPreCmdSet" type="bool">false</Field>
+        <Field name="sublaunchPreCmd" type="string"></Field>
         <Field name="sublaunchPostCmdSet" type="bool">false</Field>
         <Field name="sublaunchPostCmd" type="string"></Field>
         <Field name="machinefileSet" type="bool">false</Field>
         <Field name="machinefile" type="string"></Field>
         <Field name="visitSetsUpEnv" type="bool">false</Field>
         <Field name="canDoHWAccel" type="bool">false</Field>
-        <Field name="havePreCommand" type="bool">false</Field>
-        <Field name="hwAccelPreCommand" type="string"></Field>
-        <Field name="havePostCommand" type="bool">false</Field>
-        <Field name="hwAccelPostCommand" type="string"></Field>
-        <Field name="profileName" type="string">8cpusBatch</Field>
-    </Object>    
+        <Field name="GPUsPerNode" type="int">1</Field>
+        <Field name="XArguments" type="string"></Field>
+        <Field name="launchXServers" type="bool">false</Field>
+        <Field name="XDisplay" type="string">:%l</Field>
+        <Field name="numThreads" type="int">0</Field>
+        <Field name="constrainNodeProcs" type="bool">false</Field>
+        <Field name="allowableNodes" type="intVector"></Field>
+        <Field name="allowableProcs" type="intVector"></Field>
+        <Field name="profileName" type="string">"slim node (20CPUmax)"</Field>
+    </Object>
     <Object name="LaunchProfile">
         <Field name="timeout" type="int">480</Field>
-        <Field name="numProcessors" type="int">16</Field>
+        <Field name="numProcessors" type="int">8</Field>
         <Field name="numNodesSet" type="bool">false</Field>
         <Field name="numNodes" type="int">1</Field>
-        <Field name="partitionSet" type="bool">false</Field>
+        <Field name="partitionSet" type="bool">true</Field>
+        <Field name="partition" type="string">large</Field>
         <Field name="bankSet" type="bool">false</Field>
         <Field name="bank" type="string"></Field>
-        <Field name="timeLimitSet" type="bool">false</Field>
-        <Field name="timeLimit" type="string"></Field>
+        <Field name="timeLimitSet" type="bool">true</Field>
+        <Field name="timeLimit" type="string">15</Field>
         <Field name="launchMethodSet" type="bool">true</Field>
-        <Field name="launchMethod" type="string">sbatch/mpirun</Field>
+        <Field name="launchMethod" type="string">srun</Field>
         <Field name="forceStatic" type="bool">true</Field>
         <Field name="forceDynamic" type="bool">false</Field>
         <Field name="active" type="bool">false</Field>
         <Field name="arguments" type="stringVector"></Field>
         <Field name="parallel" type="bool">true</Field>
-        <Field name="launchArgsSet" type="bool">true</Field>
-        <Field name="launchArgs" type="string">-p slim --qos=normal -c 1 -n 16</Field>
+        <Field name="launchArgsSet" type="bool">false</Field>
+        <Field name="launchArgs" type="string"></Field>
         <Field name="sublaunchArgsSet" type="bool">false</Field>
         <Field name="sublaunchArgs" type="string"></Field>
-        <Field name="sublaunchPreCmdSet" type="bool">true</Field>
-        <Field name="sublaunchPreCmd" type="string">export PATH=$PATH # Specify PATH to mpirun</Field>
+        <Field name="sublaunchPreCmdSet" type="bool">false</Field>
+        <Field name="sublaunchPreCmd" type="string"></Field>
         <Field name="sublaunchPostCmdSet" type="bool">false</Field>
         <Field name="sublaunchPostCmd" type="string"></Field>
         <Field name="machinefileSet" type="bool">false</Field>
         <Field name="machinefile" type="string"></Field>
         <Field name="visitSetsUpEnv" type="bool">false</Field>
         <Field name="canDoHWAccel" type="bool">false</Field>
-        <Field name="havePreCommand" type="bool">false</Field>
-        <Field name="hwAccelPreCommand" type="string"></Field>
-        <Field name="havePostCommand" type="bool">false</Field>
-        <Field name="hwAccelPostCommand" type="string"></Field>
-        <Field name="profileName" type="string">16cpusBatch</Field>
+        <Field name="GPUsPerNode" type="int">1</Field>
+        <Field name="XArguments" type="string"></Field>
+        <Field name="launchXServers" type="bool">false</Field>
+        <Field name="XDisplay" type="string">:%l</Field>
+        <Field name="numThreads" type="int">0</Field>
+        <Field name="constrainNodeProcs" type="bool">false</Field>
+        <Field name="allowableNodes" type="intVector"></Field>
+        <Field name="allowableProcs" type="intVector"></Field>
+        <Field name="profileName" type="string">"large node (20CPUmax)"</Field>
+    </Object>
+    <Object name="LaunchProfile">
+        <Field name="timeout" type="int">480</Field>
+        <Field name="numProcessors" type="int">8</Field>
+        <Field name="numNodesSet" type="bool">false</Field>
+        <Field name="numNodes" type="int">1</Field>
+        <Field name="partitionSet" type="bool">true</Field>
+        <Field name="partition" type="string">fat</Field>
+        <Field name="bankSet" type="bool">false</Field>
+        <Field name="bank" type="string"></Field>
+        <Field name="timeLimitSet" type="bool">true</Field>
+        <Field name="timeLimit" type="string">15</Field>
+        <Field name="launchMethodSet" type="bool">true</Field>
+        <Field name="launchMethod" type="string">srun</Field>
+        <Field name="forceStatic" type="bool">true</Field>
+        <Field name="forceDynamic" type="bool">false</Field>
+        <Field name="active" type="bool">false</Field>
+        <Field name="arguments" type="stringVector"></Field>
+        <Field name="parallel" type="bool">true</Field>
+        <Field name="launchArgsSet" type="bool">false</Field>
+        <Field name="launchArgs" type="string"></Field>
+        <Field name="sublaunchArgsSet" type="bool">false</Field>
+        <Field name="sublaunchArgs" type="string"></Field>
+        <Field name="sublaunchPreCmdSet" type="bool">false</Field>
+        <Field name="sublaunchPreCmd" type="string"></Field>
+        <Field name="sublaunchPostCmdSet" type="bool">false</Field>
+        <Field name="sublaunchPostCmd" type="string"></Field>
+        <Field name="machinefileSet" type="bool">false</Field>
+        <Field name="machinefile" type="string"></Field>
+        <Field name="visitSetsUpEnv" type="bool">false</Field>
+        <Field name="canDoHWAccel" type="bool">false</Field>
+        <Field name="GPUsPerNode" type="int">1</Field>
+        <Field name="XArguments" type="string"></Field>
+        <Field name="launchXServers" type="bool">false</Field>
+        <Field name="XDisplay" type="string">:%l</Field>
+        <Field name="numThreads" type="int">0</Field>
+        <Field name="constrainNodeProcs" type="bool">false</Field>
+        <Field name="allowableNodes" type="intVector"></Field>
+        <Field name="allowableProcs" type="intVector"></Field>
+        <Field name="profileName" type="string">"fat node (24CPUmax)"</Field>
     </Object>
     <Field name="activeProfile" type="int">0</Field>
 </Object>

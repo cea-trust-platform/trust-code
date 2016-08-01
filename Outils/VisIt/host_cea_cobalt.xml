@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Object name="MachineProfile">
-    <Field name="hostNickname" type="string">airain</Field>
-    <Field name="host" type="string">airain*</Field>
+    <Field name="hostNickname" type="string">cobalt</Field>
+    <Field name="host" type="string">cobalt*</Field>
     <Field name="userName" type="string">notset</Field>
     <Field name="hostAliases" type="string"></Field>
     <Field name="directory" type="string">/ccc/scratch/cont002/den/triou/TRUST_VERSION/exec/VisIt</Field>
@@ -105,7 +105,7 @@
         <Field name="numNodesSet" type="bool">false</Field>
         <Field name="numNodes" type="int">1</Field>
         <Field name="partitionSet" type="bool">true</Field>
-        <Field name="partition" type="string">ivybridge</Field>
+        <Field name="partition" type="string">broadwell</Field>
         <Field name="bankSet" type="bool">false</Field>
         <Field name="bank" type="string"></Field>
         <Field name="timeLimitSet" type="bool">true</Field>
@@ -118,7 +118,7 @@
         <Field name="arguments" type="stringVector"></Field>
         <Field name="parallel" type="bool">true</Field>
         <Field name="launchArgsSet" type="bool">true</Field>
-        <Field name="launchArgs" type="string">"--resv-ports -A den@ivybridge"</Field>
+        <Field name="launchArgs" type="string">"--resv-ports -A gch0202@broadwell"</Field>
         <Field name="sublaunchArgsSet" type="bool">false</Field>
         <Field name="sublaunchArgs" type="string"></Field>
         <Field name="sublaunchPreCmdSet" type="bool">false</Field>
@@ -137,15 +137,15 @@
         <Field name="constrainNodeProcs" type="bool">false</Field>
         <Field name="allowableNodes" type="intVector"></Field>
         <Field name="allowableProcs" type="intVector"></Field>
-        <Field name="profileName" type="string">"ivybridge node (20CPUmax)"</Field>
+        <Field name="profileName" type="string">"broadwell node (28CPUmax)"</Field>
     </Object>
     <Object name="LaunchProfile">
         <Field name="timeout" type="int">480</Field>
-        <Field name="numProcessors" type="int">40</Field>
+        <Field name="numProcessors" type="int">56</Field>
         <Field name="numNodesSet" type="bool">true</Field>
         <Field name="numNodes" type="int">2</Field>
         <Field name="partitionSet" type="bool">true</Field>
-        <Field name="partition" type="string">ivybridge</Field>
+        <Field name="partition" type="string">broadwell</Field>
         <Field name="bankSet" type="bool">false</Field>
         <Field name="bank" type="string"></Field>
         <Field name="timeLimitSet" type="bool">true</Field>
@@ -158,7 +158,7 @@
         <Field name="arguments" type="stringVector"></Field>
         <Field name="parallel" type="bool">true</Field>
         <Field name="launchArgsSet" type="bool">true</Field>
-        <Field name="launchArgs" type="string">"--resv-ports -A den@ivybridge"</Field>
+        <Field name="launchArgs" type="string">"--resv-ports -A gch0202@broadwell"</Field>
         <Field name="sublaunchArgsSet" type="bool">false</Field>
         <Field name="sublaunchArgs" type="string"></Field>
         <Field name="sublaunchPreCmdSet" type="bool">false</Field>
@@ -177,7 +177,7 @@
         <Field name="constrainNodeProcs" type="bool">false</Field>
         <Field name="allowableNodes" type="intVector"></Field>
         <Field name="allowableProcs" type="intVector"></Field>
-        <Field name="profileName" type="string">"ivybridge nodes (20CPUmin)"</Field>
+        <Field name="profileName" type="string">"broadwell nodes (28CPUmin)"</Field>
     </Object>
     <Field name="activeProfile" type="int">0</Field>
 </Object>

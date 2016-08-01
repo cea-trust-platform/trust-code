@@ -1,11 +1,11 @@
 Version	Qui				Tache
+1.7.4   triou@cea.fr            Revoir reprise avec temps different entre sauv et son ou out par exemple (suite crash par ex) => supprimer t>tsauv sans son et out ?
 1.7.4   triou@cea.fr            Revoir tous les prepare sans make_PAR.data a mettre dans pre_run
 1.7.4   triou@cea.fr            Revoir sortie des fields a post traiter dans .err (energie_cinetique ? reynolds_maille en VEF ?)
 1.7.4   triou@cea.fr            Revoir maillage de validation pour modele turbulence de Mathieu dans TrioCFD
 1.7.4   triou@cea.fr            Reactiver VerifData avec HOST_ADMIN pour prochaine version
 1.7.4   triou@cea.fr            Revoir baltik avec possibilite de 2 statistiques commencant a des tdeb differents
 1.7.4   triou@cea.fr            baltik: renommer make check_trio_optim en make check_trust_optim  + renommer script triou en trust sans ln
-1.7.4   triou@cea.fr            revoir host visit sur CCRT avec configuration sub_file
 1.7.4   gauthier.fauchet@cea.fr  Reprendre Mod_turb_hyd_base.cpp limitation mut
 1.7.4   gauthier.fauchet@cea.fr  Revoir le PATH pour module load TRUST sous occigen (passer par SET)
 1.7.4   triou@cea.fr            proposer un tutorial ICoCo
