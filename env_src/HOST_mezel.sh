@@ -57,6 +57,7 @@ define_soumission_batch()
    #      long          0           30-00:00:00 
    qos=normal
    cpu=30 && [ "$prod" = 1 ] && cpu=1440 # 30 minutes or 1 day
+   ntasks=12 # 12 cores per node for prod_amd_12c queue (48 for prod_amd_48c and 20 for prod_intel)
    # sinfo :
    #PARTITION    AVAIL  TIMELIMIT  NODES  STATE
    #prod*           up   infinite     31    mix
@@ -64,7 +65,16 @@ define_soumission_batch()
    #prod_amd_12c    up   infinite     20    mix
    #prod_amd_48c    up   infinite      6    mix
    #mono            up   infinite      1    mix
-   queue=prod
+   queue=prod_amd_12c
+   if [ "$prod" = 1 ] || [ $NB_PROCS -gt $ntasks ]
+   then
+      if [ "`echo $NB_PROCS | awk -v n=$ntasks '{print $1%n}'`" != 0 ]
+      then
+         echo "=================================================================================================================="
+         echo "Warning: try to fill the allocated nodes by partitioning your mesh with multiple of $ntasks on $queue partition."
+         echo "=================================================================================================================="
+      fi
+   fi
    # Slurm srun support
    #mpirun="srun -n \$SLURM_NTASKS"
    mpirun="mpirun -np \$SLURM_NTASKS"

@@ -52,6 +52,14 @@ squeue" > $TRUST_ROOT/bin/qstat
 define_soumission_batch()
 {
    soumission=2 && [ "$prod" = 1 ] && soumission=1
+   # sinfo :
+   #PARTITION AVAIL  TIMELIMIT  NODES  STATE
+   #slim*        up   infinite     37    mix
+   #fat          up   infinite      1    mix
+   #large        up   infinite     13    mix
+   #eris         up   infinite     30  alloc
+   #pluton       up   infinite      4    mix
+   queue=slim && [ "$bigmem" = 1 ] && queue=large && soumission=1
    # sacctmgr list qos format=Name,Priority,MaxSubmit,MaxWall,MaxNodes :      
    # Name     Priority MaxSubmit     MaxWall 
    #------- ---------- --------- -----------
@@ -60,14 +68,14 @@ define_soumission_batch()
    #   long         10           14-00:00:00
    # project_r+     40           31-00:00:00
    cpu=30 && [ "$prod" = 1 ] && cpu=1440 # 30 minutes or 1 day
-   ntasks=20 # 20 cores per node
+   ntasks=20 # 20 cores per node for slim or large queue (24 for fat, 8 for eris and 12 for pluton)
    if [ "$prod" = 1 ] || [ $NB_PROCS -gt $ntasks ]
    then
       if [ "`echo $NB_PROCS | awk -v n=$ntasks '{print $1%n}'`" != 0 ]
       then
          echo "=================================================================================================================="
          echo "Warning: the allocated nodes of $ntasks cores will not be shared with other jobs (--exclusive option used)"
-	 echo "so please try to fill the allocated nodes by partitioning your mesh with multiple of $ntasks."
+	 echo "so please try to fill the allocated nodes by partitioning your mesh with multiple of $ntasks on $queue partition."
 	 echo "=================================================================================================================="
       fi
       node=1
@@ -77,16 +85,6 @@ define_soumission_batch()
       qos=test
       [ "$prod" = 1 ] && cpu=60 # 1 hour
    fi
-   # sinfo :
-   #PARTITION AVAIL  TIMELIMIT  NODES  STATE
-   #slim*        up   infinite     37    mix
-   #fat          up   infinite      1    mix
-   #large        up   infinite     13    mix
-   #eris         up   infinite     30  alloc
-   #pluton       up   infinite      4    mix
-   queue=slim && [ "$bigmem" = 1 ] && queue=large,fat && soumission=1
-   #queue=defq # 18/05/2016 suite maintenance, sinfo ne renvoie que defq
-   #project=stmf
    #if [ "`basename $Mpirun`" = srun ]
    #then
    #   # Slurm srun support

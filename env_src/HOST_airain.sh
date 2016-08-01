@@ -52,14 +52,14 @@ module () {
    then
       echo "So we create the collection of modules $collection_modules:"
       # Changing strategy, we load a version for each module (not the last one)
-      # MPI module 1.1.16.6 1.2.8.2 1.2.8.4(default)
+      # MPI module 1.2.7.2 1.2.8.2 1.2.8.4(default) 1.2.9.1
       module="bullxmpi/1.2.8.4"
       echo "Module $module detected and loaded on $HOST."
       module unload bullxmpi
       module load $module
       # Intel compiler (WARNING: Intel 12.x provoque plusieurs problemes (voir FA1445))
 	  # Intel 13.1.3.192 14.0.3.174(default) 15.0.2.164 15.0.3.187(decommissioned)
-          # 15.0.5.223 16.0.0.109 16.0.1.150
+          # 15.0.5.223 16.0.0.109 16.0.1.150 16.0.2.181 16.0.3.210
       module="intel/14.0.3.174"
       echo "Module $module detected and loaded on $HOST."
       module unload intel
@@ -90,6 +90,7 @@ define_soumission_batch()
    # ram=64000 # 64 GB asked
    # So we use now n cores for one task to have 4*n GB per task
    [ "$bigmem" = 1 ] && cpus_per_task=16 && soumission=1 # To have 64GB per task
+   ntasks=16 # 16 cores per node for standard or hybrid or large queue (20 for ivybridge, 160 for xlarge)
    # ccc_mqinfo : 
    #Name     Partition  Priority  MaxCPUs  SumCPUs  MaxNodes  MaxRun  MaxSub     MaxTime
    #-------  ---------  --------  -------  -------  --------  ------  ------  ----------
@@ -118,16 +119,28 @@ define_soumission_batch()
    # On selectionne la queue la moins occupee
    # On attend de voir, certains plantages sur standard
    #queue=`ccc_mpinfo | awk '/up/ {if ($10>free) {free=$10;queue=$1}} END {print queue}'`
-   # On force la queue standard (processeurs@2.27Ghz au lieu de 1.00Ghz sur la xlarge)
+   # On force la queue standard
    queue=standard
    if [ "`id -g`" = 50003 ] # groupe DEN
    then
+      ntasks=20
       # Partition ivybridge sur airain (fin 2013, accessible a DEN, 7180 cores)
       queue=ivybridge && [ "$bigmem" = 1 ] && queue=large
       [ "$NB_PROCS" -gt 2048 ] && echo "$NB_PROCS cores is too high for $HOST:" && ccc_mqinfo && exit -1
+   fi
+   if [ "$prod" = 1 ] || [ $NB_PROCS -gt $ntasks ]
+   then
+      if [ "`echo $NB_PROCS | awk -v n=$ntasks '{print $1%n}'`" != 0 ]
+      then
+         echo "=================================================================================================================="
+         echo "Warning: try to fill the allocated nodes by partitioning your mesh with multiple of $ntasks on $queue partition."
+         echo "=================================================================================================================="
+      fi
    fi
    #mpirun="mpirun -np $NB_PROCS" ne marche pas au dela de 32 procs ?
    mpirun="ccc_mprun -n $NB_PROCS"
    [ "`basename $MPI_ROOT`" = mpich ] && mpirun="$Mpirun -np $NB_PROCS" # Try support of MVAPICH...
    sub=CCC
+   #project="den"
+   #project=`ccc_myproject 2>/dev/null | $TRUST_Awk '/project/ {print $4;exit}'` # Add project
 }

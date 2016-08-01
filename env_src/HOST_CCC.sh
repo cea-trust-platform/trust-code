@@ -51,4 +51,5 @@ define_soumission_batch()
    mpirun="ccc_mprun -n $NB_PROCS"
    #mpirun="mpirun -np $NB_PROCS"
    sub=CCC
+   project=`ccc_myproject 2>/dev/null | $TRUST_Awk '/project/ {print $4;exit}'` # Add project
 }
