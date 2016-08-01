@@ -32,9 +32,9 @@
 //      int tester_compatibilite_hydr_concentration(const Zone_Cl_dis& , const Zone_Cl_dis& )
 //      int tester_compatibilite_hydr_turb(const Zone_Cl_dis& , const Zone_Cl_dis& )
 //    qui servent a tester la coherence des conditions aux limites
-//    et la fonction
-//      int message_erreur(const Cond_lim& , const Cond_lim& , int& )
-//    qui affiche un message d'erreur pour la compatibilite hyd/turb
+//    et les 3 fonctions
+//      int message_erreur_[therm|conc|turb](const Cond_lim& , const Cond_lim& , int& )
+//    qui affiche un message d'erreur pour la compatibilite hyd/[therm|conc|turb]
 // .SECTION voir aussi
 //    Fonction de librairie hors classe
 //////////////////////////////////////////////////////////////////////////////
@@ -45,8 +45,12 @@ class Zone_Cl_dis;
 
 int tester_compatibilite_hydr_thermique(const Zone_Cl_dis& , const Zone_Cl_dis& );
 
+int message_erreur_therm(const Cond_lim& , const Cond_lim& , int& );
+
 int tester_compatibilite_hydr_concentration(const Zone_Cl_dis& , const Zone_Cl_dis& )  ;
+
+int message_erreur_conc(const Cond_lim& , const Cond_lim& , int& );
 
 int tester_compatibilite_hydr_turb(const Zone_Cl_dis& , const Zone_Cl_dis& );
 
-int message_erreur(const Cond_lim& , const Cond_lim& , int& );
+int message_erreur_turb(const Cond_lim& , const Cond_lim& , int& );
