@@ -12,7 +12,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %----------------------------------------------------------------------------------------
-%	PACKAGES AND THEMES
+%    PACKAGES AND THEMES
 %----------------------------------------------------------------------------------------
 
 %%TO COMPILE AND GENERATE THE INDEX
@@ -98,7 +98,7 @@
 \newcommand\indexspace{}
 
 %----------------------------------------------------------------------------------------
-%	TITLE PAGE
+%    TITLE PAGE
 %----------------------------------------------------------------------------------------
 %\title[Short title]{Long title}
 \title[TRUST tutorial v1.7.3]{TRUST tutorial v1.7.3} % The short title appears at the bottom of every slide, the full title is only on the title page
@@ -140,7 +140,7 @@ CEA Saclay \\ % Your institution for the title page
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %----------------------------------------------------------------------------------------
-%	PRESENTATION SLIDES
+%    PRESENTATION SLIDES
 %----------------------------------------------------------------------------------------
 
 \section{Initialization}
@@ -180,7 +180,7 @@ CEA Saclay \\ % Your institution for the title page
 
 
 \section{Obstacle VDF}
-\subsection{Obstacle: Sequentiel calculation}
+\subsection{Obstacle: Sequential calculation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -215,6 +215,7 @@ CEA Saclay \\ % Your institution for the title page
 \end{block}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Create a study}
@@ -283,27 +284,35 @@ CEA Saclay \\ % Your institution for the title page
 
 \begin{itemize}
 
-\item Run the calculation with "-monitor" option to access to a visualization menu: \\
-\textbf{trust -monitor\index{trust -monitor} Obstacle}
-\vspace{0.1cm}
+\item Launch the tool "PLOT2D" to compute calculation and visualize results with: \\
+\textbf{trust -evol\index{trust -evol} Obstacle \&}
 
-\item Visualize the evolution of the pressure with the plot number 3. Check also the velocity profile behind the square cylinder. Close the plots (for example, -3 to close the plot 3).
-\vspace{0.1cm}
+\item To run the calculation, click on the button "Start computation!" at the bottom left corner of the window.
 
-\item Check the convergence monitoring: plot 0 in the first menu to open the convergence menu, then open the 4 following plots:
+\item Visualization:
     \begin{itemize}
-    \item [$\circ$] Pressure linear system convergence at each time step
-    \item [$\circ$] Residual error $\left\Vert Ax-B \right\Vert$ of the pressure linear system at the last time step
-    \item [$\circ$] Time step evolution
-    \item [$\circ$] Flow rate error evolution
+    \item [$\circ$] Select "PRESSION(X=0.13,Y=0.105)" in the left list to see the evolution of your pressure probe and click behind on "Plot".
+    \item [$\circ$] Check the velocity profile behind the square cylinder with "VITESSE\_X(X=0.14,Y=0.115)" and "VITESSE\_Y(X=0.14,Y=0.115)".
+    \item [$\circ$] Visualize the equation residuals on the same plot, select "$ Ri = max \left| \frac{dV}{dt} \right|$" and "$residu = max \left| Ri \right|$" using the button "Plot on same" or select the two graphs with "Ctrl" button and "plot".
     \end{itemize}
-Type "5" to quit this menu and return to the first one.
 \vspace{0.1cm}
 
-\item Visualize the equation residuals (plot 2).
-\vspace{0.1cm}
+%\item Check the convergence monitoring: plot 0 in the first menu to open the convergence menu, then open the 4 following plots:
+%    \begin{itemize}
+%    \item [$\circ$] Pressure linear system convergence at each time step
+%    \item [$\circ$] Residual error $\left\Vert Ax-B \right\Vert$ of the pressure linear system at the last time step
+%    \item [$\circ$] Time step evolution
+%    \item [$\circ$] Flow rate error evolution
+%    \end{itemize}
+%Type "5" to quit this menu and return to the first one.
+%\vspace{0.1cm}
+%\item Open the menu "Surface fluxes characteristics" (plot1), visualize:
+ %   \begin{itemize}
+ %   \item [$\circ$] the drag exerted by the fluid on the square Cylinder (plot 1, then 4 for the square), close this menu with 7.
+%    \item [$\circ$] the "Pressure drag + Friction drag" with 5 and select the Square boundary (4). Each drag is plotted together with the total drag also called viscous drag.
+%    \end{itemize} 
 
-
+\item To quit this tool, close the GUI.
 \end{itemize}
 
 \end{block}
@@ -315,23 +324,18 @@ Type "5" to quit this menu and return to the first one.
 \begin{block}{}
 
 \begin{itemize}
-\item Open the menu "Surface fluxes characteristics" (plot1), visualize:
-    \begin{itemize}
-    \item [$\circ$] the drag exerted by the fluid on the square Cylinder (plot 1, then 4 for the square), close this menu with 7.
-    \item [$\circ$] the "Pressure drag + Friction drag" with 5 and select the Square boundary (4). Each drag is plotted together with the total drag also called viscous drag.
-    \end{itemize}
-To quit this tool, close the plots and type "\#".
-
-\item Once the calculation is finished, visualize the results with the graphical tool VisIt: \textbf{visit\index{visit} \&}
+\item Once the calculation is finished, visualize the results with the graphical tool VisIt directly: \textbf{visit\index{visit} \&} \\
+or using "PLOT2D" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&} and click on "Visualisation" on the right menu.
 
     \begin{itemize}
     \item [$\circ$] First, we are going to configure VisIt: {\footnotesize{In the menu File $\rightarrow$ Open file, select Off instead of Smart for File grouping option. For the Filter, specify *.lata to list only the LATA results file. Then save your choices, in the menu Options $\rightarrow$ Save Settings.}}
 
     \item [$\circ$] In the menu File $\rightarrow$ Open file, select the Obstacle.lata file.
 
-    \item [$\circ$] Visualize the mesh in the "Plots" area with "Add $\rightarrow$ Mesh $\rightarrow$ dom" then click on the button "Draw". Zoom and move the mesh in the right window. You will de-zoom with right button (View $\rightarrow$ Reset view) or with a combination of CTRL keypad and left button.
+    \item [$\circ$] Visualize the mesh in the "Plots" area with "Add $\rightarrow$ Mesh $\rightarrow$ dom" then click on the button "Draw". Zoom and move the mesh in the right window. You will un-zoom with right button (View $\rightarrow$ Reset view) or with a combination of CTRL keypad and left button.
 
     \item [$\circ$] Visualize the pressure field ({\footnotesize{Plots area: "Add $\rightarrow$ Pseudocolor $\rightarrow$ PRESSION\_SOM\_dom" + Draw then select the last time on the Time slider}})
+    \item [$\circ$] Suppress or hide the mesh (Select Mesh then click on Delete or Hide/Show).
     \end{itemize}
 \end{itemize}
 
@@ -343,7 +347,6 @@ To quit this tool, close the plots and type "\#".
 \frametitle{VisIt}
 \begin{block}{}
 
-\hspace{1cm} $\color{darkblue}\circ$ {\small{Suppress or hide the mesh (Select Mesh then clcik on Delete or Hide/Show).}}\\
 \hspace{1cm} $\color{darkblue}\circ$ {\small{Visualize the velocity field ({\footnotesize{Plots area: "Add $\rightarrow$ Vector $\rightarrow$ VITESSE\_SOM\_dom"}}\\
 \hspace{1.3cm} {\footnotesize{ + Draw)}}. You can change each plot attributes:}}\\
 \vspace{0.05cm}
@@ -409,19 +412,31 @@ To quit this tool, close the plots and type "\#".
 
 \begin{itemize}
 \item Edit the different output (*.out) files to read the complete balances (mass, stress, energy, ...) on the whole domain or at the boundaries.
-\vspace{0.1cm}
-\item  Change the data file to restart the calculation. You will modify \textbf{tinit\index{tinit}} (pick in the .err file the last backup time of the previous calculation) and \textbf{tmax\index{tmax}} values, and add in the problem definition just before the last "\}":\\
+
+\item Now we want to change the data file to restart the calculation. So open it using "PLOT2D" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&}.
+
+\item Find the last backup time of the previous calculation in the .err file (or in the bottom right file in the "PLOT2D" tool, if you didn't close it since the beginning of this practice).
+
+\item Edit your data file, with "Edit data" or "Edit with xdata" and modify \textbf{tinit\index{tinit}}, \textbf{tmax\index{tmax}} values in the object "mon\_schema" and add in the problem definition just before the last "\}":\\
 \textbf{reprise binaire\index{reprise binaire} Obstacle\_pb.sauv}\\
 (The file "Obstacle\_pb.sauv" must have been created during the first run.)
-\vspace{0.1cm}
-\item Restart the calculation again with:\\
-\textbf{trust -monitor\index{trust -monitor} Obstacle}\\
-to see that values are added to the first probes during the new calculation.
-\vspace{0.1cm}
-\item [$\color{green}\Rightarrow$] \textit{Remark :} to restart your calculation, you can also use the keyword \textbf{resume\_last\_time\index{resume\_last\_time}} instead of \textbf{reprise} and only change the \textbf{tmax\index{tmax}} value (cf User's manual).
 \end{itemize}
 
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Outputs and "reprise"}
+\begin{block}{}
 
+\begin{itemize}
+\item Save and close the window.
+
+\item Restart the calculation again with "Start calculation!" button. You can see that values are added to the first probes during the new calculation.
+
+\item [$\color{green}\Rightarrow$] \textit{Remark :} to restart your calculation, you can also use the keyword \textbf{resume\_last\_time\index{resume\_last\_time}} instead of \textbf{reprise} and only change the \textbf{tmax\index{tmax}} value (cf User's manual).
+\end{itemize}
 
 \end{block}
 \end{frame}
@@ -474,7 +489,7 @@ The goal of this exercise is to introduce parallelism in the data file of the pr
     \item [$\circ$] The overlapping width \textbf{Larg\_joint\index{Larg\_joint}} between two parts of the partition should be defined according to the numerical scheme higher order, generally the convective scheme. Its value is generally 1 for the two order scheme, and 2 for the three or four-order scheme like Quick\index{quick} scheme.
     \item [$\circ$] In VEF, you should use \textbf{2} for \textbf{Larg\_joint\index{Larg\_joint}} except when partitioning a domain where only the conduction equation will be solved.
     \item [$\circ$] At least, the keyword \textbf{zones\_name\index{zones\_name}} is useful to define the name of the files containing the partitioned mesh and to write these files.
-    \item [$\circ$] Notice the presence of the keyword \textbf{End} in the "Partition" block: the code will stop to read the dta file at this point!
+    \item [$\circ$] Notice the presence of the keyword \textbf{End} in the "Partition" block: the code will stop to read the data file at this point!
     \end{itemize}
 
 \item Run the data file: \textbf{trust DEC\_Obstacle}
@@ -509,7 +524,7 @@ which represent the parts of the domain partition, then the velocity fields. You
 also visualize a field only on a selected part (block) with the menu Control $\rightarrow$ Subset.
 
 \item To visualize probes after the end of the calculation, you can run the command line:\\
-\textbf{trust -probes\index{trust -probes} PAR\_Obstacle}
+\textbf{trust -evol\index{trust -evol} PAR\_Obstacle \&}
 \end{itemize}
 
 \end{block}
@@ -690,7 +705,7 @@ or
 \item Check the state of the job with: \textbf{"squeue"} or \textbf{"squeue -u login"}
 \vspace{0.2cm}
 
-\item You could run VisIt from the cluster but it is not recommanded. But you can run VisIt on your PC and access/visualize the result file on callisto cluster, with File $\rightarrow$ Open File and select callisto in the localhost menu.
+\item You could run VisIt from the cluster but it is not recommended. But you can run VisIt on your PC and access/visualize the result file on callisto cluster, with File $\rightarrow$ Open File and select callisto in the localhost menu.
 \end{itemize}
 
 \end{block}
@@ -762,14 +777,17 @@ $$
 
 \item Check the fluid and solid characteristics inside the docond.data file.
 
-\item This coupled problem is constitued by 2 domains of calculation with a mesh of 10x10 cells ($\Delta x = \Delta y = 0.1m$) created with 3 blocks. 
+\item This coupled problem is constituted by 2 domains of calculation with a mesh of 10x10 cells ($\Delta x = \Delta y = 0.1m$) created with 3 blocks. 
 
-\item Modify the data file to have the 2 domains on a mesh of 40x40 cells ($\Delta x= \Delta y=0.025m$). For this, you will change the number of nodes for each block like this:\\
+\item Modify the data file to have the 2 domains on a mesh of 40x40 cells ($\Delta x= \Delta y=0.025m$). For this, open your data file with "Plot2D" tool:\\
+\textbf{trust -evol\index{trust -evol} docond  \&} \\
+
+\item Click on "Edit data" (you can also use "Edit with xdata").
+
+\item Change the number of nodes for each block like this:\\
 First block (Cavite1): 4 11 $\rightarrow$ 13 41 \\
 Second block (Cavite2): 8 4 $\rightarrow$ 29 13 \\ 
 Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
-
-\item Change \textbf{"format lml\index{format lml}"} to \textbf{"format lata\index{format lata}"} into the two problems definition and run the calculation and check the evolution. 
 \end{itemize}
 
 \end{block}
@@ -781,20 +799,20 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 \begin{block}{}
 
 \begin{itemize}
-\item Then post process the temperature field with the tool VisIt. A natural convection cell appears. Change the colour tables for the temperature to have the same one on the 2 domains.
+\item Change \textbf{"format lml\index{format lml}"} to \textbf{"format lata\index{format lata}"} into the two problems definition
+
+\item Click on "Save" and close the window.
+
+\item Run the calculation with "Start computation!" and check the evolution.
+
+\item Then post process the temperature field with VisIt tool: "Visualization" button. A natural convection cell appears. Change the colour tables for the temperature to have the same one on the 2 domains. Close VisIt.
 
 \item We are going to change the discretization of the test case. Triangulate the domains with the keyword \textbf{Trianguler\_H\index{Trianguler\_H}} (See the syntax in the User's manual). Give an unstructured aspect to the 2 meshes thanks to the following keyword : \\
 \textbf{Transformer\index{Transformer} name\_of\_domain \; x*(1-0.5*y*y) \; y*(1+0.1*x*y)}
 
 \item Substitute the discretization VDF\index{VDF} (pressure nodes at the element center) to VEFPreP1B\index{VEFPreP1B} (pressure nodes at the element center and nodes).
 
-\item Check the meshes with: \\
-\textbf{trust -mesh\index{trust -mesh} docond}
-
-\item Run the calculation with:\\
-\textbf{trust -monitor\index{trust -monitor} docond}
-
-\item Follow the residuals (plot number 2) and a probe evolution (for example temperature), to see when convergence is reached.
+\item Close the Plot2D tool.
 \end{itemize}
 
 \end{block}
@@ -806,14 +824,38 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 \begin{block}{}
 
 \begin{itemize}
-\item Post-process the results and compare with VDF\index{VDF} discretization about the CPU performance: the VEF calculation is running 10 times slower (cause higher number of pressure unknowns and smaller time steps). Study the docond.out file to see the time steps for each equation.
+\item Check the meshes with: \\
+\textbf{trust -mesh\index{trust -mesh} docond}
 
-\item Accelerate the calculation by impliciting the diffusion operators of each equation with \textbf{diffusion\_implicite\index{diffusion\_implicite}} option in the explicit Euler scheme (check again the User's manual: \textbf{trust -doc \&\index{trust -doc \&}}). Run the calculation.
+\item Run the calculation with:\\
+\textbf{trust -evol\index{trust -evol} docond  \&}
 
-\item \label{schema_impl} Use a full implicit scheme now (suppress \textbf{diffusion\_implicite\index{diffusion\_implicite}}), by substituting \textbf{Scheme\_Euler\_Explicit} by \textbf{Schema\_Euler\_implicite\index{schema\_euler\_implicite}} and adding the \textbf{Implicite} solver. Have a look at the User's manual for the \textbf{gmres\index{gmres}} options and define accordingly to the advices given into the User's manual, a value for \textbf{facsec\index{facsec}, facsec\_max\index{facsec\_max}}. You block will looks like:\\
+\item Click : 'Start computation!', select 'Ri=max\_pb1$|dT/dt|$', 'Ri=max\_pb2$|dT/dt|$', 'Ri=max\_pb2$|dV/dt|$', 'residu=max$|Ri|$' with "Ctrl" button and click on 'Plot on same'.
+
+\item To see when convergence is reached, select a probe (for example temperature) ant click on 'Plot'. 
+
+\item Post-process the results and compare with VDF\index{VDF} discretization about the CPU performance: the VEF calculation is running 10 times slower (cause higher number of pressure unknowns and smaller time steps). Study the docond.out file to see the time steps for each equation (click on "Edit .out" at the top right corner of the GUI).
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Heat exchange VDF/VEF exercise}
+\begin{block}{}
+
+\begin{itemize}
+\item Accelerate the calculation by impliciting the diffusion operators of each equation with \textbf{diffusion\_implicite\index{diffusion\_implicite}} option in the explicit Euler scheme (check again the User's manual: \textbf{trust -doc \&\index{trust -doc \&}}). 
+
+\item Run the calculation without any option: \\
+\textbf{trust docond}
+
+\item \label{schema_impl} Use a full implicit scheme now (suppress \textbf{diffusion\_implicite\index{diffusion\_implicite}}), by substituting \textbf{Scheme\_Euler\_Explicit} by \textbf{Scheme\_Euler\_implicit\index{scheme\_euler\_implicit}} and adding the \textbf{Implicite} solver. Have a look at the User's manual for the \textbf{gmres\index{gmres}} options and define accordingly to the advices given into the User's manual, a value for \textbf{facsec\index{facsec}, facsec\_max\index{facsec\_max}}. Your block will looks like:\\
 \textbf{Solveur Implicite\index{Solveur Implicite} \{ solveur gmres\index{gmres} \{ diag seuil 1e-30 nb\_it\_max 5 impr \}  seuil\_convergence\_implicite\index{seuil\_convergence\_implicite} 0.01  \} }
 
-\item Run the calculation.
+\item Run the calculation:\\
+\textbf{trust -evol\index{trust -evol} docond  \&}
 \end{itemize}
 
 \end{block}
@@ -841,14 +883,27 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 \begin{itemize}
 \item Open a terminal and create a directory using Unix commands, and copy the study \textbf{TP\_Temp\_QC\_VEF} (it is a 2D simulation of helium gas flow from left to right between two heated walls):\\
 \textbf{mkdir -p $\sim$/test/yourname}\\
+\textbf{cd $\sim$/test/yourname}\\
 \textbf{trust -copy\index{trust -copy} TP\_Temp\_QC\_VEF}\\
 \textbf{cd TP\_Temp\_QC\_VEF}
 
 \item Open the TRUST User's manual with (it will be useful to search for keywords in this exercice): \textbf{trust -doc \&\index{trust -doc \&}}
 
-\item Edit the data file with your favourite editor (\textbf{nedit} is recommended because it is configured to recognize TRUST syntax):\\
-\textbf{nedit TP\_Temp\_QC\_VEF.data \&}
+\item Edit the data file with your favorite editor (\textbf{nedit} is recommended because it is configured to recognize TRUST syntax):\\
+\textbf{nedit TP\_Temp\_QC\_VEF.data \&} \\
+or \\
+\textbf{trust -evol\index{trust -evol} TP\_Temp\_QC\_VEF  \&} and "Edit data" button.
+\end{itemize}
 
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Low mach number flow}
+\begin{block}{}
+
+\begin{itemize}
 \item Modify the data file in order to:
     \begin{itemize}
     \item [$\circ$] Change the geometry and the mesh:
@@ -856,7 +911,16 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
     \includegraphics[width=0.5\textwidth]{PICTURES/low_mach.pdf}
     %\caption{Obstacle}
     \end{figure}
+    \item [$\circ$] Add several probes (velocity, volume mass, temperature) near the upper right corner of the geometry at location (x,y)=(4,1).
+    \item [$\circ$] Add a probe \textbf{"segment"} (with 9 points) between the locations (x,y)=(4,0.05) and (x,y)=(4,0.95) for the temperature field.
+    \item [$\circ$] Write the results with the \textbf{LATA} format and change the \textbf{dt\_post\index{dt\_post}} period to 1s.
+    \item [$\circ$] We are looking for the stationary state, so suppress tmax\index{tmax} keyword and change the \textbf{seuil\_statio\index{seuil\_statio}} $\varepsilon$ value to 10 ($|dT/dt|<\varepsilon$ and $dt \sim 0.001s$ so $|dT|<0.01$).
+    \item [$\circ$] Add the keyword \textbf{impr} into the pressure solver to print its convergence.
+    \item [$\circ$] If you use Plot2D tool, save and close the editor.
     \end{itemize}
+
+\item Run the simulation with the TRUST command (if not already done):\\
+\textbf{trust -evol\index{trust -evol} TP\_Temp\_QC\_VEF \&} \\
 \end{itemize}
 
 \end{block}
@@ -866,31 +930,24 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 \begin{frame}
 \frametitle{Low mach number flow}
 \begin{block}{}
-
-\hspace{1cm} $\color{darkblue}\circ$ {\small{Add several probes (velocity, volume mass, temperature) near the upper right\\
-\hspace{1.3cm} corner of the geometry at location (x,y)=(4,1).}} \\
-
-\hspace{1cm} $\color{darkblue}\circ$ {\small{Add a probe \textbf{"segment"} (with 9 points) between the locations (x,y)=(4,0.05) \\
-\hspace{1.3cm} and (x,y)=(4,0.95) for the temperature field.}}
-
-\hspace{1cm} $\color{darkblue}\circ$ {\small{Write the results with the \textbf{LATA} format and change the \textbf{dt\_post\index{dt\_post}} period to 1s. }}\\
-
-\hspace{1cm} $\color{darkblue}\circ$ {\small{We are looking for the stationary state, so suppress tmax\index{tmax} keyword and change \\
-\hspace{1.3cm} the \textbf{seuil\_statio\index{seuil\_statio}} $\varepsilon$ value to 10 ($|dT/dt|<\varepsilon$ and $dt \sim 0.001s$ so $|dT|<0.01$).}}\\
-
-\hspace{1cm} $\color{darkblue}\circ$ {\small{Add the keyword \textbf{impr} into the pressure solver to print its convergence.}}
 
 \begin{itemize}
-\item Run the simulation with the TRUST command:\\
-\textbf{trust -monitor\index{trust -monitor} TP\_Temp\_QC\_VEF}\\
-    \begin{itemize}
-    \item [$\circ$]Check the convergence information by entering 0 (convergence monitoring in the menu). Visualize the 3 plots:
-        \begin{itemize}
-        \item [$\diamond$] Conjugate Gradient iterations number at each time step,
-        \item [$\diamond$] Error evolution of Conjugate Gradient resolution at each time step,
-        \item [$\diamond$] Time step evolution.
-        \end{itemize}
-    \end{itemize}
+\item Click on "Start computation!".
+\item Check mass flow rate (absolute and relative values) in the TP\_Temp\_QC\_VEF.out file: \\
+\textbf{nedit TP\_Temp\_QC\_VEF.out \&} \\
+or look at the first window on the right of the PLOT2D tool.
+
+\item Once the calculation finishes, visualize the results by running \textbf{VisIt}:\\
+\textbf{visit\index{visit} -o TP\_Temp\_QC\_VEF.lata \&}\\
+or \\
+"Visualization" button on Plot2D tool.
+\begin{itemize}
+    \item [$\circ$] See the mesh (Plots: "Add $\rightarrow$ Mesh $\rightarrow$ dom $\rightarrow$ Draw").
+    \item [$\circ$] Visualize the temperature field (Select the last Time with the slicer, then Plots: "Add $\rightarrow$ Pseudo Color $\rightarrow$ TEMPERATURE\_SOM\_dom  $\rightarrow$ Draw").
+    \item [$\circ$] Suppress or hide the mesh (Select "Mesh-dom" in the list of plots then "Delete" or "Hide/Show").
+    \item [$\circ$] Visualize the velocity field (Add $\rightarrow$ Vector $\rightarrow$ VITESSE\_SOM\_dom $\rightarrow$ Draw).
+\end{itemize}
+
 \end{itemize}
 
 \end{block}
@@ -901,38 +958,12 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 \frametitle{Low mach number flow}
 \begin{block}{}
 
-\hspace{1cm} $\color{darkblue}\circ$ {\small{And check mass flow rate (absolute and relative values) in the\\
-\hspace{1.3cm} TP\_Temp\_QC\_VEF.out file: \\
-\hspace{1.3cm} \textbf{nedit TP\_Temp\_QC\_VEF.out \&} }}\\
-
-\hspace{1cm} $\color{darkblue}\circ$ {\small{Once the calculation finishes, visualize the results by running \textbf{VisIt}:\\
-\hspace{1.3cm} \textbf{visit\index{visit} -o TP\_Temp\_QC\_VEF.lata \&} }}\\
-
-\hspace{1cm} $\color{darkblue}\circ$ {\small{See the mesh (Plots: "Add $\rightarrow$ Mesh $\rightarrow$ dom $\rightarrow$ Draw").}}
-
-\hspace{1cm} $\color{darkblue}\circ$ {\small{Visualize the temperature field (Select the last Time with the slicer, then  \\
-\hspace{1.3cm} Plots: "Add $\rightarrow$ Pseudo Color $\rightarrow$ TEMPERATURE\_SOM\_dom  $\rightarrow$ Draw")}}
-
-\hspace{1cm} $\color{darkblue}\circ$ {\small{Suppress or hide the mesh (Select "Mesh-dom" in the list of plots then \\
-\hspace{1.3cm} "Delete" or "Hide/Show")}}
-
-\hspace{1cm} $\color{darkblue}\circ$ {\small{Visualize the velocity field (Add $\rightarrow$ Vector $\rightarrow$ VITESSE\_SOM\_dom $\rightarrow$ Draw).}}
-
 \hspace{1cm} $\color{darkblue}\circ$ {\small{Select the Zoom mode with the right button of the mouse (Mode $\rightarrow$ Zoom) \\
-\hspace{1.3cm} then zoom by selecting an area in the plot. To de-zoom push "Ctrl" button \\
-\hspace{1.3cm} and select an area with the left button or with the right button select \\
-\hspace{1.3cm} "View $\rightarrow$ Reset view".}}
-
+\hspace{1.3cm}  then zoom by selecting an area in the plot. To un-zoom push "Ctrl" button \\
+\hspace{1.3cm}  and select an area with the left button or with the right button select \\
+\hspace{1.3cm}  "View $\rightarrow$ Reset view".}}\\
 \hspace{1cm} $\color{darkblue}\circ$ {\small{Print your visualization (File $\rightarrow$ Set Save options $\rightarrow$ File type $\rightarrow$ Select a type \\
 \hspace{1.3cm}  $\rightarrow$ Save): a file named visit*** is created into your study directory.}}
-
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Low mach number flow}
-\begin{block}{}
 
 \hspace{1cm} $\color{darkblue}\circ$ {\small{Add a second screen with "Window $\rightarrow$ Layout $\rightarrow$ 1x2".}}
 
@@ -941,15 +972,30 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 \hspace{1.3cm} profile with left button): the profile is shown on the second window.}}
 
 \begin{itemize}
-\item Substitute the time scheme by an implicit time scheme (like \textbf{schema\_euler\_implicite\index{schema\_euler\_implicite}}). 
+\item Substitute the time scheme by an implicit time scheme (like \textbf{scheme\_euler\_implicit\index{scheme\_euler\_implicit}}). 
 
-\item Use the \textbf{implicite} solver and specify \textbf{facsec\index{facsec}} and \textbf{facsec\_max\index{facsec\_max}} parameters according to the advices given into the User's manual (search for the \textbf{schema\_euler\_implicite\index{schema\_euler\_implicite}} keyword for the according syntax). You can also see the informations at the end of the Heat exchange VDF/VEF exercise at p.\pageref{schema_impl}.
+\item Use the \textbf{implicite} solver and specify \textbf{facsec\index{facsec}} and \textbf{facsec\_max\index{facsec\_max}} parameters according to the advices given into the User's manual (search for the \textbf{scheme\_euler\_implicit\index{scheme\_euler\_implicit}} keyword for the according syntax). You can also see the informations at the end of the Heat exchange VDF/VEF exercise at p.\pageref{schema_impl}.
+\end{itemize}
 
-\item Run the calculation with this time scheme: \\
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Low mach number flow}
+\begin{block}{}
+
+\begin{itemize}
+\item Run the calculation with this time scheme with the PLOT2D tool or: \\
 {\footnotesize{\textbf{trust TP\_Temp\_QC\_VEF.data 1$>$TP\_Temp\_QC\_VEF.out 2$>$TP\_Temp\_QC\_VEF.err}}}
 
-\item Edit the following file where is located information about time-step used dt, stability time-step dt\_stab, \textbf{facsec\index{facsec}} evolution (dt=dt\_stab*facsec), residuals for each equation: \\
+\item Edit the following file where is located information about dt the used time-step, dt\_stab the stability time-step, \textbf{facsec\index{facsec}} evolution (dt=dt\_stab*facsec) and residuals for each equation: \\
 \textbf{nedit TP\_Temp\_QC\_VEF.dt\_ev \&}
+
+\item  If everything is OK, try to fine tune the speed convergence of the implicit solver with the value of \textbf{seuil\_convergence\_implicite\index{seuil\_convergence\_implicite}} keyword (look inside the TP\_Temp\_QC\_VEF.out file and check that the number of iterations for GMRES\index{gmres} is between 3 and 5, it is enough to quickly converge).
+
+\item  To restart a calculation, you will need to change the \textbf{tinit\index{tinit}} value into the data file (pick up the last save time in the \textbf{.err} file) and insert into the data file in the problem definition the following keywords: \\
+\textbf{reprise binaire\index{reprise binaire} TP\_Temp\_QC\_VEF\_pb.sauv}
 \end{itemize}
 
 \end{block}
@@ -962,15 +1008,10 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 
 \begin{itemize}
 
-\item  If everything is OK, try to fine tune the speed convergence of the implicit solver with the value of \textbf{seuil\_convergence\_implicite\index{seuil\_convergence\_implicite}} keyword (look inside the TP\_Temp\_QC\_VEF.out file and check that the number of iterations for GMRES\index{gmres} is between 3 and 5, it is enough to quickly converge).
-
-\item  To restart a calculation, you will need to change the \textbf{tinit\index{tinit}} value into the data file (pick up the last save time in the \textbf{.err} file) and insert into the data file in the problem definition the following keywords: \\
-\textbf{reprise binaire\index{reprise binaire} TP\_Temp\_QC\_VEF\_pb.sauv}
-
 \item  Then run the calculation with: \\
 {\footnotesize{\textbf{trust TP\_Temp\_QC\_VEF.data 1$>$TP\_Temp\_QC\_VEF.out 2$>$TP\_Temp\_QC\_VEF.err}}} \\
 or \\
-\textbf{trust -monitor\index{trust -monitor} TP\_Temp\_QC\_VEF.data} which creates automaticaly the .out and .err files.
+\textbf{trust -evol\index{trust -evol} TP\_Temp\_QC\_VEF.data \&} which creates automatically the .out
 
 \end{itemize}
 
@@ -1068,7 +1109,7 @@ or \\
 \textbf{vitesse champ\_fonc\_reprise\index{Champ\_fonc\_reprise} P1toP1Bulle\_pb.xyz  pb  vitesse  last\_time} \\
 \underline{This will be useful to reach the quasi-stationary state faster.}
 
-\item You can also use implicit scheme (change the scheme to \textbf{Schema\_Euler\_implicite\index{schema\_euler\_implicite}} scheme and use an \textbf{Implicite} solver) \underline{only if you are looking for the stationary state}.\\ 
+\item You can also use implicit scheme (change the scheme to \textbf{Scheme\_Euler\_implicit\index{scheme\_euler\_implicit}} scheme and use an \textbf{Implicite} solver) \underline{only if you are looking for the stationary state}.\\ 
 You can also see the informations at the end of the Heat exchange VDF/VEF exercise page \pageref{schema_impl}.
 \end{itemize}
 
@@ -1201,7 +1242,7 @@ Goals:
 \begin{block}{TrioCFD}
 
 \begin{itemize}
-\item First initialize TrioCFD environnement :\\
+\item First initialize TrioCFD environment :\\
 {\small{
 \textbf{source /home/triou/env\_TrioCFD\_X.Y.Z.sh }\\
 \textbf{echo \$exec} \\
@@ -1218,7 +1259,7 @@ Goals:
 }}
 \vspace{0.2cm}
 Notice that this directory correspond to an automated validation test case. 
-If you want to run it and generated the pdf report, see the last exercise of this tutorial named "Validation form", but be carefull this case is very slow !
+If you want to run it and generated the pdf report, see the last exercise of this tutorial named "Validation form", but be careful this case is very slow !
 \end{itemize}
 
 \end{block}
@@ -1266,7 +1307,7 @@ Notice that we use \textbf{"trust"} command line because this script will use th
 \item Then, fix the maximal number of time steps in the time scheme using \textbf{nb\_pas\_dt\_max\index{nb\_pas\_dt\_max}} to 100 in the files PeriodicBoxRANS and PeriodicBoxLES and run the 2 cores parallel calculations, to initialize the turbulent flow in the box: \\
 \textbf{trust PeriodicBoxRANS 2} \\
 \textbf{trust PeriodicBoxLES 2} \\
-(The full calculation in RANS takes approximatively 1h and 10h in LES.)
+(The full calculation in RANS takes approximately 1h and 10h in LES.)
 \end{itemize}
 
 \end{block}
@@ -1282,10 +1323,10 @@ Notice that we use \textbf{"trust"} command line because this script will use th
 
 \item Once finished, open the file DomainFlowRANS.data and DomainFlowLES.data and change the maximal number of time steps to 10.
 
-\item You can see that theses data files are constitued by 2 problems, one for the box and one for the domain.
+\item You can see that theses data files are constituted by 2 problems, one for the box and one for the domain.
     \begin {itemize}
-    \item We use the velocity and temperature fields of the last time step of the PeriodicBoxRANS (or LES) calculation into the initiales conditions of the pb\_box problem with the keyword "Champ\_fonc\_reprise\index{Champ\_fonc\_reprise}".
-    \item In addition in the pb\_dom, the velocity and temperature fields of the pb\_box are used in the initiales conditions of the pb\_dom throught the keyword "champ\_front\_recyclage".
+    \item We use the velocity and temperature fields of the last time step of the PeriodicBoxRANS (or LES) calculation into the initial conditions of the pb\_box problem with the keyword "Champ\_fonc\_reprise\index{Champ\_fonc\_reprise}".
+    \item In addition in the pb\_dom, the velocity and temperature fields of the pb\_box are used in the initial conditions of the pb\_dom throught the keyword "champ\_front\_recyclage".
     \end{itemize}
 
 \item Run a 6 cores parallel calculation of the domain (it will stop by default after 10 times steps):\\
@@ -1337,7 +1378,7 @@ Outlet: $P_0=0$
 \begin{block}{TrioCFD}
 
 \begin{itemize}
-\item First initialize TrioCFD environnement :\\
+\item First initialize TrioCFD environment :\\
 {\small{
 \textbf{source /home/triou/env\_TrioCFD\_X.Y.Z.sh }\\
 \textbf{echo \$exec} \\
@@ -1441,7 +1482,7 @@ Outlet: $P_0=0$
 \begin{block}{}
 
 \begin{itemize}
-\item Source the TRUST environnement:\\
+\item Source the TRUST environment:\\
 \textbf{source /home/triou/env\_TRUST\_X.Y.Z.sh}
 \item Copy the study named \textbf{diagonale}. This test case deals with a 2D flow with Navier Stokes and the equation for one constituent.
 \item Edit the data file and modify the fluid characteristics to the previous ones ($\mu, \rho, D$).
@@ -1470,7 +1511,7 @@ Outlet: $P_0=0$
     \end{itemize}
 \item Define the boundary wall, using the keyword \textbf{"RegroupeBord\index{RegroupeBord}"}.
 \item You could also use facteurs and symx, symy keywords to define a refined mesh near the walls. 
-\item Check the mesh with: \textbf{"trust -mesh\index{trust -mesh} diagonale"} and correct the mesh errors if needed.
+\item Check the mesh with: \textbf{trust -mesh\index{trust -mesh} diagonale} and correct the mesh errors if needed.
 \end{itemize}
 
 \end{block}
@@ -1540,9 +1581,9 @@ time step.
 \begin{itemize}
 %\item Change the period to 0.1s in the post processing definition (keyword \textbf{dt\_post}).
 \item Run the study and follow the time evolution with the probes:\\
-\textbf{"trust -monitor\index{trust -monitor} diagonale"}
-\item Check the flow rate in inlet boundary in the diagonale\_pb\_Debit.out file. You should find a value near $6.8 \; 10^{-3} m^2.s^{-1}$.
-
+\textbf{trust -evol\index{trust -evol} diagonale \&} \\
+"Start computation!" button and "Plot" or "Plot on same" for probes.
+\item Check the flow rate in inlet boundary in the diagonale\_pb\_Debit.out file (plotted on the right of the PLOT2D window). You should find a value near $6.8 \; 10^{-3} m^2.s^{-1}$.
 \item Use VisIt to post process the results at t=0.2, t=0.4s and t=0.7s. VisIt has some interesting feature for this study. It can give concentration histogram to check the numerical diffusion in the concentration equation: Add $\rightarrow$ Histogram $\rightarrow$ CONCENTRATION\_ELEM\_dom.
 The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ before $t=0.5s$ and $Vol(t)=3.33.10^{-3}$ after.
 \end{itemize}
@@ -1641,7 +1682,7 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 \begin{block}{TrioCFD}
 
 \begin{itemize}
-\item First initialize TrioCFD environnement :\\
+\item First initialize TrioCFD environment :\\
 \textbf{source /home/triou/env\_TrioCFD\_X.Y.Z.sh }\\
 \textbf{echo \$exec} 
 
@@ -1672,7 +1713,7 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 
 \item Change the \textbf{dt\_post\index{dt\_post}} period of the 3 post processing blocks (0.05 to 0.01). The first one (add \textbf{format lata\index{format lata}}) is the classical block for post processing probes and fields. Here, we want to see the concentration field and the \textbf{"indicatrice\_interf"} field. Value of this field is 0 for liquid and 1 for gas, so the interface is located at "indicatrice" value 0.5.
 
-\item Change the interpolation location of \textbf{indicatrice\_interf\index{indicatrice\_interf}} and the \textbf{concentration} fields in the first post processing block, by adding the keyword \textbf{elem} just after the fields: the values in the post processing tool will be plotted at the centre of each element of the mesh.
+\item Change the interpolation location of \textbf{indicatrice\_interf\index{indicatrice\_interf}} and the \textbf{concentration} fields in the first post processing block, by adding the keyword \textbf{elem} just after the fields: the values in the post processing tool will be plotted at the center of each element of the mesh.
 \end{itemize}
 
 \end{block}
@@ -1783,8 +1824,8 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 
 \begin{itemize}
 \item Give a Group Name for the top: "Inlet".
-\item Click on the arrow button of the Main Shape field and select the "Cylinder\_1" in the "Object browser" or in the visualisation window.\\
-\item Select the shape defining the top of the cylinder on the visualisation window then Add $\rightarrow$ Apply.\\
+\item Click on the arrow button of the Main Shape field and select the "Cylinder\_1" in the "Object browser" or in the visualization window.\\
+\item Select the shape defining the top of the cylinder on the visualization window then Add $\rightarrow$ Apply.\\
 
 \item Select the shape defining the part on the window then Add $\rightarrow$ Apply.\\
 %\textbf{Warning}: Mouse icon should be unselected to select a shape.
@@ -2299,7 +2340,7 @@ Click on the surface of the Cylinder\_1 then "Add", click on the surface of Tran
 \begin{itemize}
 \item We are now going to create the point "Corner": New Entity $\rightarrow$ Explode \\
     \begin{itemize}
-    \item [$\circ$] Main Object: Fuse\_1, Sub-shape type: Vertex, select "Select sub-shape" and click on the choosen point and "Apply and Close".
+    \item [$\circ$] Main Object: Fuse\_1, Sub-shape type: Vertex, select "Select sub-shape" and click on the chosen point and "Apply and Close".
     \item [$\circ$] This will create a vertex name "Vertex\_1", rename it "Corner" (by right-clicking and "rename").
     \end{itemize}
 \end{itemize}
@@ -2699,7 +2740,7 @@ Physical Volume("dom") = \{1\};
 %%%%\begin{itemize}
 %%%%    \item [$\circ$] Add the declaration of the parameter "radius" in the first line of the "maillagedefaut" file.
 %%%%    \item [$\circ$] Set the values of $xomin=0$, $xomax=10$, $yomin=0$, $yomax=2$, $zomin=0$ and $zomax=1$.
-%%%%    \item [$\circ$] Add the initialisation of the radius: $radius=0.4$.
+%%%%    \item [$\circ$] Add the initialization of the radius: $radius=0.4$.
 %%%%\end{itemize}
 %%%%\end{itemize}
 
@@ -2735,7 +2776,7 @@ Physical Volume("dom") = \{1\};
 %%%%\item Note that the "maillagefefaut" file and your prepro file are saved in the directory $\sim$/test/yourname/Xprepro/model.
 %%%%\item Click on "Modify" on the top of the "viewlist" window to change the values of $nx$, $ny$ and $nz$ to have $NX=100$, $Ny=20$ and $Nz=10$. Then "Ok". 
 %%%%\item Think to save your geometry with "Save file prepro"!
-%%%%\item You can see in this window that there are some "?", we will commplete them now.
+%%%%\item You can see in this window that there are some "?", we will complete them now.
 %%%%\item Note that the lines whom finish by a "(comm)" are commented lines.
 %%%%\item Choose the index number of the matter by double-clicking on the line 5 "filling up of the domain...", set the index of the matter to $1000$. (For matter, we must use positive numbers, matter with a negative number will be deleted.)
 %%%%\item Double-click on the line 7 "back boundary...", change the name of the boundary from "back boundary" to "Wall", and set the matter index to $-1000$. (Negative numbers for boundaries.)
@@ -2918,7 +2959,7 @@ Physical Volume("dom") = \{1\};
 %%%%    \item [$\circ$] line 12, change the "top boundary" name to \textbf{""}, INDMAT=$0$.
 %%%%    \end{itemize}
 
-%%%%\item The coordinates of the centre of the first cylinder, which after will be duplicated, are (x0, y0)=(0.6, 0.4). So the distance between to cylinder center is $dx=0.8$ and $dy=0.3$. Declare and initialise this parameters $(x0, y0, dx, dy)$ in your "maillagedefaut" file.
+%%%%\item The coordinates of the center of the first cylinder, which after will be duplicated, are (x0, y0)=(0.6, 0.4). So the distance between to cylinder center is $dx=0.8$ and $dy=0.3$. Declare and initialize this parameters $(x0, y0, dx, dy)$ in your "maillagedefaut" file.
 
 %%%%\item Think about how to create 2 Fortran nesteed loops to copy the first cylinder in the two directions X and Y.
 %%%%\end{itemize}
@@ -3059,7 +3100,7 @@ or\\
 \begin{itemize}
 \item Add the evolution of residus in the report in log scale (Cf. .dt\_ev file). For this, introduce a new block with "Figure" and "Curve" keywords:
     \begin{itemize}
-    \item [$\circ$] Complete the chapter "Additionnal information" with a new block "Figure":\\
+    \item [$\circ$] Complete the chapter "Additional information" with a new block "Figure":\\
     {\scriptsize{
 %    \textbf{Chapter \{}  \\
 %    \hspace{.3cm} \textbf{Title "Additional information"}  \\
@@ -3097,9 +3138,9 @@ or\\
 \frametitle{Validation form}
 \begin{block}{}
 
-\hspace{1cm} $\color{darkblue}\circ$ {\small{Visualize the pressure field at last time: complete the chapter "Additionnal \\
+\hspace{1cm} $\color{darkblue}\circ$ {\small{Visualize the pressure field at last time: complete the chapter "Additional \\
 \hspace{1.3cm} information" with a new block "Visu" using "PseudoColor" keywords. The \\
-\hspace{1.3cm} name of field and localisation must be uppercase letter: }}
+\hspace{1.3cm} name of field and localization must be uppercase letter: }}
 
 {\footnotesize{
 %\hspace{1.5cm} \textbf{Chapter \{ } \\
@@ -3148,7 +3189,7 @@ or\\
     \textbf{echo \$tp1 \$tp2 \$tp3 $>$ lastime.dat} \\
     }}
 
-    \item [$\circ$] Add a table to display the results of .dat files: complete the chapter "Additionnal information" by introducing a new block with "table" and "line" keywords.\\
+    \item [$\circ$] Add a table to display the results of .dat files: complete the chapter "Additional information" by introducing a new block with "table" and "line" keywords.\\
     You can help with:
         \begin{itemize}
         \item [$\diamond$] {\scriptsize{\$TRUST\_ROOT/Validation/Outils/Genere\_courbe/doc/manuel.xhtml\#paramTableau}}
