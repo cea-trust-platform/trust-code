@@ -91,7 +91,7 @@ const Noms Champ_Generique_Predefini::get_property(const Motcle& query) const
       {
         Noms mots(1);
         if (Motcle(type_champ_)=="ENERGIE_CINETIQUE_TOTALE")
-          mots[0] = "kg/(m.s2)";
+          mots[0] = "kg.m2/s2";
         else if (Motcle(type_champ_)=="ENERGIE_CINETIQUE_ELEM")
           mots[0] = "kg/(m.s2)";
         else if (Motcle(type_champ_)=="VISCOSITE_TURBULENTE")
