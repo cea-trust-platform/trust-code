@@ -77,32 +77,4 @@ void Puissance_Thermique_EF::associer_pb(const Probleme_base& pb)
   eval_puis.associer_champs(rho,le_Cp,la_puissance);
 }
 
-const Champ_base& Puissance_Thermique_EF::get_champ(const Motcle& nom) const
-{
-  try
-    {
-      return champs_compris_.get_champ(nom);
-    }
-  catch (Champs_compris_erreur)
-    {
-    }
-  try
-    {
-      return Terme_Source_EF_base::get_champ(nom);
-    }
-  catch (Champs_compris_erreur)
-    {
-    }
-
-  throw Champs_compris_erreur();
-}
-void Puissance_Thermique_EF::get_noms_champs_postraitables(Noms& nom,Option opt) const
-{
-  Terme_Source_EF_base::get_noms_champs_postraitables(nom,opt);
-  if (opt==DESCRIPTION)
-    Cerr<<"Terme_Puissance_Thermique_EF : "<<champs_compris_.liste_noms_compris()<<finl;
-
-  else
-    nom.add(champs_compris_.liste_noms_compris());
-}
 

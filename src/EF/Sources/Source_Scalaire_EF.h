@@ -50,10 +50,6 @@ public:
   DoubleTab& ajouter(DoubleTab& ) const;
   DoubleTab& calculer(DoubleTab& ) const;
   void mettre_a_jour(double );
-  virtual const Champ_base& get_champ(const Motcle& nom) const;
-  virtual void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const;
-private:
-  Champs_compris champs_compris_;
 
 protected:
 
