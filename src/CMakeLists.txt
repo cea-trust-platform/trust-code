@@ -185,6 +185,23 @@ endif(NOT COMPIL_DYN)
    include_directories(Kernel/Utilitaires MAIN Kernel/Math)
    target_link_libraries(${trio} ${libtrio} ${syslib})
    install (TARGETS ${trio} DESTINATION exec)
+
+
+   ENABLE_TESTING()
+   SET (TRUST_TESTS $ENV{TRUST_TESTS})
+   #file(GLOB_RECURSE LML  RELATIVE ${TRUST_TESTS} FOLLOW_SYMLINKS ${TRUST_TESTS}/[A-Z|a-z]*.lml.gz )
+   file(GLOB_RECURSE LML   FOLLOW_SYMLINKS ${TRUST_TESTS}/[A-Z|a-z]*.lml.gz )
+#message("${ajout} iiiii ${LML} oooo")
+LIST (LENGTH  LML NN)
+message("go ${NN} tests")
+foreach(f ${LML})
+string(REPLACE .lml.gz "" l2 ${f} )
+string(FIND ${f} /  ii  REVERSE )
+string(SUBSTRING ${l2} ${ii} -1 l3 )
+string(SUBSTRING ${l3} 1 -1 l3 )
+ADD_TEST(NAME ${l3} COMMAND trust -exe $<TARGET_FILE:${trio}> -check ${l3}  )
+endforeach(f )
+
  ENDIF()
  
  
