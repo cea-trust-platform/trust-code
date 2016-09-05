@@ -30,7 +30,7 @@
 #include <Debog.h>
 #include <Matrice_Morse_Sym.h>
 #include <Discretisation_base.h>
-#include <Zone_VF.h>
+#include <Frontiere_dis_base.h>
 #include <DoubleTrav.h>
 #include <Postraitement.h>
 #include <EChaine.h>

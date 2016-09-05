@@ -479,23 +479,38 @@ const Motcle Champ_Generique_refChamp::get_directive_pour_discr() const
   if (sub_type(Champ_Inc_P0_base,ch) || sub_type(Champ_Fonc_P0_base,ch))
     {
       directive = "champ_elem";
+      //    assert(localisation_=="ELEMENTS");
     }
   else if (sub_type(Champ_Inc_P1_base,ch) || sub_type(Champ_Fonc_P1_base,ch)
            || sub_type(Champ_Inc_P1_base,ch) || sub_type(Champ_Inc_Q1_base,ch)
            || sub_type(Champ_Fonc_Q1_base,ch))
     {
       directive = "champ_sommets";
+      //   assert(localisation_=="SOMMETS");
     }
   else
     {
       const Nom& type = ch.que_suis_je();
       if ((type=="Champ_Face") || (type=="Champ_P1NC") || (type=="Champ_Q1NC") ||
           (type=="Champ_Fonc_Face") || (type=="Champ_Fonc_P1NC") || (type=="Champ_Fonc_Q1NC"))
-        directive = "champ_face";
+        {
+          directive = "champ_face";
+          //      assert(localisation_=="FACES");
+        }
       else if ((type=="Champ_P1_isoP1Bulle") || (type=="Champ_Fonc_P1_isoP1Bulle"))
-        directive = "pression";
+        {
+          directive = "pression";
+        }
+      else if (sub_type(Champ_Uniforme,ch))
+        {
+          directive = "champ_uniforme";
+        }
+
       else if (sub_type(Champ_Don_base,ch))
-        directive = "champ_don";
+        {
+          directive = "champ_don";
+        }
+
       else
         {
           Cerr<<"No directive is available to create a storing field for the source field of type "<<ch.que_suis_je()<<finl;
