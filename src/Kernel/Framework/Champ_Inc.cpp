@@ -548,33 +548,6 @@ void Champ_Inc::associer_eqn(const Equation_base& eqn)
 // Precondition:
 // Parametre: Frontiere_dis_base& fr
 //    Signification: frontiere discretisee sur laquelle on veut
-//                   calculer la trace du champ
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree
-// Parametre: DoubleTab& x
-//    Signification: les valeurs du champ sur la frontiere
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: DoubleTab&
-//    Signification: les valeurs du champ sur la frontiere
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-DoubleTab& Champ_Inc::trace(const Frontiere_dis_base& fr, DoubleTab& x,int distant) const
-{
-  return valeur().trace(fr, x,distant);
-}
-
-// Description:
-//    Appel a l'objet sous-jacent
-//    Calcule la trace du champ sur une frontiere et renvoie
-//    les valeurs.
-// Precondition:
-// Parametre: Frontiere_dis_base& fr
-//    Signification: frontiere discretisee sur laquelle on veut
 //                   calculer la trace du champ au temps tps
 //    Valeurs par defaut:
 //    Contraintes:

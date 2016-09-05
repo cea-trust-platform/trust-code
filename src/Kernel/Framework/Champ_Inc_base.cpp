@@ -894,30 +894,6 @@ Champ_base& Champ_Inc_base::affecter_compo(const Champ_base& ch,
   return *this;
 }
 
-// Description:
-//    Calcule la trace d'un champ sur une frontiere au temps courant
-// Precondition: x doit etre dimensionne
-// Parametre: Frontiere_dis_base&
-//    Signification: frontiere discretisee sur laquelle on veut
-//                   calculer la trace du champ
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleTab& x
-//    Signification: les valeurs du champ sur la frontiere
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: DoubleTab&
-//    Signification: les valeurs du champ sur la frontiere
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-DoubleTab& Champ_Inc_base::trace(const Frontiere_dis_base& fr, DoubleTab& x,int distant) const
-{
-  return trace(fr,x,les_valeurs->temps(),distant);
-}
 
 
 // Description:
