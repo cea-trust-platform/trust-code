@@ -22,10 +22,10 @@
 
 #include <RefParoiVDF.h>
 #include <Paroi_std_hyd_VDF.h>
-#include <Paroi_2couches_VDF.h>
-#include <Paroi_2couches_scal_VDF.h>
+#include <Paroi_hyd_base_VDF.h>
+#include <Paroi_log_QDM.h>
+#include <Paroi_std_scal_hyd_VDF.h>
+
 
 Implemente_ref(Paroi_std_hyd_VDF);
 Implemente_ref(Paroi_std_scal_hyd_VDF);
-Implemente_ref(Paroi_2couches_VDF);
-Implemente_ref(Paroi_2couches_scal_VDF);

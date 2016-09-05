@@ -21,7 +21,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Paroi_loi_WW_scal_VDF.h>
-#include <Paroi_2couches_VDF.h>
 #include <Paroi_std_hyd_VDF.h>
 #include <Champ_Uniforme.h>
 #include <Zone_Cl_VDF.h>

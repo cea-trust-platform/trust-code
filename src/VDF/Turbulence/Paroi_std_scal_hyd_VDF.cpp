@@ -21,7 +21,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Paroi_std_scal_hyd_VDF.h>
-#include <Paroi_2couches_VDF.h>
 #include <Paroi_std_hyd_VDF.h>
 #include <Champ_Uniforme.h>
 #include <Champ_Uniforme_Morceaux.h>

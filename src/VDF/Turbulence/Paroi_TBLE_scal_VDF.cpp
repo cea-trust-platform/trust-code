@@ -23,7 +23,6 @@
 
 #include <Paroi_TBLE_scal_VDF.h>
 #include <ParoiVDF_TBLE.h>
-#include <Paroi_2couches_VDF.h>
 #include <Paroi_std_hyd_VDF.h>
 #include <Eq_ODVM.h>
 #include <Zone_Cl_VDF.h>
