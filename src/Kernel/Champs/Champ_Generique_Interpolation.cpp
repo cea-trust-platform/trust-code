@@ -225,6 +225,7 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
 
   //Creation du champ espace_stockage
   Nature_du_champ nature_source = (ncomp==-1)?source.nature_du_champ():scalaire;
+  nature_source = source.nature_du_champ();
   int nb_comp = source.nb_comp();
 
   Champ_Fonc es_tmp;

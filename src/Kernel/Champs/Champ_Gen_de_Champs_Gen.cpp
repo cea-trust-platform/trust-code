@@ -154,7 +154,7 @@ Champ_Fonc& Champ_Gen_de_Champs_Gen::creer_espace_stockage(const Nature_du_champ
       noms.add("bidon");
       unites.add("bidon");
     }
-  noms.add("bidon");
+  //noms.add("bidon");
   double temps;
   temps = get_time();
   const Discretisation_base&  discr = get_discretisation();
