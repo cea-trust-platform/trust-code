@@ -1,6 +1,0 @@
-#!/bin/bash
-
-jdd=`ls *.data`
-cas=${jdd%.data}
-make_PAR.data $cas
-

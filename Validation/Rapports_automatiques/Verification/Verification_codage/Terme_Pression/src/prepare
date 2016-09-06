@@ -1,9 +1,0 @@
-#!/bin/bash
-
-for i in `ls *.data`
-do
-    rep=${i%.data}
-    mkdir $rep
-    mv $i $rep
-    cp pre_run post_run propertiesGeometry.py geometry.geo $rep
-done
