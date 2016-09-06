@@ -124,8 +124,8 @@ void Matrix_tools::allocate_morse_matrix( const int&  nb_lines,
 
   if ( nb_coefficients > 0 )
     {
-      matrix.tab1_ = 0;
-      matrix.tab1_( 0 ) = 1;
+      matrix.get_set_tab1( ) = 0 ;
+      matrix.get_set_tab1( )( 0 ) = 1;
       for ( int i=0; i<nb_coefficients; ++i )
         {
           assert( stencil( i ,0 ) >= 0         );
@@ -133,14 +133,15 @@ void Matrix_tools::allocate_morse_matrix( const int&  nb_lines,
           assert( stencil( i ,1 ) >= 0         );
           assert( stencil( i ,1 ) < nb_columns );
 
-          matrix.tab1_( stencil( i, 0 ) + 1 ) += 1;
-          matrix.tab2_( i ) = stencil( i, 1 ) + 1;
+          matrix.get_set_tab1( )( stencil( i, 0 ) + 1 ) += 1;
+          matrix.get_set_tab2( )( i ) = stencil( i, 1 ) + 1;
         }
       for ( int i=0; i<nb_lines; ++i )
         {
-          matrix.tab1_( i + 1 ) += matrix.tab1_( i );
+          matrix.get_set_tab1()( i + 1 ) += matrix.get_tab1()( i );
         }
     }
+
 }
 
 void Matrix_tools::build_morse_matrix( const int&      nb_lines,
@@ -160,8 +161,8 @@ void Matrix_tools::build_morse_matrix( const int&      nb_lines,
 
   if ( nb_coefficients > 0 )
     {
-      matrix.tab1_ = 0;
-      matrix.tab1_( 0 ) = 1;
+      matrix.get_set_tab1() =0  ;
+      matrix.get_set_tab1()( 0 ) = 1;
       for ( int i=0; i<nb_coefficients; ++i )
         {
           assert( stencil( i ,0 ) >= 0         );
@@ -169,13 +170,13 @@ void Matrix_tools::build_morse_matrix( const int&      nb_lines,
           assert( stencil( i ,1 ) >= 0         );
           assert( stencil( i ,1 ) < nb_columns );
 
-          matrix.tab1_( stencil( i, 0 ) + 1 ) += 1;
-          matrix.tab2_( i ) = stencil( i, 1 ) + 1;
-          matrix.coeff_( i ) = coefficients[ i ];
+          matrix.get_set_tab1()( stencil( i, 0 ) + 1 ) += 1;
+          matrix.get_set_tab2()( i ) = stencil( i, 1 ) + 1;
+          matrix.get_set_coeff()( i ) = coefficients[ i ];
         }
       for ( int i=0; i<nb_lines; ++i )
         {
-          matrix.tab1_( i + 1 ) += matrix.tab1_( i );
+          matrix.get_set_tab1()( i + 1 ) += matrix.get_tab1()( i );
         }
     }
 }
@@ -197,8 +198,8 @@ void Matrix_tools::allocate_symmetric_morse_matrix( const int&      order,
 
   if ( nb_coefficients > 0 )
     {
-      matrix.tab1_ = 0;
-      matrix.tab1_( 0 ) = 1;
+      matrix.get_set_tab1()= 0 ;
+      matrix.get_set_tab1()( 0 ) = 1;
       for ( int i=0; i<nb_coefficients; ++i )
         {
           assert( stencil( i ,0 ) >= 0               );
@@ -207,15 +208,15 @@ void Matrix_tools::allocate_symmetric_morse_matrix( const int&      order,
           assert( stencil( i ,1 ) < order            );
           assert( stencil( i, 0 ) <= stencil( i, 1 ) );
 
-          matrix.tab1_( stencil( i, 0 ) + 1 ) += 1;
-          matrix.tab2_( i ) = stencil( i, 1 ) + 1;
+          matrix.get_set_tab1()( stencil( i, 0 ) + 1 ) += 1;
+          matrix.get_set_tab2()( i ) = stencil( i, 1 ) + 1;
         }
       for ( int i=0; i<order; ++i )
         {
-          matrix.tab1_( i + 1 ) += matrix.tab1_( i );
+          matrix.get_set_tab1()( i + 1 ) += matrix.get_tab1()( i );
         }
     }
-  matrix.symetrique_ = 1;
+  matrix.set_symmetric( 1 );
 }
 
 
@@ -235,8 +236,8 @@ void Matrix_tools::build_symmetric_morse_matrix( const int&      order,
 
   if ( nb_coefficients > 0 )
     {
-      matrix.tab1_ = 0;
-      matrix.tab1_( 0 ) = 1;
+      matrix.get_set_tab1() = 0 ;
+      matrix.get_set_tab1()( 0 ) = 1;
       for ( int i=0; i<nb_coefficients; ++i )
         {
           assert( stencil( i ,0 ) >= 0               );
@@ -245,16 +246,16 @@ void Matrix_tools::build_symmetric_morse_matrix( const int&      order,
           assert( stencil( i ,1 ) < order            );
           assert( stencil( i, 0 ) <= stencil( i, 1 ) );
 
-          matrix.tab1_( stencil( i, 0 ) + 1 ) += 1;
-          matrix.tab2_( i )  = stencil( i, 1 ) + 1;
-          matrix.coeff_( i ) = coefficients[ i ];
+          matrix.get_set_tab1()( stencil( i, 0 ) + 1 ) += 1;
+          matrix.get_set_tab2()( i )  = stencil( i, 1 ) + 1;
+          matrix.get_set_coeff()( i ) = coefficients[ i ];
         }
       for ( int i=0; i<order; ++i )
         {
-          matrix.tab1_( i + 1 ) += matrix.tab1_( i );
+          matrix.get_set_tab1()( i + 1 ) += matrix.get_tab1()( i );
         }
     }
-  matrix.symetrique_ = 1;
+  matrix.set_symmetric( 1 );
 }
 
 
@@ -369,27 +370,27 @@ void Matrix_tools::add_scaled_matrices( const Matrice& A,
   int A_k = 0;
   int B_k = 0;
 
-  C_.coeff_ = 0.0;
+  C_.get_set_coeff() = 0.0 ;
 
   const int nb_lines = C_.nb_lignes( );
   for ( int i=0; i<nb_lines; ++i )
     {
-      int k0   = C_.tab1_( i ) - 1;
-      int k1   = C_.tab1_( i + 1 ) - 1;
+      int k0   = C_.get_tab1()( i ) - 1;
+      int k1   = C_.get_tab1()( i + 1 ) - 1;
 
       for ( int k=k0; k<k1; ++k )
         {
-          int j = C_.tab2_( k ) - 1;
+          int j = C_.get_tab2()( k ) - 1;
 
           if ( ( A_k < A_stencil.dimension( 0 ) ) && ( A_stencil( A_k, 0 ) == i ) && ( A_stencil( A_k, 1 ) == j ) )
             {
-              C_.coeff( k ) += alpha * A_coefficients[ A_k ];
+              C_.get_set_coeff()( k ) += alpha * A_coefficients[ A_k ];
               ++A_k;
             }
 
           if ( ( B_k < B_stencil.dimension( 0 ) ) && ( B_stencil( B_k, 0 ) == i ) && ( B_stencil( B_k, 1 ) == j ) )
             {
-              C_.coeff( k ) += beta * B_coefficients[ B_k ];
+              C_.get_set_coeff()( k ) += beta * B_coefficients[ B_k ];
               ++B_k;
             }
         }
@@ -423,27 +424,27 @@ void Matrix_tools::add_symmetric_scaled_matrices( const Matrice& A,
   int A_k = 0;
   int B_k = 0;
 
-  C_.coeff_ = 0.0;
+  C_.get_set_coeff() = 0.0 ;
 
   const int nb_lines = C_.nb_lignes( );
   for ( int i=0; i<nb_lines; ++i )
     {
-      int k0   = C_.tab1_( i ) - 1;
-      int k1   = C_.tab1_( i + 1 ) - 1;
+      int k0   = C_.get_tab1()( i ) - 1;
+      int k1   = C_.get_tab1()( i + 1 ) - 1;
 
       for ( int k=k0; k<k1; ++k )
         {
-          int j = C_.tab2_( k ) - 1;
+          int j = C_.get_tab2()( k ) - 1;
 
           if ( ( A_k < A_stencil.dimension( 0 ) ) && ( A_stencil( A_k, 0 ) == i ) && ( A_stencil( A_k, 1 ) == j ) )
             {
-              C_.coeff( k ) += alpha * A_coefficients[ A_k ];
+              C_.get_set_coeff()( k ) += alpha * A_coefficients[ A_k ];
               ++A_k;
             }
 
           if ( ( B_k < B_stencil.dimension( 0 ) ) && ( B_stencil( B_k, 0 ) == i ) && ( B_stencil( B_k, 1 ) == j ) )
             {
-              C_.coeff( k ) += beta * B_coefficients[ B_k ];
+              C_.get_set_coeff()( k ) += beta * B_coefficients[ B_k ];
               ++B_k;
             }
         }

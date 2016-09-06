@@ -71,3 +71,8 @@ double Matrice_SuperMorse::ajouter_mult_vect_et_prodscal(const DoubleVect& x, Do
     }
   return prod_scal_local;
 }
+
+
+
+
+

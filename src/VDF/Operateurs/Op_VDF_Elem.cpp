@@ -54,12 +54,12 @@ void Op_VDF_Elem::dimensionner(const Zone_VDF& la_zone,
 
   la_matrice.dimensionner(n1*nb_comp, n1*nb_comp, 0);
 
-  IntVect& tab1=la_matrice.tab1_;
-  IntVect& tab2=la_matrice.tab2_;
+  IntVect& tab1=la_matrice.get_set_tab1();
+  IntVect& tab2=la_matrice.get_set_tab2();
 
   int ndeb = la_zone.premiere_face_int();
   int nfin = la_zone.nb_faces();
-  DoubleVect& coeff = la_matrice.coeff_;
+  DoubleVect& coeff = la_matrice.get_set_coeff();
   coeff=0;
 
   IntVect rang_voisin(n1*nb_comp);

@@ -162,21 +162,21 @@ void Matrice_Dense::convert_to_morse_matrix( Matrice_Morse& morse_matrix ) const
 
   int size_tab1 = nb_lines + 1 ;
   int size_tab2 = nnz ;
-  morse_matrix.tab1_.resize( size_tab1 );
-  morse_matrix.tab2_.resize( size_tab2 );
-  morse_matrix.coeff_.resize( nnz );
+  morse_matrix.get_set_tab1().resize( size_tab1 );
+  morse_matrix.get_set_tab2().resize( size_tab2 );
+  morse_matrix.get_set_coeff().resize( nnz );
 
   for(int i=0; i<size_tab1; i++)
     {
-      morse_matrix.tab1_[ i ] =  /*already registred*/i*nb_cols + /*fortran index*/ 1 ;
+      morse_matrix.get_set_tab1()( i ) =  /*already registred*/i*nb_cols + /*fortran index*/ 1 ;
     }
   int count = 0;
   for(int i=0 ; i<nb_lines ; i++)
     {
       for(int j=0; j<nb_cols; j++)
         {
-          morse_matrix.tab2_[ count ] = j+1 ;
-          morse_matrix.coeff_[ count ] = Matrix_( i , j );
+          morse_matrix.get_set_tab2()( count ) = j+1 ;
+          morse_matrix.get_set_coeff()( count ) = Matrix_( i , j );
           count++;
         }
     }

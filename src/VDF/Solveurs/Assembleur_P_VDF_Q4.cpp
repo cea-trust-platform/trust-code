@@ -56,9 +56,9 @@ int Assembleur_P_VDF_Q4::assembler(Matrice& la_matrice)
   Matrice_Morse& mat = ref_cast(Matrice_Morse,la_matrice.valeur());
   mat.dimensionner(nbsom,0);
   IntVect rang_voisins(nbsom);
-  IntVect& tab1 = mat.tab1_;
-  IntVect& tab2 = mat.tab2_;
-  DoubleVect& coeff = mat.coeff_;
+  IntVect& tab1 = mat.get_set_tab1();
+  IntVect& tab2 = mat.get_set_tab2();
+  DoubleVect& coeff = mat.get_set_coeff();
 
   tab1 = 0;
   tab2 = 0;

@@ -253,14 +253,14 @@ int Op_Diff_RotRot::assembler_matrice(Matrice& matrice)
       Tri(sommets_pour_elem); //tableau trie
 
       // On remplit tab1
-      la_matrice.tab1(numero_elem) = nombre_coeff_non_nuls;
+      la_matrice.get_set_tab1()(numero_elem) = nombre_coeff_non_nuls;
 
       // On remplit tab2 et coeff
 
       //Les nb_elem premiers elements de la ligne "numero_elem"
       //a cause du FORTRAN
-      la_matrice.tab2(colonne_a_remplir_tab2) = numero_elem + 1;
-      la_matrice.coeff(colonne_a_remplir_coeff) =
+      la_matrice.get_set_tab2()(colonne_a_remplir_tab2) = numero_elem + 1;
+      la_matrice.get_set_coeff()(colonne_a_remplir_coeff) =
         remplir_elem_elem_EF(numero_elem);
 
       //On incremente nb_coeff_non_nuls car on vient de remplir
@@ -279,9 +279,9 @@ int Op_Diff_RotRot::assembler_matrice(Matrice& matrice)
           //du dernier sommet alors on stocke le bon coefficient
           if (sommets_pour_elem[i] != zone.nb_som()-1)
             {
-              la_matrice.tab2(colonne_a_remplir_tab2) =
+              la_matrice.get_set_tab2()(colonne_a_remplir_tab2) =
                 zone.nb_elem()+sommets_pour_elem[i]+1; //pour FORTRAN
-              la_matrice.coeff(colonne_a_remplir_coeff) =
+              la_matrice.get_set_coeff()(colonne_a_remplir_coeff) =
                 remplir_elem_som_EF(numero_elem,sommets_pour_elem[i]);
 
               //On incremente nb_coeff_non_nuls car on vient de remplir
@@ -314,7 +314,7 @@ int Op_Diff_RotRot::assembler_matrice(Matrice& matrice)
 
       //On remplit tab1
       //pour FORTRAN
-      la_matrice.tab1(zone.nb_elem()+numero_som) = nombre_coeff_non_nuls;
+      la_matrice.get_set_tab1()(zone.nb_elem()+numero_som) = nombre_coeff_non_nuls;
 
       //On remplit tab2 et coeff
 
@@ -322,8 +322,8 @@ int Op_Diff_RotRot::assembler_matrice(Matrice& matrice)
       for (int i=0; i < Elem_pour_sommet.size(); i++)
         {
           //A cause du FORTRAN
-          la_matrice.tab2(colonne_a_remplir_tab2) = Elem_pour_sommet[i]+1;
-          la_matrice.coeff(colonne_a_remplir_coeff) =
+          la_matrice.get_set_tab2()(colonne_a_remplir_tab2) = Elem_pour_sommet[i]+1;
+          la_matrice.get_set_coeff()(colonne_a_remplir_coeff) =
             remplir_som_elem_EF(Elem_pour_sommet[i],numero_som);
 
           //On incremente nb_coeff_non_nuls car on vient de remplir
@@ -350,9 +350,9 @@ int Op_Diff_RotRot::assembler_matrice(Matrice& matrice)
           if (numero_som_global != zone.nb_som()-1)
             {
               //A cause du FORTRAN
-              la_matrice.tab2(colonne_a_remplir_tab2) =
+              la_matrice.get_set_tab2()(colonne_a_remplir_tab2) =
                 zone.nb_elem()+Sommets_voisins[i]+1;
-              la_matrice.coeff(colonne_a_remplir_coeff) =
+              la_matrice.get_set_coeff()(colonne_a_remplir_coeff) =
                 remplir_som_som_EF(numero_som,Sommets_voisins[i],Elem_pour_sommet);
 
               //On incremente nb_coeff_non_nuls car on vient de remplir
@@ -374,7 +374,7 @@ int Op_Diff_RotRot::assembler_matrice(Matrice& matrice)
   //de tab1 est tab1[zone.nb_elem()+zone.nb_som()+1] et vaut
   //le nombre total de coefficients non nuls +1
   //soit avec notre algorithme: nombre_coeff_non_nuls
-  la_matrice.tab1(zone.nb_elem()+zone.nb_som()-1) = nombre_coeff_non_nuls;
+  la_matrice.get_set_tab1()(zone.nb_elem()+zone.nb_som()-1) = nombre_coeff_non_nuls;
 
   //   if(Debog::mode_db==2) Debog::save_matrix_seq(la_matrice);
   //   else if(Debog::mode_db==3)

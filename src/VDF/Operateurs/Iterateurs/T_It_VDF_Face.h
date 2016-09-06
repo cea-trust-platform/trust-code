@@ -2105,9 +2105,9 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
   int n_type;
   int fac1, fac2, fac3, fac4;
   int k,i;
-  IntVect& tab1 = matrice.tab1_;
-  IntVect& tab2 = matrice.tab2_;
-  DoubleVect& coeff = matrice.coeff_;
+  IntVect& tab1 = matrice.get_set_tab1();
+  IntVect& tab2 = matrice.get_set_tab2();
+  DoubleVect& coeff = matrice.get_set_coeff();
   for (n_arete=premiere_arete_bord; n_arete<derniere_arete_bord; n_arete++)
     {
       n_type=type_arete_bord(n_arete-premiere_arete_bord);
@@ -2488,9 +2488,9 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_internes(const DoubleTab
 {
   int fac1, fac2, fac3, fac4;
   DoubleVect aii(ncomp), ajj(ncomp);
-  IntVect& tab1 = matrice.tab1_;
-  IntVect& tab2 = matrice.tab2_;
-  DoubleVect& coeff = matrice.coeff_;
+  IntVect& tab1 = matrice.get_set_tab1();
+  IntVect& tab2 = matrice.get_set_tab2();
+  DoubleVect& coeff = matrice.get_set_coeff();
   int n_arete,k,i;
   for (n_arete=premiere_arete_interne; n_arete<derniere_arete_interne; n_arete++)
     {
@@ -2585,9 +2585,9 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_mixtes(const DoubleTab& 
 {
   int fac1, fac2, fac3, fac4;
   int n_arete,k,i;
-  IntVect& tab1 = matrice.tab1_;
-  IntVect& tab2 = matrice.tab2_;
-  DoubleVect& coeff = matrice.coeff_;
+  IntVect& tab1 = matrice.get_set_tab1();
+  IntVect& tab2 = matrice.get_set_tab2();
+  DoubleVect& coeff = matrice.get_set_coeff();
   DoubleVect aii(ncomp), ajj(ncomp);
   for (n_arete=premiere_arete_mixte; n_arete<derniere_arete_mixte; n_arete++)
     {
@@ -2655,9 +2655,9 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_fa7_sortie_libre(const DoubleTa
   int num_cl;
   int ndeb, nfin,k;
   double aii=0, ajj=0;
-  IntVect& tab1 = matrice.tab1_;
-  IntVect& tab2 = matrice.tab2_;
-  DoubleVect& coeff = matrice.coeff_;
+  IntVect& tab1 = matrice.get_set_tab1();
+  IntVect& tab2 = matrice.get_set_tab2();
+  DoubleVect& coeff = matrice.get_set_coeff();
   int face;
   int nb_front_Cl=la_zone->nb_front_Cl();
   for (num_cl=0; num_cl<nb_front_Cl; num_cl++)
@@ -2724,9 +2724,9 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_fa7_sortie_libre(const DoubleTa
 {
   int num_cl;
   int ndeb, nfin;
-  IntVect& tab1 = matrice.tab1_;
-  IntVect& tab2 = matrice.tab2_;
-  DoubleVect& coeff = matrice.coeff_;
+  IntVect& tab1 = matrice.get_set_tab1();
+  IntVect& tab2 = matrice.get_set_tab2();
+  DoubleVect& coeff = matrice.get_set_coeff();
   DoubleVect aii(ncomp), ajj(ncomp);
   int face,k,i;
   int nb_front_Cl=la_zone->nb_front_Cl();
@@ -2825,9 +2825,9 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_fa7_elem(const DoubleTab& inco,
 {
   int fa7, fac1, fac2;
   int num_elem;
-  IntVect& tab1 = matrice.tab1_;
-  IntVect& tab2 = matrice.tab2_;
-  DoubleVect& coeff = matrice.coeff_;
+  IntVect& tab1 = matrice.get_set_tab1();
+  IntVect& tab2 = matrice.get_set_tab2();
+  DoubleVect& coeff = matrice.get_set_coeff();
   DoubleVect aii(ncomp), ajj(ncomp);
   int k,i;
   for(num_elem=0; num_elem<nb_elem; num_elem++)
@@ -2930,9 +2930,9 @@ void T_It_VDF_Face<_TYPE_>::corriger_coeffs_fa7_elem_periodicite(const DoubleTab
         {
           int ndeb,nfin,elem1,elem2,num_elem,ori,k,i;
           int face,fac1,fac2,signe;
-          IntVect& tab1 = matrice.tab1_;
-          IntVect& tab2 = matrice.tab2_;
-          DoubleVect& coeff = matrice.coeff_;
+          IntVect& tab1 = matrice.get_set_tab1();
+          IntVect& tab2 = matrice.get_set_tab2();
+          DoubleVect& coeff = matrice.get_set_coeff();
           DoubleVect aii(ncomp), ajj(ncomp);
           /* const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur()); */
           ndeb = le_bord.num_premiere_face();

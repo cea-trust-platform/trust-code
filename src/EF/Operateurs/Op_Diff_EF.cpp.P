@@ -494,13 +494,13 @@ DoubleTab& Op_Diff_EF::ajouter_nature_gen(const DoubleTab& tab_inconnue, DoubleT
 // essai
   inline double& coeff_opt(Matrice_Morse& matrice,int i, int j)
   {
-    const IntVect& tab1_=matrice.tab1_;
-    const IntVect& tab2_=matrice.tab2_;
+    const IntVect& tab1_=matrice.get_tab1();
+    const IntVect& tab2_=matrice.get_tab2();
     int k1=tab1_[i]-1;
     int k2=tab1_[i+1]-1;
     int k;
     for (k=k1; k<k2; k++)
-      if (tab2_[k]-1 == j) return(matrice.coeff_[k]);
+      if (tab2_[k]-1 == j) return(matrice.get_set_coeff()(k));
     Cerr << "i ou j ne conviennent pas " << finl;
     Cerr << "i=" << i << finl;
     Cerr << "j=" << j << finl;

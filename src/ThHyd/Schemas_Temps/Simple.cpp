@@ -246,7 +246,7 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
   dudt = current; // pour pouvoir tester la convergence.
   Matrice_Morse matrice;
   eqn.dimensionner_matrice(matrice);
-  DoubleVect& coeff = matrice.coeff_;
+  DoubleVect& coeff = matrice.get_set_coeff();
   coeff=0;
   DoubleTrav resu(current);
 

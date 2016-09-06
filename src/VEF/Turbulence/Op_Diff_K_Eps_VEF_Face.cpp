@@ -449,8 +449,8 @@ void Op_Diff_K_Eps_VEF_Face::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab&
   const Paroi_hyd_base_VEF& paroi=ref_cast(Paroi_hyd_base_VEF,mod.valeur());
   const ArrOfInt& face_keps_imposee=paroi.face_keps_imposee();
   int size=secmem.dimension(0);
-  const IntVect& tab1=matrice.tab1_;
-  DoubleVect& coeff = matrice.coeff_;
+  const IntVect& tab1=matrice.get_tab1();
+  DoubleVect& coeff = matrice.get_set_coeff();
   int nb_comp=2;
 
   Op_VEF_Face::modifier_pour_Cl(la_zone_vef.valeur(),la_zcl_vef.valeur(), matrice, secmem);

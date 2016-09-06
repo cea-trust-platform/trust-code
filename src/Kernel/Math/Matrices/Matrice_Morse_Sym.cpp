@@ -160,14 +160,15 @@ Matrice_Morse_Sym::Matrice_Morse_Sym(const Matrice& A)
 }
 Matrice_Morse_Sym& Matrice_Morse_Sym::operator=(const Matrice_Morse& A)
 {
-  tab1_=A.tab1_;
-  tab2_=A.tab2_;
-  coeff_=A.coeff_;
-  m_=A.m_;
-  symetrique_=A.symetrique_;
+  tab1_=A.get_tab1();
+  tab2_=A.get_tab2();
+  coeff_=A.get_coeff();
+  m_=A.nb_colonnes();
+  symetrique_=A.get_symmetric();
   partie_sup(A);
   compacte();
   morse_matrix_structure_has_changed_=1;
+  is_stencil_up_to_date_=A.is_stencil_up_to_date();
   return *this;
 }
 Matrice_Morse_Sym& Matrice_Morse_Sym::operator=(const Matrice& A)
@@ -275,11 +276,11 @@ double Matrice_Morse_Sym::multvect_et_prodscal(const DoubleVect& x, DoubleVect& 
 
   const int fin = nb_lignes() + 1;
   {
-    const double * thecoef = coeff_.addr() - 1;
+    const double * thecoef = get_coeff().addr() - 1;
     const double * xx = x.addr() - 1;
     double * res = resu.addr() - 1;
-    const int * index1 = tab1_.addr() - 1;
-    const int * index2 = tab2_.addr() - 1;
+    const int * index1 = get_tab1().addr() - 1;
+    const int * index2 = get_tab2().addr() - 1;
 #ifdef COMPILER_BLRTS_XLC
 #pragma disjoint (*coef, *xx, *res)
 #endif
@@ -341,11 +342,11 @@ DoubleVect& Matrice_Morse_Sym::ajouter_multvect_(const DoubleVect& x, DoubleVect
 
   const int fin = nb_lignes() + 1;
   {
-    const double * thecoef = coeff_.addr() - 1;
+    const double * thecoef = get_coeff().addr() - 1;
     const double * xx = x.addr() - 1;
     double * res = resu.addr() - 1;
-    const int * index1 = tab1_.addr() - 1;
-    const int * index2 = tab2_.addr() - 1;
+    const int * index1 = get_tab1().addr() - 1;
+    const int * index2 = get_tab2().addr() - 1;
 #ifdef COMPILER_BLRTS_XLC
 #pragma disjoint (*coef, *xx, *res)
 #endif
@@ -490,11 +491,11 @@ Matrice_Morse_Sym operator+(const Matrice_Morse_Sym& A,const Matrice_Morse_Sym& 
   double coeff_A,coeff_B;
 
   //Pour s'assurer que compacte() va marcher
-  for (int i=0; i<somme.coeff_.size(); i++)
-    somme.coeff(i) = 0.;
+  for (int i=0; i<somme.get_coeff().size(); i++)
+    somme.get_set_coeff()(i) = 0.;
 
   //On va remplir tab2_ par ordre croissant de colonnes
-  somme.tab1(0) = 1;
+  somme.get_set_tab1()(0) = 1;
   for (int i=0; i<A.nb_lignes(); i++) //boucle sur les lignes
     {
       //Pour eviter les effets de bord
@@ -503,16 +504,16 @@ Matrice_Morse_Sym operator+(const Matrice_Morse_Sym& A,const Matrice_Morse_Sym& 
 
       //Initialisation des colonnes_A et colonnes_B
       //ATTENTION a la numerotation C++
-      for (int j=0; j<A.tab1(i+1)-A.tab1(i); j++)
+      for (int j=0; j<A.get_tab1()(i+1)-A.get_tab1()(i); j++)
         {
-          colonnes_A_ligne_i.add_if_not(A.tab2(A.tab1(i)+j-1));
-          coeffs_A_ligne_i.add(A.coeff(A.tab1(i)+j-1));
+          colonnes_A_ligne_i.add_if_not(A.get_tab2()(A.get_tab1()(i)+j-1));
+          coeffs_A_ligne_i.add(A.get_coeff()(A.get_tab1()(i)+j-1));
         }//fin for
 
-      for (int j=0; j<B.tab1(i+1)-B.tab1(i); j++)
+      for (int j=0; j<B.get_tab1()(i+1)-B.get_tab1()(i); j++)
         {
-          colonnes_B_ligne_i.add_if_not(B.tab2(B.tab1(i)+j-1));
-          coeffs_B_ligne_i.add(B.coeff(B.tab1(i)+j-1));
+          colonnes_B_ligne_i.add_if_not(B.get_tab2()(B.get_tab1()(i)+j-1));
+          coeffs_B_ligne_i.add(B.get_coeff()(B.get_tab1()(i)+j-1));
         }//fin for
 
       //On initialise d'autres varibles
@@ -524,10 +525,10 @@ Matrice_Morse_Sym operator+(const Matrice_Morse_Sym& A,const Matrice_Morse_Sym& 
           //Si l'une des listes est vide et pas l'autre
           if (colonnes_A_ligne_i.est_vide() && !colonnes_B_ligne_i.est_vide())
             {
-              somme.tab2(somme.tab1(i)+non_nuls_ligne_i-1) =
+              somme.get_set_tab2()(somme.get_tab1()(i)+non_nuls_ligne_i-1) =
                 colonnes_B_ligne_i[0];
 
-              somme.coeff(somme.tab1(i)+non_nuls_ligne_i-1) =
+              somme.get_set_coeff()(somme.get_tab1()(i)+non_nuls_ligne_i-1) =
                 coeffs_B_ligne_i[0] ;
 
               colonnes_B_ligne_i.suppr(colonnes_B_ligne_i[0]);
@@ -537,10 +538,10 @@ Matrice_Morse_Sym operator+(const Matrice_Morse_Sym& A,const Matrice_Morse_Sym& 
 
           if (colonnes_B_ligne_i.est_vide() && !colonnes_A_ligne_i.est_vide())
             {
-              somme.tab2(somme.tab1(i)+non_nuls_ligne_i-1) =
+              somme.get_set_tab2()(somme.get_tab1()(i)+non_nuls_ligne_i-1) =
                 colonnes_A_ligne_i[0];
 
-              somme.coeff(somme.tab1(i)+non_nuls_ligne_i-1) =
+              somme.get_set_coeff()(somme.get_tab1()(i)+non_nuls_ligne_i-1) =
                 coeffs_A_ligne_i[0];
 
               colonnes_A_ligne_i.suppr(colonnes_A_ligne_i[0]);
@@ -556,8 +557,8 @@ Matrice_Morse_Sym operator+(const Matrice_Morse_Sym& A,const Matrice_Morse_Sym& 
 
           if (min_colonnes_A < min_colonnes_B)
             {
-              somme.tab2(somme.tab1(i)+non_nuls_ligne_i-1) = min_colonnes_A;
-              somme.coeff(somme.tab1(i)+non_nuls_ligne_i-1) = coeff_A;
+              somme.get_set_tab2()(somme.get_tab1()(i)+non_nuls_ligne_i-1) = min_colonnes_A;
+              somme.get_set_coeff()(somme.get_tab1()(i)+non_nuls_ligne_i-1) = coeff_A;
 
               colonnes_A_ligne_i.suppr(min_colonnes_A);
               coeffs_A_ligne_i.suppr(coeff_A);
@@ -566,8 +567,8 @@ Matrice_Morse_Sym operator+(const Matrice_Morse_Sym& A,const Matrice_Morse_Sym& 
 
           if (min_colonnes_B < min_colonnes_A)
             {
-              somme.tab2(somme.tab1(i)+non_nuls_ligne_i-1) = min_colonnes_B;
-              somme.coeff(somme.tab1(i)+non_nuls_ligne_i-1) = coeff_B;
+              somme.get_set_tab2()(somme.get_tab1()(i)+non_nuls_ligne_i-1) = min_colonnes_B;
+              somme.get_set_coeff()(somme.get_tab1()(i)+non_nuls_ligne_i-1) = coeff_B;
 
               colonnes_B_ligne_i.suppr(min_colonnes_B);
               coeffs_B_ligne_i.suppr(coeff_B);
@@ -576,8 +577,8 @@ Matrice_Morse_Sym operator+(const Matrice_Morse_Sym& A,const Matrice_Morse_Sym& 
 
           if (min_colonnes_A == min_colonnes_B)
             {
-              somme.tab2(somme.tab1(i)+non_nuls_ligne_i-1) = min_colonnes_A;
-              somme.coeff(somme.tab1(i)+non_nuls_ligne_i-1) = coeff_A+coeff_B;
+              somme.get_set_tab2()(somme.get_tab1()(i)+non_nuls_ligne_i-1) = min_colonnes_A;
+              somme.get_set_coeff()(somme.get_tab1()(i)+non_nuls_ligne_i-1) = coeff_A+coeff_B;
 
               colonnes_A_ligne_i.suppr(min_colonnes_A);
               colonnes_B_ligne_i.suppr(min_colonnes_B);
@@ -588,7 +589,7 @@ Matrice_Morse_Sym operator+(const Matrice_Morse_Sym& A,const Matrice_Morse_Sym& 
 
         }// fin while
 
-      somme.tab1(i+1) = somme.tab1(i)+non_nuls_ligne_i;//?????
+      somme.get_set_tab1()(i+1) = somme.get_tab1()(i)+non_nuls_ligne_i;//?????
     }// fin for
 
   somme.compacte();
@@ -620,7 +621,7 @@ Matrice_Morse_Sym operator+(const Matrice_Morse_Sym& A,const Matrice_Morse_Sym& 
 Matrice_Morse_Sym operator *(double x, const Matrice_Morse_Sym& A)
 {
   Matrice_Morse_Sym mat_res(A);
-  mat_res.coeff_*=x;
+  mat_res.get_set_coeff()*=x;
   mat_res.morse_matrix_structure_has_changed_=1;
   return(mat_res);
 }
@@ -875,12 +876,13 @@ static int commun(const ArrOfInt& items,
 // Postcondition:
 Matrice_Morse_Sym& Matrice_Morse_Sym::operator=(const Matrice_Morse_Sym& a )
 {
-  tab1_  =a.tab1_;
-  tab2_  =a.tab2_;
-  coeff_ =a.coeff_;
-  m_=a.m_;
+  tab1_  =a.get_tab1();
+  tab2_  =a.get_tab2();
+  coeff_ =a.get_coeff();
+  m_=a.nb_colonnes();
   set_est_definie(a.get_est_definie());
   morse_matrix_structure_has_changed_=1;
+  is_stencil_up_to_date_ =  a.is_stencil_up_to_date() ;
   return(*this);
 }
 
@@ -1013,8 +1015,8 @@ void Matrice_Morse_Sym::renumerote() const
 
   //  int nnz = matrice2.coeff_.size();
   const int n = mon_ordre;
-  const int* tab1tmp = matrice2.tab1();
-  const int* tab2tmp = matrice2.tab2();
+  const int* tab1tmp = matrice2.get_tab1().addr();
+  const int* tab2tmp = matrice2.get_tab2().addr();
   // const int nfirst=1;
 
 
@@ -1047,14 +1049,14 @@ void Matrice_Morse_Sym::renumerote() const
 
   matrice2 = matrice;
 
-  const double* a = matrice.coeff();
-  const int* ja = matrice.tab2();
-  const int* ia = matrice.tab1();
-  const double* tao = matrice2.coeff();
+  const double* a = matrice.get_coeff().addr();
+  const int* ja = matrice.get_tab2().addr();
+  const int* ia = matrice.get_tab1().addr();
+  const double* tao = matrice2.get_coeff().addr();
   double* ao = (double*)tao;
-  const  int* tjao = matrice2.tab2();
+  const  int* tjao = matrice2.get_tab2().addr();
   int* jao = (int*)tjao;
-  const  int* tiao = matrice2.tab1();
+  const  int* tiao = matrice2.get_tab1().addr();
   int* iao = (int*)tiao;
 
   const int* perm = tab_perm.addr();

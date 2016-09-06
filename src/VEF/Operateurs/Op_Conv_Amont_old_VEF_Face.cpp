@@ -106,8 +106,8 @@ static void convbisimplicite(const double& psc,const int num1,const int num2,
                              DoubleVect& coeff, Matrice_Morse& matrice)
 {
   int comp,k;
-  IntVect& tab1 = matrice.tab1_;
-  IntVect& tab2 = matrice.tab2_;
+  IntVect& tab1 = matrice.get_set_tab1();
+  IntVect& tab2 = matrice.get_set_tab2();
 
   if (ncomp == 1)
     {
@@ -552,9 +552,9 @@ void Op_Conv_Amont_old_VEF_Face::ajouter_contribution(const DoubleTab& transport
   DoubleVect vc(dimension);
   DoubleTab vsom(nsom,dimension);
   DoubleVect cc(dimension);
-  IntVect& tab1 = matrice.tab1_;
-  IntVect& tab2 = matrice.tab2_;
-  DoubleVect& coeff = matrice.coeff_;
+  IntVect& tab1 = matrice.get_set_tab1();
+  IntVect& tab2 = matrice.get_set_tab2();
+  DoubleVect& coeff = matrice.get_set_coeff();
 
 
   // Traitement particulier pour les faces de periodicite

@@ -200,6 +200,7 @@ void Matrice_Bloc::scale( const double& x )
     }
 }
 
+
 void Matrice_Bloc::get_stencil( IntTab& stencil ) const
 {
   assert_check_block_matrix_structure( );
@@ -225,14 +226,14 @@ void Matrice_Bloc::get_stencil( IntTab& stencil ) const
           imax = imin + local_matrix.nb_lignes( );
           jmax = jmin + local_matrix.nb_colonnes( );
 
-          IntTab& stencil_ = local_stencils[ i * nb_column_blocks + j ];
-          local_matrix.get_stencil( stencil_ );
+          IntTab& local_stencil = local_stencils[ i * nb_column_blocks + j ];
+          local_matrix.get_stencil( local_stencil );
 
-          const int size = stencil_.dimension( 0 );
+          const int size = local_stencil.dimension( 0 );
           for ( int k=0; k<size; ++k )
             {
-              stencil_( k, 0 ) += imin;
-              stencil_( k, 1 ) += jmin;
+              local_stencil( k, 0 ) += imin;
+              local_stencil( k, 1 ) += jmin;
             }
           jmin = jmax;
         }
@@ -246,12 +247,12 @@ void Matrice_Bloc::get_stencil( IntTab& stencil ) const
 
   for ( int i=0; i<nb_stencils; ++i )
     {
-      const IntTab& stencil_ = local_stencils[ i ];
-      const int size = stencil_.dimension( 0 );
+      const IntTab& local_stencil = local_stencils[ i ];
+      const int size = local_stencil.dimension( 0 );
 
       for ( int k=0; k<size; ++k )
         {
-          const int line = stencil_( k, 0 );
+          const int line = local_stencil( k, 0 );
           offsets[ line + 1 ] += 1;
         }
     }
@@ -268,13 +269,13 @@ void Matrice_Bloc::get_stencil( IntTab& stencil ) const
 
   for ( int i=0; i<nb_stencils; ++i )
     {
-      const IntTab& stencil_ = local_stencils[ i ];
-      const int size = stencil_.dimension( 0 );
+      const IntTab& local_stencil = local_stencils[ i ];
+      const int size = local_stencil.dimension( 0 );
 
       for ( int k=0; k<size; ++k )
         {
-          const int line   = stencil_( k, 0 );
-          const int column = stencil_( k, 1 );
+          const int line   = local_stencil( k, 0 );
+          const int column = local_stencil( k, 1 );
           const int index  = offsets[ line ];
 
           assert( stencil( index, 0 ) < 0 );
@@ -286,26 +287,29 @@ void Matrice_Bloc::get_stencil( IntTab& stencil ) const
           offsets[ line ]     += 1;
         }
     }
+
 }
+
+
 
 void Matrice_Bloc::get_stencil_and_coefficients( IntTab& stencil, ArrOfDouble& coefficients ) const
 {
   assert_check_block_matrix_structure( );
-
   const int nb_line_blocks   = nb_bloc_lignes( );
   const int nb_column_blocks = nb_bloc_colonnes( );
-  const int nb_stencils      =  nb_line_blocks * nb_column_blocks;
-
-  VECT( IntTab ) local_stencils;
-  local_stencils.dimensionner( nb_stencils );
-
-  VECT( ArrOfDouble ) local_coefficients;
-  local_coefficients.dimensionner( nb_stencils );
 
   int imin = 0;
   int imax = 0;
   int jmin = 0;
   int jmax = 0;
+
+  const int nb_stencils      =  nb_line_blocks * nb_column_blocks;
+
+  VECT( IntTab ) vect_local_stencils;
+  vect_local_stencils.dimensionner( nb_stencils );
+
+  VECT( ArrOfDouble ) vect_local_coefficients;
+  vect_local_coefficients.dimensionner( nb_stencils );
 
   for ( int i=0; i<nb_line_blocks; ++i )
     {
@@ -316,15 +320,15 @@ void Matrice_Bloc::get_stencil_and_coefficients( IntTab& stencil, ArrOfDouble& c
           imax = imin + local_matrix.nb_lignes( );
           jmax = jmin + local_matrix.nb_colonnes( );
 
-          IntTab&      stencil_      = local_stencils[ i * nb_column_blocks + j ];
-          ArrOfDouble& coefficients_ = local_coefficients[i * nb_column_blocks + j ];
-          local_matrix.get_stencil_and_coefficients( stencil_, coefficients_ );
+          IntTab&      local_stencil = vect_local_stencils[ i * nb_column_blocks + j ];
+          ArrOfDouble& local_coefficients = vect_local_coefficients[i * nb_column_blocks + j ];
+          local_matrix.get_stencil_and_coefficients( local_stencil, local_coefficients );
 
-          const int size = stencil_.dimension( 0 );
+          const int size = local_stencil.dimension( 0 );
           for ( int k=0; k<size; ++k )
             {
-              stencil_( k, 0 ) += imin;
-              stencil_( k, 1 ) += jmin;
+              local_stencil( k, 0 ) += imin;
+              local_stencil( k, 1 ) += jmin;
             }
           jmin = jmax;
         }
@@ -338,12 +342,12 @@ void Matrice_Bloc::get_stencil_and_coefficients( IntTab& stencil, ArrOfDouble& c
 
   for ( int i=0; i<nb_stencils; ++i )
     {
-      const IntTab& stencil_ = local_stencils[ i ];
-      const int size = stencil_.dimension( 0 );
+      const IntTab& local_stencil = vect_local_stencils[ i ];
+      const int size = local_stencil.dimension( 0 );
 
       for ( int k=0; k<size; ++k )
         {
-          const int line = stencil_( k, 0 );
+          const int line = local_stencil( k, 0 );
           offsets[ line + 1 ] += 1;
         }
     }
@@ -362,17 +366,17 @@ void Matrice_Bloc::get_stencil_and_coefficients( IntTab& stencil, ArrOfDouble& c
 
   for ( int i=0; i<nb_stencils; ++i )
     {
-      const IntTab&      stencil_      = local_stencils[ i ];
-      const ArrOfDouble& coefficients_ = local_coefficients[ i ];
+      const IntTab&      local_stencil= vect_local_stencils[ i ];
+      const ArrOfDouble& local_coefficients = vect_local_coefficients[ i ];
 
-      const int size = stencil_.dimension( 0 );
-      assert( coefficients_.size_array( ) == size );
+      const int size = local_stencil.dimension( 0 );
+      assert( local_coefficients.size_array( ) == size );
 
       for ( int k=0; k<size; ++k )
         {
-          const int line        = stencil_( k, 0 );
-          const int column      = stencil_( k, 1 );
-          const double coefficient = coefficients_[ k ];
+          const int line        = local_stencil( k, 0 );
+          const int column      = local_stencil( k, 1 );
+          const double coefficient = local_coefficients[ k ];
           const int index       = offsets[ line ];
 
           assert( stencil( index, 0 ) < 0 );
@@ -387,6 +391,8 @@ void Matrice_Bloc::get_stencil_and_coefficients( IntTab& stencil, ArrOfDouble& c
         }
     }
 }
+
+
 
 Sortie& Matrice_Bloc::imprimer( Sortie& os ) const
 {
@@ -463,6 +469,7 @@ Matrice& Matrice_Bloc::get_bloc( int i, int j )
 Matrice_Bloc::Matrice_Bloc( int N, int M ) : Matrice_Base( )
 {
   dimensionner(N,M);
+  is_stencil_up_to_date_ = false ;
 }
 
 int Matrice_Bloc::dim( int d ) const
@@ -593,34 +600,34 @@ void Matrice_Bloc::remplir(const IntLists& voisins, const DoubleLists& valeurs, 
   VV.dimensionner(n-i,        m-j,        VV_rang);        // Dimension VV
 
   // Initialisations necessaires
-  RR.tab1_=1;
-  RV.tab1_=1;
-  VR.tab1_=1;
-  VV.tab1_=1;
+  RR.get_set_tab1()=1;
+  RV.get_set_tab1()=1;
+  VR.get_set_tab1()=1;
+  VV.get_set_tab1()=1;
 
   // Deuxieme passe pour le remplissage
   // Tableaux tab1, tab2 et coeff_ pour le bloc RR
-  int* RR_tab1 = RR.tab1_.addr();
-  int* RR_tab2 = RR.tab2_.addr();
-  double* RR_coeff = RR.coeff_.addr();
+  int* RR_tab1 = RR.get_set_tab1().addr();
+  int* RR_tab2 = RR.get_set_tab2().addr();
+  double* RR_coeff = RR.get_set_coeff().addr();
   int* RR_tab2_ptr = RR_tab2;
 
   // Tableaux tab1, tab2 et coeff_ pour le bloc RV
-  int* RV_tab1 = RV.tab1_.addr();
-  int* RV_tab2 = RV.tab2_.addr();
-  double* RV_coeff = RV.coeff_.addr();
+  int* RV_tab1 = RV.get_set_tab1().addr();
+  int* RV_tab2 = RV.get_set_tab2().addr();
+  double* RV_coeff = RV.get_set_coeff().addr();
   int* RV_tab2_ptr = RV_tab2;
 
   // Tableaux tab1, tab2 et coeff_ pour le bloc VR
-  int* VR_tab1 = VR.tab1_.addr();
-  int* VR_tab2 = VR.tab2_.addr();
-  double* VR_coeff = VR.coeff_.addr();
+  int* VR_tab1 = VR.get_set_tab1().addr();
+  int* VR_tab2 = VR.get_set_tab2().addr();
+  double* VR_coeff = VR.get_set_coeff().addr();
   int* VR_tab2_ptr = VR_tab2;
 
   // Tableaux tab1, tab2 et coeff_ pour le bloc VV
-  int* VV_tab1 = VV.tab1_.addr();
-  int* VV_tab2 = VV.tab2_.addr();
-  double* VV_coeff = VV.coeff_.addr();
+  int* VV_tab1 = VV.get_set_tab1().addr();
+  int* VV_tab2 = VV.get_set_tab2().addr();
+  double* VV_coeff = VV.get_set_coeff().addr();
   int* VV_tab2_ptr = VV_tab2;
 
   RR_rang=0;
@@ -704,10 +711,10 @@ void Matrice_Bloc::remplir(const IntLists& voisins, const DoubleLists& valeurs, 
       VR_rang += VR_compteur;
       VV_rang += VV_compteur;
     }
-  RR.tab1(i)=RR_rang;
-  RV.tab1(i)=RV_rang;
-  VR.tab1(n-i)=VR_rang;
-  VV.tab1(n-i)=VV_rang;
+  RR.get_set_tab1()(i)=RR_rang;
+  RV.get_set_tab1()(i)=RV_rang;
+  VR.get_set_tab1()(n-i)=VR_rang;
+  VV.get_set_tab1()(n-i)=VV_rang;
   // Passage a la numerotation Fortran
   RR.formeF();
   RV.formeF();

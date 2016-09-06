@@ -24,6 +24,7 @@
 #include <Matrice_Morse.h>
 #include <Matrice_Morse_Sym.h>
 #include <Matrix_tools.h>
+#include <Array_tools.h>
 
 Implemente_base(Matrice_Base,"Matrice_Base",Objet_U);
 
@@ -65,6 +66,12 @@ DoubleVect operator * (const Matrice_Base& A, const DoubleVect& vect)
   return A.multvect(vect, r);
 }
 
+
+int Matrice_Base::get_stencil_size( void ) const
+{
+  return stencil_.dimension( 0 );
+}
+
 void Matrice_Base::get_stencil( IntTab& stencil ) const
 {
   Cerr << "Error in 'Matrice_Base::get_stencil( )':" << finl;
@@ -99,5 +106,10 @@ void Matrice_Base::get_symmetric_stencil_and_coefficients( IntTab&      stencil,
 
   Matrice_Morse_Sym tmp2( tmp1 );
   tmp2.get_symmetric_stencil_and_coefficients( stencil, coefficients );
+}
+
+bool Matrice_Base::is_stencil_up_to_date( void ) const
+{
+  return is_stencil_up_to_date_;
 }
 

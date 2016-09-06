@@ -167,20 +167,20 @@ static void construire_graph_from_segment(const Domaine& dom,
   Matrice_Morse A;
   Matrix_tools::allocate_morse_matrix(nb_elem,nb_elem,stencyl,A);
 
-  nb_edges=A.tab2_.size_array(); // des liens peuvent etre doubles
+  nb_edges=A.get_tab2().size_array(); // des liens peuvent etre doubles
   graph.nedges = nb_edges;
   graph.adjncy = imalloc(nb_edges, "readgraph: adjncy");
 
   //
-  assert(A.tab1_.size_array()==graph.nvtxs+1);
+  assert(A.get_tab1().size_array()==graph.nvtxs+1);
   for (int c=0; c<graph.nvtxs+1; c++)
     {
-      graph.xadj[c]=A.tab1_[c]-1;
+      graph.xadj[c]=A.get_tab1()(c)-1;
     }
   // assert(A.tab2_.size_array()==graph.nedges);
   for (int c=0; c<graph.nedges; c++)
     {
-      graph.adjncy[c]=A.tab2_[c]-1;
+      graph.adjncy[c]=A.get_tab2()(c)-1;
     }
 }
 

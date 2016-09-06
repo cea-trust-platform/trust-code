@@ -736,9 +736,9 @@ void Op_Dift_VDF_var_Face_Axi::ajouter_contribution(const DoubleTab& inco,      
   //  int nb_elem = zvdf.nb_elem();
   //  int nb_aretes = zvdf.nb_aretes();
   int l;
-  IntVect& tab1 = matrice.tab1_;
-  IntVect& tab2 = matrice.tab2_;
-  DoubleVect& coeff = matrice.coeff_;
+  IntVect& tab1 = matrice.get_set_tab1();
+  IntVect& tab2 = matrice.get_set_tab2();
+  DoubleVect& coeff = matrice.get_set_coeff();
 
   const DoubleVect& visco_lam = diffusivite_->valeurs();
   const DoubleVect& visco_turb = la_diffusivite_turbulente->valeurs();

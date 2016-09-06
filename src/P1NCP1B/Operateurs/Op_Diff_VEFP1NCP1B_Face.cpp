@@ -963,7 +963,7 @@ calculer_laplacien_som(const DoubleTab& nu_som) const
 
   const Zone_VEF_PreP1b& zone_VEF = zone_VEFPreP1B();
 
-  DoubleVect& coeff=laplacien_p1_.coeff_;
+  DoubleVect& coeff=laplacien_p1_.get_set_coeff();
 
   const DoubleTab& inconnue1=equation().inconnue().valeurs();
   const DoubleVect& porosite_face=zone_VEF.porosite_face();
@@ -1617,8 +1617,8 @@ coeff_matrice_som(const int& face,IntVect& liste_som,
 {
   const Zone_VEF_PreP1b& zone_VEF=zone_VEFPreP1B();
 
-  const ArrOfInt& tab1=matrice.tab1_;
-  const ArrOfInt& tab2=matrice.tab2_;
+  const ArrOfInt& tab1=matrice.get_tab1();
+  const ArrOfInt& tab2=matrice.get_tab2();
 
   const DoubleVect& volume_aux_sommets=zone_VEF.volume_aux_sommets();
 
@@ -1754,8 +1754,8 @@ coeff_matrice_som_CL(const int& face,IntVect& liste_som,
 {
   const Zone_VEF_PreP1b& zone_VEF=zone_VEFPreP1B();
 
-  const ArrOfInt& tab1=matrice.tab1_;
-  const ArrOfInt& tab2=matrice.tab2_;
+  const ArrOfInt& tab1=matrice.get_tab1();
+  const ArrOfInt& tab2=matrice.get_tab2();
 
   const DoubleVect& volume_aux_sommets=zone_VEF.volume_aux_sommets();
 
@@ -1891,8 +1891,8 @@ coeff_matrice_som_symetrie(const int& face,IntVect& liste_som,
 {
   const Zone_VEF_PreP1b& zone_VEF=zone_VEFPreP1B();
 
-  const ArrOfInt& tab1=matrice.tab1_;
-  const ArrOfInt& tab2=matrice.tab2_;
+  const ArrOfInt& tab1=matrice.get_tab1();
+  const ArrOfInt& tab2=matrice.get_tab2();
 
   const DoubleVect& volume_aux_sommets=zone_VEF.volume_aux_sommets();
 
@@ -2032,8 +2032,8 @@ coeff_matrice_som_perio(const int& face,const int& faceAss, IntVect& liste_som,
 {
   const Zone_VEF_PreP1b& zone_VEF=zone_VEFPreP1B();
 
-  const ArrOfInt& tab1=matrice.tab1_;
-  const ArrOfInt& tab2=matrice.tab2_;
+  const ArrOfInt& tab1=matrice.get_tab1();
+  const ArrOfInt& tab2=matrice.get_tab2();
 
   const DoubleVect& volume_aux_sommets=zone_VEF.volume_aux_sommets();
 
@@ -3009,8 +3009,8 @@ void Op_Diff_VEFP1NCP1B_Face::dimensionner(Matrice_Morse& matrice) const
 
   ArrOfBit is_symetry(nb_faces_tot);
 
-  IntVect& tab1 = matrice.tab1_;
-  IntVect& tab2 = matrice.tab2_;
+  IntVect& tab1 = matrice.get_set_tab1();
+  IntVect& tab2 = matrice.get_set_tab2();
 
   IntLists faces_faces;
 

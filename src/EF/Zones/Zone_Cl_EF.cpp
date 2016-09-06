@@ -493,8 +493,8 @@ void  Zone_Cl_EF::imposer_symetrie_matrice_secmem(Matrice_Morse& la_matrice, Dou
   const DoubleTab& n_bis =normales_symetrie_bis_.valeur().valeurs();
   ArrOfDouble normale(dimension);
 
-  const IntVect& tab1=la_matrice.tab1_;
-  const IntVect& tab2=la_matrice.tab2_;
+  const IntVect& tab1=la_matrice.get_tab1();
+  const IntVect& tab2=la_matrice.get_tab2();
 
   const DoubleTab& champ_inconnue = equation().inconnue().valeurs();
   int dirmax=2;

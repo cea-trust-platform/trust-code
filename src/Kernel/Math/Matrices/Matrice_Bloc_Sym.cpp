@@ -339,22 +339,22 @@ void Matrice_Bloc_Sym::get_symmetric_stencil( IntTab& stencil ) const
 
           int stencil_index = i *( nb_line_blocks - 1 ) - i * ( i - 1) / 2 + j;
 
-          IntTab& stencil_ = local_stencils[ stencil_index ];
+          IntTab& local_stencil_ = local_stencils[ stencil_index ];
 
           if ( i == j )
             {
-              local_matrix.get_symmetric_stencil( stencil_ );
+              local_matrix.get_symmetric_stencil( local_stencil_ );
             }
           else
             {
-              local_matrix.get_stencil( stencil_ );
+              local_matrix.get_stencil( local_stencil_ );
             }
 
-          const int size = stencil_.dimension( 0 );
+          const int size = local_stencil_.dimension( 0 );
           for ( int k=0; k<size; ++k )
             {
-              stencil_( k, 0 ) += imin;
-              stencil_( k, 1 ) += jmin;
+              local_stencil_( k, 0 ) += imin;
+              local_stencil_( k, 1 ) += jmin;
             }
           jmin = jmax;
         }
@@ -368,12 +368,12 @@ void Matrice_Bloc_Sym::get_symmetric_stencil( IntTab& stencil ) const
 
   for ( int i=0; i<nb_stencils; ++i )
     {
-      const IntTab& stencil_ = local_stencils[ i ];
-      const int size = stencil_.dimension( 0 );
+      const IntTab& local_stencil_ = local_stencils[ i ];
+      const int size = local_stencil_.dimension( 0 );
 
       for ( int k=0; k<size; ++k )
         {
-          const int line = stencil_( k, 0 );
+          const int line = local_stencil_( k, 0 );
           offsets[ line + 1 ] += 1;
         }
     }
@@ -390,13 +390,13 @@ void Matrice_Bloc_Sym::get_symmetric_stencil( IntTab& stencil ) const
 
   for ( int i=0; i<nb_stencils; ++i )
     {
-      const IntTab& stencil_ = local_stencils[ i ];
-      const int size = stencil_.dimension( 0 );
+      const IntTab& local_stencil_ = local_stencils[ i ];
+      const int size = local_stencil_.dimension( 0 );
 
       for ( int k=0; k<size; ++k )
         {
-          const int line   = stencil_( k, 0 );
-          const int column = stencil_( k, 1 );
+          const int line   = local_stencil_( k, 0 );
+          const int column = local_stencil_( k, 1 );
           const int index  = offsets[ line ];
 
           assert( stencil( index, 0 ) < 0 );
@@ -460,23 +460,23 @@ void Matrice_Bloc_Sym::get_symmetric_stencil_and_coefficients( IntTab&      sten
 
           int stencil_index = i *( nb_line_blocks - 1 ) - i * ( i - 1) / 2 + j;
 
-          IntTab&      stencil_      = local_stencils[ stencil_index ];
-          ArrOfDouble& coefficients_ = local_coefficients[ stencil_index ];
+          IntTab&      local_stencil_      = local_stencils[ stencil_index ];
+          ArrOfDouble& coefficients_       = local_coefficients[ stencil_index ];
 
           if ( i == j )
             {
-              local_matrix.get_symmetric_stencil_and_coefficients( stencil_, coefficients_ );
+              local_matrix.get_symmetric_stencil_and_coefficients( local_stencil_, coefficients_ );
             }
           else
             {
-              local_matrix.get_stencil_and_coefficients( stencil_, coefficients_ );
+              local_matrix.get_stencil_and_coefficients( local_stencil_, coefficients_ );
             }
 
-          const int size = stencil_.dimension( 0 );
+          const int size = local_stencil_.dimension( 0 );
           for ( int k=0; k<size; ++k )
             {
-              stencil_( k, 0 ) += imin;
-              stencil_( k, 1 ) += jmin;
+              local_stencil_( k, 0 ) += imin;
+              local_stencil_( k, 1 ) += jmin;
             }
           jmin = jmax;
         }
@@ -490,12 +490,12 @@ void Matrice_Bloc_Sym::get_symmetric_stencil_and_coefficients( IntTab&      sten
 
   for ( int i=0; i<nb_stencils; ++i )
     {
-      const IntTab& stencil_ = local_stencils[ i ];
-      const int size = stencil_.dimension( 0 );
+      const IntTab& local_stencil_ = local_stencils[ i ];
+      const int size = local_stencil_.dimension( 0 );
 
       for ( int k=0; k<size; ++k )
         {
-          const int line = stencil_( k, 0 );
+          const int line = local_stencil_( k, 0 );
           offsets[ line + 1 ] += 1;
         }
     }
@@ -513,16 +513,16 @@ void Matrice_Bloc_Sym::get_symmetric_stencil_and_coefficients( IntTab&      sten
 
   for ( int i=0; i<nb_stencils; ++i )
     {
-      const IntTab&      stencil_       = local_stencils[ i ];
-      const ArrOfDouble& coefficients_ = local_coefficients[ i ];
+      const IntTab&      local_stencil_       = local_stencils[ i ];
+      const ArrOfDouble&        coefficients_ = local_coefficients[ i ];
 
-      const int size = stencil_.dimension( 0 );
+      const int size = local_stencil_.dimension( 0 );
       assert( coefficients_.size_array( ) == size );
 
       for ( int k=0; k<size; ++k )
         {
-          const int line        = stencil_( k, 0 );
-          const int column      = stencil_( k, 1 );
+          const int line        = local_stencil_( k, 0 );
+          const int column      = local_stencil_( k, 1 );
           const double coefficient = coefficients_[ k ];
           const int index       = offsets[ line ];
 

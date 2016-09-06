@@ -74,10 +74,10 @@ void Op_VDF_Face::dimensionner(const Zone_VDF& la_zone,
 
   la_matrice.dimensionner(nfin*nb_comp,nfin*nb_comp,0);
 
-  IntVect& tab1=la_matrice.tab1_;
-  IntVect& tab2=la_matrice.tab2_;
+  IntVect& tab1=la_matrice.get_set_tab1();
+  IntVect& tab2=la_matrice.get_set_tab2();
 
-  DoubleVect& coeff = la_matrice.coeff_;
+  DoubleVect& coeff = la_matrice.get_set_coeff();
   coeff=0;
   IntVect rang_voisin(nfin);
   rang_voisin=1;
@@ -281,8 +281,8 @@ void Op_VDF_Face::modifier_pour_Cl(const Zone_VDF& la_zone,
   //  int nfin = la_zone.nb_faces();
   const Conds_lim& les_cl = la_zone_cl.les_conditions_limites();
 
-  IntVect& tab1=la_matrice.tab1_;
-  DoubleVect& coeff = la_matrice.coeff_;
+  IntVect& tab1=la_matrice.get_set_tab1();
+  DoubleVect& coeff = la_matrice.get_set_coeff();
   const IntVect& orientation=la_zone.orientation();
   int nb_comp = 1;
 

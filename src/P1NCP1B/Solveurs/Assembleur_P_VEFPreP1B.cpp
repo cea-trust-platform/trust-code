@@ -1025,9 +1025,9 @@ void operation11(Matrice_Bloc& A00, Matrice_Bloc& A01, Matrice_Bloc& A11, double
       for (int j_bloc=0; j_bloc<A00.nb_bloc_colonnes(); j_bloc++)
         {
           Matrice_Morse& A00ij=ref_cast(Matrice_Morse, A00.get_bloc(i_bloc,j_bloc).valeur());
-          const int* tab1=A00ij.tab1();
-          const int* tab2=A00ij.tab2();
-          const double* coeff=A00ij.coeff();
+          const int* tab1=A00ij.get_tab1().addr();
+          const int* tab2=A00ij.get_tab2().addr();
+          const double* coeff=A00ij.get_coeff().addr();
           nb_lignes=A00ij.nb_lignes();
           int nb_colonnes=A00ij.nb_colonnes();
           for (int i=0; i<nb_lignes; i++)
@@ -1077,9 +1077,9 @@ void operation11(Matrice_Bloc& A00, Matrice_Bloc& A01, Matrice_Bloc& A11, double
       for (int j_bloc=0; j_bloc<A01.nb_bloc_colonnes(); j_bloc++)
         {
           Matrice_Morse& A01ij=ref_cast(Matrice_Morse, A01.get_bloc(i_bloc,j_bloc).valeur());
-          const int* tab1=A01ij.tab1();
-          const int* tab2=A01ij.tab2();
-          const double* coeff=A01ij.coeff();
+          const int* tab1=A01ij.get_tab1().addr();
+          const int* tab2=A01ij.get_tab2().addr();
+          const double* coeff=A01ij.get_coeff().addr();
           nb_lignes=A01ij.nb_lignes();
           int nb_colonnes=A01ij.nb_colonnes();
           for (int i=0; i<nb_lignes; i++)
@@ -1124,9 +1124,9 @@ void operation01(Matrice_Bloc& A00, Matrice_Bloc& A01, double alpha, double beta
       for (int j_bloc=0; j_bloc<A00.nb_bloc_colonnes(); j_bloc++)
         {
           Matrice_Morse& A00ij=ref_cast(Matrice_Morse, A00.get_bloc(i_bloc,j_bloc).valeur());
-          const int* tab1=A00ij.tab1();
-          const int* tab2=A00ij.tab2();
-          const double* coeff=A00ij.coeff();
+          const int* tab1=A00ij.get_tab1().addr();
+          const int* tab2=A00ij.get_tab2().addr();
+          const double* coeff=A00ij.get_coeff().addr();
           nb_lignes=A00ij.nb_lignes();
           int nb_colonnes=A00ij.nb_colonnes();
           int s;

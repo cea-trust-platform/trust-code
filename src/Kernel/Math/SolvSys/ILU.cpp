@@ -151,7 +151,7 @@ int ILU::factoriser(const Matrice_Morse& mat,
       ArrOfDouble wbis(n1+1);
       ArrOfInt jwbis(2*n1);
 
-      F77NAME(ILUTV2)(&n1, mat.coeff_.addr(), mat.tab2_.addr(), mat.tab1_.addr(), &lfil_,
+      F77NAME(ILUTV2)(&n1, mat.get_coeff().addr(), mat.get_tab2().addr(), mat.get_tab1().addr(), &lfil_,
                       &to, alu.addr(), jlu.addr(), ju.addr(),
                       &iw, wbis.addr(),
                       jwbis.addr(), &ie);
@@ -196,12 +196,12 @@ int ILU::factorisation(const Matrice_Morse& mat,const DoubleVect& secmem)
       MLOC.dimensionner(n_reel,0);
       int ii,jj;
       int cpt=0;
-      const IntVect& tab1_tot = mat.tab1_;
-      const IntVect& tab2_tot = mat.tab2_;
-      //      const DoubleVect& coeff_tot = mat.coeff_;
-      IntVect& tab1_reel = MLOC.tab1_;
-      IntVect& tab2_reel = MLOC.tab2_;
-      //      DoubleVect& coeff_reel = MLOC.coeff_;
+      const IntVect& tab1_tot = mat.get_tab1();
+      const IntVect& tab2_tot = mat.get_tab2();
+      //      const DoubleVect& coeff_tot = mat.get_set_coeff();
+      IntVect& tab1_reel = MLOC.get_set_tab1();
+      IntVect& tab2_reel = MLOC.get_set_tab2();
+      //      DoubleVect& coeff_reel = MLOC.get_set_coeff();
       tab1_reel(0)=1;
       for(ii=0; ii<n_reel; ii++)
         {
@@ -236,12 +236,12 @@ int ILU::factorisation(const Matrice_Morse& mat,const DoubleVect& secmem)
     int cpt=0;
     int n_reel = secmem.size();
 
-    const IntVect& tab1_tot = mat.tab1_;
-    const IntVect& tab2_tot = mat.tab2_;
-    const DoubleVect& coeff_tot = mat.coeff_;
-    //    IntVect& tab1_reel = MLOC.tab1_;
-    //    IntVect& tab2_reel = MLOC.tab2_;
-    DoubleVect& coeff_reel = MLOC.coeff_;
+    const IntVect& tab1_tot = mat.get_tab1();
+    const IntVect& tab2_tot = mat.get_tab2();
+    const DoubleVect& coeff_tot = mat.get_coeff();
+    //    IntVect& tab1_reel = MLOC.get_set_tab1();
+    //    IntVect& tab2_reel = MLOC.get_set_tab2();
+    DoubleVect& coeff_reel = MLOC.get_set_coeff();
 
     for(ii=0; ii<n_reel; ii++)
       {

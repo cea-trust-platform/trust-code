@@ -164,8 +164,8 @@ void Op_Diff_K_Eps_VDF_base::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab&
   if ( !(type_loi.debute_par("negligeable")) )
     {
 
-      const IntVect& tab1=matrice.tab1_;
-      DoubleVect& coeff = matrice.coeff_;
+      const IntVect& tab1=matrice.get_tab1();
+      DoubleVect& coeff = matrice.get_set_coeff();
 
       const IntTab& face_voisins = iter.zone().face_voisins();
 

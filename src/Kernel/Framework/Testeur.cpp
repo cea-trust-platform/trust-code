@@ -50,16 +50,16 @@ Entree& Testeur::interpreter(Entree& is)
   SSOR ssor;
   SSOR ssor2;
   DoubleVect v;
-  param.ajouter("tab1", &m.tab1_);
-  param.ajouter("tab2", &m.tab2_);
-  param.ajouter("coef", &m.coeff_);
+  param.ajouter("tab1", &m.get_set_tab1());
+  param.ajouter("tab2", &m.get_set_tab2());
+  param.ajouter("coef", &m.get_set_coeff());
   param.ajouter("ssor", &ssor);
   param.ajouter("ssor2", &ssor2);
   param.ajouter("vect", &v);
   param.lire_avec_accolades(is);
 
-  m.m_ = v.size();
-  DoubleVect w(m.m_);
+  m.set_nb_columns(v.size());
+  DoubleVect w(m.nb_colonnes());
 
   ssor.preconditionner(m, v, w);
   Cout << "Result ssor: " << w << finl;
