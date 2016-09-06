@@ -1,0 +1,52 @@
+#!/bin/bash
+
+sed    "8d ; s/nb_parts 4/nb_parts 2/ ; s/VEFPreP1B dis/VDF dis/ ; 26d" VEF_P0P1Pa_g.data   >  VDF_g.data
+sed -i "s/pressure    nodes/pressure    grav / ; s/pression    nodes/pression    grav /"       VDF_g.data
+sed -i "s/pression_pa nodes/pression_pa grav / ; s/p_star      nodes/p_star      grav /"       VDF_g.data
+sed -i "s/13  2.23   2.25   0.4    2.23   2.25   9.6/13  2.5   2.5   0.    2.5   2.5   10./g"  VDF_g.data
+sed -i "s/ 7  0.4    2.25   4.8    4.8    2.25   4.8/ 7  0.    2.5   5.    5.    2.5    5./" VDF_g.data
+
+sed    "s/P0 P1 Pa/P0/ ; s/pressure    nodes/pressure    grav / ; s/pression    nodes/pression    grav /" VEF_P0P1Pa_g.data > VEF_P0_g.data
+
+sed -i "s/pression_pa nodes/pression_pa grav / ; s/p_star      nodes/p_star      grav /"  VEF_P0_g.data
+
+sed    "s/P0 P1 Pa/P1/"    VEF_P0P1Pa_g.data   > VEF_P1_g.data
+
+sed    "s/P0 P1 Pa/P0 P1/; s/Cl_pression_sommet_faible 0/Cl_pression_sommet_faible 1/; s/grav / /g; s/nodes//g" VEF_P0P1Pa_g.data   > VEF_P0P1_g.data
+
+sed "46,49d ; 78,92d ; /energie_cine/d ; /pression_hydro/d ; /pressure_tot/d" VDF_g.data        > VDF.data
+sed "48,51d ; 80,94d ; /energie_cine/d ; /pression_hydro/d ; /pressure_tot/d" VEF_P0_g.data     > VEF_P0.data
+sed "48,51d ; 80,94d ; /energie_cine/d ; /pression_hydro/d ; /pressure_tot/d" VEF_P1_g.data     > VEF_P1.data
+sed "48,51d ; 80,94d ; /energie_cine/d ; /pression_hydro/d ; /pressure_tot/d" VEF_P0P1_g.data   > VEF_P0P1.data
+sed "48,51d ; 80,94d ; /energie_cine/d ; /pression_hydro/d ; /pressure_tot/d" VEF_P0P1Pa_g.data > VEF_P0P1Pa.data
+
+sed -n "65,74p" VEF_P0P1Pa_g.data > CL.txt
+sed -i 's/^\s*//' CL.txt # supprime les espaces en debut de ligne
+
+sed -n "80,94p" VEF_P0P1Pa_g.data > def_champ.txt
+sed -i 's/^\s*//' def_champ.txt # supprime les espaces en debut de ligne
+
+sed -n "110p" VDF_g.data > VDF_probes.txt
+sed -i 's/^\s*//' VDF_probes.txt # supprime les espaces en debut de ligne
+
+sed -n "112p" VEF_P0_g.data > VEF_P0_probes.txt
+sed -i 's/^\s*//' VEF_P0_probes.txt # supprime les espaces en debut de ligne
+
+sed -n "112p" VEF_P1_g.data > VEF_P1_probes.txt
+sed -i 's/^\s*//' VEF_P1_probes.txt # supprime les espaces en debut de ligne
+
+sed -n "112p" VEF_P0P1_g.data > VEF_P0P1_probes.txt
+sed -i 's/^\s*//' VEF_P0P1_probes.txt # supprime les espaces en debut de ligne
+
+sed -n "25,26p" VEF_P0P1_g.data > VEF_P0P1_dis.txt
+
+sed -n "129,140p" VEF_P0P1_g.data > post_processings.txt
+sed -i 's/^\s*//' post_processings.txt # supprime les espaces en debut de ligne
+
+for i in `ls V*.data`
+do
+    rep=${i%.data}
+    mkdir $rep
+    mv $i $rep
+    cp post_run pre_run propertiesGeometry.py geometry.geo $rep
+done
