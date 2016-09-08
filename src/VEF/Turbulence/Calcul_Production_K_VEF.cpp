@@ -27,7 +27,7 @@
 #include <DoubleVect.h>
 #include <DoubleTrav.h>
 #include <Champ_P1NC.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
 #include <Champ_Uniforme.h>
 #include <Convection_Diffusion_Concentration.h>
 

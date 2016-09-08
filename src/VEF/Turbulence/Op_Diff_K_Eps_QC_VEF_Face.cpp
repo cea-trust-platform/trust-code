@@ -23,7 +23,7 @@
 #include <Op_Diff_K_Eps_QC_VEF_Face.h>
 #include <Modele_turbulence_hyd_K_Eps.h>
 #include <Champ_P1NC.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
 #include <Paroi_hyd_base_VEF.h>
 #include <Fluide_Quasi_Compressible.h>
 #include <DoubleTrav.h>

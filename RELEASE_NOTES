@@ -1,6 +1,9 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.4_beta : Enhancements, modifications and corrected bugs since version 1.7.3 :
 --------------------------------------------------------------------------------------------------
+01/08/16 (TRUST)  New keyword : Update Verif_Cl with new sub-class (Entree_fluide_vitesse_imposee_libre)
+29/07/16 (Tools)  Minor change: Update the VisIt configuration of host profiles automatically on several clusters (CCRT and DM2S)
+22/07/16 (TRUST)  Minor change: Options -evol and -wiz added to the trust script (TRUST_PLOT2D and TRUST_WIZZARD)
 20/07/16 (TRUST)  Minor change: Update reprise_auto script with new archiving option
 29/06/16 (TRUST)  Portability : Linux distribution Fedora 24 and gcc 6.1.1 supported
 29/06/16 (TRUST)  Bug fixed   : Fixed bug with "turbulence_paroi Paroi_TBLE" on output of tble_mesh.dat file in parallel mode

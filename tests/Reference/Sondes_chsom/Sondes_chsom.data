@@ -115,7 +115,7 @@ Read pb
 		{
 			HAUT   Paroi_adiabatique
 			BAS    Paroi_adiabatique
- 			ENTREE frontiere_ouverte T_ext Champ_Front_Uniforme 1 10.00
+ 			ENTREE frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 10.00
 			SORTIE frontiere_ouverte T_ext Champ_Front_Uniforme 1 5.00
 		}
 		initial_conditions { Temperature Champ_Uniforme 1 5. }

@@ -29,7 +29,7 @@ define_modules_config()
    # MPI module openmpi-1.8.3-gcc.env openmpi-1.8.5-gcc.env
    # echo "source /softs/_environnement/openmpi-1.8.5-gcc.env" >> $env
    #
-   # INTEL:
+   # INTEL: 2016.1.2
    #echo "source /softs/_environnement/intel.env" >> $env
    echo "source /softs/intel/bin/compilervars.sh intel64" >> $env
    # MPI module impi-5.0.3.048 impi-5.1.3.181
@@ -59,6 +59,7 @@ define_soumission_batch()
    #      lila          0
    qos=normal
    cpu=30 && [ "$prod" = 1 ] && cpu=1440 # 30 minutes or 1 day
+   ntasks=12 # 12 cores per node for prod_X5675 queue (16 for prod_E5-2670 and 20 for prod_E5-2680v2)
    # sinfo :
    #PARTITION      AVAIL  TIMELIMIT  NODES  STATE
    #prod*             up   infinite      7    mix
@@ -66,8 +67,17 @@ define_soumission_batch()
    #prod_E5-2680v2    up   infinite      3    mix
    #prod_E5-2670      up   infinite      3    mix
    #lila              up   infinite      2    mix
-   #queue=prod #NB benchmark KO with prod_E5-2680v2 and prod_E5-2670 so queue=prod_X5675
+   #queue=prod
    queue=prod_X5675
+   if [ "$prod" = 1 ] || [ $NB_PROCS -gt $ntasks ]
+   then
+      if [ "`echo $NB_PROCS | awk -v n=$ntasks '{print $1%n}'`" != 0 ]
+      then
+         echo "=================================================================================================================="
+         echo "Warning: try to fill the allocated nodes by partitioning your mesh with multiple of $ntasks on $queue partition."
+         echo "=================================================================================================================="
+      fi
+   fi
    #if [ "`basename $Mpirun`" = srun ]
    #then
    #   # Slurm srun support

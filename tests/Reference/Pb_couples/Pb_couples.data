@@ -338,7 +338,7 @@ Read pb2
 			face  	 		paroi_adiabatique
 			contact42		paroi_contact pb4 contact42
 			sortie_froide		Frontiere_ouverte T_ext Champ_Front_Uniforme 1 673.
-			entree_froide		Frontiere_ouverte T_ext Champ_Front_Uniforme 1 573.
+			entree_froide		Frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 573.
 			
 		}
 		

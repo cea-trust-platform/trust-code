@@ -22,7 +22,7 @@
 
 #include <Op_Div_VEF_Elem.h>
 #include <Zone_Cl_VEF.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
 #include <Probleme_base.h>
 #include <Schema_Temps_base.h>
 #include <Check_espace_virtuel.h>

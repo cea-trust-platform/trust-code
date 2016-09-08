@@ -24,7 +24,14 @@
 #include <Champ_P1NC.h>
 #include <Champ_Q1NC.h>
 #include <Champ_Uniforme.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
+#include <Symetrie.h>
+#include <Neumann_paroi.h>
+#include <Echange_externe_impose.h>
+#include <Neumann_sortie_libre.h>
+#include <Dirichlet.h>
+#include <Dirichlet_homogene.h>
+#include <Neumann_homogene.h>
 #include <Ref_Champ_P1NC.h>
 #include <Ref_Champ_Q1NC.h>
 #include <Milieu_base.h>

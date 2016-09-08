@@ -23,7 +23,11 @@
 #include <Op_Dift_VEF_Face_Q1.h>
 #include <Champ_Q1NC.h>
 #include <Champ_Don.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
+#include <Dirichlet_paroi_fixe.h>
+#include <Dirichlet_paroi_defilante.h>
+#include <Neumann_paroi.h>
+#include <Echange_externe_impose.h>
 #include <Champ_Uniforme.h>
 #include <Paroi_negligeable_VEF.h>
 #include <Debog.h>

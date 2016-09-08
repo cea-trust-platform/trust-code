@@ -104,6 +104,7 @@ then
    [ "${HOST#callisto}" != $HOST ] && HOST=callisto
    [ "${HOST#ceres2}"   != $HOST ] && HOST=ceres2
    [ "${HOST#mezel}"    != $HOST ] && HOST=mezel
+   [ "${HOST#cobalt}"   != $HOST ] && HOST=cobalt
 fi
 
 WHERE=$HOME && [ "$WORKDIR" != "" ] && WHERE=$WORKDIR
@@ -300,7 +301,8 @@ date
 ################################################
 # Pour forcer des options sur certaines machines
 ################################################
-option_configure=""
+export TRUST_BUILD_IN_TMP=1
+option_configure=" -disable-ccache"
 # PETSc with CUDA for GPU (needs GNU compiler for PETSc, confirmed in petsc-dev december 2013) 
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_petsc_have_cuda" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -force_petsc_have_cuda -c++=g++ -cc=gcc -fc=gfortran"
 # PETSc with OpenMP 
@@ -318,7 +320,7 @@ option_configure=""
 # Compilation minimale avec -disable
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable " | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-med -disable-medcoupling -disable-mpi -without-visit -without-doc -disable-plot2d"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-mpi" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-mpi"
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-optionals" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -disable-optionals"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-optionals" | grep ^$HOST"\."`" != "" ] 		&& option_configure=" -disable-optionals"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-check_sources" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -disable-check_sources"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-medcoupling" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -disable-medcoupling"
 # Salome

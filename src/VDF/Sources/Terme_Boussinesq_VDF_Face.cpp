@@ -23,7 +23,8 @@
 #include <Terme_Boussinesq_VDF_Face.h>
 #include <Fluide_Incompressible.h>
 #include <Champ_Uniforme.h>
-#include <Les_Cl.h>
+#include <Neumann_sortie_libre.h>
+#include <Dirichlet.h>
 #include <Zone_VDF.h>
 #include <Zone_Cl_VDF.h>
 #include <Convection_Diffusion_Concentration.h>

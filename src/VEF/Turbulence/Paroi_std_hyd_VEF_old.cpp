@@ -25,7 +25,8 @@
 #include <Champ_P1NC.h>
 #include <Fluide_Incompressible.h>
 #include <Champ_Uniforme.h>
-#include <Les_Cl.h>
+#include <Dirichlet_paroi_fixe.h>
+#include <Dirichlet_paroi_defilante.h>
 #include <Static_Int_Lists.h>
 #include <Debog.h>
 #include <IntList.h>

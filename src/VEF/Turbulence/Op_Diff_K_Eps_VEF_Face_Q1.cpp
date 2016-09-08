@@ -25,7 +25,8 @@
 #include <Champ_Q1NC.h>
 #include <Zone_VEF.h>
 #include <Zone_Cl_VEF.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
+#include <Neumann_paroi.h>
 
 Implemente_instanciable(Op_Diff_K_Eps_VEF_Face_Q1,"Op_Diff_K_Eps_VEF_Q1NC",Op_Diff_K_Eps_VEF_base);
 

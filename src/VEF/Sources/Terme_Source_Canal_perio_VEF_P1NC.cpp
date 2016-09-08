@@ -23,7 +23,7 @@
 #include <Terme_Source_Canal_perio_VEF_P1NC.h>
 #include <Zone_VEF.h>
 #include <Zone_Cl_VEF.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>
 #include <Schema_Temps_base.h>

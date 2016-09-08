@@ -23,7 +23,11 @@
 #include <Assembleur_P_VEFPreP1B.h>
 #include <Matrice_Bloc_Sym.h>
 #include <Domaine.h>
-#include <Les_Cl.h>
+#include <Dirichlet.h>
+#include <Dirichlet_homogene.h>
+#include <Periodique.h>
+#include <Neumann_sortie_libre.h>
+#include <Symetrie.h>
 #include <LecFicDistribueBin.h>
 #include <EcrFicCollecteBin.h>
 #include <DoubleLists.h>

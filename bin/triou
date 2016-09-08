@@ -631,7 +631,6 @@ then
 		[ "`echo $cpu | grep :`" = "" ] && echo "#MSUB -T $cpu" 	>> $sub_file # Exprime en SSSSS      	
 		echo "#MSUB -o myjob.%J.o"					>> $sub_file
 		echo "#MSUB -e myjob.%J.e" 					>> $sub_file
-		project=`ccc_myproject 2>/dev/null | $TRUST_Awk '/project/ {print $4;exit}'` # Ajout projet
 		[ "$project" != "" ] && echo "#MSUB -A $project" 		>> $sub_file 
 		echo "#MSUB -E \"--no-requeue\""            			>> $sub_file # Prevent from restart
 		echo "#MSUB -n $NB_PROCS" 					>> $sub_file 

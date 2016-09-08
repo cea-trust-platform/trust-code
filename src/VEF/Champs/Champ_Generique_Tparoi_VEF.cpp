@@ -30,7 +30,7 @@
 #include <Modele_turbulence_scal_base.h>
 #include <Scalaire_impose_paroi.h>
 #include <Neumann_paroi.h>
-#include <Neumann.h>
+#include <Neumann_homogene.h>
 #include <Discretisation_base.h>
 #include <Synonyme_info.h>
 

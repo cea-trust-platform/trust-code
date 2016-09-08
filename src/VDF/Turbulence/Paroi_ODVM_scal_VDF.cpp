@@ -25,7 +25,8 @@
 #include <ParoiVDF_TBLE.h>
 #include <Paroi_std_hyd_VDF.h>
 #include <Zone_Cl_VDF.h>
-#include <Les_Cl.h>
+#include <Dirichlet_paroi_fixe.h>
+#include <Echange_externe_impose.h>
 #include <Champ_Uniforme.h>
 #include <Champ_front_calc.h>
 #include <Convection_Diffusion_Temperature.h>

@@ -21,7 +21,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <LoiParoiHybride_VEF.h>
-#include <Les_Cl.h>
 #include <Zone_Cl_VEF.h>
 #include <Zone_VEF.h>
 #include <Zone_dis.h>

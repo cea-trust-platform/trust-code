@@ -23,7 +23,6 @@
 #include <Op_Diff_RotRot.h>
 #include <Zone_Cl_VEF.h>
 #include <Front_VF.h>
-#include <Les_Cl.h>
 #include <Zone_dis.h>
 #include <Zone_Cl_dis.h>
 #include <Matrice_Morse_Sym.h>

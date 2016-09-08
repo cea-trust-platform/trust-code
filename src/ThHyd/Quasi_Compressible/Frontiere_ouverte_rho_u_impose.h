@@ -24,7 +24,7 @@
 #ifndef Frontiere_ouverte_rho_u_impose_included
 #define Frontiere_ouverte_rho_u_impose_included
 
-#include <Dirichlet_entree_fluide.h>
+#include <Entree_fluide_vitesse_imposee_libre.h>
 #include <Ref_Fluide_Quasi_Compressible.h>
 
 //////////////////////////////////////////////////////////////////////////////
@@ -37,7 +37,7 @@
 // .SECTION voir aussi
 //    Dirichlet_entree_fluide
 //////////////////////////////////////////////////////////////////////////////
-class Frontiere_ouverte_rho_u_impose  : public Entree_fluide_vitesse_imposee
+class Frontiere_ouverte_rho_u_impose  : public Entree_fluide_vitesse_imposee_libre
 {
 
   Declare_instanciable(Frontiere_ouverte_rho_u_impose);

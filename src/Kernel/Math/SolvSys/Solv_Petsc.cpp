@@ -19,6 +19,7 @@
 // Version:     /main/95
 //
 //////////////////////////////////////////////////////////////////////////////
+
 #include <Solv_Petsc.h>
 #include <Matrice_Morse_Sym.h>
 #include <stat_counters.h>
@@ -734,8 +735,8 @@ void Solv_Petsc::create_solver(Entree& entree)
                 //check_not_defined(epsilon);
                 //check_not_defined(ordering);
                 //
-                // CHANGES in the PETSc 3.6 Version: Removed -pc_hypre_type euclid due to bit-rot
-                Cerr << "Error: CHANGES in the PETSc 3.6 Version: Removed -pc_hypre_type euclid due to bit-rot." << finl;
+                // CHANGES in the PETSc 3.6 version: Removed -pc_hypre_type euclid due to bit-rot
+                Cerr << "Error: CHANGES in the PETSc 3.6 version: Removed -pc_hypre_type euclid due to bit-rot." << finl;
                 Cerr << "So the ILU { level k } preconditionner no longer available. " << finl;
                 Cerr << "Change your data file." << finl;
                 Process::exit();

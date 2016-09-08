@@ -23,7 +23,7 @@
 #include <Terme_Source_Acceleration_VDF_Face.h>
 #include <Zone_Cl_dis.h>
 #include <Zone_Cl_VDF.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
 #include <Navier_Stokes_std.h>
 #include <Champ_Fonc_P0_VDF.h>
 

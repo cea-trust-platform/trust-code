@@ -51,6 +51,12 @@ Chapitre {
 			Fichier mezel.cpu
 			colonnes $1 $3
 		}	
+		Courbe { 
+			Legende "cobalt"
+			Style points
+			Fichier cobalt.cpu
+			colonnes $1 $3
+		}	
 		Courbe {
 			Legende "Acceptance limit"
 			Style lines
@@ -98,6 +104,12 @@ Chapitre {
 			Legende "mezel"
 			Style points
 			Fichier mezel.cpu
+			colonnes $1 $8
+		}
+		Courbe { 
+			Legende "cobalt"
+			Style points
+			Fichier cobalt.cpu
 			colonnes $1 $8
 		}
 		Courbe {
@@ -153,6 +165,12 @@ Chapitre {
 			Fichier mezel.cpu
 			colonnes $1 $9
 		}		
+		Courbe { 
+			Legende "cobalt"
+			Style points
+			Fichier cobalt.cpu
+			colonnes $1 $9
+		}		
 		Courbe {
 			Legende "Acceptance limit"
 			Style lines
@@ -200,6 +218,12 @@ Chapitre {
 			Legende "mezel"
 			Style points
 			Fichier mezel.cpu
+			colonnes $1 $14
+		}
+		Courbe { 
+			Legende "cobalt"
+			Style points
+			Fichier cobalt.cpu
 			colonnes $1 $14
 		}
 		Courbe {

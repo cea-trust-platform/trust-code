@@ -28,7 +28,6 @@
 #include <math.h>
 #include <Champ_P1NC.h>
 #include <Champ_Don.h>
-#include <Les_Cl.h>
 #include <Champ_Uniforme.h>
 #include <Champ_Fonc.h>
 #include <DoubleTrav.h>

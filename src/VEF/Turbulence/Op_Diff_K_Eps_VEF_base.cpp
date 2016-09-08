@@ -23,7 +23,6 @@
 #include <Op_Diff_K_Eps_VEF_base.h>
 #include <Modele_turbulence_hyd_K_Eps.h>
 #include <Champ_P1NC.h>
-#include <Les_Cl.h>
 #include <Paroi_hyd_base_VEF.h>
 
 Implemente_base_sans_constructeur(Op_Diff_K_Eps_VEF_base,"Op_Diff_K_Eps_VEF_base",Op_Diff_K_Eps_base);

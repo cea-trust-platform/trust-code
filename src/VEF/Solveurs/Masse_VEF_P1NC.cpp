@@ -23,7 +23,10 @@
 #include <Masse_VEF_P1NC.h>
 #include <Zone_Cl_VEF.h>
 #include <Zone_VEF.h>
-#include <Les_Cl.h>
+#include <Dirichlet.h>
+#include <Dirichlet_homogene.h>
+#include <Periodique.h>
+#include <Symetrie.h>
 #include <Debog.h>
 #include <Equation_base.h>
 #include <Matrice_Morse.h>

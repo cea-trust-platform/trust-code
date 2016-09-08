@@ -22,7 +22,13 @@
 
 #include <Op_Dift_VEF_Face.h>
 #include <Champ_P1NC.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
+#include <Scalaire_impose_paroi.h>
+#include <Neumann_paroi.h>
+#include <Echange_externe_impose.h>
+#include <Neumann_homogene.h>
+#include <Symetrie.h>
+#include <Neumann_sortie_libre.h>
 #include <Champ_Uniforme.h>
 #include <Modele_turbulence_hyd_K_Eps.h>
 #include <Turbulence_hyd_sous_maille_VEF.h>

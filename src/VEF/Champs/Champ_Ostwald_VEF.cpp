@@ -25,7 +25,6 @@
 #include <Fluide_Ostwald.h>
 #include <Zone_VEF.h>
 #include <Navier_Stokes_std.h>
-#include <Les_Cl.h>
 
 
 Implemente_instanciable(Champ_Ostwald_VEF,"Champ_Ostwald_VEF",Champ_Ostwald);

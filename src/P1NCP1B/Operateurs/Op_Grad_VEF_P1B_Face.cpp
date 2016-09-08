@@ -21,7 +21,11 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Grad_VEF_P1B_Face.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
+#include <Symetrie.h>
+#include <Dirichlet.h>
+#include <Dirichlet_homogene.h>
+#include <Neumann_sortie_libre.h>
 #include <Navier_Stokes_std.h>
 #include <Domaine.h>
 #include <Schema_Temps.h>

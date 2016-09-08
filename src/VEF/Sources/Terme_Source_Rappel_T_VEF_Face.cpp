@@ -24,7 +24,6 @@
 #include <Champ_Uniforme.h>
 #include <Zone_VEF.h>
 #include <Zone_Cl_VEF.h>
-#include <Les_Cl.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>
 #include <Schema_Temps_base.h>

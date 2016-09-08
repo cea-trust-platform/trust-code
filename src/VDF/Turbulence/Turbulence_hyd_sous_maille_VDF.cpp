@@ -21,7 +21,11 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Turbulence_hyd_sous_maille_VDF.h>
-#include <Les_Cl.h>
+#include <Dirichlet_entree_fluide.h>
+#include <Neumann_sortie_libre.h>
+#include <Symetrie.h>
+#include <Dirichlet_paroi_fixe.h>
+#include <Periodique.h>
 #include <Paroi_negligeable_VDF.h>
 #include <DoubleTrav.h>
 #include <Debog.h>

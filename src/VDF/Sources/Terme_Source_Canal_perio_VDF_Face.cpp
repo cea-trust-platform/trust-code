@@ -24,7 +24,11 @@
 #include <math.h>
 #include <Zone_VDF.h>
 #include <Zone_Cl_VDF.h>
-#include <Les_Cl.h>
+#include <Neumann_sortie_libre.h>
+#include <Dirichlet.h>
+#include <Dirichlet_homogene.h>
+#include <Symetrie.h>
+#include <Periodique.h>
 #include <Pb_Thermohydraulique.h>
 #include <Fluide_Quasi_Compressible.h>
 

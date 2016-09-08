@@ -107,7 +107,7 @@ $TRUST_ROOT/bin/KSH/check_license_in_file.sh --mode c -add $tmp_file || exit -1
    # Verification qu'il y'a bien un seul en tete
    if [ "`grep -e '[ ]*File:' -e '[ ]*Directory:' -e '[ ]*Version: ' $file | wc -l | $TRUST_Awk '{print $1}'`" != 3 ]
    then
-      echo "Probleme en tete. Contacter le support TRUST."
+      echo "Problem entete $file. Contact TRUST support."
       exit -1
    fi
 fi

@@ -25,7 +25,7 @@
 #include <Front_VF.h>
 #include <Zone_VF.h>
 #include <EFichier.h>
-#include <Les_Cl.h>
+#include <Dirichlet_paroi_fixe.h>
 #include <Diffu_totale_hyd_base.h>
 #include <Probleme_base.h>
 #include <MuLambda_TBLE_Fcts_T.h>

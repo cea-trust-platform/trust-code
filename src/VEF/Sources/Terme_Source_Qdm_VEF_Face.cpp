@@ -26,7 +26,7 @@
 #include <Zone_Cl_dis.h>
 #include <Zone_VEF.h>
 #include <Zone_Cl_VEF.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
 #include <BilanQdmVEF.h>
 #include <Equation_base.h>
 #include <Champ_Inc.h>

@@ -22,7 +22,15 @@
 
 #include <Op_Dift_Stab_VEF_Face.h>
 #include <Champ_P1NC.h>
-#include <Les_Cl.h>
+#include <Periodique.h>
+#include <Neumann_paroi.h>
+#include <Echange_externe_impose.h>
+#include <Neumann_homogene.h>
+#include <Symetrie.h>
+#include <Neumann_sortie_libre.h>
+#include <Dirichlet.h>
+#include <Dirichlet_homogene.h>
+#include <Scalaire_impose_paroi.h>
 #include <Pb_Thermohydraulique_Turbulent.h>
 #include <Debog.h>
 #include <DoubleTrav.h>

@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <Object name="MachineProfile">
-    <Field name="hostNickname" type="string">airain</Field>	
-    <Field name="host" type="string">airain-gw.ccc.cea.fr</Field>
+    <Field name="hostNickname" type="string">airain</Field>
     <Field name="host" type="string">airain*</Field>
     <Field name="userName" type="string">notset</Field>
     <Field name="hostAliases" type="string"></Field>
@@ -50,15 +49,19 @@
         <Field name="machinefile" type="string"></Field>
         <Field name="visitSetsUpEnv" type="bool">false</Field>
         <Field name="canDoHWAccel" type="bool">true</Field>
-        <Field name="GPUsPerNode" type="int">2</Field>
+        <Field name="GPUsPerNode" type="int">1</Field>
         <Field name="XArguments" type="string"></Field>
         <Field name="launchXServers" type="bool">false</Field>
         <Field name="XDisplay" type="string">:0.0</Field>
-        <Field name="profileName" type="string">"sequentiel (hpcdrive - gpu)"</Field>
+        <Field name="numThreads" type="int">0</Field>
+        <Field name="constrainNodeProcs" type="bool">false</Field>
+        <Field name="allowableNodes" type="intVector"></Field>
+        <Field name="allowableProcs" type="intVector"></Field>
+        <Field name="profileName" type="string">"visu node (1GPU)"</Field>
     </Object>
     <Object name="LaunchProfile">
         <Field name="timeout" type="int">480</Field>
-        <Field name="numProcessors" type="int">8</Field>
+        <Field name="numProcessors" type="int">4</Field>
         <Field name="numNodesSet" type="bool">false</Field>
         <Field name="numNodes" type="int">1</Field>
         <Field name="partitionSet" type="bool">false</Field>
@@ -86,11 +89,95 @@
         <Field name="machinefile" type="string"></Field>
         <Field name="visitSetsUpEnv" type="bool">false</Field>
         <Field name="canDoHWAccel" type="bool">false</Field>
-        <Field name="GPUsPerNode" type="int">2</Field>
+        <Field name="GPUsPerNode" type="int">1</Field>
         <Field name="XArguments" type="string"></Field>
         <Field name="launchXServers" type="bool">false</Field>
         <Field name="XDisplay" type="string">:%l</Field>
-        <Field name="profileName" type="string">"parallel (hpcdrive - mpi)"</Field>
+        <Field name="numThreads" type="int">0</Field>
+        <Field name="constrainNodeProcs" type="bool">false</Field>
+        <Field name="allowableNodes" type="intVector"></Field>
+        <Field name="allowableProcs" type="intVector"></Field>
+        <Field name="profileName" type="string">"visu node (8CPUmax)"</Field>
+    </Object>
+    <Object name="LaunchProfile">
+        <Field name="timeout" type="int">480</Field>
+        <Field name="numProcessors" type="int">8</Field>
+        <Field name="numNodesSet" type="bool">false</Field>
+        <Field name="numNodes" type="int">1</Field>
+        <Field name="partitionSet" type="bool">true</Field>
+        <Field name="partition" type="string">ivybridge</Field>
+        <Field name="bankSet" type="bool">false</Field>
+        <Field name="bank" type="string"></Field>
+        <Field name="timeLimitSet" type="bool">true</Field>
+        <Field name="timeLimit" type="string">15</Field>
+        <Field name="launchMethodSet" type="bool">true</Field>
+        <Field name="launchMethod" type="string">srun</Field>
+        <Field name="forceStatic" type="bool">true</Field>
+        <Field name="forceDynamic" type="bool">false</Field>
+        <Field name="active" type="bool">false</Field>
+        <Field name="arguments" type="stringVector"></Field>
+        <Field name="parallel" type="bool">true</Field>
+        <Field name="launchArgsSet" type="bool">true</Field>
+        <Field name="launchArgs" type="string">"--resv-ports -A den@ivybridge"</Field>
+        <Field name="sublaunchArgsSet" type="bool">false</Field>
+        <Field name="sublaunchArgs" type="string"></Field>
+        <Field name="sublaunchPreCmdSet" type="bool">false</Field>
+        <Field name="sublaunchPreCmd" type="string"></Field>
+        <Field name="sublaunchPostCmdSet" type="bool">false</Field>
+        <Field name="sublaunchPostCmd" type="string"></Field>
+        <Field name="machinefileSet" type="bool">false</Field>
+        <Field name="machinefile" type="string"></Field>
+        <Field name="visitSetsUpEnv" type="bool">false</Field>
+        <Field name="canDoHWAccel" type="bool">false</Field>
+        <Field name="GPUsPerNode" type="int">1</Field>
+        <Field name="XArguments" type="string"></Field>
+        <Field name="launchXServers" type="bool">false</Field>
+        <Field name="XDisplay" type="string">:%l</Field>
+        <Field name="numThreads" type="int">0</Field>
+        <Field name="constrainNodeProcs" type="bool">false</Field>
+        <Field name="allowableNodes" type="intVector"></Field>
+        <Field name="allowableProcs" type="intVector"></Field>
+        <Field name="profileName" type="string">"ivybridge node (20CPUmax)"</Field>
+    </Object>
+    <Object name="LaunchProfile">
+        <Field name="timeout" type="int">480</Field>
+        <Field name="numProcessors" type="int">40</Field>
+        <Field name="numNodesSet" type="bool">true</Field>
+        <Field name="numNodes" type="int">2</Field>
+        <Field name="partitionSet" type="bool">true</Field>
+        <Field name="partition" type="string">ivybridge</Field>
+        <Field name="bankSet" type="bool">false</Field>
+        <Field name="bank" type="string"></Field>
+        <Field name="timeLimitSet" type="bool">true</Field>
+        <Field name="timeLimit" type="string">15</Field>
+        <Field name="launchMethodSet" type="bool">true</Field>
+        <Field name="launchMethod" type="string">srun</Field>
+        <Field name="forceStatic" type="bool">true</Field>
+        <Field name="forceDynamic" type="bool">false</Field>
+        <Field name="active" type="bool">false</Field>
+        <Field name="arguments" type="stringVector"></Field>
+        <Field name="parallel" type="bool">true</Field>
+        <Field name="launchArgsSet" type="bool">true</Field>
+        <Field name="launchArgs" type="string">"--resv-ports -A den@ivybridge"</Field>
+        <Field name="sublaunchArgsSet" type="bool">false</Field>
+        <Field name="sublaunchArgs" type="string"></Field>
+        <Field name="sublaunchPreCmdSet" type="bool">false</Field>
+        <Field name="sublaunchPreCmd" type="string"></Field>
+        <Field name="sublaunchPostCmdSet" type="bool">false</Field>
+        <Field name="sublaunchPostCmd" type="string"></Field>
+        <Field name="machinefileSet" type="bool">false</Field>
+        <Field name="machinefile" type="string"></Field>
+        <Field name="visitSetsUpEnv" type="bool">false</Field>
+        <Field name="canDoHWAccel" type="bool">false</Field>
+        <Field name="GPUsPerNode" type="int">1</Field>
+        <Field name="XArguments" type="string"></Field>
+        <Field name="launchXServers" type="bool">false</Field>
+        <Field name="XDisplay" type="string">:%l</Field>
+        <Field name="numThreads" type="int">0</Field>
+        <Field name="constrainNodeProcs" type="bool">false</Field>
+        <Field name="allowableNodes" type="intVector"></Field>
+        <Field name="allowableProcs" type="intVector"></Field>
+        <Field name="profileName" type="string">"ivybridge nodes (20CPUmin)"</Field>
     </Object>
     <Field name="activeProfile" type="int">0</Field>
 </Object>

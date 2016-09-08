@@ -51,7 +51,7 @@ Read pb
 	Navier_Stokes_standard
 	{
 		methode_calcul_pression_initiale avec_les_cl # pour forcer modele NS par defaut dans baltik ModeleCoeur #
-		solveur_pression gcp  { seuil 1e-6 impr precond ssor { omega 1.5 }  }
+		solveur_pression gcp  { seuil 1e-8 impr precond ssor { omega 1.5 }  }
 solveur_pression petsc cholesky { }
 		convection {    generic   Amont  # negligeable # }
                 diffusion { option { grad_u_transpose_partout 1 }   }

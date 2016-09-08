@@ -23,7 +23,7 @@
 #ifndef Echange_externe_impose_H_included
 #define Echange_externe_impose_H_included
 
-#include <Echange_global_impose.h>
+#include <Echange_externe_impose.h>
 #include <Ref_Fluide_Quasi_Compressible.h>
 
 //////////////////////////////////////////////////////////////////////////////

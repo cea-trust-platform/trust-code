@@ -64,6 +64,7 @@ define_modules_config()
 define_soumission_batch()
 {
    soumission=1 # aucun calcul meme sequentiel sur la frontale
+   queue=Batch
    cpu=00:30:00 && [ "$prod" = 1 ] && cpu=24:00:00 # 30 minutes or 1 day
    ntasks=12    # 12 cores per node
    if [ $NB_PROCS -gt $ntasks ]
@@ -75,7 +76,7 @@ define_soumission_batch()
       then
          echo "=================================================================================================================="
          echo "Warning: the allocated nodes of $ntasks cores will not be shared with other jobs (--exclusive option used)"
-         echo "so please try to fill the allocated nodes by partitioning your mesh with multiple of $ntasks."
+         echo "so please try to fill the allocated nodes by partitioning your mesh with multiple of $ntasks on $queue partition."
          echo "=================================================================================================================="
          cpus_per_task=1 # pour message erreur
       else
@@ -89,7 +90,6 @@ define_soumission_batch()
       noeuds=1
       taches=$NB_PROCS
    fi
-   queue=Batch
    # Ne pas prendre mpirun mais mpiexec
    export mpirun="mpiexec" # Pas installe sur la frontale
    sub=PBS
