@@ -81,7 +81,7 @@ Entree& Neumann_homogene::readOn(Entree& s )
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-inline double Neumann_homogene::flux_impose(int ) const
+double Neumann_homogene::flux_impose(int ) const
 {
   return 0;
 }
@@ -107,7 +107,7 @@ inline double Neumann_homogene::flux_impose(int ) const
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-inline double Neumann_homogene::flux_impose(int ,int ) const
+double Neumann_homogene::flux_impose(int ,int ) const
 {
   return 0;
 }
