@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.7.4_beta : Changes since version 1.7.3 :
 -------------------------------------------------------------
+01/09/16 (TRUST)  tab1_, tab2_, coeff_ of Matrice_Morse no more public 
 01/08/16 (TRUST)  #include <Les_Cl.h> removed from src files
 18/07/16 (Kernel) Remove optional value in Tabs constructors: Modification DoubleTab
 29/06/16 (Tools)  VisIt now install in exec

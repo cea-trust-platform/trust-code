@@ -2438,8 +2438,8 @@ void Champ_P1NC_implementation::dimensionner_Mat_Bloc_Morse_Sym(Matrice& matrice
   int n1 = nb_colonnes_tot();
   int n2 = nb_colonnes();
   int iligne;
-  const IntVect& tab1=la_matrice.tab1_;
-  const IntVect& tab2=la_matrice.tab2_;
+  const IntVect& tab1=la_matrice.get_tab1();
+  const IntVect& tab2=la_matrice.get_tab2();
 
   matrice_tmp.typer("Matrice_Bloc");
   Matrice_Bloc& matrice=ref_cast(Matrice_Bloc,matrice_tmp.valeur());
@@ -2452,10 +2452,10 @@ void Champ_P1NC_implementation::dimensionner_Mat_Bloc_Morse_Sym(Matrice& matrice
   MBrr.dimensionner(n2,0);
   MBrv.dimensionner(n2,0);
 
-  IntVect& tab1RR=MBrr.tab1_;
-  IntVect& tab2RR=MBrr.tab2_;
-  IntVect& tab1RV=MBrv.tab1_;
-  IntVect& tab2RV=MBrv.tab2_;
+  IntVect& tab1RR=MBrr.get_set_tab1();
+  IntVect& tab2RR=MBrr.get_set_tab2();
+  IntVect& tab1RV=MBrv.get_set_tab1();
+  IntVect& tab2RV=MBrv.get_set_tab2();
 
   IntVect compteur_MBrr(n2);
   IntVect compteur_MBrv(n2);
@@ -2544,12 +2544,12 @@ void Champ_P1NC_implementation::Mat_Morse_to_Mat_Bloc(Matrice& matrice_tmp)
   Matrice_Morse& MBrr =  ref_cast(Matrice_Morse,matrice.get_bloc(0,0).valeur());
   Matrice_Morse& MBrv =  ref_cast(Matrice_Morse,matrice.get_bloc(0,1).valeur());
 
-  IntVect& tab1RR=MBrr.tab1_;
-  IntVect& tab2RR=MBrr.tab2_;
-  DoubleVect& coeffRR=MBrr.coeff_;
-  IntVect& tab1RV=MBrv.tab1_;
-  IntVect& tab2RV=MBrv.tab2_;
-  DoubleVect& coeffRV=MBrv.coeff_;
+  IntVect& tab1RR=MBrr.get_set_tab1();
+  IntVect& tab2RR=MBrr.get_set_tab2();
+  DoubleVect& coeffRR=MBrr.get_set_coeff();
+  IntVect& tab1RV=MBrv.get_set_tab1();
+  IntVect& tab2RV=MBrv.get_set_tab2();
+  DoubleVect& coeffRV=MBrv.get_set_coeff();
 
   DoubleTab ligne_tmp(n1);
   for(int i=0; i<n2; i++)
@@ -2557,8 +2557,8 @@ void Champ_P1NC_implementation::Mat_Morse_to_Mat_Bloc(Matrice& matrice_tmp)
       int k;
       // On recopie le premier bloc de la matrice dans un tableau :
       //      ligne_tmp = 0;
-      for ( k=la_matrice.tab1(i)-1; k<la_matrice.tab1(i+1)-1; k++)
-        ligne_tmp(la_matrice.tab2(k) - 1) = la_matrice.coeff(k);
+      for ( k=la_matrice.get_tab1()(i)-1; k<la_matrice.get_tab1()(i+1)-1; k++)
+        ligne_tmp(la_matrice.get_tab2()(k) - 1) = la_matrice.get_coeff()(k);
 
       // On complete la partie reelle de la matrice
       for ( k=tab1RR(i)-1; k<tab1RR(i+1)-1; k++)

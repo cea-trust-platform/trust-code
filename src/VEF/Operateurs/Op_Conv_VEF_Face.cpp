@@ -919,7 +919,7 @@ void Op_Conv_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
   ArrOfDouble vc(dimension);
   DoubleTab vsom(nsom,dimension);
   ArrOfDouble cc(dimension);
-  DoubleVect& coeff = matrice.coeff_;
+  DoubleVect& coeff = matrice.get_set_coeff();
   const Elem_VEF_base& type_elemvef= zone_VEF.type_elem().valeur();
   int istetra=0;
   Nom nom_elem=type_elemvef.que_suis_je();

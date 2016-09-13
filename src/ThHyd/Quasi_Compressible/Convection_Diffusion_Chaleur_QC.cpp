@@ -522,9 +522,9 @@ void Convection_Diffusion_Chaleur_QC::assembler( Matrice_Morse& matrice,const Do
   les_sources.contribuer_a_avec(inco,matrice);
 
 
-  const IntVect& tab1= matrice.tab1_;
+  const IntVect& tab1= matrice.get_tab1();
 
-  DoubleVect& coeff=matrice.coeff_;
+  DoubleVect& coeff=matrice.get_set_coeff();
   DoubleVect coeff_diffusif(coeff);
   // on calcule les coefficients de l'op de convection on obtient les coeff de div(p*u*T) , il faudrait multiplier par cp puis divisier par rho cp on le fera d'un coup...
   coeff=0;

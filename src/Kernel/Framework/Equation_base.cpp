@@ -2113,7 +2113,7 @@ void  Equation_base::assembler( Matrice_Morse& matrice,const DoubleTab& inco, Do
       if (test_op)
         {
           Matrice_Morse test(matrice);
-          DoubleVect& coeff = test.coeff_;
+          DoubleVect& coeff = test.get_set_coeff();
           DoubleTrav diff(resu);
           coeff=0;
           operateur(op).l_op_base().calculer(inco,diff);

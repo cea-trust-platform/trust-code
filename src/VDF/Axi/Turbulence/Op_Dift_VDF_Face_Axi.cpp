@@ -705,9 +705,9 @@ void Op_Dift_VDF_Face_Axi::ajouter_contribution(const DoubleTab& inco,          
   //  int nb_elem = zvdf.nb_elem();
   //  int nb_aretes = zvdf.nb_aretes();
 
-  IntVect& tab1 = matrice.tab1_;
-  IntVect& tab2 = matrice.tab2_;
-  DoubleVect& coeff = matrice.coeff_;
+  IntVect& tab1 = matrice.get_set_tab1();
+  IntVect& tab2 = matrice.get_set_tab2();
+  DoubleVect& coeff = matrice.get_set_coeff();
 
 
   const Champ_Uniforme& viscosite_lam = diffusivite_;

@@ -121,8 +121,8 @@ void SSOR::prepare_(const Matrice_Base& la_matrice, const DoubleVect& secmem)
       if(sub_type(Matrice_Morse_Sym,la_matrice))
         {
           const Matrice_Morse_Sym& matrice = ref_cast(Matrice_Morse_Sym,la_matrice);
-          const ArrOfInt& tab1 = matrice.tab1_;
-          const ArrOfDouble& coeff = matrice.coeff_;
+          const ArrOfInt& tab1 = matrice.get_tab1();
+          const ArrOfDouble& coeff = matrice.get_coeff();
           for (int i = 0; i < nb_items_a_traiter; i++)
             {
               const int index = tab1[i] - 1; // Fortran -> C
@@ -533,9 +533,9 @@ void traite_diagonale(const double omega, const ArrOfInt& tab1, const ArrOfInt& 
 //   E :partie triangulaire inferieure de la matrice
 void SSOR::ssor(const Matrice_Morse_Sym& matrice, DoubleVect& solution)
 {
-  const ArrOfInt& tab1 = matrice.tab1_;
-  const ArrOfInt& tab2 = matrice.tab2_;
-  const ArrOfDouble& coeff = matrice.coeff_;
+  const ArrOfInt& tab1 = matrice.get_tab1();
+  const ArrOfInt& tab2 = matrice.get_tab2();
+  const ArrOfDouble& coeff = matrice.get_coeff();
 
   if (tab2.size_array() > 0 && tab2[0] == 1)
     {
@@ -620,9 +620,9 @@ void SSOR::ssor(const Matrice_Bloc_Sym& matrice, DoubleVect& solution)
       const Matrice_Morse_Sym& MB00 = ref_cast(Matrice_Morse_Sym, matrice0.get_bloc(0,0).valeur());
       DoubleVect& partie = s_parts[i_part];
       if (algo_items_communs_)
-        descente_diag_ok_assert(omega_, MB00.tab1_, MB00.tab2_, MB00.coeff_, partie, items_parts[i_part]);
+        descente_diag_ok_assert(omega_, MB00.get_tab1(), MB00.get_tab2(), MB00.get_coeff(), partie, items_parts[i_part]);
       else
-        descente_diag_ok_assert(omega_, MB00.tab1_, MB00.tab2_, MB00.coeff_, partie);
+        descente_diag_ok_assert(omega_, MB00.get_tab1(), MB00.get_tab2(), MB00.get_coeff(), partie);
 
       // blocs extra-diagonaux
       for(int j_part = i_part+1; j_part < nb_parts; j_part++)
@@ -635,9 +635,9 @@ void SSOR::ssor(const Matrice_Bloc_Sym& matrice, DoubleVect& solution)
           // (note BM: je crois que la version precedente etait buggee mais ca ne s'est pas vu
           //  parce que la matrice elem-elem arrive en premier et qu'il n'y a pas d'items communs sur les elements)
           if (algo_items_communs_)
-            descente_bloc_extradiag_assert(MB00bis.tab1_, MB00bis.tab2_, MB00bis.coeff_, partie, partie_j, items_parts[i_part]);
+            descente_bloc_extradiag_assert(MB00bis.get_tab1(), MB00bis.get_tab2(), MB00bis.get_coeff(), partie, partie_j, items_parts[i_part]);
           else
-            descente_bloc_extradiag_assert(MB00bis.tab1_, MB00bis.tab2_, MB00bis.coeff_, partie, partie_j);
+            descente_bloc_extradiag_assert(MB00bis.get_tab1(), MB00bis.get_tab2(), MB00bis.get_coeff(), partie, partie_j);
         }
     }
   // Traitement de la diagonale
@@ -646,7 +646,7 @@ void SSOR::ssor(const Matrice_Bloc_Sym& matrice, DoubleVect& solution)
       const Matrice_Bloc& matrice0 = ref_cast(Matrice_Bloc, matrice.get_bloc(i_part, i_part).valeur());
       const Matrice_Morse_Sym& MB00 = ref_cast(Matrice_Morse_Sym, matrice0.get_bloc(0,0).valeur());
       DoubleVect& partie = s_parts[i_part];
-      traite_diagonale(omega_, MB00.tab1_, MB00.tab2_, MB00.coeff_, partie);
+      traite_diagonale(omega_, MB00.get_tab1(), MB00.get_tab2(), MB00.get_coeff(), partie);
     }
 
   // Remontee
@@ -656,9 +656,9 @@ void SSOR::ssor(const Matrice_Bloc_Sym& matrice, DoubleVect& solution)
       const Matrice_Morse_Sym& MB00bis = ref_cast(Matrice_Morse_Sym, matrice0.get_bloc(0,0).valeur());
       DoubleVect& partie = s_parts[i_part];
       if (algo_items_communs_)
-        remontee_diag_ok_assert(omega_, MB00bis.tab1_, MB00bis.tab2_, MB00bis.coeff_, partie, items_parts[i_part]);
+        remontee_diag_ok_assert(omega_, MB00bis.get_tab1(), MB00bis.get_tab2(), MB00bis.get_coeff(), partie, items_parts[i_part]);
       else
-        remontee_diag_ok_assert(omega_, MB00bis.tab1_, MB00bis.tab2_, MB00bis.coeff_, partie);
+        remontee_diag_ok_assert(omega_, MB00bis.get_tab1(), MB00bis.get_tab2(), MB00bis.get_coeff(), partie);
       // Blocs extra-diagonaux (parcours horizontal au lieu de vertical)
       for (int j_part = 0; j_part < i_part; j_part++)
         {
@@ -668,9 +668,9 @@ void SSOR::ssor(const Matrice_Bloc_Sym& matrice, DoubleVect& solution)
           // Attention: le test sur les items communs concerne les lignes de la matrice, pas
           //  les colonnes (on passe items_parts[i_part], pas j_part)
           if (algo_items_communs_)
-            remontee_bloc_extradiag_assert(MB00.tab1_, MB00.tab2_, MB00.coeff_, partie_j, partie, items_parts[j_part]);
+            remontee_bloc_extradiag_assert(MB00.get_tab1(), MB00.get_tab2(), MB00.get_coeff(), partie_j, partie, items_parts[j_part]);
           else
-            remontee_bloc_extradiag_assert(MB00.tab1_, MB00.tab2_, MB00.coeff_, partie_j, partie);
+            remontee_bloc_extradiag_assert(MB00.get_tab1(), MB00.get_tab2(), MB00.get_coeff(), partie_j, partie);
         }
     }
 

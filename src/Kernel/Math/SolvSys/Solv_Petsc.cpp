@@ -966,12 +966,12 @@ void Solv_Petsc::MorseHybToMorse(const Matrice_Morse& MM_tot, Matrice_Morse& M, 
   int nbrows_M=nb_items_to_keep_;
   M.dimensionner(nbrows_M,0);
 
-  const IntVect& tab1_tot = MM_tot.tab1_;
-  const IntVect& tab2_tot = MM_tot.tab2_;
-  const DoubleVect& coeff_tot = MM_tot.coeff_;
-  IntVect& tab1 = M.tab1_;
-  IntVect& tab2 = M.tab2_;
-  DoubleVect& coeff = M.coeff_;
+  const IntVect& tab1_tot = MM_tot.get_tab1();
+  const IntVect& tab2_tot = MM_tot.get_tab2();
+  const DoubleVect& coeff_tot = MM_tot.get_coeff();
+  IntVect& tab1 = M.get_set_tab1();
+  IntVect& tab2 = M.get_set_tab2();
+  DoubleVect& coeff = M.get_set_coeff();
 
   // Construction de tab1 de la matrice morse hybride
   tab1(0)=1;
@@ -1399,8 +1399,8 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
 inline int ligne_inutile(const Matrice_Morse& mat, const DoubleVect& secmem, int& i)
 {
   if (secmem(i)==0.                         // Le second membre est nul
-      && mat.tab1_[i+1]-mat.tab1_[i]==1        // Et il n'y a qu'un terme non nul sur la ligne
-      && mat.tab2_[mat.tab1_[i]-1]-1==i)        // Et c'est la diagonale
+      && mat.get_tab1()(i+1)-mat.get_tab1()(i)==1        // Et il n'y a qu'un terme non nul sur la ligne
+      && mat.get_tab2()(mat.get_tab1()(i)-1)-1==i)        // Et c'est la diagonale
     {
       Cerr << "[" << Process::me() << "] Line " << i << " useless..." << finl;
       return 1;                        // Alors cette ligne est inutile (item periodique, arete superflue,...)
@@ -1535,9 +1535,9 @@ int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
       // les mets a 0 et on appelle compacte qui les supprime
       if (mataij_==0)
         {
-          IntVect& tab1=mat.tab1_;
-          IntVect& tab2=mat.tab2_;
-          DoubleVect& coeff=mat.coeff_;
+          IntVect& tab1=mat.get_set_tab1();
+          IntVect& tab2=mat.get_set_tab2();
+          DoubleVect& coeff=mat.get_set_coeff();
           for (int i=0; i<nb_rows_; i++)
             for (int k=tab1(i)-1; k<tab1(i+1)-1; k++)
               if (renum_array[tab2(k)-1]<i+decalage_local_global_)
@@ -1874,9 +1874,9 @@ int Solv_Petsc::compute_nb_rows_petsc(int nb_rows_tot)
 void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, Matrice_Morse& mat)
 {
   // Recuperation des donnees
-  IntVect& tab1_=mat.tab1_;
-  IntVect& tab2_=mat.tab2_;
-  DoubleVect& coeff_=mat.coeff_;
+  IntVect& tab1_=mat.get_set_tab1();
+  IntVect& tab2_=mat.get_set_tab2();
+  DoubleVect& coeff_=mat.get_set_coeff();
   int nb_rows = mat.nb_lignes();
   int nb_rows_tot = mp_sum(nb_rows);
 

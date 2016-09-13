@@ -574,9 +574,9 @@ void Op_Dift_VEF_Face_Q1::ajouter_contribution(const DoubleTab& transporte, Matr
   DoubleVect n(dimension);
   DoubleTrav Tgrad(dimension,dimension);
 
-  IntVect& tab1 = matrice.tab1_;
-  IntVect& tab2 = matrice.tab2_;
-  DoubleVect& coeff = matrice.coeff_;
+  IntVect& tab1 = matrice.get_set_tab1();
+  IntVect& tab2 = matrice.get_set_tab2();
+  DoubleVect& coeff = matrice.get_set_coeff();
 
   // On traite les faces bord
 

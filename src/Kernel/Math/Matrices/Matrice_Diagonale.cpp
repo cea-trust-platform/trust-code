@@ -158,14 +158,17 @@ void Matrice_Diagonale::get_symmetric_stencil_and_coefficients( IntTab&      ste
 
 Matrice_Diagonale::Matrice_Diagonale( void ) : Matrice_Base( ), coefficients_( )
 {
+  is_stencil_up_to_date_ = false ;
 }
 
 Matrice_Diagonale::Matrice_Diagonale( int size ) : Matrice_Base( ), coefficients_( size )
 {
+  is_stencil_up_to_date_ = false ;
 }
 
 Matrice_Diagonale::Matrice_Diagonale(const DoubleVect& coefficients) : Matrice_Base( ), coefficients_( coefficients )
 {
+  is_stencil_up_to_date_ = false ;
 }
 
 DoubleVect& Matrice_Diagonale::get_coefficients( void )

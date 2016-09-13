@@ -514,9 +514,9 @@ void Op_Diff_VDF_var_Face_Axi::ajouter_contribution(const DoubleTab& inco, Matri
   double coef_laplacien_axi;
   //  int nb_faces_elem = zvdf.zone().nb_faces_elem();
 
-  IntVect& tab1 = matrice.tab1_;
-  IntVect& tab2 = matrice.tab2_;
-  DoubleVect& coeff = matrice.coeff_;
+  IntVect& tab1 = matrice.get_set_tab1();
+  IntVect& tab2 = matrice.get_set_tab2();
+  DoubleVect& coeff = matrice.get_set_coeff();
 
   double deux_pi = M_PI*2.0;
 

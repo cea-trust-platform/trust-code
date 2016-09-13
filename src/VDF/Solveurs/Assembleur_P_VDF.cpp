@@ -189,8 +189,8 @@ int Assembleur_P_VDF::construire(Matrice& la_matrice)
     const int nb_faces_bord = zone_vdf.nb_faces_bord();
     les_coeff_pression.resize_array(nb_faces_bord);
   }
-  ArrOfInt& carre_tab1 = carre.tab1_;
-  ArrOfInt& rect_tab1 = rect.tab1_;
+  ArrOfInt& carre_tab1 = carre.get_set_tab1();
+  ArrOfInt& rect_tab1 = rect.get_set_tab1();
 
   // Matrice creuse, stockage morse avec des indices fortran:
   // lignes numerotees 1..n, colonnes 1..m
@@ -223,8 +223,8 @@ int Assembleur_P_VDF::construire(Matrice& la_matrice)
 
   // Deuxieme etape : remplissage de tab2_ = numero de la colonne de chaque
   // terme non nul de la matrice
-  ArrOfInt& carre_tab2 = carre.tab2_;
-  ArrOfInt& rect_tab2 = rect.tab2_;
+  ArrOfInt& carre_tab2 = carre.get_set_tab2();
+  ArrOfInt& rect_tab2 = rect.get_set_tab2();
 
   carre_tab2 = -1;
   rect_tab2 = -1;
@@ -328,10 +328,10 @@ int Assembleur_P_VDF::remplir(Matrice& la_matrice, const DoubleVect& volumes_ent
   carre_nb_non_zero = 1;
   rect_nb_non_zero = 0;
 
-  ArrOfInt& carre_tab1 = carre.tab1_;
-  ArrOfInt& rect_tab1 = rect.tab1_;
-  ArrOfDouble& carre_coeff = carre.coeff_;
-  ArrOfDouble& rect_coeff = rect.coeff_;
+  ArrOfInt& carre_tab1 = carre.get_set_tab1();
+  ArrOfInt& rect_tab1 = rect.get_set_tab1();
+  ArrOfDouble& carre_coeff = carre.get_set_coeff();
+  ArrOfDouble& rect_coeff = rect.get_set_coeff();
 
   carre_coeff = 0.;
   rect_coeff = 0.;
@@ -390,7 +390,7 @@ int Assembleur_P_VDF::remplir(Matrice& la_matrice, const DoubleVect& volumes_ent
               carre_coeff[index_diag1 - 1] += coefficient;
               // Coefficient extra-diagonal
               carre_coeff[index - 1] = - coefficient;
-              assert(carre.tab2_[index - 1] == elem1 + 1);
+              assert(carre.get_tab2()(index - 1) == elem1 + 1);
             }
           else
             {
@@ -399,7 +399,7 @@ int Assembleur_P_VDF::remplir(Matrice& la_matrice, const DoubleVect& volumes_ent
               const int index = rect_tab1[ligne-1] + n; // Indice fortran dans tab2
               // Coefficient extra-diagonal
               rect_coeff[index - 1] = - coefficient;
-              assert(rect.tab2_[index - 1] == elem1 - nb_elem + 1);
+              assert(rect.get_tab2()(index - 1) == elem1 - nb_elem + 1);
             }
         }
     }

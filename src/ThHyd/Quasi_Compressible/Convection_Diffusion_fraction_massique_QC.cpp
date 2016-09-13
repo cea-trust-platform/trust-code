@@ -398,9 +398,9 @@ void Convection_Diffusion_fraction_massique_QC::assembler( Matrice_Morse& matric
 {
 
   resu=0;
-  const IntVect& tab1= matrice.tab1_;
+  const IntVect& tab1= matrice.get_tab1();
 
-  DoubleVect& coeff=matrice.coeff_;
+  DoubleVect& coeff=matrice.get_set_coeff();
 
   const DoubleTab& rho=get_champ("masse_volumique").valeurs();
   operateur(0).l_op_base().contribuer_a_avec(inco, matrice );
