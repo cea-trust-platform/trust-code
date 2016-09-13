@@ -556,7 +556,7 @@ void Traitement_particulier_NS_Profils_VDF::init_calcul_moyenne(void)
                   {
                     y = xv(num_face,3-homo_dir-dir_profil);
                     trouve = 0;
-                    for (j=0; j<indic_m+1; j++)
+                    for (j=0; j-(indic_m+1)<0; j++)
                       {
                         if (j==Nap)
                           {
@@ -585,7 +585,7 @@ void Traitement_particulier_NS_Profils_VDF::init_calcul_moyenne(void)
                   {
                     y = xv(num_face,3-homo_dir-dir_profil);
                     trouve = 0;
-                    for (j=0; j<indic_p+1; j++)
+                    for (j=0; j-(indic_p+1)<0; j++)
                       {
                         if (j==Nap)
                           {
@@ -619,7 +619,7 @@ void Traitement_particulier_NS_Profils_VDF::init_calcul_moyenne(void)
                   {
                     y = xv(num_face,3-homo_dir-dir_profil);
                     trouve = 0;
-                    for (j=0; j<indicv_m+1; j++)
+                    for (j=0; j-(indicv_m+1)<0; j++)
                       {
                         if (j==Nap)
                           {
@@ -648,7 +648,7 @@ void Traitement_particulier_NS_Profils_VDF::init_calcul_moyenne(void)
                   {
                     y = xv(num_face,3-homo_dir-dir_profil);
                     trouve = 0;
-                    for (j=0; j<indicv_p+1; j++)
+                    for (j=0; j-(indicv_p+1)<0; j++)
                       {
                         if (j==Nap)
                           {
@@ -682,7 +682,7 @@ void Traitement_particulier_NS_Profils_VDF::init_calcul_moyenne(void)
                   {
                     y = xv(num_face,3-homo_dir-dir_profil);
                     trouve = 0;
-                    for (j=0; j<indicw_m+1; j++)
+                    for (j=0; j-(indicw_m+1)<0; j++)
                       {
                         if (j==Nap)
                           {
@@ -711,7 +711,7 @@ void Traitement_particulier_NS_Profils_VDF::init_calcul_moyenne(void)
                   {
                     y = xv(num_face,3-homo_dir-dir_profil);
                     trouve = 0;
-                    for (j=0; j<indicw_p+1; j++)
+                    for (j=0; j-(indicw_p+1)<0; j++)
                       {
                         if (j==Nap)
                           {
@@ -755,7 +755,7 @@ void Traitement_particulier_NS_Profils_VDF::init_calcul_moyenne(void)
             {
               y = xp(num_elem,3-homo_dir-dir_profil);
               trouve = 0;
-              for (j=0; j<indicuv_m+1; j++)
+              for (j=0; j-(indicuv_m+1)<0; j++)
                 {
                   if(y==Yuv_m(i,j))
                     {
@@ -778,7 +778,7 @@ void Traitement_particulier_NS_Profils_VDF::init_calcul_moyenne(void)
             {
               y = xp(num_elem,3-homo_dir-dir_profil);
               trouve = 0;
-              for (j=0; j<indicuv_p+1; j++)
+              for (j=0; j-(indicuv_p+1)<0; j++)
                 {
                   if(y==Yuv_p(i,j))
                     {
