@@ -56,7 +56,8 @@ public :
   const Zone_dis_base& zone_dis_base() const;
   virtual void mettre_a_jour(double );
 
-  inline const DoubleTab& valeurs_champ() const;
+  inline const DoubleTab& valeurs() const;
+  inline  DoubleTab& valeurs() ;
   inline virtual DoubleTab& valeur_aux_elems(const DoubleTab& positions,
                                              const IntVect& les_polys,
                                              DoubleTab& les_valeurs) const;
@@ -94,7 +95,11 @@ inline Champ_Inc_base& Champ_Fonc_reprise::le_champ()
   return vrai_champ_.valeur();
 }
 
-inline const DoubleTab& Champ_Fonc_reprise::valeurs_champ() const
+inline const DoubleTab& Champ_Fonc_reprise::valeurs() const
+{
+  return le_champ().valeurs();
+}
+inline DoubleTab& Champ_Fonc_reprise::valeurs()
 {
   return le_champ().valeurs();
 }

@@ -26,7 +26,7 @@
 
 #include <Operateur_Statistique_tps.h>
 #include <Champ_Don.h>
-#include <Champ_Fonc_reprise.h>
+//#include <Champ_Fonc_reprise.h>
 
 class DoubleTab;
 
@@ -95,9 +95,9 @@ inline void Op_Moyenne::mettre_a_jour(double tps)
   integrale_champ.mettre_a_jour(tps);
   if (ch_moyenne_convergee_.non_nul())
     {
-      const Champ_Fonc_reprise& ch_moy = ref_cast(Champ_Fonc_reprise,ch_moyenne_convergee_.valeur());
+      //const Champ_Fonc_reprise& ch_moy = ref_cast(Champ_Fonc_reprise,ch_moyenne_convergee_.valeur());
       DoubleTab& valeurs_integrale = valeurs();
-      valeurs_integrale = ch_moy.valeurs_champ();
+      valeurs_integrale = ch_moyenne_convergee_.valeurs();
       valeurs_integrale *= dt_integration();
     }
 }
