@@ -56,6 +56,25 @@ public:
     Process::exit();
   };
 
+  void discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
+                         Nature_du_champ nature,
+                         const Noms& nom, const Noms& unite,
+                         int nb_comp, int nb_pas_dt, double temps,
+                         Champ_Inc& champ, const Nom& sous_type = nom_vide) const;
+  void discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
+                         Nature_du_champ nature,
+                         const Noms& nom, const Noms& unite,
+                         int nb_comp, double temps,
+                         Champ_Fonc& champ) const;
+  void discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
+                         Nature_du_champ nature,
+                         const Noms& nom, const Noms& unite,
+                         int nb_comp, double temps,
+                         Champ_Don& champ) const;
+private:
+  void discretiser_champ_fonc_don(const Motcle& directive, const Zone_dis_base& z,
+                                  Nature_du_champ nature, const Noms& noms, const Noms& unites,
+                                  int nb_comp, double temps, Objet_U& champ) const;
 
 };
 

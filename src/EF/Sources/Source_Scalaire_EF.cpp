@@ -150,32 +150,4 @@ void Source_Scalaire_EF::mettre_a_jour(double temps)
   la_source_->mettre_a_jour(temps);
 }
 
-const Champ_base& Source_Scalaire_EF::get_champ(const Motcle& nom) const
-{
-  try
-    {
-      return champs_compris_.get_champ(nom);
-    }
-  catch (Champs_compris_erreur)
-    {
-    }
-  try
-    {
-      return Source_base::get_champ(nom);
-    }
-  catch (Champs_compris_erreur)
-    {
-    }
-
-  throw Champs_compris_erreur();
-}
-void Source_Scalaire_EF::get_noms_champs_postraitables(Noms& nom,Option opt) const
-{
-  Source_base::get_noms_champs_postraitables(nom,opt);
-  if (opt==DESCRIPTION)
-    Cerr<<"Source_scalaire_EF : "<<champs_compris_.liste_noms_compris()<<finl;
-
-  else
-    nom.add(champs_compris_.liste_noms_compris());
-}
 

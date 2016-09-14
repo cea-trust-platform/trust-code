@@ -223,63 +223,14 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
       ncomp = Champ_Generique_base::composante(identifiant_appel_,nom_champ[0],compo,syno);
     }
 
-  Nom disc;
-  const Zone_dis_base& zone_dis = get_ref_zone_dis_base();
-
-  if (zone_dis.que_suis_je().debute_par("Zone_VDF"))
-    {
-      disc = "VDF";
-    }
-  else if (zone_dis.que_suis_je().debute_par("Zone_VEF"))
-    {
-      disc = "VEF";
-    }
-  else
-    {
-      disc="MED";
-    }
-
   //Creation du champ espace_stockage
   Nature_du_champ nature_source = (ncomp==-1)?source.nature_du_champ():scalaire;
+  nature_source = source.nature_du_champ();
   int nb_comp = source.nb_comp();
 
-  if (disc!="MED")
-    {
-      Champ_Fonc es_tmp;
-      espace_stockage = creer_espace_stockage(nature_source,nb_comp,es_tmp);
-    }
-  else
-    {
-      Nom type_espace_stockage;
-      type_espace_stockage = "Champ_Fonc";
-      int nb_ddl = 0;
+  Champ_Fonc es_tmp;
+  espace_stockage = creer_espace_stockage(nature_source,nb_comp,es_tmp);
 
-      if (localisation_ == "elem")
-        {
-          type_espace_stockage = type_espace_stockage + "_P0_"+ disc;
-          nb_ddl = domaine.zone(0).nb_elem();
-
-        }
-      else if (localisation_=="som")
-        {
-          int nb_som_elem = domaine.zone(0).nb_som_elem();
-          if (((dimension==2) && (nb_som_elem==4)) || ((dimension==3) && (nb_som_elem==8)))
-            {
-              type_espace_stockage = type_espace_stockage + "_Q1_"+ disc;
-            }
-          else
-            {
-              type_espace_stockage = type_espace_stockage + "_P1_"+ disc;
-            }
-          nb_ddl = domaine.nb_som();
-        }
-
-      espace_stockage.typer(type_espace_stockage);
-      espace_stockage->associer_zone_dis_base(zone_dis);
-      espace_stockage->fixer_nb_comp(nb_comp);
-      espace_stockage->fixer_nature_du_champ(nature_source);
-      espace_stockage->fixer_nb_valeurs_nodales(nb_ddl);
-    }
   //double default_value=-1e35;
   //espace_stockage.valeurs()=default_value;
   int decal=10;
@@ -442,17 +393,19 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
     }
   else
     {
-      const Nom& nom_source = source.que_suis_je();
-      if (((nom_source=="Champ_P1NC") || (nom_source=="Champ_Fonc_P1NC")) && (localisation_=="faces"))
-        {
-          espace_stockage->affecter(source);
-        }
-      else
-        {
-          Cerr << "Champ_Generique_Interpolation::get_champ localisation uncoded " << localisation_ << " for " <<source.que_suis_je()<<finl;
-          exit();
-        }
+      //     const Nom& nom_source = source.que_suis_je();
+      //if (((nom_source=="Champ_P1NC") || (nom_source=="Champ_Fonc_P1NC")) && (localisation_=="faces"))
+      // {
+      espace_stockage->affecter(source);
+      // }
+      /* else
+          {
+            Cerr << "Champ_Generique_Interpolation::get_champ localisation uncoded " << localisation_ << " for " <<source.que_suis_je()<<finl;
+            exit();
+          }
+      */
     }
+
 
 
   if (optimisation_sous_maillage_==-1)

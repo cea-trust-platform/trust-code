@@ -45,8 +45,8 @@ class Neumann_homogene : public Cond_lim_base
   Declare_base(Neumann_homogene);
 
 public:
-  inline double flux_impose(int i) const;
-  inline double flux_impose(int i,int j) const;
+  double flux_impose(int i) const;
+  double flux_impose(int i,int j) const;
 };
 
 #endif

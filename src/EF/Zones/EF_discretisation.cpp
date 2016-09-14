@@ -331,7 +331,7 @@ void EF_discretisation::discretiser_champ_fonc_don(
   else if (type == type_champ_vitesse) nb_ddl = zone_EF.nb_som();
   else assert(0);
 
-  // Si c'est un champ multiscalaire, uh !
+  /* // Si c'est un champ multiscalaire, uh !
   if (nature == multi_scalaire)
     {
       // Pas encore code
@@ -339,18 +339,31 @@ void EF_discretisation::discretiser_champ_fonc_don(
       assert(0);
       exit();
     }
-  else
+    else */
+  {
+    if (nb_comp < 0)
+      nb_comp = default_nb_comp;
+    assert(nb_comp > 0);
+    if (champ_fonc)
+      creer_champ(*champ_fonc, z, type, noms[0], unites[0], nb_comp, nb_ddl, temps,
+                  directive, que_suis_je());
+    else
+      creer_champ(*champ_don, z, type, noms[0], unites[0], nb_comp, nb_ddl, temps,
+                  directive, que_suis_je());
+  }
+
+  if ((nature == multi_scalaire) && (champ_fonc))
     {
-      if (nb_comp < 0)
-        nb_comp = default_nb_comp;
-      assert(nb_comp > 0);
-      if (champ_fonc)
-        creer_champ(*champ_fonc, z, type, noms[0], unites[0], nb_comp, nb_ddl, temps,
-                    directive, que_suis_je());
-      else
-        creer_champ(*champ_don, z, type, noms[0], unites[0], nb_comp, nb_ddl, temps,
-                    directive, que_suis_je());
+      champ_fonc->valeur().fixer_nature_du_champ(nature);
+      champ_fonc->valeur().fixer_unites(unites);
+      champ_fonc->valeur().fixer_noms_compo(noms);
     }
+  else if ((nature == multi_scalaire) && (champ_don))
+    {
+      Cerr<<"There is no field of type Champ_Don with a multi_scalaire nature."<<finl;
+      exit();
+    }
+
 }
 
 

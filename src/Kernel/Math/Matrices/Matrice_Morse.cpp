@@ -187,6 +187,7 @@ Matrice_Morse::Matrice_Morse(const Matrice_Morse& acopier) :Matrice_Base(),
   zero_(0)
 {
   morse_matrix_structure_has_changed_=1;
+  is_stencil_up_to_date_ = acopier.is_stencil_up_to_date_ ;
 }
 // Description:
 //    Constructeur d'une matrice Morse carree d'ordre n
@@ -212,9 +213,10 @@ Matrice_Morse::Matrice_Morse(const Matrice_Morse& acopier) :Matrice_Base(),
 // Effets de bord:
 // Postcondition:
 Matrice_Morse::Matrice_Morse(int n, int nnz) :
-  symetrique_(0), morse_matrix_structure_has_changed_(1), zero_(0)
+  morse_matrix_structure_has_changed_(1), symetrique_(0), zero_(0)
 {
   dimensionner(n,nnz);
+  is_stencil_up_to_date_ = false ;
 }
 
 Matrice_Morse::Matrice_Morse()
@@ -223,6 +225,7 @@ Matrice_Morse::Matrice_Morse()
   morse_matrix_structure_has_changed_=1;
   symetrique_ = 0;
   zero_ = 0;
+  is_stencil_up_to_date_ = false ;
 }
 
 
@@ -253,19 +256,31 @@ Matrice_Morse::Matrice_Morse()
 // Effets de bord:
 // Postcondition:
 Matrice_Morse::Matrice_Morse(int n, int m, int nnz):
-  symetrique_(0), morse_matrix_structure_has_changed_(1), zero_(0)
+  morse_matrix_structure_has_changed_(1), symetrique_(0), zero_(0)
 {
   dimensionner(n,m,nnz);
+  is_stencil_up_to_date_ = false ;
 }
 
 
 Matrice_Morse::Matrice_Morse(int n, int nnz, const IntLists& voisins,
                              const DoubleLists& valeurs,
                              const DoubleVect& terme_diag)
-  :  symetrique_(0), morse_matrix_structure_has_changed_(1), zero_(0)
+  :  morse_matrix_structure_has_changed_(1), symetrique_(0) , zero_(0)
 {
   dimensionner(n,n,nnz);
   remplir(voisins, valeurs, terme_diag);
+  is_stencil_up_to_date_ = false;
+}
+
+void Matrice_Morse::set_nb_columns( const int nb_col )
+{
+  m_ = nb_col;
+}
+
+void Matrice_Morse::set_symmetric( const int symmetric )
+{
+  symetrique_ = symmetric ;
 }
 
 // Description:
@@ -275,6 +290,7 @@ void Matrice_Morse::dimensionner(int n, int nnz)
   dimensionner(n,n,nnz);
   return ;
 }
+
 
 // Description
 //   Redimensionne la matrice creuse en ajoutant eventuellement
@@ -625,11 +641,12 @@ void Matrice_Morse::compacte(int elim_coeff_nul)
 // Postcondition:
 Matrice_Morse& Matrice_Morse::operator=(const Matrice_Morse& a )
 {
-  tab1_.copy(a.tab1_);
-  tab2_.copy(a.tab2_);
-  coeff_.copy(a.coeff_);
-  m_=a.m_;
+  tab1_.copy(a.get_tab1());
+  tab2_.copy(a.get_tab2());
+  coeff_.copy(a.get_coeff());
+  m_=a.nb_colonnes();
   morse_matrix_structure_has_changed_=1;
+  is_stencil_up_to_date_=a.is_stencil_up_to_date();
   return(*this);
 }
 
@@ -1047,9 +1064,9 @@ Matrice_Morse operator+(const Matrice_Morse& A , const Matrice_Morse& B )
   IntVect iw(ncol);
   Matrice_Morse C(nrow, ncol, nzmax);
 #ifndef CRAY
-  F77NAME(APLB) (&nrow, &ncol, &job, A.coeff(), A.tab2(), A.tab1(),
-                 B.coeff(), B.tab2(), B.tab1(), C.coeff(),
-                 C.tab2(), C.tab1(),
+  F77NAME(APLB) (&nrow, &ncol, &job, A.get_coeff().addr(), A.get_tab2().addr(), A.get_tab1().addr(),
+                 B.get_coeff().addr(), B.get_tab2().addr(), B.get_tab1().addr(), C.get_set_coeff().addr(),
+                 C.get_set_tab2().addr(), C.get_set_tab1().addr(),
                  &nzmax,iw.addr(),&ierr);
 #else
   Cerr << "operator+ : APLB call invalid for CRAY"<<finl;
@@ -1057,8 +1074,8 @@ Matrice_Morse operator+(const Matrice_Morse& A , const Matrice_Morse& B )
 #endif
 
   const int nnz = C.tab1_[nrow] - 1;
-  C.tab2_.resize( nnz );
-  C.coeff_.resize( nnz );
+  C.get_set_tab2().resize( nnz );
+  C.get_set_coeff().resize( nnz );
   C.morse_matrix_structure_has_changed_=1;
   return(C);
 }
@@ -1966,6 +1983,7 @@ void Matrice_Morse::remplir(const IntLists& voisins,
   tab1_(num_elem)=rang;
   formeF();
   morse_matrix_structure_has_changed_=1;
+  is_stencil_up_to_date_=false;
 }
 
 void Matrice_Morse::remplir(const IntLists& voisins,
@@ -2005,6 +2023,7 @@ void Matrice_Morse::remplir(const IntLists& voisins,
   tab1_(num_elem)=rang;
   formeF();
   morse_matrix_structure_has_changed_=1;
+  is_stencil_up_to_date_=false;
 }
 
 // Description:
@@ -2054,6 +2073,7 @@ void Matrice_Morse::remplir(const int ideb, const int jdeb, const int n, const i
     coeff_(i)=matrice_locale.coeff_(i);
 
   morse_matrix_structure_has_changed_=1;
+  is_stencil_up_to_date_=false;
 }
 
 void Matrice_Morse::formeC()
@@ -2067,6 +2087,7 @@ void Matrice_Morse::formeC()
   for(k=0; k<nb_coeff(); k++)
     tab2_(k)--;
   morse_matrix_structure_has_changed_=1;
+  is_stencil_up_to_date_=false;
 }
 
 void Matrice_Morse::formeF()
@@ -2078,6 +2099,7 @@ void Matrice_Morse::formeF()
   for(k=0; k<nb_coeff(); k++)
     tab2_(k)++;
   morse_matrix_structure_has_changed_=1;
+  is_stencil_up_to_date_=false;
 }
 
 
@@ -2136,8 +2158,8 @@ void Matrice_Morse::clean()
 int Matrice_Morse::largeur_de_bande() const
 {
   int ldist,min = 0;
-  const int* p_tab1_ = tab1();
-  const int* p_tab2_ = tab2();
+  const int* p_tab1_ = get_tab1().addr();
+  const int* p_tab2_ = get_tab2().addr();
   int N=ordre();
 
   for(int i=0; i<N; i++)
@@ -2303,3 +2325,12 @@ void Matrice_Morse::assert_check_sorted_morse_matrix_structure( void ) const
     morse_matrix_structure_has_changed_=0;
 #endif
 }
+
+
+
+
+
+
+
+
+

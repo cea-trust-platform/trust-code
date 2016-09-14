@@ -60,7 +60,8 @@ public :
   // checking symmetric stencil
   static bool is_normalized_symmetric_stencil( const IntTab& stencil );
 
-  // building morse matrices
+  // building morse matrices by creating new matrix (from given stencil)
+  // so we need to specify is the stencil is to attach or not to the matrix
   static void allocate_morse_matrix( const int&  nb_lines,
                                      const int&  nb_columns,
                                      const IntTab&  stencil,

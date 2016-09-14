@@ -357,9 +357,9 @@ void Navier_Stokes_QC_impl::assembler_avec_inertie_impl(const Navier_Stokes_std&
   const DoubleTab& tab_rho_face_n=fluide_QC.rho_face_n();
   int nb_compo = 1;
   if (present.nb_dim() == 2) nb_compo = present.dimension(1);
-  const IntVect& tab1= matrice.tab1_;
-  const IntVect& tab2= matrice.tab2_;
-  DoubleVect& coeff=matrice.coeff_;
+  const IntVect& tab1= matrice.get_tab1();
+  const IntVect& tab2= matrice.get_tab2();
+  DoubleVect& coeff=matrice.get_set_coeff();
   for (int i=0; i<matrice.nb_lignes(); i++)
     {
       for (int k=tab1(i)-1; k<tab1(i+1)-1; k++)

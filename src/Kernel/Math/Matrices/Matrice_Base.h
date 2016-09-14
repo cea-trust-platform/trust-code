@@ -24,6 +24,7 @@
 #ifndef Matrice_Base_included
 #define Matrice_Base_included
 #include <DoubleTab.h>
+#include <IntTab.h>
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -88,7 +89,13 @@ public :
   virtual void get_symmetric_stencil_and_coefficients( IntTab&      stencil,
                                                        ArrOfDouble& coefficients ) const;
 
+  int get_stencil_size( void ) const ;
+
+  bool is_stencil_up_to_date( void ) const ;
+
 protected:
+  bool is_stencil_up_to_date_ ;
+  IntTab stencil_ ;
 };
 
 

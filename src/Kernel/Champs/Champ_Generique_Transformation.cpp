@@ -246,7 +246,8 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
         localisation_ = "faces";
       else if (directive=="pression")
         localisation_ = "elem_som";
-      else if (directive=="champ_don")
+      // on considere les champs uniformes comme des champs P0 aux elems
+      else if (directive=="champ_uniforme")
         localisation_ = "elem";
       else
         {

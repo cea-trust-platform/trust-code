@@ -72,9 +72,9 @@ void Op_VEF_Face::dimensionner(const Zone_VEF& la_zone,
   if (champ_inconnue.nb_dim() == 2) nb_comp = champ_inconnue.dimension(1);
   la_matrice.dimensionner(nfin*nb_comp,nfin*nb_comp,0);
 
-  IntVect& tab1=la_matrice.tab1_;
-  IntVect& tab2=la_matrice.tab2_;
-  DoubleVect& coeff = la_matrice.coeff_;
+  IntVect& tab1=la_matrice.get_set_tab1();
+  IntVect& tab2=la_matrice.get_set_tab2();
+  DoubleVect& coeff = la_matrice.get_set_coeff();
   coeff=0;
 
 
@@ -194,8 +194,8 @@ void Op_VEF_Face::modifier_pour_Cl(const Zone_VEF& la_zone,
   // Cette matrice a une structure de matrice morse.
   // Nous commencons par calculer les tailles des tableaux tab1 et tab2.
   const Conds_lim& les_cl = la_zone_cl.les_conditions_limites();
-  const IntVect& tab1=la_matrice.tab1_;
-  DoubleVect& coeff = la_matrice.coeff_;
+  const IntVect& tab1=la_matrice.get_tab1();
+  DoubleVect& coeff = la_matrice.get_set_coeff();
   int nb_comp = 1;
   const DoubleTab& champ_inconnue = la_zone_cl.equation().inconnue().valeurs();
   if (champ_inconnue.nb_dim() == 2) nb_comp = champ_inconnue.dimension(1);
@@ -259,7 +259,7 @@ void Op_VEF_Face::modifier_pour_Cl(const Zone_VEF& la_zone,
       if (sub_type(Symetrie,la_cl.valeur()))
         if (la_zone_cl.equation().inconnue().valeur().nature_du_champ()==vectoriel)
           {
-            const IntVect& tab2=la_matrice.tab2_;
+            const IntVect& tab2=la_matrice.get_tab2();
             const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
             const DoubleTab& face_normales = la_zone.face_normales();
             int nfaces = la_front_dis.nb_faces_tot();
@@ -827,8 +827,8 @@ void Op_VEF_Face::modifier_matrice_pour_periodique_apres_contribuer(Matrice_Mors
   const Zone_VF& zone_VEF= ref_cast(Zone_VF,eqn.zone_dis().valeur());
   int nb_bords=zone_VEF.nb_front_Cl();
 
-  const IntVect& tab1=matrice.tab1_;
-  const IntVect& tab2=matrice.tab2_;
+  const IntVect& tab1=matrice.get_tab1();
+  const IntVect& tab2=matrice.get_tab2();
 
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {

@@ -50,9 +50,9 @@ Entree& Simpler::readOn(Entree& is )
 // avec D diagonale de la matrice et E = D-matrice =-(matrice-D)
 int inverser_par_diagonale(const Matrice_Morse& matrice,const DoubleTrav& resu,const DoubleTab& current,DoubleTrav& correction_en_vitesse)
 {
-  const IntVect& tab1 = matrice.tab1_;
-  const IntVect& tab2 = matrice.tab2_;
-  const DoubleVect& coeff = matrice.coeff_;
+  const IntVect& tab1 = matrice.get_tab1();
+  const IntVect& tab2 = matrice.get_tab2();
+  const DoubleVect& coeff = matrice.get_coeff();
 
   int deux_entrees=0;
   int nb_comp=1;

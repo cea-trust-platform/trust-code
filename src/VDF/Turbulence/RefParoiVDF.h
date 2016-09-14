@@ -32,11 +32,4 @@ Declare_ref(Paroi_std_scal_hyd_VDF);
 
 class Paroi_loi_puiss_hyd_VDF;
 Declare_ref(Paroi_loi_puiss_hyd_VDF);
-
-class Paroi_2couches_VDF;
-Declare_ref(Paroi_2couches_VDF);
-
-class Paroi_2couches_scal_VDF;
-Declare_ref(Paroi_2couches_scal_VDF);
-
 #endif

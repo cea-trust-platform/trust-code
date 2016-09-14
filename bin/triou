@@ -197,6 +197,10 @@ do
    elif [ "$1" = "-index" ]
    then
       ($WEBBROWSER $TRUST_ROOT/index.html &) && exit 0  
+   elif [ "$1" = "-exec" ] ||  [ "$1" = "-exe" ]
+   then
+      shift
+      binary=$1
    elif [ "$1" = "-copy" ]
    then
       copy=1
@@ -269,7 +273,7 @@ do
 	 Qui $1 || exit -1
 	 option=liste_cas
       fi
-      echo $option | lance_test
+      echo $option | lance_test -no_timeout $binary
       exit $?
    elif [ "$1" = "-clean" ]
    then

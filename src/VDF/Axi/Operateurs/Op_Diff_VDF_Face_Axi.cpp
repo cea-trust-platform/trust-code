@@ -504,9 +504,9 @@ void Op_Diff_VDF_Face_Axi::ajouter_contribution(const DoubleTab& inco, Matrice_M
   int ndeb ;
   int nfin,k ;
   double flux;
-  IntVect& tab1 = matrice.tab1_;
-  IntVect& tab2 = matrice.tab2_;
-  DoubleVect& coeff = matrice.coeff_;
+  IntVect& tab1 = matrice.get_set_tab1();
+  IntVect& tab2 = matrice.get_set_tab2();
+  DoubleVect& coeff = matrice.get_set_coeff();
 
 
   // Boucle sur les elements
@@ -811,9 +811,9 @@ void Op_Diff_VDF_Face_Axi::ajouter_contribution_bord(const DoubleTab& inco, Matr
   int ndeb = zvdf.premiere_arete_bord();
   int nfin = ndeb + zvdf.nb_aretes_bord();
 
-  IntVect& tab1 = matrice.tab1_;
-  IntVect& tab2 = matrice.tab2_;
-  DoubleVect& coeff = matrice.coeff_;
+  IntVect& tab1 = matrice.get_set_tab1();
+  IntVect& tab2 = matrice.get_set_tab2();
+  DoubleVect& coeff = matrice.get_set_coeff();
 
   for (n_arete=ndeb; n_arete<nfin; n_arete++)
     {

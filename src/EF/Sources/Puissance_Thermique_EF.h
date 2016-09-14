@@ -29,7 +29,6 @@
 #include <Terme_Source_EF_base.h>
 #include <Eval_Puiss_Th_EF.h>
 #include <It_Sou_EF.h>
-#include <Champs_compris.h>
 
 Declare_It_Sou_EF(Eval_Puiss_Th_EF);
 
@@ -56,10 +55,6 @@ public:
   {
     Terme_Puissance_Thermique::mettre_a_jour(temps);
   }
-  virtual const Champ_base& get_champ(const Motcle& nom) const;
-  virtual void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const;
-private:
-  Champs_compris champs_compris_;
 
 };
 

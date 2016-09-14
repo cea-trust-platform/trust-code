@@ -145,7 +145,7 @@ void Solv_GCP::prepare_data(const Matrice_Base& matrice, const DoubleVect& secme
         for (i = sz; i < sztot_source; i++)
           renum_[i] = -1;
         renum_.set_md_vector(secmem.get_md_vector());
-        const ArrOfInt& tab2 = mat_virt.tab2_;
+        const ArrOfInt& tab2 = mat_virt.get_tab2();
         const int n = tab2.size_array();
         for (i = 0; i < n; i++)
           {
@@ -158,9 +158,9 @@ void Solv_GCP::prepare_data(const Matrice_Base& matrice, const DoubleVect& secme
       // Determination du nombre de lignes non vides de mat_virt
       int nb_lignes_mat_virt = 0;
       {
-        const int n = mat_virt.tab1_.size_array() - 1;
+        const int n = mat_virt.get_tab1().size_array() - 1;
         for (int i = 0; i < n; i++)
-          if (mat_virt.tab1_[i+1] - mat_virt.tab1_[i] > 0)
+          if (mat_virt.get_tab1()(i+1) - mat_virt.get_tab1()(i) > 0)
             nb_lignes_mat_virt++;
       }
 
@@ -178,23 +178,23 @@ void Solv_GCP::prepare_data(const Matrice_Base& matrice, const DoubleVect& secme
       // matrice reel/reel
       mem_size += (sz + 1) * sizeof(int); // pour tab1_
       int nnz_reel_reel = 0;
-      assert(mat.tab1_.size_array() == sz + 1);
-      assert(mat.tab2_.size_array() == mat.coeff_.size_array());
+      assert(mat.get_tab1().size_array() == sz + 1);
+      assert(mat.get_tab2().size_array() == mat.get_coeff().size_array());
       if (! precond_diag_)
         {
-          nnz_reel_reel = mat.coeff_.size_array();
+          nnz_reel_reel = mat.get_coeff().size_array();
         }
       else
         {
           // On ne stocke pas les coefficients diagonaux:
-          nnz_reel_reel = mat.coeff_.size_array() - sz;
+          nnz_reel_reel = mat.get_coeff().size_array() - sz;
         }
       mem_size += nnz_reel_reel * sizeof(double); // pour les coefficients
       mem_size += nnz_reel_reel * sizeof(int); // pour les indices
       // matrice reel/virtuel
       mem_size += (nb_lignes_mat_virt+1) * sizeof(int); // pour tab1_
-      const int nnz_reel_virtuel = mat_virt.coeff_.size_array();
-      assert(mat_virt.tab2_.size_array() == nnz_reel_virtuel);
+      const int nnz_reel_virtuel = mat_virt.get_coeff().size_array();
+      assert(mat_virt.get_tab2().size_array() == nnz_reel_virtuel);
       mem_size += nnz_reel_virtuel * sizeof(double); // pour les coefficients
       mem_size += nnz_reel_virtuel * sizeof(int); // pour les indices
       // taille de tmp_mat_virt_.lignes_non_vides_
@@ -223,21 +223,21 @@ void Solv_GCP::prepare_data(const Matrice_Base& matrice, const DoubleVect& secme
       tmp_solution_.ref_data(ptr, sz);
       ptr += sz;
       // Allocation des tableaux pour les matrices:
-      tmp_mat_.coeff_.ref_data(ptr, nnz_reel_reel);
+      tmp_mat_.get_set_coeff().ref_data(ptr, nnz_reel_reel);
       ptr += nnz_reel_reel;
-      tmp_mat_virt_.coeff_.ref_data(ptr, nnz_reel_virtuel);
+      tmp_mat_virt_.get_set_coeff().ref_data(ptr, nnz_reel_virtuel);
       ptr += nnz_reel_virtuel;
       // On a fini les double, on passe aux tableaux d'entiers:
       int * iptr = (int*)ptr;
-      tmp_mat_.tab1_.ref_data(iptr, nb_lignes_mat + 1);
+      tmp_mat_.get_set_tab1().ref_data(iptr, nb_lignes_mat + 1);
       iptr += nb_lignes_mat + 1;
-      tmp_mat_.tab2_.ref_data(iptr, nnz_reel_reel);
+      tmp_mat_.get_set_tab2().ref_data(iptr, nnz_reel_reel);
       iptr += nnz_reel_reel;
       tmp_mat_virt_.lignes_non_vides_.ref_data(iptr, nb_lignes_mat_virt);
       iptr += nb_lignes_mat_virt;
-      tmp_mat_virt_.tab1_.ref_data(iptr, nb_lignes_mat_virt + 1);
+      tmp_mat_virt_.get_set_tab1().ref_data(iptr, nb_lignes_mat_virt + 1);
       iptr += nb_lignes_mat_virt + 1;
-      tmp_mat_virt_.tab2_.ref_data(iptr, nnz_reel_virtuel);
+      tmp_mat_virt_.get_set_tab2().ref_data(iptr, nnz_reel_virtuel);
       iptr += nnz_reel_virtuel;
       // Allocation terminee.
       assert(((char*)iptr) <= ((char*)tmp_data_block_.addr() + mem_size));
@@ -245,18 +245,18 @@ void Solv_GCP::prepare_data(const Matrice_Base& matrice, const DoubleVect& secme
       // Remplissages des tableaux d'index (tab1_, tab2_ et lignes_non_vides_)
       if (! precond_diag_)
         {
-          tmp_mat_.tab1_.inject_array(mat.tab1_);
+          tmp_mat_.get_set_tab1().inject_array(mat.get_tab1());
           {
             // remplissage de tab2 (renumerotation eventuelle)
             for (int i = 0; i < nnz_reel_reel; i++)
               {
-                int j = mat.tab2_[i]-1; // fortran->c
+                int j = mat.get_tab2()(i)-1; // fortran->c
                 int rj = renum_[j];
                 assert(rj < sz_tot);
-                tmp_mat_.tab2_[i] = rj+1; // c->fortran
+                tmp_mat_.get_set_tab2()(i) = rj+1; // c->fortran
               }
           }
-          tmp_mat_.m_ = sz_tot;
+          tmp_mat_.set_nb_columns( sz_tot );
         }
       else
         {
@@ -271,49 +271,49 @@ void Solv_GCP::prepare_data(const Matrice_Base& matrice, const DoubleVect& secme
               {
                 // A chaque ligne on a un coefficient de moins que dans la matrice d'origine
                 // (on ne met pas le coeff diagonal)
-                tmp_mat_.tab1_[i_ligne] = dest_index + 1; // indice fortran du debut de ligne
-                const int ncoeff = mat.tab1_[i_ligne+1] - mat.tab1_[i_ligne] - 1;
+                tmp_mat_.get_set_tab1()(i_ligne) = dest_index + 1; // indice fortran du debut de ligne
+                const int ncoeff = mat.get_tab1()(i_ligne+1) - mat.get_tab1()(i_ligne) - 1;
                 // Ne pas inserer le coeff diagonal
-                assert(mat.tab2_[src_index] == i_ligne + 1); // index fortran
+                assert(mat.get_tab2()(src_index) == i_ligne + 1); // index fortran
                 src_index++;
                 // Inserer les autres coeffs:
                 for (int i = 0; i < ncoeff; i++, src_index++, dest_index++)
-                  tmp_mat_.tab2_[dest_index] = mat.tab2_[src_index];
+                  tmp_mat_.get_set_tab2()(dest_index) = mat.get_tab2()(src_index);
 
               }
             // Fin de la derniere ligne:
-            tmp_mat_.tab1_[i_ligne] = dest_index + 1; // indice fortran du debut de ligne
+            tmp_mat_.get_set_tab1()(i_ligne) = dest_index + 1; // indice fortran du debut de ligne
           }
-          tmp_mat_.m_ = sz_tot;
+          tmp_mat_.set_nb_columns( sz_tot );
         }
       // remplissage de tmp_mat_virt_
       {
-        tmp_mat_virt_.tab1_[0] = 1;
+        tmp_mat_virt_.get_set_tab1()(0) = 1;
         int i_ligne_dest = 0;
         int dest_index = 0;
         for (int i_ligne = 0; i_ligne < nb_lignes_mat; i_ligne++)
           {
-            const int count = mat_virt.tab1_[i_ligne+1] - mat_virt.tab1_[i_ligne];
+            const int count = mat_virt.get_tab1()(i_ligne+1) - mat_virt.get_tab1()(i_ligne);
             if (count > 0)
               {
                 tmp_mat_virt_.lignes_non_vides_[i_ligne_dest] = i_ligne + 1; // indice fortran
-                tmp_mat_virt_.tab1_[i_ligne_dest] = dest_index + 1; // index fortran
+                tmp_mat_virt_.get_set_tab1()(i_ligne_dest) = dest_index + 1; // index fortran
                 i_ligne_dest++;
-                int src_index = mat_virt.tab1_[i_ligne] - 1; // fortran->c
+                int src_index = mat_virt.get_tab1()(i_ligne) - 1; // fortran->c
                 for (int i = 0; i < count; i++, src_index++, dest_index++)
                   {
                     // mat_virt contient des indices fortran relatifs au debut de la partie virtuelle,
                     // on transform en indice C, relatif au vecteur complet
-                    int j = mat_virt.tab2_[src_index] + sz - 1;
+                    int j = mat_virt.get_tab2()(src_index) + sz - 1;
                     int rj = renum_[j];
                     // on stocke dans tmp_mat_virt des indices de colonnes relatifs au vecteur complet
                     // (pas seulement la partie virtuelle)
-                    tmp_mat_virt_.tab2_[dest_index] = rj + 1; // indice fortran
+                    tmp_mat_virt_.get_set_tab2()(dest_index) = rj + 1; // indice fortran
                   }
               }
           }
         // Fin de la derniere ligne:
-        tmp_mat_virt_.tab1_[i_ligne_dest] = dest_index + 1; // index fortran
+        tmp_mat_virt_.get_set_tab1()(i_ligne_dest) = dest_index + 1; // index fortran
       }
       reinit_ = 1;
     }
@@ -325,8 +325,8 @@ void Solv_GCP::prepare_data(const Matrice_Base& matrice, const DoubleVect& secme
       const Matrice_Morse& mat_virt = ref_cast(Matrice_Morse, mat_bloc.get_bloc(0,1).valeur());
       if (!precond_diag_)
         {
-          tmp_mat_.coeff_.inject_array(mat.coeff_);
-          tmp_mat_virt_.coeff_.inject_array(mat_virt.coeff_);
+          tmp_mat_.get_set_coeff().inject_array(mat.get_coeff());
+          tmp_mat_virt_.get_set_coeff().inject_array(mat_virt.get_coeff());
         }
       else
         {

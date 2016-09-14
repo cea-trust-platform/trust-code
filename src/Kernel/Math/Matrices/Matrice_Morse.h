@@ -102,45 +102,45 @@ public :
   {
     return coeff_.size(); // nb_coeff retourne nnz
   }
-  const int* tab1() const
+
+  void set_nb_columns( const int );
+  void set_symmetric( const int );
+  int get_symmetric( ) const
   {
-    return tab1_.addr(); // pour passer a fortran :
+    return symetrique_;
   }
-  const int* tab2() const
+
+  IntVect& get_set_tab1( void )
   {
-    return tab2_.addr();
+    is_stencil_up_to_date_ = false ;
+    return tab1_ ;
   }
-  const double* coeff() const
+  IntVect& get_set_tab2( void )
   {
-    return coeff_.addr();
+    is_stencil_up_to_date_ = false ;
+    return tab2_ ;
   }
-  const int& tab1(int i) const
+  DoubleVect& get_set_coeff( void )
   {
-    return tab1_[i]; // i de 0 a n
+    return coeff_ ;
   }
-  int& tab1(int i)
+
+  const IntVect& get_tab1( void ) const
   {
-    return tab1_[i];
+    return tab1_ ;
   }
-  const int& tab2(int i) const
+  const IntVect& get_tab2( void ) const
   {
-    return tab2_[i]; // i de 0 a nnz-1
+    return tab2_ ;
   }
-  int& tab2(int i)
+  const DoubleVect& get_coeff( void ) const
   {
-    return tab2_[i];
+    return coeff_ ;
   }
-  const double& coeff(int i) const
-  {
-    return coeff_[i]; // i de 0 a nnz-1
-  }
-  double& coeff(int i)
-  {
-    return coeff_[i];
-  }
+
   int nb_vois(int i) const
   {
-    return tab1(i+1)-tab1(i); // nb_vois(i) : nombre d'elements non nuls de la ligne i
+    return get_tab1()(i+1)-get_tab1()(i); // nb_vois(i) : nombre d'elements non nuls de la ligne i
   }
 
   //methode pour nettoyer la matrice.
@@ -152,6 +152,7 @@ public :
   inline double operator()(int i, int j) const;
   // Ne pas supprimer ces deux methodes coef(i,j) qui bien qu'elles fassent la meme chose que les
   // deux precedents sont utilisees tres souvent par OVAP:
+  // Access to coefficients do not modify the stencil so we can leave these two access functions
   inline double coef(int i, int j) const
   {
     return operator()(i,j);
@@ -207,11 +208,7 @@ public :
   void unite();
 
 
-  IntVect tab1_;
-  IntVect tab2_;
-  DoubleVect coeff_;
-  int m_;
-  int symetrique_; // Pour inliner operator()(i,j) afin d'optimiser
+
   void formeC() ;
   void formeF() ;
 
@@ -221,6 +218,15 @@ public :
   void assert_check_sorted_morse_matrix_structure( void ) const;
 
   mutable int morse_matrix_structure_has_changed_; // Flag if matrix structure changes
+
+protected :
+  IntVect tab1_;
+  IntVect tab2_;
+  DoubleVect coeff_;
+
+  int m_;
+  int symetrique_; // Pour inliner operator()(i,j) afin d'optimiser
+
 
 private :
   double zero_;

@@ -146,8 +146,11 @@ Discretisation_base::discretiser_champ(const Motcle& directive, const Zone_dis_b
 {
   test_demande_description(directive, champ.que_suis_je());
   // Appel recursif pour produire l'affichage des directives :
-  exit();
-  throw;
+  if (directive==demande_description)
+    {
+      exit();
+      throw;
+    }
   discretiser_champ(demande_description, z, nature, noms, unites, nb_comp,
                     nb_pas_dt, temps, champ, sous_type);
 }
@@ -162,8 +165,11 @@ Discretisation_base::discretiser_champ(const Motcle& directive, const Zone_dis_b
 {
   test_demande_description(directive, champ.que_suis_je());
   // Appel recursif pour produire l'affichage des directives :
-  exit();
-  throw;
+  if (directive==demande_description)
+    {
+      exit();
+      throw;
+    }
   discretiser_champ(demande_description, z, nature, noms, unites, nb_comp,
                     temps, champ);
 }
@@ -178,8 +184,11 @@ Discretisation_base::discretiser_champ(const Motcle& directive, const Zone_dis_b
 {
   test_demande_description(directive, champ.que_suis_je());
   // Appel recursif pour produire l'affichage des directives :
-  exit();
-  throw;
+  if (directive==demande_description)
+    {
+      exit();
+      throw;
+    }
   discretiser_champ(demande_description, z, nature, noms, unites, nb_comp,
                     temps, champ);
 }

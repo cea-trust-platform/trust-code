@@ -136,7 +136,7 @@ void Op_EF_base::dimensionner(const Zone_EF& la_zone,
       // abort();
     }
 
-  assert(mp_min_vect(la_matrice.tab2_)>-1);
+  assert(mp_min_vect(la_matrice.get_tab2())>-1);
 
   if (matrice_stocke)
     {
@@ -145,9 +145,9 @@ void Op_EF_base::dimensionner(const Zone_EF& la_zone,
   //
   if (0)
     {
-      Cerr<<la_matrice.tab1_<<finl;
-      Cerr<<la_matrice.tab2_<<finl;
-      la_matrice.coeff_=1;
+      Cerr<<la_matrice.get_tab1()<<finl;
+      Cerr<<la_matrice.get_tab2()<<finl;
+      la_matrice.get_set_coeff() = 1;
       Cerr<<"ici "<<tot <<" "<< nb_coeff<<finl;
       Cerr<<"Indice"<<Indice<<finl;
       la_matrice.imprimer_formatte(Cerr);
@@ -177,8 +177,8 @@ void Op_EF_base::modifier_pour_Cl(const Zone_EF& la_zone,
   //  int nfin = la_zone.nb_faces();
   const Conds_lim& les_cl = la_zone_cl.les_conditions_limites();
 
-  const IntVect& tab1=la_matrice.tab1_;
-  DoubleVect& coeff = la_matrice.coeff_;
+  const IntVect& tab1=la_matrice.get_tab1();
+  DoubleVect& coeff = la_matrice.get_set_coeff();
 
   // determination de la taille du champ inconnue.
   // Cerr << "dans modifier cl " << finl;

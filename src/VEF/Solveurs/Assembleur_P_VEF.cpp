@@ -185,17 +185,17 @@ int Assembleur_P_VEF::remplir(Matrice& la_matrice, const DoubleTab& inverse_quan
 
   // Le sous blocs vr est dimensionne et nul
   MBvr.dimensionner(n1-n2,n2,0);
-  MBvr.tab1_=1;
+  MBvr.get_set_tab1() = 1;
 
-  IntVect& tab1RR=MBrr.tab1_;
-  IntVect& tab2RR=MBrr.tab2_;
-  DoubleVect& coeffRR=MBrr.coeff_;
-  IntVect& tab1RV=MBrv.tab1_;
-  IntVect& tab2RV=MBrv.tab2_;
-  DoubleVect& coeffRV=MBrv.coeff_;
-  IntVect& tab1VV=MBvv.tab1_;
-  IntVect& tab2VV=MBvv.tab2_;
-  DoubleVect& coeffVV=MBvv.coeff_;
+  IntVect& tab1RR=MBrr.get_set_tab1();
+  IntVect& tab2RR=MBrr.get_set_tab2();
+  DoubleVect& coeffRR=MBrr.get_set_coeff();
+  IntVect& tab1RV=MBrv.get_set_tab1();
+  IntVect& tab2RV=MBrv.get_set_tab2();
+  DoubleVect& coeffRV=MBrv.get_set_coeff();
+  IntVect& tab1VV=MBvv.get_set_tab1();
+  IntVect& tab2VV=MBvv.get_set_tab2();
+  DoubleVect& coeffVV=MBvv.get_set_coeff();
 
   // On traite les faces internes:
 

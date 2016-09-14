@@ -272,8 +272,8 @@ int  Assembleur_P_EF::assembler_mat(Matrice& la_matrice,const DoubleVect& volume
   MBrr.dimensionner(indice_rr);
   if (indice_rv.size()>0)
     MBrv.dimensionner(indice_rv);
-  MBrr.coeff_=0;
-  MBrv.coeff_=0;
+  MBrr.get_set_coeff() = 0;
+  MBrv.get_set_coeff() = 0;
   const DoubleTab& Bthilde=la_zone.Bij_thilde();
   for (int elem1=0; elem1<n1; elem1++)
     for (int s=0; s<nb_som_elem; s++)
