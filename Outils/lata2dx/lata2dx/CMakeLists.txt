@@ -90,6 +90,7 @@ target_link_libraries(${essai2} ${ajout} )
 
 
 # swig
+FIND_PACKAGE(PythonInterp)
 FIND_PACKAGE(PythonLibs)
 FIND_PACKAGE(SWIG REQUIRED)
 INCLUDE(${SWIG_USE_FILE})
