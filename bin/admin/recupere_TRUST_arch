@@ -257,7 +257,8 @@ do
 	PERF=$REP_NUIT/PERF_$NOM
 	EXEC=${NOM%_$HOST}
 	EXEC=${EXEC%_$arch}
-	host="";os="";rel="";mod="";taille="";cpu="";cpu3d="<TD $BLANC>NOT</TD>";bench="<TD $BLANC>NOT</TD>";runfich="<TD $BLANC>NOT</TD>"
+	host="";os="";rel="";mod="";nb_procs="";ram="";cache="";freq="";TRUST_CC=""
+	taille="";cpu="";cpu3d="<TD $BLANC>NOT</TD>";bench="<TD $BLANC>NOT</TD>";runfich="<TD $BLANC>NOT</TD>"
 	BLANC="BGCOLOR=#FEFEFE";ROUGE="BGCOLOR=#C42111";VERT="BGCOLOR=3D\"#E47833\""
 	comp="Echec";COL1=$ROUGE
 	[ "`grep BUILD_EXEC=OK $CR`" != "" ] && comp="Succes" && COL1=$VERT

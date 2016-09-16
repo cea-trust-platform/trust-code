@@ -301,6 +301,7 @@ date
 ################################################
 # Pour forcer des options sur certaines machines
 ################################################
+#option_configure=""
 export TRUST_BUILD_IN_TMP=1
 option_configure=" -disable-ccache"
 # PETSc with CUDA for GPU (needs GNU compiler for PETSc, confirmed in petsc-dev december 2013) 
@@ -464,7 +465,13 @@ do
          $Mpirun --version 2>&1 | $TRUST_Awk '/Open MPI/ {print "MPI=OpenMPI "$NF} /Version:/ {print "MPI=MPICH "$NF}'
       elif [ "$MPI_ROOT" != "" ]
       then
-         echo "MPI=MPI natif: $MPI_ROOT"
+	 MPI_VERSION=`$Mpirun --version 2>&1 | $TRUST_Awk '/Open MPI/ {print "OpenMPI "$NF} /Version:/ {print "MPICH "$NF} /Intel\(R\) MPI/ {print "Intel MPI "$8}'`
+         if [ "$MPI_VERSION" != "" ]
+         then
+            echo "MPI=MPI natif: $MPI_VERSION"
+	 else
+            echo "MPI=MPI natif: $MPI_ROOT"
+	 fi
       else
          echo "MPI="
       fi
