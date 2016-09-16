@@ -1,6 +1,7 @@
 #!/bin/bash
 clean()
 {
+# return
    # Nettoyage des paquets
    echo $ECHO_OPTS "Cleaning...\c"
    # 
@@ -144,6 +145,8 @@ fi
 # Installation plante sur is225222 en Fedora 18 avec OpenMPI 1.8.3
 export CFLAGS="$CFLAGS -ldl"
 export CXXFLAGS="$CXXFLAGS -ldl"
+#export CXXFLAGS="$CXXFLAGS -ldl -Wno-narrowing -Wno-deprecated-declarations -std=gnu++98" 
+export CXXFLAGS="$CXXFLAGS -std=gnu++98" 
 
 if [ "$option" = parallel ]
 then
@@ -183,6 +186,12 @@ fi
 # To avoid an obscure recursive cmake shit prior to cmake 3.0 in VTK when compiler changes,
 # we clean VTK and IceT builds
 rm -r -f VTK*-build IceT-?-?-?
+if [ -d VTK-6.1.0 ]
+then
+echo patch VTK gcc6 
+cp VTK-6.1.0_patch_gcc6/CMake/* VTK-6.1.0/CMake
+
+fi
 
 ############################################
 # Modification eventuelle du script de build
