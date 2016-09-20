@@ -1,0 +1,13 @@
+#!/bin/bash 
+#MSUB -r mise_a_jour_TRUST_arch
+#MSUB -q broadwell
+#MSUB -Q normal
+#MSUB -T 43200
+#MSUB -o ~/myjob_cobalt.%J.o
+#MSUB -e ~/myjob_cobalt.%J.e
+#MSUB -A gch0202
+#MSUB -E "--no-requeue"
+#MSUB -n 1
+cd $BRIDGE_MSUB_PWD
+[ -f ld_env.sh ] && . ./ld_env.sh # To load an environment file if necessary
+ccc_mprun -n 1 ./mise_a_jour_TRUST_arch -rsync 1>~/CR_cobalt 2>&1
