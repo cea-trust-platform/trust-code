@@ -1,4 +1,5 @@
 Version	Qui				Tache
+1.7.4   triou@cea.fr            Recuperer aupres de Guillaume son sub_file avec reprise + calcul de nb de noeuds (cf occigen)
 1.7.4   triou@cea.fr            Revoir reprise avec temps different entre sauv et son ou out par exemple (suite crash par ex) => supprimer t>tsauv sans son et out ?
 1.7.4   triou@cea.fr            Revoir tous les prepare sans make_PAR.data a mettre dans pre_run
 1.7.4   triou@cea.fr            Revoir sortie des fields a post traiter dans .err (energie_cinetique ? reynolds_maille en VEF ?)

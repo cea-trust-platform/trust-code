@@ -50,6 +50,7 @@ define_soumission_batch()
    #ntasks=12
    #noeuds=`echo "$NB_PROCS/$ntasks+1" | bc`
    #[ `echo "$NB_PROCS%$ntasks" | bc -l` = 0 ] && noeuds=`echo "$NB_PROCS/$ntasks" | bc`
+   #[ "$noeuds" = 0 ] && noeuds=1
    #mpirun="mpirun -np $NB_PROCS"
    sub=POE
 }

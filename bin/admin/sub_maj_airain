@@ -1,12 +1,12 @@
 #!/bin/bash 
 #MSUB -r mise_a_jour_TRUST_arch
-#MSUB -n 1
-#MSUB -T 43200
-#MSUB -E "--no-requeue"
-#MSUB -Q normal
 #MSUB -q ivybridge
-#MSUB -o out.%J
-#MSUB -e err.%J
-set -x 
-cd ${BRIDGE_MSUB_PWD}
-ccc_mprun ./mise_a_jour_TRUST_arch -rsync 1>~/CR_airain 2>&1
+#MSUB -Q normal
+#MSUB -T 43200
+#MSUB -o ~/myjob_airain.%J.o
+#MSUB -e ~/myjob_airain.%J.e
+#MSUB -E "--no-requeue"
+#MSUB -n 1
+cd $BRIDGE_MSUB_PWD
+[ -f ld_env.sh ] && . ./ld_env.sh # To load an environment file if necessary
+ccc_mprun -n 1 ./mise_a_jour_TRUST_arch -rsync 1>~/CR_airain 2>&1

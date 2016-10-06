@@ -72,6 +72,7 @@ define_soumission_batch()
       taches=$NB_PROCS  
       noeuds=`echo "$NB_PROCS/$ntasks+1" | bc`
       [ `echo "$NB_PROCS%$ntasks" | bc -l` = 0 ] && noeuds=`echo "$NB_PROCS/$ntasks" | bc`
+      [ "$noeuds" = 0 ] && noeuds=1
       if [ "`echo $NB_PROCS | awk -v n=$ntasks '{print $1%n}'`" != 0 ]
       then
          echo "=================================================================================================================="

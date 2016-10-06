@@ -85,6 +85,7 @@ define_soumission_batch()
    fi
    noeuds=`echo "$NB_PROCS/$ntasks+1" | bc`
    [ `echo "$NB_PROCS%$ntasks" | bc -l` = 0 ] && noeuds=`echo "$NB_PROCS/$ntasks" | bc`
+   [ "$noeuds" = 0 ] && noeuds=1
    #if [ "`basename $Mpirun`" = srun ]
    #then
    #   # Slurm srun support

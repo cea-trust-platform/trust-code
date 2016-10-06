@@ -60,7 +60,7 @@ module () {
       # Intel compiler (WARNING: Intel 12.x provoque plusieurs problemes (voir FA1445))
 	  # Intel 13.1.3.192 14.0.3.174(default) 15.0.2.164 15.0.3.187(decommissioned)
           # 15.0.5.223 16.0.0.109 16.0.1.150 16.0.2.181 16.0.3.210
-      module="intel/14.0.3.174"
+      module="intel/16.0.3.210"
       echo "Module $module detected and loaded on $HOST."
       module unload intel
       module load $module

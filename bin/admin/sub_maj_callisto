@@ -1,11 +1,11 @@
 #!/bin/bash 
 #SBATCH -J mise_a_jour_TRUST_arch
-#SBATCH -n 1
-#SBATCH -t 720
 #SBATCH -p slim
 #SBATCH --qos=normal
-#SBATCH -o myjob.%j.o
-#SBATCH -e myjob.%j.e
-#SBATCH --exclusive
+#SBATCH -t 720
+#SBATCH -o ~/myjob_callisto.%j.o
+#SBATCH -e ~/myjob_callisto.%j.e
+#SBATCH -n 1
 cd $SLURM_SUBMIT_DIR
-srun ./mise_a_jour_TRUST_arch -rsync 1>~/CR_callisto 2>&1
+[ -f ld_env.sh ] && . ./ld_env.sh # To load an environment file if necessary
+srun -n 1 ./mise_a_jour_TRUST_arch -rsync 1>~/CR_callisto 2>&1

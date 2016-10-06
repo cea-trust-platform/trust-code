@@ -29,15 +29,19 @@ define_modules_config()
    echo "source /cm/local/apps/environment-modules/3.2.10/init/bash" >> $env
    echo "module load $module 1>/dev/null" >> $env
    #
+   #GNU gcc/4.4.6 gcc/4.8.1 gcc/4.9.0 gcc/4.9.3 gcc/5.2.0 (4.4.7 default)
+   #intel="gcc/5.2.0"
    #OPENMPI module openmpi/gcc/64/1.8 openmpi/gcc/64/1.8.3 openmpi/gcc/64/1.8.4 
    # Aero_192: 3.7s
    module="openmpi/gcc/64/1.8.3"
    #module="openmpi/gcc/64/1.8.4"
    #module="openmpi/gcc/64/1.10.0"
    #module="openmpi/gcc/64/1.10.1"
+   #module="openmpi/gcc/64/1.10.3"
+   #module="$intel openmpi/gcc/64/1.8.3"
    #
    echo "# Module $module detected and loaded on $HOST."
-   echo "module unload mpich openmpi mvapich mvapich2 intel/compiler intel/mkl intel/tbb 1>/dev/null" >> $env
+   echo "module unload mpich openmpi mvapich mvapich2 intel/compiler intel/mkl intel/tbb gcc 1>/dev/null" >> $env
    echo "module load $module 1>/dev/null" >> $env     
    . $env
    # Creation wrapper qstat -> squeue

@@ -1,13 +1,13 @@
 #!/bin/bash 
 #MSUB -r mise_a_jour_TRUST_arch
-#MSUB -n 1
+#MSUB -q standard
+#MSUB -Q normal
 #MSUB -T 43200
+#MSUB -o ~/myjob_curie-ccrt.%J.o
+#MSUB -e ~/myjob_curie-ccrt.%J.e
 #MSUB -A genden
 #MSUB -E "--no-requeue"
-#MSUB -Q normal
-#MSUB -q standard
-#MSUB -o out.%J
-#MSUB -e err.%J
-set -x 
+#MSUB -n 1
 cd $BRIDGE_MSUB_PWD
-ccc_mprun ./mise_a_jour_TRUST_arch -rsync 1>~/CR_curie-ccrt 2>&1
+[ -f ld_env.sh ] && . ./ld_env.sh # To load an environment file if necessary
+ccc_mprun -n 1 ./mise_a_jour_TRUST_arch -rsync 1>~/CR_curie-ccrt 2>&1
