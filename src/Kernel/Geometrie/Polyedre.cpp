@@ -26,7 +26,7 @@
 #include <algorithm>
 using std::swap;
 
-Implemente_instanciable_sans_constructeur(Polyedre,"Polyedre",Elem_geom_base);
+Implemente_instanciable_sans_constructeur(Polyedre,"Polyedre",Poly_geom_base);
 
 Polyedre::Polyedre(): FacesIndex_(1),PolyhedronIndex_(1)
 {
@@ -890,3 +890,4 @@ void Polyedre::ajouter_elements(const Elem_geom_base& type_elem, const IntTab& n
     }
   Nodes_.resize_array(old_nodes_index+new_s);
 }
+

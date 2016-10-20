@@ -14,14 +14,14 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Polyedre.h
+// File:        Polygone.h
 // Directory:   $TRUST_ROOT/src/Kernel/Geometrie
 // Version:     /main/13
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Polyedre_included
-#define Polyedre_included
+#ifndef Polygone_included
+#define Polygone_included
 
 #ifdef linux
 #define BLOQUE Cerr<<__PRETTY_FUNCTION__<< " "<<__FILE__<<":"<<(int)__LINE__<<" not coded" <<finl;exit()
@@ -37,32 +37,21 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    Classe Polyedre
-//    Cette represente l'element geometrique Polyedre.
+//    Classe Polygone
+//    Cette represente l'element geometrique Polygone.
 //    Un polyedre est un element defini par ses faces
 //    de type polygone_3D
 // .SECTION voir aussi
 //    Poly_geom_base Elem_geom
 //////////////////////////////////////////////////////////////////////////////
-class Polyedre  : public Poly_geom_base
+class Polygone  : public Poly_geom_base
 {
 
-  Declare_instanciable(Polyedre);
+  Declare_instanciable(Polygone);
 
 public :
 
 
-  virtual void calculer_un_centre_gravite(const int elem,DoubleVect& xp) const
-  {
-    BLOQUE;
-    throw;
-  };
-  void calculer_centres_gravite(DoubleTab& xp) const
-  {
-    // on a change la methode dans Polygone mais pas dans Polyedre ?
-    WARN;
-    return Elem_geom_base::calculer_centres_gravite(xp);
-  };
   // Fonctions d'acces aux membres prives:
   inline int face_sommet(int i, int j) const;
   inline int nb_som() const;
@@ -75,37 +64,39 @@ public :
   inline Type_Face type_face(int=0) const;
   virtual void reordonner() ;
   virtual void calculer_volumes(DoubleVect& ) const;
+  void calculer_centres_gravite(DoubleTab& xp) const;
+  virtual void calculer_un_centre_gravite(const int elem,DoubleVect& xp) const ;
+
   virtual int nb_type_face() const;
   int get_tab_faces_sommets_locaux(IntTab& faces_som_local) const;
   int get_tab_faces_sommets_locaux(IntTab& faces_som_local,int elem) const;
-  void affecte_connectivite_numero_global(const ArrOfInt& Nodes,const ArrOfInt& FacesIndex,const ArrOfInt& PolyhedronIndex,IntTab& les_elems);
+  int get_tab_faces_sommets_locaux_global(IntTab& faces_som_local,int elem) const;
+  void affecte_connectivite_numero_global(const ArrOfInt& FacesIndex,const ArrOfInt& PolygonIndex,IntTab& les_elems);
   int get_nb_som_elem_max() const;
   inline int get_nb_face_elem_max() const
   {
     return nb_face_elem_max_ ;
   } ;
-  inline int get_nb_som_face_max() const
-  {
-    return nb_som_face_max_ ;
-  } ;
+
   inline int get_somme_nb_faces_elem() const
   {
-    return getFacesIndex().size_array()-1;
+    return PolygonIndex_[PolygonIndex_.size_array()-1];
   }
+
   inline const ArrOfInt& getFacesIndex() const
   {
     return FacesIndex_;
   };
-  inline const ArrOfInt& getPolyhedronIndex() const
+  inline const ArrOfInt& getPolygonIndex() const
   {
-    return PolyhedronIndex_;
+    return PolygonIndex_;
   };
   void remplir_Nodes_glob(ArrOfInt& Nodes_glob,const IntTab& les_elems ) const;
-  // void affecte_connectivite_numero_local(Nodes,FacesIndex,PolyhedronIndex);
+  // void affecte_connectivite_numero_local(Nodes,FacesIndex,PolygonIndex);
   void ajouter_elements(const Elem_geom_base& new_elem, const IntTab& new_elems, IntTab& les_elems);
 private :
-  ArrOfInt Nodes_,FacesIndex_,PolyhedronIndex_;
-  int nb_som_elem_max_,nb_face_elem_max_,nb_som_face_max_;
+  ArrOfInt Nodes_,FacesIndex_,PolygonIndex_;
+  int nb_som_elem_max_,nb_face_elem_max_;
 };
 
 
@@ -128,7 +119,7 @@ private :
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-inline int Polyedre::face_sommet(int face, int sommet) const
+inline int Polygone::face_sommet(int face, int sommet) const
 {
   BLOQUE;
   return -1;
@@ -136,7 +127,7 @@ inline int Polyedre::face_sommet(int face, int sommet) const
 
 
 // Description:
-//    Renvoie le nombre de sommets d'un Polyedre
+//    Renvoie le nombre de sommets d'un Polygone
 // Precondition:
 // Parametre:
 //    Signification:
@@ -148,7 +139,7 @@ inline int Polyedre::face_sommet(int face, int sommet) const
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-inline int Polyedre::nb_som() const
+inline int Polygone::nb_som() const
 {
   return get_nb_som_elem_max();
 
@@ -158,14 +149,14 @@ inline int Polyedre::nb_som() const
 // Description:
 //    Renvoie le nombre de faces du type specifie
 //    que possede l'element geometrique.
-//    Un Polyedre a 1 type de faces: polygon_3D
+//    Un Polygone a 1 type de faces: polygon_3D
 // Precondition:
 // Parametre: int i
 //    Signification: le type de face
 //    Valeurs par defaut: 0
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-inline int Polyedre::nb_faces(int i) const
+inline int Polygone::nb_faces(int i) const
 {
   assert(i==0);
   switch(i)
@@ -193,15 +184,15 @@ inline int Polyedre::nb_faces(int i) const
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-inline int Polyedre::nb_som_face(int i) const
+inline int Polygone::nb_som_face(int i) const
 {
   assert(i==0);
-  return get_nb_som_face_max();
+  return 2;
 }
 
 
 //    Renvoie toujours 0, car l'element geometrique
-//    Polyedre n'est pas de type structure.
+//    Polygone n'est pas de type structure.
 // Precondition:
 // Parametre:
 //    Signification:
@@ -215,7 +206,7 @@ inline int Polyedre::nb_som_face(int i) const
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-inline int Polyedre::est_structure() const
+inline int Polygone::est_structure() const
 {
   return 0;
 }
@@ -235,13 +226,13 @@ inline int Polyedre::est_structure() const
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-inline Type_Face Polyedre::type_face(int i) const
+inline Type_Face Polygone::type_face(int i) const
 {
   assert(i<=0);
   switch(i)
     {
     case 0:
-      return polygone_3D;
+      return segment_2D;
     default :
       Cerr << "Error, a polyhedron has 1 type of faces and not " << i << finl;
       exit();

@@ -191,6 +191,10 @@ void lml_reader(const char * lmlfilename, const char * data_filename, LataDB & l
         lata_db.set_elemtype(tstep, elements.geometry_, motlu);
         elements.nb_comp_ = atoi(((const char *)motlu) + strlen("polyedre_"));
         borne_index_min=-1;
+      } else if (motlu.debute_par("POLYGONE_")) {
+        lata_db.set_elemtype(tstep, elements.geometry_, motlu);
+        elements.nb_comp_ = atoi(((const char *)motlu) + strlen("polygone_"));
+        borne_index_min=-1;
       } else {
         Journal() << "Error reading TOPOLOGIE: unknown element type" << endl;
         throw;

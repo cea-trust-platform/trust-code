@@ -29,6 +29,7 @@
 #include <IntList.h>
 #include <Vect_IntTab.h>
 #include <Vect_ArrOfInt.h>
+#include <Polygone.h>
 #include <Polyedre.h>
 #include <Scatter.h>
 #include <Synonyme_info.h>
@@ -577,6 +578,74 @@ int medliregeom(Nom& nom_fic,const Nom& nom_dom,const Nom& nom_dom_trio,int& dim
 
 
         //    Cerr<<"elem "<<ret<<finl;
+      }
+    else if (type_geo==MED_POLYGON)
+      {
+
+
+
+        // on a des polygone...
+
+        //avant d'oublier on lit les familles
+#ifdef MED30
+        if (MEDmeshEntityFamilyNumberRd(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,type_geo,num_famille_elem)<0)
+#else
+        abort();
+#endif
+          for (int ii=0; ii<nelem; ii++)
+            num_famille_elem[ii] = 0;
+
+        int  NumberOfPolygone = nm1;
+
+
+        //med_int ConnectivitySize;
+        //med_err err1 = MEDpolygoneInfo(fid,nom_dom,MED_CELL,MED_NODAL, &ConnectivitySize);
+        med_int FacesIndexSize;
+#ifdef MED30
+        med_bool cght,transfo2;
+        // NumberOfNodes=NumberOfPolygone;
+        NumberOfPolygone=MEDmeshnEntity(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,MED_POLYGON,MED_INDEX_NODE,MED_NODAL,&cght,&transfo2)-1; // -1 a cause du +1 ensuite !!!
+        med_err err1=0;
+
+        FacesIndexSize=MEDmeshnEntity(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,MED_POLYGON, MED_CONNECTIVITY,MED_NODAL,&cght,&transfo2);
+#endif
+        if (err1 != 0)
+          {
+            Cerr<<"Error MEDpolygoneInfo"<<finl;
+            Process::exit();
+          }
+        //Cerr<<NumberOfPolygone<< " "<<NumberOfNodes<<" "<<FacesIndexSize<<finl;
+        //  ArrOfInt Nodes(NumberOfNodes);
+        ArrOfInt FacesIndex(FacesIndexSize),PolygonIndex(NumberOfPolygone+1);
+        {
+          //med_int* med_Nodes=alloue_med_int_from_inttab(Nodes);
+          med_int* med_FacesIndex=alloue_med_int_from_inttab(FacesIndex);
+          med_int* med_PolygonIndex=alloue_med_int_from_inttab(PolygonIndex);
+#ifdef MED30
+          med_err err4 =MEDmeshPolygonRd(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,MED_NODAL,med_PolygonIndex,med_FacesIndex);
+#endif
+          if (err4 != 0)
+            {
+              Cerr<<": MEDpolygoneConnLire returns "<<(int)err4;
+              Process::exit();
+            }
+          //convert_med_int_to_inttab(Nodes,med_Nodes);
+          convert_med_int_to_inttab(FacesIndex,med_FacesIndex);
+          convert_med_int_to_inttab(PolygonIndex,med_PolygonIndex);
+          //Cerr<<Nodes<< " "<<FacesIndex<<" "<<PolyhedronIndex<<finl;
+        }
+        // Nodes-=1;
+        FacesIndex-=1;
+        PolygonIndex-=1;
+
+        Cerr<<"iiiiiiiiiii"<<FacesIndex<<"llllllll"<<finl;
+
+        ref_cast(Polygone,ele.valeur()).affecte_connectivite_numero_global( FacesIndex, PolygonIndex, les_elems);
+        Cerr<<"iiiiiiiiiii"<<FacesIndex<<"llllllll"<<finl;
+        // on remet +1 car apres on le retire....
+        les_elems+=1;
+
+
       }
     else
       {

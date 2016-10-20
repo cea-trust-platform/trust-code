@@ -766,6 +766,7 @@ void UserFields::new_fields_metadata(LataFilter & filter,
     case Domain::point:     topo_dim = 0; break;
     case Domain::line:      topo_dim = 1; break;
     case Domain::triangle:
+    case Domain::polygone:
     case Domain::quadri:    topo_dim = 2; break;
     case Domain::tetra:
     case Domain::prism6:

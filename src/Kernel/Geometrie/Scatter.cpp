@@ -921,16 +921,19 @@ static void calculer_espace_distant_item(Zone& la_zone,
           for (int i_item = 0; i_item < nb_items_par_element; i_item++)
             {
               const int item = connectivite_elem_item(elem, i_item);
-              liste_items.append_array(item);
-              // Si un item est lie a l'item courant, on envoie aussi l'item lie.
-              if (flag_items_lies)
+              if (item>-1)
                 {
-                  const int item_lie = items_lies[item];
-                  if (item_lie != item)
+                  liste_items.append_array(item);
+                  // Si un item est lie a l'item courant, on envoie aussi l'item lie.
+                  if (flag_items_lies)
                     {
-                      assert(item_lie >= 0 && item_lie < nb_items_reels);
-                      assert(items_lies[item_lie] == item_lie); // chaine de liaisons interdite
-                      liste_items.append_array(item_lie);
+                      const int item_lie = items_lies[item];
+                      if (item_lie != item)
+                        {
+                          assert(item_lie >= 0 && item_lie < nb_items_reels);
+                          assert(items_lies[item_lie] == item_lie); // chaine de liaisons interdite
+                          liste_items.append_array(item_lie);
+                        }
                     }
                 }
             }
