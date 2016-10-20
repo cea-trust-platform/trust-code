@@ -383,13 +383,13 @@ Entree& __Scalar__List::readOn(Entree& is)  {
 // Postcondition: 
 __Scalar__List::__Scalar__List(const __Scalar__List& a_list) : __Scalar__ListElem()
 {
+  min_data=a_list.min_data;
+  max_data=a_list.max_data;
   if(a_list.est_vide() ){
     suivant_=this;
   }
   else {
     data=a_list.data;
-    min_data=a_list.min_data;
-    max_data=a_list.max_data;
     dernier_=this;    
     if(a_list.suivant_) {
       __Scalar__ListElem* next = new __Scalar__ListElem(*a_list.suivant_); //Recursif !!

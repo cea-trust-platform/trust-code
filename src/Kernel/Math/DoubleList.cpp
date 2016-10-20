@@ -113,6 +113,8 @@ Entree& DoubleList::readOn(Entree& is)
 // Postcondition:
 DoubleList::DoubleList(const DoubleList& a_list) : DoubleListElem()
 {
+  min_data=a_list.min_data;
+  max_data=a_list.max_data;
   if(a_list.est_vide() )
     {
       suivant_=this;
@@ -120,8 +122,6 @@ DoubleList::DoubleList(const DoubleList& a_list) : DoubleListElem()
   else
     {
       data=a_list.data;
-      min_data=a_list.min_data;
-      max_data=a_list.max_data;
       dernier_=this;
       if(a_list.suivant_)
         {
