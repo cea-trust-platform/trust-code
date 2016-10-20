@@ -118,10 +118,10 @@ Entree& LireMED::interpreter_(Entree& is)
     }
   //is >> nom_dom;
   lire_nom_med(nom_dom,is);
-  Cerr << "domaine_name:" << nom_dom_trio << finl;
-  Cerr << "mesh_name:" << nom_dom << finl;
+  //Cerr << "domaine_name:" << nom_dom_trio << finl;
+  //Cerr << "mesh_name:" << nom_dom << finl;
   is >> nom_fic;
-  Cerr << "MED file read: " << nom_fic << finl;
+  //Cerr << "MED file read: " << nom_fic << finl;
   // on retire _0000 si il existe et on cree le bon fichier
   Nom nom_fic2(nom_fic);
   nom_fic2.prefix(".med");
@@ -149,7 +149,7 @@ void convert_med_int_to_inttab(ArrOfInt& tab,med_int* tabmed)
     {
       int taille=tab.size_array();
       //    cerr<<sizeof(tab)<<" "<<sizeof(int)<<" "<<sizeof(tab)/sizeof(int)<<" "<<taille<<endl;
-      Cerr<<"medint* copy"<<finl;
+      Process::Journal()<<"medint* copy"<<finl;
 
       for (int i=0; i<taille; i++)
         tab[i]=tabmed[i];
@@ -166,7 +166,7 @@ med_int* alloue_med_int_from_inttab(const ArrOfInt& tab)
     {
 
       int taille=tab.size_array();
-      Cerr<<"medint* creation"<<finl;
+      Process::Journal()<<"medint* creation"<<finl;
       tabmed=new med_int[taille];
     }
   return tabmed;
@@ -445,7 +445,7 @@ int medliregeom(Nom& nom_fic,const Nom& nom_dom,const Nom& nom_dom_trio,int& dim
                   nm1=nm;
                   jelem=i;
                   type_geo=all_cell_type1[i];
-                  Cerr<<nm1<<" elements of kind "<<(int)type_geo<<" has been found." << finl;
+                  Process::Journal()<<nm1<<" elements of kind "<<(int)type_geo<<" has been found." << finl;
                 }
               else
                 {
@@ -522,7 +522,7 @@ int medliregeom(Nom& nom_fic,const Nom& nom_dom,const Nom& nom_dom_trio,int& dim
             Objet_U::axi=1;
           }
       }
-    Cerr<<"Element TRUST kind: "<<type_elem<<finl;
+    Process::Journal()<<"Element TRUST kind: "<<type_elem<<finl;
     ele.typer(type_elem);
 
     int is_poly=0;
@@ -707,7 +707,7 @@ int medliregeom(Nom& nom_fic,const Nom& nom_dom,const Nom& nom_dom_trio,int& dim
                     {
                       nm1=nm;
                       type_geo=all_cell_type1[i];
-                      Cerr<<"We find "<<nm1<<" faces of kind "<<(int)type_geo<<finl;
+                      Process::Journal()<<"We find "<<nm1<<" faces of kind "<<(int)type_geo<<finl;
                       debut_cherche=i;
                     }
                   else
@@ -893,7 +893,7 @@ int medliregeom(Nom& nom_fic,const Nom& nom_dom,const Nom& nom_dom_trio,int& dim
         Cerr<<"Problem during the read of the families."<<finl;
         return -1;
       }
-    Cerr<<"Number of families: "<<nfam<<finl;
+    Process::Journal()<<"Number of families: "<<nfam<<finl;
     noms_bords.dimensionner(nfam);
     Indice_bords.resize_array(nfam);
     int non_affecte=-1000;
@@ -989,7 +989,7 @@ int medliregeom(Nom& nom_fic,const Nom& nom_dom,const Nom& nom_dom_trio,int& dim
                   {
 
                     // Cerr<<ret<<finl;
-                    Cerr<< " Family of name "<<nomfam<<" , number "<<(int)numfam<<finl;
+                    Process::Journal()<< " Family of name "<<nomfam<<" , number "<<(int)numfam<<finl;
                     Indice_bords[i]=numfam;
                     if (isfamilyshort==2)
                       {
@@ -1002,7 +1002,7 @@ int medliregeom(Nom& nom_fic,const Nom& nom_dom,const Nom& nom_dom_trio,int& dim
                         else
                           {
                             noms_bords[i]=nomfam;
-                            Cerr<<noms_bords[i]<<" is not seen as a boundary "<< (int)numfam<<finl;
+                            Process::Journal()<<noms_bords[i]<<" is not seen as a boundary "<< (int)numfam<<finl;
                             if (numfam<0)
                               Indice_bords[i]=-numfam;
                             Indice_bords[i]+=10000;
@@ -1086,7 +1086,7 @@ int medliregeom(Nom& nom_fic,const Nom& nom_dom,const Nom& nom_dom_trio,int& dim
         SFichier jdd_par(nom_dom_trio + "_ssz_par.geo");
         SFichier jdd_par_old("ssz_par.geo");
 
-        Cerr<<"grp"<<list_group<<finl;
+        Process::Journal()<<"grp"<<list_group<<finl;
         int nb_elem=les_elems.dimension(0);
 
         for (int grp=0; grp<list_group.size(); grp++)
@@ -1338,19 +1338,19 @@ void LireMED::lire_geom( Nom& nom_fic,Domaine& dom,const Nom& nom_dom,const Nom&
       Process::exit();
     }
 
-
-  Cerr << "nom_fic = " << nom_fic<< finl
-       << "nom_dom ="<<nom_dom<<finl
-       << "dimension = " << dimension<< finl
-       /*
-         << "sommets = " << sommets2<< finl
-         << "type_elem = " << type_elem<< finl
-         << "les_elems = " << les_elems2<< finl
-         << "type_face = " << type_face<< finl
-         << "all_faces_bord = " << all_faces_bord<< finl
-         << "familles = " << familles << finl
-       */
-       << "noms_bords= " << noms_bords<< finl;
+  if (0)
+    Cerr << "nom_fic = " << nom_fic<< finl
+         << "nom_dom ="<<nom_dom<<finl
+         << "dimension = " << dimension<< finl
+         /*
+           << "sommets = " << sommets2<< finl
+           << "type_elem = " << type_elem<< finl
+           << "les_elems = " << les_elems2<< finl
+           << "type_face = " << type_face<< finl
+           << "all_faces_bord = " << all_faces_bord<< finl
+           << "familles = " << familles << finl
+         */
+         << "noms_bords= " << noms_bords<< finl;
   /*
     SFichier es(nom_fic+".es2");
     es<< "nom_fic = " << nom_fic<< finl

@@ -277,7 +277,7 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
         {
           const Noms nom = get_source(i).get_property("nom");
           fxyz[0].addVar(nom[0]);
-          Cerr<<" Name of source "<<nom[0]<<finl;
+          Journal()<<" Name of source "<<nom[0]<<finl;
         }
       fxyz[0].parseString();
     }
@@ -758,7 +758,7 @@ int Champ_Generique_Transformation::preparer_macro()
           for (int comp=0; comp<nb_comp; comp++)
             {
               fxyz[0].addVar(compo[comp]);
-              Cerr<<" Source compo "<<compo[comp]<<finl;
+              Journal()<<" Source compo "<<compo[comp]<<finl;
             }
         }
       fxyz[0].parseString();
@@ -781,7 +781,7 @@ int Champ_Generique_Transformation::preparer_macro()
             {
               const Noms nom = get_source(i).get_property("nom");
               fxyz[comp].addVar(nom[0]);
-              Cerr<<" Name of source "<<nom[0]<<finl;
+              Journal()<<" Name of source "<<nom[0]<<finl;
             }
           fxyz[comp].parseString();
         }

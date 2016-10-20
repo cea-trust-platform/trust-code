@@ -986,6 +986,7 @@ int Postraitement::lire_champs_operateurs(Entree& s)
     }
   while (motlu != accolade_fermee)
     {
+      Cerr <<"Reading definition of field "<<motlu<<finl;
       s>>champ;
       complete_champ(champ,motlu);
       s>>motlu;
@@ -2179,7 +2180,7 @@ const Champ_Generique_base& Postraitement::get_champ_post(const Motcle& nom) con
         }
       ++curseur_liste_champs;
     }
-
+  Cerr<<nom<<" not found !!! "<< finl;
   throw Champs_compris_erreur();
 
   //Pour compilation

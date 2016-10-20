@@ -938,7 +938,7 @@ void calculer_centres_gravite(DoubleTab& xv,
 // Postcondition:
 void Faces::reordonner()
 {
-  Cerr << "Faces::reordonner()" << finl;
+  //Cerr << "Faces::reordonner()" << finl;
   switch(type_face_)
     {
     case  point_1D :
@@ -1144,7 +1144,7 @@ void Faces::reordonner()
         exit();
       }
     }
-  Cerr << "Faces::reordonner() ok" << finl;
+//  Cerr << "Faces::reordonner() ok" << finl;
 }
 
 // Description:

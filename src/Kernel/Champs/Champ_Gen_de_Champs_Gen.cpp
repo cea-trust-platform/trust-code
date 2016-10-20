@@ -61,7 +61,7 @@ int Champ_Gen_de_Champs_Gen::lire_motcle_non_standard(const Motcle& mot, Entree&
       Champ_Generique& new_src = sources_.add(Champ_Generique());
       Nom typ;
       is >> typ;
-      Cerr << "Reading a source type " << typ << finl;
+      Journal() << "Reading a source type " << typ << finl;
       new_src.typer(typ);
       is >> new_src.valeur();
       return 1;
@@ -91,7 +91,7 @@ int Champ_Gen_de_Champs_Gen::lire_motcle_non_standard(const Motcle& mot, Entree&
       while(1)
         {
           Champ_Generique& new_src = sources_.add(Champ_Generique());
-          Cerr << "Reading a source type " << typ << finl;
+          Journal() << "Reading a source type " << typ << finl;
           new_src.typer(typ);
           is >> new_src.valeur();
           is >> typ;

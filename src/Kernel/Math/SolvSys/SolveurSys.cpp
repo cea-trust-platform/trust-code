@@ -74,7 +74,7 @@ int SolveurSys::resoudre_systeme(const Matrice_Base& matrice,
   //  {
   statistiques().end_count(solv_sys_counter_, nb_iter);
   // Si limpr vaut -1, on n'imprime pas
-  if (valeur().limpr()>0)
+  if (valeur().limpr()>=0)
     {
       Cout << " Convergence in " << nb_iter << " iterations for " << le_nom() << finl;
     }

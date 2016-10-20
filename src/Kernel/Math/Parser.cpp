@@ -367,6 +367,10 @@ void Parser::parserState0(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
                   Cerr << " identifier " << func << " unknown " << finl;
                   // permet d avoir 0 erreur valgrind avec cppunit
                   root=(PNode*) *(ob->getBase());
+                  Cerr << "List of known var "<<finl;
+                  for (int i=0; i<ivar; i++)
+                    Cerr<<les_var[i]->getString()<< " ";
+                  Cerr<<finl;
                   Process::exit();
                 }
 
@@ -454,6 +458,10 @@ void Parser::parserState1(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
                   Cerr << "Error in Parser::parserState1 during interpretation of the following string :\n ";
                   Cerr << str << "\n";
                   Cerr << " identifier " << func << " unknown !! " << finl;
+                  Cerr << "List of known var "<<finl;
+                  for (int i=0; i<ivar; i++)
+                    Cerr<<les_var[i]->getString()<< " ";
+                  Cerr<<finl;
                   Process::exit();
                 }
 
@@ -645,7 +653,7 @@ void Parser::addVar(const char *vv)
   if (searchVar(vv)!=-1)
     {
       Cerr<<"Warning in Parser::addVar "<< vv << " already in Parser"<<finl;
-      //Process::exit();
+      //  Process::exit();
     }
   if (ivar<maxvar)
     les_var[ivar++] = new Variable(vv);
