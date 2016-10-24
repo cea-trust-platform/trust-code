@@ -202,7 +202,7 @@ then
    then
        # sometimes path to libz is verry strange !!!
 	file=$TRUST_ROOT/exec/VisIt/current/linux-x86_64/include/VisItLibraryDependencies.cmake
-	res=`grep libz  $file |  awk -F\; '{for (i=1;i<=NF;i++) { printf($i"\n")}}'  | grep libz | sort -u | grep VisIt/src`
+	res=`grep libz  $file |  awk -F\; '{for (i=1;i<=NF;i++) { printf($i"\n")}}'  | grep libz | sort -u | grep visit/zlib`
 	if [ "$res" != "" ] 
 	then
 		cp $file $file.sa
