@@ -366,7 +366,7 @@ printf "\n" >> $project_makefile
 list_cible=`list_type`
 for type in $list_cible
 do
-printf "# help check_$type \t: Running test suite in `human_name_from_name $type` mode \n" >>$project_makefile
+printf "# help check_$type \t: Running baltik test suite in `human_name_from_name $type` mode \n" >>$project_makefile
 printf "check_$type : $type\n"                                  >> $project_makefile
 printf "\t@echo \"####################################\"\n"     >> $project_makefile
 printf "\t@echo \"# Running test suite in `human_name_from_name $type` mode #\"\n"     >> $project_makefile
@@ -382,15 +382,7 @@ printf "\t@echo \"####################################\"\n"     >> $project_make
 printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check $type deps \n"               >> $project_makefile
 printf "\n"                                                     >> $project_makefile
 
-printf "# help check_trio_$type : Running trio test suite in `human_name_from_name $type` mode \n" >>$project_makefile
-printf "check_trio_$type : $type\n"                                  >> $project_makefile
-printf "\t@echo \"####################################\"\n"     >> $project_makefile
-printf "\t@echo \"# Running trio test suite in `human_name_from_name $type` mode #\"\n"     >> $project_makefile
-printf "\t@echo \"####################################\"\n"     >> $project_makefile
-printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check $type  trio \n"               >> $project_makefile
-printf "\n" >> $project_makefile
-
-printf "# help check_all_$type : Running all test suite in `human_name_from_name $type` mode \n" >>$project_makefile
+printf "# help check_all_$type : Running all test suite in `human_name_from_name $type` mode (all test of project = baltik test + dependencies test)\n" >>$project_makefile
 printf "check_all_$type : $type\n"                                  >> $project_makefile
 printf "\t@echo \"####################################\"\n"     >> $project_makefile
 printf "\t@echo \"# Running all test suite in `human_name_from_name $type` mode #\"\n"     >> $project_makefile
@@ -398,7 +390,23 @@ printf "\t@echo \"####################################\"\n"     >> $project_make
 printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check $type all \n"               >> $project_makefile
 printf "\n" >> $project_makefile
 
-printf "# help check_full_$type : Running full test suite in `human_name_from_name $type` mode (all test of project + all test of TRUST)\n" >>$project_makefile
+printf "# help check_trust_$type : Running TRUST test suite in `human_name_from_name $type` mode (only test of TRUST platform)\n" >>$project_makefile
+printf "check_trust_$type : $type\n"                                  >> $project_makefile
+printf "\t@echo \"####################################\"\n"     >> $project_makefile
+printf "\t@echo \"# Running TRUST test suite in `human_name_from_name $type` mode #\"\n"     >> $project_makefile
+printf "\t@echo \"####################################\"\n"     >> $project_makefile
+printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check $type  trust \n"               >> $project_makefile
+printf "\n" >> $project_makefile
+
+printf "# help check_trio_$type : Running TRUST test suite in `human_name_from_name $type` mode (IMPORTANT: prefer the use of check_trust_$type because it will disappear)\n" >>$project_makefile
+printf "check_trio_$type : $type\n"                                  >> $project_makefile
+printf "\t@echo \"####################################\"\n"     >> $project_makefile
+printf "\t@echo \"# Running TRUST test suite in `human_name_from_name $type` mode #\"\n"     >> $project_makefile
+printf "\t@echo \"####################################\"\n"     >> $project_makefile
+printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check $type  trust \n"               >> $project_makefile
+printf "\n" >> $project_makefile
+
+printf "# help check_full_$type : Running full test suite in `human_name_from_name $type` mode (all test of project + all test of TRUST platform)\n" >>$project_makefile
 printf "check_full_$type : $type\n"                                  >> $project_makefile
 printf "\t@echo \"####################################\"\n"     >> $project_makefile
 printf "\t@echo \"# Running full test suite in `human_name_from_name $type` mode #\"\n"     >> $project_makefile
@@ -406,7 +414,7 @@ printf "\t@echo \"####################################\"\n"     >> $project_make
 printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check $type full \n"               >> $project_makefile
 printf "\n" >> $project_makefile
 
-printf "# help check_last_pb_$type : Running last pb test suite in `human_name_from_name $type` mode \n" >>$project_makefile
+printf "# help check_last_pb_$type : Running last pb test suite in `human_name_from_name $type` mode (see test in liste_pb.all file)\n" >>$project_makefile
 printf "check_last_pb_$type : $type\n"                                  >> $project_makefile
 printf "\t@echo \"####################################\"\n"     >> $project_makefile
 printf "\t@echo \"# Running last pb test suite in `human_name_from_name $type` mode #\"\n"     >> $project_makefile
@@ -428,7 +436,7 @@ printf "\t@echo \"###########################\"\n"              >> $project_make
 printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_build $type\n"               >> $project_makefile
 printf "\n"                                                     >> $project_makefile
 
-printf "# help module_$type \t\t: Compiling module in `human_name_from_name $type` mode \n" >>  $project_makefile
+printf "# help module_$type \t: Compiling module in `human_name_from_name $type` mode \n" >>  $project_makefile
 printf "module_$type :\n"  >> $project_makefile
 printf "\t@echo \"###########################\"\n"              >> $project_makefile
 printf "\t@echo \"# Compiling in `human_name_from_name $type` mode #\"\n"              >> $project_makefile
@@ -450,23 +458,20 @@ printf "# help check_validation \t: like validation\n">>$project_makefile
 printf "check_validation : validation\n"                                              >> $project_makefile
 printf "\n"       
 
-printf "# help check_sources_strict \t: check_sources with new rules\n">>$project_makefile
+printf "# help check_sources_strict \t: Checking sources with new rules\n">>$project_makefile
 printf "check_sources_strict :\n"                                              >> $project_makefile
 printf "\t@echo \"##################################\"\n"                 >> $project_makefile
 printf "\t@echo \"# check_sources with new rules   #\"\n"                 >> $project_makefile
 printf "\t@echo \"##################################\"\n"                 >> $project_makefile
 printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check_sources -check_file \n"                     >> $project_makefile
 printf "\n"                                                     >> $project_makefile
-
-printf "# help check_sources \t: check_sources\n">>$project_makefile
+printf "# help check_sources \t: Checking sources\n">>$project_makefile
 printf "check_sources :\n"                                              >> $project_makefile
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
 printf "\t@echo \"# check_sources        #\"\n"                 >> $project_makefile
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
 printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check_sources || exit 0 \n"                     >> $project_makefile
 printf "\n"                                                     >> $project_makefile
-
-
 
 printf "# help clean \t\t: Cleaning environment \n">>$project_makefile
 printf "clean :\n"                                              >> $project_makefile
@@ -475,22 +480,22 @@ printf "\t@echo \"# Cleaning environment #\"\n"                 >> $project_make
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
 printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_clean\n"                     >> $project_makefile
 printf "\n"                                                     >> $project_makefile
-printf "# help dist_clean \t\t: Cleaning completly environment \n">>$project_makefile
+printf "# help dist_clean \t: Cleaning completly environment (with cleaning configuration) \n">>$project_makefile
 printf "dist_clean :\n"                                              >> $project_makefile
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
 printf "\t@echo \"# Cleaning completly environment #\"\n"                 >> $project_makefile
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
 printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_clean dist\n"                     >> $project_makefile
-printf "\n"                                                     >> $project_makefile
-printf "# help distrib \t: Building distrib \n">>$project_makefile
+printf "\n"   
+                                                  >> $project_makefile
+printf "# help distrib \t: Building distribution (*.tar.gz archive) \n">>$project_makefile
 printf "distrib :\n"                                              >> $project_makefile
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
 printf "\t@echo \"# Building distrib #\"\n"                 >> $project_makefile
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
 printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_make_distrib $distrib_path\n"                     >> $project_makefile
 printf "\n"                                                     >> $project_makefile
-
-printf "# help distrib_clearcase \t: Building distrib from eleme,t in clearcase \n">>$project_makefile
+#printf "# help distrib_clearcase \t: Building distrib from element in clearcase \n">>$project_makefile
 printf "distrib_clearcase :\n"                                              >> $project_makefile
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
 printf "\t@echo \"# Building distrib_clearcase #\"\n"                 >> $project_makefile
@@ -498,15 +503,14 @@ printf "\t@echo \"########################\"\n"                 >> $project_make
 printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_make_distrib -clearcase $distrib_path\n"                     >> $project_makefile
 printf "\n"                                                     >> $project_makefile
 
-printf "# help gui \t\t: Building gui \n" >> $project_makefile
+printf "# help gui \t\t: Building gui (XDATA compilation) \n" >> $project_makefile
 printf "gui : optim\n"                                              >> $project_makefile
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
 printf "\t@echo \"# building gui         #\"\n"                 >> $project_makefile
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
 printf "\t@source $env_file; env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_make_xdata\n"                >> $project_makefile
 printf "\n"                                                     >> $project_makefile
-
-printf "# help check_gui \t\t: Checking gui \n" >> $project_makefile
+printf "# help check_gui \t: Checking gui (XDATA validation)\n" >> $project_makefile
 printf "check_gui : gui\n"                                              >> $project_makefile
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
 printf "\t@echo \"# Checking gui         #\"\n"                 >> $project_makefile
@@ -514,7 +518,7 @@ printf "\t@echo \"########################\"\n"                 >> $project_make
 printf "\t@source $env_file; check_jdd\n"                       >> $project_makefile
 printf "\n"                                                     >> $project_makefile
 
-printf "# help doxygen \t\t: Building doxygen documentation \n" >> $project_makefile
+printf "# help doxygen \t: Building doxygen documentation \n" >> $project_makefile
 printf "doxygen :\n"                                              >> $project_makefile
 printf "\t@echo \"###################################\"\n"                 >> $project_makefile
 printf "\t@echo \"# building doxygen documentation  #\"\n"                 >> $project_makefile
@@ -527,8 +531,10 @@ printf "\t@echo \"########################\"\n"                 >> $project_make
 printf "\t@echo \"# Install              #\"\n"                 >> $project_makefile
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
 printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_install `dirname $project_directory`\n"                     >> $project_makefile
-printf "\n"                                                     >> $project_makefile
-printf "# help terminal \t: open a xterm with TRUST_TESTS... \n" >> $project_makefile
+printf "\n"    
+                                                 >> $project_makefile
+#printf "# help terminal \t: Open a xterm with TRUST_TESTS... \n" >> $project_makefile
+printf "# help terminal \t: Open a xterm... \n" >> $project_makefile
 printf "terminal :\n" >> $project_makefile
 printf "\t source $env_file; env MAKELEVEL=0 xterm\n" >> $project_makefile
 

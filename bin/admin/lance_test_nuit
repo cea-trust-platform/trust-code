@@ -54,7 +54,7 @@ check_components()
 	    make_option="make check_all_optim"
 	    if [ "$Composant" = basic ] 
 	    then
-	       make_option="make check_trio_optim"
+	       make_option="make check_trust_optim"
 	    elif [ $TRUST_ROOT = $TRUST_ROOT_MASTER ]
 	    then
 	       if [ "$Composant" != TrioCFD ] && [ "$Composant" != ModeleCoeur ] && [ "$Composant" != Test_Baltik ]
@@ -164,8 +164,8 @@ check_components()
 		        liste_options=$liste_options" --cible"
 	             fi
                      log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`
-                     WORKTMP=`ssh_command 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
-                     echo "$Composant.tar $WORKTMP/$WORKBASE$machine/Composants/$Composant $log@$adr --with-trio=$WORKTMP/$WORKBASE$machine/TRUST $liste_options $mode_option $check_option $valgrind_option" >> Run.liste
+                     WORKTMP=`ssh_command 'if [ "\$WORKDIRb" = "" ]; then if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi; else echo \$WORKDIRb;fi'`
+                     echo "$Composant.tar $WORKTMP/$WORKBASE$machine/Composants/$Composant $log@$adr --with-TRUST=$WORKTMP/$WORKBASE$machine/TRUST $liste_options $mode_option $check_option $valgrind_option" >> Run.liste
 		  #fi
 	       done
                echo " "
@@ -280,7 +280,7 @@ VOBS="TRUST Composants"
 # ICoCo est devenu un Outil de TRUST.
 # equation_convection_diffusion est un projet Baltik qui sert de tutorial a la formation developpeur.
 # MPCube est un Baltik qui peut etre teste sur TRUST et sur le kernel.
-# basic est le template Hello_word qui permet de tester TRUST avec make check_trio_optim (pas possible via script de portabilite) 
+# basic est le template Hello_word qui permet de tester TRUST avec make check_trust_optim (pas possible via script de portabilite) 
 # => on utilise maintenant le baltik Test_Baltik pour la portabilite
 ComposantsLns="equation_convection_diffusion ICoCo Test_Baltik" # basic"
 ComposantsGit="MPCube TrioCFD ModeleCoeur"
@@ -1568,7 +1568,7 @@ grep "Total number portability" $REP_NUIT/NUIT.html
 grep "TRUST portability" $REP_NUIT/NUIT.html
 all_cible=`$TRUST_Awk '/Total number portability/ {print $9}' $REP_NUIT/NUIT.html`
 nb_cible=`$TRUST_Awk '/Total number portability/ {print $7}' $REP_NUIT/NUIT.html`
-portabilite_trio=`$TRUST_Awk '/TRUST portability/ {print $1}' $REP_NUIT/NUIT.html`
+portabilite_test=`$TRUST_Awk '/TRUST portability/ {print $1}' $REP_NUIT/NUIT.html`
 portabilite_trust=`$TRUST_Awk '/TRUST portability/ {print $6}' $REP_NUIT/NUIT.html`
 portabilite=0 && [ "`grep "Portable version" $REP_NUIT/NUIT.html`" != "" ] && portabilite=1
 echo " "
@@ -1580,7 +1580,7 @@ else
 fi
 force_portabilite=~/force_portabilite && [ -f $force_portabilite ] && portabilite=1 && rm -f $force_portabilite
 limite=0.99 # cf recupere_TRUST_arch
-echo "$portabilite  Portability $portabilite_trust=$portabilite_trio + nb=$nb_cible (>$limite+nb=$all_cible)" >> $MESSAGES_NUIT
+echo "$portabilite  Portability $portabilite_trust=$portabilite_test + nb=$nb_cible (>$limite+nb=$all_cible)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+$portabilite
 echo "<--- End at "`date '+%H:%M:%S %d/%m'`
