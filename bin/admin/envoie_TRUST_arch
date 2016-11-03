@@ -130,7 +130,7 @@ do
       ##################################################
       if [ "`liste_machines git_cron | grep $adr`" = "" ]
       then
-         WORKDIR=`ssh_command 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
+         WORKDIR=`ssh_command 'if [ "\$WORKDIRb" = "" ]; then if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi; else echo \$WORKDIRb;fi'`
          WORKBASE=`ssh_command 'if [ "\$WORKBASE" = "" ]; then echo Version_beta_;else echo \$WORKBASE;fi'`
          echo "We have WORKDIR=$WORKDIR and WORKBASE=$WORKBASE on host $adr"
          [ "$WORKDIR" = "" ] && echo "KO $adr WORKDIR empty! See rsync_$adr.log" && echo "WORKDIR empty on $log@$adr" | mail_ -s\"[envoie_TRUST_arch] Configuration $machine KO\" $TRUST_MAIL

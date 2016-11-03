@@ -6,7 +6,6 @@ Version	Qui				Tache
 1.7.4   triou@cea.fr            Revoir maillage de validation pour modele turbulence de Mathieu dans TrioCFD
 1.7.4   triou@cea.fr            Reactiver VerifData avec HOST_ADMIN pour prochaine version
 1.7.4   triou@cea.fr            Revoir baltik avec possibilite de 2 statistiques commencant a des tdeb differents
-1.7.4   triou@cea.fr            baltik: renommer make check_trio_optim en make check_trust_optim  + renommer script triou en trust sans ln
 1.7.4   gauthier.fauchet@cea.fr  Reprendre Mod_turb_hyd_base.cpp limitation mut
 1.7.4   gauthier.fauchet@cea.fr  Revoir le PATH pour module load TRUST sous occigen (passer par SET)
 1.7.4   triou@cea.fr            proposer un tutorial ICoCo

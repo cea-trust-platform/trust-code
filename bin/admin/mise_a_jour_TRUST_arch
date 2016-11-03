@@ -107,6 +107,7 @@ then
    [ "${HOST#cobalt}"   != $HOST ] && HOST=cobalt
 fi
 
+[ "$WORKDIRb" != "" ] && WORKDIR=$WORKDIRb
 WHERE=$HOME && [ "$WORKDIR" != "" ] && WHERE=$WORKDIR
 QUI=triou@cea.fr
 export version=$WHERE/$WORKBASE$HOST

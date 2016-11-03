@@ -115,6 +115,7 @@ then
     fi
     [ "$param" = "deps" ] && mode=$param &&shift && shift && TRUST_TESTS=$project_test_directory/deps&& Rapports_auto_root=$project_test_directory/share/deps
     [ "$param" = "trio" ] && mode=$param &&shift && shift && TRUST_TESTS=$TRUST_ROOT/tests && Rapports_auto_root=$TRUST_ROOT
+    [ "$param" = "trust" ] && mode=$param &&shift && shift && TRUST_TESTS=$TRUST_ROOT/tests && Rapports_auto_root=$TRUST_ROOT
     [ "$param" = "all" ] && mode=$param &&shift && shift && TRUST_TESTS=$project_test_directory/all&& Rapports_auto_root=$project_test_directory/share/all
     [ "$param" = "full" ] && mode=$param &&shift && shift && TRUST_TESTS=$project_test_directory/full&& Rapports_auto_root=$project_test_directory/share/full
     [ "$param" = "" ] && mode=$param &&shift && shift
@@ -134,7 +135,7 @@ export LC_COLLATE
 rm $project_report_file
 
 # on met le flag a 1 pour creer les cas tests de NR a partir des fiches de valid
-if [ "$mode" != "trio" ]
+if [ "$mode" != "trust" ] && [ "$mode" != "trio" ]
 then
 TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS=1
 export TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS

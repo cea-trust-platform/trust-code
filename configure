@@ -351,6 +351,9 @@ rm -f env_TRUST.sh env/env_TRUST.sh
 sed "s?TRUST_ROOT=path_to_trio?TRUST_ROOT=$TRUST_ROOT?" env_src/env_TRUST.sh.in > env/env_TRUST.sh
 chmod gou+x env/env_TRUST.sh
 ln -sf env/env_TRUST.sh .
+cd bin
+ln -sf trust triou
+cd ..
 
 cd env
 ./configurer_env $clean || exit -1
