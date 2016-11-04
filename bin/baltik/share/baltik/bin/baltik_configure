@@ -291,7 +291,10 @@ do
        lib=`echo $lib0| sed "s?-l??"`
        libs="lib${lib}.a"
        [ "$lib" = "dl" ] && libs=""
-       cmake_flags="$cmake_flags %% find_library( ${lib} NAMES ${libs} ${lib} PATHS ${project_directory}/local/${prerequis_name}/lib ) %% set(libdeps  \${libdeps} \${${lib}} )"
+
+       cmake_flags="$cmake_flags %% find_library( ${lib} NAMES ${libs} ${lib} PATHS ${project_directory}/local/${prerequis_name}/lib NO_DEFAULT_PATH)"
+       cmake_flags="$cmake_flags %% if (${lib} STREQUAL ${lib}-NOTFOUND)%% find_library( ${lib} NAMES ${libs} ${lib} ) %% endif()"
+       cmake_flags="$cmake_flags  %% set(libdeps  \${libdeps} \${${lib}} )"
     done
     export cmake_flags
    

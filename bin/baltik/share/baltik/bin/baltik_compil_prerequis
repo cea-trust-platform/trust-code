@@ -97,6 +97,10 @@ install_arch()
    tar xf prov$3.tar
    cd  $3
    DIR=`pwd`
+# On prend les compilos de TRUST
+   export CXX=$TRUST_CC_BASE
+   export CC=$TRUST_cc_BASE
+   export F77=$TRUST_F77_BASE
    $DIR/configure --prefix=$dir  ${configure_flag}
    make
    make install	
