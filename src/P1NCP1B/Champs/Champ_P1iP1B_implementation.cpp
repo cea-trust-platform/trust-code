@@ -457,7 +457,7 @@ void corriger(const Zone_VEF_PreP1b& zone_VEF, DoubleTab& champ_filtre_, Matrice
       const ArrOfInt& ok_arete=zone_VEF.get_ok_arete();
       for(int arete=0; arete<nb_arete; arete++)
         {
-          if(!ok_arete(arete) && !est_egal(Pa(arete),0.,DMINFLOAT))
+          if(!ok_arete(arete) && Pa(arete)!=0)
             {
               Cerr << "Pa(arete_superflue)!=0 dans Champ_P1iP1B_implementation::corriger" << finl;
               Cerr << "Contacter le support TRUST." << finl;
@@ -487,12 +487,8 @@ void corriger(const Zone_VEF_PreP1b& zone_VEF, DoubleTab& champ_filtre_, Matrice
 
   // Filtrage L2:
   double moyenne_K = mp_moyenne_vect(Pk);                // Calcul de la moyenne du champ aux elements
-  // On teste si moyenne_K est non nul car sinon si Pk est aussi nul alors 0.-0. (par ex 1e-15-1e-15) peut valoir -1e-30 < 0. !!! pour une norme_L2
-  if(!est_egal(dabs(moyenne_K),0.,1e-14))
-    {
-      Pk -= moyenne_K;                                 // Correction des elements du champ_filtre_
-      Ps += moyenne_K;                                 // Correction des sommets du champ_filtre_
-    }
+  Pk -= moyenne_K;                                 // Correction des elements du champ_filtre_
+  Ps += moyenne_K;                                 // Correction des sommets du champ_filtre_
 
   // On retranche a Ps sa moyenne si pas de Cl de Neumann pour avoir une moyenne nulle
   // Il faudrait peut etre mieux faire cela dans Assembleur_P_VEFPreP1B::modifier_solution
