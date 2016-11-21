@@ -116,7 +116,8 @@ help()
    echo "-prm                    : Write a prm file and generate the corresponding pdf file in the build directory."
    echo "-clean                  : Clean the current directory from all the generated files by TRUST."
    echo "-copy                   : Copy the test case datafile from the TRUST database under the present directory."
-   echo "-check all|testcase|function|class|method::class : Check the non regression of all the test cases or a single test case or a list of tests cases covering a function, a class or a class method."
+   echo "-check all|testcase|case_list : Check the non regression of all the test cases or a single test case or a list of tests cases of a file named case_list."
+   echo "-check function|class|method::class : Check the non regression of a list of tests cases covering a function, a class or a class method."
    echo "-gdb                    : Run under gdb debugger."
    echo "-valgrind               : Run under valgrind."
    echo "-valgrind_strict        : Run under valgrind with no suppressions."
@@ -264,6 +265,9 @@ do
 	 # All test cases
 	 option=0 
       # elif [ "`ls $TRUST_TESTS/*/$1/$1.lml.gz 2>/dev/null`" != "" ]
+      elif [ "$1" = case_list ]
+      then
+	 option=case_list
       elif [ "`find $TRUST_TESTS/ -follow -name $1.lml.gz -print 2>/dev/null | sort`" != "" ]
       then
 	 # Single test case
@@ -358,7 +362,7 @@ then
       let i=i+1
      # break
       [ -f $dt_ev ] && break
-      echo waiting for $dt_ev
+      echo "waiting for $dt_ev"
      sleep 0.1
    done
    #[ ! -f $dt_ev ] && exit 1
