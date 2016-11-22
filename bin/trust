@@ -379,7 +379,7 @@ fi
 #####################
 if [ "$prm" = 1 ]
 then
-   create_basic_prm_from_lata.sh $NOM
+   create_basic_prm_from_lata.sh -gen_pdf $NOM
    exit $?
 fi
 
