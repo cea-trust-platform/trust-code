@@ -9,10 +9,7 @@ LIB = $(TRUST_LIB)/TRUST$(COMM)$(OPT).$(LIB_EXTENSION)
 all : $(PROGRAM)
 OBJS=
 
-$(PROGRAM): $(OBJS) lib link
-lib:
-	@echo "Please wait ..."
-	@cree_TRUST_opt_a
+$(PROGRAM): $(OBJS) link
 link:
 	@echo $(ECHO_OPTS) "Building exec/TRUST$(COMM)$(OPT) ... \c"
 	@if [ $(SHARE_LIBS) = 1 ];then \
