@@ -38,11 +38,18 @@ Entree& Pb_qdm_fluide::readOn(Entree& is)
 
 int Pb_qdm_fluide::expression_predefini(const Motcle& motlu, Nom& expression)
 {
-  if (motlu=="ENERGIE_CINETIQUE")
+  if (motlu=="ENERGIE_CINETIQUE_TOTALE")
     {
       expression = "predefini { pb_champ ";
       expression += le_nom();
-      expression += " energie_cinetique } ";
+      expression += " energie_cinetique_totale } ";
+      return 1;
+    }
+  else if (motlu=="ENERGIE_CINETIQUE_ELEM")
+    {
+      expression = "predefini { pb_champ ";
+      expression += le_nom();
+      expression += " energie_cinetique_elem } ";
       return 1;
     }
   else
