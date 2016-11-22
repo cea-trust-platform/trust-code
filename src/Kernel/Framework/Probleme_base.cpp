@@ -40,6 +40,8 @@
 #include <communications.h>
 #include <Avanc.h>
 #include <Deriv_Entree_Fichier_base.h>
+#include <sys/stat.h>
+
 
 #define CHECK_ALLOCATE 0
 #ifdef CHECK_ALLOCATE
@@ -612,6 +614,17 @@ Entree& Probleme_base::readOn(Entree& is)
     {
       schema_temps().set_temps_init()=0;
       schema_temps().set_temps_courant()=0;
+    }
+
+  if (reprise_effectuee())
+    {
+      // on teste si dt_ev existe sinon on met reprise a 2
+      // on recrera l'entete dans dt_ev sinon l'entete est fausse en reprise de pb_couple
+      Nom fichier(nom_du_cas());
+      fichier+=".dt_ev";
+      struct stat f;
+      if (stat(fichier,&f))
+        reprise_effectuee()=2;
     }
 
   return is ;

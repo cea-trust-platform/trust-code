@@ -42,13 +42,13 @@ void Schema_Temps_base::initialize()
   pb_base().calculer_pas_de_temps();
   // je le mets une deuxieme fois pour alternant....
   pb_base().calculer_pas_de_temps();
-  Nom fichier(nom_du_cas());
-  fichier+=".dt_ev";
   if (je_suis_maitre())
     {
+      Nom fichier(nom_du_cas());
+      fichier+=".dt_ev";
       struct stat f;
       // On initialise le fichier .dt_ev s'il n'existe pas ou si c'est un demarrage de calcul sans reprise
-      if (nb_pas_dt_==0 && ((stat(fichier,&f)) || !pb_base().reprise_effectuee()))
+      if ((nb_pas_dt_==0) && ((stat(fichier,&f)) || !(pb_base().reprise_effectuee()==1)))
         {
           SFichier fic(fichier,(schema_impr() ? (ios::out) : (ios::app)));
           if (schema_impr())
