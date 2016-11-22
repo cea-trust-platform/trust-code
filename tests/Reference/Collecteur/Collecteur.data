@@ -41,7 +41,8 @@ Read sch
         facsec 500.
         Solveur implicite
         {
-		solveur gen { seuil 1e-8 impr solv_elem bicgstab precond ilu { type 2 filling 10 } }
+		/* solveur gen { seuil 1e-8 impr solv_elem bicgstab precond ilu { type 2 filling 10 } } */
+                solveur gmres { seuil 1e-8 impr diag }
         }
         no_check_disk_space
 }

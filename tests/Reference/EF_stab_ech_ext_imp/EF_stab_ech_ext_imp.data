@@ -1,5 +1,5 @@
 # Thermohydraulique 2D : test du schema EF_stab avec la CL paroi_echange_externe_impose #
-# PARALLEL OK #
+# PARALLEL NOT because ERROR with Debog between seq and par on nb_pas_dt_max 3 #
 dimension 2
 Pb_Thermohydraulique pb
 Domaine dom
