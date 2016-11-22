@@ -32,6 +32,20 @@
    fun:PCSetUp_HYPRE
 }
 {
+   hypre_cond
+   Memcheck:Cond
+   fun:MPIR_Process_status
+   fun:MPIC_Waitall
+   fun:MPIR_Alltoall_intra
+   fun:MPIR_Alltoall
+   fun:MPIR_Alltoall_impl
+   fun:PMPI_Alltoall
+   ...
+   fun:PCSetUp_HYPRE
+   fun:PCSetUp
+   fun:KSPSetUp
+}
+{
    mumps_para
    Memcheck:User
    fun:check_mem_is_defined_untyped

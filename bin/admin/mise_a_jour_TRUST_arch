@@ -673,6 +673,23 @@ do
 	    cd $TRUST_ROOT
 	    [ $OK != "KO" ] && rm -r -f $rep_dev	
          )	 
+	 #############################
+	 # On lance un test Valgrind #
+	 #############################
+	 (
+            echo "--------------------------------------------------------" 
+	    echo "Test case in valgrind mode at "`date '+%H:%M:%S'`
+	    cd $TRUST_ROOT/Validation/Valgrind
+	    OK="KO" && rm -f testval.log *upwind.val 1>/dev/null 2>&1 && (echo upwind | ./testval 1>testval.log 2>&1) && OK=`$TRUST_Awk 'BEGIN {mes="KO";ok=0} /...OK/ {ok++} END {if (ok==3) mes="OK"; print mes}' testval.log`
+	    echo "KVALGRIND="$OK
+	    if [ $OK != "KO" ] 
+            then
+              rm -f *upwind.val 
+            else
+              echo "See $TRUST_ROOT/Validation/Valgrind/testval.log file"
+            fi
+	    cd $TRUST_ROOT
+	 )	 
 	 ################################
 	 # On lance les tests sur Xprepro
 	 ################################
