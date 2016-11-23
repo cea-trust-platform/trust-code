@@ -463,6 +463,7 @@ int Schema_Euler_Implicite::reprendre(Entree&)
         }
       // Recherche du pas de temps precedant tinit_
       fichier >> temps;
+      double residu_old_old=0;
       while (!fichier.eof() && temps<tinit_)
         {
 
@@ -472,17 +473,24 @@ int Schema_Euler_Implicite::reprendre(Entree&)
           fichier >> residu_lu;
           if (residu_old_==0)
             residu_old_=residu_lu;
+          if (residu_old_old==0)
+            residu_old_old=residu_lu;
           // On lit le reste de la ligne
           std::getline(fichier.get_ifstream(), ligne);
           fichier >> temps;
+
           if (facsec_lu_old != facsec_lu)
             {
-              residu_old_ = residu_lu;
+              residu_old_ = residu_old_old;
+
               nb_ite_sans_accel_ = 1;
             }
+          residu_old_old = residu_lu;
           nb_ite_sans_accel_++;
         }
     }
+// GF
+  calcul_fac_sec(residu_lu,residu_old_,facsec_lu,facsec_max_,nb_ite_sans_accel_);
   envoyer_broadcast(facsec_lu, 0 /* pe source */);
   envoyer_broadcast(residu_lu, 0 /* pe source */);
   envoyer_broadcast(nb_ite_sans_accel_, 0 /* pe source */);

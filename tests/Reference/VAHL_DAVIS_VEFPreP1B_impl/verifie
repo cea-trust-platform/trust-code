@@ -1,9 +1,10 @@
 # On relance avec des options pour verifier que les bons solveurs ont ete choisis
 jdd=`pwd`
 jdd=`basename $jdd`
+cp $jdd.data essai_$jdd.data
 # On a choisi BICGSTAB/ILU pour l'implicite et CHOLESKY pour le solveur en pression
 # On doit bien avoir Cholesky avec -ksp_view 
-if [ "`trust $jdd -ksp_view 2>&1 | grep "type: cholesky"`" != "" ]
+if [ "`trust essai_$jdd -ksp_view 2>&1 | grep "type: cholesky"`" != "" ]
 then
    exit 0
 else

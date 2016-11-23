@@ -1,5 +1,9 @@
 #!/bin/bash
-. $TRUST_ROOT/Outils/TRIOXDATA/IHMTRIO.sh 
+dir=$(which EditData)
+dir=$(dirname $dir)
+[ ! -f $dir/IHMTRIO.sh ] && dir=$TRUST_ROOT/Outils/TRIOXDATA
+
+. $dir/IHMTRIO.sh 
 cas=`basename $1 .data`
 DIR=`dirname $0`
 [ "$DIR" = "" ] && DIR=`pwd`
@@ -20,9 +24,12 @@ else
   chmod +w $cas.data
   grep -vi distance_paroi $cas.data > p.data
   mv p.data $cas.data
-  python $DIR/decoup_data.py $cas.data xyz
+  format=binaire
+  # format=xyz
+  python $DIR/decoup_data.py $cas.data $format 
+  # python $DIR/decoup_data.py $cas.data xyz
   status=$?
-[ $status -eq 0 ] &&   triou -clean > /dev/null
+[ $status -eq 0 ] &&  rm -f $cas.lml $cas*out $cas*xyz $cas*dt_ev $cas*son #  triou -clean > /dev/null
   for f in `ls *_repr_*`
   do
    cp $f PAR_$f
@@ -31,6 +38,14 @@ else
   echo "premiere partie"
   lan test_$cas 
   cp test_$cas.dt_ev $cas.dt_ev
+  cp test_$cas.dt_ev PAR_$cas.dt_ev
+  if [ $format != "xyz" ]
+  then
+   make_PAR.data test_$cas
+   n=$?
+   echo "running in // $n"
+   trust PAR_test_$cas $n 1>PAR.log 2>PAR.err
+  fi
   #echo "deuxieme partie "
   #lan test2_$cas
   #compare_lata $cas.lml test2_$cas.lml --dernier 
