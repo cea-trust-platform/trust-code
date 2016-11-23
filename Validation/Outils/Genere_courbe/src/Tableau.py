@@ -41,6 +41,7 @@ class Tableau:
 		self.dimension = -1
 		self.label    = "Undefined"
 		self.nb_colonnes= -1
+		self.textsize= None
 		self.listeLignes = []
 		self.legende = 'Undefined'
 		self.formule=  None
@@ -56,6 +57,7 @@ class Tableau:
 		print_description(self.description,dec)
 		
 		if self.nb_colonnes != -1: print dec,"nb_colonnes",self.nb_colonnes
+		if self.textsize: print dec,"textsize",self.textsize
 		if self.formule !=  None: print dec,"formule",self.formule
 		
 		if self.label != 'Undefined' : print dec,"label ",self.label	
@@ -72,7 +74,13 @@ class Tableau:
 		'''Lecture des parametres du tableau.'''
 		self.gestMsg.ecrire(GestionMessages._DEBOG, 'DEBUT %s.%s' % (self.__class__.__name__, getNomFonction()), niveau=15)
 		fin = False
-		dico=['titre','nb_colonnes','formule','label','legende','description','ligne','lignes','incluredesclignes','transposed_display']
+		dico=['titre','nb_colonnes','formule','label','legende','description','ligne','lignes','incluredesclignes','transposed_display','textsize']
+		sizedico = {'tiny':r'\tiny', 
+					'script':r'\scriptsize',
+					'footnote':r'\footnotesize',
+					'small':r'\small',
+					'large':r'\large',
+					'Large':r'\Large'}
 		while not fin:
 			ligne = fichier.readline()
 			if not ligne:
@@ -86,6 +94,9 @@ class Tableau:
 					self.titre = valeur
 				elif motcle=='nb_colonnes':
 					self.nb_colonnes = int(valeur)
+				elif motcle=='textsize':
+					if valeur in sizedico.keys():
+						self.textsize = sizedico[valeur]
 				elif motcle=='formule':
 					self.formule=valeur
 				elif motcle=='label':

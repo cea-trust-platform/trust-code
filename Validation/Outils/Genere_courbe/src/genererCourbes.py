@@ -173,10 +173,11 @@ TODO
 		#initalisations
 		self.titre = 'Undefined'
 		self.auteur = 'Undefined'
+		self.code = 'TRUST'
 		self.description = []
 		self.reference = []
 		self.casTest = []
-		self.versionTrioU = ''
+		self.versionTrioU = ''  # os.getenv('TRUST_VERSION', '')
 		self.parametresTrioU = []
 		#import time
 		# self.date = time.strftime('%d/%m/%Y')
@@ -197,7 +198,7 @@ TODO
 		
 		for ref in self.reference :print dec,"reference",ref
 		for cas in self.casTest: print dec,"casTest", cas
-		if self.versionTrioU != '': print dec,"versionTrio_u", self.versionTrioU
+		if self.versionTrioU != '': print dec,"versionTRUST", self.versionTrioU
 		for param in  self.parametresTrioU : print dec,"parametresTrio_u",param
 	
 		if self.inclureData != 2: print dec,'inclureData',self.inclureData
@@ -261,7 +262,7 @@ TODO
 			#Lecture des parametres generaux
 			verifie_accolade_suivante(ligne,fichier,self.gestMsg)
 			fin = False
-			dico=['titre','auteur','description','reference','castest','versiontrio_u','parametrestrio_u','incluredata','prerequis']
+			dico=['titre','auteur','description','reference','castest','code','versiontrio_u','parametrestrio_u','incluredata','prerequis']
 			while not fin:
 				ligne = fichier.readline()
 				if not ligne:
@@ -277,6 +278,8 @@ TODO
 						self.titre = valeur
 					elif motcle=='auteur':
 						self.auteur = valeur
+					elif motcle=='code':
+						self.code = valeur
 					elif motcle=='description':
 						self.description.append(valeur)
 					elif motcle=='reference':

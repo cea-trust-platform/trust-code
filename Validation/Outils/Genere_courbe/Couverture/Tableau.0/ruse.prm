@@ -6,6 +6,8 @@ Parameters
 	Author "G.F."
 	TestCase "test_ef_stab" "test.data"
 	TestCase "test_ef_stab" "test.data"
+	VersionTRUST essai
+code ESSAI
 }
 
 Chapter {
@@ -37,7 +39,7 @@ Table {
 	description "encore un peu de texte"
 	nb_columns 4
 	label c1 truc| c2 | "c3 uuuuuu" | "tt"
-
+	textsize Large
 	line 
 	{
 	legend yyyyyy
@@ -77,6 +79,7 @@ Table {
 Chapter {
 	description "la suite du texte dans le Chapter suivant" 
 	description "quelle ruse !!!!!!"
+         
 	Tableau_performance {
 
 	Include_Description_lines 1 
