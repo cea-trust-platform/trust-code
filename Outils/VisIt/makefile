@@ -18,7 +18,8 @@ all: $(cible)
 
 $(cible): ./makefile ./install ./src/build.sh $(MPI_INCLUDE)/mpi.h
 	make clean
-	./install $(version) visit 
+	# on essaye 2 fois a cause de mesa sur Ubuntu 16.10
+	./install $(version) visit || ./install $(version) visit
 
 $(check): *.xml install customlauncher $(TRUST_ROOT)/RELEASE_NOTES
 	# On ajoute la mise a jour des host profiles et on test

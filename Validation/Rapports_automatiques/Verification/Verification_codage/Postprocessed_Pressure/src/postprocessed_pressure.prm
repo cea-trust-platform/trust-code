@@ -1,0 +1,855 @@
+Parameters {
+    Title "3D examples to post-process the pressure"
+    Author "MR"
+    VersionTrio_U 1.7.3_beta
+    TestCase VDF            PAR_VDF.data            2
+    TestCase VDF_g          PAR_VDF_g.data          2
+    TestCase VEF_P0         PAR_VEF_P0.data         4
+    TestCase VEF_P0_g       PAR_VEF_P0_g.data       4
+    TestCase VEF_P1         PAR_VEF_P1.data         4
+    TestCase VEF_P1_g       PAR_VEF_P1_g.data       4
+    TestCase VEF_P0P1       PAR_VEF_P0P1.data       4
+    TestCase VEF_P0P1_g     PAR_VEF_P0P1_g.data     4   attached
+#    TestCase VEF_P0P1Pa     PAR_VEF_P0P1Pa.data     4
+#    TestCase VEF_P0P1Pa_g   PAR_VEF_P0P1Pa_g.data   4
+}
+
+##################################################################################################################
+
+Chapter {
+    Title "Geometry" 
+    Description "Here we made calculs on a column of water."
+    Description "We can see in red the locations of the probes used for pressure and in blue the ones used for hydraulic pressure."
+    visu {
+        title       "VDF Mesh and probes localisation: xoz plan"
+        Width       20cm
+        mesh        VDF/PAR_VDF.lata              dom
+        mesh        VDF/PAR_VDF_PRESSURE.son      MESH red
+        mesh        VDF_g/PAR_VDF_g_P_HYDRO2.son  MESH blue
+        operator_to_all    slice2D_y  0 2.5 0
+    }
+    visu {
+        title       "VDF Mesh and probes localisation: xoy plan"
+        Width       12cm
+        mesh        VDF/PAR_VDF.lata              dom
+        mesh        VDF/PAR_VDF_PRESSURE.son      MESH red
+        mesh        VDF_g/PAR_VDF_g_P_HYDRO2.son  MESH blue
+        operator_to_all    slice2D_z  0 0 5.
+    }
+    visu {
+        title       "VEF Mesh and probes localisation for P0, P1 and P0P1 discretizations"
+        Width       20cm
+        mesh        VEF_P0/PAR_VEF_P0.lata                  dom
+        mesh        VEF_P0/PAR_VEF_P0_PRESSURE.son          MESH red
+        mesh        VEF_P1/PAR_VEF_P1_PRESSURE.son          MESH green
+        mesh        VEF_P0P1/PAR_VEF_P0P1_PRESSURE.son      MESH blue
+        mesh        VEF_P0_g/PAR_VEF_P0_g_P_HYDRO2.son      MESH blue
+        up3d         0.01338917158451617 0.1416505156603561 0.9898261774157296
+        normal3D    -0.1516748026546194 -0.978172261192283 0.1420344383368291
+    }
+    visu {
+        title       "VEF probes localisation for P0, P1 and P0P1 discretizations"
+        Description "In red, we can see the probes for pressure in P0 discretization located at the gravity center of the elements."
+        Description "In green, we can see the probes for pressure in P1 discretization located at the vertices."
+        Description "In blue, we can see the probes for pressure in P0P1 discretization, where we have not specified any location, so TRUST made interpolation."
+        Description "Note that if we specified a location in P0P1 discretization, we will always have interpolation!"
+        Width       12cm
+        mesh        VEF_P0/PAR_VEF_P0.lata                  dom
+        mesh        VEF_P0/PAR_VEF_P0_PRESSURE.son          MESH red
+        mesh        VEF_P1/PAR_VEF_P1_PRESSURE.son          MESH green
+        mesh        VEF_P0P1/PAR_VEF_P0P1_PRESSURE.son      MESH blue
+        up3d        -0.1499071129880145 0.7283282640884507 0.6686297908450557
+        normal3D    0.1470417025193451 -0.6523274778855598 0.7435372212039403
+        zoom3D      0.05651774025688895 -0.2087383392904306  1.77156
+    }
+}
+
+##################################################################################################################
+
+Chapter {
+    Title "Physical properties" 
+    Table {
+        Title "Physical Properties"
+        Description "Notice that the gravity moves to the right."
+        nb_columns 1
+        line {
+            legend " Density $\rho$ ($kg/m^3$)"
+            file VDF/propertiesGeometry.dat    
+            nb_columns_file 5
+            columns ($2)
+        }
+        line {
+            legend "Dynamic viscosity $\mu$ ($kg/(m.s)$)"
+            file VDF/propertiesGeometry.dat
+            nb_columns_file 5
+            columns ($1)
+        }
+        line {
+            legend "Gravity ( \latex_( $m.s^{-2}$ \latex_) )"
+            values 9.81
+        }
+    }
+}
+
+##################################################################################################################
+
+Chapter {
+    Title "Initials and boundaries conditions used" 
+    Description include_text_file(CL.txt, initial_conditions, boundary_conditions, Champ_Uniforme, paroi_fixe, Frontiere_ouverte_vitesse_imposee, Champ_front_Uniforme, Frontiere_ouverte_pression_imposee)
+
+}
+
+##################################################################################################################
+
+Chapter {
+    Title "What is 'Pression_Pa' ?" 
+    Description "The following graphe show us that with or without gravity field, 'Pression_Pa' field is the same. So hydrostatic pressure ( \latex_( $\rho g z$ \latex_) ) is not a composante of the fields 'Pression_Pa'."
+    Description "We can also see that Pression_Pa(h=5)=20 Pa, (the pressure field value at the top of the geometry is 20 Pa) which is the value imposed in the boundary conditions of the data file." 
+    Description "In the slides of the users training session, we can see that: \latex_( $P^{*}=\frac{P_{NS}}{\rho}+ g z$ \latex_) where \latex_($P_{NS}$ \latex_) is the pressure in the Navier-Stokes equations (in Pascals)."
+    Description "So we have Pression_Pa=\latex_($P_{NS}$ \latex_)."
+    Description "Points of probes are on the red dots of the mesh graphs."
+    Description "Note that we don't find a null pressure on the last point of the probes. Here we use a coarse mesh. If you refine it, you will find the good value but calculations will be much more longer."
+
+    figure { 
+        title "'Pression_Pa' probe for VDF test case at final time"
+        Description "In VDF, the pressure is calculated at the gravity center of the elements so we post-process the pressure with probes using the keyword 'grav'."
+        Description include_text_file(VDF_probes.txt, grav, periode, segment, pressure)
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "'Pression_Pa' (Pa)"
+        curve {
+            Segment VDF/PAR_VDF.data PRESSION_Pa
+            columns ($1) ($2)
+            legend "'Pression_Pa'"
+            style linespoints
+        }
+        curve {
+            Segment VDF_g/PAR_VDF_g.data PRESSION_Pa
+            columns ($1) ($2)
+            legend "'Pression_Pa' case with gravity"
+            style linespoints
+        }
+    }
+    figure { 
+        title "'Pression_Pa' probe for VEF P0 discretization test case at final time"
+        Description "In VEF P0 discretization, the pressure is calculated at the gravity center of the elements so we post-process the pressure with probes using the keyword 'grav'."
+        Description include_text_file(VEF_P0_probes.txt, grav, periode, segment, pressure)
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "'Pression_Pa' (Pa)"
+        curve {
+            Segment VEF_P0/PAR_VEF_P0.data PRESSION_Pa
+            columns ($1) ($2)
+            legend "'Pression_Pa' P0"
+            style linespoints
+        }
+        curve {
+            Segment VEF_P0_g/PAR_VEF_P0_g.data PRESSION_Pa
+            columns ($1) ($2)
+            legend "'Pression_Pa' P0 case with gravity"
+            style linespoints
+        }
+    }
+    figure { 
+        title "'Pression_Pa' probe for VEF P1 discretization test case at final time"
+        Description "In VEF P1 discretization, the pressure is calculated at the vertices of the elements so we post-process the pressure with probes using the keyword 'nodes'."
+        Description include_text_file(VEF_P1_probes.txt, nodes, periode, segment, pressure)
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "'Pression_Pa' (Pa)"
+        curve {
+            Segment VEF_P1/PAR_VEF_P1.data PRESSION_Pa
+            columns ($1) ($2)
+            legend "'Pression_Pa' P1"
+            style linespoints
+        }
+        curve {
+            Segment VEF_P1_g/PAR_VEF_P1_g.data PRESSION_Pa
+            columns ($1) ($2)
+            legend "'Pression_Pa' P1 case with gravity"
+            style linespoints
+        }
+    }
+    figure { 
+        title "'Pression_Pa' probe for VEF P0P1 discretization test case at final time"
+        Description "In VEF P0P1 discretization, the pressure is calculated at the vertices and at the gravity center of the elements. But if we ask for the pressure at the gravity center or at the vertices of the elements, the values obtained are calculated using an interpolation using the other points. So here we don't specified any location of the probes."
+        Description include_text_file(VEF_P0P1_probes.txt, nodes, periode, segment, pressure)
+        Description "Furthermore, in this case, we enable the option 'Cl_pression_sommet_faible' to find a better pressure at the outlet of the geometry."
+        Description include_text_file(VEF_P0P1_dis.txt, VEFPreP1b, Read, P0, P1, Cl_pression_sommet_faible)
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "'Pression_Pa' (Pa)"
+        curve {
+            Segment VEF_P0P1/PAR_VEF_P0P1.data PRESSION_Pa
+            columns ($1) ($2)
+            legend "'Pression_Pa' P0P1"
+            style linespoints
+        }
+        curve {
+            Segment VEF_P0P1_g/PAR_VEF_P0P1_g.data PRESSION_Pa
+            columns ($1) ($2)
+            legend "'Pression_Pa' P0P1 case with gravity"
+            style linespoints
+        }
+    }
+}
+
+##################################################################################################################
+
+Chapter {
+    Title "What is 'Pressure' ?" 
+    Description "Pressure = Pression_Pa"
+    figure { 
+        title "'Pressure' probe for VDF test case at final time"
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        curve {
+            Segment VDF/PAR_VDF.data PRESSURE
+            columns ($1) ($2)
+            legend "VDF Pressure"
+            style linespoints
+        }
+        curve {
+            Segment VDF/PAR_VDF.data PRESSION_PA
+            columns ($1) ($2)
+            legend "VDF Pression_Pa "
+            style lines
+        }
+    }
+    figure { 
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        curve {
+            Segment VDF_g/PAR_VDF_g.data PRESSURE
+            columns ($1) ($2)
+            legend "VDF Pressure with gravity"
+            style linespoints
+        }
+        curve {
+            Segment VDF_g/PAR_VDF_g.data PRESSION_PA
+            columns ($1) ($2)
+            legend "VDF Pression_Pa with gravity"
+            style lines
+        }
+    }
+
+    figure { 
+        title "'Pressure' probe for VEF test case in P0 discretization at final time"
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        curve {
+            Segment VEF_P0/PAR_VEF_P0.data PRESSURE
+            columns ($1) ($2)
+            legend "VEF P0 Pressure"
+            style linespoints
+        }
+        curve {
+            Segment VEF_P0/PAR_VEF_P0.data PRESSION_PA
+            columns ($1) ($2)
+            legend "VEF P0 Pression_Pa "
+            style lines
+        }
+    }
+    figure { 
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        curve {
+            Segment VEF_P0_g/PAR_VEF_P0_g.data PRESSURE
+            columns ($1) ($2)
+            legend "VEF P0 Pressure with gravity"
+            style linespoints
+        }
+        curve {
+            Segment VEF_P0_g/PAR_VEF_P0_g.data PRESSION_PA
+            columns ($1) ($2)
+            legend "VEF P0 Pression_Pa with gravity"
+            style lines
+        }
+    }
+
+    figure { 
+        title "'Pressure' probe for VEF test case in P1 discretization at final time"
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        curve {
+            Segment VEF_P1/PAR_VEF_P1.data PRESSURE
+            columns ($1) ($2)
+            legend "VEF P1 Pressure"
+            style linespoints
+        }
+        curve {
+            Segment VEF_P1/PAR_VEF_P1.data PRESSION_PA
+            columns ($1) ($2)
+            legend "VEF P1 Pression_Pa"
+            style lines
+        }
+    }
+    figure { 
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        curve {
+            Segment VEF_P1_g/PAR_VEF_P1_g.data PRESSURE
+            columns ($1) ($2)
+            legend "VEF P1 Pressure with gravity"
+            style linespoints
+        }
+        curve {
+            Segment VEF_P1_g/PAR_VEF_P1_g.data PRESSION_PA
+            columns ($1) ($2)
+            legend "VEF P1 Pression_Pa with gravity"
+            style lines
+        }
+    }
+
+    figure { 
+        title "'Pressure' probe for VEF test case in P0P1 discretization at final time"
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        curve {
+            Segment VEF_P0P1/PAR_VEF_P0P1.data PRESSURE
+            columns ($1) ($2)
+            legend "VEF P0P1 Pressure"
+            style linespoints
+        }
+        curve {
+            Segment VEF_P0P1/PAR_VEF_P0P1.data PRESSION_PA
+            columns ($1) ($2)
+            legend "VEF P0P1 Pression_Pa "
+            style lines
+        }
+    }
+    figure { 
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        curve {
+            Segment VEF_P0P1_g/PAR_VEF_P0P1_g.data PRESSURE
+            columns ($1) ($2)
+            legend "VEF P0P1 Pressure with gravity"
+            style linespoints
+        }
+        curve {
+            Segment VEF_P0P1_g/PAR_VEF_P0P1_g.data PRESSION_PA
+            columns ($1) ($2)
+            legend "VEF P0P1 Pression_Pa with gravity"
+            style lines
+        }
+    }
+}
+
+##################################################################################################################
+
+Chapter {
+    Title "What is 'Pression' ?" 
+    Description "Pression = \latex_( $\frac{1}{\rho}$ \latex_) Pression_Pa"
+    figure { 
+        title "'Pression' probe for VDF test case at final time"
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        curve {
+            Segment VDF/PAR_VDF.data PRESSION
+            columns ($1) ($2)*1000
+            legend "VDF Pression x rho"
+            style linespoints
+        }
+        curve {
+            Segment VDF/PAR_VDF.data PRESSION_PA
+            columns ($1) ($2)
+            legend "VDF Pression_Pa "
+            style lines
+        }
+    }
+    figure { 
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        curve {
+            Segment VDF_g/PAR_VDF_g.data PRESSION
+            columns ($1) ($2)*1000
+            legend "VDF Pression x rho with gravity"
+            style linespoints
+        }
+        curve {
+            Segment VDF_g/PAR_VDF_g.data PRESSION_PA
+            columns ($1) ($2)
+            legend "VDF Pression_Pa with gravity"
+            style lines
+        }
+    }
+
+    figure { 
+        title "'Pression' probe for VEF P0 discretization test case at final time"
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        curve {
+            Segment VEF_P0/PAR_VEF_P0.data PRESSION
+            columns ($1) ($2)*1000
+            legend "VEF P0 Pression x rho"
+            style linespoints
+        }
+        curve {
+            Segment VEF_P0/PAR_VEF_P0.data PRESSION_PA
+            columns ($1) ($2)
+            legend "VEF P0 Pression_Pa "
+            style lines
+        }
+    }
+    figure { 
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        curve {
+            Segment VEF_P0_g/PAR_VEF_P0_g.data PRESSION
+            columns ($1) ($2)*1000
+            legend "VEF P0 Pression x rho with gravity"
+            style linespoints
+        }
+        curve {
+            Segment VEF_P0_g/PAR_VEF_P0_g.data PRESSION_PA
+            columns ($1) ($2)
+            legend "VEF P0 Pression_Pa with gravity"
+            style lines
+        }
+    }
+
+    figure { 
+        title "'Pression' probe for VEF P1 discretization test case at final time"
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        curve {
+            Segment VEF_P1/PAR_VEF_P1.data PRESSION
+            columns ($1) ($2)*1000
+            legend "VEF P1 Pression x rho"
+            style linespoints
+        }
+        curve {
+            Segment VEF_P1/PAR_VEF_P1.data PRESSION_PA
+            columns ($1) ($2)
+            legend "VEF P1 Pression_Pa "
+            style lines
+        }
+    }
+    figure { 
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        curve {
+            Segment VEF_P1_g/PAR_VEF_P1_g.data PRESSION
+            columns ($1) ($2)*1000
+            legend "VEF P1 Pression x rho with gravity"
+            style linespoints
+        }
+        curve {
+            Segment VEF_P1_g/PAR_VEF_P1_g.data PRESSION_PA
+            columns ($1) ($2)
+            legend "VEF P1 Pression_Pa with gravity"
+            style lines
+        }
+    }
+
+    figure { 
+        title "'Pression' probe for VEF P0P1 discretization test case at final time"
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        curve {
+            Segment VEF_P0P1/PAR_VEF_P0P1.data PRESSION
+            columns ($1) ($2)*1000
+            legend "VEF P0P1 Pression x rho"
+            style linespoints
+        }
+        curve {
+            Segment VEF_P0P1/PAR_VEF_P0P1.data PRESSION_PA
+            columns ($1) ($2)
+            legend "VEF P0P1 Pression_Pa "
+            style lines
+        }
+    }
+    figure { 
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        curve {
+            Segment VEF_P0P1_g/PAR_VEF_P0P1_g.data PRESSION
+            columns ($1) ($2)*1000
+            legend "VEF P0P1 Pression x rho with gravity"
+            style linespoints
+        }
+        curve {
+            Segment VEF_P0P1_g/PAR_VEF_P0P1_g.data PRESSION_PA
+            columns ($1) ($2)
+            legend "VEF P0P1 Pression_Pa with gravity"
+            style lines
+        }
+    }
+}
+
+##################################################################################################################
+
+Chapter {
+    Title "What is 'P_star' ?" 
+    Description "P_star = \latex_( $ \frac{1}{\rho} $ \latex_) Pression_pa = \latex_( $ \frac{1}{\rho} $ \latex_) Pressure = Pression "
+    figure { 
+        title "'P_star' probe for VDF test case at final time"
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        curve {
+            Segment VDF/PAR_VDF.data P_STAR
+            columns ($1) ($2)*1000
+            legend "VDF 'P_star' x rho"
+            style linespoints
+        }
+        curve {
+            Segment VDF/PAR_VDF.data PRESSION_PA
+            columns ($1) ($2)
+            legend "VDF 'Pression_pa'"
+            style linespoints
+        }
+    }
+    figure { 
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        curve {
+            Segment VDF_g/PAR_VDF_g.data P_STAR
+            columns ($1) ($2)*1000
+            legend "VDF 'P_star' x rho with gravity"
+            style linespoints
+        }
+        curve {
+            Segment VDF_g/PAR_VDF_g.data PRESSION_PA
+            columns ($1) ($2)
+            legend "VDF 'Pression_pa' with gravity"
+            style linespoints
+        }
+    }
+
+
+    figure { 
+        title "'P_star' probe for VEF P0 discretization test case at final time"
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        curve {
+            Segment VEF_P0/PAR_VEF_P0.data P_STAR
+            columns ($1) ($2)*1000
+            legend "VEF P0 'P_star' x rho"
+            style linespoints
+        }
+        curve {
+            Segment VEF_P0/PAR_VEF_P0.data PRESSION_PA
+            columns ($1) ($2)
+            legend "'Pression_pa'"
+            style linespoints
+        }
+    }
+    figure { 
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        curve {
+            Segment VEF_P0_g/PAR_VEF_P0_g.data P_STAR
+            columns ($1) ($2)*1000
+            legend "VEF P0 'P_star' x rho with gravity"
+            style linespoints
+        }
+        curve {
+            Segment VEF_P0_g/PAR_VEF_P0_g.data PRESSION_PA
+            columns ($1) ($2)
+            legend "VEF P0 'Pression_pa' with gravity"
+            style linespoints
+        }
+    }
+
+    figure { 
+        title "'P_star' probe for VEF P1 discretization test case at final time"
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        curve {
+            Segment VEF_P1/PAR_VEF_P1.data P_STAR
+            columns ($1) ($2)*1000
+            legend "VEF P1 'P_star' x rho"
+            style linespoints
+        }
+        curve {
+            Segment VEF_P1/PAR_VEF_P1.data PRESSION_PA
+            columns ($1) ($2)
+            legend "VEF P1 'Pression_pa'"
+            style linespoints
+        }
+    }
+    figure { 
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        curve {
+            Segment VEF_P1_g/PAR_VEF_P1_g.data P_STAR
+            columns ($1) ($2)*1000
+            legend "VEF P1 'P_star' x rho with gravity"
+            style linespoints
+        }
+        curve {
+            Segment VEF_P1_g/PAR_VEF_P1_g.data PRESSION_PA
+            columns ($1) ($2)
+            legend "VEF P1 'Pression_pa' with gravity"
+            style linespoints
+        }
+    }
+
+    figure { 
+        title "'P_star' probe for VEF P0P1 discretization test case at final time"
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        curve {
+            Segment VEF_P0P1/PAR_VEF_P0P1.data P_STAR
+            columns ($1) ($2)*1000
+            legend "VEF P0P1 'P_star' x rho"
+            style linespoints
+        }
+        curve {
+            Segment VEF_P0P1/PAR_VEF_P0P1.data PRESSION_PA
+            columns ($1) ($2)
+            legend "VEF P0P1 'Pression_pa'"
+            style linespoints
+        }
+    }
+    figure { 
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        curve {
+            Segment VEF_P0P1_g/PAR_VEF_P0P1_g.data P_STAR
+            columns ($1) ($2)*1000
+            legend "VEF P0P1 'P_star' x rho with gravity"
+            style linespoints
+        }
+        curve {
+            Segment VEF_P0P1_g/PAR_VEF_P0P1_g.data PRESSION_PA
+            columns ($1) ($2)
+            legend "VEF P0P1 'Pression_pa' with gravity"
+            style linespoints
+        }
+    }
+}
+
+##################################################################################################################
+
+Chapter {
+    Title "What is 'Pression_hydrostatique' ?" 
+    Description "Pression_hydrostatique = \latex_( $\rho g z$ \latex_)"
+    figure { 
+        title "'Pression_hydrostatique' probe for test cases with gravity at final time"
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure in Pascals (Pa)"
+        legend  right bottom
+        curve {
+            Fonction 1000*9.81*x
+            legend "Analytical expression: rho g z" left
+            style lines
+        }
+        curve {
+            Segment VDF_g/PAR_VDF_g.data P_HYDRO2
+            columns ($1) ($2)
+            legend "VDF 'Pression_hydrostatique'"
+            style points
+        }
+        curve {
+            Segment VEF_P0_g/PAR_VEF_P0_g.data P_HYDRO2
+            columns ($1) ($2)
+            legend "VEF P0 'Pression_hydrostatique'"
+            style points
+        }
+        curve {
+            Segment VEF_P1_g/PAR_VEF_P1_g.data P_HYDRO2
+            columns ($1) ($2)
+            legend "VEF P1 'Pression_hydrostatique'"
+            style points
+        }
+        curve {
+            Segment VEF_P0P1_g/PAR_VEF_P0P1_g.data P_HYDRO2
+            columns ($1) ($2)
+            legend "VEF P0P1 'Pression_hydrostatique'"
+            style points
+        }
+    }
+}
+
+##################################################################################################################
+
+Chapter {
+    Title "Total pressure" 
+    Description "We define:"
+    Description "P_tot = \latex_( $ P_{NS} + \rho g (z-z_{0}) + \frac{1}{2} \rho \underbrace{\vec{u} \cdot \vec{u}}_{||\vec{u}||} $ \latex_)"
+    Description "P_tot = 'Pression_Pa' + 'Pression_hydrostatique' - \latex_( $ \rho g z_{0} $ \latex_) + 'energie_cinetique_elem'"
+    Description "\latex_( \vspace{0.5cm} \latex_)"
+    Description "To have this field, we have to define a new field like:"
+    Description include_text_file(def_champ.txt, Definition_champs, Predefini, Pb_champ, energie_cinetique_elem, Transformation, methode, formule, expression, sources_reference, sources, RefChamp, pression_pa, nom_source, pression_hydrostatique, masse_volumique)
+    figure { 
+        title "Total Pressure probe for VDF test case with gravity at final time"
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure (Pa)"
+        curve {
+            Segment VDF_g/PAR_VDF_g.data P_TOT
+            columns ($1) ($2)
+            legend "'Pressure_tot'"
+            style linespoints
+        }
+        curve {
+            Segment VDF_g/PAR_VDF_g.data P_HYDRO2
+            columns ($1) ($2)-1000*9.81*2.
+            legend "rho g (z-z0)' with z0=2."
+            style linespoints
+        }
+    }
+    figure { 
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure (Pa)"
+        curve {
+            Segment VDF_g/PAR_VDF_g.data PRESSION_PA
+            columns ($1) ($2)
+            legend "'Pression_Pa'"
+            style linespoints
+        }
+    }
+    figure { 
+        Width 11cm
+        include_description_curves 0
+        labelX "Height (m)"
+        labelY "Pressure (Pa)"
+        curve {
+            Segment VDF_g/PAR_VDF_g.data EC_ELEM2
+            columns ($1) ($2)
+            legend "Cinetic Energy (0.5 rho U.U)"
+            style linespoints
+        }
+    }
+}
+
+##################################################################################################################
+
+Chapter {
+    Title "Conclusion"
+    Description "So we have with or without gravity:"
+    Description "\latex_($P_{NS}$\latex_)='Pression_Pa'='Pressure'=\latex_($\rho$\latex_) 'Pression' =\latex_($\rho$\latex_) 'P_star'"
+    Description "\latex_( \vspace{0.5cm} \latex_)"
+    Description "Note that you can also post-process a field on a boundary using a post-processing block like:"
+    Description include_text_file(post_processings.txt, Post_processings, bord_, domaine, _boundaries_, Format, lata, Fields, dt_post, pression_pa, elem )
+}
+
+##################################################################################################################
+
+Chapter {
+    Title "Convergence" 
+
+    figure { 
+        title "Evolution of residue"
+        include_description_curves 0
+        labelX "TIME"
+        labelY "residu=max|Ri|"
+        logX
+        logY
+        legend below title "Legend"
+        curve {
+            file VDF/PAR_VDF.dt_ev
+            columns ($1) ($4)
+            legend "VDF"
+            style linespoints
+        }
+        curve {
+            file VEF_P0/PAR_VEF_P0.dt_ev
+            columns ($1) ($4)
+            legend "VEF P0"
+            style linespoints
+        }
+        curve {
+            file VEF_P1/PAR_VEF_P1.dt_ev
+            columns ($1) ($4)
+            legend "VEF P1"
+            style linespoints
+        }
+        curve {
+            file VEF_P0P1/PAR_VEF_P0P1.dt_ev
+            columns ($1) ($4)
+            legend "VEF P0P1"
+            style linespoints
+        }
+
+        curve {
+            file VDF_g/PAR_VDF_g.dt_ev
+            columns ($1) ($4)
+            legend "VDF with gravity"
+            style linespoints
+        }
+        curve {
+            file VEF_P0_g/PAR_VEF_P0_g.dt_ev
+            columns ($1) ($4)
+            legend "VEF P0 with gravity"
+            style linespoints
+        }
+        curve {
+            file VEF_P1_g/PAR_VEF_P1_g.dt_ev
+            columns ($1) ($4)
+            legend "VEF P1 with gravity"
+            style linespoints
+        }
+        curve {
+            file VEF_P0P1_g/PAR_VEF_P0P1_g.dt_ev
+            columns ($1) ($4)
+            legend "VEF P0P1 with gravity"
+            style linespoints
+        }
+#        curve {
+#            file VEF_P0P1Pa_g/PAR_VEF_P0P1Pa_g.dt_ev
+#            columns ($1) ($4)
+#            legend "VEF P0P1Pa with gravity"
+#            style linespoints
+#        }
+    }
+}

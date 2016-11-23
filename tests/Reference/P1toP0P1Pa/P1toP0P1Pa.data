@@ -81,13 +81,9 @@ Read pb
 	}
 	Post_processing
 	{
-		Definition_champs
-		{
-		   Energie_cinetique_fluide predefini { pb_champ pb energie_cinetique }
-		}
 	       Probes
 	       {
-	       		sonde_ec Energie_cinetique_fluide periode 0.005 point 1 0.7 0. 0.
+	       		sonde_ec energie_cinetique_totale periode 0.005 point 1 0.7 0. 0.
 		       	sonde_pression pression_pa periode 0.005 circle 11 0. 0. 0. 2 0.7 0. 360.
 		       	sonde_vitesse vitesse periode 0.005 point 1 0.7 0. 0.
 	       }

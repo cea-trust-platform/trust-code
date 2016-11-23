@@ -1074,7 +1074,7 @@ then
 			    fi
 			    if [ $tool = compare_lata ]
 			    then
-                               $TRUST_ROOT/exec/$tool $LML1 $LML2
+                               $TRUST_ROOT/exec/$tool $LML1 $LML2 --max_delta
 			       PB=$?
 			    elif [ $tool = lance_test_seq_par ]
 			    then 

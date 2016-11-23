@@ -105,21 +105,18 @@ export rep_dev=$TRUST_TMP/atelier
 [ "$cas" = "Reference/nul" ] && rm -r -f $rep_dev 1>/dev/null 2>&1 # On fait le menage
 mkdir -p $rep_dev
 cd $rep_dev
-lib=$TRUST_ROOT/lib/TRUST_mpi_opt.a
 export new=$rep_dev/exec${OPT}/TRUST${COMM}${OPT}
 # Creation d'un binaire modifie
 source_file=Schema_Temps_base.cpp
 source_file_from=`Find.sh $source_file`
-if [ ! -f $source_file ] || [ $source_file_from -nt $source_file ] || [ ! -f $new ] || [ ! -f $lib ] || [ $lib -nt $new ]
+if [ ! -f $source_file ] || [ $source_file_from -nt $source_file ] || [ ! -f $new ]
 then
    cp -f $source_file_from .
    chmod +w $source_file
    echo "Calcul $cas mene sur 2 pas de temps."   
    echo $ECHO_OPTS "1,$ s?is >> nb_pas_dt_max_;?entier toto;is >> toto;if (toto<nb_pas_dt_max_) nb_pas_dt_max_=toto;?g\nw" | ed $source_file 2>/dev/null
    echo $ECHO_OPTS "1,$ s?seuil_statio_ =?nb_pas_dt_max_ = 2;seuil_statio_ =?g\nw" | ed $source_file 2>/dev/null
-   [ ! -f $lib ] && cree_TRUST_opt_a
-   option=2 && [ "$OPT" = "" ] && option=1
-   echo \n | Makeatelier.sccs $option
+   Makeatelier.sccs -2
 fi
 rep1=$rep_dev
 
@@ -142,12 +139,12 @@ export NB_PROCS=`$TRUST_Awk '/PARALLEL ONLY/ {print $4}' $cas.data`
 if [ "$NB_PROCS" != "" ]
 then
    # Lancement du cas en parallele seulement
-   export CALCUL=PAR && lan_ici $new $cas 
+   [ "$TRUST_DISABLE_MPI" = "0" ] && export CALCUL=PAR && lan_ici $new $cas 
 else
    # Lancement du cas en sequentiel
    export CALCUL=SEQ && lan_ici $new $cas 
    # Lancement du decoupage et eventuellement du parallele
-   if [ "`grep "PARALLEL OK" $cas.data`" != "" ]
+   if [ "`grep "PARALLEL OK" $cas.data`" != "" ] &&  [ "$TRUST_DISABLE_MPI" = "0" ]
    then
       export CALCUL=DEC && lan_ici $new $cas 
       # Lancement du parallele, plusieurs cas bloquent sur moleson en //

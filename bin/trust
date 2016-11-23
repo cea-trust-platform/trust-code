@@ -116,7 +116,8 @@ help()
    echo "-prm                    : Write a prm file and generate the corresponding pdf file in the build directory."
    echo "-clean                  : Clean the current directory from all the generated files by TRUST."
    echo "-copy                   : Copy the test case datafile from the TRUST database under the present directory."
-   echo "-check all|testcase|function|class|method::class : Check the non regression of all the test cases or a single test case or a list of tests cases covering a function, a class or a class method."
+   echo "-check all|testcase|list : Check the non regression of all the test cases or a single test case or a list of tests cases specified in a file."
+   echo "-check function|class|method::class : Check the non regression of a list of tests cases covering a function, a class or a class method."
    echo "-gdb                    : Run under gdb debugger."
    echo "-valgrind               : Run under valgrind."
    echo "-valgrind_strict        : Run under valgrind with no suppressions."
@@ -268,6 +269,10 @@ do
       then
 	 # Single test case
 	 option=$1   
+      elif [ -f $1 ]
+      then
+	 # List of test cases in a file
+	 option=$1   
       else
 	 # Test cases covering a method::class
 	 Qui $1 || exit -1
@@ -358,7 +363,7 @@ then
       let i=i+1
      # break
       [ -f $dt_ev ] && break
-      echo waiting for $dt_ev
+      echo "waiting for $dt_ev"
      sleep 0.1
    done
    #[ ! -f $dt_ev ] && exit 1
@@ -379,7 +384,7 @@ fi
 #####################
 if [ "$prm" = 1 ]
 then
-   create_basic_prm_from_lata.sh $NOM
+   create_basic_prm_from_lata.sh -gen_pdf $NOM
    exit $?
 fi
 

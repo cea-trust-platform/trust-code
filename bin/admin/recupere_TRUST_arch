@@ -100,6 +100,7 @@ do
 <TD>VisIt</TD>
 <TD>fiche</TD>
 <TD>Ate</TD>
+<TD>Valg</TD>
 <TD>Xpr</TD>
 <TD>assert</TD>
 <TD>Baltik</TD>
@@ -258,7 +259,7 @@ do
 	EXEC=${NOM%_$HOST}
 	EXEC=${EXEC%_$arch}
 	host="";os="";rel="";mod="";nb_procs="";ram="";cache="";freq="";TRUST_CC=""
-	taille="";cpu="";cpu3d="<TD $BLANC>NOT</TD>";bench="<TD $BLANC>NOT</TD>";runfich="<TD $BLANC>NOT</TD>"
+	taille="";cpu="";cpu3d="<TD $BLANC>NOT</TD>";bench="<TD $BLANC>NOT</TD>";runfich="<TD $BLANC>NOT</TD>";testgrind="<TD $BLANC>NOT</TD>"
 	BLANC="BGCOLOR=#FEFEFE";ROUGE="BGCOLOR=#C42111";VERT="BGCOLOR=3D\"#E47833\""
 	comp="Echec";COL1=$ROUGE
 	[ "`grep BUILD_EXEC=OK $CR`" != "" ] && comp="Succes" && COL1=$VERT
@@ -287,6 +288,9 @@ do
 	   # Run_fiche
 	   runfich=$runfich && [ "`grep Run_fiche=KO $CR`" != "" ] && runfich="<TD $ROUGE>KO</TD>"
 	   runfich=$runfich && [ "`grep Run_fiche=OK $CR`" != "" ] && runfich="<TD $VERT>OK</TD>"
+	   # Test upwind valgrind
+	   testgrind=$testgrind && [ "`grep KVALGRIND=KO $CR`" != "" ] && testgrind="<TD $ROUGE>KO</TD>"
+	   testgrind=$testgrind && [ "`grep KVALGRIND=OK $CR`" != "" ] && testgrind="<TD $VERT>KO</TD>"
 	   # Taux sequentiel:
 	   staux=`cat $PERF | $TRUST_Awk '/succes/ && (NF==2) {print $2;exit}'`
 	   # Taux parallele:
@@ -399,6 +403,7 @@ $GMSH
 $VISIT
 $runfich
 $ATELIER
+$testgrind
 $XPREPRO
 $ASSERT
 $BALTIK
@@ -416,6 +421,7 @@ $bench
         echo "
 <TR>
 $TD_CR<A HREF="$CR">$HOST</A>$FTD
+<TD>$vide</TD>
 <TD>$vide</TD>
 <TD>$vide</TD>
 <TD>$vide</TD>
