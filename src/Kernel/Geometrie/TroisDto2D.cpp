@@ -182,6 +182,7 @@ void TroisDto2D::extraire_2D(const Domaine& dom3D, Domaine& dom2D, const Bord& b
         renum_som2D3D(j)=i;
     }
   coord_sommets2D.resize(nb_som2D,2);
+  if (coupe_==2) coord_sommets2D.resize(nb_som2D,3);
   Zone tmpz;
   Zone& zone2D=dom2D.add(tmpz);
   Nom nom_zone("surface");
@@ -200,7 +201,7 @@ void TroisDto2D::extraire_2D(const Domaine& dom3D, Domaine& dom2D, const Bord& b
     {
       zone2D.typer("Quadrangle");
     }
-  if (!coupe_)
+  if (coupe_!=1)
     {
       // Algorithme general
       // La frontiere doit etre plane (non verifie), parallele a un axe ou pas
@@ -281,9 +282,19 @@ void TroisDto2D::extraire_2D(const Domaine& dom3D, Domaine& dom2D, const Bord& b
           double x = coord_sommets3D(renum_som2D3D(i),0);
           double y = coord_sommets3D(renum_som2D3D(i),1);
           double z = coord_sommets3D(renum_som2D3D(i),2);
-
-          coord_sommets2D(i,0) = -scalI + x*Ix + y*Iy + z*Iz;
-          coord_sommets2D(i,1) = -scalJ + x*Jx + y*Jy + z*Jz;
+          if (coupe_==0)
+            {
+              coord_sommets2D(i,0) = -scalI + x*Ix + y*Iy + z*Iz;
+              coord_sommets2D(i,1) = -scalJ + x*Jx + y*Jy + z*Jz;
+            }
+          else
+            {
+              assert(coupe_==2);
+// on ne ramene pas en 2D
+              coord_sommets2D(i,0)=x;
+              coord_sommets2D(i,1)=y;
+              coord_sommets2D(i,2)=z;
+            }
           //        Cout << "coord 1 = " << coord_sommets2D(i,0) << finl;
           //        Cout << "coord 2 = " << coord_sommets2D(i,1) << finl;
           //        Cout << "coord 3 = " << -xa*Kx-ya*Ky-za*Kz+x*Kx + y*Ky + z*Kz << finl;
@@ -519,7 +530,8 @@ void TroisDto2D::extraire_2D(const Domaine& dom3D, Domaine& dom2D, const Bord& b
   }
 
   if(zone3D.type_elem()->que_suis_je()!="Hexaedre_VEF")
-    dom2D.reordonner();
+    if (coupe_!=2)
+      dom2D.reordonner();
   dimension=3;
 }
 

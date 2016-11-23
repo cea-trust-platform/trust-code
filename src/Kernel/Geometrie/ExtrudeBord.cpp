@@ -27,6 +27,7 @@
 #include <SFichier.h>
 #include <Extruder.h>
 #include <Extruder_en3.h>
+#include <Extruder_en20.h>
 #include <Scatter.h>
 #include <Param.h>
 #include <IntVects.h>
@@ -54,6 +55,7 @@ Entree& ExtrudeBord::interpreter_(Entree& is)
   Nom nom_dom_volumique;
   Nom nom_front,nom_dom_surfacique;
   DoubleVect vect_dir(3);
+  en3D_=1;
   int nbpas;
 
   if(dimension!=3)
@@ -69,6 +71,8 @@ Entree& ExtrudeBord::interpreter_(Entree& is)
   param.ajouter("nom_bord",&nom_front,Param::REQUIRED);
   param.ajouter_flag("hexa_old",&hexa_old);
   param.ajouter_flag("Trois_Tetra",&Trois_Tetra);
+  param.ajouter_flag("Vingt_Tetra",&Vingt_Tetra);
+  param.ajouter("sans_passer_par_le2D",&en3D_);
   param.lire_avec_accolades_depuis(is);
 
   associer_domaine(nom_dom_volumique);
@@ -104,7 +108,16 @@ void ExtrudeBord::extruder_bord(Nom& nom_front, Nom& nom_dom_surfacique, DoubleV
   TroisDto2D tD2dD;
   int& coupe=tD2dD.coupe();
   coupe=0;
+  if (en3D_)
+    coupe=2;
   tD2dD.extraire_2D(dom,dom_surfacique,front,nom_front,0);
+  if (0)
+    {
+      SFichier test("bord.geom");
+      test<<dom_surfacique;
+    }
+
+
 
   double xa = tD2dD.getXa();
   double ya = tD2dD.getYa();
@@ -119,8 +132,23 @@ void ExtrudeBord::extruder_bord(Nom& nom_front, Nom& nom_dom_surfacique, DoubleV
   double Ky = tD2dD.getKy();
   double Kz = tD2dD.getKz();
 
+  if (!en3D_)
+    {
+      dimension=2;
+    }
+  else
+    {
+      Ix=1;
+      Iy=0;
+      Iz=0;
+      Jx=0;
+      Jy=1;
+      Jz=0;
+      Kx=0;
+      Ky=0;
+      Kz=1;
 
-  dimension=2;
+    }
 
   if (Trois_Tetra==1)  // Evolution de la methode Extrude bord pour l'adapter a 3tetra
     {
@@ -139,8 +167,17 @@ void ExtrudeBord::extruder_bord(Nom& nom_front, Nom& nom_dom_surfacique, DoubleV
       if ((zone2.type_elem()->que_suis_je())== "Rectangle")
         {
           Cerr << "It is not possible to apply ExtrudeBord with 3Tetra option to : "   <<  zone2.type_elem()->que_suis_je() << " mesh cells" << finl;
-          exit();
+          // exit();
         }
+    }
+  else if (Vingt_Tetra==1)
+    {
+      Extruder_en20 extr;
+      extr.setNbTranches(nbpas);
+      extr.setDirection(vect_dir(0)*Ix+vect_dir(1)*Iy+vect_dir(2)*Iz,
+                        vect_dir(0)*Jx+vect_dir(1)*Jy+vect_dir(2)*Jz,
+                        vect_dir(0)*Kx+vect_dir(1)*Ky+vect_dir(2)*Kz);
+      extr.extruder(dom_surfacique);
     }
   else
     {
@@ -151,7 +188,11 @@ void ExtrudeBord::extruder_bord(Nom& nom_front, Nom& nom_dom_surfacique, DoubleV
                         vect_dir(0)*Kx+vect_dir(1)*Ky+vect_dir(2)*Kz);
       extr.extruder(dom_surfacique);
     }
-
+  if (en3D_)
+    {
+      Cerr<< "on ne tourne pas le bord"<<finl;
+      return;
+    }
   // on remet le nouveau domaine 3D dans le repere du domaine 3D initial
   dimension = 3;
 
