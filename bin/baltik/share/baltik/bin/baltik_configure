@@ -439,16 +439,29 @@ printf "\n"                                                     >> $project_make
 printf "# help \n" >> $project_makefile
 done
 printf "\n" 							>> $project_makefile
-printf "# help validation \t: Generate validation report\n">>$project_makefile
-printf "validation : optim\n"                                              >> $project_makefile
+printf "# help all_validation \t: Generate validation report\n">>$project_makefile
+printf "all_validation : optim\n"    >> $project_makefile
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
 printf "\t@echo \"# Generate validation report #\"\n"                 >> $project_makefile
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
 printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_validation\n"                     >> $project_makefile
 printf "\n"                                                     >> $project_makefile
+printf "# help check_all_validation \t: like all_validation\n">>$project_makefile
+printf "check_all_validation : all_validation\n"           >> $project_makefile
+printf "\n" 		
+                         >> $project_makefile
+printf "# help validation \t: Generate validation report with only the prm of this project\n">>$project_makefile
+printf "validation : optim\n"  >> $project_makefile
+printf "\n"       
 printf "# help check_validation \t: like validation\n">>$project_makefile
 printf "check_validation : validation\n"                                              >> $project_makefile
-printf "\n"       
+printf "\n" 
+
+printf "\t@echo \"########################\"\n"       >> $project_makefile
+printf "\t@echo \"# Generate validation report of this project only #\"\n"  >> $project_makefile
+printf "\t@echo \"########################\"\n"        >> $project_makefile
+printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_validation reduit\n"                     >> $project_makefile
+printf "\n"           >> $project_makefile
 
 printf "# help check_sources_strict \t: check_sources with new rules\n">>$project_makefile
 printf "check_sources_strict :\n"                                              >> $project_makefile

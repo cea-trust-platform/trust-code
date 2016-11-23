@@ -2061,7 +2061,10 @@ void Equation_base::dimensionner_matrice(Matrice_Morse& matrice)
     {
       // on avait que des op negligeables
       // on dimensionne par la diagonale
-      int nb_case_tot=inconnue().valeurs().dimension_tot(0)*inconnue().valeur().nb_comp();
+      int nb_comp=1;
+      if (inconnue().valeurs().nb_dim()>1)
+        nb_comp=inconnue().valeurs().dimension(1);
+      int nb_case_tot=inconnue().valeurs().dimension_tot(0)*nb_comp;
       IntTab indice(nb_case_tot,2);
       for( int c=0; c<nb_case_tot; c++) indice(c,0)=indice(c,1)=c;
       if (indice.size()!=0) matrice.dimensionner(indice);

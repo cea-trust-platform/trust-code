@@ -25,7 +25,9 @@ Parameters {
 	TestCase  "muscl_160" "cas.data"  
 	TestCase  "ef_stab_160" "cas.data"  
 	TestCase  "amont_old_160" "cas.data"  
-	TestCase  "centre_160" "cas.data"  	Auteur "GF "
+	TestCase  "centre_160" "cas.data"   
+
+	Author "GF "
 	IncludeData 2
 	Prerequisite "./extract_convergence"
 	Description "Cas test periodique, pour tester convergence en maillage des opérateurs de convection"

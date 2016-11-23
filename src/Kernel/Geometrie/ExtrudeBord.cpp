@@ -190,7 +190,7 @@ void ExtrudeBord::extruder_bord(Nom& nom_front, Nom& nom_dom_surfacique, DoubleV
     }
   if (en3D_)
     {
-      Cerr<< "on ne tourne pas le bord"<<finl;
+      // en 3D on ne tourne pas le bord
       return;
     }
   // on remet le nouveau domaine 3D dans le repere du domaine 3D initial
