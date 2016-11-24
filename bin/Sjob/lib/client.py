@@ -18,3 +18,7 @@ while 1:
         break
 s.close()
 print  (data)
+if (data[:7]=="Killing"):
+   # print "KKKK"
+   import sys
+   sys.exit(1)

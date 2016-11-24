@@ -2,7 +2,8 @@
 
 DIR=`dirname $0`
 DIR=`(cd $DIR;pwd)`
-trap "python $DIR/lib/client.py finish $$;exit 1" HUP INT PIPE QUIT TERM KILL ABRT
+#trap "python $DIR/lib/client.py finish $$;exit 1" HUP INT PIPE QUIT TERM KILL ABRT
+trap "python $DIR/lib/client.py finish $$;exit 1"  INT PIPE QUIT TERM KILL ABRT
 NB=1
 if [ $1 = "-n" ]
 then
