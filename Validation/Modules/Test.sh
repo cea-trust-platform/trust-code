@@ -42,8 +42,9 @@ test_module Petsc_GCP Cavite_paroi_defilante_hexa
 test_module Poreux Bilan_chaleur_vef_jdd1
 [ $? -ne 0 ] && status_tot=1
 
-test_module Rayo_transp Bilan_chaleur_vef_jdd1
-[ $? -ne 0 ] && status_tot=1
+# Rayo_transp dans triocfd
+#test_module Rayo_transp Bilan_chaleur_vef_jdd1
+#[ $? -ne 0 ] && status_tot=1
 
 test_module Reprise upwind
 [ $? -ne 0 ] && status_tot=1

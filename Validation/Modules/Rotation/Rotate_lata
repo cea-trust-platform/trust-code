@@ -112,7 +112,7 @@ done
 sed "s/$lata/rot_$lata/g" $lata | grep -v _boundaries_ > rot_$lata
 
 
-for vitesse in `ls $lata.vitess* $lata.VITESS* 2>/dev/null`
+for vitesse in `ls $lata.vitess* $lata.*VITESS* 2>/dev/null`
 do
 echo $vitesse
 nl=`wc -l $vitesse | awk -F: '{print $1}'`

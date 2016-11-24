@@ -117,7 +117,7 @@ def modif(l,nom):
             pass
         if (isinstance(cl,comment)):
             print cl.comm[-8:]
-            if cl.comm[-12:]=="FIN MAILLAGE":
+            if cl.comm[-12:]=="FIN MAILLAGE" or cl.comm[-8:]=="END MESH":
                 iscatt=j
                
             
@@ -194,10 +194,10 @@ def test_cas(nom):
     for cl in ll0:
         if (isinstance(cl,vdf)): is_vdf=1
     
-    theta=asin(1.)/3.
+    theta=asin(1.)/2.
 
-    #if is_vdf:
-    if 0:
+    if is_vdf:
+    #if 0:
         theta=asin(1)
     phi=theta
     alpha=theta
