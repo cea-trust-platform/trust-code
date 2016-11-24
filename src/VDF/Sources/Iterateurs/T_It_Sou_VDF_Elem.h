@@ -49,8 +49,7 @@ class T_It_Sou_VDF_Elem : public Iterateur_Source_VDF_base
   };
   inline unsigned taille_memoire() const
   {
-    abort();
-    return -1;
+    throw;
   };
 public:
 

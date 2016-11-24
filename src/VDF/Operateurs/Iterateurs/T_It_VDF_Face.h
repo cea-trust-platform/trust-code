@@ -50,8 +50,7 @@ class T_It_VDF_Face : public Iterateur_VDF_base
   };
   inline unsigned taille_memoire() const
   {
-    abort();
-    return -1;
+    throw;
   };
 public:
   inline T_It_VDF_Face() { } ;
