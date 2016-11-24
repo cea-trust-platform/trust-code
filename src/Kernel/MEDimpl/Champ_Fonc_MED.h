@@ -102,6 +102,7 @@ protected:
   Champ_Fonc vrai_champ_;
   Nom nom_champ_dans_fichier_med_;
   ArrOfDouble temps_sauv_;
+  int last_time_only_;
 };
 
 inline void Champ_Fonc_MED::associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base)

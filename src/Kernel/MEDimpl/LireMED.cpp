@@ -2045,8 +2045,14 @@ void traite_nom_fichier_med(Nom& nom_fic)
     ifstream test(nom_fic);
     if (!test)
       {
-        Cerr<<"med file "<<nom_fic<<" not found."<<finl;
-        Process::exit();
+        // on essaye Cas_0000.med
+        nom_fic=nom_fic2.nom_me(0);
+        ifstream test2(nom_fic);
+        if (!test2)
+          {
+            Cerr<<"med file "<<nom_fic<<" not found."<<finl;
+            Process::exit();
+          }
       }
   }
   //  Cerr<<"File med read: "<<nom_fic<<finl;

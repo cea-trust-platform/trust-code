@@ -811,6 +811,16 @@ int Champ_base::calculer_valeurs_som_post(DoubleTab& les_valeurs,int nb_som,Nom&
   if (sub_type(Champ_Inc_base, *this)&&impose_cl_diri)
     {
       const Champ_Inc_base& chi=ref_cast(Champ_Inc_base, *this);
+      if (!chi.mon_equation_non_nul())
+        {
+          Cerr<<"no equation assocuate to "<<que_suis_je()<<finl;
+          impose_cl_diri=0;
+        }
+    }
+  if (sub_type(Champ_Inc_base, *this)&&impose_cl_diri)
+    {
+      const Champ_Inc_base& chi=ref_cast(Champ_Inc_base, *this);
+
       const Equation_base& eqn=chi.equation();
       // GF on ne veut pas prendre en compte les CL en EF
       if (eqn.discretisation().que_suis_je()!="EF")

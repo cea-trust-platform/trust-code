@@ -415,6 +415,13 @@ void corriger(const Zone_VEF_PreP1b& zone_VEF, DoubleTab& champ_filtre_, Matrice
   // Filtrage si support arete
   if (zone_VEF.get_alphaA())
     {
+      if (zone_VEF.get_renum_arete_perio().size_array()==0)
+        {
+          Cerr<<"We try to Champ_P1iP1B_impl::corriger but get_renum_arete_perio"<<finl;
+        }
+    }
+  if (zone_VEF.get_alphaA()&& zone_VEF.get_renum_arete_perio().size_array())
+    {
       DoubleVect& Pa = parties_P[2];  // partie aretes
 
       // Si premier passage on assemble la matrice

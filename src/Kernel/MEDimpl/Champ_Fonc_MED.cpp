@@ -45,7 +45,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& s)
   double un_temps;
   s>>nom_fic2;
   int use_existing_domain=0;
-  int last_time=0;
+  last_time_only_=0;
   if (nom_fic2=="use_existing_domain")
     {
       use_existing_domain=1;
@@ -53,7 +53,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& s)
     }
   if (nom_fic2=="last_time")
     {
-      last_time=1;
+      last_time_only_=1;
       s>>nom_fic2;
     }
 
@@ -94,6 +94,30 @@ Entree& Champ_Fonc_MED::readOn(Entree& s)
       Cerr<<nom_dom<<" was not read into the med file because it already exists" <<finl;
 
       Domaine& un_dom=ref_cast(Domaine, interprete().objet(nom_dom));
+#ifndef NDEBUG
+      // on va verifier que l'on a le meme
+      if (1)
+        {
+          LireMED liremed;
+          dom.nommer(nom_dom);
+          // ne pas initialiser le nom du domaine va conduire a ne pas creer les fichiers sous zones
+          Nom nom_dom_trio_non_nomme;
+          liremed.lire_geom(nom_fic2,dom,nom_dom,nom_dom_trio_non_nomme);
+          dom.les_sommets().set_md_vector(un_dom.les_sommets().get_md_vector());
+          dom.les_sommets()-=un_dom.les_sommets();
+          dom.les_sommets().set_md_vector(MD_Vector());
+          dom.zone(0).les_elems().set_md_vector(un_dom.zone(0).les_elems().get_md_vector());
+          dom.zone(0).les_elems()-=un_dom.zone(0).les_elems();
+          dom.zone(0).les_elems().set_md_vector(MD_Vector());
+          if ((max_abs_array(dom.les_sommets())>1e-5)||(max_abs_array(dom.zone(0).les_elems())>0))
+            {
+              Cerr<<"Error the domain in the file "<<nom_fic2<<" and domain "<<nom_dom<<" are not the same (coords,conn)"<<finl;
+              exit();
+            }
+          //
+          dom=Domaine();
+        }
+#endif
       creer(nom_fic2,un_dom,localisation,temps_sauv_);
       //exit();
     }
@@ -113,7 +137,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& s)
       // j'ajoute l'attribut temps_sauv_
       creer(nom_fic2,dom,localisation,temps_sauv_);
     }
-  if (last_time)
+  if (last_time_only_)
     {
       un_temps=temps_sauv_(temps_sauv_.size_array()-1);
       Cout << "The resumption time is "<<un_temps<<finl;
@@ -228,7 +252,7 @@ void  Champ_Fonc_MED::lire(double t,int nn)
   //numo=MED_NONOR;
   //  Cerr<<"dt - t"<<dt -t <<finl;
   //Cerr<<ret<<" ici "<<nn<<finl;
-  if ((nb_dt==1) && (!est_egal(dt,t)))
+  if (((nb_dt==1) || (last_time_only_==1))&& (!est_egal(dt,t)))
     {
       Cout<< " We assume that the field "<< le_nom_du_champ<<" is stationary" <<finl;
       // exit();
