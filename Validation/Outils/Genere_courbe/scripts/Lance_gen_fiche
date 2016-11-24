@@ -48,7 +48,7 @@ genere_fiche()
     dir=$1
     prm=`ls $dir/src/*.prm`
     cas=`basename $dir`
-    if [ $concurent -eq 0 ] ||  [ ! -d BUILD/$cas ]
+    if [ $concurent -eq 0 ] ||  [ ! -d BUILD/$cas/build ]
 	then
 	[ ! -d BUILD ] && echo `pwd` pas de build && exit 
         echo $cas non existant on lance la generation de la fiche $dir
