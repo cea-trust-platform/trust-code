@@ -84,7 +84,10 @@ inline double Eval_Puiss_Th_EF::calculer_terme_source_standard(int num_elem) con
     source = puissance(0,0) / (Cp_*rho_ref_);
   else
     {
-      source = puissance(num_elem,0)/(Cp_*rho_ref_);
+      if (puissance.nb_dim()==1)
+        source = puissance(num_elem)/(Cp_*rho_ref_);
+      else
+        source = puissance(num_elem,0)/(Cp_*rho_ref_);
     }
   return (source);
 }

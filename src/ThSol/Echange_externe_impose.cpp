@@ -68,7 +68,7 @@ Entree& Echange_externe_impose::readOn(Entree& s )
 
 int Echange_externe_impose::compatible_avec_discr(const Discretisation_base& discr) const
 {
-  return 1;
+  return Echange_impose_base::compatible_avec_discr(discr);
 }
 
 void Echange_externe_impose::verifie_ch_init_nb_comp()

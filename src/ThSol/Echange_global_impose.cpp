@@ -65,3 +65,9 @@ Entree& Echange_global_impose::readOn(Entree& s )
 {
   return Echange_impose_base::readOn(s) ;
 }
+
+
+int Echange_global_impose::compatible_avec_discr(const Discretisation_base& discr) const
+{
+  return 1;
+}

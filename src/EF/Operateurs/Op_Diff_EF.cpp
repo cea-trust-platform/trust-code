@@ -34,8 +34,11 @@
 #include <Probleme_base.h>
 #include <Neumann_paroi.h>
 #include <Neumann_sortie_libre.h>
+#include <Echange_global_impose.h>
+
 #include <Param.h>
 #include <Op_Conv_EF.h>
+
 Implemente_instanciable_sans_constructeur(Op_Diff_EF,"Op_Diff_EF",Op_Diff_EF_base);
 
 Op_Diff_EF::Op_Diff_EF():transpose_(1),transpose_partout_(0),nouvelle_expression_(0)
@@ -335,7 +338,7 @@ DoubleTab& Op_Diff_EF::ajouter_vectoriel_dim3_nbn_8(const DoubleTab& tab_inconnu
 
 
   // on ajoute la contribution des bords
-  ajouter_bords(resu);
+  ajouter_bords(tab_inconnue,resu);
   return resu;
 #undef bij_
 #undef inconnue_
@@ -419,7 +422,7 @@ DoubleTab& Op_Diff_EF::ajouter_scalaire_dim3_nbn_8(const DoubleTab& tab_inconnue
 
 
   // on ajoute la contribution des bords
-  ajouter_bords(resu);
+  ajouter_bords(tab_inconnue,resu);
   return resu;
 #undef bij_
 #undef inconnue_
@@ -513,7 +516,7 @@ DoubleTab& Op_Diff_EF::ajouter_vectoriel_dim2_nbn_4(const DoubleTab& tab_inconnu
 
 
   // on ajoute la contribution des bords
-  ajouter_bords(resu);
+  ajouter_bords(tab_inconnue,resu);
   return resu;
 #undef bij_
 #undef inconnue_
@@ -597,7 +600,7 @@ DoubleTab& Op_Diff_EF::ajouter_scalaire_dim2_nbn_4(const DoubleTab& tab_inconnue
 
 
   // on ajoute la contribution des bords
-  ajouter_bords(resu);
+  ajouter_bords(tab_inconnue,resu);
   return resu;
 #undef bij_
 #undef inconnue_
@@ -678,7 +681,7 @@ DoubleTab& Op_Diff_EF::ajouter_scalaire_gen(const DoubleTab& tab_inconnue, Doubl
 
 
   // on ajoute la contribution des bords
-  ajouter_bords(resu);
+  ajouter_bords(tab_inconnue,resu);
   return resu;
 #undef bij_
 #undef inconnue_
@@ -762,7 +765,7 @@ DoubleTab& Op_Diff_EF::ajouter_vectoriel_gen(const DoubleTab& tab_inconnue, Doub
 
 
   // on ajoute la contribution des bords
-  ajouter_bords(resu);
+  ajouter_bords(tab_inconnue,resu);
   return resu;
 #undef bij_
 #undef inconnue_
@@ -842,7 +845,7 @@ DoubleTab& Op_Diff_EF::ajouter_new(const DoubleTab& tab_inconnue, DoubleTab& res
 
 
   // on ajoute la contribution des bords
-  ajouter_bords(resu);
+  ajouter_bords(tab_inconnue,resu);
   return resu;
 }
 
@@ -930,6 +933,7 @@ void Op_Diff_EF::ajouter_contribution(const DoubleTab& transporte, Matrice_Morse
                     }
               }
           }
+      ajouter_contributions_bords(matrice);
     }
   else
     {
@@ -1064,16 +1068,17 @@ void Op_Diff_EF::contribuer_au_second_membre(DoubleTab& resu ) const
 
   if ((equation().nombre_d_operateurs()>1)&&sub_type(Op_Conv_EF,equation().operateur(1).l_op_base()))
     ref_cast(Op_Conv_EF,equation().operateur(1).l_op_base()).contribue_au_second_membre_a_la_diffusion(resu);
-  ajouter_bords(resu);
+  const DoubleTab& tab_inconnue=equation().inconnue().valeurs();
+  ajouter_bords(tab_inconnue,resu,0);
 }
-void Op_Diff_EF::ajouter_bords(DoubleTab& resu ) const
+void Op_Diff_EF::ajouter_bords(const DoubleTab& tab_inconnue,DoubleTab& resu,  int contrib_interne ) const
 {
   // a mettre dans calculer_flux_bord....
 
   const Zone_Cl_EF& zone_Cl_EF = la_zcl_EF.valeur();
   const Zone_EF& zone_EF = la_zone_EF.valeur();
   flux_bords_=0.;
-  const DoubleTab& tab_inconnue=equation().inconnue().valeurs();
+  // const DoubleTab& tab_inconnue=equation().inconnue().valeurs();
   // on parcourt toutes les faces de bord et on calcule lambda*gradT
   const Zone_EF& zone_ef=ref_cast(Zone_EF,equation().zone_dis().valeur());
   const IntTab& face_voisins=zone_ef.face_voisins();
@@ -1125,13 +1130,13 @@ void Op_Diff_EF::ajouter_bords(DoubleTab& resu ) const
   for (n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = zone_Cl_EF.les_conditions_limites(n_bord);
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      int ndeb = le_bord.num_premiere_face();
+      int nfin = ndeb + le_bord.nb_faces();
 
       if (sub_type(Neumann_paroi,la_cl.valeur()))
         {
           const Neumann_paroi& la_cl_paroi = ref_cast(Neumann_paroi, la_cl.valeur());
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-          int ndeb = le_bord.num_premiere_face();
-          int nfin = ndeb + le_bord.nb_faces();
           for (int face=ndeb; face<nfin; face++)
             {
 
@@ -1147,10 +1152,110 @@ void Op_Diff_EF::ajouter_bords(DoubleTab& resu ) const
                 }
             }
         }
+      else if (sub_type(Echange_global_impose, la_cl.valeur()))
+        {
+          const Echange_global_impose& la_cl_paroi = ref_cast(Echange_global_impose, la_cl.valeur());
+          for (int face=ndeb; face<nfin; face++)
+            {
+
+              double h=la_cl_paroi.h_imp(face-ndeb);
+              double Text=la_cl_paroi.T_ext(face-ndeb);
+
+
+              double tm=0;
+              if (contrib_interne)
+                {
+                  for (int i1=0; i1<nb_som_face; i1++)
+                    {
+                      int glob2=face_sommets(face,i1);
+                      {
+                        tm+=tab_inconnue(glob2);
+                      }
+                    }
+                  tm/=nb_som_face;
+                }
+              double flux=h*(Text-tm)*zone_EF.surface(face);
+              flux_bords_(face,0) = flux;
+              flux/=nb_som_face;
+              for (int i1=0; i1<nb_som_face; i1++)
+                {
+                  int glob2=face_sommets(face,i1);
+                  {
+                    resu[glob2] += flux;
+                  }
+
+                }
+            }
+        }
+
+
     }
   modifier_flux(*this);
 }
 
+
+
+
+void Op_Diff_EF::ajouter_contributions_bords(Matrice_Morse& matrice ) const
+{
+  const Zone_Cl_EF& zone_Cl_EF = la_zcl_EF.valeur();
+  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  const Zone_EF& zone_ef=ref_cast(Zone_EF,equation().zone_dis().valeur());
+
+  const IntTab& face_sommets=zone_ef.face_sommets();
+  int nb_som_face=zone_ef.nb_som_face();
+
+  int nb_dim =equation().inconnue().valeurs().nb_dim();
+
+  if (nb_dim==2)
+    {
+      // Cerr<<__PRETTY_FUNCTION__<<" non code pour les vecteurs"<<finl;
+      throw;
+      return;
+    }
+
+  // Neumann :
+  int n_bord;
+  int nb_bords=zone_Cl_EF.nb_cond_lim();
+
+  for (n_bord=0; n_bord<nb_bords; n_bord++)
+    {
+      const Cond_lim& la_cl = zone_Cl_EF.les_conditions_limites(n_bord);
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      int ndeb = le_bord.num_premiere_face();
+      int nfin = ndeb + le_bord.nb_faces();
+
+
+      if (sub_type(Echange_global_impose, la_cl.valeur()))
+        {
+          //  matrice.imprimer(Cout);
+          const Echange_global_impose& la_cl_paroi = ref_cast(Echange_global_impose, la_cl.valeur());
+          for (int face=ndeb; face<nfin; face++)
+            {
+
+              double h=la_cl_paroi.h_imp(face-ndeb);
+              //double Text=la_cl_paroi.T_ext(face-ndeb);
+
+
+              double tm=1./(nb_som_face*nb_som_face);
+              double flux=h*zone_EF.surface(face)*tm;
+              for (int i1=0; i1<nb_som_face; i1++)
+                {
+                  int glob2=face_sommets(face,i1);
+                  for (int j1=0; j1<nb_som_face; j1++)
+                    {
+                      int glob1=face_sommets(face,j1);
+                      {
+                        matrice_coef(glob1,glob2) += flux;
+                      }
+
+                    }
+                }
+            }
+          //  matrice.imprimer(Cout);exit();
+        }
+    }
+}
 void Op_Diff_EF::verifier() const
 {
   static int testee=0;

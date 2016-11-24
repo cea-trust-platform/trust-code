@@ -66,8 +66,9 @@ public:
   inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
   inline void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
   void contribuer_au_second_membre(DoubleTab& ) const;
-  void ajouter_bords(DoubleTab& ) const;
+  void ajouter_bords(const DoubleTab&, DoubleTab& ,int contrib_interne=1) const;
   void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const;
+  void ajouter_contributions_bords(Matrice_Morse& matrice ) const;
   void ajouter_contribution_new(const DoubleTab&, Matrice_Morse& ) const;
   void ajouter_cas_scalaire(const DoubleTab& inconnue,
                             DoubleTab& resu, DoubleTab& flux_bords,
