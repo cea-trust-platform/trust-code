@@ -93,11 +93,13 @@ public:
   {
     return nom_;
   }
+  static void sed_check_case_non_sensitive(int i) ;
 protected :
 
   static int nb_noms;
   std::string nom_;
 
+  static int check_case_non_sensitive_; // pour descativer dans ==
 };
 
 char intochar(int i);

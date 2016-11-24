@@ -4,10 +4,25 @@ for cas in obsolete accolade
 do
   trust ${cas} 1>${cas}.out 2>${cas}.err
   status=$?
-                 if [ $status -eq 0 ]
-                 then
-                 echo le cas test ${cas} devrait faire une erreur
-                 exit 1
-                 fi
-                 done
-                 exit 0
+  if [ $status -eq 0 ]
+      then
+      echo le cas test ${cas} devrait faire une erreur
+      exit 1
+  fi
+done
+
+cas=check_sensitive
+trust ${cas} 1>${cas}.out 2>${cas}.err
+status=$?
+if [ $status -ne 0 ]
+    then
+    echo le cas test ${cas} ne devrait pas faire une erreur
+    exit 1
+    fi
+if [ "`grep 'Warning: ok and OK are they really different ?' ${cas}.err`" == "" ]
+then
+    echo le cas test ${cas} devrait affichier un warning
+    exit 1
+fi
+
+exit 0

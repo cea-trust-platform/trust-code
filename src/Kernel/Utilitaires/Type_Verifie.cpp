@@ -19,6 +19,7 @@
 // Version:     /main/48
 //
 //////////////////////////////////////////////////////////////////////////////
+#include <Type_Verifie.h>
 #include <Motcle.h>
 #include <Noms.h>
 
@@ -28,69 +29,69 @@ static Motcles motcle_obsolete;
 void verifie(const Nom& type)
 {
   int n=56;
-if( motcle_obsolete.size()!=n)
-{
- int i=0;
-  // Definition des anciens mots cles desormais plus reconnus
-  Motcles motcle_obsolete(n);
-  motcle_obsolete[i++] = "Solv_GCP_SSOR";
-  motcle_obsolete[i++] = "Paroi_flux_impose_Rayo_transp_VDF";
-  motcle_obsolete[i++] = "Paroi_flux_impose_Rayo_transp_VEF";
-  motcle_obsolete[i++] = "Frontiere_Ouverte_Rayo_transp_VDF";
-  motcle_obsolete[i++] = "Frontiere_Ouverte_Rayo_transp_VEF";
-  motcle_obsolete[i++] = "EchgItemsComm";
-  motcle_obsolete[i++] = "LireMED";
-  motcle_obsolete[i++] = "EcrMED";
-  motcle_obsolete[i++] = "Canal_thermo";
-  motcle_obsolete[i++] = "Prandtl_sous_maille";
-  motcle_obsolete[i++] = "Decentre";
-  motcle_obsolete[i++] = "Distance_perio";
-  motcle_obsolete[i++] = "T_paroi";
-  motcle_obsolete[i++] = "Champ_front_lineaire";
-  motcle_obsolete[i++] = "Champ_front_analytique";
-  motcle_obsolete[i++] = "Tourbillon";
-  motcle_obsolete[i++] = "Puissance_Thermique_Uniforme";
-  motcle_obsolete[i++] = "Source_Constituant_Uniforme";
-  motcle_obsolete[i++] = "Seuil_convg_implicite";
-  motcle_obsolete[i++] = "Seuil_resol_implicite";
-  motcle_obsolete[i++] = "Seuil_convg_variable";
-  motcle_obsolete[i++] = "Schema_Crank_Nicholson";
-  motcle_obsolete[i++] = "Resoudre_ALE";
-  motcle_obsolete[i++] = "Resoudre_QComp";
-  motcle_obsolete[i++] = "Decoupebord";
-  motcle_obsolete[i++] = "Periodique_1Proc";
-  motcle_obsolete[i++] = "Corriger_coord_perio";
-  motcle_obsolete[i++] = "Echange_domcut";
-  motcle_obsolete[i++] = "Extruder_en3_perio";
-  motcle_obsolete[i++] = "Extruder_perio";
-  motcle_obsolete[i++] = "ScatterAscii";
-  motcle_obsolete[i++] = "frontiere_ouverte_gradient_pression_impose_VEF";
-  motcle_obsolete[i++] = "Champ_front_calc_intern";
-  motcle_obsolete[i++] = "Champ_front_calc_recycl_fluct_pbperio";
-  motcle_obsolete[i++] = "Champ_front_calc_recycl_champ";
-  motcle_obsolete[i++] = "Champ_front_calc_intern_2pbs";
-  motcle_obsolete[i++] = "Champ_front_calc_recycl_fluct";
-  motcle_obsolete[i++] = "direction_periodicite";
-  motcle_obsolete[i++] = "NPHypre";
-  motcle_obsolete[i++] = "NPPetsc";
-  motcle_obsolete[i++] = "Latatomed";
-  motcle_obsolete[i++] = "Latatoother";
-  motcle_obsolete[i++] = "MG";
-  motcle_obsolete[i++] = "precond_local";
-  motcle_obsolete[i++] = "quick_period";
-  motcle_obsolete[i++] = "diffusivite";
-  motcle_obsolete[i++] = "Ecrire_fic_meshtv";
-  motcle_obsolete[i++] = "meshtv";
-  motcle_obsolete[i++] = "paroi_couple";
-  motcle_obsolete[i++] = "corriger_coordonnees";
-  motcle_obsolete[i++] = "Champ_front_debit_VEF";
-  motcle_obsolete[i++] = "Schema_MacCormack";
-  motcle_obsolete[i++] = "Alternant";
-  motcle_obsolete[i++] = "Alter_interp";
-  motcle_obsolete[i++] = "Boussinesq";
-  motcle_obsolete[i++] = "Temperature_paroi_NOPASPOURGENEPI";
-  assert(i==n);
-}
+  if( motcle_obsolete.size()!=n)
+    {
+      int i=0;
+      // Definition des anciens mots cles desormais plus reconnus
+      motcle_obsolete.dimensionner(n);
+      motcle_obsolete[i++] = "Solv_GCP_SSOR";
+      motcle_obsolete[i++] = "Paroi_flux_impose_Rayo_transp_VDF";
+      motcle_obsolete[i++] = "Paroi_flux_impose_Rayo_transp_VEF";
+      motcle_obsolete[i++] = "Frontiere_Ouverte_Rayo_transp_VDF";
+      motcle_obsolete[i++] = "Frontiere_Ouverte_Rayo_transp_VEF";
+      motcle_obsolete[i++] = "EchgItemsComm";
+      motcle_obsolete[i++] = "LireMED";
+      motcle_obsolete[i++] = "EcrMED";
+      motcle_obsolete[i++] = "Canal_thermo";
+      motcle_obsolete[i++] = "Prandtl_sous_maille";
+      motcle_obsolete[i++] = "Decentre";
+      motcle_obsolete[i++] = "Distance_perio";
+      motcle_obsolete[i++] = "T_paroi";
+      motcle_obsolete[i++] = "Champ_front_lineaire";
+      motcle_obsolete[i++] = "Champ_front_analytique";
+      motcle_obsolete[i++] = "Tourbillon";
+      motcle_obsolete[i++] = "Puissance_Thermique_Uniforme";
+      motcle_obsolete[i++] = "Source_Constituant_Uniforme";
+      motcle_obsolete[i++] = "Seuil_convg_implicite";
+      motcle_obsolete[i++] = "Seuil_resol_implicite";
+      motcle_obsolete[i++] = "Seuil_convg_variable";
+      motcle_obsolete[i++] = "Schema_Crank_Nicholson";
+      motcle_obsolete[i++] = "Resoudre_ALE";
+      motcle_obsolete[i++] = "Resoudre_QComp";
+      motcle_obsolete[i++] = "Decoupebord";
+      motcle_obsolete[i++] = "Periodique_1Proc";
+      motcle_obsolete[i++] = "Corriger_coord_perio";
+      motcle_obsolete[i++] = "Echange_domcut";
+      motcle_obsolete[i++] = "Extruder_en3_perio";
+      motcle_obsolete[i++] = "Extruder_perio";
+      motcle_obsolete[i++] = "ScatterAscii";
+      motcle_obsolete[i++] = "frontiere_ouverte_gradient_pression_impose_VEF";
+      motcle_obsolete[i++] = "Champ_front_calc_intern";
+      motcle_obsolete[i++] = "Champ_front_calc_recycl_fluct_pbperio";
+      motcle_obsolete[i++] = "Champ_front_calc_recycl_champ";
+      motcle_obsolete[i++] = "Champ_front_calc_intern_2pbs";
+      motcle_obsolete[i++] = "Champ_front_calc_recycl_fluct";
+      motcle_obsolete[i++] = "direction_periodicite";
+      motcle_obsolete[i++] = "NPHypre";
+      motcle_obsolete[i++] = "NPPetsc";
+      motcle_obsolete[i++] = "Latatomed";
+      motcle_obsolete[i++] = "Latatoother";
+      motcle_obsolete[i++] = "MG";
+      motcle_obsolete[i++] = "precond_local";
+      motcle_obsolete[i++] = "quick_period";
+      motcle_obsolete[i++] = "diffusivite";
+      motcle_obsolete[i++] = "Ecrire_fic_meshtv";
+      motcle_obsolete[i++] = "meshtv";
+      motcle_obsolete[i++] = "paroi_couple";
+      motcle_obsolete[i++] = "corriger_coordonnees";
+      motcle_obsolete[i++] = "Champ_front_debit_VEF";
+      motcle_obsolete[i++] = "Schema_MacCormack";
+      motcle_obsolete[i++] = "Alternant";
+      motcle_obsolete[i++] = "Alter_interp";
+      motcle_obsolete[i++] = "Boussinesq";
+      motcle_obsolete[i++] = "Temperature_paroi_NOPASPOURGENEPI";
+      assert(i==n);
+    }
   // GF on ne constuit les noms de la nouvelle syntaxe que si necessaire
   // cela optimise un peu...
   int rang=motcle_obsolete.search((Motcle)type);
