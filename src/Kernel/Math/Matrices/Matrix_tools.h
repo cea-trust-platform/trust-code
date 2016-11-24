@@ -65,7 +65,8 @@ public :
   static void allocate_morse_matrix( const int&  nb_lines,
                                      const int&  nb_columns,
                                      const IntTab&  stencil,
-                                     Matrice_Morse& matrix );
+                                     Matrice_Morse& matrix,
+                                     const bool& attach_stencil_to_matrix=false);
 
   static void build_morse_matrix( const int&      nb_lines,
                                   const int&      nb_columns,
@@ -116,11 +117,13 @@ public :
   static void allocate_from_stencil( const int& nb_lines,
                                      const int& nb_columns,
                                      const IntTab& stencil,
-                                     Matrice&      matrix );
+                                     Matrice&      matrix,
+                                     const bool& attach_stencil_to_matrix=false);
 
   // extending a matrix's stencil
   static void extend_matrix_stencil( const IntTab& stencil,
-                                     Matrice&      matrix );
+                                     Matrice&      matrix,
+                                     const bool& attach_stencil_to_matrix=false );
 
 };
 

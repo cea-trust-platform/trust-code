@@ -112,7 +112,8 @@ bool Matrix_tools::is_normalized_symmetric_stencil( const IntTab& stencil )
 void Matrix_tools::allocate_morse_matrix( const int&  nb_lines,
                                           const int&  nb_columns,
                                           const IntTab&  stencil,
-                                          Matrice_Morse& matrix )
+                                          Matrice_Morse& matrix ,
+                                          const bool& attach_stencil_to_matrix )
 {
   assert( is_normalized_stencil( stencil ) );
 
@@ -142,6 +143,10 @@ void Matrix_tools::allocate_morse_matrix( const int&  nb_lines,
         }
     }
 
+  if( attach_stencil_to_matrix )
+    {
+      matrix.set_stencil( stencil );
+    }
 }
 
 void Matrix_tools::build_morse_matrix( const int&      nb_lines,
@@ -500,7 +505,8 @@ bool Matrix_tools::is_diagonal_stencil( const int& nb_lines,
 void Matrix_tools::allocate_from_stencil( const int& nb_lines,
                                           const int& nb_columns,
                                           const IntTab& stencil,
-                                          Matrice&      matrix )
+                                          Matrice&      matrix ,
+                                          const bool&   attach_stencil_to_matrix)
 {
   if ( is_null_stencil( stencil ) )
     {
@@ -515,6 +521,10 @@ void Matrix_tools::allocate_from_stencil( const int& nb_lines,
       matrix.typer( "Matrice_Diagonale" );
       Matrice_Diagonale& matrix_ = ref_cast( Matrice_Diagonale, matrix.valeur( ) );
       matrix_.dimensionner( nb_lines );
+      if( attach_stencil_to_matrix )
+        {
+          matrix_.set_stencil( stencil );
+        }
     }
   else
     {
@@ -523,13 +533,15 @@ void Matrix_tools::allocate_from_stencil( const int& nb_lines,
       allocate_morse_matrix( nb_lines,
                              nb_columns,
                              stencil,
-                             matrix_ );
+                             matrix_,
+                             attach_stencil_to_matrix );
     }
 }
 
 // extending a matrix's stencil
 void Matrix_tools::extend_matrix_stencil( const IntTab& stencil,
-                                          Matrice&      matrix )
+                                          Matrice&      matrix ,
+                                          const bool&   attach_stencil_to_matrix )
 {
   if ( ! ( is_null_stencil( stencil ) ) )
     {
@@ -550,6 +562,7 @@ void Matrix_tools::extend_matrix_stencil( const IntTab& stencil,
       allocate_from_stencil( nb_lines,
                              nb_columns,
                              full_stencil,
-                             matrix );
+                             matrix ,
+                             attach_stencil_to_matrix );
     }
 }

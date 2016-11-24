@@ -1825,6 +1825,13 @@ void Matrice_Morse::get_stencil( IntTab& stencil ) const
 {
   assert_check_morse_matrix_structure( );
 
+  if( is_stencil_up_to_date_ )
+    {
+      stencil = stencil_;
+      return;
+    }
+
+
   stencil.resize( 0, 2 );
   stencil.set_smart_resize( 1 );
 
@@ -1863,6 +1870,20 @@ void Matrice_Morse::get_stencil_and_coefficients( IntTab&      stencil,
                                                   ArrOfDouble& coefficients ) const
 {
   assert_check_morse_matrix_structure( );
+
+  if( is_stencil_up_to_date_ )
+    {
+      if( coeff_.size( ) == 0 )
+        {
+          Cerr << "Error in Matrice_Morse::get_stencil_and_coefficients( )"<<finl;
+          Cerr << "  The coefficients are not filled."<<finl;
+          Cerr << "  Aborting..." << finl;
+          Process::abort( );
+        }
+      stencil = stencil_ ;
+      coefficients = coeff_ ;
+      return;
+    }
 
   stencil.resize( 0, 2 );
   stencil.set_smart_resize( 1 );

@@ -190,9 +190,12 @@ DoubleTab& Matrice_Bloc::ajouter_multTab_(const DoubleTab& x,
 
 void Matrice_Bloc::scale( const double& x )
 {
-  for (int i=0; i<nb_bloc_lignes(); i++)
+  const int nb_line_blocks   = nb_bloc_lignes( );
+  const int nb_column_blocks = nb_bloc_colonnes( );
+
+  for (int i=0; i<nb_line_blocks; i++)
     {
-      for (int j=0; j<nb_bloc_colonnes(); j++)
+      for (int j=0; j<nb_column_blocks; j++)
         {
           Matrice_Base& matrix = get_bloc( i, j ).valeur( );
           matrix.scale( x );
@@ -204,6 +207,11 @@ void Matrice_Bloc::scale( const double& x )
 void Matrice_Bloc::get_stencil( IntTab& stencil ) const
 {
   assert_check_block_matrix_structure( );
+  if(  is_stencil_up_to_date_ )
+    {
+      stencil = stencil_;
+      return;
+    }
 
   const int nb_line_blocks   = nb_bloc_lignes( );
   const int nb_column_blocks = nb_bloc_colonnes( );
@@ -291,6 +299,96 @@ void Matrice_Bloc::get_stencil( IntTab& stencil ) const
 }
 
 
+void Matrice_Bloc::build_stencil( void )
+{
+  const int nb_line_blocks   = nb_bloc_lignes( );
+  const int nb_column_blocks = nb_bloc_colonnes( );
+  const int nb_stencils      = nb_line_blocks * nb_column_blocks;
+
+
+  VECT( IntTab ) local_stencils;
+  local_stencils.dimensionner( nb_stencils );
+
+  int imin = 0;
+  int imax = 0;
+  int jmin = 0;
+  int jmax = 0;
+
+  for ( int i=0; i<nb_line_blocks; ++i )
+    {
+      for ( int j=0; j<nb_column_blocks; ++j )
+        {
+          const Matrice_Base& local_matrix = get_bloc( i, j ).valeur( );
+
+          imax = imin + local_matrix.nb_lignes( );
+          jmax = jmin + local_matrix.nb_colonnes( );
+
+          IntTab& local_stencil = local_stencils[ i * nb_column_blocks + j ];
+          local_matrix.get_stencil( local_stencil );
+
+          const int size = local_stencil.dimension( 0 );
+          for ( int k=0; k<size; ++k )
+            {
+              local_stencil( k, 0 ) += imin;
+              local_stencil( k, 1 ) += jmin;
+            }
+          jmin = jmax;
+        }
+      imin = imax;
+      jmin = 0;
+    }
+
+  const int nb_lines = nb_lignes( );
+  ArrOfInt offsets( nb_lines + 1 );
+  offsets[ 0 ] = 0;
+
+  for ( int i=0; i<nb_stencils; ++i )
+    {
+      const IntTab& local_stencil = local_stencils[ i ];
+      const int size = local_stencil.dimension( 0 );
+
+      for ( int k=0; k<size; ++k )
+        {
+          const int line = local_stencil( k, 0 );
+          offsets[ line + 1 ] += 1;
+        }
+    }
+
+  for ( int i=0; i<nb_lines; ++i )
+    {
+      offsets[ i + 1 ] += offsets[ i ];
+    }
+
+  offsets_ = offsets ;
+
+  const int stencil_size = offsets[ nb_lines ];
+  stencil_.resize( stencil_size, 2 );
+
+  stencil_ = -1;
+
+  for ( int i=0; i<nb_stencils; ++i )
+    {
+      const IntTab& local_stencil = local_stencils[ i ];
+      const int size = local_stencil.dimension( 0 );
+
+      for ( int k=0; k<size; ++k )
+        {
+          const int line   = local_stencil( k, 0 );
+          const int column = local_stencil( k, 1 );
+          const int index  = offsets[ line ];
+
+          assert( stencil_( index, 0 ) < 0 );
+          assert( stencil_( index, 1 ) < 0 );
+          assert( index < offsets[ line + 1 ] );
+
+          stencil_( index, 0 )  = line;
+          stencil_( index, 1 )  = column;
+          offsets[ line ]     += 1;
+        }
+    }
+
+  is_stencil_up_to_date_ = true ;
+}
 
 void Matrice_Bloc::get_stencil_and_coefficients( IntTab& stencil, ArrOfDouble& coefficients ) const
 {
@@ -303,6 +401,45 @@ void Matrice_Bloc::get_stencil_and_coefficients( IntTab& stencil, ArrOfDouble& c
   int jmin = 0;
   int jmax = 0;
 
+  if( is_stencil_up_to_date_ )
+    {
+      stencil = stencil_;
+      ArrOfInt offsets = offsets_;
+      const int stencil_size = stencil_.dimension(0);
+      coefficients.resize_array( stencil_size );
+
+      IntTab      local_stencil;
+      ArrOfDouble local_coeff;
+
+      for ( int i=0; i<nb_line_blocks; ++i )
+        {
+          for ( int j=0; j<nb_column_blocks; ++j )
+            {
+              const Matrice_Base& local_matrix = get_bloc( i, j ).valeur( );
+
+              imax = imin + local_matrix.nb_lignes( );
+              jmax = jmin + local_matrix.nb_colonnes( );
+
+              local_matrix.get_stencil_and_coefficients( local_stencil, local_coeff );
+
+              const int size = local_stencil.dimension( 0 );
+              for ( int k=0; k<size; ++k )
+                {
+                  const int line           = local_stencil( k, 0 ) + imin;
+                  const double coefficient = local_coeff[ k ];
+                  const int index          = offsets[ line ];
+
+                  coefficients[ index ] = coefficient;
+
+                  offsets[ line ] += 1;
+                }
+              jmin = jmax;
+            }
+          imin = imax;
+          jmin = 0;
+        }
+      return;
+    }
   const int nb_stencils      =  nb_line_blocks * nb_column_blocks;
 
   VECT( IntTab ) vect_local_stencils;

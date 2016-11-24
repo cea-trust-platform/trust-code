@@ -1621,22 +1621,34 @@ int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
     }
   else if (solveur_direct_==2)
     {
-      Cout << "Cholesky from SUPERLU_DIST may take several minutes, please wait..." << finl;
+      if( message_affi )
+        {
+          Cout << "Cholesky from SUPERLU_DIST may take several minutes, please wait..." << finl;
+        }
       PCFactorSetMatSolverPackage(PreconditionneurPetsc_, MATSOLVERSUPERLU_DIST);
     }
   else if (solveur_direct_==3)
     {
-      Cout << "Cholesky from PETSc may take several minutes, please wait..." << finl;
+      if( message_affi )
+        {
+          Cout << "Cholesky from PETSc may take several minutes, please wait..." ;
+        }
       PCFactorSetMatSolverPackage(PreconditionneurPetsc_, MATSOLVERPETSC);
     }
   else if (solveur_direct_==4)
     {
-      Cout << "Cholesky from UMFPACK may take several minutes, please wait..." << finl;
+      if( message_affi )
+        {
+          Cout << "Cholesky from UMFPACK may take several minutes, please wait..." ;
+        }
       PCFactorSetMatSolverPackage(PreconditionneurPetsc_, MATSOLVERUMFPACK);
     }
   else if (solveur_direct_==5)
     {
-      Cout << "Cholesky from Pastix may take several minutes, please wait..." << finl;
+      if( message_affi )
+        {
+          Cout << "Cholesky from Pastix may take several minutes, please wait..." ;
+        }
       PCFactorSetMatSolverPackage(PreconditionneurPetsc_, MATSOLVERPASTIX);
     }
   else if (solveur_direct_)
@@ -1645,6 +1657,13 @@ int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
       Cerr << "Contact TRUST support." << finl;
       exit();
     }
+
+  if( ( solveur_direct_ > 1 ) && ( message_affi ) )
+    {
+      Cout << " OK "<<finl;
+      message_affi = 0;
+    }
+
 
   /****************************************/
   /* Association de la matrice au solveur */
