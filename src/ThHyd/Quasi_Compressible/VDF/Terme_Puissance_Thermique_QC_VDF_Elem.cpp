@@ -22,9 +22,11 @@
 
 #include <Terme_Puissance_Thermique_QC_VDF_Elem.h>
 #include <Probleme_base.h>
-#include <Fluide_Quasi_Compressible.h>
 #include <Discretisation_base.h>
 #include <Champ_val_tot_sur_vol_base.h>
+//  classe a renommer et a mettre dans ThSol
+//
+//
 Implemente_instanciable_sans_constructeur(Terme_Puissance_Thermique_QC_VDF_Elem,"Puissance_Thermique_QC_VDF_P0_VDF",Terme_Puissance_Thermique_VDF_base);
 implemente_It_Sou_VDF_Elem(Eval_Puiss_Th_QC_VDF_Elem)
 
@@ -37,7 +39,7 @@ Sortie& Terme_Puissance_Thermique_QC_VDF_Elem::printOn(Sortie& s ) const
 Entree& Terme_Puissance_Thermique_QC_VDF_Elem::readOn(Entree& s )
 {
   Terme_Puissance_Thermique_VDF_base::readOn(s);
-  Nom name_file("Puissance_Thermique_QC");
+  Nom name_file("Puissance_Thermique");
   modify_name_file(name_file);
   set_fichier(name_file);
   set_description("Degagement de puissance thermique = Integrale(P*dv) [W]");

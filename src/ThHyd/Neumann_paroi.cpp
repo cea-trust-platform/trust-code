@@ -126,7 +126,14 @@ double Neumann_paroi::flux_impose(int i) const
       double d_Cp;
       double d_rho;
       const Champ_Don& rho=mil.masse_volumique();
-      if (rho.non_nul())
+      if ((!rho.non_nul())||(nom_pb.debute_par("Probleme_Interface")|| nom_pb==Nom("Probleme_Thermo_Front_Tracking"))||!sub_type(Champ_Uniforme,rho.valeur())||nom_pb==Nom("Pb_Conduction_Milieu_Variable"))
+        {
+          // Pour le front tracking, on ne divise pas par Rho*Cp
+          // ni pour QC
+          d_rho=1.;
+          d_Cp=1.;
+        }
+      else
         {
           const Champ_Don& Cp =mil.capacite_calorifique();
 
@@ -146,19 +153,6 @@ double Neumann_paroi::flux_impose(int i) const
             {
               d_Cp= Cp.valeur()(i);
             }
-          if ((nom_pb.debute_par("Probleme_Interface")|| nom_pb==Nom("Probleme_Thermo_Front_Tracking"))||!sub_type(Champ_Uniforme,rho.valeur()))
-            {
-              // Pour le front tracking, on ne divise pas par Rho*Cp
-              // ni pour QC
-              d_rho=1.;
-              d_Cp=1.;
-            }
-        }
-      else
-        {
-          d_rho=1.;
-          d_Cp=1.;
-
         }
       //  Cout << "Rho = " << d_rho << finl;
       //  Cout << "Cp = " << d_Cp << finl;
@@ -196,30 +190,33 @@ double Neumann_paroi::flux_impose(int i,int j) const
       double d_Cp;
       double d_rho;
       const Champ_Don& rho=mil.masse_volumique();
-      const Champ_Don& Cp =mil.capacite_calorifique();
-
-      if (sub_type(Champ_Uniforme,rho.valeur()))
-        {
-          d_rho= rho(0,0);
-        }
-      else
-        {
-          d_rho= rho.valeur()(i);
-        }
-      if (sub_type(Champ_Uniforme,Cp.valeur()))
-        {
-          d_Cp= Cp(0,0);
-        }
-      else
-        {
-          d_Cp= Cp.valeur()(i);
-        }
-
-      if (nom_pb.debute_par("Probleme_Interface") || nom_pb==Nom("Probleme_Thermo_Front_Tracking"))
+      if ((nom_pb.debute_par("Probleme_Interface")|| nom_pb==Nom("Probleme_Thermo_Front_Tracking"))||!sub_type(Champ_Uniforme,rho.valeur())||nom_pb==Nom("Pb_Conduction_Milieu_Variable"))
         {
           // Pour le front tracking, on ne divise pas par Rho*Cp
+          // ni pour QC
           d_rho=1.;
           d_Cp=1.;
+        }
+      else
+        {
+          const Champ_Don& Cp =mil.capacite_calorifique();
+
+          if (sub_type(Champ_Uniforme,rho.valeur()))
+            {
+              d_rho= rho(0,0);
+            }
+          else
+            {
+              d_rho= rho.valeur()(i);
+            }
+          if (sub_type(Champ_Uniforme,Cp.valeur()))
+            {
+              d_Cp= Cp(0,0);
+            }
+          else
+            {
+              d_Cp= Cp.valeur()(i);
+            }
         }
       if (le_champ_front.valeurs().dimension(0)==1)
         return le_champ_front(0,j)/(d_rho*d_Cp);

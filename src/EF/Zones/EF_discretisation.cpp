@@ -28,18 +28,7 @@
 
 #include <Champ_Fonc_Tabule_P0_EF.h>
 #include <Milieu_base.h>
-/*
-#include <Rot_Ch_P1_EF.h>
-#include <Ch_Crit_Q_P1_EF.h>
-#include <Ch_y_plus_P1_EF.h>
-#include <Ch_grad_T_P1_EF.h>
-#include <Ch_h_conv_P1_EF.h>
-#include <Rot_Ch_Q1_EF.h>
-#include <Correlation_Vec_Sca_EF.h>
-#include <Fluide_Ostwald.h>
-#include <Champ_Ostwald_EF.h>
-#include <Navier_Stokes_std.h>
-*/
+#include <Equation_base.h>
 #include <Tri_EF.h>
 #include <Tetra_EF.h>
 #include <Segment_EF.h>
@@ -685,6 +674,8 @@ Nom  EF_discretisation::get_name_of_type_for(const Nom& class_operateur, const N
   if (class_operateur=="Source")
     {
       type=type_operateur;
+      if (eqn.que_suis_je()=="Conduction_Milieu_Variable")
+        type+="_QC";
       type+="_EF";
       return type;
 
