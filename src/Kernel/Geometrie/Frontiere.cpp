@@ -365,6 +365,76 @@ void Frontiere::trace_elem_local(const DoubleTab& y, DoubleTab& x) const
 }
 
 // Description:
+// Renvoie la trace sur la frontiere du tableau aux noeuds y
+void Frontiere::trace_som_local(const DoubleTab& y, DoubleTab& x) const
+{
+  int size = nb_faces();
+  int nb_compo_=1;
+  const IntTab& som_face = les_sommets_des_faces();
+
+  if (y.nb_dim() == 2)
+    nb_compo_ = y.dimension(1);
+
+  // On dimensionne x si ce n'est pas fait
+  if (x.size_array()==0 && size!=0)
+    {
+      if (y.nb_dim() == 2)
+        x.resize(size,nb_compo_);
+      else
+        x.resize(size);
+    }
+  else if (x.dimension(0) != size)
+    {
+      Cerr << "Call to Frontiere::trace_som with a DoubleTab x not located on boundary faces." << finl;
+      Process::exit();
+    }
+  int nsomfa = som_face.dimension(1);
+  double s;
+
+  for (int i=0; i<size; i++)
+    {
+      if(y.nb_dim()==2)
+        {
+          for(int j=0; j<nb_compo_; j++)
+            {
+              s=0.;
+              for (int isom=0 ; isom<nsomfa ; isom++)
+                s+=y(som_face(i,isom),j);
+
+              s/=nsomfa;
+              x(i,j) = s;
+            }
+        }
+      else
+        {
+
+          if (x.nb_dim()==2)
+            {
+              for(int j=0; j<nb_compo_; j++)
+                {
+                  s = 0.;
+                  for (int isom=0 ; isom<nsomfa ; isom++)
+                    s+=y(som_face(i,isom));
+
+                  s/=nsomfa;
+                  x(i,j) = s;
+                }
+            }
+          else
+            {
+              s = 0.;
+              for (int isom=0 ; isom<nsomfa ; isom++)
+                s+=y(som_face(i,isom));
+
+              s/=nsomfa;
+              x(i) = s;
+            }
+
+        }
+    }
+}
+
+// Description:
 // Renvoie la trace sur la frontiere du tableau aux faces y
 void Frontiere::trace_face_local(const DoubleVect& y, DoubleVect& x) const
 {
@@ -398,6 +468,12 @@ void Frontiere::trace_face_local(const DoubleTab& y, DoubleTab& x) const
         int face=num_premiere_face()+i;
         x(i,0)=y(face);
       }
+}
+
+void Frontiere::trace_som_distant(const DoubleTab&, DoubleTab&) const
+{
+  Cerr<<que_suis_je()<<"::trace_som_distant not implemented "<<finl;
+  exit();
 }
 
 void Frontiere::trace_elem_distant(const DoubleTab&, DoubleTab&) const

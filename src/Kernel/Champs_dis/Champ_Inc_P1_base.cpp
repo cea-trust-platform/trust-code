@@ -56,3 +56,10 @@ int Champ_Inc_P1_base::fixer_nb_valeurs_nodales(int nb_noeuds)
   creer_tableau_distribue(md);
   return 1;
 }
+
+// Description :
+// Trace du champ P0 sur la frontiere
+DoubleTab& Champ_Inc_P1_base::trace(const Frontiere_dis_base& fr, DoubleTab& x, double tps,int distant) const
+{
+  return Champ_implementation_sommet_base::trace(fr, valeurs(tps), x,  distant);
+}

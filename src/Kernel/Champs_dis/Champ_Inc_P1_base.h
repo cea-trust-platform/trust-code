@@ -47,6 +47,7 @@ public :
   inline virtual double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const;
   inline virtual DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const;
   inline virtual DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& result, int ncomp) const;
+  virtual DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double,int distant ) const;
 
   inline virtual DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const;
   inline virtual int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const;
