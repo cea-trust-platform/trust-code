@@ -1,138 +1,140 @@
-Parametres {
-	Titre "Convergence du calcul"
+Parameters {
+	Title "Convergence du calcul"
 	 
-	Castest  "amont_10" "cas.data"  
-	Castest  "muscl_10" "cas.data"  
-	Castest  "ef_stab_10" "cas.data"  
-	Castest  "amont_old_10" "cas.data"  
-	Castest  "centre_10" "cas.data"  	 
-	Castest  "amont_20" "cas.data"  jdd en annexe  
-	Castest  "muscl_20" "cas.data"  
-	Castest  "ef_stab_20" "cas.data"  
-	Castest  "amont_old_20" "cas.data"  
-	Castest  "centre_20" "cas.data"  	 
-	Castest  "amont_40" "cas.data"  
-	Castest  "muscl_40" "cas.data"  
-	Castest  "ef_stab_40" "cas.data"  
-	Castest  "amont_old_40" "cas.data"  
-	Castest  "centre_40" "cas.data"  	 
-	Castest  "amont_80" "cas.data"  
-	Castest  "muscl_80" "cas.data"  
-	Castest  "ef_stab_80" "cas.data"  
-	Castest  "amont_old_80" "cas.data"  
-	Castest  "centre_80" "cas.data"  	 
-	Castest  "amont_160" "cas.data"  
-	Castest  "muscl_160" "cas.data"  
-	Castest  "ef_stab_160" "cas.data"  
-	Castest  "amont_old_160" "cas.data"  
-	Castest  "centre_160" "cas.data"  	Auteur "GF "
-	InclureData 2
-	Prerequis "./extract_convergence"
+	TestCase  "amont_10" "cas.data"  
+	TestCase  "muscl_10" "cas.data"  
+	TestCase  "ef_stab_10" "cas.data"  
+	TestCase  "amont_old_10" "cas.data"  
+	TestCase  "centre_10" "cas.data"  	 
+	TestCase  "amont_20" "cas.data"  jdd en annexe  
+	TestCase  "muscl_20" "cas.data"  
+	TestCase  "ef_stab_20" "cas.data"  
+	TestCase  "amont_old_20" "cas.data"  
+	TestCase  "centre_20" "cas.data"  	 
+	TestCase  "amont_40" "cas.data"  
+	TestCase  "muscl_40" "cas.data"  
+	TestCase  "ef_stab_40" "cas.data"  
+	TestCase  "amont_old_40" "cas.data"  
+	TestCase  "centre_40" "cas.data"  	 
+	TestCase  "amont_80" "cas.data"  
+	TestCase  "muscl_80" "cas.data"  
+	TestCase  "ef_stab_80" "cas.data"  
+	TestCase  "amont_old_80" "cas.data"  
+	TestCase  "centre_80" "cas.data"  	 
+	TestCase  "amont_160" "cas.data"  
+	TestCase  "muscl_160" "cas.data"  
+	TestCase  "ef_stab_160" "cas.data"  
+	TestCase  "amont_old_160" "cas.data"  
+	TestCase  "centre_160" "cas.data"   
+
+	Author "GF "
+	IncludeData 2
+	Prerequisite "./extract_convergence"
 	Description "Cas test periodique, pour tester convergence en maillage des opérateurs de convection"
 }
 
 
-Chapitre {
-	titre Convergence en maillage en vitesse 
+Chapter {
+	Title Convergence en maillage en vitesse 
 	Figure {
 	labelx N
 	labely erreur max 
 	logx
 	logy
-	incluredesccourbes 0
+	Include_Description_Curves 0
 	width 12cm
-	titre "convergence de la convection vitesse en maillage "
+	Title "convergence de la convection vitesse en maillage "
 	 
-		courbe {
-		legende amont
-		fichier conv_glob_amont_qdm
+		Curve {
+		legend amont
+		file conv_glob_amont_qdm
 		  style linespoints
 		}
 		 
-		courbe {
-		legende muscl
-		fichier conv_glob_muscl_qdm
+		Curve {
+		legend muscl
+		file conv_glob_muscl_qdm
 		  style linespoints
 		}
 		 
-		courbe {
-		legende ef_stab
-		fichier conv_glob_ef_stab_qdm
+		Curve {
+		legend ef_stab
+		file conv_glob_ef_stab_qdm
 		  style linespoints
 		}
 		 
-		courbe {
-		legende amont_old
-		fichier conv_glob_amont_old_qdm
+		Curve {
+		legend amont_old
+		file conv_glob_amont_old_qdm
 		  style linespoints
 		}
 		 
-		courbe {
-		legende centre
-		fichier conv_glob_centre_qdm
+		Curve {
+		legend centre
+		file conv_glob_centre_qdm
 		  style linespoints
 		}
 		 
-		courbe {
-		legende N^-1 
+		Curve {
+		legend N^-1 
 		fonction 1./x
 		  style lines
 		}
-		courbe {
-		legende N^-2 
+		Curve {
+		legend N^-2 
 		fonction 1./x/x
 		  style lines
 		}
 	}			
 } 
-Chapitre {
-	titre Convergence en maillage scalaire 
+Chapter {
+	Title Convergence en maillage scalaire 
 	Figure {
 	labelx N
 	labely erreur max 
 	logx
 	logy
-	incluredesccourbes 0
+	Include_Description_Curves 0
 	width 12cm
-	titre "convergence de la convection T en maillage "
+	Title "convergence de la convection T en maillage "
 	 
-		courbe {
-		legende amont
-		fichier conv_glob_amont_T
+		Curve {
+		legend amont
+		file conv_glob_amont_T
 		  style linespoints
 		}
 		 
-		courbe {
-		legende muscl
-		fichier conv_glob_muscl_T
+		Curve {
+		legend muscl
+		file conv_glob_muscl_T
 		  style linespoints
 		}
 		 
-		courbe {
-		legende ef_stab
-		fichier conv_glob_ef_stab_T
+		Curve {
+		legend ef_stab
+		file conv_glob_ef_stab_T
 		  style linespoints
 		}
 		 
-		courbe {
-		legende amont_old
-		fichier conv_glob_amont_old_T
+		Curve {
+		legend amont_old
+		file conv_glob_amont_old_T
 		  style linespoints
 		}
 		 
-		courbe {
-		legende centre
-		fichier conv_glob_centre_T
+		Curve {
+		legend centre
+		file conv_glob_centre_T
 		  style linespoints
 		}
 		 
-	      courbe {
-		legende N^-1 
+	      Curve {
+		legend N^-1 
 		fonction 1./x
 		  style lines
 		}
-		courbe {
-		legende N^-2 
+		Curve {
+		legend N^-2 
 		fonction 1./x/x
 		  style lines
 		}

@@ -1,18 +1,18 @@
-Parametres {
-	Titre "Ecoulement laminaire dans un coude 3D"
+Parameters {
+	Title "Ecoulement laminaire dans un coude 3D"
 	Description "On calcule l'écoulement tridimensionnel dans un coude.  L'écoulement est laminaire et on néglige la convection.  La pression est imposée sur les frontières d'entrée et de sortie du domaine de calcul.  Sur les parois supérieure et inférieure, une condition d'adhérence est imposée alors que les parois avant et arrière, une condition de symétrie est imposée.  Les champs initiaux de vitesse et de pression sont ceux du cas bidimensionnel pour lequel il existe une solution analytique."
-	Auteur "D. Jamet"
-	CasTest "." "eclt_coude_pression_3D.data"
-	incluredata 1
+	Author "D. Jamet"
+	TestCase "." "eclt_coude_pression_3D.data"
+	IncludeData 1
 }
 
-Chapitre {
-	Titre "Champs de pression et de vitesse"
+Chapter {
+	Title "Champs de pression et de vitesse"
 	Description "Dans cette partie, on trace les champs de pression et de vitesse calculés par GENEPI."
 
 
 	visu {
-                titre "Champs de pression et de vitesse calculés"
+                Title "Champs de pression et de vitesse calculés"
                 description "Les champs de pression et de vitesse calculés par GENEPI sont tracés."
                 Normal3d -0.7 0.1 0.7
                 Up3D 0. 0.7 0.
@@ -23,7 +23,7 @@ Chapitre {
 
 
 	visu {
-                titre "Champs de pression et de vitesse analytiques"
+                Title "Champs de pression et de vitesse analytiques"
                 description "Le champ de pression analytique est tracé et le champ de pression calculé par GENEPI est donné par des iso-valeurs."
                 Normal3d -0.7 0.1 0.7
                 Up3D 0. 0.7 0.
@@ -35,7 +35,7 @@ Chapitre {
         }
 
 	visu {
-                titre "Erreurs sur les champs de pression et de vitesse"
+                Title "Erreurs sur les champs de pression et de vitesse"
                 description "On trace l'erreur entre le champ de pression calculé par GENEPI et le champ de pression analytique.  Sont superposés le champ de l'erreur et les iso-valeurs de l'erreur (pour plus de clarté, le maillage n'est pas tracé)."
                 Normal3d -0.7 0.1 0.7
                 Up3D 0. 0.7 0.

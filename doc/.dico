@@ -758,7 +758,9 @@
  Plaque_Thermique_VDF PlaqThVDF PlaqThVDF.h
  Point Point Point.h
  Polyedre Polyedre Polyedre.h
+ Polygone Polygone Polygone.h
  Polynome Polynome Polynome.h
+ Poly_geom_base Poly_geom_base Poly_geom_base.h
  Porosites Porosites Porosites.h
  Porosites_champ Porosites_champ Porosites_champ.h
  Postraitements|Post_processings Postraitements Postraitements.h

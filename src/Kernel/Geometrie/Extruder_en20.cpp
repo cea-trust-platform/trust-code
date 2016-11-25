@@ -131,12 +131,12 @@ void Extruder_en20::extruder(Domaine& dom)
 {
   Zone& zone = dom.zone(0);
 
-  if(Objet_U::dimension == 2 && (zone.type_elem()->que_suis_je() == "Rectangle" || zone.type_elem()->que_suis_je() ==  "Quadrangle" ))
+  if (zone.type_elem()->que_suis_je() == "Rectangle" || zone.type_elem()->que_suis_je() ==  "Quadrangle" )
     {
       Cerr << " The extrusion of quadrangle is made by Extruder and not by Extruder_en20 " << finl;
       exit();
     }
-  else if(Objet_U::dimension == 2 && zone.type_elem()->que_suis_je() == "Triangle")
+  else if( zone.type_elem()->que_suis_je() == "Triangle")
     {
       int oldnbsom = zone.nb_som();
       IntTab& les_elems=zone.les_elems();
@@ -183,7 +183,9 @@ void Extruder_en20::extruder(Domaine& dom)
         {
           double x = coord_sommets(i,0);
           double y = coord_sommets(i,1);
-          double z=0.;
+          double z=0;
+          if (coord_sommets.dimension(1)>2)
+            z=coord_sommets(i,2);
           for (int k=0; k<=NZ; k++)
             {
               new_soms(k*oldnbsom+i,0)=x;
@@ -207,7 +209,8 @@ void Extruder_en20::extruder(Domaine& dom)
           double xg = 1./3.*(coord_sommets(i0,0)+coord_sommets(i1,0)+coord_sommets(i2,0))+0.5*dx;
           double yg = 1./3.*(coord_sommets(i0,1)+coord_sommets(i1,1)+coord_sommets(i2,1))+0.5*dy;
           double z = 0.5*dz;
-
+          if (coord_sommets.dimension(1)>2)
+            z = 1./3.*(coord_sommets(i0,2)+coord_sommets(i1,2)+coord_sommets(i2,2))+0.5*dz;
           for (int k=0; k<NZ; k++)
             {
 
@@ -231,7 +234,8 @@ void Extruder_en20::extruder(Domaine& dom)
           double x01 = 0.5*(coord_sommets(i0,0)+coord_sommets(i1,0))+0.5*dx;
           double y01 = 0.5*(coord_sommets(i0,1)+coord_sommets(i1,1))+0.5*dy;
           double z = 0.5*dz;
-
+          if (coord_sommets.dimension(1)>2)
+            z = 0.5*(coord_sommets(i0,2)+coord_sommets(i1,2))+0.5*dz;
           for (int k=0; k<NZ; k++)
             {
               new_soms(oldnbsom*(NZ+1)+NZ*oldsz+k*nbfaces2D+i,0)=x01;
@@ -246,10 +250,11 @@ void Extruder_en20::extruder(Domaine& dom)
       // creation des centres des aretes du maillage 2D puis translation de ces points
       for (int i=0; i<oldnbsom; i++)
         {
-          double x = coord_sommets(i,0);
-          double y = coord_sommets(i,1);
+          double x = coord_sommets(i,0)+0.5*dx;
+          double y = coord_sommets(i,1)+ 0.5*dy;
           double z = 0.5*dz;
-
+          if (coord_sommets.dimension(1)>2)
+            z=coord_sommets(i,2)+0.5*dz;
           for (int k=0; k<NZ; k++)
             {
               new_soms(oldnbsom*(NZ+1)+NZ*oldsz+NZ*nbfaces2D+k*oldnbsom+i,0)=x;

@@ -195,5 +195,14 @@ Table {
 	number_last_line 1
 	}		
 }
+Table {
+	Title "essai tableau sur plusieurs pages"
+	nb_columns 1	
+	label  ligne  
+
+	lines { 
+	file gros 
+	}	
+}
 }
  

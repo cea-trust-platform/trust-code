@@ -71,7 +71,8 @@ private:
   //                        0: les CL seront nommees "devant" et "derriere"
   int hexa_old; // flag pour ancienne version de l'extrusion des hexas : 0 = ancienne version
   int Trois_Tetra; // flag pour extrusion en trois tetraedres plutot qu'en 14 (option par defaut)
-
+  int Vingt_Tetra; // flag pour extrusion en vingr tetraedres plutot qu'en 14 (option par defaut)
+  int en3D_;
 };
 
 #endif

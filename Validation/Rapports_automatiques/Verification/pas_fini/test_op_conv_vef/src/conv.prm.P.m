@@ -1,71 +1,71 @@
-Parametres {
-	Titre "Convergence du calcul"
+Parameters {
+	Title "Convergence du calcul"
 #Pset(_listresol_ %list% )
 #Pset(_listcas_ %cas% )
 #Pforeach _resol_ (_listresol_)	#Pforeach _cas_ (_listcas_) 
-	Castest  "_cas___resol_" "cas.data" #Pif(("_cas_"=="amont")and("_resol_"=="20")) jdd en annexe #Pendif
-#Pendforeach(_cas_) #Pendforeach(_resol_)
+	TestCase  "_cas___resol_" "cas.data" #Pif(("_cas_"=="amont")and("_resol_"=="20")) jdd en annexe #Pendif
+#Pendforeach(_cas_) #Pendforeach(_resol_) 
 
-	Auteur "GF "
-	InclureData 2
-	Prerequis "./extract_convergence"
+	Author "GF "
+	IncludeData 2
+	Prerequisite "./extract_convergence"
 	Description "Cas test periodique, pour tester convergence en maillage des opérateurs de convection"
 }
 
 
-Chapitre {
-	titre Convergence en maillage en vitesse 
+Chapter {
+	Title Convergence en maillage en vitesse 
 	Figure {
 	labelx N
 	labely erreur max 
 	logx
 	logy
-	incluredesccourbes 0
+	Include_Description_Curves 0
 	width 12cm
-	titre "convergence de la convection vitesse en maillage "
+	Title "convergence de la convection vitesse en maillage "
 	#Pforeach _cas_ (_listcas_) 
-		courbe {
-		legende _cas_
-		fichier conv_glob__cas__qdm
+		Curve {
+		legend _cas_
+		file conv_glob__cas__qdm
 		  style linespoints
 		}
 		#Pendforeach(_cas_) 
-		courbe {
-		legende N^-1 
+		Curve {
+		legend N^-1 
 		fonction 1./x
 		  style lines
 		}
-		courbe {
-		legende N^-2 
+		Curve {
+		legend N^-2 
 		fonction 1./x/x
 		  style lines
 		}
 	}			
 } 
-Chapitre {
-	titre Convergence en maillage scalaire 
+Chapter {
+	Title Convergence en maillage scalaire 
 	Figure {
 	labelx N
 	labely erreur max 
 	logx
 	logy
-	incluredesccourbes 0
+	Include_Description_Curves 0
 	width 12cm
-	titre "convergence de la convection T en maillage "
+	Title "convergence de la convection T en maillage "
 	#Pforeach _cas_ (_listcas_) 
-		courbe {
-		legende _cas_
-		fichier conv_glob__cas__T
+		Curve {
+		legend _cas_
+		file conv_glob__cas__T
 		  style linespoints
 		}
 		#Pendforeach(_cas_) 
-	      courbe {
-		legende N^-1 
+	      Curve {
+		legend N^-1 
 		fonction 1./x
 		  style lines
 		}
-		courbe {
-		legende N^-2 
+		Curve {
+		legend N^-2 
 		fonction 1./x/x
 		  style lines
 		}

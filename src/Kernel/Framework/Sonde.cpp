@@ -646,8 +646,9 @@ void Sonde::initialiser()
           for (int s=0; s<nb_som; s++)
             {
               int soml=les_elems(numero_elem_,s);
-              for (int dir=0; dir<dimension; dir++)
-                les_positions_(0,dir)+=coord(soml,dir)/nb_som;
+              if (soml>-1)
+                for (int dir=0; dir<dimension; dir++)
+                  les_positions_(0,dir)+=coord(soml,dir)/nb_som;
             }
         }
       else

@@ -207,6 +207,8 @@ void Extruder_en3::extruder(Domaine& dom, const IntVect& num)
           double x = coord_sommets(i,0);
           double y = coord_sommets(i,1);
           double z=0.;
+          if (coord_sommets.dimension(1)>2)
+            z=coord_sommets(i,2);
           for (int k=0; k<=NZ_; k++)
             {
               new_soms(k*oldnbsom+i,0)=x;

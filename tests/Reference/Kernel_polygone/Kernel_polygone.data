@@ -1,0 +1,34 @@
+# Test polygone #
+# PARALLEL OK 2 #
+dimension 2
+domaine dom2
+# BEGIN MESH #
+domaine dom
+Lire_med dom layer_1 maillage_simple_grp.med
+
+Ecrire_fichier_formatte dom dom.geom
+Postraiter_domaine { fichier lecture_1 domaine dom format lml }
+Ecrire_med dom toto.med
+Lire_med dom2 dom toto.med
+Ecrire_fichier_formatte dom2 dom2.geom
+# END MESH #
+# BEGIN PARTITION
+Partition dom2
+{
+        Partition_tool tranche { tranches 2 1 }
+        Larg_joint 1
+        zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom2
+END SCATTER #
+
+
+discretiser_domaine dom2
+Postraiter_domaine { domaine dom2 format lml }
+Postraiter_domaine { domaine dom2 format med }
+Postraiter_domaine { domaine dom2 format lata }
+End

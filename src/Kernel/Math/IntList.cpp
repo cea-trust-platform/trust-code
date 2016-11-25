@@ -113,6 +113,8 @@ Entree& IntList::readOn(Entree& is)
 // Postcondition:
 IntList::IntList(const IntList& a_list) : IntListElem()
 {
+  min_data=a_list.min_data;
+  max_data=a_list.max_data;
   if(a_list.est_vide() )
     {
       suivant_=this;
@@ -120,8 +122,6 @@ IntList::IntList(const IntList& a_list) : IntListElem()
   else
     {
       data=a_list.data;
-      min_data=a_list.min_data;
-      max_data=a_list.max_data;
       dernier_=this;
       if(a_list.suivant_)
         {

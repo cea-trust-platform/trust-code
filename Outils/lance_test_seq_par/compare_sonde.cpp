@@ -45,7 +45,8 @@ istream& get_mot(istream& entree, nom& nom)
   //    char*c =*c1;
   char* chaine=new char[1000];
   chaine[0]='\0';
-  entree >> chaine;
+  if (!entree.eof())
+    entree >> chaine;
 
   //cerr<<"ici "<< chaine <<endl<<flush;
   /*
@@ -65,7 +66,12 @@ istream& get_mot(istream& entree, nom& nom)
 void passe_entete(ifstream& entree)
 {
   char c; 
+  if (entree.eof()) 
+    return;
   get_c(entree,c);
+  
+  if (entree.eof()) 
+    return;
   // si premiere ligne blanche on passe
   if (c!='\n') entree.putback(c);
   while ((c=='#') || (c=='@'))
@@ -93,7 +99,8 @@ int trouve_nb_champ(const nom& nom_f,int& nl)
       get_mot(entree,titi);
       //cerr<<"|"<<titi.str<<"|" << i << " " << strlen(titi.str) << endl;
       if (strlen(titi.str)) i++;
-      get_c(entree,c);
+      if (!entree.eof())
+	get_c(entree,c);
       while ((c==' ')||(c=='\t')) get_c(entree,c);
       //      cerr<<"c"<<c<<":"<<(int)c<<" "<<(int)' '<<endl;
       if (c!='\n') entree.putback(c);

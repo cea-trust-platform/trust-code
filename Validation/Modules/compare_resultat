@@ -8,9 +8,9 @@ rapport()
    then
      #stabilite=`$TRUST_Awk -F':' ' /Successful tests cases/ {print $2}' $file | $TRUST_Awk -F'/' 'BEGIN {ok=0;tot=0;} { ok=ok+$1; tot=tot+$2 } END { print (ok) }' `
      # On ecarte tous les cas sensibles et on les place dans KO
-     $TRUST_Awk '/ OK / && !/possible sur/ {print $3"|"}' $file | sort > $file.OK
+     $TRUST_Awk -F\| '/ OK / {print $NF}' $file | awk '{print "|"$1"|"}' | sort > $file.OK
      stabilite=`wc -l $file.OK | $TRUST_Awk '{print $1}'`
-     $TRUST_Awk '(!/ OK / || /possible sur/) && /\|/ && (NR>5) {n=($3=="ecarts"?4:3);print $n"|"}' $file | sort > $file.KO
+     $TRUST_Awk -F\| '(!/ OK / )  && (NF>9) {print $NF}'  $file |  awk '{print "|"$1"|"}' | sort > $file.KO
      echo $stabilite
    else
      echo 0

@@ -86,6 +86,7 @@ bool Probleme_Couple::solveTimeStep()
         {
           sch_clones[i].facteur_securite_pas()=schema_temps().facteur_securite_pas();
           sch_clones[i]->set_stationnaire_atteint()=schema_temps().stationnaire_atteint();
+          sch_clones[i]->residu()=schema_temps().residu();
         }
       return ok;
     }

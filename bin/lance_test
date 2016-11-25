@@ -1380,6 +1380,8 @@ then
          [ "$dest" != "" ] && cat $message | grep -v ' ecarts |' | mail_ -s \"[lance_test] Unsuccesful no-regression tests on $HOST \(without warning\)\" $dest 
       fi
    fi
+   # on nettoie les repertoires vides
+   rmdir $rep_tests/* 2>/dev/null
    # Liste des cas tests ayant pose probleme
    echo $ECHO_OPTS "List of unsuccessful tests cases :\n`cat $rep_tests/liste`" >> $SORTIE
    (echo $ECHO_OPTS "List of unsuccessful tests cases :\n`cat $rep_tests/liste`" >> $fichier) 2>/dev/null

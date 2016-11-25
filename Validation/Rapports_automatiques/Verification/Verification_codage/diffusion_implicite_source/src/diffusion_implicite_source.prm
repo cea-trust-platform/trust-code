@@ -49,7 +49,7 @@ Chapter {
 			legend Euler_explicite,diffusion_implicite
 			last_line
 			nb_columns_file 6
-			colonnes $6
+			columns $6
 		}
 			line { 
 			file PCS/diff_PCS01.out
@@ -57,7 +57,7 @@ Chapter {
 			legend Euler_explicite,diffusion_implicite, precond_diagonal
 			last_line
 			nb_columns_file 6
-			colonnes $6
+			columns $6
 		}
 
 	}
@@ -99,7 +99,7 @@ Chapter {
 			legend Euler_explicite,diffusion_implicite
 			last_line
 			nb_columns_file 6
-			colonnes $6
+			columns $6
 		}
 			line { 
 			file PCR/diff_PCR01.out
@@ -107,7 +107,7 @@ Chapter {
 			legend Euler_explicite,diffusion_implicite, precond_diagonal
 			last_line
 			nb_columns_file 6
-			colonnes $6
+			columns $6
 		}
 
 	}

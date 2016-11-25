@@ -1,0 +1,26 @@
+Parameters {
+	Title "Kernel_polygone 2D calculation"
+	Author "fauchet"
+	VersionTrio_U 1.7.3
+ 	TestCase . Kernel_polygone.data
+}
+
+Chapter {
+	Title "Visualization via lata" 
+	visu {
+		title "MESH"
+		mesh Kernel_polygone.lata dom2
+	}
+	Title "Visualization via med" 
+	visu {
+		title "MESH"
+		mesh Kernel_polygone_0000.med dom2
+	}
+	Title "Visualization via lml" 
+	Description "La visu via lml ne correspond pas au maillage !" 
+	visu {
+		title "MESH"
+		mesh Kernel_polygone.lml dom2
+	}
+}
+

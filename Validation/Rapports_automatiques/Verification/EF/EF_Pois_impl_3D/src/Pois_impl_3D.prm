@@ -1,22 +1,22 @@
-Parametres {
-	Titre "Poiseuille en EF"
+Parameters {
+	Title "Poiseuille en EF"
 	Description "Calculs menés en EF, delta p impos\'e"
-	Auteur "G.F."
-	CasTest . Pois_impl_3D.data
+	Author "G.F."
+	TestCase . Pois_impl_3D.data
 }
 
-Chapitre {
-	Titre "R\'esultats"
+Chapter {
+	Title "R\'esultats"
 	Description ""
 	 visu {
-	titre "vitesse_x"
+	Title "vitesse_x"
 	mesh ./Pois_impl_3D.lata dom
 	pseudocolor ./Pois_impl_3D.lata dom VITESSE_X SOM
 }
 visu {
-	titre "Erreurs"
+	Title "Erreurs"
 	description "on trace la pression moins la solution, ainsi que la vitesse moins la solution"
-	origine comparaison
+	origin comparaison
 	mesh ./Pois_impl_3D.lata dom
 	instruction_visit DefineVectorExpression("erreur_SOM_dom","VITESSE_SOM_dom-{(coord(dom)[1])*(0.22-coord(dom)[1]),0,0}")
 	instruction_visit DefineScalarExpression("sol_p_ELEM_dom","PRESSION_PA_ELEM_dom*0-(coord(dom)[0]-0.1)*6")

@@ -28,7 +28,7 @@
 #include <Connectivite_som_elem.h>
 #include <Scatter.h>
 #include <stdio.h>
-#include <Polyedre.h>
+#include <Poly_geom_base.h>
 #include <MD_Vector_tools.h>
 #include <MD_Vector_std.h>
 #include <Schema_Comm.h>
@@ -76,7 +76,7 @@ void Faces_builder::creer_faces_reeles(Zone& zone,
   // Remplissage du tableau des faces de l'element de reference
 
   is_polyedre_=0;
-  if (sub_type(Polyedre,zone.type_elem().valeur()))
+  if (sub_type(Poly_geom_base,zone.type_elem().valeur()))
     {
       is_polyedre_=1;
     }
@@ -119,8 +119,8 @@ void Faces_builder::creer_faces_reeles(Zone& zone,
   if (is_polyedre_)
     {
       // les faces sont toutes deja connues....
-      const Polyedre& poly=ref_cast(Polyedre,ref_zone_->type_elem().valeur());
-      nb_faces_prevision=((poly.getFacesIndex().size_array()-1)+ nb_faces_front) / 2;;
+      const Poly_geom_base& poly=ref_cast(Poly_geom_base,ref_zone_->type_elem().valeur());
+      nb_faces_prevision=(poly.get_somme_nb_faces_elem()+ nb_faces_front) / 2;;
     }
   // Allocation memoire pour le nombre de faces prevu pour eviter de reallouer
   // de la memoire n fois (voir set_smart_resize)
@@ -371,7 +371,7 @@ const IntTab& Faces_builder::faces_element_reference(int elem) const
   if (is_polyedre_==1)
     {
       assert(is_polyedre_==1);
-      const Polyedre& poly=ref_cast(Polyedre,ref_zone_->type_elem().valeur());
+      const Poly_geom_base& poly=ref_cast(Poly_geom_base,ref_zone_->type_elem().valeur());
       IntTab& elem_ref_mod=ref_cast_non_const(IntTab,faces_element_reference_old_);
       poly.get_tab_faces_sommets_locaux(elem_ref_mod,elem);
 

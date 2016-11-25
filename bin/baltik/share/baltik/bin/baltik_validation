@@ -48,7 +48,8 @@ if [ "${TRUST_ROOT}" = "" ]
 then
     TRUST_environnement_error
 fi
-
+reduit=0
+[ "$1" = "reduit" ] && reduit=1 && shift
 
 # verification du nombre d'arguments
 if [ $# -ne 0 ]
@@ -104,7 +105,8 @@ echo "Launch of cases"
 Validation_outil=$TRUST_ROOT/Validation/Outils/Genere_courbe
 
 ${Validation_outil}/scripts/Lance_gen_fiche
-
+if [ $reduit -ne 1 ]
+then
 echo "Launch of deps cases"
 Rapports_auto_root=${project_directory}/build/tests/share/deps
 export Rapports_auto_root
@@ -114,6 +116,8 @@ ${Validation_outil}/scripts/Lance_gen_fiche
 
 Rapports_auto_root=${project_directory}/build/tests/share/all
 export Rapports_auto_root
+fi
+
 echo
 echo
 echo Checking pdf and tgz

@@ -43,7 +43,7 @@ Sortie& Champ_Generique_base::printOn(Sortie& os) const
 
 Entree& Champ_Generique_base::readOn(Entree& is)
 {
-  Cerr<<"Reading data for a "<<que_suis_je()<<" field." <<finl;
+  Journal()<<"Reading data for a "<<que_suis_je()<<" field." <<finl;
   Param param(que_suis_je());
   set_param(param);
   param.lire_avec_accolades_depuis(is);

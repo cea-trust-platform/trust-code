@@ -150,6 +150,8 @@ LataDB::Element LataDB::element_type_from_string(const Motcle & type_elem)
     type=triangle;
   else if (type_elem.debute_par("POLYEDRE"))
     type=polyedre;
+  else if (type_elem.debute_par("POLYGONE"))
+    type=polygone;
   else {
     Journal() << "Error in elem_type_from_string: unknown element type " << type_elem << endl;
     throw(LataDBError(LataDBError::BAD_ELEM_TYPE));
@@ -168,6 +170,8 @@ void LataDB::get_element_data(const Motcle & elemtype, entier & dimension, entie
     elem_shape=4; face_shape=2; nb_elem_faces=4; break;
   case tetra:       dimension = 3; elem_shape=4; face_shape=3; nb_elem_faces=4; break;
   case hexa:        dimension = 3; elem_shape=8; face_shape=4; nb_elem_faces=6; break;
+  case polyedre:    dimension = 3; elem_shape=-1; face_shape=-1; nb_elem_faces=-1; break;
+  case polygone:    dimension = 2; elem_shape=-1; face_shape=-1; nb_elem_faces=-1; break;
   default:
     Journal() << "LataDB::get_element_data element is unspecified" << endl;
     throw(LataDBError(LataDBError::BAD_ELEM_TYPE));
@@ -2284,7 +2288,7 @@ LataDB::~LataDB()
 #if 0
   if (write_master_file_to_call_) {
     Journal() << "Internal Error !!! write_data() has been called without calling write_master_file() after." << endl;
-//    exit(-1); // In c++ it is forbidden to throw exceptions in a destructor.
+//    exit(); // In c++ it is forbidden to throw exceptions in a destructor.
   }
 #endif
 }

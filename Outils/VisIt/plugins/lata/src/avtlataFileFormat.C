@@ -209,6 +209,7 @@ avtlataFileFormat::PopulateDatabaseMetaData(avtDatabaseMetaData *md, int timeSta
     case Domain::point:     topo_dim = 0; mt = AVT_POINT_MESH; break;
     case Domain::line:      topo_dim = 1; break;
     case Domain::triangle: 
+    case Domain::polygone:
     case Domain::quadri:    topo_dim = 2; break;
     case Domain::tetra:
     case Domain::prism6:
@@ -451,6 +452,9 @@ avtlataFileFormat::GetMesh(int timestate, int block, const char *meshname)
     case Domain::hexa:
       type_cell=VTK_HEXAHEDRON;
       break;
+    case Domain::polygone:
+      type_cell=VTK_POLYGON;
+      break;
     case Domain::polyedre:
       type_cell=VTK_CONVEX_POINT_SET;
       break;
@@ -487,7 +491,7 @@ avtlataFileFormat::GetMesh(int timestate, int block, const char *meshname)
           verts[5]=conn(i,5);
           verts[6]=conn(i,7);
           verts[7]=conn(i,6);
-        } else if (type_cell==VTK_CONVEX_POINT_SET) {
+        } else if ((type_cell==VTK_CONVEX_POINT_SET)||(type_cell==VTK_POLYGON)) {
           int nverts_loc=nverts;
           for (int j = 0; j < nverts; j++) 
             {
@@ -514,6 +518,8 @@ avtlataFileFormat::GetMesh(int timestate, int block, const char *meshname)
               if (filter_.get_options().regularize_polyedre==-1)
                   nb_som_max_to_regularize=32000;
             }
+          if ( geom.elt_type_==Domain::polygone)
+		nb_som_max_to_regularize=-1;
           if ((nb_som_max_to_regularize>=6) && (nverts_loc==6))
             ugrid->InsertNextCell(VTK_WEDGE, nverts_loc, verts);
           else if ((nb_som_max_to_regularize>=12)&&(nverts_loc==12))
@@ -539,7 +545,7 @@ avtlataFileFormat::GetMesh(int timestate, int block, const char *meshname)
           for (int j = 0; j < nverts; j++) 
             verts[j] = conn(i,j);
         }
-        if (type_cell!=VTK_CONVEX_POINT_SET)          
+        if ((type_cell!=VTK_CONVEX_POINT_SET) && (type_cell!=VTK_POLYGON))
          
           ugrid->InsertNextCell(type_cell, nverts, verts);
       }

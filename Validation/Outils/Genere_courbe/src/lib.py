@@ -25,6 +25,7 @@ __date__    = '20061207'
 dico_en={
 'parameterstrio_u':'parametrestrio_u',
 'parameterstrust':'parametrestrio_u',
+'versiontrust':'versiontrio_u',
 'title_figure':'titre_figure',
 'include_description_curves':'incluredesccourbes',
 'nb_columns_file':'nb_colonnes_fichier',

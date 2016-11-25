@@ -1467,6 +1467,8 @@ extrudebord interprete extrudebord 1 Class to generate an extruded mesh from a b
   attr non_perio rien non_perio 1 Extruded domain will not have periodic boundaries. So, the boundaries will be named DEVANT and DERRIERE instead of PERIO.
   attr hexa_old rien hexa_old 1 Old algorithm for boundary extrusion from a hexahedral mesh.
   attr trois_tetra rien trois_tetra 1 To extrude in 3 tetrahedras instead of 14 tetrahedras.
+  attr vingt_tetra rien vingt_tetra 1 To extrude in 20 tetrahedras instead of 14 tetrahedras.
+  attr sans_passer_par_le2D entier sans_passer_par_le2D 1 Only for non regression
 troisf objet_lecture nul 0 Auxiliary class to extrude.
   attr lx floattant lx 0 X direction of the extrude operation.
   attr ly floattant ly 0 Y direction of the extrude operation.

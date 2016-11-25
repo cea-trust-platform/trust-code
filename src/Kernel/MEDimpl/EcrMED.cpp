@@ -28,6 +28,7 @@
 #include <Vect_IntTab.h>
 #include <LireMED.h>
 #include <Polyedre.h>
+#include <Polygone.h>
 #include <Char_ptr.h>
 
 #define POURSATURNE
@@ -164,6 +165,8 @@ med_geometry_type type_geo_trio_to_type_med(const Nom& type_elem_,med_axis_type&
     type_elem_med=MED_PENTA6;
   else if (type_elem=="POLYEDRE")
     type_elem_med=MED_POLYHEDRON;
+  else if (type_elem=="POLYGONE")
+    type_elem_med=MED_POLYGON;
   else if (type_elem=="POLYGONE_3D")
     type_elem_med=MED_POLYGON;
   else if(type_elem=="SEGMENT")
@@ -394,11 +397,25 @@ int medecrgeom(const Nom& nom_fic,const Nom& nom_dom,int dimension,const DoubleT
 #endif
     else
       {
-        const Polyedre& Poly=ref_cast(Polyedre,ele.valeur());
         ArrOfInt Nodes_glob;
-        Poly.remplir_Nodes_glob(Nodes_glob,les_elems);
-        ArrOfInt FacesIndex(Poly.getFacesIndex());
-        ArrOfInt PolyhedronIndex(Poly.getPolyhedronIndex());
+        ArrOfInt FacesIndex;
+        ArrOfInt PolyhedronIndex;
+
+        if (type_elem_med==MED_POLYHEDRON)
+          {
+            const Polyedre& Poly=ref_cast(Polyedre,ele.valeur());
+            Poly.remplir_Nodes_glob(Nodes_glob,les_elems);
+            FacesIndex=(Poly.getFacesIndex());
+            PolyhedronIndex=(Poly.getPolyhedronIndex());
+          }
+        else
+          {
+            const Polygone& Poly=ref_cast(Polygone,ele.valeur());
+            //Poly.remplir_Nodes_glob(Nodes_glob,les_elems);
+            FacesIndex=(Poly.getFacesIndex());
+            PolyhedronIndex=(Poly.getPolygonIndex());
+          }
+
         //        pas necessaire on a rempli avec elem qui a le +1 Nodes_glob+=1;
         FacesIndex+=1;
         PolyhedronIndex+=1;
@@ -408,7 +425,14 @@ int medecrgeom(const Nom& nom_fic,const Nom& nom_dom,int dimension,const DoubleT
         int size_index=PolyhedronIndex.size_array();
         int size_f=FacesIndex.size_array();
 #ifdef MED30
-        ret=MEDmeshPolyhedronWr(fid,nom_dom,MED_NO_DT,MED_NO_IT,0.,MED_CELL,MED_NODAL,size_index,med_PolyhedronIndex,size_f,med_FacesIndex,med_Nodes);
+        if (type_elem_med==MED_POLYHEDRON)
+          {
+            ret=MEDmeshPolyhedronWr(fid,nom_dom,MED_NO_DT,MED_NO_IT,0.,MED_CELL,MED_NODAL,size_index,med_PolyhedronIndex,size_f,med_FacesIndex,med_Nodes);
+          }
+        else
+          {
+            ret=MEDmeshPolygonWr(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_UNDEF_DT,MED_CELL,MED_NODAL,size_index,med_PolyhedronIndex,med_FacesIndex);
+          }
 #else
         ret=MEDpolyedreConnEcr(fid,nom_dom,
                                med_PolyhedronIndex,
@@ -417,6 +441,8 @@ int medecrgeom(const Nom& nom_fic,const Nom& nom_dom,int dimension,const DoubleT
                                size_f,
                                med_Nodes,
                                MED_NODAL);
+        if (type_geo!=MED_POLYGON)
+          abort();
 #endif
         if (ret<0)
           {

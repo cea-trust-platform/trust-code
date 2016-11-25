@@ -147,6 +147,7 @@ Motcle Domain::lata_element_name(Domain::Element type)
   case hexa: return "HEXAEDRE"; break;
   case prism6: return "PRISM6"; break;
   case polyedre: return "POLYEDRE"; break;
+  case polygone: return "POLYGONE"; break;
   default: return "UNSPECIFIED";
   }
   return "UNSPECIFIED";
@@ -187,6 +188,8 @@ Domain::Element Domain::element_type_from_string(const Motcle & type_elem)
     type=prism6;
   else if (type_elem.debute_par("POLYEDRE"))
     type=polyedre;
+  else if (type_elem.debute_par("POLYGONE"))
+    type=polygone;
   else {
     Journal() << "Error in elem_type_from_string: unknown element type " << type_elem << endl;
     throw;
@@ -206,6 +209,7 @@ Nom Domain::element_type_to_string(Element type)
   case hexa:        n = "HEXAEDRE"; break;
   case prism6:      n = "PRISM6"; break;
   case polyedre:    n = "POLYEDRE_0"; break;
+  case polygone:    n = "POLYGONE"; break;
   case unspecified: n = "UNKNOWN"; break;
   }
   return n;
