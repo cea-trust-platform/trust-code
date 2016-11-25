@@ -250,7 +250,7 @@ public:
   virtual void read_data(const LataDBField &, FloatTab & data, const ArrOfInt & lines_to_read) const;
   virtual void read_data(const LataDBField &, IntTab & data, const ArrOfInt & lines_to_read) const;
 
-  enum Element { line, triangle, quadri, tetra, hexa, triangle_3D, quadri_3D, polyedre, unspecified };
+  enum Element { line, triangle, quadri, tetra, hexa, triangle_3D, quadri_3D, polyedre,polygone, unspecified };
   static Element element_type_from_string(const Motcle & type_elem);
 
   // Tools to create/update the database and write lata data to disk

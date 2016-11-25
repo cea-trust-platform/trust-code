@@ -90,6 +90,9 @@ public :
                                                        ArrOfDouble& coefficients ) const;
 
   int get_stencil_size( void ) const ;
+  virtual void build_stencil( void );
+
+  void set_stencil( const IntTab& stencil );
 
   bool is_stencil_up_to_date( void ) const ;
 

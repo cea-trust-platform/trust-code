@@ -1,17 +1,17 @@
-Parametres {
-	Titre "Vérification du transposé du gradient de vitesse dans le tenseur des contraintes visqueuses en 3D -- Cas quadratique explicite"
+Parameters {
+	Title "Vérification du transposé du gradient de vitesse dans le tenseur des contraintes visqueuses en 3D -- Cas quadratique explicite"
 	Description "On impose un champ de vitesse à divergence nulle particulier dans tout le domaine.  On choisit une viscosité variable en espace.  Pour ces deux champs, il est possible de déterminer la solution analytique de la force visqueuse.  Une force volumique égale à l'opposée de la force visqueuse est imposée.  Le champ de pression correspondant doit donc être une constante."
-	Auteur "D. Jamet"
-	CasTest "." "grad_u_transpose_3d_3_explicite.data"
-	incluredata 1
+	Author "D. Jamet"
+	TestCase "." "grad_u_transpose_3d_3_explicite.data"
+	IncludeData 1
 }
 
-Chapitre {
-	Titre "Champ de pression"
+Chapter {
+	Title "Champ de pression"
 	Description "On vérifie que le champ de pression calculé est bien correct."
 
 	visu {
-                titre "Champ de pression calculé"
+                Title "Champ de pression calculé"
                 description "Le champ de pression 3D calculé par GENEPI est tracé."
                 mesh ./grad_u_transpose_3d_3_explicite.lata dom 
                 Normal3d 0.7 -0.5 0.5
@@ -20,7 +20,7 @@ Chapitre {
         }
 
         visu {
-                titre "Différence entre champ de pression calculé et champ de pression analytique"
+                Title "Différence entre champ de pression calculé et champ de pression analytique"
                 description "Ce champ doit être nul."
                 mesh ./grad_u_transpose_3d_3_explicite.lata dom 
                 instruction_visit DefineScalarExpression("P_ANALYTIQUE_ELEM_dom","(4.*coord(dom)[0]-2.*coord(dom)[1]-2.*coord(dom)[2])")

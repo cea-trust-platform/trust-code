@@ -45,6 +45,7 @@ def decoup_cas(file,tmax,nb_max,format="binaire"):
             cl.sauvegarde=None
             cl.sauvegarde_simple=None
             cl.reprise=format_file(format,file[:-5]+'_'+cl.name_u+format+'.rep')
+            cl.resume_last_time=None
             pass
         pass
     file2="Reprise_"+file

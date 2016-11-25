@@ -1,32 +1,32 @@
-Parametres {
-	Titre "Vérification du transposé du gradient de vitesse dans le tenseur des contraintes visqueuses"
+Parameters {
+	Title "Vérification du transposé du gradient de vitesse dans le tenseur des contraintes visqueuses"
 	Description "On impose un champ de vitesse à divergence nulle particulier dans tout le domaine.  On choisit une viscosité variable en espace.  Pour ces deux champs, il est possible de déterminer la solution analytique de la force visqueuse.  Dans le cas particulier considéré, cette force est un gradient et doit être pris en compte par la pression.  On compare donc la pression analytique à la pression calculée par GENEPI."
-	Auteur "D. Jamet"
-	CasTest "." "grad_u_transpose_2d.data"
-	incluredata 1
+	Author "D. Jamet"
+	TestCase "." "grad_u_transpose_2d.data"
+	IncludeData 1
 }
 
-Chapitre {
-	Titre "Champ de pression"
+Chapter {
+	Title "Champ de pression"
 	Description "Dans cette partie, on compare le champ de pression calculé par GENEPI et le champ de pression analytique"
 
 
 	visu {
-                titre "Champs de pression calculé et analytique"
+                Title "Champs de pression calculé et analytique"
                 description "Le champ de pression calculé par GENEPI est tracé et le champ de pression analytique est donné par des iso-valeurs."
                 mesh ./grad_u_transpose_2d.lata dom 
                 pseudocolor ./grad_u_transpose_2d.lata dom PRESSION_PA ELEM
                 instruction_visit DefineScalarExpression("P_ANALYTIQUE_ELEM_dom","(4+2*coord(dom)[0]-2*coord(dom)[1])")
-                isovaleurs ./grad_u_transpose_2d.lata dom P_ANALYTIQUE ELEM
+                Isovalues ./grad_u_transpose_2d.lata dom P_ANALYTIQUE ELEM
         }
 
 	visu {
-                titre "Erreur sur le champ de pression"
+                Title "Erreur sur le champ de pression"
                 description "On trace l'erreur entre le champ de pression calculé par GENEPI et le champ de pression analytique.  Sont tracés le champ de l'erreur et les iso-valeurs de l'erreur."
                 mesh ./grad_u_transpose_2d.lata dom 
                 instruction_visit DefineScalarExpression("ERREUR_ELEM_dom","PRESSION_PA_ELEM_dom-(4+2*coord(dom)[0]-2*coord(dom)[1])")
                 pseudocolor ./grad_u_transpose_2d.lata dom ERREUR ELEM
-                isovaleurs ./grad_u_transpose_2d.lata dom ERREUR ELEM
+                Isovalues ./grad_u_transpose_2d.lata dom ERREUR ELEM
         }
 
 

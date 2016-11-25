@@ -29,6 +29,7 @@
 #include <Vect_ArrOfInt.h>
 #include <Sous_Zone.h>
 #include <Sparskit.h>
+#include <Poly_geom_base.h>
 
 Implemente_instanciable_sans_constructeur(DomaineCutter,"DomaineCutter",Objet_U);
 
@@ -111,10 +112,13 @@ static void construire_liste_sommets_sousdomaine(const int nb_sommets,
       for (int j = 0; j < nb_sommets_par_element; j++)
         {
           int sommet = les_elems(elem, j);
-          int bit = drapeau_sommet.testsetbit(sommet);
-          // Si le drapeau n'etait pas mis, cela fait un sommet de plus
-          if (! bit)
-            nb_sommets_part++;
+          if (sommet>-1)
+            {
+              int bit = drapeau_sommet.testsetbit(sommet);
+              // Si le drapeau n'etait pas mis, cela fait un sommet de plus
+              if (! bit)
+                nb_sommets_part++;
+            }
         }
     }
 
@@ -201,9 +205,14 @@ void construire_elems_sous_domaine(const IntTab&    elems_zone_globale,
       for (int i = 0; i < nb_sommets_par_element; i++)
         {
           int sommet = elems_zone_globale(elem, i);
-          int new_num = liste_inverse_sommets[sommet];
-          assert(new_num >= 0);
-          elems_zone_locale(i_elem, i) = new_num;
+          if (sommet<0)
+            elems_zone_locale(i_elem, i) =sommet;
+          else
+            {
+              int new_num = liste_inverse_sommets[sommet];
+              assert(new_num >= 0);
+              elems_zone_locale(i_elem, i) = new_num;
+            }
         }
     }
 }
@@ -430,8 +439,9 @@ static void parcourir_epaisseurs_elements(const IntTab& elements,
     for (int i = 0; i < sz_liste; i++)
       {
         const int sommet = liste_sommets_depart[i];
-        if (!sommets_parcourus.testsetbit(sommet))
-          new_liste.append_array(sommet);
+        if (sommet>-1)
+          if (!sommets_parcourus.testsetbit(sommet))
+            new_liste.append_array(sommet);
       }
   }
 
@@ -463,8 +473,11 @@ static void parcourir_epaisseurs_elements(const IntTab& elements,
               for (int i = 0; i < nb_som_elem; i++)
                 {
                   const int sommet2 = elements(elem, i);
-                  if (sommets_parcourus.testsetbit(sommet2) == 0)
-                    new_liste.append_array(sommet2);
+                  if (sommet2>-1)
+                    {
+                      if (sommets_parcourus.testsetbit(sommet2) == 0)
+                        new_liste.append_array(sommet2);
+                    }
                 }
             }
         }
@@ -772,11 +785,12 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie,
     // On ne sait pas traiter les elements non reguliers
     if (!is_regular)
       {
-        Cerr << "DomaineCutter::faces_joints Error: non-regular elements not supported" << finl;
-        exit();
+        // Cerr << "DomaineCutter::faces_joints Error: non-regular elements not supported" << finl;
+        ref_cast(Poly_geom_base,type_elem).get_tab_faces_sommets_locaux(faces_element_reference,0);
+        //exit();
       }
 
-    const int nb_faces_elem       = faces_element_reference.dimension(0);
+    int nb_faces_elem       = faces_element_reference.dimension(0);
     const int nb_sommets_par_face = faces_element_reference.dimension(1);
     faces_joints.resize(0, nb_sommets_par_face); // Voir *suite*
     const ArrOfInt& liste_inverse_sommets = correspondance.get_liste_inverse_sommets();
@@ -798,6 +812,13 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie,
         const int i_elem_global = liste_elements_joint[i_elem_joint];
         // Boucle sur les faces de l'element
         int i_face;
+        if (!is_regular)
+          {
+            ref_cast(Poly_geom_base,type_elem).get_tab_faces_sommets_locaux_global(faces_element_reference,i_elem_global);
+            nb_faces_elem       = faces_element_reference.dimension(0);
+            while ( faces_element_reference(nb_faces_elem-1,0)==-1)
+              nb_faces_elem--;
+          }
         for (i_face = 0; i_face < nb_faces_elem; i_face++)
           {
             // Construction de la face
@@ -806,13 +827,22 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie,
             for (i = 0; i < nb_sommets_par_face; i++)
               {
                 const int i_ref = faces_element_reference(i_face, i);
-                const int i_som = elem_som(i_elem_global, i_ref);
-                une_face[i] = i_som;
-                // Indice du sommet dans le sous-domaine
-                const int i_som_local = liste_inverse_sommets(i_som);
-                // Le sommet est-il sur un joint ?
-                if (drapeaux_sommets_joints[i_som_local] == 0)
-                  face_ok = 0; // Non => cette face n'est pas sur un joint
+                if (i_ref<0)
+                  {
+                    une_face[i] = i_ref;
+                  }
+                else
+                  {
+                    const int i_som = elem_som(i_elem_global, i_ref);
+                    une_face[i] = i_som;
+                    // Indice du sommet dans le sous-domaine
+
+
+                    const int i_som_local = liste_inverse_sommets(i_som);
+                    // Le sommet est-il sur un joint ?
+                    if (drapeaux_sommets_joints[i_som_local] == 0)
+                      face_ok = 0; // Non => cette face n'est pas sur un joint
+                  }
               }
             // Premier test pour eliminer tout de suite la face
             // si tous ses sommets ne sont pas des sommets de joint.

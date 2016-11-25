@@ -20,7 +20,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 //
-// WARNING: DO NOT USE THIS FILE! Instead, specify one or more of the following files
+#warning DO NOT USE THIS FILE! Instead, specify one or more of the following files
 //
 
 //#include <Periodique.h>

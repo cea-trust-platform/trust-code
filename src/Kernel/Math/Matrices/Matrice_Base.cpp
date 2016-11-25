@@ -67,6 +67,14 @@ DoubleVect operator * (const Matrice_Base& A, const DoubleVect& vect)
 }
 
 
+void Matrice_Base::build_stencil( void )
+{
+  Cerr << "Error in 'Matrice_Base::build_stencil( )"<<finl;
+  Cerr << "  This method should be implemented in derived class." << finl;
+  Cerr << "  Exiting..." << finl;
+  Process::exit( );
+}
+
 int Matrice_Base::get_stencil_size( void ) const
 {
   return stencil_.dimension( 0 );
@@ -106,6 +114,13 @@ void Matrice_Base::get_symmetric_stencil_and_coefficients( IntTab&      stencil,
 
   Matrice_Morse_Sym tmp2( tmp1 );
   tmp2.get_symmetric_stencil_and_coefficients( stencil, coefficients );
+}
+
+void Matrice_Base::set_stencil( const IntTab& stencil )
+{
+  stencil_ = stencil ;
+  tableau_trier_retirer_doublons( stencil_ );
+  is_stencil_up_to_date_ = false ;
 }
 
 bool Matrice_Base::is_stencil_up_to_date( void ) const

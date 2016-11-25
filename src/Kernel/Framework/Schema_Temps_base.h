@@ -349,7 +349,7 @@ protected :
   int precision_impr_;                // Nombre de chiffres significatifs impression
   double mode_dt_start_;                // mode calcul du pas de temps de depart
   double residu_;        // Residu
-  double residu_old_;
+  double residu_old_slope_;
   double cumul_slope_;
 
   int ind_tps_final_atteint;

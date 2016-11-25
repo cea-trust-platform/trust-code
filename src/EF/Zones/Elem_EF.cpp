@@ -62,8 +62,7 @@ Entree& Elem_EF::readOn(Entree& s )
 // determination du type
 void Elem_EF::typer(Nom type_elem_geom)
 {
-  Cerr << "Elem_EF::typer()" << finl ;
-  Cerr << "type geometrique : " << type_elem_geom << finl;
+//  Cerr << "Elem_EF::typer()" << finl ;
   Nom type;
   if(type_elem_geom=="Triangle")
     type="Tri_EF";
@@ -78,8 +77,9 @@ void Elem_EF::typer(Nom type_elem_geom)
   else
     {
       Cerr << "probleme de typage dans Elem_EF::typer" << finl;
+      Cerr << "type geometrique : " << type_elem_geom << finl;
       exit();
     }
   DERIV(Elem_EF_base)::typer(type);
-  Cerr << "type retenu : " << valeur().que_suis_je() << finl ;
+// Cerr << "type retenu : " << valeur().que_suis_je() << finl ;
 }

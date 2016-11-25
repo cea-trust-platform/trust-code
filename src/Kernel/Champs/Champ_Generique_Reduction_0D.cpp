@@ -76,7 +76,7 @@ void Champ_Generique_Reduction_0D::completer(const Postraitement_base& post)
       numero_proc_=-1;
     }
 
-  Cerr<<"METHODE "<<methode_<<finl;
+  Journal()<<"METHODE "<<methode_<<finl;
   if ((methode_=="valeur_a_gauche")&&(numero_proc_==-1))
     {
       const Zone_dis_base& zone_dis = get_source(0).get_ref_zone_dis_base();
@@ -86,9 +86,9 @@ void Champ_Generique_Reduction_0D::completer(const Postraitement_base& post)
       const DoubleTab& coords=zvf.zone().domaine().les_sommets();
       const IntTab& conn=zvf.zone().les_elems();
       double minp=mp_min_vect(coords);
-      Cerr<<" uu "<<minp<<finl;
+      //Cerr<<" uu "<<minp<<finl;
       minp=Process::mp_min(minp);
-      Cerr<<" uu "<<minp<<finl;
+      // Cerr<<" uu "<<minp<<finl;
       const Zone& zone =zvf.zone();
       int elemin=-1;
       double dmin=DMAXFLOAT;
@@ -133,7 +133,7 @@ void Champ_Generique_Reduction_0D::completer(const Postraitement_base& post)
               int eleminloc;
               recevoir(dminloc,p,97);
               recevoir(eleminloc,p,97);
-              Cerr<<" coucou "<<p<<" "<<dminloc<<finl;
+              //Cerr<<" coucou "<<p<<" "<<dminloc<<finl;
               if (dminloc<dmin)
                 {
                   dmin=dminloc;
@@ -151,7 +151,7 @@ void Champ_Generique_Reduction_0D::completer(const Postraitement_base& post)
       envoyer_broadcast(numero_proc_,0);
       envoyer_broadcast(numero_elem_,0);
 
-      Cerr<<" PPPP "<< numero_proc_<<" "<<numero_elem_<<finl;
+      //Cerr<<" PPPP "<< numero_proc_<<" "<<numero_elem_<<finl;
     }
 
 }

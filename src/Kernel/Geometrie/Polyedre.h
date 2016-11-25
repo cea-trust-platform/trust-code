@@ -31,7 +31,7 @@
 #define WARN Cerr<<"Warning: "<<__FILE__<<":"<<(int)__LINE__<<" bad coded" <<finl
 #endif
 
-#include <Elem_geom_base.h>
+#include <Poly_geom_base.h>
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -42,9 +42,9 @@
 //    Un polyedre est un element defini par ses faces
 //    de type polygone_3D
 // .SECTION voir aussi
-//    Elem_geom_base Elem_geom
+//    Poly_geom_base Elem_geom
 //////////////////////////////////////////////////////////////////////////////
-class Polyedre  : public Elem_geom_base
+class Polyedre  : public Poly_geom_base
 {
 
   Declare_instanciable(Polyedre);
@@ -52,6 +52,17 @@ class Polyedre  : public Elem_geom_base
 public :
 
 
+  virtual void calculer_un_centre_gravite(const int elem,DoubleVect& xp) const
+  {
+    BLOQUE;
+    throw;
+  };
+  void calculer_centres_gravite(DoubleTab& xp) const
+  {
+    // on a change la methode dans Polygone mais pas dans Polyedre ?
+    WARN;
+    return Elem_geom_base::calculer_centres_gravite(xp);
+  };
   // Fonctions d'acces aux membres prives:
   inline int face_sommet(int i, int j) const;
   inline int nb_som() const;
@@ -77,6 +88,10 @@ public :
   {
     return nb_som_face_max_ ;
   } ;
+  inline int get_somme_nb_faces_elem() const
+  {
+    return getFacesIndex().size_array()-1;
+  }
   inline const ArrOfInt& getFacesIndex() const
   {
     return FacesIndex_;

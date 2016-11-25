@@ -22,12 +22,12 @@ Chapter {
 		labely debit
 		labelx time
 		Curve {
-			fichier std_pb_Debit.out
+			file std_pb_Debit.out
 			legend std
 			style lines
 		}
 		Curve {
-			fichier debit_pb_Debit.out
+			file debit_pb_Debit.out
 			legend debit_impose
 			style lines
 		}	

@@ -280,6 +280,8 @@ class Write_tex:
         nb_lines   = len(data)
         nb_columns = len( data[0] )
 
+        if tableau.textsize:
+            fichier.write_Tex(tableau.textsize+'\n')
 
         entete=('\n\begin{longtable}{|c|')
        
@@ -307,14 +309,22 @@ class Write_tex:
                     for j in xrange( nb_columns ):
                         transposed_data[ j ].append( data[ i ][ j ] )
 
-                for line in transposed_data:
+                for index, line in enumerate(transposed_data):
                     fichier.write( ' & '.join( line ) )
-                    fichier.write(' \\\\  \hline \n')
+                    if index==0:
+                        fichier.write(' \endhead  \hline \n')
+                    else:
+                        fichier.write(' \\\\  \hline \n')
         else:
-            for line in data:
+            for index, line in enumerate(data):
                 fichier.write( ' & '.join( line ) )
-                fichier.write(' \\\\  \hline \n')
+                if index==0:
+                    fichier.write(' \endhead  \hline \n')
+                else:
+                    fichier.write(' \\\\  \hline \n')
         fichier.write_Tex('\end{longtable}\n \n ')
+        if tableau.textsize:
+            fichier.write_Tex('\\normalsize\n')
         fichier.write_Tex_sans_nl('\vspace{0.5cm}')
         # print "ICICI gros travail a faire !!!!!!!"
         if len(tableau.listeLignes)>0 and tableau.inclureDescLignes==1:
@@ -400,8 +410,8 @@ class Write_tex:
         pass
 
     def write_liste_cas(self,maitre,ficTex):
-        ficTex.write_Tex('\par\subsection{Test cases}')
         if maitre.casTest:
+            ficTex.write_Tex('\par\subsection{Test cases}')
             # if 1:
             ficTex.write_Tex('\begin{itemize}')
             for cas in maitre.casTest:
@@ -504,10 +514,10 @@ class Write_tex:
         ficTex.write_Tex('\par\subsection{Description}')
         ficTex.write_description(maitre.description)
 
-        ficTex.write_Tex('\par\subsection{Parameters Trio\_U}')
+        ficTex.write_Tex('\par\subsection{Parameters '+maitre.code+' }')
         ficTex.write_Tex('\begin{itemize}')
         version=maitre.versionTrioU
-        ficTex.write_Tex('\item Version Trio\_U : %s' % chaine2Tex(version))
+        ficTex.write_Tex('\item Version %s : %s' % (maitre.code,chaine2Tex(version)))
         try:
             from os import popen
             a=os.popen('egrep "code|version : " version_utilisee | awk \'{printf("%s " ,$NF)}\'') #| awk \'{print "\""$1 " ("$2")\""}\' `')

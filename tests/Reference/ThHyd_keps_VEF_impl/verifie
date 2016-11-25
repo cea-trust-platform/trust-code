@@ -1,9 +1,10 @@
 # On relance avec des options pour verifier que les bons solveurs ont ete choisis
 jdd=`pwd`
 jdd=`basename $jdd`
+cp $jdd.data essai_$jdd.data
 # On a mis 3 solveurs differents (BICGSTAB, GCP, GMRES) et 3 precond differents (DIAG, ILU, SSOR)
 # On avoir 6 types en tout avec -ksp_view
 # Depuis Petsc 3.2, le type de matrice aussi est sorti donc il faut filtrer "type: seq" et "type: mpi"
-[ "`trust $jdd -ksp_view 2>&1 | grep "type: " | grep -v 'type: seq' | grep -v 'type: mpi' | sort -u | wc -l`" != 6 ] && exit -1
+[ "`trust essai_$jdd -ksp_view 2>&1 | grep "type: " | grep -v 'type: seq' | grep -v 'type: mpi' | sort -u | wc -l`" != 6 ] && exit -1
 exit 0
 

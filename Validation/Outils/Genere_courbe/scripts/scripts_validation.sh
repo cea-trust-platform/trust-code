@@ -313,7 +313,7 @@ done
 }
 
 
-echo def Generate_makefile_validation [ -without_deps_exe ]
+echo def Generate_makefile_validation [ -without_deps_exe ] [ -with_Sjob ]
 
 
 Generate_makefile_validation()
@@ -322,6 +322,7 @@ deps="\$(exec)"
 [ "$1" = "-without_deps_exe" ] && deps="" && shift
 LANCE=$TRUST_ROOT/Validation/Outils/Genere_courbe/scripts/Lance_gen_fiche
 . $LANCE
+[ "$1" = "-with_Sjob" ] && LANCE="Salloc $LANCE" && shift
 if [ "$1" = "" ]
 then
 prm=`get_list_prm`

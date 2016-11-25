@@ -128,9 +128,10 @@ ArrOfInt renum_conn(const LataDB::Element& type)
 
 extern med_geometry_type typmai3[MED_N_CELL_FIXED_GEO];
 
-void latadb_get_info_mesh_med(const char* filename,const char* meshname,med_geometry_type& type_geo,int& ncells,int& nnodes,int& spacedim)
+void latadb_get_info_mesh_med(const char* filename,const char* meshname,med_geometry_type& type_geo,int& ncells,int& nnodes,int& spacedim, int &nbcomp)
 {
-  int meshDim;
+  int meshDim, i;
+  
   std::vector< std::vector< std::pair<INTERP_KERNEL::NormalizedCellType,int> > > res = MEDLoader::GetUMeshGlobalInfo(filename, meshname, meshDim, spacedim, nnodes);
   
   // on prend que la dimension la plus grande et on verifie que l'on a qu'un type elt 
@@ -144,9 +145,19 @@ void latadb_get_info_mesh_med(const char* filename,const char* meshname,med_geom
       cerr<<"error multi elements in "<<meshname<<endl;
       throw;
     }	
-  ncells=res[0][0].second;
   type_geo=typmai3[res[0][0].first];
-  
+
+  if ((type_geo==MED_POLYGON)||(type_geo==MED_POLYHEDRON))
+    {
+      //on est force de lire le maillage pour avoir le bon nombre de cellules  
+      ParaMEDMEM::MEDCouplingUMesh * mesh=  MEDLoader::ReadUMeshFromFile(filename,meshname);
+      ncells = mesh->getNumberOfCells();
+      const int *idx = mesh->getNodalConnectivityIndex()->getConstPointer();
+      for (i = 0, nbcomp = 0; i < ncells; i++) if (nbcomp < idx[i + 1] - idx[i] - 1) nbcomp = idx[i + 1] - idx[i] - 1;
+      mesh->decrRef();
+    }
+  else
+    ncells=res[0][0].second;
 }
 
 
@@ -195,10 +206,10 @@ void LataDB::read_master_file_med(const char *prefix, const char *filename)
       dom.timestep_ = timesteps_.size()-1;
       dom.name_=geoms[i];
       med_geometry_type type_geo;
-      int ncells,nnodes,spacedim;
+      int ncells,nnodes,spacedim, nbcomp;
       
-      latadb_get_info_mesh_med(filename,geoms[i].c_str(),type_geo,ncells,nnodes,spacedim);
-      
+      latadb_get_info_mesh_med(filename,geoms[i].c_str(),type_geo,ncells,nnodes,spacedim,nbcomp);
+            
       dom.elem_type_=latadb_name_from_type_geo(type_geo);
 
       LataDBField som;
@@ -218,8 +229,8 @@ void LataDB::read_master_file_med(const char *prefix, const char *filename)
 
       int dim,ff,ef;
       get_element_data(dom.elem_type_, dim, elem.nb_comp_, ff, ef);
+      if (elem.nb_comp_ == -1) elem.nb_comp_ = nbcomp;
       
-
       add(timesteps_.size() - 1, dom);
       add(timesteps_.size() - 1, som);
       add(timesteps_.size() - 1, elem);
@@ -387,30 +398,21 @@ void LataDB::read_data2_med_(
       LataDB::Element type =LataDB::element_type_from_string(type_elem);
       ArrOfInt filter=renum_conn(type);
       ParaMEDMEM::MEDCouplingUMesh * mesh=  MEDLoader::ReadUMeshFromFile(fld.filename_.getString(),fld.geometry_.getString());
-      const  ParaMEDMEM::DataArrayInt* elems=mesh->getNodalConnectivity();
-      const int* ptr_elems=elems->getConstPointer();
+      const  ParaMEDMEM::DataArrayInt *elems = mesh->getNodalConnectivity(), *idx = mesh->getNodalConnectivityIndex();
+      const int *ptr_elems=elems->getConstPointer(), *ptr_idx = idx->getConstPointer();
       data->resize(fld.size_,fld.nb_comp_);
       int compt=0;
       for (int i=0;i<fld.size_;i++)
-	{
-	
-	  assert(fld.nb_comp_==INTERP_KERNEL::CellModel::GetCellModel((INTERP_KERNEL::NormalizedCellType)ptr_elems[compt]).getNumberOfNodes());
-	  compt++;
-	  for (int j=0;j<fld.nb_comp_;j++)
-	    {
-	      assert(ptr_elems[compt]==elems->getIJ(compt,0));
-	      //	      int som=elems->getIJ(compt,0)+1;
-	      int som=ptr_elems[compt]+1;
-	     
-	      compt++;
-	      if (filter.size_array()>0)
-		(*data)(i,filter[j])=som;
-	      else
-		(*data)(i,j)=som;
-	    }
-	}
+      {
+          compt++;
+          for (int j=0;j<fld.nb_comp_;j++)
+          {
+              int reel = j + ptr_idx[i] + 1 < ptr_idx[i + 1];
+              (*data)(i,filter.size_array()>0 ? filter[j] : j) = reel ? ptr_elems[compt] + 1 : 0;
+              compt += reel;
+          }
+      }
       mesh->decrRef();
-      
     }
   else 
     {

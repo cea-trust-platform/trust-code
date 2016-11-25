@@ -82,8 +82,10 @@ public:
   virtual void trace_face_local(const DoubleTab&, DoubleTab&) const;
   virtual void trace_face_local(const DoubleVect&, DoubleVect&) const;
   virtual void trace_elem_distant(const DoubleTab&, DoubleTab&) const;
+  virtual void trace_som_distant(const DoubleTab&, DoubleTab&) const;
   virtual void trace_face_distant(const DoubleTab&, DoubleTab&) const;
   virtual void trace_face_distant(const DoubleVect&, DoubleVect&) const;
+  virtual void trace_som_local(const DoubleTab& y, DoubleTab& x) const;
 private :
 
   Nom nom;

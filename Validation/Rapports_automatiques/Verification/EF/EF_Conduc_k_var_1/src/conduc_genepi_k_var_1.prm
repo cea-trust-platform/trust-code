@@ -1,18 +1,18 @@
-Parametres {
-	Titre "Vérification de la conduction thermique stationnaire avec conductivité thermique variable : conductivité thermique linéaire"
+Parameters {
+	Title "Vérification de la conduction thermique stationnaire avec conductivité thermique variable : conductivité thermique linéaire"
 	Description "On considère un problème de conduction thermique stationnaire unidimensionnel dans la direction $x$. La conductivité thermique est une fonction variant linéairement suivant la direction $x$.  Une solution analytique à ce problème existe et elle est comparée à la solution calculée avec GENEPI.  La température est imposée en entrée et sortie du domaine (cf. jeu de données).  On compare le profil de température dans la direction $x$ ainsi que le champ de température bidimensionnel.  On compare également les flux conductifs sur les parois en entrée et sortie."
-	Auteur "D. Jamet"
-	CasTest "." "conduc_genepi_k_var_1.data"
-	incluredata 1
+	Author "D. Jamet"
+	TestCase "." "conduc_genepi_k_var_1.data"
+	IncludeData 1
 }
 
-Chapitre {
-	Titre "Champs de température"
+Chapter {
+	Title "Champs de température"
 	Description "On compare les champs de température calculé par GENEPI et analytique.  Cette comparaison se fait sur un profil en $y=cte$ et sur le champ 2D."
 
 	Figure {
-		Titre "Comparaison des profils calculé et analytique"
-		incluredesccourbes 0
+		Title "Comparaison des profils calculé et analytique"
+		Include_Description_Curves 0
 		Dimension 2
 #       	RangeX 0. 2.5
 	        LabelX "x"
@@ -21,27 +21,27 @@ Chapitre {
         
 	        width 7cm
         	
-	        Courbe {
-        	        Legende "EF"
-                	Origine "Trio_U"
+	        Curve {
+        	        legend "EF"
+                	origin "Trio_U"
         	        segment ./conduc_genepi_k_var_1.data temperature_x
                 	Style linespoints
                 }
 	
-		Courbe {
-        	        Legende "analytique"
-                	Origine "Solution analytique"
+		Curve {
+        	        legend "analytique"
+                	origin "Solution analytique"
 	                segment ./conduc_genepi_k_var_1.data temperature_x
         	        Style lines
-			colonnes ($1) 2.+(4.-2.)/log((0.25+1.125*2.)/0.25)*log((0.25+1.125*($1))/0.25)
+			columns ($1) 2.+(4.-2.)/log((0.25+1.125*2.)/0.25)*log((0.25+1.125*($1))/0.25)
                 }
 	}
 
 	visu {
-                titre "Comparaison des champs 2D calculé et analytique"
+                Title "Comparaison des champs 2D calculé et analytique"
                 description "On trace le champ d'écart entre la température calculée et la solution analytique.  La solution analytique est représentée par des isovaleurs du champ de température."
                 mesh ./conduc_genepi_k_var_1.lata dom 
-                isovaleurs ./conduc_genepi_k_var_1.lata dom TEMPERATURE SOM
+                Isovalues ./conduc_genepi_k_var_1.lata dom TEMPERATURE SOM
                 instruction_visit DefineScalarExpression("ERREUR_SOM_dom","TEMPERATURE_SOM_dom-(2.+(4.-2.)/log((0.25+1.125*2.)/0.25)*log((0.25+1.125*(coord(dom)[0]))/0.25))")
                 pseudocolor ./conduc_genepi_k_var_1.lata dom ERREUR SOM
         }
@@ -50,39 +50,39 @@ Chapitre {
 }
 
 
-Chapitre {
-	Titre "Flux conductifs aux frontières du domaine"
+Chapter {
+	Title "Flux conductifs aux frontières du domaine"
 	Description "Les flux conductifs calculés par GENEPI en $x=0$ et $x=L$ sont comparés aux flux théoriques.  L'erreur correspondante est également donnée."
 
 
-	Tableau {
-		Titre "Comparaison théorie/numérique"
-		nb_colonnes 2
+	Table {
+		Title "Comparaison théorie/numérique"
+		nb_columns 2
 		label  flux  gauche  | flux droit
-		Ligne {
-			Legende theorie
+		line {
+			legend theorie
 			Version "1.5.3-beta_build_180907"
-			valeurs -0.9772 0.9772
+			values -0.9772 0.9772
 			alias ref
 		}
-		Ligne {
-			Legende calcul
-			Origine "Trio_U"
+		line {
+			legend calcul
+			origin "Trio_U"
 			Version "1.5.3-beta_build_180907"
-			nb_colonnes_fichier 6
-			fichier ./conduc_genepi_k_var_1_fin.out
-			colonnes $2 $5
+			nb_columns_file 6
+			file ./conduc_genepi_k_var_1_fin.out
+			columns $2 $5
 		}
-		Ligne {
-			Legende ecart_relatif
+		line {
+			legend ecart_relatif
 			alias erreur
-			Origine "Trio_U"
+			origin "Trio_U"
 			Version "1.5.3-beta_build_180907"
 			difference ecart_relatif calcul ref
-			 afficher_ligne 0	
+			 display_line 0	
 		}
-		Ligne {
-	        	legende "erreur en %"
+		line {
+	        	legend "erreur en %"
 			alias err_bis
 		        difference formule   erreur ref int(v1*10000)/100.
 	        }

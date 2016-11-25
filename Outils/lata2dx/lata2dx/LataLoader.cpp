@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include <MEDCouplingUMesh.hxx>
+#include <MEDCouplingCMesh.hxx>
 #include <MEDCouplingMemArray.hxx>
 #include <MEDCouplingFieldDouble.hxx>
 #include <MEDCouplingRefCountObject.hxx>
@@ -13,6 +14,8 @@
 
 #include <LmlReader.h>
 #include <LataJournal.h>
+
+
 using namespace ParaMEDMEM;
 
 
@@ -529,27 +532,37 @@ LataLoader::GetMesh(const char *meshname, int timestate, int block)
     return_value = ugrid;
     
   } else if (ijk_ptr) {
-    throw "KKKK";
-    /*
+  //  throw "KKKK";
     const DomainIJK & geom = *ijk_ptr;
 
     // Maillage regulier : on transmet la grille ijk
-    vtkRectilinearGrid *sgrid = vtkRectilinearGrid::New();
+    
+    
+  
+
 
     const int dim = geom.coord_.size();
+    MEDCouplingCMesh *sgrid = MEDCouplingCMesh::New(meshname);
     ArrOfInt ncoord(3, 1);
     int i;
     for (i = 0; i < dim; i++) 
       ncoord[i] = geom.coord_[i].size_array();
-    sgrid->SetDimensions(ncoord[0], ncoord[1], ncoord[2]);
+    //    sgrid->SetDimensions(ncoord[0], ncoord[1], ncoord[2]);
 
     for (i = 0; i < 3; i++) {
-      float *data;
+      
+     
+      const int n = ncoord[i];
+      /*
       vtkFloatArray *c;
       c = vtkFloatArray::New();
-      const int n = ncoord[i];
       c->SetNumberOfTuples(n);
       data = (float *) c->GetVoidPointer(0);
+      */
+      DataArrayDouble *c = DataArrayDouble::New();
+      c->alloc(n);
+      double* data = c->getPointer();
+     
       if (i < dim) {
         const ArrOfFloat & coord = geom.coord_[i];
         for (int j = 0; j < n; j++)
@@ -557,14 +570,12 @@ LataLoader::GetMesh(const char *meshname, int timestate, int block)
       } else {
         data[0] = 0.;
       }
-      switch(i) {
-      case 0: sgrid->SetXCoordinates(c); break;
-      case 1: sgrid->SetYCoordinates(c); break;
-      case 2: sgrid->SetZCoordinates(c); break;
-      default: ;
-      }
-      c->Delete();
+      sgrid->setCoordsAt(i,c);
+      
+      c->decrRef();
     }
+    
+#if 0
     // Create "invalid cells" data (GettingDataIntoVisit.pdf, page 136)
     // and "ghost cells"
     const int n = geom.invalid_connections_.size_array();
@@ -611,9 +622,9 @@ LataLoader::GetMesh(const char *meshname, int timestate, int block)
       sgrid->SetUpdateGhostLevel(0);
       ghostcells->Delete();
     }
+#endif
    
     return_value = sgrid;
-    */
   } else {
     cerr << "Error in LataLoader::GetMesh: unknown geometry type" << endl;
     throw;

@@ -2,5 +2,5 @@
 
 file=`ls V*.data`
 jdd=${file%.data}
-make_PAR.data $jdd
+# make_PAR.data $jdd
 

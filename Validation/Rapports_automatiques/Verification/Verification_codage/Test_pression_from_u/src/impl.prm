@@ -1,91 +1,91 @@
-parametres {
-	titre "pression sortie  dependant de la vitesse moyenne"
-	auteur "G.F."
-	casTest . first /* jdd */
-	casTest . second /* jdd */
-	inclureData 1
+Parameters {
+	Title "pression sortie  dependant de la vitesse moyenne"
+	Author "G.F."
+	TestCase . first /* jdd */
+	TestCase . second /* jdd */
+	IncludeData 1
 }
-Chapitre {
-	titre Cas avec champ_front_from_u
+Chapter {
+	Title Cas avec champ_front_from_u
 	# definition figure 0
 	Figure {
-		titre "Tracé de la pression de sortie  au cours du temps"
+		Title "Tracé de la pression de sortie  au cours du temps"
 		labelX "s"
 		labelY "Pa"
-		inclureDescCourbes 0
+		Include_Description_Curves 0
 		width  12cm
-		Courbe {
-			legende "first.out1"
-			fichier first.out1
-			colonnes ($3) ($7)
+		Curve {
+			legend "first.out1"
+			file first.out1
+			columns ($3) ($7)
 			style linespoints
 		}
-		Courbe {
-			legende "first.out2"
-			fichier first.out2
-			colonnes ($3) ($7)
+		Curve {
+			legend "first.out2"
+			file first.out2
+			columns ($3) ($7)
 			style linespoints
 		}
 	}
 	# definition figure 1
 	Figure {
-		titre "Tracé de la pression de sortie  au cours du temps"
+		Title "Tracé de la pression de sortie  au cours du temps"
 		rangeX 0 2
 		labelX "s"
 		labelY "Pa"
-		inclureDescCourbes 0
+		Include_Description_Curves 0
 		width  12cm
-		Courbe {
-			legende "first.out1"
-			fichier first.out1
-			colonnes ($3) ($7)
+		Curve {
+			legend "first.out1"
+			file first.out1
+			columns ($3) ($7)
 			style linespoints
 		}
-		Courbe {
-			legende "first.out2"
-			fichier first.out2
-			colonnes ($3) ($7)
+		Curve {
+			legend "first.out2"
+			file first.out2
+			columns ($3) ($7)
 			style linespoints
 		}
 	}
 	# definition figure 2
 	Figure {
-		titre "Tracé de la vitesse moyenne de sortie  au cours du temps"
+		Title "Tracé de la vitesse moyenne de sortie  au cours du temps"
 		labelX "s"
 		labelY u_moy
-		inclureDescCourbes 0
+		Include_Description_Curves 0
 		width  12cm
-		Courbe {
-			legende "first.out1"
-			fichier first.out1
-			colonnes ($3) ($5)
+		Curve {
+			legend "first.out1"
+			file first.out1
+			columns ($3) ($5)
 			style linespoints
 		}
-		Courbe {
-			legende "first.out2"
-			fichier first.out2
-			colonnes ($3) ($5)
+		Curve {
+			legend "first.out2"
+			file first.out2
+			columns ($3) ($5)
 			style linespoints
 		}
 	}
 	# definition figure 3
 	Figure {
-		titre "Tracé de la vitesse moyenne de sortie  au cours du temps"
+		Title "Tracé de la vitesse moyenne de sortie  au cours du temps"
 		rangeX 0 2
 		labelX "s"
 		labelY u_moy
-		inclureDescCourbes 0
+		Include_Description_Curves 0
 		width  12cm
-		Courbe {
-			legende "first.out1"
-			fichier first.out1
-			colonnes ($3) ($5)
+		Curve {
+			legend "first.out1"
+			file first.out1
+			columns ($3) ($5)
 			style linespoints
 		}
-		Courbe {
-			legende "first.out2"
-			fichier first.out2
-			colonnes ($3) ($5)
+		Curve {
+			legend "first.out2"
+			file first.out2
+			columns ($3) ($5)
 			style linespoints
 		}
 	}
@@ -95,87 +95,87 @@ Chapitre {
 	vector first.lata DOM_DOM VITESSE ELEM
 }	
 }
-Chapitre {
-	titre Cas avec perte charge singulier
+Chapter {
+	Title Cas avec perte charge singulier
 	# definition figure 0
 	Figure {
-		titre "Tracé de la pression de sortie  au cours du temps"
+		Title "Tracé de la pression de sortie  au cours du temps"
 		labelX "s"
 		labelY "Pa"
-		inclureDescCourbes 0
+		Include_Description_Curves 0
 		width  12cm
-		Courbe {
-			legende "second.out1"
-			fichier second.out1
-			colonnes ($3) ($7)
+		Curve {
+			legend "second.out1"
+			file second.out1
+			columns ($3) ($7)
 			style linespoints
 		}
-		Courbe {
-			legende "second.out2"
-			fichier second.out2
-			colonnes ($3) ($7)
+		Curve {
+			legend "second.out2"
+			file second.out2
+			columns ($3) ($7)
 			style linespoints
 		}
 	}
 	# definition figure 1
 	Figure {
-		titre "Tracé de la pression de sortie  au cours du temps"
+		Title "Tracé de la pression de sortie  au cours du temps"
 		rangeX 0 2
 		labelX "s"
 		labelY "Pa"
-		inclureDescCourbes 0
+		Include_Description_Curves 0
 		width  12cm
-		Courbe {
-			legende "second.out1"
-			fichier second.out1
-			colonnes ($3) ($7)
+		Curve {
+			legend "second.out1"
+			file second.out1
+			columns ($3) ($7)
 			style linespoints
 		}
-		Courbe {
-			legende "second.out2"
-			fichier second.out2
-			colonnes ($3) ($7)
+		Curve {
+			legend "second.out2"
+			file second.out2
+			columns ($3) ($7)
 			style linespoints
 		}
 	}
 	# definition figure 2
 	Figure {
-		titre "Tracé de la vitesse moyenne de sortie  au cours du temps"
+		Title "Tracé de la vitesse moyenne de sortie  au cours du temps"
 		labelX "s"
 		labelY u_moy
-		inclureDescCourbes 0
+		Include_Description_Curves 0
 		width  12cm
-		Courbe {
-			legende "second.out1"
-			fichier second.out1
-			colonnes ($3) ($5)
+		Curve {
+			legend "second.out1"
+			file second.out1
+			columns ($3) ($5)
 			style linespoints
 		}
-		Courbe {
-			legende "second.out2"
-			fichier second.out2
-			colonnes ($3) ($5)
+		Curve {
+			legend "second.out2"
+			file second.out2
+			columns ($3) ($5)
 			style linespoints
 		}
 	}
 	# definition figure 3
 	Figure {
-		titre "Tracé de la vitesse moyenne de sortie  au cours du temps"
+		Title "Tracé de la vitesse moyenne de sortie  au cours du temps"
 		rangeX 0 2
 		labelX "s"
 		labelY u_moy
-		inclureDescCourbes 0
+		Include_Description_Curves 0
 		width  12cm
-		Courbe {
-			legende "second.out1"
-			fichier second.out1
-			colonnes ($3) ($5)
+		Curve {
+			legend "second.out1"
+			file second.out1
+			columns ($3) ($5)
 			style linespoints
 		}
-		Courbe {
-			legende "second.out2"
-			fichier second.out2
-			colonnes ($3) ($5)
+		Curve {
+			legend "second.out2"
+			file second.out2
+			columns ($3) ($5)
 			style linespoints
 		}
 	}

@@ -74,7 +74,7 @@ int LecFicDiffuse_JDD::ouvrir(const char* name,
 
       Cout <<"Reading data file "<<finl;
       int fin_lu=0;
-      Motcle fin("fin");
+      Motcle fin("fin|end");
       EFichier file_;
       ok = file_.ouvrir(name, mode);
       if (!ok )
@@ -172,10 +172,11 @@ int LecFicDiffuse_JDD::ouvrir(const char* name,
         nb_accolade=nb_accolade_sa;
       if (nb_accolade!=0)
         {
-          if (nb_accolade>0)
+          if (nb_accolade<0)
             Cerr<<"Error perhaps  extra \"}\" in data file"<<finl;
           else
             Cerr<<"Error check for missing \"}\" in data file"<<finl;
+          Process::exit();
         }
 
       chaine_.init(prov.get_str());

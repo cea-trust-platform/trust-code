@@ -29,6 +29,7 @@
 #include <IntList.h>
 #include <Vect_IntTab.h>
 #include <Vect_ArrOfInt.h>
+#include <Polygone.h>
 #include <Polyedre.h>
 #include <Scatter.h>
 #include <Synonyme_info.h>
@@ -118,10 +119,10 @@ Entree& LireMED::interpreter_(Entree& is)
     }
   //is >> nom_dom;
   lire_nom_med(nom_dom,is);
-  Cerr << "domaine_name:" << nom_dom_trio << finl;
-  Cerr << "mesh_name:" << nom_dom << finl;
+  //Cerr << "domaine_name:" << nom_dom_trio << finl;
+  //Cerr << "mesh_name:" << nom_dom << finl;
   is >> nom_fic;
-  Cerr << "MED file read: " << nom_fic << finl;
+  //Cerr << "MED file read: " << nom_fic << finl;
   // on retire _0000 si il existe et on cree le bon fichier
   Nom nom_fic2(nom_fic);
   nom_fic2.prefix(".med");
@@ -149,7 +150,7 @@ void convert_med_int_to_inttab(ArrOfInt& tab,med_int* tabmed)
     {
       int taille=tab.size_array();
       //    cerr<<sizeof(tab)<<" "<<sizeof(int)<<" "<<sizeof(tab)/sizeof(int)<<" "<<taille<<endl;
-      Cerr<<"medint* copy"<<finl;
+      Process::Journal()<<"medint* copy"<<finl;
 
       for (int i=0; i<taille; i++)
         tab[i]=tabmed[i];
@@ -166,7 +167,7 @@ med_int* alloue_med_int_from_inttab(const ArrOfInt& tab)
     {
 
       int taille=tab.size_array();
-      Cerr<<"medint* creation"<<finl;
+      Process::Journal()<<"medint* creation"<<finl;
       tabmed=new med_int[taille];
     }
   return tabmed;
@@ -445,7 +446,7 @@ int medliregeom(Nom& nom_fic,const Nom& nom_dom,const Nom& nom_dom_trio,int& dim
                   nm1=nm;
                   jelem=i;
                   type_geo=all_cell_type1[i];
-                  Cerr<<nm1<<" elements of kind "<<(int)type_geo<<" has been found." << finl;
+                  Process::Journal()<<nm1<<" elements of kind "<<(int)type_geo<<" has been found." << finl;
                 }
               else
                 {
@@ -522,7 +523,7 @@ int medliregeom(Nom& nom_fic,const Nom& nom_dom,const Nom& nom_dom_trio,int& dim
             Objet_U::axi=1;
           }
       }
-    Cerr<<"Element TRUST kind: "<<type_elem<<finl;
+    Process::Journal()<<"Element TRUST kind: "<<type_elem<<finl;
     ele.typer(type_elem);
 
     int is_poly=0;
@@ -577,6 +578,74 @@ int medliregeom(Nom& nom_fic,const Nom& nom_dom,const Nom& nom_dom_trio,int& dim
 
 
         //    Cerr<<"elem "<<ret<<finl;
+      }
+    else if (type_geo==MED_POLYGON)
+      {
+
+
+
+        // on a des polygone...
+
+        //avant d'oublier on lit les familles
+#ifdef MED30
+        if (MEDmeshEntityFamilyNumberRd(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,type_geo,num_famille_elem)<0)
+#else
+        abort();
+#endif
+          for (int ii=0; ii<nelem; ii++)
+            num_famille_elem[ii] = 0;
+
+        int  NumberOfPolygone = nm1;
+
+
+        //med_int ConnectivitySize;
+        //med_err err1 = MEDpolygoneInfo(fid,nom_dom,MED_CELL,MED_NODAL, &ConnectivitySize);
+        med_int FacesIndexSize;
+#ifdef MED30
+        med_bool cght,transfo2;
+        // NumberOfNodes=NumberOfPolygone;
+        NumberOfPolygone=MEDmeshnEntity(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,MED_POLYGON,MED_INDEX_NODE,MED_NODAL,&cght,&transfo2)-1; // -1 a cause du +1 ensuite !!!
+        med_err err1=0;
+
+        FacesIndexSize=MEDmeshnEntity(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,MED_POLYGON, MED_CONNECTIVITY,MED_NODAL,&cght,&transfo2);
+#endif
+        if (err1 != 0)
+          {
+            Cerr<<"Error MEDpolygoneInfo"<<finl;
+            Process::exit();
+          }
+        //Cerr<<NumberOfPolygone<< " "<<NumberOfNodes<<" "<<FacesIndexSize<<finl;
+        //  ArrOfInt Nodes(NumberOfNodes);
+        ArrOfInt FacesIndex(FacesIndexSize),PolygonIndex(NumberOfPolygone+1);
+        {
+          //med_int* med_Nodes=alloue_med_int_from_inttab(Nodes);
+          med_int* med_FacesIndex=alloue_med_int_from_inttab(FacesIndex);
+          med_int* med_PolygonIndex=alloue_med_int_from_inttab(PolygonIndex);
+#ifdef MED30
+          med_err err4 =MEDmeshPolygonRd(fid,nom_dom,MED_NO_DT,MED_NO_IT,MED_CELL,MED_NODAL,med_PolygonIndex,med_FacesIndex);
+#endif
+          if (err4 != 0)
+            {
+              Cerr<<": MEDpolygoneConnLire returns "<<(int)err4;
+              Process::exit();
+            }
+          //convert_med_int_to_inttab(Nodes,med_Nodes);
+          convert_med_int_to_inttab(FacesIndex,med_FacesIndex);
+          convert_med_int_to_inttab(PolygonIndex,med_PolygonIndex);
+          //Cerr<<Nodes<< " "<<FacesIndex<<" "<<PolyhedronIndex<<finl;
+        }
+        // Nodes-=1;
+        FacesIndex-=1;
+        PolygonIndex-=1;
+
+        Cerr<<"iiiiiiiiiii"<<FacesIndex<<"llllllll"<<finl;
+
+        ref_cast(Polygone,ele.valeur()).affecte_connectivite_numero_global( FacesIndex, PolygonIndex, les_elems);
+        Cerr<<"iiiiiiiiiii"<<FacesIndex<<"llllllll"<<finl;
+        // on remet +1 car apres on le retire....
+        les_elems+=1;
+
+
       }
     else
       {
@@ -707,7 +776,7 @@ int medliregeom(Nom& nom_fic,const Nom& nom_dom,const Nom& nom_dom_trio,int& dim
                     {
                       nm1=nm;
                       type_geo=all_cell_type1[i];
-                      Cerr<<"We find "<<nm1<<" faces of kind "<<(int)type_geo<<finl;
+                      Process::Journal()<<"We find "<<nm1<<" faces of kind "<<(int)type_geo<<finl;
                       debut_cherche=i;
                     }
                   else
@@ -893,7 +962,7 @@ int medliregeom(Nom& nom_fic,const Nom& nom_dom,const Nom& nom_dom_trio,int& dim
         Cerr<<"Problem during the read of the families."<<finl;
         return -1;
       }
-    Cerr<<"Number of families: "<<nfam<<finl;
+    Process::Journal()<<"Number of families: "<<nfam<<finl;
     noms_bords.dimensionner(nfam);
     Indice_bords.resize_array(nfam);
     int non_affecte=-1000;
@@ -989,7 +1058,7 @@ int medliregeom(Nom& nom_fic,const Nom& nom_dom,const Nom& nom_dom_trio,int& dim
                   {
 
                     // Cerr<<ret<<finl;
-                    Cerr<< " Family of name "<<nomfam<<" , number "<<(int)numfam<<finl;
+                    Process::Journal()<< " Family of name "<<nomfam<<" , number "<<(int)numfam<<finl;
                     Indice_bords[i]=numfam;
                     if (isfamilyshort==2)
                       {
@@ -1002,7 +1071,7 @@ int medliregeom(Nom& nom_fic,const Nom& nom_dom,const Nom& nom_dom_trio,int& dim
                         else
                           {
                             noms_bords[i]=nomfam;
-                            Cerr<<noms_bords[i]<<" is not seen as a boundary "<< (int)numfam<<finl;
+                            Process::Journal()<<noms_bords[i]<<" is not seen as a boundary "<< (int)numfam<<finl;
                             if (numfam<0)
                               Indice_bords[i]=-numfam;
                             Indice_bords[i]+=10000;
@@ -1086,7 +1155,7 @@ int medliregeom(Nom& nom_fic,const Nom& nom_dom,const Nom& nom_dom_trio,int& dim
         SFichier jdd_par(nom_dom_trio + "_ssz_par.geo");
         SFichier jdd_par_old("ssz_par.geo");
 
-        Cerr<<"grp"<<list_group<<finl;
+        Process::Journal()<<"grp"<<list_group<<finl;
         int nb_elem=les_elems.dimension(0);
 
         for (int grp=0; grp<list_group.size(); grp++)
@@ -1338,19 +1407,19 @@ void LireMED::lire_geom( Nom& nom_fic,Domaine& dom,const Nom& nom_dom,const Nom&
       Process::exit();
     }
 
-
-  Cerr << "nom_fic = " << nom_fic<< finl
-       << "nom_dom ="<<nom_dom<<finl
-       << "dimension = " << dimension<< finl
-       /*
-         << "sommets = " << sommets2<< finl
-         << "type_elem = " << type_elem<< finl
-         << "les_elems = " << les_elems2<< finl
-         << "type_face = " << type_face<< finl
-         << "all_faces_bord = " << all_faces_bord<< finl
-         << "familles = " << familles << finl
-       */
-       << "noms_bords= " << noms_bords<< finl;
+  if (0)
+    Cerr << "nom_fic = " << nom_fic<< finl
+         << "nom_dom ="<<nom_dom<<finl
+         << "dimension = " << dimension<< finl
+         /*
+           << "sommets = " << sommets2<< finl
+           << "type_elem = " << type_elem<< finl
+           << "les_elems = " << les_elems2<< finl
+           << "type_face = " << type_face<< finl
+           << "all_faces_bord = " << all_faces_bord<< finl
+           << "familles = " << familles << finl
+         */
+         << "noms_bords= " << noms_bords<< finl;
   /*
     SFichier es(nom_fic+".es2");
     es<< "nom_fic = " << nom_fic<< finl
@@ -1976,8 +2045,14 @@ void traite_nom_fichier_med(Nom& nom_fic)
     ifstream test(nom_fic);
     if (!test)
       {
-        Cerr<<"med file "<<nom_fic<<" not found."<<finl;
-        Process::exit();
+        // on essaye Cas_0000.med
+        nom_fic=nom_fic2.nom_me(0);
+        ifstream test2(nom_fic);
+        if (!test2)
+          {
+            Cerr<<"med file "<<nom_fic<<" not found."<<finl;
+            Process::exit();
+          }
       }
   }
   //  Cerr<<"File med read: "<<nom_fic<<finl;

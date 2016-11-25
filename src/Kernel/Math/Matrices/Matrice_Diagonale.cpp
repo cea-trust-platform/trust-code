@@ -117,6 +117,12 @@ void Matrice_Diagonale::scale( const double& x )
 
 void Matrice_Diagonale::get_stencil( IntTab& stencil ) const
 {
+  if( is_stencil_up_to_date_ )
+    {
+      stencil = stencil_;
+      return;
+    }
+
   const int size = ordre( );
 
   stencil.resize( size, 2 );
@@ -136,6 +142,19 @@ void Matrice_Diagonale::get_symmetric_stencil( IntTab& stencil ) const
 void Matrice_Diagonale::get_stencil_and_coefficients( IntTab&      stencil,
                                                       ArrOfDouble& coefficients ) const
 {
+  if( is_stencil_up_to_date_ )
+    {
+      if( coefficients_.size( ) == 0 )
+        {
+          Cerr << "Error in Matrice_Morse::get_stencil_and_coefficients( )"<<finl;
+          Cerr << "  The coefficients are not filled."<<finl;
+          Cerr << "  Aborting..." << finl;
+          Process::abort( );
+        }
+      stencil = stencil_;
+      coefficients  = coefficients_;
+      return;
+    }
   const int size = ordre( );
 
   stencil.resize( size, 2 );

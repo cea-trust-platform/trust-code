@@ -102,6 +102,8 @@ public :
   virtual const Matrice& get_bloc( int i, int j ) const;
   virtual Matrice& get_bloc( int i, int j );
 
+  virtual void build_stencil( void ) ;
+
 public :
   // Constructeurs :
   Matrice_Bloc( int N=0, int M=0 );

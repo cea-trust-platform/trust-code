@@ -2,16 +2,16 @@ Parameters {
     Title "3D examples to post-process the pressure"
     Author "MR"
     VersionTrio_U 1.7.3_beta
-    TestCase VDF            PAR_VDF.data            2
-    TestCase VDF_g          PAR_VDF_g.data          2
-    TestCase VEF_P0         PAR_VEF_P0.data         4
-    TestCase VEF_P0_g       PAR_VEF_P0_g.data       4
-    TestCase VEF_P1         PAR_VEF_P1.data         4
-    TestCase VEF_P1_g       PAR_VEF_P1_g.data       4
-    TestCase VEF_P0P1       PAR_VEF_P0P1.data       4
-    TestCase VEF_P0P1_g     PAR_VEF_P0P1_g.data     4   attached
-#    TestCase VEF_P0P1Pa     PAR_VEF_P0P1Pa.data     4
-#    TestCase VEF_P0P1Pa_g   PAR_VEF_P0P1Pa_g.data   4
+    TestCase VDF            VDF.data            
+    TestCase VDF_g          VDF_g.data         
+    TestCase VEF_P0         VEF_P0.data         
+    TestCase VEF_P0_g       VEF_P0_g.data       
+    TestCase VEF_P1         VEF_P1.data         
+    TestCase VEF_P1_g       VEF_P1_g.data       
+    TestCase VEF_P0P1       VEF_P0P1.data       
+    TestCase VEF_P0P1_g     VEF_P0P1_g.data        attached
+#    TestCase VEF_P0P1Pa     VEF_P0P1Pa.data     
+#    TestCase VEF_P0P1Pa_g   VEF_P0P1Pa_g.data   
 }
 
 ##################################################################################################################
@@ -23,27 +23,27 @@ Chapter {
     visu {
         title       "VDF Mesh and probes localisation: xoz plan"
         Width       20cm
-        mesh        VDF/PAR_VDF.lata              dom
-        mesh        VDF/PAR_VDF_PRESSURE.son      MESH red
-        mesh        VDF_g/PAR_VDF_g_P_HYDRO2.son  MESH blue
+        mesh        VDF/VDF.lata              dom
+        mesh        VDF/VDF_PRESSURE.son      MESH red
+        mesh        VDF_g/VDF_g_P_HYDRO2.son  MESH blue
         operator_to_all    slice2D_y  0 2.5 0
     }
     visu {
         title       "VDF Mesh and probes localisation: xoy plan"
         Width       12cm
-        mesh        VDF/PAR_VDF.lata              dom
-        mesh        VDF/PAR_VDF_PRESSURE.son      MESH red
-        mesh        VDF_g/PAR_VDF_g_P_HYDRO2.son  MESH blue
+        mesh        VDF/VDF.lata              dom
+        mesh        VDF/VDF_PRESSURE.son      MESH red
+        mesh        VDF_g/VDF_g_P_HYDRO2.son  MESH blue
         operator_to_all    slice2D_z  0 0 5.
     }
     visu {
         title       "VEF Mesh and probes localisation for P0, P1 and P0P1 discretizations"
         Width       20cm
-        mesh        VEF_P0/PAR_VEF_P0.lata                  dom
-        mesh        VEF_P0/PAR_VEF_P0_PRESSURE.son          MESH red
-        mesh        VEF_P1/PAR_VEF_P1_PRESSURE.son          MESH green
-        mesh        VEF_P0P1/PAR_VEF_P0P1_PRESSURE.son      MESH blue
-        mesh        VEF_P0_g/PAR_VEF_P0_g_P_HYDRO2.son      MESH blue
+        mesh        VEF_P0/VEF_P0.lata                  dom
+        mesh        VEF_P0/VEF_P0_PRESSURE.son          MESH red
+        mesh        VEF_P1/VEF_P1_PRESSURE.son          MESH green
+        mesh        VEF_P0P1/VEF_P0P1_PRESSURE.son      MESH blue
+        mesh        VEF_P0_g/VEF_P0_g_P_HYDRO2.son      MESH blue
         up3d         0.01338917158451617 0.1416505156603561 0.9898261774157296
         normal3D    -0.1516748026546194 -0.978172261192283 0.1420344383368291
     }
@@ -54,10 +54,10 @@ Chapter {
         Description "In blue, we can see the probes for pressure in P0P1 discretization, where we have not specified any location, so TRUST made interpolation."
         Description "Note that if we specified a location in P0P1 discretization, we will always have interpolation!"
         Width       12cm
-        mesh        VEF_P0/PAR_VEF_P0.lata                  dom
-        mesh        VEF_P0/PAR_VEF_P0_PRESSURE.son          MESH red
-        mesh        VEF_P1/PAR_VEF_P1_PRESSURE.son          MESH green
-        mesh        VEF_P0P1/PAR_VEF_P0P1_PRESSURE.son      MESH blue
+        mesh        VEF_P0/VEF_P0.lata                  dom
+        mesh        VEF_P0/VEF_P0_PRESSURE.son          MESH red
+        mesh        VEF_P1/VEF_P1_PRESSURE.son          MESH green
+        mesh        VEF_P0P1/VEF_P0P1_PRESSURE.son      MESH blue
         up3d        -0.1499071129880145 0.7283282640884507 0.6686297908450557
         normal3D    0.1470417025193451 -0.6523274778855598 0.7435372212039403
         zoom3D      0.05651774025688895 -0.2087383392904306  1.77156
@@ -119,13 +119,13 @@ Chapter {
         labelX "Height (m)"
         labelY "'Pression_Pa' (Pa)"
         curve {
-            Segment VDF/PAR_VDF.data PRESSION_Pa
+            Segment VDF/VDF.data PRESSION_Pa
             columns ($1) ($2)
             legend "'Pression_Pa'"
             style linespoints
         }
         curve {
-            Segment VDF_g/PAR_VDF_g.data PRESSION_Pa
+            Segment VDF_g/VDF_g.data PRESSION_Pa
             columns ($1) ($2)
             legend "'Pression_Pa' case with gravity"
             style linespoints
@@ -140,13 +140,13 @@ Chapter {
         labelX "Height (m)"
         labelY "'Pression_Pa' (Pa)"
         curve {
-            Segment VEF_P0/PAR_VEF_P0.data PRESSION_Pa
+            Segment VEF_P0/VEF_P0.data PRESSION_Pa
             columns ($1) ($2)
             legend "'Pression_Pa' P0"
             style linespoints
         }
         curve {
-            Segment VEF_P0_g/PAR_VEF_P0_g.data PRESSION_Pa
+            Segment VEF_P0_g/VEF_P0_g.data PRESSION_Pa
             columns ($1) ($2)
             legend "'Pression_Pa' P0 case with gravity"
             style linespoints
@@ -161,13 +161,13 @@ Chapter {
         labelX "Height (m)"
         labelY "'Pression_Pa' (Pa)"
         curve {
-            Segment VEF_P1/PAR_VEF_P1.data PRESSION_Pa
+            Segment VEF_P1/VEF_P1.data PRESSION_Pa
             columns ($1) ($2)
             legend "'Pression_Pa' P1"
             style linespoints
         }
         curve {
-            Segment VEF_P1_g/PAR_VEF_P1_g.data PRESSION_Pa
+            Segment VEF_P1_g/VEF_P1_g.data PRESSION_Pa
             columns ($1) ($2)
             legend "'Pression_Pa' P1 case with gravity"
             style linespoints
@@ -184,13 +184,13 @@ Chapter {
         labelX "Height (m)"
         labelY "'Pression_Pa' (Pa)"
         curve {
-            Segment VEF_P0P1/PAR_VEF_P0P1.data PRESSION_Pa
+            Segment VEF_P0P1/VEF_P0P1.data PRESSION_Pa
             columns ($1) ($2)
             legend "'Pression_Pa' P0P1"
             style linespoints
         }
         curve {
-            Segment VEF_P0P1_g/PAR_VEF_P0P1_g.data PRESSION_Pa
+            Segment VEF_P0P1_g/VEF_P0P1_g.data PRESSION_Pa
             columns ($1) ($2)
             legend "'Pression_Pa' P0P1 case with gravity"
             style linespoints
@@ -210,13 +210,13 @@ Chapter {
         labelX "Height (m)"
         labelY "Pressure in Pascals (Pa)"
         curve {
-            Segment VDF/PAR_VDF.data PRESSURE
+            Segment VDF/VDF.data PRESSURE
             columns ($1) ($2)
             legend "VDF Pressure"
             style linespoints
         }
         curve {
-            Segment VDF/PAR_VDF.data PRESSION_PA
+            Segment VDF/VDF.data PRESSION_PA
             columns ($1) ($2)
             legend "VDF Pression_Pa "
             style lines
@@ -228,13 +228,13 @@ Chapter {
         labelX "Height (m)"
         labelY "Pressure in Pascals (Pa)"
         curve {
-            Segment VDF_g/PAR_VDF_g.data PRESSURE
+            Segment VDF_g/VDF_g.data PRESSURE
             columns ($1) ($2)
             legend "VDF Pressure with gravity"
             style linespoints
         }
         curve {
-            Segment VDF_g/PAR_VDF_g.data PRESSION_PA
+            Segment VDF_g/VDF_g.data PRESSION_PA
             columns ($1) ($2)
             legend "VDF Pression_Pa with gravity"
             style lines
@@ -248,13 +248,13 @@ Chapter {
         labelX "Height (m)"
         labelY "Pressure in Pascals (Pa)"
         curve {
-            Segment VEF_P0/PAR_VEF_P0.data PRESSURE
+            Segment VEF_P0/VEF_P0.data PRESSURE
             columns ($1) ($2)
             legend "VEF P0 Pressure"
             style linespoints
         }
         curve {
-            Segment VEF_P0/PAR_VEF_P0.data PRESSION_PA
+            Segment VEF_P0/VEF_P0.data PRESSION_PA
             columns ($1) ($2)
             legend "VEF P0 Pression_Pa "
             style lines
@@ -266,13 +266,13 @@ Chapter {
         labelX "Height (m)"
         labelY "Pressure in Pascals (Pa)"
         curve {
-            Segment VEF_P0_g/PAR_VEF_P0_g.data PRESSURE
+            Segment VEF_P0_g/VEF_P0_g.data PRESSURE
             columns ($1) ($2)
             legend "VEF P0 Pressure with gravity"
             style linespoints
         }
         curve {
-            Segment VEF_P0_g/PAR_VEF_P0_g.data PRESSION_PA
+            Segment VEF_P0_g/VEF_P0_g.data PRESSION_PA
             columns ($1) ($2)
             legend "VEF P0 Pression_Pa with gravity"
             style lines
@@ -286,13 +286,13 @@ Chapter {
         labelX "Height (m)"
         labelY "Pressure in Pascals (Pa)"
         curve {
-            Segment VEF_P1/PAR_VEF_P1.data PRESSURE
+            Segment VEF_P1/VEF_P1.data PRESSURE
             columns ($1) ($2)
             legend "VEF P1 Pressure"
             style linespoints
         }
         curve {
-            Segment VEF_P1/PAR_VEF_P1.data PRESSION_PA
+            Segment VEF_P1/VEF_P1.data PRESSION_PA
             columns ($1) ($2)
             legend "VEF P1 Pression_Pa"
             style lines
@@ -304,13 +304,13 @@ Chapter {
         labelX "Height (m)"
         labelY "Pressure in Pascals (Pa)"
         curve {
-            Segment VEF_P1_g/PAR_VEF_P1_g.data PRESSURE
+            Segment VEF_P1_g/VEF_P1_g.data PRESSURE
             columns ($1) ($2)
             legend "VEF P1 Pressure with gravity"
             style linespoints
         }
         curve {
-            Segment VEF_P1_g/PAR_VEF_P1_g.data PRESSION_PA
+            Segment VEF_P1_g/VEF_P1_g.data PRESSION_PA
             columns ($1) ($2)
             legend "VEF P1 Pression_Pa with gravity"
             style lines
@@ -324,13 +324,13 @@ Chapter {
         labelX "Height (m)"
         labelY "Pressure in Pascals (Pa)"
         curve {
-            Segment VEF_P0P1/PAR_VEF_P0P1.data PRESSURE
+            Segment VEF_P0P1/VEF_P0P1.data PRESSURE
             columns ($1) ($2)
             legend "VEF P0P1 Pressure"
             style linespoints
         }
         curve {
-            Segment VEF_P0P1/PAR_VEF_P0P1.data PRESSION_PA
+            Segment VEF_P0P1/VEF_P0P1.data PRESSION_PA
             columns ($1) ($2)
             legend "VEF P0P1 Pression_Pa "
             style lines
@@ -342,13 +342,13 @@ Chapter {
         labelX "Height (m)"
         labelY "Pressure in Pascals (Pa)"
         curve {
-            Segment VEF_P0P1_g/PAR_VEF_P0P1_g.data PRESSURE
+            Segment VEF_P0P1_g/VEF_P0P1_g.data PRESSURE
             columns ($1) ($2)
             legend "VEF P0P1 Pressure with gravity"
             style linespoints
         }
         curve {
-            Segment VEF_P0P1_g/PAR_VEF_P0P1_g.data PRESSION_PA
+            Segment VEF_P0P1_g/VEF_P0P1_g.data PRESSION_PA
             columns ($1) ($2)
             legend "VEF P0P1 Pression_Pa with gravity"
             style lines
@@ -368,13 +368,13 @@ Chapter {
         labelX "Height (m)"
         labelY "Pressure in Pascals (Pa)"
         curve {
-            Segment VDF/PAR_VDF.data PRESSION
+            Segment VDF/VDF.data PRESSION
             columns ($1) ($2)*1000
             legend "VDF Pression x rho"
             style linespoints
         }
         curve {
-            Segment VDF/PAR_VDF.data PRESSION_PA
+            Segment VDF/VDF.data PRESSION_PA
             columns ($1) ($2)
             legend "VDF Pression_Pa "
             style lines
@@ -386,13 +386,13 @@ Chapter {
         labelX "Height (m)"
         labelY "Pressure in Pascals (Pa)"
         curve {
-            Segment VDF_g/PAR_VDF_g.data PRESSION
+            Segment VDF_g/VDF_g.data PRESSION
             columns ($1) ($2)*1000
             legend "VDF Pression x rho with gravity"
             style linespoints
         }
         curve {
-            Segment VDF_g/PAR_VDF_g.data PRESSION_PA
+            Segment VDF_g/VDF_g.data PRESSION_PA
             columns ($1) ($2)
             legend "VDF Pression_Pa with gravity"
             style lines
@@ -406,13 +406,13 @@ Chapter {
         labelX "Height (m)"
         labelY "Pressure in Pascals (Pa)"
         curve {
-            Segment VEF_P0/PAR_VEF_P0.data PRESSION
+            Segment VEF_P0/VEF_P0.data PRESSION
             columns ($1) ($2)*1000
             legend "VEF P0 Pression x rho"
             style linespoints
         }
         curve {
-            Segment VEF_P0/PAR_VEF_P0.data PRESSION_PA
+            Segment VEF_P0/VEF_P0.data PRESSION_PA
             columns ($1) ($2)
             legend "VEF P0 Pression_Pa "
             style lines
@@ -424,13 +424,13 @@ Chapter {
         labelX "Height (m)"
         labelY "Pressure in Pascals (Pa)"
         curve {
-            Segment VEF_P0_g/PAR_VEF_P0_g.data PRESSION
+            Segment VEF_P0_g/VEF_P0_g.data PRESSION
             columns ($1) ($2)*1000
             legend "VEF P0 Pression x rho with gravity"
             style linespoints
         }
         curve {
-            Segment VEF_P0_g/PAR_VEF_P0_g.data PRESSION_PA
+            Segment VEF_P0_g/VEF_P0_g.data PRESSION_PA
             columns ($1) ($2)
             legend "VEF P0 Pression_Pa with gravity"
             style lines
@@ -444,13 +444,13 @@ Chapter {
         labelX "Height (m)"
         labelY "Pressure in Pascals (Pa)"
         curve {
-            Segment VEF_P1/PAR_VEF_P1.data PRESSION
+            Segment VEF_P1/VEF_P1.data PRESSION
             columns ($1) ($2)*1000
             legend "VEF P1 Pression x rho"
             style linespoints
         }
         curve {
-            Segment VEF_P1/PAR_VEF_P1.data PRESSION_PA
+            Segment VEF_P1/VEF_P1.data PRESSION_PA
             columns ($1) ($2)
             legend "VEF P1 Pression_Pa "
             style lines
@@ -462,13 +462,13 @@ Chapter {
         labelX "Height (m)"
         labelY "Pressure in Pascals (Pa)"
         curve {
-            Segment VEF_P1_g/PAR_VEF_P1_g.data PRESSION
+            Segment VEF_P1_g/VEF_P1_g.data PRESSION
             columns ($1) ($2)*1000
             legend "VEF P1 Pression x rho with gravity"
             style linespoints
         }
         curve {
-            Segment VEF_P1_g/PAR_VEF_P1_g.data PRESSION_PA
+            Segment VEF_P1_g/VEF_P1_g.data PRESSION_PA
             columns ($1) ($2)
             legend "VEF P1 Pression_Pa with gravity"
             style lines
@@ -482,13 +482,13 @@ Chapter {
         labelX "Height (m)"
         labelY "Pressure in Pascals (Pa)"
         curve {
-            Segment VEF_P0P1/PAR_VEF_P0P1.data PRESSION
+            Segment VEF_P0P1/VEF_P0P1.data PRESSION
             columns ($1) ($2)*1000
             legend "VEF P0P1 Pression x rho"
             style linespoints
         }
         curve {
-            Segment VEF_P0P1/PAR_VEF_P0P1.data PRESSION_PA
+            Segment VEF_P0P1/VEF_P0P1.data PRESSION_PA
             columns ($1) ($2)
             legend "VEF P0P1 Pression_Pa "
             style lines
@@ -500,13 +500,13 @@ Chapter {
         labelX "Height (m)"
         labelY "Pressure in Pascals (Pa)"
         curve {
-            Segment VEF_P0P1_g/PAR_VEF_P0P1_g.data PRESSION
+            Segment VEF_P0P1_g/VEF_P0P1_g.data PRESSION
             columns ($1) ($2)*1000
             legend "VEF P0P1 Pression x rho with gravity"
             style linespoints
         }
         curve {
-            Segment VEF_P0P1_g/PAR_VEF_P0P1_g.data PRESSION_PA
+            Segment VEF_P0P1_g/VEF_P0P1_g.data PRESSION_PA
             columns ($1) ($2)
             legend "VEF P0P1 Pression_Pa with gravity"
             style lines
@@ -526,13 +526,13 @@ Chapter {
         labelX "Height (m)"
         labelY "Pressure in Pascals (Pa)"
         curve {
-            Segment VDF/PAR_VDF.data P_STAR
+            Segment VDF/VDF.data P_STAR
             columns ($1) ($2)*1000
             legend "VDF 'P_star' x rho"
             style linespoints
         }
         curve {
-            Segment VDF/PAR_VDF.data PRESSION_PA
+            Segment VDF/VDF.data PRESSION_PA
             columns ($1) ($2)
             legend "VDF 'Pression_pa'"
             style linespoints
@@ -544,13 +544,13 @@ Chapter {
         labelX "Height (m)"
         labelY "Pressure in Pascals (Pa)"
         curve {
-            Segment VDF_g/PAR_VDF_g.data P_STAR
+            Segment VDF_g/VDF_g.data P_STAR
             columns ($1) ($2)*1000
             legend "VDF 'P_star' x rho with gravity"
             style linespoints
         }
         curve {
-            Segment VDF_g/PAR_VDF_g.data PRESSION_PA
+            Segment VDF_g/VDF_g.data PRESSION_PA
             columns ($1) ($2)
             legend "VDF 'Pression_pa' with gravity"
             style linespoints
@@ -565,13 +565,13 @@ Chapter {
         labelX "Height (m)"
         labelY "Pressure in Pascals (Pa)"
         curve {
-            Segment VEF_P0/PAR_VEF_P0.data P_STAR
+            Segment VEF_P0/VEF_P0.data P_STAR
             columns ($1) ($2)*1000
             legend "VEF P0 'P_star' x rho"
             style linespoints
         }
         curve {
-            Segment VEF_P0/PAR_VEF_P0.data PRESSION_PA
+            Segment VEF_P0/VEF_P0.data PRESSION_PA
             columns ($1) ($2)
             legend "'Pression_pa'"
             style linespoints
@@ -583,13 +583,13 @@ Chapter {
         labelX "Height (m)"
         labelY "Pressure in Pascals (Pa)"
         curve {
-            Segment VEF_P0_g/PAR_VEF_P0_g.data P_STAR
+            Segment VEF_P0_g/VEF_P0_g.data P_STAR
             columns ($1) ($2)*1000
             legend "VEF P0 'P_star' x rho with gravity"
             style linespoints
         }
         curve {
-            Segment VEF_P0_g/PAR_VEF_P0_g.data PRESSION_PA
+            Segment VEF_P0_g/VEF_P0_g.data PRESSION_PA
             columns ($1) ($2)
             legend "VEF P0 'Pression_pa' with gravity"
             style linespoints
@@ -603,13 +603,13 @@ Chapter {
         labelX "Height (m)"
         labelY "Pressure in Pascals (Pa)"
         curve {
-            Segment VEF_P1/PAR_VEF_P1.data P_STAR
+            Segment VEF_P1/VEF_P1.data P_STAR
             columns ($1) ($2)*1000
             legend "VEF P1 'P_star' x rho"
             style linespoints
         }
         curve {
-            Segment VEF_P1/PAR_VEF_P1.data PRESSION_PA
+            Segment VEF_P1/VEF_P1.data PRESSION_PA
             columns ($1) ($2)
             legend "VEF P1 'Pression_pa'"
             style linespoints
@@ -621,13 +621,13 @@ Chapter {
         labelX "Height (m)"
         labelY "Pressure in Pascals (Pa)"
         curve {
-            Segment VEF_P1_g/PAR_VEF_P1_g.data P_STAR
+            Segment VEF_P1_g/VEF_P1_g.data P_STAR
             columns ($1) ($2)*1000
             legend "VEF P1 'P_star' x rho with gravity"
             style linespoints
         }
         curve {
-            Segment VEF_P1_g/PAR_VEF_P1_g.data PRESSION_PA
+            Segment VEF_P1_g/VEF_P1_g.data PRESSION_PA
             columns ($1) ($2)
             legend "VEF P1 'Pression_pa' with gravity"
             style linespoints
@@ -641,13 +641,13 @@ Chapter {
         labelX "Height (m)"
         labelY "Pressure in Pascals (Pa)"
         curve {
-            Segment VEF_P0P1/PAR_VEF_P0P1.data P_STAR
+            Segment VEF_P0P1/VEF_P0P1.data P_STAR
             columns ($1) ($2)*1000
             legend "VEF P0P1 'P_star' x rho"
             style linespoints
         }
         curve {
-            Segment VEF_P0P1/PAR_VEF_P0P1.data PRESSION_PA
+            Segment VEF_P0P1/VEF_P0P1.data PRESSION_PA
             columns ($1) ($2)
             legend "VEF P0P1 'Pression_pa'"
             style linespoints
@@ -659,13 +659,13 @@ Chapter {
         labelX "Height (m)"
         labelY "Pressure in Pascals (Pa)"
         curve {
-            Segment VEF_P0P1_g/PAR_VEF_P0P1_g.data P_STAR
+            Segment VEF_P0P1_g/VEF_P0P1_g.data P_STAR
             columns ($1) ($2)*1000
             legend "VEF P0P1 'P_star' x rho with gravity"
             style linespoints
         }
         curve {
-            Segment VEF_P0P1_g/PAR_VEF_P0P1_g.data PRESSION_PA
+            Segment VEF_P0P1_g/VEF_P0P1_g.data PRESSION_PA
             columns ($1) ($2)
             legend "VEF P0P1 'Pression_pa' with gravity"
             style linespoints
@@ -691,25 +691,25 @@ Chapter {
             style lines
         }
         curve {
-            Segment VDF_g/PAR_VDF_g.data P_HYDRO2
+            Segment VDF_g/VDF_g.data P_HYDRO2
             columns ($1) ($2)
             legend "VDF 'Pression_hydrostatique'"
             style points
         }
         curve {
-            Segment VEF_P0_g/PAR_VEF_P0_g.data P_HYDRO2
+            Segment VEF_P0_g/VEF_P0_g.data P_HYDRO2
             columns ($1) ($2)
             legend "VEF P0 'Pression_hydrostatique'"
             style points
         }
         curve {
-            Segment VEF_P1_g/PAR_VEF_P1_g.data P_HYDRO2
+            Segment VEF_P1_g/VEF_P1_g.data P_HYDRO2
             columns ($1) ($2)
             legend "VEF P1 'Pression_hydrostatique'"
             style points
         }
         curve {
-            Segment VEF_P0P1_g/PAR_VEF_P0P1_g.data P_HYDRO2
+            Segment VEF_P0P1_g/VEF_P0P1_g.data P_HYDRO2
             columns ($1) ($2)
             legend "VEF P0P1 'Pression_hydrostatique'"
             style points
@@ -734,13 +734,13 @@ Chapter {
         labelX "Height (m)"
         labelY "Pressure (Pa)"
         curve {
-            Segment VDF_g/PAR_VDF_g.data P_TOT
+            Segment VDF_g/VDF_g.data P_TOT
             columns ($1) ($2)
             legend "'Pressure_tot'"
             style linespoints
         }
         curve {
-            Segment VDF_g/PAR_VDF_g.data P_HYDRO2
+            Segment VDF_g/VDF_g.data P_HYDRO2
             columns ($1) ($2)-1000*9.81*2.
             legend "rho g (z-z0)' with z0=2."
             style linespoints
@@ -752,7 +752,7 @@ Chapter {
         labelX "Height (m)"
         labelY "Pressure (Pa)"
         curve {
-            Segment VDF_g/PAR_VDF_g.data PRESSION_PA
+            Segment VDF_g/VDF_g.data PRESSION_PA
             columns ($1) ($2)
             legend "'Pression_Pa'"
             style linespoints
@@ -764,7 +764,7 @@ Chapter {
         labelX "Height (m)"
         labelY "Pressure (Pa)"
         curve {
-            Segment VDF_g/PAR_VDF_g.data EC_ELEM2
+            Segment VDF_g/VDF_g.data EC_ELEM2
             columns ($1) ($2)
             legend "Cinetic Energy (0.5 rho U.U)"
             style linespoints
@@ -797,56 +797,56 @@ Chapter {
         logY
         legend below title "Legend"
         curve {
-            file VDF/PAR_VDF.dt_ev
+            file VDF/VDF.dt_ev
             columns ($1) ($4)
             legend "VDF"
             style linespoints
         }
         curve {
-            file VEF_P0/PAR_VEF_P0.dt_ev
+            file VEF_P0/VEF_P0.dt_ev
             columns ($1) ($4)
             legend "VEF P0"
             style linespoints
         }
         curve {
-            file VEF_P1/PAR_VEF_P1.dt_ev
+            file VEF_P1/VEF_P1.dt_ev
             columns ($1) ($4)
             legend "VEF P1"
             style linespoints
         }
         curve {
-            file VEF_P0P1/PAR_VEF_P0P1.dt_ev
+            file VEF_P0P1/VEF_P0P1.dt_ev
             columns ($1) ($4)
             legend "VEF P0P1"
             style linespoints
         }
 
         curve {
-            file VDF_g/PAR_VDF_g.dt_ev
+            file VDF_g/VDF_g.dt_ev
             columns ($1) ($4)
             legend "VDF with gravity"
             style linespoints
         }
         curve {
-            file VEF_P0_g/PAR_VEF_P0_g.dt_ev
+            file VEF_P0_g/VEF_P0_g.dt_ev
             columns ($1) ($4)
             legend "VEF P0 with gravity"
             style linespoints
         }
         curve {
-            file VEF_P1_g/PAR_VEF_P1_g.dt_ev
+            file VEF_P1_g/VEF_P1_g.dt_ev
             columns ($1) ($4)
             legend "VEF P1 with gravity"
             style linespoints
         }
         curve {
-            file VEF_P0P1_g/PAR_VEF_P0P1_g.dt_ev
+            file VEF_P0P1_g/VEF_P0P1_g.dt_ev
             columns ($1) ($4)
             legend "VEF P0P1 with gravity"
             style linespoints
         }
 #        curve {
-#            file VEF_P0P1Pa_g/PAR_VEF_P0P1Pa_g.dt_ev
+#            file VEF_P0P1Pa_g/VEF_P0P1Pa_g.dt_ev
 #            columns ($1) ($4)
 #            legend "VEF P0P1Pa with gravity"
 #            style linespoints

@@ -1,7 +1,7 @@
 #!/bin/bash
 ../fait_lance_test `pwd`
 
-sed "s?\$TRUST_ROOT/exec/\$tool?`pwd`/compare_lata_dernier?" lance_test_modif | sed "s/effacer=0/effacer=1/" > lance_test_modif2
+sed "s?\$TRUST_ROOT/exec/\$tool?`pwd`/compare_lata_dernier?" lance_test_modif | sed "s/effacer=0/effacer=0/" > lance_test_modif2
 cp lance_test_modif2 lance_test_modif
 
 

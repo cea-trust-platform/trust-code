@@ -24,6 +24,8 @@
 #define Champ_implementation_sommet_base_included
 
 #include <Champ_implementation_base.h>
+#include <Frontiere.h>
+#include <Frontiere_dis_base.h>
 
 /////////////////////////////////////////////////////////////////////////////
 // .DESCRIPTION        : class Champ_implementation_sommet_base
@@ -58,7 +60,18 @@ public :
 protected :
   virtual DoubleTab& valeur_aux_sommets_impl(DoubleTab& result) const;
   virtual DoubleVect& valeur_aux_sommets_compo_impl(DoubleVect& result, int ncomp) const;
+  inline DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x,int distant) const;
 
 };
+
+inline DoubleTab& Champ_implementation_sommet_base::trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x,int distant) const
+{
+  if (distant)
+    fr.frontiere().trace_som_distant(y, x);
+  else
+    fr.frontiere().trace_som_local(y, x);
+  // useless ? x.echange_espace_virtuel();
+  return x;
+}
 
 #endif /* Champ_implementation_sommet_base_inclus */

@@ -98,6 +98,12 @@
 		<td>New functionalities in Figure: xtics,ytics,grid. <br></br>Use of longtable instead of tabular for Table</td>
 	        
 	</tr>
+	<tr>
+		<td>014</td>
+		<td>01/12/2016</td>
+		<td>New functionalities in Table: textsize<br></br>New: option code</td>
+	        
+	</tr>
 </table>
 
 <h1>Introduction</h1>
@@ -238,11 +244,18 @@ Parameters {
 		<td class="desc">Number of the TRUST version used for the validation</td>
 	</tr>
 	<tr>
-		<td>ParametersTRUST<br></br>  |ParametresTRUST</td>
+		<td>ParametresTRUST</td>
 		<td>M</td>
 		<td>str</td>
 		<td>F</td>
 		<td class="desc">List of the options tested in this validation file</td>
+	</tr>
+	<tr>
+		<td>Code</td>
+		<td>M</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">Name of the code (TRUST by default)</td>
 	</tr>
 	<tr>
 		<td>Reference</td>
@@ -971,6 +984,13 @@ Table {
 		<td>BLOC</td>
 		<td>F</td>
 		<td class="desc">Elements of the list <a href="#paramLignes">lines</a> displayed in the table</td>
+	</tr>
+	<tr>
+	<td>textsize</td>
+		<td>M</td>
+		<td>str</td>
+		<td>F</td>
+		<td class="desc">Text size used in this table (tiny,script,footnote,small,large,Large)</td>
 	</tr>
 
 	<tr>

@@ -1,18 +1,18 @@
-Parametres {
-	Titre "Ecoulement laminaire dans un coude"
+Parameters {
+	Title "Ecoulement laminaire dans un coude"
 	Description "On calcule l'écoulement bidimensionnel dans un coude.  L'écoulement est laminaire et on néglige la convection.  Les parois du domaine sont fixes et une condition d'adhérence y est imposée.  Une solution analytique à ce problème existe et on compare les résultats calculés par GENEPI à cette solution analytique."
-	Auteur "D. Jamet"
-	CasTest "." "eclt_coude_pression.data"
-	incluredata 1
+	Author "D. Jamet"
+	TestCase "." "eclt_coude_pression.data"
+	IncludeData 1
 }
 
-Chapitre {
-	Titre "Champs de pression et de vitesse"
+Chapter {
+	Title "Champs de pression et de vitesse"
 	Description "Dans cette partie, on compare le champ de pression calculé par GENEPI et le champ de pression analytique."
 
 
 	visu {
-                titre "Champs de pression et de vitesse calculés"
+                Title "Champs de pression et de vitesse calculés"
                 description "Le champ de pression calculé par GENEPI est tracé et le champ de pression analytique est donné par des iso-valeurs."
                 mesh ./eclt_coude_pression.lata dom 
                 pseudocolor ./eclt_coude_pression.lata dom PRESSION_PA ELEM
@@ -22,7 +22,7 @@ Chapitre {
 
 
 	visu {
-                titre "Champs de pression et de vitesse analytiques"
+                Title "Champs de pression et de vitesse analytiques"
                 description "Le champ de pression analytique est tracé et le champ de pression calculé par GENEPI est donné par des iso-valeurs."
                 mesh ./eclt_coude_pression.lata dom 
                 instruction_visit DefineScalarExpression("P_ANALYTIQUE_ELEM_dom","(-0.225E1*acos(coord(dom)[0]/sqrt(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1]))/ln(2.0)+0.1125E1*0.3141592653589793E1/ln(2.0))")
@@ -32,7 +32,7 @@ Chapitre {
         }
 
 	visu {
-                titre "Erreurs sur les champs de pression et de vitesse"
+                Title "Erreurs sur les champs de pression et de vitesse"
                 description "On trace l'erreur entre le champ de pression calculé par GENEPI et le champ de pression analytique.  Sont superposés le champ de l'erreur et les iso-valeurs de l'erreur (pour plus de clarté, le maillage n'est pas tracé)."
                 instruction_visit DefineScalarExpression("ERREUR_P_ELEM_dom","PRESSION_PA_ELEM_dom-(-0.225E1*acos(coord(dom)[0]/sqrt(coord(dom)[0]*coord(dom)[0]+coord(dom)[1]*coord(dom)[1]))/ln(2.0)+0.1125E1*0.3141592653589793E1/ln(2.0))")
                 pseudocolor ./eclt_coude_pression.lata dom ERREUR_P ELEM
@@ -42,40 +42,40 @@ Chapitre {
         }
 }
 
-Chapitre {
-	Titre "Débit dans la conduite"
+Chapter {
+	Title "Débit dans la conduite"
 	Description "Le champ de vitesse étant connu analytiquement, on peut calculer la valeur analytique du débit et la comparer à la valeur calculée par GENEPI.  Ces valeurs sont donnés dans le tableau suivant ainsi que l'erreur correspondante."
 
 
-	Tableau {
-		Titre "Comparaison théorie/numérique"
-		nb_colonnes 1
+	Table {
+		Title "Comparaison théorie/numérique"
+		nb_columns 1
 		label  Perte de pression
-		Ligne {
-			Legende Analytique
+		line {
+			legend Analytique
 			alias ref
 			Version "1.5.3-beta_build_180907"
-			valeurs 0.118369
+			values 0.118369
 		}
-		Ligne {
-			Legende Calcul
+		line {
+			legend Calcul
 			alias calcul
-			Origine "Trio_U"
+			origin "Trio_U"
 			Version "1.5.3-beta_build_180907"
-			nb_colonnes_fichier 6
-			fichier ./eclt_coude_pression_fin.out
-			colonnes ($5)
+			nb_columns_file 6
+			file ./eclt_coude_pression_fin.out
+			columns ($5)
 		}
-		Ligne {
-			Legende ecart_relatif
+		line {
+			legend ecart_relatif
 			alias erreur
-			Origine "Trio_U"
+			origin "Trio_U"
 			Version "1.5.3-beta_build_180907"
 			difference ecart_relatif calcul ref
-			afficher_ligne 0	
+			display_line 0	
 		}
-		Ligne {
-	        	legende "erreur en %"
+		line {
+	        	legend "erreur en %"
 			alias err_relative
 		        difference formule erreur ref int(v1*10000)/100.
 	        }

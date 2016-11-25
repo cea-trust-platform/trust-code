@@ -1,0 +1,90 @@
+# Exemple d'utilisation du mot cle ExtrudeBord #
+#  #
+# Le bord n'est pas plan # 
+dimension 3
+export domaine dom3D
+
+Mailler dom3D
+{
+Pave Cavite
+	{
+		Origine 0. 0. 0.
+		Nombre_de_Noeuds 5 5 5 
+		Longueurs 2. 2. 2. 
+
+	}
+	{
+		Bord b1  X = 0.            	0 <= Y <= 2.     0 <= Z <= 2.      
+		Bord b2  X = 2.   	0 <= Y <= 2.           0 <= Z <= 2.
+		Bord haut     Y = 2.           	0. <= X <= 2.   0 <= Z <= 2.
+		Bord bas    Y = 0.           	0. <= X <= 2.   0 <= Z <= 2.
+		Bord b3    Z = 0.           	0. <= X <= 2.  0 <= Y <= 2.
+		Bord b4    Z = 2.           	0. <= X <= 2.   0 <= Y <= 2.
+	} 
+}
+Transformer dom3D x+y*(2-y) y z
+#
+ExtrudeBord peut extruder un bord maille soit en triangle soit en quadrangle
+ - si  le bord est maille en quadrangle, le domaine extrude sera compose d'hexaedres
+ - si  le bord est maille en triangle, le domaine extrude sera compose de tetraedres
+#
+domaine dom_extrude
+
+extrudebord 
+{
+	domaine_init dom3D 
+	direction 1 0 0
+	nb_tranches 5
+	domaine_final dom_extrude
+	nom_bord b1 
+}
+RegroupeBord dom_extrude PERIO { devant derriere }
+
+# On ecrit le domaine dans un fichier maillage #
+ecrire_fichier dom_extrude dom_extrude.geom
+
+# On ecrit le domaine pour le post-traiter #
+
+# Essai de l'extrusion d'un bord maille avec des triangles #
+Tetraedriser_homogene_compact dom3D
+domaine dom_extrude_trois_tetra
+extrudebord
+{
+	domaine_init dom3D 
+	direction 1 0 0
+	nb_tranches 5
+	domaine_final dom_extrude_trois_tetra
+	nom_bord b1 
+Trois_Tetra
+}
+domaine dom_extrude_tetra
+extrudebord
+{
+	domaine_init dom3D 
+	direction 1 0 0
+	nb_tranches 5
+	domaine_final dom_extrude_tetra
+	nom_bord b1 
+}
+domaine dom_extrude_vingt_tetra
+extrudebord
+{
+	domaine_init dom3D 
+	direction 1 0 0
+	nb_tranches 2
+	domaine_final dom_extrude_vingt_tetra
+	nom_bord b1 
+Vingt_Tetra
+}
+# On ecrit le domaine pour le post-traiter #
+Postraiter_domaine { domaines { dom3D dom_extrude dom_extrude_tetra dom_extrude_trois_tetra dom_extrude_vingt_tetra }  format lata }
+discretiser_domaine dom_extrude
+discretiser_domaine dom_extrude_trois_tetra
+discretiser_domaine dom_extrude_tetra
+discretiser_domaine dom_extrude_vingt_tetra
+Postraiter_domaine { domaines { dom3D dom_extrude dom_extrude_tetra dom_extrude_trois_tetra dom_extrude_vingt_tetra }  format lml }
+ecrire_fichier dom_extrude_tetra dom_extrude.geom
+
+End
+
+

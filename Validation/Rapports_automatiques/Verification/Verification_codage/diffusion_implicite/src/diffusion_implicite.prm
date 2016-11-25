@@ -98,18 +98,18 @@ Chapter {
           Curve {
               style linespoints
 		segment solide SONDE_TSOL 10.
-	       legende diffusion implicite
+	       legend diffusion implicite
 		}	
           Curve {
               style linespoints
 		segment solide_explicite SONDE_TSOL 10.
-	       legende diffusion explicite
+	       legend diffusion explicite
 		}	
           Curve {
               style lines
 		fonction 10*x
-	       legende solution analytique
-		origine analytique
+	       legend solution analytique
+		origin analytique
 		}	
 }
 }

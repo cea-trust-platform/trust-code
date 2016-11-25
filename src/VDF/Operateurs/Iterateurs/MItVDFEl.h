@@ -410,7 +410,6 @@
     if( ncomp != 1) Process ::exit();/* cas scalaire */			\
                                                                              \
                                                                           \
-    int elem1, elem2;                                                        \
     int ndeb, nfin;                                                        \
     int face;                                                                \
     int num_cl=0;                                                        \
@@ -439,11 +438,11 @@
           const Symetrie& cl =(const Symetrie&) (la_cl.valeur());        \
           for (face=ndeb; face<nfin; face++) {                                \
             flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);        \
-            if ( (elem1=elem(face,0)) > -1)                                \
+            if ( (elem(face,0)) > -1)                                \
               {                                                                \
                 flux_bords(face,0)+=flux;                                \
               }                                                                \
-            if ( (elem2=elem(face,1)) > -1)                                \
+            if ( (elem(face,1)) > -1)                                \
               {                                                                \
                 flux_bords(face,0)-=flux;                                \
               }                                                                \
@@ -455,11 +454,11 @@
           const Neumann_sortie_libre& cl =(const Neumann_sortie_libre&) (la_cl.valeur()); \
           for (face=ndeb; face<nfin; face++) {                                \
             flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);        \
-            if ( (elem1=elem(face,0)) > -1)                                \
+            if ( (elem(face,0)) > -1)                                \
               {                                                                \
                 flux_bords(face,0)+=flux;                                \
               }                                                                \
-            if ( (elem2=elem(face,1)) > -1)                                \
+            if ( (elem(face,1)) > -1)                                \
               {                                                                \
                 flux_bords(face,0)-=flux;                                \
               }                                                                \
@@ -471,11 +470,11 @@
           const Dirichlet_entree_fluide& cl =(const Dirichlet_entree_fluide&) (la_cl.valeur());        \
           for (face=ndeb; face<nfin; face++) {                                \
             flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);        \
-            if ( (elem1=elem(face,0)) > -1)                                \
+            if ( (elem(face,0)) > -1)                                \
               {                                                                \
                 flux_bords(face,0)+=flux;                                \
               }                                                                \
-            if ( (elem2=elem(face,1)) > -1)                                \
+            if ( (elem(face,1)) > -1)                                \
               {                                                                \
                 flux_bords(face,0)-=flux;                                \
               }                                                                \
@@ -487,11 +486,11 @@
           const Dirichlet_paroi_fixe& cl =(const Dirichlet_paroi_fixe&) (la_cl.valeur()); \
           for (face=ndeb; face<nfin; face++) {                                \
             flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);        \
-            if ( (elem1=elem(face,0)) > -1)                                \
+            if ( (elem(face,0)) > -1)                                \
               {                                                                \
                 flux_bords(face,0)+=flux;                                \
               }                                                                \
-            if ( (elem2=elem(face,1)) > -1)                                \
+            if ( (elem(face,1)) > -1)                                \
               {                                                                \
                 flux_bords(face,0)-=flux;                                \
               }                                                                \
@@ -503,11 +502,11 @@
           const Dirichlet_paroi_defilante& cl =(const Dirichlet_paroi_defilante&) (la_cl.valeur()); \
           for (face=ndeb; face<nfin; face++) {                                \
             flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);        \
-            if ( (elem1=elem(face,0)) > -1)                                \
+            if ( (elem(face,0)) > -1)                                \
               {                                                                \
                 flux_bords(face,0)+=flux;                                \
               }                                                                \
-            if ( (elem2=elem(face,1)) > -1)                                \
+            if ( (elem(face,1)) > -1)                                \
               {                                                                \
                 flux_bords(face,0)-=flux;                                \
               }                                                                \
@@ -518,8 +517,7 @@
         if (flux_evaluateur.calculer_flux_faces_paroi_adiabatique()){        \
           const Neumann_paroi_adiabatique& cl =(const Neumann_paroi_adiabatique&) (la_cl.valeur()); \
           for (face=ndeb; face<nfin; face++) {                                \
-            /* on initialise elem1 elem2 et on fait planter */                \
-            elem1=-1;elem2=-1;assert(0);exit();                                \
+            assert(0);exit();                                \
             flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);        \
             flux_bords(face,0)+=flux;                                        \
             flux_bords(face,0)-=flux;                                        \
@@ -531,11 +529,11 @@
           const Neumann_paroi& cl =(const Neumann_paroi&) (la_cl.valeur()); \
           for (face=ndeb; face<nfin; face++) {                                \
             flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);        \
-            if ( (elem1=elem(face,0)) > -1)                                \
+            if ( (elem(face,0)) > -1)                                \
               {                                                                \
                 flux_bords(face,0)+=flux;                                \
               }                                                                \
-            if ( (elem2=elem(face,1)) > -1)                                \
+            if ( (elem(face,1)) > -1)                                \
               {                                                                \
                 flux_bords(face,0)-=flux;                                \
               }                                                                \
@@ -553,11 +551,11 @@
           for (face=ndeb; face<nfin; face++) {                                \
             int local_face=la_zone.valeur().front_VF(boundary_index).num_local_face(face); \
             flux = flux_evaluateur.flux_face(donnee, boundary_index,face,local_face, cl, ndeb); \
-            if ( (elem1=elem(face,0)) > -1)                                \
+            if ( (elem(face,0)) > -1)                                \
               {                                                                \
                 flux_bords(face,0)+=flux;                                \
               }                                                                \
-            if ( (elem2=elem(face,1)) > -1)                                \
+            if ( (elem(face,1)) > -1)                                \
               {                                                                \
                 flux_bords(face,0)-=flux;                                \
               }                                                                \
@@ -569,11 +567,11 @@
           const Echange_global_impose& cl =(const Echange_global_impose&) (la_cl.valeur()); \
           for (face=ndeb; face<nfin; face++) {                                \
             flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);        \
-            if ( (elem1=elem(face,0)) > -1)                                \
+            if ( (elem(face,0)) > -1)                                \
               {                                                                \
                 flux_bords(face,0)+=flux;                                \
               }                                                                \
-            if ( (elem2=elem(face,1)) > -1)                                \
+            if ( (elem(face,1)) > -1)                                \
               {                                                                \
                 flux_bords(face,0)-=flux;                                \
               }                                                                \
@@ -585,11 +583,11 @@
           const NSCBC& cl =(const NSCBC&) (la_cl.valeur());                \
           for (face=ndeb; face<nfin; face++) {                                \
             flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);        \
-            if ( (elem1=elem(face,0)) > -1)                                \
+            if ( (elem(face,0)) > -1)                                \
               {                                                                \
                 flux_bords(face,0)+=flux;                                \
               }                                                                \
-            if ( (elem2=elem(face,1)) > -1)                                \
+            if ( (elem(face,1)) > -1)                                \
               {                                                                \
                 flux_bords(face,0)-=flux;                                \
               }                                                                \
@@ -601,12 +599,12 @@
           const Periodique& cl =(const Periodique&) (la_cl.valeur());        \
           for (face=ndeb; face<nfin; face++) {                                \
             flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);        \
-            if ( (elem1=elem(face,0)) > -1)                                \
+            if ( (elem(face,0)) > -1)                                \
               {                                                                \
                 if ( face < (ndeb+frontiere_dis.nb_faces()/2) )                \
                   flux_bords(face,0)+=flux;                                \
               }                                                                \
-            if ( (elem2=elem(face,1)) > -1)                                \
+            if ( (elem(face,1)) > -1)                                \
               {                                                                \
                 if ( (ndeb+frontiere_dis.nb_faces()/2) <= face )        \
                   flux_bords(face,0)-=flux;                                \
@@ -619,16 +617,16 @@
                                                                           if (flux_evaluateur.calculer_flux_faces_echange_global_impose()){ \
                                                                           const Nouvelle_Cl_VDF& cl =(const Nouvelle_Cl_VDF&) (la_cl.valeur()); \
                                                                           for (face=ndeb; face<nfin; face++) { \
-                                                                          if ( (elem1=elem(face,0)) > -1) \
+                                                                          if ( (int elem1=elem(face,0)) > -1) \
                                                                           resu[elem1]+=flux_evaluateur.flux_face(donnee, face, cl, ndeb); \
-                                                                          if ( (elem2=elem(face,1)) > -1) \
+                                                                          if ( (int elem2=elem(face,1)) > -1) \
                                                                           resu[elem2]-=flux_evaluateur.flux_face(donnee, face, cl, ndeb); \
                                                                           } \
                                                                           } \
                                                                           break; \
         */                                                                \
       default :                                                                \
-        Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur();        \
+	Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur();        \
         Cerr << "Dans It_VDF_Elem(_TYPE_)::ajouter_bords"<<finl;        \
         exit();                                                                \
         break;                                                                \

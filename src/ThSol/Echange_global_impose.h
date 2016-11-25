@@ -52,6 +52,8 @@ class Echange_global_impose : public Echange_impose_base
 {
 
   Declare_instanciable(Echange_global_impose);
+public:
+  int compatible_avec_discr(const Discretisation_base& discr) const;
 };
 
 

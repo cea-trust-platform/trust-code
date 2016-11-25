@@ -94,7 +94,7 @@ class Domain : public LataObject
 {
 public:
   Domain_Id id_;
-  enum Element { point, line, triangle, quadri, tetra, hexa, prism6, polyedre, unspecified };
+  enum Element { point, line, triangle, quadri, tetra, hexa, prism6, polyedre, polygone, unspecified };
   enum DomainType { IJK, UNSTRUCTURED };
   static Element element_type_from_string(const Motcle & type_elem);
   static Nom     element_type_to_string(Element type);

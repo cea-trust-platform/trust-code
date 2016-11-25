@@ -28,6 +28,14 @@ int Nom::nb_noms=0;
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Nom,"Nom",Objet_U);
 
+int Nom::check_case_non_sensitive_=1;
+
+
+void Nom::sed_check_case_non_sensitive(int i)
+{
+  check_case_non_sensitive_=i;
+}
+
 int sz = 0;
 
 // Description:
@@ -679,8 +687,6 @@ Nom::operator const char*() const
 {
   return nom_.c_str();
 }
-
-
 // Description:
 //     Comparaison d'un nom avec une chaine de caractere
 //     Utilise strcmp
@@ -705,7 +711,7 @@ int operator ==(const Nom& un_nom, const char* const un_autre)
 {
   //int res_actu=(strcmp(un_nom.nom_.c_str(), un_autre)==0);
   int res_actu=(un_nom.nom_.compare(un_autre)==0);
-  if (!res_actu)
+  if ((Nom::check_case_non_sensitive_==1) && (!res_actu))
     {
       Motcle toto(un_autre);
       if (toto==un_nom)
@@ -715,6 +721,7 @@ int operator ==(const Nom& un_nom, const char* const un_autre)
               Cerr << "Warning: " << un_nom << " and " << un_autre << " are they really different ?" << finl;
               Cerr << "A test in the code on a string of characters does not seem to take account of the case." << finl;
               Cerr << "Contact TRUST support by sending your data file of this calculation." << finl;
+              Cerr<<finl;
               /*
                 #ifndef NDEBUG
                 Process::exit();

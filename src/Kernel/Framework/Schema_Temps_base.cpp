@@ -42,13 +42,13 @@ void Schema_Temps_base::initialize()
   pb_base().calculer_pas_de_temps();
   // je le mets une deuxieme fois pour alternant....
   pb_base().calculer_pas_de_temps();
-  Nom fichier(nom_du_cas());
-  fichier+=".dt_ev";
   if (je_suis_maitre())
     {
+      Nom fichier(nom_du_cas());
+      fichier+=".dt_ev";
       struct stat f;
       // On initialise le fichier .dt_ev s'il n'existe pas ou si c'est un demarrage de calcul sans reprise
-      if (nb_pas_dt_==0 && ((stat(fichier,&f)) || !pb_base().reprise_effectuee()))
+      if ((nb_pas_dt_==0) && ((stat(fichier,&f)) || !(pb_base().reprise_effectuee()==1)))
         {
           SFichier fic(fichier,(schema_impr() ? (ios::out) : (ios::app)));
           if (schema_impr())
@@ -203,9 +203,9 @@ void Schema_Temps_base::validateTimeStep()
 
       if (schema_impr())
         {
-          if ((residu_>0)&&(residu_old_>0))
-            cumul_slope_+=(log(residu_)-log(residu_old_))/dt_;
-          residu_old_=residu_;
+          if ((residu_>0)&&(residu_old_slope_>0))
+            cumul_slope_+=(log(residu_)-log(residu_old_slope_))/dt_;
+          residu_old_slope_=residu_;
 
         }
       if (schema_impr()&&(nb_pas_dt()>0 && pas_de_temps()>0))
@@ -231,7 +231,7 @@ void Schema_Temps_base::validateTimeStep()
 
           if (limpr() )
             {
-              double seconds_to_finish  =  statistiques().last_time(temps_total_execution_counter_)/dpercent;
+              double seconds_to_finish  =  statistiques().last_time(temps_total_execution_counter_)*(1.-dpercent)/dpercent;
               int integer_limit=(int)(pow(2.0,(double)((sizeof(True_int)*8)-1))-1);
               if (seconds_to_finish<integer_limit)
                 {
@@ -552,7 +552,7 @@ Schema_Temps_base::Schema_Temps_base()
   niter_max_diff_impl_ = 1000; // Above 100 iterations, diffusion implicit algorithm is may be diverging
   schema_impr_=1;
   file_allocation_=0; // Desactive car pose probleme sur platine sur les gros maillages
-  residu_old_=-1000;
+  residu_old_slope_=-1000;
   cumul_slope_=1e-20;
 }
 // Description:
@@ -660,7 +660,14 @@ int Schema_Temps_base::mettre_a_jour()
       //limite_cpu_sans_sauvegarde_ = 2 * limite_cpu_sans_sauvegarde_;
       Cerr << "The next backup, by security, will take place after " << limite_cpu_sans_sauvegarde_/3600 << " hours of calculation." << finl;
     }
-  temps_cpu_ecoule_ = statistiques().last_time(temps_total_execution_counter_);
+// GF pour etre sur que tous les proc aient le meme temps ecoule
+  if (je_suis_maitre())
+    {
+      temps_cpu_ecoule_ = statistiques().last_time(temps_total_execution_counter_);
+    }
+
+  envoyer_broadcast(temps_cpu_ecoule_,0);
+
 
 #ifdef LIBCCC_USER
   if (je_suis_maitre() && limpr())

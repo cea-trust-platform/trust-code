@@ -1,0 +1,118 @@
+# PARALLEL OK #
+# PARALLEL OK #
+dimension 3
+Pb_conduction pbth
+Domaine dom
+
+# DEBUT MAILLAGE #
+
+lire_med family_names_from_group_names dom FineMesh fuel_geom1.med
+reordonner dom
+discretiser_domaine dom
+
+ecrire_fichier_formatte dom domas.geom
+postraiter_domaine 
+{
+domaine dom
+format med
+fichier dom }
+Ecrire_fichier dom dom.geom
+
+# FIN MAILLAGE #
+# DEBUT DECOUPAGE 
+Decouper dom 
+{ 
+partitionneur metis { nb_parts 2 }
+Larg_joint 1
+Nom_Zones DOM  
+}
+end
+FIN DECOUPAGE #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+Solide sol
+Lire sol
+{
+	rho Champ_Uniforme 1 8000. 
+	lambda Champ_Uniforme 1 15.
+	Cp Champ_Uniforme 1 500.
+}
+
+
+EF dis
+
+Scheme_euler_implicit schth
+Lire schth
+{
+	tinit 0
+        nb_pas_dt_max 10000
+	tmax 300.
+	dt_min 1e-6
+	dt_max 1.
+        facsec 1 
+	dt_impr 1
+	dt_sauv 100
+	seuil_statio 1.e-8
+
+	Solveur 
+           implicite
+	   {
+	seuil_convergence_implicite 1.e-5
+	
+		seuil_convergence_solveur 1.e-12
+	solveur petsc cholesky { } 
+
+	   }
+	facsec 1
+
+}
+
+Associer pbth dom
+Associer pbth schth
+Associer pbth sol
+Discretiser pbth dis
+
+Lire pbth
+{
+	Conduction
+	{
+		diffusion { }
+		conditions_initiales {
+
+                       temperature champ_uniforme 1 600. 
+			}
+		conditions_limites {
+                       outside paroi_echange_global_impose T_ext Champ_Front_Uniforme 1 650. H_imp Champ_Front_Uniforme 1 1.e20
+		       # outside paroi_temperature_imposee Champ_Front_Uniforme 1 650. #
+                       inside  paroi_temperature_imposee Champ_Front_Uniforme 1 550.                         
+		}
+                sources { Puissance_Thermique Champ_Uniforme 1 0. } 
+	}
+
+	Postraitement
+	{
+		champs dt_post  1e7
+		{
+			temperature som
+		}
+	}
+	Postraitements
+	{
+	lata { 
+		format lata 
+		 champs dt_post 1e7
+                {
+                        temperature som
+                }
+
+	}
+	}
+}
+
+
+
+Resoudre pbth 
+
