@@ -35,7 +35,7 @@ class SalomePyQt(QObject):
   
   def getFileName(self, parent_widget, initial, filters, caption, do_open):
     fil = ";;".join([str(f) for f in filters])
-    return QFileDialog.getOpenFileName(parent=parent_widget,
+    return QFileDialog.getSaveFileName(parent=parent_widget,
                                        caption=caption, directory=initial, filter=fil);
   
   @Slot(int)

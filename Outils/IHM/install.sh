@@ -1,6 +1,12 @@
 #!/bin/bash
 
 [ ! -d CURVEPLOT ] && tar zxf $TRUST_ROOT/externalpackages/CURVEPLOT.tgz
+file=CURVEPLOT/src/python/controller/utils.py.in
+echo patching $file 
+ [ ! -f  $file.sa ] && cp $file $file.sa
+sed "s/LOG_LEVEL = 0/LOG_LEVEL = 1/g" $file.sa > $file.2
+[ "`diff $file.2 $file`" != "" ] && cp $file.2 $file
+diff $file $file.sa
 
 STANDALONE=ON
 if [ "$KERNEL_ROOT_DIR" = "" ]
