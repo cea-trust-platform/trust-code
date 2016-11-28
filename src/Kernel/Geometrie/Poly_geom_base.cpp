@@ -22,7 +22,7 @@
 
 #include <Poly_geom_base.h>
 
-Implemente_base( Poly_geom_base, "Poly_geom_base", Elem_geom_base ) ;
+Implemente_base( Poly_geom_base, "Poly_geom_base", Elem_geom_base );
 
 Sortie& Poly_geom_base::printOn( Sortie& os ) const
 {

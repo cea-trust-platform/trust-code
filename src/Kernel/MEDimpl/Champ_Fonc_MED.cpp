@@ -25,7 +25,12 @@
 #include <Char_ptr.h>
 
 
-Implemente_instanciable(Champ_Fonc_MED,"Champ_Fonc_MED",Champ_Fonc_base);
+Implemente_instanciable_sans_constructeur(Champ_Fonc_MED,"Champ_Fonc_MED",Champ_Fonc_base);
+
+Champ_Fonc_MED::Champ_Fonc_MED():Champ_Fonc_base::Champ_Fonc_base()
+{
+  last_time_only_=0;
+}
 
 //     printOn()
 /////

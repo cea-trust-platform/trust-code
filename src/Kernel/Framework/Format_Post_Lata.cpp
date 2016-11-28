@@ -652,7 +652,7 @@ int Format_Post_Lata::initialize_lata(const Nom& file_basename,
 // Description: Modification du nom du fichier de postraitement.
 int Format_Post_Lata::modify_file_basename(const Nom file_basename, const int a_faire, const double tinit)
 {
-  assert(a_faire==0||a_faire==1);
+  assert(a_faire==0||a_faire==1||a_faire==2);
 
   Nom post_file;
   post_file=file_basename+extension_lata();

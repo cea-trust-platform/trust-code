@@ -23,8 +23,8 @@
 #include <Polygone.h>
 #include <Domaine.h>
 #include <IntList.h>
-#include <algorithm>
 #include <Triangle.h>
+#include <algorithm>
 using std::swap;
 
 Implemente_instanciable_sans_constructeur(Polygone,"Polygone",Poly_geom_base);
@@ -132,7 +132,7 @@ const Nom& Polygone::nom_lml() const
 }
 
 
-// TODO a mettre dans triangle
+// ToDo a mettre dans triangle
 int contient_triangle(const ArrOfDouble& pos,int som0,int som1,int som2,const DoubleTab& coord)
 {
 
