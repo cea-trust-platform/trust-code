@@ -29,7 +29,7 @@ define_modules_config()
    # MPI module openmpi-1.8.3-gcc.env openmpi-1.8.5-gcc.env
    # echo "source /softs/_environnement/openmpi-1.8.5-gcc.env" >> $env
    #
-   # INTEL: 2016.1.2
+   # INTEL: 2016.2.181
    #echo "source /softs/_environnement/intel.env" >> $env
    echo "source /softs/intel/bin/compilervars.sh intel64" >> $env
    # MPI module impi-5.0.3.048 impi-5.1.3.181
@@ -68,22 +68,19 @@ define_soumission_batch()
    #prod_E5-2670      up   infinite      3    mix
    #lila              up   infinite      2    mix
    #queue=prod
-   queue=prod_X5675
-   if [ "$prod" = 1 ] || [ $NB_PROCS -gt $ntasks ]
-   then
-      if [ "`echo $NB_PROCS | awk -v n=$ntasks '{print $1%n}'`" != 0 ]
-      then
-         echo "=================================================================================================================="
-         echo "Warning: try to fill the allocated nodes by partitioning your mesh with multiple of $ntasks on $queue partition."
-         echo "=================================================================================================================="
-      fi
-   fi
-   #if [ "`basename $Mpirun`" = srun ]
+   queue=prod
+   node=0
+   #if [ "$prod" = 1 ] || [ $NB_PROCS -gt $ntasks ]
    #then
-   #   # Slurm srun support
-   #   mpirun="srun -n $NB_PROCS" # A revoir car tres tres long !!!
+   #   node=1
+   #   if [ "`echo $NB_PROCS | awk -v n=$ntasks '{print $1%n}'`" != 0 ]
+   #   then
+   #      echo "=================================================================================================================="
+   #      echo "Warning: try to fill the allocated nodes by partitioning your mesh with multiple of $ntasks on $queue partition."
+   #      echo "=================================================================================================================="
+   #   fi
    #else
-   #   mpirun="mpirun -np $NB_PROCS"
+   #   node=0
    #fi
    mpirun="mpirun -np \$SLURM_NTASKS"
    sub=SLURM

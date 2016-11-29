@@ -26,7 +26,6 @@ define_modules_config()
    #
    #echo "# Module $module detected and loaded on $HOST."
    #echo "module purge 1>/dev/null" >> $env
-   #echo "module unload mpich openmpi mvapich mvapich2 intel 1>/dev/null" >> $env
    #echo "module load $module 1>/dev/null" >> $env     
    . $env
    # Creation wrapper qstat -> squeue
@@ -48,8 +47,10 @@ define_soumission_batch()
    # ccc_mpinfo :
    queue=""
    # CCC ccc_mprun support
-   mpirun="ccc_mprun -n $NB_PROCS"
-   #mpirun="mpirun -np $NB_PROCS"
+   mpirun="ccc_mprun -n \$BRIDGE_MSUB_NPROC"
+   #mpirun="mpirun -np \$BRIDGE_MSUB_NPROC"
    sub=CCC
-   project=`ccc_myproject 2>/dev/null | $TRUST_Awk '/project/ {print $4;exit}'` # Add project
+   #project="den"
+   #Your account : 'user' is not attached to an existant project
+   #project=`ccc_myproject 2>/dev/null | $TRUST_Awk '/project/ {print $4;exit}'` # Add project
 }

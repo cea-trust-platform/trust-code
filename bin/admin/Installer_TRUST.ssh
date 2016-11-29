@@ -3,19 +3,6 @@
 ########################################################
 # Script d'installation a distance d'une version par ssh
 ########################################################
-ssh_command()
-{
-    # Le sh devant mise_a_jour_TRUST_arch est important sur titane!!
-    # Comprends pas pourquoi...
-    # Creation d'un fichier de commandes car probleme si le SHELL n'est pas bash 1> 2> pas reconnu
-    command=`mktemp_`$HOST # To avoid conflicts if several Installer_TRUST.ssh is run in SAME time
-    echo ". ~/.bashrc 1>/dev/null 2>&1" > $command
-    echo $* >> $command
-    scp -o "StrictHostKeyChecking no" -o ConnectTimeout=60 -o BatchMode=yes $command $log@$adr:~/command_$HOST 1>/dev/null 2>&1
-    rm -f $command
-    # Add -X ?
-    ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=60 -o BatchMode=yes $log@$adr -n 'chmod +x ./command_'$HOST';./command_'$HOST 2>/dev/null
-}
 echo "Usage: $0 machine version [-patch] [-compile]"
 adr=$1
 v=$2   
@@ -53,9 +40,8 @@ else
    ssh_ -o BatchMode=yes $log@$adr -n '. ./.profile 1>/dev/null 2>&1;mkdir -p '$rep'/'$rep_patch''
 fi
 
-# On recupere WORKDIR car sur themis c'est important (l'environnement doit etre fait depuis /softs/Applications64/TRUST
-# et non depuis /home_ceres/Utilisateurs/mb124139)
-WORKDIR=`ssh_command 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
+# On recupere WORKDIR
+WORKDIR=`ssh_ -o BatchMode=yes $log@$adr -n 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
 rep=$WORKDIR/$rep
 rep_stable=$rep/TRUST-$v
 rep_patch=$rep_stable`[ "$patch" != "" ] && echo _patch`

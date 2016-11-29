@@ -90,6 +90,7 @@ define_soumission_batch()
    else
       noeuds=1
       taches=$NB_PROCS
+      node=0
    fi
    # Ne pas prendre mpirun mais mpiexec
    export mpirun="mpiexec" # Pas installe sur la frontale

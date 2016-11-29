@@ -107,7 +107,6 @@ then
    [ "${HOST#cobalt}"   != $HOST ] && HOST=cobalt
 fi
 
-[ "$WORKDIRb" != "" ] && WORKDIR=$WORKDIRb
 WHERE=$HOME && [ "$WORKDIR" != "" ] && WHERE=$WORKDIR
 QUI=triou@cea.fr
 export version=$WHERE/$WORKBASE$HOST
@@ -680,7 +679,13 @@ do
             echo "--------------------------------------------------------" 
 	    echo "Test case in valgrind mode at "`date '+%H:%M:%S'`
 	    cd $TRUST_ROOT/Validation/Valgrind
-	    OK="KO" && rm -f testval.log *upwind.val 1>/dev/null 2>&1 && (echo upwind | ./testval 1>testval.log 2>&1) && OK=`$TRUST_Awk 'BEGIN {mes="KO";ok=0} /...OK/ {ok++} END {if (ok==3) mes="OK"; print mes}' testval.log`
+	    OK="KO" && rm -f testval.log *upwind.val 1>/dev/null 2>&1 && (echo upwind | ./testval 1>testval.log 2>&1)
+	    if [ "$TRUST_DISABLE_MPI" = "0" ]
+	    then
+	      OK=`$TRUST_Awk 'BEGIN {mes="KO";ok=0} /...OK/ {ok++} END {if (ok==3) mes="OK"; print mes}' testval.log`
+	    else
+	      OK=`$TRUST_Awk 'BEGIN {mes="KO";ok=0} /...OK/ {ok++} END {if (ok==1) mes="OK"; print mes}' testval.log`
+	    fi
 	    echo "KVALGRIND="$OK
 	    if [ $OK != "KO" ] 
             then

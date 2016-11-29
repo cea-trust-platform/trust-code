@@ -1,15 +1,4 @@
 #!/bin/bash
-ssh_command()
-{
-    command=`mktemp_`
-    echo > $command
-    echo ". ~/.bashrc 1>/dev/null 2>&1" >> $command
-    echo $* >> $command
-    scp -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $command $log@$adr:~/command_$machine 1>/dev/null 2>&1
-    rm -f $command
-    # Add -X to have DISPLAY ?
-    ssh -X -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $log@$adr -n 'chmod +x ./command_'$machine';./command_'$machine 2>/dev/null
-}
 check_components()
 {
    for Composant in $Composants
@@ -153,7 +142,7 @@ check_components()
 	             check_option="--check-all"
 	             if [[ "$updated_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines updated
 		     then
-	                if [ "$Composant" = TrioCFD ] || [ "$Composant" = Test_Baltik ] #|| [ "$Composant" = ModeleCoeur ]
+	                if [ "$Composant" = TrioCFD ] || [ "$Composant" = Test_Baltik ] || [ "$Composant" = ModeleCoeur ]
 			then
 		           check_option="--without-run"
 	                   liste_options="--with-efface-dir-before"
@@ -164,8 +153,8 @@ check_components()
 		        liste_options=$liste_options" --cible"
 	             fi
                      log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`
-                     WORKTMP=`ssh_command 'if [ "\$WORKDIRb" = "" ]; then if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi; else echo \$WORKDIRb;fi'`
-                     echo "$Composant.tar $WORKTMP/$WORKBASE$machine/Composants/$Composant $log@$adr --with-TRUST=$WORKTMP/$WORKBASE$machine/TRUST $liste_options $mode_option $check_option $valgrind_option" >> Run.liste
+                     WORKTMP=`ssh_ -o BatchMode=yes $log@$adr -n 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
+		     echo "$Composant.tar $WORKTMP/$WORKBASE$machine/Composants/$Composant $log@$adr --with-TRUST=$WORKTMP/$WORKBASE$machine/TRUST $liste_options $mode_option $check_option $valgrind_option" >> Run.liste
 		  #fi
 	       done
                echo " "
@@ -1182,14 +1171,15 @@ echo $ECHO_OPTS "Latest Tutorial:             ftp://$TRUST_FTP/$SECRET/doc/TRUST
 echo $ECHO_OPTS "Latest list of builds:       ftp://$TRUST_FTP/$SECRET/NUIT/NUIT.html" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 echo "Binaries of TRUST $new version are available here:" >> $MESSAGES_NUIT
-for machine in `liste_machines updated | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
+for adr in `liste_machines | grep -v is1 | grep -v is2 | grep -v cezanne`
 do 
-#   ssh_ $machine -n 'echo -e "'$machine:'\n\c";ls ${WORKDIR:-$HOME}/$WORKBASE*/TRUST/exec/TRUST_mpi_opt 2>/dev/null || echo' 2>/dev/null
-   ssh_ $machine -n 'echo -e "'$machine: '\c";ls ${WORKDIR:-$HOME}/$WORKBASE"'$machine'"/TRUST/exec/TRUST_mpi_opt 2>/dev/null || echo' 2>/dev/null
+   machine=`echo $adr | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
+   log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`
+   ssh_ $log@$machine -n 'echo -e "'$machine: '\c";ls ${WORKDIR:-$HOME}/$WORKBASE"'$machine'"/TRUST/exec/TRUST_mpi_opt 2>/dev/null || echo' 2>/dev/null
 done >> $MESSAGES_NUIT
 echo "Older binaries (> v1.7.1) are available here: ftp://$TRUST_FTP/$PUBLIC/" >> $MESSAGES_NUIT
 echo "Older binaries (< v1.7.1) are available here: ftp://ftp.cea.fr/pub/Trio_U/a87pour/" >> $MESSAGES_NUIT
-echo "Older binaries (< v1.6.6) are available here: file:///net/dibona/users/dibona/triou/version/" >> $MESSAGES_NUIT
+#echo "Older binaries (< v1.6.6) are available here: file:///net/dibona/users/dibona/triou/version/" >> $MESSAGES_NUIT
 echo "-------------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 ##########################################################
 # On checkine dans la vue si criteres suivants respectes :
@@ -1418,7 +1408,7 @@ do
 	       adr=`echo $line | awk -F"@" '{print $2}' | awk -F"_" '{print $1}'`
 	       log=`echo $line | awk -F"@" '{print $1}' | awk -F"%" '{print $2}' | awk -F"_" '{print $2}'`
 	       machine=`echo $adr | awk -F"." '{print $1}' | awk -F"-gw" '{print $1}'`
-               WORKTMP=`ssh_command 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
+               WORKTMP=`ssh_ -o BatchMode=yes $log@$adr -n 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
 	       echo "  Treatment of $PID on $machine"
 	       pids=$(ssh $log@$adr $WORKTMP/$WORKBASE$machine/TRUST/bin/baltik/share/baltik/bin/portability/list_pid_et_fils.sh $PID)
 	       echo "    ssh $log@$adr kill -9 $pids"

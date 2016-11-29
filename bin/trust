@@ -226,7 +226,7 @@ do
       exit $?
    elif [ "$1" = "-create_sub_file" ]
    then
-      create_sub_file=1 && prod=1 && node=1
+      create_sub_file=1 && prod=1 #&& node=1
    elif [ "$1" = "-queue" ]
    then
       shift && queue_choisie=$1
@@ -722,6 +722,9 @@ then
          if [ "$sub" = "SLURM" ]
 	 then
             echo "$mpirun $machinefile $exec $NOM \$SLURM_NTASKS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
+         elif [ "$sub" = "CCC" ]
+	 then
+            echo "$mpirun $machinefile $exec $NOM \$BRIDGE_MSUB_NPROC $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
 	 else
             echo "$mpirun $machinefile $exec $NOM $NB_PROCS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
 	 fi

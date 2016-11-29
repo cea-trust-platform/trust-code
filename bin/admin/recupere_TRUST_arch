@@ -290,7 +290,7 @@ do
 	   runfich=$runfich && [ "`grep Run_fiche=OK $CR`" != "" ] && runfich="<TD $VERT>OK</TD>"
 	   # Test upwind valgrind
 	   testgrind=$testgrind && [ "`grep KVALGRIND=KO $CR`" != "" ] && testgrind="<TD $ROUGE>KO</TD>"
-	   testgrind=$testgrind && [ "`grep KVALGRIND=OK $CR`" != "" ] && testgrind="<TD $VERT>KO</TD>"
+	   testgrind=$testgrind && [ "`grep KVALGRIND=OK $CR`" != "" ] && testgrind="<TD $VERT>OK</TD>"
 	   # Taux sequentiel:
 	   staux=`cat $PERF | $TRUST_Awk '/succes/ && (NF==2) {print $2;exit}'`
 	   # Taux parallele:

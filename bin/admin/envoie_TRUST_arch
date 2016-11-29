@@ -130,8 +130,8 @@ do
       ##################################################
       if [ "`liste_machines git_cron | grep $adr`" = "" ]
       then
-         WORKDIR=`ssh_command 'if [ "\$WORKDIRb" = "" ]; then if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi; else echo \$WORKDIRb;fi'`
-         WORKBASE=`ssh_command 'if [ "\$WORKBASE" = "" ]; then echo Version_beta_;else echo \$WORKBASE;fi'`
+         WORKDIR=`ssh_command 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
+	 WORKBASE=`ssh_command 'if [ "\$WORKBASE" = "" ]; then echo Version_beta_;else echo \$WORKBASE;fi'`
          echo "We have WORKDIR=$WORKDIR and WORKBASE=$WORKBASE on host $adr"
          [ "$WORKDIR" = "" ] && echo "KO $adr WORKDIR empty! See rsync_$adr.log" && echo "WORKDIR empty on $log@$adr" | mail_ -s\"[envoie_TRUST_arch] Configuration $machine KO\" $TRUST_MAIL
          [ "$WORKBASE" = "" ] && echo "KO $adr WORKBASE empty! See rsync_$adr.log" && echo "WORKBASE empty on $log@$adr" | mail_ -s\"[envoie_TRUST_arch] Configuration $machine KO\" $TRUST_MAIL
@@ -244,17 +244,17 @@ do
 	       option="sh -xv "
                option=""
 	       # machine=$machine".bak" # Pourquoi CR_$machine est abime?
-	       if [ `date '+%u'` -ge 5 ]
-	       then
+	       #if [ `date '+%u'` -ge 5 ]
+	       #then
 	          # le vendredi soir on lance sur la frontale car encore des problemes avec lance_test en soumission de job
 	          ssh_command "export WORKBASE=$WORKBASE;cd $WORKDIR/$version/TRUST/bin/admin;$option./mise_a_jour_TRUST_arch -rsync 1>~/CR_$machine 2>&1" &
 	          echo "Launching in background the update by ssh on $log@$adr at "`date '+%H:%M:%S'`
-	       else
+	       #else
 	          # On ne lance plus sur la frontale
 	          #ssh_command "export WORKBASE=$WORKBASE;cd $WORKDIR/$version/TRUST/bin/admin;ccc_msub sub_maj_$machine" &
 	          #echo "Launching in background the update by ssh then ccc_msub on $log@$adr at "`date '+%H:%M:%S'`
-	          echo "NO launching in background the update by ssh then KO on $log@$adr at "`date '+%H:%M:%S'`
-	       fi
+	       #   echo "NO launching in background the update by ssh then KO on $log@$adr at "`date '+%H:%M:%S'`
+	       #fi
 	    #elif [ "$machine" = callisto ]
 	    #then
 	    #   # On ne lance plus sur la frontale
@@ -311,7 +311,7 @@ do
 	 
 	 # Lancement par ssh à partir de $HOMEDIR
          ssh_command "export WORKBASE=$WORKBASE;./mise_a_jour_TRUST_arch -sftp 1>~/CR_$machine 2>&1" &
-	 echo "Launching in background the update by ssh on $log@$adr"
+	 echo "Launching in background the update by ssh on $log@$adr at "`date '+%H:%M:%S'`
 
       #################
       # Mode scp_ssh #
@@ -341,21 +341,8 @@ do
 	 ssh_command '[ "$WORKDIR" != "" ] && [ "$WORKDIR" != "$HOME" ] && cd $HOME && rm -f '$version' && ln -sf $WORKDIR/'$version' .'
 	 
 	 # Lancement par ssh
-	 if [ "$machine" = cobalt ]
-	 then
-	    if [ `date '+%u'` -ge 5 ]
-	    then
-	       # le vendredi soir on lance sur la frontale car encore des problemes avec lance_test en soumission de job
-	       ssh_command "export WORKBASE=$WORKBASE;./mise_a_jour_TRUST_arch -sftp 1>~/CR_$machine 2>&1" &
-	       echo "Launching in background the update by ssh on $log@$adr at "`date '+%H:%M:%S'`
-	    else
-	       # On ne lance plus sur la frontale
-	       echo "NO launching in background the update by ssh then KO on $log@$adr at "`date '+%H:%M:%S'`
-	    fi
-	 else
-	    ssh_command "export WORKBASE=$WORKBASE;./mise_a_jour_TRUST_arch -sftp 1>~/CR_$machine 2>&1" &
-	    echo "Launching in background the update by ssh on $log@$adr"
-	 fi
+	 ssh_command "export WORKBASE=$WORKBASE;./mise_a_jour_TRUST_arch -sftp 1>~/CR_$machine 2>&1" &
+	 echo "Launching in background the update by ssh on $log@$adr at "`date '+%H:%M:%S'`
       fi
    fi
    echo "------------------------------------"

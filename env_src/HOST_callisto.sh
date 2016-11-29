@@ -33,15 +33,13 @@ define_modules_config()
    #intel="intel/compiler/64/14.0/2013_sp1.2.144 intel/mkl/64/11.1/2013_sp1.2.144 intel/tbb/64/4.2/2013_sp1.2.144"
    #intel="intel/compiler/64/14.0/2013_sp1.4.211 intel/mkl/64/11.1/2013_sp1.4.211 intel/tbb/64/4.2/2013_sp1.4.211"
    intel="intel/compiler/64/15.0/2015.3.187 intel/mkl/64/11.2/2015.3.187 intel/tbb/64/4.3/2015.3.187"
-   #OPENMPI module openmpi/icc/64/1.8 openmpi/icc/64/1.8.3 openmpi/icc/64/1.8.4 
-   # Aero_192: 3.6s
-   # module load qt/4.8.6 temporary, time to fix the Qt4 build failed with VisIt 2.8.2
-   # module="$intel openmpi/icc/64/1.8 qt/4.8.6"    
-   #module="$intel openmpi/icc/64/1.8.3"
-   module="$intel openmpi/icc/64/1.8.4"
+   #OPENMPI openmpi/icc/64/1.8.3 openmpi/icc/64/1.8.4 openmpi/icc/64/1.10.3
+   module="$intel openmpi/icc/64/1.8.3"
+   #module="$intel openmpi/icc/64/1.8.4"
+   #module="$intel openmpi/icc/64/1.10.3"
    #
    echo "# Module $module detected and loaded on $HOST."
-   echo "module unload mpich openmpi mvapich mvapich2 intel/compiler intel/mkl intel/tbb gcc 1>/dev/null" >> $env
+   echo "module purge 1>/dev/null" >> $env
    echo "module load $module 1>/dev/null" >> $env     
    . $env
    # Creation wrapper qstat -> squeue
@@ -73,32 +71,24 @@ define_soumission_batch()
    # project_r+     40           31-00:00:00
    cpu=30 && [ "$prod" = 1 ] && cpu=1440 # 30 minutes or 1 day
    ntasks=20 # 20 cores per node for slim or large queue (24 for fat, 8 for eris and 12 for pluton)
+   node=0
    if [ "$prod" = 1 ] || [ $NB_PROCS -gt $ntasks ]
    then
-      if [ "`echo $NB_PROCS | awk -v n=$ntasks '{print $1%n}'`" != 0 ]
-      then
-         echo "=================================================================================================================="
-         echo "Warning: the allocated nodes of $ntasks cores will not be shared with other jobs (--exclusive option used)"
-	 echo "so please try to fill the allocated nodes by partitioning your mesh with multiple of $ntasks on $queue partition."
-	 echo "=================================================================================================================="
-      fi
-      node=1
+      #node=1
+      #if [ "`echo $NB_PROCS | awk -v n=$ntasks '{print $1%n}'`" != 0 ]
+      #then
+      #   echo "=================================================================================================================="
+      #   echo "Warning: the allocated nodes of $ntasks cores will not be shared with other jobs (--exclusive option used)"
+      #   echo "so please try to fill the allocated nodes by partitioning your mesh with multiple of $ntasks on $queue partition."
+      #   echo "=================================================================================================================="
+      #fi
       qos=normal
       [ "$prod" = 1 ] && cpu=2880 # 2 days
    else
+      #node=0
       qos=test
       [ "$prod" = 1 ] && cpu=60 # 1 hour
    fi
-   #if [ "`basename $Mpirun`" = srun ]
-   #then
-   #   # Slurm srun support
-   #   mpirun="srun -n $NB_PROCS"
-   #else
-   #   mpirun="mpirun -np $NB_PROCS"
-   #fi
-   # 01/07/2014: Regression when using mpirun with openmpi (very bad performance *3) so:
-   # srun for everyone (even if it is slightly slower, binding ?)
-   #mpirun="srun --cpu_bind=verbose,cores -n $NB_PROCS"
    mpirun="srun -n \$SLURM_NTASKS"
    sub=SLURM
 }

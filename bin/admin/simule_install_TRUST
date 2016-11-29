@@ -20,6 +20,7 @@ else
 fi
 
 machine=localhost && [ "$2" = "-remote" ] && [ "$3" != "" ] && machine=$3
+WORKDIR=`ssh_ -o BatchMode=yes $machine -n 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
 cible=$WORKDIR/simule_install_${paquet%.tar.gz}
 install_log=$cible/../Installer_TRUST.log
 ssh_ $machine -n pwd 1>/dev/null 2>&1

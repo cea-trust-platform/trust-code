@@ -24,7 +24,6 @@ define_modules_config()
    #
    #echo "# Module $module detected and loaded on $HOST."
    #echo "module purge 1>/dev/null" >> $env
-   #echo "module unload mpich openmpi mvapich mvapich2 intel 1>/dev/null" >> $env
    #echo "module load $module 1>/dev/null" >> $env     
    . $env
    # Creation wrapper qstat -> squeue
@@ -45,6 +44,7 @@ define_soumission_batch()
    queue=""
    # specific data cluster
    taches=$NB_PROCS
+   #node=0
    #mpirun="mpirun -np $NB_PROCS"
    sub=SGE
 }

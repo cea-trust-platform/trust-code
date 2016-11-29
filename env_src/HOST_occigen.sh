@@ -27,27 +27,26 @@ define_modules_config()
 {
    env=$TRUST_ROOT/env/machine.env
    #
-   # Create ROMIO_HINTS file for MPI IO optimizations on Lustre file system
-   echo "# ROMIO HINTS
-# Select the max OST available:
-striping_factor -1
-# Collective comm between nodes before write:
-romio_cb_write enable
-# Collective comm between nodes before read:
-romio_cb_read  enable
-# One process on each node do the coll comm task:
-cb_config_list *:1" > ROMIO_HINTS.env
-   echo "export ROMIO_HINTS=\$TRUST_ROOT/env/ROMIO_HINTS.env # ROMIO HINTS" >> $env
-   #
+#   # Create ROMIO_HINTS file for MPI IO optimizations on Lustre file system
+#   echo "# ROMIO HINTS
+## Select the max OST available:
+#striping_factor -1
+## Collective comm between nodes before write:
+#romio_cb_write enable
+## Collective comm between nodes before read:
+#romio_cb_read  enable
+## One process on each node do the coll comm task:
+#cb_config_list *:1" > ROMIO_HINTS.env
+#   echo "export ROMIO_HINTS=\$TRUST_ROOT/env/ROMIO_HINTS.env # ROMIO HINTS" >> $env
+#   #
    # Load modules
-   # intel 14.0.4.211 15.0.3.187(default) intel/15.6.233 intel/16.0.1
-   # intel="intel/14.0.4.211"
-   intel="intel/15.0.3.187"
-   # bullxmpi/1.2.8.4 bullxmpi/1.2.8.4-mxm(default) bullxmpi/MPI3.gcc.4.9-beta bullxmpi_gnu/1.2.8.4
-   # module="bullxmpi_gnu/1.2.8.4"
-   # module="$intel bullxmpi/1.2.8.4"
-   # intelmpi 5.0.1.035(default) intelmpi/5.0.3.048 intelmpi/5.1.2.150 
-   module="$intel intelmpi/5.0.3.048"
+   # intel 14.0.4.211 15.0.3.187(default) intel/15.6.233 intel/16.0.1 intel/16.3 intel/17.0
+   #intel="intel/15.0.3.187"
+   intel="intel/17.0"
+   # bullxmpi/1.2.8.4 bullxmpi/1.2.8.4-mxm(default) bullxmpi/1.2.9.2 bullxmpi/MPI3.gcc.4.9-beta bullxmpi_gnu/1.2.8.4
+   # intelmpi 5.0.1.035(default) intelmpi/5.0.3.048 intelmpi/5.1.2.150 intelmpi/2017.0.098
+   #module="$intel intelmpi/5.0.3.048"
+   module="$intel intelmpi/2017.0.098"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
@@ -72,8 +71,16 @@ define_soumission_batch()
    #ram=60GB # Memory nodes with 64Go (small) or 120Go (large) of RAM
    [ "$bigmem" = 1 ] && ram=120GB && soumission=1
    ntasks=24    # 24 cores per node
+   # Priorite superieure avec test si pas plus de 8 nodes (24 cores)
+   if [ "$prod" = 1 ] || [ $NB_PROCS -gt 192 ]
+   then
+      [ "$prod" = 1 ] && cpu=24:00:00
+   else
+      cpu=00:30:00
+   fi
    if [ "$prod" = 1 ] || [ $NB_PROCS -gt $ntasks ]
    then
+      node=1
       if [ "`echo $NB_PROCS | awk -v n=$ntasks '{print $1%n}'`" != 0 ]
       then
          echo "=================================================================================================================="
@@ -81,23 +88,16 @@ define_soumission_batch()
          echo "so please try to fill the allocated nodes by partitioning your mesh with multiple of $ntasks."
          echo "=================================================================================================================="
       fi
-      node=1
+   else
+     node=0
    fi
    noeuds=`echo "$NB_PROCS/$ntasks+1" | bc`
    [ `echo "$NB_PROCS%$ntasks" | bc -l` = 0 ] && noeuds=`echo "$NB_PROCS/$ntasks" | bc`
    [ "$noeuds" = 0 ] && noeuds=1
-   #if [ "`basename $Mpirun`" = srun ]
-   #then
-   #   # Slurm srun support
-   #   mpirun="srun -n $NB_PROCS"
-   #else
-   #   mpirun="mpirun -np $NB_PROCS"
-   #fi
    # srun Run a parallel job on cluster managed by SLURM
    # option --mpi Identify the type of MPI to be used : pmi2 load the library lib/slurm/mpi_pmi2.so
    # option -K = --kill-on-bad-exit 0|1
    # option --resv-ports Reserve communication ports for this job. Used for OpenMPI. 
-   # mpirun="srun --mpi=pmi2 -K1 --resv-ports -n $NB_PROCS"
    mpirun="srun --mpi=pmi2 -K1 --resv-ports -n \$SLURM_NTASKS"
    sub=SLURM
 }

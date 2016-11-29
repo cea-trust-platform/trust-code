@@ -28,7 +28,6 @@ define_modules_config()
    #
    #echo "# Module $module detected and loaded on $HOST."
    #echo "module purge 1>/dev/null" >> $env
-   #echo "module unload mpich openmpi mvapich mvapich2 intel 1>/dev/null" >> $env
    #echo "module load $module 1>/dev/null" >> $env     
    . $env
    # Creation wrapper qstat -> squeue
@@ -51,6 +50,19 @@ define_soumission_batch()
    queue=""
    # specific data cluster
    #ntasks=20
+   #if [ "$prod" = 1 ] || [ $NB_PROCS -gt $ntasks ]
+   #then
+   #   node=1
+   #   if [ "`echo $NB_PROCS | awk -v n=$ntasks '{print $1%n}'`" != 0 ]
+   #   then
+   #      echo "=================================================================================================================="
+   #      echo "Warning: the allocated nodes of $ntasks cores will not be shared with other jobs (--exclusive option used)"
+   #      echo "so please try to fill the allocated nodes by partitioning your mesh with multiple of $ntasks."
+   #      echo "=================================================================================================================="
+   #   fi
+   #else
+   #  node=0
+   #fi
    #noeuds=`echo "$NB_PROCS/$ntasks+1" | bc`
    #[ `echo "$NB_PROCS%$ntasks" | bc -l` = 0 ] && noeuds=`echo "$NB_PROCS/$ntasks" | bc`
    #[ "$noeuds" = 0 ] && noeuds=1

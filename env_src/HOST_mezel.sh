@@ -31,7 +31,7 @@ define_modules_config()
    # Load modules
    # intel 
    #intel=""
-   # bullxmpi
+   # mpi
    #module="$intel "
    #
    #echo "# Module $module detected and loaded on $HOST."
@@ -65,18 +65,20 @@ define_soumission_batch()
    #prod_amd_12c    up   infinite     20    mix
    #prod_amd_48c    up   infinite      6    mix
    #mono            up   infinite      1    mix
-   queue=prod_amd_12c
-   if [ "$prod" = 1 ] || [ $NB_PROCS -gt $ntasks ]
-   then
-      if [ "`echo $NB_PROCS | awk -v n=$ntasks '{print $1%n}'`" != 0 ]
-      then
-         echo "=================================================================================================================="
-         echo "Warning: try to fill the allocated nodes by partitioning your mesh with multiple of $ntasks on $queue partition."
-         echo "=================================================================================================================="
-      fi
-   fi
-   # Slurm srun support
-   #mpirun="srun -n \$SLURM_NTASKS"
+   queue=prod
+   node=0
+   #if [ "$prod" = 1 ] || [ $NB_PROCS -gt $ntasks ]
+   #then
+   #   node=1
+   #   if [ "`echo $NB_PROCS | awk -v n=$ntasks '{print $1%n}'`" != 0 ]
+   #   then
+   #      echo "=================================================================================================================="
+   #      echo "Warning: try to fill the allocated nodes by partitioning your mesh with multiple of $ntasks on $queue partition."
+   #      echo "=================================================================================================================="
+   #   fi
+   #else
+   #   node=0
+   #fi
    mpirun="mpirun -np \$SLURM_NTASKS"
    sub=SLURM
 }

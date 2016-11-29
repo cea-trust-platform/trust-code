@@ -52,14 +52,14 @@ module () {
    then
       echo "So we create the collection of modules $collection_modules:"
       # Changing strategy, we load a version for each module (not the last one)
-      # MPI module 1.2.7.2 1.2.8.2 1.2.8.4(default) 1.2.9.1
+      # MPI module 1.2.7.2 1.2.8.2 1.2.8.4(default) 1.2.9.2
       module="bullxmpi/1.2.8.4"
       echo "Module $module detected and loaded on $HOST."
       module unload bullxmpi
       module load $module
       # Intel compiler (WARNING: Intel 12.x provoque plusieurs problemes (voir FA1445))
 	  # Intel 13.1.3.192 14.0.3.174(default) 15.0.2.164 15.0.3.187(decommissioned)
-          # 15.0.5.223 16.0.0.109 16.0.1.150 16.0.2.181 16.0.3.210
+          # 15.0.5.223 16.0.0.109 16.0.1.150 16.0.2.181 16.0.3.210 intel/17.0.0.098
       module="intel/16.0.3.210"
       echo "Module $module detected and loaded on $HOST."
       module unload intel
@@ -130,17 +130,21 @@ define_soumission_batch()
    fi
    if [ "$prod" = 1 ] || [ $NB_PROCS -gt $ntasks ]
    then
+      node=1
       if [ "`echo $NB_PROCS | awk -v n=$ntasks '{print $1%n}'`" != 0 ]
       then
          echo "=================================================================================================================="
          echo "Warning: try to fill the allocated nodes by partitioning your mesh with multiple of $ntasks on $queue partition."
          echo "=================================================================================================================="
       fi
+   else
+      node=0
    fi
-   #mpirun="mpirun -np $NB_PROCS" ne marche pas au dela de 32 procs ?
-   mpirun="ccc_mprun -n $NB_PROCS"
-   [ "`basename $MPI_ROOT`" = mpich ] && mpirun="$Mpirun -np $NB_PROCS" # Try support of MVAPICH...
+   #mpirun="mpirun -np \$BRIDGE_MSUB_NPROC" ne marche pas au dela de 32 procs ?
+   mpirun="ccc_mprun -n \$BRIDGE_MSUB_NPROC"
+   [ "`basename $MPI_ROOT`" = mpich ] && mpirun="$Mpirun -np \$BRIDGE_MSUB_NPROC" # Try support of MVAPICH...
    sub=CCC
    #project="den"
+   #Your account : 'user' is not attached to an existant project
    #project=`ccc_myproject 2>/dev/null | $TRUST_Awk '/project/ {print $4;exit}'` # Add project
 }

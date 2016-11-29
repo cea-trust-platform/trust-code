@@ -25,7 +25,6 @@ define_modules_config()
    #
    #echo "# Module $module detected and loaded on $HOST."
    #echo "module purge 1>/dev/null" >> $env
-   #echo "module unload mpich openmpi mvapich mvapich2 intel 1>/dev/null" >> $env
    #echo "module load $module 1>/dev/null" >> $env     
    . $env
    # Creation wrapper qstat -> squeue
@@ -49,6 +48,7 @@ define_soumission_batch()
    taches=$NB_PROCS
    noeuds=1
    #ntasks=12
+   #node=0
    #noeuds=`echo "$NB_PROCS/$ntasks+1" | bc`
    #[ `echo "$NB_PROCS%$ntasks" | bc -l` = 0 ] && noeuds=`echo "$NB_PROCS/$ntasks" | bc`
    #[ "$noeuds" = 0 ] && noeuds=1
