@@ -38,7 +38,7 @@ NOFC="--disable-fc"
 # disable-fc  ne compile pas depuis 3.1.4 on ne peut pas desactiver le fortran pour petsc 
 NOFC=""
 
-  option_configure="--enable-shared --enable-g=dbg,meminit $NOFC --enable-fast=all,O3 --enable-yield=sched_yield"
+  option_configure="--enable-shared --enable-g=meminit $NOFC --enable-fast=all,O3 --enable-yield=sched_yield"
   # Try to build MPICH with valgrind include: Nothing is changed to avoid warnings with MPICH&Valgrind in //
   #option_configure="--enable-g=meminit --disable-fc --enable-fast=all,O3 --enable-yield=sched_yield $CPPFLAGS"
   #INCLUDE_VALGRIND=$TRUST_ROOT/exec/valgrind/include/valgrind && [ -d $INCLUDE_VALGRIND ] && option_configure=$option_configure" CPPFLAGS=-I$INCLUDE_VALGRIND"
