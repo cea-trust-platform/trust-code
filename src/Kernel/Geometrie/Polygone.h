@@ -93,7 +93,7 @@ public :
   };
   void remplir_Nodes_glob(ArrOfInt& Nodes_glob,const IntTab& les_elems ) const;
   // void affecte_connectivite_numero_local(Nodes,FacesIndex,PolygonIndex);
-  void ajouter_elements(const Elem_geom_base& new_elem, const IntTab& new_elems, IntTab& les_elems);
+  //void ajouter_elements(const Elem_geom_base& new_elem, const IntTab& new_elems, IntTab& les_elems);
 private :
   ArrOfInt Nodes_,FacesIndex_,PolygonIndex_;
   int nb_som_elem_max_,nb_face_elem_max_;

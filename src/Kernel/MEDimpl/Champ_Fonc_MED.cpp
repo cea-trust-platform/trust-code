@@ -212,6 +212,19 @@ void  Champ_Fonc_MED::lire(double t,int nn)
 #else
   int nb_dt_tot=MEDnPasdetemps(fid,le_nom_du_champ,type_ent,type_geo);
 #endif
+  double tmax=-1;
+  for (int j=0; j<nb_dt_tot; j++)
+    {
+#ifdef MED30
+      med_int meshnumdt,meshnumit;
+      MEDfieldComputingStepMeshInfo(fid,le_nom_du_champ,j+1,&numdt,&numo,&dt,&meshnumdt,&meshnumit);
+#else
+      med_int ngauss;
+      MEDpasdetempsInfo(fid,le_nom_du_champ,type_ent,type_geo,
+                        j+1, maa_ass,&ngauss, &numdt,dt_unit, &dt, &numo);
+#endif
+      tmax=dt;
+    }
   for (int j=0; j<nb_dt_tot; j++)
     {
       if (i2>=nb_dt) exit();
@@ -257,7 +270,7 @@ void  Champ_Fonc_MED::lire(double t,int nn)
   //numo=MED_NONOR;
   //  Cerr<<"dt - t"<<dt -t <<finl;
   //Cerr<<ret<<" ici "<<nn<<finl;
-  if (((nb_dt==1) || (last_time_only_==1))&& (!est_egal(dt,t)))
+  if (((nb_dt==1)&&(!est_egal(dt,t))) || ((last_time_only_==1)&& (!est_egal(tmax,t))))
     {
       Cout<< " We assume that the field "<< le_nom_du_champ<<" is stationary" <<finl;
       // exit();
