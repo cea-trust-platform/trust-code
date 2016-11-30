@@ -48,3 +48,9 @@ void Terme_Source_VEF_base::completer()
   iter.associer(*this);
   iter.completer_();
 }
+int Terme_Source_VEF_base::initialiser(double temps)
+{
+  Source_base::initialiser(temps);
+  iter.valeur().initialiser(temps);
+  return 1;
+}

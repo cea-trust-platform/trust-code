@@ -32,7 +32,10 @@ Evaluateur_Source_VEF_Face::Evaluateur_Source_VEF_Face(const Evaluateur_Source_V
   porosite_surf.ref(eval.porosite_surf);
   face_voisins.ref(eval.face_voisins);
 }
-
+void Evaluateur_Source_VEF_Face::changer_volumes_entrelaces_Cl(DoubleVect& vol)
+{
+  volumes_entrelaces_Cl.ref(vol);
+}
 void Evaluateur_Source_VEF_Face::completer()
 {
   Cerr << "Evaluateur_Source_VEF_Face::completer()" << finl;

@@ -25,6 +25,9 @@
 #include <Milieu_base.h>
 #include <Champ.h>
 #include <Equation_base.h>
+#include <Champ_Uniforme.h>
+#include <Champ_Fonc_Tabule.h>
+
 
 // Description:
 //    Lit le terme de puissance thermique a partir
@@ -61,6 +64,20 @@ void Terme_Puissance_Thermique::lire_donnees(Entree& is,const Equation_base& eqn
   la_puissance.typer(type);
   Champ_Don_base& ch_puissance = ref_cast(Champ_Don_base,la_puissance.valeur());
   is >> ch_puissance;
+
+  if ((!sub_type(Champ_Uniforme,ch_puissance))&&(!sub_type(Champ_Fonc_Tabule,ch_puissance)))
+    {
+      const DoubleTab& p=ch_puissance.valeurs();
+      if (p.get_md_vector()!=eqn.zone_dis().valeur().zone().md_vector_elements())
+        {
+          for (int i=0; i<1000; i++)
+            {
+              Cerr<<" Warning !!!!!! The field associate to the power seems to not have the good support !!!!!!!" <<finl;
+              Cerr<<"If you use champ_fonc_med try use_exisiting_domain"<<finl;
+            }
+          Process::exit();
+        }
+    }
   if (la_puissance.le_nom()=="anonyme")
     la_puissance->fixer_nom_compo("Puissance_volumique");
   else
