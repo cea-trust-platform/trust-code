@@ -1955,4 +1955,5 @@ interpolation champ_post_de_champs_post interpolation -1 To create a field which
   attr optimisation_sous_maillage chaine(into=["default","yes","no",]) optimisation_sous_maillage 1 not_set
   attr methode chaine methode 1 The optional keyword methode is limited to calculer_champ_post for the moment.
   attr domaine chaine domaine 1 the domain name where the interpolation is done (by default, the calculation domain)
+paroi_fixe_iso_Genepi2_sans_contribution_aux_vitesses_sommets paroi_fixe paroi_fixe_iso_Genepi2_sans_contribution_aux_vitesses_sommets -1 CL to obtain iso Genepi2... 
 

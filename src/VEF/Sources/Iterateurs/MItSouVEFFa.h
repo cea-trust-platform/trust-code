@@ -50,7 +50,8 @@
     inline void completer_();                                                \
                                                                         \
   protected:                                                                \
-                                                                        \
+    void remplir_volumes_cl_dirichlet();			       	\
+    int initialiser(double tps);     \
     _TYPE_ evaluateur_source_face;                                        \
                                                                         \
     DoubleTab& ajouter_faces_standard(DoubleTab& ) const;                \
@@ -58,7 +59,7 @@
     DoubleTab& ajouter_faces_non_standard(DoubleTab& ) const;                \
     DoubleTab& ajouter_faces_non_standard(DoubleTab& ,int ) const;        \
     inline const int& faces_doubles(int num_face) const { return la_zone->faces_doubles()[num_face];}; \
-    inline double volumes_entrelaces_Cl(int& num_face) const { return la_zcl->volumes_entrelaces_Cl()[num_face]; }; \
+    inline double volumes_entrelaces_Cl(int& num_face) const { return volumes_cl_dirichlet_[num_face]; }; \
     inline double volumes_entrelaces(int& num_face) const { return la_zone->volumes_entrelaces()[num_face]; }; \
     inline int face_voisins(int num_face, int dir) const { return la_zone->face_voisins(num_face,dir);}; \
     inline int elem_faces(int num_elem, int i) const { return la_zone->elem_faces(num_elem,i);}; \
@@ -67,6 +68,7 @@
     int nb_faces_elem;                                                \
     int premiere_face_std;                                                \
     mutable DoubleTab coef;                                                \
+    DoubleVect volumes_cl_dirichlet_;					\
                                                                         \
   };                                                                        \
                                                                         \
@@ -82,7 +84,12 @@
   inline void It_Sou_VEF_Face(_TYPE_)::completer_(){                        \
     nb_faces=la_zone->nb_faces();                                        \
     nb_faces_elem=la_zone->zone().nb_faces_elem();                        \
-    premiere_face_std=la_zone->premiere_face_std();                        \
+    premiere_face_std=la_zone->premiere_face_std();			\
+}\
+int It_Sou_VEF_Face(_TYPE_)::initialiser(double tps){ \
+    remplir_volumes_cl_dirichlet();					\
+   evaluateur().changer_volumes_entrelaces_Cl(volumes_cl_dirichlet_); \
+return 1 ; \
   }                                                                        \
                                                                         \
   inline Evaluateur_Source_VEF& It_Sou_VEF_Face(_TYPE_)::evaluateur()        \
@@ -171,22 +178,46 @@
       }                                                                        \
     return resu;                                                        \
   }                                                                        \
+  void  It_Sou_VEF_Face(_TYPE_)::remplir_volumes_cl_dirichlet()	\
+  {									\
+    la_zone->creer_tableau_faces(volumes_cl_dirichlet_);		\
+    DoubleVect& marq=volumes_cl_dirichlet_;				\
+    for (int f=0;f<la_zone->premiere_face_std();f++)			\
+      marq[f]=la_zcl->volumes_entrelaces_Cl()[f];			\
+    for (int f=la_zone->premiere_face_std();f<la_zone->nb_faces();f++)	\
+      marq[f]=volumes_entrelaces(f);					\
+    for (int num_cl =0; num_cl<la_zone->nb_front_Cl()*0; num_cl++)	\
+      {									\
+	const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);	\
+	const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis()); \
+	int nf = le_bord.nb_faces();					\
+	if (sub_type(Dirichlet,la_cl.valeur()))				\
+	  for (int ind_face=0; ind_face<nf; ind_face++)			\
+	    {								\
+	      int num_face = le_bord.num_face(ind_face);		\
+	      if (volumes_entrelaces_Cl(num_face)==0)			\
+                marq[num_face]=1;					\
+	    }								\
+      }									\
+    marq.echange_espace_virtuel();					\
+  }									\
   DoubleTab& It_Sou_VEF_Face(_TYPE_)::ajouter_faces_non_standard(DoubleTab& resu) const        \
   {                                                                        \
     int num_cl;                                                        \
-    int num_face,ndeb,nfin=0;                                        \
+    int num_face,nfin=0;                                        \
     DoubleVect& bilan = so_base->bilan();                                \
     for (num_cl =0; num_cl<la_zone->nb_front_Cl(); num_cl++)                \
       {                                                                        \
         const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);        \
         const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis()); \
-        ndeb = le_bord.num_premiere_face();                                \
-        nfin = ndeb + le_bord.nb_faces();                                \
+        int nf =  le_bord.nb_faces_tot();  	\
+	nfin= le_bord.num_premiere_face()+ le_bord.nb_faces(); \
         int type_CL = 0;                                                \
         if (sub_type(Dirichlet,la_cl.valeur()))                                \
-          type_CL=1;                                                        \
-        for (num_face=ndeb; num_face<nfin; num_face++)                        \
-          {                                                                \
+          type_CL=1;							\
+        for (int ind_face=0; ind_face<nf; ind_face++)		\
+          {								\
+	    num_face = le_bord.num_face(ind_face);			\
             double source = evaluateur_source_face.calculer_terme_source_non_standard(num_face); \
             if (volumes_entrelaces_Cl(num_face)==0)                        \
               {                                                                \
@@ -204,17 +235,19 @@
                     if (volumes_entrelaces_Cl(face_voisine)!=0)                \
                       {                                                        \
                         resu(face_voisine) += source/(nb_faces_elem-faces_dirichlet); \
-                        double contribution = (faces_doubles(face_voisine)==1) ? 0.5 : 1 ; \
-                        bilan(0) += contribution * coef(face_voisine) * source/(nb_faces_elem-faces_dirichlet); \
-                      }                                                        \
-                  }                                                        \
-              }                                                                \
+			if (face_voisine<la_zone->nb_faces())  {	\
+			  double contribution = (faces_doubles(face_voisine)==1) ? 0.5 : 1 ; \
+			  bilan(0) += contribution * coef(face_voisine) * source/(nb_faces_elem-faces_dirichlet); \
+			} }						\
+		  }							\
+              }								\
             else                                                        \
-              {                                                                \
-                resu(num_face) += source;                                \
+              {								\
+		resu(num_face) += source;				\
+		if (num_face    <la_zone->nb_faces())  {		\
                 double contribution = (faces_doubles(num_face)==1) ? 0.5 : 1 ; \
                 bilan(0) += (1.-type_CL)*contribution * coef(num_face) * source;        \
-              }                                                                \
+		} }							\
           }                                                                \
       }                                                                        \
     for (num_face=nfin; num_face<premiere_face_std; num_face++)                \
@@ -229,20 +262,21 @@
   DoubleTab& It_Sou_VEF_Face(_TYPE_)::ajouter_faces_non_standard(DoubleTab& resu,int ncomp) const \
   {                                                                        \
     int num_cl;                                                        \
-    int num_face,ndeb,nfin=0;                                        \
+    int num_face,nfin=0;                                        \
     DoubleVect source(ncomp);                                                \
     DoubleVect& bilan = so_base->bilan();                                \
     for (num_cl =0; num_cl<la_zone->nb_front_Cl(); num_cl++)                \
       {                                                                        \
         const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);        \
         const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis()); \
-        ndeb = le_bord.num_premiere_face();                                \
-        nfin = ndeb + le_bord.nb_faces();                                \
+	int nf =  le_bord.nb_faces_tot();	\
+	nfin= le_bord.num_premiere_face()+ le_bord.nb_faces(); \
         int type_CL = 0;                                                \
         if (sub_type(Dirichlet,la_cl.valeur()))                                \
           type_CL=1;                                                        \
-        for (num_face=ndeb; num_face<nfin; num_face++) {                \
-          evaluateur_source_face.calculer_terme_source_non_standard(num_face,source); \
+	for (int ind_face=0; ind_face<nf; ind_face++) {		\
+	  num_face = le_bord.num_face(ind_face);			\
+	  evaluateur_source_face.calculer_terme_source_non_standard(num_face,source); \
           if (volumes_entrelaces_Cl(num_face)==0)                        \
             {                                                                \
               int faces_dirichlet=0;                                        \
@@ -260,23 +294,25 @@
                     for (int k=0; k<ncomp; k++)                        \
                       {                                                        \
                         resu(face_voisine,k) += source(k)/(nb_faces_elem-faces_dirichlet); \
+			if (face_voisine<la_zone->nb_faces())  {	\
                         double contribution = (faces_doubles(face_voisine)==1) ? 0.5 : 1 ; \
                         bilan(k) += contribution * coef(face_voisine) * source(k)/(nb_faces_elem-faces_dirichlet); \
-                      }                                                        \
+} }									\
                 }                                                        \
             }                                                                \
           else                                                                \
-            {                                                                \
-              for (int k=0; k<ncomp; k++)                                \
-                {                                                        \
-                  resu(num_face,k) += source(k);                        \
-                  double contribution = (faces_doubles(num_face)==1) ? 0.5 : 1 ; \
-                  bilan(k) += (1.-type_CL)*contribution * coef(num_face) * source(k); \
-                }                                                        \
-            }                                                                \
-        }                                                                \
-      }                                                                        \
-    for (num_face=nfin; num_face<premiere_face_std; num_face++)                \
+            {								\
+	      for (int k=0; k<ncomp; k++)				\
+                {							\
+                  resu(num_face,k) += source(k);			\
+		  if (num_face    <la_zone->nb_faces())  {		\
+		    double contribution = (faces_doubles(num_face)==1) ? 0.5 : 1 ; \
+		    bilan(k) += (1.-type_CL)*contribution * coef(num_face) * source(k); \
+		  }							\
+		} }							\
+	}								\
+      }									\
+    for (num_face=nfin; num_face<premiere_face_std; num_face++)		\
       {                                                                        \
         evaluateur_source_face.calculer_terme_source_non_standard(num_face,source); \
         for (int k=0; k<ncomp; k++)                                        \

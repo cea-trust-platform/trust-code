@@ -1421,7 +1421,6 @@ void Probleme_base::creer_champ(const Motcle& motlu)
 
 const Champ_base& Probleme_base::get_champ(const Motcle& un_nom) const
 {
-  REF(Champ_base) ref_champ;
   int nb_eq = nombre_d_equations();
   for (int i=0; i<nb_eq; i++)
     {
@@ -1452,6 +1451,7 @@ const Champ_base& Probleme_base::get_champ(const Motcle& un_nom) const
   exit();
 
   //Pour compilation
+  REF(Champ_base) ref_champ;
   return ref_champ;
 }
 

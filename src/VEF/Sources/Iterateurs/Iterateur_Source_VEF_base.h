@@ -52,6 +52,7 @@ public:
   virtual DoubleTab& calculer(DoubleTab& ) const=0;
   virtual Evaluateur_Source_VEF& evaluateur() =0;
   virtual void completer_()=0;
+  virtual int initialiser(double tps)=0;
   virtual inline int equation_divisee_par_rho_cp() const;
   virtual inline int equation_divisee_par_rho() const;
 

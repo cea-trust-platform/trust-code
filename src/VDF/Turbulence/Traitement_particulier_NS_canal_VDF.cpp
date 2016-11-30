@@ -131,18 +131,145 @@ void Traitement_particulier_NS_canal_VDF::remplir_Y(DoubleVect& tab_Y,  DoubleVe
   tab_compt.resize(nNy);
 }
 
-void Traitement_particulier_NS_canal_VDF::calculer_moyenne_spatiale_vitesse_rho_mu(DoubleTab& val_moy) const
+//Ajout F.A 15/02/11 on va faire un changement,
+// l'objectif est de reunir des operations faites et refaite pour profiter pleinement de l'espace memoire (boucles)
+// par la creation d'un tableau de grande taille (+/- 7M par proc mais qui ne s'echange pas)
+// le tableau aura la structure suivant : La ligne est le numero de l'elemennt
+// numero de l'element au dessus, numero de l'element au dessous,position dans le vecteur Y.
+// soit un tableau de nelem x 3.
+// pour cela apres remplir_Y on va appeller la fonction qui fais les differenent calculs,
+// en utilisant le tableau comme argument de la fonction.
+
+void Traitement_particulier_NS_canal_VDF::remplir_Tab_recap(IntTab& Tab_rec) const
 {
   const Zone_dis_base& zdisbase=mon_equation->inconnue().zone_dis_base();
   const Zone_VDF& zone_VDF=ref_cast(Zone_VDF, zdisbase);
   const DoubleTab& xp = zone_VDF.xp();
   const IntTab& elem_faces = zone_VDF.elem_faces();
+
+  int face; //recepteur des faces
+  int elem_test,elem_test2; // element de test pour les ficitfs
+  int nb_elem_tot = zone_VDF.zone().nb_elem_tot(); // nombre total d'elements (reel + fict)
+  int nb_elems = zone_VDF.zone().nb_elem();
+  int dimension=Objet_U::dimension;
+
+  IntTab trouve(1);// tableau des elements deja effectue
+  double y=0;
+  int i,num_elem; // compteurs
+  int q=1; //Curseur pour les tableau haut
+  trouve[0]=0;
+
+
+  Tab_rec.resize(nb_elems,3); // On dimenssione le tableau.
+
+  for (num_elem=nb_elems; num_elem<nb_elem_tot; num_elem++) // boucle sur les elements fictifs
+    {
+      face = elem_faces(num_elem,1+dimension);
+      elem_test=zone_VDF.elem_voisin(num_elem,face,0);
+      face = elem_faces(num_elem,1);
+      elem_test2=zone_VDF.elem_voisin(num_elem,face,1);
+
+      if ((elem_test>0) && (elem_test<nb_elems)) // si l'element en dessus est un element reel alors
+        {
+          trouve[q-1]=elem_test;
+          q =q +1;
+          trouve.resize(q);
+
+          Tab_rec(elem_test,0)=num_elem; // on affecte la meme valeur aux deux case haut et bas
+          Tab_rec(elem_test,1)=num_elem; //ainsi la fonction qui calcul les valeurs voie un element normal.
+
+          y=xp(elem_test,1);
+          for (i=0; i<Ny; i++)
+            {
+              if(est_egal(y,Y[i]))
+                break;
+            }
+
+          Tab_rec(elem_test,2)=i; // on garde la valeur de i pour ne pas reefectuer la boucle a chaque pas de temps.
+        }
+      else if ((elem_test2<nb_elems)&&(elem_test2>0)) //sinon si l'element en dessous est un element reel alors
+        {
+          trouve[q-1]=elem_test2;
+          q =q +1;
+          trouve.resize(q);
+
+          Tab_rec(elem_test2,0)=num_elem; // on affecte la meme valeur aux deux case haut et bas
+          Tab_rec(elem_test2,1)=num_elem; //ainsi la fonction qui calcul les valeurs voie un element normal.
+
+          y=xp(elem_test2,1);
+          for (i=0; i<Ny; i++)
+            {
+              if(est_egal(y,Y[i]))
+                break;
+            }
+          Tab_rec(elem_test2,2)=i; // on garde la valeur de i pour ne pas reefectuer la boucle a chaque pas de temps.
+
+        }
+      // sinon rien
+    }
+
+  Cerr << "Traitement particulier canal : Il y a une amelioration a apporter aux face de bord !! " << finl;
+  for (num_elem=0; num_elem<nb_elems; num_elem++)
+    {
+      q=0;// on utilise le compteur q qui ne nous sert plus pour verifier si on a trouver un equivalent.
+      for(i=0; i<(trouve.size()-1); i++) // trouve est une case trop grand, mais plutot que de le redimentionner on utilise le critere taille -1
+        if((num_elem==trouve[i]))
+          {
+            q = 0;  // on met fixe q qui ne peu repondre au prochain test. // correction on fixe q =0 car c'etais un faux probleme.
+            break;
+          }
+      // en realite lambda explose a l'interface.
+      if(q==0) //
+        {
+          face=elem_faces(num_elem,1); //face inferieure
+          elem_test=zone_VDF.elem_voisin(num_elem,face,1);
+
+
+          if (elem_test+1)
+            {
+              Tab_rec(num_elem,1)=elem_test; // faux si elem_test=-1 sinon remplit avec l'element en dessous
+            }
+          else
+            {
+              Tab_rec(num_elem,1)=zone_VDF.elem_voisin(num_elem,elem_faces(num_elem,1+dimension),0); // on le traite alors comme un virtuel
+            }
+
+          face= elem_faces(num_elem,1+dimension); //face superieure
+          elem_test=zone_VDF.elem_voisin(num_elem,face,0);
+
+          if (elem_test+1)
+            {
+              Tab_rec(num_elem,0)=elem_test; // faux si elem_test=-1 sinon remplit avec l'element au dessus
+            }
+          else
+            {
+              Tab_rec(num_elem,0)=zone_VDF.elem_voisin(num_elem,elem_faces(num_elem,1),1); // on le traite alors comme un virtuel
+            }
+
+          y = xp(num_elem,1);
+          for (i=0; i<Ny; i++)
+            if(est_egal(y,Y[i])) break;
+
+          Tab_rec(num_elem,2)=i;
+
+        }
+
+    }
+}
+
+void Traitement_particulier_NS_canal_VDF::calculer_moyenne_spatiale_vitesse_rho_mu(DoubleTab& val_moy) const
+{
+  const Zone_dis_base& zdisbase=mon_equation->inconnue().zone_dis_base();
+  const Zone_VDF& zone_VDF=ref_cast(Zone_VDF, zdisbase);
+  //  const DoubleTab& xp = zone_VDF.xp();
+  const IntTab& elem_faces = zone_VDF.elem_faces();
   const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
-  double y,u,v,wl;
+  double u,v,wl;
   int nb_elems = zone_VDF.zone().nb_elem();
   int num_elem,i;
   int face_x_0,face_y_0,face_y_1,face_z_0;
 
+  int dimension=Objet_U::dimension;
 
   const Fluide_Incompressible& le_fluide = ref_cast(Fluide_Incompressible,mon_equation->milieu());
   const DoubleTab& visco_dyn = le_fluide.viscosite_dynamique();
@@ -152,7 +279,7 @@ void Traitement_particulier_NS_canal_VDF::calculer_moyenne_spatiale_vitesse_rho_
 
   for (num_elem=0; num_elem<nb_elems; num_elem++)
     {
-      y=xp(num_elem,1);
+      //y=xp(num_elem,1);
 
       face_x_0 = elem_faces(num_elem,0);
       //      face_x_1 = elem_faces(num_elem,dimension);
@@ -170,8 +297,7 @@ void Traitement_particulier_NS_canal_VDF::calculer_moyenne_spatiale_vitesse_rho_
       u = vitesse[face_x_0];
       v = .5*(vitesse[face_y_0]+vitesse[face_y_1]);
 
-      for (i=0; i<Ny; i++)
-        if(est_egal(y,Y[i])) break;
+      i= Tab_recap(num_elem,2);
 
       val_moy(i,0) += u;
       val_moy(i,1) += v;
@@ -209,21 +335,20 @@ void Traitement_particulier_NS_canal_VDF::calculer_moyenne_spatiale_nut(DoubleTa
 {
   const Zone_dis_base& zdisbase=mon_equation->inconnue().zone_dis_base();
   const Zone_VDF& zone_VDF=ref_cast(Zone_VDF, zdisbase);
-  const DoubleTab& xp = zone_VDF.xp();
+  //const DoubleTab& xp = zone_VDF.xp();
   const RefObjU& modele_turbulence = mon_equation.valeur().get_modele(TURBULENCE);
   const Mod_turb_hyd_base& mod_turb = ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur());
   const DoubleTab& nu_t = mod_turb.viscosite_turbulente()->valeurs();
 
   int nb_elems = zone_VDF.zone().nb_elem();
   int num_elem,i;
-  double y;
+  // double y;
 
   for (num_elem=0; num_elem<nb_elems; num_elem++)
     {
-      y=xp(num_elem,1);
+      //y=xp(num_elem,1);
 
-      for (i=0; i<Ny; i++)
-        if(est_egal(y,Y[i])) break;
+      i= Tab_recap(num_elem,2);
 
       val_moy(i,12) += nu_t[num_elem];
     }
@@ -233,18 +358,18 @@ void Traitement_particulier_NS_canal_VDF::calculer_moyenne_spatiale_Temp(DoubleT
 {
   const Zone_dis_base& zdisbase=mon_equation->inconnue().zone_dis_base();
   const Zone_VDF& zone_VDF=ref_cast(Zone_VDF, zdisbase);
-  const DoubleTab& xp = zone_VDF.xp();
+  //const DoubleTab& xp = zone_VDF.xp();
   const IntTab& elem_faces = zone_VDF.elem_faces();
   const DoubleTab& temperature = Temp.valeur().valeurs();
   const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
-  double y,u,v,wl,T;
+  double u,v,wl,T;
   int nb_elems = zone_VDF.zone().nb_elem();
   int num_elem,i;
   int face_x_0,face_x_1,face_y_0,face_y_1,face_z_0,face_z_1;
 
   for (num_elem=0; num_elem<nb_elems; num_elem++)
     {
-      y=xp(num_elem,1);
+      //y=xp(num_elem,1);
 
       T = temperature[num_elem];
 
@@ -256,8 +381,9 @@ void Traitement_particulier_NS_canal_VDF::calculer_moyenne_spatiale_Temp(DoubleT
       u = .5*(vitesse[face_x_0]+vitesse[face_x_1]);
       v = .5*(vitesse[face_y_0]+vitesse[face_y_1]);
 
-      for (i=0; i<Ny; i++)
-        if(est_egal(y,Y[i])) break;
+
+      i=Tab_recap(num_elem,2);
+      // for (i=0; i<Ny; i++)     if(est_egal(y,Y[i])) break;
 
       val_moy(i,13) += T;
       val_moy(i,14) += T*T;

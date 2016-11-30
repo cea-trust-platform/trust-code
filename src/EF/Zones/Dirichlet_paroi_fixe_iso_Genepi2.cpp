@@ -14,43 +14,26 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Terme_Source_VEF_base.cpp
-// Directory:   $TRUST_ROOT/src/VEF/Sources
-// Version:     /main/7
+// File:        Dirichlet_paroi_fixe_iso_Genepi2.cpp
+// Directory:   $TRUST_ROOT/src/EF/Zones
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Terme_Source_VEF_base.h>
+#include <Dirichlet_paroi_fixe_iso_Genepi2.h>
 
-Implemente_base(Terme_Source_VEF_base,"Terme_Source_VEF_base",Source_base);
+Implemente_instanciable( Dirichlet_paroi_fixe_iso_Genepi2, "paroi_fixe_iso_Genepi2_sans_contribution_aux_vitesses_sommets", Dirichlet_paroi_fixe ) ;
 
+// XD paroi_fixe_iso_Genepi2_sans_contribution_aux_vitesses_sommets paroi_fixe paroi_fixe_iso_Genepi2_sans_contribution_aux_vitesses_sommets -1 CL pour obtenir iso Geneppi2, sans interet
 
-//// printOn
-//
-
-Sortie& Terme_Source_VEF_base::printOn(Sortie& s ) const
+Sortie& Dirichlet_paroi_fixe_iso_Genepi2::printOn( Sortie& os ) const
 {
-  return s << que_suis_je() ;
+  Dirichlet_paroi_fixe::printOn( os );
+  return os;
 }
 
-
-//// readOn
-//
-
-Entree& Terme_Source_VEF_base::readOn(Entree& s )
+Entree& Dirichlet_paroi_fixe_iso_Genepi2::readOn( Entree& is )
 {
-  return s ;
-}
-
-void Terme_Source_VEF_base::completer()
-{
-  Source_base::completer();
-  iter.associer(*this);
-  iter.completer_();
-}
-int Terme_Source_VEF_base::initialiser(double temps)
-{
-  Source_base::initialiser(temps);
-  iter.valeur().initialiser(temps);
-  return 1;
+  Dirichlet_paroi_fixe::readOn( is );
+  return is;
 }

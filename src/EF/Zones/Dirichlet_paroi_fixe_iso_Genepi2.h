@@ -14,43 +14,34 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Terme_Source_VEF_base.cpp
-// Directory:   $TRUST_ROOT/src/VEF/Sources
-// Version:     /main/7
+// File:        Dirichlet_paroi_fixe_iso_Genepi2.h
+// Directory:   $TRUST_ROOT/src/EF/Zones
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Terme_Source_VEF_base.h>
+#ifndef Dirichlet_paroi_fixe_iso_Genepi2_included
+#define Dirichlet_paroi_fixe_iso_Genepi2_included
 
-Implemente_base(Terme_Source_VEF_base,"Terme_Source_VEF_base",Source_base);
+#include <Dirichlet_paroi_fixe.h>
 
-
-//// printOn
+/////////////////////////////////////////////////////////////////////////////
 //
-
-Sortie& Terme_Source_VEF_base::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
-
-
-//// readOn
+// .DESCRIPTION : class Dirichlet_paroi_fixe_iso_Genepi2
 //
+// <Description of class Dirichlet_paroi_fixe_iso_Genepi2>
+//
+/////////////////////////////////////////////////////////////////////////////
 
-Entree& Terme_Source_VEF_base::readOn(Entree& s )
+class Dirichlet_paroi_fixe_iso_Genepi2 : public Dirichlet_paroi_fixe
 {
-  return s ;
-}
 
-void Terme_Source_VEF_base::completer()
-{
-  Source_base::completer();
-  iter.associer(*this);
-  iter.completer_();
-}
-int Terme_Source_VEF_base::initialiser(double temps)
-{
-  Source_base::initialiser(temps);
-  iter.valeur().initialiser(temps);
-  return 1;
-}
+  Declare_instanciable( Dirichlet_paroi_fixe_iso_Genepi2 ) ;
+
+public :
+
+protected :
+
+};
+
+#endif /* Dirichlet_paroi_fixe_iso_Genepi2_included */

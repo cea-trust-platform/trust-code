@@ -47,6 +47,7 @@ public:
   virtual double calculer_terme_source_non_standard(int ) const =0;
   virtual void calculer_terme_source_standard(int , DoubleVect&  ) const =0;
   virtual void calculer_terme_source_non_standard(int , DoubleVect&  ) const =0;
+  void changer_volumes_entrelaces_Cl(DoubleVect&);
 
 protected:
 

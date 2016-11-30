@@ -47,6 +47,7 @@ public:
   inline void associer_zones(const Zone_dis_base&,const Zone_Cl_dis_base&);
   virtual void mettre_a_jour() =0;
   virtual void completer() = 0;
+  virtual void changer_volumes_entrelaces_Cl(DoubleVect&) =0;
 
 protected:
 

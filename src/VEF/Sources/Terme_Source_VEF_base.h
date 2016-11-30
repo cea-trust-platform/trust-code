@@ -46,6 +46,8 @@ public:
   inline DoubleTab& ajouter(DoubleTab& ) const ;
   inline DoubleTab& calculer(DoubleTab& ) const ;
   void completer();
+  int initialiser(double temps);
+
 
 protected:
 
