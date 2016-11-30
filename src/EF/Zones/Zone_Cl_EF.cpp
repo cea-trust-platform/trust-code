@@ -41,6 +41,7 @@
 #include <Probleme_base.h>
 #include <Discretisation_base.h>
 #include <Matrice_Morse.h>
+#include <Dirichlet_paroi_fixe_iso_Genepi2.h>
 
 Implemente_instanciable(Zone_Cl_EF,"Zone_Cl_EF",Zone_Cl_dis_base);
 int Deux_Puissance(int n) ;
@@ -197,7 +198,9 @@ void Zone_Cl_EF::remplir_type_elem_Cl(const Zone_EF& la_zone_EF)
               for (int s=0; s<nb_som_face; s++)
                 {
                   int som=faces_sommets(face,s);
-                  titi(som)++;
+//	Si on a Dirichlet_paroi_fixe_iso_Genepi2 on ne prend pas en compte le 0 pour la moyenne
+                  if (!sub_type(Dirichlet_paroi_fixe_iso_Genepi2,la_cl))
+                    titi(som)++;
                   if ((type_sommet_(som)!=1)&& (type_sommet_(som)!=3))
                     type_sommet_(som)=2;
                   else
@@ -244,8 +247,8 @@ void Zone_Cl_EF::remplir_type_elem_Cl(const Zone_EF& la_zone_EF)
     {
       if (type_sommet_(som)>1)
         {
-          assert(titi(som)>0);
-          type_sommet_(som)+=2*(titi(som)-1);
+          //assert(titi(som)>0);
+          type_sommet_(som)+=2*(titi(som));
         }
     }
   // On cree la connectivite sommet -> face de bord symetrie
@@ -710,8 +713,8 @@ void Zone_Cl_EF::imposer_cond_lim(Champ_Inc& ch, double temps)
                   for (int s=0; s<nb_som_face; s++)
                     {
                       int som=faces_sommets(face,s);
-                      assert(type_sommet_(som)>=2);
-                      double coef=1./(type_sommet_(som)/2);
+                      assert(type_sommet_(som)>=4);
+                      double coef=1./(type_sommet_(som)/2-1);
                       //Cerr<<"iciPB "<<coef<<finl;
                       double x,y,z=0;
                       x=coords(som,0);
@@ -733,8 +736,8 @@ void Zone_Cl_EF::imposer_cond_lim(Champ_Inc& ch, double temps)
                 for (int s=0; s<nb_som_face; s++)
                   {
                     int som=faces_sommets(face,s);
-                    assert(type_sommet_(som)>=2);
-                    double coef=1./(type_sommet_(som)/2);
+                    assert(type_sommet_(som)>=4);
+                    double coef=1./(type_sommet_(som)/2-1);
                     //Cerr<<"iciPB "<<coef<<finl;
                     if (nb_comp == 1)
                       ch_tab[som]+=coef*la_cl_diri.val_imp_au_temps(temps,ind_face);
