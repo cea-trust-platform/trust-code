@@ -86,7 +86,7 @@
     nb_faces_elem=la_zone->zone().nb_faces_elem();                        \
     premiere_face_std=la_zone->premiere_face_std();			\
 }\
-int It_Sou_VEF_Face(_TYPE_)::initialiser(double tps){ \
+  inline int It_Sou_VEF_Face(_TYPE_)::initialiser(double tps){ \
     remplir_volumes_cl_dirichlet();					\
    evaluateur().changer_volumes_entrelaces_Cl(volumes_cl_dirichlet_); \
 return 1 ; \
