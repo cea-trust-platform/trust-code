@@ -25,6 +25,7 @@
 #define Traitement_particulier_NS_canal_included
 
 #include <Traitement_particulier_NS_base.h>
+#include <IntTab.h>
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -62,6 +63,7 @@ protected :
   void reprendre_stat_canal(DoubleTab&, const Nom& );
   void sauver_stat_canal(const DoubleTab&, const Nom& ) const;
   virtual void remplir_Y(DoubleVect&,  DoubleVect&, int& ) const = 0;
+  virtual void remplir_Tab_recap(IntTab& ) const;
   void remplir_reordonne_Y_tot(const DoubleVect&,  DoubleVect&) const;
   virtual void calculer_moyenne_spatiale_vitesse_rho_mu(DoubleTab&) const = 0;
   virtual void calculer_moyenne_spatiale_nut(DoubleTab&) const = 0;
@@ -79,6 +81,7 @@ protected :
   DoubleVect Y,Y_tot;
   DoubleVect compt,compt_tot;
   IntVect    Nb_ech_phase;     // nombre d'echantillons par phase
+  IntTab     Tab_recap;
   double     w,freq;
   int             ind_phase;
 

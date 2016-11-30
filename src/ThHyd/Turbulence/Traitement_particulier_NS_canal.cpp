@@ -201,6 +201,13 @@ Entree& Traitement_particulier_NS_canal::lire(Entree& is)
   return is;
 }
 
+void Traitement_particulier_NS_canal::remplir_Tab_recap(IntTab& Tab_rec) const
+{
+// surchargeee dans VDF
+  Cerr << "Traitement_particulier_NS_canal::remplir_Tab_recap ne marche pas pour le VEF" << finl;
+//  Process::exit();
+}
+
 void Traitement_particulier_NS_canal::preparer_calcul_particulier()
 {
   const RefObjU& modele_turbulence = mon_equation.valeur().get_modele(TURBULENCE);
@@ -222,7 +229,7 @@ void Traitement_particulier_NS_canal::preparer_calcul_particulier()
       }
 
   remplir_Y(Y,compt,Ny); // renvoie vers Traitement_particulier_NS_canal_VDF ou Traitement_particulier_NS_canal_VEF
-
+  remplir_Tab_recap(Tab_recap);
   remplir_reordonne_Y_tot(Y,Y_tot);
 
   int NN=Y_tot.size();
@@ -438,7 +445,7 @@ void Traitement_particulier_NS_canal::post_traitement_particulier()
   DoubleVect compt_p(compt);
   DoubleTab val_moy_p(val_moy);
 
-  int NN = Y_tot.size();
+  const int NN = Y_tot.size();
 
   envoyer(Y_p,Process::me(),0,Process::me());
   envoyer(compt_p,Process::me(),0,Process::me());

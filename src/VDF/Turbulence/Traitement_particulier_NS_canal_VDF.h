@@ -51,6 +51,7 @@ public :
 protected :
 
   void remplir_Y(DoubleVect&, DoubleVect&, int& ) const;
+  void remplir_Tab_recap(IntTab&) const;
   void calculer_moyenne_spatiale_vitesse_rho_mu(DoubleTab&) const;
   void calculer_moyenne_spatiale_nut(DoubleTab&) const;
   void calculer_moyenne_spatiale_Temp(DoubleTab&) const;
