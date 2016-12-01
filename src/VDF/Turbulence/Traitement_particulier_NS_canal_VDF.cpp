@@ -151,7 +151,6 @@ void Traitement_particulier_NS_canal_VDF::remplir_Tab_recap(IntTab& Tab_rec) con
   int elem_test,elem_test2; // element de test pour les ficitfs
   int nb_elem_tot = zone_VDF.zone().nb_elem_tot(); // nombre total d'elements (reel + fict)
   int nb_elems = zone_VDF.zone().nb_elem();
-  int dimension=Objet_U::dimension;
 
   IntTab trouve(1);// tableau des elements deja effectue
   double y=0;
@@ -213,7 +212,7 @@ void Traitement_particulier_NS_canal_VDF::remplir_Tab_recap(IntTab& Tab_rec) con
     {
       q=0;// on utilise le compteur q qui ne nous sert plus pour verifier si on a trouver un equivalent.
       for(i=0; i<(trouve.size()-1); i++) // trouve est une case trop grand, mais plutot que de le redimentionner on utilise le critere taille -1
-        if((num_elem==trouve[i]))
+        if(num_elem==trouve[i])
           {
             q = 0;  // on met fixe q qui ne peu repondre au prochain test. // correction on fixe q =0 car c'etais un faux probleme.
             break;
@@ -268,8 +267,6 @@ void Traitement_particulier_NS_canal_VDF::calculer_moyenne_spatiale_vitesse_rho_
   int nb_elems = zone_VDF.zone().nb_elem();
   int num_elem,i;
   int face_x_0,face_y_0,face_y_1,face_z_0;
-
-  int dimension=Objet_U::dimension;
 
   const Fluide_Incompressible& le_fluide = ref_cast(Fluide_Incompressible,mon_equation->milieu());
   const DoubleTab& visco_dyn = le_fluide.viscosite_dynamique();
@@ -390,7 +387,7 @@ void Traitement_particulier_NS_canal_VDF::calculer_moyenne_spatiale_Temp(DoubleT
       val_moy(i,15) += u*T;
       val_moy(i,16) += v*T;
 
-      if(Objet_U::dimension==3)
+      if(dimension==3)
         {
           face_z_0 = elem_faces(num_elem,2);
           face_z_1 = elem_faces(num_elem,2+dimension);
