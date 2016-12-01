@@ -43,6 +43,7 @@
 #include <Schema_Temps_base.h>
 #include <Porosites_champ.h>
 #include <Check_espace_virtuel.h>
+#include <Conduction.h>
 #include <fstream>
 using std::ofstream;
 
@@ -200,6 +201,19 @@ void Op_Diff_VEFP1NCP1B_Face::associer(const Zone_dis& zone_dis,
 {
   const Zone_VEF_PreP1b& zvef = ref_cast(Zone_VEF_PreP1b,zone_dis.valeur());
   const Zone_Cl_VEFP1B& zclvef = ref_cast(Zone_Cl_VEFP1B,zone_cl_dis.valeur());
+
+  // On bloque la symetrie dans l operateur de diffusion P1NC sur vitesse (OK pour scalaire)
+  for (int i = 0; i<zclvef.nb_cond_lim(); i++)
+    {
+      Cond_lim la_cl = zclvef.les_conditions_limites(i);
+      if ( sub_type(Symetrie,la_cl.valeur()) && (ch_diffuse.valeur().nature_du_champ()==vectoriel) )
+        {
+          Cerr << "\nBoundary conditions of 'Symetrie' type with P1NCP1B diffusion operator are only allowed for Conduction equation!" << finl;
+          Cerr << "Here you use a P1NCP1B diffusion operator in a '" << equation().que_suis_je() << "' equation where" << finl;
+          Cerr << "boundary condition number " << i << ", on boundary '" << la_cl.frontiere_dis().le_nom() << "' has been assigned to: '" << la_cl.valeur().que_suis_je() << "'." << finl;
+          Process::exit();
+        }
+    }
 
   if (sub_type(Champ_P1NC,ch_diffuse.valeur()))
     {

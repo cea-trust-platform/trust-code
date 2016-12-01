@@ -1,7 +1,7 @@
 jdd=`pwd`
 jdd=`basename $jdd`
 # Preparation avec une diffusion variable pour tester OpDifP1NCP1BVar.cpp
-echo $ECHO_OPTS "1,$ s?mu Champ_Uniforme 1 1.?mu Champ_Fonc_xyz dom_pbF1 1 1.?g\nw var.data" | ed $jdd.data 
+echo $ECHO_OPTS "1,$ s?lambda Champ_Uniforme 1 1.?lambda Champ_Fonc_xyz dom_pbF1 1 1.?g\nw var.data" | ed $jdd.data 
 echo $ECHO_OPTS "1,$ s?fichier $jdd?fichier var?g\nw" | ed var.data 
 [ "$TRUST_DISABLE_MPI" != 1 ] && make_PAR.data var
 trust var

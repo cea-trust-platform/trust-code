@@ -80,7 +80,8 @@ Navier_Stokes_standard
        {
                solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-12 }
        	       convection { negligeable }
-               diffusion { P1NCP1B {  } }
+               /* diffusion { P1NCP1B {  } } */
+               diffusion { }
                initial_conditions {
                        vitesse Champ_fonc_txyz dom_pbF1 3 y z 0.
                        }
