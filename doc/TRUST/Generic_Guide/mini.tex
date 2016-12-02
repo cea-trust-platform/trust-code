@@ -1,0 +1,298 @@
+\fbox{ \begin{minipage}[c]{1\textwidth}
+\begin{alltt}
+\textcolor{blue}{\# Dimension 2D or 3D \#}
+
+{\bf{Dimension}} 2
+\end{alltt}
+\end{minipage}}
+\vspace{0.1cm}
+
+
+
+\fbox{ \begin{minipage}[c]{1\textwidth}
+\begin{alltt}
+\textcolor{blue}{\# Problem definition \#}
+
+{\bf{Pb\_hydraulique}} \textit{my\_problem}
+\end{alltt}
+\end{minipage}}
+\vspace{0.1cm}
+
+
+
+\fbox{ \begin{minipage}[c]{1\textwidth}
+\begin{alltt}
+\textcolor{blue}{\# Domain definition \#}
+
+{\bf{Domaine}} \textit{my\_domain}
+\end{alltt}
+\end{minipage}}
+\vspace{0.1cm}
+
+
+
+\fbox{ \begin{minipage}[c]{1\textwidth}
+\begin{alltt}
+\textcolor{blue}{\# BEGIN MESH \#}
+
+{\bf{Read\_file}} \textit{my\_mesh.geo} ;
+
+\textcolor{blue}{\# END MESH \#}
+\end{alltt}
+\end{minipage}}
+\vspace{0.1cm}
+
+
+
+\fbox{ \begin{minipage}[c]{1\textwidth}
+\begin{alltt}
+\textcolor{blue}{\# Discretization on hexa or tetra mesh \#}
+
+{\bf{VDF}} \textit{my\_discretization}
+\end{alltt}
+\end{minipage}}
+\vspace{0.1cm}
+
+
+
+\fbox{ \begin{minipage}[c]{1\textwidth}
+\begin{alltt}
+\textcolor{blue}{\# Time scheme explicit or implicit \#}
+
+{\bf{Scheme\_euler\_explicit}} \textit{my\_scheme}
+
+{\bf{Read}} \textit{my\_scheme}
+
+\{
+
+\hspace{1cm}        \textcolor{blue}{\# Initial time \#}
+
+\hspace{1cm}        \textcolor{blue}{\# Time step \#}
+
+\hspace{1cm}        \textcolor{blue}{\# Output criteria \#}
+
+\hspace{1cm}        \textcolor{blue}{\# Stop Criteria \#}
+
+\}
+\end{alltt}
+\end{minipage}}
+\vspace{0.1cm}
+
+
+
+\fbox{ \begin{minipage}[c]{1\textwidth}
+\begin{alltt}
+\textcolor{blue}{\# Physical characteristics of medium \#}
+
+{\bf{Fluide\_Incompressible}} \textit{my\_medium}
+
+{\bf{Read}} \textit{my\_medium}
+
+\{
+
+\hspace{1cm}        ...
+
+\}
+\end{alltt}
+\end{minipage}}
+\vspace{0.1cm}
+
+
+
+\fbox{ \begin{minipage}[c]{1\textwidth}
+\begin{alltt}
+\textcolor{blue}{\# Gravity vector definition \#}
+
+{\bf{Uniform\_field}} \textit{my\_gravity}
+
+{\bf{Read}} \textit{my\_gravity 2 0 -9.81}
+
+\end{alltt}
+\end{minipage}}
+\vspace{0.1cm}
+
+
+
+\fbox{ \begin{minipage}[c]{1\textwidth}
+\begin{alltt}
+
+\textcolor{blue}{\# Association between the different objects \#}
+
+{\bf{Associate}} \textit{my\_problem my\_domain}
+
+{\bf{Associate}} \textit{my\_problem my\_scheme}
+
+{\bf{Associate}} \textit{my\_problem my\_medium}
+
+{\bf{Associate}} \textit{my\_medium my\_gravity}
+\end{alltt}
+\end{minipage}}
+\vspace{0.1cm}
+
+
+
+\fbox{ \begin{minipage}[c]{1\textwidth}
+\begin{alltt}
+\textcolor{blue}{\# Discretization of the problem \#}
+
+{\bf{Discretize}} \textit{my\_problem my\_discretization}
+\end{alltt}
+\end{minipage}}
+\vspace{0.1cm}
+
+
+
+\fbox{ \begin{minipage}[c]{1\textwidth}
+\begin{alltt}
+\textcolor{blue}{\# New domains for post-treatment \#}
+
+\textcolor{blue}{\# By default each boundary condition of the domain is already extrated }
+
+\textcolor{blue}{\hspace{0.2cm} with such name "my\_dom"\_boundaries\_"my\_BC" \#}
+\end{alltt}
+\end{minipage}}
+\vspace{0.1cm}
+
+
+
+\fbox{ \begin{minipage}[c]{1\textwidth}
+\begin{alltt}
+\textcolor{blue}{\# Problem description \#}
+
+{\bf{Read}} \textit{my\_problem}
+
+\{
+\end{alltt}
+\end{minipage}}
+\vspace{0.1cm}
+
+
+
+\fbox{ \begin{minipage}[c]{1\textwidth}
+\begin{alltt}
+\hspace{1cm}        \textcolor{blue}{\# hydraulic problem \#}
+
+\hspace{1cm}        {\bf{Navier\_Stokes\_standard}}
+
+\hspace{1cm}        \{
+
+\hspace{2cm}                \textcolor{blue}{\# Choice of the pressure matrix solver \#}
+
+\hspace{2cm}                {\bf{Solveur\_Pression}} \textit{solver} \{ ... \}
+
+\hspace{2cm}                \textcolor{blue}{\# Diffusion operator \#}
+
+\hspace{2cm}                {\bf{Diffusion}} \{ ... \}
+
+\hspace{2cm}                \textcolor{blue}{\# Convection operator \#}
+
+\hspace{2cm}                {\bf{Convection}} \{ ... \}
+
+\hspace{2cm}                \textcolor{blue}{\# Sources \#}
+
+\hspace{2cm}                [{\bf{Sources}} \{ ... \}]
+
+\hspace{2cm}                \textcolor{blue}{\# Initial conditions \#}
+
+\hspace{2cm}                {\bf{Initial\_conditions}} \{ ... \}
+
+\hspace{2cm}                \textcolor{blue}{\# Boundary conditions \#}
+
+\hspace{2cm}                {\bf{Boundary\_conditions}} \{ ... \}
+
+\hspace{1cm}        \}
+    \end{alltt}
+\end{minipage}}
+\vspace{0.1cm}
+
+
+
+\fbox{ \begin{minipage}[c]{1\textwidth}
+\begin{alltt}
+\hspace{1cm}        \textcolor{blue}{\# Post\_processing description \#}
+
+\hspace{1cm}        \textcolor{blue}{/* To know domains that can be treated directly, search in .err }
+
+\hspace{1.6cm}       \textcolor{blue}{    output file: "Creating a surface domain named" */}
+
+\hspace{1cm}        \textcolor{blue}{/* To know fields  that can be treated directly, search in .err }
+
+\hspace{1.6cm}      \textcolor{blue}{     output file: "Reading of fields to be postprocessed" */}
+
+\hspace{1cm}        {\bf{Post\_processing}}
+
+\hspace{1cm}        \{
+
+\hspace{2cm}                \textcolor{blue}{\# Definition of new fields \#}
+
+\hspace{2cm}                [{\bf{Definition\_Champs}} \{ ... \}]
+
+
+\hspace{2cm}                \textcolor{blue}{\# Probes \#}
+
+\hspace{2cm}                [{\bf{Probes}} \{ ... \}]
+
+
+\hspace{2cm}                \textcolor{blue}{\# Fields \#}
+
+\hspace{2cm}                \textcolor{blue}{\# format default value: lml \#}
+
+\hspace{2cm}                \textcolor{blue}{\# select 'lata' for VisIt tool or 'MED' for Salom\'e \#}
+
+\hspace{2cm}                [{\bf{format lata}}]
+
+\hspace{2cm}                [{\bf{fields dt\_post}} 1. \{ ... \}]
+
+
+\hspace{2cm}                \textcolor{blue}{\# Statistical fields \#}
+
+\hspace{2cm}                [{\bf{Statistiques dt\_post}} 1. \{ ... \}]
+
+\hspace{1cm}        \} 
+\end{alltt}
+\end{minipage}}
+\vspace{0.1cm}
+
+
+
+\fbox{ \begin{minipage}[c]{1\textwidth}
+\begin{alltt}
+    \textcolor{blue}{\# Saving and restarting process \#}
+
+    [{\bf{sauvegarde binaire}} \textit{datafile}{\bf{.sauv}}]
+
+    [{\bf{resume\_last\_time binaire}} \textit{datafile}{\bf{.sauv}}]
+\end{alltt}
+\end{minipage}}
+\vspace{0.1cm}
+
+
+\fbox{ \begin{minipage}[c]{1\textwidth}
+\begin{alltt}
+\textcolor{blue}{\# End of the problem description block \#}
+
+\}
+\end{alltt}
+\end{minipage}}
+\vspace{0.1cm}
+
+
+
+\fbox{ \begin{minipage}[c]{1\textwidth}
+\begin{alltt}
+\textcolor{blue}{\# The problem is solved with \#}
+
+{\bf{Solve}} \textit{my\_problem}
+\end{alltt}
+\end{minipage}}
+\vspace{0.1cm}
+
+
+
+\fbox{ \begin{minipage}[c]{1\textwidth}
+\begin{alltt}
+\textcolor{blue}{\# Not necessary keyword to finish \#}
+
+{\bf{End}}
+\end{alltt}
+\end{minipage}}
