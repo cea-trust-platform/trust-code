@@ -21,7 +21,7 @@
 %pdflatex TRUST_tutorial.tex
 %pdflatex TRUST_tutorial.tex
 
-\documentclass[10pt]{beamer}
+\documentclass[10pt, hyperref={unicode=true,pdfusetitle, bookmarks=true,bookmarksnumbered=false,bookmarksopen=false, breaklinks=false,pdfborder={0 0 1},backref=true,colorlinks=true,linkcolor=darkblue,pageanchor}]{beamer}
 
 \mode<presentation> {
 
@@ -84,12 +84,15 @@
 }
 
 \usepackage{graphicx} % Allows including images
-\usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
+%\usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
 %\usepackage{multimedia} % for video
-\definecolor{darkblue}{HTML}{3535b4}
+\definecolor{darkblue}{HTML}{3535B4}
+
 \usepackage{multirow}
+\usepackage{multicol}
 \usepackage{makeidx}
     \makeindex
+
 
 \newenvironment{theindex}
  {\let\item\par
@@ -101,7 +104,7 @@
 %    TITLE PAGE
 %----------------------------------------------------------------------------------------
 %\title[Short title]{Long title}
-\title[TRUST tutorial v1.7.3]{TRUST tutorial v1.7.3} % The short title appears at the bottom of every slide, the full title is only on the title page
+\title[TRUST tutorial v1.7.4]{TRUST tutorial v1.7.4} % The short title appears at the bottom of every slide, the full title is only on the title page
 
 %\author{John Smith} % Your name
 \institute[CEA/DEN/DANS/DM2S/STMF] % Your institution as it will appear on the bottom of every slide, may be shorthand to save space
@@ -113,10 +116,6 @@ CEA Saclay \\ % Your institution for the title page
 \date{\today} % Date, can be changed to a custom date
 
 
-
-
-
-
 \begin{document}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -124,6 +123,7 @@ CEA Saclay \\ % Your institution for the title page
 \titlepage % Print the title page as the first slide
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
@@ -143,7 +143,7 @@ CEA Saclay \\ % Your institution for the title page
 %    PRESENTATION SLIDES
 %----------------------------------------------------------------------------------------
 
-\section{Initialization}
+\section{{\bf{Initialization}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -160,7 +160,7 @@ CEA Saclay \\ % Your institution for the title page
 \begin{block}{}
 
 \begin{itemize}
-\item First, initialize the TRUST environment. On CEA Saclay PCs and callisto cluster, TRUST versions are available with (e.g. X.Y.Z=1.7.3):\\
+\item First, initialize the TRUST environment. On CEA Saclay PCs and callisto cluster, TRUST versions are available with (e.g. X.Y.Z=1.7.4):\\
 \vspace{0.2cm}
 \textbf{source  /home/triou/env\_TRUST\_X.Y.Z.sh}
 \vspace{0.5cm}
@@ -179,7 +179,7 @@ CEA Saclay \\ % Your institution for the title page
 
 
 
-\section{Obstacle VDF}
+\section{{\bf{Obstacle VDF}}} \label{exo1}
 \subsection{Obstacle: Sequential calculation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
@@ -417,7 +417,7 @@ or using "PLOT2D" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&} and 
 
 \item Find the last backup time of the previous calculation in the .err file (or in the bottom right file in the "PLOT2D" tool, if you didn't close it since the beginning of this practice).
 
-\item Edit your data file, with "Edit data" or "Edit with xdata" and modify \textbf{tinit\index{tinit}}, \textbf{tmax\index{tmax}} values in the object "mon\_schema" and add in the problem definition just before the last "\}":\\
+\item \label{save_restart} Edit your data file, with "Edit data" or "Edit with xdata" and modify \textbf{tinit\index{tinit}}, \textbf{tmax\index{tmax}} values in the object "mon\_schema" and add in the problem definition just before the last "\}":\\
 \textbf{reprise binaire\index{reprise binaire} Obstacle\_pb.sauv}\\
 (The file "Obstacle\_pb.sauv" must have been created during the first run.)
 \end{itemize}
@@ -444,7 +444,7 @@ or using "PLOT2D" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&} and 
 
 
 
-\subsection{Obstacle: Parallel calculation}
+\subsection{Obstacle: Parallel calculation} \label{exo_para_1}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -532,7 +532,7 @@ also visualize a field only on a selected part (block) with the menu Control $\r
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Parallel calculation: method 2}
+\frametitle{Parallel calculation: method 2} \label{exo_para_2}
 \begin{block}{}
 
 \begin{itemize}
@@ -633,7 +633,7 @@ You will run it like:\\
 
 
 
-\subsection{Obstacle: Parallel calculation on a cluster}
+\subsection{Obstacle: Parallel calculation on a cluster} \label{exo_para_3}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -653,7 +653,7 @@ You will run it like:\\
 \item Log on to the cluster callisto and initialize the TRUT version: \\
 \vspace{0.2cm}
 {\small{
-\textbf{ssh -X login@callisto-login1(.intra.cea.fr)} \\
+\textbf{ssh -X yourlogin@callisto-login1(.intra.cea.fr)} \\
 \textbf{source /panfs/ixion/home/triou/TRUST/TRUST\_X.Y.Z/env\_TRUST.sh}\\
 or 
 \textbf{source /home/triou/env\_TRUST\_X.Y.Z.sh}\\
@@ -662,7 +662,7 @@ or
 
 \item Copy the study Obstacle:\\
 \vspace{0.2cm}
-\textbf{cd /panfs/ixion/home/login}\\
+\textbf{cd /panfs/ixion/home/yourlogin}\\
 \textbf{mkdir  -p  test/yourname} \\
 \textbf{cd test/yourname} \\
 \textbf{trust -copy\index{trust -copy} Obstacle} \\
@@ -702,7 +702,7 @@ or
 \item Submit the job with: \textbf{sbatch sub\_file}
 \vspace{0.2cm}
 
-\item Check the state of the job with: \textbf{"squeue"} or \textbf{"squeue -u login"}
+\item Check the state of the job with: \textbf{"squeue"} or \textbf{"squeue -u yourlogin"}
 \vspace{0.2cm}
 
 \item You could run VisIt from the cluster but it is not recommended. But you can run VisIt on your PC and access/visualize the result file on callisto cluster, with File $\rightarrow$ Open File and select callisto in the localhost menu.
@@ -714,7 +714,7 @@ or
 
 
 
-\section{Heat exchange VDF/VEF}
+\section{{\bf{Heat exchange VDF/VEF}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -864,7 +864,7 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 
 
 
-\section{Low mach number flow}
+\section{{\bf{Low mach number flow}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -1021,7 +1021,7 @@ or \\
 
 
 
-\section{Periodic 3D channel flow}
+\section{{\bf{Periodic 3D channel flow}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -1118,7 +1118,7 @@ You can also see the informations at the end of the Heat exchange VDF/VEF exerci
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\section{Constituents and turbulent flow}
+\section{{\bf{Constituents and turbulent flow}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -1204,7 +1204,7 @@ Upper and lower walls: No slip wall ($U=0$) and non-porous wall ($\partial C_i/\
 
 
 
-\section{3D turbulent flow in a curved pipe}
+\section{{\bf{3D turbulent flow in a curved pipe}}} \label{prm_para}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -1244,7 +1244,7 @@ Goals:
 \begin{itemize}
 \item First initialize TrioCFD environment :\\
 {\small{
-\textbf{source /home/triou/env\_TrioCFD\_X.Y.Z.sh }\\
+\textbf{source /home/triou/env\_\textcolor{blue}{TrioCFD}\_X.Y.Z.sh }\\
 \textbf{echo \$exec} \\
 \textbf{export TrioCFD\_ROOT=\`\,dirname \$exec\`} \\
 \textbf{echo \$TrioCFD\_ROOT} \\
@@ -1340,7 +1340,7 @@ Notice that we use \textbf{"trust"} command line because this script will use th
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\section{Turbulent flow on a 3D step}
+\section{{\bf{Turbulent flow on a 3D step}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -1380,7 +1380,7 @@ Outlet: $P_0=0$
 \begin{itemize}
 \item First initialize TrioCFD environment :\\
 {\small{
-\textbf{source /home/triou/env\_TrioCFD\_X.Y.Z.sh }\\
+\textbf{source /home/triou/env\_\textcolor{blue}{TrioCFD}\_X.Y.Z.sh }\\
 \textbf{echo \$exec} \\
 \textbf{export TrioCFD\_ROOT=\`\,dirname \$exec\`} \\
 \textbf{echo \$TrioCFD\_ROOT} \\
@@ -1427,7 +1427,7 @@ Outlet: $P_0=0$
 
 
 
-\section{Tank filling (2D-single phase flow)}
+\section{{\bf{Tank filling (2D-single phase flow)}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -1632,7 +1632,7 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 
 
 
-\section{Tank filling (3D-two phases flow)}
+\section{{\bf{Tank filling (3D-two phases flow)}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -1683,7 +1683,7 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 
 \begin{itemize}
 \item First initialize TrioCFD environment :\\
-\textbf{source /home/triou/env\_TrioCFD\_X.Y.Z.sh }\\
+\textbf{source /home/triou/env\_\textcolor{blue}{TrioCFD}\_X.Y.Z.sh }\\
 \textbf{echo \$exec} 
 
 \item Copy the study named \textbf{FTD\_all\_VDF}: \textbf{trust -copy\index{trust -copy} FTD\_all\_VDF}
@@ -1743,8 +1743,10 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 
 
 
-\section{Meshing tools}
-\subsection{Salom\'e to create a 3D VEF mesh}
+\section{{\bf{Salom\'e: 3D VEF mesh}}} \label{salome}
+%\subsection{Salom\'e to create a 3D VEF mesh}
+\subsection{Cylinder}
+%\subsubsection{Cylinder}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -1755,8 +1757,6 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\subsubsection{Cylinder}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Salom\'e to create a 3D VEF mesh: Cylinder}
@@ -2049,7 +2049,8 @@ Netgen & MG
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\subsubsection{Revolution}
+\subsection{Revolution}
+%\subsubsection{Revolution}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -2196,7 +2197,8 @@ Then "Apply and Close"
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\subsubsection{T-shape}
+\subsection{T-shape}
+%\subsubsection{T-shape}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -2485,8 +2487,10 @@ or in parallel with:\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\subsection{Gmsh}
-\subsubsection{2D VEF mesh}
+\section{{\bf{Gmsh meshing tool}}} \label{gmsh}
+\subsection{2D VEF mesh}
+%\subsection{Gmsh}
+%\subsubsection{2D VEF mesh}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -2512,7 +2516,7 @@ or in parallel with:\\
 {\footnotesize{
 \textbf{mkdir \, -p \, $\sim$/test/yourname/gmsh} \\
 \textbf{cd \, $\sim$/test/yourname/gmsh} \\
-\textbf{source /home/triou/env\_TrioCFD\_X.Y.Z.sh }\\
+\textbf{source /home/triou/env\_\textcolor{blue}{TrioCFD}\_X.Y.Z.sh }\\
 \textbf{export TrioCFD\_ROOT=\`\,dirname \$exec\`} \\
 \textbf{echo \$TrioCFD\_ROOT} \\
 \textbf{dir=\$TrioCFD\_ROOT/validation/share/Validation/Rapports\_automatiques/Validant} \\
@@ -2603,7 +2607,8 @@ Point(14)=\{1,0.75,0,lc2\};
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\subsubsection{3D VEF mesh}
+\subsection{3D VEF mesh}
+%\subsubsection{3D VEF mesh}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -3011,7 +3016,7 @@ Physical Volume("dom") = \{1\};
 
 
 
-\section{Validation form}
+\section{{\bf{Validation form}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 

@@ -1,0 +1,494 @@
+This document constitutes the generic guide for \textbf{TRUST software} and his \textbf{Baltik projects}.\\
+
+\trust is a thermohydraulic calculation modular software package for CFD simulations of incompressible monophasic/diphasic flow.\\
+
+You could create new project based on \trust plateform. Theses projects were named \textbf{"BALTIK"} projects.\\
+
+The two currently available modules include a VDF calculation module "Finite Difference Volume" and a VEF calculation module "Finite Element Volume". \\
+
+The VDF and VEF validated modules are designed to process the 2D or 3D flow of Newtonian, incompressible, weakly expandable fluids the density of which is a function of a local temperature and concentration values (Boussinesq approximation).
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Before TRUST: a brick software named Trio\_U}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\trust was born from the cutting in two pieces of \textbf{Trio\_U} software.
+\textbf{Trio\_U} was a software brick based on the \textbf{Kernel} brick (which contains the equations, space discretizations, numerical schemes, parallelism...) and used by other CEA applications (cf Figure \ref{TrioU}).
+
+\begin{figure}[h!]
+\begin{center}
+\begin{tikzpicture}[scale=2, line width=1pt]
+% box Kernel
+\coordinate (A) at (0,0) ;
+\coordinate (B) at (6.25,0) ;
+\coordinate (C) at (6.25,0.5) ;
+\coordinate (D) at (0,0.5) ;
+\coordinate (E) at (0.25,0.75) ;
+\coordinate (F) at (6.5,0.75) ;
+\coordinate (G) at (6.5,0.25) ;
+\draw[black,fill=orange!80] (A) -- (B) -- (C) -- (D) -- cycle ;
+\draw[black,fill=orange!80] (D) -- (C) -- (F) -- (E) -- cycle ;
+\draw[black,fill=orange!80] (B) -- (C) -- (F) -- (G) -- cycle ;
+\draw (3,0.1) node[above]{\textbf{Kernel}} ;
+%% box Trio_U
+\begin{scope}
+\coordinate (A1) at (0,0.625) ;
+\coordinate (B1) at (3.125,0.625) ;
+\coordinate (C1) at (3.125,1.125) ;
+\coordinate (D1) at (0,1.125) ;
+\coordinate (E1) at (0.25,1.375) ;
+\coordinate (F1) at (3.375,1.375) ;
+\coordinate (G1) at (3.375,0.875) ;
+\draw[black,fill=orange!80] (A1) -- (B1) -- (C1) -- (D1) -- cycle ;
+\draw[black,fill=orange!80] (D1) -- (C1) -- (F1) -- (E1) -- cycle ;
+\draw[black,fill=orange!80] (B1) -- (C1) -- (F1) -- (G1) -- cycle ;
+\draw (1.5,0.7) node[above]{\textbf{Trio\_U}} ;
+\end{scope}
+% box MPCube
+\begin{scope}[xshift=3.25 cm]
+\coordinate (A1) at (0,0.625) ;
+\coordinate (B1) at (1.5,0.625) ;
+\coordinate (C1) at (1.5,1.125) ;
+\coordinate (D1) at (0,1.125) ;
+\coordinate (E1) at (0.25,1.375) ;
+\coordinate (F1) at (1.75,1.375) ;
+\coordinate (G1) at (1.75,0.875) ;
+\draw[black,fill=mauve!80] (A1) -- (B1) -- (C1) -- (D1) -- cycle ;
+\draw[black,fill=mauve!80] (D1) -- (C1) -- (F1) -- (E1) -- cycle ;
+\draw[black,fill=mauve!80] (B1) -- (C1) -- (F1) -- (G1) -- cycle ;
+\draw (0.75,0.75) node[above]{\textbf{MPCube}} ;
+\end{scope}
+%% box MC2
+\begin{scope}[xshift=0 cm, yshift=0.625 cm]
+\coordinate (A1) at (0,0.625) ;
+\coordinate (B1) at (1.5,0.625) ;
+\coordinate (C1) at (1.5,1.125) ;
+\coordinate (D1) at (0,1.125) ;
+\coordinate (E1) at (0.25,1.375) ;
+\coordinate (F1) at (1.75,1.375) ;
+\coordinate (G1) at (1.75,0.875) ;
+\draw[black,fill=red!80] (A1) -- (B1) -- (C1) -- (D1) -- cycle ;
+\draw[black,fill=red!80] (D1) -- (C1) -- (F1) -- (E1) -- cycle ;
+\draw[black,fill=red!80] (B1) -- (C1) -- (F1) -- (G1) -- cycle ;
+\draw (0.75,0.75) node[above]{\textbf{MC2}} ;
+\end{scope}
+% box Genepi+
+\begin{scope}[xshift=1.625 cm, yshift=0.625 cm]
+\coordinate (A1) at (0,0.625) ;
+\coordinate (B1) at (1.5,0.625) ;
+\coordinate (C1) at (1.5,1.125) ;
+\coordinate (D1) at (0,1.125) ;
+\coordinate (E1) at (0.25,1.375) ;
+\coordinate (F1) at (1.75,1.375) ;
+\coordinate (G1) at (1.75,0.875) ;
+\draw[black,fill=vert] (A1) -- (B1) -- (C1) -- (D1) -- cycle ;
+\draw[black,fill=vert] (D1) -- (C1) -- (F1) -- (E1) -- cycle ;
+\draw[black,fill=vert] (B1) -- (C1) -- (F1) -- (G1) -- cycle ;
+\draw (0.75,0.7) node[above]{\textbf{GENEPI+}} ;
+\end{scope}
+\end{tikzpicture}
+\caption{Trio\_U: brick software}
+\label{TrioU}
+\end{center}
+\end{figure}
+
+We could create new project based on Kernel brick or \textbf{Trio\_U} brick. 
+Theses projects were named \textbf{"BALTIK"} projects: "\textbf{B}uild an \textbf{A}pplication \textbf{L}inked to \textbf{T}r\textbf{I}o\_U \textbf{K}ernel".\\
+
+In 2015, \textbf{Trio\_U} was divided in two parts: \trust and \textbf{TrioCFD}.
+\begin{itemize}
+\item \trust is a new platform, its name means: "\textbf{TR}io\_\textbf{U} \textbf{S}oftware for \textbf{T}hermohydraulics",
+\item \textbf{TrioCFD} is a BALTIK project based on \trust, which contains the following models: FT, Radiation, LES, zoom...
+\end{itemize}
+
+Here is the structure of \trust platform (cf Figure \ref{TRUST}):
+
+\begin{figure}[h!]
+\begin{center}
+\begin{tikzpicture}[scale=2, line width=1pt]
+% box TRUST
+\coordinate (A) at (0,0) ;
+\coordinate (B) at (7,0) ;
+\coordinate (C) at (7,0.5) ;
+\coordinate (D) at (0,0.5) ;
+\coordinate (E) at (0.25,0.75) ;
+\coordinate (F) at (7.25,0.75) ;
+\coordinate (G) at (7.25,0.25) ;
+\draw[black,fill=orange!80] (A) -- (B) -- (C) -- (D) -- cycle ;
+\draw[black,fill=orange!80] (D) -- (C) -- (F) -- (E) -- cycle ;
+\draw[black,fill=orange!80] (B) -- (C) -- (F) -- (G) -- cycle ;
+\draw (3.5,0) node[above]{\trust platform: Kernel/Code Coupling Interface / V \& V Tools / doc} ;
+%% box TrioCFD
+\begin{scope}
+\coordinate (A1) at (0,0.625) ;
+\coordinate (B1) at (1.5,0.625) ;
+\coordinate (C1) at (1.5,1.125) ;
+\coordinate (D1) at (0,1.125) ;
+\coordinate (E1) at (0.25,1.375) ;
+\coordinate (F1) at (1.75,1.375) ;
+\coordinate (G1) at (1.75,0.875) ;
+\draw[black,fill=DeepSkyBlue!80] (A1) -- (B1) -- (C1) -- (D1) -- cycle ;
+\draw[black,fill=DeepSkyBlue!80] (D1) -- (C1) -- (F1) -- (E1) -- cycle ;
+\draw[black,fill=DeepSkyBlue!80] (B1) -- (C1) -- (F1) -- (G1) -- cycle ;
+\draw (0.75,0.75) node[above]{\textbf{TrioCFD}} ;
+\end{scope}
+% box TrioMC2
+\begin{scope}[xshift=1.625 cm]
+\coordinate (A1) at (0,0.625) ;
+\coordinate (B1) at (1.5,0.625) ;
+\coordinate (C1) at (1.5,1.125) ;
+\coordinate (D1) at (0,1.125) ;
+\coordinate (E1) at (0.25,1.375) ;
+\coordinate (F1) at (1.75,1.375) ;
+\coordinate (G1) at (1.75,0.875) ;
+\draw[black,fill=red!80] (A1) -- (B1) -- (C1) -- (D1) -- cycle ;
+\draw[black,fill=red!80] (D1) -- (C1) -- (F1) -- (E1) -- cycle ;
+\draw[black,fill=red!80] (B1) -- (C1) -- (F1) -- (G1) -- cycle ;
+\draw (0.75,0.75) node[above]{\textbf{TrioMC2}} ;
+\end{scope}
+% box Genepi+
+\begin{scope}[xshift=3.248 cm]
+\coordinate (A1) at (0,0.625) ;
+\coordinate (B1) at (1.5,0.625) ;
+\coordinate (C1) at (1.5,1.125) ;
+\coordinate (D1) at (0,1.125) ;
+\coordinate (E1) at (0.25,1.375) ;
+\coordinate (F1) at (1.75,1.375) ;
+\coordinate (G1) at (1.75,0.875) ;
+\draw[black,fill=vert] (A1) -- (B1) -- (C1) -- (D1) -- cycle ;
+\draw[black,fill=vert] (D1) -- (C1) -- (F1) -- (E1) -- cycle ;
+\draw[black,fill=vert] (B1) -- (C1) -- (F1) -- (G1) -- cycle ;
+\draw (0.75,0.7) node[above]{\textbf{Genepi+}} ;
+\end{scope}
+%% box MPCube
+\begin{scope}[xshift=4.875 cm]
+\coordinate (A1) at (0,0.625) ;
+\coordinate (B1) at (1.5,0.625) ;
+\coordinate (C1) at (1.5,1.125) ;
+\coordinate (D1) at (0,1.125) ;
+\coordinate (E1) at (0.25,1.375) ;
+\coordinate (F1) at (1.75,1.375) ;
+\coordinate (G1) at (1.75,0.875) ;
+\draw[black,fill=mauve!80] (A1) -- (B1) -- (C1) -- (D1) -- cycle ;
+\draw[black,fill=mauve!80] (D1) -- (C1) -- (F1) -- (E1) -- cycle ;
+\draw[black,fill=mauve!80] (B1) -- (C1) -- (F1) -- (G1) -- cycle ;
+\draw (0.75,0.75) node[above]{\textbf{MPCube}} ;
+\end{scope}
+\end{tikzpicture}
+\caption{TRUST platform \& his BALTIKs}
+\label{TRUST}
+\end{center}
+\end{figure}
+
+\Note that: \textbf{Trio\_U = TRUST + TrioCFD}.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Software little history}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\trust is developed at the CEA/DEN/DANS/DM2S/STMF service.
+The project starts in 1994 and improved versions were built since:
+\begin{itemize}
+\item 1994: start of the project Trio\_U
+\item 01/1997: v1.0 (VDF only)
+\item 06/1998: v1.1 (VEF version)
+\item 04/2000: v1.2 (parallel version)
+\item 07/2001: v1.3 (radiation model)
+\item 11/2002: v1.4 (new LES turbulence models)
+\item 02/2006: v1.5 (VDF/VEF Front Tracking)
+\item 10/2009: v1.6 (data structure revamped)
+\item 06/2015: v1.7 (cut into \trust and \textbf{TrioCFD} + switch to open source)
+\end{itemize}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Data file}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+To launch a calculation with \trust, you need to write a "data file" which is an input file for \trust and will contain all the informations about your simulation.
+Data files are written following some rules as shown above. But their language is not a programming language, users can't make loops or switch...\\
+
+\Note that:
+\begin{itemize}
+\item lignes between \textcolor{blue}{\# ... \#} and \textcolor{blue}{/* ... */} are comments,
+\item in that document, words in \textbf{bold} are \trust keywords, you can enlight them in your file editor with command line (details in section \ref{Run}):\\
+\texttt{> trust -config nedit|vim|emacs}
+\item braces "\{ \}" are elements that \trust reads and interpretes, so don't forget them and \underline{put space before and after them},
+\item elements between bracket "[ ]" are optionnal.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Data file example: base blocks} \label{data}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Here is a frame of basic sequential data file:\\
+
+\input{mini.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Basic rules}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+There is no line concept in \trust.\\
+
+Data files uses \underline{blocks}. They may be defined using the braces:\\
+    \begin{center}
+    \fbox{ \begin{minipage}[c]{0.5\textwidth}
+    \begin{alltt}
+    \{
+
+    \hspace{1cm}    a block
+
+    \}
+    \end{alltt}
+    \end{minipage}}
+    \end{center}
+\bigskip{}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Objects notion}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\textbf{Objects} are created in the data set as follows:
+    \begin{center}
+    \fbox{ \begin{minipage}[c]{0.5\textwidth}
+    \begin{alltt}
+        [ {\bf{export}} ] {\textit{ Type identificateur}}
+    \end{alltt}
+    \end{minipage}}
+    \end{center}
+
+\begin{itemize}
+\item \textbf{export}: if this keyword is included, \textit{identificateur} (identifier) will have a global range, if not, its range will be applied to the block only (the associated object will be destroyed on exiting the block).
+\item \textit{Type}: must be a type of object recognised by \trust, correspond to the C++ classes. The list of recognised types is given in the file hierarchie.dump.
+\item \textit{identificateur}: the identifier of the object type \textit{Type} created, correspond to an instancy of the C++ class \textit{Type}. \trust exits in error if the identifier has already been used.
+\end{itemize}
+
+There are several object types. Physical objects, for example:
+
+\begin{itemize}
+%\item A block object (keyword \textbf{Pave}) is defined by its origin and dimensions (keyword \textbf{origine (origin)} and \textbf{longueurs (length)}). Discretization is given by the \textbf{nombre\_de\_noeuds (node number)} in each direction.
+\item A \textbf{Fluide\_incompressible} (incompressible\_Fluid) object. This type of object is defined by its physical characteristics (its dynamic viscosity $\mu$ (keyword \textbf{mu}), its density $\rho$ (keyword \textbf{rho}), etc...),
+\item A \textbf{Domaine}.
+\end{itemize}
+
+More abstract object types also exist:
+
+\begin{itemize}
+\item A \textbf{VDF} or \textbf{VEF} according to the discretization type,
+\item A \textbf{Scheme\_euler\_explicit} to indicate  the scheme type,
+\item A \textbf{Solveur\_pression} to denote the pressure system solver type,
+\item A \textbf{Champ\_Uniforme} to define, for example, the gravity field.
+\end{itemize}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Interpretors notion}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\textbf{Interprete } (interpretor) type objects are then used to handle the created objects with the following syntax:
+    \begin{center}
+    \fbox{ \begin{minipage}[c]{0.5\textwidth}
+    \begin{alltt}
+        {\bf{\textit{Type\_interprete}}} \textit{argument}
+    \end{alltt}
+    \end{minipage}}
+    \end{center}
+
+\begin{itemize}
+\item \textit{Type\_interprete}: any type derived from the \textbf{Interprete} (Interpretor) type recognised by \trust. In this manual, they are written in \textbf{bold}. You can enlight them in your file editor with the command (details in section \ref{Run}):\\
+\texttt{> trust -config nedit|vim|emacs}
+\item \textit{argument}: an argument may comprise one or several object identifiers and/or one or several data blocks.
+\end{itemize}
+
+Interpretors allow some operations to be carried out on objects.\\
+
+Currently available general interpretors include \textbf{Read}, \textbf{Read\_file}, \textbf{Ecrire} (Write), \textbf{Ecrire\_fichier} (Write\_file), \textbf{Associate}.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Example}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{itemize}
+%\item A data set to write Ok on screen:
+A data set to write Ok on screen:
+    \begin{center}
+    \fbox{ \begin{minipage}[c]{0.9\textwidth}
+    \begin{alltt}
+    {\bf{Nom}} a\_name    \hspace{0.5cm}       \textcolor{blue}{\# Creation of an object type. Name identifier a\_name \#}
+
+    {\bf{Read}} a\_name Ok        \textcolor{blue}{\# Allocates the string "Ok" to a\_name \#}
+
+    {\bf{Ecrire}} a\_name     \hspace{0.2cm}     \textcolor{blue}{\# Write a\_name on screen \#}
+    \end{alltt}
+    \end{minipage}}
+    \end{center}
+
+%%%\item An incorrect data set:
+%%%    \begin{center}
+%%%    \fbox{ \begin{minipage}[c]{0.5\textwidth}
+%%%    \begin{alltt}
+%%%    {\bf{Domaine}} truc
+
+%%%    ...
+
+%%%    {\bf{Probleme}} truc   \textcolor{blue}{\# TRUST exits in error \#}
+%%%    \end{alltt}
+%%%    \end{minipage}}
+%%%    \end{center}
+
+%%%A possible correction:
+%%%    \begin{center}
+%%%    \fbox{ \begin{minipage}[c]{0.9\textwidth}
+%%%    \begin{alltt}
+%%%    \{
+
+%%%    {\bf{Domaine}} truc
+
+%%%    \}   \hspace{2.6cm}   \textcolor{blue}{\# The domain truc is destroyed \#}
+
+%%%    {\bf{Probleme}} truc  \textcolor{blue}{\# this is correct because truc is not used any more \#}
+%%%    \end{alltt}
+%%%    \end{minipage}}
+%%%    \end{center}
+
+
+%\item One data set nesting another:
+%    \begin{center}
+%    \fbox{ \begin{minipage}[c]{0.9\textwidth}
+%    \begin{alltt}
+%    {\bf{Read\_file}} fichier\_inclus ; 
+
+%    \textcolor{blue}{\# you should use {\bf{export}} in the fichier\_inclus to export identifiers \#}
+%    \end{alltt}
+%    \end{minipage}}
+%    \end{center}
+
+%example of the fichier\_inclus file: 
+%    \begin{center}
+%    \fbox{ \begin{minipage}[c]{0.9\textwidth}
+%    \begin{alltt}
+%    {\bf{Dimension}} 2
+
+%    {\bf{export Domaine}} dom
+
+%    {\bf{export Probleme\_hydraulique}} pb
+%    \end{alltt}
+%    \end{minipage}}
+%    \end{center}
+%\end{itemize}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Important remarks}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{enumerate}
+\item To insert \underline{comments} in the data set, use \textcolor{blue}{\# .. \#} (or \textcolor{blue}{/* ... */}), the character \textcolor{blue}{\#} must always be enclosed by blanks.
+\item The comma separates items in a list (a comma must be enclosed with spaces or a new line).
+\item Interpretor keywords are recognised indiscriminately whether they are written in lower and/or upper case.
+\item \textbf{On the contrary, object names (identifiers) are recognised differently if they are written in upper or lower case.}
+\item \textbf{In the following description, items (keywords or values) enclosed by [ and ] are optional.}
+\end{enumerate}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Running data file}\label{Run}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+To use \trust, your shell must be "bash". So ensure you are in the right shell:
+\begin{verbatim}
+> echo $0
+/bin/bash
+\end{verbatim}
+
+To run your data file, you must initialize the TRUST environment using the following command:
+\begin{verbatim}
+> source $my_path_to_TRUST_installation/env_TRUST.sh
+source $my_path_to_TRUST_installation/env/env_TRUST.sh
+TRUST vX.Y.Z support : triou@cea.fr
+Loading personal configuration /$path_to_my_home_directory/.perso_TRUST.env
+\end{verbatim}
+
+Then you can run your calculation:
+\begin{verbatim}
+> cd $my_test_directory
+> trust [-evol] my_data_file
+\end{verbatim}
+
+where "trust" command call the "trust" script.
+You can have the list of his options with:
+\begin{verbatim}
+> trust -help
+\end{verbatim}
+or
+\begin{verbatim}
+> trust -h
+\end{verbatim}
+
+Here is a panel of available options:
+\begin{verbatim}
+Usage: trust [option] datafile [nb_cpus] [1>file.out] [2>file.err]
+Where option may be:
+-help|-h                 : List options.
+-index                   : Access to TRUST ressources index.
+-doc                     : Access to TRUST user's manual.
+-config nedit|vim|emacs  : Configure nedit or vim or emacs with TRUST keywords.
+-mesh                    : Visualize the mesh(es) contained in the data file.
+-evol                    : Monitor the TRUST calculation (new IHM).
+-wiz                     : Set a TRUST datafile from a MED file (new IHM).
+-prm                     : Write a prm file and generate the corresponding pdf 
+                           file in the build directory.
+-clean                   : Clean the current directory from all the generated 
+                           files by TRUST.
+-copy                    : Copy the test case datafile from the TRUST database 
+                           under the present directory. 
+-check all|testcase|list : Check the non regression of all the test cases or a 
+                           single test case or a list of tests cases specified 
+                           in a file.
+-check function|class|method::class : Check the non regression of a list of
+                           tests cases covering a function, a class or a 
+                           class method.
+-gdb                     : Run under gdb debugger.
+-valgrind                : Run under valgrind.
+-valgrind_strict         : Run under valgrind with no suppressions. 
+-create_sub_file         : Create a submission file only. 
+-prod                    : Create a submission file and submit the job on the 
+                           main production class with exclusive resource. 
+-help_trust              : Print options of 
+                           TRUST_EXECUTABLE [CASE[.data]] [options]. 
+\end{verbatim}
+
+%-monitor                : Run and monitor the progress of the TRUST calculation.
+%-probes                 : Monitor the TRUST calculation only.
+%-bigmem                 : Create a submission file and submit the job on the big 
+%                          memory production class. 
+%-queue queue            : Create a submission file with the specified queue and 
+%                          submit the job. 
+%-c ncpus                : Use ncpus CPUs allocated per task for a parallel 
+%                          calculation. 
+
+\vspace{0.5cm}
+To learn how to use the "\textbf{-evol}" option, you can go to see the first exercise of the tutorial: \href{TRUST_tutorial.pdf\#exo1}{Obstacle}.
+
+
+

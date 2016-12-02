@@ -1,0 +1,161 @@
+\documentclass[a4paper,12pt,english]{report}
+
+%%TO COMPILE AND GENERATE THE PDF
+%cp Generic_Guide.tex Generic_Guide_new.tex
+%cp problem_definition.tex problem_definition_new.tex
+%cp data_setting.tex data_setting_new.tex
+%sed -i "s/problem_definition/problem_definition_new/" Generic_Guide_new.tex
+%sed -i "s/data_setting/data_setting_new/" Generic_Guide_new.tex
+%python bookmarks.py -p ../User_Manual_TRUST.pdf -t Generic_Guide_new.tex
+%python bookmarks.py -p ../User_Manual_TRUST.pdf -t problem_definition_new.tex
+%python bookmarks.py -p ../User_Manual_TRUST.pdf -t data_setting_new.tex
+%pdflatex -interaction=nonstopmode Generic_Guide_new.tex >> LOG
+%pdflatex -interaction=nonstopmode Generic_Guide_new.tex >> LOG
+
+
+\usepackage[unicode=true,pdfusetitle, bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=true,linkcolor=blue,pageanchor]
+ {hyperref}[2010/09/11]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
+\usepackage{babel}
+\usepackage{alltt}
+\usepackage{color}
+\usepackage{longtable}
+\usepackage{tikz}
+\usepackage{xspace}
+\usepackage{graphicx}
+
+\setlength{\parindent}{0pt} % pas d'indentation
+
+\definecolor{darkblue}{HTML}{3535B4}
+\definecolor{LightSkyBlue}{HTML}{87CFFA}
+\definecolor{DeepSkyBlue}{HTML}{00BFFF}
+\definecolor{Greeen}{HTML}{439236}
+\definecolor{mauve}{HTML}{874ad3}
+\definecolor{vert}{HTML}{0ab351}
+\definecolor{darkred}{HTML}{a31623}
+
+\newenvironment{remark}{\textit{\underline{Remark:}}}{}
+\newcommand{\trust}{\textbf{TRUST}\xspace}
+\newcommand{\Note}{\textbf{\textcolor{darkred}{Note}}\xspace}
+
+%\usepackage{hyperref}[2010/09/11]
+
+\begin{document}
+
+\title{\huge \bfseries{TRUST Generic Guide V1.7.4}}
+\author{\Large \textcolor{darkblue}{Support team: \textbf{\href{mailto:triou@cea.fr}{triou@cea.fr}}}}
+%\date{} % si on ne veut pas la date
+
+\maketitle
+\tableofcontents{}
+\newpage
+
+
+
+
+%\subsection{tests}
+%COMPILER AVEC FEDORA 18 au moins is226425 \\
+%Fedora20 is221714.intra.cea.fr\\
+%\textbf{Mailler} cf \href[page=DOCLINK_MESH]{./User_Manual_TRUST.pdf}{MAILLER}\\
+%\textbf{MESH FILES}  cf \href[page=DOCLINK_MESH FILES]{./User_Manual_TRUST.pdf}{MESH FILES}\\
+%\textbf{PROBLEM WITH PASSIVE SCALARS}  cf \href[page=DOCLINK_PROBLEM WITH PASSIVE SCALARS]{./User_Manual_TRUST.pdf}{PROBLEM WITH PASSIVE SCALARS}\\
+%%\hyperref{User_Manual_TRUST.pdf}{page}{30}{thedoc}
+%%\href{User_Manual_TRUST.pdf#page.30}{user page 13+1}\\
+%%\href{User_Manual_TRUST.pdf\#_Ref58057250}{Ref58057250} \\
+%\href{TRUST_tutorial.pdf#page.25}{tuto page 25+1}\\
+%\href{TRUST_tutorial.pdf\#save_restart}{Tuto Save\&Restart} \\
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+\chapter{Introduction}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{chap1_intro.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+\chapter{Important references}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{chap2_refs.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+\chapter{Data setting}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{chap3_data_setting.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+\chapter{Problem definition}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{chap4_problem_definition.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+\chapter{Ending data file}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{chap5_ending.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+\chapter{Post-processing}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{chap6_post_processing.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+\chapter{Parallel calculation} \label{parallel}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{chap7_parallel.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%\chapter{Automatic validation form ?}
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%\input{chap8_prm.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+
+
+\end{document}
+

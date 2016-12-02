@@ -1,0 +1,141 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Solve}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Now that you have finish to specify all your computation parameters, you may add the \textbf{"Solve"} keyword at the end of your data file, in order to resolve your problem.
+You may also add the \textbf{"End"} keyword to specify the end of your data file.
+
+    \begin{center}
+    \fbox{ \begin{minipage}[c]{0.5\textwidth}
+    \begin{alltt}
+    {\bf{Solve}} \textit{my\_problem}
+
+    [{\bf{End}}]
+    \end{alltt}
+    \end{minipage}}
+    \end{center}
+
+For more details, see the \href[page=DOCLINK_PROBLEM RESOLUTION]{User_Manual_TRUST.pdf}{User's Manual}. \\
+
+You can see methods to run your data file in section \ref{Run}.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Stop running calculation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Your calculation will automatically stops if it has reached:
+\begin{itemize}
+\item the end of the calculation time,
+\item the maximal allowed cpu time,
+\item the maximal number of iterations or
+\item the threshold of convergence.
+\end{itemize}
+
+You may use the \textit{my\_data\_file}\textbf{.stop} file, if you want to stop properly your calculation (i.e. with all saves).
+When the simulation is running, you can see the "\textbf{0}" value in that file.\\
+
+To stop it, put a "\textbf{1}" instead of the "\textbf{0}" and at the next iteration the calculation will stop properly.\\
+
+When you don't change any thing to that file, at the end of the calculation, you can see that it is writen "\textbf{Finished correctly}".
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Save}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Automaticaly, \trust make backups during the calculation. The unknowns (velocity, temperature,...) are saved in:
+\begin{itemize}
+\item one \textbf{.xyz} file,happening:
+    \begin{itemize}
+    \item at the end of the calculation,
+    \item but, user may disable it with the specific keyword \textbf{"EcritureLectureSpecial 0"} added just before the \textbf{"Solve"} keyword.
+    \end{itemize}
+
+
+\item one, or several in case of parallel calculation, \textbf{.sauv} files, happening:
+    \begin{itemize}
+    \item at the start of the calculation,
+    \item at the end of the calculation,
+    \item each 23 hours of CPU, to change it, uses \small \textbf{"periode\_sauvegarde\_securite\_en\_heure"} \normalsize keyword,
+    \item user may also specify a time physical period with \textbf{"dt\_sauv"} keyword,
+    \item periodically using \textbf{"tcpumax"} keyword for which calculation stops after the specified time (default value $10^{30}$).
+    \end{itemize}
+\end{itemize}
+
+
+By default, the name for the \textbf{.sauv} files is \textbf{"filename\_problemname.sauv"} for sequential calculation, \textbf{"filename\_problemname\_000n.sauv"} for parallel calculation (one per process).
+The format of theses files is binary and the files are appended during successive saves.\\
+
+You can change the behaviour using the following keywords just before the \textbf{solve} instruction:
+
+    \begin{center}
+    \fbox{ \begin{minipage}[c]{1\textwidth}
+    \begin{alltt}
+    {\bf{sauvegarde \hspace{0.5cm} binaire|xyz}} \hspace{0.5cm} \textit{filename}{\bf{.sauv}}|\textit{filename}{\bf{.xyz}}
+    \end{alltt}
+    \end{minipage}}
+    \end{center}
+
+with
+%\begin{itemize}
+%\item \textbf{"formatte"}: the format of the file ASCII instead of binary (\textbf{"binaire"} keyword),
+\textbf{"xyz"}: the \textbf{.xyz} file is written instead of the \textbf{.sauv} files.\\
+%\end{itemize}
+
+\Note that, you can use \textbf{"sauvegarde\_simple"} instead of \textbf{"sauvegarde"} where the .sauv or .xyz file is deleted before saves, in order to keep disk space:
+    \begin{center}
+    \fbox{ \begin{minipage}[c]{1\textwidth}
+    \begin{alltt}
+    {\bf{sauvegarde\_simple \hspace{0.5cm} binaire|xyz}} \hspace{0.5cm} \textit{filename}{\bf{.sauv}}|\textit{filename}{\bf{.xyz}}
+    \end{alltt}
+    \end{minipage}}
+    \end{center}
+
+For more details, see the \href[page=DOCLINK_SAVING A PROBLEM]{User_Manual_TRUST.pdf}{User's Manual}. \\
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Restart}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+To restart your calculation, you may:
+\begin{itemize}
+\item change your initial time, the new initial time will be the real final calculation time of the previous calculation (cf .err file),
+\item change your final calculation time to the new wanted value and
+\item add the following block just before the \textbf{"Solve"} keyword:
+    \begin{center}
+    \fbox{ \begin{minipage}[c]{0.8\textwidth}
+    \begin{alltt}
+    {\bf{reprise \hspace{0.5cm} binaire|xyz}} \hspace{0.5cm} \textit{filename}{\bf{.sauv}}|\textit{filename}{\bf{.xyz}}
+    \end{alltt}
+    \end{minipage}}
+    \end{center}
+\end{itemize}
+\vspace{0.5cm}
+
+You can restart your calculation:
+\begin{itemize}
+\item from .sauv file(s) (one file per process): you can only restart the calculation with the \textbf{same number of equations} on \textbf{the same number of processes},
+\item or from a .xyz file: here you can restart your calculation by \textbf{changing the number of equations solved} and/or with a \textbf{different number of processes}.
+\end{itemize}
+
+Instead of \textbf{"reprise"} keyword, you can use \textbf{"resume\_last\_time"} where \textbf{tinit} is automatically set to the last time of saved files (but you may change \textbf{tmax}):
+    \begin{center}
+    \fbox{ \begin{minipage}[c]{0.92\textwidth}
+    \begin{alltt}
+    {\bf{resume\_last\_time \hspace{0.5cm} binaire|xyz}} \hspace{0.5cm} \textit{filename}{\bf{.sauv}}|\textit{filename}{\bf{.xyz}}
+    \end{alltt}
+    \end{minipage}}
+    \end{center}
+
+For examples, see the \href{TRUST_tutorial.pdf\#save_restart}{tutorial} and the \href[page=DOCLINK_RESTARTING A PROBLEM]{User_Manual_TRUST.pdf}{User's Manual}.\\
+
+\Note that you can run a calculation with initial condition read into a save file (.xyz or .sauv) from a previous calculation using \textbf{Champ\_Fonc\_reprise} or read a into a MED file with \textbf{Champ\_Fonc\_MED} (see \href[page=DOCLINK_STATIONARY FIELDS]{User_Manual_TRUST.pdf}{User's Manual} for more information).
+
+
+
+
+
+
