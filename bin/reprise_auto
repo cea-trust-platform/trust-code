@@ -232,7 +232,7 @@ then
       if [ $sub = CCC ]
       then
          # Pas de balise possible pour curie pour un job en differe?
-         if [ $HOST = curie-ccrt ] || [ $HOST = airain ]
+         if [ $HOST = curie-ccrt ] || [ $HOST = airain ] || [ $HOST = cobalt ]
 	 then
 	    echo $ECHO_OPTS "$shell#MSUB -E '--begin `date '+%Y'-``echo $restart | $TRUST_Awk -F: '{print $1"-"$2"T"$3":"$4}'`'" > $sub_file_next
 	 else
@@ -404,6 +404,7 @@ mes=""
 
 echo "
 #################################################################
+02/12/16: CCRT cluster cobalt is supported (CCC)
 20/07/16: It is possible to put 'export ARCHIVAGE=NOT_GZIP' in the submission file to not gzip the tar archives
 13/05/15: CINES cluster occigen supported (SLURM)
 13/05/15: \$CCCSTOREDIR is equivalent to \$STOREDIR on CCRT clusters and \$STOREDIR exists on CINES cluster
@@ -472,7 +473,7 @@ else
 fi
 
 # Verifie si la machine a ete testee
-if [ $HOST != curie-ccrt ] && [ $HOST != airain ] && [ $HOST != occigen ] # Supported
+if [ $HOST != curie-ccrt ] && [ $HOST != airain ] && [ $HOST != occigen ] && [ $HOST != cobalt ] # Supported
 then
    if [ $HOST = mars ] || [ $HOST = eris ]
    then

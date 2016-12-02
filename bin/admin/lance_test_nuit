@@ -1,4 +1,15 @@
 #!/bin/bash
+ssh_command()
+{
+    command=`mktemp_`
+    echo > $command
+    echo ". ~/.bashrc 1>/dev/null 2>&1" >> $command
+    echo $* >> $command
+    scp -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $command $log@$adr:~/command_$machine 1>/dev/null 2>&1
+    rm -f $command
+    # Add -X to have DISPLAY ?
+    ssh -X -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $log@$adr -n 'chmod +x ./command_'$machine';./command_'$machine 2>/dev/null
+}
 check_components()
 {
    for Composant in $Composants
@@ -153,8 +164,9 @@ check_components()
 		        liste_options=$liste_options" --cible"
 	             fi
                      log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`
-                     WORKTMP=`ssh_ -o BatchMode=yes $log@$adr -n 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
-		     echo "$Composant.tar $WORKTMP/$WORKBASE$machine/Composants/$Composant $log@$adr --with-TRUST=$WORKTMP/$WORKBASE$machine/TRUST $liste_options $mode_option $check_option $valgrind_option" >> Run.liste
+		     #WORKTMP=`ssh_ -o BatchMode=yes $log@$adr -n 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
+                     WORKTMP=`ssh_command 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
+                     echo "$Composant.tar $WORKTMP/$WORKBASE$machine/Composants/$Composant $log@$adr --with-TRUST=$WORKTMP/$WORKBASE$machine/TRUST $liste_options $mode_option $check_option $valgrind_option" >> Run.liste
 		  #fi
 	       done
                echo " "
@@ -311,6 +323,7 @@ export NUIT=1
 REP_NUIT=/data/tmplgls/triou/Historique/NUIT
 REP_HIST=/data/tmplgls/triou/Historique/HIST
 MESSAGES_NUIT=$REP_NUIT/MESSAGES_NUIT
+MESSAGES_LIVRAISON=~/MESSAGES_LIVRAISON
 
 # On fait le menage :
 echo "Cleaning of $REP_NUIT directory"
@@ -1142,7 +1155,7 @@ echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 ####################
 # Release criteria #
 ####################
-echo "----------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
+echo "----------------------------------------------------------------------------------------" > $MESSAGES_NUIT
 echo `date` >> $MESSAGES_NUIT
 echo "----------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 [ -f $TRUST_ROOT/RELEASE_NOTES ] && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/RELEASE_NOTES >> $MESSAGES_NUIT
@@ -1153,9 +1166,12 @@ echo "--------------------------------------------------------------------------
 #   [ -f $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES ] && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES >> $MESSAGES_NUIT
 #done
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "TRUST/TrioCFD WEB site:      http://www-trio-u.cea.fr" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "TRUST distribution site:     http://sourceforge.net/projects/trust-platform" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "TrioCFD distribution site:   http://sourceforge.net/projects/triocfd" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TRUST/TrioCFD WEB site:    http://www-trio-u.cea.fr" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TRUST distribution site:   http://sourceforge.net/projects/trust-platform" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TrioCFD distribution site: http://sourceforge.net/projects/triocfd" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TRUST environment at Saclay:   source /home/triou/env_TRUST_$old.sh" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TrioCFD environment at Saclay: source /home/triou/env_TrioCFD_$old.sh" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "User TRUST TrioCFD      diffusion list http://saxifrage:3500/wws/info/trio_u_annonces" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "Developer TRUST TrioCFD diffusion list http://saxifrage:3500/wws/info/trio_u_dev" >> $MESSAGES_NUIT
@@ -1164,11 +1180,11 @@ echo $ECHO_OPTS "TRUST Kernel              mailing list http://saxifrage:3500/ww
 echo $ECHO_OPTS "TRUST Post Processing     mailing list http://saxifrage:3500/wws/info/trio_u_post_traitement" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "TrioCFD Front Tracking    mailing list http://saxifrage:3500/wws/info/trio_u_front_tracking" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "TRUST ftp site:              ftp://$TRUST_FTP/$PUBLIC/index.html" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "Latest TRUST binary:         ftp://$TRUST_FTP/$SECRET/exec/linux/TRUST_mpi_opt"_"$new"_build_"$DATE.gz" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "Latest User's manual:        ftp://$TRUST_FTP/$SECRET/doc/User_Manual_TRUST.pdf" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "Latest Tutorial:             ftp://$TRUST_FTP/$SECRET/doc/TRUST_tutorial.pdf" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "Latest list of builds:       ftp://$TRUST_FTP/$SECRET/NUIT/NUIT.html" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TRUST ftp site:        ftp://$TRUST_FTP/$PUBLIC/index.html" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "Latest TRUST binary:   ftp://$TRUST_FTP/$SECRET/exec/linux/TRUST_mpi_opt"_"$new"_build_"$DATE.gz" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "Latest User's manual:  ftp://$TRUST_FTP/$SECRET/doc/User_Manual_TRUST.pdf" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "Latest Tutorial:       ftp://$TRUST_FTP/$SECRET/doc/TRUST_tutorial.pdf" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "Latest list of builds: ftp://$TRUST_FTP/$SECRET/NUIT/NUIT.html" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 echo "Binaries of TRUST $new version are available here:" >> $MESSAGES_NUIT
 for adr in `liste_machines | grep -v is1 | grep -v is2 | grep -v cezanne`
@@ -1408,7 +1424,8 @@ do
 	       adr=`echo $line | awk -F"@" '{print $2}' | awk -F"_" '{print $1}'`
 	       log=`echo $line | awk -F"@" '{print $1}' | awk -F"%" '{print $2}' | awk -F"_" '{print $2}'`
 	       machine=`echo $adr | awk -F"." '{print $1}' | awk -F"-gw" '{print $1}'`
-               WORKTMP=`ssh_ -o BatchMode=yes $log@$adr -n 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
+               #WORKTMP=`ssh_ -o BatchMode=yes $log@$adr -n 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
+	       WORKTMP=`ssh_command 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
 	       echo "  Treatment of $PID on $machine"
 	       pids=$(ssh $log@$adr $WORKTMP/$WORKBASE$machine/TRUST/bin/baltik/share/baltik/bin/portability/list_pid_et_fils.sh $PID)
 	       echo "    ssh $log@$adr kill -9 $pids"
@@ -3263,7 +3280,7 @@ then
    for dest in $ALL_USERS_TRUST_MAIL
    do
       echo "Stable release announcement sent to $dest"
-      mail_ -s \"TRUST/TrioCFD v$new released\" $dest << EOF
+      echo "
 TrioCFD is a programmable software for Computational Fluid Dynamics (CFD) code, 
 based on the TRUST platform (TRrio_U Software for Thermohydraulics).
 These softwares are OpenSource (license BSD).
@@ -3271,20 +3288,49 @@ These softwares are OpenSource (license BSD).
 New TRUST (\"Trio_U\" without Front_Tracking, Radiation, Zoom and LES models) version released (v$new).
 Look at http://sourceforge.net/projects/trust-platform/files/
 to read the README and to download Installer_TRUST.sh.
-Changes compared to the $old version are detailed in the RELEASE_NOTES file 
-attached to the TRUST-$new.tar.gz archive.
+Changes compared to the $old version are detailed in the RELEASE_NOTES below or 
+file attached to the TRUST-$new.tar.gz archive.
 
 New TrioCFD (previously named \"Trio_U\") version released (v$new).
 Look at http://sourceforge.net/projects/triocfd/files/  
 to read the README and to download Installer_TrioCFD.sh.
-Changes compared to the $old version are detailed in the RELEASE_NOTES file 
-attached to the TrioCFD.tar.gz archive.
+Changes compared to the $old version are detailed in the RELEASE_NOTES below or 
+file attached to the TrioCFD.tar.gz archive.
 
 TRUST/TrioCFD support team. mailto: $TRUST_MAIL  Web: http://www-trio-u.cea.fr
 
 To unsubscribe from http://saxifrage:3500/wws/info/trio_u_annonces list: Reply to this message.
-EOF
+" > $MESSAGES_LIVRAISON
+      echo "--------------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
+      [ -f $TRUST_ROOT/RELEASE_NOTES ] && echo $ECHO_OPTS "TRUST \c" >> $MESSAGES_LIVRAISON && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/RELEASE_NOTES >> $MESSAGES_LIVRAISON
+      [ -f $TRUST_ROOT/DEVELOPER_NOTES ] && echo $ECHO_OPTS "TRUST \c" >> $MESSAGES_LIVRAISON && $TRUST_Awk '/Developer notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/DEVELOPER_NOTES >> $MESSAGES_LIVRAISON
+      [ -f $TRUST_ROOT/externalpackages/RELEASE_NOTES ] && echo $ECHO_OPTS "externalpackages \c" >> $MESSAGES_LIVRAISON && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/externalpackages/RELEASE_NOTES >> $MESSAGES_LIVRAISON
+      #for Composant in $ComposantsGit
+      for Composant in TrioCFD
+      do
+         [ -f $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES ] && echo $ECHO_OPTS "$Composant \c" >> $MESSAGES_LIVRAISON && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES >> $MESSAGES_LIVRAISON
+      done
+      echo " 
+--------------------------------------------------------------------------------
+TRUST/TrioCFD executables available from PC connected to the CEA Saclay network:
+--------------------------------------------------------------------------------
+source /home/triou/env_TRUST_$new.sh
+source /home/triou/env_TrioCFD_$new.sh
+--------------------------------------------------------------------------------
+" >> $MESSAGES_LIVRAISON
+      echo "-------------------------------------------" >> $MESSAGES_LIVRAISON
+      echo "Version portability on several OS:" >> $MESSAGES_LIVRAISON
+      echo "-------------------------------------------" >> $MESSAGES_LIVRAISON
+      sed 's/<BR><LI>/ /g'  $REP_NUIT/os >> $MESSAGES_LIVRAISON
+      echo "-------------------------------------------" >> $MESSAGES_LIVRAISON
+      echo "Version portability with several compilers:" >> $MESSAGES_LIVRAISON
+      echo "-------------------------------------------" >> $MESSAGES_LIVRAISON
+      sed 's/<BR><LI>/ /g'  $REP_NUIT/CC >> $MESSAGES_LIVRAISON
+      echo "-------------------------------------------" >> $MESSAGES_LIVRAISON
+      echo " " >> $MESSAGES_LIVRAISON
+      mail_ -s \"TRUST/TrioCFD v$new released\" $dest < $MESSAGES_LIVRAISON
       sleep 5
+      mv -f $MESSAGES_LIVRAISON $REP_NUIT/MESSAGES_LIVRAISON
    done
    ########################################################
    # On change les NOTES en augmentant le numero de version

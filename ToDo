@@ -2,14 +2,14 @@ Version	Qui				Tache
 1.7.5   gauthier.fauchet@cea.fr Ajouter fiche prm du cas FTD : bulle bloque©e sur un maillage TRUSTa l interface entre 2 Pave (DI 4006)
 1.7.5   triou@cea.fr            Revoir tous les prepare sans make_PAR.data a mettre dans pre_run
 1.7.5   triou@cea.fr            Revoir baltik avec possibilite de 2 statistiques commencant a des tdeb differents
-1.7.4   gauthier.fauchet@cea.fr  Reprendre Mod_turb_hyd_base.cpp limitation mut
-1.7.4   gauthier.fauchet@cea.fr  Revoir le PATH pour module load TRUST sous occigen (passer par SET)
+1.7.5   gauthier.fauchet@cea.fr  Reprendre Mod_turb_hyd_base.cpp limitation mut
+1.7.5   gauthier.fauchet@cea.fr  Revoir le PATH pour module load TRUST sous occigen (passer par SET)
 1.7.5   triou@cea.fr            Analyser le fichier de sortie datafile_petsc.TU (signification de count)
 1.7.5   triou@cea.fr            completer benchmark avec et sans Petsc
 1.7.5   triou@cea.fr            Avoir un fichier avec la liste des fichiers deleted sur git pour faire un rm a distance
 1.7.5   triou@cea.fr            revoir TESTS_MINIMUM dans lance_test en augmentant le nombre de tests 27/27
 1.7.5	triou@cea.fr		Do a git tag on each change of the branch patch_XYZ (patch_XYZ.n)
-1.7.4   gauthier.fauchet@cea.fr  Rechercher test MPIIO qui planterait sur machine Areva (tester sur occigen => MPIIO plante sur upwind en sequentiel)
+1.7.5   gauthier.fauchet@cea.fr  Rechercher test MPIIO qui planterait sur machine Areva (tester sur occigen => MPIIO plante sur upwind en sequentiel)
 1.7.5   triou@cea.fr            Gauthier a demande d ajouter test Execute_parallel lors du configure pour verifier l'installation MPI
 1.7.5   triou@cea.fr            Probleme avec pre-commit et post-commit qui modifie des fichiers lors du commit apres nos tests !!! Le faire lors du compile et si modif alors arret...
 1.7.4	triou@cea.fr  		Doc : recupere branche GF et MR + gcov

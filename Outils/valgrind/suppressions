@@ -34,7 +34,6 @@
 {
    hypre_cond
    Memcheck:Cond
-   fun:MPIR_Process_status
    fun:MPIC_Waitall
    fun:MPIR_Alltoall_intra
    fun:MPIR_Alltoall

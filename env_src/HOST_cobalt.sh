@@ -22,18 +22,18 @@ define_modules_config()
 {
    env=$TRUST_ROOT/env/machine.env
    #
-#   # Create ROMIO_HINTS file for MPI IO optimizations on Lustre file system
-#   echo "# ROMIO HINTS
-## Select the max OST available:
-#striping_factor -1
-## Collective comm between nodes before write:
-#romio_cb_write enable
-## Collective comm between nodes before read:
-#romio_cb_read  enable
-## One process on each node do the coll comm task:
-#cb_config_list *:1" > ROMIO_HINTS.env
-#   echo "export ROMIO_HINTS=\$TRUST_ROOT/env/ROMIO_HINTS.env # ROMIO HINTS" >> $env
-#   #
+   # Create ROMIO_HINTS file for MPI IO optimizations on Lustre file system
+   echo "# ROMIO HINTS
+# Select the max OST available:
+striping_factor -1
+# Collective comm between nodes before write:
+romio_cb_write enable
+# Collective comm between nodes before read:
+romio_cb_read  enable
+# One process on each node do the coll comm task:
+cb_config_list *:1" > ROMIO_HINTS.env
+   echo "export ROMIO_HINTS=\$TRUST_ROOT/env/ROMIO_HINTS.env # ROMIO HINTS" >> $env
+   #
    # Load modules
    # intel 14.0.3.174 15.0.6.233 16.0.3.210(default) intel/17.0.0.098
    intel="intel/16.0.3.210"

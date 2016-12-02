@@ -12,10 +12,11 @@ linux	scp_ssh		non		is229107.intra.cea.fr		-all	 									-disable 		# Fedora 20
 linux	rsync_ssh	cible		is221559.intra.cea.fr		 		-TRUST -MPCube	-g 		-force_provided_mpich		-Check_decoupage	# Fedora 18 			CEA Saclay	Bat 451 LGLS	bureau Gauthier Fauchet (PC of the Leader Project) (Couplage Cathare/TRUST)
 linux	rsync_ssh	cible		airain.ccc.cea.fr	 updated -limited 	-TrioCFD			-benchmark	 					# RedHat 6.7			CEA CCRT
 linux	rsync_ssh	cible		cobalt.ccc.cea.fr	 updated -limited 	-TrioCFD			-benchmark	 					# RedHat 7.2			CEA CCRT
+linux	rsync_ssh	tache		curie-ccrt.ccc.cea.fr	 updated -limited 	-TrioCFD			-benchmark	 					# RedHat 6.7			CEA TGCC
 linux	rsync_ssh	tache		callisto.intra.cea.fr	 	 -limited	-TrioCFD -ModeleCoeur		-benchmark						# CentOS 6.4			CEA DM2S 	Bat 458	
 linux 	rsync_ssh	non   		is142348.intra.cea.fr       							-force_provided_mpich		-without-visit		# Mandriva 2008 MACHINE 32bits	CEA Saclay	Bat ??	
 linux 	rsync_ssh	cible		cezanne63.intra.cea.fr				-ModeleCoeur										# Debian 8			CEA Cadarache
-linux	scp_ssh		cible		is227553.intra.cea.fr				-TRUST -MPCube			-remote_install_TRUST_kernel_only			# Fedora 20	 		CEA Saclay	Bat 526 LMES	bureau TMA Cathare (ex is227526 Couplage Cathare/TRUST)
+linux	scp_ssh		cible		is231310.intra.cea.fr				-TRUST -MPCube			-remote_install_TRUST_kernel_only			# Fedora 20	 		CEA Saclay	Bat 526 LMES	bureau TMA Cathare (ex is227526 Couplage Cathare/TRUST)
 linux	sftp_ssh 	non		is221714.intra.cea.fr				-TrioCFD -ModeleCoeur									# Fedora 20			CEA Saclay	Bat 454 LMEC	bureau Sebastien Chemin
 linux   rsync_ssh       cible           is227246.intra.cea.fr	-rsync	-all		-TRUST -TrioCFD	-prof		-force_provided_mpich -remote_install_TRUST_with_source	# Fedora 24 			CEA Saclay	Bat 454 LMES	PC test Erwan Adam
 linux	rsync_ssh	non		is221556.intra.cea.fr	 			-TrioCFD -ModeleCoeur		-force_provided_mpich					# Ubuntu 16.04  		CEA Saclay	Bat 451 LGLS	PC infogere beta-testeur
@@ -23,8 +24,8 @@ linux	rsync_ssh	non		is223284.intra.cea.fr				-TrioCFD		 	-force_provided_mpich	
 linux	rsync_ssh	non		is229106.intra.cea.fr	 	-all						-force_provided_mpich					# Ubuntu 16.10  		CEA Saclay	Bat 454 LMES	bureau Marc Tajchman 
 linux	sftp_ssh	non		is228666.intra.cea.fr   			-TRUST -MPCube							  			# Ubuntu 14.04  		CEA Saclay	Bat 454	LMEC	bureau Mathieu Niezgoda
 linux	rsync_ssh	non		is213120.intra.cea.fr   			-TrioCFD -ModeleCoeur									# Ubuntu 12.04  		CEA Saclay	Bat 454		TMA flica4
-linux 	rsync_ssh	non		ceres2.intra.cea.fr		-limited					-benchmark						# CentOS 6.5			CEA Marcoule
-linux 	rsync_ssh	non		mezel.intra.cea.fr		-limited					-benchmark						# CentOS 6.7			CEA Cadarache
+linux 	rsync_ssh	non		ceres2.intra.cea.fr		-limited												# CentOS 6.5			CEA Marcoule	NB: bench desactive
+linux 	rsync_ssh	non		mezel.intra.cea.fr		-limited												# CentOS 6.7			CEA Cadarache	NB: bench desactive
 linux	rsync_ssh	non		is210382.intra.cea.fr		-all		-ModeleCoeur										# Mandriva 2010 		CEA Saclay	Bat ??
 linux	rsync_ssh	non		is211986.intra.cea.fr				-ModeleCoeur -MPCube									# CentOS 5.5			CEA Saclay	Bat ??
 linux	rsync_ssh	non		is221931.intra.cea.fr				-TRUST -TrioCFD										# CentOS 5.5			CEA Saclay	Bat ??

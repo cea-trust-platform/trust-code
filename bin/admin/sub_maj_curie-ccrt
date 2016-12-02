@@ -8,6 +8,7 @@
 #MSUB -A genden
 #MSUB -E "--no-requeue"
 #MSUB -n 1
+set -x
 cd $BRIDGE_MSUB_PWD
 [ -f ld_env.sh ] && . ./ld_env.sh # To load an environment file if necessary
-ccc_mprun -n 1 ./mise_a_jour_TRUST_arch -rsync 1>~/CR_curie-ccrt 2>&1
+ccc_mprun -n $BRIDGE_MSUB_NPROC ./mise_a_jour_TRUST_arch 1>~/CR_curie-ccrt 2>&1

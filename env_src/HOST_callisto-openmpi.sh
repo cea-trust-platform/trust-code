@@ -38,7 +38,7 @@ define_modules_config()
    #module="$intel openmpi/gcc/64/1.10.3"
    #
    echo "# Module $module detected and loaded on $HOST."
-   echo "modulepurge 1>/dev/null" >> $env
+   echo "module unload mpich openmpi mvapich mvapich2 intel/compiler intel/mkl intel/tbb gcc 1>/dev/null" >> $env
    echo "module load $module 1>/dev/null" >> $env     
    . $env
    # Creation wrapper qstat -> squeue

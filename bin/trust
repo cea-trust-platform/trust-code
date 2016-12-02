@@ -130,7 +130,6 @@ help()
 #   [ -d /ccc ] && echo "-ipm                    : Use ipm to report MPI statistics."
    echo "-help_trust             : Print options of TRUST_EXECUTABLE [CASE[.data]] [options]."
 
-   echo "If no option is given, create a submission file and submit the job on the test class."
    exit 0
 }
 binary=$exec
