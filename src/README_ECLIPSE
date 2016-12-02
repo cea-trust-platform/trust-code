@@ -1,4 +1,4 @@
-Notes for Eclipse with TRUST (02/05/2016)
+Notes for Eclipse with TRUST (19/10/2016)
 -----------------------------------------
 
 ######################################
@@ -8,8 +8,10 @@ Notes for Eclipse with TRUST (02/05/2016)
 Download
 ========
 > Go to the website of the Eclipse Foundation: http://www.eclipse.org/downloads/
-> Select the Foundation Eclipse Application
-> Select Eclipse for Linux 64 Bit (example: Parallel Application Developers)
+> Select "Download Packages" in "Get Eclipse Neon".
+> Click on "Eclipse Mars (4.5)" on the left menu "More downloads".
+> Then click on "Download" button.
+> Select "Eclipse IDE for C/C++ Developers" -> "Linux 64-bits"
 > Download the eclipse-*-linux*64.tar.gz package in your directory
 
 Installation
@@ -20,14 +22,12 @@ Installation
 
 Configuration
 =============
-> Change the END of the eclipse.ini file
-> Add or modify in eclipse.ini
---launcher.XXMaxPermSize
-256m
+> Change the eclipse.ini file, by adding or modifying the END of the file with:
 --launcher.defaultAction
 openFile
+--launcher.XXMaxPermSize
+256m
 -vmargs
--Dosgi.requiredJavaVersion=1.7
 -Dhelp.lucene.tokenizer=standard
 -XX:PermSize=256m
 -XX:MaxPermSize=1024m
@@ -40,10 +40,11 @@ openFile
 
 Launching
 =========
+> echo $TRUST_ROOT 
 > ./eclipse &
 > Workspace: /export/home/login/eclipse/workspace 
   => OK
-  => Welcome: close X
+  => Welcome -> close: x button
 > File/New/C++ Project 
   => Profect name: TRUST_X.Y.Z
   => Use default location 
@@ -53,16 +54,16 @@ Launching
 > Project Explorer
   Right click TRUST_X-Y-Z --> Import...
   => General --> File System
-  => Next 
+  => "Next"
   => From directory: $TRUST_ROOT/src
   => Select All  
-  => Into folder: TRUST_X.Y.Z
-  => Advanced: check Create links in workspace 
+  => "Into folder": TRUST_X.Y.Z
+  => Advanced: check "Create links in workspace "
   => Finish 
+  => Wait...
 > Project Explorer
   Right click TRUST_X.Y.Z --> Properties
-  => Builders: not check CDT Builder => OK
-  => OK
+  => Builders: uncheck "CDT Builder" => click on "OK"
   => OK
   => Wait to have 100% at the bottom right corner of the window.
 > File/Exit
@@ -80,26 +81,26 @@ Configuration
 > Project Explorer
   Right click TRUST_X.Y.Z --> Debug As --> Debug configurations...
   => Select C/C++ Application
-  => Press the 'New' button to create a configuration of the selected type
+  => On the top of the window, press the 'New' button (to create a configuration of the selected type)
   => Main --> C/C++ Application: $TRUST_ROOT/exec/TRUST_mpi
-  => Arguments --> not check Use default working directory
-  => Debugger--> Main options GDB debugger --> replace gdb by /usr/bin/gdb
+  => Arguments --> uncheck "Use default" in "Working directory" area
+  => Debugger--> "Main" options "GDB debugger" --> replace "gdb" by "/usr/bin/gdb"
   => Apply
   => Close
 
 View debug
 ==========
 > Window --> Perspective --> Open Perspective --> Debug
-  => New button at the top right of the window: view Debug side view C/C++
+  => New button at the top right of the window: view "Debug" at the side of view "C/C++"
 
 Case selection
 ==============
 > Run --> Debug configurations
-  => Select C/C++ application TRUST_X.Y.Z Debug
+  => Select "C/C++ application" -> "TRUST_X.Y.Z Debug"
   => Arguments: Program arguments: datafile               (for example datafile=Cx)
   =>            Working directoty: /export/home/login/... (for example /export/home/login/Cx : folder of Cx test case in your home-directories)
   => Apply
-  => Debug
+  => Run
 
 Launching
 =========
