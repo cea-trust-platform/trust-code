@@ -165,7 +165,7 @@ liste()
    echo "Searching test cases in $ref. Please wait..."
    testslist=`find $ref/ -follow -name *.lml.gz -print 2>/dev/null | sed 's#'"$ref/"'##' | sort`
    # Pour eviter les problemes des .lml.gz sortis de gestion de conf
-   if [ "`element_gere_en_configuration.sh .`" = git ]
+   if [ "`element_gere_en_configuration.sh $ref`" = git ]
    then
       #liste=`\cd $ref;git ls-files */*/*.lml.gz` 
       liste=`\cd $ref;git ls-files $testslist | sort`

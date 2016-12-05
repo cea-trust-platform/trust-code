@@ -181,7 +181,7 @@ do
       fi
    elif [ "$1" = "-doc" ]
    then
-      doc=$TRUST_ROOT/doc/TRUST/User_Manual_TRUST.pdf
+      doc=$TRUST_ROOT/doc/TRUST/TRUST_Generic_Guide.pdf
       if [ -f $doc ]
       then
 	 for app in xpdf kpdf evince okular
