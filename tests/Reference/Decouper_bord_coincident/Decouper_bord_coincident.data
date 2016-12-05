@@ -1,3 +1,4 @@
+# Generation of a new coincident 2D mesh #
 dimension 2
 Domaine dom_solide
 Read_file dom_solide dom_solide.geom

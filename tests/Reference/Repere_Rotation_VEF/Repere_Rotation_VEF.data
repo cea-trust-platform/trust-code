@@ -1,9 +1,9 @@
-# *************************************************** #
 # * CALCUL PRESSION ARRETE : MOUVEMENT A LA POINSOT * #
 # *************************************************** #
 # Rayon R=0.1m et Hauteur H=0.1m et rotation 1 rad/s  #
 # Energie cinetique dans le repere fixe=0.25*rho*Pi*H*R^4=1.177e-2 kg.m2.s-2 #
 # La pression P*(r)=P*(0)+0.5*r^2 donc P*(R)-P*(0)=0.005 #
+# *************************************************** #
 # --------- DIMENSION DU PROBLEME --------- #
 # PARALLEL OK #
 Dimension 3

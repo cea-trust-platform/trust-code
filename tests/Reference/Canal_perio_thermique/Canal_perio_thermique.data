@@ -1,5 +1,5 @@
-# PARALLEL OK 8 #
 # Test canal_perio source term on the equation energy #
+# PARALLEL OK 8 #
 
 dimension 2
 Pb_thermoHydraulique pb

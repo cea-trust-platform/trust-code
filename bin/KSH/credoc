@@ -17,6 +17,91 @@ doxygen()
 } 
 
 
+################################################
+# Creation du fichier des cas tests de reference
+################################################
+cree_References()
+{
+echo "Begin reference index at `date '+%H:%M:%S %d/%m'`"
+echo "From $TRUST_TESTS/Reference directory"
+# Appel a $TRUST_ROOT/bin/HTML/cree_References.html
+fichier=$TRUST_TMP/References.html
+tmp=$HOME/.tmp_file
+# Ecriture de l entete du fichier
+notice=.."/doc/TRUST/TRUST_Generic_Guide.pdf"
+echo "<!--NewPage-->
+<html>
+<head>
+<title> TRUST </title>
+</head>
+<body>
+<BODY BGCOLOR="#D0D5D9" TEXT="#23238E" LINK="#E47833" ALINK="#007FFF" VLINK="#007FFF">
+<a href=$notice>Users manual</a> | <a href=Reference/index_keywords_tests.html>Keyword index</a> | <a HREF=mailto:triou@cea.fr>Support</a>" > $fichier
+echo "<HR><h1>Reference test cases for TRUST</h1><HR>" >> $fichier
+# On parcourt les tests pour faire l index
+i=0
+cd $TRUST_TESTS
+echo "<TABLE BORDER COLS=2><TR>
+<TD WIDTH="1%">Name</TD><TD WIDTH="100%">Configuration</TD></TR>" >> $fichier
+testslist=`find Reference/ -follow -name *.lml.gz -print 2>/dev/null | sort`
+for fic in $testslist
+do
+   let i=$i+1
+   NOM=`basename $fic .lml.gz`
+   com=`head -1 ${fic%.lml.gz}.data`
+   echo $ECHO_OPTS "<TR><TD><SMALL><A HREF="\"#$NOM\"">$NOM</A></TD><TD><SMALL>$com</TD></TR>" >> $fichier
+done
+echo $ECHO_OPTS "</TABLE><HR><PRE>" >> $fichier
+# On parcourt les tests pour creer les liens Edit/Copy
+i=0
+cd $TRUST_TESTS
+for fic in $testslist
+do
+   let i=$i+1
+   NOM=`basename $fic .lml.gz`
+   REP=`dirname $fic`
+   com=`head -1 ${fic%.lml.gz}.data`
+   echo $ECHO_OPTS "<CENTER><B><A NAME=$NOM>$NOM</A></B></CENTER>" >> $fichier
+   echo $ECHO_OPTS "<CENTER>$com</CENTER>" >> $fichier
+   REP_REL="../tests/"$REP
+   if [ -f $REP/$NOM.lml.gif.fin ]
+   then
+      echo $ECHO_OPTS "<CENTER><a href="$REP_REL/$NOM.lml.gif"><img src="$REP_REL/$NOM.lml.gif.fin"></a></CENTER>" >> $fichier
+   elif [ -f $REP/$NOM.coupe.gif.fin ]
+   then
+      echo $ECHO_OPTS "<CENTER><a href="$REP_REL/$NOM.coupe.gif"><img src="$REP_REL/$NOM.coupe.gif.fin"></a></CENTER>" >> $fichier
+   elif [ -f $REP/$NOM.son.gif.fin ]
+   then
+      echo $ECHO_OPTS "<CENTER><a href="$REP_REL/$NOM.son.gif"><img src="$REP_REL/$NOM.son.gif.fin"></a></CENTER>" >> $fichier
+   elif [ -f $REP/$NOM.gif.fin ]
+   then
+      echo $ECHO_OPTS "<CENTER><a href="$REP_REL/$NOM.gif"><img src="$REP_REL/$NOM.gif.fin"></a></CENTER>" >> $fichier
+   else
+      echo $ECHO_OPTS "<CENTER><img src="rien.gif"></CENTER>" >> $fichier
+   fi
+   for fic_format in `cd $REP;ls $NOM.data *.geo *.geom *.geom.gz 2>/dev/null`
+   do
+      if [ -f $REP/$fic_format ]
+      then
+         echo $ECHO_OPTS "<CENTER><a href="$REP_REL/$fic_format">"Edit"</a> $fic_format </CENTER>" >> $fichier
+      fi
+   done
+   echo $ECHO_OPTS "<HR>\c" >> $fichier
+done
+echo $ECHO_OPTS "</body>
+</html> " >> $fichier
+# On met a jour le fichier si different
+References=$TRUST_ROOT/tests/References.html
+if [ "`diff $References $fichier`" != "" ]
+then
+   CHECKOUT $References
+   cat $fichier > $References
+   CHECKIN $References
+fi
+echo "-> Update $TRUST_TESTS/References.html"
+echo "End cree_References at `date '+%H:%M:%S %d/%m'`"
+}
+
 
 ##############################################################################
 # Nouveau : ajout cree des liens entre la liste des mots cles et les cas tests
@@ -41,8 +126,6 @@ echo "<html>
 cd $TRUST_TESTS/Reference
 for keyword in `$TRUST_Awk -F"|" '{print $1" "$2}' $keywords`
 do
-   echo "<tr valign=top>
-<td WIDTH=40%><FONT Size=-1><b>$keyword</b></FONT></td>" >> $html
    # Cherche dans les jeux de donnees
    # D'abord ceux avec PARALLEL@OK et $keyword
    cherche.ksh PARALLEL@OK $keyword 1>/dev/null 2>&1
@@ -50,6 +133,8 @@ do
    [ ! -f $TRUST_TESTS/Reference/liste_cherche ] && cherche.ksh $keyword 1>/dev/null 2>&1
    if [ -f $TRUST_TESTS/Reference/liste_cherche ]
    then
+      echo "<tr valign=top>
+<td WIDTH=40%><FONT Size=-1><b>$keyword</b></FONT></td>" >> $html
       # Ecriture dans le fichier .txt et dans un fichier html
       ligne=$keyword"\t\t\t\t\t"
       for test in `$TRUST_Awk '{print length()" "$1}' $TRUST_TESTS/Reference/liste_cherche | sort -n | head -3 | $TRUST_Awk '{print $2}'`
@@ -58,11 +143,11 @@ do
 	  echo "<td WIDTH=20%><FONT Size=-2><A HREF=../References.html#$test TARGET=p>$test</A></FONT></td>" >> $html
       done
       echo $ECHO_OPTS $ligne >> $tests
+      echo "</tr>" >> $html
    else
       # Previent qu'il n'y a pas de cas test pour un mot cle !
       echo "The $keyword keyword has no test cases!" >> $TRUST_TMP/motcles
    fi
-   echo "</tr>" >> $html
 done
 echo "-> Update $TRUST_ROOT/doc/TRUST/Tests.txt file (keywords have test cases)"
 echo "-> Update $TRUST_TMP/motcles file (keywords have NO test cases)"
@@ -172,6 +257,9 @@ then
 elif [ "$1" = -pdf_par_xdata ]
 then
    pdf_par_xdata
+elif [ "$1" = -cree_References ]
+then
+   cree_References
 elif [ "$1" = -tests ]
 then
    tests 
@@ -185,6 +273,9 @@ else
    echo "####################################################"
    echo "# Begin pdf_par_xdata at `date '+%H:%M:%S %d/%m'`"
    pdf_par_xdata
+   echo "####################################################"
+   echo "# Begin cree_References at `date '+%H:%M:%S %d/%m'`"
+   cree_References
    echo "####################################################"
    echo "# Launch tests at `date '+%H:%M:%S %d/%m'`"
    # On lance en batch car tests est lent (a optimiser)

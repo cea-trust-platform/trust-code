@@ -1,3 +1,4 @@
+# Create a 3D mesh (a prism is cut in 3) from a 2D mesh #
 dimension 2
 Domaine dom1
 Domaine dom2

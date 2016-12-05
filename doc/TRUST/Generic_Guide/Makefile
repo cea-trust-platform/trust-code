@@ -28,8 +28,8 @@ all: ../$(FILE).pdf
 	python bookmarks.py -p ../User_Manual_TRUST.pdf -t $(FILE7)_new.tex
 	pdflatex -interaction=nonstopmode $(FILE)_new.tex >> LOG
 	pdflatex -interaction=nonstopmode $(FILE)_new.tex >> LOG
-	mv $(FILE)_new.pdf ../$(FILE).pdf
-	#$(MAKE) clean_build
+	mv $(FILE)_new.pdf ../TRUST_$(FILE).pdf
+	$(MAKE) clean_build
 
 
 clean_build:  

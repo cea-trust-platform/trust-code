@@ -1,3 +1,4 @@
+# Polyhedron mesh #
 dimension 3
 domaine dom
 Lire_med dom FluidMesh_1 NC_hexaedrons_fluidmesh_polyhedra.med

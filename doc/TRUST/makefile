@@ -1,4 +1,4 @@
-dirs = Tutorial exercices/Tutorial_solutions/
+dirs = Tutorial exercices/Tutorial_solutions Generic_Guide
 all: Keywords.Vim
 	@for d in $(dirs) ;do (cd $$d; $(MAKE)); done
 Keywords.Vim: Keywords.txt

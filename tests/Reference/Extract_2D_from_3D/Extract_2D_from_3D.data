@@ -1,3 +1,4 @@
+# Extract a 2D mesh by selecting a boundary of the 3D mesh #
 dimension 3
 Pb_thermohydraulique pb
 export domaine DOM
