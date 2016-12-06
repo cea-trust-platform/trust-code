@@ -1,4 +1,4 @@
-\documentclass[a4paper,12pt,english]{report}
+\documentclass[a4paper,11pt,english]{report}
 
 %%TO COMPILE AND GENERATE THE PDF
 %cp Generic_Guide.tex Generic_Guide_new.tex
@@ -12,7 +12,7 @@
 %pdflatex -interaction=nonstopmode Generic_Guide_new.tex >> LOG
 %pdflatex -interaction=nonstopmode Generic_Guide_new.tex >> LOG
 
-
+%\usepackage{xr-hyper} % a mettre avant hyperref
 \usepackage[unicode=true,pdfusetitle, bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
  breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=true,linkcolor=blue,pageanchor]
  {hyperref}[2010/09/11]
@@ -27,6 +27,7 @@
 \usepackage{tikz}
 \usepackage{xspace}
 \usepackage{graphicx}
+%\usepackage{times}
 
 \setlength{\parindent}{0pt} % pas d'indentation
 
@@ -42,12 +43,22 @@
 \newcommand{\trust}{\textbf{TRUST}\xspace}
 \newcommand{\Note}{\textbf{\textcolor{darkred}{Note}}\xspace}
 
-%\usepackage{hyperref}[2010/09/11]
+%\externaldocument[Ref-]{TRUST_Reference_Manual}
+
+
+
+
+
 
 \begin{document}
 
-\title{\huge \bfseries{TRUST Generic Guide V1.7.4}}
-\author{\Large \textcolor{darkblue}{Support team: \textbf{\href{mailto:triou@cea.fr}{triou@cea.fr}}}}
+\title{\Huge \bfseries{TRUST Generic Guide V1.7.4}}
+\author{
+\vspace{4cm} % espace entre support team et ref manual
+\LARGE \textcolor{darkblue}{Support team: \textbf{\href{mailto:triou@cea.fr}{triou@cea.fr}}} \\
+\vspace{5cm} % espace entre ref manual et date
+\LARGE \textbf{\href{TRUST_Reference_Manual.pdf}{\trust Reference Manual}}
+}
 %\date{} % si on ne veut pas la date
 
 \maketitle
@@ -68,8 +79,7 @@
 %%\href{User_Manual_TRUST.pdf\#_Ref58057250}{Ref58057250} \\
 %\href{TRUST_tutorial.pdf#page.25}{tuto page 25+1}\\
 %\href{TRUST_tutorial.pdf\#save_restart}{Tuto Save\&Restart} \\
-
-
+%\href{TRUST_Reference_Manual.pdf\#coeur}{test} \\
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -141,13 +151,13 @@
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%
-%\chapter{Automatic validation form ?}
-%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%\input{chap8_prm.tex}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%
+%%\chapter{Automatic validation form}
+%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%\input{chap8_prm.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 

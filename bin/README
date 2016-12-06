@@ -14,7 +14,7 @@ data set support
 ****************
 
 Notice first that the reference manual which contains the information needed to carry out 
-a data set is User_Manual_TRUST.pdf (located in $TRUST_ROOT/doc/TRUST)
+a data set is TRUST_Generic_Guide.pdf (located in $TRUST_ROOT/doc/TRUST)
 
 
 -EditData : to support user when carrying out a data set by indicating keywords specific to each object
