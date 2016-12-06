@@ -6,11 +6,11 @@ diff -r bin/BUILD64/patch/Outils/lata2dx/Makefile ./Outils/lata2dx/Makefile
 > 	(cd lata2dx_reactor;./build_lata2dx_reactor.sh)
 > 	cp -f lata2dx_reactor/build/lata2dx_reactor $(TRUST_ROOT)/exec
 diff -r bin/BUILD64/patch/Outils/lata2dx/lata2dx/commun_triou/LataDB.cpp ./Outils/lata2dx/lata2dx/commun_triou/LataDB.cpp
-396c396
+400c400
 <     if ((type_ != LataDBDataType::INT64) &&  (type_ != LataDBDataType::INT32)) {
 ---
 >     if (type_ != LataDBDataType::INT32) {
-566,567c566
+570,571c570
 <   case LataDBDataType::INT32:
 <   case LataDBDataType::INT64: f.read((LataDBInt32*) 0, size); break;
 ---
@@ -24,7 +24,6 @@ diff -r bin/BUILD64/patch/ThirdPart/src/LIBLAPACK/Installer ./ThirdPart/src/LIBL
 < version_lapack=3.4.1 #     && [ "$TRUST_USE_MUMPS" != 1 ] && version_lapack=3.1.1
 ---
 > version_lapack=3.4.1 && [ "$TRUST_USE_MUMPS" != 1 ] && version_lapack=3.1.1
-Only in bin/BUILD64/patch/ThirdPart/src/LIBLAPACK: Installer~
 diff -r bin/BUILD64/patch/ThirdPart/src/LIBMETIS/Install ./ThirdPart/src/LIBMETIS/Install
 27d26
 < sed "s/#define IDXTYPEWIDTH 32/#define IDXTYPEWIDTH 64/g" -i include/metis.h
@@ -52,18 +51,14 @@ diff -r bin/BUILD64/patch/ThirdPart/src/LIBPETSC/install ./ThirdPart/src/LIBPETS
 >    FOPTFLAGS=`$TRUST_Awk '/F77Flags =/ {gsub("F77Flags =","",$0);print $0}' $fic_env`
 539d537
 < --with-64-bit-indices \
-Only in bin/BUILD64/patch/ThirdPart/src/LIBPETSC: install~
 diff -r bin/BUILD64/patch/ThirdPart/src/LIBSKIT/Installer ./ThirdPart/src/LIBSKIT/Installer
 25,27d24
 < cp  patch/color.f ./SPARSKIT2/ORDERINGS/color.f   && echo SPARSKIT2/color.f modifie
 < 
 < 
-Only in bin/BUILD64/patch/ThirdPart/src/LIBSKIT: Installer~
 Only in bin/BUILD64/patch/ThirdPart/src/LIBSKIT/patch: color.f
 diff -r bin/BUILD64/patch/env_src/configurer_env ./env_src/configurer_env
-539a540
->    cd $TRUST_ROOT
-583,589d583
+584,590d583
 < 
 < # Ajout des paths dans le PATH 
 < for d in  $TRUST_FORCE_SEARCH
@@ -71,11 +66,11 @@ diff -r bin/BUILD64/patch/env_src/configurer_env ./env_src/configurer_env
 < export PATH=$d:${PATH}
 < done
 < 
-1608c1602
+1611c1604
 < 	F77Flags="-O3 $FPIC -fdefault-integer-8" && [ "`echo $TRUST_F77_BASE | grep absoft`" != "" ] && F77Flags="-O"
 ---
 > 	F77Flags="-O3 $FPIC" && [ "`echo $TRUST_F77_BASE | grep absoft`" != "" ] && F77Flags="-O"
-1814d1807
+1817d1809
 <    TRUST_USE_MUMPS=0
 diff -r bin/BUILD64/patch/src/Kernel/Utilitaires/arch.h ./src/Kernel/Utilitaires/arch.h
 62,63c62,63
