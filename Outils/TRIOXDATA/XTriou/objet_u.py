@@ -2008,11 +2008,23 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
         pass
     tstr=tstr+'\label{'+replace(name,'_','')+'}'
     if pb:
-         tstr=tstr+'\index{'+clname+'}'
+         tstr=tstr+' \index{'+clname+'} \n'
 	 pass
+
+     # ecriture de la description de l'objet
+
+    try:
+         descr=replace(replace(icl.descr_,'{','\{'),'}','\}')
+         descr=replace(replace(descr,'\{\{','{'),'\}\}','}')
+         tstr=tstr+"Description: "+descr+'\n \\newline \\newline\n'
+         pass
+    except:
+         pass
+    if (icl.attdiscr==1):
+         tstr+="Keyword Discretiser should have already be used to read the object. \n\n"
     if fr:
         # print "clname",clname
-        tstr=tstr+ "Class "+ clname +" herits from "+ ipere.name_trio_
+        tstr=tstr+ "See also: "+ ipere.name_trio_
         # print tstr
         
     else:
@@ -2020,7 +2032,7 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
         pass
     
     tstr=tstr+" (\\ref{"+replace(ipere.name_,'_','')+"})"
-    tstr=tstr+'.\n \n'
+    # tstr=tstr+'.\n \n'
 
 
     # recherhce des classes filles
@@ -2037,7 +2049,7 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
         pass
     # ecriture des classes filles
     if len(listf):
-        tstr+="classes filles: "
+        # tstr+="classes filles: "
         for ob in listf:
             nob=ob.name_trio_
             if nob=='{': nob='\{'
@@ -2047,17 +2059,9 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
                 pass
             tstr+=" "+nob+" (\\ref{"+replace(ob.name_,'_','')+"}) "
             pass
-        tstr+="\n\n"
         pass
-    # ecriture de la description de l'objet
-    try:
-       descr=replace(replace(icl.descr_,'{','\{'),'}','\}')
-       tstr=tstr+"Description: "+descr+'\n \n'
-       pass
-    except:
-        pass
-    if (icl.attdiscr==1):
-        tstr+="Keyword Discretiser should have already be used to read the object. \n\n"
+    tstr+="\n\\newline \\newline \n"
+    
     tstr+="Usage:\n\n"
 
     # cas particulier d'une liste d'objet
@@ -2113,7 +2117,7 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
     
     
     lpere=ipere.getAllInitXAttributes()
-    
+    clname="{ \\bf "+clname+" } "
     if icl.readacc_==0:
         if icl.name_trio_!='':
             tstr=tstr+clname
@@ -2134,10 +2138,22 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
             tstr=tstr+'\n\\begin{itemize}\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}\n'
             pass
         pass
-    if len(lcl)  :
-        tstr2=tstr2+'\n\\begin{itemize}\n'
-        for i in range(len(lcl)):
-            xattr=lcl[i]
+
+     # pour pas generer la doc dans chaque classe
+    lcl_p=[]
+    for xattr in lcl:
+        if icl.readacc_==10:
+            if xattr in lpere:
+                continue
+        lcl_p.append(xattr)
+    
+    if len(lcl_p)  :
+        tstr2=tstr2+'\n\\begin{itemize}\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}\n'
+        
+        for xattr in lcl_p:
+            #xattr=lcl[i]
+           
+           
             
             mot=xattr.name
             
@@ -2275,18 +2291,19 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
             tstr2=tstr2+'\n'
             pass
         if icl.readacc_:
-            tstr=tstr+'\end{itemize} \n\n\n \}'
+            tstr=tstr+'\end{itemize} \} \n\n where \n '
         else:
             tstr2='\n \n where'+'\n'+tstr2
             pass
         tstr2=tstr2+'\end{itemize} \n '
+        
         tstr+=tstr2
     else:
         tstr+='\n\n ' 
         pass
     # print tstr
     tstr=tstr.replace("NL1",'\n')
-    tstr=tstr.replace("NL2",'\n\n')
+    tstr=tstr.replace("NL2",'\\newline\n')
     if len(list_objet_lecture):
         # print "list ",             list_objet_lecture
         pass
@@ -2329,12 +2346,12 @@ def gen_doc_base(fr=1):
     s1=open('doc.tex','w')
     s1.write('\\newif\ifppdf \n\ifx\pdfoutput\undefined \n  \ppdffalse \n\else \n \pdfoutput=1 \n  \ppdftrue \n\\fi \n')
     s1.write('\\batchmode\n') 
-    s1.write('\documentclass{article}\n') 
+    s1.write('\documentclass{article}[11pt]\n') 
     s1.write('\usepackage[T1]{fontenc}\n')
 
     s1.write('\usepackage{times}\n')
 
-    s1.write('\ifppdf \usepackage[pdftex,pdfstartview=FitH,colorlinks=true,linkcolor=blue]{hyperref} \n\pdfcompresslevel=9 \n\else \n\usepackage[colorlinks=true,linkcolor=blue]{hyperref}\n\\fi\n\usepackage{a4wide} \n')
+    s1.write('\ifppdf \usepackage[pdftex,pdfstartview=FitH,colorlinks=true,linkcolor=blue]{hyperref} \n\pdfcompresslevel=9 \n\else \n\usepackage[colorlinks=true,linkcolor=blue]{hyperref}\n\\fi\n\usepackage{a4wide} \n\setlength{\parindent}{0pt} \n')
     s1.write('\\makeindex \n \\begin{document}\n\\tableofcontents\n')
     l=[]
     for name in dicobases.keys():

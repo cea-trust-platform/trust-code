@@ -57,8 +57,9 @@ def getLinesWithRegExp(lines):
       if ((len(line.strip())>=8) and (line.split()[0]=="New_file")):
          debut=1
 	 filename=line.split()[1]
-      elif (re.findall("//.*//[ ]*"+xd,line)):
-	continue
+      # revoir les comm ne marchent pas pour mpcube
+      # elif (re.findall("//.*//[ ]*"+xd,line)):
+      #	continue
       elif (re.findall("//[ ]*"+xd+"[ ]+",line)):
 	# traitement des classes
         li=re.findall(re.escape(xd)+"(.*)"+re.escape(' '),line)[0].split(' ')
@@ -69,17 +70,19 @@ def getLinesWithRegExp(lines):
             desc2=li[1:]
             dico_p={"desc":' '.join(desc2)}
             dico_p["dict"]={}
+            dico_p["numero"]=len(dico[nameClass]["parameters"])
             dico[nameClass]['parameters'][li[1]]=dico_p
            # print li
           #  print desc2
             #1/0
         elif li[0]=="ref":
             print nameClass, line
-            1/0
+            dico[nameClass]["refs"].append([li[1],li[2]])
+            #  1/0
         else:
             nameClass=li[0]
             
-            dico[nameClass]={"desc":desc,"parameters":{}}
+            dico[nameClass]={"desc":desc,"parameters":{},"refs":[]}
             debut=2        
 	pass
       elif re.findall("//[ ]*"+xd+"_ADD_P+",line):
@@ -101,6 +104,7 @@ def getLinesWithRegExp(lines):
         dr=line.split(xd+"_ADD_P")[-1].split()
         desc=param+" "+dr[0]+" "+mparam+" "+str(int(optionnel))+" "+' '.join(dr[1:])
 	dico_param["desc"]=desc
+        dico_param["numero"]=len(dico[nameClass]["parameters"])
 	dico_param["dict"]={}
 	dico[nameClass]["parameters"][param]=dico_param
 	pass
@@ -121,24 +125,40 @@ def writeOutPutFile(dico, filename,st_add=""):
     st=""
     for clas in dico.keys():
         st+=dico[clas]["desc"]+"\n"
-        for param in dico[clas]["parameters"].keys():
-            if (len(dico[clas]["parameters"][param]["dict"].keys())==0):
-               st+="  attr "+dico[clas]["parameters"][param]["desc"]+"\n"
+        Params=dico[clas]["parameters"]
+        for i in xrange(len(Params.keys())):
+            ok=0
+            for j,param in enumerate(Params.keys()):
+                if (i==Params[param]["numero"]):
+                    # print j,Params[param]["numero"]
+                    ok=1
+                    break
+            if (ok==0):
+                1/0
+            if (len(Params[param]["dict"].keys())==0):
+               st+="  attr "+Params[param]["desc"]+"\n"
                pass
             str_dico="  attr "+param+" chaine(into=["
-            for dic in dico[clas]["parameters"][param]["dict"].keys():
+            for dic in Params[param]["dict"].keys():
 		str_dico+='"'+dic+'",'
 		pass
-            if (len(dico[clas]["parameters"][param]["dict"].keys())>0):
-	       desc=dico[clas]["parameters"][param]["desc"].split()[2:]
+            if (len(Params[param]["dict"].keys())>0):
+	       desc=Params[param]["desc"].split()[2:]
                st+=str_dico+"]) "+' '.join(desc)+"\n"
                pass
 	    pass
-	pass
-
+    
+        for ref in dico[clas]["refs"]:
+            st+="  ref "+ref[0]+" "+ref[1]+"\n"
+            pass
+        pass
     st=st.replace(" double "," floattant ")
     st=st.replace(" flag "," rien ")
     st=st.replace(" int "," entier ")
+    st=st.replace(r"'",r"\'")
+    st=st.replace(r"\\'",r"\'")
+    #st="\\'".join(st.split("'"))
+    #st="\\'".join(st.split("\\\\'"))
 
     fi=open(filename, "w")
     fi.write(st_add)

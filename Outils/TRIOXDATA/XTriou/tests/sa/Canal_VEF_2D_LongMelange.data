@@ -92,7 +92,7 @@ Lire pb
                 Sources { Source_Qdm_lambdaup  { lambda 2. } }
                 Sources
                         {
-                        Canal_perio { direction_ecoulement 0  coeff 10. }
+                        Canal_perio {   bord periox coeff 10. }
                         }
 		conditions_initiales
 			{
