@@ -19,5 +19,5 @@ clean_build:
 	@echo "Removing compilation files"
 	@rm -f *.log *.aux *.toc *.out LOG
 clean:  clean_build
-	@rm -f $(FILE).pdf
+	@rm -f ../TRUST_$(FILE).pdf
 .PHONY: clean clean_build
