@@ -462,10 +462,10 @@ printf "check_all_validation : all_validation\n"           >> $project_makefile
 printf "\n" 		
                          >> $project_makefile
 printf "# help validation \t: Generate validation report with only the prm of this project\n">>$project_makefile
-printf "validation : optim\n"  >> $project_makefile
+printf "validation : check_validation\n"  >> $project_makefile
 printf "\n"       
 printf "# help check_validation \t: like validation\n">>$project_makefile
-printf "check_validation : validation\n"                                              >> $project_makefile
+printf "check_validation : optim\n"                                              >> $project_makefile
 printf "\n" 
 
 printf "\t@echo \"########################\"\n"       >> $project_makefile

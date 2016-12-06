@@ -11,12 +11,13 @@ triou_old.py: objet_u.py objet_u_spec.py genclold.py gentriopy.py
 doc: doc.pdf
 doc.pdf: triou.py 
 	mkdir -p doc
+	(cd doc; ln -sf ../doc_ressources/* .)
 	python -c "from triou import *;gen_doc_base(1)"
 	mv *.tex doc
 	cp *.sty doc/.
 	@grep -v batchmode  doc/doc.tex  > doc/doc_inter.tex
 	(cd doc ;touch doc.ind;pdflatex -interaction=nonstopmode doc.tex 1>/dev/null ;makeindex doc;pdflatex -interaction=nonstopmode  doc.tex 1>/dev/null;pdflatex -interaction=nonstopmode doc.tex && mv doc.pdf ..)
-doc_r: doc_r.pdf
+doc_reduit: doc_r.pdf
 doc_r.pdf: triou.py tests/ref/lutil.py
 	mkdir -p doc_r
 	cp tests/ref/lutil.py .

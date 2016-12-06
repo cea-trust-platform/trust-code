@@ -39,7 +39,8 @@ python -c "from Couv import create_dico;create_dico()"
 
 #time gprof --no-graph $exec| cut -c 55- | sort -u > out
 cat /dev/null > cpu
-FF="["
+FF=LISTFF
+cat /dev/null > $FF
 listfichier_a_retirer=""
 for file in `find $TRUST_TMP/tests/ -name cpu'.*'.seq -newer $exec -or -name cpu.'*'.par -newer $exec -or -name cpu.'*'.dec -newer $exec`
 do
@@ -54,14 +55,15 @@ do
    fi
    # le sort -u permet de gagner du temps dans le python et avoir un dico juste
    $TRUST_Awk '(NR>5) {if (NF) print $0;else exit}' $file | cut -c 54- | sort -u >./$name
-   FF=$FF"'"$name"',"
+   #FF=$FF"'"$name"',"
+   echo $name >> $FF
    listfichier_a_retirer=$listfichier_a_retirer" "$name
    echo "Extraction des perfs du test "$name
 done
 
-FF=$FF"]"
+#FF=$FF"]"
 #echo $FF
-python -c "from Couv import traite_tout;traite_tout($FF)"
+python -c "from Couv import traite_tout;traite_tout('LISTFF')"
 echo ""
 echo $ECHO_OPTS "Creation du dico Python: \c"
 update_version dico.pkl

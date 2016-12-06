@@ -59,10 +59,10 @@ def get_deps(*args,**kwargs):
 
 def transforme(chaine):
    import syno
-   print "kkk",chaine
+   #print "kkk",chaine
    for key in syno.synonyme.keys():
      chaine=chaine.replace("name_trio='"+key+"'","name_trio='"+syno.synonyme[key]+"'")
-     print key,syno.synonyme[key],chaine
+     # print key,syno.synonyme[key],chaine
    return chaine
 def gen_class(cl,dico):
     val=dico[cl]

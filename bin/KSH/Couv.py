@@ -73,9 +73,12 @@ def traite(file):
 	pass
 def traite_tout(list):
 	dico=lire_dico()
-	
-	for file in list:
-		traite_file(file,dico)
+	f=open(list,"r")
+	line=f.readline()
+	while line:
+		# print line.strip(),"ll"
+		traite_file(line.strip(),dico)
+		line=f.readline()
 		pass
 	ecrit_dico(dico)
 	pass

@@ -47,7 +47,7 @@ else
 	print ("]);")
  }
 
-}' TRAD_2 | sed "s?quote?'?g"`
+}' TRAD_2 | sed "s?quote?'?g;s/\*/__etoile__/g"`
 #ch2=`awk -v class=$class '{if ($1==class) {print ("[quote"$4"quote,quote"$3"quote,quote"$2"quote],")}}' TYPES_1  | sed "s?quote?'?g"`
 #ch2=$ch2"],list_ref=["
 #ch2=`echo $ch2 | sed "s?],]?]]?"`
@@ -55,7 +55,7 @@ else
 #ch3=`awk -v class=$class '{if ($1==class) {print ("[quote"$2"quote,quote"$3"quote],")}}' LISTREF_1  | sed "s?quote?'?g"`
 #ch3=$ch3"])"
 #ch3=`echo $ch3 | sed "s?],]?]]?"`
-echo $ch1 
+echo $ch1 | sed "s/__etoile__/*/g"
 }
 
 traite_TYPE1()
