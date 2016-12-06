@@ -33,9 +33,11 @@
 
 \fbox{ \begin{minipage}[c]{1\textwidth}
 \begin{alltt}
-\textcolor{blue}{\# Mesh \#}
+\textcolor{blue}{\# BEGIN MESH \#}
 
 {\bf{Read\_file}} \textit{my\_mesh.geo} ;
+
+\textcolor{blue}{\# END MESH \#}
 \end{alltt}
 \end{minipage}}
 \vspace{0.1cm}
@@ -47,6 +49,8 @@
 \textcolor{blue}{\# For parallel calculation only! \#}
 
 \textcolor{blue}{\# For the first run: partitioning step \#}
+
+\textcolor{blue}{\# BEGIN PARTITION}
 
 \textcolor{blue}{{\bf{Partition}} \textit{my\_domain}}
 
@@ -63,6 +67,8 @@
 \textcolor{blue}{\}}
 
 \textcolor{blue}{{\bf{End}}}
+
+\textcolor{blue}{END PARTITION \#}
 \end{alltt}
 \end{minipage}}
 \vspace{0.1cm}
@@ -75,7 +81,11 @@
 
 \textcolor{blue}{\# For the second run: read of the sub-domains \#}
 
-\textcolor{blue}{\# {\bf{Scatter}} \textit{DOM}{\bf{.Zones}} \textit{my\_domain} \#}
+\textcolor{blue}{\# BEGIN SCATTER}
+
+\textcolor{blue}{{\bf{Scatter}} \textit{DOM}{\bf{.Zones}} \textit{my\_domain}}
+
+\textcolor{blue}{END SCATTER \#}
 \end{alltt}
 \end{minipage}}
 \vspace{0.1cm}

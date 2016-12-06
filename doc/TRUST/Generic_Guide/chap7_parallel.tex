@@ -97,7 +97,7 @@ You may now add the partitionning block which contains the instruction of cuttin
 \end{center}
 Where \textit{partitioner\_name} is the name of the chosen partitioner, one of \textbf{METIS}, \textbf{Tranche}, \textbf{Sous\_Zones}, \textbf{Partition} or \textbf{Fichier\_Decoupage} (cf section \ref{partitioner}).\\
 The \textbf{"Larg\_joint"} keyword allow to specify the overlapping width value.\\
-You can see the documentation of \href[page=DOCLINK_PARTITION]{User_Manual_TRUST.pdf}{this part} in the User's Manual.
+You can see the documentation of \href{TRUST_Reference_Manual.pdf\#partition}{this part} in the \trust Reference Manual.
 
 \Note the "End" before the last line. It will be useful for the cutting step.\\
 
@@ -124,7 +124,7 @@ At last, you will add a block which will be activated during the parallel calcul
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Partitionning: "By hand" method}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-For this mmethod, you have to make two copies of your data file \textit{my\_data\_file.data} and name it (for example):
+For this method, you have to make two copies of your data file \textit{my\_data\_file.data} and name it (for example):
 \begin{itemize}
 \item \textit{CUTTING\_data\_file.data} and 
 \item \textit{RUN\_PARA\_data\_file.data}.
@@ -216,7 +216,7 @@ You may obtain something like:
 \end{alltt}
 \end{minipage}}
 \end{center}
-This will read your \textit{DOM\_000n}\textbf{.Zones} files. You can see the documentation of the \textbf{"scatter"} keyword in \href[page=DOCLINK_SCATTER]{User_Manual_TRUST.pdf}{this part} of the User's Manual.\\
+This will read your \textit{DOM\_000n}\textbf{.Zones} files. You can see the documentation of the \textbf{"scatter"} keyword in \href{TRUST_Reference_Manual.pdf\#scatter}{this part} of the \trust Reference Manual.\\
 
 To see your sub-domains, you can run:
 \begin{alltt} 
@@ -267,7 +267,7 @@ For more information, you can go to see this \href{TRUST_tutorial.pdf\#exo_para_
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In \trust, you can make partitioning with:
 \begin{itemize}
-\item the external partitionning library \href{http://glaros.dtc.umn.edu/gkhome/views/metis}{\textbf{"METIS"}} (open source). It is a general algorithm that will generate a partition of the domain (cf \href[page=245]{User_Manual_TRUST.pdf}{\trust documention here}),
+\item the external partitionning library \href{http://glaros.dtc.umn.edu/gkhome/views/metis}{\textbf{"METIS"}} (open source). It is a general algorithm that will generate a partition of the domain (cf \href{TRUST_Reference_Manual.pdf\#partitionneurmetis}{\trust Reference Manual}),
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.4\textwidth}
 \begin{alltt} 
@@ -288,7 +288,7 @@ In \trust, you can make partitioning with:
 
 \item internal \trust partitioning tools:
     \begin{itemize}
-    \item \href[page=246]{User_Manual_TRUST.pdf}{\textbf{Tranche}} which make parts by cutting the domain following x, y and/or z directions.
+    \item \href{TRUST_Reference_Manual.pdf\#partitionneurtranche}{\textbf{Tranche}} which make parts by cutting the domain following x, y and/or z directions.
     \begin{center}
     \fbox{ \begin{minipage}[c]{0.4\textwidth}
     \begin{alltt} 
@@ -301,46 +301,49 @@ In \trust, you can make partitioning with:
     \end{minipage}}
     \end{center}
 
-    \item \href[page=247]{User_Manual_TRUST.pdf}{\textbf{Sous\_Zones}} which will create one part for each specified subzone.
-    \begin{center}
-    \fbox{ \begin{minipage}[c]{0.92\textwidth}
-    \begin{alltt} 
-    {\bf{partition\_tool Sous\_Zones}} \{
+%    \item \href[page=247]{TRUST_Reference_Manual.pdf}{\textbf{Sous\_Zones}} which will create one part for each specified subzone.
+%    \begin{center}
+%    \fbox{ \begin{minipage}[c]{0.92\textwidth}
+%    \begin{alltt} 
+%    {\bf{partition\_tool Sous\_Zones}} \{
 
-    \hspace{1cm}    [{\bf{sous\_zones}} N SUBZONE\_NAME\_1 SUBZONE\_NAME\_2 ... SUBZONE\_NAME\_N ]
+%    \hspace{1cm}    [{\bf{sous\_zones}} N SUBZONE\_NAME\_1 SUBZONE\_NAME\_2 ... SUBZONE\_NAME\_N ]
 
-    \}
-    \end{alltt}
-    \end{minipage}}
-    \end{center}
+%    \}
+%    \end{alltt}
+%    \end{minipage}}
+%    \end{center}
 
-    \item \href[page=247]{User_Manual_TRUST.pdf}{\textbf{Partition}} which re-use the partition of a domain.
-    \begin{center}
-    \fbox{ \begin{minipage}[c]{0.4\textwidth}
-    \begin{alltt} 
-    {\bf{partition\_tool Partition}} \{
+%    \item \href[page=247]{TRUST_Reference_Manual.pdf}{\textbf{Partition}} which re-use the partition of a domain.
+%    \begin{center}
+%    \fbox{ \begin{minipage}[c]{0.4\textwidth}
+%    \begin{alltt} 
+%    {\bf{partition\_tool Partition}} \{
 
-    \hspace{1cm}    {\bf{domaine}} DOMAIN\_NAME
+%    \hspace{1cm}    {\bf{domaine}} DOMAIN\_NAME
 
-    \}
-    \end{alltt}
-    \end{minipage}}
-    \end{center}
+%    \}
+%    \end{alltt}
+%    \end{minipage}}
+%    \end{center}
 
-    \item \href[page=247]{User_Manual_TRUST.pdf}{\textbf{Fichier\_Decoupage}} which reads an array of integer values on the disc, one value for each mesh element. The number of parts created is the highest value in the array plus one.
-    \begin{center}
-    \fbox{ \begin{minipage}[c]{0.6\textwidth}
-    \begin{alltt} 
-    {\bf{partition\_tool Fichier\_Decoupage}} \{
+%    \item \href[page=247]{TRUST_Reference_Manual.pdf}{\textbf{Fichier\_Decoupage}} which reads an array of integer values on the disc, one value for each mesh element. The number of parts created is the highest value in the array plus one.
+%    \begin{center}
+%    \fbox{ \begin{minipage}[c]{0.6\textwidth}
+%    \begin{alltt} 
+%    {\bf{partition\_tool Fichier\_Decoupage}} \{
 
-    \hspace{1cm}    {\bf{fichier}} file\_name
+%    \hspace{1cm}    {\bf{fichier}} file\_name
 
-    \hspace{1cm}    [{\bf{corriger\_partition}}]
+%    \hspace{1cm}    [{\bf{corriger\_partition}}]
 
-    \}
-    \end{alltt}
-    \end{minipage}}
-    \end{center}
+%    \}
+%    \end{alltt}
+%    \end{minipage}}
+%    \end{center}
+
+    \item \href{TRUST_Reference_Manual.pdf\#partitionneurderiv}{other internal partitioning tools}.
+
     \end{itemize}
 \end{itemize}
 
@@ -358,7 +361,7 @@ METIS & & Tranche\tabularnewline
 \label{partitioning}
 \end{figure}
 
-You can see the documentation of \href[page=DOCLINK_PARTITION]{User_Manual_TRUST.pdf}{this part} in the User's Manual.
+You can see the documentation of \href{TRUST_Reference_Manual.pdf\#partition}{this part} in the \trust Reference Manual.
 
 
 
@@ -411,7 +414,7 @@ You can see the \href[page=82]{TRUST_and_TrioCFD_presentation.pdf}{slides of \tr
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 You must submit your job in a system of queue.
 For this, you must have a submission file.
-\trust can create a submission file for you on clusters on which the support team has done installations.
+\trust can create a submission file for you \textbf{on clusters on which the support team has done installations}.
 To create this file, run:
 \begin{verbatim}
 > trust -create_sub_file my_parallel_data_file
@@ -422,7 +425,7 @@ where here \textit{my\_parallel\_data\_file.data} is one of:
 \item \textit{PAR\_my\_data\_file.data},
 \end{itemize}
 
-You obtain a file named \textbf{"sub\_file"}, you can open it and verify/change values(for example the name of the job, the number of processors, the name of the exe, ...).\\
+You obtain a file named \textbf{"sub\_file"}, you can open it and verify/change values(for example the name of the job, the name of the exe, ...).\\
 
 Then you must submit you calculation with:
 \begin{verbatim}
@@ -434,11 +437,11 @@ or
 \end{verbatim}
 following the queue system of the cluster.\\
 
-You can also run the same command as on a pc:
-\begin{verbatim}
-> trust my_parallel_data_file procs_number
-\end{verbatim}
-\trust will automatically submit your simulation.\\
+%You can also run the same command as on a pc:
+%\begin{verbatim}
+%> trust my_parallel_data_file procs_number
+%\end{verbatim}
+%\trust will automatically submit your simulation.\\
 
 You can see the \href[page=82]{TRUST_and_TrioCFD_presentation.pdf}{slides of \trust presentation} about parallel for more informations and \href{TRUST_tutorial.pdf\#exo_para_3}{this exercise of the \trust tutorial}.
 
@@ -464,7 +467,7 @@ Select "Open file" and choose the right computer name in the drop down menu "Hos
 \item local mode: if neither previous proposition works, copy your results from the cluster to your local computer and open it with a local parallel version of VisIt.
 \end{itemize}
 
-You can have a look at the \href{TRUST_tutorial.pdf\#exo_para_3}{cluster exercise} in the \trust tutorial or at the \href[page=96]{TRUST_and_TrioCFD_presentation.pdf}{slides of \trust presentation}.
+You can have a look at the \href[page=96]{TRUST_and_TrioCFD_presentation.pdf}{slides of \trust presentation}.
 
 
 

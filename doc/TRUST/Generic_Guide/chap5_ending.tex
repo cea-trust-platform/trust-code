@@ -14,14 +14,14 @@ You may also add the \textbf{"End"} keyword to specify the end of your data file
     \end{minipage}}
     \end{center}
 
-For more details, see the \href[page=DOCLINK_PROBLEM RESOLUTION]{User_Manual_TRUST.pdf}{User's Manual}. \\
+For more details, see the \href{TRUST_Reference_Manual.pdf\#solve}{\trust Reference Manual}. \\
 
 You can see methods to run your data file in section \ref{Run}.
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Stop running calculation}
+\section{Stop running calculation} \label{stopfile}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Your calculation will automatically stops if it has reached:
 \begin{itemize}
@@ -31,7 +31,7 @@ Your calculation will automatically stops if it has reached:
 \item the threshold of convergence.
 \end{itemize}
 
-You may use the \textit{my\_data\_file}\textbf{.stop} file, if you want to stop properly your calculation (i.e. with all saves).
+You may use the \textit{my\_data\_file}\textbf{.stop} file, if you want to stop properly your running calculation (i.e. with all saves).
 When the simulation is running, you can see the "\textbf{0}" value in that file.\\
 
 To stop it, put a "\textbf{1}" instead of the "\textbf{0}" and at the next iteration the calculation will stop properly.\\
@@ -56,9 +56,9 @@ Automaticaly, \trust make backups during the calculation. The unknowns (velocity
     \begin{itemize}
     \item at the start of the calculation,
     \item at the end of the calculation,
-    \item each 23 hours of CPU, to change it, uses \small \textbf{"periode\_sauvegarde\_securite\_en\_heure"} \normalsize keyword,
+    \item each 23 hours of CPU, to change it, uses \small \textbf{"periode\_sauvegarde\_securite\_en\_heure"} \normalsize keyword (default value 23 hours),
     \item user may also specify a time physical period with \textbf{"dt\_sauv"} keyword,
-    \item periodically using \textbf{"tcpumax"} keyword for which calculation stops after the specified time (default value $10^{30}$).
+    \item periodically using \textbf{"tcpumax"} keyword for which calculation stops after the specified time (default value $10^{30}$), use it for calculation on CCRT/TGCC and CINES clusters for example.
     \end{itemize}
 \end{itemize}
 
@@ -91,7 +91,7 @@ with
     \end{minipage}}
     \end{center}
 
-For more details, see the \href[page=DOCLINK_SAVING A PROBLEM]{User_Manual_TRUST.pdf}{User's Manual}. \\
+For more details, see the \href{TRUST_Reference_Manual.pdf\#Pbbase}{\trust Reference Manual}. \\
 
 
 
@@ -130,9 +130,9 @@ Instead of \textbf{"reprise"} keyword, you can use \textbf{"resume\_last\_time"}
     \end{minipage}}
     \end{center}
 
-For examples, see the \href{TRUST_tutorial.pdf\#save_restart}{tutorial} and the \href[page=DOCLINK_RESTARTING A PROBLEM]{User_Manual_TRUST.pdf}{User's Manual}.\\
+For examples, see the \href{TRUST_tutorial.pdf\#save_restart}{tutorial} and the \href{TRUST_Reference_Manual.pdf\#Pbbase}{\trust Reference Manual}.\\
 
-\Note that you can run a calculation with initial condition read into a save file (.xyz or .sauv) from a previous calculation using \textbf{Champ\_Fonc\_reprise} or read a into a MED file with \textbf{Champ\_Fonc\_MED} (see \href[page=DOCLINK_STATIONARY FIELDS]{User_Manual_TRUST.pdf}{User's Manual} for more information).
+\Note that you can run a calculation with initial condition read into a save file (.xyz or .sauv) from a previous calculation using \textbf{Champ\_Fonc\_reprise} or read a into a MED file with \textbf{Champ\_Fonc\_MED} (see \href{TRUST_Reference_Manual.pdf\#champfoncmed}{\trust Reference Manual} for more information).
 
 
 

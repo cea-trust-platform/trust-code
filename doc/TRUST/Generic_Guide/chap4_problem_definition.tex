@@ -1,49 +1,36 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Set of equations}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+In function of your choice of problem type, you will have a different set of equations.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Incompressible problems}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \trust solves Navier-Stokes equations with/without heat equation for incompressible fluid:
 
 $$
 \left\{
 \begin{array}{c}
 \nabla \cdot \vec u =0 \\
-\displaystyle{\frac{\partial \vec u }{\partial t} + \textcolor{red}{\vec u \nabla \vec u} = - \nabla P^* + \textcolor{blue}{\nabla \cdot (\nu \nabla \vec u)} } \\
-\displaystyle{\frac{\partial T}{\partial t} + \vec u \nabla T = \nabla \cdot (\alpha \nabla T) }
+\displaystyle{\frac{\partial \vec u }{\partial t} + \textcolor{red}{\nabla \cdot (\vec u \otimes \vec u)} = \textcolor{blue}{\nabla \cdot (\nu \nabla \vec u)} - \nabla P^* } \\
+\displaystyle{\frac{\partial T}{\partial t} + \textcolor{red}{\vec u \nabla T} = \textcolor{blue}{\nabla \cdot (\alpha \nabla T)} + \frac{Q}{\rho C_p}}
 \end{array}
 \right.
 $$
 
-or for quasi-compressible fluid:
-
-$$
-\left\{
-\begin{array}{c}
-\displaystyle{\frac{\partial \rho }{\partial t} + \nabla \cdot (\rho \vec u) =0 }\\
-\displaystyle{ \frac{\partial}{\partial t} (\rho u_i) + \textcolor{red}{div (\rho u u_i)} - \textcolor{blue}{\sum_{j=1}^N  \frac{\partial}{\partial x_j} \left[\mu \left( \frac{\partial u_i}{\partial x_j} + \frac{\partial u_j}{\partial x_i} \right) \right] } + \frac{\partial P^*_1}{\partial x_i} = -\rho g_i} \\
-\displaystyle{ \rho C_p \frac{dT}{dt} - \sum_{j=1}^N \frac{\partial}{\partial x_j} \left( \lambda \frac{\partial T}{\partial x_j} \right) = Q + \frac{dP_0}{dt} }
-\end{array}
-\right.
-$$
-
-where: $\displaystyle{P^*=\frac{P}{\rho} + g z}$, $P_0=\rho R T$, $\displaystyle{P_1^*=P_1 + \frac{2}{3} \mu div (\vec u )}$, $Q$ is a heat source term, and:
+where: $\displaystyle{P^*=\frac{P}{\rho} + g z}$, $Q$ is a heat source term, and:
 
 \begin{itemize}
 \item $\rho$: density,
 \item $\mu$: dynamic viscosity,
 \item $\displaystyle{\nu=\frac{\mu}{\rho}}$: cinematic viscosity,
+\item $\vec g=g z$: gravity vector in cartesian coordinates,
+\item $\displaystyle{\alpha=\frac{\lambda}{\rho C_p}}$: thermal diffusivity.
 \item $C_p$: specific heat capacity at constant pressure,
 \item $\lambda$: thermal conductivity,
-\item $\displaystyle{\alpha=\frac{\lambda}{\rho C_p}}$: thermal diffusivity.
 \end{itemize}
 
 \Note that \textcolor{red}{red} terms are convective terms and \textcolor{blue}{blue} terms are diffusive terms.\\
-
-In function of your choice of problem type, you will have a different set of equations.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Incompressible problems}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.98\textwidth}
@@ -132,33 +119,33 @@ In function of your choice of problem type, you will have a different set of equ
 For documentation, see:\\
 
 \begin{longtable}{|c|c|c|c|c|}
-\cline{1-4} 
-Thermo & hydraulique & Concentration & Turbulent & \multicolumn{1}{c}{}\tabularnewline
+\hline
+Thermo & hydraulique & Concentration & Turbulent & Reference Manual\tabularnewline
 \hline 
 \hline 
             & \textbf{Pb\_hydraulique}  &   
-            &                           & \href[page=DOCLINK_HYDRAULIC PROBLEM]{User_Manual_TRUST.pdf}{doc} \tabularnewline 
+            &                           & \href{TRUST_Reference_Manual.pdf\#pbhydraulique}{doc} \tabularnewline 
 \hline
             & \textbf{Pb\_hydraulique}  & \textbf{\textcolor{darkblue}{\_Concentration}}
-            &                           & \href[page=DOCLINK_HYDRAULIC PROBLEM WITH CONCENTRATION]{User_Manual_TRUST.pdf}{doc} \tabularnewline
+            &                           & \href{TRUST_Reference_Manual.pdf\#pbhydrauliqueconcentration}{doc} \tabularnewline
 \hline
             & \textbf{Pb\_hydraulique}  &   
-            & \textbf{\textcolor{Greeen}{\_Turbulent}}      & \href[page=DOCLINK_TURBULENT HYDRAULIC PROBLEM]{User_Manual_TRUST.pdf}{doc} \tabularnewline
+            & \textbf{\textcolor{Greeen}{\_Turbulent}}      & \href{TRUST_Reference_Manual.pdf\#pbhydrauliqueturbulent}{doc} \tabularnewline
 \hline
             & \textbf{Pb\_hydraulique}  & \textbf{\textcolor{darkblue}{\_Concentration}}
-            & \textbf{\textcolor{Greeen}{\_Turbulent}}      & \href[page=DOCLINK_TURBULENT HYDRAULIC PROBLEM WITH CONCENTRATION]{User_Manual_TRUST.pdf}{doc} \tabularnewline
+            & \textbf{\textcolor{Greeen}{\_Turbulent}}      & \href{TRUST_Reference_Manual.pdf\#pbhydrauliqueconcentrationturbulent}{doc} \tabularnewline
 \hline
 \textbf{Pb\_\textcolor{magenta}{Thermo}}     & \textbf{hydraulique}  &   
-                        &                       & \href[page=DOCLINK_THERMOYDRAULIC PROBLEM]{User_Manual_TRUST.pdf}{doc} \tabularnewline
+                        &                       & \href{TRUST_Reference_Manual.pdf\#pbthermohydraulique}{doc} \tabularnewline
 \hline
 \textbf{Pb\_\textcolor{magenta}{Thermo}}     & \textbf{hydraulique}  & \textbf{\textcolor{darkblue}{\_Concentration}}
-                        &                       & \href[page=DOCLINK_THERMOHYDRAULIC PROBLEM WITH CONCENTRATION]{User_Manual_TRUST.pdf}{doc} \tabularnewline
+                        &                       & \href{TRUST_Reference_Manual.pdf\#pbthermohydrauliqueconcentration}{doc} \tabularnewline
 \hline
 \textbf{Pb\_\textcolor{magenta}{Thermo}}     & \textbf{hydraulique}  &   
-                        & \textbf{\textcolor{Greeen}{\_Turbulent}}  & \href[page=DOCLINK_TURBULENT THERMOHYDRAULIC PROBLEM]{User_Manual_TRUST.pdf}{doc} \tabularnewline
+                        & \textbf{\textcolor{Greeen}{\_Turbulent}}  & \href{TRUST_Reference_Manual.pdf\#pbthermohydrauliqueturbulent}{doc} \tabularnewline
 \hline
 \textbf{Pb\_\textcolor{magenta}{Thermo}}     & \textbf{hydraulique}  & \textbf{\textcolor{darkblue}{\_Concentration}}
-                        & \textbf{\textcolor{Greeen}{\_Turbulent}}  & \href[page=DOCLINK_THERMOHYDRAULIC TURBULENT PROBLEM WITH CONCENTRATION]{User_Manual_TRUST.pdf}{doc} \tabularnewline \hline
+                        & \textbf{\textcolor{Greeen}{\_Turbulent}}  & \href{TRUST_Reference_Manual.pdf\#pbthermohydrauliqueconcentrationturbulent}{doc}
 \end{longtable}
 
 \vspace{0.5cm}
@@ -167,10 +154,37 @@ Thermo & hydraulique & Concentration & Turbulent & \multicolumn{1}{c}{}\tabularn
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Quasi-compressible problem}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\trust solves Navier-Stokes equations with/without heat equation for quasi-compressible fluid:
+
+$$
+\left\{
+\begin{array}{c}
+\displaystyle{\frac{\partial \rho }{\partial t} + \nabla \cdot (\rho \vec u) =0 }\\
+\displaystyle{ \frac{\partial \rho u}{\partial t} + \textcolor{red}{\nabla \cdot (\rho u u)} =  \textcolor{blue}{\nabla \cdot \left(\mu \nabla \vec u \right)} - \nabla P -\rho \vec g }\\
+\displaystyle{ \rho C_p \left( \frac{\partial T}{\partial t} + \textcolor{red}{\vec u \nabla T} \right) = \textcolor{blue}{\nabla \cdot \left(\lambda \nabla T\right)} + \frac{dP_0}{dt} + Q }
+\end{array}
+\right.
+$$
+
+where: $P_0=\rho R T$, $Q$ is a heat source term, and:
+
+\begin{itemize}
+\item $\rho$: density,
+\item $\mu$: dynamic viscosity,
+\item $\displaystyle{\nu=\frac{\mu}{\rho}}$: cinematic viscosity,
+\item $\vec g=g z$: gravity vector in cartesian coordinates,
+\item $C_p$: specific heat capacity at constant pressure,
+\item $\lambda$: thermal conductivity,
+\item $\displaystyle{\alpha=\frac{\lambda}{\rho C_p}}$: thermal diffusivity.
+\end{itemize}
+
+\Note that \textcolor{red}{red} terms are convective terms and \textcolor{blue}{blue} terms are diffusive terms.\\
+
+
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.95\textwidth}
 \begin{alltt}
-{\bf{Pb\_Thermohydraulique\textcolor{Greeen}{\_Turbulent}\_QC\textcolor{mauve}{\_fraction\_massique}} } \textit{my\_problem}
+{\bf{Pb\_Thermohydraulique\textcolor{Greeen}{\_Turbulent}\_QC} } \textit{my\_problem}
 
 ...
 
@@ -233,16 +247,28 @@ Thermo & hydraulique & Concentration & Turbulent & \multicolumn{1}{c}{}\tabularn
 \end{minipage}}
 \end{center}
 
-For more information on thermohydraulique QC problem, go \href[page=DOCLINK_PROBLEM FOR NAVIER STOKES EQUATIONS UNDER A SMALL MACH NUMBER APPROXIMATION]{User_Manual_TRUST.pdf}{here} and for thermohydraulique turbulent QC problem, go \href[page=DOCLINK_TURBULENT THERMOHYDRAULICAL PROBLEM UNDER SMALL MACH NUMBER]{User_Manual_TRUST.pdf}{there}.
-
+For more information on thermohydraulique QC problem, go \href{TRUST_Reference_Manual.pdf\#pbthermohydrauliqueqc}{here} and for thermohydraulique turbulent QC problem, go \href{TRUST_Reference_Manual.pdf\#pbthermohydrauliqueturbulentqc}{there}.
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Conduction problem}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+For this kind of problem, \trust solves the heat equation:
+$$
+\rho C_p \frac{\partial T}{\partial t} = \textcolor{blue}{\nabla \cdot \left(\lambda \nabla T\right)} + Q
+$$
+where:
+\begin{itemize}
+\item $\rho$: density,
+\item $C_p$: specific heat capacity at constant pressure,
+\item $\lambda$: thermal conductivity,
+\item $Q$ is a heat source term.
+\end{itemize}
 
-For this kind of problem, \trust solves the heat equation. In your data file, you will have:
+\Note that \textcolor{red}{red} terms are convective terms and \textcolor{blue}{blue} terms are diffusive terms.\\
+
+In your data file, you will have:
 
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.95\textwidth}
@@ -280,14 +306,36 @@ For this kind of problem, \trust solves the heat equation. In your data file, yo
 \end{minipage}}
 \end{center}
 
-For more information, see the \href[page=DOCLINK_CONDUCTION PROBLEM]{User_Manual_TRUST.pdf}{User's Manual}.
+For more information, see the \href{TRUST_Reference_Manual.pdf\#pbconduction}{\trust Reference Manual}.
+For more information, see the section \ref{Ref-} of the Reference Manual.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Coupled problems}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+section \ref{Ref-coupledproblem} of the Reference Manual\\
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Other problems}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+section \ref{Ref-problemeftdiscgen} of the Reference Manual\\
+
+section \ref{Ref-pbphasefield} of the Reference Manual\\
+
+section \ref{Ref-pbthermohydrauliqueconcentrationscalairespassifs} of the Reference Manual\\
+
+section \ref{Ref-chimie} of the Reference Manual\\
+
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Pressure solvers}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Then you may indicate the choice of pressure solver (cf \href[page=DOCLINK_PRESSURE SOLVERS]{User_Manual_TRUST.pdf}{User's Manual}) using the following syntaxe:
-
+Then you may indicate the choice of pressure solver (cf \href{TRUST_Reference_Manual.pdf\#solveursysbase}{\trust Reference Manual}) using the following syntaxe:
     \begin{center}
     \fbox{ \begin{minipage}[c]{0.7\textwidth}
     \begin{alltt}
@@ -299,10 +347,13 @@ Then you may indicate the choice of pressure solver (cf \href[page=DOCLINK_PRESS
 The \textit{my\_solver} may be:
 
 \begin{itemize}
-\item \href[page=DOCLINK_PRECONDITIONED CONJUGATED GRADIENT]{User_Manual_TRUST.pdf}{\textbf{GCP}},
-\item \href[page=DOCLINK_SOLVERS FROM PETSC API]{User_Manual_TRUST.pdf}{\textbf{Petsc} \textit{Petsc\_solver\_name}},
-\item \href[page=DOCLINK_CHOLESKY DIRECT METHOD]{User_Manual_TRUST.pdf}{\textbf{Cholesky}},
-\item \textbf{Gmres} or \textbf{Gen} or \textbf{Optimal} (cf to the \href[page=DOCLINK_OTHER SOLVERS]{User_Manual_TRUST.pdf}{User's Manual}).
+\item \href{TRUST_Reference_Manual.pdf\#solvgcp}{\textbf{GCP}},
+\item \href{TRUST_Reference_Manual.pdf\#petsc}{\textbf{Petsc} \textit{Petsc\_solver\_name}},
+\item \href{TRUST_Reference_Manual.pdf\#cholesky}{\textbf{Cholesky}},
+\item \href{TRUST_Reference_Manual.pdf\#gmres}{\textbf{Gmres}},
+\item \href{TRUST_Reference_Manual.pdf\#gen}{\textbf{Gen}},
+\item \href{TRUST_Reference_Manual.pdf\#optimal}{\textbf{Optimal}}.
+%\item \textbf{Gmres} or \textbf{Gen} or \textbf{Optimal} (cf to the \href[page=DOCLINK_OTHER SOLVERS]{TRUST_Reference_Manual.pdf}{\trust Reference Manual}).
 \end{itemize}
 
 
@@ -311,8 +362,7 @@ The \textit{my\_solver} may be:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Convection}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-There is no default convectif scheme so you must choose one (cf \href[page=DOCLINK_CONVECTIVE SCHEMES]{User_Manual_TRUST.pdf}{User's Manual}):
-
+There is no default convectif scheme so you must choose one \href{TRUST_Reference_Manual.pdf\#blocconvection}{convection scheme}:
     \begin{center}
     \fbox{ \begin{minipage}[c]{0.5\textwidth}
     \begin{alltt}
@@ -326,7 +376,7 @@ You can use the following convective scheme, following the recommendations of th
 \item \textbf{Amont}
 \item \textbf{Muscl}
 \item \textbf{EF\_stab}
-\item for more, see the \href[page=DOCLINK_CONVECTIVE SCHEMES]{User_Manual_TRUST.pdf}{User's Manual}.
+\item for more, see the \href{TRUST_Reference_Manual.pdf\#blocconvection}{\trust Reference Manual}.
 \end{itemize}
 
 \Note that there is no default convective scheme and if you don't want convection in your problem, you may use:
@@ -352,7 +402,8 @@ For the diffusive scheme, it is the same syntaxe:
     \end{minipage}}
     \end{center}
 
-you can choose your scheme with the help of the \href[page=DOCLINK_DIFFUSIVE SCHEME]{User_Manual_TRUST.pdf}{User's Manual}.\\
+You can choose your scheme with the help of the \href{TRUST_Reference_Manual.pdf\#blocdiffusion}{\trust Reference Manual}.\\
+
 \Note that if you don't specify any diffusive scheme, automaticaly the code uses the standard diffusive scheme of order 2.
 If you don't want diffusion in your problem, you may use:
 
@@ -383,7 +434,7 @@ For each equation, you must set initial conditions:
     \end{minipage}}
     \end{center}
 
-To see the syntaxe of each available initial condition: cf \href[page=DOCLINK_INITIAL CONDITIONS]{User_Manual_TRUST.pdf}{User's Manual}.
+To see the syntaxe of each available initial condition: cf \href{TRUST_Reference_Manual.pdf\#condinits}{\trust Reference Manual}.
 Here are the most used initial conditions:
 
 \begin{itemize}
@@ -392,7 +443,7 @@ Here are the most used initial conditions:
 \item \textbf{K\_eps}       field\_type   \textit{bloc\_lecture\_champ}
 %\item \textbf{Flux\_Chaleur\_Turbulente}    field\_type   \textit{bloc\_lecture\_champ}
 %\item \textbf{Fluctu\_Temperature}          field\_type   \textit{bloc\_lecture\_champ}
-\item for more, see the \href[page=DOCLINK_INITIAL CONDITIONS]{User_Manual_TRUST.pdf}{User's Manual}.
+%\item for more, see the \href{TRUST_Reference_Manual.pdf\#condinits}{\trust Reference Manual}.
 \end{itemize}
 
 We list here some "field\_type":
@@ -400,8 +451,9 @@ We list here some "field\_type":
 \item \textbf{Champ\_Uniforme}: for uniform field,
 \item \textbf{Champ\_Fonc\_Med}: to read a data field in a MED-format file .med at a specified time,
 \item \textbf{Champ\_Fonc\_txyz}: for a field which depends on the time and the space,
-\item \textbf{Champ\_Fonc\_Fonction\_txyz}: for a field which is a function of another field and time and/or space coordinates.
-\item refer to \href[page=DOCLINK_OBJECT FIELD DEFINITION]{User_Manual_TRUST.pdf}{User's Manual}.
+\item \textbf{Champ\_Fonc\_Fonction\_txyz}: for a field which is a function of another field and time and/or space coordinates,
+\item \textbf{Champ\_Fonc\_Reprise}: to read a data field in a save file (.xyz or .sauv) at a specified time.
+\item refer to \href{TRUST_Reference_Manual.pdf\#fieldbase}{\trust Reference Manual}.
 \end{itemize}
 
 
@@ -423,7 +475,7 @@ Then you may specify your boundary conditions like:
 
 It is important to specify here that \textbf{TRUST will not accept any boundary conditions by default.}\\
 
-You can find help for boundary conditions in the \href[page=DOCLINK_BOUNDARY CONDITIONS]{User_Manual_TRUST.pdf}{User's Manual}.
+You can find help for boundary conditions in the \href{TRUST_Reference_Manual.pdf\#condlimbase}{\trust Reference Manual}.
 Here is a list of the most used boundary conditions:
 {\small{
 \begin{itemize}
@@ -439,7 +491,7 @@ Here is a list of the most used boundary conditions:
 %\item \textbf{Bord Paroi\_rugueuse} \{ \textbf{erugu} value \}
 \item \textbf{Bord Frontiere\_ouverte\_temperature\_imposee}                        boundary\_field\_type \textit{bloc\_lecture\_champ}
 %\item \textbf{Bord Frontiere\_ouverte\_temperature\_imposee\_rayo\_semi\_transp}    boundary\_field\_type \textit{bloc\_lecture\_champ}
-%\item \textbf{Bord Frontiere\_ouverte T\_ext}                       boundary\_field\_type \textit{bloc\_lecture\_champ}
+\item \textbf{Bord Frontiere\_ouverte T\_ext}                       boundary\_field\_type \textit{bloc\_lecture\_champ}
 %\item \textbf{Bord Frontiere\_ouverte\_rayo\_semi\_transp T\_Ext}   boundary\_field\_type \textit{bloc\_lecture\_champ}
 %\item \textbf{Bord Frontiere\_ouverte\_rayo\_transp T\_Ext}         boundary\_field\_type \textit{bloc\_lecture\_champ}
 \item \textbf{Bord Paroi\_adiabatique}
@@ -451,11 +503,11 @@ Here is a list of the most used boundary conditions:
 %\item \textbf{Bord Frontiere\_ouverte\_K\_Eps\_impose}              boundary\_field\_type \textit{bloc\_lecture\_champ\_front}
 %\item \textbf{Bord Frontiere\_ouverte K\_Eps\_ext}                  boundary\_field\_type \textit{bloc\_lecture\_champ\_front}
 %\item \textbf{Bord Paroi}
-\item for more, see the \href[page=DOCLINK_BOUNDARY CONDITIONS]{User_Manual_TRUST.pdf}{User's Manual}.
+\item for more, see the \href{TRUST_Reference_Manual.pdf\#condlimbase}{\trust Reference Manual}.
 \end{itemize}
 }}
 
-To choose your "boundary\_field\_type" parameters, refer to \href[page=DOCLINK_STATIONARY BOUNDARY FIELDS]{User_Manual_TRUST.pdf}{User's Manual}.
+To choose your "boundary\_field\_type" parameters, refer to \href{TRUST_Reference_Manual.pdf\#frontfieldbase}{\trust Reference Manual}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -475,13 +527,13 @@ User can add a turbulent model to his simulation using the keyword:
 where \textit{my\_model} can be:
 
 \begin{itemize}
-\item \href[page=DOCLINK_THE MIXING LENGTH MODEL]{User_Manual_TRUST.pdf}{\textbf{Longueur\_Melange}}: RANS model based on mixing length modelling,
-\item \href[page=DOCLINK_SUB-GRID SCALE MODELS]{User_Manual_TRUST.pdf}{\textbf{Sous\_maille}}: LES model which uses a structure sub-grid function model,
+\item \href{TRUST_Reference_Manual.pdf\#longueurmelange}{\textbf{Longueur\_Melange}}: RANS model based on mixing length modelling,
+\item \href{TRUST_Reference_Manual.pdf\#sousmaille}{\textbf{Sous\_maille}}: LES model which uses a structure sub-grid function model,
 %\item \textbf{Sous\_maille\_Smago}
 %\item \textbf{Sous\_maille\_wale}
-\item \href[page=DOCLINK_THE K-EPSILON MODEL]{User_Manual_TRUST.pdf}{\textbf{K\_epsilon}}: for RANS turbulence model (k-$\varepsilon$),
+\item \href{TRUST_Reference_Manual.pdf\#kepsilon}{\textbf{K\_epsilon}}: for RANS turbulence model (k-$\varepsilon$),
 %\item \textbf{K\_epsilon\_2\_Couches}
-\item for more, see the \href[page=DOCLINK_TURBULENCE MODELS]{User_Manual_TRUST.pdf}{User's Manual}.
+\item for more, see the \href{TRUST_Reference_Manual.pdf\#modeleturbulencehydderiv}{\trust Reference Manual}.
 \end{itemize}
 
 
@@ -521,8 +573,7 @@ To introduce several source terms into the same equation, the blocks correspondi
 \item \textbf{Puissance\_thermique} field\_type   bloc\_lecture\_champ 
 %\item \textbf{Source\_Robin\_Scalaire  ...}
 %\item \textbf{Source\_Generique} field\_type   bloc\_lecture\_champ
-\item \href[page=DOCLINK_HYDRAULIC SOURCE TERMS]{User_Manual_TRUST.pdf}{documentation for hydraulic source terms},
-\item \href[page=DOCLINK_SCALAR SOURCE TERMS]{User_Manual_TRUST.pdf}{documentation for scalar source terms}.
+\item \href{TRUST_Reference_Manual.pdf\#sourcebase}{documentation for hydraulic source terms and for scalar source terms}.
 \end{itemize}
 
 
@@ -571,7 +622,7 @@ But you can also create a list of postprocessing with \textbf{Post\_processings}
     \end{minipage}}
     \end{center}
 
-We present here basic methods to post-process, you can find more details in \href[page=DOCLINK_PROBLEM POST-PROCESSING]{User_Manual_TRUST.pdf}{User's Manual}.\\
+We present here basic methods to post-process, you can find more details in \href{TRUST_Reference_Manual.pdf\#postraitements}{\trust Reference Manual}.\\
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -660,8 +711,8 @@ Physical properties (conductivity, diffusivity,...) can also been interrogated.
 
 \textbf{The name of the fields and components available for post-processing is displayed in the error file after the following message: "Reading of fields to be postprocessed". Of course, this list depends of the problem being solved.}
 
-For more informations, you can see the \href[page=DOCLINK_POST-PROCESSING FIELD NAMES]{User_Manual_TRUST.pdf}{User's Manual}.
-\vspace{1cm}
+For more informations, you can see the \href{TRUST_Reference_Manual.pdf\#champsapost}{\trust Reference Manual}.
+%\vspace{1cm}
 
 \item \textcolor{darkblue}{\textbf{Creating new fields}}
 
@@ -728,7 +779,7 @@ The \textbf{Definition\_champs} keyword is used to create new or more complex fi
 %\item Morceau\_Equation
 %\item Predefini
 %\item Tparoi\_VEF
-\item for details and other keywords, see the \href[page=DOCLINK_ADVANCED FIELD POST-PROCESSING]{User_Manual_TRUST.pdf}{User's Manual}.
+\item for details and other keywords, see the \href{TRUST_Reference_Manual.pdf\#definitionchamps}{\trust Reference Manual}.
 \end{itemize}
 
 \Note that you can combine several \textbf{\textit{field\_type}} keywords to create your field and then use your new fields to create other ones.\\
@@ -777,7 +828,7 @@ Here is an example of new field named \textit{max\_temperature}:
 \end{minipage}}
 \end{center}
 
-You can find other examples in the \href[page=66]{TRUST_and_TrioCFD_presentation.pdf}{TRUST \& TrioCFD presentation} or in the \href[page=233]{User_Manual_TRUST.pdf}{User's Manual}.
+You can find other examples in the \href[page=66]{TRUST_and_TrioCFD_presentation.pdf}{TRUST \& TrioCFD presentation} or in the \href[page=233]{TRUST_Reference_Manual.pdf}{\trust Reference Manual}.
 
 
 
@@ -818,9 +869,9 @@ Here is an example of 2D \textbf{Probes} block:
     \end{alltt}
     \end{minipage}}
     \end{center}
-where the use of \textit{"loc"} option allow to specify the wanted localisation of the probes. The available values are \textbf{"grav"} for gravity center of the element, \textbf{"nodes"} for faces and \textbf{"som"} for verteces.
+where the use of \textit{"loc"} option allow to specify the wanted localisation of the probes. The available values are \textbf{"grav"} for gravity center of the element, \textbf{"nodes"} for faces and \textbf{"som"} for verteces. There is not default location. If the point does not coincide with a calculation node, the value is extrapolated linearly according to neighbouring node values.
 
-For complete syntax, see the User's Manual \href[page=222]{User_Manual_TRUST.pdf}{here}, and for all options see the \href[page=DOCLINK_POST-PROCESSING BY PROBE]{User_Manual_TRUST.pdf}{User's Manual}.
+For complete syntax, see the \trust Reference Manual \href{TRUST_Reference_Manual.pdf\#corpspostraitement}{here}, and for all options see the \href{TRUST_Reference_Manual.pdf\#sondes}{\trust Reference Manual}.
 
 %%    \begin{center}
 %%    \fbox{ \begin{minipage}[c]{1\textwidth}
@@ -872,10 +923,6 @@ For complete syntax, see the User's Manual \href[page=222]{User_Manual_TRUST.pdf
 
 
 
-
-
-
-
 \item \textcolor{darkblue}{\textbf{Fields}}\\
 This keyword allows to post-process fields on the whole domain, specifying the name of the backup file, its format, the post-process time step and the name (and localisation) of the post-processed fields.
 
@@ -902,11 +949,11 @@ Here is an example of \textbf{Fields} block:
 
 where \textbf{"faces"} , \textbf{"elem"} and \textbf{"som"} are keywords allowed to specify the localisation of the field.\\
 
-\Note that \underline{when you don't specify the localisation of the probe}, the default value is \textbf{"som"} for values at the verteces. So fields are post-processed at the verteces of the mesh.\\
+\Note that \underline{when you don't specify the localisation of the field}, the default value is \textbf{"som"} for values at the verteces. So fields are post-processed at the verteces of the mesh.\\
 
 To visualize, your post-processed fields, you can use open source softwares like: \href{https://wci.llnl.gov/simulation/computer-codes/visit}{VisIt} (included in \trust package) for lata files, or for med files: \href{http://www.salome-platform.org}{Salom\'e} or \href{http://www.paraview.org}{Paraview}.\\
 
-For complete syntax, see the \href[page=222]{User_Manual_TRUST.pdf}{User's Manual here}, and for all options see the \href[page=DOCLINK_GENERAL FIELD POST-PROCESSING]{User_Manual_TRUST.pdf}{User's Manual there}.
+You can see the \href{TRUST_Reference_Manual.pdf\#corpspostraitement}{complete syntax} and \href{TRUST_Reference_Manual.pdf\#champsposts}{all options} in the \trust Reference Manual.
 
 
 
@@ -932,11 +979,11 @@ Here is an example of \textbf{Statistiques} block:
     \end{minipage}}
     \end{center}
 
-%%%    {\bf{Statistiques\_en\_serie Dt\_integr}} dtst \{
-%%%        \hspace{1cm}  {\bf{t\_deb}} value {\bf{t\_fin}} value 
-%%%        \hspace{1cm}  [{\textit{stat}}  field\_name] [localisation]
-%%%        \hspace{1cm}  ...
-%%%    \}
+%%    {\bf{Statistiques\_en\_serie Dt\_integr}} dtst \{
+%%        \hspace{1cm}  {\bf{t\_deb}} value {\bf{t\_fin}} value 
+%%        \hspace{1cm}  [{\textit{stat}}  field\_name] [localisation]
+%%        \hspace{1cm}  ...
+%%    \}
 
 This block will write at every \textbf{dt\_post} the average of the velocity $\overline{V(t)}$:
 \[
@@ -970,7 +1017,7 @@ and correlation between the pressure and the velocity $\left\langle P(t).V(t)\ri
 Statistical fields can be plotted with probes with the keyword "operator\_field\_name" like for example: Moyenne\_Vitesse or Ecart\_Type\_Pression or Correlation\_Vitesse\_Vitesse. For that, it is mandatory to have the statistical calculation of this fields defined with the keyword \textbf{Statistiques}.\\
 \end{remark}
 
-For complete syntax, see the User's Manual \href[page=222]{User_Manual_TRUST.pdf}{here}, and for all options see the \href[page=DOCLINK_FIELD GENERAL POST-PROCESSING FOR STATISTICS]{User_Manual_TRUST.pdf}{User's Manual}.
+For complete syntax, see the \trust Reference Manual \href{TRUST_Reference_Manual.pdf\#corpspostraitement}{here}, and for all options see the \href{TRUST_Reference_Manual.pdf\#statsposts}{\trust Reference Manual}.
 \end{itemize}
 
 

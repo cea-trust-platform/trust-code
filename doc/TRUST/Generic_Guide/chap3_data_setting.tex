@@ -30,9 +30,11 @@ Here are some of the available problems types:
 %\item \textbf{Pb\_Thermohydraulique$\left[\mbox{\_Turbulent}\right]$}
 %\item \textbf{Pb\_Hydraulique\_Concentration$\left[\mbox{\_Turbulent}\right]$}
 \item for incompressible flow: \textbf{Pb\_$\left[\mbox{\textcolor{magenta}{Thermo}}\right]$hydraulique$\left[\mbox{\textcolor{darkblue}{\_Concentration}}\right]\hspace{-0.15cm}\left[\mbox{\textcolor{Greeen}{\_Turbulent}}\right]$},
-\item for quasi-compressible flow:\\
-    \textbf{Pb\_Thermohydraulique$\left[\mbox{\textcolor{Greeen}{\_Turbulent}}\right]$\_QC$\left[\mbox{\textcolor{mauve}{\_fraction\_massique}}\right]$}, 
+\item for quasi-compressible flow: \textbf{Pb\_Thermohydraulique$\left[\mbox{\textcolor{Greeen}{\_Turbulent}}\right]$\_QC}, 
+%\item for quasi-compressible flow:\\
+%    \textbf{Pb\_Thermohydraulique$\left[\mbox{\textcolor{Greeen}{\_Turbulent}}\right]$\_QC$\left[\mbox{\textcolor{mauve}{\_fraction\_massique}}\right]$}, 
 \item for solid: \textbf{Pb\_Conduction},
+\item you can find all \href{TRUST_Reference_Manual.pdf\#Pbbase}{problem types} in the Reference Manual.
 \end{itemize}
 
 
@@ -44,10 +46,10 @@ where:
 \item \textbf{\textcolor{Greeen}{Turbulent}}: that we will simulate a turbulent flow and specify a turbulent model (RANS or LES),
 \item \textbf{Conduction}: resolution of the heat equation,
 \item \textbf{QC}: Navier Stokes equations with energy equation for quasi-compressible fluid under low Mach numbers,
-\item \textbf{\textcolor{mauve}{fraction\_massique}}: hydraulic and energy equations are solved and a list of passive scalar equations may be added.
+%\item \textbf{\textcolor{mauve}{fraction\_massique}}: hydraulic and energy equations are solved and a list of passive scalar equations may be added.
 \end{itemize}
 
-You can find all \href[page=DOCLINK_PROBLEMS]{User_Manual_TRUST.pdf}{problem types} in the User's Manual.
+
 
 
 
@@ -201,11 +203,9 @@ This is necessary for parallel calculation (see section \ref{parallel}).
 If your mesh was generated with an external tool like \href{http://www.salome-platform.org}{Salom\'e} (open source software), \href{http://resource.ansys.com/Products/Other+Products/ANSYS+ICEM+CFD}{ICEM} (commercial software), \href{http://gmsh.info/}{Gmsh} (open source software, included in \trust package) or \href{http://www-cast3m.cea.fr/}{Cast3M} (CEA software), then you must use one of the following keyword into your data file:
 
 \begin{itemize}
-\item \href[page=DOCLINK_READ]{User_Manual_TRUST.pdf}{\textbf{Read\_MED}} for a MED file from \href{http://www.salome-platform.org}{Salom\'e}, \href{http://gmsh.info/}{Gmsh},... ,
-
-\item \href[page=DOCLINK_READ]{User_Manual_TRUST.pdf}{\textbf{Read\_File}} for a binary mesh file from \href{http://resource.ansys.com/Products/Other+Products/ANSYS+ICEM+CFD}{ICEM},
-
-\item for another format, see the \href[page=DOCLINK_READ]{User_Manual_TRUST.pdf}{User's Manual}.
+\item \href{TRUST_Reference_Manual.pdf\#readmed}{\textbf{Read\_MED}} for a MED file from \href{http://www.salome-platform.org}{Salom\'e}, \href{http://gmsh.info/}{Gmsh},... ,
+\item \href{TRUST_Reference_Manual.pdf\#readfile}{\textbf{Read\_File}} for a binary mesh file from \href{http://resource.ansys.com/Products/Other+Products/ANSYS+ICEM+CFD}{ICEM},
+\item for another format, see the \href{TRUST_Reference_Manual.pdf\#read}{\trust Reference Manual}.
 \end{itemize}
 
 If you want to learn how to make a mesh with Salom\'e or Gmsh and read it with \trust, you can go to see the exercises of the \trust tutorial: \href{TRUST_tutorial.pdf\#salome}{here} for Salom\'e and \href{TRUST_tutorial.pdf\#gmsh}{here} for Gmsh.
@@ -214,7 +214,7 @@ If you want to learn how to make a mesh with Salom\'e or Gmsh and read it with \
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Create simple mesh}
+\subsection{Create quickly a mesh}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Here is an example of a simple geometry (of non complex channel type) using the internal tool of \trust:
 \begin{center}
@@ -284,19 +284,14 @@ To use this mesh in your data file, you just have to add the previous block in y
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 You can also made transformations on your mesh after the \textbf{"Mailler"} or \textbf{"Read\_*"} command, using the following keywords:
 \begin{itemize}
-\item \href[page=DOCLINK_TRIANGULATE]{User_Manual_TRUST.pdf}{\textbf{Trianguler}} to triangulate your 2D cells and create an unstructured mesh.
-
-\item \href[page=DOCLINK_TETRAHEDRALISE]{User_Manual_TRUST.pdf}{\textbf{Tetraedriser}} to tetrahedralise 3D cells and create an unstructured mesh.
-
-\item \href[page=DOCLINK_REFINE]{User_Manual_TRUST.pdf}{\textbf{Raffiner\_anisotrope/Raffiner\_isotrope}} to triangulate/tetrahedralise elements of an untructured mesh.
-
-\item \href[page=DOCLINK_EXTRUDE]{User_Manual_TRUST.pdf}{\textbf{ExtrudeBord}} to generate an extruded mesh from a boundary of a tetrahedral or an hexahedral mesh. \Note that ExtrudeBord in VEF generates 3 or 14 tetrahedra from extruded prisms.
-
-\item \href[page=DOCLINK_GATHER BOUNDARIES]{User_Manual_TRUST.pdf}{\textbf{RegroupeBord}} to build a new boundary with several boundaries of the domain.
-
-\item \href[page=DOCLINK_TRANSFORMER]{User_Manual_TRUST.pdf}{\textbf{Transformer}} to transform the coordinates of the geometry.
-
-\item for other commands, see the \href{User_Manual_TRUST.pdf}{User's Manual}.
+\item \href{TRUST_Reference_Manual.pdf\#triangulate}{\textbf{Trianguler}} to triangulate your 2D cells and create an unstructured mesh.
+\item \href{TRUST_Reference_Manual.pdf\#tetraedriser}{\textbf{Tetraedriser}} to tetrahedralise 3D cells and create an unstructured mesh.
+\item \href{TRUST_Reference_Manual.pdf\#raffineranisotrope}{\textbf{Raffiner\_anisotrope}}/\href{TRUST_Reference_Manual.pdf\#raffinerisotrope}{\textbf{Raffiner\_isotrope}} to triangulate/tetrahedralise elements of an untructured mesh.
+\item \href{TRUST_Reference_Manual.pdf\#extrudebord}{\textbf{ExtrudeBord}} to generate an extruded mesh from a boundary of a tetrahedral or an hexahedral mesh. \Note that ExtrudeBord in VEF generates 3 or 14 tetrahedra from extruded prisms.
+\Note that ExtrudeBord in VEF generates 3 or 14 tetrahedra from extruded prisms.
+\item \href{TRUST_Reference_Manual.pdf\#regroupebord}{\textbf{RegroupeBord}} to build a new boundary with several boundaries of the domain.
+\item \href{TRUST_Reference_Manual.pdf\#transformer}{\textbf{Transformer}} to transform the coordinates of the geometry.
+\item for other commands, see the section \href{TRUST_Reference_Manual.pdf\#interprete}{interprete} of the \trust Reference Manual.
 \end{itemize}
 
 \Note that theses mesh modifications work on all mesh type (i.e. also for \textbf{*.geo} or \textbf{*.bin} or \textbf{*.med} files).
@@ -306,7 +301,7 @@ You can also made transformations on your mesh after the \textbf{"Mailler"} or \
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Test your mesh}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-The keyword \href[page=37]{User_Manual_TRUST.pdf}{\textbf{Discretiser\_domaine}} is useful to discretize the domain (faces will be created) without defining a problem.
+The keyword \href{TRUST_Reference_Manual.pdf\#discretiserdomaine}{\textbf{Discretiser\_domaine}} is useful to discretize the domain (faces will be created) without defining a problem.
 Indeed, you can create a minimal data file, post-process your mesh in lata format (for example) and visualize it with VisIt. \\
 
 \Note that you must name all the boundaries!\\
@@ -381,13 +376,31 @@ To use it, launch in a bash terminal:
 
 To see how to use VisIt, go to see the first tutorial exercise: \href{TRUST_tutorial.pdf\#exo1}{Obstacle}.\\
 
+If you want to learn how to make a mesh with Salom\'e or Gmsh and read it with \trust, you can go to see the exercises of the \trust tutorial: \href{TRUST_tutorial.pdf\#salome}{here} for Salom\'e and \href{TRUST_tutorial.pdf\#gmsh}{here} for Gmsh.
 
 
-\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Parallel calculation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+For parallel calculation, we need two additional blocks.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Partitioning}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Read the sub-domains}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Discretization}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-You have to specify the \href[page=DOCLINK_DISCRETIZATION]{User_Manual_TRUST.pdf}{discretization type} which can be \textbf{VDF}, \textbf{EF} or \textbf{VEFPreP1B}.\\
+You have to specify the discretization type which can be \href{TRUST_Reference_Manual.pdf\#vdf}{\textbf{VDF}}, \href{TRUST_Reference_Manual.pdf\#ef}{\textbf{EF}} or \href{TRUST_Reference_Manual.pdf\#vefprep1b}{\textbf{VEFPreP1B}}.\\
 
 In \textbf{VDF} discretization, the locations of the unknown are drawn in the Figure \ref{fig_VDF}.\\
 
@@ -550,7 +563,7 @@ To specify the wanted discretization, you have to add the following block to you
     \end{minipage}}
     \end{center}
 
-You can add parameters to your discretization with the optional keyword \textbf{"\href[page=DOCLINK_DISCRETIZATION]{User_Manual_TRUST.pdf}{Read}"}.
+You can add parameters to your discretization with the optional keyword \href{TRUST_Reference_Manual.pdf\#read}{\textbf{Read}} (see \href{TRUST_Reference_Manual.pdf\#vefprep1b}{\textbf{VEFPreP1B discretization}}).
 
 On the \href{http://www-trio-u.cea.fr/scripts/home/publigen/content/templates/show.asp?L=EN&P=55&vTicker=alleza&ITEMID=3}{TRUST website}, you can find information about:
 \begin{itemize}
@@ -579,13 +592,14 @@ then you have to specify its parameters by filling the associated \textbf{"Read"
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Some available time schemes}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Here are some \href[page=DOCLINK_TIME SCHEMES]{User_Manual_TRUST.pdf}{available types of explicit schemes}:
+%Here are some \href[page=DOCLINK_TIME SCHEMES]{TRUST_Reference_Manual.pdf}{available types of explicit schemes}:
+Here are some available types of explicit schemes:
 \begin{itemize}
-\item \textbf{Scheme\_Euler\_explicit}
-\item \textbf{Schema\_Adams\_Bashforth\_order\_2}
+\item \href{TRUST_Reference_Manual.pdf\#eulerscheme}{\textbf{Scheme\_Euler\_explicit}},
+\item \href{TRUST_Reference_Manual.pdf\#schemaadamsbashforthorder2}{\textbf{Schema\_Adams\_Bashforth\_order\_2}},
 %\item \textbf{Schema\_Adams\_Bashforth\_order\_3}
 %\item \textbf{Runge\_Kutta\_Rationnel\_ordre\_2}
-\item \textbf{Runge\_Kutta\_ordre\_3}
+\item \href{TRUST_Reference_Manual.pdf\#rungekuttaordre3}{\textbf{Runge\_Kutta\_ordre\_3}},
 %\item \textbf{Runge\_Kutta\_ordre\_4\_D3P}
 %\item \textbf{Schema\_Predictor\_Corrector}
 %\item \textbf{Sch\_CN\_iteratif}
@@ -594,26 +608,19 @@ Here are some \href[page=DOCLINK_TIME SCHEMES]{User_Manual_TRUST.pdf}{available 
 %\item \textbf{RK3\_FT}
 \end{itemize}
 
-And also implicit schemes:
+%And also some \href[page=DOCLINK_TIME SCHEMES]{TRUST_Reference_Manual.pdf}{available types of implicit schemes}:
+And also some available types of implicit schemes:
 \begin{itemize}
-\item \textbf{Scheme\_Euler\_implicit}
+\item \href{TRUST_Reference_Manual.pdf\#schemaeulerimplicite}{\textbf{Scheme\_Euler\_implicit}},
 %\item \textbf{Schema\_Adams\_Moulton\_order\_2}
-\item \textbf{Schema\_Adams\_Moulton\_order\_3}
+\item \href{TRUST_Reference_Manual.pdf\#schemaadamsmoultonorder3}{\textbf{Schema\_Adams\_Moulton\_order\_3}}.
 %\item \textbf{Schema\_Backward\_Differentiation\_order\_2}
 %\item \textbf{Schema\_Backward\_Differentiation\_order\_3}
 \end{itemize}
 
+For other scheme, see \href{TRUST_Reference_Manual.pdf\#schematempsbase}{this section} of the Reference Manual.\\
 
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Time step determination}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-dt\_min, dt\_max, facsec...
-
-
-
-
+\Note that you can use semi-implicit schemes activating the \textbf{diffusion\_implicite} keyword in your explicit time scheme.
 
 
 
@@ -629,7 +636,14 @@ It can be:
 \item the convergency treshold: \textbf{seuil\_statio}
 \end{itemize}
 
-\Note that if the time step wants to go under the minimal time step \textbf{dt\_min}, \trust will stop the calculation.
+\Note that if the time step wants to go under the minimal time step \textbf{dt\_min}, \trust will stop the calculation.\\
+
+If you want to stop properly your running calculation (i.e. with all saves), you may use the \textit{my\_data\_file}.stop file (cf section \ref{stopfile}).
+When the simulation is running, you can see the "\textbf{0}" value in that file.\\
+
+To stop it, put a "\textbf{1}" instead of the "\textbf{0}" and at the next iteration the calculation will stop properly.\\
+
+When you don't change any thing to that file, at the end of the calculation, you can see that it is writen "\textbf{Finished correctly}".
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -649,11 +663,12 @@ To specify the medium or fluid, you may add the following block.
 
 {\bf{\textit{Fluid\_type}}} can be one of the following:
 \begin{itemize}
-\item \textbf{Fluide\_incompressible}
+\item \href{TRUST_Reference_Manual.pdf\#fluideincompressible}{\textbf{Fluide\_incompressible}}
+\item \href{TRUST_Reference_Manual.pdf\#fluidequasicompressible}{\textbf{Fluide\_quasi\_compressible}}
 %\item \textbf{Fluide\_Ostwald}
 %\item \textbf{Constituant}
-\item \textbf{Solide}
-\item for other types and more information see \href[page=DOCLINK_MEDIUM SPECIFICATION]{User_Manual_TRUST.pdf}{User's Manual}.
+\item \href{TRUST_Reference_Manual.pdf\#solide}{\textbf{Solide}}
+\item for other types and more information see \href{TRUST_Reference_Manual.pdf\#milieubase}{\trust Reference Manual}.
 \end{itemize}
 
 If you want to use more than one medium, you can add an other block for each medium or fluid.\\
@@ -666,7 +681,7 @@ If you want to use more than one medium, you can add an other block for each med
 \section{Add gravity}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 If needed, you can add gravity term to your simulation. This is done by adding
-a uniform field, no matter his name. For example:
+a uniform field, no matter his name. For example in 2D:
 
     \begin{center}
     \fbox{ \begin{minipage}[c]{0.5\textwidth}
@@ -691,8 +706,7 @@ a uniform field, no matter his name. For example:
 \subsection{Association}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Until now, we have created some objects, now we must associate them together.
-For this, we must use the \href[page=DOCLINK_ASSOCIATE]{User_Manual_TRUST.pdf}{\textbf{Associate}} interpretor:
-
+For this, we must use the \href{TRUST_Reference_Manual.pdf\#associate}{\textbf{Associate}} interpretor:
     \begin{center}
     \fbox{ \begin{minipage}[c]{0.7\textwidth}
     \begin{alltt}
@@ -710,18 +724,12 @@ For this, we must use the \href[page=DOCLINK_ASSOCIATE]{User_Manual_TRUST.pdf}{\
     \end{center}
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Coupled calculation ??}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Discretization}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Then you must discretize your domain using the \href[page=DOCLINK_DISCRETIZATION]{User_Manual_TRUST.pdf}{\textbf{Discretize}} interpretor:
-
+Then you must discretize your domain using the \href{TRUST_Reference_Manual.pdf\#discretize}{\textbf{Discretize}} interpretor:
     \begin{center}
     \fbox{ \begin{minipage}[c]{0.7\textwidth}
     \begin{alltt}
