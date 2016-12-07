@@ -138,7 +138,7 @@ status=$PB
  rm -f ${project_directory}/validation.pdf
 if [ $status -eq 0 ]
 then
- sh ${Validation_outil}/scripts/rapport_global archives
+ bash ${Validation_outil}/scripts/rapport_global archives
  mv archives/build_prov/fic.pdf ${project_directory}/validation.pdf && rm -rf archives/build_prov
 else
 echo 

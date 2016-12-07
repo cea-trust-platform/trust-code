@@ -53,7 +53,7 @@ fi
 prm=`basename $prm .prm`.prm
 if [ "$1" = "-archive" ] 
 then
-  sh $DIR/archive_resultat $prm
+  bash $DIR/archive_resultat $prm
   exit $?
 fi
 if [ ! -d $orig/src ]
@@ -120,7 +120,7 @@ then
   echo "================================================"
   if [ "$parallel" = 0 ]
   then
-     sh cmds
+     bash cmds
   else
      ########################
      # En lancement parallele, on cree des fichiers de nom cmdsN.sh sans le post_run et un fichier post_run.sh contenant les commandes post_run faites sequentiellement
@@ -141,7 +141,7 @@ then
      let n=1
      for cmd in cmds*.sh 
      do
-        sh ./$cmd &
+        bash ./$cmd &
         processes=$processes" "$!
 	task[$n]=$!
 	let n=$n+1
@@ -168,7 +168,7 @@ then
 	sleep 1
      done
      # Lancement du post_run 
-     sh ./post_run.sh
+     bash ./post_run.sh
   fi
 fi
 if [ $run -eq 2 ]
@@ -178,7 +178,7 @@ then
   echo "========================================================"
   echo "-> Running commands in the ./build/cmds_${suff} file ..."
   echo "========================================================"
-  sh cmds_${suff}
+  bash cmds_${suff}
 fi
 
 if [ $run -le -1 ]
