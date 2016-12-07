@@ -9,3 +9,4 @@ PySide:  ./install_PySide.sh matplotlib
 	@./install_PySide.sh $(package) $(install)
 clean:
 	rm -r -f $(install)
+	./clean.sh

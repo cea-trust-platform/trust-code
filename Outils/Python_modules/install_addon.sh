@@ -27,16 +27,25 @@ do
       pip -h 2> /dev/null 1 >/dev/null
       [ $? -ne 0 ] && ok=0 
   fi
+
+  if [ $package = "distribute_N" ]  || [ $package = "Distribute2_N" ]
+   then
+       tes=`python -c 'import setuptools;import sys;print  (setuptools.__version__>="0.7")'`
+     [ $tes = "True" ] && ok=1
+fi
+
   [ $ok -eq 1 ] && continue
   if [ $package = "Distribute2" ]
 then
    pac=distribute-0.7.3
+   rm -rf $pac
    unzip $TRUST_ROOT/externalpackages/Python_modules/$pac.zip
 else
   pac=`ls $TRUST_ROOT/externalpackages/Python_modules/$package*.gz`
   pac=`basename $pac .tar.gz`
   rm -rf $pac
-  tar zxvf $TRUST_ROOT/externalpackages/Python_modules/$pac.tar.gz
+  echo Untar $pac
+  tar zxf $TRUST_ROOT/externalpackages/Python_modules/$pac.tar.gz
 fi
   cd $pac
   python setup.py build
@@ -44,6 +53,9 @@ fi
   python setup.py install --prefix=$cible
   [ $? -ne 0 ] && echo "Pb installing $package"
   cd ..
-  rm -rf $pac
+  if [ $package != distribute ] && [ $package != Distribute2 ] 
+  then
+   rm -rf $pac
+  fi
 done
 python -c "import matplotlib;import jsonschema"

@@ -59,8 +59,9 @@
                    { "properties": 
                       { 
                          "velocity":     { "$ref": "trust_schemas:bound_cond_def.json#/definitions/velocity_wall" },
-                         "temperature":  { "$ref": "trust_schemas:bound_cond_def.json#/definitions/temperature_wall" }
-                      },
+                         "temperature":  { "$ref": "trust_schemas:bound_cond_def.json#/definitions/temperature_wall" },
+			 "k-epsilon":   { "$ref": "trust_schemas:bound_cond_def.json#/definitions/void_object" }
+                      },                         
                      "required": ["velocity", "temperature"]
                     }]
               }

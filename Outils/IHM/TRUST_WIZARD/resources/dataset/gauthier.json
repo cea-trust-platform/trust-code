@@ -6,7 +6,7 @@
                 0.0
             ]
         }, 
-        "turb_model": "LM", 
+        "turb_model": "Laminar", 
         "cond_lim": [
             {
                 "group_name": "cl1",

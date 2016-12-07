@@ -15,7 +15,7 @@
             { "turb_model": 
                 {
                  "type": "string", 
-                 "enum": ["None", "Laminar","LM", "k-epsilon" ,"LES"], 
+                 "enum": ["None", "Laminar", "k-epsilon"], 
                  "title": "Turbulent model", 
                  "desc": "Turbulent model for the Navier-Stokes equation",
                  "gui_order": 0

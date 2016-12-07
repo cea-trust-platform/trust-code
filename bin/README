@@ -80,7 +80,7 @@ a data set is User_Manual_TRUST.pdf (located in $TRUST_ROOT/doc/TRUST)
 -TRUST_Wizard.sh : IHM to edit an input data file from a MED meshing file
              located in $TRUST_ROOT/exec/TRUST_WIZARD
        
-        syntax : sh TRUST_Wizard.sh
+        syntax : bash TRUST_Wizard.sh
 		 A mesh.med must exist
                  A jdd.data file is created and tested
 		  
@@ -127,7 +127,7 @@ to run a calculation
 -Plot2d.sh : IHM to run a calculation and to post-process some fields
              located in $TRUST_ROOT/exec/TRUST_PLOT2D
        
-        syntax : sh Plot2d.sh jdd
+        syntax : bash Plot2d.sh jdd
 		 A jdd.data must exist
 		    
  

@@ -56,7 +56,8 @@
                   [{ "$ref": "trust_schemas:bound_cond_def.json#/definitions/generic_wall"},
                    { "properties": 
                       { 
-                         "velocity":     { "$ref": "trust_schemas:bound_cond_def.json#/definitions/velocity_wall" }
+                         "velocity":     { "$ref": "trust_schemas:bound_cond_def.json#/definitions/velocity_wall" },
+			"k-epsilon":   { "$ref": "trust_schemas:bound_cond_def.json#/definitions/void_object" }
                       },
                      "required": ["velocity"]
                     }]
