@@ -25,16 +25,9 @@ deuxentiers objet_lecture nul 0 Two integers.
 floatfloat objet_lecture nul 0 Two reals.
   attr a floattant a 0 First real.
   attr b floattant b 0 Second real.
-floatentier objet_lecture nul 0 A real and an integer.
-  attr the_float floattant the_float 0 Real.
-  attr the_int entier the_int 0 Integer.
 entierfloat objet_lecture nul 0 An integer and a real.
   attr the_int entier the_int 0 Integer.
   attr the_float floattant the_float 0 Real.
-floattantchaine objet_lecture nul 0 A real and a chain.
-  attr the_float floattant the_float 0 Real.
-  attr name chaine name 0 Chain.
-listdeuxmots listobj nul -1 deuxmots 0 List of groups of two words.
 champ_a_post objet_lecture nul 0 Field to be post-processed.
   attr champ chaine champ 0 Name of the post-processed field.
   attr localisation chaine(into=["elem","som","faces"]) localisation 1 Localisation of post-processed field values: The two available values are elem, som, or faces (LATA format only) used respectively to select field values at mesh centres (CHAMPMAILLE type field in the lml file) or at mesh nodes (CHAMPPOINT type field in the lml file). If no selection is made, localisation is set to som by default.
@@ -69,8 +62,6 @@ stats_serie_posts objet_lecture nul 0 Post-processing for statistics.
   attr mot chaine(into=["dt_integr"]) mot 0 Keyword is used to set the statistics period of integration and write period.
   attr dt_integr floattant dt_integr 0 Average on dt_integr time interval is post-processed every dt_integr seconds.
   attr stat list_stat_post stat 0 not_set
-pip objet_u pip 0 not_set
-  attr stat bloc_lecture stat 0 Set to Moyenne (average) to calculate the average of the field over time or Ecart_type (std_deviation) to calculate the standard deviation (statistic rms) of the field or Correlation to calculate the correlation between the two fields. NL2 You need to add the name of the field on which statistical analysis will be performed. Possible keywords are Vitesse (speed), Pression (pressure), Temperature, Concentration, ...
 sonde_base objet_lecture sonde_base 0 Basic probe. Probes refer to sensors that allow a value or several points of the domain to be monitored over time. The probes may be a set of points defined one by one (keyword Points) or a set of points evenly distributed over a straight segment (keyword Segment) or arranged according to a layout (keyword Plan) or according to a parallelepiped (keyword Volume). The fields allow all the values of a physical value on the domain to be known at several moments in time.
 un_point objet_lecture nul 0 A point.
   attr pos listf pos 0 Point co-ordinates.
@@ -189,8 +180,6 @@ postraitements listobj postraitements -1 un_postraitement 0 Keyword to use sever
 type_un_post objet_lecture nul 0 not_set
   attr type chaine(into=["postraitement","post_processing"]) type 0 not_set
   attr post un_postraitement post 0 not_set
-postraitement_ft_lata postraitement_base postraitement_ft_lata 0 not_set
-  attr bloc chaine bloc 0 not_set
 type_postraitement_ft_lata objet_lecture nul 0 not_set
   attr type chaine(into=["postraitement_ft_lata","postraitement_lata"]) type 0 not_set
   attr nom chaine nom 0 Name of the post-processing.
@@ -401,13 +390,6 @@ euler_scheme schema_temps_base schema_euler_explicite -1 This is the Euler expli
 schema_predictor_corrector schema_temps_base schema_predictor_corrector -1 This is the predictor-corrector scheme (second order). It is more accurate and economic than MacCormack scheme. It gives best results with a second ordre convective scheme like quick, centre (VDF).
 solveur_implicite_base objet_u solveur_implicite_base -1 Class for solver in the situation where the time scheme is the implicit scheme. Solver allows equation diffusion and convection operators to be set as implicit terms.
 solveur_sys_base class_generic solveur_sys_base -1 Basic class to solve the linear system.
-solveur_iteratif_crank objet_lecture nul 1 Iterative solver.
-  attr omega floattant omega 1 Relaxation factor (by default 0.1).
-  attr seuil floattant seuil 1 Criteria for ending iterative process (Max(||u(p) - u(p-1)||/Max||u(p)||) < seuil) (by default 0.01).
-  attr niter_max entier niter_max 1 Number of maximum p-iterations allowed to satisfy convergence criteria (by default 10).
-  attr niter_max_rep entier niter_max_rep 1 Number of maximum p-iterations allowed to satisfy convergence criteria when (re-)starting calculation (by default 40).
-  attr facsec_max floattant facsec_max 1 Maximum ratio allowed between dynamical time step returned by iterative process and stability time returned by CFL condition (by default 5.0).
-  attr facsec_evol_factor floattant facsec_evol_factor 1 Evolution factor of facsec (by default 1.1).
 Sch_CN_iteratif schema_temps_base Sch_CN_iteratif -1 The Crank-Nicholson method of second order accuracy. A mid-point rule formulation is used (Euler-centered scheme). The basic scheme is: u(t+1) = u(t) + du/dt(t+1/2)*dt. The estimation of the time derivative du/dt at the level (t+1/2) is obtained either by iterative process. The time derivative du/dt at the level (t+1/2) is calculated iteratively with a simple under-relaxations method. Since the method is implicit, neither the cfl nor the fourier stability criteria must be respected. The time step is calculated in a way that the iterative procedure converges with the less iterations as possible. NL2 Remark : for stationary or RANS calculations, no limitation can be given for time step through high value of facsec_max parameter (for instance : facsec_max 1000). In counterpart, for LES calculations, high values of facsec_max may engender numerical instabilities.
   attr niter_min entier niter_min 1 minimal number of p-iterations to satisfy convergence criteria (2 by default)
   attr niter_max entier niter_max 1 number of maximum p-iterations allowed to satisfy convergence criteria (6)
@@ -418,7 +400,6 @@ Sch_CN_EX_iteratif Sch_CN_iteratif Sch_CN_EX_iteratif -1 This keyword also descr
   attr omega floattant omega 1 relaxation factor (0.1)
 runge_kutta_ordre_3 schema_temps_base runge_kutta_ordre_3 -1 This is the Runge-Kutta scheme of third order.
 runge_kutta_ordre_4_d3p schema_temps_base runge_kutta_ordre_4_d3p -1 not_set
-rk3_ft runge_kutta_ordre_3 rk3_ft -1 Keyword for Runge Kutta time scheme for Front_Tracking calculation.
 leap_frog schema_temps_base leap_frog -1 This is the leap-frog scheme.
 runge_kutta_rationnel_ordre_2 schema_temps_base runge_kutta_rationnel_ordre_2 -1 This is the Runge-Kutta rational scheme of second order.
 solveur_lineaire_std solveur_implicite_base solveur_lineaire_std 1 not_set
@@ -457,9 +438,6 @@ schema_implicite_base schema_temps_base schema_implicite_base -1 Basic class for
   attr max_iter_implicite entier max_iter_implicite 1 Maximum number of iterations allowed for the solver (by default 200).
   attr solveur solveur_implicite_base solveur 0 This keyword is used to designate the solver selected in the situation where the time scheme is an implicit scheme. solver is the name of the solver that allows equation diffusion and convection operators to be set as implicit terms. Keywords corresponding to this functionality are Simple (SIMPLE type algorithm), Simpler (SIMPLER type algorithm) for incompressible systems, Piso (Pressure Implicit with Split Operator), and Implicite (similar to PISO, but as it looks like a simplified solver, it will use fewer timesteps. But it may run faster because the pressure matrix is not re-assembled and thus provides CPU gains. NL2 Advice: Since the 1.6.0 version, we recommend to use first the Implicite or Simple, then Piso, and at least Simpler. Because the two first give a fastest convergence (several times) than Piso and the Simpler has not been validated. It seems also than Implicite and Piso schemes give better results than the Simple scheme when the flow is not fully stationary. Thus, if the solution obtained with Simple is not stationary, it is recommended to switch to Piso or Implicite scheme.
 schema_euler_implicite schema_implicite_base schema_euler_implicite -1 This is the Euler implicite scheme.
-schema_phase_field schema_temps_base schema_phase_field -1 Keyword for the only available Scheme for time discretization of the Phase Field problem.
-  attr schema_ch schema_temps_base schema_ch 1 Time scheme for the Cahn-Hilliard equation.
-  attr schema_ns schema_temps_base schema_ns 1 Time scheme for the Navier-Stokes equation.
 un_pb objet_lecture nul 0 pour les groupes
   attr mot ref_Pb_base mot 0 la chaine
 list_un_pb listobj nul 1 un_pb 1 pour les groupes
@@ -472,8 +450,6 @@ coupled_problem pb_gen_base probleme_couple -1 This instruction causes a problem
   ref pb_3 Pb_base
   ref pb_4 Pb_base
   ref scheme_2 schema_temps_base
-probleme_couple_rayonnement coupled_problem pb_couple_rayonnement -1 This keyword is used to define a problem coupling several other problems to which radiation coupling is added.
-  ref modele modele_rayonnement_base
 mor_eqn objet_u mor_eqn -1 Class of equation pieces (morceaux d\'equation).
 bords_ecrire objet_lecture nul 0 not_set
   attr chaine chaine(into=["bords"]) chaine 0 not_set
@@ -580,8 +556,6 @@ pb_thermohydraulique_turbulent_qc Pb_base pb_thermohydraulique_turbulent_qc -1 R
 paroi_fixe condlim_base paroi_fixe -1 Keyword to designate a situation of adherence to the wall called bord (edge) (normal and tangential speed at the edge is zero).
 paroi_ft_disc_deriv objet_lecture paroi_ft_disc_deriv 0 not_set
 paroi_ft_disc_symetrie paroi_ft_disc_deriv symetrie 0 Symetrie condition in the case of two-phase flows
-paroi_ft_disc condlim_base paroi_ft_disc 0 Boundary condition for Front-Tracking problem in the discontinuous version.
-  attr type paroi_ft_disc_deriv type 0 Symetrie condition.
 symetrie condlim_base symetrie -1 1). For NAVIER STOKES equations, this keyword is used to designate a symmetry condition concerning the speed at the boundary called bord (edge) (normal speed at the edge equal to zero and tangential speed gradient at the edge equal to zero); 2). For scalar transport equation, this keyword is used to set a symmetry condition on scalar on the boundary named bord (edge).
 periodic condlim_base periodique -1 1). For NAVIER STOKES equations, this keyword is used to indicate the fact that the horizontal speed inlet values are the same as the outlet speed values, at every moment. As regards meshing, the inlet and outlet edges bear the same name.; 2). For scalar transport equation, this keyword is used to set a periodic condition on scalar. The two edges dealing with this periodic condition bear the same name.
 paroi_decalee_robin condlim_base paroi_decalee_robin 1 This keyword is used to designate a Robin boundary condition (a.u+b.du/dn=c) associated with the Pironneau methodology for the wall laws. The value of given by the delta option is the distance between the mesh (where symmetry boundary condition is applied) and the fictious wall. This boundary condition needs the definition of the dedicated source terms (Source_Robin or Source_Robin_Scalaire) according the equations used.
@@ -598,8 +572,6 @@ paroi_knudsen_non_negligeable dirichlet paroi_knudsen_non_negligeable -1 Boundar
   attr champ_2 front_field_base champ_2 0 Boundary field type.
 paroi_rugueuse dirichlet paroi_rugueuse 1 Rough wall boundary
   attr erugu floattant erugu 0 Constant value for roughness
-paroi_ft_disc_constant paroi_ft_disc_deriv constant 0 condition contact angle fidex. The angle is measured between the wall and the interface in the phase 0.
-  attr ch front_field_base ch 0 Boundary field type.
 neumann condlim_base neumann -1 Neumann condition at the boundary called bord (edge) : 1). For NAVIER STOKES equations, constraint imposed at the boundary; 2). For scalar transport equation, flux imposed at the boundary.
 frontiere_ouverte_vitesse_imposee dirichlet frontiere_ouverte_vitesse_imposee -1 Class for velocity-inlet boundary condition. The imposed speed field at the inlet is vectorial and the imposed speed values are expressed in m.s-1.
   attr ch front_field_base ch 0 Boundary field type.
@@ -619,8 +591,6 @@ frontiere_ouverte neumann frontiere_ouverte -1 Boundary outlet condition on the 
   attr ch front_field_base ch 0 Boundary field type.
 frontiere_ouverte_temperature_imposee dirichlet frontiere_ouverte_temperature_imposee -1 Imposed temperature condition at the open boundary called bord (edge) (in the case of fluid inlet). This condition must be associated with an imposed inlet speed condition. The imposed temperature value is expressed in oC or K.
   attr ch front_field_base ch 0 Boundary field type.
-frontiere_ouverte_temperature_imposee_rayo_semi_transp frontiere_ouverte_temperature_imposee frontiere_ouverte_temperature_imposee_rayo_semi_transp -1 Imposed temperature condition for a radiation problem with semi transparent gas.
-frontiere_ouverte_temperature_imposee_rayo_transp frontiere_ouverte_temperature_imposee frontiere_ouverte_temperature_imposee_rayo_transp -1 Imposed temperature condition for a radiation problem with transparent gas.
 frontiere_ouverte_concentration_imposee dirichlet frontiere_ouverte_concentration_imposee -1 Imposed concentration condition at an open boundary called bord (edge) (situation corresponding to a fluid inlet). This condition must be associated with an imposed inlet speed condition.
   attr ch front_field_base ch 0 Boundary field type.
 paroi_couple condlim_base paroi_couple -1 not_set
@@ -648,17 +618,12 @@ paroi_echange_global_impose condlim_base paroi_echange_global_impose -1 Global t
   attr himpc front_field_base himpc 0 Boundary field type.
   attr text chaine text 0 External temperature value. The external temperature value is expressed in oC or K.
   attr ch front_field_base ch 0 Boundary field type.
-paroi_echange_externe_impose_rayo_transp paroi_echange_externe_impose paroi_echange_externe_impose_rayo_transp -1 External type exchange condition for a coupled problem with radiation in transparent gas.
-paroi_echange_externe_impose_rayo_semi_transp paroi_echange_externe_impose paroi_echange_externe_impose_rayo_semi_transp -1 External type exchange condition for a coupled problem with radiation in semi transparent gas.
 boussinesq_temperature source_base boussinesq_temperature -1 Class to describe a source term that couples the movement quantity equation and energy equation with the Boussinesq hypothesis.
   attr t0 chaine t0 0 Reference temperature value (oC or K). It can also be a time dependant function since the 1.6.6 version.
   attr verif_boussinesq entier verif_boussinesq 1 Keyword to check (1) or not (0) the reference temperature in comparison with the mean temperature value in the domain. It is set to 1 by default.
 boussinesq_concentration source_base boussinesq_concentration -1 Class to describe a source term that couples the movement quantity equation and constituent transportation equation with the Boussinesq hypothesis.
   attr c0 list c0 0 Reference concentration field type. The only field type currently available is Champ_Uniforme (Uniform field).
   attr verif_boussinesq entier verif_boussinesq 1 Keyword to check (1) or not (0) the reference concentration in comparison with the mean concentration value in the domain. It is set to 1 by default.
-boussinesq source_base boussinesq -1 Class to define a source term coupling the movement quantity equation with the energy equation and the constituent(s) transportation equation under the Boussinesq hypothesis. NL2 Observations : NL2 Using a Boussinesq type source term or jointly using a Boussinesq_temperature type source term and a Boussinesq_concentration type source term corresponds to the same thing.
-  attr t0 floattant t0 0 Reference temperature value (oC or K).
-  attr c0 field_base c0 0 Reference concentration field type. The only field type currently available is Champ_Uniforme (Uniform field).
 dirac source_base dirac 0 Class to define a source term corresponding to a volume power release in the energy equation.
   attr position list position 0 not_set
   attr ch field_base ch 0 Thermal power field type. To impose a volume power on a domain sub-area, the Champ_Uniforme_Morceaux (partly_uniform_field) type must be used. NL2 Warning : The volume thermal power is expressed in W.m-3.
@@ -700,7 +665,6 @@ champ_don_lu champ_don_base champ_don_lu 0 Field to read a data field (values lo
   attr dom ref_domaine dom 0 Name of the domain.
   attr nb_comp entier nb_comp 0 Number of field components.
   attr file chaine file 0 Name of the file. NL2 This file has the following format: NL2 nb_val_lues -> Number of values readen in th file NL2 Xi Yi Zi -> Coordinates readen in the file NL2 Ui Vi Wi -> Value of the field
-gamm_pr0 champ_don_base gamm_pr0 0 Field T = (1-x*(H/L))
 init_par_partie champ_don_base init_par_partie 0 ne marche que pour n_comp=1
   attr n_comp entier(into=[1]) n_comp 0 not_set
   attr val1 floattant val1 0 not_set
@@ -738,9 +702,6 @@ champ_front_lu front_field_base champ_front_lu 0 boundary field which is given f
   attr domaine ref_domaine domain 0 Name of domain
   attr dim entier dim 0 number of components
   attr file chaine file 0 path for the read file
-champ_front_normal_vef front_field_base champ_front_normal_vef 0 Field to define the normal vector field standard at the boundary in VEF discretization.
-  attr mot chaine(into=["valeur_normale"]) mot 0 Name of vector field.
-  attr vit_tan floattant vit_tan 0 normal vector value (positive value for a vector oriented outside to inside).
 boundary_field_inward front_field_base boundary_field_inward 1 this field is used to define the normal vector field standard at the boundary in VDF or VEF discretization.
   attr normal_value chaine normal_value 0 normal vector value (positive value for a vector oriented outside to inside) which can depend of the time.
 champ_front_pression_from_u front_field_base champ_front_pression_from_u 0 this field is used to define a pressure field depending of a velocity field.
@@ -805,9 +766,6 @@ sous_maille_wale mod_turb_hyd_ss_maille sous_maille_wale -1 This is the WALE-mod
   attr cw floattant cw 1 The unique parameter (constant) of the WALE-model (by default value 0.5).
 sous_maille_smago mod_turb_hyd_ss_maille sous_maille_smago -1 Smagorinsky sub-grid turbulence model. NL2 Nut=Cs1*Cs1*l*l*sqrt(2*S*S) NL2 K=Cs2*Cs2*l*l*2*S
   attr cs floattant cs 1 This is an optional keyword and the value is used to set the constant used in the Smagorinsky model (This is currently only valid for Smagorinsky models and it is set to 0.18 by default) .
-sous_maille_selectif_mod mod_turb_hyd_ss_maille sous_maille_selectif_mod -1 Selective structure sub-grid function model (modified).
-  attr thi deuxentiers thi 1 For homogeneous isotropic turbulence (THI), two integers ki and kc are needed in VDF (not in VEF).
-  attr canal floatentier canal 1 h dir_faces_paroi: For a channel flow, the half width h and the orientation of the wall dir_faces_paroi are needed.
 combinaison mod_turb_hyd_ss_maille combinaison -1 This keyword specify a turbulent viscosity model where the turbulent viscosity is user-defined.
   attr nb_var listchaine nb_var 1 Number and names of variables which will be used in the turbulent viscosity definition (by default 0)
   attr fonction chaine fonction 1 Fonction for turbulent viscosity. X,Y,Z and variables defined previously can be used.
@@ -818,26 +776,12 @@ longueur_melange mod_turb_hyd_ss_maille longueur_melange -1 This model is based 
   attr dmax floattant dmax 1 Maximum distance.
   attr fichier chaine fichier 1 not_set
   attr fichier_ecriture_K_Eps chaine fichier_ecriture_K_Eps 1 When a restart with k-epsilon model is envisaged, this keyword allows to generate external MED-format file with evaluation of k and epsilon quantities (based on eddy turbulent viscosity and turbulent characteristic length returned by mixing length model). The frequency of the MED file print is set equal to dt_impr_ustar. Moreover, k-eps MED field is automatically saved at the last time step. MED file is then used for the restarting K-Epsilon calculation with the Champ_Fonc_Med keyword.
-sous_maille_selectif mod_turb_hyd_ss_maille sous_maille_selectif -1 Selective structure sub-grid function model (a filter is applied to the structure function).
-sous_maille_1elt mod_turb_hyd_ss_maille sous_maille_1elt -1 Turbulence model sous_maille_1elt.
-sous_maille_1elt_selectif_mod sous_maille_1elt sous_maille_1elt_selectif_mod -1 Turbulence model sous_maille_1elt_selectif_mod.
-sous_maille_axi mod_turb_hyd_ss_maille sous_maille_axi -1 Structure sub-grid function turbulence model available in cylindrical co-ordinates.
 sous_maille mod_turb_hyd_ss_maille sous_maille -1 Structure sub-grid function model.
 prandtl modele_turbulence_scal_base prandtl -1 The Prandtl model. For the scalar equations, only the model based on Reynolds analogy is available. If K_Epsilon was selected in the hydraulic equation, Prandtl must be selected for the convection-diffusion temperature equation coupled to the hydraulic equation and Schmidt for the concentration equations.
   attr prdt chaine prdt 1 Keyword to modify the constant (Prdt) of Prandtl model : Alphat=Nut/Prdt Default value is 0.9
   attr prandt_turbulent_fonction_nu_t_alpha chaine prandt_turbulent_fonction_nu_t_alpha 1 Optional keyword to specify turbulent diffusivity (by default, alpha_t=nu_t/Prt) with another formulae, for example: alpha_t=nu_t2/(0,7*alpha+0,85*nu_tt) with the string nu_t*nu_t/(0,7*alpha+0,85*nu_t) where alpha is the thermal diffusivity.
 schmidt modele_turbulence_scal_base schmidt -1 The Schmidt model. For the scalar equations, only the model based on Reynolds analogy is available. If K_Epsilon was selected in the hydraulic equation, Prandtl must be selected for the convection-diffusion temperature equation coupled to the hydraulic equation and Schmidt for the concentration equations.
   attr scturb floattant scturb 1 Keyword to modify the constant (Sct) of Schmlidt model : Dt=Nut/Sct Default value is 0.7.
-sous_maille_smago_filtre mod_turb_hyd_ss_maille sous_maille_smago_filtre -1 Smagorinsky sub-grid turbulence model should be used with low-filter.
-sous_maille_smago_dyn mod_turb_hyd_ss_maille sous_maille_smago_dyn -1 Dynamic Smagorinsky sub-grid turbulence model (available in VDF discretization only).
-  attr stabilise chaine(into=["6_points","moy_euler","plans_paralleles"]) stabilise 1 not_set
-  attr nb_points entier nb_points 1 not_set
-sous_maille_dyn modele_turbulence_scal_base sous_maille_dyn -1 Dynamic sub-grid turbulence modele. NL2 Warning : Available in VDF only. Not coded in VEF yet.
-  attr stabilise chaine(into=["6_points","moy_euler","plans_paralleles"]) stabilise 1 not_set
-  attr nb_points entier nb_points 1 not_set
-fluctuation_temperature_w_bas_re modele_turbulence_scal_base fluctuation_temperature_w_bas_re -1 a_reprendre
-  attr transport_fluctuation_temperature_w_bas_re bloc_lecture transport_fluctuation_temperature_w_bas_re 1 Transport equation for the temperature fluctuation.
-  attr modele_fonc_bas_reynolds_thermique deuxmots modele_fonc_bas_reynolds_thermique 1 Choice of the coefficient (Jones Lauder).
 modele_fonction_bas_reynolds_base objet_lecture modele_fonction_bas_reynolds_base -1 not_set
 transport_k_epsilon eqn_base transport_k_epsilon -1 The (k-eps) transportation equation. To restart from a previous mixing length calculation, an external MED-format file containing reconstructed K and Epsilon quantities can be read (see fichier_ecriture_k_eps) thanks to the Champ_fonc_MED keyword. NL2 Warning, When used with the Quasi-compressible model, k and eps should be viewed as rho k and rho epsilon when defining initial and boundary conditions or when visualizing values for k and eps. This bug will be fixed in a future version.
   attr with_nu chaine(into=["yes","no"]) with_nu 1 yes/no
@@ -864,10 +808,6 @@ fourfloat objet_lecture nul 0 Four reals.
   attr b floattant b 0 Second real.
   attr c floattant c 0 Third real.
   attr d floattant d 0 Fourth real.
-threefloat objet_lecture nul 0 Three reals.
-  attr a floattant a 0 First real.
-  attr b floattant b 0 Second real.
-  attr c floattant c 0 Third real.
 twofloat objet_lecture nul 0 two reals.
   attr a floattant a 0 First real.
   attr b floattant b 0 Second real.
@@ -888,7 +828,6 @@ paroi_tble turbulence_paroi_base paroi_tble 1 Keyword for the Thin Boundary Laye
   attr sans_source_boussinesq rien sans_source_boussinesq 1 not_set
   attr alpha floattant alpha 1 not_set
   attr kappa floattant kappa 1 not_set
-loi_WW_scalaire turbulence_paroi_scalaire_base loi_WW_scalaire 0 not_set
 paroi_tble_scal turbulence_paroi_scalaire_base paroi_tble_scal 1 Keyword for the Thin Boundary Layer Equation thermal wall-model.
   attr n entier n 1 Number of nodes in the TBLE grid (mandatory option).
   attr facteur floattant facteur 1 Stretching ratio for the TBLE grid (to refine, the TBLE facteur must be greater than 1).
@@ -897,11 +836,6 @@ paroi_tble_scal turbulence_paroi_scalaire_base paroi_tble_scal 1 Keyword for the
   attr stats fourfloat stats 1 Statistics of the TBLE velocity and turbulent viscosity profiles. 4 values are required : the starting time of velocity averaging, the starting time of the RMS fluctuations, the ending time of the statistics computation and finally the print time period for the statistics.
   attr sonde_tble liste_sonde_tble sonde_tble 1 not_set
   attr prandtl floattant prandtl 1 not_set
-loi_odvm turbulence_paroi_scalaire_base loi_odvm 1 Thermal wall-function based on the simultaneous 1D resolution of a turbulent thermal boundary-layer and a variance transport equation, adapted to conjugate heat-transfer problems with fluid/solid thermal interaction (where a specific boundary condition should be used : Paroi_Echange_Contact_OVDM_VDF). This law is also available with isothermal walls.
-  attr n entier n 0 Number of points per face in the 1D uniform meshes. n should be choosen in order to have the first point situated near $\Delta$ y+=1/3.
-  attr gamma floattant gamma 0 Smoothing parameter of the signal between 10e-5 (no smoothing) and 10e-1 (high averaging).
-  attr stats floatfloat stats 1 value_t0 value_dt : Only for plane channel flow, it gives mean and root mean square profiles in the fine meshes, since value_t0 and every value_dt seconds. The values are printed into files named ODVM_fields*.dat.
-  attr check_files rien check_files 1 It gives for one boundary face a historical view of local instantaneous and filtered values, as well as the calculated variance profiles from the resolution of the equation. The printed values are into the file Suivi_ndeb.dat.
 loi_paroi_nu_impose turbulence_paroi_scalaire_base loi_paroi_nu_impose 1 Keyword to impose Nusselt numbers on the wall for the thermohydraulic problems. To use this option, it is necessary to give in the data file the value of the hydraulic diameter and the expression of the Nusselt number.
   attr nusselt chaine nusselt 0 The Nusselt number. This expression can be a function of x, y, z, Re (Reynolds number), Pr (Prandtl number).
   attr diam_hydr field_base diam_hydr 0 The hydraulic diameter.
@@ -911,9 +845,6 @@ utau_imp turbulence_paroi_base utau_imp 1 Keyword to impose the friction velocit
   attr u_tau field_base u_tau 1 Field type.
   attr lambda_c chaine lambda_c 1 The friction coefficient. It can be function of the spatial coordinates x,y,z, the Reynolds number Re, and the hydraulic diameter.
   attr diam_hydr field_base diam_hydr 1 The hydraulic diameter.
-loi_puissance_hydr turbulence_paroi_base loi_puissance_hydr 1 A Loi_puissance_hydr law for wall turbulence for NAVIER STOKES equations.
-loi_ww_hydr loi_standard_hydr loi_ww_hydr 1 laws have been qualified on channel calculation
-loi_ciofalo_hydr loi_standard_hydr loi_ciofalo_hydr -1 A Loi_ciofalo_hydr law for wall turbulence for NAVIER STOKES equations.
 source_transport_k_eps source_base source_transport_k_eps -1 Keyword to alter the source term constants in the standard k-eps model epsilon transportation equation. By default, these constants are set to: C1_eps=1.44 C2_eps=1.92
   attr c1_eps floattant c1_eps 1 First constant.
   attr c2_eps floattant c2_eps 1 Second constant.
@@ -923,9 +854,6 @@ source_transport_k_eps_aniso_concen source_transport_k_eps source_transport_k_ep
   attr c3_eps floattant c3_eps 1 Third constant.
 source_transport_k_eps_aniso_therm_concen source_transport_k_eps source_transport_k_eps_aniso_therm_concen -1 Keywords to modify the source term constants in the anisotherm standard k-eps model epsilon transportation equation. By default, these constants are set to: C1_eps=1.44 C2_eps=1.92 C3_eps=1.0
   attr c3_eps floattant c3_eps 1 Third constant.
-source_transport_k_eps_bas_reynolds source_base source_transport_k_eps_bas_reynolds -1 Keywords to modify the source term constants in the model\'s epsilon transportation equation. By default, these constants are set to: C1_eps=1.55 C2_eps=2.
-  attr c1_eps floattant c1_eps 1 First constant.
-  attr c2_eps floattant c2_eps 1 Second constant.
 Paroi condlim_base Paroi 0 Impermeability condition at a wall called bord (edge) (standard flux zero). This condition must be associated with a wall type hydraulic condition.
 frontiere_ouverte_k_eps_impose condlim_base frontiere_ouverte_k_eps_impose -1 Turbulence condition imposed on an open boundary called bord (edge) (this situation corresponds to a fluid inlet). This condition must be associated with an imposed inlet speed condition.
   attr ch front_field_base ch 0 Boundary field type.
@@ -1087,30 +1015,16 @@ tetraedriser_homogene_compact tetraedriser tetraedriser_homogene_compact -1 This
 tetraedriser_par_prisme tetraedriser tetraedriser_par_prisme -1 Tetraedriser_par_prisme generates 6 iso-volume tetrahedral element from primary hexahedral one (contrarily to the 5 elements ordinarily generated by tetraedriser). This element is suitable for calculation of gradients at the summit (coincident with the gravity centre of the jointed elements related with) and spectra (due to a better alignment of the points).
 verifiercoin interprete verifiercoin -1 This keyword subdivides inconsistent 2D/3D cells used with VEFPreP1B discretization. Must be used before the mesh is discretized. NL he lire_fichier option can be used only if the file.decoupage_som was previously created by TRUST. This option, only in 2D, reverses the common face at two cells (at least one is inconsistent), through the nodes opposed. In 3D, the option has no effect. NL2 The expert_only option deactivates, into the VEFPreP1B divergence operator, the test of inconsistent cells.
   attr dom ref_domaine dom 0 Name of domain.
-modele_rayonnement_base objet_u modele_rayonnement_base -1 Basic class for wall thermal radiation model.
-modele_rayonnement_milieu_transparent modele_rayonnement_base modele_rayonnement_milieu_transparent -2 Wall thermal radiation model for a transparent gas and resolving a radiation-conduction-thermohydraulics coupled problem in VDF or VEF.\input{{modelerayotransp}}
-  attr bloc bloc_lecture bloc 0 See description.
 paroi_flux_impose condlim_base paroi_flux_impose 0 Normal flux condition at the wall called bord (edge). The surface area of the flux (W.m-1 in 2D or W.m-2 in 3D) is imposed at the boundary according to the following convention: a positive flux is a flux that enters into the domain according to convention.
   attr ch front_field_base ch 0 Boundary field type.
-paroi_flux_impose_rayo_transp paroi_flux_impose paroi_flux_impose_rayo_transp -1 Normal flux condition at the wall called bord (edge) for a radiation problem in transparent gas.
-paroi_flux_impose_rayo_semi_transp_vdf paroi_flux_impose paroi_flux_impose_rayo_semi_transp_vdf -1 Normal flux condition at the wall called bord (edge) for a radiation problem in semi transparent gas (in VDF).
-paroi_flux_impose_rayo_semi_transp_vef paroi_flux_impose paroi_flux_impose_rayo_semi_transp_vef -1 Normal flux condition at the wall called bord (edge) for a radiation problem in semi transparent gas (in VEF).
 paroi_temperature_imposee dirichlet paroi_temperature_imposee 0 Imposed temperature condition at the wall called bord (edge).
   attr ch front_field_base ch 0 Boundary field type.
 temperature_imposee_paroi paroi_temperature_imposee temperature_imposee_paroi 0 Imposed temperature condition at the wall called bord (edge).
-paroi_temperature_imposee_rayo_transp paroi_temperature_imposee paroi_temperature_imposee_rayo_transp -1 Imposed temperature condition at the wall called bord (edge) for a radiation problem in transparent gas.
-paroi_temperature_imposee_rayo_semi_transp paroi_temperature_imposee paroi_temperature_imposee_rayo_semi_transp -1 Imposed temperature condition at the wall called bord (edge) for a radiation problem in semi transparent gas.
 champ_front_contact_vef front_field_base champ_front_contact_vef 0 This field is used on a boundary between a solid and fluid domain to exchange a calculated temperature at the contact face of the two domains according to the flux of the two problems.
   attr local_pb ref_Pb_base local_pb 0 Name of the problem.
   attr local_boundary chaine local_boundary 0 Name of the boundary.
   attr remote_pb ref_Pb_base remote_pb 0 Name of the second problem.
   attr remote_boundary chaine remote_boundary 0 Name of the boundary in the second problem.
-champ_front_contact_rayo_transp_vef champ_front_contact_vef champ_front_contact_rayo_transp_vef -1 This field is used on a boundary between a solid and fluid domain to exchange a calculated temperature at the contact face of the two domains according to the flux of the two problems with radiation in transparent fluid.
-champ_front_contact_rayo_semi_transp_vef champ_front_contact_vef champ_front_contact_rayo_semi_transp_vef -1 This field is used on a boundary between a solid and fluid domain to exchange a calculated temperature at the contact face of the two domains according to the flux of the two problems with radiation in semi transparent fluid.
-echange_contact_rayo_transp_vdf paroi_echange_contact_vdf echange_contact_rayo_transp_vdf -1 Exchange boundary condition in VDF between the transparent fluid and the solid for a problem coupled with radiation. Without radiation, it is the equivalent of the Paroi_Echange_contact_VDF exchange condition.
-paroi_echange_contact_rayo_semi_transp_vdf paroi_echange_contact_vdf paroi_echange_contact_rayo_semi_transp_vdf -1 Exchange boundary condition in VDF between the semi transparent fluid and the solid for a problem coupled with radiation.
-paroi_echange_contact_vdf_ft paroi_echange_contact_vdf paroi_echange_contact_vdf_ft -1 This boundary condition is used between a conduction problem and a thermohydraulic problem with two phases flow (Front-Tracking method) to modelize heat exchange.
-paroi_echange_contact_odvm_vdf paroi_echange_contact_vdf paroi_echange_contact_odvm_vdf -1 not_set
 bloc_lecture_poro objet_lecture nul 1 Surface and volume porosity values.
   attr volumique floattant volumique 0 Volume porosity value.
   attr surfacique list surfacique 0 Surface porosity values (in X, Y, Z directions).
@@ -1138,10 +1052,6 @@ champ_fonc_tabule champ_don_base champ_fonc_tabule 0 Field that is tabulated as 
   attr bloc bloc_lecture bloc 0 Values (the table (the value of the field at any time is calculated by linear interpolation from this table) or the analytical expression (with keyword expression to use an analytical expression)).
 champ_fonc_fonction champ_fonc_tabule champ_fonc_fonction 0 Field that is a function of another field.
 champ_fonc_fonction_txyz champ_fonc_fonction champ_fonc_fonction_txyz -1 this refers to a field that is a function of another field and time and/or space coordinates
-frontiere_ouverte_rayo_transp frontiere_ouverte frontiere_ouverte_rayo_transp -1 Keyword to set a boundary outlet temperature condition on the boundary called bord (edge) (diffusion flux zero) for a radiation problem with transparent gas.
-frontiere_ouverte_rayo_transp_vdf frontiere_ouverte_rayo_transp frontiere_ouverte_rayo_transp_vdf -1 doit disparaitre
-frontiere_ouverte_rayo_transp_vef frontiere_ouverte_rayo_transp frontiere_ouverte_rayo_transp_vef -1 doit disparaitre
-frontiere_ouverte_rayo_semi_transp frontiere_ouverte frontiere_ouverte_rayo_semi_transp -1 Keyword to set a boundary outlet temperature condition on the boundary called bord (edge) (diffusion flux zero) for a radiation problem with semi transparent gas.
 frontiere_ouverte_gradient_pression_impose_vef frontiere_ouverte_pression_imposee frontiere_ouverte_gradient_pression_impose_vef -1 Keyword for an outlet boundary condition on the gradient of the pressure. This boundary condition may only be applied in the VEF module.
 frontiere_ouverte_gradient_pression_impose_vefprep1b frontiere_ouverte_gradient_pression_impose_vef frontiere_ouverte_gradient_pression_impose_vefprep1b -1 Keyword for an outlet boundary condition in VEF P1B/P1NC on the gradient of the pressure.
 bloc_lec_champ_init_canal_sinal objet_lecture nul 1 Parameters for the class champ_init_canal_sinal. NL2 in 2D: NL2 U=ucent*y(2h-y)/h/h NL2 V=ampli_bruit*rand+ampli_sin*sin(omega*x) NL2 rand: unpredictable value between -1 and 1. NL2 in 3D: NL2 U=ucent*y(2h-y)/h/h NL2 V=ampli_bruit*rand1+ampli_sin*sin(omega*x) NL2 W=ampli_bruit*rand2 NL2 rand1 and rand2: unpredictables values between -1 and 1.
@@ -1178,18 +1088,6 @@ coriolis source_base coriolis 0 Keyword for a Coriolis term in hydraulic equatio
   attr omega chaine omega 0 Value of omega.
 champ_front_recyclage front_field_base champ_front_recyclage 0 \input{{champfrontrecyclage}}
   attr bloc chaine bloc 0 not_set
-k_epsilon_bas_reynolds modele_turbulence_hyd_deriv k_epsilon_bas_reynolds -1 Bas Reynolds k-eps turbulence model. Caution: this model is only available in the VDF module.
-  attr transport_k_epsilon_bas_reynolds bloc_lecture transport_k_epsilon_bas_reynolds 1 Keyword to define the bas Reynolds k-eps transportation equation.
-  attr modele_fonc_bas_reynolds deuxmots modele_fonc_bas_reynolds 1 Keyword to set the bas Reynolds model used. Currently, two models are available for VDF and VEF discretizations : Launder_Sharma for Launder-Sharma model or Jones_Launder for Jones-Launder model. When Launder Sharma\'s model is used, one must specify the correct constants C1 and C2 for K_eps transport equation source termes (C1=1.44 and C2=1.92).
-k_epsilon_v2 modele_turbulence_hyd_deriv k_epsilon_v2 -1 Keyword to refer to a turbulence model available in VDF discretization. This model is a variant of the k-eps turbulence model called K-Eps-V2. A transport equation for V2 is added to calculate turbulent viscosity (Nut=CmuV2).
-  attr transport_k_epsilon_v2 bloc_lecture transport_k_epsilon_v2 1 Keyword to define the (k-eps) transportation equation.
-  attr transport_v2 bloc_lecture transport_v2 1 Transport equation for V2.
-  attr eqnf22 bloc_lecture eqnf22 1 Elliptic equation to calculate the V2 tranport source term (solver like GMRES is needed).
-k_epsilon_2_couches modele_turbulence_hyd_deriv k_epsilon_2_couches -1 Turbulence model at two layers for the hydraulic equation is a variant of the k-eps turbulence model. NL2 Warning : Model only available in VDF discretization.
-  attr transport_k_kepsilon bloc_lecture transport_k_kepsilon 1 Transport equation for K and Epsilon.
-loi_paroi_2_couches turbulence_paroi_base loi_paroi_2_couches 0 Standard law of the wall for turbulence model k-eps at two layers for a hydraulic problem.
-loi_paroi_2_couches_scalaire turbulence_paroi_scalaire_base loi_paroi_2_couches_scalaire 0 Standard law of the wall for turbulence model k-eps at two layers for a thermohydraulic problem.
-puissance_thermique_uniforme puissance_thermique puissance_thermique_uniforme -1 Source term puissance_thermique_uniforme.
 paroi_echange_externe_impose_h paroi_echange_externe_impose paroi_echange_externe_impose_h -1 Particular case of class paroi_echange_externe_impose for enthalpy equation.
 entree_temperature_imposee_h frontiere_ouverte_temperature_imposee entree_temperature_imposee_h -1 Particular case of class frontiere_ouverte_temperature_imposee for enthalpy equation.
 sortie_libre_temperature_imposee_h neumann sortie_libre_temperature_imposee_h 0 Open boundary for heat equation with enthalpy as unknown.
@@ -1238,22 +1136,6 @@ perte_charge_circulaire source_base perte_charge_circulaire 1 New pressure loss.
   attr diam_hydr_ortho champ_don_base diam_hydr_ortho 0 Transverse hydraulic diameter value.
   attr direction champ_don_base direction 0 Field which indicates the direction of the pressure loss.
   attr sous_zone chaine sous_zone 1 Optional sub-area where pressure loss applies.
-flux_radiatif condlim_base flux_radiatif 0 Boundary condition for radiation equation.
-  attr na chaine(into=["A"]) na 0 Keyword for constant in boundary condition for irradiancy (sqrt(3) for half-infinite domain or 2 in closed domain).
-  attr a floattant a 0 Value of constant in boundary condition for irradiancy (sqrt(3) for half-infinite domain or 2 in closed domain).
-  attr ne chaine(into=["emissivite"]) ne 0 Keyword for wall emissivity.
-  attr emissivite front_field_base emissivite 0 Wall emissivity, value between 0 and 1.
-flux_radiatif_vdf flux_radiatif flux_radiatif_vdf -1 Boundary condition for radiation equation in VDF.
-flux_radiatif_vef flux_radiatif flux_radiatif_vef -1 Boundary condition for radiation equation in VEF.
-eq_rayo_semi_transp objet_lecture nul -1 Irradiancy equation.
-  attr solveur solveur_sys_base solveur 0 Solver of the irradiancy equation.
-  attr conditions_limites|boundary_conditions condlims conditions_limites 1 Boundary conditions.
-modele_rayo_semi_transp Pb_base modele_rayo_semi_transp -3 Radiation model for semi transparent gas. The model should be associated to the coupling problem BEFORE the time scheme.
-  attr eq_rayo_semi_transp eq_rayo_semi_transp eq_rayo_semi_transp 1 Irradiancy G equation. Radiative flux equals -grad(G)/3/kappa.
-pb_couple_rayo_semi_transp coupled_problem pb_couple_rayo_semi_transp -1 Problem coupling several other problems to which radiation coupling is added (for semi transparent gas). NL2 You have to associate a modele_rayo_semi_transpNL2 You have to add a radiative term source in energy equation NL2 Warning: Calculation with semi transparent gas model may lead to divergence when high temperature differences are used. Indeed, the calculation of the stability time step of the equation does not take in account the source term. In semi transparent gas model, energy equation source term depends strongly of temperature via irradiance and stability is not guaranteed by the calculated time step. Reducing the facsec of the time scheme is a good tip to reach convergence when divergence is encountered.
-  ref modele modele_rayo_semi_transp
-  ref scheme schema_temps_base
-  ref scheme_2 schema_temps_base
 convection_diffusion_concentration eqn_base convection_diffusion_concentration -1 Constituent transportation vectorial equation (concentration diffusion convection).
   attr nom_inconnue chaine nom_inconnue 1 Keyword Nom_inconnue will rename the unknown of this equation with the given name. In the postprocessing part, the concentration field will be accessible with this name. This is usefull if you want to track more than one concentration (otherwise, only the concentration field in the first concentration equation can be accessed).
   attr masse_molaire floattant masse_molaire 1 not_set
@@ -1278,63 +1160,19 @@ pb_thermohydraulique_concentration_turbulent Pb_base pb_thermohydraulique_concen
   attr convection_diffusion_concentration_turbulent convection_diffusion_concentration_turbulent convection_diffusion_concentration_turbulent 1 Constituent transportation equations (concentration diffusion convection) as well as the associated turbulence model equations.
   attr convection_diffusion_temperature_turbulent convection_diffusion_temperature_turbulent convection_diffusion_temperature_turbulent 1 Energy equation (temperature diffusion convection) as well as the associated turbulence model equations.
   ref constituant constituant
-source_qdm_phase_field source_base source_qdm_phase_field 1 Keyword to define the capillary force into the Navier Stokes equation for the Phase Field problem.
-  attr forme_du_terme_source entier forme_du_terme_source 0 Kind of the source term (1, 2, 3 or 4).
-navier_stokes_phase_field navier_stokes_standard navier_stokes_phase_field -1 Navier Stokes equation for the Phase Field problem.
-  attr approximation_de_boussinesq chaine(into=["oui","non"]) approximation_de_boussinesq 0 To use or not the Boussinesq approximation.
-  attr viscosite_dynamique_constante chaine(into=["oui","non"]) viscosite_dynamique_constante 0 To use or not a viscosity which will depends on concentration C (in fact, C is the unknown of Cahn-Hilliard equation).
-  attr gravite list gravite 0 Keyword to define gravity in the case Boussinesq approximation is not used.
-source_con_phase_field source_base source_con_phase_field 1 Keyword to define the source term of the Cahn-Hilliard equation.
-  attr temps_d_affichage entier temps_d_affichage 0 Time during the caracteristics of the problem are shown before calculation.
-  attr alpha floattant alpha 0 Internal capillary coefficient alfa.
-  attr beta floattant beta 0 Parameter beta of the model.
-  attr kappa floattant kappa 0 Mobility coefficient kappa0.
-  attr kappa_variable chaine(into=["oui","non"]) kappa_variable 0 To define a mobility which depends on concentration C.
-  attr moyenne_de_kappa chaine moyenne_de_kappa 0 To define how mobility kappa is calculated on faces of the mesh according to cell-centered values (chaine is arithmetique/harmonique/geometrique).
-  attr multiplicateur_de_kappa floattant multiplicateur_de_kappa 0 To define the parameter of the mobility expression when mobility depends on C.
-  attr couplage_NS_CH chaine couplage_NS_CH 0 Evaluating time choosen for the term source calculation into the Navier Stokes equation (chaine is mutilde(n+1/2)/mutilde(n), in order to be conservative, the first choice seems better).
-  attr implicitation_CH chaine(into=["oui","non"]) implicitation_CH 0 To define if the Cahn-Hilliard will be solved using a implicit algorithm or not.
-  attr gmres_non_lineaire chaine(into=["oui","non"]) gmres_non_lineaire 0 To define the algorithm to solve Cahn-Hilliard equation (oui: Newton-Krylov method, non: fixed point method).
-  attr seuil_cv_iterations_ptfixe floattant seuil_cv_iterations_ptfixe 0 Convergence threshold (an option of the fixed point method).
-  attr seuil_residu_ptfixe floattant seuil_residu_ptfixe 0 Threshold for the matrix inversion used in the method (an option of the fixed point method).
-  attr seuil_residu_gmresnl floattant seuil_residu_gmresnl 0 Convergence threshold (an option of the Newton-Krylov method).
-  attr dimension_espace_de_krylov entier dimension_espace_de_krylov 0 Vector numbers used in the method (an option of the Newton-Krylov method).
-  attr nb_iterations_gmresnl entier nb_iterations_gmresnl 0 Maximal iteration (an option of the Newton-Krylov method).
-  attr residu_min_gmresnl floattant residu_min_gmresnl 0 Minimal convergence threshold (an option of the Newton-Krylov method).
-  attr residu_max_gmresnl floattant residu_max_gmresnl 0 Maximal convergence threshold (an option of the Newton-Krylov method).
-convection_diffusion_phase_field convection_diffusion_concentration convection_diffusion_phase_field -1 Cahn-Hilliard equation of the Phase Field problem. The unknown of this equation is the concentration C.
-  attr mu_1 floattant mu_1 0 Dynamic viscosity of the first phase.
-  attr mu_2 floattant mu_2 0 Dynamic viscosity of the second phase.
-  attr rho_1 floattant rho_1 0 Density of the first phase.
-  attr rho_2 floattant rho_2 0 Density of the second phase.
-  attr potentiel_chimique_generalise chaine(into=["avec_energie_cinetique","sans_energie_cinetique"]) potentiel_chimique_generalise 0 To define (chaine set to avec_energie_cinetique) or not (chaine set to sans_energie_cinetique) if the Cahn-Hilliard equation contains the cinetic energy term.
-pb_phase_field Pb_base pb_phase_field -1 Problem to solve local instantaneous incompressible-two-phase-flows. Complete description of the Phase Field model for incompressible and immiscible fluids can be found into this PDF: TRUST_ROOT/doc/TRUST/phase_field_non_miscible_manuel.pdf
-  attr navier_stokes_phase_field navier_stokes_phase_field navier_stokes_phase_field 1 Navier Stokes equation for the Phase Field problem.
-  attr convection_diffusion_phase_field convection_diffusion_phase_field convection_diffusion_phase_field 1 Cahn-Hilliard equation of the Phase Field problem. The unknown of this equation is the concentration C.
-  ref constituant constituant
 darcy source_base darcy 0 Class for calculation in a porius media with source term of Darcy -nu/K*V. This keyword must be used with a permeability model. For the moment there are two models : permeability constant or Ergun\'s law. Darcy source term is available for quasi compressible calculation. A new keyword is aded for porosity (porosite).
   attr bloc bloc_lecture bloc 0 Description.
 forchheimer source_base forchheimer 0 Class to add the source term of Forchheimer -Cf/sqrt(K)*V2 in the Navier Stokes equations. We must precise a permeability model : constant or Ergun\'s law. Moreover we can give the constant Cf : by default its value is 1. Forchheimer source term is available also for quasi compressible calculation. A new keyword is aded for porosity (porosite).
   attr bloc bloc_lecture bloc 0 Description.
-source_rayo_semi_transp source_base source_rayo_semi_transp 0 Radiative term source in energy equation.
 debut_bloc interprete { 0 Block\'s beginning.
 fin_bloc interprete } 0 Block\'s end.
 export interprete export 0 Class to make the object have a global range, if not its range will apply to the block only (the associated object will be destroyed on exiting the block).
-domaine_ale domaine domaine_ale -1 Domain with nodes at the interior of the domain are displaced in an arbitrarily prescribed way thanks to ALE description.
 debog interprete debog 0 Class to debug some differences between two TRUST versions on a same data file. NL2 If you want to compare the results of the same code in sequential and parallel calculation, first run (mode=0) in sequential mode (the files fichier1 and fichier2 will be written first) then the second run in parallel calculation (mode=1). NL2 During the first run (mode=0), it prints into the file DEBOG, values at different points of the code thanks to the C++ instruction call. see for example in Noyau/Resoudre.cpp file the instruction: Debog::verifier(msg,value); Where msg is a string and value may be a double, integer or array. NL2 During the second run (mode=1), it prints into a file Err_Debog.dbg the same messages than in the DEBOG file and checks if the differences between results from the two codes are less than error. If not, it prints Ok else show the differences and the lines where it occured.
   attr pb ref_pb_gen_base pb 0 Name of the problem to debug.
   attr fichier1 chaine file1 0 Name of the file where domain will be written in sequential calculation.
   attr fichier2 chaine file2 0 Name of the file where faces will be written in sequential calculation.
   attr seuil floattant seuil 0 Minimal value (by default 1.e-20) for the differences between the two codes.
   attr mode entier mode 0 By default -1 (nothing is written in the different files), you will set 0 for the run with the first code, and 1 for the run with the second code.
-imposer_vit_bords_ale interprete imposer_vit_bords_ale 0 not_set
-  attr dom ref_domaine dom 0 Name of domain.
-  attr bloc bloc_lecture bloc 0 Description.
-champ_front_vortex front_field_base champ_front_vortex 0 not_set
-  attr dom ref_domaine dom 0 Name of domain.
-  attr geom chaine geom 0 not_set
-  attr nu floattant nu 0 not_set
-  attr utau floattant utau 0 not_set
 pilote_icoco interprete pilote_icoco 1 not_set
   attr pb_name chaine pb_name 0 not_set
   attr main chaine main 0 not_set
@@ -1352,9 +1190,6 @@ champ_input_base field_base champ_input_base 1 not_set
   attr probleme chaine probleme 0 not_set
   attr sous_zone ref_sous_zone sous_zone 1 not_set
 champ_input_p0 champ_input_base champ_input_p0 1 not_set
-champ_front_ale front_field_base champ_front_ale 0 Class to define a boundary condition on a moving boundary of a mesh.
-  attr val listchaine val 0 Example: NL2 2 20*0.3*SIN(6.28*y)*COS(20*t) 0.
-milieu_v2_base objet_u milieu_v2_base -1 Basic class for medium (physics properties of medium) composed of constituents (fluids and solids).
 moyenne_volumique interprete moyenne_volumique 1 This keyword should be used after Resoudre keyword. It computes the convolution product of one or more fields with a given filtering function.
   attr nom_pb ref_Pb_base nom_pb 0 name of the problem where the source fields will be searched.
   attr nom_domaine ref_domaine nom_domaine 0 name of the destination domain (for example, it can be a coarser mesh, but for optimal performance in parallel, the domain should be split with the same algorithm as the computation mesh, eg, same tranche parameters for example)
@@ -1394,15 +1229,12 @@ resequencing interprete reordonner -1 The Reordonner interpretor is required som
 option_vdf interprete option_vdf 1 Class of VDF options.
   attr traitement_coins chaine(into=["oui","non"]) traitement_coins 1 Treatment of corners (yes or no).
   attr p_imposee_aux_faces chaine(into=["oui","non"]) p_imposee_aux_faces 1 Pressure imposed at the faces (yes or no).
-nettoiepasnoeuds interprete nettoiepasnoeuds 0 Keyword NettoiePasNoeuds does not delete useless nodes (nodes without elements) from a domain.
-  attr domain_name ref_domaine domain_name 0 Name of domain.
 precisiongeom interprete precisiongeom 0 Class to change the way floating-point number comparison is done. By default, two numbers are the same if their absolute difference is less than 1e-10. The keyword is useful to change this value. Moreover, nodes coordinates will be written in .geom files with this same precision.
   attr precision floattant precision 0 New value of precision.
 scatter interprete scatter 0 Class to read a partionned mesh in the files during a parallel calculation. The files are in binary format.
   attr file chaine file 0 Name of file.
   attr domaine ref_domaine domaine 0 Name of domain.
 scattermed scatter scattermed 0 This keyword will read the partition of the domain_name domain into a the MED format files file.med created by Medsplitter.
-scatterformatte scatter scatterformatte 0 Class to read a partionned mesh in the files during a parallel calculation. The files are formatted.
 listdeuxmots_sacc listobj nul 0 deuxmots 0 List of groups of two words (without accodances).
 partitionneur_deriv objet_u partitionneur_deriv -1 not_set
   attr nb_parts entier nb_parts 1 The number of non empty parts that must be generated (generally equal to the number of processors in the parallel run).
@@ -1439,28 +1271,6 @@ corriger_frontiere_periodique interprete corriger_frontiere_periodique 1 he Corr
   attr bord chaine bord 0 the name of the boundary (which must contain two opposite sides of the domain)
   attr direction list direction 1 defines the periodicity direction vector (a vector that points from one node on one side to the opposite node on the other side. This vector must be given if the automatic algorithm fails, that is:NL2 - when the node coordinates are not perfectly periodic NL2 - when the periodic direction is not aligned with the normal vector of the boundary faces
   attr fichier_post chaine fichier_post 1 see corriger_coordonnees
-algo_base objet_u algo_base -1 Basic class for multi-grid algorithms.
-algo_couple_1 algo_base algo_couple_1 -1 not_set
-  attr dt_uniforme rien dt_uniforme 1 not_set
-pb_mg pb_gen_base pb_mg -2 Multi-grid problem.
-  ref pb_1 Pb_base
-  ref pb_2 Pb_base
-  ref algo algo_base
-associer_pbmg_pbgglobal associate associer_pbmg_pbgglobal -1 This interpretor allows a global problem to be associated with multi-grid problem.
-associer_pbmg_pbfin associate associer_pbmg_pbfin -1 This interpretor allows a local problem to be associated with multi-grid problem.
-associer_algo associate associer_algo -1 This interpretor allows an algorithm to be associated with multi-grid problem.
-paroi_echange_contact_vdf_zoom_grossier paroi_echange_externe_impose paroi_echange_contact_vdf_zoom_grossier -1 External type exchange condition with a heat exchange coefficient and an imposed external temperature in the case of zoom (coarse).
-paroi_echange_contact_vdf_zoom_fin paroi_echange_externe_impose paroi_echange_contact_vdf_zoom_fin -1 External type exchange condition with a heat exchange coefficient and an imposed external temperature in the case of zoom (fine).
-champ_front_zoom front_field_base champ_front_zoom 0 Basic class for fields at boundaries of two problems (global problem and local problem).
-  attr pbMg ref_pb_mg pbMg 0 Name of multi-grid problem.
-  attr pb_1 ref_Pb_base pb_1 0 Name of first problem.
-  attr pb_2 ref_Pb_base pb_2 0 Name of second problem.
-  attr bord chaine bord 0 Name of bord.
-  attr inco chaine inco 0 Name of field.
-contact_vdf_vef condlim_base contact_vdf_vef 0 Boundary condition in the case of two problems (VDF -> VEF).
-  attr champ front_field_base champ 0 Boundary field type.
-contact_vef_vdf condlim_base contact_vef_vdf 0 Boundary condition in the case of two problems (VEF -> VDF).
-  attr champ front_field_base champ 0 Boundary field type.
 distance_paroi interprete distance_paroi 0 Class to generate external file Wall_length.xyz devoted for instance, for mixing length modelling. In this file, are saved the coordinates of each element (center of gravity) of dom domain and minimum distance between this point and boundaries (specified bords) that user specifies in data file (typically, those which are associated to walls). A field Distance_paroi is available to post process the distance to the wall.
   attr dom ref_domaine dom 0 Name of domain.
   attr bords listchaine bords 0 Boundaries.
@@ -1626,12 +1436,7 @@ decoupebord_pour_rayonnement interprete decoupebord_pour_rayonnement 1 To subdiv
   attr nom_fichier_sortie chaine nom_fichier_sortie 1 not_set
   attr condition_geometrique listchaine condition_geometrique 1 not_set
   attr binaire entier binaire 1 not_set
-fluide_diphasique milieu_v2_base fluide_diphasique 0 Two-phase fluid.
-  attr bloc bloc_lecture bloc 0 Two-phase fluid description.
-  ref gravite field_base
 methode_transport_deriv objet_lecture methode_transport_deriv 0 Basic class for method of transport of interface.
-vitesse_imposee methode_transport_deriv vitesse_imposee -1 Class to specify that the speed of displacement of the nodes of the interfaces is imposed with an analytical formula.
-  attr val listchainef val 0 Analytical formula.
 loi_horaire objet_u loi_horaire 1 to define the movement with a time-dependant law for the solid interface.
   attr position listchaine position 0 not_set
   attr vitesse listchaine vitesse 0 not_set
@@ -1639,66 +1444,6 @@ loi_horaire objet_u loi_horaire 1 to define the movement with a time-dependant l
   attr derivee_rotation listchaine derivee_rotation 1 not_set
 methode_loi_horaire methode_transport_deriv loi_horaire -1 not_set
   attr nom_loi ref_loi_horaire nom_loi 0 not_set
-vitesse_interpolee methode_transport_deriv vitesse_interpolee -1 Class to specify that the interpolation will use the velocity field of the Navier-Stokes equation named val to compute the speed of displacement of the nodes of the interfaces.
-  attr val chaine val 0 Navier-Stokes equation.
-bloc_lecture_remaillage objet_lecture nul 1 Parameters for remeshing.
-  attr pas floattant pas 1 This keyword has default value -1.; when it is set to a negative value there is no remeshing. It is the time step in second (physical time) between two operations of remeshing.
-  attr pas_lissage floattant pas_lissage 1 This keyword has default value -1.; when it is set to a negative value there is no smoothing of mesh. It is the time step in second (physical time) between two operations of smoothing of the mesh.
-  attr nb_iter_remaillage entier nb_iter_remaillage 1 This keyword has default value 0; when it is set to the zero value there is no remeshing. It is the number of iterations performed during a remeshing process.
-  attr nb_iter_barycentrage entier nb_iter_barycentrage 1 This keyword has default value 0; when it is set to the zero value there is no operation of barycentrage. The barycentrage operation consists in moving each node of the mesh tangentially to the mesh surface and in a direction that let it closer the center of gravity of its neighbors. If relax_barycentrage is set to 1, the node is move to the center of gravity. For values lower than unity, the motion is limited to the corresponding fraction. The parameter nb_iter_barycentrage is the number of iteration of these node displacements.
-  attr relax_barycentrage floattant relax_barycentrage 1 This keyword has default value 0; when it is set to the zero value there is no motion of the nodes. When 0 < relax_barycentrage <= 1, this parameter provides the relaxation ratio to be used in the barycentrage operation described for the keyword nb_iter_barycentrage.
-  attr critere_arete floattant critere_arete 1 This keyword is used to compute two sub-criteria : the minimum and the maximum edge length ratios used in the process of obtaining edges of length close to critere_longueur_fixe. Their respective values are set to (1-critere_arete)**2 and (1+critere_arete)**2. The default values of the minimum and the maximum are set respectively to 0.5 and 1.5. When an edge is longer than critere_longueur_fixe*(1+critere_arete)**2, the edge is cut into two pieces; when its length is smaller than critere_longueur_fixe*(1-critere_arete)**2, this edge has to be suppressed.
-  attr critere_remaillage floattant critere_remaillage 1 This keyword was previously used to compute two sub-criteria : the minimum and the maximum length used in the process of remeshing. Their respective values are set to (1-critere_remaillage)**2 and (1+critere_remaillage)**2. The default values of the minimum and the maximum are set respectively to 0.2 and 1.7. There are currently not used in data files.
-  attr impr floattant impr 1 This keyword is followed by a value that specify the printing time period given. The default value is -1, which means no printing.
-  attr facteur_longueur_ideale floattant facteur_longueur_ideale 1 This keyword is used to set a ratio between edge length and the cube root of volume cell for the remeshing process. The default value is 1.0.
-  attr nb_iter_correction_volume entier nb_iter_correction_volume 1 This keyword give the maximum number of iterations to be performed trying to satisfy the criterion seuil_dvolume_residuel. The default value is 0, which means no iteration.
-  attr seuil_dvolume_residuel floattant seuil_dvolume_residuel 1 This keyword give the error volume (in m3) that is accepted to stop the iterations performed to keep the volume constant during the remeshing process. The default value is 0.0.
-  attr lissage_courbure_coeff floattant lissage_courbure_coeff 1 This keyword is used to specify the diffusion coefficient used in the diffusion process of the curvature in the curvature smoothing process with a time step. The default value is 0.05. That value usually provides a stable process. Too small values do not stabilize enough the interface, especially with several Lagrangian nodes per Eulerian cell. Too high values induce an additional macroscopic smoothing of the interface that should physically come from the surface tension and not from this numerical smoothing.
-  attr lissage_courbure_iterations entier lissage_courbure_iterations 1 This keyword is used to specify the number of iterations to perform the curvature smoothing process. The default value is 1.
-  attr lissage_courbure_iterations_systematique entier lissage_courbure_iterations_systematique 1 These keywords allow a finer control than the previous lissage_courbure_iterations keyword. N1 iterations are applied systematically at each timestep. For proper DNS computation, N1 should be set to 0.
-  attr lissage_courbure_iterations_si_remaillage entier lissage_courbure_iterations_si_remaillage 1 N2 iterations are applied only if the local or the global remeshing effectively changes the lagrangian mesh connectivity.
-  attr critere_longueur_fixe floattant critere_longueur_fixe 1 This keyword is used to specify the ideal edge length for a remeshing process. The default value is -1., which means that the remeshing does not try to have all edge lengths to tend towards a given value.
-convection_diffusion_concentration_ft_disc convection_diffusion_concentration convection_diffusion_concentration_ft_disc -1 not_set
-  attr equation_interface chaine equation_interface 1 his is the name of the interface tracking equation to watch. The scalar will not diffuse through the interface of this equation.
-  attr phase entier(into=[0,1]) phase 0 tells whether the scalar must be confined in phase 0 or in phase 1
-  attr option chaine option 1 Experimental features used to prevent the concentration to leak through the interface between phases due to numerical diffusion. NL2 RIEN: do nothing NL2 RAMASSE_MIETTES_SIMPLE: at each timestep, this algorithm takes all the mass located in the opposite phase and spreads it uniformly in the given phase.
-objet_lecture_maintien_temperature objet_lecture nul 0 not_set
-  attr sous_zone ref_sous_zone sous_zone 0 not_set
-  attr temperature_moyenne floattant temperature_moyenne 0 not_set
-convection_diffusion_temperature_ft_disc convection_diffusion_temperature convection_diffusion_temperature_ft_disc -1 not_set
-  attr equation_interface chaine equation_interface 1 The name of the interface equation should be given.
-  attr phase entier(into=[0,1]) phase 0 Phase in which the temperature equation will be solved. The temperature, which may be postprocessed with the keyword temperature_EquationName, in the orther phase may be negative: the code only computes the temperature field in the specified phase. The other phase is supposed to physically stay at saturation temperature. The code uses a ghost fluid numerical method to work on a smooth temperature field at the interface. In the opposite phase (1-X) the temperature will therefore be extrapolated in the vicinity of the interface and have the opposite sign, saturation temperature is zero by convention).
-  attr equation_navier_stokes chaine equation_navier_stokes 1 The name of the Navier Stokes equation of the problem should be given.
-  attr stencil_width entier stencil_width 1 distance in mesh elements over which the temperature field should be extrapolated in the opposite phase.
-  attr maintien_temperature objet_lecture_maintien_temperature maintien_temperature 1 maintien_temperature SOUS_ZONE_NAME VALUE : experimental, this acts as a dynamic source term that heats or cools the fluid to maintain the average temperature to VALUE within the specified region. At this time, this is done by multiplying the temperature within the SOUS_ZONE by an appropriate uniform value at each timestep. This feature might be implemented in a separate source term in the future.
-interpolation_champ_face_deriv objet_lecture interpolation_champ_face_deriv -1 not_set
-interpolation_champ_facebase interpolation_champ_face_deriv base 0 not_set
-interpolation_champ_face_lineaire interpolation_champ_face_deriv lineaire 1 not_set
-  attr vitesse_fluide_explicite rien vitesse_fluide_explicite 1 not_set
-parcours_interface objet_lecture nul 1 allows you to configure the algorithm that computes the surface mesh to volume mesh intersection. This algorithm has some serious trouble when the surface mesh points coincide with some faces of the volume mesh. Effects are visible on the indicator function, in VDF when a plane interface coincides with a volume mesh surface.NL2 To overcome these problems, the keyword correction_parcours_thomas keyword can be used: it allows the algorithm to slightly move some mesh points. This algorithm, which is experimental and is NOT activated by default, triggers a correction that avoids some errors in the computation of the indicator function for surface meshes that exactly cross some eulerian mesh edges (strongly suggested !).
-  attr correction_parcours_thomas rien correction_parcours_thomas 1 not_set
-transport_interfaces_ft_disc eqn_base transport_interfaces_ft_disc -1 Interface tracking equation for Front-Tracking problem in the discontinuous version.
-  attr conditions_initiales|initial_conditions bloc_lecture conditions_initiales 1 The keyword conditions_initiales is used to define the shape of the initial interfaces through the zero level-set of a function, or through a mesh fichier_geom. Indicator function is set to 0, that is fluide0, where the function is negative; indicator function is set to 1, that is fluide1, where the function is positive; the interfaces are the level-set 0 of that function: NL2 NL2 conditions_initiales { fonction NL2 $(-((x-0.002)^2+(y-0.002)^2+z^2-(0.00125)^2))*((x-0.005)^2+(y-0.007)^2+z^2 (0.00150)^2))*(0.020-z))$ NL2 } NL2 NL2 In the above example, there are three interfaces: two bubbles in a liquid with a free surface. One bubble has a radius of 0.00125, i.e. 1.25 mm, and its center is {0.002, 0.002, 0.000}. The other bubble has a radius of 0.00150, i.e. 1.5 mm, and its center is {0.005, 0.007, 0.000}. The free surface is above the two bubble, at a level z=0.02. NL2 NL2 Additional feature in this block concerns the keywords ajout_phase0 and ajout_phase1. They can be used to simplify the composition of different interfaces. When using these keywords, the initial function defines the indicator function; ajout_phase0 and ajout_phase1 are used to modify this initial field. Each time ajout_phase0 is used, the field is untouched where the function is positive whereas the indicator field is set to 0 where the function is negative. The keyword ajout_phase1 has the symmetrical use, keeping the field value where the function is negative and setting the indicator field to 1 where the function is positive. The previous example can also be written: NL2 NL2 conditions_initiales { NL2 fonction z-0.020 , NL fonction ajout_phase1 $(x-0.002)^2+(y-0.002)^2+z^2-(0.00125)^2$ , NL2 fonction ajout_phase1 $(x-0.005)^2+(y-0.007)^2+z^2-(0.00150)^2$ NL2 }
-  attr methode_transport methode_transport_deriv methode_transport 1 Method of transport of interface.
-  attr iterations_correction_volume entier iterations_correction_volume 1 Keyword to specify the number or iterations requested for the correction process that can be used to keep the volume of the phases constant during the transport process.
-  attr n_iterations_distance entier n_iterations_distance 1 Keyword to specify the number or iterations requested for the smoothing process of computing the field corresponding to the signed distance to the interfaces and located at the center of the Eulerian elements. This smoothing is necessary when there are more Lagrangian nodes than Eulerian two-phase cells.
-  attr maillage chaine maillage 1 This optional block is used to specify that we want a Gnuplot drawing of the initial mesh. There is only one keyword, niveau_plot, that is used only to define if a Gnuplot drawing is active (value 1) or not active (value -1). By default, skipping the block will produce non Gnuplot drawing. This option is to be used only in a debug process.
-  attr remaillage bloc_lecture_remaillage remaillage 1 This block is used to specify the operations that are used to keep the solid interfaces in a proper condition. The remaillage block only contains parameter\'s values.
-  attr collisions chaine collisions 1 This block is used to specify the operations that are used when a collision occurs between two parts of interfaces. When this occurs, it is necessary to build a new mesh that has locally a clear definition of what is inside and what is outside of the mesh. The collisions can either be active or inactive. If the collisions are active (highly recommended), the keyword juric_pour_tout indicates that the Juric level-set reconstruction method will be used to re-create the new mesh after each coalescence or breakup. The next line (type_remaillage) is used to state whose field will be used for the level-set computation. Main option is Juric, a remeshing that is compatible with parallel computing. When using Juric level-set remeshing, the source field (source_isovaleur) that is used to compute the level-sets is then defined. It can be either the indicator function (indicatrice), a choice which is the default one and the most robust, or a geometrical distance computed from the mesh at the beginning of the time step (fonction_distance), a choice that may be more accurate in specific situations.NL2 Type_remaillage Thomas is an enhancement of the Juric global remeshing algorithm designed to compensate for mass loss during remeshing. The mesh is always reconstructed with the indicator function (not with the distance function). After having reconstructed the mesh with the Juric algorithm, the difference between the old indicator function (before remeshing) and the new indicator function is computed. The differences occuring at a distance below or equal to N elements from the interface are summed up and used to move the interface in the normal direction. The displacement of the interface is such that the volume of each phase after displacement is equal to the volume of the phase before remeshing. N (default value 1) must be smaller than n_iterations_distance (suggested value: 2). NL2 An alternate choice for the remeshing type (type_remaillage) is collision_seq, which is more complex and tries to sew the two meshes that have collided, once the collision zone has been removed. This algorithm does not work in parallel computation.
-  attr methode_interpolation_v chaine(into=["valeur_a_elem","vdf_lineaire"]) methode_interpolation_v 1 In this block, two keywords are possible for method to select the way the interpolation is performed. With the choice valeur_a_elem the speed of displacement of the nodes of the interfaces is the velocity at the center of the Eulerian element in which each node is located at the beginning of the time step. This choice is the default interpolation method. The choice VDF_lineaire is only available with a VDF discretization (VDF). In this case, the speed of displacement of the nodes of the interfaces is linearly interpolated on the 4 (in 2D) or the 6 (in 3D) Eulerian velocities closest the location of each node at the beginning of the time step. In peculiar situation, this choice may provide a better interpolated value. Of course, this choice is not available with a VEF discretization (VEFPreP1B).
-  attr volume_impose_phase_1 floattant volume_impose_phase_1 1 this keyword is used to specify the volume of one phase to keep the volume of the phases constant during the remeshing process. It is an alternate solution to trouble in mass conservation. This option is mainly realistic when only one inclusion of phase 1 is present in the domain. In most other situations, the iterations_correction_volume keyword seems easier to justify. The volume to be keep is in m3 and should agree with initial condition.
-  attr parcours_interface parcours_interface parcours_interface 1 Parcours_interface allows you to configure the algorithm that computes the surface mesh to volume mesh intersection. This algorithm has some serious trouble when the surface mesh points coincide with some faces of the volume mesh. Effects are visible on the indicator function, in VDF when a plane interface coincides with a volume mesh surface. NL2 To overcome these problems, the keyword correction_parcours_thomas keyword can be used: it allows the algorithm to slightly move some mesh points. This algorithm is experimental and is NOT activated by default.
-  attr interpolation_repere_local rien interpolation_repere_local 1 Triggers a new transport algorithm for the interface: the velocity vector of lagrangian nodes is computed in the moving frame of reference of the center of each connex component, in such a way that relative displacements of nodes within a connex component of the lagrangian mesh are minimized, hence reducing the necessity of barycentering, smooting and local remeshing. Very efficient for bubbly flows.
-  attr interpolation_champ_face interpolation_champ_face_deriv interpolation_champ_face 1 It is possible to compute the imposed velocity for the solid-fluid interface by direct affectation (interpolation_scheme would be set to base) or by multi-linear interpolation (interpolation_scheme would be set to lineaire). The default value is base.
-  attr n_iterations_interpolation_ibc entier n_iterations_interpolation_ibc 1 Useful only with interpolation_champ_face positioned to lineaire. Set the value concerning the width of the region of the linear interpolation. For the Penalized Direct Forcing model, a value equals to 1 is enough.
-  attr type_vitesse_imposee chaine(into=["uniforme","analytique"]) type_vitesse_imposee 1 Useful only with interpolation_champ_face positioned to lineaire. Value of the keyword is uniforme (for an uniform solid-fluide interface\'s velocity, i.e. zero for instance) or analytique (for an analytic expression of the solid-fluide interface\'s velocity depending on the spatial coordinates). The default value is uniforme.
-  attr nombre_facettes_retenues_par_cellule entier nombre_facettes_retenues_par_cellule 1 Keyword to specify the default number (3) of facets per cell used to describe the geometry of the solid-solid interface. This number should be increased if the geometry of the solid-solid interface is complex in each cell (eulerian mesh too coarse for example).
-  attr seuil_convergence_uzawa floattant seuil_convergence_uzawa 1 Optional option to change the default value (10-8) of the threshold convergence for the Uzawa algorithm if used in the Penalized Direct Forcing model. Sometime, the value should be decreased to insure a better convergence to force equality between sequential and parallel results.
-  attr nb_iteration_max_uzawa entier nb_iteration_max_uzawa 1 Optional option to change the default value (10-8) of the threshold convergence for the Uzawa algorithm if used in the Penalized Direct Forcing model. Sometime, the value should be decreased to insure a better convergence to force equality between sequential and parallel results.
-  attr injecteur_interfaces chaine injecteur_interfaces 1 not_set
-  attr vitesse_imposee_regularisee entier vitesse_imposee_regularisee 1 not_set
-  attr indic_faces_modifiee bloc_lecture indic_faces_modifiee 1 not_set
-  attr distance_projete_faces chaine(into=["simplifiee","initiale","modifiee"]) distance_projete_faces 1 not_set
 problem_read_generic Pb_base problem_read_generic -1 The probleme_read_generic differs rom the rest of the TRUST code : The problem does not state the number of equations that are enclosed in the problem. As the list of equations to be solved in the generic read problem is declared in the data file and not pre-defined in the structure of the problem, each equation has to be distinctively associated with the problem with the Associer keyword.
   ref eqn1 eqn_base
   ref eqn2 eqn_base
@@ -1710,35 +1455,6 @@ problem_read_generic Pb_base problem_read_generic -1 The probleme_read_generic d
   ref eqn8 eqn_base
   ref eqn9 eqn_base
   ref eqn10 eqn_base
-sortie_libre_rho_variable condlim_base sortie_libre_rho_variable 0 Class to define an outlet boundary condition at which the pressure is defined through the given field, whereas the density of the two-phase flow may varies (value of P/rho given in Pa/kg.m-3).
-  attr ch front_field_base ch 0 Boundary field type.
-injection_marqueur objet_lecture nul -1 not_set
-  attr ensemble_points bloc_lecture ensemble_points 0 not_set
-  attr proprietes_particules bloc_lecture proprietes_particules 0 not_set
-  attr t_debut_injection floattant t_debut_injection 1 not_set
-  attr dt_injection floattant dt_injection 1 not_set
-transport_marqueur_ft eqn_base transport_marqueur_ft -1 not_set
-  attr conditions_initiales|initial_conditions bloc_lecture conditions_initiales 1 ne semble pas standard
-  attr injection injection_marqueur injection 1 The keyword injection can be used to inject periodically during the calculation some other particles. The syntax for ensemble_points and proprietes_particles is the same than the initial conditions for the particles. The keyword t_debut_injection give the injection initial time (by default, given by t_debut_integration) and dt_injection gives the injection time period (by default given by dt_min).
-  attr transformation_bulles bloc_lecture transformation_bulles 1 This keyword will activate the transformation of an inclusion (small bubbles) into a particle. localisation gives the sub-zones (N number of sub-zones and their names) where the transformation may happen. The diameter size for the inclusion transformation is given by either diameter_min option, in this case the inclusion will be suppressed for a diameter less than diameter_size, either by the beta_transfo option, in this case the inclusion will be suppressed for a diameter less than diameter_size*cell_volume (cell_volume is the volume of the cell containing the inclusion). interface specifies the name of the inclusion interface and t_debut_transfo is the beginning time for the inclusion transformation operation (by default, it is t_debut_integr value) and dt_transfo is the period transformation (by default, it is dt_min value). In a two phase flow calculation, the particles will be suppressed when entring into the non marked phase
-  attr phase_marquee entier phase_marquee 1 Phase number giving the marked phase, where the particles are located (when they leave this phase, they are suppressed). By default, for a the two phase fluide, the particles are supposed to be into the phase 0 (liquid).
-  attr methode_transport chaine(into=["vitesse_interpolee","vitesse_particules"]) methode_transport 1 Kind of transport method for the particles. With vitesse_interpolee, the velocity of the particles is the velocity a fluid interpolation velocity (option by default). With vitesse_particules, the velocity of the particules is governed by the resolution of a momentum equation for the particles.
-  attr methode_couplage chaine(into=["suivi","one_way_coupling","two_way_coupling"]) methode_couplage 1 Way of coupling between the fluid and the particles. By default, (keyword suivi), there is no interaction between both. With one_way_coupling keyword, the fluid act on the particles. With two_way_coupling keyword, besides, particles act on the fluid.
-  attr nb_iterations entier nb_iterations 1 Number of sub-timesteps to solve the momentum equation for the particles (1 per default).
-  attr contribution_one_way entier(into=[0,1]) contribution_one_way 1 Activate (1, default) or not (0) the fluid forces on the particles when one_way_coupling or two_way_coupling coupling method is used.
-  attr implicite entier(into=[0,1]) implicite 1 Impliciting (1) or not (0) the time scheme when weight added source term is used in the momentum equation
-penalisation_forcage objet_lecture nul 1 penalisation_forcage
-  attr pression_reference floattant pression_reference 1 not_set
-  attr domaine_flottant_fluide listf domaine_flottant_fluide 1 not_set
-navier_stokes_ft_disc navier_stokes_turbulent navier_stokes_ft_disc -1 Two-phase momentum balance equation.
-  attr equation_interfaces_proprietes_fluide chaine equation_interfaces_proprietes_fluide 1 This keyword is used for liquid-gas, liquid-vapor and fluid-fluid deformable interface, which transported at the Eulerian velocity. When this case is selected, the keyword sequence Methode_transport vitesse_interpolee is used in the block Transport_Interfaces_FT_Disc to define the velocity field for the displacement of the interface.
-  attr equation_interfaces_vitesse_imposee chaine equation_interfaces_vitesse_imposee 1 This keyword is used to specify the velocity field to be used when using an interface that mimics a solid interface moving with a given solid speed of displacement. When this case is selected, the keyword sequence Methode_transport vitesse_imposee in the Transport_Interfaces_FT_Disc block will define the velocity field for the displacement of the interface.
-  attr equations_interfaces_vitesse_imposee listchaine equations_interfaces_vitesse_imposee 1 This keyword is used to specify the velocity field to be used when using an interface that mimics a solid interface moving with a given solid speed of displacement. When this case is selected, the keyword sequence Methode_transport vitesse_imposee in the Transport_Interfaces_FT_Disc block will define the velocity field for the displacement of the interface. If two or more solid interfaces are defined, then the keyword equations_interfaces_vitesse_imposee should be used.
-  attr clipping_courbure_interface entier clipping_courbure_interface 1 This keyword is used to numerically limit the values of curvature used in the momentum balance equation. Curvature is computed as usual, but values exceeding the clipping value are replaced by this threshold, before using the clipped curvature in the momentum balance. Each time a curvature value is clipped, a counter is increased by one unity and the value of the counter is written in the .err file at the end of the time step. This clipping allows not reducing drastically the time stepping when a geometrical singularity occurs in the interface mesh. However, physical phenomena may be concealed with the use of such a clipping.
-  attr terme_gravite chaine(into=["rho_g","grad_i"]) terme_gravite 1 The Terme_gravite keyword changes the numerical scheme used for the gravity source term. The default is grad_i, which is designed to remove spurious currents around the interface. In this case, the pressure field does not contain the hydrostatic part but only a jump across the interface. This scheme seems not to work very well in vef. The rho_g option uses the more traditional source term, equal to rho*g in the volume. In this case, the hydrostatic pressure is visible in the pressure field and the boundary conditions in pressure must be set accordingly. This model produces spurious currents in the vicinity of the fluid-fluid interfaces and with the immersed boundary conditions.
-  attr equation_temperature_mpoint chaine equation_temperature_mpoint 1 The equation_temperature_mpoint should be used in the case of liquid-vapor flow with phase-change (see the TRUST_ROOT/doc/TRUST/ft_chgt_phase.pdf written in French for more information about the model). The name of the temperature equation, defined with the convection_diffusion_temperature_ft_disc keyword, should be given.
-  attr matrice_pression_invariante rien matrice_pression_invariante 1 This keyword is a shortcut to be used only when the flow is a single-phase one, with interface tracking only used for solid-fluid interfaces. In this peculiar case, the density of the fluid does not evolve during the computation and the pressure matrix does not need to be actuated at each time step.
-  attr penalisation_forcage penalisation_forcage penalisation_forcage 1 This keyword is used to specify a strong formulation (value set to 0) or a weak formulation (value set to 1) for an imposed pressure boundary condition. The first formulation converges quicker and is stable in general cases except some rare cases (see Ecoulement_Neumann test case for example) where the second one should be used despite of its slow convergence.
 temperature traitement_particulier_base temperature -1 not_set
   attr bord chaine bord 0 not_set
   attr direction entier direction 0 not_set
@@ -1750,12 +1466,6 @@ canal traitement_particulier_base canal -1 Keyword for statistics on a periodic 
   attr pulsation_w floattant pulsation_w 1 Pulsation for phase averaging (in case of pulsating forcing term) (no default value).
   attr nb_points_par_phase entier nb_points_par_phase 1 Number of samples to represent phase average all along a period (no default value).
   attr reprise chaine reprise 1 val_moy_temp_xxxxxx.sauv : Keyword to restart a calculation with previous average quantities. NL2 Note that for thermal and turbulent problems, averages on temperature and turbulent viscosity are automatically calculated. To restart a calculation with phase averaging, val_moy_temp_xxxxxx.sauv_phase file is required on the directory where the job is submitted (this last file will be then automatically loaded by TRUST).
-concmoy traitement_particulier_base concmoy -1 Keyword for printing concentration rates for a concentration equation
-  attr concmoy rien concmoy 1 not_set
-  attr periode floattant periode 1 periode is the keyword to set the period of printing into the file datafile_ConcMoy.son
-  attr tx1 floattant tx1 1 tx1 is the limit 1 for concentration rate
-  attr tx2 floattant tx2 1 tx2 is the limit 2 for concentration rate
-  attr tx3 floattant tx3 1 tx3 is the limit 3 for concentration rate
 ec traitement_particulier_base ec -1 Keyword to print total kinetic energy into the referential linked to the domain (keyword Ec). In the case where the domain is moving into a Galilean referential, the keyword Ec_dans_repere_fixe will print total kinetic energy in the Galilean referential whereas Ec will print the value calculated into the moving referential linked to the domain
   attr Ec rien Ec 1 not_set
   attr Ec_dans_repere_fixe rien Ec_dans_repere_fixe 1 not_set
@@ -1770,21 +1480,7 @@ thi traitement_particulier_base thi -1 Keyword for a THI (Homogeneous Isotropic 
   attr 1D entier(into=["0","1"]) flag1D 1 Calculate or not the 1D spectrum
   attr conservation_Ec rien conservation_Ec 1 If set to 1, velocity field will be changed as to have a constant kinetic energy (default 0)
   attr longueur_boite floattant longueur_boite 1 Length of the calculation domain
-thi_thermo thi thi_thermo -1 Treatment for the temperature field. NL2 It offers the possibility to : NL2 - evaluate the probability density function on temperature field, NL2 - give in a file the temperature field for a future spectral analysis, NL2 - monitor the evolution of the max and min temperature on the whole domain.
 chmoy_faceperio traitement_particulier_base chmoy_faceperio 0 non documente
-  attr bloc bloc_lecture bloc 0 not_set
-profils_thermo traitement_particulier_base profils_thermo 0 non documente
-  attr bloc bloc_lecture bloc 0 not_set
-coeur objet_u coeur 1 not_set
-  attr probleme ref_Pb_base probleme 0 not_set
-  attr type_probleme entier(into=[0,1]) type_probleme 0 not_set
-  attr nom_bord chaine nom_bord 0 not_set
-  attr entreplat floattant entreplat 0 not_set
-  attr epaisseur_jeu floattant epaisseur_jeu 0 not_set
-  attr nb_couronnes entier nb_couronnes 0 not_set
-  attr origine_numerotation entier origine_numerotation 0 not_set
-  attr test entier test 1 not_set
-brech traitement_particulier_base brech 0 non documente
   attr bloc bloc_lecture bloc 0 not_set
 extraire_plan interprete extraire_plan -3 This keyword extract a plan mesh named domain_name (this domain should have be declared before) from the mesh of the pb_name problem. The plan can be either a triangle (defined by the keywords Origine, Point1, Point2 and Triangle), either a regular quadrangle (with keywords Origine, Point1 and Point2), or either a generalized quadrangle (with keywords Origine, Point1, Point2, Point3). The keyword Epaisseur specifies the thickness of volume around the plan which contains the faces of the extracted mesh. The keyword via_extraire_surface will create a plan and use Extraire_surface algorithm. Inverse_condition_element keyword then will be used in the case where the plan is a boundary not well oriented, and avec_certains_bords_pour_extraire_surface is the option related to the Extraire_surface option named avec_certains_bords.
   attr domaine ref_domaine domaine 0 domain_namme
@@ -1821,8 +1517,6 @@ integrer_champ_med interprete integrer_champ_med 1 his keyword is used to calcul
   attr zmax floattant zmax 1 not_set
   attr nb_tranche entier nb_tranche 1 not_set
   attr fichier_sortie chaine fichier_sortie 1 nom du fichier de sortie par defaut : integrale.
-convection_ale convection_deriv ale 0 a convective scheme for ALE method. Example: See the test case ALE_membrane.
-  attr opconv bloc_convection opconv 0 not_set
 convection_amont convection_deriv amont 0 Keyword for upwind scheme in VEF discretization equivalent to generic amont for TRUST version 1.5 or later. The previous upwind scheme can be used with the obsolete in future amont_old keyword.
 convection_amont_old convection_deriv amont_old 0 not_set
 convection_centre convection_deriv centre 0 not_set
@@ -1902,9 +1596,6 @@ champ_fonc_med field_base champ_fonc_med 0 Field to read a data field in a MED-f
   attr field_name chaine field_name 0 Name of the problem unknown.
   attr location chaine(into=["som","elem"]) location 0 To indicate where the field has been post-processed.
   attr time floattant time 0 Time of the field in the .med file.
-source_trainee source_base trainee 0 drag effect
-source_flottabilite source_base flottabilite 0 buoyancy effect
-source_masse_ajoutee source_base masse_ajoutee 0 weight added effect
 reaction objet_lecture nul 1 Keyword to describe reaction: NL2 w =K pow(T,beta) exp(-Ea/( R T)) $\Pi$ pow(Reactif_i,activitivity_i). NL2 If K_inv >0, NL2 w= K pow(T,beta) exp(-Ea/( R T)) ( $\Pi$ pow(Reactif_i,activitivity_i) - Kinv/exp(-c_r_Ea/(R T)) $\Pi$ pow(Produit_i,activitivity_i ))
   attr reactifs chaine reactifs 0 LHS of equation (ex CH4+2*O2)
   attr produits chaine produits 0 RHS of equation (ex CO2+2*H20)
@@ -1921,10 +1612,6 @@ chimie objet_u chimie 1 Keyword to describe the chmical reactions
   attr modele_micro_melange entier modele_micro_melange 1 modele_micro_melange (0 by default)
   attr constante_modele_micro_melange floattant constante_modele_micro_melange 1 constante of modele (1 by default)
   attr espece_en_competition_micro_melange chaine espece_en_competition_micro_melange 1 espece in competition in reactions
-probleme_ft_disc_gen problem_read_generic probleme_ft_disc_gen -1 The generic Front-Tracking problem in the discontinuous version. It differs from the rest of the TRUST code : The problem does not state the number of equations that are enclosed in the problem. Two equations are compulsory : a momentum balance equation (alias Navier-Stokes equation) and an interface tracking equation. The list of equations to be solved is declared in the beginning of the data file. Another difference with more classical TRUST data file, lies in the fluids definition. The two-phase fluid (Fluide_Diphasique) is made with two usual single-phase fluids (Fluide_Incompressible). As the list of equations to be solved in the generic Front-Tracking problem is declared in the data file and not pre-defined in the structure of the problem, each equation has to be distinctively associated with the problem with the Associer keyword.
-  ref mm milieu_v2_base
-  ref chimie chimie
-  ref constituant constituant
 rectify_mesh interprete rectify_mesh -1 Keyword to raffine a mesh
   attr domain_name ref_domaine domain_name 0 Name of domain.
 verifier_simplexes interprete verifier_simplexes -1 Keyword to raffine a simplexes
@@ -1954,8 +1641,6 @@ convection_btd convection_deriv btd 1 not_set
 testeur_medcoupling interprete testeur_medcoupling 0 not_set
   attr pb_name chaine pb_name 0 Name of domain.
   attr field_name chaine filed_name 0 Name of domain.
-test_supr raffiner_isotrope test_supr -1 Keyword to raffine a simplexes
-  attr domain2_name suppress_param domain2_name 0 Name of domain.
 Raffiner_isotrope_parallele interprete Raffiner_isotrope_parallele 1 Refine parallel mesh in parallel
   attr name_of_initial_zones chaine name_of_initial_zones 0 name of initial Zones
   attr ascii rien ascii 1 writing Zones in ascii format
@@ -1966,4 +1651,7 @@ interpolation champ_post_de_champs_post interpolation -1 To create a field which
   attr methode chaine methode 1 The optional keyword methode is limited to calculer_champ_post for the moment.
   attr domaine chaine domaine 1 the domain name where the interpolation is done (by default, the calculation domain)
 paroi_fixe_iso_Genepi2_sans_contribution_aux_vitesses_sommets paroi_fixe paroi_fixe_iso_Genepi2_sans_contribution_aux_vitesses_sommets -1 CL to obtain iso Genepi2...
+champ_front_normal_vef front_field_base champ_front_normal_vef 0 Field to define the normal vector field standard at the boundary in VEF discretization.
+  attr mot chaine(into=["valeur_normale"]) mot 0 Name of vector field.
+  attr vit_tan floattant vit_tan 0 normal vector value (positive value for a vector oriented outside to inside).
 
