@@ -6,7 +6,7 @@
           "mesh_name": "the_mesh2",
           "dimension": 2
         },
-       "turb_model" : "LM",
+       "turb_model" : "Laminar",
        "medium": 
         {
           "user-defined": 

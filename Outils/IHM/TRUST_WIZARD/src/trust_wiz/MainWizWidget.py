@@ -36,7 +36,7 @@ class MainWidget(QtGui.QWidget):
     for turb in turbs:
       turb.onComboChanged.connect(self.onTurbulenceChange)
       # By default, k-eps hidden:
-      self.onTurbulenceChange(turb.getPath(), "LM")
+      self.onTurbulenceChange(turb.getPath(), "Laminar")
 
   def setUpDomainWidget(self):
     domainW = self._dynWidget.findChildren("domain")

@@ -122,7 +122,7 @@ class TrustWizTest(unittest.TestCase):
     self.assertEqual(None, data2['thermo_hydrau_pb']['medium'])
     data2['thermo_hydrau_pb']['medium'] = {"preset": "Water 20 deg"}
     self.assertEqual('None', data2['thermo_hydrau_pb']['turb_model'])
-    data2['thermo_hydrau_pb']['turb_model'] = "LM"
+    data2['thermo_hydrau_pb']['turb_model'] = "Laminar"
     ret, pth = vali.validateInput(data=data2, highlight=True)
     self.assertEqual("", ret)
 

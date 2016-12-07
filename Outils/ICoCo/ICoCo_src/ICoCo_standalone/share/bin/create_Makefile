@@ -40,7 +40,7 @@ cat $makeincludeatelier | grep -v project_directory >>makefile
 echo "# on refait a chaque fois l executable" >>makefile
 
 echo "couplage: $lib_dyn main.cpp makefile ld_env.sh $build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION)
-	touch couplage.data
+	echo end >>  couplage.data
 	@echo Linking.. 
 	@if [ \"\$(TRUST_ARCH)\" = \"cygwin\" ] ; then cp  $build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION)  .; fi
 	@\$(TRUST_CC) main.cpp -o couplage -I$build \$(Includes) -Wl,-R $build/exec\$(OPT) $build/exec\$(OPT)/_TRUSTModule\$(OPT).\$(SL_EXTENSION) \$(CppFlags) \$(Libs) \$(SYSLIBS)
@@ -55,11 +55,11 @@ lib_dyn:
 	(cd $build; [ -O . ] && (cd ../..;\$(TRUST_ROOT)/bin/baltik/share/baltik/bin/baltik_build module_from_OPT ) ||( [ ! -O . ] && echo  No Compilation  ))" >>makefile
 echo "check: couplage">> makefile
 echo "	env exec=./couplage trust couplage \$(nproc) 1>couplage.out 2>couplage.err
-	if [ -f check.sh ]; then sh check.sh ;fi
+	if [ -f check.sh ]; then bash check.sh ;fi
 	@echo ok
 check_dynamique: dynamique
 	env exec=./dynamique trust dynamique \$(nproc) 1>dynamique.out 2>dynamique.err
-	if [ -f check.sh ]; then sh check.sh ;fi
+	if [ -f check.sh ]; then bash check.sh ;fi
 	@echo ok
 ld_env.sh: makefile
 	@echo \"echo on charge ld_env.sh\" > ld_env.sh
@@ -70,7 +70,7 @@ valgrind: couplage
 	env exec=\"\$TRUST_ROOT/exec/valgrind/bin/valgrind --db-attach=yes ./couplage \"   trust couplage \$(nproc) 
 clean:
 	rm -f couplage *dump *lata* *out *err *TU *log  *son *sons *sauv *xyz convert_jdd *~ *dt_ev *stop	make.include.atelier makefile ld_env.sh 
-	if [ -f Clean.sh ] ; then sh Clean.sh ; fi">> makefile
+	if [ -f Clean.sh ] ; then bash Clean.sh ; fi">> makefile
 
 
 sed "s?${project_directory}?\$(project_directory)?g" makefile > mm

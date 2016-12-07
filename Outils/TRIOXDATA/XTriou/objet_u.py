@@ -2350,9 +2350,17 @@ def gen_doc_base(fr=1):
     s1.write('\usepackage[T1]{fontenc}\n')
 
     s1.write('\usepackage{times}\n')
+    s1.write(r'''\usepackage{xcolor}
+\definecolor{darkblue}{HTML}{3535B4}
+\usepackage{makeidx}''')
+    s1.write('\n\ifppdf \usepackage[pdftex,pdfstartview=FitH,colorlinks=true,linkcolor=blue]{hyperref} \n\pdfcompresslevel=9 \n\AtBeginDocument{\n    \let\Oldlabel\label \n    \\renewcommand{\label}[1]{\hypertarget{#1}{} \Oldlabel{#1}} \n} \n\else \n\usepackage[colorlinks=true,linkcolor=blue]{hyperref}\n\\fi\n\usepackage{a4wide} \n\setlength{\parindent}{0pt} \n')
+    s1.write('\\makeindex \n \\begin{document}\n')
+    s1.write(r'''\title{\vspace{5cm} \Huge \textbf{TRUST Reference Manual V1.7.4} \vspace{0.5cm}}
+\author{\vspace{0.4cm} \LARGE \textcolor{darkblue}{Support team: \textbf{\href{mailto:triou@cea.fr}{triou@cea.fr}}}}
+\maketitle
+\newpage''')
+    s1.write('\n \\tableofcontents\n')
 
-    s1.write('\ifppdf \usepackage[pdftex,pdfstartview=FitH,colorlinks=true,linkcolor=blue]{hyperref} \n\pdfcompresslevel=9 \n\else \n\usepackage[colorlinks=true,linkcolor=blue]{hyperref}\n\\fi\n\usepackage{a4wide} \n\setlength{\parindent}{0pt} \n')
-    s1.write('\\makeindex \n \\begin{document}\n\\tableofcontents\n')
     l=[]
     for name in dicobases.keys():
         if lutil:
@@ -2432,7 +2440,7 @@ def gen_doc_base(fr=1):
         s.close()
         pass
     
-    s1.write('\section{index}\label{objetu} \input{doc.ind} \n \end{document}\n')
+    s1.write('\section{index}\label{objetu} \printindex\n \end{document}\n')
     s1.close()
     if (lutil):
 	    for cla in getXClasses():

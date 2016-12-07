@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # On verifie que VisIt est une version compilee et non telechargee sinon on quitte
 [ "$TRUST_DOWNLOAD_VISIT" = 1 ] && exit 0
 # On verifie que pdflatex est installe sinon on quitte

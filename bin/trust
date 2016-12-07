@@ -113,7 +113,7 @@ help()
 #   echo "-probes                 : Monitor the TRUST calculation only."
    echo "-evol                   : Monitor the TRUST calculation (new IHM)."
    echo "-wiz                    : Set a TRUST datafile from a MED file (new IHM)."
-   echo "-prm                    : Write a prm file and generate the corresponding pdf file in the build directory."
+   echo "-prm                    : Write a prm file."
    echo "-clean                  : Clean the current directory from all the generated files by TRUST."
    echo "-copy                   : Copy the test case datafile from the TRUST database under the present directory."
    echo "-check all|testcase|list : Check the non regression of all the test cases or a single test case or a list of tests cases specified in a file."
@@ -221,7 +221,7 @@ do
       probes=2
    elif [ "$1" = "-wiz" ]
    then
-      sh  $TRUST_ROOT/exec/TRUST_WIZARD/TRUST_Wizard.sh
+      bash  $TRUST_ROOT/exec/TRUST_WIZARD/TRUST_Wizard.sh
       exit $?
    elif [ "$1" = "-create_sub_file" ]
    then
@@ -366,7 +366,7 @@ then
      sleep 0.1
    done
    #[ ! -f $dt_ev ] && exit 1
-   sh  $TRUST_ROOT/exec/TRUST_PLOT2D/Plot2d.sh $DIR/`basename $NOM`.data "residu=max|Ri|"
+   bash  $TRUST_ROOT/exec/TRUST_PLOT2D/Plot2d.sh $DIR/`basename $NOM`.data "residu=max|Ri|"
    exit $?
 fi
 #################
@@ -383,7 +383,7 @@ fi
 #####################
 if [ "$prm" = 1 ]
 then
-   create_basic_prm_from_lata.sh -gen_pdf $NOM
+   create_basic_prm_from_lata.sh $NOM
    exit $?
 fi
 

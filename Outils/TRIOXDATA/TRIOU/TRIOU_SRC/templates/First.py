@@ -74,7 +74,7 @@ def create_cl(eq,inco,clglobal):
     acl=triou.condlimlu(bord=group) 
     if cl=={}:
         # condlim generique
-        dico_cl= {"symetry":"symetrie","periodic":"periodic"}
+        dico_cl= {"symetry":"symetrie","periodic":"periodic","wall":"Paroi"}
         type_tr=dico_cl[type]
         acl.cl=triou.__dict__[type_tr]()
     elif type=="input":
@@ -138,28 +138,24 @@ def convert_json_to_jdd(sch,filename):
     assert(len(sch.keys())==1)
     type_pb=sch.keys()[0]
     sch=sch[type_pb]
- 
-    if type_pb=="thermo_hydrau_pb":
-        turb_model=sch["turb_model"]
-        print "AFAIRE",turb_model
-        sch.pop("turb_model")
-        if turb_model=="k-epsilon":
-            data="templates/upwind_KEPS.data"
-        elif turb_model=="Laminar":
-            data="templates/upwind.data"
-        else:
-            raise Exception(not implemented)
-    elif type_pb=="solid_pb":
-        data="templates/conduc.data"
+
+    if type_pb=="solid_pb":
+        data=type_pb
     else:
-        print type_pb, "not supported"
-        raise Exception("errror")
+        turb_model=sch["turb_model"]
+        sch.pop("turb_model")
+        data=type_pb+"_"+turb_model
         pass
+    data="templates/"+data+".data"
     try:
        f=open(data,"r")
     except:
        import os
        data=os.getenv("TRIOU_ROOT_DIR")+"/"+data
+       try:
+           f=open(data,"r")
+       except:
+           raise Exception("Unable to open "+data)
     template=read_template(data)
     
     # print template
@@ -236,7 +232,26 @@ def convert_json_to_jdd(sch,filename):
                     eq=trouve_eqn(pb,key)
                     eq.conditions_initiales.condinit.ch=triou.uniform_field(val=val[key])
                 except:
-                    print "pb with",key 
+                    print "pb with",key
+                if key=="temperature":
+                    eq=None
+                    # on ajoute boussinesq
+                    try:
+                        eq=trouve_eqn(pb,"vitesse")
+                    except:
+                        pass
+                    if (eq):
+                        if eq.sources is None:
+                            eq.sources=triou.sources(listobj=[])
+                            pass
+                
+                        bou=triou.boussinesq_temperature()
+                        bou.setT0(str(val[key]))
+                        eq.sources.listobj.append(bou)
+                    
+                        pass
+                    pass
+                pass
         elif cle=="bound_cond":
             first=1
             for cl in val:

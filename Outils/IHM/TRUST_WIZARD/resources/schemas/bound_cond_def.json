@@ -14,7 +14,7 @@
        "title": "Temperature",
        "type": "object", 
        "oneOf":
-        [ { "title": "Paroi adiab", 
+        [ { "title": "Adiabatic wall", 
             "properties": { "wall_type": { "enum": ["paroi_adiab"] } },
             "required": ["wall_type"], "additionalProperties": false
             },

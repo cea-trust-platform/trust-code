@@ -200,7 +200,7 @@ class TrustWizDesktop(QMainWindow):
           cmd=cmd.split()
           print "cmd",cmd
           import subprocess
-          # subprocess.call(cmd)
+          subprocess.call(cmd)
           print "Ok"
     @Slot()
     def reset(self):
