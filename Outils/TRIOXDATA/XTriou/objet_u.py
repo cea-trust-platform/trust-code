@@ -2344,22 +2344,41 @@ def gen_doc_base(fr=1):
             print cla,"not in listxc"
         pass
     s1=open('doc.tex','w')
-    s1.write('\\newif\ifppdf \n\ifx\pdfoutput\undefined \n  \ppdffalse \n\else \n \pdfoutput=1 \n  \ppdftrue \n\\fi \n')
-    s1.write('\\batchmode\n') 
-    s1.write('\documentclass{article}[11pt]\n') 
-    s1.write('\usepackage[T1]{fontenc}\n')
 
-    s1.write('\usepackage{times}\n')
-    s1.write(r'''\usepackage{xcolor}
+    s1.write(r'''\newif\ifppdf 
+\ifx\pdfoutput\undefined 
+  \ppdffalse 
+\else 
+ \pdfoutput=1 
+  \ppdftrue 
+\fi 
+\batchmode
+\documentclass{article}[11pt]
+\usepackage[T1]{fontenc}
+\usepackage{times}
+\usepackage{xcolor}
 \definecolor{darkblue}{HTML}{3535B4}
-\usepackage{makeidx}''')
-    s1.write('\n\ifppdf \usepackage[pdftex,pdfstartview=FitH,colorlinks=true,linkcolor=blue]{hyperref} \n\pdfcompresslevel=9 \n\AtBeginDocument{\n    \let\Oldlabel\label \n    \\renewcommand{\label}[1]{\hypertarget{#1}{} \Oldlabel{#1}} \n} \n\else \n\usepackage[colorlinks=true,linkcolor=blue]{hyperref}\n\\fi\n\usepackage{a4wide} \n\setlength{\parindent}{0pt} \n')
-    s1.write('\\makeindex \n \\begin{document}\n')
-    s1.write(r'''\title{\vspace{5cm} \Huge \textbf{TRUST Reference Manual V1.7.4} \vspace{0.5cm}}
-\author{\vspace{0.4cm} \LARGE \textcolor{darkblue}{Support team: \textbf{\href{mailto:triou@cea.fr}{triou@cea.fr}}}}
+\usepackage{makeidx}
+\ifppdf \usepackage[pdftex,pdfstartview=FitH,colorlinks=true,linkcolor=blue,urlcolor=darkblue]{hyperref} 
+\pdfcompresslevel=9 
+\AtBeginDocument{
+    \let\Oldlabel\label
+    \renewcommand{\label}[1]{\hypertarget{#1}{} \Oldlabel{#1}}
+}
+\else 
+\usepackage[colorlinks=true,linkcolor=blue]{hyperref}
+\fi
+\usepackage{a4wide} 
+\setlength{\parindent}{0pt} 
+\makeindex 
+ \begin{document}
+\title{\vspace{5cm} \Huge \textbf{TRUST Reference Manual V1.7.4} \vspace{0.5cm}}
+\author{\vspace{0.4cm} \LARGE \textbf{Support team: \href{mailto:triou@cea.fr}{triou@cea.fr}} }
 \maketitle
-\newpage''')
-    s1.write('\n \\tableofcontents\n')
+\newpage
+\tableofcontents
+''')
+    
 
     l=[]
     for name in dicobases.keys():
