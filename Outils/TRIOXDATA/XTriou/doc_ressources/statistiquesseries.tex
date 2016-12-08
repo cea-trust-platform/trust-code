@@ -1,0 +1,56 @@
+
+{\ttfamily
+\textrm{\textbf{Statistiques}}\index{Statistiques}\textrm{\textbf{\_en\_serie}}\index{Statistiques\_en\_serie}\textrm{:
+This keyword is used to set the statistics. Average on }\textrm{\textbf{dt\_integr}}\textrm{ time interval is
+post-processed every }\textrm{\textbf{dt\_integr}}\textrm{ seconds}}
+
+
+\bigskip
+
+{\ttfamily
+\textrm{\textbf{dt\_integr }}\textrm{value : Period of integration and write period.}}
+
+
+\bigskip
+
+\textit{stat}: Set to \textbf{Moyenne}\index{Moyenne}\textbf{ (average)} to calculate the average of the field
+\textit{nom\_champ} (field name) over time or \textbf{Ecart\_type}\index{type}\index{Ecart\_type}\textbf{
+(std\_deviation)} to calculate the standard deviation (statistic rms) of the field \textit{nom\_champ (field\_name)}.
+
+
+\bigskip
+
+\textit{nom\_champ:} name of the field on which statistical analysis will be performed. Possible keywords are
+\textbf{Vitesse}\index{Vitesse}\textbf{ (speed)}, \textbf{Pression}\index{Pression}\textbf{ (pressure)},
+\textbf{Temperature}\index{Temperature}, \textbf{Concentration}\index{Concentration}\textbf{,{\dots}}
+
+
+\bigskip
+
+{\ttfamily
+\textrm{\textit{localisation}}\textrm{: localisation of post-processed field values (}\textrm{\textbf{elem}}\textrm{ or
+}\textrm{\textbf{som}}\textrm{).}}
+
+
+\bigskip
+
+{\itshape
+Example:}
+
+
+\bigskip
+
+\textbf{Statistiques}\index{Statistiques}\textbf{\_en\_serie}\index{Statistiques\_en\_serie}\textbf{ Dt\_integr }dtst \{
+
+\textbf{Moyenne}\index{Moyenne} Pression\index{Pression}
+
+\}
+
+Will calculate and write every dtst seconds the mean value:
+
+\begin{equation*}
+(n+1)\normalsubformula{\text{dt}}\text{\_int}\normalsubformula{\text{egr}}>t>n\ast
+\normalsubformula{\text{dt}}\text{\_int}\normalsubformula{\text{egr}},\overline{P(t)}=\frac 1{t-n\ast
+\normalsubformula{\text{dt}}\text{\_int}\normalsubformula{\text{egr}}}\overset t{\underset{t_n\ast
+\normalsubformula{\text{dt}}\text{\_int}\normalsubformula{\text{egr}}}{\int }}P(t)\normalsubformula{\text{dt}}
+\end{equation*}
