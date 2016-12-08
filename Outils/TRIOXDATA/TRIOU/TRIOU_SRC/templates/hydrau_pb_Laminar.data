@@ -1,12 +1,11 @@
-# Hydraulique 2D laminaire avec "trou" dans le maillage #
-# PARALLEL OK 8 #
+# laminar hydraulic problem #
+# PARALLEL OK #
 dimension 2
 domaine dom 
 # BEGIN MESH #
 read_med family_names_from_group_names dom dom2 mesh.med
 # END MESH #
 # BEGIN PARTITION 
-
 Partition dom 
   { 
     Partition_tool metis   { nb_parts 2   } 
@@ -23,7 +22,7 @@ scheme_euler_explicit sch
 Read sch
   { 
     tinit 0.0
-    nb_pas_dt_max 0
+    nb_pas_dt_max 3
   }
 scheme_euler_implicit sch_statio 
 Read sch_statio
@@ -67,6 +66,7 @@ Read pb
                 omega 1.5
               }
             seuil 1e-08
+            impr 
           }
         convection    { amont 
           }
@@ -86,8 +86,8 @@ Read pb
         format lata
         fields  dt_post 1. 
           {
-            pression
-            vitesse
+            pressure
+            velocity
           }
       }
   }
