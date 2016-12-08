@@ -12,10 +12,20 @@
 %pdflatex -interaction=nonstopmode Generic_Guide_new.tex >> LOG
 %pdflatex -interaction=nonstopmode Generic_Guide_new.tex >> LOG
 
-%\usepackage{xr-hyper} % a mettre avant hyperref
 \usepackage[unicode=true,pdfusetitle, bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
- breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=true,linkcolor=blue,pageanchor]
+ breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=true,linkcolor=blue,pageanchor, urlcolor=darkblue]
  {hyperref}[2010/09/11]
+
+\ifx \TRUSTV \undefined
+\def\TRUSTVERSION{}
+\else
+\def\TRUSTVERSION{V\TRUSTV}
+\fi
+
+\hypersetup{pdftitle={TRUST Generic Guide \TRUSTVERSION},
+ pdfauthor={Team TRUST},
+ pdfsubject={TRUST Generic Guide},
+ pdfkeywords={TRUST, guide, howto, \TRUSTVERSION}}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -43,21 +53,22 @@
 \newcommand{\trust}{\textbf{TRUST}\xspace}
 \newcommand{\Note}{\textbf{\textcolor{darkred}{Note}}\xspace}
 
-%\externaldocument[Ref-]{TRUST_Reference_Manual}
-
-
-
-
-
 
 \begin{document}
 
-\title{\Huge \bfseries{TRUST Generic Guide V1.7.4}}
+\title{\vspace{2cm}\Huge \bfseries{TRUST Generic Guide \TRUSTVERSION}}
 \author{
-\vspace{4cm} % espace entre support team et ref manual
-\LARGE \textcolor{darkblue}{Support team: \textbf{\href{mailto:triou@cea.fr}{triou@cea.fr}}} \\
-\vspace{5cm} % espace entre ref manual et date
-\LARGE \textbf{\href{TRUST_Reference_Manual.pdf}{\trust Reference Manual}}
+\vspace{2cm} % espace entre support team et ref manual
+\LARGE \textbf{Support team: \href{mailto:triou@cea.fr}{triou@cea.fr}} \\
+\ifx \BALTROOT \empty
+\vspace{2cm} % espace entre ref manual et ce qui est en dessous
+Link to: \LARGE \textbf{\href{run:\TRUSTROOTLATEX/Outils/TRIOXDATA/XTriou/doc.pdf}{\trust Reference Manual}}\\
+\else
+\vspace{2cm} % espace entre ref manual et ce qui est en dessous
+Link to: \LARGE \textbf{\href{run:\TRUSTROOTLATEX/Outils/TRIOXDATA/XTriou/doc.pdf}{\trust Reference Manual}}\\
+Link to: \LARGE \textbf{\href{run:\BALTROOT/build/xdata/XTriou/doc.pdf}{BALTIK Reference Manual}}\\
+%Link to: \LARGE \textbf{\href{\BALTROOT/share/doc/Reference_Guide.pdf}{Baltik documentation}}
+\fi
 }
 %\date{} % si on ne veut pas la date
 
@@ -65,21 +76,6 @@
 \tableofcontents{}
 \newpage
 
-
-
-
-%\subsection{tests}
-%COMPILER AVEC FEDORA 18 au moins is226425 \\
-%Fedora20 is221714.intra.cea.fr\\
-%\textbf{Mailler} cf \href[page=DOCLINK_MESH]{./User_Manual_TRUST.pdf}{MAILLER}\\
-%\textbf{MESH FILES}  cf \href[page=DOCLINK_MESH FILES]{./User_Manual_TRUST.pdf}{MESH FILES}\\
-%\textbf{PROBLEM WITH PASSIVE SCALARS}  cf \href[page=DOCLINK_PROBLEM WITH PASSIVE SCALARS]{./User_Manual_TRUST.pdf}{PROBLEM WITH PASSIVE SCALARS}\\
-%%\hyperref{User_Manual_TRUST.pdf}{page}{30}{thedoc}
-%%\href{User_Manual_TRUST.pdf#page.30}{user page 13+1}\\
-%%\href{User_Manual_TRUST.pdf\#_Ref58057250}{Ref58057250} \\
-%\href{TRUST_tutorial.pdf#page.25}{tuto page 25+1}\\
-%\href{TRUST_tutorial.pdf\#save_restart}{Tuto Save\&Restart} \\
-%\href{TRUST_Reference_Manual.pdf\#coeur}{test} \\
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -158,12 +154,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%\input{chap8_prm.tex}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-
 
 
 

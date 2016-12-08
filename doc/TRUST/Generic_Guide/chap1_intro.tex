@@ -221,7 +221,7 @@ Data files are written following some rules as shown above. But their language i
 \item lignes between \textcolor{blue}{\# ... \#} and \textcolor{blue}{/* ... */} are comments,
 \item in that document, words in \textbf{bold} are \trust keywords, you can enlight them in your file editor with the command line (details in section \ref{Run}):\\
 \texttt{> trust -config nedit|vim|emacs}
-\item braces "\{ \}" are elements that \trust reads and interpretes, so don't forget them and \underline{put space before and} \underline{after them},
+\item braces "\{ \}" are elements that \trust reads and interpretes, so don't forget them and \underline{put space} \underline{before and after them},
 \item elements between bracket "[ ]" are optionnal.
 \end{itemize}
 
@@ -292,7 +292,7 @@ More abstract object types also exist:
 \item A \textbf{VDF} or \textbf{VEF} according to the discretization type,
 \item A \textbf{Scheme\_euler\_explicit} to indicate  the scheme type,
 \item A \textbf{Solveur\_pression} to denote the pressure system solver type,
-\item A \textbf{Champ\_Uniforme} to define, for example, the gravity field.
+\item A \textbf{Uniform\_field} to define, for example, the gravity field.
 \end{itemize}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -415,6 +415,7 @@ A data set to write Ok on screen:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Running data file}\label{Run}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 To use \trust, your shell must be "bash". So ensure you are in the right shell:
 \begin{verbatim}
 > echo $0
@@ -429,7 +430,11 @@ TRUST vX.Y.Z support : triou@cea.fr
 Loading personal configuration /$path_to_my_home_directory/.perso_TRUST.env
 \end{verbatim}
 
-Then you can run your calculation:
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Sequential calculation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+You can run your sequential calculation:
 \begin{verbatim}
 > cd $my_test_directory
 > trust [-evol] my_data_file
@@ -451,13 +456,12 @@ Usage: trust [option] datafile [nb_cpus] [1>file.out] [2>file.err]
 Where option may be:
 -help|-h                 : List options.
 -index                   : Access to TRUST ressources index.
--doc                     : Access to TRUST user's manual.
+-doc                     : Access to TRUST manual (Generic Guide).
 -config nedit|vim|emacs  : Configure nedit or vim or emacs with TRUST keywords.
 -mesh                    : Visualize the mesh(es) contained in the data file.
 -evol                    : Monitor the TRUST calculation (new IHM).
 -wiz                     : Set a TRUST datafile from a MED file (new IHM).
--prm                     : Write a prm file and generate the corresponding pdf 
-                           file in the build directory.
+-prm                     : Write a prm file.
 -clean                   : Clean the current directory from all the generated 
                            files by TRUST.
 -copy                    : Copy the test case datafile from the TRUST database 
@@ -487,6 +491,174 @@ Where option may be:
 %-c ncpus                : Use ncpus CPUs allocated per task for a parallel 
 %                          calculation. 
 
-\vspace{0.5cm}
-To learn how to use the "\textbf{-evol}" option, you can go to see the first exercise of the tutorial: \href{TRUST_tutorial.pdf\#exo1}{Obstacle}.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Parallel calculation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+To run a parallel calculation, you must do two runs:
+\begin{itemize}
+\item the first one, to partitioning and create your 'n' sub-domains (two methods will by presented),
+\item the second one, to read your 'n' sub-domains and run the calculation on 'n' processors.
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Partitionning: "By hand" method}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+You have to make two data files:
+\begin{itemize}
+\item \textit{BuildMeshes.data} and 
+\item \textit{Calculation.data}.
+\end{itemize}
+
+The \textit{BuildMeshes.data} file only contains the same informations as the 
+begining of the sequential data file and partitioning informations.
+This file will create the sub-domains (cf .Zones files).
+
+
+\begin{center}
+\fbox{ \begin{minipage}[c]{0.8\textwidth}
+\begin{center}
+\textit{BuildMeshes.data}
+\end{center}
+\end{minipage}}
+\fbox{ \begin{minipage}[c]{0.8\textwidth}
+\begin{alltt} 
+{\bf{Dimension}} 2
+
+{\bf{Domaine}} \textit{my\_domain}
+
+
+\textcolor{blue}{\# BEGIN MESH \#}
+
+{\bf{Read\_file}} \textit{my\_mesh.geo} ;
+
+\textcolor{blue}{\# END MESH \#}
+
+
+\textcolor{blue}{\# BEGIN PARTITION \#}
+
+{\bf{Partition}} \textit{my\_domain}
+
+\{
+
+\hspace{1cm}    {\bf{Partition\_tool}} \textit{partitioner\_name} \{ \textit{option1 option2 ...} \}
+
+\hspace{1cm}    {\bf{Larg\_joint}} \textit{2}
+
+\hspace{1cm}    {\bf{zones\_name}} \textit{DOM}
+
+\hspace{1cm}    ...
+
+\}
+
+{\bf{End}}
+
+\textcolor{blue}{\# END PARTITION \#}
+\end{alltt}
+\end{minipage}}
+\end{center}
+
+Run the \textit{BuildMeshes.data} with \trust:
+\begin{verbatim}
+> trust BuildMeshes
+\end{verbatim}
+
+You may have obtained files named \textit{DOM\_000n}\textbf{.Zones} which contains the 'n' sub-domains.\\
+
+To see your sub-domains, you can run:
+\begin{alltt} 
+> trust -mesh Calculation
+\end{alltt}
+
+In the \textit{Calculation.data} file contains the domain definition, the block which will read the sub-domains and the probleme definition (as in sequential calculation).
+\begin{center}
+\fbox{ \begin{minipage}[c]{0.8\textwidth}
+\begin{center}
+\textit{Calculation.data}
+\end{center}
+\end{minipage}}
+\fbox{ \begin{minipage}[c]{0.8\textwidth}
+\begin{alltt} 
+{\bf{Dimension}} 2
+
+
+{\bf{Domaine}} \textit{my\_domain}
+
+
+\textcolor{blue}{\# BEGIN SCATTER \#}
+
+{\bf{Scatter}} \textit{DOM}{\bf{.Zones}} \textit{my\_domain}
+
+\textcolor{blue}{\# END SCATTER \#}
+
+
+{\bf{VDF}} \textit{my\_discretization}
+
+
+{\bf{Scheme\_euler\_explicit}} \textit{my\_scheme}
+
+{\bf{Read}} \textit{my\_scheme} \{ ... \}
+
+
+{\bf{Fluide\_Incompressible}} \textit{my\_medium}
+
+{\bf{Read}} \textit{my\_medium} \{ ... \}
+
+
+{\bf{Uniform\_field}} \textit{my\_gravity}
+
+{\bf{Read}} \textit{my\_gravity 2 0 -9.81}
+
+
+{\bf{Associate}} \textit{my\_problem my\_domain}
+
+{\bf{Associate}} \textit{my\_problem my\_scheme}
+
+{\bf{Associate}} \textit{my\_problem my\_medium}
+
+{\bf{Associate}} \textit{my\_medium my\_gravity}
+
+
+{\bf{Discretize}} \textit{my\_problem my\_discretization}
+
+
+{\bf{Read}} \textit{my\_problem} \{ ... \}
+
+
+{\bf{Solve}} \textit{my\_problem}
+
+
+{\bf{End}}
+\end{alltt}
+\end{minipage}}
+\end{center}
+
+Run the \textit{Calculation.data} file with \trust:
+\begin{verbatim}
+> trust Calculation procs_number
+\end{verbatim}
+
+
+This will read your \textit{DOM\_000n}\textbf{.Zones} files. You can see the documentation of the \textbf{"scatter"} keyword in \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#scatter}{this part of the \trust Reference Manual}.\\
+
+
+
+For more information, you can go to see this \href{TRUST_tutorial.pdf\#exo_para_1}{exercise in the \trust tutorial}.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Read the sub-domains}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Visualization}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+To learn how to use the "\textbf{-evol}" option, you can go to see the first exercise of the \trust tutorial: \href{TRUST_tutorial.pdf\#exo1}{Obstacle}.
+
 
