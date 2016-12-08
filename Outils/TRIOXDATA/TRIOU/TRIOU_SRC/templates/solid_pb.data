@@ -3,7 +3,7 @@
 dimension 2
 domaine dom 
 # BEGIN MESH #
-lire_med dom dom2 mesh.med
+lire_med family_names_from_group_names dom dom2 mesh.med
 # END MESH #
 # BEGIN PARTITION 
 

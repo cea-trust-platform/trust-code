@@ -54,11 +54,11 @@ stat_post_correlation stat_post_deriv correlation 0 not_set
   attr second_field chaine second_field 0 not_set
   attr localisation chaine(into=["elem","som","faces"]) localisation 1 Localisation of post-processed field value
 list_stat_post listobj nul -1 stat_post_deriv 0 Post-processing for statistics
-stats_posts objet_lecture nul 0 Field\'s write mode.
+stats_posts objet_lecture nul 0 Field\'s write mode. \input{{statistiques}}
   attr mot chaine(into=["dt_post","nb_pas_dt_post"]) mot 0 Keyword to set the kind of the field\'s write frequency. Either a time period or a time step period.
   attr period chaine period 0 Value of the period.
   attr champs|fields list_stat_post champs 0 Post-processed fields.
-stats_serie_posts objet_lecture nul 0 Post-processing for statistics.
+stats_serie_posts objet_lecture nul 0 Post-processing for statistics. \input{{statistiquesseries}}
   attr mot chaine(into=["dt_integr"]) mot 0 Keyword is used to set the statistics period of integration and write period.
   attr dt_integr floattant dt_integr 0 Average on dt_integr time interval is post-processed every dt_integr seconds.
   attr stat list_stat_post stat 0 not_set
@@ -932,7 +932,7 @@ modif_bord_to_raccord interprete modif_bord_to_raccord -1 Keyword to convert a b
 remove_elem_bloc objet_lecture nul 1 not_set
   attr liste listentier liste 1 not_set
   attr fonction chaine fonction 1 not_set
-remove_elem interprete remove_elem -1 Keyword to remove element from a VDF mesh (named domaine_name), either from an explicit list of elements or from a geometric condition defined by a condition f(x,y)>0 in 2D and f(x,y,z)>0 in 3D. All the new borders generated are gathered in one boundary called : newBord (to rename it, use RegroupeBord keyword. To split it to different boundaries, use DecoupeBord_Pour_Rayonnement keyword). Example of a removed zone of radius 0.2 centered at (x,y)=(0.5,0.5): NL2 Remove_elem dom { fonction $0.2*0.2-(x-0.5)^2-(y-0.5)^2>0$ } NL2 Warning : the thickness of removed zone has to be large enough to avoid singular nodes as decribed below :
+remove_elem interprete remove_elem -1 Keyword to remove element from a VDF mesh (named domaine_name), either from an explicit list of elements or from a geometric condition defined by a condition f(x,y)>0 in 2D and f(x,y,z)>0 in 3D. All the new borders generated are gathered in one boundary called : newBord (to rename it, use RegroupeBord keyword. To split it to different boundaries, use DecoupeBord_Pour_Rayonnement keyword). Example of a removed zone of radius 0.2 centered at (x,y)=(0.5,0.5): NL2 Remove_elem dom { fonction $0.2*0.2-(x-0.5)^2-(y-0.5)^2>0$ } NL2 Warning : the thickness of removed zone has to be large enough to avoid singular nodes as decribed below : \includepng{{removeelem.png}}
   attr domaine ref_domaine domain 0 Name of domain
   attr bloc remove_elem_bloc bloc 0 not_set
 regroupebord interprete regroupebord -1 Keyword to build one boundary new_bord with several boundaries of the domain named domaine.

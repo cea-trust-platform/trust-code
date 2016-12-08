@@ -1,0 +1,63 @@
+
+
+
+\textbf{Dt\_post}\index{Dt\_post}: This keyword is used to set the calculated statistics write period.
+
+\textit{dts}: frequency value.
+
+\textbf{t\_deb} value: Start of integration time
+
+\textbf{t\_fin} value: End of integration time
+
+
+\bigskip
+
+\textit{stat}: Set to \textbf{Moyenne}\index{Moyenne}\textbf{ (average)} to calculate the average of the field
+\textit{nom\_champ} (field name) over time or \textbf{Ecart\_type}\index{type}\index{Ecart\_type}\textbf{
+(std\_deviation)} to calculate the standard deviation (statistic rms) of the field \textit{nom\_champ (field\_name)} or
+\textbf{Correlation}\index{Correlation} to calculate the correlation between the two fields \textit{nom\_champ
+}and\textit{ second\_nom\_champ.}
+
+
+\bigskip
+
+\textit{nom\_champ:} name of the field on which statistical analysis will be performed. Possible keywords are
+\textbf{Vitesse}\index{Vitesse}\textbf{ (speed)}, \textbf{Pression}\index{Pression}\textbf{ (pressure)},
+\textbf{Temperature}\index{Temperature}, \textbf{Concentration}\index{Concentration}\textbf{,{\dots}}
+
+
+\bigskip
+
+\textit{localisation}: localisation of post-processed field values (\textbf{elem} or \textbf{som}).
+
+
+\bigskip
+
+Example:
+
+\textbf{Statistiques}\index{Statistiques}\textbf{ Dt\_post}\index{Dt\_post}\textbf{ }dtst \{
+
+\textbf{\ \ \ \ \ \ \ \ \ \ \ \ t\_deb} 0.1 \ \textbf{t\_fin} 0.12
+
+\textbf{Moyenne}\index{Moyenne} Pression\index{Pression}
+
+\textbf{Ecart\_type}\index{type}\index{Ecart\_type}\textbf{ }Pression\index{Pression} \index{Pression}
+
+\textbf{Correlation}\index{Correlation}\textbf{ }Vitesse Vitesse \ \}
+
+It will write every \textbf{dt\_post \ }the mean, standard deviation and correlation value:
+
+\begin{equation*}
+\begin{matrix}t\text{{\textless}=}t_{\normalsubformula{\text{deb}}}:\hfill\null \\\text{average:
+}\overline{P(t)}=0\hfill\null \\\text{std\_deviation: }<P(t)\text{{\textgreater}=}0\hfill\null \\\text{correlation:
+}<U(t).V(t)\text{{\textgreater}=0}\hfill\null \\\text{ }\hfill\null \\t>t_{\normalsubformula{\text{deb}}}:\hfill\null
+\\\text{average: }\overline{P(t)}=\frac 1{t-t_{\normalsubformula{\text{deb}}}}\overset
+t{\underset{t_{\normalsubformula{\text{deb}}}}{\int }}P(t)\normalsubformula{\text{dt}}\hfill\null
+\\\text{std\_deviation: }<P(t)\text{{\textgreater}=}\sqrt{\frac 1{t-t_{\normalsubformula{\text{deb}}}}\overset
+t{\underset{t_{\normalsubformula{\text{deb}}}}{\int
+}}\left[P(t)-\overline{P(t)}\right]^2\normalsubformula{\text{dt}}}\hfill\null \\\text{correlation:
+}<U(t).V(t)\text{{\textgreater}=}\frac 1{t-t_{\normalsubformula{\text{deb}}}}\overset
+t{\underset{t_{\normalsubformula{\text{deb}}}}{\int
+}}\left[U(t)-\overline{U(t)}\right].\left[V(t)-\overline{V(t)}\right]\normalsubformula{\text{dt}}\hfill\null
+\end{matrix}\hfill 
+\end{equation*}

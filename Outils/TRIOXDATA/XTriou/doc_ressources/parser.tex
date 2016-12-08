@@ -1,0 +1,126 @@
+\section{Syntax to define a mathematical funciton}
+\label{parser}
+In a mathematical function,
+used for example in field definition, it's possible to use the predifined function (an object parser is used to
+evaluate the functions) :
+
+ABS\ \ \ \ : absolute value function
+
+COS \ \ \ \ : cosinus function
+
+SIN\ \ \ \ : sinus function
+
+TAN\ \ \ \ : tan function
+
+ATAN\ \ : arctan function
+
+EXP\ \ \ \ : exponential function
+
+LN\ \ \ \ : neperian logaithm function
+
+SQRT \ \ : root mean square function
+
+INT\ \ \ \ : integer function
+
+ERF\ \ \ \ : erf function
+
+RND(x)\ \ : random function (values between 0 and x)
+
+COSH\ \ \ \ : hyperbolic cosinus function
+
+SINH\ \ \ \ : hyperbolic sinus function
+
+TANH\ \ \ \ : hyperbolic tangent function
+
+ACOS\ \ \ \ : inverse cosinus function
+
+ATANH\ \ : inverse hyperbolic tangent function
+
+NOT(x)\ \ : not equal to x 
+
+x\_AND\_y \ \ : and function (returns 1 if x and y true else 0)
+
+x\_OR\_y\ \ : or function (returns 1 if x or y true else 0)
+
+x\_GT\_y\ \ : greater to (returns 1 if x{\textgreater}y else 0)
+
+x\_GE\_y\ \ : greater or equal to (returns 1 if x{\textgreater}=y else 0)
+
+x\_LT\_y\ \ : lesser to (returns 1 if x{\textless}y else 0)
+
+x\_LE\_y\ \ : lesser or equal to (returns 1 if x{\textless}=y else 0)
+
+x\_MIN\_y \ \ \ \ \ : minimum of x and y
+
+x\_MAX\_y \ \ \ \ : maximum of x and y
+
+x\_MOD\_y \ \ \ \ : modular division of x per y
+
+x\_EQ\_y \ \ \ \ \ \ \ \ : equal to (returns 1 if x=y else 0)
+
+x\_NEQ\_y \ \ \ \ \ : not equal to (returns 1 if x!=y else 0) 
+
+
+\bigskip
+
+You can also use the following operations:
+
++\ \ : addition
+
+{}- \ \ : substraction
+
+/ \ \ : division
+
+*\ \ : multiplication
+
+\%\ \ : modulo
+
+\$\ \ : max
+
+\^{} \ \ : power
+
+{\textless}\ \ : lesser than
+
+{\textgreater}\ \ : greater than
+
+[\ \ : less or equal to
+
+]\ \ : greater of equal to
+
+
+\bigskip
+
+You can also use the following constants:
+
+Pi \ \ : pi value (3,1415{\dots})
+
+
+\bigskip
+
+The variables which can be used are:
+
+x,y,z \ \ : coordinates 
+
+t \ \ : time
+
+
+\bigskip
+
+{\bfseries
+Examples:}
+
+Champ\_front\_fonc\_txyz\index{Champ\_front\_fonc\_txyz} \ 2 \ cos(y+x\^{}2) \ t+ln(y)
+
+Champ\_fonc\_xyz\index{xyz} dom 2 tanh(4*y)*(0.95+0.1*rnd(1)) 0.
+
+
+\bigskip
+
+{\bfseries
+Possible error:}
+
+Champ\_fonc\_txyz 1 \ cos(10*t)*(1{\textless}x{\textless}2)*(1{\textless}y{\textless}2)
+
+Previous line is wrong. It should be written:
+
+Champ\_fonc\_txyz 1 \ cos(10*t)*(1{\textless}x)*(x{\textless}2)*(1{\textless}y)*(y{\textless}2)

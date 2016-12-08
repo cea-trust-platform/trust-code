@@ -2352,15 +2352,23 @@ def gen_doc_base(fr=1):
  \pdfoutput=1 
   \ppdftrue 
 \fi 
-\batchmode
+%\batchmode
 \documentclass{article}[11pt]
 \usepackage[T1]{fontenc}
 \usepackage{times}
 \usepackage{xcolor}
 \definecolor{darkblue}{HTML}{3535B4}
 \usepackage{makeidx}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{amsmath}
+\newcommand\normalsubformula[1]{\text{\mathversion{normal}$#1$}}
+
+\newcommand\includepng[1]{{\centering\includegraphics[width=11.234cm]{#1}}}
+
 \ifppdf \usepackage[pdftex,pdfstartview=FitH,colorlinks=true,linkcolor=blue,urlcolor=darkblue]{hyperref} 
 \pdfcompresslevel=9 
+\usepackage[pdftex]{graphicx}
 \AtBeginDocument{
     \let\Oldlabel\label
     \renewcommand{\label}[1]{\hypertarget{#1}{} \Oldlabel{#1}}
@@ -2377,6 +2385,7 @@ def gen_doc_base(fr=1):
 \maketitle
 \newpage
 \tableofcontents
+\input{parser.tex}
 ''')
     
 
