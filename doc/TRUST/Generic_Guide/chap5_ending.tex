@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Solve}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Now that you have finish to specify all your computation parameters, you may add the \textbf{"Solve"} keyword at the end of your data file, in order to resolve your problem.
+Now that you have finish to specify all your computation parameters, you may add the \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#solve}{\textbf{"Solve"}} keyword at the end of your data file, in order to resolve your problem.
 You may also add the \textbf{"End"} keyword to specify the end of your data file.
 
     \begin{center}
@@ -14,7 +14,7 @@ You may also add the \textbf{"End"} keyword to specify the end of your data file
     \end{minipage}}
     \end{center}
 
-For more details, see the \href{TRUST_Reference_Manual.pdf\#solve}{\trust Reference Manual}. \\
+For more details, see the \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#solve}{\trust Reference Manual}. \\
 
 You can see methods to run your data file in section \ref{Run}.
 
@@ -31,11 +31,10 @@ Your calculation will automatically stops if it has reached:
 \item the threshold of convergence.
 \end{itemize}
 
-You may use the \textit{my\_data\_file}\textbf{.stop} file, if you want to stop properly your running calculation (i.e. with all saves).
-When the simulation is running, you can see the "\textbf{0}" value in that file.\\
+You may use the \textit{my\_data\_file}\textbf{.stop} file, if you want to stop properly your running calculation (i.e. with all saves).\\
 
-To stop it, put a "\textbf{1}" instead of the "\textbf{0}" and at the next iteration the calculation will stop properly.\\
-
+When the simulation is running, you can see the "\textbf{0}" value in that file.
+To stop it, put a "\textbf{1}" instead of the "\textbf{0}" and at the next iteration the calculation will stop properly.
 When you don't change any thing to that file, at the end of the calculation, you can see that it is writen "\textbf{Finished correctly}".
 
 
@@ -45,10 +44,10 @@ When you don't change any thing to that file, at the end of the calculation, you
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Automaticaly, \trust make backups during the calculation. The unknowns (velocity, temperature,...) are saved in:
 \begin{itemize}
-\item one \textbf{.xyz} file,happening:
+\item one \textbf{.xyz} file, happening:
     \begin{itemize}
     \item at the end of the calculation,
-    \item but, user may disable it with the specific keyword \textbf{"EcritureLectureSpecial 0"} added just before the \textbf{"Solve"} keyword.
+    \item but, user may disable it with the specific keyword "\href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#ecriturelecturespecial}{\textbf{EcritureLectureSpecial 0}}" added just before the \textbf{"Solve"} keyword.
     \end{itemize}
 
 
@@ -67,14 +66,13 @@ By default, the name for the \textbf{.sauv} files is \textbf{"filename\_problemn
 The format of theses files is binary and the files are appended during successive saves.\\
 
 You can change the behaviour using the following keywords just before the \textbf{solve} instruction:
-
-    \begin{center}
-    \fbox{ \begin{minipage}[c]{1\textwidth}
-    \begin{alltt}
-    {\bf{sauvegarde \hspace{0.5cm} binaire|xyz}} \hspace{0.5cm} \textit{filename}{\bf{.sauv}}|\textit{filename}{\bf{.xyz}}
-    \end{alltt}
-    \end{minipage}}
-    \end{center}
+\begin{center}
+\fbox{ \begin{minipage}[c]{1\textwidth}
+\begin{alltt}
+{\bf{sauvegarde \hspace{0.5cm} binaire|xyz}} \hspace{0.5cm} \textit{filename}{\bf{.sauv}}|\textit{filename}{\bf{.xyz}}
+\end{alltt}
+\end{minipage}}
+\end{center}
 
 with
 %\begin{itemize}
@@ -83,15 +81,15 @@ with
 %\end{itemize}
 
 \Note that, you can use \textbf{"sauvegarde\_simple"} instead of \textbf{"sauvegarde"} where the .sauv or .xyz file is deleted before saves, in order to keep disk space:
-    \begin{center}
-    \fbox{ \begin{minipage}[c]{1\textwidth}
-    \begin{alltt}
-    {\bf{sauvegarde\_simple \hspace{0.5cm} binaire|xyz}} \hspace{0.5cm} \textit{filename}{\bf{.sauv}}|\textit{filename}{\bf{.xyz}}
-    \end{alltt}
-    \end{minipage}}
-    \end{center}
+\begin{center}
+\fbox{ \begin{minipage}[c]{1\textwidth}
+\begin{alltt}
+{\bf{sauvegarde\_simple \hspace{0.5cm} binaire|xyz}} \hspace{0.5cm} \textit{filename}{\bf{.sauv}}|\textit{filename}{\bf{.xyz}}
+\end{alltt}
+\end{minipage}}
+\end{center}
 
-For more details, see the \href{TRUST_Reference_Manual.pdf\#Pbbase}{\trust Reference Manual}. \\
+For more details, see the \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#Pbbase}{\trust Reference Manual}. \\
 
 
 
@@ -130,9 +128,9 @@ Instead of \textbf{"reprise"} keyword, you can use \textbf{"resume\_last\_time"}
     \end{minipage}}
     \end{center}
 
-For examples, see the \href{TRUST_tutorial.pdf\#save_restart}{tutorial} and the \href{TRUST_Reference_Manual.pdf\#Pbbase}{\trust Reference Manual}.\\
+For examples, see the \href{TRUST_tutorial.pdf\#save_restart}{\trust tutorial} and the \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#Pbbase}{\trust Reference Manual}.\\
 
-\Note that you can run a calculation with initial condition read into a save file (.xyz or .sauv) from a previous calculation using \textbf{Champ\_Fonc\_reprise} or read a into a MED file with \textbf{Champ\_Fonc\_MED} (see \href{TRUST_Reference_Manual.pdf\#champfoncmed}{\trust Reference Manual} for more information).
+\Note that you can run a calculation with initial condition read into a save file (.xyz or .sauv) from a previous calculation using \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#champfoncreprise}{\textbf{Champ\_Fonc\_reprise}} or read a into a MED file with \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#champfoncmed}{\textbf{Champ\_Fonc\_MED}}.
 
 
 
