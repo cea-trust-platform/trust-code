@@ -106,7 +106,7 @@ help()
    echo "Where option may be:"
    echo "-help|-h                : List options."
    echo "-index                  : Access to TRUST ressources index."
-   echo "-doc                    : Access to TRUST user's manual."
+   echo "-doc                    : Access to TRUST manual (Generic Guide)."
    echo "-config nedit|vim|emacs : Configure nedit or vim or emacs with TRUST keywords."
    echo "-mesh                   : Visualize the mesh(es) contained in the data file."
 #   echo "-monitor                : Run and monitor the progress of the TRUST calculation."

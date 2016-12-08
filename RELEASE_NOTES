@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.4_beta : Enhancements, modifications and corrected bugs since version 1.7.3 :
 --------------------------------------------------------------------------------------------------
-06/12/16 (Tools)  Announcement: TRUST_Generic_Guide.pdf new documentation
+09/12/16 (Tools)  Announcement: New Documentation Generic and Reference Guides
 24/11/16 (TRUST)  Portability : Linux distribution Ubuntu 16 and gcc 6.2.0 supported
 23/11/16 (TRUST)  New keyword : Add vint_tetra option to ExtrudeBord. ExtrudeBord improved
 22/11/16 (TRUST)  Major change: Syntaxe modification of predefined field energie_cinetique renamed as energie_cinetique_totale and creation of energie_cinetique_elem

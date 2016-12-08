@@ -1,15 +1,4 @@
 #!/bin/bash
-ssh_command()
-{
-    command=`mktemp_`
-    echo > $command
-    echo ". ~/.bashrc 1>/dev/null 2>&1" >> $command
-    echo $* >> $command
-    scp -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $command $log@$adr:~/command_$machine 1>/dev/null 2>&1
-    rm -f $command
-    # Add -X to have DISPLAY ?
-    ssh -X -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $log@$adr -n 'chmod +x ./command_'$machine';./command_'$machine 2>/dev/null
-}
 check_components()
 {
    for Composant in $Composants
@@ -66,6 +55,7 @@ check_components()
 	    $TRUST_ROOT/bin/baltik/bin/baltik_build_configure -execute &&
 	    make optim module_optim debug module_debug &&
 	    $make_option && echo "$Composant OK" && COMPOSANT_OK=1
+	    [[ "$ComposantsGit" = *"$Composant"* ]] && make gui # Test si Composant est dans la liste des composants GIT
             echo " "
             echo "******************************************************"
             echo " "
@@ -164,8 +154,7 @@ check_components()
 		        liste_options=$liste_options" --cible"
 	             fi
                      log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`
-		     #WORKTMP=`ssh_ -o BatchMode=yes $log@$adr -n 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
-                     WORKTMP=`ssh_command 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
+		     WORKTMP=`ssh_ -o BatchMode=yes $log@$adr -n 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
                      echo "$Composant.tar $WORKTMP/$WORKBASE$machine/Composants/$Composant $log@$adr --with-TRUST=$WORKTMP/$WORKBASE$machine/TRUST $liste_options $mode_option $check_option $valgrind_option" >> Run.liste
 		  #fi
 	       done
@@ -935,6 +924,7 @@ fi
 if [ "$etude_activation" = 0 ] 
 then
    echo "NOT executed"
+   [ -f run_Etudes.log ] && cp run_Etudes.log $REP_NUIT/.
 fi
 echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
@@ -1181,10 +1171,11 @@ echo $ECHO_OPTS "TRUST Post Processing     mailing list http://saxifrage:3500/ww
 echo $ECHO_OPTS "TrioCFD Front Tracking    mailing list http://saxifrage:3500/wws/info/trio_u_front_tracking" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "TRUST ftp site:        ftp://$TRUST_FTP/$PUBLIC/index.html" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "Latest TRUST binary:   ftp://$TRUST_FTP/$SECRET/exec/linux/TRUST_mpi_opt"_"$new"_build_"$DATE.gz" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "Latest User's manual:  ftp://$TRUST_FTP/$SECRET/doc/User_Manual_TRUST.pdf" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TRUST documentation:   ftp://$TRUST_FTP/$PUBLIC/documentation" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "Latest Generic Guide:  ftp://$TRUST_FTP/$SECRET/doc/TRUST_Generic_Guide.pdf" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "Latest Tutorial:       ftp://$TRUST_FTP/$SECRET/doc/TRUST_tutorial.pdf" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "Latest list of builds: ftp://$TRUST_FTP/$SECRET/NUIT/NUIT.html" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "Latest TRUST binary:   ftp://$TRUST_FTP/$SECRET/exec/linux/TRUST_mpi_opt"_"$new"_build_"$DATE.gz" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 echo "Binaries of TRUST $new version are available here:" >> $MESSAGES_NUIT
 for adr in `liste_machines | grep -v is1 | grep -v is2 | grep -v cezanne`
@@ -1424,8 +1415,7 @@ do
 	       adr=`echo $line | awk -F"@" '{print $2}' | awk -F"_" '{print $1}'`
 	       log=`echo $line | awk -F"@" '{print $1}' | awk -F"%" '{print $2}' | awk -F"_" '{print $2}'`
 	       machine=`echo $adr | awk -F"." '{print $1}' | awk -F"-gw" '{print $1}'`
-               #WORKTMP=`ssh_ -o BatchMode=yes $log@$adr -n 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
-	       WORKTMP=`ssh_command 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
+               WORKTMP=`ssh_ -o BatchMode=yes $log@$adr -n 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
 	       echo "  Treatment of $PID on $machine"
 	       pids=$(ssh $log@$adr $WORKTMP/$WORKBASE$machine/TRUST/bin/baltik/share/baltik/bin/portability/list_pid_et_fils.sh $PID)
 	       echo "    ssh $log@$adr kill -9 $pids"
@@ -2271,7 +2261,7 @@ $TRUST_ROOT/bin/KSH/tggcov_ 1>$REP_NUIT/tggcov.log 2>&1
 #tail -n2 $REP_NUIT/tggcov.log
 couverture_de_code=`tggcov_ | $TRUST_Awk '/TRUST code/ {print $1}'`
 cd - 1>/dev/null 2>&1
-couverture_minimale=69.61 #v1.7.3 ; 69.28 v1.7.2 ; 65.26 v1.7.1
+couverture_minimale=70.04 #v1.7.4 ; 69.61 v1.7.3 ; 69.28 v1.7.2 ; 65.26 v1.7.1
 coverage=`echo $couverture_de_code | $TRUST_Awk -v m=$couverture_minimale '{if ($1>=m) print 1;else print 0}'`
 if [ "$coverage" = 1 ]
 then

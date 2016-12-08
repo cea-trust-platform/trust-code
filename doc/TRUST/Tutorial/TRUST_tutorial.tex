@@ -261,7 +261,7 @@ CEA Saclay \\ % Your institution for the title page
     \item [$\circ$] A segment of velocity probes between the points (0.92, 0.00) and (0.92, 0.22) to see the velocity profile behind the square cylinder.
     \vspace{0.1cm}
 
-    \item [$\circ$] Add the vorticity to the fields being post processed and change the writing period to 0.5s. To find the keyword for this field, you can open the User's manual with:\\
+    \item [$\circ$] Add the vorticity to the fields being post processed and change the writing period to 0.5s. To find the keyword for this field, you can open the Generic Guide with:\\
     \textbf{trust -doc \&\index{trust -doc \&}}
     \vspace{0.1cm}
 
@@ -435,7 +435,7 @@ or using "PLOT2D" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&} and 
 
 \item Restart the calculation again with "Start calculation!" button. You can see that values are added to the first probes during the new calculation.
 
-\item [$\color{green}\Rightarrow$] \textit{Remark :} to restart your calculation, you can also use the keyword \textbf{resume\_last\_time\index{resume\_last\_time}} instead of \textbf{reprise} and only change the \textbf{tmax\index{tmax}} value (cf User's manual).
+\item [$\color{green}\Rightarrow$] \textit{Remark :} to restart your calculation, you can also use the keyword \textbf{resume\_last\_time\index{resume\_last\_time}} instead of \textbf{reprise} and only change the \textbf{tmax\index{tmax}} value (cf Reference Guide).
 \end{itemize}
 
 \end{block}
@@ -807,7 +807,7 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 
 \item Then post process the temperature field with VisIt tool: "Visualization" button. A natural convection cell appears. Change the colour tables for the temperature to have the same one on the 2 domains. Close VisIt.
 
-\item We are going to change the discretization of the test case. Triangulate the domains with the keyword \textbf{Trianguler\_H\index{Trianguler\_H}} (See the syntax in the User's manual). Give an unstructured aspect to the 2 meshes thanks to the following keyword : \\
+\item We are going to change the discretization of the test case. Triangulate the domains with the keyword \textbf{Trianguler\_H\index{Trianguler\_H}} (See the syntax in the Reference Guide). Give an unstructured aspect to the 2 meshes thanks to the following keyword : \\
 \textbf{Transformer\index{Transformer} name\_of\_domain \; x*(1-0.5*y*y) \; y*(1+0.1*x*y)}
 
 \item Substitute the discretization VDF\index{VDF} (pressure nodes at the element center) to VEFPreP1B\index{VEFPreP1B} (pressure nodes at the element center and nodes).
@@ -846,12 +846,12 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 \begin{block}{}
 
 \begin{itemize}
-\item Accelerate the calculation by impliciting the diffusion operators of each equation with \textbf{diffusion\_implicite\index{diffusion\_implicite}} option in the explicit Euler scheme (check again the User's manual: \textbf{trust -doc \&\index{trust -doc \&}}). 
+\item Accelerate the calculation by impliciting the diffusion operators of each equation with \textbf{diffusion\_implicite\index{diffusion\_implicite}} option in the explicit Euler scheme (check again the Generic Guide: \textbf{trust -doc \&\index{trust -doc \&}}). 
 
 \item Run the calculation without any option: \\
 \textbf{trust docond}
 
-\item \label{schema_impl} Use a full implicit scheme now (suppress \textbf{diffusion\_implicite\index{diffusion\_implicite}}), by substituting \textbf{Scheme\_Euler\_Explicit} by \textbf{Scheme\_Euler\_implicit\index{scheme\_euler\_implicit}} and adding the \textbf{Implicite} solver. Have a look at the User's manual for the \textbf{gmres\index{gmres}} options and define accordingly to the advices given into the User's manual, a value for \textbf{facsec\index{facsec}, facsec\_max\index{facsec\_max}}. Your block will looks like:\\
+\item \label{schema_impl} Use a full implicit scheme now (suppress \textbf{diffusion\_implicite\index{diffusion\_implicite}}), by substituting \textbf{Scheme\_Euler\_Explicit} by \textbf{Scheme\_Euler\_implicit\index{scheme\_euler\_implicit}} and adding the \textbf{Implicite} solver. Have a look at the Reference Guide for the \textbf{gmres\index{gmres}} options and define accordingly to the advices given into the Reference Guide, a value for \textbf{facsec\index{facsec}, facsec\_max\index{facsec\_max}}. Your block will looks like:\\
 \textbf{Solveur Implicite\index{Solveur Implicite} \{ solveur gmres\index{gmres} \{ diag seuil 1e-30 nb\_it\_max 5 impr \}  seuil\_convergence\_implicite\index{seuil\_convergence\_implicite} 0.01  \} }
 
 \item Run the calculation:\\
@@ -887,7 +887,7 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 \textbf{trust -copy\index{trust -copy} TP\_Temp\_QC\_VEF}\\
 \textbf{cd TP\_Temp\_QC\_VEF}
 
-\item Open the TRUST User's manual with (it will be useful to search for keywords in this exercice): \textbf{trust -doc \&\index{trust -doc \&}}
+\item Open the Generic Guide with (it will be useful to search for keywords in this exercice): \textbf{trust -doc \&\index{trust -doc \&}}
 
 \item Edit the data file with your favorite editor (\textbf{nedit} is recommended because it is configured to recognize TRUST syntax):\\
 \textbf{nedit TP\_Temp\_QC\_VEF.data \&} \\
@@ -974,7 +974,7 @@ or \\
 \begin{itemize}
 \item Substitute the time scheme by an implicit time scheme (like \textbf{scheme\_euler\_implicit\index{scheme\_euler\_implicit}}). 
 
-\item Use the \textbf{implicite} solver and specify \textbf{facsec\index{facsec}} and \textbf{facsec\_max\index{facsec\_max}} parameters according to the advices given into the User's manual (search for the \textbf{scheme\_euler\_implicit\index{scheme\_euler\_implicit}} keyword for the according syntax). You can also see the informations at the end of the Heat exchange VDF/VEF exercise at p.\pageref{schema_impl}.
+\item Use the \textbf{implicite} solver and specify \textbf{facsec\index{facsec}} and \textbf{facsec\_max\index{facsec\_max}} parameters according to the advices given into the Reference Guide (search for the \textbf{scheme\_euler\_implicit\index{scheme\_euler\_implicit}} keyword for the according syntax). You can also see the informations at the end of the Heat exchange VDF/VEF exercise at p.\pageref{schema_impl}.
 \end{itemize}
 
 \end{block}
@@ -1161,7 +1161,7 @@ Upper and lower walls: No slip wall ($U=0$) and non-porous wall ($\partial C_i/\
 \begin{itemize}
 \item Copy also the \textbf{Constituants\index{Constituants}} study which will give you examples for constituents keyword used for a 2D incompressible laminar flow.
 
-\item Edit your data file in the Marche directory. First, change the name of the problem in order to add concentration equations (look for the good keyword in the User manual).
+\item Edit your data file in the Marche directory. First, change the name of the problem in order to add concentration equations (look for the good keyword in the Reference Guide).
 
 \item Add 3 constituents with the same diffusivities ($\alpha=1m/s$) and associate the constituents to the problem.
 
@@ -1393,7 +1393,7 @@ Outlet: $P_0=0$
     \begin{itemize}
     \item [$\circ$] Note that we use a "Pb\_Hydraulique\_Turbulent" problem with "Navier\_Stokes\_Turbulent" equations and a "modele\_turbulence\index{modele\_turbulence}" model.
     \item [$\circ$] Modify the fluid characteristics to perform a calculation at $R_e=50000$. For example, impose $\rho = 1 kg.m^{-3}$ and $\mu=2.10^{-5} kg.m^{-1}.s^{-1}$.
-%    \item [$\circ$] Define a turbulent hydraulic problem (see User manual).
+%    \item [$\circ$] Define a turbulent hydraulic problem (see Reference Guide).
     \item [$\circ$] Select the sub-grid Smagorinsky turbulence model with standard wall law instead of the "sous\_maille" model (LES).
     \item [$\circ$] Select the Quick\index{quick} convection scheme.
     \item [$\circ$] Post-process of velocity, pressure, vorticity, turbulent viscosity at the nodes and elements.
@@ -1620,7 +1620,7 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
     \item [$\circ$] change the \textbf{trianguler\index{trianguler}} keyword to \textbf{trianguler\_h\index{Trianguler\_H}}, 
     \item [$\circ$] or use the \textbf{VerifierCoin\index{VerifierCoin}} keyword. For this, after this first error you must find a "diagonale\_VEF.decoupage\_som" file in your directory, so you can use it by adding:\\
     \textbf{VerifierCoin dom \{ read\_file diagonale\_VEF.decoupage\_som \} }\\
-    just after "trianguler\index{trianguler} dom". This will subdivides inconsistent 2D/3D cells used with VEFPreP1B\index{VEFPreP1B} discretization (cf User's Manual).
+    just after "trianguler\index{trianguler} dom". This will subdivides inconsistent 2D/3D cells used with VEFPreP1B\index{VEFPreP1B} discretization (cf Reference Guide).
     \end{itemize}
 
 \item Run the calculation and compare the results between \textbf{VDF/quick} and \textbf{VEFPreP1B/muscl} which must take much more time!
@@ -1709,7 +1709,7 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 \begin{itemize}
 \item Increase the height of the tank (0.06 to 0.12).
 
-\item Add a second drop above the first one, at $z=0.08$ (keywords \textbf{ajout\_phase0\index{ajout\_phase0}} could be useful to add other interfaces, cf User's manual for \textbf{ajout\_phase0/ajout\_phase1\index{ajout\_phase1}} keywords). Don't forget the comma between the two definition of the drops.
+\item Add a second drop above the first one, at $z=0.08$ (keywords \textbf{ajout\_phase0\index{ajout\_phase0}} could be useful to add other interfaces, cf Reference Guide for \textbf{ajout\_phase0/ajout\_phase1\index{ajout\_phase1}} keywords). Don't forget the comma between the two definition of the drops.
 
 \item Change the \textbf{dt\_post\index{dt\_post}} period of the 3 post processing blocks (0.05 to 0.01). The first one (add \textbf{format lata\index{format lata}}) is the classical block for post processing probes and fields. Here, we want to see the concentration field and the \textbf{"indicatrice\_interf"} field. Value of this field is 0 for liquid and 1 for gas, so the interface is located at "indicatrice" value 0.5.
 

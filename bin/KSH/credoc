@@ -36,7 +36,7 @@ echo "<!--NewPage-->
 </head>
 <body>
 <BODY BGCOLOR="#D0D5D9" TEXT="#23238E" LINK="#E47833" ALINK="#007FFF" VLINK="#007FFF">
-<a href=$notice>Users manual</a> | <a href=Reference/index_keywords_tests.html>Keyword index</a> | <a HREF=mailto:triou@cea.fr>Support</a>" > $fichier
+<a href=$notice>Generic Guide</a> | <a href=Reference/index_keywords_tests.html>Keyword index</a> | <a HREF=mailto:triou@cea.fr>Support</a>" > $fichier
 echo "<HR><h1>Reference test cases for TRUST</h1><HR>" >> $fichier
 # On parcourt les tests pour faire l index
 i=0
