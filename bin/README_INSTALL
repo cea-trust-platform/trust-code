@@ -4,7 +4,7 @@
 Requirements:
 -------------
 The following OS is required to use/build TRUST:
-	LINUX:      	All distribution with GNU version 3.x/4.x/5.x
+	LINUX:      	All distribution with GNU version 3.x/4.x/5.x/6.x
 	
 You need also:
 	1024 Mo RAM
@@ -12,9 +12,7 @@ You need also:
 	FireFox installed to use TRUST GUI
 	bash shell installed
 
-In most cases, you can install TRUST without building it. In the case
-where you should build or re-build TRUST, please install TRUST and after
-read how to build TRUST :
+Please install TRUST and after read how to build TRUST :
 
 To install TRUST:
 -----------------

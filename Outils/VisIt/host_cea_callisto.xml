@@ -4,7 +4,7 @@
     <Field name="host" type="string">callisto*</Field>
     <Field name="userName" type="string">notset</Field>
     <Field name="hostAliases" type="string"></Field>
-    <Field name="directory" type="string">/panfs/ixion/home/triou/TRUST_VERSION/exec/VisIt</Field>
+    <Field name="directory" type="string">/panfs/ixion/share/triou/TRUST_VERSION/exec/VisIt</Field>
     <Field name="shareOneBatchJob" type="bool">false</Field>
     <Field name="sshPortSpecified" type="bool">true</Field>
     <Field name="sshPort" type="int">22</Field>
@@ -61,7 +61,7 @@
     </Object>
     <Object name="LaunchProfile">
         <Field name="timeout" type="int">480</Field>
-        <Field name="numProcessors" type="int">1</Field>
+        <Field name="numProcessors" type="int">2</Field>
         <Field name="numNodesSet" type="bool">false</Field>
         <Field name="numNodes" type="int">1</Field>
         <Field name="partitionSet" type="bool">false</Field>

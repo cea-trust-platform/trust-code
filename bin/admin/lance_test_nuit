@@ -3270,7 +3270,10 @@ then
    for dest in $ALL_USERS_TRUST_MAIL
    do
       echo "Stable release announcement sent to $dest"
-      echo "
+      echo "---------------------------------
+New TRUST/TrioCFD v$new released
+---------------------------------
+
 TrioCFD is a programmable software for Computational Fluid Dynamics (CFD) code, 
 based on the TRUST platform (TRrio_U Software for Thermohydraulics).
 These softwares are OpenSource (license BSD).
@@ -3278,14 +3281,14 @@ These softwares are OpenSource (license BSD).
 New TRUST (\"Trio_U\" without Front_Tracking, Radiation, Zoom and LES models) version released (v$new).
 Look at http://sourceforge.net/projects/trust-platform/files/
 to read the README and to download Installer_TRUST.sh.
-Changes compared to the $old version are detailed in the RELEASE_NOTES below or 
-file attached to the TRUST-$new.tar.gz archive.
+Changes compared to the $old version are detailed in the RELEASE_NOTES below 
+or file attached to the TRUST-$new.tar.gz archive.
 
 New TrioCFD (previously named \"Trio_U\") version released (v$new).
 Look at http://sourceforge.net/projects/triocfd/files/  
 to read the README and to download Installer_TrioCFD.sh.
-Changes compared to the $old version are detailed in the RELEASE_NOTES below or 
-file attached to the TrioCFD.tar.gz archive.
+Changes compared to the $old version are detailed in the RELEASE_NOTES below 
+or file attached to the TrioCFD.tar.gz archive.
 
 TRUST/TrioCFD support team. mailto: $TRUST_MAIL  Web: http://www-trio-u.cea.fr
 
@@ -3300,6 +3303,7 @@ To unsubscribe from http://saxifrage:3500/wws/info/trio_u_annonces list: Reply t
       do
          [ -f $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES ] && echo $ECHO_OPTS "$Composant \c" >> $MESSAGES_LIVRAISON && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES >> $MESSAGES_LIVRAISON
       done
+      echo " " >> $MESSAGES_LIVRAISON
       echo " 
 --------------------------------------------------------------------------------
 TRUST/TrioCFD executables available from PC connected to the CEA Saclay network:
@@ -3307,7 +3311,28 @@ TRUST/TrioCFD executables available from PC connected to the CEA Saclay network:
 source /home/triou/env_TRUST_$new.sh
 source /home/triou/env_TrioCFD_$new.sh
 --------------------------------------------------------------------------------
+TRUST/TrioCFD executables available on CEA DM2S cluster:
+--------------------------------------------------------------------------------
+source /home/triou/TRUST-$new/callisto/env_TRUST.sh 
+source /home/triou/TrioCFD-$new/callisto/env_TrioCFD.sh 
+--------------------------------------------------------------------------------
+TRUST/TrioCFD executables available on CEA TGCC supercomputer:
+--------------------------------------------------------------------------------
+source /ccc/cont002/home/den/triou/TRUST-$new/curie-ccrt/env_TRUST.sh
+source /ccc/cont002/home/den/triou/TrioCFD-$new/curie-ccrt/env_TrioCFD.sh
+--------------------------------------------------------------------------------
+TRUST/TrioCFD executables available on CEA CCRT supercomputer:
+--------------------------------------------------------------------------------
+source /ccc/cont002/home/den/triou/TRUST-$new/cobalt/env_TRUST.sh
+source /ccc/cont002/home/den/triou/TrioCFD-$new/cobalt/env_TrioCFD.sh
+--------------------------------------------------------------------------------
+TRUST/TrioCFD executables available on CINES supercomputer:
+--------------------------------------------------------------------------------
+source /opt/software/applications/trio_u/TRUST-$new/occigen/env_TRUST.sh
+source /opt/software/applications/trio_u/TrioCFD-$new/occigen/env_TrioCFD.sh
+--------------------------------------------------------------------------------
 " >> $MESSAGES_LIVRAISON
+      echo " " >> $MESSAGES_LIVRAISON
       echo "-------------------------------------------" >> $MESSAGES_LIVRAISON
       echo "Version portability on several OS:" >> $MESSAGES_LIVRAISON
       echo "-------------------------------------------" >> $MESSAGES_LIVRAISON
@@ -3317,8 +3342,7 @@ source /home/triou/env_TrioCFD_$new.sh
       echo "-------------------------------------------" >> $MESSAGES_LIVRAISON
       sed 's/<BR><LI>/ /g'  $REP_NUIT/CC >> $MESSAGES_LIVRAISON
       echo "-------------------------------------------" >> $MESSAGES_LIVRAISON
-      echo " " >> $MESSAGES_LIVRAISON
-      mail_ -s \"TRUST/TrioCFD v$new released\" $dest < $MESSAGES_LIVRAISON
+      mail_ -s \"New TRUST/TrioCFD v$new released\" $dest < $MESSAGES_LIVRAISON
       sleep 5
       mv -f $MESSAGES_LIVRAISON $REP_NUIT/MESSAGES_LIVRAISON
    done

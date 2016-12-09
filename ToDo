@@ -1,5 +1,8 @@
 Version	Qui				Tache
-1.7.5   gauthier.fauchet@cea.fr Ajouter fiche prm du cas FTD : bulle bloque©e sur un maillage TRUSTa l interface entre 2 Pave (DI 4006)
+1.7.5   triou@cea.fr            Update License to 2017
+1.7.5   triou@cea.fr            Enlever toutes les references a users manual dans src
+1.7.5   triou@cea.fr            Revoir tous les fiches exclues pour lancer les cas sans resoudre sinon aucune verif
+1.7.5   gauthier.fauchet@cea.fr Ajouter fiche prm du cas FTD : bulle bloqueee sur un maillage TRUSTa l interface entre 2 Pave (DI 4006)
 1.7.5   triou@cea.fr            Revoir tous les prepare sans make_PAR.data a mettre dans pre_run
 1.7.5   triou@cea.fr            Revoir baltik avec possibilite de 2 statistiques commencant a des tdeb differents
 1.7.5   gauthier.fauchet@cea.fr  Reprendre Mod_turb_hyd_base.cpp limitation mut

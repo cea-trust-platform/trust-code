@@ -247,7 +247,7 @@ do
 	       #if [ `date '+%u'` -ge 5 ]
 	       #then
 	          # le vendredi soir on lance sur la frontale car encore des problemes avec lance_test en soumission de job
-	       if [ "$machine" = airain ] || [ "$machine" = cobalt ]
+	       if [ "$machine" = cobalt ]
 	       then
 	          ssh_command "export WORKBASE=$WORKBASE;cd $WORKDIR/$version/TRUST/bin/admin;$option./mise_a_jour_TRUST_arch -rsync 1>~/CR_$machine 2>&1" &
 	          echo "Launching in background the update by ssh on $log@$adr at "`date '+%H:%M:%S'`
