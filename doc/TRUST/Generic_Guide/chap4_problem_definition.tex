@@ -61,7 +61,7 @@ where: $\displaystyle{P^*=\frac{P}{\rho} + g z}$, $Q$ is a heat source term, and
 
 \hspace{2cm}        {\bf{\textcolor{Greeen}{Modele\_turbulence \textit{modele} \{ ... \} } }}
 
-\hspace{2cm}        [{\bf{Sources}} \{ ... \}]
+\hspace{2cm}        {\bf{Sources}} \{ ... \}
 
 \hspace{2cm}       ...
 
@@ -83,7 +83,7 @@ where: $\displaystyle{P^*=\frac{P}{\rho} + g z}$, $Q$ is a heat source term, and
 
 \hspace{2cm}        \textcolor{magenta}{{\bf{\textcolor{Greeen}{Modele\_turbulence Prandtl \{ ... \} } }}}
 
-\hspace{2cm}        \textcolor{magenta}{[{\bf{Sources}} \{ ... \}]}
+\hspace{2cm}        \textcolor{magenta}{{\bf{Sources}} \{ ... \}}
 
 \hspace{2cm}        \textcolor{magenta}{...}
 
@@ -105,7 +105,7 @@ where: $\displaystyle{P^*=\frac{P}{\rho} + g z}$, $Q$ is a heat source term, and
 
 \hspace{2cm}        \textcolor{darkblue}{{\bf{\textcolor{Greeen}{Modele\_turbulence Schmidt \{ ... \} } }}}
 
-\hspace{2cm}        \textcolor{darkblue}{[{\bf{Sources}} \{ ... \}]}
+\hspace{2cm}        \textcolor{darkblue}{{\bf{Sources}} \{ ... \}}
 
 \hspace{2cm}        \textcolor{darkblue}{...}
 
@@ -124,28 +124,28 @@ Thermo & hydraulique & Concentration & Turbulent & Reference Manual\tabularnewli
 \hline 
 \hline 
             & \textbf{Pb\_hydraulique}  &   
-            &                           & \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#pbhydraulique}{doc} \tabularnewline 
+            &                           & \href{\REFERENCEMANUAL\#pbhydraulique}{doc} \tabularnewline 
 \hline
             & \textbf{Pb\_hydraulique}  & \textbf{\textcolor{darkblue}{\_Concentration}}
-            &                           & \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#pbhydrauliqueconcentration}{doc} \tabularnewline
+            &                           & \href{\REFERENCEMANUAL\#pbhydrauliqueconcentration}{doc} \tabularnewline
 \hline
             & \textbf{Pb\_hydraulique}  &   
-            & \textbf{\textcolor{Greeen}{\_Turbulent}}      & \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#pbhydrauliqueturbulent}{doc} \tabularnewline
+            & \textbf{\textcolor{Greeen}{\_Turbulent}}      & \href{\REFERENCEMANUAL\#pbhydrauliqueturbulent}{doc} \tabularnewline
 \hline
             & \textbf{Pb\_hydraulique}  & \textbf{\textcolor{darkblue}{\_Concentration}}
-            & \textbf{\textcolor{Greeen}{\_Turbulent}}      & \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#pbhydrauliqueconcentrationturbulent}{doc} \tabularnewline
+            & \textbf{\textcolor{Greeen}{\_Turbulent}}      & \href{\REFERENCEMANUAL\#pbhydrauliqueconcentrationturbulent}{doc} \tabularnewline
 \hline
 \textbf{Pb\_\textcolor{magenta}{Thermo}}     & \textbf{hydraulique}  &   
-                        &                       & \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#pbthermohydraulique}{doc} \tabularnewline
+                        &                       & \href{\REFERENCEMANUAL\#pbthermohydraulique}{doc} \tabularnewline
 \hline
 \textbf{Pb\_\textcolor{magenta}{Thermo}}     & \textbf{hydraulique}  & \textbf{\textcolor{darkblue}{\_Concentration}}
-                        &                       & \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#pbthermohydrauliqueconcentration}{doc} \tabularnewline
+                        &                       & \href{\REFERENCEMANUAL\#pbthermohydrauliqueconcentration}{doc} \tabularnewline
 \hline
 \textbf{Pb\_\textcolor{magenta}{Thermo}}     & \textbf{hydraulique}  &   
-                        & \textbf{\textcolor{Greeen}{\_Turbulent}}  & \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#pbthermohydrauliqueturbulent}{doc} \tabularnewline
+                        & \textbf{\textcolor{Greeen}{\_Turbulent}}  & \href{\REFERENCEMANUAL\#pbthermohydrauliqueturbulent}{doc} \tabularnewline
 \hline
 \textbf{Pb\_\textcolor{magenta}{Thermo}}     & \textbf{hydraulique}  & \textbf{\textcolor{darkblue}{\_Concentration}}
-                        & \textbf{\textcolor{Greeen}{\_Turbulent}}  & \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#pbthermohydrauliqueconcentrationturbulent}{doc} \tabularnewline
+                        & \textbf{\textcolor{Greeen}{\_Turbulent}}  & \href{\REFERENCEMANUAL\#pbthermohydrauliqueconcentrationturbulent}{doc} \tabularnewline
 \hline
 \end{longtable}
 
@@ -161,7 +161,7 @@ $$
 \left\{
 \begin{array}{c}
 \displaystyle{\frac{\partial \rho }{\partial t} + \nabla \cdot (\rho \vec u) =0 }\\
-\displaystyle{ \frac{\partial \rho u}{\partial t} + \textcolor{red}{\nabla \cdot (\rho u u)} =  \textcolor{blue}{\nabla \cdot \left(\mu \nabla \vec u \right)} - \nabla P -\rho \vec g }\\
+\displaystyle{ \frac{\partial \rho \vec u}{\partial t} + \textcolor{red}{\nabla \cdot (\rho \vec u \vec u)} =  \textcolor{blue}{\nabla \cdot \left(\mu \nabla \vec u \right)} - \nabla P -\rho \vec g }\\
 \displaystyle{ \rho C_p \left( \frac{\partial T}{\partial t} + \textcolor{red}{\vec u \nabla T} \right) = \textcolor{blue}{\nabla \cdot \left(\lambda \nabla T\right)} + \frac{dP_0}{dt} + Q }
 \end{array}
 \right.
@@ -172,11 +172,9 @@ where: $P_0=\rho R T$, $Q$ is a heat source term, and:
 \begin{itemize}
 \item $\rho$: density,
 \item $\mu$: dynamic viscosity,
-\item $\displaystyle{\nu=\frac{\mu}{\rho}}$: cinematic viscosity,
 \item $\vec g=g z$: gravity vector in cartesian coordinates,
 \item $C_p$: specific heat capacity at constant pressure,
-\item $\lambda$: thermal conductivity,
-\item $\displaystyle{\alpha=\frac{\lambda}{\rho C_p}}$: thermal diffusivity.
+\item $\lambda$: thermal conductivity.
 \end{itemize}
 
 \Note that \textcolor{red}{red} terms are convective terms and \textcolor{blue}{blue} terms are diffusive terms.\\
@@ -213,7 +211,7 @@ where: $P_0=\rho R T$, $Q$ is a heat source term, and:
 
 \hspace{2cm}        {\bf{\textcolor{Greeen}{Modele\_turbulence \textit{modele} \{ ... \} } }}
 
-\hspace{2cm}        [{\bf{Sources}} \{ ... \}]
+\hspace{2cm}        {\bf{Sources}} \{ ... \}
 
 \hspace{2cm}       ...
 
@@ -237,7 +235,7 @@ where: $P_0=\rho R T$, $Q$ is a heat source term, and:
 
 \hspace{2cm}        {\bf{\textcolor{Greeen}{Modele\_turbulence Prandtl \{ ... \} } }}
 
-\hspace{2cm}        [{\bf{Sources}} \{ ... \}]
+\hspace{2cm}        {\bf{Sources}} \{ ... \}
 
 \hspace{2cm}        ...
 
@@ -248,7 +246,7 @@ where: $P_0=\rho R T$, $Q$ is a heat source term, and:
 \end{minipage}}
 \end{center}
 
-For more information on thermohydraulique QC problem, go \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#pbthermohydrauliqueqc}{here} and for thermohydraulique turbulent QC problem, go \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#pbthermohydrauliqueturbulentqc}{there}.
+For more information on thermohydraulique QC problem, go \href{\REFERENCEMANUAL\#pbthermohydrauliqueqc}{here} and for thermohydraulique turbulent QC problem, go \href{\REFERENCEMANUAL\#pbthermohydrauliqueturbulentqc}{there}.
 
 
 
@@ -296,7 +294,7 @@ In your data file, you will have:
 
 \hspace{2cm}        {\bf{Boundary\_conditions}} \{ ... \}
 
-\hspace{2cm}        [{\bf{Sources}} \{ ... \}]
+\hspace{2cm}        {\bf{Sources}} \{ ... \}
 
 \hspace{2cm}        ...
 
@@ -307,7 +305,7 @@ In your data file, you will have:
 \end{minipage}}
 \end{center}
 
-For more information, see the \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#pbconduction}{\trust Reference Manual}.
+For more information, see the \href{\REFERENCEMANUAL\#pbconduction}{\trust Reference Manual}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Coupled problems}
@@ -401,7 +399,7 @@ Then we discretize and solve everything:
 \end{minipage}}
 \end{center}
 
-You can see the documentation of this kind of problem in the \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#coupledproblem}{\trust Reference Manual}.
+You can see the documentation of this kind of problem in the \href{\REFERENCEMANUAL\#coupledproblem}{\trust Reference Manual}.
 
 
 
@@ -410,10 +408,10 @@ You can see the documentation of this kind of problem in the \href{../../Outils/
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \trust can also solve the following types of problems:
 \begin{itemize}
-%\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#problemeftdiscgen}{Front-Tracking problems},
-%\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#pbphasefield}{Problems to solve local instantaneous incompressible-two-phase-flows},
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#pbthermohydrauliqueconcentrationscalairespassifs}{Resolution of NAVIER STOKES/energy/multiple constituent transportation equations, with the additional passive scalar equations}, and
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#chimie}{describe the chemical reactions}.
+%\item \href{\REFERENCEMANUAL\#problemeftdiscgen}{Front-Tracking problems},
+%\item \href{\REFERENCEMANUAL\#pbphasefield}{Problems to solve local instantaneous incompressible-two-phase-flows},
+\item \href{\REFERENCEMANUAL\#pbthermohydrauliqueconcentrationscalairespassifs}{Resolution of NAVIER STOKES/energy/multiple constituent transportation equations, with the additional passive scalar equations}, and
+\item \href{\REFERENCEMANUAL\#chimie}{describe the chemical reactions}.
 \end{itemize}
 
 
@@ -421,7 +419,7 @@ You can see the documentation of this kind of problem in the \href{../../Outils/
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Pressure solvers}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Then you may indicate the choice of pressure solver (cf \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#solveursysbase}{\trust Reference Manual}) using the following syntaxe:
+Then you may indicate the choice of pressure solver (cf \href{\REFERENCEMANUAL\#solveursysbase}{\trust Reference Manual}) using the following syntaxe:
     \begin{center}
     \fbox{ \begin{minipage}[c]{0.7\textwidth}
     \begin{alltt}
@@ -433,13 +431,13 @@ Then you may indicate the choice of pressure solver (cf \href{../../Outils/TRIOX
 The \textit{my\_solver} may be:
 
 \begin{itemize}
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#solvgcp}{\textbf{GCP}},
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#petsc}{\textbf{Petsc} \textit{Petsc\_solver\_name}},
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#cholesky}{\textbf{Cholesky}},
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#gmres}{\textbf{Gmres}},
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#gen}{\textbf{Gen}},
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#optimal}{\textbf{Optimal}}.
-%\item \textbf{Gmres} or \textbf{Gen} or \textbf{Optimal} (cf to the \href[page=DOCLINK_OTHER SOLVERS]{../../Outils/TRIOXDATA/XTriou/doc.pdf}{\trust Reference Manual}).
+\item \href{\REFERENCEMANUAL\#solvgcp}{\textbf{GCP}},
+\item \href{\REFERENCEMANUAL\#petsc}{\textbf{Petsc} \textit{Petsc\_solver\_name}},
+\item \href{\REFERENCEMANUAL\#cholesky}{\textbf{Cholesky}},
+\item \href{\REFERENCEMANUAL\#gmres}{\textbf{Gmres}},
+\item \href{\REFERENCEMANUAL\#gen}{\textbf{Gen}},
+\item \href{\REFERENCEMANUAL\#optimal}{\textbf{Optimal}}.
+%\item \textbf{Gmres} or \textbf{Gen} or \textbf{Optimal} (cf to the \href[page=DOCLINK_OTHER SOLVERS]{\REFERENCEMANUAL}{\trust Reference Manual}).
 \end{itemize}
 
 
@@ -448,7 +446,7 @@ The \textit{my\_solver} may be:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Convection}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-There is no default convectif scheme so you must choose one \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#blocconvection}{convection scheme}:
+There is no default convectif scheme so you must choose one \href{\REFERENCEMANUAL\#blocconvection}{convection scheme}:
     \begin{center}
     \fbox{ \begin{minipage}[c]{0.5\textwidth}
     \begin{alltt}
@@ -459,10 +457,10 @@ There is no default convectif scheme so you must choose one \href{../../Outils/T
 
 You can use the following convective scheme, following the recommendations of the user training session (cf section "Time and space schemes" of the \href{TRUST_and_TrioCFD_presentation.pdf}{the \trust \& \textbf{TrioCFD} user slides} and the section "Recommendations for schemes") following your discretization type:
 \begin{itemize}
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#convectionamont}{\textbf{Amont}}
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#convectionmuscl}{\textbf{Muscl}}
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#convectionefstab}{\textbf{EF\_stab}}
-\item for more, see the \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#blocconvection}{\trust Reference Manual}.
+\item \href{\REFERENCEMANUAL\#convectionamont}{\textbf{Amont}}
+\item \href{\REFERENCEMANUAL\#convectionmuscl}{\textbf{Muscl}}
+\item \href{\REFERENCEMANUAL\#convectionefstab}{\textbf{EF\_stab}}
+\item for more, see the \href{\REFERENCEMANUAL\#blocconvection}{\trust Reference Manual}.
 \end{itemize}
 
 \Note that there is no default convective scheme and if you don't want convection in your problem, you may use:
@@ -488,7 +486,7 @@ For the diffusive scheme, it is the same syntaxe:
     \end{minipage}}
     \end{center}
 
-You can choose your scheme with the help of the \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#blocdiffusion}{\trust Reference Manual}.\\
+You can choose your scheme with the help of the \href{\REFERENCEMANUAL\#blocdiffusion}{\trust Reference Manual}.\\
 
 \Note that if you don't specify any diffusive scheme, automaticaly the code uses the standard diffusive scheme of order 2.
 If you don't want diffusion in your problem, you may use:
@@ -518,7 +516,7 @@ For each equation, you \textbf{must} set initial conditions:
 \end{minipage}}
 \end{center}
 
-To see the syntaxe of each available initial condition: cf \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#condinits}{\trust Reference Manual}.
+To see the syntaxe of each available initial condition: cf \href{\REFERENCEMANUAL\#condinits}{\trust Reference Manual}.
 Here are the most used initial conditions:
 \begin{itemize}
 \item \textbf{Velocity}     field\_type   \textit{bloc\_lecture\_champ}
@@ -526,17 +524,17 @@ Here are the most used initial conditions:
 \item \textbf{K\_eps}       field\_type   \textit{bloc\_lecture\_champ}
 %\item \textbf{Flux\_Chaleur\_Turbulente}    field\_type   \textit{bloc\_lecture\_champ}
 %\item \textbf{Fluctu\_Temperature}          field\_type   \textit{bloc\_lecture\_champ}
-%\item for more, see the \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#condinits}{\trust Reference Manual}.
+%\item for more, see the \href{\REFERENCEMANUAL\#condinits}{\trust Reference Manual}.
 \end{itemize}
 
 We list here some "field\_type":
 \begin{itemize}
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#uniformfield}{\textbf{Uniform\_Field}}: for uniform field,
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#champfoncmed}{\textbf{Champ\_Fonc\_Med}}: to read a data field in a MED-format file .med at a specified time,
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#fieldfunctxyz}{\textbf{Champ\_Fonc\_txyz}}: for a field which depends on the time and the space,
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#champfoncfonctiontxyz}{\textbf{Champ\_Fonc\_Fonction\_txyz}}: for a field which is a function of another field and time and/or space coordinates,
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#champfoncreprise}{\textbf{Champ\_Fonc\_Reprise}}: to read a data field in a save file (.xyz or .sauv) at a specified time.
-\item refer to \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#fieldbase}{\trust Reference Manual}.
+\item \href{\REFERENCEMANUAL\#uniformfield}{\textbf{Uniform\_Field}}: for uniform field,
+\item \href{\REFERENCEMANUAL\#champfoncmed}{\textbf{Champ\_Fonc\_Med}}: to read a data field in a MED-format file .med at a specified time,
+\item \href{\REFERENCEMANUAL\#fieldfunctxyz}{\textbf{Champ\_Fonc\_txyz}}: for a field which depends on the time and the space,
+\item \href{\REFERENCEMANUAL\#champfoncfonctiontxyz}{\textbf{Champ\_Fonc\_Fonction\_txyz}}: for a field which is a function of another field and time and/or space coordinates,
+\item \href{\REFERENCEMANUAL\#champfoncreprise}{\textbf{Champ\_Fonc\_Reprise}}: to read a data field in a save file (.xyz or .sauv) at a specified time.
+\item refer to \href{\REFERENCEMANUAL\#fieldbase}{\trust Reference Manual}.
 \end{itemize}
 
 
@@ -558,27 +556,27 @@ Then you may specify your boundary conditions like:
 
 It is important to specify here that \textbf{TRUST will not accept any boundary conditions by default.}\\
 
-You can find help for boundary conditions in the \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#condlimbase}{\trust Reference Manual}.
+You can find help for boundary conditions in the \href{\REFERENCEMANUAL\#condlimbase}{\trust Reference Manual}.
 Here is a list of the most used boundary conditions:
 {\small{
 \begin{itemize}
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#frontiereouvertevitesseimposee}{\textbf{Bord Frontiere\_ouverte\_vitesse\_imposee}}    boundary\_field\_type \textit{bloc\_lecture\_champ}
+\item \href{\REFERENCEMANUAL\#frontiereouvertevitesseimposee}{\textbf{Bord Frontiere\_ouverte\_vitesse\_imposee}}    boundary\_field\_type \textit{bloc\_lecture\_champ}
 %\item \textbf{Bord Frontiere\_ouverte\_rho\_u\_impose}      boundary\_field\_type \textit{bloc\_lecture\_champ}
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#frontiereouvertepressionimposee}{\textbf{Bord Frontiere\_ouverte\_pression\_imposee}}   boundary\_field\_type \textit{bloc\_lecture\_champ}
+\item \href{\REFERENCEMANUAL\#frontiereouvertepressionimposee}{\textbf{Bord Frontiere\_ouverte\_pression\_imposee}}   boundary\_field\_type \textit{bloc\_lecture\_champ}
 %\item \textbf{Bord Frontiere\_ouverte\_gradient\_pression\_impose} boundary\_field\_type \textit{bloc\_lecture\_champ}
 %\item \textbf{Bord Frontiere\_ouverte\_pression\_imposee\_Orlansky }
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#paroifixe}{\textbf{Bord Paroi\_fixe}}
+\item \href{\REFERENCEMANUAL\#paroifixe}{\textbf{Bord Paroi\_fixe}}
 %\item \textbf{Bord Paroi\_decalee\_Robin \{ delta value \} }
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#symetrie}{\textbf{Bord Symetrie}}
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#periodic}{\textbf{Bord Periodique}}
+\item \href{\REFERENCEMANUAL\#symetrie}{\textbf{Bord Symetrie}}
+\item \href{\REFERENCEMANUAL\#periodic}{\textbf{Bord Periodique}}
 %\item \textbf{Bord Paroi\_rugueuse} \{ \textbf{erugu} value \}
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#frontiereouvertetemperatureimposee}{\textbf{Bord Frontiere\_ouverte\_temperature\_imposee}}                        boundary\_field\_type \textit{bloc\_lecture\_champ}
+\item \href{\REFERENCEMANUAL\#frontiereouvertetemperatureimposee}{\textbf{Bord Frontiere\_ouverte\_temperature\_imposee}}                        boundary\_field\_type \textit{bloc\_lecture\_champ}
 %\item \textbf{Bord Frontiere\_ouverte\_temperature\_imposee\_rayo\_semi\_transp}    boundary\_field\_type \textit{bloc\_lecture\_champ}
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#frontiereouverte}{\textbf{Bord Frontiere\_ouverte T\_ext}}                       boundary\_field\_type \textit{bloc\_lecture\_champ}
+\item \href{\REFERENCEMANUAL\#frontiereouverte}{\textbf{Bord Frontiere\_ouverte T\_ext}}                       boundary\_field\_type \textit{bloc\_lecture\_champ}
 %\item \textbf{Bord Frontiere\_ouverte\_rayo\_semi\_transp T\_Ext}   boundary\_field\_type \textit{bloc\_lecture\_champ}
 %\item \textbf{Bord Frontiere\_ouverte\_rayo\_transp T\_Ext}         boundary\_field\_type \textit{bloc\_lecture\_champ}
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#paroiadiabatique}{\textbf{Bord Paroi\_adiabatique}}
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#paroifluximpose}{\textbf{Bord Paroi\_flux\_impose}}                             boundary\_field\_type \textit{bloc\_lecture\_champ}
+\item \href{\REFERENCEMANUAL\#paroiadiabatique}{\textbf{Bord Paroi\_adiabatique}}
+\item \href{\REFERENCEMANUAL\#paroifluximpose}{\textbf{Bord Paroi\_flux\_impose}}                             boundary\_field\_type \textit{bloc\_lecture\_champ}
 %\item \textbf{Bord Paroi\_temperature\_imposee}                     boundary\_field\_type \textit{bloc\_lecture\_champ}
 %\item \textbf{Bord Paroi\_echange\_externe\_impose H\_imp}          boundary\_field\_type \textit{bloc\_lecture\_champ}  \textbf{T\_ext}   boundary\_field\_type \textit{bloc\_lecture\_champ}
 %\item \textbf{Bord Frontiere\_ouverte\_concentration\_imposee}      boundary\_field\_type \textit{bloc\_lecture\_champ\_front}
@@ -586,11 +584,11 @@ Here is a list of the most used boundary conditions:
 %\item \textbf{Bord Frontiere\_ouverte\_K\_Eps\_impose}              boundary\_field\_type \textit{bloc\_lecture\_champ\_front}
 %\item \textbf{Bord Frontiere\_ouverte K\_Eps\_ext}                  boundary\_field\_type \textit{bloc\_lecture\_champ\_front}
 %\item \textbf{Bord Paroi}
-\item for more, see the \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#condlimbase}{\trust Reference Manual}.
+\item for more, see the \href{\REFERENCEMANUAL\#condlimbase}{\trust Reference Manual}.
 \end{itemize}
 }}
 
-To choose your "boundary\_field\_type" parameters, refer to \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#frontfieldbase}{\trust Reference Manual}.
+To choose your "boundary\_field\_type" parameters, refer to \href{\REFERENCEMANUAL\#frontfieldbase}{\trust Reference Manual}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -607,13 +605,13 @@ User can add a turbulent model to his simulation using the keyword:
 
 where \textit{my\_model} can be:
 \begin{itemize}
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#longueurmelange}{\textbf{Longueur\_Melange}}: RANS model based on mixing length modelling,
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#sousmaille}{\textbf{Sous\_maille}}: LES model which uses a structure sub-grid function model,
+\item \href{\REFERENCEMANUAL\#longueurmelange}{\textbf{Longueur\_Melange}}: RANS model based on mixing length modelling,
+\item \href{\REFERENCEMANUAL\#sousmaille}{\textbf{Sous\_maille}}: LES model which uses a structure sub-grid function model,
 %\item \textbf{Sous\_maille\_Smago}
 %\item \textbf{Sous\_maille\_wale}
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#kepsilon}{\textbf{K\_epsilon}}: for RANS turbulence model (k-$\varepsilon$),
+\item \href{\REFERENCEMANUAL\#kepsilon}{\textbf{K\_epsilon}}: for RANS turbulence model (k-$\varepsilon$),
 %\item \textbf{K\_epsilon\_2\_Couches}
-\item for more, see the \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#modeleturbulencehydderiv}{\trust Reference Manual}.
+\item for more, see the \href{\REFERENCEMANUAL\#modeleturbulencehydderiv}{\trust Reference Manual}.
 \end{itemize}
 
 
@@ -641,19 +639,19 @@ To introduce several source terms into the same equation, the blocks correspondi
 \end{center}
 
 \begin{itemize}
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#pertechargereguliere}{\textbf{Perte\_Charge\_Reguliere}} type\_perte\_charge bloc\_definition\_pertes\_charges
+\item \href{\REFERENCEMANUAL\#pertechargereguliere}{\textbf{Perte\_Charge\_Reguliere}} type\_perte\_charge bloc\_definition\_pertes\_charges
 %\item \textbf{Perte\_Charge\_Isotrope} \{ ... \} 
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#pertechargesinguliere}{\textbf{Perte\_Charge\_Singuliere}} \textbf{KX | KY | KZ} coefficient\_value \{ ... \} 
+\item \href{\REFERENCEMANUAL\#pertechargesinguliere}{\textbf{Perte\_Charge\_Singuliere}} \textbf{KX | KY | KZ} coefficient\_value \{ ... \} 
 %\item \textbf{Source\_Qdm}   field\_type   field\_description
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#canalperio}{\textbf{Canal\_perio}} \{ ... \} 
+\item \href{\REFERENCEMANUAL\#canalperio}{\textbf{Canal\_perio}} \{ ... \} 
 %\item \textbf{Source\_Robin} N boundary\_name\_1  ... boundary\_name\_N 
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#boussinesqtemperature}{\textbf{Boussinesq\_temperature}} \{ ... \}
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#boussinesqconcentration}{\textbf{Boussinesq\_concentration}} \{ ... \}
+\item \href{\REFERENCEMANUAL\#boussinesqtemperature}{\textbf{Boussinesq\_temperature}} \{ ... \}
+\item \href{\REFERENCEMANUAL\#boussinesqconcentration}{\textbf{Boussinesq\_concentration}} \{ ... \}
 %\item \textbf{Source\_Th\_TdivU }
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#puissancethermique}{\textbf{Puissance\_thermique}} field\_type   bloc\_lecture\_champ 
+\item \href{\REFERENCEMANUAL\#puissancethermique}{\textbf{Puissance\_thermique}} field\_type   bloc\_lecture\_champ 
 %\item \textbf{Source\_Robin\_Scalaire  ...}
 %\item \textbf{Source\_Generique} field\_type   bloc\_lecture\_champ
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#sourcebase}{documentation for hydraulic source terms and for scalar source terms}.
+\item \href{\REFERENCEMANUAL\#sourcebase}{documentation for hydraulic source terms and for scalar source terms}.
 \end{itemize}
 
 
@@ -666,7 +664,7 @@ To introduce several source terms into the same equation, the blocks correspondi
 
 Before post-process fields, during a run, \trust creates several files which contain informations about the calculation, the convergence, flux, bilans... (see part \ref{post} for more informations).\\
 
-Several keywords can be used to create a postprocessing block, into a problem. First, you can create a single postprocessing task (\href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#postraitement}{\textbf{Post\_processing}} keyword). Generally, in this block, results will be printed with a specified format at a specified time period.
+Several keywords can be used to create a postprocessing block, into a problem. First, you can create a single postprocessing task (\href{\REFERENCEMANUAL\#postraitement}{\textbf{Post\_processing}} keyword). Generally, in this block, results will be printed with a specified format at a specified time period.
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.5\textwidth}
 \begin{alltt}
@@ -681,7 +679,7 @@ Several keywords can be used to create a postprocessing block, into a problem. F
 \end{minipage}}
 \end{center}
 
-But you can also create a list of postprocessing with \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#postraitements}{\textbf{Post\_processings}} keyword (named with Post\_name1, Post\_name2, etc...), in order to print results to several formats or with different time periods, or into different results files:
+But you can also create a list of postprocessing with \href{\REFERENCEMANUAL\#postraitements}{\textbf{Post\_processings}} keyword (named with Post\_name1, Post\_name2, etc...), in order to print results to several formats or with different time periods, or into different results files:
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.6\textwidth}
 \begin{alltt}
@@ -788,12 +786,12 @@ Physical properties (conductivity, diffusivity,...) can also been interrogated.
 
 \textbf{The name of the fields and components available for post-processing is displayed in the error file after the following message: "Reading of fields to be postprocessed". Of course, this list depends of the problem being solved.}
 
-For more informations, you can see the \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#champsapost}{\trust Reference Manual}.
+For more informations, you can see the \href{\REFERENCEMANUAL\#champsapost}{\trust Reference Manual}.
 %\vspace{1cm}
 
 \item \textcolor{darkblue}{\textbf{Creating new fields}}
 
-The \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#definitionchamps}{\textbf{Definition\_champs}} keyword is used to create new or more complex field for advanced postprocessing.
+The \href{\REFERENCEMANUAL\#definitionchamps}{\textbf{Definition\_champs}} keyword is used to create new or more complex field for advanced postprocessing.
 
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.8\textwidth}
@@ -843,9 +841,9 @@ The \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#definitionchamps}{\textbf{Defin
 
 \textit{field\_name\_post} is the name of the new created field and \textbf{\textit{field\_type}} is one of the following possible type:
 \begin{itemize}
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#refchamp}{\textbf{refChamp}}
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#reduction0d}{\textbf{Reduction\_0D}} using for example the \textbf{min}, \textbf{max} or \textbf{somme} methods.
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#transformation}{\textbf{Transformation}}
+\item \href{\REFERENCEMANUAL\#refchamp}{\textbf{refChamp}}
+\item \href{\REFERENCEMANUAL\#reduction0d}{\textbf{Reduction\_0D}} using for example the \textbf{min}, \textbf{max} or \textbf{somme} methods.
+\item \href{\REFERENCEMANUAL\#transformation}{\textbf{Transformation}}
 %\item Interpolation
 %\item \textbf{Gradient}
 %\item Divergence
@@ -856,7 +854,7 @@ The \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#definitionchamps}{\textbf{Defin
 %\item Morceau\_Equation
 %\item Predefini
 %\item Tparoi\_VEF
-\item for details and other keywords, see the \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#definitionchamps}{\trust Reference Manual}.
+\item for details and other keywords, see the \href{\REFERENCEMANUAL\#definitionchamps}{\trust Reference Manual}.
 \end{itemize}
 
 \Note that you can combine several \textbf{\textit{field\_type}} keywords to create your field and then use your new fields to create other ones.\\
@@ -921,10 +919,10 @@ There is three method to post-process in \trust: by probes, fields or making sta
 Probes refer to sensors that allow a value or several points of the domain to be monitored over time.
 The probes may be a set of points defined:
 \begin{itemize}
-\item one by one: \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#points}{\textbf{Points}} keyword or 
-\item by a set of points evenly distributed over a straight segment: \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#segment}{\textbf{Segment}} keyword or
-\item arranged according to a layout: \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#plan}{\textbf{Plan}} keyword or
-\item arranged according to a parallelepiped: \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#volume}{\textbf{Volume}} keyword.
+\item one by one: \href{\REFERENCEMANUAL\#points}{\textbf{Points}} keyword or 
+\item by a set of points evenly distributed over a straight segment: \href{\REFERENCEMANUAL\#segment}{\textbf{Segment}} keyword or
+\item arranged according to a layout: \href{\REFERENCEMANUAL\#plan}{\textbf{Plan}} keyword or
+\item arranged according to a parallelepiped: \href{\REFERENCEMANUAL\#volume}{\textbf{Volume}} keyword.
 \end{itemize}
 
 Here is an example of 2D \textbf{Probes} block:
@@ -943,7 +941,7 @@ Here is an example of 2D \textbf{Probes} block:
     \end{center}
 where the use of \textit{"loc"} option allow to specify the wanted localisation of the probes. The available values are \textbf{"grav"} for gravity center of the element, \textbf{"nodes"} for faces and \textbf{"som"} for verteces. There is not default location. If the point does not coincide with a calculation node, the value is extrapolated linearly according to neighbouring node values.
 
-For complete syntax, see the \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#corpspostraitement}{\trust Reference Manual}, also for \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#sondes}{all options}.
+For complete syntax, see the \href{\REFERENCEMANUAL\#corpspostraitement}{\trust Reference Manual}, also for \href{\REFERENCEMANUAL\#sondes}{all options}.
 
 %%    \begin{center}
 %%    \fbox{ \begin{minipage}[c]{1\textwidth}
@@ -998,7 +996,7 @@ For complete syntax, see the \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#corpsp
 \item \textcolor{darkblue}{\textbf{Fields}}\\
 This keyword allows to post-process fields on the whole domain, specifying the name of the backup file, its format, the post-process time step and the name (and localisation) of the post-processed fields.
 
-Here is an example of \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#champsposts}{\textbf{Fields}} block:
+Here is an example of \href{\REFERENCEMANUAL\#champsposts}{\textbf{Fields}} block:
     \begin{center}
     \fbox{ \begin{minipage}[c]{0.5\textwidth}
     \begin{alltt}
@@ -1025,14 +1023,14 @@ where \textbf{"faces"} , \textbf{"elem"} and \textbf{"som"} are keywords allowed
 
 To visualize, your post-processed fields, you can use open source softwares like: \href{https://wci.llnl.gov/simulation/computer-codes/visit}{VisIt} (included in \trust package) for lata files, or for med files: \href{http://www.salome-platform.org}{Salom\'e} or \href{http://www.paraview.org}{Paraview}.\\
 
-You can see the \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#corpspostraitement}{complete syntax} and \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#champsposts}{all options} in the \trust Reference Manual.
+You can see the \href{\REFERENCEMANUAL\#corpspostraitement}{complete syntax} and \href{\REFERENCEMANUAL\#champsposts}{all options} in the \trust Reference Manual.
 
 
 
 \item \textcolor{darkblue}{\textbf{Statistics}}\\
 Using this keyword, you will compute statistics on your unknows. You must specify the beginning and ending time for the statistics, the post-process time step, the statistic method, the name (and localisation) of your post-processed field.
 
-Here is an example of \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#statsposts}{\textbf{Statistiques}} block:
+Here is an example of \href{\REFERENCEMANUAL\#statsposts}{\textbf{Statistiques}} block:
     \begin{center}
     \fbox{ \begin{minipage}[c]{0.7\textwidth}
     \begin{alltt}
@@ -1089,7 +1087,7 @@ and correlation between the pressure and the velocity $\left\langle P(t).V(t)\ri
 Statistical fields can be plotted with probes with the keyword "operator\_field\_name" like for example: Moyenne\_Vitesse or Ecart\_Type\_Pression or Correlation\_Vitesse\_Vitesse. For that, it is mandatory to have the statistical calculation of this fields defined with the keyword \textbf{Statistiques}.\\
 \end{remark}
 
-For complete syntax, see the \trust Reference Manual \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#corpspostraitement}{here}, and for all options see the \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#statsposts}{\trust Reference Manual}.
+For complete syntax, see the \trust Reference Manual \href{\REFERENCEMANUAL\#corpspostraitement}{here}, and for all options see the \href{\REFERENCEMANUAL\#statsposts}{\trust Reference Manual}.
 \end{itemize}
 
 

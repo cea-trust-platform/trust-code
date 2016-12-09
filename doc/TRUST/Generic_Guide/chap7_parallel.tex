@@ -50,10 +50,8 @@ To run a parallel calculation, you must:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Different blocks appear in the data file.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Modifications on the mesh block}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+\begin{itemize}
+\item \textbf{\textcolor{darkblue}{Modifications on the mesh block}}\\
 First you may add the tags "\# BEGIN MESH \#" and "\# END MESH \#" before and after your mesh block, for example:
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.6\textwidth}
@@ -73,9 +71,7 @@ You can refer to section \ref{Mesh} to have more informations.
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Adding a partitionning block}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\item \textbf{\textcolor{darkblue}{Adding a partitionning block}}\\
 You may now add the partitionning block which contains the instruction of cutting, after your mesh block:
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.8\textwidth}
@@ -104,16 +100,14 @@ You may now add the partitionning block which contains the instruction of cuttin
 \end{center}
 Where \textit{partitioner\_name} is the name of the chosen partitioner, one of \textbf{METIS}, \textbf{Tranche}, \textbf{Sous\_Zones}, \textbf{Partition} or \textbf{Fichier\_Decoupage} (cf section \ref{partitioner}).\\
 The \textbf{"Larg\_joint"} keyword allow to specify the overlapping width value.
-You can see the documentation of \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#partition}{this part in the \trust Reference Manual}.\\
+You can see the documentation of \href{\REFERENCEMANUAL\#partition}{this part in the \trust Reference Manual}.\\
 
 \Note the "End" before the last line. It will be useful for the cutting step.\\
 
 This block will made the partitioning of your domain into the specified number of sub-domains during the partitioning run.
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Adding a block to read the sub-domains}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\item \textbf{\textcolor{darkblue}{Adding a block to read the sub-domains}}\\
 At last, you will add a block which will be activated during the parallel calculation and will allow to read the sub-domains:
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.6\textwidth}
@@ -127,7 +121,7 @@ At last, you will add a block which will be activated during the parallel calcul
 \end{minipage}}
 \end{center}
 
-
+\end{itemize}
 
 
 
@@ -172,7 +166,7 @@ For more information, you can go to see this \href{TRUST_tutorial.pdf\#exo_para_
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In \trust, you can make partitioning with:
 \begin{itemize}
-\item the external partitionning library \href{http://glaros.dtc.umn.edu/gkhome/views/metis}{\textbf{"METIS"}} (open source). It is a general algorithm that will generate a partition of the domain (cf \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#partitionneurmetis}{\trust Reference Manual}),
+\item the external partitionning library \href{http://glaros.dtc.umn.edu/gkhome/views/metis}{\textbf{"METIS"}} (open source). It is a general algorithm that will generate a partition of the domain (cf \href{\REFERENCEMANUAL\#partitionneurmetis}{\trust Reference Manual}),
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.4\textwidth}
 \begin{alltt} 
@@ -191,7 +185,7 @@ In \trust, you can make partitioning with:
 \end{minipage}}
 \end{center}
 
-\item internal \trust partitioning tool: \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#partitionneurtranche}{\textbf{Tranche}} which make parts by cutting the domain following x, y and/or z directions.
+\item internal \trust partitioning tool: \href{\REFERENCEMANUAL\#partitionneurtranche}{\textbf{Tranche}} which make parts by cutting the domain following x, y and/or z directions.
     \begin{center}
     \fbox{ \begin{minipage}[c]{0.4\textwidth}
     \begin{alltt} 
@@ -204,7 +198,7 @@ In \trust, you can make partitioning with:
     \end{minipage}}
     \end{center}
 
-%    \item \href[page=247]{../../Outils/TRIOXDATA/XTriou/doc.pdf}{\textbf{Sous\_Zones}} which will create one part for each specified subzone.
+%    \item \href[page=247]{\REFERENCEMANUAL}{\textbf{Sous\_Zones}} which will create one part for each specified subzone.
 %    \begin{center}
 %    \fbox{ \begin{minipage}[c]{0.92\textwidth}
 %    \begin{alltt} 
@@ -217,7 +211,7 @@ In \trust, you can make partitioning with:
 %    \end{minipage}}
 %    \end{center}
 
-%    \item \href[page=247]{../../Outils/TRIOXDATA/XTriou/doc.pdf}{\textbf{Partition}} which re-use the partition of a domain.
+%    \item \href[page=247]{\REFERENCEMANUAL}{\textbf{Partition}} which re-use the partition of a domain.
 %    \begin{center}
 %    \fbox{ \begin{minipage}[c]{0.4\textwidth}
 %    \begin{alltt} 
@@ -230,7 +224,7 @@ In \trust, you can make partitioning with:
 %    \end{minipage}}
 %    \end{center}
 
-%    \item \href[page=247]{../../Outils/TRIOXDATA/XTriou/doc.pdf}{\textbf{Fichier\_Decoupage}} which reads an array of integer values on the disc, one value for each mesh element. The number of parts created is the highest value in the array plus one.
+%    \item \href[page=247]{\REFERENCEMANUAL}{\textbf{Fichier\_Decoupage}} which reads an array of integer values on the disc, one value for each mesh element. The number of parts created is the highest value in the array plus one.
 %    \begin{center}
 %    \fbox{ \begin{minipage}[c]{0.6\textwidth}
 %    \begin{alltt} 
@@ -245,7 +239,7 @@ In \trust, you can make partitioning with:
 %    \end{minipage}}
 %    \end{center}
 
-\item \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#partitionneurderiv}{other internal partitioning tools}.
+\item \href{\REFERENCEMANUAL\#partitionneurderiv}{other internal partitioning tools}.
 \end{itemize}
 
 \newpage
@@ -262,7 +256,7 @@ METIS & & Tranche\tabularnewline
 \label{partitioning}
 \end{figure}
 
-You can see the documentation of \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#partition}{this part in the \trust Reference Manual}.
+You can see the documentation of \href{\REFERENCEMANUAL\#partition}{this part in the \trust Reference Manual}.
 
 
 

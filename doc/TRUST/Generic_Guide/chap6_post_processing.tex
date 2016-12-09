@@ -27,18 +27,18 @@ Even if you don't post-process anything, you will have output files which are li
 \textit{my\_data\_file}\textbf{.log}                           & Journal logging  \\ \hline
 \textit{my\_data\_file}\textbf{.TU}                            & CPU performances \\ \hline
 \textit{my\_data\_file}\textbf{\_detail.TU}                    & Statistics of execution \\ \hline
-\textit{my\_data\_file}\textbf{.progress}                      & ?????? \\ \hline
+%\textit{my\_data\_file}\textbf{.progress}                      & Percent of calculation advancement \\ \hline
 \textit{my\_data\_file\_problem\_name}\textbf{.sauv} or \textbf{.xyz}      & Saving 2D/3D results for restart \\
 or \textit{specified\_name}\textbf{.sauv} or \textbf{.xyz}                 & (binary files) \\ \hline
 \end{longtable}
 
 and the listing of boundary fluxes where:
 \begin{itemize}
-\item \textit{my\_data\_file}\textbf{\_Contrainte\_visqueuse.out} correspond to the friction drag exerted by the fluid: $\int_S (-\mu \nabla(u) \cdot \vec{n}) dS$ in Newtons (if SI units used),
-\item \textit{my\_data\_file}\textbf{\_Convection\_qdm.out} contains the momentum flow rate: \\
-$\int_S (\rho u^2 \cdot \vec{n}) dS$ in Newtons (if SI units used),
-\item \textit{my\_data\_file}\textbf{\_Debit.out} is the volumetric flow rate: $\int_S (u \cdot \vec{n}) dS$ in [$m^2.s^{-1}$] (if SI units used),
-\item \textit{my\_data\_file}\textbf{\_Force\_pression.out} correspond to the pressure drag exerted by the fluid: $\int_S (P \cdot \vec{n}) dS$ in Newtons (if SI units used).
+\item \textit{my\_data\_file}\textbf{\_Contrainte\_visqueuse.out} correspond to the friction drag exerted by the fluid,%: $\int_S (-\mu \nabla(u) \cdot \vec{n}) dS$ in Newtons (if SI units used),
+\item \textit{my\_data\_file}\textbf{\_Convection\_qdm.out} contains the momentum flow rate,
+%: $\int_S (\rho u^2 \cdot \vec{n}) dS$ in Newtons (if SI units used),
+\item \textit{my\_data\_file}\textbf{\_Debit.out} is the volumetric flow rate,%: $\int_S (u \cdot \vec{n}) dS$ in [$m^2.s^{-1}$] (if SI units used),
+\item \textit{my\_data\_file}\textbf{\_Force\_pression.out} correspond to the pressure drag exerted by the fluid.%: $\int_S (P \cdot \vec{n}) dS$ in Newtons (if SI units used).
 \end{itemize}
 
 If you add post-processings in your data files, you will find:

@@ -6,19 +6,14 @@ FILE4=chap4_problem_definition
 FILE5=chap5_ending
 FILE6=chap6_post_processing
 FILE7=chap7_parallel
-EXECNAME=`basename $(exec)`
-BALTIKNAME=$(subst _opt,,$(EXECNAME))
 
 all: ../$(FILE).pdf 
 ../$(FILE).pdf: $(FILE).tex $(FILE2).tex $(FILE3).tex $(FILE4).tex $(FILE5).tex $(FILE6).tex chap1_intro.tex mini.tex Makefile 
 	$(MAKE) clean
-	pdflatex -jobname=Generic_Guide '\begingroup\lccode`~=`_ \lowercase{\endgroup\let~}_ \catcode`_=12\def \TRUSTROOTLATEX {$(TRUST_ROOT)} \def \TRUSTV {$(TRUST_VERSION)} \def \BALTROOT {$(project_directory)} \input{Generic_Guide}'
-	pdflatex -jobname=Generic_Guide '\begingroup\lccode`~=`_ \lowercase{\endgroup\let~}_ \catcode`_=12\def \TRUSTROOTLATEX {$(TRUST_ROOT)} \def \TRUSTV {$(TRUST_VERSION)} \def \BALTROOT {$(project_directory)} \input{Generic_Guide}'
-	#pdflatex -interaction=nonstopmode $(FILE).tex >> LOG
-	#pdflatex -interaction=nonstopmode $(FILE).tex >> LOG
+	pdflatex -interaction=nonstopmode -jobname=Generic_Guide '\begingroup\lccode`~=`_ \lowercase{\endgroup\let~}_ \catcode`_=12 \def \TRUSTV {$(TRUST_VERSION)} \input{Generic_Guide}'
+	pdflatex -interaction=nonstopmode -jobname=Generic_Guide '\begingroup\lccode`~=`_ \lowercase{\endgroup\let~}_ \catcode`_=12 \def \TRUSTV {$(TRUST_VERSION)} \input{Generic_Guide}'
 	mv $(FILE).pdf ../TRUST_$(FILE).pdf
 	$(MAKE) clean_build
-	echo $(BALTIKNAME)
 
 
 clean_build:  

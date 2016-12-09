@@ -1,16 +1,7 @@
 \documentclass[a4paper,11pt,english]{report}
 
-%%TO COMPILE AND GENERATE THE PDF
-%cp Generic_Guide.tex Generic_Guide_new.tex
-%cp problem_definition.tex problem_definition_new.tex
-%cp data_setting.tex data_setting_new.tex
-%sed -i "s/problem_definition/problem_definition_new/" Generic_Guide_new.tex
-%sed -i "s/data_setting/data_setting_new/" Generic_Guide_new.tex
-%python bookmarks.py -p ../User_Manual_TRUST.pdf -t Generic_Guide_new.tex
-%python bookmarks.py -p ../User_Manual_TRUST.pdf -t problem_definition_new.tex
-%python bookmarks.py -p ../User_Manual_TRUST.pdf -t data_setting_new.tex
-%pdflatex -interaction=nonstopmode Generic_Guide_new.tex >> LOG
-%pdflatex -interaction=nonstopmode Generic_Guide_new.tex >> LOG
+%%%% pour compiler avec variables d'environnement et retirer les problemes d'_:
+%% pdflatex -interaction=nonstopmode -jobname=Generic_Guide '\begingroup\lccode`~=`_ \lowercase{\endgroup\let~}_ \catcode`_=12\def \TRUSTROOTLATEX {$(TRUST_ROOT)} \def \TRUSTV {$(TRUST_VERSION)} \def \BALTROOT {$(project_directory)} \input{Generic_Guide}'
 
 \usepackage[unicode=true,pdfusetitle, bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
  breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=true,linkcolor=blue,pageanchor, urlcolor=darkblue]
@@ -21,11 +12,10 @@
 \else
 \def\TRUSTVERSION{V\TRUSTV}
 \fi
+%\def \REFERENCEMANUAL {../../Outils/TRIOXDATA/XTriou/doc.pdf}
+\def \REFERENCEMANUAL {TRUST_Reference_Manual.pdf}
 
-\hypersetup{pdftitle={TRUST Generic Guide \TRUSTVERSION},
- pdfauthor={Team TRUST},
- pdfsubject={TRUST Generic Guide},
- pdfkeywords={TRUST, guide, howto, \TRUSTVERSION}}
+\hypersetup{pdftitle={TRUST Generic Guide \TRUSTVERSION}, pdfauthor={Team TRUST} }
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -60,15 +50,14 @@
 \author{
 \vspace{2cm} % espace entre support team et ref manual
 \LARGE \textbf{Support team: \href{mailto:triou@cea.fr}{triou@cea.fr}} \\
-\ifx \BALTROOT \empty
-\vspace{2cm} % espace entre ref manual et ce qui est en dessous
-Link to: \LARGE \textbf{\href{run:\TRUSTROOTLATEX/Outils/TRIOXDATA/XTriou/doc.pdf}{\trust Reference Manual}}\\
-\else
-\vspace{2cm} % espace entre ref manual et ce qui est en dessous
-Link to: \LARGE \textbf{\href{run:\TRUSTROOTLATEX/Outils/TRIOXDATA/XTriou/doc.pdf}{\trust Reference Manual}}\\
-Link to: \LARGE \textbf{\href{run:\BALTROOT/build/xdata/XTriou/doc.pdf}{BALTIK Reference Manual}}\\
-%Link to: \LARGE \textbf{\href{\BALTROOT/share/doc/Reference_Guide.pdf}{Baltik documentation}}
-\fi
+\vspace{1cm} % espace entre ref manual et la date
+Link to: \LARGE \textbf{\href{run:\REFERENCEMANUAL}{\trust Reference Manual}}\\
+%%%%%%% Pour recuperer l'adresse d'un pdf par les variables d'environnement et makefile
+%%%%%\ifx \BALTROOT \empty
+%%%%%Link to: \LARGE \textbf{\href{run:\TRUSTROOTLATEX/Outils/TRIOXDATA/XTriou/doc.pdf}{\trust Reference Manual}}\\
+%%%%%\else
+%%%%%Link to: \LARGE \textbf{\href{run:\BALTROOT/build/xdata/XTriou/doc.pdf}{\trust Reference Manual}}\\
+%%%%%\fi
 }
 %\date{} % si on ne veut pas la date
 

@@ -501,11 +501,11 @@ To run a parallel calculation, you must do two runs:
 \item the first one, to partitioning and create your 'n' sub-domains (two methods will by presented),
 \item the second one, to read your 'n' sub-domains and run the calculation on 'n' processors.
 \end{itemize}
+\vspace{0.5cm}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Partitionning: "By hand" method}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+We will explain here how to do such work:
+\begin{itemize}
+\item \textbf{\textcolor{darkblue}{Partitionning: "By hand" method}}\\
 You have to make two data files:
 \begin{itemize}
 \item \textit{BuildMeshes.data} and 
@@ -567,6 +567,9 @@ Run the \textit{BuildMeshes.data} with \trust:
 
 You may have obtained files named \textit{DOM\_000n}\textbf{.Zones} which contains the 'n' sub-domains.\\
 
+
+
+\item \textbf{\textcolor{darkblue}{Read the sub-domains}}\\
 To see your sub-domains, you can run:
 \begin{alltt} 
 > trust -mesh Calculation
@@ -641,17 +644,11 @@ Run the \textit{Calculation.data} file with \trust:
 \end{verbatim}
 
 
-This will read your \textit{DOM\_000n}\textbf{.Zones} files. You can see the documentation of the \textbf{"scatter"} keyword in \href{../../Outils/TRIOXDATA/XTriou/doc.pdf\#scatter}{this part of the \trust Reference Manual}.\\
-
+This will read your \textit{DOM\_000n}\textbf{.Zones} files. You can see the documentation of the \textbf{"scatter"} keyword in \href{\REFERENCEMANUAL\#scatter}{this part of the \trust Reference Manual}.\\
+\end{itemize}
 
 
 For more information, you can go to see this \href{TRUST_tutorial.pdf\#exo_para_1}{exercise in the \trust tutorial}.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Read the sub-domains}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 
