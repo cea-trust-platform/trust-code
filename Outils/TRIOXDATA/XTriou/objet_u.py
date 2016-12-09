@@ -1997,22 +1997,22 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
 	pb=0
 	pass
         pass
+    tstr='\label{'+replace(name,'_','')+'}'
+    if pb:
+         tstr=tstr+' \index{'+clname+'} '
+	 pass
+    tstra=""
     if clname not in dicobases.keys():
         # if name != vrai_name_:
-        tstr="\subsection{"+clname+"}\n"
+        tstra = "\subsection{"+clname+"}\n"
         pass
     if issubclass(icl,objet_lecture) or issubclass(icl,listobj) :
         if (niveau>1):
-            tstr="\subsubsection{"+clname+"}\n"
+            tstra = "\subsubsection{"+clname+"}\n"
             pass
         pass
-    tstr=tstr+'\label{'+replace(name,'_','')+'}'
-    if pb:
-         tstr=tstr+' \index{'+clname+'} \n'
-	 pass
-
      # ecriture de la description de l'objet
-
+    tstr = tstr + tstra
     try:
          descr=replace(replace(icl.descr_,'{','\{'),'}','\}')
          descr=replace(replace(descr,'\{\{','{'),'\}\}','}')
@@ -2352,7 +2352,7 @@ def gen_doc_base(fr=1):
  \pdfoutput=1 
   \ppdftrue 
 \fi 
-%\batchmode
+\batchmode
 \documentclass{article}[11pt]
 \usepackage[T1]{fontenc}
 \usepackage{times}
@@ -2373,6 +2373,13 @@ def gen_doc_base(fr=1):
     \let\Oldlabel\label
     \renewcommand{\label}[1]{\hypertarget{#1}{} \Oldlabel{#1}}
 }
+
+\hypersetup{pdftitle={TRUST Reference Manual},
+ pdfauthor={Team TRUST},
+ pdfsubject={TRUST Reference Manual},
+ pdfkeywords={TRUST, guide, howto}
+}
+
 \else 
 \usepackage[colorlinks=true,linkcolor=blue]{hyperref}
 \fi
@@ -2380,8 +2387,15 @@ def gen_doc_base(fr=1):
 \setlength{\parindent}{0pt} 
 \makeindex 
  \begin{document}
-\title{\vspace{5cm} \Huge \textbf{TRUST Reference Manual V1.7.4} \vspace{0.5cm}}
-\author{\vspace{0.4cm} \LARGE \textbf{Support team: \href{mailto:triou@cea.fr}{triou@cea.fr}} }
+\title{
+\vspace{5cm} 
+\Huge \textbf{TRUST Reference Manual V1.7.4} \vspace{0.5cm}}
+\author{
+\vspace{2cm} 
+\LARGE \textbf{Support team: \href{mailto:triou@cea.fr}{triou@cea.fr}} \\
+\vspace{4cm} % espace entre ref manual et ce qui est en dessous
+Link to: \LARGE \textbf{\href{run:TRUST_Generic_Guide.pdf}{ TRUST Generic Guide}}\\
+ }
 \maketitle
 \newpage
 \tableofcontents
