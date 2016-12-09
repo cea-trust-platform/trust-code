@@ -181,10 +181,16 @@ do
       fi
    elif [ "$1" = "-doc" ]
    then
-      doc=$TRUST_ROOT/doc/TRUST/TRUST_Generic_Guide.pdf
+      if [ "$project_directory" != "" ]
+      then
+          doc=$project_directory/share/doc/TRUST_Generic_Guide.pdf
+	  [ ! -f $doc ] && doc=$TRUST_ROOT/doc/TRUST/TRUST_Generic_Guide.pdf
+      else
+         doc=$TRUST_ROOT/doc/TRUST/TRUST_Generic_Guide.pdf
+      fi
       if [ -f $doc ]
       then
-	 for app in xpdf kpdf evince okular
+	 for app in evince xpdf kpdf okular
 	 do
             $app $doc 1>/dev/null 2>&1 && exit 0
 	 done
