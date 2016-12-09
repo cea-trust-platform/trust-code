@@ -24,3 +24,4 @@ pip install dist/PySide-*.whl  --prefix=$cible
 [ $? -ne 0 ] && echo "Pb installing $package" && exit -1
 cd ..
 rm -rf $pac
+echo "export CURVEPLOT_FORCE_PYSIDE=ON" >> $cible/env.sh

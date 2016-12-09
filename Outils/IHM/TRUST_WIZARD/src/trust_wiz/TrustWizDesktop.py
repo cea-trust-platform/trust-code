@@ -187,6 +187,10 @@ class TrustWizDesktop(QMainWindow):
       if fName != "":
           #with open(fName, "w") as f:
           #json.dump(self._lastData, f, indent=4)
+          
+          if (fName[-5:]!='.data'):
+              fName+='.data'
+
           import First
           reload(First)
           #from First import convert_json_to_jdd

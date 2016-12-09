@@ -10,3 +10,6 @@ PySide:  ./install_PySide.sh matplotlib
 clean:
 	rm -r -f $(install)
 	./clean.sh
+
+force_Pyside: clean
+	env FORCE_BUID=1 make PySide

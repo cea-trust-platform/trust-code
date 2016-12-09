@@ -10,7 +10,7 @@ if [ -f  $cible/env.sh ]
     then
     . $cible/env.sh
     python -c "import matplotlib;import jsonschema"
-    [ $? -eq 0 ] && echo OK && exit 0
+    [ $? -eq 0 ] && [ "$FORCE_BUILD" != 1 ] && echo OK && exit 0
 fi
 
 export OPT=""
@@ -34,7 +34,7 @@ do
      [ $tes = "True" ] && ok=1
 fi
 
-  [ $ok -eq 1 ] && continue
+  [ $ok -eq 1 ] && [ "$FORCE_BUILD" != 1 ] &&continue
   if [ $package = "Distribute2" ]
 then
    pac=distribute-0.7.3
