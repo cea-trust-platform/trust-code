@@ -17,6 +17,7 @@ doc.pdf: triou.py
 	cp *.sty doc/.
 	@grep -v batchmode  doc/doc.tex  > doc/doc_inter.tex
 	(cd doc ;touch doc.ind;pdflatex -interaction=nonstopmode doc.tex 1>/dev/null ;makeindex doc;pdflatex -interaction=nonstopmode  doc.tex 1>/dev/null;makeindex doc;pdflatex -interaction=nonstopmode doc.tex && mv doc.pdf ..)
+	./create_Keywords.sh
 doc_reduit: doc_r.pdf
 doc_r.pdf: triou.py tests/ref/lutil.py
 	mkdir -p doc_r

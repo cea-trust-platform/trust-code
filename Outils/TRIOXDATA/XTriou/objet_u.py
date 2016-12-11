@@ -1981,13 +1981,15 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
 
     # generation de l'entete tstr contient le debut
     # tstr2 la deuxieme partie
+    pb=1
     if fr==1 and clname=='':
         clname=vrai_name_
+        pb=0
         pass
     if fr==0:
         clname=icl.name_
         pass
-    pb=1
+    
     if clname=='{':
         clname='\{'
 	pb=0
@@ -2011,6 +2013,14 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
             tstra = "\subsubsection{"+clname+"}\n"
             pass
         pass
+    # a t on un syno
+   
+    if clname in synonyme.values():
+	
+        for k in synonyme.keys():
+            if synonyme[k]==clname:
+                tstra+="Synonymous: { \\bf "+ k   + ' } \index{  '+k +'  } \\newline \\newline  \n' 
+                break
      # ecriture de la description de l'objet
     tstr = tstr + tstra
     try:
@@ -2160,13 +2170,15 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
             if fr:
                 mot=xattr.name_trio
                 pass
+            if icl.readacc_:
+                tstr2+=' \index{ {\\bf '+mot+' } } '
+                pass
             for syn in xattr.syno:
                 mot+="|"+syn
+                if icl.readacc_:
+                    tstr2+=' \index{ {\\bf  '+syn+' } } '
                 pass
             mot='{ \\bf '+ mot+ ' }' 
-            if icl.readacc_:
-	       tstr2+=' \index{'+mot+'} '
-	       pass
             motcomprend='\item '+ mot
             her=""
             if icl.readacc_==0:
@@ -2236,6 +2248,9 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
                 pass
             if into:
                 stype=stype+" into "+str(into)
+                for c in into:
+		    if isinstance(c,str):
+                       stype+='\index{ '+str(c)+' }'
                 pass
             #print "ici", xattr.name,stype2,name,stype
             
