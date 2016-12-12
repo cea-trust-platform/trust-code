@@ -1,4 +1,5 @@
 Version	Qui				Tache
+1.7.5   triou@cea.fr            Revoir config emacs sans version et avec fichier, idem our nedit
 1.7.5   triou@cea.fr            Update License to 2017
 1.7.5   triou@cea.fr            Enlever toutes les references a users manual dans src
 1.7.5   triou@cea.fr            Revoir tous les fiches exclues pour lancer les cas sans resoudre sinon aucune verif

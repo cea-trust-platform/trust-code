@@ -3298,7 +3298,7 @@ To unsubscribe from http://saxifrage:3500/wws/info/trio_u_annonces list: Reply t
 Version available on:
 ----------------------------------------------------------------------------------------------------
  PC connected to CEA Saclay network: source /home/triou/env_TRUST_$new.sh
- CEA Saclay cluster: source /home/triou/TRUST-$new/callisto/env_TRUST.sh
+ CEA Saclay cluster (callisto): source /home/triou/env_TRUST_$new.sh
  CEA Cadarache cluster: source /soft/mezel/TRIO/TRUST-$new/mezel/env_TRUST.sh
  CEA Marcoule cluster: source /softs/trio_u/TRUST-$new/ceres2/env_TRUST.sh
  CEA TGCC supercomputer: source /ccc/cont002/home/den/triou/TRUST-$new/curie-ccrt/env_TRUST.sh
@@ -3326,7 +3326,8 @@ Version available on:
       then
          echo "
 TrioCFD (previously named \"Trio_U\") is a programmable software for 
-Computational Fluid Dynamics (CFD) code, based on the TRUST platform.
+Computational Fluid Dynamics (CFD) code, based on the TRUST platform
+(\"TRUST\" with Front_Tracking, Radiation, Zoom and LES models).
 This software is OpenSource (license BSD).
 
 -----------------------------------
@@ -3356,7 +3357,7 @@ Version available on:
  CINES supercomputer: source /opt/software/applications/trio_u/TrioCFD-$new/occigen/env_TrioCFD.sh
 ----------------------------------------------------------------------------------------------------
 " >> $MESSAGES_LIVRAISON
-         mail_ -s \"New TrioCFD v$new released\" $dest < $MESSAGES_LIVRAISON
+         mail_ -s \"New TrioCFD v$new released\" $TRUST_MAIL < $MESSAGES_LIVRAISON
          sleep 5
          mv -f $MESSAGES_LIVRAISON $REP_NUIT/MESSAGES_LIVRAISON_$Composant
       elif [ "$Composant" == ModeleCoeur ]
@@ -3387,7 +3388,7 @@ Version available on:
  CEA Cadarache cluster: source /soft/mezel/TRIO/TrioMC2/"$new"_redhat6.7/env_ModeleCoeur.sh
 ----------------------------------------------------------------------------------------------------
 " >> $MESSAGES_LIVRAISON
-         mail_ -s \"New TrioMC2 v$new released\" $dest < $MESSAGES_LIVRAISON
+         mail_ -s \"New TrioMC2 v$new released\" $TRUST_MAIL < $MESSAGES_LIVRAISON
          sleep 5
          mv -f $MESSAGES_LIVRAISON $REP_NUIT/MESSAGES_LIVRAISON_$Composant
       fi

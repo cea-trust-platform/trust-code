@@ -236,17 +236,18 @@ then
    for xml in `ls $TRUST_ROOT/exec/VisIt/current/.visit/hosts/*.xml 2>/dev/null`
    do
       xml=`basename $xml`
-      machine=`echo ${xml%.xml} | $TRUST_Awk -F_ '{print $NF}'`
-      if [ ! -f $xml ] ||  [ $machine != $HOST ] 
-      then
-         rm -f $TRUST_ROOT/exec/VisIt/current/.visit/hosts/$xml && echo "$TRUST_ROOT/exec/VisIt/current/.visit/hosts/$xml deleted."
-      fi
+      [ ! -f $xml ] && rm -f $TRUST_ROOT/exec/VisIt/current/.visit/hosts/$xml && echo "$TRUST_ROOT/exec/VisIt/current/.visit/hosts/$xml deleted."
+      #machine=`echo ${xml%.xml} | $TRUST_Awk -F_ '{print $NF}'`
+      #if [ ! -f $xml ] ||  [ $machine != $HOST ] 
+      #then
+      #   rm -f $TRUST_ROOT/exec/VisIt/current/.visit/hosts/$xml && echo "$TRUST_ROOT/exec/VisIt/current/.visit/hosts/$xml deleted."
+      #fi
    done
    for xml in `ls *.xml 2>/dev/null`
    do
       machine=`echo ${xml%.xml} | $TRUST_Awk -F_ '{print $NF}'`
-      if [ $machine = $HOST ] 
-      then
+      #if [ $machine = $HOST ] 
+      #then
       # La premier ligne <Field name="host" definit le host en remote 
       # La deuxieme ligne <Field name="host" definit le host en local
       # Ainsi pour configurer VisIt sur Windows, il suffit de copier
@@ -263,22 +264,22 @@ then
       else
          VERSION=TRUST/TRUST-$TRUST_VERSION
       fi
-      #$TRUST_Awk -v ligne=$ligne -v TRUST_VERSION=$VERSION '(ligne==2) && /<!--/ {getline} /"host"/ {n++;if (n==ligne) print $0} !/"host"/ {gsub("TRUST_VERSION",TRUST_VERSION,$0);print $0}' $xml > $xml.tmp
-      $TRUST_Awk -v ligne=$ligne -v TRUST_VERSION=$VERSION '(ligne==2) && /<!--/ {getline} /"toto"/ {n++;if (n==ligne) print $0} !/"toto"/ {gsub("TRUST_VERSION",TRUST_VERSION,$0);print $0}' $xml > $xml.tmp
+      $TRUST_Awk -v ligne=$ligne -v TRUST_VERSION=$VERSION '(ligne==2) && /<!--/ {getline} /"host"/ {n++;if (n==ligne) print $0} !/"host"/ {gsub("TRUST_VERSION",TRUST_VERSION,$0);print $0}' $xml > $xml.tmp
+      #$TRUST_Awk -v ligne=$ligne -v TRUST_VERSION=$VERSION '(ligne==2) && /<!--/ {getline} /"toto"/ {n++;if (n==ligne) print $0} !/"toto"/ {gsub("TRUST_VERSION",TRUST_VERSION,$0);print $0}' $xml > $xml.tmp
       if [ ! -f $TRUST_ROOT/exec/VisIt/current/.visit/hosts/$xml ] || [ "`diff $xml.tmp $TRUST_ROOT/exec/VisIt/current/.visit/hosts/$xml`" != "" ]
       then
          echo "$TRUST_ROOT/exec/VisIt/current/.visit/hosts/$xml updated."
          mv -f $xml.tmp $TRUST_ROOT/exec/VisIt/current/.visit/hosts/$xml
-	 #if [ $HOST = $TRUST_HOST_ADMIN ] && [ "$3" = -update_for_test ]
-         #then
-	 #   adr=`awk -F">" '/"host"/ {print $2}' $xml | awk -F"<" '{print $1}' | head -1`
-	 #   tmp=/tmp/remote.xml;$TRUST_Awk -v ligne=2 '(ligne==2) && /<!--/ {getline} /"host"/ {n++;if (n==ligne) print $0} !/"host"/ {print $0}' $xml > $tmp
-	 #   scp $tmp $adr:~/$WORKBASE$machine/TRUST/exec/VisIt/current/.visit/hosts/$xml	 
-         #fi
+	 if [ $HOST = $TRUST_HOST_ADMIN ] && [ "$3" = -update_for_test ]
+         then
+	    adr=`awk -F">" '/"host"/ {print $2}' $xml | awk -F"<" '{print $1}' | head -1`
+	    tmp=/tmp/remote.xml;$TRUST_Awk -v ligne=2 '(ligne==2) && /<!--/ {getline} /"host"/ {n++;if (n==ligne) print $0} !/"host"/ {print $0}' $xml > $tmp
+	    scp $tmp $adr:~/$WORKBASE$machine/TRUST/exec/VisIt/current/.visit/hosts/$xml	 
+         fi
       else
          rm -f $xml.tmp
       fi
-      fi
+      #fi
    done
    ###############################################################
    # Debut des corrections de scripts de visit (pour le parallele)

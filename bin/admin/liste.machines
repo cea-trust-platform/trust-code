@@ -12,7 +12,7 @@ linux	scp_ssh		non		is229107.intra.cea.fr		-all	 									-disable 		# Fedora 20
 linux	rsync_ssh	cible		is221559.intra.cea.fr		 		-TRUST -MPCube	-g 		-force_provided_mpich		-Check_decoupage	# Fedora 18 			CEA Saclay	Bat 451 LGLS	bureau Gauthier Fauchet (PC of the Leader Project) (Couplage Cathare/TRUST)
 linux	rsync_ssh	cible		cobalt.ccc.cea.fr	 updated -limited 	-TrioCFD			-benchmark	 					# RedHat 7.2			CEA CCRT
 linux	rsync_ssh	tache		curie-ccrt.ccc.cea.fr	 updated -limited 	-TrioCFD			-benchmark	 					# RedHat 6.7			CEA TGCC
-linux	rsync_ssh	tache		callisto.intra.cea.fr	 updated -limited	-TrioCFD -ModeleCoeur		-benchmark						# CentOS 6.4			CEA DM2S 	Bat 458	
+linux	rsync_ssh	tache		callisto.intra.cea.fr	 	 -limited	-TrioCFD -ModeleCoeur		-benchmark						# CentOS 6.4			CEA DM2S 	Bat 458	
 linux 	rsync_ssh	non   		is142348.intra.cea.fr       							-force_provided_mpich		-without-visit		# Mandriva 2008 MACHINE 32bits	CEA Saclay	Bat ??	
 linux 	rsync_ssh	cible		cezanne63.intra.cea.fr				-ModeleCoeur										# Debian 8			CEA Cadarache
 linux	scp_ssh		cible		is231310.intra.cea.fr				-TRUST -MPCube			-remote_install_TRUST_kernel_only			# Fedora 20	 		CEA Saclay	Bat 526 LMES	bureau TMA Cathare (ex is227526 Couplage Cathare/TRUST)

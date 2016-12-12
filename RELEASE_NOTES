@@ -2,11 +2,10 @@
 Release notes version 1.7.4 : Enhancements, modifications and corrected bugs since version 1.7.3 :
 --------------------------------------------------------------------------------------------------
 09/12/16 (Tools)  Announcement: New Documentation Generic and Reference Guides
-24/11/16 (TRUST)  Portability : Linux distribution Ubuntu 16 and gcc 6.2.0 supported
-23/11/16 (TRUST)  New keyword : Add vint_tetra option to ExtrudeBord. ExtrudeBord improved
+24/11/16 (TRUST)  Portability : Linux distribution CentOS 7, Ubuntu 16 and gcc 6.2.0 supported
+23/11/16 (TRUST)  New keyword : Add new option to ExtrudeBord. ExtrudeBord improved
 22/11/16 (TRUST)  Major change: Syntaxe modification of predefined field energie_cinetique renamed as energie_cinetique_totale and creation of energie_cinetique_elem
 20/10/16 (TRUST)  New feature : Polygone 
-01/08/16 (TRUST)  New keyword : Update Verif_Cl with new sub-class (Entree_fluide_vitesse_imposee_libre)
 29/07/16 (Tools)  Minor change: Update the VisIt configuration of host profiles automatically on several clusters (CCRT and DM2S)
 22/07/16 (TRUST)  Minor change: Options -evol and -wiz added to the trust script (TRUST_PLOT2D and TRUST_WIZZARD)
 20/07/16 (TRUST)  Minor change: Update reprise_auto script with new archiving option
