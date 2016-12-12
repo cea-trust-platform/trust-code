@@ -18,3 +18,8 @@ cat  $dest/XTriou/TRAD_2.org $dest/XTriou/TRAD2_ajout > $dest/XTriou/TRAD_2
 cd $dest
 (cd XTriou;[ -f build_TRAD2.sh ] && ./build_TRAD2.sh )
 make
+cd $project_directory
+mkdir -p share/doc_src
+cat build/xdata/XTriou/Keywords.txt $TRUST_ROOT/doc/TRUST/Keywords.txt | sort | uniq -u > share/doc_src/Keywords.txt.n
+KeywordsTRUST=`$TRUST_Awk '!/\|/ {k=k" "$1} /\|/ {gsub("\\\|"," ",$0);k=k" "$0} END {print k}' share/doc_src/Keywords.txt.n`
+echo "syntax keyword TRUSTLanguageKeywords$KeywordsTRUST" >> share/doc_src/Keywords.Vim
