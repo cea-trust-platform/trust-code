@@ -16,4 +16,4 @@ Version	Qui				Tache
 1.7.5   gauthier.fauchet@cea.fr  Rechercher test MPIIO qui planterait sur machine Areva (tester sur occigen => MPIIO plante sur upwind en sequentiel)
 1.7.5   triou@cea.fr            Gauthier a demande d ajouter test Execute_parallel lors du configure pour verifier l'installation MPI
 1.7.5   triou@cea.fr            Probleme avec pre-commit et post-commit qui modifie des fichiers lors du commit apres nos tests !!! Le faire lors du compile et si modif alors arret...
-1.7.4	triou@cea.fr  		Doc : recupere branche GF et MR + gcov
+1.7.5	triou@cea.fr  		Doc : recupere branche GF et MR + gcov
