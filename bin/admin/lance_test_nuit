@@ -320,6 +320,7 @@ rm -f $REP_NUIT/CR_* $REP_NUIT/PERF_* $REP_NUIT/MAKE_* $REP_NUIT/*.log
 rm -f $REP_NUIT/rsync_include_from $REP_NUIT/NUIT.html
 rm -f $REP_NUIT/os $REP_NUIT/CC $REP_NUIT/CR
 rm -f $MESSAGES_NUIT $REP_NUIT/nuit_*.html
+rm -f $REP_NUIT/MESSAGES_LIVRAISON*
 rm -f $REP_NUIT/.nfs*
 # On cree :
 [ ! -d $REP_NUIT ] && mkdir $REP_NUIT
@@ -3058,9 +3059,9 @@ then
          echo "!!! See A_GRAVER_CD_TRUST (Warning externalpackages) and A_GRAVER_CD_TrioCFD !!!" | mail_ -s \"[lance_test_nuit] WARNING! TRUST v$new released: Ensure that packages for sourceforge.net are correct...\" $TRUST_MAIL $TRUST_PROJECT_LEADER
          mise_a_jour_TRUST_tar
          GRAVAGE=$WORKDIR/A_GRAVER_CD_TRUST
-         version_arch=TRUST_$new".tar.gz"
+         version_arch=TRUST-$new".tar.gz"
          mv $TRUST_ROOT/$version_arch $GRAVAGE/.
-         version_arch=externalpackages_$new".tar"
+         version_arch=externalpackages-$new".tar"
          mv $TRUST_ROOT/$version_arch $GRAVAGE/.
 	 # Changement de la vue Maintenance
 	 echo " "
@@ -3271,8 +3272,8 @@ then
    do
       echo "Stable release announcement sent to $dest"
       echo "
-TRUST is a thermohydraulic calculation modular software package 
-for CFD simulations of incompressible monophasic/diphasic flow.
+TRUST is a thermohydraulic software package for CFD 
+simulations for incompressible monophasic/diphasic flow.
 TRUST platform name means TRrio_U Software for Thermohydraulics
 (\"Trio_U\" without Front_Tracking, Radiation, Zoom and LES models).
 This software is OpenSource (license BSD).
@@ -3280,41 +3281,98 @@ This software is OpenSource (license BSD).
 ---------------------------------
 New TRUST version released v$new
 ---------------------------------
-Look at http://sourceforge.net/projects/trust-platform/files/
-to read the README and to download Installer_TRUST.sh.
-Changes compared to the $old version are detailed in the RELEASE_NOTES 
-below or in file attached to the TRUST-$new.tar.gz archive.
+is available at http://sourceforge.net/projects/trust-platform/
+
+-----------------
+Table of contents
+-----------------
+1. How to install?
+2. How to run preinstalled version?
+3. TRUST Release notes
+4. TRUST Developer notes
+5. externalpackages Release notes
+6. Version tested on several OS
+7. Version portability with several compilers
 
 TRUST support team. mailto: $TRUST_MAIL  Web: http://www-trio-u.cea.fr
 
-To unsubscribe from http://saxifrage:3500/wws/info/trio_u_annonces list: Reply to this message.
-" > $MESSAGES_LIVRAISON
-      echo "--------------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
+To unsubscribe, click here http://saxifrage:3500/wws/info/trio_u_annonces " > $MESSAGES_LIVRAISON
+      echo "
+---------------------------------------------------------------------------------------------
+1. How to install?
+---------------------------------------------------------------------------------------------
+# Option to minimize build
+OPTIONS="-disable-optionals"
+
+# First method
+wget http://downloads.sourceforge.net/project/trust-platform/Installer_TRUST.sh;
+chmod +x Installer_TRUST.sh;
+./Installer_TRUST.sh -configure-options "$OPTIONS"
+
+# Second method
+wget http://downloads.sourceforge.net/project/trust-platform/$new/TRUST-$new.tar.gz;
+tar xzf TRUST-$new.tar.gz;
+cd TRUST-$new;
+./configure $OPTIONS;
+make
+
+# Third method
+git clone git://git.code.sf.net/p/trust-platform/code TRUST-$new;
+cd TRUST-$new;
+wget http://downloads.sourceforge.net/project/trust-platform/$new/externalpackages-$new.tar;
+tar xf externalpackages-$new.tar;
+./configure $OPTIONS;
+make
+---------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
+      echo "
+----------------------------------------------------------------------------------------------------
+2. How to run preinstalled version?
+----------------------------------------------------------------------------------------------------
+# for PC connected to CEA Saclay network:
+source /home/triou/env_TRUST_$new.sh
+
+# for CEA Saclay cluster (callisto):
+source /home/triou/env_TRUST_$new.sh
+
+# for CEA Cadarache cluster (mezel):
+source /soft/mezel/TRIO/TRUST/"$new"_redhat6.7/env_TRUST.sh
+
+# for CEA Marcoule cluster (ceres2):
+source /softs/trio_u/TRUST/"$new"_centos6.5/env_TRUST.sh
+
+# for CEA TGCC supercomputer (curie-ccrt):
+source /ccc/work/cont002/den/triou/curie-ccrt/TRUST/TRUST-$new/env_TRUST.sh
+
+# for CEA CCRT supercomputer (cobalt):
+source /ccc/work/cont002/den/triou/cobalt/TRUST/TRUST-$new/env_TRUST.sh
+
+# for CINES supercomputer (occigen):
+source /opt/software/applications/trio_u/TRUST/RedHat_6.8_64/TRUST-intelmpi-$new/env_TRUST.sh
+----------------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
+      echo $ECHO_OPTS "
+--------------------------------------------------------------------------------------------------
+3. \c" >> $MESSAGES_LIVRAISON
       [ -f $TRUST_ROOT/RELEASE_NOTES ] && echo $ECHO_OPTS "TRUST \c" >> $MESSAGES_LIVRAISON && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/RELEASE_NOTES >> $MESSAGES_LIVRAISON
+      echo $ECHO_OPTS "
+-------------------------------------------------------------
+4. \c" >> $MESSAGES_LIVRAISON
       [ -f $TRUST_ROOT/DEVELOPER_NOTES ] && echo $ECHO_OPTS "TRUST \c" >> $MESSAGES_LIVRAISON && $TRUST_Awk '/Developer notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/DEVELOPER_NOTES >> $MESSAGES_LIVRAISON
+      echo $ECHO_OPTS "
+--------------------------------------------------------------------------------------------------
+5. \c" >> $MESSAGES_LIVRAISON
       [ -f $TRUST_ROOT/externalpackages/RELEASE_NOTES ] && echo $ECHO_OPTS "externalpackages \c" >> $MESSAGES_LIVRAISON && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/externalpackages/RELEASE_NOTES >> $MESSAGES_LIVRAISON
-      echo " 
-----------------------------------------------------------------------------------------------------
-Version available on:
-----------------------------------------------------------------------------------------------------
- PC connected to CEA Saclay network: source /home/triou/env_TRUST_$new.sh
- CEA Saclay cluster (callisto): source /home/triou/env_TRUST_$new.sh
- CEA Cadarache cluster: source /soft/mezel/TRIO/TRUST-$new/mezel/env_TRUST.sh
- CEA Marcoule cluster: source /softs/trio_u/TRUST-$new/ceres2/env_TRUST.sh
- CEA TGCC supercomputer: source /ccc/cont002/home/den/triou/TRUST-$new/curie-ccrt/env_TRUST.sh
- CEA CCRT supercomputer: source /ccc/cont002/home/den/triou/TRUST-$new/cobalt/env_TRUST.sh
- CINES supercomputer: source /opt/software/applications/trio_u/TRUST-$new/occigen/env_TRUST.sh
-----------------------------------------------------------------------------------------------------
-" >> $MESSAGES_LIVRAISON
-      echo "-------------------------------------------" >> $MESSAGES_LIVRAISON
-      echo "Version portability on several OS:" >> $MESSAGES_LIVRAISON
-      echo "-------------------------------------------" >> $MESSAGES_LIVRAISON
+      echo " " >> $MESSAGES_LIVRAISON
+      echo "---------------------------------------------" >> $MESSAGES_LIVRAISON
+      echo "6. Version portability on several OS" >> $MESSAGES_LIVRAISON
+      echo "---------------------------------------------" >> $MESSAGES_LIVRAISON
       sed 's/<BR><LI>/ /g'  $REP_NUIT/os >> $MESSAGES_LIVRAISON
-      echo "-------------------------------------------" >> $MESSAGES_LIVRAISON
-      echo "Version portability with several compilers:" >> $MESSAGES_LIVRAISON
-      echo "-------------------------------------------" >> $MESSAGES_LIVRAISON
+      echo "---------------------------------------------" >> $MESSAGES_LIVRAISON
+      echo " " >> $MESSAGES_LIVRAISON
+      echo "---------------------------------------------" >> $MESSAGES_LIVRAISON
+      echo "7. Version portability with several compilers" >> $MESSAGES_LIVRAISON
+      echo "---------------------------------------------" >> $MESSAGES_LIVRAISON
       sed 's/<BR><LI>/ /g'  $REP_NUIT/CC >> $MESSAGES_LIVRAISON
-      echo "-------------------------------------------" >> $MESSAGES_LIVRAISON
+      echo "---------------------------------------------" >> $MESSAGES_LIVRAISON
       echo " " >> $MESSAGES_LIVRAISON
       mail_ -s \"New TRUST v$new released\" $dest < $MESSAGES_LIVRAISON
       sleep 5
@@ -3325,69 +3383,118 @@ Version available on:
       if [ "$Composant" == TrioCFD ]
       then
          echo "
-TrioCFD (previously named \"Trio_U\") is a programmable software for 
-Computational Fluid Dynamics (CFD) code, based on the TRUST platform
-(\"TRUST\" with Front_Tracking, Radiation, Zoom and LES models).
+TrioCFD (previously named \"Trio_U\") is Computational Fluid Dynamics (CFD) code, 
+based on the TRUST platform (\"TRUST\" with Front_Tracking, Radiation, Zoom and LES models).
 This software is OpenSource (license BSD).
 
 -----------------------------------
 New TrioCFD version released v$new
 -----------------------------------
-Look at http://sourceforge.net/projects/triocfd/files/  
-to read the README and to download Installer_TrioCFD.sh.
-Changes compared to the $old version are detailed in the RELEASE_NOTES 
-below or in file attached to the TrioCFD.tar.gz archive.
+is available at http://sourceforge.net/projects/triocfd/
+
+-----------------
+Table of contents
+-----------------
+1. How to install?
+2. How to run preinstalled version?
+3. TrioCFD Release notes
 
 TRUST/TrioCFD support team. mailto: $TRUST_MAIL  Web: http://www-trio-u.cea.fr
 
-To unsubscribe from http://saxifrage:3500/wws/info/trio_u_annonces list: Reply to this message.
-" > $MESSAGES_LIVRAISON
-         echo "--------------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
+To unsubscribe, click here http://saxifrage:3500/wws/info/trio_u_annonces " > $MESSAGES_LIVRAISON
+      echo "
+---------------------------------------------------------------------------------------------
+1. How to install?
+---------------------------------------------------------------------------------------------
+# Option to minimize build
+OPTIONS="-disable-optionals"
+
+# First method if TRUST-$new platform is not installed
+wget http://sourceforge.net/projects/triocfd/files/Installer_TrioCFD.sh;
+chmod +x Installer_TrioCFD.sh;
+./Installer_TrioCFD.sh -configure-options "$OPTIONS"
+
+# Second method if TRUST-$new platform is already installed
+wget http://sourceforge.net/projects/triocfd/files/Installer_TrioCFD.sh;
+chmod +x Installer_TrioCFD.sh;
+./Installer_TrioCFD.sh -with-trust \$TRUST_ROOT
+
+# Third method if TRUST-$new platform is already installed
+git clone git://git.code.sf.net/p/triocfd/code TrioCFD-$new;
+cd TrioCFD-$new;
+source \$TRUST_ROOT/env_TRUST.sh;
+baltik_build_configure -execute;
+make optim debug
+---------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
+      echo "
+----------------------------------------------------------------------------------------------------
+2. How to run preinstalled version?
+----------------------------------------------------------------------------------------------------
+# for PC connected to CEA Saclay network:
+source /home/triou/env_TrioCFD_$new.sh
+
+# for CEA Saclay cluster (callisto):
+source /home/triou/env_TrioCFD_$new.sh
+
+# for CEA Cadarache cluster (mezel):
+source /soft/mezel/TRIO/TrioCFD/"$new"_redhat6.7/env_TrioCFD.sh
+
+# for CEA Marcoule cluster (ceres2):
+source /softs/trio_u/TrioCFD/"$new"_centos6.5/env_TrioCFD.sh
+
+# for CEA TGCC supercomputer (curie-ccrt):
+source /ccc/work/cont002/den/triou/curie-ccrt/TrioCFD/TrioCFD-$new/env_TrioCFD.sh
+
+# for CEA CCRT supercomputer (cobalt):
+source /ccc/work/cont002/den/triou/cobalt/TrioCFD/TrioCFD-$new/env_TrioCFD.sh
+
+# for CINES supercomputer (occigen):
+source /opt/software/applications/trio_u/TrioCFD/RedHat_6.8_64/TrioCFD-intelmpi-$new/env_TrioCFD.sh
+----------------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
+      echo $ECHO_OPTS "
+--------------------------------------------------------------------------------------------------
+3. \c" >> $MESSAGES_LIVRAISON
          [ -f $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES ] && echo $ECHO_OPTS "$Composant \c" >> $MESSAGES_LIVRAISON && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES >> $MESSAGES_LIVRAISON
-         echo " 
-----------------------------------------------------------------------------------------------------
-Version available on:
-----------------------------------------------------------------------------------------------------
- PC connected to CEA Saclay network: source /home/triou/env_TrioCFD_$new.sh
- CEA Saclay cluster: source /home/triou/TrioCFD-$new/callisto/env_TrioCFD.sh
- CEA Cadarache cluster: source /soft/mezel/TRIO/TrioCFD-$new/mezel/env_TrioCFD.sh
- CEA Marcoule cluster: source /softs/trio_u/TrioCFD-$new/ceres2/env_TrioCFD.sh
- CEA TGCC supercomputer: source /ccc/cont002/home/den/triou/TrioCFD-$new/curie-ccrt/env_TrioCFD.sh
- CEA CCRT supercomputer: source /ccc/cont002/home/den/triou/TrioCFD-$new/cobalt/env_TrioCFD.sh
- CINES supercomputer: source /opt/software/applications/trio_u/TrioCFD-$new/occigen/env_TrioCFD.sh
-----------------------------------------------------------------------------------------------------
-" >> $MESSAGES_LIVRAISON
+         echo " " >> $MESSAGES_LIVRAISON
          mail_ -s \"New TrioCFD v$new released\" $TRUST_MAIL < $MESSAGES_LIVRAISON
          sleep 5
          mv -f $MESSAGES_LIVRAISON $REP_NUIT/MESSAGES_LIVRAISON_$Composant
       elif [ "$Composant" == ModeleCoeur ]
       then
          echo "
-TrioMC2 is a programmable software for coupling a rough CFD 
-model of the inter-wrapper region (calculated with TrioCFD)
-and a sub-channel description of the core (with TrioMC).
-This code is based on the TRUST platform.
+TrioMC is a subchannel code dedicated to the study of SFR subassemblies
+at the complete core scale. Through the MATHYS code, TrioMC can be coupled:
+- with the TrioCFD code to model the coupling between the core and the inter-wrapper region;
+- with the CATHARE code to model the local core behavior during reactor transients.
+TrioMC is based on the TRUST platform.
 
 -----------------------------------
 New TrioMC2 version released v$new
 -----------------------------------
-Changes compared to the $old version are detailed in the RELEASE_NOTES 
-below or in file attached to this mail.
+1. How to run preinstalled version?
+2. Release notes
 
 TRUST/TrioMC2 support team. mailto: $TRUST_MAIL  Web: http://www-trio-u.cea.fr
 
-To unsubscribe from http://saxifrage:3500/wws/info/mc2_annonces list: Reply to this message.
-" > $MESSAGES_LIVRAISON
-         echo "--------------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
+To unsubscribe, click here http://saxifrage:3500/wws/info/mc2_annonces " > $MESSAGES_LIVRAISON
+ echo "
+----------------------------------------------------------------------------------------------------
+1. How to run preinstalled version?
+----------------------------------------------------------------------------------------------------
+# for PC connected to CEA SESI network:
+source /soft/der/sesi/TrioMC2/"$new"_debian8/env_ModeleCoeur.sh
+
+# for CEA Cadarache cluster (mezel):
+source /soft/mezel/TRIO/TrioMC2/"$new"_redhat6.7/env_ModeleCoeur.sh
+
+# for CEA Saclay cluster (callisto):
+source /home/triou/env_TrioMC2_$new.sh
+----------------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
+      echo $ECHO_OPTS "
+--------------------------------------------------------------------------------------------------
+2. \c" >> $MESSAGES_LIVRAISON
          [ -f $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES ] && echo $ECHO_OPTS "$Composant \c" >> $MESSAGES_LIVRAISON && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES >> $MESSAGES_LIVRAISON
-         echo " 
-----------------------------------------------------------------------------------------------------
-Version available on:
-----------------------------------------------------------------------------------------------------
- PC connected to CEA SESI network: source /soft/der/sesi/TrioMC2/"$new"_debian8/env_ModeleCoeur.sh
- CEA Cadarache cluster: source /soft/mezel/TRIO/TrioMC2/"$new"_redhat6.7/env_ModeleCoeur.sh
-----------------------------------------------------------------------------------------------------
-" >> $MESSAGES_LIVRAISON
+         echo " " >> $MESSAGES_LIVRAISON
          mail_ -s \"New TrioMC2 v$new released\" $TRUST_MAIL < $MESSAGES_LIVRAISON
          sleep 5
          mv -f $MESSAGES_LIVRAISON $REP_NUIT/MESSAGES_LIVRAISON_$Composant
