@@ -100,7 +100,6 @@ then
    # on laisse pour le moment:
    HOST=`hostname | awk -F. '{print $1}'`
    [ "${HOST#curie}"    != $HOST ] && HOST=curie-ccrt
-   [ "${HOST#airain}"   != $HOST ] && HOST=airain
    [ "${HOST#callisto}" != $HOST ] && HOST=callisto
    [ "${HOST#ceres2}"   != $HOST ] && HOST=ceres2
    [ "${HOST#mezel}"    != $HOST ] && HOST=mezel

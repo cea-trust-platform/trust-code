@@ -232,7 +232,7 @@ then
       if [ $sub = CCC ]
       then
          # Pas de balise possible pour curie pour un job en differe?
-         if [ $HOST = curie-ccrt ] || [ $HOST = airain ] || [ $HOST = cobalt ]
+         if [ $HOST = curie-ccrt ] || [ $HOST = cobalt ]
 	 then
 	    echo $ECHO_OPTS "$shell#MSUB -E '--begin `date '+%Y'-``echo $restart | $TRUST_Awk -F: '{print $1"-"$2"T"$3":"$4}'`'" > $sub_file_next
 	 else
@@ -473,7 +473,7 @@ else
 fi
 
 # Verifie si la machine a ete testee
-if [ $HOST != curie-ccrt ] && [ $HOST != airain ] && [ $HOST != occigen ] && [ $HOST != cobalt ] # Supported
+if [ $HOST != curie-ccrt ] && [ $HOST != occigen ] && [ $HOST != cobalt ] # Supported
 then
    if [ $HOST = mars ] || [ $HOST = eris ]
    then

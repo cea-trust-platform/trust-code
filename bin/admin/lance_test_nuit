@@ -898,9 +898,6 @@ then
    #echo "-> Start of "$ETUDES"/run -all"
    touch $ETUDES/run_Etudes.log
    #echo "  See $REP_NUIT/run_Mistra_*.log"
-   #echo "TRUST script on airain the `date` ...">run_Mistra_airain.log
-   #echo>>run_Mistra_airain.log
-   #(./run Validation/Mistra -adr airain.ccc.cea.fr 1>>run_Mistra_airain.log 2>&1;mv -f run_Mistra_airain.log $REP_NUIT/.) &
    #echo "TRUST script on curie the `date` ...">run_Mistra_curie.log
    #echo>>run_Mistra_curie.log
    #(./run Validation/Mistra -adr curie-ccrt.ccc.cea.fr 1>>run_Mistra_curie.log 2>&1;mv -f run_Mistra_curie.log $REP_NUIT/.) &

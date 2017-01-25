@@ -118,7 +118,7 @@
         <Field name="arguments" type="stringVector"></Field>
         <Field name="parallel" type="bool">true</Field>
         <Field name="launchArgsSet" type="bool">true</Field>
-        <Field name="launchArgs" type="string">"--resv-ports -A gch0202@broadwell"</Field>
+        <Field name="launchArgs" type="string">"--resv-ports -A den@broadwell"</Field>
         <Field name="sublaunchArgsSet" type="bool">false</Field>
         <Field name="sublaunchArgs" type="string"></Field>
         <Field name="sublaunchPreCmdSet" type="bool">false</Field>
@@ -158,7 +158,7 @@
         <Field name="arguments" type="stringVector"></Field>
         <Field name="parallel" type="bool">true</Field>
         <Field name="launchArgsSet" type="bool">true</Field>
-        <Field name="launchArgs" type="string">"--resv-ports -A gch0202@broadwell"</Field>
+        <Field name="launchArgs" type="string">"--resv-ports -A den@broadwell"</Field>
         <Field name="sublaunchArgsSet" type="bool">false</Field>
         <Field name="sublaunchArgs" type="string"></Field>
         <Field name="sublaunchPreCmdSet" type="bool">false</Field>
