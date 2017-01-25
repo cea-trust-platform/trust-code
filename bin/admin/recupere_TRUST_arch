@@ -45,7 +45,7 @@ fi
 ###############################
 # Creation du rapport NUIT.html
 ###############################
-REP_NUIT=/data/tmplgls/triou/Historique/NUIT
+REP_NUIT=/data/tmptrust/tmptrust/Historique/NUIT
 [ ! -d $REP_NUIT ] && mkdir -p $REP_NUIT
 NUIT=$REP_NUIT/NUIT.html
 NUIT_DIPHA=$REP_NUIT/NUIT_dipha.html

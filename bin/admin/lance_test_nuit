@@ -309,8 +309,8 @@ echo " "
 
 export DATE=`date '+%d%m%y'`
 export NUIT=1
-REP_NUIT=/data/tmplgls/triou/Historique/NUIT
-REP_HIST=/data/tmplgls/triou/Historique/HIST
+REP_NUIT=/data/tmptrust/tmptrust/Historique/NUIT
+REP_HIST=/data/tmptrust/tmptrust/Historique/HIST
 MESSAGES_NUIT=$REP_NUIT/MESSAGES_NUIT
 MESSAGES_LIVRAISON=~/MESSAGES_LIVRAISON
 
