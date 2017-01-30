@@ -1,33 +1,23 @@
-Notes for Eclipse with TRUST (19/10/2016)
+Notes for Eclipse with TRUST (30/01/2017)
 -----------------------------------------
-
-######################################
-# Create a project to browse sources #
-######################################
 
 Download
 ========
-> Go to the website of the Eclipse Foundation: http://www.eclipse.org/downloads/
-> Select "Download Packages" in "Get Eclipse Neon".
-> Click on "Eclipse Mars (4.5)" on the left menu "More downloads".
+> Go to the website of the Eclipse Foundation: http://www.eclipse.org/downloads/eclipse-packages/
+> Click on "Eclipse Mars (4.5)" on the menu "More downloads".
 > Then click on "Download" button.
 > Select "Eclipse IDE for C/C++ Developers" -> "Linux 64-bits"
-> Download the eclipse-*-linux*64.tar.gz package in your directory
+> Download the eclipse-cpp-mars-2-linux-gtk-x86_64.tar.gz package in your directory "/export/home/user/"
 
 Installation
 ============
-> cd /export/home/login/...
+> cd /export/home/user/
 > tar xvfz eclipse-*.tar.gz
-> cd <eclipse_install>
 
 Configuration
 =============
-> Change the eclipse.ini file, by adding or modifying the END of the file with:
---launcher.defaultAction
-openFile
---launcher.XXMaxPermSize
-256m
--vmargs
+> cd eclipse
+> Change the eclipse.ini file, by deleting the last 3 lines (MaxPermSize, Xms and Xmx) and adding the following lines:
 -Dhelp.lucene.tokenizer=standard
 -XX:PermSize=256m
 -XX:MaxPermSize=1024m
@@ -37,129 +27,95 @@ openFile
 -Xms512m
 -Xmx2048m
 -server
+> cd /export/home/user/
+
+##########################
+# Create a TRUST project #
+##########################
 
 Launching
 =========
-> echo $TRUST_ROOT 
-> ./eclipse &
-> Workspace: /export/home/login/eclipse/workspace 
+> source /home/triou/env_TRUST_1.7.4.sh
+> echo $TRUST_ROOT/src
+
+> /export/home/user/eclipse/eclipse &
+> Workspace: Browse a directory
   => OK
   => Welcome -> close: x button
-> File/New/C++ Project 
-  => Profect name: TRUST_X.Y.Z
-  => Use default location 
-  => Project type: Executable --> Empty Project
-  => Toolchains: Linux GCC
+
+> File/New/Makefile Project with Existing Code
+  => Profect name: TRUST-X.Y.Z
+  => Existing Code Location: copy the string matching $TRUST_ROOT/src/
   => Finish
+  => Wait to have 100% at the bottom right corner of the window  (C/C++ indexer).
 > Project Explorer
-  Right click TRUST_X-Y-Z --> Import...
-  => General --> File System
-  => "Next"
-  => From directory: $TRUST_ROOT/src
-  => Select All  
-  => "Into folder": TRUST_X.Y.Z
-  => Advanced: check "Create links in workspace "
-  => Finish 
-  => Wait...
-> Project Explorer
-  Right click TRUST_X.Y.Z --> Properties
+  Right click TRUST-X.Y.Z --> Properties
   => Builders: uncheck "CDT Builder" => click on "OK"
   => OK
   => Wait to have 100% at the bottom right corner of the window.
-> File/Exit
-
-
-######################################
-# Launch a calculation in debug mode #
-######################################
-
-Configuration
-============= 
-> cd <eclipse_install>
-> source $TRUST_ROOT/env_TRUST.sh
-> ./eclipse &
-> Project Explorer
-  Right click TRUST_X.Y.Z --> Debug As --> Debug configurations...
-  => Select C/C++ Application
-  => On the top of the window, press the 'New' button (to create a configuration of the selected type)
-  => Main --> C/C++ Application: $TRUST_ROOT/exec/TRUST_mpi
-  => Arguments --> uncheck "Use default" in "Working directory" area
-  => Debugger--> "Main" options "GDB debugger" --> replace "gdb" by "/usr/bin/gdb"
-  => Apply
   => Close
 
-View debug
-==========
-> Window --> Perspective --> Open Perspective --> Debug
-  => New button at the top right of the window: view "Debug" at the side of view "C/C++"
-
-Case selection
-==============
-> Run --> Debug configurations
-  => Select "C/C++ application" -> "TRUST_X.Y.Z Debug"
-  => Arguments: Program arguments: datafile               (for example datafile=Cx)
-  =>            Working directoty: /export/home/login/... (for example /export/home/login/Cx : folder of Cx test case in your home-directories)
-  => Apply
-  => Run
-
-Launching
-=========
-> Run/Debug (F11)         (Wait to have 100% on the bottom right corner of the window)
-> Run/Resume (F8)
-> Run/Terminate (Ctrl+F2)
-> File/Exit
-
-
-###################################
-# Launch a calculation in Baltik  #
-###################################
-
-Configuration
-============= 
-> cd <eclipse_install>
-> source $Baltik_ROOT/env_Baltik.sh or source $Baltik_ROOT/full_Baltik.sh 
-> ./eclipse &
-> File/New/C++ Project 
-  => Profect name: Baltik
-  => Use default location 
-  => Project type: Executable --> Empty Project
-  => Toolchains: Linux GCC
-  => Finish
 > Project Explorer
-  Right click Baltik --> Import...
-  => General --> File System
-  => Next 
-  => From directory: $Baltik_ROOT/src
-  => Select All  
-  => Into folder: Baltik
-  => Advanced: check Create links in workspace 
-  => Finish 
-> Project Explorer
-  Right click Baltik --> Properties
-  => Builders: not check CDT Builder => OK
-  => OK
-  => Wait to have 100% at the bottom right corner of the window.
-> Project Explorer
-  Right click Baltik --> Debug As --> Debug configurarions...
-  => Select C/C++ Application
-  => Press the 'New' button to create a configuration of the selected type
-  => Main --> C/C++ Application: $Baltik_ROOT/Baltik
-  => Arguments --> not check Use default working directory
-  => Debugger--> Main options GDB debugger --> replace gdb by /usr/bin/gdb
-  => Apply
-  => Close
-
-Case selection
-==============
-> Run --> Debug configurations
-  => Select C/C++ application Baltik Debug
-  => Arguments: Program arguments: datafile               (for example datafile=Cx)
-  =>            Working directoty: /export/home/login/... (for example /export/home/login/Cx : folder of Cx test case in your home-directories)
-  => Apply
+  Right click TRUST-X.Y.Z --> Debug As/Debug Configurations...
+  => C/C++ Application => New
+  => Main: Name: TRUST-X.Y.Y exec_debug
+  => Main: Project: TRUST-X.Y.Z 
+  => Main: C/C++ Application: ${workspace_loc:/TRUST-X.Y.Z}/../exec/TRUST_mpi
+  => Main: Apply
+  => Arguments: Program arguments: datafile
+  => Arguments: Working directoty: uncheck Use default and select the directory containing the datafile
+  => Arguments: Apply
   => Debug
+> File/Exit
+
+
+###########################
+# Create a BALTIK project #
+###########################
 
 Launching
 =========
-> Run/Debug (F11)         (Wait to have 100% on the bottom right corner of the window)
+> source env_baltik.sh
+> echo $project_directory/build/src/
+
+> /export/home/user/eclipse/eclipse &
+> File/New/Makefile Project with Existing Code
+  => Profect name: MY_BALTIK
+  => Existing Code Location: copy the string matching $project_directory/build/src/
+  => Finish
+  => Wait to have 100% at the bottom right corner of the window  (C/C++ indexer).
+> Project Explorer
+  Right click MY_BALTIK --> Properties
+  => Builders: check "CDT Builder"
+  => C/C++ Build => 
+  => Builder Settings: Build directory: ${workspace_loc:/MY_BALTIK}/../../ => Apply
+  => Behavior: check Build (Incremental build): debug optim (instead of all) => Apply 
+  => Close
+  Right click MY_BALTIK --> Build Project
+
+> Project Explorer
+  Right click MY_BALTIK --> Debug As/Debug Configurations...
+  => C/C++ Application => New
+  => Main: Name: MY_BALTIK exec_debug
+  => Main: Project: MY_BALTIK
+  => Main: C/C++ Application: ${workspace_loc:/MY_BALTIK}/../../baltik
+  => Main: Apply
+  => Arguments: Program arguments: datafile
+  => Arguments: Working directoty: uncheck Use default and select the directory containing the datafile
+  => Arguments: Apply
+  => Debug
 > File/Exit
+
+
+
+###############################
+# Shortcuts useful in sources #
+###############################
+> Project Explorer
+  Double click TRUST-X.Y.Y+Kernel+Framework+Probleme_bas.cpp
+  In cpp file: Right click in method initialize()
+  => F3 Open Declaration
+  => F4 Open Type Hierarchy
+  => Ctrl+Alt+H Open Call Hierarchy
+  => Alt+-> and Alt+<-
 
