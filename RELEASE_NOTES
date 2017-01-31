@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.5_beta : Enhancements, modifications and corrected bugs since version 1.7.4 :
 --------------------------------------------------------------------------------------------------
+31/01/17 (TRUST)  Bug fixed   : modele_turbulence WALE with turbulence_paroi negligeable and Cw=0 is now ok
 31/01/17 (TRUST)  Bug fixed   : Update of the temps_precedent at a resume_last_time without tinit
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.4 : Enhancements, modifications and corrected bugs since version 1.7.3 :

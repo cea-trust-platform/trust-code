@@ -74,28 +74,34 @@ Champ_Fonc& Turbulence_hyd_sous_maille_Wale_VDF::calculer_viscosite_turbulente()
   const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
   double temps = mon_equation->inconnue().temps();
   DoubleTab& visco_turb = la_viscosite_turbulente.valeurs();
-  int nb_elem = zone_VDF.zone().nb_elem();
-  const int nb_elem_tot = zone_VDF.nb_elem_tot();
-
-  OP1.resize(nb_elem_tot);  // OP1 est le premier operateur spatial du modele WALE.
-  OP2.resize(nb_elem_tot);  // OP2 est le deuxieme operateur spatial du modele WALE.
-
-  calculer_OP1_OP2();
-
-  if (visco_turb.size() != nb_elem)
+  if (est_egal(cw,0.))
     {
-      Cerr << "Size error for the array containing the values of the turbulent viscosity." << finl;
-      exit();
+      visco_turb=0.;
     }
-
-  for (int elem=0; elem<nb_elem; elem++)
+  else
     {
-      if (OP1[elem]!=0.) // donc sd2 (et OP2 par voie de consequence) sont differents de zero
-        visco_turb[elem]=cw*cw*l_(elem)*l_(elem)*OP1[elem]/OP2[elem];
-      else
-        visco_turb[elem]=0;
-    }
+      int nb_elem = zone_VDF.zone().nb_elem();
+      const int nb_elem_tot = zone_VDF.nb_elem_tot();
 
+      OP1.resize(nb_elem_tot);  // OP1 est le premier operateur spatial du modele WALE.
+      OP2.resize(nb_elem_tot);  // OP2 est le deuxieme operateur spatial du modele WALE.
+
+      calculer_OP1_OP2();
+
+      if (visco_turb.size() != nb_elem)
+        {
+          Cerr << "Size error for the array containing the values of the turbulent viscosity." << finl;
+          exit();
+        }
+
+      for (int elem=0; elem<nb_elem; elem++)
+        {
+          if (OP1[elem]!=0.) // donc sd2 (et OP2 par voie de consequence) sont differents de zero
+            visco_turb[elem]=cw*cw*l_(elem)*l_(elem)*OP1[elem]/OP2[elem];
+          else
+            visco_turb[elem]=0;
+        }
+    }
 
   la_viscosite_turbulente.changer_temps(temps);
 
