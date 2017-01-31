@@ -218,6 +218,10 @@ public :
   {
     return temps_courant_;
   } ;
+  inline double& set_temps_precedent()
+  {
+    return temps_precedent_;
+  } ;
   inline int& set_nb_pas_dt()
   {
     return nb_pas_dt_;

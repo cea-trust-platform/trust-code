@@ -519,6 +519,7 @@ Entree& Probleme_base::readOn(Entree& is)
                   Cerr<<"tinit was defined in .data file to "<< schema_temps().temps_init()<< ". The value is fixed to "<<last_time<<" accroding to resume_last_time_option" <<finl;
                 }
               schema_temps().set_temps_init()=last_time;
+              schema_temps().set_temps_precedent()=last_time;
               Cerr << "==================================================================================================" << finl;
               Cerr << "In the " << nomfic << " file, we find the last time: " << last_time << " and read the fields." << finl;
               fic->close();
