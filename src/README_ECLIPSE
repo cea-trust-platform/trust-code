@@ -18,15 +18,12 @@ Configuration
 =============
 > cd eclipse
 > Change the eclipse.ini file, by deleting the last 3 lines (MaxPermSize, Xms and Xmx) and adding the following lines:
--Dhelp.lucene.tokenizer=standard
--XX:PermSize=256m
--XX:MaxPermSize=1024m
 -XX:+UseParallelGC
 -Xmn256m
 -Xss2m
+-server
 -Xms512m
 -Xmx2048m
--server
 > cd /export/home/user/
 
 ##########################
@@ -58,7 +55,6 @@ Launching
 > Project Explorer
   Right click TRUST-X.Y.Z --> Debug As/Debug Configurations...
   => C/C++ Application => New
-  => Main: Name: TRUST-X.Y.Y exec_debug
   => Main: Project: TRUST-X.Y.Z 
   => Main: C/C++ Application: ${workspace_loc:/TRUST-X.Y.Z}/../exec/TRUST_mpi
   => Main: Apply
@@ -96,7 +92,6 @@ Launching
 > Project Explorer
   Right click MY_BALTIK --> Debug As/Debug Configurations...
   => C/C++ Application => New
-  => Main: Name: MY_BALTIK exec_debug
   => Main: Project: MY_BALTIK
   => Main: C/C++ Application: ${workspace_loc:/MY_BALTIK}/../../baltik
   => Main: Apply
