@@ -19,6 +19,16 @@
 #  nos equipes support au 04 67 14 14 99 ou par mail svp@cines.fr     #
 #                                                                     #
 #######################################################################
+#######################################################################
+#              Bienvenue au CINES  sur  OCCIGEN2                      #
+#                                                                     #
+#                     Cluster BULLx SCS5                              #
+#                                                                     #
+#                       Red Hat 7                                     #
+#          kernel : 3.10.0-514.el7.x86_64                             #
+#                                                                     #
+#######################################################################
+
 
 ##################################
 # Variables for configure script #
@@ -40,13 +50,13 @@ cb_config_list *:1" > ROMIO_HINTS.env
    echo "export ROMIO_HINTS=\$TRUST_ROOT/env/ROMIO_HINTS.env # ROMIO HINTS" >> $env
    #
    # Load modules
-   # intel 14.0.4.211 15.0.3.187(default) intel/15.6.233 intel/16.0.1 intel/16.3 intel/17.0
-   #intel="intel/15.0.3.187"
+   # intel 15.6.233 16.4.258 17.0
    intel="intel/17.0"
-   # bullxmpi/1.2.8.4 bullxmpi/1.2.8.4-mxm(default) bullxmpi/1.2.9.2 bullxmpi/MPI3.gcc.4.9-beta bullxmpi_gnu/1.2.8.4
-   # intelmpi 5.0.1.035(default) intelmpi/5.0.3.048 intelmpi/5.1.2.150 intelmpi/2017.0.098
-   #module="$intel intelmpi/5.0.3.048"
-   module="$intel intelmpi/2017.0.098"
+   # intelmpi 2017.0.098 5.1.3.258
+   module="$intel intelmpi/2017.0.098" # license is not available now
+   # openmpi 2.0.0 2.0.1
+   module="$intel openmpi/intel/2.0.1" # error mpif-sizeof.h
+   module="openmpi/gnu/2.0.1"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
@@ -56,9 +66,6 @@ cb_config_list *:1" > ROMIO_HINTS.env
    echo "#!/bin/bash
 squeue" > $TRUST_ROOT/bin/qstat
    chmod +x $TRUST_ROOT/bin/qstat
-   # 2016/06/20 - configuration CINES SVP: module load intel intelmpi
-   # ./configure -disable-ccache -add_search=${MPI_ROOT} -c++=g++ -cc=gcc -fc=gfortran
-   #             -disable-med -disable-medcoupling -disable-gnuplot -disable-tcl_tk -disable-valgrind -without-visit -disable-gmsh -without-doc
 }
 
 ##############################
@@ -70,7 +77,8 @@ define_soumission_batch()
    cpu=00:30:00 && [ "$prod" = 1 ] && cpu=24:00:00 # 30 minutes or 1 day
    #ram=60GB # Memory nodes with 64Go (small) or 120Go (large) of RAM
    [ "$bigmem" = 1 ] && ram=120GB && soumission=1
-   ntasks=24    # 24 cores per node
+   project="BDW28" # project="HSW24"
+   ntasks=28       # 28 cores per node for Broadwell (24 for Haswell)
    # Priorite superieure avec test si pas plus de 8 nodes (24 cores)
    if [ "$prod" = 1 ] || [ $NB_PROCS -gt 192 ]
    then

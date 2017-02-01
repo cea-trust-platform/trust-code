@@ -590,7 +590,8 @@ then
 		echo "#SBATCH -t $cpu"					>> $sub_file	# Time in minutes
 		echo "#SBATCH -o myjob.%j.o"				>> $sub_file	# Output log
 		echo "#SBATCH -e myjob.%j.e"				>> $sub_file	# Error log
-		[ "$project" != "" ] && echo "#SBATCH -A $project"	>> $sub_file	# Account
+		#[ "$project" != "" ] && echo "#SBATCH -A $project"	>> $sub_file	# Account
+		[ "$project" != "" ] && echo "#SBATCH --constraint=$project" >> $sub_file	# Account
 		echo "#SBATCH -n $NB_PROCS"				>> $sub_file	# Number of tasks
 		[ "$noeuds" != "" ] && echo "#SBATCH -N $noeuds"        >> $sub_file    # Number of nodes
 		[ "$cpus_per_task" != "" ] && echo "#SBATCH -c $cpus_per_task"	>> $sub_file	# Number of cores per task	
