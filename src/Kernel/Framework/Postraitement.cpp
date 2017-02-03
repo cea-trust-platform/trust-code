@@ -2180,7 +2180,7 @@ const Champ_Generique_base& Postraitement::get_champ_post(const Motcle& nom) con
         }
       ++curseur_liste_champs;
     }
-  Cerr<<nom<<" not found !!! "<< finl;
+  //Cerr<<nom<<" not found !!! "<< finl;
   throw Champs_compris_erreur();
 
   //Pour compilation

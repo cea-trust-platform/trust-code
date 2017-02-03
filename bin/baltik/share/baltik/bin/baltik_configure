@@ -401,7 +401,7 @@ printf "\t@echo \"####################################\"\n"     >> $project_make
 printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check $type  trust \n"               >> $project_makefile
 printf "\n" >> $project_makefile
 
-printf "# help check_trio_$type : Running TRUST test suite in `human_name_from_name $type` mode (IMPORTANT: prefer the use of check_trust_$type because it will disappear)\n" >>$project_makefile
+printf "# obsolete check_trio_$type : Running TRUST test suite in `human_name_from_name $type` mode (IMPORTANT: prefer the use of check_trust_$type because it will disappear)\n" >>$project_makefile
 printf "check_trio_$type : $type\n"                                  >> $project_makefile
 printf "\t@echo \"####################################\"\n"     >> $project_makefile
 printf "\t@echo \"# Running TRUST test suite in `human_name_from_name $type` mode #\"\n"     >> $project_makefile
