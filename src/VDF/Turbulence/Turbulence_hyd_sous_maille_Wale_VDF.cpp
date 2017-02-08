@@ -74,7 +74,7 @@ Champ_Fonc& Turbulence_hyd_sous_maille_Wale_VDF::calculer_viscosite_turbulente()
   const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
   double temps = mon_equation->inconnue().temps();
   DoubleTab& visco_turb = la_viscosite_turbulente.valeurs();
-  if (est_egal(cw,0.))
+  if (est_egal(cw,0.,1.e-15))
     {
       visco_turb=0.;
     }
