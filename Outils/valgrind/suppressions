@@ -4,7 +4,6 @@
    match-leak-kinds: reachable
    fun:calloc
    fun:_dlerror_run
-   fun:dlopen@@GLIBC_2.2.5
 }
 {
    gcc_511
@@ -15,7 +14,26 @@
    fun:call_init.part.0
    fun:_dl_init
    obj:/usr/lib64/ld-2.21.so
-   }
+}
+{
+   gcc_540
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   obj:/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.21
+   fun:call_init.part.0
+   fun:call_init
+   fun:_dl_init
+   obj:/lib/x86_64-linux-gnu/ld-2.23.so
+}
+{
+   gcc_620
+   Memcheck:Free
+   fun:free
+   fun:free_mem
+   fun:__libc_freeres
+   fun:_vgnU_freeres
+}
 {
    hypre_boomerang_mempara
    Memcheck:User

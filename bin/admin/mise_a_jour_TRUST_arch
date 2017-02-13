@@ -674,7 +674,8 @@ do
 	 #############################
 	 # On lance un test Valgrind #
 	 #############################
-	 (
+	 if [ "`liste_machines "\-disable-optionals" | grep ^$HOST_BUILD"\."`" = "" ]
+	 then
             echo "--------------------------------------------------------" 
 	    echo "Test case in valgrind mode at "`date '+%H:%M:%S'`
 	    cd $TRUST_ROOT/Validation/Valgrind
@@ -693,7 +694,7 @@ do
               echo "See $TRUST_ROOT/Validation/Valgrind/testval.log file"
             fi
 	    cd $TRUST_ROOT
-	 )	 
+         fi	 
 	 ################################
 	 # On lance les tests sur Xprepro
 	 ################################

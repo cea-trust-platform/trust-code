@@ -204,6 +204,7 @@ Read pb
 	    } 
 	}
 }
+EcritureLectureSpecial EcrFicPartageBin
 # On doit trouver les resultantes des forces de pression et visqueuses exercees par le fluide sur la frontiere Obstacle positives #
 # On doit trouver le moment des forces de pression et visqueuses exercees par le fluide sur la frontiere Obstacle positifs #
 Calculer_moments dom centre_de_gravite 0.00 0.22
