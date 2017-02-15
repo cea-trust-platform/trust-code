@@ -63,7 +63,7 @@ echo $version $what
 # Encore des variables #
 ########################
 version_visit=`echo $version | $TRUST_Awk '{gsub("_",".",$1);print $1}'`
-export HTTPS="http://portal.nersc.gov/project/visit/releases https://wci.llnl.gov/simulation/computer-codes/visit/executables"
+export HTTPS="http://portal.nersc.gov/project/visit/releases https://wci.llnl.gov/simulation/computer-codes/visit/executables  http://visit.ilight.com/svn/visit/trunk/releases/"
 
 ##############################
 # Script visit-install a jour?
