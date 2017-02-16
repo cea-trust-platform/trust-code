@@ -48,6 +48,22 @@ run_test_mpi()
       err=1
    fi  
 }
+run_test_mpi_par()
+{
+   rm -f test_mpi.log
+   lib=`dirname $mpiCC`
+   # On essaie d'executer en parallele
+   $lib/mpirun -np 2 ./test_mpi 2 1>test_mpi.log 2>&1 &
+   $TRUST_ROOT/bin/KSH/wait_for $! 30
+   if [ ! -s test_mpi.log ]
+   then
+      err=0
+   #elif [ "`grep mpi-abort test_mpi.log`" != "" ]
+   elif [ "`grep coucou test_mpi.log`" = "" ]
+   then
+      err=1
+   fi
+}
 
 ########################################################
 configure_compilateur_ccache()
@@ -1017,6 +1033,27 @@ else
      }
      return 0;
    }" > $rep_test_mpi/test_mpi.cpp
+   echo "#include <mpi.h>
+   #include <iostream>
+   using std::cout;
+   using std::endl;
+   int main(int argc, char** argv)
+   {
+     if (argc>1)
+     {
+       MPI_Init(&argc,&argv);
+       int mytid;
+       MPI_Comm_rank(MPI_COMM_WORLD,&mytid);
+       cout<<\"[PE \"<<mytid<<\"] coucou\"<<endl;
+       // MPI_Abort(MPI_COMM_WORLD,mytid);
+       MPI_Abort(MPI_COMM_WORLD,-1);
+     }
+     else
+     {
+       cout<<\"[PE 0] coucou\"<<endl;
+     }
+     return 0;
+   }" > $rep_test_mpi/test_abort_mpi.cpp
    echo "      program main 
       include 'mpif.h'
       integer ierr
@@ -1077,7 +1114,7 @@ else
 	 echo $mpiCC -o ./test_mpi $rep_test_mpi/test_mpi.cpp
 	 $mpiCC -o ./test_mpi $rep_test_mpi/test_mpi.cpp 1>mpiCC.log 2>&1 
 	 err=$?
-	 [ $err = 0 ] && run_test_mpi 1>mpiCC.log 2>&1 
+	 [ $err = 0 ] && run_test_mpi 1>>mpiCC.log 2>&1 
 	 OK $err
 	 if [ $err = 0 ]
 	 then
@@ -1092,7 +1129,7 @@ else
 	    echo $mpif -o ./test_mpi $rep_test_mpi/test_mpi.f
 	    $mpif -o ./test_mpi $rep_test_mpi/test_mpi.f 1>mpif.log 2>&1 
 	    err=$?
-	    [ $err = 0 ] && run_test_mpi 1>mpif.log 2>&1 
+	    [ $err = 0 ] && run_test_mpi 1>>mpif.log 2>&1 
 	    OK $err
 	 fi
 	 # On definit TRUST_CC et TRUST_cc si on trouve un mpiCC/mpi77 qui fonctionne:
@@ -1142,6 +1179,14 @@ else
 	       [ "$Mpirun" = "" ] && mpi_detecte=0 && echo "mpiexec/mpirun not found for MPI_ROOT=$MPI_ROOT..."	       
 	       # Pb decouvert sur machine is202803 et ioulia : il ne faut pas inclure mpi++.h dans le mpi.h sinon warning qui font des erreurs avec -Wall -Werror:
 	       [ -f `dirname $mpiCC`/mpicxx ] && COMFLAGS=$COMFLAGS" -DMPICH_SKIP_MPICXX"
+               # Test du MPI_Abort en parallel (KO avec openmpi 1.10.3 1.10.4 1.10.5)
+               echo $ECHO_OPTS "# Check `basename $mpiCC` (mpiAbort.log file): "
+               echo $mpiCC -o ./test_mpi $rep_test_mpi/test_abort_mpi.cpp
+               $mpiCC -o ./test_mpi $rep_test_mpi/test_abort_mpi.cpp 1>mpiAbort.log 2>&1
+               err=$?
+               [ $err = 0 ] && run_test_mpi_par 1>>mpiAbort.log 2>&1
+               OK $err
+               [ $err = 1 ] && mpi_detecte=0 && echo "Problem with MPI_ABORT of `mpirun --version | head -n 1`. Upgrade of MPI version."
 	    fi	
 	 fi
       fi
