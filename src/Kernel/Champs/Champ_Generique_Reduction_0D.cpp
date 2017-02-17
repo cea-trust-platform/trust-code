@@ -40,7 +40,25 @@ Sortie& Champ_Generique_Reduction_0D::printOn(Sortie& s ) const
 //cf Champ_Gen_de_Champs_Gen::readOn
 Entree& Champ_Generique_Reduction_0D::readOn(Entree& s )
 {
+  Motcles motcle_compris(11);
+  motcle_compris[0]="min";
+  motcle_compris[1]="max";
+  motcle_compris[2]="norme_L2";
+  motcle_compris[3]="normalized_norm_L2";
+  motcle_compris[4]="moyenne";
+  motcle_compris[5]="somme";
+  motcle_compris[6]="moyenne_ponderee";
+  motcle_compris[7]="somme_ponderee";
+  motcle_compris[8]="moyenne_ponderee_porosite";
+  motcle_compris[9]="somme_ponderee_porosite";
+  motcle_compris[10]="valeur_a_gauche";
   Champ_Gen_de_Champs_Gen::readOn(s);
+  if (motcle_compris.rang(methode_)<0)
+    {
+      Cerr << "Method " << methode_ << " is an unknown option for methode keyword in "<< que_suis_je() << "." << finl;
+      Cerr << "Choose from " << motcle_compris << finl;
+      exit();
+    }
   return s ;
 }
 
@@ -288,6 +306,12 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
   else if (methode_=="norme_L2")
     {
       val_extraite = mp_norme_vect(val_source);
+    }
+  else if (methode_=="normalized_norm_L2")
+    {
+      DoubleVect val_un(val_source);
+      val_un=1.;
+      val_extraite = mp_norme_vect(val_source)/mp_norme_vect(val_un);
     }
   else if (methode_=="moyenne_ponderee" || methode_=="somme_ponderee")
     {
