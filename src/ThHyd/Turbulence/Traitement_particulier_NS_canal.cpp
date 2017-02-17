@@ -177,7 +177,7 @@ Entree& Traitement_particulier_NS_canal::lire(Entree& is)
               {
                 Cerr << motlu << " is not a keyword for Traitement_particulier_NS_canal " << finl;
                 Cerr << "Since the TRUST v1.5, the syntax of Canal option has changed." << finl;
-                Cerr << "Check the 1.5 version (or later) of the user's manual." << finl;
+                Cerr << "Check the reference manual." << finl;
                 exit();
               }
             }

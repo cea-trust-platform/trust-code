@@ -77,7 +77,7 @@ Sortie& Source_Transport_K_Eps_aniso_therm_concen_VDF_Elem::printOn(Sortie& s) c
 inline void error(const Nom& source, const Nom& problem)
 {
   Cerr << "Error ! You can't use the " << source << " source term for the K-Eps equation of the problem: " << problem << finl;
-  Cerr << "Check the user's manual. It is may be another source term Source_Transport_K_Eps_.... which should be used." << finl;
+  Cerr << "Check the reference manual. It is may be another source term Source_Transport_K_Eps_.... which should be used." << finl;
   Process::exit();
 }
 

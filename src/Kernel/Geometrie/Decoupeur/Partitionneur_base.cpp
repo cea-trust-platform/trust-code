@@ -182,7 +182,7 @@ int Partitionneur_base::calculer_graphe_connexions_periodiques(const Zone& zone,
         if (!ok)
           {
             Cerr << "You need to use the Corriger_frontiere_periodique keyword on the periodic boundaries." << finl;
-            Cerr << "See the user manual to use this keyword on your data file." << finl;
+            Cerr << "See the reference manual to use this keyword on your data file." << finl;
             exit();
           }
       }

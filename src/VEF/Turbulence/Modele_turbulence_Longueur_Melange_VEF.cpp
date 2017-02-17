@@ -71,7 +71,7 @@ Entree& Modele_turbulence_Longueur_Melange_VEF::readOn(Entree& is)
     {
       Cerr << " Error while reading the Longueur_Melange turbulence model. " <<finl;
       Cerr << " Case not selected, choose among : canalx tuyauz dmax fichier " << finl;
-      Cerr << " Please refer to the TRUST User manual for a detailed documentation. " << finl;
+      Cerr << " Please refer to the reference manual for a detailed documentation. " << finl;
       exit();
     }
 

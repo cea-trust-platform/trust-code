@@ -160,7 +160,7 @@ void verifie(const Nom& type)
       assert(i==n);
       Cerr << "The keyword " << motcle_obsolete[rang] << " is now obsolete," << finl;
       Cerr << "since the version " << nouvelle_syntaxe[rang] << finl << finl;
-      Cerr << "Look if necessary at the user's manual and change your data file." << finl;
+      Cerr << "Look if necessary at the reference manual and change your data file." << finl;
       Process::exit();
     }
   // Parcours les releases notes pour afficher des infos en relation avec le mot cle type

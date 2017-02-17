@@ -734,7 +734,7 @@ void Champ_front_contact_VEF::remplir_connect_bords()
       Cerr << "have not the same number of faces." << finl;
       Cerr << "Coincidence between meshes may be recovered " << finl;
       Cerr << "by cutting mesh associated to " << nom_pb << finl;
-      Cerr << "thanks to decouper_bord_coincident keyword or HOMARD tool (see Users Manual)." << finl;
+      Cerr << "thanks to decouper_bord_coincident keyword or HOMARD tool (see reference manual)." << finl;
       exit();
     }
 

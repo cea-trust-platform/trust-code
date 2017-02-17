@@ -1447,7 +1447,7 @@ const Champ_base& Probleme_base::get_champ(const Motcle& un_nom) const
   Cerr<<"please remove the localisation elem or som that you may have specified."<<finl;
   Cerr<<"2) It you have used "<<un_nom<<" in Definition_champs, please use 'sources_reference { "<<un_nom<<" }'"<<finl;
   Cerr<<"instead of 'source refchamp { pb_champ "<<le_nom()<<" "<<un_nom<<" }'"<<finl;
-  Cerr<<"3) Check User's manual." << finl;
+  Cerr<<"3) Check reference manual." << finl;
   Cerr<<"4) Contact TRUST support." << finl;
   exit();
 

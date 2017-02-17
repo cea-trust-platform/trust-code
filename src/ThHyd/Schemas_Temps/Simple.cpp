@@ -324,7 +324,7 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
       if (!converge)
         {
           Cout<<eqn.que_suis_je()<<" is not converged at the implicit iteration "<<nb_iter<<" ( ||uk-uk-1|| = "<<dudt_norme<<" > implicit threshold "<<seuil_convg<<" )"<<finl;
-          if (nb_iter>=10) Cout << "Consider lowering facsec_max value. Look at the User's manual for advice to set facsec_max value according to the problem type." << finl;
+          if (nb_iter>=10) Cout << "Consider lowering facsec_max value. Look at the reference manual for advice to set facsec_max value according to the problem type." << finl;
         }
       else
         Cout<<eqn.que_suis_je()<<" is converged at the implicit iteration "<<nb_iter<<" ( ||uk-uk-1|| = "<<dudt_norme<<" < implicit threshold "<<seuil_convg<<" )"<<finl;

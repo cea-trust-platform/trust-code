@@ -205,7 +205,6 @@ Parametre_implicite& Simpler_Base::get_and_set_parametre_implicite(Equation_base
           Cerr << finl << "Error!" << finl;
           Cerr << "seuil_convergence_implicite option should be defined in your time scheme." << finl;
           Cerr << "It is a mandatory option for a calculation with coupled problems." << finl;
-          Cerr << "See User's manual for recommended values." << finl;
           exit();
         }
     }

@@ -302,7 +302,7 @@ void Solv_Petsc::create_solver(Entree& entree)
         Cerr << les_solveurs << finl;
         Cerr << "You can try to access directly to Petsc solvers with the command line:" << finl;
         Cerr << "PETSC CLI { -ksp_type solver_name -pc_type preconditioning_name -ksp_atol threshold -ksp_monitor }" << finl;
-        Cerr << "See the user manual for all Petsc options." << finl;
+        Cerr << "See the reference manual for all Petsc options." << finl;
         Process::exit();
       }
     }
@@ -846,7 +846,7 @@ void Solv_Petsc::create_solver(Entree& entree)
                 Cerr << pc << " : preconditioner not officially recognized by TRUST among those possible for the moment:" << finl;
                 Cerr << les_precond << finl;
                 Cerr << "You can try to access directly to Petsc preconditioners with the command line." << finl;
-                Cerr << "See the user manual of Petsc to do this." << finl;
+                Cerr << "See the reference manual of Petsc to do this." << finl;
                 Process::exit();
               }
             }
