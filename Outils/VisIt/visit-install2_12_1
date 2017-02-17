@@ -11,8 +11,8 @@
 #    visit-install    [-c anag | anl | arl | asu | awe | clemson | cscs |"
 #                         eth_zurich | llnl_open | llnl_open_rz |"
 #                         llnl_open_cz | llnl_closed | lsu | ncar |"
-#                         nersc | nics | ornl | princeton | sandia |"
-#                         sandia_closed | tacc | umich | utah]"
+#                         nersc | nics | ohio | ornl | princeton |"
+#                         sandia | sandia_closed | tacc | umich | utah]"
 #                      [-g group] [-b bank] [-gw] [-l] [-dmg] [-test]"
 #                      [-beta | -private] version platform directory"
 #
@@ -380,6 +380,16 @@
 #    script is in the directory $distributiondir/$version at that point
 #    and $distributiondir is not an absolute path.
 #
+#    Eric Brugger, Wed Jan 11 14:45:37 PST 2017
+#    I added a host profile for syrah.
+#
+#    Eric Brugger, Fri Oct 29 09:40:23 PDT 2010
+#    I deleted the host profile for aztec and added host profiles for
+#    borax and quartz.
+#
+#    Eric Brugger, Fri Jan 13 09:41:59 PST 2017
+#    I deleted the host profile for sierra.
+#
 #-----------------------------------------------------------------------
 
 Compress=COMPRESS
@@ -453,8 +463,8 @@ if [ "$#" != "3" ]; then
    echo "Usage: visit-install [-c anag | anl | arl | asu | awe | clemson | cscs |"
    echo "                         eth_zurich | llnl_open | llnl_open_rz |"
    echo "                         llnl_open_cz | llnl_closed | lsu | ncar |"
-   echo "                         nersc | nics | ornl | princeton | sandia |"
-   echo "                         sandia_closed | tacc | umich | utah]"
+   echo "                         nersc | nics | ohio | ornl | princeton | "
+   echo "                         sandia | sandia_closed | tacc | umich | utah]"
    echo "                     [-g group] [-b bank] [-gw] [-l] [-dmg] [-test]"
    echo "                     [-beta | -private] version platform directory"
    echo ""
@@ -699,6 +709,14 @@ if [ "$test" = "true" ]; then
        echo "failed"
        exit 1
     fi
+    echo "Testing ohio configuration..."
+    rm -rf $dir
+    $0 -c ohio $version $platform $dir > /dev/null 2>&1
+    files=`ls $dir/$version/.visit/hosts/host_ohio*`
+    if [ "$files" == "" ]; then
+       echo "failed"
+       exit 1
+    fi
     echo "Testing ornl configuration..."
     rm -rf $dir
     $0 -c ornl $version $platform $dir > /dev/null 2>&1
@@ -780,16 +798,17 @@ while [ "$config" = "prompt" ]; do
    echo "   12) NCAR network"
    echo "   13) NERSC network"
    echo "   14) NICS at University of Tennessee at Knoxville"
-   echo "   15) ORNL network"
-   echo "   16) Princeton network"
-   echo "   17) Sandia network"
-   echo "   18) Sandia closed network"
-   echo "   19) Swiss National Supercomputing Center (CSCS) network"
-   echo "   20) TACC network"
-   echo "   21) U of Michigan Center for Advanced Computing network"
-   echo "   22) U of Utah Center for High Performance Computing network"
+   echo "   15) Ohio Supercomputer Center (OSC) network"
+   echo "   16) ORNL network"
+   echo "   17) Princeton network"
+   echo "   18) Sandia network"
+   echo "   19) Sandia closed network"
+   echo "   20) Swiss National Supercomputing Center (CSCS) network"
+   echo "   21) TACC network"
+   echo "   22) U of Michigan Advanced Research Computing (ARC-TS) network"
+   echo "   23) U of Utah Center for High Performance Computing (CHPC) network"
    echo ""
-   echo "Enter (1-22):"
+   echo "Enter (1-23):"
 
    read config
    case "$config" in
@@ -836,27 +855,30 @@ while [ "$config" = "prompt" ]; do
          config=nics
          ;;
       15)
-         config=ornl
+         config=ohio
          ;;
       16)
-         config=princeton
+         config=ornl
          ;;
       17)
-         config=sandia
+         config=princeton
          ;;
       18)
-         config=sandia_closed
+         config=sandia
          ;;
       19)
-         config=cscs
+         config=sandia_closed
          ;;
       20)
-         config=tacc
+         config=cscs
          ;;
       21)
-         config=umich
+         config=tacc
          ;;
       22)
+         config=umich
+         ;;
+      23)
          config=utah
          ;;
       *)
@@ -898,6 +920,8 @@ case "$config" in
       ;;
    nics)
       ;; 
+   ohio)
+      ;;
    ornl)
       ;;
    princeton)
@@ -917,8 +941,8 @@ case "$config" in
    *)
       echo "Illegal configuration option, choices are none, anag, anl,"
       echo "arl, asu, awe, clemson, cscs, eth_zurich, llnl_open, llnl_open_rz,"
-      echo "llnl_open_cz, llnl_closed, lsu, ncar, nersc, nics, ornl, princeton,"
-      echo "sandia, sandia_closed, tacc, umich, utah"
+      echo "llnl_open_cz, llnl_closed, lsu, ncar, nersc, nics, ohio, ornl,"
+      echo "princeton, sandia, sandia_closed, tacc, umich, utah"
       exit 4
       ;;
 esac
@@ -990,7 +1014,7 @@ cp $distributiondir/bin/mkgrdbl             "$dir"/bin/mkgrdbl+
 
 if [ -e "$dir"/$version ]; then
    mv "$dir"/$version "$dir"/$version+
-   ln -sf $version+ "$dir"/$version
+   ln -s $version+ "$dir"/$version
 fi
 [ ! -e "$dir"/$version+ ] &&             mkdir "$dir"/$version+
 
@@ -1062,12 +1086,12 @@ elif [ "$config" = "llnl_open_rz" ]; then
    cp "$dir"/$version+/$platformDir/resources/hosts/llnl/config                 "$dir"/$version+/.visit/
 elif [ "$config" = "llnl_open_cz" ]; then
    # Copy the files explicitly to avoid the rzgw hosts. We're most likely installing on a cz machine.
-   cp "$dir"/$version+/$platformDir/resources/hosts/llnl/host_llnl_aztec.xml    "$dir"/$version+/.visit/hosts/
+   cp "$dir"/$version+/$platformDir/resources/hosts/llnl/host_llnl_borax.xml    "$dir"/$version+/.visit/hosts/
    cp "$dir"/$version+/$platformDir/resources/hosts/llnl/host_llnl_cab.xml      "$dir"/$version+/.visit/hosts/
-   cp "$dir"/$version+/$platformDir/resources/hosts/llnl/host_llnl_hera.xml     "$dir"/$version+/.visit/hosts/
+   cp "$dir"/$version+/$platformDir/resources/hosts/llnl/host_llnl_quartz.xml   "$dir"/$version+/.visit/hosts/
    cp "$dir"/$version+/$platformDir/resources/hosts/llnl/host_llnl_oslic.xml    "$dir"/$version+/.visit/hosts/
-   cp "$dir"/$version+/$platformDir/resources/hosts/llnl/host_llnl_sierra.xml   "$dir"/$version+/.visit/hosts/
-   cp "$dir"/$version+/$platformDir/resources/hosts/llnl/host_llnl_surface.xml     "$dir"/$version+/.visit/hosts/
+   cp "$dir"/$version+/$platformDir/resources/hosts/llnl/host_llnl_surface.xml  "$dir"/$version+/.visit/hosts/
+   cp "$dir"/$version+/$platformDir/resources/hosts/llnl/host_llnl_syrah.xml    "$dir"/$version+/.visit/hosts/
    cp "$dir"/$version+/$platformDir/resources/hosts/llnl/host_llnl_vulcan.xml   "$dir"/$version+/.visit/hosts/
    cp "$dir"/$version+/$platformDir/resources/hosts/llnl/host_slac_red.xml      "$dir"/$version+/.visit/hosts/
 
@@ -1087,6 +1111,9 @@ elif [ "$config" = "nersc" ]; then
    cp "$dir"/$version+/$platformDir/resources/hosts/$config/*.xml               "$dir"/$version+/.visit/hosts/
    cp "$dir"/$version+/$platformDir/resources/hosts/$config/customlauncher      "$dir"/$version+/bin/
 elif [ "$config" = "nics" ]; then
+   cp "$dir"/$version+/$platformDir/resources/hosts/$config/*.xml               "$dir"/$version+/.visit/hosts/
+   cp "$dir"/$version+/$platformDir/resources/hosts/$config/customlauncher      "$dir"/$version+/bin/
+elif [ "$config" = "ohio" ]; then
    cp "$dir"/$version+/$platformDir/resources/hosts/$config/*.xml               "$dir"/$version+/.visit/hosts/
    cp "$dir"/$version+/$platformDir/resources/hosts/$config/customlauncher      "$dir"/$version+/bin/
 elif [ "$config" = "ornl" ]; then
@@ -1109,6 +1136,7 @@ elif [ "$config" = "umich" ]; then
    cp "$dir"/$version+/$platformDir/resources/hosts/$config/*.xml               "$dir"/$version+/.visit/hosts/
 elif [ "$config" = "utah" ]; then
    cp "$dir"/$version+/$platformDir/resources/hosts/$config/*.xml               "$dir"/$version+/.visit/hosts/
+   cp "$dir"/$version+/$platformDir/resources/hosts/$config/customlauncher      "$dir"/$version+/bin/
 fi
 
 # Do the bank fixup
@@ -1228,7 +1256,7 @@ programs="curv3dprep makemili mpeg2encode surfcomp text2polys time_annotation vi
 cd "$dir"/bin
 for prog in $programs; do
     rm -f $prog
-    ln -sf frontendlauncher $prog
+    ln -s frontendlauncher $prog
 done
 
 #
@@ -1263,11 +1291,11 @@ mv bin/mkgrdbl+ bin/mkgrdbl
 if [ "$beta" = "true" ]; then
    [ -e $version+ ] &&           mv $version+ $version
    [ -e beta ] &&                rm -f beta
-   ln -sf $version beta
+   ln -s $version beta
 elif [ "$private" = "false" ]; then
    [ -e $version+ ] &&           mv $version+ $version
    [ -e current ] &&             rm -f current
-   ln -sf $version current
+   ln -s $version current
 fi
 
 #

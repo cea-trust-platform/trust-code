@@ -5,16 +5,17 @@ clean()
    # Nettoyage des paquets
    echo $ECHO_OPTS "Cleaning...\c"
    # 
-   for paquet in `\ls *.tar.gz *.tgz *.zip 2>/dev/null `
+   for paquet in `\ls *.tar.gz *.tgz *.zip *.tar.bz2 2>/dev/null `
    do
       [ -d ${paquet%.tar.gz} ] && rm -r -f ${paquet%.tar.gz}
       [ -d ${paquet%.tgz} ]    && rm -r -f ${paquet%.tgz}
       [ -d ${paquet%.zip} ]    && rm -r -f ${paquet%.zip}
+      [ -d ${paquet%.tar.bz2} ]    && rm -r -f ${paquet%.tar.bz2}
       rm -f $paquet
    done
    rm -r -f VTK-?.?.? VTK-*-build visit visit?.?.? visit-vtk-?.? visit-vtk-*-build Mesa-?.? Mesa-?.*.? qt-everywhere-opensource-src-?.?.?  
    rm -f build_visit2_5_2* build_visit*help
-   rm -f build_visit*"_log" *.cmake *.conf tmp* *.py
+   rm -f build_visit*"_log" *.cmake *.conf tmp* *.py releases
    echo "OK"
 }
 
@@ -186,12 +187,11 @@ fi
 # To avoid an obscure recursive cmake shit prior to cmake 3.0 in VTK when compiler changes,
 # we clean VTK and IceT builds
 rm -r -f VTK*-build IceT-?-?-?
-if [ -d VTK-6.1.0 ]
-then
-echo patch VTK gcc6 
-cp VTK-6.1.0_patch_gcc6/CMake/* VTK-6.1.0/CMake
-
-fi
+#if [ -d VTK-6.1.0 ]
+#then
+#echo patch VTK gcc6 
+#cp VTK-6.1.0_patch_gcc6/CMake/* VTK-6.1.0/CMake
+#fi
 
 ############################################
 # Modification eventuelle du script de build

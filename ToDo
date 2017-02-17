@@ -4,7 +4,6 @@ Version	Qui				Tache
 1.7.5   marthe.roux@cea.fr      3 liens a ajouter sur site web triou => demander a CC
 1.7.5   adrien.bruneton@cea.fr  externalpackages: MEDCoupling 7.8.0 upgraded to 8.2.0
 1.7.5   stephane.veys@cea.fr    externalpackages: Petsc 3.6.3 upgrated to 3.7.5 (Analyser le fichier de sortie datafile_petsc.TU - signification de count)
-1.7.5   gauthier.fauchet@cea.fr externalpackages: VisIt 2.10.0 upgrated to 2.12.1
 1.7.5   gauthier.fauchet@cea.fr organiser reunion pour generation documentation TRUST et baltiks evc Stephane et Adela
 1.7.5   triou@cea.fr            retirer de la doc ref manual les mots cles non actives (ex:  k_epsilon_bas_reynolds de K_Eps_non_std)
 1.7.5   triou@cea.fr            Nettoyage variable env ... exemple $DEBUG ... si utilise passer en TRUST_DEBUG sinon supprimer

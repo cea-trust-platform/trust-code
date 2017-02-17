@@ -28,10 +28,14 @@ VisIt,VTK-6.1.0.tar.gz,,SV,BSD,http://www.vtk.org/,http://www.vtk.org/files/rele
 VisIt,pyparsing-1.5.2.tar.gz,,SV,"MIT License",https://pypi.python.org/pypi/pyparsing,https://pypi.python.org/packages/source/p/pyparsing/pyparsing-1.5.2.tar.gz#md5=13aed3cb21a427f8aeb0fe7ca472ba42,
 VisIt,MesaLib-7.10.2.tar.gz,,SV,"MIT license",http://www.mesa3d.org/,ftp://ftp.freedesktop.org/pub/mesa/older-versions/7.x/7.10.2/MesaLib-7.10.2.tar.gz,"pour la licence voir : http://www.mesa3d.org/license.html"
 VisIt,IceT-1-0-0.tar.gz,,SV,BSD,http://icet.sandia.gov/index.html,http://icet.sandia.gov/downloads/IceT-1-0-0.tar.gz,
-VisIt,visit2.10.0.tar.gz,outil,SV,BSD,https://wci.llnl.gov/simulation/computer-codes/visit/,http://visit.ilight.com/svn/visit/trunk/releases/2.10.0/visit2.10.0.tar.gz,
+VisIt,visit2.12.1.tar.gz,outil,SV,BSD,https://wci.llnl.gov/simulation/computer-codes/visit/,http://visit.ilight.com/svn/visit/trunk/releases/2.12.1/visit2.12.1.tar.gz,
 VisIt,cmake-3.0.2.tar.gz,,GF,BSD,http://www.cmake.org/,http://www.cmake.org/files/v3.0/cmake-3.0.2.tar.gz,
 VisIt,qt-everywhere-opensource-src-4.8.3.tar.gz,,," GPL Version 3  LGPL 2.1",http://www.qt.io/,https://download.qt.io/archive/qt/4.8/4.8.3/qt-everywhere-opensource-src-4.8.3.tar.gz,"C'est quoi la page qu'on veut ? qt.io? qt ?"
-VisIt,Imaging-1.1.6.tar.gz,,SV,"voir remarque",http://www.pythonware.com/products/pil/,http://effbot.org/downloads/Imaging-1.1.6.tar.gz,"pour la licence voir http://www.pythonware.com/products/pil/license.htm (je ne sais pas de quel type de licence il s'agit)"
+VisIt,Imaging-1.1.7.tar.gz,,SV,"voir remarque",http://www.pythonware.com/products/pil/,http://effbot.org/downloads/Imaging-1.1.7.tar.gz,"pour la licence voir http://www.pythonware.com/products/pil/license.htm (je ne sais pas de quel type de licence il s'agit)"
+VisIt,Python-2.7.11.tgz,,GF,GPL,https://www.python.org/,https://www.python.org/ftp/python/2.7.11/Python-2.7.11.tgz,
+VisIt,numpy-1.11.2.tar.gz,,GF,LGPL,http://sourceforge.net/projects/numpy/files/NumPy/1.11.2,http://sourceforge.net/projects/numpy/files/NumPy/1.11.2/numpy-1.11.2.tar.gz,
+VisIt,qwt-6.1.2.tar.bz2,,GF,"?","?",http://visit.ilight.com/svn/visit/tags/2.11.0/third_party/qwt-6.1.2.tar.bz2,
+VisIt,setuptools-28.0.0.tar.gz,,GF,"?","?",https://pypi.python.org/packages/f7/94/eee867605a99ac113c4108534ad7c292ed48bf1d06dfe7b63daa51e49987/setuptools-28.0.0.tar.gz
 VisIt,requests-2.5.1.tar.gz,,GF,"?","?",http://visit.ilight.com/svn/visit/tags/2.9.1/third_party/requests-2.5.1.tar.gz,
 VisIt,seedme-python-client-v1.1.0.zip,,GF,"?","?",http://visit.ilight.com/svn/visit/tags/2.10.0/third_party/seedme-python-client-v1.1.0.zip,
 lapack,lapack-3.4.1.tgz,,SV,BSD,http://www.netlib.org/lapack/,http://www.netlib.org/lapack/lapack-3.4.1.tgz,
