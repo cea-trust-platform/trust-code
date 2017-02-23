@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.7.5_beta : Changes since version 1.7.4 :
 -------------------------------------------------------------
+22/02/17 (TRUST)  New List with Motcle
 22/02/17 (TRUST)  Bug fixed on output reynolds_maille field with mu variable
 16/02/17 (Tools)  OpenMPI 2.0.2 is the lastest downloaded version tested
 -------------------------------------------------------------

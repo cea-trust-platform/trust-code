@@ -28,6 +28,7 @@
 #include <Synonyme_info.h>
 #include <Param.h>
 #include <communications.h>
+#include <List_Motcle.h>
 
 Implemente_instanciable(Champ_Generique_Reduction_0D,"Reduction_0D",Champ_Gen_de_Champs_Gen);
 Add_synonym(Champ_Generique_Reduction_0D,"Champ_Post_Reduction_0D");
@@ -40,23 +41,23 @@ Sortie& Champ_Generique_Reduction_0D::printOn(Sortie& s ) const
 //cf Champ_Gen_de_Champs_Gen::readOn
 Entree& Champ_Generique_Reduction_0D::readOn(Entree& s )
 {
-  Motcles motcle_compris(11);
-  motcle_compris[0]="min";
-  motcle_compris[1]="max";
-  motcle_compris[2]="norme_L2";
-  motcle_compris[3]="normalized_norm_L2";
-  motcle_compris[4]="moyenne";
-  motcle_compris[5]="somme";
-  motcle_compris[6]="moyenne_ponderee";
-  motcle_compris[7]="somme_ponderee";
-  motcle_compris[8]="moyenne_ponderee_porosite";
-  motcle_compris[9]="somme_ponderee_porosite";
-  motcle_compris[10]="valeur_a_gauche";
+  LIST(Motcle) mot_compris;
+  mot_compris.add("min");
+  mot_compris.add("max");
+  mot_compris.add("norme_L2");
+  mot_compris.add("normalized_norm_L2");
+  mot_compris.add("moyenne");
+  mot_compris.add("somme");
+  mot_compris.add("moyenne_ponderee");
+  mot_compris.add("somme_ponderee");
+  mot_compris.add("moyenne_ponderee_porosite");
+  mot_compris.add("somme_ponderee_porosite");
+  mot_compris.add("valeur_a_gauche");
   Champ_Gen_de_Champs_Gen::readOn(s);
-  if (motcle_compris.rang(methode_)<0)
+  if (mot_compris.rang(methode_)<0)
     {
       Cerr << "Method " << methode_ << " is an unknown option for methode keyword in "<< que_suis_je() << "." << finl;
-      Cerr << "Choose from " << motcle_compris << finl;
+      Cerr << "Choose from " << mot_compris << finl;
       exit();
     }
   return s ;
