@@ -59,6 +59,7 @@ inline double valeur(const DoubleTab& champ, const int& face, const int& compo, 
     {
       int elem0 = la_zone_VDF.face_voisins(face,0);
       int elem1 = la_zone_VDF.face_voisins(face,1);
+      if (elem0<0) elem0 = elem1; // face frontiere
       if (elem1<0) elem1 = elem0; // face frontiere
       if (champ.nb_dim()==1)
         return 0.5*(champ(elem0)+champ(elem1));

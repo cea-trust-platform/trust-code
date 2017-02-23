@@ -197,6 +197,7 @@ Read pb
                         viscosite_dynamique  elem
                         pression             elem
                         viscosite_turbulente elem 
+                        reynolds_maille      som
                 }
         }
 }
