@@ -169,6 +169,10 @@ then
             # No 32bits version...
             ARCH=linux-x86_64-rhel6
 	    #ARCH=linux-x86_64-ubuntu11
+	 elif [ $version = 2_12_1 ]
+	 then
+            ARCH=linux-x86_64-rhel7
+            #ARCH=linux-x86_64-ubuntu14
 	 else
             echo "No ARCH defined yet for $version."
 	    exit -1
@@ -201,14 +205,14 @@ then
    if [ "$TRUST_DOWNLOAD_VISIT" != 1 ]
    then
        # sometimes path to libz is verry strange !!!
-	file=$TRUST_ROOT/exec/VisIt/current/linux-x86_64/include/VisItLibraryDependencies.cmake
-	res=`grep libz  $file |  awk -F\; '{for (i=1;i<=NF;i++) { printf($i"\n")}}'  | grep libz | sort -u | grep visit/zlib`
-	if [ "$res" != "" ] 
-	then
-		cp $file $file.sa
-		echo patching $file for libz
-		sed "s?$res??g" $file -i
-	fi
+	#file=$TRUST_ROOT/exec/VisIt/current/linux-x86_64/include/VisItLibraryDependencies.cmake
+	#res=`grep libz  $file |  awk -F\; '{for (i=1;i<=NF;i++) { printf($i"\n")}}'  | grep libz | sort -u | grep visit/zlib`
+	#if [ "$res" != "" ] 
+	#then
+	#	cp $file $file.sa
+	#	echo patching $file for libz
+	#	sed "s?$res??g" $file -i
+	#fi
       # Add path to use VisIt cmake
       #export PATH=$TRUST_ROOT/Outils/VisIt/src/cmake-3.0.2/bin:$PATH
       for plugin in `ls plugins/*/build_plugin 2>/dev/null`
