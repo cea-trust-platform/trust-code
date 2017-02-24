@@ -5,7 +5,7 @@
 
 #include <vector>
 #include "LataFilter.h"
-namespace ParaMEDMEM {
+namespace MEDCoupling {
 class MEDCouplingMesh;
 class DataArray;
 class  MEDCouplingFieldDouble;
@@ -30,12 +30,12 @@ class LataLoader
     const char    *GetType(void)   { return "lata"; };
     void           FreeUpResources(void); 
 
-    ParaMEDMEM::MEDCouplingMesh     *GetMesh(const char *varname,int timestate, int block=-1);
-    //ParaMEDMEM::DataArray  *GetVar(int, int, const char *);
-    ParaMEDMEM::DataArray  *GetVectorVar(int, int, const char *);
+    MEDCoupling::MEDCouplingMesh     *GetMesh(const char *varname,int timestate, int block=-1);
+    //MEDCoupling::DataArray  *GetVar(int, int, const char *);
+    MEDCoupling::DataArray  *GetVectorVar(int, int, const char *);
     void GetTimes(std::vector<double>& times);
     inline std::vector<double> getTimes() { std::vector<double> a; GetTimes(a);return a; };
-    ParaMEDMEM::MEDCouplingFieldDouble*  GetFieldDouble(const char *varname,int timestate, int block=-1);
+    MEDCoupling::MEDCouplingFieldDouble*  GetFieldDouble(const char *varname,int timestate, int block=-1);
     std::vector<std::string> GetMeshNames();
     
     std::vector<std::string> GetFieldNames();

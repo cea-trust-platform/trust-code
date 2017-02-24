@@ -16,7 +16,7 @@
 #include <LataJournal.h>
 
 
-using namespace ParaMEDMEM;
+using namespace MEDCoupling;
 
 
 // ****************************************************************************
@@ -844,7 +844,7 @@ MEDCouplingFieldDouble*  LataLoader::GetFieldDouble(const char *varname,int time
  
   ret->setName(varname);
   ret->setTime(time,timestate,-1);
-  ret->checkCoherency();
+  ret->checkConsistencyLight();
   return ret;
 }
 
