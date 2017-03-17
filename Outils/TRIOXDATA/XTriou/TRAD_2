@@ -137,7 +137,7 @@ refchamp champ_generique_base refchamp -1 Field of prolem
   attr pb_champ deuxmots pb_champ 0 { Pb_champ nom_pb nom_champ } : nom_pb is the problem name and nom_champ is the selected field name.
   attr nom_source chaine nom_source 1 The alias name for the field
 reduction_0d champ_post_de_champs_post reduction_0d -1 To calculate the min, max, or mean value of a field.
-  attr methode chaine(into=["min","max","moyenne","somme","moyenne_ponderee","somme_ponderee","norme_l2"]) methode 0 name of the reduction method (min, max, somme for the sum, somme_ponderee for a weighted sum (integral), norme_L2 for the L2 norm, moyenne for a mean and moyenne_ponderee for a mean ponderated by integration volumes, e.g: cell volumes for temperature or pressure in VDF, volumes around faces for velocity and temperature in VEF)
+  attr methode chaine(into=["min","max","moyenne","somme","moyenne_ponderee","somme_ponderee","norme_l2","normalized_norm_l2"]) methode 0 name of the reduction method (min, max, somme for the sum, somme_ponderee for a weighted sum (integral), norme_L2 for the L2 norm, normalized_norm_L2 for the L2 norm normalized, moyenne for a mean and moyenne_ponderee for a mean ponderated by integration volumes, e.g: cell volumes for temperature or pressure in VDF, volumes around faces for velocity and temperature in VEF)
 champ_post_operateur_base champ_post_de_champs_post champ_post_operateur_base -1 not_set
 gradient champ_post_operateur_base gradient -1 To calculate gradient of a given field.
 divergence champ_post_operateur_base divergence -1 To calculate divergency of a given field.

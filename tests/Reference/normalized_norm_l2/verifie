@@ -1,0 +1,13 @@
+#!/bin/bash
+# Check that normalized_norm_l2 is equal to heat 1:
+value=1.00000000e+00
+err=0
+
+jdd=`pwd`
+jdd=`basename $jdd`
+[ -f PAR_$jdd.dt_ev ] && jdd=PAR_$jdd
+
+norm=`tail -1 $jdd"_NORME_L2_1.son"  | $TRUST_Awk '{print $NF}'`
+[ $norm != $value ] && echo $ECHO_OPTS "Error ($1!=$2) when checking normalized_norm_l2." && err=1
+
+exit $err
