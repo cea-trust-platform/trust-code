@@ -1,0 +1,211 @@
+# Egalite des flux sur paroi_contact inclinee #
+# PARALLEL OK #
+dimension 3
+
+
+pb_conduction pb2
+Pb_thermohydraulique pb1
+
+Domaine dom_solide
+Domaine dom_fluide
+
+
+# BEGIN MESH #
+Read_unsupported_ASCII_file_from_ICEM dom_fluide trio_f_FLU_geo.asc
+Read_unsupported_ASCII_file_from_ICEM dom_solide trio_s_SOL_geo.asc
+VerifierCoin dom_fluide { }
+
+modif_bord_to_raccord dom_fluide cont
+modif_bord_to_raccord dom_solide cont
+
+Rotation dom_solide z 0 0 26.56505118
+Rotation dom_fluide z 0 0 26.56505118
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom_solide
+{
+        Partition_tool metis { Nb_parts 2 }
+        Larg_joint 1
+        zones_name DOM1
+}
+Partition dom_fluide
+{
+        Partition_tool metis { Nb_parts 2 }
+        Larg_joint 2
+        zones_name DOM2
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM1.Zones dom_solide
+Scatter DOM2.Zones dom_fluide
+END SCATTER #
+
+
+# ***************** DISCRETISATION ***************** #
+
+VEFPreP1B dis
+
+Schema_euler_explicite sch
+
+Read sch
+{
+        facsec 1
+        dt_min 1e-8
+        dt_max 1e4
+        dt_impr 1e-7
+        dt_sauv 100
+        seuil_statio 1.e-8
+	precision_impr 12
+        nb_pas_dt_max 3
+}
+
+
+# ***************** MEDIUM ***************** #
+
+Fluide_incompressible eau
+Read eau
+{
+        mu  Champ_Uniforme 1 7.19e-4
+        rho Champ_Uniforme 1 992.06      # http://www.econologie.com/masse-volumique-eau-temperature/ #
+        lambda champ_uniforme 1 0.62      # http://www.bfe.admin.ch/php/modules/enet/streamfile.php?file=000000006827.pdf #
+        cp champ_uniforme 1 4206         # https://www.thermexcel.com/french/tables/eau_atm.htm #
+        beta_th champ_uniforme 1 3.57e-4  # http://public.iutenligne.net/thermodynamique/courtin/chaleur_et_thermometrie/co/Chaleur_42.html #
+}
+
+Solide ss304
+Read ss304
+{
+        rho Uniform_Field 1 7800        # http://www.cvm.qc.ca/pnoel/Cours%20A33/Cours%201/Tableau%201.pdf #
+        lambda Champ_Uniforme 1 15.5    # donnees de l'article #
+        Cp Champ_Uniforme 1 510         # http://www.azom.com/properties.aspx?ArticleID=965 #
+}
+
+
+# ***************** GRAVITE ET ASSOCIATIONS ***************** #
+
+Champ_uniforme gravite
+Read gravite 3 0 0 -9.81
+
+Associate ss304 gravite
+Associate eau gravite
+
+Associate pb2 dom_solide
+Associate pb2 ss304
+
+Associate pb1 dom_fluide
+Associate pb1 eau
+
+Probleme_Couple pb
+Associate pb pb1
+Associate pb pb2
+Associate pb sch
+Discretize pb dis
+
+
+# ***************** PROBLEME 1 - NAVIER-STOKES ***************** #
+
+Read pb1
+{
+        Navier_stokes_standard
+        {
+                solveur_pression petsc cholesky { }
+		
+		convection { amont }
+                diffusion {  }
+		
+                conditions_initiales
+                {
+                        vitesse champ_uniforme 3 0 0 1.5
+                }
+                boundary_conditions
+                {
+                        F-IN  frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 3 0 0 1.5
+			F-OUT frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.                      
+			F-1   paroi_fixe
+			F-2   paroi_fixe
+                        cont  paroi_fixe
+                }
+
+        }
+        Convection_Diffusion_Temperature
+        {
+	        Convection { amont }
+                Diffusion  { }
+                
+                Conditions_initiales
+                        {
+                        temperature champ_uniforme 1 270.2
+                        }
+			
+                Conditions_limites
+                {
+                        F-IN  frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 270.2
+			F-OUT frontiere_ouverte T_ext Champ_front_Uniforme 1 270.2 
+			F-1   paroi_adiabatique
+			F-2   paroi_adiabatique
+                        cont  paroi_contact pb2 cont
+                }
+                
+        }
+        Post_processing
+        {
+                Format lml
+                Probes
+                {
+                        sonde_vitesse vitesse     periode 1.e-6 points 1 0.01690 -0.005 0
+			sonde_tempera temperature periode 1.e-6 points 1 0.01690 -0.005 0
+
+                }
+                Fields dt_post 1.0
+                {
+                        pression som
+                        vitesse som
+                        temperature som
+                }
+        }
+}
+
+
+# ***************** PROBLEME 2 - CONDUCTION ***************** #
+
+Read pb2
+{
+        Conduction
+        {
+                diffusion {  }
+                initial_conditions
+                {
+                        temperature Champ_Uniforme 1 308.15
+                }
+                boundary_conditions
+                {
+                        S-IN  paroi_adiabatique
+			S-OUT paroi_adiabatique
+			S-1   paroi_adiabatique
+			S-2   paroi_adiabatique
+                        cont  paroi_contact pb1 cont
+                }
+                sources
+                {
+                        puissance_thermique Valeur_totale_sur_volume dom_solide 1 { Defaut 0.  }
+                }
+        }
+        Post_processing
+        {
+                Format lml
+                Probes
+                {
+                        sonde_temp temperature periode 1.e-6 points 1 0.0075 -0.005 0
+                }
+                Fields dt_post 1.0
+                {
+                        temperature som
+                }
+        }
+}
+
+Solve pb
+End

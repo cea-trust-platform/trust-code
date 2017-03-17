@@ -94,6 +94,7 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue,
   // On dimensionne et initialise le tableau des bilans de flux:
   (ref_cast(DoubleTab,tab_flux_bords)).resize(zone_VEF.nb_faces_bord(),1);
   tab_flux_bords=0.;
+  const int& premiere_face_int=zone_VEF.premiere_face_int();
 
   // On traite les faces bord
   for (n_bord=0; n_bord<nb_bords; n_bord++)
@@ -175,6 +176,8 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue,
                       if(j<nb_faces) // face reelle
                         {
                           flux=valA*(inconnue(num_face)-inconnue(j));
+                          if (j<premiere_face_int)
+                            tab_flux_bords(j,0)-=flux;
                           resu(j)+=flux;
                         }
                     }
@@ -184,7 +187,7 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue,
     }
 
   // Faces internes :
-  for (num_face=zone_VEF.premiere_face_int(); num_face<nb_faces; num_face++)
+  for (num_face=premiere_face_int; num_face<nb_faces; num_face++)
     {
       for (int k=0; k<2; k++)
         {
@@ -370,21 +373,16 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
                     valA = viscA(num_face,j,elem,nu(elem));
                     for (int nc=0; nc<nb_comp; nc++)
                       {
+                        double flux=valA*(inconnue(j,nc)-inconnue(num_face,nc));
                         if (ind_face<nb_faces_bord_reel)
                           {
-                            double flux=valA*(inconnue(j,nc)-inconnue(num_face,nc));
-                            //resu(num_face,nc)+=flux*porosite_face(num_face);
                             resu(num_face,nc)+=flux;
-                            //flux_bords(num_face,nc)-=flux*porosite_face(num_face);
                             tab_flux_bords(num_face,nc)+=flux;
                           }
 
                         if(j<nb_faces) // face reelle
                           {
-                            // resu(j,nc)+=valA*inconnue(num_face,nc)*porosite_face(j);
-                            //resu(j,nc)-=valA*inconnue(j,nc)*porosite_face(j);
-                            resu(j,nc)+=valA*inconnue(num_face,nc);
-                            resu(j,nc)-=valA*inconnue(j,nc);
+                            resu(j,nc)-=flux;
                           }
                       }
                   }

@@ -1,0 +1,11 @@
+#!/bin/bash
+# Check that heat flux leaving dom1 is equal to heat flux entering dom2:
+jdd=`pwd`
+jdd=`basename $jdd`
+[ -f PAR_$jdd.dt_ev ] && jdd=PAR_$jdd
+
+awk '{print $1" "$6}' $jdd"_pb1_Diffusion_chaleur.out" > pb1
+awk '{print $1" "(-1)*$6}' $jdd"_pb2_Diffusion_chaleur.out" > pb2
+
+# Comparing the files (should be the same):
+compare_sonde pb1 pb2 1>compare_sonde.log 2>&1
