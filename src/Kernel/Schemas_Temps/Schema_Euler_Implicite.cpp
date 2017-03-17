@@ -427,11 +427,13 @@ int Schema_Euler_Implicite::reprendre(Entree&)
   if (!test.ouvrir(nom_fichier))
     {
       Cerr << "*****************************************" << finl;
-      Cerr << "***************** WARNING *************" << finl;
+      Cerr << "***************** WARNING ***************" << finl;
       Cerr << "File " << nom_fichier << " does not exist." << finl;
       Cerr << "In order to restart a calculation carried out with an implicit time scheme" << finl;
       Cerr << "it is preferable to re-read the .dt_ev file to pick up some informations" << finl;
       Cerr << "and in particular the facsec of the previous calculation." << finl;
+      Cerr << "TRUST will use facsec= " << facsec_ << "." << finl;
+      Cerr << "Else specify the facsec wanted value in your data file." << finl;
       Cerr << "*****************************************" << finl;
       return 1;
     }
