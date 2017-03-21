@@ -110,12 +110,12 @@ then
         line=`head -n5 ${REP}$file | tail -n1`
         nbcol=`echo $line | wc -w`
         nbcol=`expr $nbcol - 1`
-        for ((j=1 ; $nbscal -$j + 1 ; j++))
+        for ((j=1 ; $nbscal - $j + 1 ; j++))
         do
           echo $ECHO_OPTS "\n\tfigure { \n\t\ttitle \"$probe\"">> $prm
  	  echo $ECHO_OPTS "\t\tinclude_description_curves 0\n\t\tlabelX \"TIME\"\n\t\tlabelY \"${lab[$j]}"$field"\"" >> $prm
 	  k=`expr $j + 1`
-          for ((i=$k ; $nbcol - $i + $k ; i=i+$nbscal))
+          for ((i=$k ; $nbcol - $i + $k ; i=$i+$nbscal))
           do
             echo $ECHO_OPTS $file | awk -v REP=${REP} '{print "\t\tcurve {\n\t\t\tfile "REP$0""}' >> $prm
             echo $ECHO_OPTS "\t\t\tcolumns (\$1) ($"$i")" >> $prm

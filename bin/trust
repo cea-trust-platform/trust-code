@@ -110,7 +110,7 @@ help()
    echo "-config nedit|vim|emacs : Configure nedit or vim or emacs with TRUST keywords."
    echo "-mesh                   : Visualize the mesh(es) contained in the data file."
 #   echo "-monitor                : Run and monitor the progress of the TRUST calculation."
-#   echo "-probes                 : Monitor the TRUST calculation only."
+   echo "-probes                 : Monitor the TRUST calculation only."
    echo "-evol                   : Monitor the TRUST calculation (new IHM)."
    echo "-wiz                    : Set a TRUST datafile from a MED file (new IHM)."
    echo "-prm                    : Write a prm file."
@@ -647,6 +647,7 @@ then
 		echo "#MSUB -n $NB_PROCS" 					>> $sub_file 
 		[ "$noeuds" != "" ] && echo "#MSUB -N $noeuds" 			>> $sub_file 
 		[ "$cpus_per_task" != "" ] && echo "#MSUB -c $cpus_per_task"	>> $sub_file
+		[ "$node" = 1 ] && echo "#MSUB -x"				>> $sub_file	# Exclusive use of nodes during production run	
 		[ "$ram" != "" ] && echo "#MSUB -M $ram" 			>> $sub_file 
 		echo "cd \$BRIDGE_MSUB_PWD" 					>> $sub_file
  		;;

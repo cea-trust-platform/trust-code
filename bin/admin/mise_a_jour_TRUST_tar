@@ -91,6 +91,11 @@ then
    echo doc/TRUST/TRUST_Generic_Guide.pdf >> Src.files
    echo doc/TRUST/TRUST_tutorial.pdf >> Src.files
    echo doc/TRUST/exercices/Tutorial_solutions.pdf >> Src.files
+   if [ ! -f "doc/TRUST/TRUST_Generic_Guide.pdf" ] || [ ! -f "doc/TRUST/TRUST_tutorial.pdf" ] || [ ! -f "doc/TRUST/exercices/Tutorial_solutions.pdf" ]
+   then
+      echo "Error !"
+      exit -1
+   fi
    # Marquage de la version
    date > .DATE
    echo .DATE >> Src.files

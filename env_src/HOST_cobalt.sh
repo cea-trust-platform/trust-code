@@ -39,7 +39,8 @@ cb_config_list *:1" > ROMIO_HINTS.env
    intel="intel/16.0.3.210"
    # openmpi mpi/openmpi/1.8.4 mpi/openmpi/1.8.8(default)
    # bibliotheque MellanoX Messaging (MXM) pour optimisation des communications MPI mpiprofile/openmpi/mxm
-   openmpi="mpi/openmpi/1.8.8 mpiprofile/openmpi/mxm"
+   #openmpi="mpi/openmpi/1.8.8 mpiprofile/openmpi/mxm"
+   openmpi="mpi/openmpi/1.8.8"
    # intelmpi mpi/intelmpi/5.1.3.210  mpi/intelmpi/2017 # 2016: You are currently not allowed to use this software
    module="$intel $openmpi"
    #
@@ -62,7 +63,7 @@ define_soumission_batch()
    # -M ram with ram>4000 is not supported anymore (06/2014)
    # ram=64000 # 64 GB asked
    # So we use now n cores for one task to have 4*n GB per task
-   [ "$bigmem" = 1 ] && cpus_per_task=64 && soumission=1 # To have 64GB per task
+   [ "$bigmem" = 1 ] && cpus_per_task=16 && soumission=1 # To have 64GB per task
    ntasks=28 # 28 cores per node for broadwell or hybrid queue (64 for xlarge)
    # ccc_mqinfo : 
    #Name     Partition  Priority  MaxCPUs  SumCPUs  MaxNodes  MaxRun  MaxSub     MaxTime

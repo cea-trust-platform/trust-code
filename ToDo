@@ -1,10 +1,11 @@
 Version	Qui				Tache
+1.7.5   stephane.veys@cea.fr    cf DI 4195 Definition_Champs passe en v1.7.3 mais plante en v1.7.4
+1.7.5   triou@cea.fr            revoir mail sur nouvelle machine et test sans dibona pour liste sympa
 1.7.5   marthe.roux@cea.fr      Faire valider les 2 supports de formation par CEA et CS
 1.7.5   celine.capitaine@cea.fr Faire valider les doc de qualite (notice maintenance) par CEA et CS
-1.7.5   marthe.roux@cea.fr      3 liens a ajouter sur site web triou => demander a CC
 1.7.5   adrien.bruneton@cea.fr  externalpackages: MEDCoupling 7.8.0 upgraded to 8.2.0
-1.7.5   stephane.veys@cea.fr    externalpackages: Petsc 3.6.3 upgrated to 3.7.5 (Analyser le fichier de sortie datafile_petsc.TU - signification de count)
-1.7.5   gauthier.fauchet@cea.fr organiser reunion pour generation documentation TRUST et baltiks evc Stephane et Adela
+1.7.5   triou@cea.fr            externalpackages: Petsc 3.6.3 upgrated to 3.7.5 (Analyser le fichier de sortie datafile_petsc.TU - signification de count)
+1.7.5   gauthier.fauchet@cea.fr organiser reunion pour generation documentation TRUST et baltiks evc Stephane et Adela (+ keywords.txt)
 1.7.5   triou@cea.fr            retirer de la doc ref manual les mots cles non actives (ex:  k_epsilon_bas_reynolds de K_Eps_non_std)
 1.7.5   triou@cea.fr            Nettoyage variable env ... exemple $DEBUG ... si utilise passer en TRUST_DEBUG sinon supprimer
 1.7.5   marthe.roux@cea.fr      Revoir config emacs sans version et avec fichier, idem our nedit
@@ -17,4 +18,4 @@ Version	Qui				Tache
 1.7.5   triou@cea.fr            Avoir un fichier avec la liste des fichiers deleted sur git pour faire un rm a distance
 1.7.5   triou@cea.fr            voir pour ajouter test Execute_parallel lors du configure pour verifier l'installation MPI
 1.7.5   triou@cea.fr            Probleme avec pre-commit et post-commit qui modifie des fichiers lors du commit apres nos tests !!! Le faire lors du compile et si modif alors arret...
-1.7.5	triou@cea.fr  		Doc : mise a jour version
+1.7.5   triou@cea.fr            Doc : mise a jour version (+ keywords cf Reynolds maille et normalized norm L2 et ...)

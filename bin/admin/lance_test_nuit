@@ -873,8 +873,15 @@ echo "# On study cases #"
 echo "##################"
 echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 etude_activation=1
-etude_test=0
-disable_etudes=~/disable_etudes && [ -f $disable_etudes ] && etude_test=2 #etude_test=1 && rm -f $disable_etudes
+if [ `date '+%u'` -ge 5 ]
+then
+   # le vendredi soir on lance toutes les etudes
+   etude_test=0
+else
+   # On ne lance qu'une etude
+   etude_test=1
+fi
+disable_etudes=~/disable_etudes && [ -f $disable_etudes ] && etude_test=1 && rm -f $disable_etudes
 if [ "$etude_activation" = 1 ] 
 then
    cd $ETUDES 2>/dev/null
@@ -895,19 +902,11 @@ then
 fi
 if [ "$etude_activation" = 1 ]  && [ ! -f run_Etudes.log ] && [ "$etude_test" = 1 ]
 then
-   #echo "-> Start of "$ETUDES"/run -all"
    touch $ETUDES/run_Etudes.log
-   #echo "  See $REP_NUIT/run_Mistra_*.log"
-   #echo "TRUST script on curie the `date` ...">run_Mistra_curie.log
-   #echo>>run_Mistra_curie.log
-   #(./run Validation/Mistra -adr curie-ccrt.ccc.cea.fr 1>>run_Mistra_curie.log 2>&1;mv -f run_Mistra_curie.log $REP_NUIT/.) &
-   #echo "TRUST script on callisto the `date` ...">run_Mistra_callisto.log
-   #echo>>run_Mistra_callisto.log
-   #(./run Validation/Mistra -adr callisto.intra.cea.fr 1>>run_Mistra_callisto.log 2>&1;mv -f run_Mistra_callisto.log $REP_NUIT/.) &
-   echo "  See $REP_NUIT/run_Cormoran_16_callisto.log"
-   echo "TRUST script on callisto the `date` ...">run_Cormoran_16_callisto.log
-   echo>>run_Cormoran_16_callisto.log
-   (./run Studies/Cormoran_16 -adr callisto.intra.cea.fr 1>>run_Cormoran_16_callisto.log 2>&1;mv -f run_Cormoran_16_callisto.log $REP_NUIT/.) &
+   echo "  See $REP_NUIT/run_EOLE_120_cobalt.log"
+   echo "TRUST script on cobalt the `date` ...">run_EOLE_120_cobalt.log
+   echo>>run_EOLE_120_cobalt.log
+   (./run Studies/EOLE_120 -adr cobalt.ccc.cea.fr 1>>run_EOLE_120_cobalt.log 2>&1;mv -f run_EOLE_120_cobalt.log $REP_NUIT/.) &
    mv -f run_Etudes.log $REP_NUIT/.
 fi
 if [ "$etude_activation" = 1 ]  && [ ! -f run_Etudes.log ] && [ "$etude_test" = 0 ]
@@ -1146,13 +1145,13 @@ echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 echo "----------------------------------------------------------------------------------------" > $MESSAGES_NUIT
 echo `date` >> $MESSAGES_NUIT
 echo "----------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
-[ -f $TRUST_ROOT/RELEASE_NOTES ] && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/RELEASE_NOTES >> $MESSAGES_NUIT
-[ -f $TRUST_ROOT/DEVELOPER_NOTES ] && $TRUST_Awk '/Developer notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/DEVELOPER_NOTES >> $MESSAGES_NUIT
-[ -f $TRUST_ROOT/externalpackages/RELEASE_NOTES ] && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/externalpackages/RELEASE_NOTES >> $MESSAGES_NUIT
-#for Composant in $ComposantsGit
-#do
-#   [ -f $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES ] && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES >> $MESSAGES_NUIT
-#done
+[ -f $TRUST_ROOT/RELEASE_NOTES ] && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/RELEASE_NOTES | head -n -1 >> $MESSAGES_NUIT
+[ -f $TRUST_ROOT/DEVELOPER_NOTES ] && $TRUST_Awk '/Developer notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/DEVELOPER_NOTES | tail -n +3 | head -n -1 >> $MESSAGES_NUIT
+[ -f $TRUST_ROOT/externalpackages/RELEASE_NOTES ] && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/externalpackages/RELEASE_NOTES | tail -n +3 | head -n -1 >> $MESSAGES_NUIT
+for Composant in $ComposantsGit
+do
+  [ -f $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES ] && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES | tail -n +3 | head -n -1 >> $MESSAGES_NUIT
+done
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "TRUST/TrioCFD WEB site:    http://www-trio-u.cea.fr" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "TRUST distribution site:   http://sourceforge.net/projects/trust-platform" >> $MESSAGES_NUIT
@@ -2285,16 +2284,16 @@ if [ "`diff -a html.tgz ../html.tgz 2>/dev/null;echo $?`" != 0 ]
 then
    echo "    => updated"
    #CHECKOUT ../html.tgz 1>/dev/null 2>&1 # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
-   #mv -f html.tgz ../html.tgz            # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
+   mv -f html.tgz ../html.tgz            # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
 else
    echo "    => NOT updated"
-   #rm -f html.tgz   # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
+   rm -f html.tgz   # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
 fi
-#ls -la ../html.tgz  # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
+ls -la ../html.tgz  # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
 )
 cd $TRUST_ROOT/doc/Coverage
 echo "  Call to make in $TRUST_ROOT/doc/Coverage"
-make clean
+make clean # dossier Coverage/html supprime et Coverage/html/index.html vide car non mis à jour dans l'archive TRUST + all baltik
 make
 CPP_GCOV=$TRUST_ROOT/doc/Coverage/html/cpp.gcov
 echo "  Verification of $CPP_GCOV"
@@ -2577,17 +2576,20 @@ else
    echo "Release criterion: Studies KO"
    [ "$NB" -gt 0 ] && cat $REP_NUIT/run_Etudes.log | mail_ -s \"[lance_test_nuit] Results of study cases KO\" $TRUST_MAIL
 fi
-if [ "$NB" -gt 0 ] && [ -f $ETUDES/Rapport/build/rapport.pdf ]
+if [ "$etude_activation" = 1 ] 
 then
-   # Envoi du rapport genere le week-end au project leader
-   if [ "`date '+%u'`" = 1 ] && [ `date '+%H'` -lt 8 ]
+   if [ "$NB" -gt 0 ] && [ -f $ETUDES/Rapport/build/rapport.pdf ]
    then
-      echo "$ETUDES/Rapport/Run_fiche" | mail_ -a\"$ETUDES/Rapport/build/rapport.pdf\" -s\"[lance_test_nuit] Studies report generated `date '+%d/%m/%y'`\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+      # Envoi du rapport genere le week-end au project leader
+      if [ "`date '+%u'`" = 1 ] && [ `date '+%H'` -lt 8 ]
+      then
+         echo "$ETUDES/Rapport/Run_fiche" | mail_ -a\"$ETUDES/Rapport/build/rapport.pdf\" -s\"[lance_test_nuit] Studies report generated `date '+%d/%m/%y'`\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+      else
+         echo "$ETUDES/Rapport/Run_fiche" | mail_ -a\"$ETUDES/Rapport/build/rapport.pdf\" -s\"[lance_test_nuit] Studies report generated `date '+%d/%m/%y'`\" $TRUST_MAIL
+      fi
    else
-      echo "$ETUDES/Rapport/Run_fiche" | mail_ -a\"$ETUDES/Rapport/build/rapport.pdf\" -s\"[lance_test_nuit] Studies report generated `date '+%d/%m/%y'`\" $TRUST_MAIL
+      [ "$NB" -gt 0 ] && cat $ETUDES/Rapport/Run.log | mail_ -s\"[lance_test_nuit] KO Studies report NOT generated `date '+%d/%m/%y'`\" $TRUST_MAIL
    fi
-else
-   [ "$NB" -gt 0 ] && cat $ETUDES/Rapport/Run.log | mail_ -s\"[lance_test_nuit] KO Studies report NOT generated `date '+%d/%m/%y'`\" $TRUST_MAIL
 fi
 force_validation_etudes=~/force_validation_etudes && [ -f $force_validation_etudes ] && validation_etudes=1 && rm -f $force_validation_etudes
 if [ "$NB" -eq -1 ]
@@ -3332,19 +3334,16 @@ source /home/triou/env_TRUST_$new.sh
 source /home/triou/env_TRUST_$new.sh
 
 # for CEA Cadarache cluster (mezel):
-source /soft/mezel/TRIO/TRUST/"$new"_redhat6.7/env_TRUST.sh
+source /soft/mezel/TRIO/env_TRUST-$new.sh
 
 # for CEA Marcoule cluster (ceres2):
-source /softs/trio_u/TRUST/"$new"_centos6.5/env_TRUST.sh
+source /softs/trio_u/env_TRUST-$new.sh
 
-# for CEA TGCC supercomputer (curie-ccrt):
-source /ccc/work/cont002/den/triou/curie-ccrt/TRUST/TRUST-$new/env_TRUST.sh
-
-# for CEA CCRT supercomputer (cobalt):
-source /ccc/work/cont002/den/triou/cobalt/TRUST/TRUST-$new/env_TRUST.sh
+# for CEA CCRT-TGCC supercomputers (cobalt & curie-ccrt):
+source /ccc/cont002/home/den/triou/env_TRUST-$new.sh
 
 # for CINES supercomputer (occigen):
-source /opt/software/applications/trio_u/TRUST/RedHat_6.8_64/TRUST-intelmpi-$new/env_TRUST.sh
+source /opt/software/applications/trio_u/env_TRUST-$new.sh
 ----------------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
       echo $ECHO_OPTS "
 --------------------------------------------------------------------------------------------------
@@ -3434,19 +3433,16 @@ source /home/triou/env_TrioCFD_$new.sh
 source /home/triou/env_TrioCFD_$new.sh
 
 # for CEA Cadarache cluster (mezel):
-source /soft/mezel/TRIO/TrioCFD/"$new"_redhat6.7/env_TrioCFD.sh
+source /soft/mezel/TRIO/env_TrioCFD-$new.sh
 
 # for CEA Marcoule cluster (ceres2):
-source /softs/trio_u/TrioCFD/"$new"_centos6.5/env_TrioCFD.sh
+source /softs/trio_u/env_TrioCFD-$new.sh
 
-# for CEA TGCC supercomputer (curie-ccrt):
-source /ccc/work/cont002/den/triou/curie-ccrt/TrioCFD/TrioCFD-$new/env_TrioCFD.sh
-
-# for CEA CCRT supercomputer (cobalt):
-source /ccc/work/cont002/den/triou/cobalt/TrioCFD/TrioCFD-$new/env_TrioCFD.sh
+# for CEA CCRT-TGCC supercomputers (cobalt & curie-ccrt):
+source /ccc/cont002/home/den/triou/env_TrioCFD-$new.sh
 
 # for CINES supercomputer (occigen):
-source /opt/software/applications/trio_u/TrioCFD/RedHat_6.8_64/TrioCFD-intelmpi-$new/env_TrioCFD.sh
+source /opt/software/applications/trio_u/env_TrioCFD-$new.sh
 ----------------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
       echo $ECHO_OPTS "
 --------------------------------------------------------------------------------------------------
@@ -3472,6 +3468,7 @@ New TrioMC2 version released v$new
 2. Release notes
 
 TRUST/TrioMC2 support team. mailto: $TRUST_MAIL  Web: http://www-trio-u.cea.fr
+MATHYS support team. mailto: mathys@cea.fr
 
 To unsubscribe, click here http://saxifrage:3500/wws/info/mc2_annonces " > $MESSAGES_LIVRAISON
  echo "
@@ -3479,10 +3476,10 @@ To unsubscribe, click here http://saxifrage:3500/wws/info/mc2_annonces " > $MESS
 1. How to run preinstalled version?
 ----------------------------------------------------------------------------------------------------
 # for PC connected to CEA SESI network:
-source /soft/der/sesi/TrioMC2/"$new"_debian8/env_ModeleCoeur.sh
+source /soft/der/sesi/TrioMC2/env_TrioMC2-$new.sh
 
 # for CEA Cadarache cluster (mezel):
-source /soft/mezel/TRIO/TrioMC2/"$new"_redhat6.7/env_ModeleCoeur.sh
+source /soft/mezel/TRIO/env_TrioMC2-$new.sh
 
 # for CEA Saclay cluster (callisto):
 source /home/triou/env_TrioMC2_$new.sh

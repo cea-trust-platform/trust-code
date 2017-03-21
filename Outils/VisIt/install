@@ -172,7 +172,7 @@ then
 	 elif [ $version = 2_12_1 ]
 	 then
             ARCH=linux-x86_64-rhel7
-            #ARCH=linux-x86_64-ubuntu14
+            [ $HOST = is226423 ] && ARCH=linux-x86_64-ubuntu14
 	 else
             echo "No ARCH defined yet for $version."
 	    exit -1

@@ -170,8 +170,8 @@ do
 	    echo "$adr not accessible..."
 	 else
             # Connection sur machine interne par ssh
-            scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o BatchMode=yes $log@$adr:$CR $REP_NUIT/. 2>/dev/null
-            ssh_ $log@$adr -n "rm $CR 2>/dev/null"
+            scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o BatchMode=yes $log@$adr:~/$CR $REP_NUIT/. 2>/dev/null
+            ssh_ $log@$adr -n "rm ~/$CR 2>/dev/null"
             scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o BatchMode=yes $log@$adr:$ROOT/compile_* $REP_NUIT/. 2>/dev/null
             ssh_ $log@$adr -n "rm $ROOT/compile_* 2>/dev/null" 
             scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o BatchMode=yes $log@$adr:$ROOT/MAKE_* $REP_NUIT/. 2>/dev/null

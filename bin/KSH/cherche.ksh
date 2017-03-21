@@ -79,3 +79,5 @@ echo
 echo "Liste des cas ecrite dans le fichier `pwd`/$liste_cherche"
 echo "pour pouvoir lancer avec lance_test par :"
 echo "echo liste_cherche | lance_test [\$exec] [\$repertoire]"
+echo "ou"
+echo "trust -check liste_cherche"

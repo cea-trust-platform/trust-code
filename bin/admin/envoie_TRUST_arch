@@ -17,7 +17,7 @@ ssh_command()
     then
        scp -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $command $log@$adr:~/command_$machine 1>/dev/null 2>&1
        # Add -X to have DISPLAY ?
-       ssh -X -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $log@$adr -n 'chmod +x ./command_'$machine';./command_'$machine 2>/dev/null
+       ssh -X -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $log@$adr -n 'chmod +x ~/command_'$machine';~/command_'$machine 2>/dev/null
     fi
     rm -f $command
 }
@@ -244,11 +244,9 @@ do
 	       option="sh -xv "
                option=""
 	       # machine=$machine".bak" # Pourquoi CR_$machine est abime?
-	       #if [ `date '+%u'` -ge 5 ]
-	       #then
-	          # le vendredi soir on lance sur la frontale car encore des problemes avec lance_test en soumission de job
-	       if [ "$machine" = cobalt ]
+	       if [ `date '+%u'` -ge 5 ]
 	       then
+	          # le vendredi soir on lance sur la frontale car encore des problemes avec lance_test en soumission de job
 	          ssh_command "export WORKBASE=$WORKBASE;cd $WORKDIR/$version/TRUST/bin/admin;$option./mise_a_jour_TRUST_arch -rsync 1>~/CR_$machine 2>&1" &
 	          echo "Launching in background the update by ssh on $log@$adr at "`date '+%H:%M:%S'`
 	       else

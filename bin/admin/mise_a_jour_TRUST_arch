@@ -319,10 +319,11 @@ option_configure=" -disable-ccache"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\get_binary" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -force_old_openmpi"
 # Compilation minimale avec -disable
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable " | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-med -disable-medcoupling -disable-mpi -without-visit -without-doc -disable-plot2d"
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-mpi" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-mpi"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-mpi " | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-mpi"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-optionals" | grep ^$HOST"\."`" != "" ] 		&& option_configure=" -disable-optionals"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-check_sources" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -disable-check_sources"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-medcoupling" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -disable-medcoupling"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-mpiio" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-mpiio"
 # Salome
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-download-salome" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -download-salome"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-download " | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -download-salome -download-visit"
@@ -679,7 +680,8 @@ do
             echo "--------------------------------------------------------" 
 	    echo "Test case in valgrind mode at "`date '+%H:%M:%S'`
 	    cd $TRUST_ROOT/Validation/Valgrind
-	    OK="KO" && rm -f testval.log *upwind.val 1>/dev/null 2>&1 && (echo upwind | ./testval 1>testval.log 2>&1)
+            case="upwind"
+	    OK="KO" && rm -f testval.log *$case.val 1>/dev/null 2>&1 && (echo $case | ./testval 1>testval.log 2>&1)
 	    if [ "$TRUST_DISABLE_MPI" = "0" ]
 	    then
 	      OK=`$TRUST_Awk 'BEGIN {mes="KO";ok=0} /...OK/ {ok++} END {if (ok==3) mes="OK"; print mes}' testval.log`
@@ -689,7 +691,7 @@ do
 	    echo "KVALGRIND="$OK
 	    if [ $OK != "KO" ] 
             then
-              rm -f *upwind.val 
+              rm -f *$case.val 
             else
               echo "See $TRUST_ROOT/Validation/Valgrind/testval.log file"
             fi
