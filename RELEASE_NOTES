@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.5_beta : Enhancements, modifications and corrected bugs since version 1.7.4 :
 --------------------------------------------------------------------------------------------------
+27/03/17 (Tools)  Minor change: The default editor for "trust -evol datafile" is the EDITEUR variable (See ~/.perso_TRUST.env file)
 17/03/17 (TRUST)  Bug fixed   : Correction of the output of the flux on the boundaries in Front-Tracking
 21/02/17 (TRUST)  Minor change: Warning replaced by stop if definition_champs name is x, y, z or t
 17/02/17 (TRUST)  New keyword : Add new method for Reduction_0D post field: normalized_norm_L2 [ =norme_L2(field)/norme_L2(1) ]
