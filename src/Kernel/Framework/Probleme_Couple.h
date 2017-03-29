@@ -94,6 +94,7 @@ public :
 
   virtual void discretiser(const Discretisation_base&);
   inline virtual void mettre_a_jour_modele_rayo(double temps);
+  void initialize();
 
 protected:
 

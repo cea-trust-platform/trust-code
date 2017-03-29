@@ -77,24 +77,25 @@ double Probleme_Couple::computeTimeStep(bool& stop) const
 bool Probleme_Couple::solveTimeStep()
 {
   // WEC : A changer !!!!
-  if (sub_type(Schema_Euler_Implicite,schema_temps()))
-    {
-      Schema_Euler_Implicite& sch_eul_imp=ref_cast(Schema_Euler_Implicite,schema_temps());
-      bool ok= sch_eul_imp.faire_un_pas_de_temps_pb_couple(*this);
-      // on propage un certain nombre de choses vers les clones
-      for (int i=1; i<nb_problemes(); i++)
-        {
-          sch_clones[i].facteur_securite_pas()=schema_temps().facteur_securite_pas();
-          sch_clones[i]->set_stationnaire_atteint()=schema_temps().stationnaire_atteint();
-          sch_clones[i]->residu()=schema_temps().residu();
-        }
-      return ok;
-    }
+  if (sch_clones.size())
+    if (sub_type(Schema_Euler_Implicite,schema_temps()))
+      {
+        Schema_Euler_Implicite& sch_eul_imp=ref_cast(Schema_Euler_Implicite,schema_temps());
+        bool ok= sch_eul_imp.faire_un_pas_de_temps_pb_couple(*this);
+        // on propage un certain nombre de choses vers les clones
+        for (int i=1; i<sch_clones.size(); i++)
+          {
+            sch_clones[i].facteur_securite_pas()=schema_temps().facteur_securite_pas();
+            sch_clones[i]->set_stationnaire_atteint()=schema_temps().stationnaire_atteint();
+            sch_clones[i]->residu()=schema_temps().residu();
+          }
+        return ok;
+      }
 
   bool ok=Couplage_U::solveTimeStep();
   double& residu_max = schema_temps().residu();
   for (int i=1; i<nb_problemes(); i++)
-    residu_max = max(residu_max,sch_clones[i]->residu());
+    residu_max = max(residu_max,ref_cast(Probleme_base,probleme(i)).schema_temps().residu());
   return ok;
 }
 
@@ -253,6 +254,8 @@ void Probleme_Couple::ajouter(Probleme_base& pb)
   pb.set_coupled(1);
 
   int nb_pb=nb_problemes();
+
+
   Nom nom_pb=probleme(nb_pb-1).que_suis_je();
   if (nb_pb!=1
       && probleme(0).que_suis_je()=="Pb_Conduction"
@@ -269,6 +272,19 @@ void Probleme_Couple::ajouter(Probleme_base& pb)
       Cerr << finl;
       exit();
     }
+}
+void Probleme_Couple::initialize()
+{
+  for (int i=0; i<nb_problemes(); i++)
+    {
+      Probleme_base& pb=ref_cast(Probleme_base,probleme(i));
+      //On attribue la valeur 1 a schema_impr_ pour le schema du probleme 0
+      //et 0 pour les autres. Un seul schema doit imprimer.
+      pb.schema_temps().schema_impr()=(i==0);
+    }
+
+  Couplage_U::initialize();
+
 }
 
 
