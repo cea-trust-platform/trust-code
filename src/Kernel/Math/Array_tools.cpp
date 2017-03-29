@@ -503,6 +503,15 @@ void array_smart_allocate(ArrOfInt& array, const int n)
   array.resize_array(0);
 }
 
+void array_smart_allocate(ArrOfDouble& array, const int n)
+{
+  array.set_smart_resize(1);
+  // get memory for the requested size
+  array.resize_array(n, Array_base::NOCOPY_NOINIT);
+  // and set actual size to zero
+  array.resize_array(0);
+}
+
 void append_array_to_array(ArrOfInt& dest, const ArrOfInt& src)
 {
   const int n1 = dest.size_array();
