@@ -42,7 +42,8 @@ Entree& Refine_Mesh::readOn(Entree& is)
   Interprete::readOn(is);
   return is;
 }
-
+// XD refine_mesh interprete refine_mesh 0 not_set
+// XD attr domaine ref_domaine domaine 0 not_set
 Entree& Refine_Mesh::interpreter_(Entree& is)
 {
   associer_domaine(is);

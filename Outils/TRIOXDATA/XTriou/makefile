@@ -4,6 +4,8 @@ triou.py: objet_u.py objet_u_spec.py gencl.py gentriopy.py syno.py
 	sort -u trace > traces
 syno.py : $(exec) cree_syno
 	@./cree_syno $(exec)
+TRAD_2 : TRAD_2.org $(exec)
+	@./build_TRAD2.sh
 gencl.py: syno.py GENCLASS2 TRAD_2 sort_gen_cl.py
 	./GENCLASS2
 triou_old.py: objet_u.py objet_u_spec.py genclold.py gentriopy.py
@@ -21,6 +23,7 @@ doc.pdf: triou.py
 doc_reduit: doc_r.pdf
 doc_r.pdf: triou.py tests/ref/lutil.py
 	mkdir -p doc_r
+	(cd doc_r; ln -sf ../doc_ressources/* .)
 	cp tests/ref/lutil.py .
 	python -c "from triou import *;gen_doc_base(3)"
 	mv *.tex doc_r

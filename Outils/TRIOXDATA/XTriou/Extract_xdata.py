@@ -66,6 +66,8 @@ def getLinesWithRegExp(lines):
         li = [x for x in li if x.strip()]
 	desc=re.split("//[ ]*"+xd+"[ ]+",line)[-1]
         if li[0]=="attr":
+            if (debut<2):
+              raise Exception("error in "+filename+" first line XD "+line)
             # print dico[nameClass]
             desc2=li[1:]
             dico_p={"desc":' '.join(desc2)}
@@ -76,7 +78,9 @@ def getLinesWithRegExp(lines):
           #  print desc2
             #1/0
         elif li[0]=="ref":
-            print nameClass, line
+            if (debut<2):
+              raise Exception("error in "+filename+" first line XD "+line)
+            # print nameClass, line
             dico[nameClass]["refs"].append([li[1],li[2]])
             #  1/0
         else:
@@ -88,8 +92,7 @@ def getLinesWithRegExp(lines):
       elif re.findall("//[ ]*"+xd+"_ADD_P+",line):
 	# traitement des parametres
         if (debut<2):
-           print filename,line
-           raise 'jjjjjjjj'
+           raise Exception("error in "+filename+" first line XD "+line)
 	dico_param={}
         optionnel=True
         if (re.findall("Param::REQUIRED",line)): 
@@ -130,10 +133,10 @@ def writeOutPutFile(dico, filename,st_add=""):
             ok=0
             for j,param in enumerate(Params.keys()):
                 if (i==Params[param]["numero"]):
-                    # print j,Params[param]["numero"]
                     ok=1
                     break
             if (ok==0):
+                print "pb",clas,"nmero",i,"params",Params
                 1/0
             if (len(Params[param]["dict"].keys())==0):
                st+="  attr "+Params[param]["desc"]+"\n"
