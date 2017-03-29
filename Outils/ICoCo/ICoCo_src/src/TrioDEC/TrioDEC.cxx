@@ -8,7 +8,7 @@
 #include <ICoCoTrioField.h>
 #include <Convert_ICoCoTrioField.h>
 
-using namespace ParaMEDMEM;
+using namespace MEDCoupling;
 using namespace ICoCo;
  
 TrioDEC::TrioDEC():_my_traduced_field(0)

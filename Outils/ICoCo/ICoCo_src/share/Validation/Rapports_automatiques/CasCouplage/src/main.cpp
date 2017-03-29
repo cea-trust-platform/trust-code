@@ -14,7 +14,7 @@
 #include <ICoCoTrioField.h>
 #endif
 
-using namespace ParaMEDMEM;
+using namespace MEDCoupling;
 using namespace std;
 using namespace ICoCo;
 
