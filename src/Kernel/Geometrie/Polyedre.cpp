@@ -24,6 +24,7 @@
 #include <Domaine.h>
 #include <IntList.h>
 #include <algorithm>
+#include <Linear_algebra_tools_impl.h>
 using std::swap;
 
 Implemente_instanciable_sans_constructeur(Polyedre,"Polyedre",Poly_geom_base);
@@ -89,6 +90,113 @@ Entree& Polyedre::readOn(Entree& s )
   return s;
 }
 
+void Polyedre::calculer_centres_gravite(DoubleTab& xp) const
+{
+
+  const Zone& zone=ma_zone.valeur();
+  const IntTab& elem=zone.les_elems();
+  const DoubleTab& coord=zone.domaine().coord_sommets();
+
+
+  int nb_elem;
+  if(xp.dimension(0)==0)
+    {
+      nb_elem = ma_zone->nb_elem_tot();
+      xp.resize(nb_elem,dimension);
+    }
+  else
+    nb_elem=xp.dimension(0);
+
+
+  for (int num_poly=0; num_poly<nb_elem; num_poly++)
+    {
+      double volume=0;
+      Vecteur3 xg(0,0,0);
+      int nb_som_max=elem.dimension(1);
+      int nb_som_reel;
+      for (nb_som_reel=0; nb_som_reel<nb_som_max; nb_som_reel++)
+        {
+          int n=elem(num_poly,nb_som_reel);
+          if (n<0)
+            break;
+          Vecteur3 S(coord(n,0),coord(n,1),coord(n,2));
+          xg+=S;
+        }
+      xg*=1./nb_som_reel;
+      Vecteur3 moinsS0(xg);
+      moinsS0*=-1;
+
+      Vecteur3 vraixg(0,0,0);
+
+      for (int f=PolyhedronIndex_(num_poly); f<PolyhedronIndex_(num_poly+1); f++)
+        {
+          int somm_loc3=Nodes_(FacesIndex_(f+1)-1);
+          int n3=elem(num_poly,somm_loc3);
+          Vecteur3 S3(coord(n3,0),coord(n3,1),coord(n3,2));
+          Vecteur3 S3sa(S3);
+          S3+=  moinsS0;
+          for (int s=FacesIndex_(f); s<FacesIndex_(f+1)-2; s++)
+            {
+              int somm_loc1=Nodes_(s);
+              int n1=elem(num_poly,somm_loc1);
+              int somm_loc2=Nodes_(s+1);
+              int n2=elem(num_poly,somm_loc2);
+              Vecteur3 S1(coord(n1,0),coord(n1,1),coord(n1,2));
+              Vecteur3 S2(coord(n2,0),coord(n2,1),coord(n2,2));
+
+              Vecteur3 xgl(xg);
+              xgl+=S3sa;
+              xgl+=S1;
+              xgl+=S2;
+              xgl*=0.25;
+              S1+=  moinsS0;
+              S2+=  moinsS0;
+              double vol_l= dabs(
+                              S1[0] * ( S2[1] * S3[2] - S3[1] * S2[2] )
+                              + S2[0] * ( S3[1] * S1[2] - S1[1] * S3[2] )
+                              + S3[0] * ( S1[1] * S2[2] - S2[1] * S1[2] ) );
+              volume+=vol_l;
+              xgl*=vol_l;
+              vraixg+=xgl;
+            }
+        }
+      vraixg*=1./volume;
+      xp(num_poly,0)=vraixg[0];
+      xp(num_poly,1)=vraixg[1];
+      xp(num_poly,2)=vraixg[2];
+
+      Vecteur3 test= xg -vraixg;
+      Cerr<<num_poly<< "iiii "<<test[0]<< " "<<test[1]<<" "<<test[2]<<finl;
+    }
+
+  Cerr<<" xp "<<xp << finl;
+  return ;
+
+
+  // on a change la methode dans Polygone mais pas dans Polyedre ?
+  WARN;
+  return Elem_geom_base::calculer_centres_gravite(xp);
+}
+
+void Polyedre::calculer_un_centre_gravite(const int num_elem,DoubleVect& xp) const
+{
+  const IntTab& les_Polys = ma_zone->les_elems();
+  const Domaine& le_domaine = ma_zone->domaine();
+
+  xp.resize(dimension);
+  int nb_som_reel=nb_som();
+  while (les_Polys(num_elem,nb_som_reel-1)==-1)  nb_som_reel--;
+  for(int s=0; s<nb_som_reel; s++)
+    {
+      int num_som = les_Polys(num_elem,s);
+      for(int i=0; i<dimension; i++)
+        xp(i) += le_domaine.coord(num_som,i)/nb_som_reel;
+    }
+
+
+
+  WARN;
+}
 int Polyedre::get_nb_som_elem_max() const
 {
   if (nb_som_elem_max_>-1)
@@ -120,262 +228,6 @@ const Nom& Polyedre::nom_lml() const
   return nom;
 }
 
-// fonctions pour polyedre contient:
-
-void r8vec_zero ( int n, double a1[] );
-double *r8vec_cross_3d ( double v1[3], double v2[3] );
-void r8vec_copy ( int n, double a1[], double a2[] );
-double r8vec_length ( int dim_num, double x[] );
-double r8vec_dot ( int n, double a1[], double a2[] );
-double r8vec_triple_product ( double v1[3], double v2[3], double v3[3] );
-double arc_cosine ( double c )
-{
-  double angle;
-  double pi = 3.141592653589793;
-  if ( c <= -1.0 )
-    {
-      angle = pi;
-    }
-  else if ( 1.0 <= c )
-    {
-      angle = 0.0;
-    }
-  else
-    {
-      angle = acos ( c );
-    }
-  return angle;
-}
-int i4_max ( int i1, int i2 )
-{
-  if ( i2 < i1 )
-    {
-      return i1;
-    }
-  else
-    {
-      return i2;
-    }
-}
-int i4_min ( int i1, int i2 )
-{
-  if ( i1 < i2 )
-    {
-      return i1;
-    }
-  else
-    {
-      return i2;
-    }
-}
-int i4_modp ( int i, int j )
-{
-  int value;
-  if ( j == 0 )
-    {
-      Cout << "\n";
-      Cout << "I4_MODP - Fatal error!\n";
-      Cout << "  I4_MODP ( I, J ) called with J = " << j << "\n";
-      Process::exit();
-    }
-  value = i % j;
-  if ( value < 0 )
-    {
-      value = value + abs ( j );
-    }
-  return value;
-}
-int i4_wrap ( int ival, int ilo, int ihi )
-{
-  int jhi;
-  int jlo;
-  int value;
-  int wide;
-  jlo = i4_min ( ilo, ihi );
-  jhi = i4_max ( ilo, ihi );
-  wide = jhi + 1 - jlo;
-  if ( wide == 1 )
-    {
-      value = jlo;
-    }
-  else
-    {
-      value = jlo + i4_modp ( ival - jlo, wide );
-    }
-  return value;
-}
-double *polygon_normal_3d ( int n, double v[] )
-{
-  int i;
-  int j;
-  double *normal;
-  double normal_norm;
-  double *p;
-  double *v1;
-  double *v2;
-  normal = new double[3];
-  v1 = new double[3];
-  v2 = new double[3];
-  r8vec_zero ( 3, normal );
-  for ( i = 0; i < 3; i++ )
-    {
-      v1[i] = v[i+1*3] - v[i+0*3];
-    }
-  for ( j = 2; j < n; j++ )
-    {
-      for ( i = 0; i < 3; i++ )
-        {
-          v2[i] = v[i+j*3] - v[i+0*3];
-        }
-      p = r8vec_cross_3d ( v1, v2 );
-      for ( i = 0; i < 3; i++ )
-        {
-          normal[i] = normal[i] + p[i];
-        }
-      r8vec_copy ( 3, v2, v1 );
-      delete [] p;
-    }
-  normal_norm = r8vec_length ( 3, normal );
-  if ( normal_norm != 0.0 )
-    {
-      for ( i = 0; i < 3; i++ )
-        {
-          normal[i] = normal[i] / normal_norm;
-        }
-    }
-  delete [] v1;
-  delete [] v2;
-  return normal;
-}
-double polygon_solid_angle_3d ( int n, double v[], const double p[3] )
-{
-  // Cerr<<" toto "<<n ;for (int i=0;i<n;i++) Cerr<<" "<<v[i];  Cerr<<" "<<p[0]<<" "<<p[1]<<" "<<p[2]<<finl;
-  double a[3];
-  double angle;
-  double area = 0.0;
-  double b[3];
-  int j;
-  int jp1;
-  double *normal1;
-  double normal1_norm;
-  double *normal2;
-  double normal2_norm;
-  double pi = 3.141592653589793;
-  double *plane;
-  double r1[3];
-  double s;
-  double value;
-  if ( n < 3 )
-    {
-      return 0.0;
-    }
-  plane = polygon_normal_3d ( n, v );
-  a[0] = v[0+(n-1)*3] - v[0+0*3];
-  a[1] = v[1+(n-1)*3] - v[1+0*3];
-  a[2] = v[2+(n-1)*3] - v[2+0*3];
-  for ( j = 0; j < n; j++ )
-    {
-      r1[0] = v[0+j*3] - p[0];
-      r1[1] = v[1+j*3] - p[1];
-      r1[2] = v[2+j*3] - p[2];
-      jp1 = i4_wrap ( j + 1, 0, n - 1 );
-      b[0] = v[0+jp1*3] - v[0+j*3];
-      b[1] = v[1+jp1*3] - v[1+j*3];
-      b[2] = v[2+jp1*3] - v[2+j*3];
-      normal1 = r8vec_cross_3d ( a, r1 );
-      normal1_norm = r8vec_length ( 3, normal1 );
-      normal2 = r8vec_cross_3d ( r1, b );
-      normal2_norm = r8vec_length ( 3, normal2 );
-      s = r8vec_dot ( 3, normal1, normal2 )
-          / ( normal1_norm * normal2_norm );
-      angle = arc_cosine ( s );
-      s = r8vec_triple_product ( b, a, plane );
-      if ( 0.0 < s )
-        {
-          area = area + pi - angle;
-        }
-      else
-        {
-          area = area + pi + angle;
-        }
-      a[0] = -b[0];
-      a[1] = -b[1];
-      a[2] = -b[2];
-      delete [] normal1;
-      delete [] normal2;
-    }
-  area = area - pi * ( double ) ( n - 2 );
-  if ( 0.0 < r8vec_dot ( 3, plane, r1 ) )
-    {
-      value = -area;
-    }
-  else
-    {
-      value = area;
-    }
-  delete [] plane;
-  return value;
-}
-void r8vec_copy ( int n, double a1[], double a2[] )
-{
-  int i;
-  for ( i = 0; i < n; i++ )
-    {
-      a2[i] = a1[i];
-    }
-  return;
-}
-double *r8vec_cross_3d ( double v1[3], double v2[3] )
-{
-  double *v3;
-  v3 = new double[3];
-  v3[0] = v1[1] * v2[2] - v1[2] * v2[1];
-  v3[1] = v1[2] * v2[0] - v1[0] * v2[2];
-  v3[2] = v1[0] * v2[1] - v1[1] * v2[0];
-  return v3;
-}
-double r8vec_dot ( int n, double a1[], double a2[] )
-{
-  int i;
-  double value;
-  value = 0.0;
-  for ( i = 0; i < n; i++ )
-    {
-      value = value + a1[i] * a2[i];
-    }
-  return value;
-}
-double r8vec_length ( int dim_num, double x[] )
-{
-  int i;
-  double value;
-  value = 0.0;
-  for ( i = 0; i < dim_num; i++ )
-    {
-      value = value + pow ( x[i], 2 );
-    }
-  value = sqrt ( value );
-  return value;
-}
-double r8vec_triple_product ( double v1[3], double v2[3], double v3[3] )
-{
-  double *v4;
-  double value;
-  v4 = r8vec_cross_3d ( v2, v3 );
-  value = r8vec_dot ( 3, v1, v4 );
-  delete [] v4;
-  return value;
-}
-void r8vec_zero ( int n, double a1[] )
-{
-  int i;
-  for ( i = 0; i < n; i++ )
-    {
-      a1[i] = 0.0;
-    }
-  return;
-}
-
 
 // Description:
 //    NE FAIT RIEN: A CODER, renvoie toujours 0.
@@ -404,127 +256,63 @@ void r8vec_zero ( int n, double a1[] )
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-int Polyedre::contient(const ArrOfDouble& pos, int ele ) const
+int Polyedre::contient(const ArrOfDouble& pos, int num_poly ) const
 {
 
-
-  double area=0;
-  int face_order_max=get_nb_som_face_max();
-  ArrOfDouble v_face(3*face_order_max);
+  // on regarde si le point P est du même coté que xg pour chaque face .
   const Zone& zone=ma_zone.valeur();
   const IntTab& elem=zone.les_elems();
   const DoubleTab& coord=zone.domaine().coord_sommets();
-  for (int f=PolyhedronIndex_(ele); f<PolyhedronIndex_(ele+1); f++)
+  Vecteur3 P(pos(0),pos(1),pos(2));
+  Vecteur3 xg(0,0,0);
+  int nb_som_max=elem.dimension(1);
+  int nb_som_reel;
+  for (nb_som_reel=0; nb_som_reel<nb_som_max; nb_som_reel++)
     {
-      int node_num_face=FacesIndex_(f+1)-FacesIndex_(f);
-      int s0=FacesIndex_(f);
-      for (int s=FacesIndex_(f); s<FacesIndex_(f+1); s++)
+      int n=elem(num_poly,nb_som_reel);
+      if (n<0)
+        break;
+      Vecteur3 S(coord(n,0),coord(n,1),coord(n,2));
+      xg+=S;
+    }
+  xg*=1./nb_som_reel;
+
+  for (int f=PolyhedronIndex_(num_poly); f<PolyhedronIndex_(num_poly+1); f++)
+    {
+      Vecteur3 n(0,0,0);
+      int somm_loc3=Nodes_(FacesIndex_(f+1)-1);
+      int n3=elem(num_poly,somm_loc3);
+      Vecteur3 moinsS3(-coord(n3,0),-coord(n3,1),-coord(n3,2));
+
+      for (int s=FacesIndex_(f); s<FacesIndex_(f+1)-2; s++)
         {
+          int somm_loc1=Nodes_(s);
+          int n1=elem(num_poly,somm_loc1);
+          int somm_loc2=Nodes_(s+1);
+          int n2=elem(num_poly,somm_loc2);
+          Vecteur3 S1(coord(n1,0),coord(n1,1),coord(n1,2));
+          Vecteur3 S2(coord(n2,0),coord(n2,1),coord(n2,2));
+          S1+=moinsS3;
+          S2+=moinsS3;
+          Vecteur3 nTr;
+          Vecteur3::produit_vectoriel(S1,S2,nTr);
+          n+=nTr;
 
-          int somm_loc=Nodes_(s);
-          int som_glob=elem(ele,somm_loc);
-          for (int i=0; i<3; i++)
-            v_face(i+(s-s0)*3)=coord(som_glob,i);
         }
-      // calcul angle solid
-      //double solid_angle=0;
-
-      area = area + polygon_solid_angle_3d ( node_num_face, v_face.addr(), pos.addr() );
 
 
+
+
+      Vecteur3 S3G(xg);
+      S3G+=moinsS3;
+      Vecteur3 S3P(P);
+      S3P+=moinsS3;
+      double prod_scal1=Vecteur3::produit_scalaire(n,S3G);
+      double prod_scal2=Vecteur3::produit_scalaire(n,S3P);
+      if (prod_scal1*prod_scal2<-Objet_U::precision_geom*prod_scal1*prod_scal1)
+        return 0;
     }
 
-  //  AREA should be -4*PI, 0, or 4*PI.
-  //  So this test should be quite safe!
-  double pi= 3.141592653589793;
-  if (( area < -2.0 * pi) || ( 2.0 * pi) < area )
-    return 1;
-  else
-    return 0;
-  /*
-    BLOQUE;
-
-    // a coder :
-    // est-ce que le polyedre de numero element contient le point de
-    // coordonnees pos ?
-    // adaptation de tetraedre contient
-    assert(pos.size_array()==3);
-    const Zone& zone=ma_zone.valeur();
-    const Domaine& dom=zone.domaine();
-    double prod1,prod2,xn,yn,zn;
-    int som0, som1, som2, som3,som4,som5;
-
-    // On regarde tout d'abord si le pintr cherche n'est pas un des
-    // sommets du triangle
-    som0 = zone.sommet_elem(ielem,0);
-    som1 = zone.sommet_elem(ielem,1);
-    som2 = zone.sommet_elem(ielem,2);
-    som3 = zone.sommet_elem(ielem,3);
-    som4 = zone.sommet_elem(ielem,4);
-    som5 = zone.sommet_elem(ielem,5);
-    if( ( est_egal(dom.coord(som0,0),pos(0)) && est_egal(dom.coord(som0,1),pos(1)) && est_egal(dom.coord(som0,2),pos(2)) )
-    || (est_egal(dom.coord(som1,0),pos(0)) && est_egal(dom.coord(som1,1),pos(1)) && est_egal(dom.coord(som1,2),pos(2)))
-    || (est_egal(dom.coord(som2,0),pos(0)) && est_egal(dom.coord(som2,1),pos(1)) && est_egal(dom.coord(som2,2),pos(2)))
-    || (est_egal(dom.coord(som3,0),pos(0)) && est_egal(dom.coord(som3,1),pos(1)) && est_egal(dom.coord(som3,2),pos(2)))
-    || (est_egal(dom.coord(som4,0),pos(0)) && est_egal(dom.coord(som4,1),pos(1)) && est_egal(dom.coord(som4,2),pos(2)))
-    || (est_egal(dom.coord(som5,0),pos(0)) && est_egal(dom.coord(som5,1),pos(1)) && est_egal(dom.coord(som5,2),pos(2)))
-    )
-    return 1;
-
-    for (int j=0; j<5; j++)
-    {
-    switch(j) {
-    case 0 :
-    som0 = zone.sommet_elem(ielem,0);
-    som1 = zone.sommet_elem(ielem,1);
-    som2 = zone.sommet_elem(ielem,3);
-    som3 = zone.sommet_elem(ielem,2);
-    break;
-    case 1 :
-    som0 = zone.sommet_elem(ielem,0);
-    som1 = zone.sommet_elem(ielem,2);
-    som2 = zone.sommet_elem(ielem,3);
-    som3 = zone.sommet_elem(ielem,4);
-    break;
-    case 2 :
-    som0 = zone.sommet_elem(ielem,1);
-    som1 = zone.sommet_elem(ielem,2);
-    som2 = zone.sommet_elem(ielem,4);
-    som3 = zone.sommet_elem(ielem,0);
-    break;
-    case 3 :
-    som0 = zone.sommet_elem(ielem,0);
-    som1 = zone.sommet_elem(ielem,1);
-    som2 = zone.sommet_elem(ielem,2);
-    som3 = zone.sommet_elem(ielem,3);
-    break;
-    case 4 :
-    som0 = zone.sommet_elem(ielem,3);
-    som1 = zone.sommet_elem(ielem,4);
-    som2 = zone.sommet_elem(ielem,5);
-    som3 = zone.sommet_elem(ielem,0);
-    break;
-    }
-
-    // Algorithme : le sommet 3 et le point M doivent pour j=0 a 3 du meme cote
-    // que le plan formes par les points som0,som1,som2.
-    // calcul de la normale au plan som0,som1,som2 :
-    xn = (dom.coord(som1,1)-dom.coord(som0,1))*(dom.coord(som2,2)-dom.coord(som0,2))
-    - (dom.coord(som1,2)-dom.coord(som0,2))*(dom.coord(som2,1)-dom.coord(som0,1));
-    yn = (dom.coord(som1,2)-dom.coord(som0,2))*(dom.coord(som2,0)-dom.coord(som0,0))
-    - (dom.coord(som1,0)-dom.coord(som0,0))*(dom.coord(som2,2)-dom.coord(som0,2));
-    zn = (dom.coord(som1,0)-dom.coord(som0,0))*(dom.coord(som2,1)-dom.coord(som0,1))
-    - (dom.coord(som1,1)-dom.coord(som0,1))*(dom.coord(som2,0)-dom.coord(som0,0));
-    prod1 = xn * ( dom.coord(som3,0) - dom.coord(som0,0) )
-    + yn * ( dom.coord(som3,1) - dom.coord(som0,1) )
-    + zn * ( dom.coord(som3,2) - dom.coord(som0,2) );
-    prod2 = xn * ( pos[0] - dom.coord(som0,0) )
-    + yn * ( pos[1] - dom.coord(som0,1) )
-    + zn * ( pos[2] - dom.coord(som0,2) );
-    // Si le point est sur le plan (prod2 quasi nul) : on ne peut pas conclure...
-    if (prod1*prod2 < 0 && dabs(prod2)>dabs(prod1)*Objet_U::precision_geom) return 0;
-    }
-  */
   return 1;
 }
 
@@ -554,11 +342,9 @@ int Polyedre::contient(const ArrOfDouble& pos, int ele ) const
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-int Polyedre::contient(const ArrOfInt& pos, int element ) const
+int Polyedre::contient(const ArrOfInt& pos, int num_poly ) const
 {
   BLOQUE;
-  // a coder :
-  exit();
   return 0;
 }
 
@@ -590,31 +376,47 @@ void Polyedre::calculer_volumes(DoubleVect& volumes) const
   for (int num_poly=0; num_poly<size_tot; num_poly++)
     {
       double volume=0;
+      Vecteur3 xg(0,0,0);
+      int nb_som_max=elem.dimension(1);
+      int nb_som_reel;
+      for (nb_som_reel=0; nb_som_reel<nb_som_max; nb_som_reel++)
+        {
+          int n=elem(num_poly,nb_som_reel);
+          if (n<0)
+            break;
+          Vecteur3 S(coord(n,0),coord(n,1),coord(n,2));
+          xg+=S;
+        }
+      xg*=1./nb_som_reel;
+      Vecteur3 moinsS0(xg);
+      moinsS0*=-1;
       for (int f=PolyhedronIndex_(num_poly); f<PolyhedronIndex_(num_poly+1); f++)
         {
           int somm_loc3=Nodes_(FacesIndex_(f+1)-1);
           int n3=elem(num_poly,somm_loc3);
+          Vecteur3 S3(coord(n3,0),coord(n3,1),coord(n3,2));
+          S3+=  moinsS0;
           for (int s=FacesIndex_(f); s<FacesIndex_(f+1)-2; s++)
             {
               int somm_loc1=Nodes_(s);
               int n1=elem(num_poly,somm_loc1);
               int somm_loc2=Nodes_(s+1);
               int n2=elem(num_poly,somm_loc2);
-              volume += fabs(
-                          coord(n1,0) * ( coord(n2,1) * coord(n3,2) - coord(n3,1) * coord(n2,2) )
-                          + coord(n2,0) * ( coord(n3,1) * coord(n1,2) - coord(n1,1) * coord(n3,2) )
-                          + coord(n3,0) * ( coord(n1,1) * coord(n2,2) - coord(n2,1) * coord(n1,2) ) );
+              Vecteur3 S1(coord(n1,0),coord(n1,1),coord(n1,2));
+              Vecteur3 S2(coord(n2,0),coord(n2,1),coord(n2,2));
+              S1+=  moinsS0;
+              S2+=  moinsS0;
+              volume += dabs(
+                          S1[0] * ( S2[1] * S3[2] - S3[1] * S2[2] )
+                          + S2[0] * ( S3[1] * S1[2] - S1[1] * S3[2] )
+                          + S3[0] * ( S1[1] * S2[2] - S2[1] * S1[2] ) );
 
             }
         }
       volumes(num_poly)=volume/6.;
     }
-
+//  Cerr<<" volumes "<<volumes << finl;
   return ;
-
-
-
-
 }
 int Polyedre::nb_type_face() const
 {
@@ -631,8 +433,7 @@ int Polyedre::nb_type_face() const
 // On renvoie 1 si toutes les faces ont le meme nombre d'elements, 0 sinon.
 int Polyedre::get_tab_faces_sommets_locaux(IntTab& faces_som_local) const
 {
-  BLOQUE;
-  return 1;
+  return 0;
 }
 int Polyedre::get_tab_faces_sommets_locaux(IntTab& faces_som_local,int ele) const
 {
@@ -741,7 +542,6 @@ void Polyedre::affecte_connectivite_numero_global(const ArrOfInt& Nodes,const Ar
       }
   }
   assert(min_array(Nodes_)>-1);
-  //  exit();
 }
 
 void Polyedre::remplir_Nodes_glob(ArrOfInt& Nodes_glob,const IntTab& les_elems) const
@@ -778,53 +578,6 @@ void Polyedre::remplir_Nodes_glob(ArrOfInt& Nodes_glob,const IntTab& les_elems) 
 // Postcondition:
 void Polyedre::reordonner()
 {
-  int face_order_max=get_nb_som_face_max();
-  ArrOfDouble v_face(3*face_order_max);
-  const Zone& zone=ma_zone.valeur();
-  const IntTab& elem=zone.les_elems();
-  const DoubleTab& coord=zone.domaine().coord_sommets();
-  ArrOfDouble pos(3);
-  int nelem=zone.nb_elem();
-
-  // pour reordonner on reordonne les sommets des faces, de facon a avoir toutes les normales sortantes ou rentrantes (necessaire pour contient).
-  // pour cela on regarde le signe de l'angle solide de chaque face vue du cdg.
-  for (int ele=0; ele<nelem; ele++)
-    {
-      int sm=elem.dimension(1);
-      while(elem(ele,sm-1)==-1) sm--;
-      for (int d=0; d<3; d++)
-        {
-          for (int s=0; s<sm; s++)
-            pos(d)+=coord(elem(ele,s),d);
-          pos(d)/=sm;
-        }
-      double area;
-      for (int f=PolyhedronIndex_(ele); f<PolyhedronIndex_(ele+1); f++)
-        {
-          int node_num_face=FacesIndex_(f+1)-FacesIndex_(f);
-          int s0=FacesIndex_(f);
-          for (int s=FacesIndex_(f); s<FacesIndex_(f+1); s++)
-            {
-
-              int somm_loc=Nodes_(s);
-              int som_glob=elem(ele,somm_loc);
-              for (int i=0; i<3; i++)
-                v_face(i+(s-s0)*3)=coord(som_glob,i);
-            }
-          // calcul angle solid
-          //double solid_angle=0;
-
-          area =  polygon_solid_angle_3d ( node_num_face, v_face.addr(), pos.addr() );
-          if (area>0)
-            {
-              Cerr<<" The face "<<f-PolyhedronIndex_(ele)<<"/"<< PolyhedronIndex_(ele+1)-PolyhedronIndex_(ele)<< " of the element "<<ele<<" not well oriented, we straighten it "<<finl;
-              ArrOfInt save(node_num_face);
-              for (int s=0; s<node_num_face; s++) save(s)=Nodes_(FacesIndex_(f)+s);
-              for (int s=0; s<node_num_face; s++) Nodes_(FacesIndex_(f+1)-s-1)=save(s);
-            }
-
-        }
-    }
 }
 // Description on va ajouter les elements de type new_elem aux elements deja presents dans les_elems et dans new_elems
 void Polyedre::ajouter_elements(const Elem_geom_base& type_elem, const IntTab& new_elems,IntTab& les_elems)
@@ -891,3 +644,135 @@ void Polyedre::ajouter_elements(const Elem_geom_base& type_elem, const IntTab& n
   Nodes_.resize_array(old_nodes_index+new_s);
 }
 
+void Polyedre::reduit_index(const ArrOfInt& elems_sous_part)
+{
+
+  ArrOfInt PolyhedronIndex_old(PolyhedronIndex_);
+  ArrOfInt FacesIndex_old(FacesIndex_);
+  ArrOfInt Nodes_old(Nodes_);
+  int nbelem=0,nbf=0,nbs=0;
+  int size_tot = elems_sous_part.size_array();
+  for (int num_poly=0; num_poly<size_tot; num_poly++)
+    {
+      int elem=elems_sous_part[num_poly];
+      for (int f=PolyhedronIndex_old(elem); f<PolyhedronIndex_old(elem+1); f++)
+        {
+          for (int s=FacesIndex_old(f); s<FacesIndex_old(f+1); s++)
+            {
+              int somm_loc=Nodes_old(s);
+              Nodes_(nbs)=somm_loc;
+              nbs++;
+            }
+          FacesIndex_(nbf+1)=nbs;
+          nbf++;
+        }
+      PolyhedronIndex_[nbelem+1]=nbf;
+      nbelem++	;
+    }
+  PolyhedronIndex_.resize(nbelem+1);
+  FacesIndex_.resize(nbf+1);
+  Nodes_.resize(nbs);
+}
+void Polyedre::compute_virtual_index()
+{
+
+  printOn(Cerr);
+
+  // Methode brutal mais il faut bien commencer ....
+
+
+  IntTab faces_som(0,nb_face_elem_max_,nb_som_face_max_);
+  ma_zone.valeur().creer_tableau_elements(faces_som);
+
+  IntTab faces_som_local;
+  int nb_elem=ma_zone.valeur().nb_elem();
+  int nb_elem_tot=ma_zone.valeur().nb_elem_tot();
+  for (int ele=0; ele<nb_elem; ele++)
+    {
+      get_tab_faces_sommets_locaux(faces_som_local,ele);
+      for (int k=0; k<nb_face_elem_max_; k++)
+        for (int l=0; l<nb_som_face_max_; l++)
+          faces_som(ele,k,l)=faces_som_local(k,l);
+    }
+  faces_som.echange_espace_virtuel();
+  int nbs=0;
+
+  PolyhedronIndex_.resize(nb_elem_tot+1);
+  //Cerr<<"uuu "<< PolyhedronIndex_<<endl;
+
+  for (int ele=nb_elem; ele<nb_elem_tot; ele++)
+    {
+      int nbf=0;
+      for (int k=0; k<nb_face_elem_max_; k++)
+        {
+          if (faces_som(ele,k,0)!=-1)
+            nbf++;
+          for (int l=0; l<nb_som_face_max_; l++)
+            {
+              if (faces_som(ele,k,l)!=-1)
+                nbs++;
+              Cerr <<" INFO " << ele<< " k" <<k << " l "<< l<< " iiii "<<faces_som(ele,k,l)<<finl;
+            }
+        }
+      PolyhedronIndex_(ele+1)=PolyhedronIndex_(ele)+nbf;
+    }
+  FacesIndex_.resize(PolyhedronIndex_(nb_elem_tot)+1);
+  int nbs_old=Nodes_.size_array();
+  Nodes_.resize(nbs_old+nbs);
+  int nbft=PolyhedronIndex_(nb_elem);
+  nbs=nbs_old;
+
+
+  for (int ele=nb_elem; ele<nb_elem_tot; ele++)
+    {
+
+      for (int k=0; k<nb_face_elem_max_; k++)
+        {
+          for (int l=0; l<nb_som_face_max_; l++)
+            {
+              if (faces_som(ele,k,l)!=-1)
+                {
+                  Nodes_(nbs)=faces_som(ele,k,l);
+                  nbs++;
+                }
+            }
+          if (faces_som(ele,k,0)!=-1)
+            {
+              FacesIndex_(nbft+1)=nbs;
+              nbft++;
+            }
+
+        }
+
+    }
+
+  printOn(Cerr);
+
+
+  for (int ele=nb_elem; ele<nb_elem_tot; ele++)
+    {
+      get_tab_faces_sommets_locaux(faces_som_local,ele);
+      for (int k=0; k<nb_face_elem_max_; k++)
+        for (int l=0; l<nb_som_face_max_; l++)
+          {
+
+            int ind1=faces_som(ele,k,l);
+            int ind2=faces_som_local(k,l);
+            if (ind1!=ind2)
+              {
+                Cerr << "PPPPB "<< ele<< " k " <<k << " l "<< l<< " iiii "<<ind1<<" "<<ind2<<finl;
+                abort();
+              }
+          }
+    }
+  //  BLOQUE;
+
+}
+
+
+int Polyedre::get_somme_nb_faces_elem() const
+{
+
+  int titi= PolyhedronIndex_[ma_zone.valeur().nb_elem()];
+  return titi;
+}

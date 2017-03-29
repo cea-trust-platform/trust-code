@@ -36,6 +36,7 @@
 #include <MD_Vector_tools.h>
 #include <MD_Vector_std.h>
 #include <unistd.h> // PGI
+#include <Poly_geom_base.h>
 
 extern Stat_Counter_Id interprete_scatter_counter_;
 
@@ -304,6 +305,12 @@ Entree& Scatter::interpreter(Entree& is)
   barrier();
   Cerr << "End Distribue_zones" << finl;
 
+
+  Elem_geom_base& elem=dom.zone(0).type_elem().valeur();
+  if (sub_type(Poly_geom_base,elem))
+    {
+      ref_cast(Poly_geom_base,elem).compute_virtual_index();
+    }
   statistiques().end_count(interprete_scatter_counter_);
   if(Process::me()==0)
     {
@@ -1984,6 +1991,8 @@ void Scatter::calculer_espace_distant_elements(Domaine& dom)
           for (int isom = 0; isom < nb_som_liste; isom++)
             {
               const int som = sommets[isom];
+              if (som<0)
+                continue;
               const int nb_elem_som = som_elem.get_list_size(som);
               for (int ielem = 0; ielem < nb_elem_som; ielem++)
                 {
@@ -2031,6 +2040,8 @@ void Scatter::calculer_espace_distant_elements(Domaine& dom)
           for (int isom = 0; isom < nb_som_liste; isom++)
             {
               const int i_sommet_local = sommets[isom];
+              if (i_sommet_local<0)
+                continue;
               const int nb_pe_voisins = data_sommets_communs.get_list_size(i_sommet_local) / 2;
               for (int i = 0; i < nb_pe_voisins; i++)
                 {

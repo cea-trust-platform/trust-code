@@ -70,7 +70,6 @@ public :
   virtual int nb_type_face() const;
   int get_tab_faces_sommets_locaux(IntTab& faces_som_local) const;
   int get_tab_faces_sommets_locaux(IntTab& faces_som_local,int elem) const;
-  int get_tab_faces_sommets_locaux_global(IntTab& faces_som_local,int elem) const;
   void affecte_connectivite_numero_global(const ArrOfInt& FacesIndex,const ArrOfInt& PolygonIndex,IntTab& les_elems);
   int get_nb_som_elem_max() const;
   inline int get_nb_face_elem_max() const
@@ -78,10 +77,7 @@ public :
     return nb_face_elem_max_ ;
   } ;
 
-  inline int get_somme_nb_faces_elem() const
-  {
-    return PolygonIndex_[PolygonIndex_.size_array()-1];
-  }
+  int get_somme_nb_faces_elem() const;
 
   inline const ArrOfInt& getFacesIndex() const
   {
@@ -91,11 +87,12 @@ public :
   {
     return PolygonIndex_;
   };
-  void remplir_Nodes_glob(ArrOfInt& Nodes_glob,const IntTab& les_elems ) const;
-  // void affecte_connectivite_numero_local(Nodes,FacesIndex,PolygonIndex);
-  //void ajouter_elements(const Elem_geom_base& new_elem, const IntTab& new_elems, IntTab& les_elems);
+  void rebuild_index();
+  void reduit_index(const ArrOfInt& elems_sous_part);
+  void compute_virtual_index();
 private :
-  ArrOfInt Nodes_,FacesIndex_,PolygonIndex_;
+  ArrOfInt FacesIndex_,PolygonIndex_;  //  PolygoneIndex_[ele] numero premiere face de ele (sert sutrout en diff)
+  // FaceIndex_ numerotation globale a la zone ne sert qu'a med
   int nb_som_elem_max_,nb_face_elem_max_;
 };
 

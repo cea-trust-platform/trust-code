@@ -24,10 +24,11 @@
 #include <Static_Int_Lists.h>
 #include <Connectivite_som_elem.h>
 #include <Param.h>
-
+#include <Poly_geom_base.h>
 #include <Matrix_tools.h>
 #include <Matrice_Morse.h>
 #include <Array_tools.h>
+
 
 inline void not_implemented(const Nom& chaine)
 {
@@ -203,8 +204,9 @@ static void construire_graph_elem_elem(const Domaine& dom,
     {
       Cerr << "Error in Partitionneur_Metis::construire_graph_elem_elem\n"
            << " The type of element is not supported" << finl;
+      ref_cast(Poly_geom_base,type_elem).get_tab_faces_sommets_locaux(faces_element_reference,0);
     }
-  const int nb_faces_par_element = faces_element_reference.dimension(0);
+  int nb_faces_par_element = faces_element_reference.dimension(0);
   const int nb_sommets_par_face = faces_element_reference.dimension(1);
 
   const IntTab& elem_som = zone.les_elems();
@@ -236,7 +238,13 @@ static void construire_graph_elem_elem(const Domaine& dom,
   const int nb_elem = zone.nb_elem();
 
   // Formule classique: nb_faces internes = nnn/2 avec :
-  const int nnn = nb_elem * nb_faces_par_element - nb_faces_bord + nb_connexions_perio;
+  int nnn = nb_elem * nb_faces_par_element - nb_faces_bord + nb_connexions_perio;
+  if (sub_type(Poly_geom_base,zone.type_elem().valeur()))
+    {
+      const Poly_geom_base& poly=ref_cast(Poly_geom_base,zone.type_elem().valeur());
+      nnn= poly.get_somme_nb_faces_elem() - nb_faces_bord + nb_connexions_perio;
+    }
+
   const int nb_edges = nnn;
 
   graph.nvtxs = nb_elem;
@@ -274,6 +282,15 @@ static void construire_graph_elem_elem(const Domaine& dom,
     {
       graph.xadj[i_elem] = edge_count;
       int i_face;
+
+      if (!is_regular)
+        {
+          ref_cast(Poly_geom_base,type_elem).get_tab_faces_sommets_locaux(faces_element_reference,i_elem);
+          int nb_faces_elem       = faces_element_reference.dimension(0);
+          while ( faces_element_reference(nb_faces_elem-1,0)==-1)
+            nb_faces_elem--;
+          nb_faces_par_element= nb_faces_elem;
+        }
       for (i_face = 0; i_face < nb_faces_par_element; i_face++)
         {
           // Construction de cette face de l'element:
@@ -283,8 +300,13 @@ static void construire_graph_elem_elem(const Domaine& dom,
             for (i = 0; i < nb_sommets_par_face; i++)
               {
                 const int i_som = faces_element_reference(i_face, i);
-                const int sommet = elem_som(i_elem, i_som);
-                une_face[i] = sommet;
+                if (i_som<0)
+                  une_face[i] = i_som;
+                else
+                  {
+                    const int sommet = elem_som(i_elem, i_som);
+                    une_face[i] = sommet;
+                  }
               }
           }
           // Recherche des elements voisins de cette face:

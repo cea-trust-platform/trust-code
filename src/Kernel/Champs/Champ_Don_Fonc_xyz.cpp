@@ -76,9 +76,7 @@ Entree& Champ_Don_Fonc_xyz::readOn(Entree& is)
   mon_domaine = ref_cast(Domaine, Interprete::objet(nom));
   Domaine& domaine=mon_domaine.valeur();
   const Zone& ma_zone = domaine.zone(0);
-  const Elem_geom& mon_elem = ma_zone.type_elem();
   const IntTab& les_Polys = ma_zone.les_elems();
-  int nb_som = mon_elem.nb_som();
   int nb_elems = ma_zone.nb_elem(),num_som;
   dim=lire_dimension(is,que_suis_je());
   dimensionner(nb_elems,dim);
@@ -113,17 +111,18 @@ Entree& Champ_Don_Fonc_xyz::readOn(Entree& is)
   for (num_elem=dernier_elem; num_elem<nb_elems; num_elem++)
     {
       x=y=z=0;
-      for(int s=0; s<nb_som; s++)
-        {
-          num_som = les_Polys(num_elem,s);
-          x += domaine.coord(num_som,0);
-          y += domaine.coord(num_som,1);
-          if (dimension>2) z += domaine.coord(num_som,2);
-        }
-      positions(num_elem,0) = x/nb_som;
-      positions(num_elem,1) = y/nb_som;
+      int s, n;
+      for(s = n = 0; s < les_Polys.dimension(1); s++) if ((num_som = les_Polys(num_elem,s)) >= 0)
+          {
+            x += domaine.coord(num_som,0);
+            y += domaine.coord(num_som,1);
+            if (dimension>2) z += domaine.coord(num_som,2);
+            n++;
+          }
+      positions(num_elem,0) = x/n;
+      positions(num_elem,1) = y/n;
       if (dimension>2)
-        positions(num_elem,2) = z/nb_som;
+        positions(num_elem,2) = z/n;
     }
 
   eval_fct(positions,mes_val);
