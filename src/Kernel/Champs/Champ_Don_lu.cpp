@@ -485,8 +485,10 @@ DoubleTab& Champ_Don_lu::valeur_aux_elems(const DoubleTab& ,
           le_poly=les_polys(rang_poly);
           if (le_poly == -1)
             val(rang_poly) = 0;
-          else
+          else if (val.nb_dim()==1)
             val(rang_poly) = ch(le_poly,0);
+          else
+            val(rang_poly,0) = ch(le_poly,0);
         }
     }
   else // nb_compo_ > 1

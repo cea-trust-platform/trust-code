@@ -904,6 +904,7 @@ solv_gcp solveur_sys_base gcp 1 Preconditioned conjugated gradient.
   attr quiet rien quiet 1 To not displaying any outputs of the solver.
   attr save_matrice|save_matrix rien save_matrice 1 to save the matrix in a file.
   attr optimized rien optimized 1 This keyword triggers a memory and network optimized algorithms useful for strong scaling (when computing less than 100 000 elements per processor). The matrix and the vectors are duplicated, common items removed and only virtual items really used in the matrix are exchanged.NL2 Warning: this is experimental and known to fail in some VEF computations (L2 projection step will not converge). Works well in VDF.
+  attr nb_it_max entier nb_it_max 1 Keyword to set the maximum iterations number for the Gcp.
 gcp_ns solv_gcp gcp_ns -1 not_set
   attr solveur0 solveur_sys_base solveur0 0 Solver type.
   attr solveur1 solveur_sys_base solveur1 0 Solver type.

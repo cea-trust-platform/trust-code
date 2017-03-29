@@ -176,7 +176,7 @@ int Solv_Gmres::resoudre_systeme(const Matrice_Base& la_matrice,
       if(sub_type(Matrice_Bloc,la_matrice))
         {
           const Matrice_Bloc& matrice = ref_cast(Matrice_Bloc,la_matrice);
-          if(matrice.nb_lignes()>1)
+          if(matrice.nb_bloc_lignes()>1)
             {
               Cerr<<"Solv_Gmres : WARNING : one is not able to carry out Gmres by blocks"<<finl;
               exit();
