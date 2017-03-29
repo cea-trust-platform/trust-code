@@ -54,11 +54,11 @@ public :
   virtual void mettre_a_jour(double );
   void calculer_h_autre_pb(DoubleTab& tab,double invhparoi,int opt);
   void calculer_h_mon_pb(DoubleTab&, double, int);
-  inline Champ_front& T_autre_pb()
+  inline virtual Champ_front& T_autre_pb()
   {
     return T_autre_pb_;
   };
-  inline const Champ_front& T_autre_pb() const
+  inline virtual const Champ_front& T_autre_pb() const
   {
     return T_autre_pb_;
   };

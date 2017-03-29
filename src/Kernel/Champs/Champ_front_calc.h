@@ -66,9 +66,14 @@ public:
   const Zone_dis_base& zone_dis() const;
   const Zone_Cl_dis_base& zone_Cl_dis() const;
   const Frontiere_dis_base& front_dis() const;
+  inline void  set_distant(int d)
+  {
+    distant_=d ;
+  };
 protected :
   REF(Champ_Inc_base) l_inconnue;	// L'inconnue du probleme oppose
   Nom nom_autre_bord_,nom_autre_pb_;	// Nom du bord et du probleme oppose
+  int distant_; // par defaut distant_ vaut 1
 };
 
 #endif

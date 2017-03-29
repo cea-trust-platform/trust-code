@@ -114,6 +114,7 @@ void Champ_front_calc::creer(const Nom& nom_pb,
                              const Nom& nom_bord,
                              const Motcle& nom_inco)
 {
+  distant_=1;
   nom_autre_pb_ = nom_pb;
   nom_autre_bord_ = nom_bord;
   REF(Probleme_base) autre_pb;
@@ -159,7 +160,11 @@ void Champ_front_calc::completer()
           exit();
         }
       Raccord_distant_homogene& raccord_distant = ref_cast_non_const(Raccord_distant_homogene, frontiere_opposee);
-      raccord_distant.initialise(frontiere_locale, zone_dis_locale, zone_dis_opposee);
+      if (distant_==1)
+        {
+          if (!raccord_distant.est_initialise())
+            raccord_distant.initialise(frontiere_locale, zone_dis_locale, zone_dis_opposee);
+        }
     }
 }
 
@@ -231,7 +236,7 @@ void Champ_front_calc::mettre_a_jour(double temps)
   assert (nom_autre_bord_ != "??") ;
   DoubleTab& tab=valeurs_au_temps(temps);
   const Frontiere_dis_base& frontiere_dis_opposee = zone_dis().frontiere_dis(nom_bord_oppose());
-  l_inconnue->trace(frontiere_dis_opposee,tab,temps,1 /* distant */);
+  l_inconnue->trace(frontiere_dis_opposee,tab,temps,distant_ /* distant */);
 
 
 }
