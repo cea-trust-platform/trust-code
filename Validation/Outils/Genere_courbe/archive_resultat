@@ -138,7 +138,7 @@ then
 fi
 
 modif_prm $prm
-python $DIR/src/genererCourbes.py -p $prm -o ../old_rapport.pdf >& ../err
+python $DIR/src/genererCourbes.py -p $prm -o ../old_rapport.pdf 1> ../err 2>&1
 [ $? -ne 0 ] && echo generation finale echoue &&  mv ../$archive.tgz ../${archive}_pb.tgz && exit 2
 cd ..
 gzip -f  old_rapport.pdf

@@ -183,7 +183,7 @@ class Visu:
 					self.inclureDescCourbes = int(valeur)
 				else:
 					# self.gestMsg.ecrire(GestionMessages._ERR, 'Parameter %s not recognized. List of parameters for visualization: %s ' % (motcle_lu,dico),fichier=fichier)
-					self.gestMsg.ecrire_usage(GestionMessages._ERR, 'Visu', motcle_lu,dico,fichier=fichier)
+					self.gestMsg.ecrire_usage(GestionMessages._ERR, 'Visu', dico,motcle_lu,fichier=fichier)
        				if motcle!=_accoladeF and not (motcle in dico): print "Missing something for ",motcle;1/0
 
 	#generation du graphique correspondant a la visu
