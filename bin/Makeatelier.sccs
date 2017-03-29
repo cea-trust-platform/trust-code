@@ -358,6 +358,8 @@ case $switchopt in
 
 
 cmake .. -DCMAKE_BUILD_TYPE=$build_type  ${TRUST_ATELIER_CMAKE_FLGAS}
+status=$? ; [ $status -ne 0 ] && status_tot=$status
+
 # xterm
 fi
 echo $ECHO_OPTS "-----------------------"
