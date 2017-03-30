@@ -22,6 +22,8 @@
 
 #include <TriouError.h>
 #include <string.h>
+#include <stdlib.h>
+
 
 TriouError::TriouError(const char* s, int pe)
 {
@@ -32,4 +34,8 @@ TriouError::TriouError(int pe)
 {
   message_=strdup("not defined");
   pe_=pe;
+}
+TriouError::~TriouError()
+{
+  free(message_);
 }

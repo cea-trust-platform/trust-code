@@ -49,10 +49,27 @@ int Param::lire_avec_accolades_depuis(Entree& is)
 
 int Param::lire_sans_accolade(Entree& is)
 {
+  Motcle bidon;
+  LIST_CURSEUR(Objet_a_lire) curseur(list_parametre_a_lire_);
+  while (curseur)
+    {
+      Objet_a_lire& obj=curseur.valeur();
+      if (obj.is_optional())
+        {
+          Cerr<<proprietaire_<<" has optional param. not implemented for lire_sans_accolade"<<finl;
+          Process::exit();
+        }
+      obj.read(bidon,is);
+      Motcle mot=obj.get_name();
+      list_parametre_lu_.add(mot);
 
-  Cerr<<"not yet implemented"<<finl;
-  Process::exit();
+      ++curseur;
+    }
+  int ok=check();
+  if (!ok)
+    Process::exit();
   return 1;
+
 }
 int Param::read(Entree& is,int with_acco)
 {

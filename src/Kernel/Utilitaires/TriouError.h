@@ -31,6 +31,7 @@ class TriouError
 public:
   TriouError(const char* s, int pe=-1) ;
   TriouError(int pe=-1);
+  ~TriouError();
   const char* get_msg() const
   {
     return message_;
