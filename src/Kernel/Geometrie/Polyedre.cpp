@@ -259,7 +259,7 @@ const Nom& Polyedre::nom_lml() const
 int Polyedre::contient(const ArrOfDouble& pos, int num_poly ) const
 {
 
-  // on regarde si le point P est du même coté que xg pour chaque face .
+  // on regarde si le point P est du meme cote que xg pour chaque face .
   const Zone& zone=ma_zone.valeur();
   const IntTab& elem=zone.les_elems();
   const DoubleTab& coord=zone.domaine().coord_sommets();
