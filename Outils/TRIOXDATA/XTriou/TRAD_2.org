@@ -919,6 +919,7 @@ gmres solveur_sys_base gmres -1 Gmres method (for non symetric matrix).
   attr nb_it_max entier nb_it_max 1 Keyword to set the maximum iterations number for the Gmres.
   attr controle_residu entier(into=["0","1"]) controle_residu 1 Keyword of Boolean type (by default 0). If set to 1, the convergence occurs if the residu suddenly increases.
   attr save_matrice|save_matrix rien save_matrice 1 to save the matrix in a file.
+  attr dim_espace_krilov entier dim_espace_krilov 1 not_set
 postraiter_domaine interprete postraiter_domaine 1 To write one or more domains in a file with a specified format (MED,LML,LATA).
   attr format chaine(into=["lml","meshtv","lata","lata_v1","lata_v2","med"]) format 0 File format.
   attr fichier|file chaine fichier 1 The file name can be changed with the fichier option.

@@ -1,5 +1,5 @@
 #!/bin/bash
-CLEARTOOL="cleartool"
+#CLEARTOOL="cleartool"
 for file in  $1
 do
    file2=""$2/$file
@@ -15,7 +15,7 @@ do
       if [ "$res" = "$2/$file" ]
       then
 	 #echo elt existe mais n est pas en gestion $file
-	 $MKELEM  -c "essai" $file2
+	 $MKELEM  $file2
 	 #CHECKIN $file2
       fi
       #echo elmt existe et est en gestion de conf $file

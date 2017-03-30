@@ -185,8 +185,9 @@ void Extraire_surface::extraire_surface(Domaine& domaine_surfacique,const Domain
                     }
                   else
                     {
-                      Cerr<<type_elem<< " non prevu" <<finl;
-                      exit();
+                      Cerr<<"WARNING "<<type_elem<< " not coded, use Quadrangle" <<finl;
+                      zone.typer("Quadrangle");
+                      //      exit();
                     }
                 }
             }

@@ -30,6 +30,7 @@
 #include <Debog.h>
 #include <Schema_Euler_Implicite.h>
 #include <Domaine.h>
+#include <Loi_Fermeture_base.h>
 
 Implemente_base(Pb_QC_base,"Pb_QC_base",Pb_qdm_fluide);
 
@@ -138,6 +139,13 @@ void Pb_QC_base::mettre_a_jour(double temps)
   //     equation(i).mettre_a_jour(temps);
   les_postraitements.mettre_a_jour(temps);
   domaine().mettre_a_jour(temps,domaine_dis(),*this);
+  LIST_CURSEUR(REF(Loi_Fermeture_base)) curseur = liste_loi_fermeture_;
+  while (curseur)
+    {
+      Loi_Fermeture_base& loi=curseur.valeur().valeur();
+      loi.mettre_a_jour(temps);
+      ++curseur;
+    }
 }
 
 bool Pb_QC_base::iterateTimeStep(bool& converged)

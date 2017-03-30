@@ -223,7 +223,7 @@ void Discretisation_base::champ_fixer_membres_communs(
   ch.associer_zone_dis_base(z);
   ch.nommer(nom);
   ch.fixer_nb_comp(nb_comp);
-  if (nb_comp>1)
+  if ((nb_comp>1)&& (nb_comp==dimension))
     {
       Noms noms(nb_comp);
       if (!axi)
