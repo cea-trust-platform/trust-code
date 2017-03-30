@@ -13,7 +13,7 @@
 #include <stdio.h>
 
 using namespace std;
-using namespace ParaMEDMEM;
+using namespace MEDCoupling;
 using namespace ICoCo;
 
 //utility methods for synchronizing
@@ -274,7 +274,7 @@ void main2 (int argc,char **argv) {
 	  else
 	    dec_emetteur.attachLocalField(&champ_recepteur);
 #ifndef med_old
-          dec_emetteur.setNature(ConservativeVolumic);
+          dec_emetteur.setNature(IntensiveMaximum);
 #endif
 	  if(init) dec_emetteur.synchronize();
 	  init=false;

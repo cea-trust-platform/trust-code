@@ -132,7 +132,7 @@ ICoCo::TrioField buildTrioField_from_champ_base(const Champ_base& ch)
 #ifndef NO_MEDFIELD
 #include <MEDCouplingUMesh.hxx>
 #include <MEDCouplingFieldDouble.hxx>
-#include <MEDCouplingAutoRefCountObjectPtr.hxx>
+#include <MCAuto.hxx>
 
 #include <string.h>
 #include <iostream>
@@ -149,8 +149,8 @@ using std::vector;
  */
 MEDField build_medfield(TrioField& triofield)
 {
-  ParaMEDMEM::MEDCouplingAutoRefCountObjectPtr<ParaMEDMEM::MEDCouplingUMesh> mesh(ParaMEDMEM::MEDCouplingUMesh::New("",triofield._mesh_dim));
-  ParaMEDMEM::MEDCouplingAutoRefCountObjectPtr<ParaMEDMEM::DataArrayDouble> coo(ParaMEDMEM::DataArrayDouble::New());
+  MEDCoupling::MCAuto<MEDCoupling::MEDCouplingUMesh> mesh(MEDCoupling::MEDCouplingUMesh::New("",triofield._mesh_dim));
+  MEDCoupling::MCAuto<MEDCoupling::DataArrayDouble> coo(MEDCoupling::DataArrayDouble::New());
   coo->alloc(triofield._nbnodes,triofield._space_dim);
   mesh->setCoords(coo);
   double *ptr(coo->getPointer());
@@ -218,7 +218,7 @@ MEDField build_medfield(TrioField& triofield)
     }
   //creating a connectivity table that complies to MED (1 indexing)
   //and passing it to _mesh
-  ParaMEDMEM::MEDCouplingAutoRefCountObjectPtr<ParaMEDMEM::MEDCouplingFieldDouble> field;
+  MEDCoupling::MCAuto<MEDCoupling::MEDCouplingFieldDouble> field;
   True_int *conn(new True_int[triofield._nodes_per_elem]);
   for (int i=0; i<triofield._nb_elems; i++)
     {
@@ -265,15 +265,15 @@ MEDField build_medfield(TrioField& triofield)
   int nb_case=triofield.nb_values();
   if (triofield._type==0)
     {
-      field =  ParaMEDMEM::MEDCouplingFieldDouble::New(ParaMEDMEM::ON_CELLS,ParaMEDMEM::ONE_TIME);
+      field =  MEDCoupling::MEDCouplingFieldDouble::New(MEDCoupling::ON_CELLS,MEDCoupling::ONE_TIME);
     }
   else
     {
-      field =  ParaMEDMEM::MEDCouplingFieldDouble::New(ParaMEDMEM::ON_NODES,ParaMEDMEM::ONE_TIME );
+      field =  MEDCoupling::MEDCouplingFieldDouble::New(MEDCoupling::ON_NODES,MEDCoupling::ONE_TIME );
     }
   field->setMesh(mesh);
-  field->setNature(ParaMEDMEM::ConservativeVolumic);
-  ParaMEDMEM::MEDCouplingAutoRefCountObjectPtr<ParaMEDMEM::DataArrayDouble> fieldArr(ParaMEDMEM::DataArrayDouble::New());
+  field->setNature(MEDCoupling::IntensiveMaximum);
+  MEDCoupling::MCAuto<MEDCoupling::DataArrayDouble> fieldArr(MEDCoupling::DataArrayDouble::New());
   fieldArr->alloc(field->getNumberOfTuplesExpected(),triofield._nb_field_components);
   field->setName(triofield.getName().c_str());
   std::string meshName("SupportOf_");

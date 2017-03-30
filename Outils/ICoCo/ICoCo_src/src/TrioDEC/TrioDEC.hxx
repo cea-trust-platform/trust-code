@@ -14,7 +14,7 @@ namespace ICoCo
   class Field;
 }
 
-namespace ParaMEDMEM
+namespace MEDCoupling
 {
   class TrioDEC : public InterpKernelDEC
   {

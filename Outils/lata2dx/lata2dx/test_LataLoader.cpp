@@ -13,7 +13,7 @@
 
 #include <LmlReader.h>
 #include <LataJournal.h>
-using namespace ParaMEDMEM;
+using namespace MEDCoupling;
 
 
 int main(int argc,char ** argv)
