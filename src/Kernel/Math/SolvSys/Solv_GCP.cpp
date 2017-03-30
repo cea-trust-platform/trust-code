@@ -41,6 +41,7 @@ Solv_GCP::Solv_GCP()
   reinit_ = 0;
   precond_diag_ = 0;
   optimized_ = 0;
+  nb_it_max_=-1;
 }
 
 Sortie& Solv_GCP::printOn(Sortie& s ) const
@@ -53,6 +54,8 @@ Sortie& Solv_GCP::printOn(Sortie& s ) const
   if (limpr()==1) s<<" impr ";
   if (limpr()==-1) s<<" quiet ";
   if (save_matrice_) s<<" save_matrice ";
+  if (nb_it_max_!=-1) s<<" nb_it_max "<<nb_it_max_;
+
   s<<" } ";
   return s ;
 }
@@ -63,6 +66,7 @@ Entree& Solv_GCP::readOn(Entree& is )
   int impr,quiet;
   Param param((*this).que_suis_je());
   param.ajouter("seuil",&seuil_,Param::REQUIRED);
+  param.ajouter("nb_it_max",&nb_it_max_);
   param.ajouter_flag("impr",&impr);
   param.ajouter_flag("quiet",&quiet);
   param.ajouter_flag("save_matrice|save_matrix",&save_matrice_);
@@ -478,7 +482,10 @@ int Solv_GCP::resoudre_(const Matrice_Base& matrice,
       Cout << "Norm of the residue: " << norme << " (" << norme_relative << ")" << finl;
     }
   int niter = 0;
-  while ( ( norme > seuil_ ) && (niter++ < nmax) )
+  int nb_it_max=nmax;
+  if (nb_it_max_>-1)
+    nb_it_max=nb_it_max_;
+  while ( ( norme > seuil_ ) && (niter++ < nmax) &&( niter<nb_it_max))
     {
       // Precondition pour multvect
       // (le seul echange espace virtuel de l'algo sauf si le precond en a besoin)
@@ -543,7 +550,7 @@ int Solv_GCP::resoudre_(const Matrice_Base& matrice,
           if ((niter % 15) == 0) Cout << finl ;
         }
     }
-  if(norme > seuil_)
+  if ((nb_it_max_<0)&& (norme > seuil_))
     {
       Cerr << "No convergence after : " << niter << " iterations\n";
       Cerr << " Residue : "<< norme << "\n";

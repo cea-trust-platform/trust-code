@@ -25,6 +25,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sstream>
+#include <Char_ptr.h>
+
 //using namespace std;
 using std::stringstream;
 
@@ -175,7 +177,10 @@ int StringTokenizer::nextToken(void)
     }
   else
     {
-      char* tok = new char[tmp-reste+1];
+      Char_ptr token;
+      token.allocate(tmp-reste);
+
+      char* tok = token.getChar();;
       int j=0;
       for (int i=0; i<tmp-reste; i++)
         {
@@ -266,7 +271,7 @@ int StringTokenizer::nextToken(void)
           sval = new String2(tok);
           reste=tmp;
         }
-      delete[] tok;
+      // delete[] tok;
     }
   return type;
 }

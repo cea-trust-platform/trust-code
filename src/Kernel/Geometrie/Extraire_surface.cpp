@@ -173,7 +173,23 @@ void Extraire_surface::extraire_surface(Domaine& domaine_surfacique,const Domain
             }
           else
             {
-              zone.typer("Quadrangle");
+              if ((type_elem==Motcle("Hexaedre"))|| (type_elem==Motcle("Hexaedre_VEF")))
+                {
+                  zone.typer("Quadrangle");
+                }
+              else
+                {
+                  if (type_elem==Motcle("Polyedre"))
+                    {
+                      zone.typer("Polygone");
+                    }
+                  else
+                    {
+                      Cerr<<"WARNING "<<type_elem<< " not coded, use Quadrangle" <<finl;
+                      zone.typer("Quadrangle");
+                      //      exit();
+                    }
+                }
             }
         }
     }

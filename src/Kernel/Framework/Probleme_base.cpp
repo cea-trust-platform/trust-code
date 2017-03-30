@@ -41,7 +41,7 @@
 #include <Avanc.h>
 #include <Deriv_Entree_Fichier_base.h>
 #include <sys/stat.h>
-
+#include <Loi_Fermeture_base.h>
 
 #define CHECK_ALLOCATE 0
 #ifdef CHECK_ALLOCATE
@@ -54,6 +54,25 @@ using ICoCo::WrongArgument;
 using ICoCo::WrongContext;
 
 Implemente_base_sans_constructeur_ni_destructeur(Probleme_base,"Probleme_base",Probleme_U);
+
+
+// XD Pb_base pb_gen_base Pb_base -3 Resolution of equations on a domain. A problem is defined by creating an object and assigning the problem type that the user wishes to resolve. To enter values for the problem objects created, the Lire (Read) interpretor is used with a data block.
+// XD  attr postraitement|Post_processing corps_postraitement postraitement 1 One post-processing (without name).
+// XD  attr postraitements|Post_processings postraitements postraitements 1 List of Postraitement objects (with name).
+// XD  attr liste_de_postraitements liste_post_ok liste_de_postraitements 1 This
+// XD  attr liste_postraitements liste_post liste_postraitements 1 This block defines the output files to be written during the computation. The output format is lata in order to use OpenDX to draw the results. This block can be divided in one or several sub-blocks that can be written at different frequencies and in different directories. Attention. The directory lata used in this example should be created before running the computation or the lata files will be lost.
+// XD  attr sauvegarde format_file sauvegarde 1 Keyword used when calculation results are to be backed up. When a coupling is performed, the backup-recovery file name must be well specified for each problem. In this case, you must save to different files and correctly specify these files when restarting the calculation.
+// XD  attr sauvegarde_simple format_file sauvegarde_simple 1 The same keyword than Sauvegarde except, the last time step only is saved.
+// XD  attr reprise format_file reprise 1 Keyword to restart a calculation based on the name_file file (see the class format_file). If format_reprise is xyz, the name_file file should be the .xyz file created by the previous calculation. With this file, it is possible to restart a parallel calculation on P processors, whereas the previous calculation has been run on N (N<>P) processors. Should the calculation be restarted, values for the tinit (see schema_temps_base) time fields are taken from the name_file file. If there is no backup corresponding to this time in the name_file, TRUST exits in error.
+//  XD  attr resume_last_time format_file resume_last_time 1 Keyword to restart a calculation based on the name_file file, restart the calculation at the last time found in the file (tinit is set to last time of saved files).
+//  XD ref domaine domaine
+//  XD ref scheme schema_temps_base
+//  XD ref milieu milieu_base
+//  XD ref loi1 loi_fermeture_base
+//  XD ref loi2 loi_fermeture_base
+//  XD ref loi3 loi_fermeture_base
+//  XD ref loi4 loi_fermeture_base
+//  XD ref loi5 loi_fermeture_base
 
 // Variables globales pour initialiser est_le_premier_postraitement_pour_nom_fic
 // et est_le_dernier_postraitement_pour_nom_fic en une seule passe.
@@ -695,6 +714,14 @@ int Probleme_base::associer_(Objet_U& ob)
       associer_milieu_base(ref_cast(Milieu_base, ob));
       return 1;
     }
+  if (sub_type(Loi_Fermeture_base,ob))
+    {
+      Loi_Fermeture_base& loi=ref_cast(Loi_Fermeture_base,ob);
+      liste_loi_fermeture_.add(loi);
+      loi.associer_pb_base(*this);
+
+      return 1;
+    }
   return 0;
 }
 
@@ -718,6 +745,14 @@ void Probleme_base::completer()
   // Cerr << "Probleme_base::completer()" << finl;
   for(int i=0; i<nombre_d_equations(); i++)
     equation(i).completer();
+
+  LIST_CURSEUR(REF(Loi_Fermeture_base)) curseur = liste_loi_fermeture_;
+  while (curseur)
+    {
+      Loi_Fermeture_base& loi=curseur.valeur().valeur();
+      loi.completer();
+      ++curseur;
+    }
 }
 
 // Description:
@@ -807,6 +842,15 @@ void Probleme_base::discretiser(const Discretisation_base& une_discretisation)
           milieux_deja_discretises.add(le_milieu);
         }
     }
+
+  LIST_CURSEUR(REF(Loi_Fermeture_base)) curseur = liste_loi_fermeture_;
+  while (curseur)
+    {
+      Loi_Fermeture_base& loi=curseur.valeur().valeur();
+      loi.discretiser(une_discretisation);
+      ++curseur;
+    }
+
 }
 
 // Description :
@@ -1129,6 +1173,12 @@ void Probleme_base::imprimer(Sortie& os) const
 // Postcondition:
 void Probleme_base::associer_sch_tps_base(const Schema_Temps_base& un_schema_en_temps)
 {
+  if (le_schema_en_temps.non_nul())
+    {
+      // TODO Ajouter la methode nommer au schema_temps
+      Cerr<<"Error: Problem "<<le_nom()<<" was ialready associated with the scheme "<< le_schema_en_temps.valeur().le_nom()<<" and we try to assocaite with "<<un_schema_en_temps.le_nom()<<finl;
+      exit();
+    }
   le_schema_en_temps=un_schema_en_temps;
   le_schema_en_temps->associer_pb(*this);
   for(int i=0; i<nombre_d_equations(); i++)
@@ -1418,6 +1468,14 @@ void Probleme_base::creer_champ(const Motcle& motlu)
   int nb_eq = nombre_d_equations();
   for (int i=0; i<nb_eq; i++)
     equation(i).creer_champ(motlu);
+
+  LIST_CURSEUR(REF(Loi_Fermeture_base)) curseur = liste_loi_fermeture_;
+  while (curseur)
+    {
+      Loi_Fermeture_base& loi=curseur.valeur().valeur();
+      loi.creer_champ(motlu);
+      ++curseur;
+    }
 }
 
 const Champ_base& Probleme_base::get_champ(const Motcle& un_nom) const
@@ -1441,6 +1499,21 @@ const Champ_base& Probleme_base::get_champ(const Motcle& un_nom) const
         }
     }
 
+  CONST_LIST_CURSEUR(REF(Loi_Fermeture_base)) curseur = liste_loi_fermeture_;
+  while (curseur)
+    {
+      const Loi_Fermeture_base& loi=curseur.valeur().valeur();
+      try
+        {
+          return loi.get_champ(un_nom);
+        }
+      catch(Champs_compris_erreur)
+        {
+        }
+      ++curseur;
+    }
+
+
   Cerr<<"The field of name "<<un_nom<<" do not correspond to a field understood by the problem."<<finl;
   Cerr<<"It may be a field dedicated only to post-process and defined in the Definition_champs set."<<finl;
   Cerr<<"1) If you have request the post-processing of "<<un_nom<<" in the Champs set"<<finl;
@@ -1462,6 +1535,15 @@ void Probleme_base::get_noms_champs_postraitables(Noms& noms,Option opt) const
   int nb_eq = nombre_d_equations();
   for (int i=0; i<nb_eq; i++)
     equation(i).get_noms_champs_postraitables(noms,opt);
+
+  CONST_LIST_CURSEUR(REF(Loi_Fermeture_base)) curseur = liste_loi_fermeture_;
+  while (curseur)
+    {
+      const Loi_Fermeture_base& loi=curseur.valeur().valeur();
+      loi.get_noms_champs_postraitables(noms,opt);
+      ++curseur;
+    }
+
 }
 
 int Probleme_base::comprend_champ_post(const Motcle& un_nom) const
@@ -1576,6 +1658,15 @@ void Probleme_base::mettre_a_jour(double temps)
 
   // Update the domain:
   domaine().mettre_a_jour(temps,domaine_dis(),*this);
+
+  LIST_CURSEUR(REF(Loi_Fermeture_base)) curseur = liste_loi_fermeture_;
+  while (curseur)
+    {
+      Loi_Fermeture_base& loi=curseur.valeur().valeur();
+      loi.mettre_a_jour(temps);
+      ++curseur;
+    }
+
 }
 
 // Description:
@@ -1608,6 +1699,14 @@ void Probleme_base::preparer_calcul()
   equation(0).milieu().preparer_calcul();
   if(schema_temps().file_allocation() && EcritureLectureSpecial::Active)
     file_size_xyz();
+
+  LIST_CURSEUR(REF(Loi_Fermeture_base)) curseur = liste_loi_fermeture_;
+  while (curseur)
+    {
+      Loi_Fermeture_base& loi=curseur.valeur().valeur();
+      loi.preparer_calcul();
+      ++curseur;
+    }
 }
 
 

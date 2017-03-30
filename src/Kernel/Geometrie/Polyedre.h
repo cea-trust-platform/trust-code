@@ -52,17 +52,8 @@ class Polyedre  : public Poly_geom_base
 public :
 
 
-  virtual void calculer_un_centre_gravite(const int elem,DoubleVect& xp) const
-  {
-    BLOQUE;
-    throw;
-  };
-  void calculer_centres_gravite(DoubleTab& xp) const
-  {
-    // on a change la methode dans Polygone mais pas dans Polyedre ?
-    WARN;
-    return Elem_geom_base::calculer_centres_gravite(xp);
-  };
+  void calculer_un_centre_gravite(const int elem,DoubleVect& xp) const;
+  void calculer_centres_gravite(DoubleTab& xp) const;
   // Fonctions d'acces aux membres prives:
   inline int face_sommet(int i, int j) const;
   inline int nb_som() const;
@@ -88,10 +79,8 @@ public :
   {
     return nb_som_face_max_ ;
   } ;
-  inline int get_somme_nb_faces_elem() const
-  {
-    return getFacesIndex().size_array()-1;
-  }
+  int get_somme_nb_faces_elem() const;
+
   inline const ArrOfInt& getFacesIndex() const
   {
     return FacesIndex_;
@@ -103,8 +92,13 @@ public :
   void remplir_Nodes_glob(ArrOfInt& Nodes_glob,const IntTab& les_elems ) const;
   // void affecte_connectivite_numero_local(Nodes,FacesIndex,PolyhedronIndex);
   void ajouter_elements(const Elem_geom_base& new_elem, const IntTab& new_elems, IntTab& les_elems);
+  void reduit_index(const ArrOfInt& elems_sous_part);
+  void compute_virtual_index();
+
 private :
-  ArrOfInt Nodes_,FacesIndex_,PolyhedronIndex_;
+  ArrOfInt Nodes_,FacesIndex_,PolyhedronIndex_;     //         PolyhedronIndex_[ele]  numero premiere face de l'ele
+  // FacesIndex_[f] numero premier indice de sommet de la face f dans Nodes
+  // Nodes_[s] numero local du sommet s d'une face, elem(ele,s) -> numero global
   int nb_som_elem_max_,nb_face_elem_max_,nb_som_face_max_;
 };
 

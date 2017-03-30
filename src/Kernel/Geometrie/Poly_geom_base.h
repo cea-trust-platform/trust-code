@@ -42,14 +42,11 @@ public :
 
   virtual int get_tab_faces_sommets_locaux(IntTab& faces_som_local) const=0;
   virtual int get_tab_faces_sommets_locaux(IntTab& faces_som_local,int elem) const=0;
-  virtual int get_tab_faces_sommets_locaux_global(IntTab& faces_som_local,int elem) const
-  {
-    exit();
-    return 0;
-  };
   virtual const ArrOfInt& getFacesIndex() const =0;
   virtual int get_somme_nb_faces_elem() const =0;
   virtual void calculer_un_centre_gravite(const int elem,DoubleVect& xp) const =0;
+  virtual void reduit_index(const ArrOfInt& elems_sous_part)=0;
+  virtual void compute_virtual_index()=0;
 protected :
 
 };

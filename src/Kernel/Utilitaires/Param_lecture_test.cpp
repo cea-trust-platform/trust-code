@@ -68,6 +68,8 @@ class ParamTest: public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(testdoublelecture);
   CPPUNIT_TEST(testajouterderiv);
   CPPUNIT_TEST(test_ajouter_param);
+
+  CPPUNIT_TEST(test_lecture_sans_accolade);
   CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -106,6 +108,53 @@ public:
 
     // CPPUNIT_ASSERT_EQUAL(1,param.verifier_avant_ajout("INT2"));
   };
+  void test_lecture_sans_accolade()
+  {
+    Param param("test_param");
+    param.ajouter("int",&int1,Param::REQUIRED);
+    {
+      EChaine is(" 5 ");
+      param.lire_sans_accolade(is);
+      CPPUNIT_ASSERT_EQUAL_MESSAGE(" pb avec la lecture des int",5,int1);
+    }
+    {
+      EChaine is(" { 5  } ");
+
+      CPPUNIT_ASSERT_THROW_MESSAGE("ne doit pas lire 5 dans lire_sans_accolade",param.lire_sans_accolade(is), TriouError);
+    }
+
+    param.ajouter("double",&double1);
+    {
+      EChaine is(" 5 ");
+      CPPUNIT_ASSERT_THROW_MESSAGE("Optionne pas supporte dans lire_sans_accolade",param.lire_sans_accolade(is), TriouError);
+    }
+
+#if 0
+    // on ne veut pas les flags pour l'instant ... trop dangeureux
+    param.supprimer("double");
+    int test_fl;
+    param.ajouter_flag("OPT",&test_fl);
+    {
+      EChaine is(" 5 ");
+      param.lire_sans_accolade(is);
+      CPPUNIT_ASSERT_EQUAL_MESSAGE(" pb avec la lecture des flag",0,test_fl);
+    }
+    {
+      EChaine is(" OPT 5 ");
+      param.lire_sans_accolade(is);
+
+      CPPUNIT_ASSERT_EQUAL_MESSAGE(" pb avec la lecture des flag",1,test_fl);
+    }
+    {
+      EChaine is(" OPT2 5   ");
+
+      CPPUNIT_ASSERT_THROW_MESSAGE("ne doit pas lire 5 dans lire_sans_accolade",param.lire_sans_accolade(is), TriouError);
+    }
+
+
+#endif
+  };
+
   void testLecture()
   {
     Param param("test_param");

@@ -498,8 +498,8 @@ int Format_Post_Lml::ecrire_champ_lml(const Domaine& domaine,const Noms& unite_,
               os << "CHAMPPOINT ";
               os << nom_post << " " << nom_top << " " << temps_ << finl;
             }
-          int nb_compo_dv=1;
-          if(nb_compo_!=1) nb_compo_dv=3;
+          int nb_compo_dv=nb_compo_;
+          if(nb_compo_==2) nb_compo_dv=3;
           if(je_suis_maitre())
             {
               os << nom_post << " " << nb_compo_dv << " " << unite_[0] << " "

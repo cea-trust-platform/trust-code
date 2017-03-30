@@ -51,6 +51,8 @@ void test_un_solveur(SolveurSys& solveur, const Matrice_Base& matrice, const Dou
 {
   DoubleVect solution_ref(solution);
   int n=temps.size_array();
+  Stat_Counter_Id  solv_sys_counter_l= statistiques().new_counter(1, "SolveurSys::resoudre_systeme", 0);
+
   for (int i=0; i<n; i++)
     {
       solution=solution_ref;
@@ -58,18 +60,18 @@ void test_un_solveur(SolveurSys& solveur, const Matrice_Base& matrice, const Dou
       // etape de resolution
       Stat_Results stat_resol_0;
 
-      statistiques().get_stats(solv_sys_counter_, stat_resol_0);
+      statistiques().get_stats(solv_sys_counter_l, stat_resol_0);
       Cout<<"------------------------------------"<<finl;
       Cout<<"Try " << i << " of solver " << solveur <<finl;
       //solveur.valeur().fixer_limpr(0);
-      statistiques().begin_count(solv_sys_counter_);
+      statistiques().begin_count(solv_sys_counter_l);
       solveur.nommer("test_solver");
 
       solveur.resoudre_systeme(matrice,secmem,solution);
-      statistiques().end_count(solv_sys_counter_);
+      statistiques().end_count(solv_sys_counter_l);
 
       Stat_Results stat_resol;
-      statistiques().get_stats(solv_sys_counter_, stat_resol);
+      statistiques().get_stats(solv_sys_counter_l, stat_resol);
       // on recupere un delta time et non un time absolu !!
       double time_resol=stat_resol.time-stat_resol_0.time;
       DoubleVect test(secmem);

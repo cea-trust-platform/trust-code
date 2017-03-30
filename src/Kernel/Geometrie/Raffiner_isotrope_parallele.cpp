@@ -197,7 +197,7 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
   int form=0;
   Nom org,newd;
   Param param(que_suis_je());
-// XD Raffiner_isotrope_parallele interprete Raffiner_isotrope_parallele::interpreter 1 Refine parallel mesh in parallel
+// XD Raffiner_isotrope_parallele interprete Raffiner_isotrope_parallele 1 Refine parallel mesh in parallel
   param.ajouter("name_of_initial_zones",&org,Param::REQUIRED); // XD_ADD_P chaine name of initial Zones
   param.ajouter("name_of_new_zones",&newd,Param::REQUIRED); // XD_ADD_P chaine name of new Zones
   param.ajouter("ascii",&form);  // XD_ADD_P flag writing Zones in ascii format

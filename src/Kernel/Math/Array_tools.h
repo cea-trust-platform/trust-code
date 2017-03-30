@@ -51,6 +51,7 @@ void calculer_renum_sans_doublons(const IntTab& tab, ArrOfInt& renum, ArrOfInt& 
 
 // Description: Set the smart_resize flag, preallocates memory for the given size, and resize to zero
 void array_smart_allocate(ArrOfInt& array, const int allocate_size);
+void array_smart_allocate(ArrOfDouble& array, const int allocate_size);
 
 // Description: Increase size of "dest" array and copy "src" at the end of "dest"
 void append_array_to_array(ArrOfInt& dest, const ArrOfInt& src);

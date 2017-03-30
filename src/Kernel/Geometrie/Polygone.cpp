@@ -54,11 +54,18 @@ Polygone::Polygone(): FacesIndex_(1),PolygonIndex_(1)
 // Postcondition: la methode ne modifie pas l'objet
 Sortie& Polygone::printOn(Sortie& s ) const
 {
-//  s<< Nodes_        <<finl;
   s<< FacesIndex_     <<finl;
+  s<< PolygonIndex_ <<finl;
+  s<< nb_som_elem_max_ <<finl;
+  s<< nb_face_elem_max_ <<finl;
+  WARN;
+  return s;
+}
+void Polygone::rebuild_index()
+{
 
   const IntTab& les_elems = ma_zone.valeur().les_elems();
-  int nb_elem=les_elems.dimension(0);
+  int nb_elem=les_elems.dimension_tot(0);
   ArrOfInt   PolygonIndex_OK(nb_elem+1);
   PolygonIndex_OK[0]=0;
   for (int ele=0; ele<nb_elem; ele++)
@@ -68,14 +75,35 @@ Sortie& Polygone::printOn(Sortie& s ) const
         nbf--;
       PolygonIndex_OK[ele+1]= PolygonIndex_OK[ele]+nbf;
     }
-  s<< PolygonIndex_OK <<finl;
-  s<< nb_som_elem_max_ <<finl;
-  s<< nb_face_elem_max_ <<finl;
-  WARN;
-  return s;
+  ArrOfInt FacesIndex_OK(PolygonIndex_OK(nb_elem));
+  int f=0;
+  for (int ele=0; ele<nb_elem; ele++)
+    {
+      for (int ss=0; ss<PolygonIndex_OK[ele+1]-PolygonIndex_OK[ele]; ss++)
+
+        FacesIndex_OK[f++]= les_elems(ele,ss);
+    }
+  assert(f==PolygonIndex_OK(nb_elem));
+
+  FacesIndex_=FacesIndex_OK;
+  PolygonIndex_=PolygonIndex_OK;
 }
 
 
+void Polygone::reduit_index(const ArrOfInt& elems_sous_part)
+{
+  rebuild_index();
+}
+void Polygone::compute_virtual_index()
+{
+  rebuild_index();
+}
+
+
+int Polygone::get_somme_nb_faces_elem() const
+{
+  return PolygonIndex_[ma_zone.valeur().nb_elem()];
+}
 // Description:
 //    NE FAIT RIEN
 // Precondition:
@@ -92,7 +120,6 @@ Sortie& Polygone::printOn(Sortie& s ) const
 // Postcondition:
 Entree& Polygone::readOn(Entree& s )
 {
-//  s>> Nodes_;
   s>>FacesIndex_;
   s>>PolygonIndex_;
   s>>nb_som_elem_max_;
@@ -127,6 +154,8 @@ const Nom& Polygone::nom_lml() const
   static Nom nom;
   nom="POLYEDRE_";
   Nom n(2*get_nb_som_elem_max());
+  if (dimension==3) nom="POLYGONE_";
+  if (dimension==3) n=Nom(get_nb_som_elem_max());
   nom+=n;
   return nom;
 }
@@ -330,34 +359,22 @@ int Polygone::get_tab_faces_sommets_locaux(IntTab& faces_som_local,int ele) cons
   faces_som_local.resize(nb_face_elem_max_,nb_som_face());
   faces_som_local=-1;
   // on cherche les faces de l'elt
-  const IntTab& les_elems = ma_zone.valeur().les_elems();
-
-  int nb_face=get_nb_som_elem_max();
-  while (les_elems(ele,nb_face-1)<0)
-    nb_face--;
-
-  //int nb_face=PolygonIndex_(ele+1)-PolygonIndex_(ele);
-  for (int fl=0; fl<nb_face-1; fl++)
-    {
-      // numerotion locale ou globale ????
-      faces_som_local(fl,0)=fl;
-      faces_som_local(fl,1)=fl+1;
-    }
-  {
-    int fl=nb_face-1;
-    faces_som_local(fl,0)=fl;
-    faces_som_local(fl,1)=0;
-  }
-  return 1;
-
-}
-int Polygone::get_tab_faces_sommets_locaux_global(IntTab& faces_som_local,int ele) const
-{
-  faces_som_local.resize(nb_face_elem_max_,nb_som_face());
-  faces_som_local=-1;
-  // on cherche les faces de l'elt
 
   int nb_face=PolygonIndex_(ele+1)-PolygonIndex_(ele);
+  /*
+   les elems pas remplis
+    int nb_face2=get_nb_som_elem_max();
+    const IntTab& les_elems = ma_zone.valeur().les_elems();
+
+    {
+
+    while (les_elems(ele,nb_face2-1)<0)
+      nb_face2--;
+    }
+
+    assert(nb_face==nb_face2);
+
+  */
   for (int fl=0; fl<nb_face-1; fl++)
     {
       // numerotion locale ou globale ????
@@ -369,13 +386,18 @@ int Polygone::get_tab_faces_sommets_locaux_global(IntTab& faces_som_local,int el
     faces_som_local(fl,0)=fl;
     faces_som_local(fl,1)=0;
   }
+  /*
+    IntTab test;
+    get_tab_faces_sommets_locaux(test,ele);
+    test-=faces_som_local;
+    assert(mp_max_abs_vect(test)==0);
+  */
   return 1;
 
 }
 
-// Desctiption : a partir des tableaux d'indirection FacesIndex PolygonIndex et Nodes
+// Desctiption : a partir des tableaux d'indirection FacesIndex PolygonIndex
 // on calcul les elems, nb_som_face_max_, nb_face_elem_max_ nb_som_elem_max_
-// ainsi que Nodes local...
 void Polygone::affecte_connectivite_numero_global(const ArrOfInt& FacesIndex,const ArrOfInt& PolygonIndex,IntTab& les_elems)
 {
   nb_som_elem_max_=0;
@@ -421,23 +443,6 @@ void Polygone::affecte_connectivite_numero_global(const ArrOfInt& FacesIndex,con
   assert(nb_face_elem_max_==nb_som_elem_max_);
 }
 
-void Polygone::remplir_Nodes_glob(ArrOfInt& Nodes_glob,const IntTab& les_elems) const
-{
-  BLOQUE;
-  Nodes_glob=Nodes_;
-  int nelem=les_elems.dimension_tot(0);
-  for (int ele=0; ele<nelem; ele++)
-    {
-      for (int f=PolygonIndex_(ele); f<PolygonIndex_(ele+1); f++)
-        {
-          for (int s=FacesIndex_(f); s<FacesIndex_(f+1); s++)
-            {
-              int somm_loc=Nodes_(s);
-              Nodes_glob(s)=les_elems(ele,somm_loc);
-            }
-        }
-    }
-}
 
 // Description:
 //    Reordonne les sommets du Polygone.

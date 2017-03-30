@@ -22,4 +22,4 @@ cd $project_directory
 mkdir -p share/doc_src
 cat build/xdata/XTriou/Keywords.txt $TRUST_ROOT/doc/TRUST/Keywords.txt | sort | uniq -u > share/doc_src/Keywords.txt.n
 KeywordsTRUST=`$TRUST_Awk '!/\|/ {k=k" "$1} /\|/ {gsub("\\\|"," ",$0);k=k" "$0} END {print k}' share/doc_src/Keywords.txt.n`
-echo "syntax keyword TRUSTLanguageKeywords$KeywordsTRUST" >> share/doc_src/Keywords.Vim
+echo "syntax keyword TRUSTLanguageKeywords$KeywordsTRUST" > share/doc_src/Keywords.Vim

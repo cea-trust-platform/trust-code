@@ -173,6 +173,7 @@ const Champ_base& Champ_Post_Operateur_Eqn::get_champ(Champ& espace_stockage) co
     if (!sans_solveur_masse_)
       ref_eq_->solv_masse().appliquer(es);
   }
+  es.echange_espace_virtuel();
   // espace_stockage.valeurs()=es;
   return espace_stockage.valeur();
 }

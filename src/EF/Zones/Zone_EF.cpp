@@ -110,7 +110,7 @@ void  Zone_EF::calculer_volumes_sommets()
 {
   //  volumes_sommets_thilde_.resize(nb_som());
   //Scatter::creer_tableau_distribue(zone().domaine(), Joint::SOMMET, volumes_sommets_thilde_);
-  zone().domaine().creer_tableau_sommets(volumes_sommets_thilde_);
+//  zone().domaine().creer_tableau_sommets(volumes_sommets_thilde_);
   int nbelem=zone().nb_elem();
   int nb_som_elem=zone().nb_som_elem();
   IPhi_.resize(nbelem,nb_som_elem);
@@ -524,6 +524,7 @@ void Zone_EF::discretiser()
   Zone_VF::calculer_porosites();
   //calculer_volumes_entrelaces();
 
+  zone().domaine().creer_tableau_sommets(volumes_sommets_thilde_);
 }
 
 void Zone_EF::calculer_Bij(DoubleTab& bij)

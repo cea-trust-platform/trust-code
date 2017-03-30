@@ -14,34 +14,17 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        TriouError.h
-// Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     /main/4
+// File:        Ref_Loi_Fermeture_base.h
+// Directory:   $TRUST_ROOT/src/Kernel/Framework
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef TriouError_included
-#define TriouError_included
+#ifndef Ref_Loi_Fermeture_base_included
+#define Ref_Loi_Fermeture_base_included
 
-// Description: classe d erreur declenche par process::exit
+#include <Ref.h>
+class Loi_Fermeture_base ;
+Declare_ref(Loi_Fermeture_base) ;
 
-class TriouError
-{
-
-public:
-  TriouError(const char* s, int pe=-1) ;
-  TriouError(int pe=-1);
-  ~TriouError();
-  const char* get_msg() const
-  {
-    return message_;
-  };
-  const int& get_pe() const
-  {
-    return pe_;
-  };
-private:
-  char *message_;
-  int pe_;
-};
-#endif
+#endif /* Ref_Loi_Fermeture_base_included */

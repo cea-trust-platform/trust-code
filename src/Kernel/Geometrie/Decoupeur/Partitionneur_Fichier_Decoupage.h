@@ -44,7 +44,7 @@ public:
   void initialiser(const char *filename);
   void construire_partition(ArrOfInt& elem_part, int& nb_parts_tot) const;
 
-private:
+protected:
   // Parametres du partitionneur
   REF(Domaine) ref_domaine_;
   Nom filename_;

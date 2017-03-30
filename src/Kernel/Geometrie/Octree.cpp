@@ -727,11 +727,15 @@ void Octree::ranger_elem_2D(ArrOfInt& ok, int elem, int i, int nb_som_elem, cons
   for(int som=0; som<nb_som_elem; som++)
     {
       int sommet=elems(i,som);
-      assert(sommet>=0);
-      xmin=min(xmin, coord(sommet,0));
-      xmax=max(xmax, coord(sommet,0));
-      ymin=min(ymin, coord(sommet,1));
-      ymax=max(ymax, coord(sommet,1));
+//      assert(sommet>=0);
+// GF dans le cas dde polyedre le tableau elem est surdimensionne et peut contenir des -1
+      if (sommet>=0)
+        {
+          xmin=min(xmin, coord(sommet,0));
+          xmax=max(xmax, coord(sommet,0));
+          ymin=min(ymin, coord(sommet,1));
+          ymax=max(ymax, coord(sommet,1));
+        }
     }
   range2D(xmin, ymin, xmil, ymil, ok, SousTab, compteur, i);
   range2D(xmin, ymax, xmil, ymil, ok, SousTab, compteur, i);

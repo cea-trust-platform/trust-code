@@ -1,0 +1,36 @@
+Parameters {
+	Title "Loi_Fermeture_Test"
+	Author "fauchet"
+ 	TestCase . Loi_Fermeture_Test.data
+	Description Cas test pour tester la prise en compte des lois de fermeture associes au probleme
+}
+
+
+Chapter {
+	Title "Visualization via VisIt" 
+
+        Description Au temps initial (1s), le champ doit valoir  2 partout 
+	visu {
+		title "TEST_TIME ELEM"
+		pseudocolor Loi_Fermeture_Test.lata dom TEST_TIME ELEM
+		cycles 0
+	}
+
+}
+
+Chapter {
+	Title "Visualization via Gnuplot" 
+
+	figure { 
+		title "SONDE"
+		include_description_curves 0
+		labelX "TIME"
+		labelY "TEST_TIME"
+        Description La variable doit varier entre 2 et 4 (le temps entre 1 et 2)
+		curve {
+			file Loi_Fermeture_Test_SONDE.son
+			style linespoints
+		}
+	}
+}
+

@@ -904,6 +904,7 @@ solv_gcp solveur_sys_base gcp 1 Preconditioned conjugated gradient.
   attr quiet rien quiet 1 To not displaying any outputs of the solver.
   attr save_matrice|save_matrix rien save_matrice 1 to save the matrix in a file.
   attr optimized rien optimized 1 This keyword triggers a memory and network optimized algorithms useful for strong scaling (when computing less than 100 000 elements per processor). The matrix and the vectors are duplicated, common items removed and only virtual items really used in the matrix are exchanged.NL2 Warning: this is experimental and known to fail in some VEF computations (L2 projection step will not converge). Works well in VDF.
+  attr nb_it_max entier nb_it_max 1 Keyword to set the maximum iterations number for the Gcp.
 gcp_ns solv_gcp gcp_ns -1 not_set
   attr solveur0 solveur_sys_base solveur0 0 Solver type.
   attr solveur1 solveur_sys_base solveur1 0 Solver type.
@@ -918,6 +919,7 @@ gmres solveur_sys_base gmres -1 Gmres method (for non symetric matrix).
   attr nb_it_max entier nb_it_max 1 Keyword to set the maximum iterations number for the Gmres.
   attr controle_residu entier(into=["0","1"]) controle_residu 1 Keyword of Boolean type (by default 0). If set to 1, the convergence occurs if the residu suddenly increases.
   attr save_matrice|save_matrix rien save_matrice 1 to save the matrix in a file.
+  attr dim_espace_krilov entier dim_espace_krilov 1 not_set
 postraiter_domaine interprete postraiter_domaine 1 To write one or more domains in a file with a specified format (MED,LML,LATA).
   attr format chaine(into=["lml","meshtv","lata","lata_v1","lata_v2","med"]) format 0 File format.
   attr fichier|file chaine fichier 1 The file name can be changed with the fichier option.
@@ -1633,24 +1635,9 @@ boundary_field_uniform_keps_from_ud front_field_base boundary_field_uniform_keps
 ef discretisation_base ef -1 Element Finite discretization.
 diffusion_option diffusion_deriv option 0 not_set
   attr bloc_lecture bloc_lecture bloc_lecture 0 not_set
-convection_supg convection_deriv supg 1 not_set
-  attr facteur floattant facteur 1 not_set
-convection_btd convection_deriv btd 1 not_set
-  attr facteur floattant facteur 1 not_set
-  attr btd floattant btd 0 not_set
 testeur_medcoupling interprete testeur_medcoupling 0 not_set
   attr pb_name chaine pb_name 0 Name of domain.
   attr field_name chaine filed_name 0 Name of domain.
-Raffiner_isotrope_parallele interprete Raffiner_isotrope_parallele 1 Refine parallel mesh in parallel
-  attr name_of_initial_zones chaine name_of_initial_zones 0 name of initial Zones
-  attr ascii rien ascii 1 writing Zones in ascii format
-  attr name_of_new_zones chaine name_of_new_zones 0 name of new Zones
-interpolation champ_post_de_champs_post interpolation -1 To create a field which is an interpolation of the field given by the keyword source.
-  attr localisation chaine localisation 0 type_loc indicate where is done the interpolation (elem for element or som for node).
-  attr optimisation_sous_maillage chaine(into=["default","yes","no",]) optimisation_sous_maillage 1 not_set
-  attr methode chaine methode 1 The optional keyword methode is limited to calculer_champ_post for the moment.
-  attr domaine chaine domaine 1 the domain name where the interpolation is done (by default, the calculation domain)
-paroi_fixe_iso_Genepi2_sans_contribution_aux_vitesses_sommets paroi_fixe paroi_fixe_iso_Genepi2_sans_contribution_aux_vitesses_sommets -1 CL to obtain iso Genepi2...
 champ_front_normal_vef front_field_base champ_front_normal_vef 0 Field to define the normal vector field standard at the boundary in VEF discretization.
   attr mot chaine(into=["valeur_normale"]) mot 0 Name of vector field.
   attr vit_tan floattant vit_tan 0 normal vector value (positive value for a vector oriented outside to inside).

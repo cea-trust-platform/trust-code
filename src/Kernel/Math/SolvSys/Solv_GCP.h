@@ -91,6 +91,7 @@ protected:
   // pour D*A*D
   DoubleVect inv_sqrt_diag_;
   int reinit_; // 0=> rien n'est pret 1=> memoire allouee, coeffs matrice a copier, 2=> ok
+  int nb_it_max_;
 };
 
 inline void Solv_GCP::set_precond(const Precond& pre)

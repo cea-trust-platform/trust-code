@@ -14,34 +14,71 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        TriouError.h
-// Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     /main/4
+// File:        Loi_Fermeture_base.h
+// Directory:   $TRUST_ROOT/src/Kernel/Framework
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef TriouError_included
-#define TriouError_included
 
-// Description: classe d erreur declenche par process::exit
+#ifndef Loi_Fermeture_base_included
+#define Loi_Fermeture_base_included
+#include <Ref_Probleme_base.h>
+#include <Champs_compris_interface.h>
+#include <Champs_compris.h>
 
-class TriouError
+class Param;
+class Champ_base;
+class Motcle;
+class Discretisation_base;
+
+// .DESCRIPTION: Classe de base des lois de fermetures.
+//  Cette classe calcule des champs qui peuvent dependre
+//  de plusieurs inconnues, de grandeurs physiques du milieu etc.
+//  Les champs de la classe sont rendus accessibles a tout le probleme
+//  a travers la methode get_champ() et leur mise a jour est declanchee
+//  par le probleme, apres la mise a jour du milieu et des equations.
+class Loi_Fermeture_base : public Objet_U, public Champs_compris_interface
 {
-
+  Declare_base(Loi_Fermeture_base);
 public:
-  TriouError(const char* s, int pe=-1) ;
-  TriouError(int pe=-1);
-  ~TriouError();
-  const char* get_msg() const
+  // Reimplementation de Objet_U
+  void nommer(const Nom& nom)
   {
-    return message_;
-  };
-  const int& get_pe() const
+    nom_ = nom;
+  }
+  const Nom& le_nom () const
   {
-    return pe_;
-  };
+    return nom_;
+  }
+  // Implementation des methodes de Champs_compris_interface:
+  virtual void  creer_champ(const Motcle& motlu);
+  virtual const Champ_base& get_champ(const Motcle& nom) const;
+  virtual void get_noms_champs_postraitables(Noms& nom, Option opt=NONE) const;
+  // Nouvelles methodes:
+  virtual void associer_pb_base(const Probleme_base&);
+  virtual void discretiser(const Discretisation_base& );
+  virtual void set_param(Param& param);
+  virtual void completer();
+  virtual void preparer_calcul();
+  virtual void mettre_a_jour(double temps);
+
+protected:
+  const Probleme_base& mon_probleme() const;
+  Champs_compris champs_compris_;
+
+  enum Status { INITIAL, PB_ASSOCIE, DISCRETISE, READON_FAIT, COMPLET };
+  Status status_;
+
+
 private:
-  char *message_;
-  int pe_;
+  Nom nom_;
+  // Prive car ce membre donne acces au probleme non const. On le cache.
+  REF(Probleme_base) mon_probleme_;
+
+
+
 };
+
+
 #endif

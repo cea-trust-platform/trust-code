@@ -26,7 +26,8 @@
 #include <Discretisation_base.h>
 
 Implemente_instanciable(Scalaire_impose_paroi,"Scalaire_impose_paroi",Dirichlet);
-
+// XD scalaire_impose_paroi dirichlet scalaire_impose_paroi 0 Imposed temperature condition at the wall called bord (edge).
+// XD   attr ch front_field_base ch 0 Boundary field type.
 
 // Description:
 //    Ecrit le type de l'objet sur un flot de sortie.
@@ -98,6 +99,8 @@ int Scalaire_impose_paroi::compatible_avec_discr(const Discretisation_base& disc
   else if (type_discr == "VEFPreP1B")
     return 1;
   else if (type_discr == "VEFPreP1B_Front_Tracking")
+    return 1;
+  else if (type_discr == "PolyMAC")
     return 1;
   else
     {

@@ -49,6 +49,17 @@ public:
 Sortie& MD_Vector_composite::printOn(Sortie& os) const
 {
   MD_Vector_base2::printOn(os);
+  int np=data_.size();
+  os << np<<finl;
+  for (int p=0; p<np; p++)
+    {
+      const MD_Vector_base& md = get_desc_part(p).valeur();
+      os << md.que_suis_je() << finl;
+      os << md << finl;
+    }
+
+
+
   os << "{" << finl;
   os << "global_md" << finl << global_md_ << finl;
   os << "parts_offsets" << space << parts_offsets_ << finl;
@@ -62,6 +73,24 @@ Sortie& MD_Vector_composite::printOn(Sortie& os) const
 Entree& MD_Vector_composite::readOn(Entree& is)
 {
   MD_Vector_base2::readOn(is);
+
+  int np;
+  is >> np ;
+  for (int p=0; p<np; p++)
+    {
+      DERIV(MD_Vector_base) md_ptr;
+      Nom md_type;
+      is >> md_type;
+      md_ptr.typer(md_type);
+      is >> md_ptr.valeur();
+      if (1)
+        {
+          // Creation du MD_Vector attache au tableau
+          data_.add(MD_Vector());
+          MD_Vector& mdV =data_[p];
+          mdV.copy(md_ptr.valeur());
+        }
+    }
   Param p(que_suis_je());
   p.ajouter("global_md", &global_md_);
   p.ajouter("parts_offsets", &parts_offsets_);

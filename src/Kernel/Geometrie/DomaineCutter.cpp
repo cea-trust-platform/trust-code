@@ -30,6 +30,7 @@
 #include <Sous_Zone.h>
 #include <Sparskit.h>
 #include <Poly_geom_base.h>
+#include <Poly_geom_base.h>
 
 Implemente_instanciable_sans_constructeur(DomaineCutter,"DomaineCutter",Objet_U);
 
@@ -268,9 +269,14 @@ void construire_liste_faces_sous_domaine(const ArrOfInt& elements_voisins,
       for (j = 0; j < nb_sommets_par_face; j++)
         {
           int sommet = faces_sommets(i_face, j);
-          int new_num = liste_inverse_sommets[sommet];
-          assert(new_num >= 0);
-          faces_sommets_partie(i, j) = new_num;
+          if (sommet>-1)
+            {
+              int new_num = liste_inverse_sommets[sommet];
+              assert(new_num >= 0);
+              faces_sommets_partie(i, j) = new_num;
+            }
+          else
+            faces_sommets_partie(i, j) = -1;
         }
     }
 }
@@ -814,7 +820,8 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie,
         int i_face;
         if (!is_regular)
           {
-            ref_cast(Poly_geom_base,type_elem).get_tab_faces_sommets_locaux_global(faces_element_reference,i_elem_global);
+            // global ou non ????????
+            ref_cast(Poly_geom_base,type_elem).get_tab_faces_sommets_locaux(faces_element_reference,i_elem_global);
             nb_faces_elem       = faces_element_reference.dimension(0);
             while ( faces_element_reference(nb_faces_elem-1,0)==-1)
               nb_faces_elem--;
@@ -837,11 +844,13 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie,
                     une_face[i] = i_som;
                     // Indice du sommet dans le sous-domaine
 
-
-                    const int i_som_local = liste_inverse_sommets(i_som);
-                    // Le sommet est-il sur un joint ?
-                    if (drapeaux_sommets_joints[i_som_local] == 0)
-                      face_ok = 0; // Non => cette face n'est pas sur un joint
+                    if (i_som>-1)
+                      {
+                        const int i_som_local = liste_inverse_sommets(i_som);
+                        // Le sommet est-il sur un joint ?
+                        if (drapeaux_sommets_joints[i_som_local] == 0)
+                          face_ok = 0; // Non => cette face n'est pas sur un joint
+                      }
                   }
               }
             // Premier test pour eliminer tout de suite la face
@@ -869,8 +878,13 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie,
                     for (i = 0; i < nb_sommets_par_face; i++)
                       {
                         const int i_som_global = une_face[i];
-                        const int i_som_local = liste_inverse_sommets[i_som_global];
-                        faces_joints(n, i) = i_som_local;
+                        if (i_som_global>-1)
+                          {
+                            const int i_som_local = liste_inverse_sommets[i_som_global];
+                            faces_joints(n, i) = i_som_local;
+                          }
+                        else
+                          faces_joints(n, i) = -1;
                       }
                     nb_faces_joints[PEvoisin]++;
                   }
@@ -898,6 +912,7 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie,
         // Typage des faces et allocation memoire
         Joint& joint = joints_partie[i_joint];
         joint.typer_faces(type_face_joint);
+        joint.faces().les_sommets().resize(0, nb_sommets_par_face);
         const int PE_voisin = joint.PEvoisin();
         const int nb_faces = nb_faces_joints[PE_voisin];
         joint.dimensionner(nb_faces);
@@ -1145,6 +1160,10 @@ void DomaineCutter::construire_sous_domaine(const int part,
           Joint&     joint = zone_partie.joint(ij);
           joint.set_joint_item(Joint::ELEMENT).set_items_distants();
         }
+    }
+  if (sub_type(Poly_geom_base,zone_partie.type_elem().valeur()))
+    {
+      ref_cast(Poly_geom_base,zone_partie.type_elem().valeur()).reduit_index(elements_sous_partie);
     }
   Scatter::trier_les_joints(zone_partie.faces_joint());
 }

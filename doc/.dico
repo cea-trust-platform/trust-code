@@ -414,6 +414,8 @@
  Loi_expert_hydr_VEF Loi_expert_hydr_VEF Paroi_std_hyd_VEF.h
  Loi_expert_scalaire_VDF Loi_expert_scalaire_VDF Paroi_std_scal_hyd_VDF.h
  Loi_expert_scalaire_VEF Loi_expert_scalaire_VEF Paroi_std_scal_hyd_VEF.h
+ Loi_Fermeture_base Loi_Fermeture_base Loi_Fermeture_base.h
+ Loi_Fermeture_Test Loi_Fermeture_Test Loi_Fermeture_Test.h
  Loi_horaire Loi_horaire Loi_horaire.h
  loi_ODVM_VDF Paroi_ODVM_scal_VDF Paroi_ODVM_scal_VDF.h
  loi_paroi_2_couches_scalaire_VDF Paroi_2couches_scal_VDF Paroi_2couches_scal_VDF.h

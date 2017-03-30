@@ -33,7 +33,7 @@
 #include <Champs_compris_interface.h>
 #include <List_Ref_Field_base.h>
 #include <Deriv_Sortie_Fichier_base.h>
-
+#include <List_Ref_Loi_Fermeture_base.h>
 
 
 class Equation_base;
@@ -247,6 +247,9 @@ protected :
   static int num_pb;                // numero du probleme
   mutable Nom error;                // Erreur d'allocation
   int coupled_;			// Flag to indicate it is a part of a coupled problem
+
+  LIST(REF(Loi_Fermeture_base)) liste_loi_fermeture_; // liste des fermetures associees au probleme
+
 };
 
 // Description:

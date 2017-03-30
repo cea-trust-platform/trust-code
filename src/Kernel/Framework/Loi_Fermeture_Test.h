@@ -14,34 +14,38 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        TriouError.h
-// Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     /main/4
+// File:        Loi_Fermeture_Test.h
+// Directory:   $TRUST_ROOT/src/Kernel/Framework
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef TriouError_included
-#define TriouError_included
+#ifndef Loi_Fermeture_Test_included
+#define Loi_Fermeture_Test_included
 
-// Description: classe d erreur declenche par process::exit
+#include <Loi_Fermeture_base.h>
+#include <Champ_Don.h>
 
-class TriouError
+/////////////////////////////////////////////////////////////////////////////
+//
+// .DESCRIPTION : class Loi_Fermeture_Test
+//
+// <Description of class Loi_Fermeture_Test>
+//
+/////////////////////////////////////////////////////////////////////////////
+
+class Loi_Fermeture_Test : public Loi_Fermeture_base
 {
 
-public:
-  TriouError(const char* s, int pe=-1) ;
-  TriouError(int pe=-1);
-  ~TriouError();
-  const char* get_msg() const
-  {
-    return message_;
-  };
-  const int& get_pe() const
-  {
-    return pe_;
-  };
-private:
-  char *message_;
-  int pe_;
+  Declare_instanciable( Loi_Fermeture_Test ) ;
+
+public :
+  virtual void mettre_a_jour(double temps);
+  virtual void discretiser(const Discretisation_base& );
+  virtual void set_param(Param& param);
+protected :
+  Champ_Don champ_test_;
+  double coef_;
 };
-#endif
+
+#endif /* Loi_Fermeture_Test_included */

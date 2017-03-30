@@ -90,7 +90,7 @@ template<class LIST_FRONTIERE> void check_frontiere(const LIST_FRONTIERE& list, 
 
 // S'il y a un proc qui a un type different de vide_OD, on type les faces sur tous
 // les processeurs avec ce type:
-static void corriger_type(Faces& faces)
+static void corriger_type(Faces& faces,const Elem_geom_base& type_elem)
 {
   int typ = faces.type_face();
   const int pe = (faces.type_face() == vide_0D) ? Process::nproc()-1 : Process::me();
@@ -108,7 +108,8 @@ static void corriger_type(Faces& faces)
         }
       Type_Face tt = (Type_Face)typ_commun;
       faces.typer(tt);
-      int n= faces.nb_som_faces();
+//     int n= faces.nb_som_faces();
+      int n =type_elem.nb_som_face();
       faces.les_sommets().resize(0, n);
     }
 }
@@ -145,7 +146,7 @@ Entree& Zone::readOn(Entree& s)
     int i;
     int n = nb_front_Cl();
     for (i = 0; i < n; i++)
-      corriger_type(frontiere(i).faces());
+      corriger_type(frontiere(i).faces(),type_elem().valeur());
   }
 
   if (mes_faces_bord.size()==0 && mes_faces_raccord.size()==0 && Process::nproc()==1)
