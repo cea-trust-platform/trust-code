@@ -123,7 +123,7 @@ install_MED() {
     then
 	# defining the MED archive
 	case "x_${MED_version}_x" in
-	    "x_3_x") MED_archive="med-3.2.1"     ;;
+	    "x_3_x") MED_archive="med-3.2.0"     ;;
 	    "x_2.3_x") MED_archive="med-2.3.6"     ;;
 	    *) raise_invalid_MED_version_exception ;;
 	esac

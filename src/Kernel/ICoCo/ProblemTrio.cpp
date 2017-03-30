@@ -555,7 +555,7 @@ void ProblemTrio::getOutputField(const std::string& name_, TrioField& afield) co
   pb->getOutputField(name,afield);
 }
 
-
+#ifdef OLD_MEDCOUPLING
 ParaMEDMEM::MEDCouplingFieldDouble* ProblemTrio::getOutputMEDField(const string& name) const
 {
 #ifndef NO_MEDFIELD
@@ -604,6 +604,7 @@ void ProblemTrio::setInputMEDField(const std::string& name, const ParaMEDMEM::ME
 #endif
 }
 
+#endif
 
 void ProblemTrio::getOutputField(const std::string& name,MEDField& medfield) const
 {
@@ -633,8 +634,11 @@ void ProblemTrio::setInputField(const std::string& name, const MEDField& afield)
   // bof en attendant mieux
   TrioField  triofield;
   getInputFieldTemplate(name,triofield);
-
+#ifdef OLD_MEDCOUPLING
   const ParaMEDMEM::DataArrayDouble *fieldArr=afield.getField()->getArray();
+#else
+  const MEDCoupling::DataArrayDouble *fieldArr=afield.getField()->getArray();
+#endif
   triofield._field=const_cast<double*> (fieldArr->getConstPointer());
   // il faut copier les valeurs
   setInputField(name,triofield);

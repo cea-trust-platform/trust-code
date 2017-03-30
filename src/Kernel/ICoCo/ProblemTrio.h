@@ -34,10 +34,14 @@ class Probleme_U;
 //using std::string;
 //using std::vector;
 
+#undef OLD_MEDCOUPLING
+
+#ifdef OLD_MEDCOUPLING
 namespace ParaMEDMEM
 {
 class MEDCouplingFieldDouble;
 }
+#endif
 
 namespace ICoCo
 {
@@ -98,11 +102,12 @@ public :
   virtual std::vector<std::string> getOutputFieldsNames() const;
   virtual void getOutputField(const std::string& name, TrioField& afield) const;
 
+#ifdef OLD_MEDCOUPLING
   // interface salome
   ParaMEDMEM::MEDCouplingFieldDouble* getOutputMEDField(const std::string& name) const ;
   ParaMEDMEM::MEDCouplingFieldDouble* getInputMEDFieldTemplate(const std::string& name) const;
   void setInputMEDField(const std::string& name, const ParaMEDMEM::MEDCouplingFieldDouble* afield);
-
+#endif
   void getInputFieldTemplate(const std::string& name, MEDField& afield) const;
   void setInputField(const std::string& name, const MEDField& afield);
   void getOutputField(const std::string& name, MEDField& afield) const;

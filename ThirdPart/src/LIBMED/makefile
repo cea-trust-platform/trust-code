@@ -7,7 +7,7 @@ HDF_INSTALLER=./scripts/generated/install_HDF.sh
 MED=$(TRUST_MED_ROOT)/lib/libmed.a
 HDF=$(TRUST_MED_ROOT)/lib/libhdf5.a
 
-MED_ARCHIVES= ./archives/med-3.2.1.tar.gz
+MED_ARCHIVES= ./archives/med-3.2.0.tar.gz
 HDF_ARCHIVES= ./archives/hdf5-1.8.14.tar.gz
 
 
