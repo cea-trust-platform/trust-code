@@ -3,7 +3,7 @@
 #
 
 import LataLoader
-import LataConversion
+import Lata_to_med
 import MEDLoader
 from CaseWriter import CaseWriter
 from optparse import OptionParser
@@ -15,7 +15,7 @@ def buildMEDFileData(latafile,lasttime):
 
     write_med = 0 # we not want to write meshes in med format
     medfile="no_medfile" # no medfile !
-    mesh , indices, newNbNodes = LataConversion.BuildMergedMesh( latafile, write_med, medfile )
+    mesh , indices, newNbNodes = Lata_to_med.BuildMergedMesh( latafile, write_med, medfile )
 
     liste_ite=xrange(a.GetNTimesteps())
     liste_fields=a.GetFieldNames()

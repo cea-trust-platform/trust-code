@@ -126,7 +126,7 @@ Read pb
 	Post_processing
 	{
 		# Fields #
-                format lata # lata for VisIt tool #
+                format Lata # Lata (upper case !!) to force non regression (it is IMPORTANT) #
 		fields dt_post 1.  # Note: Warning to memory space if dt_post too small #
 		{
 			pression elem
@@ -135,10 +135,6 @@ Read pb
 			vitesse som
 		}
 	} 
-
-        # Saving and restarting process #
-        /* sauvegarde_simple binaire datafile.sauv */ # Note: last time step only saved #
-        /* resume_last_time binaire datafile.sauv */
 }
 
 # The problem is solved with #

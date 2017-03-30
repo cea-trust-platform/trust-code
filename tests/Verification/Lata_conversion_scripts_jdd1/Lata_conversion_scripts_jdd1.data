@@ -126,7 +126,7 @@ Read pb
 	Post_processing
 	{
 		# Fields #
-                format lml # lata for VisIt tool #
+                format Lata # lata for VisIt tool #
 		fields dt_post 1.  # Note: Warning to memory space if dt_post too small #
 		{
 			pression elem

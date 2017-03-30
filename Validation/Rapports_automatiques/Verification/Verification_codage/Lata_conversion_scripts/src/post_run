@@ -1,45 +1,83 @@
 #!/bin/bash
 
 source $TRUST_ROOT/Outils/lata2dx/lata2dx/install/env.sh
-source $TRUST_ROOT/lib/src/LIBMEDCOUPLING/install/env.sh
 
-python $TRUST_ROOT/Outils/lata2dx/lata2dx/Lata_to_med.py Obstacle.lata Obstacle.med
-$MED_COUPLING_ROOT/bin/med2case Obstacle.med 
-python $TRUST_ROOT/Outils/lata2dx/lata2dx/Lata_to_case.py Obstacle.lata Obstacle2.case
-python $TRUST_ROOT/Outils/lata2dx/lata2dx/Lata_to_case.py -l Obstacle.lata Obstacle2_LastTS.case
+mystudy=$1
 
-visit -cli -s script_visit.py Obstacle.case nts_case1_all -nowin
-visit -cli -s script_visit.py Obstacle2.case nts_case2_all -nowin
-visit -cli -s script_visit.py Obstacle2_LastTS.case nts_case2_last -nowin
+mystudyLata=$mystudy".lata"
+mystudyMed=$mystudy".med"
+mystudyCase=$mystudy".case"
+mystudyCase2=$mystudy"2.case"
+mystudyLastTS=$mystudy"2_LastTS.case"
 
-good="TRUE"
+python $LATALOADER_ROOT/lib/Lata_to_med.py $mystudyLata $mystudyMed 1>/dev/null 2>&1
+$MED_COUPLING_ROOT/bin/med2case $mystudyMed 1>/dev/null 2>&1
+python $LATALOADER_ROOT/lib/Lata_to_case.py $mystudyLata $mystudyCase2 1>/dev/null 2>&1
+python $LATALOADER_ROOT/lib/Lata_to_case.py -l $mystudyLata $mystudyLastTS 1>/dev/null 2>&1
 
-for i in {0..6}
-do
-    for field in VITESSE_SOM VITESSE_ELEM PRESSION_SOM PRESSION_ELEM
-    do
+all_files_are_here="FALSE"
 
-	file1="Obstacle000"$i"."$field"_dom"
-	file2="Obstacle2000"$i"."$field"_dom"
-
-	diff -u $file1 $file2 > differences
-	touch empty
-
-	diff differences empty
-	status=$?
-	if [ $status -ne 0 ]
-	then
-	    echo "Error !! There are differences between files "$file1" and "$file2> my_text
-	    good="FALSE"
-	fi 
-	rm -f empty
-  
-    done
-done
-
-if [ $good == "TRUE" ]
+if [ -e $mystudyLata ] && [ -e $mystudyMed ] && [ -e $mystudyCase ] && [ -e $mystudyCase2 ] && [ -e $mystudyLastTS ] 
 then
-    echo "No differences between .case files generated via {Lata_to_med and then med2case} and {Lata_to_case} scripts"> my_text
+    all_files_are_here="TRUE"
+else
+    touch nts_case1_all
+    touch nts_case2_all
+    touch nts_case2_last
 fi
 
+
+if [ $all_files_are_here == "TRUE" ]
+then
+
+    visit -cli -s script_visit.py $mystudyCase nts_case1_all -nowin 
+    visit -cli -s script_visit.py $mystudyCase2 nts_case2_all -nowin 
+    visit -cli -s script_visit.py $mystudyLastTS nts_case2_last -nowin 
+
+    good="TRUE"
+    for i in {0..6}
+    do
+	for field in VITESSE_SOM VITESSE_ELEM PRESSION_SOM PRESSION_ELEM
+	do
+	    file1=$mystudy"000"$i"."$field"_dom"
+	    file2=$mystudy"2000"$i"."$field"_dom"
+
+	    if [ ! -e $file1 ]
+	    then
+		echo "Error ! file "$file1" is missing ! ">my_text
+		good="FALSE"
+	    fi
+
+	    if [ ! -e $file2 ]
+	    then
+      		echo "Error ! file "$file2" is missing ! ">my_text
+		good="FALSE"
+	    fi
+
+	    if [ good == "TRUE" ]
+	    then
+		diff -u $file1 $file2 > differences
+		touch empty
+
+		diff differences empty
+		status=$?
+		if [ $status -ne 0 ]
+		then
+		    echo "Error !! There are differences between (at least) files "$file1" and "$file2> my_text
+		    good="FALSE"
+		fi 
+		rm -f empty
+	    fi
+
+	done
+    done
+
+    if [ $good == "TRUE" ]
+    then
+	echo "No differences between .case files generated via {Lata_to_med and then med2case} and {Lata_to_case} scripts"> my_text
+    fi
+  
+else
+    echo "ERROR !!!!!! Not all files were generated !"> my_text
+fi
 

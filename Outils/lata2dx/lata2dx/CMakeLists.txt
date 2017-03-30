@@ -102,6 +102,7 @@ SWIG_LINK_LIBRARIES(LataLoader ${PYTHON_LIBRARIES} ${essai})
 install(TARGETS _LataLoader  DESTINATION lib)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/LataLoader.py   DESTINATION lib)
 install(FILES Lata_to_med.py   DESTINATION lib)
+install(FILES Lata_to_case.py   DESTINATION lib)
 
 configure_file(env.sh.in env.sh @ONLY)
 
