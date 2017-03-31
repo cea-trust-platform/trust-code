@@ -10,7 +10,7 @@
 #define MM 
 #ifdef MM
 #include <ICoCoMEDField.hxx>
-#include <ProblemTrio.h>
+#include <Problem_V2.h>
 #else
 #include <ICoCoTrioField.h>
 #endif
@@ -82,8 +82,7 @@ int main(int argc,char **argv) {
 
   // Instanciation of Trio_U
 #ifdef MM
-  Problem *Ta = getProblem(); // new ProblemTrio;
-  ProblemTrio* T=dynamic_cast<ProblemTrio*>( Ta);
+  Problem_V2 *T = getProblem_V2(); // new ProblemTrio;
 #else
   Problem *T = getProblem(); // new ProblemTrio;
 #endif
