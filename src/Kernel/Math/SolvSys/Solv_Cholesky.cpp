@@ -41,6 +41,15 @@ Sortie& Solv_Cholesky::printOn(Sortie& s ) const
 
 Entree& Solv_Cholesky::readOn(Entree& is )
 {
+  if ( Process::nproc()>1 )
+    {
+      Cerr << finl;
+      Cerr << "Cholesky solver not parallelized in TRUST!!!" << finl;
+      Cerr << "Change your solver." << finl;
+      Cerr << "Try using Petsc Cholesky solver." << finl;
+      exit();
+    }
+
   Motcle accolade_ouverte("{");
   Motcle accolade_fermee("}");
   Motcles les_parametres(3);

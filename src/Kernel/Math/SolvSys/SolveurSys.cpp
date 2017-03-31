@@ -23,6 +23,7 @@
 #include <SolveurSys.h>
 #include <stat_counters.h>
 #include <Motcle.h>
+#include <Param.h>
 
 Implemente_deriv(SolveurSys_base);
 Implemente_instanciable(SolveurSys,"SolveurSys",DERIV(SolveurSys_base));
@@ -34,20 +35,14 @@ Sortie& SolveurSys::printOn(Sortie& s ) const
 
 Entree& SolveurSys::readOn(Entree& is )
 {
-  Nom nom_solveur("Solv_");
-  Nom type_solv_sys;
-  is >> type_solv_sys;
-  //  if (type_solv_sys==Motcle("petsc")) is >> type_solv_sys;
-  nom_solveur+=type_solv_sys;
-  if (nom_solveur=="Solv_CHOLESKY" && Process::nproc()>1)
-    {
-      Cerr << finl;
-      Cerr << "Cholesky solver not parallelized in TRUST." << finl;
-      Cerr << "Change your solver." << finl;
-      Cerr << "Try using Petsc Cholesky solver." << finl;
-      exit();
-    }
-  typer(nom_solveur);
+  Param param(que_suis_je());
+  Nom solver_name;
+  param.ajouter("solveur_pression",&solver_name,Param::REQUIRED);
+  param.lire_sans_accolade(is);
+
+  Nom type_solv_sys("Solv_");
+  type_solv_sys+=solver_name;
+  typer(type_solv_sys);
   return is >> valeur();
 }
 
