@@ -16,6 +16,7 @@
 //
 // File:        ProblemTrio_V2.h
 // Directory:   $TRUST_ROOT/src/Kernel/ICoCo
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef ProblemTrio_V2_included

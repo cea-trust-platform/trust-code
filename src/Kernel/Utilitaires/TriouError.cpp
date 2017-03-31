@@ -39,3 +39,13 @@ TriouError::~TriouError()
 {
   free(message_);
 }
+TriouError::TriouError(const TriouError& iii)
+{
+  (*this)=iii;
+}
+const TriouError& TriouError::operator=(const TriouError& iii)
+{
+  message_=strdup(iii.message_);
+  pe_=iii.pe_;
+  return (*this);
+}
