@@ -3,7 +3,7 @@
 #
 
 import os
-from MEDLoader import MEDLoader
+import MEDLoader
 
 def getMCTypeMap():
   """ Helper function returning mapping between the MEDCoupling type enum and human-readable names.  
