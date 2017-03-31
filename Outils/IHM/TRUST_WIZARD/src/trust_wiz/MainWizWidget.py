@@ -92,7 +92,7 @@ class MainWidget(QtGui.QWidget):
   def onMEDFileChange(self, widgetPath, filePath):
 #    print "file change"
     import os
-    from MEDLoader import MEDLoader
+    import MEDLoader
     try:
       if not os.path.isfile(filePath):
         raise Exception
@@ -114,7 +114,7 @@ class MainWidget(QtGui.QWidget):
     geotypes = []
     mesh_name = str(mesh_name)
     if mesh_name != "":
-      from MEDLoader import MEDLoader
+      import MEDLoader
       import MEDLoader as ml
       try:
         medFileW = self._dynWidget.resolvePath(widgetPath[:-1] + ["med_file"])

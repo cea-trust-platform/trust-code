@@ -10,7 +10,7 @@
 #include <fstream>
 #include <string.h>
 
-using namespace ParaMEDMEM;
+using namespace MEDCoupling;
 using namespace std;
 using namespace ICoCo;
 
@@ -43,7 +43,7 @@ void modifie_TrioDEC(TrioDEC& dec)
 }
 void modifie_n_TrioDEC(TrioDEC& dec)
 {
-   dec.setNature(ConservativeVolumic);
+   dec.setNature(IntensiveMaximum);
 }
 int main(int argc,char **argv) {
 
@@ -169,7 +169,7 @@ int main(int argc,char **argv) {
 	// OK on all procs
 	
 
-	// On renseigne le maillage des champs à recevoir.
+	// On renseigne le maillage des champs ï¿½ recevoir.
        
 	
 	if ( entree_vef_group.containsMyRank()) {
@@ -232,7 +232,7 @@ int main(int argc,char **argv) {
           double p0=Pression_chaude._field[0];
           int nbcase=Pression_chaude.nb_values()*Pression_chaude._nb_field_components;
 	  // on retire la pression dans la case 0 pour avoir toujours P(0)=0 
-	  // la pression est définie a une constante pres
+	  // la pression est dï¿½finie a une constante pres
 	  // pour t<=0.1 pas de retroaction en pression (P=0)
 	  // ensuite P=r*P_ef+(1-r)*P_old relaxation pour faciliter la 
 	  // convergence du couplage
@@ -272,7 +272,7 @@ int main(int argc,char **argv) {
       }
 	
 
-      }	// destruction des champs et des tableaux associés
+      }	// destruction des champs et des tableaux associï¿½s
       
       clock_t clock_avt_resolution= clock ();
       

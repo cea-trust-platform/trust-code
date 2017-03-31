@@ -23,6 +23,7 @@
 #include <Pilote_ICoCo.h>
 #include <ICoCoTrioField.h>
 #include <ProblemTrio.h>
+#include <ProblemTrio_V2.h>
 #include <Param.h>
 #include <Probleme_U.h>
 /*
@@ -34,6 +35,7 @@
 using std::string;
 using std::vector;
 using ICoCo::ProblemTrio;
+using ICoCo::ProblemTrio_V2;
 using ICoCo::TrioField;
 
 Implemente_instanciable(Pilote_ICoCo,"Pilote_ICoCo",Interprete);
@@ -96,7 +98,7 @@ Entree& Pilote_ICoCo::readOn(Entree& is)
 void main_pilote_icoco_1(Probleme_U& pb_to_solve)
 {
 
-  ProblemTrio pb;
+  ProblemTrio_V2 pb;
 
   Nom pb_name=pb_to_solve.le_nom();
   pb.initialize_pb(pb_to_solve);

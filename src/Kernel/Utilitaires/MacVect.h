@@ -42,8 +42,9 @@
     inline _TYPE_& operator()(int i) { return operator[](i); };		\
     VECT(_TYPE_)(const VECT(_TYPE_)&);					\
     VECT(_TYPE_)& operator=(const VECT(_TYPE_)& );			\
-    VECT(_TYPE_)& add(const _TYPE_&);					\
-    VECT(_TYPE_)& add(const VECT(_TYPE_)&);				\
+    _TYPE_& add(const _TYPE_& titi);					\
+    _TYPE_& add();					\
+    void add(const VECT(_TYPE_)&);				\
     Entree& lit(Entree& );						\
   protected:								\
     Objet_U* cree_une_instance() const;					\
@@ -87,15 +88,17 @@
     vect_impl::operator=(avect);					\
     return *this; 							\
     }									\
+  _TYPE_& VECT(_TYPE_)::add() {\
+  return add(_TYPE_()) ;\
+  } \
   /* Add a new element to the VECT */					\
-  VECT(_TYPE_)& VECT(_TYPE_)::add(const _TYPE_& data_to_add) {		\
-    vect_impl::add(data_to_add);					\
-    return *this;							\
+  _TYPE_& VECT(_TYPE_)::add(const _TYPE_& data_to_add) {		\
+   vect_impl::add(data_to_add);					\
+   return (*this)[size()-1];  \
   }									\
   /* Append a VECT to a VECT */						\
-  VECT(_TYPE_)& VECT(_TYPE_)::add(const VECT(_TYPE_)& data_to_add) {	\
+  void VECT(_TYPE_)::add(const VECT(_TYPE_)& data_to_add) {	\
     vect_impl::add(data_to_add);					\
-    return *this;							\
   }
 
 #define Declare_vect(_TYPE_)			\

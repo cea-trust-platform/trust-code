@@ -6,7 +6,7 @@
 
 %{
 #include "LataLoader.h"
-using namespace ParaMEDMEM;
+using namespace MEDCoupling;
 
 %}
 

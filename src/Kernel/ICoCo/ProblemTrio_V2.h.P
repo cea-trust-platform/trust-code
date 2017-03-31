@@ -14,36 +14,9 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        TriouError.h
-// Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     /main/4
+// File:        ProblemTrio_V2.h
+// Directory:   $TRUST_ROOT/src/Kernel/ICoCo
 //
 //////////////////////////////////////////////////////////////////////////////
-
-#ifndef TriouError_included
-#define TriouError_included
-
-// Description: classe d erreur declenche par process::exit
-
-class TriouError
-{
-
-public:
-  TriouError(const char* s, int pe=-1) ;
-  TriouError(int pe=-1);
-  ~TriouError();
-  TriouError(const TriouError& iii);
-  const TriouError& operator=(const TriouError&);
-  const char* get_msg() const
-  {
-    return message_;
-  };
-  const int& get_pe() const
-  {
-    return pe_;
-  };
-private:
-  char *message_;
-  int pe_;
-};
-#endif
+#Pinclude(ProblemTrio_base_h__)
+#Pusemacro(declarePb)(ProblemTrio_V2,Problem_V2)

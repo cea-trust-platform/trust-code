@@ -20,7 +20,7 @@
 #include <math.h>
 
 using namespace std;
-using namespace ParaMEDMEM;
+using namespace MEDCoupling;
 using namespace ICoCo;
 
 // 1 - testGauthier1
@@ -788,7 +788,7 @@ void testICocoTrio1()
             else
               dec_emetteur.attachLocalField((ICoCo::Field*) &champ_recepteur);
             
-            dec_emetteur.setNature(ConservativeVolumic);
+            dec_emetteur.setNature(IntensiveMaximum);
             
             if(init)
               dec_emetteur.synchronize();

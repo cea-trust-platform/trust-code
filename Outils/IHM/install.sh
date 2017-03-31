@@ -9,6 +9,7 @@ sed "s/LOG_LEVEL = 0/LOG_LEVEL = 1/g" $file.sa > $file.2
 diff $file $file.sa
 
 STANDALONE=ON
+export  CONFIGURATION_ROOT_DIR=$PWD/configuration
 if [ "$KERNEL_ROOT_DIR" = "" ]
 then
 # verification of modules

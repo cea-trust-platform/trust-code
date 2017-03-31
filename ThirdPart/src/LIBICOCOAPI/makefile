@@ -12,12 +12,13 @@ OBJS= \
 	src/Exceptions.o \
 	src/ICoCoTrioField.o \
 	src/Problem.o \
+	src/Problem_V2.o \
 	src/ICoCoField.o
 install: $(MALIB) ./install_include.sh
 	@./install_include.sh
 all: $(MALIB)
 
-$(MALIB) : $(OBJS) makefile include/Exceptions.h include/ICoCoTrioField.h include/ICoCoField.h include/Problem.h $(SRCS)
+$(MALIB) : $(OBJS) makefile include/Exceptions.h include/ICoCoTrioField.h include/ICoCoField.h include/Problem.h include/Problem_V2.h $(SRCS)
 	@mkdir -p $(TRUST_ICOCOAPI)/lib
 	@ar cruv $(MALIB) $(OBJS)
 	@echo "$(MALIB) est a jour".
@@ -29,5 +30,6 @@ SRCS= \
 	src/Exceptions.cpp \
 	src/ICoCoTrioField.cpp \
 	src/Problem.cpp \
+	src/Problem_V2.cpp \
 	src/ICoCoField.cpp
 	

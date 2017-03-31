@@ -10,11 +10,12 @@
 #define MM 
 #ifdef MM
 #include <ICoCoMEDField.hxx>
+#include <Problem_V2.h>
 #else
 #include <ICoCoTrioField.h>
 #endif
 
-using namespace ParaMEDMEM;
+using namespace MEDCoupling;
 using namespace std;
 using namespace ICoCo;
 
@@ -80,7 +81,11 @@ int main(int argc,char **argv) {
   MPIProcessorGroup canal_group(comm,canal_ids);
 
   // Instanciation of Trio_U
+#ifdef MM
+  Problem_V2 *T = getProblem_V2(); // new ProblemTrio;
+#else
   Problem *T = getProblem(); // new ProblemTrio;
+#endif
   
   // Initialisation of Trio_U
   std::string data_file;
@@ -122,7 +127,7 @@ int main(int argc,char **argv) {
 #endif
  
 #ifdef MM
-  MEDCouplingFieldDouble* field_vitesse=0;
+  MEDField field_vitesse;
 #else
 #ifndef testvector
   TrioField vitesse;
@@ -166,8 +171,8 @@ int main(int argc,char **argv) {
 	
 #ifdef MM
 	  cout <<" medcouplindfielddouble"<<endl;
-	  field_vitesse= T->getInputMEDFieldTemplate("vitesse_entree");
-	  dec.attachLocalField(field_vitesse);
+	  T->getInputFieldTemplate("vitesse_entree",field_vitesse);
+	  dec.attachLocalField(field_vitesse.getField());
 	  
 #else
 	  T->getInputFieldTemplate("vitesse_entree",vitesse);
@@ -182,7 +187,7 @@ int main(int argc,char **argv) {
 	  // Receive field from boite
 	  dec.recvData();
 #ifdef MM
-	  T->setInputMEDField("vitesse_entree",field_vitesse);
+	  T->setInputField("vitesse_entree",field_vitesse);
 #else
 	  T->setInputField("vitesse_entree",vitesse);
 #endif
@@ -195,9 +200,9 @@ int main(int argc,char **argv) {
 	 
 #ifdef MM
 	  cout <<" medcouplindfielddouble"<<endl;
-	  field_vitesse=T->getOutputMEDField("VITESSE_ELEM_boite_boundaries_perio");
+	  T->getOutputField("VITESSE_ELEM_boite_boundaries_perio",field_vitesse);
 	  //dec.attachLocalField(parafield);
-	  dec.attachLocalField(field_vitesse);
+	  dec.attachLocalField(field_vitesse.getField());
 #else 
 	  T->getOutputField("VITESSE_ELEM_boite_boundaries_perio",vitesse);
 	  dec.attachLocalField( &vitesse);
@@ -212,11 +217,6 @@ int main(int argc,char **argv) {
 	  dec.sendData();
 	}
       
-#ifdef MM
-	if (field_vitesse)
-	  field_vitesse->decrRef();
-	
-#endif
       }
       // Solve the next time step
       ok=T->solveTimeStep();
