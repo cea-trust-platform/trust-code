@@ -19,13 +19,14 @@
 // Version:     /main/23
 //
 //////////////////////////////////////////////////////////////////////////////
+
 #include <StringTokenizer.h>
+#include <Char_ptr.h>
 #include <Objet_U.h>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sstream>
-#include <Char_ptr.h>
 
 //using namespace std;
 using std::stringstream;

@@ -19,6 +19,7 @@
 // Version:     /main/26
 //
 //////////////////////////////////////////////////////////////////////////////
+
 #include <DomaineCutter.h>
 #include <ArrOfBit.h>
 #include <Domaine.h>
@@ -29,7 +30,6 @@
 #include <Vect_ArrOfInt.h>
 #include <Sous_Zone.h>
 #include <Sparskit.h>
-#include <Poly_geom_base.h>
 #include <Poly_geom_base.h>
 
 Implemente_instanciable_sans_constructeur(DomaineCutter,"DomaineCutter",Objet_U);

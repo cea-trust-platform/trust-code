@@ -21,10 +21,11 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Polyedre.h>
+#include <Linear_algebra_tools_impl.h>
 #include <Domaine.h>
 #include <IntList.h>
 #include <algorithm>
-#include <Linear_algebra_tools_impl.h>
+
 using std::swap;
 
 Implemente_instanciable_sans_constructeur(Polyedre,"Polyedre",Poly_geom_base);

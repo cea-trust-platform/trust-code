@@ -1175,7 +1175,7 @@ void Probleme_base::associer_sch_tps_base(const Schema_Temps_base& un_schema_en_
 {
   if (le_schema_en_temps.non_nul())
     {
-      // TODO Ajouter la methode nommer au schema_temps
+      // ToDo Ajouter la methode nommer au schema_temps
       Cerr<<"Error: Problem "<<le_nom()<<" was ialready associated with the scheme "<< le_schema_en_temps.valeur().le_nom()<<" and we try to assocaite with "<<un_schema_en_temps.le_nom()<<finl;
       exit();
     }
