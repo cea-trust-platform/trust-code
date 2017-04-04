@@ -48,8 +48,8 @@ tar zxf $archive
 
 #echo patching MPIProcessorGroup.cxx
 #sed -i "s?_comm_interface.commCreate(_world_comm, _group, &_comm);?_comm_interface.commCreate(_world_comm, _group, \&_comm);MPI_Group_free(\&group_world);?"  MED_SRC/src/ParaMEDMEM/MPIProcessorGroup.cxx
-echo patching MEDCouplingMemArray
-cp $org/MEDCouplingMemArray.hxx $(find $medcoupling -name  MEDCouplingMemArray.hxx )
+#echo patching MEDCouplingMemArray
+#cp $org/MEDCouplingMemArray.hxx $(find $medcoupling -name  MEDCouplingMemArray.hxx )
 
 
 mkdir build
