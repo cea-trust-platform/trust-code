@@ -383,20 +383,20 @@ if [ "$clean" = "" ]
 then
    # echo $ECHO_OPTS "all:\n\tcompile" 				> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "SHELL=/bin/bash" > $TRUST_ROOT/Makefile
-   echo $ECHO_OPTS "all:\n\t(. ./env_TRUST.sh ;env cibles=\"micro_kernel_opt numeric_kernel_opt standard_kernel_opt opt micro_kernel_debug numeric_kernel_debug standard_kernel_debug debug\" monodir)"  >> $TRUST_ROOT/Makefile
-   echo $ECHO_OPTS "tools:\n\t(. ./env_TRUST.sh ;compile tools)" >> $TRUST_ROOT/Makefile
+   echo $ECHO_OPTS "all:\n\t(source ./env_TRUST.sh && env cibles=\"micro_kernel_opt numeric_kernel_opt standard_kernel_opt opt micro_kernel_debug numeric_kernel_debug standard_kernel_debug debug\" monodir)"  >> $TRUST_ROOT/Makefile
+   echo $ECHO_OPTS "tools:\n\t(source ./env_TRUST.sh && compile tools)" >> $TRUST_ROOT/Makefile
    echo  $ECHO_OPTS "optim:\t opt" 	>> $TRUST_ROOT/Makefile
    for cible in opt debug prof gcov opt_avx semi_opt custom
    do
-     echo $ECHO_OPTS "${cible}:\n\t(. ./env_TRUST.sh ;env cibles=\"micro_kernel_${cible} numeric_kernel_${cible} standard_kernel_${cible} ${cible}\" monodir)" >> $TRUST_ROOT/Makefile
+     echo $ECHO_OPTS "${cible}:\n\t(source ./env_TRUST.sh && env cibles=\"micro_kernel_${cible} numeric_kernel_${cible} standard_kernel_${cible} ${cible}\" monodir)" >> $TRUST_ROOT/Makefile
    done
-   echo $ECHO_OPTS "clean:\n\t(. ./env_TRUST.sh ;compile clean)" >> $TRUST_ROOT/Makefile
+   echo $ECHO_OPTS "clean:\n\t(source ./env_TRUST.sh && compile clean)" >> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "depend:\n\t#fait_makefile" 			>> $TRUST_ROOT/Makefile
-   echo $ECHO_OPTS "doxygen:\n\t(. ./env_TRUST.sh ;make_Doxyfile)" 			>> $TRUST_ROOT/Makefile
-   #echo $ECHO_OPTS "init:\n\t. ./env_TRUST.sh" 		>> $TRUST_ROOT/Makefile
-   echo $ECHO_OPTS "check:\n\t(. ./env_TRUST.sh ;echo 0 | lance_test $exec_opt $TRUST_ROOT )" >> $TRUST_ROOT/Makefile  
+   echo $ECHO_OPTS "doxygen:\n\t(source ./env_TRUST.sh && make_Doxyfile)" 			>> $TRUST_ROOT/Makefile
+   #echo $ECHO_OPTS "init:\n\tsource ./env_TRUST.sh" 		>> $TRUST_ROOT/Makefile
+   echo $ECHO_OPTS "check:\n\t(source ./env_TRUST.sh && echo 0 | lance_test $exec_opt $TRUST_ROOT )" >> $TRUST_ROOT/Makefile  
    echo $ECHO_OPTS "check_optim:\tcheck" >> $TRUST_ROOT/Makefile  
-   echo $ECHO_OPTS "check_debug:\n\t(. ./env_TRUST.sh ;echo 0 | lance_test $exec_debug $TRUST_ROOT )" >> $TRUST_ROOT/Makefile  
+   echo $ECHO_OPTS "check_debug:\n\t(source ./env_TRUST.sh && echo 0 | lance_test $exec_debug $TRUST_ROOT )" >> $TRUST_ROOT/Makefile  
    [ "${#ECHO_OPTS}" = 0 ] && echo "Error: Check "$TRUST_ROOT"/Makefile !!! (ECHO_OPTS="$ECHO_OPTS")" && exit -1
    ##################################
    # Desormais on recree les makefile
