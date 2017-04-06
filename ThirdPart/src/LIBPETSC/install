@@ -112,7 +112,7 @@ for file in `ls $TRUST_ROOT/externalpackages/petsc/*`
 do
 ln -sf $file .
 done
-ln -sf scotch_6.0.3.tar.gz ptscotch.tar.gz
+ln -sf scotch_6.0.4-p1.tar.gz ptscotch.tar.gz
 
 
 ##############

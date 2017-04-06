@@ -3,12 +3,13 @@
 [ "$TRUST_DOWNLOAD_VISIT" = 1 ] && exit 0
 # On verifie que pdflatex est installe sinon on quitte
 [ "`pdflatex -v 1>/dev/null 2>&1;echo $?`" != 0 ] && echo No pdflatax, no verif && exit 0
-echo Generation rapport.pdf
 KO=0
 
 PAR=""
 [ -f PAR_Kernel_polygone.lata ] && PAR=PAR_
 
+[ "`visit -version 1>/dev/null 2>&1;echo $?`" != 0 ] && exit 0
+echo Generation rapport.pdf
 $TRUST_ROOT/Validation/Outils/Genere_courbe/src/genererCourbes.py -p ${PAR}Kernel_polygone.prm  1>${PAR}log 2>&1
 [ $? -ne 0 ] && KO=1 && cat ${PAR}log
 exit $KO

@@ -115,7 +115,7 @@ done
 # Nom des versions a upgrader:
 version_openblas=0.2.8
 # On utilise Lapack 3.1.1 si le compilateur fortran n'est pas f90 (auquel cas TRUST_USE_MUMPS=0)
-version_lapack=3.4.1 && [ "$TRUST_USE_MUMPS" != 1 ] && version_lapack=3.1.1
+version_lapack=3.4.2 && [ "$TRUST_USE_MUMPS" != 1 ] && version_lapack=3.1.1
 
 # Sur 32 bits, OpenBLAS et GotoBlas font des erreurs valgrind sur ddot_k et daxpy_k
 # donc on utilise l'ancien LAPACK non optimise

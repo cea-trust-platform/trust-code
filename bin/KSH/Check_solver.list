@@ -84,7 +84,7 @@ let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond BLOCK_JACOBI_ICC { 
 let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond SPAI { level 2 epsilon 0.2 } impr }"		;sym[$i]=1	
 
 # GC + BOOMERAMG
-let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond BOOMERAMG { } impr }"				;sym[$i]=1	
+let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond BOOMERAMG { level 2 } impr }"			;sym[$i]=1	
 
 ##########################
 # Solveurs tested on GPU #
