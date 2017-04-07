@@ -465,7 +465,7 @@ class objet_u(XObject):
         self.status="Valid"
         #self.name_u="not_set"
         self.mode_ecr=1
-        
+        self.is_read=0 
 	self.listattr=None
         # print "ici args",args,self.__class__
         # print self,"cree"
@@ -744,6 +744,7 @@ class objet_u(XObject):
                 self.name_u=chaine[0]
                 if len(chaine): chaine.pop(0)
             else:
+                self.is_read=1 
                 # on passe l'accolade
                 if self.__class__.readacc_==1:
                     # on passe l'accolade
@@ -1068,7 +1069,8 @@ class objet_u(XObject):
                 pass
             #print attr.name,val,isinstance(attr,Tr_Attribute) and (attr.optional==0)
             if (val is None) and  isinstance(attr,Tr_Attribute) and (attr.optional==0):
-                msgn= "Pb "+str(self)+" "+str(self.name_u)+" "+attr.name+ " is none and no optionnal"
+               if self.is_read==1:
+                msgn= "Pb "+str(self)+" "+str(self.name_u)+" "+str(self.is_read) + " "+ attr.name+ " is none and no optionnal"
 		msg+=msgn+";"
                 self.status="NoValid"
                 self.test_valid[attr.name]="NoValid"

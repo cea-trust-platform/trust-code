@@ -11,6 +11,7 @@ if [ $trad -ne 0 ]
   fi
 
 cd ..
+[ "$1" = "-no_lance_test" ] && exit $trad
 cd test_complet
 ./fait_lance_test
 export PAR_F=0

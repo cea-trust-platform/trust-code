@@ -193,18 +193,6 @@ nom_postraitement objet_lecture nul 0
   attr post postraitement_base post 0 the post
 liste_post_ok listobj liste_post_ok -1 nom_postraitement 0 Keyword to use several results files. List of objects of post-processing (with name)
 pb_gen_base objet_u pb_gen_base -1 Basic class for problems.
-Pb_base pb_gen_base Pb_base -3 Resolution of equations on a domain. A problem is defined by creating an object and assigning the problem type that the user wishes to resolve. To enter values for the problem objects created, the Lire (Read) interpretor is used with a data block.
-  attr postraitement|Post_processing corps_postraitement postraitement 1 One post-processing (without name).
-  attr postraitements|Post_processings postraitements postraitements 1 List of Postraitement objects (with name).
-  attr liste_de_postraitements liste_post_ok liste_de_postraitements 1 This
-  attr liste_postraitements liste_post liste_postraitements 1 This block defines the output files to be written during the computation. The output format is lata in order to use OpenDX to draw the results. This block can be divided in one or several sub-blocks that can be written at different frequencies and in different directories. Attention. The directory lata used in this example should be created before running the computation or the lata files will be lost.
-  attr sauvegarde format_file sauvegarde 1 Keyword used when calculation results are to be backed up. When a coupling is performed, the backup-recovery file name must be well specified for each problem. In this case, you must save to different files and correctly specify these files when restarting the calculation.
-  attr sauvegarde_simple format_file sauvegarde_simple 1 The same keyword than Sauvegarde except, the last time step only is saved.
-  attr reprise format_file reprise 1 Keyword to restart a calculation based on the name_file file (see the class format_file). If format_reprise is xyz, the name_file file should be the .xyz file created by the previous calculation. With this file, it is possible to restart a parallel calculation on P processors, whereas the previous calculation has been run on N (N<>P) processors. Should the calculation be restarted, values for the tinit (see schema_temps_base) time fields are taken from the name_file file. If there is no backup corresponding to this time in the name_file, TRUST exits in error.
-  attr resume_last_time format_file resume_last_time 1 Keyword to restart a calculation based on the name_file file, restart the calculation at the last time found in the file (tinit is set to last time of saved files).
-  ref domaine domaine
-  ref scheme schema_temps_base
-  ref milieu milieu_base
 discretize interprete discretiser -1 Keyword to discretise a problem problem_name according to the discretisation dis. NL2 IMPORTANT: A number of objects must be already associated (a domain, time scheme, central object) prior to invoking the Discretiser (Discretise) keyword. The physical properties of this central object must also have been read.
   attr problem_name ref_pb_gen_base problem_name 0 Name of problem.
   attr dis ref_discretisation_base dis 0 Name of the discretisation object.
@@ -543,7 +531,7 @@ pb_conduction Pb_base pb_conduction -1 Resolution of the heat equation.
   attr conduction conduction conduction 1 Heat equation.
 navier_stokes_qc navier_stokes_standard navier_stokes_qc -1 NAVIER STOKES equations under smal Mach number.
 convection_diffusion_chaleur_qc eqn_base convection_diffusion_chaleur_qc -1 Energy equation under smal Mach number.
-  attr mode_calcul_convection chaine(into=["ancien","divuT_moins_Tdivu","divrhouT_moins_Tdivrhou"]) mode_calcul_convection 1 Option to set the form of the convective operatorNL2 divrhouT_moins_Tdivrhou  (the default since 1.6.8): rho.u.gradT = div(rho.u.T )- Tdiv(rho.u.1) NL2ancien: u.gradT = div(u.T) - T.div(u) NL2 divuT_moins_Tdivu : u.gradT = div(u.T) - Tdiv(u.1)
+  attr mode_calcul_convection chaine(into=["ancien","divuT_moins_Tdivu","divrhouT_moins_Tdivrhou"]) mode_calcul_convection 1 Option to set the form of the convective operatorNL2 divrhouT_moins_Tdivrhou (the default since 1.6.8): rho.u.gradT = div(rho.u.T )- Tdiv(rho.u.1) NL2ancien: u.gradT = div(u.T) - T.div(u) NL2 divuT_moins_Tdivu : u.gradT = div(u.T) - Tdiv(u.1)
 pb_thermohydraulique_qc Pb_base pb_thermohydraulique_qc -1 Resolution of thermohydraulic problem under smal Mach number. NL2 Keywords for the unknowns other than pressure, velocity, temperature are : NL2 masse_volumique : density NL2 enthalpie : enthalpy NL2 pression : reduced pressure NL2 pression_tot : total pressure.
   attr navier_stokes_qc navier_stokes_qc navier_stokes_qc 0 NAVIER STOKES equations under smal Mach number.
   attr convection_diffusion_chaleur_qc convection_diffusion_chaleur_qc convection_diffusion_chaleur_qc 0 Energy equation under smal Mach number.
@@ -635,7 +623,7 @@ source_qdm_lambdaup source_base source_qdm_lambdaup 1 This source term is a diss
   attr lambda_max floattant lambda_max 1 value of lambda_max
   attr ubar_umprim_cible floattant ubar_umprim_cible 1 value of ubar_umprim_cible
 source_th_tdivu source_base source_th_tdivu 0 This term source is dedicated for any scalar (called T) transportation. Coupled with upwind (amont) or muscl scheme, this term gives for final expression of convection : div(U.T)-T.div (U)=U.grad(T) This ensures, in incompressible flow when divergence free is badly resolved, to stay in a better way in the physical boundaries. NL2 Warning: Only available in VEF discretization.
-source_robin source_base source_robin 0 This source term should be used when a Paroi_decalee_Robin boundary condition is set in a hydraulic equation. The source term will be applied on the N specified boundaries. To post-process the values of tauw, u_tau and Reynolds_tau into the files tauw_robin.dat, reynolds_tau_robin.dat and u_tau_robin.dat, you must add a block “Traitement_particulier { canal { } }
+source_robin source_base source_robin 0 This source term should be used when a Paroi_decalee_Robin boundary condition is set in a hydraulic equation. The source term will be applied on the N specified boundaries. To post-process the values of tauw, u_tau and Reynolds_tau into the files tauw_robin.dat, reynolds_tau_robin.dat and u_tau_robin.dat, you must add a block Traitement_particulier { canal { } }
   attr bords vect_nom bords 0 not_set
 source_robin_scalaire source_base source_robin_scalaire 0 This source term should be used when a Paroi_decalee_Robin boundary condition is set in a an energy equation. The source term will be applied on the N specified boundaries. The values temp_wall_valueI are the temperature specified on the Ith boundary. The last value dt_impr is a printing period which is mandatory to specify in the data file but has no effect yet.
   attr bords listdeuxmots_sacc bords 0 not_set
@@ -705,7 +693,7 @@ champ_front_lu front_field_base champ_front_lu 0 boundary field which is given f
 boundary_field_inward front_field_base boundary_field_inward 1 this field is used to define the normal vector field standard at the boundary in VDF or VEF discretization.
   attr normal_value chaine normal_value 0 normal vector value (positive value for a vector oriented outside to inside) which can depend of the time.
 champ_front_pression_from_u front_field_base champ_front_pression_from_u 0 this field is used to define a pressure field depending of a velocity field.
-  attr expression chaine expression 0 value depending of a velocity (like $“2*u_moy^2$).
+  attr expression chaine expression 0 value depending of a velocity (like $2*u_moy^2$).
 champ_front_debit front_field_base champ_front_debit 0 This field is used to define a flow rate field instead of a velocity field for a Dirichlet boundary condition on Navier Stokes equation.
   attr ch front_field_base ch 0 field (champ_front_uniforme) to define the flow rate.
 milieu_base objet_u milieu_base -1 Basic class for medium (physics properties of medium).
@@ -904,6 +892,7 @@ solv_gcp solveur_sys_base gcp 1 Preconditioned conjugated gradient.
   attr quiet rien quiet 1 To not displaying any outputs of the solver.
   attr save_matrice|save_matrix rien save_matrice 1 to save the matrix in a file.
   attr optimized rien optimized 1 This keyword triggers a memory and network optimized algorithms useful for strong scaling (when computing less than 100 000 elements per processor). The matrix and the vectors are duplicated, common items removed and only virtual items really used in the matrix are exchanged.NL2 Warning: this is experimental and known to fail in some VEF computations (L2 projection step will not converge). Works well in VDF.
+  attr nb_it_max entier nb_it_max 1 Keyword to set the maximum iterations number for the Gcp.
 gcp_ns solv_gcp gcp_ns -1 not_set
   attr solveur0 solveur_sys_base solveur0 0 Solver type.
   attr solveur1 solveur_sys_base solveur1 0 Solver type.
@@ -918,6 +907,7 @@ gmres solveur_sys_base gmres -1 Gmres method (for non symetric matrix).
   attr nb_it_max entier nb_it_max 1 Keyword to set the maximum iterations number for the Gmres.
   attr controle_residu entier(into=["0","1"]) controle_residu 1 Keyword of Boolean type (by default 0). If set to 1, the convergence occurs if the residu suddenly increases.
   attr save_matrice|save_matrix rien save_matrice 1 to save the matrix in a file.
+  attr dim_espace_krilov entier dim_espace_krilov 1 not_set
 postraiter_domaine interprete postraiter_domaine 1 To write one or more domains in a file with a specified format (MED,LML,LATA).
   attr format chaine(into=["lml","meshtv","lata","lata_v1","lata_v2","med"]) format 0 File format.
   attr fichier|file chaine fichier 1 The file name can be changed with the fichier option.
@@ -1231,9 +1221,12 @@ option_vdf interprete option_vdf 1 Class of VDF options.
   attr p_imposee_aux_faces chaine(into=["oui","non"]) p_imposee_aux_faces 1 Pressure imposed at the faces (yes or no).
 precisiongeom interprete precisiongeom 0 Class to change the way floating-point number comparison is done. By default, two numbers are the same if their absolute difference is less than 1e-10. The keyword is useful to change this value. Moreover, nodes coordinates will be written in .geom files with this same precision.
   attr precision floattant precision 0 New value of precision.
+nettoiepasnoeuds interprete nettoiepasnoeuds 0 Keyword NettoiePasNoeuds does not delete useless nodes (nodes without elements) from a domain.
+  attr domain_name ref_domaine domain_name 0 Name of domain.
 scatter interprete scatter 0 Class to read a partionned mesh in the files during a parallel calculation. The files are in binary format.
   attr file chaine file 0 Name of file.
   attr domaine ref_domaine domaine 0 Name of domain.
+scatterformatte scatter scatterformatte 0 Class to read a partionned mesh in the files during a parallel calculation. The files are formatted.
 scattermed scatter scattermed 0 This keyword will read the partition of the domain_name domain into a the MED format files file.med created by Medsplitter.
 listdeuxmots_sacc listobj nul 0 deuxmots 0 List of groups of two words (without accodances).
 partitionneur_deriv objet_u partitionneur_deriv -1 not_set
@@ -1627,7 +1620,7 @@ schema_backward_differentiation_order_3 schema_implicite_base schema_backward_di
 field_uniform_keps_from_ud field_base field_uniform_keps_from_ud 1 field which allows to impose on a domain K and EPS values derived from U velocity and D hydraulic diameter
   attr u floattant u 0 value of velocity specified in boundary condition.
   attr d floattant d 0 value of hydraulic diameter specified in boundary condition
-boundary_field_uniform_keps_from_ud front_field_base boundary_field_uniform_keps_from_ud 1 field which allows to impose on a boundary K and EPS values derived from U velocity and D hydraulic diameter²
+boundary_field_uniform_keps_from_ud front_field_base boundary_field_uniform_keps_from_ud 1 field which allows to impose on a boundary K and EPS values derived from U velocity and D hydraulic diameter
   attr u floattant u 0 value of velocity
   attr d floattant d 0 value of hydraulic diameter
 ef discretisation_base ef -1 Element Finite discretization.
@@ -1639,4 +1632,26 @@ testeur_medcoupling interprete testeur_medcoupling 0 not_set
 champ_front_normal_vef front_field_base champ_front_normal_vef 0 Field to define the normal vector field standard at the boundary in VEF discretization.
   attr mot chaine(into=["valeur_normale"]) mot 0 Name of vector field.
   attr vit_tan floattant vit_tan 0 normal vector value (positive value for a vector oriented outside to inside).
+loi_fermeture_test loi_fermeture_base loi_fermeture_test -1 Loi for test only 
+  attr coef floattant coef 1 coefficient
+Pb_base pb_gen_base Pb_base -3 Resolution of equations on a domain. A problem is defined by creating an object and assigning the problem type that the user wishes to resolve. To enter values for the problem objects created, the Lire (Read) interpretor is used with a data block. 
+  attr postraitement|Post_processing corps_postraitement postraitement 1 One post-processing (without name).
+  attr postraitements|Post_processings postraitements postraitements 1 List of Postraitement objects (with name).
+  attr liste_de_postraitements liste_post_ok liste_de_postraitements 1 This
+  attr liste_postraitements liste_post liste_postraitements 1 This block defines the output files to be written during the computation. The output format is lata in order to use OpenDX to draw the results. This block can be divided in one or several sub-blocks that can be written at different frequencies and in different directories. Attention. The directory lata used in this example should be created before running the computation or the lata files will be lost.
+  attr sauvegarde format_file sauvegarde 1 Keyword used when calculation results are to be backed up. When a coupling is performed, the backup-recovery file name must be well specified for each problem. In this case, you must save to different files and correctly specify these files when restarting the calculation.
+  attr sauvegarde_simple format_file sauvegarde_simple 1 The same keyword than Sauvegarde except, the last time step only is saved.
+  attr reprise format_file reprise 1 Keyword to restart a calculation based on the name_file file (see the class format_file). If format_reprise is xyz, the name_file file should be the .xyz file created by the previous calculation. With this file, it is possible to restart a parallel calculation on P processors, whereas the previous calculation has been run on N (N<>P) processors. Should the calculation be restarted, values for the tinit (see schema_temps_base) time fields are taken from the name_file file. If there is no backup corresponding to this time in the name_file, TRUST exits in error.
+  attr resume_last_time format_file resume_last_time 1 Keyword to restart a calculation based on the name_file file, restart the calculation at the last time found in the file (tinit is set to last time of saved files).
+  ref domaine domaine
+  ref scheme schema_temps_base
+  ref milieu milieu_base
+  ref loi1 loi_fermeture_base
+  ref loi2 loi_fermeture_base
+  ref loi3 loi_fermeture_base
+  ref loi4 loi_fermeture_base
+  ref loi5 loi_fermeture_base
+loi_fermeture_base objet_u loi_fermeture_base -3 Class for appends fermeture to problem 
+scalaire_impose_paroi dirichlet scalaire_impose_paroi 0 Imposed temperature condition at the wall called bord (edge). 
+  attr ch front_field_base ch 0 Boundary field type.
 

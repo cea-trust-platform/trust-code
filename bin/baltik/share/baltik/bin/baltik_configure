@@ -531,7 +531,7 @@ printf "check_gui : gui\n"                                              >> $proj
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
 printf "\t@echo \"# Checking gui         #\"\n"                 >> $project_makefile
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
-printf "\t@source $env_file; check_jdd\n"                       >> $project_makefile
+printf "\t@source $env_file; check_jdd \$(OPTIONS_GUI)\n"                       >> $project_makefile
 printf "\n"                                                     >> $project_makefile
 
 printf "# help doxygen \t: Building doxygen documentation \n" >> $project_makefile

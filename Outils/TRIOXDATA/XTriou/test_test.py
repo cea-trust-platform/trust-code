@@ -58,10 +58,12 @@ def test_all(list,s,fast):
 
 if __name__ == '__main__':
 	fast=0
-	if (sys.argv[1]=="-fast"):
+	list=[]
+         
+        if (len(sys.argv)>1):
+	  if (sys.argv[1]=="-fast"):
 		fast=1
-		list=[]
-	else:
+	  else:
 		list=[sys.argv[1]]
 		pass
 	for i in range(2,len(sys.argv)):
