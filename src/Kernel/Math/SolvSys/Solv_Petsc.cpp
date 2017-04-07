@@ -132,7 +132,8 @@ void Solv_Petsc::create_solver(Entree& entree)
       // _petsc.TU is only printed if one group calculation (e.g. Execute_parallel failed)
       Nom petsc_TU(nom_du_cas());
       petsc_TU+="_petsc.TU";
-      add_option("log_view",petsc_TU); 		// Monitor performances at the end of the calculation
+      add_option("log_summary",petsc_TU);	// WARNING:   -log_summary is being deprecated; switch to -log_view
+      //add_option("log_view",petsc_TU);	// Monitor performances at the end of the calculation
       PetscLogAllBegin(); 			// Necessary cause if not Event logs not printed in petsc_TU file ... I don't know why...
     }
   //add_option("on_error_abort",""); // ne marche pas semble t'il
@@ -818,6 +819,7 @@ void Solv_Petsc::create_solver(Entree& entree)
                 PCSetType(PreconditionneurPetsc_, PCHYPRE);
                 PCHYPRESetType(PreconditionneurPetsc_, "boomeramg");
                 check_not_defined(omega);
+                level.value()=max(level.value(),2);
                 add_option("pc_hypre_boomeramg_max_levels",(Nom)level.value());		  // Number of levels [>=2] (of grids) allowed (default 2)
                 add_option("pc_hypre_boomeramg_tol",(Nom)epsilon.value());                // Convergence tolerance PER hypre call (0.0 = use a fixed number of iterations)
                 check_not_defined(ordering);
