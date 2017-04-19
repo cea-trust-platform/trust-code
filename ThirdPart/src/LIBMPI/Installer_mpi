@@ -40,4 +40,10 @@ else
    echo "$MPI_ROOT not supported yet."
    exit -1
 fi
+# on retire les liens 
+for file in `ls $TRUST_ROOT/externalpackages/MPI/*`
+do
+ f=`basename $file`
+ [ -h $f ] && rm  $f 
+done
 exit 0

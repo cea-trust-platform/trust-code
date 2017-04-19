@@ -126,4 +126,10 @@ $TRUST_MAKE || exit -1
 make install || exit -1
 cd ../.. 
 rm -r -f fltk ${gmsh%.tgz}
+# on retire les liens 
+for file in `ls $TRUST_ROOT/externalpackages/Gmsh/*`
+do
+ f=`basename $file`
+ [ -h $f ] && rm  $f 
+done
 

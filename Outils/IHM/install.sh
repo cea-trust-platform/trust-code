@@ -1,4 +1,10 @@
 #!/bin/bash
+DIR=`dirname $0`
+DIR=`cd $DIR;pwd`
+DEST=$TRUST_ROOT/build/Outils/IHM
+mkdir -p $DEST
+
+cd  $DEST
 
 [ ! -d CURVEPLOT ] && tar zxf $TRUST_ROOT/externalpackages/CURVEPLOT.tgz
 file=CURVEPLOT/src/python/controller/utils.py.in
@@ -25,9 +31,11 @@ export MEDCOUPLING_ROOT_DIR=$TRUST_MEDCOUPLING_ROOT
 export MAKELEVEL=0
 
 
-ORG=`pwd`
+ICI=`pwd`
 for rep in CURVEPLOT TRUST_PLOT2D TRUST_WIZARD
 do
+  ORG=$DIR
+  [ "$rep" = "CURVEPLOT" ] && ORG=$ICI
   BUILD=$TRUST_TMP/build/$ORG/build_$rep
   BUILD=build_$rep
   mkdir -p $BUILD

@@ -76,3 +76,11 @@ do
    cd ..
    rm -r -f ${package%.tar.gz}
 done
+# on retire les liens 
+for file in `ls $TRUST_ROOT/externalpackages/gnuplot/*`
+do
+ f=`basename $file`
+ [ -h $f ] && rm  $f 
+done
+rm -rf gd
+exit 0

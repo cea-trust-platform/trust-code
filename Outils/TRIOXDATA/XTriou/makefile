@@ -2,6 +2,7 @@ triou.py: objet_u.py objet_u_spec.py gencl.py gentriopy.py syno.py
 	python gentriopy.py
 	rm dico.py triouint.py triouint2.py
 	sort -u trace > traces
+	rm -f trace sed2 sedfile sedfile2 existepas.stop gentriopy.py2 gencles.py run.log
 syno.py : $(exec) cree_syno
 	@./cree_syno $(exec)
 TRAD_2 : TRAD_2.org $(exec)
@@ -30,7 +31,7 @@ doc_r.pdf: triou.py tests/ref/lutil.py
 	cp *.sty doc_r/.
 	(cd doc_r ;touch doc.ind;pdflatex -interaction=nonstopmode doc.tex 1>/dev/null ;makeindex doc;pdflatex -interaction=nonstopmode  doc.tex 1>/dev/null;pdflatex -interaction=nonstopmode doc.tex && mv doc.pdf ../doc_r.pdf)
 test:	triou.py
-	(cd tests;cat sa/makefile > makefile; time $(MAKE))
+	(mkdir -p tests; cat tests_src/makefile > tests/makefile; cd tests; time $(MAKE))
 	touch test
 test_ref: test
 	(cd tests; $(MAKE) test_ref);
@@ -48,4 +49,4 @@ update_xd: test
 clean:
 	rm -f existepas.stop test doc.pdf doc_r.pdf triou.py *.pyc  syno.py gencl.py gencles.py gentriopy.py2 *.ver sed2 sedfile sedfile2 trace traces update_xd
 	rm -rf doc_r doc menu
-	(cd tests; make clean)
+	(cd tests &&  make clean) || exit 0

@@ -8,7 +8,7 @@ mkdir -p $proj/build/rapport
 cp $DIR/* $proj/build/rapport
 
 cd $proj
-make check_all_optim validation doxygen 
+make check_all_optim validation #  doxygen 
 [ $? -ne 0 ] && echo "pb ? make check_all_optim validation doxygen " && exit
 
 

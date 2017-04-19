@@ -1,4 +1,5 @@
 #!/bin/bash
+[  -f $TRUST_ROOT/exec/lata2dx_reactor ] &&  [ $HOST != $TRUST_HOST_ADMIN ] &&  exit 0
 mkdir -p build
 cd build
 echo "Building application lata2dx_reactor..."
@@ -35,6 +36,10 @@ then
    if [ $err_test = 0 ] 
    then
       echo "Test lata2dx_reactor OK!"
+       
+      cd ../..
+      mv build/lata2dx_reactor $TRUST_ROOT/exec/lata2dx_reactor
+      rm -rf build test/buuild 
    else 
       echo "Test lata2dx_reactor KO!"
    fi

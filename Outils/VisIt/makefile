@@ -25,5 +25,5 @@ $(check): *.xml install customlauncher $(TRUST_ROOT)/RELEASE_NOTES
 	./install $(version) check
 
 clean:
-	rm -r -f $(install) plugins/*/build src/*.help $(check)
+	rm -r -f $(install) $(TRUST_ROOT)/build/Outils/VisIt/plugins/ src/*.help $(check)
 	(cd src; ./build.sh clean)

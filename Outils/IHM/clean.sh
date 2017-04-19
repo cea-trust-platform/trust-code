@@ -8,3 +8,5 @@ do
   rm -rf $BUILD
   rm -rf $TRUST_ROOT/exec/$rep
 done
+rm -rf $TRUST_ROOT/build/Outils/IHM/
+

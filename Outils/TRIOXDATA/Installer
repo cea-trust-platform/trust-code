@@ -12,6 +12,8 @@ rm -rf $1/dist $1/build
 chmod -R +w $1
 if [ $1 = "TRIOU" ]
 then
+   mkidr -p TRIOU/TRIOU_SRC/src
+   rsync -v --archive TRIOU/TRIOU_SRC/src_base/* TRIOU/TRIOU_SRC/src
    cp -f XTriou/triou.py  XTriou/menu/menu_*.py TRIOU/TRIOU_SRC/src/.
 else
   if [ $1 = "XDATA" ]

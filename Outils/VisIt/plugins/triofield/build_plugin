@@ -1,4 +1,6 @@
 #!/bin/bash
+DIR=`dirname $0`
+DIR=`(cd $DIR;pwd)`
 plugin=$1
 if [ -z "$TRUST_ROOT" ]
 then
@@ -15,14 +17,15 @@ else
 
 fi
 
-[ $0 -nt build ] && rm -rf build 
-if [ ! -d build ]
+Build=$TRUST_ROOT/build/Outils/VisIt/plugins/triofield/build
+[ $0 -nt ${Build} ] && rm -rf ${Build} 
+if [ ! -d ${Build} ]
 then
-   echo Creating build directory
-   mkdir -p build
-   cd build
+   echo Creating ${Build} directory
+   mkdir -p ${Build}
+   cd ${Build}
    echo Creating symlink to source files
-   ln -sf ../src/* . 2>/dev/null
+   ln -sf $DIR/src/* . 2>/dev/null
    $local/xml2info triofield.xml
   
    $local/xml2cmake triofield.xml
@@ -38,7 +41,7 @@ then
    # fin modif makefile
   
 else
-   cd build
+   cd ${Build}
 fi
 
 #######################

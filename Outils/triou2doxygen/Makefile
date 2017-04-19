@@ -1,5 +1,5 @@
 INCLUDES	= 
-OBJS		= triou2doxygen.o
+SRCS		= triou2doxygen.cpp
 PROG		= $(TRUST_ROOT)/exec/triou2doxygen
 
 LIBDIR        = 
@@ -12,11 +12,11 @@ CC		= $(TRUST_CC)
 all: $(PROG)
 	#strip $?
 
-$(PROG): $(OBJS)
-	$(CC) -o $@ $(LFLAGS) $(OBJS)
+$(PROG): $(SRCS)
+	$(CC) -o $@ $(CFLAGS) $(LFLAGS) $(SRCS)
 
 clean:
-	rm -f $(OBJS) $(PROG) *~ core
+	rm -f $(PROG) *~ core
 
 .SUFFIXES : .cpp .o
 .cpp.o:

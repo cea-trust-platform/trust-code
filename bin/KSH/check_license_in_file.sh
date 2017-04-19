@@ -10,7 +10,10 @@ check=0
 mode="auto"
 APP="$*"
 
-LICENSE=$TRUST_ROOT/License.txt
+LICENSE_SRC=$TRUST_ROOT/License.txt
+mkdir -p $TRUST_ROOT/build
+LICENSE=$TRUST_ROOT/build/License.txt
+cat $LICENSE_SRC > $LICENSE
 
 [ "$1" = "--mode" ] && shift && mode=$1 && shift 
 
