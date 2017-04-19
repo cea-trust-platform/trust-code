@@ -52,7 +52,7 @@ class Turbulence_paroi : public DERIV(Turbulence_paroi_base)
 
 public:
 
-  Turbulence_paroi(const Turbulence_paroi_base& x):DERIV(Turbulence_paroi_base)(x) {}
+  //Turbulence_paroi(const Turbulence_paroi_base& x):DERIV(Turbulence_paroi_base)(x) {}
   // inline Turbulence_paroi& operator=(const Turbulence_paroi_base& paroi_base);
   void associer_modele(const Mod_turb_hyd_base& );
   inline int init_lois_paroi();

@@ -177,8 +177,9 @@ inline Type_Cl_VDF Iterateur_VDF_base::type_cl(const Cond_lim& la_cl) const
 //
 
 inline Iterateur_VDF::Iterateur_VDF(const Iterateur_VDF_base& Opb)
-  : DERIV(Iterateur_VDF_base)(Opb)
+  : DERIV(Iterateur_VDF_base)()
 {
+  DERIV(Iterateur_VDF_base)::operator=(Opb);
 }
 
 inline Evaluateur_VDF& Iterateur_VDF::evaluateur()

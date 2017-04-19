@@ -50,7 +50,7 @@ class Champ_front : public DERIV(Champ_front_base), public Champ_Proto
 
 public:
 
-  Champ_front(const Champ_front_base& x);
+//  Champ_front(const Champ_front_base& x);
   inline Champ_front& operator=(const Champ_front_base& ch_base) ;
   inline Champ_front& operator=(const Champ_front& ch_base) ;
   inline void nommer(const Nom& name) ;
@@ -85,10 +85,11 @@ public:
 // Exception:
 // Effets de bord:
 // Postcondition:
+/*
 inline Champ_front::Champ_front(const Champ_front_base& x)
   :DERIV(Champ_front_base)(x)
 {}
-
+*/
 
 // Description:
 //    Operateur d'affectation d'un Champ_front_base dans un

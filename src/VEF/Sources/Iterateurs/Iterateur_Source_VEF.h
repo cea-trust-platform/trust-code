@@ -57,7 +57,10 @@ public:
 
 inline Iterateur_Source_VEF::Iterateur_Source_VEF(const Iterateur_Source_VEF_base& Opb)
 
-  : DERIV(Iterateur_Source_VEF_base)(Opb) {}
+  : DERIV(Iterateur_Source_VEF_base)()
+{
+  DERIV(Iterateur_Source_VEF_base)::operator=(Opb) ;
+}
 
 inline void Iterateur_Source_VEF::completer_()
 {

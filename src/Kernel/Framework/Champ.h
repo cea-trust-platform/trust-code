@@ -40,7 +40,7 @@ class Champ : public DERIV(Champ_base), public Champ_Proto
 {
   Declare_instanciable(Champ);
 public :
-  inline Champ(const Champ_base& ch):DERIV(Champ_base)(ch) {}
+  //  inline Champ(const Champ_base& ch):DERIV(Champ_base)(ch) {}
   inline const Champ_base& operator=(const Champ_base& ch)
   {
     DERIV(Champ_base)::operator=(ch);

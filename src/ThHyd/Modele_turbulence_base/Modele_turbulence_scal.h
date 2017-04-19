@@ -40,7 +40,7 @@ class Modele_turbulence_scal : public MorEqn, public DERIV(Modele_turbulence_sca
 
 public:
 
-  inline Modele_turbulence_scal(Modele_turbulence_scal_base& );
+  //  inline Modele_turbulence_scal(Modele_turbulence_scal_base& );
   inline Modele_turbulence_scal& operator=(const Modele_turbulence_scal_base& );
   inline int preparer_calcul();
   inline void completer();
@@ -63,6 +63,7 @@ public:
 //  Fonctions inline de la classe Modele_turbulence_scal
 //
 
+/*
 inline Modele_turbulence_scal::Modele_turbulence_scal(Modele_turbulence_scal_base& x)
   : DERIV(Modele_turbulence_scal_base)(x) {}
 
@@ -71,7 +72,7 @@ inline Modele_turbulence_scal& Modele_turbulence_scal::operator=(const Modele_tu
   DERIV(Modele_turbulence_scal_base)::operator=(x);
   return *this;
 }
-
+*/
 inline void Modele_turbulence_scal::completer()
 {
   valeur().completer();

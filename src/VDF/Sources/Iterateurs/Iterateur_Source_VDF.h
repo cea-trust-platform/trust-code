@@ -56,7 +56,10 @@ public:
 
 inline Iterateur_Source_VDF::Iterateur_Source_VDF(const Iterateur_Source_VDF_base& Opb)
 
-  : DERIV(Iterateur_Source_VDF_base)(Opb) {}
+  : DERIV(Iterateur_Source_VDF_base)()
+{
+  DERIV(Iterateur_Source_VDF_base)::operator=(Opb);
+}
 
 inline void Iterateur_Source_VDF::completer_()
 {

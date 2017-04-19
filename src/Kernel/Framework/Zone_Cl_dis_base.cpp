@@ -458,6 +458,7 @@ Cond_lim_base& Zone_Cl_dis_base::condition_limite_de_la_frontiere(Nom frontiere)
         return les_conditions_limites(i).valeur();
     }
   assert(0); // Aucune frontiere de ce nom
+  exit();
   return les_conditions_limites(0).valeur(); // Pour compilo
 }
 
@@ -473,6 +474,7 @@ const Cond_lim_base& Zone_Cl_dis_base::condition_limite_de_la_frontiere(Nom fron
         return les_conditions_limites(i).valeur();
     }
   assert(0); // Aucune frontiere de ce nom
+  exit();
   return les_conditions_limites(0).valeur(); // Pour compilo
 }
 
