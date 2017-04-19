@@ -1408,31 +1408,12 @@ void LireMED::lire_geom( Nom& nom_fic,Domaine& dom,const Nom& nom_dom,const Nom&
     }
 
   if (0)
-    Cerr << "nom_fic = " << nom_fic<< finl
-         << "nom_dom ="<<nom_dom<<finl
-         << "dimension = " << dimension<< finl
-         /*
-           << "sommets = " << sommets2<< finl
-           << "type_elem = " << type_elem<< finl
-           << "les_elems = " << les_elems2<< finl
-           << "type_face = " << type_face<< finl
-           << "all_faces_bord = " << all_faces_bord<< finl
-           << "familles = " << familles << finl
-         */
-         << "noms_bords= " << noms_bords<< finl;
-  /*
-    SFichier es(nom_fic+".es2");
-    es<< "nom_fic = " << nom_fic<< finl
-    <<"nom_dom ="<<nom_dom<<finl
-    << "dimension = " << dimension<< finl
-    << "sommets = " << sommets2<< finl
-    << "type_elem = " << type_elem<< finl
-    << "les_elems = " << les_elems2<< finl
-    << "type_face = " << type_face<< finl
-    << "all_faces_bord = " << all_faces_bord<< finl
-    << "familles = " << familles << finl
-    << "noms_bords= " << noms_bords<< finl;
-  */
+    {
+      Cerr << "nom_fic = " << nom_fic<< finl
+           << "nom_dom ="<<nom_dom<<finl;
+      Cerr << "dimension = " << dimension<< finl
+           << "noms_bords= " << noms_bords<< finl;
+    }
   renum_conn(les_elems2,type_elem,-1);
   for (int j=0; j<type_face.size(); j++)
     renum_conn(all_faces_bord[j],type_face[j],-1);

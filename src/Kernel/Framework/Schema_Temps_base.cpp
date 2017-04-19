@@ -599,20 +599,20 @@ int Schema_Temps_base::impr(Sortie& os,Probleme_base& pb) const
 {
   os << finl;
   os << " Problem : " << pb.le_nom() << finl;
-  os << "We treat the time step number "<< nb_pas_dt_ << finl
-     << "   dt = " << dt_ << finl
-     << "   time = " << temps_courant_ << finl
-     << "   time scheme : " << pb.schema_temps() << finl;
+  os << "We treat the time step number "<< nb_pas_dt_ << finl;
+  os << "   dt = " << dt_ << finl;
+  os << "   time = " << temps_courant_ << finl;
+  os << "   time scheme : " << pb.schema_temps() << finl;
   return 0;
 }
 int Schema_Temps_base::impr(Sortie& os,const Probleme_base& pb) const
 {
   os << finl;
   os << " Problem : " << pb.le_nom() << finl;
-  os << "We treat the time step number "<< nb_pas_dt_ << finl
-     << "   dt = " << dt_ << finl
-     << "   time = " << temps_courant_ << finl
-     << "   time scheme : " << pb.schema_temps() << finl;
+  os << "We treat the time step number "<< nb_pas_dt_ << finl;
+  os << "   dt = " << dt_ << finl;
+  os << "   time = " << temps_courant_ << finl;
+  os << "   time scheme : " << pb.schema_temps() << finl;
   return 0;
 }
 

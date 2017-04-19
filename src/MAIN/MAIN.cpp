@@ -41,19 +41,19 @@ static const char directory_separator = '/';
 extern void desalloue_pwd();
 void usage()
 {
-  cerr << "usage:\n"
-       << "TRUST_EXECUTABLE [CASE[.data]] [options]\n"
-       << " CASE is the basename of the trust data file (must have .data extension)\n"
-       << "   If no CASE given, the current directory name is used\n"
-       << " -help_trust => print options\n"
-       << " -mpi => run in parallel with MPI (must run with mpirun)\n"
-       << " -check_enabled=0|1  => enables or disables runtime checking of parallel messages\n"
-       << " -debugscript=SCRIPT => execute \"SCRIPT n\" after parallel initialisation, n=processor rank\n"
-       << " -petsc=0            => disable call to PetscInitialize\n"
-       << " -journal=0..9       => select journal level (0=disable, 9=maximum verbosity)\n"
-       << " -journal_master     => only master processor writes a journal\n"
-       << " -disable_ieee       => Disable the detection of NaNs.\n"
-       << endl;
+  cerr << "usage:\n";
+  cerr << "TRUST_EXECUTABLE [CASE[.data]] [options]\n";
+  cerr << " CASE is the basename of the trust data file (must have .data extension)\n";
+  cerr << "   If no CASE given, the current directory name is used\n";
+  cerr << " -help_trust => print options\n";
+  cerr << " -mpi => run in parallel with MPI (must run with mpirun)\n";
+  cerr << " -check_enabled=0|1  => enables or disables runtime checking of parallel messages\n";
+  cerr << " -debugscript=SCRIPT => execute \"SCRIPT n\" after parallel initialisation, n=processor rank\n";
+  cerr << " -petsc=0            => disable call to PetscInitialize\n";
+  cerr << " -journal=0..9       => select journal level (0=disable, 9=maximum verbosity)\n";
+  cerr << " -journal_master     => only master processor writes a journal\n";
+  cerr << " -disable_ieee       => Disable the detection of NaNs.\n";
+  cerr << endl;
   Process::exit();
 }
 

@@ -899,12 +899,13 @@ void EcrMED::ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom
       Process::exit();
     }
   if (0)
-    Cerr << "Writing of the domain at the med format"<<finl
-         <<"nom_fic = " << nom_fic<< finl
-         << "nom_dom ="<<nom_dom<<finl
-         << "dimension = " << dimension<< finl
-         << "noms_bords= " << noms_bords<< finl;
-
+    {
+      Cerr << "Writing of the domain at the med format"<<finl
+           <<"nom_fic = " << nom_fic<< finl
+           << "nom_dom ="<<nom_dom<<finl;
+      Cerr << "dimension = " << dimension<< finl
+           << "noms_bords= " << noms_bords<< finl;
+    }
   medecrgeom(nom_fic,nom_dom,dimension,sommets,type_elem,zone.type_elem(),les_elems2,type_face,all_faces_bord,familles,noms_bords,zone.le_nom(),mode);
   //Cerr<<"Writing of the domain is ended"<<finl;
 

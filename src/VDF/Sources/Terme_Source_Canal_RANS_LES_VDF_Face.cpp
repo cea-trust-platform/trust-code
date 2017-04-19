@@ -860,8 +860,8 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::mettre_a_jour(double temps)
                 }
             }
 
-          fic_f << tps << " " << dt << " " << tps-dt_min << " "<< utemp_sum(123)
-                << " " << umoy(123) << " " << vitesse(123) << " " << U_RANS(123) << finl;
+          fic_f << tps << " " << dt << " " << tps-dt_min << " "<< utemp_sum(123);
+          fic_f << " " << umoy(123) << " " << vitesse(123) << " " << U_RANS(123) << finl;
 
         }
 
@@ -920,8 +920,8 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::mettre_a_jour(double temps)
                   umoy(num_face) = utemp_sum(num_face)/(tps-dt_min);
                 }
             }
-          fic_f << tps << " " << dt << " " << tps-dt_min << " "<< utemp_sum(123)
-                << " " << umoy(123) << " " << vitesse(123) << " " << U_RANS(123) << finl;
+          fic_f << tps << " " << dt << " " << tps-dt_min << " "<< utemp_sum(123);
+          fic_f << " " << umoy(123) << " " << vitesse(123) << " " << U_RANS(123) << finl;
 
         }
 

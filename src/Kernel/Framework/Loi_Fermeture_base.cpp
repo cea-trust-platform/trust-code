@@ -42,10 +42,9 @@ void Loi_Fermeture_base::associer_pb_base(const Probleme_base& pb)
 {
   if (status_ == PB_ASSOCIE)
     {
-      Cerr << "Error associating " << que_suis_je() << " " << le_nom()
-           << " to problem " << pb.que_suis_je()
-           << ".\n This object is already associated to problem " << mon_probleme().le_nom()
-           << finl;
+      Cerr << "Error associating " << que_suis_je() << " " << le_nom();
+      Cerr << " to problem " << pb.que_suis_je();
+      Cerr  << ".\n This object is already associated to problem " << mon_probleme().le_nom() << finl;
       barrier();
       exit();
     }

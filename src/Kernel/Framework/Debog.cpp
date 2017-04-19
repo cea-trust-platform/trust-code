@@ -773,8 +773,8 @@ void Debog_Pb::verifier_partie_std(const DoubleVect& reference,
               if (delta > seuil_relatif_)
                 {
                   detailed_log_file_ << " ECART reference[" << i2+j << "]=" << y
-                                     << " calcul[" << i1+j << "]=" << x
-                                     << " relative error=" << delta
+                                     << " calcul[" << i1+j << "]=" << x;
+                  detailed_log_file_ << " relative error=" << delta
                                      << " (adim=" << adim << ")" << message << finl;
                 }
             }

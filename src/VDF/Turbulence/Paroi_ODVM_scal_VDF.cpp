@@ -572,8 +572,8 @@ int Paroi_ODVM_scal_VDF::calculer_scal(Champ_Fonc_base& diffusivite_turb)
                           SFichier fic("Suivi_ndeb.dat",ios::app);
                           fic << tps << "   " << Temp_solid
                               << "   " << eq_odvm[num_face].get_Tm(0)
-                              << "   " << Ttot0
-                              << "   " << Ttot1
+                              << "   " << Ttot0;
+                          fic << "   " << Ttot1
                               << "   " << Temp(elem)
                               << "   " << eq_odvm[num_face].get_Tm(N-1) << finl;
                         }
