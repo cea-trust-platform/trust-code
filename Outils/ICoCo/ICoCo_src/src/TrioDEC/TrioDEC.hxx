@@ -26,6 +26,9 @@ namespace MEDCoupling
     void attachLocalField(ICoCo::Field *field);
     inline void attachLocalField(MEDCouplingFieldDouble *field)
 	{ InterpKernelDEC::attachLocalField(field); }
+
+    inline void attachLocalField(const ICoCo::MEDField *field)
+	{ InterpKernelDEC::attachLocalField(field); }
     virtual ~TrioDEC();
   private:
     void releaseInternalPointer();

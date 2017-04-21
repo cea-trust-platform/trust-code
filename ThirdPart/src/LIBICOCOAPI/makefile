@@ -18,11 +18,13 @@ install: $(MALIB) ./install_include.sh
 	@./install_include.sh
 all: $(MALIB)
 
-$(MALIB) : $(OBJS) makefile include/Exceptions.h include/ICoCoTrioField.h include/ICoCoField.h include/Problem.h include/Problem_V2.h $(SRCS)
+$(MALIB) : makefile include/Exceptions.h include/ICoCoTrioField.h include/ICoCoField.h include/Problem.h include/Problem_V2.h $(SRCS)
+	@make clean 
+	@make $(OBJS)
 	@mkdir -p $(TRUST_ICOCOAPI)/lib
 	@ar cruv $(MALIB) $(OBJS)
-	@echo "$(MALIB) est a jour".
-	
+	@echo "$(MALIB) updated"
+	@rm -f $(OBJS)	
 clean:
 	@rm -rf $(MALIB) $(OBJS) $(TRUST_LIB)/src/LIBICOCOAPI
 	

@@ -881,7 +881,8 @@ void Echange_contact_Correlation_VDF::imprimer(double temps) const
 
               for (int i =0; i<coord_tmp.size(); i++)
                 {
-                  fic << coord_tmp(i) << " \t" << T_tmp(i) << " \t" << U_tmp(i) << " \t" << h_tmp(i) << " \t" << rho_tmp(i) << " \t" << mu_tmp(i) << " \t" << lambda_tmp(i) << " \t" << Qvol_tmp(i)*vol_tmp(i) << finl;
+                  fic << coord_tmp(i) << " \t" << T_tmp(i) << " \t" << U_tmp(i) << " \t" << h_tmp(i) << " \t" << rho_tmp(i);
+                  fic << " \t" << mu_tmp(i) << " \t" << lambda_tmp(i) << " \t" << Qvol_tmp(i)*vol_tmp(i) << finl;
                   Qt+=Qvol_tmp(i)*vol_tmp(i);
                 }
 
@@ -905,7 +906,8 @@ void Echange_contact_Correlation_VDF::imprimer(double temps) const
       fic << "# X                 T                 U                 h                 rho                 mu                 lambda                  Q[W]" << finl;
       for (int i =0; i<N; i++)
         {
-          fic << coord(i) << " \t" << T(i) << " \t" << U(i) << " \t" << h_correlation(i) << " \t" << rho(i) << " \t" << mu(i) << " \t" << lambda(i) << " \t" << Qvol(i)*vol(i) << finl;
+          fic << coord(i) << " \t" << T(i) << " \t" << U(i) << " \t" << h_correlation(i) << " \t" << rho(i);
+          fic << " \t" << mu(i) << " \t" << lambda(i) << " \t" << Qvol(i)*vol(i) << finl;
           Qt+=Qvol(i)*vol(i);
         }
       fic << "# Q total[W] = " << Qt << finl;

@@ -59,6 +59,7 @@ do
     sleep 1
 
 # Nettoyage repertoire: les fichiers  *geo *msh *geom et *data doivent etre conserves
+    trust -clean
     rm -f *err *out *dump trace *param *.TU
     if [ $j -lt 1 ]
     then

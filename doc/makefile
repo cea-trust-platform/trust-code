@@ -29,7 +29,7 @@ depend:
 	done;\
 	done;
 	@echo "$(TRUST_ROOT)/bin/KSH/make_Doxyfile makefile" >> tmp
-	@echo "	@make ctags" >> tmp
+	@#echo "	@make ctags" >> tmp
 	@echo "	@make doc" >> tmp
 	@make -f tmp
 	@rm -f tmp $(TRUST_FILES)

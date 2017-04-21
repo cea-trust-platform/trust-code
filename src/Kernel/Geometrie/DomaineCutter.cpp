@@ -1390,10 +1390,10 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const int binaire, ArrOfIn
       3     137      10      0.073    223      10      0.045         1
         Cerr << "------" << finl;
         Cerr << "Partition count             = " << nb_parties_ << finl;
-        Cerr << "Cell variation              = (134 - 137)
+        Cerr << "Cell variation              = (134 - 138)
         Cerr << "Mean cell variation         = (  -1.1% -    1.1%)
         Cerr << "Intercell variation         = (10 - 19)
-        Cerr << "Intercell ratio variation   = (   7.3% -   14.2%)
+        Cerr << "Intercell ratio variation   = (   7.3% -   14.2%);
         Cerr << "Global intercell ratio      =   10.7%
         Cerr << "Face variation              = (217 - 223)
         Cerr << "Interface variation         = (10 - 19)

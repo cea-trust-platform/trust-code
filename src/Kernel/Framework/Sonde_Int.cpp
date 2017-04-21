@@ -454,10 +454,10 @@ void Sonde_Int::ouvrir_fichier()
               {
                 k=j*nbre_points1+i+1;
                 kn=k+nbre_points;
-                s << "VOXEL8 " << k << " " << k+1 << " "
-                  << k+nbre_points1 << " " << k+nbre_points1+1
-                  << " " << kn << " " << kn+1 << " " << kn+nbre_points1
-                  << " " << kn+nbre_points1+1 << finl;
+                s << "VOXEL8 " << k << " " << k+1 << " ";
+                s << k+nbre_points1 << " " << k+nbre_points1+1;
+                s << " " << kn << " " << kn+1 << " " << kn+nbre_points1;
+                s << " " << kn+nbre_points1+1 << finl;
               }
           s << "FACE" << finl;
           s << "0" << finl;
@@ -494,10 +494,10 @@ void Sonde_Int::ouvrir_fichier()
                 {
                   k=m*nbre_points2*nbre_points1+j*nbre_points1+i+1;
                   kn=k+nbre_points2*nbre_points1;
-                  s << "VOXEL8 " << k << " " << k+1 << " "
-                    << k+nbre_points1 << " " << k+nbre_points1+1
-                    << " " << kn << " " << kn+1 << " " << kn+nbre_points1
-                    << " " << kn+nbre_points1+1 << finl;
+                  s << "VOXEL8 " << k << " " << k+1 << " ";
+                  s << k+nbre_points1 << " " << k+nbre_points1+1;
+                  s << " " << kn << " " << kn+1 << " " << kn+nbre_points1;
+                  s << " " << kn+nbre_points1+1 << finl;
                 }
           s << "FACE" << finl;
           s << "0" << finl;

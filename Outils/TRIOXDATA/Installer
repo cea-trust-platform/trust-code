@@ -10,6 +10,8 @@ fi
 rm -rf $1/dist $1/build
 #tar zxf $1.tgz
 chmod -R +w $1
+   mkdir -p TRIOU/TRIOU_SRC/src
+   rsync -v --archive TRIOU/TRIOU_SRC/src_base/* TRIOU/TRIOU_SRC/src
 if [ $1 = "TRIOU" ]
 then
    cp -f XTriou/triou.py  XTriou/menu/menu_*.py TRIOU/TRIOU_SRC/src/.

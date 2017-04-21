@@ -7,7 +7,7 @@ mv reactors_data.txt reference_reactors_data.txt
 # Compilation si necessaire
 ROOT=$TRUST_ROOT/Outils/lata2dx/lata2dx_reactor
 lata2dx_reactor=$ROOT/build/lata2dx_reactor
-([ ! -f $lata2dx_reactor ] && echo "$lata2dx_reactor non compile!" && exit -1)
+[ ! -f $lata2dx_reactor ] && echo "lata2dx_reactor non compile!" && exit -1
 # Specification du temps necessaire
 $lata2dx_reactor post.lata timestep=2
 [ $? != 0 ] && echo "Erreur dans execution de lata2dx_reactor !" && exit -1
@@ -70,6 +70,6 @@ fi
 mkdir -p fourth_test
 mv new_post* fourth_test/.
 # Clean
-rm -r -f fourth_test third_test second_test first_test
+#rm -r -f fourth_test third_test second_test first_test
 rm -f *.txt *.lata*
 exit 0

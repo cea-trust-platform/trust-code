@@ -32,7 +32,7 @@
 
 #define verb_level 4
 
-template<class T, class Tab> int search_in_ordered_vect(T x, const Tab & v) {
+template<class T, class Tab> int search_in_ordered_vect(T x, const Tab & v, const T epsilon) {
   if (!v.size_array())
     return -1;
   int i1=0;
@@ -40,13 +40,16 @@ template<class T, class Tab> int search_in_ordered_vect(T x, const Tab & v) {
   int i2 = (int)v.size_array()-1;
   while (i1 != i2) {
     i = (i1+i2)/2;
-    if (v[i] < x)
+    if (epsilon+ v[i] < x)
       i1=i+1;
     else
       i2=i;
   }
   if (v[i1] == x)
     return i1;
+  if (((v[i1] - x) * (v[i1] - x))<= (epsilon*epsilon) )
+    return i1;
+
   return -1;
 }
 
@@ -132,7 +135,7 @@ void build_geometry_(OperatorRegularize & op,
     entier ijk_index = 0;
     for (int j = dim-1; j >= 0; j--) {
       const double x = src.nodes_(i,j);
-      int index = search_in_ordered_vect(x, dest.coord_[j]);
+      int index = search_in_ordered_vect(x, dest.coord_[j],op.tolerance_);
       if (index < 0) {
         Journal() << "Error: coordinate (" << i << "," << j << ") = " << x << " not found in regularize" << endl
                   << "Try reducing regularize tolerance value (option regularize=epsilon)" << endl;

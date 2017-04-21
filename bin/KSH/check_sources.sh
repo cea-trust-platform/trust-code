@@ -72,7 +72,10 @@ check_recent_src()
     file=$1
 	indent_file.sh $file
     # pas daccumulation de <<  sinon cela met des heures avec gcc 6.6.1 #
-    gros_pipe=`awk -F\<\< '{if (NF>19) {print NF $0}}' $file`
+    #   gros_pipe=`awk -F\<\< '{if (NF>19) {print NF $0}}' $file`
+    gros_pipe=`awk -F\<\< '{if (NF>1) { te=$0;a=gsub(";","ok",te); if (((NF+old)>19)&&(a!=0))  {print ("line:",FNR, "number",NF+old, $0)}  ; if ((NF>1)&&(a==0)) { old=NF+old } else { old =0 } }}' $file`
+
+
     [ "$gros_pipe" != "" ] && echo $file two many pipes $gros_pipe && erreur 1
 
     #############################################################

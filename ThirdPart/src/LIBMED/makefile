@@ -26,6 +26,7 @@ $(HDF_CONFIG) : $(HDF_INSTALL_BUILDER) makefile ./scripts/provided/HDF_installer
 
 $(MED) : $(HDF) $(MED_ARCHIVES) makefile
 	@sh $(MED_INSTALLER)
+	@rm -f archives 
 
 $(HDF) : $(HDF_INSTALLER) $(HDF_ARCHIVES) makefile
 	@sh $(HDF_INSTALLER)

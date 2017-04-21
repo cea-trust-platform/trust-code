@@ -107,7 +107,7 @@ Launching
   => Main: Project: MY_BALTIK
   => Main: C/C++ Application: ${workspace_loc:/MY_BALTIK}/../../basic
   => Main: Apply
-  => Arguments: Program arguments: datafile
+  => Arguments: Program arguments: specify the name of your datafile
   => Arguments: Working directory: uncheck Use default and select the directory containing the datafile
   => Arguments: Apply
   => Debug

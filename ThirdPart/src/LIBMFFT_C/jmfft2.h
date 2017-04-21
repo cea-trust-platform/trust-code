@@ -255,6 +255,7 @@ void jmtransp(
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
+#include <stdlib.h>
 #define max(a,b) ( (a) > (b) ? (a) : (b) )
 #define min(a,b) ( (a) < (b) ? (a) : (b) )
 #define nint(x) ( ((x) >= 0) ? (INTEGER)((x) + 0.5) : (INTEGER)((x) + 0.5) - 1)

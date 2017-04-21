@@ -4,6 +4,8 @@ prepsrc=0
 source $TRUST_ROOT/env_TRUST.sh 1>/dev/null 2>&1
 LATASRC=Outils/lata2dx/lata2dx
 local=$TRUST_ROOT/exec/VisIt/bin
+DIR=`dirname $0`
+DIR=`(cd $DIR;pwd)`
 plugin=lata
 
 # Le plugin depuis le Kernel que si la version de VisIt a ete compilee
@@ -20,34 +22,34 @@ then
 #   exit 0
 fi
 
-# Regroupement des sources du plugin depuis le Kernel:
-cd src
-MED="-with_med"
-[ ! -f $TRUST_MED_ROOT/lib/libmed.a ] || [ ! -f $TRUST_MEDCOUPLING_ROOT/lib/libmedloader.a ] && MED=""
-./generate_lata_xml.sh $TRUST_ROOT/$LATASRC $1 $MED
-cd ..
-if [ $0 -nt build ]
+Build=build
+Build=$TRUST_ROOT/build/Outils/VisIt/plugins/lata/build
+if [ $0 -nt ${Build} ]
 then
-    echo "removing build"
-    rm -r -f build
+    echo "removing ${Build}"
+    rm -r -f ${Build}
     #exit -1
 fi
-if [ ! -d build ]
+if [ ! -d ${Build} ]
     then
-    mkdir -p build
-    cd build
-    ln -sf ../src/* . 2>/dev/null
+    mkdir -p ${Build}
+    cd ${Build}
+    ln -sf $DIR/src/* . 2>/dev/null
     for i in `cd $TRUST_ROOT/$LATASRC;ls commun_triou/*.cpp triou_compat/*.cpp 2>/dev/null`
       do
-      ln -sf ../../../../../$LATASRC/$i `basename $i .cpp`.C
+      ln -sf $TRUST_ROOT/$LATASRC/$i `basename $i .cpp`.C
     done
     for i in `cd $TRUST_ROOT/$LATASRC;ls commun_triou/*.h triou_compat/*.h 2>/dev/null`
       do
-      ln -sf ../../../../../$LATASRC/$i `basename $i`
+      ln -sf $TRUST_ROOT/$LATASRC/$i `basename $i`
     done
 
 
       echo "# Compiling $plugin plugin..."
+# Regroupement des sources du plugin depuis le Kernel:
+MED="-with_med"
+[ ! -f $TRUST_MED_ROOT/lib/libmed.a ] || [ ! -f $TRUST_MEDCOUPLING_ROOT/lib/libmedloader.a ] && MED=""
+$DIR/src/generate_lata_xml.sh $TRUST_ROOT/$LATASRC $1 $MED
    
    $local/xml2info lata.xml
 
@@ -64,12 +66,12 @@ if [ ! -d build ]
    mv p CMakeLists.txt
   # rm -f CMakeCache*
    cmake . -DCMAKE_CXX_COMPILER=$TRUST_CC  -DCMAKE_C_COMPILER=$TRUST_cc
-   [ ! -f Makefile ] && echo "Echec du construction du Makefile par xml2makefile dans build_plugin" && exit -1
+   [ ! -f Makefile ] && echo "Echec du construction du Makefile par xml2makefile dans ${Build}_plugin" && exit -1
 
    cd ..
     
 fi
-cd build
+cd ${Build}
 
 #######################
    # Compilation du plugin

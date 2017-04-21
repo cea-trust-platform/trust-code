@@ -6,8 +6,6 @@ sortie=open('triouint.py','w')
 trace=open('trace','w')
 sortie2=open('sedfile','w')
 sortie3=open('TRAD_1.ver','w')
-sortie4=open('TYPES_1.ver','w')
-sortie5=open('LISTREF_1.ver','w')
 #sortie.write('from objet_u import *\n')
 from string import *
 from types import *

@@ -64,7 +64,7 @@ add_executable (${essai} lata2dx.cpp lata2dx.h)
 target_link_libraries(${essai} ${lib} )
 target_link_libraries(${essai} ${ajout} )
 
-install(TARGETS ${essai} DESTINATION exec)
+install(TARGETS ${essai} DESTINATION bin)
 
 
 set(essai compare_lata)

@@ -127,7 +127,7 @@ int main(int argc,char **argv) {
 #endif
  
 #ifdef MM
-  MEDField field_vitesse;
+  MEDField vitesse;
 #else
 #ifndef testvector
   TrioField vitesse;
@@ -171,13 +171,9 @@ int main(int argc,char **argv) {
 	
 #ifdef MM
 	  cout <<" medcouplindfielddouble"<<endl;
-	  T->getInputFieldTemplate("vitesse_entree",field_vitesse);
-	  dec.attachLocalField(field_vitesse.getField());
-	  
-#else
+#endif	  
 	  T->getInputFieldTemplate("vitesse_entree",vitesse);
 	  dec.attachLocalField( &vitesse);
-#endif	  
 	  // Compute intersections if necessary 
 	  if (init) {
 	    dec.synchronize();
@@ -186,11 +182,7 @@ int main(int argc,char **argv) {
 
 	  // Receive field from boite
 	  dec.recvData();
-#ifdef MM
-	  T->setInputField("vitesse_entree",field_vitesse);
-#else
 	  T->setInputField("vitesse_entree",vitesse);
-#endif
 	}
 	
 	// Sender side
@@ -200,13 +192,9 @@ int main(int argc,char **argv) {
 	 
 #ifdef MM
 	  cout <<" medcouplindfielddouble"<<endl;
-	  T->getOutputField("VITESSE_ELEM_boite_boundaries_perio",field_vitesse);
-	  //dec.attachLocalField(parafield);
-	  dec.attachLocalField(field_vitesse.getField());
-#else 
+#endif	  
 	  T->getOutputField("VITESSE_ELEM_boite_boundaries_perio",vitesse);
 	  dec.attachLocalField( &vitesse);
-#endif	  
 	  // Compute intersections if necessary 
 	  if (init) {
 	    dec.synchronize();

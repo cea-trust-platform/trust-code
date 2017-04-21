@@ -484,7 +484,8 @@ package_valgrind=$TRUST_ROOT/exec/valgrind
 # Car parfois Ex Debian, le python construit ne marche pas: 
 # scotch_5.1.12b_esmumps-p1.tar.gz is not a tarball
 # [or installed python cannot process compressed files]
-if [ "`python --version 2>/dev/null;echo $?`" != 0 ]
+#if [ "`python --version 2>/dev/null;echo $?`" != 0 ]
+if [ "`python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1]*100+a[2]*10+a[3];print (v>=273?1:0)}'`" != 1 ]
 then
    if [ -f $TRUST_ROOT/exec/python/env.sh ]
    then

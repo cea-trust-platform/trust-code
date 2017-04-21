@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.7.5_beta : Changes since version 1.7.4 :
 -------------------------------------------------------------
+21/04/17 (Tools)  Using MEDField in ICoCo
 05/04/17 (TRUST)  GNU compilers 6.3.0 supported
 31/03/17 (TRUST)  Changing the interface of VECT::add (see MacVect.h)
 30/03/17 (TRUST)  Add Param::lire_sans_accolade

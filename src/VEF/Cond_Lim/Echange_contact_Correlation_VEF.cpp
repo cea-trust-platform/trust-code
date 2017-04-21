@@ -1028,8 +1028,8 @@ void Echange_contact_Correlation_VEF::imprimer(double temps) const
 
               for (int i=0; i<coord_tmp.size(); i++)
                 {
-                  fic << coord_tmp(i) << " \t" << T_tmp(i) << " \t" << U_tmp(i) << " \t" << h_tmp(i) << " \t" <<
-                      rho_tmp(i) << " \t" << mu_tmp(i) << " \t" << lambda_tmp(i) << " \t" << Qvol_tmp(i)*vol_tmp(i);
+                  fic << coord_tmp(i) << " \t" << T_tmp(i) << " \t" << U_tmp(i) << " \t" << h_tmp(i) << " \t" ;
+                  fic  << rho_tmp(i) << " \t" << mu_tmp(i) << " \t" << lambda_tmp(i) << " \t" << Qvol_tmp(i)*vol_tmp(i);
                   if (avec_rayo && i>0 && i<coord_tmp.size()-1) fic << " \t" << flux_radiatif_tmp(i-1);
                   fic << finl;
                   Qt+=Qvol_tmp(i)*vol_tmp(i);
@@ -1056,8 +1056,8 @@ void Echange_contact_Correlation_VEF::imprimer(double temps) const
 
       for (int i =0; i<N; i++)
         {
-          fic << coord(i) << " \t" << T(i) << " \t" << U(i) << " \t" << h_correlation(i) << " \t" << rho(i) << " \t" <<
-              mu(i) << " \t" << lambda(i) << " \t" << Qvol(i)*vol(i);
+          fic << coord(i) << " \t" << T(i) << " \t" << U(i) << " \t" << h_correlation(i) << " \t" << rho(i) << " \t" ;
+          fic <<    mu(i) << " \t" << lambda(i) << " \t" << Qvol(i)*vol(i);
           if (avec_rayo && i>0 && i<N-1) fic << " \t" << flux_radiatif(i-1);
           fic << finl;
           Qt+=Qvol(i)*vol(i);
