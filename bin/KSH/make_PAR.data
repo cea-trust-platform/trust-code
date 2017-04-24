@@ -22,8 +22,8 @@ SUBSTITUE ()
 -e "s? Cholesky {? GCP { precond ssor { omega 1.651 } seuil 1.e-10?g" \
 -e "s? cholesky {? GCP { precond ssor { omega 1.651 } seuil 1.e-10?g" $1.data > tmp.data
      mv -f tmp.data $1.data
-     echo "   Cholesky solver not parallelized in TRUST."
-     echo "   We changed it into GCP { precond ssor { omega 1.651 } seuil 1.e-10 }"
+     echo "   Cholesky solver not parallelized in TRUST." 1>&2
+     echo "   In the $1 file, Cholesky -> GCP { precond ssor { omega 1.651 } seuil 1.e-10 } " 1>&2
    fi
 }
 
