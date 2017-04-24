@@ -39,8 +39,8 @@ END SCATTER #
 
 VEFPreP1B dis
 
-Scheme_euler_implicit sch
-Read sch
+Scheme_euler_implicit sch_fluide
+Read sch_fluide
 {
 	tinit	0.
 	tmax	0.015
@@ -59,6 +59,28 @@ Read sch
 	   seuil_convergence_implicite	1.e-1
 	}
 }
+
+Scheme_euler_implicit sch_solide
+Read sch_solide
+{
+	tinit	0.
+	tmax	0.015
+	facsec          10.e2
+	facsec_max      50.e2
+	dt_start	dt_calc
+	dt_min	1.e-10
+	dt_max	1.e-1
+	dt_impr	1.e-4
+	dt_sauv	1.e-4
+        seuil_statio 1.e-8
+	solveur piso
+	{
+	   solveur gmres { diag seuil 1e-06   controle_residu  1 }
+	   seuil_convergence_solveur	1.e-5 
+	   seuil_convergence_implicite	1.e-1
+	}
+}
+
 
 Fluide_Quasi_Compressible fluide
 Read fluide
@@ -92,15 +114,16 @@ Associate solide gravite
 
 Associate pb_Th dom_fluide
 Associate pb_Th fluide
+Associate pb_Th sch_fluide
 
 Associate pb_C dom_solide
 Associate pb_C solide
+Associate pb_C sch_solide
 
 Probleme_Couple pbc
 
 Associate pbc pb_Th
 Associate pbc pb_C
-Associate pbc sch
 
 Discretize pbc dis
 

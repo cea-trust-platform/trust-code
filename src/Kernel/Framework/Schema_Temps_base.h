@@ -100,6 +100,8 @@ public :
   /////////////////////////////////////////
 
   Schema_Temps_base();
+  inline void nommer(const Nom&);
+  inline const Nom& le_nom() const;
   virtual int faire_un_pas_de_temps_eqn_base(Equation_base&) =0;
 
   virtual void set_param(Param& titi);
@@ -329,7 +331,7 @@ public :
 protected :
 
   REF(Probleme_base) mon_probleme;
-
+  Nom nom_;
   double dt_;                                // Pas de temps de calcul
   double temps_courant_;
   double temps_precedent_;
@@ -372,6 +374,48 @@ private:
   int stationnaire_atteint_;	// Stationary reached by the problem using this scheme
   bool stationnaires_atteints_;	// Stationary reached by the calculation (means all the problems reach stationary)
 };
+
+
+// Description:
+//    surcharge Objet_U::nommer(const Nom&)
+//    Donne un nom au shema en temps
+// Precondition:
+// Parametre: Nom& name
+//    Signification: le nom a donner au shema en temps
+//    Valeurs par defaut:
+//    Contraintes: reference const
+//    Acces: entree
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+inline void Schema_Temps_base::nommer(const Nom& name)
+{
+  nom_=name;
+}
+
+
+// Description:
+//    surcharge Objet_U::le_nom()
+//    Renvoie le nom du shema en temps
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour: Nom&
+//    Signification: le nom du shema en temps
+//    Contraintes: reference constante
+// Exception:
+// Effets de bord:
+// Postcondition: la methode ne modifie pas l'objet
+inline const Nom& Schema_Temps_base::le_nom() const
+{
+  return nom_;
+}
 
 
 // Description:
