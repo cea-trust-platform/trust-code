@@ -31,6 +31,7 @@
 #include <Schema_Euler_Implicite.h>
 #include <Domaine.h>
 #include <Loi_Fermeture_base.h>
+#include <Probleme_Couple.h>
 
 Implemente_base(Pb_QC_base,"Pb_QC_base",Pb_qdm_fluide);
 
@@ -69,8 +70,16 @@ void Pb_QC_base::associer_sch_tps_base(const Schema_Temps_base& sch)
       && !sub_type(RRK2,sch)
       && !sub_type(RK3,sch))
     {
-      Cerr << "On ne sait pas resoudre un : " << que_suis_je() << finl;
-      Cerr << "avec un schema en temps " << sch.que_suis_je() << finl;
+      Cerr << finl;
+      Cerr << "TRUST can't solve a " << que_suis_je() << finl;
+      Cerr << "with a " << sch.que_suis_je() << " time scheme." << finl;
+      exit();
+    }
+  if ( sub_type(Schema_Euler_Implicite,sch) && coupled_==1 )
+    {
+      Cerr << finl;
+      Cerr << "Coupled problem with unique Euler implicit time scheme with quasi-compressible fluid are not allowed!" << finl;
+      Cerr << "Choose another time scheme or set a time scheme for each of your problems." << finl;
       exit();
     }
   Pb_qdm_fluide::associer_sch_tps_base(sch);
