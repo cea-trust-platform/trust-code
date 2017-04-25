@@ -286,18 +286,20 @@ do
 done
 
 export TRUST_ROOT_VERSION=`awk '/version/ && /Release notes/ {print $4;exit}' $TRUST_ROOT/RELEASE_NOTES | sed "s/_beta//"`
-if [ "$TRUST_DISABLE_CHECKS" = 0 ] && [ "$clean" != "clean" ]
+if [ "$clean" != "clean" ]
 then
    [ ! -d externalpackages ] && [ ! -L externalpackages ] && echo "You need to download externalpackages before configuring" && echo "wget http://downloads.sourceforge.net/project/trust-platform/$TRUST_ROOT_VERSION/externalpackages-$TRUST_ROOT_VERSION.tar" && exit -1
-   # Gestion externalpackages
-   echo "Verify externalpackages..."
-   cd $TRUST_ROOT/bin/gestion_externalpackages
-   export LC_ALL=C && ./Verify_externalpackages.sh 
-   [ $? != 0 ] && echo "" && echo "Error: You need to update externalpackages directory to $TRUST_ROOT_VERSION version" && exit -1
-   cd $TRUST_ROOT
-elif [ "$clean" != "clean" ]
-then
-   echo "Disabling CHECKS, so no verify externalpackages."
+   if [ "$TRUST_DISABLE_CHECKS" = 0 ]
+   then
+      # Gestion externalpackages
+      echo "Verify externalpackages..."
+      cd $TRUST_ROOT/bin/gestion_externalpackages
+      export LC_ALL=C && ./Verify_externalpackages.sh 
+      [ $? != 0 ] && echo "" && echo "Error: You need to update externalpackages directory to $TRUST_ROOT_VERSION version" && exit -1
+      cd $TRUST_ROOT
+   else
+      echo "Disabling CHECKS, so no verify externalpackages."
+   fi
 fi
 
 for THIRD_PARTY in $LIST_THIRD_PARTY 

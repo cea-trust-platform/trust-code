@@ -37,16 +37,21 @@ cb_config_list *:1" > ROMIO_HINTS.env
    # Load modules
    # intel 14.0.3.174 15.0.6.233 16.0.3.210(default) intel/17.0.0.098
    intel="intel/16.0.3.210"
+   #Vgcc # gnu 4.8.4 4.8.5(default) 4.9.3 5.4.0 6.1.0
+   #Vgcc intel="gnu/4.8.5"
    # openmpi mpi/openmpi/1.8.4 mpi/openmpi/1.8.8(default)
    # bibliotheque MellanoX Messaging (MXM) pour optimisation des communications MPI mpiprofile/openmpi/mxm
    #openmpi="mpi/openmpi/1.8.8 mpiprofile/openmpi/mxm"
    openmpi="mpi/openmpi/1.8.8"
+   #Vgcc openmpi="feature/openmpi/gnu"
    # intelmpi mpi/intelmpi/5.1.3.210  mpi/intelmpi/2017 # 2016: You are currently not allowed to use this software
    module="$intel $openmpi"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
    echo "module load $module 1>/dev/null" >> $env
+   #Vgcc module="flavor/openmpi/cea flavor/openmpi/gcc"
+   #Vgcc echo "module switch $module 1>/dev/null" >> $env
    . $env
    # Creation wrapper qstat -> squeue
    echo "#!/bin/bash
