@@ -108,6 +108,9 @@ help()
    echo "-index                  : Access to TRUST ressources index."
    echo "-doc                    : Access to TRUST manual (Generic Guide)."
    echo "-config nedit|vim|emacs : Configure nedit or vim or emacs with TRUST keywords."
+   echo "-edit                   : Edit datafile."
+   echo "-xedit                  : Edit datafile with xdata."
+   echo "-xcheck                 : Check the datafile's keywords with xdata."
    echo "-mesh                   : Visualize the mesh(es) contained in the data file."
 #   echo "-monitor                : Run and monitor the progress of the TRUST calculation."
    echo "-probes                 : Monitor the TRUST calculation only."
@@ -135,6 +138,9 @@ help()
 binary=$exec
 ici=`pwd`   
 me=`whoami`
+edit=""
+xedit=""
+xcheck=""
 mesh=""
 monitor=""
 probes=""
@@ -210,6 +216,15 @@ do
    elif [ "$1" = "-copy" ]
    then
       copy=1
+   elif [ "$1" = "-edit" ]
+   then
+      edit=1
+   elif [ "$1" = "-xedit" ]
+   then
+      xedit=1
+   elif [ "$1" = "-xcheck" ]
+   then
+      xcheck=1
    elif [ "$1" = "-mesh" ]
    then
       mesh=1
@@ -314,6 +329,7 @@ done
 # Filename #
 ############
 NOM=`basename $ici` && [ ${#1} != 0 ] && NOM=$1 && NOM=${NOM%.data} && shift
+[ "${NOM:0:1}" = "-" ] && echo "Error: option not included" && help && exit 0
 
 ###############
 # CPU numbers #
@@ -375,6 +391,36 @@ then
    bash  $TRUST_ROOT/exec/TRUST_PLOT2D/Plot2d.sh $DIR/`basename $NOM`.data "residu=max|Ri|"
    exit $?
 fi
+
+#############
+# Edit data #
+#############
+if [ "$edit" = 1 ]
+then
+   editor=$EDITEUR
+   [ "$editor" = "" ] && editor="xemacs"
+   $editor $NOM".data" &
+   exit $?
+fi
+
+########################
+# Edit data with xdata #
+########################
+if [ "$xedit" = 1 ]
+then
+   $TRUST_ROOT/bin/EditData $NOM".data"
+   exit $?
+fi
+
+##########################
+# Verify data with xdata #
+##########################
+if [ "$xcheck" = 1 ]
+then
+   $TRUST_ROOT/bin/VerifData $NOM".data"
+   exit $?
+fi
+
 #################
 # Visu maillage #
 #################
