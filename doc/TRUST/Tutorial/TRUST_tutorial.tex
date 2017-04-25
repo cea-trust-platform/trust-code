@@ -112,6 +112,7 @@
 CEA Saclay \\ % Your institution for the title page
 \medskip
 \textit{triou@cea.fr} % Your email address
+\medskip
 }
 \date{\today} % Date, can be changed to a custom date
 
@@ -133,7 +134,7 @@ CEA Saclay \\ % Your institution for the title page
 \column{.45\textwidth}
 \tableofcontents[sections={1-7}, hideallsubsections]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-13}, hideallsubsections]
+\tableofcontents[sections={8-14}, hideallsubsections]
 \end{columns}
 % Throughout your presentation, if you choose to use \section{} and \subsection{} commands, these will automatically be printed on this slide as an overview of your presentation
 \end{frame}
@@ -150,7 +151,7 @@ CEA Saclay \\ % Your institution for the title page
 \column{.45\textwidth}
 \tableofcontents[sections={1-7},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-13},currentsection, currentsubsection]
+\tableofcontents[sections={8-14},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -187,7 +188,7 @@ CEA Saclay \\ % Your institution for the title page
 \column{.45\textwidth}
 \tableofcontents[sections={1-7},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-13},currentsection, currentsubsection]
+\tableofcontents[sections={8-14},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -451,7 +452,7 @@ or using "PLOT2D" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&} and 
 \column{.45\textwidth}
 \tableofcontents[sections={1-7},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-13},currentsection, currentsubsection]
+\tableofcontents[sections={8-14},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -640,7 +641,7 @@ You will run it like:\\
 \column{.45\textwidth}
 \tableofcontents[sections={1-7},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-13},currentsection, currentsubsection]
+\tableofcontents[sections={8-14},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -721,7 +722,7 @@ or
 \column{.45\textwidth}
 \tableofcontents[sections={1-7},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-13},currentsection, currentsubsection]
+\tableofcontents[sections={8-14},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -832,7 +833,7 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 
 \item Click : 'Start computation!', select 'Ri=max\_pb1$|dT/dt|$', 'Ri=max\_pb2$|dT/dt|$', 'Ri=max\_pb2$|dV/dt|$', 'residu=max$|Ri|$' with "Ctrl" button and click on 'Plot on same'.
 
-\item To see when convergence is reached, select a probe (for example temperature) ant click on 'Plot'. 
+\item To see when convergence is reached, select a probe (for example temperature) and click on 'Plot'. 
 
 \item Post-process the results and compare with VDF\index{VDF} discretization about the CPU performance: the VEF calculation is running 10 times slower (cause higher number of pressure unknowns and smaller time steps). Study the docond.out file to see the time steps for each equation (click on "Edit .out" at the top right corner of the GUI).
 \end{itemize}
@@ -871,7 +872,7 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 \column{.45\textwidth}
 \tableofcontents[sections={1-7},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-13},currentsection, currentsubsection]
+\tableofcontents[sections={8-14},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1028,7 +1029,7 @@ or \\
 \column{.45\textwidth}
 \tableofcontents[sections={1-7},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-13},currentsection, currentsubsection]
+\tableofcontents[sections={8-14},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1125,7 +1126,7 @@ You can also see the informations at the end of the Heat exchange VDF/VEF exerci
 \column{.45\textwidth}
 \tableofcontents[sections={1-7},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-13},currentsection, currentsubsection]
+\tableofcontents[sections={8-14},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1211,7 +1212,7 @@ Upper and lower walls: No slip wall ($U=0$) and non-porous wall ($\partial C_i/\
 \column{.45\textwidth}
 \tableofcontents[sections={1-7},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-13},currentsection, currentsubsection]
+\tableofcontents[sections={8-14},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1246,15 +1247,14 @@ Goals:
 {\small{
 \textbf{source /home/triou/env\_\textcolor{blue}{TrioCFD}\_X.Y.Z.sh }\\
 \textbf{echo \$exec} \\
-\textbf{export TrioCFD\_ROOT=\`\,dirname \$exec\`} \\
-\textbf{echo \$TrioCFD\_ROOT} \\
+\textbf{echo \$project\_directory} \\
 }}
 
 \item Create a new directory and copy some data:\\
 {\small{
 \textbf{mkdir -p $\sim$/test/yourname/PeriodicBox} \\
 \textbf{cd $\sim$/test/yourname/PeriodicBox} \\
-\textbf{cp \$TrioCFD\_ROOT/validation/share/Validation/Rapports\_automatiques/} \\
+\textbf{cp \$project\_directory/validation/share/Validation/Rapports\_automatiques/} \\
 \hspace{4cm} \textbf{Validant/pas\_fini/PeriodicBox/src/* \; .} \\
 }}
 \vspace{0.2cm}
@@ -1347,7 +1347,7 @@ Notice that we use \textbf{"trust"} command line because this script will use th
 \column{.45\textwidth}
 \tableofcontents[sections={1-7},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-13},currentsection, currentsubsection]
+\tableofcontents[sections={8-14},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1382,8 +1382,7 @@ Outlet: $P_0=0$
 {\small{
 \textbf{source /home/triou/env\_\textcolor{blue}{TrioCFD}\_X.Y.Z.sh }\\
 \textbf{echo \$exec} \\
-\textbf{export TrioCFD\_ROOT=\`\,dirname \$exec\`} \\
-\textbf{echo \$TrioCFD\_ROOT} \\
+\textbf{echo \$project\_directory} \\
 }}
 
 \item Copy the study named Marche3D: 
@@ -1434,7 +1433,7 @@ Outlet: $P_0=0$
 \column{.45\textwidth}
 \tableofcontents[sections={1-7},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-13},currentsection, currentsubsection]
+\tableofcontents[sections={8-14},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1639,7 +1638,7 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 \column{.45\textwidth}
 \tableofcontents[sections={1-7},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-13},currentsection, currentsubsection]
+\tableofcontents[sections={8-14},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1753,7 +1752,7 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 \column{.45\textwidth}
 \tableofcontents[sections={1-7},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-13},currentsection, currentsubsection]
+\tableofcontents[sections={8-14},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2057,7 +2056,7 @@ Netgen & MG
 \column{.45\textwidth}
 \tableofcontents[sections={1-7},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-13},currentsection, currentsubsection]
+\tableofcontents[sections={8-14},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2205,7 +2204,7 @@ Then "Apply and Close"
 \column{.45\textwidth}
 \tableofcontents[sections={1-7},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-13},currentsection, currentsubsection]
+\tableofcontents[sections={8-14},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2497,7 +2496,7 @@ or in parallel with:\\
 \column{.45\textwidth}
 \tableofcontents[sections={1-7},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-13},currentsection, currentsubsection]
+\tableofcontents[sections={8-14},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2517,9 +2516,8 @@ or in parallel with:\\
 \textbf{mkdir \, -p \, $\sim$/test/yourname/gmsh} \\
 \textbf{cd \, $\sim$/test/yourname/gmsh} \\
 \textbf{source /home/triou/env\_\textcolor{blue}{TrioCFD}\_X.Y.Z.sh }\\
-\textbf{export TrioCFD\_ROOT=\`\,dirname \$exec\`} \\
-\textbf{echo \$TrioCFD\_ROOT} \\
-\textbf{dir=\$TrioCFD\_ROOT/validation/share/Validation/Rapports\_automatiques/Validant} \\
+\textbf{echo \$project\_directory} \\
+\textbf{dir=\$project\_directory/validation/share/Validation/Rapports\_automatiques/Validant} \\
 \textbf{cp \, \$dir/pas\_fini/Drag/src/shape.geo \, file.geo} \\
 \textbf{nedit file.geo \& } \\
 \textbf{gmsh file.geo \&} }}\\
@@ -2615,7 +2613,7 @@ Point(14)=\{1,0.75,0,lc2\};
 \column{.45\textwidth}
 \tableofcontents[sections={1-7},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-13},currentsection, currentsubsection]
+\tableofcontents[sections={8-14},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2691,6 +2689,69 @@ Physical Volume("dom") = \{1\};
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+\subsection{TRUST Wizzard for 3D VEF mesh}
+%\subsubsection{3D VEF mesh}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-7},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={8-14},currentsection, currentsubsection]
+\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{TRUST Wizzard for 3D VEF mesh}
+\begin{block}{}
+
+\begin{itemize}
+\item Open the TRUST wizzard:\\
+\textbf{trust -wiz\index{trust -wiz}}
+
+\item Create an hydraulic problem with:
+    \begin{itemize}
+    \item in "Turbulent model" tab, set a laminar turbulent model.
+    \item in "Domain" tab, input the path to your 3D mesh file in med format. The wizzard will find the name of your mesh.
+    \item in "Boundary condition" tab, select a boundary condition of type:
+        \begin{itemize}
+        \item "Input" for your Inlet boundary and set your velocity field to ( 1. 0. 0. ),
+        \item "Wall" with no velocity for your Obstacle boundary,
+        \item "Output" with pressure field set to 0. for your Outlet boundary,
+        \item "Symetry" for your Wall boundary.
+        \end{itemize}
+    \item in "Initial condition" tab, set your velocity field to ( 0. 0. 0. ).
+    \item in "Incompressible flow" tab, choose a predefined field like "Water 20 deg".
+    \end{itemize}
+\item Then click on "Validate" to see if your parameters are ok.
+\item You can see the message "All ok!" at the bottom left of the window.
+\item You can save your session at the .JSon format by clicking on "Save ...".
+\end{itemize}
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{TRUST Wizzard for 3D VEF mesh}
+\begin{block}{}
+
+\begin{itemize}
+\item Click on "Start ...", a window opens to save your data file. Name it for example "test\_wiz.data" and clock on "Save".
+\item The TRUST PLOT2D tool opens, click on "Start computation!".
+\item An error occurs! Open your data file with "Edit data" button.
+\item Correct the expression of gravity field adding a third composant.
+\item Add a "\textbf{tmax}" value (for example 'tmax 0.1') and suppress the max number of iterations.
+\item Save it and run your simulation.
+\item It must be long because of the size of the cells. You can decrease it and create another mesh with gmsh to run faster.
+\end{itemize}
+\textbf{Warning}: TRUST Wizzard is still in development. Not all models are available yet.
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
 %%%%\subsection{Xprepro}
 %%%%\subsubsection{3D VDF mesh}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2699,7 +2760,7 @@ Physical Volume("dom") = \{1\};
 %%%%\column{.45\textwidth}
 %%%%\tableofcontents[sections={1-7},currentsection, currentsubsection]
 %%%%\column{.5\textwidth} 
-%%%%\tableofcontents[sections={8-13},currentsection, currentsubsection]
+%%%%\tableofcontents[sections={8-14},currentsection, currentsubsection]
 %%%%\end{columns}
 %%%%\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2887,7 +2948,7 @@ Physical Volume("dom") = \{1\};
 %%%%\column{.45\textwidth}
 %%%%\tableofcontents[sections={1-7},currentsection, currentsubsection]
 %%%%\column{.5\textwidth} 
-%%%%\tableofcontents[sections={8-13},currentsection, currentsubsection]
+%%%%\tableofcontents[sections={8-14},currentsection, currentsubsection]
 %%%%\end{columns}
 %%%%\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3023,7 +3084,7 @@ Physical Volume("dom") = \{1\};
 \column{.45\textwidth}
 \tableofcontents[sections={1-7},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-13},currentsection, currentsubsection]
+\tableofcontents[sections={8-14},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3274,7 +3335,7 @@ or\\
 \column{.45\textwidth}
 \tableofcontents[sections={1-7},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-13},currentsection, currentsubsection]
+\tableofcontents[sections={8-14},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3288,8 +3349,11 @@ or\\
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-
-\Huge{\centerline{End}}
+\begin{center}
+{\Huge{End}}\\
+\vspace{2cm}
+\textbf{Tutorial solutions}: \textit{\$TRUST\_ROOT/doc/TRUST/exercices/Tutorial\_solutions.pdf}
+\end{center}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
