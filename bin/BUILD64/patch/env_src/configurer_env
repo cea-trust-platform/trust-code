@@ -48,6 +48,22 @@ run_test_mpi()
       err=1
    fi  
 }
+run_test_mpi_par()
+{
+   rm -f test_mpi.log
+   lib=`dirname $mpiCC`
+   # On essaie d'executer en parallele
+   $lib/mpirun -np 2 ./test_mpi 2 1>test_mpi.log 2>&1 &
+   $TRUST_ROOT/bin/KSH/wait_for $! 30
+   if [ ! -s test_mpi.log ]
+   then
+      err=0
+   #elif [ "`grep mpi-abort test_mpi.log`" != "" ]
+   elif [ "`grep coucou test_mpi.log`" = "" ]
+   then
+      err=1
+   fi
+}
 
 ########################################################
 configure_compilateur_ccache()
@@ -889,6 +905,8 @@ compiler_found=1
 [ "$TRUST_cc_BASE" = "" ] && echo "C compiler not found. Please install a C compiler." && compiler_found=0
 [ "$TRUST_F77_BASE" = "" ] && echo "Fortran compiler not found. Please install a Fortran compiler." && compiler_found=0
 [ "$compiler_found" = 0 ] && echo "Then install again the code." && exit -1
+# Arret si compilateur intel utilise pour build en 64 BITS (car il faut revoir option -fdefault-integer-8)
+[ "`basename $TRUST_F77_BASE`" = "ifort" ] && echo "INTEL compiler not supported for build in 64 BITS. Contact TRUST support." && exit -1
 
 ######################################################################
 # On va avoir besoin de cmake 2.8 pour Metis et 2.8.10.2 pour VisIt 2.7.0
@@ -1024,6 +1042,27 @@ else
      }
      return 0;
    }" > $rep_test_mpi/test_mpi.cpp
+   echo "#include <mpi.h>
+   #include <iostream>
+   using std::cout;
+   using std::endl;
+   int main(int argc, char** argv)
+   {
+     if (argc>1)
+     {
+       MPI_Init(&argc,&argv);
+       int mytid;
+       MPI_Comm_rank(MPI_COMM_WORLD,&mytid);
+       cout<<\"[PE \"<<mytid<<\"] coucou\"<<endl;
+       // MPI_Abort(MPI_COMM_WORLD,mytid);
+       MPI_Abort(MPI_COMM_WORLD,-1);
+     }
+     else
+     {
+       cout<<\"[PE 0] coucou\"<<endl;
+     }
+     return 0;
+   }" > $rep_test_mpi/test_abort_mpi.cpp
    echo "      program main 
       include 'mpif.h'
       integer ierr
@@ -1084,7 +1123,7 @@ else
 	 echo $mpiCC -o ./test_mpi $rep_test_mpi/test_mpi.cpp
 	 $mpiCC -o ./test_mpi $rep_test_mpi/test_mpi.cpp 1>mpiCC.log 2>&1 
 	 err=$?
-	 [ $err = 0 ] && run_test_mpi 1>mpiCC.log 2>&1 
+	 [ $err = 0 ] && run_test_mpi 1>>mpiCC.log 2>&1 
 	 OK $err
 	 if [ $err = 0 ]
 	 then
@@ -1099,7 +1138,7 @@ else
 	    echo $mpif -o ./test_mpi $rep_test_mpi/test_mpi.f
 	    $mpif -o ./test_mpi $rep_test_mpi/test_mpi.f 1>mpif.log 2>&1 
 	    err=$?
-	    [ $err = 0 ] && run_test_mpi 1>mpif.log 2>&1 
+	    [ $err = 0 ] && run_test_mpi 1>>mpif.log 2>&1 
 	    OK $err
 	 fi
 	 # On definit TRUST_CC et TRUST_cc si on trouve un mpiCC/mpi77 qui fonctionne:
@@ -1149,6 +1188,15 @@ else
 	       [ "$Mpirun" = "" ] && mpi_detecte=0 && echo "mpiexec/mpirun not found for MPI_ROOT=$MPI_ROOT..."	       
 	       # Pb decouvert sur machine is202803 et ioulia : il ne faut pas inclure mpi++.h dans le mpi.h sinon warning qui font des erreurs avec -Wall -Werror:
 	       [ -f `dirname $mpiCC`/mpicxx ] && COMFLAGS=$COMFLAGS" -DMPICH_SKIP_MPICXX"
+               # Test du MPI_Abort en parallel (KO avec openmpi 1.10.3 1.10.4 1.10.5)
+               # desactive car pb en soumission de job hors frontale
+               #echo $ECHO_OPTS "# Check `basename $mpiCC` (mpiAbort.log file): "
+               #echo $mpiCC -o ./test_mpi $rep_test_mpi/test_abort_mpi.cpp
+               #$mpiCC -o ./test_mpi $rep_test_mpi/test_abort_mpi.cpp 1>mpiAbort.log 2>&1
+               #err=$?
+               #[ $err = 0 ] && run_test_mpi_par 1>>mpiAbort.log 2>&1
+               #OK $err
+               #[ $err = 1 ] && mpi_detecte=0 && echo "Problem with MPI_ABORT of `mpirun --version | head -n 1`. Upgrade of MPI version."
 	    fi	
 	 fi
       fi
@@ -1176,6 +1224,8 @@ else
       # MPI_ROOT="$TRUST_ROOT/lib/src/LIBMPI/openmpi" && [ "$TRUST_FORCE_PROVIDED_MPICH" = 1 ] && MPI_ROOT="$TRUST_ROOT/lib/src/LIBMPI/mpich"
       # New 1.6.9 -> MPICH by default instead of OpenMPI (hangs on several cases, eg: UJV_32 on gudy)
       MPI_ROOT="$TRUST_ROOT/lib/src/LIBMPI/mpich"
+      # New 1.7.5 -> OpenMPI by default instead of MPICH (2.0.2 valgrind free)
+      #MPI_ROOT="$TRUST_ROOT/lib/src/LIBMPI/openmpi"
       if [ "$TRUST_FORCE_PROVIDED_OPENMPI" = 1 ] || [ "$TRUST_FORCE_OLD_OPENMPI" = 1 ] || [ "$TRUST_FORCE_LATEST_OPENMPI" = 1 ]
       then
          MPI_ROOT="$TRUST_ROOT/lib/src/LIBMPI/openmpi"
@@ -1565,7 +1615,8 @@ case $TRUST_ARCH_CC in
    # 27/06/16 : pour portabilite sur Ubuntu16, passage de v5.1.2 a v5.3.2 sur test GNU
    # 29/06/16 : pour portabilite sur Fedora24, passage de v5.3.2 a v6.1.1 sur test GNU
    # 16/09/16 : passage de v6.1.1 a v6.2.0 sur test GNU
-        TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk '{if ($1<"6.2.1" && $1>="3.4") print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
+   # 04/04/17 : passage de v6.2.0 a v6.3.0 sur test GNU
+        TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk '{if ($1<"6.3.1" && $1>="3.4") print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
    	m="# GNU compiler version";e="TRUST_VERSION_GNU=$TRUST_VERSION_GNU && export TRUST_VERSION_GNU";ecrit $m"|"$e"|"$env
 	[ "`echo $TRUST_SUPPORTED | grep -i Not`" != "" ] && TRUST_SUPPORTED=0
 	# Passage en -O2 car plantages suspects en -O3 avec egcs sur linux
