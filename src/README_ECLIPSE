@@ -1,4 +1,4 @@
-Notes for Eclipse with TRUST (30/01/2017)
+Notes for Eclipse with TRUST (27/04/2017)
 -----------------------------------------
 
 Download
@@ -8,6 +8,7 @@ Download
 > Then click on "Download" button.
 > Select "Eclipse IDE for C/C++ Developers" -> "Linux 64-bits"
 > Download the eclipse-cpp-mars-2-linux-gtk-x86_64.tar.gz package in your directory "/export/home/user/"
+--> For Ubuntu16.04, download Eclipse NEON version: eclipse-cpp-neon-3-linux-gtk-x86_64.tar.gz to avoid graphical issues
 
 Installation
 ============
@@ -17,7 +18,10 @@ Installation
 Configuration
 =============
 > cd eclipse
-> Change the eclipse.ini file, by deleting the last 3 lines (MaxPermSize, Xms and Xmx) and adding the following lines:
+> For Ubuntu16.04, change the eclipse.ini file, by deleting the last 2 lines (Xms and Xmx) and adding the following lines:
+-Xms512m
+-Xmx2048m
+> For other OS, change the eclipse.ini file, by deleting the last 3 lines (MaxPermSize, Xms and Xmx) and adding the following lines:
 -XX:+UseParallelGC
 -Xmn256m
 -Xss2m
@@ -59,7 +63,6 @@ Launching
   Right click TRUST-X.Y.Z --> Properties
   => Builders: uncheck "CDT Builder" => OK
   => OK
-
 > Project Explorer
   Right click TRUST-X.Y.Z --> Debug As/Debug Configurations...
   => C/C++ Application => New

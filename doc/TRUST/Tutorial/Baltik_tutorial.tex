@@ -1,0 +1,1513 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Beamer Presentation
+% LaTeX Template
+% Version 1.0 (10/11/12)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%    PACKAGES AND THEMES
+%----------------------------------------------------------------------------------------
+
+%%TO COMPILE AND GENERATE THE INDEX
+%pdflatex TRUST_tutorial.tex
+%pdflatex TRUST_tutorial.tex
+
+\documentclass[10pt, hyperref={unicode=true,pdfusetitle, bookmarks=true,bookmarksnumbered=false,bookmarksopen=false, breaklinks=false,pdfborder={0 0 1},backref=true,colorlinks=true,linkcolor=darkblue,pageanchor, urlcolor=darkblue}]{beamer}
+
+\mode<presentation> {
+
+% The Beamer class comes with a number of default slide themes
+% which change the colors and layouts of slides. Below this is a list
+% of all the themes, uncomment each in turn to see what they look like.
+
+%\usetheme{default}
+%\usetheme{AnnArbor}
+%\usetheme{Antibes}
+%\usetheme{Bergen}
+%\usetheme{Berkeley}
+%\usetheme{Berlin}
+%\usetheme{Boadilla}
+\usetheme{CambridgeUS}
+%\usetheme{Copenhagen}
+%\usetheme{Darmstadt}
+%\usetheme{Dresden}
+%\usetheme{Frankfurt}
+%\usetheme{Goettingen}
+%\usetheme{Hannover}
+%\usetheme{Ilmenau}
+%\usetheme{JuanLesPins}
+%\usetheme{Luebeck}
+%\usetheme{Madrid}
+%\usetheme{Malmoe}
+%\usetheme{Marburg}
+%\usetheme{Montpellier}
+%\usetheme{PaloAlto}
+%\usetheme{Pittsburgh}
+%\usetheme{Rochester}
+%\usetheme{Singapore}
+%\usetheme{Szeged}
+%\usetheme{Warsaw}
+
+% As well as themes, the Beamer class has a number of color themes
+% for any slide theme. Uncomment each of these in turn to see how it
+% changes the colors of your current slide theme.
+
+%\usecolortheme{albatross} % bleubleu
+%\usecolortheme{beaver} % rouge
+%\usecolortheme{beetle} % bleu/gris
+%\usecolortheme{crane}  % jaune
+%\usecolortheme{dolphin} % bleu
+%\usecolortheme{dove}  % blanc
+%\usecolortheme{fly} % gris
+%\usecolortheme{lily} % bleu
+%\usecolortheme{orchid} % bleu
+%\usecolortheme{rose} % bleu
+%\usecolortheme{seagull} % gris
+%\usecolortheme{seahorse} % bleu pale
+%\usecolortheme{whale} % bleu
+%\usecolortheme{wolverine} % jaune/bleu
+
+%\setbeamertemplate{footline} % To remove the footer line in all slides uncomment this line
+%\setbeamertemplate{footline}[page number] % To replace the footer line in all slides with a simple slide count uncomment this line
+
+%\setbeamertemplate{navigation symbols}{} % To remove the navigation symbols from the bottom of all slides uncomment this line
+
+}
+
+\usepackage{graphicx} % Allows including images
+\definecolor{darkblue}{HTML}{3535B4}
+\usepackage[T1]{fontenc}
+\usepackage{alltt}
+
+%----------------------------------------------------------------------------------------
+%    TITLE PAGE
+%----------------------------------------------------------------------------------------
+%\title[Short title]{Long title}
+\title[TRUST Baltik project]{TRUST Baltik project}
+% The short title appears at the bottom of every slide, the full title is only on the title page
+
+%\author{John Smith} % Your name
+\institute[CEA/DEN/DANS/DM2S/STMF] % Your institution as it will appear on the bottom of every slide, may be shorthand to save space
+{
+CEA Saclay \\ % Your institution for the title page
+\medskip
+\textit{triou@cea.fr} % Your email address
+}
+\date{\today} % Date, can be changed to a custom date
+
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\titlepage % Print the title page as the first slide
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%    PRESENTATION SLIDES
+%----------------------------------------------------------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\tableofcontents [hideallsubsections]
+%\begin{columns}[c] 
+%\column{.45\textwidth}
+%\tableofcontents[sections={1-3},hideallsubsections]
+%\column{.5\textwidth} 
+%\tableofcontents[sections={4-8},hideallsubsections]
+%\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\section{{\bf{TRUST initialization}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Initialisation of TRUST environment}
+\begin{block}{}
+
+\begin{itemize}
+\item Source the TRUST environment:\\
+\texttt{\$ source /home/triou/env\_TRUST\_X.Y.Z.sh}
+
+\item To know if the configuration is ok and where are the sources:\\
+\texttt{\$ echo \$TRUST\_ROOT}
+
+\item Copy a TRUST test case:\\
+\texttt{\$ cd /export/home/yourlogin/}\\
+\texttt{\$ trust -copy upwind}\\
+\texttt{\$ cd upwind}\\
+
+\item Change "format lml" to "format lata" in datafile\\
+
+\item Create your TRUST project and launch a test case with Eclipse:\\
+\texttt{\$ trust -index}\\
+$\rightarrow$ "FTP site" $\rightarrow$ "See here how to configure Eclipse with TRUST project." \\
+or \\
+\texttt{\$ nedit \$TRUST\_ROOT/src/README\_ECLIPSE \&}\\
+Do only the first part (Create a TRUST project).\\
+\item Close Eclipse.\\
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\section{{\bf{Baltik initialization}}}
+\subsection{{\bf{Creation of a Baltik project}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Creation of a Baltik project}
+\begin{block}{}
+
+\begin{itemize}
+\item Create your directory for your project:\\
+\texttt{\$ mkdir -p /export/home/yourlogin/my\_project}\\
+\texttt{\$ cd /export/home/yourlogin/my\_project}
+
+\item Fill your project from a basic project template:\\
+\texttt{\$ cp -r \$TRUST\_ROOT/bin/baltik/templates/basic/* .}\\
+\texttt{\$ ls -l}
+
+\item You can see that you have now:
+    \begin{itemize}
+    \item [$\circ$] three directories: share, src and tests, and
+    \item [$\circ$] one "project.cfg" file.
+    \end{itemize}
+
+\item Copy the following TRUST .cpp file into your baltik project:\\
+\texttt{\$ cd src}\\
+\texttt{\$ mkdir TRUST\_modif} \\
+\texttt{\$ cp \$TRUST\_ROOT/src/MAIN/mon\_main.cpp TRUST\_modif}\\
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\subsection{{\bf{Creation of your git repository}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Create your git repository}
+\begin{block}{}
+
+\begin{itemize}
+\item Initialize an empty git repository:\\
+\texttt{\$ git init}\\
+
+\item Watch your working tree status:\\
+\texttt{\$ git status}\\
+
+\item You can see your file and the three directories on the "untracked" files section.
+It means that they are not followed by the git repository for the moment.
+
+\item To add all your directories and files to the git repository, you have to prepare a commit:\\
+\texttt{\$ git add -\,-all}\\
+\texttt{\$ git status}\\
+
+\item Now you can send your commit to add your files to your git repository:\\
+\texttt{\$ git commit -m "Initial commit"}\\
+
+\item Watch your working tree status:\\
+\texttt{\$ git status}
+
+\item There is nothing more to add to your git repository.
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Create your git repository}
+\begin{block}{}
+
+\begin{itemize}
+\item Edit your project file "project.cfg" to specify name, author and executable.
+
+\item Then configure your project:\\
+\texttt{\$ baltik\_build\_configure -execute}\\
+
+\item The previous command launches the "baltik\_build\_configure" script and the "configure" script directly.
+
+\item Check the status of your git repository:\\
+\texttt{\$ git status}\\
+
+\item You can see that the file "project.cfg" has been modified. And that there are new untracked files.
+It means that there are not on the git repository.
+
+\item To see only the changes on the git repository files:\\
+\texttt{\$ git status -\,-u=no}\\
+
+\item Track changes via gitk (GUI interface of Git):\\
+\texttt{\$ gitk \&}
+
+\item You can see informations about your first commit and actual untracked changes.
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\subsection{{\bf{Builds}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{}
+\begin{block}{Make a basic build}
+
+\begin{itemize}
+\item To make a basic build:\\
+\texttt{\$ cd /export/home/yourlogin/my\_project}
+
+\item Configure your project:\\
+\texttt{\$ ./configure}
+
+\item Build your project in different modes:\\
+    \begin{itemize}
+    \item [$\circ$] Build an optimized (-03 option) version:\\
+    \texttt{\$ make optim}
+    \item [$\circ$] Build a debug (-g -O0 option with asserts) version:\\
+    \texttt{\$ make debug}
+    \end{itemize}
+
+\item Initialize your baltik project environment:\\
+\texttt{\$ source env\_basic.sh}\\
+
+\item Check the executables files:\\
+\texttt{\$ ls \$exec}\\
+\texttt{\$ ls \$exec\_opt}\\
+\texttt{\$ ls \$exec\_debug}\\
+
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{}
+\begin{block}{Other builds}
+
+\begin{itemize}
+\item List other options available for the make command:\\
+\texttt{\$ make}
+
+\item Build an optimized binary for profiling (option -pg -O3):\\
+\texttt{\$ make prof}\\
+\texttt{\$ ls \$exec\_pg}
+
+\item Build an optimized binary for test coverage (option -gcov -O3):\\
+\texttt{\$ make gcov}\\
+\texttt{\$ ls \$exec\_gcov}\\
+NB: TRUST exe matching must exist. \\
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\subsection{{\bf{Using Eclipse}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{}
+\begin{block}{Eclipse}
+
+Do the second part of README\_ECLIPSE file (Create a BALTIK project):
+\begin{itemize}
+\item to create your baltik project
+\item and launch the upwind test case with Eclipse.
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\section{{\bf{PRM file and validation test case}}}
+\subsection{{\bf{"trust -prm"}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Useful commands}
+\begin{block}{New share/Validation/Rapports\_automatiques}
+\begin{itemize}
+\item Create a new prm file:\\
+\texttt{\$ cd /export/home/yourlogin/upwind/}\\
+\texttt{\$ trust -prm upwind}\\
+\item Add this prm validation in your baltik:\\
+\texttt{\$ cd \$project\_directory/}\\
+\texttt{\$ cd share/Validation/Rapports\_automatiques/}\\
+\texttt{\$ mkdir -p upwind/src}\\
+\texttt{\$ cp /export/home/yourlogin/upwind/upwind.data upwind/src/.}\\
+\texttt{\$ cp /export/home/yourlogin/upwind/upwind.geo upwind/src/.}\\
+\texttt{\$ cp /export/home/yourlogin/upwind/upwind.prm upwind/src/.}\\
+\texttt{\$ git add upwind}\\
+\texttt{\$ git commit -m "New prm"}\\
+\item Run this prm:\\
+\texttt{\$ cd upwind/}\\
+\texttt{\$ Run\_fiche}\\
+\end{itemize}
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\subsection{{\bf{Validation test case}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Useful commands}
+\begin{block}{New tests/Reference/Validation}
+
+\begin{itemize}
+\item Create automatically the non-regression test case:\\
+\texttt{\$ cd \$project\_directory}\\
+\texttt{\$ make check\_optim}\\
+\textit{\hspace{0.1cm} Creation of upwind\_jdd1}\\
+\textit{\hspace{0.1cm} Creation of upwind\_jdd1/lien\_fiche\_validation}\\
+\textit{\hspace{0.1cm} Extracting test case (upwind.data) ...End.}\\
+\textit{\hspace{0.1cm} Creation of the file upwind\_jdd1.lml.gz}\\
+\texttt{\$ git status -\,-u=no}\\
+$\rightarrow$ But PAR\_upwind\_jdd1 is CORE.\\
+
+\item Correct the datafile to run in parallel:\\
+\texttt{\$ diff share/Validation/Rapports\_automatiques/upwind/src/upwind.data tests/Reference/Validation/upwind\_jdd1/upwind\_jdd1.data}\\
+\texttt{\$ make check\_last\_pb\_optim}\\
+NB: upwind\_jdd1.data is readonly.\\
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Useful commands}
+\begin{block}{New tests/Reference/Validation}
+
+\begin{itemize}
+\item For this, we analyze the test case:\\
+\texttt{\$ trust -copy upwind\_jdd1}\\
+ERROR...\\
+\texttt{\$ ./configure}\\
+\texttt{\$ cd build/}\\
+\texttt{\$ trust -copy upwind\_jdd1}\\
+\texttt{\$ cd upwind\_jdd1}\\
+\texttt{\$ make\_PAR.data upwind\_jdd1}\\
+\texttt{\$ trust PAR\_upwind\_jdd1 2}\\
+Update share/Validation/Rapports\_automatiques/upwind/src/upwind.data\\
+change "Scatter ../upwind/DOM.Zones dom" by "Scatter DOM.Zones dom"\\
+\texttt{\$ cd \$project\_directory}\\
+\texttt{\$ make check\_last\_pb\_optim}\\
+\hspace{0.1cm}{\small{\textit{Changement du jeu de donnees... \\
+\hspace{0.1cm}suite a une modification d'un jeu de donnees de la fiche de validation associee. \\
+\hspace{0.1cm}Successful tests cases :1/1 \\}}}
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Useful commands}
+\begin{block}{New tests/Reference/Validation}
+
+\begin{itemize}
+\item Add this non-regression test in configuration:\\
+\texttt{\$ git status -\,-u=no}\\
+\texttt{\$ git add tests/Reference/Validation/upwind\_jdd1/upwind\_jdd1.data}\\
+\texttt{\$ git commit -m "New reference test"}\\
+\texttt{\$ git log}\\
+
+\item To run all the non regression tests with a optimized binary:\\
+\texttt{\$ make check\_all\_optim}
+\item To run all the non regression tests with a debug binary:\\
+\texttt{\$ make check\_all\_debug}
+\item To create an archive to share your work:\\
+\texttt{\$ make distrib}
+\item Notice that you have acces to the latex/images/... files in the directory:\\
+share/Validation/Rapports\_automatiques/upwind/build/.tmp
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\section{{\bf{Modify the cpp sources}}}
+\subsection{{\bf{Create a new cpp class}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Creation of a new cpp class}
+\begin{block}{}
+\begin{itemize}
+\item Create a first class "my\_first\_class" with template:\\
+\texttt{\$ mkdir -p \$project\_directory/src/my\_module}\\
+\texttt{\$ cd \$project\_directory/src/my\_module}\\
+\texttt{\$ baltik\_gen\_class my\_first\_class}\\
+\texttt{\$ git status .}\\
+\texttt{\$ git add my\_first\_class.*}\\
+\texttt{\$ git commit -m "Add my\_first\_class src"}\\
+\texttt{\$ cd \$project\_directory}\\
+
+\item Have a look at the 2 files my\_first\_class.h|cpp.\\
+
+\item Each time a source file is added to the project, you need to configure it:\\
+\texttt{\$ ./configure}\\
+
+\item Build your project with Eclipse or in the terminal.\\
+
+\item Edit the 2 files in Eclipse:\\
+$\rightarrow$ "Index/Rebuild" from "my\_project" of "Project Explorer"\\
+$\rightarrow$ "+" the "my\_project" of "Project Explorer"\\
+\end{itemize}
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Creation of a new cpp class}
+\begin{block}{}
+\begin{itemize}
+\item We want to change the inheritance of the class in order that it inherits from "Interprete\_geometrique\_base" class
+instead of "Objet\_U".
+
+\item "Interprete\_geometrique\_base" class is the base class of all the keywords doing tasks on domains (eg: Mailler, Lire\_fichier,...).
+
+\item You will:
+    \begin{itemize}
+    \item [$\circ$] add an "\#include <Interprete\_geometrique\_base.h>" in my\_first\_class.h,
+    \item [$\circ$] switch "Objet\_U" to "Interprete\_geometrique\_base" in the .h and .cpp files,
+    \item [$\circ$] rebuild your application with Eclipse or in the terminal.\\
+    \item [$\circ$] An error will occur!
+    \end{itemize}
+
+\item You will have an error indicating a pure virtual function ("interpreter\_") should be
+implemented.
+
+\item Look at the "Interprete\_geometrique\_base" class thanks to F3 (Open Declaration)
+from Eclipse and notice the "interpreter()" method.\\
+\end{itemize}
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Creation of a new cpp class}
+\begin{itemize}
+\item This method is called each time a keyword is read in the datafile (eg: "Read\_file dom dom.geom", "Solve pb",...).
+
+\item Define the public method "interpreter\_(Entree\&)" in the include file and implement it
+(just print a message with "Cerr" like "My first keyword!") into the cpp file. 
+
+\item "Entree" is a TRUST class to read an input stream (from a file for example):\\
+"virtual Entree\& interpreter\_(Entree\&);"
+
+\item Rebuild your project and fix your files until the binary of your project is built (named
+basic if you have not changed the name in the project.cfg file):\\
+
+\item Modify a test case into the build directory of your Baltik project:\\
+\texttt{\$ cd \$project\_directory/build/}\\
+\texttt{\$ trust -copy Cx}\\
+ERROR...\\
+\texttt{\$ source ../full\_env\_basic.sh}\\
+\texttt{\$ trust -copy Cx}\\
+\texttt{\$ cd Cx}\\
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Creation of a new cpp class}
+\begin{itemize}
+\item Add into the data file "Cx.data" the following 2 lines: the keyword "my\_first\_class" and "End" just after the line where the problem is discretized\\
+NB: Without "End", you can reduce the number of time step to only 1.\\
+\texttt{\$ nedit|gedit|xemacs Cx.data}
+
+\item Run with Eclipse your binary to check that this new keyword is recognized:\\
+    \begin{itemize}
+    \item [$\circ$] With Eclipse:\\
+    $\rightarrow$ "Debug As" and "Debug configurations..." from "my\_project"\\
+    $\rightarrow$ "Disable auto build" in "Main" and "Apply"\\
+    $\rightarrow$ in "Arguments", "Program arguments:" Cx\\
+    $\rightarrow$ "Working directory:" \${workspace\_loc:my\_project}/../Cx/\\
+    $\rightarrow$ "Apply" and "Debug"\\
+    \item [$\circ$] Or in a terminal:\\
+    \texttt{\$ cd \$project\_directory/build/Cx/}\\
+    \texttt{\$ exec=\$exec\_debug trust Cx}\\
+    \end{itemize}
+
+\item Understand that "Interprete\_geometrique\_base::interpreter()" method is called first,
+which calls then the "my\_first\_class::interpreter\_()" method.
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{{\bf{Modify your cpp class}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{}
+\begin{block}{Part 1}
+\begin{itemize}
+\item The use of the class \textbf{Param} is recommended to read in the data file:
+\end{itemize}
+\vspace{-0.8cm}
+\begin{center}
+\fbox{ \begin{minipage}[c]{0.98\textwidth}
+\begin{alltt}
+\small{
+\#include <Param.h>\\
+Entree\& A::readOn(Entree\& is)\\
+\{\\
+{\bf{Nom}} opt;\\
+int dim;\\
+Cerr <\textcompwordmark{}< " Reading parameters of A from a stream (cin or file) " <\textcompwordmark{}< finl;\\
+{\bf{Param}} \textcolor{orange}{param}(que\_suis\_je());\\
+\textcolor{blue}{// Register parameters to be read:}\\
+\textcolor{orange}{param}.ajouter("option",\&opt);\\
+\textcolor{orange}{param}.ajouter("dimension",\&dim,Param::REQUIRED); \textcolor{blue}{// Mandatory parameter}\\
+\textcolor{blue}{// Read now the parameters from the stream is and produces an error if unknown}\\
+\textcolor{blue}{// keyword is read or if brackets are not found at the beginning and the end:}\\
+\textcolor{orange}{param}.lire\_avec\_accolades\_depuis(is);\\
+...\\
+return is;\\
+\}
+}
+\end{alltt}
+\end{minipage}}
+\end{center}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Modify your cpp class}
+\begin{block}{}
+\begin{itemize}
+\item To call it in the data file, you have to use the following syntaxe:
+\begin{center}
+\fbox{ \begin{minipage}[c]{0.9\textwidth}
+\begin{alltt}
+A a\\
+{\bf{Read}} a { dimension 3 option fast }
+\end{alltt}
+\end{minipage}}
+\end{center}
+
+\item Add into the "interpreter\_(Entree\&)" method the read of a domain and some parameters into brackets.
+
+\item In the data file, the syntax will be:
+\begin{center}
+\fbox{ \begin{minipage}[c]{0.9\textwidth}
+\begin{alltt}
+{\bf{my\_first\_class}} dom \{ option 0 \} \textcolor{blue}{\# dom is the domain name \#}
+\end{alltt}
+\end{minipage}}
+\end{center}
+
+\item Use the following method to read the name of the domain:\\
+Interprete\_geometrique\_base::associer\_domaine(Entree\&).
+
+\item Look the HTML documentation. What is the task of this method?
+
+\item To help you, have a look at a "Interprete\_geometrique\_base" sub-class, for
+instance "Raffiner\_anisotrope" to see how the domain is read. 
+
+\item The datafile syntax is:
+\begin{center}
+\fbox{ \begin{minipage}[c]{0.9\textwidth}
+\begin{alltt}
+{\bf{Raffiner\_anisotrope}} DomainName
+\end{alltt}
+\end{minipage}}
+\end{center}
+
+\end{itemize}
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Modify your cpp class}
+\begin{block}{}
+
+\begin{itemize}
+\item Then use the \textbf{Param} object to read the keyword parameter option in the
+data file. 
+
+\item \textbf{Param} use is the recommended choice in this case (even if a lot of
+current TRUST classes still use the old fashion to read parameters), cause it
+simplifies greatly the coding.
+
+\item Add "\#include <Param.h>" into the cpp file and if help needed, have a look at
+the "Interprete\_geometrique\_base" sub-class "Extruder". 
+
+\item The datafile syntax is :
+\begin{center}
+\fbox{ \begin{minipage}[c]{0.9\textwidth}
+\begin{alltt}
+{\bf{Extruder}} \{ {\bf{domaine}}\;DomainName\;{\bf{nb\_tranches}}\;N\;{\bf{direction}}\;X Y Z \}
+\end{alltt}
+\end{minipage}}
+\end{center}
+
+\item Once implementation is finished, add a check at the end of the method
+"interpreter\_(Entree\&)" and find how to print the domain name:
+\begin{center}
+\fbox{ \begin{minipage}[c]{0.9\textwidth}
+\begin{alltt}
+Cerr <\textcompwordmark{}< "Option number " <\textcompwordmark{}< option\_number <\textcompwordmark{}< " has been read on the
+domain named " <\textcompwordmark{}< ??? <\textcompwordmark{}< finl;
+\end{alltt}
+\end{minipage}}
+\end{center}
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Modify your cpp class}
+\begin{block}{}
+
+\begin{itemize}
+\item Build/fix/re-build the test case:\\
+    \begin{itemize}
+    \item [$\circ$] With Eclipse:\\
+    $\rightarrow$ "Project" and "Build project"\\
+    \item [$\circ$] Or in a terminal:\\
+    \texttt{\$ cd \$project\_directory}\\
+    \texttt{\$ make debug}\\
+    \end{itemize}
+
+\item Run the test case:\\
+    \begin{itemize}
+    \item [$\circ$] With Eclipse:\\
+    $\rightarrow$ "Run" and "Debug"\\
+    \item [$\circ$] Or in a terminal:\\
+    \texttt{\$ cd \$project\_directory/build/Cx/}\\
+    \texttt{\$ export exec=\$exec\_debug}\\
+    \texttt{\$ trust Cx}
+    \end{itemize}
+
+\item In this case trust runs with exec\_debug.
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Modify your cpp class}
+\begin{block}{Part 2}
+
+\begin{itemize}
+\item We are going to try to print informations of the domain boundaries in our current project.
+
+\item Edit the "my\_first\_class.cpp" file and add into the "interpreter\_()" method a loop on the boundaries.
+
+\item Look for help inside the "Domaine", "Zone", "Bord", "Frontiere" classes into the HTML documentation to access to the:
+    \begin{itemize}
+    \item [$\circ$] Number of boundaries (\textbf{nb\_bords()} method)
+    \item [$\circ$] Boundaries (\textbf{bord(int)} method)
+    \item [$\circ$] Name of the boundaries (\textbf{le\_nom()} method)
+    \item [$\circ$] Number of faces of each boundary (\textbf{nb\_faces()} method)
+    \end{itemize}
+
+\item You will print the infos with something like:
+\begin{center}
+\fbox{ \begin{minipage}[c]{0.9\textwidth}
+\begin{alltt}
+Cerr <\textcompwordmark{}< "The boundary named " <\textcompwordmark{}< ??? <\textcompwordmark{}< " has " <\textcompwordmark{}< ??? <\textcompwordmark{}< " faces." <\textcompwordmark{}< finl;
+\end{alltt}
+\end{minipage}}
+\end{center}
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Modify your cpp class}
+\begin{block}{}
+\begin{itemize}
+\item Now, we are going to try to calculate the sum of the VEF control volumes on the domain in our project.
+
+\item The information is in the "Zone\_VF" class (a "Zone\_dis" discretized zone) which can't be accessed 
+from the domain, only from the problem. 
+
+\item So we need to read another parameter in our data file:\\
+\begin{center}
+\fbox{ \begin{minipage}[c]{0.9\textwidth}
+\begin{alltt}
+\textbf{my\_first\_class} dom \{ \textbf{option} 0 \textbf{problem} pb \}
+\end{alltt}
+\end{minipage}}
+\end{center}
+
+\item Add the read of a new parameter problem (see "Extraire\_plan::interpreter\_(Entree\&)" method for instance) into the "my\_first\_class.cpp" file.
+
+\item Then, remember the equation UML diagram.
+
+\item Look for help inside the "Zone\_VF", "Probleme\_base" and "Equation\_base" into the HTML documentation to access to the:
+    \begin{itemize}
+    \item [$\circ$] equation (\textbf{equation(int)} method)
+    \item [$\circ$] discretized zone (\textbf{zone\_dis()} method)
+    \item [$\circ$] control volumes (\textbf{volumes\_entrelaces()} method)
+    \end{itemize}
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Modify your cpp class}
+\begin{block}{}
+
+\begin{itemize}
+\item You will need to cast the discretized zone returned by the \textbf{zone\_dis()} method into a "Zone\_VF" object.
+
+\item You will print the size of the control volumes array with something like:
+\begin{center}
+\fbox{ \begin{minipage}[c]{0.9\textwidth}
+\begin{alltt}
+Cerr <\textcompwordmark{}< control\_volumes.size() <\textcompwordmark{}< finl;
+\end{alltt}
+\end{minipage}}
+\end{center}
+
+\item Where control\_volumes is a \textbf{DoubleVect} returned by the \textbf{Zone\_VF::volumes\_entrelaces()} method.
+
+\item If you look at the "Problem" UML diagram, you will notice a better path to access to the discretized zone.
+\item What is this path ?
+
+\item Now, compute and print the sum of the control volumes into a file whose name is something like: DataFileName\_result.txt, where "DataFileName" is the name of the data file (eg: Cx).
+
+\item For that, you will create the previous filename with the class \textbf{Nom} by adding to the name of the data file (given by \textbf{Objet\_U::nom\_du\_cas()} method) the string "\_result.txt" thanks to the "operator+=" method of the class \textbf{Nom}.
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Modify your cpp class}
+\begin{block}{}
+
+\begin{itemize}
+\item Then you will create the file with the \textbf{SFichier} class and print the sum into this file.
+
+\item Once everything is implemented, run the test case (but, first add the keyword \textbf{END} just after the line where \textbf{my\_first\_class} is used in order to not run the whole calculation...).\\
+\end{itemize}
+
+\begin{itemize}
+\item Run the test case:\\
+    \begin{itemize}
+    \item [$\circ$] With Eclipse:\\
+    $\rightarrow$ "Run" and "Debug"\\
+    \item [$\circ$] Or in a terminal:\\
+    \texttt{\$ cd \$project\_directory/build/Cx/}\\
+    \texttt{\$ exec=\$exec\_debug trust Cx}
+    \end{itemize}
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{{\bf{Adding prints}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Adding prints}
+\begin{block}{}
+
+\begin{itemize}
+\item Edit the "my\_project/src/TRUST\_modif/mon\_main.cpp" file in your baltik project of Eclipse.
+
+\item Add this lines after "Process::imprimer\_ram\_totale(1);" :\\
+\textit{std::cout <\textcompwordmark{}< "Hello World to cout." <\textcompwordmark{}< std::endl;\\
+std::cerr <\textcompwordmark{}< "Hello World to cerr." <\textcompwordmark{}< std::endl;\\
+Cout <\textcompwordmark{}< "Hello World to Cout." <\textcompwordmark{}< finl;\\
+Cerr <\textcompwordmark{}< "Hello World to Cerr." <\textcompwordmark{}< finl;\\
+Process::Journal() <\textcompwordmark{}< "Hello World to Journal." <\textcompwordmark{}< finl;}\\
+
+\item Rebuild the code with Eclipse:\\
+$\rightarrow$ "Build project" from "my\_project" of "Project Explorer"\\
+or \\
+\texttt{\$ cd \$project\_directory}\\
+\texttt{\$ make debug optim}\\
+
+\item Create an empty data file:\\
+\texttt{\$ mkdir -p \$project\_directory/build/hello}\\
+\texttt{\$ cd \$project\_directory/build/hello}\\
+\texttt{\$ touch hello.data}\\
+
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Adding prints}
+\begin{block}{}
+
+\begin{itemize}
+\item Run the code sequentially:\\
+\texttt{\$ trust hello}
+
+\item Run the code in parallel and see the differences:\\
+\texttt{\$ trust hello 4}
+
+\item "Cout" is equivalent to "std::cout" on the master process only.
+Use this output for infos about the physics (convergence, fluxes,...).
+
+\item "Cerr" is equivalent to "std::cerr" on the master process only.
+Use this output for warning/errors only.
+
+\item "finl" is equivalent to "std::endl" + "flush()" on the master process.
+
+\item "Journal()" prints to "datafile\_000n.log" files.
+Use this output during parallel development to print plumbing infos which would be hidden during later production runs.
+
+\item During run, this output can be unactivated with:\\
+\texttt{\$ ls *.log}\\
+\texttt{\$ trust -clean \&\& trust hello 4 -journal=0}\\
+\texttt{\$ ls *.log}\\
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\section{{\bf{Parallel exercise}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Parallel exercise}
+
+\begin{block}{Part 1}
+\begin{itemize}
+\item Run your test case Cx in parallel mode:\\
+    \texttt{\$ cd \$project\_directory/build/Cx/}\\
+\texttt{\$ make\_PAR.data Cx 2 \textcolor{blue}{\# Partition in 2 subdomains}}\\
+\texttt{\$ trust PAR\_Cx 2 \textcolor{blue}{\# 2 processes used}}
+\item Compare the files: Cx\_result.txt, PAR\_Cx\_result.txt and explain the discrepancies between the values.
+\item To parallelize the algorithm, rewrite it, according to the previous slide with the help of 
+the \textbf{mp\_somme\_vect(DoubleVect\&)} method and change the way the result is written in the .txt file. 
+\item You should find the same value for the sequential and parallel calculation.
+\item If you replace \textbf{mp\_somme\_vect()} by \textbf{mp\_sum()}, do you have the same result? Why?
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Parallel exercise}
+
+\begin{block}{Part 2 Optional}
+\begin{itemize}
+\item Create a "verifie" script to check the resulting value (sequential then parallel).
+\item Add a call to "compare\_sonde" in your "verifie" script...
+\end{itemize}
+\end{block}
+
+\begin{block}{Part 3}
+\begin{itemize}
+\item To validate parallelization in TRUST, you can use the command "compare\_lata":\\
+\texttt{\$ ls *lata }\\
+\texttt{\$ compare\_lata  Cx.lata  PAR\_Cx.lata }
+\item You can see that there is no differences and the maximal relative error encountered is about 4.e-12.
+\item Performances
+\texttt{\$ ls *TU }\\
+\texttt{\$ meld Cx.TU PAR\_Cx.TU \& }\\
+\texttt{\$ meld Cx\_detail.TU PAR\_Cx\_detail.TU \& }\\
+\end{itemize}
+\end{block}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Parallel exercise}
+\begin{block}{Part 4 Debog}
+
+\begin{itemize}
+\item Copy a debog test case:\\
+\texttt{\$ cd \$project\_directory/build }\\
+\texttt{\$ trust -copy Debog\_VEF }\\
+\texttt{\$ cd Debog\_VEF }\\
+\item Open the Debog\_VEF.data file and searche the "Debog" command.
+\item Sequential run:\\
+\texttt{\$ trust Debog\_VEF }\\
+\item You get "seq" and "faces" files.
+\item Partitionning step and creation of the parallel data file:\\
+\texttt{\$ make\_PAR.data Debog\_VEF 2 }\\
+\item Modify the parallel data file to have "Debog pb seq faces 1.e-6 \textbf{1}".
+\item Run in parallel:\\
+\texttt{\$ trust PAR\_Debog\_VEF 2 }\\
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Parallel exercise}
+\begin{block}{Part 4 Debog}
+
+\begin{itemize}
+\item You get debog*.log and DEBOG files.
+\item If a value of an array differs between the two calculations and the difference is greater than 1.e-6 then "ERROR" message appears in the log files else we will get "OK" (cf debog.log).\\
+\item You can add debog instruction in the code with:\\
+\texttt{Debog::verifier("message",array);}
+\item Then compile and do the two runs one more time.
+\item Becarefull the debog instruction in the data file must be between the "Discretize" and "Read pb" lines.
+\item For more information:\\
+\texttt{\$ trust -doc \&} \\
+$\rightarrow$ Open the TRUST Generic Guide\\
+$\rightarrow$ Click onto the TRUST Reference Manual\\
+$\rightarrow$ Search for "Debog" keyword.
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%\section{{\bf{HTML documentation exercise}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%\begin{frame}
+%%%%\begin{columns}[c] 
+%%%%\column{.45\textwidth}
+%%%%\tableofcontents[sections={1-3},currentsection, currentsubsection]
+%%%%\column{.5\textwidth} 
+%%%%\tableofcontents[sections={4-8},currentsection, currentsubsection]
+%%%%\end{columns}
+%%%%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%\begin{frame}
+%%%%\frametitle{HTML documentation exercise}
+%%%%\begin{block}{}
+
+%%%%\begin{itemize}
+%%%%\item Open the HTML documentation:\\
+%%%%\texttt{trust -index}\\
+%%%%$\rightarrow$ "C++ classes"
+
+%%%%\item Open the documentation of MacVect.h.
+
+%%%%\item Have a look at the VECT methods.
+
+%%%%\item You can also search via Eclipse.
+
+%%%%\item Find the method names to use for "???" in the following code lines:\\
+%%%%\textbf{Noms} StudentNames ;\\
+%%%%StudentNames.???(3) ;\\
+%%%%StudentNames[0]=... ;\\
+%%%%StudentNames[1]=... ;\\
+%%%%StudentNames[2]=... ;\\
+%%%%\textbf{int} number = StudentNames.???("Betty") ;\\
+%%%%\textbf{Nom} NewStudent("Bart") ;\\
+%%%%StudentNames.???(NewStudent) ;\\
+%%%%Cerr <\textcompwordmark{}< "The number of students is" <\textcompwordmark{}< StudentNames.??? <\textcompwordmark{}< finl ;
+%%%%\end{itemize}
+
+%%%%\end{block}
+%%%%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\section{{\bf{Code coverage exercise}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Code coverage exercise}
+\begin{block}{}
+
+\begin{itemize}
+\item Browse the TRUST ressources index file:\\
+\texttt{\$ trust -index}
+
+\item Select the Test coverage link.
+
+\item Which is the less covered matrix class ?
+
+\item Run the test case using the RRK2 time scheme.
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\section{{\bf{Tools}}}
+%\subsection{{\bf{GDB commands}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}
+%\begin{columns}[c] 
+%\column{.45\textwidth}
+%\tableofcontents[sections={1-3},currentsection, currentsubsection]
+%\column{.5\textwidth} 
+%\tableofcontents[sections={4-8},currentsection, currentsubsection]
+%\end{columns}
+%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}
+%\frametitle{GDB commands}
+%\begin{block}{}
+
+%\begin{itemize}
+%\item Use "gdb" tool to debug or understand the code.
+
+%\item To describe all the commands:\\
+%\texttt{\$ man gdb}
+
+%\item To debug the TRUST binary program compiled with -g:\\
+%\texttt{\$ exec=\$exec\_debug trust -gdb datafile}
+
+%\item List of the GDB commands:\\
+%    \begin{itemize}
+%    \item [$\circ$] Run the calculation on the datafile:\\
+%    \texttt{(gdb) run datafile}
+%    \item [$\circ$] To display the program stack (useful to understand who called what)\\
+%    \texttt{(gdb) where}, or\\
+%    \texttt{(gdb) bt}
+%    \item [$\circ$] To move up in the stack:\\
+%    \texttt{(gdb) up}
+%    \item [$\circ$] To move down in the stack:\\
+%    \texttt{(gdb) down}
+%    \item [$\circ$] List the source code:\\
+%    \texttt{(gdb) list}
+%    \end{itemize}
+
+%\end{itemize}
+
+%\end{block}
+%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}
+%\frametitle{GDB commands}
+%\begin{block}{}
+
+%\hspace{1cm} $\color{darkblue}\circ$ {\small{To continue the calculation after a stop:}}\\
+%\hspace{1.3cm} {\small{\texttt{(gdb) cont}, or}}\\
+%\hspace{1.3cm} {\small{\texttt{(gdb) c}}}\\
+
+%\hspace{1cm} $\color{darkblue}\circ$ {\small{To add a breakpoint on a method of a class:}}\\
+%\hspace{1.3cm} {\small{\texttt{(gdb) break class::method}}}\\
+
+%\hspace{1cm} $\color{darkblue}\circ$ {\small{To add a breakpoint on a line of the file once inside a method:}}\\
+%\hspace{1.3cm} {\small{\texttt{(gdb) break line}}}\\
+
+%\hspace{1cm} $\color{darkblue}\circ$ {\small{Useful to set a breakpoint just after a TRUST error message is printed}}\\
+%\hspace{1.3cm} {\small{(before the stack is left):}}\\
+%\hspace{1.3cm} {\small{\texttt{(gdb) break exit}}}\\
+
+%\hspace{1cm} $\color{darkblue}\circ$ {\small{Execute next line:}}\\
+%\hspace{1.3cm} {\small{\texttt{(gdb) next or n}}}\\
+
+%\hspace{1cm} $\color{darkblue}\circ$ {\small{Execute next line and enter in a method/function if any:}}\\
+%\hspace{1.3cm} {\small{\texttt{(gdb) step or s}}}\\
+
+%\hspace{1cm} $\color{darkblue}\circ$ {\small{Print a variable:}}\\
+%\hspace{1.3cm} {\small{\texttt{(gdb) print var}}}
+
+%\end{block}
+%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}
+%\frametitle{GDB commands}
+%\begin{block}{}
+
+%\begin{itemize}
+%\item Specific GDB commands for TRUST (macros in a GDB wrapper) to dump an array or print array values:
+%    \begin{itemize}
+%    \item [$\circ$] To dump a DoubleVect:\\
+%    \texttt{(gdb) dump array}
+%    \item [$\circ$] To dump a DoubleTab:\\
+%    \texttt{(gdb) dumptab array}
+%    \item [$\circ$] To dump a IntVect:\\
+%    \texttt{(gdb) dumpint array}
+%    \item [$\circ$] To dump a IntTab:\\
+%    \texttt{(gdb) dumpinttab array}
+%    \item [$\circ$] To print tab(i) of a DoubleVect array:\\
+%    \texttt{(gdb) print tab.operator()(i) or tab[i]}
+%    \item [$\circ$] To print tab(i,j) of a DoubleTab array:\\
+%    \texttt{(gdb) print tab.operator()(i,j) or tab[i,j]}
+%    \end{itemize}
+%\item To debug a parallel calculation with N processes:\\
+%\texttt{\$ make\_PAR.data datafile N}\\
+%\texttt{\$ exec=\$exec\_debug trust -gdb PAR\_datafile N}
+%\end{itemize}
+
+%\end{block}
+%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{{\bf{GDB exercise}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{GDB exercise}
+\begin{itemize}
+\item Run a test case with GDB:\\
+    \begin{itemize}
+    \item [$\circ$] With Eclipse:\\
+    $\rightarrow$ "Debug As" and "Debug configurations..." from "my\_project"\\
+    $\rightarrow$ in "Arguments", "Program arguments:" upwind\\
+    $\rightarrow$ "Working directory:"  /export/home/yourlogin/upwind/\\
+    $\rightarrow$ "Apply" and "Debug"\\
+    \item [$\circ$] Or in a terminal:\\
+    \texttt{\$ cd /export/home/yourlogin/upwind/}\\
+    \texttt{\$ exec=\$exec\_debug trust -gdb upwind}\\
+    \end{itemize}
+
+\item You are now in GDB.
+
+\item Add a breakpoint and stop into the SSOR preconditionner:\\
+\texttt{(gdb) break SSOR::ssor}
+
+\item Run the test case:\\
+\texttt{(gdb) run upwind}
+
+\item Have a look at the stack\\
+\texttt{(gdb) where}\\
+
+\item Go to the next instruction:\\
+\texttt{(gdb) n}\\
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{GDB exercise}
+\begin{itemize}
+\item Print an array:\\
+\texttt{(gdb) print tab1}
+
+\item Or print matrice.tab1\_ if "optimized out" message printed:\\
+\texttt{(gdb) print tab1[10]}
+
+\item Print only a value of an array:\\
+\texttt{(gdb) dumpint tab1 \textcolor{blue}{\# Dump the array}} \\
+\texttt{(gdb) print tab1.size\_array() \textcolor{blue}{\# Array size}}\\
+\texttt{(gdb) up}\\
+\texttt{(gdb) list 100}
+
+\item Print lines after the 100th line:\\
+\texttt{(gdb) print matrice}\\
+\texttt{(gdb) print matrice.que\_suis\_je() \textcolor{blue}{\# Kind of matrix ?}}\\
+\texttt{(gdb) print matrice.que\_suis\_je().nom\_ \textcolor{blue}{\# Kind of matrix ?}}\\
+\texttt{(gdb) up 5 \textcolor{blue}{\# Move up 5 levels}}\\
+\texttt{(gdb) list 900}\\
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{GDB exercise}
+\begin{itemize}
+\item Print others variables:\\
+\texttt{(gdb) \textcolor{blue}{\# Pressure field}}\\
+\texttt{(gdb) print la\_pression.que\_suis\_je().nom\_}\\
+\texttt{(gdb) \textcolor{blue}{\# Pressure values (DoubleTab)}}\\
+\texttt{(gdb) print la\_pression.valeurs()}\\
+\texttt{(gdb) \textcolor{blue}{\# DoubleTab dimension}}\\
+\texttt{(gdb) print la\_pression.valeurs().nb\_dim()}\\
+\texttt{(gdb) \textcolor{blue}{\# Dump the field values}}\\
+\texttt{(gdb) dumptab la\_pression.valeurs()}
+\end{itemize}
+\begin{itemize}
+\item With Eclipse, for more information about GDB commands, refer to the help menu.\\
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{{\bf{Use Valgrind to find memory bugs}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Use Valgrind to find memory bugs}
+\begin{itemize}
+\item Run a test case with Valgrind:\\
+\texttt{\$ cd \$project\_directory/}\\
+\texttt{\$ source env\_basic.sh}\\
+\texttt{\$ cd build/Cx/}\\
+\texttt{\$ VALGRIND=1 trust Cx}\\
+\item The Valgrind messages appear on the screen with the beginning of each line the same number. For example:\\
+\texttt{\$ ==26645== ...}\\
+\item The last line indicates if errors have occurred. An example with 0 error:\\
+\texttt{\$ ==26645== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)}
+\end{itemize}
+\begin{itemize}
+\item Now we will modify the sources in your baltik project to generate a Valgrind error on the Cx test case.\\
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Use Valgrind to find memory bugs}
+\begin{itemize}
+\item Edit the "my\_first\_class.cpp" file and remove the initialization of the sum to calcule the total of control volumes.\\
+In place of "double sum=0;", put only "double sum;".\\
+\item Rebuild your project and run the test case:\\
+\texttt{\$ cd \$project\_directory}\\
+\texttt{\$ make debug optim}\\
+\texttt{\$ cd build/Cx/}\\
+    \begin{itemize}
+    \item [$\circ$] in mode optim:\\
+    \texttt{\$ exec=\$exec\_opt trust Cx}\\
+In this case, no error appears.
+    \item [$\circ$] in mode debug:\\
+    \texttt{\$ exec=\$exec\_debug trust Cx}\\
+In this case also, no error appears.
+    \item [$\circ$] in mode valgrind:\\
+    \texttt{\$ VALGRIND=1 exec=\$exec\_opt trust Cx}\\
+On the other hand, in this case, there are errors.\\
+    \texttt{\$ ==7517== ERROR SUMMARY: 187 errors from 109 contexts}
+    \end{itemize}
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+\section{{\bf{For more}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{For more}
+\begin{block}{}
+
+\begin{itemize}
+\item You can find the commented solution of the exercise:\\
+\texttt{\$ cd \$TRUST\_ROOT/doc/TRUST/exercices/my\_first\_class}
+
+\item You can practice on a tutorial:\\
+\texttt{\$ cd \$TRUST\_ROOT/doc/TRUST/exercices/}\\
+\texttt{\$ evince equation\_convection\_diffusion/rapport.pdf \&}
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+
+
+
+
+%Terminology/chronology of methods in TRUST
+%interpreter()/readOn()
+%→ The parameters of the keyword are read
+%associer()
+%→ Called by a Associate keyword, generally to fill the references (pointer) to other objects (eg : link to an Equation)
+%discretiser()
+%→ Called by Discretize keyword, complete tasks related to the selected discretization (eg : discretize a field)
+%completer()
+%→ All the data file is read, and some initializations are completed now
+%Loop in the Probleme\_base class on each equation -> Probleme\_base.cpp
+%Loop in Equation\_base class on each operator, discretized boundary condition, sources and time sheme -> Equation\_base.cpp
+%preparer\_calcul()
+%→ Before the first time step (eg : initialize arrays, set time to 0)
+%Loop in the Probleme\_base class on each equation -> Probleme\_base.cpp
+%calculer()
+%→ During the time step, perform the main task of the class
+%mettre\_a\_jour()
+%→ At the end of the time step (eg : update time field)
+%Loop in the Probleme\_base class on each equation -> Probleme\_base.cpp
+%postraiter()
+%→ At the end of the time step, post process the fields into the result files
+%Example : LES Turbulence model in Mod\_turb\_hyd\_ss\_maille.cpp
+
+
+%\begin{figure}[H]
+%\begin{centering}
+%\includegraphics[scale=0.22]{IMG/img52}
+%\par\end{centering}
+%\end{figure}
+
+
+
+
+
+\end{document} 
