@@ -169,9 +169,11 @@ do
 	 ####################
 	 cd $PROJECT_DOC
 	 doxygen=`ls -rt $TRUST_ROOT/exec/doxygen*/bin/doxygen`
-	 echo $ECHO_OPTS "Running doxygen `$doxygen --version` (output in `pwd`/doxygen$GENERATE_TAGFILE.out|err)... \c" | tee doxygen$GENERATE_TAGFILE.out
-	 $doxygen $TRUST_DOXYFILE 1>>doxygen$GENERATE_TAGFILE.out 2>doxygen$GENERATE_TAGFILE.err
-	 [ $? != 0 ] && echo "Error! See `pwd`/doxygen$GENERATE_TAGFILE.err" && exit -1
+         Build=$TRUST_ROOT/build/doc
+         [ ! -d ${Build} ] && echo Creating ${Build} directory && mkdir -p ${Build}
+	 echo $ECHO_OPTS "Running doxygen `$doxygen --version` (output in $Build/doxygen$GENERATE_TAGFILE.out|err)... \c" | tee $Build/doxygen$GENERATE_TAGFILE.out
+	 $doxygen $TRUST_DOXYFILE 1>>$Build/doxygen$GENERATE_TAGFILE.out 2>$Build/doxygen$GENERATE_TAGFILE.err
+	 [ $? != 0 ] && echo "Error! See $Build/doxygen$GENERATE_TAGFILE.err" && exit -1
 	 if [ "$GENERATE_TAGFILE" = 1 ]
 	 then
 	    echo "OK. Project tag is created: $PROJECT_TAG"

@@ -162,28 +162,28 @@ then
    cd $TRUST_ROOT/exec
    cp_ftp .tests* $SECRET/NUIT/.
    sleep 1
-   cd $TRUST_ROOT/doc/TRUST/exercices/equation_convection_diffusion
+   cd $TRUST_ROOT/doc/TRUST/exercices/equation_convection_diffusion/build/portability
    cp_ftp nuit_*.html $SECRET/NUIT/.
    cp_ftp *_%_*.log $SECRET/NUIT/.
    sleep 1
-   cd $TRUST_ROOT/Outils/ICoCo/ICoCo_src
+   cd $TRUST_ROOT/Outils/ICoCo/ICoCo_src/build/portability
    cp_ftp nuit_*.html $SECRET/NUIT/.
    cp_ftp *_%_*.log $SECRET/NUIT/.
    sleep 1
    #cd $TRUST_ROOT/bin/baltik/templates/basic
-   cd $TRUST_ROOT/../Composants/Test_Baltik
+   cd $TRUST_ROOT/../Composants/Test_Baltik/build/portability
    cp_ftp nuit_*.html $SECRET/NUIT/.
    cp_ftp *_%_*.log $SECRET/NUIT/.
    sleep 1
-   cd $TRUST_ROOT/../Composants/MPCube
+   cd $TRUST_ROOT/../Composants/MPCube/build/portability
    cp_ftp nuit_*.html $SECRET/NUIT/.
    cp_ftp *_%_*.log $SECRET/NUIT/.
    sleep 1
-   cd $TRUST_ROOT/../Composants/TrioCFD
+   cd $TRUST_ROOT/../Composants/TrioCFD/build/portability
    cp_ftp nuit_*.html $SECRET/NUIT/.
    cp_ftp *_%_*.log $SECRET/NUIT/.
    sleep 1
-   cd $TRUST_ROOT/../Composants/ModeleCoeur
+   cd $TRUST_ROOT/../Composants/ModeleCoeur/build/portability
    cp_ftp nuit_*.html $SECRET/NUIT/.
    cp_ftp *_%_*.log $SECRET/NUIT/.
 fi

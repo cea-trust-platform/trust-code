@@ -16,7 +16,11 @@ err_compilation=$?
 if [ ! -f $TRUST_ROOT/exec/lata2dx_reactor ] || [ lata2dx_reactor -nt $TRUST_ROOT/exec/lata2dx_reactor ]
 then
    # Test de lata2dx_reactor si nouveau binaire
-   cd ../test/src
+   Build=$TRUST_ROOT/build/Outils/lata2dx/lata2dx_reactor
+   [ ! -d ${Build} ] && echo Creating ${Build} directory && mkdir -p ${Build}
+   rm -rf $Build/test
+   cp -r ../test $Build/.
+   cd $Build/test/src
    # Construction de la fiche de validation uniquement sur PC TMA
    if [ -f /usr/bin/pdflatex ] && [ $HOST = $TRUST_HOST_ADMIN ] && [ -f $TRUST_ROOT/Validation/Outils/Genere_courbe/Run ] && [ "`cd $TRUST_ROOT/Outils/VisIt;make -n 2>&1 | grep visit`" = "" ]
    then
@@ -37,7 +41,7 @@ then
    then
       echo "Test lata2dx_reactor OK!"
        
-      cd ../..
+      cd $TRUST_ROOT/Outils/lata2dx/lata2dx_reactor
       mv build/lata2dx_reactor $TRUST_ROOT/exec/lata2dx_reactor
       rm -rf build test/build 
    else 

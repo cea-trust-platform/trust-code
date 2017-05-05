@@ -868,7 +868,11 @@ do
 	    then
 	       echo "--------------------------------------------------------" 
 	       echo "Run_bench script launched on $HOST_BUILD at "`date '+%H:%M:%S'`" ..."
-	       (cd $TRUST_TESTS/Reference/BENCHMARK;
+	       (Build=$TRUST_ROOT/build/tests/Reference;
+                [ ! -d ${Build} ] && echo Creating ${Build} directory && mkdir -p ${Build};
+                rm -rf $Build/BENCHMARK;
+                cp -r $TRUST_ROOT/tests/Reference/BENCHMARK $Build/.;
+                cd $Build/BENCHMARK;
 	        rm -f Run_bench.log;
 		echo "Run_bench script launched on $HOST_BUILD at "`date '+%H:%M:%S'`" ..." >> $PERF;
 		echo " " >> $PERF;
@@ -928,7 +932,11 @@ do
 	 then
             echo "--------------------------------------------------------"
             echo "Test of Run_fiche at `date '+%H:%M:%S'`"
-	    cd $TRUST_ROOT/doc/TRUST/exercices/validation_form_exercise
+            Build=$TRUST_ROOT/build/doc/TRUST/exercices
+            [ ! -d ${Build} ] && echo Creating ${Build} directory && mkdir -p ${Build}
+            rm -rf $Build/validation_form_exercise
+            cp -r $TRUST_ROOT/doc/TRUST/exercices/validation_form_exercise $Build/.
+            cd $Build/doc/TRUST/exercices/validation_form_exercise
 	    log=`pwd`/Run_fiche.log
 	    rm -f $log
 	    rm -r -f build Run.log
@@ -947,7 +955,6 @@ do
 	    else
 	       echo "Script Run_fiche=KO -> See $log"
 	    fi
-	    #rm -r -f build
 	    cd - 1>/dev/null 2>&1
          fi	
 	 ###################################

@@ -43,7 +43,6 @@ then
    if [ ! -f $TRUST_ROOT/.RELEASE_NOTES ] || [ $TRUST_ROOT/RELEASE_NOTES -nt $TRUST_ROOT/.RELEASE_NOTES ]
    then
       touch $TRUST_ROOT/.RELEASE_NOTES
-      export TRUST_SHARE="/net/dibona/users/dibona/triou"
       dest="trio_u_annonces@saxifrage.saclay.cea.fr"
       dest="trio_u_dev@saxifrage.saclay.cea.fr"
       push_error=1 # Temporary

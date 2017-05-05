@@ -105,6 +105,8 @@ fi
 #########################
 # Boucle sur les machines
 #########################
+Build=$TRUST_ROOT/build
+[ ! -d ${Build} ] && echo Creating ${Build} directory && mkdir -p ${Build}
 echo "------------------------------------"
 liste_machines_KO=""
 for adr in $liste_adr
@@ -113,7 +115,7 @@ do
    machine=`echo $adr | awk -F"." '{print $1}' | awk -F"-gw" '{print $1}'` # 09/2015 Modification des acces SSH au TGCC *-gw.ccc.cea.fr
    version=$WORKBASE$machine
    log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`      
-   ssh_log=$TRUST_ROOT/ssh_$machine.log
+   ssh_log=$Build/ssh_$machine.log
    echo "ssh on $machine the `date` ...">$ssh_log
    if [ "$log" = "" ]
    then
@@ -182,7 +184,7 @@ do
       # On teste si rsync marche sinon on bascule sur le mode scp+ssh
       elif [ "`liste_machines rsync_ssh | grep $adr`" != "" ]
       then
-	 rsync_log=$TRUST_ROOT/rsync_$machine.log
+	 rsync_log=$Build/rsync_$machine.log
 	 echo "rsync on $machine the `date` ...">$rsync_log
          if [ "`rsync -e 'ssh -o StrictHostKeyChecking=no' --dirs --delete --dry-run $TRUST_ROOT/RELEASE_NOTES $log@$adr:/tmp 1>/dev/null 2>&1;echo $?`" = 0 ]
          then
@@ -194,14 +196,14 @@ do
 	       mise_a_jour_TRUST_tar -files_only -without_version
 	       # Creation du fichier pattern pour --include-from
 	       cd $TRUST_ROOT
-	       rm -f rsync_include_from
+	       rm -f $Build/rsync_include_from
 	       for file in TRUST.files
 	       do
 	          VOB=${file%.files}
-		  echo $VOB >> rsync_include_from
-		  cat $file >> rsync_include_from
+		  echo $VOB >> $Build/rsync_include_from
+		  cat $file >> $Build/rsync_include_from
 	       done
-	       echo "$TRUST_ROOT/rsync_include_from updated."
+	       echo "$Build/rsync_include_from updated."
 	       echo " "
 	    fi
             

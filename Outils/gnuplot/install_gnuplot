@@ -1,6 +1,8 @@
 #!/bin/bash
 gnuplot=$1
 gd=gd-2.0.36RC1.tar.gz
+Build=$TRUST_ROOT/build/Outils/gnuplot
+[ ! -d ${Build} ] && echo Creating ${Build} directory && mkdir -p ${Build}
 
 # recuperation des packages
 
@@ -22,14 +24,15 @@ do
    cd ${package%.tar.gz}
    if [ $i = 1 ]
    then
-      ./configure --prefix=`pwd`/../gd 2>&1 | tee gd.log
+      GD=$Build/gd
+      ./configure --prefix=$GD 2>&1 | tee gd.log
       # Echec (PNG&ZLIB non ou mal installes sur la machine)
       if [ "`grep 'libpng is required' gd.log`" != "" ]
       then
-         GD=`pwd`
+         rep_gd=`pwd`
          cd ..
-         PNG=`pwd`/png
-         ZLIB=`pwd`/zlib
+         PNG=$Build/png
+         ZLIB=$Build/zlib
          # Installation de zlib
          package=zlib-1.2.5.tar.gz
          echo "***************************************"
@@ -55,21 +58,21 @@ do
          cd .. && rm -r -f ${package%.tar.gz}
 
          # Reconfiguration de gd avec PNG&ZLIB installes
-         cd $GD
+         cd $rep_gd
 	 package=$gd
          echo "***************************************"
          echo "Trying to install ${package%.tar.gz}..."
          echo "***************************************"
          export CFLAGS="-I$PNG/include -I$ZLIB/include"
          export LDFLAGS="-L$ZLIB/lib"
-         ./configure --prefix=`pwd`/../gd --with-png=$PNG || exit -1
+         ./configure --prefix=$GD --with-png=$PNG || exit -1
       fi
    else
       # Probleme sur kata en crontab, lib64 pas trouve
       XLIB="" && [ -d /usr/X11R6/lib64 ] && XLIB="--x-lib=/usr/X11R6/lib64" 
       # --without-tutorial car plantage sur is209003 pour un probleme Latex 
       # --without-lisp-files car plantage sur VRH797979.intra.cea.fr car emacs mal installe
-      ./configure --prefix=$TRUST_ROOT/exec/gnuplot --without-lua  --without-lisp-files --without-tutorial --with-readline=builtin --with-gd=`pwd`/../gd $XLIB || exit -1
+      ./configure --prefix=$TRUST_ROOT/exec/gnuplot --without-lua  --without-lisp-files --without-tutorial --with-readline=builtin --with-gd=$GD $XLIB || exit -1
    fi
    $TRUST_MAKE || exit -1
    make install  || echo error on installation, but we hope that is ok
@@ -82,6 +85,4 @@ do
  f=`basename $file`
  [ -h $f ] && rm  $f 
 done
-# On Ubuntu and Debian => gnuplot: error while loading shared libraries: libgd.so.2: cannot open shared object file: No such file or directory0i
-#rm -rf gd
 exit 0

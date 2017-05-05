@@ -89,5 +89,7 @@ then
    done
    rm -r -f $tmp_visit
 fi
-echo > $TRUST_ROOT/Outils/VisIt/test/ok
+Build=$TRUST_ROOT/build/Outils/VisIt/test
+[ ! -d ${Build} ] && echo Creating ${Build} directory && mkdir -p ${Build}
+echo > $Build/ok
 exit 0

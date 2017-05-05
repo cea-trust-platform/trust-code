@@ -40,6 +40,6 @@ wait
 rm cmds f_cmd_*
 rm *.tar
 proj=`basename $org`
-
+echo "Begin of build_report.sh "$proj
 sh $DIR/../portability/build_report.sh $proj
 echo "See html log here:" `pwd`/nuit_$proj.html

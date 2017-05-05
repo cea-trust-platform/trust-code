@@ -24,8 +24,10 @@ check_components()
       if [ -d $TRUST_ROOT/../Composants/$Composant ]
       then
          cd $TRUST_ROOT/../Composants/$Composant
+         rm -rf build/portability
 	 rm -f $Composant*.log
 	 Composant_log=$REP_NUIT"/baltik_"$Composant"_"$HOST"_"${*#*/}".log"
+	 Gui_log=$REP_NUIT"/baltik_"$Composant"_"$HOST"_"${*#*/}"_gui.log"
          echo "  Check `pwd`"
 	 echo "    See $Composant_log"
 	 (
@@ -55,7 +57,15 @@ check_components()
 	    $TRUST_ROOT/bin/baltik/bin/baltik_build_configure -execute &&
 	    make optim module_optim debug module_debug &&
 	    $make_option && echo "$Composant OK" && COMPOSANT_OK=1
-	    [[ "$ComposantsGit" = *"$Composant"* ]] && make gui # Test si Composant est dans la liste des composants GIT
+	    if [[ "$ComposantsGit" = *"$Composant"* ]] # Test si Composant est dans la liste des composants GIT
+	    then
+	       if [ "`date '+%u'`" = 5 ]
+	       then
+	          make check_gui 1>$Gui_log 2>&1 &
+	       else
+	          make gui 1>$Gui_log 2>&1
+	       fi
+	    fi
             echo " "
             echo "******************************************************"
             echo " "
@@ -446,15 +456,15 @@ then
    # osu-micro-benchmarks-3.8 version initiale non retrouvee
    #liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.2.0 | grep -v osu-micro-benchmarks-3.8 | grep -v medcoupling-7.8.0 | grep -v hypre-2.10.0b-p2-TRUST | grep -v CURVEPLOT | grep -v nvc_get_devices`
    liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.2.0 | grep -v osu-micro-benchmarks-3.8`
-   cd Test
+   cd $TRUST_ROOT/build/bin/gestion_externalpackages/Test
    rm -r -f old new
    for package in $liste_failed
    do
       echo>>$liste_log
       echo "Launch ../compare_archive $package">>$liste_log    
-      ../compare_archive $package 1>>$liste_log 2>&1
+      $TRUST_ROOT/bin/gestion_externalpackages/compare_archive $package 1>>$liste_log 2>&1
    done
-   cd ..
+   cd - 1>/dev/null 2>&1
    cat $liste_log | mail_ -s\"[lance_test_nuit] Verify_liste_dep.sh KO on $HOST:$TRUST_ROOT\" $TRUST_MAIL $TRUST_PROJECT_LEADER
    grep "computed checksums did NOT match" $liste_log
    grep "FAILED" $liste_log
@@ -539,9 +549,9 @@ rm -f liste_envoie_KO
 grep -i delete $envoie_log | head -n1
 grep "KO " $envoie_log
 #grep error $envoie_log
-mv -f rsync_*.log $REP_NUIT/.
-mv -f rsync_include_from $REP_NUIT/.
-mv -f ssh_*.log $REP_NUIT/.
+mv -f build/rsync_*.log $REP_NUIT/.
+mv -f build/rsync_include_from $REP_NUIT/.
+mv -f build/ssh_*.log $REP_NUIT/.
 # On recupere le nom des machines sur lesquelles les sources n'ont pu etre mises a jour 
 # Cette liste permettra de ne pas lancer la portabilite des baltiks sur ces machines
 if [ ${#liste_machines_KO} != 0 ] # chaine non vide
@@ -706,6 +716,7 @@ echo "###############################################"
 	      elif [ $vue = sourceforge/Maintenance ]
 	      then
 	         echo " "
+		 new_patch=1
 	         echo "Special treatment..."
 	         ################################
 	         # Travaux sur la vue Maintenance
@@ -714,12 +725,10 @@ echo "###############################################"
                  echo "Call to "$TRUST_ROOT"/bin/admin/checkin_patch.ct"
                  echo "  See $checkin_log"
                  echo "TRUST checkin patch on $HOST the `date` ...">$checkin_log
-		 export TRUST_SHARE="/net/dibona/users/dibona/triou"
 		 $TRUST_ROOT/bin/admin/checkin_patch.ct 1>>$checkin_log 2>&1
 		 wc -l $checkin_log
 		 grep "diff --git" $checkin_log
 		 [ "`cat $checkin_log | tail -n +2`" != "" ] && cat $checkin_log | mail_ -s\"[checkin_patch.ct] Changes in the $TRUST_VERSION patch branch\" $TRUST_MAIL #$TRUST_PROJECT_LEADER
-		 export TRUST_SHARE=""
 		 #######################
 		 # Construction du patch
 		 #######################
@@ -800,6 +809,7 @@ echo "###############################################"
                     echo "Not install on remote machine!" | mail_ -s\"[lance_test_nuit] Failed to create $TRUST_VERSION patch version\" $TRUST_MAIL
 		 else
 		    echo "No patch"
+		    new_patch=0
 		 fi
 	         echo "End special treatment."
 	      fi
@@ -808,7 +818,7 @@ echo "###############################################"
 	########################
 	# Check non regression #
 	########################
-	if [ $vue = sourceforge/Maintenance ] || [ $vue = sourceforge/Kernel ]
+	if ([ $vue = sourceforge/Maintenance ] && [ $new_patch != 0 ]) || [ $vue = sourceforge/Kernel ]
 	then
 	   lance_test_log=$REP_NUIT"/lance_test_"$HOST"_"${vue#*/}".log"
 	   echo " "
@@ -822,7 +832,7 @@ echo "###############################################"
 	###############################
 	# Verification des composants #
 	###############################
-	if [ $vue = sourceforge/Maintenance ] || [ $vue = sourceforge/Kernel ]
+	if ([ $vue = sourceforge/Maintenance ] && [ $new_patch != 0 ]) || [ $vue = sourceforge/Kernel ]
 	then
 	   echo " "
 	   echo "Call check_components for $TRUST_VERSION version from `pwd`"
@@ -989,7 +999,8 @@ do
       echo "######################################################" >> $lance_test_log
       echo " " >> $lance_test_log
       export PAR=0
-      echo $ECHO_OPTS $N | lance_test $exec `dirname $exec` 2>&1 >> $lance_test_log
+      #echo $ECHO_OPTS $N | lance_test $exec `dirname $exec` 2>&1 >> $lance_test_log
+      echo $ECHO_OPTS $N | lance_test $exec `dirname $exec` >> $lance_test_log
       if [ -f $fic_test ]
       then
          #cat $fic_test".html" | grep "Mo|" >> $PERF
@@ -1427,6 +1438,9 @@ do
          echo "  => OK: portability is finished"
 	 cp nuit_$Composant.html $REP_NUIT/nuit_$Composant.html
       fi 
+      mkdir -p build/portability
+      mv $Composant*.log build/portability/.
+      mv Run.liste debut nuit_$Composant.html build/portability/.
    fi
 done
 echo "<--- End at "`date '+%H:%M:%S %d/%m'`
@@ -1922,7 +1936,9 @@ echo "#####################################"
 echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 # Recuperer le ANA.log sur les machines valgrind
 cd $TRUST_ROOT/Validation/Valgrind
-rm -f ANA_*.log casmem_* caserr_*
+Build=$TRUST_ROOT/build/Validation/Valgrind
+[ ! -d ${Build} ] && echo Creating ${Build} directory && mkdir -p ${Build}
+rm -f $Build/ANA_*.log $Build/casmem_* $Build/caserr_*
 machines=`liste_machines "\-valgrind" | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'`
 if [ "${#machines}" = 0 ]
 then
@@ -1935,7 +1951,7 @@ else
 fi
 for machine in $machines
 do
-   valgrind_log=$TRUST_ROOT"/Validation/Valgrind/ANA_"$machine".log"
+   valgrind_log=$Build"/ANA_"$machine".log"
    if  [ "`ssh_ -o ConnectTimeout=30 -o BatchMode=yes $machine -n pwd 1>/dev/null 2>&1;echo $?`" != 0 ]
    then
       echo "  KO $machine machine not accessible via ssh."
@@ -1964,36 +1980,36 @@ do
          echo "  valgrind not finished"
          valgrind=0
       else
-         #scp triou@$machine:~/$WORKBASE$machine/TRUST/Validation/Valgrind/casmem casmem_$machine
+         #scp triou@$machine:~/$WORKBASE$machine/TRUST/Validation/Valgrind/casmem $Build/casmem_$machine
          if [ "${machine:0:2}" = "is" ]
          then
-            scp triou@$machine:$WORKDIR/.tmp_TRUST_$machine/casmem casmem_$machine
+            scp triou@$machine:$WORKDIR/.tmp_TRUST_$machine/casmem $Build/casmem_$machine
          else
-            scp triou@$machine:~/.tmp_TRUST_$machine/casmem casmem_$machine
+            scp triou@$machine:~/.tmp_TRUST_$machine/casmem $Build/casmem_$machine
          fi
-         cat $valgrind_log 2>/dev/null | $TRUST_Awk -F: '/ errors from /{gsub("\\.val","",$2);print $2}' > caserr_$machine
+         cat $valgrind_log 2>/dev/null | $TRUST_Awk -F: '/ errors from /{gsub("\\.val","",$2);print $2}' > $Build/caserr_$machine
          valgrind_max=0
-         valgrind_err=`cat caserr_$machine 2>/dev/null | wc -l`
+         valgrind_err=`cat $Build/caserr_$machine 2>/dev/null | wc -l`
          # On supprime les cas de casmem qui se retrouvent dans liste (cas qui se sont arretes)
-         grep -v -f $TRUST_ROOT/exec/tests_TRUST$COMM"_semi_opt"/liste casmem_$machine > cas
+         grep -v -f $TRUST_ROOT/exec/tests_TRUST$COMM"_semi_opt"/liste $Build/casmem_$machine > cas
          valgrind_leak=`cat cas 2>/dev/null | wc -l`
          rm -f cas
          let valgrind_err=$valgrind_err+$valgrind_leak
          echo "  valgrind $valgrind_err errors including $valgrind_leak memory leak ($valgrind_err<=$valgrind_max)"  
-         [ ! "$valgrind_err" = 0 ] && echo "    See `pwd`/caserr_$machine" && cat caserr_$machine
-         [ ! "$valgrind_leak" = 0 ] && echo "    See `pwd`/casmem_$machine" && cat casmem_$machine
+         [ ! "$valgrind_err" = 0 ] && echo "    See $Build/caserr_$machine" #&& cat $Build/caserr_$machine
+         [ ! "$valgrind_leak" = 0 ] && echo "    See $Build/casmem_$machine" #&& cat $Build/casmem_$machine
          if [ ${#valgrind_err} = 0 ] || [ $valgrind_err -gt $valgrind_max ]
          then
             valgrind=0 
 	    # Envoi d'un mail pour prevenir immediatement
-	    cat caserr_$machine casmem_$machine >> $TRUST_TMP/cas
+	    cat $Build/caserr_$machine $Build/casmem_$machine >> $TRUST_TMP/cas
 	    if [ -s $TRUST_TMP/cas ]
 	    then
 	       log_filtre=`mktemp_`
 	       grep -v -f $TRUST_ROOT/exec/tests_TRUST$COMM"_semi_opt"/liste $valgrind_log 1>$log_filtre 2>&1
 	       echo "-----------" >>$log_filtre
 	       cat $TRUST_TMP/cas >>$log_filtre
-	       [ -s $log_filtre ] && cat $log_filtre | mail_ -s \"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects errors on $machine host!!!\" $TRUST_PROJECT_LEADER $TRUST_MAIL
+	       [ -s $log_filtre ] && cat $log_filtre | mail_ -s \"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects errors on $machine host!!!\" $TRUST_PROJECT_LEADER $TRUST_MAIL adrien.bruneton@cea.fr
                rm -f $log_filtre
 	    fi
          fi
@@ -2173,6 +2189,8 @@ done
 ##########
 # Mise a jour du repertoire doc/Coverage et verification que la couverture est a jour
 cd $TRUST_ROOT/doc/Coverage
+Build=$TRUST_ROOT/build/doc/Coverage
+[ ! -d ${Build} ] && echo Creating ${Build} directory && mkdir -p ${Build}
 echo " "
 echo "Verification of the coverage in `pwd`:"
 # Creation des classes appellees ou non
@@ -2196,16 +2214,16 @@ do
       tc=""
    fi
    echo $ECHO_OPTS $string" \tdans \$TRUST_ROOT"${path_fichier_cpp#$TRUST_ROOT/.}" "$tc
-done > liste_classes_non_testees
-cat liste_classes_non_testees | grep Kernel > liste_classes_non_testees_Kernel
-cat liste_classes_non_testees_Kernel | grep " 0.00" > liste_fichiers_Kernel_a_supprimer
-for file in liste_classes_non_testees liste_classes_non_testees_Kernel liste_fichiers_Kernel_a_supprimer
+done > $Build/liste_classes_non_testees
+cat $Build/liste_classes_non_testees | grep Kernel > $Build/liste_classes_non_testees_Kernel
+cat $Build/liste_classes_non_testees_Kernel | grep " 0.00" > $Build/liste_fichiers_Kernel_a_supprimer
+for file in $Build/liste_classes_non_testees $Build/liste_classes_non_testees_Kernel $Build/liste_fichiers_Kernel_a_supprimer
 do
    echo "    "`wc -l $file | awk '{ print $1 }'`" $file"
 done
 # Classes testees
 echo "  Call to $TRUST_ROOT/bin/KSH/tggcov_ -short -file"
-html=liste_classes_testees.html
+html=$Build/liste_classes_testees.html
 echo $ECHO_OPTS "<HTML><PRE>Critere\tCouvert\tTests\tClasse" > $html
 for string in `$TRUST_Awk '!/ 0 0/ {print $1"|"$2"|"$3}' $listing`
 do
@@ -2235,11 +2253,11 @@ done
 echo "  Analysis of $credoc_log"
 grep OK $credoc_log
 grep KO $credoc_log
-#echo "    See $TRUST_ROOT/Outils/TRIOXDATA/pdf_par_xdata.log"
-echo "    See $TRUST_TMP/motcles file"
-echo "    "`wc -l $TRUST_TMP/motcles | awk '{ print $1 }'`" keywords without test cases!"
+#echo "    See $TRUST_ROOT/build/Outils/TRIOXDATA/pdf_par_xdata.log"
+echo "    See $TRUST_ROOT/build/doc/TRUST/motcles file"
+echo "    "`wc -l $TRUST_ROOT/build/doc/TRUST/motcles | awk '{ print $1 }'`" keywords without test cases!"
 # Mail de verification uniquement le week-end
-[ "`date '+%u'`" = 1 ] && [ `date '+%H'` -lt 8 ] && [ -f $TRUST_TMP/motcles ] && cat $TRUST_TMP/motcles | mail_ -s \"[lance_test_nuit] Tests coverage credoc\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+[ "`date '+%u'`" = 1 ] && [ `date '+%H'` -lt 8 ] && [ -f $TRUST_ROOT/build/doc/TRUST/motcles ] && cat $TRUST_ROOT/build/doc/TRUST/motcles | mail_ -s \"[lance_test_nuit] Tests coverage credoc\" $TRUST_MAIL $TRUST_PROJECT_LEADER
 error_log=`grep 'error Doxygen' $credoc_log`
 [ ${#error_log} != 0 ] && mail_ -s\"[credoc] Doxygen: Study of TRUST includes under `pwd`\" $TRUST_MAIL #$TRUST_PROJECT_LEADER
 #
@@ -2477,20 +2495,24 @@ then
    echo "  See $bench_log"
    echo "TRUST benchmarh report on $HOST the `date` ...">$bench_log
    echo>>$bench_log
-   rm -f $TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/build/rapport.pdf
-   (cd $TRUST_ROOT/tests/Reference/BENCHMARK/Rapport;rm -r -f Run.log build;Run_fiche 1>>$bench_log 2>&1)
+   (Build=$TRUST_ROOT/build/tests/Reference/BENCHMARK;
+    [ ! -d ${Build} ] && echo Creating ${Build} directory && mkdir -p ${Build};
+    rm -rf $Build/Rapport;
+    cp -r $TRUST_ROOT/tests/Reference/BENCHMARK/Rapport $Build/.;
+    cd $Build/Rapport;Run_fiche 1>>$bench_log 2>&1
+   )
    tail -n1 $bench_log
-   if [ -f $TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/build/rapport.pdf ]
+   if [ -f $TRUST_ROOT/build/tests/Reference/BENCHMARK/Rapport/build/rapport.pdf ]
    then
        # Envoi du rapport genere le week-end au project leader
       if [ "`date '+%u'`" = 1 ] && [ `date '+%H'` -lt 8 ]
       then
-         echo "$TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/Run_fiche" | mail_ -a\"$TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/build/rapport.pdf\" -s\"[lance_test_nuit] Benchmark report generated `date '+%d/%m/%y'`\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+         echo "$TRUST_ROOT/build/tests/Reference/BENCHMARK/Rapport/Run_fiche" | mail_ -a\"$TRUST_ROOT/build/tests/Reference/BENCHMARK/Rapport/build/rapport.pdf\" -s\"[lance_test_nuit] Benchmark report generated `date '+%d/%m/%y'`\" $TRUST_MAIL $TRUST_PROJECT_LEADER
       else
-         echo "$TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/Run_fiche" | mail_ -a\"$TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/build/rapport.pdf\" -s\"[lance_test_nuit] Benchmark report generated `date '+%d/%m/%y'`\" $TRUST_MAIL
+         echo "$TRUST_ROOT/build/tests/Reference/BENCHMARK/Rapport/Run_fiche" | mail_ -a\"$TRUST_ROOT/build/tests/Reference/BENCHMARK/Rapport/build/rapport.pdf\" -s\"[lance_test_nuit] Benchmark report generated `date '+%d/%m/%y'`\" $TRUST_MAIL
       fi
    else
-      cat $TRUST_ROOT/tests/Reference/BENCHMARK/Rapport/Run.log | mail_ -s\"[lance_test_nuit] KO Benchmark report NOT generated `date '+%d/%m/%y'`\" $TRUST_MAIL
+      cat $TRUST_ROOT/build/tests/Reference/BENCHMARK/Rapport/Run.log | mail_ -s\"[lance_test_nuit] KO Benchmark report NOT generated `date '+%d/%m/%y'`\" $TRUST_MAIL
    fi
 else
    echo "...no machine with benchmark option in $TRUST_ROOT/bin/admin/liste.machines file"
@@ -3224,14 +3246,12 @@ echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 ################################################################################################
 if [ "`date '+%u'`" = 1 ] || [ $livraison = 1 ] || [ $accord_beta = 1 ]
 then
-   export TRUST_SHARE="/net/dibona/users/dibona/triou"
    ALL_DEVELOPERS_TRUST_MAIL="trio_u_dev@saxifrage.saclay.cea.fr"
    echo " " >> $MESSAGES_NUIT
    echo "TRUST/TrioCFD support team. mailto: $TRUST_MAIL  Web: http://www-trio-u.cea.fr" >> $MESSAGES_NUIT
    echo " " >> $MESSAGES_NUIT
    echo "To unsubscribe from http://saxifrage:3500/wws/info/trio_u_dev list: Reply to this message." >> $MESSAGES_NUIT
 else
-   export TRUST_SHARE=""
    ALL_DEVELOPERS_TRUST_MAIL=$TRUST_MAIL" "$TRUST_PROJECT_LEADER
 fi
 
@@ -3259,10 +3279,8 @@ done
 ############################################################################
 # Annonce d'une version stable a tout le monde (developpeur et utilisateurs)
 ############################################################################
-export TRUST_SHARE=""
 if [ $livraison = 1 ]
 then
-   export TRUST_SHARE="/net/dibona/users/dibona/triou"
    ALL_USERS_TRUST_MAIL="trio_u_annonces@saxifrage.saclay.cea.fr"
    push_error=1 # Temporary
    [ $push_error = 1 ] && ALL_USERS_TRUST_MAIL=$TRUST_MAIL
