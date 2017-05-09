@@ -49,7 +49,7 @@ class Cond_lim : public DERIV(Cond_lim_base)
 
 public:
 
-  Cond_lim(const Cond_lim_base& cl_base) : DERIV(Cond_lim_base)(cl_base) {}
+  //  Cond_lim(const Cond_lim_base& cl_base) : DERIV(Cond_lim_base)(cl_base) {}
   inline Cond_lim& operator=(const Cond_lim_base& cl_base);
   inline Cond_lim& operator=(const Cond_lim& cl);
   void adopt(Cond_lim& cl);

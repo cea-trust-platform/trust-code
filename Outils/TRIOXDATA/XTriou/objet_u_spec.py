@@ -179,14 +179,19 @@ def get_list_ref_ft_disc_gen(self):
 
 
 # GF changement introduction de la classe mere problem_read_generic
-problem_read_generic.read_val=read_val_pb_ft
-problem_read_generic.print_lire=print_lire_pb_ft
-problem_read_generic.get_list_ref=get_list_ref_ft_disc_gen
-
+try:
+    problem_read_generic.read_val=read_val_pb_ft
+    problem_read_generic.print_lire=print_lire_pb_ft
+    problem_read_generic.get_list_ref=get_list_ref_ft_disc_gen
+except NameError:
+    print "problem_read_generic not defined  ... pass"
+    pass
 read.read_data=read_data_read
-
-
-discretize.print_lu=print_lu_discretize
+try:
+    discretize.print_lu=print_lu_discretize
+except NameError:
+    print "discretize not defined  ... pass"
+    pass
 
 def comment_read_data(self,chaine,niveau,listdata=[]):
     comm,chaine=read_bloc_comm(chaine)
@@ -220,9 +225,12 @@ def bloc_comment_print_lu(self,ll=[]):
 
 bloc_comment.read_data=bloc_comment_read_data
 bloc_comment.print_lu=bloc_comment_print_lu
-
-coupled_problem.print_associer_org=coupled_problem.print_associer
-coupled_problem.print_lire_org=coupled_problem.print_lire
+coupled=True
+try:
+    coupled_problem.print_associer_org=coupled_problem.print_associer
+    coupled_problem.print_lire_org=coupled_problem.print_lire
+except NameError:
+    coupled=False
 def probleme_couple_print_lire(self,list_class):
 	return ""
 def probleme_couple_print_associer(self,list_class):
@@ -245,5 +253,8 @@ def probleme_couple_print_associer(self,list_class):
     else:
         return  self.print_associer_org(list_class)
     pass
-coupled_problem.print_associer=probleme_couple_print_associer
-coupled_problem.print_lire=probleme_couple_print_lire
+if coupled:
+    coupled_problem.print_associer=probleme_couple_print_associer
+    coupled_problem.print_lire=probleme_couple_print_lire
+    pass
+

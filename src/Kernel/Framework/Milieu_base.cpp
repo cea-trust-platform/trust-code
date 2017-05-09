@@ -300,8 +300,10 @@ void Milieu_base::calculer_alpha()
 {
   if(lambda.non_nul())
     {
-      Champ rhobis=lambda.valeur();
-      Champ Cpbis=lambda.valeur();
+      Champ rhobis;
+      rhobis=lambda.valeur();
+      Champ Cpbis;
+      Cpbis=lambda.valeur();
       rhobis->affecter(rho.valeur());
       Cpbis->affecter(Cp.valeur());
 

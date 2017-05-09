@@ -46,7 +46,7 @@ class Equation : public DERIV(Equation_base)
 {
   Declare_instanciable(Equation);
 public :
-  inline Equation(const Equation_base&);
+  //  inline Equation(const Equation_base&);
   inline int nombre_d_operateurs() const;
   inline const Operateur& operateur(int) const;
   inline Operateur& operateur(int);
@@ -62,11 +62,14 @@ public :
   inline const Milieu_base& milieu() const;
   inline Milieu_base& milieu();
 };
-
+/*
 inline Equation::Equation(const Equation_base& eqn)
   : DERIV(Equation_base)(eqn)
 {
 }
+*/
+
+
 // Description:
 //    Appel a l'objet sous-jacent.
 //    Renvoie le nombre d'operateurs de l'equation.

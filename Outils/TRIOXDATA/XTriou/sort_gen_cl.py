@@ -24,9 +24,11 @@ while (line):
     if name in dico.keys():
         if line!=dico[name][1]:
 	    message="classe deja dans dico "+name+" avec "+dico[name][1]+"\n et maintenant "+line
-            #raise Exception (message)
+            # raise Exception (message)
     	    print "WARNING", message
         pass
+        message="classe deja dans dico "+name
+        # raise Exception (message)
     list.append(name)
     dico[name]=[0,line]
     #   f2.write(line)

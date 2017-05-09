@@ -80,8 +80,8 @@
     Declare_instanciable_sans_constructeur(DERIV(_TYPE_));        \
       public:                                                        \
     DERIV(_TYPE_)() ;                                                \
-    DERIV(_TYPE_)(const _TYPE_& ) ;                                \
-    DERIV(_TYPE_)(const DERIV(_TYPE_)& ) ;                        \
+   /*  DERIV(_TYPE_)(const _TYPE_& ) ;       */                         \
+    DERIV(_TYPE_)(const DERIV(_TYPE_)& ) ;                       \
     _INLINE_DERIV_ const _TYPE_& valeur() const;                \
     _INLINE_DERIV_ _TYPE_& valeur() ;                                \
     _INLINE_DERIV_ const  _TYPE_* operator ->() const;                \
@@ -115,10 +115,10 @@
   {                                                                        \
     detach();                                                                \
   }                                                                        \
-  DERIV(_TYPE_)::DERIV(_TYPE_)(const _TYPE_& t):Deriv_() {                \
-    pointeur_=0;                                                        \
-    recopie(t);                                                                \
-  }                                                                        \
+ /*  DERIV(_TYPE_)::DERIV(_TYPE_)(const _TYPE_& t):Deriv_() {   */             \
+ /*    pointeur_=0;                 */                                       \
+/*     recopie(t);                 */                                              \
+ /*  } */                                                                        \
   DERIV(_TYPE_)::DERIV(_TYPE_)(const DERIV(_TYPE_)& t) : Deriv_() {        \
     pointeur_=0;                                                        \
     if (t.non_nul())                                                        \

@@ -54,9 +54,10 @@ public:
 //  Fonctions inline de la classe Iterateur_Source_EF
 //
 
-inline Iterateur_Source_EF::Iterateur_Source_EF(const Iterateur_Source_EF_base& Opb)
-
-  : DERIV(Iterateur_Source_EF_base)(Opb) {}
+inline Iterateur_Source_EF::Iterateur_Source_EF(const Iterateur_Source_EF_base& Opb): DERIV(Iterateur_Source_EF_base)()
+{
+  DERIV(Iterateur_Source_EF_base)::operator=(Opb);
+}
 
 inline void Iterateur_Source_EF::completer_()
 {

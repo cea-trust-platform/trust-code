@@ -50,7 +50,7 @@ class Champ_Fonc : public DERIV(Champ_Fonc_base), public Champ_Proto
 
 public :
 
-  inline Champ_Fonc(const Champ_Fonc_base& ) ;
+//  inline Champ_Fonc(const Champ_Fonc_base& ) ;
   inline Champ_Fonc& operator=(const Champ_Fonc_base& ) ;
   inline Champ_Fonc& operator=(const Champ_Fonc& ) ;
   inline void fixer_nb_valeurs_nodales(int ) ;
@@ -99,10 +99,11 @@ public :
 // Exception:
 // Effets de bord:
 // Postcondition:
+/*
 inline Champ_Fonc::Champ_Fonc(const Champ_Fonc_base& x)
 
-  : DERIV(Champ_Fonc_base)(x) {}
-
+ : DERIV(Champ_Fonc_base)(x) {}
+*/
 
 
 // Description:
