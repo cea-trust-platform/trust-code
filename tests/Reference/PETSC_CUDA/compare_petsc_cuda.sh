@@ -1,6 +1,6 @@
 #!/bin/bash
 # Script de comparaison de performance PETSC vs PETSC_GPU
-# Analyse le -log_view et compare les resultats du cas
+# Analyse le -log_summary et compare les resultats du cas
 compare_performance()
 {
    echo "==============================="
@@ -28,7 +28,7 @@ cas=$1 && [ "$1" = "" ] && exit -1
 NPROCS=$2
 [ ! -f $cas.data ] && exit -1
 err=0
-petsc_options="-log_view -mat_no_inode -preload off -ksp_view"
+petsc_options="-log_summary -mat_no_inode -preload off -ksp_view"
 line_solver=`grep -i solveur_pression $cas.data`
 # List of solver
 ksp="gcp"

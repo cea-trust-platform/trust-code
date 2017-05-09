@@ -218,7 +218,7 @@ inline void Solv_Petsc::initialize()
       Cerr << "Commands lines possible for " << version << ":" << finl;
       Cerr << "-ksp_view : to have some informations on the solver/preconditioner used by PETSc." << finl;
       Cerr << "-info : to have among other informations on storage of matrices of PETSc." << finl;
-      Cerr << "-log_view : to have at the end of the calculation, informations about performances and memory." << finl;
+      Cerr << "-log_summary : to have at the end of the calculation, informations about performances and memory." << finl;
       Cerr << "-log_all : trace all PETSc calls." << finl;
       Cerr << "-malloc_dump : to have at the end of the calculation the memory not deallocated by PETSc." << finl;
       Cerr << "-help : to know all the commands lines of PETSc including those related to the solver/preconditioner selected." << finl;

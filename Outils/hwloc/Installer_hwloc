@@ -2,7 +2,7 @@
 ###############################################################
 # Installation de hwloc pour avoir l'architecture de la machine
 ###############################################################
-package=hwloc-1.10.0
+package=hwloc-1.9
 
 if [ "$TRUST_BUILD_IN_TMP" = "1" ]
 then

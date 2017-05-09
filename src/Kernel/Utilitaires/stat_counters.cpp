@@ -365,7 +365,7 @@ void print_statistics_analyse(const char * message, int mode_append)
                 {
                   stat_file << "---------------------------------------------------------------------------------------------------------" << finl;
                   stat_file << "Warning: One or several PETSc solvers are used and thus the communication time below are under-estimated." << finl;
-                  stat_file << "To print also the additional time spent in PETSc solvers, run the calculation with -log_view option."      << finl;
+                  stat_file << "To print also the additional time spent in PETSc solvers, run the calculation with -log_summary option."   << finl;
                   stat_file << "---------------------------------------------------------------------------------------------------------" << finl;
                 }
               double fraction;
