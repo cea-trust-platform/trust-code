@@ -74,6 +74,7 @@ public :
   virtual void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const /* =0 */;
   virtual void contribuer_au_second_membre(DoubleTab& ) const /* =0 */;
   virtual double calculer_dt_stab() const;
+  virtual void calculer_dt_local(DoubleTab&) const;//Local time step calculation
   virtual void completer();
   virtual void mettre_a_jour(double temps);
   virtual void abortTimeStep();

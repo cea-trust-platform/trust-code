@@ -254,8 +254,12 @@ double Operateur::calculer_pas_de_temps() const
   assert(dt_stab==Process::mp_min(dt_stab));
   return dt_stab;
 }
-
-
+// Description:
+// Calculate the next local time steps
+void Operateur::calculer_pas_de_temps_locaux(DoubleTab& dt_locaux) const
+{
+  l_op_base().calculer_dt_local(dt_locaux);
+}
 // Description:
 //    Demande a l'equation si une impression est necessaire
 //    Renvoie 1 pour OUI, 0 sinon.

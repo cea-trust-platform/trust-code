@@ -232,7 +232,7 @@ ArrOfDouble Terme_Source_Canal_perio::source() const
   if (est_different(dernier_temps_calc_,tps))
     {
       // Compte flow rate:
-      double debit_e;
+      double debit_e= 0.;
       calculer_debit(debit_e);
 
       if (je_suis_maitre())
@@ -329,6 +329,12 @@ ArrOfDouble Terme_Source_Canal_perio::source() const
               Cerr << "Contact TRUST support." << finl;
               exit();
             }
+          if(equation().schema_temps().pas_de_temps_locaux().size()>0)
+            {
+              Cerr << "Source term not validated yet for steady option for the Convection_Diffusion_std equation." << finl;
+              Cerr << "Contact TRUST support." << finl;
+              exit();
+            }
 
           // Compute heat_flux:
           const Zone_VF& zone_vf = ref_cast(Zone_VF,equation().zone_dis().valeur());
@@ -405,12 +411,26 @@ ArrOfDouble Terme_Source_Canal_perio::source() const
 
           // On conserve le test (avec dt_min) car appel a t=0 (dt=0) au cours de preparer calculer pour loi de paroi TBLE
           double dt_min = equation().schema_temps().pas_temps_min();
+          const DoubleVect& dt_locaux = equation().schema_temps().pas_de_temps_locaux();
           double si = 0;
           if (sup_ou_egal(dt,dt_min))
             {
               // si = [ 2*(Q(0)-Q(t(n))) - (Q(0)-Q(t(n-1))) ] / [ coeff * dt * aire(bord) ]
-              si = (2.*(debit_ref_-debit_e)-(debit_ref_-debnm1_))/(coeff*dt*surface_bord_);
-              debnm1_ = debit_e;
+              if( dt_locaux.size()>0)
+                {
+                  Cerr << "Periodic BC plus source term not validated yet for steady option." << finl;
+                  Cerr << "Contact TRUST support." << finl;
+                  exit();
+
+                  //du au fait que ce calcul implique une division par dt, dans le cas ou le dt est variable par face,
+                  // calculer_debit(debit_e) renvoye [ 2*(Q(0)-Q(t(n))) - (Q(0)-Q(t(n-1))) ]/dt_locaux
+                  si = debit_e/(coeff*surface_bord_);
+                }
+              else
+                {
+                  si = (2.*(debit_ref_-debit_e)-(debit_ref_-debnm1_))/(coeff*dt*surface_bord_);
+                  debnm1_ = debit_e;
+                }
             }
 
           source_ += si;

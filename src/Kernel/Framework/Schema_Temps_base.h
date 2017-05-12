@@ -25,6 +25,7 @@
 
 #include <Ref_Probleme_base.h>
 #include <math.h>
+#include <DoubleTab.h>
 
 class Equation;
 class Equation_base;
@@ -116,6 +117,7 @@ public :
   virtual void mettre_a_jour_dt_stab();
 
   inline double pas_de_temps() const;
+  inline const DoubleTab& pas_de_temps_locaux() const;
 
   virtual bool corriger_dt_calcule(double& dt) const;
   virtual void imprimer(Sortie& os) const;
@@ -333,6 +335,8 @@ protected :
   REF(Probleme_base) mon_probleme;
   Nom nom_;
   double dt_;                                // Pas de temps de calcul
+  DoubleTab dt_locaux_;                     // Local time steps: Vector of size nb faces of the mesh
+
   double temps_courant_;
   double temps_precedent_;
   double tinit_;
@@ -536,7 +540,10 @@ inline double Schema_Temps_base::pas_de_temps() const
 {
   return dt_;
 }
-
+inline const DoubleTab& Schema_Temps_base::pas_de_temps_locaux() const
+{
+  return dt_locaux_;
+}
 // Description:
 //    Renvoie le pas de temps minimum.
 //    (version const)

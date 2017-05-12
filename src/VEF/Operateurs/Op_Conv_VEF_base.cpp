@@ -265,3 +265,89 @@ void Op_Conv_VEF_base::remplir_fluent(DoubleVect& tab_fluent) const
   // du schema et donc on peut coder quelque chose comme fluent=vitesse*surface*porosite
   // dans cette presente methode
 }
+
+
+//Description
+// Calculation of local time: Vect of size number of faces of the domain
+// This is the equivalent of "Op_Conv_VEF_base :: calculer_dt_stab ()"
+void Op_Conv_VEF_base::calculer_dt_local(DoubleTab& dt_face) const
+{
+  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
+  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const DoubleVect& volumes_entrelaces =  zone_VEF.volumes_entrelaces();
+  const DoubleVect& volumes_entrelaces_Cl = zone_Cl_VEF.volumes_entrelaces_Cl();
+
+  int nb_faces= zone_VEF.nb_faces();
+  dt_face=(volumes_entrelaces);
+  remplir_fluent(fluent);
+
+  for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
+    {
+      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      int ndeb = le_bord.num_premiere_face();
+      int nfin = ndeb + le_bord.nb_faces();
+      for (int num_face=ndeb; num_face<nfin; num_face++)
+        {
+          if( sup_strict(fluent[num_face], 1.e-30) )
+            dt_face(num_face)= volumes_entrelaces_Cl(num_face)/fluent[num_face];
+          else
+            dt_face(num_face) = -1.;
+        }
+    }
+
+  //Non-standard internal faces
+  int ndeb = zone_VEF.premiere_face_int();
+  int nfin = zone_VEF.premiere_face_std();
+
+  for (int num_face=ndeb; num_face<nfin; num_face++)
+    {
+      if( sup_strict(fluent[num_face], 1.e-30) )
+        dt_face(num_face)= volumes_entrelaces(num_face)/fluent[num_face];
+      else
+        dt_face(num_face) = -1.;
+    }
+
+  //The standard internal faces
+  ndeb = nfin;
+  nfin = zone_VEF.nb_faces();
+  for (int num_face=ndeb; num_face<nfin; num_face++)
+    {
+      if( sup_strict(fluent[num_face], 1.e-30) )
+        dt_face(num_face)= volumes_entrelaces(num_face)/fluent[num_face];
+      else
+        dt_face(num_face) = -1.;
+    }
+
+  double max_dt_local= dt_face.mp_max_abs_vect();
+  for(int i=0; i<nb_faces; i++)
+    {
+      if(! sup_strict(dt_face(i), 1.e-16))
+        dt_face(i) = max_dt_local;
+    }
+  dt_face.echange_espace_virtuel();
+
+  for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
+    {
+      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      if (sub_type(Periodique,la_cl.valeur()))
+        {
+          const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          int nb_faces_bord=le_bord.nb_faces();
+          for (int ind_face=0; ind_face<nb_faces_bord; ind_face++)
+            {
+              int ind_face_associee = la_cl_perio.face_associee(ind_face);
+              int face = le_bord.num_face(ind_face);
+              int face_associee = le_bord.num_face(ind_face_associee);
+              if (!est_egal(dt_face(face),dt_face(face_associee),1.e-8))
+                {
+                  dt_face(face) = min(dt_face(face),dt_face(face_associee));
+                }
+            }
+        }
+    }
+  dt_face.echange_espace_virtuel();
+
+// dt_conv_locaux=dt_face;
+}

@@ -24,6 +24,7 @@
 #include <Milieu_base.h>
 #include <Operateur_base.h>
 #include <Operateur_Conv_base.h>
+#include <Op_Conv_negligeable.h>
 #include <Operateur_Diff_base.h>
 #include <Operateur.h>
 #include <Avanc.h>
@@ -1563,6 +1564,34 @@ double Equation_base::calculer_pas_de_temps() const
       }
   Debog::verifier("Equation_base::calculer_pas_de_temps dt ",dt);
   return dt;
+}
+
+//Description
+// Calculation of local time: Vect of size number of faces of the domain
+// Calculate whether the "steady" option is used in the "Euler implicit"
+// The local time step is a convection temp step
+void Equation_base::calculer_pas_de_temps_locaux(DoubleTab& dt_op) const
+{
+  int nb_op=nombre_d_operateurs();
+  for(int i=0; i<nb_op; i++)
+    {
+      const Operateur_base& op=operateur(i).l_op_base();
+      if (sub_type(Operateur_Conv_base,op))
+        {
+          if(sub_type(Op_Conv_negligeable, op))
+            {
+              Cerr<<"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<finl;
+              Cerr<<"STEADY option is not compatible with the 'CONVECTION { NEGLIGEABLE }' model!"<<finl;
+              Cerr << "Please, contact TRUST support." << finl;
+              Cerr<<"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<finl;
+              exit();
+            }
+          else
+            operateur(i).calculer_pas_de_temps_locaux(dt_op);
+
+        }
+    }
+
 }
 
 // Description:

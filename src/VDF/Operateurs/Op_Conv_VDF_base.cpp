@@ -136,6 +136,127 @@ double Op_Conv_VDF_base::calculer_dt_stab() const
   return dt_stab;
 }
 
+
+
+//Description
+// Calculation of local time: Vect of size number of faces of the domain
+// This is the equivalent of "Op_Conv_VDF_base :: calculer_dt_stab ()"
+void Op_Conv_VDF_base::calculer_dt_local(DoubleTab& dt_face) const
+{
+  const Zone_VDF& zone_VDF = iter.zone();
+  const Zone_Cl_VDF& zone_Cl_VDF = iter.zone_Cl();
+  const DoubleVect& volumes_entrelaces= zone_VDF.volumes_entrelaces();
+  const DoubleVect& face_surfaces = zone_VDF.face_surfaces();
+  //const DoubleVect& vit= vitesse_pour_pas_de_temps_.valeur().valeurs();
+  const DoubleVect& vit=equation().inconnue().valeurs();
+  DoubleTrav fluent(volumes_entrelaces);
+
+  // Remplissage du tableau fluent
+  // On traite les bords
+  for (int n_bord=0; n_bord<zone_VDF.nb_front_Cl(); n_bord++)
+    {
+      const Cond_lim& la_cl = zone_Cl_VDF.les_conditions_limites(n_bord);
+
+      if ( sub_type(Dirichlet_entree_fluide,la_cl.valeur())
+           || sub_type(Neumann_sortie_libre,la_cl.valeur())  )
+
+        {
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          int  num1 = le_bord.num_premiere_face();
+          int num2 = num1 + le_bord.nb_faces();
+          for (int face=num1; face<num2; face++)
+            {
+              double value = vit[face]*face_surfaces(face);
+              if (value >0)
+                fluent[face] = value;
+              else
+                fluent[face] -= value;
+            }
+        }
+    }
+
+  // Boucle sur les faces internes pour remplir fluent
+  int zone_VDF_nb_faces=zone_VDF.nb_faces();
+  int premiere_face=zone_VDF.premiere_face_int();
+  for (int face=premiere_face; face<zone_VDF_nb_faces; face++)
+    {
+      double value = vit[face]*face_surfaces(face);
+      if (value >0)
+        fluent[face] = value;
+      else
+        fluent[face] -= value;
+    }
+
+
+  // Calcul du pas de temps de stabilite a partir du tableau fluent
+  if (vitesse().le_nom()=="rho_u")
+    diviser_par_rho_si_qc(fluent,equation().milieu());
+
+
+
+  dt_face=(volumes_entrelaces);
+  // Boucle sur les faces de bords
+  for (int n_bord=0; n_bord<zone_VDF.nb_front_Cl(); n_bord++)
+    {
+      const Cond_lim& la_cl = zone_Cl_VDF.les_conditions_limites(n_bord);
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      int ndeb = le_bord.num_premiere_face();
+      int nfin = ndeb + le_bord.nb_faces();
+      for (int num_face=ndeb; num_face<nfin; num_face++)
+        {
+          if( sup_strict(fluent[num_face], 1.e-16) )
+            dt_face(num_face)= volumes_entrelaces(num_face)/fluent[num_face];
+          else
+            dt_face(num_face) = -1.;
+        }
+    }
+
+  // Boucle sur les faces internes
+  for (int num_face=premiere_face; num_face<zone_VDF_nb_faces; num_face++)
+    {
+      if( sup_strict(fluent[num_face], 1.e-16) )
+        dt_face(num_face)= volumes_entrelaces(num_face)/fluent[num_face];
+      else
+        dt_face(num_face) = -1.;
+    }
+
+  double max_dt_local= dt_face.mp_max_abs_vect();
+  int taille= dt_face.size();
+  for(int i=0; i<taille; i++)
+    {
+      if(! sup_strict(dt_face(i), 1.e-16))
+        {
+          dt_face(i) = max_dt_local;
+        }
+    }
+  dt_face.echange_espace_virtuel();
+
+  for (int n_bord=0; n_bord<zone_VDF.nb_front_Cl(); n_bord++)
+    {
+      const Cond_lim& la_cl = zone_Cl_VDF.les_conditions_limites(n_bord);
+      if (sub_type(Periodique,la_cl.valeur()))
+        {
+          const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          int nb_faces_bord=le_bord.nb_faces();
+          for (int ind_face=0; ind_face<nb_faces_bord; ind_face++)
+            {
+              int ind_face_associee = la_cl_perio.face_associee(ind_face);
+              int face = le_bord.num_face(ind_face);
+              int face_associee = le_bord.num_face(ind_face_associee);
+              if (!est_egal(dt_face(face),dt_face(face_associee),1.e-8))
+                {
+                  dt_face(face) = min(dt_face(face),dt_face(face_associee));
+                }
+            }
+        }
+    }
+  dt_face.echange_espace_virtuel();
+//  dt_conv_locaux=dt_face;
+}
+
+
+
 // cf Op_Conv_VDF_base::calculer_dt_stab() pour choix de calcul de dt_stab
 void Op_Conv_VDF_base::calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const
 {

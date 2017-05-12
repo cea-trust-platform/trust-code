@@ -128,7 +128,7 @@ public :
   virtual void associer_pb_base(const Probleme_base&);
   virtual void completer();
   virtual double calculer_pas_de_temps() const;
-  //
+  void calculer_pas_de_temps_locaux(DoubleTab&) const;  //Computation of local time: Vect of size number of faces of the domain
   Sources& sources();
   const Sources& sources() const;
   inline Solveur_Masse& solv_masse();
