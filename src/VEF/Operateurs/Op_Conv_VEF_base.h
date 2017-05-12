@@ -78,6 +78,7 @@ public:
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
   virtual void abortTimeStep();
   double calculer_dt_stab() const ;
+  void calculer_dt_local(DoubleTab&) const ; //Local time step calculation
   void calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const;
   virtual Motcle get_localisation_pour_post(const Nom& option) const;
 

@@ -64,6 +64,7 @@ public :
   DoubleTab& calculer(DoubleTab& ) const;
   const Nom& type() const;
   double calculer_pas_de_temps() const;
+  void calculer_pas_de_temps_locaux(DoubleTab&) const; //Local time step calculation
   int impr(Sortie& os) const;
 
   virtual void typer()=0;

@@ -31,6 +31,7 @@ class Zone_dis_base;
 class Zone_Cl_dis;
 class Zone_Cl_dis_base;
 class DoubleTab;
+class DoubleVect;
 class Matrice_Base;
 class Matrice_Morse;
 
@@ -65,6 +66,10 @@ public :
 
   virtual Matrice_Base& ajouter_masse(double dt, Matrice_Base& matrice, int penalisation=1) const;
   virtual DoubleTab& ajouter_masse(double dt, DoubleTab& x, const DoubleTab& y, int penalisation=1) const;
+  virtual Matrice_Base& ajouter_masse_dt_local(DoubleVect& dt_locaux, Matrice_Base& matrice, int penalisation=1) const;
+  virtual DoubleTab& ajouter_masse_dt_local(DoubleVect& dt_locaux, DoubleTab& x, const DoubleTab& y, int penalisation=1) const;
+  virtual void get_masse_dt_local(DoubleVect& m_dt_locaux, DoubleVect& dt_locaux, int penalisation=1);
+  virtual void get_masse_divide_by_local_dt(DoubleVect& m_dt_locaux, DoubleVect& dt_locaux, int penalisation=1);
 
   virtual DoubleTab& corriger_solution(DoubleTab& x, const DoubleTab& y) const;
   void set_name_of_coefficient_temporel(const Nom&);

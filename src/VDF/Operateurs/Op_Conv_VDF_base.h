@@ -60,6 +60,7 @@ public:
   virtual Champ_base& vitesse()=0;
   void completer();
   double calculer_dt_stab() const;
+  void calculer_dt_local(DoubleTab&) const ; //Local time step calculation
   void calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const;
   virtual Motcle get_localisation_pour_post(const Nom& option) const;
   virtual int impr(Sortie& os) const;

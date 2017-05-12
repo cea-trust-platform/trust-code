@@ -59,6 +59,10 @@ public :
   inline Matrice_Base& ajouter_masse(double , Matrice_Base&, int penalisation=1) const;
   inline DoubleTab& ajouter_masse(double, DoubleTab& , const DoubleTab& y, int penalisation=1) const;
   inline DoubleTab& corriger_solution( DoubleTab& x, const DoubleTab& y) const;
+  inline Matrice_Base& ajouter_masse_dt_local(DoubleVect& , Matrice_Base&, int penalisation=1) const;
+  inline DoubleTab& ajouter_masse_dt_local(DoubleVect&, DoubleTab& , const DoubleTab& y, int penalisation=1) const;
+  inline void get_masse_dt_local(DoubleVect& m_dt_locaux, DoubleVect& dt_locaux, int penalisation=1);
+  inline void get_masse_divide_by_local_dt(DoubleVect& m_dt_locaux, DoubleVect& dt_locaux, int penalisation=1);
 };
 
 // Description:
@@ -156,6 +160,23 @@ inline DoubleTab& Solveur_Masse::ajouter_masse(double dt, DoubleTab& x, const Do
   return valeur().ajouter_masse(dt,x,y,penalisation);
 }
 
+inline Matrice_Base& Solveur_Masse::ajouter_masse_dt_local(DoubleVect& dt_locaux, Matrice_Base& matrice, int penalisation) const
+{
+  return valeur().ajouter_masse_dt_local(dt_locaux,matrice,penalisation);
+}
+
+inline DoubleTab& Solveur_Masse::ajouter_masse_dt_local(DoubleVect& dt_locaux, DoubleTab& x, const DoubleTab& y, int penalisation) const
+{
+  return valeur().ajouter_masse_dt_local(dt_locaux,x,y,penalisation);
+}
+inline void Solveur_Masse::get_masse_dt_local(DoubleVect& m_dt_locaux, DoubleVect& dt_locaux, int penalisation)
+{
+  valeur().get_masse_dt_local(m_dt_locaux,dt_locaux,penalisation);
+}
+inline void Solveur_Masse::get_masse_divide_by_local_dt(DoubleVect& m_dt_locaux, DoubleVect& dt_locaux, int penalisation)
+{
+  valeur().get_masse_divide_by_local_dt(m_dt_locaux,dt_locaux,penalisation);
+}
 inline DoubleTab& Solveur_Masse::corriger_solution( DoubleTab& x, const DoubleTab& y) const
 {
   return valeur().corriger_solution(x,y);

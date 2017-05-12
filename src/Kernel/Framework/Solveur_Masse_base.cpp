@@ -243,6 +243,131 @@ DoubleTab& Solveur_Masse_base::ajouter_masse(double dt, DoubleTab& x, const Doub
   //x.echange_espace_virtuel();Debog::verifier("Solveur_Masse::ajouter_masse",x);
   return x;
 }
+Matrice_Base& Solveur_Masse_base::ajouter_masse_dt_local(DoubleVect& dt_locaux, Matrice_Base& matrice, int penalisation) const
+{
+  Matrice_Morse& matmo=ref_cast(Matrice_Morse, matrice);
+  int sz=matmo.nb_lignes();;
+  DoubleTrav diag(equation().inconnue().valeurs());
+  diag=1.;
+  appliquer(diag);
+  int prems=0;
+  if(penalisation)
+    {
+      if (penalisation_==0)
+        {
+          double penal=0;
+          for(int i=0; i<sz; i++)
+            penal=dmax(penal, matmo(i,i));
+          penal=mp_max(penal);
+          penalisation_=(mp_max_vect(diag)/dt_locaux.local_max_vect() + penal)*1.e3;
+          prems=1;
+        }
+    }
+  else
+    penalisation_=0;
+
+  for(int i=0; i<sz; i++)
+    {
+      if (diag.addr()[i]==0)
+        {
+          if(prems)
+            {
+              matmo(i,i)+=penalisation_;
+              prems=0;
+            }
+          matmo(i,i)+=penalisation_/dt_locaux[i];
+        }
+      else
+        matmo(i,i)+=1./(diag.addr()[i]*dt_locaux[i]);
+    }
+
+  return matrice;
+}
+
+DoubleTab& Solveur_Masse_base::ajouter_masse_dt_local(DoubleVect& dt_locaux, DoubleTab& x, const DoubleTab& y, int penalisation) const
+{
+  int sz=y.size();
+  DoubleTrav diag;
+  diag.copy(equation().inconnue().valeurs(), Array_base::NOCOPY_NOINIT);
+  diag=1.;
+  appliquer(diag);
+  if (penalisation)
+    {
+      if (penalisation_==0)
+        penalisation_ = mp_max_vect(diag)*1.e3;
+    }
+  else
+    penalisation_=1;
+  for(int i=0; i<sz; i++)
+    {
+      if (diag.addr()[i]==0)
+        x.addr()[i]=penalisation_*y.addr()[i];
+      else
+        x.addr()[i]+=1./(diag.addr()[i]*dt_locaux[i])*y.addr()[i];
+
+    }
+  //x.echange_espace_virtuel();
+
+  //test
+
+  return x;
+}
+
+void Solveur_Masse_base::get_masse_dt_local(DoubleVect& m_dt_locaux, DoubleVect& dt_locaux, int penalisation)
+{
+  int sz=dt_locaux.size();
+  DoubleTab diag;
+  diag.copy(equation().inconnue().valeurs(), Array_base::NOCOPY_NOINIT);
+  diag=1.;
+  appliquer(diag);
+  if (penalisation)
+    {
+      if (penalisation_==0)
+        penalisation_ = mp_max_vect(diag)*1.e3;
+    }
+  else
+    penalisation_=1;
+  for(int i=0; i<sz; i++)
+    {
+      if (diag.addr()[i]==0)
+        m_dt_locaux[i]=0.;
+      else
+        m_dt_locaux[i]=(1./diag.addr()[i])*dt_locaux[i];
+
+    }
+  m_dt_locaux.echange_espace_virtuel();
+
+  //Debog::verifier("Solveur_Masse::ajouter_masse",x);
+}
+
+
+void Solveur_Masse_base::get_masse_divide_by_local_dt(DoubleVect& m_dt_locaux, DoubleVect& dt_locaux, int penalisation)
+{
+  int sz=dt_locaux.size();
+  DoubleTab diag;
+  diag.copy(equation().inconnue().valeurs(), Array_base::NOCOPY_NOINIT);
+  diag=1.;
+  appliquer(diag);
+  if (penalisation)
+    {
+      if (penalisation_==0)
+        penalisation_ = mp_max_vect(diag)*1.e3;
+    }
+  else
+    penalisation_=1;
+  for(int i=0; i<sz; i++)
+    {
+      if (diag.addr()[i]==0)
+        m_dt_locaux[i]=0.;
+      else
+        m_dt_locaux[i]=(1./diag.addr()[i])/dt_locaux[i];
+
+    }
+  m_dt_locaux.echange_espace_virtuel();
+
+  //Debog::verifier("Solveur_Masse::ajouter_masse",x);
+
+}
 
 DoubleTab& Solveur_Masse_base::corriger_solution(DoubleTab& x, const DoubleTab& y) const
 {

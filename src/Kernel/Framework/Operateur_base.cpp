@@ -154,7 +154,12 @@ double Operateur_base::calculer_dt_stab() const
   return 1.e30;
 }
 
-
+void Operateur_base::calculer_dt_local(DoubleTab& dt) const
+{
+  Cerr << "You must overload the method " << que_suis_je()
+       << "::calculer_dt_local(DoubleVect&)" << finl;
+  exit();
+}
 // Description:
 //    NE FAIT RIEN
 //    A surcharger dans les classes derivees.
