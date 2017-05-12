@@ -1007,6 +1007,9 @@ void calculer_elements_voisins_bords(const Domaine& dom,
               if (drap==0)
                 {
                   if (permissif)
+                    Cerr << "Message from DomaineCutter.cpp : calculer_elements_voisins_bords\n"
+                         << " boundary face "<<  zone.frontiere(i).le_nom()<<" with " << n_voisins << " neighbors." << finl;
+                  else
                     Cerr << "Error in DomaineCutter.cpp : calculer_elements_voisins_bords\n"
                          << " boundary face "<<  zone.frontiere(i).le_nom()<<" with " << n_voisins << " neighbors." << finl;
                   bords_a_pb_.add( zone.frontiere(i).le_nom());
