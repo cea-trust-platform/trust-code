@@ -1613,8 +1613,10 @@ const Champ_Generique_base& Probleme_base::get_champ_post(const Motcle& un_nom) 
         }
       ++curseur_post;
     }
-  Cerr<<"The field of name "<<un_nom<<" do not correspond to a field understood by the problem."<<finl;
-  Cerr<<"Check the name of the field indicated into the postprocessing block of the data file."<<finl;
+  Cerr<<" "<<finl;
+  Cerr<<"The field named "<<un_nom<<" do not correspond to a field understood by the problem."<<finl;
+  Cerr<<"Check the name of the field indicated into the postprocessing block of the data file " << finl;
+  Cerr<<"or in the list of post-processed fields above (in the block 'Reading of fields to be postprocessed')."<<finl;
   exit();
 
   //Pour compilation

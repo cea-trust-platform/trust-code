@@ -64,7 +64,6 @@ void Terme_Puissance_Thermique::lire_donnees(Entree& is,const Equation_base& eqn
   la_puissance.typer(type);
   Champ_Don_base& ch_puissance = ref_cast(Champ_Don_base,la_puissance.valeur());
   is >> ch_puissance;
-
   if ((!sub_type(Champ_Uniforme,ch_puissance))&&(!sub_type(Champ_Fonc_Tabule,ch_puissance)))
     {
       const DoubleTab& p=ch_puissance.valeurs();
@@ -83,6 +82,7 @@ void Terme_Puissance_Thermique::lire_donnees(Entree& is,const Equation_base& eqn
   else
     {
 // on met a jour le nom des compos
+      Cerr << "The field 'Puissance_volumique' has been renamed as '" << la_puissance.le_nom() << "'." << finl;
       la_puissance->fixer_nom_compo(la_puissance.le_nom());
     }
 }
