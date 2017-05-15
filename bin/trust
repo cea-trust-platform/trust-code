@@ -104,31 +104,31 @@ help()
 {
    echo "Usage: `basename $0` [option] datafile [nb_cpus] [1>file.out] [2>file.err]"
    echo "Where option may be:"
-   echo "-help|-h                : List options."
-   echo "-index                  : Access to TRUST ressources index."
-   echo "-doc                    : Access to TRUST manual (Generic Guide)."
-   echo "-config nedit|vim|emacs : Configure nedit or vim or emacs with TRUST keywords."
-   echo "-mesh                   : Visualize the mesh(es) contained in the data file."
+   echo "-help|-h                      : List options."
+   echo "-index                        : Access to TRUST ressources index."
+   echo "-doc                          : Access to TRUST manual (Generic Guide)."
+   echo "-config nedit|vim|emacs|gedit : Configure nedit or vim or emacs or gedit with TRUST keywords."
+   echo "-mesh                         : Visualize the mesh(es) contained in the data file."
 #   echo "-monitor                : Run and monitor the progress of the TRUST calculation."
 #   echo "-probes                 : Monitor the TRUST calculation only."
-   echo "-evol                   : Monitor the TRUST calculation (new IHM)."
-   echo "-wiz                    : Set a TRUST datafile from a MED file (new IHM)."
-   echo "-prm                    : Write a prm file."
-   echo "-clean                  : Clean the current directory from all the generated files by TRUST."
-   echo "-copy                   : Copy the test case datafile from the TRUST database under the present directory."
-   echo "-check all|testcase|list : Check the non regression of all the test cases or a single test case or a list of tests cases specified in a file."
+   echo "-evol                         : Monitor the TRUST calculation (new IHM)."
+   echo "-wiz                          : Set a TRUST datafile from a MED file (new IHM)."
+   echo "-prm                          : Write a prm file."
+   echo "-clean                        : Clean the current directory from all the generated files by TRUST."
+   echo "-copy                         : Copy the test case datafile from the TRUST database under the present directory."
+   echo "-check all|testcase|list      : Check the non regression of all the test cases or a single test case or a list of tests cases specified in a file."
    echo "-check function|class|method::class : Check the non regression of a list of tests cases covering a function, a class or a class method."
-   echo "-gdb                    : Run under gdb debugger."
-   echo "-valgrind               : Run under valgrind."
-   echo "-valgrind_strict        : Run under valgrind with no suppressions."
-   echo "-create_sub_file        : Create a submission file only."
-   echo "-prod                   : Create a submission file and submit the job on the main production class with exclusive resource."
-   echo "-bigmem                 : Create a submission file and submit the job on the big memory production class."
-   echo "-queue queue            : Create a submission file with the specified queue and submit the job."
-   echo "-c ncpus                : Use ncpus CPUs allocated per task for a parallel calculation."
+   echo "-gdb                          : Run under gdb debugger."
+   echo "-valgrind                     : Run under valgrind."
+   echo "-valgrind_strict              : Run under valgrind with no suppressions."
+   echo "-create_sub_file              : Create a submission file only."
+   echo "-prod                         : Create a submission file and submit the job on the main production class with exclusive resource."
+   echo "-bigmem                       : Create a submission file and submit the job on the big memory production class."
+   echo "-queue queue                  : Create a submission file with the specified queue and submit the job."
+   echo "-c ncpus                      : Use ncpus CPUs allocated per task for a parallel calculation."
 #   [ "$PETSC_HAVE_CUDA" = 1 ] && echo "-gpu                    : Create a submission file and submit the job on production class with GPU cards."
 #   [ -d /ccc ] && echo "-ipm                    : Use ipm to report MPI statistics."
-   echo "-help_trust             : Print options of TRUST_EXECUTABLE [CASE[.data]] [options]."
+   echo "-help_trust                   : Print options of TRUST_EXECUTABLE [CASE[.data]] [options]."
 
    exit 0
 }
@@ -176,6 +176,10 @@ do
       then
          # Configure emacs
 	 configure_emacs.sh && exit 0
+      elif [ "$1" = gedit ]
+      then
+         # Configure gedit
+	 configure_gedit.sh && exit 0
       else
          help
       fi
