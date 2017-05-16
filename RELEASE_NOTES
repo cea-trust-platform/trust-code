@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.5_beta : Enhancements, modifications and corrected bugs since version 1.7.4 :
 --------------------------------------------------------------------------------------------------
+16/05/17 (TRUST)  Minor change: Option -config completed with gedit editor
 25/04/17 (Tools)  Minor change: Options -edit, -xedit and -xcheck added to the trust script (EDITEUR, EditData and VerifData)
 25/04/17 (TRUST)  Major change: Adding a stop test for unique implicit time scheme in coupled problem with QC
 30/03/17 (Tools)  New feature : New python script to convert into Ensight format (Lata_to_case.py)
