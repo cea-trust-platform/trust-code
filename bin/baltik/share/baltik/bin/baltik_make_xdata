@@ -5,6 +5,9 @@ dest=`pwd`
 cd -
 org=$TRUST_ROOT/Outils/TRIOXDATA/
 cp -ar $org/XTriou $dest 
+# on change le nom du projet pour la doc
+sed "s/TRUST Reference/$project_name Reference/g" -i $dest/XTriou/objet_u.py
+
 ln -sf  $org/EditData $org/VerifData $org/check_jdd $org/XDATA*    $org/Installer $org/Install_all  $org/Makefile $dest
 mkdir -p $dest/test_complet
 ln -sf $org/test_complet/fait_lance_test $org/test_complet/modif $dest/test_complet
@@ -23,3 +26,9 @@ mkdir -p share/doc_src
 cat build/xdata/XTriou/Keywords.txt $TRUST_ROOT/doc/TRUST/Keywords.txt | sort | uniq -u > share/doc_src/Keywords.txt.n
 KeywordsTRUST=`$TRUST_Awk '!/\|/ {k=k" "$1} /\|/ {gsub("\\\|"," ",$0);k=k" "$0} END {print k}' share/doc_src/Keywords.txt.n`
 echo "syntax keyword TRUSTLanguageKeywords$KeywordsTRUST" > share/doc_src/Keywords.Vim
+mkdir -p share/doc_auto
+cd share/doc_auto
+cp $dest/XTriou/doc.pdf ${project_name}_Reference_Manual.pdf 
+ln -sf $TRUST_ROOT/doc/TRUST/TRUST_Generic_Guide.pdf .
+ln -sf  ${project_name}_Reference_Manual.pdf TRUST_Reference_Manual.pdf 
+

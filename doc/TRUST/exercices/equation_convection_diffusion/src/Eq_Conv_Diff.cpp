@@ -4,6 +4,7 @@
 #include <Probleme_base.h>
 
 Implemente_instanciable(Eq_Conv_Diff,"Convection_Diffusion",Convection_Diffusion_Concentration);
+// XD  convection_diffusion  eqn_base convection_diffusion -1 not_set
 
 Sortie& Eq_Conv_Diff::printOn(Sortie& is) const
 {

@@ -305,7 +305,7 @@ In your data file, you will have:
 \end{minipage}}
 \end{center}
 
-For more information, see the \href{\REFERENCEMANUAL\#pbconduction}{\trust Reference Manual}.
+For more information, see the \href{\REFERENCEMANUAL\#pbconduction}{\trustref Reference Manual}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Coupled problems}
@@ -399,7 +399,7 @@ Then we discretize and solve everything:
 \end{minipage}}
 \end{center}
 
-You can see the documentation of this kind of problem in the \href{\REFERENCEMANUAL\#coupledproblem}{\trust Reference Manual}.
+You can see the documentation of this kind of problem in the \href{\REFERENCEMANUAL\#coupledproblem}{\trustref Reference Manual}.
 
 
 
@@ -419,7 +419,7 @@ You can see the documentation of this kind of problem in the \href{\REFERENCEMAN
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Pressure solvers}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Then you may indicate the choice of pressure solver (cf \href{\REFERENCEMANUAL\#solveursysbase}{\trust Reference Manual}) using the following syntaxe:
+Then you may indicate the choice of pressure solver (cf \href{\REFERENCEMANUAL\#solveursysbase}{\trustref Reference Manual}) using the following syntaxe:
     \begin{center}
     \fbox{ \begin{minipage}[c]{0.7\textwidth}
     \begin{alltt}
@@ -437,7 +437,7 @@ The \textit{my\_solver} may be:
 \item \href{\REFERENCEMANUAL\#gmres}{\textbf{Gmres}},
 \item \href{\REFERENCEMANUAL\#gen}{\textbf{Gen}},
 \item \href{\REFERENCEMANUAL\#optimal}{\textbf{Optimal}}.
-%\item \textbf{Gmres} or \textbf{Gen} or \textbf{Optimal} (cf to the \href[page=DOCLINK_OTHER SOLVERS]{\REFERENCEMANUAL}{\trust Reference Manual}).
+%\item \textbf{Gmres} or \textbf{Gen} or \textbf{Optimal} (cf to the \href[page=DOCLINK_OTHER SOLVERS]{\REFERENCEMANUAL}{\trustref Reference Manual}).
 \end{itemize}
 
 
@@ -460,7 +460,7 @@ You can use the following convective scheme, following the recommendations of th
 \item \href{\REFERENCEMANUAL\#convectionamont}{\textbf{Amont}}
 \item \href{\REFERENCEMANUAL\#convectionmuscl}{\textbf{Muscl}}
 \item \href{\REFERENCEMANUAL\#convectionefstab}{\textbf{EF\_stab}}
-\item for more, see the \href{\REFERENCEMANUAL\#blocconvection}{\trust Reference Manual}.
+\item for more, see the \href{\REFERENCEMANUAL\#blocconvection}{\trustref Reference Manual}.
 \end{itemize}
 
 \Note that there is no default convective scheme and if you don't want convection in your problem, you may use:
@@ -486,7 +486,7 @@ For the diffusive scheme, it is the same syntaxe:
     \end{minipage}}
     \end{center}
 
-You can choose your scheme with the help of the \href{\REFERENCEMANUAL\#blocdiffusion}{\trust Reference Manual}.\\
+You can choose your scheme with the help of the \href{\REFERENCEMANUAL\#blocdiffusion}{\trustref Reference Manual}.\\
 
 \Note that if you don't specify any diffusive scheme, automaticaly the code uses the standard diffusive scheme of order 2.
 If you don't want diffusion in your problem, you may use:
@@ -516,7 +516,7 @@ For each equation, you \textbf{must} set initial conditions:
 \end{minipage}}
 \end{center}
 
-To see the syntaxe of each available initial condition: cf \href{\REFERENCEMANUAL\#condinits}{\trust Reference Manual}.
+To see the syntaxe of each available initial condition: cf \href{\REFERENCEMANUAL\#condinits}{\trustref Reference Manual}.
 Here are the most used initial conditions:
 \begin{itemize}
 \item \textbf{Velocity}     field\_type   \textit{bloc\_lecture\_champ}
@@ -524,7 +524,7 @@ Here are the most used initial conditions:
 \item \textbf{K\_eps}       field\_type   \textit{bloc\_lecture\_champ}
 %\item \textbf{Flux\_Chaleur\_Turbulente}    field\_type   \textit{bloc\_lecture\_champ}
 %\item \textbf{Fluctu\_Temperature}          field\_type   \textit{bloc\_lecture\_champ}
-%\item for more, see the \href{\REFERENCEMANUAL\#condinits}{\trust Reference Manual}.
+%\item for more, see the \href{\REFERENCEMANUAL\#condinits}{\trustref Reference Manual}.
 \end{itemize}
 
 We list here some "field\_type":
@@ -534,7 +534,7 @@ We list here some "field\_type":
 \item \href{\REFERENCEMANUAL\#fieldfunctxyz}{\textbf{Champ\_Fonc\_txyz}}: for a field which depends on the time and the space,
 \item \href{\REFERENCEMANUAL\#champfoncfonctiontxyz}{\textbf{Champ\_Fonc\_Fonction\_txyz}}: for a field which is a function of another field and time and/or space coordinates,
 \item \href{\REFERENCEMANUAL\#champfoncreprise}{\textbf{Champ\_Fonc\_Reprise}}: to read a data field in a save file (.xyz or .sauv) at a specified time.
-\item refer to \href{\REFERENCEMANUAL\#fieldbase}{\trust Reference Manual}.
+\item refer to \href{\REFERENCEMANUAL\#fieldbase}{\trustref Reference Manual}.
 \end{itemize}
 
 
@@ -556,7 +556,7 @@ Then you may specify your boundary conditions like:
 
 It is important to specify here that \textbf{TRUST will not accept any boundary conditions by default.}\\
 
-You can find help for boundary conditions in the \href{\REFERENCEMANUAL\#condlimbase}{\trust Reference Manual}.
+You can find help for boundary conditions in the \href{\REFERENCEMANUAL\#condlimbase}{\trustref Reference Manual}.
 Here is a list of the most used boundary conditions:
 {\small{
 \begin{itemize}
@@ -584,11 +584,11 @@ Here is a list of the most used boundary conditions:
 %\item \textbf{Bord Frontiere\_ouverte\_K\_Eps\_impose}              boundary\_field\_type \textit{bloc\_lecture\_champ\_front}
 %\item \textbf{Bord Frontiere\_ouverte K\_Eps\_ext}                  boundary\_field\_type \textit{bloc\_lecture\_champ\_front}
 %\item \textbf{Bord Paroi}
-\item for more, see the \href{\REFERENCEMANUAL\#condlimbase}{\trust Reference Manual}.
+\item for more, see the \href{\REFERENCEMANUAL\#condlimbase}{\trustref Reference Manual}.
 \end{itemize}
 }}
 
-To choose your "boundary\_field\_type" parameters, refer to \href{\REFERENCEMANUAL\#frontfieldbase}{\trust Reference Manual}.
+To choose your "boundary\_field\_type" parameters, refer to \href{\REFERENCEMANUAL\#frontfieldbase}{\trustref Reference Manual}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -611,7 +611,7 @@ where \textit{my\_model} can be:
 %\item \textbf{Sous\_maille\_wale}
 \item \href{\REFERENCEMANUAL\#kepsilon}{\textbf{K\_epsilon}}: for RANS turbulence model (k-$\varepsilon$),
 %\item \textbf{K\_epsilon\_2\_Couches}
-\item for more, see the \href{\REFERENCEMANUAL\#modeleturbulencehydderiv}{\trust Reference Manual}.
+\item for more, see the \href{\REFERENCEMANUAL\#modeleturbulencehydderiv}{\trustref Reference Manual}.
 \end{itemize}
 
 
@@ -786,7 +786,7 @@ Physical properties (conductivity, diffusivity,...) can also been interrogated.
 
 \textbf{The name of the fields and components available for post-processing is displayed in the error file after the following message: "Reading of fields to be postprocessed". Of course, this list depends of the problem being solved.}
 
-For more informations, you can see the \href{\REFERENCEMANUAL\#champsapost}{\trust Reference Manual}.
+For more informations, you can see the \href{\REFERENCEMANUAL\#champsapost}{\trustref Reference Manual}.
 %\vspace{1cm}
 
 \item \textcolor{darkblue}{\textbf{Creating new fields}}
@@ -854,7 +854,7 @@ The \href{\REFERENCEMANUAL\#definitionchamps}{\textbf{Definition\_champs}} keywo
 %\item Morceau\_Equation
 %\item Predefini
 %\item Tparoi\_VEF
-\item for details and other keywords, see the \href{\REFERENCEMANUAL\#definitionchamps}{\trust Reference Manual}.
+\item for details and other keywords, see the \href{\REFERENCEMANUAL\#definitionchamps}{\trustref Reference Manual}.
 \end{itemize}
 
 \Note that you can combine several \textbf{\textit{field\_type}} keywords to create your field and then use your new fields to create other ones.\\
@@ -941,7 +941,7 @@ Here is an example of 2D \textbf{Probes} block:
     \end{center}
 where the use of \textit{"loc"} option allow to specify the wanted localisation of the probes. The available values are \textbf{"grav"} for gravity center of the element, \textbf{"nodes"} for faces and \textbf{"som"} for verteces. There is not default location. If the point does not coincide with a calculation node, the value is extrapolated linearly according to neighbouring node values.
 
-For complete syntax, see the \href{\REFERENCEMANUAL\#corpspostraitement}{\trust Reference Manual}, also for \href{\REFERENCEMANUAL\#sondes}{all options}.
+For complete syntax, see the \href{\REFERENCEMANUAL\#corpspostraitement}{\trustref Reference Manual}, also for \href{\REFERENCEMANUAL\#sondes}{all options}.
 
 %%    \begin{center}
 %%    \fbox{ \begin{minipage}[c]{1\textwidth}
@@ -1023,7 +1023,7 @@ where \textbf{"faces"} , \textbf{"elem"} and \textbf{"som"} are keywords allowed
 
 To visualize, your post-processed fields, you can use open source softwares like: \href{https://wci.llnl.gov/simulation/computer-codes/visit}{VisIt} (included in \trust package) for lata files, or for med files: \href{http://www.salome-platform.org}{Salom\'e} or \href{http://www.paraview.org}{Paraview}.\\
 
-You can see the \href{\REFERENCEMANUAL\#corpspostraitement}{complete syntax} and \href{\REFERENCEMANUAL\#champsposts}{all options} in the \trust Reference Manual.
+You can see the \href{\REFERENCEMANUAL\#corpspostraitement}{complete syntax} and \href{\REFERENCEMANUAL\#champsposts}{all options} in the \trustref Reference Manual.
 
 
 
@@ -1087,7 +1087,7 @@ and correlation between the pressure and the velocity $\left\langle P(t).V(t)\ri
 Statistical fields can be plotted with probes with the keyword "operator\_field\_name" like for example: Moyenne\_Vitesse or Ecart\_Type\_Pression or Correlation\_Vitesse\_Vitesse. For that, it is mandatory to have the statistical calculation of this fields defined with the keyword \textbf{Statistiques}.\\
 \end{remark}
 
-For complete syntax, see the \trust Reference Manual \href{\REFERENCEMANUAL\#corpspostraitement}{here}, and for all options see the \href{\REFERENCEMANUAL\#statsposts}{\trust Reference Manual}.
+For complete syntax, see the \trustref Reference Manual \href{\REFERENCEMANUAL\#corpspostraitement}{here}, and for all options see the \href{\REFERENCEMANUAL\#statsposts}{\trust Reference Manual}.
 \end{itemize}
 
 

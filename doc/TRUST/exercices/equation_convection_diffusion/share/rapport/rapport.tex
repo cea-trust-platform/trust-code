@@ -442,7 +442,6 @@ Le traitement de cet attribut supplémentaire nécessite les actions suivantes:
 \begin{itemize}
 \item \texttt{C}: il contiendra le contenu du \texttt{vitesse\_convection} du jeu de données (cf. section~\ref{spec}).
 \item \texttt{vitesse\_transport}: il contiendra la vitesse de convection discrétisée.
-\item \texttt{champs\_compris\_}: il contiendra les champs post-traitables.
 \end{itemize}
 
  \item la surcharge des méthodes suivantes\footnote{Seules les fonctionnalités spécifiques de la nouvelle classe \texttt{Constituant\_Avec\_Vitesse} sont décrites.}:
@@ -454,9 +453,8 @@ Le traitement de cet attribut supplémentaire nécessite les actions suivantes:
 
 \item \texttt{mettre\_a\_jour}: évaluer la vitesse de convection en espace au temps courant. 
 
-\item \texttt{discrétiser}: discrétise la vitesse de convection à partir de la vitesse de convection donné par l'utilisateur.
+\item \texttt{discretiser}: discrétise la vitesse de convection à partir de la vitesse de convection donné par l'utilisateur.
 
-\item \texttt{get\_champ} et \texttt{get\_noms\_champs\_postraitables}: rendre la vitesse de convection discrétisée post-traitable à partir du jeu de données.
 
 \end{itemize}
 
