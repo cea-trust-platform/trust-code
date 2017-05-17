@@ -732,7 +732,9 @@ int Assembleur_P_VEFPreP1B::modifier_solution(DoubleTab& pression)
         }
     }
   // pression.echange_espace_virtuel();
-
+  // pour retirer le min de la pression si pas de Pref et si que PO sinon on filtre plus tard
+  if (la_zone.get_alphaE() && (la_zone.get_alphaS()==0) && (la_zone.get_alphaA()==0) )
+    Assembleur_P_VEF::modifier_solution( pression);
   // Verification possible par variable d'environnement:
   char* theValue = getenv("TRUST_VERIFIE_DIRICHLET");
   if(theValue != NULL) verifier_dirichlet();
