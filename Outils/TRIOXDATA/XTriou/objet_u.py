@@ -390,6 +390,7 @@ class objet_u(XObject):
     readacc_=1
     __init__xattributes__=[
         XAttribute("name_u", xtype=My_String, default_value="not_set"),
+        XAttribute("is_read", xtype=XInt(), default_value=0),
         ]
     def _getToolTip(cls, target):
         try:
@@ -465,7 +466,7 @@ class objet_u(XObject):
         self.status="Valid"
         #self.name_u="not_set"
         self.mode_ecr=1
-        self.is_read=0 
+        # self.is_read=0 
 	self.listattr=None
         # print "ici args",args,self.__class__
         # print self,"cree"
@@ -842,6 +843,8 @@ class objet_u(XObject):
                     pass
                 pass
             pass
+        if self.is_read==1:
+            a=a+"is_read=1,"
         # for ref in self.list_ref_:
         #   if ref[2]!='not_set':
         for ref in self.get_list_ref():
@@ -967,7 +970,7 @@ class objet_u(XObject):
                     pass
                 pass
             pass
-        if lec:
+        if (lec==1) or (self.is_read):
             if self.__class__.readacc_==1:
                 stri=stri+" }"
                 pass

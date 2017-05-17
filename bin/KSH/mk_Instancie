@@ -52,7 +52,7 @@ then
       echo "Fichier $name modifie:"
       [ -f $name.cpp ]  && diff $name.cpp $tmp/$name.cpp
       cat $tmp/$name.cpp > $name.cpp
-      touch CMakeList.txt
+      touch CMakeLists.txt
       # le touch est important pour recompiler mon_main !!!!!
       touch $TRUST_ROOT/src/MAIN/instancie_appel.h
    fi
