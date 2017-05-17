@@ -6,7 +6,7 @@
 #include <Schema_Temps_base.h>
 
 Implemente_instanciable(Constituant_Avec_Vitesse,"Constituant_Avec_Vitesse",Constituant);
-
+// XD constituant_avec_vitesse constituant constituant_avec_vitesse -1 not_set
 Sortie& Constituant_Avec_Vitesse::printOn(Sortie& os) const
 {
   return os;
@@ -21,7 +21,7 @@ Entree& Constituant_Avec_Vitesse::readOn(Entree& is)
 void Constituant_Avec_Vitesse::set_param(Param& param)
 {
   Constituant::set_param(param);
-  param.ajouter("vitesse_convection",&C,Param::REQUIRED);
+  param.ajouter("vitesse_convection",&C,Param::REQUIRED); // XD_ADD_P field_base not_set
 }
 
 void Constituant_Avec_Vitesse::discretiser(const Probleme_base& pb, 

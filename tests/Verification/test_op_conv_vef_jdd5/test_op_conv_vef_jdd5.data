@@ -127,9 +127,11 @@ Read pb_canal
 				sources { refchamp { pb_champ pb_canal vitesse } }  
 				numero_op 1
 			}
+                       convection_qdmx transformation { methode composante numero 0 sources_reference  { convection_qdm } }  
+                       convection_qdmy transformation { methode composante numero 1 sources_reference  { convection_qdm } }  
 			erreur_conv_qdm	transformation  {
-		 		methode vecteur expression 2 abs(convection_qdm+(0.1*cos(x-y-t))) abs(convection_qdm+(0.1*cos(x-y-t)))
-				source_reference convection_qdm
+		 		methode vecteur expression 2 abs(convection_qdmx+(0.1*cos(x-y-t))) abs(convection_qdmy+(0.1*cos(x-y-t)))
+				sources_reference  { convection_qdmx , convection_qdmy }
 			}
 			erreur_conv_qdm_elem interpolation { 
 				localisation elem 

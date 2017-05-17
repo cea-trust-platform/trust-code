@@ -16,7 +16,7 @@ def test_all(list,s,fast):
 		cmd2="cp -H $TRUST_TESTS/*/"+file+"/*.geo $TRUST_TESTS/*/*/"+file+"/*.geo . 2>/dev/null;chmod +w *"
 		os.system(cmd)
 		os.system(cmd2)
-		os.system("make_PAR.data "+ file +" 2 no_exec >>log") 
+		os.system("make_PAR.data "+ file +" 2 no_exec >>log 2>/dev/null") 
 		compt+=1
 		list_cas=[ file , "DEC_"+file ]
 		if fast:

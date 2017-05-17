@@ -1,6 +1,7 @@
 import numpy as np
 
 class TrustFile(object):
+  _COMPO_NAMES = ["X", "Y", "Z","4","5","6","7","8","9"]
   """ Parsing and value extraction from a Trust file. Assumption: all valid (=completly written) line
   of data terminate with a new line char """
   
@@ -243,7 +244,6 @@ class TrustFile(object):
     return ret
 
 class SonFile(TrustFile):
-  _COMPO_NAMES = ["X", "Y", "Z"]
   
   def __init__(self, filePath, refPath):
     TrustFile.__init__(self, filePath, refPath)
@@ -477,7 +477,6 @@ class SonSEGFile(SonFile):
 
 
 class OutFile(TrustFile):
-  _COMPO_NAMES = ["X", "Y", "Z"]
   
   def __init__(self, filePath, refPath):
     TrustFile.__init__(self, filePath, refPath)

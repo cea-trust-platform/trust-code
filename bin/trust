@@ -193,8 +193,15 @@ do
    then
       if [ "$project_directory" != "" ]
       then
-          doc=$project_directory/share/doc/TRUST_Generic_Guide.pdf
-	  [ ! -f $doc ] && doc=$TRUST_ROOT/doc/TRUST/TRUST_Generic_Guide.pdf
+          
+          doc=$project_directory/share/doc_auto/TRUST_Generic_Guide.pdf
+          if [ ! -f $doc ] 
+            then
+             doc=$project_directory/share/doc/TRUST_Generic_Guide.pdf
+	     [ ! -f $doc ] && doc=$TRUST_ROOT/doc/TRUST/TRUST_Generic_Guide.pdf
+            else
+		echo "Using doc generated"
+           fi
       else
          doc=$TRUST_ROOT/doc/TRUST/TRUST_Generic_Guide.pdf
       fi

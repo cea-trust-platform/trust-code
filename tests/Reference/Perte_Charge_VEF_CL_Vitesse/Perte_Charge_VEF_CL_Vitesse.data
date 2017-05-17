@@ -95,6 +95,7 @@ Read pb
 	{	
 		Definition_champs {
 			solution Transformation {
+				localisation Faces
 				methode formule expression 1 -320.*x+320
 			} 
   		}

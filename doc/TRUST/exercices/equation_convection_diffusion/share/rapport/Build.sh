@@ -8,8 +8,10 @@ mkdir -p $proj/build/rapport
 cp $DIR/* $proj/build/rapport
 
 cd $proj
-make check_all_optim validation #  doxygen 
-[ $? -ne 0 ] && echo "pb ? make check_all_optim validation doxygen " && exit
+baltik_build_configure -execute
+make check_all_optim validation check_gui #  doxygen 
+
+[ $? -ne 0 ] && echo "pb ? make check_all_optim validation check_gui  " && exit
 
 
 

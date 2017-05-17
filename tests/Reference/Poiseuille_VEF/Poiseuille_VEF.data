@@ -86,6 +86,7 @@ Read pb
 	{
 		Definition_champs {
 			solution Transformation {
+				localisation Faces
 				methode formule expression 1 10*(1-4*y*y)
 			} 
   		}

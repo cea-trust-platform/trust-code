@@ -237,7 +237,9 @@ Read pb1
 	definition_champs
 	 { 
 	delta_pression Transformation {
-        	methode formule expression 1 pression_natif_dom_fluid-7e7
+		localisation elem
+        	methode formule 
+                expression 1 pression_natif_dom_fluid-7e7
 		source refChamp { pb_champ pb1 pression }
 		}
 	}

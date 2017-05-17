@@ -311,8 +311,8 @@ Read pb2
 		  	methode norme
 			sources_reference { gradT } 
 		    }
-		 vecteur_unitairex  Transformation { methode vecteur expression 3 1. 0. 0. }
-		 vecteur_transfo  Transformation { methode vecteur expression 3 x 1. t }
+		 vecteur_unitairex  Transformation { methode vecteur expression 3 1. 0. 0. localisation Faces }
+		 vecteur_transfo  Transformation { methode vecteur expression 3 x 1. t localisation Faces }
 		 vecteur_source_elem  Transformation { methode vecteur expression 3 temperature_natif_dom_fluide
 		 								pression_natif_dom_fluide 
 										z

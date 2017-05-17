@@ -524,7 +524,7 @@ printf "gui : optim\n"                                              >> $project_
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
 printf "\t@echo \"# building gui         #\"\n"                 >> $project_makefile
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
-printf "\t@source $env_file; env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_make_xdata\n"                >> $project_makefile
+printf "\t@source $env_file; env TRUST_ROOT_ORG=$TRUST_ROOT project_name=$project_name $BALTIK_ROOT/bin/baltik_make_xdata\n"                >> $project_makefile
 printf "\n"                                                     >> $project_makefile
 printf "# help check_gui \t: Checking gui (XDATA validation)\n" >> $project_makefile
 printf "check_gui : gui\n"                                              >> $project_makefile
