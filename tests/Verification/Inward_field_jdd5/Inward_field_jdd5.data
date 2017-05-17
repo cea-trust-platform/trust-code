@@ -113,7 +113,7 @@ Read pb
 	         # velocity given by Trio on the boundary #
 	         velocity_trio Extraction { Domaine boundary_Left nom_frontiere Left methode trace source refChamp { Pb_champ pb vitesse } }
 		 # we know what is the vector shape on the boundary #
-		 true_vector  Transformation { methode vecteur expression 2 1./sqrt(2) -1./sqrt(2) }
+		 true_vector  Transformation { methode vecteur expression 2 1./sqrt(2) -1./sqrt(2) localisation Faces }
 
 		 # all this stuff is to compute error between velocity_trio and true_vector #
  		 true_vector_interp Interpolation { localisation elem  sources_reference { true_vector } }  

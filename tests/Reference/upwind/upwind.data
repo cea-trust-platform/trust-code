@@ -129,9 +129,9 @@ Read pb
 			    	source refChamp { Pb_champ pb vitesse } } 
 			}
 			   
-	         	vecteur_unitairex transformation { methode vecteur expression 2 1. 0. }   
+	         	vecteur_unitairex transformation { methode vecteur expression 2 1. 0. localisation faces }   
 			
-		  	vecteur_transfo transformation { methode vecteur  expression 2 x t }
+		  	vecteur_transfo transformation { methode vecteur  expression 2 x t localisation faces }
 			
 		  	vecteur_source_elem Transformation { 
 				methode vecteur  expression 2 pression_natif_dom y

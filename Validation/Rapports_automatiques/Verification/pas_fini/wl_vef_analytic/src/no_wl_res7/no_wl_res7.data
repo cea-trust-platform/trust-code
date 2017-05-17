@@ -129,6 +129,7 @@ Read pb
 				localisation elem
 			}
 			solution Transformation {
+                                localisation Faces
 				methode formule expression 1 ((0.74413543*ln(0.33333333e-5+(y/5.4e3))+509.3846923)*(y[0.5))+((-0.74413543*ln(0.33333333e-5-(y-1.)/5.4e3)+495.61531)*(y>0.5))
 			}
 		} 

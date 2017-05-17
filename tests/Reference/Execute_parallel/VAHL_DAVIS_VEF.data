@@ -165,6 +165,7 @@ Read pb
 		  
 		  grad_temp_pression Transformation {
 		  	methode formule expression 1 Gradient_temperature_natif_dom*pression_natif_dom
+			localisation elem
 			sources { 
 			  Gradient {
 		            source refChamp { Pb_champ pb temperature } } ,
