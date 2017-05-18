@@ -36,7 +36,9 @@
 #include <Param.h>
 
 #include <Linear_algebra_tools_impl.h>
-
+#include <MD_Vector.h>
+#include <MD_Vector_composite.h>
+#include <Zone_dis_base.h>
 
 Implemente_instanciable(Champ_Generique_Transformation,"Transformation",Champ_Gen_de_Champs_Gen);
 Add_synonym(Champ_Generique_Transformation,"Champ_Post_Transformation");
@@ -167,6 +169,10 @@ void Champ_Generique_Transformation::verifier_localisation()
 }
 void Champ_Generique_Transformation::completer(const Postraitement_base& post)
 {
+
+  bool sources_location_ok = true;
+  bool fictive_source = false;
+
   int nb_source_fictive=0;
   int nb_sources = get_nb_sources();
   if (nb_sources==0)
@@ -195,10 +201,14 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
     {
       if (get_nb_sources()>1)
         {
+          assert( get_set_sources().size( ) == 1 );
           // on a rajoute une source pour rien ...
           get_set_sources().vide();
+          nb_source_fictive = 0;
         }
     }
+
+  nb_sources = get_nb_sources();
 
   //On determine le nombre de composantes qui sera attribue
   //a l espace de stockage rendu par ce champ de postraitement en
@@ -212,7 +222,7 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
       for (int i=0; i<nb_sources; i++)
         {
           Champ source_espace_stockage;
-          const Champ_base& source = get_source(i).get_champ(source_espace_stockage);
+          const Champ_base& source = get_source(i).get_champ_without_evaluation(source_espace_stockage);
 
           if ((Motcle(methode_) == "vecteur"))
             {
@@ -224,7 +234,6 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
                 }
             }
           int nb_comp = source.nb_comp();
-
           nb_comp_ = (nb_comp_<nb_comp)?  nb_comp:nb_comp_;
 
           if (source.nature_du_champ()==vectoriel)
@@ -235,30 +244,179 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
     }
   //Si aucun champ source n a ete specifie on en ajoute une
   //pour donner acces a la zone discretisee ...
-  if (localisation_=="??")
+
+  Noms sources_location;
+
+  if( nb_source_fictive > 0 )
     {
-      Motcle directive = get_source(0).get_directive_pour_discr();
-      if (directive=="champ_elem")
-        localisation_ = "elem";
-      else if (directive=="champ_sommets")
-        localisation_ = "som";
-      else if (directive=="champ_face")
-        localisation_ = "faces";
-      else if (directive=="pression")
-        localisation_ = "elem_som";
-      // on considere les champs uniformes comme des champs P0 aux elems
-      else if (directive=="champ_uniforme")
-        localisation_ = "elem";
+      //special treatment when we have fictives sources
+      //the user needs to provide a location
+      if( localisation_ == "??" )
+        {
+          Cerr << "Error in Champ_Generique_Transformation::completer "<<finl;
+          Cerr << "No sources were specified. So you need to specify at least the location."<<finl;
+          Cerr << "Aborting..."<<finl;
+          Process::abort( );
+        }
       else
         {
-          Cerr<<"Error in "<<que_suis_je()<<finl;
-          Cerr<<"The discretization of the first source of the generic field "<<nom_post_<<finl;
-          Cerr<<"does not correspond to any TRUST field discretization."<<finl;
-          exit();
+          fictive_source = true;
         }
     }
   else
-    verifier_localisation();
+    {
+
+      //real sources
+      for( int i=0; i<nb_sources; i++)
+        {
+          //loop over sources to check that all sources have the same location
+          bool use_directive = false;
+          Champ my_field;
+
+          const Champ_base& source_i = get_source( i ).get_champ_without_evaluation( my_field );
+          if( source_i.a_une_zone_dis_base( ) )
+            {
+              const Zone_dis_base& zone_source_i = source_i.zone_dis_base( );
+              if( ! sub_type( Zone_VF , zone_source_i ) )
+                {
+                  Cerr << "Warning in Champ_Generique_Transformation::completer "<<finl;
+                  Cerr << "The source number "<<i<<" has a zone_dis_base but not of type Zone_VF so use directive to determine the location"<<finl;
+                  use_directive=true;
+                }
+              if( ! use_directive )
+                {
+                  const DoubleTab& values_source_i = source_i.valeurs( );
+                  const Zone_VF& zvf_source_i = ref_cast( Zone_VF, zone_source_i );
+
+                  //composite case
+                  //if( ( sub_type( MD_Vector_composite, values_source_i.get_md_vector( ).valeur( ) ) ) && ((localisation_=="??")|| (localisation_=="elem_som") ))
+                  if( ( sub_type( MD_Vector_composite, values_source_i.get_md_vector( ).valeur( ) ) ) && (localisation_=="??"))
+                    {
+                      Cerr << "Error in Champ_Generique_Transformation::completer "<<finl;
+                      Cerr << "The source number "<<i<<" is composite. It is forbidden to apply a 'transformation' on a composite source. "<<finl;
+                      Cerr << "You must perform an interpolation before." << localisation_ <<finl;
+                      Cerr << "Aborting..."<<finl;
+                      Process::abort( );
+                      // if we want to deal with composite case we can do something like...
+                      // MD_Vector_composite md_comp = ref_cast( MD_Vector_composite, values_source_i.get_md_vector( ).valeur( ) );
+                      // nb_parts = md_comp.nb_parts( ); //to perform loop over parts and then get the considered part :
+                      // md = md_comp.get_desc_part( part );
+                      // when dealing with pression_pa it leads to have elem and som locations
+                    }
+
+                  MD_Vector md;
+                  md = values_source_i.get_md_vector( );
+
+                  if ( md == zvf_source_i.face_sommets( ).get_md_vector( ) )
+                    {
+                      sources_location.add( "faces" );
+                    }
+                  else if( md == zvf_source_i.zone( ).les_elems( ).get_md_vector( ) )
+                    {
+                      sources_location.add( "elem" );
+                    }
+                  else if( md == zvf_source_i.zone( ).domaine( ).les_sommets( ).get_md_vector( ) )
+                    {
+                      sources_location.add( "som" );
+                    }
+                  else if( md == zvf_source_i.xa( ).get_md_vector( ) )
+                    {
+                      sources_location.add( "xa" );
+                    }
+                  else
+                    {
+                      Cerr << "Warning in Champ_Generique_Transformation::completer "<<finl;
+                      Cerr << "Impossible to determine the localisation of the source number "<<i<<" using md_vectors so try using directive"<<finl;
+                      use_directive = true;
+                    }
+                  // Cout << "sources location "<<i<<" : "<<sources_location( i )<<finl;
+                }//end of not using directive case
+            }//end of has zone dis
+          else
+            {
+              //in the case where there is no zone dis base, we look at the directive
+              use_directive=true;
+            }
+
+          if( use_directive )
+            {
+              Motcle directive = get_source( i ).get_directive_pour_discr( );
+              if (directive=="champ_elem")
+                sources_location.add( "elem" );
+              else if (directive=="champ_sommets")
+                sources_location.add( "som" );
+              else if (directive=="champ_face")
+                sources_location.add( "faces" );
+              else if (directive=="pression")
+                {
+                  if  (localisation_=="??")
+                    {
+                      Cerr << "Error in Champ_Generique_Transformation::completer"<<finl;
+                      Cerr << "The directive associated to the source number "<<i<<" is pressure. It is forbidden to apply a 'transformation' on a composite source. "<<finl;
+                      Cerr << "You must perform an interpolation before."<<finl;
+                      Cerr << "Aborting..."<<finl;
+                      Process::abort( );
+                    }
+                  sources_location.add( "unknown" );
+                }
+              else if ( directive == "champ_uniforme" )
+                sources_location.add( "elem" );
+              else
+                {
+                  Cerr<<"Error in Champ_Generique_Transformation::completer"<<finl;
+                  Cerr<<"The discretization of the first source of the generic field "<<nom_post_<<finl;
+                  Cerr<<"does not correspond to any TRUST field discretization."<<finl;
+                  Cerr<<directive<<finl;
+                  Cerr<<"Aborting..."<<finl;
+                  Process::abort( );
+                }
+            }
+        }//loop over sources
+      const int nb_locations = sources_location.size( );
+      if( nb_sources != nb_locations )
+        {
+          Cerr << "Error in Champ_Generique_Transformation::completer "<<finl;
+          Cerr << nb_sources<<" were detected but "<<nb_locations<<" were found"<<finl;
+          Cerr << "Aborting..."<<finl;
+          Process::abort( );
+        }
+      Nom reference_location = sources_location( 0 );
+      for(int i=1; i<nb_locations; i++)
+        {
+          if( sources_location( i ) != reference_location )
+            {
+              sources_location_ok = false;
+              Cerr << "Warning in Champ_Generique_Transformation::completer "<<finl;
+              Cerr << "All sources have location : "<<finl;
+              Cerr <<sources_location;
+              Cerr <<"But the specify location is "<<localisation_<<finl;
+              //Cerr << "Aborting..."<<finl;
+              //Process::abort( );
+            }
+        }
+    } //end dealing with nb_source_fictive <= 0
+
+  if( localisation_ == "??" )
+    {
+      if( sources_location_ok  )
+        {
+          Cerr <<"sources have same location : "<< sources_location( 0 )<<finl;
+        }
+      else
+        {
+          Cerr << "Warning sources have not the same location, taking "<<sources_location( 0 )<<" as location"<<finl;
+        }
+      localisation_ = sources_location( 0 ) ;
+    }
+  else
+    {
+      if( ! fictive_source && localisation_ != sources_location( 0 ) )
+        {
+          Cerr << "Warning first source is located to "<<sources_location( 0 )<<" but the user has specified "<< localisation_<<finl;
+        }
+    }
+
+  verifier_localisation();
 
   creer_expression_macro();
   preparer_macro();
@@ -332,6 +490,13 @@ void  projette(DoubleTab& valeurs_espace,const DoubleTab& val_source,const Zone_
 //-Interpolation des valeurs des sources sur le support retenu
 //-Evaluation des valeurs de l espace de stockage en fonction de la fonction (les_fct)
 
+const Champ_base& Champ_Generique_Transformation::get_champ_without_evaluation(Champ& espace_stockage) const
+{
+  Champ_Fonc es_tmp;
+
+  espace_stockage = creer_espace_stockage(nature_ch,nb_comp_,es_tmp);
+  return espace_stockage.valeur();
+}
 const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stockage) const
 {
   const Zone_dis_base& zone_dis = get_ref_zone_dis_base();
@@ -798,7 +963,7 @@ int Champ_Generique_Transformation::preparer_macro()
       for (int i=0; i<nb_sources; i++)
         {
           Champ source_espace_stockage;
-          const Champ_base& source = get_source(i).get_champ(source_espace_stockage);
+          const Champ_base& source = get_source(i).get_champ_without_evaluation(source_espace_stockage);
           if (source.nature_du_champ()!=vectoriel && source.nature_du_champ()!=multi_scalaire)
             {
               msg = "The source field is not of vector nature.";

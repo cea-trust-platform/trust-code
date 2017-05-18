@@ -67,11 +67,9 @@ void Op_Moyenne::completer(const Probleme_base& Pb)
   // integrale_champ->valeurs(). Il n'y a pas de stockage en memoire
   // de la moyenne. On stocke l'integrale en temps et on postraite la moyenne
   // Copie de la structure du vecteur, initialisation a zero.
+  valeurs().copy(tab1, ArrOfDouble::NOCOPY_NOINIT);
   if (!ch_moyenne_convergee_.non_nul())
-    {
-      valeurs().copy(tab1, ArrOfDouble::NOCOPY_NOINIT);
-      valeurs() = 0.;
-    }
+    valeurs() = 0.;
   int nb_comp = source.nb_comp();
   integrale_champ->associer_zone_dis_base(Pb.domaine_dis().zone_dis(0).valeur());
   integrale_champ->fixer_nb_comp(nb_comp);
