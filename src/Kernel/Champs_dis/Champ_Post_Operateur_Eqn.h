@@ -56,6 +56,8 @@ public:
   virtual const Noms get_property(const Motcle& query) const;
   virtual Entity  get_localisation(const int index = -1) const;
   virtual const Champ_base&  get_champ(Champ& espace_stockage) const;
+  virtual const Champ_base&  get_champ_without_evaluation(Champ& espace_stockage) const;
+
 
   const Operateur_base& Operateur() const;
   Operateur_base& Operateur();

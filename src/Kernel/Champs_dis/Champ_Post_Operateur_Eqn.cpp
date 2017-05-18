@@ -131,7 +131,7 @@ void Champ_Post_Operateur_Eqn::completer(const Postraitement_base& post)
 
 }
 
-const Champ_base& Champ_Post_Operateur_Eqn::get_champ(Champ& espace_stockage) const
+const Champ_base& Champ_Post_Operateur_Eqn::get_champ_without_evaluation(Champ& espace_stockage) const
 {
 
   Champ_Fonc espace_stockage_fonc;
@@ -163,6 +163,13 @@ const Champ_base& Champ_Post_Operateur_Eqn::get_champ(Champ& espace_stockage) co
   int nb_comp=ref_eq_.valeur().inconnue().valeur().nb_comp();
   ref_eq_.valeur().discretisation().discretiser_champ(directive,ref_eq_->zone_dis().valeur(),"oooo","unit", nb_comp,temps,espace_stockage_fonc);
   espace_stockage=espace_stockage_fonc;
+  espace_stockage.valeur().fixer_nature_du_champ( ref_eq_.valeur().inconnue().valeur().nature_du_champ());
+
+  return espace_stockage;
+}
+const Champ_base& Champ_Post_Operateur_Eqn::get_champ(Champ& espace_stockage) const
+{
+  espace_stockage=get_champ_without_evaluation(espace_stockage);
   DoubleTab& es =(espace_stockage.valeurs());
   //if (ref_eq_->schema_temps().temps_courant()!=0)
   {
