@@ -76,8 +76,8 @@ do
       #ls $MODULE/exec.*.tar.gz > $MODULE/exec.files
       # Construit le paquet
       echo $ECHO_OPTS "\nCreation of $fichier..."
-      #tar zcf $fichier  --transform=s?$MODULE?${MODULE}-${v}? `cat $MODULE/TRUST.files;cat $MODULE/exec.files`
-      tar zcf $fichier  --transform=s?$MODULE?${MODULE}-${v}? `cat $MODULE/TRUST.files`
+      #tar zcf $fichier  --transform=s?$MODULE?${MODULE}-${v}? `cat $MODULE/build/TRUST.files;cat $MODULE/exec.files`
+      tar zcf $fichier  --transform=s?$MODULE?${MODULE}-${v}? `cat $MODULE/build/TRUST.files`
       echo $ECHO_OPTS "\nThe $fichier file is ready."
       cd $ROOT
    else

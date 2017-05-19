@@ -197,7 +197,7 @@ do
 	       # Creation du fichier pattern pour --include-from
 	       cd $TRUST_ROOT
 	       rm -f $Build/rsync_include_from
-	       for file in TRUST.files
+	       for file in $Build/TRUST.files
 	       do
 	          VOB=${file%.files}
 		  echo $VOB >> $Build/rsync_include_from
@@ -226,7 +226,7 @@ do
             for VOB in $VOBS
 	    do
 	       # -delete ne marche pas avec --files-from. A savoir. Voir: http://stackoverflow.com/questions/1813907/rsync-delete-files-from-list-dest-does-not-delete-unwanted-files
-	       rsync -e 'ssh -o StrictHostKeyChecking=no' --stats -aiHD --delete --files-from=$TRUST_ROOT/$VOB.files --timeout=1000 . $log@$adr:$WORKDIR/$version
+	       rsync -e 'ssh -o StrictHostKeyChecking=no' --stats -aiHD --delete --files-from=$Build/$VOB.files --timeout=1000 . $log@$adr:$WORKDIR/$version
 	    done | grep -v "^\." 1>>$rsync_log 2>&1 # On filtre pour n'avoir que les fichiers modifies/deleted remotely
 	    if [ $? != 0 ]
 	    then
