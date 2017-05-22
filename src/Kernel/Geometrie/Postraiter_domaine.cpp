@@ -177,7 +177,7 @@ void traite_bord(const Zone& zone,IntVect& ch_som,IntVect& ch_elem3,int num2, Fa
                                 Cerr<<"To properly view the joints, the splitting area must be complete "<<finl;
                               else
                                 {
-                                  Cerr<<"Problem in ecrire_fic_meshtv with the boundary "<<nom_bord<<finl;
+                                  Cerr<<"Problem in Postraiter_domaine.cpp with the boundary "<<nom_bord<<finl;
                                   // abort();
                                 }
                             }
