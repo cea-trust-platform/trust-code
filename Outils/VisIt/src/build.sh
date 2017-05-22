@@ -91,6 +91,8 @@ fi
 # Mesa or not ? #
 #################
 mesa="--mesa"
+# Problem GUI on OS Ubuntu 16.04.2 : Aborting the Graphical User Interface => OK without OpenGL MESA library
+#[ "`grep 'Ubuntu 16.04' /etc/issue.net 2>/dev/null`" != "" ] && mesa=""
 # Zlib (libz.so is needed not libz.so.1...)
 # Built also in gnuplot...
 zlib="" && [ "`locate libz.so 2>/dev/null | grep ^/lib | grep lib.so$ 2>/dev/null`" = "" ] && [ "`ls /usr/lib*/libz.so 2>/dev/null`" = "" ] && zlib="--zlib"

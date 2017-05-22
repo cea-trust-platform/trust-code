@@ -465,7 +465,7 @@ then
       $TRUST_ROOT/bin/gestion_externalpackages/compare_archive $package 1>>$liste_log 2>&1
    done
    cd - 1>/dev/null 2>&1
-   cat $liste_log | mail_ -s\"[lance_test_nuit] Verify_liste_dep.sh KO on $HOST:$TRUST_ROOT\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+   cat $liste_log | mail_ -s\"[lance_test_nuit] Verify_liste_dep.sh KO on $HOST:$TRUST_ROOT\" $TRUST_MAIL $TRUST_PROJECT_LEADER $OCCAS_TASK_PERSON
    grep "computed checksums did NOT match" $liste_log
    grep "FAILED" $liste_log
    echo "  KO"
@@ -2023,7 +2023,7 @@ do
 	       grep -v -f $TRUST_ROOT/exec/tests_TRUST$COMM"_semi_opt"/liste $valgrind_log 1>$log_filtre 2>&1
 	       echo "-----------" >>$log_filtre
 	       cat $TRUST_TMP/cas >>$log_filtre
-	       [ -s $log_filtre ] && cat $log_filtre | mail_ -s \"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects errors on $machine host!!!\" $TRUST_PROJECT_LEADER $TRUST_MAIL
+	       [ -s $log_filtre ] && cat $log_filtre | mail_ -s \"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects errors on $machine host!!!\" $TRUST_PROJECT_LEADER $TRUST_MAIL $OCCAS_TASK_PERSON
                rm -f $log_filtre
 	    fi
          fi
@@ -2997,7 +2997,7 @@ then
       if [ $error_rc = 0 ]
       then  
          # On previent l'administrateur et le project leader
-         cat $TRUST_ROOT/RELEASE_NOTES | mail_ -s\"[lance_test_nuit] TRUST Release version - Tag a $release version: $label_pose \(See shared/Livraison branch\)\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+         cat $TRUST_ROOT/RELEASE_NOTES | mail_ -s\"[lance_test_nuit] TRUST Release version - Tag a $release version: $label_pose \(See shared/Livraison branch\)\" $TRUST_MAIL $TRUST_PROJECT_LEADER $OCCAS_TASK_PERSON
       else
          echo "" | mail_ -s\"[lance_test_nuit] TRUST - Tag a $release version: $label_pose KO\" $TRUST_MAIL
       fi
@@ -3014,7 +3014,7 @@ then
       if [ $error_rc = 0 ]
       then  
          # On previent l'administrateur et le project leader
-         cat $TRUST_ROOT/externalpackages/RELEASE_NOTES | mail_ -s\"[lance_test_nuit] externalpackages Release version - Tag a $release version: $label_pose \(See shared/Livraison branch\)\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+         cat $TRUST_ROOT/externalpackages/RELEASE_NOTES | mail_ -s\"[lance_test_nuit] externalpackages Release version - Tag a $release version: $label_pose \(See shared/Livraison branch\)\" $TRUST_MAIL $TRUST_PROJECT_LEADER $OCCAS_TASK_PERSON
       else
          echo "" | mail_ -s\"[lance_test_nuit] externalpackages - Tag a $release version: $label_pose KO\" $TRUST_MAIL
       fi

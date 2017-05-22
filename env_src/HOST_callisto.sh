@@ -31,12 +31,12 @@ define_modules_config()
    #
    #INTEL 2013_sp1.2.144 2013_sp1.4.211 2015.3.187
    #intel="intel/compiler/64/14.0/2013_sp1.2.144 intel/mkl/64/11.1/2013_sp1.2.144 intel/tbb/64/4.2/2013_sp1.2.144"
-   #intel="intel/compiler/64/14.0/2013_sp1.4.211 intel/mkl/64/11.1/2013_sp1.4.211 intel/tbb/64/4.2/2013_sp1.4.211"
-   intel="intel/compiler/64/15.0/2015.3.187 intel/mkl/64/11.2/2015.3.187 intel/tbb/64/4.3/2015.3.187"
+   intel="intel/compiler/64/14.0/2013_sp1.4.211 intel/mkl/64/11.1/2013_sp1.4.211 intel/tbb/64/4.2/2013_sp1.4.211"
+   #intel="intel/compiler/64/15.0/2015.3.187 intel/mkl/64/11.2/2015.3.187 intel/tbb/64/4.3/2015.3.187"
    #OPENMPI openmpi/icc/64/1.8.3 openmpi/icc/64/1.8.4 openmpi/icc/64/1.10.3
-   #module="$intel openmpi/icc/64/1.8.3"
+   module="$intel openmpi/icc/64/1.8.3"
    #module="$intel openmpi/icc/64/1.8.4"
-   module="$intel openmpi/icc/64/1.10.3"
+   #module="$intel openmpi/icc/64/1.10.3"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module unload mpich openmpi mvapich mvapich2 intel/compiler intel/mkl intel/tbb gcc 1>/dev/null" >> $env

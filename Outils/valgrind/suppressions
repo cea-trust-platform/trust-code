@@ -1,481 +1,286 @@
+# Triggered by 
+#   VAHL_DAVIS_VEFPreP1B_impl
+#   PETSC_Quasi_Comp_Coupl_keps_VEF_impl_GMRES
+#   ThHyd_keps_VEF_impl
+#   PETSC_Canal_VEF_2D_LongMelangeThHyd_keps_VEF_impl 
+#   Couplage_Implicite_Instationnaire_jdd1
+#
 {
-   leak_dlopen
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:calloc
-   fun:_dlerror_run
-   fun:dlopen@@GLIBC_2.2.5
-}
-{
-   gcc_511
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   obj:/usr/lib64/libstdc++.so.6.0.21
-   fun:call_init.part.0
-   fun:_dl_init
-   obj:/usr/lib64/ld-2.21.so
-   }
-{
-   hypre_boomerang_mempara
-   Memcheck:User
-   fun:check_mem_is_defined_untyped
-   fun:walk_type_array
-   fun:check_mem_is_defined
-   fun:generic_Send
-   fun:PMPI_Send
-   fun:hypre_DataExchangeList
-   fun:hypre_NewCommPkgCreate_core
-   fun:hypre_MatvecCommPkgCreate
-   fun:hypre_BoomerAMGCreateS
-   fun:hypre_BoomerAMGSetup
+   <hypre_set_up_factor>
+   Memcheck:Cond
+   fun:MPIC_Waitall
+   fun:MPIR_Alltoall_intra
+   fun:MPIR_Alltoall
+   fun:MPIR_Alltoall_impl
+   fun:PMPI_Alltoall
+   fun:hypre_SetUpFactor
+   fun:hypre_SetUpLUFactor
+   fun:HYPRE_DistributedMatrixPilutSolverSetup
+   fun:HYPRE_ParCSRPilutSetup
    fun:PCSetUp_HYPRE
-}
-{
-   mumps_para
-   Memcheck:User
-   fun:check_mem_is_defined_untyped
-   fun:walk_type_array
-   fun:check_mem_is_defined
-   fun:PMPI_Pack
-   fun:MPI_PACK
-   fun:__dmumps_comm_buffer_MOD_dmumps_62
-}
-{
-   mumps_para_bis
-   Memcheck:User
-   fun:check_mem_is_defined_untyped
-   fun:walk_type_array
-   fun:check_mem_is_defined
-   fun:PMPI_Pack
-   fun:PMPI_PACK
-   fun:__dmumps_comm_buffer_MOD_dmumps_62
-}
-{
-   mumps_para_bis
-   Memcheck:User
-   fun:check_mem_is_defined_untyped
-   fun:walk_type_array
-   fun:check_mem_is_defined
-   fun:PMPI_Pack
-   fun:mpi_pack
-   fun:__dmumps_comm_buffer_MOD_dmumps_62
-}
-{
-   mumps_para
-   Memcheck:User
-   fun:check_mem_is_defined_untyped
-   fun:walk_type_array
-   fun:check_mem_is_defined
-   fun:PMPI_Pack
-   fun:MPI_PACK
-   fun:__dmumps_comm_buffer_MOD_dmumps_buf_send_1int
-}
-{
-   mumps_para_bis
-   Memcheck:User
-   fun:check_mem_is_defined_untyped
-   fun:walk_type_array
-   fun:check_mem_is_defined
-   fun:PMPI_Pack
-   fun:PMPI_PACK
-   fun:__dmumps_comm_buffer_MOD_dmumps_buf_send_1int
+   fun:PCSetUp
+   fun:KSPSetUp
+   ...
 }
 
+# Triggered by?? (not sure anymore?)
+{
+   <hypre_set_up_factor2>
+   Memcheck:Cond
+   fun:MPIC_Waitall
+   fun:MPIR_Alltoall_intra
+   fun:MPIR_Alltoall
+   fun:MPIR_Alltoall_impl
+   fun:PMPI_Alltoall
+   fun:MatrixComplete
+   fun:hypre_ParaSailsSetup
+   fun:HYPRE_ParaSailsSetup
+   fun:PCSetUp_HYPRE
+   fun:PCSetUp
+   fun:KSPSetUp
+   ...
+}
 
+# Triggered by PETSC_GCP_SPAI_P0P1Pa
 {
-   mumps_para_bis
-   Memcheck:User
-   fun:check_mem_is_defined_untyped
-   fun:walk_type_array
-   fun:check_mem_is_defined
-   fun:PMPI_Pack
-   fun:mpi_pack
-   fun:__dmumps_comm_buffer_MOD_dmumps_buf_send_1int
-}
-{
-    mumps_leak_para
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
+   <hypre_set_up_factor3>
+   Memcheck:Cond
+   fun:MPIC_Waitall
+   fun:MPIR_Alltoall_intra
+   fun:MPIR_Alltoall
+   fun:MPIR_Alltoall_impl
+   fun:PMPI_Alltoall
+   fun:MatrixComplete
+   fun:convert_matrix
+   fun:hypre_ParaSailsSetup
+   fun:HYPRE_ParaSailsSetup
+   fun:PCSetUp_HYPRE
+   fun:PCSetUp
+   fun:KSPSetUp
    ...
-   fun:dmumps_
 }
+
+# Triggered by 3D_P0P1Pa_perio
 {
-    mumps_leak_para_definitie
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:malloc
-   ...
-   fun:dmumps_
-}
-{
-    mumps_con
+   <MUMPS_para0>
    Memcheck:Cond
    fun:dmumps_solve_driver_
    fun:dmumps_
+   fun:dmumps_f77_
+   fun:dmumps_c
+   fun:MatSolve_MUMPS
+   fun:MatSolve
+   fun:PCApply_Cholesky
+   fun:PCApply
+   fun:KSPSolve_PREONLY
+   fun:KSPSolve
+   ...
 }
+
+# Triggered by OpDiffP1B_mixte_vitesse_implicite_3D
 {
-   libcuda_Leak
+   <MUMPS_para1>
+   Memcheck:Cond
+   fun:dmumps_solve_driver_
+   fun:dmumps_
+   fun:dmumps_f77_
+   fun:dmumps_c
+   fun:MatSolve_MUMPS
+   fun:MatSolve
+   fun:PCApply_LU
+   fun:PCApply
+   fun:KSPSolve_PREONLY
+   fun:KSPSolve
+   ...
+}
+
+# Triggered by PAR_3D_P0P1Pa for example:
+# Error type: User: Uninitialised byte(s) found during client check request
+{
+   <MUMPS_para2>
+   Memcheck:User
+   fun:check_mem_is_defined_untyped
+   fun:walk_type_array
+   fun:check_mem_is_defined
+   fun:PMPI_Pack
+   fun:MPI_PACK
+   fun:__dmumps_comm_buffer_MOD_dmumps_buf_send_1int
+   fun:dmumps_mcast2_
+   fun:dmumps_sol_r_
+   fun:dmumps_sol_c_
+   fun:dmumps_solve_driver_
+   fun:dmumps_
+   fun:dmumps_f77_
+   fun:dmumps_c
+   fun:MatSolve_MUMPS
+   ...
+}
+
+# Triggered by 
+#   PAR_Collecteur
+#   PAR_P1toP0P1Pa, 
+#   PAR_Test_solveur_sym
+#   PAR_DarcyFlow_jdd3
+#   PAR_DarcyFlow_jdd4
+#   ...
+{
+   <MUMPS_Cholesky>
    Memcheck:Leak
-   ...
-   obj:*/lib*/libcuda.*
-}
-{
-   libcuda_Cond
-   Memcheck:Cond
-   ...
-   obj:*/lib*/libcuda.*
-}
-{
-   libcudart_Leak
-   Memcheck:Leak
-   ...
-   obj:*/lib*/libcudart.*
-}
-{
-   libcudart_Cond
-   Memcheck:Cond
-   ...
-   obj:*/lib*/libcudart.*
-}
-{
-   libcublas_Leak
-   Memcheck:Leak
-   ...
-   obj:*/lib*/libcublas.*
-}
-{
-   fd_to_stream_Cond
-   Memcheck:Cond
-   fun:fd_to_stream
-   fun:_gfortrani_init_units
-   fun:init
-   fun:call_init.part.0
-   fun:_dl_init
-}
-{
-   H5O_chunk_deserialize_Value8
-   Memcheck:Value8
-   ...
-   fun:H5O_chunk_deserialize
-}
-{
-   H5Dclose_Cond
-   Memcheck:Cond
-   ...
-   fun:H5Dclose
-}
-{
-   H5Gopen1_Cond
-   Memcheck:Cond
-   ...
-   fun:H5Gopen1
-}
-{
-   MEDfamilyInfo_Donc
-   Memcheck:Cond
-   ...
-   fun:MEDfamilyInfo
-}
-{
-   HDF_Cond_H5Dopen1
-   Memcheck:Cond
-   ...
-   fun:H5Dopen1
-}
-{
-   HDF_Cond_H5Dcreate1
-   Memcheck:Cond
-   ...
-   fun:H5Dcreate1
-}
-{
-   HDF_Cond_H5O_alloc
-   Memcheck:Cond
-   fun:H5O_alloc
-}
-{
-   HDF_Cond_H5O_size
-   Memcheck:Cond
-   fun:H5O_size
-}
-{
-   HDF_Cond_H5O_link_oh
-   Memcheck:Cond
-   fun:H5O_link_oh
-}
-{
-   HDF_Cond_H5O_link
-   Memcheck:Cond
-   fun:H5O_link
-}
-{
-   HDF_Cond_H5O_copy_header_map
-   Memcheck:Cond
-   fun:H5O_copy_header_map
-}
-{
-   MatCholeskyFactorSymbolic_MUMPS_Cond
-   Memcheck:Cond
-   ...
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:Cblacs_pinfo
+   fun:blacs_gridmap_
+   fun:blacs_gridinit_
+   fun:dmumps_init_root_ana_
+   fun:dmumps_ana_driver_
+   fun:dmumps_
+   fun:dmumps_f77_
+   fun:dmumps_c
    fun:MatCholeskyFactorSymbolic_MUMPS
-}
-{
-   MatFactorNumeric_MUMPS_Cond
-   Memcheck:Cond
-   ...
-   fun:MatFactorNumeric_MUMPS
-}
-{
-   MatFactorNumeric_MUMPS_Addr16
-   Memcheck:Addr16
-   ...
-   fun:MatFactorNumeric_MUMPS
-}
-{
-   MatFactorNumeric_MUMPS_Addr8
-   Memcheck:Addr8
-   ...
-   fun:MatFactorNumeric_MUMPS
-}
-{
-   PMPI_Init_thread_Addr4
-   Memcheck:Addr4
-   ...
-   fun:PMPI_Init_thread
-}
-{
-   PMPI_Addr8_PMPI_Attr_get
-   Memcheck:Addr8
-   fun:PMPI_Attr_get
-   fun:PetscFinalize
-}
-{
-   PMPI_Comm_rank1
-   Memcheck:Addr1
-   fun:PMPI_Comm_rank
-   fun:PetscFinalize
-}
-{
-   PMPI_Comm_rank2
-   Memcheck:Addr4
-   fun:PMPI_Comm_rank
-   fun:PetscFinalize
-}
-{
-   PMPI_Attr_get
-   Memcheck:Addr4
-   fun:PMPI_Attr_get
-   fun:PetscFinalize
-}
-{
-   METIS_NodeND
-   Memcheck:Cond
-   ...
-   fun:METIS_NodeND
-}
-{
-   H5Fclose
-   Memcheck:Cond
-   ...
-   fun:H5Fclose
-}
-{
-   H5O_delete
-   Memcheck:Cond
-   ...
-   fun:H5O_delete
-}
-{
-   H5G_node_iterate
-   Memcheck:Cond
-   ...
-   fun:H5G_node_iterate
-}
-{
-   H5B_iterate
-   Memcheck:Cond
-   ...
-   fun:H5B_iterate
-}
-{
-   H5O_copy_header_real
-   Memcheck:Cond
-   ...
-   fun:H5O_copy_header_real
-}
-{
-   H5L_delete
-   Memcheck:Cond
-   ...
-   fun:H5L_delete
-}
-{
-   cuda_Cond
-   Memcheck:Cond
-   ...
-   fun:cuModuleLoadFatBinary
-}
-{
-   cuda_Leak
-   Memcheck:Leak
-   fun:realloc
-   ...
-   fun:cuModuleLoadFatBinary
-}
-{
-   cuda_Addr1
-   Memcheck:Addr1
-   ...
-   fun:cudaFree
-}
-{
-   cuda_Addr2
-   Memcheck:Addr2
-   ...
-   fun:cudaFree
-}
-{
-   cuda_Param
-   Memcheck:Param
-   write(buf)
-   ...
-   fun:cudaFree
-}
-{
-   cuda_Leak1
-   Memcheck:Leak
-   ...
-   fun:cudaFree
-}
-{
-   OpenMPI_1
-   Memcheck:Leak
-   ...
-   fun:ompi_*
-}
-{
-   OpenMPI_2
-   Memcheck:Leak
-   ...
-   fun:mca_*
-}
-{
-   OpenMPI_3
-   Memcheck:Leak
-   ...
-   fun:orte_*
-}
-{
-   OpenMPI_4
-   Memcheck:Leak
-   ...
-   fun:opal_*
-}
-{
-   OpenMPI_5
-   Memcheck:Param
-   sched_setaffinity(mask)
-   fun:syscall
-   obj:*
-   obj:*
-}
-{
-   OpenMPI_6
-   Memcheck:Param
-   writev(vector[...])
-   ...
-   fun:PMPI_Init
-}
-{
-   OpenMPI_7
-   Memcheck:Cond
-   ...
-   fun:PMPI_Init
-}
-{
-   OpenMPI_8
-   Memcheck:Param
-   writev(vector[...])
-   ...
-   fun:PMPI_Init_thread
-}
-{
-   Petsc_cholesky
-   Memcheck:Leak
-   fun:memalign
-   fun:PetscMallocAlign
-   ...
+   fun:MatCholeskyFactorSymbolic
    fun:PCSetUp_Cholesky
-}
-{
-   Hypre1(Cond)
-   Memcheck:Cond
-   fun:hypre_IJMatrixSetValuesParCSR
-}
-{
-   HDF1(Cond)
-   Memcheck:Cond
-   fun:H5A_copy
-}
-{
-   HDF2(Cond)
-   Memcheck:Cond
-   fun:H5A_write
-}
-{
-   HDF3(Cond)
-   Memcheck:Cond
-   fun:H5A_close
-}
-{
-   HDF4(Cond)
-   Memcheck:Cond
-   fun:H5I_register
-   fun:H5Gopen
-}
-{
-   HDF5(Cond)
-   Memcheck:Cond
-   fun:H5I_register
-   fun:H5Gcreate
-}
-{
-   HDF6(Cond)
-   Memcheck:Cond
-   fun:H5I_search
-}
-{
-   HDF(Param)
-   Memcheck:Param
-   write(buf)
+   fun:PCSetUp
+   fun:KSPSetUp
    ...
-   fun:MEDfermer
+}
+
+# On some hosts/OS dl_init is leaking!!!
+# Typically happens with libstdc++.so.6.XXX (e.g. on FED22 with g++5.1.1), 'upwind' case
+{
+   <dl_init>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   obj:/usr/lib64/libstdc++.so.6.*
+   fun:call_init.part.*
+   fun:_dl_init
+   obj:/usr/lib64/ld-*.so
+   ...
+}
+
+# Similar as above - Triggered by upwind 
+#    is229106 en Mint 18.1 Serena - g++ 5.4.0 - MPICH 3.2
+#    is226426 en Ubuntu 16.04 - g++ 5.4.0 - MPICH 3.2
+{
+   <dl_init2>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   obj:/usr/lib/x86_64-linux-gnu/libstdc++.so.6.*
+   fun:call_init.part.0
+   fun:call_init
+   fun:_dl_init
+   obj:/lib/x86_64-linux-gnu/ld-2.*.so
+   ...
+}
+
+# Triggered by upwind -- is223196 en CentOS 6.4 - g++ 6.3.0 - MPICH 3.2
+{
+   <free_gpp630>
+   Memcheck:Free
+   fun:free
+   fun:free_mem
+   fun:__libc_freeres
+   fun:_vgnU_freeres
+   fun:exit
+   ...
+}
+
+##
+## OpenMPI related suppressions ...
+##
+
+# upwind - is223279 en Fedora 18 - g++ 4.7.2 - OpenMPI 2.0.2
+{
+   <ompi_2_0_2__0>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:hnp_component_open
+   fun:mca_base_framework_components_open
+   fun:mca_base_framework_open
+   fun:orte_init
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize.part.3
+   ...
 }
 {
-   HDF3(Param)
-   Memcheck:Param
-   write(buf)
-   fun:__write_nocancel
-   fun:H5FD_sec2_write
+   <ompi_2_0_2__1>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:strdup
+   fun:opal_argv_append_nosize
+   fun:opal_argv_append
+   fun:opal_argv_split_inter
+   fun:dlopen_component_register
+   fun:mca_base_framework_components_register
+   fun:mca_base_framework_register
+   fun:mca_base_framework_open
+   fun:mca_base_component_repository_init
+   fun:mca_base_open
+   fun:opal_init_util
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize.part.*
+   ...
 }
+
+# upwind -- is225222 en Fedora 18 - g++ 4.7.2 - OpenMPI 2.1.1
 {
-  write_net_send_1
-  Memcheck:Param
-  write(buf)
-  fun:write
-  fun:net_send
-}
-{
-  write_net_send_v
-  Memcheck:Param
-  writev(vector[...])
-  fun:writev
-  fun:net_send2
-}
-{
-   elf_dynamic_do_rel.4(Cond)
+   <ompi_2_1_1__0>
    Memcheck:Cond
-   fun:elf_dynamic_do_rel.4
+   fun:opal_value_unload
+   fun:rte_init
+   fun:orte_init
+   fun:ompi_mpi_init
+   fun:PMPI_Init
+   ...
 }
+{
+   <ompi_2_1_1__1>
+   Memcheck:Cond
+   fun:opal_value_unload
+   fun:ompi_proc_complete_init
+   fun:ompi_mpi_init
+   fun:PMPI_Init
+   ...
+}
+{
+   <ompi_2_1_1__2>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:strdup
+   fun:opal_argv_append_nosize
+   fun:opal_argv_append
+   fun:opal_argv_split_inter
+   fun:dlopen_component_register
+   fun:mca_base_framework_components_register
+   fun:mca_base_framework_register
+   fun:mca_base_framework_open
+   fun:mca_base_component_repository_init
+   fun:mca_base_open
+   fun:opal_init_util
+   fun:ompi_mpi_init
+   fun:PMPI_Init
+   ...
+}
+
+# is147462 en Fedora 22 - g++ 5.1.1 - OpenMPI 2.0.2
+{
+   <ompi_2_0_2__2>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:hnp_component_open
+   fun:mca_base_framework_components_open
+   fun:mca_base_framework_open
+   fun:orte_init
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize.part.*
+   ...
+}
+
