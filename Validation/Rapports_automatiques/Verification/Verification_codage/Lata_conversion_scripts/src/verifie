@@ -1,0 +1,63 @@
+source $TRUST_ROOT/Outils/lata2dx/lata2dx/install/env.sh
+
+mystudy=$1
+mystudyLata=$mystudy".lata"
+mystudyMed=$mystudy".med"
+mystudyCase=$mystudy".case"
+mystudyCase2=$mystudy"2.case"
+mystudyLastTS=$mystudy"2_LastTS.case"
+
+python $LATALOADER_ROOT/lib/Lata_to_med.py $mystudyLata $mystudyMed 1>/dev/null 2>&1
+$MED_COUPLING_ROOT/bin/med2case $mystudyMed 1>/dev/null 2>&1
+python $LATALOADER_ROOT/lib/Lata_to_case.py $mystudyLata $mystudyCase2 1>/dev/null 2>&1
+python $LATALOADER_ROOT/lib/Lata_to_case.py -l $mystudyLata $mystudyLastTS 1>/dev/null 2>&1
+
+
+all_files_are_here="FALSE"
+
+if [ -e $mystudyLata ] && [ -e $mystudyMed ] && [ -e $mystudyCase ] && [ -e $mystudyCase2 ] && [ -e $mystudyLastTS ] 
+then
+    all_files_are_here="TRUE"
+else
+    echo "Error ! Not all files were generated ! Aborting..."
+    exit -1
+fi
+
+
+good="TRUE"
+for i in {0..1}
+do
+   for field in VITESSE_SOM VITESSE_ELEM PRESSION_SOM PRESSION_ELEM
+   do
+      file1=$mystudy"000"$i"."$field"_dom"
+      file2=$mystudy"2000"$i"."$field"_dom"
+
+      if [ ! -e $file1 ]
+      then
+	echo "Error ! file "$file1" is missing"
+	exit -1
+      fi
+
+      if [ ! -e $file2 ]
+      then
+      	echo "Error ! file "$file2" is missing"
+	exit -1
+      fi
+
+      diff -u $file1 $file2 > differences
+      touch empty
+
+      diff differences empty
+      status=$?
+      if [ $status -ne 0 ]
+      then
+	 echo "Error !! There are differences between (at least) files "$file1" and "$file2
+	 good="FALSE"
+	 exit -1
+      fi 
+      rm -f empty
+   done
+done
+
+exit 0
+

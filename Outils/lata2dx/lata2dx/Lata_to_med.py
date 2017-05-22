@@ -30,7 +30,7 @@ def BuildMergedMesh( latafile , write_med , medfile ):
         pass
 
     if write_med :
-        MEDLoader.MEDLoader.WriteMesh(medfile,mesh,1)
+        MEDLoader.WriteMesh(medfile,mesh,True)
 
     meshnamedual=meshname+"_dual"
     if meshnamedual in meshes:
@@ -40,7 +40,7 @@ def BuildMergedMesh( latafile , write_med , medfile ):
             print "Correcting fields Mesh=dom_dual"
             pass
         if write_med:
-            MEDLoader.MEDLoader.WriteMesh(medfile,mesh_dual,0)
+            MEDLoader.WriteMesh(medfile,mesh_dual,False)
         pass
 
     return mesh , indices, newNbNodes
@@ -73,7 +73,7 @@ def convert(latafile,medfile,lasttime=0):
             f=a.GetFieldDouble(name,ite)
             if name.find('_SOM_')>0:
             
-                f2 = f.deepCpy()
+                f2 = f.deepCopy()
                 f2.setMesh(mesh)   # needed?
                 d = f2.getArray()
                 # print d
@@ -81,10 +81,10 @@ def convert(latafile,medfile,lasttime=0):
                 f2.setArray(d[d2])
         
                 # print f2.getNumberOfTuples()
-                MEDLoader.MEDLoader.WriteFieldUsingAlreadyWrittenMesh(medfile,f2)
+                MEDLoader.WriteFieldUsingAlreadyWrittenMesh(medfile,f2)
             else:
             
-                MEDLoader.MEDLoader.WriteFieldUsingAlreadyWrittenMesh(medfile,f)
+                MEDLoader.WriteFieldUsingAlreadyWrittenMesh(medfile,f)
                 pass
             pass
         pass
