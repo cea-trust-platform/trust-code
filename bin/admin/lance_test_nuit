@@ -2390,19 +2390,27 @@ grep OK $credoc_log
 grep KO $credoc_log
 error_log=`grep 'error Doxygen' $credoc_log`
 [ ${#error_log} != 0 ] && mail_ -s\"[credoc] Doxygen: Study of TRUST includes under `pwd`\" $TRUST_MAIL #$TRUST_PROJECT_LEADER
-echo "    See $TRUST_ROOT/build/doc/TRUST/list_keywords_covered file"
-OK=`wc -l $TRUST_ROOT/build/doc/TRUST/list_keywords_covered | awk '{ print $1 }'`
-echo "    $OK keywords covered by test cases"
-echo "    See $TRUST_ROOT/build/doc/TRUST/list_keywords_NOT_covered file"
-KO=`wc -l $TRUST_ROOT/build/doc/TRUST/list_keywords_NOT_covered | awk '{ print $1 }'`
-echo "    $KO keywords NOT covered by test cases"
+#echo "    See $TRUST_ROOT/build/doc/TRUST/list_keywords_covered file"
+#OK=`wc -l $TRUST_ROOT/build/doc/TRUST/list_keywords_covered | awk '{ print $1 }'`
+#echo "    $OK keywords covered by test cases"
+#echo "    See $TRUST_ROOT/build/doc/TRUST/list_keywords_NOT_covered file"
+#KO=`wc -l $TRUST_ROOT/build/doc/TRUST/list_keywords_NOT_covered | awk '{ print $1 }'`
+#echo "    $KO keywords NOT covered by test cases"
+#let NB=$OK+$KO
 # Mail de verification uniquement le week-end
-[ "`date '+%u'`" = 1 ] && [ `date '+%H'` -lt 8 ] && [ -f $TRUST_ROOT/build/doc/TRUST/list_keywords_NOT_covered ] && cat $TRUST_ROOT/build/doc/TRUST/list_keywords_NOT_covered | mail_ -s \"[lance_test_nuit] Tests coverage credoc: list of keywords NOT covered by test cases\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+#[ "`date '+%u'`" = 1 ] && [ `date '+%H'` -lt 8 ] && [ -f $TRUST_ROOT/build/doc/TRUST/list_keywords_NOT_covered ] && cat $TRUST_ROOT/build/doc/TRUST/list_keywords_NOT_covered | mail_ -s \"[lance_test_nuit] Tests coverage credoc: list of keywords NOT covered by test cases\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+#keywords_minimal=77.37 #v1.7.5
 #
+echo "    See $TRUST_ROOT/build/Outils/TRIOXDATA/XTriou/list_keywords_xdata* files"
+NB=`wc -l $TRUST_ROOT/build/Outils/TRIOXDATA/XTriou/list_keywords_xdata | awk '{ print $1 }'`
+OK=`wc -l $TRUST_ROOT/build/Outils/TRIOXDATA/XTriou/list_keywords_xdata_tested | awk '{ print $1 }'`
+let KO=$NB-$OK
+echo "    $OK keywords covered by test cases"
+echo "    $KO keywords NOT covered by test cases"
+keywords_minimal=83.03 #v1.7.5
+
 echo " "
-let NB=$OK+$KO
 couverture_de_motcle=`echo $ECHO_OPTS "scale=2;100*$OK/$NB" | bc -l`
-keywords_minimal=77.37 #v1.7.5
 keywords=`echo $couverture_de_motcle | $TRUST_Awk -v m=$keywords_minimal '{if ($1>=m) print 1;else print 0}'`
 if [ "$keywords" = 1 ]
 then
