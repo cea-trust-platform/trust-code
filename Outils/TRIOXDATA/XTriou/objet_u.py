@@ -2124,6 +2124,8 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
     for cl in lcl2:
         if cl.name=='name_u':
             continue
+        if cl.name=='is_read':
+            continue
         if isinstance(cl,Ref_Tr_Attribute):
             continue
         lcl.append(cl)

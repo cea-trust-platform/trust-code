@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $TRUST_ROOT/Outils/lata2dx/lata2dx/install/env.sh
+source $TRUST_ROOT/exec/lata2dx_install/env.sh
 
 mystudy=$1
 

@@ -51,7 +51,7 @@ def buildMEDFileData(latafile,lasttime):
             
             #traitement des sommets
             if name.find('_SOM_')>0:
-                f2 = f.deepCpy()
+                f2 = f.deepCopy()
                 f2.setMesh(mesh)
                 d = f2.getArray()
                 d2 = indices.invertArrayO2N2N2O(newNbNodes)
