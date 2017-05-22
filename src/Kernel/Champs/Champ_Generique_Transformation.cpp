@@ -293,8 +293,8 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
                   if( ( sub_type( MD_Vector_composite, values_source_i.get_md_vector( ).valeur( ) ) ) && (localisation_=="??"))
                     {
                       Cerr << "Error in Champ_Generique_Transformation::completer "<<finl;
-                      Cerr << "The source number "<<i<<" is composite. It is forbidden to apply a 'transformation' on a composite source. "<<finl;
-                      Cerr << "You must perform an interpolation before." << localisation_ <<finl;
+                      Cerr << "The source number "<<i<<" is composite and the location was not provided. It is forbidden to apply a 'transformation' on a composite source without providing a location. "<<finl;
+                      Cerr << "You must perform an interpolation before or specify a location."<<finl;
                       Cerr << "Aborting..."<<finl;
                       Process::abort( );
                       // if we want to deal with composite case we can do something like...
@@ -352,8 +352,9 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
                   if  (localisation_=="??")
                     {
                       Cerr << "Error in Champ_Generique_Transformation::completer"<<finl;
-                      Cerr << "The directive associated to the source number "<<i<<" is pressure. It is forbidden to apply a 'transformation' on a composite source. "<<finl;
-                      Cerr << "You must perform an interpolation before."<<finl;
+                      Cerr << "The directive associated to the source number "<<i<<" is pressure and the location was not provided.";
+		      Cerr <<" It is forbidden to apply a 'transformation' on a composite source without providing a location. "<<finl;
+                      Cerr << "You must perform an interpolation before or specify a location." <<finl;
                       Cerr << "Aborting..."<<finl;
                       Process::abort( );
                     }
@@ -389,7 +390,7 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
               Cerr << "Warning in Champ_Generique_Transformation::completer "<<finl;
               Cerr << "All sources have location : "<<finl;
               Cerr <<sources_location;
-              Cerr <<"But the specify location is "<<localisation_<<finl;
+              Cerr <<"But the specified location is "<<localisation_<<finl;
               //Cerr << "Aborting..."<<finl;
               //Process::abort( );
             }
