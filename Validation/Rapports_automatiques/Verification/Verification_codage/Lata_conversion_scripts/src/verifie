@@ -1,4 +1,9 @@
-source $TRUST_ROOT/Outils/lata2dx/lata2dx/install/env.sh
+#!/bin/bash
+
+[ "$TRUST_DISABLE_MEDCOUPLING" != 0 ] && exit 0
+source $TRUST_ROOT/lib/src/LIBMEDCOUPLING/install/env.sh
+[ "$MED_COUPLING_PYTHON" != "ON" ] && exit 0
+source $TRUST_ROOT/exec/lata2dx_install/env.sh
 
 mystudy=$1
 mystudyLata=$mystudy".lata"
