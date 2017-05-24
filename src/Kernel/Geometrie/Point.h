@@ -35,7 +35,7 @@
 // .DESCRIPTION
 //    Classe Point
 //    Cette classe represente l'element geometrique segment.
-//    Un segment a 1 face et 2 sommets.
+//    Un Point a 1 face et 1 sommets.
 // .SECTION voir aussi
 //    Elem_geom_base Elem_geom
 // .CONTRAINTES
@@ -90,8 +90,7 @@ public :
 // Postcondition: la methode ne modifie pas l'objet
 inline int Point::face_sommet(int i, int j) const
 {
-  abort();
-  assert(i<2);
+  assert(i<1);
   switch(i)
     {
     case 0:
@@ -119,7 +118,6 @@ inline int Point::face_sommet(int i, int j) const
 // Postcondition: la methode ne modifie pas l'objet
 inline int Point::face_sommet0(int i) const
 {
-  abort();
   // face_sommet0(0)=0;
   assert(i==0);
   if(i!=0)
@@ -169,14 +167,13 @@ inline int Point::nb_som() const
 // Postcondition: la methode ne modifie pas l'objet
 inline int Point::nb_faces(int i) const
 {
-
   assert(i==0);
   if(i!=0)
     {
       Cerr << "A segment has not " << i << " types of face" << finl;
       exit();
     }
-  return 0;
+  return 1;
 }
 
 
@@ -198,7 +195,6 @@ inline int Point::nb_faces(int i) const
 // Postcondition: la methode ne modifie pas l'objet
 inline int Point::nb_som_face(int i) const
 {
-  abort();
   assert(i==0);
   if(i!=0)
     {
@@ -254,7 +250,7 @@ inline Type_Face Point::type_face(int i) const
       Cerr << "A segment has not " << i << " types of face" << finl;
       exit();
     }
-  return vide_0D;
+  return point_1D;
 }
 
 #endif

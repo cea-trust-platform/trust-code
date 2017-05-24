@@ -214,14 +214,13 @@ int Point::contient(const ArrOfInt& pos, int element ) const
 // Postcondition: la methode ne modifie pas l'objet
 void Point::calculer_volumes(DoubleVect& volumes) const
 {
-  abort();
-
+  volumes=1;
 }
 // Description: voir ElemGeomBase::get_tab_faces_sommets_locaux
 int Point::get_tab_faces_sommets_locaux(IntTab& faces_som_local) const
 {
-  faces_som_local.resize(0,0);
-
+  faces_som_local.resize(1,1);
+  faces_som_local[0]=0;
   return 1;
 }
 

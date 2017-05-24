@@ -1,0 +1,103 @@
+# PARALLEL OK 2 #
+dimension 3
+Pb_conduction pbth
+Domaine FineMesh
+Domaine FineMesh_ex
+
+# DEBUT MAILLAGE #
+
+lire_fichier FineMesh petit.geom
+reordonner FineMesh
+discretiser_domaine FineMesh
+ecrire_fichier_formatte FineMesh geom.geom
+
+# FIN MAILLAGE #
+# DEBUT DECOUPAGE 
+Decouper FineMesh
+{ 
+partitionneur metis { nb_parts 2 }
+Larg_joint 1
+Nom_Zones DOM  
+}
+end
+FIN DECOUPAGE #
+
+# BEGIN SCATTER
+Scatter DOM.Zones FineMesh
+END SCATTER #
+
+Solide sol
+Lire sol
+{
+	rho Champ_Uniforme 1 8000. 
+	lambda Champ_Uniforme 1 20.
+	Cp Champ_Uniforme 1 300.
+}
+
+Scheme_euler_implicit schth
+Lire schth
+{
+	tinit 0
+        nb_pas_dt_max 1
+	tmax 300.
+	dt_min 1e-6 
+	dt_max 10.
+        facsec 1 
+	dt_impr 1
+	dt_sauv 100
+	seuil_statio 1.e-5
+
+        Solveur Solveur_lineaire_std
+        {
+                Solveur Gmres { seuil 1e-5 nb_it_max 2 diag  }
+        } 
+}
+
+EF dis1
+
+Associer pbth FineMesh
+Associer pbth schth
+Associer pbth sol
+Discretiser pbth dis1
+
+Lire pbth
+{
+	Conduction
+	{
+		diffusion { }
+                conditions_limites 
+                {	
+		 	outside Paroi_temperature_imposee
+                              Champ_Front_uniforme 1  123.
+                inside Paroi_flux_impose Champ_front_Uniforme 1 400.
+
+                }
+                conditions_initiales { Temperature champ_fonc_xyz FineMesh 1 
+1+abs(10*x+100*y+1000*z)
+# (x_gt_0)*(18.31179308*SIN(30.79992798*x-1.539996399)+20.00-400.*x)+(x_le_0)*(-18.31179308*COS(3.079992798*x+.3079992798e-1)+20.00-40.*x) #
+
+ }
+
+
+
+	}
+
+	Postraitement
+	{
+		format lml
+                Definition_champs 
+                {
+                 Twall Extraction { Domaine FineMesh_ex nom_frontiere outside methode trace source refChamp { Pb_champ pbth temperature } } 
+                }    
+		domaine  FineMesh_ex 
+		champs formatte dt_post  1e+7
+		{
+		twall 
+		}
+	
+	}
+
+}
+
+Resoudre pbth 
+

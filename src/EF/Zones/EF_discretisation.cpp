@@ -32,6 +32,7 @@
 #include <Tri_EF.h>
 #include <Tetra_EF.h>
 #include <Segment_EF.h>
+#include <Point_EF.h>
 #include <Quadri_EF.h>
 #include <Hexa_EF.h>
 //#include <Fluide_Quasi_Compressible.h>
@@ -248,7 +249,7 @@ void EF_discretisation::discretiser_champ_fonc_don(
   Nom type_champ_vitesse;
   {
     const Elem_EF_base& elem_EF = zone_EF.type_elem().valeur();
-    if (sub_type(Tri_EF, elem_EF) || sub_type(Segment_EF,elem_EF) ||sub_type(Tetra_EF, elem_EF))
+    if (sub_type(Tri_EF, elem_EF) || sub_type(Segment_EF,elem_EF) ||sub_type(Tetra_EF, elem_EF) ||  sub_type(Point_EF,elem_EF) )
       type_champ_vitesse = "Champ_Fonc_P1_EF";
     else if (sub_type(Quadri_EF, elem_EF) || sub_type(Hexa_EF, elem_EF))
       type_champ_vitesse = "Champ_Fonc_Q1_EF";
