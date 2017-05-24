@@ -83,7 +83,7 @@ Read pb
             pressure_tot Transformation
             {
                 methode formule expression 1 p_pa+p_hydro-rho*9.81*2.+energie_cine_elem
-                sources_reference { energie_cine_elem }
+                localisation elem sources_reference { energie_cine_elem }
                 sources 
                 {
                     RefChamp { Pb_champ pb pression_pa              nom_source p_pa } ,

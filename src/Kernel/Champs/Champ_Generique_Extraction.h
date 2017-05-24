@@ -49,6 +49,7 @@ public:
   void set_param(Param& param);
   virtual Entity  get_localisation(const int index = -1) const;
   virtual const Champ_base&  get_champ(Champ& espace_stockage) const;
+  virtual const Champ_base&  get_champ_without_evaluation(Champ& espace_stockage) const;
   virtual const Noms        get_property(const Motcle& query) const;
   void nommer_source();
   void completer(const Postraitement_base& post);

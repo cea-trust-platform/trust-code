@@ -49,6 +49,31 @@ Entree& Champ_Generique_Tparoi_VEF::readOn(Entree& s )
   return s ;
 }
 
+const Champ_base& Champ_Generique_Tparoi_VEF::get_champ_without_evaluation(Champ& espace_stockage) const
+{
+
+  Champ source_espace_stockage;
+  const Champ_base& source = get_source(0).get_champ_without_evaluation(source_espace_stockage);
+
+  const Zone_dis_base& zone_dis = get_ref_zone_dis_base();
+  Nature_du_champ nature_source = source.nature_du_champ();
+  Noms noms;
+  Noms unites;
+  noms.add("bidon");
+  unites.add("bidon");
+  int nb_comp = 1;
+  double temps;
+  temps=0.;
+
+  Champ_Fonc espace_stockage_fonc;
+  const Discretisation_base&  discr = get_discretisation();
+  Motcle directive = get_directive_pour_discr();
+  discr.discretiser_champ(directive,zone_dis,nature_source,noms,unites,nb_comp,temps,espace_stockage_fonc);
+  espace_stockage = espace_stockage_fonc;
+
+
+  return espace_stockage.valeur();
+}
 const Champ_base& Champ_Generique_Tparoi_VEF::get_champ(Champ& espace_stockage) const
 {
 

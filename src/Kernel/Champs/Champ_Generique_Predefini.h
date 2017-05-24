@@ -55,6 +55,7 @@ public:
   const Champ_Generique_base&  get_source(int i) const;
   virtual const Noms get_property(const Motcle& query) const;
   virtual const Champ_base&  get_champ(Champ& espace_stockage) const;
+  virtual const Champ_base&  get_champ_without_evaluation(Champ& espace_stockage) const;
   virtual void nommer(const Nom&);
   virtual const Nom& get_nom_post() const;
   void nommer_source();

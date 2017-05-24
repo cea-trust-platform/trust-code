@@ -52,6 +52,7 @@ public:
   void set_param(Param& param);
   void completer(const Postraitement_base& post);
   virtual const Champ_base&  get_champ(Champ& espace_stockage) const;
+  virtual const Champ_base&  get_champ_without_evaluation(Champ& espace_stockage) const;
   void nommer_source();
 
 protected:

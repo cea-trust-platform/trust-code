@@ -142,6 +142,21 @@ const Champ_base& Champ_Generique_Morceau_Equation::get_champ(Champ& espace_stoc
   return espace_stockage.valeur();
 }
 
+const Champ_base& Champ_Generique_Morceau_Equation::get_champ_without_evaluation(Champ& espace_stockage) const
+{
+  Champ_Fonc es_tmp;
+  Nature_du_champ nature;
+  int nb_comp;
+
+  if ((Motcle(option_)=="stabilite") || (Motcle(option_)=="flux_bords"))
+    {
+      nature = scalaire;
+      nb_comp = 1;
+    }
+
+  espace_stockage = creer_espace_stockage(nature,nb_comp,es_tmp);
+  return espace_stockage.valeur();
+}
 const Noms Champ_Generique_Morceau_Equation::get_property(const Motcle& query) const
 {
 

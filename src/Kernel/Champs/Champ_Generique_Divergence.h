@@ -55,6 +55,7 @@ public:
   virtual Entity  get_localisation(const int index = -1) const;
   const   Motcle             get_directive_pour_discr() const;
   virtual const Champ_base&  get_champ(Champ& espace_stockage) const;
+  virtual const Champ_base&  get_champ_without_evaluation(Champ& espace_stockage) const;
 
   inline const Operateur_base& Operateur() const;
   inline Operateur_base& Operateur();

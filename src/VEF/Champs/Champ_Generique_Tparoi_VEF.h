@@ -40,6 +40,7 @@ public:
 
   virtual const Noms get_property(const Motcle& query) const;
   virtual const Champ_base&  get_champ(Champ& espace_stockage) const;
+  virtual const Champ_base&  get_champ_without_evaluation(Champ& espace_stockage) const;
   void nommer_source();
 
 protected:

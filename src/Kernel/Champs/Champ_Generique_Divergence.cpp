@@ -63,6 +63,23 @@ void Champ_Generique_Divergence::completer(const Postraitement_base& post)
     }
 }
 
+const Champ_base& Champ_Generique_Divergence::get_champ_without_evaluation(Champ& espace_stockage) const
+{
+
+
+  if (Op_Div_.non_nul())
+    {
+      Champ_Fonc es_tmp;
+      espace_stockage = creer_espace_stockage(scalaire,1,es_tmp);
+    }
+  else
+    {
+      const Noms nom = get_source(0).get_property("nom");
+      Cerr<<"We can apply a Champ_Generique_Divergence only to the velocity field"<<finl;
+      exit();
+    }
+  return espace_stockage.valeur();
+}
 const Champ_base& Champ_Generique_Divergence::get_champ(Champ& espace_stockage) const
 {
 
