@@ -71,6 +71,7 @@ public:
   //Actualise le champ discret si champ calcule du probleme
   //et renvoie la reference
   virtual const Champ_base& get_champ(Champ& espace_stockage) const;
+  virtual const Champ_base& get_champ_without_evaluation(Champ& espace_stockage) const;
 
   virtual void set_ref_champ(const Champ_base&);
 

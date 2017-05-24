@@ -87,6 +87,11 @@ const Motcle Champ_Generique_Extraction::get_directive_pour_discr() const
   return directive;
 }
 
+const Champ_base& Champ_Generique_Extraction::get_champ_without_evaluation(Champ& espace_stockage) const
+{
+  return get_champ( espace_stockage);
+
+}
 // Description:  Extraction des valeurs d un champ (trace ou champ frontiere) sur un bord du domaine
 // Precondition: L extraction est actuellement limitee aux champs inconnus du probleme
 //                 Elle est realisee uniquement sur des frontieres planes
@@ -331,6 +336,8 @@ void Champ_Generique_Extraction::completer(const Postraitement_base& post)
     type_elem = "Quadrangle";
   else if (type_face_source==triangle_3D)
     type_elem = "Triangle";
+  else if (type_face_source==point_1D)
+    type_elem = "point_1D";
   //Cas suivant possible en parallele
   else if ((type_face_source==vide_0D) && (nb_faces==0))
     {

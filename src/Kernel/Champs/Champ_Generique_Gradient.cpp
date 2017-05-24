@@ -97,6 +97,24 @@ void Champ_Generique_Gradient::completer(const Postraitement_base& post)
     }
 }
 
+const Champ_base& Champ_Generique_Gradient::get_champ_without_evaluation(Champ& espace_stockage) const
+{
+
+  if (Op_Grad_.non_nul())
+    {
+      Champ_Fonc es_tmp;
+      espace_stockage = creer_espace_stockage(vectoriel,dimension,es_tmp);
+
+    }
+  else
+    {
+      const Noms nom = get_source(0).get_property("nom");
+      Cerr<<"We can apply a Champ_Generique_Gradient only to the pressure field"<<finl;
+      Cerr<<"or to a field of type Champ_P1NC or Champ_P0_VDF at one component"<<finl;
+      exit();
+    }
+  return espace_stockage.valeur();
+}
 const Champ_base& Champ_Generique_Gradient::get_champ(Champ& espace_stockage) const
 {
   Champ source_espace_stockage;

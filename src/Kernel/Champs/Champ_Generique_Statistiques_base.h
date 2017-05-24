@@ -67,6 +67,11 @@ public:
   virtual void fixer_serie(const double& t1,const double& t2);
   virtual void fixer_tstat_deb(const double& t1,const double& t2);
   virtual void lire_bidon(Entree& is) const;
+  inline virtual const Champ_base&   get_champ_without_evaluation(Champ& espace_stockage) const
+  {
+    return get_champ(espace_stockage);
+  };
+
   inline double tstat_deb() const
   {
     return tstat_deb_;

@@ -107,11 +107,12 @@ public:
   //return espace_stockage.valeur()
 
   virtual const Champ_base&   get_champ(Champ& espace_stockage) const = 0;
-  inline virtual const Champ_base&   get_champ_without_evaluation(Champ& espace_stockage) const
-  {
-    return get_champ(espace_stockage);
-  };
-
+  virtual const Champ_base&   get_champ_without_evaluation(Champ& espace_stockage) const=0;
+  /*
+    {
+      return get_champ(espace_stockage);
+    };
+  */
 
   //get_champ_post() renvoie le champ si l identifiant passe en parametre designe
   //le nom du champ ou l une de ses composantes

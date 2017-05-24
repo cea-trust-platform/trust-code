@@ -54,6 +54,7 @@ public:
   void completer(const Postraitement_base& post);
   virtual const Noms get_property(const Motcle& query) const;
   virtual const Champ_base&  get_champ(Champ& espace_stockage) const;
+  virtual const Champ_base&  get_champ_without_evaluation(Champ& espace_stockage) const;
   void nommer_source();
   void extraire(double& val_extraites, const DoubleVect& val_source, const int& composante_VDF=-1) const;
 

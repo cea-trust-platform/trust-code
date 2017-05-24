@@ -421,6 +421,10 @@ const Champ_base& Champ_Generique_refChamp::get_champ(Champ& espace_stockage) co
 
 }
 
+const Champ_base& Champ_Generique_refChamp::get_champ_without_evaluation(Champ& espace_stockage) const
+{
+  return get_champ(espace_stockage);
+}
 
 // Description:
 //  Associe le champ et determine sa localisation.

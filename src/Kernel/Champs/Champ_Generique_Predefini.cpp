@@ -75,6 +75,10 @@ const Champ_Generique_base& Champ_Generique_Predefini::get_source(int i) const
   return ref_cast(Champ_Gen_de_Champs_Gen,champ_.valeur()).get_source(i);
 }
 
+const Champ_base& Champ_Generique_Predefini::get_champ_without_evaluation(Champ& espace_stockage) const
+{
+  return champ_->get_champ_without_evaluation(espace_stockage);
+}
 const Champ_base& Champ_Generique_Predefini::get_champ(Champ& espace_stockage) const
 {
   return champ_->get_champ(espace_stockage);

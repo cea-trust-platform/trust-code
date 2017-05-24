@@ -54,6 +54,7 @@ public:
   virtual int     set_methode(const Motcle& methode, int exit_on_error = 1);
   virtual int     set_domaine(const Nom& nom_domaine, int exit_on_error = 1);
   virtual const Champ_base&  get_champ(Champ& espace_stockage) const;
+  virtual const Champ_base&  get_champ_without_evaluation(Champ& espace_stockage) const;
   virtual const Champ_base&  get_champ_with_calculer_champ_post(Champ& espace_stockage) const;
 
   virtual const DoubleTab&  get_ref_values() const;

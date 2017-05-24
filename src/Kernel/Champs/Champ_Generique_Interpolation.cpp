@@ -189,6 +189,38 @@ const Champ_base& Champ_Generique_Interpolation::get_champ(Champ& espace_stockag
   return espace_stockage.valeur();
 }
 
+const Champ_base& Champ_Generique_Interpolation::get_champ_without_evaluation(Champ& espace_stockage) const
+{
+
+  Champ espace_stockage_source;
+  const Champ_base& source = get_source(0).get_champ_without_evaluation(espace_stockage_source);
+  // Domaine sur lequel on interpole le champ :
+  //  si domaine_ est une ref nulle, on prend le domaine natif du champ.
+
+  const Noms compo = get_property("composantes");
+  const Noms nom_champ = get_property("nom");
+  const Noms syno = get_property("synonyms");
+
+  int ncomp;
+  //On fixe identifiant_appel_ a nom_champ[0] dans le cas ou il est egal a ??
+  if (identifiant_appel_=="??")
+    {
+      ncomp = -1;
+    }
+  else
+    {
+      ncomp = Champ_Generique_base::composante(identifiant_appel_,nom_champ[0],compo,syno);
+    }
+
+  //Creation du champ espace_stockage
+  Nature_du_champ nature_source = (ncomp==-1)?source.nature_du_champ():scalaire;
+  nature_source = source.nature_du_champ();
+  int nb_comp = source.nb_comp();
+
+  Champ_Fonc es_tmp;
+  espace_stockage = creer_espace_stockage(nature_source,nb_comp,es_tmp);
+  return espace_stockage.valeur();
+}
 // Description: Interpolation du champ source a l'aide de Champ_base::calculer_champ_xxx_post
 const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_post(Champ& espace_stockage) const
 {
