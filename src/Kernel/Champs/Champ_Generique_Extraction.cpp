@@ -137,6 +137,8 @@ const Champ_base& Champ_Generique_Extraction::get_champ(Champ& espace_stockage) 
     disc = "VDF";
   else if (zone_dis_source.que_suis_je().debute_par("Zone_VEF"))
     disc = "VEF";
+  else if (zone_dis_source.que_suis_je().debute_par("Zone_EF"))
+    disc = "EF";
   else
     {
       Cerr<<"Champ_Generique_Extraction::get_champ()"<<finl;
@@ -300,6 +302,12 @@ void Champ_Generique_Extraction::completer(const Postraitement_base& post)
     }
 
   const Domaine& dom = source.get_ref_domain();
+  if (dom==domaine_.valeur())
+    {
+      Cerr<<"Error in Champ_Generique_Extraction:get_champ"<<finl;
+      Cerr<<"The domain is the same of the domain of the soource"<<finl;
+      exit();
+    }
   const Zone_dis_base& zone_dis_source = source.get_ref_zone_dis_base();
   const Zone_VF& zvf_source = ref_cast(Zone_VF,zone_dis_source);
   // Pour eviter un crash:
@@ -337,7 +345,7 @@ void Champ_Generique_Extraction::completer(const Postraitement_base& post)
   else if (type_face_source==triangle_3D)
     type_elem = "Triangle";
   else if (type_face_source==point_1D)
-    type_elem = "point_1D";
+    type_elem = "Point";
   //Cas suivant possible en parallele
   else if ((type_face_source==vide_0D) && (nb_faces==0))
     {

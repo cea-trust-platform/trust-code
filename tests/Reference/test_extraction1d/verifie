@@ -1,0 +1,7 @@
+OK=`tail -11 test_extraction1d.lml | head -10 | awk  '{if ($2!=123.) {err=1; print ($0)} } END { if (err) { print ("Error")} else {print "OK" } }'`
+if [ "$OK" != "OK" ]
+then
+ echo $OK
+ exit 1
+fi
+exit 0

@@ -14,74 +14,33 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Elem_EF.cpp
+// File:        Point_EF.h
 // Directory:   $TRUST_ROOT/src/EF/Zones
 // Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Elem_EF.h>
-#include <Tri_EF.h>
-#include <Tetra_EF.h>
-#include <Quadri_EF.h>
-#include <Hexa_EF.h>
+#ifndef Point_EF_included
+#define Point_EF_included
 
-Implemente_deriv(Elem_EF_base);
-Implemente_instanciable(Elem_EF,"Elem_EF",DERIV(Elem_EF_base));
+#include <Elem_EF_base.h>
 
-
-
-// printOn et readOn
-
-Sortie& Elem_EF::printOn(Sortie& s ) const
+class Point_EF : public Elem_EF_base
 {
-  return s << valeur() ;
-}
 
-Entree& Elem_EF::readOn(Entree& s )
-{
-  Nom type;
-  s >> type;
-  if(type == "Tri_EF")
-    *this =  Tri_EF();
-  else if(type == "Tetra_EF")
-    *this =  Tetra_EF();
-  else if(type == "Quadri_EF")
-    *this =  Quadri_EF();
-  else if(type == "Hexa_EF")
-    *this =  Hexa_EF();
-  else
-    {
-      Cerr << type << " n'est pas un Elem_EF" << finl;
-      exit();
-    }
-  return s ;
-}
+  Declare_instanciable_sans_constructeur(Point_EF);
 
-// Description:
-// determination du type
-void Elem_EF::typer(Nom type_elem_geom)
-{
-//  Cerr << "Elem_EF::typer()" << finl ;
-  Nom type;
-  if(type_elem_geom=="Triangle")
-    type="Tri_EF";
-  else if(type_elem_geom=="Tetraedre")
-    type="Tetra_EF";
-  else if(type_elem_geom=="Quadrangle")
-    type="Quadri_EF";
-  else if(type_elem_geom=="Hexaedre_VEF")
-    type="Hexa_EF";
-  else if(type_elem_geom=="Segment")
-    type="Segment_EF";
-  else if(type_elem_geom=="Point")
-    type="Point_EF";
-  else
-    {
-      Cerr << "probleme de typage dans Elem_EF::typer" << finl;
-      Cerr << "type geometrique : " << type_elem_geom << finl;
-      exit();
-    }
-  DERIV(Elem_EF_base)::typer(type);
-// Cerr << "type retenu : " << valeur().que_suis_je() << finl ;
-}
+public:
+  Point_EF();
+  void calcul_vc(const ArrOfInt& ,ArrOfDouble& ,const ArrOfDouble& ,
+                 const DoubleTab& ,const Champ_Inc_base& ,int ) const;
+  void calcul_xg(DoubleVect& ,const DoubleTab& ,const int ,int& ,
+                 int& ,int& ,int& ) const;
+  void normale(int ,DoubleTab&, const IntTab& ,const IntTab&,
+               const IntTab& ,const Zone& )  const ;
+};
+
+#endif
+
+
+

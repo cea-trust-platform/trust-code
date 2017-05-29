@@ -760,6 +760,7 @@
  Piso Piso Piso.h
  Plaque_Thermique_VDF PlaqThVDF PlaqThVDF.h
  Point Point Point.h
+ Point_EF Point_EF Point_EF.h
  Polyedre Polyedre Polyedre.h
  Polygone Polygone Polygone.h
  Polynome Polynome Polynome.h
