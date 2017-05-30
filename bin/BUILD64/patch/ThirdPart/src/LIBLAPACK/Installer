@@ -140,4 +140,11 @@ else
 fi
 mkdir -p $TRUST_LIB/src/LIBLAPACK
 mv *.a $TRUST_LIB/src/LIBLAPACK
+#  on efface les liens des archives
+for file in `ls $TRUST_ROOT/externalpackages/lapack/*`
+do
+ f=`basename $file`
+ [ -h $f ] && rm  $f 
+done
+# Nom des versions a upgrader:
 exit 0
