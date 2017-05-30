@@ -614,7 +614,7 @@ then
    #rm -rf lib/ include/ MonoDir*
    # il ne faut pas effacer lib/src/LIBMPI ici, sinon l'installation Installer_TRUST plante, idem pour include/backward
    #rm -rf `ls lib/src/* | grep -v LIBMPI` include/ MonoDir* # equivaut a rm -rf LIB* et non a rm -rf lib/src/LIB* donc faire une boucle
-   rm -rf MonoDir*
+   rm -rf MonoDir* build
    rm -f include/*.h
    rm -f lib/*.a
    for rep_lib in `ls lib/src | grep -v LIBMPI` 

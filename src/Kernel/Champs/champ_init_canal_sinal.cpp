@@ -264,12 +264,12 @@ double champ_init_canal_sinal::valeur_a_elem_compo(const DoubleVect& positions,
           val=fy(positions(dir_flow),positions(dir_wall),positions(3-dir_flow-dir_wall));
         else
           val=fz(positions(dir_flow),positions(dir_wall),positions(3-dir_flow-dir_wall));
-      default:
-        val=-1;
-        assert(0);
-        exit();
-        break;
       }
+      break;
+    default:
+      val=-1;
+      assert(0);
+      exit();
       break;
     }
   return val;

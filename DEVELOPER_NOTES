@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.7.5_beta : Changes since version 1.7.4 :
 -------------------------------------------------------------
+30/05/17 (TRUST)  GNU compilers 7.1.0 supported
 29/05/17 (TRUST)  Corrections Champ_Generique get_champ_without_evaluation
 29/05/17 (TRUST)  Minor improvements on some error messages of Champ Transformation
 15/05/17 (TRUST)  New methods for calculation of local time

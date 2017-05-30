@@ -111,6 +111,7 @@ void Traitement_particulier_NS_canal_VDF::remplir_Y(DoubleVect& tab_Y,  DoubleVe
               tab_compt[j] ++;
               j=indic+1;
               trouve = 1;
+              break;
             }
         }
       if (trouve==0)

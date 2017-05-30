@@ -119,6 +119,7 @@ void Traitement_particulier_NS_canal_VEF::remplir_Y(DoubleVect& tabY,  DoubleVec
               tabcompt[j] +=c;
               j=indic+1;
               trouve = 1;
+              break;
             }
         }
       if (trouve==0)

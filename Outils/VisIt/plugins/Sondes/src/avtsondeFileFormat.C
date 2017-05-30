@@ -116,9 +116,10 @@ avtsondeFileFormat::avtsondeFileFormat(const char *filename)
   if (dim==-1)
     {
     char* marq=strstr(buf,"x=");
-    if (marq!=NULL)  dim=1;
+    if (marq!=NULL)  
+      dim=1;
     else
-      cerr<<"pb "<< buf << " ne ocntient pas x= "<<endl;throw;
+      { cerr<<"pb "<< buf << " ne ocntient pas x= "<<endl;throw; }
     }
   
 

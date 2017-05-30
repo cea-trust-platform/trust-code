@@ -209,6 +209,7 @@ void Terme_Source_Solide_SWIFT_VDF::init_calcul_moyenne(const Conduction& my_eqn
               compt[j] ++;
               j=indic+1;
               trouve = 1;
+              break;
             }
         }
       if (trouve==0)

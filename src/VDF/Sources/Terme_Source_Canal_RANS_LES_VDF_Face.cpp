@@ -359,6 +359,7 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::init_calcul_moyenne_spat()
                     compt_x[j] ++;
                     j=indic+1;
                     trouve = 1;
+                    break;
                   }
               }
             if (trouve==0)
@@ -382,6 +383,7 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::init_calcul_moyenne_spat()
                     compt_y[j] ++;
                     j = indicv+1;
                     trouve = 1;
+                    break;
                   }
               }
             if (trouve==0)
@@ -405,6 +407,7 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::init_calcul_moyenne_spat()
                     compt_z[j] ++;
                     j = indicw+1;
                     trouve = 1;
+                    break;
                   }
               }
             if (trouve==0)

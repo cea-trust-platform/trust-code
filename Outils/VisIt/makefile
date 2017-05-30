@@ -10,7 +10,7 @@ version=2_12_1
 install=$(TRUST_ROOT)/exec/VisIt
 cible=$(install)/bin/$(name)
 #cible=bin/$(name)
-check=test/ok   
+check=$(TRUST_ROOT)/build/Outils/VisIt/test/ok   
 
 all: $(cible)
 	./install $(version) plugins
@@ -25,5 +25,5 @@ $(check): *.xml install customlauncher $(TRUST_ROOT)/RELEASE_NOTES
 	./install $(version) check
 
 clean:
-	rm -r -f $(install) $(TRUST_ROOT)/build/Outils/VisIt/plugins/ src/*.help $(TRUST_ROOT)/build/Outils/VisIt/$(check)
+	rm -r -f $(install) $(TRUST_ROOT)/build/Outils/VisIt src/*.help 
 	(cd src; ./build.sh clean)

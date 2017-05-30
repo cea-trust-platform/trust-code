@@ -22,13 +22,24 @@ if(CMAKE_COMPILER_IS_GNUCXX)
       "-Wl,--fatal-warnings -Wl,--no-undefined -lc ${CMAKE_SHARED_LINKER_FLAGS}")
   endif()
 
+  # Now check if we can use visibility to selectively export symbols
+  execute_process(COMMAND ${CMAKE_C_COMPILER} --version
+    OUTPUT_VARIABLE _gcc_version_info
+    ERROR_VARIABLE _gcc_version_info)
+
+  string (REGEX MATCH "[34567]\\.[0-9]\\.[0-9]"
+    _gcc_version "${_gcc_version_info}")
+  if(NOT _gcc_version)
+    string (REGEX REPLACE ".*\\(GCC\\).* ([34]\\.[0-9]) .*" "\\1.0"
+      _gcc_version "${_gcc_version_info}")
+  endif()
 
   # GCC visibility support, on by default and in testing.
   check_cxx_compiler_flag(-fvisibility=hidden HAVE_GCC_VISIBILITY)
   option(VTK_USE_GCC_VISIBILITY "Use GCC visibility support if available." OFF)
   mark_as_advanced(VTK_USE_GCC_VISIBILITY)
 
-  if(${CMAKE_CXX_COMPILER_VERSION} VERSION_GREATER 4.2.0 AND BUILD_SHARED_LIBS
+  if(${_gcc_version} VERSION_GREATER 4.2.0 AND BUILD_SHARED_LIBS
     AND HAVE_GCC_VISIBILITY AND VTK_USE_GCC_VISIBILITY
     AND NOT MINGW AND NOT CYGWIN)
     # Should only be set if GCC is newer than 4.2.0

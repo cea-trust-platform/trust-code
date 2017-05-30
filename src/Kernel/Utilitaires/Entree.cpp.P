@@ -457,6 +457,7 @@ int Entree::error_handle_(int fail_flag)
             Cerr << " IO error (not an EOF error)." << finl;
         }
       Process::exit();
+      break;
     case ERROR_EXCEPTION:
       Entree_Sortie_Error e;
       throw (e);

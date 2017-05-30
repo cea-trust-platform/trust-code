@@ -1216,21 +1216,27 @@ precond :
           case -1 :
             Cerr << "Error in ilut 'matrix may be wrong' dixit SAAD" << finl;
             exit();
+            break;
           case  -2  :
             Cerr << "Error in ilut : overflow in L " << finl;
             exit();
+            break;
           case   -3  :
             Cerr << "Error in ilut : overflow in U " << finl;
             exit();
+            break;
           case    -4   :
             Cerr << "Illegal value for lfil : it may be a memory trouble " << finl;
             exit();
+            break;
           case    -5  :
             Cerr << "Empty line met " << finl;
             exit();
+            break;
           default :
             Cerr << "Pivot empty met ! at step " << ie << finl;;
             exit();
+            break;
           }
         prems=0;
       }
@@ -1286,6 +1292,7 @@ precond :
           Cout << "    (=> working array for pgmres at " << (nn*(ima+1)) << " elements.)" << finl;
           goto resol ;
           }*/
+        break;
       case -1:
         Cerr << "convergence reached after " << (int)0 << "iterations !! " << finl;
         Cerr << "'stationnary state may be obtened' dixit us " << finl;
@@ -1401,21 +1408,27 @@ int Matrice_Morse::inverse(const DoubleVect& secmem, DoubleVect& solution,
           case -1 :
             Cerr << "Error in ilut 'matrix may be wrong' dixit SAAD" << finl;
             exit();
+            break;
           case  -2  :
             Cerr << "Error in ilut : overflow in L " << finl;
             exit();
+            break;
           case   -3  :
             Cerr << "Error in ilut : overflow in U " << finl;
             exit();
+            break;
           case    -4   :
             Cerr << "Illegal value for lfil : it may be a memory trouble " << finl;
             exit();
+            break;
           case    -5  :
             Cerr << "Empty line met " << finl;
             exit();
+            break;
           default :
             Cerr << "Pivot null met ! at step " << ie << finl;;
             exit();
+            break;
           }
         prems=0;
       }
