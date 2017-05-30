@@ -208,6 +208,7 @@ Do only the first part (Create a TRUST project).\\
 \texttt{\$ cd src}\\
 \texttt{\$ mkdir TRUST\_modif} \\
 \texttt{\$ cp \$TRUST\_ROOT/src/MAIN/mon\_main.cpp TRUST\_modif}\\
+\texttt{\$ cd ..}
 \end{itemize}
 
 \end{block}
@@ -418,9 +419,23 @@ Do the second part of README\_ECLIPSE file (Create a BALTIK project):
 \texttt{\$ cp /export/home/yourlogin/upwind/upwind.prm upwind/src/.}\\
 \texttt{\$ git add upwind}\\
 \texttt{\$ git commit -m "New prm"}\\
+\end{itemize}
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Useful commands}
+\begin{block}{New share/Validation/Rapports\_automatiques}
+\begin{itemize}
 \item Run this prm:\\
 \texttt{\$ cd upwind/}\\
 \texttt{\$ Run\_fiche}\\
+\item Open the pdf report:\\
+\texttt{\$ evince build/rapport.pdf \&}\\
+\item You can see that the pdf contains all the fields and probes post-processed in the data file.
+\item Notice that you have acces to the latex/images/... files in the directory:\\
+share/Validation/Rapports\_automatiques/upwind/build/.tmp
 \end{itemize}
 \end{block}
 \end{frame}
@@ -452,11 +467,9 @@ Do the second part of README\_ECLIPSE file (Create a BALTIK project):
 \textit{\hspace{0.1cm} Extracting test case (upwind.data) ...End.}\\
 \textit{\hspace{0.1cm} Creation of the file upwind\_jdd1.lml.gz}\\
 \texttt{\$ git status -\,-u=no}\\
-$\rightarrow$ But PAR\_upwind\_jdd1 is CORE.\\
-
-\item Correct the datafile to run in parallel:\\
+\item $\rightarrow$ But PAR\_upwind\_jdd1 is CORE.\\
+\item Check the datafiles to see the problem to run in parallel:\\
 \texttt{\$ diff share/Validation/Rapports\_automatiques/upwind/src/upwind.data tests/Reference/Validation/upwind\_jdd1/upwind\_jdd1.data}\\
-\texttt{\$ make check\_last\_pb\_optim}\\
 NB: upwind\_jdd1.data is readonly.\\
 \end{itemize}
 
@@ -468,22 +481,21 @@ NB: upwind\_jdd1.data is readonly.\\
 \begin{block}{New tests/Reference/Validation}
 
 \begin{itemize}
-\item For this, we analyze the test case:\\
+\item To correct the error, we copy the test case:\\
+\texttt{\$ cd build}\\
 \texttt{\$ trust -copy upwind\_jdd1}\\
-ERROR...\\
+ERROR...
+\item We have to re-run the configure script to take into account the new test case:\\
 \texttt{\$ ./configure}\\
-\texttt{\$ cd build/}\\
-\texttt{\$ trust -copy upwind\_jdd1}\\
+\texttt{\$ trust -copy upwind\_jdd1}
+\item Now we will analyse the error:\\
 \texttt{\$ cd upwind\_jdd1}\\
 \texttt{\$ make\_PAR.data upwind\_jdd1}\\
 \texttt{\$ trust PAR\_upwind\_jdd1 2}\\
-Update share/Validation/Rapports\_automatiques/upwind/src/upwind.data\\
-change "Scatter ../upwind/DOM.Zones dom" by "Scatter DOM.Zones dom"\\
-\texttt{\$ cd \$project\_directory}\\
-\texttt{\$ make check\_last\_pb\_optim}\\
-\hspace{0.1cm}{\small{\textit{Changement du jeu de donnees... \\
-\hspace{0.1cm}suite a une modification d'un jeu de donnees de la fiche de validation associee. \\
-\hspace{0.1cm}Successful tests cases :1/1 \\}}}
+\item Correct the data file PAR\_upwind\_jdd1.data and re-run it.
+\item If it's ok, update the data file in 
+\$project\_directory/share/Validation/Rapports\_automatiques/upwind/src\\
+("Scatter ../upwind/DOM.Zones dom" $\rightarrow$ "Scatter DOM.Zones dom")\\
 \end{itemize}
 
 \end{block}
@@ -494,20 +506,38 @@ change "Scatter ../upwind/DOM.Zones dom" by "Scatter DOM.Zones dom"\\
 \begin{block}{New tests/Reference/Validation}
 
 \begin{itemize}
+\item To Relaunch the last test cases which do not run:\\
+\texttt{\$ cd \$project\_directory}\\
+\texttt{\$ make check\_last\_pb\_optim}\\
+\hspace{0.1cm}{\small{\textit{Changement du jeu de donnees... \\
+\hspace{0.1cm}suite a une modification d'un jeu de donnees de la fiche de validation associee. \\
+\hspace{0.1cm}...\\
+\hspace{0.1cm}Successful tests cases :1/1 \\}}}
 \item Add this non-regression test in configuration:\\
 \texttt{\$ git status -\,-u=no}\\
 \texttt{\$ git add tests/Reference/Validation/upwind\_jdd1/upwind\_jdd1.data}\\
 \texttt{\$ git commit -m "New reference test"}\\
 \texttt{\$ git log}\\
-
 \item To run all the non regression tests with a optimized binary:\\
 \texttt{\$ make check\_all\_optim}
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Useful commands}
+\begin{block}{New tests/Reference/Validation}
+
+\begin{itemize}
 \item To run all the non regression tests with a debug binary:\\
 \texttt{\$ make check\_all\_debug}
 \item To create an archive to share your work:\\
-\texttt{\$ make distrib}
-\item Notice that you have acces to the latex/images/... files in the directory:\\
-share/Validation/Rapports\_automatiques/upwind/build/.tmp
+\texttt{\$ make distrib}\\
+\texttt{\$ ls}
+\item You have now an archive in tar.gz format of your baltik project.
+
 \end{itemize}
 
 \end{block}
@@ -540,11 +570,11 @@ share/Validation/Rapports\_automatiques/upwind/build/.tmp
 \texttt{\$ git status .}\\
 \texttt{\$ git add my\_first\_class.*}\\
 \texttt{\$ git commit -m "Add my\_first\_class src"}\\
-\texttt{\$ cd \$project\_directory}\\
 
 \item Have a look at the 2 files my\_first\_class.h|cpp.\\
 
 \item Each time a source file is added to the project, you need to configure it:\\
+\texttt{\$ cd \$project\_directory}\\
 \texttt{\$ ./configure}\\
 
 \item Build your project with Eclipse or in the terminal.\\
@@ -574,11 +604,10 @@ instead of "Objet\_U".
     \item [$\circ$] An error will occur!
     \end{itemize}
 
-\item You will have an error indicating a pure virtual function ("interpreter\_") should be
-implemented.
+\item You will have an error indicating a pure virtual function ("interpreter\_") should be implemented.
 
 \item Look at the "Interprete\_geometrique\_base" class thanks to F3 (Open Declaration)
-from Eclipse and notice the "interpreter()" method.\\
+from Eclipse and notice the "interpreter()" method (which calls the "interpreter\_()" method).\\
 \end{itemize}
 \end{block}
 \end{frame}
@@ -586,36 +615,53 @@ from Eclipse and notice the "interpreter()" method.\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Creation of a new cpp class}
+\begin{block}{}
+
 \begin{itemize}
 \item This method is called each time a keyword is read in the datafile (eg: "Read\_file dom dom.geom", "Solve pb",...).
-
 \item Define the public method "interpreter\_(Entree\&)" in the include file and implement it
-(just print a message with "Cerr" like "My first keyword!") into the cpp file. 
-
+(just print a message with "Cerr" like "- My first keyword!") into the cpp file. 
 \item "Entree" is a TRUST class to read an input stream (from a file for example):\\
 "virtual Entree\& interpreter\_(Entree\&);"
-
 \item Rebuild your project and fix your files until the binary of your project is built (named
-basic if you have not changed the name in the project.cfg file):\\
-
+basic if you have not changed the name in the project.cfg file)\\
+\item Now we want to test our new class.
 \item Modify a test case into the build directory of your Baltik project:\\
 \texttt{\$ cd \$project\_directory/build/}\\
 \texttt{\$ trust -copy Cx}\\
-ERROR...\\
-\texttt{\$ source ../full\_env\_basic.sh}\\
-\texttt{\$ trust -copy Cx}\\
-\texttt{\$ cd Cx}\\
+ERROR...
 \end{itemize}
+
+\end{block}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Creation of a new cpp class}
+\begin{block}{}
+
 \begin{itemize}
-\item Add into the data file "Cx.data" the following 2 lines: the keyword "my\_first\_class" and "End" just after the line where the problem is discretized\\
-NB: Without "End", you can reduce the number of time step to only 1.\\
+\item An error occurs because this test case is not in our baltik but in TRUST project so we have to launch the full environment (TRUST+our baltik).\\
+\texttt{\$ source ../full\_env\_basic.sh}\\
+\texttt{\$ trust -copy Cx}\\
+\texttt{\$ cd Cx}\\
+
+\item Open the data file "Cx.data":\\
 \texttt{\$ nedit|gedit|xemacs Cx.data}
 
+\item Just after the line where \underline{the problem is discretized}, add the keywords "my\_first\_class" and "End".\\
+NB: Instead of "End", you can reduce the number of time step to only 1.\\
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Creation of a new cpp class}
+\begin{block}{}
+
+\begin{itemize}
 \item Run with Eclipse your binary to check that this new keyword is recognized:\\
     \begin{itemize}
     \item [$\circ$] With Eclipse:\\
@@ -629,9 +675,11 @@ NB: Without "End", you can reduce the number of time step to only 1.\\
     \texttt{\$ exec=\$exec\_debug trust Cx}\\
     \end{itemize}
 
-\item Understand that "Interprete\_geometrique\_base::interpreter()" method is called first,
+\item Understand that "Interprete\_geometrique\_base::interpreter\_()" method is called first,
 which calls then the "my\_first\_class::interpreter\_()" method.
 \end{itemize}
+
+\end{block}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -662,14 +710,16 @@ which calls then the "my\_first\_class::interpreter\_()" method.
 Entree\& A::readOn(Entree\& is)\\
 \{\\
 {\bf{Nom}} opt;\\
-int dim;\\
-Cerr <\textcompwordmark{}< " Reading parameters of A from a stream (cin or file) " <\textcompwordmark{}< finl;\\
+{\bf{int}} dim;\\
+{\bf{Cerr}} <\textcompwordmark{}< "Reading parameters of A from a stream (cin or file)" <\textcompwordmark{}< {\bf{finl}};\\
 {\bf{Param}} \textcolor{orange}{param}(que\_suis\_je());\\
 \textcolor{blue}{// Register parameters to be read:}\\
 \textcolor{orange}{param}.ajouter("option",\&opt);\\
-\textcolor{orange}{param}.ajouter("dimension",\&dim,Param::REQUIRED); \textcolor{blue}{// Mandatory parameter}\\
-\textcolor{blue}{// Read now the parameters from the stream is and produces an error if unknown}\\
-\textcolor{blue}{// keyword is read or if brackets are not found at the beginning and the end:}\\
+\textcolor{orange}{param}.ajouter("dimension",\&dim,Param::REQUIRED); \\
+\textcolor{blue}{// Mandatory parameter}\\
+\textcolor{blue}{// Read now the parameters from the stream is and produces an error }\\
+\textcolor{blue}{// if unknown keyword is read or if braces are not found at the }\\
+\textcolor{blue}{// beginning and the end:}\\
 \textcolor{orange}{param}.lire\_avec\_accolades\_depuis(is);\\
 ...\\
 return is;\\
@@ -686,46 +736,35 @@ return is;\\
 \begin{frame}
 \frametitle{Modify your cpp class}
 \begin{block}{}
+
 \begin{itemize}
-\item To call it in the data file, you have to use the following syntaxe:
+\item To call it in the data file, you have to use the following syntaxe as the read of the parameters is done by the readOn method:
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.9\textwidth}
 \begin{alltt}
-A a\\
-{\bf{Read}} a { dimension 3 option fast }
+{\bf{A}} a\\
+{\bf{Read}} a \{ {\bf{dimension}} 3 {\bf{option}} fast \}
 \end{alltt}
 \end{minipage}}
 \end{center}
 
-\item Add into the "interpreter\_(Entree\&)" method the read of a domain and some parameters into brackets.
-
-\item In the data file, the syntax will be:
+\item In our case, the read of the parameters will be done by the interpreter() method so the syntax in the data file will be the following:
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.9\textwidth}
 \begin{alltt}
-{\bf{my\_first\_class}} dom \{ option 0 \} \textcolor{blue}{\# dom is the domain name \#}
+{\bf{my\_first\_class}} \{ {\bf{domaine}} dom {\bf{option}} 0 \} \\
+\textcolor{blue}{\# dom is the domain name \#}
 \end{alltt}
 \end{minipage}}
 \end{center}
 
-\item Use the following method to read the name of the domain:\\
-Interprete\_geometrique\_base::associer\_domaine(Entree\&).
+\item Add into the "interpreter\_(Entree\&)" method the read of these parameters into braces using the \textbf{Param} object.
 
-\item Look the HTML documentation. What is the task of this method?
-
-\item To help you, have a look at a "Interprete\_geometrique\_base" sub-class, for
-instance "Raffiner\_anisotrope" to see how the domain is read. 
-
-\item The datafile syntax is:
-\begin{center}
-\fbox{ \begin{minipage}[c]{0.9\textwidth}
-\begin{alltt}
-{\bf{Raffiner\_anisotrope}} DomainName
-\end{alltt}
-\end{minipage}}
-\end{center}
-
+\item \textbf{Param} use is the recommended choice in this case (even if a lot of
+current TRUST classes still use the old fashion to read parameters), cause it
+simplifies greatly the coding.
 \end{itemize}
+
 \end{block}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -735,17 +774,9 @@ instance "Raffiner\_anisotrope" to see how the domain is read.
 \begin{block}{}
 
 \begin{itemize}
-\item Then use the \textbf{Param} object to read the keyword parameter option in the
-data file. 
+\item Add "\#include <Param.h>" into the cpp file.
 
-\item \textbf{Param} use is the recommended choice in this case (even if a lot of
-current TRUST classes still use the old fashion to read parameters), cause it
-simplifies greatly the coding.
-
-\item Add "\#include <Param.h>" into the cpp file and if help needed, have a look at
-the "Interprete\_geometrique\_base" sub-class "Extruder". 
-
-\item The datafile syntax is :
+\item If help needed, have a look at the "Interprete\_geometrique\_base" sub-class "Extruder". The datafile syntax is :
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.9\textwidth}
 \begin{alltt}
@@ -754,13 +785,18 @@ the "Interprete\_geometrique\_base" sub-class "Extruder".
 \end{minipage}}
 \end{center}
 
+\item Now we want to obtain the problem object using his name. You can have a look at the following method: \\
+Interprete\_geometrique\_base::associer\_domaine ( Nom \& nom\_dom)
+
+\item Look the HTML documentation. What is the task of this method?
+
 \item Once implementation is finished, add a check at the end of the method
 "interpreter\_(Entree\&)" and find how to print the domain name:
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.9\textwidth}
 \begin{alltt}
-Cerr <\textcompwordmark{}< "Option number " <\textcompwordmark{}< option\_number <\textcompwordmark{}< " has been read on the
-domain named " <\textcompwordmark{}< ??? <\textcompwordmark{}< finl;
+{\bf{Cerr}} <\textcompwordmark{}< "Option number " <\textcompwordmark{}< option\_number <\textcompwordmark{}< " has been read on the
+domain named " <\textcompwordmark{}< ??? <\textcompwordmark{}< {\bf{finl}};
 \end{alltt}
 \end{minipage}}
 \end{center}
@@ -794,7 +830,7 @@ domain named " <\textcompwordmark{}< ??? <\textcompwordmark{}< finl;
     \texttt{\$ trust Cx}
     \end{itemize}
 
-\item In this case trust runs with exec\_debug.
+\item In this case, TRUST runs with exec\_debug.
 \end{itemize}
 
 \end{block}
@@ -822,7 +858,7 @@ domain named " <\textcompwordmark{}< ??? <\textcompwordmark{}< finl;
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.9\textwidth}
 \begin{alltt}
-Cerr <\textcompwordmark{}< "The boundary named " <\textcompwordmark{}< ??? <\textcompwordmark{}< " has " <\textcompwordmark{}< ??? <\textcompwordmark{}< " faces." <\textcompwordmark{}< finl;
+{\bf{Cerr}} <\textcompwordmark{}< "The boundary named " <\textcompwordmark{}< ??? <\textcompwordmark{}< " has " <\textcompwordmark{}< ??? <\textcompwordmark{}< " faces." <\textcompwordmark{}< {\bf{finl}};
 \end{alltt}
 \end{minipage}}
 \end{center}
@@ -845,7 +881,7 @@ from the domain, only from the problem.
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.9\textwidth}
 \begin{alltt}
-\textbf{my\_first\_class} dom \{ \textbf{option} 0 \textbf{problem} pb \}
+{\bf{my\_first\_class}} \{ {\bf{domaine}} dom {\bf{option}} 0 {\bf{problem}} pb \}
 \end{alltt}
 \end{minipage}}
 \end{center}
@@ -877,7 +913,7 @@ from the domain, only from the problem.
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.9\textwidth}
 \begin{alltt}
-Cerr <\textcompwordmark{}< control\_volumes.size() <\textcompwordmark{}< finl;
+{\bf{Cerr}} <\textcompwordmark{}< control\_volumes.size() <\textcompwordmark{}< {\bf{finl}};
 \end{alltt}
 \end{minipage}}
 \end{center}
@@ -915,6 +951,80 @@ Cerr <\textcompwordmark{}< control\_volumes.size() <\textcompwordmark{}< finl;
     \texttt{\$ cd \$project\_directory/build/Cx/}\\
     \texttt{\$ exec=\$exec\_debug trust Cx}
     \end{itemize}
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{{\bf{Add XData tags}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Add XData tags}
+\begin{block}{}
+
+\begin{itemize}
+\item We want now to add XData tag to create the automated documentation of your new code.
+\item First we have to create this documentation for the first time.\\
+\texttt{\$ cd \$project\_directory}\\
+\texttt{\$ make gui}
+\item Open the documentation file:\\
+\texttt{\$ cd \$project\_directory/build/xdata/XTriou}\\
+\texttt{\$ evince doc.pdf \&}
+\item Now we will add comments in our cpp files to add our new class in the documentation.
+\item For this open the help of the TRAD\_2 syntaxe:\\
+\texttt{\$ nedit|gedit|xemacs doc\_TRAD\_2 \&}
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Add XData tags}
+\begin{block}{}
+
+\begin{itemize}
+\item Add a first tag (in comments) into your cpp file just after the openning brace of the 'interpreter\_()' method:\\
+\begin{alltt}
+\textcolor{blue}{// XD english\_class\_name base\_class\_name TRUST\_class\_name mode description}
+\end{alltt}
+\item The "english\_class\_name" and "TRUST\_class\_name" can be "my\_first\_class".
+\item The "base\_class\_name" is the name of the section in which will appear the information of your new class in the 'doc.pdf' file.
+\item The "mode" is to choose with the help of the doc\_TRAD\_2 file. Here we use "-3".
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Add XData tags}
+\begin{block}{}
+
+\begin{itemize}
+\item Then add at the end of the lines of type "param.ajouter...", an XD comment like:\\
+\begin{alltt}
+param.ajouter(...);  \textcolor{blue}{// XD\_ADD\_P type description}
+\end{alltt}
+\item "type" can be (cf 'doc\_TRAD\_2' file): 'int', 'floattant', 'chaine', 'rien'...
+\item Compile the documentation:\\
+\texttt{\$ make gui}
+\item Check that the documentation of your new class is in the new doc:\\
+\texttt{\$ evince \$project\_directory/build/xdata/XTriou/doc.pdf \&}
+\item To check that the GUI is validated:\\
+\texttt{\$ make check\_gui}
+\item Notice that you must have XD commands in all your cpp classes.
 \end{itemize}
 
 \end{block}
