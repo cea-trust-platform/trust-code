@@ -1,6 +1,8 @@
 -------------------------------------------------------------
 Developer notes version 1.7.5_beta : Changes since version 1.7.4 :
 -------------------------------------------------------------
+29/05/17 (TRUST)  Corrections Champ_Generique get_champ_without_evaluation
+29/05/17 (TRUST)  Minor improvements on some error messages of Champ Transformation
 15/05/17 (TRUST)  New methods for calculation of local time
 09/05/17 (TRUST)  Modification API of Deriv: Removing the method that implicitly constructs a Deriv_ from a _base class
 21/04/17 (Tools)  Using MEDField in ICoCo

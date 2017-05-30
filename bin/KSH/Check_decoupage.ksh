@@ -74,6 +74,7 @@ then
       run=1
       # On ne teste pas les cas "# PARALLEL OK #" sauf si update
       [ "`echo $* | grep update`" = "" ] && [ "`grep '# PARALLEL OK #'  */$rep/$rep.data`" != "" ] && run=0
+      [ ! -f */$rep/$rep.lml.gz ] && run=0
       #
       if [ $run = 1 ]
       then
@@ -87,7 +88,7 @@ then
 fi
 cas=${1%.data}
 shift
-[ ! -f $cas.data ] && echo "Cas $cas.data inexistant." && send_and_exit -1
+[ ! -f $cas.lml.gz ] && echo "Cas $cas.lml.gz inexistant." && send_and_exit -1
 
 update=0
 quick=0
