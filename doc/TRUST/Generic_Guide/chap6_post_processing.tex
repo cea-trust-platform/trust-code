@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Output files} \label{post}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-After running, you will find different files in your directory. Here is a little explaination of what you will find in each type of file in function of his extension.\\
+After running, you will find different files in your directory. Here is a short explaination of what you will find in each type of file in function of his extension.\\
 
 %\subsubsection{Input files:}
 %\begin{longtable}{|l|c|}
@@ -54,7 +54,7 @@ If you add post-processings in your data files, you will find:
 or \textit{specified\_name}\textbf{.lml} or \textbf{.lata} or \textbf{.med}  & \\ \hline
 \end{longtable}
 
-The sceen outputs are automaticaly redirected in \textit{my\_data\_file}\textbf{.out} and \textit{my\_data\_file}\textbf{.err} files if you run a parallel calculation or if you use the "\textbf{-evol}" option of the "trust" script.\\
+The sceen outputs are automatically redirected in \textit{my\_data\_file}\textbf{.out} and \textit{my\_data\_file}\textbf{.err} files if you run a parallel calculation or if you use the "\textbf{-evol}" option of the "trust" script.\\
 Else you can redirect them with the following command:
 \begin{verbatim}
 # if not already done
@@ -83,10 +83,10 @@ To learn how to use it, you can try the \trust tutorial exercise \href{TRUST_tut
 
 To open your 3D results in \textbf{med} format, you can also use \href{https://wci.llnl.gov/simulation/computer-codes/visit}{VisIt} or \href{http://www.salome-platform.org}{Salom\'e} or \href{http://www.paraview.org}{Paraview}.\\
 
-Here are some actions that you can realize when you simulation is finished:
+Here are some actions that you can perform when you simulation is finished:
 \begin{itemize}
 \item To visualize the positions of your probes in function of the 2D/3D mesh, you can open your .son files at the same time of the .lata file in VisIt.
-\item If you need more probes, you can create it with VisIt (if you have post-processed the good fields) or with MEDCoupling.
+\item If you need more probes, you can create them with VisIt (if you have post-processed the good fields) or with MEDCoupling.
 \item You can use the option "\textbf{-evol}" of the trust script, like:
 \begin{verbatim}
 trust -evol my_data_file

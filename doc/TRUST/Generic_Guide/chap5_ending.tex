@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Solve}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Now that you have finish to specify all your computation parameters, you may add the \href{\REFERENCEMANUAL\#solve}{\textbf{"Solve"}} keyword at the end of your data file, in order to resolve your problem.
+Now that you have finished to specify all your computation parameters, you may add the \href{\REFERENCEMANUAL\#solve}{\textbf{"Solve"}} keyword at the end of your data file, in order to solve your problem.
 You may also add the \textbf{"End"} keyword to specify the end of your data file.
 
     \begin{center}
@@ -21,7 +21,7 @@ You can see methods to run your data file in section \ref{Run}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Stop running calculation} \label{stopfile}
+\section{Stop a running calculation} \label{stopfile}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Your calculation will automatically stops if it has reached:
 \begin{itemize}
@@ -42,7 +42,7 @@ When you don't change any thing to that file, at the end of the calculation, you
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Save}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Automaticaly, \trust make backups during the calculation. The unknowns (velocity, temperature,...) are saved in:
+\trust makes automatic backups during the calculation. The unknowns (velocity, temperature,...) are saved in:
 \begin{itemize}
 \item one \textbf{.xyz} file, happening:
     \begin{itemize}
@@ -51,7 +51,7 @@ Automaticaly, \trust make backups during the calculation. The unknowns (velocity
     \end{itemize}
 
 
-\item one, or several in case of parallel calculation, \textbf{.sauv} files, happening:
+\item one (or several in case of parallel calculation) \textbf{.sauv} files, happening:
     \begin{itemize}
     \item at the start of the calculation,
     \item at the end of the calculation,
@@ -63,7 +63,7 @@ Automaticaly, \trust make backups during the calculation. The unknowns (velocity
 
 
 By default, the name for the \textbf{.sauv} files is \textbf{"filename\_problemname.sauv"} for sequential calculation, \textbf{"filename\_problemname\_000n.sauv"} for parallel calculation (one per process).
-The format of theses files is binary and the files are appended during successive saves.\\
+The format of theses files is binary and the files are completed during successive saves.\\
 
 You can change the behaviour using the following keywords just before the \textbf{solve} instruction:
 \begin{center}

@@ -2,15 +2,15 @@
 \begin{itemize}
 \item \textbf{S}ingle \textbf{P}rogram, \textbf{M}ultiple \textbf{D}ata model: tasks are split up and run simultaneously on multiple processors with different input in order to obtain results faster,
 \item messages exchange by \textbf{M}essage \textbf{P}assing \textbf{I}nterface,
-\item from PC to massively parallel computer, with shared or distributed memory.
+\item from a PC to a massively parallel computer, with shared or distributed memory.
 \end{itemize}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Basic notions}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-To make a parallel calculation, you have to partitioning your domain.
-Each domain will be treated by one processor.
+To make a parallel calculation, you have to partition your domain.
+Each sub-domain will be treated by one processor.
 In order to have good performances, ensure you that:
 \begin{itemize}
 \item sub-domains have almost the same number of cells,
@@ -30,7 +30,7 @@ From our experience, for good performance with \trust, each processor has to tre
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Partitionning}
+\section{Partitioning}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 To run a parallel calculation, you must:
@@ -46,7 +46,7 @@ To run a parallel calculation, you must:
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{The different blocks}
+\subsection{The different blocks} \label{decjdd}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Different blocks appear in the data file.
 
@@ -71,8 +71,8 @@ You can refer to section \ref{Mesh} to have more informations.
 
 
 
-\item \textbf{\textcolor{darkblue}{Adding a partitionning block}}\\
-You may now add the partitionning block which contains the instruction of cutting, after your mesh block:
+\item \textbf{\textcolor{darkblue}{Adding a partitioning block}}\\
+You may now add the partitioning block which contains the cutting instruction, after your mesh block:
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.8\textwidth}
 \begin{alltt} 
@@ -99,7 +99,7 @@ You may now add the partitionning block which contains the instruction of cuttin
 \end{minipage}}
 \end{center}
 Where \textit{partitioner\_name} is the name of the chosen partitioner, one of \textbf{METIS}, \textbf{Tranche}, \textbf{Sous\_Zones}, \textbf{Partition} or \textbf{Fichier\_Decoupage} (cf section \ref{partitioner}).\\
-The \textbf{"Larg\_joint"} keyword allow to specify the overlapping width value.
+The \textbf{"Larg\_joint"} keyword allows to specify the overlapping width value.
 You can see the documentation of \href{\REFERENCEMANUAL\#partition}{this part in the \trustref Reference Manual}.\\
 
 \Note the "End" before the last line. It will be useful for the cutting step.\\
@@ -129,14 +129,14 @@ At last, you will add a block which will be activated during the parallel calcul
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Partitionning: "Assisted" method}
+\subsection{Partitionning: "Assisted" method} \label{makePARdata}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Here we will use the script \verb make_PAR.data  to make the partitioning step.
 We consider that you have correctly add the "\textcolor{blue}{\textbf{\#}}" in your \textit{my\_data\_file.data} file with the partitioning block and cutting block.\\
 
-\textbf{Be carefull} to the hashtags "\textcolor{blue}{\textbf{\#}}", they are interpreted by the script!\\
+\textbf{Be careful} with the hashtags "\textcolor{blue}{\textbf{\#}}", they are interpreted by the script!\\
 
-Then to made automatically the partitioning step and obtain the parallel data file, you have to run:
+To automatically perform the partitioning step and obtain the parallel data file, you have to run:
 \begin{verbatim}
 > make_PAR.data my_data_file [parts_number]
 \end{verbatim}
@@ -264,7 +264,7 @@ You can see the documentation of \href{\REFERENCEMANUAL\#partition}{this part in
 \subsection{Overlapping width value}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 To make the partitioning, you will have to specify the \underline{overlapping width value}.
-This value correspond to the thickness of the virtual ghost zone (data known by one processor though not owned by it) i.e. the number of verteces or elements on the remote sub-domain known by the local sub-domain (cf Figure \ref{overlap}).
+This value correspond to the thickness of the virtual ghost zone (data known by one processor though not owned by it) i.e. the number of vertices or elements on the remote sub-domain known by the local sub-domain (cf Figure \ref{overlap}).
 
 \begin{figure}[h!]
 \begin{center}
@@ -302,7 +302,7 @@ You can see \href{TRUST_and_TrioCFD_presentation.pdf}{the \trust \& \textbf{Trio
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{On a cluster}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-You must submit your job in a system of queue.
+You must submit your job in a queue system.
 For this, you must have a submission file.
 \trust can create a submission file for you \textbf{on clusters on which the support team has done installations}.
 To create this file, run:
@@ -334,16 +334,16 @@ You can see \href{TRUST_and_TrioCFD_presentation.pdf}{the \trust \& \textbf{Trio
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Visualization}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-To visualize your probes, you can use the Plot2D tool, with the command line:
+To visualize your probes, you can use the CurvePlot tool, with the command line:
 \begin{verbatim}
 > trust -evol my_parallel_data_file
 \end{verbatim}
-or using Gnuplot or any software which reads values in columns in a file.\\
+or use Gnuplot or any software which reads values in columns in a file.\\
 
 There are three ways to visualize your parallel results with VisIt:
 \begin{itemize}
 \item HPCDrive on CCRT/TGCC clusters: opens a deported graphic session on dedicated nodes with more memory (on curie cluster: \href{https://visu-tgcc.ccc.cea.fr/HPCDrive/home}{HPCDrive}),
-\item local mode:copy your results from the cluster to your local computer and open it with a local parallel version of VisIt with:
+\item local mode: copy your results from the cluster to your local computer and open it with a local parallel version of VisIt with:
 \begin{verbatim}
 > visit -np 4 &
 \end{verbatim}
@@ -404,7 +404,7 @@ Then run the \textit{PAR\_my\_data\_file.data} file with:
 > trust PAR_my_data_file procs_number
 \end{verbatim}
 
-\Note that if after a certain time, you want to reopen an old case and understand want you did in it without any doubts, you may create two files by your hands:
+\Note that if after a certain time, you want to reopen an old case and understand want you did in it without any doubts, you may create two files by hands:
 \begin{itemize} 
 \item one "BuildMeshes.data" file only for the mesh and the cut of the mesh, and
 \item one "calculation.data" file for the parallel calculation. 

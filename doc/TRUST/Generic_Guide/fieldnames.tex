@@ -1,0 +1,70 @@
+\begin{longtable}[hcr]{|c|c|c|}
+\hline \textbf{Physical values}                        & \textbf{Keyword for field\_name}          & \textbf{Unit} \\ \hline \endhead
+\hline\multicolumn{3}{|c|}{\textcolor{olive}{... continued on next page ...}}  \\ \hline \endfoot
+\hline \hline \endlastfoot
+
+
+Speed                                           & \textbf{Vitesse} or \textbf{Velocity}     & $m.s^{-1}$ \\ \hline
+Kinetic energy per elements                     &                                           & \\
+($0.5 \rho ||u_i||^2$)                          & \textbf{Energie\_cinetique\_elem}         & $kg.m^{-1}.s^{-2}$ \\ \hline
+Total kinetic energy                            &                                           & \\
+$\displaystyle \left( \frac{\sum_{i=1}^{nb\_elem} 0.5 \rho ||u_i||^2 vol_i}{\sum_{i=1}^{nb\_elem} vol_i} \right)$                            & \textbf{Energie\_cinetique\_totale}       & $kg.m^{-1}.s^{-2}$ \\ \hline
+Vorticity                                       & \textbf{Vorticite}                        & $s^{-1}$ \\ \hline
+Pressure in incompressible flow                 &                                           & \\
+($P/\rho+gz$)                                   & \textbf{Pression} \footnote{The post-processed pressure is the pressure divided by the fluid's density ($P/\rho+gz$) on incompressible laminar calculation. For turbulent, pressure is $P/\rho+gz+2/3*k$ cause the turbulent kinetic energy is in the pressure gradient.}
+                                                                                            & $Pa.m^3.kg^{-1}$ \\
+For Front Tracking probleme                     &                                           & or \\
+($P+\rho gz$)                                   &                                           &  $Pa$ \\ \hline
+Pressure in incompressible flow                 &                                           &   \\
+(P+$\rho gz$)                                   & \textbf{Pression\_pa} or \textbf{Pressure}         & $Pa$ \\ \hline
+Pressure in compressible flow                   & \textbf{Pression}                         & $Pa$ \\ \hline
+Hydrostatic pressure $(\rho g z)$               & \textbf{Pression\_hydrostatique}          & $Pa$ \\ \hline
+Totale pressure (when                           &                                           & \\
+quasi compressible model                        &                                           & \\
+is used)=Pth+P                                  & \textbf{Pression\_tot}                    & $Pa$ \\ \hline
+Pressure gradient                               &                                           & \\
+($\nabla(P/\rho+gz)$)                           & \textbf{Gradient\_pression}               & $m.s^{-2}$ \\ \hline
+Temperature                                     & \textbf{Temperature}                      & $^o$C or K \\ \hline
+Phase temperature of                            &                                           & \\
+a two phases flow                               & \textbf{Temperature\_EquationName}        & $^o$C or K \\ \hline
+Mass transfer rate                              &                                           & \\
+between two phases                              & \textbf{Temperature\_mpoint}              & $kg.m^{-2}.s^{-1}$ \\ \hline
+Temperature variance                            & \textbf{Variance\_Temperature}            & $K^2$ \\ \hline
+Temperature dissipation rate                    & \textbf{Taux\_Dissipation\_Temperature}   & $K^2.s^{-1}$ \\ \hline
+Temperature gradient                            & \textbf{Gradient\_temperature}            & $K.m^{-1}$ \\ \hline
+Heat exchange coefficient                       & \textbf{H\_echange\_Tref} \footnote{Tref indicates the value of a reference temperature and must be specified by the user. For example, H\_echange\_293 is the keyword to use for Tref=293K.}            & $W.m^{-2}.K^{-1}$ \\ \hline
+Turbulent heat flux                             & \textbf{Flux\_Chaleur\_Turbulente}        & $m.K.s^{-1}$ \\ \hline
+Turbulent viscosity                             & \textbf{Viscosite\_turbulente}            & $m^2.s^{-1}$ \\ \hline
+Turbulent dynamic viscosity                     &                                           & \\
+(when quasi compressible                        & \textbf{Viscosite\_dynamique\_turbulente} & $kg.m.s^{-1}$ \\
+ model is used)                                 &                                           & \\ \hline
+Turbulent kinetic energy                        & \textbf{K}                                & $m^2.s^{-2}$ \\ \hline
+Turbulent dissipation rate                      & \textbf{Eps}                              & $m^3.s^{-1}$ \\ \hline
+Turbulent quantities                            &                                           & \\
+K and Epsilon                                   & \textbf{K\_Eps}                           & ($m^2.s^{-2}$ ,$m^3.s^{-1}$ ) \\ \hline
+Constituent concentration                       & \textbf{Concentration}                    & \\ \hline
+Component velocity along X                      & \textbf{VitesseX}                         & $m.s^{-1}$ \\ \hline
+Component velocity along Y                      & \textbf{VitesseY}                         & $m.s^{-1}$ \\ \hline
+Component velocity along Z                      & \textbf{VitesseZ}                         & $m.s^{-1}$ \\ \hline
+Mass balance on each cell                       & \textbf{Divergence\_U}                    & $m^3.s^{-1}$  \\ \hline
+Irradiancy                                      & \textbf{Irradiance}                       & $W.m^{-2}$ \\ \hline
+Q-criteria                                      & \textbf{Critere\_Q}                       & $s^{-1}$ \\ \hline
+Distance to the wall $Y^+=yU/\nu$               &                                           & \\ 
+(only computed on                               & \textbf{Y\_plus}                          & dimensionless \\ 
+boundaries of wall type)                        &                                           &  \\ \hline
+Friction velocity                               & \textbf{U\_star}                          & $m.s^{-1}$ \\ \hline
+Cell volumes                                    & \textbf{Volume\_maille}                   & $m^3$ \\ \hline
+Chemical potential                              & \textbf{Potentiel\_Chimique\_Generalise}  & \\ \hline
+Source term in non                              &                                           & \\
+Galinean referential                            & \textbf{Acceleration\_terme\_source}      & $m.s^{-2}$ \\ \hline
+Stability time steps                            & \textbf{Pas\_de\_temps}                   & S \\ \hline
+Boundary fluxes                                 & \textbf{Flux\_bords}                      & \\ \hline
+Volumetric porosity                             & \textbf{Porosite\_volumique}              & dimensionless \\ \hline
+Distance to the wall                            & \textbf{Distance\_Paroi} \footnote{distance\_paroi is a field which can be used only if the mixing length model (see 2.15.1.2) is used in the data file.}              & $m$\\ \hline
+Volumic thermal power                           & \textbf{Puissance\_volumique}             & $W.m^{-3}$ \\ \hline
+Local shear strain rate defined as              &                                           & \\
+$\sqrt{(2SijSij)}$                              & \textbf{Taux\_cisaillement}               & $s^{-1}$ \\ \hline
+Cell Courant number (VDF only)                  & \textbf{Courant\_maille}                  & dimensionless \\ \hline
+Cell Reynolds number (VDF only)                 & \textbf{Reynolds\_maille}                 & dimensionless \\ \hline
+\end{longtable}
+

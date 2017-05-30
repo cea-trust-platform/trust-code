@@ -2004,18 +2004,27 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
 	pb=0
 	pass
         pass
-    tstr='\label{'+replace(name,'_','')+'}'
+
+    if clname in dicobases.keys(): # si c'est une section, je ferme l'accolade laissee ouverte
+        if name!='methode_loi_horaire':
+            tstr+='\label{'+replace(name,'_','')+'}'+"}\n"
+        else:
+            tstr+='\label{'+replace(name,'_','')+"}\n"
+    else:
+        if clname=='/*' or clname=='#' or clname=='champ_base' or clname=='champ_front_base':
+            tstr+='}'
+
     if pb:
          tstr=tstr+' \index{'+clname+'} '
 	 pass
     tstra=""
     if clname not in dicobases.keys():
         # if name != vrai_name_:
-        tstra = "\subsection{"+clname+"}\n"
+        tstra = "\subsection{"+clname+"\label{"+replace(name,'_','')+"} }\n"
         pass
     if issubclass(icl,objet_lecture) or issubclass(icl,listobj) :
         if (niveau>1):
-            tstra = "\subsubsection{"+clname+"}\n"
+            tstra = "\subsubsection{"+clname+"\label{"+replace(name,'_','')+"} }\n"
             pass
         pass
     # a t on un syno
@@ -2386,7 +2395,9 @@ def gen_doc_base(fr=1):
 \usepackage{amsmath}
 \newcommand\normalsubformula[1]{\text{\mathversion{normal}$#1$}}
 
-\newcommand\includepng[1]{{\centering\includegraphics[width=11.234cm]{#1}}}
+\newcommand\includepng[2]{{\begin{figure}[h!]\begin{center}\includegraphics[width=#2cm]{#1}\end{center}\end{figure}}}
+\newcommand\includetabfig[4]{{\begin{center} \begin{tabular}{cc} \includegraphics[width=#2cm]{#1} & \includegraphics[width=#4cm]{#3} \tabularnewline \end{tabular} \par\end{center}}}
+\newcommand\jolitheta{\theta}
 
 \ifppdf \usepackage[pdftex,pdfstartview=FitH,colorlinks=true,linkcolor=blue,urlcolor=darkblue]{hyperref} 
 \pdfcompresslevel=9 
@@ -2422,6 +2433,9 @@ Link to: \LARGE \textbf{\href{run:TRUST_Generic_Guide.pdf}{ TRUST Generic Guide}
 \newpage
 \tableofcontents
 \input{parser.tex}
+\section{Existing \& predefined fields names\label{fieldsnames}}
+Here is a list of post-processable fields, but it is not the only ones.
+\input{fieldnames.tex}
 ''')
     
 
@@ -2478,7 +2492,7 @@ Link to: \LARGE \textbf{\href{run:TRUST_Generic_Guide.pdf}{ TRUST Generic Guide}
         else:
             tstr=tstr+name
             pass
-        tstr=tstr+"}\n"
+
         # namecl=dicoclass[name]
         namecl=name
         try:
@@ -2504,7 +2518,7 @@ Link to: \LARGE \textbf{\href{run:TRUST_Generic_Guide.pdf}{ TRUST Generic Guide}
         s.close()
         pass
     
-    s1.write('\section{index}\label{objetu} \printindex\n \end{document}\n')
+    s1.write('\section{index\label{objetu}} \printindex\n \end{document}\n')
     s1.close()
     if (lutil):
 	    for cla in getXClasses():
