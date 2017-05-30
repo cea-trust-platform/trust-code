@@ -14,7 +14,7 @@ To define the problem dimension, we use the following keyword:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Problems} \label{pbs}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-You have to define the problem type that you wishes to solve.
+You have to define the problem type that you wish to solve.
 
     \begin{center}
     \fbox{ \begin{minipage}[c]{0.5\textwidth}
@@ -24,7 +24,7 @@ You have to define the problem type that you wishes to solve.
     \end{minipage}}
     \end{center}
 
-Here are some of the available problems types:
+Here are some of the available problem types:
 \begin{itemize}
 %\item \textbf{Pb\_Hydraulique$\left[\mbox{\_Turbulent}\right]$}
 %\item \textbf{Pb\_Thermohydraulique$\left[\mbox{\_Turbulent}\right]$}
@@ -56,7 +56,7 @@ where:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Domain definition}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-To define the domain, you must name. This is done thanks to the following block:
+To define the domain, you must name it. This is done thanks to the following block:
 
     \begin{center}
     \fbox{ \begin{minipage}[c]{0.5\textwidth}
@@ -137,7 +137,7 @@ This is necessary for parallel calculation (see section \ref{parallel}).
 \end{figure}
 \end{itemize}
 
-\textbf{Be carefull} non standard and hybrih meshing are not supported! (cf Figure \ref{hybr})
+\textbf{Be carefull} non standard and hybrid meshing are not supported! (cf Figure \ref{hybr})
 
 \begin{figure}[h!]
 \begin{center}
@@ -198,7 +198,7 @@ This is necessary for parallel calculation (see section \ref{parallel}).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Import mesh file}
+\subsection{Import a mesh file}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 If your mesh was generated with an external tool like \href{http://www.salome-platform.org}{Salom\'e} (open source software), \href{http://resource.ansys.com/Products/Other+Products/ANSYS+ICEM+CFD}{ICEM} (commercial software), \href{http://gmsh.info/}{Gmsh} (open source software, included in \trust package) or \href{http://www-cast3m.cea.fr/}{Cast3M} (CEA software), then you must use one of the following keyword into your data file:
 
@@ -208,13 +208,13 @@ If your mesh was generated with an external tool like \href{http://www.salome-pl
 \item for another format, see the \href{\REFERENCEMANUAL\#read}{\trustref Reference Manual}.
 \end{itemize}
 
-If you want to learn how to make a mesh with Salom\'e or Gmsh and read it with \trust, you can go to see the exercises of the \trust tutorial: \href{TRUST_tutorial.pdf\#salome}{here} for Salom\'e and \href{TRUST_tutorial.pdf\#gmsh}{here} for Gmsh.
+If you want to learn how to make a mesh with Salom\'e or Gmsh and read it with \trust, you can look at the exercises of the \trust tutorial: \href{TRUST_tutorial.pdf\#salome}{here} for Salom\'e and \href{TRUST_tutorial.pdf\#gmsh}{here} for Gmsh.
 
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Create quickly a mesh}
+\subsection{Quickly create a mesh}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Here is an example of a simple geometry (of non complex channel type) using the internal tool of \trust:
 \begin{center}
@@ -280,9 +280,9 @@ To use this mesh in your data file, you just have to add the previous block in y
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Transform mesh within data file}
+\subsection{Transform mesh within the data file}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-You can also made transformations on your mesh after the \textbf{"Mailler"} or \textbf{"Read\_*"} command, using the following keywords:
+You can also make transformations on your mesh after the \textbf{"Mailler"} or \textbf{"Read\_*"} command, using the following keywords:
 \begin{itemize}
 \item \href{\REFERENCEMANUAL\#triangulate}{\textbf{Trianguler}} to triangulate your 2D cells and create an unstructured mesh.
 \item \href{\REFERENCEMANUAL\#tetraedriser}{\textbf{Tetraedriser}} to tetrahedralise 3D cells and create an unstructured mesh.
@@ -294,7 +294,7 @@ You can also made transformations on your mesh after the \textbf{"Mailler"} or \
 \item for other commands, see the section \href{\REFERENCEMANUAL\#interprete}{interprete} of the \trustref Reference Manual.
 \end{itemize}
 
-\Note that theses mesh modifications work on all mesh type (i.e. also for \textbf{*.geo} or \textbf{*.bin} or \textbf{*.med} files).
+\Note that theses mesh modifications work on all mesh types (i.e. also for \textbf{*.geo} or \textbf{*.bin} or \textbf{*.med} files).
 
 
 
@@ -374,9 +374,9 @@ To use it, launch in a bash terminal:
 > visit -o my_data_file.lata &
 \end{verbatim}
 
-To see how to use VisIt, go to see the first \trust tutorial exercise: \href{TRUST_tutorial.pdf\#exo1}{Obstacle}.\\
+To see how to use VisIt, look at the first \trust tutorial exercise: \href{TRUST_tutorial.pdf\#exo1}{Obstacle}.\\
 
-If you want to learn how to make a mesh with Salom\'e or Gmsh and read it with \trust, you can go to see the exercises of the \trust tutorial: \href{TRUST_tutorial.pdf\#salome}{here} for Salom\'e and \href{TRUST_tutorial.pdf\#gmsh}{here} for Gmsh.
+If you want to learn how to make a mesh with Salom\'e or Gmsh and read it with \trust, you can look at the exercises of the \trust tutorial: \href{TRUST_tutorial.pdf\#salome}{here} for Salom\'e and \href{TRUST_tutorial.pdf\#gmsh}{here} for Gmsh.
 
 
 
@@ -623,20 +623,20 @@ It can be:
 \item the convergency treshold: \textbf{seuil\_statio}
 \end{itemize}
 
-\Note that if the time step wants to go under the minimal time step \textbf{dt\_min}, \trust will stop the calculation.\\
+\Note that if the time step reaches the minimal time step \textbf{dt\_min}, \trust will stop the calculation.\\
 
 If you want to stop properly your running calculation (i.e. with all saves), you may use the \textit{my\_data\_file}.stop file (cf section \ref{stopfile}).
 When the simulation is running, you can see the "\textbf{0}" value in that file.\\
 
-To stop it, put a "\textbf{1}" instead of the "\textbf{0}" and at the next iteration the calculation will stop properly.\\
+To stop it, put a "\textbf{1}" instead of the "\textbf{0}", save the file and at the next iteration the calculation will stop properly.\\
 
-When you don't change any thing to that file, at the end of the calculation, you can see that it is writen "\textbf{Finished correctly}".
+When you don't change any thing in that file, at the end of the calculation, you can see that it is writen "\textbf{Finished correctly}".
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Medium/Type of fluide}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-To specify the medium or fluid, you may add the following block.
+To specify the medium or fluid, you must add the following block.
 
     \begin{center}
     \fbox{ \begin{minipage}[c]{0.5\textwidth}
@@ -658,7 +658,7 @@ To specify the medium or fluid, you may add the following block.
 \item for other types and more information see \href{\REFERENCEMANUAL\#milieubase}{\trustref Reference Manual}.
 \end{itemize}
 
-If you want to use more than one medium, you can add an other block for each medium or fluid.\\
+If you want to use more than one medium, you can add an other blocks for each medium or fluid.\\
 
 
 
@@ -667,7 +667,7 @@ If you want to use more than one medium, you can add an other block for each med
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Add gravity}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-If needed, you can add gravity term to your simulation. This is done by adding
+If needed, you can add a gravity term to your simulation. This is done by adding
 a uniform field, no matter his name. For example in 2D:
 
     \begin{center}
@@ -729,7 +729,7 @@ The problem \textit{my\_problem} is discretized according to the \textit{my\_dis
 
 IMPORTANT: A number of objects must be already associated (a domain, time scheme, central object) prior to invoking the \textbf{Discretize} keyword. The physical properties of this central object must also have been read.\\
 
-\Note that when \trust succed the discretization step, the mesh is then validated by the code.\\
+\Note that when the discretization step succeeds, the mesh is validated by the code.\\
 
 At this level of your data file, you can visualize your mesh with the "\textbf{-mesh}" option of the trust script, it will directly open your mesh with VisIt.
 \begin{verbatim}

@@ -88,7 +88,7 @@ Associate pb milieu
 Discretize pb ma_discretisation
 
 # New domains for post-treatment #
-# By default each boundarie condition of the domain is already extrated with such name "dom"_boundaries_"BC" #
+# By default each boundary condition of the domain is already extracted with names such as "dom"_boundaries_"BC" #
 
 # Problem description #
 Read pb

@@ -6,7 +6,7 @@ In function of your choice of problem type, you will have a different set of equ
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Incompressible problems}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\trust solves Navier-Stokes equations with/without heat equation for incompressible fluid:
+\trust solves Navier-Stokes equations with/without the heat equation for an incompressible fluid:
 
 $$
 \left\{
@@ -18,7 +18,7 @@ $$
 \right.
 $$
 
-where: $\displaystyle{P^*=\frac{P}{\rho} + g z}$, $Q$ is a heat source term, and:
+where: $\displaystyle{P^*=\frac{P}{\rho} + g z}$, $Q$ is the heat source term, and:
 
 \begin{itemize}
 \item $\rho$: density,
@@ -246,7 +246,7 @@ where: $P_0=\rho R T$, $Q$ is a heat source term, and:
 \end{minipage}}
 \end{center}
 
-For more information on thermohydraulique QC problem, go \href{\REFERENCEMANUAL\#pbthermohydrauliqueqc}{here} and for thermohydraulique turbulent QC problem, go \href{\REFERENCEMANUAL\#pbthermohydrauliqueturbulentqc}{there}.
+For more information on QC problem, go \href{\REFERENCEMANUAL\#pbthermohydrauliqueqc}{there} and for turbulent QC problem, go \href{\REFERENCEMANUAL\#pbthermohydrauliqueturbulentqc}{there}.
 
 
 
@@ -419,7 +419,7 @@ You can see the documentation of this kind of problem in the \href{\REFERENCEMAN
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Pressure solvers}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Then you may indicate the choice of pressure solver (cf \href{\REFERENCEMANUAL\#solveursysbase}{\trustref Reference Manual}) using the following syntaxe:
+Then you may indicate the choice of pressure solver (cf \href{\REFERENCEMANUAL\#solveursysbase}{\trustref Reference Manual}) using the following syntax:
     \begin{center}
     \fbox{ \begin{minipage}[c]{0.7\textwidth}
     \begin{alltt}
@@ -440,13 +440,14 @@ The \textit{my\_solver} may be:
 %\item \textbf{Gmres} or \textbf{Gen} or \textbf{Optimal} (cf to the \href[page=DOCLINK_OTHER SOLVERS]{\REFERENCEMANUAL}{\trustref Reference Manual}).
 \end{itemize}
 
+Reminder: in CFD, a separate solver is used to solve the pressure. For more details, you can have a look at the section "Time and space schemes" of the \href{TRUST_and_TrioCFD_presentation.pdf}{the \trust \& \textbf{TrioCFD} user slides}.
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Convection}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-There is no default convectif scheme so you must choose one \href{\REFERENCEMANUAL\#blocconvection}{convection scheme}:
+There is no default convective scheme so you must choose one \href{\REFERENCEMANUAL\#blocconvection}{convection scheme}:
     \begin{center}
     \fbox{ \begin{minipage}[c]{0.5\textwidth}
     \begin{alltt}
@@ -476,7 +477,7 @@ You can use the following convective scheme, following the recommendations of th
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Diffusion}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-For the diffusive scheme, it is the same syntaxe:
+For the diffusive scheme, it is the same syntax:
 
     \begin{center}
     \fbox{ \begin{minipage}[c]{0.5\textwidth}
@@ -488,7 +489,7 @@ For the diffusive scheme, it is the same syntaxe:
 
 You can choose your scheme with the help of the \href{\REFERENCEMANUAL\#blocdiffusion}{\trustref Reference Manual}.\\
 
-\Note that if you don't specify any diffusive scheme, automaticaly the code uses the standard diffusive scheme of order 2.
+\Note that if you don't specify any diffusive scheme, the code automatically uses the standard diffusive scheme of order 2.
 If you don't want diffusion in your problem, you may use:
 
     \begin{center}
@@ -516,7 +517,7 @@ For each equation, you \textbf{must} set initial conditions:
 \end{minipage}}
 \end{center}
 
-To see the syntaxe of each available initial condition: cf \href{\REFERENCEMANUAL\#condinits}{\trustref Reference Manual}.
+To see the syntax of each available initial condition: cf \href{\REFERENCEMANUAL\#condinits}{\trustref Reference Manual}.
 Here are the most used initial conditions:
 \begin{itemize}
 \item \textbf{Velocity}     field\_type   \textit{bloc\_lecture\_champ}
@@ -529,12 +530,12 @@ Here are the most used initial conditions:
 
 We list here some "field\_type":
 \begin{itemize}
-\item \href{\REFERENCEMANUAL\#uniformfield}{\textbf{Uniform\_Field}}: for uniform field,
+\item \href{\REFERENCEMANUAL\#uniformfield}{\textbf{Uniform\_Field}}: for a uniform field,
 \item \href{\REFERENCEMANUAL\#champfoncmed}{\textbf{Champ\_Fonc\_Med}}: to read a data field in a MED-format file .med at a specified time,
-\item \href{\REFERENCEMANUAL\#fieldfunctxyz}{\textbf{Champ\_Fonc\_txyz}}: for a field which depends on the time and the space,
+\item \href{\REFERENCEMANUAL\#fieldfunctxyz}{\textbf{Champ\_Fonc\_txyz}}: for a field which depends on time and space,
 \item \href{\REFERENCEMANUAL\#champfoncfonctiontxyz}{\textbf{Champ\_Fonc\_Fonction\_txyz}}: for a field which is a function of another field and time and/or space coordinates,
-\item \href{\REFERENCEMANUAL\#champfoncreprise}{\textbf{Champ\_Fonc\_Reprise}}: to read a data field in a save file (.xyz or .sauv) at a specified time.
-\item refer to \href{\REFERENCEMANUAL\#fieldbase}{\trustref Reference Manual}.
+\item \href{\REFERENCEMANUAL\#champfoncreprise}{\textbf{Champ\_Fonc\_Reprise}}: to read a data field in a saved file (.xyz or .sauv) at a specified time.
+\item refer to the \href{\REFERENCEMANUAL\#fieldbase}{\trustref Reference Manual}.
 \end{itemize}
 
 
@@ -588,7 +589,7 @@ Here is a list of the most used boundary conditions:
 \end{itemize}
 }}
 
-To choose your "boundary\_field\_type" parameters, refer to \href{\REFERENCEMANUAL\#frontfieldbase}{\trustref Reference Manual}.
+To choose your "boundary\_field\_type" parameters, refer to the \href{\REFERENCEMANUAL\#frontfieldbase}{\trustref Reference Manual}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -662,7 +663,7 @@ To introduce several source terms into the same equation, the blocks correspondi
 \section{Post-process}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Before post-process fields, during a run, \trust creates several files which contain informations about the calculation, the convergence, flux, bilans... (see part \ref{post} for more informations).\\
+Before post-processing fields, during a run, \trust creates several files which contain informations about the calculation, the convergence, flux, balances... (see part \ref{post} for more informations).\\
 
 Several keywords can be used to create a postprocessing block, into a problem. First, you can create a single postprocessing task (\href{\REFERENCEMANUAL\#postraitement}{\textbf{Post\_processing}} keyword). Generally, in this block, results will be printed with a specified format at a specified time period.
 \begin{center}
@@ -679,7 +680,7 @@ Several keywords can be used to create a postprocessing block, into a problem. F
 \end{minipage}}
 \end{center}
 
-But you can also create a list of postprocessing with \href{\REFERENCEMANUAL\#postraitements}{\textbf{Post\_processings}} keyword (named with Post\_name1, Post\_name2, etc...), in order to print results to several formats or with different time periods, or into different results files:
+But you can also create a list of postprocessings with \href{\REFERENCEMANUAL\#postraitements}{\textbf{Post\_processings}} keyword (named with Post\_name1, Post\_name2, etc...), in order to print results into several formats or with different time periods, or into different results files:
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.6\textwidth}
 \begin{alltt}
@@ -710,77 +711,11 @@ You can post-process predefined fields and already existing fields.
 Here is a list of post-processable fields, but it is not the only ones.
 
 \small
-\begin{longtable}[hcr]{|c|c|c|}
-\hline \textbf{Physical values}                        & \textbf{Keyword for field\_name}          & \textbf{Unit} \\ \hline \endhead
-\hline\multicolumn{3}{|c|}{\textcolor{olive}{... continued on next page ...}}  \\ \hline \endfoot
-\hline \hline \endlastfoot
-
-
-Speed                                           & \textbf{Vitesse} or \textbf{Velocity}     & $m.s^{-1}$ \\ \hline
-Kinetic energy                                  & \textbf{Energie\_cinetique}               & $m^2.s^{-2}$ \\ \hline
-Vorticity                                       & \textbf{Vorticite}                        & $s^{-1}$ \\ \hline
-Pressure in incompressible flow                 &                                           & \\
-($P/\rho+gz$)                                   & \textbf{Pression} \footnote{The post-processed pressure is the pressure divided by the fluid's density ($P/\rho+gz$) on incompressible laminar calculation. For turbulent, pressure is $P/\rho+gz+2/3*k$ cause the turbulent kinetic energy is in the pressure gradient.}
-                                                                                            & $Pa.m^3.kg^{-1}$ \\
-For Front Tracking probleme                     &                                           & or \\
-($P+\rho gz$)                                   &                                           &  $Pa$ \\ \hline
-Pressure in incompressible flow                 &                                           &   \\
-(P+$\rho gz$)                                   & \textbf{Pression\_pa} or \textbf{Pressure}         & $Pa$ \\ \hline
-Pressure in compressible flow                   & \textbf{Pression}                         & $Pa$ \\ \hline
-Hydrostatic pressure $(\rho g z)$                 & \textbf{Pression\_hydrostatique}           & $Pa$ \\ \hline
-Totale pressure (when                           &                                           & \\
-quasi compressible model                        &                                           & \\
-is used)=Pth+P                                  & \textbf{Pression\_tot}                    & $Pa$ \\ \hline
-Pressure gradient                               &                                           & \\
-($\nabla(P/\rho+gz)$)                           & \textbf{Gradient\_pression}               & $m.s^{-2}$ \\ \hline
-Temperature                                     & \textbf{Temperature}                      & $^o$C or K \\ \hline
-Phase temperature of                            &                                           & \\
-a two phases flow                               & \textbf{Temperature\_EquationName}        & $^o$C or K \\ \hline
-Mass transfer rate                              &                                           & \\
-between two phases                              & \textbf{Temperature\_mpoint}              & $kg.m^{-2}.s^{-1}$ \\ \hline
-Temperature variance                            & \textbf{Variance\_Temperature}            & $K^2$ \\ \hline
-Temperature dissipation rate                    & \textbf{Taux\_Dissipation\_Temperature}   & $K^2.s^{-1}$ \\ \hline
-Temperature gradient                            & \textbf{Gradient\_temperature}            & $K.m^{-1}$ \\ \hline
-Heat exchange coefficient                       & \textbf{H\_echange\_Tref} \footnote{Tref indicates the value of a reference temperature and must be specified by the user. For example, H\_echange\_293 is the keyword to use for Tref=293K.}            & $W.m^{-2}.K^{-1}$ \\ \hline
-Turbulent heat flux                             & \textbf{Flux\_Chaleur\_Turbulente}        & $m.K.s^{-1}$ \\ \hline
-Turbulent viscosity                             & \textbf{Viscosite\_turbulente}            & $m^2.s^{-1}$ \\ \hline
-Turbulent dynamic viscosity                     &                                           & \\
-(when quasi compressible                        & \textbf{Viscosite\_dynamique\_turbulente} & $kg.m.s^{-1}$ \\
- model is used)                                 &                                           & \\ \hline
-Turbulent kinetic energy                        & \textbf{K}                                & $m^2.s^{-2}$ \\ \hline
-Turbulent dissipation rate                      & \textbf{Eps}                              & $m^3.s^{-1}$ \\ \hline
-Turbulent quantities                            &                                           & \\
-K and Epsilon                                   & \textbf{K\_Eps}                           & ($m^2.s^{-2}$ ,$m^3.s^{-1}$ ) \\ \hline
-Constituent concentration                       & \textbf{Concentration}                    & \\ \hline
-Component velocity along X                      & \textbf{VitesseX}                         & $m.s^{-1}$ \\ \hline
-Component velocity along Y                      & \textbf{VitesseY}                         & $m.s^{-1}$ \\ \hline
-Component velocity along Z                      & \textbf{VitesseZ}                         & $m.s^{-1}$ \\ \hline
-Mass balance on each cell                       & \textbf{Divergence\_U}                    & $m^3.s^{-1}$  \\ \hline
-Irradiancy                                      & \textbf{Irradiance}                       & $W.m^{-2}$ \\ \hline
-Q-criteria                                      & \textbf{Critere\_Q}                       & $s^{-1}$ \\ \hline
-Distance to the wall $Y^+=yU/\nu$               &                                           & \\ 
-(only computed on                               & \textbf{Y\_plus}                          & dimensionless \\ 
-boundaries of wall type)                        &                                           &  \\ \hline
-Friction velocity                               & \textbf{U\_star}                          & $m.s^{-1}$ \\ \hline
-Cell volumes                                    & \textbf{Volume\_maille}                   & $m^3$ \\ \hline
-Chemical potential                              & \textbf{Potentiel\_Chimique\_Generalise}  & \\ \hline
-Source term in non                              &                                           & \\
-Galinean referential                            & \textbf{Acceleration\_terme\_source}      & $m.s^{-2}$ \\ \hline
-Stability time steps                            & \textbf{Pas\_de\_temps}                   & S \\ \hline
-Boundary fluxes                                 & \textbf{Flux\_bords}                      & \\ \hline
-Volumetric porosity                             & \textbf{Porosite\_volumique}              & dimensionless \\ \hline
-Distance to the wall                            & \textbf{Distance\_Paroi} \footnote{distance\_paroi is a field which can be used only if the mixing length model (see 2.15.1.2) is used in the data file.}              & $m$\\ \hline
-Volumic thermal power                           & \textbf{Puissance\_volumique}             & $W.m^{-3}$ \\ \hline
-Local shear strain rate defined as              &                                           & \\
-$\sqrt{(2SijSij)}$                              & \textbf{Taux\_cisaillement}               & $s^{-1}$ \\ \hline
-Cell Courant number (VDF only)                  & \textbf{Courant\_maille}                  & dimensionless \\ \hline
-Cell Reynolds number (VDF only)                 & \textbf{Reynolds\_maille}                 & dimensionless \\ \hline
-\end{longtable}
+\input{fieldnames.tex}
 \normalsize
 
-
 \begin{remark}
-Physical properties (conductivity, diffusivity,...) can also been interrogated.
+Physical properties (conductivity, diffusivity,...) can also be interrogated.
 \end{remark}
 
 
@@ -791,7 +726,7 @@ For more informations, you can see the \href{\REFERENCEMANUAL\#champsapost}{\tru
 
 \item \textcolor{darkblue}{\textbf{Creating new fields}}
 
-The \href{\REFERENCEMANUAL\#definitionchamps}{\textbf{Definition\_champs}} keyword is used to create new or more complex field for advanced postprocessing.
+The \href{\REFERENCEMANUAL\#definitionchamps}{\textbf{Definition\_champs}} keyword is used to create new or more complex fields for advanced postprocessing.
 
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.8\textwidth}
@@ -911,13 +846,13 @@ You can find other examples in the \href{TRUST_and_TrioCFD_presentation.pdf}{the
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Post-processing blocks}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-There is three method to post-process in \trust: by probes, fields or making statitics.
+There are three method to post-process in \trust: using probes, fields or making statistics.
 
 
 \begin{itemize}
 \item \textcolor{darkblue}{\textbf{Probes}}\\
 Probes refer to sensors that allow a value or several points of the domain to be monitored over time.
-The probes may be a set of points defined:
+The probes are a set of points defined:
 \begin{itemize}
 \item one by one: \href{\REFERENCEMANUAL\#points}{\textbf{Points}} keyword or 
 \item by a set of points evenly distributed over a straight segment: \href{\REFERENCEMANUAL\#segment}{\textbf{Segment}} keyword or
@@ -939,7 +874,7 @@ Here is an example of 2D \textbf{Probes} block:
     \end{alltt}
     \end{minipage}}
     \end{center}
-where the use of \textit{"loc"} option allow to specify the wanted localisation of the probes. The available values are \textbf{"grav"} for gravity center of the element, \textbf{"nodes"} for faces and \textbf{"som"} for verteces. There is not default location. If the point does not coincide with a calculation node, the value is extrapolated linearly according to neighbouring node values.
+where the use of \textit{"loc"} option allow to specify the wanted localisation of the probes. The available values are \textbf{"grav"} for gravity center of the element, \textbf{"nodes"} for faces and \textbf{"som"} for vertices. There is not default location. If the point does not coincide with a calculation node, the value is extrapolated linearly according to neighbouring node values.
 
 For complete syntax, see the \href{\REFERENCEMANUAL\#corpspostraitement}{\trustref Reference Manual}, also for \href{\REFERENCEMANUAL\#sondes}{all options}.
 
@@ -1019,16 +954,16 @@ Here is an example of \href{\REFERENCEMANUAL\#champsposts}{\textbf{Fields}} bloc
 
 where \textbf{"faces"} , \textbf{"elem"} and \textbf{"som"} are keywords allowed to specify the localisation of the field.\\
 
-\Note that \underline{when you don't specify the localisation of the field}, the default value is \textbf{"som"} for values at the verteces. So fields are post-processed at the verteces of the mesh.\\
+\Note that \underline{when you don't specify the localisation of the field}, the default value is \textbf{"som"} for values at the vertices. So fields are post-processed at the vertices of the mesh.\\
 
-To visualize, your post-processed fields, you can use open source softwares like: \href{https://wci.llnl.gov/simulation/computer-codes/visit}{VisIt} (included in \trust package) for lata files, or for med files: \href{http://www.salome-platform.org}{Salom\'e} or \href{http://www.paraview.org}{Paraview}.\\
+To visualize your post-processed fields, you can use open source softwares like: \href{https://wci.llnl.gov/simulation/computer-codes/visit}{VisIt} (included in \trust package) for lata files, or for med files: \href{http://www.salome-platform.org}{Salom\'e} or \href{http://www.paraview.org}{Paraview}.\\
 
 You can see the \href{\REFERENCEMANUAL\#corpspostraitement}{complete syntax} and \href{\REFERENCEMANUAL\#champsposts}{all options} in the \trustref Reference Manual.
 
 
 
 \item \textcolor{darkblue}{\textbf{Statistics}}\\
-Using this keyword, you will compute statistics on your unknows. You must specify the beginning and ending time for the statistics, the post-process time step, the statistic method, the name (and localisation) of your post-processed field.
+Using this keyword, you will compute statistics on your unknows. You must specify the begining and ending time for the statistics, the post-process time step, the statistic method, the name (and localisation) of your post-processed field.
 
 Here is an example of \href{\REFERENCEMANUAL\#statsposts}{\textbf{Statistiques}} block:
     \begin{center}
@@ -1087,7 +1022,7 @@ and correlation between the pressure and the velocity $\left\langle P(t).V(t)\ri
 Statistical fields can be plotted with probes with the keyword "operator\_field\_name" like for example: Moyenne\_Vitesse or Ecart\_Type\_Pression or Correlation\_Vitesse\_Vitesse. For that, it is mandatory to have the statistical calculation of this fields defined with the keyword \textbf{Statistiques}.\\
 \end{remark}
 
-For complete syntax, see the \trustref Reference Manual \href{\REFERENCEMANUAL\#corpspostraitement}{here}, and for all options see the \href{\REFERENCEMANUAL\#statsposts}{\trust Reference Manual}.
+For the complete syntax, see the \trustref Reference Manual \href{\REFERENCEMANUAL\#corpspostraitement}{here}, and for all options see the \href{\REFERENCEMANUAL\#statsposts}{\trust Reference Manual}.
 \end{itemize}
 
 
@@ -1097,9 +1032,9 @@ For complete syntax, see the \trustref Reference Manual \href{\REFERENCEMANUAL\#
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 You can use localisation keywords to specify where you want to post-process your fields in order to avoid interpolations on your post-processed fields.\\
 
-%For example, in VDF, pressure field is computed at the verteces so if we put \textbf{"elem"} keyword, the post-processed field will be taken at the center of the element so it won't be interpolated. If we use \textbf{"faces"} keyword for VDF pressure, we will get interpolated field.
+%For example, in VDF, pressure field is computed at the vertices so if we put \textbf{"elem"} keyword, the post-processed field will be taken at the center of the element so it won't be interpolated. If we use \textbf{"faces"} keyword for VDF pressure, we will get interpolated field.
 
-For \textbf{VDF} discretization, you can see the Figure \ref{fig_VDF} and here is a tabular with a reminder of the calcul location of the fields in \textbf{VDF} discretization:
+For the \textbf{VDF} discretization, you can see the Figure \ref{fig_VDF} and here is a table with a reminder of the computation location of the fields in the \textbf{VDF} discretization:
 
 %\begin{longtable}[h!]{|c|c|c|c|c|}
 %\hline 
@@ -1140,14 +1075,14 @@ Turbulent viscosity         & \textbf{viscosite\_turbulente}    & element gravit
 \end{longtable}
 
 
-For \textbf{VEFPreP1B} discretization, you can see the Figure \ref{fig_VEF} and \ref{fig_VEF_pressure_loc}. Here is a tabular with a reminder of the calcul location of the fields in \textbf{VEFPreP1B} discretization:
+For the \textbf{VEFPreP1B} discretization, you can see the Figure \ref{fig_VEF} and \ref{fig_VEF_pressure_loc}. Here is a table with a reminder of the computation location of the fields in \textbf{VEFPreP1B} discretization:
 
 \begin{longtable}[h!]{|c|c|c|c|c|}
 \hline 
 \textbf{Names}              & \textbf{Keyword}                  & \textbf{Localisation}     \\ \hline
 \hline
                             &                                   & element gravity center    \\
-Pressure                    & \textbf{pressure}                 & verteces                  \\ \hline
+Pressure                    & \textbf{pressure}                 & vertices                  \\ \hline
 %                            &                                   & faces center (for 3D)     \\ \hline
 Velocity                    & \textbf{velocity}                 & faces center              \\ \hline
 Temperature                 & \textbf{temperature}              & faces center              \\ \hline
@@ -1169,7 +1104,7 @@ Turbulent viscosity         & \textbf{viscosite\_turbulente}    & element gravit
 %\textbf{Names}              & \textbf{Keyword}                  & \textbf{Localisation}     & \textbf{Probes}   & \textbf{Fields}   \\ \hline
 %\hline
 %                            &                                   & P0: element gravity center    & \textbf{grav} & \textbf{elem}     \\
-%Pressure                    & \textbf{pressure}                 & P1: verteces              & \textbf{som}      & \textbf{som}      \\
+%Pressure                    & \textbf{pressure}                 & P1: vertices              & \textbf{som}      & \textbf{som}      \\
 %                            &                                   & Pa: faces center (for 3D) & \textbf{nodes}    & \textbf{faces}    \\ \hline
 %Velocity                    & \textbf{velocity}                 & faces center              & \textbf{nodes}    & \textbf{faces}    \\ \hline
 %Temperature                 & \textbf{temperature}              & faces center              & \textbf{nodes}    & \textbf{faces}    \\ \hline
@@ -1186,8 +1121,8 @@ Turbulent viscosity         & \textbf{viscosite\_turbulente}    & element gravit
 %\end{longtable}
 
 
-\textbf{Be carefull}, if you are in P0+P1 discretization (default option) and you post-process the pressure field at the element (or at the verteces), you will have \textbf{interpolation} because the field is calculated at the element \textbf{and} at the verteces. \\
-%There is no distinction between the two fields and the code will interpolate to have pressure at the element or at the verteces.\\
+\textbf{Be careful}, if you are in P0+P1 discretization (default option) and you post-process the pressure field at the element (or at the vertices), you will have an \textbf{interpolation} because the field is computed at the element \textbf{and} at the vertices. \\
+%There is no distinction between the two fields and the code will interpolate to have pressure at the element or at the vertices.\\
 %This is the same in P0+P1+Pa.
 
 

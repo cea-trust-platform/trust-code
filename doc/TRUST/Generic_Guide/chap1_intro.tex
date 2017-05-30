@@ -2,7 +2,7 @@ This document constitutes the generic guide for \textbf{TRUST software} and his 
 
 \trust is a thermohydraulic software package for CFD simulations for incompressible monophasic/diphasic flow.\\
 
-You could create new project based on \trust plateform. Theses projects were named \textbf{"BALTIK"} projects.\\
+You can create new project based on \trust plateform. Theses projects are named \textbf{"BALTIK"} projects.\\
 
 The two currently available modules include a VDF calculation module "Finite Difference Volume" and a VEF calculation module "Finite Element Volume". \\
 
@@ -11,7 +11,7 @@ The VDF and VEF validated modules are designed to process the 2D or 3D flow of N
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Before TRUST: a brick software named Trio\_U}
+\section{Before TRUST: a modular software named Trio\_U}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \trust was born from the cutting in two pieces of \textbf{Trio\_U} software.
@@ -94,7 +94,7 @@ The VDF and VEF validated modules are designed to process the 2D or 3D flow of N
 \end{center}
 \end{figure}
 
-We could create new project based on Kernel brick or \textbf{Trio\_U} brick. 
+We could create new projects based on Kernel brick or \textbf{Trio\_U} brick. 
 Theses projects were named \textbf{"BALTIK"} projects: "\textbf{B}uild an \textbf{A}pplication \textbf{L}inked to \textbf{T}r\textbf{I}o\_U \textbf{K}ernel".\\
 
 In 2015, \textbf{Trio\_U} was divided in two parts: \trust and \textbf{TrioCFD}.
@@ -188,11 +188,11 @@ Here is the structure of \trust platform (cf Figure \ref{TRUST}):
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Software little history}
+\section{Short history}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \trust is developed at the CEA/DEN/DANS/DM2S/STMF service.
-The project starts in 1994 and improved versions were built since:
+The project starts in 1994 and improved versions were built ever since:
 \begin{itemize}
 \item 1994: start of the project Trio\_U
 \item 01/1997: v1.0 (VDF only)
@@ -214,21 +214,21 @@ The project starts in 1994 and improved versions were built since:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 To launch a calculation with \trust, you need to write a "data file" which is an input file for \trust and will contain all the informations about your simulation.
-Data files are written following some rules as shown above. But their language is not a programming language, users can't make loops or switch...\\
+Data files are written following some rules as shown below. But their language is not a programming language, users can't make loops or switch...\\
 
 \Note that:
 \begin{itemize}
-\item lignes between \textcolor{blue}{\# ... \#} and \textcolor{blue}{/* ... */} are comments,
-\item in that document, words in \textbf{bold} are \trust keywords, you can enlight them in your file editor with the command line (details in section \ref{Run}):\\
+\item lines between \textcolor{blue}{\# ... \#} and \textcolor{blue}{/* ... */} are comments,
+\item in that document, words in \textbf{bold} are \trust keywords, you can highlight them in your file editor with the command line (details in section \ref{Run}):\\
 \texttt{> trust -config nedit|vim|emacs}
-\item braces "\{ \}" are elements that \trust reads and interpretes, so don't forget them and \underline{put space} \underline{before and after them},
-\item elements between bracket "[ ]" are optionnal.
+\item braces "\{ \}" are elements that \trust reads and interprets, so don't forget them and \underline{put space} \underline{before and after them},
+\item elements between bracket "[ ]" are optional.
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Data file example: base blocks} \label{data}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Here is a frame of basic sequential data file:\\
+Here is the template of a basic sequential data file:\\
 
 \input{mini.tex}
 
@@ -290,7 +290,7 @@ More abstract object types also exist:
 
 \begin{itemize}
 \item A \textbf{VDF} or \textbf{VEF} according to the discretization type,
-\item A \textbf{Scheme\_euler\_explicit} to indicate  the scheme type,
+\item A \textbf{Scheme\_euler\_explicit} to indicate the time scheme type,
 \item A \textbf{Solveur\_pression} to denote the pressure system solver type,
 \item A \textbf{Uniform\_field} to define, for example, the gravity field.
 \end{itemize}
@@ -299,7 +299,7 @@ More abstract object types also exist:
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Interpretors notion}
+\subsection{Interpretor notion}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \textbf{Interprete } (interpretor) type objects are then used to handle the created objects with the following syntax:
     \begin{center}
@@ -311,7 +311,7 @@ More abstract object types also exist:
     \end{center}
 
 \begin{itemize}
-\item \textit{Type\_interprete}: any type derived from the \textbf{Interprete} (Interpretor) type recognised by \trust. In this manual, they are written in \textbf{bold}. You can enlight them in your file editor with the command (details in section \ref{Run}):\\
+\item \textit{Type\_interprete}: any type derived from the \textbf{Interprete} (Interpretor) type recognised by \trust. In this manual, they are written in \textbf{bold}. You can highlight them in your file editor with the command (details in section \ref{Run}):\\
 \texttt{> trust -config nedit|vim|emacs}
 \item \textit{argument}: an argument may comprise one or several object identifiers and/or one or several data blocks.
 \end{itemize}
@@ -406,14 +406,14 @@ A data set to write Ok on screen:
 \item The comma separates items in a list (a comma must be enclosed with spaces or a new line).
 \item Interpretor keywords are recognised indiscriminately whether they are written in lower and/or upper case.
 \item \textbf{On the contrary, object names (identifiers) are recognised differently if they are written in upper or lower case.}
-\item \textbf{In the following description, items (keywords or values) enclosed by [ and ] are optional.}
+\item In the following description, items (keywords or values) enclosed by [ and ] are \underline{optional}.
 \end{enumerate}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Running data file}\label{Run}
+\section{Running a data file}\label{Run}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 To use \trust, your shell must be "bash". So ensure you are in the right shell:
@@ -455,12 +455,12 @@ Here is a panel of available options:
 Usage: trust [option] datafile [nb_cpus] [1>file.out] [2>file.err]
 Where option may be:
 -help|-h                 : List options.
--index                   : Access to TRUST ressources index.
--doc                     : Access to TRUST manual (Generic Guide).
+-index                   : Access to the TRUST ressource index.
+-doc                     : Access to the TRUST manual (Generic Guide).
 -config nedit|vim|emacs  : Configure nedit or vim or emacs with TRUST keywords.
 -mesh                    : Visualize the mesh(es) contained in the data file.
 -evol                    : Monitor the TRUST calculation (new IHM).
--wiz                     : Set a TRUST datafile from a MED file (new IHM).
+-wiz                     : Create a TRUST datafile from a MED file (new IHM).
 -prm                     : Write a prm file.
 -clean                   : Clean the current directory from all the generated 
                            files by TRUST.
@@ -498,14 +498,14 @@ Where option may be:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 To run a parallel calculation, you must do two runs:
 \begin{itemize}
-\item the first one, to partitioning and create your 'n' sub-domains (two methods will by presented),
+\item the first one, to partition and create your 'n' sub-domains (two methods: "By hand" method below and "Assisted" method cf parts \ref{decjdd} \& \ref{makePARdata}),
 \item the second one, to read your 'n' sub-domains and run the calculation on 'n' processors.
 \end{itemize}
 \vspace{0.5cm}
 
 We will explain here how to do such work:
 \begin{itemize}
-\item \textbf{\textcolor{darkblue}{Partitionning: "By hand" method}}\\
+\item \textbf{\textcolor{darkblue}{Partitioning: "By hand" method}}\\
 You have to make two data files:
 \begin{itemize}
 \item \textit{BuildMeshes.data} and 
@@ -575,7 +575,7 @@ To see your sub-domains, you can run:
 > trust -mesh Calculation
 \end{alltt}
 
-In the \textit{Calculation.data} file contains the domain definition, the block which will read the sub-domains and the probleme definition (as in sequential calculation).
+In the \textit{Calculation.data} file contains the domain definition, the block which will read the sub-domains and the problem definition (as in sequential calculation).
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.8\textwidth}
 \begin{center}
