@@ -1,10 +1,8 @@
 diff -r bin/BUILD64/patch/Outils/lata2dx/Makefile ./Outils/lata2dx/Makefile
-9,10c9,10
+9c9
 < 	#(cd lata2dx_reactor;./build_lata2dx_reactor.sh)
-< 	#cp -f lata2dx_reactor/build/lata2dx_reactor $(TRUST_ROOT)/exec
 ---
 > 	(cd lata2dx_reactor;./build_lata2dx_reactor.sh)
-> 	cp -f lata2dx_reactor/build/lata2dx_reactor $(TRUST_ROOT)/exec
 diff -r bin/BUILD64/patch/Outils/lata2dx/lata2dx/commun_triou/LataDB.cpp ./Outils/lata2dx/lata2dx/commun_triou/LataDB.cpp
 400c400
 <     if ((type_ != LataDBDataType::INT64) &&  (type_ != LataDBDataType::INT32)) {
@@ -45,11 +43,11 @@ diff -r bin/BUILD64/patch/ThirdPart/src/LIBMFFT_C/jmfft.h ./ThirdPart/src/LIBMFF
 diff -r bin/BUILD64/patch/ThirdPart/src/LIBPETSC/install ./ThirdPart/src/LIBPETSC/install
 402d401
 <    add_package metis
-518c517
+519c518
 <    FOPTFLAGS=`$TRUST_Awk '/F77Flags =/ {gsub("F77Flags =","",$0);print $0}' $fic_env |sed "s/-fdefault-integer-8//g" `
 ---
 >    FOPTFLAGS=`$TRUST_Awk '/F77Flags =/ {gsub("F77Flags =","",$0);print $0}' $fic_env`
-539d537
+540d538
 < --with-64-bit-indices \
 diff -r bin/BUILD64/patch/ThirdPart/src/LIBSKIT/Installer ./ThirdPart/src/LIBSKIT/Installer
 25,27d24
@@ -58,7 +56,7 @@ diff -r bin/BUILD64/patch/ThirdPart/src/LIBSKIT/Installer ./ThirdPart/src/LIBSKI
 < 
 Only in bin/BUILD64/patch/ThirdPart/src/LIBSKIT/patch: color.f
 diff -r bin/BUILD64/patch/env_src/configurer_env ./env_src/configurer_env
-584,590d583
+600,606d599
 < 
 < # Ajout des paths dans le PATH 
 < for d in  $TRUST_FORCE_SEARCH
@@ -66,11 +64,14 @@ diff -r bin/BUILD64/patch/env_src/configurer_env ./env_src/configurer_env
 < export PATH=$d:${PATH}
 < done
 < 
-1611c1604
+908,909d900
+< # Arret si compilateur intel utilise pour build en 64 BITS (car il faut revoir option -fdefault-integer-8)
+< [ "`basename $TRUST_F77_BASE`" = "ifort" ] && echo "INTEL compiler not supported for build in 64 BITS. Contact TRUST support." && exit -1
+1663c1654
 < 	F77Flags="-O3 $FPIC -fdefault-integer-8" && [ "`echo $TRUST_F77_BASE | grep absoft`" != "" ] && F77Flags="-O"
 ---
 > 	F77Flags="-O3 $FPIC" && [ "`echo $TRUST_F77_BASE | grep absoft`" != "" ] && F77Flags="-O"
-1817d1809
+1869d1859
 <    TRUST_USE_MUMPS=0
 diff -r bin/BUILD64/patch/src/Kernel/Utilitaires/arch.h ./src/Kernel/Utilitaires/arch.h
 62,63c62,63

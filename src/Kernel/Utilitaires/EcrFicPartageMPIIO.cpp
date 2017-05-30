@@ -81,8 +81,8 @@ int EcrFicPartageMPIIO::ouvrir(const char* name,IOS_OPEN_MODE mode)
       if (je_suis_maitre())
         {
           Nom marq("INT64");
-#ifdef INT_is_64_s
-          (*this)<<marq;
+#ifdef INT_is_64_
+          (*this)<<marq.getChar();
 #endif
         }
     }
@@ -142,7 +142,11 @@ Sortie& EcrFicPartageMPIIO::operator <<(const char* ob)
 }
 Sortie& EcrFicPartageMPIIO::operator <<(const int& ob)
 {
+#ifdef INT_is_64_
+  write(MPI_LONG, &ob);
+#else
   write(MPI_INT, &ob);
+#endif
   return *this;
 }
 Sortie& EcrFicPartageMPIIO::operator <<(const float& ob)
@@ -239,7 +243,11 @@ int EcrFicPartageMPIIO::put(MPI_Datatype MPI_TYPE, const void* ob, int n)
 
 int EcrFicPartageMPIIO::put(const int* ob, int n, int pas /* useless in binary */)
 {
+#ifdef INT_is_64_
+  return put(MPI_LONG, ob, n);
+#else
   return put(MPI_INT, ob, n);
+#endif
 }
 
 int EcrFicPartageMPIIO::put(const double* ob, int n, int pas /* useless in binary */)
