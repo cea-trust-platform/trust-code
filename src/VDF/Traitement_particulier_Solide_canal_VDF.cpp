@@ -309,6 +309,7 @@ void Traitement_particulier_Solide_canal_VDF::init_calcul_moyenne(void)
               compt[j] ++;
               j=indic+1;
               trouve = 1;
+              break;
             }
         }
       if (trouve==0)

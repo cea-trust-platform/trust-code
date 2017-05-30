@@ -162,18 +162,23 @@ int ILU::factoriser(const Matrice_Morse& mat,
         case -1 :
           Cerr << "Error in ilut 'matrix may be wrong' dixit SAAD" << finl;
           exit();
+          break;
         case  -2  :
           Cerr << "Error in ilut : overflow in L " << finl;
           exit();
+          break;
         case   -3  :
           Cerr << "Error in ilut : overflow in U " << finl;
           exit();
+          break;
         case    -4   :
           Cerr << "Illegal value for lfil : it may be a memory trouble " << finl;
           exit();
+          break;
         case    -5  :
           Cerr << "Empty line met " << finl;
           exit();
+          break;
         default :
           Cerr << "Pivot null met ! at step " << ie << finl;;
           exit();

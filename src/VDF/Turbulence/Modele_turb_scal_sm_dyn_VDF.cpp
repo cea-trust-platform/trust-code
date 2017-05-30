@@ -1120,6 +1120,7 @@ void Modele_turb_scal_sm_dyn_VDF::calcul_tableaux_correspondance(
               compt_c[j] ++;
               j=indic_c+1;
               trouve = 1;
+              break;
             }
         }
       if (trouve==0)

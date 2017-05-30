@@ -280,6 +280,7 @@ void ExtrudeBord::extruder_hexa_old(Nom& nom_front, Nom& nom_dom_surfacique, Dou
                       {
                         k=nbsombord+1;
                         trouve = 1;
+                        break;
                       }
                   }
 
