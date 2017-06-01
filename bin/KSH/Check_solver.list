@@ -86,6 +86,9 @@ let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond SPAI { level 2 epsi
 # GC + BOOMERAMG
 let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond BOOMERAMG { } impr }"				;sym[$i]=1	
 
+# PIPECG + SSOR
+let i=$i+1;solver[$i]="Petsc PIPECG   { seuil $seuil precond SSOR { omega 1.65 } impr }"			;sym[$i]=1
+
 ##########################
 # Solveurs tested on GPU #
 ##########################
