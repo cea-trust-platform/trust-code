@@ -172,7 +172,7 @@ then
 	 elif [ $version = 2_12_1 ]
 	 then
             ARCH=linux-x86_64-rhel7
-            [ $HOST = is226423 ] && ARCH=linux-x86_64-ubuntu14
+            #ARCH=linux-x86_64-ubuntu14
 	 else
             echo "No ARCH defined yet for $version."
 	    exit -1
@@ -325,7 +325,7 @@ then
    # eg: Useful to load TRUST environment automatically for client/server mode -> users don't need anymore loading it
    echo $ECHO_OPTS "1,$ s?TRUST_ROOT?$TRUST_ROOT?g\nw customlauncher.tmp" | ed customlauncher 1>/dev/null 2>&1
    echo $ECHO_OPTS "1,$ s?MPI_ROOT?$MPI_ROOT?g\nw" | ed customlauncher.tmp 1>/dev/null 2>&1
-   if [ "`diff $TRUST_ROOT/exec/VisIt/current/bin/customlauncher customlauncher.tmp`" != "" ]
+   if [ "`diff customlauncher customlauncher.tmp`" != "" ]
    then
       echo "current/bin/customlauncher updated."
       mv -f customlauncher.tmp $TRUST_ROOT/exec/VisIt/current/bin/customlauncher
