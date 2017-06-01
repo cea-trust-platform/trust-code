@@ -90,11 +90,14 @@ then
       echo "Error !"
       exit -1
    fi
+   # mise a jour de la doc pdf geree en gestion de configuration mais genere a un autre endroit
+   [ -f $TRUST_ROOT/Outils/TRIOXDATA/XTriou/doc/doc.pdf ] && cp $TRUST_ROOT/Outils/TRIOXDATA/XTriou/doc/doc.pdf  $TRUST_ROOT/doc/TRUST/TRUST_Reference_Manual.pdf
    # ajout de la doc pdf non geree en gestion de configuration
    echo doc/TRUST/TRUST_Generic_Guide.pdf >> build/Src.files
    echo doc/TRUST/TRUST_tutorial.pdf >> build/Src.files
    echo doc/TRUST/exercices/Tutorial_solutions.pdf >> build/Src.files
-   if [ ! -f "doc/TRUST/TRUST_Generic_Guide.pdf" ] || [ ! -f "doc/TRUST/TRUST_tutorial.pdf" ] || [ ! -f "doc/TRUST/exercices/Tutorial_solutions.pdf" ]
+   echo doc/TRUST/Baltik_tutorial.pdf >> build/Src.files
+   if [ ! -f "doc/TRUST/TRUST_Generic_Guide.pdf" ] || [ ! -f "doc/TRUST/TRUST_tutorial.pdf" ] || [ ! -f "doc/TRUST/exercices/Tutorial_solutions.pdf" ] || [ ! -f "doc/TRUST/Baltik_tutorial.pdf" ]
    then
       echo "Error !"
       exit -1

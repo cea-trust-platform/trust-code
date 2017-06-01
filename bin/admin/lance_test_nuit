@@ -103,6 +103,8 @@ check_components()
 	       cible_machines=$cible_machines" "`liste_machines get_binary | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Toutes les machines
 	       all_machines=`liste_machines`
+	       # Machines sur lesquelles on ne garde pas la compilation des baltiks
+	       non_machines=`liste_machines non | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Liste des machines a tester selon le baltik en question
 	       if [ "$Composant" = ICoCo ]
 	       then
@@ -135,7 +137,7 @@ check_components()
 	       for adr in $machines
 	       do
 	          machine=`echo $adr | awk -F"." '{print $1}' | awk -F"-gw" '{print $1}'`
-	          liste_options="--with-efface-dir-before --clean-after-if-ok"
+	          liste_options="--with-efface-dir-before"
 	          #if [[ "$liste_machines_KO" != *"$machine"* ]] # Test si machine n est pas dans la liste des machines KO
 		  #then
 	             if [[ "$valgrind_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines valgrind
@@ -158,6 +160,10 @@ check_components()
 		           check_option="--without-run"
 	                   liste_options="--with-efface-dir-before"
 			fi
+	             fi
+	             if [[ "$non_machines" = *"$machine"* ]] # Test si machine n est pas dans la liste des machines cible, get_binary et tache
+		     then
+		        liste_options=$liste_options" --clean-after-if-ok"
 	             fi
 	             if [[ "$cible_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines cible
 		     then
@@ -495,6 +501,16 @@ then
    cat $index.new > $index
 fi
 rm -f $index.new
+ref_manual=Outils/TRIOXDATA/XTriou/objet_u.py
+version=`$TRUST_Awk '/ Manual V/ {print $5}' $ref_manual`
+echo $ECHO_OPTS "1,$ s?$version?V$new}?g\nw $ref_manual.new" | ed $ref_manual 1>/dev/null 2>&1
+if [ "`diff $ref_manual $ref_manual.new`" != "" ]
+then
+   echo "Mark "$ref_manual
+   CHECKOUT $ref_manual
+   cat $ref_manual.new > $ref_manual
+fi
+rm -f $ref_manual.new
 echo " "
 
 
@@ -915,10 +931,10 @@ fi
 if [ "$etude_activation" = 1 ]  && [ ! -f run_Etudes.log ] && [ "$etude_test" = 1 ]
 then
    touch $ETUDES/run_Etudes.log
-   echo "  See $REP_NUIT/run_EOLE_120_cobalt.log"
-   echo "TRUST script on cobalt the `date` ...">run_EOLE_120_cobalt.log
-   echo>>run_EOLE_120_cobalt.log
-   (./run Studies/EOLE_120 -adr cobalt.ccc.cea.fr 1>>run_EOLE_120_cobalt.log 2>&1;mv -f run_EOLE_120_cobalt.log $REP_NUIT/.) &
+   echo "  See $REP_NUIT/run_EOLE_120_curie.log"
+   echo "TRUST script on curie the `date` ...">run_EOLE_120_curie.log
+   echo>>run_EOLE_120_curie.log
+   (./run Studies/EOLE_120 -adr curie-ccrt.ccc.cea.fr 1>>run_EOLE_120_curie.log 2>&1;mv -f run_EOLE_120_curie.log $REP_NUIT/.) &
    mv -f run_Etudes.log $REP_NUIT/.
 fi
 if [ "$etude_activation" = 1 ]  && [ ! -f run_Etudes.log ] && [ "$etude_test" = 0 ]
