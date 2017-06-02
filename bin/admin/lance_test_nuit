@@ -2423,7 +2423,7 @@ OK=`wc -l $TRUST_ROOT/build/Outils/TRIOXDATA/XTriou/list_keywords_xdata_tested |
 let KO=$NB-$OK
 echo "    $OK keywords covered by test cases"
 echo "    $KO keywords NOT covered by test cases"
-keywords_minimal=83.03 #v1.7.5
+keywords_minimal=82.89 #v1.7.5
 
 echo " "
 couverture_de_motcle=`echo $ECHO_OPTS "scale=2;100*$OK/$NB" | bc -l`
@@ -2433,7 +2433,7 @@ then
    echo "    Keywords coverage $couverture_de_motcle% >= $keywords_minimal% tested "
 else
    echo "    Keywords coverage $couverture_de_motcle% < $keywords_minimal% tested"
-   cat $TRUST_ROOT/build/doc/TRUST/list_keywords_NOT_covered | mail_ -s\"[lance_test_nuit] Keywords coverage KO with $couverture_de_motcle% \< $keywords_minimal% tested\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+   cat $TRUST_ROOT/build/Outils/TRIOXDATA/XTriou/list_keywords_xdata_tested | mail_ -s\"[lance_test_nuit] Keywords coverage KO with $couverture_de_motcle% \< $keywords_minimal% tested\" $TRUST_MAIL $TRUST_PROJECT_LEADER
 fi
 echo " "
 if [ "$keywords" = 1 ]
