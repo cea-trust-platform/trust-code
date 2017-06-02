@@ -116,6 +116,27 @@
    ...
 }
 
+# Similar to the one above - triggered by "Execute_parallel" or CasCouplage_jdd2
+{
+   <MUMPS_para3>
+   Memcheck:User
+   fun:check_mem_is_defined_untyped
+   fun:walk_type_array
+   fun:check_mem_is_defined
+   fun:PMPI_Pack
+   fun:PMPI_PACK
+   fun:__dmumps_comm_buffer_MOD_dmumps_buf_send_1int
+   fun:dmumps_mcast2_
+   fun:dmumps_sol_r_
+   fun:dmumps_sol_c_
+   fun:dmumps_solve_driver_
+   fun:dmumps_
+   fun:dmumps_f77_
+   fun:dmumps_c
+   fun:MatSolve_MUMPS
+   ...
+}
+
 # Triggered by 
 #   PAR_Collecteur
 #   PAR_P1toP0P1Pa, 
@@ -183,6 +204,42 @@
    fun:__libc_freeres
    fun:_vgnU_freeres
    fun:exit
+   ...
+}
+
+##
+## Intel related suppressions
+##
+
+# Upwind on ceres2
+{
+   <intel_strcpy>
+   Memcheck:Cond
+   fun:__intel_sse2_strcpy
+   ...
+}
+{
+   <intel_strchr>
+   Memcheck:Cond
+   fun:__intel_sse2_strchr
+   ...
+}
+{
+   <intel_strncmp>
+   Memcheck:Addr16
+   fun:__intel_sse2_strncmp
+   ...
+}
+{
+   <intel_strncmp2>
+   Memcheck:Cond
+   fun:__intel_sse2_strncmp
+   ...
+}
+{
+   <split_mot_intel>
+   Memcheck:Cond
+   fun:_Z9split_motRK3Nom
    ...
 }
 
@@ -283,4 +340,689 @@
    fun:PetscInitialize.part.*
    ...
 }
+
+##
+## MPCube - cas 'standard_hydraulic_head_diffusion_0013'
+##
+{
+   <hypre_setup_6>
+   Memcheck:User
+   fun:check_mem_is_defined_untyped
+   fun:walk_type_array
+   fun:check_mem_is_defined
+   fun:generic_Send
+   fun:PMPI_Send
+   fun:hypre_DataExchangeList
+   fun:hypre_NewCommPkgCreate_core
+   fun:hypre_MatvecCommPkgCreate
+   fun:hypre_BoomerAMGCreateS
+   fun:hypre_BoomerAMGSetup
+   fun:PCSetUp_HYPRE
+   fun:PCSetUp
+   fun:KSPSetUp
+   ...
+}
+
+##
+##  dlopen_jdd1: more complex case: inside this case, dynamic.data is ran first (in the prepare I beleive)
+##  This is the first log to monitor before looking at dlopen_jdd1.err ...
+##
+{
+   <dlopen_jdd1>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   ...
+}
+
+##
+## upwind sur clang++ 3.8.0, Fedora 24 (is210376)
+## On these suppressions, we have not verified that the leaks are not incremental.
+##
+{
+   <upwind_clang_3_8_0_0>
+   Memcheck:Leak
+   fun:malloc
+   ...
+   fun:opal_pmix_pmix112_pmix_*
+   ...
+   fun:event_process_active_single_queue
+   fun:event_process_active
+   fun:opal_libevent2022_event_base_loop
+   fun:progress_engine
+   fun:start_thread
+   fun:clone
+}
+{
+   <upwind_clang_3_8_0_1>
+   Memcheck:Cond
+   fun:opal_value_unload
+   fun:rte_init
+   fun:orte_init
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_2>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:strdup
+   fun:opal_argv_append
+   fun:opal_argv_split_inter
+   fun:dlopen_component_register
+   fun:mca_base_framework_components_register
+   fun:mca_base_framework_register
+   fun:mca_base_framework_open
+   fun:mca_base_component_repository_init
+   fun:mca_base_open
+   fun:opal_init_util
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_3>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:hnp_component_open
+   fun:mca_base_framework_components_open
+   fun:mca_base_framework_open
+   fun:orte_init
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_4>
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:malloc
+   fun:strdup
+   fun:opal_sec_base_validate
+   fun:mca_oob_usock_peer_recv_connect_ack
+   fun:mca_oob_usock_recv_handler
+   fun:event_persist_closure
+   fun:event_process_active_single_queue
+   fun:event_process_active
+   fun:opal_libevent2022_event_base_loop
+   fun:progress_engine
+   fun:start_thread
+   fun:clone
+}
+{
+   <upwind_clang_3_8_0_5>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:strdup
+   fun:rte_init
+   fun:orte_init
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_6>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:realloc
+   fun:opal_pmix_pmix112_pmix_pointer_array_add
+   fun:pmix_add_errhandler
+   fun:pmix_client_register_errhandler
+   fun:pmix1_client_init
+   fun:rte_init
+   fun:orte_init
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_7>
+   Memcheck:Leak
+   fun:malloc
+   fun:vasprintf
+   fun:asprintf
+   fun:rte_init
+   fun:orte_init
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_8>
+   Memcheck:Leak
+   fun:malloc
+   fun:opal_class_initialize
+   ...
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_9>
+   Memcheck:Leak
+   fun:realloc
+   fun:opal_class_initialize
+   ...
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_10>
+   Memcheck:Leak
+   fun:malloc
+   fun:opal_class_initialize
+   ...
+   fun:opal_libevent2022_event_base_loop
+   fun:progress_engine
+   fun:start_thread
+   fun:clone
+}
+{
+   <upwind_clang_3_8_0_11>
+   Memcheck:Leak
+   fun:malloc
+   ...
+   fun:OPAL_PMIX_PMIX112_PMIx_Store_internal
+   fun:pmix1_store_local
+   fun:orte_ess_base_app_setup
+   fun:rte_init
+   fun:orte_init
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_12>
+   Memcheck:Leak
+   fun:malloc
+   ...
+   fun:OPAL_PMIX_PMIX112_PMIx_*
+   ...
+   fun:rte_init
+   fun:orte_init
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_13>
+   Memcheck:Leak
+   fun:malloc
+   fun:strdup
+   fun:opal_libevent2022_*
+   ...
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_14>
+   Memcheck:Leak
+   fun:calloc
+   fun:opal_libevent2022_event_mm_calloc_
+   fun:opal_libevent2022_evmap_io_add
+   fun:event_add_internal
+   fun:opal_libevent2022_event_add
+   fun:opal_libevent2022_evthread_make_base_notifiable
+   fun:opal_libevent2022_event_base_new_with_config
+   fun:opal_event_base_create
+   fun:opal_event_base_open
+   fun:mca_base_framework_open
+   fun:opal_init
+   fun:orte_init
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_15>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   fun:opal_libevent2022_event_mm_calloc_
+   fun:opal_libevent2022_evmap_io_add
+   fun:event_add_internal
+   fun:opal_libevent2022_event_add
+   fun:mca_btl_tcp_component_init
+   fun:mca_btl_base_select
+   fun:mca_bml_r2_component_init
+   fun:mca_bml_base_init
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_16>
+   Memcheck:Leak
+   fun:malloc
+   fun:vasprintf
+   fun:asprintf
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_17>
+   Memcheck:Leak
+   fun:malloc
+   fun:vasprintf
+   fun:asprintf
+   fun:mca_base_open
+   fun:opal_init_util
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_18>
+   Memcheck:Leak
+   fun:realloc
+   fun:vasprintf
+   fun:asprintf
+   fun:mca_base_open
+   fun:opal_init_util
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_19>
+   Memcheck:Leak
+   fun:realloc
+   fun:vasprintf
+   fun:asprintf
+   fun:rte_init
+   fun:orte_init
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_20>
+   Memcheck:Leak
+   fun:malloc
+   fun:strdup
+   fun:mca_base_open
+   fun:opal_init_util
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_21>
+   Memcheck:Leak
+   fun:malloc
+   fun:strdup
+   fun:_putfn
+   fun:event_process_active_single_queue
+   fun:event_process_active
+   fun:opal_libevent2022_event_base_loop
+   fun:progress_engine
+   fun:start_thread
+   fun:clone
+}
+{
+   <upwind_clang_3_8_0_22>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   fun:_dlerror_run
+   fun:dlsym
+   fun:mca_patcher_overwrite_patch_symbol
+   fun:patcher_open
+   fun:mca_base_framework_components_open
+   fun:opal_memory_base_open
+   fun:mca_base_framework_open
+   fun:opal_init
+   fun:orte_init
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_23>
+   Memcheck:Leak
+   fun:malloc
+   fun:strdup
+   fun:do_open
+   fun:pml_v_output_open
+   fun:mca_pml_v_component_open
+   fun:mca_base_framework_components_open
+   fun:mca_pml_base_open
+   fun:mca_base_framework_open
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_24>
+   Memcheck:Leak
+   fun:malloc
+   fun:if_posix_open
+   fun:mca_base_framework_components_open
+   fun:mca_base_framework_open
+   fun:opal_ifbegin
+   fun:component_available
+   fun:orte_oob_base_select
+   fun:orte_ess_base_app_setup
+   fun:rte_init
+   fun:orte_init
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_25>
+   Memcheck:Leak
+   fun:calloc
+   fun:opal_libevent2022_event_mm_calloc_
+   ...
+   fun:opal_init
+   fun:orte_init
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_26>
+   Memcheck:Leak
+   fun:realloc
+   fun:opal_argv_append
+   fun:opal_argv_split_inter
+   fun:dlopen_component_register
+   fun:mca_base_framework_components_register
+   fun:mca_base_framework_register
+   fun:mca_base_framework_open
+   fun:mca_base_component_repository_init
+   fun:mca_base_open
+   fun:opal_init_util
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_27>
+   Memcheck:Leak
+   fun:malloc
+   fun:mca_base_component_find
+   fun:mca_base_framework_components_register
+   fun:mca_base_framework_register
+   fun:mca_base_framework_open
+   fun:patcher_query
+   fun:opal_memory_base_open
+   fun:mca_base_framework_open
+   fun:opal_init
+   fun:orte_init
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_28>
+   Memcheck:Leak
+   fun:malloc
+   fun:opal_libevent2022_event_*
+   ...
+   fun:opal_init
+   fun:orte_init
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_29>
+   Memcheck:Leak
+   fun:malloc
+   fun:realloc
+   fun:opal_libevent2022_event_mm_realloc_
+   fun:poll_dispatch
+   fun:opal_libevent2022_event_base_loop
+   fun:opal_progress
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_30>
+   Memcheck:Leak
+   fun:malloc
+   fun:realloc
+   fun:opal_libevent2022_event_mm_realloc_
+   fun:evmap_make_space
+   fun:opal_libevent2022_evmap_io_add
+   fun:event_add_internal
+   fun:opal_libevent2022_event_add
+   fun:opal_libevent2022_evthread_make_base_notifiable
+   fun:opal_libevent2022_event_base_new_with_config
+   fun:opal_event_base_create
+   fun:opal_event_base_open
+   fun:mca_base_framework_open
+   fun:opal_init
+   fun:orte_init
+   fun:ompi_mpi_init
+   ...
+}
+{
+   <upwind_clang_3_8_0_31>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:mca_base_component_find
+   fun:mca_base_framework_components_register
+   fun:mca_base_framework_register
+   fun:mca_base_framework_open
+   ...
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_32>
+   Memcheck:Leak
+   fun:malloc
+   fun:pmix_add_errhandler
+   fun:pmix_client_register_errhandler
+   fun:pmix1_client_init
+   fun:rte_init
+   fun:orte_init
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_33>
+   Memcheck:Leak
+   fun:malloc
+   fun:realloc
+   fun:mca_bml_base_btl_array_reserve
+   fun:mca_bml_r2_allocate_endpoint
+   fun:mca_bml_r2_add_procs
+   fun:mca_pml_ob1_add_procs
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_34>
+   Memcheck:Leak
+   fun:malloc
+   fun:mca_bml_r2_allocate_endpoint
+   fun:mca_bml_r2_add_procs
+   fun:mca_pml_ob1_add_procs
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_35>
+   Memcheck:Leak
+   fun:malloc
+   fun:_putfn
+   fun:event_process_active_single_queue
+   fun:event_process_active
+   fun:opal_libevent2022_event_base_loop
+   fun:progress_engine
+   fun:start_thread
+   fun:clone
+}
+{
+   <upwind_clang_3_8_0_36>
+   Memcheck:Leak
+   fun:malloc
+   fun:get_print_name_buffer
+   fun:orte_util_print_jobids
+   fun:orte_util_print_name_args
+   fun:_process_name_print_for_opal
+   fun:pmix1_get
+   fun:rte_init
+   fun:orte_init
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_37>
+   Memcheck:Leak
+   fun:malloc
+   fun:component_set_addr
+   fun:process_uri
+   fun:orte_oob_base_set_addr
+   fun:event_process_active_single_queue
+   fun:event_process_active
+   fun:opal_libevent2022_event_base_loop
+   fun:progress_engine
+   fun:start_thread
+   fun:clone
+}
+{
+   <upwind_clang_3_8_0_38>
+   Memcheck:Leak
+   fun:calloc
+   fun:opal_hash_table_init
+   fun:mca_base_component_repository_init
+   fun:mca_base_open
+   fun:opal_init_util
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_39>
+   Memcheck:Leak
+   fun:malloc
+   fun:opal_free_list_grow_st
+   fun:opal_rb_tree_init
+   fun:mca_mpool_base_open
+   fun:mca_base_framework_open
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_40>
+   Memcheck:Leak
+   fun:realloc
+   fun:vasprintf
+   fun:asprintf
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_41>
+   Memcheck:Leak
+   fun:malloc
+   fun:realloc
+   fun:opal_libevent2022_event_mm_realloc_
+   fun:poll_add
+   fun:opal_libevent2022_evmap_io_add
+   fun:event_add_internal
+   fun:opal_libevent2022_event_add
+   fun:opal_libevent2022_evthread_make_base_notifiable
+   fun:opal_libevent2022_event_base_new_with_config
+   fun:opal_event_base_create
+   fun:opal_event_base_open
+   fun:mca_base_framework_open
+   fun:opal_init
+   fun:orte_init
+   fun:ompi_mpi_init
+   ...
+}   
+{
+   <upwind_clang_3_8_0_42>
+   Memcheck:Leak
+   fun:malloc
+   fun:pmix_client_deregister_errhandler
+   fun:OPAL_PMIX_PMIX112_PMIx_Deregister_errhandler
+   fun:pmix1_client_finalize
+   fun:rte_finalize
+   fun:orte_finalize
+   fun:ompi_mpi_finalize
+   fun:PetscFinalize
+   ...
+}
+{
+   <upwind_clang_3_8_0_43>
+   Memcheck:Leak
+   fun:malloc
+   fun:mca_coll_sync_comm_query
+   fun:mca_coll_base_comm_select
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+{
+   <upwind_clang_3_8_0_44>
+   Memcheck:Leak
+   fun:malloc
+   fun:mca_coll_sync_comm_query
+   fun:mca_coll_base_comm_select
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+   ...
+}
+
+###################
+
+
 
