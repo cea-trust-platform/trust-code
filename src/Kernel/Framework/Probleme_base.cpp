@@ -223,7 +223,7 @@ void Probleme_base::getInputFieldsNames(Noms& noms) const
   int n=input_fields.size();
   Noms nouveaux_noms(n);
   for (int i=0; i<n; i++)
-    nouveaux_noms[i]=input_fields[i].le_nom();
+    nouveaux_noms[i]=input_fields[i]->le_nom();
   // GF pour contourner un bug dans add() si vecteur null
   if (n)
     noms.add(nouveaux_noms);
