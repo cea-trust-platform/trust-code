@@ -124,7 +124,7 @@
    fun:walk_type_array
    fun:check_mem_is_defined
    fun:PMPI_Pack
-   fun:PMPI_PACK
+   ...
    fun:__dmumps_comm_buffer_MOD_dmumps_buf_send_1int
    fun:dmumps_mcast2_
    fun:dmumps_sol_r_
