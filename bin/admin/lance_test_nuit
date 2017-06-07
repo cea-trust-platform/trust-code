@@ -143,12 +143,32 @@ check_components()
 	             if [[ "$valgrind_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines valgrind
 		     then
 		        valgrind_option="--with-valgrind"
+			# Pour ModeleCoeur, test en valgrind seulement le vendredi car ne passe pas en une nuit
+			if [ "$Composant" = ModeleCoeur ]
+			then
+			   if [ "`date '+%u'`" = 5 ] 
+			   then
+		              valgrind_option="--with-valgrind"
+			   else
+		              valgrind_option=""
+			   fi
+			fi
 		     else
 		        valgrind_option=""
 		     fi
 	             if [[ "$debug_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines debug
 		     then
 		        mode_option="--with-mode=debug"
+			# Pour TrioCFD, test en debug seulement le vendredi car ne passe pas en une nuit
+			if [ "$Composant" = TrioCFD ]
+			then
+			   if [ "`date '+%u'`" = 5 ] 
+			   then
+		              mode_option="--with-mode=debug"
+			   else
+		              mode_option="--with-mode=optim"
+			   fi
+			fi
 		     else
 		        mode_option="--with-mode=optim"
 		     fi

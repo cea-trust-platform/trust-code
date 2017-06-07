@@ -24,23 +24,23 @@
 Implemente_instanciable(Hello,"Hello",Interprete);
 // XD hello interprete hello 0 Hello class
 
-// printOn et readOn 
+// printOn et readOn
 
-Sortie& Hello::printOn(Sortie& s ) const 
+Sortie& Hello::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << "\n";
 }
 
-Entree& Hello::readOn(Entree& is ) 
+Entree& Hello::readOn(Entree& is )
 {
   //
-  // VERIFIER ICI QU'ON A BIEN TOUT LU;  
+  // VERIFIER ICI QU'ON A BIEN TOUT LU;
   //
   return is;
 }
 
 Entree& Hello::interpreter(Entree& is)
 {
-Cout <<"Hello world" <<finl;
-return is;
+  Cout <<"Hello world" <<finl;
+  return is;
 }
