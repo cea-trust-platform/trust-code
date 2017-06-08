@@ -24,6 +24,10 @@ def BuildMergedMesh( latafile , write_med , medfile ):
             raise Exception( "not implemented for differents meshes "+meshname +" "+ short_name(m))
     mesh=a.GetMesh(meshname,0)
 
+    if ( type( mesh ).__name__ != "MEDCouplingUMesh"  ) :
+        # mesh=mesh.buildUnstructured( )
+        raise Exception( "Only implemented for meshes of type MEDCouplingUMesh ( not "+ type( mesh ).__name__ +" )" )
+
     indices, areMerged, newNbNodes = mesh.mergeNodes( EPS ) 
     if areMerged:
         print "Correcting fields Mesh=dom"

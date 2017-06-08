@@ -566,7 +566,7 @@ echo ""
 
 echo "Creating tests/deps and tests/all"
 mkdir -p ${project_directory}/build/tests/deps ${project_directory}/build/tests/all 
-rm -rf  ${project_directory}/build/tests/deps/* ${project_directory}/build/tests/all/* ${project_directory}/build/tests/full  ${project_directory}/build/tests/share/full
+rm -rf  ${project_directory}/build/tests/deps/* ${project_directory}/build/tests/all/* ${project_directory}/build/tests/full  ${project_directory}/build/tests/share/*
 mkdir -p ${project_directory}/build/tests/share/deps/Validation/Rapports_automatiques/
 mkdir -p ${project_directory}/build/tests/share/all/Validation/Rapports_automatiques/
 
