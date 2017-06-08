@@ -43,45 +43,53 @@ ORG=`dirname $0`
 ORG=`(cd $ORG;pwd)`
 trace=`basename  $GCOV_PREFIX`"/"
 
-for cas in TRUST baltik
-do
-cd `dirname $GCOV_PREFIX`
-
-filtre=""
-[ "$cas" = "baltik" ] && filtre="-v"
-dirs=`find  $trace -type d | grep $filtre $TRUST_ROOT`
+for cas in baltik TRUST  # baltik
+  do
+  cd `dirname $GCOV_PREFIX`
+  
+  filtre=""
+  [ "$cas" = "baltik" ] && filtre="-v"
+  dirs=`find  $trace -type d | grep $filtre $TRUST_ROOT`
 # echo $dirs
+  
+  rm -rf ana
+  mkdir ana
+  cd ana
+  for dir in $dirs
+    do
+    [ "`ls  ../$dir/*.gcda 2>/dev/null`" =  "" ] && continue
+    srcdir=`echo $dir| sed "s/trace//"` 
+    ln -sf ../$dir/*.gcda . 2>/dev/null
+    ln -sf /$srcdir/*.gcno . 2>/dev/null
+    
+  done
+  DEST=../${cas}_cpp.gcov 
 
-rm -rf ana
-mkdir ana
-cd ana
-for dir in $dirs
-do
-[ "`ls  ../$dir/*.gcda 2>/dev/null`" =  "" ] && continue
-srcdir=`echo $dir| sed "s/trace//"` 
-ln -sf ../$dir/*.gcda . 2>/dev/null
-ln -sf /$srcdir/*.gcno . 2>/dev/null
-
-done
-
- echo "Analysis by gcov..."
+  echo "Analysis by gcov..."
   rm -f gcov_out gcov_err
   gcov *.gcno 1>gcov_out 2>gcov_err
-mkdir cpp.gcov
-mv *.cpp.gcov cpp.gcov
-cd  cpp.gcov
-echo "Analysis of the coverage of $cas part "
-tout 1>monana_out 2>&1
-echo "`pwd`/monana_out file created" 
-export HTML_ROOT=$GCOV_PREFIX/../ana
-$TRUST_ROOT/bin/KSH/tggcov_   | sed "s/TRUST/$cas/"        | tee monana_glob
-echo more details in monana_sort
-$TRUST_ROOT/bin/KSH/tggcov_ -file all  | sed "s/TRUST/$cas/"  > monana_sort
-cd ..
-DEST=../${cas}_cpp.gcov 
-rm -rf $DEST
-mv cpp.gcov $DEST
-cd ..
-rm -rf ana
-
+  mkdir cpp.gcov
+  mv *.cpp.gcov cpp.gcov
+  cd  cpp.gcov
+  echo "Analysis of the coverage of $cas part "
+  tout 1>monana_out 2>&1
+  echo "`pwd`/monana_out file created" 
+  export HTML_ROOT=$GCOV_PREFIX/../ana
+  $TRUST_ROOT/bin/KSH/tggcov_   | sed "s/TRUST/$cas/"        | tee monana_glob
+  echo more details in monana_sort
+  $TRUST_ROOT/bin/KSH/tggcov_ -file all  | sed "s/TRUST/$cas/"  > monana_sort
+  if [ "$cas" = "TRUST" ]
+      then
+       $TRUST_ROOT/bin/KSH/tggcov_ -html  | sed "s/TRUST/$cas/"
+      (cd ..;tar zcf $DEST.tgz *.html cpp.gcov)
+      ( cd ../..; echo "To update coverage :" ;echo "cp $PWD/TRUST_cpp.gcov.tgz \$TRUST_ROOT/doc/Coverage/cpp.gcov.tar.gz")
+  fi
+  
+ 
+  cd ..
+  rm -rf $DEST
+  mv cpp.gcov $DEST
+  cd ..
+  rm -rf ana
+  
 done

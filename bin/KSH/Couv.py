@@ -1,5 +1,11 @@
 # Script Python
 from string import *
+import sys
+try:
+        sys.dont_write_bytecode = True
+except:
+        pass
+
 #import string
 def get_d(l):
 	d=split(l,'\n')[0]
@@ -12,10 +18,10 @@ def get_d(l):
 	return d
 import cPickle
 
-def ecrit_dico(dico):
+def ecrit_dico(dico,mode=0):
 	#print "Ecriture du dico.pkl"
         f = open("dico.pkl", "wb")
-	cPickle.dump(dico, f)
+	cPickle.dump(dico, f,mode)
 	f.close()
 	f=open('dico.py','w')
 	f.write("from Couv import lire_dico_pkl \ndico=lire_dico_pkl()\n")
@@ -32,8 +38,12 @@ def lire_dico_pkl():
     f.close()
     #print "fin lecture"
     return toto
+def optimise_dico_pkl():
+    dico=lire_dico_pkl()
+    ecrit_dico(dico,-1)
 def lire_dico():
-    from dico import dico
+    #from dico import dico
+    dico=lire_dico_pkl()
     return dico
 def create_dico():
 	dico={}

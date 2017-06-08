@@ -18,66 +18,70 @@ update_version()
 }
 for titi in baltik trust
 do
-exec=$exec_pg
-exec_run=$exec
-export PYTHONPATH=$TRUST_ROOT/bin/KSH:$PYTHONPATH
-rep=$project_directory/build/Coverage_$titi
-mkdir -p $rep
-rm -f dico.pkl
-echo "fin" > nul.data
-exec_run=$exec
+  echo couverture of $titi
+  exec=$exec_pg
+  exec_run=$exec
+  export PYTHONPATH=$TRUST_ROOT/bin/KSH:$PYTHONPATH
+  rep=$project_directory/build/Coverage_$titi
+  mkdir -p $rep
+  rm -f dico.pkl
+  echo "fin" > nul.data
+  exec_run=$exec
 
-[ "$titi" = "trust" ] && exec=$TRUST_ROOT/exec/TRUST*_opt_pg
-echo $exec
-if [ ! -f $exec ] || [ "`$exec nul 1>/dev/null 2>&1;echo $?`" != 0 ]
-then
-   echo "Probleme avec $exec. Contacter le support." && exit -1
-fi
-echo $ECHO_OPTS "Creation d'un fichier contenant toutes les methodes: \c"
-gprof --no-graph -z $exec | $TRUST_Awk '(NR>5) {if (NF) print $0;else exit}' | cut -c 54- | sort -u > list_methodes
-[ $? != 0 ] && echo "Problem with the gprof command on $HOST in make_Couverture"
-update_version list_methodes
-#echo supprimer les lignes blanches
+  suppress_warning="no_suppression"
+  [ "$titi" = "trust" ] && exec=$TRUST_ROOT/exec/TRUST*_opt_pg   && suppress_warning="pb avec" 
+  echo $exec
+  if [ ! -f $exec ] || [ "`$exec nul 1>/dev/null 2>&1;echo $?`" != 0 ]
+      then
+      echo "Probleme avec $exec. Contacter le support." && exit -1
+  fi
+  echo $ECHO_OPTS "Creation d'un fichier contenant toutes les methodes: \c"
+  gprof --no-graph -z $exec | $TRUST_Awk '(NR>5) {if (NF) print $0;else exit}' | cut -c 54- | sort -u > list_methodes
+  [ $? != 0 ] && echo "Problem with the gprof command on $HOST in make_Couverture"
+  update_version list_methodes
+  # echo supprimer les lignes blanches
+  
+  # Creation du dico a partir de list_methodes
+  python -c "from Couv import create_dico;create_dico()"
 
-# Creation du dico a partir de list_methodes
-python -c "from Couv import create_dico;create_dico()"
-
-#time gprof --no-graph $exec| cut -c 55- | sort -u > out
-cat /dev/null > cpu
-FF=LISTFF
-cat /dev/null > $FF
-listfichier_a_retirer=""
-for file in `find $project_directory/build/tests/tests_$(basename ${exec_run}) -name cpu'.*'.seq -newer $exec -or -name cpu.'*'.par -newer $exec -or -name cpu.'*'.dec -newer $exec -or -name cpu.'*'.prepare -newer $exec `
-do
-   name=`basename $file .seq |sed "s/cpu\.//"`
-   if [ `basename $name .par` != $name ]
-   then
-       name="PAR_"`basename $name .par`
-   fi
-   if [ `basename $name .dec` != $name ]
-   then
-       name="DEC_"`basename $name .dec`
-   fi
-   if [ `basename $name .prepare` != $name ]
-   then
-       name="PREPARE_"`basename $name .prepare`
-   fi
+  #time gprof --no-graph $exec| cut -c 55- | sort -u > out
+  cat /dev/null > cpu
+  FF=LISTFF
+  cat /dev/null > $FF
+  listfichier_a_retirer=""
+  for file in `find $project_directory/build/tests/tests_$(basename ${exec_run}) -name cpu'.*'.seq -newer $exec -or -name cpu.'*'.par -newer $exec -or -name cpu.'*'.dec -newer $exec -or -name cpu.'*'.prepare -newer $exec `
+    do
+    name=`basename $file .seq |sed "s/cpu\.//"`
+    if [ `basename $name .par` != $name ]
+	then
+	name="PAR_"`basename $name .par`
+    fi
+    if [ `basename $name .dec` != $name ]
+	then
+	name="DEC_"`basename $name .dec`
+    fi
+    if [ `basename $name .prepare` != $name ]
+	then
+	name="PREPARE_"`basename $name .prepare`
+    fi
    # le sort -u permet de gagner du temps dans le python et avoir un dico juste
-   $TRUST_Awk '(NR>5) {if (NF) print $0;else exit}' $file | cut -c 54- | sort -u >./$name
+    $TRUST_Awk '(NR>5) {if (NF) print $0;else exit}' $file | cut -c 54- | sort -u >./$name
    #FF=$FF"'"$name"',"
-   echo $name >> $FF
-   listfichier_a_retirer=$listfichier_a_retirer" "$name
-   echo "Extraction des perfs du test "$name
-done
+    echo $name >> $FF
+    listfichier_a_retirer=$listfichier_a_retirer" "$name
+  # echo "Extraction des perfs du test "$name
+  done
 
 #FF=$FF"]"
 #echo $FF
-python -c "from Couv import traite_tout;traite_tout('LISTFF')"
-echo $ECHO_OPTS "Creation du dico Python: \c"
-update_version dico.pkl
+  python -c "from Couv import traite_tout;traite_tout('LISTFF')" | grep -v "$suppress_warning"
+  echo $ECHO_OPTS "Creation du dico Python: \c"
+  update_version dico.pkl
+  
+  python -c "from Couv import util;util()" | sort -u > list_methodes_non_appelees
+  echo $ECHO_OPTS "Creation d'un fichier contenant les methodes non appelees par les cas tests: \c"
+  update_version list_methodes_non_appelees
 
-python -c "from Couv import util;util()" | sort -u > list_methodes_non_appelees
-echo $ECHO_OPTS "Creation d'un fichier contenant les methodes non appelees par les cas tests: \c"
-update_version list_methodes_non_appelees
+ [ "$titi" = "trust" ] && echo && echo && echo  "to update Trust dico.Pkl" && echo  $ECHO_OPTS "cp $rep/* \$TRUST_ROOT/doc/Coverage" && echo
 done
-# echo rm -f $listfichier_a_retirer
+rm -f $listfichier_a_retirer
