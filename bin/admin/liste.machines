@@ -12,6 +12,7 @@ linux	scp_ssh		non		is228817.intra.cea.fr		-all	 									-disable 		# Fedora 20
 linux	rsync_ssh	cible		is221559.intra.cea.fr		 		-TRUST -MPCube	-g 		-force_provided_mpich		-Check_decoupage	# Fedora 18 			CEA Saclay	Bat 451 LGLS	bureau Gauthier Fauchet (PC of the Leader Project) (Couplage Cathare/TRUST)
 linux   rsync_ssh       cible           cobalt.ccc.cea.fr                -limited       -TrioCFD                        -benchmark                                              # RedHat 7.2                    CEA CCRT
 linux   rsync_ssh       cible           curie-ccrt.ccc.cea.fr            -limited       -TrioCFD                        -benchmark                                              # RedHat 6.7                    CEA TGCC
+linux   rsync_ssh       tache           callisto.intra.cea.fr            -limited       -TrioCFD -ModeleCoeur           -benchmark                      -disable-mpiio          # CentOS 6.4                    CEA DM2S        Bat 458
 linux 	rsync_ssh	non   		is142348.intra.cea.fr       							-force_provided_mpich		-without-visit		# Mandriva 2008 MACHINE 32bits	CEA Saclay	Bat ??	
 linux 	rsync_ssh	cible		cezanne63.intra.cea.fr				-ModeleCoeur			-force_provided_mpich					# Debian 8			CEA Cadarache
 linux	scp_ssh		cible		is231310.intra.cea.fr				-TRUST -MPCube			-remote_install_TRUST_kernel_only			# Fedora 20	 		CEA Saclay	Bat 526 LMES	bureau TMA Cathare (ex is227526 Couplage Cathare/TRUST)
@@ -26,7 +27,7 @@ linux 	rsync_ssh	tache		ceres2.intra.cea.fr		-limited												# CentOS 6.5			
 linux 	rsync_ssh	cible		mezel.intra.cea.fr		-limited	-ModeleCoeur										# CentOS 6.7			CEA Cadarache	NB: bench desactive
 linux	sftp_ssh	non		is210375.intra.cea.fr		-all		-ModeleCoeur			 -force_provided_openmpi				# Fedora 22	 		CEA Saclay	Bat ??
 linux	rsync_ssh	non		is211986.intra.cea.fr				-ModeleCoeur -MPCube									# CentOS 5.5			CEA Saclay	Bat ??
-linux	rsync_ssh	non		is221931.intra.cea.fr				-TRUST -TrioCFD										# CentOS 5.5			CEA Saclay	Bat ??
+linux	rsync_ssh	non		is220964.intra.cea.fr				-TRUST 											# CentOS 5.5			CEA Saclay	Bat ??
 linux	rsync_ssh	non		is224667.intra.cea.fr		-all		-MPCube											# CentOS 6.4			CEA Saclay	Bat 451	LMSF	bureau Adela Puscas
 linux	rsync_ssh	non		is226426.intra.cea.fr				-TrioCFD	-g 		-force_provided_mpich 					# Ubuntu 16.04    		CEA Saclay	Bat 451 LMSF	bureau thesard Qingqing Feng
 linux	rsync_ssh	non		is223249.intra.cea.fr								-force_provided_openmpi		-disable-petsc		# Ubuntu 16.04			CEA Saclay	Bat 451	LMSF	bureau Pierre-Emmanuel Angeli

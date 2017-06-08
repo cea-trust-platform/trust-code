@@ -97,7 +97,7 @@ check_components()
 	       # Machines en mode valgrind
 	       valgrind_machines=`liste_machines "\-valgrind" | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Clusters
-	       updated_machines=`liste_machines updated | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
+	       updated_machines=`liste_machines limited | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Machines cible pour la sortie de version
 	       cible_machines=`liste_machines cible | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       cible_machines=$cible_machines" "`liste_machines get_binary | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
@@ -177,7 +177,12 @@ check_components()
 		     then
 	                if [ "$Composant" = TrioCFD ] || [ "$Composant" = Test_Baltik ] || [ "$Composant" = ModeleCoeur ]
 			then
-		           check_option="--without-run"
+			   if [ "`date '+%u'`" = 5 ] 
+			   then
+		              check_option="--check-all"
+			   else
+		              check_option="--without-run"
+			   fi
 	                   liste_options="--with-efface-dir-before"
 			fi
 	             fi
@@ -501,37 +506,74 @@ fi
 cd $TRUST_ROOT
 
 # Marque la version dans MAIN.cpp et mon_main.cpp
-echo " "
-echo "Mark version in following files:"
-for MAIN in $TRUST_ROOT/src/MAIN/MAIN.cpp $TRUST_ROOT/src/MAIN/mon_main.cpp
-do
-   CHECKOUT $MAIN 1>/dev/null 2>&1
-   version=`$TRUST_Awk '/version :/ {print $4}' $MAIN`
-   echo "  "$version"=>"$new": "$MAIN
-   echo $ECHO_OPTS "1,$ s?version : $version?version : $new?g\nw" | ed $MAIN 1>/dev/null 2>&1
-   CHECKIN $MAIN 1>/dev/null 2>&1
-done
-index=$TRUST_ROOT/index.html
-version=`$TRUST_Awk '/ Version / {print $4}' $index`
-echo $ECHO_OPTS "1,$ s?$version?$new?g\nw $index.new" | ed $index 1>/dev/null 2>&1
-if [ "`diff $index $index.new`" != "" ]
-then
-   echo "Mark "$index
-   CHECKOUT $index
-   cat $index.new > $index
-fi
-rm -f $index.new
-ref_manual=Outils/TRIOXDATA/XTriou/objet_u.py
-version=`$TRUST_Awk '/ Manual V/ {print $5}' $ref_manual`
-echo $ECHO_OPTS "1,$ s?$version?V$new}?g\nw $ref_manual.new" | ed $ref_manual 1>/dev/null 2>&1
-if [ "`diff $ref_manual $ref_manual.new`" != "" ]
-then
-   echo "Mark "$ref_manual
-   CHECKOUT $ref_manual
-   cat $ref_manual.new > $ref_manual
-fi
-rm -f $ref_manual.new
-echo " "
+#if [ "`echo $new | grep beta`" = "" ]
+#then
+   echo " "
+   echo "Mark new version in following files:"
+   for MAIN in $TRUST_ROOT/src/MAIN/MAIN.cpp $TRUST_ROOT/src/MAIN/mon_main.cpp
+   do
+      CHECKOUT $MAIN 1>/dev/null 2>&1
+      version=`$TRUST_Awk '/version :/ {print $4}' $MAIN`
+      echo "  "$version"=>"$new": "$MAIN
+      echo $ECHO_OPTS "1,$ s?version : $version?version : $new?g\nw" | ed $MAIN 1>/dev/null 2>&1
+      CHECKIN $MAIN 1>/dev/null 2>&1
+   done
+   index=$TRUST_ROOT/index.html
+   version=`$TRUST_Awk '/ Version / {print $4}' $index`
+   echo $ECHO_OPTS "1,$ s?$version?$new?g\nw $index.new" | ed $index 1>/dev/null 2>&1
+   if [ "`diff $index $index.new`" != "" ]
+   then
+      echo "Mark new version in "$index
+      CHECKOUT $index
+      cat $index.new > $index
+   fi
+   rm -f $index.new
+   ref_manual=Outils/TRIOXDATA/XTriou/objet_u.py
+   version=`$TRUST_Awk '/ Manual V/ {print $5}' $ref_manual`
+   echo $ECHO_OPTS "1,$ s?$version?V$new}?g\nw $ref_manual.new" | ed $ref_manual 1>/dev/null 2>&1
+   if [ "`diff $ref_manual $ref_manual.new`" != "" ]
+   then
+      echo "Mark new version in "$ref_manual
+      CHECKOUT $ref_manual
+      cat $ref_manual.new > $ref_manual
+   fi
+   rm -f $ref_manual.new
+   tuto=doc/TRUST/Tutorial/TRUST_tutorial.tex
+   version=`$TRUST_Awk '/ Tutorial V/ {print $3}' $tuto`
+   echo $ECHO_OPTS "1,$ s?$version?V$new]{TRUST?g\nw $tuto.new" | ed $tuto 1>/dev/null 2>&1
+   version=`$TRUST_Awk '/ Tutorial V/ {print $5}' $tuto.new`
+   echo $ECHO_OPTS "1,$ s?$version?V$new}?g\nw $tuto.new" | ed $tuto.new 1>/dev/null 2>&1
+   if [ "`diff $tuto $tuto.new`" != "" ]
+   then
+      echo "Mark new version in "$tuto
+      CHECKOUT $tuto
+      cat $tuto.new > $tuto
+   fi
+   rm -f $tuto.new
+   tuto=doc/TRUST/exercices/Tutorial_solutions/Tutorial_solutions.tex
+   version=`$TRUST_Awk '/ Tutorial V/ {print $3}' $tuto`
+   echo $ECHO_OPTS "1,$ s?$version?V$new?g\nw $tuto.new" | ed $tuto 1>/dev/null 2>&1
+   if [ "`diff $tuto $tuto.new`" != "" ]
+   then
+      echo "Mark new version in "$tuto
+      CHECKOUT $tuto
+      cat $tuto.new > $tuto
+   fi
+   rm -f $tuto.new
+   tuto=doc/TRUST/Tutorial/Baltik_tutorial.tex
+   version=`$TRUST_Awk '/ Project V/ {print $4}' $tuto`
+   echo $ECHO_OPTS "1,$ s?$version?V$new]{TRUST?g\nw $tuto.new" | ed $tuto 1>/dev/null 2>&1
+   version=`$TRUST_Awk '/ Project V/ {print $7}' $tuto.new`
+   echo $ECHO_OPTS "1,$ s?$version?V$new}?g\nw $tuto.new" | ed $tuto.new 1>/dev/null 2>&1
+   if [ "`diff $tuto $tuto.new`" != "" ]
+   then
+      echo "Mark new version in "$tuto
+      CHECKOUT $tuto
+      cat $tuto.new > $tuto
+   fi
+   rm -f $tuto.new
+   echo " "
+#fi
 
 
 [ ! -d $TRUST_ROOT/.git ] && echo "Error: You must have $TRUST_ROOT/.git directory to do this action" && exit
