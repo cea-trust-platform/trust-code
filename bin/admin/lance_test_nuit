@@ -585,7 +585,7 @@ cd $TRUST_ROOT
    # Assume unchanged some files (big one with a lot of changes):
    cd $TRUST_ROOT/doc
    echo "Update Git repos "`pwd`
-   for assume_inchanged in Coverage/html.tgz Coverage/cpp.gcov.tar.gz Coverage/list_methodes.gz Coverage/dico.pkl.gz Coverage/list_methodes_non_appelees.gz
+   for assume_inchanged in Coverage/cpp.gcov.tar.gz Coverage/list_methodes.gz Coverage/dico.pkl.gz Coverage/list_methodes_non_appelees.gz
    do
       if [ ! -f $assume_inchanged ]
       then
@@ -2357,7 +2357,7 @@ $TRUST_ROOT/bin/KSH/tggcov_ 1>$REP_NUIT/tggcov.log 2>&1
 #tail -n2 $REP_NUIT/tggcov.log
 couverture_de_code=`tggcov_ | $TRUST_Awk '/TRUST code/ {print $1}'`
 cd - 1>/dev/null 2>&1
-couverture_minimale=70.04 #v1.7.4 ; 69.61 v1.7.3 ; 69.28 v1.7.2 ; 65.26 v1.7.1
+couverture_minimale=69.87 #v1.7.5 ; 70.04 v1.7.4 ; 69.61 v1.7.3 ; 69.28 v1.7.2 ; 65.26 v1.7.1
 coverage=`echo $couverture_de_code | $TRUST_Awk -v m=$couverture_minimale '{if ($1>=m) print 1;else print 0}'`
 if [ "$coverage" = 1 ]
 then
@@ -2366,30 +2366,30 @@ else
    echo "    Code coverage $couverture_de_code% < $couverture_minimale% of lines"
    cat $REP_NUIT/tggcov.log | mail_ -s\"[lance_test_nuit] Code coverage KO with $couverture_de_code% \< $couverture_minimale% of lines tested\" $TRUST_MAIL $TRUST_PROJECT_LEADER
 fi
-(
-# Creation du rapport html
-cd $TRUST_ROOT/doc/Coverage
-cd html
-echo "  Call to $TRUST_ROOT/bin/KSH/tggcov_ -html"
-echo "from `pwd`"
-echo "    See $REP_NUIT/tggcov_html.log"
-$TRUST_ROOT/bin/KSH/tggcov_ -html 1>$REP_NUIT/tggcov_html.log 2>&1
-tail -n1 $REP_NUIT/tggcov_html.log
-#echo "    Update html.tgz on $TRUST_ROOT/doc/Coverage" # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
-echo "    Update html.tgz on $TRUST_ROOT/doc/Coverage/html"
-tar cfz html.tgz *.html
-# Mise a jour si different
-if [ "`diff -a html.tgz ../html.tgz 2>/dev/null;echo $?`" != 0 ]
-then
-   echo "    => updated"
-   #CHECKOUT ../html.tgz 1>/dev/null 2>&1 # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
-   mv -f html.tgz ../html.tgz            # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
-else
-   echo "    => NOT updated"
-   rm -f html.tgz   # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
-fi
-ls -la ../html.tgz  # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
-)
+#(
+## Creation du rapport html
+#cd $TRUST_ROOT/doc/Coverage
+#cd html
+#echo "  Call to $TRUST_ROOT/bin/KSH/tggcov_ -html"
+#echo "from `pwd`"
+#echo "    See $REP_NUIT/tggcov_html.log"
+#$TRUST_ROOT/bin/KSH/tggcov_ -html 1>$REP_NUIT/tggcov_html.log 2>&1
+#tail -n1 $REP_NUIT/tggcov_html.log
+##echo "    Update html.tgz on $TRUST_ROOT/doc/Coverage" # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
+#echo "    Update html.tgz on $TRUST_ROOT/doc/Coverage/html"
+#tar cfz html.tgz *.html
+## Mise a jour si different
+#if [ "`diff -a html.tgz ../html.tgz 2>/dev/null;echo $?`" != 0 ]
+#then
+#   echo "    => updated"
+#   #CHECKOUT ../html.tgz 1>/dev/null 2>&1 # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
+#   mv -f html.tgz ../html.tgz            # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
+#else
+#   echo "    => NOT updated"
+#   rm -f html.tgz   # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
+#fi
+#ls -la ../html.tgz  # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
+#)
 cd $TRUST_ROOT/doc/Coverage
 echo "  Call to make in $TRUST_ROOT/doc/Coverage"
 make clean # dossier Coverage/html supprime et Coverage/html/index.html vide car non mis à jour dans l'archive TRUST + all baltik
