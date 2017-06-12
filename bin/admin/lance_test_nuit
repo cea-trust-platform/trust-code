@@ -59,7 +59,7 @@ check_components()
 	    $make_option && echo "$Composant OK" && COMPOSANT_OK=1
 	    if [[ "$ComposantsGit" = *"$Composant"* ]] # Test si Composant est dans la liste des composants GIT
 	    then
-	       if [ "`date '+%u'`" = 5 ]
+	       if [ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 18 ]
 	       then
 	          make check_gui 1>$Gui_log 2>&1 &
 	       else
@@ -146,7 +146,7 @@ check_components()
 			# Pour ModeleCoeur, test en valgrind seulement le vendredi car ne passe pas en une nuit
 			if [ "$Composant" = ModeleCoeur ]
 			then
-			   if [ "`date '+%u'`" = 5 ] 
+			   if [ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 18 ]
 			   then
 		              valgrind_option="--with-valgrind"
 			   else
@@ -162,7 +162,7 @@ check_components()
 			# Pour TrioCFD, test en debug seulement le vendredi car ne passe pas en une nuit
 			if [ "$Composant" = TrioCFD ]
 			then
-			   if [ "`date '+%u'`" = 5 ] 
+			   if [ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 18 ]
 			   then
 		              mode_option="--with-mode=debug"
 			   else
@@ -177,7 +177,7 @@ check_components()
 		     then
 	                if [ "$Composant" = TrioCFD ] || [ "$Composant" = Test_Baltik ] || [ "$Composant" = ModeleCoeur ]
 			then
-			   if [ "`date '+%u'`" = 5 ] 
+			   if [ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 18 ]
 			   then
 		              check_option="--check-all"
 			   else
