@@ -5,7 +5,7 @@ Version	Qui				Tache
 1.7.6   triou@cea.fr            remplacer endl par finl dans src
 1.7.6   gauthier.fauchet@cea.fr envoyer DI a TMA sur prm pour Flica5
 1.7.6   gauthier.fauchet@cea.fr Polygone.cpp: ToDo a mettre dans triangle
-1.7.5   adrien.bruneton@cea.fr  cf DI 4204 erreurs Valgrind : mise a jour du fichier suppressions
+1.7.6   adrien.bruneton@cea.fr  cf DI 4204 erreurs Valgrind : mise a jour du fichier suppressions
 1.7.6   stephane.veys@cea.fr    cf DI 4221 Possibilite d ecrire les fichiers .log dans un sous-repertoire
 1.7.6   stephane.veys@cea.fr    cf DI 4195 Definition_Champs passe en v1.7.3 mais plante en v1.7.4
 1.7.6   triou@cea.fr            externalpackages: Petsc 3.6.3 upgrated to 3.7.5 (Analyser le fichier de sortie datafile_petsc.TU - signification de count)
@@ -19,4 +19,4 @@ Version	Qui				Tache
 1.7.6   triou@cea.fr            Avoir un fichier avec la liste des fichiers deleted sur git pour faire un rm a distance
 1.7.6   triou@cea.fr            voir pour ajouter test Execute_parallel lors du configure pour verifier l'installation MPI
 1.7.6   triou@cea.fr            Probleme avec pre-commit et post-commit qui modifie des fichiers lors du commit apres nos tests !!! Le faire lors du compile et si modif alors arret...
-1.7.6   marthe.roux@cea.fr      Doc : mise a jour version
+1.7.6   marthe.roux@cea.fr      Slides formations : mise a jour version

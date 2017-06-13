@@ -55,8 +55,8 @@ cb_config_list *:1" > ROMIO_HINTS.env
    # intelmpi 2017.0.098 5.1.3.258
    module="$intel intelmpi/2017.0.098" # license is not available now
    # openmpi 2.0.0 2.0.1
-   module="$intel openmpi/intel/2.0.1" # error mpif-sizeof.h
-   module="openmpi/gnu/2.0.1"
+   #module="$intel openmpi/intel/2.0.1" # error mpif-sizeof.h
+   #module="openmpi/gnu/2.0.1"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env

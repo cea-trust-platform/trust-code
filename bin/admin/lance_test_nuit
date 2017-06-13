@@ -59,7 +59,7 @@ check_components()
 	    $make_option && echo "$Composant OK" && COMPOSANT_OK=1
 	    if [[ "$ComposantsGit" = *"$Composant"* ]] # Test si Composant est dans la liste des composants GIT
 	    then
-	       if [ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 18 ]
+	       if [ "`date '+%u'`" -ge 5 ] && [ `date '+%H'` -gt 18 ]
 	       then
 	          make check_gui 1>$Gui_log 2>&1 &
 	       else
@@ -146,7 +146,7 @@ check_components()
 			# Pour ModeleCoeur, test en valgrind seulement le vendredi car ne passe pas en une nuit
 			if [ "$Composant" = ModeleCoeur ]
 			then
-			   if [ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 18 ]
+			   if [ "`date '+%u'`" -ge 5 ] && [ `date '+%H'` -gt 18 ]
 			   then
 		              valgrind_option="--with-valgrind"
 			   else
@@ -162,7 +162,7 @@ check_components()
 			# Pour TrioCFD, test en debug seulement le vendredi car ne passe pas en une nuit
 			if [ "$Composant" = TrioCFD ]
 			then
-			   if [ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 18 ]
+			   if [ "`date '+%u'`" -ge 5 ] && [ `date '+%H'` -gt 18 ]
 			   then
 		              mode_option="--with-mode=debug"
 			   else
@@ -177,7 +177,7 @@ check_components()
 		     then
 	                if [ "$Composant" = TrioCFD ] || [ "$Composant" = Test_Baltik ] || [ "$Composant" = ModeleCoeur ]
 			then
-			   if [ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 18 ]
+			   if [ "`date '+%u'`" -ge 5 ] && [ `date '+%H'` -gt 18 ]
 			   then
 		              check_option="--check-all"
 			   else
@@ -3490,7 +3490,7 @@ make
 ----------------------------------------------------------------------------------------------------
 2. How to run preinstalled version?
 ----------------------------------------------------------------------------------------------------
-# for PC connected to CEA Saclay network:
+# for PC connected to CEA Saclay network (Please notified that VisIt is KO on Ubuntu 16.04):
 source /home/triou/env_TRUST_$new.sh
 
 # for CEA Saclay cluster (callisto):
@@ -3589,7 +3589,7 @@ make optim debug
 ----------------------------------------------------------------------------------------------------
 2. How to run preinstalled version?
 ----------------------------------------------------------------------------------------------------
-# for PC connected to CEA Saclay network:
+# for PC connected to CEA Saclay network (Please notified that VisIt is KO on Ubuntu 16.04):
 source /home/triou/env_TrioCFD_$new.sh
 
 # for CEA Saclay cluster (callisto):
@@ -3624,9 +3624,9 @@ at the complete core scale. Through the MATHYS code, TrioMC can be coupled:
 - with the CATHARE code to model the local core behavior during reactor transients.
 TrioMC is based on the TRUST platform.
 
------------------------------------
-New TrioMC2 version released v$new
------------------------------------
+------------------------------------
+New TrioMC2 version released v"$new"b
+------------------------------------
 1. How to run preinstalled version?
 2. Release notes
 
@@ -3639,20 +3639,20 @@ To unsubscribe, click here http://saxifrage:3500/wws/info/mc2_annonces " > $MESS
 1. How to run preinstalled version?
 ----------------------------------------------------------------------------------------------------
 # for PC connected to CEA SESI network:
-source /soft/der/sesi/TrioMC2/env_TrioMC2-$new.sh
+source /soft/der/sesi/TrioMC2/env_TrioMC2-"$new"b.sh
 
 # for CEA Cadarache cluster (mezel):
-source /soft/mezel/TRIO/env_TrioMC2-$new.sh
+source /soft/mezel/TRIO/env_TrioMC2-"$new"b.sh
 
 # for CEA Saclay cluster (callisto):
-source /home/triou/env_TrioMC2_$new.sh
+source /home/triou/env_TrioMC2_"$new"b.sh
 ----------------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
       echo $ECHO_OPTS "
 --------------------------------------------------------------------------------------------------
 2. \c" >> $MESSAGES_LIVRAISON
          [ -f $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES ] && echo $ECHO_OPTS "$Composant \c" >> $MESSAGES_LIVRAISON && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES >> $MESSAGES_LIVRAISON
          echo " " >> $MESSAGES_LIVRAISON
-         mail_ -s \"New TrioMC2 v$new released\" $TRUST_MAIL < $MESSAGES_LIVRAISON
+         mail_ -s \"New TrioMC2 v$newb released\" $TRUST_MAIL < $MESSAGES_LIVRAISON
          sleep 5
          mv -f $MESSAGES_LIVRAISON $REP_NUIT/MESSAGES_LIVRAISON_$Composant
       fi
