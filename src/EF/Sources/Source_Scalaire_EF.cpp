@@ -70,7 +70,7 @@ Entree& Source_Scalaire_EF::readOn(Entree& s )
       la_source_lu_.detach();
     }
   //  const Equation_base& eqn = pb.equation(0);
-  equation().discretisation().nommer_completer_champ_physique(equation().zone_dis(),"Puissance_volumique","W/m3",la_source_,pb);
+  equation().discretisation().nommer_completer_champ_physique(equation().zone_dis(),la_source_.le_nom(),"W/m3",la_source_,pb);
   champs_compris_.ajoute_champ(la_source_);
   if (la_source_->nb_comp() != equation().inconnue().valeur().nb_comp())
     {

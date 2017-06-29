@@ -56,7 +56,7 @@ void Terme_Puissance_Thermique_QC_VEF_Face::associer_zones(const Zone_dis& zone_
 void Terme_Puissance_Thermique_QC_VEF_Face::associer_pb(const Probleme_base& pb)
 {
   const Equation_base& eqn = pb.equation(0);
-  eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(),"Puissance_volumique","W/m3",la_puissance,pb);
+  eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(),la_puissance.le_nom(),"W/m3",la_puissance,pb);
   Eval_Puiss_Th_QC_VEF_Face& eval_puis = (Eval_Puiss_Th_QC_VEF_Face&) iter.evaluateur();
   eval_puis.associer_puissance(la_puissance);
 }

@@ -243,7 +243,7 @@ void main_pilote_icoco_2(Probleme_U& pb_to_solve)
             int nb_elems;
 
             // Get the right geometry & nbcomp for "puissance"
-            pb.getInputFieldTemplate("Puissance_volumique",afield);
+            pb.getInputFieldTemplate("puissance",afield);
             // Allocate memory for the values (size=nb_elems*nb_comp)
             afield.set_standalone();
             // Fill the values
@@ -266,7 +266,7 @@ void main_pilote_icoco_2(Probleme_U& pb_to_solve)
                 afield._field[i]=(((x-0.5)*(x-0.5)+(y-0.5)*(y-0.5))<0.3*0.3)*10;
               }
             // Give the field to the problem
-            pb.setInputField("Puissance_volumique",afield);
+            pb.setInputField("puissance",afield);
           }
 
           // Solve the next time step

@@ -71,7 +71,7 @@ void Puissance_Thermique_EF::associer_pb(const Probleme_base& pb)
   const Champ_Don& rho = pb.milieu().masse_volumique();
   associer_champs(rho,le_Cp);
   const Equation_base& eqn = pb.equation(0);
-  eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(),"Puissance_volumique","W/m3",la_puissance,pb);
+  eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(),la_puissance.le_nom(),"W/m3",la_puissance,pb);
 
   Eval_Puiss_Th_EF& eval_puis = (Eval_Puiss_Th_EF&) iter.evaluateur();
   eval_puis.associer_champs(rho,le_Cp,la_puissance);
