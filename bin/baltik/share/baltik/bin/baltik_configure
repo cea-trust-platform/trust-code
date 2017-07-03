@@ -637,6 +637,7 @@ export exec=\${project_directory}/${project_executable_name}_opt
 export exec_semi_opt=\${project_directory}/${project_executable_name}_semi_opt
 export exec_pg=\${project_directory}/${project_executable_name}_opt_pg
 export exec_gcov=\${project_directory}/${project_executable_name}_opt_gcov
+export exec_avx=\${project_directory}/${project_executable_name}_opt_avx
 export exec_debug=\${project_directory}/${project_executable_name}" > $env_file
 
 sed "s/\/all\//\/full\//g"  $env_file > $env_file_full
