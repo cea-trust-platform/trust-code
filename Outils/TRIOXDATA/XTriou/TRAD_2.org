@@ -389,7 +389,7 @@ Sch_CN_EX_iteratif Sch_CN_iteratif Sch_CN_EX_iteratif -1 This keyword also descr
 runge_kutta_ordre_3 schema_temps_base runge_kutta_ordre_3 -1 This is the Runge-Kutta scheme of third order.
 runge_kutta_ordre_4_d3p schema_temps_base runge_kutta_ordre_4_d3p -1 not_set
 leap_frog schema_temps_base leap_frog -1 This is the leap-frog scheme.
-runge_kutta_rationnel_ordre_2 schema_temps_base runge_kutta_rationnel_ordre_2 -1 This is the Runge-Kutta rational scheme of second order.
+runge_kutta_rationnel_ordre_2 schema_temps_base runge_kutta_rationnel_ordre_2 -1 This is the Runge-Kutta rational scheme of second order. The method is described in the note: Wambeck - Rational Runge-Kutta methods for solving systems of ordinary differential equations, at the link: https://link.springer.com/article/10.1007/BF02252381. Although rational methods require more computational work than linear ones, they can have some other properties, such as a stable behaviour with explicitness, which make them preferable.
 solveur_lineaire_std solveur_implicite_base solveur_lineaire_std 1 not_set
   attr solveur solveur_sys_base solveur 1 not_set
 simpler solveur_implicite_base simpler 1 Simpler method for incompressible systems.

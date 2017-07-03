@@ -42,6 +42,17 @@
 //     on choisit b1=2, b2=-1, c2=1/2
 // .SECTION voir aussi
 //     Schema_Temps_base RK3
+//
+//  03/07/2017 ABn. Quelques explications RRK2:
+//  Le papier de reference pour l'implementation du Rational Runge Kutta 2 semble etre :
+//  Wambeck - Rational Runge-Kutta methods for solving systems of ordinary differential equations:
+//  https://link.springer.com/article/10.1007/BF02252381
+//  Le "rational" vient de la fraction rationnelle utilisee dans l'expansion.
+//  Le reste colle exactement a l'implementation, d'apres ce que je peux voir. On y retrouve notamment la definition interessante de
+//    a.b / d = a(b,d)+b(d,a)-(a,b) / ||d||^2
+//  pour a, b et d vecteurs.
+//  En deux mots (tires de la conclusion) :
+//  Although rational methods require more computational work than linear ones, they can have some other properties, such as a stable behaviour with explicitness, which make them preferable.
 //////////////////////////////////////////////////////////////////////////////
 class RRK2: public Schema_Temps_base
 {
