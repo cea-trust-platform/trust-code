@@ -44,17 +44,17 @@
 #include <errno.h>
 #include <UserFields.h>
 #include <string.h>
-static const entier cache_info_level = 5;
-static const entier filter_info_level = 4;
+static const int cache_info_level = 5;
+static const int filter_info_level = 4;
 
-entier LataOptions::read_int_opt(const Nom & s)
+int LataOptions::read_int_opt(const Nom & s)
 {
   const char *ptr = strstr(s, "=");
   if (!ptr) 
     ptr = s;
   errno = 0;
   char *errorptr = 0;
-  entier x = strtol(ptr+1, &errorptr, 0 /* base 10 par defaut */);
+  int x = strtol(ptr+1, &errorptr, 0 /* base 10 par defaut */);
   if (errno || *errorptr != 0) {
     Journal() << "LataOptions error reading int parameter: " << s << endl;
     throw;
@@ -160,10 +160,10 @@ void LataOptions::describe()
   user_fields_options_.print_help_option();
 }
 
-entier LataOptions::parse_option(const Nom & s)
+int LataOptions::parse_option(const Nom & s)
 {
   if (s.debute_par("verbosity=")) {
-    entier level = read_int_opt(s);
+    int level = read_int_opt(s);
     set_Journal_level(level);
   } else if (s.debute_par("regularize=")) {
     regularize = true;
@@ -197,7 +197,7 @@ entier LataOptions::parse_option(const Nom & s)
       Journal() << "Error : clipbox parameters expects 6 values" << endl;
       throw;
     }
-    for (entier i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i++) {
       clipbox_min[i] = read_float_opt(list[i]);
       clipbox_max[i] = read_float_opt(list[i+3]);
     }
@@ -217,7 +217,7 @@ entier LataOptions::parse_option(const Nom & s)
   return 1;
 }
 
-void LataFilterCache::set_cache_properties(entier clear_on_tstep_change, BigEntier mem_limit)
+void LataFilterCache::set_cache_properties(int clear_on_tstep_change, BigEntier mem_limit)
 { 
   clear_cache_on_tstep_change_ = clear_on_tstep_change;
   cache_memory_limit_ = mem_limit;
@@ -230,10 +230,10 @@ void LataFilterCache::set_cache_properties(entier clear_on_tstep_change, BigEnti
 //  been used recently.
 //  The entry must be released by release_item() when we are finished working
 //  with it.
-LataDeriv<LataObject> & LataFilterCache::get_item_(const Nom & id, entier tstep)
+LataDeriv<LataObject> & LataFilterCache::get_item_(const Nom & id, int tstep)
 {
-  entier i;
-  const entier n = data_.size();
+  int i;
+  const int n = data_.size();
   for (i = 0; i < n; i++) {
     const DataCacheItem & item = data_[i];
     if (item.id_ == id && item.tstep_ == tstep)
@@ -269,8 +269,8 @@ LataDeriv<LataObject> & LataFilterCache::get_item_(const Nom & id, entier tstep)
 void LataFilterCache::release_item(const Nom & id)
 {
   Journal(cache_info_level) << "LataFilterCache::release_item " << id << endl;
-  const entier n = data_.size();
-  entier i;
+  const int n = data_.size();
+  int i;
   for (i = 0; i < n; i++) {
     const DataCacheItem & item = data_[i];
     if (item.id_ == id)
@@ -295,12 +295,12 @@ void LataFilterCache::release_item(const Nom & id)
 // Description: removes from the cache the oldest items until the total
 //  memory used by the cache is below max_mem_size (in bytes), and
 //  if tstep_to_keep > 0, also removes all timesteps except 0 and tstep_to_keep
-void LataFilterCache::cleanup_cache(entier tstep_to_keep)
+void LataFilterCache::cleanup_cache(int tstep_to_keep)
 {
   if (clear_cache_on_tstep_change_ && tstep_to_keep > 0) {
     Journal(cache_info_level) << "LataFilterCache::clear_cache_tsteps except 0 and " << tstep_to_keep << endl;
-    const entier n = data_.size();
-    for (entier i = 0; i < n; i++) {
+    const int n = data_.size();
+    for (int i = 0; i < n; i++) {
       DataCacheItem & item = data_[i];
       if (item.id_ != "??") {
         if (item.tstep_ == 0 || item.tstep_ == tstep_to_keep) {
@@ -319,12 +319,12 @@ void LataFilterCache::cleanup_cache(entier tstep_to_keep)
   if (cache_memory_limit_ >= 0) {
     Journal(cache_info_level) << "LataFilterCache::clear_cache_memory " << cache_memory_limit_ << endl;
     do {
-      const entier n = data_.size();
+      const int n = data_.size();
       // Scan cached data, looking for the oldest item and summing up memory
       BigEntier total_memsize = 0;
-      entier oldest = -1;
+      int oldest = -1;
       BigEntier oldest_time = cache_data_access_count_;
-      for (entier i = 0; i < n; i++) {
+      for (int i = 0; i < n; i++) {
         const DataCacheItem & item = data_[i];
         if (item.id_ != "??") {
           total_memsize += item.memory_size_;
@@ -360,21 +360,21 @@ void LataFilter::initialize(const LataOptions & opt, const LataDB & lata_db)
   get_all_metadata(geoms_metadata_, fields_metadata_);
 }
 
-void LataFilter::set_cache_properties(BigEntier max_memory, const entier keep_all_timesteps)
+void LataFilter::set_cache_properties(BigEntier max_memory, const int keep_all_timesteps)
 {
   data_cache_.set_cache_properties(!keep_all_timesteps, max_memory);
 }
 
 // Description: Return the number of timesteps in the database
 //   (=number of physical timesteps + one containing global definitions at timestep 0)
-entier LataFilter::get_nb_timesteps() const
+int LataFilter::get_nb_timesteps() const
 {
   return lataDB().nb_timesteps();
 }
 
 // Description: Return the physical time for this timestep.
 //  returns -1.0 for timestep 0 (global definitions)
-double LataFilter::get_timestep(entier i) const
+double LataFilter::get_timestep(int i) const
 {
   if (i == 0)
     return -1.0;
@@ -386,7 +386,7 @@ static void add_fields_to_metadata_list(const LataDB & lataDB,
                                         const Nom & lata_geom, 
                                         const Nom & dest_geom, 
                                         const Nom & options,
-                                        entier dim,
+                                        int dim,
                                         LataVector<LataFieldMetaData> & fields_data,
                                         const Motcle & source,
                                         const Nom & source_domain)
@@ -394,8 +394,8 @@ static void add_fields_to_metadata_list(const LataDB & lataDB,
   if (lataDB.nb_timesteps()<2) return;
   // Query for existing fields in the latadb :
   Field_UNames lata_fields = lataDB.field_unames(1, lata_geom, "*", LataDB::FIRST_AND_CURRENT);
-  const entier nb_fields = lata_fields.size();
-  for (entier i_field = 0; i_field < nb_fields; i_field++) {
+  const int nb_fields = lata_fields.size();
+  for (int i_field = 0; i_field < nb_fields; i_field++) {
     const LataDBField & lata_field = lataDB.get_field(1, lata_fields[i_field], LataDB::FIRST_AND_CURRENT);
     LataField_base::Elem_som loc = LataField_base::localisation_from_string(lata_field.localisation_);
 
@@ -454,33 +454,33 @@ void LataFilter::get_all_metadata(LataVector<LataGeometryMetaData> & geoms_data,
 {
   geoms_data.reset();
   fields_data.reset();
-  entier current_tstep = 1;
+  int current_tstep = 1;
   // If no real timestep, just check timestep 0
   if (lataDB().nb_timesteps() < 2)
     current_tstep = 0;
   Noms lata_geoms_names = lataDB().geometry_names(current_tstep, LataDB::FIRST_AND_CURRENT);
-  const entier nb_geoms = lata_geoms_names.size();
-  for (entier i_geom = 0; i_geom < nb_geoms; i_geom++) {
+  const int nb_geoms = lata_geoms_names.size();
+  for (int i_geom = 0; i_geom < nb_geoms; i_geom++) {
     // Name of the current geometry (from lataDB)
     const Nom & lata_geom_name = lata_geoms_names[i_geom];
     const LataDBGeometry & lata_geom = lataDB().get_geometry(current_tstep, lata_geom_name, LataDB::FIRST_AND_CURRENT);
     // Query properties from LataDB:
     // Is it a dynamic mesh ?
-    const entier dynamic = lata_geom.timestep_ > 0;
+    const int dynamic = lata_geom.timestep_ > 0;
     // Element type ?
     Domain::Element element_type = Domain::element_type_from_string(lata_geom.elem_type_);
     // Query for dimension
-    const entier domain_already_ijk = lataDB().field_exists(current_tstep, lata_geom_name, "SOMMETS_IJK_I", LataDB::FIRST_AND_CURRENT);
+    const int domain_already_ijk = lataDB().field_exists(current_tstep, lata_geom_name, "SOMMETS_IJK_I", LataDB::FIRST_AND_CURRENT);
 
     // Do we have faces ?
-    const entier have_faces = 
+    const int have_faces = 
       domain_already_ijk ||
       (lataDB().field_exists(current_tstep, lata_geom_name, "FACES", LataDB::FIRST_AND_CURRENT)
        && lataDB().field_exists(current_tstep, lata_geom_name, "ELEM_FACES", LataDB::FIRST_AND_CURRENT));
 
-    entier dim = 1;
+    int dim = 1;
     // Query for number of blocks in the lata file:
-    entier nblocks = 1;
+    int nblocks = 1;
     if (domain_already_ijk) {
       if (lataDB().field_exists(current_tstep, lata_geom_name, "SOMMETS_IJK_K", LataDB::FIRST_AND_CURRENT))
         dim = 3;
@@ -494,7 +494,7 @@ void LataFilter::get_all_metadata(LataVector<LataGeometryMetaData> & geoms_data,
         nom_sommets = "SOMMETS_IJK_K";
       const LataDBField & coord = lataDB().get_field(current_tstep, lata_geom_name, nom_sommets, "", LataDB::FIRST_AND_CURRENT);
       // Nombre d'elements dans la direction du decoupage parallele:
-      const entier nelem = coord.size_ - 1;
+      const int nelem = coord.size_ - 1;
       // Si les tranches sont trop petites diminuer le nombre de blocs
       if (nblocks > (nelem + 3) / 4)
         nblocks = (nelem + 3) / 4;
@@ -548,7 +548,7 @@ void LataFilter::get_all_metadata(LataVector<LataGeometryMetaData> & geoms_data,
                                 "latadb",
                                 "??");
     // It is regularizable ?
-    entier regularizable = (((element_type == Domain::quadri)&&(data.dimension_==2)) || ((element_type == Domain::hexa)&&(data.dimension_==3)))
+    int regularizable = (((element_type == Domain::quadri)&&(data.dimension_==2)) || ((element_type == Domain::hexa)&&(data.dimension_==3)))
       && (lata_geom.elem_type_ != "HEXAEDRE_AXI") && (lata_geom.elem_type_ != "RECTANGLE_AXI");
     Journal(filter_info_level) << " metadata: geometry " << lata_geom_name << " element type says regularizable=" << regularizable << endl;
     if (regularizable && ((opt_.regularize_tolerance < 0) || (!opt_.regularize))) {
@@ -683,7 +683,7 @@ void LataFilter::get_all_metadata(LataVector<LataGeometryMetaData> & geoms_data,
 Noms LataFilter::get_exportable_geometry_names() const
 {
   Noms names;
-  entier i;
+  int i;
   for (i = 0; i < geoms_metadata_.size(); i++)
     names.add(geoms_metadata_[i].internal_name_);
 
@@ -705,7 +705,7 @@ Field_UNames LataFilter::get_exportable_field_unames(const char * geometry) cons
 {
   Field_UNames unames;
   Motcle geom(geometry);
-  for (entier i = 0; i < fields_metadata_.size(); i++)
+  for (int i = 0; i < fields_metadata_.size(); i++)
     if (geom == fields_metadata_[i].geometry_name_ || geom == "*") 
       // Do not show faces located fields to the user...
       if (fields_metadata_[i].localisation_ != LataField_base::FACES || opt_.export_fields_at_faces_)
@@ -719,7 +719,7 @@ Field_UNames LataFilter::get_exportable_field_unames(const char * geometry) cons
 const LataGeometryMetaData & LataFilter::get_geometry_metadata(const char * geometry) const
 {
   Motcle geom(geometry);
-  for (entier i = 0; i < geoms_metadata_.size(); i++)
+  for (int i = 0; i < geoms_metadata_.size(); i++)
     if (geom == geoms_metadata_[i].internal_name_)
       return geoms_metadata_[i];
 
@@ -732,7 +732,7 @@ const LataGeometryMetaData & LataFilter::get_geometry_metadata(const char * geom
 //  returned by get_exportable_geometry_names() and get_exportable_field_names()
 const LataFieldMetaData & LataFilter::get_field_metadata(const Field_UName & uname) const
 {
-  for (entier i = 0; i < fields_metadata_.size(); i++)
+  for (int i = 0; i < fields_metadata_.size(); i++)
     if (fields_metadata_[i].uname_ == uname)
       return fields_metadata_[i];
   
@@ -779,7 +779,7 @@ const Domain & LataFilter::get_geometry(const Domain_Id & id)
       
           if (opt_.reconnect) {
             // Bloc demande, peut etre le bloc 0 ou le bloc -1:
-            const entier req_block = requested_id.block_;
+            const int req_block = requested_id.block_;
             if (requested_id.block_ > 0) {
               Cerr << "Error: requesting block " << requested_id.block_ << " with reconnect option" << endl;
 	      throw;
@@ -804,8 +804,8 @@ const Domain & LataFilter::get_geometry(const Domain_Id & id)
             dom.fill_domain_from_lataDB(lataDB(), requested_id, 1 /* parallel splitting */, 
                                         0 /* no virtual elements */);
           } else {
-            const entier nparts = opt_.ijk_mesh_nb_parts_;
-            const entier virtual_size = opt_.load_virtual_elements ? opt_.ijk_virt_layer : 0;
+            const int nparts = opt_.ijk_mesh_nb_parts_;
+            const int virtual_size = opt_.load_virtual_elements ? opt_.ijk_virt_layer : 0;
             dom.fill_domain_from_lataDB(lataDB(), requested_id, nparts /* parallel splitting */, 
                                         virtual_size /* with virtual elements */);
           }
@@ -909,7 +909,7 @@ const FieldFloat & LataFilter::get_float_field(const Field_Id & id)
 {
   const LataField_base & field = get_field(id);
   const FieldFloat * float_field_ptr = dynamic_cast<const FieldFloat*>(&field);
-  if (! float_field_ptr) { /*assert(! float_field_ptr);*/ throw;}
+  if (! float_field_ptr) { /*assert(! float_field_ptr);*/ throw LataError(LataError::INVALID_COMPONENT,"unknown field");}
   const FieldFloat & fld = *float_field_ptr;
   return fld;
 }
@@ -1056,7 +1056,7 @@ void LataDB_apply_input_filter(const LataDB & lata_db, LataDB & filtered_db,
   Noms list_all_fields;
   {
     Field_UNames fields = lata_db.field_unames(lata_db.nb_timesteps()-1, "*", "*", LataDB::FIRST_AND_CURRENT);
-    for (entier i = 0; i < fields.size(); i++) {
+    for (int i = 0; i < fields.size(); i++) {
       const Nom & n = fields[i].get_field_name();
       if (list_all_fields.rang(n) < 0)
         list_all_fields.add(n);
@@ -1065,9 +1065,9 @@ void LataDB_apply_input_filter(const LataDB & lata_db, LataDB & filtered_db,
 
   if (timesteps_filter.size_array() == 0) {
     // Add all timesteps, timestep 0 is implicitely added.
-    entier n = lata_db.nb_timesteps();
+    int n = lata_db.nb_timesteps();
     timesteps_filter.resize_array(n-1);
-    for (entier i = 1; i < n; i++)
+    for (int i = 1; i < n; i++)
       timesteps_filter[i-1] = i;
     Journal(3) << " Exporting all " << n-1 << " timesteps" << endl;
   } else if (timesteps_filter[0] < 0) {
