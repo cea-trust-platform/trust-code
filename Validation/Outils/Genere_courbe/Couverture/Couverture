@@ -25,13 +25,13 @@ test_OK()
     if [ !  -f rapport.pdf ]
 	then
 	echo Probleme cas KO $itot
-	exit -1
+	exit 1
     fi
     if [ $level -ne 0 ]
 	then
 	mv .tmp .tmpsa
 	python  ../../src/genererCourbes.py -p test_lu.prm -o rapport2.pdf 1>ver.log 2>&1
-	[ $? != 0 ] && echo "pb a la verif de test_lu" && exit -1
+	[ $? != 0 ] && echo "pb a la verif de test_lu" && exit 1
 	echo "fin de verif de test_lu"
 	diff -r .tmp .tmpsa
 	rm -f test_lu.prm
@@ -42,7 +42,7 @@ test_KO()
     if [  -f rapport.pdf ]
 	then
 	echo Probleme cas pas KO $itot
-	exit -1
+	exit 1
     fi
 }
 test_cas_OK()
@@ -51,11 +51,11 @@ test_cas_OK()
     echo debut cas $itot ":" $*
     rm -rf .tmp .tmpsa
     rm -f rapport.pdf test_lu.prm
-    python -m trace  -m -c -C ../cove -f ../cove/counts ../../src/genererCourbes.py -v $level $args $* 1> trace$itot.log 2>&1
+    python -m trace  -m -c -C ../cove -f ../cove/counts ../../src/genererCourbes.py -v $level $args $* 1>trace$itot.log 2>&1
     test_OK
     echo fin cas $itot ":" $*
     mv rapport.pdf ../rapport$itot.pdf
-    
+    echo ""
 }
 test_cas_KO()
 {
@@ -70,11 +70,11 @@ test_cas_KO()
     fi
     
     rm -f rapport.pdf
-    
+    echo ""
 }
 
 cd courbe
-test_cas_OK -p impl.prm 
+test_cas_OK -p impl.prm
 cp ../rapport$itot.pdf ../impl.pdf 
 test_cas_KO  impl2.prm 
 test_cas_KO -p impl2.prm

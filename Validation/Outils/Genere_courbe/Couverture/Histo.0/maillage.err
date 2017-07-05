@@ -1,31 +1,26 @@
 Petsc initialization succeeded.
 Parallel engine initialized : Comm_Group_Noparallel with 1 processors
-Executable: /users/fauchet/VUES/fauchet_162/vobs/TRUST/exec/TRUST_mpi_opt
+Executable: /export/home/mr757596/Workdir_TRUST_TrioCFD/TRUST_175_beta4_MR/exec/TRUST_mpi_opt
 Data file name = maillage
+feenableexcept enabled.
 Data file : maillage
-Localisation etude: /users/fauchet/VUES/fauchet_162/vobs/TRUST/Validation/Outils/Genere_courbe_new/Couverture/Histo
+Localisation etude: /export/home/mr757596/Workdir_TRUST_TrioCFD/TRUST_175_beta4_MR/Validation/Outils/Genere_courbe/Couverture/Histo/build
 Nom du cas maillage
- code : /users/fauchet/VUES/fauchet_162/vobs/TRUST/exec/TRUST_mpi_opt
- version : 1.6.2 
- build : 190810 
+ code : /export/home/mr757596/Workdir_TRUST_TrioCFD/TRUST_175_beta4_MR/exec/TRUST_mpi_opt
+ version : 1.7.5 
 Debut de l'execution 
 MAIN: Reading and executing data file
 Dimension::interpreter : dimension = 3
-Lire_Fichier: reading file trio_dom_geo.asc to object dom
+Lire_Fichier: reading ASCII file dom.geom to object dom
 Reading domain dom
- Number of nodes: 1465
+ Number of nodes: 1463
  Reading zone dom
   Number of elements: 6919
   Boundary (Bord) : PERX
   Boundary (Bord) : TOP
   Boundary (Bord) : LOW
   Boundary (Bord) : PERZ
-Elimination of unnecessary nodes in the domain dom
-Number of elements               :6919
-Number of nodes per element      :4
-Number of nodes at the beginning :1465
-Number of useful nodes           :1463
-Number of nodes to delete        :2
+Elimination of 0 unnecessary nodes in the domain dom
  Number of nodes after node-cleanup: 1463
 Lire_Fichier: end of file dom
 Execution of the interpreter Discretiser_domaine
@@ -33,50 +28,64 @@ Association of the domain on which the interpreter applies Discretiser_domaine
 <<<<<< Discretization VF >>>>>>>>>>
 
 Histogram of the largest angle of each element found into the mesh dom :
-Between 0° and 10° : 0 elements ( 0 %)
-Between 10° and 20° : 0 elements ( 0 %)
-Between 20° and 30° : 0 elements ( 0 %)
-Between 30° and 40° : 0 elements ( 0 %)
-Between 40° and 50° : 0 elements ( 0 %)
-Between 50° and 60° : 0 elements ( 0 %)
-Between 60° and 70° : 0 elements ( 0 %)
-Between 70° and 80° : 247 elements ( 3.56988 %)
-Between 80° and 90° : 1601 elements ( 23.1392 %)
-Between 90° and 100° : 1985 elements ( 28.6891 %)
-Between 100° and 110° : 1523 elements ( 22.0119 %)
-Between 110° and 120° : 956 elements ( 13.817 %)
-Between 120° and 130° : 523 elements ( 7.5589 %)
-Between 130° and 140° : 83 elements ( 1.1996 %)
-Between 140° and 150° : 1 elements ( 0.014453 %)
-Between 150° and 160° : 0 elements ( 0 %)
-Between 160° and 170° : 0 elements ( 0 %)
-Between 170° and 180° : 0 elements ( 0 %)
+Between 60 degrees and 70 degrees : 0 elements ( 0 %)
+Between 70 degrees and 80 degrees : 247 elements ( 3.56988 %)
+Between 80 degrees and 90 degrees : 1601 elements ( 23.1392 %)
+Between 90 degrees and 100 degrees : 1985 elements ( 28.6891 %)
+Between 100 degrees and 110 degrees : 1523 elements ( 22.0119 %)
+Between 110 degrees and 120 degrees : 956 elements ( 13.817 %)
+Between 120 degrees and 130 degrees : 523 elements ( 7.5589 %)
+Between 130 degrees and 140 degrees : 83 elements ( 1.1996 %)
+Between 140 degrees and 150 degrees : 1 elements ( 0.014453 %)
+Between 150 degrees and 160 degrees : 0 elements ( 0 %)
+Between 160 degrees and 170 degrees : 0 elements ( 0 %)
+Between 170 degrees and 180 degrees : 0 elements ( 0 %)
+
 Scatter::calculer_espace_distant_faces : start
-Zone::calculer_volumes()
- Vtotal=1.28e+09  Vaverage=184998  Vmin=77872  Vmax=488483
-Zone::calculer_volumes()
- Vtotal=1.28e+09  Vaverage=184998  Vmin=77872  Vmax=488483
+Creating a surface domain named dom_boundaries_PERX for the boundary PERX of the domain dom
+Number of elements of the new domain : 496
+Elimination of 1169 unnecessary nodes in the domain dom_boundaries_PERX
+Creating a surface domain named dom_boundaries_TOP for the boundary TOP of the domain dom
+Number of elements of the new domain : 86
+Elimination of 1407 unnecessary nodes in the domain dom_boundaries_TOP
+Creating a surface domain named dom_boundaries_LOW for the boundary LOW of the domain dom
+Number of elements of the new domain : 86
+Elimination of 1407 unnecessary nodes in the domain dom_boundaries_LOW
+Creating a surface domain named dom_boundaries_PERZ for the boundary PERZ of the domain dom
+Number of elements of the new domain : 496
+Elimination of 1169 unnecessary nodes in the domain dom_boundaries_PERZ
 remplir_elem_faces not coded in Zone_VF_inst
-Calculation of areas...
+==============================================
+The extreme coordinates of the domain dom are:
+x is between 0 and 800
+y is between 0 and 2000
+z is between 0 and 800
+==============================================
+==============================================
+The volume cells of the domain dom are:
+sum(volume cells)= 1.28e+09
+mean(volume cells)= 184998
+min(volume cells)= 77872
+max(volume cells)= 488483
+==============================================
+==============================================
+The boundary areas of the domain dom are:
 Area of PERX  	= 3.2e+06
 Area of TOP  	= 640000
 Area of LOW  	= 640000
 Area of PERZ  	= 3.2e+06
-Calculation of elements and nodes on dom...
+==============================================
+Calculation of elements and nodes on dom :
 Total number of elements = 6919
 Total number of nodes = 1463
+Total number of faces = 14420
+496 of them on boundary PERX
+86 of them on boundary TOP
+86 of them on boundary LOW
+496 of them on boundary PERZ
+==============================================
 <<<<<< End of Discretization VF >>>>>>>>>>
 Execution of the interpreter Postraiter_domaine
 Association of the domain on which the interpreter applies Postraiter_domaine
- we use faces_voisins
-0 ch_elem2 sizedom_0000 dom dom_PERX 6919
- we use faces_voisins
-0 ch_elem2 sizedom_0000 dom dom_TOP 6919
- we use faces_voisins
-0 ch_elem2 sizedom_0000 dom dom_LOW 6919
- we use faces_voisins
-0 ch_elem2 sizedom_0000 dom dom_PERZ 6919
 MAIN: End of data file
 Arret des processes.
-0.12user 0.09system 0:00.21elapsed 98%CPU (0avgtext+0avgdata 0maxresident)k
-0inputs+1368outputs (0major+3711minor)pagefaults 0swaps

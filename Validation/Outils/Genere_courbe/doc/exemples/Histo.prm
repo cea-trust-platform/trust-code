@@ -20,6 +20,7 @@ Figure
 	dimension 2
 	Include_Description_Curves 0
 	width 12cm
+	RangeX 0. 180.
 	labelx angle
 	labely " "
 	legend under
@@ -27,7 +28,7 @@ Figure
 	{
 	file histo
 	style boxes fill solid 0.3
-	columns ($2+$4)/2 6
+	columns ($2+$5)/2 $8
 	}	
 }
 visu {
@@ -43,6 +44,7 @@ Figure
 	dimension 2
 	Include_Description_Curves 0
 	width 12cm
+	RangeX 0. 180.
 	labelx angle
 	labely % de maille
 	legend under
@@ -50,7 +52,7 @@ Figure
 	{
 	file histo
 	style boxes
-	columns ($2+$4)/2 9
+	columns ($2+$5)/2 $11
 	}	
 }
 Figure
@@ -60,6 +62,7 @@ Figure
 	dimension 2
 	Include_Description_Curves 0
 	width 12cm
+	RangeX 0. 180.
 	labelx angle
 	labely % de maille
 	legend under
@@ -67,7 +70,7 @@ Figure
 	{
 	file histo2
 	style boxes
-	columns ($2+$4)/2 9
+	columns ($2+$5)/2 $11
 	}	
 }
 
@@ -78,6 +81,7 @@ Figure
 	dimension 2
 	Include_Description_Curves 0
 	width 12cm
+	RangeX 0. 180.
 	labelx angle
 	labely % de maille
 	logy
@@ -86,7 +90,7 @@ Figure
 	{
 	file histo2
 	style boxes
-	columns ($2+$4)/2 9
+	columns ($2+$5)/2 $11
 	}	
 }
 

@@ -1,15 +1,21 @@
-TRUST Version1.4.9 06/2005
+LATA_V2.1 Trio_U Version1.6 or later
 maillage
-TRUST
-Geometrie dom dom.lata.dom
-Format=ascii
-nb_som_tot=1463
-type_elem=TETRAEDRE
-nb_elem_tot=6919
+Trio_U verbosity=0
+Format BINAIRE,LITTLE_ENDIAN,INT32,F_INDEXING,C_ORDERING,F_MARKERS_SINGLE,REAL32
+GEOM dom type_elem=TETRAEDRE
+CHAMP SOMMETS dom.lata.dom.0.0 geometrie=dom size=1463 composantes=3
+CHAMP ELEMENTS dom.lata.dom.0.0.elem geometrie=dom size=6919 composantes=4 format=INT32
+GEOM dom_boundaries_PERX type_elem=TRIANGLE
+CHAMP SOMMETS dom.lata.dom_boundaries_PERX.0.0 geometrie=dom_boundaries_PERX size=294 composantes=3
+CHAMP ELEMENTS dom.lata.dom_boundaries_PERX.0.0.elem geometrie=dom_boundaries_PERX size=496 composantes=3 format=INT32
+GEOM dom_boundaries_TOP type_elem=TRIANGLE
+CHAMP SOMMETS dom.lata.dom_boundaries_TOP.0.0 geometrie=dom_boundaries_TOP size=56 composantes=3
+CHAMP ELEMENTS dom.lata.dom_boundaries_TOP.0.0.elem geometrie=dom_boundaries_TOP size=86 composantes=3 format=INT32
+GEOM dom_boundaries_LOW type_elem=TRIANGLE
+CHAMP SOMMETS dom.lata.dom_boundaries_LOW.0.0 geometrie=dom_boundaries_LOW size=56 composantes=3
+CHAMP ELEMENTS dom.lata.dom_boundaries_LOW.0.0.elem geometrie=dom_boundaries_LOW size=86 composantes=3 format=INT32
+GEOM dom_boundaries_PERZ type_elem=TRIANGLE
+CHAMP SOMMETS dom.lata.dom_boundaries_PERZ.0.0 geometrie=dom_boundaries_PERZ size=294 composantes=3
+CHAMP ELEMENTS dom.lata.dom_boundaries_PERZ.0.0.elem geometrie=dom_boundaries_PERZ size=496 composantes=3 format=INT32
 TEMPS 0.00000000e+00
-Champ DOM_PERX dom.lata.DOM_PERX.ELEM.dom.pb.0.0000000000
-Champ DOM_TOP dom.lata.DOM_TOP.ELEM.dom.pb.0.0000000000
-Champ DOM_LOW dom.lata.DOM_LOW.ELEM.dom.pb.0.0000000000
-Champ DOM_PERZ dom.lata.DOM_PERZ.ELEM.dom.pb.0.0000000000
-Champ DOM_BORD dom.lata.DOM_BORD.SOM.dom.pb.0.0000000000
 FIN
