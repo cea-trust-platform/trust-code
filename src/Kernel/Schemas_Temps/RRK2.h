@@ -53,6 +53,11 @@
 //  pour a, b et d vecteurs.
 //  En deux mots (tires de la conclusion) :
 //  Although rational methods require more computational work than linear ones, they can have some other properties, such as a stable behaviour with explicitness, which make them preferable.
+//  05/07/2017 ABn. Complement explications RRK2:
+//  Application du RRK2 en CFD :
+//  https://link.springer.com/content/pdf/10.1007%2F3-540-13917-6_112.pdf
+//  rho*u reste au temps n pour une evaluation intereédiaire de f.
+//  Said differently, from the time scheme perspective, f is only a function of Y1.
 //////////////////////////////////////////////////////////////////////////////
 class RRK2: public Schema_Temps_base
 {
