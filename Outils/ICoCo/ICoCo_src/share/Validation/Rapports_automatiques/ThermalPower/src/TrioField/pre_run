@@ -1,0 +1,10 @@
+#!/bin/bash
+make check
+status=$?
+if [ $status -eq 0 ]
+then
+  echo OK > is_ok
+else
+  rm -f is_ok
+fi
+#exit $status

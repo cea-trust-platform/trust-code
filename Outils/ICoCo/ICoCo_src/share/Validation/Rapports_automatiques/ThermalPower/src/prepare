@@ -1,0 +1,9 @@
+#!/bin/bash
+cd TrioField
+./configure
+cd ..
+cp -r TrioField MEDField
+sed "s/undef MM/define MM/" TrioField/main.cpp > MEDField/main.cpp
+cd MEDField
+./configure
+cd ..

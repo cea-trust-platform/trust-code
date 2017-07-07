@@ -1,0 +1,24 @@
+Parameters {
+	Title "Test thermal power imposed with Champ_Input_P0"
+	Author "triou"
+        VersionTrio_U 1.7.6
+ 	TestCase ./TrioField ok
+ 	TestCase ./MEDField  ok
+        Description "In a cavity of 4m3 where the temperature is resolved, a source term of 25W/m3 is imposed. So a thermal power of 100W must be found in the energy balance."
+}
+Chapter {
+        Title "Check the thermal power value"
+        Description "In the tabular, the status is OK when the thermal power value is 100 Watt as it is expected, else the status is KO."
+        Table {
+                nb_columns 1
+                label "status"
+                line {
+                        legend "TrioField"
+                        file ./TrioField/is_ok
+                }
+                line {
+                        legend "MEDField"
+                        file ./MEDField/is_ok
+                }
+        }
+}

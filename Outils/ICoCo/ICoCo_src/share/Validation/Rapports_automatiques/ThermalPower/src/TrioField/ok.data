@@ -1,0 +1,6 @@
+Nom ok
+
+Read_file ok is_ok
+ecrire ok
+system "cp test.lml ThermalPower_jdd1.lml"
+system "ln -sf ThermalPower_jdd1.lml ThermalPower_jdd2.lml"

@@ -1,0 +1,101 @@
+# Thermal power imposed with Champ_Input_P0 #
+# PARALLEL NOT #
+dimension 3
+
+Nom ICoCoProblemName Read ICoCoProblemName pb
+
+Pb_Conduction pb
+
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+      Pave Cavite
+      {
+            Origine 0. 0. 0.
+            Longueurs 1. 1. 4.
+            Nombre_de_Noeuds 5 5 201
+      }
+      {
+            Bord G_Lateral  X = 0.  0. <= Y <= 1.  0. <= Z <= 4.
+            Bord G_Lateral  X = 1.  0. <= Y <= 1.  0. <= Z <= 4.
+            Bord G_Lateral  Y = 0.  0. <= X <= 1.  0. <= Z <= 4.
+            Bord G_Lateral  Y = 1.  0. <= X <= 1.  0. <= Z <= 4.
+            Bord G_Bottom   Z = 0.  0. <= X <= 1.  0. <= Y <= 1.
+            Bord G_Top      Z = 4.  0. <= X <= 1.  0. <= Y <= 1.
+      }
+}
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+        Partition_tool metis { nb_parts 2 }
+        Larg_joint 2
+        zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+
+Scheme_Euler_explicit sch
+Read sch
+{
+    tinit 0.
+    dt_min 1.e-9
+    dt_max 1.e+9
+    dt_impr 0.1
+    dt_sauv 1.e+6
+    seuil_statio 1.e-12
+    diffusion_implicite 1
+}
+
+Solide medium
+Read medium
+{
+  rho Champ_Uniforme 1 700.
+  cp Champ_uniforme 1 5000.
+  lambda champ_uniforme 1 0.5
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb medium
+Discretize pb dis
+
+Read pb
+{
+    ConDuction
+    {
+        diffusion { }
+        sources
+        {
+            /* Puissance_thermique  Champ_Uniforme 1 25. */
+            Puissance_thermique Champ_Input_P0 { nb_comp 1 nom POWERDENSITY_CORE probleme pb }
+        }
+        initial_conditions { temperature Champ_Uniforme 1 300. }
+        boundary_conditions {
+            G_Lateral symetrie
+            G_Bottom paroi_temperature_imposee Champ_Front_Uniforme 1 300.
+            G_Top paroi_adiabatique
+        }
+    }
+
+    Post_processing
+    {
+          Format lml
+          Champs dt_post 1.e+6
+          {
+              temperature
+              POWERDENSITY_CORE elem
+          }
+    }
+}
+
+End

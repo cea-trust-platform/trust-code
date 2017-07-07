@@ -1,0 +1,2 @@
+#!/bin/bash
+[ ! -f is_ok ] && echo KO > is_ok
