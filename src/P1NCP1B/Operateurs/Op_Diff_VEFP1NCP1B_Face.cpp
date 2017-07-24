@@ -2782,7 +2782,7 @@ gradient_som(const int& face,int& nnz, IntVect& som_glob,DoubleTab& grad) const
         grad(compj,som_loc)=coeff_som*signe*
                             face_normales(face_opp,compj);
     }
-  assert(nnz=nb_som_elem);
+  assert(nnz==nb_som_elem);
 
   /* On regarde le deuxieme element voisin */
   elem=face_voisins(face,1);
@@ -2899,7 +2899,7 @@ gradient_som_CL(const int& face,int& nnz, IntVect& som_glob,DoubleTab& grad) con
         grad(compj,som_loc)=coeff_som*signe*
                             face_normales(face_opp,compj);
     }
-  assert(nnz=nb_som_elem);
+  assert(nnz==nb_som_elem);
 
   /* On regarde le deuxieme element voisin */
   assert(face_voisins(face,1)==-1);

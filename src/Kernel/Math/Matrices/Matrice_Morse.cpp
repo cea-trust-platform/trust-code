@@ -1546,7 +1546,7 @@ Matrice_Morse& Matrice_Morse::affecte_prod(const Matrice_Morse& a, const Matrice
 {
   int nrow= a.nb_lignes();                // nb de lignes de A
   int ncol= b.nb_colonnes();                // nb de colonnes de B
-  //assert(nrow=ncol);
+  //assert(nrow==ncol);
   // Jloi non?
   assert(nrow==ncol);
   tab1_.resize(nrow+1);

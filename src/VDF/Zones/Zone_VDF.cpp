@@ -654,7 +654,7 @@ void Zone_VDF::genere_aretes()
                               nb_aretes_internes_,xv());
 #endif
   nb_aretes_joint_=0;
-  //assert(nb_aretes_=nb_aretes_coin_+nb_aretes_bord_+nb_aretes_mixtes_
+  //assert(nb_aretes_ == nb_aretes_coin_+nb_aretes_bord_+nb_aretes_mixtes_
   //         +nb_aretes_internes_+nb_aretes_joint_);
   // JOLI NON?
   assert(nb_aretes_==nb_aretes_coin_+nb_aretes_bord_+nb_aretes_mixtes_
