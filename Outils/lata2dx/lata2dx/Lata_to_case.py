@@ -15,7 +15,12 @@ def buildMEDFileData(latafile,lasttime):
 
     write_med = 0 # we not want to write meshes in med format
     medfile="no_medfile" # no medfile !
-    mesh , indices, newNbNodes = Lata_to_med.BuildMergedMesh( latafile, write_med, medfile )
+    domain_name=None
+    mesh , indices, newNbNodes , meshType = Lata_to_med.BuildMergedMesh( latafile, write_med, medfile , domain_name )
+
+    # because of CaseWriter
+    if ( type( mesh ).__name__ != "MEDCouplingUMesh"  ) :
+        raise Exception( "Only implemented for meshes of type MEDCouplingUMesh ( not "+ type( mesh ).__name__ +" )" )
 
     liste_ite=xrange(a.GetNTimesteps())
     liste_fields=a.GetFieldNames()
