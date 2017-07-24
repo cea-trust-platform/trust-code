@@ -13,7 +13,7 @@ def short_name(m):
     m2=m2.split("_centerfaces")[0]
     return m2
 
-def BuildMergedMesh( latafile , medfile, domain_name ):
+def BuildMergedMesh( latafile , write_med, medfile, domain_name ):
     """
     Load single mesh from latafile and write it to medfile, potentially removing duplicate nodes. 
     @param latafile
@@ -49,7 +49,8 @@ def BuildMergedMesh( latafile , medfile, domain_name ):
             print "No nodes to be merged in '%s'!" % meshname
 
     # Write mesh
-    MEDLoader.WriteMesh(medfile,mesh,True)
+    if write_med :
+        MEDLoader.WriteMesh(medfile,mesh,True)
 
     meshnamedual=meshname+"_dual"
     if meshnamedual in meshes:
@@ -68,7 +69,9 @@ def BuildMergedMesh( latafile , medfile, domain_name ):
 def convert(latafile,medfile,domain_name,mesh_only,lasttime=0):
 
     a=LataLoader.LataLoader(latafile)
-    mesh , indices, newNbNodes, meshType = BuildMergedMesh( latafile, medfile, domain_name )
+
+    write_med = 1 # we want to write meshes in med format
+    mesh , indices, newNbNodes, meshType = BuildMergedMesh( latafile, write_med, medfile, domain_name )
 
     if mesh_only:
         return
