@@ -1,0 +1,33 @@
+#!/bin/bash
+
+mystudy=$1
+
+sed "s/Read_MED/Read_MED_For_Testing_No_Verify_Option/" $1.data > tmp
+mv tmp $1.data
+
+trust $mystudy  1>/dev/null 2>&1
+status=$?
+if [ $status -ne 0 ]
+then
+  echo "First test ok (withtout no_verify option) the obsolete keyword is recognized.">my_text1
+else
+  echo "Error ! The datafile "$mystudy "contains the special obsolete keyword : Read_MED_For_Testing_No_Verify_Option so it is expected to rise an error !"
+  exit -1
+fi
+
+
+
+trust $mystudy -no_verify  1>/dev/null 2>&1
+
+status=$?
+if [ $status -ne 0 ]
+then
+  echo "Error ! The option no_verify doesn't ignore obsolete keywords !"
+  exit -1
+else
+  echo "Second test ok (using no_verify option) the obsolete keyword is ignored.">my_text2
+fi
+
+
+exit 0
+

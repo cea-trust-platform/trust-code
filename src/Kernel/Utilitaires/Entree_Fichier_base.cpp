@@ -64,7 +64,7 @@ Entree_Fichier_base::~Entree_Fichier_base()
   Entree_Fichier_base::close();
 }
 
-int Entree_Fichier_base::ouvrir(const char* name,IOS_OPEN_MODE mode)
+int Entree_Fichier_base::ouvrir(const char* name, bool apply_verification, IOS_OPEN_MODE mode)
 {
   if(ifstream_)
     delete ifstream_;

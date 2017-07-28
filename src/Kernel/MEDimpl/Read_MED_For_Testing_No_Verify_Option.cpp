@@ -14,40 +14,48 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        LecFicDiffuse_JDD.h
-// Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     /main/6
+// File:        Read_MED_For_Testing_No_Verify_Option.cpp
+// Directory:   $TRUST_ROOT/src/Kernel/MEDimpl
+// Version:     /main/53
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef LecFicDiffuse_JDD_included
-#define LecFicDiffuse_JDD_included
+#include <Read_MED_For_Testing_No_Verify_Option.h>
 
-#include <Lec_Diffuse_base.h>
-#include <EChaine.h>
+Implemente_instanciable(Read_MED_For_Testing_No_Verify_Option,"Read_MED_For_Testing_No_Verify_Option",LireMED);
 
-class Objet_U;
+// XD Read_MED_For_Testing_No_Verify_Option LireMED Read_MED_For_Testing_No_Verify_Option -1 Dummy class to test no verify option
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Cette classe implemente les operateurs et les methodes virtuelles de la classe EFichier de la facon suivante :
-//    Le fichier a lire est physiquement localise sur le disque de la machine hebergeant la tache maitre de l'application Trio-U (le processus de rang 0 dans le groupe "tous")
-//    et chaque item lu dans ce fichier est diffuse a tous les autres processus du groupe tous.
-//    Il en est de meme pour les methodes d'inspection de l'etat d'un fichier.
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
-
-class LecFicDiffuse_JDD : public Lec_Diffuse_base
+Sortie& Read_MED_For_Testing_No_Verify_Option::printOn(Sortie& os) const
 {
-  Declare_instanciable_sans_constructeur(LecFicDiffuse_JDD);
-  // le maitre lit le fichier et propage l'information
-public:
-  LecFicDiffuse_JDD();
-  LecFicDiffuse_JDD(const char* name, bool apply_verification=true, IOS_OPEN_MODE mode=ios::in );
-  int ouvrir(const char* name, bool apply_verification=true, IOS_OPEN_MODE mode=ios::in );
-  Entree& get_entree_master();
-protected:
-  EChaine chaine_;
-};
+  return LireMED::printOn(os);
+}
+
+Entree& Read_MED_For_Testing_No_Verify_Option::readOn(Entree& is)
+{
+  return LireMED::readOn(is);
+}
+
+#ifndef MED_
+Entree& Read_MED_For_Testing_No_Verify_Option::interpreter_(Entree& is)
+{
+  LireMED::interpreter_( is );
+  return is;
+}
+void Read_MED_For_Testing_No_Verify_Option::lire_geom( Nom& nom_fic,Domaine& dom,const Nom& nom_dom,const Nom& nom_dom_trio,int isvef, int isfamilyshort)
+{
+  LireMED::lire_geom( nom_fic, dom, nom_dom, nom_dom_trio, isvef, isfamilyshort );
+}
+#else
+Entree& Read_MED_For_Testing_No_Verify_Option::interpreter_(Entree& is)
+{
+  LireMED::interpreter_( is );
+  return is;
+}
+void Read_MED_For_Testing_No_Verify_Option::lire_geom( Nom& nom_fic,Domaine& dom,const Nom& nom_dom,const Nom& nom_dom_trio,int isvef, int isfamilyshort)
+{
+  LireMED::lire_geom( nom_fic, dom, nom_dom, nom_dom_trio, isvef, isfamilyshort );
+}
+
 #endif
+

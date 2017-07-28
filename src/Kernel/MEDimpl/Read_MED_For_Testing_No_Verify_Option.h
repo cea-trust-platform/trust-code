@@ -14,40 +14,42 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        LecFicDiffuse_JDD.h
-// Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     /main/6
+// File:        Read_MED_For_Testing_No_Verify_Option.h
+// Directory:   $TRUST_ROOT/src/Kernel/MEDimpl
+// Version:     /main/20
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef LecFicDiffuse_JDD_included
-#define LecFicDiffuse_JDD_included
+#ifndef Read_MED_For_Testing_No_Verify_Option_included
+#define Read_MED_For_Testing_No_Verify_Option_included
 
-#include <Lec_Diffuse_base.h>
-#include <EChaine.h>
 
-class Objet_U;
 
-//////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    Cette classe implemente les operateurs et les methodes virtuelles de la classe EFichier de la facon suivante :
-//    Le fichier a lire est physiquement localise sur le disque de la machine hebergeant la tache maitre de l'application Trio-U (le processus de rang 0 dans le groupe "tous")
-//    et chaque item lu dans ce fichier est diffuse a tous les autres processus du groupe tous.
-//    Il en est de meme pour les methodes d'inspection de l'etat d'un fichier.
+// Dummy class to test the no_very option
+// Indeed, trust -no_verify my_test will not check obsolete keywords in the data file
+// In order to check this functionality, the keyword Read_MED_For_Testing_No_Verify_Option
+// was added to the list of obsolete keywords but this keywords works. Thanks to that
+// we can know if obsolete keywords are checked or not.
 // .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+//
+//
+///////////////////////////////////////////////////////////////////////////
+#include <LireMED.h>
 
-class LecFicDiffuse_JDD : public Lec_Diffuse_base
+class Nom;
+class Domaine;
+class ArrOfDouble;
+
+class Read_MED_For_Testing_No_Verify_Option : public LireMED
 {
-  Declare_instanciable_sans_constructeur(LecFicDiffuse_JDD);
-  // le maitre lit le fichier et propage l'information
-public:
-  LecFicDiffuse_JDD();
-  LecFicDiffuse_JDD(const char* name, bool apply_verification=true, IOS_OPEN_MODE mode=ios::in );
-  int ouvrir(const char* name, bool apply_verification=true, IOS_OPEN_MODE mode=ios::in );
-  Entree& get_entree_master();
-protected:
-  EChaine chaine_;
+  Declare_instanciable(Read_MED_For_Testing_No_Verify_Option);
+public :
+  Entree& interpreter_(Entree&);
+  void lire_geom(Nom& nom_fic,Domaine& dom,const Nom& nom_dom,const Nom& nom_dom1,int isvef=0, int isfamilyshort=0);
 };
+
 #endif

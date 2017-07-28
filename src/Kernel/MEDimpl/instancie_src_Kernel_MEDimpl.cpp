@@ -16,6 +16,7 @@
 #include <LataToMED.h>
 #include <LireMED.h>
 #include <Pb_MED.h>
+#include <Read_MED_For_Testing_No_Verify_Option.h>
 #include <ScatterMED.h>
 void instancie_src_Kernel_MEDimpl() {
 Cerr << "src_Kernel_MEDimpl" << finl;
@@ -34,5 +35,6 @@ latatoother inst12;verifie_pere(inst12);
 LireMED inst13;verifie_pere(inst13);
 Pb_MED inst14;verifie_pere(inst14);
 Pbc_MED inst15;verifie_pere(inst15);
-ScatterMED inst16;verifie_pere(inst16);
+Read_MED_For_Testing_No_Verify_Option inst16;verifie_pere(inst16);
+ScatterMED inst17;verifie_pere(inst17);
 }

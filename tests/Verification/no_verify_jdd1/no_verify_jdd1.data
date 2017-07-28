@@ -1,0 +1,13 @@
+# PARALLEL NOT #
+
+dimension 3
+Domaine dom
+
+Nom comm
+lire comm all_in_pre_run
+ecrire comm
+
+Domaine interf
+Read_MED short_family_names interf Ksing Ksing.med
+
+fin

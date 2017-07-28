@@ -49,11 +49,12 @@ LecFicDiffuse_JDD::LecFicDiffuse_JDD()
 //  doit etre appelee sur tous les processeurs. En cas
 //  d'echec : exit()
 LecFicDiffuse_JDD::LecFicDiffuse_JDD(const char* name,
-                                     IOS_OPEN_MODE mode)
+                                     bool apply_verification,
+                                     IOS_OPEN_MODE mode )
 {
 
   //file_.set_error_action(ERROR_CONTINUE);
-  int ok = ouvrir(name, mode);
+  int ok = ouvrir(name, apply_verification, mode);
   if (!ok && Process::je_suis_maitre())
     {
       Cerr << "File " << name << " does not exist (LecFicDiffuse_JDD)" << finl;
@@ -65,7 +66,8 @@ LecFicDiffuse_JDD::LecFicDiffuse_JDD(const char* name,
 //  par tous les processeurs du groupe.
 // Valeur de retour: 1 si ok, 0 sinon
 int LecFicDiffuse_JDD::ouvrir(const char* name,
-                              IOS_OPEN_MODE mode)
+                              bool apply_verification,
+                              IOS_OPEN_MODE mode )
 {
   int ok = 0;
 
@@ -164,7 +166,8 @@ int LecFicDiffuse_JDD::ouvrir(const char* name,
           else
             {
               prov<<motlu<<" ";
-              verifie(motlu);
+              if( apply_verification )
+                verifie(motlu);
             }
           file_>>motlu;
         }
