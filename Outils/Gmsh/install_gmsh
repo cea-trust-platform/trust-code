@@ -77,7 +77,7 @@ FLTK_ROOT=`pwd`/fltk
 ########
 # GMSH #
 ########   
-gmsh_version=2.13.1
+gmsh_version=2.16.0
 gmsh=gmsh-$gmsh_version"-source.tgz"
 if [ ! -f $gmsh ]
 then

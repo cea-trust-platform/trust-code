@@ -19,7 +19,7 @@ MPI,osu-micro-benchmarks-3.8.tar,,SV,BSD,https://www.nersc.gov/,https://www.ners
 SKIT,SPARSKIT2.tar.gz,,SV,"LGPL ",http://www-users.cs.umn.edu/~saad/software/SPARSKIT/,http://www-users.cs.umn.edu/~saad/software/SPARSKIT/SPARSKIT2.tar.gz,"Pour la license, voir : https://launchpad.net/ubuntu/vivid/+source/sparskit/+copyright"
 tcl_tk,tk8.5.13-src.tar.gz,outil,SV,"BSD style tcl/tk license",http://www.tcl.tk/,http://sourceforge.net/projects/tcl/files/Tcl/8.5.13/tk8.5.13-src.tar.gz/download,
 tcl_tk,tcl8.5.13-src.tar.gz,outil,SV,"BSD style tcl/tk license",http://www.tcl.tk/,http://sourceforge.net/projects/tcl/files/Tcl/8.5.13/tcl8.5.13-src.tar.gz/download,
-Gmsh,gmsh-2.13.1-source.tgz,outil,SV,GPL,http://geuz.org/gmsh,http://geuz.org/gmsh/src/gmsh-2.13.1-source.tgz,
+Gmsh,gmsh-2.16.0-source.tgz,outil,SV,GPL,http://geuz.org/gmsh,http://geuz.org/gmsh/src/gmsh-2.16.0-source.tgz,
 Gmsh,fltk-1.3.3-source.tar.gz,,SV,LGPL,http://www.fltk.org/index.php,http://fltk.org/pub/fltk/1.3.3/fltk-1.3.3-source.tar.gz,
 MED,med-3.2.0.tar.gz,lib,GF,LGPL,http://files.salome-platform.org,http://files.salome-platform.org/Salome/other/med-3.2.0.tar.gz,
 MED,hdf5-1.8.14.tar.gz,lib,SV,BSD,http://www.hdfgroup.org/HDF5/,http://www.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8.14/src/hdf5-1.8.14.tar.gz,"corrigé GF"
