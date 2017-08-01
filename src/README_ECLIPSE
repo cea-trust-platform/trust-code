@@ -1,4 +1,4 @@
-Notes for Eclipse with TRUST (27/04/2017)
+Notes for Eclipse with TRUST (01/08/2017)
 -----------------------------------------
 
 Download
@@ -83,12 +83,12 @@ Launching
 Launching
 =========
 > source env_baltik.sh
-> echo $project_directory/build/src/
+> echo $project_directory/src/
 
 > /export/home/user/eclipse/eclipse &
 > File/New/Makefile Project with Existing Code
   => Profect name: MY_BALTIK
-  => Existing Code Location: copy the string matching $project_directory/build/src/
+  => Existing Code Location: copy the string matching $project_directory/src/
   => Toolchain for Indexer Settings: "Linux GCC".
   => Finish
   => Wait to have 100% at the bottom right corner of the window  (C/C++ indexer).
@@ -96,7 +96,7 @@ Launching
   Right click MY_BALTIK --> Properties
   => Builders: check "CDT Builder"
   => C/C++ Build :
-      => Builder Settings: Build directory: ${workspace_loc:/MY_BALTIK}/../../
+      => Builder Settings: Build directory: ${workspace_loc:/MY_BALTIK}/../ or copy the string matching $project_directory/
       => Behavior: check Build (Incremental build): debug optim (instead of all)
   => Project References: check TRUST-X.Y.Z
   => OK
@@ -108,7 +108,7 @@ Launching
   Right click MY_BALTIK --> Debug As/Debug Configurations...
   => C/C++ Application => New
   => Main: Project: MY_BALTIK
-  => Main: C/C++ Application: ${workspace_loc:/MY_BALTIK}/../../basic
+  => Main: C/C++ Application: ${workspace_loc:/MY_BALTIK}/../basic or copy the string matching $project_directory/basic
   => Main: Apply
   => Arguments: Program arguments: specify the name of your datafile
   => Arguments: Working directory: uncheck Use default and select the directory containing the datafile

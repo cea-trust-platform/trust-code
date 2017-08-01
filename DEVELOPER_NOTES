@@ -1,6 +1,8 @@
 -------------------------------------------------------------
 Developer notes version 1.7.6_beta : Changes since version 1.7.5 :
 -------------------------------------------------------------
+01/08/17 (Tools)  Updating the README_ECLIPSE file
+24/07/17 (Tools)  Allowing Lata_to_med.py to deal with CMesh. Also added option to only extract mesh.
 03/07/17 (TRUST)  Add exec_avx in baltik_configure
 -------------------------------------------------------------
 Developer notes version 1.7.5 : Changes since version 1.7.4 :
