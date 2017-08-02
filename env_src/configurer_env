@@ -1295,12 +1295,12 @@ fi
 ########################
 # Installation de Salome
 ########################
-version_salome=7.8.0
+version_salome=8.2.0
 if [ $TRUST_DOWNLOAD_SALOME = 1 ]
 then
    version_salome_=`echo $version_salome | awk '{gsub("\\\.","_",$0);print $0}'`
    package=Salome$version_salome
-   run_salome=Salome-V$version_salome_-public.run
+   run_salome=Salome-V$version_salome_-univ_public.run
    echo $ECHO_OPTS "Trying to install $package...\c"
    if [ -f $TRUST_ROOT/Outils/Salome/appli_V$version_salome_/runAppli ]
    then
@@ -1608,7 +1608,8 @@ case $TRUST_ARCH_CC in
    # 16/09/16 : passage de v6.1.1 a v6.2.0 sur test GNU
    # 04/04/17 : passage de v6.2.0 a v6.3.0 sur test GNU
    # 30/05/17 : passage de v6.3.0 a v7.1.0 sur test GNU
-        TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk '{if ($1<"7.1.1" && $1>="3.4") print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
+   # 26/07/17 : pour portabilite sur Fedora26, passage de v7.1.0 a v7.1.1 sur test GNU
+        TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk '{if ($1<"7.1.2" && $1>="3.4") print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
    	m="# GNU compiler version";e="TRUST_VERSION_GNU=$TRUST_VERSION_GNU && export TRUST_VERSION_GNU";ecrit $m"|"$e"|"$env
 	[ "`echo $TRUST_SUPPORTED | grep -i Not`" != "" ] && TRUST_SUPPORTED=0
 	# Passage en -O2 car plantages suspects en -O3 avec egcs sur linux
@@ -1664,7 +1665,7 @@ linux_clang++) TRUST_SUPPORTED=1
 	CppFlags=$CppFlags" -Wshadow"
 	CppFlags=$CppFlags" -Wextra  -Qunused-arguments -Wno-unused-parameter" #  -Wno-infinite-recursion"
 	# GF pas convaincu des erreurs trouvees
-	CppFlags=$CppFlags" -pedantic"
+	#CppFlags=$CppFlags" -pedantic" # mis en commentaire au passage de clang 4.0.0 car sinon erreur compilation en mode debug
 	CppFlags=$CppFlags" -Wno-tautological-compare"
 	
 	CppFlags=$CppFlags" -Werror"

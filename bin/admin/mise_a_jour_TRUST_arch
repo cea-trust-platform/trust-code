@@ -335,7 +335,8 @@ option_configure=" -disable-ccache"
 # Documentation
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-without-doc" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -without-doc"
 # Compilateur clang
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-clang" | grep ^$HOST"\."`" != "" ]				&& option_configure=$option_configure" -c++=/usr/bin/clang++ -cc=/usr/bin/clang"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-clang " | grep ^$HOST"\."`" != "" ]				&& option_configure=$option_configure" -c++=/usr/bin/clang++ -cc=/usr/bin/clang"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-clang38" | grep ^$HOST"\."`" != "" ]			&& option_configure=$option_configure" -c++=/usr/lib/llvm-3.8/bin/clang++ -cc=/usr/lib/llvm-3.8/bin/clang"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_even_unsupported" | grep ^$HOST"\."`" != "" ]		&& option_configure=$option_configure" -force_even_unsupported"
 
 ########################

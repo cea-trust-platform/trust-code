@@ -29,7 +29,7 @@ typedef enum {sync_and,sync_or} synctype;
 
 void synchronize_bool(bool& stop, synctype s)
 {
-  int my_stop;
+  int my_stop=-1;
   int my_stop_temp=stop?1:0;
   if (s==sync_and)
     MPI_Allreduce(&my_stop_temp,&my_stop,1,MPI_INTEGER,MPI_MIN,MPI_COMM_WORLD);
