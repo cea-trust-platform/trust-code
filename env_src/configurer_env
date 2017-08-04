@@ -2147,7 +2147,6 @@ m="# Path to makedepend command";e="`cherche_file TRUST_MD $TRUST_MD`";ecrit $m"
 ############################
 # Fin creation machine.env #
 ############################
-#m="# Mail user user@mail.fr ";e="TRUST_PROJECT_LEADER= && export TRUST_PROJECT_LEADER";ecrit $m"|"$e"|"$env
 echo "File machine.env created."
 
 # Generation de Cmake.env a partir des make.$TRUST_ARCH

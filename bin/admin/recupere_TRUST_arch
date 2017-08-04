@@ -32,7 +32,7 @@ done
 if [ ${#machine} = 0 ]
 then
    # Changement PL du 24/07/04, en tete les machines cibles PUIS les autres
-   machines=`liste_machines get_binary`" "`liste_machines cible`" "`liste_machines non`" "`liste_machines tache`
+   machines=`liste_machines cible`" "`liste_machines get_binary`" "`liste_machines tache`" "`liste_machines non`
    liste="" # Pour avoir une liste unique:
    for machine in $machines
    do

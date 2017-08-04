@@ -57,7 +57,7 @@ check_components()
 	    $TRUST_ROOT/bin/baltik/bin/baltik_build_configure -execute &&
 	    make optim module_optim debug module_debug &&
 	    $make_option && echo "$Composant OK" && COMPOSANT_OK=1
-	    if [[ "$ComposantsGit" = *"$Composant"* ]] # Test si Composant est dans la liste des composants GIT
+	    if [[ "$ComposantsGit" = *"$Composant"* ]] && [ $* != sourceforge/Kernel ] # Test si Composant est dans la liste des composants GIT
 	    then
 	       if [ "`date '+%u'`" -ge 5 ] && [ `date '+%H'` -gt 18 ]
 	       then
@@ -73,7 +73,7 @@ check_components()
 	    if [ "$COMPOSANT_OK" = 0 ]
 	    then
 	       echo $ECHO_OPTS "KO."
-	       cat $Composant_log | mail_ -s\"[lance_test_nuit] check_components $Composant $TRUST_VERSION KO\" $TRUST_MAIL #$TRUST_PROJECT_LEADER
+	       cat $Composant_log | mail_ -s\"[lance_test_nuit] check_components $Composant $TRUST_VERSION KO\" $TRUST_MAIL
 	    else
 	       echo $ECHO_OPTS "OK"
 	    fi	    
@@ -258,7 +258,7 @@ git_push()
          fi
       fi
       cat $repo_log | tail -n +3
-      [ "`cat $repo_log | tail -n +3`" != "Everything up-to-date" ] && cat $repo_log | mail_ -s\"[lance_test_nuit] git push $repo $git_branch\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+      [ "`cat $repo_log | tail -n +3`" != "Everything up-to-date" ] && cat $repo_log | mail_ -s\"[lance_test_nuit] git push $repo $git_branch\" $TRUST_MAIL $TMA_PROJECT_LEADER
    done
 }
 
@@ -438,7 +438,7 @@ if [ $verif_error != 0 ]
 then
    echo>>$verif_log
    cat $TRUST_TMP/Verifie_pere/LOG>>$verif_log
-   cat $verif_log | mail_ -s\"[lance_test_nuit] Verifie_pere KO on $HOST:$TRUST_ROOT\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+   cat $verif_log | mail_ -s\"[lance_test_nuit] Verifie_pere KO on $HOST:$TRUST_ROOT\" $TRUST_MAIL $TMA_PROJECT_LEADER
 fi
 echo>>$verif_log
 cat $TRUST_TMP/Verifie_pere/LOG>>$verif_log 
@@ -455,7 +455,7 @@ echo>>$external_log
 nb_error=`grep "not in" $external_log | wc -l`
 if [ $nb_error != 0 ]
 then
-   cat $external_log | mail_ -s\"[lance_test_nuit] Verify_externalpackages.sh KO on $HOST:$TRUST_ROOT\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+   cat $external_log | mail_ -s\"[lance_test_nuit] Verify_externalpackages.sh KO on $HOST:$TRUST_ROOT\" $TRUST_MAIL $TMA_PROJECT_LEADER
    cat $external_log
    echo "  KO"
 else
@@ -496,7 +496,7 @@ then
       $TRUST_ROOT/bin/gestion_externalpackages/compare_archive $package 1>>$liste_log 2>&1
    done
    cd - 1>/dev/null 2>&1
-   cat $liste_log | mail_ -s\"[lance_test_nuit] Verify_liste_dep.sh KO on $HOST:$TRUST_ROOT\" $TRUST_MAIL $TRUST_PROJECT_LEADER $OCCAS_TASK_PERSON
+   cat $liste_log | mail_ -s\"[lance_test_nuit] Verify_liste_dep.sh KO on $HOST:$TRUST_ROOT\" $TRUST_MAIL $TMA_PROJECT_LEADER
    grep "computed checksums did NOT match" $liste_log
    grep "FAILED" $liste_log
    echo "  KO"
@@ -530,7 +530,7 @@ cd $TRUST_ROOT
    rm -f $index.new
    ref_manual=Outils/TRIOXDATA/XTriou/objet_u.py
    version=`$TRUST_Awk '/ Manual V/ {print $5}' $ref_manual`
-   echo $ECHO_OPTS "1,$ s?$version?V$new}?g\nw $ref_manual.new" | ed $ref_manual 1>/dev/null 2>&1
+   echo $ECHO_OPTS "1,$ s?$version?V${new/"_"/}}?g\nw $ref_manual.new" | ed $ref_manual 1>/dev/null 2>&1
    if [ "`diff $ref_manual $ref_manual.new`" != "" ]
    then
       echo "Mark new version in "$ref_manual
@@ -540,9 +540,9 @@ cd $TRUST_ROOT
    rm -f $ref_manual.new
    tuto=doc/TRUST/Tutorial/TRUST_tutorial.tex
    version=`$TRUST_Awk '/ Tutorial V/ {print $3}' $tuto`
-   echo $ECHO_OPTS "1,$ s?$version?V$new]{TRUST?g\nw $tuto.new" | ed $tuto 1>/dev/null 2>&1
+   echo $ECHO_OPTS "1,$ s?$version?V${new/"_"/}]{TRUST?g\nw $tuto.new" | ed $tuto 1>/dev/null 2>&1
    version=`$TRUST_Awk '/ Tutorial V/ {print $5}' $tuto.new`
-   echo $ECHO_OPTS "1,$ s?$version?V$new}?g\nw $tuto.new" | ed $tuto.new 1>/dev/null 2>&1
+   echo $ECHO_OPTS "1,$ s?$version?V${new/"_"/}}?g\nw $tuto.new" | ed $tuto.new 1>/dev/null 2>&1
    if [ "`diff $tuto $tuto.new`" != "" ]
    then
       echo "Mark new version in "$tuto
@@ -552,7 +552,7 @@ cd $TRUST_ROOT
    rm -f $tuto.new
    tuto=doc/TRUST/exercices/Tutorial_solutions/Tutorial_solutions.tex
    version=`$TRUST_Awk '/ Tutorial V/ {print $3}' $tuto`
-   echo $ECHO_OPTS "1,$ s?$version?V$new?g\nw $tuto.new" | ed $tuto 1>/dev/null 2>&1
+   echo $ECHO_OPTS "1,$ s?$version?V${new/"_"/}?g\nw $tuto.new" | ed $tuto 1>/dev/null 2>&1
    if [ "`diff $tuto $tuto.new`" != "" ]
    then
       echo "Mark new version in "$tuto
@@ -562,9 +562,9 @@ cd $TRUST_ROOT
    rm -f $tuto.new
    tuto=doc/TRUST/Tutorial/Baltik_tutorial.tex
    version=`$TRUST_Awk '/ Project V/ {print $4}' $tuto`
-   echo $ECHO_OPTS "1,$ s?$version?V$new]{TRUST?g\nw $tuto.new" | ed $tuto 1>/dev/null 2>&1
+   echo $ECHO_OPTS "1,$ s?$version?V${new/"_"/}]{TRUST?g\nw $tuto.new" | ed $tuto 1>/dev/null 2>&1
    version=`$TRUST_Awk '/ Project V/ {print $7}' $tuto.new`
-   echo $ECHO_OPTS "1,$ s?$version?V$new}?g\nw $tuto.new" | ed $tuto.new 1>/dev/null 2>&1
+   echo $ECHO_OPTS "1,$ s?$version?V${new/"_"/}}?g\nw $tuto.new" | ed $tuto.new 1>/dev/null 2>&1
    if [ "`diff $tuto $tuto.new`" != "" ]
    then
       echo "Mark new version in "$tuto
@@ -585,7 +585,7 @@ cd $TRUST_ROOT
    # Assume unchanged some files (big one with a lot of changes):
    cd $TRUST_ROOT/doc
    echo "Update Git repos "`pwd`
-   for assume_inchanged in Coverage/cpp.gcov.tar.gz Coverage/list_methodes.gz Coverage/dico.pkl.gz Coverage/list_methodes_non_appelees.gz
+   for assume_inchanged in TRUST/TRUST_Reference_Manual.pdf Coverage/cpp.gcov.tar.gz Coverage/list_methodes.gz Coverage/dico.pkl.gz Coverage/list_methodes_non_appelees.gz
    do
       if [ ! -f $assume_inchanged ]
       then
@@ -714,7 +714,7 @@ echo "###############################################"
 	   fi
 	   if [ $rebase_error != 0 ]
 	   then
-	      cat $rebase_log | mail_ -s\"[lance_test_nuit] Error when rebasing $vue workdir. Check.\" $TRUST_MAIL #$TRUST_PROJECT_LEADER
+	      cat $rebase_log | mail_ -s\"[lance_test_nuit] Error when rebasing $vue workdir. Check.\" $TRUST_MAIL
 	   fi
 	   grep -i error $rebase_log
 	   echo "  rebase_error=$rebase_error"
@@ -806,7 +806,7 @@ echo "###############################################"
 		 $TRUST_ROOT/bin/admin/checkin_patch.ct 1>>$checkin_log 2>&1
 		 wc -l $checkin_log
 		 grep "diff --git" $checkin_log
-		 [ "`cat $checkin_log | tail -n +2`" != "" ] && cat $checkin_log | mail_ -s\"[checkin_patch.ct] Changes in the $TRUST_VERSION patch branch\" $TRUST_MAIL #$TRUST_PROJECT_LEADER
+		 [ "`cat $checkin_log | tail -n +2`" != "" ] && cat $checkin_log | mail_ -s\"[checkin_patch.ct] Changes in the $TRUST_VERSION patch branch\" $TRUST_MAIL
 		 #######################
 		 # Construction du patch
 		 #######################
@@ -1189,7 +1189,7 @@ Running cpplint by filtering with --filter=$filter
 ====================================" >> $cpplint_log
    python $TRUST_ROOT/bin/KSH/cpplint.py $filter src/*/*.cpp src/*/*/*.cpp src/*/*/*/*.cpp src/*/*/*/*/*.cpp include/*.h 2>&1 | grep -v "Done processing" >> $cpplint_log
    tail -n1 $cpplint_log
-   cat $cpplint_log | mail_ -s\"[lance_test_nuit] Google rules with cpplint on TRUST $new\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+   cat $cpplint_log | mail_ -s\"[lance_test_nuit] Google rules with cpplint on TRUST $new\" $TRUST_MAIL $TMA_PROJECT_LEADER
 else
    echo "NOT executed"
 fi
@@ -1832,7 +1832,7 @@ do
    if [ $? != 0 ]
    then
       echo "KO"
-      cat binaire.out | mail_ -s \"[lance_test_nuit] Binary $binaire KO\" $TRUST_MAIL
+      cat binaire.out | mail_ -s\"[lance_test_nuit] Binary $binaire KO\" $TRUST_MAIL
    else
       let porta_binaires=$porta_binaires+1
       echo "OK"
@@ -1881,14 +1881,17 @@ do
       #scp triou@$machine:~/$WORKBASE$machine/TRUST/Outils/TRIOXDATA/check_xdata.log $check_xdata_log
       if  [ "${machine:0:2}" = "is" ]
       then
-         scp triou@$machine:$WORKDIR/.tmp_TRUST_$machine/check_xdata.log $check_xdata_log
+         #scp triou@$machine:$WORKDIR/.tmp_TRUST_$machine/check_xdata.log $check_xdata_log
+         scp triou@$machine:/export/home/triou/.tmp_TRUST_$machine/check_xdata.log $check_xdata_log 1>/dev/null 2>&1
+         scp_error=$?
+         [ $scp_error != 0 ] && scp triou@$machine:/volatile/triou/.tmp_TRUST_$machine/check_xdata.log $check_xdata_log && scp_error=$?
       else
          scp triou@$machine:~/.tmp_TRUST_$machine/check_xdata.log $check_xdata_log
+         scp_error=$?
       fi
-      scp_error=$?
       if [ $scp_error != 0 ]
       then
-         echo | mail_ -s\"[lance_test_nuit] Error when receiving XData log from $machine. Check if not finished.\" $TRUST_MAIL #$TRUST_PROJECT_LEADER
+         echo | mail_ -s\"[lance_test_nuit] Error when receiving XData log from $machine. Check if not finished.\" $TRUST_MAIL
       else
          grep 'XDATA=' $check_xdata_log
       fi
@@ -1898,7 +1901,7 @@ do
          validation_xdata=1
       else
          [ "$validation_xdata" = "" ] && validation_xdata=0
-         [ -f $check_xdata_log ] && cat $check_xdata_log | mail_ -s \"[lance_test_nuit] Check XData on $machine KO\" $TRUST_PROJECT_LEADER $TRUST_MAIL
+         [ -f $check_xdata_log ] && cat $check_xdata_log | mail_ -s\"[lance_test_nuit] Check XData on $machine KO\" $TRUST_MAIL $TMA_PROJECT_LEADER
       fi
    fi
 done
@@ -1980,9 +1983,9 @@ then
 		     if [ "`grep $module=KO $module.log 2>/dev/null`" != "" ]
 		     then
         	        [ ! -f compare_resultat.log ] && ../compare_resultat .tests_TRUST_mpi_*
-        	        cat compare_resultat.log | mail_ -s\"[lance_test_nuit] Verification of $module module to $machine host KO\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+        	        cat compare_resultat.log | mail_ -s\"[lance_test_nuit] Verification of $module module to $machine host KO\" $TRUST_MAIL $TMA_PROJECT_LEADER
 		     else
-		        cat .tests_TRUST_mpi_* | mail_ -s\"[lance_test_nuit] Verification of $module module to $machine host not finished\" $TRUST_MAIL #$TRUST_PROJECT_LEADER
+		        cat .tests_TRUST_mpi_* | mail_ -s\"[lance_test_nuit] Verification of $module module to $machine host not finished\" $TRUST_MAIL
 		     fi
 	          fi
 	          # Mise a jour de la reference
@@ -2055,27 +2058,31 @@ do
       #scp triou@$machine:~/$WORKBASE$machine/TRUST/Validation/Valgrind/ANA.log $valgrind_log
       if [ "${machine:0:2}" = "is" ]
       then
-         scp triou@$machine:$WORKDIR/.tmp_TRUST_$machine/ANA.log $valgrind_log
+         #scp triou@$machine:$WORKDIR/.tmp_TRUST_$machine/ANA.log $valgrind_log
+         scp triou@$machine:/export/home/triou/.tmp_TRUST_$machine/ANA.log $valgrind_log 1>/dev/null 2>&1
+         scp_error=$?
+         [ $scp_error != 0 ] && scp triou@$machine:/volatile/triou/.tmp_TRUST_$machine/ANA.log $valgrind_log && scp_error=$?
       else
          scp triou@$machine:~/.tmp_TRUST_$machine/ANA.log $valgrind_log
+         scp_error=$?
       fi
-      scp_error=$?
       if [ $scp_error != 0 ]
       then
-         echo | mail_ -s\"[lance_test_nuit] Error when receiving Valgrind log from $machine. Check if not finished.\" $TRUST_MAIL #$TRUST_PROJECT_LEADER
+         echo | mail_ -s\"[lance_test_nuit] Error when receiving Valgrind log from $machine. Check if not finished.\" $TRUST_MAIL
       fi
       rm -f $scp_error
       sleep 1
       if [ ! -f $valgrind_log ]
       then
-         # echo | mail_ -s \"[lance_test_nuit] Valgrind not finished on $machine\" $TRUST_PROJECT_LEADER $TRUST_MAIL  
          echo "  valgrind not finished"
          valgrind=0
       else
          #scp triou@$machine:~/$WORKBASE$machine/TRUST/Validation/Valgrind/casmem $Build/casmem_$machine
          if [ "${machine:0:2}" = "is" ]
          then
-            scp triou@$machine:$WORKDIR/.tmp_TRUST_$machine/casmem $Build/casmem_$machine
+            #scp triou@$machine:$WORKDIR/.tmp_TRUST_$machine/casmem $Build/casmem_$machine
+            scp triou@$machine:/export/home/triou/.tmp_TRUST_$machine/casmem $Build/casmem_$machine 1>/dev/null 2>&1
+            [ $? != 0 ] && scp triou@$machine:/volatile/triou/.tmp_TRUST_$machine/casmem $Build/casmem_$machine
          else
             scp triou@$machine:~/.tmp_TRUST_$machine/casmem $Build/casmem_$machine
          fi
@@ -2101,7 +2108,7 @@ do
 	       grep -v -f $TRUST_ROOT/exec/tests_TRUST$COMM"_semi_opt"/liste $valgrind_log 1>$log_filtre 2>&1
 	       echo "-----------" >>$log_filtre
 	       cat $TRUST_TMP/cas >>$log_filtre
-	       [ -s $log_filtre ] && cat $log_filtre | mail_ -s \"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects errors on $machine host!!!\" $TRUST_PROJECT_LEADER $TRUST_MAIL $OCCAS_TASK_PERSON
+	       [ -s $log_filtre ] && cat $log_filtre | mail_ -s\"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects TRUST errors on $machine host\" $TRUST_MAIL $TMA_PROJECT_LEADER $TRUST_PROJECT_LEADER
                rm -f $log_filtre
 	    fi
          fi
@@ -2109,6 +2116,46 @@ do
    fi
 done
 cd $TRUST_ROOT
+echo " "
+for Composant in $Composants
+do
+   PROJECT_ROOT=`dirname $TRUST_ROOT`/Composants/$Composant
+   rm tmp.log 2>/dev/null
+   for machine in $machines
+   do
+      # Check if valgrind for this composant:
+      grep valgrind $PROJECT_ROOT/*$Composant*$machine*prepare.log 2>/dev/null > list.log
+      if [ -s list.log ]
+      then
+         testko=`grep "make_check KO" $PROJECT_ROOT/*$Composant*$machine*make_check.log`
+         if [ "$testko" != "" ]
+	 then
+	    echo $testko
+	    echo $testko | cut -d/ -f11 >> tmp.log
+	    valgrind=0
+	 fi
+      fi
+      rm list.log
+    done
+    if [ -s tmp.log ]
+    then
+       echo " "
+       cat tmp.log | mail_ -s\"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects $Composant errors on host:\" $TRUST_MAIL $TMA_PROJECT_LEADER $TRUST_PROJECT_LEADER
+    fi
+    rm tmp.log 2>/dev/null
+done
+echo "Analysis of $REP_NUIT/CR_* files"
+OK=`grep "KVALGRIND=OK" $REP_NUIT/CR_* 2>/dev/null | wc -l`
+KO=`grep "KVALGRIND=KO" $REP_NUIT/CR_* 2>/dev/null | wc -l`
+let NB=$OK+$KO
+if [ $KO != 0 ]
+then
+   grep "KVALGRIND=KO" $REP_NUIT/CR_*
+   (
+   grep "KVALGRIND=KO" $REP_NUIT/CR_*  | cut -d_ -f2 | mail_ -s\"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects TRUST errors with upwind test case on host:\" $TRUST_MAIL $TMA_PROJECT_LEADER $TRUST_PROJECT_LEADER
+   )
+   valgrind=0
+fi
 echo " "
 if [ "$valgrind" = 1 ]
 then
@@ -2364,7 +2411,7 @@ then
    echo "    Code coverage $couverture_de_code% >= $couverture_minimale% of lines"
 else
    echo "    Code coverage $couverture_de_code% < $couverture_minimale% of lines"
-   cat $REP_NUIT/tggcov.log | mail_ -s\"[lance_test_nuit] Code coverage KO with $couverture_de_code% \< $couverture_minimale% of lines tested\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+   cat $REP_NUIT/tggcov.log | mail_ -s\"[lance_test_nuit] Code coverage KO with $couverture_de_code% \< $couverture_minimale% of lines tested\" $TRUST_MAIL $TMA_PROJECT_LEADER
 fi
 #(
 ## Creation du rapport html
@@ -2467,7 +2514,7 @@ echo "  Analysis of $credoc_log"
 grep OK $credoc_log
 grep KO $credoc_log
 error_log=`grep 'error Doxygen' $credoc_log`
-[ ${#error_log} != 0 ] && mail_ -s\"[credoc] Doxygen: Study of TRUST includes under `pwd`\" $TRUST_MAIL #$TRUST_PROJECT_LEADER
+[ ${#error_log} != 0 ] && mail_ -s\"[credoc] Doxygen: Study of TRUST includes under `pwd`\" $TRUST_MAIL
 #echo "    See $TRUST_ROOT/build/doc/TRUST/list_keywords_covered file"
 #OK=`wc -l $TRUST_ROOT/build/doc/TRUST/list_keywords_covered | awk '{ print $1 }'`
 #echo "    $OK keywords covered by test cases"
@@ -2476,7 +2523,7 @@ error_log=`grep 'error Doxygen' $credoc_log`
 #echo "    $KO keywords NOT covered by test cases"
 #let NB=$OK+$KO
 # Mail de verification uniquement le week-end
-#[ "`date '+%u'`" = 1 ] && [ `date '+%H'` -lt 8 ] && [ -f $TRUST_ROOT/build/doc/TRUST/list_keywords_NOT_covered ] && cat $TRUST_ROOT/build/doc/TRUST/list_keywords_NOT_covered | mail_ -s \"[lance_test_nuit] Tests coverage credoc: list of keywords NOT covered by test cases\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+#[ "`date '+%u'`" = 1 ] && [ `date '+%H'` -lt 8 ] && [ -f $TRUST_ROOT/build/doc/TRUST/list_keywords_NOT_covered ] && cat $TRUST_ROOT/build/doc/TRUST/list_keywords_NOT_covered | mail_ -s\"[lance_test_nuit] Tests coverage credoc: list of keywords NOT covered by test cases\" $TRUST_MAIL $TMA_PROJECT_LEADER
 #keywords_minimal=77.37 #v1.7.5
 #
 echo "    See $TRUST_ROOT/build/Outils/TRIOXDATA/XTriou/list_keywords_xdata* files"
@@ -2495,7 +2542,7 @@ then
    echo "    Keywords coverage $couverture_de_motcle% >= $keywords_minimal% tested "
 else
    echo "    Keywords coverage $couverture_de_motcle% < $keywords_minimal% tested"
-   cat $TRUST_ROOT/build/Outils/TRIOXDATA/XTriou/list_keywords_xdata_tested | mail_ -s\"[lance_test_nuit] Keywords coverage KO with $couverture_de_motcle% \< $keywords_minimal% tested\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+   cat $TRUST_ROOT/build/Outils/TRIOXDATA/XTriou/list_keywords_xdata_tested | mail_ -s\"[lance_test_nuit] Keywords coverage KO with $couverture_de_motcle% \< $keywords_minimal% tested\" $TRUST_MAIL $TMA_PROJECT_LEADER
 fi
 echo " "
 if [ "$keywords" = 1 ]
@@ -2535,7 +2582,9 @@ else
    echo "  See $REP_NUIT/Check_decoupage.ksh_$machine.log"
    if [ "${machine:0:2}" = "is" ]
    then
-      scp triou@$machine:$WORKDIR/.tmp_TRUST_$machine/Check_decoupage/Check_decoupage.ksh.log $REP_NUIT/Check_decoupage.ksh_$machine.log
+      #scp triou@$machine:$WORKDIR/.tmp_TRUST_$machine/Check_decoupage/Check_decoupage.ksh.log $REP_NUIT/Check_decoupage.ksh_$machine.log
+      scp triou@$machine:/export/home/triou/.tmp_TRUST_$machine/Check_decoupage/Check_decoupage.ksh.log $REP_NUIT/Check_decoupage.ksh_$machine.log 1>/dev/null 2>&1
+      [ $? != 0 ] && scp triou@$machine:/volatile/triou/.tmp_TRUST_$machine/Check_decoupage/Check_decoupage.ksh.log $REP_NUIT/Check_decoupage.ksh_$machine.log
    else
       scp triou@$machine:~/.tmp_TRUST_$machine/Check_decoupage/Check_decoupage.ksh.log $REP_NUIT/Check_decoupage.ksh_$machine.log
    fi
@@ -2566,7 +2615,7 @@ else
       echo "-------------------------------------------------------------------------------------------" >> $check_log
       echo " " >> $check_log
       [ "$error_log" != "" ] && cat $REP_NUIT/Check_decoupage.ksh_$machine.log >> $check_log
-      cat $check_log | mail_ -s\"[lance_test_nuit] KO Check_decoupage script on $machine\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+      cat $check_log | mail_ -s\"[lance_test_nuit] KO Check_decoupage script on $machine\" $TRUST_MAIL $TMA_PROJECT_LEADER
    fi
    rm -f $check_log
 fi
@@ -2604,12 +2653,12 @@ do
    then
       # Aucune efficacite en dessous de 0.60 sur 4 processeurs et aucun cpu au dessus de 8s sur 1 processeur:
       perf=`$TRUST_Awk 'BEGIN {p=0} ($1==4) && (NF==12) && /\|/ {if ($(NF-1)>0.60) p=p+0.25} ($1==1) && (NF==12) && /\|/ {if ($3<8) p=p+0.25} END {print p}' $PERF`
-      [ "`liste_machines cible | grep $machine`" != "" ] && total=`echo "$total+$perf" | bc -l`
+      ([ "`liste_machines cible | grep $machine`" != "" ] || [ "`liste_machines tache | grep $machine`" != "" ]) && total=`echo "$total+$perf" | bc -l`
       echo "Time VDF and VEF on 1 CPU: < 8s ?"
       $TRUST_Awk '($1==1) && (NF==12) && /\|/ {print $3}' $PERF
       echo "Speed-UP VDF and VEF on 4 CPUs: > 0.60 ?"
       $TRUST_Awk '($1==4) && (NF==12) && /\|/ {print $(NF-1)}' $PERF
-      if [ "`liste_machines cible | grep $machine`" != "" ]
+      if ([ "`liste_machines cible | grep $machine`" != "" ] || [ "`liste_machines tache | grep $machine`" != "" ])
       then
          echo "=> perf+=$perf (total=$total)"  
          let nb_machines=$nb_machines+1
@@ -2641,7 +2690,7 @@ then
        # Envoi du rapport genere le week-end au project leader
       if [ "`date '+%u'`" = 1 ] && [ `date '+%H'` -lt 8 ]
       then
-         echo "$TRUST_ROOT/build/tests/Reference/BENCHMARK/Rapport/Run_fiche" | mail_ -a\"$TRUST_ROOT/build/tests/Reference/BENCHMARK/Rapport/build/rapport.pdf\" -s\"[lance_test_nuit] Benchmark report generated `date '+%d/%m/%y'`\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+         echo "$TRUST_ROOT/build/tests/Reference/BENCHMARK/Rapport/Run_fiche" | mail_ -a\"$TRUST_ROOT/build/tests/Reference/BENCHMARK/Rapport/build/rapport.pdf\" -s\"[lance_test_nuit] Benchmark report generated `date '+%d/%m/%y'`\" $TRUST_MAIL $TMA_PROJECT_LEADER
       else
          echo "$TRUST_ROOT/build/tests/Reference/BENCHMARK/Rapport/Run_fiche" | mail_ -a\"$TRUST_ROOT/build/tests/Reference/BENCHMARK/Rapport/build/rapport.pdf\" -s\"[lance_test_nuit] Benchmark report generated `date '+%d/%m/%y'`\" $TRUST_MAIL
       fi
@@ -2685,14 +2734,14 @@ echo "Analysis of $TRUST_ROOT/ToDo file"
 nb_todo=`grep -c ${TRUST_VERSION%_beta} $TRUST_ROOT/ToDo`
 echo "$nb_todo requests to do before the release of the next version"
 nothing_todo=0 && [ "`grep ${TRUST_VERSION%_beta} $TRUST_ROOT/ToDo`" = "" ] && nothing_todo=1
-# Envoi aux personnes concernees le mardi
+# Envoi aux personnes concernees le lundi avant COSUIV
 for qui in `$TRUST_Awk '!/Qui/ {print $2}' $TRUST_ROOT/ToDo | sort -u`
 do
    grep $qui $TRUST_ROOT/ToDo | grep ${TRUST_VERSION%_beta} > $TRUST_TMP/ToDo
-   [ -s $TRUST_TMP/ToDo ] && [ "`date '+%u'`" = 2 ] && cat $TRUST_TMP/ToDo | mail_ -s \"[lance_test_nuit] ToDo list for the version ${TRUST_VERSION%_beta}\" $qui
+   [ -s $TRUST_TMP/ToDo ] && [ "`date '+%u'`" = 1 ] && cat $TRUST_TMP/ToDo | mail_ -s\"[lance_test_nuit] ToDo list for the version ${TRUST_VERSION%_beta}\" $qui
 done
-# Envoi le week-end au chef de projet pour planning debut de semaine
-[ "`date '+%u'`" = 1 ] && [ `date '+%H'` -lt 8 ] && cat $TRUST_ROOT/ToDo | mail_ -s \"[lance_test_nuit] ToDo list for the version ${TRUST_VERSION%_beta}\" $TRUST_PROJECT_LEADER $TRUST_TODO_MAIL
+# Envoi la liste complete le jeudi au chef de projet pour planning debut de semaine prochaine
+[ "`date '+%u'`" = 4 ] && cat $TRUST_ROOT/ToDo | mail_ -s\"[lance_test_nuit] ToDo list for next Monday COSUIV\" $TRUST_MAIL $TMA_PROJECT_LEADER
 rm -f $TRUST_TMP/ToDo
 #
 echo " "
@@ -2730,7 +2779,7 @@ then
    echo "Release criterion: Studies OK"
 else
    echo "Release criterion: Studies KO"
-   [ "$NB" -gt 0 ] && cat $REP_NUIT/run_Etudes.log | mail_ -s \"[lance_test_nuit] Results of study cases KO\" $TRUST_MAIL
+   [ "$NB" -gt 0 ] && cat $REP_NUIT/run_Etudes.log | mail_ -s\"[lance_test_nuit] Results of study cases KO\" $TRUST_MAIL
 fi
 if [ "$etude_activation" = 1 ] 
 then
@@ -2739,7 +2788,7 @@ then
       # Envoi du rapport genere le week-end au project leader
       if [ "`date '+%u'`" = 1 ] && [ `date '+%H'` -lt 8 ]
       then
-         echo "$ETUDES/Rapport/Run_fiche" | mail_ -a\"$ETUDES/Rapport/build/rapport.pdf\" -s\"[lance_test_nuit] Studies report generated `date '+%d/%m/%y'`\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+         echo "$ETUDES/Rapport/Run_fiche" | mail_ -a\"$ETUDES/Rapport/build/rapport.pdf\" -s\"[lance_test_nuit] Studies report generated `date '+%d/%m/%y'`\" $TRUST_MAIL $TMA_PROJECT_LEADER
       else
          echo "$ETUDES/Rapport/Run_fiche" | mail_ -a\"$ETUDES/Rapport/build/rapport.pdf\" -s\"[lance_test_nuit] Studies report generated `date '+%d/%m/%y'`\" $TRUST_MAIL
       fi
@@ -2792,7 +2841,7 @@ echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 #   validation_projets_baltik=1
 #else
 #   validation_projets_baltik=0
-#   cat $log | mail_ -s \"[lance_test_nuit] Portability KO on Baltik $PROJECT_ROOT\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+#   cat $log | mail_ -s\"[lance_test_nuit] Portability KO on Baltik $PROJECT_ROOT\" $TRUST_MAIL $TMA_PROJECT_LEADER
 #fi
 #echo " "
 #if [ "$validation_projets_baltik" = 1 ]
@@ -2868,15 +2917,16 @@ do
          echo " " | tee -a tmp.log
          echo "Run: konqueror $nuit_log" | tee -a tmp.log	 
       fi
-      cat tmp.log | mail_ -s \"[lance_test_nuit] Portability KO on Baltik $Composant\" $TRUST_MAIL
    fi
    echo " "
    if [ "$validation_composant" = 1 ]
    then
       echo "Release criterion: $Composant OK"
+      [ $nb_cible != $tot_cible ] && cat tmp.log | mail_ -s\"[lance_test_nuit] Portability KO on Baltik $Composant\" $TRUST_MAIL
    else
       echo "Release criterion: $Composant KO"
-      [ $KO != 0 ] && cat tmp.log | mail_ -s \"[lance_test_nuit] Cible portability KO on Baltik $Composant\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+      BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
+      [ $KO != 0 ] && cat tmp.log | mail_ -s\"[lance_test_nuit] Cible portability KO on Baltik $Composant\" $TRUST_MAIL $TMA_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
    fi
    rm -f tmp.log
    [ $KO != 0 ] && [ $nb_total = $tot_total ] && validation_composant=0
@@ -2988,7 +3038,7 @@ then
    head -n1 $TRUST_ROOT/doc/doxygen*.out
    tail -n1 $TRUST_ROOT/doc/doxygen*.out
 fi
-validation_doxygen=1 && [ -s $TRUST_ROOT/doc/doxygen*.err ] && validation_doxygen=0 && cat $TRUST_ROOT/doc/doxygen*.err | mail_ -s\"[lance_test_nuit] Validation of Doxygen documentation KO\" $TRUST_MAIL #$TRUST_PROJECT_LEADER
+validation_doxygen=1 && [ -s $TRUST_ROOT/doc/doxygen*.err ] && validation_doxygen=0 && cat $TRUST_ROOT/doc/doxygen*.err | mail_ -s\"[lance_test_nuit] Validation of Doxygen documentation KO\" $TRUST_MAIL
 echo " "
 if [ "$validation_doxygen" = 1 ]
 then
@@ -3083,7 +3133,7 @@ then
       if [ $error_rc = 0 ]
       then  
          # On previent l'administrateur et le project leader
-         cat $TRUST_ROOT/RELEASE_NOTES | mail_ -s\"[lance_test_nuit] TRUST Release version - Tag a $release version: $label_pose \(See shared/Livraison branch\)\" $TRUST_MAIL $TRUST_PROJECT_LEADER $OCCAS_TASK_PERSON
+         cat $TRUST_ROOT/RELEASE_NOTES | mail_ -s\"[lance_test_nuit] TRUST Release version - Tag a $release version: $label_pose \(See shared/Livraison branch\)\" $TRUST_MAIL $TMA_PROJECT_LEADER $TRUST_PROJECT_LEADER
       else
          echo "" | mail_ -s\"[lance_test_nuit] TRUST - Tag a $release version: $label_pose KO\" $TRUST_MAIL
       fi
@@ -3100,7 +3150,7 @@ then
       if [ $error_rc = 0 ]
       then  
          # On previent l'administrateur et le project leader
-         cat $TRUST_ROOT/externalpackages/RELEASE_NOTES | mail_ -s\"[lance_test_nuit] externalpackages Release version - Tag a $release version: $label_pose \(See shared/Livraison branch\)\" $TRUST_MAIL $TRUST_PROJECT_LEADER $OCCAS_TASK_PERSON
+         cat $TRUST_ROOT/externalpackages/RELEASE_NOTES | mail_ -s\"[lance_test_nuit] externalpackages Release version - Tag a $release version: $label_pose \(See shared/Livraison branch\)\" $TRUST_MAIL $TMA_PROJECT_LEADER $TRUST_PROJECT_LEADER
       else
          echo "" | mail_ -s\"[lance_test_nuit] externalpackages - Tag a $release version: $label_pose KO\" $TRUST_MAIL
       fi
@@ -3129,7 +3179,7 @@ then
          then  
             # On previent l'administrateur et les project leader
 	    BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
-            cat $WORKDIR/sourceforge/Livraison/Composants/$Composant/share/RELEASE_NOTES | mail_ -s\"[lance_test_nuit] $Composant Release version - Tag a $release version: $label_pose \(See shared/TMA branch\)\" $TRUST_MAIL $TRUST_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
+            cat $WORKDIR/sourceforge/Livraison/Composants/$Composant/share/RELEASE_NOTES | mail_ -s\"[lance_test_nuit] $Composant Release version - Tag a $release version: $label_pose \(See shared/TMA branch\)\" $TRUST_MAIL $TMA_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
          else
             echo "" | mail_ -s\"[lance_test_nuit] $Composant - Tag a $release version: $label_pose KO\" $TRUST_MAIL
          fi
@@ -3211,7 +3261,7 @@ then
 	 # Creation des packages TRUST et externalpackages
 	 echo " "
 	 echo "  Creation of the packages of TRUST and externalpackages"
-         echo "!!! See A_GRAVER_CD_TRUST (Warning externalpackages) and A_GRAVER_CD_TrioCFD !!!" | mail_ -s \"[lance_test_nuit] WARNING! TRUST v$new released: Ensure that packages for sourceforge.net are correct...\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+         echo "!!! See A_GRAVER_CD_TRUST (Warning externalpackages) and A_GRAVER_CD_TrioCFD !!!" | mail_ -s\"[lance_test_nuit] WARNING! TRUST v$new released: Ensure that packages for sourceforge.net are correct...\" $TRUST_MAIL
          mise_a_jour_TRUST_tar
          GRAVAGE=$WORKDIR/A_GRAVER_CD_TRUST
          version_arch=TRUST-$new".tar.gz"
@@ -3395,9 +3445,9 @@ then
    echo " " >> $MESSAGES_NUIT
    echo "TRUST/TrioCFD support team. mailto: $TRUST_MAIL  Web: http://www-trio-u.cea.fr" >> $MESSAGES_NUIT
    echo " " >> $MESSAGES_NUIT
-   echo "To unsubscribe from http://saxifrage:3500/wws/info/trio_u_dev list: Reply to this message." >> $MESSAGES_NUIT
+   echo "To unsubscribe from this list, send an e-mail to $TRUST_MAIL " >> $MESSAGES_NUIT
 else
-   ALL_DEVELOPERS_TRUST_MAIL=$TRUST_MAIL" "$TRUST_PROJECT_LEADER
+   ALL_DEVELOPERS_TRUST_MAIL=$TRUST_MAIL" "$TMA_PROJECT_LEADER
 fi
 
 #####################################
@@ -3429,7 +3479,7 @@ then
    ALL_USERS_TRUST_MAIL="trio_u_annonces@saxifrage.saclay.cea.fr"
    push_error=1 # Temporary
    [ $push_error = 1 ] && ALL_USERS_TRUST_MAIL=$TRUST_MAIL
-   echo "!!! mail not sent to trio_u_annonces !!!" | mail_ -s \"[lance_test_nuit] WARNING! TRUST v$new released: Ensure that git push origin has been done manually...\" $TRUST_MAIL $TRUST_PROJECT_LEADER
+   echo "!!! mail not sent to trio_u_annonces !!!" | mail_ -s \"[lance_test_nuit] WARNING! TRUST v$new released: Ensure that git push origin has been done manually...\" $TRUST_MAIL
    for dest in $ALL_USERS_TRUST_MAIL
    do
       echo "Stable release announcement sent to $dest"
@@ -3458,39 +3508,39 @@ Table of contents
 
 TRUST support team. mailto: $TRUST_MAIL  Web: http://www-trio-u.cea.fr
 
-To unsubscribe, click here http://saxifrage:3500/wws/info/trio_u_annonces " > $MESSAGES_LIVRAISON
+To unsubscribe from this list, send an e-mail to $TRUST_MAIL " > $MESSAGES_LIVRAISON
       echo "
 ---------------------------------------------------------------------------------------------
 1. How to install?
 ---------------------------------------------------------------------------------------------
 # Option to minimize build
-OPTIONS="-disable-optionals"
+OPTIONS=\"-disable-optionals\"
 
-# First method
+# First method:
 wget http://downloads.sourceforge.net/project/trust-platform/Installer_TRUST.sh;
 chmod +x Installer_TRUST.sh;
-./Installer_TRUST.sh -configure-options "$OPTIONS"
+./Installer_TRUST.sh -configure-options \"\$OPTIONS\"
 
-# Second method
+# Second method:
 wget http://downloads.sourceforge.net/project/trust-platform/$new/TRUST-$new.tar.gz;
 tar xzf TRUST-$new.tar.gz;
 cd TRUST-$new;
-./configure $OPTIONS;
+./configure \$OPTIONS;
 make
 
-# Third method
+# Third method:
 git clone git://git.code.sf.net/p/trust-platform/code TRUST-$new;
 cd TRUST-$new;
 wget http://downloads.sourceforge.net/project/trust-platform/$new/externalpackages-$new.tar;
 tar xf externalpackages-$new.tar;
-./configure $OPTIONS;
+./configure \$OPTIONS;
 make
 ---------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
       echo "
 ----------------------------------------------------------------------------------------------------
 2. How to run preinstalled version?
 ----------------------------------------------------------------------------------------------------
-# for PC connected to CEA Saclay network (Please notified that VisIt is KO on Ubuntu 16.04):
+# for PC connected to CEA Saclay network (Please be notified that VisIt is KO on Ubuntu 16.04):
 source /home/triou/env_TRUST_$new.sh
 
 # for CEA Saclay cluster (callisto):
@@ -3522,7 +3572,7 @@ source /opt/software/applications/trio_u/env_TRUST-$new.sh
       [ -f $TRUST_ROOT/externalpackages/RELEASE_NOTES ] && echo $ECHO_OPTS "externalpackages \c" >> $MESSAGES_LIVRAISON && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/externalpackages/RELEASE_NOTES >> $MESSAGES_LIVRAISON
       echo " " >> $MESSAGES_LIVRAISON
       echo "---------------------------------------------" >> $MESSAGES_LIVRAISON
-      echo "6. Version portability on several OS" >> $MESSAGES_LIVRAISON
+      echo "6. Version tested on several OS" >> $MESSAGES_LIVRAISON
       echo "---------------------------------------------" >> $MESSAGES_LIVRAISON
       sed 's/<BR><LI>/ /g'  $REP_NUIT/os >> $MESSAGES_LIVRAISON
       echo "---------------------------------------------" >> $MESSAGES_LIVRAISON
@@ -3560,25 +3610,25 @@ Table of contents
 
 TRUST/TrioCFD support team. mailto: $TRUST_MAIL  Web: http://www-trio-u.cea.fr
 
-To unsubscribe, click here http://saxifrage:3500/wws/info/trio_u_annonces " > $MESSAGES_LIVRAISON
+To unsubscribe from this list, send an e-mail to $TRUST_MAIL " > $MESSAGES_LIVRAISON
       echo "
 ---------------------------------------------------------------------------------------------
 1. How to install?
 ---------------------------------------------------------------------------------------------
 # Option to minimize build
-OPTIONS="-disable-optionals"
+OPTIONS=\"-disable-optionals\"
 
-# First method if TRUST-$new platform is not installed
+# First method if TRUST-$new platform is not installed:
 wget http://sourceforge.net/projects/triocfd/files/Installer_TrioCFD.sh;
 chmod +x Installer_TrioCFD.sh;
-./Installer_TrioCFD.sh -configure-options "$OPTIONS"
+./Installer_TrioCFD.sh -configure-options \"\$OPTIONS\"
 
-# Second method if TRUST-$new platform is already installed
+# Second method if TRUST-$new platform is already installed:
 wget http://sourceforge.net/projects/triocfd/files/Installer_TrioCFD.sh;
 chmod +x Installer_TrioCFD.sh;
 ./Installer_TrioCFD.sh -with-trust \$TRUST_ROOT
 
-# Third method if TRUST-$new platform is already installed
+# Third method if TRUST-$new platform is already installed:
 git clone git://git.code.sf.net/p/triocfd/code TrioCFD-$new;
 cd TrioCFD-$new;
 source \$TRUST_ROOT/env_TRUST.sh;
@@ -3589,7 +3639,7 @@ make optim debug
 ----------------------------------------------------------------------------------------------------
 2. How to run preinstalled version?
 ----------------------------------------------------------------------------------------------------
-# for PC connected to CEA Saclay network (Please notified that VisIt is KO on Ubuntu 16.04):
+# for PC connected to CEA Saclay network (Please be notified that VisIt is KO on Ubuntu 16.04):
 source /home/triou/env_TrioCFD_$new.sh
 
 # for CEA Saclay cluster (callisto):
@@ -3624,35 +3674,35 @@ at the complete core scale. Through the MATHYS code, TrioMC can be coupled:
 - with the CATHARE code to model the local core behavior during reactor transients.
 TrioMC is based on the TRUST platform.
 
-------------------------------------
-New TrioMC2 version released v"$new"b
-------------------------------------
+-----------------------------------
+New TrioMC2 version released v$new
+-----------------------------------
 1. How to run preinstalled version?
 2. Release notes
 
 TRUST/TrioMC2 support team. mailto: $TRUST_MAIL  Web: http://www-trio-u.cea.fr
 MATHYS support team. mailto: mathys@cea.fr
 
-To unsubscribe, click here http://saxifrage:3500/wws/info/mc2_annonces " > $MESSAGES_LIVRAISON
+To unsubscribe from this list, send an e-mail to $TRUST_MAIL " > $MESSAGES_LIVRAISON
  echo "
 ----------------------------------------------------------------------------------------------------
 1. How to run preinstalled version?
 ----------------------------------------------------------------------------------------------------
 # for PC connected to CEA SESI network:
-source /soft/der/sesi/TrioMC2/env_TrioMC2-"$new"b.sh
+source /soft/der/sesi/TrioMC2/env_TrioMC2-$new.sh
 
 # for CEA Cadarache cluster (mezel):
-source /soft/mezel/TRIO/env_TrioMC2-"$new"b.sh
+source /soft/mezel/TRIO/env_TrioMC2-$new.sh
 
 # for CEA Saclay cluster (callisto):
-source /home/triou/env_TrioMC2_"$new"b.sh
+source /home/triou/env_TrioMC2_$new.sh
 ----------------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
       echo $ECHO_OPTS "
 --------------------------------------------------------------------------------------------------
 2. \c" >> $MESSAGES_LIVRAISON
          [ -f $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES ] && echo $ECHO_OPTS "$Composant \c" >> $MESSAGES_LIVRAISON && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES >> $MESSAGES_LIVRAISON
          echo " " >> $MESSAGES_LIVRAISON
-         mail_ -s \"New TrioMC2 v$newb released\" $TRUST_MAIL < $MESSAGES_LIVRAISON
+         mail_ -s \"New TrioMC2 v$new released\" $TRUST_MAIL < $MESSAGES_LIVRAISON
          sleep 5
          mv -f $MESSAGES_LIVRAISON $REP_NUIT/MESSAGES_LIVRAISON_$Composant
       fi
@@ -3679,8 +3729,8 @@ Developer notes version $next_new : Changes since version $new :
    # Commit immediately to differenciate master and patch branchs for setting the correct default branch after git clone
    # See http://git.661346.n2.nabble.com/git-clone-not-getting-the-correct-default-branch-td7476876.html
    echo " "
-   echo "Call git commit --all"
-   git commit --all -m"First automatic commit"
+   #echo "Call git commit --all"
+   #git commit --all -m"First automatic commit"
    cd $TRUST_ROOT
    ################################################
    # Installation a distance sur plusieurs machines
@@ -3705,7 +3755,7 @@ Developer notes version $next_new : Changes since version $new :
       $TRUST_ROOT/bin/admin/Installer_TRUST.ssh $machine $new -compile 1>>$install_stable_log 2>&1
       if [ $? != 0 ] || [ "`grep :error $install_stable_log | grep -iv warning | grep -v TRIOXDATA | grep -v Gmsh`" != "" ]
       then
-         cat $install_stable_log | mail_ -s\"[lance_test_nuit] Failed to install stable version on $machine\" $TRUST_MAIL
+         cat $install_stable_log | mail_ -s \"[lance_test_nuit] Failed to install stable version on $machine\" $TRUST_MAIL
       fi
       ) &
    done
@@ -3721,7 +3771,7 @@ echo "End of the `basename $0` script at `date '+%H:%M:%S'`."
 echo `date`
 echo "****************************************************"
 
-mail_ -s \"[lance_test_nuit] Night report of TRUST ATELIER  on `date '+%d/%m/%y'`\" $TRUST_MAIL < ~/CR
+mail_ -s\"[lance_test_nuit] Night report of TRUST ATELIER  on `date '+%d/%m/%y'`\" $TRUST_MAIL < ~/CR
 # On deplace le CR
 mv -f ~/CR $REP_NUIT/CR
 cp -f $REP_NUIT/CR $REP_HIST/CR.$DATE

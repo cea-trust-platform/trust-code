@@ -3,6 +3,8 @@
 [ "$TRUST_DOWNLOAD_VISIT" = 1 ] && exit 0
 # On verifie que pdflatex est installe sinon on quitte
 [ "`pdflatex -v 1>/dev/null 2>&1;echo $?`" != 0 ] && echo No pdflatax, no verif && exit 0
+# On verifie que si visit est installe sinon on quitte
+[ "`echo $TRUST_WITHOUT_VISIT`" = "1" ] && exit 0
 echo Generation rapport.pdf
 KO=0
 
