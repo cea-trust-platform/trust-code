@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.6_beta : Enhancements, modifications and corrected bugs since version 1.7.5 :
 --------------------------------------------------------------------------------------------------
+21/08/17 (TRUST)  Validation  : Blocking turbulent quasi-compressible calculation with mass fraction in VEF
 29/06/17 (TRUST)  Bug fixed   : Taking into account the name of the thermal power defined by Champ_Input_P0
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.5 : Enhancements, modifications and corrected bugs since version 1.7.4 :

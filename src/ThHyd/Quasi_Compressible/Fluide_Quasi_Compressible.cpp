@@ -271,6 +271,12 @@ void Fluide_Quasi_Compressible::completer(const Probleme_base& pb)
   pression_ = eqn_hydr.pression();
 
   Nom typ = pb.equation(0).discretisation().que_suis_je();
+  if ( (typ=="VEFPreP1B") && (pb.que_suis_je()=="Pb_Thermohydraulique_Turbulent_QC_fraction_massique") )
+    {
+      Cerr << "\nTurbulent quasi-compressible calculation with mass fraction are not allowed for VEF discretization!" << finl;
+      exit();
+    }
+
   if (typ=="VEFPreP1B")
     typ = "VEF";
   typ += "_";
