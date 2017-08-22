@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.7.6_beta : Changes since version 1.7.5 :
 -------------------------------------------------------------
+22/08/17 (TRUST)  Fixed environment problem on Ubuntu when OS of machine has changed
 02/08/17 (TRUST)  Compilers GNU 7.1.1 and clang 4.4.0 supported
 01/08/17 (Tools)  Updating the README_ECLIPSE file
 24/07/17 (Tools)  Allowing Lata_to_med.py to deal with CMesh. Also added option to only extract mesh.

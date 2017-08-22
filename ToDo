@@ -1,4 +1,5 @@
 Version	Qui				Tache
+1.7.6   adrien.bruneton@cea.fr  Voir avec equipe TrioCFD : a request for a tutorial case for Nucleate boiling (cf DI 4309)
 1.7.6   celine.capitaine@cea.fr Reprendre cas test ICoCo avec puissance thermique non constante (cf DI 4307)
 1.7.6   adrien.bruneton@cea.fr  Voir avec equipe TrioCFD le plugin VisIt sur le calcul de la norme d un champ moyenne (cf DI 4305)
 1.7.6   stephane.veys@cea.fr    Voir si compare_lata.cpp peut etre utilise sur maillage interfaces dans FTD (cf DI 4303)
@@ -6,7 +7,7 @@ Version	Qui				Tache
 1.7.6   celine.capitaine@cea.fr Voir avec equipe TrioCFD si baltik k_omega repris ? (ref DI 4298)
 1.7.6   marthe.roux@cea.fr      Commencer a regarder pour deboguer (cf DI 4289)
 1.7.6   stephane.veys@cea.fr    Estimer la charge d un dev si le pb moyenne avec bloc statistiques_en_serie est un bug (cf DI 4289)
-1.7.6   marthe.roux@cea.fr      Commencer a regarder pour deboguer (cf DI 4287)
+1.7.6   celine.capitaine@cea.fr Commencer a regarder pour deboguer (cf DI 4287)
 1.7.6   stephane.veys@cea.fr    Estimer la charge d un dev du bug avec schema muscl sur flux sur CL (cf DI 4287)
 1.7.6   celine.capitaine@cea.fr Voir avec equipe TrioCFD si baltiks CEG et Free_Slip integrables ? (ref DI 4286)
 1.7.6   marthe.roux@cea.fr      Commencer a regarder pour deboguer (cf DI 4282)
@@ -20,6 +21,7 @@ Version	Qui				Tache
 1.7.6   stephane.veys@cea.fr    Decision si baltik MG integrable a TRUST ? (ref DI 4211)
 1.7.6   stephane.veys@cea.fr    Voir avec equipe TrioCFD pour baltik loi_rho_T  (cf DI 4206)
 1.7.6   adrien.bruneton@cea.fr  Poursuivre la mise a jour du fichier suppressions Valgrind tant que erreurs dans atelier NUIT (ref DI 4204)
+1.7.6   marthe.roux@cea.fr      Recuperer fiche prm quand elle sera finie et validee par TrioCFD puis l integrer a TRUST (cf DI 4182)
 1.7.6   celine.capitaine@cea.fr Compilation de WIZARD et PLOT2D sur cobalt (cf DI 4159)
 1.7.6   stephane.veys@cea.fr    Voir avec equipe TrioCFD pour Benchmarck GEMIX (cf DI 4146)
 1.7.6   stephane.veys@cea.fr    Comment utiliser composante_normale ? Est ce a proposer aux utilisateurs ? (cf DI 4127)
@@ -39,6 +41,7 @@ Version	Qui				Tache
 1.7.6   adrien.bruneton@cea.fr  Est ce que TRUST doit etre porte sur FreeBSD ? (cf DI 3600)
 1.7.6   marthe.roux@cea.fr      Tester Cylindre_tournant discretise POP1Pa en parallele avec TRUST 1.7.5 (cf DI 3240)
 1.7.6   stephane.veys@cea.fr    Faut il reprendre fiche prm ef_stab ? (cf DI 2660)
+1.7.6   triou@cea.fr            Revoir les tests NR de ModeleCoeur si TRUST configure avec disable-petsc (cf avec ou sans ebulition)
 1.7.6   triou@cea.fr            Revoir pas d envoi mail dans envoi_TRUST_arch de jour sur nouvelles is
 1.7.6   triou@cea.fr            Revoir les fichiers host VisIt sur curie et cobalt
 1.7.6   triou@cea.fr            Tester Lata_to_case.py sur un calcul couple
@@ -47,6 +50,8 @@ Version	Qui				Tache
 1.7.6   triou@cea.fr            Ajout mode gui via portabilite baltik pour check
 1.7.6   triou@cea.fr            Remplacer endl par finl dans src
 1.7.6   triou@cea.fr            Nettoyage variable env ... exemple $DEBUG ... si utilise passer en TRUST_DEBUG sinon supprimer
+1.7.6   marthe.roux@cea.fr      Nouvelles publications sur le site http://www-trio-u.cea.fr : ajout d un article de Guillaume ; cf mail de triou du 21 aout
+1.7.6   gauthier.fauchet@cea.fr Est-ce normal qu il n y a pas de dossier /data/tmptrust/tmptrust/main_Validation175/TRUST/ ? Merci.
 1.7.6   adrien.bruneton@cea.fr  Qui traite plantage trust maillage converti en polyedre pour TrioMC ?
 1.7.6   stephane.veys@cea.fr    Envoyer a TMA sur prm pour Flica5
 1.7.6   stephane.veys@cea.fr    Polygone.cpp: ToDo a mettre dans triangle
