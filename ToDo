@@ -41,7 +41,6 @@ Version	Qui				Tache
 1.7.6   adrien.bruneton@cea.fr  Est ce que TRUST doit etre porte sur FreeBSD ? (cf DI 3600)
 1.7.6   marthe.roux@cea.fr      Tester Cylindre_tournant discretise POP1Pa en parallele avec TRUST 1.7.5 (cf DI 3240)
 1.7.6   stephane.veys@cea.fr    Faut il reprendre fiche prm ef_stab ? (cf DI 2660)
-1.7.6   triou@cea.fr            Revoir les tests NR de ModeleCoeur si TRUST configure avec disable-petsc (cf avec ou sans ebulition)
 1.7.6   triou@cea.fr            Revoir pas d envoi mail dans envoi_TRUST_arch de jour sur nouvelles is
 1.7.6   triou@cea.fr            Revoir les fichiers host VisIt sur curie et cobalt
 1.7.6   triou@cea.fr            Tester Lata_to_case.py sur un calcul couple

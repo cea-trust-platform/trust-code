@@ -805,7 +805,7 @@ then
 	# Discard PETSc test case if no PETSc capabilities
 	if [ "$TRUST_DISABLE_PETSC" = 1 ]
 	then
-	   if [ "`grep -i petsc $REP/* 2>/dev/null`" != "" ]
+           if ([ "`grep -i petsc $REP/* 2>/dev/null`" != "" ] || [ "`grep -i ebullition $REP/* | cut -d ":" -f2 | grep 1 2>/dev/null`" != "" ]) # ebullition at 1 in MC2
 	   then
               echo "Test $i skipped (no petsc)"
 	      liste_skipped=$liste_skipped" $i"
