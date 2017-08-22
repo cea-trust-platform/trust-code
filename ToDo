@@ -5,6 +5,7 @@ Version	Qui				Tache
 1.7.6   stephane.veys@cea.fr    Voir si compare_lata.cpp peut etre utilise sur maillage interfaces dans FTD (cf DI 4303)
 1.7.6   adrien.bruneton@cea.fr  Estimer la charge d un dev pour possibilite de bords periodiques sur 1/4 cylindre par ex (ref DI 4302)
 1.7.6   celine.capitaine@cea.fr Voir avec equipe TrioCFD si baltik k_omega repris ? (ref DI 4298)
+1.7.6   celine.capitaine@cea.fr Tester portabilite TRUST sur Debian9 : is229952 ? (cf DI 4293)
 1.7.6   marthe.roux@cea.fr      Commencer a regarder pour deboguer (cf DI 4289)
 1.7.6   stephane.veys@cea.fr    Estimer la charge d un dev si le pb moyenne avec bloc statistiques_en_serie est un bug (cf DI 4289)
 1.7.6   celine.capitaine@cea.fr Commencer a regarder pour deboguer (cf DI 4287)
@@ -41,7 +42,6 @@ Version	Qui				Tache
 1.7.6   adrien.bruneton@cea.fr  Est ce que TRUST doit etre porte sur FreeBSD ? (cf DI 3600)
 1.7.6   marthe.roux@cea.fr      Tester Cylindre_tournant discretise POP1Pa en parallele avec TRUST 1.7.5 (cf DI 3240)
 1.7.6   stephane.veys@cea.fr    Faut il reprendre fiche prm ef_stab ? (cf DI 2660)
-1.7.6   triou@cea.fr            Revoir pas d envoi mail dans envoi_TRUST_arch de jour sur nouvelles is
 1.7.6   triou@cea.fr            Revoir les fichiers host VisIt sur curie et cobalt
 1.7.6   triou@cea.fr            Tester Lata_to_case.py sur un calcul couple
 1.7.6   triou@cea.fr            Tester salome 8.3.0 et non plus 8.2.0

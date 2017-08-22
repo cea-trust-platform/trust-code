@@ -49,8 +49,9 @@ then
 else
    #######################################################
    # Serveur de mail en local avec /bin/mail ou /bin/mailx
+   # On new OS: /usr/bin/mail or /usr/bin/mailx
    #######################################################
-   binaires="/bin/mail /bin/mailx"
+   binaires="/bin/mail /bin/mailx /usr/bin/mail /usr/bin/mailx"
    for binaire in $binaires
    do
       envoi="cat $tmp_file | $binaire $commande 2>&1"
