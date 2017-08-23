@@ -49,7 +49,7 @@ double largest_angle(const DoubleTab& coords)
 {
   if (((coords.dimension(0)!=4)&&(coords.dimension(0)!=3))||(coords.dimension(1)!=3))
     {
-      Cerr<<" case not provided"<<endl;
+      Cerr<<" case not provided"<<finl;
       Process::exit();
     }
   int nb_face=coords.dimension(0);

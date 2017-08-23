@@ -741,8 +741,8 @@ Entree& Sous_Zone::readOn(Entree& is)
 
           default:
             h0=-1;
-            Cerr << "DIR is equal to X for a tube parallel to OX ; Y for a tube parallel to OY and Z for a tube parallel to OZ" << endl;
-            Cerr << "Currently, DIR is equal to " << coord << endl;
+            Cerr << "DIR is equal to X for a tube parallel to OX ; Y for a tube parallel to OY and Z for a tube parallel to OZ" << finl;
+            Cerr << "Currently, DIR is equal to " << coord << finl;
             exit();
           }
 

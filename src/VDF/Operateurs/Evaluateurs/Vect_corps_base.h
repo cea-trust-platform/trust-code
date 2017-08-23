@@ -515,7 +515,7 @@ inline void CLASSNAME::flux_face(const DoubleTab& , int ,
     {
       if (flux(k)!=0)
         {
-          cerr<<" et OUI"<<endl;
+          Cerr<<" et OUI"<<finl;
           Process::exit();
         }
     }

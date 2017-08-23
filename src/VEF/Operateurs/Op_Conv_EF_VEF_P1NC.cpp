@@ -468,7 +468,7 @@ DoubleTab& Op_Conv_EF_VEF_P1NC::ajouter(const DoubleTab& transporte_2,
       double pourcent=0;
       if (!est_egal(ec,0))
         pourcent=100*sqrt(ecprime/ec);
-      Cerr << "||u'||/||u|| :  " << pourcent << " %" << endl;
+      Cerr << "||u'||/||u|| :  " << pourcent << " %" << finl;
     }
   resu+=sauv;
   modifier_flux(*this);

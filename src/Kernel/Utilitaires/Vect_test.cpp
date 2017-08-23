@@ -66,7 +66,7 @@ public:
 
   void tearDown()
   {
-    //cerr<<"ICI" <<endl;;
+    //Cerr<<"ICI" <<finl;;
   } ;
   void testConstructor()
   {
@@ -204,7 +204,7 @@ public:
       while(curseur)
         {
           Bord& b=curseur.valeur();
-          Cerr<<b.le_nom()<<endl;
+          Cerr<<b.le_nom()<<finl;
           CPPUNIT_ASSERT_EQUAL_MESSAGE("verif acces via curseur",aa[i].le_nom(),b.le_nom());
           ++curseur;
           i++;
@@ -218,7 +218,7 @@ public:
       while(curseur)
         {
           const Bord& b=curseur.valeur();
-          Cerr<<b.le_nom()<<endl;
+          Cerr<<b.le_nom()<<finl;
           CPPUNIT_ASSERT_EQUAL_MESSAGE("verif acces via curseur",aa[i].le_nom(),b.le_nom());
           ++curseur;
           i++;

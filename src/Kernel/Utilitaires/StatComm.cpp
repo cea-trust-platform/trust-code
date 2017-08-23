@@ -82,7 +82,7 @@ void StatComm::print_stat(Sortie& os)
       ofstream fic((const char *)nf,ios::out);
       for(int i=0; i<10000; i++)
         if(tab_comm[i]!=0)
-          fic<<i<<"\t"<<tab_comm[i]<<endl;
+          fic<<i<<"\t"<<tab_comm[i]<<std::endl;
     }
   os<<"SZ_MIN : "<<SZ_MIN<<finl;
   os<<"SZ_MAX : "<<SZ_MAX<<finl;

@@ -39,7 +39,7 @@ Implemente_instanciable(Perte_Charge_Circulaire_VEF_P1NC,"Perte_Charge_Circulair
 
 Sortie& Perte_Charge_Circulaire_VEF_P1NC::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << endl;
+  return s << que_suis_je() << finl;
 }
 
 ////////////////////////////////////////////////////////////////
@@ -50,7 +50,7 @@ Sortie& Perte_Charge_Circulaire_VEF_P1NC::printOn(Sortie& s ) const
 
 Entree& Perte_Charge_Circulaire_VEF_P1NC::readOn(Entree& s )
 {
-  Cerr << "Perte_Charge_Circulaire_VEF_P1NC::readOn " << endl;
+  Cerr << "Perte_Charge_Circulaire_VEF_P1NC::readOn " << finl;
   sous_zone=false;
   int lambda_ortho_ok=0;
   int lambda_ok=0;
@@ -69,8 +69,8 @@ Entree& Perte_Charge_Circulaire_VEF_P1NC::readOn(Entree& s )
   s >> motlu;
   while (motlu != accolade_ouverte)
     {
-      Cerr << "On attendait une { a la lecture d'un " << que_suis_je() << endl;
-      Cerr << "et non : " << motlu << endl;
+      Cerr << "On attendait une { a la lecture d'un " << que_suis_je() << finl;
+      Cerr << "et non : " << motlu << finl;
       exit();
     }
   s >> motlu;
@@ -96,7 +96,7 @@ Entree& Perte_Charge_Circulaire_VEF_P1NC::readOn(Entree& s )
             if (dimension>2)
               lambda.addVar("z");
             lambda.parseString();
-            Cerr << " Ok" << endl;
+            Cerr << " Ok" << finl;
             break;
           }
         case 1: // diam_hydr
@@ -129,7 +129,7 @@ Entree& Perte_Charge_Circulaire_VEF_P1NC::readOn(Entree& s )
             if (dimension>2)
               lambda_ortho.addVar("z");
             lambda_ortho.parseString();
-            Cerr << " Ok" << endl;
+            Cerr << " Ok" << finl;
             break;
           }
         case 6:
@@ -139,7 +139,7 @@ Entree& Perte_Charge_Circulaire_VEF_P1NC::readOn(Entree& s )
           }
         default : // non compris
           Cerr << "Mot cle \"" << motlu << "\" non compris lors de la lecture d'un "
-               << que_suis_je() << endl;
+               << que_suis_je() << finl;
           exit();
         }
       s >> motlu;
@@ -148,34 +148,34 @@ Entree& Perte_Charge_Circulaire_VEF_P1NC::readOn(Entree& s )
   // Verification de la coherence
   if (lambda_ok==0)
     {
-      Cerr << "Il faut definir l'expression lamba(Re_long,Re_tot)" << endl;
+      Cerr << "Il faut definir l'expression lamba(Re_long,Re_tot)" << finl;
       exit();
     }
 
   if (lambda_ortho_ok==0)
     {
-      Cerr << "Il faut definir l'expression lamba_ortho(Re_ortho,Re_tot)" << endl;
+      Cerr << "Il faut definir l'expression lamba_ortho(Re_ortho,Re_tot)" << finl;
       exit();
     }
 
   if  ((!diam_hydr.non_nul())|| (diam_hydr->nb_comp()!=1))
     {
-      Cerr << "Il faut definir le champ diam_hydr a une composante" << endl;
+      Cerr << "Il faut definir le champ diam_hydr a une composante" << finl;
       exit();
     }
   if ((!diam_hydr_ortho.non_nul())|| (diam_hydr_ortho->nb_comp()!=1))
     {
-      Cerr << "Il faut definir le champ diam_hydr_ortho a une composante" << endl;
+      Cerr << "Il faut definir le champ diam_hydr_ortho a une composante" << finl;
       exit();
     }
   if (v->nb_comp()!=dimension)
     {
-      Cerr << "Il faut definir le champ direction a " << dimension << " composantes" << endl;
+      Cerr << "Il faut definir le champ direction a " << dimension << " composantes" << finl;
       exit();
     }
 
 
-  Cerr << "Fin de Perte_Charge_Circulaire_VEF_P1NC::readOn" << endl;
+  Cerr << "Fin de Perte_Charge_Circulaire_VEF_P1NC::readOn" << finl;
   return s;
 }
 

@@ -167,10 +167,10 @@ Entree& Probleme_Couple::readOn(Entree& is)
 
       if (nb_problemes())
         {
-          Cerr << "We can associate problems to Probleme_Couple" << endl;
-          Cerr << "* either by \"associer prob_couple pb\" (in which case they are all in the same group)" << endl;
-          Cerr << "* either by the keyword \"groupes\" while reading the object Probleme_Couple" << endl;
-          Cerr << "but not both!" << endl;
+          Cerr << "We can associate problems to Probleme_Couple" << finl;
+          Cerr << "* either by \"associer prob_couple pb\" (in which case they are all in the same group)" << finl;
+          Cerr << "* either by the keyword \"groupes\" while reading the object Probleme_Couple" << finl;
+          Cerr << "but not both!" << finl;
         }
       assert(nb_problemes()==0);
 

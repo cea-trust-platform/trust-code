@@ -600,7 +600,7 @@ void DecoupeBord::Decouper(Domaine& dom, const Nom& nom_file)
                   calculer_centres_gravite(position,newfaces.type_face(),dom.coord_sommets(),newsommet);
 
                   bord_xv<<nombord_dec_bis<<finl;
-                  bord_xv<<position<<endl;
+                  bord_xv<<position<<finl;
                   if (b<nbbord)
                     listbord2.add(toto_bord);
                   else

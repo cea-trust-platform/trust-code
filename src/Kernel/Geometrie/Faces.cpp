@@ -897,7 +897,7 @@ void calculer_centres_gravite(DoubleTab& xv,
               }
             default:
               {
-                Cerr << "Face type number " << (int)type_face_ << " not provided in Faces::calculer_centres_gravite" << endl;
+                Cerr << "Face type number " << (int)type_face_ << " not provided in Faces::calculer_centres_gravite" << finl;
                 break;
               }
             }

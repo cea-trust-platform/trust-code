@@ -78,7 +78,7 @@ Entree& Paroi_UTAU_IMP_Impl::lire_donnees(Entree& s)
           s >> diam_hydr;
           break;
         default : // non compris
-          Cerr << "Mot cle \"" << motlu << "\" non compris lors de la lecture d'un Paroi_UTAU_Impose" << endl;
+          Cerr << "Mot cle \"" << motlu << "\" non compris lors de la lecture d'un Paroi_UTAU_Impose" << finl;
           Process::exit();
         }
       s >> motlu;
@@ -86,20 +86,20 @@ Entree& Paroi_UTAU_IMP_Impl::lire_donnees(Entree& s)
 
   if ((u_star_ok == 0) && (lambda_c_ok == 0))
     {
-      Cerr << "Il faut definir le champ u_star a une composante ou lambda_c=f(Re,Dh,x,y,z)" << endl;
+      Cerr << "Il faut definir le champ u_star a une composante ou lambda_c=f(Re,Dh,x,y,z)" << finl;
       Process::exit();
     }
 
   if (u_star_ok == 1)
     if (u_star->nb_comp()!=1)
       {
-        Cerr << "Il faut definir le champ u_star a une composante" << endl;
+        Cerr << "Il faut definir le champ u_star a une composante" << finl;
         Process::exit();
       }
 
   if ((lambda_c_ok == 1) && (diam_ok == 0))
     {
-      Cerr << "Il faut definir le diametre hydraulique si vous definissez lambda_c" << endl;
+      Cerr << "Il faut definir le diametre hydraulique si vous definissez lambda_c" << finl;
       Process::exit();
 
     }

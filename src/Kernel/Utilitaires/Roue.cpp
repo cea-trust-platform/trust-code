@@ -57,7 +57,7 @@ Roue_ptr::Roue_ptr(const Roue_ptr& x)
 // Constructeur par recopie. Copie de l'ensemble de la roue.
 Roue_ptr& Roue_ptr::operator=(const Roue_ptr& x)
 {
-  Cerr << "We pass through Roue_ptr=Roue_ptr" << endl;
+  Cerr << "We pass through Roue_ptr=Roue_ptr" << finl;
   assert(0);
   ptr=new Roue(x.valeur());
   return *this;

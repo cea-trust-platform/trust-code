@@ -149,7 +149,7 @@ void convert_med_int_to_inttab(ArrOfInt& tab,med_int* tabmed)
   if (sizeof(med_int)!=sizeof(int))
     {
       int taille=tab.size_array();
-      //    cerr<<sizeof(tab)<<" "<<sizeof(int)<<" "<<sizeof(tab)/sizeof(int)<<" "<<taille<<endl;
+      //    Cerr<<sizeof(tab)<<" "<<sizeof(int)<<" "<<sizeof(tab)/sizeof(int)<<" "<<taille<<finl;
       Process::Journal()<<"medint* copy"<<finl;
 
       for (int i=0; i<taille; i++)
@@ -186,7 +186,7 @@ void test_version(Nom& nom)
   fid = MEDfileOpen(nom,MED_ACC_RDONLY);
   if (fid<0)
     {
-      Cerr<<"Problem when trying to open the file "<<nom<<endl;
+      Cerr<<"Problem when trying to open the file "<<nom<<finl;
       Process::exit();
     }
 #ifdef MED30
@@ -301,7 +301,7 @@ int medliregeom(Nom& nom_fic,const Nom& nom_dom,const Nom& nom_dom_trio,int& dim
   int fid=MEDfileOpen(nom_fic,MED_ACC_RDONLY);
   if (fid<0)
     {
-      Cerr<<"Problem when trying to open the file "<<nom_fic<<endl;
+      Cerr<<"Problem when trying to open the file "<<nom_fic<<finl;
       Process::exit();
     }
 #ifdef MED30
@@ -1090,7 +1090,7 @@ int medliregeom(Nom& nom_fic,const Nom& nom_dom,const Nom& nom_dom_trio,int& dim
                         int lnumfam = 5+nnumfam.longueur();
                         Nom nomfamcut(nom_famille.substr_old(lnumfam, nom_famille.longueur()-lnumfam));
                         noms_bords[i] = nomfamcut;
-                        cerr << "### noms_bord = " << nomfamcut << " numfam = " << numfam << endl;
+                        Cerr << "### noms_bord = " << nomfamcut << " numfam = " << numfam << finl;
                       }
                     else
                       {
@@ -1318,7 +1318,7 @@ void recuperer_info_des_joints(Noms& noms_des_joints, const Nom& nom_fic, const 
       //       nb=MEDjointTypeCorres (fid, nom_dom, name_of_joint, corres,
       //                             &typ_ent_local,   &typ_geo_local,
       //                             &typ_ent_distant, &typ_geo_distant);
-      //       Cerr<<MED_NODE<<endl;
+      //       Cerr<<MED_NODE<<finl;
       //       Cerr<< nb<<" LA " <<typ_ent_local<<" "<<typ_geo_local;
       //       Cerr<<" LA " <<typ_ent_distant<<" "<<typ_geo_distant<<finl;
 
@@ -1350,7 +1350,7 @@ void recuperer_info_des_joints(Noms& noms_des_joints, const Nom& nom_fic, const 
 #endif
           if (ret<0)
             {
-              Cerr<<"Error when reading the corresponding informations on the vertices"<<endl;
+              Cerr<<"Error when reading the corresponding informations on the vertices"<<finl;
               Process::exit();
             }
           for (int s=0; s<nc; s++)

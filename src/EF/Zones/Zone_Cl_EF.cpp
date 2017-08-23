@@ -110,7 +110,7 @@ void Zone_Cl_EF::completer(const Zone_dis& une_zone_dis)
     }
   else
     {
-      cerr << "Zone_Cl_EF::completer() prend comme argument une Zone_EF\n";
+      Cerr << "Zone_Cl_EF::completer() prend comme argument une Zone_EF " << finl;
       exit();
     }
 }

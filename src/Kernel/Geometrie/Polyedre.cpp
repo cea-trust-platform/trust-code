@@ -699,7 +699,7 @@ void Polyedre::compute_virtual_index()
   int nbs=0;
 
   PolyhedronIndex_.resize(nb_elem_tot+1);
-  //Cerr<<"uuu "<< PolyhedronIndex_<<endl;
+  //Cerr<<"uuu "<< PolyhedronIndex_<<finl;
 
   for (int ele=nb_elem; ele<nb_elem_tot; ele++)
     {

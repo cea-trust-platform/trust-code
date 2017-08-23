@@ -1813,10 +1813,10 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
       // Bug fixed : Diagonal preconditionning is fixed with periodic BC (it is OK for a parallel calculation)
       //if (precond_diag==1 && Process::nproc()>1)
       //  {
-      //    Cerr << "Error with the value of preconditionnement_diag option which is set to " << precond_diag << "." << endl;
-      //    Cerr << "The diagonal preconditionning is unavailable for a parallel calculation." << endl;
-      //    Cerr << "The CG used to solve the implicitation of the equation diffusion operator can not preconditioned." << endl;
-      //    Cerr << "So edit your .data file with preconditionnement_diag = 0 and run your case." << endl;
+      //    Cerr << "Error with the value of preconditionnement_diag option which is set to " << precond_diag << "." << finl;
+      //    Cerr << "The diagonal preconditionning is unavailable for a parallel calculation." << finl;
+      //    Cerr << "The CG used to solve the implicitation of the equation diffusion operator can not preconditioned." << finl;
+      //    Cerr << "So edit your .data file with preconditionnement_diag = 0 and run your case." << finl;
       //    exit();
       //  }
       if (param.seuil_diffusion_implicite()>0)
@@ -1838,9 +1838,9 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
       const int nb_comp = (nbdim1 ? 1 : inconnue().valeurs().dimension(1));
       if (nb_comp*nb_case != n)
         {
-          Cerr << "the size of the unknown and the second member does not match" << endl;
-          Cerr << "dimension_tot nbdim1 nb_comp = " << nb_case << " " << nbdim1 << " " << nb_comp << endl;
-          Cerr << "size_totale = " << n << endl ;
+          Cerr << "the size of the unknown and the second member does not match" << finl;
+          Cerr << "dimension_tot nbdim1 nb_comp = " << nb_case << " " << nbdim1 << " " << nb_comp << finl;
+          Cerr << "size_totale = " << n << finl ;
           exit();
         }
       diag.dimensionne_diag(n);

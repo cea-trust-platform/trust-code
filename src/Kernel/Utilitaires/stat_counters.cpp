@@ -80,7 +80,7 @@ void declare_stat_counters()
   // Creation de l'objet statistiques
   if (les_statistiques_trio_U_nom_long_pour_decourager_l_utilisation_directe)
     {
-      cerr << "Error : declare_stat_counters() has already been called\n";
+      Cerr << "Error : declare_stat_counters() has already been called " << finl;
       assert(0);
       return;
     }

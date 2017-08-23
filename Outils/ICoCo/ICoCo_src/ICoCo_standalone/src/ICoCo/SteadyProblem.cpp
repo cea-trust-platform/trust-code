@@ -38,7 +38,7 @@ void SteadyProblem::set_data_file(const string& file)
 {
  (*my_params).data_file=file;
  (*my_params).is_mpi=0;
- cout<<" fata file "<<(*my_params).data_file<<endl;
+ std::cout<<" fata file "<<(*my_params).data_file<<std::endl;
 }
 
 SteadyProblem::SteadyProblem(void* data) {

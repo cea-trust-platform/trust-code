@@ -83,6 +83,6 @@ int Stack<T>::isEmpty() const
   for (int i=0;i<21;i++)
   t->push(i);
   for (i=0;i<40;i++)
-  cout << t->pop() << endl;
+  std::cout << t->pop() << std::endl;
 
   }*/

@@ -146,7 +146,7 @@ int Solv_Gen::resoudre_systeme(const Matrice_Base& la_matrice,
           return(-1);
         }
     }
-  //cerr<<"La matrice : "<<la_matrice.que_suis_je()<<endl;
+  //Cerr<<"La matrice : "<<la_matrice.que_suis_je()<<finl;
   if(sub_type(Matrice_Bloc,la_matrice))
     {
       const Matrice_Bloc& MB = ref_cast(Matrice_Bloc,la_matrice);

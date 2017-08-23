@@ -87,15 +87,15 @@ void essai()
   a[2]=7.31;
   a[3]=7.3;
   a[4]=7.1;
-  Cerr << "a before selecting "  << endl;
+  Cerr << "a before selecting "  << finl;
   for (i=0; i<5; i++) Cerr << a[i] << " ";
   Cerr << finl;
   trier (a,c);
-  Cerr << "a after selecting " << endl;
+  Cerr << "a after selecting " << finl;
   for ( i=0; i<5; i++) Cerr << a[c[i]] << " ";
   Cerr << finl;
   trier_abs (a,c);
-  Cerr << "a after selecting abs " << endl;
+  Cerr << "a after selecting abs " << finl;
   for ( i=0; i<5; i++) Cerr << a[c[i]] << " ";
   Cerr << finl;
 }

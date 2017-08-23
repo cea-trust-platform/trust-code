@@ -226,7 +226,7 @@ void Decouper_Bord_coincident::Decouper_Bord_coincident_(Zone& zone)
       //                new_faces_int.resize(ii,dimension);
 
       // Reconstruction de l'octree
-      Cerr << "Splitting performs ..." << endl;
+      Cerr << "Splitting performs ..." << finl;
       zone.invalide_octree();
       if(dimension==2)
         zone.typer("Triangle");

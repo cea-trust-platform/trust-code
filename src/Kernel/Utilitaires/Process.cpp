@@ -360,7 +360,7 @@ void init_journal_file(int verbose_level, const char * file_name, int append)
             mode = ios::app;
           if (!journal_file_.ouvrir(file_name, mode))
             {
-              cerr << "Fatal error in init_journal_file: cannot open journal file" << endl;
+              Cerr << "Fatal error in init_journal_file: cannot open journal file" << finl;
               Process::exit();
             }
           journal_file_open_ = 1;

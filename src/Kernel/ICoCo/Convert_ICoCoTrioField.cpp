@@ -256,7 +256,7 @@ MEDField build_medfield(TrioField& triofield)
     mesh->checkButterflyCells(cells);
   if (!cells.empty())
     {
-      cerr<<" cells are butterflyed "<<cells[0]<<endl;
+      Cerr<<" cells are butterflyed "<<cells[0]<<finl;
       PE_Groups::groupe_TRUST().abort();
       Process::abort();
       Process::exit();

@@ -118,7 +118,7 @@ med_int* convert_int_med_int(const ArrOfInt& tab)
     {
 
       int taille=tab.size_array();
-      //  cerr<<sizeof(tab)<<" "<<sizeof(int)<<" "<<sizeof(tab)/sizeof(int)<<" "<<taille<<endl;
+      //  Cerr<<sizeof(tab)<<" "<<sizeof(int)<<" "<<sizeof(tab)/sizeof(int)<<" "<<taille<<finl;
       Cerr<<"creation of medint*"<<finl;
       tabmed=new med_int[taille];
       for (int i=0; i<taille; i++)
@@ -711,7 +711,7 @@ void renum_conn(IntTab& les_elems2,Nom& type_elem,int sens)
       }
     default:
       {
-        cerr<<"case not scheduled"<<endl;
+        Cerr<<"case not scheduled"<<finl;
         Process::exit();
       }
     }
@@ -1230,7 +1230,7 @@ void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_fic,const Nom& nom_dom,
       if (nbbord!= premiere_face_int) abort();
 
       renum_conn(all_faces_bord,type_face,1);
-      cerr<<"here "<<(int)MED_ACC_RDEXT <<" "<<(int)MED_ACC_CREAT<<endl;
+      Cerr<<"here "<<(int)MED_ACC_RDEXT <<" "<<(int)MED_ACC_CREAT<<finl;
       med_access_mode es=MED_ACC_RDEXT;
       // if (1) es=MED_ACC_CREAT;
       //es=MED_ACC_RDEXT;

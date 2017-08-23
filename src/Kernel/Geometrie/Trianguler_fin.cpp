@@ -217,7 +217,7 @@ void Trianguler_fin::trianguler(Zone& zone) const
       les_elems.ref(new_elems);
 
       // Reconstruction de l'octree
-      Cerr << "We have split the rectangles..." << endl;
+      Cerr << "We have split the rectangles..." << finl;
       zone.invalide_octree();
       zone.typer("Triangle");
       Cerr << "  Reconstruction of the Octree" << finl;

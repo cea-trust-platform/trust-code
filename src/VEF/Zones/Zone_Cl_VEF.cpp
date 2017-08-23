@@ -140,7 +140,7 @@ void Zone_Cl_VEF::completer(const Zone_dis& une_zone_dis)
     }
   else
     {
-      cerr << "Zone_Cl_VEF::completer() prend comme argument une Zone_VEF\n";
+      Cerr << "Zone_Cl_VEF::completer() prend comme argument une Zone_VEF " << finl;
       exit();
     }
 }
@@ -367,7 +367,7 @@ void Zone_Cl_VEF::remplir_type_elem_Cl(const Zone_VEF& la_zone_VEF)
                 if(elem_faces(elem,numero1) == j)
                   numero2 = numero1;
               if(numero2 == -1)
-                cerr << "Zone_Cl_VEF::creer_type_elem_Cl() PAS POSSIBLE!!\n";
+                Cerr << "Zone_Cl_VEF::creer_type_elem_Cl() PAS POSSIBLE!! " << finl;
               num_elem = rang_elem(elem);
               assert(num_elem!=-1);
               if (sub_type(Tri_VEF,la_zone_VEF.type_elem().valeur()) || sub_type(Tetra_VEF,la_zone_VEF.type_elem().valeur()))

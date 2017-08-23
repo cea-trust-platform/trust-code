@@ -275,10 +275,10 @@ int Tetraedriser_homogene_fin::creer_sommet (
     {
       for (int ii=0 ; ii<NbSom ; ii++)
         {
-          Cerr<<"i"<<ii<<"="<<sommets(ii)<<" coord="<<coord_sommets(sommets(ii),0)<<" "<<coord_sommets(sommets(ii),1)<<" "<<coord_sommets(sommets(ii),2)<<endl;
+          Cerr<<"i"<<ii<<"="<<sommets(ii)<<" coord="<<coord_sommets(sommets(ii),0)<<" "<<coord_sommets(sommets(ii),1)<<" "<<coord_sommets(sommets(ii),2)<<finl;
         }
-      Cerr<<"x="<<x<<" y="<<y<<" z="<<z<<endl;
-      Cerr<<"-----"<<endl;
+      Cerr<<"x="<<x<<" y="<<y<<" z="<<z<<finl;
+      Cerr<<"-----"<<finl;
       assert(trouve>=0);
     }
 
@@ -303,10 +303,10 @@ int Tetraedriser_homogene_fin::creer_sommet (
       if (_out<0)
         {
           Cerr << "Error, not found !" << finl;
-          Cerr << "found="<<trouve<<" x="<<x<<" y="<<y<<" z="<<z<<endl;
+          Cerr << "found="<<trouve<<" x="<<x<<" y="<<y<<" z="<<z<<finl;
           for (int ii=0 ; ii<NbSom ; ii++)
             {
-              Cerr<<"i"<<ii<<"="<<sommets(ii)<<" coord="<<coord_sommets(sommets(ii),0)<<" "<<coord_sommets(sommets(ii),1)<<" "<<coord_sommets(sommets(ii),2)<<endl;
+              Cerr<<"i"<<ii<<"="<<sommets(ii)<<" coord="<<coord_sommets(sommets(ii),0)<<" "<<coord_sommets(sommets(ii),1)<<" "<<coord_sommets(sommets(ii),2)<<finl;
             }
           exit();
         }
@@ -904,7 +904,7 @@ void Tetraedriser_homogene_fin::trianguler(Zone& zone) const
       les_elems.ref(new_elems);
 
       // Reconstruction de l'octree
-      Cerr << "We have split the cubes..." << endl;
+      Cerr << "We have split the cubes..." << finl;
       zone.invalide_octree();
       zone.typer("Tetraedre");
       Cerr << "  Reconstruction of the Octree" << finl;

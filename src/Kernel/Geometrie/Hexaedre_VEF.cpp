@@ -179,8 +179,8 @@ static int contient_Tetra(const Zone& zone,const Domaine& dom,const ArrOfDouble&
 
   if (aff)
     {
-      Cerr<<"Test contient_Tetra nodes="<<som0_<<" "<<som1_<<" "<<som2_<<" "<<som3_<<endl;
-      Cerr<<"  position="<<pos[0]<<" "<<pos[1]<<" "<<pos[2]<<endl;
+      Cerr<<"Test contient_Tetra nodes="<<som0_<<" "<<som1_<<" "<<som2_<<" "<<som3_<<finl;
+      Cerr<<"  position="<<pos[0]<<" "<<pos[1]<<" "<<pos[2]<<finl;
     }
 
   if( ( est_egal(dom.coord(som0,0),pos[0]) && est_egal(dom.coord(som0,1),pos[1]) && est_egal(dom.coord(som0,2),pos[2]) )
@@ -246,13 +246,13 @@ static int contient_Tetra(const Zone& zone,const Domaine& dom,const ArrOfDouble&
 
       if (aff)
         {
-          Cerr<<"  test "<<som0<<" "<<som1<<" "<<som2<<" "<<som3<<endl;
-          Cerr<<"  node0="<<som0<<" : "<<dom.coord(som0,0)<<"  "<<dom.coord(som0,1)<<"  "<<dom.coord(som0,2)<<endl;
-          Cerr<<"  node1="<<som1<<" : "<<dom.coord(som1,0)<<"  "<<dom.coord(som1,1)<<"  "<<dom.coord(som1,2)<<endl;
-          Cerr<<"  node2="<<som2<<" : "<<dom.coord(som2,0)<<"  "<<dom.coord(som2,1)<<"  "<<dom.coord(som2,2)<<endl;
-          Cerr<<"  node3="<<som3<<" : "<<dom.coord(som3,0)<<"  "<<dom.coord(som3,1)<<"  "<<dom.coord(som3,2)<<endl;
-          Cerr<<"  position : "<<pos[0]<<"  "<<pos[1]<<"  "<<pos[2]<<endl;
-          Cerr<<"      prod1="<<prod1<<" prod2="<<prod2<<endl;
+          Cerr<<"  test "<<som0<<" "<<som1<<" "<<som2<<" "<<som3<<finl;
+          Cerr<<"  node0="<<som0<<" : "<<dom.coord(som0,0)<<"  "<<dom.coord(som0,1)<<"  "<<dom.coord(som0,2)<<finl;
+          Cerr<<"  node1="<<som1<<" : "<<dom.coord(som1,0)<<"  "<<dom.coord(som1,1)<<"  "<<dom.coord(som1,2)<<finl;
+          Cerr<<"  node2="<<som2<<" : "<<dom.coord(som2,0)<<"  "<<dom.coord(som2,1)<<"  "<<dom.coord(som2,2)<<finl;
+          Cerr<<"  node3="<<som3<<" : "<<dom.coord(som3,0)<<"  "<<dom.coord(som3,1)<<"  "<<dom.coord(som3,2)<<finl;
+          Cerr<<"  position : "<<pos[0]<<"  "<<pos[1]<<"  "<<pos[2]<<finl;
+          Cerr<<"      prod1="<<prod1<<" prod2="<<prod2<<finl;
         }
 
       if (dabs(prod1)<Objet_U::precision_geom)
@@ -266,12 +266,12 @@ static int contient_Tetra(const Zone& zone,const Domaine& dom,const ArrOfDouble&
             }
           if (dabs(prod1)<Objet_U::precision_geom*sqrt(norm_v0*norm_v1*norm_v2))
             {
-              Cerr<<"Test contient_Tetra ERROR : coplanar nodes"<<endl;
-              Cerr<<"  node0="<<som0<<" : "<<dom.coord(som0,0)<<"  "<<dom.coord(som0,1)<<"  "<<dom.coord(som0,2)<<endl;
-              Cerr<<"  node1="<<som1<<" : "<<dom.coord(som1,0)<<"  "<<dom.coord(som1,1)<<"  "<<dom.coord(som1,2)<<endl;
-              Cerr<<"  node2="<<som2<<" : "<<dom.coord(som2,0)<<"  "<<dom.coord(som2,1)<<"  "<<dom.coord(som2,2)<<endl;
-              Cerr<<"  node3="<<som3<<" : "<<dom.coord(som3,0)<<"  "<<dom.coord(som3,1)<<"  "<<dom.coord(som3,2)<<endl;
-              Cerr<<"  position : "<<pos[0]<<"  "<<pos[1]<<"  "<<pos[2]<<endl;
+              Cerr<<"Test contient_Tetra ERROR : coplanar nodes"<<finl;
+              Cerr<<"  node0="<<som0<<" : "<<dom.coord(som0,0)<<"  "<<dom.coord(som0,1)<<"  "<<dom.coord(som0,2)<<finl;
+              Cerr<<"  node1="<<som1<<" : "<<dom.coord(som1,0)<<"  "<<dom.coord(som1,1)<<"  "<<dom.coord(som1,2)<<finl;
+              Cerr<<"  node2="<<som2<<" : "<<dom.coord(som2,0)<<"  "<<dom.coord(som2,1)<<"  "<<dom.coord(som2,2)<<finl;
+              Cerr<<"  node3="<<som3<<" : "<<dom.coord(som3,0)<<"  "<<dom.coord(som3,1)<<"  "<<dom.coord(som3,2)<<finl;
+              Cerr<<"  position : "<<pos[0]<<"  "<<pos[1]<<"  "<<pos[2]<<finl;
               Process::exit();
             }
         }
@@ -280,14 +280,14 @@ static int contient_Tetra(const Zone& zone,const Domaine& dom,const ArrOfDouble&
         {
           if (aff)
             {
-              Cerr<<"  CONTAINS=0"<<endl;
+              Cerr<<"  CONTAINS=0"<<finl;
             }
           return 0;
         }
     }
   if (aff)
     {
-      Cerr<<"  CONTAINS=1"<<endl;
+      Cerr<<"  CONTAINS=1"<<finl;
     }
   return 1;
 }

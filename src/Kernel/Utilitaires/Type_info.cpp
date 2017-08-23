@@ -177,8 +177,8 @@ Type_info::Type_info(const char* un_nom, int nb_base, const Type_info** the_base
 {
   if(un_nom == 0)
     {
-      cerr << "Type_info::Type_info(const char* nom,Objet_U* (*f)()...)\n";
-      cerr << " Error : name == 0" << endl;
+      Cerr << "Type_info::Type_info(const char* nom,Objet_U* (*f)()...)\n";
+      Cerr << " Error : name == 0" << finl;
       assert(0);
       Process::exit();
     }
@@ -229,8 +229,8 @@ Type_info::Type_info(const char* un_nom,
 {
   if(un_nom == 0)
     {
-      cerr << "Type_info::Type_info(const char* nom,Objet_U* (*f)()...)\n";
-      cerr << " Error : name == 0" << endl;
+      Cerr << "Type_info::Type_info(const char* nom,Objet_U* (*f)()...)\n";
+      Cerr << " Error : name == 0" << finl;
       assert(0);
       Process::exit();
     }
@@ -287,7 +287,7 @@ void Type_info::ajouter_type(const Type_info& type_info)
   if (synonym_found)
     {
       //Commented cause too verbose:
-      //cerr << "Keyword " << A << " has a synonym: " << B << endl;
+      //Cerr << "Keyword " << A << " has a synonym: " << B << finl;
       synonym_name_ = new Nom(B);
       synonym_ = new Synonyme_info(synonym_name_->getChar(),name_->getChar());
     }
@@ -314,7 +314,7 @@ void Type_info::ajouter_type(const Type_info& type_info)
   int existe_deja=Synonyme_info::est_un_synonyme(type_info.name());
   if (existe_deja)
     {
-      cerr<<" class "<<type_info.name()<<" already exists as a synonym which is forbidden!!!!"<<endl;
+      Cerr<<" class "<<type_info.name()<<" already exists as a synonym which is forbidden!!!!"<<finl;
       Process::exit();
     }
   int index;
@@ -328,7 +328,7 @@ void Type_info::ajouter_type(const Type_info& type_info)
         {
           if (strncmp(type_info.name(),"Iterateur_",10))
             {
-              cerr<<" type "<<type_info.name()<<" is in double and it is not allowed!!!!"<<endl;
+              Cerr<<" type "<<type_info.name()<<" is in double and it is not allowed!!!!"<<finl;
               Process::exit();
             }
         }
@@ -609,7 +609,7 @@ int Type_info::les_sous_types(const Type_info& mere, Noms& les_sous_types)
   int i= nb_classes;
   // Modif B. Mathieu: name() ne renvoie plus un static.
   const Nom& nom_mere = mere.name();
-  cerr << "---------" << (const char*) nom_mere << endl;
+  Cerr << "---------" << (const char*) nom_mere << finl;
   while(i--)
     {
       if( les_types[i]->has_base(nom_mere, 0) )
@@ -618,7 +618,7 @@ int Type_info::les_sous_types(const Type_info& mere, Noms& les_sous_types)
             compteur++;
           }
     }
-  cerr << compteur << endl ;
+  Cerr << compteur << finl ;
   if(compteur==0) return 0;
   les_sous_types.dimensionner(compteur);
   compteur=0;
@@ -694,9 +694,9 @@ const Type_info * Type_info::type_info_from_name(const char * type_name)
             {
               // Le type est enregistre mais le nom correspond
               // a plusieurs types...
-              cerr << "const Type_info * Type_info::type_info_from_name(const char * type_name)\n";
-              cerr << " The type " << type_name << " has several homonymous\n";
-              cerr << " We doing as if the type is unknown..." << endl;
+              Cerr << "const Type_info * Type_info::type_info_from_name(const char * type_name)\n";
+              Cerr << " The type " << type_name << " has several homonymous\n";
+              Cerr << " We doing as if the type is unknown..." << finl;
             }
         }
     }

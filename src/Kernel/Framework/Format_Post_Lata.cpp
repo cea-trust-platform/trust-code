@@ -737,12 +737,12 @@ int Format_Post_Lata::reconstruct(const Nom post_file, const Nom before_restart,
               if (temps==tinit)                                                // Si le temps trouvee = tinit alors j'arrete
                 break;
               std::getline(LataOld.get_ifstream(), line) ;                        // je lis le reste de la ligne
-              LataNew.get_ofstream() << mot << " " << temps << line << endl;        // et j'ecris le tout dans le lata
+              LataNew.get_ofstream() << mot << " " << temps << line << std::endl;        // et j'ecris le tout dans le lata
             }
           else
             {
               std::getline(LataOld.get_ifstream(), line) ;                        // je lis le reste de la ligne
-              LataNew.get_ofstream() << mot << line << endl;                        // et j'ecris le tout dans le lata
+              LataNew.get_ofstream() << mot << line << std::endl;                        // et j'ecris le tout dans le lata
             }
         }
       else
@@ -781,7 +781,7 @@ int Format_Post_Lata::finir_sans_reprise(const Nom file_basename)
                   if (temps==tinit_)                                                        // Si le temps trouvee = tinit alors
                     {
                       std::getline(Lata.get_ifstream(), line) ;
-                      LataRep.get_ofstream() << mot << " " << temps << line << endl;        // je peux commencer a ecrire
+                      LataRep.get_ofstream() << mot << " " << temps << line << std::endl;        // je peux commencer a ecrire
                       break;
                     }
                 }
@@ -789,7 +789,7 @@ int Format_Post_Lata::finir_sans_reprise(const Nom file_basename)
           while (!Lata.eof())
             {
               std::getline(Lata.get_ifstream(), line);                                // je lis le reste du .lata
-              LataRep.get_ofstream() << line << endl;                                        // et j'ecris le tout dans le after_restart.lata
+              LataRep.get_ofstream() << line << std::endl;                                        // et j'ecris le tout dans le after_restart.lata
             }
           Lata.close();
           LataRep.close();

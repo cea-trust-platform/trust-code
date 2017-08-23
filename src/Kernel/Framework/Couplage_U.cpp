@@ -225,7 +225,7 @@ int Couplage_U::indice_probleme(const Nom& nom_pb) const
       i++;
     }
   Cerr << "Problem " << nom_pb
-       << " not found in Couplage_U " << le_nom() << endl;
+       << " not found in Couplage_U " << le_nom() << finl;
   exit();
   // Avoid compiler warning
   return 0;

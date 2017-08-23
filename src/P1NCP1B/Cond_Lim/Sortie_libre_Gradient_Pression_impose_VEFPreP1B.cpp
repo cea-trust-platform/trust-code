@@ -103,7 +103,7 @@ int Sortie_libre_Gradient_Pression_impose_VEFPreP1B::calculer_trace_pression()
 {
   if (!pression_interne.non_nul())
     {
-      Cerr << "Sortie_libre_Gradient_Pression_impose_VEFPreP1B::calculer_trace_pression() : la pression n'est pas definie!" << endl;
+      Cerr << "Sortie_libre_Gradient_Pression_impose_VEFPreP1B::calculer_trace_pression() : la pression n'est pas definie!" << finl;
       return 0;
     }
   Debog::verifier("pression_interne:",pression_interne);

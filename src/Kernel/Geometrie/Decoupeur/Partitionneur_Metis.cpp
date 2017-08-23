@@ -578,7 +578,7 @@ void Partitionneur_Metis::construire_partition(ArrOfInt& elem_part, int& nb_part
         exit();
       }
     }
-  cerr << "Partitioning quality : edgecut = " << edgecut << endl;
+  Cerr << "Partitioning quality : edgecut = " << edgecut << finl;
   Cerr << "-> It is roughly the total number of edges (faces) which will be shared by the processors." << finl;
   Cerr << "-> The lesser this number is, the lesser the total volume of communication between processors." << finl;
   Cerr << "-> You can increase nb_essais option (default 1) to try to reduce (but at a higher CPU cost) this number." << finl;

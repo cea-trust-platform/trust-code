@@ -174,10 +174,10 @@ int creer_sommet (
     {
       for (int ii=0 ; ii<NbSom ; ii++)
         {
-          Cerr<<"i"<<ii<<"="<<sommets(ii)<<" coord="<<coord_sommets(sommets(ii),0)<<" "<<coord_sommets(sommets(ii),1)<<" "<<coord_sommets(sommets(ii),2)<<endl;
+          Cerr<<"i"<<ii<<"="<<sommets(ii)<<" coord="<<coord_sommets(sommets(ii),0)<<" "<<coord_sommets(sommets(ii),1)<<" "<<coord_sommets(sommets(ii),2)<<finl;
         }
-      Cerr<<"x="<<x<<" y="<<y<<" z="<<z<<endl;
-      Cerr<<"-----"<<endl;
+      Cerr<<"x="<<x<<" y="<<y<<" z="<<z<<finl;
+      Cerr<<"-----"<<finl;
       assert(trouve>=0);
     }
 
@@ -203,10 +203,10 @@ int creer_sommet (
       if (_out<0)
         {
           Cerr << "Error, not found !" << finl;
-          Cerr << "found="<<trouve<<" x="<<x<<" y="<<y<<" z="<<z<<endl;
+          Cerr << "found="<<trouve<<" x="<<x<<" y="<<y<<" z="<<z<<finl;
           for (int ii=0 ; ii<NbSom ; ii++)
             {
-              Cerr<<"i"<<ii<<"="<<sommets(ii)<<" coord="<<coord_sommets(sommets(ii),0)<<" "<<coord_sommets(sommets(ii),1)<<" "<<coord_sommets(sommets(ii),2)<<endl;
+              Cerr<<"i"<<ii<<"="<<sommets(ii)<<" coord="<<coord_sommets(sommets(ii),0)<<" "<<coord_sommets(sommets(ii),1)<<" "<<coord_sommets(sommets(ii),2)<<finl;
             }
           Process::exit();
         }
@@ -280,7 +280,7 @@ void Tetraedriser_homogene::trianguler(Zone& zone) const
 
           // Definition des nouveaux sommets : creation des barycentres
           //centre de l'hexaedre
-          //Cerr<<" --creer_sommet "<<i0<<" "<<i7<<endl;
+          //Cerr<<" --creer_sommet "<<i0<<" "<<i7<<finl;
           sommets(0)=i0;
           sommets(1)=i1;
           sommets(2)=i2;
@@ -294,11 +294,11 @@ void Tetraedriser_homogene::trianguler(Zone& zone) const
           //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i0, i7, compteur, oldnbsom, nbnewsoms);
 
           //centres des faces
-          //Cerr<<" --creer_sommet "<<i0<<" "<<i3<<endl;
+          //Cerr<<" --creer_sommet "<<i0<<" "<<i3<<finl;
           indice(1)  =
             creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms);
           //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i0, i3, compteur, oldnbsom, nbnewsoms);
-          //Cerr<<" --creer_sommet "<<i0<<" "<<i6<<endl;
+          //Cerr<<" --creer_sommet "<<i0<<" "<<i6<<finl;
           sommets(0)=i0;
           sommets(1)=i2;
           sommets(2)=i4;
@@ -306,7 +306,7 @@ void Tetraedriser_homogene::trianguler(Zone& zone) const
           indice(2)  =
             creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms);
           //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i0, i6, compteur, oldnbsom, nbnewsoms);
-          //Cerr<<" --creer_sommet "<<i0<<" "<<i5<<endl;
+          //Cerr<<" --creer_sommet "<<i0<<" "<<i5<<finl;
           sommets(0)=i0;
           sommets(1)=i1;
           sommets(2)=i4;
@@ -314,7 +314,7 @@ void Tetraedriser_homogene::trianguler(Zone& zone) const
           indice(3)  =
             creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms);
           //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i0, i5, compteur, oldnbsom, nbnewsoms);
-          //Cerr<<" --creer_sommet "<<i4<<" "<<i7<<endl;
+          //Cerr<<" --creer_sommet "<<i4<<" "<<i7<<finl;
           sommets(0)=i4;
           sommets(1)=i5;
           sommets(2)=i6;
@@ -322,7 +322,7 @@ void Tetraedriser_homogene::trianguler(Zone& zone) const
           indice(4)  =
             creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms);
           //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i4, i7, compteur, oldnbsom, nbnewsoms);
-          //Cerr<<" --creer_sommet "<<i1<<" "<<i7<<endl;
+          //Cerr<<" --creer_sommet "<<i1<<" "<<i7<<finl;
           sommets(0)=i1;
           sommets(1)=i3;
           sommets(2)=i5;
@@ -330,7 +330,7 @@ void Tetraedriser_homogene::trianguler(Zone& zone) const
           indice(5)  =
             creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms);
           //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i1, i7, compteur, oldnbsom, nbnewsoms);
-          //Cerr<<" --creer_sommet "<<i2<<" "<<i7<<endl;
+          //Cerr<<" --creer_sommet "<<i2<<" "<<i7<<finl;
           sommets(0)=i2;
           sommets(1)=i3;
           sommets(2)=i6;
@@ -340,73 +340,73 @@ void Tetraedriser_homogene::trianguler(Zone& zone) const
           //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i2, i7, compteur, oldnbsom, nbnewsoms);
 
           //centres des aretes
-          //Cerr<<" --creer_sommet "<<i0<<" "<<i1<<endl;
+          //Cerr<<" --creer_sommet "<<i0<<" "<<i1<<finl;
           sommets(0)=i0;
           sommets(1)=i1;
           indice(7)  =
             creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
           //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i0, i1, compteur, oldnbsom, nbnewsoms);
-          //Cerr<<" --creer_sommet "<<i0<<" "<<i2<<endl;
+          //Cerr<<" --creer_sommet "<<i0<<" "<<i2<<finl;
           sommets(0)=i0;
           sommets(1)=i2;
           indice(8)  =
             creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
           //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i0, i2, compteur, oldnbsom, nbnewsoms);
-          //Cerr<<" --creer_sommet "<<i0<<" "<<i4<<endl;
+          //Cerr<<" --creer_sommet "<<i0<<" "<<i4<<finl;
           sommets(0)=i0;
           sommets(1)=i4;
           indice(9)  =
             creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
           //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i0, i4, compteur, oldnbsom, nbnewsoms);
-          //Cerr<<" --creer_sommet "<<i1<<" "<<i3<<endl;
+          //Cerr<<" --creer_sommet "<<i1<<" "<<i3<<finl;
           sommets(0)=i1;
           sommets(1)=i3;
           indice(10) =
             creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
           //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i1, i3, compteur, oldnbsom, nbnewsoms);
-          //Cerr<<" --creer_sommet "<<i1<<" "<<i5<<endl;
+          //Cerr<<" --creer_sommet "<<i1<<" "<<i5<<finl;
           sommets(0)=i1;
           sommets(1)=i5;
           indice(11) =
             creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
           //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i1, i5, compteur, oldnbsom, nbnewsoms);
-          //Cerr<<" --creer_sommet "<<i2<<" "<<i3<<endl;
+          //Cerr<<" --creer_sommet "<<i2<<" "<<i3<<finl;
           sommets(0)=i2;
           sommets(1)=i3;
           indice(12) =
             creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
           //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i2, i3, compteur, oldnbsom, nbnewsoms);
-          //Cerr<<" --creer_sommet "<<i2<<" "<<i6<<endl;
+          //Cerr<<" --creer_sommet "<<i2<<" "<<i6<<finl;
           sommets(0)=i2;
           sommets(1)=i6;
           indice(13) =
             creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
           //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i2, i6, compteur, oldnbsom, nbnewsoms);
-          //Cerr<<" --creer_sommet "<<i3<<" "<<i7<<endl;
+          //Cerr<<" --creer_sommet "<<i3<<" "<<i7<<finl;
           sommets(0)=i3;
           sommets(1)=i7;
           indice(14) =
             creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
           //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i3, i7, compteur, oldnbsom, nbnewsoms);
-          //Cerr<<" --creer_sommet "<<i4<<" "<<i5<<endl;
+          //Cerr<<" --creer_sommet "<<i4<<" "<<i5<<finl;
           sommets(0)=i4;
           sommets(1)=i5;
           indice(15) =
             creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
           //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i4, i5, compteur, oldnbsom, nbnewsoms);
-          //Cerr<<" --creer_sommet "<<i4<<" "<<i6<<endl;
+          //Cerr<<" --creer_sommet "<<i4<<" "<<i6<<finl;
           sommets(0)=i4;
           sommets(1)=i6;
           indice(16) =
             creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
           //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i4, i6, compteur, oldnbsom, nbnewsoms);
-          //Cerr<<" --creer_sommet "<<i5<<" "<<i7<<endl;
+          //Cerr<<" --creer_sommet "<<i5<<" "<<i7<<finl;
           sommets(0)=i5;
           sommets(1)=i7;
           indice(17) =
             creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
           //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i5, i7, compteur, oldnbsom, nbnewsoms);
-          //Cerr<<" --creer_sommet "<<i6<<" "<<i7<<endl;
+          //Cerr<<" --creer_sommet "<<i6<<" "<<i7<<finl;
           sommets(0)=i6;
           sommets(1)=i7;
           indice(18) =
@@ -692,7 +692,7 @@ void Tetraedriser_homogene::trianguler(Zone& zone) const
       les_elems.ref(new_elems);
 
       // Reconstruction de l'octree
-      Cerr << "We have split the cubes..." << endl;
+      Cerr << "We have split the cubes..." << finl;
 
       zone.invalide_octree();
       zone.typer("Tetraedre");

@@ -2554,7 +2554,7 @@ void assemblerPaPa(const Zone_dis_base& z,
     if(diag(i)==0)
       {
         // On n'affiche pas car trop sur de gros maillages
-        //Cerr << "On modifie la ligne (arete) orpheline " << i << endl;
+        //Cerr << "On modifie la ligne (arete) orpheline " << i << finl;
         diag(i)=1;
       }
 
@@ -2645,7 +2645,7 @@ void updatePaPa(const Zone_dis_base& z,
     if(ARR(i,i)==0)
       {
         // On n'affiche pas car trop sur de gros maillages
-        //Cerr << "On modifie la ligne (arete) orpheline " << i << endl;
+        //Cerr << "On modifie la ligne (arete) orpheline " << i << finl;
         ARR(i,i)=1;
       }
 

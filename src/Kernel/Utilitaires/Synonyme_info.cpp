@@ -147,8 +147,8 @@ Synonyme_info::Synonyme_info(const char* un_nom, const char* org_name) :
 {
   if((un_nom == 0)||(org_name==0))
     {
-      cerr << "Synonyme_info::Synonyme_info(const char* nom,Objet_U* (*f)()...)\n";
-      cerr << " Error : nom==0" << endl;
+      Cerr << "Synonyme_info::Synonyme_info(const char* nom,Objet_U* (*f)()...)\n";
+      Cerr << " Error : nom==0" << finl;
       assert(0);
       Process::exit();
     }
@@ -166,7 +166,7 @@ void Synonyme_info::retirer_synonyme(const char* nom)
   int existe_deja = search_synonyme_info_name(nom, index);
   if (!existe_deja)
     {
-      cerr<<"A synonym is suppressed whereas it doesn't exist !!!!!"<<endl;
+      Cerr<<"A synonym is suppressed whereas it doesn't exist !!!!!"<<finl;
       Process::exit();
     }
   else
@@ -202,13 +202,13 @@ void Synonyme_info::ajouter_synonyme(const Synonyme_info& synonyme_info)
   int existe_deja=Type_info::est_un_type(synonyme_info.n);
   if (existe_deja)
     {
-      cerr<<" The synonym "<<synonyme_info.n<<" exists as a class which is forbidden !!!!"<<endl;
+      Cerr<<" The synonym "<<synonyme_info.n<<" exists as a class which is forbidden !!!!"<<finl;
       Process::exit();
     }
   existe_deja = search_synonyme_info_name(synonyme_info.n, index);
   if (existe_deja)
     {
-      cerr<<" Synonym "<<synonyme_info.n<<" already exists, which is forbidden!!!!"<<endl;
+      Cerr<<" Synonym "<<synonyme_info.n<<" already exists, which is forbidden!!!!"<<finl;
       Process::exit();
     }
   else

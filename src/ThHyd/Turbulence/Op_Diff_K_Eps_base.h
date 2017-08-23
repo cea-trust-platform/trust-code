@@ -63,13 +63,13 @@ public:
   virtual void associer_diffusivite_turbulente() =0;
   inline virtual void associer_diffusivite(const Champ_base& )
   {
-    cerr<<get_info()->name()<<" doit coder associer_diffusivite"<<endl;
+    Cerr<<get_info()->name()<<" doit coder associer_diffusivite"<<finl;
     Process::exit();
   }
 
   inline  virtual const Champ_base& diffusivite() const
   {
-    cerr<<get_info()->name()<<" doit coder diffusivite()"<<endl;
+    Cerr<<get_info()->name()<<" doit coder diffusivite()"<<finl;
     throw;
 
   }

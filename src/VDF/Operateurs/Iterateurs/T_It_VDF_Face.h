@@ -548,14 +548,14 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins(const DoubleTab& inco, Do
                                fac3 = Qdm(n_arete,i);
                                signe = 1;
                                flux=flux_evaluateur.flux_arete_paroi(inco, fac1, fac1,fac3, signe);*/ \
-              /*cerr<<"coin "<<fac1<<" "<<fac3<<" "<<signe<<endl;*/
+              /*Cerr<<"coin "<<fac1<<" "<<fac3<<" "<<signe<<finl;*/
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
               flux=flux_evaluateur.flux_arete_paroi(inco, fac1, fac2, fac3, signe);
               resu[fac3]+=signe*flux;
-              /*cerr<<"coin "<<fac1<<" "<<fac2<<" "<<fac3<<" "<<signe << " " << flux<<endl;*/
+              /*Cerr<<"coin "<<fac1<<" "<<fac2<<" "<<fac3<<" "<<signe << " " << flux<<finl;*/
               ((DoubleTab&)(tab_flux_bords))(fac1,orientation(fac3))-=0.5*signe*flux;
             }
           break;
@@ -568,7 +568,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins(const DoubleTab& inco, Do
                 fac1 = Qdm(n_arete,i);
                 signe = 1;
                 flux=flux_evaluateur.flux_arete_paroi(inco, fac1, fac1,fac3, signe);*/
-              /*cerr<<"coin2 "<<fac1<<" "<<fac3<<" "<<signe<<endl;*/
+              /*Cerr<<"coin2 "<<fac1<<" "<<fac3<<" "<<signe<<finl;*/
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
@@ -1513,14 +1513,14 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins( DoubleTab&
                                fac3 = Qdm(n_arete,i);
                                signe = 1;
                                flux=flux_evaluateur.flux_arete_paroi(inco, fac1, fac1,fac3, signe);*/ \
-              /*cerr<<"coin "<<fac1<<" "<<fac3<<" "<<signe<<endl;*/
+              /*Cerr<<"coin "<<fac1<<" "<<fac3<<" "<<signe<<finl;*/
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
               flux=flux_evaluateur.secmem_arete_paroi( fac1, fac2, fac3, signe);
               resu[fac3]+=signe*flux;
-              /*cerr<<"coin "<<fac1<<" "<<fac2<<" "<<fac3<<" "<<signe << " " << flux<<endl;*/
+              /*Cerr<<"coin "<<fac1<<" "<<fac2<<" "<<fac3<<" "<<signe << " " << flux<<finl;*/
             }
           break;
         case TypeAreteCoinVDF::FLUIDE_PAROI:
@@ -1532,7 +1532,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins( DoubleTab&
                 fac1 = Qdm(n_arete,i);
                 signe = 1;
                 flux=flux_evaluateur.flux_arete_paroi( fac1, fac1,fac3, signe);*/
-              /*cerr<<"coin2 "<<fac1<<" "<<fac3<<" "<<signe<<endl;*/
+              /*Cerr<<"coin2 "<<fac1<<" "<<fac3<<" "<<signe<<finl;*/
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
@@ -2451,7 +2451,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins(const DoubleTab& i
 template <class _TYPE_>
 void   T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins(const DoubleTab&, Matrice_Morse&,int ) const
 {
-  cerr<<"non code "<<endl;
+  Cerr<<"non code "<<finl;
   exit();
 }
 template <class _TYPE_>

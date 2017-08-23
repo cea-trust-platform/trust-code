@@ -47,7 +47,7 @@
 #ifdef _NO_SPARSKIT_
 static inline void ERREUR(char * msg)
 {
-  cerr << "SPARSKIT : " << msg << endl;
+  Cerr << "SPARSKIT : " << msg << finl;
   exit();
 }
 inline void F77NAME(ILUT)(const int* const a, const double* const b,

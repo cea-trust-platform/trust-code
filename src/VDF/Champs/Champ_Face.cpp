@@ -449,14 +449,14 @@ double Champ_Face_get_val_imp_face_bord_sym(const DoubleTab& tab_valeurs, const 
 // WEC : jamais appele !!
 double Champ_Face::val_imp_face_bord_private(int face,int comp1,int comp2) const
 {
-  Cerr << "Champ_Face::val_imp_face_bord(,,) exit" << endl;
+  Cerr << "Champ_Face::val_imp_face_bord(,,) exit" << finl;
   exit();
   return 0; // For compilers
 }
 
 double Champ_Face_get_val_imp_face_bord( const double& temp,int face,int comp, int comp2, const Zone_Cl_VDF& zclo)
 {
-  Cerr << "Champ_Face::val_imp_face_bord(,,) exit" << endl;
+  Cerr << "Champ_Face::val_imp_face_bord(,,) exit" << finl;
   Process::exit();
   return 0; // For compilers
 }

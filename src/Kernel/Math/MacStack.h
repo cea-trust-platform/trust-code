@@ -76,7 +76,7 @@
   {                                                                        \
     if ((top-base)==taille)                                                \
       {                                                                        \
-        cout << "Stack too small : one double the size !!" << endl;        \
+        std::cout << "Stack too small : one double the size !!" << std::endl;        \
         _TYPE_* tmp = new _TYPE_[2*taille];                                \
         for (int i=0;i<taille;i++)                                        \
           tmp[i] = base[i];                                                \
@@ -112,7 +112,7 @@
   {                                                                        \
     if ((top-base)==taille)                                                \
       {                                                                        \
-        cout << "Stack too small: one double the size !!" << endl;        \
+        std::cout << "Stack too small: one double the size !!" << std::endl;        \
         _TYPE_** tmp = new _TYPE_*[2*taille];                                \
         for (int i=0;i<taille;i++)                                        \
           tmp[i] = base[i];                                                \

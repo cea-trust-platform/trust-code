@@ -45,8 +45,8 @@ mon_main::mon_main(int verbose_level, int journal_master)
 {
   verbose_level_ = verbose_level;
   journal_master_ = journal_master;
-  // Creation d'un journal temporaire qui ecrit dans cerr
-  init_journal_file(verbose_level, 0 /* filename = 0 => cerr */, 0 /* append */);
+  // Creation d'un journal temporaire qui ecrit dans Cerr
+  init_journal_file(verbose_level, 0 /* filename = 0 => Cerr */, 0 /* append */);
   trio_began_mpi_=0;
 }
 
@@ -75,7 +75,7 @@ static int init_petsc(True_int argc, char **argv, int with_mpi,int& trio_began_m
       ierr=chdir(pwd);
       if (ierr)
         {
-          cerr << "Error on chdir into mon_main.cpp. Contact TRUST support." << endl;
+          Cerr << "Error on chdir into mon_main.cpp. Contact TRUST support." << finl;
           Process::exit();
         }
     }
@@ -154,7 +154,7 @@ void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int chec
     {
       if (!init_parallel_mpi(groupe_trio_))
         {
-          cerr << "MPI initialization failed (not compiled ?). Fatal." << endl;
+          Cerr << "MPI initialization failed (not compiled ?). Fatal." << finl;
           Process::exit();
         }
     }
@@ -172,7 +172,7 @@ void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int chec
   arguments_info += " processors\n";
 
   if (Process::je_suis_maitre())
-    cerr << arguments_info;
+    Cerr << arguments_info;
 }
 
 void mon_main::finalize()
@@ -267,9 +267,9 @@ void mon_main::dowork(const Nom& nom_du_cas)
   // on ne les charges que pour le cas nul, pour verifier avec valgrind
   if (Objet_U::nom_du_cas()=="nul")
     {
-      cerr<<"Chargement des modules:"<<endl;
+      Cerr<<"Chargement des modules:"<<finl;
 #include <instancie_appel_c.h>
-      cerr<<"Fin chargement des modules "<<endl;
+      Cerr<<"Fin chargement des modules "<<finl;
     }
 
   Cout<<"-------------------------------------------------------------------" << finl;

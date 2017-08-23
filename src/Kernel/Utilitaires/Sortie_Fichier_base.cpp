@@ -193,7 +193,7 @@ int Sortie_Fichier_base::ouvrir(const char* name,IOS_OPEN_MODE mode)
       if (error)
         {
           Cerr<<Process::me()<<name<<" strange :"<<__FILE__<<(int)__LINE__<<finl;
-          cerr<<name<<endl;
+          Cerr<<name<<finl;
           ::abort();
         }
 
@@ -221,8 +221,8 @@ int Sortie_Fichier_base::ouvrir(const char* name,IOS_OPEN_MODE mode)
   set_ostream(ofstream_);
   if (!ofstream_->good())
     {
-      cerr << "Error when opening the file " << name << endl;
-      cerr << "Check if this file can be opened." << endl;
+      Cerr << "Error when opening the file " << name << finl;
+      Cerr << "Check if this file can be opened." << finl;
       Process::exit();
     }
 

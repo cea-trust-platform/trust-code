@@ -93,7 +93,7 @@ Entree& Associer::interpreter(Entree& is)
   is >> nom1 >> nom2;
   if(is.eof())
     {
-      Cerr << "Reading problem in Associer" << endl;
+      Cerr << "Reading problem in Associer" << finl;
       exit();
     }
   Objet_U& ob1=objet(nom1);

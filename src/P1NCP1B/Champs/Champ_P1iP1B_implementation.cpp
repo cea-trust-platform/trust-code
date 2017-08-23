@@ -254,7 +254,7 @@ valeur_aux_sommets(const Domaine& dom,
         }
       else // nb_compo_ > 1
         {
-          Cerr << "Vous en etes deja la vous ?" << endl;
+          Cerr << "Vous en etes deja la vous ?" << finl;
           Process::exit();
         }
     }

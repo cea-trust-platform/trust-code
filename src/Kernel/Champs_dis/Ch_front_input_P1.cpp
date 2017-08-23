@@ -162,6 +162,6 @@ void Ch_front_input_P1::setValue(const TrioField& afield)
   //Cerr<<afield._nb_elems<<" cii "<<les_valeurs_som[1].valeurs().dimension(0)<<finl;
   for (int i=1; i<les_valeurs_som->nb_cases(); i++)
     Champ_Input_Proto::setValueOnTab(afield,les_valeurs_som[i].valeurs());
-  //Cout<<" IIIIIIII "<<les_valeurs_som[1].valeurs()<<endl;
+  //Cout<<" IIIIIIII "<<les_valeurs_som[1].valeurs()<<finl;
   Gpoint(afield._time1,afield._time2);
 }

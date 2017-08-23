@@ -26,7 +26,7 @@ Implemente_instanciable(Sous_zone_VF,"Sous_zone_VF",Sous_zone_dis_base);
 Sortie& Sous_zone_VF::printOn(Sortie& os) const
 {
 
-  Cerr << "Sous_zone_VF::printOn" << endl;
+  Cerr << "Sous_zone_VF::printOn" << finl;
 
   os << "les_faces : " << finl;
   les_faces_.ecrit(os);
@@ -46,7 +46,7 @@ Sortie& Sous_zone_VF::printOn(Sortie& os) const
 
 Entree& Sous_zone_VF::readOn(Entree& is)
 {
-  Cerr << "Sous_zone_VF::readOn" << endl;
+  Cerr << "Sous_zone_VF::readOn" << finl;
 
   les_faces_.lit(is);
   is >> premiere_face_bord_0_;

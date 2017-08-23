@@ -434,7 +434,7 @@ double Reaction::calcul_proportion_implicite(ArrOfDouble& C_temp,const ArrOfDoub
       //dmax=0;
 
     }
-  //  Cerr<<"convergence en  "<<ite <<" "<<dmax<<" "<<proportion_directe<<endl;
+  //  Cerr<<"convergence en  "<<ite <<" "<<dmax<<" "<<proportion_directe<<finl;
 
   return proportion;
 }

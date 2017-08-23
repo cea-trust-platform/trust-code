@@ -144,7 +144,7 @@ double Op_Dift_VDF_Multi_inco_Elem::calculer_dt_stab() const
   double alpha_local,h_x,h_y,h_z;
   if (!sub_type(Champ_Uniforme, diffusivite()))
     {
-      Cerr << "Error in Op_Dift_VDF_Multi_inco_Elem::calculer_dt_stab(): diffusivity must be of type Champ_Uniforme" << endl;
+      Cerr << "Error in Op_Dift_VDF_Multi_inco_Elem::calculer_dt_stab(): diffusivity must be of type Champ_Uniforme" << finl;
       exit();
     }
   double alpha_lam = max_array(alpha);

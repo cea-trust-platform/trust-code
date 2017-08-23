@@ -41,7 +41,7 @@ __typeTrio__::~__typeTrio__()
 
 extern "C" __type__* get__type__()
 {
-  //cerr<<"coucou get__type__"<<endl;
+  //Cerr<<"coucou get__type__"<<finl;
   __type__* T=new __typeTrio__;
   return T;
 }

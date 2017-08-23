@@ -137,8 +137,8 @@ void calc_sp_nouveau_3_vit(DoubleTab& vit_u, DoubleTab& vit_v, DoubleTab& vit_w,
 {
   //   Permet de calculer le spectre d energie a partir d un champ de vitesse
   //     exprime au sommet, sans correction pour la periodicite
-  /*   cerr << "COUCOU dans calc_sp_nouveau_3_vit" << flush; */
-  /*   cerr << "N = " << n << flush; */
+  /*   Cerr << "COUCOU dans calc_sp_nouveau_3_vit" << flush; */
+  /*   Cerr << "N = " << n << flush; */
   DoubleVect E(n);
   DoubleTab fft_u(n,n,n+2),fft_v(n,n,n+2),fft_w(n,n,n+2);
   DoubleVect EX(n),EY(n),EZ(n);
@@ -164,8 +164,8 @@ void calc_sp_operateur(DoubleTab& vit_u, DoubleTab& vit_v, DoubleTab& vit_w, int
 {
   //   Permet de calculer le spectre d energie a partir d un champ de vitesse
   //     exprime au sommet, sans correction pour la periodicite
-  /*   cerr << "COUCOU dans calc_sp_nouveau_3_vit" << flush; */
-  /*   cerr << "N = " << n << flush; */
+  /*   Cerr << "COUCOU dans calc_sp_nouveau_3_vit" << flush; */
+  /*   Cerr << "N = " << n << flush; */
   //  DoubleVect E(3*n*n);
   DoubleTab fft_u(n,n,n+2),fft_v(n,n,n+2),fft_w(n,n,n+2);
   DoubleVect EX(n),EY(n),EZ(n);

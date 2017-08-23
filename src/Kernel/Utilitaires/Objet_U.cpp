@@ -44,7 +44,7 @@ static int object_id_to_track = -1;
 //  Poser le breakpoint ici:
 static void object_trap(int obj_id)
 {
-  cerr << "Objet_U::Objet_U() : object_id_=" << obj_id << endl;
+  Cerr << "Objet_U::Objet_U() : object_id_=" << obj_id << finl;
 }
 
 // Description:

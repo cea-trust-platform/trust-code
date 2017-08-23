@@ -429,7 +429,7 @@ int Format_Post_Med::ecrire_domaine_med(const Domaine& domaine,const Nom& nom_fi
   s<<"domaine: "<<domaine.le_nom()<<finl;
   s<<"nb_proc: "<<Process::nproc()<<finl;
   ecr_med.ecrire_domaine(nom_fic,domaine,domaine.le_nom(),mode);
-  // Cerr<<"We want to postprocess with MED"<<domaine.le_nom()<<"end"<<endl;
+  // Cerr<<"We want to postprocess with MED"<<domaine.le_nom()<<"end"<<finl;
 
   s.flush();
   s.syncfile();

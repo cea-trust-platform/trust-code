@@ -42,7 +42,7 @@ public:
   };
   void tearDown()
   {
-    //cerr<<"ICI" <<endl;;
+    //Cerr<<"ICI" <<finl;;
   } ;
   void testConstructor()
   {

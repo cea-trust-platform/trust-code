@@ -288,7 +288,7 @@ DoubleTab& Champ_Inc_base::valeurs(double tps)
             }
         }
     }
-  Cerr << "ERROR : in Champ_Inc_base::valeurs(double), time " << tps << " not found, returns the present?" << endl;
+  Cerr << "ERROR : in Champ_Inc_base::valeurs(double), time " << tps << " not found, returns the present?" << finl;
   Cerr << "Contact TRUST support." << finl;
   exit();
   return valeurs();
@@ -507,11 +507,11 @@ void Champ_Inc_base::mettre_a_jour(double un_temps)
               return;
             }
         }
-      Cerr << "In Champ_Inc_base::mettre_a_jour(double), " << endl;
-      Cerr << "time " << un_temps << " not found in field " << le_nom() << endl;
-      Cerr << "The times available are :" << endl;
+      Cerr << "In Champ_Inc_base::mettre_a_jour(double), " << finl;
+      Cerr << "time " << un_temps << " not found in field " << le_nom() << finl;
+      Cerr << "The times available are :" << finl;
       for(int i=0; i<les_valeurs->nb_cases(); i++)
-        Cerr << "  " << les_valeurs[i].temps() << endl;
+        Cerr << "  " << les_valeurs[i].temps() << finl;
       exit();
     }
   // Champ a une seule valeur temporelle :

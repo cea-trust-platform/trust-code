@@ -65,7 +65,7 @@ ProblemTrio_V2::~ProblemTrio_V2()
 
 extern "C" Problem_V2* getProblem_V2()
 {
-  //cerr<<"coucou getProblem_V2"<<endl;
+  //Cerr<<"coucou getProblem_V2"<<finl;
   Problem_V2* T=new ProblemTrio_V2;
   return T;
 }

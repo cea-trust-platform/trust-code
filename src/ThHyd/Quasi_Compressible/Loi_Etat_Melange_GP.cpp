@@ -314,7 +314,7 @@ void Loi_Etat_Melange_GP::rabot(int futur)
           {
             if ( Y_i(elem)<0)
               {
-                Cerr<<" on rabote "<<endl;
+                Cerr<<" on rabote "<<finl;
                 Y_i(elem)=0.;
               }
 

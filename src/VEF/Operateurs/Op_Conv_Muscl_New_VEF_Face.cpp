@@ -2338,7 +2338,7 @@ void Op_Conv_Muscl_New_VEF_Face::completer()
   //     }
 
   //     if(!sous_zone) {
-  //       Cerr << "On ne trouve pas la sous_zone discretisee associee a " << nom_sous_zone << endl;
+  //       Cerr << "On ne trouve pas la sous_zone discretisee associee a " << nom_sous_zone << finl;
   //       Process::exit();
   //     }
 

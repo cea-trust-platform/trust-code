@@ -2461,7 +2461,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::completer()
 
           if(!trouve)
             {
-              Cerr << "On ne trouve pas la sous_zone discretisee associee a " << noms_ssz_alpha[i] << endl;
+              Cerr << "On ne trouve pas la sous_zone discretisee associee a " << noms_ssz_alpha[i] << finl;
               Process::exit();
             }
           const Sous_zone_VF& ssz=la_ssz.valeur();
@@ -2495,7 +2495,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::completer()
 
       if(!sous_zone)
         {
-          Cerr << "On ne trouve pas la sous_zone discretisee associee a " << nom_sous_zone << endl;
+          Cerr << "On ne trouve pas la sous_zone discretisee associee a " << nom_sous_zone << finl;
           Process::exit();
         }
 

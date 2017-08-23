@@ -57,7 +57,7 @@ Entree& Corriger_frontiere_periodique::interpreter_(Entree& is)
   if (nproc() > 1)
     {
       Cerr << "Error in Corriger_frontiere_periodique::interpreter():\n"
-           << " this function must be run in sequential before mesh splitting." << endl;
+           << " this function must be run in sequential before mesh splitting." << finl;
       barrier();
       exit();
     }

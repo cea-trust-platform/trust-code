@@ -130,7 +130,7 @@ Objet_U * O_U_Ptr::get_O_U_Ptr_check() const
           Cerr << "\n cle_           = " << cle_;
           Cerr << "\n ptr_object_id_ = " << ptr_object_id_;
           Cerr << "\n id             = " << id;
-          cerr << "\n &la_memoire().objet_u(cle_) = " << addr << endl;
+          std::cerr << "\n &la_memoire().objet_u(cle_) = " << addr << std::endl;
 
           // Si ca plante a cet endroit, c'est que l'objet en reference
           // a ete detruit et que la reference est encore utilisee.
@@ -164,7 +164,7 @@ int O_U_Ptr::check_O_U_Ptr_type(const Objet_U * ptr) const
       Cerr << " Pointer type " << le_type();
       Cerr << "\n cle_           = " << cle_;
       Cerr << "\n ptr_object_id_ = " << ptr_object_id_;
-      cerr << "\n &memoire.objet_u(cle_) = " << ptr;
+      std::cerr << "\n &memoire.objet_u(cle_) = " << ptr;
       Cerr << "\n Type accepted by the pointer : " << type_info_ptr.name();
       Cerr << "\n Object type in reference : " << type_info_obj.name();
       assert(0);

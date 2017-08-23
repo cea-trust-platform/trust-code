@@ -217,7 +217,7 @@ double Time::seconds_per_hardware_clock = 0;
 
 void Time::calibrate()
 {
-  cerr << "Time::calibrate() for 1 second\n";
+  Cerr << "Time::calibrate() for 1 second " << finl;
   timeval t_begin, now;
   Time ticks_begin, ticks_now;
 
@@ -235,8 +235,8 @@ void Time::calibrate()
   unsigned long long delta_ticks = ticks_now.time_ - ticks_begin.time_;
   seconds_per_hardware_clock = delta * 0.000001 / (double) delta_ticks;
 
-  cerr << " Result : hardware_clocks_per_second = ";
-  cerr << 1. / seconds_per_hardware_clock << "\n";
+  Cerr << " Result : hardware_clocks_per_second = ";
+  Cerr << 1. / seconds_per_hardware_clock << finl;
 }
 #endif
 
@@ -330,7 +330,7 @@ Statistiques::Statistiques()
 
 Statistiques::~Statistiques()
 {
-  //cerr << "Stat::~Stat called !!!\n";
+  //Cerr << "Stat::~Stat called !!! " << finl;
   delete stat_internals;
   stat_internals = 0;
 }

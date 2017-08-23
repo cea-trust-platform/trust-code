@@ -75,7 +75,7 @@ Memoire& Memoire::Instance()
 Memoire::Memoire() : size(step), data(new Memoire_ptr[step]),
   trav_double(new Double_ptr_trav()), trav_int(new Int_ptr_trav())
 {
-  // cerr << "prems="<<prems<<" step="<<step<<endl;
+  // Cerr << "prems="<<prems<<" step="<<step<<finl;
   for(int i=prems; i<size; i++)
     data[i].next=i+1;
   //   minfo = mallinfo();
@@ -163,7 +163,7 @@ int Memoire::add(Objet_U* obj)
 // Postcondition:
 int Memoire::suppr(int num)
 {
-  //   cerr << "Suppression de " << num << endl;
+  //   Cerr << "Suppression de " << num << finl;
   assert(!data[num].libre());
   data[num].next=prems;
   prems=num;
@@ -179,17 +179,18 @@ int Memoire::suppr(int num)
     if (compteur >500) deb=1;
     if ((deb)&&(compteur<3))
     {
-    cerr<<"here "<<compteur<<endl;
+    Cerr<<"here "<<compteur<<finl;
 
     int i;
     for(i=0; i<size; i++)
     if(! data[i].libre())
     {
-    cerr << "\n " << i << " ";
+    Cerr << finl;
+    Cerr << i << " ";
     const Objet_U& obj=objet_u(i);
-    cerr << " :: ";
-    cerr << "TYPE :" << obj.le_type()<<endl;
-    if(sub_type(Nom,obj)) cerr << " NAME : " << obj.le_nom() <<endl;
+    Cerr << " :: ";
+    Cerr << "TYPE :" << obj.le_type()<<finl;
+    if(sub_type(Nom,obj)) Cerr << " NAME : " << obj.le_nom() <<finl;
 
     }
     }
@@ -199,7 +200,7 @@ int Memoire::suppr(int num)
 
   if (compteur==0)
     {
-      //cerr<<"delete data"<<endl;
+      //Cerr<<"delete data"<<finl;
       if (data)
         {
           delete[] data;
@@ -302,10 +303,10 @@ Objet_U& Memoire::objet_u(int num)
   const int num_obj = objet.numero();
   if (num_obj != num)
     {
-      cerr << "Error in Objet_U & Memoire::objet_u(int num)\n";
-      cerr << " num                       = " << num << "\n";
-      cerr << " data[num].o_ptr           = " << &objet << "\n";
-      cerr << " data[num].o_ptr->numero() = " << num_obj << "\n";
+      Cerr << "Error in Objet_U & Memoire::objet_u(int num) " << finl;
+      Cerr << " num                       = " << num << finl;
+      std::cerr << " data[num].o_ptr           = " << &objet << std::endl;
+      Cerr << " data[num].o_ptr->numero() = " << num_obj << finl;
       assert(0);
       Process::exit();
     }
@@ -338,10 +339,10 @@ const Objet_U& Memoire::objet_u(int num) const
   const int num_obj = objet.numero();
   if (num_obj != num)
     {
-      cerr << "Error in const Objet_U & Memoire::objet_u(int num)\n";
-      cerr << " num                       = " << num << "\n";
-      cerr << " data[num].o_ptr           = " << &objet << "\n";
-      cerr << " data[num].o_ptr->numero() = " << num_obj << "\n";
+      Cerr << "Error in const Objet_U & Memoire::objet_u(int num) " << finl;
+      Cerr << " num                       = " << num << finl;
+      std::cerr << " data[num].o_ptr           = " << &objet << std::endl;
+      Cerr << " data[num].o_ptr->numero() = " << num_obj << finl;
       assert(0);
       Process::exit();
     }
@@ -374,10 +375,10 @@ Objet_U* Memoire::objet_u_ptr(int num)
   const int num_obj = objet.numero();
   if (num_obj != num)
     {
-      cerr << "Error in Objet_U * Memoire::objet_u(int num)\n";
-      cerr << " num                       = " << num << "\n";
-      cerr << " data[num].o_ptr           = " << &objet << "\n";
-      cerr << " data[num].o_ptr->numero() = " << num_obj << "\n";
+      Cerr << "Error in Objet_U * Memoire::objet_u(int num) " << finl;
+      Cerr << " num                       = " << num << finl;
+      std::cerr << " data[num].o_ptr           = " << &objet << std::endl;
+      Cerr << " data[num].o_ptr->numero() = " << num_obj << finl;
       assert(0);
       Process::exit();
     }
@@ -410,10 +411,10 @@ const Objet_U* Memoire::objet_u_ptr(int num)const
   const int num_obj = objet.numero();
   if (num_obj != num)
     {
-      cerr << "Error in const Objet_U * Memoire::objet_u(int num)\n";
-      cerr << " num                       = " << num << "\n";
-      cerr << " data[num].o_ptr           = " << &objet << "\n";
-      cerr << " data[num].o_ptr->numero() = " << num_obj << "\n";
+      Cerr << "Error in const Objet_U * Memoire::objet_u(int num) " << finl;
+      Cerr << " num                       = " << num << finl;
+      std::cerr << " data[num].o_ptr           = " << &objet << std::endl;
+      Cerr << " data[num].o_ptr->numero() = " << num_obj << finl;
       assert(0);
       Process::exit();
     }
@@ -438,9 +439,9 @@ const Objet_U* Memoire::objet_u_ptr(int num)const
 // Postcondition:
 void Memoire::compacte()
 {
-  //   cerr << "On compacte la memoire " << endl;
-  //   cerr << "size prems " << size << " " << prems << endl;
-  //   cerr << "avant" << endl;
+  //   Cerr << "On compacte la memoire " << finl;
+  //   Cerr << "size prems " << size << " " << prems << finl;
+  //   Cerr << "avant" << finl;
   int i, compte=0;
   int* newnum=new int[size];
   if(!newnum)
@@ -474,8 +475,8 @@ void Memoire::compacte()
   for(i=0; i<size; i++)
     data[i].next=i+1;
   verifie();
-  //   cerr << "la memoire est compactee" << endl;
-  //   cerr << "size prems " << size << " " << prems << endl;
+  //   Cerr << "la memoire est compactee" << finl;
+  //   Cerr << "size prems " << size << " " << prems << finl;
 }
 
 
@@ -554,7 +555,7 @@ int Memoire::verifie() const
         {
           if ((data[i].obj()).numero() != i)
             {
-              cerr << "ERROR at the square " << i << endl ;
+              Cerr << "ERROR at the square " << i << finl;
               imprime();
               Process::exit();
             }
@@ -592,7 +593,7 @@ Sortie& operator << (Sortie& os, const Memoire& mem)
   for(i=0; i<mem.size; i++)
     if(! mem.data[i].libre()) tmp++;
   os << "\n il y a " << mem.size << " cases memoires";
-  os << "\n dont " << tmp << " ==(const char*)" << compteur << " sont occupees" << endl;
+  os << "\n dont " << tmp << " ==(const char*)" << compteur << " sont occupees" << finl;
   for(i=0; i<mem.size; i++)
     if(! mem.data[i].libre())
       {
@@ -654,11 +655,11 @@ Sortie& operator << (Sortie& os, const Memoire& mem)
         total += tmp;
         os.flush();
       }
-  os << "Taille memoire max: " <<  max_sz_mem << endl;
-  os << "Taille memoire min: " <<  min_sz_mem << endl;
-  os << "Taille memoire occupee en Mo: " <<  (max_sz_mem-min_sz_mem)/1024/1024 << endl;
+  os << "Taille memoire max: " <<  max_sz_mem << finl;
+  os << "Taille memoire min: " <<  min_sz_mem << finl;
+  os << "Taille memoire occupee en Mo: " <<  (max_sz_mem-min_sz_mem)/1024/1024 << finl;
 
-  return os << "Occupation taille memoire totale en Mo: " << total/1024/1024 << endl;
+  return os << "Occupation taille memoire totale en Mo: " << total/1024/1024 << finl;
 }
 
 
@@ -690,10 +691,11 @@ Memoire::~Memoire()
       for(i=0; i<size; i++)
         if(! data[i].libre())
           {
-            cerr << "\n " << i << " ";
+            Cerr << finl;
+            Cerr << i << " ";
             const Objet_U& obj=objet_u(i);
-            cerr << " :: ";
-            cerr << "TYPE :" << obj.le_type()<<endl;
+            Cerr << " :: ";
+            Cerr << "TYPE :" << obj.le_type() << finl;
           }
 
       delete[] data;
@@ -701,10 +703,10 @@ Memoire::~Memoire()
       delete trav_int;
       data=0;
     }
-  cerr << "Memory destruction \n";
-  cerr << "Max Memory Size : " << max_sz_mem << endl;
-  cerr << "Memory size min : " << min_sz_mem << endl;
-  cerr << "Memory size used in Ko : " << (max_sz_mem-min_sz_mem)/1024 << endl;
+  Cerr << "Memory destruction " << finl;
+  Cerr << "Max Memory Size : " << max_sz_mem << finl;
+  Cerr << "Memory size min : " << min_sz_mem << finl;
+  Cerr << "Memory size used in Ko : " << (max_sz_mem-min_sz_mem)/1024 << finl;
   Process::exit();
 }
 

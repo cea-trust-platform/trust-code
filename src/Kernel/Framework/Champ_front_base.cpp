@@ -218,7 +218,7 @@ const Zone_dis_base& Champ_front_base::zone_dis() const
 int Champ_front_base::avancer(double temps)
 {
   Cerr << "Champ_front_base::avancer(double temps) should be overloaded"
-       << endl;
+       << finl;
   exit();
   return 0;
 }
@@ -242,7 +242,7 @@ int Champ_front_base::avancer(double temps)
 int Champ_front_base::reculer(double temps)
 {
   Cerr << "Champ_front_base::reculer(double temps) should be overloaded "
-       << "by " << que_suis_je() << endl;
+       << "by " << que_suis_je() << finl;
   exit();
   return 0;
 }

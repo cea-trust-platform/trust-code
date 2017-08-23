@@ -508,7 +508,7 @@ void Tetraedriser_homogene_compact::trianguler(Zone& zone) const
       les_elems.ref(new_elems);
 
       // Reconstruction de l'octree
-      Cerr << "We have split the cubes..." << endl;
+      Cerr << "We have split the cubes..." << finl;
       zone.invalide_octree();
       zone.typer("Tetraedre");
 

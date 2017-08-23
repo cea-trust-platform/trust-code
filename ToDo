@@ -1,19 +1,21 @@
 Version	Qui				Tache
-1.7.6   adrien.bruneton@cea.fr  Voir avec equipe TrioCFD : a request for a tutorial case for Nucleate boiling (cf DI 4309)
+1.7.6   adrien.bruneton@cea.fr  Voir avec equipe TrioCFD : Quelle reponse donne a l indien ? a request for a tutorial case for Nucleate boiling (ref DI 4309)
 1.7.6   celine.capitaine@cea.fr Reprendre cas test ICoCo avec puissance thermique non constante (cf DI 4307)
 1.7.6   adrien.bruneton@cea.fr  Voir avec equipe TrioCFD le plugin VisIt sur le calcul de la norme d un champ moyenne (cf DI 4305)
+1.7.6   celine.capitaine@cea.fr Tester Python 2.7.6 et cmake/3.4.1 sur callisto => montee de version de ces pre-requis pour TRUST 1.7.6 ? (cf DI 4304)
 1.7.6   stephane.veys@cea.fr    Voir si compare_lata.cpp peut etre utilise sur maillage interfaces dans FTD (cf DI 4303)
 1.7.6   adrien.bruneton@cea.fr  Estimer la charge d un dev pour possibilite de bords periodiques sur 1/4 cylindre par ex (ref DI 4302)
 1.7.6   celine.capitaine@cea.fr Voir avec equipe TrioCFD si baltik k_omega repris ? (ref DI 4298)
+1.7.6   marthe.roux@cea.fr      Tester l ajout de 2 colonnes (surface et densite) avant la derniere colonne (puissance) (cf DI 4296)
 1.7.6   celine.capitaine@cea.fr Tester portabilite TRUST sur Debian9 : is229952 ? (cf DI 4293)
-1.7.6   marthe.roux@cea.fr      Commencer a regarder pour deboguer (cf DI 4289)
+1.7.6   marthe.roux@cea.fr      Regarder pour bloquer le cas avec 2 blocs stat dans un meme post (cf DI 4289)
 1.7.6   stephane.veys@cea.fr    Estimer la charge d un dev si le pb moyenne avec bloc statistiques_en_serie est un bug (cf DI 4289)
-1.7.6   celine.capitaine@cea.fr Commencer a regarder pour deboguer (cf DI 4287)
+1.7.6   celine.capitaine@cea.fr Tester et deboguer le cas test avec schema muscl sur flux sur CL (cf DI 4287)
 1.7.6   stephane.veys@cea.fr    Estimer la charge d un dev du bug avec schema muscl sur flux sur CL (cf DI 4287)
 1.7.6   celine.capitaine@cea.fr Voir avec equipe TrioCFD si baltiks CEG et Free_Slip integrables ? (ref DI 4286)
-1.7.6   marthe.roux@cea.fr      Commencer a regarder pour deboguer (cf DI 4282)
-1.7.6   adrien.bruneton@cea.fr  Estimer la charge d un dev pour verifier et valider fraction massique QC en VEF (cf DI 4282)
-1.7.6   stephane.veys@cea.fr    Voir avec equipe TrioCFD pour validation fraction massique en VEF (cf DI 4282)
+1.7.6   celine.capitaine@cea.fr Tester et deboguer le cas test avec fraction massique QC en VEF (ref DI 4282)
+1.7.6   adrien.bruneton@cea.fr  Estimer la charge d un dev pour verifier et valider fraction massique QC en VEF (ref DI 4282)
+1.7.6   stephane.veys@cea.fr    Voir avec equipe TrioCFD pour validation fraction massique en VEF (ref DI 4282)
 1.7.6   celine.capitaine@cea.fr Voir avec equipe TrioCFD si ajout fiche prm Baglietto suite echange mail avec Ulrich 21/07/17 ? (ref DI 4272)
 1.7.6   stephane.veys@cea.fr    Estimer la charge d un dev si le pb d'analyse de taux de cisaillement via probes et fields est un bug (ref DI 4271)
 1.7.6   stephane.veys@cea.fr    Voir si champ predefini comme vitessex peut etre utilise dans definition_champs (cf DI 4262)
@@ -22,13 +24,18 @@ Version	Qui				Tache
 1.7.6   stephane.veys@cea.fr    Decision si baltik MG integrable a TRUST ? (ref DI 4211)
 1.7.6   stephane.veys@cea.fr    Voir avec equipe TrioCFD pour baltik loi_rho_T  (cf DI 4206)
 1.7.6   adrien.bruneton@cea.fr  Poursuivre la mise a jour du fichier suppressions Valgrind tant que erreurs dans atelier NUIT (ref DI 4204)
+1.7.6   stephane.veys@cea.fr    Voir avec equipe TrioCFD pour suivre residu de turbulence en norme L2 (cf DI 4191)
 1.7.6   marthe.roux@cea.fr      Recuperer fiche prm quand elle sera finie et validee par TrioCFD puis l integrer a TRUST (cf DI 4182)
 1.7.6   celine.capitaine@cea.fr Compilation de WIZARD et PLOT2D sur cobalt (cf DI 4159)
 1.7.6   stephane.veys@cea.fr    Voir avec equipe TrioCFD pour Benchmarck GEMIX (cf DI 4146)
+1.7.6   celine.capitaine@cea.fr Tester methode de fiche prm surface interne pour sortir le debit sur cas test de cette DI (cf DI 4127)
+1.7.6   marthe.roux@cea.fr      Faire synthese sur l utilisation et verification des resultats de composante_normale sur cas en VDF et VEF (cf DI 4127)
 1.7.6   stephane.veys@cea.fr    Comment utiliser composante_normale ? Est ce a proposer aux utilisateurs ? (cf DI 4127)
 1.7.6   adrien.bruneton@cea.fr  Reprendre interface TRUST Petsc avant passage a Petsc v3.7 (cf DI 4123)
 1.7.6   marthe.roux@cea.fr      Finir fiche prm avec pression pour mi aout (cf DI 4122)
-1.7.6   marthe.roux@cea.fr      Tester EF_stb_ech_ext_imp en parallele avec TRUST 1.7.5 (cf DI 4118)
+1.7.6   celine.capitaine@cea.fr Deboguer TrioCFD/Rayonnement_Cuve_2D pour obtenir memes resultats en sequentiel et en parallele (cf DI 4120)
+1.7.6   celine.capitaine@cea.fr Deboguer TrioCFD/CouplagePb1Pb2_VEF_turbulent pour obtenir memes resultats en sequentiel et en parallele (cf DI 4119)
+1.7.6   marthe.roux@cea.fr      Deboguer EF_stb_ech_ext_imp pour obtenir memes resultats en sequentiel et en parallele (cf DI 4118)
 1.7.6   stephane.veys@cea.fr    Voir equipe TrioCFD pour baltik TRUST avec loi Darcy (ref DI 4109)
 1.7.6   stephane.veys@cea.fr    Decision si baltik gradV VDF integrable a TRUST ? (ref DI 4094)
 1.7.6   stephane.veys@cea.fr    Ajout d un passif - traitement CEA a l epoque par Gauthier (cf DI 4076)
@@ -47,7 +54,6 @@ Version	Qui				Tache
 1.7.6   triou@cea.fr            Tester salome 8.3.0 et non plus 8.2.0
 1.7.6   triou@cea.fr            Reprendre les fichiers license.txt dans le build...
 1.7.6   triou@cea.fr            Ajout mode gui via portabilite baltik pour check
-1.7.6   triou@cea.fr            Remplacer endl par finl dans src
 1.7.6   triou@cea.fr            Nettoyage variable env ... exemple $DEBUG ... si utilise passer en TRUST_DEBUG sinon supprimer
 1.7.6   marthe.roux@cea.fr      Nouvelles publications sur le site http://www-trio-u.cea.fr : ajout d un article de Guillaume ; cf mail de triou du 21 aout
 1.7.6   gauthier.fauchet@cea.fr Est-ce normal qu il n y a pas de dossier /data/tmptrust/tmptrust/main_Validation175/TRUST/ ? Merci.

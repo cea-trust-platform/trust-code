@@ -148,7 +148,7 @@ void Domaine_dis::discretiser(const Nom& type_1)
       if (z==nombre_de_zones())
         {
           Cerr << "In Domaine_dis::discretiser, impossible to find a "
-               << "zone_dis corresponding to sous_zone " << i << endl;
+               << "zone_dis corresponding to sous_zone " << i << finl;
           exit();
         }
       const Zone_dis& la_zone_dis=zone_dis(z);
@@ -165,7 +165,7 @@ void Domaine_dis::discretiser(const Nom& type_1)
             {
               Cerr << "Domaine_dis::discretiser : there is no sub-areas discretized "
                    << "for discretized areas which not deriving from Zone_VF : "
-                   << la_zone_dis.valeur().que_suis_je() << endl;
+                   << la_zone_dis.valeur().que_suis_je() << finl;
               exit();
             }
         }

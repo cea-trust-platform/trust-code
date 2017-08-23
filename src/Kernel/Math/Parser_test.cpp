@@ -58,7 +58,7 @@ public:
   };
   void tearDown()
   {
-    //cerr<<"ICI" <<endl;;
+    //Cerr<<"ICI" <<finl;
   } ;
   void test_expr_sol( Nom* expr_sol,int  nb_expr)
   {

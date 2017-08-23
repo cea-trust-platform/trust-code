@@ -28,7 +28,7 @@ void SChaine::self_test()
 {
   char *toto =new char[100];
   strcpy(toto,"toto");
-  (*this)<<toto<<endl;
+  (*this)<<toto<<finl;
   Nom titi(toto);
   (*this)<<titi;
   double t=0.1;
@@ -37,14 +37,14 @@ void SChaine::self_test()
 
   //  int es=ostream_p->pcount();
   const char* s=get_str();
-  cerr<<"there"<<s<<endl;
+  Cerr<<"there"<<s<<finl;
   (*this)<<"tutu"<<finl;
   (*this)<<"tralala"<<finl;
   const char* s2=get_str();
-  cerr<<strlen(s2);
+  std::cerr<<strlen(s2);
 
-  cerr<<"HERE"<<s2<<endl;
-  //cerr<<"FIN"<<endl;
+  Cerr<<"HERE"<<s2<<finl;
+  //Cerr<<"FIN"<<finl;
   const char *ref="toto\ntoto0.1tutu\ntralala\n";
   EChaine test(s2);
   if ((strcmp(test.get_str(),ref))!=0)

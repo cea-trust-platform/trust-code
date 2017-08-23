@@ -136,7 +136,7 @@ int StringTokenizer::nextToken(void)
   tmp=find_sep(reste, type_sep, length);
   if (tmp == NULL)
     {
-      //cout << "Fin ? " << reste << endl;
+      //Cout << "Fin ? " << reste << finl;
       if (reste[0] == '\0')
         {
           type = EOS;
@@ -216,7 +216,7 @@ int StringTokenizer::nextToken(void)
                   nextToken();
                   if (type != NUMBER)
                     {
-                      Cerr << "Error while interpreting the string " << str << endl;
+                      Cerr << "Error while interpreting the string " << str << finl;
                       Process::exit();
                     }
                   nval_tmp*=pow(10,-nval);
@@ -226,7 +226,7 @@ int StringTokenizer::nextToken(void)
                   nextToken();
                   if (type != NUMBER)
                     {
-                      Cerr << "Error while inetrpreting the string " << str << endl;
+                      Cerr << "Error while inetrpreting the string " << str << finl;
                       Process::exit();
                     }
                   nval_tmp*=pow(10.,nval);
@@ -243,7 +243,7 @@ int StringTokenizer::nextToken(void)
                 }
               else
                 {
-                  Cerr << "Error while interpreting the string " << str << endl;
+                  Cerr << "Error while interpreting the string " << str << finl;
                   Process::exit();
                 }
             }
@@ -358,23 +358,23 @@ char* StringTokenizer::find_sep(char* ch, int& type_sep, int& length)
   //String s("23+34*12-13+COS ( 12 )* 2^3");
   String2 s("2+3");
   StringTokenizer tk(s);
-  cout << StringTokenizer::NUMBER << endl;
-  cout << StringTokenizer::EOS << endl;
-  cout << StringTokenizer::STRING << endl;
+  Cout << StringTokenizer::NUMBER << finl;
+  Cout << StringTokenizer::EOS << finl;
+  Cout << StringTokenizer::STRING << finl;
 
   while (tk.nextToken()!=StringTokenizer::EOS)
   {
   if (tk.type == StringTokenizer::STRING)
   {
-  cout << "String = " << tk.getSValue() << endl;
+  Cout << "String = " << tk.getSValue() << finl;
   }
   else if (tk.type == StringTokenizer::NUMBER)
   {
-  cout << "Value = " << tk.getNValue() << endl;
+  Cout << "Value = " << tk.getNValue() << finl;
   }
   else
   {
-  cout << "Operator = " << (char) tk.type << endl;
+  Cout << "Operator = " << (char) tk.type << finl;
   }
   }
   }

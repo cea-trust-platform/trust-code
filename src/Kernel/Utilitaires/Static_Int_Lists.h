@@ -39,7 +39,7 @@ class VECT(ArrOfInt);
 //   // On affecte une valeur au deuxieme element de la premiere liste:
 //   l.set_value(0,1,765);
 //   // Affiche la valeur
-//   cout << l(0,1);
+//   Cout << l(0,1);
 class Static_Int_Lists
 {
 public:

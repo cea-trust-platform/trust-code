@@ -215,7 +215,7 @@ void Zones::comprimer()
     {
       if (curseur1->les_elems().size()==0)
         {
-          //cerr << &(curseur1.valeur()) << endl;
+          //Cerr << &(curseur1.valeur()) << finl;
           suppr(curseur1.valeur());
           curseur1=*this;
         }

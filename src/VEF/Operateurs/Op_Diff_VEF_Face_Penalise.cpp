@@ -566,7 +566,7 @@ element_commun(const int& Face1,const int& Face2) const
 
   Cerr << " Op_Diff_VEF_Face_Penalise::element_commun()" << finl;
   Cerr << "Attention: la face " << Face1 << " et la face " << Face2
-       << "n'ont pas d'element commun" << endl;
+       << "n'ont pas d'element commun" << finl;
   Cerr << "Je sors de elements_communs" << finl;
   return -1;
 

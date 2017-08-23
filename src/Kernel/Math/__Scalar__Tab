@@ -999,49 +999,49 @@ int DoubleTab::inverse_LU(const ArrOfDouble& b, ArrOfDouble& solution)
 
   int cvg = (*this).decomp_LU(n,index,lu_dec);
 
-  //   cout<<"##DecompositionLU : origine"<<endl;
+  //   Cout<<"##DecompositionLU : origine"<<finl;
   //   int i,j;
   //   for (i=0;i<n;i++)
   //     {
   //       for (j=0;j<n;j++)
   //         {
-  //           cout<<"  "<<(*this)(i,j);
+  //           Cout<<"  "<<(*this)(i,j);
   //         }
-  //       cout<<endl;
+  //       Cout<<finl;
   //     }
-  //   cout<<"##DecompositionLU : L"<<endl;
+  //   Cout<<"##DecompositionLU : L"<<finl;
   //   for (i=0;i<n;i++)
   //     {
   //       for (j=0;j<i;j++)
   //         {
-  //           cout<<"  "<<lu_dec(i,j);
+  //           Cout<<"  "<<lu_dec(i,j);
   //         }
-  //       cout<<"  1.00000e+00";
+  //       Cout<<"  1.00000e+00";
   //       for (j=i+1;j<n;j++)
   //         {
-  //           cout<<"  0.00000e+00";
+  //           Cout<<"  0.00000e+00";
   //         }
-  //       cout<<endl;
+  //       Cout<<finl;
   //     }
-  //   cout<<"##DecompositionLU : U"<<endl;
+  //   Cout<<"##DecompositionLU : U"<<finl;
   //   for (i=0;i<n;i++)
   //     {
   //       for (j=0;j<i;j++)
   //         {
-  //           cout<<"  0.00000e+00";
+  //           Cout<<"  0.00000e+00";
   //         }
   //       for (j=i;j<n;j++)
   //         {
-  //           cout<<"  "<<lu_dec(i,j);
+  //           Cout<<"  "<<lu_dec(i,j);
   //         }
-  //       cout<<endl;
+  //       Cout<<finl;
   //     }
 
   if(cvg == 1)
     {
       lu_dec.resoud_LU(n,index,b,solution);
     }
-  //   cout<<"Convergence decomposition matrice : "<<cvg<<endl;
+  //   Cout<<"Convergence decomposition matrice : "<<cvg<<finl;
 
   return cvg;
 }
@@ -1071,10 +1071,10 @@ int DoubleTab::decomp_LU(int n, ArrOfInt& index, DoubleTab& matLU)
               big = temp;
             }
         }
-      //       cout<<"decomp_LU big "<<big<<endl;
+      //       Cout<<"decomp_LU big "<<big<<finl;
       if (big == 0)
         {
-          Cerr <<"Singular matrix in LU decomposition"<<endl;
+          Cerr <<"Singular matrix in LU decomposition"<<finl;
           cvg = 0;
           exit();
         }

@@ -207,7 +207,7 @@ bool Sch_CN_iteratif::iterateTimeStep(bool& converged)
       if (je_suis_maitre())
         {
           fic << " facsec= " << facsec_
-              << " result= CONVERGENCE" << endl;
+              << " result= CONVERGENCE" << finl;
         }
       fic.close();
       return true;
@@ -220,7 +220,7 @@ bool Sch_CN_iteratif::iterateTimeStep(bool& converged)
       if (je_suis_maitre())
         {
           fic << " facsec= " << facsec_
-              << " result= DIVERGENCE" << endl;
+              << " result= DIVERGENCE" << finl;
         }
       return false;
     }
@@ -232,7 +232,7 @@ bool Sch_CN_iteratif::iterateTimeStep(bool& converged)
       if (je_suis_maitre())
         {
           fic << " facsec= " << facsec_
-              << " result= NON_CONVERGENCE" << endl;
+              << " result= NON_CONVERGENCE" << finl;
         }
       return false;
     }
@@ -241,7 +241,7 @@ bool Sch_CN_iteratif::iterateTimeStep(bool& converged)
   if (je_suis_maitre())
     {
       fic << " facsec= " << facsec_
-          << " result= CONTINUE" << endl;
+          << " result= CONTINUE" << finl;
     }
   return true;
 }
@@ -349,7 +349,7 @@ bool Sch_CN_iteratif::iterateTimeStepOnEquation(int i,bool& converged)
 // Ce serait une boucle de IterateTimeStepOnEquation
 int Sch_CN_iteratif::faire_un_pas_de_temps_eqn_base(Equation_base&)
 {
-  Cerr << "Sch_CN_iteratif::faire_un_pas_de_temps_eqn_base non code!" << endl;
+  Cerr << "Sch_CN_iteratif::faire_un_pas_de_temps_eqn_base non code!" << finl;
   exit();
   return 0;
 }

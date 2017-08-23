@@ -793,7 +793,7 @@ int Champ_base::calculer_valeurs_som_post(DoubleTab& les_valeurs,int nb_som,Nom&
     char* theValue = getenv("TRUST_POST_SOM_SYMETRIE_ERREUR");
     if (theValue != NULL)
       {
-        Cerr<<"results depend on order of bc or faces in bc ..."<<endl;
+        Cerr<<"results depend on order of bc or faces in bc ..."<<finl;
         old_traitement_symetrie=1;
       }
   }

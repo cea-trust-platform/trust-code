@@ -98,7 +98,7 @@ Entree& Loi_Paroi_Nu_Impose_VEF::readOn(Entree& s)
           break;
         default : // non compris
           Cerr << "Mot cle \"" << motlu << "\" non compris lors de la lecture d'un "
-               << que_suis_je() << endl;
+               << que_suis_je() << finl;
           exit();
         }
       s >> motlu;
@@ -107,13 +107,13 @@ Entree& Loi_Paroi_Nu_Impose_VEF::readOn(Entree& s)
   // Verification de la coherence
   if (nusselt_ok==-1)
     {
-      Cerr << "Il faut definir l'expression nusselt(Re,Pr)" << endl;
+      Cerr << "Il faut definir l'expression nusselt(Re,Pr)" << finl;
       exit();
     }
 
   if (diam_hydr->nb_comp()!=1)
     {
-      Cerr << "Il faut definir le champ diam_hydr a une composante" << endl;
+      Cerr << "Il faut definir le champ diam_hydr a une composante" << finl;
       exit();
     }
   return s;

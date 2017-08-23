@@ -59,7 +59,7 @@ void Source_Echange_Th_VDF::associer_zones(const Zone_dis& zone_dis,
   /*
     Cerr << "hello" << finl;
     Cerr << "iter.non_nul()=" << iter.non_nul() << finl;
-    Cerr << "hello" << endl;
+    Cerr << "hello" << finl;
   */
   iter->associer_zones(zvdf, zclvdf);
 
@@ -85,7 +85,7 @@ void Source_Echange_Th_VDF::associer_pb(const Probleme_base& pb)
       }
   if (!eq_OK)
     {
-      Cerr << "Source_Echange_Th_VDF is not coupled to a problem solving temperature." << endl;
+      Cerr << "Source_Echange_Th_VDF is not coupled to a problem solving temperature." << finl;
       exit();
     }
   eval.associer_champs(rho,le_Cp,equation().inconnue(), eqn->inconnue(),h);

@@ -96,7 +96,7 @@ Objet_U * Deriv_::typer(const char* type)
   const Type_info& type_base = get_info_ptr();
   if ( get_O_U_Ptr())
     {
-      //cerr<<"on avait deja typer ???"<<endl;
+      //Cerr<<"on avait deja typer ???"<<finl;
       detach();
     }
   Objet_U * instance = 0;

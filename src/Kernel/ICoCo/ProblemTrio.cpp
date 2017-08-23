@@ -64,7 +64,7 @@ ProblemTrio::~ProblemTrio()
 
 extern "C" Problem* getProblem()
 {
-  //cerr<<"coucou getProblem"<<endl;
+  //Cerr<<"coucou getProblem"<<finl;
   Problem* T=new ProblemTrio;
   return T;
 }

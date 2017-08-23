@@ -532,7 +532,7 @@ DoubleTab Zone_VF::normalized_boundaries_outward_vector(int global_face_number, 
 
 void Zone_VF::marquer_faces_double_contrib(const Conds_lim& conds_lim)
 {
-  Journal() << " Zone_VF::marquer_faces_double_contrib" << endl;
+  Journal() << " Zone_VF::marquer_faces_double_contrib" << finl;
   faces_doubles_.resize_array(nb_faces());
   // marquage des faces periodiques
   ////////////////////////////////////////////////

@@ -164,7 +164,7 @@ int htoi(const char * szChaine)
     }
   // Liberation de la chaine allouee
   free (szHexaString);
-  //cerr << lResult << endl;
+  //Cerr << lResult << finl;
   return lResult;
 }
 
@@ -176,7 +176,7 @@ inline void va_a_la_parenthese_fermante(EFichier& fic)
     {
       fic >> lu;
       const char* chaine = lu.getChar();
-      Process::Journal()<<"|"<<chaine<<"|"<<endl;
+      Process::Journal()<<"|"<<chaine<<"|"<<finl;
       int iLength = strlen(chaine);
       for (int i=0; i<iLength; i++)
         {

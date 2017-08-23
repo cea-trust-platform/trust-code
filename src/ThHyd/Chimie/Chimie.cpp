@@ -46,7 +46,7 @@ Implemente_vect(REF(Champ_Inc_base));
 Sortie& Chimie::printOn(Sortie& os) const
 {
   os<<(*this).le_nom()<<finl;
-  os<<reactions_<<endl;
+  os<<reactions_<<finl;
   return os;
 }
 

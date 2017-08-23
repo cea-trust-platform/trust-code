@@ -41,19 +41,19 @@ static const char directory_separator = '/';
 extern void desalloue_pwd();
 void usage()
 {
-  cerr << "usage:\n";
-  cerr << "TRUST_EXECUTABLE [CASE[.data]] [options]\n";
-  cerr << " CASE is the basename of the trust data file (must have .data extension)\n";
-  cerr << "   If no CASE given, the current directory name is used\n";
-  cerr << " -help_trust => print options\n";
-  cerr << " -mpi => run in parallel with MPI (must run with mpirun)\n";
-  cerr << " -check_enabled=0|1  => enables or disables runtime checking of parallel messages\n";
-  cerr << " -debugscript=SCRIPT => execute \"SCRIPT n\" after parallel initialisation, n=processor rank\n";
-  cerr << " -petsc=0            => disable call to PetscInitialize\n";
-  cerr << " -journal=0..9       => select journal level (0=disable, 9=maximum verbosity)\n";
-  cerr << " -journal_master     => only master processor writes a journal\n";
-  cerr << " -disable_ieee       => Disable the detection of NaNs.\n";
-  cerr << endl;
+  Cerr << "usage:\n";
+  Cerr << "TRUST_EXECUTABLE [CASE[.data]] [options]\n";
+  Cerr << " CASE is the basename of the trust data file (must have .data extension)\n";
+  Cerr << "   If no CASE given, the current directory name is used\n";
+  Cerr << " -help_trust => print options\n";
+  Cerr << " -mpi => run in parallel with MPI (must run with mpirun)\n";
+  Cerr << " -check_enabled=0|1  => enables or disables runtime checking of parallel messages\n";
+  Cerr << " -debugscript=SCRIPT => execute \"SCRIPT n\" after parallel initialisation, n=processor rank\n";
+  Cerr << " -petsc=0            => disable call to PetscInitialize\n";
+  Cerr << " -journal=0..9       => select journal level (0=disable, 9=maximum verbosity)\n";
+  Cerr << " -journal_master     => only master processor writes a journal\n";
+  Cerr << " -disable_ieee       => Disable the detection of NaNs.\n";
+  Cerr << finl;
   Process::exit();
 }
 
@@ -137,7 +137,7 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
           int level = atoi(argv[i]+9);
           if (level < 0 || level > 9)
             {
-              cerr << "Bad journal level : " << argv[i] << endl;
+              Cerr << "Bad journal level : " << argv[i] << finl;
               //        error = 1;
             }
           else
@@ -181,7 +181,7 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
                 }
               else
                 {
-                  cerr << "Bad number of processors in old syntax TRUST case N" << endl;
+                  Cerr << "Bad number of processors in old syntax TRUST case N" << finl;
                   //error = 1;
                 }
             }
@@ -195,8 +195,8 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
                       EFichier fic(fichier);
                       if(fic.fail())
                         {
-                          cerr << "Trying to open file " << fichier << endl;
-                          cerr << "File " << fichier << " doesnt exist !" << endl;
+                          Cerr << "Trying to open file " << fichier << finl;
+                          Cerr << "File " << fichier << " doesnt exist !" << finl;
                           Process::exit();
                         }
                       else
@@ -211,13 +211,13 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
         {
           //error = 1;
         }
-      //if (i==1) cerr << "Arguments lus: " << argv[0];
-      //cerr << " " << argv[i];
+      //if (i==1) Cerr << "Arguments lus: " << argv[0];
+      //Cerr << " " << argv[i];
       /* PL: Je desactive car MPICH rajoute des arguments derriere le nombre de processeurs:
          ... TRUST_mpich_opt jdd 2 -p4pg .../PINNNN -p4wd pathname
          if (error) {
-         cerr << "TRUST error processing command line, argument " << i << " : \n "
-         << argv[i] << endl;
+         Cerr << "TRUST error processing command line, argument " << i << " : \n "
+         << argv[i] << finl;
          usage();
          } */
     }
@@ -260,8 +260,8 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
       {
         exec_script += " ";
         exec_script += Nom(Process::me());
-        cerr << "[" << Process::me() << "] Debug mode => execute command : " << exec_script << endl;
-        cerr << system(exec_script) << endl;
+        Cerr << "[" << Process::me() << "] Debug mode => execute command : " << exec_script << finl;
+        Cerr << system(exec_script) << finl;
       }
 
     if (master)
@@ -270,12 +270,12 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
 
         // On affiche le resultat de la ligne de commande ici pour ne pas remplir stderr
         // avec tous les processeurs...
-        cerr << arguments_info;
+        Cerr << arguments_info;
 
         if (nproc != -1 && Process::nproc() != nproc)
           {
-            cerr << "Error: nproc on command line does not match mpirun parameter.\n"
-                 << " Use same number or -mpi parameter instead." << endl;
+            Cerr << "Error: nproc on command line does not match mpirun parameter.\n"
+                 << " Use same number or -mpi parameter instead." << finl;
             usage();
           }
       }

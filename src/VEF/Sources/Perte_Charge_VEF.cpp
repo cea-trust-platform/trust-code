@@ -40,7 +40,7 @@ Perte_Charge_VEF::Perte_Charge_VEF():implicite_(1) { }
 
 Sortie& Perte_Charge_VEF::printOn(Sortie& s ) const
 {
-  return s << que_suis_je() << endl;
+  return s << que_suis_je() << finl;
 }
 
 // readOn
@@ -264,7 +264,7 @@ void Perte_Charge_VEF::completer()
 
       if(!sous_zone)
         {
-          Cerr << "On ne trouve pas la sous_zone discretisee associee a " << nom_sous_zone << endl;
+          Cerr << "On ne trouve pas la sous_zone discretisee associee a " << nom_sous_zone << finl;
           exit();
         }
     }

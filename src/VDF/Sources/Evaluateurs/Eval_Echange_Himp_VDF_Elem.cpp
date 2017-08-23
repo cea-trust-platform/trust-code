@@ -28,14 +28,14 @@ void Eval_Echange_Himp_VDF_Elem::associer_champs(const Champ_Don& ch_rho,
                                                  const Champ_Don& Cp,const Champ_Inc& tc, const Champ_Inc& tv,
                                                  const double dh)
 {
-  cerr << rho_cst << " " << Cp_cst << endl;
+  Cerr << rho_cst << " " << Cp_cst << finl;
   this->rho=ch_rho;
   rho_cst=sub_type(Champ_Uniforme,ch_rho.valeur())?true:false;
   rho_=ch_rho(0,0);
   this->champ_Cp_=Cp;
   Cp_cst=sub_type(Champ_Uniforme,Cp.valeur())?true:false;
   Cp_=Cp(0,0);
-  cerr << rho_cst << " " << Cp_cst << endl;
+  Cerr << rho_cst << " " << Cp_cst << finl;
   this->h_ = dh;
   T = tc;
   T_voisin = tv;

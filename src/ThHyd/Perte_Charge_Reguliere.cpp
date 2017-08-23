@@ -185,7 +185,7 @@ Entree& Perte_Charge_Reguliere::lire_donnees(Entree& is)
           break;
         default:
           h0=-1;
-          Cerr << "DIR vaut 0 pour tube // OX ; 1 pour un tube // OY et 2 pour un tube // OZ " << endl;
+          Cerr << "DIR vaut 0 pour tube // OX ; 1 pour un tube // OY et 2 pour un tube // OZ " << finl;
           Process::exit();
         }
       is >> motlu;

@@ -693,7 +693,7 @@ inline integer F77NAME(IDAMAX)(const integer *n,
 // .DESCRIPTION
 static inline void ERREUR(const char* const ch)
 {
-  //        cerr << ch << endl;
+  //        Cerr << ch << finl;
   exit();
 }
 

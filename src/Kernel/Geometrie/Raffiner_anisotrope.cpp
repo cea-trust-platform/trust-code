@@ -141,9 +141,9 @@ void Raffiner_anisotrope::Raffiner_anisotrope_(Zone& zone)
 
       // Reconstruction de l'octree
       if (dimension == 2)
-        Cerr << "We have split the triangles ..." << endl;
+        Cerr << "We have split the triangles ..." << finl;
       else
-        Cerr << "We have split the tetrahedra ..." << endl;
+        Cerr << "We have split the tetrahedra ..." << finl;
       zone.invalide_octree();
 
       Cerr<<"END of Raffiner_anisotrope..."<<finl;

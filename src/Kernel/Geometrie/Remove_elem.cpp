@@ -79,7 +79,7 @@ Entree& Remove_elem::interpreter_(Entree& is)
       f.addVar("z");
       f.parseString();
       f_ok=1;
-      Cerr << " Ok" << endl;
+      Cerr << " Ok" << finl;
     }
 
   Scatter::uninit_sequential_domain(domaine());

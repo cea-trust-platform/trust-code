@@ -367,7 +367,7 @@ int OctreeLoc::direction(double x, double y, double z) const
   if( !(x<xmil) && !(y<ymil) && !(z<zmil))
     return DroitAvantHaut;
 
-  cerr << "Error in OctreeLoc::direction" << endl;
+  Cerr << "Error in OctreeLoc::direction" << finl;
   Process::exit();
   return -1;
 }
@@ -890,7 +890,7 @@ void Octree::construire(int nb_octrees, const ArrOfInt& Tab,
               les_octrees[i]=new OctreeFloor(this, SousTab[i], loci);
             }
         }
-      //Cerr << "On continue dans cette direction" << endl;
+      //Cerr << "On continue dans cette direction" << finl;
     }
 }
 

@@ -384,7 +384,7 @@ void Raccord_distant_homogene::initialise(const Frontiere& opposed_boundary, con
                       Recep(ind_face)=p;
                       racc_vois[p].append_array(ind_face2);
                       temoin=1;
-                      //cerr << "[" << Process::me() << "] Find remote face " << ind_face2 << " for local face ind_face " << ind_face << endl;
+                      //Cerr << "[" << Process::me() << "] Find remote face " << ind_face2 << " for local face ind_face " << ind_face << finl;
                       break;
                     }
                 }

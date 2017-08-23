@@ -605,8 +605,8 @@ DoubleVect& calcul_longueur_filtre(DoubleVect& longueur_filtre, const Motcle& me
     }
   else
     {
-      Cerr << "calcul_longueur_filtre.cpp n'a pas reconnu l'argument : " << methode << endl;
-      Cerr << "les arguments possibles sont : \"volume\", \"volume_sans_lissage\", \"Scotti\", \"arete\"." << endl;
+      Cerr << "calcul_longueur_filtre.cpp n'a pas reconnu l'argument : " << methode << finl;
+      Cerr << "les arguments possibles sont : \"volume\", \"volume_sans_lissage\", \"Scotti\", \"arete\"." << finl;
       Process::exit();
 
     }

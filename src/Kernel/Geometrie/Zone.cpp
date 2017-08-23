@@ -71,7 +71,7 @@ template<class LIST_FRONTIERE> void check_frontiere(const LIST_FRONTIERE& list, 
   int n = list.size();
   if (! is_parallel_object(n))
     {
-      Cerr << " Fatal error: processors don't have the same number of boundaries " << msg << endl;
+      Cerr << " Fatal error: processors don't have the same number of boundaries " << msg << finl;
       Process::barrier();
       Process::exit();
     }
@@ -81,7 +81,7 @@ template<class LIST_FRONTIERE> void check_frontiere(const LIST_FRONTIERE& list, 
       Cerr << "  Boundary " << msg << " : " << nom << finl;
       if (! is_parallel_object(nom))
         {
-          Cerr << " Fatal error: processors don't have the same number of boundaries " << msg << endl;
+          Cerr << " Fatal error: processors don't have the same number of boundaries " << msg << finl;
           Process::barrier();
           Process::exit();
         }
