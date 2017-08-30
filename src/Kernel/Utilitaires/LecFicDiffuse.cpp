@@ -47,11 +47,10 @@ LecFicDiffuse::LecFicDiffuse()
 //  doit etre appelee sur tous les processeurs. En cas
 //  d'echec : exit()
 LecFicDiffuse::LecFicDiffuse(const char* name,
-                             bool apply_verification,
                              IOS_OPEN_MODE mode)
 {
   file_.set_error_action(ERROR_CONTINUE);
-  int ok = ouvrir(name, apply_verification, mode);
+  int ok = ouvrir(name, mode);
   if (!ok && Process::je_suis_maitre())
     {
       Cerr << "File " << name << " does not exist (LecFicDiffuse)" << finl;
@@ -63,12 +62,11 @@ LecFicDiffuse::LecFicDiffuse(const char* name,
 //  par tous les processeurs du groupe.
 // Valeur de retour: 1 si ok, 0 sinon
 int LecFicDiffuse::ouvrir(const char* name,
-                          bool apply_verification,
                           IOS_OPEN_MODE mode)
 {
   int ok = 0;
   if(Process::je_suis_maitre())
-    ok = file_.ouvrir(name, apply_verification, mode);
+    ok = file_.ouvrir(name, mode);
   envoyer_broadcast(ok, 0);
   return ok;
 }

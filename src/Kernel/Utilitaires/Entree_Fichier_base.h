@@ -50,7 +50,7 @@ public:
   void close();
 
 
-  virtual int ouvrir(const char* name, bool apply_verification=true, IOS_OPEN_MODE mode=ios::in);
+  virtual int ouvrir(const char* name, IOS_OPEN_MODE mode=ios::in);
 
   int eof();
   int fail();

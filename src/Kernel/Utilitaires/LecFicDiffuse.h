@@ -44,8 +44,8 @@ class LecFicDiffuse : public Lec_Diffuse_base
   // le maitre lit le fichier et propage l'information
 public:
   LecFicDiffuse();
-  LecFicDiffuse(const char* name, bool apply_verification=true, IOS_OPEN_MODE mode=ios::in);
-  int ouvrir(const char* name, bool apply_verification=true, IOS_OPEN_MODE mode=ios::in);
+  LecFicDiffuse(const char* name, IOS_OPEN_MODE mode=ios::in);
+  int ouvrir(const char* name, IOS_OPEN_MODE mode=ios::in);
   virtual istream& get_istream();
   virtual const istream& get_istream() const;
   //Entree& get_entree_master();

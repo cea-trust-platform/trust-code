@@ -7,7 +7,7 @@ Parameters {
 
 Chapter {
 	title "How the option is verified"
-	description "The option no_verify is introduced to allow to read data files without checking obsolete keywords.It can be interesting when dealing with a very long data file."
+	description "The command-line option no_verify is introduced to allow to read data files without checking obsolete keywords.It can be interesting when dealing with a very long data file."
 	description " "
 	description " "
 	description "The usage is the following : trust MyJDD.data -no_verify."

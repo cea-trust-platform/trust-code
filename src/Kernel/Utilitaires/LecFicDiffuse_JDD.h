@@ -44,10 +44,12 @@ class LecFicDiffuse_JDD : public Lec_Diffuse_base
   // le maitre lit le fichier et propage l'information
 public:
   LecFicDiffuse_JDD();
-  LecFicDiffuse_JDD(const char* name, bool apply_verification=true, IOS_OPEN_MODE mode=ios::in );
-  int ouvrir(const char* name, bool apply_verification=true, IOS_OPEN_MODE mode=ios::in );
+  LecFicDiffuse_JDD(const char* name, IOS_OPEN_MODE mode=ios::in, bool apply_verification=true);
+  int ouvrir(const char* name, IOS_OPEN_MODE mode=ios::in );
   Entree& get_entree_master();
 protected:
   EChaine chaine_;
+  ///! whether obsolete keywords should be checked or not. True by default.
+  bool apply_verif;
 };
 #endif

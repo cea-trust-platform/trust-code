@@ -303,7 +303,7 @@ void mon_main::dowork(const Nom& nom_du_cas)
       {
         Cerr << "MAIN: Checking data file for matching { and }" << finl;
         {
-          LecFicDiffuse_JDD verifie_entree(nomentree, apply_verification_);
+          LecFicDiffuse_JDD verifie_entree(nomentree, ios::in, apply_verification_);
           interprete_principal_.interpreter_bloc(verifie_entree,
                                                  Interprete_bloc::FIN /* on attend FIN a la fin */,
                                                  1 /* verifie_sans_interpreter */);
@@ -311,7 +311,7 @@ void mon_main::dowork(const Nom& nom_du_cas)
       }
     Cerr << "MAIN: Reading and executing data file" << finl;
     {
-      LecFicDiffuse_JDD lit_entree(nomentree, apply_verification_);
+      LecFicDiffuse_JDD lit_entree(nomentree, ios::in, apply_verification_);
       lit_entree.set_check_types(1);
       interprete_principal_.interpreter_bloc(lit_entree,
                                              Interprete_bloc::FIN /* on attend FIN a la fin */,
