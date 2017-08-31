@@ -1,0 +1,25 @@
+Parameters {
+        Title "Check no_verify option"
+	Description "This is to check no_verify option."
+        Author "Stephane Veys"
+        TestCase . no_verify.data
+}
+
+Chapter {
+	title "How the option is verified"
+	description "The command-line option no_verify is introduced to allow to read data files without checking obsolete keywords.It can be interesting when dealing with a very long data file."
+	description " "
+	description " "
+	description "The usage is the following : trust MyJDD.data -no_verify."
+	description " "
+	description " "
+	description "The special obsolete keyword Read_MED_For_Testing_No_Verify_Option, that is equivalent to Read_MED keyword, was introduced in order to check the good behavior of this option."
+	description "The test consists in reading a MED file using the obsolete keyword Read_MED_For_Testing_No_Verify_Option. First, the data file is read whithout the option no_verify so TRUST detects the obsolete keywords and stops the run. Then the option no_verify is used and all is ok."
+}
+
+Chapter {
+	title "Results"
+	description include_text_file("my_text1")
+	description include_text_file("my_text2")
+}
+

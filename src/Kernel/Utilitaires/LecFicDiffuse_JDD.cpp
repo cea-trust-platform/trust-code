@@ -40,7 +40,8 @@ Sortie& LecFicDiffuse_JDD::printOn(Sortie& s) const
   return s;
 }
 
-LecFicDiffuse_JDD::LecFicDiffuse_JDD()
+LecFicDiffuse_JDD::LecFicDiffuse_JDD() :
+  apply_verif(true)
 {
   // file_.set_error_action(ERROR_CONTINUE);
 }
@@ -49,7 +50,9 @@ LecFicDiffuse_JDD::LecFicDiffuse_JDD()
 //  doit etre appelee sur tous les processeurs. En cas
 //  d'echec : exit()
 LecFicDiffuse_JDD::LecFicDiffuse_JDD(const char* name,
-                                     IOS_OPEN_MODE mode)
+                                     IOS_OPEN_MODE mode,
+                                     bool apply_verification) :
+  apply_verif(apply_verification)
 {
 
   //file_.set_error_action(ERROR_CONTINUE);
@@ -164,7 +167,8 @@ int LecFicDiffuse_JDD::ouvrir(const char* name,
           else
             {
               prov<<motlu<<" ";
-              verifie(motlu);
+              if( apply_verif )
+                verifie(motlu);
             }
           file_>>motlu;
         }

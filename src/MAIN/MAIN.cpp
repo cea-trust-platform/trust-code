@@ -53,6 +53,7 @@ void usage()
   Cerr << " -journal=0..9       => select journal level (0=disable, 9=maximum verbosity)\n";
   Cerr << " -journal_master     => only master processor writes a journal\n";
   Cerr << " -disable_ieee       => Disable the detection of NaNs.\n";
+  Cerr << " -no_verify          => Disable the call to verifie function (from Type_Verifie) to catch outdated keywords while reading data file.\n";
   Cerr << finl;
   Process::exit();
 }
@@ -84,6 +85,7 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
   int journal_master = 0;
   int helptrust = 0;
   int ieee = 1;              // 1 => use of feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
+  bool apply_verification = true;
   Nom data_file;
   data_file = "";
   Nom exec_script;
@@ -109,6 +111,11 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
         {
           with_mpi = 1;
           arguments_info += "-mpi => parallel computation with mpi\n";
+        }
+      else if (strcmp(argv[i], "-no_verify") == 0)
+        {
+          apply_verification = false;
+          arguments_info += "-no_verify => Disable the call to verifie function (from Type_Verifie) to catch outdated keywords while reading data file.\n";
         }
       else if (strcmp(argv[i], "-check_enabled=1") == 0)
         {
@@ -240,7 +247,7 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
     // .. et demarrage du journal
     // (tout ce qu'on veut faire en commun avec l'interface python doit etre
     //  mis dans mon_main)
-    main_process=new  mon_main(verbose_level, journal_master);
+    main_process=new  mon_main(verbose_level, journal_master, apply_verification);
 
     main_process->init_parallel(argc, argv, with_mpi, check_enabled, with_petsc);
 

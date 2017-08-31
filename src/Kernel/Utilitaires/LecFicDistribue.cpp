@@ -74,7 +74,7 @@ LecFicDistribue::~LecFicDistribue()
 // Exception:
 // Effets de bord:
 // Postcondition:
-LecFicDistribue::LecFicDistribue(const char* name,IOS_OPEN_MODE mode)
+LecFicDistribue::LecFicDistribue(const char* name, IOS_OPEN_MODE mode)
 {
   LecFicDistribue::ouvrir(name, mode);
 }
@@ -105,7 +105,7 @@ LecFicDistribue::LecFicDistribue(const char* name,IOS_OPEN_MODE mode)
 // Exception:
 // Effets de bord:
 // Postcondition:
-int LecFicDistribue::ouvrir(const char* name,IOS_OPEN_MODE mode)
+int LecFicDistribue::ouvrir(const char* name, IOS_OPEN_MODE mode)
 {
   Nom nom_fic(name);
   if(Process::nproc()>1)

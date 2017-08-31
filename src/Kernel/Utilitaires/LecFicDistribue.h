@@ -46,9 +46,9 @@ class LecFicDistribue : public EFichier
 private :
   LecFicDistribue(int);
 public:
-  LecFicDistribue(const char* name,IOS_OPEN_MODE mode=ios::in);
+  LecFicDistribue(const char* name, IOS_OPEN_MODE mode=ios::in);
 
-  int ouvrir(const char* name,IOS_OPEN_MODE mode=ios::in);
+  int ouvrir(const char* name, IOS_OPEN_MODE mode=ios::in);
 
 
 protected:
