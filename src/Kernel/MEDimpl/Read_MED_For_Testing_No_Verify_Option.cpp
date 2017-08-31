@@ -24,8 +24,6 @@
 
 Implemente_instanciable(Read_MED_For_Testing_No_Verify_Option,"Read_MED_For_Testing_No_Verify_Option",LireMED);
 
-// XD Read_MED_For_Testing_No_Verify_Option LireMED Read_MED_For_Testing_No_Verify_Option -1 Dummy class to test no verify option
-
 Sortie& Read_MED_For_Testing_No_Verify_Option::printOn(Sortie& os) const
 {
   return LireMED::printOn(os);
