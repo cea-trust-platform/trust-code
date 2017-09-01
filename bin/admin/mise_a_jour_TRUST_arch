@@ -403,6 +403,9 @@ do
    #############
    # compilation
    #############
+   # export utiles si ce script est lance en soumission de job sur clusters dans le script envoie_TRUST_arch
+   export USE_MPIRUN=1
+   [ "$HOST" = curie-ccrt ] && export project="genden"
    # Changement option en -g -O3 afin d'utiliser cachegrind
    [ "`liste_machines "\-cachegrind" | grep ^$HOST_BUILD"\."`" != "" ] && echo $ECHO_OPTS "1,$ s?-O3?-g -O3?g\nw" | ed $TRUST_ROOT/env/make.linux_g++3_opt
    make
@@ -553,6 +556,7 @@ do
    echo "--------------------------------------------------------"
    echo "End compilations on $HOST_BUILD at "`date '+%H:%M:%S'` # Message important pour le run de Validation/Etudes 
    echo "--------------------------------------------------------"
+   export USE_MPIRUN=1
    # Remplissage des caracteristiques de la machine :
    echo "TRUST performance on $HOST_BUILD the `date` ...">$PERF
    echo "--------------------------------------------------------" >> $PERF
@@ -662,7 +666,7 @@ do
 	    # Passage d'un cas test du Kernel:
 	    cp $TRUST_TESTS/Reference/Kernel/Kernel.data exec_opt.data
 	    exec=$rep_dev/exec_opt/TRUST$COMM$OPT
-	    OK="KO" && rm -f err && [ -f $exec ] && trust exec_opt 1>atelier.log 2>&1 && OK=`$TRUST_Awk 'BEGIN {mes="KO"} /TEST_ATELIER_OK/ { mes="OK" } END {print mes}' atelier.log`
+	    OK="KO" && rm -f err && [ -f $exec ] && USE_MPIRUN=1 trust exec_opt 1>atelier.log 2>&1 && OK=`$TRUST_Awk 'BEGIN {mes="KO"} /TEST_ATELIER_OK/ { mes="OK" } END {print mes}' atelier.log`
 	    # On verifie qu'il est alle jusqu'a la fin aussi...
 	    [ "`grep 'Arret des processes.' atelier.log`" = "" ] && OK=KO
 	    # Nouveau test pour l'atelier, il doit etre capable de creer un objet partage pour certains projets Baltik
@@ -707,28 +711,26 @@ do
 	 ################################
 	 # On lance les tests sur Xprepro
 	 ################################
-	 (
-            echo "--------------------------------------------------------" 
-	    echo "Launch tests on XPREPRO at "`date '+%H:%M:%S'`
-	    Build=$TRUST_ROOT/build/Outils;
-            [ ! -d ${Build} ] && echo Creating ${Build} directory && mkdir -p ${Build};
-            rm -rf $Build/PRE_3DVDF;
-            cp -r $TRUST_ROOT/Outils/PRE_3DVDF $Build/.;
-            cd $Build/PRE_3DVDF;
-	    ./testfort2
-	 )	 	 
+         echo "--------------------------------------------------------" 
+	 echo "Launch tests on XPREPRO at "`date '+%H:%M:%S'`
+	 Build=$TRUST_ROOT/build/Outils;
+         [ ! -d ${Build} ] && echo Creating ${Build} directory && mkdir -p ${Build};
+         rm -rf $Build/PRE_3DVDF;
+         cp -r $TRUST_ROOT/Outils/PRE_3DVDF $Build/.;
+         cd $Build/PRE_3DVDF;
+	 ./testfort2
 	 ###################################################
 	 # On lance le test sur les assertions en mode debug
 	 ###################################################
-	 (
-            echo "--------------------------------------------------------" 
-	    echo "Launch test test_versions.sh at "`date '+%H:%M:%S'`
-            TMP_BUILD=`mktemp_ -d`
-	    cd $TMP_BUILD;
-	    $TRUST_ROOT/bin/admin/test_versions.sh
-	    cd $TRUST_ROOT
-            rm -r -f $TMP_BUILD
-	 )	 
+         echo "--------------------------------------------------------" 
+	 echo "Launch test test_versions.sh at "`date '+%H:%M:%S'`
+	 Build=$TRUST_ROOT/build/bin/admin;
+         [ ! -d ${Build} ] && echo Creating ${Build} directory && mkdir -p ${Build};
+         rm -rf $Build/assert;
+         mkdir -p $Build/assert;
+	 cd $Build/assert;
+	 $TRUST_ROOT/bin/admin/test_versions.sh
+	 cd $TRUST_ROOT
 	 ######################
 	 # Environnement BALTIK
 	 ######################
@@ -736,7 +738,7 @@ do
          echo "--------------------------------------------------------" 
 	 echo $ECHO_OPTS "Test of the baltik environment at "`date '+%H:%M:%S'`
 	 echo $ECHO_OPTS "BALTIK=\c"
-	 ./Test_baltik 1>Test_baltik.log 2>&1
+	 USE_MPIRUN=1 ./Test_baltik 1>Test_baltik.log 2>&1
 	 if [ $? = 0 ]
 	 then
 	    echo "OK"
@@ -848,7 +850,7 @@ do
          echo "--------------------------------------------------------" 
 	 echo "Start of launch $MODULE tests on $HOST_BUILD with `basename $lance_test_exec` at `date`..."
 	 echo "echo $NUM | lance_test $lance_test_exec"
-	 echo $NUM | lance_test $lance_test_exec 1>lance_test.log 2>&1
+	 export USE_MPIRUN=1 && echo $NUM | lance_test $lance_test_exec 1>lance_test.log 2>&1
 	 echo "End of launch $MODULE tests on $HOST_BUILD with `basename $lance_test_exec` at `date`..."
 	 
 	 ################################
@@ -909,29 +911,13 @@ do
 	 then
             echo "--------------------------------------------------------" 
             echo "Test of reprise_auto at `date '+%H:%M:%S'`"
-	    #log=$TRUST_ROOT/tests/Reference/Obstacle/test_reprise_auto.log
-  	    #cd $TRUST_ROOT/tests/Reference/Obstacle
-	    #rm -f $log
-	    #make_PAR.data Obstacle 1>$log 2>&1
-	    #echo $ECHO_OPTS "1,$ s?tmax 5.0?tmax 100.0?g\nw" | ed PAR_Obstacle.data 1>>$log 2>&1
-	    #trust -create_sub_file PAR_Obstacle 2 1>>$log 2>&1
-	    #reprise_auto -test 1>>$log 2>&1
-	    #sleep 1800 # Attente de 30mn que le calcul/reprise se finisse
-	    #cd test_reprise_auto 1>>$log 2>&1
-	    #if [ "`grep 'final time reached' PAR_Obstacle.err 2>/dev/null`" = "" ]
-	    #then
-            #   echo "Script reprise_auto KO"
-	    #   echo "final time reached no detecte in PAR_Obstacle.err:" >> $log
-	    #   cat PAR_Obstacle.err >> $log
-	    #   cat $log | mail_ -s\"[mise_a_jour_TRUST_arch] KO reprise_auto script on $HOST_BUILD\" $TRUST_MAIL
-            #else
-            #   echo "Script reprise_auto OK"
-            #fi
-            TMP_BUILD=`mktemp_ -d`
-	    cd $TMP_BUILD;
-	    $TRUST_ROOT/bin/admin/test_reprise_auto.sh
+	    Build=$TRUST_ROOT/build/bin/admin;
+            [ ! -d ${Build} ] && echo Creating ${Build} directory && mkdir -p ${Build};
+            rm -rf $Build/reprise_auto;
+            mkdir -p $Build/reprise_auto;
+	    cd $Build/reprise_auto;
+	    USE_MPIRUN=1 $TRUST_ROOT/bin/admin/test_reprise_auto.sh
 	    cd $TRUST_ROOT
-            rm -r -f $TMP_BUILD
 	 fi	 
 	 ########################################################
 	 # On verifie Run_fiche sur un nombre limite de machines:
@@ -954,8 +940,14 @@ do
 	    visit_erreur=`$TRUST_ROOT/exec/VisIt/bin/visit -help 1>/dev/null 2>&1;echo $?`
 	    if [ $visit_erreur = 0 ]
 	    then
-	       Run_fiche 1>$log 2>&1
-	       Run_fiche_KO=$?
+	       if [ "`liste_machines "\-benchmark" | grep ^$HOST_BUILD"\."`" != "" ] && [ "`grep $HOST $TRUST_ROOT/bin/reprise_auto | grep Supported`" != "" ]
+	       then
+	          echo "For the moment, Run_fiche is not launched with SLURM because sometimes there is blocking..." 1>$log 2>&1
+	          Run_fiche_KO=1
+	       else
+	          USE_MPIRUN=1 Run_fiche 1>$log 2>&1
+	          Run_fiche_KO=$?
+	       fi
 	    else
 	       echo "VisIt is not working under $TRUST_ROOT/Outils/VisIt" 1>$log 2>&1
 	       Run_fiche_KO=1
@@ -1066,4 +1058,5 @@ echo "--------------------------------------------------------------------------
 echo "End of update script on $HOST_BUILD at `date '+%H:%M:%S'`"
 echo "----------------------------------------------------------------------------"
 
-exit_ 0
+#exit_ 0
+exit 0

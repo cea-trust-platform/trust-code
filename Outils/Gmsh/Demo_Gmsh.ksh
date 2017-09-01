@@ -46,7 +46,7 @@ do
 # Lancement en batch de TRUST 
 
     echo $ECHO_OPTS "Running TRUST ....."
-    trust $pref 1>$pref.log 2>&1
+    USE_MPIRUN=1 trust $pref 1>$pref.log 2>&1
     if [ $? != 0 ]
     then
         tail -20 $pref.log

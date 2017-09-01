@@ -135,5 +135,5 @@ define_soumission_batch()
    [ "`basename $MPI_ROOT`" = mpich ] && mpirun="$Mpirun -np \$BRIDGE_MSUB_NPROC" # Try support of MVAPICH...
    sub=CCC
    #project="genden"
-   project=`ccc_myproject 2>/dev/null | $TRUST_Awk '/project/ {print $4;exit}'` # Add project
+   [ "$project" = "" ] && project=`ccc_myproject 2>/dev/null | $TRUST_Awk '/project/ {print $4;exit}'` # Add project
 }

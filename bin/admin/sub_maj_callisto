@@ -1,6 +1,6 @@
 #!/bin/bash 
 #SBATCH -J mise_a_jour_TRUST_arch
-#SBATCH -p slim
+#SBATCH -p slim,large,fat,eris,pluton
 #SBATCH --qos=normal
 #SBATCH -t 720
 #SBATCH -o /panfs/ixion/share/triou/myjob_callisto.%j.o

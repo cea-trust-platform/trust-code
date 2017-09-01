@@ -46,8 +46,16 @@ cat par
 rm -f EN_COURS
 cat par | mail_ -s "Bench_$HOST_BUILD" $TRUST_MAIL
 cat Run_bench.log | mail_ -s "Run_bench.log_$HOST_BUILD" $TRUST_MAIL
+
 # Creation d'un rapport PDF sur le speed up et la decomposition du temps CPU
-Run_fiche `[ "$NUIT" = "" ] && echo -xpdf`
+Run_fiche -post_run `[ "$NUIT" = "" ] && echo -xpdf`
+if [ -f `pwd`/build/rapport.pdf ]
+then
 echo "************************************************"
 echo "A PDF file is created with speed up plots there:"
 echo "`pwd`/build/rapport.pdf with speed up plots."
+else
+echo "************************************************"
+echo "The PDF file is NOT CREATED !!!"
+echo "See `pwd`/Run.log"
+fi

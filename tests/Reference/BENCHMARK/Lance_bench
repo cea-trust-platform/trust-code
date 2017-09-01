@@ -45,7 +45,6 @@ do
    cd PAR$nb_proc
    echo "# Script de calcul" > run
    echo "cd $ICI/PAR$nb_proc" >> run
-   echo "export prod=0" >> run
    #echo "trust bench1-$nb_proc `[ $nb_proc != 1 ] && echo $nb_proc` 1>bench1-$nb_proc.out 2>bench1-$nb_proc.err" >> run
    # Reduit le nombre de chances que l'on ne tourne pas sur les memes processeurs (frontale vs queue test)
    echo "trust bench1-$nb_proc $nb_proc 1>bench1-$nb_proc.out 2>bench1-$nb_proc.err" >> run

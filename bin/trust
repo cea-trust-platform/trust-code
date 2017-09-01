@@ -154,7 +154,7 @@ queue_choisie=""
 [ "$bigmem" = "" ] && bigmem=0
 gpu=0
 node=0
-USE_MPIRUN=0
+[ "$USE_MPIRUN" = "" ] && USE_MPIRUN=0
 
 ####################
 # Loop for options #
@@ -355,6 +355,8 @@ if [ $code_retour -eq 0 -o $code_retour -eq 1 ]
 then 
   [ ${#1} != 0 ] && [ ${1#-} = $1 ] && export NB_PROCS=$1 && USE_MPIRUN=1 && shift
 fi
+# verifie si le code est compile en parallele ou non
+[ "$TRUST_DISABLE_MPI" = 1 ] && [ "$USE_MPIRUN" = 1 ] && export USE_MPIRUN=0
 
 #################
 # PETSc options #
@@ -558,9 +560,9 @@ sub=""
 queue=""
 qos=""
 cpu=""
-project=""
 ram=""
 noeuds=""
+export project
 export prod
 export bigmem
 export node
@@ -662,6 +664,7 @@ then
 		[ "$cpus_per_task" != "" ] && echo "#SBATCH -c $cpus_per_task"	>> $sub_file	# Number of cores per task	
 		[ "$node" = 1 ] && echo "#SBATCH --exclusive"		>> $sub_file	# Exclusive use of nodes during production run	
 		[ "$ram" != "" ] && echo "#SBATCH --mem=$ram"           >> $sub_file    # Real memory required per node in MegaBytes
+		echo "set -x"				 		>> $sub_file 
 		echo "cd \$SLURM_SUBMIT_DIR" 				>> $sub_file    # Submit directory for reprise_auto script
 		;;
    	POE)
@@ -714,6 +717,7 @@ then
 		[ "$cpus_per_task" != "" ] && echo "#MSUB -c $cpus_per_task"	>> $sub_file
 		[ "$node" = 1 ] && echo "#MSUB -x"				>> $sub_file	# Exclusive use of nodes during production run	
 		[ "$ram" != "" ] && echo "#MSUB -M $ram" 			>> $sub_file 
+		echo "set -x"				 			>> $sub_file 
 		echo "cd \$BRIDGE_MSUB_PWD" 					>> $sub_file
  		;;
 	SGE)

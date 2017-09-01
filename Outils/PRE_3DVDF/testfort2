@@ -15,6 +15,7 @@ then
    echo $WISH Ok
 else
    echo $WISH KO , pb avec DISPLAY ?
+   echo "XPREPRO=KO" && exit -1
 fi
 #
 [ ! -f $exec ] && echo "$exec non existant." && exit -1
@@ -120,4 +121,10 @@ done
 # il en reste encore 1 
 rm -r -f $DIR/test $DIR/testref
 echo "See $log file if error."
+if  [ $errtot != 0 ]
+then
+   echo "XPREPRO=KO"
+else
+   echo "XPREPRO=OK"
+fi
 exit $errtot

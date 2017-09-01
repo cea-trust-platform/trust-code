@@ -767,7 +767,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_flux_bords(const DoubleTab& Kij, const D
 
       if ( sub_type(Dirichlet_homogene,la_cl.valeur()) )
         {
-          //On ne calcule pas le flux aux bords Periodique
+          //On ne calcule pas le flux aux bords Dirichlet_homogene
         }//fin du if sur "Dirichlet"
 
       else if ( sub_type(Neumann,la_cl.valeur())

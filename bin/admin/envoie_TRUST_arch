@@ -98,7 +98,7 @@ then
    fi
 fi
 # Versions distantes automatiquement effacees le vendredi soir
-[ "`date '+%u'`" -ge 5 ] && delete_version_machine_cible=1 && echo "We delete the version on the machines of type cible on Friday."
+[ "`date '+%u'`" -ge 5 ] &&  [ `date '+%H'` -ge 18 ] && delete_version_machine_cible=1 && echo "We delete the version on the machines of type cible on Friday."
 # Versions distantes ponctuellement effacees avec un "touch ~/delete_version_machine_cible"
 [ -f ~/delete_version_machine_cible ] && delete_version_machine_cible=1 && echo "We delete the version on the machines of type cible promptly." && rm -f ~/delete_version_machine_cible
 
@@ -246,23 +246,16 @@ do
 	       option="sh -xv "
                option=""
 	       # machine=$machine".bak" # Pourquoi CR_$machine est abime?
-	       #if [ `date '+%u'` -ge 5 ]
-	       #then
-	          # le vendredi soir on lance sur la frontale car encore des problemes avec lance_test en soumission de job
-	          ssh_command "export WORKBASE=$WORKBASE;cd $WORKDIR/$version/TRUST/bin/admin;$option./mise_a_jour_TRUST_arch -rsync 1>~/CR_$machine 2>&1" &
-	          echo "Launching in background the update by ssh on $log@$adr at "`date '+%H:%M:%S'`
-	       #else
-	          # On ne lance plus sur la frontale
-	       #   ssh_command "export WORKBASE=$WORKBASE;cd $WORKDIR/$version/TRUST/bin/admin;ccc_msub sub_maj_$machine" &
-	       #   echo "Launching in background the update by ssh then ccc_msub on $log@$adr at "`date '+%H:%M:%S'`
-	       #   echo "NO launching in background the update by ssh then KO on $log@$adr at "`date '+%H:%M:%S'`
-	       #fi
+	       # On ne lance plus sur la frontale
+	       ssh_command "export WORKBASE=$WORKBASE;cd $WORKDIR/$version/TRUST/bin/admin;ccc_msub sub_maj_$machine" &
+	       echo "Launching in background the update by ssh then ccc_msub on $log@$adr at "`date '+%H:%M:%S'`
 	    #elif [ "$machine" = callisto ]
 	    #then
 	    #   # On ne lance plus sur la frontale
 	    #   ssh_command "export WORKBASE=$WORKBASE;cd $WORKDIR/$version/TRUST/bin/admin;module load slurm;sbatch sub_maj_$machine" &
 	    #   echo "Launching in background the update by ssh then sbatch on $log@$adr at "`date '+%H:%M:%S'`
 	    else
+	       # On lance sur la frontale
 	       ssh_command "export WORKBASE=$WORKBASE;cd $WORKDIR/$version/TRUST/bin/admin;$option./mise_a_jour_TRUST_arch -rsync 1>~/CR_$machine 2>&1" &
 	       echo "Launching in background the update by ssh on $log@$adr at "`date '+%H:%M:%S'`
 	    fi
@@ -311,7 +304,7 @@ do
 	 # Creation eventuelle du lien:
 	 ssh_command '[ "$WORKDIR" != "" ] && [ "$WORKDIR" != "$HOME" ] && cd $HOME && rm -f '$version' && ln -sf $WORKDIR/'$version' .'
 	 
-	 # Lancement par ssh à partir de $HOMEDIR
+	 # Lancement par ssh a partir de $HOMEDIR
          ssh_command "export WORKBASE=$WORKBASE;./mise_a_jour_TRUST_arch -sftp 1>~/CR_$machine 2>&1" &
 	 echo "Launching in background the update by ssh on $log@$adr at "`date '+%H:%M:%S'`
 

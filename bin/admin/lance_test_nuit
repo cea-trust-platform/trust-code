@@ -1251,19 +1251,20 @@ echo $ECHO_OPTS "---------------------------------------------------------------
 echo $ECHO_OPTS "TRUST environment at Saclay:   source /home/triou/env_TRUST_$old.sh" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "TrioCFD environment at Saclay: source /home/triou/env_TrioCFD_$old.sh" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "User TRUST TrioCFD      diffusion list http://saxifrage:3500/wws/info/trio_u_annonces" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "Developer TRUST TrioCFD diffusion list http://saxifrage:3500/wws/info/trio_u_dev" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "User TRUST TrioMC2      diffusion list http://saxifrage:3500/wws/info/mc2_annonces" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "TRUST Kernel              mailing list http://saxifrage:3500/wws/info/trio_u_kernel" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "TRUST Post Processing     mailing list http://saxifrage:3500/wws/info/trio_u_post_traitement" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "TrioCFD Front Tracking    mailing list http://saxifrage:3500/wws/info/trio_u_front_tracking" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "User TRUST TrioCFD     diffusion list http://saxifrage:3500/wws/info/trio_u_annonces" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "Developer TRUST        diffusion list http://saxifrage:3500/wws/info/trio_u_dev" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "User TRUST TrioMC2     diffusion list http://saxifrage:3500/wws/info/mc2_annonces" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TRUST Kernel             mailing list http://saxifrage:3500/wws/info/trio_u_kernel" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TRUST Post Processing    mailing list http://saxifrage:3500/wws/info/trio_u_post_traitement" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TrioCFD Front Tracking   mailing list http://saxifrage:3500/wws/info/trio_u_front_tracking" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "TRUST ftp site:        ftp://$TRUST_FTP/$PUBLIC/index.html" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "TRUST documentation:   ftp://$TRUST_FTP/$PUBLIC/documentation" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "Latest Generic Guide:  ftp://$TRUST_FTP/$SECRET/doc/TRUST_Generic_Guide.pdf" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "Latest Tutorial:       ftp://$TRUST_FTP/$SECRET/doc/TRUST_tutorial.pdf" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "Latest list of builds: ftp://$TRUST_FTP/$SECRET/NUIT/NUIT.html" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "Latest TRUST binary:   ftp://$TRUST_FTP/$SECRET/exec/linux/TRUST_mpi_opt"_"$new"_build_"$DATE.gz" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TRUST ftp site:          ftp://$TRUST_FTP/$PUBLIC/index.html" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TRUST documentation:     ftp://$TRUST_FTP/$PUBLIC/documentation" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "Latest Generic Guide:    ftp://$TRUST_FTP/$SECRET/doc/TRUST_Generic_Guide.pdf" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "Latest Reference Manual: ftp://$TRUST_FTP/$SECRET/doc/TRUST_Reference_Manual.pdf" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "Latest Tutorial:         ftp://$TRUST_FTP/$SECRET/doc/TRUST_tutorial.pdf" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "Latest list of builds:   ftp://$TRUST_FTP/$SECRET/NUIT/NUIT.html" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "Latest TRUST binary:     ftp://$TRUST_FTP/$SECRET/exec/linux/TRUST_mpi_opt"_"$new"_build_"$DATE.gz" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 echo "Binaries of TRUST $new version are available here:" >> $MESSAGES_NUIT
 for adr in `liste_machines | grep -v is1 | grep -v is2 | grep -v cezanne`
@@ -1625,13 +1626,14 @@ echo "# Test the TRUST stability #"
 echo "############################"
 echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 fic_test=$TRUST_ROOT"/exec/.tests_TRUST"$COMM
-echo "Analysis of "$fic_test" file"
-grep "Successful tests cases" $fic_test
-echo " "
-fic_test=$TRUST_ROOT"/exec/.tests_TRUST"$COMM"_semi_opt"
-echo "Analysis of "$fic_test" file"
-grep "Successful tests cases" $fic_test
-echo " "
+rm -f tmp.log 
+echo "Analysis of "$fic_test" file" | tee -a tmp.log
+grep "Successful tests cases" $fic_test | tee -a tmp.log
+echo " " | tee -a tmp.log
+fic_test=$TRUST_ROOT"/exec/.tests_TRUST"$COMM"_semi_opt" | tee -a tmp.log
+echo "Analysis of "$fic_test" file" | tee -a tmp.log
+grep "Successful tests cases" $fic_test | tee -a tmp.log
+echo " " | tee -a tmp.log
 if [ -f $fic_test ]
 then
    stabilite=`$TRUST_Awk -F':' 'BEGIN {print "scale=3\n"} /Successful tests cases/ {print $2}' $fic_test | bc -l | sort -n | head -1`
@@ -1645,6 +1647,7 @@ then
    echo "Release criterion: Stability OK"
 else
    echo "Release criterion: Stability KO"
+   cat tmp.log | mail_ -s\"[lance_test_nuit] $rstab=$stabilite TRUST stability KO\" $TRUST_MAIL
 fi
 force_stabilite=~/force_stabilite && [ -f $force_stabilite ] && stabilite="1.000" && rm -f $force_stabilite
 echo `if [ "$stabilite" = "1.000" ]; then echo 1;else echo 0;fi`"  Stability $rstab=$stabilite (=1.000)" >> $MESSAGES_NUIT
@@ -1662,6 +1665,7 @@ echo "###############################"
 echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 echo "Analysis of $recupere_log file"
 grep "step TRUST" $recupere_log
+grep "step TRUST" $recupere_log | grep -v "1.000" > tmp.log
 echo "Analysis of $REP_NUIT/NUIT.html file"
 grep "Total number portability" $REP_NUIT/NUIT.html
 grep "TRUST portability" $REP_NUIT/NUIT.html
@@ -1676,6 +1680,7 @@ then
    echo "Release criterion: TRUST  OK"
 else
    echo "Release criterion: TRUST  KO"
+   cat tmp.log | mail_ -s\"[lance_test_nuit] TRUST portability KO on cible host:\" $TRUST_MAIL
 fi
 force_portabilite=~/force_portabilite && [ -f $force_portabilite ] && portabilite=1 && rm -f $force_portabilite
 limite=0.99 # cf recupere_TRUST_arch
@@ -1708,6 +1713,8 @@ then
    echo "Release criterion: Atelier OK"
 else
    echo "Release criterion: Atelier KO"
+   grep "ATELIER=KO" $REP_NUIT/CR_* > tmp.log
+   [ -s tmp.log ] && cat tmp.log | mail_ -s\"[lance_test_nuit] TRUST atelier KO on host:\" $TRUST_MAIL
 fi
 force_make_atelier=~/force_make_atelier && [ -f $force_make_atelier ] && workshop=1 && rm -f $force_make_atelier
 echo "$workshop  Atelier $port_atelier=$make_atelier (=1.000)" >> $MESSAGES_NUIT
@@ -1738,6 +1745,8 @@ then
    echo "Release criterion: Xprepro OK"
 else
    echo "Release criterion: Xprepro KO"
+   grep "XPREPRO=KO" $REP_NUIT/CR_* > tmp.log
+   [ -s tmp.log ] && cat tmp.log | mail_ -s\"[lance_test_nuit] XPREPRO KO on host:\" $TRUST_MAIL
 fi
 force_portabilite_Xprepro=~/force_portabilite_Xprepro && [ -f $force_portabilite_Xprepro ] && portabilite_Xprepro=1 && rm -f $force_portabilite_Xprepro
 echo "$portabilite_Xprepro  Xprepro $port_Xprepro=$Xprepro (>=1)" >> $MESSAGES_NUIT
@@ -1768,6 +1777,8 @@ then
    echo "Release criterion: Baltik  OK"
 else
    echo "Release criterion: Baltik  KO"
+   grep "BALTIK=KO" $REP_NUIT/CR_* > tmp.log
+   [ -s tmp.log ] && cat tmp.log | mail_ -s\"[lance_test_nuit] TRUST baltik KO on host:\" $TRUST_MAIL
 fi
 force_portabilite_baltik=~/force_portabilite_baltik && [ -f $force_portabilite_baltik ] && testbaltik=1 && rm -f $force_portabilite_baltik
 echo "$testbaltik  Baltik $port_baltik=$portabilite_baltik (=1.000)" >> $MESSAGES_NUIT
@@ -1798,6 +1809,8 @@ then
    echo "Release criterion: Assert OK"
 else
    echo "Release criterion: Assert KO"
+   grep "ASSERT=KO" $REP_NUIT/CR_* > tmp.log
+   [ -s tmp.log ] && cat tmp.log | mail_ -s\"[lance_test_nuit] TRUST assert KO on host:\" $TRUST_MAIL
 fi
 force_test_assert=~/force_test_assert && [ -f $force_test_assert ] && assert=1 && rm -f $force_test_assert
 echo "$assert  Assert $port_assert=$test_assert (=1.000)" >> $MESSAGES_NUIT
@@ -2131,7 +2144,9 @@ do
          if [ "$testko" != "" ]
 	 then
 	    echo $testko
-	    echo $testko | cut -d/ -f11 >> tmp.log
+	    echo $machine >> tmp.log
+            grep " CORE " $PROJECT_ROOT/*$Composant*$machine*make_check.log >> tmp.log
+            echo " " >> tmp.log
 	    valgrind=0
 	 fi
       fi
@@ -2738,7 +2753,7 @@ nothing_todo=0 && [ "`grep ${TRUST_VERSION%_beta} $TRUST_ROOT/ToDo`" = "" ] && n
 for qui in `$TRUST_Awk '!/Qui/ {print $2}' $TRUST_ROOT/ToDo | sort -u`
 do
    grep $qui $TRUST_ROOT/ToDo | grep ${TRUST_VERSION%_beta} > $TRUST_TMP/ToDo
-   [ -s $TRUST_TMP/ToDo ] && [ "`date '+%u'`" = 1 ] && cat $TRUST_TMP/ToDo | mail_ -s\"[lance_test_nuit] ToDo list for the version ${TRUST_VERSION%_beta}\" $qui
+   [ -s $TRUST_TMP/ToDo ] && [ "`date '+%u'`" = 1 ] && cat $TRUST_TMP/ToDo | mail_ -s\"[lance_test_nuit] ToDo list for the version ${TRUST_VERSION%_beta}\" -c $TRUST_MAIL $qui
 done
 # Envoi la liste complete le jeudi au chef de projet pour planning debut de semaine prochaine
 [ "`date '+%u'`" = 4 ] && cat $TRUST_ROOT/ToDo | mail_ -s\"[lance_test_nuit] ToDo list for next Monday COSUIV\" $TRUST_MAIL $TMA_PROJECT_LEADER
@@ -2880,10 +2895,10 @@ do
          echo "Analysis of "$Composant_log" file" | tee -a tmp.log
          #grep "$Composant OK" $Composant_log | sed 1d | tee -a tmp.log # check only component without portability
          grep "$Composant OK" $Composant_log #| tee -a tmp.log
-         (grep " KO" $Composant_log;grep KO $Composant_log | grep $Composant) | tee -a tmp.log
+         (grep " KO" $Composant_log;grep KO $Composant_log | grep $Composant;grep " connect to host " $Composant_log | cut -d: -f2) | tee -a tmp.log
 	 nb=`grep "$Composant OK" $Composant_log | wc -l`
          OK=`echo $(($OK+$nb))`
-	 nb=`(grep " KO" $Composant_log;grep KO $Composant_log | grep $Composant) | wc -l`
+	 nb=`(grep " KO" $Composant_log;grep KO $Composant_log | grep $Composant;grep " connect to host " $Composant_log | cut -d: -f2) | wc -l`
          KO=`echo $(($KO+$nb))`
       fi
    done
@@ -2915,14 +2930,14 @@ do
       if [ -f $nuit_log ]
       then
          echo " " | tee -a tmp.log
-         echo "Run: konqueror $nuit_log" | tee -a tmp.log	 
+         echo "Run: konqueror $REP_NUIT/nuit_$Composant.html" | tee -a tmp.log	 
       fi
    fi
    echo " "
    if [ "$validation_composant" = 1 ]
    then
       echo "Release criterion: $Composant OK"
-      [ $nb_cible != $tot_cible ] && cat tmp.log | mail_ -s\"[lance_test_nuit] Portability KO on Baltik $Composant\" $TRUST_MAIL
+      [ $nb_total != $tot_total ] && cat tmp.log | mail_ -s\"[lance_test_nuit] Portability KO on Baltik $Composant\" $TRUST_MAIL
    else
       echo "Release criterion: $Composant KO"
       BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
@@ -3443,7 +3458,7 @@ if [ "`date '+%u'`" = 1 ] || [ $livraison = 1 ] || [ $accord_beta = 1 ]
 then
    ALL_DEVELOPERS_TRUST_MAIL="trio_u_dev@saxifrage.saclay.cea.fr"
    echo " " >> $MESSAGES_NUIT
-   echo "TRUST/TrioCFD support team. mailto: $TRUST_MAIL  Web: http://www-trio-u.cea.fr" >> $MESSAGES_NUIT
+   echo "TRUST support team. mailto: $TRUST_MAIL  Web: http://www-trio-u.cea.fr" >> $MESSAGES_NUIT
    echo " " >> $MESSAGES_NUIT
    echo "To unsubscribe from this list, send an e-mail to $TRUST_MAIL " >> $MESSAGES_NUIT
 else

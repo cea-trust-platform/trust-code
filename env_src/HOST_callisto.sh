@@ -95,6 +95,7 @@ define_soumission_batch()
       [ "$prod" = 1 ] && cpu=1440 # 1 day
    else
       #node=0
+      queue=slim,large,fat,eris,pluton
       qos=test
       [ "$prod" = 1 ] && cpu=60 # 1 hour
    fi

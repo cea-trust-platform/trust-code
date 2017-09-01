@@ -314,7 +314,7 @@ do
 	   if [ "$machine_cible" = 1 ]
 	   then
 	      [ "$taux" != "$vide" ] && let nb_machine_cible=$nb_machine_cible+1
-	      portabilite=`echo $ECHO_OPTS "scale=3\n$portabilite+$pourcent" | bc -l`
+	      portabilite=`echo $ECHO_OPTS "scale=2\n($portabilite+$pourcent)/1" | bc -l`
 	      echo " step $MODULE: total pourc nb file "$portabilite" "$pourcent" "$nb_machine_cible" "$PERF
 	   fi
 	   # Est ce que tous les tests sont passes en version optimisee simple ?
@@ -370,7 +370,7 @@ do
 	   COULEUR=$ROUGE
 	fi
 	XPREPRO="<TD $COULEUR>$TAUX_XPREPRO</TD>"
-	if [ "$machine_cible" = 1 ] && [ "`grep Xprepro: $CR`" != "" ]
+	if [ "$machine_cible" = 1 ] && [ "`grep XPREPRO= $CR`" != "" ]
 	then
 	   let nb_machine_xprepro_cible=$nb_machine_xprepro_cible+1
 	   pourcent=`cat $CR | awk 'BEGIN {s=0;n=0} /Xprepro:/ {n++} /Xprepro:/ && /OK/ {s++} END {if (n>0) print s/n;else print s}'`

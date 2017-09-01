@@ -7,8 +7,8 @@ linux	rsync_ssh	cible		is221556.intra.cea.fr				-MPCube -TrioCFD -ModeleCoeur			
 linux	rsync_ssh	cible		is223284.intra.cea.fr				-MPCube -TrioCFD -ModeleCoeur			-force_provided_mpich			# CentOS 7.3	Bat 451	LGLS	bureau a cote de Clarisse Genrault	
 linux	rsync_ssh	cible		cezanne63.intra.cea.fr				-ModeleCoeur					-force_provided_mpich			# Debian 8	CEA Cadarache
 linux	rsync_ssh	get_binary	is224591.intra.cea.fr															# CentOS 6.4	Bat 526 LMEC	bureau TMA FLICA4
-linux	rsync_ssh	tache		cobalt.ccc.cea.fr		-limited	-TrioCFD			-benchmark						# RedHat 7.3	CEA CCRT
-linux	rsync_ssh	tache		curie-ccrt.ccc.cea.fr		-limited	-TrioCFD			-benchmark						# RedHat 6.9	CEA TGCC
+linux	rsync_ssh	cible		cobalt.ccc.cea.fr		-limited	-TrioCFD			-benchmark						# RedHat 7.3	CEA CCRT
+linux	rsync_ssh	cible		curie-ccrt.ccc.cea.fr		-limited	-TrioCFD			-benchmark						# RedHat 6.9	CEA TGCC
 linux	rsync_ssh	tache		ceres2.intra.cea.fr		-limited												# CentOS 6.8	CEA Marcoule	NB: bench desactive
 linux	rsync_ssh	tache		mezel.intra.cea.fr		-limited	-ModeleCoeur										# RedHat 6.7	CEA Cadarache	NB: bench desactive
 linux	rsync_ssh	tache		callisto.intra.cea.fr		-limited	-TrioCFD -ModeleCoeur				-disable-mpiio				# CentOS 6.4	CEA Saclay	NB: bench desactive
@@ -31,7 +31,7 @@ linux	rsync_ssh	non		is226423-clang.intra.cea.fr			-ModeleCoeur			-g -clang38	-f
 linux	rsync_ssh	non		is212915.intra.cea.fr				-TRUST -MPCube -TrioCFD -ModeleCoeur -g		-force_provided_mpich			# CentOS 7.3	Bat 526 LMSF	bureau Michel Filippi	
 linux	rsync_ssh	non		is212798.intra.cea.fr		-all								-disable-optionals			# Fedora 18	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non		is223278.intra.cea.fr		-all								-disable-mpi 				# Fedora 18	Bat 451	LGLS	salle de formation
-linux	rsync_ssh	non		is223279.intra.cea.fr		-all								-disable-petsc				# Fedora 18	Bat 451	LGLS	salle de formation
+linux	rsync_ssh	non		is223279.intra.cea.fr		-all		-ModeleCoeur					-disable-petsc				# Fedora 18	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non		is223280.intra.cea.fr		-all								-force_provided_openmpi			# Fedora 18	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non		is223281.intra.cea.fr		-all								-force_latest_openmpi			# Fedora 18	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non		is223282.intra.cea.fr		-all								-without-visit				# Fedora 18	Bat 451	LGLS	salle de formation

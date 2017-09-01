@@ -9,7 +9,7 @@ cree_syno()
     #$exec existepas 2>/dev/null 1>/dev/null
     # on generalise
     export exec=$1
-    trust existepas 2>/dev/null 1>/dev/null
+    USE_MPIRUN=1 trust existepas 2>/dev/null 1>/dev/null
     listsyno=`grep "<=>" hierarchie.dump| sed "s/ <=> /%/"`
     rm -f *dump existepas.log
     #echo -n "synonyme={ 'end':'fin',"

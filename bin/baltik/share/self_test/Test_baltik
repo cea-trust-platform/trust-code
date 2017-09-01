@@ -42,8 +42,7 @@ test_basic()
  echo Test de $1 \(mode : $MODE \)
  cd $ORG/$1
  status_tot=0
- ${BALTIK_BUILD_CONFIGURE_PATH}/baltik_build_configure
- ./configure >LOG_CONFIG 2>&1
+ ${BALTIK_BUILD_CONFIGURE_PATH}/baltik_build_configure -execute >LOG_CONFIG 2>&1
 
  make $MODE >LOG_COMP 2>&1
  status=$?
@@ -89,7 +88,7 @@ test_basic()
        make dist_clean 1>/dev/null
    else
        $DIR/../baltik/bin/baltik_clean dist
-       fi
+   fi
    rm -f LOG_CONFIG LOG_RUN LOG_COMP
  else
      err=100
@@ -162,7 +161,7 @@ status_basic_rapport=$status_tot
 # on efface le resultat des  runs d'avant
 #for file in lien_fiche_validation test_rapport_jdd1.data /test_rapport_jdd1.lml.gz
 #do
-  git reset HEAD basic_rapport/build/tests/all/Validation/test_rapport_jdd1/*
+  [ -d .git ] && git reset HEAD basic_rapport/build/tests/all/Validation/test_rapport_jdd1/*
 #  git rm -f  basic_rapport/tests/Reference/Validation/test_rapport_jdd1/$file
 #done
 rm -rf basic_rapport/build/tests/all/Validation/*_jdd*  
