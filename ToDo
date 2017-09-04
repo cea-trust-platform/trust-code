@@ -46,6 +46,7 @@ Version	Qui				Tache
 1.7.6   stephane.veys@cea.fr    Definir le masque souhaite pour un tuto ICoCo (cf DI 3889)
 1.7.6   stephane.veys@cea.fr    Estimer la charge d un dev si le pb chgt base P1Bulle avec CL perio est un bug (ref DI 3829)
 1.7.6   stephane.veys@cea.fr    Voir si probleme avec fichier binaire ICEM genere sous Windows est du ressort TRUST (cf DI 3778)
+1.7.6   stephane.veys@cea.fr    Faut il continuer la traduction des mots cle en anglais ? (ref DI 3322)
 1.7.6   marthe.roux@cea.fr      Creer une fiche pour tester l extension volumes controles + ICoCo (cf DI 3240)
 1.7.6   stephane.veys@cea.fr    Est ce que TRUST doit etre porte sur FreeBSD ? (cf DI 3600)
 1.7.6   marthe.roux@cea.fr      Tester Cylindre_tournant discretise POP1Pa en parallele avec TRUST 1.7.5 (cf DI 3240)
