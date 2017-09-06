@@ -2,7 +2,7 @@
 
 mystudy=$1
 
-sed "s/Read_MED/Read_MED_For_Testing_No_Verify_Option/" $1.data > tmp
+sed "s/Read_MED\|read_med/Read_MED_For_Testing_No_Verify_Option/" $1.data > tmp
 mv tmp $1.data
 
 trust $mystudy  1>/dev/null 2>&1
@@ -22,7 +22,6 @@ then
   echo "Error ! The option no_verify doesn't ignore obsolete keywords !"
   exit -1
 fi
-
 
 exit 0
 

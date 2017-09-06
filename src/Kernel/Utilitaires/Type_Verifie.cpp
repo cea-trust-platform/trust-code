@@ -158,7 +158,7 @@ void verifie(const Nom& type)
       nouvelle_syntaxe[i++] = "1.6.7, you should use another convection scheme.";
       nouvelle_syntaxe[i++] = "1.6.8, you should use now: Boussinesq_temperature { ... } , Boussinesq_concentration { ... }";
       nouvelle_syntaxe[i++] = "1.6.9.";
-      nouvelle_syntaxe[i++] = "never use that keyword!!!";
+      nouvelle_syntaxe[i++] = "1.7.6, never use that keyword!!!";
       assert(i==n);
       Cerr << "The keyword " << motcle_obsolete[rang] << " is now obsolete," << finl;
       Cerr << "since the version " << nouvelle_syntaxe[rang] << finl << finl;
