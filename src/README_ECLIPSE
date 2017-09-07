@@ -30,9 +30,9 @@ Configuration
 -Xmx2048m
 > cd /export/home/user/
 
-##########################
-# Create a TRUST project #
-##########################
+###################################
+# Create a platform TRUST project #
+###################################
 
 Launching
 =========
@@ -76,9 +76,9 @@ Launching
 > File/Exit
 
 
-###########################
-# Create a BALTIK project #
-###########################
+####################################################
+# Create a basic BALTIK project without dependency #
+####################################################
 
 Launching
 =========
