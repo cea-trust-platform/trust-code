@@ -166,7 +166,7 @@ postraitement postraitement_base postraitement -1 An object of post-processing (
   attr definition_champs definition_champs definition_champs 1 Keyword to create new or more complex field for advanced postprocessing.
   attr sondes|Probes sondes sondes 1 Probe.
   attr domaine chaine domaine 1 This optional parameter specifies the domain on which the data should be interpolated before it is written in the output file. The default is to write the data on the domain of the current problem (no interpolation).
-  attr format chaine(into=["lml","meshtv","lata","lata_v1","lata_v2","med"]) format 1 This optional parameter specifies the format of the output file. The basename used for the output file is the basename of the data file. For the fmt parameter, choices are lml, lata, or meshtv. A short description of each format can be found below. The default value is lml.
+  attr format chaine(into=["lml","lata","lata_v1","lata_v2","med"]) format 1 This optional parameter specifies the format of the output file. The basename used for the output file is the basename of the data file. For the fmt parameter, choices are lml or lata. A short description of each format can be found below. The default value is lml.
   attr champs|fields champs_posts champs 1 Field\'s write mode.
   attr statistiques stats_posts statistiques 1 Statistics between two points fixed : start of integration time and end of integration time.
   attr fichier chaine fichier 1 Name of file.
@@ -581,8 +581,6 @@ frontiere_ouverte_temperature_imposee dirichlet frontiere_ouverte_temperature_im
   attr ch front_field_base ch 0 Boundary field type.
 frontiere_ouverte_concentration_imposee dirichlet frontiere_ouverte_concentration_imposee -1 Imposed concentration condition at an open boundary called bord (edge) (situation corresponding to a fluid inlet). This condition must be associated with an imposed inlet speed condition.
   attr ch front_field_base ch 0 Boundary field type.
-paroi_couple condlim_base paroi_couple -1 not_set
-  attr autrepb ref_Pb_base autrepb 0 Name of other problem.
 paroi_contact condlim_base paroi_contact -1 Thermal condition between two domains. Important: the name of the boundaries in the two domains should be the same. (Warning: there is also an old limitation not yet fixed on the sequential algorithm in VDF to detect the matching faces on the two boundaries: faces should be ordered in the same way). The kind of condition depends on the discretization. In VDF, it is a heat exchange condition, and in VEF, a temperature condition. NL2 Such a coupling requires coincident meshes for the moment. In case of non-coincident meshes, run is stopped and two external files are automatically generated in VEF (connectivity_failed_boundary_name and connectivity_failed_pb_name.med). In 2D, the keyword Decouper_bord_coincident associated to the connectivity_failed_boundary_name file allows to generate a new coincident mesh. NL2 In 3D, for a first preliminary cut domain with HOMARD (fluid for instance), the second problem associated to pb_name (solide in a fluid/solid coupling problem) has to be submitted to HOMARD cutting procedure with connectivity_failed_pb_name.med. NL2 Such a procedure works as while the primary refined mesh (fluid in our example) impacts the fluid/solid interface with a compact shape as described below (values 2 or 4 indicates the number of division from primary faces obtained in fluid domain at the interface after HOMARD cutting): NL2 2-2-2-2-2-2 NL2 2-4-4-4-4-4-2 \\; 2-2-2 NL2 2-4-4-4-4-2 \\; 2-4-2 NL2 2-2-2-2-2 \\; 2-2 NL2 OK NL2 NL2 2-2 \\; \\; 2-2-2 NL2 2-4-2 \\; 2-2 NL2 2-2 \\; 2-2 NL2 NOT OK
   attr autrepb ref_Pb_base autrepb 0 Name of other problem.
   attr nameb chaine nameb 0 boundary name of the remote problem which should be the same than the local name
@@ -857,8 +855,6 @@ ssor_bloc precond_base ssor_bloc -1 not_set
   attr preconda precond_base preconda 1 not_set
 precondsolv precond_base precondsolv 0 not_set
   attr solveur solveur_sys_base solveur 0 Solver type.
-precond_local precond_base precond_local 0 This keyword can be used with the conjugate gradient (GCP) to choose a local preconditionment for parallel calculation (ie: Cholesky, SSOR,...).
-  attr solveur solveur_sys_base solveur 0 Solver type.
 optimal solveur_sys_base optimal 1 Optimal is a solver which tests several solvers of the previous list to choose the fastest one for the considered linear system.
   attr seuil floattant seuil 0 Convergence threshold
   attr impr rien impr 1 To print the convergency of the fastest solver
@@ -909,7 +905,7 @@ gmres solveur_sys_base gmres -1 Gmres method (for non symetric matrix).
   attr save_matrice|save_matrix rien save_matrice 1 to save the matrix in a file.
   attr dim_espace_krilov entier dim_espace_krilov 1 not_set
 postraiter_domaine interprete postraiter_domaine 1 To write one or more domains in a file with a specified format (MED,LML,LATA).
-  attr format chaine(into=["lml","meshtv","lata","lata_v1","lata_v2","med"]) format 0 File format.
+  attr format chaine(into=["lml","lata","lata_v1","lata_v2","med"]) format 0 File format.
   attr fichier|file chaine fichier 1 The file name can be changed with the fichier option.
   attr domaine ref_domaine domain 1 Name of domain
   attr domaines bloc_lecture domaines 1 Names of domains : { name1 name2 }
@@ -1042,8 +1038,7 @@ champ_fonc_tabule champ_don_base champ_fonc_tabule 0 Field that is tabulated as 
   attr bloc bloc_lecture bloc 0 Values (the table (the value of the field at any time is calculated by linear interpolation from this table) or the analytical expression (with keyword expression to use an analytical expression)).
 champ_fonc_fonction champ_fonc_tabule champ_fonc_fonction 0 Field that is a function of another field.
 champ_fonc_fonction_txyz champ_fonc_fonction champ_fonc_fonction_txyz -1 this refers to a field that is a function of another field and time and/or space coordinates
-frontiere_ouverte_gradient_pression_impose_vef frontiere_ouverte_pression_imposee frontiere_ouverte_gradient_pression_impose_vef -1 Keyword for an outlet boundary condition on the gradient of the pressure. This boundary condition may only be applied in the VEF module.
-frontiere_ouverte_gradient_pression_impose_vefprep1b frontiere_ouverte_gradient_pression_impose_vef frontiere_ouverte_gradient_pression_impose_vefprep1b -1 Keyword for an outlet boundary condition in VEF P1B/P1NC on the gradient of the pressure.
+frontiere_ouverte_gradient_pression_impose_vefprep1b frontiere_ouverte_gradient_pression_impose frontiere_ouverte_gradient_pression_impose_vefprep1b -1 Keyword for an outlet boundary condition in VEF P1B/P1NC on the gradient of the pressure.
 bloc_lec_champ_init_canal_sinal objet_lecture nul 1 Parameters for the class champ_init_canal_sinal. NL2 in 2D: NL2 U=ucent*y(2h-y)/h/h NL2 V=ampli_bruit*rand+ampli_sin*sin(omega*x) NL2 rand: unpredictable value between -1 and 1. NL2 in 3D: NL2 U=ucent*y(2h-y)/h/h NL2 V=ampli_bruit*rand1+ampli_sin*sin(omega*x) NL2 W=ampli_bruit*rand2 NL2 rand1 and rand2: unpredictables values between -1 and 1.
   attr ucent floattant ucent 0 Velocity value at the center of the channel.
   attr h floattant h 0 Half hength of the channel.
@@ -1247,7 +1242,7 @@ bloc_decouper objet_lecture nul 1 Auxiliary class to cut a domain.
   attr partitionneur|Partition_tool partitionneur_deriv partitionneur 1 Defines the partitionning algorithm (the effective C++ object used is \'Partitionneur_ALGORITHM_NAME\').
   attr larg_joint entier larg_joint 1 This keyword specifies the thickness of the virtual ghost zone (data known by one processor though not owned by it). The default value is 1 and is generally correct for all algorithms except the QUICK convection scheme that require a thickness of 2. Since the 1.5.5 version, the VEF discretization imply also a thickness of 2 (except VEF P0). Any non-zero positive value can be used, but the amount of data to store and exchange between processors grows quickly with the thickness.
   attr nom_zones|zones_name chaine nom_zones 1 Name of the files containing the different partition of the domain. The files will be : NL2 name_0001.Zones NL2 name_0002.Zones NL2 ... NL2 name_000n.Zones. If this keyword is not specified, the geometry is not written on disc (you might just want to generate a \'ecrire_decoupage\' or \'ecrire_lata\').
-  attr ecrire_decoupage chaine ecrire_decoupage 1 After having called the partitionning algorithm, the resulting partition is written on disc in the specified filename. See also partitionneur Fichier_Decoupage. This keyword is useful to change the partition numbers (for example, to do manually the task of the keyword Echange_domcut): first, you write the partition into a file with the option ecrire_decoupage. This file contains the zone number for each element\'s mesh. Then you can easily permute zone numbers in this file. Then read the new partition to create the .Zones files with the Fichier_Decoupage keyword.
+  attr ecrire_decoupage chaine ecrire_decoupage 1 After having called the partitionning algorithm, the resulting partition is written on disc in the specified filename. See also partitionneur Fichier_Decoupage. This keyword is useful to change the partition numbers: first, you write the partition into a file with the option ecrire_decoupage. This file contains the zone number for each element\'s mesh. Then you can easily permute zone numbers in this file. Then read the new partition to create the .Zones files with the Fichier_Decoupage keyword.
   attr ecrire_lata chaine ecrire_lata 1 not_set
   attr nb_parts_tot entier nb_parts_tot 1 Keyword to generates N .Zone files, instead of the default number M obtained after the partitionning algorithm. N must be greater or equal to M. This option might be used to perform coupled parallel computations. Supplemental empty zones from M to N-1 are created. This keyword is used when you want to run a parallel calculation on several domains with for example, 2 processors on a first domain and 10 on the second domain because the first domain is very small compare to second one. You will write Nb_parts 2 and Nb_parts_tot 10 for the first domain and Nb_parts 10 for the second domain.
   attr formatte rien formatte 1 Optional keyword to have formatted format for .Zones files. By default, it is binary format.
@@ -1259,11 +1254,11 @@ partition interprete decouper -1 Class for parallel calculation to cut a domain 
 reordonner_faces_periodiques interprete reordonner_faces_periodiques -1 The Reordonner_faces_periodiques keyword is mandatory to first define the periodic boundaries and also to reorder the faces of theses boundaries.
   attr domaine ref_domaine domaine 0 Name of domain.
   attr nom_bord_perio chaine nom_bord_perio 0 boundary_name.
-corriger_frontiere_periodique interprete corriger_frontiere_periodique 1 he Corriger_frontiere_periodique keyword is mandatory to first define the periodic boundaries, to reorder the faces and eventually fix unaligned nodes of theses boundaries. Faces on one side of the periodic domain are put first, then the faces on the opposite side, in the same order. It must be run in sequential before mesh splitting.
+corriger_frontiere_periodique interprete corriger_frontiere_periodique 1 The Corriger_frontiere_periodique keyword is mandatory to first define the periodic boundaries, to reorder the faces and eventually fix unaligned nodes of theses boundaries. Faces on one side of the periodic domain are put first, then the faces on the opposite side, in the same order. It must be run in sequential before mesh splitting.
   attr domaine chaine domaine 0 Name of domain.
   attr bord chaine bord 0 the name of the boundary (which must contain two opposite sides of the domain)
   attr direction list direction 1 defines the periodicity direction vector (a vector that points from one node on one side to the opposite node on the other side. This vector must be given if the automatic algorithm fails, that is:NL2 - when the node coordinates are not perfectly periodic NL2 - when the periodic direction is not aligned with the normal vector of the boundary faces
-  attr fichier_post chaine fichier_post 1 see corriger_coordonnees
+  attr fichier_post chaine fichier_post 1 .
 distance_paroi interprete distance_paroi 0 Class to generate external file Wall_length.xyz devoted for instance, for mixing length modelling. In this file, are saved the coordinates of each element (center of gravity) of dom domain and minimum distance between this point and boundaries (specified bords) that user specifies in data file (typically, those which are associated to walls). A field Distance_paroi is available to post process the distance to the wall.
   attr dom ref_domaine dom 0 Name of domain.
   attr bords listchaine bords 0 Boundaries.
@@ -1404,13 +1399,13 @@ perte_charge_reguliere source_base perte_charge_reguliere 0 Source term modellin
 pb_post Pb_base nul -1 not_set
 format_lata_to_med objet_lecture nul 0 not_set
   attr mot chaine(into=["format_post_sup"]) mot 0 not_set
-  attr format chaine(into=["lml","meshtv","lata","lata_v1","lata_v2","med"]) format 1 generated file post_med.data use format (MED or MESHTV or LML keyword).
+  attr format chaine(into=["lml","lata","lata_v1","lata_v2","med"]) format 1 generated file post_med.data use format (MED or LATA or LML keyword).
 lata_to_med interprete lata_to_med -1 To convert results file written with LATA format to MED file. Warning: Fields located to faces are not supported yet.
-  attr format format_lata_to_med format 1 generated file post_med.data use format (MED or MESHTV or LML keyword).
+  attr format format_lata_to_med format 1 generated file post_med.data use format (MED or LATA or LML keyword).
   attr file chaine file 0 LATA file to convert to the new format.
   attr file_med chaine file_med 0 Name of file med.
 lata_to_other interprete lata_to_other -1 To convert results file written with LATA format to MED or LML format. Warning: Fields located to faces are not supported yet.
-  attr format chaine(into=["lml","meshtv","lata","lata_v1","lata_v2","med"]) format 1 Results format (MED or MESHTV or LML keyword).
+  attr format chaine(into=["lml","lata","lata_v1","lata_v2","med"]) format 1 Results format (MED or LATA or LML keyword).
   attr file chaine file 0 LATA file to convert to the new format.
   attr file_post chaine file_post 0 Name of file post.
 info_med objet_lecture nul 0 not_set
