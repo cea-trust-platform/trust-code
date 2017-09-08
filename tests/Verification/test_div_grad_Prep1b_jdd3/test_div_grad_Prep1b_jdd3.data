@@ -79,7 +79,7 @@ Read pb
 Post_processing 
 {
 		Definition_champs {
-vmax champ_post_reduction_0d { methode max source champ_post_refchamp { pb_champ pb vitesse } }
+vmax reduction_0d { methode max source refchamp { pb_champ pb vitesse } }
 }
 		Probes
 		{

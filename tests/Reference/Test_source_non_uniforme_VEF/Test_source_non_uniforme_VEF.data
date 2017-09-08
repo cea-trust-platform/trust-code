@@ -75,7 +75,7 @@ Lire pb2
 	{
 		Definition_champs	{
 
-S Champ_Post_Operateur_Eqn  { numero_source 0 sources { refChamp { pb_champ pb2 temperature }  } } 
+S Operateur_Eqn  { numero_source 0 sources { refChamp { pb_champ pb2 temperature }  } } 
 
 					}
 		Format lata

@@ -83,11 +83,11 @@ Read pb
 	{
 		Definition_champs 
 			{
-vitesse_convection_som_dom  Champ_Post_Interpolation {
+vitesse_convection_som_dom  Interpolation {
                                         localisation som
-                                        source Champ_Post_Operateur_Eqn {
+                                        source Operateur_Eqn {
                                          numero_op 1
-                                         source Champ_Post_refChamp { Pb_champ pb vitesse }
+                                         source refChamp { Pb_champ pb vitesse }
         }
         }
 
