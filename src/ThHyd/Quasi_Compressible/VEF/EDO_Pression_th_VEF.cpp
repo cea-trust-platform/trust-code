@@ -532,7 +532,7 @@ double EDO_Pression_th_VEF::masse_totale(double P,const DoubleTab& T)
       const DoubleTab& Masse_mol_mel = loi_mel_GP.masse_molaire();
       for (int i = 0; i < nb_faces; i++)
         {
-          double r = 8.314 / Masse_mol_mel[i];
+          double r = 8.3143 / Masse_mol_mel[i];
           tmp[i] = loi_mel_GP.calculer_masse_volumique_case(P, T[i], r,i);
         }
     }

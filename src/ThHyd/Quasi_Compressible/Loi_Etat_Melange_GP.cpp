@@ -538,7 +538,7 @@ void Loi_Etat_Melange_GP::calculer_masse_volumique()
 
   for (som=0 ; som<n ; som++)
     {
-      r=8.314/Masse_mol_mel(som);
+      r=8.3143/Masse_mol_mel(som);
       tab_rho_np1[som] = calculer_masse_volumique_case(Pth,tab_ICh[som],r,som);
 
       //Correction pour calculer la masse volumique a partir de la pression

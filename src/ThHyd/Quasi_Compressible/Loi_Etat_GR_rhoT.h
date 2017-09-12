@@ -25,7 +25,7 @@
 
 #ifndef RU_
 //constante des gaz
-#define RU_ 8.314*4.18448
+#define RU_ 8.3143*4.18448
 #endif
 
 #include <Loi_Etat_base.h>

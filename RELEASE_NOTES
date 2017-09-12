@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.6_beta : Enhancements, modifications and corrected bugs since version 1.7.5 :
 --------------------------------------------------------------------------------------------------
+12/09/17 (TRUST)  Minor change: Value of ideal gas constant in Quasi_Compressible model R=8.3143J/mol/K
 31/08/17 (TRUST)  New feature : Introduce no_verify option (Usage: trust MyJDD.data -no_verify)
 21/08/17 (TRUST)  Validation  : Blocking turbulent quasi-compressible calculation with mass fraction in VEF
 29/06/17 (TRUST)  Bug fixed   : Taking into account the name of the thermal power defined by Champ_Input_P0
