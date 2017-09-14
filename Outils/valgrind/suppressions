@@ -1143,3 +1143,131 @@
    ...
 }
 
+##
+## 14/09/2017: Part added by TMA but to be validated by TRUST project leader
+## Triggered by TrioCFD tests NR launched in parallel with Petsc solver
+## On these suppressions, we have not verified that the leaks are not incremental.
+##
+## PAR_cpu_3D_VEF
+{
+   <MUMPS_para4>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:blacs_gridmap_
+   fun:blacs_gridinit_
+   fun:dmumps_init_root_ana_
+   fun:dmumps_ana_driver_
+   fun:dmumps_
+   fun:dmumps_f77_
+   fun:dmumps_c
+   fun:MatCholeskyFactorSymbolic_MUMPS
+   fun:MatCholeskyFactorSymbolic
+   fun:PCSetUp_Cholesky
+   fun:PCSetUp
+   fun:KSPSetUp
+   ...
+}
+{
+   <MUMPS_para5>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:BI_GetBuff
+   fun:Cdgsum2d
+   fun:PB_CptrsmB
+   fun:pdtrsm_
+   fun:pdgetrs_
+   fun:dmumps_solve_2d_bcyclic_
+   fun:dmumps_root_solve_
+   fun:dmumps_sol_c_
+   fun:dmumps_solve_driver_
+   fun:dmumps_
+   fun:dmumps_f77_
+   fun:dmumps_c
+   fun:MatSolve_MUMPS
+   fun:MatSolve
+}
+## PAR_Fiche_validation_Re395_Pr0.71_jdd1
+{
+   <MUMPS_para6>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:BI_GetBuff
+   fun:BI_Pack
+   fun:Cdgesd2d
+   fun:PB_CInOutV2
+   fun:PB_CptrsmB
+   fun:pdtrsm_
+   fun:pdgetrf_
+   fun:dmumps_facto_root_
+   fun:__dmumps_fac_par_m_MOD_dmumps_fac_par
+   fun:dmumps_fac_b_
+   fun:dmumps_fac_driver_
+   fun:dmumps_
+   fun:dmumps_f77_
+   fun:dmumps_c
+}
+{
+   <MUMPS_para7>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:BI_GetBuff
+   fun:BI_Pack
+   fun:Cdgesd2d
+   fun:PB_CInV
+   fun:PB_CpgemmAB
+   fun:pdgemm_
+   fun:pdgetrf_
+   fun:dmumps_facto_root_
+   fun:__dmumps_fac_par_m_MOD_dmumps_fac_par
+   fun:dmumps_fac_b_
+   fun:dmumps_fac_driver_
+   fun:dmumps_
+   fun:dmumps_f77_
+   fun:dmumps_c
+}
+{
+   <MUMPS_para8>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:BI_GetBuff
+   fun:BI_Pack
+   fun:Cdgesd2d
+   fun:PB_CpaxpbyNN
+   fun:PB_Cpaxpby
+   fun:PB_CptrsmB
+   fun:pdtrsm_
+   fun:pdgetrf_
+   fun:dmumps_facto_root_
+   fun:__dmumps_fac_par_m_MOD_dmumps_fac_par
+   fun:dmumps_fac_b_
+   fun:dmumps_fac_driver_
+   fun:dmumps_
+   fun:dmumps_f77_
+}
+## les_Re395Pr0025_T0Q_jdd5
+{
+   <MUMPS_para9>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:BI_GetBuff
+   fun:BI_Pack
+   fun:Cdgesd2d
+   fun:PB_Cpaxpby
+   fun:PB_CptrsmB
+   fun:pdtrsm_
+   fun:pdgetrf_
+   fun:dmumps_facto_root_
+   fun:__dmumps_fac_par_m_MOD_dmumps_fac_par
+   fun:dmumps_fac_b_
+   fun:dmumps_fac_driver_
+   fun:dmumps_
+   fun:dmumps_f77_
+   fun:dmumps_c
+}
+
