@@ -851,6 +851,10 @@ then
 	PBS) 	qsub_interactif;;
    esac	
    err=$?   
+   if [ "$VALGRIND" = "1" ] || [ "$VALGRIND_STRICT" = "1" ] || [ "$VALGRIND_GDB" = "1" ]
+   then
+     [ "echo `grep "ERROR SUMMARY: 0"  $OUTPUT.err`" != "" ] && exit -1
+   fi
    [ $err = 0 ] && rm -f $sub_file
    # On envoit $OUTPUT.out et $OUTPUT.err vers les bonnes sorties afin que "trust jdd 1>jdd.out 2>jdd.err" envoie ce qu'il faut dans jdd.out et jdd.err
    # A cause de platine (permission denied), on utilise plutot les chemins pointes /proc/self/fd/1 et 2

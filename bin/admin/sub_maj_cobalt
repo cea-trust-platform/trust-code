@@ -7,6 +7,7 @@
 #MSUB -e ~/myjob_cobalt.%J.e
 #MSUB -E "--no-requeue"
 #MSUB -n 1
+#MSUB -X bash
 set -x
 cd $BRIDGE_MSUB_PWD
 [ -f ld_env.sh ] && . ./ld_env.sh # To load an environment file if necessary

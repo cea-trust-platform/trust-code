@@ -6,6 +6,7 @@
 #SBATCH -o /panfs/ixion/share/triou/myjob_callisto.%j.o
 #SBATCH -e /panfs/ixion/share/triou/myjob_callisto.%j.e
 #SBATCH -n 1
+#SBATCH --x11=batch
 set -x
 cd $SLURM_SUBMIT_DIR
 [ -f ld_env.sh ] && . ./ld_env.sh # To load an environment file if necessary

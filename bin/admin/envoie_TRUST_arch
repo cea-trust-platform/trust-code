@@ -247,7 +247,7 @@ do
                option=""
 	       # machine=$machine".bak" # Pourquoi CR_$machine est abime?
 	       # On ne lance plus sur la frontale
-	       ssh_command "export WORKBASE=$WORKBASE;cd $WORKDIR/$version/TRUST/bin/admin;ccc_msub sub_maj_$machine" &
+	       ssh_command "export WORKBASE=$WORKBASE;rm -f myjob_$machine.*.o  myjob_$machine.*.e;cd $WORKDIR/$version/TRUST/bin/admin;ccc_msub sub_maj_$machine" &
 	       echo "Launching in background the update by ssh then ccc_msub on $log@$adr at "`date '+%H:%M:%S'`
 	    #elif [ "$machine" = callisto ]
 	    #then

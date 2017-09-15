@@ -718,7 +718,7 @@ do
          rm -rf $Build/PRE_3DVDF;
          cp -r $TRUST_ROOT/Outils/PRE_3DVDF $Build/.;
          cd $Build/PRE_3DVDF;
-	 ./testfort2
+	 USE_MPIRUN=1 ./testfort2
 	 ###################################################
 	 # On lance le test sur les assertions en mode debug
 	 ###################################################
@@ -940,14 +940,8 @@ do
 	    visit_erreur=`$TRUST_ROOT/exec/VisIt/bin/visit -help 1>/dev/null 2>&1;echo $?`
 	    if [ $visit_erreur = 0 ]
 	    then
-	       if [ "`liste_machines "\-benchmark" | grep ^$HOST_BUILD"\."`" != "" ] && [ "`grep $HOST $TRUST_ROOT/bin/reprise_auto | grep Supported`" != "" ]
-	       then
-	          echo "For the moment, Run_fiche is not launched with SLURM because sometimes there is blocking..." 1>$log 2>&1
-	          Run_fiche_KO=1
-	       else
-	          USE_MPIRUN=1 Run_fiche 1>$log 2>&1
-	          Run_fiche_KO=$?
-	       fi
+	       USE_MPIRUN=1 Run_fiche 1>$log 2>&1
+	       Run_fiche_KO=$?
 	    else
 	       echo "VisIt is not working under $TRUST_ROOT/Outils/VisIt" 1>$log 2>&1
 	       Run_fiche_KO=1

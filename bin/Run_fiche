@@ -167,7 +167,7 @@ then
    [ "$save" = 1 ] && echo "-save not implemented yet" && exit -1
    [ "$binary" != "" ] && export exec=$binary
    # Lancement en local de la commande creant la fiche avec les options
-   export prod=1 # On utilise les queues de production desormais
+   export USE_MPIRUN=1 # On utilise les queues de production desormais
    # Recherche de la fiche prm:
    prm=`ls src/*.prm 2>/dev/null`
    if [ "`echo $prm | wc -w`" != 1 ]
@@ -202,7 +202,7 @@ else
    # Changement eventuel du binaire
    [ "$binary" != "" ] && binary="export exec=$binary;"
    # Lancement de la fichier sur la machine distante
-   ssh -X $adr -n '. ~/.bashrc;cd '$rep'/src;export prod=1;'$binary'Run_fiche '$options 2>&1 | tee Run.log
+   ssh -X $adr -n '. ~/.bashrc;cd '$rep'/src;export USE_MPIRUN=1;'$binary'Run_fiche '$options 2>&1 | tee Run.log
    scp $adr:$rep/build/rapport.pdf .
    pdf=`pwd`/rapport.pdf
    echo "PDF report $adr:$rep/build/rapport.pdf copied here: $pdf"
