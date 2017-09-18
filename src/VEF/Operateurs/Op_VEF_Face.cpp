@@ -613,11 +613,11 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
               for (int face=ndeb; face<nfin; face++)
                 {
                   if (Objet_U::dimension==2)
-                    Flux_face << "# Face a x= " << xv(face,0) << " y= " << xv(face,1) << " flux=" ;
+                    Flux_face << "# Face a x= " << xv(face,0) << " y= " << xv(face,1) ;
                   else if (Objet_U::dimension==3)
-                    Flux_face << "# Face a x= " << xv(face,0) << " y= " << xv(face,1) << " z= " << xv(face,2) << " flux=" ;
+                    Flux_face << "# Face a x= " << xv(face,0) << " y= " << xv(face,1) << " z= " << xv(face,2) ;
                   for(int k=0; k<nb_compo; k++)
-                    Flux_face << " " << flux_bords_(face, k);
+                    Flux_face << " surface_face(m2)= " << la_zone_vef.face_surfaces(face) << " flux_par_surface(W/m2)= "  << flux_bords_(face, k)/la_zone_vef.face_surfaces(face) << " flux(W)= " << flux_bords_(face, k)  ;
                   Flux_face << finl;
                 }
               Flux_face.syncfile();

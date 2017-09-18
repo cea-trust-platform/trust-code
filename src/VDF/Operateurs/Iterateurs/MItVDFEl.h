@@ -983,6 +983,7 @@ modifier_flux() ;  						\
   }                                                                        \
   int It_VDF_Elem(_TYPE_)::impr(Sortie& os) const                        \
   {                                                                        \
+    const Zone_VDF& la_zone_vdf=ref_cast(Zone_VDF,op_base.valeur().equation().zone_dis().valeur()); \
     const Zone& mazone=la_zone->zone();                                        \
     const int impr_bord=(mazone.Bords_a_imprimer().est_vide() ? 0:1);        \
     double temps=la_zcl->equation().probleme().schema_temps().temps_courant(); \
@@ -1020,7 +1021,7 @@ modifier_flux() ;  						\
     if (je_suis_maitre()) \
     {\
         SFichier Flux;op_base->ouvrir_fichier(Flux,"",1);                        \
-        Flux<< temps;                                        \
+        Flux << temps;                                        \
 	for (int num_cl=0; num_cl<nb_front_Cl; num_cl++)\
 	  {\
 	    const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);\
@@ -1056,11 +1057,18 @@ modifier_flux() ;  						\
                for (face=ndeb; face<nfin; face++)\
         	 {\
         	   if (dimension == 2)                                            \
-                     Flux_face << "# Face a x= " << la_zone->xv(face,0) << " y= " << la_zone->xv(face,1) << " : ";\
+                     Flux_face << "# Face a x= " << la_zone->xv(face,0) << " y= " << la_zone->xv(face,1);\
         	   else if (dimension == 3)                                        \
-                     Flux_face << "# Face a x= " << la_zone->xv(face,0) << " y= " << la_zone->xv(face,1) << " z= " << la_zone->xv(face,2) << " : ";\
+                     Flux_face << "# Face a x= " << la_zone->xv(face,0) << " y= " << la_zone->xv(face,1) << " z= " << la_zone->xv(face,2);\
         	   for(k=0; k<flux_bords.dimension(1); k++)                        \
-                     Flux_face << flux_bords(face, k) << " ";\
+                     {   \
+                        if (!est_egal(la_zone_vdf.face_surfaces(face),0., 1.e-20)) \
+                          { \
+                          Flux_face << " surface_face(m2)= " << la_zone_vdf.face_surfaces(face) ; \
+                          Flux_face << " flux_par_surface(W/m2)= "  << flux_bords(face, k)/la_zone_vdf.face_surfaces(face) ; \
+                          } \
+                        Flux_face << " flux(W)= " << flux_bords(face, k) ;\
+                     }  \
         	   Flux_face << finl;\
         	 }                                                                \
                Flux_face.syncfile();\
