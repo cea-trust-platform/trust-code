@@ -10,11 +10,7 @@ check=0
 mode="auto"
 APP="$*"
 
-#LICENSE_SRC=$TRUST_ROOT/License.txt
-#mkdir -p $TRUST_ROOT/build
-#LICENSE=$TRUST_ROOT/build/License.txt
-#cat $LICENSE_SRC > $LICENSE
-LICENSE=$TRUST_ROOT/License.txt
+LICENSE=$TRUST_ROOT/build/License.txt
 
 [ "$1" = "--mode" ] && shift && mode=$1 && shift 
 
@@ -59,16 +55,6 @@ else
   [ "`grep Copyright $file`" = "" ] && echo  No license in $file && return 1
 fi
 }
-if  [ ! -f ${LICENSE}_c  ] || [  ${LICENSE}_c -ot  ${LICENSE} ] 
-then
-awk 'BEGIN {print ("/****************************************************************************")} 
-    { if ($0=="") {print ("*") } else {print ("* "$0) }}
-    END    {print ("*****************************************************************************/")}' ${LICENSE}  >  ${LICENSE}_c
-
-awk 'BEGIN {print ("#****************************************************************************")} 
-    { print ("# "$0)}
-    END    {print ("#*****************************************************************************")}' ${LICENSE}  >  ${LICENSE}_py
-fi
 for f in $*
 do
 #echo $f

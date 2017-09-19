@@ -103,9 +103,25 @@ CLEAN="" && MESSAGE="Building" && [ "${1%clean}" != "$1" ] && CLEAN=clean && MES
 # Creation eventuelle des repertoires exec et lib :
 [ ! -d $TRUST_ROOT/exec ] && mkdir $TRUST_ROOT/exec
 [ ! -d $TRUST_ROOT/lib ] && mkdir $TRUST_ROOT/lib
+[ ! -d $TRUST_ROOT/build ] && mkdir $TRUST_ROOT/build
  
 COMPILE=$TRUST_ROOT/compile_TRUST$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD".log"
 echo "TRUST compilation on $HOST the `date` ...">$COMPILE
+
+# Creation des fichiers License pour check_license_in_file.sh
+LICENSE_SRC=$TRUST_ROOT/License.txt
+LICENSE=$TRUST_ROOT/build/License.txt
+cp $LICENSE_SRC $LICENSE
+if  [ ! -f ${LICENSE}_c  ] || [  ${LICENSE}_c -ot  ${LICENSE} ]
+then
+awk 'BEGIN {print ("/****************************************************************************")} 
+    { if ($0=="") {print ("*") } else {print ("* "$0) }}
+    END    {print ("*****************************************************************************/")}' ${LICENSE}  >  ${LICENSE}_c
+
+awk 'BEGIN {print ("#****************************************************************************")} 
+    { print ("# "$0)}
+    END    {print ("#*****************************************************************************")}' ${LICENSE}  >  ${LICENSE}_py
+fi
 
 # Nettoyage/Reconstruction des outils uniquement
 if [ "$1" = tools ]
