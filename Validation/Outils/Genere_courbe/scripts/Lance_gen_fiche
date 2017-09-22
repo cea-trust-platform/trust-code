@@ -30,11 +30,13 @@ get_list_prm()
 	  then
 	  echo "$dir bizarre!!!!"
       else
-	  echo `dirname $cas`
+        dirn_cas=`dirname $cas`
+	    if [ ! -f $dirn_cas/skip_prm ]
+        then
+          echo `dirname $cas`
+        fi
       fi
     done
-
-    
 }
 
 genere_fiche()

@@ -84,12 +84,21 @@ verif_archives()
     for file in `find  $Rapports_auto_root/Validation/Rapports_automatiques/$1 -follow -name '*'.prm`
       do
       f=`dirname $file`
-      f=`dirname $f`
-      f=`basename $f`
-      if [ ! -f $f.pdf ] 
-	  then
-	  echo $f not run ? 
-	  PB=1
+      ze_dir=`dirname $f`
+      f=`basename $ze_dir`
+      if [ -f $ze_dir/skip_prm ]
+      then
+         if [ -f $f.pdf ]
+         then
+            echo $f is skipped. Deleting corresponding PDF.
+            rm $f.pdf  
+         fi 
+      else
+         if [ ! -f $f.pdf ]  
+   	     then
+	     echo $f not run ? 
+	     PB=1
+         fi
       fi
     done
     # echo `wc -l ../nettoie` repertoires a effacer
