@@ -15,7 +15,7 @@ then
    echo $WISH Ok
 else
    echo $WISH KO , pb avec DISPLAY ?
-   echo "XPREPRO=KO" && exit -1
+   echo "XPREPRO=NOT" && exit -1
 fi
 #
 [ ! -f $exec ] && echo "$exec non existant." && exit -1

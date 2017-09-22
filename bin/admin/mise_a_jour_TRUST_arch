@@ -813,7 +813,8 @@ do
 	 echo cpu_3D >> liste_cherche & echo PETSC_VDF >> liste_cherche && echo PETSC_VEF >> liste_cherche
 	 echo VAHL_DAVIS >> liste_cherche && echo upwind >> liste_cherche && echo Cx >> liste_cherche 
 	 # Test outils Gmsh et VisIt
-	 echo Kernel_Gmsh2Trio_U >> liste_cherche && echo Extrait_plan >> liste_cherche
+	 echo Kernel_Gmsh2Trio_U >> liste_cherche 
+	 [ "${HOST:0:6}" != cobalt ] && echo Extrait_plan >> liste_cherche # Test provisoire : en attente d une solution via SLURM
 	 # Ensuite selon les options, on affine:
 	 teste=0
 	 if [ "`liste_machines "\-seq" | grep ^$HOST_BUILD"\."`" ]
@@ -937,20 +938,26 @@ do
 	    log=`pwd`/Run_fiche.log
 	    rm -f $log
 	    rm -r -f build Run.log
-	    visit_erreur=`$TRUST_ROOT/exec/VisIt/bin/visit -help 1>/dev/null 2>&1;echo $?`
-	    if [ $visit_erreur = 0 ]
+	    if [ "${HOST:0:6}" = cobalt ] # Test provisoire : en attente d une solution via SLURM
 	    then
-	       USE_MPIRUN=1 Run_fiche 1>$log 2>&1
-	       Run_fiche_KO=$?
-	    else
-	       echo "VisIt is not working under $TRUST_ROOT/Outils/VisIt" 1>$log 2>&1
-	       Run_fiche_KO=1
-	    fi
-	    if [ $Run_fiche_KO = 0 ]
-	    then
-	       echo "Script Run_fiche=OK"
-	    else
-	       echo "Script Run_fiche=KO -> See $log"
+               echo "For the moment, Run_fiche is not launched with SLURM because there is blocking in step of building PDF report file (genererCourbes.py => cf call to visit on Visu.py)..." 1>$log 2>&1
+	       echo "Script Run_fiche=NOT"
+            else
+	       visit_erreur=`$TRUST_ROOT/exec/VisIt/bin/visit -help 1>/dev/null 2>&1;echo $?`
+	       if [ $visit_erreur = 0 ]
+	       then
+	          USE_MPIRUN=1 Run_fiche 1>$log 2>&1
+	          Run_fiche_KO=$?
+	       else
+	          echo "VisIt is not working under $TRUST_ROOT/Outils/VisIt" 1>$log 2>&1
+	          Run_fiche_KO=1
+	       fi
+	       if [ $Run_fiche_KO = 0 ]
+	       then
+	          echo "Script Run_fiche=OK"
+	       else
+	          echo "Script Run_fiche=KO -> See $log"
+	       fi
 	    fi
 	    cd - 1>/dev/null 2>&1
          fi	

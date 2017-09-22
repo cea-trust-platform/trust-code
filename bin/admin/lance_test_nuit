@@ -138,8 +138,8 @@ check_components()
 	       do
 	          machine=`echo $adr | awk -F"." '{print $1}' | awk -F"-gw" '{print $1}'`
 	          liste_options="--with-efface-dir-before"
-	          #if [[ "$liste_machines_KO" != *"$machine"* ]] # Test si machine n est pas dans la liste des machines KO
-		  #then
+	          if [[ "$liste_machines_KO" != *"$machine"* ]] # Test si machine n est pas dans la liste des machines KO
+		  then
 	             if [[ "$valgrind_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines valgrind
 		     then
 		        valgrind_option="--with-valgrind"
@@ -197,7 +197,7 @@ check_components()
                      log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`
 		     WORKTMP=`ssh_ -o BatchMode=yes $log@$adr -n 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
                      echo "$Composant.tar $WORKTMP/$WORKBASE$machine/Composants/$Composant $log@$adr --with-TRUST=$WORKTMP/$WORKBASE$machine/TRUST $liste_options $mode_option $check_option $valgrind_option" >> Run.liste
-		  #fi
+		  fi
 	       done
                echo " "
 	       cat Run.liste
@@ -1680,8 +1680,9 @@ then
    echo "Release criterion: TRUST  OK"
 else
    echo "Release criterion: TRUST  KO"
+   grep "Empty PERF report of" $recupere_log >> tmp.log
    grep "No PERF report of" $recupere_log >> tmp.log
-   cat tmp.log | mail_ -s\"[lance_test_nuit] TRUST portability KO on cible host:\" $TRUST_MAIL
+   cat tmp.log | mail_ -s\"[lance_test_nuit] TRUST portability KO on cible host:\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
 fi
 force_portabilite=~/force_portabilite && [ -f $force_portabilite ] && portabilite=1 && rm -f $force_portabilite
 limite=0.99 # cf recupere_TRUST_arch
@@ -1709,13 +1710,16 @@ port_atelier=`$TRUST_Awk '/atelier compilation/ && /TRUST/ {print $7}' $REP_NUIT
 workshop=0
 [ "$make_atelier" = "1.000" ] && [ "$nb_cible" = "$all_cible" ] && workshop=1
 echo " "
+grep "ATELIER=KO" $REP_NUIT/CR_* > tmp.log
 if [ "$workshop" = 1 ]
 then
    echo "Release criterion: Atelier OK"
+   [ -s tmp.log ] && cat tmp.log | mail_ -s\"[lance_test_nuit] TRUST atelier KO on host:\" $TRUST_MAIL
 else
    echo "Release criterion: Atelier KO"
-   grep "ATELIER=KO" $REP_NUIT/CR_* > tmp.log
-   [ -s tmp.log ] && cat tmp.log | mail_ -s\"[lance_test_nuit] TRUST atelier KO on host:\" $TRUST_MAIL
+   grep "Empty PERF report of" $recupere_log >> tmp.log
+   grep "No PERF report of" $recupere_log >> tmp.log
+   [ -s tmp.log ] && cat tmp.log | mail_ -s\"[lance_test_nuit] TRUST atelier KO on cible host:\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
 fi
 force_make_atelier=~/force_make_atelier && [ -f $force_make_atelier ] && workshop=1 && rm -f $force_make_atelier
 echo "$workshop  Atelier $port_atelier=$make_atelier (=1.000)" >> $MESSAGES_NUIT
@@ -1741,13 +1745,16 @@ port_Xprepro=`$TRUST_Awk '/Xprepro portability with TRUST/ {print $8}' $REP_NUIT
 portabilite_Xprepro=`echo $Xprepro | $TRUST_Awk '{if ($1>=1) print 1;else print 0}'`
 [ "$nb_cible" != "$all_cible" ] && portabilite_Xprepro=0
 echo " "
+grep "XPREPRO=KO" $REP_NUIT/CR_* > tmp.log
 if [ "$portabilite_Xprepro" = 1 ]
 then
    echo "Release criterion: Xprepro OK"
+   [ -s tmp.log ] && cat tmp.log | mail_ -s\"[lance_test_nuit] XPREPRO KO on host:\" $TRUST_MAIL
 else
    echo "Release criterion: Xprepro KO"
-   grep "XPREPRO=KO" $REP_NUIT/CR_* > tmp.log
-   [ -s tmp.log ] && cat tmp.log | mail_ -s\"[lance_test_nuit] XPREPRO KO on host:\" $TRUST_MAIL
+   grep "Empty PERF report of" $recupere_log >> tmp.log
+   grep "No PERF report of" $recupere_log >> tmp.log
+   [ -s tmp.log ] && cat tmp.log | mail_ -s\"[lance_test_nuit] XPREPRO KO on cible host:\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
 fi
 force_portabilite_Xprepro=~/force_portabilite_Xprepro && [ -f $force_portabilite_Xprepro ] && portabilite_Xprepro=1 && rm -f $force_portabilite_Xprepro
 echo "$portabilite_Xprepro  Xprepro $port_Xprepro=$Xprepro (>=1)" >> $MESSAGES_NUIT
@@ -1773,13 +1780,16 @@ port_baltik=`$TRUST_Awk '/Baltik portability/ && /TRUST/ {print $8}' $REP_NUIT/N
 testbaltik=0
 [ "$portabilite_baltik" = "1.000" ] && [ "$nb_cible" = "$all_cible" ] && testbaltik=1
 echo " "
+grep "BALTIK=KO" $REP_NUIT/CR_* > tmp.log
 if [ "$testbaltik" = 1 ]
 then
    echo "Release criterion: Baltik  OK"
+   [ -s tmp.log ] && cat tmp.log | mail_ -s\"[lance_test_nuit] TRUST baltik KO on host:\" $TRUST_MAIL
 else
    echo "Release criterion: Baltik  KO"
-   grep "BALTIK=KO" $REP_NUIT/CR_* > tmp.log
-   [ -s tmp.log ] && cat tmp.log | mail_ -s\"[lance_test_nuit] TRUST baltik KO on host:\" $TRUST_MAIL
+   grep "Empty PERF report of" $recupere_log >> tmp.log
+   grep "No PERF report of" $recupere_log >> tmp.log
+   [ -s tmp.log ] && cat tmp.log | mail_ -s\"[lance_test_nuit] TRUST baltik KO on cible host:\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
 fi
 force_portabilite_baltik=~/force_portabilite_baltik && [ -f $force_portabilite_baltik ] && testbaltik=1 && rm -f $force_portabilite_baltik
 echo "$testbaltik  Baltik $port_baltik=$portabilite_baltik (=1.000)" >> $MESSAGES_NUIT
@@ -1805,13 +1815,16 @@ port_assert=`$TRUST_Awk '/Compilation assert/ {print $7}' $REP_NUIT/NUIT.html`
 assert=0
 [ "$test_assert" = "1.000" ] && [ "$nb_cible" = "$all_cible" ] && assert=1
 echo " "
+grep "ASSERT=KO" $REP_NUIT/CR_* > tmp.log
 if [ "$assert" = 1 ]
 then
    echo "Release criterion: Assert OK"
+   [ -s tmp.log ] && cat tmp.log | mail_ -s\"[lance_test_nuit] TRUST assert KO on host:\" $TRUST_MAIL
 else
    echo "Release criterion: Assert KO"
-   grep "ASSERT=KO" $REP_NUIT/CR_* > tmp.log
-   [ -s tmp.log ] && cat tmp.log | mail_ -s\"[lance_test_nuit] TRUST assert KO on host:\" $TRUST_MAIL
+   grep "Empty PERF report of" $recupere_log >> tmp.log
+   grep "No PERF report of" $recupere_log >> tmp.log
+   [ -s tmp.log ] && cat tmp.log | mail_ -s\"[lance_test_nuit] TRUST assert KO on cible host:\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
 fi
 force_test_assert=~/force_test_assert && [ -f $force_test_assert ] && assert=1 && rm -f $force_test_assert
 echo "$assert  Assert $port_assert=$test_assert (=1.000)" >> $MESSAGES_NUIT
@@ -2066,7 +2079,7 @@ do
       echo "  KO $machine machine not accessible via ssh."
       echo "  No $valgrind_log"
       valgrind=0
-      echo | mail_ -s\"[lance_test_nuit] Error when receiving Valgrind log from $machine not accessible via ssh.\" $TRUST_MAIL
+      echo | mail_ -s\"[lance_test_nuit] Error when receiving Valgrind log from $machine not accessible via ssh.\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
    else
       echo "Verification of $valgrind_log"
       #scp triou@$machine:~/$WORKBASE$machine/TRUST/Validation/Valgrind/ANA.log $valgrind_log
@@ -2082,7 +2095,7 @@ do
       fi
       if [ $scp_error != 0 ]
       then
-         echo | mail_ -s\"[lance_test_nuit] Error when receiving Valgrind log from $machine. Check if not finished.\" $TRUST_MAIL
+         echo | mail_ -s\"[lance_test_nuit] Error when receiving Valgrind log from $machine. Check if not finished.\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
       fi
       rm -f $scp_error
       sleep 1
@@ -2122,7 +2135,7 @@ do
 	       grep -v -f $TRUST_ROOT/exec/tests_TRUST$COMM"_semi_opt"/liste $valgrind_log 1>$log_filtre 2>&1
 	       echo "-----------" >>$log_filtre
 	       cat $TRUST_TMP/cas >>$log_filtre
-	       [ -s $log_filtre ] && cat $log_filtre | mail_ -s\"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects TRUST errors on $machine host\" -c $TRUST_MAIL $TMA_PROJECT_LEADER
+	       [ -s $log_filtre ] && cat $log_filtre | mail_ -s\"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects TRUST errors on $machine host\" -c $TRUST_PROJECT_LEADER -c $TRUST_MAIL $TMA_PROJECT_LEADER
                rm -f $log_filtre
 	    fi
          fi
@@ -2156,7 +2169,12 @@ do
     if [ -s tmp.log ]
     then
        echo " "
-       BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
+       if [[ "$ComposantsGit" = *"$Composant"* ]] # Test si Composant est dans la liste des composants GIT
+       then
+           BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
+       else
+          BALTIK_PROJECT_LEADER="TRUST_PROJECT_LEADER"
+       fi
        cat tmp.log | mail_ -s\"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects $Composant errors on host:\" -c ${!BALTIK_PROJECT_LEADER} -c $TRUST_MAIL $TMA_PROJECT_LEADER
     fi
     rm tmp.log 2>/dev/null
@@ -2169,9 +2187,9 @@ if [ $KO != 0 ]
 then
    grep "KVALGRIND=KO" $REP_NUIT/CR_*
    (
-   grep "KVALGRIND=KO" $REP_NUIT/CR_*  | cut -d_ -f2 | mail_ -s\"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects TRUST errors with upwind test case on host:\" -c $TRUST_MAIL $TMA_PROJECT_LEADER
+   grep "KVALGRIND=KO" $REP_NUIT/CR_*  | cut -d_ -f2 | mail_ -s\"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects TRUST errors with upwind test case on host:\" -c $TRUST_PROJECT_LEADER -c $TRUST_MAIL $TMA_PROJECT_LEADER
    )
-   valgrind=0
+   #valgrind=0 # Test provisoire : en attente decision project leader
 fi
 echo " "
 if [ "$valgrind" = 1 ]
@@ -2758,7 +2776,8 @@ do
    [ -s $TRUST_TMP/ToDo ] && [ "`date '+%u'`" = 1 ] && cat $TRUST_TMP/ToDo | mail_ -s\"[lance_test_nuit] ToDo list for the version ${TRUST_VERSION%_beta}\" -c $TRUST_MAIL $qui
 done
 # Envoi la liste complete le jeudi au chef de projet pour planning debut de semaine prochaine
-[ "`date '+%u'`" = 4 ] && cat $TRUST_ROOT/ToDo | mail_ -s\"[lance_test_nuit] ToDo list for next Monday COSUIV\" -c $TRUST_MAIL $TMA_PROJECT_LEADER
+grep ${TRUST_VERSION%_beta} $TRUST_ROOT/ToDo > $TRUST_TMP/ToDo
+[ "`date '+%u'`" = 4 ] && cat $TRUST_TMP/ToDo | mail_ -s\"[lance_test_nuit] ToDo list for next Monday COSUIV\" -c $TRUST_MAIL $TMA_PROJECT_LEADER
 rm -f $TRUST_TMP/ToDo
 #
 echo " "
@@ -2922,6 +2941,8 @@ do
       tot_total=`$TRUST_Awk '/total_OK/ {print $4}' $nuit_log`
    else
       validation_composant=0
+      echo " " | tee -a tmp.log
+      echo "No $REP_NUIT/nuit_$Composant.html report of $Composant on $TRUST_HOST_ADMIN KO!" | tee -a tmp.log	 
    fi
    [ $tot_cible != 0 ] && [ $nb_cible != $tot_cible ] && validation_composant=0
    [ $tot_cible = 0 ] && [ $nb_cible = 0 ] && validation_composant=0
@@ -2942,7 +2963,12 @@ do
       [ $nb_total != $tot_total ] && cat tmp.log | mail_ -s\"[lance_test_nuit] Portability KO on Baltik $Composant\" $TRUST_MAIL
    else
       echo "Release criterion: $Composant KO"
-      BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
+      if [[ "$ComposantsGit" = *"$Composant"* ]] # Test si Composant est dans la liste des composants GIT
+      then
+         BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
+      else
+         BALTIK_PROJECT_LEADER="TRUST_PROJECT_LEADER"
+      fi
       [ $KO != 0 ] && cat tmp.log | mail_ -s\"[lance_test_nuit] Cible portability KO on Baltik $Composant\" -c ${!BALTIK_PROJECT_LEADER} -c $TMA_PROJECT_LEADER $TRUST_MAIL
    fi
    rm -f tmp.log
@@ -3009,7 +3035,12 @@ if [ "`grep "Script " $REP_NUIT/CR_* | grep KO`" = "" ]
 then
    validation_scripts=1
 else
-   grep "Script " $REP_NUIT/CR_* | grep KO | mail_ -s\"[lance_test_nuit] Validation of scripts KO\" $TRUST_MAIL
+   if [ "$KOt" -eq 0 ]
+   then
+      grep "Script " $REP_NUIT/CR_* | grep KO | mail_ -s\"[lance_test_nuit] Validation of scripts KO on host:\" $TRUST_MAIL
+   else
+      grep "Script " $REP_NUIT/CR_* | grep KO | mail_ -s\"[lance_test_nuit] Validation of scripts KO on cible host:\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
+   fi
 fi
 [ "$KOt" -eq 0 ] && validation_scripts=1
 echo " "
@@ -3066,6 +3097,7 @@ fi
 echo "$validation_doxygen  Doxygen $validation_doxygen (=1)" >> $MESSAGES_NUIT
 let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+$validation_doxygen
+min_criteres=`echo $ECHO_OPTS "scale=0\n$total_criteres*75/100" | bc -l` # 75% du nombre total de criteres pour release beta #
 echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 echo "Total: $criteres_remplis/$total_criteres criteria for the $new version" >> $MESSAGES_NUIT
@@ -3113,12 +3145,12 @@ echo " "
 echo "Analysis of $MESSAGES_NUIT file"
 grep "Total:" $MESSAGES_NUIT
 echo "  criteria:    "$criteres_remplis" != "$total_criteres
-echo "  minimum:     "$criteres_remplis" -ge 16"
+echo "  minimum:     "$criteres_remplis" -ge $min_criteres"
 echo "  stability:   "$stabilite" = 1.000"
 echo "  portability: "$portabilite" = 1"
 echo "  baltikGIT:   "$baltik_ok" = "$total_baltik
 cd $TRUST_ROOT
-if [ $criteres_remplis != $total_criteres ] && [ $criteres_remplis -ge 16 ] && [ $stabilite = "1.000" ] && [ $portabilite = "1" ] && [ $baltik_ok = $total_baltik ]
+if [ $criteres_remplis != $total_criteres ] && [ $criteres_remplis -ge $min_criteres ] && [ $stabilite = "1.000" ] && [ $portabilite = "1" ] && [ $baltik_ok = $total_baltik ]
 then
    echo "Version $new : Currently $criteres_remplis criteria are OK on $total_criteres planned" >> $MESSAGES_NUIT
    echo -e "=> release OK\c"

@@ -36,23 +36,23 @@ cb_config_list *:1" > ROMIO_HINTS.env
    #
    # Load modules
    # intel 14.0.3.174 16.0.3.210(default) intel/17.0.4.196
-   intel="intel/16.0.3.210"
+   intel="intel/17.0.4.196"
    #Vgcc # gnu 4.8.4 4.8.5(default) 4.9.3 5.4.0 6.1.0 6.3.0 7.1.0
    #Vgcc intel="gnu/4.8.5"
    # openmpi mpi/openmpi/1.8.4 mpi/openmpi/1.8.8(default) mpi/openmpi/2.0.2 
    # bibliotheque MellanoX Messaging (MXM) pour optimisation des communications MPI mpiprofile/openmpi/mxm
    #openmpi="mpi/openmpi/1.8.8 mpiprofile/openmpi/mxm"
-   openmpi="mpi/openmpi/1.8.8"
+   #openmpi="mpi/openmpi/2.0.2"
    #Vgcc openmpi="feature/openmpi/gnu"
    # intelmpi mpi/intelmpi/5.1.3.210  mpi/intelmpi/2017.0.4.196(default) # 2016: You are currently not allowed to use this software
    #openmpi="mpi/intelmpi/2017.0.4.196"
    # wi4mpi mpi/wi4mpi/3.0.5 mpi/wi4mpi/3.0.6(default) mpi/wi4mpi/3.1.0 mpi/wi4mpi/3.1.2
-   #openmpi="mpi/wi4mpi/3.0.6"
+   openmpi="mpi/wi4mpi/3.0.6"
    #Python 2.7.5 python/2.7.8  python/2.7.12(default)  python/2.7.13  python/3.5.2 
    #cmake version 2.8.12.2 cmake/3.5.2  cmake/3.9.1
    #module="$intel $openmpi"
    # newenv/2016-09  newenv/2018-03(default)
-   module="newenv/2016-09"
+   module="newenv/2018-03"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env

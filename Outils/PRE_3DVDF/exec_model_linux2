@@ -203,11 +203,9 @@ if [ $avec_xterm -eq 1 ]
 then 
  $Xterm -e tail -f mod.out &
  proc2=$!
- #wait $proc1 &&  kill -9  $proc2
- sleep 15 &&  kill -9  $proc2
+ wait $proc1 &&  kill -9  $proc2
 else
- #wait $proc1
- sleep 15
+ wait $proc1
 fi
 
 res=` grep "PROBLEM " mod.out| tail -1`

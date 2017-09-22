@@ -1,0 +1,14 @@
+#!/bin/bash 
+#MSUB -r mise_a_jour_TRUST_arch
+#MSUB -q broadwell
+#MSUB -Q normal
+#MSUB -T 43200
+#MSUB -o ~/myjob_cobalt-wi4mpi.%J.o
+#MSUB -e ~/myjob_cobalt-wi4mpi.%J.e
+#MSUB -E "--no-requeue"
+#MSUB -n 1
+#MSUB -X bash
+set -x
+cd $BRIDGE_MSUB_PWD
+[ -f ld_env.sh ] && . ./ld_env.sh # To load an environment file if necessary
+ccc_mprun -n $BRIDGE_MSUB_NPROC ./mise_a_jour_TRUST_arch 1>~/CR_cobalt-wi4mpi 2>&1

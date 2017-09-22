@@ -54,25 +54,25 @@ module () {
       # Changing strategy, we load a version for each module (not the last one)
       # Intel compiler (WARNING: Intel 12.x provoque plusieurs problemes (voir FA1445))
 	  # Intel 14.0.3.174(default) 16.0.3.210
-      module="intel/14.0.3.174"
+      module="intel/16.0.3.210"
       echo "Module $module detected and loaded on $HOST."
       module unload intel
       module load $module
       # bullxmpi 1.2.7.2 1.2.8.2 1.2.8.4(default) 1.2.9.2
-      module="mpi/bullxmpi/1.2.8.4"
-      echo "Module $module detected and loaded on $HOST."
-      module unload mpi
-      module load $module
-      # openmpi 1.8.8(default) 2.0.2
-      #module="mpi/openmpi/1.8.8"
+      #module="mpi/bullxmpi/1.2.8.4"
       #echo "Module $module detected and loaded on $HOST."
       #module unload mpi
       #module load $module
+      # openmpi 1.8.8(default) 2.0.2
+      module="mpi/openmpi/1.8.8"
+      echo "Module $module detected and loaded on $HOST."
+      module unload mpi
+      module load $module
       #Python 2.6.6 python/2.7.3  python/2.7.8(default)  python/2.7.12  python/3.3.2
-      #module="python/2.7.8"
-      #echo "Module $module detected and loaded on $HOST."
-      #module unload python
-      #module load $module
+      module="python/2.7.8"
+      echo "Module $module detected and loaded on $HOST."
+      module unload python
+      module load $module
       #
       # If libccc_user module found, load it (this module helps to know the CPU)
       module=libccc_user

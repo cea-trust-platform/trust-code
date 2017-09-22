@@ -366,6 +366,9 @@ do
 	if [ "`grep Xprepro: $CR`" != "" ]
 	then
 	   COULEUR=$ROUGE && [ "`echo $TAUX_XPREPRO | bc`" = 1 ] && COULEUR=$VERT
+	elif [ "`grep XPREPRO=NOT $CR`" != "" ]
+	then
+	   COULEUR=$BLANC
 	else
 	   COULEUR=$ROUGE
 	fi
@@ -374,6 +377,7 @@ do
 	then
 	   let nb_machine_xprepro_cible=$nb_machine_xprepro_cible+1
 	   pourcent=`cat $CR | awk 'BEGIN {s=0;n=0} /Xprepro:/ {n++} /Xprepro:/ && /OK/ {s++} END {if (n>0) print s/n;else print s}'`
+	   [ $pourcent = 0 ] && [ "`grep XPREPRO=NOT $CR`" != "" ] && pourcent=1 # Test provisoire : en attente decision project leader
 	   portabilite_xprepro=`echo $ECHO_OPTS "scale=3\n$portabilite_xprepro+$pourcent" | bc -l`
 	   echo " step Xprepro: total pourc nb file "$portabilite_xprepro" "$pourcent" "$nb_machine_xprepro_cible" "$CR
 	fi
