@@ -1295,7 +1295,7 @@ fi
 ########################
 # Installation de Salome
 ########################
-version_salome=8.2.0
+version_salome=8.3.0
 if [ $TRUST_DOWNLOAD_SALOME = 1 ]
 then
    version_salome_=`echo $version_salome | awk '{gsub("\\\.","_",$0);print $0}'`
