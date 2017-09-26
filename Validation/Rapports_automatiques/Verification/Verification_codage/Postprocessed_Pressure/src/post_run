@@ -3,4 +3,13 @@
 
 python propertiesGeometry.py
 
+sed -n "2p" PAR_VEF_P0P1_g*_P_TOT1DRAWA.son > probe1.txt
+sed -i 's/# Temps //' probe1.txt
 
+#sed -n "2p" PAR_VEF_P0P1_g*_P_TOT2DRAWA.son > probe2.txt
+#sed -i 's/# Temps //' probe2.txt
+
+sed -n "2p" PAR_VEF_P0P1_g*_P_TOT3DRAWA.son > probe3.txt
+sed -i 's/# Temps //' probe3.txt
+
+sed -n "97p" PAR_VEF_P0P1_g*.err > nb_elem_tot.txt

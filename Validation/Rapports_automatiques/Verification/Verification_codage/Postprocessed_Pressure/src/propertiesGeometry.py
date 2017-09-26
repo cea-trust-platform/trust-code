@@ -1,19 +1,23 @@
 #Script de recuperation des proprietes physiques et de la geometrie
 
 import os, sys, math
+import numpy as np
 
 def readPropertiesData(nomFic):
 	#initialisation
 	properties = {}
 	properties['mu'] = -1
 	properties['rho'] = -1
-	properties['Cp'] = -1
-	properties['lambda'] = -1
-	properties['beta_th'] = -1
-	#properties['Lx'] = -1	
+	properties['Vmax'] = -1
+	properties['L'] = -1
+	properties['R'] = -1
+        properties['Vmoy']= -1
+	properties['Re'] = -1
+        properties['Qv'] = -1
+	properties['delta_P_theo'] = -1
 	# ouverture des fichiers
 	fic = open(nomFic,'r')
-	
+
 	for ligne in fic:
 		ligne = ligne.strip().lower()
 		tLigne = ligne.split()
@@ -22,73 +26,126 @@ def readPropertiesData(nomFic):
 				properties['mu'] = float(tLigne[-1])
 			elif ligne.startswith('rho'):
 				properties['rho'] = float(tLigne[-1])
-			elif ligne.find('cp')>-1:
-			    	properties['Cp'] = float(tLigne[-1])
-			elif ligne.find('lambda')>-1:
-			    	properties['lambda'] = float(tLigne[-1])
-			elif ligne.find('beta_th')>-1:
-			    	properties['beta_th'] = float(tLigne[-1])
+		elif ligne.find('vmax')>-1:
+			properties['Vmax'] = float(tLigne[-2])
+		elif ligne.find('longueur')>-1:
+			properties['L'] = float(tLigne[-2])
+		elif ligne.find('rayon')>-1:
+			properties['R'] = float(tLigne[-2])
 	fic.close()
+        D=2*properties['R']
+        K=-4*properties['mu']*properties['Vmax']/properties['R']**2
+        properties['Vmoy']=-K*properties['R']**2/(8*properties['mu'])
+        properties['Re']=properties['rho']*properties['Vmoy']*D/properties['mu']
+        properties['Qv']=-K*np.pi*properties['R']**4/(8*properties['mu'])
+        properties['delta_P_theo']=-K*properties['L']
 	return properties
 
+def dPtrustmoy(nomFic):
+	fic = open(nomFic,'r')
+	# lecture de ligne -> entetes
+	fichier = fic.readlines()
+	#tant que la derniere ligne est vide
+	while fichier[-1]=="" or fichier[-1]=="\n":
+		del fichier [-1]
+	ligne = fichier[-1]
+	tLigne = ligne.split()
+	ptrust=float(tLigne[-1])
+	fic.close()
+	return ptrust
 
-def ecritureFichier(properties):
-	#ecriture du fichier
+def dPtrust(nomFic):
+	fic = open(nomFic,'r')
+	# lecture de ligne -> entetes
+	fichier = fic.readlines()
+	#tant que la derniere ligne est vide
+	while fichier[-1]=="" or fichier[-1]=="\n":
+		del fichier [-1]
+	ligne = fichier[-1]
+	tLigne = ligne.split()
+	dptrust=abs(float(tLigne[-1])-float(tLigne[-2]))
+	fic.close()
+	return dptrust
+
+def meanPOutlet(nomFic):
+	fic = open(nomFic,'r')
+	# lecture de ligne -> entetes
+	fichier = fic.readlines()
+	#tant que la derniere ligne est vide
+	while fichier[-1]=="" or fichier[-1]=="\n":
+		del fichier [-1]
+	ligne = fichier[-1]
+	tLigne = ligne.split()
+	meanPOutlet=float(tLigne[-1])
+	fic.close()
+	return meanPOutlet
+
+def Qvtrust(nomFic):
+	fic = open(nomFic,'r')
+	# lecture de ligne -> entetes
+	fichier = fic.readlines()
+	#tant que la derniere ligne est vide
+	while fichier[-1]=="" or fichier[-1]=="\n":
+		del fichier [-1]
+	ligne = fichier[-1]
+	tLigne = ligne.split()
+	Qvtrust=abs(float(tLigne[-2]))
+	fic.close()
+	return Qvtrust
+
+def ecritureFichier(properties, values):
 	nomFic = 'propertiesGeometry.dat'
 	fichier = open(nomFic, 'w')
-	fichier.write('%18.3e %18.3f %18.f %18.2e %18.2e\n' % ( properties['mu'], properties['rho'], properties['Cp'], properties['lambda'], properties['beta_th'] ))
+	fichier.write('%18.3e %18.3f %18.3f %18.3f %18.3e %18.3e %18.4e %18.4e %18.4e %18.4e %18.4e %18.4e %18.4e %18.4e %18.4e %18.4e %18.4e\n' % ( properties['mu'], properties['rho'], properties['Vmax'], properties['Vmoy'], properties['Qv'], properties['Re'], properties['delta_P_theo'], values['dptrust1'], values['delta_P1_error'], values['dptrust2'], values['delta_P2_error'], values['dptrust3'], values['delta_P3_error'], values['dptrustmoy2'], values['delta_Pmoy2_error'] , values['Qvtrust'], values['QvError'] ))
+	fichier.close()
+	nomFic = 'mean_pressure.dat'
+	fichier = open(nomFic, 'w')
+	fichier.write('%18.3e %18.3e %18.3e %18.3e\n' % ( values['meanPressionOutlet'], values['meanPressionPaOutlet'], values['meanPressureOutlet'], values['meanPstarOutlet'] ))
 	fichier.close()
 
-def getPropertiesFromdat():
-	properties = {}
-	nomFichier = 'propertiesGeometry.dat'
-	if os.path.isfile(nomFichier):
-		#recupere les donnees du fichier
-		f = open(nomFichier, 'r')
-		lignes = f.readlines()
-		f.close()
-	else:
-		print 'Erreur getPropertiesFromdat : fichier %s non trouve !' % (nomFichier)
-		sys.exit()
-	ligne = (lignes[0]).strip()
-	tabLigne = ligne.split()
-	ind = 0
-	try:
-		properties['mu'] = float(tabLigne[ind])
-		ind += 1
-		properties['rho'] = float(tabLigne[ind])
-		ind += 1
-		properties['Cp'] = float(tabLigne[ind])
-		ind += 1
-		properties['lambda'] = float(tabLigne[ind])
-		ind += 1
-		properties['beta_th'] = float(tabLigne[ind])
-	except IndexError:
-		print 'Erreur getPropertiesFromdat : lecture element %d pour 0-%d elements...' % (ind, len(tabLigne)-1)
-		sys.exit()
-	except ValueError:
-		print 'Erreur getPropertiesFromdat : lecture element %d n\'est pas un float (%s)...' % (ind, tabLigne[ind])
-		sys.exit()
-	return properties
-
-
-
 if __name__ == '__main__':
-	
 	#recuperation du fichier data
 	import glob
-	#derniere ligne du ls
-	#ficLS = os.popen('ls *.data')
-	#lignes = ficLS.readlines()
-	#Ligne = lignes[0]
-	#suppression du \n en fin de nom
-	#nomFic = Ligne[:len(Ligne)-1]
-	listFics = glob.glob('*.data')
-	if len(listFics)>0:
-		nomFic = listFics[0]
-		properties = readPropertiesData(nomFic)
-	
-		#ecriture du fichier
-		ecritureFichier(properties)
-	else:
-		print 'Erreur propertiesGeometry : pas de fichier data trouve !'
+
+	values = {}
+	values['Qvtrust'] = -1
+	values['QvError'] = -1
+	values['delta_P1_error'] = -1
+	values['delta_P2_error'] = -1
+	values['delta_P3_error'] = -1
+	values['delta_Pmoy2_error'] = -1
+        values['dptrust1'] = -1
+        values['dptrust2'] = -1
+        values['dptrust3'] = -1
+        values['meanPressionOutlet'] = -1
+        values['meanPressionPaOutlet'] = -1
+        values['meanPressureOutlet'] = -1
+        values['meanPstarOutlet'] = -1
+
+	properties = readPropertiesData('PAR_VEF_P0P1_g.data')
+
+	values['dptrust1'] = dPtrust('PAR_VEF_P0P1_g_P_TOT1.son')
+#	values['dptrust2'] = dPtrust('PAR_VEF_P0P1_g_P_TOT2.son')
+	values['dptrust3'] = dPtrust('PAR_VEF_P0P1_g_P_TOT3.son')
+	values['dptrustmoy2'] = dPtrustmoy('PAR_VEF_P0P1_g_DELTA_P_TOT_MOY.son')
+
+        values['meanPressionOutlet'] = meanPOutlet('PAR_VEF_P0P1_g_MEAN_PRESSION_OUTLET.son')
+        values['meanPressionPaOutlet'] = meanPOutlet('PAR_VEF_P0P1_g_MEAN_PRESSION_PA_OUTLET.son')
+        values['meanPressureOutlet'] = meanPOutlet('PAR_VEF_P0P1_g_MEAN_PRESSURE_OUTLET.son')
+        values['meanPstarOutlet'] = meanPOutlet('PAR_VEF_P0P1_g_MEAN_P_STAR_OUTLET.son')
+
+	values['Qvtrust'] = Qvtrust('PAR_VEF_P0P1_g_pb_Debit.out')
+	values['QvError'] = float(abs(properties['Qv']-values['Qvtrust'])/properties['Qv'])*100
+	values['delta_P1_error'] = float(abs(properties['delta_P_theo']-values['dptrust1'])/properties['delta_P_theo'])*100
+#	values['delta_P2_error'] = float(abs(properties['delta_P_theo']-values['dptrust2'])/properties['delta_P_theo'])*100
+	values['delta_P3_error'] = float(abs(properties['delta_P_theo']-values['dptrust3'])/properties['delta_P_theo'])*100
+	values['delta_Pmoy2_error'] = float(abs(properties['delta_P_theo']-values['dptrustmoy2'])/properties['delta_P_theo'])*100
+
+	#ecriture du fichier
+	ecritureFichier(properties, values)
+#	else:
+#		print 'Erreur propertiesGeometry : pas de fichier data trouve !'
+
+
+
+

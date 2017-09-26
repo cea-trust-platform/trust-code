@@ -1,0 +1,47 @@
+dimension 3
+
+Pb_hydraulique pb
+domaine dom
+
+# Longueur 0.2 #
+# Rayon 0.1 #
+# BEGIN MESH #
+# Read_file geometry.geo ; #
+# Mailler dom {
+    Pave pavegauche
+    {
+        Origine             0.    -0.1   -0.1
+        Longueurs           0.2    0.2    0.2
+        Nombre_de_Noeuds    6     30     30
+    }
+    {
+        bord Wall       Y = -0.1    0.  <= X <=  0.2      -0.1 <= Z <= 0.1
+        bord Wall       Y =  0.1    0.  <= X <=  0.2      -0.1 <= Z <= 0.1
+        bord Wall       Z = -0.1    0.  <= X <=  0.2      -0.1 <= Y <=  0.1
+        bord Wall       Z =  0.1    0.  <= X <=  0.2      -0.1 <= Y <=  0.1
+        bord Inlet      X =  0.    -0.1 <= Y <=  0.1      -0.1 <= Z <= 0.1
+        bord Outlet     X =  0.2   -0.1 <= Y <=  0.1      -0.1 <= Z <= 0.1
+    }
+}
+Remove_elem dom { fonction (y^2+z^2_GE_0.01) }
+tetraedriser_homogene_compact dom
+RegroupeBord dom Wall { Wall newBord }
+ #
+Lire_med family_names_from_group_names dom mesh_gmsh mesh_gmsh.med
+extruder { domaine dom direction 0.2 0 0 nb_tranches 4 }
+RegroupeBord dom Inlet { devant }
+RegroupeBord dom Outlet { derriere }
+# tetraedriser_homogene_compact dom #
+# rotation dom Y 0 0 90 #
+# END MESH #
+
+# Postraiter_domaine { domaine dom fichier mesh format lata } #
+# BEGIN PARTITION #
+Partition dom
+{
+    Partition_tool metis { nb_parts 3 }
+    Larg_joint 2
+    zones_name DOM
+}
+End
+# END PARTITION #
