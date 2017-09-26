@@ -103,7 +103,7 @@ export Rapports_auto_root
 SJOB=""
 [ "TRUST_USE_Sjob" = "1" ] && SJOb="-Sjob"
 
-echo "Launch of cases"
+echo "Launch of cases (you can skip a PRM by touching a file 'skip_prm' in the associated validation form directory)"
 Validation_outil=$TRUST_ROOT/Validation/Outils/Genere_courbe
 . ${Validation_outil}/scripts/scripts_validation.sh 1>/dev/null
 Generate_makefile_validation $SJOB
