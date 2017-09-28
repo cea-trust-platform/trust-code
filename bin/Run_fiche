@@ -12,6 +12,7 @@ help()
    echo "-parallel_run                  : Run/submit calculations in a parallel way (by default, calculations are run one after one)." 
    echo "-nb_pas_dt_max N               : The test cases will be run on N time steps only."
    echo "-visit_np np                   : Run VisIt on np cores (by default 1) when building the figures, which is faster on a very big mesh."
+   echo "-no_visit                      : Do not build any VisIt figures, which is faster on PRM having many VisIt snapshots."
    echo "-d text                        : The figures will not be re-generated and will reuse previous one, if any."
    echo "-d figure_number               : Generates the figure_number figure without building the whole PDF report."
    echo "-o name_report.pdf             : Change the default PDF report name 'rapport.pdf'"
@@ -76,6 +77,10 @@ do
    then
       shift
       export TRUST_VISIT_NP="-np $1"
+      shifti
+   elif [ "$1" = -no_visit ]
+   then
+      options=$options" "--no_visit
       shift
    elif [ "$1" = -o ]
    then

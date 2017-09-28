@@ -3,21 +3,21 @@
 #****************************************************************************
 # Copyright (c) 2015 - 2016, CEA
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 # 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
 # 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 # 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
-# 
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
-# IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; 
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+# IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
 # OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# 
+#
 #*****************************************************************************
 
 import sys, os, getopt, shutil
 
-try: 
+try:
 	sys.dont_write_bytecode = True
 except:
         pass
@@ -51,17 +51,18 @@ def getOptions(argv, gestMsg):
 	old_path=[]
 	debug_figure=None
 	sortie = 'rapport.pdf'
+	novisit = False
 	#recuperation des options
 	try:
-		options,arguments = getopt.getopt(argv, 'g:hfp:v:o:d:c:Dn', ['get_cmd_to_run=','help', 'format', 'parametres=', 'verbose=', 'output=','debug_figure=','compare=','DEBOG','nodisplay'])
+		options,arguments = getopt.getopt(argv, 'g:hfp:v:o:d:c:Dn:nv', ['get_cmd_to_run=','help', 'format', 'parametres=', 'verbose=', 'output=','debug_figure=','compare=','DEBOG','nodisplay', 'no_visit'])
 	except getopt.GetoptError:
 		gestMsg.ecrire(GestionMessages._ERR, '-> Error, unknown option. Options list is %s' % (argv), arret=True, usage=True, texteUsage=Usage(gestMsg))
-		
+
 	# balayage pour extraire les options utiles
 	if (arguments):
-		gestMsg.ecrire(GestionMessages._ERR, '-> Error, unknown option. Options list is %s' % (arguments), arret=True, usage=True)	
-		
-	
+		gestMsg.ecrire(GestionMessages._ERR, '-> Error, unknown option. Options list is %s' % (arguments), arret=True, usage=True)
+
+
 	for opt, arg in options:
 		if opt in ('-h', '--help'):
 			gestMsg.ecrire(GestionMessages._INFO, '-- Help --', arret=True, usage=True, texteUsage=Usage(gestMsg))
@@ -88,14 +89,19 @@ def getOptions(argv, gestMsg):
 			debug_figure=int(arg)
 		elif opt in ('--nodisplay'):
 			display_figure=False
+		elif opt in ('--no_visit'):
+			novisit=True
 		else:
 			print "codage manquant pour "+str(opt)
 			1/0
-		
+
+		if os.getenv("PRM_NO_VISIT"):
+			novisit=True
+
 	if ficParametres=='':
 		gestMsg.ecrire(GestionMessages._ERR, 'The parameter file has not been given !', texteUsage=Usage(gestMsg))
 
-	return verbose, ficParametres, sortie, get_cmd_to_run,debug_figure,old_path
+	return verbose, ficParametres, sortie, get_cmd_to_run,debug_figure,old_path, novisit
 
 
 class genererCourbes:
@@ -158,7 +164,7 @@ TODO
 	__format_fichier__ = 'ADU'
 
 	#methode d'initialisation / constructeur
-	def __init__(self, parametersFile, verbose=0, output='', out='rapport.pdf'):
+	def __init__(self, parametersFile, verbose=0, output='', out='rapport.pdf', novisit=False):
 		'''Constructeur.'''
 		if output=='':
 			self.gestMsg = GestionMessages(verbose,'log')
@@ -186,21 +192,22 @@ TODO
 		self.compile_latex=1
 		self.sortie = out
 		self.preRequis = []
+		self.novisit = novisit
 
 
 		pass
 	def printFichierParametres(self):
 		dec='\t'
 		print "parametres {"
-		if self.titre != 'Undefined' : print dec,"titre" ,self.titre  
+		if self.titre != 'Undefined' : print dec,"titre" ,self.titre
 		if self.auteur != 'Undefined': print dec,"auteur" , self.auteur
 		print_description(self.description,dec)
-		
+
 		for ref in self.reference :print dec,"reference",ref
 		for cas in self.casTest: print dec,"casTest", cas
 		if self.versionTrioU != '': print dec,"versionTRUST", self.versionTrioU
 		for param in  self.parametresTrioU : print dec,"parametresTrio_u",param
-	
+
 		if self.inclureData != 2: print dec,'inclureData',self.inclureData
 		for pre in self.preRequis : print dec,'preRequis', pre
 		print "}"
@@ -209,8 +216,8 @@ TODO
 			indice=chap.printFichierParametres(indice)
 			pass
 		pass
-	
-		
+
+
 	#---------------------------------------------
 	# Methodes de lecture du fichier de parametres
 
@@ -256,7 +263,7 @@ TODO
 			ligne = ligne.strip()
 			if ligne[0]!='#': ok=1
 			pass
-		
+
 		motcle,valeur,motcle_lu = extraireMotcleValeur(fichier,ligne, self.gestMsg)
 		if motcle=='parametres':
 			#Lecture des parametres generaux
@@ -267,11 +274,11 @@ TODO
 				ligne = fichier.readline()
 				if not ligne:
 					self.gestMsg.ecrire(GestionMessages._ERR, 'Unexpected end of file. We expected a parameter from the general parameters.')
-			
+
 				ligne = ligne.strip()
 				if len(ligne)>0 and ligne[0]!='#':
 					motcle,valeur,motcle_lu = extraireMotcleValeur(fichier,ligne, self.gestMsg)
-					
+
 					if motcle==_accoladeF:
 						fin = True
 					elif motcle=='titre':
@@ -352,12 +359,12 @@ TODO
 				os.mkdir(destTMP)
 				pass
 			pass
-		
+
 
 		#balayage des chapitres, pour les ajouter au rapport
 		indice = 0
 		for chapitre in self.listeChapitres:
-			indice = chapitre.genererGraphes(destTMP, indice,debug_figure)
+			indice = chapitre.genererGraphes(destTMP, indice,debug_figure, self.novisit)
 			#indice += 1
 			pass
 		if (self.compile_latex==1):
@@ -371,7 +378,7 @@ TODO
 				print "User_write_tex uses to generate tex"
 			except:
 				from Write_tex import Write_tex
-				w=Write_tex()
+				w=Write_tex(novisit=self.novisit)
 				pass
 			dico={}
 			dico["nomFichierTex"]=nomFichierTex
@@ -385,7 +392,7 @@ TODO
 			# err = res.stderr.readlines()
 			# if err!=[]:
 			#	self.gestMsg.ecrire(GestionMessages._ERR, 'Error when generating pdf file, see log file (%s)' % (nomFichierTexComplet[:-3] + 'log'))
-	
+
 			ici = os.getcwd()
 			os.chdir(destTMP)
 			res = os.system('pdflatex -interaction=nonstopmode %s >pdflatex.log' % nomFichierTex)
@@ -414,23 +421,23 @@ TODO
 				pass
 			pass
 		pass
-	
+
 	pass
 
         def modifie_figures(app,old_path):
 	    ''' double les figures trio pour ajouter les anciens resultats situes dans old/lesnouveaux ... souvent old commence par ../ et finit par / '''
-	  
+
 	    for chap in app.listeChapitres:
 		    newfig=[]
 		    for figure in chap.listeFigures:
 			    new_figs=figure.modifie_pour_comparaison(old_path)
 			    newfig.append(figure)
-			    for fig in new_figs: newfig.append(fig) 
+			    for fig in new_figs: newfig.append(fig)
 			    pass
 		    chap.listeFigures=newfig
 		    pass
 	    pass
-    
+
 
 
 
@@ -438,10 +445,10 @@ if __name__ == "__main__":
 	# global debug_figures
 	argv = sys.argv[1:]
 	gestMsg = GestionMessages(verbose=10, output='log', ecran=True)
-	verbose, ficParam, sortie, get_cmd_to_run,debug_figure,old_path= getOptions(argv, gestMsg)
+	verbose, ficParam, sortie, get_cmd_to_run,debug_figure,old_path,novisit= getOptions(argv, gestMsg)
 	gestMsg.setNiveauMessage(verbose)
 	#creation de l'objet de generation des courbes
-	app = genererCourbes(parametersFile=ficParam, verbose=verbose, output=gestMsg, out=sortie)
+	app = genererCourbes(parametersFile=ficParam, verbose=verbose, output=gestMsg, out=sortie, novisit=novisit)
 
 	#lecture du fichier de parametres
 	app.lireFichierParametres()
@@ -459,7 +466,7 @@ if __name__ == "__main__":
 			cmd_0='( echo;echo "-> Running the calculation of the %s data file in the %s directory ...";cd %s ;'%(case,dir,dir)
 			test_cmd='extract_perf %s 2>/dev/null; if [ $? -ne 0 ]; then '%(case)
 			if (nb_proc==1):
-				
+
 				cmd=' [ -f pre_run ] && chmod +x pre_run && echo "-> Running the pre_run script in the %s directory ..." && ./pre_run %s; trust %s     1>%s.out 2>%s.err ;'%(dir,case,case,case,case)
 			else:
 				cmd=' [ -f pre_run ] && chmod +x pre_run && echo "-> Running the pre_run script in the %s directory ..." && ./pre_run %s; trust %s %d  1>%s.out 2>%s.err ;'%(dir,case,case,nb_proc,case,case)
@@ -500,7 +507,7 @@ if __name__ == "__main__":
 		f.write(s.getvalue())
 		f.close()
 		pass
-	
+
 	if get_cmd_to_run:
 		from sys import exit
 		if (get_cmd_to_run!='not_run'):
