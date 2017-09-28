@@ -19,12 +19,12 @@ linux	rsync_ssh	tache		is210376.intra.cea.fr				-MPCube				-valgrind	-force_prov
 linux	rsync_ssh	tache		is210968.intra.cea.fr		-all						-Check_decoupage -force_provided_openmpi		# CentOS 7.3	Bat 526	LMEC	bureau TMA FLICA4
 linux	rsync_ssh	tache		is212957.intra.cea.fr		-all						-xdata		-force_provided_mpich			# Ubuntu 16	Bat 526 LMEC	bureau TMA FLICA4
 linux	sftp_ssh	tache		is220631.intra.cea.fr	-rsync	-all		-MPCube -TrioCFD -ModeleCoeur	-prof		-force_provided_mpich			# Fedora 22	Bat 526 LGLS	bureau TMA FLICA4
-linux	rsync_ssh	tache		is227246.intra.cea.fr				-TRUST -MPCube					-remote_install_TRUST_with_source	# Fedora 26 	Bat 454 LMES	bureau Erwan Adam
-linux	rsync_ssh	tache		is221931.intra.cea.fr		-all								-remote_install_TRUST_kernel_only	# CentOS 7.3	Bat ?	SERMA	bureau ?
+linux	rsync_ssh	tache		is227246.intra.cea.fr				-TRUST -MPCube		-force_provided_openmpi	-remote_install_TRUST_with_source	# Fedora 26 	Bat 454 LMES	bureau Erwan Adam
+linux	rsync_ssh	tache		is221931.intra.cea.fr		-all					-force_provided_mpich	-remote_install_TRUST_kernel_only	# CentOS 7.3	Bat ?	SERMA	bureau ?
 linux	rsync_ssh	tache		is212800.intra.cea.fr		-all		-MPCube				-g 		-disable 				# CentOS 6.4	Bat ?	?	bureau ? (Teste la compilation de TRUST allegee)
 linux	rsync_ssh	tache		is223252.intra.cea.fr				-TRUST -TrioCFD 		-g 		-force_provided_mpich			# Ubuntu 16	Bat 451 LMSF	bureau Ulrich Bieder
 linux	rsync_ssh	non		is229106.intra.cea.fr				-TRUST -MPCube -TrioCFD -ModeleCoeur		-disable-gmsh				# Mint 18.2	Bat 454	LMES	bureau Marc Tajchman
-linux	rsync_ssh	non		is221710.intra.cea.fr				-TRUST -MPCube -TrioCFD -ModeleCoeur							# Fedora 24	Bat 454	LMEC	bureau Marc Elmo
+linux	rsync_ssh	non		is221710.intra.cea.fr				-TRUST -MPCube -TrioCFD -ModeleCoeur		-force_provided_mpich			# Fedora 24	Bat 454	LMEC	bureau Marc Elmo
 linux	rsync_ssh	non		is213120.intra.cea.fr   	-all													# Ubuntu 12	Bat 526 LMEC	bureau TMA FLICA4
 linux	rsync_ssh	non		is220631-clang.intra.cea.fr			-ModeleCoeur			-clang 		-force_provided_mpich			# Fedora 22	Bat 526 LGLS	bureau TMA FLICA4
 linux	rsync_ssh	non		is226423-clang.intra.cea.fr			-ModeleCoeur			-g -clang38	-force_provided_openmpi	-disable-gmsh	# Ubuntu 16	Bat 526 LMSF	bureau Michel Filippi

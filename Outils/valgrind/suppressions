@@ -1271,3 +1271,160 @@
    fun:dmumps_c
 }
 
+##
+## 26/09/2017: Part added by TMA but to be validated by TRUST project leader
+## Triggered by upwind and PAR_upwind tests with OpenMPI 2.0.2 (provided library)
+## On these suppressions, we have not verified that the leaks are not incremental.
+##
+## on is210968, g++ 4.8.5, CentOS 7.3
+{
+   <upwind_openmpi_2_0_2_0>
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:malloc
+   ...
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize.part.3
+   ...
+   fun:main
+}
+{
+   <upwind_openmpi_2_0_2_1>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize.part.3
+   ...
+}
+{
+   <upwind_openmpi_2_0_2_2>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:realloc
+   ...
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize.part.3
+   ...
+}
+{
+   <upwind_openmpi_2_0_2_3>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   ...
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize.part.3
+   ...
+}
+{
+   <upwind_openmpi_2_0_2_4>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize.part.3
+   ...
+}
+{
+   <upwind_openmpi_2_0_2_5>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:opal_class_initialize
+   fun:opal_obj_new.constprop.9
+   fun:mca_pml_ob1_isend
+   fun:ompi_coll_base_bcast_intra_generic
+   fun:ompi_coll_base_bcast_intra_binomial
+   fun:ompi_coll_tuned_bcast_intra_dec_fixed
+   fun:PMPI_Bcast
+   fun:PetscOptionsInsertFile
+   fun:PetscOptionsInsert
+   fun:PetscInitialize.part.3
+   ...
+   fun:main
+}
+{
+   <upwind_openmpi_2_0_2_6>
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:calloc
+   fun:opal_hash_table_init2
+   fun:opal_proc_table_set_value
+   fun:mca_btl_tcp_proc_create
+   fun:mca_btl_tcp_add_procs
+   fun:mca_bml_r2_add_procs
+   fun:mca_pml_ob1_add_procs
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize.part.3
+   ...
+   fun:main
+}
+{
+   <upwind_openmpi_2_0_2_7>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:opal_class_initialize
+   fun:opal_obj_new.constprop.17
+   fun:mca_pml_ob1_recv_req_start
+   fun:mca_pml_ob1_irecv
+   fun:ompi_coll_base_bcast_intra_generic
+   fun:ompi_coll_base_bcast_intra_binomial
+   fun:ompi_coll_tuned_bcast_intra_dec_fixed
+   fun:PMPI_Bcast
+   fun:PetscOptionsInsertFile
+   fun:PetscOptionsInsert
+   fun:PetscInitialize.part.3
+   ...
+   fun:main
+}
+## on is223280, g++ 4.7.2, Fedora 18
+{
+   <upwind_openmpi_2_0_2_8>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:opal_class_initialize
+   fun:opal_obj_new.constprop.19
+   fun:mca_pml_ob1_recv_req_start
+   fun:mca_pml_ob1_irecv
+   fun:ompi_coll_base_bcast_intra_generic
+   fun:ompi_coll_base_bcast_intra_binomial
+   fun:ompi_coll_tuned_bcast_intra_dec_fixed
+   fun:PMPI_Bcast
+   fun:PetscOptionsInsertFile
+   fun:PetscOptionsInsert
+   fun:PetscInitialize.part.3
+   ...
+   fun:main
+}
+## on is227246, g++ 7.1.1, Fedora 26
+{
+   <upwind_openmpi_2_0_2_9>
+   Memcheck:Leak
+   ...
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize.part.2
+   ...
+}
+{
+   <upwind_openmpi_2_0_2_10>
+   Memcheck:Leak
+   ...
+   fun:PMPI_Bcast
+   fun:PetscOptionsInsertFile
+   fun:PetscOptionsInsert
+   fun:PetscInitialize.part.2
+   ...
+}
+
