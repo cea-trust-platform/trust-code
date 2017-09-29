@@ -96,6 +96,7 @@ genere_fiche()
     else
 	echo BUILD/$dir existe and mode concurrent, on ne lance pas la fiche
     fi
+
     return $ko
 }
 

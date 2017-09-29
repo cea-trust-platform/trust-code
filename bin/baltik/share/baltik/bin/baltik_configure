@@ -450,7 +450,7 @@ printf "\n"                                                     >> $project_make
 printf "# help \n" >> $project_makefile
 done
 printf "\n" 							>> $project_makefile
-printf "# help all_validation \t: Generate validation report\n">>$project_makefile
+printf "# help all_validation \t: Generate validation report. Remark : if the environment variable PRM_NO_VISIT exists then reports will be generated without visit plots.\n">>$project_makefile
 printf "all_validation : optim\n"    >> $project_makefile
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
 printf "\t@echo \"# Generate validation report #\"\n"                 >> $project_makefile

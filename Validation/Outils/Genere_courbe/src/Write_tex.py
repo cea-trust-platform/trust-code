@@ -1,16 +1,16 @@
 #****************************************************************************
 # Copyright (c) 2015 - 2016, CEA
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 # 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
 # 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 # 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
-# 
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
-# IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; 
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+# IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
 # OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# 
+#
 #*****************************************************************************
 
 # -*- coding: latin-1 -*-
@@ -46,7 +46,7 @@ class FileTex:
         self.write_interne('\n')
         pass
     def write_description_sans_nl(self,description):
-        if (len(description)==0): return 
+        if (len(description)==0): return
         self.write_text_sans_nl(description[0])
         for i in range(1,len(description)):
             #self.write_Tex_sans_nl('\\\\')
@@ -59,7 +59,7 @@ class FileTex:
         self.write_description_sans_nl(description)
         self.write_interne('\n')
         pass
-    
+
     def write_Tex_sans_nl(self,titi):
         titi2=chaine2File(titi)
         self.write_interne(titi2)
@@ -73,10 +73,12 @@ class FileTex:
         pass
     pass
 class Write_tex:
-    def __init__(self):
-	self.nb_visu=0
+    def __init__(self,novisit=False):
+        self.nb_visu=0
         self.minifigure_avt=0
-	pass
+        self.novisit = novisit
+        pass
+
     def verifie_existance_fichier(self,nom_fichier,objet):
         iter = 0
         while iter<2 and (not os.path.isfile(nom_fichier)):
@@ -103,7 +105,7 @@ class Write_tex:
 	    if figure.titre!='Undefined':
 	      fichier.write_Tex('\subsection{%s}' % chaine2Tex(figure.titre))
 	      pass
-            
+
             if minifigure:
                 minipage_width=figure.width.split(",")[0]
                 fichier.write_Tex('\hspace*\fill')
@@ -111,9 +113,9 @@ class Write_tex:
                 pass
             fichier.write_description(figure.description)
             fichier.write_text('')
-            
+
             self.verifie_existance_fichier(figure.fichierGraphiqueComplet,figure)
-            
+
             width="".join(figure.width.split())
             if (width!="0cm") and (width[0]!="-"):
                 self.nb_visu+=1
@@ -161,7 +163,7 @@ class Write_tex:
 			tmp = True
                         pass
                     if tmp: fichier.write_Tex_sans_nl('\\\\')
-                        
+
                     if (courbe.fichier!='Undefined'):
                         fichier.write_text_sans_nl('\nfichier %s' % ((courbe.fichier)))
                         pass
@@ -194,25 +196,24 @@ class Write_tex:
         fichier.write_text('')
         for i in range(max(len(visu.cycles.split()),1)):
             if (minifigure) and (i>0):
-	        fichier.write_Tex('\hspace*\fill')
+                fichier.write_Tex('\hspace*\fill')
                 fichier.write_Tex('\begin{minipage}{%s}{'%minipage_width)
                 pass
-            fichiercomplet=visu.fichierGraphiqueComplet+'_'+str(i)+'.'+visu.format
-            fichiergraphique=visu.fichierGraphique+'_'+str(i)+'.'+visu.format
+            if not self.novisit:
+                fichiercomplet=visu.fichierGraphiqueComplet+'_'+str(i)+'.'+visu.format
+                fichiergraphique=visu.fichierGraphique+'_'+str(i)+'.'+visu.format
 
-            self.verifie_existance_fichier(fichiercomplet,visu)
-            width="".join(visu.width.split())
-            if (width!="0cm") and (width[0]!="-"):
-	        self.nb_visu+=1
-                if visu.format=='ps' or visu.format=='png':
-                    fichier.write_Tex('\includegraphics[width=%s]{\orig/.tmp/%s}' % (visu.width,fichiergraphique))
+                self.verifie_existance_fichier(fichiercomplet,visu)
+                width="".join(visu.width.split())
+                if (width!="0cm") and (width[0]!="-"):
+                    self.nb_visu+=1
+                    if visu.format=='ps' or visu.format=='png':
+                        fichier.write_Tex('\includegraphics[width=%s]{\orig/.tmp/%s}' % (visu.width,fichiergraphique))
+                    else:
+                        fichier.write_Tex('\input{%s}' % fichiercomplet)
                 else:
-                    fichier.write_Tex('\input{%s}' % fichiercomplet)
+                    print "The visu does not really include the picture ",fichiergraphique," because the width <= 0 :",visu.width
                     pass
-                pass
-            else:
-                print "The visu does not really include the picture ",fichiergraphique," because the width <= 0 :",visu.width
-                pass
             if (minifigure==1):
                 fichier.write_Tex('} \end{minipage}')
                 fichier.write_Tex('\hspace*\fill')
@@ -243,11 +244,11 @@ class Write_tex:
 
         if (tableau.label!="Undefined"):
             line = [ "", ]
-            for i in range(nbc): 
+            for i in range(nbc):
                 line.append( chaine2Tex(label[i]) )
             data.append( line )
             # print "llll",line
-            pass 
+            pass
         li=0
         # print "Tabbb" ,Tableau_val
         for ligne in tableau.listeLignes:
@@ -257,20 +258,20 @@ class Write_tex:
             # on charge toujours les valeurs mais on ne les affiches pas forcement
             from Ligne import Lignes
             if ligne.afficher_ligne:
-                
+
                 if (isinstance(ligne,Lignes)):
                     nb_ligne=len(values)/(nbc+1)
                     for ll in range(nb_ligne):
                         decal=(nbc+1)*ll
                         line = [ chaine2Tex(str(values[decal])), ]
-                        for i in range(1,nbc+1): 
+                        for i in range(1,nbc+1):
                             line.append( chaine2Tex(str(values[i+decal])) )
                         data.append( line )
                         pass
                     pass
                 else:
                     line = [ chaine2Tex(ligne.legende), ]
-                    for i in range(nbc): 
+                    for i in range(nbc):
                         line.append( chaine2Tex(str(values[i] )) )
                     data.append( line )
                     pass
@@ -284,7 +285,7 @@ class Write_tex:
             fichier.write_Tex(tableau.textsize+'\n')
 
         entete=('\n\begin{longtable}{|c|')
-       
+
         nbl=nbc
         if tableau.transposed_display:
             nbl=nb_lines
@@ -293,14 +294,14 @@ class Write_tex:
         for i in range(nbl): entete+=('c|')
         entete+='}'
         fichier.write_Tex(entete)
-        
+
         fichier.write_Tex_sans_nl('\hline \n ')
 
-       
+
 
         for  line in data:
             assert( len(line) == nb_columns )
-        if tableau.transposed_display:    
+        if tableau.transposed_display:
                 transposed_data=[]
                 for i in xrange( nb_columns ):
                     transposed_data.append( [ ] )
@@ -329,7 +330,7 @@ class Write_tex:
         # print "ICICI gros travail a faire !!!!!!!"
         if len(tableau.listeLignes)>0 and tableau.inclureDescLignes==1:
             # description des lignes
-		    
+
             fichier.write_Tex('\n% Debut ligne')
             fichier.write_text('Description des lignes du tableau %s:'%((tableau.titre)) )
             fichier.write_Tex('\begin{itemize}')
@@ -383,7 +384,7 @@ class Write_tex:
           fichier.write_Tex('\section{%s}' % chaine2Tex(chapitre.titre))
         fichier.write_description(chapitre.description)
         iter = 0
-        
+
         #ajout des figures
         for figure in chapitre.listeFigures:
             self.inclureObjet(figure,fichier)
@@ -399,11 +400,11 @@ class Write_tex:
         entete = entete.replace('__AUTEUR__', chaine2Tex(maitre.auteur))
 	date = time.strftime('%d/%m/%Y')
         entete = entete.replace('__DATE__', chaine2Tex(date))
-        
+
         ficTexm = FileTex(nomFichierTexComplet, 'w')
         ficTexm.write_Tex('\def\orig{..}')
         ficTexm.write_Tex(entete)
-        
+
         ficTexm.write_Tex('\input{corps}')
         ficTexm.write_Tex('\n\n% Fin du document\n\end{document}')
         ficTexm.close()
@@ -423,7 +424,7 @@ class Write_tex:
             ficTex.write_Tex('\end{itemize}')
             pass
         pass
-        
+
     def write_liste_ref(self,maitre,ficTex):
         if  maitre.reference:
             ficTex.write_Tex('\par\subsection{References :}')
@@ -469,34 +470,34 @@ class Write_tex:
         pass
     def write_fichiers(self,maitre,dico):
         # generation du fichier.tex
-        
+
         for key in dico.keys():
             cmd=key+'=dico[key]'
             # print cmd
             exec(cmd)
             pass
         self.ecrire_fichier_maitre(maitre,dico)
-     
+
         ficTex = FileTex( destTMP + '/corps.tex', 'w')
         self.ficTex=ficTex
         self.ecrire_introduction(maitre,ficTex)
         self.write_liste_cas(maitre,ficTex)
         self.write_liste_ref(maitre,ficTex)
-        
-        
+
+
 
         for chapitre in maitre.listeChapitres:
             self.inclureChapitreTex(chapitre)
             pass
-            
+
         # inclusion des fichiers.data
         self.include_data(maitre,ficTex)
-      
+
         ficTex.close()
-        
+
         pass
     def ecrire_introduction(self,maitre,ficTex):
-        
+
         #suite_entete='''\\section{Introduction}\n\nValidation r\\'ealis\\'ee par : __AUTEUR__.\\\\Rapport g\\'en\\'er\\'e le __DATE__.\n'''
         #suite_entete = suite_entete.replace('__TITRECAS__', chaine2Tex(maitre.titre))
         #suite_entete = suite_entete.replace('__AUTEUR__', chaine2Tex(maitre.auteur))
@@ -526,7 +527,7 @@ class Write_tex:
             ficTex.write_Tex('\item Version Trio\_U from out: %s' % chaine2Tex(version))
         except:
             pass
-       
+
         for param in maitre.parametresTrioU:
             ficTex.write_Tex_sans_nl('\item ');ficTex.write_text(param)
             pass
