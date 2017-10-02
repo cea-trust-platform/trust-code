@@ -1,0 +1,83 @@
+# Hydraulique 2D : plaque boundary layer #
+# PARALLEL OK 8 #
+dimension 3
+Pb_Hydraulique pb
+Domaine dom
+
+Lire_MED family_names_from_group_names dom tuyau_mesh_cas_test tuyau_mesh_cas_test.med
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1b dis
+Runge_Kutta_ordre_3 sch 
+# Scheme_euler_explicit sch #
+Read sch
+{
+	tinit 0.
+	nb_pas_dt_max 3
+	tmax 50.
+	dt_min 1.e-6
+	dt_max 1.
+	dt_impr 1.e-3
+	dt_sauv 1.
+	# seuil_statio 1.e-8 #
+	facsec 1.
+}
+
+# on utilise de l'eau pour commencer #
+Fluide_Incompressible fluide
+Read fluide
+{
+	# mu Champ_Uniforme  1 0.083 #
+	mu Champ_Uniforme  1 0.006 # pour Re = 3000 avec U = 0.06, L = 0.3 (entrefer tuyau). U calcule pour parcourir 40Dh en 200s dans tuyau #
+	rho Champ_Uniforme 1 1000.
+}
+
+
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Read pb
+{
+	Navier_Stokes_standard
+	{
+		# solveur_pression GCP { 
+			precond ssor { omega 1.7 } 
+			seuil 1e-6
+			impr 
+		} #
+                solveur_pression petsc Cholesky { }
+		convection { EF_stab { alpha 0.2 } }
+		diffusion { }
+		 initial_conditions { vitesse Champ_Fonc_XYZ dom 3  0. 0. 0. }   # TOURBILLON UNIQUE #
+ 
+		# initial_conditions {
+			vitesse Champ_Uniforme 2 30. 0.
+			} #
+		boundary_conditions {
+			face_int symetrie 
+			face_ext symetrie 
+      sortie frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.
+      entree frontiere_ouverte_vitesse_imposee  champ_front_med Champ_fonc_med last_time etat_interm_3D_cas_test.med maillage_2D VITESSE_ELEM_dom_0_3D ELEM 0  
+		}
+	}
+
+  	Post_processing 
+        {
+        Format lml
+      	fields dt_post 1
+	    	{
+	    		vitesse  som
+	    		vitesse  elem
+		    }
+     }
+}
+
+Solve pb
+End
+
