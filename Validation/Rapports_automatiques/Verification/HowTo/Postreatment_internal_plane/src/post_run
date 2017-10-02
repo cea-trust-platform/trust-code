@@ -1,0 +1,5 @@
+#!/bin/bash
+
+python process_data.py
+sed -i "6d" cylindre_tourbillon_DEBIT_PLAN1.son
+sed -i "6d" cylindre_tourbillon_VAR1.son

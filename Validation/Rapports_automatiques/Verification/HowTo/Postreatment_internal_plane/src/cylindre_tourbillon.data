@@ -1,0 +1,328 @@
+# laminar hydraulic problem #
+# PARALLEL OK #
+dimension 3
+domaine dom
+
+# BEGIN MESH #
+Lire_MED short_family_names dom Mesh_perio_fine_3 cylindre_perio_fine_3.med
+dilate dom 0.001
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+    partitionneur metis { nb_parts 8 }
+    Larg_joint 2
+    Nom_Zones DOM_dom
+    periodique 1 perio
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM_dom.Zones dom 
+END SCATTER #
+
+vefprep1b dis 
+
+scheme_euler_implicit sch_statio 
+Read sch_statio
+{
+  tinit 0 
+  Solveur Implicite { seuil_convergence_solveur 1.e-12 }
+  nb_pas_dt_max 1
+}
+uniform_field gravity 
+Read gravity 3 0. 0.0 0.0
+fluide_incompressible eau 
+Associate eau gravity
+Read eau
+{
+  beta_th uniform_field  1 0.00018
+  mu      uniform_field  1 1e-3
+  rho     uniform_field  1 1.
+  cp      uniform_field  1 4182.0
+  lambda  uniform_field  1 0.597
+}
+pb_hydraulique pb 
+Associate pb dom
+Associate pb sch_statio
+Associate pb eau
+discretize pb dis
+
+domaine plan_1
+Extraire_surface { Domaine plan_1  Probleme pb  condition_elements (z<100e-3) }
+
+domaine plan_2
+Extraire_surface { Domaine plan_2  Probleme pb  condition_elements (z<x+75e-3) }
+
+postraiter_domaine 
+{
+  format lata
+  fichier surface_interne
+  domaines { dom plan_1 plan_2 }
+}
+
+Read pb
+{
+  Navier_stokes_standard 
+  {
+    projection_initiale 0
+    solveur_pression Petsc Cholesky {  }
+    convection    { amont }
+    diffusion    {   }
+    initial_conditions
+    {  vitesse champ_fonc_xyz dom 3 -y*20 x*20 2*(1-(x^2+y^2)/(5e-2)^2) }
+    boundary_conditions 
+    {
+      perio periodique
+      wall paroi_defilante champ_front_fonc_xyz 3 -y*20 x*20 0.
+    }
+    sources { Canal_perio { Bord perio } }
+  }
+
+  Post_processing
+  {
+    Definition_champs
+    {
+      v_plan Transformation 
+      {
+        methode vecteur expression 3 v_X v_Y 0 
+        sources
+        {
+          Transformation
+          {
+            methode composante numero 0 localisation elem 
+            source refChamp { Pb_champ pb vitesse }
+            nom_source v_X
+          } ,
+          Transformation
+          {
+            methode composante numero 1 localisation elem 
+            source refChamp { Pb_champ pb vitesse }
+            nom_source v_Y
+          }
+        }
+      }
+
+      Vz Transformation
+      {
+        methode composante numero 2 localisation Faces 
+        source refChamp { Pb_champ pb vitesse }
+      }
+
+      Vz_e Interpolation 
+      {
+        domaine dom localisation elem
+        sources_reference { Vz }
+      }
+
+      debit_global reduction_0d
+      {
+        methode moyenne_ponderee sources_reference { Vz }
+      }
+
+      debit_global_e reduction_0d
+      {
+        methode moyenne_ponderee sources_reference { Vz_e }
+      }
+
+      # on calcule E[Vz^2] ie le double de l'énergie cinétique massique moyenne. 
+      Il suffit de soustraire E[Vz]^2 pour avoir l'écart type recherché #
+      Ecm reduction_0d
+      {
+        methode moyenne_ponderee
+        source Transformation
+        {
+          methode formule expression 1 Vz^2 sources_reference { Vz }
+        }
+      }
+
+      Ecm_e reduction_0d
+      {
+        methode somme_ponderee
+        source Transformation
+        {
+          methode formule expression 1 Vz_e^2 sources_reference { Vz_e }
+        }
+      }
+    }
+
+    format lata
+    fields dt_post 1e-2
+    {
+      vitesse
+      vitesse elem
+      v_plan
+      pression
+    }
+
+    probes
+    {
+      debit_global    debit_global    periode 1 points 1 0. 0. 0.1
+      debit_global_e  debit_global_e  periode 1 points 1 0. 0. 0.1
+      Ecm             Ecm             periode 1 points 1 0. 0. 0.1
+      Ecm_e           Ecm_e           periode 1 points 1 0. 0. 0.1
+    }
+  }
+
+  Post_processings
+  {
+    coupe1
+    {
+      domaine plan_1
+      fichier coupe1
+      Definition_champs 
+      {
+        vs_plan Transformation 
+        {
+          methode vecteur expression 3 v_X v_Y 0
+          sources 
+          {
+            Transformation
+            {
+              methode composante numero 0 localisation Faces 
+              source refChamp { Pb_champ pb vitesse }
+              nom_source v_X
+            } ,
+            Transformation
+            {
+              methode composante numero 1 localisation Faces 
+              source refChamp { Pb_champ pb vitesse }
+              nom_source v_Y
+            }
+          }
+        }
+
+        vs_plan_e Interpolation
+        {
+          domaine plan_1 localisation elem sources_reference { vs_plan }
+        }
+
+        Vz1 Transformation
+        {
+          methode composante numero 2 localisation Faces
+          source refChamp { Pb_champ pb vitesse }
+        }
+
+        Vz1_sq Transformation
+        {
+          methode formule expression 1 Vz1^2 sources_reference { Vz1 }
+        }
+
+        vn Transformation 
+        {
+          methode vecteur expression 3 0 0 Vz1
+          sources_reference { Vz1 }
+        }
+
+        # On a rho=1 donc le débit à travers la surface est la moyenne #
+        debit_plan1 reduction_0d { methode moyenne_ponderee sources_reference { Vz1 } }
+
+        # energie cinetique massique ie esperance de la vitesse au carre #
+        Ecm1 reduction_0d { methode moyenne_ponderee sources_reference { Vz1_sq } }
+
+        # variance #
+        Var1 Transformation 
+        {
+          methode formule expression 1 Ecm1-debit_plan1^2
+          sources_reference { Ecm1 , debit_plan1 }
+        }
+      }
+
+      format lata 
+      fields dt_post 1e-2
+      {
+        vitesse elem
+        vs_plan_e
+        vn elem
+      }
+
+      probes 
+      {
+        debit_plan1   debit_plan1 periode 1 points 1 0. 0. 0.1
+        Var1          Var1        periode 1 points 1 0. 0. 0.1 
+      }
+    }
+
+    coupe2
+    {
+        domaine plan_2
+        fichier coupe2
+        definition_champs
+        {
+          vs2_plan2 Transformation
+          {   methode vecteur expression 3 (v_X/2)+v_Z/2 v_Y (v_X/2)+v_Z/2
+              sources 
+              {
+                Transformation
+                {
+                  methode composante numero 0 localisation Faces 
+                  source refChamp { Pb_champ pb vitesse }
+                  nom_source v_X
+                } ,
+                Transformation
+                {
+                  methode composante numero 1 localisation Faces 
+                  source refChamp { Pb_champ pb vitesse }
+                  nom_source v_Y
+                } ,
+                Transformation
+                {
+                  methode composante numero 2 localisation Faces 
+                  source refChamp { Pb_champ pb vitesse }
+                  nom_source v_Z
+                }
+              }
+          }
+
+          vn22 Transformation 
+          {
+            methode vecteur expression 3 v_X/2-v_Z/2 0. -v_X/2+v_Z/2
+            sources
+            {
+              Transformation
+              {
+                methode composante numero 0 localisation Faces 
+                source refChamp { Pb_champ pb vitesse }
+                nom_source v_X
+              } ,
+              Transformation
+              {
+                methode composante numero 2 localisation Faces
+                source refChamp { Pb_champ pb vitesse }
+                nom_source v_Z
+              }
+            }
+          }
+
+          vs2_plan2_e Interpolation
+          {
+            domaine plan_2 localisation elem sources_reference { vs2_plan2 }
+          }
+
+          # On a rho=1 donc le débit à travers la surface est la moyenne #
+          debit_plan2 Transformation
+          {
+            methode norme
+            source reduction_0d { methode moyenne_ponderee sources_reference { vn22 } }
+          }
+        }
+
+        format lata 
+        fields dt_post 1e-2
+        {
+          vitesse elem
+          vs2_plan2_e
+          vn22 elem
+        }
+
+        probes 
+        {
+          debit_plan2   debit_plan2   periode 1 points 1 0. 0. 0.1
+        }
+    }
+  }
+}
+solve pb
+end 
