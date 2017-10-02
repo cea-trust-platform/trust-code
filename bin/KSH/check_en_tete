@@ -63,8 +63,9 @@ then
    source env_TRUST.sh 1>/dev/null 2>&1
 fi
 
-# Si file est un fichier non vide, on met a jour l'en tete
-if [ -f $file ] && [ -s $file ]
+# Si file est un fichier non vide et que son git status a change, on met a jour l'en tete
+# Retreive git status of the file in short version and look for the 'M'odified flag.
+if [ -f $file ] && [ -s $file ] && [ "x`git status -s -- $file | cut -d' ' -f2`" = "xM" ] 
 then
    tmp_file=`mktemp_`
    ###########################################
