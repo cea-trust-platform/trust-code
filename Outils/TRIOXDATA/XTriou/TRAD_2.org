@@ -775,6 +775,7 @@ k_epsilon modele_turbulence_hyd_deriv k_epsilon -1 Turbulence model (k-eps).
   attr cmu floattant cmu 1 Keyword to modify the Cmu constant of k-eps model : Nut=Cmu*k*k/eps Default value is 0.09
   attr transport_k_epsilon transport_k_epsilon transport_k_epsilon 0 Keyword to define the (k-eps) transportation equation.
   attr modele_fonc_bas_reynolds modele_fonction_bas_reynolds_base modele_fonc_bas_reynolds 1 This keyword is used to set the bas Reynolds model used.
+  attr eps_max floattant eps_max 1 Upper limitation of epsilon (default value 1.e+10).
 loi_standard_hydr_old turbulence_paroi_base loi_standard_hydr_old 0 not_set
 loi_standard_hydr turbulence_paroi_base loi_standard_hydr 0 Keyword for the logarithmic wall law for a hydraulic problem. Loi_standard_hydr refers to first cell rank eddy-viscosity defined from continuous analytical functions, whereas Loi_standard_hydr_3couches from functions separataly defined for each sub-layer
 loi_expert_hydr loi_standard_hydr loi_expert_hydr 1 This keyword is similar to the previous keyword Loi_standard_hydr but has several additional options into brackets.

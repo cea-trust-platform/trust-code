@@ -141,7 +141,7 @@ Read pb
 			 }
 			 Prandtl_K 1
 			 Prandtl_Eps 1.3
-			 turbulence_paroi loi_expert_hydr { kappa 0.415 Erugu 9.11 A_plus 26 } dt_impr_ustar 10. eps_min 1.e-15
+			 turbulence_paroi loi_expert_hydr { kappa 0.415 Erugu 9.11 A_plus 26 } dt_impr_ustar 10. eps_min 1.e-15 eps_max 1.e+6
 		} 
 	}
 Post_processing 

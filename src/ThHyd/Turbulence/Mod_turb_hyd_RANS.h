@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -61,6 +61,7 @@ public:
   inline double get_Prandtl_K() const;
   inline double get_Prandtl_Eps() const;
   inline double get_LeEPS_MIN() const;
+  inline double get_LeEPS_MAX() const;
   inline double get_LeK_MIN() const;
 
   //Methodes de l interface des champs postraitables
@@ -74,7 +75,7 @@ public:
 protected:
 
   double Prandtl_K, Prandtl_Eps;
-  double LeEPS_MIN, LeK_MIN ;
+  double LeEPS_MIN, LeEPS_MAX, LeK_MIN;
 
 };
 
@@ -91,6 +92,11 @@ inline double Mod_turb_hyd_RANS::get_Prandtl_Eps() const
 inline double Mod_turb_hyd_RANS::get_LeEPS_MIN() const
 {
   return LeEPS_MIN;
+}
+
+inline double Mod_turb_hyd_RANS::get_LeEPS_MAX() const
+{
+  return LeEPS_MAX;
 }
 
 inline double Mod_turb_hyd_RANS::get_LeK_MIN() const

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -229,7 +229,7 @@ int Transport_K_Eps_base::controler_K_Eps()
   DoubleTab& K_Eps = le_champ_K_Eps.valeurs();
   int size=K_Eps.dimension(0);
   int size_tot=mp_sum(size);
-  int negk=0,nege=0;
+  int negk=0,nege=0,nmaxe=0;
   int control=1;
   // On interdit K-Eps negatif pour le K-Eps seulement
   // Les autres modeles (2 couches, Launder, ne sont pas assez valides)
@@ -240,6 +240,7 @@ int Transport_K_Eps_base::controler_K_Eps()
   */
   const Zone_VF& zone_vf = ref_cast(Zone_VF,zone_dis().valeur());
   double LeEPS_MIN = modele_turbulence().get_LeEPS_MIN();
+  double LeEPS_MAX = modele_turbulence().get_LeEPS_MAX();
   double LeK_MIN = modele_turbulence().get_LeK_MIN();
   const IntTab& face_voisins = zone_vf.face_voisins();
   const IntTab& elem_faces = zone_vf.elem_faces();
@@ -351,10 +352,51 @@ int Transport_K_Eps_base::controler_K_Eps()
               Cerr << "eps forced to " << eps << " on node " << n << " : " << position << finl;
             }
         }
+      else if (eps > LeEPS_MAX)
+        {
+          nmaxe += 1;
+
+          if (size==face_voisins.dimension(0))
+            {
+              // K-Eps on faces (eg:VEF)
+
+              position="x=";
+              position+=(Nom)zone_vf.xv(n,0);
+              position+=" y=";
+              position+=(Nom)zone_vf.xv(n,1);
+              if (dimension==3)
+                {
+                  position+=" z=";
+                  position+=(Nom)zone_vf.xv(n,2);
+                }
+            }
+          else
+            {
+              // K-Eps on cells (eg:VDF)
+              position="x=";
+              position+=(Nom)zone_vf.xp(n,0);
+              position+=" y=";
+              position+=(Nom)zone_vf.xp(n,1);
+              if (dimension==3)
+                {
+                  position+=" z=";
+                  position+=(Nom)zone_vf.xp(n,2);
+                }
+            }
+
+          eps = LeEPS_MAX;
+          if (schema_temps().limpr())
+            {
+              // Warnings printed:
+              Cerr << (control ? "***Warning***: " : "***Error***: ");
+              Cerr << "eps forced to " << eps << " on node " << n << " : " << position << finl;
+            }
+        }
     }
   K_Eps.echange_espace_virtuel();
   negk=mp_sum(negk);
   nege=mp_sum(nege);
+  nmaxe=mp_sum(nmaxe);
   if (negk || nege)
     {
       if (Process::je_suis_maitre() && schema_temps().limpr())
@@ -390,6 +432,15 @@ int Transport_K_Eps_base::controler_K_Eps()
           probleme().postraiter(1);
           exit();
         };
+    }
+  if (nmaxe)
+    {
+      if (Process::je_suis_maitre() && schema_temps().limpr())
+        {
+          const double time = le_champ_K_Eps.temps();
+          Cerr << "Values forced for eps because:" << finl;
+          Cerr << "Maximum values found for eps on " << nmaxe << "/" << size_tot << " nodes at time " << time << finl;
+        }
     }
   Debog::verifier("Transport_K_Eps_base::controler_K_Eps K_Eps after",K_Eps);
   return 1;

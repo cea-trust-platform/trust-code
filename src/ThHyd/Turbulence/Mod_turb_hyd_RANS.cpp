@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,6 +32,7 @@ Mod_turb_hyd_RANS::Mod_turb_hyd_RANS()
   Prandtl_K = 1.;
   Prandtl_Eps = 1.3;
   LeEPS_MIN = 1.e-10  ;
+  LeEPS_MAX = 1.e+10;
   LeK_MIN = 1.e-10;
 }
 // Description:
@@ -77,6 +78,7 @@ void Mod_turb_hyd_RANS::set_param(Param& param)
 {
   Mod_turb_hyd_base::set_param(param);
   param.ajouter("eps_min",&LeEPS_MIN);
+  param.ajouter("eps_max",&LeEPS_MAX);
   param.ajouter("k_min",&LeK_MIN);
 }
 
