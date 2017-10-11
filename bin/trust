@@ -111,6 +111,7 @@ help()
    echo "-edit                         : Edit datafile."
    echo "-xedit                        : Edit datafile with xdata."
    echo "-xcheck                       : Check the datafile's keywords with xdata."
+   echo "-partition                    : Partition the mesh to prepare a parallel calculation (Creation of the .Zones files)."
    echo "-mesh                         : Visualize the mesh(es) contained in the data file."
 #   echo "-monitor                : Run and monitor the progress of the TRUST calculation."
    echo "-probes                       : Monitor the TRUST calculation only."
@@ -118,6 +119,7 @@ help()
    echo "-wiz                          : Create a TRUST datafile from a MED file (new IHM)."
    echo "-prm                          : Write a prm file."
    echo "-clean                        : Clean the current directory from all the generated files by TRUST."
+   echo "-search keywords              : Know the list of test cases from the data bases which contain keywords."
    echo "-copy                         : Copy the test case datafile from the TRUST database under the present directory."
    echo "-check all|testcase|list      : Check the non regression of all the test cases or a single test case or a list of tests cases specified in a file."
    echo "-check function|class|method::class : Check the non regression of a list of tests cases covering a function, a class or a class method."
@@ -131,7 +133,7 @@ help()
    echo "-c ncpus                      : Use ncpus CPUs allocated per task for a parallel calculation."
 #   [ "$PETSC_HAVE_CUDA" = 1 ] && echo "-gpu                    : Create a submission file and submit the job on production class with GPU cards."
 #   [ -d /ccc ] && echo "-ipm                    : Use ipm to report MPI statistics."
-   echo "-help_trust                   : Print options of TRUST_EXECUTABLE [CASE[.data]] [options]."
+   echo "datafile -help_trust          : Print options of TRUST_EXECUTABLE [CASE[.data]] [options]."
 
    exit 0
 }
@@ -141,6 +143,7 @@ me=`whoami`
 edit=""
 xedit=""
 xcheck=""
+partition=""
 mesh=""
 monitor=""
 probes=""
@@ -236,6 +239,9 @@ do
    elif [ "$1" = "-xcheck" ]
    then
       xcheck=1
+   elif [ "$1" = "-partition" ]
+   then
+      partition=1
    elif [ "$1" = "-mesh" ]
    then
       mesh=1
@@ -285,6 +291,17 @@ do
    elif [ "$1" = "-prm" ]
    then
       prm=1 
+   elif [ "$1" = "-search" ]
+   then
+      shift
+      option=""
+      while [ "$1" != "" ]
+      do
+	 option=$option" "$1
+         shift
+      done
+      cherche.ksh $option
+      exit $?
    elif [ "$1" = "-check" ]
    then
       shift
@@ -439,6 +456,20 @@ fi
 if [ "$xcheck" = 1 ]
 then
    $TRUST_ROOT/bin/VerifData $NOM".data"
+   exit $?
+fi
+
+##################
+# Partition mesh #
+##################
+if [ "$partition" = 1 ]
+then
+   if [ $NB_PROCS -eq 1 ]
+   then
+      make_PAR.data $NOM
+   else
+      make_PAR.data $NOM $NB_PROCS
+   fi
    exit $?
 fi
 

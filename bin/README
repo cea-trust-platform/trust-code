@@ -21,12 +21,14 @@ a data set is TRUST_Generic_Guide.pdf (located in $TRUST_ROOT/doc/TRUST)
 	    located in $TRUST_ROUT/Outils/TRIOXDATA
 	    
 	syntax : EditData jdd.data
+	      or trust -xedit jdd
 
 
 -VerifData : to support user when writing a data by checking keywords specific to each object
 	     located in $TRUST_ROUT/Outils/TRIOXDATA
 	    
 	syntax : VerifData jdd.data
+	      or trust -xcheck jdd
  
  
 -cherche.ksh : to identify all the data sets from the no regression data base (Reference, Validation, Verification, ...)
@@ -34,6 +36,7 @@ a data set is TRUST_Generic_Guide.pdf (located in $TRUST_ROOT/doc/TRUST)
 	       located in $TRUST_ROOT/bin/KSH
 	
 	syntax : cherche.ksh [-reference_only] word1 word2 ...wordn
+	      or trust -search word1 word2 ...wordn
 		 The identified data set are listed in the file 'liste_cherche'
 		
 	remarks : Use the @ character to replace blank between two words
@@ -45,19 +48,22 @@ a data set is TRUST_Generic_Guide.pdf (located in $TRUST_ROOT/doc/TRUST)
        located in $TRUST_ROOT/bin/KSH
 	
 	syntax : Qui class|class::method
+	      or trust -check class|class::method
 		 The identified data set are listed in the file 'liste_cas'
 
 
 -copie_cas_test : to copy a test case directory from the tests database under the present directory
                   located in $TRUST_ROOT/bin/KSH
        
-        syntax : copie_cas_test TEST [TRUST_TESTS]
+        syntax : copie_cas_test jdd [$TRUST_TESTS]
+              or trust -copy jdd
 		  
 		  
 -make_PAR.data : to generate data sets used for sequential calculation - cutting domain - parallel calculation.
 		 located in $TRUST_ROOT/bin/KSH
 	
 	syntax : make_PAR.data jdd [nb_procs]
+	      or trust -partition jdd [nb_procs]
 		 => creates SEQ_jdd.data : used to perform sequential calculation
 		 => creates DEC_jdd.data : used to carry out domain cutting
 		    (moreover the script uses DEC_jdd data set to create the .Zones files)
@@ -81,6 +87,7 @@ a data set is TRUST_Generic_Guide.pdf (located in $TRUST_ROOT/doc/TRUST)
              located in $TRUST_ROOT/exec/TRUST_WIZARD
        
         syntax : bash TRUST_Wizard.sh
+              or trust -wiz
 		 A mesh.med must exist
                  A jdd.data file is created and tested
 		  
@@ -109,9 +116,12 @@ to run a calculation
 	      located in $TRUST_ROOT/bin
 
 	syntax : echo jdd | lance_test [-print] [-distant] [-nomail] [-efface] [-no_timeout] [$exec] [$directory]
+	      or trust -check jdd
 	
 	remarks : echo 0 | lance_test to apply lance_test to all the no regression cases
+	       or trust -check all
 		  echo liste | lance_test to apply lance_test to the cases listed in the liste file
+	       or trust -check liste
 		  The reporting file (.tests_TRUST_mpi[_opt]) of the comparison with the reference results is 
 		  located in /home/user/.tmp_TRUST_name_view/tests
 
@@ -119,8 +129,9 @@ to run a calculation
 -Run_fiche : to run a validation case
              located in $TRUST_ROOT/bin
        
-        syntax : Run_fiche
+        syntax : Run_fiche [-help]
 		 A validation_file.prm must exist in $TRUST_ROOT/Validation/Rapports_automatiques/.../.../.../src
+                 trust -prm jdd => to create a prm file
                  A rapport.pdf file is created in $TRUST_ROOT/Validation/Rapports_automatiques/.../.../.../build
 
 
@@ -128,6 +139,7 @@ to run a calculation
              located in $TRUST_ROOT/exec/TRUST_PLOT2D
        
         syntax : bash Plot2d.sh jdd
+              or trust -evol jdd
 		 A jdd.data must exist
 		    
  
@@ -140,6 +152,7 @@ to post-process some fields
 	     located in $TRUST_ROOT/bin
 	     
 	syntax : Run_sonde [$exec] jdd
+	      or trust -probes jdd
 		 If executable file is specified it is necessary to specify the study and eventually the data set.
 		 In that case the calculation is started and the post-processing tool is opened. If no executable
 		 file is specified only the post-processing tool is activated.
@@ -159,6 +172,7 @@ to post-process some fields
 		 located in $TRUST_ROOT/bin
 		 
 	syntax : extrait_coupe jdd PROBE_NAME [time] 	
+	      or trust -probes jdd
 		 A jdd_PROBE_NAME.coupe[.time] file is created	   
 		 
 	remarks : PROBE_NAME corresponds to the name given to the probe in the data set (jdd)

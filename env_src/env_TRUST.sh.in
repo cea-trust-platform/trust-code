@@ -39,6 +39,25 @@ else
    ###################################
    source $TRUST_ROOT/env/TRUST.env
 
+   ############
+   # Completion
+   ############
+   _trust()
+   {
+      local cur=${COMP_WORDS[COMP_CWORD]}
+      local keys=$(trust -help | grep '^-' | cut -d ' ' -f1 | cut -d '|' -f1 )
+      case "$cur" in
+      -*)
+         COMPREPLY=($(compgen -W "$keys" -- ${cur}) )
+         ;;
+      *)
+         COMPREPLY=($(compgen -f ${cur})) 
+         ;;
+      esac
+      return 0
+   }
+   complete -F _trust trust
+
    ##########
    # Finalize
    ##########
