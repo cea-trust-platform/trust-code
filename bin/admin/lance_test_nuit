@@ -55,15 +55,15 @@ check_components()
 	    fi
 	    [ "$Composant" = Test_Baltik ] && ./Configure_Tests
 	    $TRUST_ROOT/bin/baltik/bin/baltik_build_configure -execute &&
-	    make optim module_optim debug module_debug &&
+	    make optim module_optim debug module_debug optim_avx &&
 	    $make_option && echo "$Composant OK" && COMPOSANT_OK=1
-	    if [[ "$ComposantsGit" = *"$Composant"* ]] && [ $* != sourceforge/Kernel ] # Test si Composant est dans la liste des composants GIT
+	    DOC_PDF_OK=0
+	    if [ $* != sourceforge/Kernel ]
 	    then
-	       if [ "`date '+%u'`" -ge 5 ] && [ `date '+%H'` -gt 18 ]
+	       make gui 1>$Gui_log 2>&1 && echo $Composant"_Reference_Manual.pdf OK" && DOC_PDF_OK=1
+	       if [ "$Composant" != ModeleCoeur ] && ([ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 18 ]))
 	       then
 	          make check_gui 1>$Gui_log 2>&1 &
-	       else
-	          make gui 1>$Gui_log 2>&1
 	       fi
 	    fi
             echo " "
@@ -76,6 +76,17 @@ check_components()
 	       cat $Composant_log | mail_ -s\"[lance_test_nuit] check_components $Composant $TRUST_VERSION KO\" $TRUST_MAIL
 	    else
 	       echo $ECHO_OPTS "OK"
+	    fi	   
+	    if [ $* != sourceforge/Kernel ]
+	    then 
+	       echo $ECHO_OPTS "Reference Manual $Composant built on $HOST with $TRUST_VERSION ...\c"
+	       if [ "$DOC_PDF_OK" = 0 ]
+	       then
+	          echo $ECHO_OPTS "KO."
+	          cat $Gui_log | mail_ -s\"[lance_test_nuit] reference manual $Composant $TRUST_VERSION KO\" $TRUST_MAIL
+	       else
+	          echo $ECHO_OPTS "OK"
+	       fi	    
 	    fi	    
 	    echo " "
             echo "TRUST script on $HOST the `date` ..."
@@ -94,8 +105,12 @@ check_components()
 	       echo "  See `pwd`/Run.liste"
 	       # Machines en mode debug
 	       debug_machines=`liste_machines "\-g " | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
+	       # Machines en mode avx
+	       avx_machines=`liste_machines "\-avx" | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Machines en mode valgrind
 	       valgrind_machines=`liste_machines "\-valgrind" | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
+	       # Machines en mode gui
+	       gui_machines=`liste_machines "\-gui" | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Clusters
 	       updated_machines=`liste_machines limited | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Machines cible pour la sortie de version
@@ -146,7 +161,7 @@ check_components()
 			# Pour ModeleCoeur, test en valgrind seulement le vendredi car ne passe pas en une nuit
 			if [ "$Composant" = ModeleCoeur ]
 			then
-			   if [ "`date '+%u'`" -ge 5 ] && [ `date '+%H'` -gt 18 ]
+			   if [ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 18 ])
 			   then
 		              valgrind_option="--with-valgrind"
 			   else
@@ -156,34 +171,50 @@ check_components()
 		     else
 		        valgrind_option=""
 		     fi
-	             if [[ "$debug_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines debug
+	             if [[ "$gui_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines gui
+		     then
+		        mode_option="--with-mode=gui"
+	             elif [[ "$debug_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines debug
 		     then
 		        mode_option="--with-mode=debug"
 			# Pour TrioCFD, test en debug seulement le vendredi car ne passe pas en une nuit
 			if [ "$Composant" = TrioCFD ]
 			then
-			   if [ "`date '+%u'`" -ge 5 ] && [ `date '+%H'` -gt 18 ]
+			   if [ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 18 ])
 			   then
 		              mode_option="--with-mode=debug"
 			   else
 		              mode_option="--with-mode=optim"
 			   fi
 			fi
+	             elif [[ "$avx_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines avx
+		     then
+		        mode_option="--with-mode=optim_avx"
 		     else
 		        mode_option="--with-mode=optim"
 		     fi
-	             check_option="--check-all"
-	             if [[ "$updated_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines updated
+	             if [[ "$gui_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines gui
 		     then
-	                if [ "$Composant" = TrioCFD ] || [ "$Composant" = Test_Baltik ] || [ "$Composant" = ModeleCoeur ]
+	                if [ "$Composant" = ModeleCoeur ]
 			then
-			   if [ "`date '+%u'`" -ge 5 ] && [ `date '+%H'` -gt 18 ]
+	                   check_option="--without-run"
+			else
+	                   check_option=""
+			fi
+	             else
+	                check_option="--check-all"
+		        if [[ "$updated_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines updated
+		        then
+	                   if [ "$Composant" = TrioCFD ] || [ "$Composant" = Test_Baltik ] || [ "$Composant" = ModeleCoeur ]
 			   then
-		              check_option="--check-all"
-			   else
-		              check_option="--without-run"
+			      if [ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 18 ])
+			      then
+		                 check_option="--check-all"
+			      else
+		                 check_option="--without-run"
+			      fi
+	                      liste_options="--with-efface-dir-before"
 			   fi
-	                   liste_options="--with-efface-dir-before"
 			fi
 	             fi
 	             if [[ "$non_machines" = *"$machine"* ]] # Test si machine n est pas dans la liste des machines cible, get_binary et tache
@@ -468,11 +499,12 @@ echo "  See $liste_log"
 echo "TRUST external packages liste dep on $HOST the `date` ...">$liste_log
 echo>>$liste_log
 # NB: Verification complete (apres nettoyage) le vendredi
-[ "`date '+%u'`" = 5 ] && rm -r -f Test
+[ "`date '+%u'`" = 5 ] && rm -r -f $TRUST_ROOT/build/bin/gestion_externalpackages/Test
 ./Verify_liste_dep.sh 1>>$liste_log 2>&1
 # les 3 paquets suivants different car
 # qt-everywhere-opensource-src-4.8.3 sans doc (taille passe de 685M a 352M)
 # med-3.0.7 sans doc et sans python (taille passe de 162M a 19M)
+# med-3.2.1 sans doc (taille passe de 45M a 17M)
 # osu-micro-benchmarks-3.8 version initiale non retrouvee
 nb_error=`grep "FAILED" $liste_log | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.2.1 | grep -v osu-micro-benchmarks-3.8 | wc -l`
 # les 3 paquets suivants sont sous http://downloads.sourceforge.net/project/trust-platform/X.Y.Z/extra/
@@ -1233,14 +1265,17 @@ echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 ####################
 # Release criteria #
 ####################
-echo "----------------------------------------------------------------------------------------" > $MESSAGES_NUIT
+echo "--------------------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 echo `date` >> $MESSAGES_NUIT
-echo "----------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
+[ -f $TRUST_ROOT/RELEASE_NOTES ] && echo "--------------------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 [ -f $TRUST_ROOT/RELEASE_NOTES ] && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/RELEASE_NOTES | head -n -1 >> $MESSAGES_NUIT
+[ -f $TRUST_ROOT/DEVELOPER_NOTES ] && echo "--------------------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 [ -f $TRUST_ROOT/DEVELOPER_NOTES ] && $TRUST_Awk '/Developer notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/DEVELOPER_NOTES | tail -n +3 | head -n -1 >> $MESSAGES_NUIT
+[ -f $TRUST_ROOT/externalpackages/RELEASE_NOTES ] && echo "--------------------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 [ -f $TRUST_ROOT/externalpackages/RELEASE_NOTES ] && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/externalpackages/RELEASE_NOTES | tail -n +3 | head -n -1 >> $MESSAGES_NUIT
 for Composant in $ComposantsGit
 do
+  [ -f $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES ] && echo "--------------------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
   [ -f $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES ] && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES | tail -n +3 | head -n -1 >> $MESSAGES_NUIT
 done
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
@@ -1667,7 +1702,7 @@ echo "Analysis of $recupere_log file"
 grep "step TRUST" $recupere_log
 grep "step TRUST" $recupere_log | grep -v "1.000" > tmp.log
 echo "Analysis of $REP_NUIT/NUIT.html file"
-grep "Total number portability" $REP_NUIT/NUIT.html >> tmp.log
+grep "Total number portability" $REP_NUIT/NUIT.html | tee -a tmp.log
 grep "TRUST portability" $REP_NUIT/NUIT.html
 all_cible=`$TRUST_Awk '/Total number portability/ {print $9}' $REP_NUIT/NUIT.html`
 nb_cible=`$TRUST_Awk '/Total number portability/ {print $7}' $REP_NUIT/NUIT.html`
@@ -1752,6 +1787,7 @@ then
    [ -s tmp.log ] && cat tmp.log | mail_ -s\"[lance_test_nuit] XPREPRO KO on host:\" $TRUST_MAIL
 else
    echo "Release criterion: Xprepro KO"
+   grep "XPREPRO=NOT" $REP_NUIT/CR_* >> tmp.log
    grep "Empty PERF report of" $recupere_log >> tmp.log
    grep "No PERF report of" $recupere_log >> tmp.log
    [ -s tmp.log ] && cat tmp.log | mail_ -s\"[lance_test_nuit] XPREPRO KO on cible host:\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
@@ -2135,7 +2171,7 @@ do
 	       grep -v -f $TRUST_ROOT/exec/tests_TRUST$COMM"_semi_opt"/liste $valgrind_log 1>$log_filtre 2>&1
 	       echo "-----------" >>$log_filtre
 	       cat $TRUST_TMP/cas >>$log_filtre
-	       [ -s $log_filtre ] && cat $log_filtre | mail_ -s\"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects TRUST errors on $machine host\" -c $TRUST_PROJECT_LEADER -c $TRUST_MAIL $TMA_PROJECT_LEADER
+	       [ -s $log_filtre ] && cat $log_filtre | mail_ -s\"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects TRUST errors on $machine host\" -c $TRUST_PROJECT_LEADER -c $TMA_PROJECT_LEADER $TRUST_MAIL
                rm -f $log_filtre
 	    fi
          fi
@@ -2151,15 +2187,17 @@ do
    for machine in $machines
    do
       # Check if valgrind for this composant:
-      grep valgrind $PROJECT_ROOT/*$Composant*$machine*prepare.log 2>/dev/null > list.log
+      grep valgrind $PROJECT_ROOT/*$Composant*$machine.*prepare.log 2>/dev/null > list.log
       if [ -s list.log ]
       then
-         testko=`grep "make_check KO" $PROJECT_ROOT/*$Composant*$machine*make_check.log`
+         echo "Verification of baltik $Composant on $machine"
+	 grep "make_check " $PROJECT_ROOT/*$Composant*$machine.*make_check.log 2>/dev/null
+         testko=`grep "make_check KO" $PROJECT_ROOT/*$Composant*$machine.*make_check.log`
          if [ "$testko" != "" ]
 	 then
 	    echo $testko
 	    echo $machine >> tmp.log
-            grep " CORE " $PROJECT_ROOT/*$Composant*$machine*make_check.log | awk -F"|" '{print $NF}' >> tmp.log
+            grep " CORE " $PROJECT_ROOT/*$Composant*$machine.*make_check.log | awk -F"|" '{print $NF}' >> tmp.log
             echo " " >> tmp.log
 	    valgrind=0
 	 fi
@@ -2175,10 +2213,11 @@ do
        else
           BALTIK_PROJECT_LEADER="TRUST_PROJECT_LEADER"
        fi
-       cat tmp.log | mail_ -s\"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects $Composant errors on host:\" -c ${!BALTIK_PROJECT_LEADER} -c $TRUST_MAIL $TMA_PROJECT_LEADER
+       cat tmp.log | mail_ -s\"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects $Composant errors on host:\" -c ${!BALTIK_PROJECT_LEADER} -c $TMA_PROJECT_LEADER $TRUST_MAIL
     fi
     rm tmp.log 2>/dev/null
 done
+echo " "
 echo "Analysis of $REP_NUIT/CR_* files"
 OK=`grep "KVALGRIND=OK" $REP_NUIT/CR_* 2>/dev/null | wc -l`
 KO=`grep "KVALGRIND=KO" $REP_NUIT/CR_* 2>/dev/null | wc -l`
@@ -2187,7 +2226,7 @@ if [ $KO != 0 ]
 then
    grep "KVALGRIND=KO" $REP_NUIT/CR_*
    (
-   grep "KVALGRIND=KO" $REP_NUIT/CR_*  | cut -d_ -f2 | mail_ -s\"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects TRUST errors with upwind test case on host:\" -c $TRUST_PROJECT_LEADER -c $TRUST_MAIL $TMA_PROJECT_LEADER
+   grep "KVALGRIND=KO" $REP_NUIT/CR_*  | cut -d_ -f2 | mail_ -s\"[lance_test_nuit] `$TRUST_ROOT/exec/valgrind/bin/valgrind --version` detects TRUST errors with upwind test case on host:\" -c $TRUST_PROJECT_LEADER -c $TMA_PROJECT_LEADER $TRUST_MAIL
    )
    #valgrind=0 # Test provisoire : en attente decision project leader
 fi
@@ -2374,6 +2413,7 @@ echo "  Call to $TRUST_ROOT/bin/KSH/tggcov_ -file"
 listing=`mktemp_`
 export PYTHONPATH=$PYTHONPATH:$TRUST_ROOT/bin/KSH
 python -c "from Couv import nombre_de_cas_par_classe;nombre_de_cas_par_classe()" > $listing
+rm $TRUST_ROOT/bin/KSH/Couv.pyc
 # Classes non testees
 for string in `$TRUST_Awk '/ 0 0/ {print $1}' $listing | sort`
 do
@@ -2769,15 +2809,15 @@ echo "Analysis of $TRUST_ROOT/ToDo file"
 nb_todo=`grep -c ${TRUST_VERSION%_beta} $TRUST_ROOT/ToDo`
 echo "$nb_todo requests to do before the release of the next version"
 nothing_todo=0 && [ "`grep ${TRUST_VERSION%_beta} $TRUST_ROOT/ToDo`" = "" ] && nothing_todo=1
-# Envoi aux personnes concernees le lundi avant COSUIV
+# Envoi aux personnes concernees le mardi apres COSUIV
 for qui in `$TRUST_Awk '!/Qui/ {print $2}' $TRUST_ROOT/ToDo | sort -u`
 do
    grep $qui $TRUST_ROOT/ToDo | grep ${TRUST_VERSION%_beta} > $TRUST_TMP/ToDo
-   [ -s $TRUST_TMP/ToDo ] && [ "`date '+%u'`" = 1 ] && cat $TRUST_TMP/ToDo | mail_ -s\"[lance_test_nuit] ToDo list for the version ${TRUST_VERSION%_beta}\" -c $TRUST_MAIL $qui
+   [ -s $TRUST_TMP/ToDo ] && [ "`date '+%u'`" = 2 ] && cat $TRUST_TMP/ToDo | mail_ -s\"[lance_test_nuit] ToDo list for the version ${TRUST_VERSION%_beta}\" -c $TRUST_MAIL $qui
 done
-# Envoi la liste complete le jeudi au chef de projet pour planning debut de semaine prochaine
+# Envoi la liste complete le lundi au chef de projet avant COSUIV pour planning de la semaine
 grep ${TRUST_VERSION%_beta} $TRUST_ROOT/ToDo > $TRUST_TMP/ToDo
-[ "`date '+%u'`" = 4 ] && cat $TRUST_TMP/ToDo | mail_ -s\"[lance_test_nuit] ToDo list for next Monday COSUIV\" -c $TRUST_MAIL $TMA_PROJECT_LEADER
+[ "`date '+%u'`" = 1 ] && cat $TRUST_TMP/ToDo | mail_ -s\"[lance_test_nuit] ToDo list for next Monday COSUIV\" -c $TRUST_MAIL $TMA_PROJECT_LEADER
 rm -f $TRUST_TMP/ToDo
 #
 echo " "
@@ -2910,6 +2950,13 @@ do
    rm -f tmp.log
    for view in Livraison Maintenance Kernel
    do
+      Gui_log=$REP_NUIT"/baltik_"$Composant"_"$HOST"_"$view"_gui.log"
+      if [ -f $Gui_log ]
+      then
+         echo "Analysis of "$Gui_log" file"
+	 grep "Error" $Gui_log
+	 grep "Validation XDATA=" $Gui_log
+      fi
       Composant_log=$REP_NUIT"/baltik_"$Composant"_"$HOST"_"$view".log"
       if [ -f $Composant_log ]
       then
@@ -2953,7 +3000,7 @@ do
       if [ -f $nuit_log ]
       then
          echo " " | tee -a tmp.log
-         echo "Run: konqueror $REP_NUIT/nuit_$Composant.html" | tee -a tmp.log	 
+         echo "Run: konqueror ftp://$TRUST_FTP/$SECRET/NUIT/nuit_$Composant.html" | tee -a tmp.log	 
       fi
    fi
    echo " "
@@ -3079,14 +3126,18 @@ echo "####################################"
 echo "# Verify the Doxygen documentation #"
 echo "####################################"
 echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
-echo "Search of $TRUST_ROOT/doc/doxygen*.err file"
-if [ -f $TRUST_ROOT/doc/doxygen*.err ]
+echo "Search of $TRUST_ROOT/build/doc/doxygen*.err file"
+validation_doxygen=1
+if [ -f $TRUST_ROOT/build/doc/doxygen*.err ]
 then
-   ls -la $TRUST_ROOT/doc/doxygen*.*
-   head -n1 $TRUST_ROOT/doc/doxygen*.out
-   tail -n1 $TRUST_ROOT/doc/doxygen*.out
+   ls -la $TRUST_ROOT/build/doc/doxygen*.*
+   head -n1 $TRUST_ROOT/build/doc/doxygen*.out
+   tail -n1 $TRUST_ROOT/build/doc/doxygen*.out
+elif [ ! -f $TRUST_ROOT/build/doc/doxygen*.out ]
+then
+   validation_doxygen=0 && echo `ls -la $TRUST_ROOT/build/doc/doxygen*.*` | mail_ -s\"[lance_test_nuit] Validation of Doxygen documentation NOT\" $TRUST_MAIL
 fi
-validation_doxygen=1 && [ -s $TRUST_ROOT/doc/doxygen*.err ] && validation_doxygen=0 && cat $TRUST_ROOT/doc/doxygen*.err | mail_ -s\"[lance_test_nuit] Validation of Doxygen documentation KO\" $TRUST_MAIL
+[ -s $TRUST_ROOT/build/doc/doxygen*.err ] && validation_doxygen=0 && cat $TRUST_ROOT/build/doc/doxygen*.err | mail_ -s\"[lance_test_nuit] Validation of Doxygen documentation KO\" $TRUST_MAIL
 echo " "
 if [ "$validation_doxygen" = 1 ]
 then
@@ -3485,10 +3536,10 @@ echo "###########################"
 echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 
 ################################################################################################
-# Le mail des RELEASES NOTES est envoye aux developpeurs tous les lundis ou lors de la livraison
+# Le mail des RELEASES NOTES est envoye aux developpeurs tous les mardis ou lors de la livraison
 # sinon uniquement a l'admin TRUST et au chef de projet
 ################################################################################################
-if [ "`date '+%u'`" = 1 ] || [ $livraison = 1 ] || [ $accord_beta = 1 ]
+if [ "`date '+%u'`" = 2 ] || [ $livraison = 1 ] || [ $accord_beta = 1 ]
 then
    ALL_DEVELOPERS_TRUST_MAIL="trio_u_dev@saxifrage.saclay.cea.fr"
    echo " " >> $MESSAGES_NUIT
@@ -3604,8 +3655,8 @@ source /softs/trio_u/env_TRUST-$new.sh
 # for CEA CCRT-TGCC supercomputers (cobalt & curie-ccrt):
 source /ccc/cont002/home/den/triou/env_TRUST-$new.sh
 
-# for CINES supercomputer (occigen):
-source /opt/software/applications/trio_u/env_TRUST-$new.sh
+# for CINES supercomputer (occigen & cristal):
+source /panfs/panasas/softs/applications/trio_u/env_TRUST-$new.sh
 ----------------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
       echo $ECHO_OPTS "
 --------------------------------------------------------------------------------------------------
@@ -3703,8 +3754,8 @@ source /softs/trio_u/env_TrioCFD-$new.sh
 # for CEA CCRT-TGCC supercomputers (cobalt & curie-ccrt):
 source /ccc/cont002/home/den/triou/env_TrioCFD-$new.sh
 
-# for CINES supercomputer (occigen):
-source /opt/software/applications/trio_u/env_TrioCFD-$new.sh
+# for CINES supercomputer (occigen & cristal):
+source /panfs/panasas/softs/applications/trio_u/env_TrioCFD-$new.sh
 ----------------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
       echo $ECHO_OPTS "
 --------------------------------------------------------------------------------------------------
