@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,6 +28,7 @@
 #include <Sous_Zone.h>
 
 Implemente_instanciable(Create_domain_from_sous_zone,"Create_domain_from_sous_zone",Interprete_geometrique_base);
+// XD create_domain_from_sous_zone interprete create_domain_from_sous_zone 1 These keyword fills the domain domaine_final with the subzone par_sous_zone or with several subzones par_sous_zones from the domain domaine_init. It is very useful when meshing several mediums with Gmsh. Each medium will be defined as a subzone into Gmsh. A MED mesh file will be saved from Gmsh and read with Lire_Med keyword by the TRUST data file. And with this keyword, a domain will be created for each medium in the TRUST data file.
 
 Sortie& Create_domain_from_sous_zone::printOn(Sortie& os) const
 {
@@ -38,49 +39,51 @@ Entree& Create_domain_from_sous_zone::readOn(Entree& is)
   return Interprete::readOn(is);
 }
 
-
-
-
-
-
-
 Entree& Create_domain_from_sous_zone::interpreter_(Entree& is)
 {
   Nom nom_dom,nom_dom_org;
   Nom nom_sous_zone;
+  Noms vec_nom_ssz;
 
   Param param(que_suis_je());
-  param.ajouter("domaine_final",&nom_dom,Param::REQUIRED);
-  param.ajouter("par_sous_zone",&nom_sous_zone,Param::REQUIRED);
-  param.ajouter("domaine_init",&nom_dom_org,Param::REQUIRED);
-
+  param.ajouter("domaine_final",&nom_dom,Param::REQUIRED); // XD_ADD_P ref_domaine new domain in which faces are stored
+  param.ajouter("par_sous_zone",&nom_sous_zone); // XD_ADD_P chaine a sub-area allowing to choose the elements
+  param.ajouter("par_sous_zones",&vec_nom_ssz); // XD_ADD_P listchaine several sub-zones allowing to choose the elements
+  param.ajouter("domaine_init",&nom_dom_org,Param::REQUIRED); // XD_ADD_P ref_domaine initial domain
+  param.ajouter_condition("is_read_par_sous_zone_or_is_read_par_sous_zones","Interpreter Create_domain_from_sous_zone: one of the keywords par_sous_zone or par_sous_zones must be specified.");
   param.lire_avec_accolades_depuis(is);
-
-
 
   associer_domaine(nom_dom);
   Domaine& dom=domaine();
 
-
   if (nproc()>1)
     {
-      Cerr<<"option par_sous_zone of  "<<que_suis_je()<<" is for sequential" <<finl;
+      Cerr<<"Options par_sous_zone and par_sous_zones of  "<<que_suis_je()<<" are for sequential." <<finl;
       exit();
     }
-  const Sous_Zone& ssz=ref_cast(Sous_Zone,objet(nom_sous_zone));
-  int nb_poly=ssz.nb_elem_tot();
 
   const Domaine& domaine_org=ref_cast(Domaine, objet(nom_dom_org));
   IntTab marq_elem(domaine_org.zone(0).nb_elem());
-  for (int pol=0; pol<nb_poly; pol++)
-    marq_elem(ssz[pol])=1;
 
+  if (vec_nom_ssz.size()==0)
+    vec_nom_ssz.add(Nom(nom_sous_zone));
+  else
+    Cerr << "\nWARNING: par_sous_zones option only available for subzones that do not touch each other!!\n" << finl;
 
+  int nb_poly;
   DomaineCutter cutter;
   Noms vide;
+
+  for ( int i=0; i<vec_nom_ssz.size(); i++ )
+    {
+      const Sous_Zone& ssz=ref_cast(Sous_Zone,objet(vec_nom_ssz(i)));
+      nb_poly=ssz.nb_elem_tot();
+      for (int pol=0; pol<nb_poly; pol++)
+        marq_elem(ssz[pol])=1;
+    }
+
   cutter.initialiser(domaine_org,marq_elem,2,1,vide,1);
   cutter.construire_sous_domaine(1,dom);
-
 
   Zone& zone=dom.zone(0);
   Bords& bords=zone.faces_bord();
@@ -101,7 +104,6 @@ Entree& Create_domain_from_sous_zone::interpreter_(Entree& is)
 
           joints.suppr(joints(j));
         }
-
     }
 
   for (int b=bords.size()-1; b>=0; b--)

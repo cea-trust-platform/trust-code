@@ -1,6 +1,8 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.6_beta : Enhancements, modifications and corrected bugs since version 1.7.5 :
 --------------------------------------------------------------------------------------------------
+13/10/17 (TRUST)  New feature : Possibility to create a domain from multiple subareas and not just one (new keyword: par_sous_zones)
+11/10/17 (TRUST)  New feature : Upper limitation of epsilon for k-eps RANS turbulence model
 26/09/17 (TRUST)  Major change: Adding columns into diffusion_chaleur.face (and debit.face into VDF) files for flux by face using imprimer_flux keyword
 12/09/17 (TRUST)  Minor change: Value of ideal gas constant in Quasi_Compressible model R=8.3143J/mol/K
 31/08/17 (TRUST)  New feature : Introduce no_verify option (Usage: trust MyJDD.data -no_verify)

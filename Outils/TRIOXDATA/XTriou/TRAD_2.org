@@ -1483,10 +1483,6 @@ extraire_plan interprete extraire_plan -3 This keyword extract a plan mesh named
   attr via_extraire_surface rien via_extraire_surface 1 not_set
   attr inverse_condition_element rien inverse_condition_element 1 not_set
   attr avec_certains_bords_pour_extraire_surface listchaine avec_certains_bords_pour_extraire_surface 1 not_set
-create_domain_from_sous_zone interprete create_domain_from_sous_zone 1 These keyword fills the domain domaine_final with the subzone par_sous_zone from the domain domaine_init. It is very useful when meshing several mediums with Gmsh. Each medium will be defined as a subzone into Gmsh. A MED mesh file will be saved from Gmsh and read with Lire_Med keyword by the TRUST data file. And with this keyword, a domain will be created for each medium in the TRUST data file.
-  attr domaine_final ref_domaine domaine_final 0 domaine dans lequel stocke les faces
-  attr par_sous_zone chaine par_sous_zone 0 sous zone permettant de choisr les elements
-  attr domaine_init ref_domaine domaine_init 0 domaine d origine
 extraire_domaine interprete extraire_domaine -3 Keyword to create a new new domain built with the domain elements of the pb_name problem verifying the two conditions given by Condition_elements. The problem pb_name should have been discretized.
   attr domaine ref_domaine domaine 0 domaine dans lequel stocke les faces
   attr probleme ref_Pb_base probleme 0 Probleme duquel il faut extraire les faces
