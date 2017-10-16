@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -56,7 +56,7 @@
 //  05/07/2017 ABn. Complement explications RRK2:
 //  Application du RRK2 en CFD :
 //  https://link.springer.com/content/pdf/10.1007%2F3-540-13917-6_112.pdf
-//  rho*u reste au temps n pour une evaluation intereédiaire de f.
+//  rho*u reste au temps n pour une evaluation intermediaire de f.
 //  Said differently, from the time scheme perspective, f is only a function of Y1.
 //////////////////////////////////////////////////////////////////////////////
 class RRK2: public Schema_Temps_base
