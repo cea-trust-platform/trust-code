@@ -93,6 +93,7 @@ do
 <TD>Petsc</TD>
 <TD>Med</TD>
 <TD>MedC</TD>
+<TD>MedP</TD>
 <TD>lata2</TD>
 <TD>plot2</TD>
 <TD>ICoCo</TD>
@@ -335,6 +336,7 @@ do
 	BALTIK=$STRICT 	 && [ "`grep BALTIK=OK $CR`" != "" ] 	  && BALTIK="<TD $VERT>OK</TD>"  && [ "$machine_cible" = 1 ] && let portabilite_baltik=$portabilite_baltik+1
 	# Si certains elements sont disabled au configure:
 	NOT="<TD $BLANC>NOT</TD>"
+	MEDCOUPLPYT=$NOT && [ "`grep MED_COUPLING_PYTHON=ON $CR`" != "" ] && MEDCOUPLPYT="<TD $VERT>ON</TD>" && [ "`grep MED_COUPLING_PYTHON=OFF $CR`" != "" ] && MEDCOUPLPYT="<TD $ROUGE>OFF</TD>"
 	[ "`grep 'Disabling PETSC' $CR`" != "" ] 	&& [ "`grep PETSC=KO $CR`" != "" ] 	 && PETSC=$NOT
 	[ "`grep ' -disable-petsc' $CR`" != "" ] 	&& [ "`grep PETSC=KO $CR`" != "" ] 	 && PETSC=$NOT
 	[ "`grep 'Disabling MED' $CR`" != "" ] 		&& [ "`grep MED=KO $CR`" != "" ] 	 && MED=$NOT 	  && GMSH=$NOT	 && ICOCO=$NOT
@@ -377,7 +379,7 @@ do
 	then
 	   let nb_machine_xprepro_cible=$nb_machine_xprepro_cible+1
 	   pourcent=`cat $CR | awk 'BEGIN {s=0;n=0} /Xprepro:/ {n++} /Xprepro:/ && /OK/ {s++} END {if (n>0) print s/n;else print s}'`
-	   [ $pourcent = 0 ] && [ "`grep XPREPRO=NOT $CR`" != "" ] && pourcent=1 # Test provisoire : en attente decision project leader
+	   [ $pourcent = 0 ] && [ "`grep XPREPRO=NOT $CR`" != "" ] && let nb_machine_xprepro_cible=$nb_machine_xprepro_cible-1 # Remplace -disable-xprepro propose par project leader
 	   portabilite_xprepro=`echo $ECHO_OPTS "scale=3\n$portabilite_xprepro+$pourcent" | bc -l`
 	   echo " step Xprepro: total pourc nb file "$portabilite_xprepro" "$pourcent" "$nb_machine_xprepro_cible" "$CR
 	fi
@@ -400,6 +402,7 @@ $TOOLS
 $PETSC
 $MED
 $MEDCOUPL
+$MEDCOUPLPYT
 $LATA2DX
 $PLOT2D
 $ICOCO
@@ -425,6 +428,7 @@ $bench
         echo "
 <TR>
 $TD_CR<A HREF="$CR">$HOST</A>$FTD
+<TD>$vide</TD>
 <TD>$vide</TD>
 <TD>$vide</TD>
 <TD>$vide</TD>

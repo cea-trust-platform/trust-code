@@ -408,7 +408,7 @@ do
    [ "$HOST" = curie-ccrt ] && export project="genden"
    # Changement option en -g -O3 afin d'utiliser cachegrind
    [ "`liste_machines "\-cachegrind" | grep ^$HOST_BUILD"\."`" != "" ] && echo $ECHO_OPTS "1,$ s?-O3?-g -O3?g\nw" | ed $TRUST_ROOT/env/make.linux_g++3_opt
-   make
+   make && make opt_avx
    err_compile=$?
    [ "`grep BUILD_EXEC=OK compile_$code$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD.log`" != "" ] && err_compile=0
    if [ $MODULE = TRUST ]
@@ -431,6 +431,13 @@ do
 	 echo "MEDCOUPLING=OK"
       else 
 	 echo "MEDCOUPLING=KO"
+      fi
+      if [ -f $TRUST_ROOT/lib/src/LIBMEDCOUPLING/install/env.sh ]
+      then
+	 source $TRUST_ROOT/lib/src/LIBMEDCOUPLING/install/env.sh 1>/dev/null 2>&1
+	 echo "MED_COUPLING_PYTHON="$MED_COUPLING_PYTHON
+      else 
+	 echo "MED_COUPLING_PYTHON=NOT"
       fi
       ########################
       # PETSC est il compile ?
@@ -843,7 +850,7 @@ do
 	 lance_test_exec=$exec_opt
 	 [ $NUIT = 1 ] && [ "`liste_machines "\-prof" | grep ^$HOST_BUILD"\."`" != "" ] && lance_test_exec=$exec_pg
 	 [ $NUIT = 1 ] && [ "`liste_machines "\-gcov" | grep ^$HOST_BUILD"\."`" != "" ] && lance_test_exec=$exec_gcov	
-	 #[ $NUIT = 1 ] && [ "`liste_machines "\-avx"  | grep ^$HOST_BUILD"\."`" != "" ] && lance_test_exec=$exec_avx	
+	 [ $NUIT = 1 ] && [ "`liste_machines "\-avx"  | grep ^$HOST_BUILD"\."`" != "" ] && lance_test_exec=$exec_avx	
 	 [ $NUIT = 1 ] && [ "`liste_machines "\-g "   | grep ^$HOST_BUILD"\."`" != "" ] && lance_test_exec=$exec_debug	
 	 # On efface le CR
 	 CR_TESTS=$TRUST_TMP/tests/.tests_`basename $lance_test_exec`
@@ -938,26 +945,25 @@ do
 	    log=`pwd`/Run_fiche.log
 	    rm -f $log
 	    rm -r -f build Run.log
-	    if [ "${HOST:0:6}" = cobalt ] # Test provisoire : en attente d une solution via SLURM
+	    visit_erreur=`$TRUST_ROOT/exec/VisIt/bin/visit -help 1>/dev/null 2>&1;echo $?`
+	    if [ $visit_erreur = 0 ]
 	    then
-               echo "For the moment, Run_fiche is not launched with SLURM because there is blocking in step of building PDF report file (genererCourbes.py => cf call to visit on Visu.py)..." 1>$log 2>&1
-	       echo "Script Run_fiche=NOT"
-            else
-	       visit_erreur=`$TRUST_ROOT/exec/VisIt/bin/visit -help 1>/dev/null 2>&1;echo $?`
-	       if [ $visit_erreur = 0 ]
+	       if [ "${HOST:0:6}" = cobalt ] # Test provisoire : en attente d une solution via SLURM
 	       then
+	          USE_MPIRUN=1 Run_fiche -no_visit 1>$log 2>&1
+               else
 	          USE_MPIRUN=1 Run_fiche 1>$log 2>&1
-	          Run_fiche_KO=$?
-	       else
-	          echo "VisIt is not working under $TRUST_ROOT/Outils/VisIt" 1>$log 2>&1
-	          Run_fiche_KO=1
 	       fi
-	       if [ $Run_fiche_KO = 0 ]
-	       then
-	          echo "Script Run_fiche=OK"
-	       else
-	          echo "Script Run_fiche=KO -> See $log"
-	       fi
+	       Run_fiche_KO=$?
+	    else
+	       echo "VisIt is not working under $TRUST_ROOT/Outils/VisIt" 1>$log 2>&1
+	       Run_fiche_KO=1
+	    fi
+	    if [ $Run_fiche_KO = 0 ]
+	    then
+	       echo "Script Run_fiche=OK"
+	    else
+	       echo "Script Run_fiche=KO -> See $log"
 	    fi
 	    cd - 1>/dev/null 2>&1
          fi	

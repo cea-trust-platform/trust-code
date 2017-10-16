@@ -187,7 +187,15 @@ echo "Info_global mode "$mode
 
 
 echo Info_global CC `basename $TRUST_CC_BASE` `$TRUST_CC_BASE --version 2>&1 | head -1 | $TRUST_Awk '{print $3}'`
-OS=`uname -s` && [ $TRUST_ARCH = linux ] && [ -f /etc/issue ] && OS=`awk '(NF>0) {gsub("Welcome to ","",$0);print $0}' /etc/issue | head -1`
+#OS=`uname -s` && [ $TRUST_ARCH = linux ] && [ -f /etc/issue ] && OS=`awk '(NF>0) {gsub("Welcome to ","",$0);print $0}' /etc/issue | head -1`
+print_OS()
+{
+   for file in /etc/system-release /etc/release /etc/issue.net /etc/issue
+   do
+      [ -f $file ] && echo `head -1 $file` && break
+   done
+}
+OS=`uname -s` && [ $TRUST_ARCH = linux ] && OS=`print_OS` 
 #OS="Os "`uname -s` && [ $TRUST_ARCH = linux ] && OS=$OS" "`cat /proc/cpuinfo | $TRUST_Awk '/MHz/ {print $4"Mhz";exit}'`
 echo Info_global Os $OS 
 echo Info_global cible $cible

@@ -69,10 +69,10 @@ module () {
       module unload mpi
       module load $module
       #Python 2.6.6 python/2.7.3  python/2.7.8(default)  python/2.7.12  python/3.3.2
-      module="python/2.7.8"
-      echo "Module $module detected and loaded on $HOST."
-      module unload python
-      module load $module
+      #module="python/2.7.8"
+      #echo "Module $module detected and loaded on $HOST."
+      #module unload python
+      #module load $module
       #
       # If libccc_user module found, load it (this module helps to know the CPU)
       module=libccc_user

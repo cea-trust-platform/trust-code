@@ -1,73 +1,82 @@
 Version	Qui				Tache
-1.7.6   triou@cea.fr            Se renseigner sur la date du passage de RoundUp a Tuleap (evoque en COTHEM)
-1.7.6   triou@cea.fr            Se renseigner sur le mdp triou pour connexion a sedna (evoque en COSUIV)
+1.7.7   triou@cea.fr            Se renseigner sur la date du passage de RoundUp a Tuleap (evoque en COTHEM)
+1.7.6   celine.capitaine@cea.fr Possibilite de desactiver affichage warning k-eps (cf DI 4338)
+1.7.7   marthe.roux@cea.fr      Revoir Champ_Generique_Transformation::completer pour postraiter vitessex avec tansformation ou probes (cf DI 4336)
+1.7.7   celine.capitaine@cea.fr Montee de version medfichier 3.3.0 / medcoupling 8.4.0 (cf DI 4335)
+1.7.7   celine.capitaine@cea.fr Si pas de med_coupling_python alors sortir proprement du lata_to_case.py (ref DI 4330)
+1.7.6   marthe.roux@cea.fr      Voir pour gradient temperature nul si T=sin(y) alors que OK si T=sin(x) (cf DI 4329)
+1.7.5   trust@cea.fr            Voir avec equipe TrioCFD pourquoi sur cas avec source en grad(P) pas de solution vitesse nulle (cf DI 4329)
+1.7.5   trust@cea.fr            Gestion d un tres grand nombre de fichiers log Zones sauv lata ... (cf DI 4325)
 1.7.7   celine.capitaine@cea.fr Voir pour ajouter un test NR avec champ_front_MED dans TRUST (ref DI 4324)
-1.7.5   stephane.veys@cea.fr    Voir avec equipe TrioMC2 pour adaptation du create_domain_from_zones a leur cas d etudes (cf DI 4319)
-1.7.5   stephane.veys@cea.fr    Comment gerer la mise a jour de la license dans entete fichier (ref DI 4316)
+1.7.6   celine.capitaine@cea.fr En attente retour TrioMC2 pour integration branche gerschen a ModeleCoeur et si PolyMAC ? (cf DI 4322)
+1.7.7   celine.capitaine@cea.fr Remplacer Pr dans loi de paroi en QC FM par calculer_prandtl (ref DI 4320)
+1.7.6   celine.capitaine@cea.fr Donner la possibilite a utilisateur d ajuster test sur Ymin et Ymax en QC FM (cf DI 4320)
+1.7.5   trust@cea.fr            Tester compilateur g++ 7.2.0 (cf DI 4317)
+1.7.6   celine.capitaine@cea.fr Integration branche portabilite med 3.0.0 (cf DI 4317)
 1.7.7   celine.capitaine@cea.fr Voir pour ajouter un test NR avec script python pour projeter via MEDCoupling (ref DI 4315)
-1.7.7   stephane.veys@cea.fr    Prendre en compte les remarques pour ameliorer genereCourbe (ref DI 4315)
-1.7.5   stephane.veys@cea.fr    Voir avec equipe TrioCFD le plugin VisIt sur le calcul de la norme d un champ moyenne (ref DI 4305)
-1.7.7   adrien.bruneton@cea.fr  Montee de version du prerequis cmake 3.0.2 vers 3.4.1 (ref DI 4304)
-1.7.5   stephane.veys@cea.fr    Voir possibilite de bords periodiques sur 1/4 cylindre par ex (ref DI 4302)
+1.7.5   trust@cea.fr            Prendre en compte les remarques pour ameliorer genereCourbe (ref DI 4315)
+1.7.5   trust@cea.fr            Retrouver Champ_generique_from_champ_base dans baltik hors TMA (cf DI 4307)
+1.7.5   trust@cea.fr            Voir avec equipe TrioCFD le plugin VisIt sur le calcul de la norme d un champ moyenne (ref DI 4305)
+1.7.5   trust@cea.fr            Montee de version du prerequis cmake 3.0.2 vers 3.4.1 (ref DI 4304)
+1.7.5   trust@cea.fr            Voir possibilite de bords periodiques sur 1/4 cylindre par ex (ref DI 4302)
 1.7.6   marthe.roux@cea.fr      Preparer formation developpeurs 16 et 17 octobre (cf DI 4301)
-1.7.6   marthe.roux@cea.fr      Preparer formation utilisateurs 9 et 10 octobre (cf DI 4300)
 1.7.7   celine.capitaine@cea.fr Voir avec equipe TrioCFD si baltik k_omega repris ? (ref DI 4298)
-1.7.5   stephane.veys@cea.fr    Voir pb moyenne avec bloc statistiques_en_serie (ref DI 4289)
-1.7.5   stephane.veys@cea.fr    Voir schema muscl sur flux sur CL (ref DI 4287)
+1.7.5   trust@cea.fr            Voir pb moyenne avec bloc statistiques_en_serie (ref DI 4289)
+1.7.5   trust@cea.fr            Voir schema muscl sur flux sur CL (ref DI 4287)
 1.7.7   celine.capitaine@cea.fr Voir avec equipe TrioCFD si baltiks CEG et Free_Slip integrables ? (ref DI 4286)
 1.7.7   celine.capitaine@cea.fr Tester et deboguer le cas test avec fraction massique QC en VEF (ref DI 4282)
-1.7.5   stephane.veys@cea.fr    Voir validation fraction massique QC en VEF (ref DI 4282)
+1.7.5   trust@cea.fr            Voir validation fraction massique QC en VEF (ref DI 4282)
 1.7.7   celine.capitaine@cea.fr Voir avec equipe TrioCFD si ajout fiche prm Baglietto suite echange mail avec Ulrich 21/07/17 ? (ref DI 4272)
-1.7.5   stephane.veys@cea.fr    Voir pb d'analyse de taux de cisaillement via probes et fields (ref DI 4271)
-1.7.5   stephane.veys@cea.fr    Voir si champ predefini comme vitessex peut etre utilise dans definition_champs (ref DI 4262)
-1.7.7   adrien.bruneton@cea.fr  Quelle suite a donner aux echanges mail avec Gauthier 29/03/17 sur interpolations de champs en entree ? (cf DI 4235)
-1.7.5   stephane.veys@cea.fr    Est ce que baltik MG integrable a TRUST ? (ref DI 4211)
-1.7.7   stephane.veys@cea.fr    Voir avec equipe TrioCFD pour baltik loi_rho_T  (cf DI 4206)
-1.7.7   adrien.bruneton@cea.fr  Poursuivre la mise a jour du fichier suppressions Valgrind tant que erreurs dans atelier NUIT (ref DI 4204)
-1.7.6   stephane.veys@cea.fr    Voir en reunion TrioCFD le suivi de residu de turbulence en norme L2 (cf DI 4191)
-1.7.6   celine.capitaine@cea.fr Compilation de WIZARD et PLOT2D sur cobalt (cf DI 4159)
-1.7.6   stephane.veys@cea.fr    Voir en reunion TrioCFD pour definir ce qui manque a TRUST pour realiser Benchmarck GEMIX (cf DI 4146)
-1.7.5   stephane.veys@cea.fr    Voir si champ composante_normale peut etre utilise en VDF et VEF (ref DI 4127)
-1.7.7   celine.capitaine@cea.fr Reprendre cas test PAR_CANAL_QC_Turb_Timposees_dt293K_VEF_imp avec petsc cholesky (ref DI 4123)
-1.7.7   adrien.bruneton@cea.fr  Reprendre interface TRUST Petsc avant passage a Petsc v3.7 (ref DI 4123)
-1.7.6   marthe.roux@cea.fr      Finir fiche prm (post pression tot) avec validation par Stephane et Ulrich (cf DI 4122)
+1.7.5   trust@cea.fr            Voir pb d'analyse de taux de cisaillement via probes et fields (ref DI 4271)
+1.7.7   celine.capitaine@cea.fr Reprendre cas test TrioCFD FTD_IBC_3D_VEF avec petsc pipecg sur callisto (ref DI 4263)
+1.7.5   trust@cea.fr            Quelle suite a donner aux echanges mail entre Adrien et Gauthier 29/03/17 sur interpolations de champs en entree ? (cf DI 4235)
+1.7.5   trust@cea.fr            Est ce que baltik MG integrable a TRUST ? (ref DI 4211)
+1.7.5   trust@cea.fr            Voir avec equipe TrioCFD pour baltik loi_rho_T  (cf DI 4206)
+1.7.5   trust@cea.fr            Voir en reunion TrioCFD le suivi de residu de turbulence en norme L2 (cf DI 4191)
+1.7.7   celine.capitaine@cea.fr Portabilite de PLOT_WIZARD et PLOT_2D sur host cible ? (cf DI 4159)
+1.7.5   trust@cea.fr            Voir en reunion TrioCFD pour definir ce qui manque a TRUST pour realiser Benchmarck GEMIX (cf DI 4146)
+1.7.5   trust@cea.fr            Voir si champ composante_normale peut etre utilise en VDF et VEF (ref DI 4127)
+1.7.7   celine.capitaine@cea.fr Reprendre cas test TrioCFD PAR_CANAL_QC_Turb_Timposees_dt293K_VEF_imp avec petsc cholesky (ref DI 4123)
+1.7.5   trust@cea.fr            Reprendre interface TRUST Petsc avant passage a Petsc v3.7 (ref DI 4123)
+1.7.6   celine.capitaine@cea.fr Relire la fiche prm (post pression tot) et faire un retour (cf DI 4122)
 1.7.7   celine.capitaine@cea.fr Deboguer TrioCFD/Rayonnement_Cuve_2D pour obtenir memes resultats en sequentiel et en parallele (cf DI 4120)
 1.7.7   celine.capitaine@cea.fr Deboguer TrioCFD/CouplagePb1Pb2_VEF_turbulent pour obtenir memes resultats en sequentiel et en parallele (cf DI 4119)
 1.7.7   marthe.roux@cea.fr      Deboguer EF_stb_ech_ext_imp pour obtenir memes resultats en sequentiel et en parallele (cf DI 4118)
-1.7.5   stephane.veys@cea.fr    Suivre equipe TrioCFD pour baltik TRUST avec loi Darcy (ref DI 4109)
-1.7.5   stephane.veys@cea.fr    Est ce que baltik gradV VDF integrable a TRUST ? (ref DI 4094)
-1.7.6   stephane.veys@cea.fr    Qui reprend cette activite ? Ajout d un passif - traitement CEA a l epoque par Gauthier (cf DI 4076)
-1.7.6   stephane.veys@cea.fr    Qui reprend cette activite ? Point verification - traitement CEA a l epoque par Gauthier (cf DI 4017)
-1.7.6   stephane.veys@cea.fr    Qui reprend cette activite ? Methode echange_espace_virtuel - traitement CEA car IJK (cf DI 3990)
-1.7.7   stephane.veys@cea.fr    Revoir le PATH pour module load TRUST sous occigen - passer par SET (cf DI 3932)
+1.7.5   trust@cea.fr            Suivre equipe TrioCFD pour baltik TRUST avec loi Darcy (ref DI 4109)
+1.7.5   trust@cea.fr            Voir avec equipe TrioCFD si baltik gradV VDF est pret pour etre integre a TRUST (ref DI 4094)
+1.7.5   trust@cea.fr            Qui reprend cette activite ? Ajout d un passif - traitement CEA a l epoque par Gauthier (cf DI 4076)
+1.7.5   trust@cea.fr            Qui reprend cette activite ? Point verification - traitement CEA a l epoque par Gauthier (cf DI 4017)
+1.7.5   trust@cea.fr            Qui reprend cette activite ? Methode echange_espace_virtuel - traitement CEA car IJK (cf DI 3990)
+1.7.5   trust@cea.fr            Revoir le PATH pour module load TRUST sous occigen - passer par SET (cf DI 3932)
 1.7.7   celine.capitaine@cea.fr Proposer un tuto ICoCo (cf DI 3889)
-1.7.5   stephane.veys@cea.fr    Voir pb chgt base P1Bulle avec CL perio (ref DI 3829)
-1.7.6   stephane.veys@cea.fr    Voir si probleme avec fichier binaire ICEM genere sous Windows est du ressort TRUST (cf DI 3778)
+1.7.5   trust@cea.fr            Voir pb chgt base P1Bulle avec CL perio (ref DI 3829)
+1.7.5   trust@cea.fr            Voir si probleme avec fichier binaire ICEM genere sous Windows est du ressort TRUST (cf DI 3778)
 1.7.7   marthe.roux@cea.fr      Creer une fiche pour tester l extension volumes controles + ICoCo (cf DI 3633)
-1.7.5   stephane.veys@cea.fr    Faut il continuer la traduction des mots cle en anglais + aucun jdd de NR avec mots cle non traduits ? (ref DI 3322)
-1.7.7   stephane.veys@cea.fr    Faut il reprendre fiche prm ef_stab ? (cf DI 2660)
-1.7.6   triou@cea.fr            Revoir le Keywords.txt des BALTIKS et la config via editeurs si OK (ex : Implicit_Euler_Steady_Scheme)
+1.7.7   celine.capitaine@cea.fr Reprendre suppression de la definition du Prandtl dans le QC (cf DI 3484)
+1.7.5   trust@cea.fr            Faut il continuer la traduction des mots cle en anglais + aucun jdd de NR avec mots cle non traduits ? (ref DI 3322)
+1.7.5   trust@cea.fr            Faut il reprendre fiche prm ef_stab ? (cf DI 2660)
+1.7.6   triou@cea.fr            Revoir pour analyser les fichiers *_gui.log de l atelier NUIT error sur equation_convection_diffusion et Test_Baltik
+1.7.7   triou@cea.fr            Revoir pour lancer le check_component des que exe TRUST OK => voir pour attendre
+1.7.7   triou@cea.fr            Reprendre la verification du TRUST_Reference_Manual.pdf
+1.7.7   marthe.roux@cea.fr      Revoir le Keywords.txt des BALTIKS et la config via editeurs si OK (ex : Implicit_Euler_Steady_Scheme)
 1.7.6   triou@cea.fr            Gerer push shared des baltiks comme TRUST + mail annonce
-1.7.6   triou@cea.fr            Supprimer CentOS 5.5 is220964 et installer GNU 4.1.2 sur is220631
-1.7.6   triou@cea.fr            Rechercher lire ssz dans NR
+1.7.7   triou@cea.fr            Supprimer CentOS 5.5 is220964 et installer GNU 4.1.2 sur is220631
 1.7.7   triou@cea.fr            Reprendre rapports bench et etudes de atelier nuit
-1.7.6   triou@cea.fr            Integration dev MC2 dans branche TMA
-1.7.6   triou@cea.fr            Integration update ALE dans branches TMA et Livraison
 1.7.7   triou@cea.fr            Revoir les fichiers host VisIt sur curie et cobalt
-1.7.6   marthe.roux@cea.fr      Tester Lata_to_case.py sur un calcul couple
-1.7.6   triou@cea.fr            Ajout mode gui via portabilite baltik pour check + os dans nuit.html
 1.7.6   triou@cea.fr            Nettoyage variable env ... exemple $DEBUG ... si utilise passer en TRUST_DEBUG sinon supprimer
-1.7.5   adrien.bruneton@cea.fr  Qui traite plantage trust maillage converti en polyedre pour TrioMC ?
-1.7.5   stephane.veys@cea.fr    Envoyer a TMA sur prm pour Flica5 (ligne ajoutee par GF a l epoque)
-1.7.5   stephane.veys@cea.fr    Polygone.cpp: ToDo a mettre dans triangle (ligne ajoutee par GF a l epoque)
-1.7.5   stephane.veys@cea.fr    Reprendre Mod_turb_hyd_base.cpp limitation mut (ligne ajoutee par GF a l epoque)
+1.7.5   trust@cea.fr            Qui traite plantage trust maillage converti en polyedre pour TrioMC ?
+1.7.5   trust@cea.fr            Envoyer a TMA sur prm pour Flica5 (ligne ajoutee par GF a l epoque)
+1.7.5   trust@cea.fr            Polygone.cpp: ToDo a mettre dans triangle (ligne ajoutee par GF a l epoque)
+1.7.5   trust@cea.fr            Reprendre Mod_turb_hyd_base.cpp limitation mut (ligne ajoutee par GF a l epoque)
 1.7.7   triou@cea.fr            Revoir toutes les fiches exclues pour lancer les cas sans resoudre sinon aucune verif
 1.7.7   triou@cea.fr            Revoir tous les prepare sans make_PAR.data a mettre dans pre_run
 1.7.7   triou@cea.fr            Completer benchmark avec et sans Petsc
 1.7.7   triou@cea.fr            Avoir un fichier avec la liste des fichiers deleted sur git pour faire un rm a distance
 1.7.7   triou@cea.fr            Voir pour ajouter test Execute_parallel lors du configure pour verifier l'installation MPI
 1.7.7   triou@cea.fr            Probleme avec pre-commit et post-commit qui modifie des fichiers lors du commit apres nos tests !!! Le faire lors du compile et si modif alors arret...
-1.7.6   triou@cea.fr            Mettre a jour version dans slides formations
+1.7.6   triou@cea.fr            Mettre a jour version dans slides formations + trust -help dans Generic
 1.7.6   triou@cea.fr            Tester check valgrind BALTIK
 1.7.6   triou@cea.fr            Tester independance modules BALTIK
+1.7.6   triou@cea.fr            Verifier la main_validation du tmptrust
 1.7.6   triou@cea.fr            Recuperer l archive de couverture de code du super build
+1.7.6   triou@cea.fr            Verifier http://downloads.sourceforge.net/project/trust-platform/1.7.6/extra/

@@ -264,10 +264,13 @@ pdf_par_xdata()
 # Debut du script #
 ###################
 echo "Begin credoc at `date '+%H:%M:%S %d/%m'`"
-if [ "$1" = -pdf ]
+if [ "$1" = -doxygen ]
+then
+   doxygen
+elif [ "$1" = -pdf ]
 then
    pdf_par_office
-elif [ "$1" = -pdf_par_xdata ]
+elif [ "$1" = -xdata ]
 then
    pdf_par_xdata
 elif [ "$1" = -cree_References ]

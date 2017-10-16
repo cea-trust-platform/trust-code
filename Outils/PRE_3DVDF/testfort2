@@ -27,6 +27,7 @@ listdir=`ls -d test_[1-9]`
 oktot=0
 log=$DIR/testfort2.log
 cat /dev/null > $log
+errtot=0
 for dirt in $listdir
 do
    cd $DIR
@@ -114,7 +115,6 @@ do
       cp -R $DIR/testref $DIR/$dirt2".log"
       errtot=1
    else
-      errtot=0
       echo "OK"
    fi
    #rm -r -f $DIR/test $DIR/testref
