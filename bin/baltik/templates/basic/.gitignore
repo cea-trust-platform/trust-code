@@ -1,0 +1,10 @@
+*~
+build/
+*env_*
+*.log
+Makefile
+configure
+README.BALTIK
+.tests_*
+.gitignore
+
