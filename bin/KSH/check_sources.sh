@@ -88,7 +88,7 @@ check_recent_src()
     ################################################
     #grep "[àâçéèêëïîôùûüÿ]" $file && echo "-> Error in $file: French accents are not supported anymore ! Please, consider writing comments or messages in English." && echo && erreur 1
     #[ "`file $file | grep ISO`" != ""  ]&& echo "-> Error in $file: French accents are not supported anymore ! Please, consider writing comments or messages in English." && echo && erreur 1
-    ([ "`file $file | grep ASCII`" = "" ] &&  [ -s $file ]) && echo "-> Error in $file: French accents are not supported anymore ! Please, consider writing comments or messages in English." && echo && erreur 1
+    ([ "`file -i $file | grep ascii`" = "" ] &&  [ -s $file ]) && echo "-> Error in $file: French accents are not supported anymore ! Please, consider writing comments or messages in English." && echo && erreur 1
 
     ###############################################################
     # Interdiction du francais dans les messages d'erreur du Kernel
