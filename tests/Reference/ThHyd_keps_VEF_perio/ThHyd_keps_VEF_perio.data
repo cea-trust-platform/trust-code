@@ -97,6 +97,7 @@ Read pb
                                 initial_conditions { k_Eps Champ_Uniforme 2 1222. 5341560. }
 			}
 			turbulence_paroi loi_standard_hydr dt_impr_ustar 0.01
+                        quiet
 		}
 		 Ecrire_fichier_xyz_valeur vitesse 100. bords 1 Haut
 		 Ecrire_fichier_xyz_valeur k_eps 100. bords 1 Haut	

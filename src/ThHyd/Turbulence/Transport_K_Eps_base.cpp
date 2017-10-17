@@ -231,6 +231,7 @@ int Transport_K_Eps_base::controler_K_Eps()
   int size_tot=mp_sum(size);
   int negk=0,nege=0,nmaxe=0;
   int control=1;
+  int lquiet = modele_turbulence().get_lquiet();
   // On interdit K-Eps negatif pour le K-Eps seulement
   // Les autres modeles (2 couches, Launder, ne sont pas assez valides)
   /* 1.6.3 : on renonce en debug a stopper le code quand kEps<0
@@ -343,7 +344,7 @@ int Transport_K_Eps_base::controler_K_Eps()
           else k = LeK_MIN;
           if (neps!=0) eps /= neps;
           else eps = LeEPS_MIN;
-          if (schema_temps().limpr())
+          if (schema_temps().limpr() && !lquiet)
             {
               // Warnings printed:
               Cerr << (control ? "***Warning***: " : "***Error***: ");
@@ -385,7 +386,7 @@ int Transport_K_Eps_base::controler_K_Eps()
             }
 
           eps = LeEPS_MAX;
-          if (schema_temps().limpr())
+          if (schema_temps().limpr() && !lquiet)
             {
               // Warnings printed:
               Cerr << (control ? "***Warning***: " : "***Error***: ");
@@ -408,7 +409,7 @@ int Transport_K_Eps_base::controler_K_Eps()
           // Warning if more than 0.01% of nodes are values fixed
           double ratio_k = 100. * negk / size_tot;
           double ratio_eps = 100. * nege / size_tot;
-          if (ratio_k>0.01 || ratio_eps>0.01)
+          if ((ratio_k>0.01 || ratio_eps>0.01) && !lquiet)
             {
               Cerr << "It is possible your initial and/or boundary conditions on k and/or eps are wrong." << finl;
               Cerr << "Check the initial and boundary values for k and eps by using:" << finl;
@@ -424,7 +425,7 @@ int Transport_K_Eps_base::controler_K_Eps()
                 }
             }
         }
-      if (!control)
+      if (!control && !lquiet)
         {
           // On quitte en postraitant pour trouver les noeuds
           // qui posent probleme

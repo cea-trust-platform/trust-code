@@ -63,6 +63,7 @@ public:
   inline double get_LeEPS_MIN() const;
   inline double get_LeEPS_MAX() const;
   inline double get_LeK_MIN() const;
+  inline int get_lquiet() const;
 
   //Methodes de l interface des champs postraitables
   /////////////////////////////////////////////////////
@@ -76,6 +77,7 @@ protected:
 
   double Prandtl_K, Prandtl_Eps;
   double LeEPS_MIN, LeEPS_MAX, LeK_MIN;
+  int lquiet;
 
 };
 
@@ -102,6 +104,11 @@ inline double Mod_turb_hyd_RANS::get_LeEPS_MAX() const
 inline double Mod_turb_hyd_RANS::get_LeK_MIN() const
 {
   return LeK_MIN;
+}
+
+inline int Mod_turb_hyd_RANS::get_lquiet() const
+{
+  return lquiet;
 }
 
 #endif

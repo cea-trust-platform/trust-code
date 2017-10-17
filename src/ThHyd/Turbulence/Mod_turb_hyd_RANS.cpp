@@ -26,6 +26,7 @@
 #include <Param.h>
 
 Implemente_base_sans_constructeur(Mod_turb_hyd_RANS,"Mod_turb_hyd_RANS",Mod_turb_hyd_base);
+// XD mod_turb_hyd_rans modele_turbulence_hyd_deriv mod_turb_hyd_rans -1 Class for RANS turbulence model for NAVIER STOKES equations.
 
 Mod_turb_hyd_RANS::Mod_turb_hyd_RANS()
 {
@@ -34,6 +35,7 @@ Mod_turb_hyd_RANS::Mod_turb_hyd_RANS()
   LeEPS_MIN = 1.e-10  ;
   LeEPS_MAX = 1.e+10;
   LeK_MIN = 1.e-10;
+  lquiet = 0;
 }
 // Description:
 //    Simple appel a Mod_turb_hyd_base::printOn(Sortie&)
@@ -77,9 +79,10 @@ Entree& Mod_turb_hyd_RANS::readOn(Entree& is)
 void Mod_turb_hyd_RANS::set_param(Param& param)
 {
   Mod_turb_hyd_base::set_param(param);
-  param.ajouter("eps_min",&LeEPS_MIN);
-  param.ajouter("eps_max",&LeEPS_MAX);
-  param.ajouter("k_min",&LeK_MIN);
+  param.ajouter("eps_min",&LeEPS_MIN); // XD_ADD_P double Lower limitation of epsilon (default value 1.e-10).
+  param.ajouter("eps_max",&LeEPS_MAX); // XD_ADD_P double Upper limitation of epsilon (default value 1.e+10).
+  param.ajouter("k_min",&LeK_MIN); // XD_ADD_P double Lower limitation of k (default value 1.e-10).
+  param.ajouter_flag("quiet",&lquiet); // XD_ADD_P flag To disable printing of information about k and epsilon.
 }
 
 
