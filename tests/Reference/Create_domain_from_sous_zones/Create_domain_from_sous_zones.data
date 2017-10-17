@@ -27,6 +27,7 @@ Scatter DOM.Zones dom
 Read_file dom_ssz_par.geo ;
 END SCATTER #
 
+/* 
 # Creation d un domaine avec sous-zones disjointes #
 domaine new
 Create_domain_from_sous_zone { domaine_final new par_sous_zones 2 G_3D_93 G_3D_91 domaine_init dom }
@@ -34,17 +35,28 @@ Create_domain_from_sous_zone { domaine_final new par_sous_zones 2 G_3D_93 G_3D_9
 domaine newdom
 supprime_bord dom { F_2D_34 }
 Create_domain_from_sous_zone { domaine_final newdom par_sous_zones 2 G_3D_2 G_3D_91 domaine_init dom }
+ */
+/* test temporaire avec une seule sous-zone */
+domaine newdom
+Create_domain_from_sous_zone { domaine_final newdom par_sous_zone G_3D_2 domaine_init dom }
 
-discretiser_domaine new
 discretiser_domaine newdom
-postraiter_domaine { domaines { dom new newdom } fichier mesh format lata }
+postraiter_domaine { domaines { dom newdom } fichier mesh format lata }
 
+/* 
 # Exemple de calcul sur le domaine resultant de l union des sous-zones en ayant toujours acces aux sous-zones #
 Regroupebord newdom inlet { F_2D_30 F_2D_41 }
 Regroupebord newdom outlet { F_2D_31 F_2D_42 }
 Regroupebord newdom wall { F_2D_45 }
 Regroupebord newdom sym1 { F_2D_32 F_2D_43 }
 Regroupebord newdom sym2 { F_2D_33 F_2D_44 }
+ */
+/* test temporaire avec une seule sous-zone */
+Regroupebord newdom inlet { F_2D_41 }
+Regroupebord newdom outlet { F_2D_42 }
+Regroupebord newdom wall { F_2D_34 F_2D_45 }
+Regroupebord newdom sym1 { F_2D_43 }
+Regroupebord newdom sym2 { F_2D_44 }
 
 VEFPreP1B dis
 

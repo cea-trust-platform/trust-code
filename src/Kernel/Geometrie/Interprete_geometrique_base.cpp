@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,6 +27,7 @@
 #include <Sous_Zone.h>
 
 Implemente_base(Interprete_geometrique_base,"Interprete_geometrique_base",Interprete);
+// XD interprete_geometrique_base interprete interprete_geometrique_base -1 Class for interpreting a data file
 
 Implemente_liste(REF(Domaine));
 
