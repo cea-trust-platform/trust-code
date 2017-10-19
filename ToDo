@@ -1,16 +1,18 @@
 Version	Qui				Tache
 1.7.7   triou@cea.fr            Se renseigner sur la date du passage de RoundUp a Tuleap (evoque en COTHEM)
-1.7.6   celine.capitaine@cea.fr Possibilite de desactiver affichage warning k-eps (cf DI 4338)
+1.7.7   celine.capitaine@cea.fr Revoir fichier Puissance_volumique.out si dans datafile en EF 2 sources : source_scalaire + puissance_thermique (ref DI 4341)
+1.7.6   celine.capitaine@cea.fr UTF8 ou ASCII pour check accent (cf DI 4340)
+1.7.5   trust@cea.fr            Revoir ghost cells dans VisIt Faut-il garder les valeurs virtuelles daans Lata ? (ref DI 4339)
 1.7.7   marthe.roux@cea.fr      Revoir Champ_Generique_Transformation::completer pour postraiter vitessex avec tansformation ou probes (cf DI 4336)
-1.7.7   celine.capitaine@cea.fr Montee de version medfichier 3.3.0 / medcoupling 8.4.0 (cf DI 4335)
 1.7.7   celine.capitaine@cea.fr Si pas de med_coupling_python alors sortir proprement du lata_to_case.py (ref DI 4330)
 1.7.6   marthe.roux@cea.fr      Voir pour gradient temperature nul si T=sin(y) alors que OK si T=sin(x) (cf DI 4329)
 1.7.5   trust@cea.fr            Voir avec equipe TrioCFD pourquoi sur cas avec source en grad(P) pas de solution vitesse nulle (cf DI 4329)
 1.7.5   trust@cea.fr            Gestion d un tres grand nombre de fichiers log Zones sauv lata ... (cf DI 4325)
 1.7.7   celine.capitaine@cea.fr Voir pour ajouter un test NR avec champ_front_MED dans TRUST (ref DI 4324)
 1.7.6   celine.capitaine@cea.fr En attente retour TrioMC2 pour integration branche gerschen a ModeleCoeur et si PolyMAC ? (cf DI 4322)
-1.7.7   celine.capitaine@cea.fr Remplacer Pr dans loi de paroi en QC FM par calculer_prandtl (ref DI 4320)
+1.7.7   celine.capitaine@cea.fr Remplacer Pr dans loi de paroi en QC FM par calculer_prandtl (cf DI 4320)
 1.7.6   celine.capitaine@cea.fr Donner la possibilite a utilisateur d ajuster test sur Ymin et Ymax en QC FM (cf DI 4320)
+1.7.7   celine.capitaine@cea.fr Voir avec equipe TrioMC2  create_domain_from_sous_zone avec par_sous_zones (cf DI 4319)
 1.7.5   trust@cea.fr            Tester compilateur g++ 7.2.0 (cf DI 4317)
 1.7.6   celine.capitaine@cea.fr Integration branche portabilite med 3.0.0 (cf DI 4317)
 1.7.7   celine.capitaine@cea.fr Voir pour ajouter un test NR avec script python pour projeter via MEDCoupling (ref DI 4315)
@@ -19,8 +21,8 @@ Version	Qui				Tache
 1.7.5   trust@cea.fr            Voir avec equipe TrioCFD le plugin VisIt sur le calcul de la norme d un champ moyenne (ref DI 4305)
 1.7.5   trust@cea.fr            Montee de version du prerequis cmake 3.0.2 vers 3.4.1 (ref DI 4304)
 1.7.5   trust@cea.fr            Voir possibilite de bords periodiques sur 1/4 cylindre par ex (ref DI 4302)
-1.7.6   marthe.roux@cea.fr      Preparer formation developpeurs 16 et 17 octobre (cf DI 4301)
 1.7.7   celine.capitaine@cea.fr Voir avec equipe TrioCFD si baltik k_omega repris ? (ref DI 4298)
+1.7.7   celine.capitaine@cea.fr Voir pour adapter flux_bords avec sortie aire facette pour creer densite flux via definition_champs (ref DI 4296)
 1.7.5   trust@cea.fr            Voir pb moyenne avec bloc statistiques_en_serie (ref DI 4289)
 1.7.5   trust@cea.fr            Voir schema muscl sur flux sur CL (ref DI 4287)
 1.7.7   celine.capitaine@cea.fr Voir avec equipe TrioCFD si baltiks CEG et Free_Slip integrables ? (ref DI 4286)
@@ -38,7 +40,7 @@ Version	Qui				Tache
 1.7.5   trust@cea.fr            Voir si champ composante_normale peut etre utilise en VDF et VEF (ref DI 4127)
 1.7.7   celine.capitaine@cea.fr Reprendre cas test TrioCFD PAR_CANAL_QC_Turb_Timposees_dt293K_VEF_imp avec petsc cholesky (ref DI 4123)
 1.7.5   trust@cea.fr            Reprendre interface TRUST Petsc avant passage a Petsc v3.7 (ref DI 4123)
-1.7.6   celine.capitaine@cea.fr Relire la fiche prm (post pression tot) et faire un retour (cf DI 4122)
+1.7.7   celine.capitaine@cea.fr Relire la fiche prm (post pression tot) et faire un retour (cf DI 4122)
 1.7.7   celine.capitaine@cea.fr Deboguer TrioCFD/Rayonnement_Cuve_2D pour obtenir memes resultats en sequentiel et en parallele (cf DI 4120)
 1.7.7   celine.capitaine@cea.fr Deboguer TrioCFD/CouplagePb1Pb2_VEF_turbulent pour obtenir memes resultats en sequentiel et en parallele (cf DI 4119)
 1.7.7   marthe.roux@cea.fr      Deboguer EF_stb_ech_ext_imp pour obtenir memes resultats en sequentiel et en parallele (cf DI 4118)
@@ -55,7 +57,7 @@ Version	Qui				Tache
 1.7.7   celine.capitaine@cea.fr Reprendre suppression de la definition du Prandtl dans le QC (cf DI 3484)
 1.7.5   trust@cea.fr            Faut il continuer la traduction des mots cle en anglais + aucun jdd de NR avec mots cle non traduits ? (ref DI 3322)
 1.7.5   trust@cea.fr            Faut il reprendre fiche prm ef_stab ? (cf DI 2660)
-1.7.6   triou@cea.fr            Revoir pour analyser les fichiers *_gui.log de l atelier NUIT error sur equation_convection_diffusion et Test_Baltik
+1.7.7   triou@cea.fr            Pourrait on recuperer la localisation d un max ou min cree via definition_champs ?
 1.7.7   triou@cea.fr            Revoir pour lancer le check_component des que exe TRUST OK => voir pour attendre
 1.7.7   triou@cea.fr            Reprendre la verification du TRUST_Reference_Manual.pdf
 1.7.7   marthe.roux@cea.fr      Revoir le Keywords.txt des BALTIKS et la config via editeurs si OK (ex : Implicit_Euler_Steady_Scheme)
@@ -74,9 +76,9 @@ Version	Qui				Tache
 1.7.7   triou@cea.fr            Avoir un fichier avec la liste des fichiers deleted sur git pour faire un rm a distance
 1.7.7   triou@cea.fr            Voir pour ajouter test Execute_parallel lors du configure pour verifier l'installation MPI
 1.7.7   triou@cea.fr            Probleme avec pre-commit et post-commit qui modifie des fichiers lors du commit apres nos tests !!! Le faire lors du compile et si modif alors arret...
-1.7.6   triou@cea.fr            Mettre a jour version dans slides formations + trust -help dans Generic
+1.7.6   marthe.roux@cea.fr      Mettre a jour slides et tutos formations + trust -help dans Generic + version
 1.7.6   triou@cea.fr            Tester check valgrind BALTIK
 1.7.6   triou@cea.fr            Tester independance modules BALTIK
 1.7.6   triou@cea.fr            Verifier la main_validation du tmptrust
 1.7.6   triou@cea.fr            Recuperer l archive de couverture de code du super build
-1.7.6   triou@cea.fr            Verifier http://downloads.sourceforge.net/project/trust-platform/1.7.6/extra/
+1.7.6   triou@cea.fr            Verifier http://downloads.sourceforge.net/project/trust-platform/X.Y.Z/extra/
