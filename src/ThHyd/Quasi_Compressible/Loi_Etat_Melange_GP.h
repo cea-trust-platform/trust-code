@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -72,22 +72,24 @@ public :
   virtual void rabot(int futur=0);
   inline const DoubleTab& masse_molaire() const;
   inline DoubleTab& masse_molaire();
-  inline double get_rho_p() const
-  {
-    return rho_p_;
-  };
-  inline double get_cp_p() const
-  {
-    return cp_p_;
-  };
+  //inline double get_rho_p() const
+  //{
+  //  return rho_p_;
+  //};
+  //inline double get_cp_p() const
+  //{
+  //  return cp_p_;
+  //};
 
-  inline int get_nb_famille_grains() const
-  {
-    return nb_famille_grains_ ;
-  };
+  //inline int get_nb_famille_grains() const
+  //{
+  //  return nb_famille_grains_ ;
+  //};
 protected :
-  int rabot_,verif_fraction_,nb_famille_grains_;
-  double Sc_,rho_p_,cp_p_;
+  int correction_fraction_,ignore_check_fraction_;
+  //int nb_famille_grains_;
+  double Sc_,dtol_fraction_;
+  //double rho_p_,cp_p_;
   DoubleTab Masse_mol_mel;
 
   LIST(REF(Champ_Inc_base)) liste_Y;

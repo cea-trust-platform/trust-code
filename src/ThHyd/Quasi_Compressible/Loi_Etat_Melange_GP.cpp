@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,6 +32,7 @@ Implemente_liste(REF(Champ_Inc_base));
 Implemente_liste(REF(Espece));
 
 Implemente_instanciable_sans_constructeur(Loi_Etat_Melange_GP,"Loi_Etat_Melange_Gaz_Parfait",Loi_Etat_GP);
+// XD melange_gaz_parfait loi_etat_base melange_gaz_parfait -1 Mixing of perfect gas.
 
 Loi_Etat_Melange_GP::Loi_Etat_Melange_GP()
 {
@@ -74,25 +75,27 @@ Sortie& Loi_Etat_Melange_GP::printOn(Sortie& os) const
 // Postcondition: l'objet est construit avec les parametres lus
 Entree& Loi_Etat_Melange_GP::readOn(Entree& is)
 {
-  double gamma_ = -1;
+  //double gamma_ = -1;
   // parametre a mettre dans grains
-  rho_p_=-1;
-  cp_p_=-1;
-  rabot_=0;
-  nb_famille_grains_ =1 ;
+  //rho_p_=-1;
+  //cp_p_=-1;
+  //nb_famille_grains_ =1 ;
+  correction_fraction_=0;
+  ignore_check_fraction_=0;
+  dtol_fraction_=1.e-6;
   Pr_=-1;
   Param param(que_suis_je());
   //param.ajouter("Sc",&Sc_,0);
-  param.ajouter("Sc",&Sc_,Param::REQUIRED);
-  param.ajouter( "Cp",&Cp_);
-  param.ajouter( "Prandtl",&Pr_);
-  param.ajouter( "gamma",&gamma_);
-  param.ajouter( "rho_p",&rho_p_);
-  param.ajouter( "cp_p",&cp_p_);
-  param.ajouter_flag( "rabot",&rabot_);
-  param.ajouter_flag( "verif_fraction",&verif_fraction_);
-  param.ajouter( "nb_famille_grains",&nb_famille_grains_);
-
+  param.ajouter("Sc",&Sc_,Param::REQUIRED); // XD_ADD_P double Schmidt number of the gas Sc=nu/D (D: diffusion coefficient of the mixing).
+  param.ajouter( "Cp",&Cp_); // XD_ADD_P double Specific heat at constant pressure of the gas Cp.
+  param.ajouter( "Prandtl",&Pr_); // XD_ADD_P double Prandtl number of the gas Pr=mu*Cp/lambda
+  //param.ajouter( "gamma",&gamma_);
+  //param.ajouter( "rho_p",&rho_p_);
+  //param.ajouter( "cp_p",&cp_p_);
+  param.ajouter_flag( "correction_fraction",&correction_fraction_); // XD_ADD_P flag To force mass fractions between 0. and 1.
+  param.ajouter_flag( "ignore_check_fraction",&ignore_check_fraction_); // XD_ADD_P flag Not to check if mass fractions between 0. and 1.
+  //param.ajouter( "nb_famille_grains",&nb_famille_grains_);
+  param.ajouter( "dtol_fraction",&dtol_fraction_); // XD_ADD_P double Delta tolerance on mass fractions for check testing (default value 1.e-6).
 
   param.lire_avec_accolades_depuis(is);
 
@@ -101,7 +104,7 @@ Entree& Loi_Etat_Melange_GP::readOn(Entree& is)
 
   if (Sc_==-1)
     {
-      Cerr<<"ERREUR : on attendait la definition du nombre de Schmidt (constante)"<<finl;
+      Cerr << "Error: the Schmidt number (constant) is not defined. Please specify Sc in your data file." << finl;
       abort();
     }
 
@@ -271,12 +274,12 @@ void Loi_Etat_Melange_GP::calculer_masse_molaire(DoubleTab& tab_Masse_mol_mel) c
       const DoubleTab& Y_i=liste_Y(i).valeur().valeurs();
       double min_Y_i=local_min_vect(Y_i);
       double max_Y_i=local_max_vect(Y_i);
-      if ((min_Y_i<-1e-6)||(max_Y_i>1+1e-6))
+      if ((min_Y_i<0.-dtol_fraction_)||(max_Y_i>1.+dtol_fraction_))
         {
-          Cerr << "Arret : (min_Y_i<-1e-6)||(max_Y_i>1+1e-6) " << i<<finl;
-          Cerr << "min_Y_i " << min_Y_i << finl;
-          Cerr << "max_Y_i " << max_Y_i << finl;
-          exit();
+          Cerr << "Warning : (min_Y_i<-" << dtol_fraction_ << ")||(max_Y_i>1+" << dtol_fraction_ <<") for the" << i << "th mass fraction:" << finl;
+          Cerr << "  min_Y_i = " << min_Y_i << finl;
+          Cerr << "  max_Y_i = " << max_Y_i << finl;
+          if (!ignore_check_fraction_) exit();
         }
       for (int elem=0; elem<size; elem++)
         {
@@ -306,41 +309,47 @@ void Loi_Etat_Melange_GP::rabot(int futur)
       DoubleTab& Y_i=liste_Y(i).valeur().futur(futur);
       double min_Y_i=local_min_vect(Y_i);
       double max_Y_i=local_max_vect(Y_i);
-      Cerr<<" TEST Y_i "<<i<<" "<<min_Y_i<< " "<<max_Y_i<<finl;
-      if (((min_Y_i<-1e-6)||(max_Y_i>1+1e-6))&&(!rabot_))
-        exit();
-      if (rabot_)
-        for (int elem=0; elem<Y_i.size(); elem++)
-          {
-            if ( Y_i(elem)<0)
-              {
-                Cerr<<" on rabote "<<finl;
-                Y_i(elem)=0.;
-              }
-
-            //Cerr<<"i, elem, Y="<<i<<" "<<elem<<" "<<liste_Y(i).valeur().valeurs()(elem)<<finl;
-          }
+      Cerr << "Verification of the " << i << "th mass fraction:" << finl;
+      Cerr << "  min_Y_i = " << min_Y_i << finl;
+      Cerr << "  max_Y_i = " << max_Y_i << finl;
+      if ((min_Y_i<0.-dtol_fraction_)||(max_Y_i>1.+dtol_fraction_))
+        {
+          Cerr << "  Warning : (min_Y_i<-" << dtol_fraction_ << ")||(max_Y_i>1+" << dtol_fraction_ <<")" << finl;
+          if (!ignore_check_fraction_) exit();
+        }
+      for (int elem=0; elem<Y_i.size(); elem++)
+        {
+          if (Y_i(elem)<0.)
+            {
+              Y_i(elem)=0.;
+              Cerr << "  Y_i forced to " << Y_i(elem) << " on node " << elem << finl;
+            }
+          if (Y_i(elem)>1.)
+            {
+              Y_i(elem)=1.;
+              Cerr << "  Y_i forced to " << Y_i(elem) << " on node " << elem << finl;
+            }
+          //Cerr<<"i, elem, Y="<<i<<" "<<elem<<" "<<liste_Y(i).valeur().valeurs()(elem)<<finl;
+        }
       test+=Y_i;
     }
   double min_s=mp_min_vect(test);
   double max_s=mp_max_vect(test);
-  Cerr<<" Somme des fractions min "<<min_s<< " max "<<max_s<<finl;
-  if (rabot_)
-    for (int i=0; i<liste_Y.size(); i++)
-      {
-        DoubleTab& Y_i=liste_Y(i).valeur().futur(futur);
-        for (int elem=0; elem<Y_i.size(); elem++)
-          {
-            Y_i(elem)/=(test(elem)+DMINFLOAT);
-          }
-      }
-  else
+  Cerr << "Verification of the sum of the mass fractions:" << finl;
+  Cerr << "  Sum(min_Y_i) =  " << min_s << finl;
+  Cerr << "  Sum(max_Y_i) =  " << max_s << finl;
+  for (int i=0; i<liste_Y.size(); i++)
     {
-      if ((!est_egal(min_s,1,1e-5))||(!est_egal(max_s,1,1e-5)))
+      DoubleTab& Y_i=liste_Y(i).valeur().futur(futur);
+      for (int elem=0; elem<Y_i.size(); elem++)
         {
-          Cerr<<" On arrete tout la somme ne fait plus 1 .... " <<finl;
-          exit();
+          Y_i(elem)/=(test(elem)+DMINFLOAT);
         }
+    }
+  if ((!est_egal(min_s,1.,dtol_fraction_))||(!est_egal(max_s,1.,dtol_fraction_)))
+    {
+      Cerr << "  Warning: the sum of the mass fractions is not equal to 1." <<finl;
+      if (!ignore_check_fraction_) exit();
     }
 
 }
@@ -395,7 +404,7 @@ void Loi_Etat_Melange_GP::calculer_lambda()
   if (Pr_!=-1)
     {
 
-      Cerr<< "Prandtl n est plus une option valide de "<<que_suis_je()<<finl;
+      Cerr << "Warning: Prandtl is no longer a valid option of " << que_suis_je() << finl;
       const Champ_Don& mubis = le_fluide->viscosite_dynamique();
 
       if (sub_type(Champ_Uniforme,mubis.valeur()))
@@ -407,7 +416,7 @@ void Loi_Etat_Melange_GP::calculer_lambda()
           double lambda_test = mu0 * tab_Cpbis(0)/ Pr_;
 
 
-          Cerr<<"mettre (peut etre ?) lambda a "<<lambda_test<<finl;
+          Cerr << "  => suggestion: put in your data file lambda to " << lambda_test << "(perhaps?)." << finl;
         }
       // exit();
     }
@@ -528,10 +537,9 @@ void Loi_Etat_Melange_GP::calculer_masse_volumique()
 
   //Correction pour calculer la masse volumique a partir de la pression
   //qui permet de conserver la masse
-  if ((rabot_)||(verif_fraction_))
+  if (correction_fraction_)
     {
       rabot(0);
-      // rabot(0);
     }
 
   calculer_masse_molaire();
@@ -577,7 +585,7 @@ double Loi_Etat_Melange_GP::calculer_masse_volumique_case(double P, double T, do
 {
   if (inf_ou_egal(T,0))
     {
-      Cerr << finl << "Temperature T must be defined in Kelvin." << finl;
+      Cerr << finl << "Warning: Temperature T must be defined in Kelvin." << finl;
       Cerr << "Check your data file." << finl;
       exit();
     }
@@ -746,11 +754,11 @@ void Loi_Etat_Melange_GP::calculer_mu_sur_Sc()
 // Postcondition:
 double Loi_Etat_Melange_GP::calculer_masse_volumique(double P, double T) const
 {
-  Cerr<<"Loi_Etat_Melange_GP::calculer_masse_volumique(double P, double T) ne doit pas etre utilisee "<<finl;
+  Cerr << "Error: the Loi_Etat_Melange_GP::calculer_masse_volumique(double P, double T) method should not be used!" << finl;
   exit();
   if (inf_ou_egal(T,0))
     {
-      Cerr << finl << "Temperature T must be defined in Kelvin." << finl;
+      Cerr << finl << "Warning: Temperature T must be defined in Kelvin." << finl;
       Cerr << "Check your data file." << finl;
       exit();
     }

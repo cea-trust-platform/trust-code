@@ -11,7 +11,6 @@ Version	Qui				Tache
 1.7.7   celine.capitaine@cea.fr Voir pour ajouter un test NR avec champ_front_MED dans TRUST (ref DI 4324)
 1.7.6   celine.capitaine@cea.fr En attente retour TrioMC2 pour integration branche gerschen a ModeleCoeur et si PolyMAC ? (cf DI 4322)
 1.7.7   celine.capitaine@cea.fr Remplacer Pr dans loi de paroi en QC FM par calculer_prandtl (cf DI 4320)
-1.7.6   celine.capitaine@cea.fr Donner la possibilite a utilisateur d ajuster test sur Ymin et Ymax en QC FM (cf DI 4320)
 1.7.7   celine.capitaine@cea.fr Voir avec equipe TrioMC2  create_domain_from_sous_zone avec par_sous_zones (cf DI 4319)
 1.7.5   trust@cea.fr            Tester compilateur g++ 7.2.0 (cf DI 4317)
 1.7.6   celine.capitaine@cea.fr Integration branche portabilite med 3.0.0 (cf DI 4317)

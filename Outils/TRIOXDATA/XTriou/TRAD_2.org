@@ -715,9 +715,6 @@ perfect_gaz loi_etat_base gaz_parfait 1 Perfect gas.
   attr gamma floattant gamma 1 Cp/Cv
   attr Prandtl floattant Prandtl 0 Prandtl number of the gas Pr=mu*Cp/lambda
   attr rho_constant_pour_debug field_base rho_constant_pour_debug 1 not_set
-melange_gaz_parfait loi_etat_base melange_gaz_parfait -1 Mixing of perfect gas.
-  attr Sc floattant Sc 1 Schmidt number of the gas Sc=nu/D (D: diffusion coefficient of the mixing).
-  attr Prandtl floattant Prandtl 0 Prandtl number of the gas Pr=mu*Cp/lambda
 gaz_reel_rhot loi_etat_base gaz_reel_rhot 0 Real gas.
   attr bloc bloc_lecture bloc 0 Description.
 bloc_sutherland objet_lecture nul 0 Sutherland law for viscosity mu(T)=mu0*((T0+C)/(T+C))*(T/T0)**1.5 and (optional) for conductivity lambda(T)=mu0*Cp/Prandtl*((T0+Slambda)/(T+Slambda))*(T/T0)**1.5

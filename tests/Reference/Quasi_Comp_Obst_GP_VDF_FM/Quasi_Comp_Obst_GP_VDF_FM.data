@@ -95,6 +95,7 @@ Read fluide {
         loi_etat Melange_Gaz_Parfait {
                 Prandtl 0.71034351145038165942
 		Sc 0.6                
+		correction_fraction   
         }
 	traitement_pth constant
 	traitement_rho_gravite moins_rho_moyen
