@@ -84,11 +84,11 @@ check_recent_src()
     grep -e "[$,( ]entier[& ]" $file && echo "-> Error in $file: entier type should be replace by int type" && echo && erreur 1
     
     ################################################
-    # Interdiction des accents a partir de la v1.6.8
+    # Only UTF-8 or ASCII encoding since v1.7.6
     ################################################
     #grep "[àâçéèêëïîôùûüÿ]" $file && echo "-> Error in $file: French accents are not supported anymore ! Please, consider writing comments or messages in English." && echo && erreur 1
     #[ "`file $file | grep ISO`" != ""  ]&& echo "-> Error in $file: French accents are not supported anymore ! Please, consider writing comments or messages in English." && echo && erreur 1
-    ([ "`file -i $file | grep ascii`" = "" ] &&  [ -s $file ]) && echo "-> Error in $file: French accents are not supported anymore ! Please, consider writing comments or messages in English." && echo && erreur 1
+    ([ "`file $file | grep ASCII`" == "" ] && [ "`file $file | grep UTF-8`" == "" ] )  && echo "-> Error in $file: only ASCII or UTF-8 encoding is accepted for source files! Please, consider writing comments or messages in English and/or save your file in UTF8." && echo && erreur 1
 
     ###############################################################
     # Interdiction du francais dans les messages d'erreur du Kernel
