@@ -122,7 +122,7 @@ help()
    echo "-search keywords              : Know the list of test cases from the data bases which contain keywords."
    echo "-copy                         : Copy the test case datafile from the TRUST database under the present directory."
    echo "-check all|testcase|list      : Check the non regression of all the test cases or a single test case or a list of tests cases specified in a file."
-   echo "-check function|class|method::class : Check the non regression of a list of tests cases covering a function, a class or a class method."
+   echo "-check function|class|class::method : Check the non regression of a list of tests cases covering a function, a class or a class method."
    echo "-gdb                          : Run under gdb debugger."
    echo "-valgrind                     : Run under valgrind."
    echo "-valgrind_strict              : Run under valgrind with no suppressions."

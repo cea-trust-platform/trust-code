@@ -7,7 +7,7 @@ Version	Qui				Tache
 1.7.7   celine.capitaine@cea.fr Si pas de med_coupling_python alors sortir proprement du lata_to_case.py (ref DI 4330)
 1.7.6   marthe.roux@cea.fr      Voir pour gradient temperature nul si T=sin(y) alors que OK si T=sin(x) (cf DI 4329)
 1.7.5   trust@cea.fr            Voir avec equipe TrioCFD pourquoi sur cas avec source en grad(P) pas de solution vitesse nulle (cf DI 4329)
-1.7.5   trust@cea.fr            Gestion d un tres grand nombre de fichiers log Zones sauv lata ... (cf DI 4325)
+1.7.5   trust@cea.fr            Gestion d un tres grand nombre de fichiers log Zones sauv lata ... (ref DI 4325)
 1.7.7   celine.capitaine@cea.fr Voir pour ajouter un test NR avec champ_front_MED dans TRUST (ref DI 4324)
 1.7.6   celine.capitaine@cea.fr En attente retour TrioMC2 pour integration branche gerschen a ModeleCoeur et si PolyMAC ? (cf DI 4322)
 1.7.7   celine.capitaine@cea.fr Remplacer Pr dans loi de paroi en QC FM par calculer_prandtl (cf DI 4320)
@@ -56,6 +56,7 @@ Version	Qui				Tache
 1.7.7   celine.capitaine@cea.fr Reprendre suppression de la definition du Prandtl dans le QC (cf DI 3484)
 1.7.5   trust@cea.fr            Faut il continuer la traduction des mots cle en anglais + aucun jdd de NR avec mots cle non traduits ? (ref DI 3322)
 1.7.5   trust@cea.fr            Faut il reprendre fiche prm ef_stab ? (cf DI 2660)
+1.7.7   triou@cea.fr            Reactiver l option fortran -fbound-check
 1.7.7   triou@cea.fr            Pourrait on recuperer la localisation d un max ou min cree via definition_champs ?
 1.7.7   triou@cea.fr            Revoir pour lancer le check_component des que exe TRUST OK => voir pour attendre
 1.7.7   triou@cea.fr            Reprendre la verification du TRUST_Reference_Manual.pdf

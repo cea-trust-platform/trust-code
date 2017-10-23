@@ -752,6 +752,20 @@ echo "###############################################"
 	   echo "  rebase_error=$rebase_error"
 	   echo " "
 	   #rm -f $rebase_log
+	   # Delete non Kernel src if any:
+	   cd $TRUST_ROOT/src
+	   NonKernelTests=`find * -type d | grep -v Kernel | grep -v MAIN`
+	   if [ "$NonKernelTests" != "" ]
+	   then
+	      echo "Call git rm no $vue tests..."
+	      for NonKernelTest in $NonKernelTests
+	      do
+		 git rm -r $NonKernelTest
+	      done
+	      git commit --all -m"Non Kernel src suppressed from the branch Kernel"
+	      echo " "
+	   fi
+	   cd - 1>/dev/null 2>&1
 	   # Delete non Kernel tests if any:
 	   cd $TRUST_ROOT/tests
 	   NonKernelTests=`find * -type d | grep -v Kernel | grep "/"`
@@ -763,6 +777,20 @@ echo "###############################################"
 		 git rm -r $NonKernelTest
 	      done
 	      git commit --all -m"Non Kernel tests suppressed from the branch Kernel"
+	      echo " "
+	   fi
+	   cd - 1>/dev/null 2>&1
+	   # Delete non Kernel verification if any:
+	   cd $TRUST_ROOT/Validation/Rapports_automatiques/Verification
+	   NonKernelTests=`find * -type d | grep -v Kernel | grep -v src |grep "/"`
+	   if [ "$NonKernelTests" != "" ]
+	   then
+	      echo "Call git rm no $vue tests..."
+	      for NonKernelTest in $NonKernelTests
+	      do
+		 git rm -r $NonKernelTest
+	      done
+	      git commit --all -m"Non Kernel verification suppressed from the branch Kernel"
 	      echo " "
 	   fi
 	   cd - 1>/dev/null 2>&1
@@ -3536,10 +3564,10 @@ echo "###########################"
 echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 
 ################################################################################################
-# Le mail des RELEASES NOTES est envoye aux developpeurs tous les mardis ou lors de la livraison
+# Le mail des RELEASES NOTES est envoye aux developpeurs tous les lundis ou lors de la livraison
 # sinon uniquement a l'admin TRUST et au chef de projet
 ################################################################################################
-if [ "`date '+%u'`" = 2 ] || [ $livraison = 1 ] || [ $accord_beta = 1 ]
+if [ "`date '+%u'`" = 1 ] || [ $livraison = 1 ] || [ $accord_beta = 1 ]
 then
    ALL_DEVELOPERS_TRUST_MAIL="trio_u_dev@saxifrage.saclay.cea.fr"
    echo " " >> $MESSAGES_NUIT
