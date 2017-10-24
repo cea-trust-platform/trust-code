@@ -147,7 +147,7 @@ int Mod_turb_hyd_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
           if ( motlu != accolade_ouverte )
             {
               Cerr << motlu << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
-              Cerr << "A specification of kind : dt_impr_ustar_mean_only { periode [boundaries nb_boundaries boundary_name1 boundary_name2 ... ] } was expected."<<finl;
+              Cerr << "A specification of kind : dt_impr_ustar_mean_only { dt_impr periode [boundaries nb_boundaries boundary_name1 boundary_name2 ... ] } was expected."<<finl;
               exit();
             }
           is >> motlu;
@@ -197,14 +197,14 @@ int Mod_turb_hyd_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
               else
                 {
                   Cerr << motlu << " is not a keyword understood by " << que_suis_je() << " in lire_motcle_non_standard"<< finl;
-                  Cerr << "A specification of kind : dt_impr_ustar_mean_only { periode [boundaries nb_boundaries boundary_name1 boundary_name2 ... ] } was expected."<<finl;
+                  Cerr << "A specification of kind : dt_impr_ustar_mean_only { dt_impr periode [boundaries nb_boundaries boundary_name1 boundary_name2 ... ] } was expected."<<finl;
                   exit();
                 }
             }
         } // fin dt_impr_ustar_mean_only
       else
         {
-          Cerr << "Please remove dt_impr_ustar option if the wall law if of Negligeable type." << finl;
+          Cerr << "Please remove dt_impr_ustar option if the wall law is of Negligeable type." << finl;
           exit();
         }
     } // fin loi paroi negligeable

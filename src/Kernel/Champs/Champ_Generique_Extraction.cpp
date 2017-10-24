@@ -305,7 +305,7 @@ void Champ_Generique_Extraction::completer(const Postraitement_base& post)
   if (dom==domaine_.valeur())
     {
       Cerr<<"Error in Champ_Generique_Extraction:get_champ"<<finl;
-      Cerr<<"The domain is the same of the domain of the soource"<<finl;
+      Cerr<<"The domain is the same as the source's domain."<<finl;
       exit();
     }
   const Zone_dis_base& zone_dis_source = source.get_ref_zone_dis_base();
