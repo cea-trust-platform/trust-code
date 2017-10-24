@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2015 - 2016, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,53 +14,26 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        EcrMED.h
+// File:        Format_Post_Med_major.h
 // Directory:   $TRUST_ROOT/src/Kernel/MEDimpl
-// Version:     /main/7
+// Version:     /main/13
 //
 //////////////////////////////////////////////////////////////////////////////
+#ifndef Format_Post_Med_major_included
+#define Format_Post_Med_major_included
 
-#ifndef EcrMED_included
-#define EcrMED_included
+#include <Format_Post_Med.h>
 
 
+// .DESCRIPTION        :
+//  Exactly the same as Format_Post_Med but with the last major version of MED
 
-
-///////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-// Classe EcrMED
-//    Ecr un fichier MED
-//    Structure du jeu de donnee (en dimension 2) :
-//    EcrMED dom medfile
-// .SECTION voir aussi
-//
-//
-///////////////////////////////////////////////////////////////////////////
-#include <Interprete.h>
-
-class Domaine;
-class Nom;
-class Noms;
-class DoubleTab;
-class Champ_Inc_base;
-
-class EcrMED : public Interprete
+class Format_Post_Med_major : public Format_Post_Med
 {
-  Declare_instanciable(EcrMED);
-public :
-  ///! Set major mode for MED file writing. See major_mode member below.
-  void setMajorMode(bool majorMod)
-  {
-    major_mode = majorMod;
-  };
-  Entree& interpreter(Entree&);
-  void ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom_dom,int mode=0);
-  void ecrire_champ(const Nom& type,const Nom& nom_fic,const Nom& nom_dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Nom& type_elem,double time,int compteur);
-  void ecrire_champ(const Nom& type,const Nom& nom_fic,const Nom& nom_dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Nom& type_elem,double time,int compteur,const Champ_Inc_base& le_champ);
+  Declare_instanciable_sans_constructeur(Format_Post_Med_major);
 
-private:
-  ///! False by default. If true, the MED file will be written in the major mode of the release version (3.0 for example if current MED version is 3.2)
-  bool major_mode;
+protected:
+  virtual EcrMED getEcrMED() const;
 };
+
 #endif

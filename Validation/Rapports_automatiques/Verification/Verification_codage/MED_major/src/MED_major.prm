@@ -1,0 +1,16 @@
+Parameters {
+	Title "MED writing in major version"
+	Description "This note illustrates the use of the new keyword 'med_major' to write the post in MED file with version number X.0 when the current MED version given with TRUST is X.Y. At the time of writing this allows to write a MED file in version 3.0 when the MED version of TRUST is 3.2"
+
+	Author "A.Bruneton"
+  TestCase . MED_major.data
+}
+
+Chapter {
+	Title "File check"
+	Description A extremly reduced version of upwind is run. The below test checks that MED file was written with the major version number:
+
+  Description include_text_file("result.txt")
+}
+
+

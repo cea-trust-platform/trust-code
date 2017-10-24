@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2015 - 2016, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,53 +14,37 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        EcrMED.h
+// File:        Format_Post_Med_major.cpp
 // Directory:   $TRUST_ROOT/src/Kernel/MEDimpl
-// Version:     /main/7
+// Version:     /main/23
 //
 //////////////////////////////////////////////////////////////////////////////
+#include <Format_Post_Med_major.h>
 
-#ifndef EcrMED_included
-#define EcrMED_included
+Implemente_instanciable_sans_constructeur(Format_Post_Med_major,"Format_Post_Med_major",Format_Post_Med);
 
-
-
-
-///////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-// Classe EcrMED
-//    Ecr un fichier MED
-//    Structure du jeu de donnee (en dimension 2) :
-//    EcrMED dom medfile
-// .SECTION voir aussi
-//
-//
-///////////////////////////////////////////////////////////////////////////
-#include <Interprete.h>
-
-class Domaine;
-class Nom;
-class Noms;
-class DoubleTab;
-class Champ_Inc_base;
-
-class EcrMED : public Interprete
+// Description: erreur => exit
+Sortie& Format_Post_Med_major::printOn(Sortie& os) const
 {
-  Declare_instanciable(EcrMED);
-public :
-  ///! Set major mode for MED file writing. See major_mode member below.
-  void setMajorMode(bool majorMod)
-  {
-    major_mode = majorMod;
-  };
-  Entree& interpreter(Entree&);
-  void ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom_dom,int mode=0);
-  void ecrire_champ(const Nom& type,const Nom& nom_fic,const Nom& nom_dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Nom& type_elem,double time,int compteur);
-  void ecrire_champ(const Nom& type,const Nom& nom_fic,const Nom& nom_dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Nom& type_elem,double time,int compteur,const Champ_Inc_base& le_champ);
+  Cerr << "Format_Post_Mesh_major::printOn : error" << finl;
+  exit();
+  return os;
+}
 
-private:
-  ///! False by default. If true, the MED file will be written in the major mode of the release version (3.0 for example if current MED version is 3.2)
-  bool major_mode;
-};
-#endif
+// Description: Lecture des parametres du postraitement au format "jeu de donnees"
+//  Le format attendu est le suivant:
+//  {
+//    nom_fichier filename_sans_extension
+//  }
+Entree& Format_Post_Med_major::readOn(Entree& is)
+{
+  Format_Post_Med::readOn(is);
+  return is;
+}
+
+EcrMED Format_Post_Med_major::getEcrMED() const
+{
+  EcrMED e;
+  e.setMajorMode(true);
+  return e;
+}

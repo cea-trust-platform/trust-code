@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,6 +23,7 @@
 #define Format_Post_Med_included
 
 #include <Format_Post_base.h>
+#include <EcrMED.h>
 
 class DoubleTab;
 class IntTab;
@@ -94,32 +95,28 @@ public:
                               const IntVect& data,
                               const int reference_size);
 
-
-  // Methodes specifiques a ce format:
-
-  static int ecrire_domaine_med(const Domaine& domaine,const Nom& nom_fic,const int& est_le_premier_post,Nom& nom_fich);
-  static int ecrire_temps_med(const double temps,Nom& nom_fich);
-  static int ecrire_champ_med(const Domaine& domaine,const Noms& unite_, const Noms& noms_compo,
-                              int ncomp, double temps_,const Nom& nom_pdb,
-                              const Nom&   id_du_champ,
-                              const Nom&   id_du_domaine,
-                              const Nom&   localisation,
-                              const DoubleTab& data,Nom& nom_fich);
-
-  static int ecrire_entete_med(Nom& nom_fic,const int& est_le_premier_post);
-  static int finir_med(Nom& nom_fic,int& est_le_dernier_post);
-  static int completer_post_med(const Nom& nom_fich2,const Nom& nom1,const Nom& nom2);
-  static int preparer_post_med(const Nom& nom_fich1,const Nom& nom_fich2,const Nom& nom_fich3,
-                               const Nom& id_du_domaine,const int& est_le_premier_post);
-
   Format_Post_Med();
 
 protected:
-
   Nom med_basename_;
 
+  // Methodes specifiques a ce format:
+  virtual int ecrire_domaine_med(const Domaine& domaine,const Nom& nom_fic,const int& est_le_premier_post,Nom& nom_fich);
+  virtual int ecrire_temps_med(const double temps,Nom& nom_fich);
+  virtual int ecrire_champ_med(const Domaine& domaine,const Noms& unite_, const Noms& noms_compo,
+                               int ncomp, double temps_,const Nom& nom_pdb,
+                               const Nom&   id_du_champ,
+                               const Nom&   id_du_domaine,
+                               const Nom&   localisation,
+                               const DoubleTab& data,Nom& nom_fich);
 
-public:
+  virtual int ecrire_entete_med(Nom& nom_fic,const int& est_le_premier_post);
+  virtual int finir_med(Nom& nom_fic,int& est_le_dernier_post);
+  virtual int completer_post_med(const Nom& nom_fich2,const Nom& nom1,const Nom& nom2);
+  virtual int preparer_post_med(const Nom& nom_fich1,const Nom& nom_fich2,const Nom& nom_fich3,
+                                const Nom& id_du_domaine,const int& est_le_premier_post);
+
+  virtual EcrMED getEcrMED() const;
 
 };
 

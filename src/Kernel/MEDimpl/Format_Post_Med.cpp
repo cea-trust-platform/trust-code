@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -94,6 +94,13 @@ int Format_Post_Med::initialize(const Nom& file_basename, const int& format, con
   med_basename_= file_basename;
 
   return 1;
+}
+
+EcrMED Format_Post_Med::getEcrMED() const
+{
+  EcrMED e;
+  e.setMajorMode(false);
+  return e;
 }
 
 int Format_Post_Med::ecrire_entete(double temps_courant,int reprise,const int& est_le_premier_post)
@@ -413,7 +420,7 @@ int Format_Post_Med::ecrire_domaine_med(const Domaine& domaine,const Nom& nom_fi
 {
 
   //Cerr<<"We want to postprocess with MED "<<est_le_premier_post<<finl;
-  EcrMED ecr_med;
+  EcrMED ecr_med(getEcrMED());
 
   // Cerr<<"We want to postprocess with MED in domain"<<nom_fic<<finl;
   // Cerr<<"We want to postprocess with MED"<<domaine.le_nom()<<finl;
@@ -505,7 +512,7 @@ int Format_Post_Med::ecrire_champ_med(const Domaine& dom,const Noms& unite_, con
             os<<"champ: "<< nom_post <<" "<<dom.le_nom()<<" "<<loc_post<<finl;
           }
         os.syncfile();
-        EcrMED ecr_med;
+        EcrMED ecr_med(getEcrMED());
 
         ////Cout << que_suis_je() << " " << le_nom() << finl;
         //Cout << "Format_Post_Med::ecrire_champ_med BEGINNING <<<<<<<<<< " << finl;
@@ -608,7 +615,7 @@ int Format_Post_Med::ecrire_champ_med(const Domaine& dom,const Noms& unite_, con
       // GF: ne devrait plus planter sur dibona
 
 
-      EcrMED ecr_med;
+      EcrMED ecr_med(getEcrMED());
       // Cout << "Format_Post_Med::postraiter_med_dom BEGINNING <<<<<<<<<< " << finl;
       ////Cout << que_suis_je() << " " << le_nom() << finl;
       // Cout << id_du_champ << " " << id_du_champ << finl;

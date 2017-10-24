@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,7 +33,10 @@
 
 #define POURSATURNE
 
-Implemente_instanciable(EcrMED,"Ecrire_MED",Interprete);
+Implemente_instanciable_sans_constructeur(EcrMED,"Ecrire_MED",Interprete);
+
+EcrMED::EcrMED() : major_mode(false)
+{}
 
 // Description:
 //    Simple appel a: Interprete::printOn(Sortie&)
@@ -98,6 +101,14 @@ Entree& EcrMED::interpreter(Entree& is)
   ecrire_domaine(nom_fic,dom,nom_dom,mode);
   return is;
 }
+
+med_idt trustMEDfileOpen(const char* const filename, const med_access_mode accessmode, bool major_mode)
+{
+  if (major_mode)
+    return MEDfileVersionOpen(filename, accessmode, MED_NUM_MAJEUR,0,0);
+  return MEDfileOpen(filename, accessmode );
+}
+
 
 #ifndef MED_
 void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_fic,const Nom& nom_dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Nom& type_elem,double time,int compteur)
@@ -294,7 +305,7 @@ int medecrirefaces(IntTab& all_faces_bord,const Nom& type_face,int fid,const Nom
 
 void affecte_nom_med(Char_ptr& nom_med,const Nom& mot);
 // ecrit la geom appele par EcrMED::ecrire_domaine
-int medecrgeom(const Nom& nom_fic,const Nom& nom_dom,int dimension,const DoubleTab& sommets,const Nom& type_elem,const Elem_geom& ele,const IntTab& les_elems,const Noms& type_face,VECT(IntTab)& all_faces_bord,const VECT(ArrOfInt)& familles,Noms& noms_bords,const Nom& nom_zone,int mode)
+int medecrgeom(const Nom& nom_fic,const Nom& nom_dom,int dimension,const DoubleTab& sommets,const Nom& type_elem,const Elem_geom& ele,const IntTab& les_elems,const Noms& type_face,VECT(IntTab)& all_faces_bord,const VECT(ArrOfInt)& familles,Noms& noms_bords,const Nom& nom_zone,int mode, bool major_mode)
 {
   // creation d'un mot de longueur MED_NAME_SIZE
   Char_ptr med_taille_nom;
@@ -306,12 +317,12 @@ int medecrgeom(const Nom& nom_fic,const Nom& nom_dom,int dimension,const DoubleT
   // mode =0 on ajoute. mode=-1 on reecrit
   if (mode==0)
     {
-      fid= MEDfileOpen(nom_fic,MED_ACC_RDEXT);
+      fid= trustMEDfileOpen(nom_fic,MED_ACC_RDEXT, major_mode);
       if (fid<0)
-        fid= MEDfileOpen(nom_fic,MED_ACC_CREAT);
+        fid= trustMEDfileOpen(nom_fic,MED_ACC_CREAT, major_mode);
     }
   else
-    fid= MEDfileOpen(nom_fic,MED_ACC_CREAT);
+    fid= trustMEDfileOpen(nom_fic,MED_ACC_CREAT, major_mode);
 
   if (fid < 0)
     {
@@ -906,7 +917,7 @@ void EcrMED::ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom
       Cerr << "dimension = " << dimension<< finl
            << "noms_bords= " << noms_bords<< finl;
     }
-  medecrgeom(nom_fic,nom_dom,dimension,sommets,type_elem,zone.type_elem(),les_elems2,type_face,all_faces_bord,familles,noms_bords,zone.le_nom(),mode);
+  medecrgeom(nom_fic,nom_dom,dimension,sommets,type_elem,zone.type_elem(),les_elems2,type_face,all_faces_bord,familles,noms_bords,zone.le_nom(),mode, major_mode);
   //Cerr<<"Writing of the domain is ended"<<finl;
 
 }
@@ -929,13 +940,13 @@ void affecte_nom_med(Char_ptr& nom_med,const Nom& mot)
 }
 // regarde si le champ de nom cha1 existe dans nom_fic
 // sinon le cree
-int medcreerchamp(const Nom& nom_fic,const Nom& nomcha1_org,const Nom& nom_dom, const Nom& comp2,const Nom& unit2,int nbcomp,med_int& nbofcstp)
+int medcreerchamp(const Nom& nom_fic,const Nom& nomcha1_org,const Nom& nom_dom, const Nom& comp2,const Nom& unit2,int nbcomp,med_int& nbofcstp, bool major_mode)
 {
   Char_ptr med_taille_nom;
   dimensionne_char_ptr_taille(med_taille_nom,MED_NAME_SIZE);
   Char_ptr nomcha1(med_taille_nom);
   affecte_nom_med(nomcha1,nomcha1_org);
-  int fid = MEDfileOpen(nom_fic,MED_ACC_RDEXT);
+  int fid = trustMEDfileOpen(nom_fic,MED_ACC_RDEXT, major_mode);
 
   int ret=0;
   // on regarde si le champ existe
@@ -1021,14 +1032,14 @@ int medcreerchamp(const Nom& nom_fic,const Nom& nomcha1_org,const Nom& nom_dom, 
 }
 
 // ecrit les valeurs dans le champ precedemment declare
-int medecrchamp(const Nom& nom_fic,const Nom& nom_dom,const Nom& nomcha1,const DoubleTab& val,const Nom& type,const Nom& type_elem,double dt,int compteur,med_int& nboft)
+int medecrchamp(const Nom& nom_fic,const Nom& nom_dom,const Nom& nomcha1,const DoubleTab& val,const Nom& type,const Nom& type_elem,double dt,int compteur,med_int& nboft, bool major_mode)
 {
   Char_ptr med_taille_nom;
   dimensionne_char_ptr_taille(med_taille_nom,MED_NAME_SIZE);
   int ret=0;
   int nbele=val.dimension(0);
   if (nbele==0) return 0;
-  int fid = MEDfileOpen(nom_fic,MED_ACC_RDEXT);
+  int fid = trustMEDfileOpen(nom_fic,MED_ACC_RDEXT, major_mode);
 
   //MED_CELL si CHAMPMAILLE
   //MED_NODE si CHAMPNOEUD
@@ -1124,7 +1135,7 @@ void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_fic,const Nom& nom_dom,
 
   // cree le champ si il n'existe pas
   med_int nbofcstp;
-  ret=medcreerchamp( nom_fic,nom_cha1,nom_dom, nomcoo, unite1, nbcomp,nbofcstp) ;
+  ret=medcreerchamp( nom_fic,nom_cha1,nom_dom, nomcoo, unite1, nbcomp,nbofcstp, major_mode) ;
   if (ret<0)
     {
       Cerr<<"error field creation"<<finl;
@@ -1133,7 +1144,7 @@ void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_fic,const Nom& nom_dom,
 
 
   // ecrit le champ
-  ret+=medecrchamp( nom_fic,nom_dom, nom_cha1, val, type,type_elem, time, compteur,nbofcstp);
+  ret+=medecrchamp( nom_fic,nom_dom, nom_cha1, val, type,type_elem, time, compteur,nbofcstp, major_mode);
   if (ret<0)
     {
       Cerr<<"Error writing field"<<finl;
@@ -1186,7 +1197,7 @@ void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_fic,const Nom& nom_dom,
       Cerr<<type<<"to check"<<finl;
       exit();
     }
-  int fid = MEDfileOpen(nom_fic,MED_ACC_RDONLY);
+  int fid = trustMEDfileOpen(nom_fic,MED_ACC_RDONLY, major_mode);
   int nm=MEDnEntMaa(fid,nom_dom,MED_CONN,type_ent,type_geo_trio_to_type_med(type_elem),MED_NODAL);
   MEDfileClose(fid);
   Cerr<<"nm "<<nm<<" " <<valeurs.dimension(0)<<finl;
@@ -1234,7 +1245,7 @@ void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_fic,const Nom& nom_dom,
       med_access_mode es=MED_ACC_RDEXT;
       // if (1) es=MED_ACC_CREAT;
       //es=MED_ACC_RDEXT;
-      int fid = MEDfileOpen(nom_fic,es);
+      int fid = trustMEDfileOpen(nom_fic,es, major_mode);
       Cerr<<" fid "<<fid<<finl;
       //int nm2=MEDnEntMaa(fid,nom_dom,MED_CONN,type_ent,type_geo_trio_to_type_med(type_elem),MED_NODAL);
       int nm2=nm;
