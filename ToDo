@@ -4,7 +4,7 @@ Version	Qui				Tache
 1.7.5   trust@cea.fr            Revoir ghost cells dans VisIt Faut-il garder les valeurs virtuelles daans Lata ? (ref DI 4339)
 1.7.7   marthe.roux@cea.fr      Revoir Champ_Generique_Transformation::completer pour postraiter vitessex avec tansformation ou probes (cf DI 4336)
 1.7.7   celine.capitaine@cea.fr Si pas de med_coupling_python alors sortir proprement du lata_to_case.py (ref DI 4330)
-1.7.6   marthe.roux@cea.fr      Voir pour gradient temperature nul si T=sin(y) alors que OK si T=sin(x) (cf DI 4329)
+1.7.5   trust@cea.fr            Revoir calcul gradient temperature aux faces en VDF (cf DI 4329)
 1.7.5   trust@cea.fr            Voir avec equipe TrioCFD pourquoi sur cas avec source en grad(P) pas de solution vitesse nulle (cf DI 4329)
 1.7.5   trust@cea.fr            Gestion d un tres grand nombre de fichiers log Zones sauv lata ... (ref DI 4325)
 1.7.7   celine.capitaine@cea.fr Voir pour ajouter un test NR avec champ_front_MED dans TRUST (ref DI 4324)
@@ -12,7 +12,7 @@ Version	Qui				Tache
 1.7.7   celine.capitaine@cea.fr Remplacer Pr dans loi de paroi en QC FM par calculer_prandtl (cf DI 4320)
 1.7.7   celine.capitaine@cea.fr Voir avec equipe TrioMC2  create_domain_from_sous_zone avec par_sous_zones (cf DI 4319)
 1.7.5   trust@cea.fr            Tester compilateur g++ 7.2.0 (cf DI 4317)
-1.7.6   celine.capitaine@cea.fr Integration branche portabilite med 3.0.0 (cf DI 4317)
+1.7.5   trust@cea.fr            Integration branche portabilite med 3.0.0 (ref DI 4317)
 1.7.7   celine.capitaine@cea.fr Voir pour ajouter un test NR avec script python pour projeter via MEDCoupling (ref DI 4315)
 1.7.5   trust@cea.fr            Prendre en compte les remarques pour ameliorer genereCourbe (ref DI 4315)
 1.7.5   trust@cea.fr            Retrouver Champ_generique_from_champ_base dans baltik hors TMA (cf DI 4307)
@@ -60,7 +60,6 @@ Version	Qui				Tache
 1.7.7   triou@cea.fr            Revoir pour lancer le check_component des que exe TRUST OK => voir pour attendre
 1.7.7   triou@cea.fr            Reprendre la verification du TRUST_Reference_Manual.pdf
 1.7.7   marthe.roux@cea.fr      Revoir le Keywords.txt des BALTIKS et la config via editeurs si OK (ex : Implicit_Euler_Steady_Scheme)
-1.7.6   triou@cea.fr            Gerer push shared des baltiks comme TRUST + mail annonce
 1.7.7   triou@cea.fr            Supprimer CentOS 5.5 is220964 et installer GNU 4.1.2 sur is220631
 1.7.7   triou@cea.fr            Reprendre rapports bench et etudes de atelier nuit
 1.7.7   triou@cea.fr            Revoir les fichiers host VisIt sur curie et cobalt
@@ -74,9 +73,9 @@ Version	Qui				Tache
 1.7.7   triou@cea.fr            Avoir un fichier avec la liste des fichiers deleted sur git pour faire un rm a distance
 1.7.7   triou@cea.fr            Voir pour ajouter test Execute_parallel lors du configure pour verifier l'installation MPI
 1.7.7   triou@cea.fr            Probleme avec pre-commit et post-commit qui modifie des fichiers lors du commit apres nos tests !!! Le faire lors du compile et si modif alors arret...
-1.7.6   marthe.roux@cea.fr      Mettre a jour slides et tutos formations + trust -help dans Generic + version
-1.7.6   triou@cea.fr            Tester check valgrind BALTIK
-1.7.6   triou@cea.fr            Tester independance modules BALTIK
-1.7.6   triou@cea.fr            Verifier la main_validation du tmptrust
+1.7.7   triou@cea.fr            Mettre a jour version dans slides formations
+1.7.7   triou@cea.fr            Tester check valgrind BALTIK
+1.7.7   triou@cea.fr            Tester independance modules BALTIK
+1.7.7   triou@cea.fr            Verifier la main_validation du tmptrust
 1.7.6   triou@cea.fr            Recuperer l archive de couverture de code du super build
-1.7.6   triou@cea.fr            Verifier http://downloads.sourceforge.net/project/trust-platform/X.Y.Z/extra/
+1.7.7   triou@cea.fr            Verifier http://downloads.sourceforge.net/project/trust-platform/X.Y.Z/extra/

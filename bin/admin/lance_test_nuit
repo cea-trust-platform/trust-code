@@ -276,20 +276,20 @@ git_push()
       then
          if [ "$force" != 1 ]
          then
-            git push $repo $git_branch 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] Error for git push $repo $git_branch\" $TRUST_MAIL
+            git push $repo $git_branch 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST error for git push $repo $git_branch\" $TRUST_MAIL
          else
-            git push --force $repo $git_branch 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] Error for git push force $repo $git_branch\" $TRUST_MAIL
+            git push --force $repo $git_branch 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST error for git push force $repo $git_branch\" $TRUST_MAIL
          fi
       else
          if [ "$force" != 1 ]
          then
-            git push --tags $repo $git_branch 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] Error for git push tags $repo $git_branch\" $TRUST_MAIL
+            git push --tags $repo $git_branch 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST error for git push tags $repo $git_branch\" $TRUST_MAIL
          else
-            git push --force --tags $repo $git_branch 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] Error for git push force tags $repo $git_branch\" $TRUST_MAIL
+            git push --force --tags $repo $git_branch 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST error for git push force tags $repo $git_branch\" $TRUST_MAIL
          fi
       fi
       cat $repo_log | tail -n +3
-      [ "`cat $repo_log | tail -n +3`" != "Everything up-to-date" ] && cat $repo_log | mail_ -s\"[lance_test_nuit] git push $repo $git_branch\" -c $TRUST_MAIL $TMA_PROJECT_LEADER
+      [ "`cat $repo_log | tail -n +3`" != "Everything up-to-date" ] && cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST git push $repo $git_branch\" -c $TRUST_MAIL $TMA_PROJECT_LEADER
    done
 }
 
@@ -637,8 +637,26 @@ cd $TRUST_ROOT
    git_push -tags
    cd $TRUST_ROOT/externalpackages
    echo " git push shared Livraison in `pwd`"
-   git push --tags shared Livraison
+   git push --tags shared Livraison > tmp.log
+   cat tmp.log | tail -n +3
+   [ "`cat tmp.log | tail -n +3`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] externalpackages git push shared Livraison\" -c $TRUST_MAIL $TMA_PROJECT_LEADER
+   rm tmp.log 1>/dev/null 2>&1
    cd - 1>/dev/null 2>&1
+      
+   # BALTIK
+   for Composant in $ComposantsGit 
+   do
+      cd $WORKDIR/sourceforge/Livraison/Composants/$Composant
+      BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
+      echo " "
+      echo " git push shared TMA in `pwd`"
+      [ "$Composant" = TrioCFD ] && git push --tags shared Livraison
+      git push --tags shared Livraison:TMA > tmp.log
+      cat tmp.log | tail -n +3
+      [ "`cat tmp.log | tail -n +3`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push shared TMA\" -c $TRUST_MAIL $TMA_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
+      rm tmp.log 1>/dev/null 2>&1
+      cd - 1>/dev/null 2>&1
+   done
 )
 echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 echo " "
