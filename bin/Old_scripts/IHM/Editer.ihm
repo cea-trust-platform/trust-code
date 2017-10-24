@@ -7,7 +7,7 @@ cd $ETUDE_TRUST
 if [ ${#nom} != 0 ]
 then
    data=`cat $nom`.data
-   nohup $EDITEUR $data 1>/dev/null 2>/dev/null &
+   nohup $TRUST_EDITOR $data 1>/dev/null 2>/dev/null &
    sleep 4
 else
    echo $ECHO_OPTS "------------------------------------------"
@@ -17,8 +17,8 @@ else
    echo $ECHO_OPTS "------------------------------------------"
    echo $ECHO_OPTS "Please enter the filename for editing:"
    read NOM
-   #nohup $EDITEUR $NOM 1>/dev/null 2>/dev/null &
+   #nohup $TRUST_EDITOR $NOM 1>/dev/null 2>/dev/null &
    no_exec=1
    export no_exec
-   execute.ksh "$EDITEUR $ETUDE_TRUST/$NOM 1>/dev/null 2>/dev/null &"
+   execute.ksh "$TRUST_EDITOR $ETUDE_TRUST/$NOM 1>/dev/null 2>/dev/null &"
 fi

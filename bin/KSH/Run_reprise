@@ -122,5 +122,5 @@ rm -f $NOM.data.old.tmp
 if [ $GUI = 1 ]
 then
    echo $ECHO_OPTS "\nWarning: $NOM.data has been modified..."
-   nohup $EDITEUR $NOM.data 1>/dev/null & 
+   nohup $TRUST_EDITOR $NOM.data 1>/dev/null & 
 fi

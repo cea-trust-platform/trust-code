@@ -143,7 +143,7 @@ FIN DECOUPAGE #" >> $file
       $TRUST_Awk '/bord conserve/ && !/coupe_2D/ && !/coupe_Axi2D/ {print $3}' prepro/trans_geom/TRUST.log | sort -u >> $file 
    fi
    echo $ECHO_OPTS "#" >> $file   
-   $EDITEUR $file
+   $TRUST_EDITOR $file
    
    cd $dirmodel
    `dirname $0`/nettoie ${dirmodel}

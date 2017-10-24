@@ -103,11 +103,11 @@ done
 
 # Comparaison des .out .err
 sdiff -w 150 old.out_err new.out_err > out_err
-$EDITEUR out_err
+$TRUST_EDITOR out_err
 
 # Comparaison des performances
 sdiff old.TU new.TU > TU
-$EDITEUR TU
+$TRUST_EDITOR TU
 
 # Comparaison visit
 [ -f new.lata ] && visit -o new.lata

@@ -9,7 +9,7 @@ nomfichier=$rep_dev/$nom_fic
 # Edition d'un fichier de l'atelier
 if [ -f $nomfichier ]
 then
-   nohup $EDITEUR $nomfichier 1>/dev/null 2>/dev/null &
+   nohup $TRUST_EDITOR $nomfichier 1>/dev/null 2>/dev/null &
 else
    Erreur.ihm "$nomfichier est inexistant !!!"
 fi

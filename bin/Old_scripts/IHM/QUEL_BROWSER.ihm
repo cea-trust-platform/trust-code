@@ -4,7 +4,7 @@
 #echo $1
 #signature=`echo $1 | $TRUST_Awk '{print substr($0,length($0)-3,4)}'`
 #echo $signature
-nom=`echo $WEBBROWSER | $TRUST_Awk '{print $1}'`
+nom=`echo $TRUST_WEBBROWSER | $TRUST_Awk '{print $1}'`
 nom=`basename $nom`
 # Pour supporter Mozilla :
 [ $nom = mozilla ] && nom=netscape

@@ -38,7 +38,7 @@ EOF
    last_version=`cat $TRUST_TMP/versions | $TRUST_Awk -F'_opt_' '{gsub(".gz","",$NF);print $NF}' | sort -rn | head -1`
    if [ $last_version != $TRUST_VERSION ] && [ ! -f $TRUST_TMP/NO_$last_version ]
    then
-      $EDITEUR $TRUST_TMP/RELEASE_NOTES &
+      $TRUST_EDITOR $TRUST_TMP/RELEASE_NOTES &
       nom_exec=`cat $TRUST_TMP/versions | grep $last_version".gz" | $TRUST_Awk '{print $NF}'`
       taille_exec=`cat $TRUST_TMP/versions | grep $last_version".gz" | $TRUST_Awk '{print int($4/1024/1024+1)}'`
       # Il existe une version plus recente et elle n'a pas ete refusee

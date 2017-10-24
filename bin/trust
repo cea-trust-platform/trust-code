@@ -222,7 +222,7 @@ do
       fi
    elif [ "$1" = "-index" ]
    then
-      ($WEBBROWSER $TRUST_ROOT/index.html &) && exit 0  
+      ($TRUST_WEBBROWSER $TRUST_ROOT/index.html &) && exit 0  
    elif [ "$1" = "-exec" ] ||  [ "$1" = "-exe" ]
    then
       shift
@@ -435,7 +435,7 @@ fi
 #############
 if [ "$edit" = 1 ]
 then
-   editor=$EDITEUR
+   editor=$TRUST_EDITOR
    [ "$editor" = "" ] && editor="xemacs"
    $editor $NOM".data" &
    exit $?

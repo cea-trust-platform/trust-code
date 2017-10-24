@@ -21,7 +21,7 @@ fi
 done
 if [ -f $TMP ]
 then
-   nohup $EDITEUR $TMP 1>/dev/null &
+   nohup $TRUST_EDITOR $TMP 1>/dev/null &
 else
    $Erreur.ihm "Aucun fichier trouve avec cette chaine !!!"
 fi

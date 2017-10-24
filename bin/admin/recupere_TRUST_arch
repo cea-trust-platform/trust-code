@@ -535,4 +535,4 @@ cd $TRUST_ROOT
 ##############################
 # Fin boucle sur les modules #
 ##############################
-[ ${#binaire} = 0 ] && $WEBBROWSER $NUIT
+[ ${#binaire} = 0 ] && $TRUST_WEBBROWSER $NUIT

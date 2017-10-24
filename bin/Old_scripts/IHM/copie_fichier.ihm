@@ -79,6 +79,6 @@ then
    # Edition du fichier :
    no_exec=1
    export no_exec
-   execute.ksh "$EDITEUR $ETUDE_TRUST/$NOM 1>/dev/null &" 1>/dev/null
+   execute.ksh "$TRUST_EDITOR $ETUDE_TRUST/$NOM 1>/dev/null &" 1>/dev/null
 fi
 sleep 1

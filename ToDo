@@ -1,7 +1,6 @@
 Version	Qui				Tache
 1.7.7   triou@cea.fr            Se renseigner sur la date du passage de RoundUp a Tuleap (evoque en COTHEM)
 1.7.7   celine.capitaine@cea.fr Revoir fichier Puissance_volumique.out si dans datafile en EF 2 sources : source_scalaire + puissance_thermique (ref DI 4341)
-1.7.6   celine.capitaine@cea.fr UTF8 ou ASCII pour check accent (cf DI 4340)
 1.7.5   trust@cea.fr            Revoir ghost cells dans VisIt Faut-il garder les valeurs virtuelles daans Lata ? (ref DI 4339)
 1.7.7   marthe.roux@cea.fr      Revoir Champ_Generique_Transformation::completer pour postraiter vitessex avec tansformation ou probes (cf DI 4336)
 1.7.7   celine.capitaine@cea.fr Si pas de med_coupling_python alors sortir proprement du lata_to_case.py (ref DI 4330)
@@ -9,7 +8,7 @@ Version	Qui				Tache
 1.7.5   trust@cea.fr            Voir avec equipe TrioCFD pourquoi sur cas avec source en grad(P) pas de solution vitesse nulle (cf DI 4329)
 1.7.5   trust@cea.fr            Gestion d un tres grand nombre de fichiers log Zones sauv lata ... (ref DI 4325)
 1.7.7   celine.capitaine@cea.fr Voir pour ajouter un test NR avec champ_front_MED dans TRUST (ref DI 4324)
-1.7.6   celine.capitaine@cea.fr En attente retour TrioMC2 pour integration branche gerschen a ModeleCoeur et si PolyMAC ? (cf DI 4322)
+1.7.7   celine.capitaine@cea.fr Integration branche gerschen 1.7.5 a ModeleCoeur pour 1.7.7 (cf DI 4322)
 1.7.7   celine.capitaine@cea.fr Remplacer Pr dans loi de paroi en QC FM par calculer_prandtl (cf DI 4320)
 1.7.7   celine.capitaine@cea.fr Voir avec equipe TrioMC2  create_domain_from_sous_zone avec par_sous_zones (cf DI 4319)
 1.7.5   trust@cea.fr            Tester compilateur g++ 7.2.0 (cf DI 4317)
@@ -65,7 +64,6 @@ Version	Qui				Tache
 1.7.7   triou@cea.fr            Supprimer CentOS 5.5 is220964 et installer GNU 4.1.2 sur is220631
 1.7.7   triou@cea.fr            Reprendre rapports bench et etudes de atelier nuit
 1.7.7   triou@cea.fr            Revoir les fichiers host VisIt sur curie et cobalt
-1.7.6   triou@cea.fr            Nettoyage variable env ... exemple $DEBUG ... si utilise passer en TRUST_DEBUG sinon supprimer
 1.7.5   trust@cea.fr            Qui traite plantage trust maillage converti en polyedre pour TrioMC ?
 1.7.5   trust@cea.fr            Envoyer a TMA sur prm pour Flica5 (ligne ajoutee par GF a l epoque)
 1.7.5   trust@cea.fr            Polygone.cpp: ToDo a mettre dans triangle (ligne ajoutee par GF a l epoque)

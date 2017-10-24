@@ -41,7 +41,7 @@ class MenuTRUSTWidget(QDockWidget):
       return
     case+=extension
     # cmd="xemacs "+case
-    editor=os.environ.get("EDITEUR")
+    editor=os.environ.get("TRUST_EDITOR")
     if editor == "":
       editor="xemacs"
     cmd=editor+" "+case

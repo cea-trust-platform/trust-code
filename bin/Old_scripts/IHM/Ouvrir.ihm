@@ -87,10 +87,10 @@ else
       if [ `QUEL_BROWSER.ihm` = "netscape" ]
       then
          echo $ECHO_OPTS "\nStudy opened.\nIf necessary click on study link (left frame)."
-         $WEBBROWSER -remote 'openFile('$HOME/HTML/Etude.html')'
+         $TRUST_WEBBROWSER -remote 'openFile('$HOME/HTML/Etude.html')'
       else
-         nohup $WEBBROWSER $HOME/$ETUDE_HTML 1>/dev/null &
-# Attente necessaire car sinon $WEBBROWSER n'a pas le temps d'etre lance.
+         nohup $TRUST_WEBBROWSER $HOME/$ETUDE_HTML 1>/dev/null &
+# Attente necessaire car sinon $TRUST_WEBBROWSER n'a pas le temps d'etre lance.
       fi
       sleep 3
    fi

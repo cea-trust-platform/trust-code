@@ -5,16 +5,16 @@ echo "Usage: `basename $0` [numero_cas_test]"
 # on test wish
 echo "exit" > test.wish
 wish_notok=0
-log=`$WISH test.wish 2>&1`
+log=`$TRUST_WISH test.wish 2>&1`
 
-# `$WISH test.wish   wish_notok=$? ne marche pas
+# `$TRUST_WISH test.wish   wish_notok=$? ne marche pas
 [ "$log" != "" ] && echo $log && wish_notok=1
 
 if [ $wish_notok -eq 0 ]
 then
-   echo $WISH Ok
+   echo $TRUST_WISH Ok
 else
-   echo $WISH KO , pb avec DISPLAY ?
+   echo $TRUST_WISH KO , pb avec DISPLAY ?
    echo "XPREPRO=NOT" && exit -1
 fi
 #

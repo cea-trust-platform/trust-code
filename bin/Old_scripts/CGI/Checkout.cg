@@ -10,8 +10,8 @@ file=$rep_dev/`basename $fic`
 rm -f $file && ln -sf $fic $file
 
 # Edition du fichier 
-execute.ksh "$EDITEUR $fic &"
-#ecrit_exec.ksh "#!/bin/bash\n\$EDITEUR $fic &"
+execute.ksh "$TRUST_EDITOR $fic &"
+#ecrit_exec.ksh "#!/bin/bash\n\$TRUST_EDITOR $fic &"
 #kill -$SIG_EXEC `cat $HOME/.exec`
 
 # Regenere la page atelier :

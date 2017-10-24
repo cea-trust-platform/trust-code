@@ -45,8 +45,8 @@ then
    then
       Message.ihm "Development directory ready .\nClick on link Development (left frame)." 
    else
-      nohup $WEBBROWSER $rep_dev/$ATELIER_HTML 1>/dev/null 2>/dev/null &
-# Attente necessaire car sinon $WEBBROWSER n'a pas le temps d'etre lance.
+      nohup $TRUST_WEBBROWSER $rep_dev/$ATELIER_HTML 1>/dev/null 2>/dev/null &
+# Attente necessaire car sinon $TRUST_WEBBROWSER n'a pas le temps d'etre lance.
       sleep 3
    fi
 fi

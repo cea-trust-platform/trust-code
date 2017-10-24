@@ -7,8 +7,8 @@ file=$rep_dev/`basename $fic`
 cp $fic $file && chmod 744 $file
 
 # Execute l'ordre
-execute.ksh "$EDITEUR $file &"
-#ecrit_exec.ksh "#!/bin/bash\n\$EDITEUR $file &"
+execute.ksh "$TRUST_EDITOR $file &"
+#ecrit_exec.ksh "#!/bin/bash\n\$TRUST_EDITOR $file &"
 
 
 # Regenere la page atelier :

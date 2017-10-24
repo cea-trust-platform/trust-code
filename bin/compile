@@ -152,7 +152,7 @@ then
 	  break
       fi         
    done
-   $EDITEUR $new_file
+   $TRUST_EDITOR $new_file
    cd -
 fi
 \cd $TRUST_ROOT

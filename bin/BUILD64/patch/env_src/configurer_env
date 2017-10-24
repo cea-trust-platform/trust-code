@@ -250,7 +250,7 @@ xxx()
 	   fi;;
 	   TRUST_F77_BASE) echo $ECHO_OPTS "      PROGRAM main\n      END\n      SUBROUTINE TOTO\n      RETURN\n      END" > $TRUST_ENV/main.f;$f -o test_exec_f $TRUST_ENV/main.f 1>$log 2>&1;./test_exec_f 1>>$log 2>&1;[ $? != 0 ] && ok=0;;
 	   # GUI plus supporte: on ne teste plus le browser trouve.
-	   #WEBBROWSER) if [ "`echo $f | grep -i acrobat`" != "" ]
+	   #TRUST_WEBBROWSER) if [ "`echo $f | grep -i acrobat`" != "" ]
 	   #then
 	      # On passe le script netscape livre avec Acrobat
 	      # car cela bloque la configuration (ex: PC verde...)
@@ -676,55 +676,50 @@ case $arch in
            TRUST_ARCH=HPPA
            TRUST_F77_BASE="f77 f90"
         fi
-	EDITEUR="nedit softedit xedit dtpad"
+	TRUST_EDITOR="nedit softedit xedit dtpad"
 	TRUST_CC_BASE="aCC CC g++"
 	TRUST_cc_BASE="cc"
 	Dtterm="hpterm dtterm xterm"
-	DEBUG="softdebug softdde ddd xdb dde"
 	IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/bytes/ {print $4}'`
         ;;
    IRIX*) TRUST_ARCH=SGI
-	EDITEUR="nedit xedit jot dtpad"
+	TRUST_EDITOR="nedit xedit jot dtpad"
 	TRUST_CC_BASE="CC g++"
 	TRUST_F77_BASE="f77"
 	TRUST_cc_BASE="cc"		
         # winterm supprime car incompatible avec -sb....	
 	# Dtterm="dtterm winterm xterm"
         Dtterm="dtterm xterm"
-	DEBUG="cvd ddd dbx"
 	IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/ bytes / {print $4}'`
 	;;
    SunOS) TRUST_ARCH=sun5
-	EDITEUR="nedit textedit xedit dtpad"
+	TRUST_EDITOR="nedit textedit xedit dtpad"
 	TRUST_CC_BASE="g++ CC"				# TRUST plante avec CC natif sur SUN
 	TRUST_F77_BASE="g77 f77"			# Vaut mieux chercher g77 en premier
 	TRUST_cc_BASE="cc"	
 	Dtterm="dtterm xterm"
-	DEBUG="dbxtool debugger ddd dbx gdb"
 	#IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/bytes/ {print $4}'`
         ;;
    AIX) TRUST_ARCH=RS6000
 	# mpCC_r, mpxlf_r, mpcc_r compilateurs de zahir a l'IDRIS
-	EDITEUR="nedit xedit dtpad"
+	TRUST_EDITOR="nedit xedit dtpad"
 	TRUST_CC_BASE="mpCC_r xlC g++"
 	SLD="makeC++SharedLib"
 	TRUST_F77_BASE="mpxlf_r xlf f77 xlf90"
 	TRUST_cc_BASE="mpcc_r cc"
 	Dtterm="xterm dtterm"
-	DEBUG="ddd xdb"
 	IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/ bytes / {print $4}'`
 	;;
    OSF1) TRUST_ARCH=DECalpha
-	EDITEUR="nedit xedit dtpad"
+	TRUST_EDITOR="nedit xedit dtpad"
 	TRUST_CC_BASE="cxx g++"
 	TRUST_F77_BASE="f77"
 	TRUST_cc_BASE="cc"
 	Dtterm="xterm dtterm"
-	DEBUG="ddd dbx xdb"
 	IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/ bytes / {print $4}'`
 	;;
    Linux) TRUST_ARCH=linux
-	EDITEUR="nedit kedit xemacs xedit emacs gedit"
+	TRUST_EDITOR="nedit kedit xemacs xedit emacs gedit"
 	# Compilos Intel plus performants sont desormais en priorite sur archi 64 bits (exx)
 	# Sur 32 bits on laisse Gnu prioritaires par rapport a Intel (ixx)
 	# pgCC en dernier car +50% sur Opteron par rapport a gcc
@@ -757,11 +752,10 @@ case $arch in
 	TRUST_cc_BASE=$TRUST_cc_BASE" pgcc cc"
 	
 	Dtterm="xterm dtterm nxterm rxvt konsole"
-	DEBUG="ddd gdb"
 	IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/PING/ {print $3}'`
 	;;
    CYGWIN*) TRUST_ARCH=cygwin
-	EDITEUR="nedit kedit xemacs xedit emacs"
+	TRUST_EDITOR="nedit kedit xemacs xedit emacs"
         fortran_gnu="gfortran g77"
 	   TRUST_CC_BASE="g++ icpc icc ecc"
 	   TRUST_F77_BASE="$fortran_gnu ifort ifc efc"
@@ -772,40 +766,35 @@ case $arch in
 	TRUST_cc_BASE=$TRUST_cc_BASE" pgcc cc"
 	
 	Dtterm="xterm dtterm nxterm rxvt konsole"
-	DEBUG="ddd gdb"
 	IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/PING/ {print $3}'`
 	;;
    Darwin) TRUST_ARCH=linux	# Portage en cours de la v1.4.5 sur Power MacIntosh G5
-	EDITEUR="nedit xedit emacs dtpad"
+	TRUST_EDITOR="nedit xedit emacs dtpad"
 	TRUST_CC_BASE="g++ gcc"
 	TRUST_F77_BASE="g77 f77"
 	TRUST_cc_BASE="gcc cc"
 	Dtterm="xterm dtterm nxterm"
-	DEBUG="ddd gdb"
 	;;
    cobea) TRUST_ARCH=CRAY
-        EDITEUR="nedit xemacs emacs xedit dtpad"
+        TRUST_EDITOR="nedit xemacs emacs xedit dtpad"
         TRUST_CC_BASE="CC g++"
 	TRUST_F77_BASE="fort77"
 	TRUST_cc_BASE="cc"
         Dtterm="xterm"
-        DEBUG="totalview dbx xdb ddd gdb"
         ;;
    UNIX_System_V) TRUST_ARCH=F5000
-        EDITEUR="nedit xedit"
+        TRUST_EDITOR="nedit xedit"
         TRUST_CC_BASE="CC g++"
         TRUST_F77_BASE="frt f77"
 	TRUST_cc_BASE="cc"
         Dtterm="xterm"
-        DEBUG="totalview fdb"
         ;;
    *) TRUST_ARCH=autre
-	EDITEUR="nedit xedit dtpad xemacs"
+	TRUST_EDITOR="nedit xedit dtpad xemacs"
 	TRUST_CC_BASE="g++ CC"
 	TRUST_F77_BASE="g77 f77 fort77"
 	TRUST_cc_BASE="gcc cc"
 	Dtterm="dtterm xterm"
-	DEBUG="ddd"
 	;;
 esac
 # Si on ne trouve pas f77, on essaie avec g77 et f90 (TRUST a deja marche sur HP avec f90)
@@ -825,7 +814,7 @@ m="# Echo option";e="ECHO_OPTS=\"$ECHO_OPTS\" && export ECHO_OPTS";ecrit $m"|"$e
 m="# Login of the TRUST install";e="TRUST_LOGIN=`whoami` && export TRUST_LOGIN";ecrit $m"|"$e"|"$env
 # Verification de l'existence de certaines variables :
 m="# Path to awk command";e="`cherche_file TRUST_Awk gawk awk nawk oawk`";ecrit $m"|"$e"|"$env;eval $e
-m="# Path to an text editor";e="`cherche_file EDITEUR $EDITEUR`";ecrit $m"|"$e"|"$env
+m="# Path to an text editor";e="`cherche_file TRUST_EDITOR $TRUST_EDITOR`";ecrit $m"|"$e"|"$env
 
 # Nouveau 2010, on regarde le nombre de processeurs disponibles des machines Linux:   
 TRUST_NB_PROCS=`./configurer_env -TRUST_NB_PROCS`
@@ -949,16 +938,15 @@ fi
 m="# Path to dtterm command";e="`cherche_file Dtterm $Dtterm`";ecrit $m"|"$e"|"$env;eval $e
 m="# Path to xterm command";e="`cherche_file Xterm xterm rxvt konsole`";ecrit $m"|"$e"|"$env;eval $e
 [ ${#Dtterm} = 0 ] || [ ${#Xterm} = 0 ] && echo "Warning. The TRUST GUI (Graphical User Interface) will not work cause Dtterm or Xterm not found. "
-m="# Path to a debugger";e="`cherche_file DEBUG $DEBUG`";ecrit $m"|"$e"|"$env
 
 #################################################################
 # Si on ne trouve pas la librairie graphique Tcl/Tk on l'installe
 #################################################################
-m="# Path to Tcl/Tk";e="`cherche_file WISH /usr/bin/wish /bin/wish wish`";eval $e
-if [ "$WISH" = "" ] && [ "$TRUST_DISABLE_TCL_TK" != "1" ]
+m="# Path to Tcl/Tk";e="`cherche_file TRUST_WISH /usr/bin/wish /bin/wish wish`";eval $e
+if [ "$TRUST_WISH" = "" ] && [ "$TRUST_DISABLE_TCL_TK" != "1" ]
 then
    make_ $TRUST_ROOT/Outils/tcl_tk Tcl/Tk $TRUST_ROOT/exec/tcl_tk.log
-   e="`cherche_file WISH $TRUST_ROOT/exec/tcl_tk/bin/wish`";
+   e="`cherche_file TRUST_WISH $TRUST_ROOT/exec/tcl_tk/bin/wish`";
 fi
 ecrit $m"|"$e"|"$env
 
@@ -977,7 +965,7 @@ fi
 cd $TRUST_ROOT/env
 # Mozilla est desormais supporte mais Konqueror pas encore completement ...
 #echo $ECHO_OPTS "Trying to find and test a browser...\c"
-m="# Path to a browser";e="`cherche_file WEBBROWSER google-chrome firefox mozilla-firefox mozilla netscape`";ecrit $m"|"$e"|"$env
+m="# Path to a browser";e="`cherche_file TRUST_WEBBROWSER google-chrome firefox mozilla-firefox mozilla netscape`";ecrit $m"|"$e"|"$env
 #echo OK
 ###############
 # NATIVE BLAS #

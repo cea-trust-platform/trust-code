@@ -56,7 +56,7 @@ do
       exit 0
    elif [ "$1" = -doc ]
    then
-      $WEBBROWSER $TRUST_ROOT/Validation/Outils/Genere_courbe/doc/manuel.xhtml &
+      $TRUST_WEBBROWSER $TRUST_ROOT/Validation/Outils/Genere_courbe/doc/manuel.xhtml &
       exit 0
    elif [ "$1" = -dest ]
    then

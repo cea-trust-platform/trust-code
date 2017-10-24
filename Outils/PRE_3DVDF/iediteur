@@ -1,2 +1,2 @@
 #!/bin/bash
-$EDITEUR $1 &
+$TRUST_EDITOR $1 &

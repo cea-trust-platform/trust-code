@@ -12,8 +12,8 @@ else
       cd `dirname $NOM`
       $Xterm $HautGauche_geometrie -title "Postraiter" -e Run_DV `basename $NOM`
    else
-      # Fichier edite par defaut par $EDITEUR !
-      nohup $EDITEUR $NOM 1>/dev/null 2>/dev/null &
+      # Fichier edite par defaut par $TRUST_EDITOR !
+      nohup $TRUST_EDITOR $NOM 1>/dev/null 2>/dev/null &
    fi
 fi
 sleep 3

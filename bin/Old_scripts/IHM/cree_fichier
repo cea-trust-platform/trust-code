@@ -68,7 +68,7 @@ do
          sleep 2
 	 sed -f .change $rep_dev/$NOM_DU_FICHIER.$suffixe
          echo $ECHO_OPTS "\nCreation de $NOM_DU_FICHIER.$suffixe"
-         nohup $EDITEUR $NOM_DU_FICHIER.$suffixe 1>/dev/null &
+         nohup $TRUST_EDITOR $NOM_DU_FICHIER.$suffixe 1>/dev/null &
       fi
    fi
 done

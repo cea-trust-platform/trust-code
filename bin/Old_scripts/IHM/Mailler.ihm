@@ -61,7 +61,7 @@ else
    then
       echo $ECHO_OPTS "GIBI failed running mesh generation."
       echo $ECHO_OPTS "Check your file $NOM."
-      nohup $EDITEUR $NOM 1>/dev/null &
+      nohup $TRUST_EDITOR $NOM 1>/dev/null &
       eval $FIN
    else
 # Trouve le fichier .GCA genere :
@@ -78,7 +78,7 @@ else
       then
          echo $ECHO_OPTS "GIBI failed running mesh generation."
          echo $ECHO_OPTS "Check your file $NOM."
-         nohup $EDITEUR $NOM 1>/dev/null &
+         nohup $TRUST_EDITOR $NOM 1>/dev/null &
          eval $FIN
       fi
    fi

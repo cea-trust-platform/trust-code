@@ -3,5 +3,5 @@
 [ "$UTILISE_APPACHE" = "1" ] && . $HOME/HTML/recharger_env
 fic=`extrait_nom $1` 
 # Execute l'ordre
-execute.ksh "$EDITEUR $fic &"
-#ecrit_exec.ksh "#!/bin/bash\n\$EDITEUR $fic &"
+execute.ksh "$TRUST_EDITOR $fic &"
+#ecrit_exec.ksh "#!/bin/bash\n\$TRUST_EDITOR $fic &"

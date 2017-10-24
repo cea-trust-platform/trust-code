@@ -405,7 +405,7 @@ do
 ####################
    elif [ $choix = "E" ]
    then
-      $EDITEUR $NOM.data &
+      $TRUST_EDITOR $NOM.data &
       
 ####################
 # Cas ou $choix="R" :
@@ -925,7 +925,7 @@ do
       Run_cherche_gnu $FIC_GNU $NOM
       if [ ${#IHM} != 0 ] && [ $IHM = 1 ]
       then
-         $WEBBROWSER $FIC_GNU.html &
+         $TRUST_WEBBROWSER $FIC_GNU.html &
 	 pcs_sup=$!
          rm -f gnuplot/$NOM.ordre_IHM
          while [ ! -f gnuplot/$NOM.ordre_IHM ]

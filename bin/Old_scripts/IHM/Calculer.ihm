@@ -80,10 +80,10 @@ else
       cree_Etude.html
       if [ `QUEL_BROWSER.ihm` = "netscape" ]
       then
-         $WEBBROWSER -remote 'openFile('$HOME/HTML/Etude.html')'
+         $TRUST_WEBBROWSER -remote 'openFile('$HOME/HTML/Etude.html')'
       else
-         nohup $WEBBROWSER $HOME/$ETUDE_HTML 1>/dev/null &
-# Attente necessaire car sinon $WEBBROWSER n'a pas le temps d'etre lance.
+         nohup $TRUST_WEBBROWSER $HOME/$ETUDE_HTML 1>/dev/null &
+# Attente necessaire car sinon $TRUST_WEBBROWSER n'a pas le temps d'etre lance.
       fi
    fi
 # Simple choix du jeu de donnees : on sort 

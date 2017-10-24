@@ -24,17 +24,17 @@ else
 # Creation du fichier .$fichier.html contenant les vieilles versions :
       cree_Fichiers.html $rep/$nom > $rep_dev/.$nom.html
       fichier=.$nom.html
-      nohup $WEBBROWSER $rep_dev/$fichier 1>/dev/null 2>/dev/null &
+      nohup $TRUST_WEBBROWSER $rep_dev/$fichier 1>/dev/null 2>/dev/null &
       if [ $? != 0 ]
       then
-         echo $ECHO_OPTS "Echec de $WEBBROWSER !"
+         echo $ECHO_OPTS "Echec de $TRUST_WEBBROWSER !"
 	 echo $ECHO_OPTS "Deloggez vous puis revenez."
 	 eval $FIN
       fi
 # Creation d'un fichier contenant deux infos importantes :
 # Le nom du fichier et le process du browser lance.
       echo $ECHO_OPTS $nom"\n"$! > $rep_dev/.pcs
-# Attente necessaire car sinon $WEBBROWSER n'a pas le temps d'etre lance.
+# Attente necessaire car sinon $TRUST_WEBBROWSER n'a pas le temps d'etre lance.
       sleep 3
    fi
 fi
