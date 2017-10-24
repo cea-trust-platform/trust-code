@@ -104,7 +104,7 @@
 %    TITLE PAGE
 %----------------------------------------------------------------------------------------
 %\title[Short title]{Long title}
-\title[TRUST Tutorial V1.7.6beta]{TRUST Tutorial V1.7.6beta} % The short title appears at the bottom of every slide, the full title is only on the title page
+\title[TRUST Tutorial V1.7.6]{TRUST Tutorial V1.7.6} % The short title appears at the bottom of every slide, the full title is only on the title page
 
 %\author{John Smith} % Your name
 \institute[CEA/DEN/DANS/DM2S/STMF] % Your institution as it will appear on the bottom of every slide, may be shorthand to save space
@@ -132,9 +132,9 @@ CEA Saclay \\ % Your institution for the title page
 %\tableofcontents[sectionstyle=show/show,subsectionstyle=hide/hide/hide ] 
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-7}, hideallsubsections]
+\tableofcontents[sections={1-9}, hideallsubsections]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-14}, hideallsubsections]
+\tableofcontents[sections={10-16}, hideallsubsections]
 \end{columns}
 % Throughout your presentation, if you choose to use \section{} and \subsection{} commands, these will automatically be printed on this slide as an overview of your presentation
 \end{frame}
@@ -149,9 +149,9 @@ CEA Saclay \\ % Your institution for the title page
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-7},currentsection, currentsubsection]
+\tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-14},currentsection, currentsubsection]
+\tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -186,9 +186,9 @@ CEA Saclay \\ % Your institution for the title page
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-7},currentsection, currentsubsection]
+\tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-14},currentsection, currentsubsection]
+\tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -227,8 +227,8 @@ CEA Saclay \\ % Your institution for the title page
 \vspace{0.2cm}
 
 \item Open a terminal and run the commands to create a directory for your studies: \\
-\textbf{mkdir -p \; $\sim$/test/yourname}\\
-\textbf{cd \; $\sim$/test/yourname}
+\textbf{mkdir -p \; $\sim$/Formation\_TRUST/yourname}\\
+\textbf{cd \; $\sim$/Formation\_TRUST/yourname}
 \vspace{0.2cm}
 
 \item \label{method_copy} Copy a test case from the TRUST database to your study with the command:\\
@@ -236,12 +236,17 @@ CEA Saclay \\ % Your institution for the title page
 \textbf{cd Obstacle}
 \vspace{0.2cm}
 
-\item Run the test case with the command:\\
-\textbf{trust Obstacle}\\
+\item Ask for trust script options:\\
+\textbf{trust -help\index{trust -help}}\\
 \vspace{0.2cm}
 
-\item Edit there the data file Obstacle.data and change some lines in order to modify the time step to 0.004s:\\
-\textbf{nedit Obstacle.data \&}\\
+\item Ask for help on the options of TRUST executable:\\
+\textbf{trust Obstacle -help\_trust\index{trust -help\_trust}}\\
+\vspace{0.2cm}
+
+\item Run the test case with the command:\\
+\textbf{trust Obstacle}\\
+
 \end{itemize}
 
 \end{block}
@@ -253,6 +258,9 @@ CEA Saclay \\ % Your institution for the title page
 \begin{block}{}
 
 \begin{itemize}
+\item Edit there the data file Obstacle.data and change some lines in order to modify the time step to 0.004s:\\
+\textbf{nedit Obstacle.data \&}\\
+
 \item Add to the post processing block of Obstacle.data the following elements :\\
 
     \begin{itemize}
@@ -268,10 +276,6 @@ CEA Saclay \\ % Your institution for the title page
 
     \item [$\circ$] Add the keyword "\textbf{format lata\index{format lata}}" inside the block, just before the keyword \textbf{fields} in order to use the post processing tool VisIt during and/or after the calculation.
     \vspace{0.1cm}
-
-    \item [$\rightarrow$] You have access to useful resources in the \$TRUST\_ROOT/index.html file with your favourite browser (eg: firefox). Take few minutes to find test case examples containing a particular keyword thanks to the \underline{Keywords} link: \\
-    \textbf{firefox \$TRUST\_ROOT/index.html \&} \\
-    or \textbf{trust -index \&\index{trust -index \&}}\\
     \end{itemize}
 \end{itemize}
 
@@ -284,6 +288,9 @@ CEA Saclay \\ % Your institution for the title page
 \begin{block}{}
 
 \begin{itemize}
+\item [$\rightarrow$] You have access to useful resources in the \$TRUST\_ROOT/index.html file with your favourite browser (eg: firefox). Take few minutes to find test case examples containing a particular keyword thanks to the \underline{Keywords} link: \\
+\textbf{firefox \$TRUST\_ROOT/index.html \&} \\
+or \textbf{trust -index \&\index{trust -index}}\\
 
 \item Launch the tool "PLOT2D" to compute calculation and visualize results with: \\
 \textbf{trust -evol\index{trust -evol} Obstacle \&}
@@ -296,7 +303,6 @@ CEA Saclay \\ % Your institution for the title page
     \item [$\circ$] Check the velocity profile behind the square cylinder with "VITESSE\_X(X=0.14,Y=0.115)" and "VITESSE\_Y(X=0.14,Y=0.115)".
     \item [$\circ$] Visualize the equation residuals on the same plot, select "$ Ri = max \left| \frac{dV}{dt} \right|$" and "$residu = max \left| Ri \right|$" using the button "Plot on same" or select the two graphs with "Ctrl" button and "plot".
     \end{itemize}
-\vspace{0.1cm}
 
 %\item Check the convergence monitoring: plot 0 in the first menu to open the convergence menu, then open the 4 following plots:
 %    \begin{itemize}
@@ -312,8 +318,6 @@ CEA Saclay \\ % Your institution for the title page
  %   \item [$\circ$] the drag exerted by the fluid on the square Cylinder (plot 1, then 4 for the square), close this menu with 7.
 %    \item [$\circ$] the "Pressure drag + Friction drag" with 5 and select the Square boundary (4). Each drag is plotted together with the total drag also called viscous drag.
 %    \end{itemize} 
-
-\item To quit this tool, close the GUI.
 \end{itemize}
 
 \end{block}
@@ -325,6 +329,8 @@ CEA Saclay \\ % Your institution for the title page
 \begin{block}{}
 
 \begin{itemize}
+\item To quit this tool, close the GUI.
+
 \item Once the calculation is finished, visualize the results with the graphical tool VisIt directly: \textbf{visit\index{visit} \&} \\
 or using "PLOT2D" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&} and click on "Visualisation" on the right menu.
 
@@ -412,15 +418,16 @@ or using "PLOT2D" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&} and 
 \hspace{1.3cm} space, or projected to a 2D space.}}
 
 \begin{itemize}
+\item For more information on \textbf{VisIt}, you can refers to: 
+    \begin{itemize}
+    \item [$\circ$] the \textbf{VisIt} website and its manuals: \textcolor{blue}{https://wci.llnl.gov/simulation/computer-codes/visit/manuals}
+    \item [$\circ$] the \textbf{VisIt} user community web site: \textcolor{blue}{http://visitusers.org}
+    \item [$\circ$] or send an email to the VisIt software users community at: \textcolor{blue}{visit-users@elist.ornl.gov}
+    \end{itemize}
+
 \item Edit the different output (*.out) files to read the complete balances (mass, stress, energy, ...) on the whole domain or at the boundaries.
 
 \item Now we want to change the data file to restart the calculation. So open it using "PLOT2D" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&}.
-
-\item Find the last backup time of the previous calculation in the .err file (or in the bottom right file in the "PLOT2D" tool, if you didn't close it since the beginning of this practice).
-
-\item \label{save_restart} Edit your data file, with "Edit data" or "Edit with xdata" and modify \textbf{tinit\index{tinit}}, \textbf{tmax\index{tmax}} values in the object "mon\_schema" and add in the problem definition just before the last "\}":\\
-\textbf{reprise binaire\index{reprise binaire} Obstacle\_pb.sauv}\\
-(The file "Obstacle\_pb.sauv" must have been created during the first run.)
 \end{itemize}
 
 \end{block}
@@ -432,6 +439,14 @@ or using "PLOT2D" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&} and 
 \begin{block}{}
 
 \begin{itemize}
+\item Find the last backup time of the previous calculation in the .err file (or in the bottom right file in the "PLOT2D" tool, if you didn't close it since the beginning of this practice).
+
+\item \label{save_restart} Edit your data file, with "Edit data" or "Edit with xdata" and modify \textbf{tinit\index{tinit}}, \textbf{tmax\index{tmax}} values in the object "mon\_schema".
+
+\item Add in the problem definition just before the last "\}":\\
+\textbf{reprise binaire\index{reprise binaire} Obstacle\_pb.sauv}\\
+(The file "Obstacle\_pb.sauv" must have been created during the first run.)
+
 \item Save and close the window.
 
 \item Restart the calculation again with "Start calculation!" button. You can see that values are added to the first probes during the new calculation.
@@ -450,9 +465,9 @@ or using "PLOT2D" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&} and 
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-7},currentsection, currentsubsection]
+\tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-14},currentsection, currentsubsection]
+\tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -465,7 +480,7 @@ The goal of this exercise is to introduce parallelism in the data file of the pr
 
 \begin{itemize}
 \item Go to the previous study (should be done) and after you had suppressed the \textbf{reprise} keyword and set \textbf{tinit\index{tinit}} to 0 again in the \textit{Obstacle.data} file, create the two new files:\\
-\textbf{cd $\sim$/test/yourname/Obstacle} \\
+\textbf{cd $\sim$/Formation\_TRUST/yourname/Obstacle} \\
 \textbf{mkdir PARA1} \\
 \textbf{cd PARA1} \\
 \textbf{cp ../Obstacle.data DEC\_Obstacle.data} \\
@@ -508,8 +523,11 @@ The goal of this exercise is to introduce parallelism in the data file of the pr
 
 \begin{itemize}
 \item Now, edit the file PAR\_Obstacle.data and comment the read of the mesh
-(\textbf{Read\_file}) and uncomment the \textbf{Scatter} keyword which will read the partitioned
-mesh. Visualize it with VisIt:\\
+(using \# tags of the 'BEGIN/END MESH' comments).
+
+\item Uncomment the \textbf{Scatter} keyword which will read the partitioned mesh. 
+
+\item Visualize it with VisIt:\\
 \textbf{trust -mesh\index{trust -mesh} PAR\_Obstacle}
 
 \item Now, run a parallel calculation with TRUST:\\
@@ -523,9 +541,6 @@ command line:\\
 \item Select the last time step and visualize the blocks (with Plots: Add $\rightarrow$ Subset $\rightarrow$ blocks)
 which represent the parts of the domain partition, then the velocity fields. You can
 also visualize a field only on a selected part (block) with the menu Control $\rightarrow$ Subset.
-
-\item To visualize probes after the end of the calculation, you can run the command line:\\
-\textbf{trust -evol\index{trust -evol} PAR\_Obstacle \&}
 \end{itemize}
 
 \end{block}
@@ -537,11 +552,14 @@ also visualize a field only on a selected part (block) with the menu Control $\r
 \begin{block}{}
 
 \begin{itemize}
-\item The existing tool \textbf{make\_PAR.data\index{make\_PAR.data}} is useful on the data files \underline{which have} the marks MAILLAGE/MESH, DECOUPAGE/PARTITION and LECTURE/SCATTER. If you run the following commands: \\
+\item To visualize probes after the end of the calculation, you can run the command line:\\
+\textbf{trust -evol\index{trust -evol} PAR\_Obstacle \&}
+
+\item The existing tool \textbf{trust -partition\index{trust -partition}} is useful on the data files \underline{which have} the marks MAILLAGE/MESH, DECOUPAGE/PARTITION and LECTURE/SCATTER. If you run the following commands: \\
 \vspace{0.2cm}
 
 \item First we will create a new working directory with our data files:\\
-\textbf{cd $\sim$/test/yourname/Obstacle} \\
+\textbf{cd $\sim$/Formation\_TRUST/yourname/Obstacle} \\
 \textbf{mkdir PARA2} \\
 \textbf{cd PARA2} \\
 \textbf{cp ../Obstacle.data exemple.data}\\
@@ -549,7 +567,7 @@ also visualize a field only on a selected part (block) with the menu Control $\r
 \vspace{0.2cm}
 
 \item Then we can run the command:\\
-\textbf{make\_PAR.data\index{make\_PAR.data} exemple 3}\\
+\textbf{trust -partition\index{trust -partition} exemple 3}\\
 \textbf{ls}
 \end{itemize}
 
@@ -565,7 +583,7 @@ also visualize a field only on a selected part (block) with the menu Control $\r
 \item It creates:
     \begin{itemize} 
     \item [$\circ$] a \underline{SEQ\_exemple.data} file which is a copy of the sequential data file exemple.data,
-    \item [$\circ$] a \underline{DEC\_exemple.data} file which is the first data file to be run. It is immediately run by the command line \textbf{make\_PAR.data} to create a partition (with 3 sub zones here), located in the ***.Zones files. \\
+    \item [$\circ$] a \underline{DEC\_exemple.data} file which is the first data file to be run. It is immediately run by the command line \textbf{trust -partition} to create a partition (with 3 sub zones here), located in the ***.Zones files. \\
     \textbf{ls *.Zones}\\
     Note that the code stops reading this file at the keyword "End" just before the "\# END PARTITION \#" block.
     \item [$\circ$] a \underline{PAR\_exemple.data} file which is the data file for the parallel calculation. It uses the ***.Zones files to read the mesh through the line "Scatter DOM.Zones dom". Note that the meshing and cut of the mesh are commented here.
@@ -592,7 +610,7 @@ also visualize a field only on a selected part (block) with the menu Control $\r
 
 \item For the first one, you can modify:
     \begin{itemize} 
-    \item [$\circ$] the file exemple.data and run \textbf{make\_PAR.data}. But it will \underline{erase} the DEC\_exemple.data, SEQ\_exemple.data and PAR\_exemple.data files and create new zones. Then it will run the new DEC\_exemple.data file which gives your new ***.Zones files \underline{or},
+    \item [$\circ$] the file exemple.data and run \textbf{trust -partition}. But it will \underline{erase} the DEC\_exemple.data, SEQ\_exemple.data and PAR\_exemple.data files and create new zones. Then it will run the new DEC\_exemple.data file which gives your new ***.Zones files \underline{or},
     \item [$\circ$] the meshing part of file DEC\_exemple.data and run it with:\\
     \textbf{trust DEC\_exemple.data} \\
     \end{itemize}
@@ -611,9 +629,9 @@ Then run the parallel calculation normally, on the new ***.Zones files.\\
 
 \begin{itemize}
 \item For the second possibility, you can modify:
-    \begin{itemize} 
-    \item [$\circ$] the file exemple.data and run \textbf{make\_PAR.data}. But it will \underline{erase} the DEC\_exemple.data, SEQ\_exemple.data and PAR\_exemple.data files and create new ones. Then it will run the new DEC\_exemple.data file. \underline{Note that in that} \underline{case, you don't need to re-create the mesh so you can use the second point} \underline{below:}
-    \item [$\circ$] modify the PAR\_exemple.data file \underline{without} running \textbf{make\_PAR.data}.
+    \begin{itemize}
+    \item [$\circ$] the file exemple.data and run \textbf{trust -partition}. But it will \underline{erase} the DEC\_exemple.data, SEQ\_exemple.data and PAR\_exemple.data files and create new ones. Then it will run the new DEC\_exemple.data file. \underline{Note that in that} \underline{case, you don't need to re-create the mesh so you can use the second point} \underline{below:}
+    \item [$\circ$] modify the PAR\_exemple.data file \underline{without} running \textbf{trust -partition}.
     \end{itemize}
 Then run the PAR\_exemple.data file with:\\
 \textbf{trust PAR\_exemple 3}
@@ -621,7 +639,7 @@ Then run the PAR\_exemple.data file with:\\
 \item \underline{Notice that if after a certain time, you want to reopen an old case} and understand want you did in it without any doubts, you may create two files by your hands:
     \begin{itemize} 
     \item [$\circ$] one "BuildMeshes.data" file only for the mesh and the cut of the mesh, and
-    \item [$\circ$] one "calculation.data" file for the parallel calculation. 
+    \item [$\circ$] one "calculation.data" file for the parallel calculation.
     \end{itemize}
 You will run it like:\\
 \textbf{trust BuildMeshes}\\
@@ -639,9 +657,9 @@ You will run it like:\\
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-7},currentsection, currentsubsection]
+\tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-14},currentsection, currentsubsection]
+\tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -655,7 +673,7 @@ You will run it like:\\
 \vspace{0.2cm}
 {\small{
 \textbf{ssh -X yourlogin@callisto-login1(.intra.cea.fr)} \\
-\textbf{source /panfs/ixion/home/triou/TRUST/TRUST\_X.Y.Z/env\_TRUST.sh}\\
+\textbf{source /panfs/ixion/home/triou/TRUST/TRUST-X.Y.Z/env\_TRUST.sh}\\
 or 
 \textbf{source /home/triou/env\_TRUST\_X.Y.Z.sh}\\
 }}
@@ -664,8 +682,8 @@ or
 \item Copy the study Obstacle:\\
 \vspace{0.2cm}
 \textbf{cd /panfs/ixion/home/yourlogin}\\
-\textbf{mkdir  -p  test/yourname} \\
-\textbf{cd test/yourname} \\
+\textbf{mkdir  -p  Formation\_TRUST/yourname} \\
+\textbf{cd Formation\_TRUST/yourname} \\
 \textbf{trust -copy\index{trust -copy} Obstacle} \\
 \textbf{cd Obstacle} \\
 \vspace{0.2cm}
@@ -673,9 +691,8 @@ or
 \item Open Obstacle.data and add \textbf{"format lata\index{format lata}"} in the post-traitement block.
 \vspace{0.2cm}
 
-\item Create automatically a 2 partitioned mesh and a parallel datafile with:
-\vspace{0.2cm}
-\textbf{make\_PAR.data\index{make\_PAR.data} Obstacle}
+\item Create automatically a 2 partitioned mesh and a parallel datafile with:\\
+\textbf{trust -partition\index{trust -partition} Obstacle}
 \end{itemize}
 
 \end{block}
@@ -720,9 +737,9 @@ or
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-7},currentsection, currentsubsection]
+\tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-14},currentsection, currentsubsection]
+\tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -771,7 +788,7 @@ $$
 
 \begin{itemize}
 \item Create a new study Coupling\_VDF by copying the docond study:\\
-\textbf{cd $\sim$/test/yourname} \\
+\textbf{cd $\sim$/Formation\_TRUST/yourname} \\
 \textbf{trust -copy\index{trust -copy} docond} \\
 \textbf{mv docond Coupling\_VDF} \\
 \textbf{cd Coupling\_VDF} \\
@@ -780,15 +797,12 @@ $$
 
 \item This coupled problem is constituted by 2 domains of calculation with a mesh of 10x10 cells ($\Delta x = \Delta y = 0.1m$) created with 3 blocks. 
 
-\item Modify the data file to have the 2 domains on a mesh of 40x40 cells ($\Delta x= \Delta y=0.025m$). For this, open your data file with "Plot2D" tool:\\
+\item Now open your data file with "Plot2D" tool:\\
 \textbf{trust -evol\index{trust -evol} docond  \&} \\
 
 \item Click on "Edit data" (you can also use "Edit with xdata").
 
-\item Change the number of nodes for each block like this:\\
-First block (Cavite1): 4 11 $\rightarrow$ 13 41 \\
-Second block (Cavite2): 8 4 $\rightarrow$ 29 13 \\ 
-Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
+\item We want to modify the data file to have the 2 domains on a mesh of 40x40 cells ($\Delta x= \Delta y=0.025m$). 
 \end{itemize}
 
 \end{block}
@@ -800,42 +814,51 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 \begin{block}{}
 
 \begin{itemize}
-\item Change \textbf{"format lml\index{format lml}"} to \textbf{"format lata\index{format lata}"} into the two problems definition
+\item Change the number of nodes for each block like this:\\
+First block (Cavite1): 4 11 $\rightarrow$ 13 41 \\
+Second block (Cavite2): 8 4 $\rightarrow$ 29 13 \\ 
+Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 
+\item Check your new mesh with:\\
+\textbf{trust -mesh\index{trust -mesh} docond } \\
+
+\item Change \textbf{"format lml\index{format lml}"} to \textbf{"format lata\index{format lata}"} into the two problems definition
 \item Click on "Save" and close the window.
 
 \item Run the calculation with "Start computation!" and check the evolution.
 
-\item Then post process the temperature field with VisIt tool: "Visualization" button. A natural convection cell appears. Change the colour tables for the temperature to have the same one on the 2 domains. Close VisIt.
+\item Then post process the temperature field with VisIt tool: "Visualization" button. A natural convection cell appears.
 
-\item We are going to change the discretization of the test case. Triangulate the domains with the keyword \textbf{Trianguler\_H\index{Trianguler\_H}} (See the syntax in the Reference Guide). Give an unstructured aspect to the 2 meshes thanks to the following keyword : \\
+\item Change the colour tables for the temperature to have the same one on the 2 domains. Close VisIt.
+
+\item We are going to change the discretization of the test case: triangulate the domains with the keyword \textbf{Trianguler\_H\index{Trianguler\_H}} (See the syntax in the Reference Guide).
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Heat exchange VDF/VEF exercise}
+\begin{block}{}
+
+\begin{itemize}
+\item Then give an unstructured aspect to the 2 meshes thanks to the following keyword : \\
 \textbf{Transformer\index{Transformer} name\_of\_domain \; x*(1-0.5*y*y) \; y*(1+0.1*x*y)}
 
 \item Substitute the discretization VDF\index{VDF} (pressure nodes at the element center) to VEFPreP1B\index{VEFPreP1B} (pressure nodes at the element center and nodes).
 
 \item Close the Plot2D tool.
-\end{itemize}
 
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Heat exchange VDF/VEF exercise}
-\begin{block}{}
-
-\begin{itemize}
 \item Check the meshes with: \\
 \textbf{trust -mesh\index{trust -mesh} docond}
 
 \item Run the calculation with:\\
-\textbf{trust -evol\index{trust -evol} docond  \&}
+\textbf{trust docond }
 
 \item Click : 'Start computation!', select 'Ri=max\_pb1$|dT/dt|$', 'Ri=max\_pb2$|dT/dt|$', 'Ri=max\_pb2$|dV/dt|$', 'residu=max$|Ri|$' with "Ctrl" button and click on 'Plot on same'.
 
 \item To see when convergence is reached, select a probe (for example temperature) and click on 'Plot'. 
-
-\item Post-process the results and compare with VDF\index{VDF} discretization about the CPU performance: the VEF calculation is running 10 times slower (cause higher number of pressure unknowns and smaller time steps). Study the docond.out file to see the time steps for each equation (click on "Edit .out" at the top right corner of the GUI).
 \end{itemize}
 
 \end{block}
@@ -847,12 +870,28 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 \begin{block}{}
 
 \begin{itemize}
+\item Post-process the results and compare with VDF\index{VDF} discretization about the CPU performance: the VEF calculation is running 10 times slower (cause higher number of pressure unknowns and smaller time steps). Study the docond.out file to see the time steps for each equation (click on "Edit .out" at the top right corner of the GUI).
+
 \item Accelerate the calculation by impliciting the diffusion operators of each equation with \textbf{diffusion\_implicite\index{diffusion\_implicite}} option in the explicit Euler scheme (check again the Generic Guide: \textbf{trust -doc \&\index{trust -doc \&}}). 
 
 \item Run the calculation without any option: \\
 \textbf{trust docond}
 
-\item \label{schema_impl} Use a full implicit scheme now (suppress \textbf{diffusion\_implicite\index{diffusion\_implicite}}), by substituting \textbf{Scheme\_Euler\_Explicit} by \textbf{Scheme\_Euler\_implicit\index{scheme\_euler\_implicit}} and adding the \textbf{Implicite} solver. Have a look at the Reference Guide for the \textbf{gmres\index{gmres}} options and define accordingly to the advices given into the Reference Guide, a value for \textbf{facsec\index{facsec}, facsec\_max\index{facsec\_max}}. Your block will looks like:\\
+\item \label{schema_impl} Use a full implicit scheme now (suppress \textbf{diffusion\_implicite\index{diffusion\_implicite}}), by substituting \textbf{Scheme\_Euler\_Explicit} by \textbf{Scheme\_Euler\_implicit\index{scheme\_euler\_implicit}} and adding the \textbf{Implicite} solver.
+
+\item Have a look at the Reference Guide for the \textbf{gmres\index{gmres}} options and define accordingly to the advices given into the Reference Guide, a value for \textbf{facsec\index{facsec}, facsec\_max\index{facsec\_max}}.
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Heat exchange VDF/VEF exercise}
+\begin{block}{}
+
+\begin{itemize}
+\item Your block will looks like:\\
 \textbf{Solveur Implicite\index{Solveur Implicite} \{ solveur gmres\index{gmres} \{ diag seuil 1e-30 nb\_it\_max 5 impr \}  seuil\_convergence\_implicite\index{seuil\_convergence\_implicite} 0.01  \} }
 
 \item Run the calculation:\\
@@ -870,9 +909,9 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-7},currentsection, currentsubsection]
+\tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-14},currentsection, currentsubsection]
+\tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -883,8 +922,8 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 
 \begin{itemize}
 \item Open a terminal and create a directory using Unix commands, and copy the study \textbf{TP\_Temp\_QC\_VEF} (it is a 2D simulation of helium gas flow from left to right between two heated walls):\\
-\textbf{mkdir -p $\sim$/test/yourname}\\
-\textbf{cd $\sim$/test/yourname}\\
+\textbf{mkdir -p $\sim$/Formation\_TRUST/yourname}\\
+\textbf{cd $\sim$/Formation\_TRUST/yourname}\\
 \textbf{trust -copy\index{trust -copy} TP\_Temp\_QC\_VEF}\\
 \textbf{cd TP\_Temp\_QC\_VEF}
 
@@ -1027,9 +1066,9 @@ or \\
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-7},currentsection, currentsubsection]
+\tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-14},currentsection, currentsubsection]
+\tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1119,14 +1158,14 @@ You can also see the informations at the end of the Heat exchange VDF/VEF exerci
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\section{{\bf{Constituents and turbulent flow}}}
+\section{{\bf{Constituents \& turbulent flow}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-7},currentsection, currentsubsection]
+\tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-14},currentsection, currentsubsection]
+\tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1143,9 +1182,9 @@ You can also see the informations at the end of the Heat exchange VDF/VEF exerci
 \textbf{Fluid:} $\mu=3.7 \, 10^{-5} kg.m^{-1}.s^{-1}, \rho=2 \, kg.m^{-3}, R_e=\frac{U_0 H_{inlet} \rho}{\mu} =54054$
 
 \textbf{Boundary conditions:} \\
-Inlet with fixed velocity: $U_0=1 m.s^{-1}$, C1\_eps=$10^{-2}$, C2\_eps=$10^{-3}$ (dimensionless values)\\
-Outlet with a fixed pressure: $P_0=0$, C1\_eps=0, C2\_eps=0 \\
-Upper and lower walls: No slip wall ($U=0$) and non-porous wall ($\partial C_i/\partial n=0$)
+Inlet with fixed velocity: $U_0=1 m.s^{-1}$ and fixed values of $k=10^{-2}$ and $\varepsilon=10^{-3}$ (dimensionless values)\\
+Outlet with a fixed pressure: $P_0=0$ and fixed values of $k=0$ and $\varepsilon=0$ \\
+Upper and lower walls: No slip wall ($U=0$) and $k$ standard flux, $\varepsilon$ null.
 
 \begin{itemize}
 \item Copy the study named \textbf{Marche} like explained page \pageref{method_copy}. It simulates a 2D incompressible turbulent flow with a K-Eps model in the geometry described above.
@@ -1160,7 +1199,7 @@ Upper and lower walls: No slip wall ($U=0$) and non-porous wall ($\partial C_i/\
 \begin{block}{}
 
 \begin{itemize}
-\item Copy also the \textbf{Constituants\index{Constituants}} study which will give you examples for constituents keyword used for a 2D incompressible laminar flow.
+\item We want to add a source of constituent's diffusion so copy the \textbf{Constituants\index{Constituants}} study which will give you examples for constituents keyword used for a 2D incompressible laminar flow.
 
 \item Edit your data file in the Marche directory. First, change the name of the problem in order to add concentration equations (look for the good keyword in the Reference Guide).
 
@@ -1210,9 +1249,9 @@ Upper and lower walls: No slip wall ($U=0$) and non-porous wall ($\partial C_i/\
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-7},currentsection, currentsubsection]
+\tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-14},currentsection, currentsubsection]
+\tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1252,8 +1291,8 @@ Goals:
 
 \item Create a new directory and copy some data:\\
 {\small{
-\textbf{mkdir -p $\sim$/test/yourname/PeriodicBox} \\
-\textbf{cd $\sim$/test/yourname/PeriodicBox} \\
+\textbf{mkdir -p $\sim$/Formation\_TRUST/yourname/PeriodicBox} \\
+\textbf{cd $\sim$/Formation\_TRUST/yourname/PeriodicBox} \\
 \textbf{cp \$project\_directory/validation/share/Validation/Rapports\_automatiques/} \\
 \hspace{4cm} \textbf{Validant/pas\_fini/PeriodicBox/src/* \; .} \\
 }}
@@ -1345,9 +1384,9 @@ Notice that we use \textbf{"trust"} command line because this script will use th
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-7},currentsection, currentsubsection]
+\tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-14},currentsection, currentsubsection]
+\tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1431,9 +1470,9 @@ Outlet: $P_0=0$
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-7},currentsection, currentsubsection]
+\tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-14},currentsection, currentsubsection]
+\tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1636,9 +1675,9 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-7},currentsection, currentsubsection]
+\tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-14},currentsection, currentsubsection]
+\tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1750,9 +1789,9 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-7},currentsection, currentsubsection]
+\tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-14},currentsection, currentsubsection]
+\tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1776,8 +1815,8 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 
 \begin{itemize}
 \item Create a directory and run Salom\'e (we suppose it is installed):\\
-\textbf{mkdir -p $\sim$/test/yourname/salome/exo1} \\
-\textbf{cd $\sim$/test/yourname/salome/exo1} \\
+\textbf{mkdir -p $\sim$/Formation\_TRUST/yourname/salome/exo1} \\
+\textbf{cd $\sim$/Formation\_TRUST/yourname/salome/exo1} \\
 
 \textbf{/export/home/salome/SALOME-7.7.1-FD18/salome} \\
 \# or if no local version: {\scriptsize{\textbf{/home/salome/salome}}} \\
@@ -2054,9 +2093,9 @@ Netgen & MG
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-7},currentsection, currentsubsection]
+\tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-14},currentsection, currentsubsection]
+\tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2080,8 +2119,8 @@ Netgen & MG
 
 \begin{itemize}
 \item Create a directory and run Salom\'e (we suppose it is installed):\\
-\textbf{mkdir -p $\sim$/test/yourname/salome/exo2} \\
-\textbf{cd $\sim$/test/yourname/salome/exo2} \\
+\textbf{mkdir -p $\sim$/Formation\_TRUST/yourname/salome/exo2} \\
+\textbf{cd $\sim$/Formation\_TRUST/yourname/salome/exo2} \\
 
 \textbf{/export/home/salome/SALOME-7.7.1-FD18/salome} \\
 \# or if no local version: {\scriptsize{\textbf{/home/salome/salome}}} \\
@@ -2202,9 +2241,9 @@ Then "Apply and Close"
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-7},currentsection, currentsubsection]
+\tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-14},currentsection, currentsubsection]
+\tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2228,8 +2267,8 @@ Then "Apply and Close"
 
 \begin{itemize}
 \item Create a directory and run Salom\'e (we suppose it is installed):\\
-\textbf{mkdir -p $\sim$/test/yourname/salome/exo3} \\
-\textbf{cd $\sim$/test/yourname/salome/exo3} \\
+\textbf{mkdir -p $\sim$/Formation\_TRUST/yourname/salome/exo3} \\
+\textbf{cd $\sim$/Formation\_TRUST/yourname/salome/exo3} \\
 
 \textbf{/export/home/salome/SALOME-7.7.1-FD18/salome} \\
 \# or if no local version: {\scriptsize{\textbf{/home/salome/salome}}} \\
@@ -2462,7 +2501,7 @@ Click on the surface of the Cylinder\_1 then "Add", click on the surface of Tran
 \item Run it with TRUST:\\
 \textbf{trust T\_shape}\\
 or in parallel with:\\
-\textbf{make\_PAR.data T\_shape}\\
+\textbf{trust -partition T\_shape}\\
 \textbf{trust PAR\_T\_shape 4}\\
 
 \item You can visualize the results with Visit or Salom\'e by opening the T\_shape\_0000.med file for sequential calculation or PAR\_T\_shape\_0000.med for parallel calculation.
@@ -2494,9 +2533,9 @@ or in parallel with:\\
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-7},currentsection, currentsubsection]
+\tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-14},currentsection, currentsubsection]
+\tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2513,8 +2552,8 @@ or in parallel with:\\
 \begin{itemize}
 \item Create a directory and copy an example:\\
 {\footnotesize{
-\textbf{mkdir \, -p \, $\sim$/test/yourname/gmsh} \\
-\textbf{cd \, $\sim$/test/yourname/gmsh} \\
+\textbf{mkdir \, -p \, $\sim$/Formation\_TRUST/yourname/gmsh} \\
+\textbf{cd \, $\sim$/Formation\_TRUST/yourname/gmsh} \\
 \textbf{source /home/triou/env\_\textcolor{blue}{TrioCFD}\_X.Y.Z.sh }\\
 \textbf{echo \$project\_directory} \\
 \textbf{dir=\$project\_directory/validation/share/Validation/Rapports\_automatiques/Validant} \\
@@ -2561,7 +2600,7 @@ or in parallel with:\\
 
 \begin{itemize}
 \item Press "Reload" in the gmsh GUI $\rightarrow$ Geometry to update the geometry visualization.
-\item Now we will had the circle. Note that you can only create circle arcs with angle strictly smaller than $\pi$!
+\item Now we will add the circle. Note that you can only create circle arcs with angle strictly smaller than $\pi$!
     \begin{itemize}
     \item [$\circ$] create the middle of the circle like "Point(10)=\{1,1,0,lc\};" where the triplet "1,1,0" are the coordinates of the point and "lc" the thickness of the cells next this point.
     \item [$\circ$] create 4 points around this point, which will correspond to the 4 arc of the circle: \\
@@ -2611,9 +2650,9 @@ Point(14)=\{1,0.75,0,lc2\};
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-7},currentsection, currentsubsection]
+\tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-14},currentsection, currentsubsection]
+\tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2676,12 +2715,21 @@ Physical Volume("dom") = \{1\};
 \begin{block}{}
 
 \begin{itemize}
-\item You can use the "Optimize 3D (Netgen)" algorithm to optimize your mesh.
+\item You can use the "Optimize 3D" algorithm to optimize your mesh.
 
 \item Export your mesh to a MED file. Run gmsh again on this exported MED file to check everything is defined:\\
 \textbf{gmsh file.med \&}
 
-\item Now, read the mesh by TRUST. You can, for example, take the first exercise and create a Obstacle\_VEF.data file (from a copy of Obstacle\_VDF.data) to read the MED file and run the simulation on the unstructured mesh.
+\item Now, use your mesh in a TRUST calculation, for example:
+        \begin{itemize}
+        \item [$\circ$] copy the data file of the first exercise into a Obstacle\_VEF.data file, \\
+        \item [$\circ$] read the MED file:\\
+                        \textbf{Lire\_med family\_names\_from\_group\_names dom file file.med } \\
+                        Notice that by default with Gmsh, the mesh name is the name of the file!
+        \item [$\circ$] change the discretisation type,
+        \item [$\circ$] be careful of the choice of the convection scheme for your VEF calculation,
+        \item [$\circ$] and run the simulation on the unstructured mesh.
+        \end{itemize}
 \end{itemize}
 
 \end{block}
@@ -2695,9 +2743,9 @@ Physical Volume("dom") = \{1\};
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-7},currentsection, currentsubsection]
+\tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-14},currentsection, currentsubsection]
+\tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2745,335 +2793,335 @@ Physical Volume("dom") = \{1\};
 \item Save it and run your simulation.
 \item It must be long because of the size of the cells. You can decrease it and create another mesh with gmsh to run faster.
 \end{itemize}
-\textbf{Warning}: TRUST Wizzard is still in development. Not all models are available yet.
+\textbf{Warning}: TRUST Wizzard is still in development. Models are not yet all available.
 \end{block}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
-%%%%\subsection{Xprepro}
-%%%%\subsubsection{3D VDF mesh}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%\begin{frame}
-%%%%\begin{columns}[c] 
-%%%%\column{.45\textwidth}
-%%%%\tableofcontents[sections={1-7},currentsection, currentsubsection]
-%%%%\column{.5\textwidth} 
-%%%%\tableofcontents[sections={8-14},currentsection, currentsubsection]
-%%%%\end{columns}
-%%%%\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%\begin{frame}
-%%%%\frametitle{Xprepro to create a 3D VDF simple mesh}
-%%%%\begin{block}{First exercise}
+\section{{\bf{Xprepro}}}
+\subsection{3D VDF mesh}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-9},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={10-16},currentsection, currentsubsection]
+\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Xprepro to create a 3D VDF simple mesh}
+\begin{block}{First exercise}
 
-%%%%\begin{figure}
-%%%%\includegraphics[width=0.7\textwidth]{PICTURES/xprepro0.pdf}
-%%%%%\caption{Obstacle}
-%%%%\end{figure}
+\begin{figure}
+\includegraphics[width=0.7\textwidth]{PICTURES/xprepro0.pdf}
+%\caption{Obstacle}
+\end{figure}
 
-%%%%In this exercise, you will learn how to create a 2D mesh with Xprepro. 
-%%%%Note that in Xprepro, we dig a geometry in an initial block of matter.
-%%%%\vspace{0.2cm}
+In this exercise, you will learn how to create a 2D mesh with Xprepro. 
+Note that in Xprepro, we dig a geometry in an initial block of matter.
+\vspace{0.2cm}
 
-%%%%\begin{itemize}
-%%%%\item Create a directory:\\
-%%%%\textbf{mkdir \, -p \, $\sim$/test/yourname/Xprepro/exo1} \\
-%%%%\textbf{cd \, $\sim$/test/yourname/Xprepro/exo1} \\
-%%%%\textbf{source /home/triou/env\_TRUST\_X.Y.Z.sh }\\
-%%%%\textbf{Xprepro \&} 
-%%%%\end{itemize}
+\begin{itemize}
+\item Create a directory:\\
+\textbf{mkdir \, -p \, $\sim$/Formation\_TRUST/yourname/Xprepro/exo1} \\
+\textbf{cd \, $\sim$/Formation\_TRUST/yourname/Xprepro/exo1} \\
+\textbf{source /home/triou/env\_TRUST\_X.Y.Z.sh }\\
+\textbf{Xprepro \&} 
+\end{itemize}
 
-%%%%\end{block}
-%%%%\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%\begin{frame}
-%%%%\frametitle{Xprepro to create a 3D VDF simple mesh}
-%%%%\begin{block}{}
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Xprepro to create a 3D VDF simple mesh}
+\begin{block}{}
 
-%%%%\begin{itemize}
-%%%%\item You can see two windows: 
-%%%%    \begin{itemize}
-%%%%    \item [$\circ$] the command window: xprepro.tcl and 
-%%%%    \item [$\circ$] the list of existing objects: viewlist (empty for the moment).
-%%%%    \end{itemize}
-%%%%\item Click on "Default" button to begin from a cube. Read the pop-up window and click on "Ok". A new nedit window appears, opening a file named "maillagedefaut" in which we will set the values of the parameters used in our geometry.
-%%%%\item We want to create a cube of lenght L=10m, height H=1m and width l=1m with a cylinder of radius R=0.4m at one meter from the left side of the cube. So the center of the cylinder is located at the point $x=xomin+L/10$, $y=yomin+H/2$ with $(xomin, yomin, zomin)$ the origin of the frame.
-%%%%\item Set theses values in the window "maillagedefaut":
-%%%%\begin{itemize}
-%%%%    \item [$\circ$] Add the declaration of the parameter "radius" in the first line of the "maillagedefaut" file.
-%%%%    \item [$\circ$] Set the values of $xomin=0$, $xomax=10$, $yomin=0$, $yomax=2$, $zomin=0$ and $zomax=1$.
-%%%%    \item [$\circ$] Add the initialization of the radius: $radius=0.4$.
-%%%%\end{itemize}
-%%%%\end{itemize}
+\begin{itemize}
+\item You can see two windows: 
+    \begin{itemize}
+    \item [$\circ$] the command window: xprepro.tcl and 
+    \item [$\circ$] the list of existing objects: viewlist (empty for the moment).
+    \end{itemize}
+\item Click on "Default" button to begin from a cube. Read the pop-up window and click on "Ok". A new nedit window appears, opening a file named "maillagedefaut" in which we will set the values of the parameters used in our geometry.
+\item We want to create a cube of lenght L=10m, height H=1m and width l=1m with a cylinder of radius R=0.4m at one meter from the left side of the cube. So the center of the cylinder is located at the point $x=xomin+L/10$, $y=yomin+H/2$ with $(xomin, yomin, zomin)$ the origin of the frame.
+\item Set theses values in the window "maillagedefaut":
+\begin{itemize}
+    \item [$\circ$] Add the declaration of the parameter "radius" in the first line of the "maillagedefaut" file.
+    \item [$\circ$] Set the values of $xomin=0$, $xomax=10$, $yomin=0$, $yomax=2$, $zomin=0$ and $zomax=1$.
+    \item [$\circ$] Add the initialization of the radius: $radius=0.4$.
+\end{itemize}
+\end{itemize}
 
-%%%%\end{block}
-%%%%\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%\begin{frame}
-%%%%\frametitle{Xprepro to create a 3D VDF simple mesh}
-%%%%\begin{block}{}
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Xprepro to create a 3D VDF simple mesh}
+\begin{block}{}
 
-%%%%\begin{figure}
-%%%%\includegraphics[width=0.8\textwidth]{PICTURES/xprepro1.pdf}
-%%%%%\caption{Obstacle}
-%%%%\end{figure}
+\begin{figure}
+\includegraphics[width=0.8\textwidth]{PICTURES/xprepro1.pdf}
+%\caption{Obstacle}
+\end{figure}
 
-%%%%\begin{itemize}
-%%%%\item Save your file.
-%%%%\item You can see the definition of $XM(1/nx)$, $YM(1/ny)$ and $ZM(1/nz)$, they represent the boundaries of the domain with a width of $\varepsilon=0.01$.
-%%%%\item You can see on the top of the "viewlist" window the values of $nx$, $ny$ and $nz$. For the moment they are fixed to $4$, it is the minimal number of nodes in an Xprepro mesh. Indeed the first point in x direction is on $XM(1)$, the second on $xomin$, the third on $xomax$ and the fourth $XM(nx)$.
-%%%%\item Note that the "real" number of cells in the final domain is: $Nx=nx-3$, $Ny=ny-3$ and $Nz=nz-3$.
-%%%%\end{itemize}
+\begin{itemize}
+\item Save your file.
+\item You can see the definition of $XM(1/nx)$, $YM(1/ny)$ and $ZM(1/nz)$, they represent the boundaries of the domain with a width of $\varepsilon=0.01$.
+\item You can see on the top of the "viewlist" window the values of $nx$, $ny$ and $nz$. For the moment they are fixed to $4$, it is the minimal number of nodes in an Xprepro mesh. Indeed the first point in x direction is on $XM(1)$, the second on $xomin$, the third on $xomax$ and the fourth $XM(nx)$.
+\item Note that the "real" number of cells in the final domain is: $Nx=nx-3$, $Ny=ny-3$ and $Nz=nz-3$.
+\end{itemize}
 
-%%%%\end{block}
-%%%%\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%\begin{frame}
-%%%%\frametitle{Xprepro to create a 3D VDF simple mesh}
-%%%%\begin{block}{}
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Xprepro to create a 3D VDF simple mesh}
+\begin{block}{}
 
-%%%%\begin{itemize}
-%%%%\item Note that the "maillagefefaut" file and your prepro file are saved in the directory $\sim$/test/yourname/Xprepro/model.
-%%%%\item Click on "Modify" on the top of the "viewlist" window to change the values of $nx$, $ny$ and $nz$ to have $NX=100$, $Ny=20$ and $Nz=10$. Then "Ok". 
-%%%%\item Think to save your geometry with "Save file prepro"!
-%%%%\item You can see in this window that there are some "?", we will complete them now.
-%%%%\item Note that the lines whom finish by a "(comm)" are commented lines.
-%%%%\item Choose the index number of the matter by double-clicking on the line 5 "filling up of the domain...", set the index of the matter to $1000$. (For matter, we must use positive numbers, matter with a negative number will be deleted.)
-%%%%\item Double-click on the line 7 "back boundary...", change the name of the boundary from "back boundary" to "Wall", and set the matter index to $-1000$. (Negative numbers for boundaries.)
-%%%%\end{itemize}
+\begin{itemize}
+\item Note that the "maillagefefaut" file and your prepro file are saved in the directory $\sim$/Formation\_TRUST/yourname/Xprepro/model.
+\item Click on "Modify" on the top of the "viewlist" window to change the values of $nx$, $ny$ and $nz$ to have $NX=100$, $Ny=20$ and $Nz=10$. Then "Ok". 
+\item Think to save your geometry with "Save file prepro"!
+\item You can see in this window that there are some "?", we will complete them now.
+\item Note that the lines whom finish by a "(comm)" are commented lines.
+\item Choose the index number of the matter by double-clicking on the line 5 "filling up of the domain...", set the index of the matter to $1000$. (For matter, we must use positive numbers, matter with a negative number will be deleted.)
+\item Double-click on the line 7 "back boundary...", change the name of the boundary from "back boundary" to "Wall", and set the matter index to $-1000$. (Negative numbers for boundaries.)
+\end{itemize}
 
-%%%%\end{block}
-%%%%\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%\begin{frame}
-%%%%\frametitle{Xprepro to create a 3D VDF simple mesh}
-%%%%\begin{block}{}
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Xprepro to create a 3D VDF simple mesh}
+\begin{block}{}
 
-%%%%\begin{itemize}
-%%%%\item Do the same for the lines 8 to 12:
-%%%%    \begin{itemize}
-%%%%    \item [$\circ$] line 8, change the "front boundary" name to "Wall", INDMAT=$-1000$,
-%%%%    \item [$\circ$] line 9, change the "left boundary" name to "Inlet", INDMAT=$-2000$,
-%%%%    \item [$\circ$] line 10, change the "right boundary" name to "Outlet", INDMAT=$-3000$,
-%%%%    \item [$\circ$] line 11, change the "bottom boundary" name to "Bottom", INDMAT=$-1000$,
-%%%%    \item [$\circ$] line 12, change the "top boundary" name to "Top", INDMAT=$-1000$.
-%%%%    \end{itemize}
-%%%%\item Add the cylinder, click on "Add", then click on the "? $\square$" button and select "cylinder".
-%%%%\item Name it "Obstacle", set the values of (AC) and (BC) with C the center of the cylinder so (AC, BC) are the coordinates of C in the plan xOy, so $AC=xomin+(xomax-xomin)/10$ and $BC=yomin+(yomax-yomin)/2$.
-%%%%\item Set the Radius to "radius".
-%%%%\item Set $CMIN=zomin$ and $CMAX=zomax$, $CMAX-CMIN$ correspond to the cylinder width.
-%%%%\item Set IDIR to $3$, the cylinder axe and INDMAT to $-9000$ (to make a hole) then "Ok".
+\begin{itemize}
+\item Do the same for the lines 8 to 12:
+    \begin{itemize}
+    \item [$\circ$] line 8, change the "front boundary" name to "Wall", INDMAT=$-1000$,
+    \item [$\circ$] line 9, change the "left boundary" name to "Inlet", INDMAT=$-2000$,
+    \item [$\circ$] line 10, change the "right boundary" name to "Outlet", INDMAT=$-3000$,
+    \item [$\circ$] line 11, change the "bottom boundary" name to "Bottom", INDMAT=$-1000$,
+    \item [$\circ$] line 12, change the "top boundary" name to "Top", INDMAT=$-1000$.
+    \end{itemize}
+\item Add the cylinder, click on "Add", then click on the "? $\square$" button and select "cylinder".
+\item Name it "Obstacle", set the values of (AC) and (BC) with C the center of the cylinder so (AC, BC) are the coordinates of C in the plan xOy, so $AC=xomin+(xomax-xomin)/10$ and $BC=yomin+(yomax-yomin)/2$.
+\item Set the Radius to "radius".
+\item Set $CMIN=zomin$ and $CMAX=zomax$, $CMAX-CMIN$ correspond to the cylinder width.
+\item Set IDIR to $3$, the cylinder axe and INDMAT to $-9000$ (to make a hole) then "Ok".
 
-%%%%\end{itemize}
+\end{itemize}
 
-%%%%\end{block}
-%%%%\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%\begin{frame}
-%%%%\frametitle{Xprepro to create a 3D VDF simple mesh}
-%%%%\begin{block}{}
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Xprepro to create a 3D VDF simple mesh}
+\begin{block}{}
 
-%%%%\begin{itemize}
-%%%%\item The new line defining the cylinder appears in the "viewlist" window (save your prepro file).
-%%%%\item Click on "Modeling run..." in the command window. A pop-up window appears with the nodes list, click "Ok".
-%%%%\item Click on "Pre-mesh visualisation", VisIt opens. You can:
-%%%%    \begin{itemize}
-%%%%    \item [$\circ$] visualize your mesh with Add $\rightarrow$ Mesh $\rightarrow$ dom\_IJK and
-%%%%    \item [$\circ$] visualize the matter indexes with Add $\rightarrow$ Pseudocolor $\rightarrow$ INDMAT\_ELEM\_dom\_IJK.
-%%%%    \end{itemize}
-%%%%\item We have a box but no hole! In fact we cannot see the hole because it is inside the box and it doesn't pass through it.
-%%%%\end{itemize}
+\begin{itemize}
+\item The new line defining the cylinder appears in the "viewlist" window (save your prepro file).
+\item Click on "Modeling run..." in the command window. A pop-up window appears with the nodes list, click "Ok".
+\item Click on "Pre-mesh visualisation", VisIt opens. You can:
+    \begin{itemize}
+    \item [$\circ$] visualize your mesh with Add $\rightarrow$ Mesh $\rightarrow$ dom\_IJK and
+    \item [$\circ$] visualize the matter indexes with Add $\rightarrow$ Pseudocolor $\rightarrow$ INDMAT\_ELEM\_dom\_IJK.
+    \end{itemize}
+\item We have a box but no hole! In fact we cannot see the hole because it is inside the box and it doesn't pass through it.
+\end{itemize}
 
-%%%%\begin{figure}
-%%%%\includegraphics[width=0.63\textwidth]{PICTURES/xprepro2.pdf}
-%%%%%\caption{Obstacle}
-%%%%\end{figure}
+\begin{figure}
+\includegraphics[width=0.63\textwidth]{PICTURES/xprepro2.pdf}
+%\caption{Obstacle}
+\end{figure}
 
-%%%%\end{block}
-%%%%\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%\begin{frame}
-%%%%\frametitle{Xprepro to create a 3D VDF simple mesh}
-%%%%\begin{block}{}
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Xprepro to create a 3D VDF simple mesh}
+\begin{block}{}
 
-%%%%\begin{itemize}
-%%%%\item So we must change the values of CMIN and CMAX in the cylinder parameters, to put $CMIN=zomin-\varepsilon$ and $CMAX=zomax+\varepsilon$
-%%%%\item Close VisIt, and click on "Modeling run..." and then "Pre-mesh visualization".
-%%%%\item Note that a cell is composed of a matter if its barycenter is in this matter's zone.
-%%%%\item Close VisIt, click on "Pre-processing run...", you can see the names of the boundaries in function of the indexes that we gave. For exemple, the boundary number 4 is made of the boundaries "Wall", "Wall", Bottom" and "Top" and it's TRUST name will be "Wall\_Wall\_Bottom\_Top".
-%%%%\item You can change the names of theses boundaries, to have the name you want.
-%%%%\item To give a name to a boundary is not mandatory for the boundaries with the same matter inder. You have just to name almost one of it.
-%%%%\item Click on "Get geom", a nedit window opens with a TRUST data file named "defaut.mesh".
-%%%%\end{itemize}
+\begin{itemize}
+\item So we must change the values of CMIN and CMAX in the cylinder parameters, to put $CMIN=zomin-\varepsilon$ and $CMAX=zomax+\varepsilon$
+\item Close VisIt, and click on "Modeling run..." and then "Pre-mesh visualization".
+\item Note that a cell is composed of a matter if its barycenter is in this matter's zone.
+\item Close VisIt, click on "Pre-processing run...", you can see the names of the boundaries in function of the indexes that we gave. For exemple, the boundary number 4 is made of the boundaries "Wall", "Wall", Bottom" and "Top" and it's TRUST name will be "Wall\_Wall\_Bottom\_Top".
+\item You can change the names of theses boundaries, to have the name you want.
+\item To give a name to a boundary is not mandatory for the boundaries with the same matter inder. You have just to name almost one of it.
+\item Click on "Get geom", a nedit window opens with a TRUST data file named "defaut.mesh".
+\end{itemize}
 
-%%%%\end{block}
-%%%%\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%\begin{frame}
-%%%%\frametitle{Xprepro to create a 3D VDF simple mesh}
-%%%%\begin{block}{}
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Xprepro to create a 3D VDF simple mesh}
+\begin{block}{}
 
-%%%%\begin{itemize}
-%%%%\item Save this file with the name "channel.data", you can see that your geometry is in the file "defaut\_Pb1.geom".
-%%%%\item Quit Xprepro.
-%%%%\item Edit your channel.data file and add at the end of the file: \\
-%%%%{\small{
-%%%%\textbf{Postraiter\_domaine\index{Postraiter\_domaine} \{ domaine dom\_pb1 fichier dom\_pb1.lata format lata\index{format lata} \} \\
-%%%%discretiser\_domaine\index{discretiser\_domaine} dom\_pb1 \\
-%%%%End }
-%%%%}}
-%%%%\item Run the file: \textbf{trust channel}
-%%%%\item Visualize your mesh with: \textbf{visit\index{visit} -o dom\_pb1.lata \& }
-%%%%\end{itemize}
+\begin{itemize}
+\item Save this file with the name "channel.data", you can see that your geometry is in the file "defaut\_Pb1.geom".
+\item Quit Xprepro.
+\item Edit your channel.data file and add at the end of the file: \\
+{\small{
+\textbf{Postraiter\_domaine\index{Postraiter\_domaine} \{ domaine dom\_pb1 fichier dom\_pb1.lata format lata\index{format lata} \} \\
+discretiser\_domaine\index{discretiser\_domaine} dom\_pb1 \\
+End }
+}}
+\item Run the file: \textbf{trust channel}
+\item Visualize your mesh with: \textbf{visit\index{visit} -o dom\_pb1.lata \& }
+\end{itemize}
 
-%%%%\end{block}
-%%%%\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-%%%%\subsubsection{2D VDF mesh}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%\begin{frame}
-%%%%\begin{columns}[c] 
-%%%%\column{.45\textwidth}
-%%%%\tableofcontents[sections={1-7},currentsection, currentsubsection]
-%%%%\column{.5\textwidth} 
-%%%%\tableofcontents[sections={8-14},currentsection, currentsubsection]
-%%%%\end{columns}
-%%%%\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%\begin{frame}
-%%%%\frametitle{Xprepro to create a 2D VDF mesh}
-%%%%\begin{block}{Second exercise}
+\subsection{2D VDF mesh}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-9},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={10-16},currentsection, currentsubsection]
+\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Xprepro to create a 2D VDF mesh}
+\begin{block}{Second exercise}
 
-%%%%In this exercise, you will learn how to create a 2D mesh with Xprepro. 
+In this exercise, you will learn how to create a 2D mesh with Xprepro. 
 
-%%%%\begin{figure}
-%%%%\includegraphics[width=0.7\textwidth]{PICTURES/xprepro.pdf}
-%%%%%\caption{Obstacle}
-%%%%\end{figure}
+\begin{figure}
+\includegraphics[width=0.7\textwidth]{PICTURES/xprepro.pdf}
+%\caption{Obstacle}
+\end{figure}
 
-%%%%The radius of the cylinders is 0.2m and the distances between cylinders are 0.2m in the y direction and 0.6m in the x direction. \\
-%%%%%You will have a look at the "virus" example (button Examples) to see how to build a loop in the viewlist.
+The radius of the cylinders is 0.2m and the distances between cylinders are 0.2m in the y direction and 0.6m in the x direction. \\
+%You will have a look at the "virus" example (button Examples) to see how to build a loop in the viewlist.
 
-%%%%\begin{itemize}
-%%%%\item Create a directory: Run Xprepro in the TRUST environment:\\
-%%%%\textbf{mkdir \, -p \, $\sim$/test/yourname/Xprepro/exo2} \\
-%%%%\textbf{cd \, $\sim$/test/yourname/Xprepro/exo2} \\
-%%%%\textbf{source /home/triou/env\_TRUST\_X.Y.Z.sh }\\
-%%%%\textbf{Xprepro \&} 
-%%%%\end{itemize}
+\begin{itemize}
+\item Create a directory: Run Xprepro in the TRUST environment:\\
+\textbf{mkdir \, -p \, $\sim$/Formation\_TRUST/yourname/Xprepro/exo2} \\
+\textbf{cd \, $\sim$/Formation\_TRUST/yourname/Xprepro/exo2} \\
+\textbf{source /home/triou/env\_TRUST\_X.Y.Z.sh }\\
+\textbf{Xprepro \&} 
+\end{itemize}
 
-%%%%\end{block}
-%%%%\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%\begin{frame}
-%%%%\frametitle{Xprepro to create a 2D VDF mesh}
-%%%%\begin{block}{}
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Xprepro to create a 2D VDF mesh}
+\begin{block}{}
 
-%%%%\begin{itemize}
-%%%%\item First, have a look at the "Examples..." ("Picture" button and if you are interested by one "Copy and Read" button).
-%%%%%\item First, have a look at the Examples (Copy and Read button on virus example) to understand how you will use fortran code in the viewlist to create loops for building your cylinders.
+\begin{itemize}
+\item First, have a look at the "Examples..." ("Picture" button and if you are interested by one "Copy and Read" button).
+%\item First, have a look at the Examples (Copy and Read button on virus example) to understand how you will use fortran code in the viewlist to create loops for building your cylinders.
 
-%%%%\item Then, click on the button "Default" to define the initial block and edit the dimensions file. 
-%%%%\item Note that the files "maillagedefaut" and "defaut.prep" are saved in your directory (with "save" in nedit for "maillagedefaut" and "Save file prepro" in Xprepro for defaut.prep).
+\item Then, click on the button "Default" to define the initial block and edit the dimensions file. 
+\item Note that the files "maillagedefaut" and "defaut.prep" are saved in your directory (with "save" in nedit for "maillagedefaut" and "Save file prepro" in Xprepro for defaut.prep).
 
-%%%%\item It is a 2D geometry, so we will define:
-%%%%    \begin{itemize}
-%%%%    \item [$\circ$] xomin=0.,
-%%%%    \item [$\circ$] xomax=10.,
-%%%%    \item [$\circ$] yomin=0.,
-%%%%    \item [$\circ$] yomax=2.,
-%%%%    \item [$\circ$] zomin=0.,
-%%%%    \item [$\circ$] zomax=0.01.,
-%%%%    \item [$\circ$] eps=0.0001 (tolerance) and
-%%%%    \item [$\circ$] radius=0.2 (don't forget to declare it).
-%%%%    \end{itemize}
-%%%%\item Save the file.
-%%%%\end{itemize}
+\item It is a 2D geometry, so we will define:
+    \begin{itemize}
+    \item [$\circ$] xomin=0.,
+    \item [$\circ$] xomax=10.,
+    \item [$\circ$] yomin=0.,
+    \item [$\circ$] yomax=2.,
+    \item [$\circ$] zomin=0.,
+    \item [$\circ$] zomax=0.01.,
+    \item [$\circ$] eps=0.0001 (tolerance) and
+    \item [$\circ$] radius=0.2 (don't forget to declare it).
+    \end{itemize}
+\item Save the file.
+\end{itemize}
 
-%%%%\end{block}
-%%%%\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%\begin{frame}
-%%%%\frametitle{Xprepro to create a 2D VDF mesh}
-%%%%\begin{block}{}
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Xprepro to create a 2D VDF mesh}
+\begin{block}{}
 
-%%%%\begin{itemize}
-%%%%\item Click "Modify" on the viewlist to modify the nodes number NX=203, NY=43, NZ=4.
-%%%%\item Set the matter index to 1000, line 5.
-%%%%\item Build the boundary blocks:
-%%%%    \begin{itemize}
-%%%%    \item [$\circ$] line 7, change the "back boundary" name to \textbf{lateral}, INDMAT=$0$,
-%%%%    \item [$\circ$] line 8, change the "front boundary" name to \textbf{""}, INDMAT=$0$,
-%%%%    \item [$\circ$] line 9, change the "left boundary" name to \textbf{inlet}, INDMAT=$-1000$,
-%%%%    \item [$\circ$] line 10, change the "right boundary" name to \textbf{outlet}, INDMAT=$-2000$,
-%%%%    \item [$\circ$] line 11, change the "bottom boundary" name to \textbf{""}, INDMAT=$0$,
-%%%%    \item [$\circ$] line 12, change the "top boundary" name to \textbf{""}, INDMAT=$0$.
-%%%%    \end{itemize}
+\begin{itemize}
+\item Click "Modify" on the viewlist to modify the nodes number NX=203, NY=43, NZ=4.
+\item Set the matter index to 1000, line 5.
+\item Build the boundary blocks:
+    \begin{itemize}
+    \item [$\circ$] line 7, change the "back boundary" name to \textbf{lateral}, INDMAT=$0$,
+    \item [$\circ$] line 8, change the "front boundary" name to \textbf{""}, INDMAT=$0$,
+    \item [$\circ$] line 9, change the "left boundary" name to \textbf{inlet}, INDMAT=$-1000$,
+    \item [$\circ$] line 10, change the "right boundary" name to \textbf{outlet}, INDMAT=$-2000$,
+    \item [$\circ$] line 11, change the "bottom boundary" name to \textbf{""}, INDMAT=$0$,
+    \item [$\circ$] line 12, change the "top boundary" name to \textbf{""}, INDMAT=$0$.
+    \end{itemize}
 
-%%%%\item The coordinates of the center of the first cylinder, which after will be duplicated, are (x0, y0)=(0.6, 0.4). So the distance between to cylinder center is $dx=0.8$ and $dy=0.3$. Declare and initialize this parameters $(x0, y0, dx, dy)$ in your "maillagedefaut" file.
+\item The coordinates of the center of the first cylinder, which after will be duplicated, are (x0, y0)=(0.6, 0.4). So the distance between to cylinder center is $dx=0.8$ and $dy=0.3$. Declare and initialize this parameters $(x0, y0, dx, dy)$ in your "maillagedefaut" file.
 
-%%%%\item Think about how to create 2 Fortran nesteed loops to copy the first cylinder in the two directions X and Y.
-%%%%\end{itemize}
+\item Think about how to create 2 Fortran nesteed loops to copy the first cylinder in the two directions X and Y.
+\end{itemize}
 
-%%%%\end{block}
-%%%%\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%\begin{frame}
-%%%%\frametitle{Xprepro to create a 2D VDF mesh}
-%%%%\begin{block}{}
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Xprepro to create a 2D VDF mesh}
+\begin{block}{}
 
-%%%%\begin{itemize}
-%%%%\item Create them with the button "Add", select "(fortran code)" instead of "?$\square$" and write your loops in fortran.
-%%%%\item Check the other objects in the viewlist and save your work with the button "Save file" prepro then check the name of the boundaries with "Boundaries informations".
-%%%%\item Run the model with "Modeling run...". A window is opened where you will check the nodes coordinates of the mesh.
-%%%%\item Click on "Pre-mesh visualization" to check your pre-mesh.
+\begin{itemize}
+\item Create them with the button "Add", select "(fortran code)" instead of "?$\square$" and write your loops in fortran.
+\item Check the other objects in the viewlist and save your work with the button "Save file" prepro then check the name of the boundaries with "Boundaries informations".
+\item Run the model with "Modeling run...". A window is opened where you will check the nodes coordinates of the mesh.
+\item Click on "Pre-mesh visualization" to check your pre-mesh.
 
-%%%%\item Create a 2D cut slice in the XY plane: with "Add" button, choose an object of "Meshing creation 2D" type and name it coupe\_2D. Set $POS=0$, $IDIR=3$, $INDMAT=-5000$.
-%%%%\item Click "Modeling run..." then "Pre-mesh visualization".
-%%%%\item Warning, it is always a 3D model in Xprepro, even if you wish a 2D mesh. By default, you see the indexes between 1000 and -3000. If you don't see the cylinders, create a 2D slice in the XY plane in VisIt to see inside the 3D pre-mesh.
-%%%%\end{itemize}
+\item Create a 2D cut slice in the XY plane: with "Add" button, choose an object of "Meshing creation 2D" type and name it coupe\_2D. Set $POS=0$, $IDIR=3$, $INDMAT=-5000$.
+\item Click "Modeling run..." then "Pre-mesh visualization".
+\item Warning, it is always a 3D model in Xprepro, even if you wish a 2D mesh. By default, you see the indexes between 1000 and -3000. If you don't see the cylinders, create a 2D slice in the XY plane in VisIt to see inside the 3D pre-mesh.
+\end{itemize}
 
-%%%%\end{block}
-%%%%\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%\begin{frame}
-%%%%\frametitle{Xprepro to create a 2D VDF mesh}
-%%%%\begin{block}{}
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Xprepro to create a 2D VDF mesh}
+\begin{block}{}
 
-%%%%\begin{itemize}
-%%%%\item Zoom onto the boundaries to check the boundary blocks are all defined.
+\begin{itemize}
+\item Zoom onto the boundaries to check the boundary blocks are all defined.
 
-%%%%\item Click "Pre-processing run" to create the final mesh (check there is no error messages).
+\item Click "Pre-processing run" to create the final mesh (check there is no error messages).
 
-%%%%\item Click on "Get geom" to generate the TRUST .geom file in your study. It opens a nedit windows with a TRUST data file, save it in your repository with the name "dom\_1.data".
-%%%%\item Suppress the first lines in comments "\#" and the "\textbackslash{}n" ending a commentary line.
-%%%%\item Add at the end of the file:\\
-%%%%\textbf{Discretiser\_domaine\index{discretiser\_domaine} dom\_1} \\
-%%%%\textbf{Postraiter\_domaine\index{Postraiter\_domaine} \{ domaine dom\_1 fichier mesh format lata\index{format lata} \} }
-%%%%\item Visualize your 2D mesh with VisIt.
-%%%%\item If you wish, build a data file to read your mesh and run the flow around the cylinders.
-%%%%\end{itemize}
+\item Click on "Get geom" to generate the TRUST .geom file in your study. It opens a nedit windows with a TRUST data file, save it in your repository with the name "dom\_1.data".
+\item Suppress the first lines in comments "\#" and the "\textbackslash{}n" ending a commentary line.
+\item Add at the end of the file:\\
+\textbf{Discretiser\_domaine\index{discretiser\_domaine} dom\_1} \\
+\textbf{Postraiter\_domaine\index{Postraiter\_domaine} \{ domaine dom\_1 fichier mesh format lata\index{format lata} \} }
+\item Visualize your 2D mesh with VisIt.
+\item If you wish, build a data file to read your mesh and run the flow around the cylinders.
+\end{itemize}
 
-%%%%\end{block}
-%%%%\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
@@ -3082,9 +3130,9 @@ Physical Volume("dom") = \{1\};
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-7},currentsection, currentsubsection]
+\tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-14},currentsection, currentsubsection]
+\tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3111,12 +3159,15 @@ Physical Volume("dom") = \{1\};
 \begin{itemize}
 \item First copy the validation form named Source\_canal\_perio:\\
 {\small{
-\textbf{mkdir -p $\sim$/test/yourname/validation} \\
-\textbf{cd  $\sim$/test/yourname/validation} \\
+\textbf{mkdir -p $\sim$/Formation\_TRUST/yourname/validation} \\
+\textbf{cd  $\sim$/Formation\_TRUST/yourname/validation} \\
 \textbf{VERIF=\$TRUST\_ROOT/Validation/Rapports\_automatiques/Verification} \\
 \textbf{cp -r \$VERIF/Verification\_codage/Source\_canal\_perio \, .} \\
 \textbf{cd Source\_canal\_perio}
  }}\\
+
+\item Ask for help about the Run\_fiche script:\\
+\textbf{Run\_fiche -help\index{Run\_fiche -help}}
 
 \item Build the report:\\
 \textbf{Run\_fiche\index{Run\_fiche} -xpdf} \\
@@ -3328,14 +3379,204 @@ or\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\section{Index}
+\section{{\bf{Annex: Unix Quick Reference}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
 \column{.45\textwidth}
-\tableofcontents[sections={1-7},currentsection, currentsubsection]
+\tableofcontents[sections={1-9},currentsection, currentsubsection]
 \column{.5\textwidth} 
-\tableofcontents[sections={8-14},currentsection, currentsubsection]
+\tableofcontents[sections={10-16},currentsection, currentsubsection]
+\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Unix Quick Reference}
+\begin{block}{File Commands}
+
+\begin{tabular}{ll}
+\textbf{ls}              & Directory listing                                                     \tabularnewline
+\textbf{ls -al}          & Formatted listing with hidden files                                   \tabularnewline
+\textbf{ls -lt}          & Sorting the Formatted listing by time modification                    \tabularnewline
+\textbf{cd dir}          & Change directory to dir                                               \tabularnewline
+\textbf{cd}              & Change to home directory                                              \tabularnewline
+\textbf{pwd}             & Show current working directory                                        \tabularnewline
+\textbf{mkdir dir}       & Creating a directory dir                                              \tabularnewline
+\textbf{cat $>$file}     & Places the standard input into the file                               \tabularnewline
+\textbf{more file}       & Output the contents of the file                                       \tabularnewline
+\textbf{head file}       & Output the first 10 lines of the file                                 \tabularnewline
+\textbf{tail file}       & Output the last 10 lines of the file                                  \tabularnewline
+\textbf{tail -f file}    & Output the contents of file as it grows,starting with the last 10 lines \tabularnewline
+\textbf{touch file}      & Create or update file                                                 \tabularnewline
+\textbf{rm file}         & Deleting the file                                                     \tabularnewline
+\textbf{rm -r dir}       & Deleting the directory                                                \tabularnewline
+\end{tabular}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Unix Quick Reference}
+\begin{block}{File Commands}
+
+\begin{tabular}{ll}
+\textbf{rm -f file}      & Force to remove the file                                              \tabularnewline
+\textbf{rm -rf dir}      & Force to remove the directory dir                                     \tabularnewline
+\textbf{cp file1 file2}  & Copy the contents of file1 to file2                                   \tabularnewline
+\textbf{cp -r dir1 dir2} & Copy dir1 to dir2;create dir2 if not present                          \tabularnewline
+\textbf{mv file1 file2}  & Rename or move file1 to file2,if file2 is an existing directory       \tabularnewline
+\textbf{ln -s file link} & Create symbolic link link to file                                     \tabularnewline
+\end{tabular}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Unix Quick Reference}
+
+\begin{block}{Process management}
+\begin{tabular}{ll}
+\textbf{ps}             & To display the currently working processes                              \tabularnewline
+\textbf{top}            & Display all running process                                             \tabularnewline
+\textbf{kill pid}       & Kill the process with given pid                                         \tabularnewline
+\textbf{killall proc}   & Kill all the process named proc                                         \tabularnewline
+\textbf{pkill pattern}  & Will kill all processes matching the pattern                            \tabularnewline
+\textbf{bg}             & List stopped or background jobs,resume a stopped job                    \tabularnewline
+                        & in the background                                                       \tabularnewline
+\textbf{fg}             & Brings the most recent job to foreground                                \tabularnewline
+\textbf{fg n}           & Brings job n to the foreground                                          \tabularnewline
+\end{tabular}
+\end{block}
+
+\begin{block}{File permission}
+\begin{tabular}{ll}
+\textbf{chmod octal file}      & Change the permission of file to octal, which can be found \tabularnewline
+                               & separately for user, group, world by adding:               \tabularnewline
+ & 4-read(r)    \tabularnewline
+ & 2-write(w)   \tabularnewline
+ & 1-execute(x) \tabularnewline
+\end{tabular}
+\end{block}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Unix Quick Reference}
+\begin{block}{Searching}
+
+\begin{tabular}{ll}
+\textbf{grep pattern file}     & Search for pattern in file                                  \tabularnewline
+\textbf{grep -r pattern dir}   & Search recursively for pattern in dir                       \tabularnewline
+\textbf{command $|$ grep}        & Search pattern in the output of a command pattern         \tabularnewline
+\textbf{locate file}           & Find all instances of file                                  \tabularnewline
+\textbf{find . -name filename} & Searches in the current directory (represented by           \tabularnewline
+                               & a period) and below it, for files and directories           \tabularnewline
+                               & with names starting with filename                           \tabularnewline
+\textbf{pgrep pattern}         & Searches for all the named processes , that matches         \tabularnewline
+                               & with the pattern and, by default, returns their ID          \tabularnewline
+\end{tabular}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Unix Quick Reference}
+\begin{block}{System Info}
+
+\begin{tabular}{ll}
+\textbf{date}   & Show the current date and time                \tabularnewline
+\textbf{cal}    & Show this month's calender                    \tabularnewline
+\textbf{uptime} & Show current uptime                           \tabularnewline
+\textbf{w}      & Display who is on line                        \tabularnewline
+\textbf{whoami} & Who you are logged in as                      \tabularnewline
+\textbf{finger user}      & Display information about user                      \tabularnewline
+\textbf{uname -a}      & Show kernel information                                \tabularnewline
+\textbf{cat /proc/cpuinfo}      & Cpu information                               \tabularnewline
+\textbf{cat proc/meminfo}      & Memory information                             \tabularnewline
+\textbf{man command}      & Show the manual for command                         \tabularnewline
+\textbf{df}      & Show the disk usage                                          \tabularnewline
+\textbf{du}      & Show directory space usage                                   \tabularnewline
+\textbf{free}      & Show memory and swap usage                                 \tabularnewline
+\textbf{whereis app}      & Show possible locations of app                      \tabularnewline
+\textbf{which app}      & Show which applications will be run by default        \tabularnewline
+\end{tabular}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Unix Quick Reference}
+
+\begin{block}{Compression}
+\begin{tabular}{ll}
+\textbf{tar cf file.tar file}           & Create tar named file.tar containing file     \tabularnewline
+\textbf{tar xf file.tar}                & Extract the files from file.tar               \tabularnewline
+\textbf{tar cf file.tar file}           & Create tar named file.tar containing file     \tabularnewline
+\textbf{tar xf file.tar}                & Extract the files from file.tar               \tabularnewline
+\textbf{tar czf file.tar.gz files}      & Create a tar with Gzip compression            \tabularnewline
+\textbf{tar xzf file.tar.gz}            & Extract a tar using Gzip                      \tabularnewline
+\textbf{tar cjf file.tar.bz2}           & Create tar with Bzip2 compression             \tabularnewline
+\textbf{tar xjf file.tar.bz2}           & Extract a tar using Bzip2                     \tabularnewline
+\textbf{gzip file}                      & Compresses file and renames it to file.gz     \tabularnewline
+\textbf{gzip -d file.gz}                & Decompresses file.gz back to file             \tabularnewline
+\end{tabular}
+\end{block}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Unix Quick Reference}
+\begin{block}{Network}
+
+\begin{tabular}{ll}
+\textbf{ping host}      & Ping host and output results                  \tabularnewline
+\textbf{whois domain}   & Get whois information for domains             \tabularnewline
+\textbf{dig domain}     & Get DNS information for domain                \tabularnewline
+\textbf{dig -x host}    & Reverse lookup host                           \tabularnewline
+\textbf{wget file}      & Download file                                 \tabularnewline
+\textbf{wget -c file}   & Continue a stopped download                   \tabularnewline
+\end{tabular}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Unix Quick Reference}
+\begin{block}{Shortcuts}
+
+\begin{tabular}{ll}
+\textbf{ctrl+c} & Halts the current command                                     \tabularnewline
+\textbf{ctrl+z} & Stops the current command, resume with fg in the foreground   \tabularnewline
+                & or bg in the background                                       \tabularnewline
+\textbf{ctrl+d} & Logout the current session, similar to exit                   \tabularnewline
+\textbf{ctrl+w} & Erases one word in the current line                           \tabularnewline
+\textbf{ctrl+u} & Erases the whole line                                         \tabularnewline
+\textbf{ctrl+r} & Type to bring up a recent command                             \tabularnewline
+\textbf{!!}     & Repeats the last command                                      \tabularnewline
+\textbf{exit}   & Logout the current session                                    \tabularnewline
+\end{tabular}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\section{{\bf{Index}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-9},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={10-16},currentsection, currentsubsection]
 \end{columns}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

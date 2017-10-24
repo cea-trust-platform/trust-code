@@ -454,32 +454,38 @@ Here is a panel of available options:
 \begin{verbatim}
 Usage: trust [option] datafile [nb_cpus] [1>file.out] [2>file.err]
 Where option may be:
--help|-h                 : List options.
--index                   : Access to the TRUST ressource index.
--doc                     : Access to the TRUST manual (Generic Guide).
--config nedit|vim|emacs  : Configure nedit or vim or emacs with TRUST keywords.
--mesh                    : Visualize the mesh(es) contained in the data file.
--evol                    : Monitor the TRUST calculation (new IHM).
--wiz                     : Create a TRUST datafile from a MED file (new IHM).
--prm                     : Write a prm file.
--clean                   : Clean the current directory from all the generated 
-                           files by TRUST.
--copy                    : Copy the test case datafile from the TRUST database 
-                           under the present directory. 
--check all|testcase|list : Check the non regression of all the test cases or a 
-                           single test case or a list of tests cases specified 
-                           in a file.
--check function|class|method::class : Check the non regression of a list of
-                           tests cases covering a function, a class or a 
-                           class method.
--gdb                     : Run under gdb debugger.
--valgrind                : Run under valgrind.
--valgrind_strict         : Run under valgrind with no suppressions. 
--create_sub_file         : Create a submission file only. 
--prod                    : Create a submission file and submit the job on the 
-                           main production class with exclusive resource. 
--help_trust              : Print options of 
-                           TRUST_EXECUTABLE [CASE[.data]] [options]. 
+-help|-h                      : List options.
+-index                        : Access to the TRUST ressource index.
+-doc                          : Access to the TRUST manual (Generic Guide).
+-config nedit|vim|emacs|gedit : Configure nedit or vim or emacs with TRUST keywords.
+-edit                         : Edit datafile.
+-xedit                        : Edit datafile with xdata.
+-xcheck                       : Check the datafile's keywords with xdata.
+-partition                    : Partition the mesh to prepare a parallel calculation 
+                                (Creation of the .Zones files).
+-mesh                         : Visualize the mesh(es) contained in the data file.
+-probes                       : Monitor the TRUST calculation only.
+-evol                         : Monitor the TRUST calculation (new IHM).
+-wiz                          : Create a TRUST datafile from a MED file (new IHM).
+-prm                          : Write a prm file.
+-clean                        : Clean the current directory from all the generated 
+                                files by TRUST.
+-search keywords              : Know the list of test cases from the data bases which 
+                                contain keywords.
+-copy                         : Copy the test case datafile from the TRUST database 
+                                under the present directory. 
+-check all|testcase|list      : Check the non regression of all the test cases or a 
+                                single test case or a list of tests cases specified 
+                                in a file.
+-check function|class|class::method : Check the non regression of a list of tests cases
+                                covering a function, a class or a class method.
+-gdb                          : Run under gdb debugger.
+-valgrind                     : Run under valgrind.
+-valgrind_strict              : Run under valgrind with no suppressions. 
+-create_sub_file              : Create a submission file only. 
+-prod                         : Create a submission file and submit the job on the 
+                                main production class with exclusive resource. 
+datafile -help_trust          : Print options of TRUST_EXECUTABLE [CASE[.data]] [options]. 
 \end{verbatim}
 
 %-monitor                : Run and monitor the progress of the TRUST calculation.
