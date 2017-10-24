@@ -90,7 +90,7 @@
 %    TITLE PAGE
 %----------------------------------------------------------------------------------------
 %\title[Short title]{Long title}
-\title[TRUST Baltik Project V1.7.6beta]{TRUST Baltik Project V1.7.6beta}
+\title[TRUST Baltik Project Tutorial V1.7.6]{TRUST Baltik Project Tutorial V1.7.6}
 % The short title appears at the bottom of every slide, the full title is only on the title page
 
 %\author{John Smith} % Your name
@@ -191,11 +191,11 @@ Do only the first part (Create a TRUST project).\\
 
 \begin{itemize}
 \item Create your directory for your project:\\
-\texttt{\$ mkdir -p /export/home/yourlogin/my\_project}\\
-\texttt{\$ cd /export/home/yourlogin/my\_project}
+\texttt{\$ cd /export/home/yourlogin}
 
 \item Fill your project from a basic project template:\\
-\texttt{\$ cp -r \$TRUST\_ROOT/bin/baltik/templates/basic/* .}\\
+\texttt{\$ cp -r \$TRUST\_ROOT/bin/baltik/templates/basic my\_project}\\
+\texttt{\$ cd my\_project}\\
 \texttt{\$ ls -l}
 
 \item You can see that you have now:
@@ -353,7 +353,9 @@ It means that there are not on the git repository.
 \item Build an optimized binary for test coverage (option -gcov -O3):\\
 \texttt{\$ make gcov}\\
 \texttt{\$ ls \$exec\_gcov}\\
-NB: TRUST exe matching must exist. \\
+
+\item Notice that TRUST optimized binary for profiling or a TRUST optimized binary for test coverage must exist 
+to compile your own optimized or debug or profiling or coverage executable. \\
 \end{itemize}
 
 \end{block}
@@ -467,10 +469,9 @@ share/Validation/Rapports\_automatiques/upwind/build/.tmp
 \textit{\hspace{0.1cm} Extracting test case (upwind.data) ...End.}\\
 \textit{\hspace{0.1cm} Creation of the file upwind\_jdd1.lml.gz}\\
 \texttt{\$ git status -\,-u=no}\\
-\item $\rightarrow$ But PAR\_upwind\_jdd1 is CORE.\\
-\item Check the datafiles to see the problem to run in parallel:\\
-\texttt{\$ diff share/Validation/Rapports\_automatiques/upwind/src/upwind.data tests/Reference/Validation/upwind\_jdd1/upwind\_jdd1.data}\\
-NB: upwind\_jdd1.data is readonly.\\
+\item A new test case based on your PRM file has been created in the directory:\\
+\$project\_directory/tests/Reference/Validation/upwind\_jdd1
+\item $\rightarrow$ But you can see in the report table that PAR\_upwind\_jdd1 has crashed: "CORE" message.\\
 \end{itemize}
 
 \end{block}
@@ -486,16 +487,20 @@ NB: upwind\_jdd1.data is readonly.\\
 \texttt{\$ trust -copy upwind\_jdd1}\\
 ERROR...
 \item We have to re-run the configure script to take into account the new test case:\\
+\texttt{\$ cd \$project\_directory}\\
 \texttt{\$ ./configure}\\
+\texttt{\$ cd build}\\
 \texttt{\$ trust -copy upwind\_jdd1}
+
+%\item Check the datafiles to see the problem to run in parallel:\\
+%\texttt{\$ diff share/Validation/Rapports\_automatiques/upwind/src/upwind.data upwind\_jdd1.data}\\
+%NB: upwind\_jdd1.data is readonly.\\
+
 \item Now we will analyse the error:\\
 \texttt{\$ cd upwind\_jdd1}\\
-\texttt{\$ make\_PAR.data upwind\_jdd1}\\
+\texttt{\$ trust -partition upwind\_jdd1}\\
 \texttt{\$ trust PAR\_upwind\_jdd1 2}\\
 \item Correct the data file PAR\_upwind\_jdd1.data and re-run it.
-\item If it's ok, update the data file in 
-\$project\_directory/share/Validation/Rapports\_automatiques/upwind/src\\
-("Scatter ../upwind/DOM.Zones dom" $\rightarrow$ "Scatter DOM.Zones dom")\\
 \end{itemize}
 
 \end{block}
@@ -506,6 +511,9 @@ ERROR...
 \begin{block}{New tests/Reference/Validation}
 
 \begin{itemize}
+\item If it's ok, update the data file in 
+\$project\_directory/share/Validation/Rapports\_automatiques/upwind/src\\
+("Scatter ../upwind/DOM.Zones dom" $\rightarrow$ "Scatter DOM.Zones dom")\\
 \item To Relaunch the last test cases which do not run:\\
 \texttt{\$ cd \$project\_directory}\\
 \texttt{\$ make check\_last\_pb\_optim}\\
@@ -518,8 +526,6 @@ ERROR...
 \texttt{\$ git add tests/Reference/Validation/upwind\_jdd1/upwind\_jdd1.data}\\
 \texttt{\$ git commit -m "New reference test"}\\
 \texttt{\$ git log}\\
-\item To run all the non regression tests with a optimized binary:\\
-\texttt{\$ make check\_all\_optim}
 \end{itemize}
 
 \end{block}
@@ -531,6 +537,8 @@ ERROR...
 \begin{block}{New tests/Reference/Validation}
 
 \begin{itemize}
+\item To run all the non regression tests with a optimized binary:\\
+\texttt{\$ make check\_all\_optim}
 \item To run all the non regression tests with a debug binary:\\
 \texttt{\$ make check\_all\_debug}
 \item To create an archive to share your work:\\
@@ -919,43 +927,16 @@ from the domain, only from the problem.
 \end{center}
 
 \item Where control\_volumes is a \textbf{DoubleVect} returned by the \textbf{Zone\_VF::volumes\_entrelaces()} method.
-
 \item If you look at the "Problem" UML diagram, you will notice a better path to access to the discretized zone.
 \item What is this path ?
+\item Now, compute and print the sum of the control volumes with a "for" loop.
 
-\item Now, compute and print the sum of the control volumes into a file whose name is something like: DataFileName\_result.txt, where "DataFileName" is the name of the data file (eg: Cx).
-
-\item For that, you will create the previous filename with the class \textbf{Nom} by adding to the name of the data file (given by \textbf{Objet\_U::nom\_du\_cas()} method) the string "\_result.txt" thanks to the "operator+=" method of the class \textbf{Nom}.
 \end{itemize}
 
 \end{block}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Modify your cpp class}
-\begin{block}{}
 
-\begin{itemize}
-\item Then you will create the file with the \textbf{SFichier} class and print the sum into this file.
-
-\item Once everything is implemented, run the test case (but, first add the keyword \textbf{END} just after the line where \textbf{my\_first\_class} is used in order to not run the whole calculation...).\\
-\end{itemize}
-
-\begin{itemize}
-\item Run the test case:\\
-    \begin{itemize}
-    \item [$\circ$] With Eclipse:\\
-    $\rightarrow$ "Run" and "Debug"\\
-    \item [$\circ$] Or in a terminal:\\
-    \texttt{\$ cd \$project\_directory/build/Cx/}\\
-    \texttt{\$ exec=\$exec\_debug trust Cx}
-    \end{itemize}
-\end{itemize}
-
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{{\bf{Add XData tags}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1062,12 +1043,6 @@ $\rightarrow$ "Build project" from "my\_project" of "Project Explorer"\\
 or \\
 \texttt{\$ cd \$project\_directory}\\
 \texttt{\$ make debug optim}\\
-
-\item Create an empty data file:\\
-\texttt{\$ mkdir -p \$project\_directory/build/hello}\\
-\texttt{\$ cd \$project\_directory/build/hello}\\
-\texttt{\$ touch hello.data}\\
-
 \end{itemize}
 
 \end{block}
@@ -1079,6 +1054,11 @@ or \\
 \begin{block}{}
 
 \begin{itemize}
+\item Create an empty data file:\\
+\texttt{\$ mkdir -p \$project\_directory/build/hello}\\
+\texttt{\$ cd \$project\_directory/build/hello}\\
+\texttt{\$ touch hello.data}\\
+
 \item Run the code sequentially:\\
 \texttt{\$ trust hello}
 
@@ -1092,7 +1072,17 @@ Use this output for infos about the physics (convergence, fluxes,...).
 Use this output for warning/errors only.
 
 \item "finl" is equivalent to "std::endl" + "flush()" on the master process.
+\end{itemize}
 
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Modify your cpp class}
+\begin{block}{}
+
+\begin{itemize}
 \item "Journal()" prints to "datafile\_000n.log" files.
 Use this output during parallel development to print plumbing infos which would be hidden during later production runs.
 
@@ -1100,6 +1090,38 @@ Use this output during parallel development to print plumbing infos which would 
 \texttt{\$ ls *.log}\\
 \texttt{\$ trust -clean \&\& trust hello 4 -journal=0}\\
 \texttt{\$ ls *.log}\\
+
+\item Now, we will print the sum of the control volumes of the test case Cx into a file.\\
+\texttt{\$ cd \$project\_directory/build/Cx}\\
+
+\item We want to write in a file whose name is something like: DataFileName\_result.txt, where "DataFileName" is the name of the data file (eg: Cx).
+
+\item For that, you will create an object of the class \textbf{Nom} and fill it by collecting the name of the data file with \textbf{Objet\_U::nom\_du\_cas()} method.
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Modify your cpp class}
+\begin{block}{}
+
+\begin{itemize}
+\item Then complete the name of the file with the string "\_result.txt" thanks to the "operator+=" method of the class \textbf{Nom}.
+
+\item Then you will create the file with the \textbf{SFichier} class and print the sum into this file.
+
+\item Run the test case:\\
+    \begin{itemize}
+    \item [$\circ$] With Eclipse:\\
+    $\rightarrow$ "Run" and "Debug"\\
+    \item [$\circ$] Or in a terminal:\\
+    \texttt{\$ cd \$project\_directory/build/Cx/}\\
+    \texttt{\$ exec=\$exec\_debug trust Cx}
+    \end{itemize}
+
+\item Then open the "Cx\_result.txt" file.
 \end{itemize}
 
 \end{block}
@@ -1126,13 +1148,21 @@ Use this output during parallel development to print plumbing infos which would 
 \begin{itemize}
 \item Run your test case Cx in parallel mode:\\
     \texttt{\$ cd \$project\_directory/build/Cx/}\\
-\texttt{\$ make\_PAR.data Cx 2 \textcolor{blue}{\# Partition in 2 subdomains}}\\
+\texttt{\$ trust -partition Cx 2 \textcolor{blue}{\# Partition in 2 subdomains}}\\
 \texttt{\$ trust PAR\_Cx 2 \textcolor{blue}{\# 2 processes used}}
-\item Compare the files: Cx\_result.txt, PAR\_Cx\_result.txt and explain the discrepancies between the values.
-\item To parallelize the algorithm, rewrite it, according to the previous slide with the help of 
-the \textbf{mp\_somme\_vect(DoubleVect\&)} method and change the way the result is written in the .txt file. 
-\item You should find the same value for the sequential and parallel calculation.
-\item If you replace \textbf{mp\_somme\_vect()} by \textbf{mp\_sum()}, do you have the same result? Why?
+
+\item Compare the files: Cx\_result.txt, PAR\_Cx\_result.txt.
+
+\item The defferencies come from the fact that the 2 processors write into the file one after the other one.
+So the final content will be the value calculated on the last processor which will acces to the file.
+
+\item You can try to launch one more time the calculation, the result may differ.
+
+\item To have the entire sum, you can apply the \textbf{mp\_sum()} method on the sum obtain and add the print in the .txt file.
+
+\item Compare it to the sum obtain in the sequential run.
+
+\item It is better but we counted several times faces that belongs to the joint and to the virtual zones.
 \end{itemize}
 
 \end{block}
@@ -1142,9 +1172,20 @@ the \textbf{mp\_somme\_vect(DoubleVect\&)} method and change the way the result 
 \begin{frame}
 \frametitle{Parallel exercise}
 
+\begin{block}{Part 1}
+\begin{itemize}
+\item To parallelize the algorithm, rewrite it with the help of the \textbf{mp\_somme\_vect(DoubleVect\&)} method.
+
+\item Add this print in the .txt file.
+
+\item You should find the same value for the sequential and parallel calculation.
+\end{itemize}
+\end{block}
+
 \begin{block}{Part 2 Optional}
 \begin{itemize}
 \item Create a "verifie" script to check the resulting value (sequential then parallel).
+
 \item Add a call to "compare\_sonde" in your "verifie" script...
 \end{itemize}
 \end{block}
@@ -1154,6 +1195,17 @@ the \textbf{mp\_somme\_vect(DoubleVect\&)} method and change the way the result 
 \item To validate parallelization in TRUST, you can use the command "compare\_lata":\\
 \texttt{\$ ls *lata }\\
 \texttt{\$ compare\_lata  Cx.lata  PAR\_Cx.lata }
+\end{itemize}
+\end{block}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Parallel exercise}
+
+\begin{block}{Part 3}
+\begin{itemize}
 \item You can see that there is no differences and the maximal relative error encountered is about 4.e-12.
 \item Performances
 \texttt{\$ ls *TU }\\
@@ -1162,6 +1214,21 @@ the \textbf{mp\_somme\_vect(DoubleVect\&)} method and change the way the result 
 \end{itemize}
 \end{block}
 
+
+\begin{block}{Part 4 Debog}
+\begin{itemize}
+\item Copy a debog test case:\\
+\texttt{\$ cd \$project\_directory/build }\\
+\texttt{\$ trust -copy Debog\_VEF }\\
+\texttt{\$ cd Debog\_VEF }\\
+\item Open the Debog\_VEF.data file and search the "Debog" command.
+\item Sequential run:\\
+\texttt{\$ trust Debog\_VEF }\\
+\item You get "seq" and "faces" files.
+
+\end{itemize}
+\end{block}
+
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1170,19 +1237,19 @@ the \textbf{mp\_somme\_vect(DoubleVect\&)} method and change the way the result 
 \begin{block}{Part 4 Debog}
 
 \begin{itemize}
-\item Copy a debog test case:\\
-\texttt{\$ cd \$project\_directory/build }\\
-\texttt{\$ trust -copy Debog\_VEF }\\
-\texttt{\$ cd Debog\_VEF }\\
-\item Open the Debog\_VEF.data file and searche the "Debog" command.
-\item Sequential run:\\
-\texttt{\$ trust Debog\_VEF }\\
-\item You get "seq" and "faces" files.
 \item Partitionning step and creation of the parallel data file:\\
-\texttt{\$ make\_PAR.data Debog\_VEF 2 }\\
-\item Modify the parallel data file to have "Debog pb seq faces 1.e-6 \textbf{1}".
+\texttt{\$ trust -partition Debog\_VEF 2 }\\
+\item Verify the parallel data file, you must have now "Debog pb seq faces 1.e-6 \textbf{1}".
 \item Run in parallel:\\
 \texttt{\$ trust PAR\_Debog\_VEF 2 }\\
+\item You get debog*.log and DEBOG files.
+\item If a value of an array differs between the two calculations and the difference is greater than 1.e-6 then "ERROR" message appears in the log files else we will get "OK" (cf debog.log).\\
+
+\item Add a debog instruction in your file mon\_main.cpp located in \$project\_directory/TRUST\_modif, after the "Hello world" prints put:\\
+\texttt{double var = 2.5;}\\
+\texttt{Debog::verifier("- Debog test message",var);}
+
+\item Don't forget to add the "\#include <Debog.h>"!
 \end{itemize}
 
 \end{block}
@@ -1194,11 +1261,9 @@ the \textbf{mp\_somme\_vect(DoubleVect\&)} method and change the way the result 
 \begin{block}{Part 4 Debog}
 
 \begin{itemize}
-\item You get debog*.log and DEBOG files.
-\item If a value of an array differs between the two calculations and the difference is greater than 1.e-6 then "ERROR" message appears in the log files else we will get "OK" (cf debog.log).\\
-\item You can add debog instruction in the code with:\\
-\texttt{Debog::verifier("message",array);}
-\item Then compile and do the two runs one more time.
+\item Then compile and do the sequential run.
+\item You can see a first message.
+\item Then do the parallel run and check the debog.log file.
 \item Becarefull the debog instruction in the data file must be between the "Discretize" and "Read pb" lines.
 \item For more information:\\
 \texttt{\$ trust -doc \&} \\
@@ -1282,7 +1347,14 @@ $\rightarrow$ Search for "Debog" keyword.
 
 \item Which is the less covered matrix class ?
 
-\item Run the test case using the RRK2 time scheme.
+\item We want to run test cases using rational Runge-Kutta scheme of ordre 2.
+
+\begin{itemize}
+    \item [$\circ$] For this go to the Doxygen documentation of RRK2 class to see the methods of this class.
+    \item [$\circ$] Use the "trust -check function|class|class::method" command to fin and launch tests cases.
+    \item [$\circ$] For example: \\
+    \texttt{\$ trust -check RRK2::RRK2}
+\end{itemize}
 \end{itemize}
 
 \end{block}
@@ -1390,7 +1462,7 @@ $\rightarrow$ Search for "Debog" keyword.
 %    \texttt{(gdb) print tab.operator()(i,j) or tab[i,j]}
 %    \end{itemize}
 %\item To debug a parallel calculation with N processes:\\
-%\texttt{\$ make\_PAR.data datafile N}\\
+%\texttt{\$ trust -partition datafile N}\\
 %\texttt{\$ exec=\$exec\_debug trust -gdb PAR\_datafile N}
 %\end{itemize}
 

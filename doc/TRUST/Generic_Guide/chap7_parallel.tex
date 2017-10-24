@@ -131,14 +131,14 @@ At last, you will add a block which will be activated during the parallel calcul
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Partitionning: "Assisted" method} \label{makePARdata}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Here we will use the script \verb make_PAR.data  to make the partitioning step.
+Here we will use the "trust -partition datafile" command line to make the partitioning step.
 We consider that you have correctly add the "\textcolor{blue}{\textbf{\#}}" in your \textit{my\_data\_file.data} file with the partitioning block and cutting block.\\
 
 \textbf{Be careful} with the hashtags "\textcolor{blue}{\textbf{\#}}", they are interpreted by the script!\\
 
 To automatically perform the partitioning step and obtain the parallel data file, you have to run:
 \begin{verbatim}
-> make_PAR.data my_data_file [parts_number]
+> trust -partition my_data_file [parts_number]
 \end{verbatim}
 
 \Note that here \verb parts_number  is the number of sub-domains created but it is also the number of processors which will be used.\\
@@ -146,7 +146,7 @@ To automatically perform the partitioning step and obtain the parallel data file
 This command creates:
 \begin{itemize} 
 \item a \textit{SEQ\_my\_data\_file.data} file which is a backup file of \textit{my\_data\_file.data} the sequential data file,
-\item a \textit{DEC\_my\_data\_file.data} file which is the first data file to be run to make the partitioning. It is immediately run by the command line \textbf{make\_PAR.data} to create a partition, located in the \textit{DOM\_000n}\textbf{.Zones} files. \\
+\item a \textit{DEC\_my\_data\_file.data} file which is the first data file to be run to make the partitioning. It is immediately run by the command line \textbf{trust -partition datafile} to create a partition, located in the \textit{DOM\_000n}\textbf{.Zones} files. \\
 \Note that the code stops reading this file at the \textbf{"End"} keyword just before the "\textcolor{blue}{\# END PARTITION \#}" block.
 \item a \textit{PAR\_my\_data\_file.data} file which is the data file for the parallel calculation. It reads the \textit{DOM\_000n}\textbf{.Zones} files through the instruction \textbf{"Scatter"}.\\
 \Note that the meshing and cut of the mesh are commented here.
@@ -364,7 +364,7 @@ If you want to modify your mesh, you have two possibilities:
 \begin{itemize} 
 \item modify the \textit{my\_data\_file.data} file and run:
 \begin{verbatim}
-> make_PAR.data my_data_file [parts_number]
+> trust -partition my_data_file [parts_number]
 \end{verbatim}
 Be carefull it will erase the \textit{SEQ\_my\_data\_file.data}, \textit{DEC\_my\_data\_file.data} and \\
 \textit{PAR\_my\_data\_file.data} files and create new ones.\\
@@ -391,13 +391,13 @@ If you want to modify the calculation parameters, you can modify:
 \begin{itemize} 
 \item the file \textit{my\_data\_file.data} and run:
 \begin{verbatim}
-> make_PAR.data data_file_name [parts_number]
+> trust -partition data_file_name [parts_number]
 \end{verbatim}
 But it will erase the \textit{SEQ\_my\_data\_file.data}, \textit{DEC\_my\_data\_file.data} and \\
 \textit{PAR\_my\_data\_file.data} files and create new ones.\\
 Then it will run the new \textit{DEC\_my\_data\_file.data} file which gives your new \textit{DOM\_000n}\textbf{.Zones} files.\\
 \Note that in that case, you don't need to re-create the mesh so you can use the second point below:
-\item modify the \textit{PAR\_my\_data\_file.data} file \underline{without} running \verb make_PAR.data  script.
+\item modify the \textit{PAR\_my\_data\_file.data} file \underline{without} running "trust -partition datafile" command line.
 \end{itemize}
 Then run the \textit{PAR\_my\_data\_file.data} file with:
 \begin{verbatim}
