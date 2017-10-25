@@ -22,6 +22,10 @@
 
 
 #include <Champ_front_debit.h>
+#include <Champ_Don.h>
+#include <Champ_Inc_base.h>
+#include <Equation_base.h>
+#include <Milieu_base.h>
 #include <Zone_VF.h>
 #include <DoubleTrav.h>
 Implemente_instanciable(Champ_front_debit,"Champ_front_debit",Champ_front_normal);
@@ -46,6 +50,8 @@ int Champ_front_debit::initialiser(double tps, const Champ_Inc_base& inco)
   if (!Champ_front_normal::initialiser(tps,inco))
     return 0;
   champ_debit_.valeur().initialiser(tps,inco);
+  initialiser_coefficient(inco);
+
   const Zone_VF& zone_VF = ref_cast(Zone_VF,zone_dis());
   const Front_VF& le_bord= ref_cast(Front_VF,frontiere_dis());
   const IntTab& face_voisins = zone_VF.face_voisins();
@@ -74,7 +80,7 @@ int Champ_front_debit::initialiser(double tps, const Champ_Inc_base& inco)
         dS += zone_VF.face_normales(face,j) * zone_VF.face_normales(face,j);
 
       dS = sqrt(dS);
-      aire += dS;
+      aire += dS * zone_VF.porosite_face(face);
       for(int j=0; j<dimension; j++)
         normales_divisees_par_aire_(i,j)=signe*zone_VF.face_normales(face,j)/dS;
     }
@@ -88,12 +94,19 @@ int Champ_front_debit::initialiser(double tps, const Champ_Inc_base& inco)
       tab=normales_divisees_par_aire_;
       if (tab.size_array())
         {
-          double debit=champ_debit_.valeur().valeurs()(0,0);
+          // Allows weighting by rho in Champ_front_debit_massique
+          double debit=champ_debit_.valeur().valeurs()(0,0) * coeff_;
           tab*=debit;
         }
     }
   return 1;
 }
+
+void Champ_front_debit::initialiser_coefficient(const Champ_Inc_base& inco)
+{
+  coeff_ = 1.0;
+}
+
 void Champ_front_debit::associer_fr_dis_base(const Frontiere_dis_base& fr)
 {
   champ_debit_.valeur().associer_fr_dis_base(fr);
@@ -140,7 +153,8 @@ void Champ_front_debit::mettre_a_jour(double temps)
   DoubleTab& tab=valeurs_au_temps(temps);
   if (tab.size_array())
     {
-      double debit=champ_debit_.valeur().valeurs_au_temps(temps)(0,0);
+      // Allows weighting by rho in Champ_front_debit_massique
+      double debit=champ_debit_.valeur().valeurs_au_temps(temps)(0,0) * coeff_;
       tab=normales_divisees_par_aire_;
       tab*=debit;
     }

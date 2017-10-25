@@ -14,49 +14,31 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_front_debit.h
+// File:        Champ_front_debit_massique.h
 // Directory:   $TRUST_ROOT/src/Kernel/Champs
 // Version:     /main/6
 //
 //////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef Champ_front_debit_included
-#define Champ_front_debit_included
+#ifndef Champ_front_debit_massique_included
+#define Champ_front_debit_massique_included
 
 #include <Champ_front_normal.h>
-#include <Champ_front.h>
-//.DESCRIPTION  class Champ_front_debit
+#include <Champ_front_debit.h>
+//.DESCRIPTION  class Champ_front_debit_massique
 //
-// Classe derivee de Champ_front_base qui represente les
-// champs aux frontieres normaux :
+// Classe derivee de Champ_front_debit pour les amateurs de kg/s
 
 //.SECTION voir aussi
 // Champ_front_base
 
-class Champ_front_debit : public Champ_front_normal
+class Champ_front_debit_massique : public Champ_front_debit
 {
-  Declare_instanciable(Champ_front_debit);
-
-public:
-
-  virtual int initialiser(double temps, const Champ_Inc_base& inco);
-  void mettre_a_jour(double temps);
-  void associer_fr_dis_base(const Frontiere_dis_base& fr);
-  void set_temps_defaut(double temps);
-  void fixer_nb_valeurs_temporelles(int nb_cases);
-  void changer_temps_futur(double temps,int i);
-  int avancer(double temps);
-  int reculer(double temps);
+  Declare_instanciable(Champ_front_debit_massique);
 
 protected:
-
-  Champ_front champ_debit_;
-  DoubleTab normales_divisees_par_aire_;
-  double coeff_;
-
   virtual void initialiser_coefficient(const Champ_Inc_base& inco);
-
 };
 
 #endif

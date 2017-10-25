@@ -170,6 +170,10 @@ Entree& Pb_MED::readOn(Entree& is )
   LireMED lire;
   lire.lire_geom(nom_fic,dom,nom_dom,nom_dom);
   dom.reordonner();
+
+  le_domaine_dis.associer_domaine(dom);
+  le_domaine_dis.discretiser("NO_FACE_Zone_VF_inst");
+
   Cerr<<"Reading the name of existing fields in "<<nom_fic<<finl;
 #ifdef MED_
   medinfochamp_existe(nom_fic,nomschampmed,domaine(),temps_sauv_);

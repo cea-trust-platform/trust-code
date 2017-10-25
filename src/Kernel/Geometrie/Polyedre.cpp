@@ -166,11 +166,11 @@ void Polyedre::calculer_centres_gravite(DoubleTab& xp) const
       xp(num_poly,1)=vraixg[1];
       xp(num_poly,2)=vraixg[2];
 
-      Vecteur3 test= xg -vraixg;
-      Cerr<<num_poly<< "iiii "<<test[0]<< " "<<test[1]<<" "<<test[2]<<finl;
+      // Vecteur3 test= xg -vraixg;
+      // Cerr<<num_poly<< "iiii "<<test[0]<< " "<<test[1]<<" "<<test[2]<<finl;
     }
 
-  Cerr<<" xp "<<xp << finl;
+  // Cerr<<" xp "<<xp << finl;
   return ;
 
 
@@ -699,7 +699,7 @@ void Polyedre::compute_virtual_index()
   int nbs=0;
 
   PolyhedronIndex_.resize(nb_elem_tot+1);
-  //Cerr<<"uuu "<< PolyhedronIndex_<<finl;
+  //Cerr<<"uuu "<< PolyhedronIndex_<<endl;
 
   for (int ele=nb_elem; ele<nb_elem_tot; ele++)
     {
@@ -712,7 +712,7 @@ void Polyedre::compute_virtual_index()
             {
               if (faces_som(ele,k,l)!=-1)
                 nbs++;
-              Cerr <<" INFO " << ele<< " k" <<k << " l "<< l<< " iiii "<<faces_som(ele,k,l)<<finl;
+              // Cerr <<" INFO " << ele<< " k" <<k << " l "<< l<< " iiii "<<faces_som(ele,k,l)<<finl;
             }
         }
       PolyhedronIndex_(ele+1)=PolyhedronIndex_(ele)+nbf;

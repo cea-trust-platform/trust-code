@@ -103,8 +103,10 @@ public:
   virtual void lit(Entree &, int resize_and_read=1);
   virtual void ecrit(Sortie &) const;
 
+  inline void append_line(__scalar__);
   inline void append_line(__scalar__, __scalar__);
   inline void append_line(__scalar__, __scalar__, __scalar__);
+  inline void append_line(__scalar__, __scalar__, __scalar__, __scalar__);
 
 private:
   // Nombre de dimensions du tableau (nb_dim_>=1)
@@ -255,6 +257,19 @@ inline int __Scalar__Tab::nb_dim() const
   return nb_dim_;
 }
 
+// Description: Adds 1 to dimension_tot(0) and puts a in the added line.
+// Precondition: line_size() must be equal to 1 and the array must be resizable.
+inline void __Scalar__Tab::append_line(__scalar__ a)
+{
+  assert(line_size() == 1);
+  assert(dimension_tot_0_ * line_size() == size_array());
+  const int n = dimension_tot_0_;
+  dimensions_[0] = ++dimension_tot_0_;
+  __Scalar__Vect::resize_vect_(n+1, COPY_NOINIT);
+  __scalar__ * ptr = addr() + n;
+  ptr[0] = a;
+}
+
 // Description: Adds 1 to dimension_tot(0) and puts a and b in the added line.
 // Precondition: line_size() must be equal to 2 and the array must be resizable.
 inline void __Scalar__Tab::append_line(__scalar__ a, __scalar__ b)
@@ -281,6 +296,21 @@ inline void __Scalar__Tab::append_line(__scalar__ a, __scalar__ b, __scalar__ c)
   ptr[0] = a;
   ptr[1] = b;
   ptr[2] = c;
+}
+
+// Description: Like append_line(i,j), but for arrays with line_size()==4
+inline void __Scalar__Tab::append_line(__scalar__ a, __scalar__ b, __scalar__ c, __scalar__ d)
+{
+  assert(line_size() == 4);
+  assert(dimension_tot_0_  * line_size() == size_array());
+  const int n = dimension_tot_0_ * 4;
+  dimensions_[0] = ++dimension_tot_0_;
+  __Scalar__Vect::resize_vect_(n+4, COPY_NOINIT);
+  __scalar__ * ptr = addr() + n;
+  ptr[0] = a;
+  ptr[1] = b;
+  ptr[2] = c;
+  ptr[3] = d;
 }
 #endif
 #Pendmacro(declareTab)
@@ -319,16 +349,16 @@ Sortie & __Scalar__Tab::printOn(Sortie & os) const
 {
   assert(CHECK_LINE_SIZE);
   if (nproc() > 1 && get_md_vector().non_nul()) {
-    Cerr << "Error in __Scalar__Tab::printOn: try to print a parallel vector" << finl;
+    Cerr << "Error in __Scalar__Tab::printOn: try to print a parallel vector" << endl;
     exit();
   }
-  os << nb_dim_ << finl;
+  os << nb_dim_ << endl;
   assert(dimensions_[0] == dimension_tot_0_);
   if (nb_dim_ > 0)
     os.put(dimensions_, nb_dim_, nb_dim_);
   
   const int sz = size_array();
-  os << sz << finl;
+  os << sz << endl;
   const int l_size = line_size();
   const __scalar__ *data = addr();
   if (sz > 0)
@@ -342,24 +372,24 @@ Entree & __Scalar__Tab::readOn(Entree & is)
 {
   if (get_md_vector().non_nul()) {
     // Que veut-on faire si on lit dans un vecteur ayant deja une structure parallele ?
-    Cerr << "Error in __Scalar__Tab::readOn: vector has a parallel structure" << finl;
+    Cerr << "Error in __Scalar__Tab::readOn: vector has a parallel structure" << endl;
     exit();
   }
 
   is >> nb_dim_;
   if (nb_dim_ < 1 || nb_dim_ > MAXDIM_TAB) {
-    Cerr << "Error in __Scalar__Tab::readOn: wrong nb_dim_ = " << nb_dim_ << finl;
+    Cerr << "Error in __Scalar__Tab::readOn: wrong nb_dim_ = " << nb_dim_ << endl;
     exit();
   }
   is.get(dimensions_, nb_dim_);
   if (dimensions_[0] < 0) {
-    Cerr << "Error in __Scalar__Tab::readOn: wrong dimension(0) = " << dimensions_[0] << finl;
+    Cerr << "Error in __Scalar__Tab::readOn: wrong dimension(0) = " << dimensions_[0] << endl;
     exit(); 
   }
   int l_size = 1; 
   for (int i = 1; i < nb_dim_; i++) {
     if (dimensions_[i] < 0) {
-      Cerr << "Error in __Scalar__Tab::readOn: wrong dimension(" << i << ") = " << dimensions_[i] << finl;
+      Cerr << "Error in __Scalar__Tab::readOn: wrong dimension(" << i << ") = " << dimensions_[i] << endl;
       exit();
     }
     l_size *= dimensions_[i];
@@ -369,7 +399,7 @@ Entree & __Scalar__Tab::readOn(Entree & is)
   set_line_size_(l_size);
   if (dimension_tot_0_ * l_size != size_array()) {
     Cerr << "Error in __Scalar__Tab::readOn: wrong size_array " << size_array() 
-         << ", expected " << dimension_tot_0_ * l_size << finl;
+         << ", expected " << dimension_tot_0_ * l_size << endl;
     exit();
   }
   assert(CHECK_LINE_SIZE);
@@ -426,7 +456,7 @@ __Scalar__Tab::__Scalar__Tab(int n1, int n2 PARAM_X)
 #Pif("__scalar__"=="int")
   if (n1*n2<0)
   {
-     Cerr << "n1*n2 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n1 << " and n2=" << n2 << finl;
+     Cerr << "n1*n2 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n1 << " and n2=" << n2 << endl;
      exit(); 
   }
 #Pendif
@@ -445,7 +475,7 @@ __Scalar__Tab::__Scalar__Tab(int n1, True_int n2 PARAM_X)
 #Pif("__scalar__"=="int")
   if (n1*n2<0)
   {
-     Cerr << "n1*n2 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n1 << " and n2=" <<(int) n2 << finl;
+     Cerr << "n1*n2 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n1 << " and n2=" <<(int) n2 << endl;
      exit(); 
   }
 #Pendif
@@ -465,7 +495,7 @@ __Scalar__Tab::__Scalar__Tab(int n1, int n2, int n3 PARAM_X)
 #Pif("__scalar__"=="int")
   if (n1*n2*n3<0)
   {
-     Cerr << "n1*n2*n3 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n1 << " and n2=" << n2 << " and n3=" << n3 << finl;
+     Cerr << "n1*n2*n3 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n1 << " and n2=" << n2 << " and n3=" << n3 << endl;
      exit(); 
   }
 #Pendif
@@ -485,7 +515,7 @@ __Scalar__Tab::__Scalar__Tab(int n1, int n2, int n3, int n4 PARAM_X)
 #Pif("__scalar__"=="int")
   if (n1*n2*n3*n4<0)
   {
-     Cerr << "n1*n2*n3*n4 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n1 << " and n2=" << n2 << " and n3=" << n3 << " and n3=" << n3 << finl;
+     Cerr << "n1*n2*n3*n4 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n1 << " and n2=" << n2 << " and n3=" << n3 << " and n3=" << n3 << endl;
      exit(); 
   }
 #Pendif
@@ -641,7 +671,7 @@ void __Scalar__Tab::resize(int n, int n2, Array_base::Resize_Options opt)
 #Pif("__scalar__"=="int")
   if (new_size<0)
   {
-     Cerr << "n1*n2 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n << " and n2=" << n2 << finl;
+     Cerr << "n1*n2 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n << " and n2=" << n2 << endl;
      exit(); 
   }
 #Pendif  
@@ -660,7 +690,7 @@ void __Scalar__Tab::resize(int n, int n2, int n3, Array_base::Resize_Options opt
 #Pif("__scalar__"=="int")
   if (new_size<0)
   {
-     Cerr << "n1*n2*n3 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n << " and n2=" << n2 << " and n3=" << n3 << finl;
+     Cerr << "n1*n2*n3 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n << " and n2=" << n2 << " and n3=" << n3 << endl;
      exit(); 
   }
 #Pendif  
@@ -680,7 +710,7 @@ void __Scalar__Tab::resize(int n, int n2, int n3, int n4, Array_base::Resize_Opt
 #Pif("__scalar__"=="int")
   if (new_size<0)
   {
-     Cerr << "n1*n2*n3*n4 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n << " and n2=" << n2 << " and n3=" << n3 << " and n4=" << n4 << finl;
+     Cerr << "n1*n2*n3*n4 > 2^31. Error! Contact TRUST support, integer 32 bits limit exceeded with n1=" << n << " and n2=" << n2 << " and n3=" << n3 << " and n4=" << n4 << endl;
      exit(); 
   }
 #Pendif  
@@ -701,7 +731,7 @@ void __Scalar__Tab::resize(const ArrOfInt & tailles, Array_base::Resize_Options 
   nb_dim_ = tailles.size_array();
   if (nb_dim_ <= 0 || nb_dim_ > MAXDIM_TAB) {
     Cerr << "Internal error in __Scalar__Tab::resize(const ArrOfInt & tailles, ...) \n"
-         << " wrong dimensions number " << nb_dim_ << finl;
+         << " wrong dimensions number " << nb_dim_ << endl;
     exit();
   }
   int l_size = 1;
@@ -712,7 +742,7 @@ void __Scalar__Tab::resize(const ArrOfInt & tailles, Array_base::Resize_Options 
       l_size *= n;
     if (n < 0) {
       Cerr << "Internal error in __Scalar__Tab::resize(const ArrOfInt & tailles, ...) \n"
-           << " wrong dimensions: " << tailles << finl;
+           << " wrong dimensions: " << tailles << endl;
       exit();
     }
   }
@@ -821,7 +851,7 @@ void __Scalar__Tab::set_md_vector(const MD_Vector & md_vector)
 
 void __Scalar__Tab::ecrit(Sortie & os) const
 {
-  os << nb_dim_ << finl;
+  os << nb_dim_ << endl;
   if (nb_dim_ > 0)
     os.put(dimensions_, nb_dim_, nb_dim_);
   ArrOfInt tmp(nb_dim_);
@@ -869,7 +899,7 @@ void __Scalar__Tab::lit(Entree & is, int resize_and_read)
        if (!ok) {
 	 // Si on cherche a relire un tableau de taille inconnue, le tableau doit
 	 // etre reset() a l'entree. On n'aura pas la structure parallele du tableau !
-	 Cerr << "Error in __Scalar__Tab::lit: array has wrong dimensions" << finl;
+	 Cerr << "Error in __Scalar__Tab::lit: array has wrong dimensions" << endl;
 	 exit();
        }
      }
@@ -999,49 +1029,49 @@ int DoubleTab::inverse_LU(const ArrOfDouble& b, ArrOfDouble& solution)
 
   int cvg = (*this).decomp_LU(n,index,lu_dec);
 
-  //   Cout<<"##DecompositionLU : origine"<<finl;
+  //   cout<<"##DecompositionLU : origine"<<endl;
   //   int i,j;
   //   for (i=0;i<n;i++)
   //     {
   //       for (j=0;j<n;j++)
   //         {
-  //           Cout<<"  "<<(*this)(i,j);
+  //           cout<<"  "<<(*this)(i,j);
   //         }
-  //       Cout<<finl;
+  //       cout<<endl;
   //     }
-  //   Cout<<"##DecompositionLU : L"<<finl;
+  //   cout<<"##DecompositionLU : L"<<endl;
   //   for (i=0;i<n;i++)
   //     {
   //       for (j=0;j<i;j++)
   //         {
-  //           Cout<<"  "<<lu_dec(i,j);
+  //           cout<<"  "<<lu_dec(i,j);
   //         }
-  //       Cout<<"  1.00000e+00";
+  //       cout<<"  1.00000e+00";
   //       for (j=i+1;j<n;j++)
   //         {
-  //           Cout<<"  0.00000e+00";
+  //           cout<<"  0.00000e+00";
   //         }
-  //       Cout<<finl;
+  //       cout<<endl;
   //     }
-  //   Cout<<"##DecompositionLU : U"<<finl;
+  //   cout<<"##DecompositionLU : U"<<endl;
   //   for (i=0;i<n;i++)
   //     {
   //       for (j=0;j<i;j++)
   //         {
-  //           Cout<<"  0.00000e+00";
+  //           cout<<"  0.00000e+00";
   //         }
   //       for (j=i;j<n;j++)
   //         {
-  //           Cout<<"  "<<lu_dec(i,j);
+  //           cout<<"  "<<lu_dec(i,j);
   //         }
-  //       Cout<<finl;
+  //       cout<<endl;
   //     }
 
   if(cvg == 1)
     {
       lu_dec.resoud_LU(n,index,b,solution);
     }
-  //   Cout<<"Convergence decomposition matrice : "<<cvg<<finl;
+  //   cout<<"Convergence decomposition matrice : "<<cvg<<endl;
 
   return cvg;
 }
@@ -1071,10 +1101,10 @@ int DoubleTab::decomp_LU(int n, ArrOfInt& index, DoubleTab& matLU)
               big = temp;
             }
         }
-      //       Cout<<"decomp_LU big "<<big<<finl;
+      //       cout<<"decomp_LU big "<<big<<endl;
       if (big == 0)
         {
-          Cerr <<"Singular matrix in LU decomposition"<<finl;
+          Cerr <<"Singular matrix in LU decomposition"<<endl;
           cvg = 0;
           exit();
         }
