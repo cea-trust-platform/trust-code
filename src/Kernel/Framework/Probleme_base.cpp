@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -452,7 +452,7 @@ Entree& Probleme_base::readOn(Entree& is)
   Motcle accolade_ouverte("{");
   Motcle accolade_fermee("}");
   Motcle motlu;
-  Nom un_nom;
+
   is >> motlu;
 
   if (motlu != accolade_ouverte)
@@ -460,14 +460,8 @@ Entree& Probleme_base::readOn(Entree& is)
       Cerr << "We expected { to start to read the problem" << finl;
       exit();
     }
-  int nb_eq= nombre_d_equations();
-  Cerr << "Reading of the equations" << finl;
 
-  for(int i=0; i<nb_eq; i++)
-    {
-      is >> un_nom ;
-      is >> getset_equation_by_name(un_nom);
-    }
+  lire_equations(is);
 
   is >> motlu;
   // Si le postraitement comprend le mot, on en lit un autre...
@@ -648,6 +642,35 @@ Entree& Probleme_base::readOn(Entree& is)
     }
 
   return is ;
+}
+
+// Description:
+//    Lecture des equations du probleme.
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition: les equations ont ete lues
+Entree& Probleme_base::lire_equations(Entree& is)
+{
+  Nom un_nom;
+  int nb_eq= nombre_d_equations();
+  Cerr << "Reading of the equations" << finl;
+
+  for(int i=0; i<nb_eq; i++)
+    {
+      is >> un_nom ;
+      is >> getset_equation_by_name(un_nom);
+    }
+
+  return is;
 }
 
 // Description:

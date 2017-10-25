@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,6 +23,7 @@
 #include <Milieu_base.h>
 #include <Champ.h>
 #include <Champ_Fonc_Tabule.h>
+#include <Champ_Uniforme.h>
 #include <Discretisation_base.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>
@@ -300,22 +301,19 @@ void Milieu_base::calculer_alpha()
 {
   if(lambda.non_nul())
     {
-      Champ rhobis;
-      rhobis=lambda.valeur();
-      Champ Cpbis;
-      Cpbis=lambda.valeur();
-      rhobis->affecter(rho.valeur());
-      Cpbis->affecter(Cp.valeur());
+      DoubleTab& tabalpha = alpha.valeurs();
+      tabalpha = lambda.valeurs();
 
-      DoubleTab& tabalpha=alpha.valeurs();
-      tabalpha=lambda.valeurs();
-      const DoubleTab& tabrho=rhobis.valeurs();
-      const DoubleTab& tabCp=Cpbis.valeurs();
-      int sz=tabalpha.size_totale();
-      assert(sz==tabrho.size_totale());
-      assert(tabCp.size_totale()==sz);
-      for(int i=0; i < sz; i++)
-        tabalpha.addr()[i]/=(tabrho.addr()[i]*tabCp.addr()[i]);
+      // [ABN]: allows variable rho, Cp at this level (will be used by Solide_Milieu_Variable for instance).
+      if (sub_type(Champ_Uniforme,rho.valeur()))
+        tabalpha /= rho.valeurs()(0,0);
+      else
+        tab_divide_any_shape(tabalpha,rho.valeurs());
+
+      if (sub_type(Champ_Uniforme,Cp.valeur()))
+        tabalpha /= Cp.valeurs()(0,0);
+      else
+        tab_divide_any_shape(tabalpha,Cp.valeurs());
     }
   else
     {
