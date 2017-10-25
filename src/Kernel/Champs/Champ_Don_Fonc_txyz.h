@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,6 +47,7 @@ class Champ_Don_Fonc_txyz : public Champ_Don_base, public Parser_Eval
 public:
   virtual void mettre_a_jour(double );
   Champ_base& affecter(const Champ_base& ch);
+  virtual Champ_base& affecter_(const Champ_base& );
 
   DoubleVect& valeur_a(const DoubleVect& position,
                        DoubleVect& valeurs) const;

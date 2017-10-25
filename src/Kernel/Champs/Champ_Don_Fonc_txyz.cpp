@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,6 +23,7 @@
 #include <Champ_Don_Fonc_txyz.h>
 #include <Domaine.h>
 #include <Interprete.h>
+#include <Champ_Uniforme.h>
 
 Implemente_instanciable(Champ_Don_Fonc_txyz,"Champ_Fonc_txyz",Champ_Don_base);
 
@@ -213,6 +214,24 @@ Champ_base& Champ_Don_Fonc_txyz::affecter(const Champ_base& )
   Champ_base::affecter_erreur();
   return *this;
 }
+
+Champ_base& Champ_Don_Fonc_txyz::affecter_(const Champ_base& ch)
+{
+  if(sub_type(Champ_Uniforme, ch))
+    {
+      const DoubleTab& val=ch.valeurs();
+      if(val.nb_dim()==1)
+        valeurs()=ch.valeurs()[0];
+      else
+        valeurs()=ch.valeurs()(0,0);
+    }
+  else
+    {
+      valeurs()=ch.valeurs();
+    }
+  return *this;
+}
+
 
 // Description:
 //    Renvoie la valeur du champ au point specifie
