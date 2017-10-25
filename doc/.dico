@@ -316,6 +316,7 @@
  Format_Post_Lata_V2 Format_Post_Lata Format_Post_Lata.h
  Format_Post_Lml Format_Post_Lml Format_Post_Lml.h
  Format_Post_Med Format_Post_Med Format_Post_Med.h
+ Format_Post_Med_major Format_Post_Med_major Format_Post_Med_major.h
  Frontiere Frontiere Frontiere.h
  Frontiere_dis_base Frontiere_dis_base Frontiere_dis_base.h
  Frontiere_ouverte Neumann_sortie_libre Neumann_sortie_libre.h

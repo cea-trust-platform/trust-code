@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -306,15 +306,17 @@ Entree& Postraitement::readOn(Entree& s )
   Postraitement_base::readOn(s);
 
   if (Motcle(format)=="MED") format="med";
+  if (Motcle(format)=="MED_MAJOR") format="med_major";
   if ((Motcle(format)!="LML")
       && (Motcle(format)!="MESHTV")
       && (Motcle(format)!="MED")
+      && (Motcle(format)!="MED_MAJOR")
       && (Motcle(format)!="LATA")
       && (Motcle(format)!="LATA_V1")
       && (Motcle(format)!="LATA_V2"))
     {
       Cerr<<"The wanted postprocessing format " << format << " is not recognized"<<finl;
-      Cerr<<"The recognized formats are lml, meshtv, med, lata, lata_V1 and lata_V2"<<finl;
+      Cerr<<"The recognized formats are lml, meshtv, med, med_major, lata, lata_V1 and lata_V2"<<finl;
       exit();
     }
   // Changement pour la 1.6.4, le format LATA par defaut est LATA_V2

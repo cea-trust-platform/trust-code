@@ -1,0 +1,19 @@
+#!/bin/bash
+
+filen='MED_major_0000.med'
+
+touch MED_major_jdd1.lml
+
+source $TRUST_MEDCOUPLING_ROOT/env.sh || exit 1
+# Version of file
+#  Skip funny char printed out when importing MEDLoader
+vers_file=`python -c "import MEDLoader as ml; print; print  ml.MEDFileVersionOfFileStr('$filen')" | tail -1 | sed 's/\([0-9]\)\.[0-9]\.[0-9]/\1/'`
+# Version read from MED header
+vers_med=`grep MED_MAJOR_NUM $TRUST_MED_ROOT/include/med.h | sed 's/[^0-9]*\([0-9]\)/\1/'`
+
+if [ "x${vers_file}" == "x${vers_med}" ]; then
+  echo All OK!! MED file version matching > result.txt
+else
+  echo Check failed! Version numbers are mismatching > result.txt
+fi
+

@@ -12,6 +12,7 @@
 #include <EcrMED.h>
 #include <Ecrire_Champ_MED.h>
 #include <Format_Post_Med.h>
+#include <Format_Post_Med_major.h>
 #include <Integrer_champ_med.h>
 #include <LataToMED.h>
 #include <LireMED.h>
@@ -29,12 +30,13 @@ Discr_inst inst6;verifie_pere(inst6);
 EcrMED inst7;verifie_pere(inst7);
 Ecrire_Champ_MED inst8;verifie_pere(inst8);
 Format_Post_Med inst9;verifie_pere(inst9);
-Integrer_champ_med inst10;verifie_pere(inst10);
-LataToMED inst11;verifie_pere(inst11);
-latatoother inst12;verifie_pere(inst12);
-LireMED inst13;verifie_pere(inst13);
-Pb_MED inst14;verifie_pere(inst14);
-Pbc_MED inst15;verifie_pere(inst15);
-Read_MED_For_Testing_No_Verify_Option inst16;verifie_pere(inst16);
-ScatterMED inst17;verifie_pere(inst17);
+Format_Post_Med_major inst10;verifie_pere(inst10);
+Integrer_champ_med inst11;verifie_pere(inst11);
+LataToMED inst12;verifie_pere(inst12);
+latatoother inst13;verifie_pere(inst13);
+LireMED inst14;verifie_pere(inst14);
+Pb_MED inst15;verifie_pere(inst15);
+Pbc_MED inst16;verifie_pere(inst16);
+Read_MED_For_Testing_No_Verify_Option inst17;verifie_pere(inst17);
+ScatterMED inst18;verifie_pere(inst18);
 }

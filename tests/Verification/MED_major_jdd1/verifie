@@ -1,0 +1,17 @@
+#!/bin/bash
+
+filen='MED_major_jdd1_0000.med'
+
+source $TRUST_MEDCOUPLING_ROOT/env.sh || exit 1
+# Version of file
+#  Skip funny char printed out when importing MEDLoader
+vers_file=`python -c "import MEDLoader as ml; print; print  ml.MEDFileVersionOfFileStr('$filen')" | tail -1 | sed 's/\([0-9]\)\.[0-9]\.[0-9]/\1/'`
+# Version read from MED header
+vers_med=`grep MED_MAJOR_NUM $TRUST_MED_ROOT/include/med.h | sed 's/[^0-9]*\([0-9]\)/\1/'`
+
+if [ "x${vers_file}" == "x${vers_med}" ]; then
+  exit 0
+else  
+  exit 1
+fi
+
