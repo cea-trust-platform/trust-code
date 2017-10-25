@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,8 +23,10 @@
 #include <Champ_front_MED.h>
 #include <Domaine.h>
 #include <Frontiere_dis_base.h>
+#include <Param.h>
 
 Implemente_instanciable(Champ_front_MED,"Champ_front_MED",Champ_front_txyz);
+// XD champ_front_MED front_field_base champ_front_MED 0 Field allowing the loading of a boundary condition from a MED file using Champ_fonc_med
 
 Sortie& Champ_front_MED::printOn(Sortie& os) const
 {
@@ -34,7 +36,10 @@ Sortie& Champ_front_MED::printOn(Sortie& os) const
 
 Entree& Champ_front_MED::readOn(Entree& is)
 {
-  is >> champ_volumique_;
+  Param param(que_suis_je());
+  param.ajouter("champ_volumique",&champ_volumique_,Param::REQUIRED);  // XD attr champ_fonc_med field_base champ_fonc_med 0 a champ_fonc_med loading the values of the unknown on a domain boundary
+  param.lire_sans_accolade(is);
+
   fixer_nb_comp(champ_volumique_.valeur().nb_comp());
   pos_.resize(1,dimension);
   val_.resize(1,nb_comp());

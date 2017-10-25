@@ -1,0 +1,6 @@
+#!/bin/sh
+
+source $TRUST_MEDCOUPLING_ROOT/env.sh || echo Warning: impossible de sourcer MEDCoupling. On prend l existant.
+python create_vtu.py || echo Warning: le champ frontiere en VTK n a pas pu etre regenere. On prend l existant.
+
+
