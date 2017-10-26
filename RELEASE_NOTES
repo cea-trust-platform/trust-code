@@ -2,7 +2,6 @@
 Release notes version 1.7.6_beta : Enhancements, modifications and corrected bugs since version 1.7.5 :
 --------------------------------------------------------------------------------------------------
 26/10/17 (TRUST)  New feature : Possibility to write a MED file in the last major version of MED file format with keyword 'med_major'
-26/10/17 (TRUST)  Verification: PRM and XD documentation for Champ_front_MED
 20/10/17 (TRUST)  New keyword : Delta tolerance on mass fractions for check testing in state law for mixing of perfect gas (dtol_fraction)
 18/10/17 (TRUST)  New keyword : Add quiet option in k-eps RANS turbulence model to disable printing of information about k and epsilon
 11/10/17 (TRUST)  New keyword : Upper limitation of epsilon for k-eps RANS turbulence model (eps_max)
