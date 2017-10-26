@@ -3,6 +3,7 @@
 filen='MED_major_jdd1_0000.med'
 
 source $TRUST_MEDCOUPLING_ROOT/env.sh || exit 1
+[ "$MED_COUPLING_PYTHON" != "ON" ] && exit 0
 # Version of file
 #  Skip funny char printed out when importing MEDLoader
 vers_file=`python -c "import MEDLoader as ml; print; print  ml.MEDFileVersionOfFileStr('$filen')" | tail -1 | sed 's/\([0-9]\)\.[0-9]\.[0-9]/\1/'`

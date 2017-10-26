@@ -102,14 +102,6 @@ Entree& EcrMED::interpreter(Entree& is)
   return is;
 }
 
-med_idt trustMEDfileOpen(const char* const filename, const med_access_mode accessmode, bool major_mode)
-{
-  if (major_mode)
-    return MEDfileVersionOpen(filename, accessmode, MED_NUM_MAJEUR,0,0);
-  return MEDfileOpen(filename, accessmode );
-}
-
-
 #ifndef MED_
 void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_fic,const Nom& nom_dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Nom& type_elem,double time,int compteur)
 {
@@ -120,6 +112,14 @@ void EcrMED::ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom
   med_non_installe();
 }
 #else
+
+med_idt trustMEDfileOpen(const char* const filename, const med_access_mode accessmode, bool major_mode)
+{
+  if (major_mode)
+    return MEDfileVersionOpen(filename, accessmode, MED_NUM_MAJEUR,0,0);
+  return MEDfileOpen(filename, accessmode );
+}
+
 med_int* convert_int_med_int(const ArrOfInt& tab)
 {
   med_int* tabmed;
