@@ -14,51 +14,31 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Terme_Puissance_Thermique_QC_VDF_Elem.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Quasi_Compressible/VDF
-// Version:     /main/14
+// File:        Champ_front_debit_massique.h
+// Directory:   $TRUST_ROOT/src/Kernel/Champs
+// Version:     /main/6
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Terme_Puissance_Thermique_QC_VDF_Elem.h>
-#include <Probleme_base.h>
-#include <Discretisation_base.h>
-//  classe a renommer et a mettre dans ThSol
+
+#ifndef Champ_front_debit_massique_included
+#define Champ_front_debit_massique_included
+
+#include <Champ_front_normal.h>
+#include <Champ_front_debit.h>
+//.DESCRIPTION  class Champ_front_debit_massique
 //
-//
-Implemente_instanciable_sans_constructeur(Terme_Puissance_Thermique_QC_VDF_Elem,"Puissance_Thermique_QC_VDF_P0_VDF",Terme_Puissance_Thermique_VDF_base);
-implemente_It_Sou_VDF_Elem(Eval_Puiss_Th_QC_VDF_Elem)
+// Classe derivee de Champ_front_debit pour les amateurs de kg/s
 
+//.SECTION voir aussi
+// Champ_front_base
 
-Sortie& Terme_Puissance_Thermique_QC_VDF_Elem::printOn(Sortie& s ) const
+class Champ_front_debit_massique : public Champ_front_debit
 {
-  return s << que_suis_je() ;
-}
+  Declare_instanciable(Champ_front_debit_massique);
 
-Entree& Terme_Puissance_Thermique_QC_VDF_Elem::readOn(Entree& s )
-{
-  Terme_Puissance_Thermique_VDF_base::readOn(s);
-  Nom name_file("Puissance_Thermique");
-  modify_name_file(name_file);
-  set_fichier(name_file);
-  set_description("Degagement de puissance thermique = Integrale(P*dv) [W]");
-  set_description("Heat power release = Integral(P*dv) [W]");
-  return s;
-}
+protected:
+  virtual void initialiser_coefficient(const Champ_Inc_base& inco);
+};
 
-void Terme_Puissance_Thermique_QC_VDF_Elem::associer_zones(const Zone_dis& zone_dis,
-                                                           const Zone_Cl_dis& zone_cl_dis)
-{
-  Terme_Puissance_Thermique_VDF_base::associer_zones(zone_dis,zone_cl_dis);
-  Eval_Puiss_Th_QC_VDF_Elem& eval_puis = (Eval_Puiss_Th_QC_VDF_Elem&) iter.evaluateur();
-  eval_puis.associer_zones(zone_dis.valeur(),zone_cl_dis.valeur());
-}
-
-void Terme_Puissance_Thermique_QC_VDF_Elem::associer_pb(const Probleme_base& pb)
-{
-  const Equation_base& eqn = pb.equation(0);
-  eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(),la_puissance.le_nom(),"W/m3",la_puissance,pb);
-  Eval_Puiss_Th_QC_VDF_Elem& eval_puis = (Eval_Puiss_Th_QC_VDF_Elem&) iter.evaluateur();
-  eval_puis.associer_puissance(la_puissance);
-}
-
+#endif

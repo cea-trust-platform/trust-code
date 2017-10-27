@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,6 +24,7 @@
 #include <Champ_front_txyz.h>
 #include <Domaine.h>
 #include <Frontiere_dis_base.h>
+#include <Zone_VF.h>
 #include <DoubleTrav.h>
 
 Implemente_instanciable(Champ_front_txyz,"Champ_front_fonc_txyz",Ch_front_var_instationnaire_indep);
@@ -130,35 +131,20 @@ void Champ_front_txyz::mettre_a_jour(double temps)
 {
   int dim=nb_comp();
   const Frontiere_dis_base& fr_dis=frontiere_dis();
-  const Frontiere& frontiere=fr_dis.frontiere();
-  const Zone& zone=frontiere.zone();
-  const Domaine& domaine=zone.domaine();
-  const Faces& faces=frontiere.faces();
-  int nb_faces=frontiere.nb_faces();
-  double x,y,z;
-  int nbsf=faces.nb_som_faces();
+  const Zone_VF& zvf = ref_cast(Zone_VF, fr_dis.zone_dis());
+  int nb_faces=ref_cast(Front_VF, fr_dis).nb_faces();
+  int premiere_face = ref_cast(Front_VF, fr_dis).num_premiere_face();
   int i,k;
   DoubleTab& tab=valeurs_au_temps(temps);
   for( i=0; i<nb_faces; i++)
     {
-      x=y=z=0;
-      for( k=0; k<nbsf; k++)
-        {
-          x+=domaine.coord(faces.sommet(i,k),0);
-          if(dimension>1)
-            y+=domaine.coord(faces.sommet(i,k),1);
-          if(dimension>2)
-            z+=domaine.coord(faces.sommet(i,k),2);
-        }
-      x/=nbsf;
-      y/=nbsf;
-      z/=nbsf;
       for( k=0; k<dim; k++)
         {
           fxyz[k].setVar("t",temps);
-          fxyz[k].setVar("x",x);
-          fxyz[k].setVar("y",y);
-          fxyz[k].setVar("z",z);
+          fxyz[k].setVar("x",zvf.xv(premiere_face + i, 0));
+          fxyz[k].setVar("y",zvf.xv(premiere_face + i, 1));
+          if (dimension >= 3)
+            fxyz[k].setVar("z",zvf.xv(premiere_face + i, 2));
           tab(i,k)=fxyz[k].eval();
         }
     }

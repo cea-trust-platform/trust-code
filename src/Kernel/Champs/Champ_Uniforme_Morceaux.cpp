@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -87,9 +87,6 @@ Entree& Champ_Uniforme_Morceaux::readOn(Entree& is)
   const IntTab& les_elems=le_domaine.zone(0).les_elems();
   const int nb_som_elem = le_domaine.zone(0).nb_som_elem();
   double x=0,y=0,z=0;
-  int num_som;
-
-
 
   dim=lire_dimension(is,que_suis_je());
   fixer_nb_comp(dim);
@@ -131,16 +128,18 @@ Entree& Champ_Uniforme_Morceaux::readOn(Entree& is)
       x = le_domaine.coord(les_elems(poly,0),0);
       y = le_domaine.coord(les_elems(poly,0),1);
       if (dimension == 3) z = le_domaine.coord(les_elems(poly,0),2);
+      int nsom = 0, e=-1;
       for (int isom = 1; isom<nb_som_elem; isom++)
-        {
-          num_som = les_elems(poly,isom);
-          x += le_domaine.coord(num_som,0);
-          y += le_domaine.coord(num_som,1);
-          if (dimension == 3) z += le_domaine.coord(num_som,2);
-        }
-      x = x/nb_som_elem;
-      y = y/nb_som_elem;
-      z = z/nb_som_elem;
+        if ((e = les_elems(poly,isom)) >= 0)
+          {
+            x += le_domaine.coord(e,0);
+            y += le_domaine.coord(e,1);
+            if (dimension == 3) z += le_domaine.coord(e,2);
+            nsom++;
+          }
+      x = x/nsom;
+      y = y/nsom;
+      z = z/nsom;
       for( k=0; k< dim; k++)
         {
           fxyz[k].setVar("x",x);
@@ -169,16 +168,18 @@ Entree& Champ_Uniforme_Morceaux::readOn(Entree& is)
           x = le_domaine.coord(les_elems(ssz(poly),0),0);
           y = le_domaine.coord(les_elems(ssz(poly),0),1);
           if (dimension == 3) z = le_domaine.coord(les_elems(ssz(poly),0),2);
+          int nsom = 0, e=-1;
           for (int isom = 1; isom<nb_som_elem; isom++)
-            {
-              num_som = les_elems(ssz(poly),isom);
-              x += le_domaine.coord(num_som,0);
-              y += le_domaine.coord(num_som,1);
-              if (dimension == 3) z += le_domaine.coord(num_som,2);
-            }
-          x = x/nb_som_elem;
-          y = y/nb_som_elem;
-          z = z/nb_som_elem;
+            if ((e = les_elems(ssz(poly),isom)) >= 0)
+              {
+                x += le_domaine.coord(e,0);
+                y += le_domaine.coord(e,1);
+                if (dimension == 3) z += le_domaine.coord(e,2);
+                nsom++;
+              }
+          x = x/nsom;
+          y = y/nsom;
+          z = z/nsom;
           for( k=0; k< dim; k++)
             {
               fxyz[k].setVar("x",x);

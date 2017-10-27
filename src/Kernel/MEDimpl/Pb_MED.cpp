@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -170,6 +170,10 @@ Entree& Pb_MED::readOn(Entree& is )
   LireMED lire;
   lire.lire_geom(nom_fic,dom,nom_dom,nom_dom);
   dom.reordonner();
+
+  le_domaine_dis.associer_domaine(dom);
+  le_domaine_dis.discretiser("NO_FACE_Zone_VF_inst");
+
   Cerr<<"Reading the name of existing fields in "<<nom_fic<<finl;
 #ifdef MED_
   medinfochamp_existe(nom_fic,nomschampmed,domaine(),temps_sauv_);

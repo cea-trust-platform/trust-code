@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,8 +50,12 @@ public:
   int reculer(double temps);
 
 protected:
+
   Champ_front champ_debit_;
   DoubleTab normales_divisees_par_aire_;
+  double coeff_;
+
+  virtual void initialiser_coefficient(const Champ_Inc_base& inco);
 
 };
 

@@ -114,8 +114,10 @@ public:
   virtual void lit(Entree&, int resize_and_read=1);
   virtual void ecrit(Sortie&) const;
 
+  inline void append_line(double);
   inline void append_line(double, double);
   inline void append_line(double, double, double);
+  inline void append_line(double, double, double, double);
 
 private:
   // Nombre de dimensions du tableau (nb_dim_>=1)
@@ -264,6 +266,19 @@ inline int DoubleTab::nb_dim() const
   return nb_dim_;
 }
 
+// Description: Adds 1 to dimension_tot(0) and puts a in the added line.
+// Precondition: line_size() must be equal to 1 and the array must be resizable.
+inline void DoubleTab::append_line(double a)
+{
+  assert(line_size() == 1);
+  assert(dimension_tot_0_ * line_size() == size_array());
+  const int n = dimension_tot_0_;
+  dimensions_[0] = ++dimension_tot_0_;
+  DoubleVect::resize_vect_(n+1, COPY_NOINIT);
+  double * ptr = addr() + n;
+  ptr[0] = a;
+}
+
 // Description: Adds 1 to dimension_tot(0) and puts a and b in the added line.
 // Precondition: line_size() must be equal to 2 and the array must be resizable.
 inline void DoubleTab::append_line(double a, double b)
@@ -290,6 +305,21 @@ inline void DoubleTab::append_line(double a, double b, double c)
   ptr[0] = a;
   ptr[1] = b;
   ptr[2] = c;
+}
+
+// Description: Like append_line(i,j), but for arrays with line_size()==4
+inline void DoubleTab::append_line(double a, double b, double c, double d)
+{
+  assert(line_size() == 4);
+  assert(dimension_tot_0_  * line_size() == size_array());
+  const int n = dimension_tot_0_ * 4;
+  dimensions_[0] = ++dimension_tot_0_;
+  DoubleVect::resize_vect_(n+4, COPY_NOINIT);
+  double * ptr = addr() + n;
+  ptr[0] = a;
+  ptr[1] = b;
+  ptr[2] = c;
+  ptr[3] = d;
 }
 #endif
 

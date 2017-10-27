@@ -92,6 +92,7 @@
  Champ_front_contact_fictif_VEF Champ_front_contact_fictif_VEF Champ_front_contact_fictif_VEF.h
  Champ_front_contact_VEF Champ_front_contact_VEF Champ_front_contact_VEF.h
  Champ_front_debit Champ_front_debit Champ_front_debit.h
+ Champ_front_debit_massique Champ_front_debit_massique Champ_front_debit_massique.h
  Champ_front_debit_QC_VDF Champ_front_debit_QC Champ_front_debit_QC.h
  Champ_front_fonc Champ_front_fonc Champ_front_fonc.h
  Champ_Front_Fonction Champ_Front_Fonction Champ_Front_Fonction.h
