@@ -91,6 +91,7 @@ then
       exit -1
    fi
    # mise a jour de la doc pdf geree en gestion de configuration mais genere a un autre endroit
+   [ -f $TRUST_ROOT/Outils/TRIOXDATA/XTriou/Keywords.txt ] && cp $TRUST_ROOT/Outils/TRIOXDATA/XTriou/Keywords.txt  $TRUST_ROOT/doc/TRUST/Keywords.txt
    [ -f $TRUST_ROOT/Outils/TRIOXDATA/XTriou/doc.pdf ] && cp $TRUST_ROOT/Outils/TRIOXDATA/XTriou/doc.pdf  $TRUST_ROOT/doc/TRUST/TRUST_Reference_Manual.pdf
    # ajout de la doc pdf non geree en gestion de configuration
    echo doc/TRUST/TRUST_Generic_Guide.pdf >> build/Src.files

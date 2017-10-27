@@ -3,7 +3,19 @@
 
 lang_file=TRUST.lang
 style_file=TRUST.xml
+
 keywords=$TRUST_ROOT/doc/TRUST/Keywords.txt
+
+# prise en compte des keywords des baltiks
+if [ -f $project_directory/share/doc_src/Keywords.txt.n ]
+then
+    keywords=$project_directory/share/doc_src/Keywords.Gedit
+    cat $TRUST_ROOT/doc/TRUST/Keywords.txt              >   $keywords
+    cat $project_directory/share/doc_src/Keywords.txt.n >>  $keywords
+    # pour supprimer les lignes contenant "|\hyperpage{99}," et "|{" -> sinon probleme avec nedit
+    # pour supprimer les lignes contenant "|/*" et "|\#" -> sinon probleme avec gedit
+    sed -i "/hyperpage/d; /{/d; /*/d; /#/d" $keywords
+fi
 
 # test of existing libgtksourceview
 if [ "`ldconfig -p | grep gtksourceview-4`" != "" ]

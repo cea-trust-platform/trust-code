@@ -89,6 +89,18 @@ then
    # ou si je ne trouve pas "TRUST:1:" dans le fichier de configuration Nedit
    # alors je continue la mise a jour, en faisant une copie du fichier de configuration nedit
    fichier_index_keyword=$TRUST_ROOT/doc/TRUST/Keywords.txt
+
+   # prise en compte des keywords des baltiks
+   if [ -f $project_directory/share/doc_src/Keywords.txt.n ]
+   then
+      fichier_index_keyword=$project_directory/share/doc_src/Keywords.Nedit
+      cat $TRUST_ROOT/doc/TRUST/Keywords.txt              >   $fichier_index_keyword
+      cat $project_directory/share/doc_src/Keywords.txt.n >>  $fichier_index_keyword
+      # pour supprimer les lignes contenant "|\hyperpage{99}," et "|{" -> sinon probleme avec nedit
+      # pour supprimer les lignes contenant "|/*" et "|\#" -> sinon probleme avec gedit
+      sed -i "/hyperpage/d; /{/d; /*/d; /#/d" $fichier_index_keyword
+   fi
+
    if [ $fichier_index_keyword -nt $Nedit_file ] || [ "`grep 'TRUST:1:' $Nedit_file`" = "" ]
    then
       KeywordsTRUST=`$TRUST_Awk -F"|" '!/\|/ {k=k" "$1} /\|/ {if ($1!="" && gsub("XXX","",$1)==0) k=k$1"|";k=k$2"|"} END {print k}' $fichier_index_keyword`
