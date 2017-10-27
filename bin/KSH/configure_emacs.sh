@@ -1,8 +1,19 @@
 #!/bin/bash
 # Configure emacs
 
-path_file=$TRUST_ROOT/doc/TRUST/Keywords_Emacs.el
+path_file=$TRUST_TMP/Keywords_Emacs.el
 keywords=$TRUST_ROOT/doc/TRUST/Keywords.txt
+
+# prise en compte des keywords des baltiks
+if [ -f $project_directory/share/doc_src/Keywords.txt.n ]
+then
+    keywords=$project_directory/share/doc_src/Keywords.Gedit
+    cat $TRUST_ROOT/doc/TRUST/Keywords.txt              >   $keywords
+    cat $project_directory/share/doc_src/Keywords.txt.n >>  $keywords
+    # pour supprimer les lignes contenant "|\hyperpage{99}," et "|{" -> sinon probleme avec nedit
+    # pour supprimer les lignes contenant "|/*" et "|\#" -> sinon probleme avec gedit
+    sed -i "/hyperpage/d; /{/d; /*/d; /#/d" $keywords
+fi
 
 echo 'Configure emacs: '$path_file
 
@@ -111,22 +122,33 @@ then
       # S'il a commente la ligne, on ne fait rien:
       if [ "`grep load $config_file 2>/dev/null | grep TRUST_ | grep ';;'`" = "" ]
       then
-	 if [ "`grep load $config_file 2>/dev/null | grep TRUST_`" = "" ]
-	 then
-	    # First change of .emacs
-	    mkdir -p `dirname $config_file`
-#	    echo "(load \"~/.emacs.d/TRUST.emacs\")" >> $config_file
-	    echo "(load $path_file)" >> $config_file
-	    echo "Loading $path_file file."
-	    echo "-> $config_file updated to highlight TRUST keywords in a data file."
-	    echo "-> You can comment with ;; the load line in the $config_file file if you do not want this feature."
-	 elif [ "`grep TRUST\.emacs $config_file`" = "" ]
-	 then 
-	    # Change the load:
-	    echo $ECHO_OPTS "1,$ s?TRUST_\(.*\)\.emacs?TRUST\.emacs?g\nw" | ed $config_file 1>/dev/null 2>&1
-	    echo "-> $config_file updated to highlight TRUST keywords in a data file."
-	    echo "-> You can comment with ;; the load line in the $config_file file if you do not want this feature."
-	 fi
+        touch $config_file.tmp
+#       echo "(load \"~/.emacs.d/TRUST.emacs\")" >> $config_file
+        echo "(load $path_file)" >> $config_file.tmp
+
+        # s'il n'y a pas de fichier, on le cree
+        if [ ! -f $config_file ]
+        then
+            echo "Creation of a config file to highlight TRUST keywords with emacs."
+            mv $config_file.tmp $config_file
+            echo "$config_file updated to highlight TRUST keywords in a data file."
+            echo "You can comment with ;; the load line in the $config_file file if you do not want this feature."
+            echo ""
+        # si il y a qqch dans le fichier, on renomme et on remplit
+        else 
+            if [ "`diff $config_file $config_file.tmp`" != "" ]
+            then
+                mv -f $config_file $config_file.save
+                echo "Renaming old language file in $config_file.save"
+                mv -f $config_file.tmp $config_file
+                echo "-> $config_file updated to highlight TRUST keywords in a data file."
+                echo "You can comment with ;; the load line in the $config_file file if you do not want this feature."
+                echo ""
+            else
+                echo "Config file to highlight TRUST keywords with emacs already up to date!"
+                rm -f $config_file.tmp
+            fi
+        fi
       fi
    done
 fi
