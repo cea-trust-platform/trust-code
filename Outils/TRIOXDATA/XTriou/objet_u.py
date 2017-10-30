@@ -2422,7 +2422,7 @@ def gen_doc_base(fr=1):
  \begin{document}
 \title{
 \vspace{5cm} 
-\Huge \textbf{TRUST Reference Manual V1.7.6beta} \vspace{0.5cm}}
+\Huge \textbf{TRUST Reference Manual V1.7.6} \vspace{0.5cm}}
 \author{
 \vspace{2cm} 
 \LARGE \textbf{Support team: \href{mailto:triou@cea.fr}{triou@cea.fr}} \\

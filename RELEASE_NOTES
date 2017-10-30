@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------------------------
-Release notes version 1.7.6_beta : Enhancements, modifications and corrected bugs since version 1.7.5 :
+Release notes version 1.7.6 : Enhancements, modifications and corrected bugs since version 1.7.5 :
 --------------------------------------------------------------------------------------------------
 26/10/17 (TRUST)  New feature : Possibility to write a MED file in the last major version of MED file format with keyword 'med_major'
 20/10/17 (TRUST)  New keyword : Delta tolerance on mass fractions for check testing in state law for mixing of perfect gas (dtol_fraction)

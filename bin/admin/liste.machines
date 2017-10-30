@@ -39,5 +39,3 @@ linux	rsync_ssh	non		is225220.intra.cea.fr				-TrioCFD -ModeleCoeur		-g 		-downl
 linux	rsync_ssh	non		is225221.intra.cea.fr				-TRUST -MPCube			-g 		-download-salome			# Fedora 18	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non		is225222.intra.cea.fr				-TRUST -MPCube -TrioCFD -ModeleCoeur -avx						# Fedora 18	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non		is225223.intra.cea.fr				-TRUST -MPCube -TrioCFD	-ModeleCoeur -gui						# Fedora 18	Bat 451	LGLS	salle de formation
-linux	rsync_ssh	non		cobalt-wi4mpi.ccc.cea.fr									-disable-optionals			# RedHat 7.3	CEA CCRT
-linux	rsync_ssh	non		curie-ccrt-openmpi.ccc.cea.fr														# RedHat 6.9	CEA TGCC

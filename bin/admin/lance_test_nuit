@@ -617,7 +617,7 @@ cd $TRUST_ROOT
    # Assume unchanged some files (big one with a lot of changes):
    cd $TRUST_ROOT/doc
    echo "Update Git repos "`pwd`
-   for assume_inchanged in TRUST/TRUST_Reference_Manual.pdf Coverage/cpp.gcov.tar.gz Coverage/list_methodes.gz Coverage/dico.pkl.gz Coverage/list_methodes_non_appelees.gz
+   for assume_inchanged in TRUST/TRUST_Reference_Manual.pdf TRUST/Keywords.txt Coverage/cpp.gcov.tar.gz Coverage/list_methodes.gz Coverage/dico.pkl.gz Coverage/list_methodes_non_appelees.gz
    do
       if [ ! -f $assume_inchanged ]
       then
@@ -637,9 +637,9 @@ cd $TRUST_ROOT
    git_push -tags
    cd $TRUST_ROOT/externalpackages
    echo " git push shared Livraison in `pwd`"
-   git push --tags shared Livraison > tmp.log
-   cat tmp.log | tail -n +3
-   [ "`cat tmp.log | tail -n +3`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] externalpackages git push shared Livraison\" -c $TRUST_MAIL $TMA_PROJECT_LEADER
+   git push --tags shared Livraison 1>tmp.log 2>&1
+   cat tmp.log
+   [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] externalpackages git push shared Livraison\" -c $TRUST_MAIL $TMA_PROJECT_LEADER
    rm tmp.log 1>/dev/null 2>&1
    cd - 1>/dev/null 2>&1
       
@@ -651,9 +651,9 @@ cd $TRUST_ROOT
       echo " "
       echo " git push shared TMA in `pwd`"
       [ "$Composant" = TrioCFD ] && git push --tags shared Livraison
-      git push --tags shared Livraison:TMA > tmp.log
-      cat tmp.log | tail -n +3
-      [ "`cat tmp.log | tail -n +3`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push shared TMA\" -c $TRUST_MAIL $TMA_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
+      git push --tags shared Livraison:TMA 1>tmp.log 2>&1
+      cat tmp.log
+      [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push shared TMA\" -c $TRUST_MAIL $TMA_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
       rm tmp.log 1>/dev/null 2>&1
       cd - 1>/dev/null 2>&1
    done
@@ -2532,7 +2532,7 @@ then
    echo "    Code coverage $couverture_de_code% >= $couverture_minimale% of lines"
 else
    echo "    Code coverage $couverture_de_code% < $couverture_minimale% of lines"
-   cat $REP_NUIT/tggcov.log | mail_ -s\"[lance_test_nuit] Code coverage KO with $couverture_de_code% \< $couverture_minimale% of lines tested\" -c $TRUST_MAIL $TMA_PROJECT_LEADER
+   cat $REP_NUIT/tggcov.log | mail_ -s\"[lance_test_nuit] Code coverage KO with $couverture_de_code% \< $couverture_minimale% of lines tested\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
 fi
 #(
 ## Creation du rapport html
@@ -3478,7 +3478,12 @@ then
             git push --tags shared Livraison:TMA
 	    [ "$Composant" = TrioCFD ] && git push --tags shared Livraison
 	    echo "    Call git tag $label"
-            git tag $label
+            if [ "$Composant" != ModeleCoeur ] 
+            then
+               git tag $label
+            else
+               git tag "$label"b
+            fi
 	    [ "$Composant" != TrioCFD ] && git push --tags ssh://triou@sedna${TRUST_GIT_REPOS%TRUST}$Composant Livraison:master
             git push --tags shared Livraison:master
 	    git fetch --all
@@ -3820,9 +3825,9 @@ at the complete core scale. Through the MATHYS code, TrioMC can be coupled:
 - with the CATHARE code to model the local core behavior during reactor transients.
 TrioMC is based on the TRUST platform.
 
------------------------------------
-New TrioMC2 version released v$new
------------------------------------
+------------------------------------
+New TrioMC2 version released v"$new"b
+------------------------------------
 1. How to run preinstalled version?
 2. Release notes
 
@@ -3835,20 +3840,20 @@ To unsubscribe from this list, send an e-mail to $TRUST_MAIL " > $MESSAGES_LIVRA
 1. How to run preinstalled version?
 ----------------------------------------------------------------------------------------------------
 # for PC connected to CEA SESI network:
-source /soft/der/sesi/TrioMC2/env_TrioMC2-$new.sh
+source /soft/der/sesi/TrioMC2/env_TrioMC2-"$new"b.sh
 
 # for CEA Cadarache cluster (mezel):
-source /soft/mezel/TRIO/env_TrioMC2-$new.sh
+source /soft/mezel/TRIO/env_TrioMC2-"$new"b.sh
 
 # for CEA Saclay cluster (callisto):
-source /home/triou/env_TrioMC2_$new.sh
+source /home/triou/env_TrioMC2_"$new"b.sh
 ----------------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
       echo $ECHO_OPTS "
 --------------------------------------------------------------------------------------------------
 2. \c" >> $MESSAGES_LIVRAISON
          [ -f $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES ] && echo $ECHO_OPTS "$Composant \c" >> $MESSAGES_LIVRAISON && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES >> $MESSAGES_LIVRAISON
          echo " " >> $MESSAGES_LIVRAISON
-         mail_ -s \"New TrioMC2 v$new released\" $TRUST_MAIL < $MESSAGES_LIVRAISON
+         mail_ -s \"New TrioMC2 v"$new"b released\" $TRUST_MAIL < $MESSAGES_LIVRAISON
          sleep 5
          mv -f $MESSAGES_LIVRAISON $REP_NUIT/MESSAGES_LIVRAISON_$Composant
       fi
