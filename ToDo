@@ -54,7 +54,6 @@ Version	Qui				Tache
 0.0.0   trust@cea.fr            Faut il continuer la traduction des mots cle en anglais + aucun jdd de NR avec mots cle non traduits ? (ref DI 3322)
 0.0.0   trust@cea.fr            Faut il reprendre fiche prm ef_stab ? (cf DI 2660)
 1.7.7   triou@cea.fr            Revoir enetete de DoubleTab.h et IntTab.h issu de src/Kernel/Math/__Scalar__Tab
-1.7.7   triou@cea.fr            Verifier colorisation Keywords.txt avec trust -config emacs
 1.7.7   triou@cea.fr            Ajouter theses sur site trio-u
 1.7.7   triou@cea.fr            Comprendre pourquoi md5sum d'une archive differe si elle est telechargee avec curl et non wget
 1.7.7   triou@cea.fr            Revoir si fiches prm et cas test reference ajoutes ne sont pas Kernel

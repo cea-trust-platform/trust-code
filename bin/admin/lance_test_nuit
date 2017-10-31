@@ -648,7 +648,6 @@ cd $TRUST_ROOT
    do
       cd $WORKDIR/sourceforge/Livraison/Composants/$Composant
       BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
-      echo " "
       echo " git push shared TMA in `pwd`"
       [ "$Composant" = TrioCFD ] && git push --tags shared Livraison
       git push --tags shared Livraison:TMA 1>tmp.log 2>&1

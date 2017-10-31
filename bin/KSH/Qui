@@ -2,7 +2,7 @@
 # Script permettant de connaitre la liste des cas tests a repasser
 # pour une classe ou une mathode modifiee
 export PYTHONPATH=$TRUST_ROOT/bin/KSH:$PYTHONPATH
-[ "$*" = "" ] && echo "Usage: `basename $0` class|class::method" && exit -1
+[ "$*" = "" ] && echo "Usage: `basename $0` class|method::class" && exit -1
 echo "==================================================="
 echo "Looking for test coverage of class|method|function:"
 ff="'"$"'"

@@ -408,8 +408,9 @@ do
    [ "$HOST" = curie-ccrt ] && export project="genden"
    # Changement option en -g -O3 afin d'utiliser cachegrind
    [ "`liste_machines "\-cachegrind" | grep ^$HOST_BUILD"\."`" != "" ] && echo $ECHO_OPTS "1,$ s?-O3?-g -O3?g\nw" | ed $TRUST_ROOT/env/make.linux_g++3_opt
-   make && make opt_avx
+   make && cp compile_TRUST*.log compile.tmp && make opt_avx
    err_compile=$?
+   cat compile_TRUST*.log >> compile.tmp && mv compile.tmp compile_TRUST*.log
    [ "`grep BUILD_EXEC=OK compile_$code$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD.log`" != "" ] && err_compile=0
    if [ $MODULE = TRUST ]
    then

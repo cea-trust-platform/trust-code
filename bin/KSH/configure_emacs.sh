@@ -124,7 +124,7 @@ then
       then
         touch $config_file.tmp
 #       echo "(load \"~/.emacs.d/TRUST.emacs\")" >> $config_file
-        echo "(load $path_file)" >> $config_file.tmp
+        echo "(load \"$path_file\")" >> $config_file.tmp
 
         # s'il n'y a pas de fichier, on le cree
         if [ ! -f $config_file ]

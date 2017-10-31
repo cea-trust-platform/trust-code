@@ -27,20 +27,20 @@ To clean also the third party libraries:
 # Quick directories description:
 bin/		TRUST scripts
 doc/		Documentation files
-env/		Environment files
+env_src/ env/	Environment files
 exec/		Binaries
 include/	Link to all TRUST include files (automatically updated)
-lib/		Libraries
+ThirdPart/ lib/	Libraries
 src/		TRUST sources 
 tests/		TRUST tests
 Outils/		Tools to build TRUST
 Validation/	Location of Validation forms
-form/       GUI tools (obsolete)
-IHM/ Milieux_reference/ Modeles/ GUI (obsolete)
+IHM/		GUI tools
+form/ Milieux_reference/ Modeles/ (obsolete)
 
 # Quick files description:
 DEVELOPER_NOTES	Developer notes (manually and regulary updated by support)
-FAQ			Faq (obsolete?)
+FAQ		Faq (obsolete?)
 Makefile	List of targets to build the code
 README		This file
 RELEASE_NOTES	Release notes (manually and regulary updated by support)
