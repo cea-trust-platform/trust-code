@@ -77,21 +77,6 @@
    ...
 }
 
-# Triggered by CasCouplage_jdd[2-4] ICoCo tests NR on is210376, g++ 7.1.1, Fedora 26
-{
-   <MUMPS_Cholesky1>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:calloc
-   ...
-   fun:dmumps_ana_driver_
-   fun:dmumps_
-   fun:dmumps_f77_
-   fun:dmumps_c
-   fun:MatCholeskyFactorSymbolic_MUMPS
-   fun:MatCholeskyFactorSymbolic
-   fun:PCSetUp_Cholesky
-}
 
 
 # Triggered by 
@@ -104,15 +89,54 @@
 #   PAR_cpu_3D_VEF
 #   PAR_Fiche_validation_Re395_Pr0.71_jdd1
 #   les_Re395Pr0025_T0Q_jdd5
+# Triggered by CHCa2 on PXP
+# Triggered by CasCouplage_jdd[2-4] ICoCo tests NR on is210376, g++ 7.1.1, Fedora 26
 {
    <MUMPS_para9>
    Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
+   fun:*alloc
    ...
    fun:dmumps_
    fun:dmumps_f77_
    ...
+}
+
+###
+### Other PETSC (from PXP mainly)
+###
+{
+   <pxp_LU_2>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:*alloc
+   ...
+   fun:ompi_comm_activate
+   fun:ompi_comm_dup_with_info
+   fun:PMPI_Comm_dup
+   fun:PetscInitializeMUMPS
+   fun:MatGetFactor_aij_mumps
+   fun:MatGetFactor
+   fun:PCSetUp_LU
+   fun:PCSetUp
+}
+{
+   <pxp_5>
+   Memcheck:Leak
+   fun:*alloc
+   ...
+   fun:ompi_comm_dup_with_info
+   fun:PMPI_Comm_dup
+   fun:PetscCommDuplicate
+   fun:PetscHeaderCreate_Private
+}
+{
+   <pxp_3>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:*alloc
+   ...
+   fun:PetscViewerASCIIOpen
+   fun:PetscFinalize
 }
 
 ###
@@ -158,13 +182,14 @@
 
 # upwind on clang++ 3.8.0, Fedora 24 (is210376)
 # upwind and PAR_upwind tests on is210376, clang++ 4.0.0, Fedora 26
+# Triggered by CHCa2 on PXP
 {
    <upwind_clang_3_8_0_0>
    Memcheck:Leak
    fun:*alloc
    ...
    fun:opal_libevent2022_event_base_loop
-   fun:progress_engine
+   ...
    fun:start_thread
    fun:clone
 }
@@ -200,14 +225,12 @@
    fun:PetscInitialize
    ...
 }
-{
+# Also triggered 
+{ 
    <upwind_clang_3_8_0_42>
    Memcheck:Leak
    fun:malloc
-   fun:pmix_client_deregister_errhandler
-   fun:OPAL_PMIX_PMIX112_PMIx_Deregister_errhandler
-   fun:pmix1_client_finalize
-   fun:rte_finalize
+   ...
    fun:orte_finalize
    fun:ompi_mpi_finalize
    fun:PetscFinalize
@@ -233,18 +256,30 @@
 
 # upwind - is223279 en Fedora 18 - g++ 4.7.2 - OpenMPI 2.0.2
 # is147462 en Fedora 22 - g++ 5.1.1 - OpenMPI 2.0.2
+# Triggered by upwind and PAR_upwind tests with OpenMPI 2.0.2 (provided library)
+# on is210968, g++ 4.8.5, CentOS 7.3
+
+# The below is quite large, but on Clang for example we see tons of errors like the one below! Even string functions looks leaky ...
+#{
+#   <insert_a_suppression_name_here>
+#   Memcheck:Leak
+#   match-leak-kinds: definite
+#   fun:realloc
+#   fun:vasprintf
+#   fun:asprintf
+#   fun:ompi_mpi_init
+#   fun:PMPI_Init_thread
+#   fun:PetscInitialize
+#}
+
 {
-   <ompi_2_0_2__2>
+   <upwind_openmpi_2_0_2_4>
    Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   fun:hnp_component_open
-   fun:mca_base_framework_components_open
-   fun:mca_base_framework_open
-   fun:orte_init
+   fun:*alloc
+   ...
    fun:ompi_mpi_init
    fun:PMPI_Init_thread
-   fun:PetscInitialize.part.*
+   fun:PetscInitialize*
    ...
 }
 # upwind -- is225222 en Fedora 18 - g++ 4.7.2 - OpenMPI 2.1.1
@@ -277,19 +312,6 @@
    ...
 }
 
-# Triggered by upwind and PAR_upwind tests with OpenMPI 2.0.2 (provided library)
-# on is210968, g++ 4.8.5, CentOS 7.3
-{
-   <upwind_openmpi_2_0_2_4>
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:*alloc
-   ...
-   fun:ompi_mpi_init
-   fun:PMPI_Init_thread
-   fun:PetscInitialize.part.3
-   ...
-}
 {
    <upwind_openmpi_2_0_2_5>
    Memcheck:Leak
@@ -304,23 +326,6 @@
    fun:PMPI_Bcast
    fun:PetscOptionsInsertFile
    fun:PetscOptionsInsert
-   fun:PetscInitialize.part.3
-   ...
-   fun:main
-}
-{
-   <upwind_openmpi_2_0_2_6>
-   Memcheck:Leak
-   match-leak-kinds: indirect
-   fun:calloc
-   fun:opal_hash_table_init2
-   fun:opal_proc_table_set_value
-   fun:mca_btl_tcp_proc_create
-   fun:mca_btl_tcp_add_procs
-   fun:mca_bml_r2_add_procs
-   fun:mca_pml_ob1_add_procs
-   fun:ompi_mpi_init
-   fun:PMPI_Init_thread
    fun:PetscInitialize.part.3
    ...
    fun:main
@@ -353,6 +358,17 @@
    fun:PetscOptionsInsert
    fun:PetscInitialize.part.2
    ...
+}
+{
+   <upwind_openmpi_2_0_2_11>
+   Memcheck:Leak
+   fun:*alloc
+   ...
+   fun:opal_libevent2022_event_add
+   ...
+   fun:opal_init
+   fun:orte_init
+   fun:ompi_mpi_init
 }
 
 ###
@@ -409,7 +425,16 @@
    fun:dlopen@@GLIBC_2.2.5
    ...
 }
-
-
+# Triggered by CHCa2 on PXP
+{
+   <pxp_openmpi2>
+   Memcheck:Leak
+   ...
+   fun:*alloc
+   ...
+   fun:dlopen@@GLIBC_2.2.5
+   obj:/usr/lib*/openmpi/lib/libopen-pal.so.*
+   ...
+}
 
 

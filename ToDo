@@ -8,7 +8,7 @@ Version	Qui				Tache
 0.0.0   trust@cea.fr            Gestion d un tres grand nombre de fichiers log Zones sauv lata ... (ref DI 4325)
 0.0.0   trust@cea.fr            Integration branche shared/abn/ch_f_med avec test champ_front_med (ref DI 4324)
 1.7.7   celine.capitaine@cea.fr Integration branche gerschen 1.7.5 a ModeleCoeur pour 1.7.7 (cf DI 4322)
-1.7.7   celine.capitaine@cea.fr Remplacer Pr dans loi de paroi en QC FM par calculer_prandtl (cf DI 4320)
+1.7.7   celine.capitaine@cea.fr Remplacer Pr dans loi de paroi en QC FM par calculer_prandtl (ref DI 4320)
 0.0.0   trust@cea.fr            Voir avec equipe TrioMC2  create_domain_from_sous_zone avec par_sous_zones (cf DI 4319)
 1.7.7   celine.capitaine@cea.fr Tester compilateur g++ 7.2.0 (cf DI 4317)
 0.0.0   trust@cea.fr            Voir pour ajouter un test NR avec script python pour projeter via MEDCoupling (ref DI 4315)
@@ -69,6 +69,7 @@ Version	Qui				Tache
 0.0.0   trust@cea.fr            Envoyer a TMA sur prm pour Flica5 (ligne ajoutee par GF a l epoque)
 0.0.0   trust@cea.fr            Polygone.cpp: ToDo a mettre dans triangle (ligne ajoutee par GF a l epoque)
 0.0.0   trust@cea.fr            Reprendre Mod_turb_hyd_base.cpp limitation mut (ligne ajoutee par GF a l epoque)
+1.7.7   triou@cea.fr            Revoir la liste des cas tests renvoyes par Qui selon environnement source TRUST ou BALTIK
 1.7.7   triou@cea.fr            Revoir toutes les fiches exclues pour lancer les cas sans resoudre sinon aucune verif
 1.7.7   triou@cea.fr            Revoir tous les prepare sans make_PAR.data a mettre dans pre_run
 1.7.7   triou@cea.fr            Completer benchmark avec et sans Petsc
@@ -78,6 +79,7 @@ Version	Qui				Tache
 1.7.7   triou@cea.fr            Mettre a jour version dans slides formations
 1.7.7   triou@cea.fr            Tester check valgrind BALTIK
 1.7.7   triou@cea.fr            Tester independance modules BALTIK + check_trust
-1.7.7   triou@cea.fr            Verifier la main_validation du tmptrust
-1.7.6   triou@cea.fr            Recuperer l archive de couverture de code du super build
+1.7.6   triou@cea.fr            Verifier la main_validation du tmptrust
+1.7.7   triou@cea.fr            Recuperer l archive de couverture de code du super build
 1.7.7   triou@cea.fr            Verifier http://downloads.sourceforge.net/project/trust-platform/X.Y.Z/extra/
+1.7.7   triou@cea.fr            Tester GUI via test_v sur version reseau des differents OS CEA
