@@ -44,7 +44,6 @@ Version	Qui				Tache
 0.0.0   trust@cea.fr            Voir avec equipe TrioCFD si baltik gradV VDF est pret pour etre integre a TRUST (ref DI 4094)
 0.0.0   trust@cea.fr            Qui reprend cette activite ? Ajout d un passif - traitement CEA a l epoque par Gauthier (cf DI 4076)
 0.0.0   trust@cea.fr            Qui reprend cette activite ? Point verification - traitement CEA a l epoque par Gauthier (cf DI 4017)
-0.0.0   trust@cea.fr            Qui reprend cette activite ? Methode echange_espace_virtuel - traitement CEA car IJK (cf DI 3990)
 0.0.0   trust@cea.fr            Revoir le PATH pour module load TRUST sous occigen - passer par SET (cf DI 3932)
 1.7.7   celine.capitaine@cea.fr Proposer un tuto ICoCo (cf DI 3889)
 0.0.0   trust@cea.fr            Voir pb chgt base P1Bulle avec CL perio (ref DI 3829)
@@ -79,7 +78,8 @@ Version	Qui				Tache
 1.7.7   triou@cea.fr            Mettre a jour version dans slides formations
 1.7.7   triou@cea.fr            Tester check valgrind BALTIK
 1.7.7   triou@cea.fr            Tester independance modules BALTIK + check_trust
-1.7.6   triou@cea.fr            Verifier la main_validation du tmptrust
+1.7.7   triou@cea.fr            Verifier la main_validation du tmptrust
 1.7.7   triou@cea.fr            Recuperer l archive de couverture de code du super build
 1.7.7   triou@cea.fr            Verifier http://downloads.sourceforge.net/project/trust-platform/X.Y.Z/extra/
 1.7.7   triou@cea.fr            Tester GUI via test_v sur version reseau des differents OS CEA
+1.7.6   triou@cea.fr            En attente accord CEA
