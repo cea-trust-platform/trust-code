@@ -10,7 +10,7 @@ Version	Qui				Tache
 1.7.7   celine.capitaine@cea.fr Integration branche gerschen 1.7.5 a ModeleCoeur pour 1.7.7 (cf DI 4322)
 1.7.7   celine.capitaine@cea.fr Remplacer Pr dans loi de paroi en QC FM par calculer_prandtl (ref DI 4320)
 0.0.0   trust@cea.fr            Voir avec equipe TrioMC2  create_domain_from_sous_zone avec par_sous_zones (cf DI 4319)
-1.7.7   celine.capitaine@cea.fr Tester compilateur g++ 7.2.0 (cf DI 4317)
+1.7.7   celine.capitaine@cea.fr Tester compilateur g++ 7.2.0 (ref DI 4317)
 0.0.0   trust@cea.fr            Voir pour ajouter un test NR avec script python pour projeter via MEDCoupling (ref DI 4315)
 0.0.0   trust@cea.fr            Prendre en compte les remarques pour ameliorer genereCourbe (ref DI 4315)
 0.0.0   trust@cea.fr            Retrouver Champ_generique_from_champ_base dans baltik hors TMA (cf DI 4307)
@@ -31,7 +31,7 @@ Version	Qui				Tache
 0.0.0   trust@cea.fr            Est ce que baltik MG integrable a TRUST ? (ref DI 4211)
 0.0.0   trust@cea.fr            Voir avec equipe TrioCFD pour baltik loi_rho_T  (cf DI 4206)
 0.0.0   trust@cea.fr            Voir en reunion TrioCFD le suivi de residu de turbulence en norme L2 (cf DI 4191)
-1.7.7   celine.capitaine@cea.fr Portabilite de PLOT_WIZARD et PLOT_2D sur host cible ? (cf DI 4159)
+1.7.7   celine.capitaine@cea.fr Portabilite de PLOT_WIZARD et PLOT_2D sur host cible avec python 2.7.6 maj configurer_env (ref DI 4159)
 0.0.0   trust@cea.fr            Voir en reunion TrioCFD pour definir ce qui manque a TRUST pour realiser Benchmarck GEMIX (cf DI 4146)
 0.0.0   trust@cea.fr            Voir si champ composante_normale peut etre utilise en VDF et VEF (ref DI 4127)
 1.7.7   celine.capitaine@cea.fr Reprendre cas test TrioCFD PAR_CANAL_QC_Turb_Timposees_dt293K_VEF_imp avec petsc cholesky (ref DI 4123)
@@ -76,10 +76,10 @@ Version	Qui				Tache
 1.7.7   triou@cea.fr            Voir pour ajouter test Execute_parallel lors du configure pour verifier l'installation MPI
 1.7.7   triou@cea.fr            Probleme avec pre-commit et post-commit qui modifie des fichiers lors du commit apres nos tests !!! Le faire lors du compile et si modif alors arret...
 1.7.7   triou@cea.fr            Mettre a jour version dans slides formations
-1.7.7   triou@cea.fr            Tester check valgrind BALTIK
-1.7.7   triou@cea.fr            Tester independance modules BALTIK + check_trust
-1.7.7   triou@cea.fr            Verifier la main_validation du tmptrust
 1.7.7   triou@cea.fr            Recuperer l archive de couverture de code du super build
-1.7.7   triou@cea.fr            Verifier http://downloads.sourceforge.net/project/trust-platform/X.Y.Z/extra/
-1.7.7   triou@cea.fr            Tester GUI via test_v sur version reseau des differents OS CEA
+0.0.0   trust@cea.fr            Tester check valgrind BALTIK
+0.0.0   trust@cea.fr            Tester independance modules BALTIK + check_trust
+0.0.0   trust@cea.fr            Verifier la main_validation du tmptrust
+0.0.0   trust@cea.fr            Verifier http://downloads.sourceforge.net/project/trust-platform/X.Y.Z/extra/
+0.0.0   trust@cea.fr            Tester GUI via test_v sur version reseau des differents OS CEA
 1.7.6   triou@cea.fr            En attente accord CEA
