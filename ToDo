@@ -79,6 +79,7 @@ Version	Qui				Tache
 1.7.7   triou@cea.fr            Recuperer l archive de couverture de code du super build
 0.0.0   trust@cea.fr            Tester check valgrind BALTIK
 0.0.0   trust@cea.fr            Tester independance modules BALTIK + check_trust
+0.0.0   trust@cea.fr            Verifier bin/BUILD64/patch
 0.0.0   trust@cea.fr            Verifier la main_validation du tmptrust
 0.0.0   trust@cea.fr            Verifier http://downloads.sourceforge.net/project/trust-platform/X.Y.Z/extra/
 0.0.0   trust@cea.fr            Tester GUI via test_v sur version reseau des differents OS CEA

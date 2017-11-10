@@ -282,6 +282,20 @@
    fun:PetscInitialize*
    ...
 }
+# From Adela PUSCAS:
+{
+   <upwind_openmpi_2_0_2_5>
+   Memcheck:Leak
+   fun:memalign
+   ...
+   fun:hwloc_topology_load
+   fun:opal_hwloc_base_get_topology
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize*
+   ...
+}
+
 # upwind -- is225222 en Fedora 18 - g++ 4.7.2 - OpenMPI 2.1.1
 {
    <ompi_2_1_1__1>
@@ -370,6 +384,17 @@
    fun:orte_init
    fun:ompi_mpi_init
 }
+# upwind on is212798 (Fed18)
+{
+   <upwind_openmpi_2_0_2_12>
+   Memcheck:Cond
+   fun:opal_value_unload
+   fun:ompi_proc_complete_init
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize*
+   ...  
+}
 
 ###
 ###  Various (and ugly ...)
@@ -437,4 +462,65 @@
    ...
 }
 
+
+##
+##  Callisto with OpenMPI
+##
+{
+   <callisto_openmpi_1>
+   Memcheck:Cond
+   ...
+   fun:ompi_mtl_psm_module_init
+   fun:ompi_mtl_psm_component_init
+   fun:ompi_mtl_base_select
+   fun:mca_pml_cm_component_init
+   fun:mca_pml_base_select
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+}
+
+{
+   <callisto_openmpi_2>
+   Memcheck:Leak   
+   ...
+   fun:opal_db_base_commit
+   fun:modex
+   fun:ompi_mpi_init
+   fun:PMPI_Init_thread
+   fun:PetscInitialize
+}
+{
+   <callisto_openmpi_3>
+   Memcheck:Leak
+   ...
+   fun:ipath_poll_type
+   fun:psmi_context_interrupt_set
+   fun:ips_ptl_rcvthread_fini
+   fun:ips_ptl_fini
+   fun:psm_ep_close
+   fun:ompi_mtl_psm_finalize
+   fun:ompi_mpi_finalize
+   fun:PetscFinalize
+}
+{
+   <callisto_openmpi_4>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:strdup
+   fun:init_ipath_mylabel
+   obj:/usr/lib64/libinfinipath.so.*
+   ...
+}
+{
+   <callisto_openmpi_5>
+   Memcheck:Leak
+   fun:*alloc
+   ...
+   fun:ompi_mtl_psm_module_init
+   fun:ompi_mtl_psm_component_init
+   fun:ompi_mtl_base_select
+   fun:mca_pml_cm_component_init
+   fun:mca_pml_base_select
+}
 
