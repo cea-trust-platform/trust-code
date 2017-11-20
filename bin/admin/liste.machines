@@ -5,7 +5,7 @@ linux	rsync_ssh	cible		is210376-clang.intra.cea.fr			-TrioCFD -ModeleCoeur		-cla
 linux	rsync_ssh	cible		is223196.intra.cea.fr		-all		-MPCube -TrioCFD -ModeleCoeur	-gcov		-force_provided_mpich			# CentOS 6.4 	Bat 451 LMEC	bureau TMA GENEPI2
 linux	rsync_ssh	cible		is221556.intra.cea.fr				-MPCube -TrioCFD -ModeleCoeur			-force_provided_mpich			# Ubuntu 16.04  Bat 451	LGLS	bureau a cote de Clarisse Genrault
 linux	rsync_ssh	cible		is223284.intra.cea.fr				-MPCube -TrioCFD -ModeleCoeur			-force_provided_mpich			# CentOS 7.3	Bat 451	LGLS	bureau a cote de Clarisse Genrault	
-linux	rsync_ssh	tache		cezanne63.intra.cea.fr				-ModeleCoeur					-force_provided_mpich			# Debian 8	CEA Cadarache
+linux	rsync_ssh	cible		cezanne63.intra.cea.fr				-ModeleCoeur					-force_provided_mpich			# Debian 8	CEA Cadarache
 linux	rsync_ssh	get_binary	is224591.intra.cea.fr															# CentOS 6.4	Bat 526 LMEC	bureau TMA FLICA4
 linux	rsync_ssh	cible		cobalt.ccc.cea.fr		-limited	-TrioCFD			-benchmark						# RedHat 7.3	CEA CCRT
 linux	rsync_ssh	cible		curie-ccrt.ccc.cea.fr		-limited	-TrioCFD			-benchmark						# RedHat 6.9	CEA TGCC
@@ -39,3 +39,6 @@ linux	rsync_ssh	non		is225220.intra.cea.fr				-TrioCFD -ModeleCoeur		-g 		-downl
 linux	rsync_ssh	non		is225221.intra.cea.fr				-TRUST -MPCube			-g 		-download-salome			# Fedora 18	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non		is225222.intra.cea.fr				-TRUST -MPCube -TrioCFD -ModeleCoeur -avx						# Fedora 18	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	non		is225223.intra.cea.fr				-TRUST -MPCube -TrioCFD	-ModeleCoeur -gui						# Fedora 18	Bat 451	LGLS	salle de formation
+linux	rsync_ssh	non		cobalt-wi4mpi.ccc.cea.fr									-disable-optionals			# RedHat 7.3	CEA CCRT
+linux	rsync_ssh	non		curie-ccrt-openmpi.ccc.cea.fr														# RedHat 6.9	CEA TGCC
+linux	rsync_ssh	non		is232983.intra.cea.fr				-TRUST -MPCube -TrioCFD -ModeleCoeur		-force_provided_mpich			# CentOS 7.4	Bat ?  	LATF	bureau Alain Genty

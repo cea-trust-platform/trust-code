@@ -59,6 +59,7 @@ Version	Qui				Tache
 0.0.0   trust@cea.fr            Changement du calculs des residuals pour la convergence (cf DI 2571 + DI 4191)
 1.7.7   celine.capitaine@cea.fr Liste des cas qui font des ecarts possibles avec la 1.6.3 (cf DI 2493)
 1.7.7   celine.capitaine@cea.fr Renforcement couverture de code (cf DI 2465)
+1.7.7   triou@cea.fr            Voir pour ajouter dans l atelier une compilation en buid64
 1.7.7   triou@cea.fr            Revoir enetete de DoubleTab.h et IntTab.h issu de src/Kernel/Math/__Scalar__Tab
 1.7.7   triou@cea.fr            Comprendre pourquoi md5sum d'une archive differe si elle est telechargee avec curl et non wget
 1.7.7   triou@cea.fr            Revoir si fiches prm et cas test reference ajoutes ne sont pas Kernel

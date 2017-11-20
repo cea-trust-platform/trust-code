@@ -1,4 +1,7 @@
 --------------------------------------------------------------------------------------------------
+Release notes version 1.7.7_beta : Enhancements, modifications and corrected bugs since version 1.7.6 :
+--------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
 Release notes version 1.7.6 : Enhancements, modifications and corrected bugs since version 1.7.5 :
 --------------------------------------------------------------------------------------------------
 26/10/17 (TRUST)  New feature : Possibility to write a MED file in the last major version of MED file format with keyword 'med_major'

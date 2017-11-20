@@ -9,7 +9,7 @@ echo "Usage: `basename $0` ./TRUST-X.Y.Z.tar.gz [-install [-remote hostname]] [-
 paquet=`basename $1`
 version=`echo $paquet | sed 's/TRUST-//' | sed 's/.tar.gz//'`
 paquet=`pwd`/$paquet
-[ ! -f $paquet ] && echo "$paquet file not found" && exit
+[ ! -f $paquet ] &&  echo "Installation KO! cannot access $paquet: No such file" && exit
 export install=0 	&& [ "$2" = -install ]	&& install=1 	&& shift
 export remote=0 	&& [ "$2" = -remote ]	&& remote="-remote $3" && shift && shift
 export kind=""	 	&& [ "$2" != "" ] 	&& kind=$2

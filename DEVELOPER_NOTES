@@ -1,4 +1,7 @@
 -------------------------------------------------------------
+Developer notes version 1.7.7_beta : Changes since version 1.7.6 :
+-------------------------------------------------------------
+-------------------------------------------------------------
 Developer notes version 1.7.6 : Changes since version 1.7.5 :
 -------------------------------------------------------------
 29/09/17 (Tools)  New option to skip VisIt generation: option '-no_visit' for Run_fiche or env variable 'export PRM_NO_VISIT=1'

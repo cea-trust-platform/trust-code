@@ -2652,7 +2652,7 @@ OK=`wc -l $TRUST_ROOT/build/Outils/TRIOXDATA/XTriou/list_keywords_xdata_tested |
 let KO=$NB-$OK
 echo "    $OK keywords covered by test cases"
 echo "    $KO keywords NOT covered by test cases"
-keywords_minimal=82.89 #v1.7.5
+keywords_minimal=83.00 #v1.7.6 ; 82.89 v1.7.5
 
 echo " "
 couverture_de_motcle=`echo $ECHO_OPTS "scale=2;100*$OK/$NB" | bc -l`
@@ -2862,7 +2862,7 @@ do
 done
 # Envoi la liste complete le lundi au chef de projet avant COSUIV pour planning de la semaine
 grep ${TRUST_VERSION%_beta} $TRUST_ROOT/ToDo > $TRUST_TMP/ToDo
-[ "`date '+%u'`" = 1 ] && cat $TRUST_TMP/ToDo | mail_ -s\"[lance_test_nuit] ToDo list for next Monday COSUIV\" -c $TRUST_MAIL $TMA_PROJECT_LEADER
+[ "`date '+%u'`" = 1 ] && cat $TRUST_TMP/ToDo | mail_ -s\"[lance_test_nuit] ToDo list for next Monday COSUIV\" $TRUST_MAIL
 rm -f $TRUST_TMP/ToDo
 #
 echo " "
@@ -3393,6 +3393,7 @@ then
 	 accord_beta=0
 	 echo "  Call git tag $label at "`date`
          git tag $label
+         git push --tags shared Livraison
 	 # On pose le meme tag sur externalpackages
          cd externalpackages
          git commit --all -m"Commit for an official Release $label version."
@@ -3440,6 +3441,7 @@ then
                # Le repo officiel pointe desormais sur la branche (exemple: patch_XYZ) # Temporary
 	       #echo "  Update $TRUST_GIT_REPOS repos on $TRUST_GIT_SERVER server"
                #ssh triou@$TRUST_GIT_SERVER -n 'cd '$TRUST_GIT_REPOS';git symbolic-ref HEAD refs/heads/'$patch_new
+	       touch $TRUST_ROOT/.RELEASE_NOTES
 	    else
 	       echo "" | mail_ -s\"[lance_test_nuit] Error for git checkout \-b $patch_new $label in Maintenance view\" $TRUST_MAIL
 	    fi
@@ -3500,7 +3502,12 @@ then
 	       cd $WORKDIR/sourceforge/Livraison/Composants/$Composant
 	       echo "from `pwd`"
 	       git fetch --all
-	       git checkout -b $patch_new $label
+	       if [ "$Composant" != ModeleCoeur ] 
+               then
+	          git checkout -b $patch_new $label
+               else
+	          git checkout -b $patch_new "$label"b
+               fi
 	       if [ $? = 0 ]
 	       then
 	          #git symbolic-ref HEAD refs/heads/$patch_new
@@ -3705,7 +3712,7 @@ source /softs/trio_u/env_TRUST-$new.sh
 # for CEA CCRT-TGCC supercomputers (cobalt & curie-ccrt):
 source /ccc/cont002/home/den/triou/env_TRUST-$new.sh
 
-# for CINES supercomputer (occigen & cristal):
+# for CINES supercomputer (occigen & VisIt is available on cristal):
 source /panfs/panasas/softs/applications/trio_u/env_TRUST-$new.sh
 ----------------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
       echo $ECHO_OPTS "
@@ -3804,7 +3811,7 @@ source /softs/trio_u/env_TrioCFD-$new.sh
 # for CEA CCRT-TGCC supercomputers (cobalt & curie-ccrt):
 source /ccc/cont002/home/den/triou/env_TrioCFD-$new.sh
 
-# for CINES supercomputer (occigen & cristal):
+# for CINES supercomputer (occigen):
 source /panfs/panasas/softs/applications/trio_u/env_TrioCFD-$new.sh
 ----------------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
       echo $ECHO_OPTS "
