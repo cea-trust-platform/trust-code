@@ -593,9 +593,9 @@ cd $TRUST_ROOT
    fi
    rm -f $tuto.new
    tuto=doc/TRUST/Tutorial/Baltik_tutorial.tex
-   version=`$TRUST_Awk '/ Project V/ {print $4}' $tuto`
+   version=`$TRUST_Awk '/ Tutorial V/ {print $5}' $tuto`
    echo $ECHO_OPTS "1,$ s?$version?V${new/"_"/}]{TRUST?g\nw $tuto.new" | ed $tuto 1>/dev/null 2>&1
-   version=`$TRUST_Awk '/ Project V/ {print $7}' $tuto.new`
+   version=`$TRUST_Awk '/ Tutorial V/ {print $9}' $tuto.new`
    echo $ECHO_OPTS "1,$ s?$version?V${new/"_"/}}?g\nw $tuto.new" | ed $tuto.new 1>/dev/null 2>&1
    if [ "`diff $tuto $tuto.new`" != "" ]
    then
