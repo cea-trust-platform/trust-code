@@ -268,7 +268,7 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
         exec_script += " ";
         exec_script += Nom(Process::me());
         Cerr << "[" << Process::me() << "] Debug mode => execute command : " << exec_script << finl;
-        Cerr << system(exec_script) << finl;
+        std::cerr << system(exec_script) << std::endl;
       }
 
     if (master)

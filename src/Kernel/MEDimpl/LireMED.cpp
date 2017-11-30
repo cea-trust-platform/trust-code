@@ -1090,7 +1090,7 @@ int medliregeom(Nom& nom_fic,const Nom& nom_dom,const Nom& nom_dom_trio,int& dim
                         int lnumfam = 5+nnumfam.longueur();
                         Nom nomfamcut(nom_famille.substr_old(lnumfam, nom_famille.longueur()-lnumfam));
                         noms_bords[i] = nomfamcut;
-                        Cerr << "### noms_bord = " << nomfamcut << " numfam = " << numfam << finl;
+                        std::cerr << "### noms_bord = " << nomfamcut << " numfam = " << numfam << std::endl;
                       }
                     else
                       {

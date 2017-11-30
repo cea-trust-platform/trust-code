@@ -822,6 +822,16 @@ then
 	      i=""
            fi
 	fi
+	# Discard MEDCoupling test case if no MEDCoupling capabilities
+	if [ "$TRUST_DISABLE_MEDCOUPLING" = 1 ]
+	then
+	   if [ "`grep -i medcoupling $REP/* 2>/dev/null`" != "" ]
+	   then
+              echo "Test $i skipped (no MEDCoupling)"
+	      liste_skipped=$liste_skipped" $i"
+	      i=""
+           fi
+	fi
 	# Discard Gmsh test case if no Gmsh capabilities
 	if [ "$TRUST_DISABLE_GMSH" = 1 ]
 	then

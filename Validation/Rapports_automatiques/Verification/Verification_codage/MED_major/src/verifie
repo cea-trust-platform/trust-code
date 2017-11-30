@@ -2,6 +2,7 @@
 
 filen='MED_major_jdd1_0000.med'
 
+[ "$TRUST_DISABLE_MEDCOUPLING" != 0 ] && exit 0
 source $TRUST_MEDCOUPLING_ROOT/env.sh || exit 1
 [ "$MED_COUPLING_PYTHON" != "ON" ] && exit 0
 # Version of file
