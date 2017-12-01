@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -359,7 +359,7 @@ void Equation_base::ecrire_fichier_xyz() const
       const int nb_pas_dt = le_schema_en_temps->nb_pas_dt();
       const int stationnaire_atteint = le_schema_en_temps->stationnaire_atteint();
       int ok;
-      if (dt_ecrire_fic<=dt || tmax<=temps_courant || nb_pas_dt_max<=nb_pas_dt || nb_pas_dt<=1 || stationnaire_atteint)
+      if (dt_ecrire_fic<=dt || tmax<=temps_courant || nb_pas_dt_max<=nb_pas_dt || nb_pas_dt<=1 || stationnaire_atteint || le_schema_en_temps.valeur().stop_lu())
         ok=1;
       else
         {
