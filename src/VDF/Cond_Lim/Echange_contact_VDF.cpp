@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -420,11 +420,20 @@ int Echange_contact_VDF::verifier_correspondance() const
       if (!meme_point2(x1,x2))
         {
           Cerr<<finl;
-          Cerr<<"Probleme de correspondance:" <<finl;
-          Cerr<<"Les raccords "<<ma_front_vf.le_nom() <<" ne sont pas en face."<<finl;
-          Cerr<<"Coordonnees de la face 1:"<<x1<<finl;
-          Cerr<<"Coordonnees de la face 2:"<<x2<<finl;
-          Cerr<<"En VDF, la numerotation des faces sur chaque raccord doit etre identique a une constante pres." << finl;
+          Cerr<<"Correspondence problem: the two 'Raccords' named "<<ma_front_vf.le_nom() <<" are not facing."<<finl;
+          Cerr<<"Problem on the following faces:" << finl;
+          if ( dimension==2 )
+            {
+              Cerr << "Coordinates of the face 1: (" << x1[0] << " " << x1[1] << ") on the domain " << ma_zvdf.domaine_dis().domaine().le_nom() << finl;
+              Cerr << "Coordinates of the face 2: (" << x2[0] << " " << x2[1] << ") on the domain " << zvdf_2.domaine_dis().domaine().le_nom()  << finl;
+            }
+          else
+            {
+              Cerr << "Coordinates of the face 1: (" << x1[0] << " " << x1[1] << x1[2] << ") on the domain " << ma_zvdf.domaine_dis().domaine().le_nom() << finl;
+              Cerr << "Coordinates of the face 2: (" << x2[0] << " " << x2[1] << x2[2] << ") on the domain " << zvdf_2.domaine_dis().domaine().le_nom()  << finl;
+            }
+          Cerr << "\nIn VDF, numbering of faces on each 'Raccord' must be identical (to a constant)." << finl;
+          Cerr << "The faces of each sub frontier of the boundary " << ma_front_vf.le_nom() << " must be created in the same order on each domain, this process is sensitive to the reading sense of the faces." << finl;
           exit();
           return 0;
         }
