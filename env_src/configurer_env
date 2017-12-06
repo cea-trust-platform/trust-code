@@ -893,7 +893,7 @@ compiler_found=1
 # Update to 3.0.1 to fix recursive cmake
 ######################################################################
 e="`cherche_file cmake cmake`";eval $e
-CMAKE_VERSION_OK=`$cmake --version 2>&1 | awk '/cmake version/ {split($3,a,".");v=a[1]*100+a[2]*10+a[3];print (v>=301?1:0)}'`
+CMAKE_VERSION_OK=`$cmake --version 2>&1 | awk '/cmake version/ {split($3,a,".");v=a[1]*100+a[2]*10+a[3];print (v>=352?1:0)}'`
 if [ "$CMAKE_VERSION_OK" != 1 ]
 then
   if [ $TRUST_ARCH = cygwin ]
