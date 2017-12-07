@@ -250,9 +250,11 @@ void Schema_Temps_base::validateTimeStep()
             }
           Nom prg(nom_du_cas());
           prg+=".progress";
-          SFichier toto(prg);
-          toto<< (percent)<< finl;
-
+          if (!disable_progress())
+            {
+              SFichier toto(prg);
+              toto<< (percent)<< finl;
+            }
         }
     }
   // Update time scheme:
@@ -262,8 +264,11 @@ void Schema_Temps_base::terminate()
 {
   Nom prg(nom_du_cas());
   prg+=".progress";
-  SFichier toto(prg);
-  toto<< (int)100<< finl;
+  if (!disable_progress())
+    {
+      SFichier toto(prg);
+      toto<< (int)100<< finl;
+    }
 
 }
 
@@ -337,6 +342,7 @@ void Schema_Temps_base::set_param(Param& param)
   param.ajouter( "precision_impr",&precision_impr_);
   param.ajouter_non_std( "periode_sauvegarde_securite_en_heures",(this));
   param.ajouter_non_std( "no_check_disk_space",(this));
+  param.ajouter_flag( "disable_progress",&disable_progress_);
 }
 // Description:
 //    Surcharge Objet_U::printOn(Sortie&)
@@ -379,6 +385,7 @@ Sortie& Schema_Temps_base::printOn(Sortie& os) const
   os << "impr_diffusion_implicite " << impr_diff_impl_ << finl ;
   os << "niter_max_diffusion_implicite " << niter_max_diff_impl_ << finl ;
   os << "no_file_allocation " << file_allocation_ << finl ;
+  os << "disable_progress " << disable_progress_ << finl ;
   os << "fin " << finl;
   return os ;
 }
@@ -555,6 +562,7 @@ Schema_Temps_base::Schema_Temps_base()
   file_allocation_=0; // Desactive car pose probleme sur platine sur les gros maillages
   residu_old_slope_=-1000;
   cumul_slope_=1e-20;
+  disable_progress_ = 0;
 }
 // Description:
 //    Impression du numero du pas de temps, la valeur du pas de temps.

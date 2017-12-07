@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -328,8 +328,13 @@ public :
   inline virtual void modifier_second_membre(const Equation_base& eqn, DoubleTab& secmem) { };
 
   // pour implicite ajoute l'inertie a la matrice et au scd membre
-
   virtual void ajouter_inertie(Matrice_Base& mat_morse,DoubleTab& secmem,const Equation_base& eqn) const;
+
+  // Flag to disable the writing of the .progress file
+  inline int disable_progress() const
+  {
+    return disable_progress_ ;
+  };
 protected :
 
   REF(Probleme_base) mon_probleme;
@@ -377,6 +382,7 @@ protected :
 private:
   int stationnaire_atteint_;	// Stationary reached by the problem using this scheme
   bool stationnaires_atteints_;	// Stationary reached by the calculation (means all the problems reach stationary)
+  int disable_progress_; // Flag to disable the writing of the .progress file
 };
 
 
