@@ -1,7 +1,7 @@
 #!/bin/bash
 # OpenMPI install script
 old_version=1.2.9
-default_version=2.0.2
+default_version=2.0.4
 latest_version=2.1.2
 version=$default_version
 # Cas ou l'on force la version la plus recente:

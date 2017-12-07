@@ -5,7 +5,7 @@ a482686e733514a51cde12d6fe5c5d95  MED/hdf5-1.8.14.tar.gz
 0b3d42765f1a1aaca1e7503650211277  MED/med-3.2.1.tar.gz
 f414cfa77099cd1fa1a5ae4e22db508a  MPI/mpich-3.2.tar.gz
 0095ceecb19bbb7fb262131cb9c2cdd6  MPI/mvapich2-2.1.tgz
-886698becc5bea8c151c0af2074b8392  MPI/openmpi-2.0.2.tar.gz
+e88f03a947c03539180b4711adfcf324  MPI/openmpi-2.0.4.tar.gz
 ec1224a216a084684bab6cd0dbf592f8  MPI/osu-micro-benchmarks-3.8.tar
 1d8728eb0dfcac72a0fd99c17ec7f386  Python-2.7.6.tgz
 3cb7174c13bd45e3e8f77638926cb8c0  Python_modules/PySide-1.2.4.tar.gz
