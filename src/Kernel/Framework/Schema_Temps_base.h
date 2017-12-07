@@ -335,6 +335,11 @@ public :
   {
     return disable_progress_ ;
   };
+  // Flag to disable the writing of the .dt_ev file
+  inline int disable_dt_ev() const
+  {
+    return disable_dt_ev_ ;
+  };
 protected :
 
   REF(Probleme_base) mon_probleme;
@@ -383,6 +388,7 @@ private:
   int stationnaire_atteint_;	// Stationary reached by the problem using this scheme
   bool stationnaires_atteints_;	// Stationary reached by the calculation (means all the problems reach stationary)
   int disable_progress_; // Flag to disable the writing of the .progress file
+  int disable_dt_ev_; // Flag to disable the writing of the .dt_ev file
 };
 
 

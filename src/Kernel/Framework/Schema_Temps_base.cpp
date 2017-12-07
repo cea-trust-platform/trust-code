@@ -47,15 +47,18 @@ void Schema_Temps_base::initialize()
     {
       Nom fichier(nom_du_cas());
       fichier+=".dt_ev";
-      struct stat f;
-      // On initialise le fichier .dt_ev s'il n'existe pas ou si c'est un demarrage de calcul sans reprise
-      if ((nb_pas_dt_==0) && ((stat(fichier,&f)) || !(pb_base().reprise_effectuee()==1)))
+      if (!disable_dt_ev())
         {
-          SFichier fic(fichier,(schema_impr() ? (ios::out) : (ios::app)));
-          if (schema_impr())
-            fic << "# temps\t\t dt\t\t facsec\t\t residu=max|Ri|\t dt_stab\t ";
-          for (int i=0; i<pb_base().nombre_d_equations(); i++)
-            fic << pb_base().equation(i).expression_residu();
+          struct stat f;
+          // On initialise le fichier .dt_ev s'il n'existe pas ou si c'est un demarrage de calcul sans reprise
+          if ((nb_pas_dt_==0) && ((stat(fichier,&f)) || !(pb_base().reprise_effectuee()==1)))
+            {
+              SFichier fic(fichier,(schema_impr() ? (ios::out) : (ios::app)));
+              if (schema_impr())
+                fic << "# temps\t\t dt\t\t facsec\t\t residu=max|Ri|\t dt_stab\t ";
+              for (int i=0; i<pb_base().nombre_d_equations(); i++)
+                fic << pb_base().equation(i).expression_residu();
+            }
         }
     }
 
@@ -191,17 +194,19 @@ void Schema_Temps_base::validateTimeStep()
     {
       Nom fichier(nom_du_cas());
       fichier+=".dt_ev";
-      SFichier fic(fichier,ios::app);
-      // On supprime la precision d'impression pour avoir le meme format que la sauvegarde.
-      // fic.precision(precision_impr());
-      fic.setf(ios::scientific);
-      if (schema_impr())
-        fic << finl << temps_courant_ << "\t " << dt_ << "\t " << facsec_ <<"\t " << residu_ << "\t " << dt_stab_ << "\t ";
-      for (int i=0; i<pb_base().nombre_d_equations(); i++)
-        pb_base().equation(i).imprime_residu(fic);
+      if (!disable_dt_ev())
+        {
+          SFichier fic(fichier,ios::app);
+          // On supprime la precision d'impression pour avoir le meme format que la sauvegarde.
+          // fic.precision(precision_impr());
+          fic.setf(ios::scientific);
+          if (schema_impr())
+            fic << finl << temps_courant_ << "\t " << dt_ << "\t " << facsec_ <<"\t " << residu_ << "\t " << dt_stab_ << "\t ";
+          for (int i=0; i<pb_base().nombre_d_equations(); i++)
+            pb_base().equation(i).imprime_residu(fic);
+        }
+
       // Impression du temps CPU estime restant
-
-
       if (schema_impr())
         {
           if ((residu_>0)&&(residu_old_slope_>0))
@@ -343,6 +348,7 @@ void Schema_Temps_base::set_param(Param& param)
   param.ajouter_non_std( "periode_sauvegarde_securite_en_heures",(this));
   param.ajouter_non_std( "no_check_disk_space",(this));
   param.ajouter_flag( "disable_progress",&disable_progress_);
+  param.ajouter_flag( "disable_dt_ev",&disable_dt_ev_);
 }
 // Description:
 //    Surcharge Objet_U::printOn(Sortie&)
@@ -386,6 +392,7 @@ Sortie& Schema_Temps_base::printOn(Sortie& os) const
   os << "niter_max_diffusion_implicite " << niter_max_diff_impl_ << finl ;
   os << "no_file_allocation " << file_allocation_ << finl ;
   os << "disable_progress " << disable_progress_ << finl ;
+  os << "disable_dt_ev " << disable_dt_ev_ << finl ;
   os << "fin " << finl;
   return os ;
 }
@@ -563,6 +570,7 @@ Schema_Temps_base::Schema_Temps_base()
   residu_old_slope_=-1000;
   cumul_slope_=1e-20;
   disable_progress_ = 0;
+  disable_dt_ev_ = 0;
 }
 // Description:
 //    Impression du numero du pas de temps, la valeur du pas de temps.
