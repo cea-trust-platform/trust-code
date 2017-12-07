@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,6 +33,7 @@
 #include <SFichier.h>
 #include <DoubleTab.h>
 #include <Matrice_Morse.h> // necessaire pour visual
+#include <Journal.h>
 
 Implemente_base_sans_constructeur(Schema_Temps_base,"Schema_Temps_base",Objet_U);
 
@@ -955,14 +956,17 @@ int Schema_Temps_base::stop() const
       return 1;
     }
 
-  if (stop_lu())
+  if (!get_disable_stop())
     {
-      Cerr << "---------------------------------------------------------"
-           << finl
-           << "The problem " << pb_base().le_nom()
-           << " wants to stop : stop file detected"
-           << finl << finl;
-      return 1;
+      if (stop_lu())
+        {
+          Cerr << "---------------------------------------------------------"
+               << finl
+               << "The problem " << pb_base().le_nom()
+               << " wants to stop : stop file detected"
+               << finl << finl;
+          return 1;
+        }
     }
   return 0;
 }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,3 +24,5 @@ int get_journal_level();
 void change_journal_level(int new_level);
 void end_journal(int verbose_level);
 void set_Cerr_to_journal(int flag);
+int get_disable_stop();
+void change_disable_stop(int new_stop);
