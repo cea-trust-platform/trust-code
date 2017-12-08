@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -193,8 +193,11 @@ bool ProblemTrio_V2::initialize()
     throw WrongArgument((*my_params).problem_name,"initialize","problem_name","No problem of that name found in data file");
   initialize_pb(*pb);
   // Print the initialization CPU statistics
-  statistiques().dump("Statistiques d'initialisation du calcul", 0);
-  print_statistics_analyse("Statistiques d'initialisation du calcul", 0);
+  if (!Objet_U::disable_TU)
+    {
+      statistiques().dump("Statistiques d'initialisation du calcul", 0);
+      print_statistics_analyse("Statistiques d'initialisation du calcul", 0);
+    }
   statistiques().reset_counters();
   statistiques().begin_count(temps_total_execution_counter_);
   return true;
@@ -229,8 +232,11 @@ void ProblemTrio_V2::terminate()
   pb->postraiter(1);
   pb->terminate();
   int mode_append=1;
-  statistiques().dump("Statistiques Resolution", mode_append);
-  print_statistics_analyse("Statistiques Resolution", 1);
+  if (!Objet_U::disable_TU)
+    {
+      statistiques().dump("Statistiques Resolution", mode_append);
+      print_statistics_analyse("Statistiques Resolution", 1);
+    }
   if(p)
     {
       delete p;

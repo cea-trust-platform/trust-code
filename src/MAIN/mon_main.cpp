@@ -326,8 +326,11 @@ void mon_main::dowork(const Nom& nom_du_cas)
 
   // pour les cas ou on ne fait pas de resolution
   int mode_append=1;
-  statistiques().dump("Statistiques de post resolution", mode_append);
-  print_statistics_analyse("Statistiques de post resolution", 1);
+  if (!Objet_U::disable_TU)
+    {
+      statistiques().dump("Statistiques de post resolution", mode_append);
+      print_statistics_analyse("Statistiques de post resolution", 1);
+    }
 
   double temps = statistiques().get_total_time();
   Cout << finl;

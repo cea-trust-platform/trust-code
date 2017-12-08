@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -110,6 +110,8 @@ public:
   /* methode rajoutee pour caster en python */
   static const Objet_U& self_cast(const Objet_U&);
   static Objet_U& self_cast( Objet_U&);
+
+  static int disable_TU; // Flag to disable the writing of the .TU files
 protected:
   Objet_U();
   Objet_U(const Objet_U&);
