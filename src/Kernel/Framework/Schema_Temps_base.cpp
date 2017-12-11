@@ -435,7 +435,10 @@ Entree& Schema_Temps_base::readOn(Entree& is)
   temps_courant_=tinit_;
   temps_precedent_=tinit_;
   lu_=1;
-  Cerr << "The next backup, by security, will take place after " << limite_cpu_sans_sauvegarde_/3600 << " hours of calculation." << finl;
+  if (dt_sauv_ <= 0.)
+    Cerr << "NO next backup, by security, because dt_sauv = " << dt_sauv_ << finl;
+  else
+    Cerr << "The next backup, by security, will take place after " << limite_cpu_sans_sauvegarde_/3600 << " hours of calculation." << finl;
   return is ;
 }
 
@@ -675,7 +678,10 @@ int Schema_Temps_base::mettre_a_jour()
       limite_cpu_sans_sauvegarde_ += periode_cpu_sans_sauvegarde_;
       //Finalement, on double la limite, ainsi par defaut sauvegarde de securite 10h, 20h, 40h, 80h, 160h,....
       //limite_cpu_sans_sauvegarde_ = 2 * limite_cpu_sans_sauvegarde_;
-      Cerr << "The next backup, by security, will take place after " << limite_cpu_sans_sauvegarde_/3600 << " hours of calculation." << finl;
+      if (dt_sauv_ <= 0.)
+        Cerr << "NO next backup, by security, because dt_sauv = " << dt_sauv_ << finl;
+      else
+        Cerr << "The next backup, by security, will take place after " << limite_cpu_sans_sauvegarde_/3600 << " hours of calculation." << finl;
     }
 // GF pour etre sur que tous les proc aient le meme temps ecoule
   if (je_suis_maitre())
@@ -709,22 +715,29 @@ int Schema_Temps_base::mettre_a_jour()
 // Fait une sauvegarde de protection sur des runs de 24h sur machines du CCRT
 int Schema_Temps_base::lsauv() const
 {
-  if ( temps_cpu_ecoule_ > limite_cpu_sans_sauvegarde_ )
-    {
-      Cerr << "After these " << limite_cpu_sans_sauvegarde_/3600 << " hours of calculation, a backup will be made by security." << finl;
-      return 1;
-    }
+  if (dt_sauv_ <= 0.)
+    return 0;
   else
     {
-      if (dt_sauv_<=dt_)
-        return 1;
+      if ( temps_cpu_ecoule_ > limite_cpu_sans_sauvegarde_ )
+        {
+          Cerr << "After these " << limite_cpu_sans_sauvegarde_/3600 << " hours of calculation, a backup will be made by security." << finl;
+          return 1;
+        }
       else
         {
-          // Voir Schema_Temps_base::limpr pour information sur epsilon et modf
-          double i, j, epsilon = 1.e-8;
-          modf(temps_courant_/dt_sauv_ + epsilon, &i);
-          modf(temps_precedent_/dt_sauv_ + epsilon, &j);
-          return ( i>j ) ;
+          if (dt_sauv_<=dt_)
+            return 1;
+          else if (tmax_<=temps_courant_ || nb_pas_dt_max_<=nb_pas_dt_ || stationnaires_atteints_)
+            return 1;
+          else
+            {
+              // Voir Schema_Temps_base::limpr pour information sur epsilon et modf
+              double i, j, epsilon = 1.e-8;
+              modf(temps_courant_/dt_sauv_ + epsilon, &i);
+              modf(temps_precedent_/dt_sauv_ + epsilon, &j);
+              return ( i>j ) ;
+            }
         }
     }
   return 0;
