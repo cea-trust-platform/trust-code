@@ -23,7 +23,7 @@
 #include <Disable_TU.h>
 
 Implemente_instanciable(Disable_TU,"Disable_TU",Interprete);
-
+// XD disable_TU interprete disable_TU -1 Flag to disable the writing of the .TU files
 
 // Description:
 //    Simple appel a: Interprete::printOn(Sortie&)
