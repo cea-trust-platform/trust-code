@@ -328,12 +328,14 @@ do
 	MEDCOUPL=$COOL   && [ "`grep MEDCOUPLING=OK $CR`" != "" ] && MEDCOUPL="<TD $VERT>OK</TD>"
 	LATA2DX=$STRICT  && [ "`grep lata2dx:OK $CR`" != "" ] 	  && LATA2DX="<TD $VERT>OK</TD>"
 	PLOT2D=$COOL 	 && [ "`grep IHM:OK $CR`" != "" ] 	  && PLOT2D="<TD $VERT>OK</TD>"
+	[ "`grep IHM: $CR`" = "" ] && PLOT2D="<TD $BLANC>NOT</TD>"
 	ICOCO=$COOL 	 && [ "`grep ICoCo:OK $CR`" != "" ] 	  && ICOCO="<TD $VERT>OK</TD>"
 	GMSH=$COOL 	 && [ "`grep Gmsh:OK $CR`" != "" ] 	  && GMSH="<TD $VERT>OK</TD>"
 	VISIT=$COOL 	 && [ "`grep VisIt:OK $CR`" != "" ] 	  && RUN=`$TRUST_Awk -F= '/VisIt=/ {print $2}' $CR` && VISIT="<TD `[ $RUN = PAR ] && echo $VERT`>$RUN</TD>"
 	ATELIER=$STRICT  && [ "`grep ATELIER=OK $CR`" != "" ] 	  && ATELIER="<TD $VERT>OK</TD>" && [ "$machine_cible" = 1 ] && let portabilite_atelier=$portabilite_atelier+1
 	ASSERT=$STRICT   && [ "`grep ASSERT=OK $CR`" != "" ] 	  && ASSERT="<TD $VERT>OK</TD>"	 && [ "$machine_cible" = 1 ] && let portabilite_assert=$portabilite_assert+1
 	BALTIK=$STRICT 	 && [ "`grep BALTIK=OK $CR`" != "" ] 	  && BALTIK="<TD $VERT>OK</TD>"  && [ "$machine_cible" = 1 ] && let portabilite_baltik=$portabilite_baltik+1
+	[ "`grep BALTIK=NOT $CR`" != "" ] && BALTIK="<TD $BLANC>NOT</TD>"
 	# Si certains elements sont disabled au configure:
 	NOT="<TD $BLANC>NOT</TD>"
 	MEDCOUPLPYT=$NOT && [ "`grep MED_COUPLING_PYTHON=ON $CR`" != "" ] && MEDCOUPLPYT="<TD $VERT>ON</TD>" && [ "`grep MED_COUPLING_PYTHON=OFF $CR`" != "" ] && MEDCOUPLPYT="<TD $ROUGE>OFF</TD>"

@@ -9,4 +9,4 @@ sed "s/General/./" $fichier |awk -F, '{print "mkdir -p",$1}'  | grep -v "mkdir d
  
 
 sed "s/General/./" $fichier | awk -F, '{print "[ ! -f "$1"/"$2" ]  &&  wget "$7" -O " $1"/"$2";touch "$1"/"$2 }'  
-#sed "s/General/./" $fichier | awk -F, '{print "[ ! -f "$1"/"$2" ]  &&  curl "$7" -o " $1"/"$2";touch "$1"/"$2 }'  
+#sed "s/General/./" $fichier | awk -F, '{print "[ ! -f "$1"/"$2" ]  &&  curl -L "$7" -o " $1"/"$2";touch "$1"/"$2 }'  

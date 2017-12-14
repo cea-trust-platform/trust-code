@@ -118,6 +118,8 @@ check_components()
 	       cible_machines=$cible_machines" "`liste_machines get_binary | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Toutes les machines
 	       all_machines=`liste_machines`
+	       # Machines en test build64
+	       build64_machines=`liste_machines "\-build64" | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Machines sur lesquelles on ne garde pas la compilation des baltiks
 	       non_machines=`liste_machines non | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Liste des machines a tester selon le baltik en question
@@ -152,82 +154,92 @@ check_components()
 	       for adr in $machines
 	       do
 	          machine=`echo $adr | awk -F"." '{print $1}' | awk -F"-gw" '{print $1}'`
-	          liste_options="--with-efface-dir-before"
-	          if [[ "$liste_machines_KO" != *"$machine"* ]] # Test si machine n est pas dans la liste des machines KO
+	          if [[ "$build64_machines" != *"$machine"* ]] # Test si machine n est pas dans la liste des machines build64 (test actuel uniquement sur TRUST)
 		  then
-	             if [[ "$valgrind_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines valgrind
+	             liste_options="--with-efface-dir-before"
+	             if [[ "$liste_machines_KO" != *"$machine"* ]] # Test si machine n est pas dans la liste des machines KO
 		     then
-		        valgrind_option="--with-valgrind"
-			# Pour ModeleCoeur, test en valgrind seulement le vendredi car ne passe pas en une nuit
-			if [ "$Composant" = ModeleCoeur ]
-			then
-			   if [ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 17 ])
-			   then
-		              valgrind_option="--with-valgrind"
-			   else
-		              valgrind_option=""
-			   fi
-			fi
-		     else
-		        valgrind_option=""
-		     fi
-	             if [[ "$gui_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines gui
-		     then
-		        mode_option="--with-mode=gui"
-	             elif [[ "$debug_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines debug
-		     then
-		        mode_option="--with-mode=debug"
-			# Pour TrioCFD, test en debug seulement le vendredi car ne passe pas en une nuit
-			if [ "$Composant" = TrioCFD ]
-			then
-			   if [ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 17 ])
-			   then
-		              mode_option="--with-mode=debug"
-			   else
-		              mode_option="--with-mode=optim"
-			   fi
-			fi
-	             elif [[ "$avx_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines avx
-		     then
-		        mode_option="--with-mode=optim_avx"
-		     else
-		        mode_option="--with-mode=optim"
-		     fi
-	             if [[ "$gui_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines gui
-		     then
-	                if [ "$Composant" = ModeleCoeur ]
-			then
-	                   check_option="--without-run"
-			else
-	                   check_option=""
-			fi
-	             else
-	                check_option="--check-all"
-		        if [[ "$updated_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines updated
+	                if [[ "$valgrind_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines valgrind
 		        then
-	                   if [ "$Composant" = TrioCFD ] || [ "$Composant" = Test_Baltik ] || [ "$Composant" = ModeleCoeur ]
+		           valgrind_option="--with-valgrind"
+			   # Pour ModeleCoeur, test en valgrind seulement le vendredi car ne passe pas en une nuit
+			   if [ "$Composant" = ModeleCoeur ]
 			   then
 			      if [ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 17 ])
 			      then
-		                 check_option="--check-all"
+		                 valgrind_option="--with-valgrind"
 			      else
-		                 check_option="--without-run"
+		                 valgrind_option=""
 			      fi
-	                      liste_options="--with-efface-dir-before"
 			   fi
-			fi
-	             fi
-	             if [[ "$non_machines" = *"$machine"* ]] # Test si machine n est pas dans la liste des machines cible, get_binary et tache
-		     then
-		        liste_options=$liste_options" --clean-after-if-ok"
-	             fi
-	             if [[ "$cible_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines cible
-		     then
-		        liste_options=$liste_options" --cible"
-	             fi
-                     log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`
-		     WORKTMP=`ssh_ -o BatchMode=yes $log@$adr -n 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
-                     echo "$Composant.tar $WORKTMP/$WORKBASE$machine/Composants/$Composant $log@$adr --with-TRUST=$WORKTMP/$WORKBASE$machine/TRUST $liste_options $mode_option $check_option $valgrind_option" >> Run.liste
+		        else
+		           valgrind_option=""
+		        fi
+	                if [[ "$gui_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines gui
+		        then
+		           mode_option="--with-mode=gui"
+	                elif [[ "$debug_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines debug
+		        then
+		           mode_option="--with-mode=debug"
+			   # pas de valgrind en mode debug
+	                   if [[ "$valgrind_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines valgrind
+		           then
+		              mode_option="--with-mode=optim"
+			   else
+		              mode_option="--with-mode=debug"
+			   fi
+			   # Pour TrioCFD, test en debug seulement le vendredi car ne passe pas en une nuit
+			   if [ "$Composant" = TrioCFD ]
+			   then
+			      if [ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 17 ])
+			      then
+		                 mode_option="--with-mode=debug"
+			      else
+		                 mode_option="--with-mode=optim"
+			      fi
+			   fi
+	                elif [[ "$avx_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines avx
+		        then
+		           mode_option="--with-mode=optim_avx"
+		        else
+		           mode_option="--with-mode=optim"
+		        fi
+	                if [[ "$gui_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines gui
+		        then
+	                   if [ "$Composant" = ModeleCoeur ]
+			   then
+	                      check_option="--without-run"
+			   else
+	                      check_option=""
+			   fi
+	                else
+	                   check_option="--check-all"
+		           if [[ "$updated_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines updated
+		           then
+	                      if [ "$Composant" = TrioCFD ] || [ "$Composant" = Test_Baltik ] || [ "$Composant" = ModeleCoeur ]
+			      then
+			         if [ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 17 ])
+			         then
+		                    check_option="--check-all"
+			         else
+		                    check_option="--without-run"
+			         fi
+	                         liste_options="--with-efface-dir-before"
+			      fi
+			   fi
+	                fi
+	                if [[ "$non_machines" = *"$machine"* ]] # Test si machine n est pas dans la liste des machines cible, get_binary et tache
+		        then
+		           liste_options=$liste_options" --clean-after-if-ok"
+	                fi
+	                if [[ "$cible_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines cible
+		        then
+		           liste_options=$liste_options" --cible"
+	                fi
+                        log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`
+		        WORKTMP=`ssh_ -o BatchMode=yes $log@$adr -n 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
+                        echo "$Composant.tar $WORKTMP/$WORKBASE$machine/Composants/$Composant $log@$adr --with-TRUST=$WORKTMP/$WORKBASE$machine/TRUST $liste_options $mode_option $check_option $valgrind_option" >> Run.liste
+		     fi
 		  fi
 	       done
                echo " "
@@ -536,6 +548,24 @@ else
    echo "  OK"
 fi
 cd $TRUST_ROOT
+
+# Gestion BUILD64
+build64_log=$REP_NUIT/Verifie_patch_$HOST.log
+echo " "
+echo "Call to "$TRUST_ROOT"/bin/BUILD64/Verifie_patch"
+echo "  See $build64_log"
+./bin/BUILD64/Verifie_patch 1>$build64_log 2>&1
+if [ -s $build64_log  ]
+then
+   echo>>$build64_log
+   echo "=> tkdiff diff_patch bin/BUILD64/diff_patch.ref ">>$build64_log
+   cat $build64_log | mail_ -s\"[lance_test_nuit] Verifie_patch KO on $HOST:$TRUST_ROOT\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
+   cat $build64_log
+   echo "  KO"
+else
+   echo "  OK"
+   rm diff_patch
+fi
 
 # Marque la version dans MAIN.cpp et mon_main.cpp
 #if [ "`echo $new | grep beta`" = "" ]
@@ -1705,11 +1735,11 @@ echo "############################"
 echo "# Test the TRUST stability #"
 echo "############################"
 echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
-fic_test=$TRUST_ROOT"/exec/.tests_TRUST"$COMM
 rm -f tmp.log 
-echo "Analysis of "$fic_test" file" | tee -a tmp.log
-grep "Successful tests cases" $fic_test | tee -a tmp.log
-echo " " | tee -a tmp.log
+#fic_test=$TRUST_ROOT"/exec/.tests_TRUST"$COMM
+#echo "Analysis of "$fic_test" file" | tee -a tmp.log
+#grep "Successful tests cases" $fic_test | tee -a tmp.log
+#echo " " | tee -a tmp.log
 fic_test=$TRUST_ROOT"/exec/.tests_TRUST"$COMM"_semi_opt" | tee -a tmp.log
 echo "Analysis of "$fic_test" file" | tee -a tmp.log
 grep "Successful tests cases" $fic_test | tee -a tmp.log
@@ -2194,6 +2224,7 @@ do
          else
             scp triou@$machine:~/.tmp_TRUST_$machine/casmem $Build/casmem_$machine
          fi
+	 # [ ! -s $valgrind_log ] && echo "  Empty file" && valgrind=0
          cat $valgrind_log 2>/dev/null | $TRUST_Awk -F: '/ errors from /{gsub("\\.val","",$2);print $2}' > $Build/caserr_$machine
          valgrind_max=0
          valgrind_err=`cat $Build/caserr_$machine 2>/dev/null | wc -l`
@@ -2237,6 +2268,7 @@ do
       then
          echo "Verification of baltik $Composant on $machine"
 	 grep "make_check " $PROJECT_ROOT/*$Composant*$machine.*make_check.log 2>/dev/null
+	 [ $? != 0 ] && valgrind=0 && cat list.log >> tmp.log
          testko=`grep "make_check KO" $PROJECT_ROOT/*$Composant*$machine.*make_check.log`
          if [ "$testko" != "" ]
 	 then
@@ -2819,6 +2851,7 @@ then
    fi
 else
    echo "...no machine with benchmark option in $TRUST_ROOT/bin/admin/liste.machines file"
+   liste_machines benchmark | mail_ -s\"[lance_test_nuit] Performance KO because NO Benchmark on\" $TRUST_MAIL
 fi
 #nb_machines=`echo $machines | $TRUST_Awk '{print NF}'`
 performances=0 && [ $total = $nb_machines ] && [ $total != 0 ] && performances=1
@@ -2862,7 +2895,7 @@ do
 done
 # Envoi la liste complete le lundi au chef de projet avant COSUIV pour planning de la semaine
 grep ${TRUST_VERSION%_beta} $TRUST_ROOT/ToDo > $TRUST_TMP/ToDo
-[ "`date '+%u'`" = 1 ] && cat $TRUST_TMP/ToDo | mail_ -s\"[lance_test_nuit] ToDo list for next Monday COSUIV\" $TRUST_MAIL
+[ "`date '+%u'`" = 1 ] && cat $TRUST_TMP/ToDo | mail_ -s\"[lance_test_nuit] ToDo list for next Monday COSUIV\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
 rm -f $TRUST_TMP/ToDo
 #
 echo " "
@@ -3642,7 +3675,7 @@ then
       echo "Stable release announcement sent to $dest"
       echo "
 TRUST is a thermohydraulic software package for CFD 
-simulations for incompressible monophasic/diphasic flow.
+simulations for incompressible monophasic flow.
 TRUST platform name means TRrio_U Software for Thermohydraulics
 (\"Trio_U\" without Front_Tracking, Radiation, Zoom and LES models).
 This software is OpenSource (license BSD).

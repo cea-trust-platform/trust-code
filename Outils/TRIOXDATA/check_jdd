@@ -16,6 +16,7 @@ cd test_complet
 ./fait_lance_test
 export PAR_F=0
 echo 0  | ./lance_test_modif -nomail $exec `pwd` 1>lance_out 2>&1
+lanc=$?
 name=`basename $exec`
 #cat .tests_${name}
 if [ -s tests_${name}/liste ] 
@@ -53,5 +54,5 @@ then
         fi 
 	rm -rf ref
 fi
-[ $trad -ne 0 ] && echo "Validation XDATA=KO" && exit -1
+([ $trad -ne 0 ] || [ $lanc -ne 0 ]) && echo "Validation XDATA=KO" && exit -1
 echo "Validation XDATA=OK" && exit 0
