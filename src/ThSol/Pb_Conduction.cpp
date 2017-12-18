@@ -106,7 +106,7 @@ const Equation_base& Pb_Conduction::equation(int i) const
 {
   if ( !( i==0 ) )
     {
-      Cerr << "\nPb_Conduction::equation() : Wrong number of equation !" << finl;
+      Cerr << "\nError in Pb_Conduction::equation() : Wrong number of equation !" << finl;
       Process::exit();
     }
   return eq_conduction;
@@ -133,7 +133,7 @@ Equation_base& Pb_Conduction::equation(int i)
 {
   if ( !( i==0 ) )
     {
-      Cerr << "\nPb_Conduction::equation() : Wrong number of equation !" << finl;
+      Cerr << "\nError in Pb_Conduction::equation() : Wrong number of equation !" << finl;
       Process::exit();
     }
   return eq_conduction;

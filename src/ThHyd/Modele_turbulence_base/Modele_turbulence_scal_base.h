@@ -200,7 +200,7 @@ inline Convection_Diffusion_std& Modele_turbulence_scal_base::equation()
 {
   if (mon_equation.non_nul()==0)
     {
-      Cerr << "\nModele_turbulence_scal_base::equation() : The equation is unknown !" << finl;
+      Cerr << "\nError in Modele_turbulence_scal_base::equation() : The equation is unknown !" << finl;
       Process::exit();
     }
   return mon_equation.valeur();
@@ -225,7 +225,7 @@ inline const Convection_Diffusion_std& Modele_turbulence_scal_base::equation() c
 {
   if (mon_equation.non_nul()==0)
     {
-      Cerr << "\nModele_turbulence_scal_base::equation() : The equation is unknown !" << finl;
+      Cerr << "\nError in Modele_turbulence_scal_base::equation() : The equation is unknown !" << finl;
       Process::exit();
     }
   return mon_equation.valeur();

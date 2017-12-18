@@ -80,7 +80,7 @@ inline const Equation_base& MorEqn::equation() const
 {
   if (mon_equation.non_nul()==0)
     {
-      Cerr << "\nMorEqn::equation() : The equation is unknown !" << finl;
+      Cerr << "\nError in MorEqn::equation() : The equation is unknown !" << finl;
       Process::exit();
     }
   return mon_equation.valeur();
@@ -105,7 +105,7 @@ inline  Equation_base& MorEqn::equation()
 {
   if (mon_equation.non_nul()==0)
     {
-      Cerr << "\nMorEqn::equation() : The equation is unknown !" << finl;
+      Cerr << "\nError in MorEqn::equation() : The equation is unknown !" << finl;
       Process::exit();
     }
   return mon_equation.valeur();

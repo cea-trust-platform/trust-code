@@ -114,7 +114,7 @@ inline const Equation_base& Modele_Fonc_Bas_Reynolds_Base::equation() const
 {
   if (mon_equation.non_nul()==0)
     {
-      Cerr << "\nModele_Fonc_Bas_Reynolds_Base::equation() : The equation is unknown !" << finl;
+      Cerr << "\nError in Modele_Fonc_Bas_Reynolds_Base::equation() : The equation is unknown !" << finl;
       Process::exit();
     }
   return mon_equation.valeur();
@@ -124,7 +124,7 @@ inline Equation_base& Modele_Fonc_Bas_Reynolds_Base::equation()
 {
   if (mon_equation.non_nul()==0)
     {
-      Cerr << "\nModele_Fonc_Bas_Reynolds_Base::equation() : The equation is unknown !" << finl;
+      Cerr << "\nError in Modele_Fonc_Bas_Reynolds_Base::equation() : The equation is unknown !" << finl;
       Process::exit();
     }
   return mon_equation.valeur();

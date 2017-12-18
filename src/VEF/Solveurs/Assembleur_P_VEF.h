@@ -74,7 +74,7 @@ inline const Equation_base& Assembleur_P_VEF::equation() const
 {
   if (mon_equation.non_nul()==0)
     {
-      Cerr << "\nAssembleur_P_VEF::equation() : The equation is unknown !" << finl;
+      Cerr << "\nError in Assembleur_P_VEF::equation() : The equation is unknown !" << finl;
       Process::exit();
     }
   return  mon_equation.valeur();

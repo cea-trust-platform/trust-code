@@ -52,7 +52,7 @@ public :
   {
     if (nb_equation()==0)
       {
-        Cerr << "\nList_Equations_Scalaires_Passifs::equation() : The equation list is empty !" << finl;
+        Cerr << "\nError in List_Equations_Scalaires_Passifs::equation() : The equation list is empty !" << finl;
         Process::exit();
       }
     return list_eq(i).valeur();

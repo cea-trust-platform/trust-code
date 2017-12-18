@@ -116,7 +116,7 @@ const Equation_base& Pb_Hydraulique_Concentration_Turbulent::equation(int i) con
 {
   if ( !( i==0 || i==1 ) )
     {
-      Cerr << "\nPb_Hydraulique_Concentration_Turbulent::equation() : Wrong number of equation !" << finl;
+      Cerr << "\nError in Pb_Hydraulique_Concentration_Turbulent::equation() : Wrong number of equation !" << finl;
       Process::exit();
     }
   if (i == 0)
@@ -146,7 +146,7 @@ Equation_base& Pb_Hydraulique_Concentration_Turbulent::equation(int i)
 {
   if ( !( i==0 || i==1 ) )
     {
-      Cerr << "\nPb_Hydraulique_Concentration_Turbulent::equation() : Wrong number of equation !" << finl;
+      Cerr << "\nError in Pb_Hydraulique_Concentration_Turbulent::equation() : Wrong number of equation !" << finl;
       Process::exit();
     }
   if (i == 0)

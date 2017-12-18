@@ -112,7 +112,7 @@ const Equation_base& Pb_Thermohydraulique::equation(int i) const
 {
   if ( !( i==0 || i==1 ) )
     {
-      Cerr << "\nPb_Thermohydraulique::equation() : Wrong number of equation !" << finl;
+      Cerr << "\nError in Pb_Thermohydraulique::equation() : Wrong number of equation !" << finl;
       Process::exit();
     }
   if (i == 0)
@@ -141,7 +141,7 @@ Equation_base& Pb_Thermohydraulique::equation(int i)
 {
   if ( !( i==0 || i==1 ) )
     {
-      Cerr << "\nPb_Thermohydraulique::equation() : Wrong number of equation !" << finl;
+      Cerr << "\nError in Pb_Thermohydraulique::equation() : Wrong number of equation !" << finl;
       Process::exit();
     }
   if (i == 0)

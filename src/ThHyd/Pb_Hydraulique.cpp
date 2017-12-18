@@ -108,7 +108,7 @@ const Equation_base& Pb_Hydraulique::equation(int i) const
 {
   if (i!=0)
     {
-      Cerr << "\nPb_Hydraulique::equation() : The problem has only one equation !" << finl;
+      Cerr << "\nError in Pb_Hydraulique::equation() : The problem has only one equation !" << finl;
       Process::exit();
     }
   return eq_hydraulique;

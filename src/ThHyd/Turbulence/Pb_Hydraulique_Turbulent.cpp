@@ -112,7 +112,7 @@ const Equation_base& Pb_Hydraulique_Turbulent::equation(int i) const
 {
   if ( !( i==0 ) )
     {
-      Cerr << "\nPb_Hydraulique_Turbulent::equation() : Wrong number of equation !" << finl;
+      Cerr << "\nError in Pb_Hydraulique_Turbulent::equation() : Wrong number of equation !" << finl;
       Process::exit();
     }
   return eq_hydraulique;
@@ -137,7 +137,7 @@ Equation_base& Pb_Hydraulique_Turbulent::equation(int i)
 {
   if ( !( i==0 ) )
     {
-      Cerr << "\nPb_Hydraulique_Turbulent::equation() : Wrong number of equation !" << finl;
+      Cerr << "\nError in Pb_Hydraulique_Turbulent::equation() : Wrong number of equation !" << finl;
       Process::exit();
     }
   return eq_hydraulique;

@@ -117,7 +117,7 @@ const Equation_base& Pb_Thermohydraulique_Concentration_Turbulent::equation(int 
 {
   if ( !( i==0 || i==1 || i==2 ) )
     {
-      Cerr << "\nPb_Thermohydraulique_Concentration_Turbulent::equation() : Wrong number of equation !" << finl;
+      Cerr << "\nError in Pb_Thermohydraulique_Concentration_Turbulent::equation() : Wrong number of equation !" << finl;
       Process::exit();
     }
   if (i == 0)
@@ -150,7 +150,7 @@ Equation_base& Pb_Thermohydraulique_Concentration_Turbulent::equation(int i)
 {
   if ( !( i==0 || i==1 || i==2 ) )
     {
-      Cerr << "\nPb_Thermohydraulique_Concentration_Turbulent::equation() : Wrong number of equation !" << finl;
+      Cerr << "\nError in Pb_Thermohydraulique_Concentration_Turbulent::equation() : Wrong number of equation !" << finl;
       Process::exit();
     }
   if (i == 0)

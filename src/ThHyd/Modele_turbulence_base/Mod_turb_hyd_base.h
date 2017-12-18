@@ -182,7 +182,7 @@ inline Equation_base& Mod_turb_hyd_base::equation()
 {
   if (mon_equation.non_nul()==0)
     {
-      Cerr << "\nMod_turb_hyd_base::equation() : The equation is unknown !" << finl;
+      Cerr << "\nError in Mod_turb_hyd_base::equation() : The equation is unknown !" << finl;
       Process::exit();
     }
   return mon_equation.valeur();
@@ -192,7 +192,7 @@ inline const Equation_base& Mod_turb_hyd_base::equation() const
 {
   if (mon_equation.non_nul()==0)
     {
-      Cerr << "\nMod_turb_hyd_base::equation() : The equation is unknown !" << finl;
+      Cerr << "\nError in Mod_turb_hyd_base::equation() : The equation is unknown !" << finl;
       Process::exit();
     }
   return mon_equation.valeur();
