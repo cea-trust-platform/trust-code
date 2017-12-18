@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -114,7 +114,11 @@ int Pb_Thermohydraulique_Concentration::nombre_d_equations() const
 // Postcondition: la methode ne modifie pas l'objet
 const Equation_base& Pb_Thermohydraulique_Concentration::equation(int i) const
 {
-  assert ((i==0) || (i==1) || (i==2));
+  if ( !( i==0 || i==1 || i==2 ) )
+    {
+      Cerr << "\nPb_Thermohydraulique_Concentration::equation() : Wrong number of equation !" << finl;
+      Process::exit();
+    }
   if (i == 0)
     return eq_hydraulique;
   else if (i == 1)
@@ -143,7 +147,11 @@ const Equation_base& Pb_Thermohydraulique_Concentration::equation(int i) const
 // Postcondition:
 Equation_base& Pb_Thermohydraulique_Concentration::equation(int i)
 {
-  assert  ((i==0) || (i==1) || (i==2));
+  if ( !( i==0 || i==1 || i==2 ) )
+    {
+      Cerr << "\nPb_Thermohydraulique_Concentration::equation() : Wrong number of equation !" << finl;
+      Process::exit();
+    }
   if (i == 0)
     return eq_hydraulique;
   else if (i == 1)

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -198,6 +198,11 @@ inline Turbulence_paroi_scal& Modele_turbulence_scal_base::loi_paroi()
 // Postcondition: la methode ne modifie pas l'objet
 inline Convection_Diffusion_std& Modele_turbulence_scal_base::equation()
 {
+  if (mon_equation.non_nul()==0)
+    {
+      Cerr << "\nModele_turbulence_scal_base::equation() : The equation is unknown !" << finl;
+      Process::exit();
+    }
   return mon_equation.valeur();
 }
 
@@ -218,6 +223,11 @@ inline Convection_Diffusion_std& Modele_turbulence_scal_base::equation()
 // Postcondition: la methode ne modifie pas l'objet
 inline const Convection_Diffusion_std& Modele_turbulence_scal_base::equation() const
 {
+  if (mon_equation.non_nul()==0)
+    {
+      Cerr << "\nModele_turbulence_scal_base::equation() : The equation is unknown !" << finl;
+      Process::exit();
+    }
   return mon_equation.valeur();
 }
 

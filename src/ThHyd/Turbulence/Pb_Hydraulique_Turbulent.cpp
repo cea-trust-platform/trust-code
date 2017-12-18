@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -110,15 +110,12 @@ int Pb_Hydraulique_Turbulent::nombre_d_equations() const
 // Postcondition: la methode ne modifie pas l'objet
 const Equation_base& Pb_Hydraulique_Turbulent::equation(int i) const
 {
-  if(i==0)
-    return eq_hydraulique;
-  else
+  if ( !( i==0 ) )
     {
-      Cerr << "Il n'y a pas " << i << "equations dans un Pb_Hydraulique_Turbulent" << finl;
-      exit();
-      //pour les compilos :
-      return eq_hydraulique;
+      Cerr << "\nPb_Hydraulique_Turbulent::equation() : Wrong number of equation !" << finl;
+      Process::exit();
     }
+  return eq_hydraulique;
 }
 
 // Description:
@@ -138,7 +135,11 @@ const Equation_base& Pb_Hydraulique_Turbulent::equation(int i) const
 // Postcondition:
 Equation_base& Pb_Hydraulique_Turbulent::equation(int i)
 {
-  assert(i==0);
+  if ( !( i==0 ) )
+    {
+      Cerr << "\nPb_Hydraulique_Turbulent::equation() : Wrong number of equation !" << finl;
+      Process::exit();
+    }
   return eq_hydraulique;
 }
 

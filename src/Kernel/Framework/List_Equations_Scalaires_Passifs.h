@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,6 +50,11 @@ public :
 
   Equation_base& equation(int i)
   {
+    if (nb_equation()==0)
+      {
+        Cerr << "\nList_Equations_Scalaires_Passifs::equation() : The equation list is empty !" << finl;
+        Process::exit();
+      }
     return list_eq(i).valeur();
   };
   const  Equation_base& equation(int i) const

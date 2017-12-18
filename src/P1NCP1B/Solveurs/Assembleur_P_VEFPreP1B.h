@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,6 +46,11 @@ public :
   virtual void completer(const Equation_base& );
   inline const Equation_base& equation() const
   {
+    if (mon_equation.non_nul()==0)
+      {
+        Cerr << "\nAssembleur_P_VEFPreP1B::equation() : The equation is unknown !" << finl;
+        Process::exit();
+      }
     return mon_equation.valeur();
   };
 
