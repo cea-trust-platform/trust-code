@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -728,6 +728,17 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
           f.setVar(1,y);
           f.setVar(2,z);
         }
+
+      for (int so=0; so<nb_sources; so++)
+        {
+          if (nb_pos > sources_val[so].size())
+            {
+              Cerr << "\nError in Champ_Generique_Transformation::get_champ" << finl;
+              Cerr << nom_source(so) << " : Wrong number of elements." << finl;
+              exit();
+            }
+        }
+
       for (int i=0; i<nb_pos; i++)
         {
           if (!special)
