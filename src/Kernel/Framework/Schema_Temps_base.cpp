@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1054,7 +1054,11 @@ void Schema_Temps_base::update_critere_statio(const DoubleTab& tab_critere, Equa
 void Schema_Temps_base::imprimer_temps_courant(SFichier& os) const
 {
   int precision_actuelle=os.get_precision();
-  int precision_temps=max(precision_actuelle,(int)(2+log10(1/pas_de_temps())+(int)(log10(temps_courant()))));
+  int precision_temps;
+  if (!est_egal(temps_courant(),0.))
+    precision_temps=max( precision_actuelle, (int)(2+log10(1/dabs(pas_de_temps()))+(int)(log10(dabs(temps_courant())))) );
+  else
+    precision_temps=max( precision_actuelle, (int)(2+log10(1/dabs(pas_de_temps()))) );
   os.precision(precision_temps);
   os << temps_courant();
   os.precision(precision_actuelle);
