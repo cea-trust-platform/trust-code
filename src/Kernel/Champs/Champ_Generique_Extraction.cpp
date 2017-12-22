@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -89,8 +89,14 @@ const Motcle Champ_Generique_Extraction::get_directive_pour_discr() const
 
 const Champ_base& Champ_Generique_Extraction::get_champ_without_evaluation(Champ& espace_stockage) const
 {
-  return get_champ( espace_stockage);
+  Champ source_espace_stockage;
+  const Champ_base& source = get_source(0).get_champ_without_evaluation(source_espace_stockage);
+  Nature_du_champ nature_source = source.nature_du_champ();
+  int nb_comp = source.nb_comp();
 
+  Champ_Fonc es_tmp;
+  espace_stockage = creer_espace_stockage(nature_source,nb_comp,es_tmp);
+  return espace_stockage.valeur();
 }
 // Description:  Extraction des valeurs d un champ (trace ou champ frontiere) sur un bord du domaine
 // Precondition: L extraction est actuellement limitee aux champs inconnus du probleme
