@@ -596,6 +596,17 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
           else
             sources_val[so] = source_so_val;
         }
+
+      if ((nb_pos==0)&&(valeurs_espace.dimension_tot(0)!=0))
+        {
+          int nb_pos_tmp=valeurs_espace.dimension(0);
+          if (nb_pos_tmp > sources_val[so].size())
+            {
+              Cerr << "\nError in Champ_Generique_Transformation::get_champ" << finl;
+              Cerr << nom_source(so) << " : Wrong number of elements." << finl;
+              exit();
+            }
+        }
     }
   //Fin du remplissage de sources_val
 
@@ -727,16 +738,6 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
           f.setVar(0,x);
           f.setVar(1,y);
           f.setVar(2,z);
-
-          for (int so=0; so<nb_sources; so++)
-            {
-              if (nb_pos > sources_val[so].size())
-                {
-                  Cerr << "\nError in Champ_Generique_Transformation::get_champ" << finl;
-                  Cerr << nom_source(so) << " : Wrong number of elements." << finl;
-                  exit();
-                }
-            }
         }
 
       for (int i=0; i<nb_pos; i++)
