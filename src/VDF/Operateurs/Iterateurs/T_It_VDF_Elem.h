@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -186,7 +186,7 @@ template <class _TYPE_>  DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_bords(const D
             {
               Cerr << "Error in the definition of the boundary conditions." << finl;
               Cerr << "The axis of revolution for this 2D calculation is along Y." << finl;
-              Cerr << "So you must specify symmetry for the boundary " << frontiere_dis.le_nom() << finl;
+              Cerr << "So you must specify symmetry boundary condition (symetrie keyword) for the boundary " << frontiere_dis.le_nom() << finl;
               exit();
             }
         }
@@ -476,7 +476,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord(const Do
             {
               Cerr << "Error in the definition of the boundary conditions." << finl;
               Cerr << "The axis of revolution for this 2D calculation is along Y." << finl;
-              Cerr << "So you must specify symmetry for the boundary " << frontiere_dis.le_nom() << finl;
+              Cerr << "So you must specify symmetry boundary condition (symetrie keyword) for the boundary " << frontiere_dis.le_nom() << finl;
               exit();
             }
         }
@@ -730,7 +730,7 @@ template <class _TYPE_>  DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_bords(const D
             {
               Cerr << "Error in the definition of the boundary conditions." << finl;
               Cerr << "The axis of revolution for this 2D calculation is along Y." << finl;
-              Cerr << "So you must specify symmetry for the boundary " << frontiere_dis.le_nom() << finl;
+              Cerr << "So you must specify symmetry boundary condition (symetrie keyword) for the boundary " << frontiere_dis.le_nom() << finl;
               exit();
             }
         }
