@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -419,9 +419,9 @@ int Assembleur_P_VDF::remplir(Matrice& la_matrice, const DoubleVect& volumes_ent
           const int nfin = ndeb + la_front_dis.nb_faces();
           if (nfin>ndeb && est_egal(face_surfaces[ndeb],0))
             {
-              Cerr << "Error in the definition of the boundary conditions." << finl;
+              Cerr << "\nError in the definition of the boundary conditions." << finl;
               Cerr << "The axis of revolution for this 2D calculation is along Y." << finl;
-              Cerr << "So you must specify symmetry for the boundary " << la_front_dis.le_nom() << finl;
+              Cerr << "So you must specify symmetry boundary condition (symetrie keyword) for the boundary " << la_front_dis.le_nom() << finl;
               exit();
             }
         }
