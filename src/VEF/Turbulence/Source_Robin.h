@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,6 +43,10 @@ public:
   {
     return tab_u_star_;
   };
+  inline const DoubleVect& tab_d_plus() const
+  {
+    return tab_d_plus_;
+  };
 
 protected:
   REF(Zone_VEF) la_zone_VEF;
@@ -51,6 +55,7 @@ protected:
 //  double dt_post;
   Noms noms_parois;
   mutable DoubleVect tab_u_star_;	// mutable pour etre modifie dans ajouter() => pas top, devrait etre modifie dans mettre_a_jour
+  mutable DoubleVect tab_d_plus_;	// mutable pour etre modifie dans ajouter() => pas top, devrait etre modifie dans mettre_a_jour
 };
 
 #endif

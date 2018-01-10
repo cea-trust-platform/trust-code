@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -511,12 +511,14 @@ int Paroi_loi_Ciofalo_hyd_VDF::calculer_local(double u_plus_d_plus,double d_visc
       // fin du else de test de la valeur de k
     }
 
+  tab_d_plus_(num_face) = dist*tab_u_star(num_face)/d_visco;
+
   // test si on sort des limites de validite de la loi log
-  if ( (dist*tab_u_star_(num_face)/d_visco) > 500. )
+  if ( (dist*tab_u_star(num_face)/d_visco) > 500. )
     {
       //          Cerr << "Probleme de TRUST dans Paroi_std_hyd_VDF::calculer_local() : " << finl;
       //          Cerr << "on sort du domaine de validite de la loi log" << finl;
-      Cerr << "Y+=" << (dist*tab_u_star_(num_face)/d_visco) << finl;
+      Cerr << "Y+=" << (dist*tab_u_star(num_face)/d_visco) << finl;
     }
 
   return 1;

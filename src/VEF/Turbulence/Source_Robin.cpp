@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -64,6 +64,7 @@ void Source_Robin::completer()
   Cerr << "Dans Source_Robin::completer()" << finl;
   const int nb_faces_bord = la_zone_VEF->nb_faces_bord();
   tab_u_star_.resize(nb_faces_bord);
+  tab_d_plus_.resize(nb_faces_bord);
   Cerr << "nb_faces_bord = " << nb_faces_bord << finl;
 }
 

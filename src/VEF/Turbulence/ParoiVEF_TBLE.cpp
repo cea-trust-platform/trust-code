@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -648,6 +648,13 @@ int ParoiVEF_TBLE::calculer_hyd(DoubleTab& tab1,int isKeps,DoubleTab& tab2)
               ///////////////////////////////////////////////
 
 
+              double d_visco;
+
+              if (l_unif==1)
+                d_visco = visco;
+              else
+                d_visco = tab_visco[elem];
+
               if (dimension == 2)
                 {
                   double C0 = equation_vitesse.get_cis(0);
@@ -659,6 +666,7 @@ int ParoiVEF_TBLE::calculer_hyd(DoubleTab& tab1,int isKeps,DoubleTab& tab2)
                   Cisaillement_paroi_(num_face,1) =  Cy;
 
                   tab_u_star_(num_face) = pow(Cx*Cx+Cy*Cy,0.25);
+                  tab_d_plus_(num_face) = dist*tab_u_star(num_face)/d_visco;
                 }
               else
                 {
@@ -674,6 +682,7 @@ int ParoiVEF_TBLE::calculer_hyd(DoubleTab& tab1,int isKeps,DoubleTab& tab2)
                   Cisaillement_paroi_(num_face,2) =  Cz;
 
                   tab_u_star_(num_face) = pow(Cx*Cx+Cy*Cy+Cz*Cz,0.25);
+                  tab_d_plus_(num_face) = dist*tab_u_star(num_face)/d_visco;
                 }
 
 
@@ -694,16 +703,7 @@ int ParoiVEF_TBLE::calculer_hyd(DoubleTab& tab1,int isKeps,DoubleTab& tab2)
                 }
               else if (isKeps==1) // on est en K-eps
                 {
-                  double d_visco;
-
-                  if (l_unif==1)
-                    d_visco = visco;
-                  else
-                    d_visco = tab_visco[elem];
-
-                  double y_plus = dist*tab_u_star_(num_face)/d_visco;
-
-                  traitement_keps(tab1, num_face, face_voisins, elem_faces, nfac, dist, y_plus, d_visco, tab_u_star_(num_face));
+                  traitement_keps(tab1, num_face, face_voisins, elem_faces, nfac, dist, tab_d_plus(num_face), d_visco, tab_u_star(num_face));
                 }
 
               compteur_faces_paroi++;
@@ -985,7 +985,7 @@ void ParoiVEF_TBLE::imprimer_ustar(Sortie& os) const
       fic_post << "# t="<< tps << " " ;
       fic_post << "x= " << zone_VEF.xv(num_face_global,0) << " " << "y= " << zone_VEF.xv(num_face_global,1) ;
       if (dimension==3) fic_post << " "<< "z= " << zone_VEF.xv(num_face_global,2);
-      fic_post << " " << "u*= " << tab_u_star_(num_face_global)  ;
+      fic_post << " " << "u*= " << tab_u_star(num_face_global)  ;
       //fic_post << " " << "dp/dt1= " << eq_vit[num_face].get_F0(0)  ;
       //if (dimension==3) fic_post << " " << "dp/dt2= " << eq_vit[num_face].get_F0(1)  ;
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -738,14 +738,12 @@ int ParoiVDF_TBLE_LRM::calculer_hyd(DoubleTab& tab_k_eps)
                   // a la paroi eps est proportionelle a 1
 
                   Diffu_totale_base& diffu = eq_k_U_W[compteur_faces_paroi].get_diffu();
-                  /*
 
                   double dist;
                   if (axi)
-                  dist = zone_VDF.dist_norm_bord_axi(num_face);
+                    dist = zone_VDF.dist_norm_bord_axi(num_face);
                   else
-                  dist = zone_VDF.dist_norm_bord(num_face);
-                  */
+                    dist = zone_VDF.dist_norm_bord(num_face);
 
 
 
@@ -987,6 +985,7 @@ int ParoiVDF_TBLE_LRM::calculer_hyd(DoubleTab& tab_k_eps)
                     }
 
                   tab_u_star_(num_face) =pow(eq_k_U_W[compteur_faces_paroi].get_cis(0)*eq_k_U_W[compteur_faces_paroi].get_cis(0),0.25);
+                  tab_d_plus_(num_face) = dist*tab_u_star(num_face)/d_visco;
 
                   compteur_faces_paroi++;
 
@@ -1131,15 +1130,14 @@ int ParoiVDF_TBLE_LRM::calculer_hyd(DoubleTab& tab_k_eps)
                     }
 
                   // On calcul vv_bar, l_eps, y_nu, y_star avec k au temps n
-                  /*
-                       double dist;
 
-                       //Distance a la paroi du 1er centre de maille
-                       if (axi)
-                       dist = zone_VDF.dist_norm_bord_axi(num_face);
-                       else
-                       dist = zone_VDF.dist_norm_bord(num_face);
-                  */
+                  double dist;
+
+                  //Distance a la paroi du 1er centre de maille
+                  if (axi)
+                    dist = zone_VDF.dist_norm_bord_axi(num_face);
+                  else
+                    dist = zone_VDF.dist_norm_bord(num_face);
 
 
                   // Definition de la face servant a recuperer le k de la deuxieme maille
@@ -1378,7 +1376,7 @@ int ParoiVDF_TBLE_LRM::calculer_hyd(DoubleTab& tab_k_eps)
 
                   tab_u_star_(num_face) = pow((eq_k_U_W[compteur_faces_paroi].get_cis(0)*eq_k_U_W[compteur_faces_paroi].get_cis(0)
                                                +eq_k_U_W[compteur_faces_paroi].get_cis(1)*eq_k_U_W[compteur_faces_paroi].get_cis(1)),0.25);
-
+                  tab_d_plus_(num_face) = dist*tab_u_star(num_face)/d_visco;
 
 
                   compteur_faces_paroi++;
@@ -1465,7 +1463,7 @@ void ParoiVDF_TBLE_LRM::imprimer_ustar(Sortie& os) const
         }
 
 
-      fic_post << "#"<< tps << " " <<  "u*= " << tab_u_star_(num_faces_post2(j))  << finl;
+      fic_post << "#"<< tps << " " <<  "u*= " << tab_u_star(num_faces_post2(j))  << finl;
 
 
       if(dimension == 2)

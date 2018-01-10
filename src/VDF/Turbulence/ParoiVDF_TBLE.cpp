@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -609,7 +609,22 @@ int ParoiVDF_TBLE::calculer_hyd(DoubleTab& tab1,int isKeps,DoubleTab& tab2)
                       Cisaillement_paroi_(num_face,1) = 0.;
                     }
 
+                  double dist;
+
+                  if (axi)
+                    dist = zone_VDF.dist_norm_bord_axi(num_face);
+                  else
+                    dist = zone_VDF.dist_norm_bord(num_face);
+
+                  double d_visco;
+
+                  if (l_unif==1)
+                    d_visco = visco;
+                  else
+                    d_visco = tab_visco[elem];
+
                   tab_u_star_(num_face) = pow(eq_vit[corresp[num_face]].get_cis(0)*eq_vit[corresp[num_face]].get_cis(0),0.25);
+                  tab_d_plus_(num_face) = dist*tab_u_star(num_face)/d_visco;
 
                   if (isKeps==0) // on est en LES
                     {
@@ -622,22 +637,7 @@ int ParoiVDF_TBLE::calculer_hyd(DoubleTab& tab1,int isKeps,DoubleTab& tab2)
                     }
                   else if (isKeps==1) // on est en K-eps
                     {
-                      double dist;
-
-                      if (axi)
-                        dist = zone_VDF.dist_norm_bord_axi(num_face);
-                      else
-                        dist = zone_VDF.dist_norm_bord(num_face);
-
-                      double d_visco;
-
-                      if (l_unif==1)
-                        d_visco = visco;
-                      else
-                        d_visco = tab_visco[elem];
-
-
-                      double y_plus = dist*tab_u_star_(num_face)/d_visco;
+                      double y_plus = tab_d_plus_(num_face);
 
                       if (y_plus<8)
                         {
@@ -646,7 +646,7 @@ int ParoiVDF_TBLE::calculer_hyd(DoubleTab& tab1,int isKeps,DoubleTab& tab2)
                         }
                       else if (y_plus>8 && y_plus<30)
                         {
-                          double u_star = tab_u_star_(num_face);
+                          double u_star = tab_u_star(num_face);
                           double lm_plus = calcul_lm_plus(y_plus);
                           double  deriv = Fdypar_direct(lm_plus);
                           double x = lm_plus*u_star*deriv;
@@ -655,9 +655,9 @@ int ParoiVDF_TBLE::calculer_hyd(DoubleTab& tab1,int isKeps,DoubleTab& tab2)
                         }
                       else if (y_plus>30)
                         {
-                          double us2 = tab_u_star_(num_face)*tab_u_star_(num_face);
+                          double us2 = tab_u_star(num_face)*tab_u_star(num_face);
                           tab1(elem,0)=us2/sqrt(Cmu);
-                          tab1(elem,1)=us2*tab_u_star_(num_face)/Kappa/dist;
+                          tab1(elem,1)=us2*tab_u_star(num_face)/Kappa/dist;
                         }
                     }
 
@@ -854,8 +854,22 @@ int ParoiVDF_TBLE::calculer_hyd(DoubleTab& tab1,int isKeps,DoubleTab& tab2)
                       Cisaillement_paroi_(num_face,2) = 0.;
                     }
 
+                  double dist;
+
+                  if (axi)
+                    dist = zone_VDF.dist_norm_bord_axi(num_face);
+                  else
+                    dist = zone_VDF.dist_norm_bord(num_face);
+                  double d_visco;
+
+                  if (l_unif==1)
+                    d_visco = visco;
+                  else
+                    d_visco = tab_visco[elem];
+
                   tab_u_star_(num_face) = sqrt(sqrt(eq_vit[corresp[num_face]].get_cis(0)*eq_vit[corresp[num_face]].get_cis(0)
                                                     +eq_vit[corresp[num_face]].get_cis(1)*eq_vit[corresp[num_face]].get_cis(1)));
+                  tab_d_plus_(num_face) = dist*tab_u_star(num_face)/d_visco;
 
 
                   if (isKeps==0) // on est en LES
@@ -869,20 +883,7 @@ int ParoiVDF_TBLE::calculer_hyd(DoubleTab& tab1,int isKeps,DoubleTab& tab2)
                     }
                   else if (isKeps==1) // on est en K-eps
                     {
-                      double dist;
-
-                      if (axi)
-                        dist = zone_VDF.dist_norm_bord_axi(num_face);
-                      else
-                        dist = zone_VDF.dist_norm_bord(num_face);
-                      double d_visco;
-
-                      if (l_unif==1)
-                        d_visco = visco;
-                      else
-                        d_visco = tab_visco[elem];
-
-                      double y_plus = dist*tab_u_star_(num_face)/d_visco;
+                      double y_plus = tab_d_plus(num_face);
 
                       if (y_plus<8)
                         {
@@ -891,7 +892,7 @@ int ParoiVDF_TBLE::calculer_hyd(DoubleTab& tab1,int isKeps,DoubleTab& tab2)
                         }
                       else if (y_plus>8 && y_plus<30)
                         {
-                          double u_star = tab_u_star_(num_face);
+                          double u_star = tab_u_star(num_face);
                           double lm_plus = calcul_lm_plus(y_plus);
                           double  deriv = Fdypar_direct(lm_plus);
                           double x = lm_plus*u_star*deriv;
@@ -900,9 +901,9 @@ int ParoiVDF_TBLE::calculer_hyd(DoubleTab& tab1,int isKeps,DoubleTab& tab2)
                         }
                       else if (y_plus>30)
                         {
-                          double us2 = tab_u_star_(num_face)*tab_u_star_(num_face);
+                          double us2 = tab_u_star(num_face)*tab_u_star(num_face);
                           tab1(elem,0)=us2/sqrt(Cmu);
-                          tab1(elem,1)=us2*tab_u_star_(num_face)/Kappa/dist;
+                          tab1(elem,1)=us2*tab_u_star(num_face)/Kappa/dist;
                         }
                     }
 
@@ -1023,7 +1024,7 @@ void ParoiVDF_TBLE::imprimer_ustar(Sortie& os) const
 
       SFichier fic_post(tmp, ios::app);
 
-      fic_post << "# "<< tps << " " <<  "u*= " << tab_u_star_(num_global_faces_post(j))  << finl;
+      fic_post << "# "<< tps << " " <<  "u*= " << tab_u_star(num_global_faces_post(j))  << finl;
       if (dimension==2)
         {
           for(int i=0; i<nb_pts+1; i++)
