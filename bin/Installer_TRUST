@@ -4,7 +4,7 @@
 ########################################################
 check_prerequis()
 {
-list_prerequis="bc ed sed awk unzip"
+list_prerequis="bc lzip ed sed awk unzip"
 prerequis=1
 export PATH=$PATH:$TRUST_ROOT/exec/utils/bin
 for p in $list_prerequis
@@ -20,7 +20,20 @@ do
     [ "$p" = "awk" ] && q=gawk
     mkdir $dest
     cd $dest
-    tar zxf $TRUST_ROOT/externalpackages/utils/$q*.tar.gz
+    archive="$TRUST_ROOT/externalpackages/utils/$q*.tar.*"
+    arch=`basename $archive`
+    if [ ${arch##*.} == 'gz' ] 
+    then
+        tar zxf $TRUST_ROOT/externalpackages/utils/$arch
+    elif [ ${arch##*.} == 'lz' ] 
+    then
+        tar --lzip -xf $TRUST_ROOT/externalpackages/utils/$arch
+    elif [ ${arch##*.} == 'xz' ] 
+    then
+        tar Jxf $TRUST_ROOT/externalpackages/utils/$arch
+    else
+        echo "Error about externsion of the archive $archive"
+    fi
     cd *$q*
     ./configure --prefix=$TRUST_ROOT/exec/utils >config.log 2>&1  && make >make.log 2>&1  && make install > install.log 2>&1
     if [ $? -eq 0 ]
@@ -182,6 +195,14 @@ fi
 echo "====================================================================="
 
 # Verification immediate des prerequis:
+TRUST_ROOT=""
+if [ -d $ROOT/TRUST-$TRUST_VERSION ]
+then
+   TRUST_ROOT=$ROOT/TRUST-$TRUST_VERSION && export TRUST_ROOT
+else
+   echo "The TRUST-$TRUST_VERSION directory must exist on $ROOT!" | tee -a $LOG
+   exit -1
+fi
 check_prerequis
 #
 configure=0
@@ -263,14 +284,6 @@ fi
 [ "`id -u 2>/dev/null`" = 0 ] && echo "TRUST install as root is not recommended." | tee -a $LOG && exit -1
 
 # Quelques verifications
-TRUST_ROOT=""
-if [ -d $ROOT/TRUST-$TRUST_VERSION ]
-then
-   TRUST_ROOT=$ROOT/TRUST-$TRUST_VERSION && export TRUST_ROOT
-else
-   echo "The TRUST-$TRUST_VERSION directory must exist on $ROOT!" | tee -a $LOG
-   exit -1
-fi
 # On arrete si la variable $HOME n'existe pas
 if [ ${#HOME} = 0 ] || [ ! -d $HOME ]
 then
