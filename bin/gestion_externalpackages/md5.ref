@@ -5,7 +5,7 @@ a482686e733514a51cde12d6fe5c5d95  MED/hdf5-1.8.14.tar.gz
 0b3d42765f1a1aaca1e7503650211277  MED/med-3.2.1.tar.gz
 f414cfa77099cd1fa1a5ae4e22db508a  MPI/mpich-3.2.tar.gz
 0095ceecb19bbb7fb262131cb9c2cdd6  MPI/mvapich2-2.1.tgz
-886698becc5bea8c151c0af2074b8392  MPI/openmpi-2.0.2.tar.gz
+e88f03a947c03539180b4711adfcf324  MPI/openmpi-2.0.4.tar.gz
 ec1224a216a084684bab6cd0dbf592f8  MPI/osu-micro-benchmarks-3.8.tar
 1d8728eb0dfcac72a0fd99c17ec7f386  Python-2.7.6.tgz
 3cb7174c13bd45e3e8f77638926cb8c0  Python_modules/PySide-1.2.4.tar.gz
@@ -23,7 +23,7 @@ eb1cb941a20c5b751352c52486aa1dd7  Python_modules/pytz-2014.10.tar.gz
 34eed507548117b2ab523ab14b2f8b55  Python_modules/six-1.10.0.tar.gz
 7848a365ced9941053bc25d9a9f8f4b4  Python_modules/vcversioner-2.14.0.0.tar.gz
 4cfc6e7e3dc7377d0164914623922a10  Python_modules/wheel-0.26.0.tar.gz
-031e799efbc799b1e31348037562b7a3  SKIT/SPARSKIT2.tar.gz
+156ae15e25fc0d0e097c0712d3541596  SKIT/SPARSKIT2.tar.gz
 90a93507b8fdc88f46b9a8d7ed651c6c  VisIt/IceT-1-0-0.tar.gz
 fc14a54e1ce02a0225be8854bfba478e  VisIt/Imaging-1.1.7.tar.gz
 2f9f444265534a2cfd9a99d1a8291089  VisIt/MesaLib-7.10.2.tar.gz
@@ -41,7 +41,7 @@ a89558d5dd35a5cb667e9a6e5d4f06f1  VisIt/requests-2.5.1.tar.gz
 60df6a37c56e7c1366cca812414f7b85  VisIt/zlib-1.2.7.tar.gz
 3e3ef8024c175ef4e1720b7aa4c75202  astyle_2.02.1_linux.tar.gz
 d43a8fbe83767978098ba7f8ee25d3d1  ccache-3.1.4.tar.gz
-db4c687a31444a929d2fdc36c4dfb95f  cmake-3.0.2.tar.gz
+701386a1b5ec95f8d1075ecf96383e02  cmake-3.5.2.tar.gz
 bd30e9cf5523cdfc019b94f5e1d7fd19  cppunit-1.12.1.tar.gz
 2cf02a542c1933de95bdbe3f42188ffa  doxygen-1.7.4.linux.bin.tar.gz
 39ac48e6d5e0012a3bd2248a0102f209  gnuplot/gd-2.0.36RC1.tar.gz
@@ -74,9 +74,10 @@ a5e9954b1dae036762f7b13673a2cf76  petsc/m4-1.4.17.tar.gz
 fa3a9bf9b2d6ed2431f1baa46f4058b8  tcl_tk/tcl8.5.13-src.tar.gz
 1fc7dbb7495160756dbc805224afa360  tcl_tk/tk8.5.13-src.tar.gz
 d44b5dddebd8a7a7309aea6c36fda117  utils/bc-1.06.tar.gz
-1c789b7043b4d56169b8d2bdb249fe41  utils/ed-1.13.tar.gz
+1c789b7043b4d56169b8d2bdb249fe41  utils/ed-1.13.tar.lz
 f20c94ca51b6ebfc9bffb90f95c8ffbb  utils/gawk-4.1.4.tar.gz
-1957fe58dffa4a4106c1f1d7cc8dee18  utils/sed-4.3.tar.gz
+4dd8790d7528440d034fc713a8680bd3  utils/lzip-1.19.tar.gz
+1957fe58dffa4a4106c1f1d7cc8dee18  utils/sed-4.3.tar.xz
 62b490407489521db863b523a7f86375  utils/unzip-60.tar.gz
 6eb03c0c10ea917013a7622e483d61bb  valgrind-3.12.0.tar.bz2
 c7a04de794b861fad020c1be2a7ec178  xdata-0.9.10.tar.gz

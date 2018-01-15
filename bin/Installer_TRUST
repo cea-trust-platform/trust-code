@@ -4,7 +4,7 @@
 ########################################################
 check_prerequis()
 {
-list_prerequis="bc ed sed awk unzip"
+list_prerequis="bc lzip ed sed awk unzip"
 prerequis=1
 export PATH=$PATH:$TRUST_ROOT/exec/utils/bin
 for p in $list_prerequis
@@ -20,7 +20,20 @@ do
     [ "$p" = "awk" ] && q=gawk
     mkdir $dest
     cd $dest
-    tar zxf $TRUST_ROOT/externalpackages/utils/$q*.tar.gz
+    archive="$TRUST_ROOT/externalpackages/utils/$q*.tar.*"
+    arch=`basename $archive`
+    if [ ${arch##*.} == 'gz' ] 
+    then
+        tar zxf $TRUST_ROOT/externalpackages/utils/$arch
+    elif [ ${arch##*.} == 'lz' ] 
+    then
+        tar --lzip -xf $TRUST_ROOT/externalpackages/utils/$arch
+    elif [ ${arch##*.} == 'xz' ] 
+    then
+        tar Jxf $TRUST_ROOT/externalpackages/utils/$arch
+    else
+        echo "Error about externsion of the archive $archive"
+    fi
     cd *$q*
     ./configure --prefix=$TRUST_ROOT/exec/utils >config.log 2>&1  && make >make.log 2>&1  && make install > install.log 2>&1
     if [ $? -eq 0 ]
