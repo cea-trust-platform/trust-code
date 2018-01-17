@@ -131,7 +131,7 @@ then
 #  modelage << EOF 
 #$1
 #EOF
-echo $1 | time ./modelage
+time { echo $1 | ./modelage ; }
 rm -f model.f model.o model.h other.h maillage 
 if  [ -s model.val ]  
 then
