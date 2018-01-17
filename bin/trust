@@ -339,10 +339,14 @@ do
       # rm -f *.lata.* core.* err.* out.*
 	  # A priori c est un peu fort : err.* out.* ne sont pas crees au run. 
       echo "rm *.lata.* core.* convert_jdd"
-      rm -f  core.* convert_jdd
+      rm -f core.* convert_jdd
       find . -maxdepth 1 -name '*.lata.*' -exec  rm  {} \;
       echo "rm *_Channel_Flow_Rate_* *_Pressure_Gradient_*"
-      rm -f  *_Channel_Flow_Rate_* *_Pressure_Gradient_*
+      rm -f *_Channel_Flow_Rate_* *_Pressure_Gradient_*
+      echo "rm Moyennes_spatiales_* reynolds_tau.dat tauw.dat u_tau.dat"
+      rm -f Moyennes_spatiales_* reynolds_tau.dat tauw.dat u_tau.dat
+      echo "rm evol_glob"
+      rm -f evol_glob
       exit 0
    else
       # Unknown option

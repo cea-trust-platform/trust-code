@@ -806,7 +806,7 @@ ECHO_OPTS="" && [ "`echo -e`" != "-e" ] && ECHO_OPTS="-e" && export ECHO_OPTS
 m="# Echo option";e="ECHO_OPTS=\"$ECHO_OPTS\" && export ECHO_OPTS";ecrit $m"|"$e"|"$env
 m="# Login of the TRUST install";e="TRUST_LOGIN=`whoami` && export TRUST_LOGIN";ecrit $m"|"$e"|"$env
 # Verification de l'existence de certaines variables :
-m="# Path to awk command";e="`cherche_file TRUST_Awk gawk awk nawk oawk`";ecrit $m"|"$e"|"$env;eval $e
+m="# Path to awk command";e="`cherche_file TRUST_Awk gawk mawk awk nawk oawk`";ecrit $m"|"$e"|"$env;eval $e
 m="# Path to an text editor";e="`cherche_file TRUST_EDITOR $TRUST_EDITOR`";ecrit $m"|"$e"|"$env
 
 # Nouveau 2010, on regarde le nombre de processeurs disponibles des machines Linux:   
