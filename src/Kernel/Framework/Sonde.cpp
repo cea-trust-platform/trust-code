@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,7 +58,7 @@ void Sonde::completer()
 {
   // Recherche du champ sonde
   // Remplissage de la reference au champ
-
+  Cerr << "Reading of the probe: " << nom_ << " on the field: " << nom_champ_lu_ << finl;
   //On devrait acceder au domaine par le champ generique
   //Mais reference pas encore faite
   Probleme_base& Pb = mon_post->probleme();
