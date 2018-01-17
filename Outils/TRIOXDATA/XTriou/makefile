@@ -1,3 +1,4 @@
+SHELL=/bin/bash
 triou.py: objet_u.py objet_u_spec.py gencl.py gentriopy.py syno.py
 	python gentriopy.py
 	rm dico.py triouint.py triouint2.py

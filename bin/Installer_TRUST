@@ -18,6 +18,7 @@ do
     dest=tmp_$p
     q=$p
     [ "$p" = "awk" ] && q=gawk
+    rm -rf $dest
     mkdir $dest
     cd $dest
     archive="$TRUST_ROOT/externalpackages/utils/$q*.tar.*"
@@ -41,12 +42,25 @@ do
 	echo install completed
 	fi
     cd ../..
-    rm -rf $dest
     export PATH=$PATH:$TRUST_ROOT/exec/utils/bin
-    [ "`$p --help 1>/dev/null 2>&1;echo $?`" != 0 ] &&  prerequis=0
+    if [ "`$p --help 1>/dev/null 2>&1;echo $?`" != 0 ]
+    then 
+       echo `$p --help`
+       prerequis=0
+       echo "See informations in $dest directory."
+    else
+      rm -rf $dest
+    fi
   fi
   opt=""
 done
+
+if  [ "`eval pdflatex --version 1>/dev/null 2>&1;echo $?`" != 0 ]
+then
+  echo ""
+  echo "You need install texlive package for the documentation's generation."
+  echo ""
+fi
  
    # Vu sur Ubuntu 13.04: Probleme de compilation m4 pour compiler bison -> bison prerequis
    #[ "`grep 'Ubuntu 13.04' /etc/issue 2>/dev/null`" != "" ] && [ ! -f /usr/bin/bison ] && echo "You need bison installed." 	&& prerequis=0

@@ -1,3 +1,4 @@
+SHELL=/bin/bash
 test:
 	cp ../tests_src/* .;chmod +w *
 	(export PYTHONPATH=`pwd`:`pwd`/..:${PYTHONPATH};export XDATA_NO_XINTERCEPTOR=1;time python ../testall.py)

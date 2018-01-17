@@ -5,21 +5,11 @@ default:  all
 
 $(FILE1): ../$(FILE1).pdf
 ../$(FILE1).pdf: $(FILE1).tex Makefile 
-	$(MAKE) clean_$(FILE1)
-	pdflatex -interaction=nonstopmode $(FILE1).tex > LOG
-	makeindex $(FILE1).idx >> LOG
-	pdflatex -interaction=nonstopmode $(FILE1).tex >> LOG
-	pdflatex -interaction=nonstopmode $(FILE1).tex >> LOG
-	mv $(FILE1).pdf ..
-	$(MAKE) clean_build
+	@(if [ "`eval pdflatex --version 1>/dev/null 2>&1;echo $?`" != 0 ] ; then echo "You need install texlive package for the documentation's generation."; else $(MAKE) clean_$(FILE1); pdflatex -interaction=nonstopmode $(FILE1).tex > LOG; makeindex $(FILE1).idx >> LOG; pdflatex -interaction=nonstopmode $(FILE1).tex >> LOG; pdflatex -interaction=nonstopmode $(FILE1).tex >> LOG; mv $(FILE1).pdf ..; $(MAKE) clean_build; fi)
 
 $(FILE2): ../$(FILE2).pdf
 ../$(FILE2).pdf: $(FILE2).tex Makefile 
-	$(MAKE) clean_$(FILE2)
-	pdflatex -interaction=nonstopmode $(FILE2).tex > LOG
-	pdflatex -interaction=nonstopmode $(FILE2).tex >> LOG
-	mv $(FILE2).pdf ..
-	$(MAKE) clean_build
+	@(if [ "`eval pdflatex --version 1>/dev/null 2>&1;echo $?`" != 0 ] ; then echo "You need install texlive package for the documentation's generation."; else	$(MAKE) clean_$(FILE2); pdflatex -interaction=nonstopmode $(FILE2).tex > LOG; pdflatex -interaction=nonstopmode $(FILE2).tex >> LOG; mv $(FILE2).pdf ..; $(MAKE) clean_build; fi)
 
 all:  $(FILE1) $(FILE2)
 
