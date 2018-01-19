@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -355,7 +355,6 @@ void Champ_Fonc_MED::creer(const Nom& nomfic,const Domaine& un_dom,const Motcle&
   //ArrOfDouble temps_sauv;
   nom_champ_dans_fichier_med_=le_nom();
   nom_champ_dans_fichier_med_=medinfo1champ(nomfic,nom_champ_dans_fichier_med_,numero_ch,nbcomp,nb_dt,type_ent,type_geo,size,un_dom.le_nom(),verifie_type,temps_sauv);
-  //  Cerr<<" "<<nomfic<<" "<<le_nom_du_champ<<" "<<numero_ch<<" "<<nbcomp<<" nb_dt "<<nb_dt<<" "<<type_ent<<" "<<type_geo<<" "<<size<<finl;
   Nom type_champ;
   if (type_ent==MED_NODE)
     {
