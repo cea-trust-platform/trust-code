@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -162,6 +162,17 @@ int Process::mp_sum(int x)
   int y;
   grp.mp_collective_op(&x, &y, 1, Comm_Group::COLL_SUM);
   return y;
+}
+
+// Description:
+//  Calcule le 'et' logique de b sur tous les processeurs du groupe courant.
+bool Process::mp_and(bool b)
+{
+  const Comm_Group& grp = PE_Groups::current_group();
+  int x = b ? 1 : 0;
+  int y;
+  grp.mp_collective_op(&x, &y, 1, Comm_Group::COLL_MIN);
+  return y == 1;
 }
 
 // Description:
