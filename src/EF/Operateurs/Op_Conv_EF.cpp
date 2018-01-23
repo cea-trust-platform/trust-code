@@ -61,7 +61,7 @@ Sortie& Op_Conv_BTD_EF::printOn(Sortie& s ) const
 }
 Entree& Op_Conv_BTD_EF::readOn(Entree& s )
 {
-  Param param(que_suis_je()); // XD convection_btd convection_deriv btd 1 not_set
+  Param param(que_suis_je()); // XD convection_btd convection_deriv btd 1 Only for EF discretization.
   param.ajouter("btd",&btd_,Param::REQUIRED); // XD_ADD_P double not_set
   param.ajouter("facteur",&facteur_,Param::REQUIRED);  // XD_ADD_P double not_set
 
