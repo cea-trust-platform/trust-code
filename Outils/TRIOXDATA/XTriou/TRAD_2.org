@@ -1098,7 +1098,7 @@ source_qdm source_base source_qdm 0 Momentum source term in the Navier Stokes eq
 perte_charge_singuliere source_base perte_charge_singuliere 0 Source term that is used to model a pressure loss over a surface area (transition through a grid, sudden enlargement) defined by the faces of elements located on the intersection of a subzone named subzone_name and a X,Y, or Z plane located at X,Y or Z = location.
   attr dir chaine(into=["kx","ky","kz"]) dir 0 KX, KY or KZ designate directional pressure loss coefficients for respectively X, Y or Z direction.
   attr coeff floattant coeff 0 Value of friction coefficient (KX, KY, KZ).
-  attr bloc_definition_surface bloc_lecture bloc_definition_surface 0 Surface definition block : In VDF, the surface area definition syntax is identical to that used to define sides (edges) in the Block, for example { X = x0 y0 <= Y <= y1 } for a line perpendicular to the Ox axis in a two-dimensional domain, or { Y = y0 x0 <= X <= x1 z0 <= Z <= z1 } for a surface perpendicular to the Oy axis in a 3D domain. NL2 example : sources { Perte_Charge_Singuliere KX 0.5 { X = 1. 0. <= Y <= 1. } } NL2 NL2 VEF : the surface area definition syntax relies on sub-areas definition (see 4.3.22). First value (X=0.35 in the example below, in regard to KX keyword) allows to determine the faces of elements in sub-area for which the pressure loss is applied. NL2 example : sources { Perte_Charge_Singuliere KX 0.5 { 0.35 sous_zone_toto } } NL2 Observations : NL2 - If the surface area is not included in the calculation domain or if (in VDF) it is not perpendicular to the space direction in accordance with which the pressure loss is being calculated, Trio-U exists in error. NL2 - The surface area may be diminished at only one side if a sudden shrinking or widening occurs.
+  attr bloc_definition_surface bloc_lecture bloc_definition_surface 0 Two syntaxes are possible for the surface definition block: NL2 For VDF and VEF: { X|Y|Z = location subzone_name } NL2 Only for VEF: { Surface surface_name }.
 perte_charge_directionnelle source_base perte_charge_directionnelle 1 Directional pressure loss.
   attr lambda chaine lambda_u 0 Function for loss coefficient which may be Reynolds dependant (Ex: 64/Re).
   attr diam_hydr champ_don_base diam_hydr 0 Hydraulic diameter value.
@@ -1501,12 +1501,12 @@ integrer_champ_med interprete integrer_champ_med 1 his keyword is used to calcul
   attr zmax floattant zmax 1 not_set
   attr nb_tranche entier nb_tranche 1 not_set
   attr fichier_sortie chaine fichier_sortie 1 nom du fichier de sortie par defaut : integrale.
-convection_amont convection_deriv amont 0 Keyword for upwind scheme in VEF discretization equivalent to generic amont for TRUST version 1.5 or later. The previous upwind scheme can be used with the obsolete in future amont_old keyword.
-convection_amont_old convection_deriv amont_old 0 not_set
-convection_centre convection_deriv centre 0 not_set
-convection_centre4 convection_deriv centre4 0 not_set
-convection_centre_old convection_deriv centre_old 0 not_set
-convection_di_l2 convection_deriv di_l2 0 not_set
+convection_amont convection_deriv amont 0 Keyword for upwind scheme for VDF or VEF discretizations. In VEF discretization equivalent to generic amont for TRUST version 1.5 or later. The previous upwind scheme can be used with the obsolete in future amont_old keyword.
+convection_amont_old convection_deriv amont_old 0 Only for VEF discretization, obsolete keyword, see amont.
+convection_centre convection_deriv centre 0 For VDF and VEF discretizations.
+convection_centre4 convection_deriv centre4 0 For VDF and VEF discretizations.
+convection_centre_old convection_deriv centre_old 0 Only for VEF discretization.
+convection_di_l2 convection_deriv di_l2 0 Only for VEF discretization.
 bloc_ef objet_lecture nul 0 not_set
   attr mot1 chaine(into=["transportant_bar","transporte_bar","filtrer_resu","antisym"]) mot1 0 not_set
   attr val1 entier(into=[0,1]) val1 0 not_set
@@ -1539,12 +1539,12 @@ convection_generic convection_deriv generic 0 Keyword for generic calling of upw
   attr limiteur chaine(into=["minmod","vanleer","vanalbada","chakravarthy","superbee"]) limiteur 1 type of limiter
   attr ordre entier(into=[1,2,3]) ordre 1 order of accuracy
   attr alpha floattant alpha 1 alpha
-convection_kquick convection_deriv kquick 0 not_set
+convection_kquick convection_deriv kquick 0 Only for VEF discretization.
 convection_muscl convection_deriv muscl 0 Keyword for muscl scheme in VEF discretization equivalent to generic muscl vanleer 2 for the 1.5 version or later. The previous muscl scheme can be used with the obsolete in future muscl_old keyword.
-convection_muscl_old convection_deriv muscl_old 0 not_set
-convection_muscl_new convection_deriv muscl_new 0 not_set
-convection_negligeable convection_deriv negligeable 0 suppresses the convection operator.
-convection_quick convection_deriv quick 0 not_set
+convection_muscl_old convection_deriv muscl_old 0 Only for VEF discretization.
+convection_muscl_new convection_deriv muscl_new 0 Only for VEF discretization.
+convection_negligeable convection_deriv negligeable 0 For VDF and VEF discretizations. Suppresses the convection operator.
+convection_quick convection_deriv quick 0 Only for VDF discretization.
 diffusion_negligeable diffusion_deriv negligeable 0 the diffusivity will not taken in count
 bloc_diffusion_standard objet_lecture nul 0 grad_Ubar 1 makes the gradient calculated through the filtered values of velocity (P1-conform).NL2 nu 1 (respectively nut 1) takes the molecular viscosity (eddy viscosity) into account in the velocity gradient part of the diffusion expression. NL2 nu_transp 1 (respectively nut_transp 1) takes the molecular viscosity (eddy viscosity) into account according in the TRANSPOSED velocity gradient part of the diffusion expression.NL2 filtrer_resu 1 allows to filter the resulting diffusive fluxes contribution.
   attr mot1 chaine(into=["grad_Ubar","nu","nut","nu_transp","nut_transp","filtrer_resu"]) mot1 0 not_set
