@@ -286,21 +286,17 @@ Entree& Postraitement::readOn(Entree& s )
   // On ajoute temperature_physique aux champs definis
   if ( liste_noms.rang("temperature")!=-1 && !comprend_champ_post("temperature_physique") )
     {
-      Nom in("{ temperature_physique ");
-      int isP1B=0;
       Motcle disc(probleme().discretisation().que_suis_je());
-      if ((disc=="VEF")||(disc=="VEFPreP1b")) isP1B=1;
-      if (isP1B==1)
-        in+="Tparoi_VEF { source";
-      in+="  refChamp { Pb_champ ";
-      in+=probleme().le_nom();
-      in+=" temperature }";
-      if (isP1B==1)
-        in+=" } ";
-      in+=" }";
-      Cerr<<" Building of temperature_physique  "<<in<<finl;
-      EChaine IN(in);
-      lire_champs_operateurs(IN);
+      if ((disc=="VEF")||(disc=="VEFPreP1b"))
+        {
+          Nom in("{ temperature_physique ");
+          in+="Tparoi_VEF { source  refChamp { Pb_champ ";
+          in+=probleme().le_nom();
+          in+=" temperature } } }";
+          Cerr<<" Building of temperature_physique  "<<in<<finl;
+          EChaine IN(in);
+          lire_champs_operateurs(IN);
+        }
     }
 
   Postraitement_base::readOn(s);
