@@ -203,7 +203,7 @@ Chapter {
         Title "Mean of the pressure field at the Outlet"
         Description "We want to verify the pressure at the outlet of the cylinder where we imposed the pressure field to be 10. For that we create a new field with the 'Definition_champ' TRUST keyword."
         Description "Syntax of the Definition_champ block for the mean of the 'pression' field on the outlet in the data file:"include_text_file(mean_pression_outlet.txt, Reduction_0D, methode, moyenne, source, interpolation, domaine, localisation, elem, refChamp ,Pb_champ, pression, pression_pa)
-        Description "Syntax of the probe line in the data file:"include_text_file(mean_pression_outlet_probe.txt, pression_pa, elem)
+        Description "Syntax of the probe line in the data file:"include_text_file(mean_pression_outlet_probe.txt, periode, numero_elem_sur_maitre)
 
         Description "  "
         Description "The obtained values confirm that Navier-stokes pressure \latex_(\textbf{$P_{NS}$ ='Pression\_Pa'='Pressure'} in [Pa] and \textbf{'Pression' = 'P\_star' = $ \frac{1}{\rho} P_{NS}$} in $[m^2/s^2]$ \latex_)"
@@ -667,7 +667,7 @@ Chapter {
         Title "Mean of the pressure field at the Outlet"
         Description "We want to verify the pressure at the outlet of the cylinder where we imposed the pressure field to be 10. For that we create a new field with the 'Definition_champ' TRUST keyword."
         Description "Syntax of the Definition_champ block for the mean of the 'pression' field on the outlet in the data file:"include_text_file(mean_pression_outlet.txt, Reduction_0D, methode, moyenne, source, interpolation, domaine, localisation, elem, refChamp ,Pb_champ, pression, pression_pa)
-        Description "Syntax of the probe line in the data file:"include_text_file(mean_pression_outlet_probe.txt, pression_pa, elem)
+        Description "Syntax of the probe line in the data file:"include_text_file(mean_pression_outlet_probe.txt, periode, numero_elem_sur_maitre)
 
         Description "  "
         Description "The obtained values confirm that Navier-stokes pressure \latex_(\textbf{$P_{NS}$ ='Pression\_Pa'='Pressure'} in [Pa] and \textbf{'Pression' = 'P\_star' = $ \frac{1}{\rho} P_{NS}$} in $[m^2/s^2]$ \latex_)"

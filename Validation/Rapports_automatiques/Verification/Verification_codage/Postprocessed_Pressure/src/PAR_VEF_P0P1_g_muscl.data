@@ -95,12 +95,12 @@ Read pb
             { methode moyenne source interpolation { domaine dom_boundaries_Inlet localisation elem sources_reference { pressure_tot } } }
             mean_P_tot_Outlet Reduction_0D
             { methode moyenne source interpolation { domaine dom_boundaries_Outlet localisation elem sources_reference { pressure_tot } } }
-            Delta_P_tot_moy transformation
+#            Delta_P_tot_moy transformation
             {
                     methode formule expression 1 abs(mean_P_tot_Inlet-mean_P_tot_Outlet)
                     localisation elem
                     sources_reference { mean_P_tot_Inlet , mean_P_tot_Outlet }
-            }
+            } #
 
             mean_PRESSION_Outlet Reduction_0D {
                 methode moyenne
@@ -153,7 +153,8 @@ Read pb
             p_pa  pression_pa       periode  20 segment 24  0.   0.   0.     0.2   0.   0.
             ec  energie_cine_elem   periode  20 segment 24  0.   0.   0.     0.2   0.   0.
             pression_hydro   pression_hydrostatique    periode  20 segment 22  0.   0.   0.     0.2   0.   0.
-            Delta_P_tot_moy                 Delta_P_tot_moy         periode  5 numero_elem_sur_maitre 0
+            mean_P_tot_Inlet        mean_P_tot_Inlet        periode  5 numero_elem_sur_maitre 0
+            mean_P_tot_Outlet       mean_P_tot_Outlet       periode  5 numero_elem_sur_maitre 0
             mean_PRESSION_Outlet    mean_PRESSION_Outlet    periode 5 numero_elem_sur_maitre 0
             mean_PRESSURE_Outlet    mean_PRESSURE_Outlet    periode 5 numero_elem_sur_maitre 0
             mean_PRESSION_PA_Outlet mean_PRESSION_PA_Outlet periode 5 numero_elem_sur_maitre 0
