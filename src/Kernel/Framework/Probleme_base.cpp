@@ -1536,6 +1536,11 @@ const Champ_base& Probleme_base::get_champ(const Motcle& un_nom) const
       ++curseur;
     }
 
+  if (discretisation().que_suis_je()=="VDF")
+    {
+      Cerr << "\nTemperature_physique is not available for VDF discretization" << finl;
+      exit();
+    }
 
   Cerr<<"The field of name "<<un_nom<<" do not correspond to a field understood by the problem."<<finl;
   Cerr<<"It may be a field dedicated only to post-process and defined in the Definition_champs set."<<finl;
