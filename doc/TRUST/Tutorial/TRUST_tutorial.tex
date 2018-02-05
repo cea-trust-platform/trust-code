@@ -230,8 +230,8 @@ CEA Saclay \\ % Your institution for the title page
 \vspace{0.2cm}
 
 \item Open a terminal and run the commands to create a directory for your studies: \\
-\textbf{mkdir -p \; $\sim$/Formation\_TRUST/yourname}\\
-\textbf{cd \; $\sim$/Formation\_TRUST/yourname}
+\textbf{mkdir -p \; Formation\_TRUST/yourname}\\
+\textbf{cd \; Formation\_TRUST/yourname}
 \vspace{0.2cm}
 
 \item \label{method_copy} Copy a test case from the TRUST database to your study with the command:\\
@@ -483,7 +483,7 @@ The goal of this exercise is to introduce parallelism in the data file of the pr
 
 \begin{itemize}
 \item Go to the previous study (should be done) and after you had suppressed the \textbf{reprise} keyword and set \textbf{tinit\index{tinit}} to 0 again in the \textit{Obstacle.data} file, create the two new files:\\
-\textbf{cd $\sim$/Formation\_TRUST/yourname/Obstacle} \\
+\textbf{cd Formation\_TRUST/yourname/Obstacle} \\
 \textbf{mkdir PARA1} \\
 \textbf{cd PARA1} \\
 \textbf{cp ../Obstacle.data DEC\_Obstacle.data} \\
@@ -562,7 +562,7 @@ also visualize a field only on a selected part (block) with the menu Control $\r
 \vspace{0.2cm}
 
 \item First we will create a new working directory with our data files:\\
-\textbf{cd $\sim$/Formation\_TRUST/yourname/Obstacle} \\
+\textbf{cd Formation\_TRUST/yourname/Obstacle} \\
 \textbf{mkdir PARA2} \\
 \textbf{cd PARA2} \\
 \textbf{cp ../Obstacle.data exemple.data}\\
@@ -673,29 +673,27 @@ You will run it like:\\
 
 \begin{itemize}
 \item Log on to the cluster callisto and initialize the TRUT version: \\
-\vspace{0.2cm}
 {\small{
 \textbf{ssh -X yourlogin@callisto-login1(.intra.cea.fr)} \\
 \textbf{source /panfs/ixion/home/triou/TRUST/TRUST-X.Y.Z/env\_TRUST.sh}\\
 or 
 \textbf{source /home/triou/env\_TRUST\_X.Y.Z.sh}\\
 }}
-\vspace{0.2cm}
 
 \item Copy the study Obstacle:\\
-\vspace{0.2cm}
 \textbf{cd /panfs/ixion/home/yourlogin}\\
 \textbf{mkdir  -p  Formation\_TRUST/yourname} \\
 \textbf{cd Formation\_TRUST/yourname} \\
 \textbf{trust -copy\index{trust -copy} Obstacle} \\
 \textbf{cd Obstacle} \\
-\vspace{0.2cm}
 
 \item Open Obstacle.data and add \textbf{"format lata\index{format lata}"} in the post-traitement block.
-\vspace{0.2cm}
 
 \item Create automatically a 2 partitioned mesh and a parallel datafile with:\\
 \textbf{trust -partition\index{trust -partition} Obstacle}
+
+\item For clusters, you have to create a submission file:\\
+\textbf{trust -create\_sub\_file\index{trust -create\_sub\_file} PAR\_Obstacle 2}
 \end{itemize}
 
 \end{block}
@@ -707,32 +705,32 @@ or
 \begin{block}{}
 
 \begin{itemize}
-\item Submit the parallel calculation on 2 cores:\\
-\vspace{0.2cm}
-\textbf{trust PAR\_Obstacle 2}
-\vspace{0.2cm}
-
-\item For clusters, you have to create a submission file:\\
-\vspace{0.2cm}
-\textbf{trust -create\_sub\_file\index{trust -create\_sub\_file} PAR\_Obstacle 2}
-\vspace{0.2cm}
-
 \item Open the file sub\_file and change the name of the job. Note that we will see only the first eight characters of the name of the job in the list of submitted jobs.
-\vspace{0.2cm}
 
-\item Submit the job with: \textbf{sbatch sub\_file}
-\vspace{0.2cm}
+\item Submit the job with:\\
+\textbf{sbatch sub\_file}
 
 \item Check the state of the job with: \textbf{"squeue"} or \textbf{"squeue -u yourlogin"}
-\vspace{0.2cm}
 
-\item You could run VisIt from the cluster but it is not recommended. But you can run VisIt on your PC and access/visualize the result file on callisto cluster, with File $\rightarrow$ Open File and select callisto in the localhost menu.
+\item You could run VisIt from the cluster but it is not recommended.
+
+\item So you can run VisIt on your PC and access/visualize the result file on callisto cluster.
+        \begin{itemize}
+        \item Open your .bashrc file (or create it if needed).
+        \item Add the following lines:\\
+        if [[ \${HOSTNAME:0:8} == "callisto" ]] \\
+        then\\
+           source /panfs/ixion/home/triou/TRUST/TRUST-X.Y.Z/env\_TRUST.sh \\
+        fi
+        \item Open VisIt on your computer, then acces to your files on callisto with:\\
+        File $\rightarrow$ Open File and select callisto in the localhost menu.
+        \end{itemize}
+
 \end{itemize}
 
 \end{block}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 \section{{\bf{Heat exchange VDF/VEF}}}
@@ -791,7 +789,7 @@ $$
 
 \begin{itemize}
 \item Create a new study Coupling\_VDF by copying the docond study:\\
-\textbf{cd $\sim$/Formation\_TRUST/yourname} \\
+\textbf{cd Formation\_TRUST/yourname} \\
 \textbf{trust -copy\index{trust -copy} docond} \\
 \textbf{mv docond Coupling\_VDF} \\
 \textbf{cd Coupling\_VDF} \\
@@ -925,8 +923,8 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 
 \begin{itemize}
 \item Open a terminal and create a directory using Unix commands, and copy the study \textbf{TP\_Temp\_QC\_VEF} (it is a 2D simulation of helium gas flow from left to right between two heated walls):\\
-\textbf{mkdir -p $\sim$/Formation\_TRUST/yourname}\\
-\textbf{cd $\sim$/Formation\_TRUST/yourname}\\
+\textbf{mkdir -p Formation\_TRUST/yourname}\\
+\textbf{cd Formation\_TRUST/yourname}\\
 \textbf{trust -copy\index{trust -copy} TP\_Temp\_QC\_VEF}\\
 \textbf{cd TP\_Temp\_QC\_VEF}
 
@@ -1294,8 +1292,8 @@ Goals:
 
 \item Create a new directory and copy some data:\\
 {\small{
-\textbf{mkdir -p $\sim$/Formation\_TRUST/yourname/PeriodicBox} \\
-\textbf{cd $\sim$/Formation\_TRUST/yourname/PeriodicBox} \\
+\textbf{mkdir -p Formation\_TRUST/yourname/PeriodicBox} \\
+\textbf{cd Formation\_TRUST/yourname/PeriodicBox} \\
 \textbf{cp \$project\_directory/validation/share/Validation/Rapports\_automatiques/} \\
 \hspace{4cm} \textbf{Validant/pas\_fini/PeriodicBox/src/* \; .} \\
 }}
@@ -1818,8 +1816,8 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 
 \begin{itemize}
 \item Create a directory and run Salom\'e (we suppose it is installed):\\
-\textbf{mkdir -p $\sim$/Formation\_TRUST/yourname/salome/exo1} \\
-\textbf{cd $\sim$/Formation\_TRUST/yourname/salome/exo1} \\
+\textbf{mkdir -p Formation\_TRUST/yourname/salome/exo1} \\
+\textbf{cd Formation\_TRUST/yourname/salome/exo1} \\
 
 \textbf{/export/home/salome/SALOME-7.7.1-FD18/salome} \\
 \# or if no local version: {\scriptsize{\textbf{/home/salome/salome}}} \\
@@ -2122,8 +2120,8 @@ Netgen & MG
 
 \begin{itemize}
 \item Create a directory and run Salom\'e (we suppose it is installed):\\
-\textbf{mkdir -p $\sim$/Formation\_TRUST/yourname/salome/exo2} \\
-\textbf{cd $\sim$/Formation\_TRUST/yourname/salome/exo2} \\
+\textbf{mkdir -p Formation\_TRUST/yourname/salome/exo2} \\
+\textbf{cd Formation\_TRUST/yourname/salome/exo2} \\
 
 \textbf{/export/home/salome/SALOME-7.7.1-FD18/salome} \\
 \# or if no local version: {\scriptsize{\textbf{/home/salome/salome}}} \\
@@ -2270,8 +2268,8 @@ Then "Apply and Close"
 
 \begin{itemize}
 \item Create a directory and run Salom\'e (we suppose it is installed):\\
-\textbf{mkdir -p $\sim$/Formation\_TRUST/yourname/salome/exo3} \\
-\textbf{cd $\sim$/Formation\_TRUST/yourname/salome/exo3} \\
+\textbf{mkdir -p Formation\_TRUST/yourname/salome/exo3} \\
+\textbf{cd Formation\_TRUST/yourname/salome/exo3} \\
 
 \textbf{/export/home/salome/SALOME-7.7.1-FD18/salome} \\
 \# or if no local version: {\scriptsize{\textbf{/home/salome/salome}}} \\
@@ -2555,8 +2553,8 @@ or in parallel with:\\
 \begin{itemize}
 \item Create a directory and copy an example:\\
 {\footnotesize{
-\textbf{mkdir \, -p \, $\sim$/Formation\_TRUST/yourname/gmsh} \\
-\textbf{cd \, $\sim$/Formation\_TRUST/yourname/gmsh} \\
+\textbf{mkdir \, -p \, Formation\_TRUST/yourname/gmsh} \\
+\textbf{cd \, Formation\_TRUST/yourname/gmsh} \\
 \textbf{source /home/triou/env\_\textcolor{blue}{TrioCFD}\_X.Y.Z.sh }\\
 \textbf{echo \$project\_directory} \\
 \textbf{dir=\$project\_directory/validation/share/Validation/Rapports\_automatiques/Validant} \\
@@ -2831,8 +2829,8 @@ Note that in Xprepro, we dig a geometry in an initial block of matter.
 
 \begin{itemize}
 \item Create a directory:\\
-\textbf{mkdir \, -p \, $\sim$/Formation\_TRUST/yourname/Xprepro/exo1} \\
-\textbf{cd \, $\sim$/Formation\_TRUST/yourname/Xprepro/exo1} \\
+\textbf{mkdir \, -p \, Formation\_TRUST/yourname/Xprepro/exo1} \\
+\textbf{cd \, Formation\_TRUST/yourname/Xprepro/exo1} \\
 \textbf{source /home/triou/env\_TRUST\_X.Y.Z.sh }\\
 \textbf{Xprepro \&} 
 \end{itemize}
@@ -2890,7 +2888,7 @@ Note that in Xprepro, we dig a geometry in an initial block of matter.
 \begin{block}{}
 
 \begin{itemize}
-\item Note that the "maillagefefaut" file and your prepro file are saved in the directory $\sim$/Formation\_TRUST/yourname/Xprepro/model.
+\item Note that the "maillagefefaut" file and your prepro file are saved in the directory Formation\_TRUST/yourname/Xprepro/model.
 \item Click on "Modify" on the top of the "viewlist" window to change the values of $nx$, $ny$ and $nz$ to have $NX=100$, $Ny=20$ and $Nz=10$. Then "Ok". 
 \item Think to save your geometry with "Save file prepro"!
 \item You can see in this window that there are some "?", we will complete them now.
@@ -3020,8 +3018,8 @@ The radius of the cylinders is 0.2m and the distances between cylinders are 0.2m
 
 \begin{itemize}
 \item Create a directory: Run Xprepro in the TRUST environment:\\
-\textbf{mkdir \, -p \, $\sim$/Formation\_TRUST/yourname/Xprepro/exo2} \\
-\textbf{cd \, $\sim$/Formation\_TRUST/yourname/Xprepro/exo2} \\
+\textbf{mkdir \, -p \, Formation\_TRUST/yourname/Xprepro/exo2} \\
+\textbf{cd \, Formation\_TRUST/yourname/Xprepro/exo2} \\
 \textbf{source /home/triou/env\_TRUST\_X.Y.Z.sh }\\
 \textbf{Xprepro \&} 
 \end{itemize}
@@ -3162,8 +3160,8 @@ The radius of the cylinders is 0.2m and the distances between cylinders are 0.2m
 \begin{itemize}
 \item First copy the validation form named Source\_canal\_perio:\\
 {\small{
-\textbf{mkdir -p $\sim$/Formation\_TRUST/yourname/validation} \\
-\textbf{cd  $\sim$/Formation\_TRUST/yourname/validation} \\
+\textbf{mkdir -p Formation\_TRUST/yourname/validation} \\
+\textbf{cd  Formation\_TRUST/yourname/validation} \\
 \textbf{VERIF=\$TRUST\_ROOT/Validation/Rapports\_automatiques/Verification} \\
 \textbf{cp -r \$VERIF/Verification\_codage/Source\_canal\_perio \, .} \\
 \textbf{cd Source\_canal\_perio}
