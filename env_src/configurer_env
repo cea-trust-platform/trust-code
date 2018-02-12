@@ -1184,6 +1184,14 @@ else
                #[ $err = 0 ] && run_test_mpi_par 1>>mpiAbort.log 2>&1
                #OK $err
                #[ $err = 1 ] && mpi_detecte=0 && echo "Problem with MPI_ABORT of `mpirun --version | head -n 1`. Upgrade of MPI version."
+	       if [ "`$MPI_ROOT/bin/mpirun --version 2>&1 | grep 'mpirun (Open MPI)'`" != "" ]
+	       then
+                  echo $ECHO_OPTS "# Check version of OpenMPI (KO if version between 1.10.3 and 1.10.6): " 
+		  [ "`$MPI_ROOT/bin/mpirun --version 2>&1 | grep 'mpirun (Open MPI) 1.10.3'`" != "" ] && mpi_detecte=0 && echo "Problem with MPI_ABORT of `$MPI_ROOT/bin/mpirun --version | head -n 1`.";
+		  [ "`$MPI_ROOT/bin/mpirun --version 2>&1 | grep 'mpirun (Open MPI) 1.10.4'`" != "" ] && mpi_detecte=0 && echo "Problem with MPI_ABORT of `$MPI_ROOT/bin/mpirun --version | head -n 1`.";
+		  [ "`$MPI_ROOT/bin/mpirun --version 2>&1 | grep 'mpirun (Open MPI) 1.10.5'`" != "" ] && mpi_detecte=0 && echo "Problem with MPI_ABORT of `$MPI_ROOT/bin/mpirun --version | head -n 1`.";
+		  [ "`$MPI_ROOT/bin/mpirun --version 2>&1 | grep 'mpirun (Open MPI) 1.10.6'`" != "" ] && mpi_detecte=0 && echo "Problem with MPI_ABORT of `$MPI_ROOT/bin/mpirun --version | head -n 1`.";
+	       fi
 	    fi	
 	 fi
       fi
