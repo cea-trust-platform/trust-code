@@ -1,0 +1,108 @@
+# Hydraulic 3D VEF PARALLEL test to disable the writing of output files #
+# PARALLEL OK #
+dimension 3
+Pb_Hydraulique pb
+
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+        {
+                Origine 0. 0. 0.
+                Nombre_de_Noeuds 3 3 2
+                Longueurs 1 1 1
+        }
+        {
+                Bord entree   	X = 0.   0. <= Y <= 1.   0. <= Z <= 1
+                Bord sortie  	X = 1.  0. <= Y <= 1.   0. <= Z <= 1
+                Bord paroi   	Y =  0.  0. <= X <= 1.  0. <= Z <= 1
+                Bord paroi   	Y =  1.  0. <= X <= 1.  0. <= Z <= 1
+                Bord paroi  	Z = 0.  0. <= X <= 1.   0. <= Y <= 1.
+                Bord paroi  	Z = 1 0. <= X <= 1.   0. <= Y <= 1.
+        }
+}
+Tetraedriser_homogene dom
+VerifierCoin dom { }
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partition_tool metis { Nb_parts 2 }
+	Larg_joint 2
+	zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+
+Scheme_euler_explicit sch
+Read sch
+{
+	nb_pas_dt_max 2
+	tinit 0.0
+	tmax 0.05
+	dt_min 1.e-5
+	dt_max 0.01
+	dt_impr 0
+        dt_sauv 0
+	seuil_statio 1.e-10
+        disable_progress
+        disable_dt_ev
+}
+disable_TU
+
+Fluide_Incompressible fluide
+Read fluide
+{
+	mu Champ_Uniforme 1 2e-05
+	rho Champ_Uniforme 1 2
+}
+
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+
+Discretize pb dis
+
+Read pb
+{
+	Navier_Stokes_standard
+	{
+		solveur_pression Petsc GCP { 
+			precond ssor { omega 1.65 } 
+			seuil 1.e-8
+			impr 
+		}
+		Sources { Source_Qdm Champ_fonc_xyz dom 3 x*y y*z x*y*z }
+
+		convection { EF_stab { alpha 0.2 } }
+		diffusion { }
+		initial_conditions
+		        {
+			vitesse Champ_Uniforme 3 1. 0. 0.
+			}
+		boundary_conditions {
+		        paroi paroi_fixe
+			entree frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 1. 0. 0.
+			sortie frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.
+		}
+	}
+        Post_processing
+        {
+                format lml
+                fields dt_post 0.01
+                {
+                        vitesse
+                        pression
+                }
+        }
+}
+EcritureLectureSpecial 0
+Solve pb
+End
