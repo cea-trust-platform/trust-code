@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,6 +27,9 @@
 class Objet_U;
 class Nom;
 class Sortie;
+
+int get_disable_stop();
+void change_disable_stop(int new_stop);
 
 //////////////////////////////////////////////////////////////////////////////
 //

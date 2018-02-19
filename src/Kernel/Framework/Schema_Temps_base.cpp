@@ -33,7 +33,6 @@
 #include <SFichier.h>
 #include <DoubleTab.h>
 #include <Matrice_Morse.h> // necessaire pour visual
-#include <Journal.h>
 
 Implemente_base_sans_constructeur(Schema_Temps_base,"Schema_Temps_base",Objet_U);
 // XD schema_temps_base objet_u schema_temps_base -1 Basic class for time schemes. This scheme will be associated with a problem and the equations of this problem.

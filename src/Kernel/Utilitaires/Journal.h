@@ -24,5 +24,3 @@ int get_journal_level();
 void change_journal_level(int new_level);
 void end_journal(int verbose_level);
 void set_Cerr_to_journal(int flag);
-int get_disable_stop();
-void change_disable_stop(int new_stop);
