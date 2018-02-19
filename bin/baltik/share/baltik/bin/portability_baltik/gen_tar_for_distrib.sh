@@ -15,6 +15,7 @@ cp $Arc.tar.gz sto
 rm -f ${Arc}*.tar.gz
 mv sto $Arc.tar.gz
 cp -ar  $BALTIK .
+rm -rf baltik/templates
 chmod -R +w .
 tar hcf ../$Arc.tar *
 cd $org

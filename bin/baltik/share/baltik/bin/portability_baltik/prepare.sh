@@ -55,6 +55,7 @@ for word in $*
       --with-case*) cases=`right $word`;  last_pb="_last_pb"  ;;
       --last-pb) last_pb="_last_pb";;
       --check-all) last_pb="_all";;
+      --check-trust) last_pb="_trust";;
       --clean-after-if-ok) clean_after=1 ;;
       --cible) cible=1;;
       *) echo $word non compris;echo options possibles ; grep '\-\-' $0| awk -F\) '{print $1}'  ;exit 1;;
