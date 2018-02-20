@@ -105,7 +105,7 @@ Read pb
 			format lml fichier Cx
 			Definition_champs
 			{
-				pressure_inlet Reduction_0D { methode moyenne 
+				pressure_inlet Reduction_0D { methode average 
 					source Extraction { domaine Entree nom_frontiere Entree 
 						source Interpolation { domaine dom localisation elem 
 							source RefChamp { Pb_champ pb pression } 
@@ -137,21 +137,21 @@ Read pb
 			{
 				# Calculate viscous force on the ring #
 				FVx Reduction_0D { 
-					methode somme source Interpolation { 
+					methode sum source Interpolation { 
 						domaine ring localisation elem source Morceau_equation {
 							type operateur numero 0 option flux_bords compo 0 source refChamp { Pb_champ pb vitesse }
 						}
 					}
 				}
 				FVy Reduction_0D { 
-					methode somme source Interpolation { 
+					methode sum source Interpolation { 
 						domaine ring localisation elem source Morceau_equation {
 							type operateur numero 0 option flux_bords compo 1 source refChamp { Pb_champ pb vitesse }
 						}
 					}
 				}
 				FVz Reduction_0D { 
-					methode somme source Interpolation { 
+					methode sum source Interpolation { 
 						domaine ring localisation elem source Morceau_equation {
 							type operateur numero 0 option flux_bords compo 2 source refChamp { Pb_champ pb vitesse }
 						}
@@ -159,21 +159,21 @@ Read pb
 				}
 				# Calculate pressure force on the ring #
 				FPx Reduction_0D { 
-					methode somme source Interpolation { 
+					methode sum source Interpolation { 
 						domaine ring localisation elem source Morceau_equation {
 							type operateur numero 2 option flux_bords compo 0 source refChamp { Pb_champ pb vitesse }
 						}
 					}
 				}
 				FPy Reduction_0D { 
-					methode somme source Interpolation { 
+					methode sum source Interpolation { 
 						domaine ring localisation elem source Morceau_equation {
 							type operateur numero 2 option flux_bords compo 1 source refChamp { Pb_champ pb vitesse }
 						}
 					}
 				}
 				FPz Reduction_0D { 
-					methode somme source Interpolation { 
+					methode sum source Interpolation { 
 						domaine ring localisation elem source Morceau_equation {
 							type operateur numero 2 option flux_bords compo 2 source refChamp { Pb_champ pb vitesse }
 						}
@@ -181,7 +181,7 @@ Read pb
 				}
 				# Calculate pressure force on the cylinder (new feature, boundary domain are usable everywhere in the data file) #				
                                 FPx_cylinder Reduction_0D {
-                                        methode somme source Interpolation {
+                                        methode sum source Interpolation {
                                                 domaine dom_boundaries_Cylindre localisation elem source Morceau_equation {
                                                         type operateur numero 2 option flux_bords compo 0 source refChamp { Pb_champ pb vitesse }
                                                 }

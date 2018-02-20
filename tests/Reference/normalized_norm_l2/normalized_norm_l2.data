@@ -83,7 +83,7 @@ Read pb
 	{
 		Definition_champs	{
 					norme_L2_1	reduction_0D	{
-									methode normalized_norm_L2
+									methode normalized_euclidian_norm
 									source transformation	{
 												methode formule expression 1 1
 												localisation elem

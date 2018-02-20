@@ -174,7 +174,7 @@ Read pb
 								} 
 							}
 							
-		   pression_moy Reduction_0D { methode moyenne 
+		   pression_moy Reduction_0D { methode average 
 		   					  source Interpolation
 							  { localisation elem 
 							    source refChamp { Pb_champ pb pression }
@@ -308,13 +308,13 @@ Read pb
 
 	     
 					       
-	     debit_sum Reduction_0D { methode somme sources_reference { debit  } }				       
-	     diffU_X_sum Reduction_0D { methode somme sources_reference { diffU_X  } }			       
-             diffU_Y_sum Reduction_0D { methode somme sources_reference { diffU_Y  } }			       			       			       
-	     convU_X_sum Reduction_0D { methode somme sources_reference { convU_X  } }			       
-             convU_Y_sum Reduction_0D { methode somme sources_reference { convU_Y  } }
-	     diffT_sum Reduction_0D { methode somme sources_reference { diffT  } }			       
-             convT_sum Reduction_0D { methode somme sources_reference { convT  } }
+	     debit_sum Reduction_0D { methode sum sources_reference { debit  } }				       
+	     diffU_X_sum Reduction_0D { methode sum sources_reference { diffU_X  } }			       
+             diffU_Y_sum Reduction_0D { methode sum sources_reference { diffU_Y  } }			       			       			       
+	     convU_X_sum Reduction_0D { methode sum sources_reference { convU_X  } }			       
+             convU_Y_sum Reduction_0D { methode sum sources_reference { convU_Y  } }
+	     diffT_sum Reduction_0D { methode sum sources_reference { diffT  } }			       
+             convT_sum Reduction_0D { methode sum sources_reference { convT  } }
 	     			       			       
 	    }
 	    

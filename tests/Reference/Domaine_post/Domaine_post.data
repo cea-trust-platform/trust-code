@@ -165,7 +165,7 @@ Read pb
 		  }
 		  critere_q_min 	Reduction_0D { methode min 	source refChamp { Pb_Champ pb critere_q } } 	
 		  critere_q_max 	Reduction_0D { methode max 	source refChamp { Pb_Champ pb critere_q } } 
-		  critere_q_mean 	Reduction_0D { methode moyenne 	source refChamp { Pb_Champ pb critere_q } } 
+		  critere_q_mean 	Reduction_0D { methode average 	source refChamp { Pb_Champ pb critere_q } } 
 		}
 		Probes 
 		{

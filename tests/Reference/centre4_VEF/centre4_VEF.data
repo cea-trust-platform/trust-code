@@ -129,7 +129,7 @@ Read pb
 		   }	
 		  temperature_reduction_moy Interpolation { localisation som
 		     source Reduction_0D {
-		  	 methode moyenne
+		  	 methode average
 			 source refChamp { Pb_champ pb temperature }
 		  	}	
 		   }
@@ -147,7 +147,7 @@ Read pb
 		   }
 		   vitesse_reduction_moy Interpolation { localisation elem
 		    source Reduction_0D {
-		  	 methode moyenne
+		  	 methode average
 			 source refChamp { Pb_champ pb vitesse }
 		  	}
 		   }

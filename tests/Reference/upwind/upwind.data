@@ -183,7 +183,7 @@ Read pb
 	liste_de_postraitements {
 	test1 Post_processing {
 		Definition_champs {
-		test_nom reduction_0D { methode moyenne_ponderee 
+		test_nom reduction_0D { methode weighted_average 
 	              sources { refchamp { pb_champ pb pression } } 
 		         }
 	                }

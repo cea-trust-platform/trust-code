@@ -123,7 +123,7 @@ Read pb
 	     		Definition_champs
         		{
         		 	temperature_max Reduction_0D { methode max sources_reference { temperature_physique  } }
-        		 	temperature_moy Reduction_0D { methode moyenne sources_reference { temperature_physique  } }	
+        		 	temperature_moy Reduction_0D { methode average sources_reference { temperature_physique  } }	
         		}
  			Probes
 	       		{
@@ -172,12 +172,12 @@ Read pb
         		    }	
 			 temperature_moy_paroi_chauf Reduction_0D 
         		    { 
-                	      methode moyenne
+                	      methode average
                 	      sources_reference { temperature_paroi_chauf } 
         		    }	
 			 temperature_moy_ponderee_paroi_chauf Reduction_0D 
         		    { 
-                	      methode moyenne_ponderee
+                	      methode weighted_average
                 	      sources_reference { temperature_paroi_chauf } 
         		    }	
         		}

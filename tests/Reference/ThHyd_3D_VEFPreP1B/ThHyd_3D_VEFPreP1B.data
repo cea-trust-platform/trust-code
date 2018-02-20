@@ -111,19 +111,19 @@ Read pb
 		Definition_champs
 		{
 			# The mean temperature on a plane inside the domain is calculated by an interpolation #
-			mean_temperature_plan 	Reduction_0D { methode moyenne source Interpolation { domaine plan localisation elem source RefChamp { Pb_champ pb temperature } } }
+			mean_temperature_plan 	Reduction_0D { methode average source Interpolation { domaine plan localisation elem source RefChamp { Pb_champ pb temperature } } }
 			# The mean temperature on inlet and outlet boundaries are calculated with an extraction of the temperature field onto the boundaries # 
-			mean_temperature_outlet Reduction_0D { methode moyenne source Extraction { domaine outlet nom_frontiere DROIT methode champ_frontiere source RefChamp { Pb_champ pb temperature } } }
-			mean_temperature_inlet 	Reduction_0D { methode moyenne source Extraction { domaine inlet nom_frontiere GAUCH methode trace source RefChamp { Pb_champ pb temperature } } }
+			mean_temperature_outlet Reduction_0D { methode average source Extraction { domaine outlet nom_frontiere DROIT methode champ_frontiere source RefChamp { Pb_champ pb temperature } } }
+			mean_temperature_inlet 	Reduction_0D { methode average source Extraction { domaine inlet nom_frontiere GAUCH methode trace source RefChamp { Pb_champ pb temperature } } }
 			
 			# Calculation of minimal and maximal values of different fields #
 		   	pression_min 		Reduction_0D { methode min source Interpolation { localisation som source refChamp { Pb_champ pb pression } } }				
 		   	pression_max 		Reduction_0D { methode max source Interpolation { localisation som source refChamp { Pb_champ pb pression } } }						
-		   	pression_moy 		Reduction_0D { methode moyenne source Interpolation { localisation som source refChamp { Pb_champ pb pression } } }
-		   	temperature_moy 	Reduction_0D { methode moyenne source Interpolation { localisation som source refChamp { Pb_champ pb temperature } } }
-		   	vitesse_moy		Reduction_0D { methode moyenne source Interpolation { localisation som source refChamp { Pb_champ pb vitesse } } }
-		   	temperature_sum 	Reduction_0D { methode somme source Interpolation { localisation som source refChamp { Pb_champ pb temperature } } }
-			vitesse_sum		Reduction_0D { methode somme source Interpolation { localisation som source refChamp { Pb_champ pb vitesse } } }		   
+		   	pression_moy 		Reduction_0D { methode average source Interpolation { localisation som source refChamp { Pb_champ pb pression } } }
+		   	temperature_moy 	Reduction_0D { methode average source Interpolation { localisation som source refChamp { Pb_champ pb temperature } } }
+		   	vitesse_moy		Reduction_0D { methode average source Interpolation { localisation som source refChamp { Pb_champ pb vitesse } } }
+		   	temperature_sum 	Reduction_0D { methode sum source Interpolation { localisation som source refChamp { Pb_champ pb temperature } } }
+			vitesse_sum		Reduction_0D { methode sum source Interpolation { localisation som source refChamp { Pb_champ pb vitesse } } }		   
 			
 		}
                 Probes

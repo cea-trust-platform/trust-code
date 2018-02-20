@@ -28,7 +28,7 @@ tetraedriser_homogene_compact dom
 RegroupeBord dom Wall { Wall newBord }
  #
 Lire_med family_names_from_group_names dom mesh_gmsh mesh_gmsh.med
-extruder { domaine dom direction 0.2 0 0 nb_tranches 4 }
+extruder { domaine dom direction 0.1 0 0 nb_tranches 4 }
 RegroupeBord dom Inlet { devant }
 RegroupeBord dom Outlet { derriere }
 # tetraedriser_homogene_compact dom #
