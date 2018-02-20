@@ -23,7 +23,7 @@ eb1cb941a20c5b751352c52486aa1dd7  Python_modules/pytz-2014.10.tar.gz
 34eed507548117b2ab523ab14b2f8b55  Python_modules/six-1.10.0.tar.gz
 7848a365ced9941053bc25d9a9f8f4b4  Python_modules/vcversioner-2.14.0.0.tar.gz
 4cfc6e7e3dc7377d0164914623922a10  Python_modules/wheel-0.26.0.tar.gz
-156ae15e25fc0d0e097c0712d3541596  SKIT/SPARSKIT2.tar.gz
+77c2a0162f6c2e9d7745e5eb35ee390b  SKIT/SPARSKIT2.tar.gz
 90a93507b8fdc88f46b9a8d7ed651c6c  VisIt/IceT-1-0-0.tar.gz
 fc14a54e1ce02a0225be8854bfba478e  VisIt/Imaging-1.1.7.tar.gz
 2f9f444265534a2cfd9a99d1a8291089  VisIt/MesaLib-7.10.2.tar.gz
@@ -39,7 +39,7 @@ a89558d5dd35a5cb667e9a6e5d4f06f1  VisIt/requests-2.5.1.tar.gz
 9b23df90e1510c7353a5cf07873dcd22  VisIt/setuptools-28.0.0.tar.gz
 4d37a21f1bee651e5341ef7bcaa7669f  VisIt/visit2.12.1.tar.gz
 60df6a37c56e7c1366cca812414f7b85  VisIt/zlib-1.2.7.tar.gz
-3e3ef8024c175ef4e1720b7aa4c75202  astyle_2.02.1_linux.tar.gz
+ba84eaa8564155babd4ba1458d4eaa11  astyle_2.03_linux.tar.gz
 d43a8fbe83767978098ba7f8ee25d3d1  ccache-3.1.4.tar.gz
 701386a1b5ec95f8d1075ecf96383e02  cmake-3.5.2.tar.gz
 bd30e9cf5523cdfc019b94f5e1d7fd19  cppunit-1.12.1.tar.gz
