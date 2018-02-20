@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -93,6 +93,14 @@ Entree& VerifierCoin::readOn(Entree& is)
 // Postcondition:
 Entree& VerifierCoin::interpreter_(Entree& is)
 {
+// XD verifiercoin interprete verifiercoin -1 This keyword subdivides inconsistent 2D/3D cells used with VEFPreP1B discretization. Must be used before the mesh is discretized. NL1 The Read_file option can be used only if the file.decoupage_som was previously created by TRUST. This option, only in 2D, reverses the common face at two cells (at least one is inconsistent), through the nodes opposed. In 3D, the option has no effect. NL2 The expert_only option deactivates, into the VEFPreP1B divergence operator, the test of inconsistent cells.
+// XD  attr domain_name  ref_domaine dom 0 Name of the domaine
+// XD  attr bloc verifiercoin_bloc bloc 0 not_set
+// XD  verifiercoin_bloc objet_lecture nul 1 not_set
+// XD  attr Read_file|Lire_fichier chaine filename 1 name of the *.decoupage_som file
+// XD  attr expert_only rien expert_only 1 to not check the mesh
+
+
   associer_domaine(is);
   Domaine& dom=domaine();
   Zone& zone=dom.zone(0);
@@ -185,7 +193,7 @@ Entree& VerifierCoin::interpreter_(Entree& is)
       LecFicDiffuse fic;
       if (lecture_decoupage_som)
         {
-          Cerr<<"The file" << decoup_som <<"is checked before reading."<<finl;
+          Cerr<<"The file" << decoup_som <<" is checked before reading."<<finl;
           fic.ouvrir(decoup_som);
           if(fic.good())
             {
@@ -250,7 +258,7 @@ Entree& VerifierCoin::interpreter_(Entree& is)
               IntList_Curseur liste_elem(elements_associes[somm]);
               int size_elem= elements_associes[somm].size();
 
-              if (option_decoupage==1 && dimension==2)  // inversion des sommets
+              if (option_decoupage==1 && dimension==2 && somm_lu!=-1)  // inversion des sommets
                 {
                   les_elems(elem,0) = somm ;
                   les_elems(elem,1) = somm_opp ;
