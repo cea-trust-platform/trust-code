@@ -337,7 +337,7 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
       val_un=1.;
       val_extraite = mp_norme_vect(val_source)/mp_norme_vect(val_un);
     }
-  else if (methode_ =="L2_norm")
+  else if (methode_ =="L1_norm" || methode_ =="L2_norm")
     {
       // Si on est :
       // - au ELEM -> on pondere par les volumes des elements,
@@ -359,9 +359,24 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
       if (get_localisation()==ELEMENT)
         {
           int nb_elem = zvf.nb_elem();
-          for (int i=0; i<nb_elem; i++)
+          if (methode_ =="L1_norm")
             {
-              sum+=val_source(i)*val_source(i)*volumes(i);
+              for (int i=0; i<nb_elem; i++)
+                {
+                  sum+=abs(val_source(i))*volumes(i);
+                }
+            }
+          else if (methode_ =="L2_norm")
+            {
+              for (int i=0; i<nb_elem; i++)
+                {
+                  sum+=val_source(i)*val_source(i)*volumes(i);
+                }
+            }
+          else
+            {
+              Cerr << "Error in Champ_Generique_Reduction_0D::extraire" << finl;
+              exit();
             }
         }
 
@@ -387,19 +402,58 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
             {
               const IntVect& ori = zvf.orientation();
               int k=0;
-              for (int i=0; i<nb_face; i++)
-                if (ori(i)==composante_VDF)
-                  {
-                    sum+=val_source(k)*val_source(k)*volume_controle_(i);
-                    k++;
-                  }
+              if (methode_ =="L1_norm")
+                {
+                  for (int i=0; i<nb_face; i++)
+                    {
+                      if (ori(i)==composante_VDF)
+                        {
+                          sum+=abs(val_source(k))*volume_controle_(i);
+                          k++;
+                        }
+                    }
+                }
+              else if (methode_ =="L2_norm")
+                {
+                  for (int i=0; i<nb_face; i++)
+                    {
+                      if (ori(i)==composante_VDF)
+                        {
+                          sum+=val_source(k)*val_source(k)*volume_controle_(i);
+                          k++;
+                        }
+                    }
+                }
+              else
+                {
+                  Cerr << "Error in Champ_Generique_Reduction_0D::extraire" << finl;
+                  exit();
+                }
             }
           else
-            for (int i=0; i<nb_face; i++)
-              {
-                sum+=val_source(i)*val_source(i)*volume_controle_(i);
-              }
+            {
+              if (methode_ =="L1_norm")
+                {
+                  for (int i=0; i<nb_face; i++)
+                    {
+                      sum+=abs(val_source(i))*volume_controle_(i);
+                    }
+                }
+              else if (methode_ =="L2_norm")
+                {
+                  for (int i=0; i<nb_face; i++)
+                    {
+                      sum+=val_source(i)*val_source(i)*volume_controle_(i);
+                    }
+                }
+              else
+                {
+                  Cerr << "Error in Champ_Generique_Reduction_0D::extraire" << finl;
+                  exit();
+                }
+            }
         }
+
       // au NODE
       if (get_localisation()==NODE)
         {
@@ -418,102 +472,33 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
                     volume_controle_(som)+=volumes(i)/nb_som_par_elem;
                   }
             }
-          for (int i=0; i<nb_som; i++)
+          if (methode_ =="L1_norm")
             {
-              sum+=val_source(i)*val_source(i)*volume_controle_(i);
+              for (int i=0; i<nb_som; i++)
+                {
+                  sum+=abs(val_source(i))*volume_controle_(i);
+                }
             }
-        }
-      val_extraite = mp_sum(sum);
-      val_extraite = sqrt(val_extraite);
-    }
-  else if (methode_ =="L1_norm")
-    {
-      // Si on est :
-      // - au ELEM -> on pondere par les volumes des elements,
-      // - au FACE -> on pondere par les volumes entrelaces (on ne prend pas en compte les volumes etendues car on n'y a pas acces),
-      // - au NODE -> on pondere par les volumes de controle nodal [Vol(som)= Somme_sur_elem_entourant_som(Vol_elem/nb_som_par_elem)].
-      const Zone_dis_base& zone_dis = get_ref_zone_dis_base();
-      const Zone_VF& zvf = ref_cast(Zone_VF,zone_dis);
-      double sum=0;
-      const DoubleVect& volumes = zvf.volumes();
-      //int volumes_size_tot = mp_sum(volumes.size_array());
-      if (volumes.size_array()<zvf.nb_elem())
-        {
-          Cerr << "The mesh volumes of the domain " << zvf.zone().domaine().le_nom() << " are not available yet." << finl;
-          Cerr << "It is not implemented yet." << finl;
-          exit();
-        }
-
-      // au ELEM
-      if (get_localisation()==ELEMENT)
-        {
-          int nb_elem = zvf.nb_elem();
-          for (int i=0; i<nb_elem; i++)
+          else if (methode_ =="L2_norm")
             {
-              sum+=abs(val_source(i))*volumes(i);
-            }
-        }
-
-      // au FACE
-      if (get_localisation()==FACE)
-        {
-          // Calcul des volumes de controle a chaque face
-          int nb_face = zvf.nb_faces();
-          if (!volume_controle_.size())
-            {
-              volume_controle_.resize(nb_face);
-              volume_controle_=0;
-              int nb_faces_par_elem = zvf.elem_faces().dimension_tot(1);
-              int nb_elem = zvf.nb_elem();
-              for (int i=0; i<nb_elem; i++)
-                for (int j=0; j<nb_faces_par_elem; j++)
-                  {
-                    int face=zvf.elem_faces(i,j);
-                    volume_controle_(face)+=volumes(i)/nb_faces_par_elem;
-                  }
-            }
-          if (composante_VDF>=0)
-            {
-              const IntVect& ori = zvf.orientation();
-              int k=0;
-              for (int i=0; i<nb_face; i++)
-                if (ori(i)==composante_VDF)
-                  {
-                    sum+=abs(val_source(k))*volume_controle_(i);
-                    k++;
-                  }
+              for (int i=0; i<nb_som; i++)
+                {
+                  sum+=val_source(i)*val_source(i)*volume_controle_(i);
+                }
             }
           else
-            for (int i=0; i<nb_face; i++)
-              {
-                sum+=abs(val_source(i))*volume_controle_(i);
-              }
-        }
-      // au NODE
-      if (get_localisation()==NODE)
-        {
-          // Calcul des volumes de controle a chaque sommet
-          int nb_som = zvf.nb_som();
-          if (!volume_controle_.size())
             {
-              volume_controle_.resize(nb_som);
-              volume_controle_=0;
-              int nb_som_par_elem = zvf.zone().les_elems().dimension_tot(1);
-              int nb_elem = zvf.nb_elem();
-              for (int i=0; i<nb_elem; i++)
-                for (int j=0; j<nb_som_par_elem; j++)
-                  {
-                    int som=zvf.zone().sommet_elem(i,j);
-                    volume_controle_(som)+=volumes(i)/nb_som_par_elem;
-                  }
-            }
-          for (int i=0; i<nb_som; i++)
-            {
-              sum+=abs(val_source(i))*volume_controle_(i);
+              Cerr << "Error in Champ_Generique_Reduction_0D::extraire" << finl;
+              exit();
             }
         }
       val_extraite = mp_sum(sum);
+      if (methode_ =="L2_norm")
+        {
+          val_extraite = sqrt(val_extraite);
+        }
     }
+
   else if (methode_=="weighted_average" || methode_=="weighted_sum" || methode_=="moyenne_ponderee" || methode_=="somme_ponderee")
     {
       // Si on est :
