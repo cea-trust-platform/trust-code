@@ -90,7 +90,7 @@ Read pb
 				methode formule expression 1 10*(1-4*y*y)
 			} 
 			norme_L2_1		reduction_0D	{
-										methode norme_L2
+										methode euclidian_norm
 										source transformation	{
 													methode formule
 													expression 1 1
@@ -98,7 +98,7 @@ Read pb
 													}
 										}
             norme_L2_divu		reduction_0D	{
-										methode norme_L2
+										methode euclidian_norm
 										sources	{
                                                   interpolation { localisation elem 
                                             sources {

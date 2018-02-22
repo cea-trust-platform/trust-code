@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,6 +32,7 @@
 
 Implemente_instanciable(Champ_Generique_Reduction_0D,"Reduction_0D",Champ_Gen_de_Champs_Gen);
 Add_synonym(Champ_Generique_Reduction_0D,"Champ_Post_Reduction_0D");
+// XD reduction_0d champ_post_de_champs_post reduction_0d -1 To calculate the min, max, sum, average, weighted sum, weighted average, weighted sum by porosity, weighted average by porosity, euclidian norm, normalized euclidian norm, L1 norm, L2 norm of a field.
 
 Sortie& Champ_Generique_Reduction_0D::printOn(Sortie& s ) const
 {
@@ -44,8 +45,8 @@ Entree& Champ_Generique_Reduction_0D::readOn(Entree& s )
   LIST(Motcle) mot_compris;
   mot_compris.add("min");
   mot_compris.add("max");
-  mot_compris.add("norme_L2");
-  mot_compris.add("normalized_norm_L2");
+  mot_compris.add("euclidian_norm"); // new name for norme_L2
+  mot_compris.add("normalized_euclidian_norm"); // new name for normalized_norm_L2
   mot_compris.add("moyenne");
   mot_compris.add("somme");
   mot_compris.add("moyenne_ponderee");
@@ -53,6 +54,16 @@ Entree& Champ_Generique_Reduction_0D::readOn(Entree& s )
   mot_compris.add("moyenne_ponderee_porosite");
   mot_compris.add("somme_ponderee_porosite");
   mot_compris.add("valeur_a_gauche");
+  mot_compris.add("L2_norm");  // L2 norm
+  mot_compris.add("L1_norm");  // L1 norm
+  mot_compris.add("average");  // new name for moyenne
+  mot_compris.add("sum");  // new name for somme
+  mot_compris.add("weighted_average"); // new name for moyenne_ponderee
+  mot_compris.add("weighted_sum"); // new name weighted_sum for somme_ponderee
+  mot_compris.add("weighted_average_porosity");  // new name for moyenne_ponderee_porosite
+  mot_compris.add("weighted_sum_porosity");  // new name for somme_ponderee_porosite
+  mot_compris.add("left_value");  // new name for valeur_a_gauche
+
   Champ_Gen_de_Champs_Gen::readOn(s);
   if (mot_compris.rang(methode_)<0)
     {
@@ -68,7 +79,7 @@ Entree& Champ_Generique_Reduction_0D::readOn(Entree& s )
 void Champ_Generique_Reduction_0D::set_param(Param& param)
 {
   Champ_Gen_de_Champs_Gen::set_param(param);
-  param.ajouter("methode",&methode_,Param::REQUIRED);
+  param.ajouter("methode",&methode_,Param::REQUIRED); // XD_ADD_P chaine(into=["min","max","average","weighted_average","sum","weighted_sum","weighted_sum_porosity","euclidian_norm","normalized_euclidian_norm","L1_norm","L2_norm","left_value"]) name of the reduction method: NL2 - min for the minimum value, NL2 - max for the maximum value, NL2 - average (or moyenne) for a mean, NL2 - weighted_average (or moyenne_ponderee) for a mean ponderated by integration volumes, e.g: cell volumes for temperature or pressure in VDF, volumes around faces for velocity and temperature in VEF, NL2 - sum (or somme) for the sum of all the values of the field, NL2 - weighted_sum (or somme_ponderee) for a weighted sum (integral), NL2 - weighted_average_porosity (or moyenne_ponderee_porosite) and weighted_sum_porosity (or somme_ponderee_porosite) for the mean and sum weighted by the volumes of the elements, only for ELEM localisation, NL2 - euclidian_norm for the euclidian norm, NL2 - normalized_euclidian_norm for the euclidian norm normalized, NL2 - L1_norm for norm L1, NL2 - L2_norm for norm L2
 }
 
 void Champ_Generique_Reduction_0D::completer(const Postraitement_base& post)
@@ -90,13 +101,13 @@ void Champ_Generique_Reduction_0D::completer(const Postraitement_base& post)
       Cerr<<"or contact TRUST support."<<finl;
       exit();
     }
-  if (methode_=="valeur_a_gauche")
+  if (methode_=="valeur_a_gauche" || methode_=="left_value")
     {
       numero_proc_=-1;
     }
 
   Journal()<<"METHODE "<<methode_<<finl;
-  if ((methode_=="valeur_a_gauche")&&(numero_proc_==-1))
+  if ((methode_=="valeur_a_gauche" || methode_=="left_value")&&(numero_proc_==-1))
     {
       const Zone_dis_base& zone_dis = get_source(0).get_ref_zone_dis_base();
 
@@ -188,7 +199,7 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ_without_evaluation(Cha
   return espace_stockage.valeur();
 }
 // Description: Reduction_0D du champ source (au sens qu on le rend uniforme)
-// en fonction de la methode (min, max moyenne, moyenne_ponderee_volume_elem, somme, somme_ponderee)
+// en fonction de la methode (min, max, moyenne, moyenne_ponderee_volume_elem, somme, somme_ponderee)
 // Dans le cas ou le champ possede plusieurs composantes, elles sont traitees une par une
 const Champ_base& Champ_Generique_Reduction_0D::get_champ(Champ& espace_stockage) const
 {
@@ -238,7 +249,7 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(Champ& espace_stockage
           //pour appliquer val_extraite = mp_prodscal(vect_source,un)
           //Sa dimension est alors fixee par rapport au nombre d items de la source
           //ex : zvf.nb_faces() si loc==FACE
-          if (methode_=="somme" || methode_=="moyenne")
+          if (methode_=="somme" || methode_=="moyenne" || methode_=="sum" || methode_=="average")
             {
               Entity loc;
               loc = get_localisation();
@@ -268,7 +279,7 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(Champ& espace_stockage
               for (int i=0; i<valeurs_source.dimension(0); i++)
                 if (ori(i)==comp)
                   {
-                    if (methode_=="somme" || methode_=="moyenne")
+                    if (methode_=="somme" || methode_=="moyenne" || methode_=="sum" || methode_=="average")
                       vect_source(i) = valeurs_source(i);
                     else
                       {
@@ -316,17 +327,179 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
   // Pour calculer la moyenne, on utilise somme(val_source)/somme(1)
   val_extraite = mp_moyenne_vect(val_source);
   } */
-  else if (methode_=="norme_L2")
+  else if (methode_=="euclidian_norm")
     {
       val_extraite = mp_norme_vect(val_source);
     }
-  else if (methode_=="normalized_norm_L2")
+  else if (methode_=="normalized_euclidian_norm")
     {
       DoubleVect val_un(val_source);
       val_un=1.;
       val_extraite = mp_norme_vect(val_source)/mp_norme_vect(val_un);
     }
-  else if (methode_=="moyenne_ponderee" || methode_=="somme_ponderee")
+  else if (methode_ =="L1_norm" || methode_ =="L2_norm")
+    {
+      // Si on est :
+      // - au ELEM -> on pondere par les volumes des elements,
+      // - au FACE -> on pondere par les volumes entrelaces (on ne prend pas en compte les volumes etendues car on n'y a pas acces),
+      // - au NODE -> on pondere par les volumes de controle nodal [Vol(som)= Somme_sur_elem_entourant_som(Vol_elem/nb_som_par_elem)].
+      const Zone_dis_base& zone_dis = get_ref_zone_dis_base();
+      const Zone_VF& zvf = ref_cast(Zone_VF,zone_dis);
+      double sum=0;
+      const DoubleVect& volumes = zvf.volumes();
+      //int volumes_size_tot = mp_sum(volumes.size_array());
+      if (volumes.size_array()<zvf.nb_elem())
+        {
+          Cerr << "The mesh volumes of the domain " << zvf.zone().domaine().le_nom() << " are not available yet." << finl;
+          Cerr << "It is not implemented yet." << finl;
+          exit();
+        }
+
+      // au ELEM
+      if (get_localisation()==ELEMENT)
+        {
+          int nb_elem = zvf.nb_elem();
+          if (methode_ =="L1_norm")
+            {
+              for (int i=0; i<nb_elem; i++)
+                {
+                  sum+=dabs(val_source(i))*volumes(i);
+                }
+            }
+          else if (methode_ =="L2_norm")
+            {
+              for (int i=0; i<nb_elem; i++)
+                {
+                  sum+=val_source(i)*val_source(i)*volumes(i);
+                }
+            }
+          else
+            {
+              Cerr << "Error in Champ_Generique_Reduction_0D::extraire" << finl;
+              exit();
+            }
+        }
+
+      // au FACE
+      if (get_localisation()==FACE)
+        {
+          // Calcul des volumes de controle a chaque face
+          int nb_face = zvf.nb_faces();
+          if (!volume_controle_.size())
+            {
+              volume_controle_.resize(nb_face);
+              volume_controle_=0;
+              int nb_faces_par_elem = zvf.elem_faces().dimension_tot(1);
+              int nb_elem = zvf.nb_elem();
+              for (int i=0; i<nb_elem; i++)
+                for (int j=0; j<nb_faces_par_elem; j++)
+                  {
+                    int face=zvf.elem_faces(i,j);
+                    volume_controle_(face)+=volumes(i)/nb_faces_par_elem;
+                  }
+            }
+          if (composante_VDF>=0)
+            {
+              const IntVect& ori = zvf.orientation();
+              int k=0;
+              if (methode_ =="L1_norm")
+                {
+                  for (int i=0; i<nb_face; i++)
+                    {
+                      if (ori(i)==composante_VDF)
+                        {
+                          sum+=dabs(val_source(k))*volume_controle_(i);
+                          k++;
+                        }
+                    }
+                }
+              else if (methode_ =="L2_norm")
+                {
+                  for (int i=0; i<nb_face; i++)
+                    {
+                      if (ori(i)==composante_VDF)
+                        {
+                          sum+=val_source(k)*val_source(k)*volume_controle_(i);
+                          k++;
+                        }
+                    }
+                }
+              else
+                {
+                  Cerr << "Error in Champ_Generique_Reduction_0D::extraire" << finl;
+                  exit();
+                }
+            }
+          else
+            {
+              if (methode_ =="L1_norm")
+                {
+                  for (int i=0; i<nb_face; i++)
+                    {
+                      sum+=dabs(val_source(i))*volume_controle_(i);
+                    }
+                }
+              else if (methode_ =="L2_norm")
+                {
+                  for (int i=0; i<nb_face; i++)
+                    {
+                      sum+=val_source(i)*val_source(i)*volume_controle_(i);
+                    }
+                }
+              else
+                {
+                  Cerr << "Error in Champ_Generique_Reduction_0D::extraire" << finl;
+                  exit();
+                }
+            }
+        }
+
+      // au NODE
+      if (get_localisation()==NODE)
+        {
+          // Calcul des volumes de controle a chaque sommet
+          int nb_som = zvf.nb_som();
+          if (!volume_controle_.size())
+            {
+              volume_controle_.resize(nb_som);
+              volume_controle_=0;
+              int nb_som_par_elem = zvf.zone().les_elems().dimension_tot(1);
+              int nb_elem = zvf.nb_elem();
+              for (int i=0; i<nb_elem; i++)
+                for (int j=0; j<nb_som_par_elem; j++)
+                  {
+                    int som=zvf.zone().sommet_elem(i,j);
+                    volume_controle_(som)+=volumes(i)/nb_som_par_elem;
+                  }
+            }
+          if (methode_ =="L1_norm")
+            {
+              for (int i=0; i<nb_som; i++)
+                {
+                  sum+=dabs(val_source(i))*volume_controle_(i);
+                }
+            }
+          else if (methode_ =="L2_norm")
+            {
+              for (int i=0; i<nb_som; i++)
+                {
+                  sum+=val_source(i)*val_source(i)*volume_controle_(i);
+                }
+            }
+          else
+            {
+              Cerr << "Error in Champ_Generique_Reduction_0D::extraire" << finl;
+              exit();
+            }
+        }
+      val_extraite = mp_sum(sum);
+      if (methode_ =="L2_norm")
+        {
+          val_extraite = sqrt(val_extraite);
+        }
+    }
+
+  else if (methode_=="weighted_average" || methode_=="weighted_sum" || methode_=="moyenne_ponderee" || methode_=="somme_ponderee")
     {
       // Si on est :
       // - au ELEM -> on pondere par les volumes des elements,
@@ -420,10 +593,10 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
             }
         }
       val_extraite = mp_sum(sum);
-      if (methode_=="moyenne_ponderee")
+      if (methode_=="moyenne_ponderee" || methode_=="weighted_average")
         val_extraite /= mp_sum(volume);
     }
-  else if (methode_=="moyenne_ponderee_porosite" || methode_=="somme_ponderee_porosite")
+  else if (methode_=="moyenne_ponderee_porosite" || methode_=="somme_ponderee_porosite" || methode_=="weighted_average_porosity" || methode_=="weighted_sum_porosity")
     {
       // - au ELEM -> on pondere par les volumes des elements *porosite_volumique
       // si on n'est pas aux ELEM erreur
@@ -475,11 +648,11 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
         }
 
       val_extraite = mp_sum(sum);
-      if (methode_=="moyenne_ponderee_porosite")
+      if (methode_=="moyenne_ponderee_porosite" || methode_=="weighted_average_porosity")
         val_extraite /= mp_sum(volume);
     }
 
-  else if (methode_=="somme" || methode_=="moyenne")
+  else if (methode_=="somme" || methode_=="moyenne" || methode_=="sum" || methode_=="average")
     {
 
       const Zone_dis_base& zone_dis = get_source(0).get_ref_zone_dis_base();
@@ -494,12 +667,12 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
       else if (loc==FACE)
         zvf.creer_tableau_faces(un,Array_base::NOCOPY_NOINIT);
       un = 1.;
-      if (methode_=="somme")
+      if (methode_=="somme" || methode_=="sum")
         {
           val_extraite = mp_prodscal(val_source,un);
           // Pourquoi ne pas utiliser val_extraite = mp_somme_vect(val_source); ?
         }
-      else if (methode_=="moyenne")
+      else if (methode_=="moyenne" || methode_=="average")
         {
           if (loc==FACE && composante_VDF>=0)
             {
@@ -519,7 +692,7 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
           exit();
         }
     }
-  else if (methode_=="valeur_a_gauche")
+  else if (methode_=="valeur_a_gauche" || methode_=="left_value")
     {
 
       assert(numero_proc_!=-1);

@@ -1,6 +1,8 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.7_beta : Enhancements, modifications and corrected bugs since version 1.7.6 :
 --------------------------------------------------------------------------------------------------
+22/02/18 (TRUST)  New keyword : Adding L1_norm and L2_norm
+22/02/18 (TRUST)  Major change: Changing names to be more precise L2_norme->euclidian_norm (keywords to rename in datafile)
 04/01/18 (TRUST)  Bug fixed   : Coding Champ_Generique_Extraction::get_champ_without_evaluation to allow operation on Extraction fields
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.6 : Enhancements, modifications and corrected bugs since version 1.7.5 :

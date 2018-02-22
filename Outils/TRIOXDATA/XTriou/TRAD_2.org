@@ -136,8 +136,6 @@ predefini champ_generique_base predefini -1 These keyword is used to post proces
 refchamp champ_generique_base refchamp -1 Field of prolem
   attr pb_champ deuxmots pb_champ 0 { Pb_champ nom_pb nom_champ } : nom_pb is the problem name and nom_champ is the selected field name.
   attr nom_source chaine nom_source 1 The alias name for the field
-reduction_0d champ_post_de_champs_post reduction_0d -1 To calculate the min, max, or mean value of a field.
-  attr methode chaine(into=["min","max","moyenne","somme","moyenne_ponderee","somme_ponderee","norme_l2","normalized_norm_l2"]) methode 0 name of the reduction method (min, max, somme for the sum, somme_ponderee for a weighted sum (integral), norme_L2 for the L2 norm, normalized_norm_L2 for the L2 norm normalized, moyenne for a mean and moyenne_ponderee for a mean ponderated by integration volumes, e.g: cell volumes for temperature or pressure in VDF, volumes around faces for velocity and temperature in VEF)
 champ_post_operateur_base champ_post_de_champs_post champ_post_operateur_base -1 not_set
 gradient champ_post_operateur_base gradient -1 To calculate gradient of a given field.
 divergence champ_post_operateur_base divergence -1 To calculate divergency of a given field.
@@ -427,7 +425,7 @@ schema_implicite_base schema_temps_base schema_implicite_base -1 Basic class for
 schema_euler_implicite schema_implicite_base schema_euler_implicite -1 This is the Euler implicite scheme.
   attr facsec_max floattant facsec_max 1 Maximum ratio allowed between time step and stability time returned by CFL condition. The initial ratio given by facsec keyword is changed during the calculation with the implicit scheme but it couldn\'t be higher than facsec_max value.NL2 Warning: Some implicit schemes do not permit high facsec_max, example Schema_Adams_Moulton_order_3 needs facsec=facsec_max=1. NL2 Advice:NL2 The calculation may start with a facsec specified by the user and increased by the algorithm up to the facsec_max limit. But the user can also choose to specify a constant facsec (facsec_max will be set to facsec value then). Faster convergence has been seen and depends on the kind of calculation: NL2-Hydraulic only or thermal hydraulic with forced convection and low coupling between velocity and temperature (Boussinesq value beta low), facsec between 20-30NL2-Thermal hydraulic with forced convection and strong coupling between velocity and temperature (Boussinesq value beta high), facsec between 90-100 NL2-Thermohydralic with natural convection, facsec around 300NL2 -Conduction only, facsec can be set to a very high value (1e8) as if the scheme was unconditionally stableNL2These values can also be used as rule of thumb for initial facsec with a facsec_max limit higher.
 un_pb objet_lecture nul 0 pour les groupes
-  attr mot ref_Pb_base mot 0 la chaine
+  attr mot ref_Pb_base mot 0 the string
 list_un_pb listobj nul 1 un_pb 1 pour les groupes
 list_list_nom listobj nul 1 list_un_pb 1 pour les groupes
 coupled_problem pb_gen_base probleme_couple -1 This instruction causes a probleme_couple type object to be created. This type of object has an associated problem list, that is, the coupling of n problems among them may be processed. Coupling between these problems is carried out explicitly via conditions at particular contact limits. Each problem may be associated either with the Associate keyword or with the Read/groupes keywords. The difference is that in the first case, the four problems exchange values then calculate their timestep, rather in the second case, the same strategy is used for all the problems listed inside one group, but the second group of problem exchange values with the first group of problems after the first group did its timestep. So, the first case may then also be written like this: NL2 Probleme_Couple pbc NL2 Read pbc { groupes { { pb1 , pb2 , pb3 , pb4 } } } NL2 There is a physical environment per problem (however, the same physical environment could be common to several problems). NL2 Each problem is resolved in a domain. NL2 Warning : Presently, coupling requires coincident meshes. In case of non-coincident meshes, boundary condition \'paroi_contact\' in VEF returns error message (see paroi_contact for correcting procedure).
@@ -1496,11 +1494,11 @@ extraire_surface interprete extraire_surface -3 This keyword extract a surface m
   attr avec_certains_bords listchaine avec_certains_bords 1 not_set
 integrer_champ_med interprete integrer_champ_med 1 his keyword is used to calculate a flow rate from a velocity MED field read before. The method is either debit_total to calculate the flow rate on the whole surface, either integrale_en_z to calculate flow rates between z=zmin and z=zmax on nb_tranche surfaces. The output file indicates first the flow rate for the whole surface and then lists for each tranche : the height z, the surface average value, the surface area and the flow rate. For the debit_total method case, only one tranche is considered.NL2 file :z Sum(u.dS)/Sum(dS) Sum(dS) Sum(u.dS)
   attr champ_med ref_champ_fonc_med champ_med 0 not_set
-  attr methode chaine(into=["integrale_en_z","debit_total"]) methode 0 permet de choisir si l on veut l integrale suivant z ou sur toute la hauteur (debit_total correspond a zmin=-DMAXFLOAT, ZMax=DMAXFLOAT, nb_tranche=1)
+  attr methode chaine(into=["integrale_en_z","debit_total"]) methode 0 to choose between the integral following z or over the entire height (debit_total correspond to zmin=-DMAXFLOAT, ZMax=DMAXFLOAT, nb_tranche=1)
   attr zmin floattant zmin 1 not_set
   attr zmax floattant zmax 1 not_set
   attr nb_tranche entier nb_tranche 1 not_set
-  attr fichier_sortie chaine fichier_sortie 1 nom du fichier de sortie par defaut : integrale.
+  attr fichier_sortie chaine fichier_sortie 1 name of the output file, by default: integrale.
 convection_amont convection_deriv amont 0 Keyword for upwind scheme for VDF or VEF discretizations. In VEF discretization equivalent to generic amont for TRUST version 1.5 or later. The previous upwind scheme can be used with the obsolete in future amont_old keyword.
 convection_amont_old convection_deriv amont_old 0 Only for VEF discretization, obsolete keyword, see amont.
 convection_centre convection_deriv centre 0 For VDF and VEF discretizations.

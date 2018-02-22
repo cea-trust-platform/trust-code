@@ -119,19 +119,19 @@ Read pb
 
       debit_global reduction_0d
       {
-        methode moyenne_ponderee sources_reference { Vz }
+        methode weighted_average sources_reference { Vz }
       }
 
       debit_global_e reduction_0d
       {
-        methode moyenne_ponderee sources_reference { Vz_e }
+        methode weighted_average sources_reference { Vz_e }
       }
 
       # on calcule E[Vz^2] ie le double de l'énergie cinétique massique moyenne. 
       Il suffit de soustraire E[Vz]^2 pour avoir l'écart type recherché #
       Ecm reduction_0d
       {
-        methode moyenne_ponderee
+        methode weighted_average
         source Transformation
         {
           methode formule expression 1 Vz^2 sources_reference { Vz }
@@ -140,7 +140,7 @@ Read pb
 
       Ecm_e reduction_0d
       {
-        methode somme_ponderee
+        methode weighted_sum
         source Transformation
         {
           methode formule expression 1 Vz_e^2 sources_reference { Vz_e }
@@ -217,10 +217,10 @@ Read pb
         }
 
         # On a rho=1 donc le débit à travers la surface est la moyenne #
-        debit_plan1 reduction_0d { methode moyenne_ponderee sources_reference { Vz1 } }
+        debit_plan1 reduction_0d { methode weighted_average sources_reference { Vz1 } }
 
         # energie cinetique massique ie esperance de la vitesse au carre #
-        Ecm1 reduction_0d { methode moyenne_ponderee sources_reference { Vz1_sq } }
+        Ecm1 reduction_0d { methode weighted_average sources_reference { Vz1_sq } }
 
         # variance #
         Var1 Transformation 
@@ -305,7 +305,7 @@ Read pb
           debit_plan2 Transformation
           {
             methode norme
-            source reduction_0d { methode moyenne_ponderee sources_reference { vn22 } }
+            source reduction_0d { methode weighted_average sources_reference { vn22 } }
           }
         }
 

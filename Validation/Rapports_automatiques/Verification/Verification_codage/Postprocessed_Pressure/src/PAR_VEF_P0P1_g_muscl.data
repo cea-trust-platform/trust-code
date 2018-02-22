@@ -2,7 +2,7 @@ dimension 3
 
 Pb_hydraulique pb
 domaine dom
-# Longueur 0.2 #
+# Longueur 0.1 #
 # Rayon 0.1 #
 
 # BEGIN SCATTER #
@@ -92,9 +92,9 @@ Read pb
             }
 
             mean_P_tot_Inlet  Reduction_0D
-            { methode moyenne source interpolation { domaine dom_boundaries_Inlet localisation elem sources_reference { pressure_tot } } }
+            { methode average source interpolation { domaine dom_boundaries_Inlet localisation elem sources_reference { pressure_tot } } }
             mean_P_tot_Outlet Reduction_0D
-            { methode moyenne source interpolation { domaine dom_boundaries_Outlet localisation elem sources_reference { pressure_tot } } }
+            { methode average source interpolation { domaine dom_boundaries_Outlet localisation elem sources_reference { pressure_tot } } }
 #            Delta_P_tot_moy transformation
             {
                     methode formule expression 1 abs(mean_P_tot_Inlet-mean_P_tot_Outlet)
@@ -103,28 +103,28 @@ Read pb
             } #
 
             mean_PRESSION_Outlet Reduction_0D {
-                methode moyenne
+                methode average
                 source interpolation {
                     domaine dom_boundaries_Outlet localisation elem 
                     source refChamp { Pb_champ pb pression }
                 }
             }
             mean_PRESSURE_Outlet Reduction_0D {
-                methode moyenne
+                methode average
                 source interpolation {
                     domaine dom_boundaries_Outlet localisation elem
                     source refChamp { Pb_champ pb pressure }
                 }
             }
             mean_PRESSION_PA_Outlet Reduction_0D {
-                methode moyenne
+                methode average
                 source interpolation {
                     domaine dom_boundaries_Outlet localisation elem
                     source refChamp { Pb_champ pb pression_pa }
                 }
             }
             mean_P_STAR_Outlet Reduction_0D {
-                methode moyenne
+                methode average
                 source interpolation {
                     domaine dom_boundaries_Outlet localisation elem
                     source refChamp { Pb_champ pb p_star }
@@ -145,14 +145,14 @@ Read pb
         Probes 
         {
             p_hydro                         pression_hydrostatique  periode 10 points 2  0.   0.     0.05   0.    0.39   0.05
-            p_tot1                  som     pressure_tot            periode  5 points 2  0.   0.     0.     0.2   0.     0.
-#            p_tot2                  som     pressure_tot            periode  5 points 2  0.   0.05   0.05   0.2   0.05   0.05 #
-            p_tot3                  som     pressure_tot            periode  5 points 2  0.  -0.02  -0.03   0.2  -0.02  -0.03
+            p_tot1                  som     pressure_tot            periode  5 points 2  0.   0.     0.     0.1   0.     0.
+#            p_tot2                  som     pressure_tot            periode  5 points 2  0.   0.05   0.05   0.1   0.05   0.05 #
+            p_tot3                  som     pressure_tot            periode  5 points 2  0.  -0.02  -0.03   0.1  -0.02  -0.03
             vitX   vitesseX   periode  20 segment 22  0.15   0.   -0.1     0.15   0.   0.1
-            ptot  pressure_tot      periode  20 segment 24  0.   0.   0.     0.2   0.   0.
-            p_pa  pression_pa       periode  20 segment 24  0.   0.   0.     0.2   0.   0.
-            ec  energie_cine_elem   periode  20 segment 24  0.   0.   0.     0.2   0.   0.
-            pression_hydro   pression_hydrostatique    periode  20 segment 22  0.   0.   0.     0.2   0.   0.
+            ptot  pressure_tot      periode  20 segment 24  0.   0.   0.     0.1   0.   0.
+            p_pa  pression_pa       periode  20 segment 24  0.   0.   0.     0.1   0.   0.
+            ec  energie_cine_elem   periode  20 segment 24  0.   0.   0.     0.1   0.   0.
+            pression_hydro   pression_hydrostatique    periode  20 segment 22  0.   0.   0.     0.1   0.   0.
             mean_P_tot_Inlet        mean_P_tot_Inlet        periode  5 numero_elem_sur_maitre 0
             mean_P_tot_Outlet       mean_P_tot_Outlet       periode  5 numero_elem_sur_maitre 0
             mean_PRESSION_Outlet    mean_PRESSION_Outlet    periode 5 numero_elem_sur_maitre 0
@@ -160,11 +160,11 @@ Read pb
             mean_PRESSION_PA_Outlet mean_PRESSION_PA_Outlet periode 5 numero_elem_sur_maitre 0
             mean_P_STAR_Outlet      mean_P_STAR_Outlet      periode 5 numero_elem_sur_maitre 0
             p_tot1drawa              som    pressure_tot            periode  20 points 1  0.   0.     0.
-            p_tot1drawb              som    pressure_tot            periode  20 points 1  0.2  0.     0.
+            p_tot1drawb              som    pressure_tot            periode  20 points 1  0.1  0.     0.
 #            p_tot2drawa              som    pressure_tot            periode  20 points 1  0.   0.05   0.05 #
-#            p_tot2drawb              som    pressure_tot            periode  20 points 1  0.2  0.05   0.05 #
+#            p_tot2drawb              som    pressure_tot            periode  20 points 1  0.1  0.05   0.05 #
             p_tot3drawa              som    pressure_tot            periode  20 points 1  0.  -0.02  -0.03
-            p_tot3drawb              som    pressure_tot            periode  20 points 1  0.2 -0.02  -0.03
+            p_tot3drawb              som    pressure_tot            periode  20 points 1  0.1 -0.02  -0.03
         }
     }
 # 

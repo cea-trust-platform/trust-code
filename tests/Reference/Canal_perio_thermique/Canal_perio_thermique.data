@@ -106,7 +106,7 @@ Read pb
 	{
 		Definition_champs
 		{
-			temperature_moyenne  Reduction_0D { methode moyenne_ponderee source refChamp { pb_champ pb temperature } }
+			temperature_moyenne  Reduction_0D { methode weighted_average source refChamp { pb_champ pb temperature } }
 			temperature_maximale Reduction_0D { methode max source refChamp { pb_champ pb temperature } }
 		}
 		Probes {

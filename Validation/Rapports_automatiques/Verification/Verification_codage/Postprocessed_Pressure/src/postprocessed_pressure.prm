@@ -2,8 +2,8 @@ Parameters {
     Title "3D examples to post-process the pressure for incompressible flow"
     Author "MR"
     VersionTrio_U 1.7.5_beta
+    Description "This report was made to show how to post-process the pressure field with TRUST. The idea is to know what is coded behind the keywords: pression, pression_Pa, pressure, P_star, pression_hydrostatique on an analytic case. At last, you can find a part about how to post-process the total pressure."
     TestCase PAR_VEF_P0P1_g_muscl       PAR_VEF_P0P1_g_muscl.data           3     attached
-#    TestCase PAR_VEF_P0P1_g_amont       PAR_VEF_P0P1_g_amont.data           3
     TestCase PAR_VEF_P0P1_g_negligeable PAR_VEF_P0P1_g_negligeable.data     3
     TestCase PAR_VEF_P0P1_g_ef_stab     PAR_VEF_P0P1_g_ef_stab.data         3
     TestCase PAR_VEF_P0P1_gx_muscl      PAR_VEF_P0P1_gx_muscl.data          3
@@ -342,7 +342,7 @@ Chapter {
         labelY "Pressure (Pa)"
         legend below title "Legend"
 #        curve {
-#            Fonction -4*0.001002*0.01/0.1**2*(x-0.2)+10  
+#            Fonction -4*0.001002*0.01/0.1**2*(x-0.1)+10  
 #            legend "Analytic solution"
 #            style lines
 #        }
@@ -401,7 +401,7 @@ Chapter {
             style linespoints
         }
         curve {
-            Fonction -4*0.001002*0.01/0.1**2*(x-0.2)+10  
+            Fonction -4*0.001002*0.01/0.1**2*(x-0.1)+10  
             legend "Analytic solution"
             style lines
         }
@@ -411,7 +411,7 @@ Chapter {
 ################################################################
 # Analytic solution en z=0, rho*g*z=0
     figure { 
-        Title "Pressure hydro profil" 
+        Title "Pressure hydrostatique profil" 
         Width 12cm
         include_description_curves 0
         labelX "x (m)"
@@ -809,7 +809,7 @@ Chapter {
         labelY "Pressure (Pa)"
         legend below title "Legend"
 #        curve {
-#            Fonction -4*0.001002*0.01/0.1**2*(x-0.2)+10
+#            Fonction -4*0.001002*0.01/0.1**2*(x-0.1)+10
 #            legend "Analytic solution"
 #            style lines
 #        }
@@ -850,7 +850,7 @@ Chapter {
         labelY "Pressure (Pa)"
         legend below title "Legend"
         curve {
-            Fonction -4*0.001002*0.01/0.1**2*(x-0.2)+10
+            Fonction -4*0.001002*0.01/0.1**2*(x-0.1)+10
             legend "Analytic solution"
             style lines
         }
@@ -878,7 +878,7 @@ Chapter {
 ################################################################
 
     figure { 
-        Title "Pressure hydro profil" 
+        Title "Pressure hydrostatique profil" 
         Width 12cm
         include_description_curves 0
         labelX "x (m)"
