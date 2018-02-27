@@ -506,7 +506,7 @@ endif()
 list(LENGTH srcs_atelier l1)
 list(LENGTH srcdeps l2)
 
-message("${l1} file(s) in rep_dev, ${l2} file(s) of Trio depends of rep_dev")
+message("${l1} file(s) in rep_dev, ${l2} file(s) of TRUST depends of rep_dev")
 #message("yes ${error} toto ${toto} titi ${srcdeps}")
 message("Utilisation de la librairie : ${libtrio_name} " )
 find_library( libTrio NAMES ${libtrio_name}.a PATHS ${TRUST_ROOT}/lib NO_DEFAULT_PATH )

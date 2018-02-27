@@ -357,7 +357,7 @@ case $switchopt in
       esac;
 
 
-cmake .. -DCMAKE_BUILD_TYPE=$build_type  ${TRUST_ATELIER_CMAKE_FLGAS}
+cmake .. -DCMAKE_BUILD_TYPE=$build_type  ${TRUST_ATELIER_CMAKE_FLAGS}
 status=$? ; [ $status -ne 0 ] && status_tot=$status
 
 # xterm
