@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -59,9 +59,9 @@ DoubleVect& Matrice_Diagonale::ajouter_multvect_( const DoubleVect& x, DoubleVec
   assert( x.size( ) ==count );
   assert( r.size( ) ==count );
 
-  register const double* c_ptr = coefficients_.addr( );
-  register const double* x_ptr = x.addr( );
-  register       double* r_ptr = r.addr( );
+  const double* c_ptr = coefficients_.addr( );
+  const double* x_ptr = x.addr( );
+  double* r_ptr = r.addr( );
 
   for ( ; count; count-- )
     {

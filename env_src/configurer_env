@@ -1798,6 +1798,13 @@ linux_clang++) TRUST_SUPPORTED=1
    	;;
 esac
 
+if [ "$TRUST_VERSION_GNU" != "" ]
+then
+   CppFlags=$CppFlags" "`echo $TRUST_VERSION_GNU | awk '{print $1<"4.7.0" ? "-std=c++0x" : "-std=c++11"}'`
+else
+   CppFlags=$CppFlags" -std=c++11"
+fi
+
 if [ $TRUST_SUPPORTED = 0 ] && [ "$TRUST_FORCE_SUPPORTED" != 1 ]
 then
    echo "\$TRUST_ARCH_CC=$TRUST_ARCH_CC is an unsupported platform for TRUST cause"
