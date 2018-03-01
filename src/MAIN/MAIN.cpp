@@ -54,6 +54,7 @@ void usage()
   Cerr << " -journal_master     => only master processor writes a journal\n";
   Cerr << " -disable_ieee       => Disable the detection of NaNs.\n";
   Cerr << " -no_verify          => Disable the call to verifie function (from Type_Verifie) to catch outdated keywords while reading data file.\n";
+  Cerr << " -disable_stop       => Disable the writing of the .stop file.\n";
   Cerr << finl;
   Process::exit();
 }
@@ -86,6 +87,7 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
   int helptrust = 0;
   int ieee = 1;              // 1 => use of feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
   bool apply_verification = true;
+  int disable_stop = 0;
   Nom data_file;
   data_file = "";
   Nom exec_script;
@@ -159,6 +161,11 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
         {
           journal_master = 1;
           arguments_info += "-journal_master => Only the master processor will write a journal\n";
+        }
+      else if (strcmp(argv[i], "-disable_stop") == 0)
+        {
+          disable_stop = 1;
+          arguments_info += "-disable_stop => Disable the writing of the .stop file.\n";
         }
       else if (i == 1)
         {
@@ -247,7 +254,7 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
     // .. et demarrage du journal
     // (tout ce qu'on veut faire en commun avec l'interface python doit etre
     //  mis dans mon_main)
-    main_process=new  mon_main(verbose_level, journal_master, apply_verification);
+    main_process=new  mon_main(verbose_level, journal_master, apply_verification, disable_stop);
 
     main_process->init_parallel(argc, argv, with_mpi, check_enabled, with_petsc);
 

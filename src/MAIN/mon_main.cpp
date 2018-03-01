@@ -41,7 +41,7 @@ extern void end_stat_counters();
 extern Stat_Counter_Id temps_total_execution_counter_;
 extern Stat_Counter_Id initialisation_calcul_counter_;
 
-mon_main::mon_main(int verbose_level, int journal_master, bool apply_verification)
+mon_main::mon_main(int verbose_level, int journal_master, bool apply_verification, int disable_stop)
 {
   verbose_level_ = verbose_level;
   journal_master_ = journal_master;
@@ -49,6 +49,8 @@ mon_main::mon_main(int verbose_level, int journal_master, bool apply_verificatio
   // Creation d'un journal temporaire qui ecrit dans Cerr
   init_journal_file(verbose_level, 0 /* filename = 0 => Cerr */, 0 /* append */);
   trio_began_mpi_=0;
+  disable_stop_=disable_stop;
+  change_disable_stop(disable_stop);
 }
 
 static int init_petsc(True_int argc, char **argv, int with_mpi,int& trio_began_mpi_)
@@ -258,10 +260,11 @@ void mon_main::dowork(const Nom& nom_du_cas)
 
   Nom nomfic( nom_du_cas );
   nomfic += ".stop";
-  {
-    SFichier ficstop( nomfic );
-    ficstop << "Running..."<<finl;
-  }
+  if (!get_disable_stop())
+    {
+      SFichier ficstop( nomfic );
+      ficstop << "Running..."<<finl;
+    }
 
   //---------------------------------------------//
   // Chargement des modules : //
@@ -323,17 +326,21 @@ void mon_main::dowork(const Nom& nom_du_cas)
 
   // pour les cas ou on ne fait pas de resolution
   int mode_append=1;
-  statistiques().dump("Statistiques de post resolution", mode_append);
-  print_statistics_analyse("Statistiques de post resolution", 1);
+  if (!Objet_U::disable_TU)
+    {
+      statistiques().dump("Statistiques de post resolution", mode_append);
+      print_statistics_analyse("Statistiques de post resolution", 1);
+    }
 
   double temps = statistiques().get_total_time();
   Cout << finl;
   Cout << "--------------------------------------------" << finl;
   Cout << "clock: Total execution: " << temps << " s" << finl;
-  {
-    SFichier ficstop ( nomfic);
-    ficstop  << "Finished correctly"<<finl;
-  }
+  if (!get_disable_stop())
+    {
+      SFichier ficstop ( nomfic);
+      ficstop  << "Finished correctly"<<finl;
+    }
   //  end_stat_counters();
 }
 

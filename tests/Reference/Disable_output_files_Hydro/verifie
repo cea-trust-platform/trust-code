@@ -1,0 +1,41 @@
+#!/bin/bash
+jdd=`pwd`
+jdd=`basename $jdd` && nbp=""
+[ -f PAR_$jdd.lml ] && jdd=PAR_$jdd && nbp=`ls *.Zones 2>/dev/null | wc -l`
+
+err=0
+if [ -f "$jdd".progress ]
+then
+    echo "Error: write to the output .progress file is NOT disabled."
+    err=1
+fi
+if [ -f "$jdd".dt_ev ]
+then
+    echo "Error: write to the output .dt_ev file is NOT disabled."
+    err=1
+fi
+if [ -f "$jdd".TU ] || [ -f "$jdd"_detail.TU ] || [ -f "$jdd"_petsc.TU ]
+then
+    echo "Error: writes to the output .TU files are NOT disabled."
+    err=1
+fi
+if [  "`ls "$jdd"*sauv 2>/dev/null`" != "" ]
+then
+    echo "Error: writes to the output .sauv files are NOT disabled."
+    err=1
+fi
+if [ $err = 1 ]
+then
+    exit -1
+else
+    rm $jdd.stop 2>/dev/null
+    trust $jdd $nbp -disable_stop 1>/dev/null 2>&1
+    if [ -f "$jdd".stop ]
+    then
+       echo "Error: write to the output .stop file is NOT disabled."
+       exit -1
+   else
+       exit 0
+   fi
+fi
+exit 0

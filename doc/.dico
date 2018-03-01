@@ -220,6 +220,7 @@
  Dirichlet Dirichlet Dirichlet.h
  Dirichlet_entree_fluide Dirichlet_entree_fluide Dirichlet_entree_fluide.h
  Dirichlet_homogene Dirichlet_homogene Dirichlet_homogene.h
+ Disable_TU Disable_TU Disable_TU.h
  Discretisation Discretisation Discretisation_base.h
  Discretisation_base Discretisation_base Discretisation_base.h
  Discretiser_domaine Discretiser_domaine Discretiser_domaine.h

@@ -28,6 +28,9 @@ class Objet_U;
 class Nom;
 class Sortie;
 
+int get_disable_stop();
+void change_disable_stop(int new_stop);
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION

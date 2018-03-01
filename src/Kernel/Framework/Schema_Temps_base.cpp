@@ -35,6 +35,7 @@
 #include <Matrice_Morse.h> // necessaire pour visual
 
 Implemente_base_sans_constructeur(Schema_Temps_base,"Schema_Temps_base",Objet_U);
+// XD schema_temps_base objet_u schema_temps_base -1 Basic class for time schemes. This scheme will be associated with a problem and the equations of this problem.
 
 void Schema_Temps_base::initialize()
 {
@@ -46,15 +47,18 @@ void Schema_Temps_base::initialize()
     {
       Nom fichier(nom_du_cas());
       fichier+=".dt_ev";
-      struct stat f;
-      // On initialise le fichier .dt_ev s'il n'existe pas ou si c'est un demarrage de calcul sans reprise
-      if ((nb_pas_dt_==0) && ((stat(fichier,&f)) || !(pb_base().reprise_effectuee()==1)))
+      if (!disable_dt_ev())
         {
-          SFichier fic(fichier,(schema_impr() ? (ios::out) : (ios::app)));
-          if (schema_impr())
-            fic << "# temps\t\t dt\t\t facsec\t\t residu=max|Ri|\t dt_stab\t ";
-          for (int i=0; i<pb_base().nombre_d_equations(); i++)
-            fic << pb_base().equation(i).expression_residu();
+          struct stat f;
+          // On initialise le fichier .dt_ev s'il n'existe pas ou si c'est un demarrage de calcul sans reprise
+          if ((nb_pas_dt_==0) && ((stat(fichier,&f)) || !(pb_base().reprise_effectuee()==1)))
+            {
+              SFichier fic(fichier,(schema_impr() ? (ios::out) : (ios::app)));
+              if (schema_impr())
+                fic << "# temps\t\t dt\t\t facsec\t\t residu=max|Ri|\t dt_stab\t ";
+              for (int i=0; i<pb_base().nombre_d_equations(); i++)
+                fic << pb_base().equation(i).expression_residu();
+            }
         }
     }
 
@@ -190,17 +194,19 @@ void Schema_Temps_base::validateTimeStep()
     {
       Nom fichier(nom_du_cas());
       fichier+=".dt_ev";
-      SFichier fic(fichier,ios::app);
-      // On supprime la precision d'impression pour avoir le meme format que la sauvegarde.
-      // fic.precision(precision_impr());
-      fic.setf(ios::scientific);
-      if (schema_impr())
-        fic << finl << temps_courant_ << "\t " << dt_ << "\t " << facsec_ <<"\t " << residu_ << "\t " << dt_stab_ << "\t ";
-      for (int i=0; i<pb_base().nombre_d_equations(); i++)
-        pb_base().equation(i).imprime_residu(fic);
+      if (!disable_dt_ev())
+        {
+          SFichier fic(fichier,ios::app);
+          // On supprime la precision d'impression pour avoir le meme format que la sauvegarde.
+          // fic.precision(precision_impr());
+          fic.setf(ios::scientific);
+          if (schema_impr())
+            fic << finl << temps_courant_ << "\t " << dt_ << "\t " << facsec_ <<"\t " << residu_ << "\t " << dt_stab_ << "\t ";
+          for (int i=0; i<pb_base().nombre_d_equations(); i++)
+            pb_base().equation(i).imprime_residu(fic);
+        }
+
       // Impression du temps CPU estime restant
-
-
       if (schema_impr())
         {
           if ((residu_>0)&&(residu_old_slope_>0))
@@ -249,9 +255,11 @@ void Schema_Temps_base::validateTimeStep()
             }
           Nom prg(nom_du_cas());
           prg+=".progress";
-          SFichier toto(prg);
-          toto<< (percent)<< finl;
-
+          if (!disable_progress())
+            {
+              SFichier toto(prg);
+              toto<< (percent)<< finl;
+            }
         }
     }
   // Update time scheme:
@@ -261,8 +269,11 @@ void Schema_Temps_base::terminate()
 {
   Nom prg(nom_du_cas());
   prg+=".progress";
-  SFichier toto(prg);
-  toto<< (int)100<< finl;
+  if (!disable_progress())
+    {
+      SFichier toto(prg);
+      toto<< (int)100<< finl;
+    }
 
 }
 
@@ -313,29 +324,31 @@ void Schema_Temps_base::associer_pb(const Probleme_base& un_probleme)
 
 void Schema_Temps_base::set_param(Param& param)
 {
-  param.ajouter("tinit",&tinit_);
-  param.ajouter( "tmax",&tmax_);
-  param.ajouter_non_std( "tcpumax",(this));
-  param.ajouter( "dt_min",&dt_min_);
-  param.ajouter( "dt_max",&dt_max_);
-  param.ajouter( "dt_sauv",&dt_sauv_);
-  param.ajouter( "dt_impr",&dt_impr_);
-  param.ajouter( "facsec",&facsec_);
-  param.ajouter( "seuil_statio",&seuil_statio_);
-  param.ajouter( "seuil_statio_relatif_deconseille",&seuil_statio_relatif_deconseille_);
-  param.ajouter( "diffusion_implicite",&ind_diff_impl_);
-  param.ajouter( "seuil_diffusion_implicite",&seuil_diff_impl_);
-  param.ajouter( "impr_diffusion_implicite",&impr_diff_impl_);
-  param.ajouter( "no_error_if_not_converged_diffusion_implicite",&no_error_if_not_converged_diff_impl_);
-  param.ajouter( "no_conv_subiteration_diffusion_implicite",&no_conv_subiteration_diff_impl_);
-  param.ajouter_non_std( "dt_start",(this));
+  param.ajouter("tinit",&tinit_); // XD_ADD_P double Value of initial calculation time (0 by default).
+  param.ajouter( "tmax",&tmax_); // XD_ADD_P double Time during which the calculation will be stopped (1e30s by default).
+  param.ajouter_non_std( "tcpumax",(this)); // XD_ADD_P double CPU time limit (must be specified in hours) for which the calculation is stopped (1e30s by default).
+  param.ajouter( "dt_min",&dt_min_); // XD_ADD_P double Minimum calculation time step (1e-16s by default).
+  param.ajouter( "dt_max",&dt_max_); // XD_ADD_P double Maximum calculation time step (1e30s by default).
+  param.ajouter( "dt_sauv",&dt_sauv_); // XD_ADD_P double Save time step value (1e30s by default). Every dt_sauv, fields are saved in the .sauv file. The file contains all the information saved over time. If this instruction is not entered, results are saved only upon calculation completion. To disable the writing of the .sauv files, you must specify 0.
+  param.ajouter( "dt_impr",&dt_impr_); // XD_ADD_P double Scheme parameter printing time step in time (1e30s by default). The time steps and the flux balances are printed (incorporated onto every side of processed domains) into the .out file.
+  param.ajouter( "facsec",&facsec_); // XD_ADD_P double Value assigned to the safety factor for the time step (1. by default). The time step calculated is multiplied by the safety factor. The first thing to try when a calculation does not converge with an explicit time scheme is to reduce the facsec to 0.5. NL2 Warning: Some schemes needs a facsec lower than 1 (0.5 is a good start), for example Schema_Adams_Bashforth_order_3.
+  param.ajouter( "seuil_statio",&seuil_statio_); // XD_ADD_P double Value of the convergence threshold (1e-12 by default). Problems using this type of time scheme converge when the derivatives dGi/dt NL1 of all the unknown transported values Gi have a combined absolute value less than this value. This is the keyword used to set the permanent rating threshold.
+  param.ajouter( "seuil_statio_relatif_deconseille",&seuil_statio_relatif_deconseille_); // XD_ADD_P int not_set
+  param.ajouter( "diffusion_implicite",&ind_diff_impl_); // XD_ADD_P int Keyword to make the diffusion term in the Navier Stokes equation implicit (in this case, vrel should be set to 1). The stability time step is then only based on the convection time step (dt=facsec*dt_convection). Thus, in some circumstances, an important gain is achieved with respect to the time step (large diffusion with respect to convection on tightened meshes). Caution: It is however recommended that the user should avoid exceeding the calculation convection time step by selecting a facsec that is too large. Start with a facsec of 1 and then increase this gradually if you wish to accelerate calculation. In addition, for a natural convection calculation with a zero initial speed, in the first time step, the convection time is infinite and therefore dt=facsec*dt_max.
+  param.ajouter( "seuil_diffusion_implicite",&seuil_diff_impl_); // XD_ADD_P double This keyword changes the default value (1e-6) of convergency criteria for the resolution by conjugate gradient used for implicit diffusion.
+  param.ajouter( "impr_diffusion_implicite",&impr_diff_impl_); // XD_ADD_P int Unactivate (default) or not the printing of the convergence during the resolution of the conjugate gradient.
+  param.ajouter( "no_error_if_not_converged_diffusion_implicite",&no_error_if_not_converged_diff_impl_); // XD_ADD_P int not_set
+  param.ajouter( "no_conv_subiteration_diffusion_implicite",&no_conv_subiteration_diff_impl_); // XD_ADD_P int not_set
+  param.ajouter_non_std( "dt_start",(this)); // XD attr dt_start dt_start dt_start 1 dt_start dt_min : the first iteration is based on dt_min. NL2 dt_start dt_calc : the time step at first iteration is calculated in agreement with CFL condition. NL2 dt_start dt_fixe value : the first time step is fixed by the user (recommended when restarting calculation with Crank Nicholson temporal scheme to ensure continuity). NL2 By default, the first iteration is based on dt_calc.
   // param.ajouter( "nb_pas_dt_max",&nb_pas_dt_max_);
   // nb_pas_dt_max non standard pour valgrind
-  param.ajouter_non_std( "nb_pas_dt_max",(this));
-  param.ajouter( "niter_max_diffusion_implicite",&niter_max_diff_impl_);
-  param.ajouter( "precision_impr",&precision_impr_);
-  param.ajouter_non_std( "periode_sauvegarde_securite_en_heures",(this));
-  param.ajouter_non_std( "no_check_disk_space",(this));
+  param.ajouter_non_std( "nb_pas_dt_max",(this)); // XD_ADD_P int Maximum number of calculation time steps (1e9 by default).
+  param.ajouter( "niter_max_diffusion_implicite",&niter_max_diff_impl_); // XD_ADD_P int This keyword changes the default value (number of unknowns) of the maximal iterations number in the conjugate gradient method used for implicit diffusion.
+  param.ajouter( "precision_impr",&precision_impr_); // XD_ADD_P int Optional keyword to define the digit number for flux values printed into .out files (by default 3).
+  param.ajouter_non_std( "periode_sauvegarde_securite_en_heures",(this)); // XD_ADD_P int To change the default period (23 hours) between the save of the fields in .sauv file.
+  param.ajouter_non_std( "no_check_disk_space",(this)); // XD_ADD_P flag To disable the check of the available amount of disk space during the calculation.
+  param.ajouter_flag( "disable_progress",&disable_progress_); // XD_ADD_P flag To disable the writing of the .progress file.
+  param.ajouter_flag( "disable_dt_ev",&disable_dt_ev_); // XD_ADD_P flag To disable the writing of the .dt_ev file.
 }
 // Description:
 //    Surcharge Objet_U::printOn(Sortie&)
@@ -378,6 +391,8 @@ Sortie& Schema_Temps_base::printOn(Sortie& os) const
   os << "impr_diffusion_implicite " << impr_diff_impl_ << finl ;
   os << "niter_max_diffusion_implicite " << niter_max_diff_impl_ << finl ;
   os << "no_file_allocation " << file_allocation_ << finl ;
+  os << "disable_progress " << disable_progress_ << finl ;
+  os << "disable_dt_ev " << disable_dt_ev_ << finl ;
   os << "fin " << finl;
   return os ;
 }
@@ -420,7 +435,10 @@ Entree& Schema_Temps_base::readOn(Entree& is)
   temps_courant_=tinit_;
   temps_precedent_=tinit_;
   lu_=1;
-  Cerr << "The next backup, by security, will take place after " << limite_cpu_sans_sauvegarde_/3600 << " hours of calculation." << finl;
+  if (dt_sauv_ <= 0.)
+    Cerr << "NO next backup, by security, because dt_sauv = " << dt_sauv_ << finl;
+  else
+    Cerr << "The next backup, by security, will take place after " << limite_cpu_sans_sauvegarde_/3600 << " hours of calculation." << finl;
   return is ;
 }
 
@@ -554,6 +572,8 @@ Schema_Temps_base::Schema_Temps_base()
   file_allocation_=0; // Desactive car pose probleme sur platine sur les gros maillages
   residu_old_slope_=-1000;
   cumul_slope_=1e-20;
+  disable_progress_ = 0;
+  disable_dt_ev_ = 0;
 }
 // Description:
 //    Impression du numero du pas de temps, la valeur du pas de temps.
@@ -658,7 +678,10 @@ int Schema_Temps_base::mettre_a_jour()
       limite_cpu_sans_sauvegarde_ += periode_cpu_sans_sauvegarde_;
       //Finalement, on double la limite, ainsi par defaut sauvegarde de securite 10h, 20h, 40h, 80h, 160h,....
       //limite_cpu_sans_sauvegarde_ = 2 * limite_cpu_sans_sauvegarde_;
-      Cerr << "The next backup, by security, will take place after " << limite_cpu_sans_sauvegarde_/3600 << " hours of calculation." << finl;
+      if (dt_sauv_ <= 0.)
+        Cerr << "NO next backup, by security, because dt_sauv = " << dt_sauv_ << finl;
+      else
+        Cerr << "The next backup, by security, will take place after " << limite_cpu_sans_sauvegarde_/3600 << " hours of calculation." << finl;
     }
 // GF pour etre sur que tous les proc aient le meme temps ecoule
   if (je_suis_maitre())
@@ -692,22 +715,29 @@ int Schema_Temps_base::mettre_a_jour()
 // Fait une sauvegarde de protection sur des runs de 24h sur machines du CCRT
 int Schema_Temps_base::lsauv() const
 {
-  if ( temps_cpu_ecoule_ > limite_cpu_sans_sauvegarde_ )
-    {
-      Cerr << "After these " << limite_cpu_sans_sauvegarde_/3600 << " hours of calculation, a backup will be made by security." << finl;
-      return 1;
-    }
+  if (dt_sauv_ <= 0.)
+    return 0;
   else
     {
-      if (dt_sauv_<=dt_)
-        return 1;
+      if ( temps_cpu_ecoule_ > limite_cpu_sans_sauvegarde_ )
+        {
+          Cerr << "After these " << limite_cpu_sans_sauvegarde_/3600 << " hours of calculation, a backup will be made by security." << finl;
+          return 1;
+        }
       else
         {
-          // Voir Schema_Temps_base::limpr pour information sur epsilon et modf
-          double i, j, epsilon = 1.e-8;
-          modf(temps_courant_/dt_sauv_ + epsilon, &i);
-          modf(temps_precedent_/dt_sauv_ + epsilon, &j);
-          return ( i>j ) ;
+          if (dt_sauv_<=dt_)
+            return 1;
+          else if (tmax_<=temps_courant_ || nb_pas_dt_max_<=nb_pas_dt_ || stationnaires_atteints_)
+            return 1;
+          else
+            {
+              // Voir Schema_Temps_base::limpr pour information sur epsilon et modf
+              double i, j, epsilon = 1.e-8;
+              modf(temps_courant_/dt_sauv_ + epsilon, &i);
+              modf(temps_precedent_/dt_sauv_ + epsilon, &j);
+              return ( i>j ) ;
+            }
         }
     }
   return 0;
@@ -955,14 +985,17 @@ int Schema_Temps_base::stop() const
       return 1;
     }
 
-  if (stop_lu())
+  if (!get_disable_stop())
     {
-      Cerr << "---------------------------------------------------------"
-           << finl
-           << "The problem " << pb_base().le_nom()
-           << " wants to stop : stop file detected"
-           << finl << finl;
-      return 1;
+      if (stop_lu())
+        {
+          Cerr << "---------------------------------------------------------"
+               << finl
+               << "The problem " << pb_base().le_nom()
+               << " wants to stop : stop file detected"
+               << finl << finl;
+          return 1;
+        }
     }
   return 0;
 }
