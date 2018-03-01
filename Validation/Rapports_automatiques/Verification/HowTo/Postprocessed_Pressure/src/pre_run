@@ -1,8 +1,5 @@
 #!/bin/bash
 
-#file=`ls V*.data`
-#jdd=${file%.data}
-# make_PAR.data $jdd
 trust mesh 1>mesh.out 2>mesh.err
 echo ""
 echo "Running calculation..."

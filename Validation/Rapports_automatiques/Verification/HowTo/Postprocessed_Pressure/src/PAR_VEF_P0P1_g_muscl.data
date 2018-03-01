@@ -1,0 +1,181 @@
+dimension 3
+
+Pb_hydraulique pb
+domaine dom
+# Longueur 0.1 #
+# Rayon 0.1 #
+
+# BEGIN SCATTER #
+Scatter DOM.Zones dom
+# END SCATTER #
+
+VEFPreP1B dis
+Read dis
+{
+    P0 P1 Cl_pression_sommet_faible 0 changement_de_base_p1bulle 1 modif_div_face_dirichlet 1
+}
+
+Schema_Euler_implicite sch
+Read sch
+{
+    tinit 0
+    tmax 3000
+    dt_min 1.e-7
+    dt_max 12.
+    dt_impr 0.001
+    dt_sauv 20.
+    dt_start dt_calc
+    seuil_statio 1.e-8
+    facsec 1.
+    facsec_max 400
+    Solveur Implicite
+    {
+        seuil_convergence_solveur 1.e-15
+        solveur gmres { diag seuil 1.e-15 impr controle_residu 1 nb_it_max 5 }
+    }
+}
+
+Fluide_Incompressible fluide
+Read fluide
+{
+    mu      Champ_Uniforme 1 1.002e-3
+    rho     Champ_Uniforme 1 1000
+}
+
+Champ_Uniforme gravite
+Read gravite 3   0.   0.   -9.81
+Associate fluide gravite
+
+Associate pb dom
+Associate pb fluide
+Associate pb sch
+
+Discretize pb dis
+
+Domaine Inlet
+
+Domaine Outlet
+
+Read pb
+{
+    Navier_Stokes_standard
+    {
+        solveur_pression Petsc Cholesky { impr }
+        convection { muscl }
+        diffusion { }
+        initial_conditions  { vitesse Champ_Uniforme 3 0 0 0 }
+        boundary_conditions 
+        {
+            # Vmax 0.01 #
+            Inlet  Frontiere_ouverte_vitesse_imposee  Champ_front_fonc_xyz 3 
+                   (y^2+z^2<0.01)*(-(0.01/0.1^2)*(y^2+z^2-0.1^2))  0.  0.
+            Outlet Frontiere_ouverte_pression_imposee  Champ_front_Uniforme 1 10.
+            Wall   paroi_fixe
+        }
+    }
+
+    Post_processing
+    {
+        Definition_champs
+        {
+            energie_cine_elem Predefini { Pb_champ pb energie_cinetique_elem }
+            pressure_tot Transformation
+            {
+                methode formule expression 1 p_pa+p_hydro+energie_cine_elem
+                localisation elem
+                sources_reference { energie_cine_elem }
+                sources 
+                {
+                    RefChamp { Pb_champ pb pression_pa  nom_source p_pa } ,
+                    RefChamp { Pb_champ pb masse_volumique  nom_source rho } ,
+                    RefChamp { Pb_champ pb pression_hydrostatique   nom_source p_hydro }
+                }
+            }
+
+            mean_P_tot_Inlet  Reduction_0D
+            {
+                methode average
+                source interpolation
+                {
+                    domaine dom_boundaries_Inlet
+                    localisation elem
+                    sources_reference { pressure_tot }
+                }
+            }
+            mean_P_tot_Outlet Reduction_0D
+            {
+                methode average
+                source interpolation
+                {
+                    domaine dom_boundaries_Outlet
+                    localisation elem
+                    sources_reference { pressure_tot }
+                }
+            }
+
+            mean_PRESSION_Outlet Reduction_0D {
+                methode average
+                source interpolation {
+                    domaine dom_boundaries_Outlet
+                    localisation elem 
+                    source refChamp { Pb_champ pb pression }
+                }
+            }
+            mean_PRESSURE_Outlet Reduction_0D {
+                methode average
+                source interpolation {
+                    domaine dom_boundaries_Outlet
+                    localisation elem
+                    source refChamp { Pb_champ pb pressure }
+                }
+            }
+            mean_PRESSION_PA_Outlet Reduction_0D {
+                methode average
+                source interpolation {
+                    domaine dom_boundaries_Outlet
+                    localisation elem
+                    source refChamp { Pb_champ pb pression_pa }
+                }
+            }
+            mean_P_STAR_Outlet Reduction_0D {
+                methode average
+                source interpolation {
+                    domaine dom_boundaries_Outlet
+                    localisation elem
+                    source refChamp { Pb_champ pb p_star }
+                }
+            }
+        }
+        Format lata 
+        Fields dt_post 80
+        {
+            pression_pa                 elem
+            pression                    elem
+            vitesse                     faces
+            pressure_tot
+        }
+
+        Probes 
+        {
+            vitX vitesseX periode 20 segment 22 0.01 0. -0.1 0.01 0. 0.1
+            p_pa pression_pa periode 20 segment 24 0. 0. 0. 0.1 0. 0.
+            ec energie_cine_elem periode 20 segment 24 0. 0. 0. 0.1 0. 0.
+            pression_hydro pression_hydrostatique periode 20 segment 22 0. 0. 0. 0.1 0. 0.
+            ptot pressure_tot periode 20 segment 24 0. 0. 0. 0.1 0. 0.
+            p_tot1 som pressure_tot periode 5 points 2 0. 0. 0. 0.1 0. 0.
+            p_tot2 som pressure_tot periode 5 points 2 0. -0.02 -0.03 0.1 -0.02 -0.03
+            p_tot1drawa som pressure_tot periode 20 points 1 0. 0. 0.
+            p_tot2drawa som pressure_tot periode 20 points 1 0. -0.02 -0.03
+            mean_P_tot_Inlet mean_P_tot_Inlet periode 5 numero_elem_sur_maitre 0
+            mean_P_tot_Outlet mean_P_tot_Outlet periode 5 numero_elem_sur_maitre 0
+            mean_PRESSION_Outlet mean_PRESSION_Outlet periode 5 numero_elem_sur_maitre 0
+            mean_PRESSURE_Outlet mean_PRESSURE_Outlet periode 5 numero_elem_sur_maitre 0
+            mean_PRESSION_PA_Outlet mean_PRESSION_PA_Outlet periode 5 numero_elem_sur_maitre 0
+            mean_P_STAR_Outlet mean_P_STAR_Outlet periode 5 numero_elem_sur_maitre 0
+        }
+    }
+}
+
+Solve pb
+End
+
