@@ -128,8 +128,7 @@ if __name__ == '__main__':
 	properties = readPropertiesData('PAR_VEF_P0P1_g.data')
 
 	values['dptrust1'] = dPtrust('PAR_VEF_P0P1_g_P_TOT1.son')
-#	values['dptrust2'] = dPtrust('PAR_VEF_P0P1_g_P_TOT2.son')
-	values['dptrust3'] = dPtrust('PAR_VEF_P0P1_g_P_TOT3.son')
+	values['dptrust3'] = dPtrust('PAR_VEF_P0P1_g_P_TOT2.son')
 	values['ptrustmoyinlet'] = dPtrustmoy('PAR_VEF_P0P1_g_MEAN_P_TOT_INLET.son')
 	values['ptrustmoyoutlet'] = dPtrustmoy('PAR_VEF_P0P1_g_MEAN_P_TOT_OUTLET.son')
 #	values['dptrustmoy2'] = dPtrustmoy('PAR_VEF_P0P1_g_DELTA_P_TOT_MOY.son') #
