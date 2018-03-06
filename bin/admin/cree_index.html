@@ -13,7 +13,7 @@ REP_NUIT=/data/tmptrust/tmptrust/Historique/NUIT
 ######################################
 # Debut creation de la page index.html
 ######################################
-release_date=`ls --full-time $WORKDIR/PORTAGE_$stable/linux/TRUST/exec/TRUST$COMM"_opt" 2>/dev/null | $TRUST_Awk '{print $6}'`
+release_date=`ls --full-time $WORKDIR/portages/PORTAGE_$stable/linux/TRUST/exec/TRUST$COMM"_opt" 2>/dev/null | $TRUST_Awk '{print $6}'`
 [ ${#release_date} = 0 ] && release_date=`grep " "$stable" version released" $TRUST_ROOT/RELEASE_NOTES | $TRUST_Awk '{print $1}'`
 os_supported=`cat $TRUST_ROOT/bin/admin/liste.machines | $TRUST_Awk '/get_binary/ {print $1}'`
 package=`ls_ftp $PUBLIC/Version$stable | awk '/.tar.gz/ {print $NF}'`

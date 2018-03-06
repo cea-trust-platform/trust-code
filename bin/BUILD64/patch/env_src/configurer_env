@@ -1199,6 +1199,7 @@ else
 	       if [ "`$MPI_ROOT/bin/mpirun --version 2>&1 | grep 'mpirun (Open MPI)'`" != "" ]
 	       then
                   echo $ECHO_OPTS "# Check version of OpenMPI (Problem if version between 1.10.3 and 1.10.6): " 
+		  [ "`$MPI_ROOT/bin/mpirun --version 2>&1 | grep 'mpirun (Open MPI) 1.10.2'`" != "" ] && mpi_detecte=0 && echo "Problem with MPI_ABORT of `$MPI_ROOT/bin/mpirun --version | head -n 1`."; # cce provisoire
 		  [ "`$MPI_ROOT/bin/mpirun --version 2>&1 | grep 'mpirun (Open MPI) 1.10.3'`" != "" ] && mpi_detecte=0 && echo "Problem with MPI_ABORT of `$MPI_ROOT/bin/mpirun --version | head -n 1`.";
 		  [ "`$MPI_ROOT/bin/mpirun --version 2>&1 | grep 'mpirun (Open MPI) 1.10.4'`" != "" ] && mpi_detecte=0 && echo "Problem with MPI_ABORT of `$MPI_ROOT/bin/mpirun --version | head -n 1`.";
 		  [ "`$MPI_ROOT/bin/mpirun --version 2>&1 | grep 'mpirun (Open MPI) 1.10.5'`" != "" ] && mpi_detecte=0 && echo "Problem with MPI_ABORT of `$MPI_ROOT/bin/mpirun --version | head -n 1`.";
@@ -1311,7 +1312,7 @@ fi
 ########################
 # Installation de Salome
 ########################
-version_salome=8.3.0
+version_salome=8.4.0
 if [ $TRUST_DOWNLOAD_SALOME = 1 ]
 then
    version_salome_=`echo $version_salome | awk '{gsub("\\\.","_",$0);print $0}'`
@@ -1809,7 +1810,7 @@ esac
 
 if [ "$TRUST_VERSION_GNU" != "" ]
 then
-   CppFlags=$CppFlags" "`echo $TRUST_VERSION_GNU | awk '{print $1<"4.7.0" ? "-std=c++0x" : "-std=c++11"}'`
+   CppFlags=$CppFlags" "`echo $TRUST_VERSION_GNU | awk '{print $1<"4.7.0" ? $1<"4.3.0" ? "" : "-std=c++0x" : "-std=c++11"}'`
 else
    CppFlags=$CppFlags" -std=c++11"
 fi

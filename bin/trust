@@ -347,6 +347,8 @@ do
       rm -f Moyennes_spatiales_* reynolds_tau.dat tauw.dat u_tau.dat
       echo "rm evol_glob"
       rm -f evol_glob
+      echo "rm iter.dat sauvegarde_tble_* tble_mesh.dat"
+      rm -f iter.dat sauvegarde_tble_* tble_mesh.dat
       exit 0
    else
       # Unknown option

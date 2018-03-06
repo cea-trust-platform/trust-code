@@ -17,7 +17,7 @@ read v
 PORTAGE=""
 if [ "$v" != "" ]
 then
-   PORTAGE=$WORKDIR/PORTAGE_$v
+   PORTAGE=$WORKDIR/portages/PORTAGE_$v
    if [ ! -d $PORTAGE ]
    then
       # On regarde si la version beta n'existe pas dans ce cas on move le repertoire

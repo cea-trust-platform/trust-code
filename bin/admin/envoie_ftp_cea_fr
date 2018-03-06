@@ -15,8 +15,8 @@ echo "
 [ ${#Version} = 0 ] && echo "What version?" && exit
 v=${Version#Version}
 version_arch=TRUST-$v".tar.gz"
-PORTAGE=$WORKDIR/PORTAGE_$v
-GRAVAGE=$WORKDIR/A_GRAVER_CD_TRUST
+PORTAGE=$WORKDIR/portages/PORTAGE_$v
+GRAVAGE=$WORKDIR/archives/ARCHIVES_TRUST
 
 cd $TRUST_ENV
 # Teste la connection :
@@ -127,7 +127,7 @@ cp_ftp /tmp/index.html $SECRET/exec/.
 #################################
 # Copie sur une machine de Saclay
 #################################
-depot=/data/tmptrust/tmptrust
+depot=/data/tmptrust/tmptrust/archives
 for machine in `liste_machines "\-rsync"`
 do
    cible=$machine:$depot/.
@@ -161,31 +161,14 @@ then
    cp_ftp compile_* $SECRET/NUIT/.
    cd $TRUST_ROOT/exec
    cp_ftp .tests* $SECRET/NUIT/.
-   sleep 1
-   cd $TRUST_ROOT/doc/TRUST/exercices/equation_convection_diffusion/build/portability
-   cp_ftp nuit_*.html $SECRET/NUIT/.
-   cp_ftp *_%_*.log $SECRET/NUIT/.
-   sleep 1
-   cd $TRUST_ROOT/Outils/ICoCo/ICoCo_src/build/portability
-   cp_ftp nuit_*.html $SECRET/NUIT/.
-   cp_ftp *_%_*.log $SECRET/NUIT/.
-   sleep 1
-   #cd $TRUST_ROOT/bin/baltik/templates/basic
-   cd $TRUST_ROOT/../Composants/Test_Baltik/build/portability
-   cp_ftp nuit_*.html $SECRET/NUIT/.
-   cp_ftp *_%_*.log $SECRET/NUIT/.
-   sleep 1
-   cd $TRUST_ROOT/../Composants/MPCube/build/portability
-   cp_ftp nuit_*.html $SECRET/NUIT/.
-   cp_ftp *_%_*.log $SECRET/NUIT/.
-   sleep 1
-   cd $TRUST_ROOT/../Composants/TrioCFD/build/portability
-   cp_ftp nuit_*.html $SECRET/NUIT/.
-   cp_ftp *_%_*.log $SECRET/NUIT/.
-   sleep 1
-   cd $TRUST_ROOT/../Composants/ModeleCoeur/build/portability
-   cp_ftp nuit_*.html $SECRET/NUIT/.
-   cp_ftp *_%_*.log $SECRET/NUIT/.
+   for Composant in $Composants
+   do
+      sleep 1
+      echo "Send night portability of $Composant baltik at `date` ..."
+      cd $TRUST_ROOT/../Composants/$Composant/build/portability
+      cp_ftp nuit_*.html $SECRET/NUIT/.
+      cp_ftp *_%_*.log $SECRET/NUIT/.
+   done
 fi
 cd $TRUST_ROOT
 

@@ -17,7 +17,8 @@ cat > $tmp_file
 # NB: necessaire pour les machines de Grenoble (sitre, vonnes, gaillands, forchat)
 # et egalement pour envoyer mail via mailing lists saxifrage.saclay.cea.fr
 # ajouter export TRUST_SHARE="/net/dibona/users/dibona/triou" dans .perso_TRUST.env
-if [ "$TRUST_SHARE" != "" ] && [ -d "$TRUST_SHARE" ] && [ "$attached" == "" ]
+# Passage PC TMA Fedora18 a Fedora24 => tous les mails de l AGL n ont pas ete recus
+if [ "$TRUST_SHARE" != "" ] && [ -d "$TRUST_SHARE" ] #&& [ "$attached" == "" ]
 then
    # Probleme de l'autentification donc copie sur dibona qui fera serveur de mail_
    mel=$TRUST_SHARE/tmp
