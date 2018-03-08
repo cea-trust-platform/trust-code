@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.7.7_beta : Changes since version 1.7.6 :
 -------------------------------------------------------------
+08/03/18 (TRUST)  Compilers GNU 7.3.0 supported
 27/02/18 (TRUST)  Add c++11 compiler flag to the default TRUST ones
 07/12/17 (Tools)  OpenMPI 2.0.4 is the lastest downloaded version tested
 28/11/17 (TRUST)  Compilers GNU 7.2.0 supported
