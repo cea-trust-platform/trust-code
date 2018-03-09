@@ -609,7 +609,7 @@ echo>>$liste_log
 # med-3.0.7 sans doc et sans python (taille passe de 162M a 19M)
 # med-3.2.1 sans doc (taille passe de 45M a 17M)
 # osu-micro-benchmarks-3.8 version initiale non retrouvee
-nb_error=`grep "FAILED" $liste_log | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.3.1 | grep -v osu-micro-benchmarks-3.8 | wc -l`
+nb_error=`grep "FAILED" $liste_log | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.3.1 | grep -v osu-micro-benchmarks-3.8 | grep -v medcoupling-8.4.0 | wc -l` # cce provisoire
 # les 3 paquets suivants sont sous http://downloads.sourceforge.net/project/trust-platform/X.Y.Z/extra/
 # medcoupling-7.8.0.tar.gz
 # hypre-2.10.0b-p2-TRUST.tar.gz
@@ -621,7 +621,7 @@ then
    # med-3.0.7 sans doc et sans python (taille passe de 162M a 19M)
    # osu-micro-benchmarks-3.8 version initiale non retrouvee
    #liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.2.1 | grep -v osu-micro-benchmarks-3.8 | grep -v medcoupling-7.8.0 | grep -v hypre-2.10.0b-p2-TRUST | grep -v CURVEPLOT | grep -v nvc_get_devices`
-   liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.3.1 | grep -v osu-micro-benchmarks-3.8`
+   liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.3.1 | grep -v osu-micro-benchmarks-3.8 | grep -v medcoupling-8.4.0` # cce provisoire
    cd $TRUST_ROOT/build/bin/gestion_externalpackages/Test
    rm -r -f old new
    for package in $liste_failed
@@ -850,7 +850,7 @@ echo "###############################################"
            # Kernel desormais workdir Git:
 	   #rebase_log=`mktemp_`
 	   rebase_log=$REP_NUIT"/rebase_"$HOST"_"${vue#*/}".log"
-	   echo "Call git rebase master"
+	   echo "Call git rebase TMA"
 	   echo "  See $rebase_log"
            echo "git rebase on $HOST the `date` ...">$rebase_log
            echo>>$rebase_log
@@ -877,7 +877,7 @@ echo "###############################################"
 	      fi
 	   done
 	   cd $TRUST_ROOT
-	   git commit doc/.dico src/CMakeLists.txt src/MAIN/instancie_appel.h src/MAIN/instancie_appel_c.h -m"Commit in Kernel before git rebase master" --u=no 1>>$rebase_log 2>&1
+	   git commit doc/.dico src/CMakeLists.txt src/MAIN/instancie_appel.h src/MAIN/instancie_appel_c.h -m"Commit in Kernel before git rebase TMA" --u=no 1>>$rebase_log 2>&1
 	   git rebase Livraison 1>>$rebase_log 2>&1
 	   rebase_error=$?
 	   if [ $rebase_error != 0 ]
@@ -3183,7 +3183,7 @@ do
          OK=`echo $(($OK+$nb))`
 	 nb=`(grep " KO" $Composant_log;grep KO $Composant_log | grep $Composant;grep " connect to host " $Composant_log | cut -d: -f2) | wc -l`
          KO=`echo $(($KO+$nb))`
-         [ `grep KO $Composant_log | grep $Composant | wc -l` > 0 ] && validation_composant=0
+         #[ `grep KO $Composant_log | grep $Composant | wc -l` > 0 ] && validation_composant=0
       fi
       let NB=$OK+$KO
    done
@@ -3647,9 +3647,10 @@ then
 	 accord_beta=0
 	 echo "  Call git tag $label at "`date`
          git tag $label
+         echo "  Call git push shared TMA"
          git push --tags shared Livraison:TMA
-         echo "  Call git push shared master"
-         git push --tags shared Livraison:master
+         #echo "  Call git push shared master"
+         #git push --tags shared Livraison:master
 	 # On pose le meme tag sur externalpackages
          cd externalpackages
          git commit --all -m"Commit for an official Release $label version."
@@ -3657,7 +3658,7 @@ then
          git push --tags shared Livraison:TMA
          git tag $label
 	 #git push --tags ssh://triou@sedna${TRUST_GIT_REPOS%TRUST}externalpackages Livraison:master
-         git push --tags shared Livraison:master
+         #git push --tags shared Livraison:master
 	 git fetch --all
          cd - 1>/dev/null 2>&1
 	 # Creation des packages TRUST et externalpackages
@@ -3730,7 +3731,7 @@ then
 	    # On pose le meme tag sur les BALTIK
             echo "    Call git commit --all -m Commit for an official Release $label version."
             git commit --all -m"Commit for an official Release $label version."
-            echo "    Call git push shared master"
+            echo "    Call git push shared TMA"
 	    git tag $label_pose
             git push --tags shared Livraison:TMA
 	    echo "    Call git tag $label"
@@ -3741,7 +3742,7 @@ then
                git tag "$label"b
             fi
 	    #[ "$Composant" != TrioCFD ] && git push --tags ssh://triou@sedna${TRUST_GIT_REPOS%TRUST}$Composant Livraison:master
-            [[ "$ComposantsGNT" = *"$Composant"* ]] && git push --tags shared Livraison:master # Test si Composant est dans la liste des Composants Git NT (non Diffusion Restreinte)
+            #[[ "$ComposantsGNT" = *"$Composant"* ]] && git push --tags shared Livraison:master # Test si Composant est dans la liste des Composants Git NT (non Diffusion Restreinte)
 	    git fetch --all
 	    # Appel du make distrib
 	    echo "    Call make distrib"
@@ -3783,7 +3784,7 @@ then
 	    # On pose le meme tag sur les BALTIK
             echo "    Call git commit --all -m Commit for an official Release $label version."
             git commit --all -m"Commit for an official Release $label version."
-            echo "    Call git push origin master"
+            echo "    Call git push origin TMA"
 	    git tag $label_pose
             git push --tags origin Livraison:TMA
 	    echo "    Call git tag $label"

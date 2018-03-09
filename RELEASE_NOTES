@@ -2,7 +2,7 @@
 Release notes version 1.7.7_beta : Enhancements, modifications and corrected bugs since version 1.7.6 :
 --------------------------------------------------------------------------------------------------
 28/02/18 (TRUST)  Minor change: Update the use of dt_sauv keyword assigned to zero to disable the writing of the .sauv file
-28/02/18 (TRUST)  New keyword : Add disable_progress, disable_dt_ev and disable_TU flags to disable the writing of these output  files
+28/02/18 (TRUST)  New keyword : Add disable_progress, disable_dt_ev and disable_TU flags to disable the writing of these output files
 28/02/18 (TRUST)  New feature : New disable_stop option to disable the writing of the .stop file (Usage: trust MyJDD.data -disable_stop)
 22/02/18 (TRUST)  New keyword : Adding L1_norm and L2_norm
 22/02/18 (TRUST)  Major change: Changing names to be more precise L2_norme->euclidian_norm (keywords to rename in datafile)

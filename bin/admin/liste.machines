@@ -22,7 +22,7 @@ linux	rsync_ssh	tache		is210377.intra.cea.fr				-PolyMAC						-xdata		-force_pro
 linux	rsync_ssh	tache		is232974.intra.cea.fr		-all		-PolyMAC -MATHYS							-force_latest_openmpi			# CentOS 7.4	Bat 451	LGLS	salle de formation
 linux	sftp_ssh	tache		is220631.intra.cea.fr	-rsync	-all		-MPCube -TrioCFD -FLICA5 -GENEPI3 -PolyMAC		-prof		-force_provided_mpich			# Fedora 22	Bat 526 LGLS	bureau TMA FLICA4
 linux	rsync_ssh	tache		is232971.intra.cea.fr				-TRUST -MPCube -PAREX+ -FLICA5 -GENEPI3	 -PolyMAC -force_provided_openmpi -remote_install_TRUST_with_source	# Fedora 26 	Bat 451 LGLS	bureau Stephane Veys
-linux	rsync_ssh	tache		is221931.intra.cea.fr		-all		-PolyMAC					-force_provided_mpich	-remote_install_TRUST_kernel_only	# CentOS 7.4	Bat ?	SERMA	bureau ?
+linux	rsync_ssh	tache		is23288.intra.cea.fr		-all		-PolyMAC					-force_provided_mpich	-remote_install_TRUST_kernel_only	# Fedora 20	Bat 451	LGLS	bureau Adrien Bruneton
 linux	rsync_ssh	tache		is212800.intra.cea.fr		-all									 		-disable-medcoupling			# CentOS 6.4	Bat ?	?	bureau ? (Teste la compilation de TRUST allegee)
 linux	rsync_ssh	non		is221556.intra.cea.fr		-all		-IJK-FT -PolyMAC							-force_provided_mpich	 -without-visit	# Ubuntu 16	Bat 451 LGLS    bureau a cote de Clarisse Genrault
 linux	rsync_ssh	non		is233136-clang.intra.cea.fr			-TRUST -TrioCFD -PolyMAC				-g -clang38	-force_provided_openmpi -disable-gmsh	# Ubuntu 16	Bat 451 LMSF	bureau Ulrich Bieder
