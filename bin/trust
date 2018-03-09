@@ -657,8 +657,10 @@ then
    fi
 fi
 
-# Si l'on a un gestionnaire de batch (soumission!=999a et que USE_MPIRUN est mis avec NB_PROCS=1, alors soumission est mis a 1
-[ $soumission != 999 ] && [ $NB_PROCS = 1 ] && [ $USE_MPIRUN = 1 ] && soumission=1
+# Si l'on a un gestionnaire de batch (soumission!=999 et que USE_MPIRUN est mis avec NB_PROCS=1, alors soumission est mis a 1
+#[ $soumission != 999 ] && [ $NB_PROCS = 1 ] && [ $USE_MPIRUN = 1 ] && soumission=1
+# pour pouvoir utiliser le debogueur sur la frontale
+[ "$prod" = 1 ] && [ $soumission != 999 ] && [ $NB_PROCS = 1 ] && [ $USE_MPIRUN = 1 ] && soumission=1
 
 # Pour eviter un message d'erreur semget depuis la compilation de MPICH en shared memory
 # on vide la table des semaphores (voir la raison dans lib/src/LIBMPI/Installer_mpich)
