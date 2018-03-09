@@ -2,7 +2,7 @@
 # --
 # Author : GF (CEA)
 # --
-# on appelle baltik_build_conigure_real situe dans ./bin/share/bamtik/bin
+# on appelle baltik_build_configure_real situe dans ./bin/baltik/share/baltik/bin
 
 baltik_environnement_init()
 {

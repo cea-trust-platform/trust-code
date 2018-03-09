@@ -132,7 +132,7 @@ export Reference_dir
 LC_COLLATE=C
 export LC_COLLATE
 
-rm $project_report_file
+rm -f $project_report_file
 
 # on met le flag a 1 pour creer les cas tests de NR a partir des fiches de valid
 if [ "$mode" != "trust" ] && [ "$mode" != "trio" ]
@@ -145,7 +145,7 @@ export PATH=$BALTIK_ROOT/bin:${PATH}
 rm -f .pb
 (echo $liste_cas | lance_test -nomail -no_timeout  $project_executable_name $project_test_directory ; status=$?;  [ $status -ne 0 ]  && echo 1 > .pb )| tee lance_test_out
 
-cat $project_report_file
+cat $project_report_file 2>/dev/null
 status=$?
 [ $status -ne 0 ]  && exit 2 
 echo Info_global test_seq `grep 'Successful tests cases :' $project_report_file| awk -F: '{print $NF}'` 
