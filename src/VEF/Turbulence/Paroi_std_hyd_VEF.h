@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -71,7 +71,6 @@ protected:
   int methode_calcul_face_keps_impose_;  // 0 std avant: 1 toutes les faces accroches 2:: comme avant mais toutes les faces des elts accroches. 3: comme avant sans test si bord...  4: que les faces des elts acrroches
 
   DoubleVect uplus_;
-  DoubleVect dplus_;
 
   DoubleVect seuil_LP;
   IntVect iterations_LP;

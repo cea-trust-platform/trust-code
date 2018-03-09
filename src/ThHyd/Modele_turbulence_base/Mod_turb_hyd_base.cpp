@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -360,8 +360,7 @@ int Mod_turb_hyd_base::preparer_calcul()
   int res = 1;
   if (loipar.non_nul())
     res = loipar.init_lois_paroi();
-  if (boundaries_list.size()>0)
-    loipar.imprimer_premiere_ligne_ustar(boundaries_, boundaries_list, nom_fichier_);
+  loipar.imprimer_premiere_ligne_ustar(boundaries_, boundaries_list, nom_fichier_);
   return res;
 }
 

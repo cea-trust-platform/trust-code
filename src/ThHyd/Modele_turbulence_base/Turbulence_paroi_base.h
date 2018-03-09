@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -84,6 +84,8 @@ public :
   inline const DoubleTab& Cisaillement_paroi() const;
   inline const DoubleVect& tab_u_star() const;
   inline double tab_u_star(int face) const;
+  inline const DoubleVect& tab_d_plus() const;
+  inline double tab_d_plus(int face) const;
 
   //OC 01/2006: ajout de la fonctionnalite sauvegarde/reprise : utile pour TBLE pour l'instant.
   virtual int sauvegarder(Sortie&) const
@@ -113,6 +115,7 @@ protected:
   DoubleTab Cisaillement_paroi_;         //valeurs des contraintes tangentielles aux
   // parois calculees localement a partir de u*
   DoubleVect tab_u_star_;                // valeurs des u* calculees localement
+  DoubleVect tab_d_plus_;                // valeurs des d+ calculees localement
   mutable Champ_Fonc champ_u_star_;                                // Champ pour postraitement
   mutable int nb_impr_;                        // Compteur d'impression
   mutable int nb_impr0_;                        // Compteur d'impression
@@ -212,6 +215,16 @@ inline const DoubleVect& Turbulence_paroi_base::tab_u_star() const
 inline double Turbulence_paroi_base::tab_u_star(int face) const
 {
   return tab_u_star_(face);
+}
+
+inline const DoubleVect& Turbulence_paroi_base::tab_d_plus() const
+{
+  return tab_d_plus_;
+}
+
+inline double Turbulence_paroi_base::tab_d_plus(int face) const
+{
+  return tab_d_plus_(face);
 }
 
 inline void erreur_non_convergence()

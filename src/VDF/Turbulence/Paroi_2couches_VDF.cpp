@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -66,7 +66,6 @@ void Paroi_2couches_VDF::set_param(Param& param)
 
 int Paroi_2couches_VDF::init_lois_paroi()
 {
-  dplus_.resize(la_zone_VDF->nb_faces_bord());
   uplus_.resize(la_zone_VDF->nb_faces_bord());
   init_lois_paroi_();
 
@@ -242,7 +241,7 @@ int Paroi_2couches_VDF::calculer_hyd(DoubleTab& tab_nu_t,DoubleTab& tab_k_eps)
                 Cisaillement_paroi_(num_face,1-ori) = tab_u_star(num_face)*tab_u_star(num_face)*val;
 
                 // Calcul de u+ d+
-                calculer_uplus_dplus(uplus_, dplus_, tab_u_star_, num_face, dist, d_visco, norm_v) ;
+                calculer_uplus_dplus(uplus_, tab_d_plus_, tab_u_star_, num_face, dist, d_visco, norm_v) ;
               }
 
           else if (dimension == 3)
@@ -353,7 +352,7 @@ int Paroi_2couches_VDF::calculer_hyd(DoubleTab& tab_nu_t,DoubleTab& tab_k_eps)
                     Cisaillement_paroi_(num_face,1) = vit_frot*val2;
                   }
                 // Calcul de u+ d+
-                calculer_uplus_dplus(uplus_, dplus_, tab_u_star_, num_face, dist, d_visco, norm_v) ;
+                calculer_uplus_dplus(uplus_, tab_d_plus_, tab_u_star_, num_face, dist, d_visco, norm_v) ;
               }
         }
 
@@ -465,7 +464,7 @@ int Paroi_2couches_VDF::calculer_hyd(DoubleTab& tab_nu_t,DoubleTab& tab_k_eps)
 
                 Cisaillement_paroi_(num_face,1-ori) = tab_u_star(num_face)*tab_u_star(num_face)*val;
                 // Calcul de u+ d+
-                calculer_uplus_dplus(uplus_, dplus_, tab_u_star_, num_face, dist, d_visco, norm_v) ;
+                calculer_uplus_dplus(uplus_, tab_d_plus_, tab_u_star_, num_face, dist, d_visco, norm_v) ;
               }
 
           else if (dimension == 3)
@@ -585,7 +584,7 @@ int Paroi_2couches_VDF::calculer_hyd(DoubleTab& tab_nu_t,DoubleTab& tab_k_eps)
                     Cisaillement_paroi_(num_face,1) = vit_frot*val2;
                   }
                 // Calcul de u+ d+
-                calculer_uplus_dplus(uplus_, dplus_, tab_u_star_, num_face, dist, d_visco, norm_v) ;
+                calculer_uplus_dplus(uplus_, tab_d_plus_, tab_u_star_, num_face, dist, d_visco, norm_v) ;
               }
 
         }
@@ -738,7 +737,7 @@ void Paroi_2couches_VDF::imprimer_ustar(Sortie& os) const
                   double z=zone_VDF.xv(num_face,2);
                   Ustar << x << "\t| " << y << "\t| " << z;
                 }
-              Ustar << "\t| " << uplus_(num_face) << "\t| " << dplus_(num_face) << "\t| " << tab_u_star(num_face);
+              Ustar << "\t| " << uplus_(num_face) << "\t| " << tab_d_plus(num_face) << "\t| " << tab_u_star(num_face);
               Ustar << "\t| " << Cisaillement_paroi_(num_face,1) << "\t| " << Cisaillement_paroi_(num_face,0) ;
               if (dimension == 3)
                 Ustar << "\t| " << Cisaillement_paroi_(num_face,2) << finl;
@@ -746,7 +745,7 @@ void Paroi_2couches_VDF::imprimer_ustar(Sortie& os) const
                 Ustar << finl;
 
               upmoy +=uplus_(num_face);
-              dpmoy +=dplus_(num_face);
+              dpmoy +=tab_d_plus(num_face);
               utaumoy +=tab_u_star(num_face);
               compt +=1;
             }

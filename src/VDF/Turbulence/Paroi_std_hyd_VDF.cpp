@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -80,7 +80,6 @@ void Paroi_std_hyd_VDF::set_param(Param& param)
 
 int Paroi_std_hyd_VDF::init_lois_paroi()
 {
-  dplus_.resize(la_zone_VDF->nb_faces_bord());
   uplus_.resize(la_zone_VDF->nb_faces_bord());
   init_lois_paroi_();
 
@@ -319,7 +318,7 @@ int Paroi_std_hyd_VDF::calculer_hyd(DoubleTab& tab1,int isKeps,DoubleTab& tab2)
                 }
 
               // Calcul de u+ d+
-              calculer_uplus_dplus(uplus_, dplus_, tab_u_star_, num_face, dist, d_visco, norm_v) ;
+              calculer_uplus_dplus(uplus_, tab_d_plus_, tab_u_star_, num_face, dist, d_visco, norm_v) ;
             }
 
 
@@ -857,7 +856,7 @@ void Paroi_std_hyd_VDF::imprimer_ustar(Sortie& os) const
                   norme_L2+= Cisaillement_paroi_(num_face,2)*Cisaillement_paroi_(num_face,2);
                 }
               norme_L2=sqrt(norme_L2);
-              Ustar << "\t| " << uplus_(num_face) << "\t| " << dplus_(num_face) << "\t| " << tab_u_star(num_face);
+              Ustar << "\t| " << uplus_(num_face) << "\t| " << tab_d_plus(num_face) << "\t| " << tab_u_star(num_face);
               Ustar << "\t| " << norme_L2 << "\t| " << Cisaillement_paroi_(num_face,0) << "\t| " << Cisaillement_paroi_(num_face,1) ;
               if (dimension == 3)
                 Ustar << "\t| " << Cisaillement_paroi_(num_face,2) << finl;
@@ -866,7 +865,7 @@ void Paroi_std_hyd_VDF::imprimer_ustar(Sortie& os) const
 
               // PQ : 03/03 : Calcul des valeurs moyennes (en supposant maillage regulier)
               moy(0) +=uplus_(num_face);
-              moy(1) +=dplus_(num_face);
+              moy(1) +=tab_d_plus(num_face);
               moy(2) +=tab_u_star(num_face);
               moy(3) +=1;
             }

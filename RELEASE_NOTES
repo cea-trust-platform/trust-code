@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.7.7_beta : Enhancements, modifications and corrected bugs since version 1.7.6 :
 --------------------------------------------------------------------------------------------------
+09/03/18 (TRUST)  Major change: Evolution of the  *_ustar_mean_only.out file format with mean(u*) and mean(d+)
 28/02/18 (TRUST)  Minor change: Update the use of dt_sauv keyword assigned to zero to disable the writing of the .sauv file
 28/02/18 (TRUST)  New keyword : Add disable_progress, disable_dt_ev and disable_TU flags to disable the writing of these output files
 28/02/18 (TRUST)  New feature : New disable_stop option to disable the writing of the .stop file (Usage: trust MyJDD.data -disable_stop)
