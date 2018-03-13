@@ -22,7 +22,7 @@ no_configuration_file_error() {
     echo ""
     echo "Please add a configuration file to your project."
     echo ""
-    echo "See README.BALTIK for more details."
+    echo "See \$TRUST_ROOT/bin/baltik/doc/README.BALTIK for more details."
     echo "--------------------------------------------------"
     echo ""
     exit 1
@@ -36,7 +36,7 @@ undefined_project_name_error() {
     echo ""
     echo "No 'name' field in 'description' section."
     echo ""
-    echo "See README.BALTIK for more details."
+    echo "See \$TRUST_ROOT/bin/baltik/doc/README.BALTIK for more details."
     echo "-----------------------------------------"
     echo ""
     exit 1
@@ -52,7 +52,7 @@ invalid_dependency_name_error() {
     echo "Names used in 'dependencies' section must"
     echo "match the designated project name."
     echo ""
-    echo "See README.BALTIK for more details."
+    echo "See \$TRUST_ROOT/bin/baltik/doc/README.BALTIK for more details."
     echo "------------------------------------------"
     echo ""
     exit 1
@@ -69,7 +69,7 @@ too_many_paths_error() {
     echo "Please, ensure that any project is given"
     echo "a single path among all dependencies."
     echo ""
-    echo "See README.BALTIK for more details."
+    echo "See \$TRUST_ROOT/bin/baltik/doc/README.BALTIK for more details."
     echo "-----------------------------------------"
     echo ""
     exit 1
@@ -84,7 +84,7 @@ conflicting_files_error() {
     echo $2" and "$3
     echo "Please, rename your files to avoid conflicts."
     echo ""
-    echo "See README.BALTIK for more details."
+    echo "See \$TRUST_ROOT/bin/baltik/doc/README.BALTIK for more details."
     echo "---------------------------------------------"
     echo ""
     exit 1
@@ -98,7 +98,7 @@ no_build_directory_error() {
     echo ""
     echo "Please run './configure' before calling make"
     echo ""
-    echo "See README.BALTIK for more details."
+    echo "See \$TRUST_ROOT/bin/baltik/doc/README.BALTIK for more details."
     echo "---------------------------------------------"
     echo ""
     exit 1
@@ -111,7 +111,7 @@ number_of_compilation_arguments_error() {
     echo "baltik_build should be called with a single argument"
     echo "which can be either 'optim' or 'debug'."
     echo ""
-    echo "See README.BALTIK for more details."
+    echo "See \$TRUST_ROOT/bin/baltik/doc/README.BALTIK for more details."
     echo "-----------------------------------------------------"
     echo ""
     exit 1
@@ -126,7 +126,7 @@ invalid_compilation_argument() {
     echo "baltik_build should be called with a single argument"
     echo "which can be either $* and not $word"
     echo ""
-    echo "See README.BALTIK for more details."
+    echo "See \$TRUST_ROOT/bin/baltik/doc/README.BALTIK for more details."
     echo "------------------------------------------------------"
     echo ""
     exit 1
@@ -136,7 +136,7 @@ compilation_error() {
     echo "-----------------------------------------------------"
     echo "ERROR : compilation error."
     echo ""
-    echo "See README.BALTIK for more details."
+    echo "See \$TRUST_ROOT/bin/baltik/doc/README.BALTIK for more details."
     echo "------------------------------------------------------"
     echo ""
     exit 1

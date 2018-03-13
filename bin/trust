@@ -105,6 +105,7 @@ help()
    echo "Usage: `basename $0` [option] datafile [nb_cpus] [1>file.out] [2>file.err]"
    echo "Where option may be:"
    echo "-help|-h                      : List options."
+   echo "-baltik                       : Instanciate a empty Baltik project."
    echo "-index                        : Access to the TRUST ressource index."
    echo "-doc                          : Access to the TRUST manual (Generic Guide)."
    echo "-config nedit|vim|emacs|gedit : Configure nedit or vim or emacs or gedit with TRUST keywords."
@@ -220,6 +221,18 @@ do
 	 echo "$doc not found!" 
 	 exit -1
       fi
+   elif [ "$1" = "-baltik" ]
+   then
+      [ -f bin/trust ] && echo "Can't be run at $TRUST_ROOT" && exit -1 
+      cp -r $TRUST_ROOT/bin/baltik/templates/basic/* .
+      sed -i "1,$ s?TRUST?`whoami 2>/dev/null`?g" project.cfg
+      project=`pwd` && project=`basename $project`
+      sed -i "1,$ s?basic?$project?g" project.cfg
+      # Suppress Hello World example:
+      rm -r -f src/Hello.* tests/Reference/New/Hello tests/Reference/New/new tests/Reference/Validation/Hello_world_jdd1 share/Validation/Rapports_automatiques/Hello_world
+      baltik_build_configure
+      #./configure && make check_optim
+      exit 0
    elif [ "$1" = "-index" ]
    then
       ($TRUST_WEBBROWSER $TRUST_ROOT/index.html &) && exit 0  

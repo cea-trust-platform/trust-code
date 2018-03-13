@@ -117,7 +117,8 @@ echo "Preparing sources ..."
 
 # initialisation du repertoire de construction
 project_build_directory="${project_directory}/build/src"
-rm -f $project_build_directory/*  $project_build_directory/exec*/CMakeCache.txt 
+rm -f $project_build_directory/exec*/CMakeCache.txt
+rm -r -f $project_build_directory/*   
 
 rm -f $project_build_directory/*/CMakeCache.txt
 mkdir -p $project_build_directory
