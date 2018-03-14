@@ -34,6 +34,15 @@ romio_cb_read  enable
 cb_config_list *:1" > ROMIO_HINTS.env
    echo "export ROMIO_HINTS=\$TRUST_ROOT/env/ROMIO_HINTS.env # ROMIO HINTS" >> $env
    #
+   # qstat inexistente sur les dernieres machines du CCRT/TGCC
+   echo "Command qstat created on $HOST"
+   cp $TRUST_ROOT/bin/KSH/qstat_wrapper $TRUST_ROOT/bin/KSH/qstat
+   modulecmd=`ls /opt/Modules/bin/modulecmd.tcl /usr/bin/modulecmd.tcl /usr/share/modules-tcl/libexec/modulecmd.tcl 2>/dev/null`
+   echo "# For $HOST cluster:
+module () {
+   eval \`tclsh $modulecmd sh \$*\`
+}" >> $env
+   #
    # Load modules
    # intel 14.0.3.174 16.0.3.210(default) intel/17.0.4.196
    intel="intel/17.0.4.196"
@@ -53,18 +62,22 @@ cb_config_list *:1" > ROMIO_HINTS.env
    #module="$intel $openmpi"
    # newenv/2016-09  newenv/2018-03(default)
    module="newenv/2018-03"
-   module="intel/16.0.3.210 mpi/openmpi/2.0.2"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
    echo "module load $module 1>/dev/null" >> $env
    #Vgcc module="flavor/openmpi/cea flavor/openmpi/gcc"
    #Vgcc echo "module switch $module 1>/dev/null" >> $env
+   #
+   # If libccc_user module found, load it (this module helps to know the CPU)
+   module=libccc_user
+   if [ "`tclsh $modulecmd sh show $module 2>&1`" != "" ]
+   then
+      echo "Module $module detected and loaded on $HOST."
+      module load $module  >> $env
+   fi
+   #
    . $env
-   # Creation wrapper qstat -> squeue
-   echo "#!/bin/bash
-squeue" > $TRUST_ROOT/bin/qstat
-   chmod +x $TRUST_ROOT/bin/qstat
 }
 
 ##############################
