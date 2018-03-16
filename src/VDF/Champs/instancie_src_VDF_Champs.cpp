@@ -22,6 +22,7 @@
 #include <Rotationnel_Champ_Face.h>
 #include <Taux_cisaillement_P0_VDF.h>
 #include <Y_plus_Champ_Face.h>
+#include <grad_U_Champ_Face.h>
 void instancie_src_VDF_Champs() {
 Cerr << "src_VDF_Champs" << finl;
 Champ_Don_Face_lu inst1;verifie_pere(inst1);
@@ -43,4 +44,5 @@ Reynolds_maille_Champ_Face inst16;verifie_pere(inst16);
 Rotationnel_Champ_Face inst17;verifie_pere(inst17);
 Taux_cisaillement_P0_VDF inst18;verifie_pere(inst18);
 Y_plus_Champ_Face inst19;verifie_pere(inst19);
+grad_U_Champ_Face inst20;verifie_pere(inst20);
 }

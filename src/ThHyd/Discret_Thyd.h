@@ -74,6 +74,7 @@ public :
                      Champ_Inc&, int =1) const;
   virtual void creer_champ_vorticite(const Schema_Temps_base&,const Champ_Inc& ,
                                      Champ_Fonc& ) const;
+  virtual void grad_u(const Zone_dis& ,const Zone_Cl_dis&,  const Champ_Inc&, Champ_Fonc& ) const;
   virtual void proprietes_physiques_fluide_Ostwald(const Zone_dis& ,Fluide_Ostwald&,
                                                    const Navier_Stokes_std& ,
                                                    const Champ_Inc& ) const ;

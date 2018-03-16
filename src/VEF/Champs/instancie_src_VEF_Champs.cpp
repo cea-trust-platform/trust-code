@@ -27,6 +27,7 @@
 #include <Taux_cisaillement_P0_VEF.h>
 #include <Y_plus_Champ_P1NC.h>
 #include <grad_T_Champ_P1NC.h>
+#include <grad_U_Champ_P1NC.h>
 #include <h_conv_Champ_P1NC.h>
 void instancie_src_VEF_Champs() {
 Cerr << "src_VEF_Champs" << finl;
@@ -54,5 +55,6 @@ Rotationnel_Champ_Q1NC inst21;verifie_pere(inst21);
 Taux_cisaillement_P0_VEF inst22;verifie_pere(inst22);
 Y_plus_Champ_P1NC inst23;verifie_pere(inst23);
 grad_T_Champ_P1NC inst24;verifie_pere(inst24);
-h_conv_Champ_P1NC inst25;verifie_pere(inst25);
+grad_U_Champ_P1NC inst25;verifie_pere(inst25);
+h_conv_Champ_P1NC inst26;verifie_pere(inst26);
 }

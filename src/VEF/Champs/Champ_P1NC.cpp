@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -169,6 +169,7 @@ void calculer_gradientP1NC(const DoubleTab& variable,
   int icomp,fac,i,elem1,elem2,elem,num_face;
   int n_bord;
   int ind_face;
+
 
   // Cas du calcul du gradient d'un tableau de vecteurs
   if (nb_comp!=1)
@@ -712,6 +713,33 @@ void Champ_P1NC::calcul_y_plus(const Zone_Cl_VEF& zone_Cl_VEF, DoubleVect& y_plu
     } // Fin boucle sur les bords
 }
 
+
+void Champ_P1NC::calcul_grad_U(const Zone_Cl_VEF& zone_Cl_VEF, DoubleTab& grad_u) const
+{
+  const DoubleTab& u = valeurs();
+  const Zone_VEF& zone_VEF = la_zone_VEF.valeur();
+  const int nb_elem = zone_VEF.nb_elem();
+
+  const int nb_elem_tot = zone_VEF.nb_elem_tot();
+
+  DoubleTab gradient_elem(nb_elem_tot,dimension,dimension);
+  gradient_elem=0.;
+
+  calculer_gradientP1NC(u,zone_VEF,zone_Cl_VEF,gradient_elem);
+
+  for (int elem=0; elem<nb_elem; elem++)
+    {
+      int comp=0;
+      for (int i=0; i<dimension; i++)
+        for(int j=0; j<dimension; j++)
+          {
+            grad_u(elem,comp) = gradient_elem(elem,i,j);
+            comp++;
+          }
+    }
+
+
+}
 
 void Champ_P1NC::calcul_grad_T(const Zone_Cl_VEF& zone_Cl_VEF, DoubleTab& grad_T) const
 {

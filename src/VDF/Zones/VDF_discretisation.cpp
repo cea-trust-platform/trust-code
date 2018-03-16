@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,6 +22,7 @@
 
 #include <VDF_discretisation.h>
 #include <Rotationnel_Champ_Face.h>
+#include <grad_U_Champ_Face.h>
 #include <Correlation_Vec_Sca_VDF.h>
 #include <Champ_P0_VDF.h>
 #include <Champ_Fonc_Tabule.h>
@@ -345,6 +346,45 @@ void VDF_discretisation::critere_Q(const Zone_dis& z,const Zone_Cl_dis& zcl,cons
   ch_Criter_Q.fixer_unite("s-2");
   ch_Criter_Q.changer_temps(ch_vitesse.temps());
 }
+
+void VDF_discretisation::grad_u(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_vitesse,Champ_Fonc& ch) const
+{
+  const Champ_Face& vit = ref_cast(Champ_Face,ch_vitesse.valeur());
+  const Zone_VDF& zone_vdf=ref_cast(Zone_VDF, z.valeur());
+  const Zone_Cl_VDF& zone_cl_vdf=ref_cast(Zone_Cl_VDF, zcl.valeur());
+  ch.typer("grad_U_Champ_Face");
+  grad_U_Champ_Face& ch_grad_u=ref_cast(grad_U_Champ_Face,ch.valeur());
+  ch_grad_u.associer_zone_dis_base(zone_vdf);
+  ch_grad_u.associer_zone_Cl_dis_base(zone_cl_vdf);
+  ch_grad_u.associer_champ(vit);
+  ch_grad_u.nommer("grad_u");
+  ch_grad_u.fixer_nb_comp(dimension*dimension);
+
+  if (dimension == 2)
+    {
+      ch_grad_u.fixer_nom_compo(0,"dUdX"); // du/dx
+      ch_grad_u.fixer_nom_compo(1,"dUdY"); // du/dy
+      ch_grad_u.fixer_nom_compo(2,"dVdX"); // dv/dx
+      ch_grad_u.fixer_nom_compo(3,"dVdY"); // dv/dy
+    }
+  else
+    {
+      ch_grad_u.fixer_nom_compo(0,"dUdX"); // du/dx
+      ch_grad_u.fixer_nom_compo(1,"dUdY"); // du/dy
+      ch_grad_u.fixer_nom_compo(2,"dUdZ"); // du/dz
+      ch_grad_u.fixer_nom_compo(3,"dVdX"); // dv/dx
+      ch_grad_u.fixer_nom_compo(4,"dVdY"); // dv/dy
+      ch_grad_u.fixer_nom_compo(5,"dVdZ"); // dv/dz
+      ch_grad_u.fixer_nom_compo(6,"dWdX"); // dw/dx
+      ch_grad_u.fixer_nom_compo(7,"dWdY"); // dw/dy
+      ch_grad_u.fixer_nom_compo(8,"dWdZ"); // dw/dz
+    }
+  ch_grad_u.fixer_nature_du_champ(vectoriel);
+  ch_grad_u.fixer_nb_valeurs_nodales(zone_vdf.nb_elem());
+  ch_grad_u.fixer_unite("s-1");
+  ch_grad_u.changer_temps(ch_vitesse.temps());
+}
+
 
 void VDF_discretisation::reynolds_maille(const Zone_dis& z, const Fluide_Incompressible& le_fluide, const Champ_Inc& ch_vitesse, Champ_Fonc& champ) const
 {

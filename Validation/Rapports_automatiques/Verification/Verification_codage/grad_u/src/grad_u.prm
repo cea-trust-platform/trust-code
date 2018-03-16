@@ -1,0 +1,221 @@
+Parametres { 
+Titre "Check grad_u postprocessing" 
+Description "Here is checked the use of the keyword grad_u to visualize to velocity gradient for both VEF and VDF discretizations."
+Description "In 2D, the domain is the square \latex_( $ \Omega_{2D} = [0;2] \times [0;2] $ \latex_) and in 3D the domain is \latex_( $ \Omega_{3D} = [0;2] \times [0;2] \times [0;2] $ \latex_)."
+CasTest "." "2D_VDF.data"
+CasTest "." "2D_VEF.data"
+CasTest "." "3D_VDF.data"
+CasTest "." "3D_VEF.data" 
+}
+
+
+
+Chapter {	
+	Title "2D VDF discretization"
+	Description "Let's consider the 2D velocity field \latex_( $ \bold{u} = \left( \begin{matrix} u \\ v \end{matrix} \right) = \left( \begin{matrix} x+2y \\ 1/2~x^2+1/2~y^2 \end{matrix} \right) $ \latex_)"
+	Description "So can write the gradient matrix as following  : "
+	Description " \latex_( $$ \nabla \bold v = \left( \begin{matrix} \partial u / \partial x & \partial u / \partial y \\  \partial v / \partial x & \partial v / \partial y \end{matrix} \right) = \left( \begin{matrix} 1 & 2 \\ x & y \end{matrix} \right) $$  \latex_)"
+	Visu {
+		Title "Visualization of \latex_( $ \partial u / \partial x $ \latex_) "
+		pseudocolor 2D_VDF.lata dom DU_DX ELEM
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial u / \partial y $ \latex_) "	
+		pseudocolor 2D_VDF.lata dom DU_DY ELEM
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial v / \partial x $ \latex_) "	
+		pseudocolor 2D_VDF.lata dom DV_DX ELEM
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial v / \partial y $ \latex_) "	
+		pseudocolor 2D_VDF.lata dom DV_DY ELEM
+		cycles 0
+		width 7cm
+	}
+}
+
+
+
+Chapter {	
+	Title "2D VEF discretization"
+	Description
+	Description "As for the 2D VDF discretization, let's consider the 2D velocity field \latex_( $ \bold{u} = \left( \begin{matrix} u \\ v \end{matrix} \right) = \left( \begin{matrix} x+2y \\ 1/2~x^2+1/2~y^2 \end{matrix} \right) $ \latex_)"
+	Description "So can write the gradient matrix as following  : "
+	Description " \latex_( $$ \nabla \bold v = \left( \begin{matrix} \partial u / \partial x & \partial u / \partial y \\  \partial v / \partial x & \partial v / \partial y \end{matrix} \right) = \left( \begin{matrix} 1 & 2 \\ x & y \end{matrix} \right) $$  \latex_)"
+	Visu {
+		Title "Visualization of \latex_( $ \partial u / \partial x $ \latex_) "
+		pseudocolor 2D_VEF.lata dom DU_DX ELEM
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial u / \partial y $ \latex_) "	
+		pseudocolor 2D_VEF.lata dom DU_DY ELEM
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial v / \partial x $ \latex_) "	
+		pseudocolor 2D_VEF.lata dom DV_DX ELEM
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial v / \partial y $ \latex_) "	
+		pseudocolor 2D_VEF.lata dom DV_DY ELEM
+		cycles 0
+		width 7cm
+	}
+}
+
+
+
+Chapter {	
+	Title "3D VDF discretization"
+	Description
+	Description "Let's consider the 3D velocity field \latex_( $ \bold{u} = \left( \begin{matrix} u \\ v \\ w \end{matrix} \right) = \left( \begin{matrix} x+2y+3*z \\ 1/2~x^2+1/2~y^2+1/2~z^2 \\ 1/3~x^3+1/3~y^3+1/3~z^3 \end{matrix} \right) $ \latex_)"
+	Description "So can write the gradient matrix as following  : "
+	Description " \latex_( $$ \nabla \bold v = \left( \begin{matrix} \partial u / \partial x & \partial u / \partial y & \partial u / \partial z \\  \partial v / \partial x & \partial v / \partial y & \partial v / \partial z \\ \partial w / \partial x & \partial w / \partial y / & \partial w / \partial z \end{matrix} \right) = \left( \begin{matrix} 1 & 2 & 3 \\ x & y & z \\ x^2 & y^2 & z^2 \end{matrix} \right) $$  \latex_)"
+	Visu {
+		Title "Visualization of \latex_( $ \partial u / \partial x $ \latex_) "
+		pseudocolor 3D_VDF.lata dom DU_DX ELEM
+		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial u / \partial y $ \latex_) "	
+		pseudocolor 3D_VDF.lata dom DU_DY ELEM
+ 		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial u / \partial z $ \latex_) "	
+		pseudocolor 3D_VDF.lata dom DU_DZ ELEM
+ 		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial v / \partial x $ \latex_) "	
+		pseudocolor 3D_VDF.lata dom DV_DX ELEM
+		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial v / \partial y $ \latex_) "	
+		pseudocolor 3D_VDF.lata dom DV_DY ELEM
+		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial v / \partial z $ \latex_) "	
+		pseudocolor 3D_VDF.lata dom DV_DZ ELEM
+		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial w / \partial x $ \latex_) "	
+		pseudocolor 3D_VDF.lata dom DW_DX ELEM
+		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial w / \partial y $ \latex_) "	
+		pseudocolor 3D_VDF.lata dom DW_DY ELEM
+		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial w / \partial z $ \latex_) "	
+		pseudocolor 3D_VDF.lata dom DW_DZ ELEM
+		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+}
+
+
+Chapter {	
+	Title "3D VEF discretization"
+	Description
+	Description "As for the 3D VDF discretization, let's consider the 3D velocity field \latex_( $ \bold{u} = \left( \begin{matrix} u \\ v \\ w \end{matrix} \right) = \left( \begin{matrix} x+2y+3*z \\ 1/2~x^2+1/2~y^2+1/2~z^2 \\ 1/3~x^3+1/3~y^3+1/3~z^3 \end{matrix} \right) $ \latex_)"
+	Description "So can write the gradient matrix as following  : "
+	Description " \latex_( $$ \nabla \bold v = \left( \begin{matrix} \partial u / \partial x & \partial u / \partial y & \partial u / \partial z \\  \partial v / \partial x & \partial v / \partial y & \partial v / \partial z \\ \partial w / \partial x & \partial w / \partial y / & \partial w / \partial z \end{matrix} \right) = \left( \begin{matrix} 1 & 2 & 3 \\ x & y & z \\ x^2 & y^2 & z^2 \end{matrix} \right) $$  \latex_)"
+	Visu {
+		Title "Visualization of \latex_( $ \partial u / \partial x $ \latex_) "
+		pseudocolor 3D_VEF.lata dom DU_DX ELEM
+		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial u / \partial y $ \latex_) "	
+		pseudocolor 3D_VEF.lata dom DU_DY ELEM
+ 		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial u / \partial z $ \latex_) "	
+		pseudocolor 3D_VEF.lata dom DU_DZ ELEM
+ 		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial v / \partial x $ \latex_) "	
+		pseudocolor 3D_VEF.lata dom DV_DX ELEM
+		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial v / \partial y $ \latex_) "	
+		pseudocolor 3D_VEF.lata dom DV_DY ELEM
+		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial v / \partial z $ \latex_) "	
+		pseudocolor 3D_VEF.lata dom DV_DZ ELEM
+		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial w / \partial x $ \latex_) "	
+		pseudocolor 3D_VEF.lata dom DW_DX ELEM
+		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial w / \partial y $ \latex_) "	
+		pseudocolor 3D_VEF.lata dom DW_DY ELEM
+		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial w / \partial z $ \latex_) "	
+		pseudocolor 3D_VEF.lata dom DW_DZ ELEM
+		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+}
