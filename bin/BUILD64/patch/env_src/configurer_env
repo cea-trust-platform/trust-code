@@ -904,7 +904,7 @@ compiler_found=1
 e="`cherche_file cmake cmake`";eval $e
 CMAKE_VERSION_OK=`$cmake --version 2>&1 | awk '/cmake version/ {split($3,a,".");v=a[1]*100+a[2]*10+a[3];print (v>=352?1:0)}'`
 # 16/02/2018 : Probleme de configure sur baltik avec lib si cmake 3.8.2 vu sur Fedora 26
-[ "$CMAKE_VERSION_OK" == 1 ] && CMAKE_VERSION_OK=`$cmake --version 2>&1 | awk '/cmake version/ {split($3,a,".");v=a[1]*100+a[2]*10+a[3];print (v!=382?1:0)}'`
+#[ "$CMAKE_VERSION_OK" == 1 ] && CMAKE_VERSION_OK=`$cmake --version 2>&1 | awk '/cmake version/ {split($3,a,".");v=a[1]*100+a[2]*10+a[3];print (v!=382?1:0)}'`
 #if [ "$CMAKE_VERSION_OK" != 1 ] || [ "`grep 'OS for the machine' $TRUST_ROOT/env/machine.env`" = "# OS for the machine : Fedora release 26 (Twenty Six)" ]
 if [ "$CMAKE_VERSION_OK" != 1 ]
 then
@@ -1199,7 +1199,6 @@ else
 	       if [ "`$MPI_ROOT/bin/mpirun --version 2>&1 | grep 'mpirun (Open MPI)'`" != "" ]
 	       then
                   echo $ECHO_OPTS "# Check version of OpenMPI (Problem if version between 1.10.3 and 1.10.6): " 
-		  [ "`$MPI_ROOT/bin/mpirun --version 2>&1 | grep 'mpirun (Open MPI) 1.10.2'`" != "" ] && mpi_detecte=0 && echo "Problem with MPI_ABORT of `$MPI_ROOT/bin/mpirun --version | head -n 1`."; # cce provisoire
 		  [ "`$MPI_ROOT/bin/mpirun --version 2>&1 | grep 'mpirun (Open MPI) 1.10.3'`" != "" ] && mpi_detecte=0 && echo "Problem with MPI_ABORT of `$MPI_ROOT/bin/mpirun --version | head -n 1`.";
 		  [ "`$MPI_ROOT/bin/mpirun --version 2>&1 | grep 'mpirun (Open MPI) 1.10.4'`" != "" ] && mpi_detecte=0 && echo "Problem with MPI_ABORT of `$MPI_ROOT/bin/mpirun --version | head -n 1`.";
 		  [ "`$MPI_ROOT/bin/mpirun --version 2>&1 | grep 'mpirun (Open MPI) 1.10.5'`" != "" ] && mpi_detecte=0 && echo "Problem with MPI_ABORT of `$MPI_ROOT/bin/mpirun --version | head -n 1`.";
@@ -1809,12 +1808,13 @@ linux_clang++) TRUST_SUPPORTED=1
    	;;
 esac
 
-if [ "$TRUST_VERSION_GNU" != "" ]
-then
-   CppFlags=$CppFlags" "`echo $TRUST_VERSION_GNU | awk '{print $1<"4.7.0" ? $1<"4.3.0" ? "" : "-std=c++0x" : "-std=c++11"}'`
-else
-   CppFlags=$CppFlags" -std=c++11"
-fi
+# Add c++11 compiler flag to the default TRUST ones
+#if [ "$TRUST_VERSION_GNU" != "" ]
+#then
+#   CppFlags=$CppFlags" "`echo $TRUST_VERSION_GNU | awk '{print $1<"4.7.0" ? $1<"4.3.0" ? "" : "-std=c++0x" : "-std=c++11"}'`
+#else
+#   CppFlags=$CppFlags" -std=c++11"
+#fi
 
 if [ $TRUST_SUPPORTED = 0 ] && [ "$TRUST_FORCE_SUPPORTED" != 1 ]
 then
