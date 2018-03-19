@@ -224,13 +224,18 @@ do
    elif [ "$1" = "-baltik" ]
    then
       [ -f bin/trust ] && echo "Can't be run at $TRUST_ROOT" && exit -1 
+      echo "Creating an empty Baltik project under `pwd` ..."
+      echo "Copying a template from \$TRUST_ROOT/bin/baltik/templates/basic ..."
       cp -r $TRUST_ROOT/bin/baltik/templates/basic/* .
+      echo "Changing the project configuration file project.cfg ..."
       sed -i "1,$ s?TRUST?`whoami 2>/dev/null`?g" project.cfg
       project=`pwd` && project=`basename $project`
       sed -i "1,$ s?basic?$project?g" project.cfg
-      # Suppress Hello World example:
+      echo "Suppressing Hello World examples from the project ..."
       rm -r -f src/Hello.* tests/Reference/New/Hello tests/Reference/New/new tests/Reference/Validation/Hello_world_jdd1 share/Validation/Rapports_automatiques/Hello_world
+      echo "Running baltik_build_configure..."
       baltik_build_configure
+      echo "Read the README.BALTIK file to know more about Baltik projects." 
       #./configure && make check_optim
       exit 0
    elif [ "$1" = "-index" ]
