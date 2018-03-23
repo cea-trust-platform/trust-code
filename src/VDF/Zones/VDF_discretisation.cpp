@@ -357,7 +357,7 @@ void VDF_discretisation::grad_u(const Zone_dis& z,const Zone_Cl_dis& zcl,const C
   ch_grad_u.associer_zone_dis_base(zone_vdf);
   ch_grad_u.associer_zone_Cl_dis_base(zone_cl_vdf);
   ch_grad_u.associer_champ(vit);
-  ch_grad_u.nommer("grad_u");
+  ch_grad_u.nommer("gradient_vitesse");
   ch_grad_u.fixer_nb_comp(dimension*dimension);
 
   if (dimension == 2)

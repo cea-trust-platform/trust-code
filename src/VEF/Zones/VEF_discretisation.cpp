@@ -612,7 +612,7 @@ void VEF_discretisation::grad_u(const Zone_dis& z,const Zone_Cl_dis& zcl,const C
   ch_grad_u.associer_zone_dis_base( zone_vef );
   ch_grad_u.associer_zone_Cl_dis_base( zone_cl_vef );
   ch_grad_u.associer_champ( vit );
-  ch_grad_u.nommer("grad_u");
+  ch_grad_u.nommer("gradient_vitesse");
   ch_grad_u.fixer_nb_comp( nb_comp );
   ch_grad_u.fixer_nb_valeurs_nodales( zone_vef.nb_elem( ) );
   ch_grad_u.fixer_unite("s-1");
