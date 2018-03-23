@@ -18,7 +18,7 @@ Mailler dom
 		} 	
 }
 
-/* tetra_here */
+Trianguler_H dom
 
 # END MESH #
 # BEGIN PARTITION
@@ -35,7 +35,7 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-VDF dis
+ VEFPreP1B dis
 
 Scheme_euler_explicit sch
 Read sch
@@ -87,10 +87,10 @@ Read pb
 
                 definition_champs
                 {
-                        DU_DX Transformation { methode composante numero 0 source refChamp { Pb_champ pb grad_u } localisation elem }
-                        DU_DY Transformation { methode composante numero 1 source refChamp { Pb_champ pb grad_u } localisation elem }
-                        DV_DX Transformation { methode composante numero 2 source refChamp { Pb_champ pb grad_u } localisation elem }
-                        DV_DY Transformation { methode composante numero 3 source refChamp { Pb_champ pb grad_u } localisation elem }
+                        DU_DX Transformation { methode composante numero 0 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
+                        DU_DY Transformation { methode composante numero 1 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
+                        DV_DX Transformation { methode composante numero 2 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
+                        DV_DY Transformation { methode composante numero 3 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
                 }
 
 

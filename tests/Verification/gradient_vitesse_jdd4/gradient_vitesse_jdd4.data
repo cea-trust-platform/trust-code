@@ -89,15 +89,15 @@ Read pb
 
                 definition_champs
                 {
-                        DU_DX Transformation { methode composante numero 0 source refChamp { Pb_champ pb grad_u } localisation elem }
-                        DU_DY Transformation { methode composante numero 1 source refChamp { Pb_champ pb grad_u } localisation elem }
-                        DU_DZ Transformation { methode composante numero 2 source refChamp { Pb_champ pb grad_u } localisation elem }
-                        DV_DX Transformation { methode composante numero 3 source refChamp { Pb_champ pb grad_u } localisation elem }
-                        DV_DY Transformation { methode composante numero 4 source refChamp { Pb_champ pb grad_u } localisation elem }
-                        DV_DZ Transformation { methode composante numero 5 source refChamp { Pb_champ pb grad_u } localisation elem }
-                        DW_DX Transformation { methode composante numero 6 source refChamp { Pb_champ pb grad_u } localisation elem }
-                        DW_DY Transformation { methode composante numero 7 source refChamp { Pb_champ pb grad_u } localisation elem }
-                        DW_DZ Transformation { methode composante numero 8 source refChamp { Pb_champ pb grad_u } localisation elem }
+                        DU_DX Transformation { methode composante numero 0 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
+                        DU_DY Transformation { methode composante numero 1 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
+                        DU_DZ Transformation { methode composante numero 2 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
+                        DV_DX Transformation { methode composante numero 3 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
+                        DV_DY Transformation { methode composante numero 4 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
+                        DV_DZ Transformation { methode composante numero 5 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
+                        DW_DX Transformation { methode composante numero 6 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
+                        DW_DY Transformation { methode composante numero 7 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
+                        DW_DZ Transformation { methode composante numero 8 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
                 }
 
 
