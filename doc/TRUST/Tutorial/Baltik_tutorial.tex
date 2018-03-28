@@ -146,28 +146,46 @@ CEA Saclay \\ % Your institution for the title page
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Initialisation of TRUST environment}
-\begin{block}{}
+\begin{block}{TRUST commands}
 
 \begin{itemize}
 \item Source the TRUST environment:\\
-\texttt{\$ source /home/triou/env\_TRUST\_X.Y.Z.sh}
+\vspace{0.2cm}
+\textbf{source  /home/triou/env\_TRUST\_X.Y.Z.sh}
+\vspace{0.2cm}
 
 \item To know if the configuration is ok and where are the sources:\\
 \texttt{\$ echo \$TRUST\_ROOT}
+\vspace{0.2cm}
 
 \item Copy a TRUST test case:\\
-\texttt{\$ cd /export/home/yourlogin/}\\
+\texttt{\$ mkdir -p Formation\_TRUST/yourname}\\
+\texttt{\$ cd Formation\_TRUST/yourname}\\
 \texttt{\$ trust -copy upwind}\\
 \texttt{\$ cd upwind}\\
-
 \item Change "format lml" to "format lata" in datafile\\
+\end{itemize}
 
-\item Create your TRUST project and launch a test case with Eclipse:\\
-\texttt{\$ trust -index}\\
-$\rightarrow$ "FTP site" $\rightarrow$ "See here how to configure Eclipse with TRUST project." \\
-or \\
-\texttt{\$ nedit \$TRUST\_ROOT/src/README\_ECLIPSE \&}\\
-Do only the first part (Create a TRUST project).\\
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Initialisation of TRUST environment}
+\begin{block}{Eclipse}
+
+\begin{itemize}
+\item Create your TRUST project and launch a test case with \textbf{Eclipse}:\\
+    \begin{itemize}
+%    \item [$\circ$] Open TRUST index html page:\\
+%    \texttt{\$ trust -index}\\
+%    $\rightarrow$ "FTP site" \\
+%    $\rightarrow$ "See here how to configure Eclipse with TRUST project." \\
+    \item [$\circ$] open the README\_ECLIPSE file: \\
+    \texttt{\$ vim|nedit|gedit|emacs \$TRUST\_ROOT/src/README\_ECLIPSE \&}\\
+    \item [$\circ$] Do only the first part (Create a platform TRUST project).\\
+    \end{itemize}
+
 \item Close Eclipse.\\
 \end{itemize}
 
@@ -191,11 +209,11 @@ Do only the first part (Create a TRUST project).\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Creation of a Baltik project}
-\begin{block}{}
+\begin{block}{Baltik commands}
 
 \begin{itemize}
 \item Create your directory for your project:\\
-\texttt{\$ cd /export/home/yourlogin}
+\texttt{\$ cd Formation\_TRUST/yourname}
 
 \item Fill your project from a basic project template:\\
 \texttt{\$ cp -r \$TRUST\_ROOT/bin/baltik/templates/basic my\_project}\\
@@ -235,9 +253,10 @@ Do only the first part (Create a TRUST project).\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Create your git repository}
-\begin{block}{}
 
+\begin{block}{Git commands}
 \begin{itemize}
+\item We want to create a git repository to store and manage your developpments.
 \item Initialize an empty git repository:\\
 \texttt{\$ git init}\\
 
@@ -253,11 +272,6 @@ It means that they are not followed by the git repository for the moment.
 
 \item Now you can send your commit to add your files to your git repository:\\
 \texttt{\$ git commit -m "Initial commit"}\\
-
-\item Watch your working tree status:\\
-\texttt{\$ git status}
-
-\item There is nothing more to add to your git repository.
 \end{itemize}
 
 \end{block}
@@ -266,18 +280,34 @@ It means that they are not followed by the git repository for the moment.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Create your git repository}
-\begin{block}{}
 
+\begin{block}{Git commands}
+\begin{itemize}
+\item Watch your working tree status:\\
+\texttt{\$ git status}
+\item There is nothing more to add to your git repository.
+\end{itemize}
+\end{block}
+
+\begin{block}{Baltik commands}
 \begin{itemize}
 \item Edit your project file "project.cfg" to specify name, author and executable.
-
 \item Then configure your project:\\
 \texttt{\$ baltik\_build\_configure -execute}\\
-
 \item The previous command launches the "baltik\_build\_configure" script and the "configure" script directly.
+\end{itemize}
+\end{block}
 
-\item Check the status of your git repository:\\
-\texttt{\$ git status}\\
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Create your git repository}
+\begin{block}{Git commands}
+
+\begin{itemize}
+\item Check the status of your git repository with the "-\,-ignored" option to see the status of all files:\\
+\texttt{\$ git status -\,-ignored}\\
 
 \item You can see that the file "project.cfg" has been modified. And that there are new untracked files.
 It means that there are not on the git repository.
@@ -315,7 +345,7 @@ It means that there are not on the git repository.
 
 \begin{itemize}
 \item To make a basic build:\\
-\texttt{\$ cd /export/home/yourlogin/my\_project}
+\texttt{\$ cd Formation\_TRUST/yourname/my\_project}
 
 \item Configure your project:\\
 \texttt{\$ ./configure}
@@ -396,168 +426,6 @@ Do the second part of README\_ECLIPSE file (Create a BALTIK project):
 
 
 
-\section{{\bf{PRM file and validation test case}}}
-\subsection{{\bf{"trust -prm"}}}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\begin{columns}[c] 
-\column{.45\textwidth}
-\tableofcontents[sections={1-3},currentsection, currentsubsection]
-\column{.5\textwidth} 
-\tableofcontents[sections={4-8},currentsection, currentsubsection]
-\end{columns}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Useful commands}
-\begin{block}{New share/Validation/Rapports\_automatiques}
-\begin{itemize}
-\item Create a new prm file:\\
-\texttt{\$ cd /export/home/yourlogin/upwind/}\\
-\texttt{\$ trust -prm upwind}\\
-\item Add this prm validation in your baltik:\\
-\texttt{\$ cd \$project\_directory/}\\
-\texttt{\$ cd share/Validation/Rapports\_automatiques/}\\
-\texttt{\$ mkdir -p upwind/src}\\
-\texttt{\$ cp /export/home/yourlogin/upwind/upwind.data upwind/src/.}\\
-\texttt{\$ cp /export/home/yourlogin/upwind/upwind.geo upwind/src/.}\\
-\texttt{\$ cp /export/home/yourlogin/upwind/upwind.prm upwind/src/.}\\
-\texttt{\$ git add upwind}\\
-\texttt{\$ git commit -m "New prm"}\\
-\end{itemize}
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Useful commands}
-\begin{block}{New share/Validation/Rapports\_automatiques}
-\begin{itemize}
-\item Run this prm:\\
-\texttt{\$ cd upwind/}\\
-\texttt{\$ Run\_fiche}\\
-\item Open the pdf report:\\
-\texttt{\$ evince build/rapport.pdf \&}\\
-\item You can see that the pdf contains all the fields and probes post-processed in the data file.
-\item Notice that you have acces to the latex/images/... files in the directory:\\
-share/Validation/Rapports\_automatiques/upwind/build/.tmp
-\end{itemize}
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-\subsection{{\bf{Validation test case}}}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\begin{columns}[c] 
-\column{.45\textwidth}
-\tableofcontents[sections={1-3},currentsection, currentsubsection]
-\column{.5\textwidth} 
-\tableofcontents[sections={4-8},currentsection, currentsubsection]
-\end{columns}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Useful commands}
-\begin{block}{New tests/Reference/Validation}
-
-\begin{itemize}
-\item Create automatically the non-regression test case:\\
-\texttt{\$ cd \$project\_directory}\\
-\texttt{\$ make check\_optim}\\
-\textit{\hspace{0.1cm} Creation of upwind\_jdd1}\\
-\textit{\hspace{0.1cm} Creation of upwind\_jdd1/lien\_fiche\_validation}\\
-\textit{\hspace{0.1cm} Extracting test case (upwind.data) ...End.}\\
-\textit{\hspace{0.1cm} Creation of the file upwind\_jdd1.lml.gz}\\
-\texttt{\$ git status -\,-u=no}\\
-\item A new test case based on your PRM file has been created in the directory:\\
-\$project\_directory/tests/Reference/Validation/upwind\_jdd1
-\item $\rightarrow$ But you can see in the report table that PAR\_upwind\_jdd1 has crashed: "CORE" message.\\
-\end{itemize}
-
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Useful commands}
-\begin{block}{New tests/Reference/Validation}
-
-\begin{itemize}
-\item To correct the error, we copy the test case:\\
-\texttt{\$ cd build}\\
-\texttt{\$ trust -copy upwind\_jdd1}\\
-ERROR...
-\item We have to re-run the configure script to take into account the new test case:\\
-\texttt{\$ cd \$project\_directory}\\
-\texttt{\$ ./configure}\\
-\texttt{\$ cd build}\\
-\texttt{\$ trust -copy upwind\_jdd1}
-
-%\item Check the datafiles to see the problem to run in parallel:\\
-%\texttt{\$ diff share/Validation/Rapports\_automatiques/upwind/src/upwind.data upwind\_jdd1.data}\\
-%NB: upwind\_jdd1.data is readonly.\\
-
-\item Now we will analyse the error:\\
-\texttt{\$ cd upwind\_jdd1}\\
-\texttt{\$ trust -partition upwind\_jdd1}\\
-\texttt{\$ trust PAR\_upwind\_jdd1 2}\\
-\item Correct the data file PAR\_upwind\_jdd1.data and re-run it.
-\end{itemize}
-
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Useful commands}
-\begin{block}{New tests/Reference/Validation}
-
-\begin{itemize}
-\item If it's ok, update the data file in 
-\$project\_directory/share/Validation/Rapports\_automatiques/upwind/src\\
-("Scatter ../upwind/DOM.Zones dom" $\rightarrow$ "Scatter DOM.Zones dom")\\
-\item To Relaunch the last test cases which do not run:\\
-\texttt{\$ cd \$project\_directory}\\
-\texttt{\$ make check\_last\_pb\_optim}\\
-\hspace{0.1cm}{\small{\textit{Changement du jeu de donnees... \\
-\hspace{0.1cm}suite a une modification d'un jeu de donnees de la fiche de validation associee. \\
-\hspace{0.1cm}...\\
-\hspace{0.1cm}Successful tests cases :1/1 \\}}}
-\item Add this non-regression test in configuration:\\
-\texttt{\$ git status -\,-u=no}\\
-\texttt{\$ git add tests/Reference/Validation/upwind\_jdd1/upwind\_jdd1.data}\\
-\texttt{\$ git commit -m "New reference test"}\\
-\texttt{\$ git log}\\
-\end{itemize}
-
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Useful commands}
-\begin{block}{New tests/Reference/Validation}
-
-\begin{itemize}
-\item To run all the non regression tests with a optimized binary:\\
-\texttt{\$ make check\_all\_optim}
-\item To run all the non regression tests with a debug binary:\\
-\texttt{\$ make check\_all\_debug}
-\item To create an archive to share your work:\\
-\texttt{\$ make distrib}\\
-\texttt{\$ ls}
-\item You have now an archive in tar.gz format of your baltik project.
-
-\end{itemize}
-
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
 \section{{\bf{Modify the cpp sources}}}
 \subsection{{\bf{Create a new cpp class}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -573,27 +441,56 @@ ERROR...
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Creation of a new cpp class}
-\begin{block}{}
+
+\begin{block}{Baltik commands}
 \begin{itemize}
-\item Create a first class "my\_first\_class" with template:\\
+\item Create a new repository for your own classes:\\
 \texttt{\$ mkdir -p \$project\_directory/src/my\_module}\\
 \texttt{\$ cd \$project\_directory/src/my\_module}\\
+\item Create your first class "my\_first\_class" with template:\\
 \texttt{\$ baltik\_gen\_class my\_first\_class}\\
+\end{itemize}
+\end{block}
+
+\begin{block}{Git commands}
+\begin{itemize}
+\item Check the status of your repository:\\
 \texttt{\$ git status .}\\
+
+\item Add your new class to your git repository to follow your modifications:\\
 \texttt{\$ git add my\_first\_class.*}\\
 \texttt{\$ git commit -m "Add my\_first\_class src"}\\
+\end{itemize}
+\end{block}
 
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Creation of a new cpp class}
+
+\begin{block}{Baltik commands}
+\begin{itemize}
 \item Have a look at the 2 files my\_first\_class.h|cpp.\\
 
 \item Each time a source file is added to the project, you need to configure it:\\
 \texttt{\$ cd \$project\_directory}\\
-\texttt{\$ ./configure}\\
+\texttt{\$ ./configure}
 
-\item Build your project with Eclipse or in the terminal.\\
+\item Build your project with Eclipse or in the terminal.
 
-\item Edit the 2 files in Eclipse:\\
+\item Edit the 2 files with vim|nedit|gedit|emacs.
+\end{itemize}
+\end{block}
+
+\begin{block}{Eclipse}
+\begin{itemize}
+\item Edit the 2 files with Eclipse.
+
+\item For Eclipse use, you have to update your project to see your new files:\\
 $\rightarrow$ "Index/Rebuild" from "my\_project" of "Project Explorer"\\
-$\rightarrow$ "+" the "my\_project" of "Project Explorer"\\
+$\rightarrow$ Click on "$\blacktriangleright$" button of "my\_project" in the "Project Explorer"
+
 \end{itemize}
 \end{block}
 \end{frame}
@@ -601,43 +498,54 @@ $\rightarrow$ "+" the "my\_project" of "Project Explorer"\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Creation of a new cpp class}
-\begin{block}{}
+\begin{block}{Baltik commands}
+
 \begin{itemize}
 \item We want to change the inheritance of the class in order that it inherits from "Interprete\_geometrique\_base" class
 instead of "Objet\_U".
 
 \item "Interprete\_geometrique\_base" class is the base class of all the keywords doing tasks on domains (eg: Mailler, Lire\_fichier,...).
-
 \item You will:
     \begin{itemize}
     \item [$\circ$] add an "\#include <Interprete\_geometrique\_base.h>" in my\_first\_class.h,
     \item [$\circ$] switch "Objet\_U" to "Interprete\_geometrique\_base" in the .h and .cpp files,
-    \item [$\circ$] rebuild your application with Eclipse or in the terminal.\\
+    \item [$\circ$] rebuild your application.\\
     \item [$\circ$] An error will occur!
     \end{itemize}
 
 \item You will have an error indicating a pure virtual function ("interpreter\_") should be implemented.
 
-\item Look at the "Interprete\_geometrique\_base" class thanks to F3 (Open Declaration)
-from Eclipse and notice the "interpreter()" method (which calls the "interpreter\_()" method).\\
+\item Look at the "Interprete\_geometrique\_base" class:
+    \begin{itemize}
+    \item [$\circ$] Eclipse: highlight the string "Interprete\_geometrique\_base" and push the F3 button of your keyboard to open the declaration file of this class
+    \item [$\circ$] Or with the HTLM documentation: open the declaration file of the "Interprete\_geometrique\_base" class
+    \end{itemize}
 \end{itemize}
+
 \end{block}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Creation of a new cpp class}
-\begin{block}{}
+\begin{block}{Baltik commands}
 
 \begin{itemize}
+\item Notice the "interpreter()" method (which calls the "interpreter\_()" method).
+
 \item This method is called each time a keyword is read in the datafile (eg: "Read\_file dom dom.geom", "Solve pb",...).
+
 \item Define the public method "interpreter\_(Entree\&)" in the include file and implement it
 (just print a message with "Cerr" like "- My first keyword!") into the cpp file. 
+
 \item "Entree" is a TRUST class to read an input stream (from a file for example):\\
 "virtual Entree\& interpreter\_(Entree\&);"
+
 \item Rebuild your project and fix your files until the binary of your project is built (named
 basic if you have not changed the name in the project.cfg file)\\
+
 \item Now we want to test our new class.
+
 \item Modify a test case into the build directory of your Baltik project:\\
 \texttt{\$ cd \$project\_directory/build/}\\
 \texttt{\$ trust -copy Cx}\\
@@ -650,7 +558,7 @@ ERROR...
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Creation of a new cpp class}
-\begin{block}{}
+\begin{block}{Baltik commands}
 
 \begin{itemize}
 \item An error occurs because this test case is not in our baltik but in TRUST project so we have to launch the full environment (TRUST+our baltik).\\
@@ -659,7 +567,7 @@ ERROR...
 \texttt{\$ cd Cx}\\
 
 \item Open the data file "Cx.data":\\
-\texttt{\$ nedit|gedit|xemacs Cx.data}
+\texttt{\$ vim|nedit|gedit|emacs Cx.data}
 
 \item Just after the line where \underline{the problem is discretized}, add the keywords "my\_first\_class" and "End".\\
 NB: Instead of "End", you can reduce the number of time step to only 1.\\
@@ -671,23 +579,25 @@ NB: Instead of "End", you can reduce the number of time step to only 1.\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Creation of a new cpp class}
-\begin{block}{}
+\begin{block}{Baltik commands}
 
 \begin{itemize}
-\item Run with Eclipse your binary to check that this new keyword is recognized:\\
+\item Run your binary to check that this new keyword is recognized:\\
     \begin{itemize}
     \item [$\circ$] With Eclipse:\\
-    $\rightarrow$ "Debug As" and "Debug configurations..." from "my\_project"\\
-    $\rightarrow$ "Disable auto build" in "Main" and "Apply"\\
-    $\rightarrow$ in "Arguments", "Program arguments:" Cx\\
-    $\rightarrow$ "Working directory:" \${workspace\_loc:my\_project}/../Cx/\\
+    $\rightarrow$ In the project explorer, right click on "MY\_BALTIK" and select "Debug As/Debug configurations..." \\
+    $\rightarrow$ In "Main" tab, check "Disable auto build" then click on "Apply"\\
+    $\rightarrow$ In "Arguments" tab, fill "Program arguments:" with "Cx"\\
+    $\rightarrow$ "Working directory:" \${workspace\_loc:my\_project}/../Cx/ or "Formation\_TRUST/yourname/my\_project/build/Cx"\\
     $\rightarrow$ "Apply" and "Debug"\\
+    $\rightarrow$ Click on "Yes" to change the kind of view\\
+    $\rightarrow$ Click on "Resume" button to run the calculation until the end\\
     \item [$\circ$] Or in a terminal:\\
     \texttt{\$ cd \$project\_directory/build/Cx/}\\
     \texttt{\$ exec=\$exec\_debug trust Cx}\\
     \end{itemize}
 
-\item Understand that "Interprete\_geometrique\_base::interpreter\_()" method is called first,
+\item "Interprete\_geometrique\_base::interpreter\_()" method is called first,
 which calls then the "my\_first\_class::interpreter\_()" method.
 \end{itemize}
 
@@ -747,7 +657,7 @@ return is;\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Modify your cpp class}
-\begin{block}{}
+\begin{block}{Part 1}
 
 \begin{itemize}
 \item To call it in the data file, you have to use the following syntaxe as the read of the parameters is done by the readOn method:
@@ -783,7 +693,7 @@ simplifies greatly the coding.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Modify your cpp class}
-\begin{block}{}
+\begin{block}{Part 1}
 
 \begin{itemize}
 \item Add "\#include <Param.h>" into the cpp file.
@@ -820,7 +730,7 @@ domain named " <\textcompwordmark{}< ??? <\textcompwordmark{}< {\bf{finl}};
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Modify your cpp class}
-\begin{block}{}
+\begin{block}{Part 1}
 
 \begin{itemize}
 \item Build/fix/re-build the test case:\\
@@ -874,6 +784,7 @@ domain named " <\textcompwordmark{}< ??? <\textcompwordmark{}< {\bf{finl}};
 \end{alltt}
 \end{minipage}}
 \end{center}
+\item Now, we are going to try to calculate the sum of the VEF control volumes on the domain in our project.
 \end{itemize}
 
 \end{block}
@@ -882,10 +793,8 @@ domain named " <\textcompwordmark{}< ??? <\textcompwordmark{}< {\bf{finl}};
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Modify your cpp class}
-\begin{block}{}
+\begin{block}{Part 2}
 \begin{itemize}
-\item Now, we are going to try to calculate the sum of the VEF control volumes on the domain in our project.
-
 \item The information is in the "Zone\_VF" class (a "Zone\_dis" discretized zone) which can't be accessed 
 from the domain, only from the problem. 
 
@@ -900,7 +809,7 @@ from the domain, only from the problem.
 
 \item Add the read of a new parameter problem (see "Extraire\_plan::interpreter\_(Entree\&)" method for instance) into the "my\_first\_class.cpp" file.
 
-\item Then, remember the equation UML diagram.
+\item Then, remember the "equation" or "problem" UML diagram of the presentation's slides.
 
 \item Look for help inside the "Zone\_VF", "Probleme\_base" and "Equation\_base" into the HTML documentation to access to the:
     \begin{itemize}
@@ -916,7 +825,7 @@ from the domain, only from the problem.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Modify your cpp class}
-\begin{block}{}
+\begin{block}{Part 2}
 
 \begin{itemize}
 \item You will need to cast the discretized zone returned by the \textbf{zone\_dis()} method into a "Zone\_VF" object.
@@ -931,7 +840,7 @@ from the domain, only from the problem.
 \end{center}
 
 \item Where control\_volumes is a \textbf{DoubleVect} returned by the \textbf{Zone\_VF::volumes\_entrelaces()} method.
-\item If you look at the "Problem" UML diagram, you will notice a better path to access to the discretized zone.
+\item If you look at the "Problem" UML diagram of the presentation's slides, you will notice a better path to access to the discretized zone.
 \item What is this path ?
 \item Now, compute and print the sum of the control volumes with a "for" loop.
 
@@ -964,11 +873,10 @@ from the domain, only from the problem.
 \texttt{\$ cd \$project\_directory}\\
 \texttt{\$ make gui}
 \item Open the documentation file:\\
-\texttt{\$ cd \$project\_directory/build/xdata/XTriou}\\
-\texttt{\$ evince doc.pdf \&}
-\item Now we will add comments in our cpp files to add our new class in the documentation.
+\texttt{\$ evince \$project\_directory/build/xdata/XTriou/doc.pdf \&}
+\item Now we will add comments in our cpp files to add informations in the documentation.
 \item For this open the help of the TRAD\_2 syntaxe:\\
-\texttt{\$ nedit|gedit|xemacs doc\_TRAD\_2 \&}
+\texttt{\$ vim|nedit|gedit|emacs doc\_TRAD\_2 \&}
 \end{itemize}
 
 \end{block}
@@ -1157,14 +1065,14 @@ Use this output during parallel development to print plumbing infos which would 
 
 \item Compare the files: Cx\_result.txt, PAR\_Cx\_result.txt.
 
-\item The defferencies come from the fact that the 2 processors write into the file one after the other one.
+\item Differences come from the fact that the 2 processors write into the file one after the other one.
 So the final content will be the value calculated on the last processor which will acces to the file.
 
 \item You can try to launch one more time the calculation, the result may differ.
 
-\item To have the entire sum, you can apply the \textbf{mp\_sum()} method on the sum obtain and add the print in the .txt file.
+\item To have the entire sum, you can apply the \textbf{mp\_sum()} method on the sum obtained and add the print in the .txt file.
 
-\item Compare it to the sum obtain in the sequential run.
+\item Compare it to the sum obtained in the sequential run.
 
 \item It is better but we counted several times faces that belongs to the joint and to the virtual zones.
 \end{itemize}
@@ -1274,6 +1182,203 @@ So the final content will be the value calculated on the last processor which wi
 $\rightarrow$ Open the TRUST Generic Guide\\
 $\rightarrow$ Click onto the TRUST Reference Manual\\
 $\rightarrow$ Search for "Debog" keyword.
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\section{{\bf{PRM file and validation test case}}}
+\subsection{{\bf{"trust -prm"}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{New share/Validation/Rapports\_automatiques}
+\begin{block}{Baltik commands}
+
+\begin{itemize}
+\item Create a new prm file:\\
+\texttt{\$ cd Formation\_TRUST/yourname/upwind}\\
+\texttt{\$ trust -prm upwind}
+\item Now you have a upwind.prm file.
+
+\item You have to add this prm validation file in your baltik:\\
+\texttt{\$ cd \$project\_directory}\\
+\texttt{\$ cd share/Validation/Rapports\_automatiques}
+
+\item Create a new repository for your new prm validation form:\\
+\texttt{\$ mkdir -p upwind/src}
+
+\item Add the needed files (data file, mesh \& .prm file):\\
+\texttt{\$ cp Formation\_TRUST/yourname/upwind/upwind.data upwind/src}\\
+\texttt{\$ cp Formation\_TRUST/yourname/upwind/upwind.geo upwind/src}\\
+\texttt{\$ cp Formation\_TRUST/yourname/upwind/upwind.prm upwind/src}
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{New share/Validation/Rapports\_automatiques}
+
+\begin{block}{Git commands}
+\begin{itemize}
+\item Add it to your git repository:\\
+\texttt{\$ git add upwind}\\
+\texttt{\$ git commit -m "New prm"}
+\end{itemize}
+\end{block}
+
+\begin{block}{Baltik commands}
+\begin{itemize}
+\item Run this prm:\\
+\texttt{\$ cd upwind/}\\
+\texttt{\$ Run\_fiche}\\
+\item Open the pdf report:\\
+\texttt{\$ evince build/rapport.pdf \&}\\
+\item You can see that the pdf contains all the fields and probes post-processed in the data file.
+\item Notice that you have acces to the latex/images/... files in the directory:\\
+\small{\$project\_directory/share/Validation/Rapports\_automatiques/upwind/build/.tmp}
+\end{itemize}
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+\subsection{{\bf{Validation test case}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{columns}[c] 
+\column{.45\textwidth}
+\tableofcontents[sections={1-3},currentsection, currentsubsection]
+\column{.5\textwidth} 
+\tableofcontents[sections={4-8},currentsection, currentsubsection]
+\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{New tests/Reference/Validation}
+\begin{block}{Baltik commands}
+
+\begin{itemize}
+\item Create automatically the non-regression test case:\\
+\texttt{\$ cd \$project\_directory}\\
+\texttt{\$ make check\_optim}\\
+\textit{\hspace{0.1cm} Creation of upwind\_jdd1}\\
+\textit{\hspace{0.1cm} Creation of upwind\_jdd1/lien\_fiche\_validation}\\
+\textit{\hspace{0.1cm} Extracting test case (upwind.data) ...End.}\\
+\textit{\hspace{0.1cm} Creation of the file upwind\_jdd1.lml.gz}\\
+\textit{\hspace{0.1cm} ...}\\
+\item $\rightarrow$ You can see in the report table that PAR\_upwind\_jdd1 has crashed: "CORE" message.\\
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{New tests/Reference/Validation}
+
+\begin{block}{Git commands}
+\begin{itemize}
+\item Lets check the git status before solving this problem:\\
+\texttt{\$ git status -\,-u=no}\\
+\item A new test case based on your PRM file has been created in the directory:\\
+\$project\_directory/tests/Reference/Validation/upwind\_jdd1
+\end{itemize}
+\end{block}
+
+\begin{block}{Baltik commands}
+\begin{itemize}
+\item Now we want to correct the error, so copy the test case:\\
+\texttt{\$ cd \$project\_directory/build}\\
+\texttt{\$ trust -copy upwind\_jdd1}\\
+ERROR...
+\item We have to re-run the configure script to take into account the new test case:\\
+\texttt{\$ cd \$project\_directory}\\
+\texttt{\$ ./configure}\\
+\texttt{\$ cd build}\\
+\texttt{\$ trust -copy upwind\_jdd1}
+
+%\item Check the datafiles to see the problem to run in parallel:\\
+%\texttt{\$ diff share/Validation/Rapports\_automatiques/upwind/src/upwind.data upwind\_jdd1.data}\\
+%NB: upwind\_jdd1.data is readonly.\\
+\end{itemize}
+\end{block}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{New tests/Reference/Validation}
+\begin{block}{Baltik commands}
+
+\begin{itemize}
+\item Now we will analyse the error:\\
+\texttt{\$ cd upwind\_jdd1}\\
+\texttt{\$ trust -partition upwind\_jdd1}\\
+\texttt{\$ trust PAR\_upwind\_jdd1 2}\\
+\item Correct the data file PAR\_upwind\_jdd1.data and re-run it.
+\item If it's ok, update the data file in 
+\$project\_directory/share/Validation/Rapports\_automatiques/upwind/src\\
+("Scatter ../upwind/DOM.Zones dom" $\rightarrow$ "Scatter DOM.Zones dom")\\
+\item To Relaunch the last test cases which do not run:\\
+\texttt{\$ cd \$project\_directory}\\
+\texttt{\$ make check\_last\_pb\_optim}\\
+\hspace{0.1cm}{\small{\textit{Changement du jeu de donnees... \\
+\hspace{0.1cm}suite a une modification d'un jeu de donnees de la fiche de validation associee. \\
+\hspace{0.1cm}...\\
+\hspace{0.1cm}Successful tests cases :1/1 }}}
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{New tests/Reference/Validation}
+\begin{block}{Git commands}
+
+\begin{itemize}
+\item Add this non-regression test in configuration:\\
+\texttt{\$ git status -\,-u=no}\\
+\texttt{\$ git add tests/Reference/Validation/upwind\_jdd1/upwind\_jdd1.data}\\
+\item Push the modifications on your git repository:\\
+\texttt{\$ git commit -m "New reference test"}\\
+\texttt{\$ git log}\\
+\end{itemize}
+
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{New tests/Reference/Validation}
+\begin{block}{Baltik commands}
+
+\begin{itemize}
+\item To run all the non regression tests with a optimized binary:\\
+\texttt{\$ make check\_all\_optim}
+
+\item To run all the non regression tests with a debug binary:\\
+\texttt{\$ make check\_all\_debug}
+
+\item To create an archive to share your work:\\
+\texttt{\$ make distrib}\\
+\texttt{\$ ls}
+
+\item You have now an archive in tar.gz format of your baltik project.
 \end{itemize}
 
 \end{block}
@@ -1488,17 +1593,19 @@ $\rightarrow$ Search for "Debog" keyword.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{GDB exercise}
+\begin{block}{}
+
 \begin{itemize}
 \item Run a test case with GDB:\\
     \begin{itemize}
     \item [$\circ$] With Eclipse:\\
     $\rightarrow$ "Debug As" and "Debug configurations..." from "my\_project"\\
     $\rightarrow$ in "Arguments", "Program arguments:" upwind\\
-    $\rightarrow$ "Working directory:"  /export/home/yourlogin/upwind/\\
+    $\rightarrow$ "Working directory:"  Formation\_TRUST/yourname/upwind/\\
     $\rightarrow$ "Apply" and "Debug"\\
     \item [$\circ$] Or in a terminal:\\
-    \texttt{\$ cd /export/home/yourlogin/upwind/}\\
-    \texttt{\$ exec=\$exec\_debug trust -gdb upwind}\\
+    \texttt{\$ cd Formation\_TRUST/yourname/upwind/}\\
+    \texttt{\$ exec=\$exec\_debug trust -gdb upwind}
     \end{itemize}
 
 \item You are now in GDB.
@@ -1510,17 +1617,21 @@ $\rightarrow$ Search for "Debog" keyword.
 \texttt{(gdb) run upwind}
 
 \item Have a look at the stack\\
-\texttt{(gdb) where}\\
-
-\item Go to the next instruction:\\
-\texttt{(gdb) n}\\
+\texttt{(gdb) where}
 \end{itemize}
+
+\end{block}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{GDB exercise}
+\begin{block}{}
+
 \begin{itemize}
+\item Go to the next instruction:\\
+\texttt{(gdb) n}
+
 \item Print an array:\\
 \texttt{(gdb) print tab1}
 
@@ -1536,15 +1647,19 @@ $\rightarrow$ Search for "Debog" keyword.
 \item Print lines after the 100th line:\\
 \texttt{(gdb) print matrice}\\
 \texttt{(gdb) print matrice.que\_suis\_je() \textcolor{blue}{\# Kind of matrix ?}}\\
-\texttt{(gdb) print matrice.que\_suis\_je().nom\_ \textcolor{blue}{\# Kind of matrix ?}}\\
-\texttt{(gdb) up 5 \textcolor{blue}{\# Move up 5 levels}}\\
-\texttt{(gdb) list 900}\\
+\texttt{(gdb) print matrice.que\_suis\_je().nom\_ \textcolor{blue}{\# Kind of matrix ?}}
 \end{itemize}
+
+\end{block}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{GDB exercise}
+\begin{block}{}
+
+\hspace{0.6cm} \texttt{(gdb) up 5 \textcolor{blue}{\# Move up 5 levels}}\\
+\hspace{0.6cm} \texttt{(gdb) list 900}
 \begin{itemize}
 \item Print others variables:\\
 \texttt{(gdb) \textcolor{blue}{\# Pressure field}}\\
@@ -1559,6 +1674,8 @@ $\rightarrow$ Search for "Debog" keyword.
 \begin{itemize}
 \item With Eclipse, for more information about GDB commands, refer to the help menu.\\
 \end{itemize}
+
+\end{block}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1576,9 +1693,11 @@ $\rightarrow$ Search for "Debog" keyword.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Use Valgrind to find memory bugs}
+\begin{block}{}
+
 \begin{itemize}
 \item Run a test case with Valgrind:\\
-\texttt{\$ cd \$project\_directory/}\\
+\texttt{\$ cd \$project\_directory}\\
 \texttt{\$ source env\_basic.sh}\\
 \texttt{\$ cd build/Cx/}\\
 \texttt{\$ VALGRIND=1 trust Cx}\\
@@ -1590,11 +1709,15 @@ $\rightarrow$ Search for "Debog" keyword.
 \begin{itemize}
 \item Now we will modify the sources in your baltik project to generate a Valgrind error on the Cx test case.\\
 \end{itemize}
+
+\end{block}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Use Valgrind to find memory bugs}
+\begin{block}{}
+
 \begin{itemize}
 \item Edit the "my\_first\_class.cpp" file and remove the initialization of the sum to calcule the total of control volumes.\\
 In place of "double sum=0;", put only "double sum;".\\
@@ -1615,6 +1738,8 @@ On the other hand, in this case, there are errors.\\
     \texttt{\$ ==7517== ERROR SUMMARY: 187 errors from 109 contexts}
     \end{itemize}
 \end{itemize}
+
+\end{block}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
