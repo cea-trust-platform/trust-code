@@ -171,8 +171,12 @@ then
 	    #ARCH=linux-x86_64-ubuntu11
 	 elif [ $version = 2_12_1 ]
 	 then
-            ARCH=linux-x86_64-rhel7
-            #ARCH=linux-x86_64-ubuntu14
+            if [ "`grep 'Ubuntu ' /etc/issue.net 2>/dev/null`" != "" ]
+            then
+               ARCH=linux-x86_64-ubuntu14-wmesa
+            else
+               ARCH=linux-x86_64-rhel7-wmesa
+            fi
 	 else
             echo "No ARCH defined yet for $version."
 	    exit -1
