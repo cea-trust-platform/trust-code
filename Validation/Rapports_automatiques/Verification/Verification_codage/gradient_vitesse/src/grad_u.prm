@@ -1,4 +1,5 @@
-Parametres { 
+Parametres {
+author "Stephane Veys"
 Titre "Check velocity gradient postprocessing" 
 Description "Here is checked the use of the keyword gradient_vitesse to visualize to velocity gradient for both VEF and VDF discretizations."
 Description "We will see that the cross terms derivatives are wrong at corners when using VDF discretization, and the reasons will be explained."
