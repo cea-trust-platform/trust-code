@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -104,6 +104,7 @@ public:
 
 
   void calcul_critere_Q(DoubleTab&, const Zone_Cl_VDF&  );
+  void calcul_grad_u(const DoubleTab&, DoubleTab&, const Zone_Cl_VDF&  );
   void calcul_y_plus(DoubleTab&, const Zone_Cl_VDF&  );
 
   DoubleTab& calcul_duidxj(const DoubleTab&, DoubleTab&) const;

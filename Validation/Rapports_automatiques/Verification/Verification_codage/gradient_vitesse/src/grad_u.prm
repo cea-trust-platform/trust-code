@@ -1,0 +1,269 @@
+Parametres {
+author "Stephane Veys"
+Titre "Check velocity gradient postprocessing" 
+Description "Here is checked the use of the keyword gradient_vitesse to visualize to velocity gradient for both VEF and VDF discretizations."
+Description "We will see that the cross terms derivatives are wrong at corners when using VDF discretization, and the reasons will be explained."
+Description "In 2D, the domain is the square \latex_( $ \Omega_{2D} = [0;2] \times [0;2] $ \latex_) and in 3D the domain is the cube \latex_( $ \Omega_{3D} = [0;2] \times [0;2] \times [0;2] $ \latex_)."
+CasTest "." "2D_VDF.data"
+CasTest "." "2D_VEF.data"
+CasTest "." "3D_VDF.data"
+CasTest "." "3D_VEF.data" 
+}
+
+
+
+Chapter {	
+	Title "2D VDF discretization"
+	Description "Let's consider the 2D velocity field \latex_( $ \bold{u} = \left( \begin{matrix} u \\ v \end{matrix} \right) = \left( \begin{matrix} x+2y \\ 1/2~x^2+1/2~y^2 \end{matrix} \right) $ \latex_)"
+	Description "So can write the gradient matrix as following  : "
+	Description " \latex_( $$ \nabla \bold v = \left( \begin{matrix} \partial u / \partial x & \partial u / \partial y \\  \partial v / \partial x & \partial v / \partial y \end{matrix} \right) = \left( \begin{matrix} 1 & 2 \\ x & y \end{matrix} \right) $$  \latex_)"
+
+	Visu {
+		Title "Visualization of \latex_( $ \partial u / \partial x $ \latex_) "
+		pseudocolor 2D_VDF.lata dom DU_DX ELEM
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial u / \partial y $ \latex_) "	
+		pseudocolor 2D_VDF.lata dom DU_DY ELEM
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial v / \partial x $ \latex_) "	
+		pseudocolor 2D_VDF.lata dom DV_DX ELEM
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial v / \partial y $ \latex_) "	
+		pseudocolor 2D_VDF.lata dom DV_DY ELEM
+		cycles 0
+		width 7cm
+	}
+
+}
+
+
+
+Chapter {	
+	Title "2D VEF discretization"
+	Description
+	Description "As for the 2D VDF discretization, let's consider the 2D velocity field \latex_( $ \bold{u} = \left( \begin{matrix} u \\ v \end{matrix} \right) = \left( \begin{matrix} x+2y \\ 1/2~x^2+1/2~y^2 \end{matrix} \right) $ \latex_)"
+	Description "So can write the gradient matrix as following  : "
+	Description " \latex_( $$ \nabla \bold v = \left( \begin{matrix} \partial u / \partial x & \partial u / \partial y \\  \partial v / \partial x & \partial v / \partial y \end{matrix} \right) = \left( \begin{matrix} 1 & 2 \\ x & y \end{matrix} \right) $$  \latex_)"
+	
+	Visu {
+		Title "Visualization of \latex_( $ \partial u / \partial x $ \latex_) "
+		pseudocolor 2D_VEF.lata dom DU_DX ELEM
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial u / \partial y $ \latex_) "	
+		pseudocolor 2D_VEF.lata dom DU_DY ELEM
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial v / \partial x $ \latex_) "	
+		pseudocolor 2D_VEF.lata dom DV_DX ELEM
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial v / \partial y $ \latex_) "	
+		pseudocolor 2D_VEF.lata dom DV_DY ELEM
+		cycles 0
+		width 7cm
+	}
+}
+
+
+
+Chapter {	
+	Title "3D VDF discretization"
+	Description
+	Description "Let's consider the 3D velocity field \latex_( $ \bold{u} = \left( \begin{matrix} u \\ v \\ w \end{matrix} \right) = \left( \begin{matrix} x+2y+3*z \\ 1/2~x^2+1/2~y^2+1/2~z^2 \\ 1/3~x^3+1/3~y^3+1/3~z^3 \end{matrix} \right) $ \latex_)"
+	Description "So can write the gradient matrix as following  : "
+	Description " \latex_( $$ \nabla \bold v = \left( \begin{matrix} \partial u / \partial x & \partial u / \partial y & \partial u / \partial z \\  \partial v / \partial x & \partial v / \partial y & \partial v / \partial z \\ \partial w / \partial x & \partial w / \partial y / & \partial w / \partial z \end{matrix} \right) = \left( \begin{matrix} 1 & 2 & 3 \\ x & y & z \\ x^2 & y^2 & z^2 \end{matrix} \right) $$  \latex_)"
+	Visu {
+		Title "Visualization of \latex_( $ \partial u / \partial x $ \latex_) "
+		pseudocolor 3D_VDF.lata dom DU_DX ELEM
+		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial u / \partial y $ \latex_) "	
+		pseudocolor 3D_VDF.lata dom DU_DY ELEM
+ 		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial u / \partial z $ \latex_) "	
+		pseudocolor 3D_VDF.lata dom DU_DZ ELEM
+ 		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial v / \partial x $ \latex_) "	
+		pseudocolor 3D_VDF.lata dom DV_DX ELEM
+		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial v / \partial y $ \latex_) "	
+		pseudocolor 3D_VDF.lata dom DV_DY ELEM
+		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial v / \partial z $ \latex_) "	
+		pseudocolor 3D_VDF.lata dom DV_DZ ELEM
+		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial w / \partial x $ \latex_) "	
+		pseudocolor 3D_VDF.lata dom DW_DX ELEM
+		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial w / \partial y $ \latex_) "	
+		pseudocolor 3D_VDF.lata dom DW_DY ELEM
+		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial w / \partial z $ \latex_) "	
+		pseudocolor 3D_VDF.lata dom DW_DZ ELEM
+		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+}
+
+
+Chapter {	
+	Title "3D VEF discretization"
+	Description
+	Description "As for the 3D VDF discretization, let's consider the 3D velocity field \latex_( $ \bold{u} = \left( \begin{matrix} u \\ v \\ w \end{matrix} \right) = \left( \begin{matrix} x+2y+3*z \\ 1/2~x^2+1/2~y^2+1/2~z^2 \\ 1/3~x^3+1/3~y^3+1/3~z^3 \end{matrix} \right) $ \latex_)"
+	Description "So can write the gradient matrix as following  : "
+	Description " \latex_( $$ \nabla \bold v = \left( \begin{matrix} \partial u / \partial x & \partial u / \partial y & \partial u / \partial z \\  \partial v / \partial x & \partial v / \partial y & \partial v / \partial z \\ \partial w / \partial x & \partial w / \partial y / & \partial w / \partial z \end{matrix} \right) = \left( \begin{matrix} 1 & 2 & 3 \\ x & y & z \\ x^2 & y^2 & z^2 \end{matrix} \right) $$  \latex_)"
+
+	Visu {
+		Title "Visualization of \latex_( $ \partial u / \partial x $ \latex_) "
+		pseudocolor 3D_VEF.lata dom DU_DX ELEM
+		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial u / \partial y $ \latex_) "	
+		pseudocolor 3D_VEF.lata dom DU_DY ELEM
+ 		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial u / \partial z $ \latex_) "	
+		pseudocolor 3D_VEF.lata dom DU_DZ ELEM
+ 		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial v / \partial x $ \latex_) "	
+		pseudocolor 3D_VEF.lata dom DV_DX ELEM
+		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial v / \partial y $ \latex_) "	
+		pseudocolor 3D_VEF.lata dom DV_DY ELEM
+		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial v / \partial z $ \latex_) "	
+		pseudocolor 3D_VEF.lata dom DV_DZ ELEM
+		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial w / \partial x $ \latex_) "	
+		pseudocolor 3D_VEF.lata dom DW_DX ELEM
+		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial w / \partial y $ \latex_) "	
+		pseudocolor 3D_VEF.lata dom DW_DY ELEM
+		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+	Visu {
+		Title "Visualization of \latex_( $ \partial w / \partial z $ \latex_) "	
+		pseudocolor 3D_VEF.lata dom DW_DZ ELEM
+		normal3D 0.5 0.25 0.5
+		cycles 0
+		width 7cm
+	}
+}
+
+
+Chapter {
+	Title "Explanations"
+	
+	Figure {
+	       Width 8cm
+	       picture ./explanation_duidxj.jpg
+	}
+
+	Description "As we can see on figures, the values of cross terms are wrong at corners of \latex_( $\Omega_{2D}$ \latex_) or \latex_( $\Omega_{3D}$ \latex_) when VDF discretization is considered".
+	Description "In 2D these terms are \latex_( $ \partial u / \partial y $ \latex_) and \latex_( $ \partial v / \partial x $ \latex_) ".
+	Description "In 3D these terms are \latex_( $ \partial u / \partial y $ \latex_), \latex_( $ \partial u / \partial z $ \latex_), \latex_( $ \partial v / \partial x $ \latex_), \latex_( $ \partial v / \partial z $ \latex_), \latex_( $ \partial w / \partial x $ \latex_) and \latex_( $ \partial w / \partial y $ \latex_) ".
+	Description "When the keywork gradient_vitesse is used to postprocess the velocity gradient in VDF, the method Champ_Face::calcul_grad_u is called. This method calls Champ_Face::calcul_duidxj to compute derivatives."
+	Description "To compute cross terms, a loop over vertices in 2D (resp. edges in 3D) is performed, whereas a loop over elements is used to compute other terms."
+	Description "In the following, only the 2D case is considered for simplicity but the reasoning remains valid in 3D."
+	Description ""
+
+
+Description "Let's explain how is computed a derivative and where is it located."
+	Description "On the figure 1, only the first component u of the velocity field computed at the blue point is considered for simplicity. The control volume associated to this unknown is the grey part. "
+	Description "Cross terms, in red on the figure 1, are computed at vertices, whereas other derivatives, in blue on the figure 1, are computed at the center of elements.
+	Description "Cross terms are then interpolated at the center of elements. To compute \latex_( $\partial u/\partial x$ \latex_) at point A, values of \latex_( $u$ \latex_) and  \latex_( $u_L$ \latex_), while  \latex_( $u$ \latex_) and  \latex_( $u_R$ \latex_) are used to compute this \latex_( $\partial u/\partial x$ \latex_) at point C. In the same way, to compute \latex_( $\partial u/\partial y$ \latex_) at point B, \latex_( $u$ \latex_) and  \latex_( $u_T$ \latex_), while  \latex_( $u$ \latex_) and  \latex_( $u_B$ \latex_) are used to compute this \latex_( $\partial u/\partial y$ \latex_) at point D." 
+	Description "Considering one direction for the derivative (for example \latex_( $\partial u/\partial y$ \latex_)), each element has 4 vertices in 2D, or edges in 3D, where are located these derivatives, that is why the contribution of each vertex (resp. edge) is weighted by 0.25."
+	Description ""
+
+	
+	Description "As detected by the visulaization, the problem appears when computing derivatives on vertices located at the corner of the domain. Indeed, when dealing with non-periodic conditions, vertices located at corners don't contribute in the computation of derivatives, that is why at corner elements, cross terms derivatives are under-evaluated."
+	Description "The question that remains outstanding is : how to compute these vertices contribution ?"
+	Description ""
+	Description ""
+
+	
+	Description "First of all, let's have a look on vertices located at boundaries of the domain, how is computed these vertices contribution. As illustrated by the figure 2, an important information is missing to compute \latex_( $\partial u/\partial y$ \latex_). On the boundary we have only access to the second veocity field component at points \latex_( $v_L$ and $v_R$ \latex_). To bypass this problem, we recover the value of the first component using given boundary conditions via Champ_Face::val_imp_face_bord_private. Thanks to this, we get values of the first component of the velocity located at points \latex_( $v_L$ and $v_R$ \latex_), and then an average is performed to have the value of \latex_( $u_T$ \latex_). Now, it is possible to compute  compute \latex_( $\partial u/\partial y$ \latex_) on the boundary using $u$ and \latex_( $u_T$ \latex_)."
+
+
+	Description "Now, let's consider a vertex located on a corner. By restricting us to (only) edges associated to this vertex, it is impossible to compute derivatives. Indeed, we have only access to one value of the field in each direction ( \latex_( $u_0$ and $v_0$ \latex_) on figure 3 ) and the only thing that we can do is approximate components of the velocity field by constant whereas the field is linear, so it is clearly not sufficient !"
+	Description "An idea to compute derivatives at corners is to extend what is done on boundaries. To do that, we need also to consider edges of neighbours to have access to \latex_( $u_1$ and $v_1$ \latex_). By doing this, we can perform an extrapolation to have values of the velocity field at the corner. For the first component we use \latex_( $u_0$ and $u_1$ \latex_) and logically we use \latex_( $v_0$ and $v_1$ \latex_) to deal with the second component. Now, the value of \latex_( $u$ \latex_) at the corner can be deduced by \latex_( $u = u_0+(u_0-u_1)/2$ \latex_). In the same way the value of \latex_( $v$ \latex_) at the corner can be deduced by \latex_( $v = v_0+(v_0-v_1)/2$ \latex_). Then, cross terms can be computed using \latex_( $u$ and $u_0$ \latex_) on the one hand, and \latex_( $v$ and $v_0$ \latex_) on the other hand."
+
+	Description ""
+	Description "Today, the computation of derivatives at corners is not corrected because of lack of time and resources."
+}

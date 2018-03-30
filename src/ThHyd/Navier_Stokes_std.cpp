@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -62,6 +62,7 @@ Navier_Stokes_std::Navier_Stokes_std():methode_calcul_pression_initiale_(0),div_
   champs_compris_.ajoute_nom_compris("courant_maille");
   champs_compris_.ajoute_nom_compris("taux_cisaillement");
   champs_compris_.ajoute_nom_compris("pression_hydrostatique");
+  champs_compris_.ajoute_nom_compris("gradient_vitesse");
 }
 // Description:
 //    Simple appel a:  Equation_base::printOn(Sortie&)
@@ -1500,6 +1501,15 @@ void Navier_Stokes_std::creer_champ(const Motcle& motlu)
         }
     }
 
+  else if (motlu == "gradient_vitesse")
+    {
+      if (!grad_u.non_nul())
+        {
+          const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
+          dis.grad_u(zone_dis(),zone_Cl_dis(),la_vitesse,grad_u);
+          champs_compris_.ajoute_champ(grad_u);
+        }
+    }
 
   if (le_traitement_particulier.non_nul())
     le_traitement_particulier->creer_champ(motlu);
@@ -1538,6 +1548,7 @@ void  Navier_Stokes_std::calculer_pression_hydrostatique(Champ_base& pression_hy
 
 const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
 {
+  Cerr << "[debug steph] Navier_Stokes_std::get_champ "<<nom<<finl;
   REF(Champ_base) ref_champ;
   double temps_init = schema_temps().temps_init();
   if (nom=="gradient_pression") postraitement_gradient_P_=1;
@@ -1587,6 +1598,13 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
   if (nom=="taux_cisaillement")
     {
       Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,Taux_cisaillement.valeur());
+      if (((ch.temps()!=la_vitesse->temps()) || (ch.temps()==temps_init)) && (la_vitesse->mon_equation_non_nul()))
+        ch.mettre_a_jour(la_vitesse->temps());
+      return champs_compris_.get_champ(nom);
+    }
+  if (nom=="gradient_vitesse")
+    {
+      Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base, grad_u.valeur());
       if (((ch.temps()!=la_vitesse->temps()) || (ch.temps()==temps_init)) && (la_vitesse->mon_equation_non_nul()))
         ch.mettre_a_jour(la_vitesse->temps());
       return champs_compris_.get_champ(nom);

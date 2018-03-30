@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1475,4 +1475,25 @@ DoubleVect& Champ_Face::calcul_S_barre(const DoubleTab& vitesse,DoubleVect& SMA_
 
 }
 
+void Champ_Face::calcul_grad_u(const DoubleTab& vitesse, DoubleTab& grad_u, const Zone_Cl_VDF& zone_Cl_VDF)
+{
+  const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
+  const int nb_elem = zone_VDF.nb_elem();
+  const int nb_elem_tot = zone_VDF.nb_elem_tot();
 
+  DoubleTab gradient_elem(nb_elem_tot,dimension,dimension);
+  gradient_elem=0.;
+
+  calcul_duidxj(vitesse,gradient_elem,zone_Cl_VDF);
+
+  for (int elem=0; elem<nb_elem; elem++)
+    {
+      int comp=0;
+      for (int i=0; i<dimension; i++)
+        for(int j=0; j<dimension; j++)
+          {
+            grad_u(elem,comp) = gradient_elem(elem,i,j);
+            comp++;
+          }
+    }
+}

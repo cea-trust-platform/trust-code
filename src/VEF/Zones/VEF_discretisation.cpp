@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,6 +28,7 @@
 #include <Critere_Q_Champ_P1NC.h>
 #include <Y_plus_Champ_P1NC.h>
 #include <grad_T_Champ_P1NC.h>
+#include <grad_U_Champ_P1NC.h>
 #include <h_conv_Champ_P1NC.h>
 #include <Rotationnel_Champ_Q1NC.h>
 #include <Taux_cisaillement_P0_VEF.h>
@@ -597,6 +598,49 @@ void VEF_discretisation::y_plus(const Zone_dis& z,const Zone_Cl_dis& zcl,const C
   ch_yp.fixer_unite("adimensionnel");
   ch_yp.changer_temps(ch_vitesse.temps());
 }
+
+void VEF_discretisation::grad_u(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+{
+
+  const Champ_P1NC& vit = ref_cast( Champ_P1NC, ch_vitesse.valeur( ) );
+  const Zone_VEF& zone_vef=ref_cast( Zone_VEF, z.valeur( ) );
+  const int nb_comp = dimension*dimension;
+  const Zone_Cl_VEF& zone_cl_vef=ref_cast( Zone_Cl_VEF, zcl.valeur( ) );
+  ch.typer("grad_u_Champ_P1NC");
+  grad_U_Champ_P1NC& ch_grad_u=ref_cast( grad_U_Champ_P1NC, ch.valeur( ) );
+  ch_grad_u.fixer_nature_du_champ( vectoriel );
+  ch_grad_u.associer_zone_dis_base( zone_vef );
+  ch_grad_u.associer_zone_Cl_dis_base( zone_cl_vef );
+  ch_grad_u.associer_champ( vit );
+  ch_grad_u.nommer("gradient_vitesse");
+  ch_grad_u.fixer_nb_comp( nb_comp );
+  ch_grad_u.fixer_nb_valeurs_nodales( zone_vef.nb_elem( ) );
+  ch_grad_u.fixer_unite("s-1");
+  ch_grad_u.changer_temps( ch_vitesse.temps( ) );
+
+
+  if (dimension == 2)
+    {
+      ch_grad_u.fixer_nom_compo(0,"dUdX"); // du/dx
+      ch_grad_u.fixer_nom_compo(1,"dUdY"); // du/dy
+      ch_grad_u.fixer_nom_compo(2,"dVdX"); // dv/dx
+      ch_grad_u.fixer_nom_compo(3,"dVdY"); // dv/dy
+    }
+  else
+    {
+      ch_grad_u.fixer_nom_compo(0,"dUdX"); // du/dx
+      ch_grad_u.fixer_nom_compo(1,"dUdY"); // du/dy
+      ch_grad_u.fixer_nom_compo(2,"dUdZ"); // du/dz
+      ch_grad_u.fixer_nom_compo(3,"dVdX"); // dv/dx
+      ch_grad_u.fixer_nom_compo(4,"dVdY"); // dv/dy
+      ch_grad_u.fixer_nom_compo(5,"dVdZ"); // dv/dz
+      ch_grad_u.fixer_nom_compo(6,"dWdX"); // dw/dx
+      ch_grad_u.fixer_nom_compo(7,"dWdY"); // dw/dy
+      ch_grad_u.fixer_nom_compo(8,"dWdZ"); // dw/dz
+    }
+
+}
+
 
 void VEF_discretisation::grad_T(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_temperature, Champ_Fonc& ch) const
 {

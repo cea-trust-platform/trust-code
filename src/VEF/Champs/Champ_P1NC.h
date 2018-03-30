@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -66,6 +66,7 @@ public :
   void calcul_critere_Q(DoubleVect&) const;
   void calcul_y_plus(const Zone_Cl_VEF& , DoubleVect&) const;
   void calcul_grad_T(const Zone_Cl_VEF& , DoubleTab&) const;
+  void calcul_grad_U(const Zone_Cl_VEF& , DoubleTab&) const;
   ////void calcul_h_conv(const Zone_Cl_VEF& , DoubleTab&);
   void calcul_h_conv(const Zone_Cl_VEF& , DoubleTab&, int temp_ref) const;
 

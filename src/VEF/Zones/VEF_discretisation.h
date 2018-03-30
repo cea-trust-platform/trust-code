@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -79,6 +79,7 @@ public :
   void critere_Q(const Zone_dis& z,const Zone_Cl_dis&,const Champ_Inc& vitesse, Champ_Fonc& ch) const;
   void y_plus(const Zone_dis& z,const Zone_Cl_dis&,const Champ_Inc& vitesse, Champ_Fonc& ch) const;
   void grad_T(const Zone_dis& z,const Zone_Cl_dis&,const Champ_Inc& temperature, Champ_Fonc& ch) const;
+  void grad_u(const Zone_dis& z,const Zone_Cl_dis&,const Champ_Inc& temperature, Champ_Fonc& ch) const;
   void h_conv(const Zone_dis& z,const Zone_Cl_dis&,const Champ_Inc& temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const;
   void taux_cisaillement(const Zone_dis&, const Zone_Cl_dis&,const Champ_Inc&, Champ_Fonc&) const;
 
