@@ -122,7 +122,8 @@ cd \${projet}
 done
 # echo "pwd;ls" >> configure.sh
 #echo "./configure; ./configure" >> configure.sh # avec cmake 3.8.2, necessaire quand il y a un pre requis a compiler (ex Fedora 26)
-echo "./configure" >> configure.sh
+echo "./configure; ./configure" >> configure.sh # COSUIV 30/03/2018 a la demande du RPL TRUST et applications
+#echo "./configure" >> configure.sh
 
 
 #echo "./configure && make $MODE" >> make.sh # ajout du configure, necessaire quand il a un pre_configure (ex -std=c++0x)
