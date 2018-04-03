@@ -346,6 +346,8 @@
  Gmres SolvElem_Gmres SolvElem_Gmres.h
  Gradient Champ_Generique_Gradient Champ_Generique_Gradient.h
  gradient_temperature_Champ_P1NC grad_T_Champ_P1NC grad_T_Champ_P1NC.h
+ grad_U_Champ_Face grad_U_Champ_Face grad_U_Champ_Face.h
+ grad_U_Champ_P1NC grad_U_Champ_P1NC grad_U_Champ_P1NC.h
  Gravite_VDF_Face Terme_Gravite_VDF_Face Terme_Gravite_VDF_Face.h
  Hexaedre Hexaedre Hexaedre.h
  Hexaedre_axi Hexaedre_axi Hexaedre_axi.h
