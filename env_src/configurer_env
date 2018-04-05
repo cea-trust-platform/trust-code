@@ -894,9 +894,6 @@ compiler_found=1
 ######################################################################
 e="`cherche_file cmake cmake`";eval $e
 CMAKE_VERSION_OK=`$cmake --version 2>&1 | awk '/cmake version/ {split($3,a,".");v=a[1]*100+a[2]*10+a[3];print (v>=352?1:0)}'`
-# 16/02/2018 : Probleme de configure sur baltik avec lib si cmake 3.8.2 vu sur Fedora 26
-#[ "$CMAKE_VERSION_OK" == 1 ] && CMAKE_VERSION_OK=`$cmake --version 2>&1 | awk '/cmake version/ {split($3,a,".");v=a[1]*100+a[2]*10+a[3];print (v!=382?1:0)}'`
-#if [ "$CMAKE_VERSION_OK" != 1 ] || [ "`grep 'OS for the machine' $TRUST_ROOT/env/machine.env`" = "# OS for the machine : Fedora release 26 (Twenty Six)" ]
 if [ "$CMAKE_VERSION_OK" != 1 ]
 then
   if [ $TRUST_ARCH = cygwin ]
