@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -254,7 +254,6 @@ void Op_Dift_VEF_Face::ajouter_cas_scalaire(const DoubleVect& inconnue,
   const IntTab& face_voisins = zone_VEF.face_voisins();
   int i,j,num_face;
   int nb_faces = zone_VEF.nb_faces();
-  int elem,elem1,elem2;
   int nb_faces_elem = zone_VEF.zone().nb_faces_elem();
   double valA, d_nu;
   int nb_front=zone_VEF.nb_front_Cl();
@@ -288,35 +287,22 @@ void Op_Dift_VEF_Face::ajouter_cas_scalaire(const DoubleVect& inconnue,
               fac_asso = le_bord.num_face(fac_asso);
               num_face = le_bord.num_face(ind_face);
               marq(num_face)=fac_asso;
-              elem1 = face_voisins(num_face,0);
-              d_nu = nu(elem1)+nu_turb(elem1);
-              for (i=0; i<nb_faces_elem; i++)
+              for (int kk=0; kk<2; kk++)
                 {
-                  if ( ( (j= elem_faces(elem1,i)) > num_face ) && (j != fac_asso) )
+                  int elem = face_voisins(num_face,kk);
+                  d_nu = nu(elem)+nu_turb(elem);
+                  for (i=0; i<nb_faces_elem; i++)
                     {
-                      valA = viscA(num_face,j,elem1,d_nu);
-                      resu(num_face)+=valA*inconnue(j);
-                      resu(num_face)-=valA*inconnue(num_face);
-                      if(j<nb_faces) // face reelle
+                      if ( ( (j= elem_faces(elem,i)) > num_face ) && (j != fac_asso) )
                         {
-                          resu(j)+=0.5*valA*inconnue(num_face);
-                          resu(j)-=0.5*valA*inconnue(j);
-                        }
-                    }
-                }
-              elem2 = face_voisins(num_face,1);
-              d_nu = nu(elem2)+nu_turb(elem2);
-              for (i=0; i<nb_faces_elem; i++)
-                {
-                  if ( ( (j= elem_faces(elem2,i)) > num_face ) && ( j != fac_asso ) )
-                    {
-                      valA = viscA(num_face,j,elem2,d_nu);
-                      resu(num_face)+=valA*inconnue(j);
-                      resu(num_face)-=valA*inconnue(num_face);
-                      if(j<nb_faces) // face reelle
-                        {
-                          resu(j)+=0.5*valA*inconnue(num_face);
-                          resu(j)-=0.5*valA*inconnue(j);
+                          valA = viscA(num_face,j,elem,d_nu);
+                          resu(num_face)+=valA*inconnue(j);
+                          resu(num_face)-=valA*inconnue(num_face);
+                          if(j<nb_faces) // face reelle
+                            {
+                              resu(j)+=0.5*valA*inconnue(num_face);
+                              resu(j)-=0.5*valA*inconnue(j);
+                            }
                         }
                     }
                 }
@@ -367,7 +353,7 @@ void Op_Dift_VEF_Face::ajouter_cas_scalaire(const DoubleVect& inconnue,
                           double bon_gradient=0.; // c'est la norme du gradient de temperature normal a la paroi calculee a l'aide de la loi de paroi.
                           le_mauvais_gradient=0.;
                           num_face = le_bord.num_face(ind_face);
-                          elem1 = face_voisins(num_face,0);
+                          int elem1 = face_voisins(num_face,0);
                           if(elem1==-1) elem1 = face_voisins(num_face,1);
                           double surface_face=zone_VEF.face_surfaces(num_face);
                           double surface_pond;
@@ -433,7 +419,7 @@ void Op_Dift_VEF_Face::ajouter_cas_scalaire(const DoubleVect& inconnue,
           for (int ind_face=num1; ind_face<num2; ind_face++)
             {
               num_face = le_bord.num_face(ind_face);
-              elem1 = face_voisins(num_face,0);
+              int elem1 = face_voisins(num_face,0);
               d_nu = nu(elem1)+nu_turb(elem1);
               for (i=0; i<nb_faces_elem; i++)
                 {
@@ -465,7 +451,7 @@ void Op_Dift_VEF_Face::ajouter_cas_scalaire(const DoubleVect& inconnue,
     {
       for (int kk=0; kk<2; kk++)
         {
-          elem = face_voisins(num_face,kk);
+          int elem = face_voisins(num_face,kk);
           d_nu = nu(elem)+nu_turb(elem);
           for (i=0; i<nb_faces_elem; i++)
             {
@@ -709,7 +695,6 @@ void Op_Dift_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
   const IntTab& face_voisins = zone_VEF.face_voisins();
   int i,j,num_face;
   int nb_faces = zone_VEF.nb_faces();
-  int elem,elem1,elem2;
   int nb_faces_elem = zone_VEF.zone().nb_faces_elem();
   double valA, d_nu;
   int nb_front=zone_VEF.nb_front_Cl();
@@ -740,40 +725,24 @@ void Op_Dift_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
               fac_asso = le_bord.num_face(fac_asso);
               num_face = le_bord.num_face(ind_face);
               marq(num_face)=fac_asso;
-              elem1 = face_voisins(num_face,0);
-              for (i=0; i<nb_faces_elem; i++)
+              for (int kk=0; kk<2; kk++)
                 {
-                  if ( ( (j= elem_faces(elem1,i)) > num_face ) && (j != fac_asso) )
+                  int elem = face_voisins(num_face,kk);
+                  for (i=0; i<nb_faces_elem; i++)
                     {
-                      for (int nc=0; nc<nb_comp; nc++)
+                      if ( ( (j= elem_faces(elem,i)) > num_face ) && (j != fac_asso) )
                         {
-                          d_nu = nu(elem1,nc)+nu_turb(elem1);
-                          valA = viscA(num_face,j,elem1,d_nu);
-                          resu(num_face,nc)+=valA*inconnue(j,nc);
-                          resu(num_face,nc)-=valA*inconnue(num_face,nc);
-                          if(j<nb_faces) // face reelle
+                          for (int nc=0; nc<nb_comp; nc++)
                             {
-                              resu(j,nc)+=0.5*valA*inconnue(num_face,nc);
-                              resu(j,nc)-=0.5*valA*inconnue(j,nc);
-                            }
-                        }
-                    }
-                }
-              elem2 = face_voisins(num_face,1);
-              for (i=0; i<nb_faces_elem; i++)
-                {
-                  if ( ( (j= elem_faces(elem2,i)) > num_face ) && ( j != fac_asso ) )
-                    {
-                      for (int nc=0; nc<nb_comp; nc++)
-                        {
-                          d_nu = nu(elem2,nc)+nu_turb(elem2);
-                          valA = viscA(num_face,j,elem2,d_nu);
-                          resu(num_face,nc)+=valA*inconnue(j,nc);
-                          resu(num_face,nc)-=valA*inconnue(num_face,nc);
-                          if(j<nb_faces) // face reelle
-                            {
-                              resu(j,nc)+=0.5*valA*inconnue(num_face,nc);
-                              resu(j,nc)-=0.5*valA*inconnue(j,nc);
+                              d_nu = nu(elem,nc)+nu_turb(elem);
+                              valA = viscA(num_face,j,elem,d_nu);
+                              resu(num_face,nc)+=valA*inconnue(j,nc);
+                              resu(num_face,nc)-=valA*inconnue(num_face,nc);
+                              if(j<nb_faces) // face reelle
+                                {
+                                  resu(j,nc)+=0.5*valA*inconnue(num_face,nc);
+                                  resu(j,nc)-=0.5*valA*inconnue(j,nc);
+                                }
                             }
                         }
                     }
@@ -817,7 +786,7 @@ void Op_Dift_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
                               double bon_gradient=0.; // c'est la norme du gradient de temperature normal a la paroi calculee a l'aide de la loi de paroi.
                               le_mauvais_gradient=0.;
                               num_face = le_bord.num_face(ind_face);
-                              elem1 = face_voisins(num_face,0);
+                              int elem1 = face_voisins(num_face,0);
                               if(elem1==-1) elem1 = face_voisins(num_face,1);
                               double surface_face=zone_VEF.face_surfaces(num_face);
                               double surface_pond;
@@ -884,7 +853,7 @@ void Op_Dift_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
           for (int ind_face=num1; ind_face<num2; ind_face++)
             {
               num_face = le_bord.num_face(ind_face);
-              elem1 = face_voisins(num_face,0);
+              int elem1 = face_voisins(num_face,0);
               for (i=0; i<nb_faces_elem; i++)
                 {
                   if (( (j= elem_faces(elem1,i)) > num_face ) || (ind_face>=nb_faces_bord_reel))
@@ -918,7 +887,7 @@ void Op_Dift_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
     {
       for (int kk=0; kk<2; kk++)
         {
-          elem = face_voisins(num_face,kk);
+          int elem = face_voisins(num_face,kk);
           for (i=0; i<nb_faces_elem; i++)
             {
               if ( (j= elem_faces(elem,i)) > num_face )
