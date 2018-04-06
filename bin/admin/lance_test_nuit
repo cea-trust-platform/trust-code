@@ -48,19 +48,19 @@ check_components()
 	    if [ "$Composant" = basic ]
 	    then
 	       make_option="make check_trust_optim"
-	    elif [ "$Composant" = polymac ] || [ "$Composant" = mathys ]
-	    then
-	       make_option=" " # cce provisoire PolyMAC KO avec check_all_optim car AG test new Op ; revoir check ICoCo avec MATHYS
-	    elif [ "$Composant" = ijk ] || [ "$Composant" = triomc ]
-	    then
-	       make_option="make check_optim" # cce provisoire ijk sans FTD et triomc sans polymac
+	    #elif [ "$Composant" = ijk ]
+	    #then
+	    #   make_option="make check_optim"
+	    #elif [ "$Composant" = mathys ]
+	    #then
+	    #   make_option=""
 	    elif [ $* = sourceforge/Kernel ]
 	    then
 	       make_option="make check_all_optim check_trust_optim"
 	    elif [ $TRUST_ROOT = $TRUST_ROOT_MASTER ]
 	    then
-	       # Test debug tous les jours sur Template, Tuto, ICoCo, PolyMAC et MPCube
-	       if [ "$Composant" != Test_Baltik ] && [ "$Composant" != TrioCFD ] && [ "$Composant" != ijk ] && [ "$Composant" != polymac ] && [ "$Composant" != triomc ] && [ "$Composant" != mathys ]
+	       # Test debug tous les jours sur Template, Tuto, ICoCo, TrioMC, MPCube, Genepi3 et Flica5
+	       if [ "$Composant" != Test_Baltik ] && [ "$Composant" != TrioCFD ] && [ "$Composant" != ijk ] && [ "$Composant" != polymac ] && [ "$Composant" != mathys ]
 	       then
 	          make_option="make check_all_optim check_all_debug"
 	       fi
@@ -97,11 +97,12 @@ check_components()
 	       make gui 1>$Gui_log 2>&1 && echo $Composant"_Reference_Manual.pdf OK" && DOC_PDF_OK=1
 	       grep "Error" $Gui_log
 	       [ "`grep "Error" $Gui_log`" != "" ] && DOC_PDF_OK=0 && echo DOC_PDF_OK=0
-	       if [ "$Composant" != polymac ] && [ "$Composant" != triomc ] && [ "$Composant" != mathys ] && [ "$Composant" != ijk ] && ([ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 17 ])) # cce provisoire
+	       if [ "$Composant" != polymac ] && [ "$Composant" != triomc ] && [ "$Composant" != mathys ] && [ "$Composant" != Test_Baltik ]
 	       then
-	          [ "$Composant" != Test_Baltik ] && make check_gui 1>>$Gui_log 2>&1 &
+	          #[ "$Composant" != ijk ] && ([ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 17 ])) && make check_gui 1>>$Gui_log 2>&1 &
+	          ([ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 17 ])) && make check_gui 1>>$Gui_log 2>&1 &
+	          make doxygen 1>$Doc_log 2>&1
 	       fi
-	       [ "$Composant" != Test_Baltik ] && make doxygen 1>$Doc_log 2>&1 &
 	    fi
             echo " "
             echo "******************************************************"
@@ -141,28 +142,28 @@ check_components()
                echo " "
 	       echo "  See `pwd`/Run.liste"
 	       # Machines en mode debug
-	       debug_machines=`liste_machines "\-g " | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
+	       debug_machines=`liste_machines "\-g "` # | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Machines en mode avx
-	       avx_machines=`liste_machines "\-avx" | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
+	       avx_machines=`liste_machines "\-avx"` # | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Machines en mode valgrind
-	       valgrind_machines=`liste_machines "\-check-valgrind" | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
+	       valgrind_machines=`liste_machines "\-check-valgrind"` # | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Machines en mode gui
-	       gui_machines=`liste_machines "\-gui" | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
+	       gui_machines=`liste_machines "\-gui"` # | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Machines en mode check trust
-	       trust_machines=`liste_machines "\-platform" | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
+	       trust_machines=`liste_machines "\-platform"` # | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Clusters
-	       updated_machines=`liste_machines limited | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
+	       updated_machines=`liste_machines limited ` #| awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Test compilation
-	       unruned_machines=`liste_machines "\-without_run" | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
+	       unruned_machines=`liste_machines "\-without_run"` # | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Machines cible pour la sortie de version
-	       cible_machines=`liste_machines cible | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
-	       cible_machines=$cible_machines" "`liste_machines get_binary | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
+	       cible_machines=`liste_machines cible` # | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
+	       cible_machines=$cible_machines" "`liste_machines get_binary` # | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Toutes les machines
 	       all_machines=`liste_machines`
 	       # Machines en test build64
-	       build64_machines=`liste_machines "\-build64" | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
+	       build64_machines=`liste_machines "\-build64"` # | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Machines sur lesquelles on ne garde pas la compilation des baltiks
-	       non_machines=`liste_machines non | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
+	       non_machines=`liste_machines non` # | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Liste des machines a tester selon le baltik en question
 	       if [ "$Composant" = Test_Baltik ] || [ "$Composant" = basic ]
 	       then
@@ -173,6 +174,7 @@ check_components()
 	          wompi_machines=`liste_machines "\-disable-mpi"`
 	          wompi_machines=$wompi_machines" `liste_machines "\-disable-optionals"`"
 	          wompi_machines=$wompi_machines" `liste_machines "\-disable "`"
+	          wompi_machines=$wompi_machines" `liste_machines "\-disable-med "`"
 	          wompi_machines=$wompi_machines" `liste_machines "\-disable-medcoupling"`"
 	          # Machines en mode parallele
 		  machines=""
@@ -212,7 +214,7 @@ check_components()
 	       fi
 	       for adr in $machines
 	       do
-	          machine=`echo $adr | awk -F"." '{print $1}' | awk -F"-gw" '{print $1}'`
+	          machine=`echo $adr` # | awk -F"." '{print $1}' | awk -F"-gw" '{print $1}'`
 	          if [[ "$build64_machines" != *"$machine"* ]] # Test si machine n est pas dans la liste des machines build64 (test actuel uniquement sur TRUST)
 		  then
 	             liste_options="--with-efface-dir-before"
@@ -221,8 +223,8 @@ check_components()
 	                if [[ "$valgrind_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines valgrind
 		        then
 		           valgrind_option="--with-valgrind"
-			   # Test en valgrind seulement le vendredi car ne passe pas en une nuit sauf tous les jours sur Template, Tuto, ICoCo, PolyMAC et MPCube
-			   if [ "$Composant" = Test_Baltik ] || [ "$Composant" = TrioCFD ] || [ "$Composant" = ijk ] || [ "$Composant" = polymac ] || [ "$Composant" = triomc ] || [ "$Composant" = mathys ] || [ "$Composant" = Genepi3 ]
+			   # Test en valgrind seulement le vendredi car ne passe pas en une nuit sauf tous les jours sur Template, Tuto, ICoCo, PolyMAC, MPCube et Flica5
+			   if [ "$Composant" = Test_Baltik ] || [ "$Composant" = TrioCFD ] || [ "$Composant" = ijk ] || [ "$Composant" = triomc ] || [ "$Composant" = mathys ] || [ "$Composant" = Genepi3 ]
 			   then
 			      if [ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 17 ])
 			      then
@@ -237,7 +239,7 @@ check_components()
 	                if [[ "$gui_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines gui
 		        then
 		           mode_option="--with-mode=gui"
-	                elif [[ "$debug_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines debug
+	                elif [[ "$debug_machines" = *"$adr"* ]] # Test si machine est dans la liste des machines debug
 		        then
 		           mode_option="--with-mode=debug"
 			   # pas de valgrind en mode debug
@@ -248,7 +250,7 @@ check_components()
 		              mode_option="--with-mode=debug"
 			   fi
 			   # Test en debug seulement le vendredi car ne passe pas en une nuit
-			   if [ "$Composant" = TrioCFD ] || [ "$Composant" = ijk ]
+			   if [ "$Composant" = TrioCFD ]
 			   then
 			      if [ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 17 ])
 			      then
@@ -265,7 +267,7 @@ check_components()
 		        fi
 	                if [[ "$gui_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines gui
 		        then
-	                   if [ "$Composant" = polymac ] || [ "$Composant" = triomc ] || [ "$Composant" = mathys ]
+	                   if [ "$Composant" = polymac ] || [ "$Composant" = triomc ] || [ "$Composant" = mathys ] #|| [ "$Composant" = ijk ]
 			   then
 	                      check_option="--without-run"
 			   else
@@ -277,25 +279,22 @@ check_components()
 			   [[ "$unruned_machines" = *"$machine"* ]] && check_option="--without-run"
 		           if [[ "$updated_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines updated
 		           then
-	                      #if [ "$Composant" = Test_Baltik ] || [ "$Composant" = TrioCFD ] || [ "$Composant" = ijk ] || [ "$Composant" = polymac ] || [ "$Composant" = triomc ] || [ "$Composant" = mathys ]
-			      #then
-			         if [ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 17 ])
-			         then
-		                    check_option="--check-all"
-			         else
-		                    check_option="--without-run"
-			         fi
-	                         liste_options="--with-efface-dir-before"
-			      #fi
+			      if [ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 17 ])
+			      then
+		                 check_option="--check-all"
+			      else
+		                 check_option="--without-run"
+			      fi
+	                      liste_options="--with-efface-dir-before"
 			   fi
-	                   if [ "$Composant" = ijk ] || [ "$Composant" = triomc ]
-                           then
-		              check_option="" # cce provisoire
-			   fi
-			   if [ "$Composant" = polymac ] || [ "$Composant" = mathys ]
-			   then
-		              check_option="--without-run" # cce provisoire
-                           fi
+	                   #if [ "$Composant" = ijk ]
+                           #then
+		           #   check_option=""
+			   #fi
+	                   #if [ "$Composant" = mathys ]
+                           #then
+		           #   check_option="--without-run"
+			   #fi
 	                fi
 	                if [[ "$non_machines" = *"$machine"* ]] # Test si machine n est pas dans la liste des machines cible, get_binary et tache
 		        then
@@ -303,8 +302,9 @@ check_components()
 	                fi
 	                if [[ "$cible_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines cible
 		        then
-		           [ "$Composant" != polymac ] && liste_options=$liste_options" --cible" # cce provisoire
+		           liste_options=$liste_options" --cible"
 	                fi
+	                machine=`echo $adr | awk -F"." '{print $1}' | awk -F"-gw" '{print $1}'`
                         log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`
 		        WORKTMP=`ssh_ -o BatchMode=yes $log@$adr -n 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
                         echo "$Composant.tar $WORKTMP/$WORKBASE$machine/Composants/$Composant $log@$adr --with-TRUST=$WORKTMP/$WORKBASE$machine/TRUST $liste_options $mode_option $check_option $valgrind_option" >> Run.liste
@@ -361,7 +361,7 @@ git_push()
 	    then
                git push $repo $git_branch 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST error for git push $repo $git_branch\" $TRUST_MAIL
 	    else
-               git push $repo $git_branch":TMA" 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST error for git push $repo TMA\" $TRUST_MAIL
+               git push $repo $git_branch":triou/TMA" 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST error for git push $repo TMA\" $TRUST_MAIL
 	    fi
          else
             git push --force $repo $git_branch 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST error for git push force $repo $git_branch\" $TRUST_MAIL
@@ -373,7 +373,7 @@ git_push()
 	    then
                git push --tags $repo $git_branch 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST error for git push tags $repo $git_branch\" $TRUST_MAIL
 	    else
-               git push --tags $repo $git_branch":TMA" 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST error for git push tags $repo TMA\" $TRUST_MAIL
+               git push --tags $repo $git_branch":triou/TMA" 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST error for git push tags $repo TMA\" $TRUST_MAIL
 	    fi
          else
             git push --force --tags $repo $git_branch 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST error for git push force tags $repo $git_branch\" $TRUST_MAIL
@@ -609,7 +609,7 @@ echo>>$liste_log
 # med-3.0.7 sans doc et sans python (taille passe de 162M a 19M)
 # med-3.2.1 sans doc (taille passe de 45M a 17M)
 # osu-micro-benchmarks-3.8 version initiale non retrouvee
-nb_error=`grep "FAILED" $liste_log | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.3.1 | grep -v osu-micro-benchmarks-3.8 | grep -v medcoupling-8.4.0 | wc -l` # cce provisoire
+nb_error=`grep "FAILED" $liste_log | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.3.1 | grep -v osu-micro-benchmarks-3.8 | grep -v medcoupling-8.4.0 | wc -l`
 # les 3 paquets suivants sont sous http://downloads.sourceforge.net/project/trust-platform/X.Y.Z/extra/
 # medcoupling-7.8.0.tar.gz
 # hypre-2.10.0b-p2-TRUST.tar.gz
@@ -621,7 +621,7 @@ then
    # med-3.0.7 sans doc et sans python (taille passe de 162M a 19M)
    # osu-micro-benchmarks-3.8 version initiale non retrouvee
    #liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.2.1 | grep -v osu-micro-benchmarks-3.8 | grep -v medcoupling-7.8.0 | grep -v hypre-2.10.0b-p2-TRUST | grep -v CURVEPLOT | grep -v nvc_get_devices`
-   liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.3.1 | grep -v osu-micro-benchmarks-3.8 | grep -v medcoupling-8.4.0` # cce provisoire
+   liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.3.1 | grep -v osu-micro-benchmarks-3.8 | grep -v medcoupling-8.4.0`
    cd $TRUST_ROOT/build/bin/gestion_externalpackages/Test
    rm -r -f old new
    for package in $liste_failed
@@ -757,7 +757,7 @@ fi
    git_push -tags
    cd $TRUST_ROOT/externalpackages
    echo " git push shared TMA in `pwd`"
-   git push --tags shared Livraison:TMA 1>tmp.log 2>&1
+   git push --tags shared Livraison:triou/TMA 1>tmp.log 2>&1
    cat tmp.log
    [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] externalpackages git push shared TMA\" -c $TRUST_MAIL $TMA_PROJECT_LEADER
    rm tmp.log 1>/dev/null 2>&1
@@ -771,12 +771,12 @@ fi
       if [ "$Composant" != mathys ] 
       then
          echo " git push shared TMA in `pwd`"
-         git push --tags shared Livraison:TMA 1>tmp.log 2>&1
+         git push --tags shared Livraison:triou/TMA 1>tmp.log 2>&1
          cat tmp.log
          [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push shared TMA\" -c $TRUST_MAIL $TMA_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
       else
          echo " git push origin TMA in `pwd`"
-         git push --tags origin Livraison:TMA 1>tmp.log 2>&1
+         git push --tags origin Livraison:triou/TMA 1>tmp.log 2>&1
          cat tmp.log
          [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push origin TMA\" -c $TRUST_MAIL $TMA_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
       fi
@@ -788,7 +788,7 @@ fi
       cd $WORKDIR/tuleap/Livraison/Composants/$Composant
       BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
       echo " git push origin TMA in `pwd`"
-      git push --tags origin Livraison:TMA 1>tmp.log 2>&1
+      git push --tags origin Livraison:triou/TMA 1>tmp.log 2>&1
       cat tmp.log
       [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push origin TMA\" -c $TRUST_MAIL $TMA_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
       rm tmp.log 1>/dev/null 2>&1
@@ -2356,7 +2356,7 @@ do
          [ ! $valgrind_leak = 0 ] && echo "    See $Build/casmem_$machine" #&& cat $Build/casmem_$machine
          if [ ${#valgrind_err} = 0 ] || [ $valgrind_err -gt $valgrind_max ]
          then
-            valgrind=0 
+            valgrind=0
 	    # Envoi d'un mail pour prevenir immediatement
 	    cat $Build/caserr_$machine $Build/casmem_$machine >> $TRUST_TMP/cas
 	    if [ -s $TRUST_TMP/cas ]
@@ -2394,7 +2394,7 @@ do
 	    echo $machine >> tmp.log
             grep " CORE " $PROJECT_ROOT/*$Composant*$machine.*make_check.log | awk -F"|" '{print $NF}' >> tmp.log
             echo " " >> tmp.log
-	    valgrind=0
+            valgrind=0
 	 fi
       fi
       rm list.log
@@ -3367,7 +3367,7 @@ fi
 [ -s $TRUST_ROOT/build/doc/doxygen*.err ] && validation_doxygen=0 && echo "TRUST Doxygen KO" && cat $TRUST_ROOT/build/doc/doxygen*.err | mail_ -s\"[lance_test_nuit] Validation of TRUST Doxygen documentation KO\" -c $TRUST_MAIL $TMA_PROJECT_LEADER
 for Composant in $Composants
 do
-   if [ "$Composant" != Test_Baltik ]
+   if [ "$Composant" != polymac ] && [ "$Composant" != triomc ] && [ "$Composant" != mathys ] && [ "$Composant" != Test_Baltik ] #&& [ "$Composant" != ijk ]
    then
       echo " "
       echo "Search of $TRUST_ROOT/../Composants/$Composant/build/doxygen*.err file"
@@ -3492,7 +3492,7 @@ then
       git tag $label_pose
       error_rc=$?
       echo "    Call git push shared TMA"
-      git push --tags shared Livraison:TMA
+      git push --tags shared Livraison:triou/TMA
       if [ $error_rc = 0 ]
       then  
          # On previent l'administrateur et le project leader
@@ -3530,11 +3530,11 @@ then
          if [ "$Composant" != mathys ] 
          then
             echo "    Call git push shared TMA"
-            git push --tags shared Livraison:TMA
+            git push --tags shared Livraison:triou/TMA
             error_rcb=$?
 	 else
             echo "    Call git push origin TMA"
-            git push --tags origin Livraison:TMA
+            git push --tags origin Livraison:triou/TMA
             error_rcb=$?
 	 fi
          if [ $error_rcb = 0 ]
@@ -3573,7 +3573,7 @@ then
          git tag $label_pose
          error_rcb=$?
          echo "    Call git push origin TMA"
-         git push --tags origin Livraison:TMA
+         git push --tags origin Livraison:triou/TMA
          error_rcb=$?
          if [ $error_rcb = 0 ]
          then  
@@ -3648,14 +3648,14 @@ then
 	 echo "  Call git tag $label at "`date`
          git tag $label
          echo "  Call git push shared TMA"
-         git push --tags shared Livraison:TMA
+         git push --tags shared Livraison:triou/TMA
          #echo "  Call git push shared master"
          #git push --tags shared Livraison:master
 	 # On pose le meme tag sur externalpackages
          cd externalpackages
          git commit --all -m"Commit for an official Release $label version."
          git tag $label_pose
-         git push --tags shared Livraison:TMA
+         git push --tags shared Livraison:triou/TMA
          git tag $label
 	 #git push --tags ssh://triou@sedna${TRUST_GIT_REPOS%TRUST}externalpackages Livraison:master
          #git push --tags shared Livraison:master
@@ -3733,9 +3733,9 @@ then
             git commit --all -m"Commit for an official Release $label version."
             echo "    Call git push shared TMA"
 	    git tag $label_pose
-            git push --tags shared Livraison:TMA
+            git push --tags shared Livraison:triou/TMA
 	    echo "    Call git tag $label"
-            if [ "$Composant" != triomc ] 
+            if [ "$Composant" != mathys ] && [ "$Composant" != triomc ] && [ "$Composant" != polymac ]
             then
                git tag $label
             else
@@ -3758,7 +3758,7 @@ then
 	       cd $WORKDIR/sourceforge/Livraison/Composants/$Composant
 	       echo "from `pwd`"
 	       git fetch --all
-	       if [ "$Composant" != triomc ] 
+	       if [ "$Composant" != mathys ] && [ "$Composant" != triomc ] && [ "$Composant" != polymac ]
                then
 	          git checkout -b $patch_new $label
                else
@@ -3786,9 +3786,9 @@ then
             git commit --all -m"Commit for an official Release $label version."
             echo "    Call git push origin TMA"
 	    git tag $label_pose
-            git push --tags origin Livraison:TMA
+            git push --tags origin Livraison:triou/TMA
 	    echo "    Call git tag $label"
-            if [ "$Composant" != triomc ] 
+            if [ "$Composant" != mathys ] && [ "$Composant" != triomc ] && [ "$Composant" != polymac ]
             then
                git tag $label
             else
@@ -3809,7 +3809,7 @@ then
 	       cd $WORKDIR/sourceforge/Livraison/Composants/$Composant
 	       echo "from `pwd`"
 	       git fetch --all
-	       if [ "$Composant" != triomc ] 
+	       if [ "$Composant" != mathys ] && [ "$Composant" != triomc ] && [ "$Composant" != polymac ]
                then
 	          git checkout -b $patch_new $label
                else
@@ -4185,9 +4185,6 @@ To unsubscribe from this list, send an e-mail to $TRUST_MAIL " > $MESSAGES_LIVRA
 ----------------------------------------------------------------------------------------------------
 # for PC connected to CEA SESI network:
 source /soft/der/sesi/TrioMC2/env_TrioMC2-"$new".sh
-
-# for CEA Cadarache cluster (mezel):
-source /soft/mezel/TRIO/env_TrioMC2-"$new".sh
 
 # for CEA Saclay cluster (callisto):
 source /home/triou/env_TrioMC2_"$new".sh

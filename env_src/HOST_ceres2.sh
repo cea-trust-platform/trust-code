@@ -26,6 +26,7 @@ define_modules_config()
    # Load modules
    #
    # GNU:
+   # echo "source /softs/_environnement/gcc484.env" >> $env
    # MPI module openmpi-1.8.3-gcc.env openmpi-1.8.5-gcc.env
    # echo "source /softs/_environnement/openmpi-1.8.5-gcc.env" >> $env
    #

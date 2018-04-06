@@ -1,23 +1,8 @@
 Version	Qui				Tache
-1.7.7   triou@cea.fr            AGL: revoir build TRIOXDATA avec build64 sort en error depuis 01/03 (c++11 ou merge MR ou merge ME)
-1.7.7   triou@cea.fr            AGL: test baltik portabilite avec intel callisto
-1.7.7   triou@cea.fr            AGL: Revoir make doxygen avec Test_Baltik => error: file `/export/home/triou/.tmp_TRUST_Livraison/TRUST_dox/baltik/dummy.cpp' not found
-1.7.7   triou@cea.fr            PRM: Comme pour le jdd en argument 1 serait-il possible l argument 2 pour partionner dans pre_run
-1.7.7   triou@cea.fr            AGL: Ajouter intallation auto sur reseau comme anciennement sur clusters mais par GIT
-1.7.7   triou@cea.fr            tuleap: pour TRUST penser a lien vers doc + branches Developpement + Etudes
-1.7.7   triou@cea.fr            AGL: Revoir shared origin official TRUST_GIT TRUST_GIT_OFFICIAL TRUST_GIT_REPOS TRUST_GIT_SERVER TRUST_GIT_SHARED 
-1.7.7   triou@cea.fr            LDC: Base Git IJK => cf reunion : aurait du etre differente avec Algo_QC
-1.7.7   triou@cea.fr            occigen: voir pour pouvoir construire le build baltik dans un .tmp sous SCRATCH car quota HOME a 20000 fichiers et build peut avoir 3000 files
-1.7.7   triou@cea.fr            AGL: Verifier git branch --all --no-merged | grep master sur branche TMA de chaque projet
-1.7.7   triou@cea.fr            LDC: Sur F26 avec cmake 3.8.2, configure KO si prerequis puis OK a la 2e tentative
-1.7.7   triou@cea.fr            NOTICE: Reprendre la liste documentaire en GC de TRUST + BALTIKS
-1.7.7   triou@cea.fr            AGL: Reprendre l etape de la verification du critere de couverture de code
-1.7.7   triou@cea.fr            Tuleap: Chercher s il est possible d etre averti par mail quand mise a jour sur depot d un projet
-1.7.7   triou@cea.fr            AGL: Ajouter dans lance_test_nuit un git fetch automatique sur toutes les bases git et envoyer mail a triou si maj
-1.7.7   triou@cea.fr            AGL: Revoir la creation d une branche Kernel sur base git sans historique
-1.7.7   triou@cea.fr            AGL: Revoir la procedure d installation de gcc car KO sur Fedora (OK sur CentOS)
-1.7.7   triou@cea.fr            AGL: Revoir pour lancer le check_component des que exe TRUST OK => voir pour attendre (cf ICoCo et tuto sur is220964 le we)
-1.7.7   triou@cea.fr            LDC: Pour la sortie de version, faut-il que des prerequis soient upgrades ?
-1.7.7   triou@cea.fr            LDC: Pour la sortie de version, faut-il que l utilisation Outils/VisIt soit OK sur Ubuntu 16.04 ?
-1.7.7   triou@cea.fr            LDC: Pour la sortie de version, faut-il que l installation Outils/IHM soit OK sur CentOS 7.4 ?
-1.7.7   triou@cea.fr            En attente feu vert CEA
+1.7.8   triou@cea.fr            AGL: Ajouter dans lance_test_nuit un git fetch automatique sur toutes les bases git et envoyer mail a triou si maj
+1.7.8   triou@cea.fr            AGL: Revoir la procedure d installation de gcc car KO sur Fedora (OK sur CentOS)
+1.7.8   triou@cea.fr            AGL: Revoir pour lancer le check_component des que exe TRUST OK => voir pour attendre (cf ICoCo et tuto sur is220964 le we)
+1.7.7   triou@cea.fr            tuleap: pour TRUST penser a lien vers doc + baltiks equation_convection_diffusion ICoCo Test_Baltik + branches Developpement + Etudes + README_kernel
+1.7.7   triou@cea.fr            LDC: Reprendre trust -help (avec -baltik) dans Generic Guide
+1.7.7   triou@cea.fr            LDC: verifier le critere de couverture de code
+1.7.7   triou@cea.fr            LDC: En attente feu vert CEA

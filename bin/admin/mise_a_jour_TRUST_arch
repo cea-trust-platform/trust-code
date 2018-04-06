@@ -177,7 +177,7 @@ echo "Usage: `basename $0` [-rsync|-sftp|-kill]"
 # Variable NUIT
 export NUIT=0 && [ `date '+%H'` -ge 18 ] || [ `date '+%H'` -lt 8 ] && NUIT=1 
 
-if [ "`ps -efl | grep make | grep TRUST | grep -v grep | grep "triou "`" != "" ] || [ "`ps -efl | grep make | grep TRUST | grep -v grep | grep "ccapitai "`" != "" ]
+if [ "`ps -efl | grep make | grep TRUST | grep -v grep | grep "triou "`" != "" ] || [ "`ps -efl | grep make | grep TRUST | grep -v grep | grep "mr757596 "`" != "" ] 
 then
    # mail_ command not found at this moment
    echo $ECHO_OPTS "\n\nSorry, $QUI is now running on the $HOST machine... Try later." #| mail_ $QUI
@@ -323,6 +323,7 @@ option_configure=" -disable-ccache"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-optionals" | grep ^$HOST"\."`" != "" ] 		&& option_configure=" -disable-optionals"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-check_sources" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -disable-check_sources"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-medcoupling" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -disable-medcoupling"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-med " | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-med -disable-medcoupling"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-mpiio" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-mpiio"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-valgrind" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -disable-valgrind"
 # Salome
@@ -474,7 +475,7 @@ do
       then
          echo "VisIt=KO"
       else
-         visit_help=`source $TRUST_ROOT/env_TRUST.sh;$TRUST_ROOT/exec/VisIt/bin/visit -help 2>&1`
+         visit_help=`source $TRUST_ROOT/env_TRUST.sh 1>/dev/null 2>&1;$TRUST_ROOT/exec/VisIt/bin/visit -help 2>&1`
          if [ $? = 0 ]
          then
             if [ "`ls $TRUST_ROOT/exec/VisIt/current/*/bin/engine_par 2>/dev/null`" != "" ]
@@ -491,6 +492,7 @@ do
       ######################
       # MPI est il compile ?
       ######################
+      MPI_NATIF=0
       if [ "${MPI_ROOT#$TRUST_ROOT}" != "$MPI_ROOT" ]
       then
          $Mpirun --version 2>&1 | $TRUST_Awk '/Open MPI/ {print "MPI=OpenMPI "$NF} /Version:/ {print "MPI=MPICH "$NF}'
@@ -503,6 +505,7 @@ do
 	 else
             echo "MPI=MPI natif: $MPI_ROOT"
 	 fi
+         MPI_NATIF=1
       else
          echo "MPI="
       fi
@@ -711,7 +714,7 @@ do
 	 then
             echo "--------------------------------------------------------" 
 	    echo "Test case in valgrind mode at "`date '+%H:%M:%S'`
-            if [ "`liste_machines "\-disable-valgrind" | grep ^$HOST_BUILD"\."`" != "" ]
+            if [ "`liste_machines "\-disable-valgrind" | grep ^$HOST_BUILD"\."`" != "" ] || [ $MPI_NATIF = 1 ]
             then
 	      OK="NOT"
             else
