@@ -27,6 +27,14 @@
 *
 *****************************************************************************/
 
+////////////////////////////////////////////////////////////
+//
+// Warning : DO NOT EDIT !
+//	     Please update ArrOf_Scalar_Prototype.cpp.h
+//	     and this file will be generated automatically
+//           by the script file check.sh
+////////////////////////////////////////////////////////////
+
 #include <ArrOfInt.h>
 // limits.h definit INT_MIN, SHRT_MIN, ...
 #include <limits.h>
@@ -34,6 +42,8 @@
 #include <Objet_U.h>
 #include <iostream>
 #include <stdlib.h>
+#include <string.h>
+#include "simd_interface.h"
 
 using namespace std;
 
@@ -52,8 +62,6 @@ using namespace std;
 // .DESCRIPTION
 // VIntdata alloue une zone de memoire de la taille specifiee au
 // constructeur, et libere la zone de memoire a la destruction.
-// La memoire peut etre allouee sur le tas (avec new) ou par le
-// mecanisme Memoire::add_trav_entier.
 //
 // "ref_count" compte le nombre de pointeurs qui font reference a "this".
 // (permet au dernier utilisateur de l'objet de le detruire), voir
@@ -94,9 +102,7 @@ private:
   // "sz" est la taille du tableau "data_" alloue
   // On a sz >= 0.
   entier size_;
-  // Si storage est de type TEMP_STORAGE, d_ptr_trav porte la reference
-  // a la zone allouee, sinon le pointeur est nul.
-  //Int_ptr_trav * d_ptr_trav_;
+  ArrOfInt::Storage storage_;
 };
 
 
@@ -106,7 +112,7 @@ private:
 //    Signification: taille du VIntdata, il faut size >= 0
 // Parametre: Storage storage
 //    Signification: indique si la memoire doit etre allouee
-//                   avec "new" ou avec "memoire.add_trav_entier()"
+//                   avec "new" ou avec "simd_malloc"
 //    Valeurs par defaut: STANDARD (allocation avec "new")
 // Postcondition:
 //    data_ n'est jamais nul, meme si size==0
@@ -135,8 +141,18 @@ VIntdata::VIntdata(entier size, ArrOfInt::Storage storage)
         if(!data_)
           {
             Cerr << "impossible d'allouer " << size << "entier " << finl;
-            throw;
+            throw ;
           }
+#endif
+        break;
+      }
+    case ArrOfInt::SIMD_ALIGNED:
+      {
+#ifdef SIMD_TOOLS_H
+        data_ = (entier*) simd_malloc (sizeof(entier) * size);
+#else
+        Cerr<<"unable to allocate simd_aligned, version compiled without simd "<<finl;
+        throw;
 #endif
         break;
       }
@@ -145,7 +161,7 @@ VIntdata::VIntdata(entier size, ArrOfInt::Storage storage)
     }
   ref_count_ = 1;
   size_ = size;
-
+  storage_ = storage;
   assert(data_ != 0);
 }
 
@@ -158,10 +174,26 @@ VIntdata::~VIntdata()
   assert(ref_count_ == 0);
 
   // Stockage STANDARD
-  delete[] data_;
+  switch(storage_)
+    {
+    case ArrOfInt::STANDARD:
+      delete[] data_;
+      break;
+    case ArrOfInt::SIMD_ALIGNED:
+#ifdef SIMD_TOOLS_H
+      simd_free(data_);
+#else
+      Cerr<<"unable to allocate simd_aligned, version compiled without simd "<<finl;
+      throw;
+#endif
+      break;
+    default:
+      throw;
+    }
 
   data_ = 0;  // paranoia: si size_==-1 c'est qu'on pointe sur un zombie
   size_ = -1; //  (pointeur vers un objet qui a ete detruit)
+  storage_ = ArrOfInt::STANDARD;
 }
 
 // Description: renvoie ref_count_
@@ -555,12 +587,14 @@ void  ArrOfInt::fill_default_value(entier first, entier nb)
   data += first;
   if (smart_resize_)
     {
-      // On initialise uniquement en mode debug
-#ifndef NDEBUG
-      static const entier ENTIER_INVALIDE = INT_MIN;
-      for (entier i = 0; i < nb; i++)
-        data[i] = ENTIER_INVALIDE;
-#endif
+      /*
+          // On initialise uniquement en mode debug
+      #ifndef NDEBUG
+          static const entier ENTIER_INVALIDE = INT_MIN;
+          for (entier i = 0; i < nb; i++)
+            data[i] = ENTIER_INVALIDE;
+      #endif
+      */
     }
   else
     {
@@ -1037,7 +1071,7 @@ entier* ArrOfInt::addr()
 
 IntTab::IntTab()
 {
-  nb_dim_ = 2;
+  // nb_dim_ = 2;
   dimensions_[0] = 0;
   dimensions_[1] = 0;
 }
@@ -1045,14 +1079,14 @@ IntTab::IntTab()
 IntTab::IntTab(const IntTab& tab) :
   ArrOfInt(tab)
 {
-  nb_dim_ = tab.nb_dim_;
+  // nb_dim_ = tab.nb_dim_;
   dimensions_[0] = tab.dimensions_[0];
   dimensions_[1] = tab.dimensions_[1];
 }
 IntTab::IntTab(const entier i, const entier j) :
   ArrOfInt(i*j)
 {
-  nb_dim_ = 2;
+  // nb_dim_ = 2;
   dimensions_[0] = i;
   dimensions_[1] = j;
 }
@@ -1060,7 +1094,7 @@ IntTab::IntTab(const entier i, const entier j) :
 IntTab& IntTab::operator=(const IntTab& tab)
 {
   ArrOfInt::operator=(tab);
-  nb_dim_ = tab.nb_dim_;
+  // nb_dim_ = tab.nb_dim_;
   dimensions_[0] = tab.dimensions_[0];
   dimensions_[1] = tab.dimensions_[1];
   return *this;
@@ -1069,7 +1103,8 @@ IntTab& IntTab::operator=(const IntTab& tab)
 void IntTab::reset()
 {
   ArrOfInt::reset();
-  nb_dim_ = 2;
+  // nb_dim_ = 2;
   dimensions_[0] = 0;
   dimensions_[1] = 0;
 }
+

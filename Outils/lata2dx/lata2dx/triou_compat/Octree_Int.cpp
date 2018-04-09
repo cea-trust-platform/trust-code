@@ -335,7 +335,7 @@ entier Octree_Int::build_octree_recursively(const entier octree_center_x,
   static const entier octree_floor_max_elems = 8;
   // S'il y a beaucoup d'elements dupliques, mais pas trop, et que le nombre d'elements
   //  dans l'octree est superieur a cette valeur, on subdivise quand-meme
-  static const entier octree_duplicate_elements_limit = 64;
+  static const entier octree_duplicate_elements_limit = 32;
   const ArrOfInt& elements_list = vect_elements_list[level];
   // Si le nombre d'elements est inferieur a la limite, on cree un floor_element,
   // sinon on subdivise
@@ -400,7 +400,7 @@ entier Octree_Int::build_octree_recursively(const entier octree_center_x,
   //  ce qui permet de ranger des elements tres alonges qui sont forcement
   //  dupliques dans une direction (>octree_duplicate_elements_limit).
   if ((nb_duplicate_elements * 2 >= nb_elems && nb_elems < octree_duplicate_elements_limit)
-      || nb_duplicate_elements > nb_elems)
+      || nb_duplicate_elements > nb_elems * 3)
     {
       const entier octree_id = build_octree_floor(elements_list);
       // On renvoie un index d'octreefloor
