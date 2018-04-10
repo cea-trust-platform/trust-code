@@ -5,4 +5,5 @@ Version	Qui				Tache
 1.7.7   triou@cea.fr            tuleap: pour TRUST penser a lien vers doc + baltiks equation_convection_diffusion ICoCo Test_Baltik + branches Developpement + Etudes + README_kernel
 1.7.7   triou@cea.fr            LDC: Reprendre trust -help (avec -baltik) dans Generic Guide
 1.7.7   triou@cea.fr            LDC: verifier le critere de couverture de code
+1.7.7   triou@cea.fr            LDC: verifier le dossier extra de 1.7.7 sur sourceforge (cf bin/gestion_externalpackages/liste_dep.csv)
 1.7.7   triou@cea.fr            LDC: En attente feu vert CEA
