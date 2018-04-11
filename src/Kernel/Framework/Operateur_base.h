@@ -75,6 +75,7 @@ public :
   virtual void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const /* =0 */;
   virtual void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const /* =0 */;
   virtual void contribuer_au_second_membre(DoubleTab& ) const /* =0 */;
+  void tester_contribuer_a_avec(const DoubleTab&, const Matrice_Morse&);
   virtual double calculer_dt_stab() const;
   virtual void calculer_dt_local(DoubleTab&) const;//Local time step calculation
   virtual void completer();
