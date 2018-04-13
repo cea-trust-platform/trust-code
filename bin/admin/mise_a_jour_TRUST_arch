@@ -23,12 +23,6 @@ exit_()
       $TRUST_ROOT/bin/admin/cp_ftp $TRUST_ROOT/MAKE_* $CR
       $TRUST_ROOT/bin/admin/cp_ftp $TRUST_ROOT/PERF_* $CR
    fi 
-   if [ "$git" = 1 ]
-   then
-      # Push eventuel vers shared
-      [ "`git remote | grep -w shared`" = "" ] && git remote add shared $TRUST_GIT_SHARED
-      git push --tags --set-upstream shared $git_branch
-   fi
    exit $1
 }
 gunzip_()
