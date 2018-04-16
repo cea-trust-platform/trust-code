@@ -2,7 +2,7 @@ Version	Qui				Tache
 1.7.8   triou@cea.fr            AGL: Ajouter dans lance_test_nuit un git remote update automatique sur toutes les bases git et envoyer mail a triou si maj
 1.7.8   triou@cea.fr            AGL: Revoir la procedure d installation de gcc car KO sur Fedora (OK sur CentOS)
 1.7.8   triou@cea.fr            AGL: Revoir pour lancer le check_component des que exe TRUST OK => voir pour attendre (cf ICoCo et tuto sur is220964 le we)
-1.7.7   triou@cea.fr            LDC: Reprendre trust -help (avec -baltik) dans Generic Guide
-1.7.7   triou@cea.fr            LDC: verifier le critere de couverture de code
-1.7.7   triou@cea.fr            LDC: verifier le dossier extra de 1.7.7 sur sourceforge (cf bin/gestion_externalpackages/liste_dep.csv)
+1.7.7   triou@cea.fr            LDC: recuperer aupres de Stephane l archive de couverture de code
 1.7.7   triou@cea.fr            LDC: En attente feu vert CEA
+1.7.7   triou@cea.fr            LDC: envoyer BDL avec les 2 formations
+1.7.7   triou@cea.fr            LDC: verifier le dossier extra de 1.7.7 sur sourceforge (cf bin/gestion_externalpackages/liste_dep.csv)
