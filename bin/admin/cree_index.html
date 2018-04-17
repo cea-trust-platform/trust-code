@@ -54,11 +54,13 @@ echo "
 <pre>make # Build the code</pre>
 <pre>make check # Check the code</pre>
 <LI>If you want to change now the code in a new branch:<BR>
-<pre>git checkout -b YourNewBranch</pre>
+<pre>git checkout -b YourLogin/YourNewBranch</pre>
 <LI>Later, to update your work with the latest $stable patch:<BR>
 <pre>git pull origin $patch_branch</pre>
 <LI>If you want also to share your work with CEA developpers, once commited, you can run:<BR>
-<pre>git push origin YourNewBranch</pre>
+<pre>git remote add tuleap https://codev-tuleap.intra.cea.fr/plugins/git/trust/trust-code.git</pre>
+<pre>git remote update</pre>
+<pre>git push tuleap YourLogin/YourNewBranch</pre>
 <BR><B>Version portability:</B>
 <BR>For this $stable release, TRUST has been succesfully built on several OS:
 ">> $html
