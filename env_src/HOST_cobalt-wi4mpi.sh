@@ -62,7 +62,6 @@ module () {
    #module="$intel $openmpi"
    # newenv/2016-09  newenv/2018-03(default)
    module="newenv/2018-03"
-   module="intel/16.0.3.210 mpi/wi4mpi/3.0.6"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env

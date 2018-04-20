@@ -48,12 +48,9 @@ check_components()
 	    if [ "$Composant" = basic ]
 	    then
 	       make_option="make check_trust_optim"
-	    #elif [ "$Composant" = ijk ]
-	    #then
-	    #   make_option="make check_optim"
-	    #elif [ "$Composant" = mathys ]
-	    #then
-	    #   make_option=""
+	    elif [ "$Composant" = mathys ]
+	    then
+	       make_option=""
 	    elif [ $* = tuleap/Kernel ]
 	    then
 	       make_option="make check_all_optim check_trust_optim"
@@ -97,9 +94,8 @@ check_components()
 	       make gui 1>$Gui_log 2>&1 && echo $Composant"_Reference_Manual.pdf OK" && DOC_PDF_OK=1
 	       grep "Error" $Gui_log
 	       [ "`grep "Error" $Gui_log`" != "" ] && DOC_PDF_OK=0 && echo DOC_PDF_OK=0
-	       if [ "$Composant" != polymac ] && [ "$Composant" != triomc ] && [ "$Composant" != mathys ] && [ "$Composant" != Test_Baltik ]
+	       if [ "$Composant" != polymac ] && [ "$Composant" != triomc ] && [ "$Composant" != mathys ] && [ "$Composant" != Test_Baltik ]  && [ "$Composant" != ijk ]
 	       then
-	          #[ "$Composant" != ijk ] && ([ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 17 ])) && make check_gui 1>>$Gui_log 2>&1 &
 	          ([ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 17 ])) && make check_gui 1>>$Gui_log 2>&1 &
 	          make doxygen 1>$Doc_log 2>&1
 	       fi
@@ -267,7 +263,7 @@ check_components()
 		        fi
 	                if [[ "$gui_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines gui
 		        then
-	                   if [ "$Composant" = polymac ] || [ "$Composant" = triomc ] || [ "$Composant" = mathys ] #|| [ "$Composant" = ijk ]
+	                   if [ "$Composant" = polymac ] || [ "$Composant" = triomc ] || [ "$Composant" = mathys ] || [ "$Composant" = ijk ]
 			   then
 	                      check_option="--without-run"
 			   else
@@ -287,14 +283,10 @@ check_components()
 			      fi
 	                      liste_options="--with-efface-dir-before"
 			   fi
-	                   #if [ "$Composant" = ijk ]
-                           #then
-		           #   check_option=""
-			   #fi
-	                   #if [ "$Composant" = mathys ]
-                           #then
-		           #   check_option="--without-run"
-			   #fi
+	                   if [ "$Composant" = mathys ]
+                           then
+		              check_option="--without-run"
+			   fi
 	                fi
 	                if [[ "$non_machines" = *"$machine"* ]] # Test si machine n est pas dans la liste des machines cible, get_binary et tache
 		        then
@@ -3336,7 +3328,7 @@ fi
 [ -s $TRUST_ROOT/build/doc/doxygen*.err ] && validation_doxygen=0 && echo "TRUST Doxygen KO" && cat $TRUST_ROOT/build/doc/doxygen*.err | mail_ -s\"[lance_test_nuit] Validation of TRUST Doxygen documentation KO\" -c $TRUST_MAIL $TMA_PROJECT_LEADER
 for Composant in $Composants
 do
-   if [ "$Composant" != polymac ] && [ "$Composant" != triomc ] && [ "$Composant" != mathys ] && [ "$Composant" != Test_Baltik ] #&& [ "$Composant" != ijk ]
+   if [ "$Composant" != polymac ] && [ "$Composant" != triomc ] && [ "$Composant" != mathys ] && [ "$Composant" != Test_Baltik ] && [ "$Composant" != ijk ]
    then
       echo " "
       echo "Search of $TRUST_ROOT/../Composants/$Composant/build/doxygen*.err file"
