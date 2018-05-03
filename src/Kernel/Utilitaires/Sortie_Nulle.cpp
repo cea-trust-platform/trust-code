@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,6 +50,10 @@ Sortie& Sortie_Nulle::operator<<(const int&     ob)
 {
   return *this;
 }
+Sortie& Sortie_Nulle::operator<<(const unsigned&     ob)
+{
+  return *this;
+}
 #ifndef INT_is_64_
 Sortie& Sortie_Nulle::operator<<(const long&       ob)
 {
@@ -69,6 +73,10 @@ Sortie& Sortie_Nulle::operator<<(const char      * ob)
   return *this;
 }
 
+int Sortie_Nulle::put(const unsigned* ob, int n, int pas)
+{
+  return 1;
+}
 #ifndef INT_is_64_
 int Sortie_Nulle::put(const int* ob, int n, int pas)
 {

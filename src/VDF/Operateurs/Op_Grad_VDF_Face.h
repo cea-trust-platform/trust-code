@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -74,7 +74,6 @@ private:
   REF(Zone_VDF) la_zone_vdf;
   REF(Zone_Cl_VDF) la_zcl_vdf;
 
-  DoubleVect porosite_surf;
   DoubleTab xp;
   DoubleVect volume_entrelaces;
   IntTab face_voisins;
@@ -83,6 +82,9 @@ private:
   inline double dist_norm(int ) const;
   inline double dist_norm_bord(int ) const;
 
+protected:
+
+  DoubleVect porosite_surf;
 
 };
 

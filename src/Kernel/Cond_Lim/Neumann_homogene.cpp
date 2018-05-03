@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,6 +23,7 @@
 #include <Neumann_homogene.h>
 
 Implemente_base(Neumann_homogene,"Neumann_homogene",Cond_lim_base);
+// XD Neumann_homogene condlim_base Neumann_homogene -1 Homogeneous neumann boundary condition
 
 
 // Description:

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -77,7 +77,7 @@ public :
   Sortie& ecrire(Sortie& ) const;
   Entree& lire(Entree& );
   void ajouter_contribution_explicite_au_second_membre(const Champ_Inc_base& inconnue, DoubleTab& derivee) const;
-  void associer_champ(const Champ_Inc_base&);
+  void associer_champ(const Champ_Inc&);
 
   void set_fichier(const Nom& nom);
   void set_description(const Nom& nom);
@@ -86,7 +86,7 @@ public :
   virtual int op_non_nul() const =0;
 
 protected :
-  REF(Champ_Inc_base) le_champ_inco;
+  REF(Champ_Inc) le_champ_inco;
   Motcle typ;
 };
 #endif

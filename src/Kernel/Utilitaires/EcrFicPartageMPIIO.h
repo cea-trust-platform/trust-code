@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -69,6 +69,7 @@ public:
 
   Sortie& operator <<(const Separateur& ob);
   Sortie& operator <<(const int& ob);
+  Sortie& operator <<(const unsigned& ob);
 #ifndef INT_is_64_
   Sortie& operator <<(const long& ob)
   {
@@ -81,6 +82,7 @@ public:
   Sortie& operator <<(const double& ob);
   Sortie& operator <<(const Objet_U& ob);
   Sortie& operator <<(const char* ob);
+  int put(const unsigned* ob, int n, int pas);
   int put(const int* ob, int n, int pas);
 #ifndef INT_is_64_
   int put(const long* ob, int n, int pas)

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -338,6 +338,13 @@ Sortie& EcrFicPartage::operator <<(const int& ob)
   get_obuffer() << ob;
   return *this;
 }
+
+Sortie& EcrFicPartage::operator <<(const unsigned& ob)
+{
+  get_obuffer() << ob;
+  return *this;
+}
+
 #ifndef INT_is_64_
 Sortie& EcrFicPartage::operator <<(const long& ob)
 {
@@ -355,6 +362,14 @@ Sortie& EcrFicPartage::operator <<(const double& ob)
   get_obuffer() << ob;
   return *this;
 }
+
+
+int EcrFicPartage::put(const unsigned* ob, int n, int pas)
+{
+  get_obuffer().put(ob,n,pas);
+  return 1;
+}
+
 #ifndef INT_is_64_
 int EcrFicPartage::put(const int* ob, int n, int pas)
 {
