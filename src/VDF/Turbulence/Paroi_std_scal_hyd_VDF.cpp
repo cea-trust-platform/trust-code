@@ -90,7 +90,6 @@ int Paroi_std_scal_hyd_VDF::init_lois_paroi()
 
 int  Paroi_std_scal_hyd_VDF::calculer_scal(Champ_Fonc_base& diffusivite_turb)
 {
-  Process::Journal()<<"steph [Paroi_std_scal_hyd_VDF::calculer_scal] is called "<<finl;
   const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
   const IntTab& face_voisins = zone_VDF.face_voisins();
   DoubleTab& alpha_t = diffusivite_turb.valeurs();
