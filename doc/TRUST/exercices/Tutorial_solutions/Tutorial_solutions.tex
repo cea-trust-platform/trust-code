@@ -31,7 +31,7 @@
 \input{Obstacle_reprise}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Obstacle: Sequentiel calculation}
+\subsection{Obstacle: Parallel calculation}
 \subsubsection{DEC\_Obstacle.data}
 \input{DEC_Obstacle}
 \subsubsection{PAR\_Obstacle.data}
@@ -44,21 +44,21 @@
 \section{Heat exchange VDF/VEF}
 \subsection{With diffusion\_implicite}
 \input{docond}
-\subsection{With schema\_euler\_implicite}
+\subsection{With scheme\_euler\_implicit}
 \input{docond_impl}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Low mach number flow}
 \subsection{With scheme\_euler\_explicit}
 \input{TP_Temp_QC_VEF}
-\subsection{With schema\_euler\_implicite}
+\subsection{With scheme\_euler\_implicit}
 \input{TP_Temp_QC_VEF_impl}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Periodic 3D channel flow}
 \subsection{With scheme\_euler\_explicit}
 \input{P1toP1Bulle}
-\subsection{With schema\_euler\_implicite}
+\subsection{With scheme\_euler\_implicit}
 \input{P1toP1Bulle_impl}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -89,9 +89,8 @@ Minimal exercise, no need to put a solution
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
-\section{Meshing tools}
+\section{Salom\'e: 3D VEF mesh}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Salom\'e to create a 3D VEF mesh}
 cf hdf files in \$TRUST\_ROOT/doc/TRUST/exercices/salome directory.
 \begin{itemize}
 \item First exercise Cylinder:
@@ -106,17 +105,17 @@ cf hdf files in \$TRUST\_ROOT/doc/TRUST/exercices/salome directory.
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Gmsh to create a 2D VEF mesh}
-\subsubsection{2D VEF mesh}
+\section{Gmsh meshing tool}
+\subsection{2D VEF mesh}
 \input{gmsh}
-\subsubsection{3D VEF mesh}
+\subsection{3D VEF mesh}
 \input{gmsh_3D}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Xprepro to create 2D/3D VDF mesh}
+\section{Xprepro}
 
-\subsubsection{3D VDF mesh}
+\subsection{3D VDF mesh}
 The "viewlist" file must look like:
 \begin{figure}[h]
 \includegraphics[width=1.1\textwidth]{xprepro_exo1_default_prep.png}
@@ -129,7 +128,7 @@ which contain your salome/exo1/model/maillagedefaut file. If you open it, you mu
 \input{xprepro_exo1_mail}
 
 \newpage
-\subsubsection{2D VDF mesh}
+\subsection{2D VDF mesh}
 The "viewlist" file must look like:
 \begin{figure}[h]
 \includegraphics[width=1.1\textwidth]{xprepro_exo2_default_prep.png}
