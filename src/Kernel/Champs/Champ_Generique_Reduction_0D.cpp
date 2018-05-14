@@ -79,7 +79,7 @@ Entree& Champ_Generique_Reduction_0D::readOn(Entree& s )
 void Champ_Generique_Reduction_0D::set_param(Param& param)
 {
   Champ_Gen_de_Champs_Gen::set_param(param);
-  param.ajouter("methode",&methode_,Param::REQUIRED); // XD_ADD_P chaine(into=["min","max","moyenne","average","moyenne_ponderee","weighted_average","somme","sum","somme_ponderee","weighted_sum","somme_ponderee_porosite","weighted_sum_porosity","euclidian_norm","normalized_euclidian_norm","L1_norm","L2_norm","valeur_a_gauche","left_value"]) name of the reduction method: NL2 - min for the minimum value, NL2 - max for the maximum value, NL2 - average (or moyenne) for a mean, NL2 - weighted_average (or moyenne_ponderee) for a mean ponderated by integration volumes, e.g: cell volumes for temperature or pressure in VDF, volumes around faces for velocity and temperature in VEF, NL2 - sum (or somme) for the sum of all the values of the field, NL2 - weighted_sum (or somme_ponderee) for a weighted sum (integral), NL2 - weighted_average_porosity (or moyenne_ponderee_porosite) and weighted_sum_porosity (or somme_ponderee_porosite) for the mean and sum weighted by the volumes of the elements, only for ELEM localisation, NL2 - euclidian_norm for the euclidian norm, NL2 - normalized_euclidian_norm for the euclidian norm normalized, NL2 - L1_norm for norm L1, NL2 - L2_norm for norm L2
+  param.ajouter("methode",&methode_,Param::REQUIRED); // XD_ADD_P chaine(into=["min","max","moyenne","average","moyenne_ponderee","weighted_average","somme","sum","somme_ponderee","weighted_sum","somme_ponderee_porosite","weighted_sum_porosity","euclidian_norm","normalized_euclidian_norm","L1_norm","L2_norm","valeur_a_gauche","left_value"]) name of the reduction method: NL2 - min for the minimum value, NL2 - max for the maximum value, NL2 - average (or moyenne) for a mean, NL2 - weighted_average (or moyenne_ponderee) for a mean ponderated by integration volumes, e.g: cell volumes for temperature and pressure in VDF, volumes around faces for velocity and temperature in VEF, NL2 - sum (or somme) for the sum of all the values of the field, NL2 - weighted_sum (or somme_ponderee) for a weighted sum (integral), NL2 - weighted_average_porosity (or moyenne_ponderee_porosite) and weighted_sum_porosity (or somme_ponderee_porosite) for the mean and sum weighted by the volumes of the elements, only for ELEM localisation, NL2 - euclidian_norm for the euclidian norm, NL2 - normalized_euclidian_norm for the euclidian norm normalized, NL2 - L1_norm for norm L1, NL2 - L2_norm for norm L2
 }
 
 void Champ_Generique_Reduction_0D::completer(const Postraitement_base& post)
@@ -163,7 +163,7 @@ void Champ_Generique_Reduction_0D::completer(const Postraitement_base& post)
               int eleminloc;
               recevoir(dminloc,p,97);
               recevoir(eleminloc,p,97);
-              //Cerr<<" coucou "<<p<<" "<<dminloc<<finl;
+
               if (dminloc<dmin)
                 {
                   dmin=dminloc;
@@ -181,7 +181,6 @@ void Champ_Generique_Reduction_0D::completer(const Postraitement_base& post)
       envoyer_broadcast(numero_proc_,0);
       envoyer_broadcast(numero_elem_,0);
 
-      //Cerr<<" PPPP "<< numero_proc_<<" "<<numero_elem_<<finl;
     }
 
 }
