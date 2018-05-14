@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -557,6 +557,13 @@ void Comm_Group_MPI::set_trio_u_world(MPI_Comm world)
 #endif
   trio_u_world_ = world;
 }
+
+MPI_Comm Comm_Group_MPI::get_trio_u_world()
+{
+  return trio_u_world_;
+}
+
+
 
 void Comm_Group_MPI::set_must_mpi_initialize(int flag)
 {

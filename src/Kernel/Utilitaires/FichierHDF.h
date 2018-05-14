@@ -14,39 +14,62 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        SChaine.h
+// File:        FichierHDF.h
 // Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     /main/15
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef SChaine_included
-#define SChaine_included
-#include <Sortie.h>
+#ifndef FichierHDF_included
+#define FichierHDF_included
 #include <Process.h>
-using std::string;
+#include <Entree_Brute.h>
+#include <Sortie_Brute.h>
+#include <Nom.h>
+
+#ifdef MED_
+#include <hdf5.h>
+#endif
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//   Cette classe derivee de Sortie empile ce qu'on lui envoie dans une
-//   chaine de caracteres. On recupere le contenu de la chaine avec get_str().
+//   This abstract class provides all the functionalities to open and manipulate HDF files and related
+//   concepts (datasets, groups, etc ...)
+//   It intentionally does not place itself in the Sortie_Fichier_base or Entree_Fichier_base hierarchy
+//   since it is rather the datasets inside the HDF file that are regarded as TRUST Fichier objects.
 // .SECTION voir aussi
-//    EChaine
+//
 //////////////////////////////////////////////////////////////////////////////
-class SChaine :  public Sortie
+class FichierHDF
 {
 public:
-  SChaine();
-  ~SChaine();
-  const char* get_str() const;
-  unsigned get_size() const;
-  void setf(IOS_FORMAT code);
-//  void self_test();   // [ABN] to be put in unit tests ...
-  int set_bin(int bin);
+  FichierHDF();
+  virtual ~FichierHDF();
+
+  // Creates (and open) the HDF file.
+  virtual void create(Nom filename);
+  virtual void open(Nom filename, bool readOnly);
+  virtual void close();
+
+  virtual Entree_Brute read_dataset(Nom dataset_name);
+  virtual void create_and_fill_dataset(Nom dataset_name, Sortie_Brute data);
+  virtual void close_dataset(Nom dataset_name);
 
 protected:
-  mutable string string_;
+  virtual void prepare_file_props();
+  virtual void prepare_read_dataset_props(Nom dataset_name);
+
+#ifdef MED_
+  hid_t file_id_;
+  hid_t file_prop_lst_;
+  hid_t dataset_prop_lst_;
+#endif
+
+  Nom dataset_full_name_; // the full name of the data set to be opened (with potential trailing _000x)
 
 private:
-
+  // Forbid copy:
+  FichierHDF& operator=(const FichierHDF&);
+  FichierHDF(const FichierHDF&);
 };
 #endif

@@ -14,39 +14,41 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        SChaine.h
+// File:        Entree_Brute.h
 // Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     /main/15
+// Version:     /main/16
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef SChaine_included
-#define SChaine_included
-#include <Sortie.h>
-#include <Process.h>
-using std::string;
+
+#ifndef Entree_Brute_included
+#define Entree_Brute_included
+
+#include <Entree.h>
+#include <sstream>
+using std::istringstream;
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//   Cette classe derivee de Sortie empile ce qu'on lui envoie dans une
-//   chaine de caracteres. On recupere le contenu de la chaine avec get_str().
+//   An Entree whose main source of data is an arbitrary binary buffer set using the
+//   set_data() method. This Entree can then be used to feed any standard TRUST objects.
 // .SECTION voir aussi
 //    EChaine
 //////////////////////////////////////////////////////////////////////////////
-class SChaine :  public Sortie
+
+class Entree_Brute : public Entree
 {
+
 public:
-  SChaine();
-  ~SChaine();
-  const char* get_str() const;
-  unsigned get_size() const;
-  void setf(IOS_FORMAT code);
-//  void self_test();   // [ABN] to be put in unit tests ...
+  Entree_Brute();
+  ~Entree_Brute();
   int set_bin(int bin);
 
+  // [ABN] TODO should be const char * data ...
+  void set_data(char * data, unsigned sz);
+
 protected:
-  mutable string string_;
-
-private:
-
+  istringstream* istrstream_;
+  char * data_;
 };
+
 #endif

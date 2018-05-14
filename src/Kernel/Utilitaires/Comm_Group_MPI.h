@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -71,6 +71,7 @@ public:
   void all_to_allv(const void *src_buffer, int *send_data_size, int *send_data_offset,
                    void *dest_buffer, int *recv_data_size, int *recv_data_offset) const;
   static void set_trio_u_world(MPI_Comm world);
+  static MPI_Comm get_trio_u_world();
   static void set_must_mpi_initialize(int flag);
 
   void ptop_send_recv(const void * send_buf, int send_buf_size, int send_proc,

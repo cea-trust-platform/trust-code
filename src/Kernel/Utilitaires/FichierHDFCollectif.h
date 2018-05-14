@@ -14,39 +14,36 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        SChaine.h
+// File:        FichierHDFCollectif.h
 // Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     /main/15
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef SChaine_included
-#define SChaine_included
-#include <Sortie.h>
-#include <Process.h>
-using std::string;
+#ifndef FichierHDFCollectif_included
+#define FichierHDFCollectif_included
+#include <FichierHDF.h>
+#include <mpi.h>
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//   Cette classe derivee de Sortie empile ce qu'on lui envoie dans une
-//   chaine de caracteres. On recupere le contenu de la chaine avec get_str().
+//   Parallel collective version of FichierHDF, to be used for all concurrent reading/writing on HDF files.
 // .SECTION voir aussi
-//    EChaine
+//
 //////////////////////////////////////////////////////////////////////////////
-class SChaine :  public Sortie
+class FichierHDFCollectif: public FichierHDF
 {
 public:
-  SChaine();
-  ~SChaine();
-  const char* get_str() const;
-  unsigned get_size() const;
-  void setf(IOS_FORMAT code);
-//  void self_test();   // [ABN] to be put in unit tests ...
-  int set_bin(int bin);
+  FichierHDFCollectif();
+  virtual ~FichierHDFCollectif();
 
 protected:
-  mutable string string_;
+  virtual void prepare_file_props();
+  virtual void prepare_read_dataset_props(Nom dataset_name);
 
 private:
-
+  // Forbid copy:
+  FichierHDFCollectif& operator=(const FichierHDFCollectif&);
+  FichierHDFCollectif(const FichierHDFCollectif&);
 };
 #endif

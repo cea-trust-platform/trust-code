@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,7 +28,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    Cette classe est a la classe C++ ofstream ce que la classe Sortie est la classe C++ ostream
+//    Cette classe est a la classe C++ ofstream ce que la classe Sortie est a la classe C++ ostream
 //    Elle redefinit de facon virtuelle les operateurs d'ecriture dans un fichier
 // .SECTION voir aussi
 //    EFichier

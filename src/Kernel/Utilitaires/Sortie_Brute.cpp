@@ -14,39 +14,54 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        SChaine.h
+// File:        Sortie_Brute.cpp
 // Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     /main/15
+// Version:     /main/14
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef SChaine_included
-#define SChaine_included
-#include <Sortie.h>
+#include <Sortie_Brute.h>
 #include <Process.h>
-using std::string;
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//   Cette classe derivee de Sortie empile ce qu'on lui envoie dans une
-//   chaine de caracteres. On recupere le contenu de la chaine avec get_str().
-// .SECTION voir aussi
-//    EChaine
-//////////////////////////////////////////////////////////////////////////////
-class SChaine :  public Sortie
+#include <EntreeSortie.h>
+#include <sstream>
+
+using std::ostringstream;
+
+// In its implementation use an ostringstream. This is by far the simplest method.
+Sortie_Brute::Sortie_Brute() :
+  Sortie()
 {
-public:
-  SChaine();
-  ~SChaine();
-  const char* get_str() const;
-  unsigned get_size() const;
-  void setf(IOS_FORMAT code);
-//  void self_test();   // [ABN] to be put in unit tests ...
-  int set_bin(int bin);
+  set_bin(1);
+  ostringstream *os = new ostringstream();  // deletion in Sortie destructor
+  set_ostream(os);
+}
 
-protected:
-  mutable string string_;
+Sortie_Brute::~Sortie_Brute()
+{
+}
 
-private:
+// Description:
+//   returns a pointer to the internal data. The data is valid as long as no other write operation is done on
+//   the Sortie_Brute object.
+const char* Sortie_Brute::get_data() const
+{
+  const ostringstream& os = static_cast< const ostringstream& >(get_ostream());
+  string_ = std::string(os.str());
+  return string_.c_str();
+}
 
-};
-#endif
+unsigned Sortie_Brute::get_size() const
+{
+  const ostringstream& os = static_cast< const ostringstream& >(get_ostream());
+  return os.str().size();
+}
+
+int Sortie_Brute::set_bin(int bin)
+{
+  if (bin != 1)
+    {
+      Cerr << "Error in Sortie_Brute::set_bin(int bin) : only binary format supported. Use SChaine otherwise." << finl;
+      Process::exit();
+    }
+  Sortie::set_bin(bin);
+  return bin;
+}

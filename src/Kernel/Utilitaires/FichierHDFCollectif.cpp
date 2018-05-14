@@ -14,39 +14,53 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        SChaine.h
+// File:        FichierHDFCollectif.cpp
 // Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     /main/15
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef SChaine_included
-#define SChaine_included
-#include <Sortie.h>
-#include <Process.h>
-using std::string;
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//   Cette classe derivee de Sortie empile ce qu'on lui envoie dans une
-//   chaine de caracteres. On recupere le contenu de la chaine avec get_str().
-// .SECTION voir aussi
-//    EChaine
-//////////////////////////////////////////////////////////////////////////////
-class SChaine :  public Sortie
-{
-public:
-  SChaine();
-  ~SChaine();
-  const char* get_str() const;
-  unsigned get_size() const;
-  void setf(IOS_FORMAT code);
-//  void self_test();   // [ABN] to be put in unit tests ...
-  int set_bin(int bin);
+#include <FichierHDFCollectif.h>
 
-protected:
-  mutable string string_;
-
-private:
-
-};
+#ifdef MPI_
+#include <mpi.h>
+#include <Comm_Group_MPI.h>
 #endif
+
+FichierHDFCollectif::FichierHDFCollectif() :
+  FichierHDF()
+{
+#ifndef MPI_
+  Cerr << "FichierHDFCollectif needs MPI to be used!" << finl;
+  Process::exit(-1);
+#endif
+}
+
+FichierHDFCollectif::~FichierHDFCollectif()
+{
+}
+
+void FichierHDFCollectif::prepare_file_props()
+{
+#ifdef MPI_
+  MPI_Info infos;
+  MPI_Info_create(&infos); // not used for now. CCRT supports advise to leave empty.
+
+  file_prop_lst_ = H5Pcreate(H5P_FILE_ACCESS);
+  H5Pset_fapl_mpio( file_prop_lst_, Comm_Group_MPI::get_trio_u_world(), infos);
+
+  MPI_Info_free(&infos);
+#endif
+}
+
+void FichierHDFCollectif::prepare_read_dataset_props(Nom dataset_name)
+{
+  int rank = Process::me();
+
+  // Build expected dataset name for the current proc (with the trailing _000x stuff)
+  Nom dataset_full_name = dataset_name;
+  dataset_full_name.nom_me(rank);
+
+  //status = H5Pset_dxpl_mpio( propList, H5FD_MPIO_COLLECTIVE);  // ABN: to be seen
+}
+
+

@@ -14,39 +14,34 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        SChaine.h
+// File:        Sortie_Brute.h
 // Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
 // Version:     /main/15
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef SChaine_included
-#define SChaine_included
+#ifndef Sortie_Brute_included
+#define Sortie_Brute_included
 #include <Sortie.h>
-#include <Process.h>
-using std::string;
+#include <sstream>
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//   Cette classe derivee de Sortie empile ce qu'on lui envoie dans une
-//   chaine de caracteres. On recupere le contenu de la chaine avec get_str().
+//   This derived class of Sortie stacks whatever it receives in an internal binary buffer.
+//   Data can be accessed through get_data().
 // .SECTION voir aussi
-//    EChaine
+//    SChaine
 //////////////////////////////////////////////////////////////////////////////
-class SChaine :  public Sortie
+class Sortie_Brute :  public Sortie
 {
 public:
-  SChaine();
-  ~SChaine();
-  const char* get_str() const;
+  Sortie_Brute();
+  ~Sortie_Brute();
+  const char* get_data() const;
   unsigned get_size() const;
-  void setf(IOS_FORMAT code);
-//  void self_test();   // [ABN] to be put in unit tests ...
   int set_bin(int bin);
 
 protected:
-  mutable string string_;
-
-private:
-
+  mutable std::string string_;
 };
 #endif

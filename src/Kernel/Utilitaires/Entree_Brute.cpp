@@ -14,39 +14,54 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        SChaine.h
+// File:        Entree_Brute.cpp
 // Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     /main/15
+// Version:     /main/14
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef SChaine_included
-#define SChaine_included
-#include <Sortie.h>
+#include <Entree_Brute.h>
 #include <Process.h>
-using std::string;
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//   Cette classe derivee de Sortie empile ce qu'on lui envoie dans une
-//   chaine de caracteres. On recupere le contenu de la chaine avec get_str().
-// .SECTION voir aussi
-//    EChaine
-//////////////////////////////////////////////////////////////////////////////
-class SChaine :  public Sortie
+#include <EntreeSortie.h>
+#include <sstream>
+
+using std::istringstream;
+
+Entree_Brute::Entree_Brute():
+  Entree()
 {
-public:
-  SChaine();
-  ~SChaine();
-  const char* get_str() const;
-  unsigned get_size() const;
-  void setf(IOS_FORMAT code);
-//  void self_test();   // [ABN] to be put in unit tests ...
-  int set_bin(int bin);
+  set_bin(1);
+  istrstream_ = new istringstream();
+  set_istream(istrstream_);
+}
 
-protected:
-  mutable string string_;
 
-private:
+Entree_Brute::~Entree_Brute()
+{
+  delete[] data_;
+}
 
-};
-#endif
+int Entree_Brute::set_bin(int bin)
+{
+  if (bin != 1)
+    {
+      Cerr << "Error in Entree_Brute::set_bin(int bin) : only binary format supported. Use EChaine otherwise." << finl;
+      Process::exit();
+    }
+  Entree::set_bin(bin);
+  return bin;
+}
+
+void Entree_Brute::set_data(char * data, unsigned sz)
+{
+  const std::istream& iss = get_istream();
+  std::streambuf * sb = iss.rdbuf();
+  if(!data_)
+    {
+      // For now forbid multiple calls ... could try deleting data_
+      Cerr << "Entree_Brute::set_data(): Multiple calls forbidden!" << finl;
+      Process::exit(-1);
+    }
+  data_ = new char[sz];
+  std::copy(data, data+sz, data_);
+  sb->pubsetbuf(data_, sz);
+}

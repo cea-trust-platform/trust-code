@@ -1,4 +1,5 @@
 #!/bin/bash
+
 #
 # Installation script for MEDCoupling
 #
@@ -15,9 +16,6 @@ install_dir=$TRUST_MEDCOUPLING_ROOT
 mkdir -p $install_dir
 mkdir -p $build_dir
 cd $build_dir
-
-icocomedfield_hxx=$install_dir/include/ICoCoMEDField.hxx
-cp -af $icocomedfield_hxx .
 
 # include file:
 medcoupling_hxx=$install_dir/include/medcoupling++.h
@@ -72,8 +70,10 @@ sed -i 's/throw(INTERP_KERNEL::Exception)//' $(find $src_dir -name  DisjointDEC.
 echo "Patching findClosestTupleId() method"
 patch -p1 $(find $src_dir -name MEDCouplingMemArray.cxx ) < $tool_dir/closestTupleId.patch
 
-echo "@@@@@@@@@@@@ Configuring, compiling and installing ..."
+echo "Patching HDF detection procedure"
+cp $build_root/FindSalomeHDF5.cmake $(find $src_dir/.. -name  FindSalomeHDF5.cmake )
 
+echo "@@@@@@@@@@@@ Configuring, compiling and installing ..."
 cd $build_dir
 
 USE_MPI=ON
@@ -87,6 +87,10 @@ OPTIONS="$OPTIONS -DMEDCOUPLING_WITH_FILE_EXAMPLES=OFF -DCONFIGURATION_ROOT_DIR=
 OPTIONS="$OPTIONS -DMEDCOUPLING_MEDLOADER_USE_XDR=OFF -DMEDCOUPLING_BUILD_STATIC=ON -DMEDCOUPLING_ENABLE_PYTHON=ON" 
 # NO_CXX1 pour cygwin
 OPTIONS="$OPTIONS -DNO_CXX11_SUPPORT=OFF"
+
+CC=$MPI_ROOT/bin/mpicc
+CXX=$MPI_ROOT/bin/mpicxx
+
 echo "About to execute CMake -- options are: $OPTIONS"
 echo "Current directory is : `pwd`"
 cmake ../$src_dir $OPTIONS -DCMAKE_INSTALL_PREFIX=$install_dir -DCMAKE_BUILD_TYPE=Release
