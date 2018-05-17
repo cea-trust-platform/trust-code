@@ -28,9 +28,9 @@
 #include <Sous_Zone.h>
 
 Implemente_instanciable(Create_domain_from_sous_zone,"Create_domain_from_sous_zone",Interprete_geometrique_base);
-// XD create_domain_from_sous_zone interprete_geometrique_base create_domain_from_sous_zone 1 These keyword fills the domain domaine_final with the subzone par_sous_zone from the domain domaine_init. It is very useful when meshing several mediums with Gmsh. Each medium will be defined as a subzone into Gmsh. A MED mesh file will be saved from Gmsh and read with Lire_Med keyword by the TRUST data file. And with this keyword, a domain will be created for each medium in the TRUST data file.
+// XD create_domain_from_sous_zone interprete_geometrique_base create_domain_from_sous_zone 1 This keyword fills the domain domaine_final with the subzone par_sous_zone from the domain domaine_init. It is very useful when meshing several mediums with Gmsh. Each medium will be defined as a subzone into Gmsh. A MED mesh file will be saved from Gmsh and read with Lire_Med keyword by the TRUST data file. And with this keyword, a domain will be created for each medium in the TRUST data file.
 // 16/10/2017: desactivation du mot-cle par_sous_zones
-// create_domain_from_sous_zone interprete_geometrique_base create_domain_from_sous_zone 1 These keyword fills the domain domaine_final with the subzone par_sous_zone or with several subzones par_sous_zones from the domain domaine_init. It is very useful when meshing several mediums with Gmsh. Each medium will be defined as a subzone into Gmsh. A MED mesh file will be saved from Gmsh and read with Lire_Med keyword by the TRUST data file. And with this keyword, a domain will be created for each medium in the TRUST data file.
+// create_domain_from_sous_zone interprete_geometrique_base create_domain_from_sous_zone 1 This keyword fills the domain domaine_final with the subzone par_sous_zone or with several subzones par_sous_zones from the domain domaine_init. It is very useful when meshing several mediums with Gmsh. Each medium will be defined as a subzone into Gmsh. A MED mesh file will be saved from Gmsh and read with Lire_Med keyword by the TRUST data file. And with this keyword, a domain will be created for each medium in the TRUST data file.
 
 Sortie& Create_domain_from_sous_zone::printOn(Sortie& os) const
 {

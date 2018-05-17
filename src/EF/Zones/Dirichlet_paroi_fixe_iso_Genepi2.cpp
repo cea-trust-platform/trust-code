@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,7 @@
 
 Implemente_instanciable( Dirichlet_paroi_fixe_iso_Genepi2, "paroi_fixe_iso_Genepi2_sans_contribution_aux_vitesses_sommets", Dirichlet_paroi_fixe ) ;
 
-// XD paroi_fixe_iso_Genepi2_sans_contribution_aux_vitesses_sommets paroi_fixe paroi_fixe_iso_Genepi2_sans_contribution_aux_vitesses_sommets -1 CL pour obtenir iso Geneppi2, sans interet
+// XD paroi_fixe_iso_Genepi2_sans_contribution_aux_vitesses_sommets paroi_fixe paroi_fixe_iso_Genepi2_sans_contribution_aux_vitesses_sommets -1 Boundary condition to obtain iso Geneppi2, without interest
 
 Sortie& Dirichlet_paroi_fixe_iso_Genepi2::printOn( Sortie& os ) const
 {
