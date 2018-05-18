@@ -50,6 +50,11 @@ genere_fiche()
     dir=$1
     prm=`ls $dir/src/*.prm`
     cas=`basename $dir`
+    opt=""
+    if [ $with_sjob -eq 1 ]
+    then
+      opt="-parallel_sjob"
+    fi 
     if [ $concurent -eq 0 ] ||  [ ! -d BUILD/$cas/build ]
 	then
 	[ ! -d BUILD ] && echo `pwd` pas de build && exit 
@@ -61,7 +66,7 @@ genere_fiche()
 	chmod -R +w  BUILD/$cas
 	cd BUILD/$cas
 	touch Running$OPTIONS_PRM
-	${GENERE_COURBE}/Run $prm  $OPTIONS_PRM 1> run$OPTIONS_PRM.log 2>&1
+	${GENERE_COURBE}/Run $prm $opt  $OPTIONS_PRM 1> run$OPTIONS_PRM.log 2>&1
 
 	if [ ! -f build/rapport.pdf ]
 	    then
@@ -73,7 +78,7 @@ genere_fiche()
 	 ###   ${GENERE_COURBE}/src/genere $prm 
 	    if [ $pdf_only -eq  0 ]
 	     then
-	    ${GENERE_COURBE}/Run $prm -archive 1>arc.log 2>&1
+	    ${GENERE_COURBE}/Run $prm $opt -archive 1>arc.log 2>&1
 	    status=$?
 	    if [ $status -ne 0 ] 
 		then
@@ -111,6 +116,8 @@ concurent=0
 [ "$1" = "-concurent" ] && concurent=1 && shift
 pdf_only=0
 [ "$1" = "-pdf_only" ] && pdf_only=1 && shift
+with_sjob=0
+[ "$1" = "-parallel_sjob" ] && with_sjob=1 && shift
 
 liste_prm=`get_list_prm`
 [ "$1" = "-from-Times" ] && shift && file=$1 && shift&& liste_prm=`get_list_prm_from_Times $file` 
