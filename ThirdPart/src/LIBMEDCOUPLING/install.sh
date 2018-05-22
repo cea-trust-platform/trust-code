@@ -53,12 +53,12 @@ tar zxf $archive
 #echo patching MEDLoader
 #cp $org/MEDLoader.hxx $(find $medcoupling -name  MEDLoader.hxx )
 
-echo patching MEDCouplingFieldDouble
-cp $org/MEDCouplingFieldDouble.hxx $(find $medcoupling -name  MEDCouplingFieldDouble.hxx )
+#echo patching MEDCouplingFieldDouble
+#cp $org/MEDCouplingFieldDouble.hxx $(find $medcoupling -name  MEDCouplingFieldDouble.hxx )
 
-echo patching DisjointDEC
-cp $org/DisjointDEC.hxx $(find $medcoupling -name  DisjointDEC.hxx )
-cp $org/DisjointDEC.cxx $(find $medcoupling -name  DisjointDEC.cxx )
+#echo patching DisjointDEC
+#cp $org/DisjointDEC.hxx $(find $medcoupling -name  DisjointDEC.hxx )
+#cp $org/DisjointDEC.cxx $(find $medcoupling -name  DisjointDEC.cxx )
 mkdir build
 cd build
 
