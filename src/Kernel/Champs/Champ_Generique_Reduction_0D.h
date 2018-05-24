@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,11 +37,15 @@
 //
 // "nom_champ" Reduction_0D { methode "type_methode"
 //                source "type_champ_gen" { ...source ref_Champ { Pb_champ "nom_pb" "nom_champ_discret" } }
+//                [ nom_source "nom_source" ]
+//                [ source_reference "source_reference" ]
+//                [ sources_reference "list_nom_virgule" ]
+//                [ sources "listchamp_generique" ]
 //               }
 // "nom_champ" fixe par utilisateur sera le nom du champ generique
 // "type_champ_gen" type d'un champ generique
 // "type_methode" indique le type de reduction demandee
-// Les options possibles sont : min, max, moyenne, moyenne_ponderee_volume_elem et somme
+// Les options possibles sont disponibles dans $TRUST_ROOT/src/Kernel/Champs/Champ_Generique_Reduction_0D.cpp
 
 class Champ_Generique_Reduction_0D : public Champ_Gen_de_Champs_Gen
 {
