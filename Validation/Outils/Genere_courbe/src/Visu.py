@@ -235,7 +235,7 @@ class Visu:
 					listcolor=["red","green","blue","black"]
 					if color not in listcolor:
 						from string import join
-						self.gestMsg.ecrire(GestionMessages._ERR, 'color expected in %s ansd not %s'% (listcolor,color))
+						self.gestMsg.ecrire(GestionMessages._ERR, 'color expected in %s and not %s'% (listcolor,color))
 					ficPlot.write('red=(255,0,0,255);green=(0,255,0,255);black=(0,0,0,255);blue=(0,0,255,255)\n')
 					ficPlot.write('m=MeshAttributes()\nm.SetMeshColorSource(1)\nm.SetMeshColor(%s)\nSetPlotOptions(m)\n'%color)
 
