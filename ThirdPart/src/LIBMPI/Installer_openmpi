@@ -27,10 +27,10 @@ package=openmpi-$version.tar.gz
 if [ ! -f $package ]
 then
    rep_version=`echo $version | $TRUST_Awk -F. '{print $1"."$2}'`
-   wget_ http://www.open-mpi.org/software/ompi/v$rep_version/downloads/$package
+   wget_ https://download.open-mpi.org/release/open-mpi/v$rep_version/$package
    if [ $? != 0 ] 
    then 
-      wget_ http://www.open-mpi.de/software/ompi/v$rep_version/downloads/$package
+      wget_ http://download.open-mpi.org/release/open-mpi/v$rep_version/$package
       [ $? != 0 ] && exit -1
    fi
 fi

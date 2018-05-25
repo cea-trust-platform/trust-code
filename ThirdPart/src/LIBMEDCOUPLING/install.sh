@@ -40,25 +40,18 @@ fi
 [ ! -f $archive ] && echo $archive no such file && exit 1
 tar zxf $archive
 
-#echo patching MEDCouplingDataArrayTypemaps.i
-#sed "s/NPY_ARRAY_OWNDATA/NPY_OWNDATA/g" -i MED_SRC/src/MEDCoupling_Swig/MEDCouplingDataArrayTypemaps.i
-
-#echo patching MPIAcces.h
-#sed -i  "s/return (MPI_Datatype ) NULL /return MPI_DATATYPE_NULL /"    MED_SRC/src/ParaMEDMEM/MPIAccess.hxx
-
-#echo patching MPIProcessorGroup.cxx
-#sed -i "s?_comm_interface.commCreate(_world_comm, _group, &_comm);?_comm_interface.commCreate(_world_comm, _group, \&_comm);MPI_Group_free(\&group_world);?"  MED_SRC/src/ParaMEDMEM/MPIProcessorGroup.cxx
-#echo patching MEDCouplingMemArray
-#cp $org/MEDCouplingMemArray.hxx $(find $medcoupling -name  MEDCouplingMemArray.hxx )
-#echo patching MEDLoader
-#cp $org/MEDLoader.hxx $(find $medcoupling -name  MEDLoader.hxx )
-
 echo patching MEDCouplingFieldDouble
 cp $org/MEDCouplingFieldDouble.hxx $(find $medcoupling -name  MEDCouplingFieldDouble.hxx )
 
 echo patching DisjointDEC
 cp $org/DisjointDEC.hxx $(find $medcoupling -name  DisjointDEC.hxx )
 cp $org/DisjointDEC.cxx $(find $medcoupling -name  DisjointDEC.cxx )
+
+echo patching Interpolation1D0D.txx 
+cp $org/Interpolation1D0D.txx $(find $medcoupling -name Interpolation1D0D.txx )
+
+echo patching MEDCouplingSkyLineArray.cxx 
+cp $org/MEDCouplingSkyLineArray.cxx $(find $medcoupling -name  MEDCouplingSkyLineArray.cxx )
 mkdir build
 cd build
 
