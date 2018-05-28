@@ -73,7 +73,7 @@ Sortie& Modele_turbulence_hyd_K_Eps::printOn(Sortie& s ) const
 // Postcondition:
 Entree& Modele_turbulence_hyd_K_Eps::readOn(Entree& s )
 {
-  return Mod_turb_hyd_RANS::readOn(s); 
+  return Mod_turb_hyd_RANS::readOn(s);
 }
 
 void Modele_turbulence_hyd_K_Eps::set_param(Param& param)

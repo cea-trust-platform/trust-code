@@ -107,11 +107,11 @@ void Faces_builder::creer_faces_reeles(Zone& zone,
   //   (les faces de l'element sont dans l'ordre donne par faces_element_reference)
   //  espaces distants et virtuels appropries pour les elements
   const int nb_elements          = les_elements().dimension(0);
-  const int nb_faces_par_element = faces_element_reference(0).dimension(0);
+  const int nb_faces_par_element = faces_element_reference(0).dimension(0) ? faces_element_reference(0).dimension(0) : 4;
   elem_faces.resize(nb_elements, nb_faces_par_element);
   elem_faces = -1;
 
-  const int nb_sommets_par_face = faces_element_reference(0).dimension(1);
+  const int nb_sommets_par_face = faces_element_reference(0).dimension(0) ? faces_element_reference(0).dimension(1) : 3;
   // On ajoute chaque face avec resize(n+1,...), donc smart_resize:
   // Calcul du nombre theorique de faces:
   const int nb_faces_front = zone.nb_faces_frontiere() + zone.nb_faces_joint();
@@ -368,7 +368,7 @@ int Faces_builder::chercher_face_element(const IntTab&    elem_som,
 }
 const IntTab& Faces_builder::faces_element_reference(int elem) const
 {
-  if (is_polyedre_==1)
+  if (is_polyedre_==1 && les_elements_ptr_->dimension(0))
     {
       assert(is_polyedre_==1);
       const Poly_geom_base& poly=ref_cast(Poly_geom_base,ref_zone_->type_elem().valeur());
@@ -415,7 +415,7 @@ void Faces_builder::creer_faces_frontiere(const int nb_voisins_attendus,
   assert(nb_voisins_attendus == 1 || nb_voisins_attendus == 2);
 
   const Static_Int_Lists& som_elem   = connectivite_som_elem();
-  const int   nb_sommets_par_face  = faces_element_reference(0).dimension(1);
+  const int   nb_sommets_par_face  = faces_element_reference(0).dimension(0) ? faces_element_reference(0).dimension(1) : 3;
   const int   num_premiere_face    = faces_sommets.dimension(0);
   const int   nb_elem_reels        = elem_faces.dimension(0);
   frontiere.fixer_num_premiere_face(num_premiere_face);
@@ -563,7 +563,7 @@ void Faces_builder::creer_faces_internes(IntTab& faces_sommets,
   //  const IntTab & faces_elem_ref       = faces_element_reference();
   const int   nb_elem              = elem_som.dimension(0);
   const int   nb_faces_par_element = faces_element_reference(0).dimension(0);
-  const int   nb_sommets_par_face  = faces_element_reference(0).dimension(1);
+  const int   nb_sommets_par_face  = nb_faces_par_element ? faces_element_reference(0).dimension(1) : 3;
 
   // Tableau temporaire dans lequel on stocke les indices des sommets
   // de la face en cours de traitement

@@ -775,8 +775,6 @@ int Format_Post_Lml::ecrire_item_int_lml(const Nom&   id_item,
             for (int j=0; j<tab.dimension(1); j++)
               {
                 int tab_dimension1_opt=tab.dimension(1);
-                abort();
-                // GF on faisait quoi ????
                 for (int j2=0; j2<tab_dimension1_opt; j2++)
                   os << i+1 << " " << tab(i,j2) << " ";
               }

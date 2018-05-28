@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -892,18 +892,20 @@ Entree& Sous_Zone::readOn(Entree& is)
           DoubleVect x(dimension);
           int compteur=0;
           Cerr << "Construction of the subarea " << le_nom()<< finl;
-          double inv_nbsom=1./((double)(nbsom));
           les_polys_.resize(nb_pol_possible);
           for (int n_pol=0; n_pol<nb_pol_possible; n_pol++)
             {
               le_poly=les_polys_possibles_[n_pol];
               x=0;
+              int nbsom_loc = 0;
               for(int le_som=0; le_som<nbsom; le_som++)
-                {
-                  for(int k=0; k<dimension; k++)
-                    x(k)+=dom.coord(lazone.sommet_elem(le_poly,le_som),k);
-                }
-              x*=inv_nbsom;
+                if (lazone.sommet_elem(le_poly,le_som) >= 0)
+                  {
+                    for(int k=0; k<dimension; k++)
+                      x(k)+=dom.coord(lazone.sommet_elem(le_poly,le_som),k);
+                    nbsom_loc++;
+                  }
+              x *= 1. / nbsom_loc;
               F.setVar(0,x[0]);
               F.setVar(1,x[1]);
               if (dimension==3)
