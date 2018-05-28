@@ -1,0 +1,20 @@
+#!/bin/bash
+sed "s/onduction/onduction_milieu_variable/g;s/olide/olide_Milieu_Variable/g" conduc.data > conduc_var.data 
+sed "s/onduction/onduction_milieu_variable/g;s/olide/olide_Milieu_Variable/g" conduc_bar.data > conduc_bar_var.data 
+
+sed "s/onduction/onduction_milieu_variable/g;s/olide/olide_Milieu_Variable/g" conduc_doublebar.data > conduc_doublebar_var.data
+
+sed "s/rho Champ_Uniforme 1 2/rho Champ_Uniforme_morceaux dom 1 { defaut	1.0e10 left_elem 2.0 right_elem 0.5 }/g" conduc_doublebar_var.data > conduc_doublebar_rhoCp_var.data  
+sed -i "s/Cp Champ_Uniforme 1 0.5/Cp Champ_Uniforme_morceaux dom 1 { defaut	1.0e10 left_elem 0.5 right_elem 2.0 }/g" conduc_doublebar_rhoCp_var.data
+
+# Version EF 
+sed "s/VDF dis/EF dis/g" conduc_doublebar_rhoCp_var.data > conduc_doublebar_rhoCp_var_ef.data
+sed -i "s/sonde_horiz temperature periode 1. segment 30 -0.983 0.5 0.983 0.5/sonde_horiz temperature periode 1. segment 31 -1.0 0.5 1.0 0.5/g" conduc_doublebar_rhoCp_var_ef.data
+
+
+#echo Generation du maillage MED ...
+source $TRUST_MEDCOUPLING_ROOT/env.sh || echo Warning: impossible de sourcer MEDCoupling. On prend l existant.
+python gen_mesh.py || echo Warning: le maillage n a pas pu etre regenere. On prend l existant.
+echo Done prepare
+exit 0
+

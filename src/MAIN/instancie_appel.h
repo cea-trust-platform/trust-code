@@ -36,6 +36,7 @@ void instancie_src_ThHyd();
 void instancie_src_ThHyd_Chimie();
 void instancie_src_ThHyd_Modele_turbulence_base();
 void instancie_src_ThHyd_Quasi_Compressible();
+void instancie_src_ThHyd_Quasi_Compressible_EF();
 void instancie_src_ThHyd_Quasi_Compressible_Turbulence();
 void instancie_src_ThHyd_Quasi_Compressible_VDF();
 void instancie_src_ThHyd_Quasi_Compressible_VEF();

@@ -1,0 +1,50 @@
+#!/bin/bash
+
+seuil=0.005
+jdd=$1
+
+[ "$TRUST_DISABLE_MEDCOUPLING" != 0 ] && exit 0
+[ "$MED_COUPLING_PYTHON" != "ON" ] && exit 0
+
+case $jdd in
+  *conduc_mil_var_jdd1)
+    compare_sonde "$jdd_SONDE_HORIZ.son" conduc_SONDE_HORIZ.son.ref -type statio -seuil_erreur $seuil 1> compare_sonde_h.log 2>&1
+    compare_sonde "$jdd_SONDE_VERT.son" conduc_SONDE_VERT.son.ref -type statio -seuil_erreur $seuil 1> compare_sonde_v.log 2>&1    
+    compare_sonde "$jdd_SONDE_POINT.son" conduc_SONDE_POINT.son.ref -type statio -seuil_erreur $seuil 1> compare_sonde_p.log 2>&1    
+    ;;
+  *conduc_mil_var_jdd2)
+    compare_sonde "$jdd_SONDE_HORIZ.son" conduc_var_SONDE_HORIZ.son.ref -type statio -seuil_erreur $seuil 1> compare_sonde_h.log 2>&1
+    compare_sonde "$jdd_SONDE_VERT.son" conduc_var_SONDE_VERT.son.ref -type statio -seuil_erreur $seuil 1> compare_sonde_v.log 2>&1    
+    compare_sonde "$jdd_SONDE_POINT.son" conduc_var_SONDE_POINT.son.ref -type statio -seuil_erreur $seuil 1> compare_sonde_p.log 2>&1    
+    ;;
+  *conduc_mil_var_jdd3)
+    compare_sonde "$jdd_SONDE_HORIZ.son" conduc_doublebar_SONDE_HORIZ.son.ref -type statio -seuil_erreur $seuil 1> compare_sonde_h.log 2>&1
+    ;;
+  *conduc_mil_var_jdd4)
+    compare_sonde "$jdd_SONDE_HORIZ.son" conduc_doublebar_var_SONDE_HORIZ.son.ref -type statio -seuil_erreur $seuil 1> compare_sonde_h.log 2>&1
+    ;;
+  *conduc_mil_var_jdd5)
+    compare_sonde "$jdd_SONDE_HORIZ.son" conduc_rhoCp_var_SONDE_HORIZ.son.ref -type statio -seuil_erreur $seuil 1> compare_sonde_h.log 2>&1
+    ;;
+  *conduc_mil_var_jdd6)
+    compare_sonde "$jdd_SONDE_HORIZ.son" conduc_bar_SONDE_HORIZ.son.ref -type statio -seuil_erreur $seuil 1> compare_sonde_h.log 2>&1
+    compare_sonde "$jdd_SONDE_POINT.son" conduc_bar_SONDE_POINT.son.ref -type statio -seuil_erreur $seuil 1> compare_sonde_p.log 2>&1    
+    ;;
+  *conduc_mil_var_jdd7)
+    compare_sonde "$jdd_SONDE_HORIZ.son" conduc_bar_var_SONDE_HORIZ.son.ref -type statio -seuil_erreur $seuil 1> compare_sonde_h.log 2>&1
+    compare_sonde "$jdd_SONDE_POINT.son" conduc_bar_var_SONDE_POINT.son.ref -type statio -seuil_erreur $seuil 1> compare_sonde_p.log 2>&1    
+    ;;
+  *conduc_mil_var_jdd8)
+    compare_sonde "$jdd_SONDE_HORIZ.son" conduc_doublebar_rhoCp_var_ef_SONDE_HORIZ.son.ref -type statio -seuil_erreur $seuil 1> compare_sonde_h.log 2>&1
+    ;;
+  *conduc_mil_var_jdd9)
+    compare_sonde "$jdd_SONDE_HORIZ.son" conduc_bar_ef_ana_SONDE_HORIZ.son.ref -type statio -seuil_erreur $seuil 1> compare_sonde_h.log 2>&1
+    ;;    
+  *)
+    echo Case not handled yet in verifie!
+    exit 1
+    ;;
+esac
+
+exit 0
+

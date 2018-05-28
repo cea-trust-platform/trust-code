@@ -1,0 +1,108 @@
+# Conduction 1D : une barre horizontale faite de deux materiaux  #
+# PARALLEL OK 4 #
+dimension 2
+
+Pb_conduction_milieu_variable pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Cavite 
+ 	{
+		Origine 0. 0.
+		Nombre_de_Noeuds 31 2 
+		Longueurs 1. 1.
+	}
+	{
+		Bord Gauche X = 0. 0. <= Y <= 1.
+		Bord Haut   Y = 1. 0. <= X <= 1.
+		Bord Bas    Y = 0. 0. <= X <= 1.
+		Bord Droit  X = 1. 0. <= Y <= 1.
+	}
+} 
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+	Partition_tool tranche { tranches 2 1 }
+	Larg_joint 1
+	zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+EF dis
+
+Scheme_euler_implicit sch
+Read sch
+{
+	Tinit 0
+	tmax 10.
+	dt_min 0.00001
+	dt_max 0.1
+	dt_impr 0.00001
+	dt_sauv 100
+	seuil_statio 1.e-8
+
+	facsec_max 100
+	facsec 10
+	solveur implicite { solveur gmres { diag seuil 1e-20 nb_it_max 3 } } 
+
+}
+
+Solide_milieu_variable sol
+Read sol
+{
+	rho    Champ_uniforme  1 1.0  
+/* lambda    Champ_uniforme  1 1.0  
+  Cp    Champ_uniforme  1 1.0  */
+  lambda Champ_fonc_txyz dom 1   sin(t)*sin(x)+1.5 
+  Cp     Champ_fonc_txyz dom 1   sin(t)*sin(x)+2.0
+ 
+}
+Associate pb dom
+Associate pb sch
+Associate pb sol
+
+Discretize pb dis
+
+Read pb
+{
+	Conduction_milieu_variable
+	{
+		diffusion { }
+		initial_conditions {
+			temperature Champ_Uniforme 1  0.0 
+# 			temperature Champ_fonc_xyz dom 1 sin(3.1415926535898*x) #
+			}
+	  sources {
+       Puissance_Thermique champ_fonc_txyz dom 1 (sin(x)*sin(t)+2.0)*(sin(3.1415926535898*x)*cos(t))+3.1415926535898*sin(t)*(3.1415926535898*(sin(x)*sin(t)+1.5)*sin(3.1415926535898*x)-cos(x)*cos(3.1415926535898*x)*sin(t))
+         
+/*      Puissance_Thermique champ_fonc_txyz dom 1 sin(3.1415926535898*x)*((sin(t)*sin(x)+2.0)*cos(t)+3.1415926535898*3.1415926535898*sin(t))  */
+	  } 
+		boundary_conditions {
+			Haut paroi_adiabatique
+			Bas paroi_adiabatique
+			Gauche paroi_temperature_imposee        Champ_Front_Uniforme 1 0.0		
+			Droit paroi_temperature_imposee        Champ_Front_Uniforme 1 0.0		
+		}
+	}
+
+	Post_processing
+	{
+		Probes
+		{
+			sonde_horiz temperature periode 1. segment 31 0.0 0.5 1.0 0.5 
+		}		
+	}
+}
+
+Solve pb
+
+End
