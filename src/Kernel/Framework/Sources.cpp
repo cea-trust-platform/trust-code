@@ -24,6 +24,7 @@
 
 #include <Sources.h>
 #include <DoubleTab.h>
+#include <Matrice_Morse.h>
 
 Implemente_liste(Source);
 Implemente_instanciable(Sources,"Sources",LIST(Source));
@@ -307,6 +308,22 @@ int Sources::impr(Sortie& os) const
   return 1;
 }
 
+// Description:
+//    Dimensionnement de la matrice implicite des termes sources.
+//    Parcours toutes les sources de la liste pour dimensionner.
+void Sources::dimensionner(Matrice_Morse& matrice) const
+{
+  CONST_LIST_CURSEUR(Source) curseur(*this);
+  while(curseur)
+    {
+      const Source& src = curseur.valeur();
+      const Source_base& src_base = src.valeur();
+      Matrice_Morse mat;
+      src_base.dimensionner(mat);
+      if (mat.nb_colonnes()) matrice += mat;
+      ++curseur;
+    }
+}
 // Description:
 // contribution a la matrice implicite des termes sources
 // par defaut pas de contribution
