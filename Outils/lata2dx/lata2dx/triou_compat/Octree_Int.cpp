@@ -400,7 +400,7 @@ entier Octree_Int::build_octree_recursively(const entier octree_center_x,
   //  ce qui permet de ranger des elements tres alonges qui sont forcement
   //  dupliques dans une direction (>octree_duplicate_elements_limit).
   if ((nb_duplicate_elements * 2 >= nb_elems && nb_elems < octree_duplicate_elements_limit)
-      || nb_duplicate_elements > nb_elems * 3)
+      || nb_duplicate_elements > nb_elems)
     {
       const entier octree_id = build_octree_floor(elements_list);
       // On renvoie un index d'octreefloor
