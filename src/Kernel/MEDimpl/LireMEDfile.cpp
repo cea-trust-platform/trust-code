@@ -14,65 +14,60 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        LireMED.h
+// File:        LireMEDfile.cpp
 // Directory:   $TRUST_ROOT/src/Kernel/MEDimpl
-// Version:     /main/20
+// Version:     /main/38
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef LireMED_included
-#define LireMED_included
+#include <LireMEDfile.h>
+#include <Interprete.h>
 
+Implemente_instanciable_sans_constructeur(LireMEDfile,"Lire_MEDfile",Interprete);
 
-
-
-///////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-// Classe LireMED
-//    Lire un fichier MED
-//    Structure du jeu de donnee (en dimension 2) :
-//    LireMED dom medfile
-// .SECTION voir aussi
-//
-//
-///////////////////////////////////////////////////////////////////////////
-#include <Interprete_geometrique_base.h>
-#include <med++.h>
-
-class Nom;
-class Domaine;
-class ArrOfDouble;
-
-class LireMED : public Interprete_geometrique_base
+LireMEDfile::LireMEDfile()
 {
-  Declare_instanciable_sans_constructeur(LireMED);
-public :
-  LireMED();
-  Entree& interpreter_(Entree&);
-  void lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const Nom& nom_dom1, int isvef=0, int isfamilyshort=0);
-  ///! Set use_medcoupling flag
-  void setMEDCoupling(bool mc)
-  {
-    use_medcoupling_ = mc;
-  }
-protected:
-  bool use_medcoupling_;
-};
-
-// fonctions utiles
-inline void med_non_installe()
-{
-  Cerr << "This version has not been built with MED library." << finl;
-  Process::exit();
+  use_medcoupling_ = false;
 }
-class Char_ptr;
-void lire_nom_med(Nom& nom_champ,Entree& is);
-void test_version(Nom& nom) ;
-void dimensionne_char_ptr_taille(Char_ptr& nom ,int taille_d_un_mot,int nb=1);
-void traite_nom_fichier_med(Nom& nom_fic);
-void medinfochamp_existe(const Nom& nom_fic,Noms& nomschamp,const Domaine& dom,ArrOfDouble& temps_sauv);
-#ifdef MED_
-Nom medinfo1champ(const Nom& nom_fic, const char* nomchamp,int& numero,int& nbcomp,int& ndt,med_entity_type& type_ent, med_geometry_type& type_geo,int& size, const Nom& nom_dom,int verifie_type,ArrOfDouble& temps_sauv);
-#endif
-#endif
+
+// Description:
+//    Simple appel a: Interprete::printOn(Sortie&)
+// Precondition:
+// Parametre: Sortie& os
+//    Signification: un flot de sortie
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces: entree/sortie
+// Retour: Sortie&
+//    Signification: le flot de sortie modifie
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition: la methode ne modifie pas l'objet
+Sortie& LireMEDfile::printOn(Sortie& os) const
+{
+  return Interprete::printOn(os);
+}
+
+
+// Description:
+//    Simple appel a: Interprete::readOn(Entree&)
+// Precondition:
+// Parametre: Entree& is
+//    Signification: un flot d'entree
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces: entree/sortie
+// Retour: Entree&
+//    Signification: le flot d'entree modifie
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+Entree& LireMEDfile::readOn(Entree& is)
+{
+  return Interprete::readOn(is);
+}
+
+
+

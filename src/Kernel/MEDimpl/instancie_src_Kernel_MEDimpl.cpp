@@ -18,6 +18,7 @@
 #include <Integrer_champ_med.h>
 #include <LataToMED.h>
 #include <LireMED.h>
+#include <LireMEDfile.h>
 #include <Pb_MED.h>
 #include <Read_MED_For_Testing_No_Verify_Option.h>
 #include <ScatterMED.h>
@@ -39,8 +40,9 @@ Integrer_champ_med inst13;verifie_pere(inst13);
 LataToMED inst14;verifie_pere(inst14);
 latatoother inst15;verifie_pere(inst15);
 LireMED inst16;verifie_pere(inst16);
-Pb_MED inst17;verifie_pere(inst17);
-Pbc_MED inst18;verifie_pere(inst18);
-Read_MED_For_Testing_No_Verify_Option inst19;verifie_pere(inst19);
-ScatterMED inst20;verifie_pere(inst20);
+LireMEDfile inst17;verifie_pere(inst17);
+Pb_MED inst18;verifie_pere(inst18);
+Pbc_MED inst19;verifie_pere(inst19);
+Read_MED_For_Testing_No_Verify_Option inst20;verifie_pere(inst20);
+ScatterMED inst21;verifie_pere(inst21);
 }
