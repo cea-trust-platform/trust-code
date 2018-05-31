@@ -44,3 +44,12 @@ Pour visualiser les vitesses aux faces:
   volume de controle des faces de vitesse x. Idem pour y et z.
 
 - en 2d il faut utiliser Simple shade a la place de cut plane (non teste)
+
+
+UPDATE mai 2018
+---------------
+
+WARNING: in triou_compat, the file Octree_Int.cpp keeps a major difference with the source forge version.
+The comparison done at line 400 on the number of elements, does not have the "*3" multiplier ...
+This was causing the compare_lata to fail on Kernel_Extrude_Bord_3D on Fedora24.
+

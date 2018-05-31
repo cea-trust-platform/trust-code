@@ -1,3 +1,4 @@
+#Pmacro DEF_ARRAYOFSCALAR_CPP(__Scalar__,__scalar__)
 /*****************************************************************************
 *
 * Copyright (c) 2011 - 2013, CEA
@@ -28,15 +29,21 @@
 *****************************************************************************/
 
 ////////////////////////////////////////////////////////////
-//
+// 
 // Warning : DO NOT EDIT !
 //	     Please update ArrOf_Scalar_Prototype.cpp.h
 //	     and this file will be generated automatically
-//           by the script file check.sh
+//           by the script file check.sh          
 ////////////////////////////////////////////////////////////
 
-#include <ArrOfDouble.h>
+#include <ArrOf__Scalar__.h>
+#Pif("__scalar__"!="entier")
 #include <math.h>
+#Pendif
+#Pif("__scalar__"=="entier")
+// limits.h definit INT_MIN, SHRT_MIN, ...
+#include <limits.h>
+#Pendif
 #include <stdlib.h>
 #include <Objet_U.h>
 #include <iostream>
@@ -48,23 +55,23 @@ using namespace std;
 
 // ******************************************************************
 //
-//             Implementation des methodes de VDoubledata
+//             Implementation des methodes de V__Scalar__data
 //
 // ******************************************************************
 ////////////////////////////////////////////////////////////////////
-// .NOM        ArrOfDouble
+// .NOM        ArrOf__Scalar__
 // .ENTETE     TRUST Math
 // .LIBRAIRIE  libtmath
-// .FILE       ArrOfDouble.h
-// .FILE       ArrOfDouble.cpp
+// .FILE       ArrOf__Scalar__.h
+// .FILE       ArrOf__Scalar__.cpp
 //
 // .DESCRIPTION
-// VDoubledata alloue une zone de memoire de la taille specifiee au
+// V__Scalar__data alloue une zone de memoire de la taille specifiee au
 // constructeur, et libere la zone de memoire a la destruction.
 //
 // "ref_count" compte le nombre de pointeurs qui font reference a "this".
 // (permet au dernier utilisateur de l'objet de le detruire), voir
-// ArrOfDouble.
+// ArrOf__Scalar__.
 //
 // .SECTION voir aussi
 // .CONTRAINTES
@@ -73,91 +80,84 @@ using namespace std;
 // .EPS
 ///////////////////////////////////////////////////////////////////
 
-class VDoubledata
-{
-public:
-  VDoubledata(entier size, ArrOfDouble::Storage storage);
-  ~VDoubledata();
+class V__Scalar__data {
+ public:
+  V__Scalar__data(entier size, ArrOf__Scalar__::Storage storage);
+  ~V__Scalar__data();
   entier          add_one_ref();
   entier          suppr_one_ref();
-  double *        get_data();
-  const double *  get_data() const;
+  __scalar__ *        get_data();
+  const __scalar__ *  get_data() const;
   inline entier   ref_count() const;
   inline entier   get_size() const;
-private:
+ private:
   // Le constructeur par copie et l'operateur= sont interdits.
-  VDoubledata(const VDoubledata& v);
-  VDoubledata& operator=(const VDoubledata& v);
+  V__Scalar__data(const V__Scalar__data & v);
+  V__Scalar__data & operator=(const V__Scalar__data & v);
 
   // "data" est un pointeur sur une zone de memoire de taille
-  // sz * sizeof(double), allouee par le
+  // sz * sizeof(__scalar__), allouee par le
   // constructeur et liberee par le destructeur.
   // Ce pointeur n'est jamais nul meme si size_==0
-  double * data_;
+  __scalar__ * data_;
   // Compteur incremente par add_one_ref et decremente par suppr_one_ref.
-  // Contient le nombre d'objets ArrOfDouble dont le membre "p" pointe
+  // Contient le nombre d'objets ArrOf__Scalar__ dont le membre "p" pointe
   // vers "this". On a ref_count_ >= 0.
   entier ref_count_;
-  // "sz" est la taille du tableau "data_" alloue
+  // "sz" est la taille du tableau "data_" alloue 
   // On a sz >= 0.
   entier size_;
-  ArrOfDouble::Storage storage_;
+  ArrOf__Scalar__::Storage storage_;
 };
 
 
 // Description:
-//    Construit un VDoubledata de taille size >= 0
+//    Construit un V__Scalar__data de taille size >= 0
 // Parametre: entier s
-//    Signification: taille du VDoubledata, il faut size >= 0
+//    Signification: taille du V__Scalar__data, il faut size >= 0
 // Parametre: Storage storage
 //    Signification: indique si la memoire doit etre allouee
 //                   avec "new" ou avec "simd_malloc"
 //    Valeurs par defaut: STANDARD (allocation avec "new")
 // Postcondition:
 //    data_ n'est jamais nul, meme si size==0
-VDoubledata::VDoubledata(entier size, ArrOfDouble::Storage storage)
+V__Scalar__data::V__Scalar__data(entier size, ArrOf__Scalar__::Storage storage)
 {
   if (size == 0)
-    storage = ArrOfDouble::STANDARD;
+    storage = ArrOf__Scalar__::STANDARD;
 
-  switch (storage)
-    {
-    case ArrOfDouble::STANDARD:
-      {
+  switch (storage) {
+  case ArrOf__Scalar__::STANDARD: {
 #ifdef _EXCEPTION_
-        // Allocation de la memoire sur le tas
-        try
-          {
-            data_ = new double[size];
-          }
-        catch(...)
-          {
-            Cerr << "impossible d'allouer " << size << " double " << finl;
-            throw;
-          }
-#else
-        data_ = new double[size];
-        if(!data_)
-          {
-            Cerr << "impossible d'allouer " << size << "double " << finl;
-            throw ;
-          }
-#endif
-        break;
-      }
-    case ArrOfDouble::SIMD_ALIGNED:
-      {
-#ifdef SIMD_TOOLS_H
-        data_ = (double*) simd_malloc (sizeof(double) * size);
-#else
-        Cerr<<"unable to allocate simd_aligned, version compiled without simd "<<finl;
-        throw;
-#endif
-        break;
-      }
-    default:
+    // Allocation de la memoire sur le tas
+    try {
+      data_ = new __scalar__[size];
+    }
+    catch(...) {
+      Cerr << "impossible d'allouer " << size << " __scalar__ " << finl;
       throw;
     }
+#else
+    data_ = new __scalar__[size];
+    if(!data_) {
+      Cerr << "impossible d'allouer " << size << "__scalar__ " << finl;
+      throw ;
+    }
+#endif
+    break;
+  }
+  case ArrOf__Scalar__::SIMD_ALIGNED: {
+#ifdef SIMD_TOOLS_H          
+    data_ = (__scalar__*) simd_malloc (sizeof(__scalar__) * size);
+#else
+    Cerr<<"unable to allocate simd_aligned, version compiled without simd "<<finl;
+    throw;
+#endif
+    break;
+  }
+  default:
+    throw;
+  }
   ref_count_ = 1;
   size_ = size;
   storage_ = storage;
@@ -168,41 +168,40 @@ VDoubledata::VDoubledata(entier size, ArrOfDouble::Storage storage)
 //  Detruit la zone de memoire allouee.
 // Precondition:
 //  ref_count == 0 (la zone de memoire ne doit etre referencee nulle part)
-VDoubledata::~VDoubledata()
+V__Scalar__data::~V__Scalar__data()
 {
   assert(ref_count_ == 0);
 
   // Stockage STANDARD
-  switch(storage_)
-    {
-    case ArrOfDouble::STANDARD:
-      delete[] data_;
-      break;
-    case ArrOfDouble::SIMD_ALIGNED:
-#ifdef SIMD_TOOLS_H
-      simd_free(data_);
+  switch(storage_) {
+  case ArrOf__Scalar__::STANDARD:
+    delete[] data_;
+    break;
+  case ArrOf__Scalar__::SIMD_ALIGNED: 
+#ifdef SIMD_TOOLS_H          
+    simd_free(data_);
 #else
-      Cerr<<"unable to allocate simd_aligned, version compiled without simd "<<finl;
-      throw;
+    Cerr<<"unable to allocate simd_aligned, version compiled without simd "<<finl;
+    throw;
 #endif
-      break;
-    default:
-      throw;
-    }
+    break;
+  default:
+    throw;
+  }
 
   data_ = 0;  // paranoia: si size_==-1 c'est qu'on pointe sur un zombie
   size_ = -1; //  (pointeur vers un objet qui a ete detruit)
-  storage_ = ArrOfDouble::STANDARD;
+  storage_ = ArrOf__Scalar__::STANDARD;
 }
 
 // Description: renvoie ref_count_
-inline entier VDoubledata::ref_count() const
+inline entier V__Scalar__data::ref_count() const
 {
   return ref_count_;
 }
 
 // Description: renvoie size_
-inline entier VDoubledata::get_size() const
+inline entier V__Scalar__data::get_size() const
 {
   return size_;
 }
@@ -212,7 +211,7 @@ inline entier VDoubledata::get_size() const
 //     incremente ref_count
 // Retour: int
 //    Signification: ref_count
-inline entier VDoubledata::add_one_ref()
+inline entier V__Scalar__data::add_one_ref()
 {
   return ++ref_count_;
 }
@@ -224,53 +223,53 @@ inline entier VDoubledata::add_one_ref()
 //     ref_count_ > 0
 // Retour: int
 //    Signification: ref_count
-inline entier VDoubledata::suppr_one_ref()
+inline entier V__Scalar__data::suppr_one_ref()
 {
   assert(ref_count_ > 0);
   return (--ref_count_);
 }
 
 // Description: renvoie data_
-inline double * VDoubledata::get_data()
+inline __scalar__ * V__Scalar__data::get_data()
 {
   return data_;
 }
 
 // Description: renvoie data_
-inline const double * VDoubledata::get_data() const
+inline const __scalar__ * V__Scalar__data::get_data() const
 {
   return data_;
 }
 
 // Description: Constructeur par copie. Interdit : genere une erreur !
-VDoubledata::VDoubledata(const VDoubledata& v)
+V__Scalar__data::V__Scalar__data(const V__Scalar__data & v)
 {
-  Cerr << "Erreur dans VDoubledata::VDoubledata(const VDoubledata & v)" << finl;
+  Cerr << "Erreur dans V__Scalar__data::V__Scalar__data(const V__Scalar__data & v)" << finl;
   throw;
 }
 
 // Description: Operateur= interdit. Genere une erreur !
-VDoubledata& VDoubledata::operator=(const VDoubledata& v)
+V__Scalar__data & V__Scalar__data::operator=(const V__Scalar__data & v)
 {
-  Cerr << "Erreur dans VDoubledata::operator=(const VDoubledata & v)" << finl;
+  Cerr << "Erreur dans V__Scalar__data::operator=(const V__Scalar__data & v)" << finl;
   throw;
   return *this;
 }
 
 // ******************************************************************
 //
-//             Implementation des methodes de ArrOfDouble
+//             Implementation des methodes de ArrOf__Scalar__
 //
 // ******************************************************************
 
 
 // Definition des constantes pour les options de memory_resize
-const entier ArrOfDouble::COPY_OLD = 1;
-const entier ArrOfDouble::INITIALIZE_NEW = 2;
+const entier ArrOf__Scalar__::COPY_OLD = 1;
+const entier ArrOf__Scalar__::INITIALIZE_NEW = 2;
 
 // Description:
 //  Destructeur : appelle detach_array()
-ArrOfDouble::~ArrOfDouble()
+ArrOf__Scalar__::~ArrOf__Scalar__()
 {
   detach_array();
   size_array_ = -1; // Paranoia: si size_array_==-1, c'est un zombie
@@ -279,7 +278,7 @@ ArrOfDouble::~ArrOfDouble()
 // Description:
 //  Constructeur par defaut: cree un tableau "detache",
 //  soit p_==0, data_==0, size_array_==0, smart_resize_==0
-ArrOfDouble::ArrOfDouble() :
+ArrOf__Scalar__::ArrOf__Scalar__() :
   p_(0),
   data_(0),
   size_array_(0),
@@ -296,8 +295,8 @@ ArrOfDouble::ArrOfDouble() :
 // Precondition:
 // Parametre: entier n
 //    Signification: taille du tableau
-ArrOfDouble::ArrOfDouble(entier n) :
-  p_(new VDoubledata(n, STANDARD)),
+ArrOf__Scalar__::ArrOf__Scalar__(entier n) :
+  p_(new V__Scalar__data(n, STANDARD)), 
   data_(p_->get_data()),
   size_array_(n),
   memory_size_(n),
@@ -314,10 +313,10 @@ ArrOfDouble::ArrOfDouble(entier n) :
 // Precondition:
 // Parametre: entier n
 //    Signification: taille du tableau
-// Parametre: double x
+// Parametre: __scalar__ x
 //    Signification: valeur pour initialiser le tableau
-ArrOfDouble::ArrOfDouble(entier n, double x) :
-  p_(new VDoubledata(n, STANDARD)),
+ArrOf__Scalar__::ArrOf__Scalar__(entier n, __scalar__ x) :
+  p_(new V__Scalar__data(n, STANDARD)), 
   data_(p_->get_data()),
   size_array_(n),
   memory_size_(n),
@@ -333,42 +332,39 @@ ArrOfDouble::ArrOfDouble(entier n, double x) :
 //     copie aussi.
 //     Si le tableau A est de taille nulle, on cree un tableau "detache",
 //     sinon on cree un tableau "normal".
-// Parametre: const ArrOfDouble& A
+// Parametre: const ArrOf__Scalar__& A
 //    Signification: le tableau a copier
-ArrOfDouble::ArrOfDouble(const ArrOfDouble& A)
+ArrOf__Scalar__::ArrOf__Scalar__(const ArrOf__Scalar__& A)
 {
   const entier size = A.size_array();
-  if (size > 0)
-    {
-      // Creation d'un tableau "normal"
-      storage_type_ = STANDARD;
-      p_ = new VDoubledata(size, STANDARD);
-      data_ = p_->get_data();
-      size_array_ = size;
-      memory_size_ = size;
-      smart_resize_ = A.smart_resize_;
-      inject_array(A);
-    }
-  else
-    {
-      // Creation d'un tableau "detache"
-      p_ = 0;
-      data_ = 0;
-      size_array_ = 0;
-      memory_size_ = 0;
-      smart_resize_ = 0;
-      storage_type_ = STANDARD;
-    }
+  if (size > 0) {
+    // Creation d'un tableau "normal"
+    storage_type_ = STANDARD;
+    p_ = new V__Scalar__data(size, STANDARD);
+    data_ = p_->get_data();
+    size_array_ = size;
+    memory_size_ = size;    
+    smart_resize_ = A.smart_resize_;
+    inject_array(A);
+  } else {
+    // Creation d'un tableau "detache"
+    p_ = 0;
+    data_ = 0;
+    size_array_ = 0;
+    memory_size_ = 0;
+    smart_resize_ = 0;
+    storage_type_ = STANDARD;
+  }
 }
 
 // Description:
 //   Change le mode d'allocation memoire lors des resize
-//   (voir VDoubledata et Double_ptr_trav)
+//   (voir V__Scalar__data et __Scalar___ptr_trav)
 //   Exemple pour creer un tableau avec allocation temporaire:
 //    DoubleTab tab; // Creation d'un tableau vide
 //    tab.set_mem_storage(TEMP_STORAGE); // Changement de mode d'allocation
 //    tab.resize(n); // Allocation memoire
-void ArrOfDouble::set_mem_storage(const Storage storage)
+void ArrOf__Scalar__::set_mem_storage(const Storage storage)
 {
   storage_type_ = storage;
 }
@@ -376,8 +372,8 @@ void ArrOfDouble::set_mem_storage(const Storage storage)
 // Description:
 //   Renvoie le mode d'allocation du tableau (qui sera utilise
 //   lors du prochain resize si changement de taille).
-//   (voir VDoubledata et Double_ptr_trav)
-enum ArrOfDouble::Storage ArrOfDouble::get_mem_storage() const
+//   (voir V__Scalar__data et __Scalar___ptr_trav)
+enum ArrOf__Scalar__::Storage ArrOf__Scalar__::get_mem_storage() const
 {
   return storage_type_;
 }
@@ -387,7 +383,7 @@ enum ArrOfDouble::Storage ArrOfDouble::get_mem_storage() const
 //   a chaque changement de taille (flag = 0) ou reallocation
 //   uniquement si la taille augmente et par doublement de la taille
 //   du tableau (flag = 1).
-void ArrOfDouble::set_smart_resize(entier flag)
+void ArrOf__Scalar__::set_smart_resize(entier flag)
 {
   assert(flag == 0 || flag == 1);
   smart_resize_ = flag;
@@ -396,7 +392,7 @@ void ArrOfDouble::set_smart_resize(entier flag)
 // Description:
 //    Remet le tableau dans l'etat obtenu avec le constructeur par defaut
 //    (libere la memoire mais conserve le mode d'allocation memoire actuel)
-void ArrOfDouble::reset()
+void ArrOf__Scalar__::reset()
 {
   detach_array();
 }
@@ -409,26 +405,24 @@ void ArrOfDouble::reset()
 // Precondition:
 //    Si le tableau n'a pas la meme taille que "m", alors *this doit
 //    etre "resizable" (ne pas etre de type "ref_data" et "ref_count == 1")
-// Parametre: const ArrOfDouble& m
+// Parametre: const ArrOf__Scalar__& m
 //    Signification: la tableau a copier
-// Retour:  ArrOfDouble&
+// Retour:  ArrOf__Scalar__&
 //    Signification: *this
-ArrOfDouble& ArrOfDouble::operator=(const ArrOfDouble& m)
+ArrOf__Scalar__& ArrOf__Scalar__::operator=(const ArrOf__Scalar__& m)
 {
-  if (&m != this)
-    {
-      const entier new_size = m.size_array();
-      // Le code suivant est quasiment une copie de ArrOfDouble::resize()
-      // SAUF: memory_resize est appele avec NO_INITIALIZE (la zone de memoire
-      //  n'est pas initialisee)
-      if (new_size != size_array())
-        {
-          if ((smart_resize_ == 0) || (new_size > memory_size_))
-            memory_resize(new_size, 0); // Pas d'initialisation
-          size_array_ = new_size;
-        }
-      inject_array(m);
+  if (&m != this) {
+    const entier new_size = m.size_array();
+    // Le code suivant est quasiment une copie de ArrOf__Scalar__::resize()
+    // SAUF: memory_resize est appele avec NO_INITIALIZE (la zone de memoire
+    //  n'est pas initialisee)
+    if (new_size != size_array()) {
+      if ((smart_resize_ == 0) || (new_size > memory_size_))
+	memory_resize(new_size, 0); // Pas d'initialisation
+      size_array_ = new_size;
     }
+    inject_array(m);
+  }
   return *this;
 }
 
@@ -436,30 +430,29 @@ ArrOfDouble& ArrOfDouble::operator=(const ArrOfDouble& m)
 // Description:
 //     x est affecte a toutes les cases
 // Precondition:
-// Parametre: double x
+// Parametre: __scalar__ x
 //    Signification: la valeur a affecter a toutes les cases du tableau
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: ArrOfDouble&
+// Retour: ArrOf__Scalar__&
 //    Signification: *this
 //    Contraintes:
 // Exception:
 // Effets de bord:
 // Postcondition:
-ArrOfDouble& ArrOfDouble::operator=(double x)
+ArrOf__Scalar__& ArrOf__Scalar__::operator=(__scalar__ x)
 {
   const entier n = size_array();
-  double *data = addr();
-  for (entier i = 0; i < n; i++)
-    {
-      data[i] = x;
-    }
+  __scalar__ *data = addr();
+  for (entier i = 0; i < n; i++) {
+    data[i] = x;
+  }
   return *this;
 }
 
 // Description: appelle operator=(a)
-ArrOfDouble& ArrOfDouble::copy_array(const ArrOfDouble& a)
+ArrOf__Scalar__& ArrOf__Scalar__::copy_array(const ArrOf__Scalar__ & a)
 {
   operator=(a);
   return *this;
@@ -488,7 +481,7 @@ ArrOfDouble& ArrOfDouble::copy_array(const ArrOfDouble& a)
 //  p_ et data_ sont mis a jour, mais pas size_array_ !!!
 //  (on suppose que c'est fait dans resize_array()).
 //  Si la nouvelle taille est nulle, on detache le tableau.
-void  ArrOfDouble::memory_resize(entier new_size, entier options)
+void  ArrOf__Scalar__::memory_resize(entier new_size, entier options)
 {
   assert(new_size >= 0);
 
@@ -504,54 +497,48 @@ void  ArrOfDouble::memory_resize(entier new_size, entier options)
   if (smart_resize_ && (old_mem_size * 2 > new_size))
     new_mem_size = old_mem_size * 2;
 
-  if (new_mem_size != old_mem_size)
-    {
-      // detach_array() efface le contenu de size_array_. On le met de cote:
-      const entier old_size_array = size_array_;
-      // On va reellement changer l'adresse du tableau.
-      // Il ne faut pas qu'il existe d'autre reference a ce tableau.
-      assert(data_ == 0 || (p_ != 0 && ref_count() == 1));
-      if (new_mem_size == 0)
-        {
-          // La nouvelle taille est nulle, on cree un tableau "detache"
-          detach_array();
-        }
-      else
-        {
-          // Allocation d'une nouvelle zone
-          VDoubledata * new_p = new VDoubledata(new_mem_size, storage_type_);
-          double * new_data = new_p->get_data();
-          // Raccourci si le tableau etait "detache", inutile de copier
-          // les anciennes donnees. On copie si COPY_OLD est demande
-          entier copy_size = 0;
-          if (data_ != 0)
-            {
-              // Calcul du nombre d'elements a copier vers la nouvelle
-              // zone de memoire : c'est le min de l'ancienne et de
-              // la nouvelle taille.
-              if (options & COPY_OLD)
-                {
-                  copy_size = size_array_;
-                  if (new_size < copy_size)
-                    copy_size = new_size;
-                  // Copie des valeurs dans le nouveau tableau
-                  for (entier i = 0; i < copy_size; i++)
-                    new_data[i] = data_[i];
-                }
-              // Destruction de l'ancienne zone (si plus aucune reference)
-              detach_array();
-            }
-          // On attache la nouvelle zone de memoire
-          p_ = new_p;
-          data_ = new_data;
-          memory_size_ = new_mem_size;
-          // Initialisation des cases supplementaires avec une valeur par defaut
-          if (options & INITIALIZE_NEW)
-            fill_default_value(copy_size, new_mem_size - copy_size);
-          // Restaure l'ancienne valeur de size_array_
-          size_array_ = old_size_array;
-        }
+  if (new_mem_size != old_mem_size) {
+    // detach_array() efface le contenu de size_array_. On le met de cote:
+    const entier old_size_array = size_array_;
+    // On va reellement changer l'adresse du tableau.
+    // Il ne faut pas qu'il existe d'autre reference a ce tableau.
+    assert(data_ == 0 || (p_ != 0 && ref_count() == 1));
+    if (new_mem_size == 0) {
+      // La nouvelle taille est nulle, on cree un tableau "detache"
+      detach_array();
+    } else {
+      // Allocation d'une nouvelle zone
+      V__Scalar__data * new_p = new V__Scalar__data(new_mem_size, storage_type_);
+      __scalar__ * new_data = new_p->get_data();
+      // Raccourci si le tableau etait "detache", inutile de copier
+      // les anciennes donnees. On copie si COPY_OLD est demande
+      entier copy_size = 0;
+      if (data_ != 0) {
+	// Calcul du nombre d'elements a copier vers la nouvelle
+	// zone de memoire : c'est le min de l'ancienne et de
+	// la nouvelle taille.
+	if (options & COPY_OLD) {
+	  copy_size = size_array_;
+	  if (new_size < copy_size)
+	    copy_size = new_size;
+	  // Copie des valeurs dans le nouveau tableau
+	  for (entier i = 0; i < copy_size; i++)
+	    new_data[i] = data_[i];
+	}
+	// Destruction de l'ancienne zone (si plus aucune reference)
+	detach_array();
+      }
+      // On attache la nouvelle zone de memoire
+      p_ = new_p;
+      data_ = new_data;
+      memory_size_ = new_mem_size;
+      // Initialisation des cases supplementaires avec une valeur par defaut
+      if (options & INITIALIZE_NEW)
+	fill_default_value(copy_size, new_mem_size - copy_size);
+      // Restaure l'ancienne valeur de size_array_
+      size_array_ = old_size_array;
     }
+  }
 }
 
 // Description:
@@ -572,207 +559,200 @@ void  ArrOfDouble::memory_resize(entier new_size, entier options)
 //    DONC: il faut supposer desormais que les nouvelles cases ne sont pas
 //    initialisees lors d'un resize.
 // Parametre: first
-//  Signification: premiere case a initialiser.
+//  Signification: premiere case a initialiser. 
 //  Contrainte:    (nb==0) ou (0 <= first < memory_size_)
 // Parametre: nb
-//  Signification: nombre de cases a initialiser.
+//  Signification: nombre de cases a initialiser. 
 //  Contrainte:    (nb==0) ou (0 < nb <= memory_size_ - first)
-void  ArrOfDouble::fill_default_value(entier first, entier nb)
+void  ArrOf__Scalar__::fill_default_value(entier first, entier nb)
 {
   assert((nb == 0) || (first >= 0 && first < memory_size_));
   assert((nb == 0) || (nb > 0 && nb <= memory_size_ - first));
-  double * data = addr();
+  __scalar__ * data = addr();
   assert(data!=0 || nb==0);
   data += first;
-  if (smart_resize_)
-    {
-      /*
-          // On initialise uniquement en mode debug
-      #ifndef NDEBUG
-          // Ceci represente un NAN. N'importe quelle operation avec ca fait encore un NAN.
-          // Si c'est pas portable, on peut remplacer par DMAX_FLOAT sur les autres machines.
-          static const unsigned long long  VALEUR_INVALIDE =
-            0x7ff7ffffffffffffULL;
+  if (smart_resize_) {
+/*
+    // On initialise uniquement en mode debug
+#ifndef NDEBUG
+#Pif("__scalar__"=="entier")
+    static const entier ENTIER_INVALIDE = INT_MIN;
+    for (entier i = 0; i < nb; i++) 
+      data[i] = ENTIER_INVALIDE;
+#Pendif
+#Pif("__scalar__"!="entier")
+    // Ceci represente un NAN. N'importe quelle operation avec ca fait encore un NAN.
+    // Si c'est pas portable, on peut remplacer par DMAX_FLOAT sur les autres machines.
+    static const unsigned long long  VALEUR_INVALIDE =
+      0x7ff7ffffffffffffULL;
 
-          // On utilise "memcpy" et non "=" car "=" peut provoquer une exception
-          // si la copie passe par le fpu.
-          for (entier i = 0; i < nb; i++)
-            memcpy(data + i, & VALEUR_INVALIDE, sizeof(double));
-      #endif
-      */
-    }
-  else
-    {
-      // Comportement pour les tableaux normaux : compatibilite avec la
-      // version precedente : on initialise avec 0.
-      for (entier i = 0; i < nb; i++)
-        data[i] = (double) 0;
-    }
+    // On utilise "memcpy" et non "=" car "=" peut provoquer une exception
+    // si la copie passe par le fpu.
+    for (entier i = 0; i < nb; i++)
+      memcpy(data + i, & VALEUR_INVALIDE, sizeof(__scalar__));
+#Pendif
+#endif
+*/
+  } else {
+    // Comportement pour les tableaux normaux : compatibilite avec la
+    // version precedente : on initialise avec 0.
+    for (entier i = 0; i < nb; i++) 
+      data[i] = (__scalar__) 0;
+  }
 }
 
 // ****************************************************************
-//
-//         Fonctions non membres de la classe ArrOfDouble
+// 
+//         Fonctions non membres de la classe ArrOf__Scalar__
 //
 // ****************************************************************
 
-// Description:
+// Description: 
 //  Renvoie 1 si les tableaux "v" et "a" sont de la meme taille
 //  et contiennent les memes valeurs au sens strict, sinon renvoie 0.
 //  Le test est !(v[i]!=a[i])
-entier operator==(const ArrOfDouble& v, const ArrOfDouble& a)
+entier operator==(const ArrOf__Scalar__& v, const ArrOf__Scalar__& a) 
 {
   const entier n = v.size_array();
   const entier na = a.size_array();
   entier resu = 1;
-  if (n != na)
-    {
-      resu = 0;
+  if (n != na) {
+    resu = 0;
+  } else {
+    const __scalar__* vv = v.addr();
+    const __scalar__* av = a.addr();
+    entier i;
+    for (i = 0; i < n; i++) {
+      if (av[i] != vv[i]) {
+	resu = 0;
+	break;
+      }
     }
-  else
-    {
-      const double* vv = v.addr();
-      const double* av = a.addr();
-      entier i;
-      for (i = 0; i < n; i++)
-        {
-          if (av[i] != vv[i])
-            {
-              resu = 0;
-              break;
-            }
-        }
-    }
+  }
   return resu;
 }
 
-// Description:
+// Description: 
 //    Retourne l'indice du min ou -1 si le tableau est vide
-// Precondition:
-// Parametre: const ArrOfDouble& dx
+// Precondition: 
+// Parametre: const ArrOf__Scalar__& dx
 //    Signification: tableau a utiliser
 // Retour: int
-//    Signification: indice du min
-entier imin_array(const ArrOfDouble& dx)
-{
+//    Signification: indice du min 
+entier imin_array(const ArrOf__Scalar__& dx){
   entier indice_min = -1;
   const entier size = dx.size_array();
-  if (size > 0)
-    {
-      indice_min = 0;
-      double valeur_min = dx[0];
-      for(entier i = 1; i < size; i++)
-        {
-          const double val = dx[i];
-          if(val < valeur_min)
-            {
-              indice_min = i;
-              valeur_min = val;
-            }
-        }
+  if (size > 0) {
+    indice_min = 0;
+    __scalar__ valeur_min = dx[0];
+    for(entier i = 1; i < size; i++) {
+      const __scalar__ val = dx[i];
+      if(val < valeur_min) {
+	indice_min = i;
+	valeur_min = val;
+      }
     }
+  }
   return indice_min;
 }
 
-// Description:
+// Description: 
 //    Retourne l'indice du max ou -1 si le tableau est vide
-// Precondition:
-// Parametre: const ArrOfDouble& dx
+// Precondition: 
+// Parametre: const ArrOf__Scalar__& dx
 //    Signification: tableau a utiliser
 // Retour: int
 //    Signification: indice du max
-entier imax_array(const ArrOfDouble& dx)
-{
+entier imax_array(const ArrOf__Scalar__& dx){
   entier indice_max = -1;
   const entier size = dx.size_array();
-  if (size > 0)
-    {
-      indice_max = 0;
-      double valeur_max = dx[0];
-      for(entier i = 1; i < size; i++)
-        {
-          const double val = dx[i];
-          if(val > valeur_max)
-            {
-              indice_max = i;
-              valeur_max = val;
-            }
-        }
+  if (size > 0) {
+    indice_max = 0;
+    __scalar__ valeur_max = dx[0];
+    for(entier i = 1; i < size; i++) {
+      const __scalar__ val = dx[i];
+      if(val > valeur_max) {
+	indice_max = i;
+	valeur_max = val;
+      }
     }
+  }
   return indice_max;
 }
 
-// Description:
+// Description: 
 //    Retourne la valeur minimale
 // Precondition:
 //    Le tableau doit contenir au moins une valeur
-// Parametre: const ArrOfDouble& dx
+// Parametre: const ArrOf__Scalar__& dx
 //    Signification: tableau a utiliser
-// Retour: double
-//    Signification: valeur du min
-double min_array(const ArrOfDouble& dx)
+// Retour: __scalar__
+//    Signification: valeur du min 
+__scalar__ min_array(const ArrOf__Scalar__& dx)
 {
   const entier size = dx.size_array();
   assert(size > 0);
-  double valeur_min = dx[0];
-  for(entier i = 1; i < size; i++)
-    {
-      const double val = dx[i];
-      if (val < valeur_min)
-        valeur_min = val;
-    }
+  __scalar__ valeur_min = dx[0];
+  for(entier i = 1; i < size; i++) {
+    const __scalar__ val = dx[i];
+    if (val < valeur_min)
+      valeur_min = val;
+  }
   return valeur_min;
 }
 
-// Description:
+// Description: 
 //    Retourne la valeur maximale
-// Precondition:
+// Precondition: 
 //    Le tableau doit contenir au moins une valeur
-// Parametre: const ArrOfDouble& dx
+// Parametre: const ArrOf__Scalar__& dx
 //    Signification: tableau a utiliser
-// Retour: double
-//    Signification: valeur du max
-double max_array(const ArrOfDouble& dx)
+// Retour: __scalar__
+//    Signification: valeur du max 
+__scalar__ max_array(const ArrOf__Scalar__& dx)
 {
   const entier size = dx.size_array();
   assert(size > 0);
-  double valeur_max = dx[0];
-  for(entier i = 1; i < size; i++)
-    {
-      const double val = dx[i];
-      if (val > valeur_max)
-        valeur_max = val;
-    }
+  __scalar__ valeur_max = dx[0];
+  for(entier i = 1; i < size; i++) {
+    const __scalar__ val = dx[i];
+    if (val > valeur_max)
+      valeur_max = val;
+  }
   return valeur_max;
 }
 
 // Description:
 //   Fonction de comparaison utilisee pour trier le tableau
-//   dans ArrOfDouble::trier(). Voir man qsort
-static int fonction_compare_arrofdouble_ordonner(const void * data1, const void * data2)
+//   dans ArrOf__Scalar__::trier(). Voir man qsort
+static int fonction_compare_arrof__scalar___ordonner(const void * data1, const void * data2)
 {
-  const double x = *(const double*)data1;
-  const double y = *(const double*)data2;
+  const __scalar__ x = *(const __scalar__*)data1;
+  const __scalar__ y = *(const __scalar__*)data2;
+#Pif("__scalar__"!="entier")
   if (x < y)
     return -1;
   else if (x > y)
     return 1;
   else
     return 0;
+#Pendif
+#Pif("__scalar__"=="entier")
+  return x - y;
+#Pendif
 }
 
-// Description:
+// Description: 
 //   Tri des valeurs du tableau dans l'ordre croissant.
 //   La fonction utilisee est qsort de stdlib (elle est en n*log(n)).
-void ArrOfDouble::ordonne_array()
+void ArrOf__Scalar__::ordonne_array()
 {
   const entier size = size_array();
-  if (size > 1)
-    {
-      double * data = addr();
-      qsort(data, size, sizeof(double),
-            fonction_compare_arrofdouble_ordonner);
-    }
+  if (size > 1) {
+    __scalar__ * data = addr();
+    qsort(data, size, sizeof(__scalar__), 
+	  fonction_compare_arrof__scalar___ordonner);
+  }
 }
 
 // Description:
@@ -782,16 +762,16 @@ void ArrOfDouble::ordonne_array()
 //    Les donnes existantes sont perdues si elles
 //    ne sont pas referencees ailleurs.
 // Precondition:
-// Parametre: const ArrOfDouble& m
+// Parametre: const ArrOf__Scalar__& m
 //    Signification: le tableau a referencer (pas de type "ref_data"
 //                   et different de *this !!!)
-// Retour: ArrOfDouble&
+// Retour: ArrOf__Scalar__&
 //    Signification: *this
 //    Contraintes:
 // Exception:
 // Effets de bord:
 // Postcondition:
-ArrOfDouble& ArrOfDouble::ref_array(const ArrOfDouble& m)
+ArrOf__Scalar__& ArrOf__Scalar__::ref_array(const ArrOf__Scalar__& m) 
 {
   assert(&m != this);
   // La condition 'm n'est pas de type "ref_data"' est necessaire pour
@@ -806,15 +786,15 @@ ArrOfDouble& ArrOfDouble::ref_array(const ArrOfDouble& m)
 //    On detache la zone de memoire existante. Le tableau devient
 //    de type "ref_data". Attention : ptr doit etre non nul.
 //    La taille est initialisee avec size.
-//    Cette methode est appelee notamment par DoubleVect::adopter.
-// Parametre: double*
+//    Cette methode est appelee notamment par __Scalar__Vect::adopter.
+// Parametre: __scalar__*
 //    Signification: le tableau a recuperer. Si pointeur nul alors size
 //                   doit etre nulle aussi et le tableau reste detache
 // Parametre: entier size
 //    Signification: le nombre d'elements du tableau.
-// Retour: ArrOfDouble&
+// Retour: ArrOf__Scalar__&
 //    Signification: *this
-ArrOfDouble& ArrOfDouble::ref_data(double* ptr, entier size)
+ArrOf__Scalar__ & ArrOf__Scalar__::ref_data(__scalar__* ptr, entier size)
 {
   assert(ptr != 0 || size == 0);
   assert(size >= 0);
@@ -837,24 +817,22 @@ ArrOfDouble& ArrOfDouble::ref_data(double* ptr, entier size)
 // Retour: int
 //    Signification: 1 si les donnees du tableau ont ete supprimees
 // Precondition:
-// Postcondition:
+// Postcondition: 
 //  On a p_==0, data_==0 et size_array_==0, memory_size_ = 0
 //  L'attribut smart_resize_ est conserve.
-entier ArrOfDouble::detach_array()
+entier ArrOf__Scalar__::detach_array() 
 {
   entier retour = 0;
-  if (p_)
-    {
-      // Le tableau est de type "normal"
-      // Si la zone de memoire n'est plus utilisee par personne,
-      // on la detruit.
-      if ((p_->suppr_one_ref()) == 0)
-        {
-          delete p_;
-          retour = 1;
-        }
-      p_ = 0;
+  if (p_) {
+    // Le tableau est de type "normal"
+    // Si la zone de memoire n'est plus utilisee par personne,
+    // on la detruit.
+    if ((p_->suppr_one_ref()) == 0) {
+      delete p_;
+      retour = 1;
     }
+    p_ = 0;
+  }
   data_ = 0;
   size_array_ = 0;
   memory_size_ = 0;
@@ -862,11 +840,11 @@ entier ArrOfDouble::detach_array()
 }
 
 // Description:
-//    Amene le tableau dans l'etat "normal", "detache" ou "ref_array"
+//    Amene le tableau dans l'etat "normal", "detache" ou "ref_array" 
 //    en associant la meme zone de memoire que le tableau m.
 // Precondition:
 //    Le tableau doit etre "detache"
-// Parametre: const ArrOfDouble& m
+// Parametre: const ArrOf__Scalar__& m
 //    Signification: tableau a utiliser
 //                   le tableau doit etre different de *this !!!
 // Retour:
@@ -875,38 +853,35 @@ entier ArrOfDouble::detach_array()
 // Exception:
 // Effets de bord:
 // Postcondition:
-//    Si m est detache, le tableau reste detache,
+//    Si m est detache, le tableau reste detache, 
 //    si m est "ref_array", le tableau devient "ref_array",
 //    sinon le tableau est "normal", avec ref_count > 1
 //    Si m est de taille nulle, le tableau reste detache + Warning dans fichier .log
-void ArrOfDouble::attach_array(const ArrOfDouble& m)
+void ArrOf__Scalar__::attach_array(const ArrOf__Scalar__& m) 
 {
   // Le tableau doit etre detache
   assert(data_ == 0 && p_ == 0);
   // Le tableau doit etre different de *this
   assert(&m != this);
 
-  if (m.size_array() > 0)
-    {
-      p_ = m.p_;
-      if (p_)
-        p_->add_one_ref();
-      data_ = m.data_;
-      size_array_ = m.size_array_;
-      memory_size_ = m.memory_size_;
-      smart_resize_ = m.smart_resize_;
-    }
-  else
-    {
-      // Cas particulier ou on attache un tableau de taille nulle:
-      //  en theorie, c'est pareil qu'un tableau de taille non nulle, MAIS
-      //  dans les operateurs (ex:Op_Dift_VDF_Face_Axi), une ref est construite
-      //  avant que le tableau ne prenne sa taille definitive. Donc, pour ne pas
-      //  empecher le resize, il ne faut pas attacher le tableau s'il n'a pas
-      //  encore la bonne taille. Solution propre: reecrire les operateurs pour
-      //  qu'ils ne prennent pas une ref avant que le tableau ne soit valide
-      //  et faire p_ = m.p_ dans tous les cas.
-    }
+  if (m.size_array() > 0) {
+    p_ = m.p_;
+    if (p_)
+      p_->add_one_ref();
+    data_ = m.data_;
+    size_array_ = m.size_array_;
+    memory_size_ = m.memory_size_;
+    smart_resize_ = m.smart_resize_;
+  } else {
+    // Cas particulier ou on attache un tableau de taille nulle:
+    //  en theorie, c'est pareil qu'un tableau de taille non nulle, MAIS
+    //  dans les operateurs (ex:Op_Dift_VDF_Face_Axi), une ref est construite
+    //  avant que le tableau ne prenne sa taille definitive. Donc, pour ne pas
+    //  empecher le resize, il ne faut pas attacher le tableau s'il n'a pas
+    //  encore la bonne taille. Solution propre: reecrire les operateurs pour
+    //  qu'ils ne prennent pas une ref avant que le tableau ne soit valide
+    //  et faire p_ = m.p_ dans tous les cas.
+  }
 }
 
 // Description:
@@ -914,7 +889,7 @@ void ArrOfDouble::attach_array(const ArrOfDouble& m)
 //    dans les elements  (*this)[first_element_dest + i] pour 0 <= i < nb_elements
 //    Les autres elements de (*this) sont inchanges.
 // Precondition:
-// Parametre:       const ArrOfDouble& m
+// Parametre:       const ArrOf__Scalar__& m
 //  Signification:   le tableau a utiliser, doit etre different de *this !
 // Parametre:       entier nb_elements
 //  Signification:   nombre d'elements a copier, nb_elements >= -1.
@@ -924,7 +899,7 @@ void ArrOfDouble::attach_array(const ArrOfDouble& m)
 //  Valeurs par defaut: 0
 // Parametre:       entier first_element_source
 //  Valeurs par defaut: 0
-// Retour: ArrOfDouble&
+// Retour: ArrOf__Scalar__&
 //    Signification: *this
 //    Contraintes:
 // Exception:
@@ -932,10 +907,10 @@ void ArrOfDouble::attach_array(const ArrOfDouble& m)
 //    taille de tableau this.
 // Effets de bord:
 // Postcondition:
-ArrOfDouble& ArrOfDouble::inject_array(const ArrOfDouble& source,
-                                       entier nb_elements,
-                                       entier first_element_dest,
-                                       entier first_element_source)
+ArrOf__Scalar__& ArrOf__Scalar__::inject_array(const ArrOf__Scalar__& source,
+					      entier nb_elements,
+					      entier first_element_dest,
+					      entier first_element_source) 
 {
   assert(&source != this);
   assert(nb_elements >= -1);
@@ -948,17 +923,15 @@ ArrOfDouble& ArrOfDouble::inject_array(const ArrOfDouble& source,
   assert(first_element_source + nb_elements <= source.size_array());
   assert(first_element_dest + nb_elements <= size_array());
 
-  if (nb_elements > 0)
-    {
-      double * addr_dest = addr() + first_element_dest;
-      const double * addr_source = source.addr() + first_element_source;
-      // memcpy(addr_dest , addr_source, nb_elements * sizeof(double));
-      entier i;
-      for (i = 0; i < nb_elements; i++)
-        {
-          addr_dest[i] = addr_source[i];
-        }
+  if (nb_elements > 0) {
+    __scalar__ * addr_dest = addr() + first_element_dest;
+    const __scalar__ * addr_source = source.addr() + first_element_source;
+    // memcpy(addr_dest , addr_source, nb_elements * sizeof(__scalar__));
+    entier i;
+    for (i = 0; i < nb_elements; i++) {
+      addr_dest[i] = addr_source[i];
     }
+  }
   return *this;
 }
 
@@ -967,7 +940,7 @@ ArrOfDouble& ArrOfDouble::inject_array(const ArrOfDouble& source,
 //    si le tableau est "normal", -1 s'il est "detache" ou "ref_data"
 // Retour: int
 //    Signification: ref_count_
-entier ArrOfDouble::ref_count() const
+entier ArrOf__Scalar__::ref_count() const
 {
   if (p_)
     return p_->ref_count();
@@ -977,47 +950,47 @@ entier ArrOfDouble::ref_count() const
 
 // Description:
 //    Addition case a case sur toutes les cases du tableau
-// Precondition:
+// Precondition: 
 //    la taille de y doit etre au moins egale a la taille de this
-// Parametre: const ArrOfDouble& y
+// Parametre: const ArrOf__Scalar__& y
 //    Signification: tableau a ajouter
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: ArrOfDouble&
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: ArrOf__Scalar__&
 //    Signification: *this
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-ArrOfDouble& ArrOfDouble::operator+=(const ArrOfDouble& y)
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+ArrOf__Scalar__& ArrOf__Scalar__::operator+=(const ArrOf__Scalar__& y)
 {
   assert(size_array()==y.size_array());
-  double* dx = addr();
-  const double* dy = y.addr();
+  __scalar__* dx = addr();
+  const __scalar__* dy = y.addr();
   const entier n = size_array();
   for (entier i=0; i<n; i++)
     dx[i] += dy[i];
   return *this;
 }
 
-// Description:
+// Description: 
 //     ajoute la meme valeur a toutes les cases du tableau
-// Precondition:
-// Parametre: const double dy
+// Precondition: 
+// Parametre: const __scalar__ dy
 //    Signification: valeur a ajouter
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: ArrOfDouble
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: ArrOf__Scalar__
 //    Signification: *this
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-ArrOfDouble& ArrOfDouble::operator+=(const double dy)
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+ArrOf__Scalar__& ArrOf__Scalar__::operator+=(const __scalar__ dy)
 {
-  double * data = addr();
+  __scalar__ * data = addr();
   const entier n = size_array();
   for(entier i=0; i < n; i++)
     data[i] += dy;
@@ -1025,29 +998,29 @@ ArrOfDouble& ArrOfDouble::operator+=(const double dy)
 }
 // Description:
 //    Soustraction case a case sur toutes les cases du tableau
-// Parametre: const ArrOfDouble& y
+// Parametre: const ArrOf__Scalar__& y
 //    Signification: tableau de meme taille que *this
-// Retour: ArrOfDouble&
+// Retour: ArrOf__Scalar__&
 //    Signification: *this
-ArrOfDouble& ArrOfDouble::operator-=(const ArrOfDouble& y)
+ArrOf__Scalar__& ArrOf__Scalar__::operator-=(const ArrOf__Scalar__& y)
 {
   const entier size = size_array();
   assert(size == y.size_array());
-  double * data = addr();
-  const double * data_y = y.addr();
-  for (entier i=0; i < size; i++)
-    data[i] -= data_y[i];
+  __scalar__ * data = addr();
+  const __scalar__ * data_y = y.addr();
+    for (entier i=0; i < size; i++)
+      data[i] -= data_y[i];
   return *this;
 }
 
 
-// Description:
+// Description: 
 //     soustrait la meme valeur a toutes les cases
-// Retour: ArrOfDouble &
+// Retour: ArrOf__Scalar__ &
 //    Signification: *this
-ArrOfDouble& ArrOfDouble::operator-=(const double dy)
+ArrOf__Scalar__& ArrOf__Scalar__::operator-=(const __scalar__ dy)
 {
-  double * data = addr();
+  __scalar__ * data = addr();
   const entier n = size_array();
   for(entier i=0; i < n; i++)
     data[i] -= dy;
@@ -1060,9 +1033,9 @@ ArrOfDouble& ArrOfDouble::operator-=(const double dy)
 //   Attention, l'adresse peut changer apres un appel
 //   a resize_array(), ref_data, ref_array, ...
 // Precondition:
-// Retour: const double*
+// Retour: const __scalar__* 
 //   Signification: pointeur sur le premier element du tableau
-const double* ArrOfDouble::addr() const
+const __scalar__* ArrOf__Scalar__::addr() const
 {
   return data_;
 }
@@ -1071,50 +1044,50 @@ const double* ArrOfDouble::addr() const
 //   Renvoie un pointeur sur le premier element du tableau.
 //   Le pointeur est nul si le tableau est "detache".
 // Precondition:
-// Retour: const double*
+// Retour: const __scalar__*
 //    Signification: la zone memoire du tableau
-double* ArrOfDouble::addr()
+__scalar__* ArrOf__Scalar__::addr()
 {
   return data_;
 }
 
+#Pif("__scalar__"!="entier")
 
-// Description:
+// Description: 
 //    Retourne le max des abs(i)
-// Precondition:
+// Precondition: 
 //    Le tableau doit contenir au moins une valeur
-// Parametre: const ArrOfDouble& dx
+// Parametre: const ArrOf__Scalar__& dx
 //    Signification: tableau a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: valeur du max des valeurs absolues
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-double max_abs_array(const ArrOfDouble& dx)
+//    Valeurs par defaut: 
+//    Contraintes: 
+//    Acces: 
+// Retour: __scalar__
+//    Signification: valeur du max des valeurs absolues 
+//    Contraintes: 
+// Exception: 
+// Effets de bord: 
+// Postcondition: 
+__scalar__ max_abs_array(const ArrOf__Scalar__& dx)
 {
   const entier size = dx.size_array();
   assert(size > 0);
-  double valeur_max = fabs(dx[0]);
-  for(entier i = 1; i < size; i++)
-    {
-      const double val = fabs(dx[i]);
-      if (val > valeur_max)
-        valeur_max = val;
-    }
+  __scalar__ valeur_max = fabs(dx[0]);
+  for(entier i = 1; i < size; i++) {
+    const __scalar__ val = fabs(dx[i]);
+    if (val > valeur_max)
+      valeur_max = val;
+  }
   return valeur_max;
 }
 
-// Description:
+// Description: 
 //     muliplie toutes les cases par dy
-// Retour: ArrOfDouble &
+// Retour: ArrOf__Scalar__ &
 //    Signification: *this
-ArrOfDouble& ArrOfDouble::operator*= (const double dy)
+ArrOf__Scalar__& ArrOf__Scalar__::operator*= (const __scalar__ dy) 
 {
-  double * data = addr();
+  __scalar__ * data = addr();
   const entier n = size_array();
   for(entier i=0; i < n; i++)
     data[i] *= dy;
@@ -1122,64 +1095,65 @@ ArrOfDouble& ArrOfDouble::operator*= (const double dy)
 }
 
 
-// Description:
+// Description: 
 //     divise toutes les cases par dy
-// Retour: ArrOfDouble &
+// Retour: ArrOf__Scalar__ &
 //    Signification: *this
-ArrOfDouble& ArrOfDouble::operator/= (const double dy)
+ArrOf__Scalar__& ArrOf__Scalar__::operator/= (const __scalar__ dy) 
 {
   // En theorie: les deux lignes suivantes sont plus efficaces, mais
-  //  cela produit des differences sur certains cas tests
+  //  cela produit des differences sur certains cas tests 
   //  (Hyd_C_VEF_Smago et Lambda_var_VEF_turb). Ca veut dire qu'il y
   //  a un probleme autre part mais pour l'instant on laisse l'ancien
   //  codage.
-  // const double i_dy = 1. / dy;
+  // const __scalar__ i_dy = 1. / dy;
   // operator*=(i_dy);
 
-  double * data = addr();
-  const entier n = size_array();
-  for(entier i=0; i < n; i++)
-    data[i] /= dy;
+   __scalar__ * data = addr();
+   const entier n = size_array();
+   for(entier i=0; i < n; i++)
+     data[i] /= dy;
 
   return *this;
 }
+#Pendif
 
-DoubleTab::DoubleTab()
+__Scalar__Tab::__Scalar__Tab() 
 {
   // nb_dim_ = 2;
   dimensions_[0] = 0;
   dimensions_[1] = 0;
 }
 
-DoubleTab::DoubleTab(const DoubleTab& tab) :
-  ArrOfDouble(tab)
+__Scalar__Tab::__Scalar__Tab(const __Scalar__Tab & tab) :
+  ArrOf__Scalar__(tab)
 {
   // nb_dim_ = tab.nb_dim_;
   dimensions_[0] = tab.dimensions_[0];
   dimensions_[1] = tab.dimensions_[1];
 }
-DoubleTab::DoubleTab(const entier i, const entier j) :
-  ArrOfDouble(i*j)
+__Scalar__Tab::__Scalar__Tab(const entier i, const entier j) :
+  ArrOf__Scalar__(i*j)
 {
   // nb_dim_ = 2;
   dimensions_[0] = i;
   dimensions_[1] = j;
 }
 
-DoubleTab& DoubleTab::operator=(const DoubleTab& tab)
+__Scalar__Tab & __Scalar__Tab::operator=(const __Scalar__Tab & tab)
 {
-  ArrOfDouble::operator=(tab);
+  ArrOf__Scalar__::operator=(tab);
   // nb_dim_ = tab.nb_dim_;
   dimensions_[0] = tab.dimensions_[0];
-  dimensions_[1] = tab.dimensions_[1];
+  dimensions_[1] = tab.dimensions_[1];  
   return *this;
 }
 
-void DoubleTab::reset()
+void __Scalar__Tab::reset()
 {
-  ArrOfDouble::reset();
+  ArrOf__Scalar__::reset();
   // nb_dim_ = 2;
   dimensions_[0] = 0;
   dimensions_[1] = 0;
 }
-
+#Pendmacro(DEF_ARRAYOFSCALAR_CPP)

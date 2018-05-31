@@ -14,56 +14,6 @@
 #
 # A la fin du script se trouvent les appels a ces fonctions.
 
-# Principe : on supprime les lignes __DoubleOnlyBegin__ et __DoubleOnlyEnd__,
-#            on supprime les blocs __IntOnlyBegin__ ... __IntOnlyEnd__,
-#            et on remplace les mots cles
-replace_keywords_double ()
-{
-  local source=$1
-  local dest=$2
-  cat >sed_script.tmp << EOF
-/__DoubleOnlyBegin__/d
-/__DoubleOnlyEnd__/d
-/__IntOnlyBegin__/,/__IntOnlyEnd__/d
-s/__Scalar__/Double/g
-s/__scalar__/double/g
-s/__add_trav_scalar__/add_trav_double/g
-s/__scalar_ptr__/d_ptr_/g
-EOF
-  sed -f sed_script.tmp $source 
-}
-
-replace_keywords_float ()
-{
-  local source=$1
-  local dest=$2
-  cat >sed_script.tmp << EOF
-/__DoubleOnlyBegin__/d
-/__DoubleOnlyEnd__/d
-/__IntOnlyBegin__/,/__IntOnlyEnd__/d
-s/__Scalar__/Float/g
-s/__scalar__/float/g
-s/__add_trav_scalar__/add_trav_float/g
-s/__scalar_ptr__/f_ptr_/g
-EOF
-  sed -f sed_script.tmp $source 
-}
-
-replace_keywords_entier ()
-{
-  local source=$1
-  local dest=$2
-  cat >sed_script.tmp << EOF
-/__DoubleOnlyBegin__/,/__DoubleOnlyEnd__/d
-/__IntOnlyBegin__/d
-/__IntOnlyEnd__/d
-s/__Scalar__/Int/g
-s/__scalar__/entier/g
-s/__add_trav_scalar__/add_trav_int/g
-s/__scalar_ptr__/i_ptr_/g
-EOF
-  sed -f sed_script.tmp $source 
-}
 
 check_file ()
 {
@@ -99,13 +49,20 @@ copy_triou_file ()
 # *********************
 for file in ArrOfDouble.h ArrOfInt.h ArrOfDouble.cpp ArrOfInt.cpp ArrOfFloat.h ArrOfFloat.cpp
 do
-   proto=ArrOf_Scalar_Prototype
-   [ ${file%.h} != $file ] && proto=$proto".h"
-   [ ${file%.cpp} != $file ] && proto=$proto".cpp.h"
-   [ ${file#ArrOfDouble} != $file ] && replace_keywords_double $proto > $file.tmp
-   [ ${file#ArrOfInt} != $file ] && replace_keywords_entier $proto > $file.tmp
-   [ ${file#ArrOfFloat} != $file ] && replace_keywords_float $proto > $file.tmp
-   check_file $file ${file}.tmp
+  prepro="python $TRUST_ROOT/bin/KSH/preprocessor.py"
+  j=`find . -name "*.P" -newer $file`
+  j=""
+  if test -z "$j"
+      then
+      echo Generating $file.P
+      $prepro $file.P $file.tmp
+      cmd=`grep 'style=' $TRUST_ROOT/bin/KSH/indent_file.sh`
+      tmp=`echo $file.tmp`
+      echo $tmp
+      eval $cmd
+      #xemacs -batch $file.tmp -l $TRUST_ROOT/bin/KSH/indent.emacs 1>/dev/null 2>&1
+      check_file $file ${file}.tmp
+  fi
 done
 
 # Verification des sources construites a partir de TRUST
@@ -114,6 +71,7 @@ then
   echo TRUST_ROOT directory not set: files built from trio_u tree not checked
 else
   list="Static_Int_Lists.h Static_Int_Lists.cpp Connectivite_som_elem.cpp Connectivite_som_elem.h ArrOfBit.cpp ArrOfBit.h Octree_Int.h Octree_Int.cpp Octree_Double.h Octree_Double.cpp"
+  list=
   for i in $list
   do
     copy_triou_file $i tmp
