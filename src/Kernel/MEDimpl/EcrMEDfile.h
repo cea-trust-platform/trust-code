@@ -14,26 +14,22 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Format_Post_Med_major.h
+// File:        EcrMEDfile.h
 // Directory:   $TRUST_ROOT/src/Kernel/MEDimpl
-// Version:     /main/13
+// Version:     /main/7
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef Format_Post_Med_major_included
-#define Format_Post_Med_major_included
 
-#include <Format_Post_Medfile.h>
+#ifndef EcrMEDfile_included
+#define EcrMEDfile_included
 
+#include <EcrMED.h>
 
-// .DESCRIPTION        :
-//  Exactly the same as Format_Post_Med but with the last major version of MED
-
-class Format_Post_Med_major : public Format_Post_Med
+/**
+ * Write a MED file with MEDFile API
+ */
+class EcrMEDfile : public EcrMED
 {
-  Declare_instanciable_sans_constructeur(Format_Post_Med_major);
-
-protected:
-  virtual EcrMED getEcrMED() const;
+  Declare_instanciable(EcrMEDfile);
 };
-
 #endif

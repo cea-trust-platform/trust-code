@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include <Format_Post_Med_major.h>
 
-Implemente_instanciable_sans_constructeur(Format_Post_Med_major,"Format_Post_Med_major",Format_Post_Med);
+Implemente_instanciable_sans_constructeur(Format_Post_Med_major,"Format_Post_Med_major",Format_Post_Medfile);
 
 // Description: erreur => exit
 Sortie& Format_Post_Med_major::printOn(Sortie& os) const
@@ -46,5 +46,6 @@ EcrMED Format_Post_Med_major::getEcrMED() const
 {
   EcrMED e;
   e.setMajorMode(true);
+  e.setMEDCoupling(false);
   return e;
 }

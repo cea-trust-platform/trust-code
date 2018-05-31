@@ -30,13 +30,28 @@
 #include <Polyedre.h>
 #include <Polygone.h>
 #include <Char_ptr.h>
+#include <medcoupling++.h>
+#ifdef MEDCOUPLING_
+#include <MEDLoader.hxx>
+#include <MEDFileMesh.hxx>
+#include <MEDCouplingFieldDouble.hxx>
+#pragma GCC diagnostic ignored "-Wreorder"
+#include <MEDFileField.hxx>
+using namespace MEDCoupling;
+#endif
 
 #define POURSATURNE
 
 Implemente_instanciable_sans_constructeur(EcrMED,"Ecrire_MED",Interprete);
 
 EcrMED::EcrMED() : major_mode(false)
-{}
+{
+#ifdef MEDCOUPLING_
+  use_medcoupling_ = true;
+#else
+  use_medcoupling_ = false;
+#endif
+}
 
 // Description:
 //    Simple appel a: Interprete::printOn(Sortie&)
@@ -138,6 +153,85 @@ med_int* convert_int_med_int(const ArrOfInt& tab)
     }
   return tabmed;
 }
+#ifdef MEDCOUPLING_
+// renvoie le type medcoupling a partir du type trio : http://docs.salome-platform.org/6/gui/MED/MEDLoader_8cxx.html
+INTERP_KERNEL::NormalizedCellType type_geo_trio_to_type_medcoupling(const Nom& type_elem_, int& mesh_dimension)
+{
+  Motcle type_elem;
+  type_elem=type_elem_;
+  type_elem.prefix("_AXI");
+  if (type_elem!=Motcle(type_elem_))
+    {
+      if (type_elem == "QUADRILATERE_2D")
+        type_elem = "SEGMENT_2D";
+      if (type_elem == "RECTANGLE_2D")
+        {
+          type_elem = "RECTANGLE";
+        }
+    }
+  mesh_dimension = -1;
+  INTERP_KERNEL::NormalizedCellType type_cell;
+  if ((type_elem=="RECTANGLE") || (type_elem=="QUADRANGLE") || (type_elem=="QUADRANGLE_3D"))
+    {
+      type_cell = INTERP_KERNEL::NORM_QUAD4;
+      mesh_dimension = 2;
+    }
+  else if  ((type_elem=="HEXAEDRE") || (type_elem=="HEXAEDRE_VEF"))
+    {
+      type_cell = INTERP_KERNEL::NORM_HEXA8;
+      mesh_dimension = 3;
+    }
+  else if  ((type_elem=="TRIANGLE") || (type_elem=="TRIANGLE_3D"))
+    {
+      type_cell = INTERP_KERNEL::NORM_TRI3;
+      mesh_dimension = 2;
+    }
+  else if  (type_elem=="TETRAEDRE")
+    {
+      type_cell = INTERP_KERNEL::NORM_TETRA4;
+      mesh_dimension = 3;
+    }
+  else if ((type_elem=="SEGMENT") || (type_elem=="SEGMENT_2D"))
+    {
+      type_cell = INTERP_KERNEL::NORM_SEG2;
+      mesh_dimension = 1;
+    }
+  else if (type_elem=="PRISME")
+    {
+      type_cell = INTERP_KERNEL::NORM_PENTA6;
+      mesh_dimension = 3;
+    }
+  else if (type_elem=="POLYEDRE")
+    {
+      type_cell = INTERP_KERNEL::NORM_POLYHED;
+      mesh_dimension = 3;
+    }
+  else if ((type_elem=="POLYGONE") || (type_elem=="POLYGONE_3D"))
+    {
+      type_cell = INTERP_KERNEL::NORM_POLYGON;
+      mesh_dimension = 2;
+    }
+  else if(type_elem=="PRISME_HEXAG")
+    {
+      type_cell = INTERP_KERNEL::NORM_HEXGP12;
+      mesh_dimension = 3;
+    }
+  else if(type_elem=="POINT_1D")
+    {
+      type_cell = INTERP_KERNEL::NORM_POINT1;
+      mesh_dimension = 0;
+    }
+  else
+    {
+      Cerr<<type_elem<< " no available cell." <<finl;
+      Process::exit();
+      return INTERP_KERNEL::NORM_POINT1;
+    }
+  assert(mesh_dimension>=0);
+  return type_cell;
+}
+#endif
+
 // renvoit le type med a partir du type trio
 med_geometry_type type_geo_trio_to_type_med(const Nom& type_elem_,med_axis_type& rep)
 {
@@ -917,8 +1011,164 @@ void EcrMED::ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom
       Cerr << "dimension = " << dimension<< finl
            << "noms_bords= " << noms_bords<< finl;
     }
-  medecrgeom(nom_fic,nom_dom,dimension,sommets,type_elem,zone.type_elem(),les_elems2,type_face,all_faces_bord,familles,noms_bords,zone.le_nom(),mode, major_mode);
-  //Cerr<<"Writing of the domain is ended"<<finl;
+#ifdef MEDCOUPLING_
+  if (use_medcoupling_)
+    {
+      Cerr << "Trying to write MED file with MEDCoupling API. To use the MEDFile API, use EcrMEDfile or MEDFile keyword." << finl;
+      Cerr << "Creating a MEDCouplingUMesh object for the domain " << nom_dom << finl;
+      // Get MEDCoupling cell type and mesh dimension:
+      int mesh_dimension = -1;
+      INTERP_KERNEL::NormalizedCellType cell_type = type_geo_trio_to_type_medcoupling(type_elem, mesh_dimension);
+      int ncells = les_elems2.dimension(0);
+      int nverts = les_elems2.dimension(1);
+      MCAuto<MEDCouplingUMesh> mesh(MEDCouplingUMesh::New(nom_dom.getChar(), mesh_dimension));
+      // Nodes:
+      int nnodes = sommets.dimension(0);
+      MCAuto<DataArrayDouble> points(DataArrayDouble::New());
+      points->useArray(sommets.addr(), false, MEDCoupling::CPP_DEALLOC, nnodes, dimension);
+      points->setInfoOnComponent(0, "x");
+      points->setInfoOnComponent(1, "y");
+      if (dimension == 3) points->setInfoOnComponent(2, "z");
+      mesh->setCoords(points);
+      mesh->allocateCells(ncells);
+      // Cells
+      if (cell_type == INTERP_KERNEL::NORM_POLYHED)
+        {
+          // Polyedron is special, seepage 10:
+          // http://trac.lecad.si/vaje/chrome/site/doc8.3.0/extra/Normalisation_pour_le_couplage_de_codes.pdf
+          const Polyedre& Poly = ref_cast(Polyedre, zone.type_elem().valeur());
+          ArrOfInt Nodes_glob;
+          Poly.remplir_Nodes_glob(Nodes_glob, les_elems2);
+          const ArrOfInt& FacesIndex = Poly.getFacesIndex();
+          const ArrOfInt& PolyhedronIndex = Poly.getPolyhedronIndex();
+          assert(ncells == PolyhedronIndex.size_array() - 1);
+          for (int i = 0; i < ncells; i++)
+            {
+              int size = 0;
+              for (int face = PolyhedronIndex(i); face < PolyhedronIndex(i + 1); face++)
+                size += FacesIndex(face + 1) - FacesIndex(face) + 1;
+              size--; // No -1 at the end of the cell
+              ArrOfInt cell_def(size);
+              size = 0;
+              for (int face = PolyhedronIndex(i); face < PolyhedronIndex(i + 1); face++)
+                {
+                  for (int node = FacesIndex(face); node < FacesIndex(face + 1); node++)
+                    {
+                      cell_def[size] = Nodes_glob(node) - 1; // Numerotation Fortran -> C++
+                      size++;
+                    }
+                  if (size < cell_def.size_array())
+                    {
+                      // Add -1 to mark the end of a face:
+                      cell_def[size] = -1;
+                      size++;
+                    }
+                }
+              mesh->insertNextCell(cell_type, cell_def.size_array(), cell_def.addr());
+            }
+        }
+      else
+        {
+          // Other cells:
+          les_elems2 -= 1; // Numerotation Fortran -> C++
+          for (int i = 0; i < ncells; i++)
+            {
+              int nvertices = nverts;
+              for (int j = 0; j < nverts; j++)
+                if (les_elems2(i, j) < 0)
+                  nvertices--; // Some cell type has not a constant number of vertices (eg: Polyhedron)
+              mesh->insertNextCell(cell_type, nvertices, les_elems2.addr() + i * nverts);
+            }
+        }
+      MCAuto<MEDFileUMesh> file(MEDFileUMesh::New());
+      file->setName(mesh->getName()); //name needed to be non empty
+      file->setCoords(mesh->getCoords());
+      file->setMeshAtLevel(0, mesh, false);
+      // Store the mesh
+      dom.setUMesh(mesh);
+
+      // Family for the cells:
+      int global_family_id = -1000;
+      MCAuto<DataArrayInt> famArr(DataArrayInt::New());
+      famArr->alloc(ncells);
+      famArr->fillWithValue(global_family_id);
+      file->setFamilyFieldArr(0, famArr);
+      // Name the family and check unicity:
+      Nom family_name = noms_bords.search(zone.le_nom()) != -1 ? "cpy_" : "";
+      family_name += zone.le_nom();
+      file->addFamily(family_name.getString(), global_family_id);
+
+      // Boundary mesh:
+      MCAuto<MEDCouplingUMesh> boundary_mesh(MEDCouplingUMesh::New(mesh->getName(), mesh_dimension - 1));
+      boundary_mesh->setCoords(mesh->getCoords());
+      int nfaces = 0;
+      int nb_type_face = familles.size();
+      for (int j = 0; j < nb_type_face; j++)
+        nfaces += familles(j).size_array();
+      boundary_mesh->allocateCells(nfaces);
+      for (int j = 0; j < nb_type_face; j++)
+        {
+          int size = familles(j).size_array();
+          if (size)
+            {
+              // Converting trio to medcoupling boundary cell:
+              int boundary_mesh_dimension = -1;
+              INTERP_KERNEL::NormalizedCellType type_boundary_cell = type_geo_trio_to_type_medcoupling(type_face[j], boundary_mesh_dimension);
+              assert(boundary_mesh_dimension == mesh_dimension - 1);
+              nverts = all_faces_bord[j].dimension(1);
+              all_faces_bord[j] -= 1; // Numerotation Fortran -> C++
+              for (int i = 0; i < size; i++)
+                {
+                  int nvertices = nverts;
+                  for (int k = 0; k < nverts; k++)
+                    if (all_faces_bord[j].addr()[i * nverts + k] < 0)
+                      nvertices--; // Some face type has not a constant number of vertices (eg: Polygon)
+                  boundary_mesh->insertNextCell(type_boundary_cell, nvertices, all_faces_bord[j].addr() + i * nverts);
+                }
+            }
+        }
+      MCAuto<DataArrayInt> renum_boundary_cell(boundary_mesh->sortCellsInMEDFileFrmt());
+      file->setMeshAtLevel(-1, boundary_mesh, false);
+
+      bool use_group_instead_of_family = false;
+      if (use_group_instead_of_family)
+        {
+          //(ToDo try to hide family notion for MEDCoupling and use group instead)
+        }
+      else
+        {
+          // Family (with possible renum of the boundary cells)
+          MCAuto<DataArrayInt> family_array(DataArrayInt::New());
+          family_array->alloc(nfaces);
+          int face = 0;
+          for (int j = 0; j < nb_type_face; j++)
+            for (int i = 0; i < familles[j].size_array(); i++)
+              {
+                int family_id = familles[j](i);
+                family_array->setIJ(renum_boundary_cell->getIJ(face, 0), 0, family_id);
+                face++;
+              }
+          file->setFamilyFieldArr(-1, family_array);
+
+          // Naming family on boundaries:
+          for (int i = 0; i < noms_bords.size(); i++)
+            {
+              int family_id = -(i + 1);
+              file->addFamily(noms_bords[i].getString(), family_id);
+              std::vector<std::string> grps(1);
+              grps[0] = noms_bords[i].getString();
+              file->setGroupsOnFamily(noms_bords[i].getString(), grps);
+            }
+        }
+      // Write:
+      int option = (mode == -1 ? 2 : 1); /* 2: reset file. 1: append, 0: overwrite objects */
+      Cerr<<"Writing file " << nom_fic<<" (mode=" << mode << ") ..."<<finl;
+      file->write(nom_fic.getString(), option);
+    }
+  else
+#endif
+    medecrgeom(nom_fic,nom_dom,dimension,sommets,type_elem,zone.type_elem(),les_elems2,type_face,all_faces_bord,familles,noms_bords,zone.le_nom(),mode, major_mode);
+//Cerr<<"Writing of the domain is ended"<<finl;
 
 }
 
@@ -1100,55 +1350,119 @@ int medecrchamp(const Nom& nom_fic,const Nom& nom_dom,const Nom& nomcha1,const D
 // type_elem le type des elems du domaine
 // time le temps
 // compteur le numero du pas de temps (ne sert pas pour l'instant)
-
-void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_fic,const Nom& nom_dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Nom& type_elem,double time,int compteur)
+// ToDo: suppress compteur variable (set to 1 and NEVER used !)
+void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_fic,const Domaine& dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Nom& type_elem,double time,int compteur)
 {
-
-  int ret=0;
-  int nbcomp=1;
-  if (val.nb_dim()>1)
-    nbcomp=val.dimension(1);
-
-  // conversion de la liste de noms unite en un mot
-  Nom unite1="";
-  for (int nn=0; nn<nbcomp; nn++)
+  const Nom& nom_dom = dom.le_nom();
+#ifdef MEDCOUPLING_
+  // MED Coupling
+  if (use_medcoupling_)
     {
-      Nom uni=unite[nn];
-      int lutil=uni.longueur()-1;
-      if (lutil>MED_SNAME_SIZE)
+      // Create MEDCouplingField
+      MEDCoupling::TypeOfField field_type;
+      if (type == "CHAMPMAILLE")
+        field_type = ON_CELLS;
+      else if (type == "CHAMPPOINT")
+        field_type = ON_NODES;
+      else
         {
-          Cerr<<uni<<" "<<uni.longueur()<<" names copy has to be revised"<<finl;
-          //exit();
-          uni="???";
-          lutil=uni.longueur()-1;
-
-
+          Cerr << "Field type " << type << " is not supported yet." << finl;
+          Process::exit();
+          return;
         }
-      unite1+=uni;
-      for (int c=0; c<(MED_SNAME_SIZE-lutil); c++) unite1+=" ";
+      std::string file_name = nom_fic.getString();
+      std::string field_name = nom_cha1.getString();
+      // Get the previous timestep:
+      int timestep = 0;
+      std::vector< std::string > field_names = GetAllFieldNames(file_name);
+      if ( std::find(field_names.begin(), field_names.end(), field_name) != field_names.end() )
+        {
+          std::vector< std::pair< std::pair< int, int >, double > > ts = GetAllFieldIterations(file_name, field_name);
+          timestep = ts[ts.size()-1].first.first + 1;
+        }
+      MCAuto<MEDCouplingFieldDouble> field(MEDCouplingFieldDouble::New(field_type, MEDCoupling::ONE_TIME));
+      field->setName(field_name);
+      field->setTime(time, timestep, -1);
+      field->setTimeUnit("s");
+      // Try to get directly the mesh from the domain:
+      if (dom.getUMesh()!=NULL)
+        field->setMesh(dom.getUMesh());
+      else
+        {
+          // Get mesh from the file (less optimal but sometime necessary: eg: call from latatoother::interpreter())
+          MCAuto<MEDFileUMesh> file_mesh(MEDFileUMesh::New(file_name));
+          field->setMesh(file_mesh->getMeshAtLevel(0));
+        }
+      // Fill array:
+      int size = val.dimension(0);
+      int nb_comp = val.nb_dim() == 1 ? 1 : val.dimension(1);
+      MCAuto<DataArrayDouble> array(DataArrayDouble::New());
+      array->useArray(val.addr(), false, MEDCoupling::CPP_DEALLOC, size, nb_comp);
+      array->setInfoOnComponent(0, "x ["+unite[0].getString()+"]");
+      if (nb_comp>1)
+        {
+          array->setInfoOnComponent(1, "y ["+unite[1].getString()+"]");
+          if (nb_comp>2)
+            array->setInfoOnComponent(2, "z ["+unite[2].getString()+"]");
+        }
+      field->setArray(array);
+      // Write
+      MCAuto<MEDFileField1TS> file(MEDFileField1TS::New());
+      file->setFieldNoProfileSBT(field);
+      file->write(file_name, 0);
+
     }
-  Nom nomcoo="x               ";
-  if (nbcomp>1)
-    nomcoo+="y               ";
-  if (nbcomp>2)
-    nomcoo+="z               ";
-
-  // cree le champ si il n'existe pas
-  med_int nbofcstp;
-  ret=medcreerchamp( nom_fic,nom_cha1,nom_dom, nomcoo, unite1, nbcomp,nbofcstp, major_mode) ;
-  if (ret<0)
+  else
+#endif
     {
-      Cerr<<"error field creation"<<finl;
-      exit();
-    }
+      // Deprecated:
+      // MED file
+      int ret = 0;
+      int nbcomp = 1;
+      if (val.nb_dim() > 1)
+        nbcomp = val.dimension(1);
+
+      // conversion de la liste de noms unite en un mot
+      Nom unite1 = "";
+      for (int nn = 0; nn < nbcomp; nn++)
+        {
+          Nom uni = unite[nn];
+          int lutil = uni.longueur() - 1;
+          if (lutil > MED_SNAME_SIZE)
+            {
+              Cerr << uni << " " << uni.longueur() << " names copy has to be revised" << finl;
+              //exit();
+              uni = "???";
+              lutil = uni.longueur() - 1;
 
 
-  // ecrit le champ
-  ret+=medecrchamp( nom_fic,nom_dom, nom_cha1, val, type,type_elem, time, compteur,nbofcstp, major_mode);
-  if (ret<0)
-    {
-      Cerr<<"Error writing field"<<finl;
-      exit();
+            }
+          unite1 += uni;
+          for (int c = 0; c < (MED_SNAME_SIZE - lutil); c++) unite1 += " ";
+        }
+      Nom nomcoo = "x               ";
+      if (nbcomp > 1)
+        nomcoo += "y               ";
+      if (nbcomp > 2)
+        nomcoo += "z               ";
+
+      // cree le champ si il n'existe pas
+      med_int nbofcstp;
+      ret = medcreerchamp(nom_fic, nom_cha1, nom_dom, nomcoo, unite1, nbcomp, nbofcstp, major_mode);
+      if (ret < 0)
+        {
+          Cerr << "error field creation" << finl;
+          exit();
+        }
+
+
+      // ecrit le champ
+      ret += medecrchamp(nom_fic, nom_dom, nom_cha1, val, type, type_elem, time, compteur, nbofcstp, major_mode);
+      if (ret < 0)
+        {
+          Cerr << "Error writing field" << finl;
+          exit();
+        }
     }
 }
 
@@ -1161,8 +1475,14 @@ void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_fic,const Nom& nom_dom,
 // on lui passe en plus le Champ_Inc pour recuperer la zone_dis
 
 // ne marche pas si l'on a pas ecrit des le depart toutes les faces...
-void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_fic,const Nom& nom_dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Nom& type_elem,double time,int compteur,const Champ_Inc_base& le_ch)
+void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_fic,const Domaine& dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Nom& type_elem,double time,int compteur,const Champ_Inc_base& le_ch)
 {
+  if (use_medcoupling_)
+    {
+      Cerr << "Todo " << finl;
+      Process::exit();
+      return;
+    }
 #ifndef MED30
   if (type!="CHAMPFACE")
 #endif

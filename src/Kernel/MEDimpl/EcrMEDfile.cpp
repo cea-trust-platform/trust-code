@@ -14,26 +14,63 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Format_Post_Med_major.h
+// File:        EcrMEDfile.cpp
 // Directory:   $TRUST_ROOT/src/Kernel/MEDimpl
-// Version:     /main/13
+// Version:     /main/38
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef Format_Post_Med_major_included
-#define Format_Post_Med_major_included
 
-#include <Format_Post_Medfile.h>
+#include <EcrMEDfile.h>
+#include <Interprete.h>
 
+Implemente_instanciable_sans_constructeur(EcrMEDfile,"Ecrire_MEDfile",Interprete);
 
-// .DESCRIPTION        :
-//  Exactly the same as Format_Post_Med but with the last major version of MED
-
-class Format_Post_Med_major : public Format_Post_Med
+/**
+ * Set flag use_medcoupling
+ */
+EcrMEDfile::EcrMEDfile()
 {
-  Declare_instanciable_sans_constructeur(Format_Post_Med_major);
+  use_medcoupling_ = false;
+}
 
-protected:
-  virtual EcrMED getEcrMED() const;
-};
+// Description:
+//    Simple appel a: Interprete::printOn(Sortie&)
+// Precondition:
+// Parametre: Sortie& os
+//    Signification: un flot de sortie
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces: entree/sortie
+// Retour: Sortie&
+//    Signification: le flot de sortie modifie
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition: la methode ne modifie pas l'objet
+Sortie& EcrMEDfile::printOn(Sortie& os) const
+{
+  return Interprete::printOn(os);
+}
 
-#endif
+
+// Description:
+//    Simple appel a: Interprete::readOn(Entree&)
+// Precondition:
+// Parametre: Entree& is
+//    Signification: un flot d'entree
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces: entree/sortie
+// Retour: Entree&
+//    Signification: le flot d'entree modifie
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+Entree& EcrMEDfile::readOn(Entree& is)
+{
+  return Interprete::readOn(is);
+}
+
+
+

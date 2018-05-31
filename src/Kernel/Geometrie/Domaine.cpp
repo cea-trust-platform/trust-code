@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -141,7 +141,11 @@ Entree& Domaine::readOn(Entree& s)
 // Effets de bord:
 // Postcondition:
 Domaine::Domaine() : epsilon_(Objet_U::precision_geom),deformable_(0)
-{}
+{
+#ifdef MEDCOUPLING_
+  mesh_ = NULL;
+#endif
+}
 
 // Description:
 // Renvoie le nombre total de sommets
