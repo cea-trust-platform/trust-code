@@ -813,11 +813,12 @@ then
            fi
 	fi
 	# Discard MED test case if no MED capabilities
-	if [ "$TRUST_DISABLE_MED" = 1 ]
+	if [ "$TRUST_DISABLE_MED" = 1 ] || [ "$TRUST_DISABLE_MEDCOUPLING" = 1 ]
 	then
 	   if [ "`grep -i med $REP/* 2>/dev/null`" != "" ] ||  [ "`grep -i faisceau $REP/* 2>/dev/null`" != "" ]  # if faisceau in Genepi3
 	   then
-              echo "Test $i skipped (no MED)"
+              [ "$TRUST_DISABLE_MED" = 1 ] && echo "Test $i skipped (no MED)"
+	      [ "$TRUST_DISABLE_MEDCOUPLING" = 1 ] && echo "Test $i skipped (no MEDCoupling)"
 	      liste_skipped=$liste_skipped" $i"
 	      i=""
            fi

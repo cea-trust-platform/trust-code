@@ -1,3 +1,4 @@
+XX/06/18 (TRUST)  MEDCoupling API used in several classes (EcrMED, LireMED, Champ_Fonc_MED) by default instead of MEDfile API
 -------------------------------------------------------------
 Developer notes version 1.7.7_beta : Changes since version 1.7.6 :
 -------------------------------------------------------------
