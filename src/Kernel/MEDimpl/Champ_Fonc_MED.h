@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,8 +34,14 @@
 
 #include <Champ_Fonc.h>
 #include <Zone_VF_inst.h>
-#include <med++.h>
 #include <ArrOfDouble.h>
+#include <med++.h>
+#include <medcoupling++.h>
+#ifdef MEDCOUPLING_
+#include <MEDCouplingFieldDouble.hxx>
+using namespace MEDCoupling;
+#endif
+
 
 //.DESCRIPTION classe Champ_Fonc_MED
 //
@@ -60,7 +66,7 @@ public :
   */
   void creer(const Nom&,const Domaine& dom,const Motcle& localisation,ArrOfDouble& temps_sauv);
   const Domaine& domaine() const;
-  virtual void lire(double tps,int nn=-1);
+  virtual void lire(double tps,int given_iteration=-1);
   int nb_pas_temps()
   {
     return nb_dt;
@@ -97,18 +103,21 @@ protected:
 #ifdef MED_
   med_entity_type type_ent;
   med_geometry_type type_geo;
+#ifdef MEDCOUPLING_
+  INTERP_KERNEL::NormalizedCellType cell_type;
+  MEDCoupling::TypeOfField field_type;
 #endif
-  //REF(Zone_MED) la_zone_MED;
+#endif
   Champ_Fonc vrai_champ_;
   Nom nom_champ_dans_fichier_med_;
   ArrOfDouble temps_sauv_;
   int last_time_only_;
+  bool use_medcoupling_;
 };
 
 inline void Champ_Fonc_MED::associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base)
 {
   Cerr<<"Champ_Fonc_MED::associer_zone_dis_base does nothing"<<finl;
-  //la_zone_MED = (const Zone_MED&) la_zone_dis_base;
 }
 inline const Champ_Fonc_base& Champ_Fonc_MED::le_champ() const
 {
@@ -188,4 +197,11 @@ inline int Champ_Fonc_MED::remplir_coord_noeuds_et_polys(DoubleTab& coord, IntVe
   return le_champ().remplir_coord_noeuds_et_polys(coord, elems);
 }
 
+/**
+ * Read field with MEDFile API (soon deprecated)
+ */
+class Champ_Fonc_MEDfile: public Champ_Fonc_MED
+{
+  Declare_instanciable(Champ_Fonc_MEDfile);
+};
 #endif
