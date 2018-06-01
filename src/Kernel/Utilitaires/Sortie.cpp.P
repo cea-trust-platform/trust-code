@@ -134,6 +134,7 @@ Sortie& Sortie::operator<<(const _TYPE_ & ob)
   return *this;
 }
 
+
 // Description:
 //  Methode de bas niveau pour ecrire un tableau d'ints ou reels dans le stream.
 //  Dans l'implementation de la classe de base, on ecrit dans ostream_.
@@ -174,6 +175,7 @@ int Sortie::put(const _TYPE_ * ob, int n, int nb_col)
 }
 #Pendmacro(deffonctions)
 
+#Pusemacro(deffonctions)(unsigned)
 #Pusemacro(deffonctions)(int)
 #ifndef INT_is_64_
 #Pusemacro(deffonctions)(long)

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,6 +23,29 @@
 #include <Perte_Charge_Reguliere.h>
 #include <Motcle.h>
 
+
+//Add a constructor for initialization
+Perte_Charge_Reguliere::Perte_Charge_Reguliere( void ) : Perte_Charge( )
+{
+
+  D_ = - 1e3;
+  d_ = - 1e3;
+  a_ = - 1e3;
+  b_ = - 1e3;
+  Cf_ =  -1e3;
+
+  couronne_tube = -1e3; ;
+  Cf_utilisateur = -1e3 ;
+  xo = -1e3;
+  yo = -1e3;
+  zo = -1e3;
+  dir[ 0 ] = -1e3 ;
+  dir[ 1 ] = -1e3 ;
+  dir[ 2 ] = -1e3 ;
+  h0 = -1e3;
+  h = -1e3 ;
+
+}
 
 // Description:
 //    Lit les specifications d'une perte de charge reguliere

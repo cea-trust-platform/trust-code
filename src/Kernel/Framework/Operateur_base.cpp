@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -128,12 +128,25 @@ void Operateur_base::completer()
   assert(mon_equation.non_nul());
   Equation_base& eqn = equation();
   Zone_dis& zdis= eqn.zone_dis();
-  Zone_Cl_dis& zcl = eqn.zone_Cl_dis();
-  Champ_Inc& inco= eqn.inconnue();
-  associer(zdis, zcl, inco);
+
+  if (!le_champ_inco.non_nul())
+    {
+      Zone_Cl_dis& zcl = eqn.zone_Cl_dis();
+      Champ_Inc& inco= eqn.inconnue();
+      associer(zdis, zcl, inco);
+    }
+  else
+    {
+      Zone_Cl_dis& zcl = le_champ_inco.valeur()->zone_Cl_dis();
+      associer(zdis, zcl, le_champ_inco.valeur());
+    }
   return ;
 }
 
+void Operateur_base::associer_champ(const Champ_Inc& ch)
+{
+  le_champ_inco = ch;
+}
 
 // Description:
 //   Calcul dt_stab

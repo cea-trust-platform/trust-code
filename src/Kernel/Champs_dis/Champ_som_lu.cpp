@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -188,6 +188,64 @@ DoubleTab& Champ_som_lu::valeur_aux_elems(const DoubleTab& positions,
         if (le_poly == -1)
           for(int ncomp=0; ncomp<nb_compo_; ncomp++)
             val(rang_poly, ncomp) = 0;
+        else if (zone.nb_som_elem() == 2)
+          {
+            for(int ncomp=0; ncomp<nb_compo_; ncomp++)
+              {
+                int som1=zone.sommet_elem(le_poly , 0 );
+                int som2=zone.sommet_elem(le_poly , 1 );
+
+                double xmin=coord(som1,0);
+                double xmax=coord(som2,0);
+                double ymin=coord(som1,1);
+                double ymax=coord(som2,1);
+                double zmin=coord(som1,2);
+                double zmax=coord(som2,2);
+
+                double hx=xmax - xmin;
+                double hy=ymax - ymin;
+                double hz=zmax - zmin;
+
+                double dd = sqrt(hx*hx+hy*hy+hz*hz);
+
+                double dxmax,dxmin,dymax,dymin,dzmax,dzmin;
+
+                dxmax = (xmax-positions(rang_poly,0));
+                dxmin = (positions(rang_poly,0)-xmin);
+
+                dymax = (ymax-positions(rang_poly,1));
+                dymin = (positions(rang_poly,1)-ymin);
+
+                dzmax = (zmax-positions(rang_poly,2));
+                dzmin = (positions(rang_poly,2)-zmin);
+
+                if (est_egal(hx,0.))
+                  {
+                    dxmin = 1.;
+                    dxmax = 1.;
+                  }
+
+                if (est_egal(hy,0.))
+                  {
+                    dymin = 1.;
+                    dymax = 1.;
+                  }
+
+                if (est_egal(hz,0.))
+                  {
+                    dzmin = 1.;
+                    dzmax = 1.;
+                  }
+
+                val(rang_poly, ncomp) =
+                  ch(som1,ncomp)*dxmax*dymax*dzmax;
+
+                val(rang_poly, ncomp) +=
+                  ch(som2,ncomp)*dxmin*dymin*dzmin;
+
+                val(rang_poly, ncomp)/=dd;
+              }
+          }
         else
           {
             for(int ncomp=0; ncomp<nb_compo_; ncomp++)
