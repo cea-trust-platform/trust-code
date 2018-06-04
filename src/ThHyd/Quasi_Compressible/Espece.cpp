@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -79,7 +79,6 @@ Entree& Espece::readOn(Entree& is)
 void Espece::set_param(Param& param)
 {
   param.ajouter("mu",&mu,Param::REQUIRED);
-  param.ajouter("lambda",&lambda,Param::REQUIRED);
   param.ajouter("Cp",&Cp,Param::REQUIRED);
   param.ajouter("Masse_molaire",&Masse_mol_,Param::REQUIRED);
 }

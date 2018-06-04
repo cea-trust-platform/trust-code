@@ -75,42 +75,27 @@ Sortie& Loi_Etat_Melange_GP::printOn(Sortie& os) const
 // Postcondition: l'objet est construit avec les parametres lus
 Entree& Loi_Etat_Melange_GP::readOn(Entree& is)
 {
-  //double gamma_ = -1;
-  // parametre a mettre dans grains
-  //rho_p_=-1;
-  //cp_p_=-1;
-  //nb_famille_grains_ =1 ;
   correction_fraction_=0;
   ignore_check_fraction_=0;
   dtol_fraction_=1.e-6;
   Pr_=-1;
   Param param(que_suis_je());
-  //param.ajouter("Sc",&Sc_,0);
   param.ajouter("Sc",&Sc_,Param::REQUIRED); // XD_ADD_P double Schmidt number of the gas Sc=nu/D (D: diffusion coefficient of the mixing).
   param.ajouter( "Cp",&Cp_); // XD_ADD_P double Specific heat at constant pressure of the gas Cp.
-  param.ajouter( "Prandtl",&Pr_); // XD_ADD_P double Prandtl number of the gas Pr=mu*Cp/lambda
-  //param.ajouter( "gamma",&gamma_);
-  //param.ajouter( "rho_p",&rho_p_);
-  //param.ajouter( "cp_p",&cp_p_);
+  param.ajouter( "Prandtl",&Pr_,Param::REQUIRED); // XD_ADD_P double Prandtl number of the gas Pr=mu*Cp/lambda
   param.ajouter_flag( "correction_fraction",&correction_fraction_); // XD_ADD_P flag To force mass fractions between 0. and 1.
   param.ajouter_flag( "ignore_check_fraction",&ignore_check_fraction_); // XD_ADD_P flag Not to check if mass fractions between 0. and 1.
-  //param.ajouter( "nb_famille_grains",&nb_famille_grains_);
   param.ajouter( "dtol_fraction",&dtol_fraction_); // XD_ADD_P double Delta tolerance on mass fractions for check testing (default value 1.e-6).
 
   param.lire_avec_accolades_depuis(is);
-
-
-
 
   if (Sc_==-1)
     {
       Cerr << "Error: the Schmidt number (constant) is not defined. Please specify Sc in your data file." << finl;
       abort();
     }
-
   return is;
 }
-
 
 // Description:
 //    Associe le fluide a la loi d'etat
@@ -152,8 +137,6 @@ void Loi_Etat_Melange_GP::initialiser_inco_ch()
   Loi_Etat_base::initialiser_inco_ch();
 }
 
-
-
 // Description:
 // Associe l inconnue de chaque equation de
 // fraction massique a la loi d'etat
@@ -180,7 +163,7 @@ void Loi_Etat_Melange_GP::associer_inconnue(const Champ_Inc_base& inconnue)
 // Associe les proprietes physiques
 // d une espece a la loi d'etat
 // Precondition:
-// Parametre: M, Cp, mu, lambda
+// Parametre: eq
 //    Signification:
 //    Valeurs par defaut:
 //    Contraintes: reference constante
@@ -194,7 +177,6 @@ void Loi_Etat_Melange_GP::associer_inconnue(const Champ_Inc_base& inconnue)
 void Loi_Etat_Melange_GP::associer_espece(const Convection_Diffusion_fraction_massique_QC& eq)
 {
   liste_especes.add(eq.espece());
-
 }
 
 
@@ -222,8 +204,6 @@ void Loi_Etat_Melange_GP::calculer_Cp()
 }
 void Loi_Etat_Melange_GP::calculer_tab_Cp(DoubleTab& tab_Cp) const
 {
-
-
   //Actuellement on suppose que Cp est pris constant pour chacune des especes
   tab_Cp=0;
 
@@ -234,11 +214,10 @@ void Loi_Etat_Melange_GP::calculer_tab_Cp(DoubleTab& tab_Cp) const
       assert(cp_i>0);
       for (int elem=0; elem<Y_i.size(); elem++)
         {
-          tab_Cp(elem) +=   Y_i(elem)*cp_i;
+          tab_Cp(elem) += Y_i(elem)*cp_i;
         }
     }
 }
-
 
 // Description:
 //    Calcule la masse molaire du melange (M)
@@ -260,6 +239,7 @@ void Loi_Etat_Melange_GP::calculer_masse_molaire()
   // rabot deplace
   calculer_masse_molaire(Masse_mol_mel);
 }
+
 void Loi_Etat_Melange_GP::calculer_masse_molaire(DoubleTab& tab_Masse_mol_mel) const
 {
   //Faire methode preparer_calcul() pour dimensionnement de Masse_mol_mel
@@ -269,14 +249,13 @@ void Loi_Etat_Melange_GP::calculer_masse_molaire(DoubleTab& tab_Masse_mol_mel) c
 
   for (int i=0; i<liste_Y.size(); i++)
     {
-
       double M_i=liste_especes(i).valeur().masse_molaire();
       const DoubleTab& Y_i=liste_Y(i).valeur().valeurs();
       double min_Y_i=local_min_vect(Y_i);
       double max_Y_i=local_max_vect(Y_i);
       if ((min_Y_i<0.-dtol_fraction_)||(max_Y_i>1.+dtol_fraction_))
         {
-          Cerr << "Warning : (min_Y_i<-" << dtol_fraction_ << ")||(max_Y_i>1+" << dtol_fraction_ <<") for the" << i << "th mass fraction:" << finl;
+          Cerr << "Warning : (min_Y_i<-" << dtol_fraction_ << ")||(max_Y_i>1+" << dtol_fraction_ <<") for the " << i << "th mass fraction:" << finl;
           Cerr << "  min_Y_i = " << min_Y_i << finl;
           Cerr << "  max_Y_i = " << max_Y_i << finl;
           if (!ignore_check_fraction_) exit();
@@ -292,10 +271,11 @@ void Loi_Etat_Melange_GP::calculer_masse_molaire(DoubleTab& tab_Masse_mol_mel) c
   for (int elem=0; elem<size; elem++)
     {
       if (inv_M(elem)>1.e-8)
-        tab_Masse_mol_mel(elem) = numer_M(elem)/ inv_M(elem);
+        tab_Masse_mol_mel(elem) = numer_M(elem) / inv_M(elem);
     }
 
 }
+
 void Loi_Etat_Melange_GP::rabot(int futur)
 {
 
@@ -351,7 +331,6 @@ void Loi_Etat_Melange_GP::rabot(int futur)
       Cerr << "  Warning: the sum of the mass fractions is not equal to 1." <<finl;
       if (!ignore_check_fraction_) exit();
     }
-
 }
 
 
@@ -371,7 +350,6 @@ void Loi_Etat_Melange_GP::rabot(int futur)
 // Postcondition:
 void Loi_Etat_Melange_GP::calculer_lambda()
 {
-
   const Champ_Don& mu = le_fluide->viscosite_dynamique();
   const DoubleTab& tab_mu = mu.valeurs();
   Champ_Don& lambda = le_fluide->conductivite();
@@ -400,26 +378,6 @@ void Loi_Etat_Melange_GP::calculer_lambda()
             tab_lambda[i] = tab_mu[i] * tab_Cp(i) / Pr_;
         }
     }
-
-  if (Pr_!=-1)
-    {
-
-      Cerr << "Warning: Prandtl is no longer a valid option of " << que_suis_je() << finl;
-      const Champ_Don& mubis = le_fluide->viscosite_dynamique();
-
-      if (sub_type(Champ_Uniforme,mubis.valeur()))
-        {
-
-          const DoubleTab& tab_mubis = mubis.valeurs();
-          const DoubleTab& tab_Cpbis = le_fluide->capacite_calorifique().valeurs();
-          double mu0 = tab_mubis(0,0);
-          double lambda_test = mu0 * tab_Cpbis(0)/ Pr_;
-
-
-          Cerr << "  => suggestion: put in your data file lambda to " << lambda_test << "(perhaps?)." << finl;
-        }
-      // exit();
-    }
   tab_lambda.echange_espace_virtuel();
 }
 
@@ -441,7 +399,6 @@ void Loi_Etat_Melange_GP::calculer_lambda()
 // Postcondition:
 void Loi_Etat_Melange_GP::calculer_alpha()
 {
-
   const Champ_Don& lambda = le_fluide->conductivite();
   const DoubleTab& tab_lambda = lambda.valeurs();
   Champ_Don& alpha=le_fluide->diffusivite();
@@ -531,9 +488,6 @@ void Loi_Etat_Melange_GP::calculer_masse_volumique()
 {
   const DoubleTab& tab_ICh = le_fluide->inco_chaleur().valeurs();
   DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
-  double Pth = le_fluide->pression_th();
-  int som, n=tab_rho.size();
-  double r;
 
   //Correction pour calculer la masse volumique a partir de la pression
   //qui permet de conserver la masse
@@ -541,12 +495,13 @@ void Loi_Etat_Melange_GP::calculer_masse_volumique()
     {
       rabot(0);
     }
-
   calculer_masse_molaire();
 
-  for (som=0 ; som<n ; som++)
+  double Pth = le_fluide->pression_th();
+  int n=tab_rho.size();
+  for (int som=0 ; som<n ; som++)
     {
-      r=8.3143/Masse_mol_mel(som);
+      double r=8.3143/Masse_mol_mel(som);
       tab_rho_np1[som] = calculer_masse_volumique_case(Pth,tab_ICh[som],r,som);
 
       //Correction pour calculer la masse volumique a partir de la pression
@@ -589,7 +544,6 @@ double Loi_Etat_Melange_GP::calculer_masse_volumique_case(double P, double T, do
       Cerr << "Check your data file." << finl;
       exit();
     }
-
   return P/(r*T);
 }
 
@@ -611,46 +565,58 @@ double Loi_Etat_Melange_GP::calculer_masse_volumique_case(double P, double T, do
 // Postcondition:
 void Loi_Etat_Melange_GP::calculer_mu0()
 {
-
-  Champ_Don& mu = le_fluide->viscosite_dynamique();
-  DoubleTab& tab_mu = mu.valeurs();
-  int size;
-  size = liste_Y(0).valeur().valeurs().size();
+  int size = liste_Y(0).valeur().valeurs().size();
   DoubleTab phi(size);
-  tab_mu =0;
+  DoubleTab mu(size);
+  mu = 0;
   phi = 0.;
-  double phi_ij,M_i,M_j,mu_i,mu_j,val1,val2;
-
-
+  // node is elem (VEF) or face (VEF)
   for (int i=0; i<liste_Y.size(); i++)
     {
       phi = 0.;
+      double& M_i=liste_especes(i).valeur().masse_molaire();
+      double mu_i=liste_especes(i).valeur().viscosite_dynamique().valeurs()(0,0);
       for (int j=0; j<liste_Y.size(); j++)
         if (j!=i)
           {
-            M_i=liste_especes(i).valeur().masse_molaire();
-            M_j=liste_especes(j).valeur().masse_molaire();
-            mu_i=liste_especes(i).valeur().viscosite_dynamique().valeurs()(0,0);
-            mu_j=liste_especes(j).valeur().viscosite_dynamique().valeurs()(0,0);
+            double& M_j=liste_especes(j).valeur().masse_molaire();
+            double mu_j=liste_especes(j).valeur().viscosite_dynamique().valeurs()(0,0);
+            double val1=1./(sqrt(8.*(1.+(M_i/M_j))));
+            double val2=(1.+sqrt(mu_i/mu_j)*pow(M_j/M_i,0.25))*(1.+sqrt(mu_i/mu_j)*pow(M_j/M_i,0.25));
+            double phi_ij=val1*val2;
 
-            val1=1./(sqrt(8.*(1.+(M_i/M_j))));
-            val2=(1.+sqrt(mu_i/mu_j)*pow(M_j/M_i,0.25))*(1.+sqrt(mu_i/mu_j)*pow(M_j/M_i,0.25));
-            phi_ij=val1*val2;
-
-            for (int elem=0; elem<liste_Y(j).valeur().valeurs().size(); elem++)
-              {
-                ////phi_ij = 1.;
-
-                phi(elem) +=  liste_Y(j).valeur().valeurs()(elem)*phi_ij;
-              }
+            const DoubleVect& y_j = liste_Y(j).valeur().valeurs();
+            for (int node=0; node<y_j.size(); node++)
+              phi(node) += y_j(node)*phi_ij;
           }
-
-      for (int elem=0; elem<liste_Y(i).valeur().valeurs().size(); elem++)
+      const DoubleVect& y_i = liste_Y(i).valeur().valeurs();
+      for (int node=0; node<y_i.size(); node++)
+        mu(node) += mu_i * y_i(node)/(y_i(node)+phi(node));
+    }
+  // Dynamic viscosity is on elem
+  DoubleTab& tab_mu = le_fluide->viscosite_dynamique().valeurs();
+  int nb_elem = tab_mu.size();
+  if (nb_elem==size)
+    {
+      //VDF:
+      for (int elem=0; elem < nb_elem; elem++)
+        tab_mu(elem) = mu(elem);
+    }
+  else
+    {
+      // VEF (average on elem from values on face);
+      const IntTab& elem_faces=ref_cast(Zone_VF,le_fluide->vitesse().zone_dis_base()).elem_faces();
+      int nfe=elem_faces.dimension(1);
+      tab_mu = 0;
+      for (int elem=0; elem<nb_elem; elem++)
         {
-          tab_mu(elem) +=
-            (liste_Y(i).valeur().valeurs()(elem)*liste_especes(i).valeur().viscosite_dynamique().valeurs()(0,0))/(liste_Y(i).valeur().valeurs()(elem)+phi(elem));
+          for (int face = 0; face < nfe; face++)
+            tab_mu(elem) += mu(elem_faces(elem, face));
+          tab_mu(elem)/=nfe;
         }
     }
+  tab_mu.echange_espace_virtuel();
+  Debog::verifier("tab_mu dans Loi_Etat_Melange_GP::calculer_mu0", tab_mu);
 }
 
 
@@ -703,31 +669,24 @@ void Loi_Etat_Melange_GP::calculer_mu_sur_Sc()
   Champ_Don& mu_sur_Sc = le_fluide->mu_sur_Schmidt();
   DoubleTab& tab_mu_sur_Sc = mu_sur_Sc.valeurs();
 
-  int i, n=tab_mu_sur_Sc.size();
-
   if (!sub_type(Champ_Uniforme,mu_sur_Sc.valeur()))
     {
-      //DoubleTab& tab_T = temperature_.valeurs();
+      int n=tab_mu_sur_Sc.size();
       if (sub_type(Champ_Uniforme,mu.valeur()))
         {
           double mu0 = tab_mu(0,0);
-          for (i=0 ; i<n ; i++)
-            {
-              tab_mu_sur_Sc[i] = mu0 /Sc_;
-            }
+          for (int i=0 ; i<n ; i++)
+            tab_mu_sur_Sc[i] = mu0/Sc_;
         }
       else
         {
-          for (i=0 ; i<n ; i++)
-            {
-              tab_mu_sur_Sc[i] = tab_mu[i]/Sc_;
-            }
+          for (int i=0 ; i<n ; i++)
+            tab_mu_sur_Sc[i] = tab_mu[i]/Sc_;
         }
     }
   else
     {
       //mu_sur_Sc uniforme
-
       double mu0 = tab_mu(0,0);
       tab_mu_sur_Sc(0,0) = mu0/Sc_;
     }
@@ -762,7 +721,6 @@ double Loi_Etat_Melange_GP::calculer_masse_volumique(double P, double T) const
       Cerr << "Check your data file." << finl;
       exit();
     }
-
   return P/(R_*T);
 }
 
