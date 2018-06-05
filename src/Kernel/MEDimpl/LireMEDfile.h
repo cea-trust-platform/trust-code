@@ -14,26 +14,26 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Format_Post_Med_major.h
+// File:        LireMEDfile.h
 // Directory:   $TRUST_ROOT/src/Kernel/MEDimpl
-// Version:     /main/13
+// Version:     /main/7
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef Format_Post_Med_major_included
-#define Format_Post_Med_major_included
 
-#include <Format_Post_Medfile.h>
+#ifndef LireMEDfile_included
+#define LireMEDfile_included
 
+///////////////////////////////////////////////////////////////////////////
+//
+// .DESCRIPTION
+// Classe LireMEDfile
+//    Lit un fichier MED (avec MEDfile)
+//
+///////////////////////////////////////////////////////////////////////////
+#include <LireMED.h>
 
-// .DESCRIPTION        :
-//  Exactly the same as Format_Post_Med but with the last major version of MED
-
-class Format_Post_Med_major : public Format_Post_Med
+class LireMEDfile : public LireMED
 {
-  Declare_instanciable_sans_constructeur(Format_Post_Med_major);
-
-protected:
-  virtual EcrMED getEcrMED() const;
+  Declare_instanciable(LireMEDfile);
 };
-
 #endif

@@ -12,10 +12,11 @@ Read ch2 cInit_tDiffu.med Face concentrationInitialeC1 elem  -1
 domaine dom
 domaine dom2
 # BEGIN MESH #
-Lire_Med dom Face rectangle_a1.med
+Lire_Medfile dom Face rectangle_a1.med /* Use Medfile to read an old 2.2 format */
+Ecrire_medfile dom new_rectangle_a1.med /* Convert to new format */
 Read_file dom_ssz.geo ;
 Reordonner dom 
-Lire_Med dom2 Face rectangle_a1.med
+Lire_Med dom2 dom new_rectangle_a1.med
 Reordonner dom2 
 # END MESH #
 # BEGIN PARTITION

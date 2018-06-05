@@ -14,7 +14,9 @@ cp -af $dest .
 
 rm -rf build install $medcoupling
 
-if  [ "$TRUST_DISABLE_MED" = "1" ] || [ "$TRUST_DISABLE_MEDCOUPLING" = "1" ] 
+# New include file:
+medcoupling_hxx=$DEST/include/medcoupling++.h
+if [ "$TRUST_DISABLE_MED" = "1" ] || [ "$TRUST_DISABLE_MEDCOUPLING" = "1" ] 
 then
     mkdir -p $DEST/include
     rm -rf $DEST/lib
@@ -27,6 +29,7 @@ then
     else
 	cp -a ICoCoMEDField.hxx $dest
     fi
+    echo "#undef MEDCOUPLING_" > $medcoupling_hxx
     rm -f prov.h ICoCoMEDField.hxx
     exit 0
 fi
@@ -121,5 +124,6 @@ echo "export MED_COUPLING_PYTHON=$MED_COUPLING_PYTHON" >> env.sh
 touch include/*
 
 [ ! -f $DEST/include/ICoCoMEDField.hxx ] && echo "#define NO_MEDFIELD " > $DEST/include/ICoCoMEDField.hxx
+[ ! -f $medcoupling_hxx ] && echo "#define MEDCOUPLING_" > $medcoupling_hxx
 
 exit $status

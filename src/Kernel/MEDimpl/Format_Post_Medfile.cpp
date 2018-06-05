@@ -14,26 +14,37 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Format_Post_Med_major.h
+// File:        Format_Post_Medfile.cpp
 // Directory:   $TRUST_ROOT/src/Kernel/MEDimpl
-// Version:     /main/13
+// Version:     /main/23
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef Format_Post_Med_major_included
-#define Format_Post_Med_major_included
-
 #include <Format_Post_Medfile.h>
+#include <EcrMED.h>
 
+Implemente_instanciable(Format_Post_Medfile,"Format_Post_Medfile",Format_Post_Med);
 
-// .DESCRIPTION        :
-//  Exactly the same as Format_Post_Med but with the last major version of MED
-
-class Format_Post_Med_major : public Format_Post_Med
+Sortie& Format_Post_Medfile::printOn(Sortie& os) const
 {
-  Declare_instanciable_sans_constructeur(Format_Post_Med_major);
+  exit();
+  return os;
+}
 
-protected:
-  virtual EcrMED getEcrMED() const;
-};
+Entree& Format_Post_Medfile::readOn(Entree& is)
+{
+  Format_Post_Med::readOn(is);
+  return is;
+}
 
-#endif
+EcrMED Format_Post_Medfile::getEcrMED() const
+{
+  EcrMED e;
+  e.setMEDCoupling(false);
+  return e;
+}
+
+
+
+
+
+

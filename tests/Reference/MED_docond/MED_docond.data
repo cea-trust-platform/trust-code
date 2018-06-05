@@ -23,7 +23,7 @@ Domaine dom_fluide
 Domaine dom
 
 # BEGIN MESH #
-Lire_MED dom dom ./MESH/geom.med
+Lire_MEDfile dom dom ./MESH/geom.med /* Use MEDFile cause the med file is 2.2 old format */
 Mailler tmp
 {
 	Pave Cavite1

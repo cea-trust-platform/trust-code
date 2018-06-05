@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -267,7 +267,7 @@ void Mod_turb_hyd_RANS_0_eq::imprimer (Sortie& os )  const
         Nom nom_dom_inc= dom.le_nom();
         Nom type_elem=dom.zone(0).type_elem()->que_suis_je();
         assert(K_eps_sortie_.valeurs().dimension(0)==dom.zone(0).nb_elem());
-        ecr_med.ecrire_champ("CHAMPMAILLE",fic,nom_dom,nom_post,K_eps_sortie_.valeurs(),K_eps_sortie_->unites(),type_elem,temps,0);
+        ecr_med.ecrire_champ("CHAMPMAILLE",fic,dom,nom_post,K_eps_sortie_.valeurs(),K_eps_sortie_->unites(),type_elem,temps,0);
       }
   return Mod_turb_hyd_base::imprimer(os);
 }

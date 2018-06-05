@@ -44,20 +44,30 @@ class Nom;
 class Noms;
 class DoubleTab;
 class Champ_Inc_base;
+class Domaine;
 
 class EcrMED : public Interprete
 {
-  Declare_instanciable(EcrMED);
+  Declare_instanciable_sans_constructeur(EcrMED);
 public :
+  EcrMED();
   ///! Set major mode for MED file writing. See major_mode member below.
   void setMajorMode(bool majorMod)
   {
     major_mode = majorMod;
   };
+  ///! Set use_medcoupling flag
+  void setMEDCoupling(bool mc)
+  {
+    use_medcoupling_ = mc;
+  }
   Entree& interpreter(Entree&);
   void ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom_dom,int mode=0);
-  void ecrire_champ(const Nom& type,const Nom& nom_fic,const Nom& nom_dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Nom& type_elem,double time,int compteur);
-  void ecrire_champ(const Nom& type,const Nom& nom_fic,const Nom& nom_dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Nom& type_elem,double time,int compteur,const Champ_Inc_base& le_champ);
+  void ecrire_champ(const Nom& type,const Nom& nom_fic,const Domaine& dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Nom& type_elem,double time,int compteur);
+  void ecrire_champ(const Nom& type,const Nom& nom_fic,const Domaine& dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Nom& type_elem,double time,int compteur,const Champ_Inc_base& le_champ);
+
+protected:
+  bool use_medcoupling_;
 
 private:
   ///! False by default. If true, the MED file will be written in the major mode of the release version (3.0 for example if current MED version is 3.2)
