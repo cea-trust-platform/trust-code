@@ -1732,7 +1732,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
               if (nb_faces > 0 && groups.size()<=1)
                 {
                   int family_id = file->getFamilyId(families[i]);
-                  Nom nom_bord;
+                  Nom nom_bord="";
                   if (isfamilyshort == 0) // Par defaut, boundary name = family name
                     nom_bord = families[i].c_str();
                   else if (isfamilyshort == 1) // Suppress FAM_*_ from family name
@@ -1745,33 +1745,34 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
                     }
                   else // boundary name = group name
                     {
-                      if (groups.size()==0)
-                        nom_bord = "??";
-                      else
+                      if (groups.size()!=0)
                         {
                           assert(groups.size() == 1);
                           nom_bord = groups[0].c_str();
                         }
                     }
-                  Cerr << "Detecting a boundary named " << nom_bord << " (family id=" << family_id << ") with "
-                       << nb_faces << " faces." << finl;
-                  noms_bords.add(nom_bord);
-                  for (int j = 0; j < nb_faces; j++)
+                  if (nom_bord!="")
                     {
-                      int face = ids->getIJ(j, 0);
-                      // Put the face on the good family
-                      tp = 0;
-                      int face_famille = face;
-                      while (face_famille >= familles[tp].size_array())
+                      Cerr << "Detecting a boundary named " << nom_bord << " (family id=" << family_id << ") with "
+                           << nb_faces << " faces." << finl;
+                      noms_bords.add(nom_bord);
+                      for (int j = 0; j < nb_faces; j++)
                         {
-                          face_famille -= familles[tp].size_array();
-                          tp++;
+                          int face = ids->getIJ(j, 0);
+                          // Put the face on the good family
+                          tp = 0;
+                          int face_famille = face;
+                          while (face_famille >= familles[tp].size_array())
+                            {
+                              face_famille -= familles[tp].size_array();
+                              tp++;
+                            }
+                          familles[tp][face_famille] = family_id;
                         }
-                      familles[tp][face_famille] = family_id;
+                      int nb_bords = noms_bords.size();
+                      Indices_bord.resize(nb_bords);
+                      Indices_bord[nb_bords - 1] = family_id;
                     }
-                  int nb_bords = noms_bords.size();
-                  Indices_bord.resize(nb_bords);
-                  Indices_bord[nb_bords - 1] = family_id;
                 }
             }
         }
