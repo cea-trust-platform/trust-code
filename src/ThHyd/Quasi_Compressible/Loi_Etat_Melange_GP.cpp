@@ -565,6 +565,7 @@ double Loi_Etat_Melange_GP::calculer_masse_volumique_case(double P, double T, do
 // Postcondition:
 void Loi_Etat_Melange_GP::calculer_mu0()
 {
+  // With Wilke formulation: https://aip.scitation.org/doi/pdf/10.1063/1.1747673
   int size = liste_Y(0).valeur().valeurs().size();
   DoubleTab phi(size);
   DoubleTab mu(size);
@@ -581,9 +582,9 @@ void Loi_Etat_Melange_GP::calculer_mu0()
           {
             double& M_j=liste_especes(j).valeur().masse_molaire();
             double mu_j=liste_especes(j).valeur().viscosite_dynamique().valeurs()(0,0);
-            double val1=1./(sqrt(8.*(1.+(M_i/M_j))));
-            double val2=(1.+sqrt(mu_i/mu_j)*pow(M_j/M_i,0.25))*(1.+sqrt(mu_i/mu_j)*pow(M_j/M_i,0.25));
-            double phi_ij=val1*val2;
+            double a=1.+sqrt(mu_i/mu_j)*pow(M_j/M_i,0.25);
+            double b=sqrt(8.*(1.+(M_i/M_j)));
+            double phi_ij=a*a/b;
 
             const DoubleVect& y_j = liste_Y(j).valeur().valeurs();
             for (int node=0; node<y_j.size(); node++)
