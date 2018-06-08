@@ -38,7 +38,7 @@ Sortie& Champ_front_debit::printOn(Sortie& os) const
 
 Entree& Champ_front_debit::readOn(Entree& is)
 {
-  is >> champ_debit_; 
+  is >> champ_debit_;
   fixer_nb_comp(dimension);
   return is;
 }
