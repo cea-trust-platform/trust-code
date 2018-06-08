@@ -29,8 +29,8 @@
 #include <Zone_VF.h>
 #include <DoubleTrav.h>
 Implemente_instanciable(Champ_front_debit,"Champ_front_debit",Champ_front_normal);
-
-
+// XD champ_front_debit front_field_base champ_front_debit 0 This field is used to define a flow rate field instead of a velocity field for a Dirichlet boundary condition on Navier-Stokes equations.
+// XD attr ch front_field_base ch 0 uniform field in space to define the flow rate. It could be, for example, champ_front_uniforme, ch_front_input_uniform or champ_front_fonc_txyz that depends only on time.
 Sortie& Champ_front_debit::printOn(Sortie& os) const
 {
   return Champ_front_normal::printOn(os);
@@ -38,7 +38,7 @@ Sortie& Champ_front_debit::printOn(Sortie& os) const
 
 Entree& Champ_front_debit::readOn(Entree& is)
 {
-  is >> champ_debit_;
+  is >> champ_debit_; 
   fixer_nb_comp(dimension);
   return is;
 }
