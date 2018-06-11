@@ -23,6 +23,7 @@
 #include <EcrMEDfile.h>
 
 Implemente_instanciable_sans_constructeur(EcrMEDfile,"Ecrire_MEDfile",EcrMED);
+// XD writemedfile interprete ecrire_medfile -1 Obsolete keyword to write a mesh with MED file API
 
 /**
  * Set flag use_medcoupling

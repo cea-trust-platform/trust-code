@@ -576,7 +576,7 @@ const ArrOfDouble& Champ_Fonc_MED::get_saved_times(void) const
  * Read field with MEDFile API (soon deprecated)
  */
 Implemente_instanciable_sans_constructeur(Champ_Fonc_MEDfile, "Champ_Fonc_MEDfile", Champ_Fonc_MED);
-
+// XD Champ_Fonc_MEDfile field_base Champ_Fonc_MEDfile -1 Obsolete keyword to read a field with MED file API
 Champ_Fonc_MEDfile::Champ_Fonc_MEDfile()
 {
   use_medcoupling_ = false;
