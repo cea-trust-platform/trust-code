@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -389,22 +389,23 @@ inline double Eval_Diff_VDF_var_Face::flux_arete_mixte(const DoubleTab& inco, in
                                                        int fac2, int fac3, int fac4) const
 {
   double flux=0;
-  double diffus=0;
-  int element;
-
-  if ((element=elem_(fac3,0)) != -1)
-    diffus+=dv_diffusivite(element);
-  if ((element=elem_(fac3,1)) != -1)
-    diffus+=dv_diffusivite(element);
-  if ((element=elem_(fac4,0)) != -1)
-    diffus+=dv_diffusivite(element);
-  if ((element=elem_(fac4,1)) != -1)  //correctiuon bug GET 20.08.2002
-    diffus+=dv_diffusivite(element);
-
-  diffus/=3.0;
 
   if (inco[fac4]*inco[fac3] != 0)
     {
+      double diffus=0;
+      int element;
+
+      if ((element=elem_(fac3,0)) != -1)
+        diffus+=dv_diffusivite(element);
+      if ((element=elem_(fac3,1)) != -1)
+        diffus+=dv_diffusivite(element);
+      if ((element=elem_(fac4,0)) != -1)
+        diffus+=dv_diffusivite(element);
+      if ((element=elem_(fac4,1)) != -1)
+        diffus+=dv_diffusivite(element);
+
+      diffus/=3.0;
+
       int ori=orientation(fac1);
       double tau = (inco[fac4]-inco[fac3])/dist_face(fac3,fac4,ori);
       flux = 0.25*tau*(surface(fac1)+surface(fac2))*
@@ -420,22 +421,23 @@ inline double Eval_Diff_VDF_var_Face::flux_arete_mixte(const DoubleTab& inco, in
 inline void Eval_Diff_VDF_var_Face::coeffs_arete_mixte(int fac1, int fac2, int fac3, int fac4,
                                                        double& aii, double& ajj) const
 {
-  double diffus=0;
-  int element;
-
-  if ((element=elem_(fac3,0)) != -1)
-    diffus+=dv_diffusivite(element);
-  if ((element=elem_(fac3,1)) != -1)
-    diffus+=dv_diffusivite(element);
-  if ((element=elem_(fac4,0)) != -1)
-    diffus+=dv_diffusivite(element);
-  if ((element=elem_(fac4,0)) != -1)
-    diffus+=dv_diffusivite(element);
-
-  diffus/=3.0;
 
   if (inconnue->valeurs()[fac4]*inconnue->valeurs()[fac3] != 0)
     {
+      double diffus=0;
+      int element;
+
+      if ((element=elem_(fac3,0)) != -1)
+        diffus+=dv_diffusivite(element);
+      if ((element=elem_(fac3,1)) != -1)
+        diffus+=dv_diffusivite(element);
+      if ((element=elem_(fac4,0)) != -1)
+        diffus+=dv_diffusivite(element);
+      if ((element=elem_(fac4,0)) != -1)
+        diffus+=dv_diffusivite(element);
+
+      diffus/=3.0;
+
       int ori=orientation(fac1);
       aii = ajj= 0.25*(surface(fac1)+surface(fac2))*diffus*
                  (porosite(fac1)+porosite(fac2))/dist_face(fac3,fac4,ori);

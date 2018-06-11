@@ -1,0 +1,90 @@
+# PARALLEL OK #
+dimension 3
+Pb_hydraulique pb
+Domaine F4MESH 
+
+/* Le maillage contient une plaque de frontieres wall1_dup et wall1 */
+# DEBUT MAILLAGE #
+lire_med family_names_from_group_names F4MESH F4MESH fluid_mesh_wall.med
+reordonner F4MESH
+postraiter_domaine { domaine F4MESH fichier fluid_mesh_wall format lata }
+# FIN MAILLAGE #
+
+# DEBUT DECOUPAGE 
+Decouper F4MESH 
+{ 
+	partitionneur metis { nb_parts 4 }
+	Larg_joint 1
+	Nom_Zones DOM  
+}
+end
+FIN DECOUPAGE #
+
+# BEGIN SCATTER
+Scatter DOM.Zones F4MESH
+END SCATTER #
+
+Fluide_incompressible fluide 
+Lire fluide
+{
+	# mu Champ_uniforme 1 1.85e-5 #
+ mu Champ_fonc_xyz F4MESH 1 1.85e-5
+       	rho Champ_Uniforme 1 1.17
+}
+
+Champ_Uniforme gravite
+Lire gravite 3 0. 0. -9.81
+Associer fluide gravite
+
+VDF dis
+
+Schema_Euler_explicite sch
+
+Lire sch
+{
+        tinit 0.0
+	dt_min 1e-6
+        facsec 1.
+        dt_impr 1.e-5
+        dt_sauv 1.e-5
+        seuil_statio 1.e-5
+}
+
+
+Associer pb F4MESH
+Associer pb fluide
+Associer pb sch
+Discretiser pb dis
+
+Lire pb
+{
+
+  Navier_Stokes_standard
+  {
+     solveur_pression petsc cholesky { }
+     convection { amont }
+     diffusion {  } 
+          conditions_initiales { vitesse Champ_Uniforme 3 0. 0. 1. }
+          conditions_limites
+          {
+            inlet frontiere_ouverte_vitesse_imposee  Champ_front_uniforme 3 0. 0. 1. 
+            outlet frontiere_ouverte_pression_imposee champ_front_uniforme 1 0 
+            walls Symetrie
+            wall1 Paroi_fixe
+            wall1_dup Paroi_fixe
+          }
+      }
+
+   Postraitement
+   {
+		format lml
+        	champs dt_post 1.E+7
+		{
+			pression elem
+                        vitesse elem
+		}
+   }
+}
+
+Resoudre pb 
+
