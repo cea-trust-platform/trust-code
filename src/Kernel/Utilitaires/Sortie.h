@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -85,6 +85,7 @@ public:
   virtual Sortie& operator<<(const Separateur& );
   virtual Sortie& operator<<(const Objet_U&    ob);
   virtual Sortie& operator<<(const int&     ob);
+  virtual Sortie& operator<<(const unsigned&     ob);
 #ifndef INT_is_64_
   virtual Sortie& operator<<(const long&       ob);
 #endif
@@ -94,6 +95,7 @@ public:
 #ifdef IO_avec_string
   virtual Sortie& operator <<(const string& ob);
 #endif
+  virtual int put(const unsigned* ob, int n, int nb_colonnes=1);
   virtual int put(const int* ob, int n, int nb_colonnes=1);
 #ifndef INT_is_64_
   virtual int put(const long  * ob, int n, int nb_colonnes=1);

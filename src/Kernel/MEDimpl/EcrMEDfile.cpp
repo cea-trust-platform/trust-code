@@ -21,9 +21,8 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <EcrMEDfile.h>
-#include <Interprete.h>
 
-Implemente_instanciable_sans_constructeur(EcrMEDfile,"Ecrire_MEDfile",Interprete);
+Implemente_instanciable_sans_constructeur(EcrMEDfile,"Ecrire_MEDfile",EcrMED);
 
 /**
  * Set flag use_medcoupling
@@ -34,7 +33,7 @@ EcrMEDfile::EcrMEDfile()
 }
 
 // Description:
-//    Simple appel a: Interprete::printOn(Sortie&)
+//    Simple appel a: EcrMED::printOn(Sortie&)
 // Precondition:
 // Parametre: Sortie& os
 //    Signification: un flot de sortie
@@ -49,12 +48,12 @@ EcrMEDfile::EcrMEDfile()
 // Postcondition: la methode ne modifie pas l'objet
 Sortie& EcrMEDfile::printOn(Sortie& os) const
 {
-  return Interprete::printOn(os);
+  return EcrMED::printOn(os);
 }
 
 
 // Description:
-//    Simple appel a: Interprete::readOn(Entree&)
+//    Simple appel a: EcrMED::readOn(Entree&)
 // Precondition:
 // Parametre: Entree& is
 //    Signification: un flot d'entree
@@ -69,7 +68,7 @@ Sortie& EcrMEDfile::printOn(Sortie& os) const
 // Postcondition:
 Entree& EcrMEDfile::readOn(Entree& is)
 {
-  return Interprete::readOn(is);
+  return EcrMED::readOn(is);
 }
 
 

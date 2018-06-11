@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,6 +25,7 @@
 #include <Mod_turb_hyd_RANS_0_eq.h>
 #include <Paroi_negligeable_VDF.h>
 #include <Transport_K_Eps_base.h>
+#include <Modele_turbulence_hyd_nul.h>
 
 
 void Eval_Dift_VDF_var_Face::associer_modele_turbulence(const Mod_turb_hyd_base& mod)
@@ -48,6 +49,12 @@ void Eval_Dift_VDF_var_Face::associer_modele_turbulence(const Mod_turb_hyd_base&
       const Mod_turb_hyd_RANS_0_eq& mod_lm =
         ref_cast(Mod_turb_hyd_RANS_0_eq,le_modele_turbulence.valeur());
       k_.ref(mod_lm.energie_cinetique_turbulente().valeurs());
+    }
+  else if (sub_type(Modele_turbulence_hyd_nul,le_modele_turbulence.valeur()))
+    {
+      const Modele_turbulence_hyd_nul& mod_nul = ref_cast(Modele_turbulence_hyd_nul, le_modele_turbulence.valeur());
+      k_ = DoubleTab(mod_nul.viscosite_turbulente().valeurs());
+      k_ = 0.;
     }
   else
     {

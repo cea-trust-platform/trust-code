@@ -118,7 +118,7 @@ Entree& EcrMED::interpreter(Entree& is)
 }
 
 #ifndef MED_
-void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_fic,const Nom& nom_dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Nom& type_elem,double time,int compteur)
+void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_fic,const Domaine& dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Nom& type_elem,double time,int compteur)
 {
   med_non_installe();
 }

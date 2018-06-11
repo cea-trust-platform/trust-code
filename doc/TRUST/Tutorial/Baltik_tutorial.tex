@@ -163,7 +163,7 @@ CEA Saclay \\ % Your institution for the title page
 \texttt{\$ cd Formation\_TRUST/yourname}\\
 \texttt{\$ trust -copy upwind}\\
 \texttt{\$ cd upwind}\\
-\item Change "format lml" to "format lata" in datafile\\
+\item Change "format lml" to "format lata" in the data file\\
 \end{itemize}
 
 \end{block}
@@ -313,12 +313,12 @@ It means that they are not followed by the git repository for the moment.
 It means that there are not on the git repository.
 
 \item To see only the changes on the git repository files:\\
-\texttt{\$ git status -\,-u=no}\\
+\texttt{\$ git status -uno}\\
 
 \item Track changes via gitk (GUI interface of Git):\\
 \texttt{\$ gitk \&}
 
-\item You can see informations about your first commit and actual untracked changes.
+\item You can see information about your first commit and actual untracked changes.
 \end{itemize}
 
 \end{block}
@@ -533,7 +533,7 @@ instead of "Objet\_U".
 \begin{itemize}
 \item Notice the "interpreter()" method (which calls the "interpreter\_()" method).
 
-\item This method is called each time a keyword is read in the datafile (eg: "Read\_file dom dom.geom", "Solve pb",...).
+\item This method is called each time a keyword is read in the data file (eg: "Read\_file dom dom.geom", "Solve pb",...).
 
 \item Define the public method "interpreter\_(Entree\&)" in the include file and implement it
 (just print a message with "Cerr" like "- My first keyword!") into the cpp file. 
@@ -682,9 +682,8 @@ return is;\\
 
 \item Add into the "interpreter\_(Entree\&)" method the read of these parameters into braces using the \textbf{Param} object.
 
-\item \textbf{Param} use is the recommended choice in this case (even if a lot of
-current TRUST classes still use the old fashion to read parameters), cause it
-simplifies greatly the coding.
+\item \textbf{Param} use is the recommended choice in this case (even though many current TRUST classes are still using the old fashion to read parameters), because it
+greatly simplifies the coding.
 \end{itemize}
 
 \end{block}
@@ -698,7 +697,7 @@ simplifies greatly the coding.
 \begin{itemize}
 \item Add "\#include <Param.h>" into the cpp file.
 
-\item If help needed, have a look at the "Interprete\_geometrique\_base" sub-class "Extruder". The datafile syntax is :
+\item If help needed, have a look at the "Interprete\_geometrique\_base" sub-class "Extruder". The data file syntax is :
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.9\textwidth}
 \begin{alltt}
@@ -764,7 +763,7 @@ domain named " <\textcompwordmark{}< ??? <\textcompwordmark{}< {\bf{finl}};
 \begin{block}{Part 2}
 
 \begin{itemize}
-\item We are going to try to print informations of the domain boundaries in our current project.
+\item We are going to try to print information of the domain boundaries in our current project.
 
 \item Edit the "my\_first\_class.cpp" file and add into the "interpreter\_()" method a loop on the boundaries.
 
@@ -874,7 +873,7 @@ from the domain, only from the problem.
 \texttt{\$ make gui}
 \item Open the documentation file:\\
 \texttt{\$ evince \$project\_directory/build/xdata/XTriou/doc.pdf \&}
-\item Now we will add comments in our cpp files to add informations in the documentation.
+\item Now we will add comments in our cpp files to add information in the documentation.
 \item For this open the help of the TRAD\_2 syntaxe:\\
 \texttt{\$ vim|nedit|gedit|emacs doc\_TRAD\_2 \&}
 \end{itemize}
@@ -1294,7 +1293,7 @@ $\rightarrow$ Search for "Debog" keyword.
 \begin{block}{Git commands}
 \begin{itemize}
 \item Lets check the git status before solving this problem:\\
-\texttt{\$ git status -\,-u=no}\\
+\texttt{\$ git status -uno}\\
 \item A new test case based on your PRM file has been created in the directory:\\
 \$project\_directory/tests/Reference/Validation/upwind\_jdd1
 \end{itemize}
@@ -1352,7 +1351,7 @@ ERROR...
 
 \begin{itemize}
 \item Add this non-regression test in configuration:\\
-\texttt{\$ git status -\,-u=no}\\
+\texttt{\$ git status -uno}\\
 \texttt{\$ git add tests/Reference/Validation/upwind\_jdd1/upwind\_jdd1.data}\\
 \item Push the modifications on your git repository:\\
 \texttt{\$ git commit -m "New reference test"}\\
@@ -1460,7 +1459,7 @@ ERROR...
 
 \begin{itemize}
     \item [$\circ$] For this go to the Doxygen documentation of RRK2 class to see the methods of this class.
-    \item [$\circ$] Use the "trust -check function|class|class::method" command to fin and launch tests cases.
+    \item [$\circ$] Use the "trust -check function|class|class::method" command to find and launch tests cases.
     \item [$\circ$] For example: \\
     \texttt{\$ trust -check RRK2::RRK2}
 \end{itemize}

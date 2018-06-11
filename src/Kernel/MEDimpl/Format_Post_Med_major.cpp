@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include <Format_Post_Med_major.h>
 
-Implemente_instanciable_sans_constructeur(Format_Post_Med_major,"Format_Post_Med_major",Format_Post_Medfile);
+Implemente_instanciable_sans_constructeur(Format_Post_Med_major,"Format_Post_Med_major",Format_Post_Med);
 
 // Description: erreur => exit
 Sortie& Format_Post_Med_major::printOn(Sortie& os) const

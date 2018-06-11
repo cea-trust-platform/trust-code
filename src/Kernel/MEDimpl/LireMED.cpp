@@ -1689,7 +1689,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
           bool provisoire = true;
           if (provisoire)
             {
-              Cerr << "Lecture des groupes au niveau -1:" << finl;
+              Cerr << "Reading groups at level -1:" << finl;
               std::vector<std::string> groups = file->getGroupsOnSpecifiedLev(-1);
               int size = groups.size();
               for (int i=0; i<size; i++)
@@ -1703,7 +1703,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
                     Cerr << file->getFamiliesIdsOnGroup(groups[i])[j] << " ";
                   Cerr << ")" << finl;
                 }
-              Cerr << "Lecture des familles au niveau -1:" << finl;
+              Cerr << "Reading families at level -1:" << finl;
               std::vector<std::string> families = file->getFamiliesNames();
               size = families.size();
               for (int i = 0; i < size; i++)
@@ -1719,7 +1719,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
                   Cerr << ")" << finl;
                 }
             }
-          Cerr << "Lecture des frontieres:" << finl;
+          Cerr << "Reading boundaries:" << finl;
           // Lecture des familles
           std::vector<std::string> families = file->getFamiliesNames();
           int size = families.size();

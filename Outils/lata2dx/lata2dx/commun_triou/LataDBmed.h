@@ -128,12 +128,14 @@ ArrOfInt renum_conn(const LataDB::Element& type)
 
 extern med_geometry_type typmai3[MED_N_CELL_FIXED_GEO];
 
-void latadb_get_info_mesh_med(const char* filename,const char* meshname,med_geometry_type& type_geo,int& ncells,int& nnodes,int& spacedim, int &nbcomp)
+void latadb_get_info_mesh_med(const char* filename,const char* meshname,med_geometry_type& type_geo,int& ncells,int& nnodes,int& spacedim, int &nbcomp,int& is_structured, std::vector<int>& NIJK)
 {
+    is_structured=0;
   int meshDim, i;
-  
+  try {
   std::vector< std::vector< std::pair<INTERP_KERNEL::NormalizedCellType,int> > > res = MEDCoupling::GetUMeshGlobalInfo(filename, meshname, meshDim, spacedim, nnodes);
   
+
   // on prend que la dimension la plus grande et on verifie que l'on a qu'un type elt 
   if (res.size()>1)
     {
@@ -158,6 +160,35 @@ void latadb_get_info_mesh_med(const char* filename,const char* meshname,med_geom
     }
   else
     ncells=res[0][0].second;
+    }
+  catch (...)
+  {
+    // No UMesh try CMesh
+      MEDCoupling::MEDCouplingMesh* mesh=  MEDCoupling::ReadMeshFromFile(filename, meshname);
+      /* 
+        type_geo,int& ncells,int& nnodes,int& spacedim, int &nbcomp
+       */
+      MEDCoupling::MEDCouplingCMesh* cmesh = dynamic_cast<MEDCoupling::MEDCouplingCMesh*>(mesh);
+      spacedim=cmesh-> getSpaceDimension() ;
+      
+      NIJK= cmesh->getNodeGridStructure();
+      ncells=mesh->getNumberOfCells();
+      nnodes=mesh->getNumberOfNodes();
+      
+    
+   // std::cout << ncells<< " "<<sizes[2]<<std::endl;
+      mesh->decrRef();
+      
+      if (spacedim==3)
+            type_geo =MED_HEXA8;
+      else if (spacedim==2)
+           type_geo =MED_QUAD4;
+        else 
+         abort();
+        is_structured=1;
+      //abort();
+      return;
+  }
 }
 
 
@@ -207,11 +238,14 @@ void LataDB::read_master_file_med(const char *prefix, const char *filename)
       dom.name_=geoms[i];
       med_geometry_type type_geo;
       int ncells,nnodes,spacedim, nbcomp;
-      
-      latadb_get_info_mesh_med(filename,geoms[i].c_str(),type_geo,ncells,nnodes,spacedim,nbcomp);
+      int is_structured;
+      std::vector<int> NIJK;
+      latadb_get_info_mesh_med(filename,geoms[i].c_str(),type_geo,ncells,nnodes,spacedim,nbcomp,is_structured,NIJK);
             
       dom.elem_type_=latadb_name_from_type_geo(type_geo);
 
+      if (is_structured==0)
+      {
       LataDBField som;
       som.name_ = "SOMMETS";
       som.geometry_ = dom.name_;
@@ -234,7 +268,42 @@ void LataDB::read_master_file_med(const char *prefix, const char *filename)
       add(timesteps_.size() - 1, dom);
       add(timesteps_.size() - 1, som);
       add(timesteps_.size() - 1, elem);
-
+      }
+      else
+      {
+      add(timesteps_.size() - 1, dom);
+       {
+        LataDBField som;
+        som.name_ = "SOMMETS_IJK_I";
+        som.geometry_ = dom.name_;
+        som.filename_ = filename;
+        som.size_=NIJK[0];
+        som.datatype_ = default_type_float(); // ??
+        som.nb_comp_=1;
+        add(timesteps_.size() - 1, som);
+      }
+       {
+        LataDBField som;
+        som.name_ = "SOMMETS_IJK_J";
+        som.geometry_ = dom.name_;
+        som.filename_ = filename;
+        som.size_=NIJK[1];
+        som.datatype_ = default_type_float(); // ??
+        som.nb_comp_=1;
+        add(timesteps_.size() - 1, som);
+      }
+       {
+        LataDBField som;
+        som.name_ = "SOMMETS_IJK_K";
+        som.geometry_ = dom.name_;
+        som.filename_ = filename;
+        som.size_=NIJK[2];
+        som.datatype_ = default_type_float(); // ??
+        som.nb_comp_=1;
+        add(timesteps_.size() - 1, som);
+      }
+          
+      }
       
     
   vector<string> fields; 
@@ -414,6 +483,29 @@ void LataDB::read_data2_med_(
       }
       mesh->decrRef();
     }
+  else if (fld.name_.debute_par("SOMMETS_IJK_"))
+    {
+      MEDCoupling::MEDCouplingMesh * mesh=  MEDCoupling::ReadMeshFromFile(fld.filename_.getString(),fld.geometry_.getString());
+      data->resize(fld.size_,fld.nb_comp_);
+      MEDCoupling::MEDCouplingCMesh* cmesh = dynamic_cast<MEDCoupling::MEDCouplingCMesh*>(mesh);
+      int dir;
+      if (fld.name_=="SOMMETS_IJK_I")
+          dir=0;
+      else  if (fld.name_=="SOMMETS_IJK_J")
+          dir=1;
+      else if (fld.name_=="SOMMETS_IJK_K")
+          dir=2;
+      else
+          abort();
+      const MEDCoupling::DataArrayDouble* coords=cmesh->getCoordsAt(dir);
+      for (int i=0;i<fld.size_;i++)
+     	for (int j=0;j<fld.nb_comp_;j++)
+	  {
+	    (*data)(i,j)=coords->getIJ(i,j);
+	  }
+      mesh->decrRef();
+    }
+  
   else 
     {
       

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -101,6 +101,8 @@ public :
   inline const DoubleVect& porosite_elem() const;
   inline DoubleVect& diametre_hydraulique_face();
   inline const DoubleVect& diametre_hydraulique_face() const;
+  inline DoubleTab& diametre_hydraulique_elem();
+  inline const DoubleTab& diametre_hydraulique_elem() const;
   inline DoubleVect& coefficient_frottement();
   inline const DoubleVect& coefficient_frottement() const;
   inline DoubleVect& coefficient_echange_thermique();
@@ -183,6 +185,7 @@ protected:
   DoubleVect porosite_face_;              // Porosites surfaciques en masse et volumiques
   // en quantite de mouvement
   DoubleVect diametre_hydraulique_face_;  //diametres hydrauliques des faces
+  DoubleTab diametre_hydraulique_elem_;  //diametres hydrauliques des elements
   DoubleVect coefficient_echange_thermique_;           // remplissage des coefficients d'echange_thermique
   DoubleVect coefficient_frottement_;                          // remplissage des coefficient de frottement
 
@@ -270,6 +273,18 @@ inline const DoubleVect& Zone_VF::porosite_elem() const
 inline double Zone_VF::porosite_elem(int i) const
 {
   return porosite_elem_[i];
+}
+
+// Description:
+inline DoubleTab& Zone_VF::diametre_hydraulique_elem()
+{
+  return diametre_hydraulique_elem_;
+}
+
+// Description:
+inline const DoubleTab& Zone_VF::diametre_hydraulique_elem() const
+{
+  return diametre_hydraulique_elem_;
 }
 
 // Description:

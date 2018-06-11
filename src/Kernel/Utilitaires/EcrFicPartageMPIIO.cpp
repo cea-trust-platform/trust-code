@@ -149,6 +149,13 @@ Sortie& EcrFicPartageMPIIO::operator <<(const int& ob)
 #endif
   return *this;
 }
+
+Sortie& EcrFicPartageMPIIO::operator <<(const unsigned& ob)
+{
+  write(MPI_UNSIGNED, &ob);
+  return *this;
+}
+
 Sortie& EcrFicPartageMPIIO::operator <<(const float& ob)
 {
   write(MPI_FLOAT, &ob);
@@ -247,6 +254,11 @@ int EcrFicPartageMPIIO::put(MPI_Datatype MPI_TYPE, const void* ob, int n)
   MPI_Info_free(&mpi_info);
   MPI_Type_free(&filetype);
   return 1;
+}
+
+int EcrFicPartageMPIIO::put(const unsigned* ob, int n, int pas /* useless in binary */)
+{
+  return put(MPI_UNSIGNED, ob, n);
 }
 
 int EcrFicPartageMPIIO::put(const int* ob, int n, int pas /* useless in binary */)

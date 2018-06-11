@@ -21,9 +21,8 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <LireMEDfile.h>
-#include <Interprete.h>
 
-Implemente_instanciable_sans_constructeur(LireMEDfile,"Lire_MEDfile",Interprete);
+Implemente_instanciable_sans_constructeur(LireMEDfile,"Lire_MEDfile",LireMED);
 
 LireMEDfile::LireMEDfile()
 {
@@ -46,7 +45,7 @@ LireMEDfile::LireMEDfile()
 // Postcondition: la methode ne modifie pas l'objet
 Sortie& LireMEDfile::printOn(Sortie& os) const
 {
-  return Interprete::printOn(os);
+  return LireMED::printOn(os);
 }
 
 
@@ -66,7 +65,7 @@ Sortie& LireMEDfile::printOn(Sortie& os) const
 // Postcondition:
 Entree& LireMEDfile::readOn(Entree& is)
 {
-  return Interprete::readOn(is);
+  return LireMED::readOn(is);
 }
 
 

@@ -483,8 +483,6 @@ modele_turbulence_hyd_deriv objet_lecture modele_turbulence_hyd_deriv -1 Basic c
   attr dt_impr_ustar floattant dt_impr_ustar 1 This keyword is used to print the values (U +, d+, u$\star$) obtained with the wall laws into a file named datafile_ProblemName_Ustar.face and periode refers to the printing period, this value is expressed in seconds.
   attr dt_impr_ustar_mean_only dt_impr_ustar_mean_only dt_impr_ustar_mean_only 1 This keyword is used to print the mean values of u* ( obtained with the wall laws) on each boundary, into a file named datafile_ProblemName_Ustar_mean_only.out. periode refers to the printing period, this value is expressed in seconds. If you don\'t use the optional keyword boundaries, all the boundaries will be considered. If you use it, you must specify nb_boundaries which is the number of boundaries on which you want to calculate the mean values of u*, then you have to specify their names.
   attr nut_max floattant nut_max 1 Upper limitation of turbulent viscosity (default value 1.e8).
-  attr prandtl_k floattant prandtl_k 1 Keyword to change the Prk value (default 1.0).
-  attr prandtl_eps floattant prandtl_eps 1 Keyword to change the Pre value (default 1.3).
 modele_turbulence_hyd_nul modele_turbulence_hyd_deriv NUL 0 not_set
 navier_stokes_turbulent navier_stokes_standard navier_stokes_turbulent -1 NAVIER STOKES equations as well as the associated turbulence model equations.
   attr modele_turbulence modele_turbulence_hyd_deriv modele_turbulence 1 Turbulence model for NAVIER STOKES equations.
@@ -666,8 +664,6 @@ boundary_field_inward front_field_base boundary_field_inward 1 this field is use
   attr normal_value chaine normal_value 0 normal vector value (positive value for a vector oriented outside to inside) which can depend of the time.
 champ_front_pression_from_u front_field_base champ_front_pression_from_u 0 this field is used to define a pressure field depending of a velocity field.
   attr expression chaine expression 0 value depending of a velocity (like $2*u_moy^2$).
-champ_front_debit front_field_base champ_front_debit 0 This field is used to define a flow rate field instead of a velocity field for a Dirichlet boundary condition on Navier Stokes equation.
-  attr ch front_field_base ch 0 field (champ_front_uniforme) to define the flow rate.
 milieu_base objet_u milieu_base -1 Basic class for medium (physics properties of medium).
   attr rho field_base rho 1 Density (kg.m-3).
   attr cp field_base cp 1 Specific heat (J.kg-1.K-1).
@@ -720,7 +716,7 @@ mod_turb_hyd_ss_maille modele_turbulence_hyd_deriv mod_turb_hyd_ss_maille -1 Cla
   attr formulation_a_nb_points form_a_nb_points formulation_a_nb_points 1 The structure fonction is calculated on nb points and we should add the 2 directions (0:OX, 1:OY, 2:OZ) constituting the homegeneity planes. Example for channel flows, planes parallel to the walls.
   attr longueur_maille chaine(into=["volume","volume_sans_lissage","scotti","arrete"]) longueur_maille 1 different ways to calculate the characteristic length may be specified : NL2 volume : It is the default option. Characteristic length is based on the cubic root of the volume cells. A smoothing procedure is applied to avoid discontinuities of this quantity in VEF from a cell to another. NL2 volume_sans_lissage : For VEF only. Characteristic length is based on the cubic root of the volume cells (without smoothing procedure).NL2 scotti : Characteristic length is based on the cubic root of the volume cells and the Scotti correction is applied to take into account the stretching of the cell in the case of anisotropic meshes. NL2 arete : For VEF only. Characteristic length relies on the max edge (+ smoothing procedure) is taken into account.
 sous_maille_wale mod_turb_hyd_ss_maille sous_maille_wale -1 This is the WALE-model. It is a new sub-grid scale model for eddy-viscosity in LES that has the following properties : NL2 - it goes naturally to 0 at the wall (it doesn\'t need any information on the wall position or geometry) NL2 - it has the proper wall scaling in o(y3) in the vicinity of the wall NL2 - it reproduces correctly the laminar to turbulent transition.
-  attr cw floattant cw 1 The unique parameter (constant) of the WALE-model (by default value 0.5).
+  attr cw floattant cw 0 The unique parameter (constant) of the WALE-model (by default value 0.5).
 sous_maille_smago mod_turb_hyd_ss_maille sous_maille_smago -1 Smagorinsky sub-grid turbulence model. NL2 Nut=Cs1*Cs1*l*l*sqrt(2*S*S) NL2 K=Cs2*Cs2*l*l*2*S
   attr cs floattant cs 1 This is an optional keyword and the value is used to set the constant used in the Smagorinsky model (This is currently only valid for Smagorinsky models and it is set to 0.18 by default) .
 combinaison mod_turb_hyd_ss_maille combinaison -1 This keyword specify a turbulent viscosity model where the turbulent viscosity is user-defined.
@@ -742,15 +738,6 @@ schmidt modele_turbulence_scal_base schmidt -1 The Schmidt model. For the scalar
 modele_fonction_bas_reynolds_base objet_lecture modele_fonction_bas_reynolds_base -1 not_set
 transport_k_epsilon eqn_base transport_k_epsilon -1 The (k-eps) transportation equation. To restart from a previous mixing length calculation, an external MED-format file containing reconstructed K and Epsilon quantities can be read (see fichier_ecriture_k_eps) thanks to the Champ_fonc_MED keyword. NL2 Warning, When used with the Quasi-compressible model, k and eps should be viewed as rho k and rho epsilon when defining initial and boundary conditions or when visualizing values for k and eps. This bug will be fixed in a future version.
   attr with_nu chaine(into=["yes","no"]) with_nu 1 yes/no
-mod_turb_hyd_rans modele_turbulence_hyd_deriv mod_turb_hyd_rans -1 Class for RANS turbulence model for NAVIER STOKES equations.
-  attr eps_min floattant eps_min 1 Lower limitation of epsilon (default value 1.e-10).
-  attr eps_max floattant eps_max 1 Upper limitation of epsilon (default value 1.e+10).
-  attr k_min floattant k_min 1 Lower limitation of k (default value 1.e-10).
-  attr quiet rien quiet 1 To disable printing of information about k and epsilon.
-k_epsilon mod_turb_hyd_rans k_epsilon -1 Turbulence model (k-eps).
-  attr cmu floattant cmu 1 Keyword to modify the Cmu constant of k-eps model : Nut=Cmu*k*k/eps Default value is 0.09
-  attr transport_k_epsilon transport_k_epsilon transport_k_epsilon 0 Keyword to define the (k-eps) transportation equation.
-  attr modele_fonc_bas_reynolds modele_fonction_bas_reynolds_base modele_fonc_bas_reynolds 1 This keyword is used to set the bas Reynolds model used.
 loi_standard_hydr_old turbulence_paroi_base loi_standard_hydr_old 0 not_set
 loi_standard_hydr turbulence_paroi_base loi_standard_hydr 0 Keyword for the logarithmic wall law for a hydraulic problem. Loi_standard_hydr refers to first cell rank eddy-viscosity defined from continuous analytical functions, whereas Loi_standard_hydr_3couches from functions separataly defined for each sub-layer
 loi_expert_hydr loi_standard_hydr loi_expert_hydr 1 This keyword is similar to the previous keyword Loi_standard_hydr but has several additional options into brackets.
