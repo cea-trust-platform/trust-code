@@ -57,13 +57,13 @@ public:
   {
     Cerr<<"Solide_Milieu_Variable::capacite_calorifique() not allowed"<<finl;
     abort();
-    return capacite_calorifique();
+    return Milieu_base::capacite_calorifique();
   };
   virtual Champ_Don&       capacite_calorifique()
   {
     Cerr<<"Solide_Milieu_Variable::capacite_calorifique() not allowed"<<finl;
     abort();
-    return capacite_calorifique();
+    return Milieu_base::capacite_calorifique();
   };
 
 protected:
