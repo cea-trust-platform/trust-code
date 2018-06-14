@@ -46,7 +46,7 @@ Launching
   => Welcome -> close: x button
 
 > File/New/C++ Project
-  => Profect name: TRUST-X.Y.Z
+  => Project name: TRUST-X.Y.Z
   => Project type: "Executable" -> "Empty Project".
   => Toolchains: "Linux GCC".
   => Finish
@@ -88,7 +88,7 @@ Launching
 > cd Formation_TRUST/user/eclipse
 > ./eclipse &
 > File/New/Makefile Project with Existing Code
-  => Profect name: MY_BALTIK
+  => Project name: MY_BALTIK
   => Existing Code Location: copy the string matching $project_directory/src/
   => Toolchain for Indexer Settings: "Linux GCC".
   => Finish

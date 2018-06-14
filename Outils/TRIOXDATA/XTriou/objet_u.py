@@ -2045,7 +2045,7 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
     except:
          pass
     if (icl.attdiscr==1):
-         tstr+="Keyword Discretiser should have already be used to read the object. \n\n"
+         tstr+="Keyword Discretize should have already been used to read the object. \n\n"
     if fr:
         # print "clname",clname
         tstr=tstr+ "See also: "+ ipere.name_trio_
