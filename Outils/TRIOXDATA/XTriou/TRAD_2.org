@@ -738,6 +738,15 @@ schmidt modele_turbulence_scal_base schmidt -1 The Schmidt model. For the scalar
 modele_fonction_bas_reynolds_base objet_lecture modele_fonction_bas_reynolds_base -1 not_set
 transport_k_epsilon eqn_base transport_k_epsilon -1 The (k-eps) transportation equation. To restart from a previous mixing length calculation, an external MED-format file containing reconstructed K and Epsilon quantities can be read (see fichier_ecriture_k_eps) thanks to the Champ_fonc_MED keyword. NL2 Warning, When used with the Quasi-compressible model, k and eps should be viewed as rho k and rho epsilon when defining initial and boundary conditions or when visualizing values for k and eps. This bug will be fixed in a future version.
   attr with_nu chaine(into=["yes","no"]) with_nu 1 yes/no
+mod_turb_hyd_rans modele_turbulence_hyd_deriv mod_turb_hyd_rans -1 Class for RANS turbulence model for NAVIER STOKES equations.
+  attr eps_min floattant eps_min 1 Lower limitation of epsilon (default value 1.e-10).
+  attr eps_max floattant eps_max 1 Upper limitation of epsilon (default value 1.e+10).
+  attr k_min floattant k_min 1 Lower limitation of k (default value 1.e-10).
+  attr quiet rien quiet 1 To disable printing of information about k and epsilon.
+k_epsilon mod_turb_hyd_rans k_epsilon -1 Turbulence model (k-eps).
+  attr cmu floattant cmu 1 Keyword to modify the Cmu constant of k-eps model : Nut=Cmu*k*k/eps Default value is 0.09
+  attr transport_k_epsilon transport_k_epsilon transport_k_epsilon 0 Keyword to define the (k-eps) transportation equation.
+  attr modele_fonc_bas_reynolds modele_fonction_bas_reynolds_base modele_fonc_bas_reynolds 1 This keyword is used to set the bas Reynolds model used.
 loi_standard_hydr_old turbulence_paroi_base loi_standard_hydr_old 0 not_set
 loi_standard_hydr turbulence_paroi_base loi_standard_hydr 0 Keyword for the logarithmic wall law for a hydraulic problem. Loi_standard_hydr refers to first cell rank eddy-viscosity defined from continuous analytical functions, whereas Loi_standard_hydr_3couches from functions separataly defined for each sub-layer
 loi_expert_hydr loi_standard_hydr loi_expert_hydr 1 This keyword is similar to the previous keyword Loi_standard_hydr but has several additional options into brackets.
