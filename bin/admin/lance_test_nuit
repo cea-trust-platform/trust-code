@@ -48,9 +48,10 @@ check_components()
 	    if [ "$Composant" = basic ]
 	    then
 	       make_option="make check_trust_optim"
-	    elif [ "$Composant" = mathys ]
+	    elif [[ "$ComposantsBeta" = *"$Composant"* ]] # Test si Composant est dans la liste des composants Beta
 	    then
-	       make_option=""
+	    #   make_option=""
+	       make_option="make check_optim"
 	    elif [ $* = tuleap/Kernel ]
 	    then
 	       make_option="make check_all_optim check_trust_optim"
@@ -94,10 +95,13 @@ check_components()
 	       make gui 1>$Gui_log 2>&1 && echo $Composant"_Reference_Manual.pdf OK" && DOC_PDF_OK=1
 	       grep "Error" $Gui_log
 	       [ "`grep "Error" $Gui_log`" != "" ] && DOC_PDF_OK=0 && echo DOC_PDF_OK=0
-	       if [ "$Composant" != polymac ] && [ "$Composant" != triomc ] && [ "$Composant" != mathys ] && [ "$Composant" != Test_Baltik ]  && [ "$Composant" != ijk ]
+               if [[ "$ComposantsOfficial" = *"$Composant"* ]] || [[ "$ComposantsLns" = *"$Composant"* ]] # Test si Composant n est pas dans la liste des composants Beta
 	       then
-	          ([ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 17 ])) && make check_gui 1>>$Gui_log 2>&1 &
-	          make doxygen 1>$Doc_log 2>&1
+                  if [ "$Composant" != Test_Baltik ]
+                  then
+	             ([ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 17 ])) && make check_gui 1>>$Gui_log 2>&1 &
+	             make doxygen 1>$Doc_log 2>&1
+	          fi
 	       fi
 	    fi
             echo " "
@@ -219,8 +223,11 @@ check_components()
 	                if [[ "$valgrind_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines valgrind
 		        then
 		           valgrind_option="--with-valgrind"
+                           if [[ "$ComposantsBeta" = *"$Composant"* ]] # Test si Composant est dans la liste des composants Beta
+                           then
+		              valgrind_option=""
 			   # Test en valgrind seulement le vendredi car ne passe pas en une nuit sauf tous les jours sur Template, Tuto, ICoCo, PolyMAC, MPCube et Flica5
-			   if [ "$Composant" = Test_Baltik ] || [ "$Composant" = triocfd ] || [ "$Composant" = ijk ] || [ "$Composant" = triomc ] || [ "$Composant" = mathys ] || [ "$Composant" = genepi3 ]
+			   elif [ "$Composant" = Test_Baltik ] || [ "$Composant" = triocfd ] || [ "$Composant" = triomc ] || [ "$Composant" = mathys ] || [ "$Composant" = genepi3 ]
 			   then
 			      if [ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 17 ])
 			      then
@@ -263,7 +270,7 @@ check_components()
 		        fi
 	                if [[ "$gui_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines gui
 		        then
-	                   if [ "$Composant" = polymac ] || [ "$Composant" = triomc ] || [ "$Composant" = mathys ] || [ "$Composant" = ijk ]
+                           if [[ "$ComposantsBeta" = *"$Composant"* ]] # Test si Composant est dans la liste des composants Beta
 			   then
 	                      check_option="--without-run"
 			   else
@@ -283,9 +290,10 @@ check_components()
 			      fi
 	                      liste_options="--with-efface-dir-before"
 			   fi
-	                   if [ "$Composant" = mathys ]
+	                   if [[ "$ComposantsBeta" = *"$Composant"* ]] # Test si Composant est dans la liste des composants Beta
                            then
-		              check_option="--without-run"
+		           #   check_option="--without-run"
+		              check_option=""
 			   fi
 	                fi
 	                if [[ "$non_machines" = *"$machine"* ]] # Test si machine n est pas dans la liste des machines cible, get_binary et tache
@@ -434,7 +442,9 @@ VOBS="TRUST Composants"
 #ComposantsLns="Test_Baltik basic equation_convection_diffusion ICoCo"
 ComposantsLns="Test_Baltik equation_convection_diffusion ICoCo"
 #ComposantsGit="triocfd ijk polymac triomc mathys mpcube genepi3 pxp flica5"
-ComposantsGit="triocfd ijk polymac triomc mathys mpcube genepi3 flica5"
+ComposantsOfficial="triocfd mpcube genepi3 flica5"
+ComposantsBeta="ijk polymac triomc mathys"
+ComposantsGit=$ComposantsOfficial" "$ComposantsBeta
 export Composants=$ComposantsLns" "$ComposantsGit
 
 # Initialize environment TRUST:
@@ -589,12 +599,12 @@ echo>>$liste_log
 # NB: Verification complete (apres nettoyage) le vendredi
 [ "`date '+%u'`" = 5 ] && rm -r -f $TRUST_ROOT/build/bin/gestion_externalpackages/Test
 ./Verify_liste_dep.sh 1>>$liste_log 2>&1
-# les 3 paquets suivants different car
+# les 4 paquets suivants different car
 # qt-everywhere-opensource-src-4.8.3 sans doc (taille passe de 685M a 352M)
 # med-3.0.7 sans doc et sans python (taille passe de 162M a 19M)
 # med-3.2.1 sans doc (taille passe de 45M a 17M)
 # osu-micro-benchmarks-3.8 version initiale non retrouvee
-nb_error=`grep "FAILED" $liste_log | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.3.1 | grep -v osu-micro-benchmarks-3.8 | grep -v medcoupling-8.4.0 | wc -l`
+nb_error=`grep "FAILED" $liste_log | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.3.1 | grep -v osu-micro-benchmarks-3.8 | grep -v medcoupling-8.5.0 | wc -l`
 # les 3 paquets suivants sont sous http://downloads.sourceforge.net/project/trust-platform/X.Y.Z/extra/
 # medcoupling-7.8.0.tar.gz
 # hypre-2.10.0b-p2-TRUST.tar.gz
@@ -606,7 +616,7 @@ then
    # med-3.0.7 sans doc et sans python (taille passe de 162M a 19M)
    # osu-micro-benchmarks-3.8 version initiale non retrouvee
    #liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.2.1 | grep -v osu-micro-benchmarks-3.8 | grep -v medcoupling-7.8.0 | grep -v hypre-2.10.0b-p2-TRUST | grep -v CURVEPLOT | grep -v nvc_get_devices`
-   liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.3.1 | grep -v osu-micro-benchmarks-3.8 | grep -v medcoupling-8.4.0`
+   liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.3.1 | grep -v osu-micro-benchmarks-3.8 | grep -v medcoupling-8.5.0`
    cd $TRUST_ROOT/build/bin/gestion_externalpackages/Test
    rm -r -f old new
    for package in $liste_failed
@@ -1473,7 +1483,7 @@ echo "Release criteria of the $new version:" >> $MESSAGES_NUIT
 criteres_remplis=0
 total_criteres=0
 baltik_ok=0
-total_baltik=`echo $ComposantsGit | wc -w`
+total_baltik=`echo $ComposantsOfficial | wc -w`
 
 ######################
 # Tests d'installation
@@ -1770,7 +1780,14 @@ echo "Call to "$TRUST_ROOT"/bin/admin/recupere_TRUST_arch"
 echo "  See $recupere_log"
 echo "TRUST script on $HOST the `date` ...">$recupere_log
 echo>>$recupere_log
-recupere_TRUST_arch 1>>$recupere_log 2>&1
+# pour le lance seul :
+# export new=`awk '/version/ {print $4;exit}' $TRUST_ROOT/RELEASE_NOTES`
+# export Version=Version$new
+# export DATE=`date '+%d%m%y'`
+# REP_NUIT=/data/tmptrust/tmptrust/Historique/NUIT
+# HOST deja existant
+# recupere_log=$REP_NUIT/recupere_TRUST_arch_$HOST.log
+recupere_TRUST_arch 1>>$recupere_log 2>&1   
 grep KO $recupere_log
 grep -i portage $recupere_log
 if [ ${#liste_machines_KO} != 0 ] # chaine non vide
@@ -2162,7 +2179,7 @@ then
       echo " "
       echo "Release criterion: Modules KO"
    else 
-      echo "  Lauching of one case per module OK"
+      echo "  Launching of one case per module OK"
       # Recuperation de tous les cas tests par module
       modules=`cd $TRUST_ROOT/Validation/Modules;ls */cree_liste_cas | $TRUST_Awk -F/ '{print $1}'`
       echo " "
@@ -2641,7 +2658,7 @@ $TRUST_ROOT/bin/KSH/tggcov_ 1>$REP_NUIT/tggcov.log 2>&1
 #tail -n2 $REP_NUIT/tggcov.log
 couverture_de_code=`tggcov_ | $TRUST_Awk '/TRUST code/ {print $1}'`
 cd - 1>/dev/null 2>&1
-couverture_minimale=69.42 #v1.7.6 ; 69.87 v1.7.5 ; 70.04 v1.7.4 ; 69.61 v1.7.3 ; 69.28 v1.7.2 ; 65.26 v1.7.1
+couverture_minimale=69.42 #69.42 v1.7.6 ; 69.87 v1.7.5 ; 70.04 v1.7.4 ; 69.61 v1.7.3 ; 69.28 v1.7.2 ; 65.26 v1.7.1
 coverage=`echo $couverture_de_code | $TRUST_Awk -v m=$couverture_minimale '{if ($1>=m) print 1;else print 0}'`
 if [ $coverage = 1 ]
 then
@@ -2772,7 +2789,7 @@ KO=0
 let KO=$NB-$OK
 echo "    $OK keywords covered by test cases"
 echo "    $KO keywords NOT covered by test cases"
-keywords_minimal=83.00 #v1.7.6 ; 82.89 v1.7.5
+keywords_minimal=83.00 #classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
 
 echo " "
 keywords=0
@@ -3222,14 +3239,27 @@ do
    [ "$tot_cible" -eq 0 ] && tot_cible=-1
    if [ "$tot_cible" -eq -1 ]
    then
-      echo "$validation_composant  $Composant $nb_cible/0="`echo $ECHO_OPTS "scale=3;$nb_cible/$tot_cible" | bc -l`" (=1)" | tee -a $MESSAGES_NUIT
+      if [[ "$ComposantsOfficial" = *"$Composant"* ]] || [[ "$ComposantsLns" = *"$Composant"* ]] # Test si Composant n est pas dans la liste des composants Beta
+      then
+          echo "$validation_composant  $Composant $nb_cible/0="`echo $ECHO_OPTS "scale=3;$nb_cible/$tot_cible" | bc -l`" (=1)" | tee -a $MESSAGES_NUIT
+      else
+          echo "$validation_composant  $Composant $nb_cible/0="`echo $ECHO_OPTS "scale=3;$nb_cible/$tot_cible" | bc -l`" (=1)"
+      fi
       tot_cible=0
    else
-      echo "$validation_composant  $Composant $nb_cible/$tot_cible="`echo $ECHO_OPTS "scale=3;$nb_cible/$tot_cible" | bc -l`" (=1)" | tee -a $MESSAGES_NUIT
+      if [[ "$ComposantsOfficial" = *"$Composant"* ]] || [[ "$ComposantsLns" = *"$Composant"* ]] # Test si Composant n est pas dans la liste des composants Beta
+      then
+         echo "$validation_composant  $Composant $nb_cible/$tot_cible="`echo $ECHO_OPTS "scale=3;$nb_cible/$tot_cible" | bc -l`" (=1)" | tee -a $MESSAGES_NUIT
+      else
+         echo "$validation_composant  $Composant $nb_cible/$tot_cible="`echo $ECHO_OPTS "scale=3;$nb_cible/$tot_cible" | bc -l`" (=1)"
+      fi
    fi
-   let total_criteres=$total_criteres+1
-   let criteres_remplis=$criteres_remplis+$validation_composant
-   if [[ "$ComposantsGit" = *"$Composant"* ]] # Test si Composant est dans la liste des composants GIT
+   if [[ "$ComposantsOfficial" = *"$Composant"* ]] || [[ "$ComposantsLns" = *"$Composant"* ]] # Test si Composant n est pas dans la liste des composants Beta
+   then
+      let total_criteres=$total_criteres+1
+      let criteres_remplis=$criteres_remplis+$validation_composant
+   fi
+   if [[ "$ComposantsOfficial" = *"$Composant"* ]] # Test si Composant est dans la liste des composants Official
    then
       let baltik_ok=$baltik_ok+$validation_composant
    fi
@@ -3328,21 +3358,24 @@ fi
 [ -s $TRUST_ROOT/build/doc/doxygen*.err ] && validation_doxygen=0 && echo "TRUST Doxygen KO" && cat $TRUST_ROOT/build/doc/doxygen*.err | mail_ -s\"[lance_test_nuit] Validation of TRUST Doxygen documentation KO\" -c $TRUST_MAIL $TMA_PROJECT_LEADER
 for Composant in $Composants
 do
-   if [ "$Composant" != polymac ] && [ "$Composant" != triomc ] && [ "$Composant" != mathys ] && [ "$Composant" != Test_Baltik ] && [ "$Composant" != ijk ]
+   if [[ "$ComposantsOfficial" = *"$Composant"* ]] || [[ "$ComposantsLns" = *"$Composant"* ]] # Test si Composant n est pas dans la liste des composants Beta
    then
-      echo " "
-      echo "Search of $TRUST_ROOT/../Composants/$Composant/build/doxygen*.err file"
-      if [ -f $TRUST_ROOT/../Composants/$Composant/build/doxygen*.err ]
+      if [ "$Composant" != Test_Baltik ]
       then
-         ls -la $TRUST_ROOT/../Composants/$Composant/build/doxygen*.*
-         head -n1 $TRUST_ROOT/../Composants/$Composant/build/doxygen*.out
-         tail -n1 $TRUST_ROOT/../Composants/$Composant/build/doxygen*.out
-      elif [ ! -f $TRUST_ROOT/../Composants/$Composant/build/doxygen*.out ]
-      then
-         validation_doxygen=0 && echo "$Composant Doxygen KO" && echo `ls -la $TRUST_ROOT/../Composants/$Composant/build/doxygen*.*` | mail_ -s\"[lance_test_nuit] Validation of $Composant Doxygen documentation NOT\" $TRUST_MAIL
+         echo " "
+         echo "Search of $TRUST_ROOT/../Composants/$Composant/build/doxygen*.err file"
+         if [ -f $TRUST_ROOT/../Composants/$Composant/build/doxygen*.err ]
+         then
+            ls -la $TRUST_ROOT/../Composants/$Composant/build/doxygen*.*
+            head -n1 $TRUST_ROOT/../Composants/$Composant/build/doxygen*.out
+            tail -n1 $TRUST_ROOT/../Composants/$Composant/build/doxygen*.out
+         elif [ ! -f $TRUST_ROOT/../Composants/$Composant/build/doxygen*.out ]
+         then
+            validation_doxygen=0 && echo "$Composant Doxygen KO" && echo `ls -la $TRUST_ROOT/../Composants/$Composant/build/doxygen*.*` | mail_ -s\"[lance_test_nuit] Validation of $Composant Doxygen documentation NOT\" $TRUST_MAIL
+         fi
+         BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
+         [ -s $TRUST_ROOT/../Composants/$Composant/build/doxygen*.err ] && validation_doxygen=0 && echo "$Composant Doxygen KO" && cat $TRUST_ROOT/../Composants/$Composant/build/doxygen*.err | mail_ -s\"[lance_test_nuit] Validation of $Composant Doxygen documentation KO\" -c $TRUST_MAIL $TMA_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
       fi
-      BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
-      [ -s $TRUST_ROOT/../Composants/$Composant/build/doxygen*.err ] && validation_doxygen=0 && echo "$Composant Doxygen KO" && cat $TRUST_ROOT/../Composants/$Composant/build/doxygen*.err | mail_ -s\"[lance_test_nuit] Validation of $Composant Doxygen documentation KO\" -c $TRUST_MAIL $TMA_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
    fi
 done
 echo " "
@@ -3647,11 +3680,11 @@ then
 	    git tag $label_pose
             git push --tags origin Livraison:triou/TMA
 	    echo "    Call git tag $label"
-            if [ "$Composant" != mathys ] && [ "$Composant" != triomc ] && [ "$Composant" != polymac ]
+            if [[ "$ComposantsBeta" = *"$Composant"* ]] # Test si Composant est dans la liste des composants Beta
             then
-               git tag $label
-            else
                git tag "$label"b
+            else
+               git tag $label
             fi
 	    [ "$Composant" = triocfd ] && git push --tags origin Livraison:master
 	    git fetch --all
@@ -3669,11 +3702,11 @@ then
 	       cd $WORKDIR/tuleap/Livraison/Composants/$Composant
 	       echo "from `pwd`"
 	       git fetch --all
-	       if [ "$Composant" != mathys ] && [ "$Composant" != triomc ] && [ "$Composant" != polymac ]
+               if [[ "$ComposantsBeta" = *"$Composant"* ]] # Test si Composant est dans la liste des composants Beta
                then
-	          git checkout -b $patch_new $label
-               else
 	          git checkout -b $patch_new "$label"b
+               else
+	          git checkout -b $patch_new $label
                fi
 	       if [ $? = 0 ]
 	       then

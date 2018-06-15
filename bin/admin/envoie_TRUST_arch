@@ -240,7 +240,8 @@ do
 	    
 	    # Lancement par ssh:
 	    option=""
-	    if [ "${machine:0:10}" = curie-ccrt ] || [ "${machine:0:6}" = cobalt ]
+	    #if [ "${machine:0:10}" = curie-ccrt ] || [ "${machine:0:6}" = cobalt ]
+	    if [ "${machine:0:6}" = tgcc-ccrt ]
 	    then
 	       # CR bugges sur CCRT, on debugge:
 	       option="sh -xv "

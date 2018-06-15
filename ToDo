@@ -1,8 +1,15 @@
 Version	Qui				Tache
+1.7.8   triou@cea.fr            LDC: Mettre a jour le fichier License.txt
 1.7.8   triou@cea.fr            AGL: Ajouter dans lance_test_nuit un git remote update automatique sur toutes les bases git et envoyer mail a triou si maj
 1.7.8   triou@cea.fr            AGL: Revoir la procedure d installation de gcc car KO sur Fedora (OK sur CentOS)
 1.7.8   triou@cea.fr            AGL: Revoir pour lancer le check_component des que exe TRUST OK => voir pour attendre (cf ICoCo et tuto sur is220964 le we)
+1.7.8   triou@cea.fr            AGL: Ajouter check trust sur les BALTIKS IJK-FT et PolyMAC sur la ligne -platform de liste.machines
+1.7.8   triou@cea.fr            LDC: Revoir Google rules with cpplint on TRUST qui est passe de 48 erreurs a 57 lors d une integration pour v1.7.7
+1.7.8   triou@cea.fr            LDC: Voir pb TRAD_2.org version Kernel erreur modele_turbulence_hyd_deriv___k_epsilon
+1.7.8   triou@cea.fr            LDC: Mettre dans un fichier separe la classe Champ_Fonc_MEDfile
+1.7.7   trust@cea.fr            LDC: Verifier check valgrind TrioCFD car non lance via AGL
+1.7.7   trust@cea.fr            LDC: Verifier independance des sous-modules de chaque BALTIK car non lance via AGL (avec la premiere version RC)
 1.7.7   triou@cea.fr            LDC: recuperer aupres de Stephane l archive de couverture de code
-1.7.7   triou@cea.fr            LDC: En attente feu vert CEA
+1.7.7   triou@cea.fr            LDC: En attente feu vert CEA - apres analyse du lancement de toutes les fiches de verification si OK (main_validation)
 1.7.7   triou@cea.fr            LDC: envoyer BDL avec les 2 formations
 1.7.7   triou@cea.fr            LDC: verifier le dossier extra de 1.7.7 sur sourceforge (cf bin/gestion_externalpackages/liste_dep.csv)

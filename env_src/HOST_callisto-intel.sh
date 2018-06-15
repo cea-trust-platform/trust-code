@@ -37,7 +37,7 @@ define_modules_config()
    #module="$intel openmpi/icc/64/1.8.3"
    #module="$intel openmpi/icc/64/1.8.4"
    #module="$intel openmpi/icc/64/1.10.3"
-   module="python/2.7.6 $intel openmpi/icc/64/1.8.4"
+   module="python/2.7.6 $intel openmpi/icc/64/1.8.3"
    #
    #GNU gcc/4.4.6 gcc/4.8.1 gcc/4.9.0 gcc/4.9.3 gcc/5.2.0 (4.4.7 default)
    #intel=""
