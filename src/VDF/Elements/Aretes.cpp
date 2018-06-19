@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -56,12 +56,18 @@ Entree& Aretes::readOn(Entree& s )
 // type1_ = 2 si arete YZ
 // En dimension 2 il n'y a que des aretes XY
 void Aretes::affecter(int& numero_a, int dir, int type, int nb_face,
-                      int f1, int f2, int f3, int f4)
+                      int f1, int f2, int f3, int f4, const ArrOfInt& est_une_plaque)
 {
+  int nb_plaques = 0;
+  nb_plaques += f1>=0 ? est_une_plaque(f1) : 0;
+  nb_plaques += f2>=0 ? est_une_plaque(f2) : 0;
+  nb_plaques += f3>=0 ? est_une_plaque(f3) : 0;
+  nb_plaques += f4>=0 ? est_une_plaque(f4) : 0;
   int coin = -1 ;
   int bord = 0 ;
   if (type>0)
     {
+      if (nb_plaques!=0) return;
       if( (f1<nb_face) || (f2<nb_face) || (f3<nb_face) || (f4<nb_face) )
         numero_a++;
       else
