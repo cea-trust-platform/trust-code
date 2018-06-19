@@ -27,7 +27,10 @@
 #ifdef MEDCOUPLING_
 #include <MEDLoader.hxx>
 #include <MEDCouplingFieldDouble.hxx>
-using namespace MEDCoupling;
+using MEDCoupling::MEDCouplingFieldDouble;
+using MEDCoupling::MCAuto;
+using MEDCoupling::GetTimeAttachedOnFieldIteration;
+using MEDCoupling::GetAllFieldNamesOnMesh;
 #endif
 
 Implemente_instanciable_sans_constructeur(Champ_Fonc_MED,"Champ_Fonc_MED",Champ_Fonc_base);
@@ -37,7 +40,7 @@ Champ_Fonc_MED::Champ_Fonc_MED():Champ_Fonc_base::Champ_Fonc_base()
   last_time_only_=0;
 #ifdef MEDCOUPLING_
   use_medcoupling_ = true;
-  field_type = ON_CELLS;
+  field_type = MEDCoupling::ON_CELLS;
 #else
   use_medcoupling_ = false;
 #endif
@@ -427,7 +430,7 @@ void Champ_Fonc_MED::creer(const Nom& nomfic, const Domaine& un_dom, const Motcl
         {
           if (localisation == "som")
             {
-              field_type = ON_NODES;
+              field_type = MEDCoupling::ON_NODES;
               if ((cell_type == INTERP_KERNEL::NORM_QUAD4) || (cell_type == INTERP_KERNEL::NORM_HEXA8))
                 type_champ = "Champ_Fonc_Q1_MED";
               else
@@ -435,7 +438,7 @@ void Champ_Fonc_MED::creer(const Nom& nomfic, const Domaine& un_dom, const Motcl
             }
           else if (localisation == "elem")
             {
-              field_type = ON_CELLS;
+              field_type = MEDCoupling::ON_CELLS;
               type_champ = "Champ_Fonc_P0_MED";
             }
           else
@@ -495,14 +498,14 @@ void Champ_Fonc_MED::creer(const Nom& nomfic, const Domaine& un_dom, const Motcl
               nbcomp = (int) field->getNumberOfComponents();
             }
         }
-      if (field_type == ON_NODES)
+      if (field_type == MEDCoupling::ON_NODES)
         {
           if ((cell_type == INTERP_KERNEL::NORM_QUAD4) || (cell_type == INTERP_KERNEL::NORM_HEXA8))
             type_champ = "Champ_Fonc_Q1_MED";
           else
             type_champ = "Champ_Fonc_P1_MED";
         }
-      else if (field_type == ON_CELLS)
+      else if (field_type == MEDCoupling::ON_CELLS)
         type_champ = "Champ_Fonc_P0_MED";
     }
   else

@@ -37,7 +37,15 @@
 #include <MEDCouplingFieldDouble.hxx>
 #pragma GCC diagnostic ignored "-Wreorder"
 #include <MEDFileField.hxx>
-using namespace MEDCoupling;
+using MEDCoupling::MCAuto;
+using MEDCoupling::MEDCouplingUMesh;
+using MEDCoupling::DataArrayDouble;
+using MEDCoupling::DataArrayInt;
+using MEDCoupling::MEDFileField1TS;
+using MEDCoupling::MEDFileUMesh;
+using MEDCoupling::MEDCouplingFieldDouble;
+using MEDCoupling::GetAllFieldNames;
+using MEDCoupling::GetAllFieldIterations;
 #endif
 
 #define POURSATURNE
@@ -1361,9 +1369,9 @@ void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_fic,const Domaine& dom,
       // Create MEDCouplingField
       MEDCoupling::TypeOfField field_type;
       if (type == "CHAMPMAILLE")
-        field_type = ON_CELLS;
+        field_type = MEDCoupling::ON_CELLS;
       else if (type == "CHAMPPOINT")
-        field_type = ON_NODES;
+        field_type = MEDCoupling::ON_NODES;
       else
         {
           Cerr << "Field type " << type << " is not supported yet." << finl;

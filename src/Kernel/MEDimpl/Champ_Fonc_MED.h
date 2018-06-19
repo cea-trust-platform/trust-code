@@ -39,7 +39,6 @@
 #include <medcoupling++.h>
 #ifdef MEDCOUPLING_
 #include <MEDCouplingFieldDouble.hxx>
-using namespace MEDCoupling;
 #endif
 
 

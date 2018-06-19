@@ -30,7 +30,8 @@
 #include <medcoupling++.h>
 #ifdef MEDCOUPLING_
 #include <MEDCouplingUMesh.hxx>
-using namespace MEDCoupling;
+using MEDCoupling::MEDCouplingUMesh;
+using MEDCoupling::MCAuto;
 #endif
 
 class Conds_lim;
