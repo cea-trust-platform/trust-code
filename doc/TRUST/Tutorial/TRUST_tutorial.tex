@@ -114,7 +114,7 @@
 {
 CEA Saclay \\ % Your institution for the title page
 \medskip
-\textit{Support team: triou@cea.fr} % Your email address
+\textit{Support team: trust@cea.fr} % Your email address
 \medskip
 }
 \date{\today} % Date, can be changed to a custom date
@@ -173,9 +173,9 @@ CEA Saclay \\ % Your institution for the title page
 %\vspace{0.2cm}
 \textbf{source  /home/triou/env\_TRUST\_X.Y.Z.sh}
 %\vspace{0.5cm}
-\item On your own computer, download and install the latest version of TRUST in your local folder \$MyPathToTRUSTVersion (unless this was already performed), then write on the terminal:
+\item On your own computer, download and install the latest version of TRUST in your local folder \$MyPathToTRUSTversion (unless this was already performed), then write on the terminal:\\
 %\vspace{0.2cm}
-\textbf{source  /\$MyPathToTRUSTVersion/env\_TRUST\_X.Y.Z.sh}
+\textbf{source  \$MyPathToTRUSTversion/env\_TRUST\_X.Y.Z.sh}
 %\vspace{0.5cm}
 \end{itemize}
 
@@ -191,7 +191,7 @@ CEA Saclay \\ % Your institution for the title page
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{{\bf{Flow past a square cylinder (2D, VDF)}}} \label{exo1}
+\section{{\bf{Flow around an obstacle (2D, VDF)}}} \label{exo1}
 \subsection{Sequential calculation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
@@ -300,7 +300,7 @@ CEA Saclay \\ % Your institution for the title page
 
 \begin{itemize}
 \item [$\rightarrow$] You have access to useful resources in the \$TRUST\_ROOT/index.html file with your favorite browser (e.g.: firefox). Take few minutes to find test case examples containing a particular keyword using the \underline{Keywords} link: \\
-\textbf{firefox \$TRUST\_ROOT/index.html \&} \\
+\textbf{firefox \$TRUST\_ROOT/index.html \&} 
 or \textbf{trust -index \&\index{trust -index}}\\
 
 \item Launch the "PLOT2D" tool with: \\
@@ -1828,13 +1828,12 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 \begin{block}{Create a geometry}
 
 \begin{itemize}
-\item Create a directory and run Salom\'e (we suppose it is installed):\\
+\item Create a directory:\\
 \textbf{mkdir -p Formation\_TRUST/yourname/salome/exo1} \\
 \textbf{cd Formation\_TRUST/yourname/salome/exo1} \\
 
-\textbf{/export/home/salome/SALOME-7.7.1-FD18/salome} \\
-\# or if no local version: {\scriptsize{\textbf{/home/salome/salome}}} \\
-\# take the network version but to be used for testing NOT for work.
+\item Launch Salom\'e (we suppose it is installed):\\
+\textbf{\$PathToSalome/salome \&} 
 
 \item Create a new study: File $\rightarrow$ New
 

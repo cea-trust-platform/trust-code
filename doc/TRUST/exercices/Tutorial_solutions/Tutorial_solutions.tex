@@ -22,16 +22,16 @@
 \newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Obstacle VDF}
+\section{Flow around an obstacle (2D, VDF)}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Obstacle: Sequentiel calculation}
+\subsection{Sequentiel calculation}
 \subsubsection{First part: basic calculation}
 \input{Obstacle_VDF}
 \subsubsection{Second part: "reprise"}
 \input{Obstacle_reprise}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Obstacle: Parallel calculation}
+\subsection{Parallel calculation}
 \subsubsection{DEC\_Obstacle.data}
 \input{DEC_Obstacle}
 \subsubsection{PAR\_Obstacle.data}
@@ -41,21 +41,21 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Heat exchange VDF/VEF}
+\section{Heat transfer (2D, VDF/VEF)}
 \subsection{With diffusion\_implicite}
 \input{docond}
 \subsection{With scheme\_euler\_implicit}
 \input{docond_impl}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Low mach number flow}
+\section{Low mach number flow (2D)}
 \subsection{With scheme\_euler\_explicit}
 \input{TP_Temp_QC_VEF}
 \subsection{With scheme\_euler\_implicit}
 \input{TP_Temp_QC_VEF_impl}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Periodic 3D channel flow}
+\section{Periodic channel flow (3D)}
 \subsection{With scheme\_euler\_explicit}
 \input{P1toP1Bulle}
 \subsection{With scheme\_euler\_implicit}
@@ -70,21 +70,21 @@
 Minimal exercise, no need to put a solution
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Turbulent flow on a 3D step}
+\section{Turbulent flow over a backward-facing step (3D)}
 \subsection{Turbulence model Smagorinsky}
 \input{Marche3D}
 \subsection{K-Eps Turbulence model}
 \input{Marche3D_keps}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Tank filling (2D-single phase flow)}
+\section{Tank filling (2D, single-phase flow)}
 \subsection{VDF}
 \input{diagonal}
 \subsection{VEF}
 \input{diagonal_VEF}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Tank filling (3D-two phases flow)}
+\section{Tank filling (3D, two-phases flow)}
 \input{FTD_all_VDF}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
