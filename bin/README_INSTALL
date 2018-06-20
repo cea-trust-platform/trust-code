@@ -32,7 +32,7 @@ A LOG_TRUST file is created to analyse the progress of the compilation.
 
 If things didn't work smoothly and you can't figure out how to
 modify the configuration so that it builds properly on your system
-you can send e-mail to triou@cea.fr for more assistance.
+you can send e-mail to trust@cea.fr for more assistance.
 
 3. Follow carefully the last instructions of the Installer_TRUST script
 to configure your environment.

@@ -1,7 +1,8 @@
 #!/bin/bash
 # Script de reprise automatique d'un calcul dependant 
 # du systeme batch de la machine parallele
-# Pierre Ledac CS (triou@cea.fr)
+# fait par Pierre Ledac
+# contact trust@cea.fr
 
 help()
 {

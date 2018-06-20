@@ -76,7 +76,7 @@ OK()
       echo $ECHO_OPTS "OK!"
    else
       echo $ECHO_OPTS "Error !"
-      at=$TRUST_MAIL && [ ${#at} = 0 ] && at=triou@cea.fr
+      at=$TRUST_MAIL && [ ${#at} = 0 ] && at=trust@cea.fr
       echo $ECHO_OPTS "See $LOG and contact support at $at"
       export error_exit=1
    fi 

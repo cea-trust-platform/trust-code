@@ -31,7 +31,7 @@ else
    # Print some infos on the version
    #################################
    export TRUST_VERSION=`awk '/version/ && /Release notes/ {print $4;exit}' $TRUST_ROOT/RELEASE_NOTES`
-   export TRUST_MAIL=triou@cea.fr
+   export TRUST_MAIL=trust@cea.fr
    echo "TRUST v$TRUST_VERSION support : $TRUST_MAIL"
 
    ###################################

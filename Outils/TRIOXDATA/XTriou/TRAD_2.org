@@ -1172,7 +1172,7 @@ lire_ideas interprete lire_ideas -1 Read a geom in a unv file. 3D tetra mesh ele
 writemed interprete ecrire_med -1 Write a domain to MED format into a file.
   attr nom_dom ref_domaine nom_dom 0 Name of domain.
   attr file chaine file 0 Name of file.
-system interprete system -1 To run Unix commands from the data file. Example: System \'echo The End | mail triou@cea.fr\'
+system interprete system -1 To run Unix commands from the data file. Example: System \'echo The End | mail trust@cea.fr\'
   attr cmd chaine cmd 0 command to execute.
 redresser_hexaedres_vdf interprete redresser_hexaedres_vdf -1 Keyword to convert a domain (named domain_name) with quadrilaterals/VEF hexaedras which looks like rectangles/VDF hexaedras into a domain with real rectangles/VDF hexaedras.
   attr domain_name ref_domaine domain_name 0 Name of domain to resequence.
