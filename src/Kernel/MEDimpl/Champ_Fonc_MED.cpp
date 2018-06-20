@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -228,7 +228,7 @@ void Champ_Fonc_MED::lire(double t, int given_it)
               double fieldTime = GetTimeAttachedOnFieldIteration(fileName, fieldName, iteration, order);
               if (given_it != -1 ? given_it == (int) it : est_egal(fieldTime, t))
                 {
-                  // TODO: can we avoid reloading the mesh ...
+                  // ToDo can we avoid reloading the mesh ...
                   MCAuto<MEDCouplingFieldDouble> field = ReadField(field_type, fileName, meshName, 0, fieldName,
                                                                    iteration, order);
                   const double *field_values = field->getArray()->begin();

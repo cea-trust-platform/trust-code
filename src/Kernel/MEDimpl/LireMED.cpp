@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1470,7 +1470,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
       // Some checks:
       assert(nel[0] == 0);
       // Get the volume mesh:
-      MCAuto<MEDCouplingUMesh> mesh(file->getMeshAtLevel(nel[0])); // TODO can not make it const because of ArrOfInt
+      MCAuto<MEDCouplingUMesh> mesh(file->getMeshAtLevel(nel[0])); // ToDo can not make it const because of ArrOfInt
       dim = mesh->getSpaceDimension();
       Cerr << "Detecting a " << mesh->getMeshDimension() << "D mesh in " << dim << "D space." << finl;
       if (dim != dimension)
@@ -1633,7 +1633,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
 
           // Get boundary mesh:
           assert(nel[1] == -1);
-          MCAuto<MEDCouplingUMesh> boundary_mesh(file->getMeshAtLevel(nel[1])); // TODO can not make it const because of ArrayOfInt
+          MCAuto<MEDCouplingUMesh> boundary_mesh(file->getMeshAtLevel(nel[1])); // ToDo can not make it const because of ArrayOfInt
           int nfaces = boundary_mesh->getNumberOfCells();
           cell_from_boundary = true;
           //conn = boundary_mesh->getNodalConnectivity()->begin();
