@@ -658,7 +658,7 @@ fi
 #then
    echo " "
    echo "Mark new version in following files:"
-   for MAIN in $TRUST_ROOT/src/MAIN/MAIN.cpp $TRUST_ROOT/src/MAIN/mon_main.cpp
+   for MAIN in $TRUST_ROOT/src/MAIN/MAIN.cpp $TRUST_ROOT/src/MAIN/mon_main.cpp $TRUST_ROOT/doc/TRUST/exercices/my_first_class/mon_main.cpp
    do
       CHECKOUT $MAIN 1>/dev/null 2>&1
       version=`$TRUST_Awk '/version :/ {print $4}' $MAIN`
