@@ -8,7 +8,6 @@ Version	Qui				Tache
 1.7.8   trust@cea.fr            LDC: Mettre dans un fichier separe la classe Champ_Fonc_MEDfile
 1.7.8   trust@cea.fr            LDC: ajouter fichier pour irene cf DI 4431
 1.7.8   trust@cea.fr            LDC: integrer branche de Pierre MEDCoupling
-1.7.7   trust@cea.fr            LDC: Verifier independance des sous-modules de chaque BALTIK car non lance via AGL (avec la premiere version RC)
 1.7.7   trust@cea.fr            LDC: recuperer aupres de Stephane l archive de couverture de code
 1.7.7   trust@cea.fr            LDC: En attente feu vert CEA - apres analyse du lancement de toutes les fiches de verification si OK (main_validation)
 1.7.7   trust@cea.fr            LDC: envoyer BDL avec les 2 formations
