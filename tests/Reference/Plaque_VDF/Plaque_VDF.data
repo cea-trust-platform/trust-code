@@ -97,6 +97,9 @@ Lire pb
 	}
 	lml
 	{
+		Probes {
+			sonde_pression grav pression periode 1.e-6 segment 100 0. 0. 0. 0. 0. 4.2
+		}
 		format lml fichier Plaque_VDF
         	champs dt_post 1.E+7
 		{
