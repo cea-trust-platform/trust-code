@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -127,7 +127,7 @@ void Solide_Milieu_Variable::update_rho_cp(double temps)
         }
       else
         {
-          Cerr<< que_suis_je()<<__LINE__<<finl;
+          Cerr<< que_suis_je()<<(int)__LINE__<<finl;
           exit();
         }
     }
