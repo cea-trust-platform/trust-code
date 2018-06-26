@@ -278,8 +278,6 @@ check_components()
 			   fi
 	                else
 	                   check_option="--check-all"
-			   [[ "$trust_machines" = *"$machine"* ]] && check_option="--check-trust"
-			   [[ "$unruned_machines" = *"$machine"* ]] && check_option="--without-run"
 		           if [[ "$updated_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines updated
 		           then
 			      if [ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 17 ])
@@ -295,6 +293,8 @@ check_components()
 		           #   check_option="--without-run"
 		              check_option=""
 			   fi
+			   [[ "$trust_machines" = *"$machine"* ]] && check_option="--check-trust"
+			   [[ "$unruned_machines" = *"$machine"* ]] && check_option="--without-run"
 	                fi
 	                if [[ "$non_machines" = *"$machine"* ]] # Test si machine n est pas dans la liste des machines cible, get_binary et tache
 		        then
@@ -3528,7 +3528,7 @@ then
          then  
             # On previent l'administrateur et les project leader
 	    BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
-            cat $WORKDIR/tuleap/Livraison/Composants/$Composant/share/RELEASE_NOTES | mail_ -s\"[lance_test_nuit] $Composant Release version - Tag a $release version: $label_pose \(See origin/TMA branch\)\" $TRUST_MAIL $TMA_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
+            cat $WORKDIR/tuleap/Livraison/Composants/$Composant/share/RELEASE_NOTES | mail_ -s\"[lance_test_nuit] $Composant Release version - Tag a $release version: $label_pose \(See origin/triou/TMA branch\)\" $TRUST_MAIL $TMA_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
          else
             echo "" | mail_ -s\"[lance_test_nuit] $Composant - Tag a $release version: $label_pose KO\" $TRUST_MAIL
          fi
