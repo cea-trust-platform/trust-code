@@ -2925,7 +2925,7 @@ do
       ([ "`liste_machines cible | grep $machine`" != "" ] || [ "`liste_machines tache | grep $machine`" != "" ]) && total=`echo "$total+$perf" | bc -l`
       echo "Time VDF and VEF on 1 CPU: < 8s ?"
       $TRUST_Awk '($1==1) && (NF==12) && /\|/ {print $3}' $PERF
-      echo "Speed-UP VDF and VEF on 4 CPUs: > 0.60 ?"
+      echo "Efficacite VDF and VEF on 4 CPUs: > 0.60 ?"
       $TRUST_Awk '($1==4) && (NF==12) && /\|/ {print $(NF-1)}' $PERF
       if ([ "`liste_machines cible | grep $machine`" != "" ] || [ "`liste_machines tache | grep $machine`" != "" ])
       then
