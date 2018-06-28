@@ -5,6 +5,7 @@
 |A_plus
 |C
 |C_ext
+|Champ_Fonc_MEDfile
 |Champ_front_fonc_txyz
 |Cholesky
 |Concentration
@@ -24,10 +25,15 @@
 |IBICGSTAB
 |Interface
 |K_Eps_ext
+|L1_norm
+|L2_norm
+|Lire_fichier
 |Moyenne
 |N
 |NUL
 |NULL
+|Neumann_homogene
+|Neumann_paroi_adiabatique
 |Origine
 |Paroi
 |Partition_tool
@@ -41,6 +47,7 @@
 |Print
 |Probes
 |Raffiner_isotrope_parallele
+|Read_file
 |SSOR
 |Sch_CN_EX_iteratif
 |Sch_CN_iteratif
@@ -86,6 +93,7 @@
 |avec_les_cl
 |avec_sources
 |avec_sources_et_operateurs
+|average
 |axi
 |b
 |beta_co
@@ -214,6 +222,7 @@
 |condlim_base
 |condlims
 |conduction
+|conduction_milieu_variable
 |conservation_Ec
 |conservation_masse
 |constant
@@ -280,6 +289,9 @@
 |dirac
 |direction
 |dirichlet
+|disable_TU
+|disable_dt_ev
+|disable_progress
 |discretisation_base
 |discretiser
 |discretiser_domaine
@@ -326,6 +338,7 @@
 |ecrire_frontiere
 |ecrire_lata
 |ecrire_med
+|ecrire_medfile
 |ecriturelecturespecial
 |edo
 |ef
@@ -348,7 +361,9 @@
 |erugu
 |espece
 |espece_en_competition_micro_melange
+|euclidian_norm
 |execute_parallel
+|expert_only
 |export
 |exposant_beta
 |expression
@@ -484,11 +499,13 @@
 |lata_v1
 |lata_v2
 |leap_frog
+|left_value
 |lire
 |lire_fichier
 |lire_fichier_bin
 |lire_ideas
 |lire_med
+|lire_medfile
 |lire_tgrid
 |list_bloc_mailler
 |list_bord
@@ -623,9 +640,8 @@
 |non
 |non_perio
 |normal_value
-|normalized_norm_l2
+|normalized_euclidian_norm
 |norme
-|norme_l2
 |nu
 |nu_transp
 |numero
@@ -689,6 +705,7 @@
 |pb_avec_passif
 |pb_champ
 |pb_conduction
+|pb_conduction_milieu_variable
 |pb_gen_base
 |pb_hydraulique
 |pb_hydraulique_concentration
@@ -864,6 +881,7 @@
 |simple
 |simpler
 |solide
+|solide_milieu_variable
 |solve
 |solveur
 |solveur0
@@ -876,6 +894,7 @@
 |som
 |somme
 |somme_ponderee
+|somme_ponderee_porosite
 |sonde_base
 |sonde_tble
 |sondes
@@ -912,6 +931,7 @@
 |statistiques
 |statistiques_en_serie
 |stats
+|sum
 |superbee
 |supg
 |supprime_bord
@@ -988,6 +1008,7 @@
 |use_weights
 |utau_imp
 |val_Ec
+|valeur_a_gauche
 |valeur_normale
 |valeur_totale_sur_volume
 |vanalbada
@@ -1012,6 +1033,9 @@
 |volumes_etendus
 |volumes_non_etendus
 |volumique
+|weighted_average
+|weighted_sum
+|weighted_sum_porosity
 |with_nu
 |x
 |xinf
