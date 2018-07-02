@@ -1,7 +1,7 @@
 <!--NewPage-->
 <html>
 <head>
-<title>Trio Unitaire </title>
+<title>Trust</title>
 </head>
 <body>
 <BODY BGCOLOR=#C5D5D5 TEXT=#23238E LINK=#E47833 ALINK=#007FFF VLINK=#007FFF>
@@ -10,6 +10,7 @@
 <HR><h1>Performances TRUST: Occupation memoire</h1><HR>
 Occupation memoire cas cpu_3D (125000 mailles, LES thermohydraulique 3D):
 -------------------------------------------------------------------------
+v1.7.7 : 158Mo (Linux)
 v1.6.6 : 159Mo (Linux)
 v1.6.2 : 130Mo (Linux)
 v1.5.6 : 158Mo (Linux)
@@ -25,86 +26,92 @@ v1.1.3 : 116Mo (HP)
 Soit environ 1000 octets/maille (Resolution avec gradient conjugue).
 
 <HR><h1>Performances TRUST sur differentes machines</h1><HR>
-Comparaison temps calcul sur test cpu_3D (125000 mailles):			
-----------------------------------------------------------
-Arch  Model  PhysicalCores@frequency	 RAM:Cache  	Processor Model CPU		Machine		(Compiler version) SpeedUp(n=2) 	TestCase version
-Linux x86_64		1*4@3,20Ghz	 8Go:8Mo	Xeon E3-1225	2.9s	malrif.intra.cea.fr	(g++ 4.4.1)		1.49		cpu_3D	 v1.6.8
-Linux x86_64		2*8@2,70Ghz	32Go:20Mo 	Xeon E5-2680	3.1s	supermuc.lrz.de		(icpc 12.1.6)
-Linux x86_64		1*2@3,10Ghz	 4Go:3Mo	i5-3210M	3.2s	grenat.si.c-s.fr	(g++ 4.4.5)		0.98		cpu_3D 	 v1.6.6
-Linux x86_64		2*6@2,67GHz     24Go:12Mo	Xeon X5650     	3.2s   antoinette3.intra.cea.fr	(g++ 4.4.6)		1.56		cpu_3D 	 v1.6.6
-Linux_x86_64	       2*10@2,80Ghz    264Go:25Mo	Xeon E5-2680	3.3s	callisto.intra.cea.fr   (icpc 14.0.2)		1.58		cpu_3D	 v1.6.9
-Linux x86_64		2*6@2,67Ghz     24Go:12Mo 	Xeon X5650	3.4s	laramon.intra.cea.fr	(g++ 4.4.1)		1.58		cpu_3D	 v1.6.4
-Linux_x86_64	       2*10@2,80Ghz    264Go:25Mo	Xeon E5-2680	3.5s	callisto.intra.cea.fr   (g++ 4.4.7)		1.59		cpu_3D	 v1.6.9
-Linux x86_64		1*2@3,30Ghz	 4Go:3Mo	i3-2120		3.5s	estaris.intra.cea.fr	(g++ 4.4.1)
-Linux x86_64	       2*10@2,80Ghz	64Go:25Mo	Xeon E5-2680	3.5s	airain.ccc.cea.fr	(icpc 13.1.3)				cpu_3D 	 v1.6.8
-Linux x86_64		2*8@2,70Ghz     64Go:20Mo 	Xeon E5-2680	3.5s	airain.ccc.cea.fr	(icpc 12.1.0)	        1.57		cpu_3D   v1.6.5
-Linux x86_64		2*8@2,70Ghz     64Go:20Mo 	Xeon E5-2680	3.6s	curie-ccrt.ccc.cea.fr	(icc 11.1)
-Linux x86_64 		2*4@3,07Ghz     48Go:12Mo	Xeon X5667	3.6s	eris.intra.cea.fr	(g++ 4.1.2)		1.64		cpu_3D	 v1.6.5
-Linux x86_64 		1*6@2,00Ghz	 8Go:15Mo 	Xeon E5-2620 	3.6s	bellety.intra.cea.fr	(g++ 4.4.1)
-Linux x86_64		2*8@2,00Ghz	64Go:20Mo	Xeon E5-2650	3.6s	cezanne63.intra.cea.fr	(g++ 4.7.2)		2.16		cpu_3D	 v1.6.8
-Linux x86_64		2*4@2,50Ghz	32Go:10Mo	Xeon E5-2609	3.8s	VRH797979.intra.cea.fr	(g++ 4.4.7)		1.58		cpu_3D	 v1.6.9
-Linux x86_64		1*2@2,50Ghz	 4Go:3Mo	i5-3210M	3.8s	grenat.si.c-s.fr	(g++ 4.4.5)		1.06		cpu_3D 	 v1.6.6
-Linux x86_64 		2*4@2,53Ghz     12Go:12Mo 	Xeon E5630	3.9s	lessy.intra.cea.fr	(g++ 4.4.1)		1.54		cpu_3D	 v1.6.3
-Linux x86_64 		2*4@2,93Ghz     24Go:8Mo	Xeon X5570	3.9s	titane.ccc.cea.fr	(icc 10.1)		1.71		cpu_3D   v1.5.6
-Linux x86_64 		2*4@2,93Ghz     24Go:8Mo	Xeon X5570	4.3s	titane.ccc.cea.fr	(g++ 4.1.2)
-Linux x86_64		2*6@2,00Ghz	16Go:15Mo	Xeon E5-2620	4.3s	sitre.intra.cea.fr	(g++ 4.7.2)		1.68		cpu_3D 	 v1.6.6
-Linux x86_64 		2*4@2,79Ghz     24Go:8Mo	Xeon X5560	4.3s	cezanne27.intra.cea.fr	(g++ 4.1.2)				cpu_3D	 v1.6.6
-Linux x86_64		2*8@2,00Ghz     64Go:20Mo 	Xeon E5-2650	4.5s	aline2.ccc.cea.fr	(g++ 4.4.6)		1.60		cpu_3D	 v1.6.6
-Linux x86_64		4*8@1,00Ghz    128Go:24Mo 	Xeon X7560	4.8s	curie-ccrt.ccc.cea.fr	(icc 11.1)
-Linux x86_64 		1*2@2,40Ghz      4Go:2Mo	Celeron G530	5.3s	pc			(g++ 4.7.2)
-Linux x86_64		2*6@2,80Ghz	64Go:6Mo 	Opteron 4184	5.7s	mezel2.intra.cea.fr	(g++ 4.4.6)		?.??		cpu_3D	 v1.6.6
-Linux x86_64		2*6@2,30Ghz    256Go:12Mo 	Opteron 6176	6.6s	mezel2.intra.cea.fr	(g++ 4.4.6)		?.??		cpu_3D	 v1.6.6
-Linux x86_64 		1*4@2,66Ghz	 8Go:3Mo	Core2 Q9400	6.5s	cerces.intra.cea.fr	(g++ 4.4.1)
-Linux x86_64 		  8@3,00Ghz     32Go:6Mo	Xeon X5472	6.5s	jade.cines.fr		(icc 10.1)		2.12		cpu_3D   v1.5.5
-Linux x86_64		4*8@2,30Ghz	 ?Go:2Mo	Opteron 6276	6.6s	usrint.cis.gov.pl	(g++ 4.6.3) 		1.31		cpu_3D 	 v1.6.4		
-Linux x86_64 		8@3,00Ghz      	66Go:6Mo	? ?		6.6s	cesium.intra.cea.fr	(icc 10.1)		1.92		cpu_3D   v1.5.6
-Linux x86_64 		8@3,00Ghz      	66Go:6Mo	? ?		6.8s	cesium.intra.cea.fr	(g++ 4.1.2)		1.67		cpu_3D   v1.5.6
-Linux x86_64 		2*4@3,00Ghz     32Go:6Mo	? ?		7.0s	fluent.univ-perp.fr	(g++ 4.2.4)		1.91		cpu_3D   v1.5.5
-Linux x86_64 		2*4@2,83Ghz	 8Go:6Mo	? ?		7.2s	gre027058.intra.cea.fr	(g++ 4.2.3)		1.7-2.0		cpu_3D	 v1.5.7
-Linux i686		1*2@2,66Ghz	 1Go:4Mo	? ?		9.3s	petichet.intra.cea.fr	(g++ 4.2.2)		1.18		cpu_3D	 v1.5.3
-Linux x86_64		4@2,66Ghz	 8Go:4Mo	? ?		9.6s	chloe.intra.cea.fr	(g++ 3.4.6)		1.61		cpu_3D	 v1.5.3
-Linux x86_64	 	3,2Ghz		 4Go:2Mo	? ?		10.4s	moleson.intra.cea.fr	(g++ 4.1.1)
-Linux i686	 	3,4Ghz		 3Go:2Mo	? ?		10.8s	213.131.76.207		(g++ 3.4.3)
-Linux x86_64		4@2,33Ghz	 8Go:4Mo	? ?		12.0s	kata.univ-perp.fr	(g++ 3.4.6)		1.30		cpu_3D	 v1.5.3
-Linux x86_64	 	3,6Ghz		 4Go:1Mo	? ?		12s	albisia5.cad.cea.fr	(g++ 3.2.3)
-Linux x86_64	 	2*2@2,0Ghz	 2Go:4Mo	Opteron 2210	12.6s	castor.intra.cea.fr	(g++ 3.4.6)
-Linux i686	 	3,2Ghz		 1Go:1Mo			13.5s	prariond.intra.cea.fr	(g++ 4.0.1) 
-Linux i686  		2*4@1,86Ghz	 4Go:4Mo	      CPU(v143)	13.6s   timber.intra.cea.fr 	(g++ 4.2.2)
-CrayLinuxOpteron 	2,4Ghz	        16Go:1Mo		16s	14.5s	paradis.intra.cea.fr	(g++ 3.2.2)		1.79	3.46	bench1-n v1.4.9
-Linux i686    		3,2Ghz		1Go:1Mo		   		15s	rosnay.intra.cea.fr	(g++ 3.4.1)
-Linux i686  		2@1,8Ghz	1Go:2Mo				15.8s	som.intra.cea.fr	(g++ 4.1.1)
-Linux Opteron 		2,4Ghz		8Go:1Mo				16s	VRH007963		(g++ 3.2.3)		1.63	2.58	bench1-n v1.4.9 MPICH 1.2.4
-IBM Power4 P690	 	1,3Ghz		8Go:1,5Mo			17s	zahir.idris.fr		(mpCC_r)		1.93	3.85	bench1-n v1.4.9
-Linux    i686 		2,6Ghz		2Go:512Ko		20s 	17s	bernon.alpes.cea.fr	(g++ 3.2)
-Linux Opteron 		2,2Ghz		1Go:1Mo				18s	patagonie.cad.cea.fr	(g++ 3.4)
-Linux    i686 		2@3,2Ghz	3Go:512Ko			18s	aurelie.intra.cea.fr	(g++ 3.2)
-IBM Power4 P690  	1,3Ghz		2Go:				19s	zeus.cines.fr		(mpCC_r v6)	
-Linux    Xeon 		3,2Ghz		1Go:512Ko			20s	magellan.cad.cea.fr	(g++ 3.2.2)
-Linux Opteron 		1,8Ghz	      	4Go:1Mo			22s	20s	tantale.ccc.cea.fr	(g++ 3.2)		1.73	3.26	bench1-n v1.4.9 MPI-HP
-Bull Linux  ia64 	1,6Ghz	       20Go:9Mo				22s	argent.ccc.cea.fr	(icc 9.1.044) 	
+Comparaison temps calcul (donne par la balise clock: Total execution) sur test cpu_3D (125000 mailles):			
+-------------------------------------------------------------------------------------------------------
+Arch  Model  PhysicalCores@frequency	 RAM:Cache  	Processor Model CPU	Machine			(Compiler version) 	SpeedUp(n=2) 	TestCase version
+Linux x86_64		1*68@1.4Ghz	96Go:		KNL 7250		irene.ccc.cea.fr
+Linux x86_64		2*24@2.7Ghz	96Go:33Mo	Xeon 8168 	2.3s    irene.ccc.cea.fr	(icpc 17.0.4, OpenMPI 2.0.2)		cpu_3D	 v1.7.6
+Linux x86_64		2*14@2.4Ghz	64Go:35Mo	Xeon E5-2680 v4	2.4s	cobalt.ccc.cea.fr	(icpc 16.0.3, OpenMPI 1.8.8)		cpu_3D	 v1.7.7
+Linux x86_64		1*4@3.00Ghz	16Go:8Mo	Xeon E3-1220 v5	2.4s	is231771.intra.cea.fr   (g++ 4.8.5, MPICH 3.2)		1.56	cpu_3D	 v1.7.7
+Linux x86_64		1*4@3.20Ghz	 8Go:8Mo	Xeon E3-1225	2.9s	malrif.intra.cea.fr	(g++ 4.4.1)		1.49		cpu_3D	 v1.6.8
+Linux x86_64		2*8@2.70Ghz	32Go:20Mo 	Xeon E5-2680	3.1s	supermuc.lrz.de		(icpc 12.1.6)
+Linux x86_64		1*2@3.10Ghz	 4Go:3Mo	i5-3210M	3.2s	grenat.si.c-s.fr	(g++ 4.4.5)		0.98		cpu_3D 	 v1.6.6
+Linux x86_64		2*6@2.67GHz     24Go:12Mo	Xeon X5650     	3.2s   antoinette3.intra.cea.fr	(g++ 4.4.6)		1.56		cpu_3D 	 v1.6.6
+Linux_x86_64	       2*10@2.80Ghz    264Go:25Mo	Xeon E5-2680	3.3s	callisto.intra.cea.fr   (icpc 14.0.2)		1.58		cpu_3D	 v1.6.9
+Linux x86_64		2*6@2.67Ghz     24Go:12Mo 	Xeon X5650	3.4s	laramon.intra.cea.fr	(g++ 4.4.1)		1.58		cpu_3D	 v1.6.4
+Linux_x86_64	       2*10@2.80Ghz    264Go:25Mo	Xeon E5-2680	3.5s	callisto.intra.cea.fr   (g++ 4.4.7)		1.59		cpu_3D	 v1.6.9
+Linux x86_64		1*2@3.30Ghz	 4Go:3Mo	i3-2120		3.5s	estaris.intra.cea.fr	(g++ 4.4.1)
+Linux x86_64	       2*10@2.80Ghz	64Go:25Mo	Xeon E5-2680	3.5s	airain.ccc.cea.fr	(icpc 13.1.3)				cpu_3D 	 v1.6.8
+Linux x86_64		2*8@2.70Ghz     64Go:20Mo 	Xeon E5-2680	3.5s	airain.ccc.cea.fr	(icpc 12.1.0)	        1.57		cpu_3D   v1.6.5
+Linux x86_64		2*8@2.70Ghz     64Go:20Mo 	Xeon E5-2680	3.6s	curie-ccrt.ccc.cea.fr	(icc 11.1)
+Linux x86_64 		2*4@3.07Ghz     48Go:12Mo	Xeon X5667	3.6s	eris.intra.cea.fr	(g++ 4.1.2)		1.64		cpu_3D	 v1.6.5
+Linux x86_64 		1*6@2.00Ghz	 8Go:15Mo 	Xeon E5-2620 	3.6s	bellety.intra.cea.fr	(g++ 4.4.1)
+Linux x86_64		2*8@2.00Ghz	64Go:20Mo	Xeon E5-2650	3.6s	cezanne63.intra.cea.fr	(g++ 4.7.2)		2.16		cpu_3D	 v1.6.8
+Linux x86_64		2*4@2.50Ghz	32Go:10Mo	Xeon E5-2609	3.8s	VRH797979.intra.cea.fr	(g++ 4.4.7)		1.58		cpu_3D	 v1.6.9
+Linux x86_64		1*2@2.50Ghz	 4Go:3Mo	i5-3210M	3.8s	grenat.si.c-s.fr	(g++ 4.4.5)		1.06		cpu_3D 	 v1.6.6
+Linux x86_64 		2*4@2.53Ghz     12Go:12Mo 	Xeon E5630	3.9s	lessy.intra.cea.fr	(g++ 4.4.1)		1.54		cpu_3D	 v1.6.3
+Linux x86_64 		2*4@2.93Ghz     24Go:8Mo	Xeon X5570	3.9s	titane.ccc.cea.fr	(icc 10.1)		1.71		cpu_3D   v1.5.6
+Linux x86_64 		2*4@2.93Ghz     24Go:8Mo	Xeon X5570	4.3s	titane.ccc.cea.fr	(g++ 4.1.2)
+Linux x86_64		2*6@2.00Ghz	16Go:15Mo	Xeon E5-2620	4.3s	sitre.intra.cea.fr	(g++ 4.7.2)		1.68		cpu_3D 	 v1.6.6
+Linux x86_64 		2*4@2.79Ghz     24Go:8Mo	Xeon X5560	4.3s	cezanne27.intra.cea.fr	(g++ 4.1.2)				cpu_3D	 v1.6.6
+Linux x86_64		2*8@2.00Ghz     64Go:20Mo 	Xeon E5-2650	4.5s	aline2.ccc.cea.fr	(g++ 4.4.6)		1.60		cpu_3D	 v1.6.6
+Linux x86_64		4*8@1.00Ghz    128Go:24Mo 	Xeon X7560	4.8s	curie-ccrt.ccc.cea.fr	(icc 11.1)
+Linux x86_64		1*8@1.7Ghz	16Go:11Mo	Xeon 3106	4.8s	is234639.intra.cea.fr	(g++ 5.4.0, OpenMPI 1.10.2)	1.62	cpu_3D	 v1.7.7
+Linux x86_64		1*8@1.7Ghz	16Go:11Mo	Xeon 3106	5.6s	is234639.intra.cea.fr	(g++ 5.4.0, OpenMPI 1.10.2, AVX512)
+Linux x86_64 		1*2@2.40Ghz      4Go:2Mo	Celeron G530	5.3s	pc			(g++ 4.7.2)
+Linux x86_64		2*6@2.80Ghz	64Go:6Mo 	Opteron 4184	5.7s	mezel2.intra.cea.fr	(g++ 4.4.6)		?.??		cpu_3D	 v1.6.6
+Linux x86_64		2*6@2.30Ghz    256Go:12Mo 	Opteron 6176	6.6s	mezel2.intra.cea.fr	(g++ 4.4.6)		?.??		cpu_3D	 v1.6.6
+Linux x86_64 		1*4@2.66Ghz	 8Go:3Mo	Core2 Q9400	6.5s	cerces.intra.cea.fr	(g++ 4.4.1)
+Linux x86_64 		  8@3.00Ghz     32Go:6Mo	Xeon X5472	6.5s	jade.cines.fr		(icc 10.1)		2.12		cpu_3D   v1.5.5
+Linux x86_64		4*8@2.30Ghz	 ?Go:2Mo	Opteron 6276	6.6s	usrint.cis.gov.pl	(g++ 4.6.3) 		1.31		cpu_3D 	 v1.6.4		
+Linux x86_64 		8@3.00Ghz      	66Go:6Mo	? ?		6.6s	cesium.intra.cea.fr	(icc 10.1)		1.92		cpu_3D   v1.5.6
+Linux x86_64 		8@3.00Ghz      	66Go:6Mo	? ?		6.8s	cesium.intra.cea.fr	(g++ 4.1.2)		1.67		cpu_3D   v1.5.6
+Linux x86_64 		2*4@3.00Ghz     32Go:6Mo	? ?		7.0s	fluent.univ-perp.fr	(g++ 4.2.4)		1.91		cpu_3D   v1.5.5
+Linux x86_64 		2*4@2.83Ghz	 8Go:6Mo	? ?		7.2s	gre027058.intra.cea.fr	(g++ 4.2.3)		1.7-2.0		cpu_3D	 v1.5.7
+Linux i686		1*2@2.66Ghz	 1Go:4Mo	? ?		9.3s	petichet.intra.cea.fr	(g++ 4.2.2)		1.18		cpu_3D	 v1.5.3
+Linux x86_64		4@2.66Ghz	 8Go:4Mo	? ?		9.6s	chloe.intra.cea.fr	(g++ 3.4.6)		1.61		cpu_3D	 v1.5.3
+Linux x86_64	 	3.2Ghz		 4Go:2Mo	? ?		10.4s	moleson.intra.cea.fr	(g++ 4.1.1)
+Linux i686	 	3.4Ghz		 3Go:2Mo	? ?		10.8s	213.131.76.207		(g++ 3.4.3)
+Linux x86_64		4@2.33Ghz	 8Go:4Mo	? ?		12.0s	kata.univ-perp.fr	(g++ 3.4.6)		1.30		cpu_3D	 v1.5.3
+Linux x86_64	 	3.6Ghz		 4Go:1Mo	? ?		12s	albisia5.cad.cea.fr	(g++ 3.2.3)
+Linux x86_64	 	2*2@2.0Ghz	 2Go:4Mo	Opteron 2210	12.6s	castor.intra.cea.fr	(g++ 3.4.6)
+Linux i686	 	3.2Ghz		 1Go:1Mo			13.5s	prariond.intra.cea.fr	(g++ 4.0.1) 
+Linux i686  		2*4@1.86Ghz	 4Go:4Mo	      CPU(v143)	13.6s   timber.intra.cea.fr 	(g++ 4.2.2)
+CrayLinuxOpteron 	2.4Ghz	        16Go:1Mo		16s	14.5s	paradis.intra.cea.fr	(g++ 3.2.2)		1.79	3.46	bench1-n v1.4.9
+Linux i686    		3.2Ghz		1Go:1Mo		   		15s	rosnay.intra.cea.fr	(g++ 3.4.1)
+Linux i686  		2@1.8Ghz	1Go:2Mo				15.8s	som.intra.cea.fr	(g++ 4.1.1)
+Linux Opteron 		2.4Ghz		8Go:1Mo				16s	VRH007963		(g++ 3.2.3)		1.63	2.58	bench1-n v1.4.9 MPICH 1.2.4
+IBM Power4 P690	 	1.3Ghz		8Go:1.5Mo			17s	zahir.idris.fr		(mpCC_r)		1.93	3.85	bench1-n v1.4.9
+Linux    i686 		2.6Ghz		2Go:512Ko		20s 	17s	bernon.alpes.cea.fr	(g++ 3.2)
+Linux Opteron 		2.2Ghz		1Go:1Mo				18s	patagonie.cad.cea.fr	(g++ 3.4)
+Linux    i686 		2@3.2Ghz	3Go:512Ko			18s	aurelie.intra.cea.fr	(g++ 3.2)
+IBM Power4 P690  	1.3Ghz		2Go:				19s	zeus.cines.fr		(mpCC_r v6)	
+Linux    Xeon 		3.2Ghz		1Go:512Ko			20s	magellan.cad.cea.fr	(g++ 3.2.2)
+Linux Opteron 		1.8Ghz	      	4Go:1Mo			22s	20s	tantale.ccc.cea.fr	(g++ 3.2)		1.73	3.26	bench1-n v1.4.9 MPI-HP
+Bull Linux  ia64 	1.6Ghz	       20Go:9Mo				22s	argent.ccc.cea.fr	(icc 9.1.044) 	
 Compaq V5.1 1885 alpha			4Go:16Mo		25s 	22s 	chrome.ccc.cea.fr	(cxx V6.5-036)		1.97	4.35	bench1-n v1.4.4 MPI
-Linux    i686 		2,4Ghz		1Go:512Ko    		25s		dom.alpes.cea.fr	(g++ 2.96)		
-Linux    i686 		2,2Ghz		2Go:512Ko  		25s  	21s	pelvoux.alpes.cea.fr	(g++ 2.96)
-Linux    Xeon 		2,2Ghz		2Go:512Ko  		25s  	21s	ecrins.alpes.cea.fr	(g++ 2.96)		1.20	----	bench1-n v1.4.9 MPICH 1.2.4
+Linux    i686 		2.4Ghz		1Go:512Ko    		25s		dom.alpes.cea.fr	(g++ 2.96)		
+Linux    i686 		2.2Ghz		2Go:512Ko  		25s  	21s	pelvoux.alpes.cea.fr	(g++ 2.96)
+Linux    Xeon 		2.2Ghz		2Go:512Ko  		25s  	21s	ecrins.alpes.cea.fr	(g++ 2.96)		1.20	----	bench1-n v1.4.9 MPICH 1.2.4
 Apple G5 PowerPC MacIntosh	   :				26s					(g++ 3.2-xlf v8.1)
-Linux    i686 		2,4Ghz		1go:512Ko		27s	25s	bach.lasef.ist.utl.pt   (g++ 2.95, f90)
-Linux    i686 		2,4Ghz	       	1Go:512ko 		29s		bach.lasef.ist.utl.pt	(g++ 2.95)
-Linux Opteron 		1,4Ghz(1,6+) 	   :    		30s     	 			(g++ 3.2)
-Linux Opteron 		1,8Ghz	      	4Go:1Mo			33s		tantale.ccc.cea.fr	(pgCC -O2)			
-Linux    i686 		1,7Ghz		1Go:256Ko    		32s		dom.alpes.cea.fr	(g++ 2.96)		1.80	3.31	bench1-n v1.4.9 MPI-SCALI
+Linux    i686 		2.4Ghz		1go:512Ko		27s	25s	bach.lasef.ist.utl.pt   (g++ 2.95. f90)
+Linux    i686 		2.4Ghz	       	1Go:512ko 		29s		bach.lasef.ist.utl.pt	(g++ 2.95)
+Linux Opteron 		1.4Ghz(1.6+) 	   :    		30s     	 			(g++ 3.2)
+Linux Opteron 		1.8Ghz	      	4Go:1Mo			33s		tantale.ccc.cea.fr	(pgCC -O2)			
+Linux    i686 		1.7Ghz		1Go:256Ko    		32s		dom.alpes.cea.fr	(g++ 2.96)		1.80	3.31	bench1-n v1.4.9 MPI-SCALI
 Compaq V5.1 1885 alpha		   	   :			34s		imhotep.cerfacs.fr	(cxx V6.5-036)
-Linux    i686 		1,5Ghz       	512Mo:256Ko		34s 	28s	pecloz.alpes.cea.fr	(g++ 2.95)
-Linux Itanium II 	1,4Ghz						33s	kolmo.hmg.inpg.fr	(icc 10.1)
-Linux    i686 		1,5Ghz       	512Mo:  		34s 		parstre.alpes.cea.fr	(g++ 2.96)
-Linux    i686 		1,5Ghz	      	512Mo:256Ko		35s		trelod.alpes.cea.fr	(g++ 3.2.2)
-Bull Linux  ia64 	1,6Ghz	       	20Go:9Mo		37s		argent.ccc.cea.fr	(g++ 3.4.1) 		1.038 	1.210	bench1-n v1.5.1 MPICH 1.2.7
-HP Linux Itanium II 	1,5Ghz  	   :6Mo			37s		machine HP center	(g++ 3.2)		1.74	???	bench1-n v1.4.3
+Linux    i686 		1.5Ghz       	512Mo:256Ko		34s 	28s	pecloz.alpes.cea.fr	(g++ 2.95)
+Linux Itanium II 	1.4Ghz						33s	kolmo.hmg.inpg.fr	(icc 10.1)
+Linux    i686 		1.5Ghz       	512Mo:  		34s 		parstre.alpes.cea.fr	(g++ 2.96)
+Linux    i686 		1.5Ghz	      	512Mo:256Ko		35s		trelod.alpes.cea.fr	(g++ 3.2.2)
+Bull Linux  ia64 	1.6Ghz	       	20Go:9Mo		37s		argent.ccc.cea.fr	(g++ 3.4.1) 		1.038 	1.210	bench1-n v1.5.1 MPICH 1.2.7
+HP Linux Itanium II 	1.5Ghz  	   :6Mo			37s		machine HP center	(g++ 3.2)		1.74	???	bench1-n v1.4.3
 Compaq V5.0 910 alpha	       		 4Go:  			46s		ixia.ceng.cea.fr        (cxx T6.2-016)
-Linux  Athlon 		1,8Ghz(2,5+) 	512Mo:512Ko		50s					(g++ 3.2)
+Linux  Athlon 		1.8Ghz(2.5+) 	512Mo:512Ko		50s					(g++ 3.2)
 Compaq V5.1 732 alpha			2Go:			51s		diane.ipsn.fr		(cxx V6.5-014)
-Linux  Athlon 		1,4Ghz(1,6+) 	256Mo:			51s		verde.lasef.ist.utl.pt	(g++ 3.2)	
-NEC Linux Itanium II 	1,0Ghz		2Go:1.5Mo?		59s	38s	mercure.ccc.cea.fr	(ecc 7.0 -ipo -ipo_obj)1.59	2.15	bench1-n v1.4.4
-Linux Itanium II 	1,3Ghz		4Go:			62s		gaura.ceng.cea.fr	(ecc 7.0)		1.12	2.43	cpu_3D	 v1.4.1
+Linux  Athlon 		1.4Ghz(1.6+) 	256Mo:			51s		verde.lasef.ist.utl.pt	(g++ 3.2)	
+NEC Linux Itanium II 	1.0Ghz		2Go:1.5Mo?		59s	38s	mercure.ccc.cea.fr	(ecc 7.0 -ipo -ipo_obj)1.59	2.15	bench1-n v1.4.4
+Linux Itanium II 	1.3Ghz		4Go:			62s		gaura.ceng.cea.fr	(ecc 7.0)		1.12	2.43	cpu_3D	 v1.4.1
 HP-UX 11.00 9000/785/J6700     		16Go:			62s		jungfrau.alpes.cea.fr	(aCC(+O2)-F90(+03))
 IBM AIX5.1  eServer p690 		2Go:			62s		zahir.idris.fr		(xlC V6.0)  		1.9		cpu_3D	 v1.4.3
 Compaq V5.0 910 alpha		   	: 			64s		rosa.alpes.cea.fr	(cxx V6.2-024)
@@ -141,8 +148,56 @@ HP-UX 10.20 9000/819/K200     		800Mo: 			699s		midi.alpes.cea.fr       (Compilo
 #######################################
 Cas VDF (4096000 inconnues en pression)
 #######################################
+Calcul parallele TRUST v1.7.7 Wed Jun 20 17:58:05 CEST 2018 sur callisto :
 ------------------------------------------------------------------------------------
-Calcul parallele TRUST 1.6.7_beta Thu Jan 31 11:57:58 CET 2013 sur mezel2 : v1.6.6 on mezelquad nodes (32 physical/64 logical cores)
+nb_proc | cpu(s) dt     | ngcp  	| cpu(s) igcp   | speed up      | efficacite    |
+------------------------------------------------------------------------------------
+1       | 42.7843       | 195.65        | 0.174366      | 1.000         | 1.000         |
+2       | 27.6708       | 195.65        | 0.117465      | 1.546         | .773          |
+4       | 15.4392       | 196.15        | 0.0655677     | 2.771         | .692          |
+8       | 11.3122       | 196.35        | 0.0483324     | 3.782         | .472          |
+16      | 6.51876       | 196.35        | 0.0288167     | 6.563         | .410          |
+------------------------------------------------------------------------------------
+Calcul parallele TRUST 1.7.6 Wed Jun 27 10:14:57 CEST 2018 sur curie-ccrt (Sandy Bridge, Intel 14.0.3, Bullxmpi/1.2.8.4):
+------------------------------------------------------------------------------------
+nb_proc | cpu(s) dt     | ngcp  	| cpu(s) igcp   | speed up      | efficacite    |
+------------------------------------------------------------------------------------
+1       | 55.4787       | 195.65        | 0.234043      | 1.000         | 1.000         |
+2       | 34.1051       | 195.65        | 0.148412      | 1.626         | .813          |
+4       | 19.2521       | 196.15        | 0.083818      | 2.881         | .720          |
+8       | 12.4925       | 196.35        | 0.0531301     | 4.440         | .555          |
+16      | 6.84244       | 196.35        | 0.030054      | 8.108         | .506          |
+32      | 3.21685       | 196.6 	| 0.0141065     | 17.246        | .538          |
+64      | 1.56747       | 196.75        | 0.00670623    | 35.393        | .553          |
+------------------------------------------------------------------------------------
+Calcul parallele TRUST 1.7.7 Tue Jun 26 14:49:21 CEST 2018 sur cobalt (Broadwell, Intel 16.0.3, OpenMPI 1.8.8):  
+------------------------------------------------------------------------------------                                                                                           
+nb_proc | cpu(s) dt     | ngcp  	| cpu(s) igcp   | speed up      | efficacite    |                                                                                        ------------------------------------------------------------------------------------                                                                                           
+1       | 39.3696       | 195.65        | 0.168742      | 1.000         | 1.000         |                                                                                      
+2       | 24.7191       | 195.65        | 0.105873      | 1.592         | .796          |                                                                                      
+4       | 17.9102       | 196.15        | 0.0794795     | 2.198         | .549          |                                                                                      
+8       | 7.98795       | 196.35        | 0.0352878     | 4.928         | .616          |                                                                                      
+16      | 6.10632       | 196.35        | 0.0274694     | 6.447         | .402          |                                                                                      
+32      | 3.10877       | 196.6 	| 0.0138006     | 12.664        | .395          |                                                                                      
+64      | 1.46279       | 196.75        | 0.00641931    | 26.914        | .420          | 
+------------------------------------------------------------------------------------
+Calcul parallele TRUST 1.7.6 Tue Jun 26 17:09:31 CEST 2018 sur irene (Skylake, Intel 17.0.4, Intelmpi/2017.0.4.196):
+------------------------------------------------------------------------------------
+nb_proc | cpu(s) dt     | ngcp  	| cpu(s) igcp   | speed up      | efficacite    |
+------------------------------------------------------------------------------------
+1       | 49.1002       | 195.65        | 0.204254      | 1.000         | 1.000         |
+2       | 31.346        | 195.65        | 0.133087      | 1.566         | .783          |
+4       | 15.3222       | 196.15        | 0.0631043     | 3.204         | .801          |
+8       | 7.80378       | 196.35        | 0.0326194     | 6.291         | .786          |
+16      | 6.15806       | 196.35        | 0.0266432     | 7.973         | .498          |
+32      | 3.2772        | 196.6 	| 0.0143382     | 14.982        | .468          |
+64      | 1.47931       | 196.75        | 0.00631334    | 33.191        | .518          |
+========================================================================
+Attention: le solveur a ete change depuis (passage a PETSc GCP/Spai pour 
+un preconditionnement parallele avec convergence identique)
+========================================================================
+---------------------------------------------------------------------------------
+Calcul parallele TRUST 1.6.7_beta Thu Jan 31 11:57:58 5.3222       CET 2013 sur mezel2 : v1.6.6 on mezelquad nodes (32 physical/64 logical cores)
 ------------------------------------------------------------------------------------
 nb_proc | cpu(s) dt     | ngcp  | cpu(s) igcp   | speed up      | efficacite    |
 ------------------------------------------------------------------------------------
@@ -224,10 +279,10 @@ nb_proc | cpu(s) dt     | ngcp  | cpu(s) igcp   | speed up      | efficacite    
 32      | 1.42856       | 112.2 | 0.0103061     | 13.530        | .422          |
 64      | 0.722372      | 119.8 | 0.00476909    | 26.758        | .418          |
 ------------------------------------------------------------------------------------
-Calcul parallele TRUST Tue May 19 12:51:41 CEST 2009 sur titane (Xeon 3,0Ghz): v1.5.7
+Calcul parallele TRUST Tue May 19 12:51:41 CEST 2009 sur titane (Xeon 3.0Ghz): v1.5.7
 ------------------------------------------------------------------------------------
 nb_proc | cpu(s) dt     | ngcp  | cpu(s) igcp   | speed up      | efficacite    |
-------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------5.3222       -
 1       | 17.5872       | 87.65 | 0.151668      | 1.000         | 1.000         |
 2       | 10.4622       | 95.1  | 0.085976      | 1.681         | .840          |
 4       | 7.05628       | 97.4  | 0.0592154     | 2.492         | .623          |
@@ -236,7 +291,7 @@ nb_proc | cpu(s) dt     | ngcp  | cpu(s) igcp   | speed up      | efficacite    
 32      | 1.69136       | 112.25| 0.0126808     | 10.398        | .324          |
 64      | 0.926713      | 119.85| 0.00643003    | 18.978        | .296          |
 ------------------------------------------------------------------------------------
-Calcul parallele TRUST Thu Aug 21 15:37:48 CEST 2008 sur jade (Xeon 3,0Ghz): v1.5.5
+Calcul parallele TRUST Thu Aug 21 15:37:48 CEST 2008 sur jade (Xeon 3.0Ghz): v1.5.5
 ------------------------------------------------------------------------------------
 nb_proc | cpu(s) dt     | ngcp  | cpu(s) igcp   | speed up      | efficacite    |
 ------------------------------------------------------------------------------------
@@ -248,10 +303,10 @@ nb_proc | cpu(s) dt     | ngcp  | cpu(s) igcp   | speed up      | efficacite    
 32      | 4.78359       | 106.75| 0.0371102     | 8.057         | .251          |
 64      | 2.14322       | 113.9 | 0.0152065     | 17.984        | .281          |
 ------------------------------------------------------------------------------------
-Calcul parallele TRUST Tue Mar  6 10:22:32 CET 2007 sur argent (Itanium2 1,6Ghz): v1.5.1
+Calcul parallele TRUST Tue Mar  6 10:22:32 CET 2007 sur argent (Itanium2 1.6Ghz): v1.5.1
 ------------------------------------------------------------------------------------
 nb_proc | cpu(s) dt     | ngcp  | cpu(s) igcp   | speed up      | efficacite    |
-------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------bullxmpi/1.2.8.4
 1       | 124.705       | 83.4  | 0.989356      | 1.000         | 1.000         |
 2       | 88.9017       | 90.35 | 0.669385      | 1.402         | .701          |
 4       | 45.6288       | 92.65 | 0.352057      | 2.733         | .683          |
@@ -261,7 +316,7 @@ nb_proc | cpu(s) dt     | ngcp  | cpu(s) igcp   | speed up      | efficacite    
 64      | 3.63794       | 113.9 | 0.0219442     | 34.279        | .535          |
 64      | 2.31783       | 113.9 | 0.0139015     | 53.802        | .840          | avec la variable MPIBULL2_USE_POSTAL=1 pour une optimisation des communications intra-noeuds
 ------------------------------------------------------------------------------------
-Calcul parallele TRUST Mon Jan  9 11:04:46 CET 2006 sur paradis-429-6 (Opteron 2,4Ghz): v1.5
+Calcul parallele TRUST Mon Jan  9 11:04:46 CET 2006 sur paradis-429-6 (Opteron 2.4Ghz): v1.5
 ------------------------------------------------------------------------------------
 nb_proc | cpu(s) dt     | ngcp  | cpu(s) igcp   | speed up      | efficacite    |
 ------------------------------------------------------------------------------------
@@ -282,7 +337,7 @@ nb_proc | cpu(s) dt     | ngcp  | cpu(s) igcp   | speed up      | efficacite    
 16      | 13.1925       | 106.25| 0.0915709     | 8.598         | .537          |
 32      | 7.28738       | 106.65| 0.0507645     | 15.565        | .486          |
 ------------------------------------------------------------------------------------
-Calcul parallele TRUST Mon Jan  9 11:04:46 CET 2006 sur paradis-429-6 (Opteron 2,4Ghz): v1.5
+Calcul parallele TRUST Mon Jan  9 11:04:46 CET 2006 sur paradis-429-6 (Opteron 2.4Ghz): v1.5
 ------------------------------------------------------------------------------------
 nb_proc | cpu(s) dt     | ngcp  | cpu(s) igcp   | speed up      | efficacite    |
 ------------------------------------------------------------------------------------
@@ -296,6 +351,59 @@ nb_proc | cpu(s) dt     | ngcp  | cpu(s) igcp   | speed up      | efficacite    
 ######################################
 Cas VDF (512000 inconnues en pression)
 ######################################
+Calcul parallele TRUST 1.7.7 Wed Jun 20 15:07:51 CEST 2018 sur callisto :
+------------------------------------------------------------------------------------
+nb_proc	| cpu(s) dt	| ngcp 		| cpu(s) igcp	| speed up	| efficacite	|
+------------------------------------------------------------------------------------
+1	| 3.28855	| 110.25	| 0.0201758	| 1.000		| 1.000		|
+2	| 3.24955	| 110.25	| 0.0230907	| 1.012		| .506		|
+4	| 2.18548	| 110.25	| 0.0158897	| 1.504		| .376		|
+8	| 1.00388	| 110.25	| 0.00708959	| 3.275		| .409		|
+16	| 0.456779	| 110.3	        | 0.00290956	| 7.199		| .449		|
+------------------------------------------------------------------------------------
+Calcul parallele TRUST 1.7.6 Wed Jun 27 09:06:01 CEST 2018 sur curie-ccrt (Sandy Bridge, Intel 14.0.3, Bullxmpi/1.2.8.4):
+------------------------------------------------------------------------------------
+nb_proc | cpu(s) dt     | ngcp  	| cpu(s) igcp   | speed up      | efficacite    |
+------------------------------------------------------------------------------------
+1       | 4.23306       | 110.25        | 0.0275764     | 1.000         | 1.000         |
+2       | 2.61219       | 110.25        | 0.0179056     | 1.620         | .810          |
+4       | 1.37779       | 110.25        | 0.00937887    | 3.072         | .768          |
+8       | 0.889491      | 110.25        | 0.00608335    | 4.758         | .594          |
+16      | 0.421379      | 110.3 	| 0.00275734    | 10.045        | .627          |
+------------------------------------------------------------------------------------
+Calcul parallele TRUST 1.7.6 Tue Jun 26 15:50:06 CEST 2018 sur cobalt (Broadwell, Intel 16.0.3, OpenMPI 1.8.8):
+------------------------------------------------------------------------------------
+nb_proc | cpu(s) dt     | ngcp  	| cpu(s) igcp   | speed up      | efficacite    |
+------------------------------------------------------------------------------------
+1       | 2.97986       | 110.25        | 0.0200472     | 1.000         | 1.000         |
+2       | 1.75705       | 110.25        | 0.012059      | 1.695         | .847          |
+4       | 1.27166       | 110.25        | 0.00896221    | 2.343         | .585          |
+8       | 0.698446      | 110.25        | 0.00483256    | 4.266         | .533          |
+16      | 0.33522       | 110.3 	| 0.00223043    | 8.889         | .555          |
+------------------------------------------------------------------------------------
+Calcul parallele TRUST 1.7.7 Tue Jun 26 14:06:19 CEST 2018 sur cobalt (Broadwell, Intel 16.0.3, OpenMPI 1.8.8):
+------------------------------------------------------------------------------------
+nb_proc | cpu(s) dt     | ngcp  	| cpu(s) igcp   | speed up      | efficacite    |
+------------------------------------------------------------------------------------
+1       | 2.77606       | 110.25        | 0.0180898     | 1.000         | 1.000         |
+2       | 1.7533        | 110.25        | 0.0119087     | 1.583         | .791          |
+4       | 1.18799       | 110.25        | 0.0079855     | 2.336         | .584          |
+8       | 0.817087      | 110.25        | 0.0055833     | 3.397         | .424          |
+16      | 0.340107      | 110.3 	| 0.0022599     | 8.162         | .510          |
+------------------------------------------------------------------------------------
+Calcul parallele TRUST 1.7.6 Tue Jun 26 15:05:32 CEST 2018 sur irene (Skylake, Intel 17.0.4, Intelmpi/2017.0.4.196):
+------------------------------------------------------------------------------------
+nb_proc | cpu(s) dt     | ngcp  	| cpu(s) igcp   | speed up      | efficacite    |
+------------------------------------------------------------------------------------
+1       | 4.58058       | 110.25        | 0.0284755     | 1.000         | 1.000         |
+2       | 1.74825       | 110.25        | 0.0108863     | 2.620         | 1.310         |
+4       | 1.03445       | 110.25        | 0.0065739     | 4.428         | 1.107         |
+8       | 0.847783      | 110.25        | 0.0056087     | 5.403         | .675          |
+16      | 0.318644      | 110.3 	| 0.00200129    | 14.375        | .898          |
+========================================================================
+Attention: le solveur a ete change depuis (passage a PETSc GCP/Spai pour 
+un preconditionnement parallele avec convergence identique)
+========================================================================
 Calcul parallele TRUST 1.6.8 Thu Feb 20 09:50:43 CET 2014 sur is223278 (1*4 cores) : v1.6.8 (OpenMPI 1.6.4)
 ------------------------------------------------------------------------------------
 nb_proc	| cpu(s) dt	| ngcp 	| cpu(s) igcp	| speed up	| efficacite	|
@@ -328,7 +436,7 @@ nb_proc	| cpu(s) dt	| ngcp 	| cpu(s) igcp	| speed up	| efficacite	|
 2	| 0.8733	| 54.5	| 0.00995158	| 1.898		| .949		|
 4	| 0.495885	| 55.55	| 0.00563987	| 3.344		| .836		|
 ------------------------------------------------------------------------------------
-Calcul parallele TRUST Wed Apr 29 10:28:35 CEST 2009 sur cesium (Xeon 3,0Ghz): v1.5.6
+Calcul parallele TRUST Wed Apr 29 10:28:35 CEST 2009 sur cesium (Xeon 3.0Ghz): v1.5.6
 ------------------------------------------------------------------------------------
 nb_proc	| cpu(s) dt	| ngcp	| cpu(s) igcp	| speed up	| efficacite	|
 ------------------------------------------------------------------------------------
@@ -336,7 +444,7 @@ nb_proc	| cpu(s) dt	| ngcp	| cpu(s) igcp	| speed up	| efficacite	|
 2	| 2.04934	| 54.5	| 0.0265215	| 1.906		| .953		|
 4	| 1.39338	| 55.55	| 0.017501	| 2.804		| .701		|
 ------------------------------------------------------------------------------------
-Calcul parallele TRUST Thu Aug 21 14:42:42 CEST 2008 sur jade (Xeon 3,0Ghz): v1.5.5
+Calcul parallele TRUST Thu Aug 21 14:42:42 CEST 2008 sur jade (Xeon 3.0Ghz): v1.5.5
 ------------------------------------------------------------------------------------
 nb_proc | cpu(s) dt     | ngcp  | cpu(s) igcp   | speed up      | efficacite    |
 ------------------------------------------------------------------------------------
@@ -344,7 +452,7 @@ nb_proc | cpu(s) dt     | ngcp  | cpu(s) igcp   | speed up      | efficacite    
 2       | 1.59909       | 51.75 | 0.0219646     | 1.867         | .933          |
 4       | 1.1072        | 52.75 | 0.0145327     | 2.696         | .674          |
 ------------------------------------------------------------------------------------
-Calcul parallele TRUST Wed Aug  6 21:19:26 CEST 2008 sur platine (Itanium2 1,6Ghz): v1.5.5
+Calcul parallele TRUST Wed Aug  6 21:19:26 CEST 2008 sur platine (Itanium2 1.6Ghz): v1.5.5
 ------------------------------------------------------------------------------------
 nb_proc	| cpu(s) dt	| ngcp	| cpu(s) igcp	| speed up	| efficacite	|
 ------------------------------------------------------------------------------------
@@ -377,7 +485,7 @@ nb_proc	| cpu(s) dt	| ngcp	| cpu(s) igcp	| speed up	| efficacite	|
 4	| 3.62961	| 52.75	| 0.0418971	| 2.417		| .604		|
 8	| 2.14559	| 62.2	| 0.0213162	| 4.090		| .511		|
 ------------------------------------------------------------------------------------
-Calcul parallele TRUST Wed Jun  8 12:12:30 CEST 2005 sur VRH007963 (Opteron 2,4Ghz): v1.4.9
+Calcul parallele TRUST Wed Jun  8 12:12:30 CEST 2005 sur VRH007963 (Opteron 2.4Ghz): v1.4.9
 ------------------------------------------------------------------------------------
 nb_proc | cpu(s) dt     | ngcp  | cpu(s) igcp   | speed up      | efficacite    |
 ------------------------------------------------------------------------------------
@@ -405,7 +513,7 @@ nb_proc	| cpu(s) dt	| ngcp	| cpu(s) igcp	| speed up	| efficacite	|
 4	| 3.38384	| 52.75	| 0.0435426	| 4.257		| 1.064		|
 8	| 2.02434	| 62.2	| 0.0235008	| 7.115		| 0.889		|
 ------------------------------------------------------------------------------------
-Calcul parallele TRUST Wed May 11 08:57:18 CEST 2005 sur magellan.cad.cea.fr (Pentium 1,6Ghz, 100Mbits Ethernet): v1.4.8
+Calcul parallele TRUST Wed May 11 08:57:18 CEST 2005 sur magellan.cad.cea.fr (Pentium 1.6Ghz, 100Mbits Ethernet): v1.4.8
 ------------------------------------------------------------------------------------
 nb_proc | cpu(s) dt     | ngcp  | cpu(s) igcp   | speed up      | efficacite    |
 ------------------------------------------------------------------------------------
