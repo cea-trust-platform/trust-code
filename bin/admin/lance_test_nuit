@@ -3,6 +3,10 @@ check_components()
 {
    for Composant in $Composants
    do
+      if [ $* = tuleap/Maintenance ] && [[ "$ComposantsBeta" != *"$Composant"* ]]
+      then
+         echo "  No check $Composant Component with $TRUST_VERSION version"
+      else
       if [ ! -d $TRUST_ROOT/../Composants/$Composant ] && [ $* != tuleap/Kernel ]
       then
          # Create a link for some components
@@ -29,6 +33,7 @@ check_components()
 	 Composant_log=$REP_NUIT"/baltik_"$Composant"_"$HOST"_"${*#*/}".log"
 	 Gui_log=$REP_NUIT"/baltik_"$Composant"_"$HOST"_"${*#*/}"_gui.log"
 	 Doc_log=$REP_NUIT"/baltik_"$Composant"_"$HOST"_"${*#*/}"_doxygen.log"
+         BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
          echo "  Check `pwd`"
 	 echo "    See $Composant_log"
 	 (
@@ -78,7 +83,7 @@ check_components()
                   if [ $? != 0 ]
                   then
                      cat tmp.log
-                     cat tmp.log | mail_ -s\"[lance_test_nuit] baltik_check_TRUST_modif KO for $Composant\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
+                     cat tmp.log | mail_ -s\"[lance_test_nuit] baltik_check_TRUST_modif KO for $Composant\" -c ${!BALTIK_PROJECT_LEADER} -c $TMA_PROJECT_LEADER $TRUST_MAIL
                      echo "  KO"
 	             MODIF_TRUST_OK=0
                   else
@@ -88,9 +93,30 @@ check_components()
                fi
             fi
 	    [ $MODIF_TRUST_OK = 0 ] && COMPOSANT_OK=0
+	    # Verification de Liste_fiche pour Create_light_archive.sh
+	    VERIF_LIGHT_OK=1
+            if [ $* = tuleap/Livraison ] && [ "$Composant" = triocfd ]
+            then
+               echo " "
+               echo "Call to ./share/Distribution/Create_Light_archive.sh"
+	       rm -rf Prov
+	       ./share/Distribution/Create_light_archive.sh 1>tmp.log 2>&1
+               if [ $? != 0 ]
+               then
+                  cat tmp.log
+                  cat tmp.log | mail_ -s\"[lance_test_nuit] Create_Light_archive.sh KO for $Composant\" -c ${!BALTIK_PROJECT_LEADER} -c $TMA_PROJECT_LEADER $TRUST_MAIL
+                  echo "  KO"
+	          VERIF_LIGHT_OK=0
+               else
+                  echo "  OK"
+               fi
+               rm tmp.log 1>/dev/null 2>&1
+	    fi
+	    [ $VERIF_LIGHT_OK = 0 ] && COMPOSANT_OK=0
 	    DOC_PDF_OK=0
 	    if [ $* != tuleap/Kernel ]
 	    then
+               echo " "
 	       # Pas de check_gui sur baltiks sans XD
 	       make gui 1>$Gui_log 2>&1 && echo $Composant"_Reference_Manual.pdf OK" && DOC_PDF_OK=1
 	       grep "Error" $Gui_log
@@ -121,7 +147,7 @@ check_components()
 	       if [ $DOC_PDF_OK = 0 ]
 	       then
 	          echo $ECHO_OPTS "KO."
-	          cat $Gui_log | mail_ -s\"[lance_test_nuit] reference manual $Composant $TRUST_VERSION KO\" -c $TMA_PROJECT_LEADER $TRUST_MAIL
+	          cat $Gui_log | mail_ -s\"[lance_test_nuit] reference manual $Composant $TRUST_VERSION KO\" -c ${!BALTIK_PROJECT_LEADER} -c $TMA_PROJECT_LEADER $TRUST_MAIL
 	       else
 	          echo $ECHO_OPTS "OK"
 	       fi	    
@@ -300,14 +326,36 @@ check_components()
 		        then
 		           liste_options=$liste_options" --clean-after-if-ok"
 	                fi
-	                if [[ "$cible_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines cible
+	                if [[ "$cible_machines" = *"$machine"* ]] && [ $* != tuleap/Maintenance ] # Test si machine est dans la liste des machines cible
 		        then
 		           liste_options=$liste_options" --cible"
 	                fi
 	                machine=`echo $adr | awk -F"." '{print $1}' | awk -F"-gw" '{print $1}'`
                         log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`
-		        WORKTMP=`ssh_ -o BatchMode=yes $log@$adr -n 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
-                        echo "$Composant.tar $WORKTMP/$WORKBASE$machine/Composants/$Composant $log@$adr --with-TRUST=$WORKTMP/$WORKBASE$machine/TRUST $liste_options $mode_option $check_option $valgrind_option" >> Run.liste
+                        if [ $* = tuleap/Maintenance ]
+                        then
+                           # Debut de partie a revoir !!!!
+		           #WORKTMP=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/triou/env_TRUST_\$TRUST_VERSION.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+                           WORKTMP=""
+                           if  [ "${machine:0:9}" = "callisto-" ]
+                           then
+                              WORKTMP=""
+                           elif [ "${machine:0:10}" = "curie-ccrt" ] || [ "${machine:0:6}" = "cobalt" ]
+                           then
+		              [ $TRUST_VERSION = 1.7.7 ] && WORKTMP=`ssh_ -o BatchMode=yes $log@$adr -n 'source /ccc/cont002/home/den/triou/env_TRUST-1.7.7.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+                           elif [ "${machine:0:7}" = "cezanne" ]
+                           then
+		              [ $TRUST_VERSION = 1.7.7 ] && WORKTMP=`ssh_ -o BatchMode=yes $log@$adr -n 'source /soft/der/sesi/TRUST/env_TRUST-1.7.7.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+                           elif  [ "${machine:0:2}" = "is" ] || [ "${machine:0:8}" = "callisto" ]
+                           then
+		              [ $TRUST_VERSION = 1.7.7 ] && WORKTMP=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/triou/env_TRUST_1.7.7.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+                           fi
+                           [ "$WORTMP" != "" ] && echo "$Composant.tar $WORKTMP/$WORKBASE$machine/ComposantsBeta/$Composant $log@$adr --with-TRUST=$WORKTMP $liste_options $mode_option $check_option $valgrind_option" >> Run.liste
+                           # !!!! Fin de partie a revoir
+                        else
+		           WORKTMP=`ssh_ -o BatchMode=yes $log@$adr -n 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
+                           echo "$Composant.tar $WORKTMP/$WORKBASE$machine/Composants/$Composant $log@$adr --with-TRUST=$WORKTMP/$WORKBASE$machine/TRUST $liste_options $mode_option $check_option $valgrind_option" >> Run.liste
+		        fi
 		     fi
 		  fi
 	       done
@@ -323,6 +371,7 @@ check_components()
          cd $TRUST_ROOT
       #else
       #   echo "  Component $Composant KO not found here: $TRUST_ROOT/../Composants"
+      fi
       fi
    done
 }
@@ -443,7 +492,7 @@ VOBS="TRUST Composants"
 ComposantsLns="Test_Baltik equation_convection_diffusion ICoCo"
 #ComposantsGit="triocfd ijk polymac triomc mathys mpcube genepi3 pxp flica5"
 ComposantsOfficial="triocfd mpcube genepi3 flica5"
-ComposantsBeta="ijk polymac triomc mathys"
+export ComposantsBeta="ijk polymac triomc mathys"
 ComposantsGit=$ComposantsOfficial" "$ComposantsBeta
 export Composants=$ComposantsLns" "$ComposantsGit
 
@@ -604,7 +653,7 @@ echo>>$liste_log
 # med-3.0.7 sans doc et sans python (taille passe de 162M a 19M)
 # med-3.2.1 sans doc (taille passe de 45M a 17M)
 # osu-micro-benchmarks-3.8 version initiale non retrouvee
-nb_error=`grep "FAILED" $liste_log | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.3.1 | grep -v osu-micro-benchmarks-3.8 | grep -v medcoupling-8.5.0 | wc -l`
+nb_error=`grep "FAILED" $liste_log | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.3.1 | grep -v osu-micro-benchmarks-3.8 | wc -l`
 # les 3 paquets suivants sont sous http://downloads.sourceforge.net/project/trust-platform/X.Y.Z/extra/
 # medcoupling-7.8.0.tar.gz
 # hypre-2.10.0b-p2-TRUST.tar.gz
@@ -616,7 +665,7 @@ then
    # med-3.0.7 sans doc et sans python (taille passe de 162M a 19M)
    # osu-micro-benchmarks-3.8 version initiale non retrouvee
    #liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.2.1 | grep -v osu-micro-benchmarks-3.8 | grep -v medcoupling-7.8.0 | grep -v hypre-2.10.0b-p2-TRUST | grep -v CURVEPLOT | grep -v nvc_get_devices`
-   liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.3.1 | grep -v osu-micro-benchmarks-3.8 | grep -v medcoupling-8.5.0`
+   liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.3.1 | grep -v osu-micro-benchmarks-3.8`
    cd $TRUST_ROOT/build/bin/gestion_externalpackages/Test
    rm -r -f old new
    for package in $liste_failed
@@ -1108,7 +1157,8 @@ echo "###############################################"
 	###############################
 	# Verification des composants #
 	###############################
-	if ([ $vue = tuleap/Maintenance ] && [ $new_patch != 0 ]) || [ $vue = tuleap/Kernel ]
+	#if ([ $vue = tuleap/Maintenance ] && [ $new_patch != 0 ]) || [ $vue = tuleap/Kernel ]
+	if [ $vue = tuleap/Maintenance ] || [ $vue = tuleap/Kernel ]
 	then
 	   echo " "
 	   echo "Call check_components for $TRUST_VERSION version from `pwd`"
@@ -2794,7 +2844,7 @@ KO=0
 let KO=$NB-$OK
 echo "    $OK keywords covered by test cases"
 echo "    $KO keywords NOT covered by test cases"
-keywords_minimal=83.00 #classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
+keywords_minimal=83.11 # 81.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
 
 echo " "
 keywords=0
@@ -3686,29 +3736,51 @@ then
 	       fi
 	    fi
             git commit --all -m"Commit for an official Release $label version."
-            echo "    Call git push origin TMA"
-	    git tag $label_pose
-            if [ $Composant != "flica5" ]
-            then
-               git push --tags origin Livraison:triou/TMA
-            else
-	       git push origin Livraison:triou/TMA
-            fi
             echo "    Call git tag $label"
+	    git tag $label_pose
             if [[ "$ComposantsBeta" = *"$Composant"* ]] # Test si Composant est dans la liste des composants Beta
             then
                git tag "$label"b
             else
                git tag $label
             fi
-	    [ "$Composant" = triocfd ] && git push --tags origin Livraison:master
+            echo "    Call git push origin TMA"
+            if [ $Composant != "flica5" ]
+            then
+               git push --tags origin Livraison:triou/TMA
+            else
+	       git push origin Livraison:triou/TMA
+	       git push origin Livraison:triou/$label
+            fi
+	    if [ "$Composant" = triocfd ] || [ "$Composant" = mpcube ]
+            then
+	       git push --tags origin Livraison:master
+            fi
 	    git fetch --all
 	    # Appel du make distrib
 	    echo "    Call make distrib"
 	    make distrib
 	    mkdir -p $WORKDIR/archives/ARCHIVES_$Composant
 	    echo "    Copy $Composant.tar.gz to $WORKDIR/archives/ARCHIVES_$Composant/$Composant-$new.tar.gz"
-	    cp -f $Composant.tar.gz $WORKDIR/archives/ARCHIVES_$Composant/$Composant-$new.tar.gz
+            if [[ "$ComposantsBeta" = *"$Composant"* ]] # Test si Composant est dans la liste des composants Beta
+            then
+	       cp -f $Composant.tar.gz $WORKDIR/archives/ARCHIVES_$Composant/$Composant-$new"b.tar.gz"
+            else
+	       cp -f $Composant.tar.gz $WORKDIR/archives/ARCHIVES_$Composant/$Composant-$new.tar.gz
+            fi
+	    if [ $Composant = "triocfd" ]
+            then
+	       # Appel du Create_Light_archive.sh
+	       echo "    Call Create_Light_archive.sh"
+	       rm -rf Prov
+	       ./share/Distribution/Create_light_archive.sh
+               if [ $? != 0 ]
+               then
+                  mail_ -s\"[lance_test_nuit] Error with Create_Light_archive.sh v$new for $Composant\" $TRUST_MAIL
+               else
+	          cp -f TrioCFD_light.tar.gz $WORKDIR/archives/ARCHIVES_$Composant/$Composant"_light"-$new.tar.gz
+               fi
+	    fi
 	    echo | mail_ -s\"[lance_test_nuit] $Composant v$new is released under $WORKDIR/archives/ARCHIVES_$Composant\" $TRUST_MAIL	 
 	    # Changement de la vue Maintenance
             if [ -d $WORKDIR/tuleap/Maintenance/Composants/$Composant ]
@@ -3815,7 +3887,7 @@ if [ "`date '+%u'`" = 1 ] || [ $livraison = 1 ] || [ $accord_beta = 1 ]
 then
    ALL_DEVELOPERS_TRUST_MAIL="trio_u_dev@saxifrage.saclay.cea.fr"
    echo " " >> $MESSAGES_NUIT
-   echo "TRUST support team. mailto: $TRUST_MAIL  Web: http://www-trio-u.cea.fr" >> $MESSAGES_NUIT
+   echo "TRUST support team: $TRUST_MAIL  Web: http://www-trio-u.cea.fr" >> $MESSAGES_NUIT
    echo " " >> $MESSAGES_NUIT
    echo "To unsubscribe from this list, send an e-mail to $TRUST_MAIL " >> $MESSAGES_NUIT
 else
@@ -3858,10 +3930,10 @@ then
       echo "Stable release announcement sent to $dest"
       echo "
 TRUST is a thermohydraulic software package for CFD 
-simulations for incompressible monophasic flow.
+simulations of incompressible monophasic flows.
 TRUST platform name means TRrio_U Software for Thermohydraulics
 (\"Trio_U\" without Front_Tracking, Radiation, Zoom and LES models).
-This software is OpenSource (license BSD).
+This software is OpenSource (BSD license).
 
 ---------------------------------
 New TRUST version released v$new
@@ -3879,16 +3951,13 @@ Table of contents
 6. Version tested on several OS
 7. Version portability with several compilers
 
-TRUST support team. mailto: $TRUST_MAIL  Web: http://www-trio-u.cea.fr
+TRUST support team: $TRUST_MAIL  Web: http://www-trio-u.cea.fr
 
 To unsubscribe from this list, send an e-mail to $TRUST_MAIL " > $MESSAGES_LIVRAISON
       echo "
 ---------------------------------------------------------------------------------------------
 1. How to install?
 ---------------------------------------------------------------------------------------------
-# Option to minimize build
-OPTIONS=\"-disable-optionals\"
-
 # First method:
 wget http://downloads.sourceforge.net/project/trust-platform/Installer_TRUST.sh;
 chmod +x Installer_TRUST.sh;
@@ -3908,12 +3977,15 @@ wget http://downloads.sourceforge.net/project/trust-platform/$new/externalpackag
 tar xf externalpackages-$new.tar;
 ./configure \$OPTIONS;
 make
+
+# Option to minimize build. You need to set this variable and then run one of the 3 methods above
+OPTIONS=\"-disable-optionals\"
 ---------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
       echo "
 ----------------------------------------------------------------------------------------------------
 2. How to run preinstalled version?
 ----------------------------------------------------------------------------------------------------
-# for PC connected to CEA Saclay network (Please be notified that VisIt is KO on Ubuntu 16.04):
+# for PC connected to CEA Saclay network (For Ubuntu 16.04 running VisIt requires a specific procedure, please contact TRUST support for help):
 source /home/triou/env_TRUST_$new.sh
 
 # for CEA Saclay cluster (callisto):
@@ -3928,7 +4000,7 @@ source /softs/trio_u/env_TRUST-$new.sh
 # for CCRT-TGCC supercomputers (cobalt & curie-ccrt):
 source /ccc/cont002/home/den/triou/env_TRUST-$new.sh
 
-# for CINES supercomputer (occigen & VisIt is available on cristal):
+# for CINES supercomputer (occigen):
 source /panfs/panasas/softs/applications/trio_u/env_TRUST-$new.sh
 ----------------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
       echo $ECHO_OPTS "
@@ -3965,9 +4037,9 @@ source /panfs/panasas/softs/applications/trio_u/env_TRUST-$new.sh
       if [ "$Composant" == triocfd ]
       then
          echo "
-TrioCFD (previously named \"Trio_U\") is Computational Fluid Dynamics (CFD) code, 
+TrioCFD (previously named \"Trio_U\") is the Computational Fluid Dynamics (CFD) code 
 based on the TRUST platform (\"TRUST\" with Front_Tracking, Radiation, Zoom and LES models).
-This software is OpenSource (license BSD).
+This software is OpenSource (BSD license).
 
 -----------------------------------
 New TrioCFD version released v$new
@@ -3979,18 +4051,15 @@ Table of contents
 -----------------
 1. How to install?
 2. How to run preinstalled version?
-3. TrioCFD Release notes
+3. $Composant Release notes
 
-TRUST/TrioCFD support team. mailto: $TRUST_MAIL  Web: http://www-trio-u.cea.fr
+TRUST/TrioCFD support team: $TRUST_MAIL  Web: http://www-trio-u.cea.fr
 
 To unsubscribe from this list, send an e-mail to $TRUST_MAIL " > $MESSAGES_LIVRAISON
       echo "
 ---------------------------------------------------------------------------------------------
 1. How to install?
 ---------------------------------------------------------------------------------------------
-# Option to minimize build
-OPTIONS=\"-disable-optionals\"
-
 # First method if TRUST-$new platform is not installed:
 wget http://sourceforge.net/projects/triocfd/files/Installer_TrioCFD.sh;
 chmod +x Installer_TrioCFD.sh;
@@ -4007,12 +4076,15 @@ cd TrioCFD-$new;
 source \$TRUST_ROOT/env_TRUST.sh;
 baltik_build_configure -execute;
 make optim debug
+
+# Option to minimize build. You need to set this variable and then run one of the 3 methods above
+OPTIONS=\"-disable-optionals\"
 ---------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
       echo "
 ----------------------------------------------------------------------------------------------------
 2. How to run preinstalled version?
 ----------------------------------------------------------------------------------------------------
-# for PC connected to CEA Saclay network (Please be notified that VisIt is KO on Ubuntu 16.04):
+# for PC connected to CEA Saclay network (For Ubuntu 16.04 running VisIt requires a specific procedure, please contact TRUST support for help):
 source /home/triou/env_TrioCFD_$new.sh
 
 # for CEA Saclay cluster (callisto):
@@ -4051,10 +4123,10 @@ source /panfs/panasas/softs/applications/trio_u/env_TrioCFD-$new.sh
 #New TrioMC version released v"$new"b
 #-----------------------------------
 #1. How to run preinstalled version?
-#2. Release notes
+#2. $Composant Release notes
 #
-#TRUST/TrioMC support team. mailto: $TRUST_MAIL  Web: http://www-trio-u.cea.fr
-#MATHYS support team. mailto: mathys@cea.fr
+#TRUST/TrioMC support team: $TRUST_MAIL  Web: http://www-trio-u.cea.fr
+#MATHYS support team: mathys@cea.fr
 #
 #To unsubscribe from this list, send an e-mail to $TRUST_MAIL " > $MESSAGES_LIVRAISON
          echo "
@@ -4068,10 +4140,10 @@ TrioMC is based on the TRUST platform.
 New TrioMC version released v"$new"
 -----------------------------------
 1. How to run preinstalled version?
-2. Release notes
+2. $Composant Release notes
 
-TRUST/TrioMC support team. mailto: $TRUST_MAIL  Web: http://www-trio-u.cea.fr
-MATHYS support team. mailto: mathys@cea.fr
+TRUST/TrioMC support team: $TRUST_MAIL  Web: http://www-trio-u.cea.fr
+MATHYS support team: mathys@cea.fr
 
 To unsubscribe from this list, send an e-mail to $TRUST_MAIL " > $MESSAGES_LIVRAISON
 # echo "
@@ -4117,16 +4189,25 @@ source /home/triou/env_TrioMC2_"$new".sh
    next_new=`echo $new | $TRUST_Awk -F"." '{if (NF==3) print $1"."$2"."$3+1"_beta";else if (NF==2) print $1"."$2".1_beta"}'`
    echo "--------------------------------------------------------------------------------------------------
 Release notes version $next_new : Enhancements, modifications and corrected bugs since version $new :
---------------------------------------------------------------------------------------------------
-" > $TRUST_TMP/RELEASE_NOTES
+--------------------------------------------------------------------------------------------------" > $TRUST_TMP/RELEASE_NOTES
    cat $TRUST_ROOT/RELEASE_NOTES >> $TRUST_TMP/RELEASE_NOTES
    cat $TRUST_TMP/RELEASE_NOTES > $TRUST_ROOT/RELEASE_NOTES
    echo "-------------------------------------------------------------
 Developer notes version $next_new : Changes since version $new :
--------------------------------------------------------------
-" > $TRUST_TMP/DEVELOPER_NOTES
+-------------------------------------------------------------" > $TRUST_TMP/DEVELOPER_NOTES
    cat $TRUST_ROOT/DEVELOPER_NOTES >> $TRUST_TMP/DEVELOPER_NOTES
    cat $TRUST_TMP/DEVELOPER_NOTES > $TRUST_ROOT/DEVELOPER_NOTES  
+   for Composant in $ComposantsOfficial
+   do
+      cd $WORKDIR/tuleap/Livraison/Composants/$Composant
+      echo "--------------------------------------------------------------------------------------------------
+Release notes version $next_new : Enhancements, modifications and corrected bugs since version $new :
+--------------------------------------------------------------------------------------------------" > RELEASE_NOTES
+      cat share/RELEASE_NOTES >> RELEASE_NOTES
+      cat RELEASE_NOTES > share/RELEASE_NOTES
+      rm RELEASE_NOTES
+      cd - 1>/dev/null 2>&1
+   done
    # Commit immediately to differenciate master and patch branchs for setting the correct default branch after git clone
    # See http://git.661346.n2.nabble.com/git-clone-not-getting-the-correct-default-branch-td7476876.html
    echo " "

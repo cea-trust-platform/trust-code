@@ -143,6 +143,19 @@ do
    fi
    echo " "
 done
+if [ "$livraison" = 1 ]
+then
+   for Composant in $Composants
+   do
+      if [[ "$ComposantsBeta" = *"$Composant"* ]] # Test si Composant est dans la liste des composants Beta
+      then
+         cp -f $WORKDIR/archives/ARCHIVES_$Composant/$Composant-$v"b.tar.gz" $depot/ARCHIVES_$Composant/.
+      else
+         cp -f $WORKDIR/archives/ARCHIVES_$Composant/$Composant-$v.tar.gz $depot/ARCHIVES_$Composant/.
+      fi
+      [ $Composant = "triocfd" ] && cp -f $WORKDIR/archives/ARCHIVES_$Composant/$Composant"_light"-$v.tar.gz $depot/ARCHIVES_$Composant/.
+   done
+fi
 
 ##################################################
 # Copie des fichiers issus de recupere_TRUST_arch 
