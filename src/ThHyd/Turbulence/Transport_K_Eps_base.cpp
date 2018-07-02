@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,6 +27,7 @@
 #include <Zone_VF.h>
 #include <Param.h>
 #include <Debog.h>
+#include <communications.h>
 
 Implemente_base_sans_constructeur(Transport_K_Eps_base,"Transport_K_Eps_base",Equation_base);
 
@@ -228,8 +229,11 @@ int Transport_K_Eps_base::controler_K_Eps()
 {
   DoubleTab& K_Eps = le_champ_K_Eps.valeurs();
   int size=K_Eps.dimension(0);
-  int size_tot=mp_sum(size);
-  int negk=0,nege=0,nmaxe=0;
+  //int size_tot=mp_sum(size);
+  // On estime pour eviter un mp_sum toujours couteux:
+  int size_tot = size * Process::nproc();
+  ArrOfInt neg(3);
+  neg=0;
   int control=1;
   int lquiet = modele_turbulence().get_lquiet();
   // On interdit K-Eps negatif pour le K-Eps seulement
@@ -258,8 +262,8 @@ int Transport_K_Eps_base::controler_K_Eps()
       double& eps = K_Eps(n,1);
       if (k < 0 || eps < 0)
         {
-          negk += (  k<0 ? 1 : 0);
-          nege += (eps<0 ? 1 : 0);
+          neg[0] += (  k<0 ? 1 : 0);
+          neg[1] += (eps<0 ? 1 : 0);
 
           position="x=";
           position+=(Nom)zone_vf.xv(n,0);
@@ -355,7 +359,7 @@ int Transport_K_Eps_base::controler_K_Eps()
         }
       else if (eps > LeEPS_MAX)
         {
-          nmaxe += 1;
+          neg[2] += 1;
 
           if (size==face_voisins.dimension(0))
             {
@@ -390,57 +394,76 @@ int Transport_K_Eps_base::controler_K_Eps()
             {
               // Warnings printed:
               Cerr << (control ? "***Warning***: " : "***Error***: ");
+
               Cerr << "eps forced to " << eps << " on node " << n << " : " << position << finl;
             }
         }
     }
+
   K_Eps.echange_espace_virtuel();
-  negk=mp_sum(negk);
-  nege=mp_sum(nege);
-  nmaxe=mp_sum(nmaxe);
-  if (negk || nege)
+  if (schema_temps().limpr())
     {
-      if (Process::je_suis_maitre() && schema_temps().limpr())
+      mp_sum_for_each_item(neg);
+      if (neg[0] || neg[1])
         {
-          const double time = le_champ_K_Eps.temps();
-          Cerr << "Values forced for k and eps because:" << finl;
-          if (negk) Cerr << "Negative values found for k on " << negk << "/" << size_tot << " nodes at time " << time << finl;
-          if (nege) Cerr << "Negative values found for eps on " << nege << "/" << size_tot << " nodes at time " << time << finl;
-          // Warning if more than 0.01% of nodes are values fixed
-          double ratio_k = 100. * negk / size_tot;
-          double ratio_eps = 100. * nege / size_tot;
-          if ((ratio_k>0.01 || ratio_eps>0.01) && !lquiet)
+          if (Process::je_suis_maitre())
             {
-              Cerr << "It is possible your initial and/or boundary conditions on k and/or eps are wrong." << finl;
-              Cerr << "Check the initial and boundary values for k and eps by using:" << finl;
-              Cerr << "k~" << (dimension==2?"":"3/2*") << "(t*U)^2 (t turbulence rate, U mean velocity) ";
-              Cerr << "and eps~Cmu^0.75 k^1.5/l with l turbulent length scale and Cmu a k-eps model parameter whose value is typically given as 0.09." << finl;
-              Cerr << "See explanations here: http://www.esi-cfd.com/esi-users/turb_parameters/" << finl;
-              Cerr << "Remark : by giving the velocity field (u) and the hydraulic diameter (d), by using boundary_field_uniform_keps_from_ud and field_uniform_keps_from_ud,  "<<finl;
-              Cerr << "respectively for boudnaries and initial conditions, TRUST will determine automatically values for k and eps."<<finl;
-              if (probleme().is_QC()==1)
+              const double time = le_champ_K_Eps.temps();
+              Cerr << "Values forced for k and eps because:" << finl;
+              if (neg[0])
+                Cerr << "Negative values found for k on " << neg[0] << "/" << size_tot << " nodes at time " << time
+                     << finl;
+              if (neg[1])
+                Cerr << "Negative values found for eps on " << neg[1] << "/" << size_tot << " nodes at time "
+                     << time << finl;
+              // Warning if more than 0.01% of nodes are values fixed
+              double ratio_k = 100. * neg[0] / size_tot;
+              double ratio_eps = 100. * neg[1] / size_tot;
+              if ((ratio_k > 0.01 || ratio_eps > 0.01) && !lquiet)
                 {
-                  Cerr << "Please, don't forget (sorry for this TRUST syntax weakness) that when using Quasi-Compressible module" << finl;
-                  Cerr << "the unknowns for which you define initial and boundary conditions are rho*k and rho*eps." << finl;
+                  Cerr << "It is possible your initial and/or boundary conditions on k and/or eps are wrong." << finl;
+                  Cerr << "Check the initial and boundary values for k and eps by using:" << finl;
+                  Cerr << "k~" << (dimension == 2 ? "" : "3/2*") << "(t*U)^2 (t turbulence rate, U mean velocity) ";
+                  Cerr
+                      << "and eps~Cmu^0.75 k^1.5/l with l turbulent length scale and Cmu a k-eps model parameter whose value is typically given as 0.09."
+                      << finl;
+                  Cerr << "See explanations here: http://www.esi-cfd.com/esi-users/turb_parameters/" << finl;
+                  Cerr
+                      << "Remark : by giving the velocity field (u) and the hydraulic diameter (d), by using boundary_field_uniform_keps_from_ud and field_uniform_keps_from_ud,  "
+                      << finl;
+                  Cerr
+                      << "respectively for boudnaries and initial conditions, TRUST will determine automatically values for k and eps."
+                      << finl;
+                  if (probleme().is_QC() == 1)
+                    {
+                      Cerr
+                          << "Please, don't forget (sorry for this TRUST syntax weakness) that when using Quasi-Compressible module"
+                          << finl;
+                      Cerr
+                          << "the unknowns for which you define initial and boundary conditions are rho*k and rho*eps."
+                          << finl;
+                    }
                 }
             }
+          if (!control && !lquiet)
+            {
+              // On quitte en postraitant pour trouver les noeuds
+              // qui posent probleme
+              Cerr << "The problem is postprocessed in order to find the nodes where K or Eps values go below 0."
+                   << finl;
+              probleme().postraiter(1);
+              exit();
+            };
         }
-      if (!control && !lquiet)
+      if (neg[2])
         {
-          // On quitte en postraitant pour trouver les noeuds
-          // qui posent probleme
-          Cerr << "The problem is postprocessed in order to find the nodes where K or Eps values go below 0." << finl;
-          probleme().postraiter(1);
-          exit();
-        };
-    }
-  if (nmaxe)
-    {
-      if (Process::je_suis_maitre() && schema_temps().limpr())
-        {
-          const double time = le_champ_K_Eps.temps();
-          Cerr << "Values forced for eps because:" << finl;
-          Cerr << "Maximum values found for eps on " << nmaxe << "/" << size_tot << " nodes at time " << time << finl;
+          if (Process::je_suis_maitre())
+            {
+              const double time = le_champ_K_Eps.temps();
+              Cerr << "Values forced for eps because:" << finl;
+              Cerr << "Maximum values found for eps on " << neg[2] << "/" << size_tot << " nodes at time " << time
+                   << finl;
+            }
         }
     }
   Debog::verifier("Transport_K_Eps_base::controler_K_Eps K_Eps after",K_Eps);
