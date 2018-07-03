@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,6 +25,7 @@
 #include <Param.h>
 
 Implemente_instanciable(Option_VDF,"Option_VDF",Interprete);
+// XD option_vdf interprete option_vdf 1 Class of VDF options.
 
 double Option_VDF::coeff_P_neumann=1.;
 int Option_VDF::traitement_coins=0;
@@ -107,8 +108,8 @@ int Option_VDF::test_mot(const Motcle& motlu) const
 Entree& Option_VDF::interpreter(Entree& is)
 {
   Param param(que_suis_je());
-  param.ajouter_non_std("traitement_coins",(this));
-  param.ajouter_non_std("P_imposee_aux_faces",(this));
+  param.ajouter_non_std("traitement_coins",(this)); // XD_ADD_P chaine(into=["oui","non"]) Treatment of corners (yes or no). This option modifies slightly the calculations at the outlet of the plane channel. It supposes that the boundary continues after channel outlet (i.e. velocity vector remains parallel to the boundary).
+  param.ajouter_non_std("P_imposee_aux_faces",(this)); // XD_ADD_P chaine(into=["oui","non"]) Pressure imposed at the faces (yes or no).
   param.lire_avec_accolades_depuis(is);
   return is;
 }

@@ -700,7 +700,7 @@ bloc_sutherland objet_lecture nul 0 Sutherland law for viscosity mu(T)=mu0*((T0+
   attr c floattant c 0 not_set
 fluide_quasi_compressible fluide_incompressible fluide_quasi_compressible -1 Compressible flow at low mach number.
   attr sutherland bloc_sutherland sutherland 1 Sutherland law for viscosity and for conductivity.
-  attr pression floattant pression 1 Initial pression.
+  attr pression floattant pression 1 Initial pressure.
   attr loi_etat loi_etat_base loi_etat 1 State law.
   attr traitement_pth chaine(into=["edo","constant","conservation_masse"]) traitement_pth 1 Particular treatment for the thermodynamic pressure Pth ; there are three possibilities: NL2 1) with the keyword \'edo\' the code computes Pth solving an O.D.E. ; in this case, the mass is not strictly conserved (it is the default case for quasi compressible computation): NL2 2) the keyword \'conservation_masse\' forces the conservation of the mass (closed geometry or with periodic boundaries condition) NL2 3) the keyword \'constant\' makes it possible to have a constant Pth ; it\'s the good choice when the flow is open (e.g. with pressure boundary conditions).
   attr traitement_rho_gravite chaine(into=["standard","moins_rho_moyen"]) traitement_rho_gravite 1 It may be :1) \`standard\` : the gravity term is evaluted with rho*g (It is the default). 2) \`moins_rho_moyen\` : the gravity term is evaluated with (rho-rhomoy) *g.
@@ -961,7 +961,7 @@ trianguler_h triangulate trianguler_h -1 To achieve a triangular mesh from a mes
 trianguler_fin triangulate trianguler_fin -1 Trianguler_fin is the recommended option to triangulate rectangles. NL2 As an extension (subdivision) of Triangulate_h option, this one cut each initial rectangle in 8 triangles (against 4, previously). This cutting ensures : NL2 - a correct cutting in the corners (in respect to pressure discretization PreP1B). NL2 - a better isotropy of elements than with Trianguler_h option. NL2 - a better alignment of summits (this could have a benefit effect on calculation near walls since first elements in contact with it are all contained in the same constant thickness, and, by this way, a 2D cartesian grid based on summits can be engendered and used to realize statistical analysis in plane channel configuration for instance). Principle: NL2 \includepng{{triangulerfin.pdf}}{{10}}
 tetraedriser interprete tetraedriser -1 To achieve a tetrahedral mesh based on a mesh comprising blocks, the Tetraedriser (Tetrahedralise) interpretor is used in VEF discretization. Initial block is divided in 6 tetrahedra: \includepng{{tetraedriser.jpeg}}{{5}}
   attr domain_name ref_domaine domain_name 0 Name of domain.
-orientefacesbord interprete orientefacesbord -1 Keyword to modify the order of the boundary verteces included in a domain, such that the surface normals are outer pointing.
+orientefacesbord interprete orientefacesbord -1 Keyword to modify the order of the boundary vertices included in a domain, such that the surface normals are outer pointing.
   attr domain_name ref_domaine domain_name 0 Name of domain.
 reorienter_tetraedres interprete reorienter_tetraedres -1 This keyword is mandatory for front-tracking computations with the VEF discretization. For each tetrahedral element of the domain, it checks if it has a positive volume. If the volume (determinant of the three vectors) is negative, it swaps two nodes to reverse the orientation of this tetrahedron.
   attr domain_name ref_domaine domain_name 0 Name of domain.
@@ -1183,9 +1183,6 @@ remove_invalid_internal_boundaries interprete remove_invalid_internal_boundaries
   attr domain_name ref_domaine domain_name 0 Name of domain.
 resequencing interprete reordonner -1 The Reordonner interpretor is required sometimes for a VDF mesh which is not produced by the internal mesher. Example where this is used: NL2 Read_file dom fichier.geom NL2 Reordonner dom NL2 Observations: This keyword is redundant when the mesh that is read is correctly sequenced in the TRUST sense. This significant mesh operation may take some time... The message returned by TRUST is not explicit when the Reordonner (Resequencing) keyword is required but not included in the data set...
   attr domain_name ref_domaine domain_name 0 Name of domain to resequence.
-option_vdf interprete option_vdf 1 Class of VDF options.
-  attr traitement_coins chaine(into=["oui","non"]) traitement_coins 1 Treatment of corners (yes or no).
-  attr p_imposee_aux_faces chaine(into=["oui","non"]) p_imposee_aux_faces 1 Pressure imposed at the faces (yes or no).
 precisiongeom interprete precisiongeom 0 Class to change the way floating-point number comparison is done. By default, two numbers are equal if their absolute difference is smaller than 1e-10. The keyword is useful to modify this value. Moreover, nodes coordinates will be written in .geom files with this same precision.
   attr precision floattant precision 0 New value of precision.
 nettoiepasnoeuds interprete nettoiepasnoeuds 0 Keyword NettoiePasNoeuds does not delete useless nodes (nodes without elements) from a domain.
