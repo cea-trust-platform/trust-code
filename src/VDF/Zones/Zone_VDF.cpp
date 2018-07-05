@@ -41,7 +41,6 @@ Implemente_instanciable(Zone_VDF,"Zone_VDF",Zone_VF);
 Sortie& Zone_VDF::printOn(Sortie& os) const
 {
   Zone_VF::printOn(os);
-  os << "face_surfaces_"<<face_surfaces_<< finl;
   os << "orientation_"<<orientation_<< finl;
   os << "nb_faces_X_"<<nb_faces_X_<< finl;
   os << "nb_faces_Y_"<<nb_faces_Y_<< finl;
@@ -63,7 +62,6 @@ Sortie& Zone_VDF::printOn(Sortie& os) const
 Entree& Zone_VDF::readOn(Entree& is)
 {
   Zone_VF::readOn(is);
-  is >>  face_surfaces_;
   is >>  orientation_;
   is >>  nb_faces_X_;
   is >>  nb_faces_Y_;
@@ -216,8 +214,14 @@ void Zone_VDF::reordonner(Faces& les_faces)
                  les_faces_vdf, elem_faces_, orientation_, joints);
 
   // Calcul des surfaces (tant que l'objet Faces_VDF existe !!!)
-  les_faces.calculer_surfaces(face_surfaces_);
+  calculer_face_surfaces(les_faces);
   // Cerr << "les faces apres les_faces_vdf.reordonner(orientation_) " << les_faces << finl;
+}
+
+void Zone_VDF::calculer_face_surfaces(Faces& les_faces)
+{
+  // Calcul des surfaces (tant que l'objet Faces_VDF existe !!!)
+  les_faces.calculer_surfaces(face_surfaces_);
 }
 
 // Description:

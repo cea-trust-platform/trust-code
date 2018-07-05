@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -88,17 +88,7 @@ public :
     return h_carre_(i);
   };
   inline double face_normales(int ,int ) const;
-  DoubleVect& face_surfaces();
-  // Une des 2 methode suivantes a supprimer ensuite dans tous le source
-  // pour etre coherent entre le VDF et le EF :
-  inline double face_surfaces(int i) const
-  {
-    return face_surfaces_(i);
-  };
-  inline double surface(int i) const
-  {
-    return face_surfaces(i);
-  };
+  void calculer_face_surfaces();
   inline DoubleTab& face_normales();
   inline const DoubleTab& face_normales() const;
   inline IntVect& rang_elem_non_std();
@@ -156,7 +146,6 @@ private:
   DoubleVect h_carre_;			// carre du pas d'une maille
   Elem_EF type_elem_;                  // type de l'element de discretisation
   DoubleTab face_normales_;             // normales aux faces
-  DoubleVect face_surfaces_;		// surface des faces
   int nb_faces_std_;                    // nombre de faces standard
   int nb_elem_std_;                     // nombre d'elements standard
   IntVect rang_elem_non_std_;		 // rang_elem_non_std_= -1 si l'element est standard

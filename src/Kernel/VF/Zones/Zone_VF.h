@@ -47,7 +47,18 @@ class Zone_VF : public Zone_dis_base
 public :
 
   virtual double face_normales(int , int ) const =0;
-  virtual double face_surfaces(int) const =0;
+  virtual const DoubleVect& face_surfaces() const
+  {
+    return face_surfaces_;
+  }
+  virtual inline double face_surfaces(int i) const
+  {
+    return face_surfaces_(i);
+  };
+  virtual inline double surface(int i) const
+  {
+    return face_surfaces(i);
+  };
 
   void discretiser();
   void infobord();
@@ -183,6 +194,7 @@ protected:
   DoubleVect porosite_elem_;                 // Porosites volumiques pour les volumes de
   // controle de masse
   DoubleVect porosite_face_;              // Porosites surfaciques en masse et volumiques
+  DoubleVect face_surfaces_;                // surface des faces
   // en quantite de mouvement
   DoubleVect diametre_hydraulique_face_;  //diametres hydrauliques des faces
   DoubleTab diametre_hydraulique_elem_;  //diametres hydrauliques des elements

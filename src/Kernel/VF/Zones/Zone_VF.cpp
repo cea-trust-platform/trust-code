@@ -47,6 +47,9 @@ Sortie& Zone_VF::printOn(Sortie& os) const
   os << "face_voisins_ : " << finl;
   face_voisins_.ecrit(os);
 
+  os << "face_surfaces_ : "<<face_surfaces_<< finl;
+  face_surfaces_.ecrit(os);
+
   os << "xp_ : " << finl;
   xp_.ecrit(os);
 
@@ -81,6 +84,7 @@ Entree& Zone_VF::readOn(Entree& is)
   volumes_.lit(is);
   volumes_entrelaces_.lit(is);
   face_voisins_.lit(is);
+  face_surfaces_.lit(is);
   xp_.lit(is);
   xv_.lit(is);
   elem_faces_.lit(is);

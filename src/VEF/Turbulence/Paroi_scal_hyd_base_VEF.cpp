@@ -99,7 +99,7 @@ int Paroi_scal_hyd_base_VEF::init_lois_paroi()
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const IntTab& face_voisins = zone_VEF.face_voisins();
   const DoubleVect& volumes_maille = zone_VEF.volumes();
-  DoubleVect& surfaces_face = ref_cast_non_const(Zone_VEF,zone_VEF).face_surfaces();
+  const DoubleVect& surfaces_face = zone_VEF.face_surfaces();
 
   if (axi)
     {
