@@ -29,7 +29,7 @@
 
 //!  Perte de charge directionnelle (selon un vecteur unitaire v)
 /**
-   du/dt = - lambda(Re,x,y,z,t) * u.v * v * ||u|| / 2 Dh ||v||^2
+   du/dt = - volume * lambda(Re,x,y,z,t) * u.(v / ||v||) * (v / ||v||) * ||u|| / (2 * Dh)
 
    Lecture des arguments :
 
