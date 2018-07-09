@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,7 +52,10 @@ public:
 protected:
 
   Champ_front champ_debit_;
-  DoubleTab normales_divisees_par_aire_;
+  // in TRUST the normal vector to a surface is stocked weighted by the area of the surface via "face_normales"
+  // here we want normal vectors only, formely known as normales_divisees_par_aire_
+  // We need the normal vector (only) because the velocity field will be perpendicular the surface
+  DoubleTab normal_vectors_;
   double coeff_;
 
   virtual void initialiser_coefficient(const Champ_Inc_base& inco);
