@@ -5,7 +5,7 @@ check_components()
    do
       if [ $* = tuleap/Maintenance ] && [[ "$ComposantsBeta" != *"$Composant"* ]]
       then
-         echo "  No check $Composant Component with $TRUST_VERSION version"
+         [ -d $TRUST_ROOT/../Composants/$Composant ] && echo "  No check $Composant Component with $TRUST_VERSION version"
       else
       if [ ! -d $TRUST_ROOT/../Composants/$Composant ] && [ $* != tuleap/Kernel ]
       then
@@ -53,10 +53,11 @@ check_components()
 	    if [ "$Composant" = basic ]
 	    then
 	       make_option="make check_trust_optim"
-	    elif [[ "$ComposantsBeta" = *"$Composant"* ]] # Test si Composant est dans la liste des composants Beta
-	    then
-	    #   make_option=""
-	       make_option="make check_optim"
+	    #elif [[ "$ComposantsBeta" = *"$Composant"* ]] # Test si Composant est dans la liste des composants Beta
+	    #then
+	    ##   make_option=""
+	    #   make_option="make check_optim"
+	    ##   make_option="make check_all_optim"
 	    elif [ $* = tuleap/Kernel ]
 	    then
 	       make_option="make check_all_optim check_trust_optim"
@@ -160,7 +161,8 @@ check_components()
 	    rm -f $Composant_%_*.log
 	    # On teste la portabilite uniquement si tout a fonctionne en local (pour eviter de bloquer d'autres PCs)
 	    #if [ $COMPOSANT_OK = 1 ] && [ $TRUST_ROOT = $TRUST_ROOT_MASTER ]
-	    if [ $TRUST_ROOT = $TRUST_ROOT_MASTER ]
+	    #if [ $TRUST_ROOT = $TRUST_ROOT_MASTER ]
+	    if [ $TRUST_ROOT = $TRUST_ROOT_MASTER ] || [ $* = tuleap/Maintenance ] # Test a revoir !!!!
 	    then
                echo "Portability $Composant Component for $TRUST_VERSION version"
                echo " "
@@ -249,11 +251,12 @@ check_components()
 	                if [[ "$valgrind_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines valgrind
 		        then
 		           valgrind_option="--with-valgrind"
-                           if [[ "$ComposantsBeta" = *"$Composant"* ]] # Test si Composant est dans la liste des composants Beta
-                           then
-		              valgrind_option=""
-			   # Test en valgrind seulement le vendredi car ne passe pas en une nuit sauf tous les jours sur Template, Tuto, ICoCo, PolyMAC, MPCube et Flica5
-			   elif [ "$Composant" = Test_Baltik ] || [ "$Composant" = triocfd ] || [ "$Composant" = triomc ] || [ "$Composant" = mathys ] || [ "$Composant" = genepi3 ]
+                           #if [[ "$ComposantsBeta" = *"$Composant"* ]] # Test si Composant est dans la liste des composants Beta
+                           #then
+		           #   valgrind_option=""
+			   ## Test en valgrind seulement le vendredi car ne passe pas en une nuit sauf tous les jours sur Template, Tuto, ICoCo, PolyMAC, MPCube et Flica5
+			   #elif [ "$Composant" = Test_Baltik ] || [ "$Composant" = triocfd ] || [ "$Composant" = triomc ] || [ "$Composant" = mathys ] || [ "$Composant" = genepi3 ]
+			   if [ "$Composant" = Test_Baltik ] || [ "$Composant" = triocfd ] || [ "$Composant" = triomc ] || [ "$Composant" = mathys ] || [ "$Composant" = genepi3 ]
 			   then
 			      if [ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 17 ])
 			      then
@@ -314,15 +317,16 @@ check_components()
 			      fi
 	                      liste_options="--with-efface-dir-before"
 			   fi
-	                   if [[ "$ComposantsBeta" = *"$Composant"* ]] # Test si Composant est dans la liste des composants Beta
-                           then
-		           #   check_option="--without-run"
-		              check_option=""
-			   fi
+	                   #if [[ "$ComposantsBeta" = *"$Composant"* ]] # Test si Composant est dans la liste des composants Beta
+                           #then
+		           ##   check_option="--without-run"
+		           #   check_option=""
+	                   ##   check_option="--check-all"
+			   #fi
 			   [[ "$trust_machines" = *"$machine"* ]] && check_option="--check-trust"
 			   [[ "$unruned_machines" = *"$machine"* ]] && check_option="--without-run"
 	                fi
-	                if [[ "$non_machines" = *"$machine"* ]] # Test si machine n est pas dans la liste des machines cible, get_binary et tache
+	                if [[ "$non_machines" = *"$machine"* ]] || [ $* = tuleap/Maintenance ] # Test si machine n est pas dans la liste des machines cible, get_binary et tache
 		        then
 		           liste_options=$liste_options" --clean-after-if-ok"
 	                fi
@@ -332,28 +336,33 @@ check_components()
 	                fi
 	                machine=`echo $adr | awk -F"." '{print $1}' | awk -F"-gw" '{print $1}'`
                         log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`
+		        WORKTMP=`ssh_ -o BatchMode=yes $log@$adr -n 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
                         if [ $* = tuleap/Maintenance ]
                         then
                            # Debut de partie a revoir !!!!
-		           #WORKTMP=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/triou/env_TRUST_\$TRUST_VERSION.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
-                           WORKTMP=""
-                           if  [ "${machine:0:9}" = "callisto-" ]
+		           #WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/triou/env_TRUST_\$TRUST_VERSION.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+                           WORKBETA=""
+                           if  [ "${machine:0:9}" = "callisto-" ] || [ "${machine:0:11}" = "curie-ccrt-" ] || [ "${machine:0:7}" = "cobalt-" ]
                            then
-                              WORKTMP=""
+                              WORKBETA=""
                            elif [ "${machine:0:10}" = "curie-ccrt" ] || [ "${machine:0:6}" = "cobalt" ]
                            then
-		              [ $TRUST_VERSION = 1.7.7 ] && WORKTMP=`ssh_ -o BatchMode=yes $log@$adr -n 'source /ccc/cont002/home/den/triou/env_TRUST-1.7.7.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              [ $TRUST_VERSION = 1.7.7 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /ccc/cont002/home/den/triou/env_TRUST-1.7.7.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            elif [ "${machine:0:7}" = "cezanne" ]
                            then
-		              [ $TRUST_VERSION = 1.7.7 ] && WORKTMP=`ssh_ -o BatchMode=yes $log@$adr -n 'source /soft/der/sesi/TRUST/env_TRUST-1.7.7.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              [ $TRUST_VERSION = 1.7.7 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /soft/der/sesi/TRUST/env_TRUST-1.7.7.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            elif  [ "${machine:0:2}" = "is" ] || [ "${machine:0:8}" = "callisto" ]
                            then
-		              [ $TRUST_VERSION = 1.7.7 ] && WORKTMP=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/triou/env_TRUST_1.7.7.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              [ $TRUST_VERSION = 1.7.7 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/triou/env_TRUST_1.7.7.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            fi
-                           [ "$WORTMP" != "" ] && echo "$Composant.tar $WORKTMP/$WORKBASE$machine/ComposantsBeta/$Composant $log@$adr --with-TRUST=$WORKTMP $liste_options $mode_option $check_option $valgrind_option" >> Run.liste
+                           if [ "$WORKBETA" != "" ]
+                           then
+                              echo "$Composant.tar $WORKTMP/$WORKBASE$machine/ComposantsBeta/$Composant $log@$adr --with-TRUST=$WORKBETA $liste_options $mode_option $check_option $valgrind_option" >> Run.liste
+                           else
+                              echo "No check on $adr because no $TRUST_VERSION version on this host"
+                           fi
                            # !!!! Fin de partie a revoir
                         else
-		           WORKTMP=`ssh_ -o BatchMode=yes $log@$adr -n 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
                            echo "$Composant.tar $WORKTMP/$WORKBASE$machine/Composants/$Composant $log@$adr --with-TRUST=$WORKTMP/$WORKBASE$machine/TRUST $liste_options $mode_option $check_option $valgrind_option" >> Run.liste
 		        fi
 		     fi
@@ -491,8 +500,8 @@ VOBS="TRUST Composants"
 #ComposantsLns="Test_Baltik basic equation_convection_diffusion ICoCo"
 ComposantsLns="Test_Baltik equation_convection_diffusion ICoCo"
 #ComposantsGit="triocfd ijk polymac triomc mathys mpcube genepi3 pxp flica5"
-ComposantsOfficial="triocfd mpcube genepi3 flica5"
-export ComposantsBeta="ijk polymac triomc mathys"
+ComposantsOfficial="triocfd ijk mpcube genepi3 flica5"
+export ComposantsBeta="polymac triomc mathys"
 ComposantsGit=$ComposantsOfficial" "$ComposantsBeta
 export Composants=$ComposantsLns" "$ComposantsGit
 
@@ -3219,7 +3228,7 @@ do
          OK=`echo $(($OK+$nb))`
 	 nb=`(grep " KO" $Composant_log;grep KO $Composant_log | grep $Composant;grep " connect to host " $Composant_log | cut -d: -f2) | wc -l`
          KO=`echo $(($KO+$nb))`
-         #[ `grep KO $Composant_log | grep $Composant | wc -l` > 0 ] && validation_composant=0
+         [ `grep KO $Composant_log | grep $Composant | wc -l` > 0 ] && validation_composant=0
       fi
       let NB=$OK+$KO
    done
@@ -4197,6 +4206,13 @@ Developer notes version $next_new : Changes since version $new :
 -------------------------------------------------------------" > $TRUST_TMP/DEVELOPER_NOTES
    cat $TRUST_ROOT/DEVELOPER_NOTES >> $TRUST_TMP/DEVELOPER_NOTES
    cat $TRUST_TMP/DEVELOPER_NOTES > $TRUST_ROOT/DEVELOPER_NOTES  
+   cd $TRUST_ROOT/externalpackages
+   echo "--------------------------------------------------------------------------------------------------
+Release notes version $next_new : Enhancements, modifications and corrected bugs since version $new :
+--------------------------------------------------------------------------------------------------" > $TRUST_TMP/RELEASE_NOTES
+   cat RELEASE_NOTES >> $TRUST_TMP/RELEASE_NOTES
+   cat $TRUST_TMP/RELEASE_NOTES > RELEASE_NOTES
+   cd - 1>/dev/null 2>&1
    for Composant in $ComposantsOfficial
    do
       cd $WORKDIR/tuleap/Livraison/Composants/$Composant
