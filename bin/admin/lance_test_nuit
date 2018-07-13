@@ -342,7 +342,10 @@ check_components()
                            # Debut de partie a revoir !!!!
 		           #WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/triou/env_TRUST_\$TRUST_VERSION.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            WORKBETA=""
-                           if  [ "${machine:0:9}" = "callisto-" ] || [ "${machine:0:11}" = "curie-ccrt-" ] || [ "${machine:0:7}" = "cobalt-" ]
+                           if  [ "${machine:0:14}" = "callisto-intel" ]
+                           then
+		              [ $TRUST_VERSION = 1.7.7 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /panfs/ixion/home/triou/TRUST/TRUST-intel-1.7.7/env_TRUST.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+                           elif  [ "${machine:0:9}" = "callisto-" ] || [ "${machine:0:11}" = "curie-ccrt-" ] || [ "${machine:0:7}" = "cobalt-" ]
                            then
                               WORKBETA=""
                            elif [ "${machine:0:10}" = "curie-ccrt" ] || [ "${machine:0:6}" = "cobalt" ]
@@ -3221,6 +3224,7 @@ do
       if [ -f $Composant_log ]
       then
          echo "Analysis of "$Composant_log" file" | tee -a tmp.log
+         grep "because no $old version on this host" $Composant_log
          #grep "$Composant OK" $Composant_log | sed 1d | tee -a tmp.log # check only component without portability
          grep "$Composant OK" $Composant_log #| tee -a tmp.log
          (grep " KO" $Composant_log;grep KO $Composant_log | grep $Composant;grep " connect to host " $Composant_log | cut -d: -f2) | tee -a tmp.log
@@ -3228,7 +3232,7 @@ do
          OK=`echo $(($OK+$nb))`
 	 nb=`(grep " KO" $Composant_log;grep KO $Composant_log | grep $Composant;grep " connect to host " $Composant_log | cut -d: -f2) | wc -l`
          KO=`echo $(($KO+$nb))`
-         [ `grep KO $Composant_log | grep $Composant | wc -l` > 0 ] && validation_composant=0
+         [ "`grep KO $Composant_log | grep $Composant | grep Component`" != "" ] && validation_composant=0
       fi
       let NB=$OK+$KO
    done
