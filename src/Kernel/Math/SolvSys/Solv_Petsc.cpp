@@ -130,9 +130,10 @@ void Solv_Petsc::create_solver(Entree& entree)
   if (PE_Groups::get_nb_groups()==1)
     {
       // _petsc.TU is only printed if one group calculation (e.g. Execute_parallel failed)
-      Nom petsc_TU(nom_du_cas());
+      Nom petsc_TU(":");
+      petsc_TU+=nom_du_cas();
       petsc_TU+="_petsc.TU";
-      add_option("log_summary",petsc_TU); 	// Monitor performances at the end of the calculation
+      add_option("log_view",petsc_TU); 		// Monitor performances at the end of the calculation
       PetscLogAllBegin(); 			// Necessary cause if not Event logs not printed in petsc_TU file ... I don't know why...
     }
   //add_option("on_error_abort",""); // ne marche pas semble t'il
