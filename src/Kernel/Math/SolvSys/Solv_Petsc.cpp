@@ -1086,7 +1086,7 @@ void Solv_Petsc::RestoreMatrixFromFile()
     }
   // Conversion AIJ to SBAIJ:
   MatSetOption(MatricePetsc_, MAT_SYMMETRIC, PETSC_TRUE);
-  MatConvert(MatricePetsc_, MATSBAIJ, MAT_REUSE_MATRIX,&MatricePetsc_);
+  MatConvert(MatricePetsc_, MATSBAIJ, MAT_INPLACE_MATRIX, &MatricePetsc_);
   int nb_rows_tot,nb_cols_tot;
   MatGetSize(MatricePetsc_,&nb_rows_tot,&nb_cols_tot);
   Cerr << "The matrix read has " << nb_rows_tot << " rows." << finl;
