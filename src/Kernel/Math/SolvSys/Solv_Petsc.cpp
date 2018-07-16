@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -132,11 +132,8 @@ void Solv_Petsc::create_solver(Entree& entree)
       // _petsc.TU is only printed if one group calculation (e.g. Execute_parallel failed)
       Nom petsc_TU(nom_du_cas());
       petsc_TU+="_petsc.TU";
-      if (!disable_TU)
-        {
-          add_option("log_summary",petsc_TU); 	// Monitor performances at the end of the calculation
-          PetscLogAllBegin(); 			// Necessary cause if not Event logs not printed in petsc_TU file ... I don't know why...
-        }
+      add_option("log_summary",petsc_TU); 	// Monitor performances at the end of the calculation
+      PetscLogAllBegin(); 			// Necessary cause if not Event logs not printed in petsc_TU file ... I don't know why...
     }
   //add_option("on_error_abort",""); // ne marche pas semble t'il
 
