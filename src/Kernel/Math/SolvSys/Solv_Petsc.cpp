@@ -1592,9 +1592,8 @@ int Solv_Petsc::Create_objects(Matrice_Morse& mat, const DoubleVect& b)
       MatSetOption(MatricePetsc_,MAT_SYMMETRIC,PETSC_TRUE); // Utile ?
       if (type_pc_==PCLU)
         {
-          // PCCHOLESKY is only supported for sbaij matrix format else error message for example with SuperLu:
-          // "Mat type seqaij symbolic factor Cholesky using solver package superlu_dist"
-          if (mataij_==0)
+          // PCCHOLESKY is only supported for sbaij format or since PETSc 3.9.2, SUPERLU
+          if (mataij_==0 || solveur_direct_==2)
             PCSetType(PreconditionneurPetsc_, PCCHOLESKY); // Precond PCLU -> PCCHOLESKY
         }
       else if (type_pc_==PCSOR)
