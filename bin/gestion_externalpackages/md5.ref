@@ -67,6 +67,7 @@ a5e9954b1dae036762f7b13673a2cf76  petsc/m4-1.4.17.tar.gz
 9365f01fdc31442283a69a78f9fa170b  petsc/metis-5.1.0-p5.tar.gz
 e13c8514c2f97c8417d7cb61efc24ed4  petsc/parmetis-4.0.3-p4.tar.gz
 31a1c3ea708ff2dc73280e4b85a82ca8  petsc/pastix_5.2.3.tar.bz2
+33a074ff5e8f20e0f2a37de4c3459ea2  petsc/petsc-3.9.3-ssor-fixed.tar.gz
 7b71d705f66f9961cb0e2da3f9da79a1  petsc/petsc-3.9.3.tar.gz
 2f75e600a2ba155ed9ce974a1c4b536f  petsc/scalapack-2.0.2.tgz
 6b0c5c6adf7d9a78821e334965fa6bbb  petsc/scotch_6.0.4-p1.tar.gz
