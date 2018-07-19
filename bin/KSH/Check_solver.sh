@@ -45,9 +45,9 @@ print()
           cpu0="  nc"
        fi
        # Nombre d'iterations moyen passes dans le solveur
-       its=` grep -E 'Convergence [ei]n' $out | grep $resolution | $TRUST_Awk -v nr=$nr '(NR>=nr) {n++;s+=$9} END {printf("%3d",s/n)}'`
+       its=` grep -E 'Convergence [ei]n' $out | grep $resolution | $TRUST_Awk -v nr=$nr '(NR>=nr) {n++;s+=$3} END {printf("%3d",s/n)}'`
         # Calcul du residu relatif
-       res=` grep -E 'Residu final:|Final residue:' $out  | grep $resolution | $TRUST_Awk -v nr=$nr '(NR>=nr) {n++;s+=$5} END {printf("%2.0e",(n>0?s/n:s))}'`      
+       res=` grep -E 'Residu final:|Final residue:' $out  | $TRUST_Awk -v nr=$nr '(NR>=nr) {n++;s+=$5} END {printf("%2.0e",(n>0?s/n:s))}'`      
        # Calcul de la RAM
        ram=`$TRUST_Awk '/ RAM / && ($2=="MBytes") {if ($1>r) r=$1} END {printf("%5d",r)}' $1`
        OK="OK"
