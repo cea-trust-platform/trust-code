@@ -842,6 +842,7 @@ then
    # Commandes de calculs
    ######################
    echo "[ -f ld_env.sh ] && . ./ld_env.sh # To load an environment file if necessary" >> $sub_file
+   echo "source $TRUST_ROOT/env_TRUST.sh" >> $sub_file
    if [ "$create_sub_file" = 1 ]
    then
       OUTPUT=$NOM
