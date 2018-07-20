@@ -26,6 +26,7 @@
 #include <Zone_VF.h>
 #include <Synonyme_info.h>
 #include <Param.h>
+#include <Poly_geom_base.h>
 
 Implemente_instanciable_sans_constructeur(Champ_Generique_Interpolation,"Interpolation",Champ_Gen_de_Champs_Gen);
 Add_synonym(Champ_Generique_Interpolation,"Champ_Post_Interpolation");
@@ -734,8 +735,8 @@ void Champ_Generique_Interpolation::discretiser_domaine()
       const Discretisation_base& discr = Pb.discretisation();
       const Nom& type_discr = discr.que_suis_je();
       Nom type;
-      // on ne cree pas les faces sauf si on veut une interpolation aux faces
-      type = "NO_FACE_Zone_";
+      // on ne cree pas les faces sauf si on veut une interpolation aux faces ou si on a des polyedres
+      type = sub_type(Poly_geom_base, domaine_.valeur().zone(0).type_elem().valeur()) ? "Zone_" : "NO_FACE_Zone_";
       if (localisation_=="faces")
         {
           type="Zone_";

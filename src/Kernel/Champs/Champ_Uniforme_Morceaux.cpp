@@ -125,11 +125,9 @@ Entree& Champ_Uniforme_Morceaux::readOn(Entree& is)
 
   for( poly=0; poly<le_domaine.zone(0).nb_elem(); poly++)
     {
-      x = le_domaine.coord(les_elems(poly,0),0);
-      y = le_domaine.coord(les_elems(poly,0),1);
-      if (dimension == 3) z = le_domaine.coord(les_elems(poly,0),2);
+      x = y = z = 0;
       int nsom = 0, e=-1;
-      for (int isom = 1; isom<nb_som_elem; isom++)
+      for (int isom = 0; isom<nb_som_elem; isom++)
         if ((e = les_elems(poly,isom)) >= 0)
           {
             x += le_domaine.coord(e,0);
@@ -162,14 +160,11 @@ Entree& Champ_Uniforme_Morceaux::readOn(Entree& is)
           fxyz[k].setString(tmp);
           fxyz[k].parseString();
         }
-      double vt=0.;
       for( poly=0; poly<ssz.nb_elem_tot(); poly++)
         {
-          x = le_domaine.coord(les_elems(ssz(poly),0),0);
-          y = le_domaine.coord(les_elems(ssz(poly),0),1);
-          if (dimension == 3) z = le_domaine.coord(les_elems(ssz(poly),0),2);
+          x = y = z = 0;
           int nsom = 0, e=-1;
-          for (int isom = 1; isom<nb_som_elem; isom++)
+          for (int isom = 0; isom<nb_som_elem; isom++)
             if ((e = les_elems(ssz(poly),isom)) >= 0)
               {
                 x += le_domaine.coord(e,0);
@@ -186,7 +181,6 @@ Entree& Champ_Uniforme_Morceaux::readOn(Entree& is)
               fxyz[k].setVar("y",y);
               fxyz[k].setVar("z",z);
               valeurs_(ssz(poly),k)=fxyz[k].eval();
-              vt+=valeurs_(ssz(poly),k);
             }
         }
       is >> nom;

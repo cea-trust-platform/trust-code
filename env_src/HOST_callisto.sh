@@ -39,14 +39,16 @@ define_modules_config()
    #module="$intel openmpi/icc/64/1.10.3"
    #
    #GNU gcc/4.4.6 gcc/4.8.1 gcc/4.9.0 gcc/4.9.3 gcc/5.2.0 (4.4.7 default)
-   intel=""
-   #intel="gcc/5.2.0"
+   module=""
+   module="$module gcc/4.8.1"
+   #module="$module gcc/5.2.0"
    #python/2.7.6 (2.6.6 default) et cmake/3.4.1 pour avoir MED_COUPLING_PYTHON=ON
-   intel="python/2.7.6 cmake/3.4.1"
+   #module="$module python/2.7.6 cmake/3.4.1"
+   module="$module python/2.7.6"
    #OPENMPI module openmpi/gcc/64/1.8.3 openmpi/gcc/64/1.8.4 openmpi/gcc/64/1.10.3
-   module="$intel openmpi/gcc/64/1.8.3"
-   #module="$intel openmpi/gcc/64/1.8.4"
-   #module="$intel openmpi/gcc/64/1.10.3"
+   module="$module openmpi/gcc/64/1.8.3"
+   #module="$module openmpi/gcc/64/1.8.4"
+   #module="$module openmpi/gcc/64/1.10.3"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module unload mpich openmpi mvapich mvapich2 intel/compiler intel/mkl intel/tbb gcc python cmake 1>/dev/null" >> $env

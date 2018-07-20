@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -299,7 +299,7 @@ double coord_barycentrique_P1(const IntTab& polys,
   //Cas Rectangle
   else if (nb_som_elem==4)
     return coord_barycentrique_P1_rectangle(polys,coord,x,y,le_poly,i);
-  Cerr<<"The number of node by element " <<nb_som_elem<<" does not correspond has a treated situation in the coord_barycentrique_P1 function."<<finl;
+  Cerr<<"The number of nodes by element " <<nb_som_elem<<" does not correspond to a treated situation in the coord_barycentrique_P1 function."<<finl;
   Process::exit();
   return 0.;
 }
@@ -379,7 +379,7 @@ double coord_barycentrique_P1(const IntTab& polys,
     return coord_barycentrique_P1_tetraedre(polys, coord, x, y, z, le_poly, i);
   else if (nb_som_elem==8)
     return coord_barycentrique_P1_hexaedre(polys, coord, x, y, z, le_poly, i);
-  Cerr<<"The number of node by element " <<nb_som_elem<<" does not correspond has a treated situation in coord_barycentrique_P1 function."<<finl;
+  Cerr<<"The number of nodes by element " <<nb_som_elem<<" does not correspond to a treated situation in the coord_barycentrique_P1 function."<<finl;
   Process::exit();
   return 0.;
 }

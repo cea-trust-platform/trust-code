@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,10 +26,11 @@
 #include <SolveurSys.h>
 #include <Matrice.h>
 #include <Equation_base.h>
+#include <Ref_Champ_Inc.h>
 
 class Zone_dis;
 class Zone_Cl_dis;
-class Champ_Inc;
+//class Champ_Inc;
 class Matrice_Morse;
 class Frontiere_dis_base;
 class Conds_lim;
@@ -65,6 +66,7 @@ class Operateur_base : public Objet_U, public MorEqn, public Champs_compris_inte
 public :
   virtual DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const=0;
   virtual DoubleTab& calculer(const DoubleTab&, DoubleTab& ) const=0;
+  virtual void associer_champ(const Champ_Inc&);
   virtual void associer(const Zone_dis&,
                         const Zone_Cl_dis&,
                         const Champ_Inc& inco) =0;
@@ -149,6 +151,7 @@ protected :
 protected :
 
   Champs_compris champs_compris_;
+  REF(Champ_Inc) le_champ_inco;
 };
 
 

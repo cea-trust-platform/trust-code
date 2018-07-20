@@ -122,6 +122,64 @@ void Sortie::set_ostream(ostream* os)
 //  Methode de bas niveau pour ecrire un int ou flottant dans le stream.
 //  Dans l'implementation de la classe de base, on ecrit dans ostream_.
 //  En binaire on utilise ostream::write(), en ascii ostream::operato<<()
+Sortie& Sortie::operator<<(const unsigned& ob)
+{
+  if(bin_)
+    {
+      /* Ecriture en mode binaire */
+      ostream_->write((char *) & ob, sizeof(unsigned));
+    }
+  else
+    {
+      /* Ecriture avec conversion en ascii */
+      (*ostream_) << ob;
+    }
+  return *this;
+}
+
+
+// Description:
+//  Methode de bas niveau pour ecrire un tableau d'ints ou reels dans le stream.
+//  Dans l'implementation de la classe de base, on ecrit dans ostream_.
+//  En binaire on utilise ostream::write(), en ascii ostream::operato<<()
+//  En ascii, on revient a la ligne chaque fois qu'on a ecrit "nb_col" valeurs et a la
+//  fin du tableau.
+//  Valeur de retour : ostream_->good()
+int Sortie::put(const unsigned * ob, int n, int nb_col)
+{
+  assert(n >= 0);
+  if (bin_)
+    {
+      std::streamsize sz = sizeof(unsigned);
+      sz *= n;
+      // Overflow checking :
+      assert(sz / (std::streamsize)sizeof(unsigned) == (std::streamsize)n);
+      ostream_->write((const char *) ob, sz);
+    }
+  else
+    {
+      int j = nb_col;
+      for (int i = 0; i < n; i++)
+        {
+          (*ostream_) << (ob[i]) << (' ');
+          j--;
+          if (j <= 0)
+            {
+              (*ostream_) << (endl);
+              j = nb_col;
+            }
+        }
+      // Si on n'a pas fini pas un retour a la ligne, en ajouter un
+      if (j != nb_col && n > 0)
+        (*ostream_) << (endl);
+      ostream_->flush();
+    }
+  return ostream_->good();
+}
+// Description:
+//  Methode de bas niveau pour ecrire un int ou flottant dans le stream.
+//  Dans l'implementation de la classe de base, on ecrit dans ostream_.
+//  En binaire on utilise ostream::write(), en ascii ostream::operato<<()
 Sortie& Sortie::operator<<(const int& ob)
 {
   if(bin_)
@@ -136,6 +194,7 @@ Sortie& Sortie::operator<<(const int& ob)
     }
   return *this;
 }
+
 
 // Description:
 //  Methode de bas niveau pour ecrire un tableau d'ints ou reels dans le stream.
@@ -195,6 +254,7 @@ Sortie& Sortie::operator<<(const long& ob)
   return *this;
 }
 
+
 // Description:
 //  Methode de bas niveau pour ecrire un tableau d'ints ou reels dans le stream.
 //  Dans l'implementation de la classe de base, on ecrit dans ostream_.
@@ -253,6 +313,7 @@ Sortie& Sortie::operator<<(const float& ob)
   return *this;
 }
 
+
 // Description:
 //  Methode de bas niveau pour ecrire un tableau d'ints ou reels dans le stream.
 //  Dans l'implementation de la classe de base, on ecrit dans ostream_.
@@ -309,6 +370,7 @@ Sortie& Sortie::operator<<(const double& ob)
     }
   return *this;
 }
+
 
 // Description:
 //  Methode de bas niveau pour ecrire un tableau d'ints ou reels dans le stream.

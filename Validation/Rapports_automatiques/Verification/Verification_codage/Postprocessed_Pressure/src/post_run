@@ -1,6 +1,0 @@
-#!/bin/bash
-#recuperation des donnees physiques
-
-python propertiesGeometry.py
-
-

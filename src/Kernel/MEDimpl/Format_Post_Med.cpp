@@ -466,204 +466,59 @@ int Format_Post_Med::ecrire_champ_med(const Domaine& dom,const Noms& unite_, con
                                       const Nom&   loc_post,
                                       const DoubleTab& valeurs,Nom& nom_fich)
 {
-
-
   //compteur est declare en variable locale car toujours fixe a 1
   int compteur;
-  if (1)
+  //Ouverture du fichier
+
+  EcrFicPartage os;
+  os.ouvrir(nom_fich, ios::app);
+
+  Nom fic = nom_pdb.nom_me(me());
+
+  //Ce compteur est en fait anciennement passe sous est_le_premier_post_pour_nom_fich_
+  //et n est pas reellement utilise
+  compteur = 1;
+  Nom nom_post(id_du_champ);
+  if (ncomp != -1)
     {
-      //if (ncomp==-1) {
-      //////////////////////////////////////////////////////////
+      nom_post = noms_compo[ncomp];
+    }
+  nom_post.prefix(dom.le_nom());
+  if (loc_post == "SOM")
+    {
+      nom_post.prefix("_som_");
+      nom_post.prefix("_SOM_");
+    }
+  else if (loc_post == "ELEM")
+    {
+      nom_post.prefix("_ELEM_");
+      nom_post.prefix("_elem_");
+    }
+  if (je_suis_maitre())
+    os << "champ: " << nom_post << " " << dom.le_nom() << " " << loc_post << finl;
+  os.syncfile();
+  EcrMED ecr_med(getEcrMED());
+  Nom nom_dom = dom.le_nom();
+  Nom nom_dom_inc = dom.le_nom();
+  Nom type_elem = dom.zone(0).type_elem()->que_suis_je();;
 
-      //Ouverture du fichier
-
-      EcrFicPartage os;
-      os.ouvrir(nom_fich,ios::app);
-
-      Nom fic=nom_pdb.nom_me(me());
-
-      //Ce compteur est en fait anciennement passe sous est_le_premier_post_pour_nom_fich_
-      //et n est pas reellement utilise
-      compteur=1;
-      //Message suivant a supprimer, on ne passe plus est_le_premier_post
-      ////Cerr<<"on veut postraiter avec MED, compteur "<<compteur<<finl;
-      //pas_med=0;
-      // GF: ne devrait plus planter sur dibona
-
-      {
-        Nom nom_post(id_du_champ);
-        if (ncomp!=-1)
-          {
-            nom_post= noms_compo[ncomp];
-          }
-        nom_post.prefix(dom.le_nom());
-        if (loc_post=="SOM")
-          {
-            nom_post.prefix("_som_");
-            nom_post.prefix("_SOM_");
-          }
-        else if (loc_post=="ELEM")
-          {
-            nom_post.prefix("_ELEM_");
-            nom_post.prefix("_elem_");
-          }
-        if (je_suis_maitre())
-          {
-            os<<"champ: "<< nom_post <<" "<<dom.le_nom()<<" "<<loc_post<<finl;
-          }
-        os.syncfile();
-        EcrMED ecr_med(getEcrMED());
-
-        ////Cout << que_suis_je() << " " << le_nom() << finl;
-        //Cout << "Format_Post_Med::ecrire_champ_med BEGINNING <<<<<<<<<< " << finl;
-        //Cout << id_du_champ << " " << nom_post << finl;
-        //Cout << "on " << dom.le_nom() << " on " << loc_post << finl;
-
-        Nom nom_dom=dom.le_nom();
-        Nom nom_dom_inc= dom.le_nom();
-        Nom type_elem=dom.zone(0).type_elem()->que_suis_je();;
-
-        if(loc_post=="SOM")
-          {
-
-            // Prise en compte des conditions aux limites :
-            {
-              // Cerr<<"nom_post, format med="<<nom_post<<finl;
-              // nom_post.prefix(dom.le_nom());
-              //nom_post.prefix("_som_");
-              //nom_post.prefix("_SOM_");
-              //Cerr<<"loc_post, nom_post="<<loc_post<<" "<<nom_post<<finl;
-              ecr_med.ecrire_champ("CHAMPPOINT",fic,nom_dom,id_du_champ,valeurs,unite_,type_elem,temps_,compteur);
-              //Cerr << "CHAMPPOINT ";
-              //Cerr << nom_post << " " << nom_top << " " << temps_ << finl;
-            }
-          }
-        else if(loc_post=="ELEM")
-          {
-            //Nom nom_post(id_du_champ);
-            // Cerr<<"nom_post, format med="<<nom_post<<finl;
-            //  nom_post.prefix(dom.le_nom());
-            // nom_post.prefix("_elem_");
-            // Cerr<<"loc_post, nom_post="<<loc_post<<" "<<nom_post<<finl;
-            ecr_med.ecrire_champ("CHAMPMAILLE",fic,nom_dom,id_du_champ,valeurs,unite_,type_elem,temps_,compteur);
-          }
-        else if (loc_post=="FACE")
-          {
-            if (nom_dom_inc!=nom_dom)
-              {
-                Cerr << "We do not know to postprocess " << id_du_champ
-                     << " with the keyword " << loc_post << "on different domains "<<finl;
-                //exit();
-              }
-
-            //Probleme car manipulation des champs
-            /*
-                   if(sub_type(Champ_Inc_base, *this) )
-                   {
-                   //      Zone_VF& la_zone_dis=ref_cast(Zone_VF,ref_cast(Champ_Inc_base, *this).zone_dis_base());
-                   //DoubleTab& xv =la_zone_dis.xv();
-                   const Zone& zone=dom.zone(0);
-                   //Cerr<<xv.dimension(0)<<" "<<la_zone_dis.nb_faces()<<finl;
-                   //DoubleTab valeurs(la_zone_dis.nb_faces(),nb_compo_);
-                   DoubleTab valeurs;
-                   //valeur_aux(xv, valeurs);
-                   Nom type_face;
-                   Type_Face typ_face = zone.type_elem().type_face(0);
-                   type_face=zone.frontiere(0).faces().type(typ_face);
-                   //Cerr<<le_nom()<<"valeurs "<<valeurs<<finl;
-                   //Cerr<<"Faces_sommets" << la_zone_dis.face_sommets()<<finl;
-
-                   ecr_med.ecrire_champ("CHAMPFACE",fic,nom_dom,nom_post,valeurs,unite_,type_face,temps_,compteur,ref_cast(Champ_Inc_base,*this));
-                   }
-            */
-            ////else Cerr << "On ne sait pas postraiter " << le_nom() << " avec le motcle " << loc_post << " sur des champs autres que  inc"<<finl;
-            ////else Cerr << "On ne sait pas postraiter " << id_du_champ << " avec le motcle " << loc_post << " sur des champs autres que  inc"<<finl;
-          }
-        else
-          {
-            Cerr << "We do not know to postprocess " << id_du_champ
-                 << " with the keyword " << loc_post << finl;
-            return -1;
-          }
-        //        Cout << "Format_Post_Med::postraiter_med_dom END >>>>>>>>>> " << finl;
-
-
-      }
-      //os.flush();
-      os.syncfile();
-
-      //////////////////////////////////////////////////////////
+  if (loc_post == "SOM")
+    ecr_med.ecrire_champ("CHAMPPOINT", fic, dom, id_du_champ, valeurs, unite_, type_elem, temps_, compteur);
+  else if (loc_post == "ELEM")
+    ecr_med.ecrire_champ("CHAMPMAILLE", fic, dom, id_du_champ, valeurs, unite_, type_elem, temps_, compteur);
+  else if (loc_post == "FACE")
+    {
+      if (nom_dom_inc != nom_dom)
+        Cerr << "We do not know to postprocess " << id_du_champ
+             << " with the keyword " << loc_post << " on different domains " << finl;
     }
   else
     {
-      /////////////////////////////////////////////////////////
-
-      //Ouverture du fichier
-
-      EcrFicPartage os;
-      os.ouvrir(nom_fich,ios::app);
-
-
-      Nom fic=nom_pdb.nom_me(me());
-
-      //Ce compteur est en fait anciennement passe sous est_le_premier_post_pour_nom_fich_
-      //et n est pas reellement utilise
-      compteur=1;
-      //Message suivant a supprimer, on ne passe plus est_le_premier_post
-      ////Cerr<<"on veut postraiter avec MED, compteur "<<compteur<<finl;
-      //pas_med=0;
-      // GF: ne devrait plus planter sur dibona
-
-
-      EcrMED ecr_med(getEcrMED());
-      // Cout << "Format_Post_Med::postraiter_med_dom BEGINNING <<<<<<<<<< " << finl;
-      ////Cout << que_suis_je() << " " << le_nom() << finl;
-      // Cout << id_du_champ << " " << id_du_champ << finl;
-      // Cout << "on " << dom.le_nom() << " on " << loc_post << finl;
-
-      Nom nom_post=id_du_champ;
-      Nom nom_dom=dom.le_nom();
-      Nom nom_dom_inc= dom.le_nom();
-      Nom type_elem=dom.zone(0).type_elem()->que_suis_je();;
-      nom_post=noms_compo[ncomp];
-      nom_post.prefix(dom.le_nom());
-
-      if(loc_post=="SOM")
-        {
-          // Prise en compte des conditions aux limites :
-          {
-            ////Nom nom_post=nom_compo(ncomp);
-            nom_post.prefix("_som_");
-            nom_post.prefix("_SOM_");
-            ecr_med.ecrire_champ("CHAMPPOINT",fic,nom_dom,id_du_champ,valeurs,unite_,type_elem,temps_,compteur);
-            //Cerr << "CHAMPPOINT ";
-            //Cerr << nom_post << " " << nom_top << " " << temps_ << finl;
-          }
-        }
-      else if(loc_post=="ELEM")
-        {
-          nom_post.prefix("_elem_");
-          nom_post.prefix("_ELEM_");
-          ecr_med.ecrire_champ("CHAMPMAILLE",fic,nom_dom,id_du_champ,valeurs,unite_,type_elem,temps_,compteur);
-        }
-      else
-        {
-          Cerr << "We do not know to postprocess " << id_du_champ
-               << " with the keyword " << loc_post << finl;
-          return -1;
-        }
-      if (je_suis_maitre())
-        os<<"champ: "<< nom_post <<" "<<dom.le_nom()<<" "<<loc_post<<finl;
-      //os<<"champ: "<< noms_compo[ncomp] <<" "<<dom.le_nom()<<" "<<loc_post<<finl;
-      os.syncfile();
-      //Cout << "Format_Post_Med::postraiter_med_dom END >>>>>>>>>> " << finl;
-
-
-      //os.flush();
-      os.syncfile();
-      /////////////////////////////////////////////////////////
+      Cerr << "We do not know to postprocess " << id_du_champ
+           << " with the keyword " << loc_post << finl;
+      return -1;
     }
-
+  os.syncfile();
   return 1;
 }
 

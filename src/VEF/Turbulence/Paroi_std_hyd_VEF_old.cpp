@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -69,7 +69,6 @@ void Paroi_std_hyd_VEF_old::set_param(Param& param)
 int Paroi_std_hyd_VEF_old::init_lois_paroi()
 {
   Paroi_hyd_base_VEF::init_lois_paroi_();
-  dplus_.resize(la_zone_VEF->nb_faces_tot());
   uplus_.resize(la_zone_VEF->nb_faces_tot());
   return init_lois_paroi_hydraulique();
 }
@@ -331,7 +330,7 @@ int Paroi_std_hyd_VEF_old::calculer_hyd(DoubleTab& tab_k_eps)
                   */
                   tab_u_star_(num_face)=res;
                   // Calcul de u+ d+
-                  calculer_uplus_dplus(uplus_, dplus_, tab_u_star_, num_face, dist, d_visco, norm_v) ;
+                  calculer_uplus_dplus(uplus_, tab_d_plus_, tab_u_star_, num_face, dist, d_visco, norm_v) ;
                 } // Fin du traitement des faces reelles
             }
 
@@ -580,7 +579,7 @@ int Paroi_std_hyd_VEF_old::calculer_hyd(DoubleTab& tab_nu_t,DoubleTab& tab_k)
 
 
                   // Calcul de u+ d+
-                  calculer_uplus_dplus(uplus_, dplus_, tab_u_star_, num_face, dist, d_visco, norm_v) ;
+                  calculer_uplus_dplus(uplus_, tab_d_plus_, tab_u_star_, num_face, dist, d_visco, norm_v) ;
 
                   // Strategie de calcul de la loi de paroi sur tous
                   // les elements ayant un sommet pres d'une paroi
@@ -699,7 +698,7 @@ int Paroi_std_hyd_VEF_old::calculer_hyd(DoubleTab& tab_nu_t,DoubleTab& tab_k)
                   Cisaillement_paroi_(num_face,1) = vit_frot*val2;
                   Cisaillement_paroi_(num_face,2) = vit_frot*val3;
                   // Calcul de u+ d+
-                  calculer_uplus_dplus(uplus_, dplus_, tab_u_star_, num_face, dist, d_visco, norm_v) ;
+                  calculer_uplus_dplus(uplus_, tab_d_plus_, tab_u_star_, num_face, dist, d_visco, norm_v) ;
 
                   // Strategie de calcul de la loi de paroi sur tous
                   // les elements ayant un sommet pres d'une paroi
@@ -821,7 +820,7 @@ int Paroi_std_hyd_VEF_old::calculer_hyd(DoubleTab& tab_nu_t,DoubleTab& tab_k)
                   // Calcul de la contrainte tangentielle a la paroi:
                   Cisaillement_paroi_(num_face,0) = tab_u_star(num_face)*tab_u_star(num_face)*val;
                   // Calcul de u+ d+
-                  calculer_uplus_dplus(uplus_, dplus_, tab_u_star_, num_face, dist, d_visco, norm_v) ;
+                  calculer_uplus_dplus(uplus_, tab_d_plus_, tab_u_star_, num_face, dist, d_visco, norm_v) ;
 
                   // Strategie de calcul de la loi de paroi sur tous
                   // les elements ayant un sommet pres d'une paroi
@@ -935,7 +934,7 @@ int Paroi_std_hyd_VEF_old::calculer_hyd(DoubleTab& tab_nu_t,DoubleTab& tab_k)
                   Cisaillement_paroi_(num_face,1) = vit_frot*val2;
                   Cisaillement_paroi_(num_face,2) = vit_frot*val3;
                   // Calcul de u+ d+
-                  calculer_uplus_dplus(uplus_, dplus_, tab_u_star_, num_face, dist, d_visco, norm_v) ;
+                  calculer_uplus_dplus(uplus_, tab_d_plus_, tab_u_star_, num_face, dist, d_visco, norm_v) ;
 
                   // Strategie de calcul de la loi de paroi sur tous
                   // les elements ayant un sommet pres d'une paroi
@@ -1358,7 +1357,7 @@ void Paroi_std_hyd_VEF_old::imprimer_ustar(Sortie& os) const
                   double z=zone_VEF.xv(num_face,2);
                   Ustar << x << "\t| " << y << "\t| " << z;
                 }
-              Ustar << "\t| " << uplus_(num_face) << "\t| " << dplus_(num_face) << "\t| " << tab_u_star(num_face);
+              Ustar << "\t| " << uplus_(num_face) << "\t| " << tab_d_plus(num_face) << "\t| " << tab_u_star(num_face);
               Ustar << "\t| " << Cisaillement_paroi_(num_face,1) << "\t| " << Cisaillement_paroi_(num_face,0) ;
               if (dimension == 3)
                 Ustar << "\t| " << Cisaillement_paroi_(num_face,2) << finl;
@@ -1368,7 +1367,7 @@ void Paroi_std_hyd_VEF_old::imprimer_ustar(Sortie& os) const
               // PQ : 03/03 : Calcul des valeurs moyennes (en supposant maillage regulier)
 
               upmoy +=uplus_(num_face);
-              dpmoy +=dplus_(num_face);
+              dpmoy +=tab_d_plus(num_face);
               utaumoy +=tab_u_star(num_face);
               compt +=1;
             }

@@ -158,6 +158,8 @@ fichier_lata=$tmp/.Check_mesh_$NOM.lata
 # Recherche du numero de ligne qui contient  l'occurence Discretiser pour "clore" le fichier "allege"
 num_lig=`grep -i -n -e discretiser -e discretize $NOM.data | cut -d":" -f1`
 [ ${#num_lig} = 0 ] && echo "Keyword Discretize is in not your data file. Exit..." && exit
+nb_lig=`grep -i -n -e discretiser -e discretize $NOM.data | cut -d":" -f1 | wc -l`
+[ $nb_lig != 1 ] && echo "Keyword discretiser_domaine is already in your data file. Delete it. Exit..." && exit
 head -$num_lig $NOM.data > $FILE
 # Permet de supprimer les commentaires dans $FILE
 sed -i '/#/!b;:a;/.#/!{;N;ba;};s:#[^#]*#::g' $FILE 

@@ -1,0 +1,22 @@
+dimension 3
+
+Pb_hydraulique pb
+domaine dom
+
+# BEGIN MESH #
+Lire_med family_names_from_group_names dom mesh_gmsh mesh_gmsh.med
+
+extruder { domaine dom direction 0.1 0 0 nb_tranches 4 }
+RegroupeBord dom Inlet { devant }
+RegroupeBord dom Outlet { derriere }
+# END MESH #
+
+# BEGIN PARTITION #
+Partition dom
+{
+    Partition_tool metis { nb_parts 3 }
+    Larg_joint 2
+    zones_name DOM
+}
+End
+# END PARTITION #

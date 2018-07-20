@@ -158,7 +158,7 @@ c      call print_common()
       call dlsode(f_chim_2,neq,y,t,tout,itol,rtol,atol,itask,istate,
      1     iopt,rwork,lrw,iwork,liw,jac_chim_2,mf)
       do ii=1,neq(1)
-         if (y(ii).lt.1e-38) y(ii)=0.d0
+         if (y(ii).lt.1e-37) y(ii)=0.d0
       enddo
       end
 
@@ -191,7 +191,7 @@ c      determination de c* pour chaque equation si ydot!=0
          enddo
          do ir=1,nr
             w=cw(ir)
-            cmin=1.d38
+            cmin=1.d37
             do ic=1,neq
                ia=activite(ir,ic)
                isto=stochio(ir,ic)

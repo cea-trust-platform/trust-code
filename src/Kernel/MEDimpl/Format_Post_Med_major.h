@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,7 +22,7 @@
 #ifndef Format_Post_Med_major_included
 #define Format_Post_Med_major_included
 
-#include <Format_Post_Med.h>
+#include <Format_Post_Medfile.h>
 
 
 // .DESCRIPTION        :

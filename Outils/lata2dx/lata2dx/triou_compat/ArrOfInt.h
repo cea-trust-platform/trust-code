@@ -27,6 +27,13 @@
 *
 *****************************************************************************/
 
+////////////////////////////////////////////////////////////
+//
+// Warning : DO NOT EDIT !
+//	     Please update ArrOf_Scalar_Prototype.h.P
+//	     and this file will be generated automatically
+//           by the script file check.sh
+////////////////////////////////////////////////////////////
 
 #ifndef ArrOfInt_H
 #define ArrOfInt_H
@@ -65,7 +72,7 @@ public:
   // (reallocation uniquement si la taille augmente)
   void    set_smart_resize(entier flag);
   // Gestion du type de memoire alouee (standard ou pool de memoire Trio-U)
-  enum    Storage { STANDARD, TEMP_STORAGE };
+  enum    Storage { STANDARD, TEMP_STORAGE, SIMD_ALIGNED };
   void    set_mem_storage(const Storage storage);
   Storage get_mem_storage() const;
 
@@ -186,13 +193,13 @@ protected:
   const double& operator[](entier i) const;
 
 private:
-  entier nb_dim_;
+  //  entier nb_dim_;
   entier dimensions_[MAXDIMIntTab];
 };
 
 inline entier& IntTab::operator()(entier i, entier j)
 {
-  assert(nb_dim_ == 2);
+  // assert(nb_dim_ == 2);
   assert(i >= 0 && i < dimensions_[0] && j >= 0 && j < dimensions_[1]);
   const entier n = i * dimensions_[1] + j;
   entier& x = ArrOfInt::operator[] (n);
@@ -201,7 +208,7 @@ inline entier& IntTab::operator()(entier i, entier j)
 
 inline entier   IntTab::operator()(entier i, entier j) const
 {
-  assert(nb_dim_ == 2);
+  // assert(nb_dim_ == 2);
   assert(i >= 0 && i < dimensions_[0] && j >= 0 && j < dimensions_[1]);
   const entier n = i * dimensions_[1] + j;
   entier x = ArrOfInt::operator[] (n);
@@ -211,7 +218,7 @@ inline entier   IntTab::operator()(entier i, entier j) const
 inline entier IntTab::resize(entier i, entier j)
 {
   assert(i >= 0 && j >= 0);
-  nb_dim_ = 2;
+  // nb_dim_ = 2;
   dimensions_[0] = i;
   dimensions_[1] = j;
   ArrOfInt::resize_array(i * j);
@@ -220,7 +227,7 @@ inline entier IntTab::resize(entier i, entier j)
 
 inline entier IntTab::dimension(entier i) const
 {
-  assert(i >= 0 && i < nb_dim_);
+  assert(i >= 0 && i < 2);
   return dimensions_[i];
 }
 
@@ -333,3 +340,4 @@ inline void   ArrOfInt::append_array(entier valeur)
 
 // ArrOfInt_H
 #endif
+

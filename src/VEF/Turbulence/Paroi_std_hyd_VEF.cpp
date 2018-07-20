@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -111,7 +111,7 @@ void Paroi_std_hyd_VEF::set_param(Param& param)
 int Paroi_std_hyd_VEF::init_lois_paroi()
 {
   tab_u_star_.resize(la_zone_VEF->nb_faces_tot());
-  dplus_.resize(la_zone_VEF->nb_faces_tot());
+  tab_d_plus_.resize(la_zone_VEF->nb_faces_tot());
   uplus_.resize(la_zone_VEF->nb_faces_tot());
   if (!Cisaillement_paroi_.get_md_vector().non_nul())
     {
@@ -849,7 +849,7 @@ int Paroi_std_hyd_VEF::calculer_hyd(DoubleTab& tab_k_eps)
 
               u_starbis=sqrt(sqrt(u_starbis));
               tab_u_star_(num_face)=u_starbis;
-              dplus_(num_face)=u_starbis*dist/d_visco;
+              tab_d_plus_(num_face)=u_starbis*dist/d_visco;
               if (u_starbis != 0) uplus_(num_face)=norm_v/u_starbis;
 
             } // End loop on real faces
@@ -938,7 +938,7 @@ int Paroi_std_hyd_VEF::calculer_hyd(DoubleTab& tab_k_eps)
               u_starbis=sqrt(sqrt(u_starbis));
 
               tab_u_star_(num_face)=u_starbis;
-              dplus_(num_face)=u_starbis*dist/d_visco;
+              tab_d_plus_(num_face)=u_starbis*dist/d_visco;
               if (u_starbis != 0) uplus_(num_face)=norm_v/u_starbis;
 
               // End common to Dirichlet
@@ -1210,7 +1210,7 @@ int Paroi_std_hyd_VEF::calculer_hyd(DoubleTab& tab_nu_t,DoubleTab& tab_k)
               if((!LM) && (!COMB)) tab_nu_t(elem) = Cmu*k*k/(eps+DMINFLOAT);
 
               uplus_(num_face) = u_plus;
-              dplus_(num_face) = d_plus;
+              tab_d_plus_(num_face) = d_plus;
               tab_u_star_(num_face) = u_star;
 
               // Modification de nu_t (et par consequent lambda_t) pour exploiter la valeur de nu_t (lambda_t) en y=deq_lam.
@@ -1308,7 +1308,7 @@ int Paroi_std_hyd_VEF::calculer_hyd(DoubleTab& tab_nu_t,DoubleTab& tab_k)
               if((!LM) && (!COMB)) tab_nu_t(elem) = Cmu*k*k/(eps+DMINFLOAT);
 
               uplus_(num_face) = u_plus;
-              dplus_(num_face) = d_plus;
+              tab_d_plus_(num_face) = d_plus;
               tab_u_star_(num_face) = u_star;
 
               // Modification de nu_t (et par consequent lambda_t) pour exploiter la valeur de nu_t (lambda_t) en y=deq_lam.
@@ -1457,7 +1457,7 @@ void Paroi_std_hyd_VEF::imprimer_ustar(Sortie& os) const
                   norme_L2+= Cisaillement_paroi_(num_face,2)*Cisaillement_paroi_(num_face,2);
                 }
               norme_L2=sqrt(norme_L2);
-              Ustar << "\t| " << uplus_(num_face) << "\t| " << dplus_(num_face) << "\t| " << tab_u_star(num_face);
+              Ustar << "\t| " << uplus_(num_face) << "\t| " << tab_d_plus(num_face) << "\t| " << tab_u_star(num_face);
               Ustar << "\t| " << norme_L2 << "\t| " << Cisaillement_paroi_(num_face,0) << "\t| " << Cisaillement_paroi_(num_face,1) ;
               if (dimension == 3)
                 Ustar << "\t| " << Cisaillement_paroi_(num_face,2) << finl;
@@ -1467,7 +1467,7 @@ void Paroi_std_hyd_VEF::imprimer_ustar(Sortie& os) const
               // PQ : 03/03 : Calcul des valeurs moyennes (en supposant maillage regulier)
 
               upmoy +=uplus_(num_face);
-              dpmoy +=dplus_(num_face);
+              dpmoy +=tab_d_plus(num_face);
               utaumoy +=tab_u_star(num_face);
               seuil_moy += seuil_LP(num_face);
               iter_moy += iterations_LP(num_face);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,6 +28,9 @@ class Objet_U;
 class Nom;
 class Sortie;
 
+int get_disable_stop();
+void change_disable_stop(int new_stop);
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
@@ -54,6 +57,7 @@ public:
   static double mp_max(double);
   static double mp_min(double);
   static int mp_sum(int);
+  static bool mp_and(bool);
 
   static int me();                        /* mon rang dans le groupe courant */
   static void   exit(int exit_code = -1);

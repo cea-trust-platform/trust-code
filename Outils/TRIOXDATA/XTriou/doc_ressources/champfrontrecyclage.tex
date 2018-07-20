@@ -1,147 +1,137 @@
- This keyword is used on a boundary to get a field from another boundary. New keyword in the 1.6.1 version which replaces and generalizes several obsolete ones:
+ This keyword is used on a boundary to get a field from another boundary. New keyword since the 1.6.1 version which replaces and generalizes several obsolete ones:
+%
 
-Champ\_front\_calc\_intern
+\hspace{1cm} Champ\_front\_calc\_intern
+%
 
-Champ\_front\_calc\_recycl\_fluct\_pbperio
+\hspace{1cm} Champ\_front\_calc\_recycl\_fluct\_pbperio
+%
 
-Champ\_front\_calc\_recycl\_champ
+\hspace{1cm} Champ\_front\_calc\_recycl\_champ
+%
 
-Champ\_front\_calc\_intern\_2pbs
+\hspace{1cm} Champ\_front\_calc\_intern\_2pbs
+%
 
-Champ\_front\_calc\_recycl\_fluct
+\hspace{1cm} Champ\_front\_calc\_recycl\_fluct
+%
 
+It is to use, in a general way, on a boundary of a local\_pb problem, a field calculated from a linear combination of an imposed field g(x,y,z,t) with an instantaneous f(x,y,z,t) and a spatial mean field <f>(t) or a temporal mean field <f>(x,y,z) extracted from a plane of a problem named pb (pb may be local\_pb itself):
 
+For each component i, the field F applied on the boundary will be:
 
-Champ\_front\_recyclage \{
+F\_i(x,y,z,t) = alpha\_i*g\_i(x,y,z,t)  + xsi\_i*[f\_i(x,y,z,t)- beta\_i*<fi>]
+%
+\\
 
-    pb\_champ\_evaluateur pb field nb\_comp
+Usage: \\
+\textbf{Champ\_front\_recyclage} \{ \\
+%
 
-    [ distance\_plan dist0 dist1 [dist2] ]
+\hspace{0.8cm} \textbf{pb\_champ\_evaluateur} \textit{problem\_name field nb\_comp}
+%
 
-    [ moyenne\_imposee methode\_moy [fichier file [second\_file] ]
+\hspace{0.8cm} [ \textbf{distance\_plan} \textit{x1 x2 (x3)} ]
+%
 
-    [ moyenne\_recyclee methode\_recyc [fichier file [second\_file] ]
+\hspace{0.8cm}  [ \textbf{moyenne\_imposee} \textit{methode\_moy} [\textbf{fichier} \textit{file [second\_file]}] ]
+%
 
-    [ direction\_anisotrope 1|2|3 ]
+\hspace{0.8cm} [ \textbf{moyenne\_recyclee} \textit{methode\_recyc} [\textbf{fichier} \textit{file [second\_file]}] ]
+%
 
-    [ ampli\_moyenne\_imposee 2|3 alpha(0) alpha(1) [alpha(2)] ]
+\hspace{0.8cm} [ \textbf{direction\_anisotrope} \textit{int} ]
+%
 
-    [ ampli\_moyenne\_recyclee 2|3 beta(0) beta(1) [beta(2)] ]
+\hspace{0.8cm} [ \textbf{ampli\_moyenne\_imposee} \textit{n x1 x2 ... xn} ]
+%
 
-    [ ampli\_fluctuation 2|3 gamma(0) gamma(1) [gamma(2)] ]
+\hspace{0.8cm} [ \textbf{ampli\_moyenne\_recyclee} \textit{n x1 x2 ... xn} ]
+%
 
+\hspace{0.8cm} [ \textbf{ampli\_fluctuation} \textit{n x1 x2 ... xn} ] \\
+%
 \}
 
 
 
-This keyword is to use, in a general way, on a boundary of a local\_pb problem, a field calculated from a linear combination of an imposed field g(x,y,z,t) with an instantaneous f(x,y,z,t) and a spatial mean field <f>(t) or a temporal mean field <f>(x,y,z) field extracted from a plane of a problem named pb (pb may be local\_pb itself) :
 
 
 
-For each component i, the field F applied on the boundary will be:
+where:
 
+\begin{itemize}
 
-
-Fi(x,y,z,t) = alpha\_i*gi(x,y,z,t)  + xsi\_i*[fi(x,y,z,t)- beta\_i*<fi>]
-
-
-
-The different options are:
-
-pb\_champ\_evaluateur pb field nb\_comp : To give the name of the pb problem, the name of the field of the problem and its number of components nb\_comp.
-
-
-
-distance\_plan dist0 dist1 [dist2] : Vector which gives the distance between the boundary and the plane from where the field F will be extracted. By default, the vector is zero, that should imply the two domains have coincident boundaries.
-
-
-
-ampli\_moyenne\_imposee 2|3 alpha(0) alpha(1) [alpha(2)] : alpha\_i coefficients (by default =1)
-
-ampli\_moyenne\_recyclee 2|3 beta(0) beta(1) [beta(2)] : beta\_i coefficients (by default =1)
-
-ampli\_fluctuation 2|3 gamma(0) gamma(1) [gamma(2)] : gamma\_i coefficients (by default =1)
-
-
-
-direction\_anisotrope direction : If an integer is given for direction (X:1, Y:2, Z:3, by default, direction is negative), the imposed field g will be 0 for the 2 other directions.
-
-
-
-moyenne\_imposee methode\_moy : Value of the imposed g field. The methode\_moy option can be :
-
-profil [2|3] valx(x,y,z,t) valy(x,y,z,t) [valz(x,y,z,t)] : to specify analytic profile for the imposed g field. 
-
-interpolation fichier file : to create a imposed field built by interpolation of values read into a file. The imposed field is applied on the direction given by the keyword direction\_anisotrope (the field is zero for the other directions). The format of the file is:
-
-	pos(1) val(1)
-
-pos(2) val(2)
-
-~
-
-pos(N) val(N)
-
+\item \textbf{pb\_champ\_evaluateur} \textit{problem\_name field nb\_comp}: To give the name of the problem, the name of the field of the problem and its number of components nb\_comp.
+%
+\item \textbf{distance\_plan} \textit{x1 x2 (x3)}: Vector which gives the distance between the boundary and the plane from where the field F will be extracted. By default, the vector is zero, that should imply the two domains have coincident boundaries.
+%
+\item \textbf{ampli\_moyenne\_imposee} \textit{2|3 alpha(0) alpha(1) [alpha(2)]}: alpha\_i coefficients (by default =1)
+%
+\item \textbf{ampli\_moyenne\_recyclee} \textit{2|3 beta(0) beta(1) [beta(2)]}: beta\_i coefficients (by default =1)
+%
+\item \textbf{ampli\_fluctuation} \textit{2|3 gamma(0) gamma(1) [gamma(2)]}: gamma\_i coefficients (by default =1)
+%
+\item \textbf{direction\_anisotrope} \textit{int into [1,2,3]}: If an integer is given for direction (X:1, Y:2, Z:3, by default, direction is negative), the imposed field g will be 0 for the 2 other directions.
+%
+\item \textbf{moyenne\_imposee} \textit{methode\_moy}: Value of the imposed g field. The \textit{methode\_moy} option can be:
+%
+\begin{itemize}
+\item[] \textbf{profil} \textit{[2|3] valx(x,y,z,t) valy(x,y,z,t) [valz(x,y,z,t)]}: To specify analytic profile for the imposed g field. 
+%
+\item[] \textbf{interpolation fichier} \textit{file}: To create an imposed field built by interpolation of values read from a file. The imposed field is applied on the direction given by the keyword direction\_anisotrope (the field is zero for the other directions). The format of the file is: 
+%
+\begin{center}
+pos(1) val(1) \\
+pos(2) val(2) \\
+... \\
+pos(N) val(N) \\
+\end{center}
+%
 If direction given by direction\_anisotrope is 1 (or 2 or 3), then pos will be X (or Y or Z) coordinate and val will be X value (or Y value, or Z value) of the imposed field.
-
-
-
-connexion\_approchee fichier file : to read the imposed field into a file where positions and values are given (it is not necessary that the coordinates of the points match the coordinates of the faces of the boundary, indeed, the nearest point of each face of the boundary will be used). The format of the file is:
-
-	N
-
-	x(1) y(1) [z(1)] valx(1) valy(1) [valz(1)]
-
-x(2) y(2) [z(2)] valx(2) valy(2) [valz(2)]
-
-~
-
+%
+\item[] \textbf{connexion\_approchee fichier} \textit{file}: To read the imposed field from a file where positions and values are given (it is not necessary that the coordinates of points match the coordinates of the boundary faces, indeed, the nearest point of each face of the boundary will be used). The format of the file is:
+\begin{center}
+\hspace{-6cm} N \\
+\hspace{-0.6cm} x(1) y(1) [z(1)] valx(1) valy(1) [valz(1)] \\
+\hspace{-0.5cm}x(2) y(2) [z(2)] valx(2) valy(2) [valz(2)] \\
+\hspace{-5.8cm} ... \\
 x(N) y(N) [z(N)] valx(N) valy(N) [valz(N)]
-
-	
-
-connection\_exacte fichier file second\_file : to read the imposed field into two files. The first file contains the points coordinates (which should be the same than the coordinates of each faces of the boundary) and the second\_file contains the mean values. The format of the first file is:
-
-	N
-
-	1 x(1) y(1) [z(1)]
-
-2 x(2) y(2) [z(2)]
-
-~
-
-N x(N) y(N) [z(N)]
-
-The format of the second\_file is:
-
-N
-
-	1 valx(1) valy(1) [valz(1)]
-
-2 valx(2) valy(2) [valz(2)]
-
-...
-
-N valx(N) valy(N) [valz(N)]
-
-
-
-logarithmique diametre double u\_tau double visco\_cin double direction integer : to specify the imposed field (in this case, velocity) by an analytical  logarithmic law of the wall :
-
-g(x,y,z) = u\_tau * ( log(0.5*diametre*u\_tau/visco\_cin)/Kappa + 5.1 ) 
-
-With g(x,y,z)=u(x,y,z) if direction is set to 1 (g=v(x,y,z) if direction is set to 2, and g=w(w,y,z) if set to 3)
-
-
-
-moyenne\_recylee methode\_recyc : Method used to do a spatial or a temporal averaging of f field to specify <f>. <f> can be the surface mean of f on the plane (surface option, see below) or it can be read from several files (for example generated by the chmoy\_faceperio option of the Traitement\_particulier keyword to obtain a temporal mean field). The option methode\_recyc can be :
-
-surfacique : surface mean for <f> from f values on the plane
-
-Same options of methode\_moy options but applied to read a temporal mean field <f>(x,y,z):
-
-interpolation
-
-connexion\_approchee fichier file
-
-connexion\_exacte fichier file second\_file
+\end{center}
+%
+\item[] \textbf{connection\_exacte fichier} \textit{file second\_file}: To read the imposed field from two files. The first file contains the points coordinates (which should be the same as the coordinates of the boundary faces) and the second\_file contains the mean values. The format of the first file is:
+\begin{center}
+	\hspace{-2.6cm} N \\
+	\hspace{-0.5cm} 1 x(1) y(1) [z(1)] \\
+	\hspace{-0.5cm}  2 x(2) y(2) [z(2)] \\
+    \hspace{-2.5cm} ... \\
+    N x(N) y(N) [z(N)]
+\end{center}
+    %
+    while the format of the second\_file is:
+\begin{center}
+    \hspace{-3.7cm} N \\
+	\hspace{-0.3cm} 1 valx(1) valy(1) [valz(1)] \\
+    \hspace{-0.3cm} 2 valx(2) valy(2) [valz(2)] \\
+    \hspace{-3.6cm} ... \\
+    N valx(N) valy(N) [valz(N)] 
+\end{center}
+%
+\item[] \textbf{logarithmique diametre} \textit{float} \textbf{u\_tau} \textit{float} \textbf{visco\_cin} \textit{float} \textbf{direction} \textit{int}: To specify the imposed field (in this case, velocity) by an analytical logarithmic law of the wall: \\
+%
+g(x,y,z) = u\_tau * ( log(0.5*diametre*u\_tau/visco\_cin)/Kappa + 5.1 ) \\
+%
+with g(x,y,z)=u(x,y,z) if \textbf{direction} is set to 1 (g=v(x,y,z) if \textbf{direction} is set to 2, and g=w(w,y,z) if it is set to 3)
+%    
+\end{itemize}
+%
+\item \textbf{moyenne\_recylee} \textit{methode\_recyc}: Method used to perform a spatial or a temporal averaging of f field to specify <f>. <f> can be the surface mean of f on the plane (surface option, see below) or it can be read from several files (for example generated by the chmoy\_faceperio option of the Traitement\_particulier keyword to obtain a temporal mean field). The option \textit{methode\_recyc} can be:
+\begin{itemize}
+\item[] \textbf{surfacique}: Surface mean for <f> from f values on the plane
+\item[] Or one of the following \textit{methode\_moy} options applied to read a temporal mean field <f>(x,y,z): 
+\item[] \textbf{interpolation} 
+\item[] \textbf{connexion\_approchee} 
+\item[] \textbf{connexion\_exacte}
+\end{itemize}
+\end{itemize}
+~%    

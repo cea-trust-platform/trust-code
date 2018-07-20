@@ -101,36 +101,50 @@ Rapports_auto_root=${project_directory}/share
 export Rapports_auto_root
 
 SJOB=""
-[ "TRUST_USE_Sjob" = "1" ] && SJOb="-Sjob"
-
+if [ "x$TRUST_USE_Sjob" = "x1" ]
+then
+  SJOB="-parallel_sjob"
+fi
 echo "Launch of cases (you can skip a PRM by touching a file 'skip_prm' in the associated validation form directory)"
 Validation_outil=$TRUST_ROOT/Validation/Outils/Genere_courbe
 . ${Validation_outil}/scripts/scripts_validation.sh 1>/dev/null
-Generate_makefile_validation $SJOB
 
-${Validation_outil}/scripts/Lance_gen_fiche
-if [ $reduit -ne 1 ]
+if [ "x$TRUST_USE_Sjob" = "x1" ]
 then
-Generate_makefile_validation $SJOB
-echo "Launch of deps cases"
-Rapports_auto_root=${project_directory}/build/tests/share/deps
-export Rapports_auto_root
-${Validation_outil}/scripts/Lance_gen_fiche
+  echo Using Sjob for validation
+  $TRUST_ROOT/bin/Sjob/Squeue 1> /dev/null 2>&1
+  if [ $? -ne 0 ] 
+  then
+    echo
+    echo *** Sserver not started unable to run with Sjob ***
+    echo 
+    exit 1
+  else
+     echo *** Sserver detected ****
+  fi
 
 
-
-Rapports_auto_root=${project_directory}/build/tests/share/all
-export Rapports_auto_root
+  Generate_makefile_validation $SJOB
+  make -j$TRUST_NB_PROCS
 fi
 
-Generate_makefile_validation $SJOB
+${Validation_outil}/scripts/Lance_gen_fiche
+
+if [ $reduit -ne 1 ]
+then
+  echo "Launch of deps cases"
+  Rapports_auto_root=${project_directory}/build/tests/share/deps
+  export Rapports_auto_root
+  ${Validation_outil}/scripts/Lance_gen_fiche
+
+  Rapports_auto_root=${project_directory}/build/tests/share/all
+  export Rapports_auto_root
+fi
 
 echo
 echo
 echo Checking pdf and tgz
 echo
-
-. ${Validation_outil}/scripts/scripts_validation.sh 1>/dev/null
 
 verif_archives
 
@@ -142,6 +156,6 @@ then
  mv archives/build_prov/fic.pdf ${project_directory}/validation.pdf && rm -rf archives/build_prov
 else
 echo 
-echo "Check   $project_validation_directory}/BUILD/*/run.log and  $project_validation_directory}/BUILD/*/arc.log"
+echo "Check   $project_validation_directory/BUILD/*/run.log and  $project_validation_directory/BUILD/*/arc.log"
 fi
 exit $status

@@ -245,6 +245,13 @@ int Source_base::impr(Sortie& os) const
   return 1;
 }
 // Description:
+//    Dimensionnement de la matrice implicite des termes sources.
+//    Par defaut ne fait rien.
+void Source_base::dimensionner(Matrice_Morse&) const
+{
+  ;
+}
+// Description:
 // contribution a la matrice implicite des termes sources
 // par defaut pas de contribution
 void Source_base::contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const

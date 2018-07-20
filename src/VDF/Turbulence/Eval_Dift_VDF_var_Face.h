@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -409,7 +409,7 @@ inline double Eval_Dift_VDF_var_Face::flux_arete_mixte(const DoubleTab& inco, in
     visc_lam += dv_diffusivite(element);
   if ((element=elem_(fac4,0)) != -1)
     visc_lam += dv_diffusivite(element);
-  if ((element=elem_(fac4,0)) != -1)
+  if ((element=elem_(fac4,1)) != -1)
     visc_lam += dv_diffusivite(element);
 
   visc_lam/=3.0;
@@ -439,7 +439,7 @@ inline void Eval_Dift_VDF_var_Face::coeffs_arete_mixte(int fac1, int fac2, int f
     visc_lam += dv_diffusivite(element);
   if ((element=elem_(fac4,0)) != -1)
     visc_lam += dv_diffusivite(element);
-  if ((element=elem_(fac4,0)) != -1)
+  if ((element=elem_(fac4,1)) != -1)
     visc_lam += dv_diffusivite(element);
 
   visc_lam/=3.0;

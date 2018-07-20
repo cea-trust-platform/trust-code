@@ -57,6 +57,7 @@ class Figure:
 		self.image     = 'Undefined'
 		self.width="15cm"
 		self.nb_img_without_newline=-1
+		self.ratio = 'noratio'
 		pass
 	def printFichierParametres(self):
 		dec='\t'
@@ -95,7 +96,7 @@ class Figure:
 		'''Lecture des parametres de la figure.'''
 		self.gestMsg.ecrire(GestionMessages._DEBOG, 'DEBUT %s.%s' % (self.__class__.__name__, getNomFonction()), niveau=15)
 		fin = False
-		dico=['titre','titre_figure','dimension','logx','logy','rangex','rangey','labelx','labely','pointsize','legende','grid','xtics','ytics','description','courbe','incluredesccourbes','width','image','nb_img_without_newline']
+		dico=['titre','titre_figure','dimension','logx','logy','rangex','rangey','labelx','labely','pointsize','legende','grid','xtics','ytics','description','courbe','incluredesccourbes','width','image','nb_img_without_newline','ratio']
 		while not fin:
 			ligne = fichier.readline()
 			if not ligne:
@@ -164,6 +165,8 @@ class Figure:
 					self.width=valeur	
 				elif motcle=='image':
 					self.image = valeur
+				elif motcle == 'ratio':
+					self.ratio = valeur
 				else:
 					self.gestMsg.ecrire_usage(GestionMessages._ERR, 'Figure', dico,motcle_lu,fichier=fichier)
 				if motcle!=_accoladeF and not (motcle in dico): print "Missing code for ",motcle;1/0
@@ -229,6 +232,8 @@ class Figure:
 				ficPlot.write('set xtics %s\n' % self.xtics)
 			if self.ytics!='Undefined':
 				ficPlot.write('set ytics %s\n' % self.ytics) 
+			if self.ratio != 'noratio':
+				ficPlot.write('set size ratio %s\n' % (self.ratio))
 			cmd = ''
 			if self.dimension==2:
 				cmd = 'plot'

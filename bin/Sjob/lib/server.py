@@ -3,6 +3,8 @@ class Job:
     def __init__(self):
         self.status="W"
         self.pere=-1
+        self.nb=1
+        self.host="-"
     def affiche(self):
         
         return str(self.id)+" "+self.name+" "+str(self.nb)+" "+self.status+" "+self.pid+" \n"
@@ -18,13 +20,17 @@ def remove_job(job,liste_action):
 def traite(conn,data,liste_action,sjob_info):
     
     print data
-    for job in liste_action:
+    remove_ajob=True
+    while (remove_ajob):
+      remove_ajob=False
+      for job in liste_action:
         # if job.status=="R":
         import os
         te=os.system("kill -18 "+job.pid+"  2>/dev/null")
         if te:
             print job.affiche(),job.pid,"Job killed ?"
             remove_job(job,liste_action)
+            remove_ajob=True
             break
    
     if (data.split()[0]=="srun"):
@@ -119,6 +125,9 @@ def traite(conn,data,liste_action,sjob_info):
     use=0
     if sjob_info.nb_proc and len(liste_action):
         for job in liste_action:
+            if job.status=="R" :
+                use+=job.nb
+        for job in liste_action:
             if job.status=="W":
                 if (job.nb>sjob_info.nb_proc_max):
                     job.status="WW"
@@ -128,13 +137,13 @@ def traite(conn,data,liste_action,sjob_info):
                     remove_job(job,liste_action)
             if job.status=="W":
                 if (use+min(job.nb,sjob_info.nb_proc)<=sjob_info.nb_proc):
-                    job.status="R"
-                    job.conn.sendall("Running "+str(job.id))
-                    job.conn.close()
-                    use+=job.nb
-            elif job.status=="R" :
-                use+=job.nb
+                      job.status="R"
+                      job.conn.sendall("Running "+str(job.id))
+                      job.conn.close()
+                      use+=job.nb
+                      pass
             else:
+              if job.status!="R" :
                 print "supsend job ?",job.id
         pass
     return 1,sjob_info.nb_proc,sjob_info.id

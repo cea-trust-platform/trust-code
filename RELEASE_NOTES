@@ -1,5 +1,19 @@
 XX/XX/18 (TRUST)  Portability : Released version of PETSc upgraded to 3.9.2
 --------------------------------------------------------------------------------------------------
+Release notes version 1.7.8_beta : Enhancements, modifications and corrected bugs since version 1.7.7 :
+--------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
+Release notes version 1.7.7 : Enhancements, modifications and corrected bugs since version 1.7.6 :
+--------------------------------------------------------------------------------------------------
+03/04/18 (TRUST)  New keyword : Postprocess velocity gradient using keyword gradient_vitesse
+09/03/18 (TRUST)  Major change: Evolution of the  *_ustar_mean_only.out file format with mean(u*) and mean(d+)
+28/02/18 (TRUST)  Minor change: Update the use of dt_sauv keyword assigned to zero to disable the writing of the .sauv file
+28/02/18 (TRUST)  New keyword : Add disable_progress, disable_dt_ev and disable_TU flags to disable the writing of these output files
+28/02/18 (TRUST)  New feature : New disable_stop option to disable the writing of the .stop file (Usage: trust MyJDD.data -disable_stop)
+22/02/18 (TRUST)  New keyword : Adding L1_norm and L2_norm
+22/02/18 (TRUST)  Major change: Changing names to be more precise L2_norme->euclidian_norm (keywords to rename in datafile)
+04/01/18 (TRUST)  Bug fixed   : Coding Champ_Generique_Extraction::get_champ_without_evaluation to allow operation on Extraction fields
+--------------------------------------------------------------------------------------------------
 Release notes version 1.7.6 : Enhancements, modifications and corrected bugs since version 1.7.5 :
 --------------------------------------------------------------------------------------------------
 26/10/17 (TRUST)  New feature : Possibility to write a MED file in the last major version of MED file format with keyword 'med_major'

@@ -1,0 +1,20 @@
+#!/bin/bash
+jdd=`pwd`
+jdd=`basename $jdd`
+[ -f PAR_$jdd.lml ] && jdd=PAR_$jdd
+jdd_out=$jdd"_pb_ustar_mean_only.out"
+jdd_face=$jdd"_pb_Ustar.face"
+
+err=0
+[ ! -f "$jdd_out" ] && echo "Error: the output "$jdd_out" file is NOT created." && err=1
+[ ! -f "$jdd_face" ] && echo "Error: the output "$jdd_face" file is NOT created." && err=1
+if [ $err = 0 ]
+then
+   ustar_out=`awk '{print $2}' $jdd_out | tail -n1`
+   ustar_face=`awk '{print $6}' $jdd_face | tail -n3 | head -n1`
+   [ `awk '{print $1-$2}' <<<"$ustar_out $ustar_face"` != 0 ] && echo $ECHO_OPTS "Error: ($ustar_out!=$ustar_face) when checking Mean(u*)." && err=1
+   dplus_out=`awk '{print $3}' $jdd_out | tail -n1`
+   dplus_face=`awk '{print $4}' $jdd_face | tail -n3 | head -n1`
+   [ `awk '{print $1-$2}' <<<"$dplus_out $dplus_face"` != 0 ] && echo $ECHO_OPTS "Error: ($dplus_out!=$dplus_face) when checking Mean(d+)." && err=1
+fi
+exit $err

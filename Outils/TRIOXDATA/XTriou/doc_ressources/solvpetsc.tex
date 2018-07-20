@@ -223,7 +223,7 @@ communications in TRUST itself (not in PETSc) will be reduced with length messag
 I) Partition your VEF mesh with a \textbf{largeur\_joint }value of 2
 
 II) Run your parallel calculation on 0 time step, to build and save the matrix with the \textbf{save\_matrix} option. A
-file named \textit{Matrix\_NBROWS\_rows\_NCPUS\_cpus.petsc} will be saved to the disc (where NBROWS is the number of
+file named \textit{Matrix\_NBROWS\_rows\_NCPUS\_cpus.petsc} will be saved to the disk (where NBROWS is the number of
 rows of the matrix and NCPUS the number of CPUs used). 
 
 III) Partition your VEF mesh with a \textbf{largeur\_joint} value of 1
@@ -241,7 +241,7 @@ is small compared to all the other operations.
 {\bfseries\itshape
 TIPS:}
 
-A) Solver\index{Solver} for symmetric linear systems (e.g: Pressure system from Navier Stokes equation):
+A) Solver\index{Solver} for symmetric linear systems (e.g: Pressure system from Navier-Stokes equations):
 
 {}-The \textbf{CHOLESKY} parallel solver is from MUMPS library. It offers better performance than all others solvers if
 you have enough RAM for your calculation. A parallel calculation on a cluster with 4GBytes on each processor, 40000

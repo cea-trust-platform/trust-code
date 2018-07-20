@@ -1,0 +1,12 @@
+for file in *.med.gz
+do
+   gunzip -c $file > ${file%.gz}
+done
+for file in *.geom.gz
+do
+   gunzip -c $file > ${file%.gz}
+done
+for file in *.xyz.gz
+do
+   gunzip -c $file > ${file%.gz}
+done

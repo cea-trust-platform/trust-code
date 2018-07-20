@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,7 +54,7 @@ public:
   void calculer_uplus_dplus(DoubleVect& ,DoubleVect& ,DoubleVect& ,int ,double ,double ,double ) ;
 
   inline const DoubleVect& tab_u_plus() const;
-  inline double tab_u_star(int face) const;
+  //inline double tab_u_star(int face) const;
   void imprimer_ustar(Sortie& os) const;
 
   bool use_shear() const
@@ -90,9 +90,9 @@ inline const DoubleVect& Paroi_2couches_VDF::tab_u_plus() const
   return uplus_;
 }
 
-inline double Paroi_2couches_VDF::tab_u_star(int face) const
-{
-  return tab_u_star_(face);
-}
+//inline double Paroi_2couches_VDF::tab_u_star(int face) const
+//{
+//  return tab_u_star_(face);
+//}
 
 #endif

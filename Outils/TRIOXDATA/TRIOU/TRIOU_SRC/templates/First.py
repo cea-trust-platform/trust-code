@@ -179,7 +179,7 @@ def convert_json_to_jdd(sch,filename):
         if cle=="domain":
             dim=find_obj_of_type(triou.dimension,template)
             dim.setDim(val["dimension"])
-            fre=find_obj_of_type(triou.readmed,template)
+            fre=find_obj_of_type(triou.Read_MED,template)
             
             fre.setFile(val["med_file"])
             fre.setNomDomMed(val["mesh_name"])

@@ -19,6 +19,7 @@ Mailler dom
 		Bord sym Y = 1. 0. <= X <= 1.
 		} 
 }
+Trianguler_h dom
 
 # END MESH #
 # BEGIN PARTITION
@@ -35,7 +36,7 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-VDF dis
+VEFPreP1b dis Read dis { P0 }
 /* Scheme_euler_explicit sch */
 Runge_Kutta_ordre_3 sch
 Read sch

@@ -21,6 +21,9 @@
 %pdflatex TRUST_tutorial.tex
 %pdflatex TRUST_tutorial.tex
 
+%% TO IMPRESS 
+% select scale : 180%
+
 \documentclass[10pt, hyperref={unicode=true,pdfusetitle, bookmarks=true,bookmarksnumbered=false,bookmarksopen=false, breaklinks=false,pdfborder={0 0 1},backref=true,colorlinks=true,linkcolor=darkblue,pageanchor}]{beamer}
 
 \mode<presentation> {
@@ -104,14 +107,14 @@
 %    TITLE PAGE
 %----------------------------------------------------------------------------------------
 %\title[Short title]{Long title}
-\title[TRUST Tutorial V1.7.6]{TRUST Tutorial V1.7.6} % The short title appears at the bottom of every slide, the full title is only on the title page
+\title[TRUST Tutorial V1.7.8beta]{TRUST Tutorial V1.7.8beta} % The short title appears at the bottom of every slide, the full title is only on the title page
 
 %\author{John Smith} % Your name
 \institute[CEA/DEN/DANS/DM2S/STMF] % Your institution as it will appear on the bottom of every slide, may be shorthand to save space
 {
 CEA Saclay \\ % Your institution for the title page
 \medskip
-\textit{triou@cea.fr} % Your email address
+\textit{Support team: trust@cea.fr} % Your email address
 \medskip
 }
 \date{\today} % Date, can be changed to a custom date
@@ -130,11 +133,14 @@ CEA Saclay \\ % Your institution for the title page
 \begin{frame}
 \frametitle{Overview} % Table of contents slide, comment this block out to remove it
 %\tableofcontents[sectionstyle=show/show,subsectionstyle=hide/hide/hide ] 
+
 \begin{columns}[c] 
-\column{.45\textwidth}
-\tableofcontents[sections={1-9}, hideallsubsections]
+\column{.48\textwidth}
+\vspace{-0.5cm}
+\tableofcontents[sections={1-8}, hideallsubsections]
 \column{.5\textwidth} 
-\tableofcontents[sections={10-16}, hideallsubsections]
+\vspace{-0.5cm}
+\tableofcontents[sections={9-16}, hideallsubsections]
 \end{columns}
 % Throughout your presentation, if you choose to use \section{} and \subsection{} commands, these will automatically be printed on this slide as an overview of your presentation
 \end{frame}
@@ -161,10 +167,17 @@ CEA Saclay \\ % Your institution for the title page
 \begin{block}{}
 
 \begin{itemize}
-\item First, initialize the TRUST environment. On CEA Saclay PCs and callisto cluster, TRUST versions are available with (e.g. X.Y.Z=1.7.6):\\
-\vspace{0.2cm}
+\item First, initialize the TRUST environment. 
+\begin{itemize}
+\item On CEA Saclay PCs and callisto cluster, TRUST versions are available with (e.g. X.Y.Z=1.7.6):\\
+%\vspace{0.2cm}
 \textbf{source  /home/triou/env\_TRUST\_X.Y.Z.sh}
-\vspace{0.5cm}
+%\vspace{0.5cm}
+\item On your own computer, download and install the latest version of TRUST in your local folder \$MyPathToTRUSTversion (unless this was already performed), then write on the terminal:\\
+%\vspace{0.2cm}
+\textbf{source  \$MyPathToTRUSTversion/env\_TRUST\_X.Y.Z.sh}
+%\vspace{0.5cm}
+\end{itemize}
 
 \item Second, several editors (\textbf{vim}, \textbf{emacs}, \textbf{nedit}, \textbf{gedit}) can be configured to highlight TRUST keywords in the data files. If you prefer using \textbf{nedit}, please do the following:
 
@@ -178,10 +191,8 @@ CEA Saclay \\ % Your institution for the title page
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-
-\section{{\bf{Obstacle VDF}}} \label{exo1}
-\subsection{Obstacle: Sequential calculation}
+\section{{\bf{Flow around an obstacle (2D, VDF)}}} \label{exo1}
+\subsection{Sequential calculation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -203,12 +214,12 @@ CEA Saclay \\ % Your institution for the title page
 \end{figure}
 
 \begin{itemize}
-\item Fluid: $\mu=3.7 \, 10^{-5} kg.m^{-1}.s^{-1}$, $\rho=2 kg.m^{-3}$ and $R_e=\frac{U_0 H_{inlet} \rho}{\mu} = \frac{1 \times 0.22 \times 2}{3.7 \;10^{-5}} = 11 891$
+\item Fluid: $\mu=3.7 \, 10^{-5} kg.m^{-1}.s^{-1}$, $\rho=2 kg.m^{-3}$ and $Re=\frac{U_0 H_{inlet} \rho}{\mu} = \frac{1 \times 0.22 \times 2}{3.7 \;10^{-5}} = 11 891$
 \item Boundary conditions:\\
     \begin{itemize}
-    \item [$\circ$] Inlet with fixed velocity: $U_0=1 m.s^{-1}$
-    \item [$\circ$] Outlet with a fixed pressure: $P_0=0$
-    \item [$\circ$] Square cylinder: Wall
+    \item [$\circ$] Inlet with uniform velocity: $U_0=1 m.s^{-1}$
+    \item [$\circ$] Outlet with constant pressure: $P_0=0$
+    \item [$\circ$] Square cylinder: No-slip wall
     \item [$\circ$] Upper and Lower walls: Symmetry
     \end{itemize}
 \end{itemize}
@@ -223,15 +234,15 @@ CEA Saclay \\ % Your institution for the title page
 \begin{block}{}
 
 \begin{itemize}
-\item First, you must have already done the commands of the first section.
+\item First, you must already have initialized TRUST environment.
 \vspace{0.2cm}
 
 \item Open a terminal and run the commands to create a directory for your studies: \\
-\textbf{mkdir -p \; $\sim$/Formation\_TRUST/yourname}\\
-\textbf{cd \; $\sim$/Formation\_TRUST/yourname}
+\textbf{mkdir -p \; Formation\_TRUST/yourname}\\
+\textbf{cd \; Formation\_TRUST/yourname}
 \vspace{0.2cm}
 
-\item \label{method_copy} Copy a test case from the TRUST database to your study with the command:\\
+\item \label{method_copy} Copy the test case from the TRUST database to your working directory with the command:\\
 \textbf{trust -copy\index{trust -copy} Obstacle}\\
 \textbf{cd Obstacle}
 \vspace{0.2cm}
@@ -258,23 +269,23 @@ CEA Saclay \\ % Your institution for the title page
 \begin{block}{}
 
 \begin{itemize}
-\item Edit there the data file Obstacle.data and change some lines in order to modify the time step to 0.004s:\\
+\item Edit the data file Obstacle.data and set the time step to 0.004s:\\
 \textbf{nedit Obstacle.data \&}\\
 
-\item Add to the post processing block of Obstacle.data the following elements :\\
+\item Add to the post-processing block of Obstacle.data the following elements:\\
 
     \begin{itemize}
-    \item [$\circ$] A segment of pressure probes between the points (0.01, 0.12) and (0.91, 0.12).
+    \item [$\circ$] A pressure probes segment (22 probes between points (0.01, 0.12) and (0.91, 0.12)).
     \vspace{0.1cm}
 
-    \item [$\circ$] A segment of velocity probes between the points (0.92, 0.00) and (0.92, 0.22) to see the velocity profile behind the square cylinder.
+    \item [$\circ$] A velocity probes segment (22 probes between points (0.92, 0.00) and (0.92, 0.22)) to plot the velocity profile behind the square cylinder.
     \vspace{0.1cm}
 
-    \item [$\circ$] Add the vorticity to the fields being post processed and change the writing period to 0.5s. To find the keyword for this field, you can open the Generic Guide with:\\
+    \item [$\circ$] Add the vorticity to the fields being post-processed and change the saving period to 0.5s. To find the appropriate keyword for this field, you can open the Generic Guide with:\\
     \textbf{trust -doc \&\index{trust -doc \&}}
     \vspace{0.1cm}
 
-    \item [$\circ$] Add the keyword "\textbf{format lata\index{format lata}}" inside the block, just before the keyword \textbf{fields} in order to use the post processing tool VisIt during and/or after the calculation.
+    \item [$\circ$] Replace the keyword "\textbf{format lml}" with "\textbf{format lata\index{format lata}}" inside the block, just before the keyword \textbf{fields} in order to use the post-processing tool VisIt during and/or after the calculation.
     \vspace{0.1cm}
     \end{itemize}
 \end{itemize}
@@ -288,19 +299,20 @@ CEA Saclay \\ % Your institution for the title page
 \begin{block}{}
 
 \begin{itemize}
-\item [$\rightarrow$] You have access to useful resources in the \$TRUST\_ROOT/index.html file with your favourite browser (eg: firefox). Take few minutes to find test case examples containing a particular keyword thanks to the \underline{Keywords} link: \\
-\textbf{firefox \$TRUST\_ROOT/index.html \&} \\
+\item [$\rightarrow$] You have access to useful resources in the \$TRUST\_ROOT/index.html file with your favorite browser (e.g.: firefox). Take few minutes to find test case examples containing a particular keyword using the \underline{Keywords} link: \\
+\textbf{firefox \$TRUST\_ROOT/index.html \&} 
 or \textbf{trust -index \&\index{trust -index}}\\
 
-\item Launch the tool "PLOT2D" to compute calculation and visualize results with: \\
-\textbf{trust -evol\index{trust -evol} Obstacle \&}
+\item Launch the "PLOT2D" tool with: \\
+\textbf{trust -evol\index{trust -evol} Obstacle \&} \\
+This tool allows to launch calculation and visualize results
 
-\item To run the calculation, click on the button "Start computation!" at the bottom left corner of the window.
+\item To run the calculation, click on the button "Start computation!" at the lower left corner of the window.
 
 \item Visualization:
     \begin{itemize}
-    \item [$\circ$] Select "PRESSION(X=0.13,Y=0.105)" in the left list to see the evolution of your pressure probe and click behind on "Plot".
-    \item [$\circ$] Check the velocity profile behind the square cylinder with "VITESSE\_X(X=0.14,Y=0.115)" and "VITESSE\_Y(X=0.14,Y=0.115)".
+    \item [$\circ$] Select "PRESSION(X=0.13,Y=0.105)" in the left list  and click on "Plot" to draw the evolution of the pressure at the probe location.
+    \item [$\circ$] Check the velocity profile behind the square cylinder by plotting "VITESSE\_X(X=0.14,Y=0.115)" and "VITESSE\_Y(X=0.14,Y=0.115)".
     \item [$\circ$] Visualize the equation residuals on the same plot, select "$ Ri = max \left| \frac{dV}{dt} \right|$" and "$residu = max \left| Ri \right|$" using the button "Plot on same" or select the two graphs with "Ctrl" button and "plot".
     \end{itemize}
 
@@ -335,11 +347,11 @@ or \textbf{trust -index \&\index{trust -index}}\\
 or using "PLOT2D" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&} and click on "Visualisation" on the right menu.
 
     \begin{itemize}
-    \item [$\circ$] First, we are going to configure VisIt: {\footnotesize{In the menu File $\rightarrow$ Open file, select Off instead of Smart for File grouping option. For the Filter, specify *.lata to list only the LATA results file. Then save your choices, in the menu Options $\rightarrow$ Save Settings.}}
+    \item [$\circ$] First, we are going to configure VisIt: {\footnotesize{In the menu File $\rightarrow$ Open file, select Off instead of Smart for File grouping option. For the Filter, specify *.lata to list only the lata files (results). Then save your choices, in the menu Options $\rightarrow$ Save Settings.}}
 
     \item [$\circ$] In the menu File $\rightarrow$ Open file, select the Obstacle.lata file.
 
-    \item [$\circ$] Visualize the mesh in the "Plots" area with "Add $\rightarrow$ Mesh $\rightarrow$ dom" then click on the button "Draw". Zoom and move the mesh in the right window. You will un-zoom with right button (View $\rightarrow$ Reset view) or with a combination of CTRL keypad and left button.
+    \item [$\circ$] Visualize the mesh in the "Plots" area with "Add $\rightarrow$ Mesh $\rightarrow$ dom" then click on the button "Draw". Zoom and move the mesh in the right window. You can un-zoom with right button (View $\rightarrow$ Reset view) or with a combination of "Ctrl" keypad and left button.
 
     \item [$\circ$] Visualize the pressure field ({\footnotesize{Plots area: "Add $\rightarrow$ Pseudocolor $\rightarrow$ PRESSION\_SOM\_dom" + Draw then select the last time on the Time slider}})
     \item [$\circ$] Suppress or hide the mesh (Select Mesh then click on Delete or Hide/Show).
@@ -359,9 +371,9 @@ or using "PLOT2D" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&} and 
 \vspace{0.05cm}
 \hspace{1.5cm} $\color{darkblue}\diamond$ {\footnotesize{click once onto the small arrow "$\blacktriangleright$" then }}\\
 \hspace{1.5cm} $\color{darkblue}\diamond$ {\footnotesize{double click on the item Vector (cf the figure below). For example, change \\
-\hspace{1.8cm} the amount of vectors plotted (by default 400, increase this number to 40000 \\
-\hspace{1.8cm} then click the button "Make default" and save definitively this change with \\
-\hspace{1.8cm} the menu Options $\rightarrow$ Save Settings). You need to click Apply to update. Then \\
+\hspace{1.8cm} the number of vectors being plotted (by default 400, set it to 40000 \\
+\hspace{1.8cm} then click the button "Make default" and save definitively this modification with \\
+\hspace{1.8cm} the menu Options $\rightarrow$ Save Settings). You need to click "Apply" to update. Then \\
 \hspace{1.8cm} click "Dismiss" to close the window.}}\\
 
 \begin{figure}
@@ -370,7 +382,7 @@ or using "PLOT2D" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&} and 
 \end{figure}
 
 \hspace{1cm} $\color{darkblue}\circ$ {\small{Print your visualization (File $\rightarrow$ Save window): a PNG file is created into your \\
-\hspace{1.3cm} study directory.}}
+\hspace{1.3cm} working directory.}}
 
 \end{block}
 \end{frame}
@@ -410,7 +422,7 @@ or using "PLOT2D" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&} and 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Outputs and "reprise"}
+\frametitle{Outputs and resuming calculation}
 \begin{block}{}
 
 \hspace{1cm} $\color{darkblue}\circ$ {\small{During a 3D visualization, you will use one of the available Operators \\
@@ -418,7 +430,7 @@ or using "PLOT2D" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&} and 
 \hspace{1.3cm} space, or projected to a 2D space.}}
 
 \begin{itemize}
-\item For more information on \textbf{VisIt}, you can refers to: 
+\item For more information on \textbf{VisIt}, you can refer to: 
     \begin{itemize}
     \item [$\circ$] the \textbf{VisIt} website and its manuals: \textcolor{blue}{https://wci.llnl.gov/simulation/computer-codes/visit/manuals}
     \item [$\circ$] the \textbf{VisIt} user community web site: \textcolor{blue}{http://visitusers.org}
@@ -427,7 +439,7 @@ or using "PLOT2D" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&} and 
 
 \item Edit the different output (*.out) files to read the complete balances (mass, stress, energy, ...) on the whole domain or at the boundaries.
 
-\item Now we want to change the data file to restart the calculation. So open it using "PLOT2D" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&}.
+\item Now we want to edit the data file in order to resume the calculation. So, open it using "PLOT2D" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&}.
 \end{itemize}
 
 \end{block}
@@ -435,23 +447,23 @@ or using "PLOT2D" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&} and 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Outputs and "reprise"}
+\frametitle{Outputs and resuming calculation}
 \begin{block}{}
 
 \begin{itemize}
-\item Find the last backup time of the previous calculation in the .err file (or in the bottom right file in the "PLOT2D" tool, if you didn't close it since the beginning of this practice).
+\item Find the last backup time of the previous calculation in the .err file (or in the bottom right file in the "PLOT2D" tool if it is still running).
 
-\item \label{save_restart} Edit your data file, with "Edit data" or "Edit with xdata" and modify \textbf{tinit\index{tinit}}, \textbf{tmax\index{tmax}} values in the object "mon\_schema".
+\item \label{save_restart} Edit your data file with "Edit data" or "Edit with xdata", then modify \textbf{tinit\index{tinit}}, \textbf{tmax\index{tmax}} values in the object "mon\_schema".
 
-\item Add in the problem definition just before the last "\}":\\
+\item Add in the problem description block just before the last "\}":\\
 \textbf{reprise binaire\index{reprise binaire} Obstacle\_pb.sauv}\\
 (The file "Obstacle\_pb.sauv" must have been created during the first run.)
 
 \item Save and close the window.
 
-\item Restart the calculation again with "Start calculation!" button. You can see that values are added to the first probes during the new calculation.
+\item Resume the calculation again with "Start calculation!" button. You can see that values are added to the first probes during the new calculation.
 
-\item [$\color{green}\Rightarrow$] \textit{Remark :} to restart your calculation, you can also use the keyword \textbf{resume\_last\_time\index{resume\_last\_time}} instead of \textbf{reprise} and only change the \textbf{tmax\index{tmax}} value (cf Reference Guide).
+\item [$\color{green}\Rightarrow$] \textit{Remark:} to resume your calculation, you can also use the keyword \textbf{resume\_last\_time\index{resume\_last\_time}} instead of \textbf{reprise} and only change the \textbf{tmax\index{tmax}} value (cf Reference Manual).
 \end{itemize}
 
 \end{block}
@@ -460,7 +472,7 @@ or using "PLOT2D" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&} and 
 
 
 
-\subsection{Obstacle: Parallel calculation} \label{exo_para_1}
+\subsection{Parallel calculation} \label{exo_para_1}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -473,14 +485,14 @@ or using "PLOT2D" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&} and 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Parallel calculation: method 1}
+\frametitle{Parallel calculation: 1st method}
 \begin{block}{}
 
 The goal of this exercise is to introduce parallelism in the data file of the previous exercise.
 
 \begin{itemize}
-\item Go to the previous study (should be done) and after you had suppressed the \textbf{reprise} keyword and set \textbf{tinit\index{tinit}} to 0 again in the \textit{Obstacle.data} file, create the two new files:\\
-\textbf{cd $\sim$/Formation\_TRUST/yourname/Obstacle} \\
+\item Go to the previous study (should be done) and after you had suppressed the \textbf{reprise} keyword and set \textbf{tinit\index{tinit}} to 0 again in the \textit{Obstacle.data} file, create two new files:\\
+\textbf{cd Formation\_TRUST/yourname/Obstacle} \\
 \textbf{mkdir PARA1} \\
 \textbf{cd PARA1} \\
 \textbf{cp ../Obstacle.data DEC\_Obstacle.data} \\
@@ -495,22 +507,22 @@ The goal of this exercise is to introduce parallelism in the data file of the pr
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Parallel calculation: method 1}
+\frametitle{Parallel calculation: 1st method}
 \begin{block}{}
 
 \begin{itemize}
 \item In this file, uncomment the block around the \textbf{Partition} keyword.
     \begin{itemize}
     \item [$\circ$] Here, the partitioning tool \textbf{Metis\index{Metis}} is used. We cut in \textbf{nb\_parts\index{nb\_parts}} blocks, here in 2.
-    \item [$\circ$] The overlapping width \textbf{Larg\_joint\index{Larg\_joint}} between two parts of the partition should be defined according to the numerical scheme higher order, generally the convective scheme. Its value is generally 1 for the two order scheme, and 2 for the three or four-order scheme like Quick\index{quick} scheme.
+    \item [$\circ$] The overlapping width \textbf{Larg\_joint\index{Larg\_joint}} between two parts of the partition should be defined according to the numerical scheme higher order, generally the convective scheme. Its value is generally 1 for a second-order scheme, and 2 for third- or fourth-order schemes such as Quick\index{quick} scheme.
     \item [$\circ$] In VEF, you should use \textbf{2} for \textbf{Larg\_joint\index{Larg\_joint}} except when partitioning a domain where only the conduction equation will be solved.
     \item [$\circ$] At least, the keyword \textbf{zones\_name\index{zones\_name}} is useful to define the name of the files containing the partitioned mesh and to write these files.
-    \item [$\circ$] Notice the presence of the keyword \textbf{End} in the "Partition" block: the code will stop to read the data file at this point!
+    \item [$\circ$] Notice the presence of the keyword \textbf{End} in the "Partition" block: the code will stop reading the data file at this line!
     \end{itemize}
 
 \item Run the data file: \textbf{trust DEC\_Obstacle}
 
-\item Check the partitioned mesh files DOM\_0000.Zones and DOM\_0001.Zones are generated in your directory: \textbf{ls *.Zones}
+\item Check that the partitioned mesh files DOM\_0000.Zones and DOM\_0001.Zones are generated inside your working directory: \textbf{ls *.Zones}
 \end{itemize}
 
 \end{block}
@@ -518,7 +530,7 @@ The goal of this exercise is to introduce parallelism in the data file of the pr
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Parallel calculation: method 1}
+\frametitle{Parallel calculation: 1st method}
 \begin{block}{}
 
 \begin{itemize}
@@ -533,7 +545,7 @@ The goal of this exercise is to introduce parallelism in the data file of the pr
 \item Now, run a parallel calculation with TRUST:\\
 \textbf{trust PAR\_Obstacle 2}
 
-\item The post-processing task is identical in sequential or parallel mode. You have the
+\item The post-processing step is identical in sequential or parallel mode. You have the
 probes into the .son files and the whole fields in the .lata files. To run VisIt with the
 command line:\\
 \textbf{visit\index{visit} -o PAR\_Obstacle.lata \&}
@@ -548,7 +560,7 @@ also visualize a field only on a selected part (block) with the menu Control $\r
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Parallel calculation: method 2} \label{exo_para_2}
+\frametitle{Parallel calculation: 2nd method} \label{exo_para_2}
 \begin{block}{}
 
 \begin{itemize}
@@ -559,14 +571,14 @@ also visualize a field only on a selected part (block) with the menu Control $\r
 \vspace{0.2cm}
 
 \item First we will create a new working directory with our data files:\\
-\textbf{cd $\sim$/Formation\_TRUST/yourname/Obstacle} \\
+\textbf{cd Formation\_TRUST/yourname/Obstacle} \\
 \textbf{mkdir PARA2} \\
 \textbf{cd PARA2} \\
 \textbf{cp ../Obstacle.data exemple.data}\\
 \textbf{cp ../Obstacle.geo .}\\
 \vspace{0.2cm}
 
-\item Then we can run the command:\\
+\item Then we run the command:\\
 \textbf{trust -partition\index{trust -partition} exemple 3}\\
 \textbf{ls}
 \end{itemize}
@@ -576,7 +588,7 @@ also visualize a field only on a selected part (block) with the menu Control $\r
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Parallel calculation: method 2}
+\frametitle{Parallel calculation: 2nd method}
 \begin{block}{}
 
 \begin{itemize}
@@ -585,7 +597,7 @@ also visualize a field only on a selected part (block) with the menu Control $\r
     \item [$\circ$] a \underline{SEQ\_exemple.data} file which is a copy of the sequential data file exemple.data,
     \item [$\circ$] a \underline{DEC\_exemple.data} file which is the first data file to be run. It is immediately run by the command line \textbf{trust -partition} to create a partition (with 3 sub zones here), located in the ***.Zones files. \\
     \textbf{ls *.Zones}\\
-    Note that the code stops reading this file at the keyword "End" just before the "\# END PARTITION \#" block.
+    Note that the TRUST code stops reading this file at the keyword "End" just before the "\# END PARTITION \#" block.
     \item [$\circ$] a \underline{PAR\_exemple.data} file which is the data file for the parallel calculation. It uses the ***.Zones files to read the mesh through the line "Scatter DOM.Zones dom". Note that the meshing and cut of the mesh are commented here.
     \end{itemize}
 
@@ -598,11 +610,11 @@ also visualize a field only on a selected part (block) with the menu Control $\r
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Parallel calculation: method 2}
-\begin{block}{Useful informations:}
+\frametitle{Parallel calculation: 2nd method}
+\begin{block}{Useful information:}
 
 \begin{itemize}
-\item Be careful when you want to modify you data file! You have two possibilities:
+\item Be careful when you want to modify your data file! You have two possibilities:
     \begin{itemize} 
     \item [$\circ$] you want to modify your mesh,
     \item [$\circ$] you want to modify the calculation parameters.
@@ -624,7 +636,7 @@ Then run the parallel calculation normally, on the new ***.Zones files.\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Parallel calculation: method 2}
+\frametitle{Parallel calculation: 2nd method}
 \begin{block}{}
 
 \begin{itemize}
@@ -636,7 +648,7 @@ Then run the parallel calculation normally, on the new ***.Zones files.\\
 Then run the PAR\_exemple.data file with:\\
 \textbf{trust PAR\_exemple 3}
 
-\item \underline{Notice that if after a certain time, you want to reopen an old case} and understand want you did in it without any doubts, you may create two files by your hands:
+\item \underline{Notice that if after a certain time, you want to reopen an old case} and understand what you did in it without any doubts, you can create two files manually:
     \begin{itemize} 
     \item [$\circ$] one "BuildMeshes.data" file only for the mesh and the cut of the mesh, and
     \item [$\circ$] one "calculation.data" file for the parallel calculation.
@@ -652,7 +664,7 @@ You will run it like:\\
 
 
 
-\subsection{Obstacle: Parallel calculation on a cluster} \label{exo_para_3}
+\subsection{Parallel calculation on a cluster} \label{exo_para_3}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -667,63 +679,63 @@ You will run it like:\\
 \begin{frame}
 \frametitle{Parallel calculation on a cluster}
 \begin{block}{}
-
+NB: On CEA Clusters, TRUST is already installed and the procedure of launching calculation is described below. Out of CEA, your cluster administrator should install and configure TRUST. In addition, submission files and procedure depend on the cluster itself and could be different from those presented below.
 \begin{itemize}
-\item Log on to the cluster callisto and initialize the TRUT version: \\
-\vspace{0.2cm}
+\item Log on to the CEA cluster callisto and initialize the TRUST environment: \\
 {\small{
 \textbf{ssh -X yourlogin@callisto-login1(.intra.cea.fr)} \\
 \textbf{source /panfs/ixion/home/triou/TRUST/TRUST-X.Y.Z/env\_TRUST.sh}\\
 or 
 \textbf{source /home/triou/env\_TRUST\_X.Y.Z.sh}\\
 }}
-\vspace{0.2cm}
 
 \item Copy the study Obstacle:\\
-\vspace{0.2cm}
 \textbf{cd /panfs/ixion/home/yourlogin}\\
 \textbf{mkdir  -p  Formation\_TRUST/yourname} \\
 \textbf{cd Formation\_TRUST/yourname} \\
 \textbf{trust -copy\index{trust -copy} Obstacle} \\
 \textbf{cd Obstacle} \\
-\vspace{0.2cm}
 
-\item Open Obstacle.data and add \textbf{"format lata\index{format lata}"} in the post-traitement block.
-\vspace{0.2cm}
+\item Open Obstacle.data and set the \textbf{format} to \textbf{lata}\index{format lata} in the post-traitement block.
 
-\item Create automatically a 2 partitioned mesh and a parallel datafile with:\\
+\item Create automatically a 2 partitioned mesh and a parallel data file with:\\
 \textbf{trust -partition\index{trust -partition} Obstacle}
+
 \end{itemize}
 
 \end{block}
 \end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Parallel calculation on a cluster}
 \begin{block}{}
 
 \begin{itemize}
-\item Submit the parallel calculation on 2 cores:\\
-\vspace{0.2cm}
-\textbf{trust PAR\_Obstacle 2}
-\vspace{0.2cm}
-
 \item For clusters, you have to create a submission file:\\
-\vspace{0.2cm}
 \textbf{trust -create\_sub\_file\index{trust -create\_sub\_file} PAR\_Obstacle 2}
-\vspace{0.2cm}
 
-\item Open the file sub\_file and change the name of the job. Note that we will see only the first eight characters of the name of the job in the list of submitted jobs.
-\vspace{0.2cm}
+\item Open the file sub\_file and rename the job. Note that we will see only the first eight characters of the job name in the submitted jobs list.
 
-\item Submit the job with: \textbf{sbatch sub\_file}
-\vspace{0.2cm}
+\item Submit the job with: 
+\textbf{sbatch sub\_file}
 
 \item Check the state of the job with: \textbf{"squeue"} or \textbf{"squeue -u yourlogin"}
-\vspace{0.2cm}
 
-\item You could run VisIt from the cluster but it is not recommended. But you can run VisIt on your PC and access/visualize the result file on callisto cluster, with File $\rightarrow$ Open File and select callisto in the localhost menu.
+\item You could run VisIt from the cluster but it is not recommended.
+
+\item So you can run VisIt on your PC and access/visualize the result file on callisto cluster.
+        \begin{itemize}
+        \item Open your .bashrc file (or create it if needed).
+        \item Add the following lines:\\
+        if [[ \${HOSTNAME:0:8} == "callisto" ]] \\
+        then\\
+           source /panfs/ixion/home/triou/TRUST/TRUST-X.Y.Z/env\_TRUST.sh \\
+        fi
+        \item Open VisIt on your computer, then access to your files on callisto with:\\
+        File $\rightarrow$ Open File and select callisto in the localhost menu.
+        \end{itemize}
+
 \end{itemize}
 
 \end{block}
@@ -732,7 +744,7 @@ or
 
 
 
-\section{{\bf{Heat exchange VDF/VEF}}}
+\section{{\bf{Heat transfer (2D, VDF/VEF)}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -745,7 +757,7 @@ or
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Heat exchange VDF/VEF exercise}
+\frametitle{Heat transfer (2D, VDF/VEF)}
 \begin{block}{}
 
 
@@ -783,12 +795,12 @@ $$
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Heat exchange VDF/VEF exercise}
+\frametitle{Heat transfer (2D, VDF/VEF)}
 \begin{block}{}
 
 \begin{itemize}
 \item Create a new study Coupling\_VDF by copying the docond study:\\
-\textbf{cd $\sim$/Formation\_TRUST/yourname} \\
+\textbf{cd Formation\_TRUST/yourname} \\
 \textbf{trust -copy\index{trust -copy} docond} \\
 \textbf{mv docond Coupling\_VDF} \\
 \textbf{cd Coupling\_VDF} \\
@@ -810,7 +822,7 @@ $$
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Heat exchange VDF/VEF exercise}
+\frametitle{Heat transfer (2D, VDF/VEF)}
 \begin{block}{}
 
 \begin{itemize}
@@ -827,11 +839,11 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 
 \item Run the calculation with "Start computation!" and check the evolution.
 
-\item Then post process the temperature field with VisIt tool: "Visualization" button. A natural convection cell appears.
+\item Then post-process the temperature field with VisIt tool: "Visualization" button. A natural convection cell appears.
 
-\item Change the colour tables for the temperature to have the same one on the 2 domains. Close VisIt.
+\item Change the color tables for the temperature to have the same one on the 2 domains. Close VisIt.
 
-\item We are going to change the discretization of the test case: triangulate the domains with the keyword \textbf{Trianguler\_H\index{Trianguler\_H}} (See the syntax in the Reference Guide).
+\item We are going to change the discretization of the test case: triangulate the domains with the keyword \textbf{Trianguler\_H\index{Trianguler\_H}} (refer to the Reference Manual).
 \end{itemize}
 
 \end{block}
@@ -839,14 +851,14 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Heat exchange VDF/VEF exercise}
+\frametitle{Heat transfer (2D, VDF/VEF)}
 \begin{block}{}
 
 \begin{itemize}
-\item Then give an unstructured aspect to the 2 meshes thanks to the following keyword : \\
+\item Then give an unstructured aspect to the 2 meshes using the following syntax: \\
 \textbf{Transformer\index{Transformer} name\_of\_domain \; x*(1-0.5*y*y) \; y*(1+0.1*x*y)}
 
-\item Substitute the discretization VDF\index{VDF} (pressure nodes at the element center) to VEFPreP1B\index{VEFPreP1B} (pressure nodes at the element center and nodes).
+\item Substitute the discretization VDF\index{VDF} (pressure nodes at the element center) to VEFPreP1B\index{VEFPreP1B} (pressure nodes at the element's center and nodes).
 
 \item Close the Plot2D tool.
 
@@ -856,7 +868,7 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 \item Run the calculation with:\\
 \textbf{trust docond }
 
-\item Click : 'Start computation!', select 'Ri=max\_pb1$|dT/dt|$', 'Ri=max\_pb2$|dT/dt|$', 'Ri=max\_pb2$|dV/dt|$', 'residu=max$|Ri|$' with "Ctrl" button and click on 'Plot on same'.
+\item Click: 'Start computation!', select 'Ri=max\_pb1$|dT/dt|$', 'Ri=max\_pb2$|dT/dt|$', 'Ri=max\_pb2$|dV/dt|$', 'residu=max$|Ri|$' with "Ctrl" button and click on 'Plot on same'.
 
 \item To see when convergence is reached, select a probe (for example temperature) and click on 'Plot'. 
 \end{itemize}
@@ -866,20 +878,20 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Heat exchange VDF/VEF exercise}
+\frametitle{Heat transfer (2D, VDF/VEF)}
 \begin{block}{}
 
 \begin{itemize}
-\item Post-process the results and compare with VDF\index{VDF} discretization about the CPU performance: the VEF calculation is running 10 times slower (cause higher number of pressure unknowns and smaller time steps). Study the docond.out file to see the time steps for each equation (click on "Edit .out" at the top right corner of the GUI).
+\item Post-process the results and compare the CPU performances with VDF\index{VDF} discretization: the VEF calculation is running $\approx$ 10 times slower (because more pressure unknowns and shorter time steps). Check the docond.out file to see the time steps for each equation (click on "Edit .out" at the upper right corner of the GUI).
 
-\item Accelerate the calculation by impliciting the diffusion operators of each equation with \textbf{diffusion\_implicite\index{diffusion\_implicite}} option in the explicit Euler scheme (check again the Generic Guide: \textbf{trust -doc \&\index{trust -doc \&}}). 
+\item Accelerate the calculation by impliciting the diffusive term of each equation with \textbf{diffusion\_implicite\index{diffusion\_implicite}} option in the explicit Euler scheme (check again the Generic Guide: \textbf{trust -doc \&\index{trust -doc \&}}). 
 
 \item Run the calculation without any option: \\
 \textbf{trust docond}
 
-\item \label{schema_impl} Use a full implicit scheme now (suppress \textbf{diffusion\_implicite\index{diffusion\_implicite}}), by substituting \textbf{Scheme\_Euler\_Explicit} by \textbf{Scheme\_Euler\_implicit\index{scheme\_euler\_implicit}} and adding the \textbf{Implicite} solver.
+\item \label{schema_impl} Now, use a fully implicit scheme (suppress \textbf{diffusion\_implicite\index{diffusion\_implicite}}), by substituting \textbf{Scheme\_Euler\_Explicit} by \textbf{Scheme\_Euler\_implicit\index{scheme\_euler\_implicit}} and adding the Implicit solver "\textbf{solveur implicite}".
 
-\item Have a look at the Reference Guide for the \textbf{gmres\index{gmres}} options and define accordingly to the advices given into the Reference Guide, a value for \textbf{facsec\index{facsec}, facsec\_max\index{facsec\_max}}.
+\item Have a look at the Reference Manual for the \textbf{gmres\index{gmres}} options and define, according to the advice given on it, a value for \textbf{facsec\index{facsec}, facsec\_max\index{facsec\_max}}.
 \end{itemize}
 
 \end{block}
@@ -887,11 +899,11 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Heat exchange VDF/VEF exercise}
+\frametitle{Heat transfer (2D, VDF/VEF)}
 \begin{block}{}
 
 \begin{itemize}
-\item Your block will looks like:\\
+\item Your block will look like:\\
 \textbf{Solveur Implicite\index{Solveur Implicite} \{ solveur gmres\index{gmres} \{ diag seuil 1e-30 nb\_it\_max 5 impr \}  seuil\_convergence\_implicite\index{seuil\_convergence\_implicite} 0.01  \} }
 
 \item Run the calculation:\\
@@ -904,7 +916,7 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 
 
 
-\section{{\bf{Low mach number flow}}}
+\section{{\bf{Low Mach number flow (2D)}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -917,19 +929,21 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Low mach number flow}
+\frametitle{Low Mach number flow (2D)}
 \begin{block}{}
+
+%\textbf{Add a description of the problem with an image showing domain, BC, ...}
 
 \begin{itemize}
 \item Open a terminal and create a directory using Unix commands, and copy the study \textbf{TP\_Temp\_QC\_VEF} (it is a 2D simulation of helium gas flow from left to right between two heated walls):\\
-\textbf{mkdir -p $\sim$/Formation\_TRUST/yourname}\\
-\textbf{cd $\sim$/Formation\_TRUST/yourname}\\
+\textbf{mkdir -p Formation\_TRUST/yourname}\\
+\textbf{cd Formation\_TRUST/yourname}\\
 \textbf{trust -copy\index{trust -copy} TP\_Temp\_QC\_VEF}\\
 \textbf{cd TP\_Temp\_QC\_VEF}
 
-\item Open the Generic Guide with (it will be useful to search for keywords in this exercice): \textbf{trust -doc \&\index{trust -doc \&}}
+\item Open the Generic Guide with (it will be useful to search for keywords in this exercise): \textbf{trust -doc \&\index{trust -doc \&}}
 
-\item Edit the data file with your favorite editor (\textbf{nedit} is recommended because it is configured to recognize TRUST syntax):\\
+\item Edit the data file with your favorite editor (\textbf{nedit} is recommended because it is configured to recognize the TRUST syntax):\\
 \textbf{nedit TP\_Temp\_QC\_VEF.data \&} \\
 or \\
 \textbf{trust -evol\index{trust -evol} TP\_Temp\_QC\_VEF  \&} and "Edit data" button.
@@ -937,29 +951,30 @@ or \\
 
 \end{block}
 \end{frame}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Low mach number flow}
+\frametitle{Low Mach number flow (2D)}
 \begin{block}{}
 
 \begin{itemize}
-\item Modify the data file in order to:
+\item Edit the data file in order to:
     \begin{itemize}
-    \item [$\circ$] Change the geometry and the mesh:
+    \item [$\circ$] Modify the geometry and the mesh:
     \begin{figure}
     \includegraphics[width=0.5\textwidth]{PICTURES/low_mach.pdf}
     %\caption{Obstacle}
     \end{figure}
-    \item [$\circ$] Add several probes (velocity, volume mass, temperature) near the upper right corner of the geometry at location (x,y)=(4,1).
+    \item [$\circ$] Add several probes (velocity, density, temperature) near the upper right corner of the geometry at location (x,y)=(4,1).
     \item [$\circ$] Add a probe \textbf{"segment"} (with 9 points) between the locations (x,y)=(4,0.05) and (x,y)=(4,0.95) for the temperature field.
-    \item [$\circ$] Write the results with the \textbf{LATA} format and change the \textbf{dt\_post\index{dt\_post}} period to 1s.
-    \item [$\circ$] We are looking for the stationary state, so suppress tmax\index{tmax} keyword and change the \textbf{seuil\_statio\index{seuil\_statio}} $\varepsilon$ value to 10 ($|dT/dt|<\varepsilon$ and $dt \sim 0.001s$ so $|dT|<0.01$).
+    \item [$\circ$] Write the results on the \textbf{lata} format and change the \textbf{dt\_post\index{dt\_post}} period to 1s.
+    \item [$\circ$] We are looking for the steady state, so suppress tmax\index{tmax} keyword and change the \textbf{seuil\_statio\index{seuil\_statio}} $\varepsilon$ value to 10 ($|dT/dt|<\varepsilon$ and $dt \sim 0.001s$ so $|dT|<0.01$).
     \item [$\circ$] Add the keyword \textbf{impr} into the pressure solver to print its convergence.
     \item [$\circ$] If you use Plot2D tool, save and close the editor.
     \end{itemize}
 
-\item Run the simulation with the TRUST command (if not already done):\\
+\item Run the simulation with the TRUST command:\\
 \textbf{trust -evol\index{trust -evol} TP\_Temp\_QC\_VEF \&} \\
 \end{itemize}
 
@@ -968,21 +983,21 @@ or \\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Low mach number flow}
+\frametitle{Low Mach number flow (2D)}
 \begin{block}{}
 
 \begin{itemize}
 \item Click on "Start computation!".
 \item Check mass flow rate (absolute and relative values) in the TP\_Temp\_QC\_VEF.out file: \\
 \textbf{nedit TP\_Temp\_QC\_VEF.out \&} \\
-or look at the first window on the right of the PLOT2D tool.
+or look at the upper small window on the right of the PLOT2D tool.
 
 \item Once the calculation finishes, visualize the results by running \textbf{VisIt}:\\
 \textbf{visit\index{visit} -o TP\_Temp\_QC\_VEF.lata \&}\\
 or \\
 "Visualization" button on Plot2D tool.
 \begin{itemize}
-    \item [$\circ$] See the mesh (Plots: "Add $\rightarrow$ Mesh $\rightarrow$ dom $\rightarrow$ Draw").
+    \item [$\circ$] Show the mesh (Plots: "Add $\rightarrow$ Mesh $\rightarrow$ dom $\rightarrow$ Draw").
     \item [$\circ$] Visualize the temperature field (Select the last Time with the slicer, then Plots: "Add $\rightarrow$ Pseudo Color $\rightarrow$ TEMPERATURE\_SOM\_dom  $\rightarrow$ Draw").
     \item [$\circ$] Suppress or hide the mesh (Select "Mesh-dom" in the list of plots then "Delete" or "Hide/Show").
     \item [$\circ$] Visualize the velocity field (Add $\rightarrow$ Vector $\rightarrow$ VITESSE\_SOM\_dom $\rightarrow$ Draw).
@@ -995,26 +1010,26 @@ or \\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Low mach number flow}
+\frametitle{Low Mach number flow (2D)}
 \begin{block}{}
 
 \hspace{1cm} $\color{darkblue}\circ$ {\small{Select the Zoom mode with the right button of the mouse (Mode $\rightarrow$ Zoom) \\
-\hspace{1.3cm}  then zoom by selecting an area in the plot. To un-zoom push "Ctrl" button \\
+\hspace{1.3cm}  then zoom by selecting an area on the plot. To un-zoom push "Ctrl" button \\
 \hspace{1.3cm}  and select an area with the left button or with the right button select \\
 \hspace{1.3cm}  "View $\rightarrow$ Reset view".}}\\
 \hspace{1cm} $\color{darkblue}\circ$ {\small{Print your visualization (File $\rightarrow$ Set Save options $\rightarrow$ File type $\rightarrow$ Select a type \\
-\hspace{1.3cm}  $\rightarrow$ Save): a file named visit*** is created into your study directory.}}
+\hspace{1.3cm}  $\rightarrow$ Save): a file named visit*** is created into your working directory.}}
 
 \hspace{1cm} $\color{darkblue}\circ$ {\small{Add a second screen with "Window $\rightarrow$ Layout $\rightarrow$ 1x2".}}
 
-\hspace{1cm} $\color{darkblue}\circ$ {\small{Plot a temperature horizontal profile (Select the temperature field and \\
+\hspace{1cm} $\color{darkblue}\circ$ {\small{Plot a horizontal profile of temperature  (Select the temperature field and \\
 \hspace{1.3cm} thanks to the right button, select "Mode $\rightarrow$ Lineout", and define your \\
 \hspace{1.3cm} profile with left button): the profile is shown on the second window.}}
 
 \begin{itemize}
 \item Substitute the time scheme by an implicit time scheme (like \textbf{scheme\_euler\_implicit\index{scheme\_euler\_implicit}}). 
 
-\item Use the \textbf{implicite} solver and specify \textbf{facsec\index{facsec}} and \textbf{facsec\_max\index{facsec\_max}} parameters according to the advices given into the Reference Guide (search for the \textbf{scheme\_euler\_implicit\index{scheme\_euler\_implicit}} keyword for the according syntax). You can also see the informations at the end of the Heat exchange VDF/VEF exercise at p.\pageref{schema_impl}.
+\item Use the \textbf{implicite} solver and specify \textbf{facsec\index{facsec}} and \textbf{facsec\_max\index{facsec\_max}} parameters according to the advice given on the Reference Manual (search for the \textbf{scheme\_euler\_implicit\index{scheme\_euler\_implicit}} keyword). You can also see the instructions at the end of the Heat transfer VDF/VEF exercise on p.\pageref{schema_impl}.
 \end{itemize}
 
 \end{block}
@@ -1022,19 +1037,19 @@ or \\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Low mach number flow}
+\frametitle{Low Mach number flow (2D)}
 \begin{block}{}
 
 \begin{itemize}
-\item Run the calculation with this time scheme with the PLOT2D tool or: \\
+\item Run the calculation with this time scheme using the PLOT2D tool or: \\
 {\footnotesize{\textbf{trust TP\_Temp\_QC\_VEF.data 1$>$TP\_Temp\_QC\_VEF.out 2$>$TP\_Temp\_QC\_VEF.err}}}
 
-\item Edit the following file where is located information about dt the used time-step, dt\_stab the stability time-step, \textbf{facsec\index{facsec}} evolution (dt=dt\_stab*facsec) and residuals for each equation: \\
+\item Edit the file containing information about dt (used time step), dt\_stab (stability time step), \textbf{facsec\index{facsec}} (dt=dt\_stab*facsec) and residuals evolution for each equation: \\
 \textbf{nedit TP\_Temp\_QC\_VEF.dt\_ev \&}
 
-\item  If everything is OK, try to fine tune the speed convergence of the implicit solver with the value of \textbf{seuil\_convergence\_implicite\index{seuil\_convergence\_implicite}} keyword (look inside the TP\_Temp\_QC\_VEF.out file and check that the number of iterations for GMRES\index{gmres} is between 3 and 5, it is enough to quickly converge).
+\item  If everything is OK, try to enhance the convergence speed of the implicit solver with the value of \textbf{seuil\_convergence\_implicite\index{seuil\_convergence\_implicite}} keyword (look at the TP\_Temp\_QC\_VEF.out file, if the number of iterations for GMRES\index{gmres} is comprised between 3 and 5 then it is enough to converge quickly).
 
-\item  To restart a calculation, you will need to change the \textbf{tinit\index{tinit}} value into the data file (pick up the last save time in the \textbf{.err} file) and insert into the data file in the problem definition the following keywords: \\
+\item  In order to resume a calculation, you will have to change the \textbf{tinit\index{tinit}} value within the data file (pick up the last saved time in the \textbf{.err} file) and insert into the data file, in the problem definition block, the following keywords: \\
 \textbf{reprise binaire\index{reprise binaire} TP\_Temp\_QC\_VEF\_pb.sauv}
 \end{itemize}
 
@@ -1043,7 +1058,7 @@ or \\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Low mach number flow}
+\frametitle{Low Mach number flow (2D)}
 \begin{block}{}
 
 \begin{itemize}
@@ -1051,7 +1066,7 @@ or \\
 \item  Then run the calculation with: \\
 {\footnotesize{\textbf{trust TP\_Temp\_QC\_VEF.data 1$>$TP\_Temp\_QC\_VEF.out 2$>$TP\_Temp\_QC\_VEF.err}}} \\
 or \\
-\textbf{trust -evol\index{trust -evol} TP\_Temp\_QC\_VEF.data \&} which creates automatically the .out
+\textbf{trust -evol\index{trust -evol} TP\_Temp\_QC\_VEF.data \&} which automatically creates the .out file
 
 \end{itemize}
 
@@ -1061,7 +1076,7 @@ or \\
 
 
 
-\section{{\bf{Periodic 3D channel flow}}}
+\section{{\bf{Periodic channel flow (3D)}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -1074,7 +1089,7 @@ or \\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Periodic 3D channel flow}
+\frametitle{Periodic channel flow (3D)}
 \begin{block}{}
 
 \begin{figure}
@@ -1082,10 +1097,10 @@ or \\
 %\caption{Obstacle}
 \end{figure}
 
-\textbf{Fluid:} $Re=2000$, $\rho=2 kg.m^{-3}$, $\mu=0.01 kg.m^{-1}.s^{-1}$, initial velocity $V0=1m/s$, periodic boundary condition on Z direction.
+\textbf{Fluid:} $Re=2000$, $\rho=2 kg.m^{-3}$, $\mu=0.01 kg.m^{-1}.s^{-1}$, initial velocity $V0=1m/s$, periodic boundary condition following the Z-direction.
 
 \begin{itemize}
-\item Copy the study named \textbf{P1toP1Bulle} like explained page \pageref{method_copy}. It simulates a 3D incompressible laminar flow ($Re=2000$) with periodic boundary according Z direction only.
+\item Copy the study named \textbf{P1toP1Bulle} as explained on page \pageref{method_copy}. It simulates a 3D incompressible laminar flow ($Re=2000$) with periodic boundary following the Z-direction only.
 
 \item Open the P1toP1Bulle.data file and use \textbf{RegroupeBord\index{RegroupeBord}} keyword to merge Entree and Sortie boundaries into a single one named periox. 
 \end{itemize}
@@ -1095,23 +1110,23 @@ or \\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Periodic 3D channel flow}
+\frametitle{Periodic channel flow (3D)}
 \begin{block}{}
 
 \begin{itemize}
-\item Change the boundary conditions to apply a periodic boundary on the new boundary. 
+\item Modify boundary conditions to apply a periodic boundary on the new boundary. 
 
 \item Change the velocity initial condition to $U_0=(1,0,0)$. 
 
-\item Set the option \textbf{diffusion\_implicite\index{diffusion\_implicite}} to 1 into the Euler scheme to implicit the diffusive operator of the Navier Stokes equation.
+\item Set the option \textbf{diffusion\_implicite\index{diffusion\_implicite}} to 1 into the Euler scheme to implicit the diffusive term in the Navier-Stokes equations.
 
-\item You have now a 3D calculation with periodic condition on X and Z directions. Run the calculation on 30 time-steps (keyword \textbf{nb\_pas\_dt\_max\index{nb\_pas\_dt\_max}}).
+\item You have now a 3D calculation with periodic boundary conditions on X- and Z-directions. Run the calculation for 30 time-steps (keyword \textbf{nb\_pas\_dt\_max\index{nb\_pas\_dt\_max}}).
 
 \item Have a look at the P1toP1Bulle\_pb\_Debit.out file, check the flow rate on the periox boundary. Why does it decrease?
 
-\item Add the \textbf{Canal\_perio} source term in the Navier Stokes equation of the data file and run again the calculation to check the flow rate evolution on 30 time steps. 
+\item Add the \textbf{Canal\_perio} source term in the Navier-Stokes equations of the data file and run again the calculation to check the flow rate evolution on 30 time steps. 
 
-\item Look for the pressure and viscous forces applied to the cylinder inside the .out files.
+\item Look at pressure and viscous forces applied on the cylinder inside the .out files.
 \end{itemize}
 
 \end{block}
@@ -1119,21 +1134,21 @@ or \\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Periodic 3D channel flow}
+\frametitle{Periodic channel flow (3D)}
 \begin{block}{}
 
 \begin{itemize}
 \item Now, the calculation domain is a rotating channel according to Z direction with a constant velocity $\Omega=1 rad/s$. 
 
-\item Add the \textbf{Acceleration} source term in the Navier Stokes equation. Suppress the \textbf{nb\_pas\_dt\_max\index{nb\_pas\_dt\_max}} keyword and set \textbf{tmax\index{tmax}} to 100s.
+\item Add the \textbf{Acceleration} source term in the Navier-Stokes equations. Suppress the \textbf{nb\_pas\_dt\_max\index{nb\_pas\_dt\_max}} keyword and set \textbf{tmax\index{tmax}} to 100s.
 
-\item Add, if you wish, velocity or statistic calculation in the post processing instructions. 
+\item Add, if you wish, velocity or statistic calculation to the post-processing instructions. 
 
 \item Run the calculation.
 
-\item You can create a uniformly refined mesh using for instance the keyword \textbf{Raffiner\_Anisotrope\index{Raffiner\_Anisotrope}}.
+\item You can create a uniformly refined mesh using, for instance, the keyword \textbf{Raffiner\_Anisotrope\index{Raffiner\_Anisotrope}}.
 
-\item Then improve the calculation speed on this mesh, you could try to use a coarse discretization \textbf{P1} (\textbf{Read dis \{ P1 \}} keywords) with less pressure unknowns. On this mesh, it runs 3 times faster than P1Bulle but with less accuracy: 8452 unknowns compare to 49221 unknowns.
+\item Then improve the calculation speed on this mesh, you can use a coarse discretization \textbf{P1} (\textbf{Read dis \{ P1 \}} keywords) with less pressure unknowns. On this latter, it runs 3 times faster than on P1Bulle discretization but it is less accurate: 8452 unknowns compared to 49221 unknowns.
 \end{itemize}
 
 \end{block}
@@ -1141,16 +1156,16 @@ or \\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Periodic 3D channel flow}
+\frametitle{Periodic channel flow (3D)}
 \begin{block}{}
 
 \begin{itemize}
 \item Then restart the calculation with \textbf{VEFPreP1B\index{VEFPreP1B}} discretization by reading the velocity field with \textbf{Champ\_fonc\_reprise\index{Champ\_fonc\_reprise}} keyword in the initial conditions for the velocity:\\
 \textbf{vitesse champ\_fonc\_reprise\index{Champ\_fonc\_reprise} P1toP1Bulle\_pb.xyz  pb  vitesse  last\_time} \\
-\underline{This will be useful to reach the quasi-stationary state faster.}
+\underline{This will be useful to reach the quasi-stationary regime faster.}
 
 \item You can also use implicit scheme (change the scheme to \textbf{Scheme\_Euler\_implicit\index{scheme\_euler\_implicit}} scheme and use an \textbf{Implicite} solver) \underline{only if you are looking for the stationary state}.\\ 
-You can also see the informations at the end of the Heat exchange VDF/VEF exercise page \pageref{schema_impl}.
+You can also see the instructions at the end of the Heat transfer VDF/VEF exercise on p. \pageref{schema_impl}.
 \end{itemize}
 
 \end{block}
@@ -1179,15 +1194,15 @@ You can also see the informations at the end of the Heat exchange VDF/VEF exerci
 %\caption{Obstacle}
 \end{figure}
 
-\textbf{Fluid:} $\mu=3.7 \, 10^{-5} kg.m^{-1}.s^{-1}, \rho=2 \, kg.m^{-3}, R_e=\frac{U_0 H_{inlet} \rho}{\mu} =54054$
+\textbf{Fluid:} $\mu=3.7 \, 10^{-5} kg.m^{-1}.s^{-1}, \rho=2 \, kg.m^{-3}, Re=\frac{U_0 H_{inlet} \rho}{\mu} =54054$
 
 \textbf{Boundary conditions:} \\
-Inlet with fixed velocity: $U_0=1 m.s^{-1}$ and fixed values of $k=10^{-2}$ and $\varepsilon=10^{-3}$ (dimensionless values)\\
-Outlet with a fixed pressure: $P_0=0$ and fixed values of $k=0$ and $\varepsilon=0$ \\
-Upper and lower walls: No slip wall ($U=0$) and $k$ standard flux, $\varepsilon$ null.
+Inlet with imposed velocity: $U_0=1 m.s^{-1}$ and constant values of $k=10^{-2}$ and $\varepsilon=10^{-3}$ (dimensionless values)\\
+Outlet with constant pressure: $P_0=0$ and constant values of $k=0$ and $\varepsilon=0$ \\
+Top and bottom walls: No-slip wall ($U=0$) and $k$ standard flux, $\varepsilon$ null.
 
 \begin{itemize}
-\item Copy the study named \textbf{Marche} like explained page \pageref{method_copy}. It simulates a 2D incompressible turbulent flow with a K-Eps model in the geometry described above.
+\item Copy the study named \textbf{Marche} as explained page \pageref{method_copy}. It simulates a 2D incompressible turbulent flow in the configuration described above using the k-$\varepsilon$ model.
 \end{itemize}
 
 \end{block}
@@ -1201,13 +1216,13 @@ Upper and lower walls: No slip wall ($U=0$) and $k$ standard flux, $\varepsilon$
 \begin{itemize}
 \item We want to add a source of constituent's diffusion so copy the \textbf{Constituants\index{Constituants}} study which will give you examples for constituents keyword used for a 2D incompressible laminar flow.
 
-\item Edit your data file in the Marche directory. First, change the name of the problem in order to add concentration equations (look for the good keyword in the Reference Guide).
+\item Edit your data file in the Marche directory. First, rename the problem in order to add concentration equations (look for the adequate keywords in the Reference Manual).
 
-\item Add 3 constituents with the same diffusivities ($\alpha=1m/s$) and associate the constituents to the problem.
+\item Add 3 constituents of equal diffusivities ($\alpha=1m/s$) and associate the constituents to the problem.
 
-\item Define the concentration equation into the problem (remember that concentrations will be a vector of 3 components) with correct initials ($C_1=0, C_2=0, C_3=0$) and boundaries conditions.
+\item Define the concentration equation into the problem (remember that concentrations will be a vector of 3 components) with correct initial ($C_1=0, C_2=0, C_3=0$) and boundary conditions.
 
-\item Use the Schmidt model to close the turbulence modelization in the  concentration equation.
+\item Use the Schmidt model to close the turbulence model in the concentration equation.
 
 \item Change the sources of the Navier-Stokes turbulence model to a \textbf{Source\_Transport\_K\_Eps\_aniso\_concen\index{Source\_Transport\_K\_Eps\_aniso\_concen} \{ C1\_eps 1.44 C2\_eps 1.92 C3\_eps 1. \} } to fit with the new concentration equation.
 \end{itemize}
@@ -1221,7 +1236,7 @@ Upper and lower walls: No slip wall ($U=0$) and $k$ standard flux, $\varepsilon$
 \begin{block}{}
 
 \begin{itemize}
-\item Add into the fluid definition, the volume expansion coefficient for the concentration: \textbf{beta\_co\index{beta\_co}} as an uniform field fixed to 0.
+\item Add into the fluid definition, the volume expansion coefficient for the concentration: \textbf{beta\_co\index{beta\_co}} as a uniform field set to 0.
 
 \item You have also to add a gravity field which can be initialized to 0.
 
@@ -1231,9 +1246,9 @@ Upper and lower walls: No slip wall ($U=0$) and $k$ standard flux, $\varepsilon$
 
 \item Add a source term for the second constituent only ($S_2=1m^{-3}$) applied on the sub domain thanks to the keyword \textbf{Champ\_Uniforme\_Morceaux\index{Champ\_Uniforme\_Morceaux}}.
 
-\item Add \textbf{format lata\index{format lata}} in te post-processing block.
+\item Add \textbf{format lata\index{format lata}} in the post-processing block.
 
-\item Add the keyword \textbf{concentration0, concentration1, concentration2} in the \textbf{fields} of the post-processing block to write the 3 concentrations into the .lata results file.
+\item Add the keyword \textbf{concentration0, concentration1, concentration2} in the \textbf{fields} of the post-processing block to write the 3 concentrations into the .lata file.
 
 \item Run the calculation and check the results.
 \end{itemize}
@@ -1244,7 +1259,7 @@ Upper and lower walls: No slip wall ($U=0$) and $k$ standard flux, $\varepsilon$
 
 
 
-\section{{\bf{3D turbulent flow in a curved pipe}}} \label{prm_para}
+\section{{\bf{Turbulent flow in a curved pipe (3D)}}} \label{prm_para}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -1257,7 +1272,7 @@ Upper and lower walls: No slip wall ($U=0$) and $k$ standard flux, $\varepsilon$
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{3D turbulent flow in a curved pipe}
+\frametitle{Turbulent flow in a curved pipe (3D)}
 \begin{block}{TrioCFD}
 
 \begin{figure}
@@ -1278,7 +1293,7 @@ Goals:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{3D turbulent flow in a curved pipe}
+\frametitle{Turbulent flow in a curved pipe (3D)}
 \begin{block}{TrioCFD}
 
 \begin{itemize}
@@ -1291,14 +1306,14 @@ Goals:
 
 \item Create a new directory and copy some data:\\
 {\small{
-\textbf{mkdir -p $\sim$/Formation\_TRUST/yourname/PeriodicBox} \\
-\textbf{cd $\sim$/Formation\_TRUST/yourname/PeriodicBox} \\
+\textbf{mkdir -p Formation\_TRUST/yourname/PeriodicBox} \\
+\textbf{cd Formation\_TRUST/yourname/PeriodicBox} \\
 \textbf{cp \$project\_directory/validation/share/Validation/Rapports\_automatiques/} \\
 \hspace{4cm} \textbf{Validant/pas\_fini/PeriodicBox/src/* \; .} \\
 }}
 \vspace{0.2cm}
-Notice that this directory correspond to an automated validation test case. 
-If you want to run it and generated the pdf report, see the last exercise of this tutorial named "Validation form", but be careful this case is very slow !
+Notice that this directory corresponds to an automated validation test case. 
+If you want to run it and generate the pdf report, see the last exercise of this tutorial which is named "Validation form", but be careful this case needs more computational effort!
 \end{itemize}
 
 \end{block}
@@ -1306,7 +1321,7 @@ If you want to run it and generated the pdf report, see the last exercise of thi
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{3D turbulent flow in a curved pipe}
+\frametitle{Turbulent flow in a curved pipe (3D)}
 \begin{block}{TrioCFD}
 
 \begin{itemize}
@@ -1331,22 +1346,22 @@ If you want to run it and generated the pdf report, see the last exercise of thi
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{3D turbulent flow in a curved pipe}
+\frametitle{Turbulent flow in a curved pipe (3D)}
 \begin{block}{TrioCFD}
 
 \begin{itemize}
 \item Then build the meshes:\\
 \textbf{./prepare} \\
 \textbf{trust BuildMeshes} \\
-Notice that we use \textbf{"trust"} command line because this script will use the variable \$exec which is the path to the TrioCFD executable.
+Notice that we use \textbf{"trust"} command lines because this script will use the variable \$exec which is the path to the TrioCFD executable.
 
 \item You can visualize the partitioned meshes with (MODEL=RANS or LES): \\
 \textbf{trust -mesh\index{trust -mesh} PeriodicBoxMODEL}
 
-\item Then, fix the maximal number of time steps in the time scheme using \textbf{nb\_pas\_dt\_max\index{nb\_pas\_dt\_max}} to 100 in the files PeriodicBoxRANS and PeriodicBoxLES and run the 2 cores parallel calculations, to initialize the turbulent flow in the box: \\
+\item Then, set the max number of time steps in the time scheme using \textbf{nb\_pas\_dt\_max\index{nb\_pas\_dt\_max}} to 100 in the files PeriodicBoxRANS and PeriodicBoxLES and run a 2-cores parallel calculation, to initialize the turbulent flow in the box: \\
 \textbf{trust PeriodicBoxRANS 2} \\
 \textbf{trust PeriodicBoxLES 2} \\
-(The full calculation in RANS takes approximately 1h and 10h in LES.)
+(The full calculation takes approximately 1h in RANS and 10h in LES.)
 \end{itemize}
 
 \end{block}
@@ -1354,21 +1369,21 @@ Notice that we use \textbf{"trust"} command line because this script will use th
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{3D turbulent flow in a curved pipe}
+\frametitle{Turbulent flow in a curved pipe (3D)}
 \begin{block}{TrioCFD}
 
 \begin{itemize}
-\item Open the file PeriodicBoxRANS.dt\_ev and PeriodicBoxLES.dt\_ev to read the last time of the two calculation after 100 time steps.
+\item Open the file PeriodicBoxRANS.dt\_ev and PeriodicBoxLES.dt\_ev to read the last time of the two calculations after 100 time steps.
 
 \item Once finished, open the file DomainFlowRANS.data and DomainFlowLES.data and change the maximal number of time steps to 10.
 
-\item You can see that theses data files are constituted by 2 problems, one for the box and one for the domain.
+\item You can see that these data files are constituted by 2 problems, one for the box and one for the domain.
     \begin {itemize}
-    \item We use the velocity and temperature fields of the last time step of the PeriodicBoxRANS (or LES) calculation into the initial conditions of the pb\_box problem with the keyword "Champ\_fonc\_reprise\index{Champ\_fonc\_reprise}".
-    \item In addition in the pb\_dom, the velocity and temperature fields of the pb\_box are used in the initial conditions of the pb\_dom throught the keyword "champ\_front\_recyclage".
+    \item We use the velocity and temperature fields of the last time step of the PeriodicBoxRANS (or LES) calculation as initial conditions for the pb\_box problem with the keyword "Champ\_fonc\_reprise\index{Champ\_fonc\_reprise}".
+    \item In addition, the velocity and temperature fields of the pb\_box are used as boundary conditions for the pb\_dom through the keyword "champ\_front\_recyclage".
     \end{itemize}
 
-\item Run a 6 cores parallel calculation of the domain (it will stop by default after 10 times steps):\\
+\item Run a 6-cores parallel calculation over the domain (it will stop by default after 10 times steps):\\
 \textbf{trust DomainFlowRANS 6}\\
 \textbf{trust DomainFlowLES 6}
 
@@ -1379,7 +1394,7 @@ Notice that we use \textbf{"trust"} command line because this script will use th
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\section{{\bf{Turbulent flow on a 3D step}}}
+\section{{\bf{Turbulent flow over a backward-facing step (3D)}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -1392,7 +1407,7 @@ Notice that we use \textbf{"trust"} command line because this script will use th
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Turbulent flow on a 3D step}
+\frametitle{Turbulent flow over a backward-facing step}
 \begin{block}{TrioCFD}
 
 \begin{figure}
@@ -1404,7 +1419,7 @@ Notice that we use \textbf{"trust"} command line because this script will use th
 
 \textbf{Fluid}: $\mu=5.10^{-5} kg.m^{-1}.s^{-1}, \rho=2 kg.m^{-3}$
 
-\textbf{Boundaries conditions}: with in entry $R_e=\frac{U_0 H_{inlet} \rho}{\mu} = \frac{1 \times 1 \times 2}{5.10^{-5}} = 40000$\\
+\textbf{Boundary conditions}: with in entry $Re=\frac{U_0 H_{inlet} \rho}{\mu} = \frac{1 \times 1 \times 2}{5.10^{-5}} = 40000$\\
 Inlet: $U_0=1 m.s^{-1}$\\
 Outlet: $P_0=0$
 
@@ -1413,7 +1428,7 @@ Outlet: $P_0=0$
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Turbulent flow on a 3D step}
+\frametitle{Turbulent flow over a backward-facing step}
 \begin{block}{TrioCFD}
 
 \begin{itemize}
@@ -1430,8 +1445,8 @@ Outlet: $P_0=0$
 \item Edit the data file and: \\
     \begin{itemize}
     \item [$\circ$] Note that we use a "Pb\_Hydraulique\_Turbulent" problem with "Navier\_Stokes\_Turbulent" equations and a "modele\_turbulence\index{modele\_turbulence}" model.
-    \item [$\circ$] Modify the fluid characteristics to perform a calculation at $R_e=50000$. For example, impose $\rho = 1 kg.m^{-3}$ and $\mu=2.10^{-5} kg.m^{-1}.s^{-1}$.
-%    \item [$\circ$] Define a turbulent hydraulic problem (see Reference Guide).
+    \item [$\circ$] Modify the fluid characteristics to perform a calculation at $Re=50000$. For example, impose $\rho = 1 kg.m^{-3}$ and $\mu=2.10^{-5} kg.m^{-1}.s^{-1}$.
+%    \item [$\circ$] Define a turbulent hydraulic problem (see Reference Manual).
     \item [$\circ$] Select the sub-grid Smagorinsky turbulence model with standard wall law instead of the "sous\_maille" model (LES).
     \item [$\circ$] Select the Quick\index{quick} convection scheme.
     \item [$\circ$] Post-process of velocity, pressure, vorticity, turbulent viscosity at the nodes and elements.
@@ -1444,7 +1459,7 @@ Outlet: $P_0=0$
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Turbulent flow on a 3D step}
+\frametitle{Turbulent flow over a backward-facing step}
 \begin{block}{TrioCFD}
 
 \begin{itemize}
@@ -1452,7 +1467,7 @@ Outlet: $P_0=0$
 \item Run the calculation and post-process the main calculated fields.\\
 \textbf{trust Marche3D} \\
 
-\item Notice that we use \textbf{"trust"} command line because this script will use the variable \$exec which is the path to the TrioCFD executable.
+\item Notice that we use \textbf{"trust"} command lines because this script will use the variable \$exec which is the path to the TrioCFD executable.
 
 \item Replace the sub-grid model by the standard k\_eps model (RANS).
 \item Run the calculation and post-process of the velocity field to see the differences between the different turbulence models used.
@@ -1465,7 +1480,7 @@ Outlet: $P_0=0$
 
 
 
-\section{{\bf{Tank filling (2D-single phase flow)}}}
+\section{{\bf{Tank filling (2D, single-phase flow)}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -1478,17 +1493,17 @@ Outlet: $P_0=0$
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Tank filling (2D-single phase flow)}
+\frametitle{Tank filling (2D, single-phase flow)}
 \begin{block}{We want to simulate the following flow:}
 
 \begin{tabular}{cl}
-\multirow{14}{*}{\includegraphics[width=0.3\textwidth]{PICTURES/tank2D.pdf}} & \textbf{Fluid}: Coloured water \tabularnewline
+\multirow{14}{*}{\includegraphics[width=0.3\textwidth]{PICTURES/tank2D.pdf}} & \textbf{Fluid}: Colored water \tabularnewline
  & diffusion $D=10^{-9}m^{2}.s^{-1}$, \tabularnewline
  & $\rho=1000kg.m^{-3}$, $\mu=10^{-3}kg.m^{-1}.s^{-1}$\tabularnewline
 
  & \tabularnewline
 
- & \textbf{Boundary condition}:\tabularnewline
+ & \textbf{Boundary conditions}:\tabularnewline
 
  & \textit{Inlet}: Velocity: $(V_{x},V_{y})=(V(t),0)$  \tabularnewline
  & with $V(t)=
@@ -1507,7 +1522,7 @@ Outlet: $P_0=0$
 
  & \tabularnewline
 
- & \textbf{Initial condition}: Concentration $C_0=0$, \tabularnewline
+ & \textbf{Initial conditions}: Concentration $C_0=0$, \tabularnewline
  & Velocity $V=0$ \tabularnewline
 \end{tabular}
 
@@ -1516,13 +1531,13 @@ Outlet: $P_0=0$
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Tank filling (2D-single phase flow)}
+\frametitle{Tank filling (2D, single-phase flow)}
 \begin{block}{}
 
 \begin{itemize}
 \item Source the TRUST environment:\\
 \textbf{source /home/triou/env\_TRUST\_X.Y.Z.sh}
-\item Copy the study named \textbf{diagonale}. This test case deals with a 2D flow with Navier Stokes and the equation for one constituent.
+\item Copy the study named \textbf{diagonale}. This test case deals with a 2D flow with Navier-Stokes and the equation for one constituent.
 \item Edit the data file and modify the fluid characteristics to the previous ones ($\mu, \rho, D$).
 \item We want to modify the geometry of this problem to the previous picture. So we want to create 3 blocks like:
 \end{itemize}
@@ -1537,19 +1552,19 @@ Outlet: $P_0=0$
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Tank filling (2D-single phase flow)}
+\frametitle{Tank filling (2D, single-phase flow)}
 \begin{block}{}
 
 \begin{itemize}
-\item Create the corresponding mesh with 3 blocks (start with $dx=dy=0.2cm$ which gives a total node number $Nx=51$ and $Ny=121$). 
+\item Create the corresponding mesh with 3 blocks (start with $dx=dy=0.2cm$ which gives a total nodes number $Nx=51$ and $Ny=121$). 
     \begin{itemize}
-    \item [$\circ$] Create a first block "Block1" which origin is (0, 0.03), $Nx=51$, $Ny=121$ (for $dx=dy=0.2cm$), $L=0.1 m$, $H=0.21 m$. Name the wall boundaries Left1, Outlet(=Top1) and Right1. (Don't forget the comma between two block definition.)
-    \item [$\circ$] Create the second block "Block2" which origin is (0, 0.02), $Nx=51$, $Ny=6$ (for $dx=dy=0.2cm$), $L=0.1 m$, $H=0.01 m$. Name the wall boundaries Inlet(=Left2) and Right2.
-    \item [$\circ$] Create the third block "Block3" which origin is (0, 0), $Nx=51$, $Ny=11$ (for $dx=dy=0.2cm$), $L=0.1 m$, $H=0.02 m$. Name the wall boundaries Left3, Bottom3 and Right3.
+    \item [$\circ$] Create a first block "Block1" whose origin is (0, 0.03), $Nx=51$, $Ny=121$ (for $dx=dy=0.2cm$), $L=0.1 m$, $H=0.21 m$. Name the wall boundaries Left1, Outlet(=Top1) and Right1. (Don't forget the comma between blocks definitions.)
+    \item [$\circ$] Create the second block "Block2" whose origin is (0, 0.02), $Nx=51$, $Ny=6$ (for $dx=dy=0.2cm$), $L=0.1 m$, $H=0.01 m$. Name the wall boundaries Inlet(=Left2) and Right2.
+    \item [$\circ$] Create the third block "Block3" whose origin is (0, 0), $Nx=51$, $Ny=11$ (for $dx=dy=0.2cm$), $L=0.1 m$, $H=0.02 m$. Name the wall boundaries Left3, Bottom3 and Right3.
     \end{itemize}
 \item Define the boundary wall, using the keyword \textbf{"RegroupeBord\index{RegroupeBord}"}.
 \item You could also use facteurs and symx, symy keywords to define a refined mesh near the walls. 
-\item Check the mesh with: \textbf{trust -mesh\index{trust -mesh} diagonale} and correct the mesh errors if needed.
+\item Check the mesh with: \textbf{trust -mesh\index{trust -mesh} diagonale} and correct the mesh errors if necessary.
 \end{itemize}
 
 \end{block}
@@ -1557,23 +1572,22 @@ Outlet: $P_0=0$
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Tank filling (2D-single phase flow)}
+\frametitle{Tank filling (2D, single-phase flow)}
 \begin{block}{}
 
 \begin{itemize}
-\item In the data file, change the values in the time scheme to finish the calculation at 1
-second, and modify \textbf{dt\_min\index{dt\_min}} and \textbf{dt\_max\index{dt\_max}} values to let TRUST calculates itself its
-time step.
+\item In the data file, change the values in the time scheme to stop the calculation at 1
+second, and modify \textbf{dt\_min\index{dt\_min}} and \textbf{dt\_max\index{dt\_max}} values to let TRUST compute time step.
 
-\item Change values for the gravity to $-9.81 m.s^{-2}$ following y axe.
+\item Change values for the gravity to $-9.81 m.s^{-2}$ following y-axis.
 
-\item Note that the \textbf{beta\_co\index{beta\_co}} keyword may be useful in order to have a Boussinesq coupling between momentum and concentration equations ($\beta C_0 g(C-C_0$) source term added in Navier Stokes equation).
+\item Note that the \textbf{beta\_co\index{beta\_co}} keyword may be useful in order to have a Boussinesq coupling between momentum and concentration equations ($\beta C_0 g(C-C_0$) source term added to the Navier-Stokes equations).
 
-\item Change the initial and boundary conditions for Navier Stokes equation:
+\item Change the initial and boundary conditions for Navier-Stokes equations:
     \begin{itemize}
     \item [$\circ$] for the Outlet boundary, you have to impose $P=0$,
     \item [$\circ$] for the Wall boundary, you have to impose $V_x=V_y=0$ with \textbf{"paroi\_fixe\index{paroi\_fixe}"} keyword.,
-    \item [$\circ$] for the Intlet boundary, you have to impose $(V_{x},V_{y})=(V(t),0)$ with 
+    \item [$\circ$] for the Inlet boundary, you have to impose $(V_{x},V_{y})=(V(t),0)$ with 
     $V(t)=  
     \begin{cases}  
     1-(y-0.025/0.005)^{2} & ,\; t\leq0.5s\\
@@ -1590,7 +1604,7 @@ time step.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Tank filling (2D-single phase flow)}
+\frametitle{Tank filling (2D, single-phase flow)}
 \begin{block}{}
 
 \begin{itemize}
@@ -1601,7 +1615,7 @@ time step.
                     \textbf{Frontiere\_ouverte C\_ext Champ\_front\_uniforme 1 0.} \\
     \item [$\circ$] For the Wall, the keyword for impermeable boundary condition for concentration is \textbf{paroi\index{paroi}}.
     \end{itemize}
-\item Check you have high order schemes (i.e. \textbf{"Quick\index{quick}"} scheme) used in both equations to reduce numerical diffusion. 
+\item Check you have high-order schemes (i.e. \textbf{"Quick\index{quick}"} scheme) used in both equations to reduce numerical diffusion. 
 \item Notice you could have suppressed diffusion term in concentration equation rather than using a small diffusion coefficient with:\\
 \textbf{Diffusion \{ negligeable\index{negligeable} \}}
 \item Add a concentration probe near the inlet (e.g.: at (0,0.025)).
@@ -1613,16 +1627,16 @@ time step.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Tank filling (2D-single phase flow)}
+\frametitle{Tank filling (2D, single-phase flow)}
 \begin{block}{}
 
 \begin{itemize}
-%\item Change the period to 0.1s in the post processing definition (keyword \textbf{dt\_post}).
+%\item Change the period to 0.1s in the post-processing definition (keyword \textbf{dt\_post}).
 \item Run the study and follow the time evolution with the probes:\\
 \textbf{trust -evol\index{trust -evol} diagonale \&} \\
 "Start computation!" button and "Plot" or "Plot on same" for probes.
 \item Check the flow rate in inlet boundary in the diagonale\_pb\_Debit.out file (plotted on the right of the PLOT2D window). You should find a value near $6.8 \; 10^{-3} m^2.s^{-1}$.
-\item Use VisIt to post process the results at t=0.2, t=0.4s and t=0.7s. VisIt has some interesting feature for this study. It can give concentration histogram to check the numerical diffusion in the concentration equation: Add $\rightarrow$ Histogram $\rightarrow$ CONCENTRATION\_ELEM\_dom.
+\item Use VisIt to post-process the results at t=0.2, t=0.4s and t=0.7s. VisIt has some interesting feature for this study. It can give concentration histogram to check the numerical diffusion in the concentration equation: Add $\rightarrow$ Histogram $\rightarrow$ CONCENTRATION\_ELEM\_dom.
 The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ before $t=0.5s$ and $Vol(t)=3.33.10^{-3}$ after.
 \end{itemize}
 
@@ -1631,7 +1645,7 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Tank filling (2D-single phase flow)}
+\frametitle{Tank filling (2D, single-phase flow)}
 \begin{block}{$\rightarrow$ VEF}
 
 \begin{itemize}
@@ -1649,16 +1663,16 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Tank filling (2D-single phase flow)}
+\frametitle{Tank filling (2D, single-phase flow)}
 \begin{block}{$\rightarrow$ VEF}
 
 \begin{itemize}
-\item As TRUST explain, to avoid this problem, you can:
+\item As TRUST indicates, to avoid this problem, you can:
     \begin{itemize}
     \item [$\circ$] change the \textbf{trianguler\index{trianguler}} keyword to \textbf{trianguler\_h\index{Trianguler\_H}}, 
     \item [$\circ$] or use the \textbf{VerifierCoin\index{VerifierCoin}} keyword. For this, after this first error you must find a "diagonale\_VEF.decoupage\_som" file in your directory, so you can use it by adding:\\
     \textbf{VerifierCoin dom \{ read\_file diagonale\_VEF.decoupage\_som \} }\\
-    just after "trianguler\index{trianguler} dom". This will subdivides inconsistent 2D/3D cells used with VEFPreP1B\index{VEFPreP1B} discretization (cf Reference Guide).
+    just after "trianguler\index{trianguler} dom". This will subdivides inconsistent 2D/3D cells used with VEFPreP1B\index{VEFPreP1B} discretization (cf Reference Manual).
     \end{itemize}
 
 \item Run the calculation and compare the results between \textbf{VDF/quick} and \textbf{VEFPreP1B/muscl} which must take much more time!
@@ -1670,7 +1684,7 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 
 
 
-\section{{\bf{Tank filling (3D-two phases flow)}}}
+\section{{\bf{Tank filling (3D, two-phase flow)}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -1683,7 +1697,7 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Tank filling (3D-two phases flow)}
+\frametitle{Tank filling (3D, two-phase flow)}
 \begin{block}{TrioCFD}
 
 %\begin{figure}
@@ -1707,7 +1721,7 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
  & \textbf{Initial conditions}: $V=0$, \tabularnewline
  & $C=e^{(-((x-0.02)^{2}+(y-0.02)^{2}+(z-0.03)^{2})/0.03^{2})}$ \tabularnewline
  & \tabularnewline
- & N.B.: The interface between the air and the gaz\tabularnewline
+ & N.B.: The interface between the air and the gas\tabularnewline
  & is a parabolic function.\tabularnewline
 \end{tabular}
 
@@ -1716,7 +1730,7 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Tank filling (3D-two phases flow)}
+\frametitle{Tank filling (3D, two-phase flow)}
 \begin{block}{TrioCFD}
 
 \begin{itemize}
@@ -1726,13 +1740,13 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 
 \item Copy the study named \textbf{FTD\_all\_VDF}: \textbf{trust -copy\index{trust -copy} FTD\_all\_VDF}
 
-\item This test case deals with a 3D two phase flow in a tank with one initial interface between liquid and gas, a droplet, and a rotating solid in the liquid. The model used is the Discontinuous Front Tracking method and the mesh is 3D structured mesh.
+\item This test case deals with a 3D two-phase flow in a tank with one initial interface between liquid and gas, a droplet, and a rotating solid in the liquid. The Discontinuous Front Tracking method is used with a 3D structured mesh.
 
 \item Notice that:
     \begin{itemize}
     \item [$\circ$] 2D Discontinuous Front Tracking method has not been intensively tested yet.
     \item [$\circ$] the type of the problem: \textbf{Probleme\_FT\_disc\_gen\index{Probleme\_FT\_disc\_gen}} in the data file. This refers to the Discontinuous Front Tracking method.
-    \item [$\circ$] the keyword \textbf{modele\_turbulence\index{modele\_turbulence}}. Navier-Stokes equation of the Discontinuous Front Tracking problem needs the read of this keyword even if the flow is laminar. In this case, use the \textbf{nul\index{nul}} keyword just after \textbf{modele\_turbulence\index{modele\_turbulence}}. Else, specify the turbulence model chosen.
+    \item [$\circ$] the keyword \textbf{modele\_turbulence\index{modele\_turbulence}}. Navier-Stokes equations of the Discontinuous Front Tracking problem needs the read of this keyword even if the flow is laminar. In this case, use the \textbf{nul\index{nul}} keyword just after \textbf{modele\_turbulence\index{modele\_turbulence}}. Else, specify the turbulence model to use.
     \end{itemize}
 \end{itemize}
 
@@ -1741,17 +1755,17 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Tank filling (3D-two phases flow)}
+\frametitle{Tank filling (3D, two-phase flow)}
 \begin{block}{TrioCFD}
 
 \begin{itemize}
-\item Increase the height of the tank (0.06 to 0.12).
+\item Increase the height of the tank (from 0.06 to 0.12).
 
-\item Add a second drop above the first one, at $z=0.08$ (keywords \textbf{ajout\_phase0\index{ajout\_phase0}} could be useful to add other interfaces, cf Reference Guide for \textbf{ajout\_phase0/ajout\_phase1\index{ajout\_phase1}} keywords). Don't forget the comma between the two definition of the drops.
+\item Add a second drop above the first one, at $z=0.08$ (keywords \textbf{ajout\_phase0\index{ajout\_phase0}} could be useful to add other interfaces, cf Reference Manual for \textbf{ajout\_phase0/ajout\_phase1\index{ajout\_phase1}} keywords). Don't forget the comma between the two definition of the drops.
 
-\item Change the \textbf{dt\_post\index{dt\_post}} period of the 3 post processing blocks (0.05 to 0.01). The first one (add \textbf{format lata\index{format lata}}) is the classical block for post processing probes and fields. Here, we want to see the concentration field and the \textbf{"indicatrice\_interf"} field. Value of this field is 0 for liquid and 1 for gas, so the interface is located at "indicatrice" value 0.5.
+\item Change the \textbf{dt\_post\index{dt\_post}} period of the 3 post-processing blocks (0.05 to 0.01). The first one (add \textbf{format lata\index{format lata}}) is the classical block for post-processing probes and fields. Here, we want to see the concentration field and the \textbf{"indicatrice\_interf"} field. Value of this field is 0 for liquid and 1 for gas, so the interface is located at "indicatrice" value 0.5.
 
-\item Change the interpolation location of \textbf{indicatrice\_interf\index{indicatrice\_interf}} and the \textbf{concentration} fields in the first post processing block, by adding the keyword \textbf{elem} just after the fields: the values in the post processing tool will be plotted at the center of each element of the mesh.
+\item Change the interpolation location of \textbf{indicatrice\_interf\index{indicatrice\_interf}} and the \textbf{concentration} fields in the first post-processing block, by adding the keyword \textbf{elem} just after the fields: the values in the post-processing tool will be plotted at the center of each element of the mesh.
 \end{itemize}
 
 \end{block}
@@ -1759,17 +1773,17 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Tank filling (3D-two phases flow)}
+\frametitle{Tank filling (3D, two-phase flow)}
 \begin{block}{TrioCFD}
 
 \begin{itemize}
-\item The second post processing block is the new syntax to post process interfaces moving meshes. You can visualize it with \textbf{VisIt}. 
+\item The second post-processing block is the new syntax to post-process interfaces moving meshes. You can visualize it with \textbf{VisIt}. 
 
-\item On each interface, you can plot several fields ie: curvature with \textbf{courbure} keyword and velocity interface with \textbf{vitesse} keyword, \textbf{pe} field is for debugging purpose, it is useless here, you can suppress it) on several locations (on nodes with \textbf{sommets} keyword, on cells with \textbf{elements} keyword).
+\item On each interface, you can plot several fields i.e.: curvature with \textbf{courbure} keyword and velocity interface with \textbf{vitesse} keyword, \textbf{pe} field is for debugging purpose, it is useless here, you can suppress it) on several locations (on nodes with \textbf{sommets} keyword, on cells with \textbf{elements} keyword).
 
 \item Run the calculation. Follow the time step evolution by having a look at the \textbf{dt\_ev} file. It contains on each line the physical time, the time step, security factor and residuals.
 
-\item Post process to visualize the interface and the concentration field.
+\item Post-process to visualize the interface and the concentration field.
 
 \item You can increase the number of cells to have a finest simulation or also change to VEF discretization.
 
@@ -1814,20 +1828,20 @@ The volume of colored water (in $m^3$) is given by $Vol(t)= 6.66.10^{-3} t$ befo
 \begin{block}{Create a geometry}
 
 \begin{itemize}
-\item Create a directory and run Salom\'e (we suppose it is installed):\\
-\textbf{mkdir -p $\sim$/Formation\_TRUST/yourname/salome/exo1} \\
-\textbf{cd $\sim$/Formation\_TRUST/yourname/salome/exo1} \\
+\item Create a directory:\\
+\textbf{mkdir -p Formation\_TRUST/yourname/salome/exo1} \\
+\textbf{cd Formation\_TRUST/yourname/salome/exo1} \\
 
-\textbf{/export/home/salome/SALOME-7.7.1-FD18/salome} \\
-\# or if no local version: {\scriptsize{\textbf{/home/salome/salome}}} \\
-\# take the network version but to be used for testing NOT for work.
+\item Launch Salom\'e (we suppose it is installed):\\
+\textbf{\$PathToSalome/salome \&} 
 
 \item Create a new study: File $\rightarrow$ New
 
 \item Select the Geometry module into the SALOME drop-down menu (contains all the modules).
 
-\item Create a first geometry with: New Entity $\rightarrow$ Primitives $\rightarrow$ Cylinder
 \item Save your study in hdf format (Salome format) frequently.
+
+\item Create a first geometry with: New Entity $\rightarrow$ Primitives $\rightarrow$ Cylinder
 \end{itemize}
 
 \end{block}
@@ -1930,8 +1944,8 @@ Mesh & Create Groups from Geometry \tabularnewline
 \begin{itemize}
 \item Now, we are going to create groups for the mesh, by using the geometry groups: Mesh $\rightarrow$ Create Groups from Geometry.
 \item Click on "Mesh\_1" object in the Object Browser to select it.
-\item Then push the arrow button of Elements/Geometry if it's not already done.
-\item Select together the 3 groups (Inlet, Wall and Outlet) with CTRL+left click in the Cylinder\_1 object of the Object Browser, then press Apply and Close.
+\item Then push the arrow button of Elements/Geometry.
+\item Select together the 3 groups (Inlet, Wall and Outlet) with "Ctrl"+left click in the Cylinder\_1 object of the Object Browser, then press Apply and Close.
 \item Check that the 3 boundaries are in the "Group of Faces" of the Mesh\_1 object in the Object Browser.
 \item Export your mesh with the MED format :\\
 Select the Mesh\_1 object then Right Click $\rightarrow$ Export $\rightarrow$ MED file (or File $\rightarrow$ Export $\rightarrow$ MED file).
@@ -1959,7 +1973,7 @@ Select the Mesh\_1 object then Right Click $\rightarrow$ Export $\rightarrow$ ME
 \hline 
 \end{tabular}
 
-\item Run the data file and post process the mesh with VisIt:\\
+\item Run the data file and post-process the mesh with VisIt:\\
 \textbf{source  /home/triou/env\_TRUST\_X.Y.Z.sh} \\
 \textbf{trust dom} \\
 \textbf{visit\index{visit} -o mesh.lata} \\
@@ -2044,7 +2058,7 @@ Netgen & MG
 \item As TRUST accepted only tetras elements, you can quickly tetraedrize:
     \begin{itemize}
     \item [$\circ$] Select the Refined\_Mesh in the Object Browser.
-    \item [$\circ$] "Modification" $\rightarrow$ "Split Volums" and select "Tetrahedron".
+    \item [$\circ$] "Modification" $\rightarrow$ "Split Volumes" and select "Tetrahedron".
     \item [$\circ$] Don't change the parameters, and click "Apply and Close".
     \end{itemize}
 \end{itemize}
@@ -2061,7 +2075,7 @@ Netgen & MG
 \item As usual, define the mesh boundaries with Groups:
     \begin{itemize}
     \item [$\circ$] Select the Refined\_Mesh, Right click $\rightarrow$ Create Groups from Geometry.
-    \item [$\circ$] Select "Inlet", "Outlet", "Wall" with Ctrl+click in the Cylinder\_1 object, then Apply and Close.
+    \item [$\circ$] Select "Inlet", "Outlet", "Wall" with "Ctrl"+click in the Cylinder\_1 object, then Apply and Close.
     \end{itemize}
 
 \item Export the mesh:
@@ -2119,8 +2133,8 @@ Netgen & MG
 
 \begin{itemize}
 \item Create a directory and run Salom\'e (we suppose it is installed):\\
-\textbf{mkdir -p $\sim$/Formation\_TRUST/yourname/salome/exo2} \\
-\textbf{cd $\sim$/Formation\_TRUST/yourname/salome/exo2} \\
+\textbf{mkdir -p Formation\_TRUST/yourname/salome/exo2} \\
+\textbf{cd Formation\_TRUST/yourname/salome/exo2} \\
 
 \textbf{/export/home/salome/SALOME-7.7.1-FD18/salome} \\
 \# or if no local version: {\scriptsize{\textbf{/home/salome/salome}}} \\
@@ -2267,8 +2281,8 @@ Then "Apply and Close"
 
 \begin{itemize}
 \item Create a directory and run Salom\'e (we suppose it is installed):\\
-\textbf{mkdir -p $\sim$/Formation\_TRUST/yourname/salome/exo3} \\
-\textbf{cd $\sim$/Formation\_TRUST/yourname/salome/exo3} \\
+\textbf{mkdir -p Formation\_TRUST/yourname/salome/exo3} \\
+\textbf{cd Formation\_TRUST/yourname/salome/exo3} \\
 
 \textbf{/export/home/salome/SALOME-7.7.1-FD18/salome} \\
 \# or if no local version: {\scriptsize{\textbf{/home/salome/salome}}} \\
@@ -2319,7 +2333,7 @@ Rotation & Translation & Fuse \tabularnewline
 
 \begin{itemize}
 \item Fuse Cylinder\_1 and Translation\_1: Operations $\rightarrow$ Boolean $\rightarrow$ Fuse\\
-Name: Fuse\_1, Selected Objects: 2\_Objects (use Ctrl key to select Cylinder\_1 and Translation\_1 in the Object Browser). \\
+Name: Fuse\_1, Selected Objects: 2\_Objects (use "Ctrl" button to select Cylinder\_1 and Translation\_1 in the Object Browser). \\
 Then "Apply and Close".
 
 \begin{figure}
@@ -2464,14 +2478,14 @@ Click on the surface of the Cylinder\_1 then "Add", click on the surface of Tran
 \item As TRUST accepted only tetras elements, you can quickly tetraedrize:
     \begin{itemize}
     \item [$\circ$] Select Mesh\_1 in the Object Browser.
-    \item [$\circ$] "Modification" $\rightarrow$ "Split Volums" and select "Tetrahedron".
+    \item [$\circ$] "Modification" $\rightarrow$ "Split Volumes" and select "Tetrahedron".
     \item [$\circ$] Don't change the parameters, and click "Apply and Close".
     \end{itemize}
 
 \item Define the mesh boundaries with Groups:
     \begin{itemize}
     \item [$\circ$] Select the Mesh\_1, Right click $\rightarrow$ Create Groups from Geometry.
-    \item [$\circ$] Select "Inlet\_x", "Inlet\_z", "Outlet" and "Wall" with Ctrl+click in the Fuse\_1 object.
+    \item [$\circ$] Select "Inlet\_x", "Inlet\_z", "Outlet" and "Wall" with "Ctrl"+click in the Fuse\_1 object.
     \item [$\circ$] Then Apply and Close.
     \end{itemize}
 
@@ -2552,8 +2566,8 @@ or in parallel with:\\
 \begin{itemize}
 \item Create a directory and copy an example:\\
 {\footnotesize{
-\textbf{mkdir \, -p \, $\sim$/Formation\_TRUST/yourname/gmsh} \\
-\textbf{cd \, $\sim$/Formation\_TRUST/yourname/gmsh} \\
+\textbf{mkdir \, -p \, Formation\_TRUST/yourname/gmsh} \\
+\textbf{cd \, Formation\_TRUST/yourname/gmsh} \\
 \textbf{source /home/triou/env\_\textcolor{blue}{TrioCFD}\_X.Y.Z.sh }\\
 \textbf{echo \$project\_directory} \\
 \textbf{dir=\$project\_directory/validation/share/Validation/Rapports\_automatiques/Validant} \\
@@ -2594,7 +2608,7 @@ or in parallel with:\\
 \begin{block}{}
 
 \hspace{1cm} $\color{darkblue}\circ$ {\small{ suppress the numbers 4 and 5 in the "Physical Line" "Axis". It refers to the \\
-\hspace{1.4cm} lines 4 and 5 which don't exist anymore.}}\\
+\hspace{1.4cm} lines 4 and 5 which does not exist anymore.}}\\
 \hspace{1cm} $\color{darkblue}\circ$ {\small{ suppress the numbers 1,3,4 and 5 in the "Line Loop(1)".}}\\
 \hspace{1cm} $\color{darkblue}\circ$ {\small{ set H to 2 and L to 10. (You can comment D, E, param and X definitions.)}}
 
@@ -2726,8 +2740,8 @@ Physical Volume("dom") = \{1\};
         \item [$\circ$] read the MED file:\\
                         \textbf{Lire\_med family\_names\_from\_group\_names dom file file.med } \\
                         Notice that by default with Gmsh, the mesh name is the name of the file!
-        \item [$\circ$] change the discretisation type,
-        \item [$\circ$] be careful of the choice of the convection scheme for your VEF calculation,
+        \item [$\circ$] change the discretization type,
+        \item [$\circ$] be careful to the choice of the convection scheme for your VEF calculation,
         \item [$\circ$] and run the simulation on the unstructured mesh.
         \end{itemize}
 \end{itemize}
@@ -2785,10 +2799,10 @@ Physical Volume("dom") = \{1\};
 \begin{block}{}
 
 \begin{itemize}
-\item Click on "Start ...", a window opens to save your data file. Name it for example "test\_wiz.data" and clock on "Save".
+\item Click on "Start ...", a window opens to save your data file. Name it for example "test\_wiz.data" and click on "Save".
 \item The TRUST PLOT2D tool opens, click on "Start computation!".
 \item An error occurs! Open your data file with "Edit data" button.
-\item Correct the expression of gravity field adding a third composant.
+\item Correct the expression of gravity field by adding a third component.
 \item Add a "\textbf{tmax}" value (for example 'tmax 0.1') and suppress the max number of iterations.
 \item Save it and run your simulation.
 \item It must be long because of the size of the cells. You can decrease it and create another mesh with gmsh to run faster.
@@ -2828,8 +2842,8 @@ Note that in Xprepro, we dig a geometry in an initial block of matter.
 
 \begin{itemize}
 \item Create a directory:\\
-\textbf{mkdir \, -p \, $\sim$/Formation\_TRUST/yourname/Xprepro/exo1} \\
-\textbf{cd \, $\sim$/Formation\_TRUST/yourname/Xprepro/exo1} \\
+\textbf{mkdir \, -p \, Formation\_TRUST/yourname/Xprepro/exo1} \\
+\textbf{cd \, Formation\_TRUST/yourname/Xprepro/exo1} \\
 \textbf{source /home/triou/env\_TRUST\_X.Y.Z.sh }\\
 \textbf{Xprepro \&} 
 \end{itemize}
@@ -2849,11 +2863,11 @@ Note that in Xprepro, we dig a geometry in an initial block of matter.
     \item [$\circ$] the list of existing objects: viewlist (empty for the moment).
     \end{itemize}
 \item Click on "Default" button to begin from a cube. Read the pop-up window and click on "Ok". A new nedit window appears, opening a file named "maillagedefaut" in which we will set the values of the parameters used in our geometry.
-\item We want to create a cube of lenght L=10m, height H=1m and width l=1m with a cylinder of radius R=0.4m at one meter from the left side of the cube. So the center of the cylinder is located at the point $x=xomin+L/10$, $y=yomin+H/2$ with $(xomin, yomin, zomin)$ the origin of the frame.
-\item Set theses values in the window "maillagedefaut":
+\item We want to create a cube of length L=10m, height H=1m and width l=1m with a cylinder of radius R=0.4m at one meter from the left side of the cube. So the center of the cylinder is located at the point $x=xomin+L/10$, $y=yomin+H/2$ with $(xomin, yomin, zomin)$ the origin of the frame.
+\item Set these values in the window "maillagedefaut":
 \begin{itemize}
     \item [$\circ$] Add the declaration of the parameter "radius" in the first line of the "maillagedefaut" file.
-    \item [$\circ$] Set the values of $xomin=0$, $xomax=10$, $yomin=0$, $yomax=2$, $zomin=0$ and $zomax=1$.
+    \item [$\circ$] Set the values $xomin=0$, $xomax=10$, $yomin=0$, $yomax=2$, $zomin=0$ and $zomax=1$.
     \item [$\circ$] Add the initialization of the radius: $radius=0.4$.
 \end{itemize}
 \end{itemize}
@@ -2873,8 +2887,8 @@ Note that in Xprepro, we dig a geometry in an initial block of matter.
 
 \begin{itemize}
 \item Save your file.
-\item You can see the definition of $XM(1/nx)$, $YM(1/ny)$ and $ZM(1/nz)$, they represent the boundaries of the domain with a width of $\varepsilon=0.01$.
-\item You can see on the top of the "viewlist" window the values of $nx$, $ny$ and $nz$. For the moment they are fixed to $4$, it is the minimal number of nodes in an Xprepro mesh. Indeed the first point in x direction is on $XM(1)$, the second on $xomin$, the third on $xomax$ and the fourth $XM(nx)$.
+\item You can see the definition of $XM(1/nx)$, $YM(1/ny)$ and $ZM(1/nz)$, it represent the boundaries of the domain with a width of $\varepsilon=0.01$.
+\item You can see on the top of the "viewlist" window the values of $nx$, $ny$ and $nz$. For the moment they are set to $4$, it is the minimal number of nodes in an Xprepro mesh. Indeed the first point in the x-direction is on $XM(1)$, the second on $xomin$, the third on $xomax$ and the fourth $XM(nx)$.
 \item Note that the "real" number of cells in the final domain is: $Nx=nx-3$, $Ny=ny-3$ and $Nz=nz-3$.
 \end{itemize}
 
@@ -2887,12 +2901,12 @@ Note that in Xprepro, we dig a geometry in an initial block of matter.
 \begin{block}{}
 
 \begin{itemize}
-\item Note that the "maillagefefaut" file and your prepro file are saved in the directory $\sim$/Formation\_TRUST/yourname/Xprepro/model.
-\item Click on "Modify" on the top of the "viewlist" window to change the values of $nx$, $ny$ and $nz$ to have $NX=100$, $Ny=20$ and $Nz=10$. Then "Ok". 
-\item Think to save your geometry with "Save file prepro"!
+\item Note that the "maillagefefaut" file and your prepro file are saved in the directory Formation\_TRUST/yourname/Xprepro/model.
+\item Click on "Modify" on the top of the "viewlist" window to change the values of $nx$, $ny$ and $nz$ to have $Nx=100$, $Ny=20$ and $Nz=10$. Then "Ok". 
+\item Do not forget to save your geometry with "Save file prepro"!
 \item You can see in this window that there are some "?", we will complete them now.
-\item Note that the lines whom finish by a "(comm)" are commented lines.
-\item Choose the index number of the matter by double-clicking on the line 5 "filling up of the domain...", set the index of the matter to $1000$. (For matter, we must use positive numbers, matter with a negative number will be deleted.)
+\item Note that lines ending by a "(Comm)" are commented lines.
+\item Choose the index number of the matter by double-clicking on the line 5 "filling up of the domain...", set the index of the matter to $1000$. (For matters, we must use positive numbers. Matters with a negative index will be deleted.)
 \item Double-click on the line 7 "back boundary...", change the name of the boundary from "back boundary" to "Wall", and set the matter index to $-1000$. (Negative numbers for boundaries.)
 \end{itemize}
 
@@ -2905,7 +2919,7 @@ Note that in Xprepro, we dig a geometry in an initial block of matter.
 \begin{block}{}
 
 \begin{itemize}
-\item Do the same for the lines 8 to 12:
+\item Do the same thing with lines 8 to 12:
     \begin{itemize}
     \item [$\circ$] line 8, change the "front boundary" name to "Wall", INDMAT=$-1000$,
     \item [$\circ$] line 9, change the "left boundary" name to "Inlet", INDMAT=$-2000$,
@@ -2913,11 +2927,11 @@ Note that in Xprepro, we dig a geometry in an initial block of matter.
     \item [$\circ$] line 11, change the "bottom boundary" name to "Bottom", INDMAT=$-1000$,
     \item [$\circ$] line 12, change the "top boundary" name to "Top", INDMAT=$-1000$.
     \end{itemize}
-\item Add the cylinder, click on "Add", then click on the "? $\square$" button and select "cylinder".
-\item Name it "Obstacle", set the values of (AC) and (BC) with C the center of the cylinder so (AC, BC) are the coordinates of C in the plan xOy, so $AC=xomin+(xomax-xomin)/10$ and $BC=yomin+(yomax-yomin)/2$.
+\item Add the cylinder, click on "Add", then click on the "$\square$" button and select "cylinder".
+\item Name it "Obstacle", set the values of (AC) and (BC) with C the center of the cylinder so (AC, BC) are the coordinates of C in the xOy plane, so $AC=xomin+(xomax-xomin)/10$ and $BC=yomin+(yomax-yomin)/2$.
 \item Set the Radius to "radius".
-\item Set $CMIN=zomin$ and $CMAX=zomax$, $CMAX-CMIN$ correspond to the cylinder width.
-\item Set IDIR to $3$, the cylinder axe and INDMAT to $-9000$ (to make a hole) then "Ok".
+\item Set $CMIN=zomin$ and $CMAX=zomax$, $CMAX-CMIN$ corresponds to the cylinder width.
+\item Set IDIR to $3$, the cylinder axis and INDMAT to $-9000$ (to make a hole) then "Ok".
 
 \end{itemize}
 
@@ -2958,8 +2972,8 @@ Note that in Xprepro, we dig a geometry in an initial block of matter.
 \item Close VisIt, and click on "Modeling run..." and then "Pre-mesh visualization".
 \item Note that a cell is composed of a matter if its barycenter is in this matter's zone.
 \item Close VisIt, click on "Pre-processing run...", you can see the names of the boundaries in function of the indexes that we gave. For exemple, the boundary number 4 is made of the boundaries "Wall", "Wall", Bottom" and "Top" and it's TRUST name will be "Wall\_Wall\_Bottom\_Top".
-\item You can change the names of theses boundaries, to have the name you want.
-\item To give a name to a boundary is not mandatory for the boundaries with the same matter inder. You have just to name almost one of it.
+\item You can change the names of these boundaries, to have the name you want.
+\item To give a name to a boundary is not mandatory for the boundaries with the same matter index. You have just to name at least one of it.
 \item Click on "Get geom", a nedit window opens with a TRUST data file named "defaut.mesh".
 \end{itemize}
 
@@ -3017,8 +3031,8 @@ The radius of the cylinders is 0.2m and the distances between cylinders are 0.2m
 
 \begin{itemize}
 \item Create a directory: Run Xprepro in the TRUST environment:\\
-\textbf{mkdir \, -p \, $\sim$/Formation\_TRUST/yourname/Xprepro/exo2} \\
-\textbf{cd \, $\sim$/Formation\_TRUST/yourname/Xprepro/exo2} \\
+\textbf{mkdir \, -p \, Formation\_TRUST/yourname/Xprepro/exo2} \\
+\textbf{cd \, Formation\_TRUST/yourname/Xprepro/exo2} \\
 \textbf{source /home/triou/env\_TRUST\_X.Y.Z.sh }\\
 \textbf{Xprepro \&} 
 \end{itemize}
@@ -3073,7 +3087,7 @@ The radius of the cylinders is 0.2m and the distances between cylinders are 0.2m
     \item [$\circ$] line 12, change the "top boundary" name to \textbf{""}, INDMAT=$0$.
     \end{itemize}
 
-\item The coordinates of the center of the first cylinder, which after will be duplicated, are (x0, y0)=(0.6, 0.4). So the distance between to cylinder center is $dx=0.8$ and $dy=0.3$. Declare and initialize this parameters $(x0, y0, dx, dy)$ in your "maillagedefaut" file.
+\item The coordinates of the center of the first cylinder, which after will be duplicated, are (x0, y0)=(0.6, 0.4). So the distance between two cylinder center is $dx=0.8$ and $dy=0.3$. Declare and initialize these parameters $(x0, y0, dx, dy)$ in your "maillagedefaut" file.
 
 \item Think about how to create 2 Fortran nesteed loops to copy the first cylinder in the two directions X and Y.
 \end{itemize}
@@ -3087,8 +3101,8 @@ The radius of the cylinders is 0.2m and the distances between cylinders are 0.2m
 \begin{block}{}
 
 \begin{itemize}
-\item Create them with the button "Add", select "(fortran code)" instead of "?$\square$" and write your loops in fortran.
-\item Check the other objects in the viewlist and save your work with the button "Save file" prepro then check the name of the boundaries with "Boundaries informations".
+\item Create them with the button "Add", select "(fortran code)" instead of "$\square$" and write your loops in fortran.
+\item Check the other objects in the viewlist and save your work with the button "Save file" prepro then check the name of the boundaries with "Boundaries information".
 \item Run the model with "Modeling run...". A window is opened where you will check the nodes coordinates of the mesh.
 \item Click on "Pre-mesh visualization" to check your pre-mesh.
 
@@ -3106,11 +3120,11 @@ The radius of the cylinders is 0.2m and the distances between cylinders are 0.2m
 \begin{block}{}
 
 \begin{itemize}
-\item Zoom onto the boundaries to check the boundary blocks are all defined.
+\item Zoom onto the boundaries to check that the boundary blocks are all defined.
 
 \item Click "Pre-processing run" to create the final mesh (check there is no error messages).
 
-\item Click on "Get geom" to generate the TRUST .geom file in your study. It opens a nedit windows with a TRUST data file, save it in your repository with the name "dom\_1.data".
+\item Click on "Get geom" to generate the TRUST .geom file in your study. It opens a nedit window with a TRUST data file, save it in your repository with the name "dom\_1.data".
 \item Suppress the first lines in comments "\#" and the "\textbackslash{}n" ending a commentary line.
 \item Add at the end of the file:\\
 \textbf{Discretiser\_domaine\index{discretiser\_domaine} dom\_1} \\
@@ -3159,8 +3173,8 @@ The radius of the cylinders is 0.2m and the distances between cylinders are 0.2m
 \begin{itemize}
 \item First copy the validation form named Source\_canal\_perio:\\
 {\small{
-\textbf{mkdir -p $\sim$/Formation\_TRUST/yourname/validation} \\
-\textbf{cd  $\sim$/Formation\_TRUST/yourname/validation} \\
+\textbf{mkdir -p Formation\_TRUST/yourname/validation} \\
+\textbf{cd  Formation\_TRUST/yourname/validation} \\
 \textbf{VERIF=\$TRUST\_ROOT/Validation/Rapports\_automatiques/Verification} \\
 \textbf{cp -r \$VERIF/Verification\_codage/Source\_canal\_perio \, .} \\
 \textbf{cd Source\_canal\_perio}
@@ -3215,16 +3229,16 @@ or\\
 \begin{block}{}
 
 \begin{itemize}
-\item Add the evolution of residus in the report in log scale (Cf. .dt\_ev file). For this, introduce a new block with "Figure" and "Curve" keywords:
+\item Add the evolution of residuals in the report in log scale (see .dt\_ev file). For this, introduce a new block with "Figure" and "Curve" keywords:
     \begin{itemize}
     \item [$\circ$] Complete the chapter "Additional information" with a new block "Figure":\\
     {\scriptsize{
 %    \textbf{Chapter \{}  \\
 %    \hspace{.3cm} \textbf{Title "Additional information"}  \\
     \hspace{.3cm} \textbf{Figure \{}  \\
-    \hspace{.6cm} \textbf{Title "Residus evolution"}  \\
+    \hspace{.6cm} \textbf{Title "Residuals evolution"}  \\
     \hspace{.6cm} \textbf{LabelX "Time (s)"}  \\
-    \hspace{.6cm} \textbf{LabelY "Residu"}  \\
+    \hspace{.6cm} \textbf{LabelY "Residual"}  \\
     \hspace{.6cm} \textbf{LogX}  \\
     \hspace{.6cm} \textbf{LogY}  \\
     \hspace{.6cm} \textbf{Include\_description\_Curves 0}  \\
@@ -3238,7 +3252,7 @@ or\\
     \hspace{.3cm} \textbf{\}}  \\
 %    \textbf{\}}  \\
     }}
-    \item [$\circ$] You can help with:
+    \item [$\circ$] If you need help, see:
         \begin{itemize}
         \item [$\diamond$] {\scriptsize{\$TRUST\_ROOT/Validation/Outils/Genere\_courbe/doc/manuel.xhtml\#paramFigure}}
         \item [$\diamond$] {\scriptsize{\$TRUST\_ROOT/Validation/Outils/Genere\_courbe/doc/manuel.xhtml\#paramCourbe}}
@@ -3255,15 +3269,15 @@ or\\
 \frametitle{Validation form}
 \begin{block}{}
 
-\hspace{1cm} $\color{darkblue}\circ$ {\small{Visualize the pressure field at last time: complete the chapter "Additional \\
+\hspace{1cm} $\color{darkblue}\circ$ {\small{Visualize the pressure field at the last time: complete the chapter "Additional \\
 \hspace{1.3cm} information" with a new block "Visu" using "PseudoColor" keywords. The \\
-\hspace{1.3cm} name of field and localization must be uppercase letter: }}
+\hspace{1.3cm} name of the field and its localization must be uppercase letter: }}
 
 {\footnotesize{
 %\hspace{1.5cm} \textbf{Chapter \{ } \\
 %\hspace{1.8cm} \textbf{Title “Additional information”} \\
 \hspace{1.3cm} \textbf{Visu \{ } \\
-\hspace{1.6cm} \textbf{Title "Visualization of pressure field at last time" } \\
+\hspace{1.6cm} \textbf{Title "Visualization of pressure field at the last time" } \\
 \hspace{1.6cm} \textbf{Description "Pressure field..."} \\
 \hspace{1.6cm} \textbf{Pseudocolor} \textit{data\_file\_name.lata domain\_name FIELD POSITION} \\
 \hspace{1.6cm} \textbf{Cycles}  \textit{cycle\_numbers}\\
@@ -3274,7 +3288,7 @@ or\\
 {\small{
 \hspace{1.3cm} NB: Cycle '-1' correspond to the last time. \\
 \hspace{1.3cm} NB: You can use the "magnitude" keyword to visualize the velocity field \\
-\hspace{1.3cm} without using arrows.
+\hspace{1.3cm} without using arrows (\small{Syntax: Pseudocolor data\_file\_name.lata dom\_magnitude VITESSE SOM}).
 }}
 \vspace{0.2cm}
 
@@ -3291,7 +3305,7 @@ or\\
 \begin{block}{}
 
 \begin{itemize}
-\item Now, we are going to extract the number of cells and the last time in three of the .err files and write the results in .dat files via a post\_run script.
+\item Now, we are going to extract the number of cells and the last time from three .err files and write it in .dat files via a post\_run script.
 
     \begin{itemize}
     \item [$\circ$] Create a "post\_run" file in the src directory containing:\\
@@ -3303,11 +3317,11 @@ or\\
     \textbf{tp1=\` \,grep "Backup of the field" std.err $|$ awk '\{print \$NF\}' $|$ head -n 1 \`} \\
     \textbf{tp2=\` \,grep "Backup of the field" debit.err $|$ awk '\{print \$NF\}' $|$ head -n 1 \`} \\
     \textbf{tp3=\` \,grep "Backup of the field" debit2.err $|$ awk '\{print \$NF\}' $|$ head -n 1 \`} \\
-    \textbf{echo \$tp1 \$tp2 \$tp3 $>$ lastime.dat} \\
+    \textbf{echo \$tp1 \$tp2 \$tp3 $>$ lasttime.dat} \\
     }}
 
     \item [$\circ$] Add a table to display the results of .dat files: complete the chapter "Additional information" by introducing a new block with "table" and "line" keywords.\\
-    You can help with:
+    If you need help, see:
         \begin{itemize}
         \item [$\diamond$] {\scriptsize{\$TRUST\_ROOT/Validation/Outils/Genere\_courbe/doc/manuel.xhtml\#paramTableau}}
         \item [$\diamond$] {\scriptsize{\$TRUST\_ROOT/Validation/Outils/Genere\_courbe/doc/manuel.xhtml\#paramLigne}}
@@ -3324,7 +3338,7 @@ or\\
 \frametitle{Validation form}
 \begin{block}{}
 
-\hspace{1cm} $\color{darkblue}\circ$ {\small{ The table block will looks like:\\
+\hspace{1cm} $\color{darkblue}\circ$ {\small{ The table block will look like:\\
 {\footnotesize{
 %\textbf{Chapter \{ } \\
 %\hspace{0.3cm} \textbf{Title "Additional information"} \\
@@ -3367,7 +3381,7 @@ or\\
     \item [$\circ$] Modify the "Canal.prm" file in "src" directory to take into account the new test case debit4. Add in the \textbf{Parameters} block :\\
     \hspace{0.3cm} \textbf{TestCase . Debit4.data}\\
 
-    \item [$\circ$] Build the report by running the 4 test case concurrently and not sequentially:\\
+    \item [$\circ$] Build the report by running the 4 test cases simultaneously (not sequentially):\\
     \textbf{Run\_fiche\index{Run\_fiche} -parallel\_run -xpdf}
     \item [$\circ$] You can add the results of this test case to your "visu" and "table".
     \end{itemize}
@@ -3553,13 +3567,13 @@ or\\
 \begin{block}{Shortcuts}
 
 \begin{tabular}{ll}
-\textbf{ctrl+c} & Halts the current command                                     \tabularnewline
-\textbf{ctrl+z} & Stops the current command, resume with fg in the foreground   \tabularnewline
+\textbf{"Ctrl"+c} & Halts the current command                                     \tabularnewline
+\textbf{"Ctrl"+z} & Stops the current command, resume with fg in the foreground   \tabularnewline
                 & or bg in the background                                       \tabularnewline
-\textbf{ctrl+d} & Logout the current session, similar to exit                   \tabularnewline
-\textbf{ctrl+w} & Erases one word in the current line                           \tabularnewline
-\textbf{ctrl+u} & Erases the whole line                                         \tabularnewline
-\textbf{ctrl+r} & Type to bring up a recent command                             \tabularnewline
+\textbf{"Ctrl"+d} & Logout the current session, similar to exit                   \tabularnewline
+\textbf{"Ctrl"+w} & Erases one word in the current line                           \tabularnewline
+\textbf{"Ctrl"+u} & Erases the whole line                                         \tabularnewline
+\textbf{"Ctrl"+r} & Type to bring up a recent command                             \tabularnewline
 \textbf{!!}     & Repeats the last command                                      \tabularnewline
 \textbf{exit}   & Logout the current session                                    \tabularnewline
 \end{tabular}

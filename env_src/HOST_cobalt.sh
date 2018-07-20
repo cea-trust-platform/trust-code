@@ -34,36 +34,43 @@ romio_cb_read  enable
 cb_config_list *:1" > ROMIO_HINTS.env
    echo "export ROMIO_HINTS=\$TRUST_ROOT/env/ROMIO_HINTS.env # ROMIO HINTS" >> $env
    #
+   # qstat inexistente sur les dernieres machines du CCRT/TGCC
+   echo "Command qstat created on $HOST"
+   cp $TRUST_ROOT/bin/KSH/qstat_wrapper $TRUST_ROOT/bin/KSH/qstat
+   modulecmd=`ls /opt/Modules/bin/modulecmd.tcl /usr/bin/modulecmd.tcl /usr/share/modules-tcl/libexec/modulecmd.tcl 2>/dev/null`
+   echo "# For $HOST cluster:
+module () {
+   eval \`tclsh $modulecmd sh \$*\`
+}" >> $env
+   #
    # Load modules
-   # intel 14.0.3.174 16.0.3.210(default) intel/17.0.4.196
+   # intel/15.0.6.233  intel/16.0.3.210  intel/17.0.4.196  intel/17.0.6.256(default)  intel/18.0.1.163
    intel="intel/16.0.3.210"
-   #Vgcc # gnu 4.8.4 4.8.5(default) 4.9.3 5.4.0 6.1.0 6.3.0 7.1.0
-   #Vgcc intel="gnu/4.8.5"
-   # openmpi mpi/openmpi/1.8.4 mpi/openmpi/1.8.8(default) mpi/openmpi/2.0.2 
-   # bibliotheque MellanoX Messaging (MXM) pour optimisation des communications MPI mpiprofile/openmpi/mxm
-   #openmpi="mpi/openmpi/1.8.8 mpiprofile/openmpi/mxm"
+   #intel="intel/17.0.6.256"
+   # gnu/4.8.5  gnu/4.9.2  gnu/5.4.0  gnu/6.3.0  gnu/6.4.0  gnu/7.1.0  gnu/7.3.0(default)
+   #intel="gnu/7.3.0"
+   # openmpi mpi/openmpi/1.8.8 mpi/openmpi/2.0.2 mpi/openmpi/2.0.4(default) mpi/wi4mpi/3.1.5
    openmpi="mpi/openmpi/1.8.8"
-   #Vgcc openmpi="feature/openmpi/gnu"
-   # intelmpi mpi/intelmpi/5.1.3.210  mpi/intelmpi/2017.0.4.196(default) # 2016: You are currently not allowed to use this software
-   #openmpi="mpi/intelmpi/2017.0.4.196"
-   # wi4mpi mpi/wi4mpi/3.0.5 mpi/wi4mpi/3.0.6(default) mpi/wi4mpi/3.1.0 mpi/wi4mpi/3.1.2
-   #openmpi="mpi/wi4mpi/3.0.6"
-   #Python 2.7.5 python/2.7.8  python/2.7.12(default)  python/2.7.13  python/3.5.2 
-   #cmake version 2.8.12.2 cmake/3.5.2  cmake/3.9.1
-   #module="$intel $openmpi"
-   # newenv/2016-09  newenv/2018-03(default)
-   module="newenv/2016-09"
+   #openmpi="mpi/openmpi/2.0.4"
+   # intelmpi mpi/intelmpi/2017.0.4.196 mpi/intelmpi/2017.0.6.256 mpi/intelmpi/2018.0.1.163(default)
+   #openmpi="mpi/intelmpi/2018.0.1.163"
+   # wi4mpi mpi/wi4mpi/3.1.5 mpi/wi4mpi/3.2.0 mpi/wi4mpi/3.2.1(default)
+   #openmpi="mpi/wi4mpi/3.2.1"
+   module="$intel $openmpi"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
    echo "module load $module 1>/dev/null" >> $env
-   #Vgcc module="flavor/openmpi/cea flavor/openmpi/gcc"
-   #Vgcc echo "module switch $module 1>/dev/null" >> $env
+   #
+   # If libccc_user module found, load it (this module helps to know the CPU)
+   module=libccc_user
+   if [ "`tclsh $modulecmd sh show $module 2>&1`" != "" ]
+   then
+      echo "Module $module detected and loaded on $HOST."
+      module load $module  >> $env
+   fi
+   #
    . $env
-   # Creation wrapper qstat -> squeue
-   echo "#!/bin/bash
-squeue" > $TRUST_ROOT/bin/qstat
-   chmod +x $TRUST_ROOT/bin/qstat
 }
 
 ##############################

@@ -676,11 +676,7 @@ void Polyedre::reduit_index(const ArrOfInt& elems_sous_part)
 }
 void Polyedre::compute_virtual_index()
 {
-
-  printOn(Cerr);
-
   // Methode brutal mais il faut bien commencer ....
-
 
   IntTab faces_som(0,nb_face_elem_max_,nb_som_face_max_);
   ma_zone.valeur().creer_tableau_elements(faces_som);
@@ -746,9 +742,6 @@ void Polyedre::compute_virtual_index()
         }
 
     }
-
-  printOn(Cerr);
-
 
   for (int ele=nb_elem; ele<nb_elem_tot; ele++)
     {

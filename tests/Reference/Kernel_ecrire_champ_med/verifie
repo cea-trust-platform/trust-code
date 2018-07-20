@@ -1,3 +1,5 @@
 #!/bin/bash
+# Added test to know if MED PLUGIN of lata2x is compiled
+[ "$TRUST_DISABLE_MEDCOUPLING" != 0 ] && exit 0
 gunzip  ref.med.gz 
 compare_lata ref.med crit_0000.med 2>/dev/null

@@ -12,7 +12,7 @@ compile=0 && [ "$3" = "-compile" ] && compile=1 && shift
 
 #[ "`liste_machines | grep $adr`" != $adr ] && echo "$adr no accessible by ssh..." && exit
 # Est ce que la version existe ?
-GRAVAGE=$WORKDIR/A_GRAVER_CD_TRUST
+GRAVAGE=$WORKDIR/archives/ARCHIVES_TRUST
 file=TRUST-$v".tar.gz" && [ ! -f $GRAVAGE/$file ] && echo "$GRAVAGE/$file not exists." && exit
 
 rep=TRUST

@@ -74,7 +74,7 @@ The VDF and VEF validated modules are designed to process the 2D or 3D flow of N
 \draw[black,fill=red!80] (B1) -- (C1) -- (F1) -- (G1) -- cycle ;
 \draw (0.75,0.75) node[above]{\textbf{MC2}} ;
 \end{scope}
-% box Genepi+
+% box GENEPI3
 \begin{scope}[xshift=1.625 cm, yshift=0.625 cm]
 \coordinate (A1) at (0,0.625) ;
 \coordinate (B1) at (1.5,0.625) ;
@@ -86,7 +86,7 @@ The VDF and VEF validated modules are designed to process the 2D or 3D flow of N
 \draw[black,fill=vert] (A1) -- (B1) -- (C1) -- (D1) -- cycle ;
 \draw[black,fill=vert] (D1) -- (C1) -- (F1) -- (E1) -- cycle ;
 \draw[black,fill=vert] (B1) -- (C1) -- (F1) -- (G1) -- cycle ;
-\draw (0.75,0.7) node[above]{\textbf{GENEPI+}} ;
+\draw (0.75,0.7) node[above]{\textbf{GENEPI3}} ;
 \end{scope}
 \end{tikzpicture}
 \caption{Trio\_U: brick software}
@@ -134,7 +134,7 @@ Here is the structure of \trust platform (cf Figure \ref{TRUST}):
 \draw[black,fill=DeepSkyBlue!80] (B1) -- (C1) -- (F1) -- (G1) -- cycle ;
 \draw (0.75,0.75) node[above]{\textbf{TrioCFD}} ;
 \end{scope}
-% box TrioMC2
+% box TrioMC
 \begin{scope}[xshift=1.625 cm]
 \coordinate (A1) at (0,0.625) ;
 \coordinate (B1) at (1.5,0.625) ;
@@ -146,9 +146,9 @@ Here is the structure of \trust platform (cf Figure \ref{TRUST}):
 \draw[black,fill=red!80] (A1) -- (B1) -- (C1) -- (D1) -- cycle ;
 \draw[black,fill=red!80] (D1) -- (C1) -- (F1) -- (E1) -- cycle ;
 \draw[black,fill=red!80] (B1) -- (C1) -- (F1) -- (G1) -- cycle ;
-\draw (0.75,0.75) node[above]{\textbf{TrioMC2}} ;
+\draw (0.75,0.75) node[above]{\textbf{TrioMC}} ;
 \end{scope}
-% box Genepi+
+% box GENEPI3
 \begin{scope}[xshift=3.248 cm]
 \coordinate (A1) at (0,0.625) ;
 \coordinate (B1) at (1.5,0.625) ;
@@ -160,7 +160,7 @@ Here is the structure of \trust platform (cf Figure \ref{TRUST}):
 \draw[black,fill=vert] (A1) -- (B1) -- (C1) -- (D1) -- cycle ;
 \draw[black,fill=vert] (D1) -- (C1) -- (F1) -- (E1) -- cycle ;
 \draw[black,fill=vert] (B1) -- (C1) -- (F1) -- (G1) -- cycle ;
-\draw (0.75,0.7) node[above]{\textbf{Genepi+}} ;
+\draw (0.75,0.7) node[above]{\textbf{GENEPI3}} ;
 \end{scope}
 %% box MPCube
 \begin{scope}[xshift=4.875 cm]
@@ -426,7 +426,7 @@ To run your data file, you must initialize the TRUST environment using the follo
 \begin{verbatim}
 > source $my_path_to_TRUST_installation/env_TRUST.sh
 source $my_path_to_TRUST_installation/env/env_TRUST.sh
-TRUST vX.Y.Z support : triou@cea.fr
+TRUST vX.Y.Z support : trust@cea.fr
 Loading personal configuration /$path_to_my_home_directory/.perso_TRUST.env
 \end{verbatim}
 
@@ -455,6 +455,7 @@ Here is a panel of available options:
 Usage: trust [option] datafile [nb_cpus] [1>file.out] [2>file.err]
 Where option may be:
 -help|-h                      : List options.
+-baltik                       : Instanciate a empty Baltik project.
 -index                        : Access to the TRUST ressource index.
 -doc                          : Access to the TRUST manual (Generic Guide).
 -config nedit|vim|emacs|gedit : Configure nedit or vim or emacs with TRUST keywords.
@@ -498,7 +499,7 @@ datafile -help_trust          : Print options of TRUST_EXECUTABLE [CASE[.data]] 
 %                          calculation. 
 
 
-
+\newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Parallel calculation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

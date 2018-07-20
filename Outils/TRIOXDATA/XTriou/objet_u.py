@@ -2045,7 +2045,7 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
     except:
          pass
     if (icl.attdiscr==1):
-         tstr+="Keyword Discretiser should have already be used to read the object. \n\n"
+         tstr+="Keyword Discretize should have already been used to read the object. \n\n"
     if fr:
         # print "clname",clname
         tstr=tstr+ "See also: "+ ipere.name_trio_
@@ -2422,10 +2422,10 @@ def gen_doc_base(fr=1):
  \begin{document}
 \title{
 \vspace{5cm} 
-\Huge \textbf{TRUST Reference Manual V1.7.6} \vspace{0.5cm}}
+\Huge \textbf{TRUST Reference Manual V1.7.8beta} \vspace{0.5cm}}
 \author{
 \vspace{2cm} 
-\LARGE \textbf{Support team: \href{mailto:triou@cea.fr}{triou@cea.fr}} \\
+\LARGE \textbf{Support team: \href{mailto:trust@cea.fr}{trust@cea.fr}} \\
 \vspace{4cm} % espace entre ref manual et ce qui est en dessous
 Link to: \LARGE \textbf{\href{run:TRUST_Generic_Guide.pdf}{ TRUST Generic Guide}}\\
  }

@@ -110,7 +110,7 @@ Read pb
 		{
 		  mean_temperature_elem_ponderee Reduction_0D
 		   {
-			methode moyenne_ponderee
+			methode weighted_average
 			source Interpolation
 			{
 				localisation elem
@@ -119,7 +119,7 @@ Read pb
 		   }	
 		  mean_temperature_som_ponderee Reduction_0D
 		   {
-			methode moyenne_ponderee
+			methode weighted_average
 			source Interpolation
 			{
 				localisation som
@@ -128,12 +128,12 @@ Read pb
 		   }	
 		  mean_temperature_face_ponderee Reduction_0D
 		   {
-			methode moyenne_ponderee
+			methode weighted_average
 			source refChamp { Pb_champ pb temperature }
 		   }	
 		  mean_temperature_pas_ponderee Reduction_0D
 		   {
-			methode moyenne
+			methode average
 			source refChamp { Pb_champ pb temperature }
 		   }	
 		}

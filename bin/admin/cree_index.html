@@ -13,7 +13,7 @@ REP_NUIT=/data/tmptrust/tmptrust/Historique/NUIT
 ######################################
 # Debut creation de la page index.html
 ######################################
-release_date=`ls --full-time $WORKDIR/PORTAGE_$stable/linux/TRUST/exec/TRUST$COMM"_opt" 2>/dev/null | $TRUST_Awk '{print $6}'`
+release_date=`ls --full-time $WORKDIR/portages/PORTAGE_$stable/linux/TRUST/exec/TRUST$COMM"_opt" 2>/dev/null | $TRUST_Awk '{print $6}'`
 [ ${#release_date} = 0 ] && release_date=`grep " "$stable" version released" $TRUST_ROOT/RELEASE_NOTES | $TRUST_Awk '{print $1}'`
 os_supported=`cat $TRUST_ROOT/bin/admin/liste.machines | $TRUST_Awk '/get_binary/ {print $1}'`
 package=`ls_ftp $PUBLIC/Version$stable | awk '/.tar.gz/ {print $NF}'`
@@ -54,12 +54,13 @@ echo "
 <pre>make # Build the code</pre>
 <pre>make check # Check the code</pre>
 <LI>If you want to change now the code in a new branch:<BR>
-<pre>git checkout -b YourNewBranch</pre>
+<pre>git checkout -b YourLogin/YourNewBranch</pre>
 <LI>Later, to update your work with the latest $stable patch:<BR>
 <pre>git pull origin $patch_branch</pre>
 <LI>If you want also to share your work with CEA developpers, once commited, you can run:<BR>
-<pre>git remote add shared $TRUST_GIT_SHARED</pre>
-<pre>git push shared YourNewBranch</pre>
+<pre>git remote add tuleap https://codev-tuleap.intra.cea.fr/plugins/git/trust/trust-code.git</pre>
+<pre>git remote update</pre>
+<pre>git push tuleap YourLogin/YourNewBranch</pre>
 <BR><B>Version portability:</B>
 <BR>For this $stable release, TRUST has been succesfully built on several OS:
 ">> $html
@@ -77,6 +78,12 @@ echo "
 </HTML>" >> $html
 cp_ftp $TRUST_ROOT/bin/README_INSTALL $PUBLIC/Version$stable
 cp_ftp $TRUST_ROOT/src/README_ECLIPSE $PUBLIC/Version$stable
+cp_ftp $TRUST_ROOT/doc/TRUST/TRUST_Generic_Guide.pdf $PUBLIC/documentation/Notes
+cp_ftp $TRUST_ROOT/doc/TRUST/TRUST_tutorial.pdf $PUBLIC/documentation/Notes
+cp_ftp $TRUST_ROOT/doc/TRUST/Baltik_tutorial.pdf $PUBLIC/documentation/Notes
+cp_ftp $TRUST_ROOT/doc/TRUST/TRUST_Reference_Manual.pdf $PUBLIC/documentation/Notes
+cp_ftp $TRUST_ROOT/doc/TRUST/Manuel_Xprepro.pdf $PUBLIC/documentation/Notes
+cp_ftp $TRUST_ROOT/doc/TRUST/TrioCFD_Reference_Manual.pdf $PUBLIC/documentation/Notes
 cp_ftp $TRUST_ROOT/bin/HTML/animation.gif $PUBLIC
 cp_ftp $TRUST_ROOT/bin/HTML/animation.gif $SECRET
 cp_ftp $html $PUBLIC

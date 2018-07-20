@@ -27,6 +27,14 @@
 *
 *****************************************************************************/
 
+////////////////////////////////////////////////////////////
+//
+// Warning : DO NOT EDIT !
+//	     Please update ArrOf_Scalar_Prototype.cpp.h
+//	     and this file will be generated automatically
+//           by the script file check.sh
+////////////////////////////////////////////////////////////
+
 #include <ArrOfDouble.h>
 #include <math.h>
 #include <stdlib.h>
@@ -34,6 +42,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <string.h>
+#include "simd_interface.h"
 
 using namespace std;
 
@@ -52,8 +61,6 @@ using namespace std;
 // .DESCRIPTION
 // VDoubledata alloue une zone de memoire de la taille specifiee au
 // constructeur, et libere la zone de memoire a la destruction.
-// La memoire peut etre allouee sur le tas (avec new) ou par le
-// mecanisme Memoire::add_trav_double.
 //
 // "ref_count" compte le nombre de pointeurs qui font reference a "this".
 // (permet au dernier utilisateur de l'objet de le detruire), voir
@@ -94,9 +101,7 @@ private:
   // "sz" est la taille du tableau "data_" alloue
   // On a sz >= 0.
   entier size_;
-  // Si storage est de type TEMP_STORAGE, d_ptr_trav porte la reference
-  // a la zone allouee, sinon le pointeur est nul.
-  //Double_ptr_trav * d_ptr_trav_;
+  ArrOfDouble::Storage storage_;
 };
 
 
@@ -106,7 +111,7 @@ private:
 //    Signification: taille du VDoubledata, il faut size >= 0
 // Parametre: Storage storage
 //    Signification: indique si la memoire doit etre allouee
-//                   avec "new" ou avec "memoire.add_trav_double()"
+//                   avec "new" ou avec "simd_malloc"
 //    Valeurs par defaut: STANDARD (allocation avec "new")
 // Postcondition:
 //    data_ n'est jamais nul, meme si size==0
@@ -135,8 +140,18 @@ VDoubledata::VDoubledata(entier size, ArrOfDouble::Storage storage)
         if(!data_)
           {
             Cerr << "impossible d'allouer " << size << "double " << finl;
-            throw;
+            throw ;
           }
+#endif
+        break;
+      }
+    case ArrOfDouble::SIMD_ALIGNED:
+      {
+#ifdef SIMD_TOOLS_H
+        data_ = (double*) simd_malloc (sizeof(double) * size);
+#else
+        Cerr<<"unable to allocate simd_aligned, version compiled without simd "<<finl;
+        throw;
 #endif
         break;
       }
@@ -145,7 +160,7 @@ VDoubledata::VDoubledata(entier size, ArrOfDouble::Storage storage)
     }
   ref_count_ = 1;
   size_ = size;
-
+  storage_ = storage;
   assert(data_ != 0);
 }
 
@@ -158,10 +173,26 @@ VDoubledata::~VDoubledata()
   assert(ref_count_ == 0);
 
   // Stockage STANDARD
-  delete[] data_;
+  switch(storage_)
+    {
+    case ArrOfDouble::STANDARD:
+      delete[] data_;
+      break;
+    case ArrOfDouble::SIMD_ALIGNED:
+#ifdef SIMD_TOOLS_H
+      simd_free(data_);
+#else
+      Cerr<<"unable to allocate simd_aligned, version compiled without simd "<<finl;
+      throw;
+#endif
+      break;
+    default:
+      throw;
+    }
 
   data_ = 0;  // paranoia: si size_==-1 c'est qu'on pointe sur un zombie
   size_ = -1; //  (pointeur vers un objet qui a ete detruit)
+  storage_ = ArrOfDouble::STANDARD;
 }
 
 // Description: renvoie ref_count_
@@ -555,18 +586,20 @@ void  ArrOfDouble::fill_default_value(entier first, entier nb)
   data += first;
   if (smart_resize_)
     {
-      // On initialise uniquement en mode debug
-#ifndef NDEBUG
-      // Ceci represente un NAN. N'importe quelle operation avec ca fait encore un NAN.
-      // Si c'est pas portable, on peut remplacer par DMAX_FLOAT sur les autres machines.
-      static const unsigned long long  VALEUR_INVALIDE =
-        0x7ff7ffffffffffffULL;
+      /*
+          // On initialise uniquement en mode debug
+      #ifndef NDEBUG
+          // Ceci represente un NAN. N'importe quelle operation avec ca fait encore un NAN.
+          // Si c'est pas portable, on peut remplacer par DMAX_FLOAT sur les autres machines.
+          static const unsigned long long  VALEUR_INVALIDE =
+            0x7ff7ffffffffffffULL;
 
-      // On utilise "memcpy" et non "=" car "=" peut provoquer une exception
-      // si la copie passe par le fpu.
-      for (entier i = 0; i < nb; i++)
-        memcpy(data + i, & VALEUR_INVALIDE, sizeof(double));
-#endif
+          // On utilise "memcpy" et non "=" car "=" peut provoquer une exception
+          // si la copie passe par le fpu.
+          for (entier i = 0; i < nb; i++)
+            memcpy(data + i, & VALEUR_INVALIDE, sizeof(double));
+      #endif
+      */
     }
   else
     {
@@ -1113,7 +1146,7 @@ ArrOfDouble& ArrOfDouble::operator/= (const double dy)
 
 DoubleTab::DoubleTab()
 {
-  nb_dim_ = 2;
+  // nb_dim_ = 2;
   dimensions_[0] = 0;
   dimensions_[1] = 0;
 }
@@ -1121,14 +1154,14 @@ DoubleTab::DoubleTab()
 DoubleTab::DoubleTab(const DoubleTab& tab) :
   ArrOfDouble(tab)
 {
-  nb_dim_ = tab.nb_dim_;
+  // nb_dim_ = tab.nb_dim_;
   dimensions_[0] = tab.dimensions_[0];
   dimensions_[1] = tab.dimensions_[1];
 }
 DoubleTab::DoubleTab(const entier i, const entier j) :
   ArrOfDouble(i*j)
 {
-  nb_dim_ = 2;
+  // nb_dim_ = 2;
   dimensions_[0] = i;
   dimensions_[1] = j;
 }
@@ -1136,7 +1169,7 @@ DoubleTab::DoubleTab(const entier i, const entier j) :
 DoubleTab& DoubleTab::operator=(const DoubleTab& tab)
 {
   ArrOfDouble::operator=(tab);
-  nb_dim_ = tab.nb_dim_;
+  // nb_dim_ = tab.nb_dim_;
   dimensions_[0] = tab.dimensions_[0];
   dimensions_[1] = tab.dimensions_[1];
   return *this;
@@ -1145,7 +1178,8 @@ DoubleTab& DoubleTab::operator=(const DoubleTab& tab)
 void DoubleTab::reset()
 {
   ArrOfDouble::reset();
-  nb_dim_ = 2;
+  // nb_dim_ = 2;
   dimensions_[0] = 0;
   dimensions_[1] = 0;
 }
+

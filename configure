@@ -5,6 +5,7 @@ TRUST_ROOT_SA=$TRUST_ROOT
 export TRUST_ROOT=`pwd`
 first=1
 [ "$TRUST_ROOT" = "$TRUST_ROOT_SA" ] && [ "$TRUST_ENV" != "" ]  && first=0
+[ -f configure.log ] && first=0
 mkdir -p lib exec env
 ( cd env; ln -sf ../env_src/* .)
 

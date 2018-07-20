@@ -524,3 +524,30 @@
    fun:mca_pml_base_select
 }
 
+##
+## 06/12/2017: Part added by TMA but to be validated by TRUST project leader
+## Triggered by upwind and PAR_upwind tests with OpenMPI 2.0.4 (provided library)
+## On these suppressions, we have not verified that the leaks are not incremental.
+##
+## on is223280, g++ 4.7.2, Fedora 18
+{
+   <upwind_openmpi_2_0_4_0>
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:malloc
+   fun:opal_pmix_pmix112_pmix_bfrop_unpack_string
+   fun:opal_pmix_pmix112_pmix_bfrop_unpack_buffer
+   fun:unpack_val
+   fun:opal_pmix_pmix112_pmix_bfrop_unpack_kval
+   fun:opal_pmix_pmix112_pmix_bfrop_unpack_buffer
+   fun:opal_pmix_pmix112_pmix_bfrop_unpack
+   fun:opal_pmix_pmix112_pmix_client_process_nspace_blob
+   fun:job_data
+   fun:opal_pmix_pmix112_pmix_usock_process_msg
+   fun:event_process_active_single_queue
+   fun:event_process_active
+   fun:opal_libevent2022_event_base_loop
+   fun:progress_engine
+   fun:start_thread
+}
+

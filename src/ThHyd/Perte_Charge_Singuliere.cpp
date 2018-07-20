@@ -179,7 +179,8 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
           for (int j=0; j<nfe; j++)
             {
               int numfa = elem_faces(ssz(poly),j);
-              if ( est_egal(xv(numfa,direction_perte_charge()),position) )
+              // numfa might be negative in case of polyhedron where number of faces for an elem varies (padding)
+              if (numfa >= 0 && est_egal(xv(numfa,direction_perte_charge()),position) )
                 {
                   bool trouve=0;
                   for (int i=0; i<compteur; i++)

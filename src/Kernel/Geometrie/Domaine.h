@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,6 +27,12 @@
 #include <Zones.h>
 #include <Vect.h>
 #include <Interprete_geometrique_base.h>
+#include <medcoupling++.h>
+#ifdef MEDCOUPLING_
+#include <MEDCouplingUMesh.hxx>
+using MEDCoupling::MEDCouplingUMesh;
+using MEDCoupling::MCAuto;
+#endif
 
 class Conds_lim;
 class Zone_dis;
@@ -131,6 +137,17 @@ public :
   {
     return domaines_frontieres_;
   };
+#ifdef MEDCOUPLING_
+  // MEDCoupling:
+  MCAuto<MEDCouplingUMesh>& getUMesh() const
+  {
+    return mesh_;
+  };
+  void setUMesh(MCAuto<MEDCouplingUMesh>& m) const
+  {
+    mesh_ = m->clone(true);
+  };
+#endif
 protected :
 
   LIST(REF(Domaine)) domaines_frontieres_;
@@ -142,6 +159,10 @@ protected :
   double epsilon_;
   int deformable_;
   Nom fichier_lu_;
+#ifdef MEDCOUPLING_
+  ///! MEDCoupling version of the domaine:
+  mutable MCAuto<MEDCouplingUMesh> mesh_;
+#endif
 };
 Declare_liste(Domaine);
 

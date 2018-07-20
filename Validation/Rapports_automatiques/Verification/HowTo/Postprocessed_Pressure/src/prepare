@@ -1,0 +1,56 @@
+#!/bin/bash
+
+#sed    "s/muscl/amont/"                 PAR_VEF_P0P1_g_muscl.data   >  PAR_VEF_P0P1_g_amont.data
+sed    "s/muscl/negligeable/; s/Fields dt_post 40/Fields dt_post 400/" PAR_VEF_P0P1_g_muscl.data   >  PAR_VEF_P0P1_g_negligeable.data
+sed    "s/muscl/Ef_stab { alpha 0.2 }/" PAR_VEF_P0P1_g_muscl.data   >  PAR_VEF_P0P1_g_ef_stab.data
+
+sed    "s/+p_hydro//"                                PAR_VEF_P0P1_g_muscl.data   >  PAR_VEF_P0P1_gx_muscl.data
+#cp PAR_VEF_P0P1_g_muscl.data  PAR_VEF_P0P1_gx_muscl.data
+sed -i "s/gravite 3   0.   0.   -9.81/gravite 3   -9.81   0.   0./" PAR_VEF_P0P1_gx_muscl.data
+sed    "s/muscl/Ef_stab { alpha 0.2 }/"                             PAR_VEF_P0P1_gx_muscl.data  >  PAR_VEF_P0P1_gx_ef_stab.data
+sed    "s/muscl/negligeable/; s/Fields dt_post 80/Fields dt_post 500/" PAR_VEF_P0P1_gx_muscl.data   >  PAR_VEF_P0P1_gx_negligeable.data
+
+sed -n "45,46p" PAR_VEF_P0P1_gx_muscl.data > gravity_gx.txt
+sed -i 's/^\s*//' gravity_gx.txt # supprime les espaces en debut de ligne
+
+sed -n "45,46p" PAR_VEF_P0P1_g_muscl.data > gravity.txt
+sed -i 's/^\s*//' gravity.txt # supprime les espaces en debut de ligne
+
+sed -n "66p" PAR_VEF_P0P1_g_muscl.data > IC.txt
+sed -i 's/^\s*//' IC.txt # supprime les espaces en debut de ligne
+
+sed -n "67,74p" PAR_VEF_P0P1_g_muscl.data > CL.txt
+sed -i 's/^\s*//' CL.txt # supprime les espaces en debut de ligne
+
+sed -n "81,93p" PAR_VEF_P0P1_gx_muscl.data > pression_tot_gx.txt
+sed -i 's/^\s*//' pression_tot_gx.txt # supprime les espaces en debut de ligne
+
+sed -n "81,93p" PAR_VEF_P0P1_g_muscl.data > pression_tot.txt
+sed -i 's/^\s*//' pression_tot.txt # supprime les espaces en debut de ligne
+
+sed -n "79,103p" PAR_VEF_P0P1_g_muscl.data > def_champ_mean_P.txt
+sed -i 's/^\s*//' def_champ_mean_P.txt # supprime les espaces en debut de ligne
+
+sed -n "116,123p" PAR_VEF_P0P1_g_muscl.data > mean_pression_outlet.txt
+sed -i 's/^\s*//' mean_pression_outlet.txt # supprime les espaces en debut de ligne
+
+sed -n "160p" PAR_VEF_P0P1_g_muscl.data > VITX_probe.txt
+sed -i 's/^\s*//' VITX_probe.txt # supprime les espaces en debut de ligne
+
+sed -n "171p" PAR_VEF_P0P1_g_muscl.data > mean_pression_outlet_probe.txt
+sed -i 's/^\s*//' mean_pression_outlet_probe.txt # supprime les espaces en debut de ligne
+
+
+liste="PAR_VEF_P0P1_g_muscl PAR_VEF_P0P1_g_negligeable PAR_VEF_P0P1_g_ef_stab PAR_VEF_P0P1_gx_muscl PAR_VEF_P0P1_gx_ef_stab PAR_VEF_P0P1_gx_negligeable"
+for i in $liste
+do
+        mkdir $i
+        cp mesh_gmsh.med mesh.data $i.data $i
+        cp post_run pre_run propertiesGeometry.py $i
+        cd $i
+        sed -i "s/PAR_VEF_P0P1_g/$i/g" propertiesGeometry.py
+        cd ..
+done
+
+
+

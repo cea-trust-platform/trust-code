@@ -157,18 +157,17 @@ Entree& Pb_MED::readOn(Entree& is )
   la_discretisation=dis_bidon.valeur();
   is >> nom_fic;
   Nom nom_dom;
-  is>>nom_dom;
+  is >> nom_dom;
 
   // on retire _0000 si il existe et on cree le bon fichier
   traite_nom_fichier_med(nom_fic);
 
-
   Domaine& dom=ref_cast(Domaine, Interprete::objet(nom_dom));
-
-  //dom.nommer(nom_dom);
   associer_domaine(dom);
+
+  // Read domain in MED file:
   LireMED lire;
-  lire.lire_geom(nom_fic,dom,nom_dom,nom_dom);
+  lire.lire_geom(nom_fic, dom, nom_dom, nom_dom);
   dom.reordonner();
 
   le_domaine_dis.associer_domaine(dom);
@@ -176,7 +175,7 @@ Entree& Pb_MED::readOn(Entree& is )
 
   Cerr<<"Reading the name of existing fields in "<<nom_fic<<finl;
 #ifdef MED_
-  medinfochamp_existe(nom_fic,nomschampmed,domaine(),temps_sauv_);
+  medinfochamp_existe(nom_fic, nomschampmed, domaine(), temps_sauv_);
 #else
   med_non_installe();
 #endif
@@ -257,9 +256,7 @@ Equation_base& Pb_MED::equation(int i)
   exit();
   assert (i==0);
   //pour les compilos
-
   return Probleme_base::equation("bidon") ;
-
 }
 
 
@@ -274,15 +271,14 @@ int Pb_MED::comprend_champ(const Motcle& mot) const
       if (mot==nomschampmed[ch]) ind= 1;
     }
 
-
   if (ind == 1)
     return ind;
 
   if (ind == 0)
     {
-      Cerr << "Error when reading the data for post-processing\n";
-      Cerr << "The field " << mot << " is not recognized by the problem\n";
-      Cerr<<"recognized words are "<<nomschampmed<<finl;
+      Cerr << "Error when reading the data for post-processing" << finl;
+      Cerr << "The field " << mot << " is not recognized by the problem" << finl;
+      Cerr << "recognized words are "<<nomschampmed<<finl;
       exit();
     }
   return -1;
@@ -293,12 +289,11 @@ void Pb_MED::creer_champ(const Motcle& motlu)
   Cerr<<"Pb_MED::creer_champ "<< motlu<<finl;
   Noms liste_noms;
   get_noms_champs_postraitables(liste_noms);
-  Cerr<<"ooo " <<liste_noms<<finl;
   Champ_Fonc toto; // on ajoute toto et on le type apres pour eviter des copies qui ne marchent pas ...
   Champ_Fonc& le_ch_fonc= champs_fonc_post.add(toto);
   le_ch_fonc.typer("Champ_Fonc_MED");
   int nbchampmed=nomschampmed.size();
-  //  int ind=-1;
+
   Nom localisation;
   Motcle es;
   le_ch_fonc.valeur().nommer(motlu);
@@ -311,7 +306,7 @@ void Pb_MED::creer_champ(const Motcle& motlu)
     {
       Nom pp(nomschampmed[ch]);
       pp.prefix(test);
-      Cerr<<test<<" ICI "<<pp<<" "<<motlu<<finl;
+      //Cerr<<test<<" ICI "<<pp<<" "<<motlu<<finl;
       if (motlu==pp)
         {
           es=pp;
@@ -324,14 +319,13 @@ void Pb_MED::creer_champ(const Motcle& motlu)
               if (es!=pp)
                 localisation="elem";
             }
-          Cerr<<"On wishes to read the field  "<<es<<" choice  "<<localisation<<" readen word in the data set "<<motlu<<finl;
+          Cerr<<"One wishes to read the field "<<es<<" choice "<<localisation<<" readen word in the data set "<<motlu<<finl;
           le_ch_fonc.valeur().nommer(es);
-
           flag=1;
         }
     }
   Champ_Fonc_MED& chmed=ref_cast(Champ_Fonc_MED,le_ch_fonc.valeur());
-  const  Domaine& dom_med = domaine();
+  const Domaine& dom_med = domaine();
   chmed.creer(nom_fic,dom_med,localisation, temps_sauv_);
 
   if (flag)
@@ -343,16 +337,10 @@ void Pb_MED::creer_champ(const Motcle& motlu)
 
   le_ch_fonc.valeur().nommer(motlu);
   chmed.le_champ().nommer(motlu);
-  //  chmed.le_champ().corriger_unite_nom_compo();
-
-
-
-
-
   if (!le_ch_fonc.non_nul())
     {
-      Cerr << "Error when reading data for post-processing\n";
-      Cerr << "The creation of the field " << motlu << " has failed\n";
+      Cerr << "Error when reading data for post-processing" << finl;
+      Cerr << "The creation of the field " << motlu << " has failed." << finl;
       exit();
     }
 }

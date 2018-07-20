@@ -1,0 +1,5 @@
+#!/bin/bash
+
+trust mesh 1>mesh.out 2>mesh.err
+echo ""
+echo "Running calculation..."

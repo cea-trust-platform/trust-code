@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -371,8 +371,11 @@ bool Probleme_U::run()
   double dt=computeTimeStep(stop);
 
   // Print the initialization CPU statistics
-  statistiques().dump("Statistiques d'initialisation du calcul", 0);
-  print_statistics_analyse("Statistiques d'initialisation du calcul", 0);
+  if (!disable_TU)
+    {
+      statistiques().dump("Statistiques d'initialisation du calcul", 0);
+      print_statistics_analyse("Statistiques d'initialisation du calcul", 0);
+    }
   statistiques().reset_counters();
   statistiques().begin_count(temps_total_execution_counter_);
 
@@ -446,8 +449,11 @@ bool Probleme_U::run()
 #endif
 
   // Print the resolution CPU statistics
-  statistiques().dump("Statistiques de resolution du probleme", 1);      // Into _detail.TU file
-  print_statistics_analyse("Statistiques de resolution du probleme", 1); // Into        .TU file
+  if (!disable_TU)
+    {
+      statistiques().dump("Statistiques de resolution du probleme", 1);      // Into _detail.TU file
+      print_statistics_analyse("Statistiques de resolution du probleme", 1); // Into        .TU file
+    }
 
   // Reset the CPU counters
   statistiques().reset_counters();

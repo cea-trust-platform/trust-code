@@ -1,0 +1,15 @@
+#!/bin/bash
+jdd=`pwd`
+jdd=`basename $jdd`
+[ -f PAR_$jdd.lml ] && jdd=PAR_$jdd
+jdd_out=$jdd"_pb_ustar_mean_only.out"
+jdd_face=$jdd"_pb_Ustar.face"
+
+err=0
+[ ! -f "$jdd_out" ] && echo "Error: the output "$jdd_out" file is NOT created." && err=1
+if [ $err = 0 ]
+then
+   bord=`awk '{print $4}' $jdd_out | head -n1`
+   [ "$bord" != "'SortieBasse'" ] && echo $bord && err=1
+fi
+exit $err

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -117,24 +117,24 @@ Entree& Ecrire_Champ_MED::interpreter(Entree& is)
   Nom nom_fic2(nom_fic);
   nom_fic2.prefix(".med");
   post.initialize_by_default(nom_fic2);
-  int est_le_premie_post=1;
-  post.ecrire_entete(0.,0,est_le_premie_post);
+  int est_le_premier_post=1;
+  post.ecrire_entete(0.,0,est_le_premier_post);
   int reprise = 0;
   double t_init = 0.;
 
   // ecriture domaine
-  post.preparer_post(dom.le_nom(),est_le_premie_post,reprise,t_init);
-  post.ecrire_domaine(dom, est_le_premie_post);
+  post.preparer_post(dom.le_nom(),est_le_premier_post,reprise,t_init);
+  post.ecrire_domaine(dom, est_le_premier_post);
   double tps=chp.temps();
 
   post.ecrire_temps(tps);
-  post.init_ecriture(tps,-1.,est_le_premie_post,dom);
+  post.init_ecriture(tps,-1.,est_le_premier_post,dom);
   chp.corriger_unite_nom_compo();
   // ecriture champ
   //chp.postraiter_champ(dom, tps, nom_champ, "ELEM", post);
   // la nature ne sert pas en MED
   Nom Nature("pas_defini");
-  post.ecrire_champ(dom,chp.unites(),chp.noms_compo(),-1,tps,tps,chp.le_nom(),dom.le_nom(),Motcle("elem"),Nature,chp.valeurs());
+  post.ecrire_champ(dom,chp.unites(),chp.noms_compo(),-1,tps,tps,Motcle(chp.le_nom()),dom.le_nom(),Motcle("elem"),Nature,chp.valeurs());
   int fin=1;
   post.finir(fin);
   return is;

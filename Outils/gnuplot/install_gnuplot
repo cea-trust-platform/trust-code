@@ -1,7 +1,7 @@
 #!/bin/bash
 gnuplot=$1
 gd=gd-2.0.36RC1.tar.gz
-Build=$TRUST_ROOT/build/Outils/gnuplot
+Build=$TRUST_ROOT/exec/gnuplot/lib
 [ ! -d ${Build} ] && echo Creating ${Build} directory && mkdir -p ${Build}
 
 # recuperation des packages

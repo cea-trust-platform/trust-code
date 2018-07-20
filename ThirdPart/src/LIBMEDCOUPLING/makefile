@@ -1,4 +1,4 @@
-archive=$(TRUST_ROOT)/externalpackages/medcoupling-8.3.0.tar.gz
+archive=$(TRUST_ROOT)/externalpackages/medcoupling-8.5.0.tar.gz
 $(TRUST_MEDCOUPLING_ROOT)/env.sh : makefile install.sh $(archvive) $(TRUST_MED_ROOT)/include/med.h
 	./install.sh $(archive)
 

@@ -14,7 +14,9 @@ cp -af $dest .
 
 rm -rf build install $medcoupling
 
-if  [ "$TRUST_DISABLE_MED" = "1" ] || [ "$TRUST_DISABLE_MEDCOUPLING" = "1" ] 
+# New include file:
+medcoupling_hxx=$DEST/include/medcoupling++.h
+if [ "$TRUST_DISABLE_MED" = "1" ] || [ "$TRUST_DISABLE_MEDCOUPLING" = "1" ] 
 then
     mkdir -p $DEST/include
     rm -rf $DEST/lib
@@ -27,6 +29,7 @@ then
     else
 	cp -a ICoCoMEDField.hxx $dest
     fi
+    echo "#undef MEDCOUPLING_" > $medcoupling_hxx
     rm -f prov.h ICoCoMEDField.hxx
     exit 0
 fi
@@ -40,25 +43,18 @@ fi
 [ ! -f $archive ] && echo $archive no such file && exit 1
 tar zxf $archive
 
-#echo patching MEDCouplingDataArrayTypemaps.i
-#sed "s/NPY_ARRAY_OWNDATA/NPY_OWNDATA/g" -i MED_SRC/src/MEDCoupling_Swig/MEDCouplingDataArrayTypemaps.i
-
-#echo patching MPIAcces.h
-#sed -i  "s/return (MPI_Datatype ) NULL /return MPI_DATATYPE_NULL /"    MED_SRC/src/ParaMEDMEM/MPIAccess.hxx
-
-#echo patching MPIProcessorGroup.cxx
-#sed -i "s?_comm_interface.commCreate(_world_comm, _group, &_comm);?_comm_interface.commCreate(_world_comm, _group, \&_comm);MPI_Group_free(\&group_world);?"  MED_SRC/src/ParaMEDMEM/MPIProcessorGroup.cxx
-#echo patching MEDCouplingMemArray
-#cp $org/MEDCouplingMemArray.hxx $(find $medcoupling -name  MEDCouplingMemArray.hxx )
-echo patching MEDLoader
-cp $org/MEDLoader.hxx $(find $medcoupling -name  MEDLoader.hxx )
-
 echo patching MEDCouplingFieldDouble
 cp $org/MEDCouplingFieldDouble.hxx $(find $medcoupling -name  MEDCouplingFieldDouble.hxx )
 
 echo patching DisjointDEC
 cp $org/DisjointDEC.hxx $(find $medcoupling -name  DisjointDEC.hxx )
 cp $org/DisjointDEC.cxx $(find $medcoupling -name  DisjointDEC.cxx )
+
+echo patching Interpolation1D0D.txx 
+cp $org/Interpolation1D0D.txx $(find $medcoupling -name Interpolation1D0D.txx )
+
+echo patching MEDCouplingSkyLineArray.cxx 
+cp $org/MEDCouplingSkyLineArray.cxx $(find $medcoupling -name  MEDCouplingSkyLineArray.cxx )
 mkdir build
 cd build
 
@@ -128,5 +124,6 @@ echo "export MED_COUPLING_PYTHON=$MED_COUPLING_PYTHON" >> env.sh
 touch include/*
 
 [ ! -f $DEST/include/ICoCoMEDField.hxx ] && echo "#define NO_MEDFIELD " > $DEST/include/ICoCoMEDField.hxx
+[ ! -f $medcoupling_hxx ] && echo "#define MEDCOUPLING_" > $medcoupling_hxx
 
 exit $status

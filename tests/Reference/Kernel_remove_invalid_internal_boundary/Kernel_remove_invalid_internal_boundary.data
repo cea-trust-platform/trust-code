@@ -5,7 +5,7 @@ dimension 2
 Domaine domain 
 
 # BEGIN MESH #
-Lire_med family_names_from_group_names domain COUPLEX1 data.med
+Lire_medfile family_names_from_group_names domain COUPLEX1 data.med
 Read_file domain_ssz.geo ;
 Remove_Invalid_Internal_Boundaries domain
 # END MESH #

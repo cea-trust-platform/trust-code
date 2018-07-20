@@ -23,12 +23,6 @@ exit_()
       $TRUST_ROOT/bin/admin/cp_ftp $TRUST_ROOT/MAKE_* $CR
       $TRUST_ROOT/bin/admin/cp_ftp $TRUST_ROOT/PERF_* $CR
    fi 
-   if [ "$git" = 1 ]
-   then
-      # Push eventuel vers shared
-      [ "`git remote | grep -w shared`" = "" ] && git remote add shared $TRUST_GIT_SHARED
-      git push --tags --set-upstream shared $git_branch
-   fi
    exit $1
 }
 gunzip_()
@@ -177,11 +171,11 @@ echo "Usage: `basename $0` [-rsync|-sftp|-kill]"
 # Variable NUIT
 export NUIT=0 && [ `date '+%H'` -ge 18 ] || [ `date '+%H'` -lt 8 ] && NUIT=1 
 
-if [ "`ps -efl | grep make | grep TRUST | grep -v grep | grep "triou "`" != "" ] || [ "`ps -efl | grep make | grep TRUST | grep -v grep | grep "ccapitai "`" != "" ]
+if [ "`ps -efl | grep make | grep TRUST | grep -v grep | grep "triou "`" != "" ] || [ "`ps -efl | grep make | grep TRUST | grep -v grep | grep "mr757596 "`" != "" ] 
 then
    # mail_ command not found at this moment
    echo $ECHO_OPTS "\n\nSorry, $QUI is now running on the $HOST machine... Try later." #| mail_ $QUI
-   [ $NUIT = 0 ] && exit_
+   #[ $NUIT = 0 ] && exit_
 fi
 
 ###########################
@@ -323,7 +317,9 @@ option_configure=" -disable-ccache"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-optionals" | grep ^$HOST"\."`" != "" ] 		&& option_configure=" -disable-optionals"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-check_sources" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -disable-check_sources"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-medcoupling" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -disable-medcoupling"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-med " | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-med -disable-medcoupling"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-mpiio" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-mpiio"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-valgrind" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -disable-valgrind"
 # Salome
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-download-salome" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -download-salome"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-download " | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -download-salome -download-visit"
@@ -341,7 +337,11 @@ option_configure=" -disable-ccache"
 # Compilateur clang
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-clang " | grep ^$HOST"\."`" != "" ]				&& option_configure=$option_configure" -c++=/usr/bin/clang++ -cc=/usr/bin/clang"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-clang38" | grep ^$HOST"\."`" != "" ]			&& option_configure=$option_configure" -c++=/usr/lib/llvm-3.8/bin/clang++ -cc=/usr/lib/llvm-3.8/bin/clang"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-clang39" | grep ^$HOST"\."`" != "" ]			&& option_configure=$option_configure" -c++=/usr/lib/llvm-3.9/bin/clang++ -cc=/usr/lib/llvm-3.9/bin/clang"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-clang40" | grep ^$HOST"\."`" != "" ]			&& option_configure=$option_configure" -c++=/usr/lib/llvm-4.0/bin/clang++ -cc=/usr/lib/llvm-4.0/bin/clang"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_even_unsupported" | grep ^$HOST"\."`" != "" ]		&& option_configure=$option_configure" -force_even_unsupported"
+# Compilation en INT64
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-build64" | grep ^$HOST"\."`" != "" ]			&& option_configure=$option_configure" -disable-medcoupling"
 
 ########################
 # Lancement du configure
@@ -349,6 +349,7 @@ option_configure=" -disable-ccache"
 echo "--------------------------------------------------------"
 echo "Configure on $HOST at "`date '+%H:%M:%S'`
 echo "--------------------------------------------------------"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-build64" | grep ^$HOST"\."`" != "" ] && [ ! -f GO ] && ./bin/BUILD64/GO
 ./configure $option_configure
 [ $? != 0 ] && echo "Error in the configure... We leave." && exit_ -1
 
@@ -408,10 +409,19 @@ do
    [ "$HOST" = curie-ccrt ] && export project="genden"
    # Changement option en -g -O3 afin d'utiliser cachegrind
    [ "`liste_machines "\-cachegrind" | grep ^$HOST_BUILD"\."`" != "" ] && echo $ECHO_OPTS "1,$ s?-O3?-g -O3?g\nw" | ed $TRUST_ROOT/env/make.linux_g++3_opt
-   make && cp compile_TRUST*.log compile.tmp && make opt_avx
-   err_compile=$?
-   cat compile_TRUST*.log >> compile.tmp && mv compile.tmp compile_TRUST*.log
-   [ "`grep BUILD_EXEC=OK compile_$code$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD.log`" != "" ] && err_compile=0
+   make && cp compile_$code$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD".log" compile.tmp && make opt_avx
+   err_exe_compile=$?
+   cat compile_$code$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD".log" >> compile.tmp && mv compile.tmp compile_$code$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD".log"
+   [ "`grep BUILD_EXEC=OK compile_$code$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD.log`" != "" ] && err_exe_compile=0
+   err_tool_compile=1
+   [ $err_exe_compile = 0 ] && [ "`grep BUILD_TOOLS=OK compile_$code$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD.log`" != "" ] && err_tool_compile=0
+   if [ $err_tool_compile = 0 ]
+   then
+      rm -rf $TRUST_ROOT/build/ 
+      echo "The build directory is deleted."
+   else
+      echo "The build directory is NOT deleted."
+   fi
    if [ $MODULE = TRUST ]
    then
       echo "==========================="
@@ -459,7 +469,7 @@ do
       then
          echo "VisIt=KO"
       else
-         visit_help=`source $TRUST_ROOT/env_TRUST.sh;$TRUST_ROOT/exec/VisIt/bin/visit -help 2>&1`
+         visit_help=`source $TRUST_ROOT/env_TRUST.sh 1>/dev/null 2>&1;$TRUST_ROOT/exec/VisIt/bin/visit -help 2>&1`
          if [ $? = 0 ]
          then
             if [ "`ls $TRUST_ROOT/exec/VisIt/current/*/bin/engine_par 2>/dev/null`" != "" ]
@@ -476,6 +486,7 @@ do
       ######################
       # MPI est il compile ?
       ######################
+      MPI_NATIF=0
       if [ "${MPI_ROOT#$TRUST_ROOT}" != "$MPI_ROOT" ]
       then
          $Mpirun --version 2>&1 | $TRUST_Awk '/Open MPI/ {print "MPI=OpenMPI "$NF} /Version:/ {print "MPI=MPICH "$NF}'
@@ -488,6 +499,7 @@ do
 	 else
             echo "MPI=MPI natif: $MPI_ROOT"
 	 fi
+         MPI_NATIF=1
       else
          echo "MPI="
       fi
@@ -499,7 +511,7 @@ do
    [ $MODULE = Diphasique ] && cree_Dipha_opt_a
    # Build other TRUST binaries during the night only if main build is OK:
    testcpu3d=0
-   if [ $NUIT = 1 ] && [ $MODULE = TRUST ] && [ $err_compile = 0 ]
+   if [ $NUIT = 1 ] && [ $MODULE = TRUST ] && [ $err_exe_compile = 0 ]
    then
       for TYPE in prof gcov opt_avx
       do
@@ -696,22 +708,28 @@ do
 	 then
             echo "--------------------------------------------------------" 
 	    echo "Test case in valgrind mode at "`date '+%H:%M:%S'`
-	    Build=$TRUST_ROOT/build/Validation/Valgrind;
-            [ ! -d ${Build} ] && echo Creating ${Build} directory && mkdir -p ${Build};
-            cd $Build;
-            case="upwind"
-	    OK="KO" && rm -f testval.log *$case.val 1>/dev/null 2>&1 && (echo $case | $TRUST_ROOT/Validation/Valgrind/testval 1>testval.log 2>&1)
-	    if [ "$TRUST_DISABLE_MPI" = "0" ]
-	    then
-	      OK=`$TRUST_Awk 'BEGIN {mes="KO";ok=0} /...OK/ {ok++} END {if (ok==3) mes="OK"; print mes}' testval.log`
-	    else
-	      OK=`$TRUST_Awk 'BEGIN {mes="KO";ok=0} /...OK/ {ok++} END {if (ok==1) mes="OK"; print mes}' testval.log`
+            if [ "`liste_machines "\-disable-valgrind" | grep ^$HOST_BUILD"\."`" != "" ] || [ $MPI_NATIF = 1 ]
+            then
+	      OK="NOT"
+            else
+ 	      Build=$TRUST_ROOT/build/Validation/Valgrind;
+              [ ! -d ${Build} ] && echo Creating ${Build} directory && mkdir -p ${Build};
+              cd $Build;
+              case="upwind"
+	      OK="KO" && rm -f testval.log *$case.val 1>/dev/null 2>&1 && (echo $case | $TRUST_ROOT/Validation/Valgrind/testval 1>testval.log 2>&1)
+	      if [ "$TRUST_DISABLE_MPI" = "0" ]
+	      then
+	        OK=`$TRUST_Awk 'BEGIN {mes="KO";ok=0} /...OK/ {ok++} END {if (ok==3) mes="OK"; print mes}' testval.log`
+	      else
+	        OK=`$TRUST_Awk 'BEGIN {mes="KO";ok=0} /...OK/ {ok++} END {if (ok==1) mes="OK"; print mes}' testval.log`
+	      fi
 	    fi
 	    echo "KVALGRIND="$OK
-	    if [ $OK != "KO" ] 
+	    if [ $OK = "OK" ] 
             then
               rm -f *$case.val 
-            else
+            elif [ $OK = "KO" ]
+            then
               echo "See $Build/testval.log file"
             fi
 	    cd $TRUST_ROOT
@@ -746,15 +764,20 @@ do
          echo "--------------------------------------------------------" 
 	 echo $ECHO_OPTS "Test of the baltik environment at "`date '+%H:%M:%S'`
 	 echo $ECHO_OPTS "BALTIK=\c"
-	 USE_MPIRUN=1 ./Test_baltik 1>Test_baltik.log 2>&1
-	 if [ $? = 0 ]
-	 then
-	    echo "OK"
-	 else
-	    echo "KO"
-	    echo "Test_baltik.log report created on $TRUST_ROOT/bin/baltik/share/self_test"
+         if [ "`$TRUST_ROOT/bin/admin/liste_machines "\-build64" | grep ^$HOST_BUILD"\."`" != "" ]
+         then
+	    echo "NOT"
+         else
+	    USE_MPIRUN=1 ./Test_baltik 1>Test_baltik.log 2>&1
+	    if [ $? = 0 ]
+	    then
+	       echo "OK"
+	    else
+	       echo "KO"
+	       echo "Test_baltik.log report created on $TRUST_ROOT/bin/baltik/share/self_test"
+	    fi
+	    cat Test_baltik.log
 	 fi
-	 cat Test_baltik.log
 	 cd - 1>/dev/null 2>&1	  
 	 ######################################
 	 # Verifie la non regression de XData #
@@ -787,14 +810,14 @@ do
 	 ############################################
 	 if [ $NUIT = 1 ]
 	 then
-	    if [ "`liste_machines "\-valgrind" | grep ^$HOST_BUILD"\."`" != "" ]
+	    if [ "`liste_machines "\-check-valgrind" | grep ^$HOST_BUILD"\."`" != "" ]
 	    then
                echo "--------------------------------------------------------" 
 	       echo "Search memories errors with Valgrind at "`date '+%H:%M:%S'`
                rm -f ANA.log
 	       cd $TRUST_ROOT/Validation/Valgrind
 	       rm -f *.val *.err *.out *.log cas*
-	       ./testall `liste_machines "\-valgrind" | $TRUST_Awk -v HOST=$HOST_BUILD -F"." '// {t++} ($1==HOST) {p=NR} END {print p" "t}'` 2>&1
+	       ./testall `liste_machines "\-check-valgrind" | $TRUST_Awk -v HOST=$HOST_BUILD -F"." '// {t++} ($1==HOST) {p=NR} END {print p" "t}'` 2>&1
 	       ./ANA 2>&1 | tee ANA.log
 	       cp ANA.log $TRUST_TMP/.
 	       cp casmem $TRUST_TMP/.
@@ -818,14 +841,20 @@ do
 	 #echo PETSC_ThHyd_2D_VEF_Ostwald >> liste_cherche && echo FTD_instab2D >> liste_cherche && echo Canal_perio_VDF_3D_Keps >> liste_cherche 
 	 echo PETSC_ThHyd_2D_VEF_Ostwald >> liste_cherche && echo Canal_perio_VDF_3D_Keps >> liste_cherche 
 	 # Autres ajouts
-	 echo cpu_3D >> liste_cherche & echo PETSC_VDF >> liste_cherche && echo PETSC_VEF >> liste_cherche
+	 echo cpu_3D >> liste_cherche #&& echo PETSC_VDF >> liste_cherche && echo PETSC_VEF >> liste_cherche
 	 echo VAHL_DAVIS >> liste_cherche && echo upwind >> liste_cherche && echo Cx >> liste_cherche 
 	 # Test outils Gmsh et VisIt
 	 echo Kernel_Gmsh2Trio_U >> liste_cherche 
 	 [ "${HOST:0:6}" != cobalt ] && echo Extrait_plan >> liste_cherche # Test provisoire : en attente d une solution via SLURM
+	 # Test MED_COUPLING_PYTHON
+         echo Lata_conversion_scripts_jdd1 >> liste_cherche
+         echo MED_major_jdd1 >> liste_cherche
 	 # Ensuite selon les options, on affine:
 	 teste=0
-	 if [ "`liste_machines "\-seq" | grep ^$HOST_BUILD"\."`" ]
+	 if [ "`liste_machines "\-without_run" | grep ^$HOST_BUILD"\."`" ]
+	 then
+            NUM=cpu_3D
+	 elif [ "`liste_machines "\-seq" | grep ^$HOST_BUILD"\."`" ]
 	 then
             [ $NUIT = 1 ] || [ $teste = 1 ] && NUM=liste_cherche && cherche.ksh PARALLEL@NOT      
 	 elif [ "`liste_machines "\-disable " | grep ^$HOST_BUILD"\."`" ]
@@ -934,6 +963,7 @@ do
 	 # Etre une machine cible (si on teste sur toutes les machines en meme temps, on a un message "trop de clients X11"
 	 ###########################################
 	 test_run_fiche=1
+         [ "`eval pdflatex --version 1>/dev/null 2>&1;echo $?`" != 0 ] && test_run_fiche=0
 	 if [ "$test_run_fiche" = 1 ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable " | grep ^$HOST_BUILD"\."`" = "" ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-optionals" | grep ^$HOST_BUILD"\."`" = "" ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-tools" | grep ^$HOST_BUILD"\."`" = "" ] && [ "`$TRUST_ROOT/bin/admin/liste_machines "\-without-visit" | grep ^$HOST_BUILD"\."`" = "" ]
 	 then
             echo "--------------------------------------------------------"

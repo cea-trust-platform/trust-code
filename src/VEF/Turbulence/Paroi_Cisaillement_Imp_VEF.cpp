@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -91,6 +91,7 @@ int Paroi_Cisaillement_Imp_VEF::calculer_hyd_commun()
   int n_bord;
 
   tab_u_star_.resize(la_zone_VEF->nb_faces_tot());
+  tab_d_plus_.resize(la_zone_VEF->nb_faces_tot());
 
 
   if (sub_type(Champ_Uniforme,ch_visco_cin.valeur()))
@@ -178,6 +179,7 @@ int Paroi_Cisaillement_Imp_VEF::calculer_hyd_commun()
                   exit();
                 }
 
+              double dist=distance_face_elem(num_face,elem,zone_VEF);
               if (l_unif)
                 d_visco = visco;
               else
@@ -187,6 +189,7 @@ int Paroi_Cisaillement_Imp_VEF::calculer_hyd_commun()
               double ustar = calculer_utau(pos, norm_v, d_visco);
 
               tab_u_star_(num_face)=ustar;
+              tab_d_plus_(num_face)=dist*ustar/d_visco;
 
               double norm_tau=ustar*ustar;
               norm_tau/=(norm_v+DMINFLOAT);

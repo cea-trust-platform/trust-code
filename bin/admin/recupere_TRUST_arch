@@ -7,7 +7,7 @@ machine="" && [ ${#1} != 0 ] && machine=$1
 [ ${#Version} = 0 ] && echo "\$Version empty !" && exit
 [ ${v%beta} != $v ] && [ ${#DATE} = 0 ] && echo "\$DATE empty !" && exit
 v=${Version#Version}
-PORTAGE=$WORKDIR/PORTAGE_$v
+PORTAGE=$WORKDIR/portages/PORTAGE_$v
 rm -r -f $PORTAGE
 mkdir -p $PORTAGE 2>/dev/null
 # Teste la connection :
@@ -328,19 +328,21 @@ do
 	MEDCOUPL=$COOL   && [ "`grep MEDCOUPLING=OK $CR`" != "" ] && MEDCOUPL="<TD $VERT>OK</TD>"
 	LATA2DX=$STRICT  && [ "`grep lata2dx:OK $CR`" != "" ] 	  && LATA2DX="<TD $VERT>OK</TD>"
 	PLOT2D=$COOL 	 && [ "`grep IHM:OK $CR`" != "" ] 	  && PLOT2D="<TD $VERT>OK</TD>"
+	[ "`grep IHM: $CR`" = "" ] && PLOT2D="<TD $BLANC>NOT</TD>"
 	ICOCO=$COOL 	 && [ "`grep ICoCo:OK $CR`" != "" ] 	  && ICOCO="<TD $VERT>OK</TD>"
 	GMSH=$COOL 	 && [ "`grep Gmsh:OK $CR`" != "" ] 	  && GMSH="<TD $VERT>OK</TD>"
 	VISIT=$COOL 	 && [ "`grep VisIt:OK $CR`" != "" ] 	  && RUN=`$TRUST_Awk -F= '/VisIt=/ {print $2}' $CR` && VISIT="<TD `[ $RUN = PAR ] && echo $VERT`>$RUN</TD>"
 	ATELIER=$STRICT  && [ "`grep ATELIER=OK $CR`" != "" ] 	  && ATELIER="<TD $VERT>OK</TD>" && [ "$machine_cible" = 1 ] && let portabilite_atelier=$portabilite_atelier+1
 	ASSERT=$STRICT   && [ "`grep ASSERT=OK $CR`" != "" ] 	  && ASSERT="<TD $VERT>OK</TD>"	 && [ "$machine_cible" = 1 ] && let portabilite_assert=$portabilite_assert+1
 	BALTIK=$STRICT 	 && [ "`grep BALTIK=OK $CR`" != "" ] 	  && BALTIK="<TD $VERT>OK</TD>"  && [ "$machine_cible" = 1 ] && let portabilite_baltik=$portabilite_baltik+1
+	[ "`grep BALTIK=NOT $CR`" != "" ] && BALTIK="<TD $BLANC>NOT</TD>"
 	# Si certains elements sont disabled au configure:
 	NOT="<TD $BLANC>NOT</TD>"
 	MEDCOUPLPYT=$NOT && [ "`grep MED_COUPLING_PYTHON=ON $CR`" != "" ] && MEDCOUPLPYT="<TD $VERT>ON</TD>" && [ "`grep MED_COUPLING_PYTHON=OFF $CR`" != "" ] && MEDCOUPLPYT="<TD $ROUGE>OFF</TD>"
 	[ "`grep 'Disabling PETSC' $CR`" != "" ] 	&& [ "`grep PETSC=KO $CR`" != "" ] 	 && PETSC=$NOT
 	[ "`grep ' -disable-petsc' $CR`" != "" ] 	&& [ "`grep PETSC=KO $CR`" != "" ] 	 && PETSC=$NOT
-	[ "`grep 'Disabling MED' $CR`" != "" ] 		&& [ "`grep MED=KO $CR`" != "" ] 	 && MED=$NOT 	  && GMSH=$NOT	 && ICOCO=$NOT
-	[ "`grep ' -disable-med ' $CR`" != "" ] 	&& [ "`grep MED=KO $CR`" != "" ] 	 && MED=$NOT 	  && GMSH=$NOT	 && ICOCO=$NOT
+	[ "`grep 'Disabling MED' $CR`" != "" ] 		&& [ "`grep MED=KO $CR`" != "" ] 	 && MED=$NOT 	  && MEDCOUPL=$NOT && GMSH=$NOT && ICOCO=$NOT
+	[ "`grep ' -disable-med ' $CR`" != "" ] 	&& [ "`grep MED=KO $CR`" != "" ] 	 && MED=$NOT 	  && MEDCOUPL=$NOT && GMSH=$NOT && ICOCO=$NOT
 	[ "`grep 'Disabling MEDCOUPLING' $CR`" != "" ]  && [ "`grep MEDCOUPLING=KO $CR`" != "" ] && MEDCOUPL=$NOT && ICOCO=$NOT
 	[ "`grep ' -disable-medcoupling' $CR`" != "" ]  && [ "`grep MEDCOUPLING=KO $CR`" != "" ] && MEDCOUPL=$NOT && ICOCO=$NOT
 	[ "`grep 'Disabling MPI' $CR`" != "" ] 		&& [ "`grep ICoCo:OK $CR`" = "" ] 	 && ICOCO=$NOT	
@@ -418,8 +420,8 @@ $BALTIK
 $cpu3d$FTD
 $bench
 </TR>" >> $NUIT2
-      echo "<BR><LI>"$os >> /tmp/os
-      echo "<BR><LI>"$TRUST_CC >> /tmp/CC
+      [ "$os" != "" ] && echo "<BR><LI>"$os >> /tmp/os
+      [ "$TRUST_CC" != "" ] && echo "<BR><LI>"$TRUST_CC >> /tmp/CC
       done
       if [ ${#file} = 0 ]
       then
@@ -491,19 +493,19 @@ $TD_CR<A HREF="$CR">$HOST</A>$FTD
    [ "$port_cible_all" = 0 ] && mes=""
 
    echo "Portability Components for $TRUST_VERSION version:<BR>" >> $NUIT2
-   #[ -f $REP_NUIT/nuit_equation_convection_diffusion.html ] && echo "<A HREF="nuit_equation_convection_diffusion.html">Tuto</A> : equation_convection_diffusion baltik compilation portability<BR>" >> $NUIT2
-   #[ -f $REP_NUIT/nuit_ICoCo.html ] && echo "<A HREF="nuit_ICoCo.html">ICoCo</A> : ICoCo baltik compilation portability<BR>" >> $NUIT2
-   #[ -f $REP_NUIT/nuit_basic.html ] && echo "<A HREF="nuit_basic.html">TRUST</A> : TRUST test baltik portability<BR>" >> $NUIT2
-   #[ -f $REP_NUIT/nuit_Test_Baltik.html ] && echo "<A HREF="nuit_Test_Baltik.html">TRUST</A> : TRUST test baltik portability<BR>" >> $NUIT2
-   #[ -f $REP_NUIT/nuit_MPCube.html ] && echo "<A HREF="nuit_MPCube.html">MPCube</A> : MPCube baltik compilation portability<BR>" >> $NUIT2
-   #[ -f $REP_NUIT/nuit_TrioCFD.html ] && echo "<A HREF="nuit_TrioCFD.html">TrioCFD</A> : TrioCFD baltik compilation portability<BR>" >> $NUIT2
-   #[ -f $REP_NUIT/nuit_ModeleCoeur.html ] && echo "<A HREF="nuit_ModeleCoeur.html">TrioMC2</A> : TrioCFD baltik compilation portability<BR>" >> $NUIT2
+   echo "<A HREF="nuit_Test_Baltik.html">TRUST</A> : TRUST test baltik portability<BR>" >> $NUIT2
+   #echo "<A HREF="nuit_basic.html">Template</A> : basic baltik compilation portability<BR>" >> $NUIT2
    echo "<A HREF="nuit_equation_convection_diffusion.html">Tuto</A> : equation_convection_diffusion baltik compilation portability<BR>" >> $NUIT2
    echo "<A HREF="nuit_ICoCo.html">ICoCo</A> : ICoCo baltik compilation portability<BR>" >> $NUIT2
-   echo "<A HREF="nuit_Test_Baltik.html">TRUST</A> : TRUST test baltik portability<BR>" >> $NUIT2
-   echo "<A HREF="nuit_MPCube.html">MPCube</A> : MPCube baltik compilation portability<BR>" >> $NUIT2
-   echo "<A HREF="nuit_TrioCFD.html">TrioCFD</A> : TrioCFD baltik compilation portability<BR>" >> $NUIT2
-   echo "<A HREF="nuit_ModeleCoeur.html">TrioMC2</A> : TrioMC2 baltik compilation portability<BR>" >> $NUIT2
+   echo "<A HREF="nuit_triocfd.html">TrioCFD</A> : TrioCFD baltik compilation portability<BR>" >> $NUIT2
+   echo "<A HREF="nuit_ijk.html">IJK-FT</A> : IJK-FT baltik compilation portability<BR>" >> $NUIT2
+   echo "<A HREF="nuit_polymac.html">PolyMAC</A> : PolyMAC baltik compilation portability<BR>" >> $NUIT2
+   echo "<A HREF="nuit_triomc.html">TrioMC</A> : TrioMC baltik compilation portability<BR>" >> $NUIT2
+   echo "<A HREF="nuit_mathys.html">MATHYS</A> : MATHYS baltik compilation portability<BR>" >> $NUIT2
+   echo "<A HREF="nuit_mpcube.html">MPCube</A> : MPCube baltik compilation portability<BR>" >> $NUIT2
+   echo "<A HREF="nuit_genepi3.html">GENEPI3</A> : GENEPI3 baltik compilation portability<BR>" >> $NUIT2
+   #echo "<A HREF="nuit_pxp.html">PAREX+</A> : PAREX+ baltik compilation portability<BR>" >> $NUIT2
+   echo "<A HREF="nuit_flica5.html">FLICA5</A> : FLICA5 baltik compilation portability<BR>" >> $NUIT2
    #echo "Release criteria of the $TRUST_VERSION version:<BR>" >> $NUIT2
    echo "$port_cible_all : Total number portability ( $nb_machine_cible = $nb_machine_total_cible )<BR>" >> $NUIT2
    echo "$port_trust : $MODULE portability ( $portabilite/$nb_machine_cible > $limite ) $mes<BR>" >> $NUIT2

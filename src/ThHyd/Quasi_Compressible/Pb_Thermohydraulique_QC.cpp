@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -109,7 +109,11 @@ int Pb_Thermohydraulique_QC::nombre_d_equations() const
 // Postcondition: la methode ne modifie pas l'objet
 const Equation_base& Pb_Thermohydraulique_QC::equation(int i) const
 {
-  assert ((i==0) || (i==1));
+  if ( !( i==0 || i==1 ) )
+    {
+      Cerr << "\nError in Pb_Thermohydraulique_QC::equation() : Wrong number of equation !" << finl;
+      Process::exit();
+    }
   if (i == 0)
     return eq_hydraulique;
   else
@@ -134,7 +138,11 @@ const Equation_base& Pb_Thermohydraulique_QC::equation(int i) const
 // Postcondition:
 Equation_base& Pb_Thermohydraulique_QC::equation(int i)
 {
-  assert ((i==0) || (i==1));
+  if ( !( i==0 || i==1 ) )
+    {
+      Cerr << "\nError in Pb_Thermohydraulique_QC::equation() : Wrong number of equation !" << finl;
+      Process::exit();
+    }
   if (i == 0)
     return eq_hydraulique;
   else

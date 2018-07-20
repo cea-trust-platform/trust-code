@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -149,6 +149,13 @@ Sortie& EcrFicPartageMPIIO::operator <<(const int& ob)
 #endif
   return *this;
 }
+
+Sortie& EcrFicPartageMPIIO::operator <<(const unsigned& ob)
+{
+  write(MPI_UNSIGNED, &ob);
+  return *this;
+}
+
 Sortie& EcrFicPartageMPIIO::operator <<(const float& ob)
 {
   write(MPI_FLOAT, &ob);
@@ -188,7 +195,15 @@ int EcrFicPartageMPIIO::put(MPI_Datatype MPI_TYPE, const void* ob, int n)
   MPI_Type_commit(&filetype);
 
   // Before collecting operations, update disp_ on all processes:
-  envoyer_broadcast(disp_, 0);
+
+  // 21/03/2018: Compilation error: no instance of overloaded function "envoyer_broadcast" matches the argument list argument types are: (MPI_Offset, int)
+  // on cobalt TGCC-CCRT cluster with module: Wi4MPI with bull-openmpi/2.0.2
+  // WARNING! This part is to be reviewed because not validated...
+  //envoyer_broadcast(disp_, 0);
+  int disp_int=(int)disp_;
+  envoyer_broadcast(disp_int, 0);
+  disp_=(MPI_Offset)disp_int;
+
   MPI_Offset disp_me = disp_ + mppartial_sum(n) * sizeof_etype;
 
 
@@ -239,6 +254,11 @@ int EcrFicPartageMPIIO::put(MPI_Datatype MPI_TYPE, const void* ob, int n)
   MPI_Info_free(&mpi_info);
   MPI_Type_free(&filetype);
   return 1;
+}
+
+int EcrFicPartageMPIIO::put(const unsigned* ob, int n, int pas /* useless in binary */)
+{
+  return put(MPI_UNSIGNED, ob, n);
 }
 
 int EcrFicPartageMPIIO::put(const int* ob, int n, int pas /* useless in binary */)

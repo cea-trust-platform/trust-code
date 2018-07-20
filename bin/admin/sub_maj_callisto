@@ -1,13 +1,12 @@
-#!/bin/bash 
+#!/bin/bash
 #SBATCH -J mise_a_jour_TRUST_arch
 #SBATCH -p slim,large,fat,eris,pluton
 #SBATCH --qos=normal
 #SBATCH -t 720
-#SBATCH -o /panfs/ixion/share/triou/myjob_callisto.%j.o
-#SBATCH -e /panfs/ixion/share/triou/myjob_callisto.%j.e
+#SBATCH -o /home/triou/myjob_callisto.%j.o
+#SBATCH -e /home/triou/myjob_callisto.%j.e
 #SBATCH -n 1
-#SBATCH --x11=batch
 set -x
 cd $SLURM_SUBMIT_DIR
 [ -f ld_env.sh ] && . ./ld_env.sh # To load an environment file if necessary
-srun -n $SLURM_NTASKS ./mise_a_jour_TRUST_arch 1>~/CR_callisto 2>&1
+srun -n $SLURM_NTASKS ./mise_a_jour_TRUST_arch 1>~/CR_callisto 2>&1 

@@ -1,34 +1,33 @@
-Notes for Eclipse with TRUST (01/08/2017)
+Notes for Eclipse with TRUST (08/03/2018)
 -----------------------------------------
 
 Download
 ========
 > Go to the website of the Eclipse Foundation: http://www.eclipse.org/downloads/eclipse-packages/
-> Click on "Eclipse Mars (4.5)" on the menu "More downloads".
+> Click on "Eclipse Neon (4.6)" on the menu "More downloads".
 > Then click on "Download" button.
 > Select "Eclipse IDE for C/C++ Developers" -> "Linux 64-bits"
-> Download the eclipse-cpp-mars-2-linux-gtk-x86_64.tar.gz package in your directory "/export/home/user/"
---> For Ubuntu16.04 and Fedora22, download Eclipse NEON version: eclipse-cpp-neon-3-linux-gtk-x86_64.tar.gz to avoid graphical issues
+> Download the eclipse-cpp-neon-3-linux-gtk-x86_64.tar.gz package in your directory "Formation_TRUST/user/"
+--> For OS older than CentOs7, Ubuntu16.04 and Fedora22, download Eclipse Mars version: eclipse-cpp-mars-2-linux-gtk-x86_64.tar.gz
 
 Installation
 ============
-> cd /export/home/user/
-> tar xvfz eclipse-*.tar.gz
+> cd Formation_TRUST/user/
+> tar xfz eclipse-*.tar.gz
 
 Configuration
 =============
 > cd eclipse
-> For Ubuntu16.04 and Fedora22, change the eclipse.ini file, by deleting the last 2 lines (Xms and Xmx) and adding the following lines:
+> For Ubuntu16.04, Fedora22, CentOs 7 and recents OS, change the eclipse.ini file, by deleting the last 2 lines (Xms and Xmx) and adding the following lines:
 -Xms512m
 -Xmx2048m
-> For other OS, change the eclipse.ini file, by deleting the last 3 lines (MaxPermSize, Xms and Xmx) and adding the following lines:
--XX:+UseParallelGC
+> For older OS, change the eclipse.ini file, by deleting the last 3 lines (MaxPermSize, Xms and Xmx) and adding the following lines:
 -Xmn256m
 -Xss2m
 -server
 -Xms512m
 -Xmx2048m
-> cd /export/home/user/
+> cd Formation_TRUST/user/
 
 ###################################
 # Create a platform TRUST project #
@@ -36,17 +35,18 @@ Configuration
 
 Launching
 =========
-> source /home/triou/env_TRUST_1.7.4.sh
+> source /home/triou/env_TRUST_X.Y.Z.sh
 > echo $TRUST_ROOT/src
 > echo $TRUST_ROOT/exec/TRUST_mpi
 
-> /export/home/user/eclipse/eclipse &
-> Workspace: Browse a directory /export/home/user/workspace
+> cd Formation_TRUST/user/eclipse
+> ./eclipse &
+> Workspace: Browse a directory Formation_TRUST/user/workspace
   => OK
   => Welcome -> close: x button
 
 > File/New/C++ Project
-  => Profect name: TRUST-X.Y.Z
+  => Project name: TRUST-X.Y.Z
   => Project type: "Executable" -> "Empty Project".
   => Toolchains: "Linux GCC".
   => Finish
@@ -70,7 +70,7 @@ Launching
   => Main: C/C++ Application:  copy the string matching $TRUST_ROOT/exec/TRUST_mpi
   => Main: Apply
   => Arguments: Program arguments: specify the name of your datafile
-  => Arguments: Working directoty: uncheck Use default and select the directory with path containing the datafile
+  => Arguments: Working directory: uncheck Use default and select the directory with path containing the datafile
   => Arguments: Apply
   => Debug
 > File/Exit
@@ -85,9 +85,10 @@ Launching
 > source env_baltik.sh
 > echo $project_directory/src/
 
-> /export/home/user/eclipse/eclipse &
+> cd Formation_TRUST/user/eclipse
+> ./eclipse &
 > File/New/Makefile Project with Existing Code
-  => Profect name: MY_BALTIK
+  => Project name: MY_BALTIK
   => Existing Code Location: copy the string matching $project_directory/src/
   => Toolchain for Indexer Settings: "Linux GCC".
   => Finish

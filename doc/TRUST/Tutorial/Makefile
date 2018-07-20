@@ -5,6 +5,9 @@ default:  all
 
 $(FILE1): ../$(FILE1).pdf
 ../$(FILE1).pdf: $(FILE1).tex Makefile 
+ifeq (, $(shell which pdflatex))
+	@echo "No pdflatex command, consider installing texlive package"
+else
 	$(MAKE) clean_$(FILE1)
 	pdflatex -interaction=nonstopmode $(FILE1).tex > LOG
 	makeindex $(FILE1).idx >> LOG
@@ -12,14 +15,19 @@ $(FILE1): ../$(FILE1).pdf
 	pdflatex -interaction=nonstopmode $(FILE1).tex >> LOG
 	mv $(FILE1).pdf ..
 	$(MAKE) clean_build
+endif
 
 $(FILE2): ../$(FILE2).pdf
 ../$(FILE2).pdf: $(FILE2).tex Makefile 
+ifeq (, $(shell which pdflatex))
+	@echo "No pdflatex command, consider installing texlive package"
+else
 	$(MAKE) clean_$(FILE2)
 	pdflatex -interaction=nonstopmode $(FILE2).tex > LOG
 	pdflatex -interaction=nonstopmode $(FILE2).tex >> LOG
 	mv $(FILE2).pdf ..
 	$(MAKE) clean_build
+endif
 
 all:  $(FILE1) $(FILE2)
 

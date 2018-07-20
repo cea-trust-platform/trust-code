@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -890,7 +890,6 @@ DoubleTab& Terme_Source_inc_VDF_Face::ajouter(DoubleTab& resu) const
               //               Cerr << me() << " bord num5 " << finl;
               num5 = element_number;
             }
-          //           Cerr << me() << " nums " << num0 << " " << num1 << " " << num2 << " " << num3 << " " << num4 << " " << num5 << " elem " << element_number << finl;
           //           dQij_j(element_number,0)=0.5*((f(num3)*Qij(num3,0,0)-f(num0)*Qij(num0,0,0))/
           //                                            zone_VDF.dim_elem(element_number,0));
           //           dQij_j(element_number,0)+=0.5*((f(num4)*Qij(num4,0,1)-f(num1)*Qij(num1,0,1))/

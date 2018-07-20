@@ -52,6 +52,7 @@ public:
   DoubleTab& ajouter_derivee(DoubleTab& ) const;
   void mettre_a_jour(double temps);
   void completer();
+  void dimensionner(Matrice_Morse&) const;
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
   //void contribuer_au_second_membre(DoubleTab& ) const ;
   virtual void associer_champ_rho(const Champ_base& champ_rho);

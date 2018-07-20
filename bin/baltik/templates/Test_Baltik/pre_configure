@@ -1,0 +1,7 @@
+#!/bin/bash
+TRUST_VERSION_GNU=`[ "${TRUST_CC_BASE%g++}" != "$TRUST_CC_BASE" ] && $TRUST_CC_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`
+if [ "$TRUST_VERSION_GNU" != "" ]
+then
+   CppFlags=`echo $TRUST_VERSION_GNU | awk '{print $1<"4.7.0" ? "-std=c++0x" : "-std=c++11"}'`
+   sed -i "s/-std=c++11/$CppFlags/" project.cfg
+fi

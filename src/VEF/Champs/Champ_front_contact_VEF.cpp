@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -503,6 +503,11 @@ const Nom& Champ_front_contact_VEF::nom_bord_oppose() const
 
 const Equation_base& Champ_front_contact_VEF::equation() const
 {
+  if (l_inconnue.non_nul()==0)
+    {
+      Cerr << "\nError in Champ_front_contact_VEF::equation() : not able to return the equation !" << finl;
+      Process::exit();
+    }
   return inconnue().equation();
 }
 

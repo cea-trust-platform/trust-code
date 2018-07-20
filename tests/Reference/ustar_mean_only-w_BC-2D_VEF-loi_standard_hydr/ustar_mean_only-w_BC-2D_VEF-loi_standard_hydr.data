@@ -1,0 +1,169 @@
+# Marche: Hydraulique 2D turbulent K-Eps #
+# test dt_impr_ustar_mean_only with boundaries in 2D VEF case with loi_standard_hydr wall law #
+# PARALLEL OK #
+dimension 2
+Pb_Hydraulique_Turbulent pb
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+	Pave Entree
+		{
+		Origine 0. 1.
+		Nombre_de_Noeuds 8 6 
+		Longueurs 7. 1.
+		}
+		{
+		Bord Entree X = 0. 1. <= Y <= 2.
+		Bord Haut1  Y = 2. 0. <= X <= 7.
+		Bord Bas1   Y = 1. 0. <= X <= 7.
+		} ,
+	Pave Haut
+		{
+		Origine 7. 1.
+		Nombre_de_Noeuds 11 6 
+		Longueurs 10. 1.
+		}
+		{
+		Bord Haut2  Y = 2.  7. <= X <= 17.
+		} ,
+	Pave SHaute
+		{
+		Origine 17. 1.
+		Nombre_de_Noeuds 14 6 
+		Longueurs 13. 1.
+		}
+		{
+		Bord SortieHaute X = 30.  1. <= Y <= 2.
+		Bord Haut3  Y = 2.  17. <= X <= 30.
+		} ,
+	Pave Bas
+		{
+		Origine 7. 0.
+		Nombre_de_Noeuds 11 6 
+		Longueurs 10. 1.
+		}
+		{
+		Bord Bas2   Y = 0.  7. <= X <= 17.
+		Bord Gauche X = 7.  0. <= Y <= 1.
+		} ,
+	Pave SBasse
+		{
+		Origine 17. 0.
+		Nombre_de_Noeuds 14 6 
+		Longueurs 13. 1.
+		}
+		{
+		Bord SortieBasse X = 30. 0. <= Y <= 1.
+		Bord Bas3   Y = 0. 17. <= X <= 30.
+		}
+}
+Trianguler dom
+VerifierCoin  dom {  }
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+	Partition_tool metis { Nb_parts 2 }
+	Larg_joint 2
+	zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+Scheme_euler_explicit sch
+Read sch
+{
+	tinit 0.
+	tmax 10.
+	dt_impr 0.
+	dt_sauv 1000.
+	seuil_statio 1.e-8
+	nb_pas_dt_max 1
+}
+Fluide_Incompressible fluide
+Read fluide
+{
+	mu Champ_Uniforme 1 3.7e-05
+	rho Champ_Uniforme 1 2
+}
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+Discretize pb dis
+Read pb
+{
+	Navier_Stokes_turbulent
+	{
+		solveur_pression petsc cholesky { }
+		convection { Amont }
+		diffusion { }
+		initial_conditions {
+			vitesse Champ_Uniforme 2 1. 0.
+			}
+		boundary_conditions {
+			 Haut1 Paroi_Fixe
+			 Bas1 Paroi_Fixe
+			 Haut2 Paroi_Fixe
+			 Bas2 Paroi_Fixe
+			 Haut3 Paroi_Fixe
+			 Bas3 Paroi_Fixe
+			 Gauche Paroi_Fixe
+			 SortieBasse frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+			 SortieHaute frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+			 Entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  1. 0.
+		}
+		modele_turbulence K_Epsilon {
+       			Transport_K_Epsilon 
+			{
+			   	convection { amont }
+				diffusion { }
+				sources { Source_Transport_K_Eps { C1_eps 1.44 C2_eps 1.92 } }
+				boundary_conditions {
+					Haut1 Paroi
+					Bas1 Paroi
+					Haut2 Paroi
+					Bas2 Paroi
+					Haut3 Paroi
+					Bas3 Paroi
+					Gauche Paroi
+		       			Entree frontiere_ouverte_K_eps_impose Champ_Front_Uniforme 2 1.e-2 1.e-3
+		       			SortieBasse frontiere_ouverte K_EPS_EXT Champ_Front_Uniforme 2 0. 0.
+		      			SortieHaute frontiere_ouverte K_EPS_EXT Champ_Front_Uniforme 2 0. 0.
+			   	}
+			   	initial_conditions {
+			      		k_Eps Champ_Uniforme 2 0. 0.
+			  	}
+			 }
+			 Prandtl_K 1
+			 Prandtl_Eps 1.3
+			 turbulence_paroi loi_standard_hydr dt_impr_ustar 1. eps_min 1.e-15 eps_max 1.e+6
+			 dt_impr_ustar_mean_only { dt_impr 1. boundaries 3 Gauche SortieBasse Bas1 }
+		} 
+	}
+Post_processing 
+{
+        format lml
+	fields dt_post 1.
+	{
+			pression elem
+			pression som
+			vitesse elem
+			vitesse som
+			k elem
+			k som
+			eps elem
+			eps som
+			viscosite_turbulente elem
+			viscosite_turbulente som
+	}
+}
+}
+Solve pb
+End

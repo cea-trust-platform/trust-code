@@ -1,0 +1,405 @@
+Parameters {
+	Title "Conduction avec parametres variables"
+	Description "Validation de l'implementation des milieux variables pour l'equation de conduction en VDF. On montre tout d'abord que l'equation de conduction standard de TRUST permet de faire varier le coefficient \latex_( $\lambda$ \latex_) aussi bien en temps qu'en espace, puis que, par contre, les nouveaux developpements de Conduction_Milieu_Variable permettent aussi de faire varier \latex_( $\rho$ et $C_p$\latex_) en espace."
+
+	Author "A.Bruneton"
+  TestCase . conduc.data
+  TestCase . conduc_var.data
+#   Variation espace:
+  TestCase . conduc_doublebar.data
+  TestCase . conduc_doublebar_var.data
+  TestCase . conduc_doublebar_rhoCp_var.data
+#   Variation temporelle:
+  TestCase . conduc_bar.data
+  TestCase . conduc_bar_var.data
+#   En EF
+  TestCase . conduc_doublebar_rhoCp_var_ef.data
+#   EF full analytic
+  TestCase . conduc_bar_ef_ana.data
+}
+
+Chapter {
+	Title "Quelques rappels theoriques"
+	Description L'equation de la chaleur s'ecrit  <<EOF
+    \latex_( \[ \rho C_p\frac{\partial T}{\partial t} - \nabla \cdot (\lambda \nabla T) = S \]  
+
+  avec  $\lambda$ la conductivite thermique, $\rho$ la masse volumique, $C_p$ la capacite calorifique, $T$ la temperature et $S$ un terme
+  source volumique.
+  
+  Dans l'equation de conduction standard de TRUST, on suppose que $\rho$ et $C_p$ sont uniformes (constants en espace), et ainsi on calcule le terme de diffusivite de l'operateur de diffusion
+  $D = \lambda / (\rho Cp)$ ce qui permet de reecrire l'equation de diffusion sous la forme:
+  
+    \[  \frac{\partial T}{\partial t} - \nabla \cdot (D \nabla T) = \frac{S}{\rho C_p} \]
+
+  Cela permet de faire appel directement a l'operateur de diffusion de TRUST. 
+  L'uniformite de $\rho$ et $C_p$ est verifiee dans la methode \latex_) Solide::verifier_coherence_champs. \latex_(
+
+  La modification principale de la classe \latex_) Solide_Milieu_Variable \latex_( consiste donc a autoriser $\rho$ et/ou $C_p$ variables en espace, 
+  en reprenant la forme  originale de l'equation de la chaleur. Le terme $\rho C_p$ est replace devant la derivee partielle de T et les termes sources par l'appel 
+  \latex_)
+  'solveur_masse->set_name_of_coefficient_temporel("rho_cp_comme_T")' dans la methode Conduction_Milieu_Variable: :lire_motcle_non_standard.
+  Le coefficient de diffusivite pour l'equation de diffusion devient simplement la conductivite mais reste la vraie diffusivite thermique 
+  (D) pour le calcul du pas de temps de stabilite.
+  
+  Cette fiche verifie la non regression des classes xxx_Milieu_Variable par rapport aux classes de Conduction standard.  \latex_( On illustre ensuite un exemple de $\rho . Cp$ variable en espace.
+    \latex_)
+	EOF
+}
+
+Chapter {
+	Title "Iso-fonctionalite avec l'equation de conduction standard"
+	Description "On verifie que pour des parametres uniformes constants en temps on retrouve les resultats de l'equation de conduction standard de TRUST. Le cas traite est  le cas 'conduction' de la base de tests, qui teste toutes les conditions limites de l'equation de conduction. Le domaine est le carre unite centre en (0.5, 0.5)."  
+	
+Figure {
+	Title "Temperature au milieu du domaine au cours du temps"
+	Description "Ci-dessous l'evolution temporelle de la temperature pour un point situe a (0.45, 0.45) dans le domaine."  
+	Dimension 2
+	include_description_curves 0
+	LabelX "t(s)"
+  LabelY "T"
+	Curve {
+		legend "Standard"
+		file ./conduc_SONDE_POINT.son
+		Style linespoints
+	}
+ Curve {
+		legend "Milieu variable"
+		file ./conduc_var_SONDE_POINT.son
+		Style linespoints
+	}
+}
+
+Figure {
+	Title "Coupes horizontale et verticale"
+	Description "Deux coupes horizontale et verticale en milieu de domaine, a t=10s dans le calcul. Le coupe horizontale est obtenue via le segment \latex_( $ [0.05, 0.45] \times [0.95, 0.45] $ \latex_) alors que la coupe verticale est obtenue via le segment \latex_( $ [0.45, 0.05] \times [0.45, 0.95] $ \latex_)."  
+	Dimension 2
+	include_description_curves 0
+	LabelX "Position"
+  LabelY "T"
+	Curve {
+		legend "Standard - Horizontal"
+		segment conduc.data sonde_horiz 10.0
+		file ./conduc_SONDE_HORIZ.son
+		Style linespoints
+	}
+  Curve {
+		legend "Milieu variable - Horizontal"
+		segment conduc_var.data sonde_horiz 10.0
+		file ./conduc_var_SONDE_HORIZ.son
+		Style linespoints
+	}
+	Curve {
+		legend "Standard - Vertical"
+		segment conduc.data sonde_vert 10.0
+		file ./conduc_SONDE_VERT.son
+		Style linespoints
+	}
+  Curve {
+		legend "Milieu variable - Vertical"
+		segment conduc_var.data sonde_vert 10.0
+		file ./conduc_var_SONDE_VERT.son
+		Style linespoints
+	}
+ }
+}
+
+Chapter {
+	Title "Variation en temps"
+	Description " Le domaine est maintenant une barre horizontale 1D s'etendant de x=0 a 1. On verifie le comportement de l'equation pour une variation temporelle de \latex_( $\lambda$ \latex_)."
+  Description "Condition limite: temperature imposee a gauche, flux impose a droite."
+  Description "A t=150s on multiplie la conductivite par 4 de 0.01 a 0.04. Cela fait chuter la temperature interne." 
+
+  Figure {
+	  Title "Coupes horizontales"
+	  Description "Coupes horizontales effectuees a t=149s et t=250s, quand les deux regimes stationnaires sont atteints."  
+	  Dimension 2
+	  include_description_curves 0
+	  LabelX "Position"
+    LabelY "T"
+	  Curve {
+		  legend "Standard - Horizontal - t=149s"
+		  segment conduc_bar.data sonde_horiz 149.0
+		  file ./conduc_bar_SONDE_HORIZ.son
+		  Style linespoints
+	  }
+    Curve {
+		  legend "Milieu variable - Horizontal - t=149s"
+		  segment conduc_bar_var.data sonde_horiz 149.0
+		  file ./conduc_bar_var_SONDE_HORIZ.son
+		  Style linespoints
+	  }
+	  Curve {
+		  legend "Standard - Horizontal - t=250s"
+		  segment conduc_bar.data sonde_horiz 250.0
+		  file ./conduc_bar_SONDE_HORIZ.son
+		  Style linespoints
+	  }
+    Curve {
+		  legend "Milieu variable - Horizontal - t=250s"
+		  segment conduc_bar_var.data sonde_horiz 250.0
+		  file ./conduc_bar_var_SONDE_HORIZ.son
+		  Style linespoints
+	  }
+  }
+	
+	Figure {
+	  Title "Evolution temporelle en un point"
+	  Description "Voici l'evolution temporelle de la temperature pour un point sur le bord droit du domaine. Le changement brutal de conductivite se voit sur le decrochage de la temperature interne du au plus grand flux de sortie."  
+	  Dimension 2
+	  include_description_curves 0
+	  LabelX "t (s)"
+    LabelY "T (deg C)"
+	  Curve {
+		  legend "Standard"
+		  file ./conduc_bar_SONDE_POINT.son
+		  Style linespoints
+	  }
+	  Curve {
+		  legend "Variable"
+		  file ./conduc_bar_var_SONDE_POINT.son
+		  Style linespoints
+	  }
+	}
+	
+}
+
+
+Chapter {
+	Title "Variation en espace"
+
+	Description On prend le cas decrit dans [1]. La geometrie modelise une barre 1D infinie avec une temperature <<EOF 
+initiale T1 en x < 0 et T2 en x > 0. Les temperatures a gauche et a droite sont imposees a 20 et 10deg respectivement.
+
+Cela revient a la mise en contact de deux solides a des temperatures differentes.
+Le domaine est cette fois charge depuis un fichier MED contenant N elements (N=30) .
+On utilise les sous-zones definies a partir des groupes d'elements MED, comme suggere par Antoine.
+
+Instantanement le contact est porte a une temperature constante Tp, et pour x > 0 (resp. x < 0) la temperature varie de Tp a T2 (resp. de Tp a T1).
+
+Pour x > 0, on a  \latex_( $T-T_p = (T_2-T_p)\mathrm{erf}(x/\sqrt{4 a_2 t}) $ avec $a_2 = \lambda_2 / (\rho_2 Cp_2)$  \latex_)
+
+Pour x < 0, on a \latex_( $T-T_p = (T_1-T_p)\mathrm{erf}(x/\sqrt{4 a_1 t}) $ avec $a_1 = \lambda_1 / (\rho_1 Cp_1)$ \latex_)
+
+Et la temperature de contact \latex_( $T_p = \frac{b_1 T_1 + b_2 T_2}{b_1+b_2}$ avec $b_1=\sqrt{\rho_1 \lambda_1 c_1}$ 
+
+Dans notre cas $T_1=20$, $T_2=10$,  $\rho_1 = \rho_2 = 2$, $Cp_1 = Cp_2 = 0.5$, et finalement $\lambda_1 = 0.01$ et $\lambda_2 = 0.03$ ce qui
+donne $T_p = 13.66$
+\latex_)
+
+Sur le graphe ci dessous, on retrouve cette temperature de joint a t=2s, mais plus a t final, car a ce moment, l'approximation du
+milieu infini n'est plus valable et l'on retrouve une rampe lineaire par morceau a gauche et a droite.
+
+On effectue differentes validations en faisant soit varier \latex_( $\lambda$ par morceaux, soit $\rho$ et $C_p$, et on montre ainsi
+quand l'utilisation de la nouvelle equation est necessaire. \latex_)
+
+EOF
+	
+	Figure {
+	Title "Lambda variable"
+	Description "Profil de temperature en transitoire pour un \latex_( $\lambda$ \latex_) variable en espace. Ce cas est traitable par l'equation standard de conduction de TRUST. Comparaison a la solution analytique a t=2s. La moitie gauche (x < 0) a une temperature initiale de 20deg, a droite 10deg."  
+	Dimension 2
+	include_description_curves 0
+	LabelX "X"
+  LabelY "T"
+#	Curve {
+#		legend "t=0s"
+#		segment conduc_doublebar.data sonde_horiz 0.0
+#		file ./conduc_doublebar_SONDE_HORIZ.son
+#		Style linespoints
+#	}
+  Curve {
+		legend "t=2s - standard"
+		segment conduc_doublebar.data sonde_horiz 2.0
+		file ./conduc_doublebar_SONDE_HORIZ.son
+		Style linespoints
+	}
+  Curve {
+		legend "t=2s - variable"
+		segment conduc_doublebar_var.data sonde_horiz 2.0
+		file ./conduc_doublebar_var_SONDE_HORIZ.son
+		Style linespoints
+	}
+  Curve {
+		legend "t=2s - analytic"
+	  fonction x > 0 ? (10-13.66)* erf(x/sqrt(4*2*0.03)) + 13.66 : (13.66-20)* erf(x/sqrt(4*2*0.01)) + 13.66
+	}
+  Curve {
+		legend "t=final - standard"
+		segment conduc_doublebar.data sonde_horiz 
+		file ./conduc_doublebar_SONDE_HORIZ.son 
+		Style linespoints
+	}
+  Curve {
+		legend "t=final - variable"
+		segment conduc_doublebar_var.data sonde_horiz 
+		file ./conduc_doublebar_var_SONDE_HORIZ.son 
+		Style linespoints
+	}	
+	Curve {
+	  legend "Temp. jonction analytic"
+	  fonction 13.66
+	}
+
+ }
+ 
+ 
+ 	Figure {
+	Title "\latex_( $\rho$, $C_p$ \latex_) variables en espace"
+	Description "Profil de temperature en transitoire, cette fois pour \latex_( $\lambda$, $\rho$ et $C_p$ variables en espace. Ce cas n'est PAS traitable par l'equation standard de conduction de TRUST. Sur la moitie gauche $\rho=2$ et $C_p=0.5$ tandis qu'a droite $\rho=0.5$ et $C_p=2.0$. On garde donc le produit des deux constant, ce qui nous ramene a la meme solution analytique que precedemment. La comparaison est faite a t=2s.  \latex_)"  
+	Dimension 2
+	include_description_curves 0
+	LabelX "X"
+  LabelY "T"
+  
+  Curve {
+		legend "t=2s - analytic"
+	  fonction x > 0 ? (10-13.66)* erf(x/sqrt(4*2*0.03)) + 13.66 : (13.66-20)* erf(x/sqrt(4*2*0.01)) + 13.66
+	}
+  Curve {
+		legend "t=2s - variable"
+		segment conduc_doublebar_rhoCp_var.data sonde_horiz 2.0
+		file ./conduc_doublebar_rhoCp_var_SONDE_HORIZ.son
+		Style linespoints
+	}
+	Curve {
+	  legend "Temp. jonction analytic"
+	  fonction 13.66
+	}
+ }
+  
+}
+
+Chapter {
+	Title "Validation en EF"
+	Description La double barre infinie en discretisation 'EF' maintenant, pour avoir une situation similaire a ce que traite FLICA4 actuellement <<EOF
+avec  les maillages filaires 1D (meme si a terme on s'oriente vers une modelisation 3D de la thermique sur discretisation VDF). Pour rappel en EF, la temperature
+est localisee aux sommets, mais les proprietes physiques \latex_( $\lambda$, $\rho$ et $C_p$ restent aux elements. \latex_)
+
+Comme precedemment le maillage est construit de telle maniere que l'abscisse x=0 coincide avec un noeud (la disconituite des proprietes physiques
+se produit donc exactement en x=0).
+
+On charge les proprietes physiques comme precedemment en utilisant les groupes d'elements definis dans le fichier MED, mais par contre 
+la temperature initiale (definie aux sommets donc, et non aux elements comme en VDF) est chargee a partir d'un champ MED aux noeuds. La temperature
+au sommet x=0 est definie a 15deg (les memes resultats sont obtenues en prenant comme temperature initiale $T_p$).
+
+Le meme calcul que precedemment est conduit, a savoir le produit \latex_( $\rho C_p$ constant et $\lambda$ variable. \latex_)
+	EOF
+	
+	Figure {
+	  Title "EF sur la double barre"
+	  Description ""  
+	  Dimension 2
+	  include_description_curves 0
+	  LabelX "X"
+    LabelY "T"
+	  Curve {
+		  legend "t=2s - analytic"
+	    fonction x > 0 ? (10-13.66)* erf((x)/sqrt(4*2*0.03)) + 13.66 : (13.66-20)* erf((x)/sqrt(4*2*0.01)) + 13.66
+	  }
+    Curve {
+		  legend "t=0s - standard EF"
+		  segment conduc_doublebar_rhoCp_var_ef.data sonde_horiz 0.0
+		  file ./conduc_doublebar_ef_SONDE_HORIZ.son 
+		  Style linespoints
+	  }
+    Curve {
+		  legend "t=2s - standard EF"
+		  segment conduc_doublebar_rhoCp_var_ef.data sonde_horiz 2.0
+		  file ./conduc_doublebar_rhoCp_var_ef_SONDE_HORIZ.son 
+		  Style linespoints
+	  }
+	  Curve {
+	    legend "Temp. jonction analytic"
+	    fonction 13.66
+	  }
+  }
+	
+}
+
+Chapter
+{
+  Title "Cas avec source"
+  Description On considere maintenant un cas completement analytique variable en espace et en temps. <<EOF
+  Le domaine est une barre 1D s'etendant de 0 a 1 en x. Les conditions limites sont en temperature imposee avec T(x=0) = T(x=1) = 0.
+  La condition initiale est aussi nulle uniformement. On garde la discretisation EF utilisee precedemment.
+  
+Soit la solution \latex_(
+\[  
+  T = \sin(\pi x)\sin t
+\]
+et les parametres physiques (strictement positifs) definis par 
+\[   \lambda = \sin x \sin t + 1.5  \]
+\[   \rho C_p = \sin x \sin t + 2  \]
+
+Cette configuration conduit a 
+\[
+  - \nabla \cdot (\lambda \nabla T) = \pi \sin t ( \pi ( \sin x \sin t + 1.5  ) \sin (\pi x) - \cos x \cos (\pi x ) \sin t ) 
+\]
+
+et a
+\[
+ \rho C_p \frac{\partial T}{\partial t} = (\sin x \sin t +2)(\sin (\pi x) \cos t)
+\]
+
+Le terme source a employer est donc la somme des deux:
+\[  S = - \nabla \cdot (\lambda \nabla T)  +  \rho C_p \frac{\partial T}{\partial t} \]
+
+
+\latex_)
+
+EOF
+
+	Figure {
+	  Title "EF avec source sur simple barre"
+	  Description ""  
+	  Dimension 2
+	  include_description_curves 0
+	  LabelX "X"
+    LabelY "T"
+#    Curve {
+#		  legend "t=0s"
+#		  segment conduc_bar_ef_ana.data sonde_horiz 0.0
+#		  file ./conduc_bar_ef_ana_SONDE_HORIZ.son 
+#		  Style linespoints
+#	  }
+    Curve {
+		  legend "t=1s"
+		  segment conduc_bar_ef_ana.data sonde_horiz 1.0
+		  file ./conduc_bar_ef_ana_SONDE_HORIZ.son 
+		  Style linespoints
+	  }
+    Curve {
+		  legend "t=3s"
+		  segment conduc_bar_ef_ana.data sonde_horiz 3.0
+		  file ./conduc_bar_ef_ana_SONDE_HORIZ.son 
+		  Style linespoints
+	  }
+    Curve {
+		  legend "t=1s - analytic"
+      fonction sin(3.1415926535898*x)*sin(1.0)
+	  }	  
+    Curve {
+		  legend "t=3s - analytic"
+      fonction sin(3.1415926535898*x)*sin(3.0)
+	  }
+
+  }
+
+}
+
+Chapter 
+{
+  Title "Jeu de donnees illustrant l'utilisation des sous-zones en VDF"
+  Description "Apres chargement du fichier MED on relit le fichier de sous-zones qui permet d'acceder a 'left_elem' et 'right_elem' les deux groupes d'elements definis dans MED."
+  Description include_text_file("conduc_doublebar.data", "left_elem", "right_elem",  "Read_file")
+}
+
+
+Chapter 
+{
+  Title "References"
+  Description "[1] Lagree - Cours sur la resolution de l equation de la chaleur - http://www.lmm.jussieu.fr/~lagree/COURS/MECAVENIR/cours6_eqchal_resol.pdf"
+}
+	
+
+

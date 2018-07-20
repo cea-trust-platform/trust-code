@@ -1,7 +1,7 @@
 name=cmake
 old_version=2.8.*
-old_version=3.0.1
-version=3.0.2
+old_version=3.0.*
+version=3.5.2
 package=$(name)-$(version).tar.gz
 install=$(TRUST_ROOT)/exec/$(name)
 cible=$(install)/bin/$(name)

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,7 +25,7 @@
 #include <Equation_base.h>
 
 Implemente_instanciable(Neumann_paroi_adiabatique,"Neumann_Paroi_adiabatique",Neumann_homogene);
-
+// XD Neumann_paroi_adiabatique Neumann_homogene Neumann_paroi_adiabatique -1 Adiabatic wall neumann boundary condition
 
 // Description:
 //    Ecrit le type de l'objet sur un flot de sortie.

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1116,6 +1116,12 @@ void Pave::lire_Noeuds(Entree& is)
     }
   for(i=0; i< dimension; i++)
     is >> Nb_Noeuds(i);
+  if (min_array(Nb_Noeuds)<2)
+    {
+      Cerr << "\nError: The number of nodes in directions Nx and Ny (and Nz) for 'Pave " << nom << "' must be greater than 1." << finl;
+      Cerr << "If you want to define a unique cell in a given direction, set the number of nodes to 2 in that direction." << finl;
+      exit();
+    }
   if(dimension==1)
     {
       Mx=Nb_Noeuds(0);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -61,10 +61,10 @@ Implemente_base_sans_constructeur_ni_destructeur(Probleme_base,"Probleme_base",P
 // XD  attr postraitements|Post_processings postraitements postraitements 1 List of Postraitement objects (with name).
 // XD  attr liste_de_postraitements liste_post_ok liste_de_postraitements 1 This
 // XD  attr liste_postraitements liste_post liste_postraitements 1 This block defines the output files to be written during the computation. The output format is lata in order to use OpenDX to draw the results. This block can be divided in one or several sub-blocks that can be written at different frequencies and in different directories. Attention. The directory lata used in this example should be created before running the computation or the lata files will be lost.
-// XD  attr sauvegarde format_file sauvegarde 1 Keyword used when calculation results are to be backed up. When a coupling is performed, the backup-recovery file name must be well specified for each problem. In this case, you must save to different files and correctly specify these files when restarting the calculation.
+// XD  attr sauvegarde format_file sauvegarde 1 Keyword used when calculation results are to be backed up. When a coupling is performed, the backup-recovery file name must be well specified for each problem. In this case, you must save to different files and correctly specify these files when resuming the calculation.
 // XD  attr sauvegarde_simple format_file sauvegarde_simple 1 The same keyword than Sauvegarde except, the last time step only is saved.
-// XD  attr reprise format_file reprise 1 Keyword to restart a calculation based on the name_file file (see the class format_file). If format_reprise is xyz, the name_file file should be the .xyz file created by the previous calculation. With this file, it is possible to restart a parallel calculation on P processors, whereas the previous calculation has been run on N (N<>P) processors. Should the calculation be restarted, values for the tinit (see schema_temps_base) time fields are taken from the name_file file. If there is no backup corresponding to this time in the name_file, TRUST exits in error.
-//  XD  attr resume_last_time format_file resume_last_time 1 Keyword to restart a calculation based on the name_file file, restart the calculation at the last time found in the file (tinit is set to last time of saved files).
+// XD  attr reprise format_file reprise 1 Keyword to resume a calculation based on the name_file file (see the class format_file). If format_reprise is xyz, the name_file file should be the .xyz file created by the previous calculation. With this file, it is possible to resume a parallel calculation on P processors, whereas the previous calculation has been run on N (N<>P) processors. Should the calculation be resumed, values for the tinit (see schema_temps_base) time fields are taken from the name_file file. If there is no backup corresponding to this time in the name_file, TRUST exits in error.
+//  XD  attr resume_last_time format_file resume_last_time 1 Keyword to resume a calculation based on the name_file file, resume the calculation at the last time found in the file (tinit is set to last time of saved files).
 //  XD ref domaine domaine
 //  XD ref scheme schema_temps_base
 //  XD ref milieu milieu_base
@@ -1034,7 +1034,8 @@ void Probleme_base::finir()
   Debog::set_nom_pb_actuel(le_nom());
 
   les_postraitements.finir();
-  sauver();
+  if (lsauv())
+    sauver();
   // On ferme proprement le fichier de sauvegarde
   // Si c'est une sauvegarde_simple, le fin a ete mis a chaque appel a ::sauver()
   if (restart_file!=1 && ficsauv_.non_nul())
@@ -1536,6 +1537,11 @@ const Champ_base& Probleme_base::get_champ(const Motcle& un_nom) const
       ++curseur;
     }
 
+  if (discretisation().que_suis_je()=="VDF")
+    {
+      Cerr << "\nTemperature_physique is not available for VDF discretization" << finl;
+      exit();
+    }
 
   Cerr<<"The field of name "<<un_nom<<" do not correspond to a field understood by the problem."<<finl;
   Cerr<<"It may be a field dedicated only to post-process and defined in the Definition_champs set."<<finl;

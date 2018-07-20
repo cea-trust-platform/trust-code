@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,6 +63,7 @@
     inline LIST(_TYPE_)& operator -=(const _TYPE_&);                        \
     int est_egal_a(const Objet_U& ) const;                                \
     int contient(const _TYPE_&) const;                                \
+    int contient(const char* const) const;                                \
     int rang(const _TYPE_&) const;                                        \
     void suppr(const _TYPE_&);                                                \
   protected :                                                                \
@@ -193,6 +194,9 @@
   }                                                                        \
   inline int LIST(_TYPE_)::contient(const _TYPE_& t) const{                \
     return liste::contient(t);                                                \
+  }                                                                        \
+  inline int LIST(_TYPE_)::contient(const char* const c) const{                \
+    return liste::contient(c);                                                \
   }                                                                        \
   inline int LIST(_TYPE_)::rang(const _TYPE_& t) const{                \
     return liste::rang(t);                                                \

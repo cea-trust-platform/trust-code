@@ -136,7 +136,7 @@ Read pb
                                             {  domaine corei localisation faces source refchamp { Pb_champ pb concentration } } 
 	d_max  Reduction_0D { methode max sources_reference { c_reduit } }
                              
-             d_moy Reduction_0D { methode moyenne_ponderee sources_reference { c_reduit } }
+             d_moy Reduction_0D { methode weighted_average sources_reference { c_reduit } }
 }
 		Probes
 		{ 

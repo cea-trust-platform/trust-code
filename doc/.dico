@@ -59,6 +59,7 @@
  Champ_Fonc_Fonction Champ_Fonc_Fonction Champ_Fonc_Fonction.h
  Champ_Fonc_Fonction_txyz Champ_Fonc_Fonction_txyz Champ_Fonc_Fonction_txyz.h
  Champ_Fonc_MED Champ_Fonc_MED Champ_Fonc_MED.h
+ Champ_Fonc_MEDfile Champ_Fonc_MEDfile Champ_Fonc_MED.h
  Champ_Fonc_P0_base Champ_Fonc_P0_base Champ_Fonc_P0_base.h
  Champ_Fonc_P0_EF Champ_Fonc_P0_EF Champ_Fonc_P0_EF.h
  Champ_Fonc_P0_MED Champ_Fonc_P0_MED Champ_Fonc_P0_MED.h
@@ -167,6 +168,7 @@
  Comm_Group_Noparallel Comm_Group_Noparallel Comm_Group_Noparallel.h
  Conds_lim Conds_lim Conds_lim.h
  Conduction Conduction Conduction.h
+ Conduction_Milieu_Variable Conduction_Milieu_Variable Conduction_Milieu_Variable.h
  Cond_lim Cond_lim Cond_lim.h
  Cond_lim_base Cond_lim_base Cond_lim_base.h
  Cond_lim_utilisateur_base Cond_lim_utilisateur_base Cond_lim_utilisateur_base.h
@@ -220,6 +222,7 @@
  Dirichlet Dirichlet Dirichlet.h
  Dirichlet_entree_fluide Dirichlet_entree_fluide Dirichlet_entree_fluide.h
  Dirichlet_homogene Dirichlet_homogene Dirichlet_homogene.h
+ Disable_TU Disable_TU Disable_TU.h
  Discretisation Discretisation Discretisation_base.h
  Discretisation_base Discretisation_base Discretisation_base.h
  Discretiser_domaine Discretiser_domaine Discretiser_domaine.h
@@ -249,6 +252,7 @@
  Ecrire_Fichier Ecrire_Fichier Ecrire_Fichier.h
  Ecrire_Fichier_Formatte Ecrire_Fichier_Formatte Ecrire_Fichier_Formatte.h
  Ecrire_MED EcrMED EcrMED.h
+ Ecrire_MEDfile EcrMEDfile EcrMEDfile.h
  EcritureLectureSpecial EcritureLectureSpecial EcritureLectureSpecial.h
  EDO_Pression_th EDO_Pression_th EDO_Pression_th.h
  EDO_Pression_th_base EDO_Pression_th_base EDO_Pression_th_base.h
@@ -317,6 +321,7 @@
  Format_Post_Lata_V2 Format_Post_Lata Format_Post_Lata.h
  Format_Post_Lml Format_Post_Lml Format_Post_Lml.h
  Format_Post_Med Format_Post_Med Format_Post_Med.h
+ Format_Post_Medfile Format_Post_Medfile Format_Post_Medfile.h
  Format_Post_Med_major Format_Post_Med_major Format_Post_Med_major.h
  Frontiere Frontiere Frontiere.h
  Frontiere_dis_base Frontiere_dis_base Frontiere_dis_base.h
@@ -345,6 +350,8 @@
  Gmres SolvElem_Gmres SolvElem_Gmres.h
  Gradient Champ_Generique_Gradient Champ_Generique_Gradient.h
  gradient_temperature_Champ_P1NC grad_T_Champ_P1NC grad_T_Champ_P1NC.h
+ grad_U_Champ_Face grad_U_Champ_Face grad_U_Champ_Face.h
+ grad_U_Champ_P1NC grad_U_Champ_P1NC grad_U_Champ_P1NC.h
  Gravite_VDF_Face Terme_Gravite_VDF_Face Terme_Gravite_VDF_Face.h
  Hexaedre Hexaedre Hexaedre.h
  Hexaedre_axi Hexaedre_axi Hexaedre_axi.h
@@ -398,6 +405,7 @@
  Lire_Fichier|Read_file Lire_Fichier Lire_Fichier.h
  Lire_Ideas Lire_Ideas Lire_Ideas.h
  Lire_MED LireMED LireMED.h
+ Lire_MEDfile LireMEDfile LireMEDfile.h
  Lire_Tgrid Lire_Tgrid Lire_Tgrid.h
  Lire|Read Lire Lire.h
  liste liste liste.h
@@ -725,6 +733,7 @@
  Pave Pave Pave.h
  Pbc_MED Pbc_MED Pb_MED.h
  Pb_Conduction Pb_Conduction Pb_Conduction.h
+ Pb_Conduction_Milieu_Variable Pb_Conduction_Milieu_Variable Pb_Conduction_Milieu_Variable.h
  Pb_Hydraulique Pb_Hydraulique Pb_Hydraulique.h
  Pb_Hydraulique_Concentration Pb_Hydraulique_Concentration Pb_Hydraulique_Concentration.h
  Pb_Hydraulique_Concentration_Turbulent Pb_Hydraulique_Concentration_Turbulent Pb_Hydraulique_Concentration_Turbulent.h
@@ -785,6 +794,7 @@
  Probleme_Couple Probleme_Couple Probleme_Couple.h
  Probleme_U Probleme_U Probleme_U.h
  Puissance_Thermique_EF Puissance_Thermique_EF Puissance_Thermique_EF.h
+ Puissance_Thermique_QC_EF Puissance_Thermique_QC_EF Puissance_Thermique_QC_EF.h
  Puissance_Thermique_QC_VDF_P0_VDF Terme_Puissance_Thermique_QC_VDF_Elem Terme_Puissance_Thermique_QC_VDF_Elem.h
  Puissance_Thermique_QC_VEF_P1NC Terme_Puissance_Thermique_QC_VEF_Face Terme_Puissance_Thermique_QC_VEF_Face.h
  Puissance_Thermique_VDF_P0_VDF Terme_Puissance_Thermique_VDF_Elem Terme_Puissance_Thermique_VDF_Elem.h
@@ -866,6 +876,7 @@
  Sin Sin StdFunction.h
  Sinh Sinh StdFunction.h
  Solide Solide Solide.h
+ Solide_Milieu_Variable Solide_Milieu_Variable Solide_Milieu_Variable.h
  Solide_SWIFT_VDF_P0_VDF Terme_Source_Solide_SWIFT_VDF Terme_Source_Solide_SWIFT_VDF.h
  SolvElem SolvElem SolvElem.h
  SolvElem_base SolvElem_base SolvElem_base.h

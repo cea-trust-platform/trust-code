@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -223,6 +223,10 @@ inline void Solv_Petsc::initialize()
       Cerr << "-malloc_dump : to have at the end of the calculation the memory not deallocated by PETSc." << finl;
       Cerr << "-help : to know all the commands lines of PETSc including those related to the solver/preconditioner selected." << finl;
       Cerr << "******************************************************************************************" << finl;
+      if (!disable_TU)
+        Cerr << "NB: if you want to disable the wrinting of the *_petsc.TU file then specify the disable_TU flag in your datafile before reading the block of schema in time." << finl;
+      else
+        Cerr << "Reading of disable_TU flag => Disable the writing of the *_petsc.TU file."<< finl;
       PetscLogStageRegister("KSPSolve",&KSPSolve_Stage_);
     }
 }

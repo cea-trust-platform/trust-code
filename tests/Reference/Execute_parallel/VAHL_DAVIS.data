@@ -205,8 +205,8 @@ Read pb
 		   	}
 		  convection_CDT_dt Morceau_Equation { type operateur numero 1 option stabilite source refChamp { Pb_champ pb temperature }
 		   	}
-		  mean_temperature1 Reduction_0D { methode moyenne source refChamp { Pb_champ pb temperature } }	
-		  mean_temperature2 Reduction_0D { methode moyenne_ponderee source refChamp { Pb_champ pb temperature } }				
+		  mean_temperature1 Reduction_0D { methode average source refChamp { Pb_champ pb temperature } }	
+		  mean_temperature2 Reduction_0D { methode weighted_average source refChamp { Pb_champ pb temperature } }				
 		}
 		Probes
 		{
@@ -319,13 +319,13 @@ Read pb
 
 	     
 					       
-	     debit_sum Reduction_0D { methode somme source_reference debit }				       
-	     diffU_X_sum Reduction_0D { methode somme source_reference diffU_X }			       
-             diffU_Y_sum Reduction_0D { methode somme source_reference diffU_Y }			       			       			       
-	     convU_X_sum Reduction_0D { methode somme source_reference convU_X }			       
-             convU_Y_sum Reduction_0D { methode somme source_reference convU_Y }
-	     diffT_sum Reduction_0D { methode somme source_reference diffT }			       
-             convT_sum Reduction_0D { methode somme source_reference convT }
+	     debit_sum Reduction_0D { methode sum source_reference debit }				       
+	     diffU_X_sum Reduction_0D { methode sum source_reference diffU_X }			       
+             diffU_Y_sum Reduction_0D { methode sum source_reference diffU_Y }			       			       			       
+	     convU_X_sum Reduction_0D { methode sum source_reference convU_X }			       
+             convU_Y_sum Reduction_0D { methode sum source_reference convU_Y }
+	     diffT_sum Reduction_0D { methode sum source_reference diffT }			       
+             convT_sum Reduction_0D { methode sum source_reference convT }
 	     			       			       
 	    }
 	    

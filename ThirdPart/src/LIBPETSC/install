@@ -169,7 +169,7 @@ then
    # CUSP has been renamed CUSPLIBRARY
    # https://github.com/cusplibrary/cusplibrary
    ###################################################
-   CUSP=cusplibrary-0.4.0
+   CUSP=cusplibrary-0.5.1
    rm -r -f $ROOT/$CUSP
    #unzip pas toujours installe sur les PCs
    #On transforme le .zip en .tgz

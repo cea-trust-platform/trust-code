@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,6 +53,7 @@ static Nom           journal_file_name_;
 // si les messages ecrits avant l'initialisation du journal sont ecrits
 // ou pas.
 static int        verbose_level_ = 0;
+static int        disable_stop_ = 0;
 
 // Drapeau indiquant si les sorties cerr et cout doivent
 // etre redirigees vers le fichier journal
@@ -165,6 +166,17 @@ int Process::mp_sum(int x)
 }
 
 // Description:
+//  Calcule le 'et' logique de b sur tous les processeurs du groupe courant.
+bool Process::mp_and(bool b)
+{
+  const Comm_Group& grp = PE_Groups::current_group();
+  int x = b ? 1 : 0;
+  int y;
+  grp.mp_collective_op(&x, &y, 1, Comm_Group::COLL_MIN);
+  return y == 1;
+}
+
+// Description:
 //    Routine de sortie de Trio-U sur une erreur
 //    Sauvegarde la memoire et le hierarchie dans les fichiers "memoire.dump" et "hierarchie.dump"
 // Precondition:
@@ -195,13 +207,15 @@ void Process::exit(const Nom& message ,int i)
       Type_info::hierarchie(hier);
       hier << "\n             SYNONYMS\n";
       Synonyme_info::hierarchie(hier);
-      Nom nomfic( Objet_U::nom_du_cas() );
-      nomfic += ".stop";
-      {
-        SFichier ficstop( nomfic );
-        ficstop <<message<<finl;
-      }
-
+      if (!get_disable_stop())
+        {
+          Nom nomfic( Objet_U::nom_du_cas() );
+          nomfic += ".stop";
+          {
+            SFichier ficstop( nomfic );
+            ficstop <<message<<finl;
+          }
+        }
     }
   Journal() << message << finl;
   if (exception_sur_exit)
@@ -437,4 +451,16 @@ void change_journal_level(int level)
   verbose_level_ = level;
 }
 
+// Description:
+//  Returns the disable_stop_ flag (Disable or not the writing of the .stop file)
+int get_disable_stop()
+{
+  return disable_stop_;
+}
 
+// Description:
+//  Affects a new value to disable_stop_ flag (Disable or not the writing of the .stop file)
+void change_disable_stop(int new_stop)
+{
+  disable_stop_ = new_stop;
+}

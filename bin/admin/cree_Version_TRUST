@@ -17,7 +17,7 @@ read v
 PORTAGE=""
 if [ "$v" != "" ]
 then
-   PORTAGE=$WORKDIR/PORTAGE_$v
+   PORTAGE=$WORKDIR/portages/PORTAGE_$v
    if [ ! -d $PORTAGE ]
    then
       # On regarde si la version beta n'existe pas dans ce cas on move le repertoire
@@ -26,8 +26,10 @@ then
          echo $PORTAGE"_beta" renamed in $PORTAGE
          mv $PORTAGE"_beta" $PORTAGE
       else
-         echo $ECHO_OPTS "Versions $PORTAGE or $PORTAGE"_beta" not exists."
-         exit -1
+         #echo $ECHO_OPTS "Versions $PORTAGE or $PORTAGE"_beta" not exists."
+         #exit -1
+         echo $ECHO_OPTS "Directory $PORTAGE created."
+	 mkdir -p $PORTAGE 
       fi
    else
       echo $ECHO_OPTS "Version $PORTAGE exists."  

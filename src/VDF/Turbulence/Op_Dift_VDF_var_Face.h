@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,7 +49,7 @@ public:
 
   Op_Dift_VDF_var_Face();
   void associer_diffusivite_turbulente(const Champ_Fonc& );
-  void completer();
+  virtual void completer();
   inline Eval_VDF_Face& get_eval_face();
 };
 

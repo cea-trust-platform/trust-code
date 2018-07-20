@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,7 +35,7 @@
 #include <Champ_Uniforme.h>
 
 Implemente_instanciable(Modele_turbulence_hyd_K_Eps,"Modele_turbulence_hyd_K_Epsilon",Mod_turb_hyd_RANS);
-
+// XD k_epsilon mod_turb_hyd_rans k_epsilon -1 Turbulence model (k-eps).
 
 // Description:
 //    Ecrit le type de l'objet sur un flot de sortie.
@@ -79,11 +79,11 @@ Entree& Modele_turbulence_hyd_K_Eps::readOn(Entree& s )
 void Modele_turbulence_hyd_K_Eps::set_param(Param& param)
 {
   Mod_turb_hyd_RANS::set_param(param);
-  param.ajouter_non_std("Transport_K_Epsilon",(this),Param::REQUIRED);
-  param.ajouter_non_std("Modele_Fonc_Bas_Reynolds",(this));
-  param.ajouter("CMU",&LeCmu);
-  param.ajouter("PRANDTL_K",&Prandtl_K);
-  param.ajouter("PRANDTL_EPS",&Prandtl_Eps);
+  param.ajouter_non_std("Transport_K_Epsilon",(this),Param::REQUIRED); // XD_ADD_P transport_k_epsilon Keyword to define the (k-eps) transportation equation.
+  param.ajouter_non_std("Modele_Fonc_Bas_Reynolds",(this)); // XD_ADD_P modele_fonction_bas_reynolds_base This keyword is used to set the bas Reynolds model used.
+  param.ajouter("CMU",&LeCmu); // XD_ADD_P double Keyword to modify the Cmu constant of k-eps model : Nut=Cmu*k*k/eps Default value is 0.09
+  param.ajouter("PRANDTL_K",&Prandtl_K); // XD_ADD_P double Keyword to change the Prk value (default 1.0).
+  param.ajouter("PRANDTL_EPS",&Prandtl_Eps); // XD_ADD_P double Keyword to change the Pre value (default 1.3).
 }
 
 int Modele_turbulence_hyd_K_Eps::lire_motcle_non_standard(const Motcle& mot, Entree& is)

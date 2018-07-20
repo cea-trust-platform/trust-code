@@ -813,7 +813,7 @@ ECHO_OPTS="" && [ "`echo -e`" != "-e" ] && ECHO_OPTS="-e" && export ECHO_OPTS
 m="# Echo option";e="ECHO_OPTS=\"$ECHO_OPTS\" && export ECHO_OPTS";ecrit $m"|"$e"|"$env
 m="# Login of the TRUST install";e="TRUST_LOGIN=`whoami` && export TRUST_LOGIN";ecrit $m"|"$e"|"$env
 # Verification de l'existence de certaines variables :
-m="# Path to awk command";e="`cherche_file TRUST_Awk gawk awk nawk oawk`";ecrit $m"|"$e"|"$env;eval $e
+m="# Path to awk command";e="`cherche_file TRUST_Awk gawk mawk awk nawk oawk`";ecrit $m"|"$e"|"$env;eval $e
 m="# Path to an text editor";e="`cherche_file TRUST_EDITOR $TRUST_EDITOR`";ecrit $m"|"$e"|"$env
 
 # Nouveau 2010, on regarde le nombre de processeurs disponibles des machines Linux:   
@@ -902,7 +902,7 @@ compiler_found=1
 # Update to 3.0.1 to fix recursive cmake
 ######################################################################
 e="`cherche_file cmake cmake`";eval $e
-CMAKE_VERSION_OK=`$cmake --version 2>&1 | awk '/cmake version/ {split($3,a,".");v=a[1]*100+a[2]*10+a[3];print (v>=301?1:0)}'`
+CMAKE_VERSION_OK=`$cmake --version 2>&1 | awk '/cmake version/ {split($3,a,".");v=a[1]*100+a[2]*10+a[3];print (v>=352?1:0)}'`
 if [ "$CMAKE_VERSION_OK" != 1 ]
 then
   if [ $TRUST_ARCH = cygwin ]
@@ -1193,6 +1193,14 @@ else
                #[ $err = 0 ] && run_test_mpi_par 1>>mpiAbort.log 2>&1
                #OK $err
                #[ $err = 1 ] && mpi_detecte=0 && echo "Problem with MPI_ABORT of `mpirun --version | head -n 1`. Upgrade of MPI version."
+	       if [ "`$MPI_ROOT/bin/mpirun --version 2>&1 | grep 'mpirun (Open MPI)'`" != "" ]
+	       then
+                  echo $ECHO_OPTS "# Check version of OpenMPI (Problem if version between 1.10.3 and 1.10.6): " 
+		  [ "`$MPI_ROOT/bin/mpirun --version 2>&1 | grep 'mpirun (Open MPI) 1.10.3'`" != "" ] && mpi_detecte=0 && echo "Problem with MPI_ABORT of `$MPI_ROOT/bin/mpirun --version | head -n 1`.";
+		  [ "`$MPI_ROOT/bin/mpirun --version 2>&1 | grep 'mpirun (Open MPI) 1.10.4'`" != "" ] && mpi_detecte=0 && echo "Problem with MPI_ABORT of `$MPI_ROOT/bin/mpirun --version | head -n 1`.";
+		  [ "`$MPI_ROOT/bin/mpirun --version 2>&1 | grep 'mpirun (Open MPI) 1.10.5'`" != "" ] && mpi_detecte=0 && echo "Problem with MPI_ABORT of `$MPI_ROOT/bin/mpirun --version | head -n 1`.";
+		  [ "`$MPI_ROOT/bin/mpirun --version 2>&1 | grep 'mpirun (Open MPI) 1.10.6'`" != "" ] && mpi_detecte=0 && echo "Problem with MPI_ABORT of `$MPI_ROOT/bin/mpirun --version | head -n 1`.";
+	       fi
 	    fi	
 	 fi
       fi
@@ -1300,7 +1308,7 @@ fi
 ########################
 # Installation de Salome
 ########################
-version_salome=8.3.0
+version_salome=8.4.0
 if [ $TRUST_DOWNLOAD_SALOME = 1 ]
 then
    version_salome_=`echo $version_salome | awk '{gsub("\\\.","_",$0);print $0}'`
@@ -1614,7 +1622,9 @@ case $TRUST_ARCH_CC in
    # 04/04/17 : passage de v6.2.0 a v6.3.0 sur test GNU
    # 30/05/17 : passage de v6.3.0 a v7.1.0 sur test GNU
    # 26/07/17 : pour portabilite sur Fedora26, passage de v7.1.0 a v7.1.1 sur test GNU
-        TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk '{if ($1<"7.1.2" && $1>="3.4") print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
+   # 28/11/17 : passage de v7.1.0 a v7.2.0 sur test GNU
+   # 08/03/18 : passage de v7.2.0 a v7.3.0 sur test GNU
+        TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk '{if ($1<"7.3.1" && $1>="3.4") print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
    	m="# GNU compiler version";e="TRUST_VERSION_GNU=$TRUST_VERSION_GNU && export TRUST_VERSION_GNU";ecrit $m"|"$e"|"$env
 	[ "`echo $TRUST_SUPPORTED | grep -i Not`" != "" ] && TRUST_SUPPORTED=0
 	# Passage en -O2 car plantages suspects en -O3 avec egcs sur linux
@@ -1794,6 +1804,14 @@ linux_clang++) TRUST_SUPPORTED=1
 	exit -1
    	;;
 esac
+
+# Add c++11 compiler flag to the default TRUST ones
+#if [ "$TRUST_VERSION_GNU" != "" ]
+#then
+#   CppFlags=$CppFlags" "`echo $TRUST_VERSION_GNU | awk '{print $1<"4.7.0" ? $1<"4.3.0" ? "" : "-std=c++0x" : "-std=c++11"}'`
+#else
+#   CppFlags=$CppFlags" -std=c++11"
+#fi
 
 if [ $TRUST_SUPPORTED = 0 ] && [ "$TRUST_FORCE_SUPPORTED" != 1 ]
 then

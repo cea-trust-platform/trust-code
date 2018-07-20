@@ -357,8 +357,16 @@ do
       # rm -f *.lata.* core.* err.* out.*
 	  # A priori c est un peu fort : err.* out.* ne sont pas crees au run. 
       echo "rm *.lata.* core.* convert_jdd"
-      rm -f  core.* convert_jdd
+      rm -f core.* convert_jdd
       find . -maxdepth 1 -name '*.lata.*' -exec  rm  {} \;
+      echo "rm *_Channel_Flow_Rate_* *_Pressure_Gradient_*"
+      rm -f *_Channel_Flow_Rate_* *_Pressure_Gradient_*
+      echo "rm Moyennes_spatiales_* reynolds_tau.dat tauw.dat u_tau.dat"
+      rm -f Moyennes_spatiales_* reynolds_tau.dat tauw.dat u_tau.dat
+      echo "rm evol_glob"
+      rm -f evol_glob
+      echo "rm iter.dat sauvegarde_tble_* tble_mesh.dat"
+      rm -f iter.dat sauvegarde_tble_* tble_mesh.dat
       exit 0
    else
       # Unknown option
@@ -611,6 +619,7 @@ qos=""
 cpu=""
 ram=""
 noeuds=""
+export espacedir
 export project
 export prod
 export bigmem
@@ -667,8 +676,10 @@ then
    fi
 fi
 
-# Si l'on a un gestionnaire de batch (soumission!=999a et que USE_MPIRUN est mis avec NB_PROCS=1, alors soumission est mis a 1
-[ $soumission != 999 ] && [ $NB_PROCS = 1 ] && [ $USE_MPIRUN = 1 ] && soumission=1
+# Si l'on a un gestionnaire de batch (soumission!=999 et que USE_MPIRUN est mis avec NB_PROCS=1, alors soumission est mis a 1
+#[ $soumission != 999 ] && [ $NB_PROCS = 1 ] && [ $USE_MPIRUN = 1 ] && soumission=1
+# pour pouvoir utiliser le debogueur sur la frontale
+[ "$prod" = 1 ] && [ $soumission != 999 ] && [ $NB_PROCS = 1 ] && [ $USE_MPIRUN = 1 ] && soumission=1
 
 # Pour eviter un message d'erreur semget depuis la compilation de MPICH en shared memory
 # on vide la table des semaphores (voir la raison dans lib/src/LIBMPI/Installer_mpich)
@@ -766,6 +777,7 @@ then
 		[ "$cpus_per_task" != "" ] && echo "#MSUB -c $cpus_per_task"	>> $sub_file
 		[ "$node" = 1 ] && echo "#MSUB -x"				>> $sub_file	# Exclusive use of nodes during production run	
 		[ "$ram" != "" ] && echo "#MSUB -M $ram" 			>> $sub_file 
+		[ "$espacedir" != "" ] && echo "#MSUB -m $espacedir"	>> $sub_file 
 		echo "set -x"				 			>> $sub_file 
 		echo "cd \$BRIDGE_MSUB_PWD" 					>> $sub_file
  		;;
