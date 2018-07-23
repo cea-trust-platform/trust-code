@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -497,11 +497,39 @@ void Zone_VDF::genere_aretes()
   int bord=0;
   int mixte=1;
   int interne=2;
-
+  // Detection des plaques (2 faces frontieres se superposent):
+  IntVect est_une_plaque(nb_faces());
+  creer_tableau_faces(est_une_plaque);
+  est_une_plaque=0;
+  // Boucles sur les faces frontieres
+  ArrOfDouble P1(3), P2(3);
+  P1=0;
+  P2=0;
+  double eps = 10.0*Objet_U::precision_geom;
+  for (int face=0; face<premiere_face_int(); face++)
+    {
+      int ori = orientation(face);
+      for (int i = 0; i < dimension; i++)
+        {
+          P1[i] = xv(face, i) + (ori == i ? eps : 0);
+          P2[i] = xv(face, i) - (ori == i ? eps : 0);
+        }
+      int elem1 = zone().chercher_elements(P1[0], P1[1], P1[2]);
+      int elem2 = zone().chercher_elements(P2[0], P2[1], P2[2]);
+      if (elem1 >= 0 && elem2 >= 0 && elem1 != elem2)
+        {
+          // Find 2 points P1 and P2 in cells so:
+          est_une_plaque(face) = 1;
+          Journal() << "We detect an internal boundary on face " << face << " between elements " << elem1 << " and "
+                    << elem2 << finl;
+        }
+    }
+  est_une_plaque.echange_espace_virtuel();
 
   for(int dir=0; dir<nb_dir; dir++)
     for (el1=0; el1<nb_poly_tot; el1++)
       {
+        // On doit generer l'arete en haut a droite de el1
         face12=elem_faces(el1,droite(dir));
         face13=elem_faces(el1,haut(dir));
 
@@ -520,123 +548,88 @@ void Zone_VDF::genere_aretes()
           face34=-1;
 
         if( (el2>-1) && (el3>-1))
-          {
-            if(face_vois(*this, ma_zone, face24, 1) != face_vois(*this, ma_zone, face34, 1))
-              {
-                // WARNING : pour les plaques ?
-                /*
-                            Cerr << el1 << el2 << " " << el3 << finl;
-                            Cerr << face24 << " " << face34 << finl;
-                            Cerr << face_vois(*this, ma_zone, face24, 1) << " " << face_vois(*this, ma_zone, face34, 1) << finl;
-                */
-                el4=max(face_vois(*this, ma_zone, face24, 1),face_vois(*this, ma_zone, face34, 1));
-                //Cerr << el4 << finl;
-
-                Cerr<<"arete special "<<finl;
-              }
-            //assert(face_vois(*this, la_zone, face24, 1) == face_vois(*this, la_zone, face34, 1));
-            else
-              el4=face_vois(*this, ma_zone, face24, 1);
-          }
+          el4=face_vois(*this, ma_zone, face24, 1);
         else if((el2>-1))
-          {
-            el4=face_vois(*this, ma_zone, face24, 1);
-          }
+          el4=face_vois(*this, ma_zone, face24, 1);
         else if((el3>-1))
-          {
-            el4=face_vois(*this, ma_zone, face34, 1);
-          }
+          el4=face_vois(*this, ma_zone, face34, 1);
         else
           el4=-1;
+
         if ( (el2==-1) && (el4>=0) )
           face24=elem_faces(el4,bas(dir));
         if ( (el3==-1) && (el4>=0) )
           face34=elem_faces(el4,gauche(dir));
 
         const int nb_f = nb_faces();
-
-        if ((el2>-1)&&(el3>-1)&&(el4>-1))
-          {
-            les_aretes.affecter(nb_aretes_, dir, interne, nb_f, face13, face24, face12, face34);
-          }
-        else if ( (el3>-1)&&(el4>-1) )
-          les_aretes.affecter(nb_aretes_, dir, mixte, nb_f,        face13, face24, face12, face34);
-        else if ( (el2>-1)&&(el4>-1) )
-          les_aretes.affecter(nb_aretes_, dir, mixte, nb_f, face13, face24, face12, face34);
-        else if ( (el2>-1)&&(el3>-1) )
-          les_aretes.affecter(nb_aretes_, dir, mixte, nb_f, face13, face24, face12, face34);
-        else if (el2>-1) // arete bord
-          les_aretes.affecter(nb_aretes_, dir, bord, nb_f, face13, face24, face12, 1);
-        else if (el3>-1) // arete bord
-          les_aretes.affecter(nb_aretes_, dir, bord, nb_f, face12, face34, face13, 1);
+        if (el2 > -1 && el3 > -1 && el4 > -1) // arete interne
+          les_aretes.affecter(nb_aretes_, dir, interne, nb_f, face13, face24, face12, face34, est_une_plaque);
+        else if ( (el3 > -1 && el4 > -1) ||
+                  (el2 > -1 && el4 > -1) ||
+                  (el2 > -1 && el3 > -1) ) // arete mixte
+          les_aretes.affecter(nb_aretes_, dir, mixte, nb_f, face13, face24, face12, face34, est_une_plaque);
+        else if (el2 > -1) // arete bord
+          les_aretes.affecter(nb_aretes_, dir, bord, nb_f, face13, face24, face12, 1, est_une_plaque);
+        else if (el3 > -1) // arete bord
+          les_aretes.affecter(nb_aretes_, dir, bord, nb_f, face12, face34, face13, 1, est_une_plaque);
         else // arete coin
-          les_aretes.affecter(nb_aretes_, dir, coin, nb_f, face13, face24, face12, face34);
+          les_aretes.affecter(nb_aretes_, dir, coin, nb_f, face13, face24, face12, face34, est_une_plaque);
+        //Cerr << "elements_haut_droit " << el1 << " " << el2 << " " << el3 << " " << el4 << finl;
+        //Journal() << "Provisoire faces arete: " << face12 << " " << face13 << " " << face24 << " " << face34 << finl;
 
         // Pour les coins ou bords :
-
-        face13=elem_faces(el1,bas(dir));
-        el3=face_vois(*this, ma_zone, face13, 0);
-        if(el3<0) // On doit generer l'arete en bas a droite de el1
+        face13 = elem_faces(el1, bas(dir));
+        el3 = face_vois(*this, ma_zone, face13, 0);
+        if (el3 < 0) // On doit generer l'arete en bas a droite de el1
           // si la maille en bas de el1 n'existe pas
           {
-            if(el2>=0)
+            if (el2 >= 0)
               {
-                face24=elem_faces(el2, bas(dir));
-                el4=face_vois(*this, ma_zone, face24, 0);
-                if(el4<0) // arete bord
-                  les_aretes.affecter(nb_aretes_, dir, bord, nb_f,
-                                      face13, face24, face12, -1);
+                face24 = elem_faces(el2, bas(dir));
+                el4 = face_vois(*this, ma_zone, face24, 0);
+                if (el4 < 0) // arete bord
+                  les_aretes.affecter(nb_aretes_, dir, bord, nb_f, face13, face24, face12, -1, est_une_plaque);
                 else // arete mixte
                   {
-                    face34=elem_faces(el4, gauche(dir));
-                    if  (face_vois(*this, ma_zone, face34, 0)==-1)
-
-                      les_aretes.affecter(nb_aretes_, dir, mixte, nb_f,
-                                          face13, face24, face34, face12);
-                    else
-                      Cerr<<" find again arete special"<<finl;
+                    face34 = elem_faces(el4, gauche(dir));
+                    if (face_vois(*this, ma_zone, face34, 0) == -1)
+                      les_aretes.affecter(nb_aretes_, dir, mixte, nb_f, face13, face24, face34, face12, est_une_plaque);
                   }
               }
-            else // arete coin
-              les_aretes.affecter(nb_aretes_, dir, coin, nb_f,
-                                  face13, -1, -1, face12);
+            else   // arete coin
+              les_aretes.affecter(nb_aretes_, dir, coin, nb_f, face13, -1, -1, face12, est_une_plaque);
+            //Cerr << "elements_bas_droit " << el1 << " " << el2 << " " << el3 << " " << el4 << finl;
           }
 
-        face13=elem_faces(el1,gauche(dir));
-        el3=face_vois(*this, ma_zone, face13, 0);
-        if(el3<0) // On doit generer l'arete en haut a gauche de el1
+
+        face13 = elem_faces(el1, gauche(dir));
+        el3 = face_vois(*this, ma_zone, face13, 0);
+        if (el3 < 0) // On doit generer l'arete en haut a gauche de el1
           // si la maille en haut a gauche n'existe pas
           {
-            face12=elem_faces(el1,haut(dir));
-            el2=face_vois(*this, ma_zone, face12, 1);
-            if (el2 >=0)
+            face12 = elem_faces(el1, haut(dir));
+            el2 = face_vois(*this, ma_zone, face12, 1);
+            if (el2 >= 0)
               {
-                face24=elem_faces(el2,gauche(dir));
-                el4=face_vois(*this, ma_zone, face24, 0);
-                if(el4<0)
-                  {
-                    // arete bord
-                    les_aretes.affecter(nb_aretes_, dir, bord, nb_f,
-                                        face13, face24, face12, -1);
-                  }
+                face24 = elem_faces(el2, gauche(dir));
+                el4 = face_vois(*this, ma_zone, face24, 0);
+                if (el4 < 0) // arete bord
+                  les_aretes.affecter(nb_aretes_, dir, bord, nb_f, face13, face24, face12, -1, est_une_plaque);
               }
-            else
-              {
-                // arete coin
-                les_aretes.affecter(nb_aretes_, dir, coin, nb_f,
-                                    -1, face12, -1, face13);
-              }
+            else   // arete coin
+              les_aretes.affecter(nb_aretes_, dir, coin, nb_f, -1, face12, -1, face13, est_une_plaque);
+            //Cerr << "elements_haut_gauche " << el1 << " " << el2 << " " << el3 << " " << el4 << finl;
           }
 
-        face12=elem_faces(el1,gauche(dir));
-        el2=face_vois(*this, ma_zone, face12, 0);
-        face13=elem_faces(el1,bas(dir));
-        el3=face_vois(*this, ma_zone, face13, 0);
-        if ( (el2<0) && (el3<0) )
+        // On doit generer l'arete en bas a gauche de el1
+        face12 = elem_faces(el1, gauche(dir));
+        el2 = face_vois(*this, ma_zone, face12, 0);
+        face13 = elem_faces(el1, bas(dir));
+        el3 = face_vois(*this, ma_zone, face13, 0);
+        if ((el2 < 0) && (el3 < 0)) // arete coin
           {
-            // arete coin
-            les_aretes.affecter(nb_aretes_, dir, coin, nb_f,
-                                face13, -1, face12, -1);
+            les_aretes.affecter(nb_aretes_, dir, coin, nb_f, face13, -1, face12, -1, est_une_plaque);
+            //Cerr << "elements_bas_gauche " << el1 << " " << el2 << " " << el3 << " " << el4 << finl;
           }
       }
   nb_aretes_++;
@@ -654,13 +647,26 @@ void Zone_VDF::genere_aretes()
                               nb_aretes_internes_,xv());
 #endif
   nb_aretes_joint_=0;
-  //assert(nb_aretes_ == nb_aretes_coin_+nb_aretes_bord_+nb_aretes_mixtes_
-  //         +nb_aretes_internes_+nb_aretes_joint_);
-  // JOLI NON?
   assert(nb_aretes_==nb_aretes_coin_+nb_aretes_bord_+nb_aretes_mixtes_
          +nb_aretes_internes_+nb_aretes_joint_);
   Qdm_.ref(les_aretes.faces());
-  //   Cerr << "Qdm : " << Qdm_ << finl;
+  /*
+  // Boucle pour verifier ou sont les parois internes
+  for (int i=0; i<Qdm_.dimension(0); i++)
+    {
+      int nb_plaques = 0;
+      for (int j = 0; j < Qdm_.dimension(1); j++)
+        nb_plaques += Qdm_(i, j) >= 0 ? est_une_plaque(Qdm_(i, j)) : 0;
+      if (nb_plaques > 0)
+      Journal() << "Provisoire arete " << i << " a " << nb_plaques << " paroi internes." << finl;
+    }
+  Journal() << "Aretes coin   = " << nb_aretes_coin_ << finl;
+    Journal() << "Aretes bord   = " << nb_aretes_bord_ << finl;
+    Journal() << "Aretes mixte  = " << nb_aretes_mixtes_ << finl;
+    Journal() << "Aretes interne= " << nb_aretes_internes_ << finl;
+    Journal() << "Aretes joint  = " << nb_aretes_joint_ << finl;
+     */
+  //Cerr << "Qdm : " << Qdm_ << finl;
 }
 
 // Description:

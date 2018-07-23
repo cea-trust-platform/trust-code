@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2018, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -61,24 +61,14 @@ void Op_VDF_Face::dimensionner(const Zone_VDF& la_zone,
   // la convection, de la diffusion pour le cas des faces.
   // Cette matrice a une structure de matrice morse.
   // Nous commencons par calculer les tailles des tableaux tab1 et tab2.
-  int num_face,face1,face2,face3,face4,face5,face6;
-  //  int n1 = la_zone.zone().nb_elem();
   int ndeb = 0;
-  int nfin = la_zone.nb_faces();
-  int nnnn = la_zone.nb_faces_tot();
-  nfin=nnnn;
-  int i,k;
-  const Conds_lim& les_cl = la_zone_cl.les_conditions_limites();
+  int nfin = la_zone.nb_faces_tot();
   int dimension = Objet_U::dimension;
-  int nb_comp = 1;
 
   const DoubleTab& champ_inconnue = la_zone_cl.equation().inconnue().valeurs();
-  if (champ_inconnue.nb_dim() == 2) nb_comp = champ_inconnue.dimension(1);
+  int nb_comp = champ_inconnue.nb_dim() == 2 ? champ_inconnue.dimension(1) : 1;
 
   la_matrice.dimensionner(nfin*nb_comp,nfin*nb_comp,0);
-
-  IntVect& tab1=la_matrice.get_set_tab1();
-  IntVect& tab2=la_matrice.get_set_tab2();
 
   DoubleVect& coeff = la_matrice.get_set_coeff();
   coeff=0;
@@ -86,14 +76,13 @@ void Op_VDF_Face::dimensionner(const Zone_VDF& la_zone,
   rang_voisin=1;
   const IntVect& orientation=la_zone.orientation();
 
-  for (num_face=ndeb; num_face<nfin; num_face++)
+  for (int num_face=ndeb; num_face<nfin; num_face++)
     {
       int ori=orientation(num_face);
-      face1=la_zone.face_amont_princ(num_face,0);
-      face2=la_zone.face_amont_princ(num_face,1);
-      face3=la_zone.face_bord_amont(num_face,(ori+1)%dimension,0);
-      face4=la_zone.face_bord_amont(num_face,(ori+1)%dimension,1);
-
+      int face1=la_zone.face_amont_princ(num_face,0);
+      int face2=la_zone.face_amont_princ(num_face,1);
+      int face3=la_zone.face_bord_amont(num_face,(ori+1)%dimension,0);
+      int face4=la_zone.face_bord_amont(num_face,(ori+1)%dimension,1);
       if(face1 > -1)
         (rang_voisin(num_face))++;
       if(face2 > -1)
@@ -104,8 +93,8 @@ void Op_VDF_Face::dimensionner(const Zone_VDF& la_zone,
         (rang_voisin(num_face))++;
       if (dimension==3)
         {
-          face5=la_zone.face_bord_amont(num_face,(ori+2)%dimension,0);
-          face6=la_zone.face_bord_amont(num_face,(ori+2)%dimension,1);
+          int face5=la_zone.face_bord_amont(num_face,(ori+2)%dimension,0);
+          int face6=la_zone.face_bord_amont(num_face,(ori+2)%dimension,1);
 
           if(face5 > -1)
             (rang_voisin(num_face))++;
@@ -118,22 +107,24 @@ void Op_VDF_Face::dimensionner(const Zone_VDF& la_zone,
   //Cerr<<"nbre max de voisin "<<max(rang_voisin)<<" "<<rang_voisin(0)<<finl;
   // on dimensionne tab1 et tab2 au nombre de faces
 
+  IntVect& tab1=la_matrice.get_set_tab1();
+  IntVect& tab2=la_matrice.get_set_tab2();
   tab1(0)=1;
-  for (num_face=ndeb; num_face<nfin; num_face++)
+  for (int num_face=ndeb; num_face<nfin; num_face++)
     {
-      for (k=0; k< nb_comp; k++)
+      for (int k=0; k< nb_comp; k++)
         tab1(num_face*nb_comp+1+k)=rang_voisin(num_face)+tab1(num_face*nb_comp+k);
     }
 
   la_matrice.dimensionner(nfin*nb_comp,tab1(nfin*nb_comp)-1);
 
-  for (num_face=ndeb; num_face<nfin; num_face++)
+  for (int num_face=ndeb; num_face<nfin; num_face++)
     {
       int ori=orientation(num_face);
-      face1=la_zone.face_amont_princ(num_face,0);
-      face2=la_zone.face_amont_princ(num_face,1);
-      face3=la_zone.face_bord_amont(num_face,(ori+1)%dimension,0);
-      face4=la_zone.face_bord_amont(num_face,(ori+1)%dimension,1);
+      int face1=la_zone.face_amont_princ(num_face,0);
+      int face2=la_zone.face_amont_princ(num_face,1);
+      int face3=la_zone.face_bord_amont(num_face,(ori+1)%dimension,0);
+      int face4=la_zone.face_bord_amont(num_face,(ori+1)%dimension,1);
 
       int cpt=tab1[num_face]-1;
       tab2[cpt]=num_face+1;
@@ -161,8 +152,8 @@ void Op_VDF_Face::dimensionner(const Zone_VDF& la_zone,
         }
       if (dimension==3)
         {
-          face5=la_zone.face_bord_amont(num_face,(ori+2)%dimension,0);
-          face6=la_zone.face_bord_amont(num_face,(ori+2)%dimension,1);
+          int face5=la_zone.face_bord_amont(num_face,(ori+2)%dimension,0);
+          int face6=la_zone.face_bord_amont(num_face,(ori+2)%dimension,1);
 
           if(face5 > -1)
             {
@@ -178,34 +169,33 @@ void Op_VDF_Face::dimensionner(const Zone_VDF& la_zone,
     }
 
   // on traite la condition de periodicite
-  // en effet ce n'est pas sur que les faces de frontiere soit les bonnes
+  // en effet ce n'est pas sur que les faces de frontiere soient les bonnes
   // plus precisement a droite on a la face de gauche et non celle de droite
+  const Conds_lim& les_cl = la_zone_cl.les_conditions_limites();
   const IntTab& faces_voisins=la_zone.face_voisins();
   const IntTab& elem_faces=la_zone.elem_faces();
-  for (i=0; i<les_cl.size(); i++)
+  for (int i=0; i<les_cl.size(); i++)
     {
       const Cond_lim& la_cl = les_cl[i];
-      if (sub_type(Periodique,la_cl.valeur()) )
+      if (sub_type(Periodique,la_cl.valeur()))
         {
-          //          const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
-
           const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
           int ndeb_p = la_front_dis.num_premiere_face();
           int nfaces = la_front_dis.nb_faces();
           int nfin_p=ndeb_p+nfaces;
 
           //fait = 0;
-          for (num_face=ndeb_p; num_face<nfin_p; num_face++)
+          for (int num_face=ndeb_p; num_face<nfin_p; num_face++)
             {
               int ori=orientation(num_face);
 
               {
                 //  fait[ind_face_local] = 1;
                 //fait[la_cl_perio.face_associee(ind_face_local)] = 1;
-                face1=la_zone.face_amont_princ(num_face,0);
-                face2=la_zone.face_amont_princ(num_face,1);
-                face3=la_zone.face_bord_amont(num_face,(ori+1)%dimension,0);
-                face4=la_zone.face_bord_amont(num_face,(ori+1)%dimension,1);
+                //int face1=la_zone.face_amont_princ(num_face,0);
+                //int face2=la_zone.face_amont_princ(num_face,1);
+                int face3=la_zone.face_bord_amont(num_face,(ori+1)%dimension,0);
+                int face4=la_zone.face_bord_amont(num_face,(ori+1)%dimension,1);
 
                 int face1b=elem_faces(faces_voisins(num_face,1),ori);
 
@@ -213,9 +203,7 @@ void Op_VDF_Face::dimensionner(const Zone_VDF& la_zone,
                 cpt+=3;
                 if (face1b!=num_face)
                   {
-
                     // on recalcule fac3 fac4
-
                     int face3n=face_bord_amont2(la_zone,num_face,(ori+1)%dimension,0);
                     int face4n=face_bord_amont2(la_zone,num_face,(ori+1)%dimension,1);
 
@@ -238,8 +226,8 @@ void Op_VDF_Face::dimensionner(const Zone_VDF& la_zone,
 
                     if (dimension==3)
                       {
-                        face5=la_zone.face_bord_amont(num_face,(ori+2)%dimension,0);
-                        face6=la_zone.face_bord_amont(num_face,(ori+2)%dimension,1);
+                        int face5=la_zone.face_bord_amont(num_face,(ori+2)%dimension,0);
+                        int face6=la_zone.face_bord_amont(num_face,(ori+2)%dimension,1);
                         int face5n=face_bord_amont2(la_zone,num_face,(ori+2)%dimension,0);
                         int face6n=face_bord_amont2(la_zone,num_face,(ori+2)%dimension,1);
 
@@ -260,7 +248,6 @@ void Op_VDF_Face::dimensionner(const Zone_VDF& la_zone,
                             cpt++;
                           }
                       }
-
                   }
               }
             }
