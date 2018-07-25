@@ -1,6 +1,6 @@
 #!/bin/bash
-trust geom 1> geom.out 2>geom.err
+
 for dir in `find . -mindepth 1 -type d`
 do
-   ( cd $dir;rm -f dom.geom;ln -sf ../dom.geom .;cp ../pre_run ../post_run .)
+   ( cd $dir;rm -f dom.geom;cp ../geom.data ../pre_run ../post_run .)
 done
