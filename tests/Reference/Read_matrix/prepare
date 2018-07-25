@@ -1,4 +1,4 @@
-gunzip -c cylindre.geom.gz > cylindre.geom
+gunzip -c cylindre.geom.gz > cylindre.geom || exit -1
 
 # Run first calculation to create the matrix and save it with largeur_joint 2
 # Change the largeur_joint value from 1 to 2:
@@ -9,16 +9,18 @@ echo $ECHO_OPTS "1,$ s?read_matrix?save_matrix_petsc_format?g\nw" | ed Save_matr
 echo $ECHO_OPTS "1,$ s?nb_pas_dt_max 10?nb_pas_dt_max 0?g\nw" | ed Save_matrix.data
 # Change DOM1 to DOM2 to compare size of .Zones with largeur_joint 1 and 2:
 echo $ECHO_OPTS "1,$ s?DOM1?DOM2?g\nw" | ed Save_matrix.data
-# Run sequential calculation:
-trust Save_matrix || exit -1
+
 
 if [ "$TRUST_DISABLE_MPI" != 1 ]
 then
+   # Run sequential calculation:
+   trust Save_matrix || exit -1
    # Run parallel calculation:
    # Partition:
    make_PAR.data Save_matrix
    NbCpus=$?
    trust PAR_Save_matrix $NbCpus || exit -1
+else
+   # Run sequential calculation:
+   trust Save_matrix || exit -1
 fi
-exit 0
-

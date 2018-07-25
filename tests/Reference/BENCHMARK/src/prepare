@@ -46,7 +46,7 @@ set output \"$dis.png\"
 plot '$dis.cpu' using (100.*\$3/\$2):xtic(1) title column(3), \
   for [i=4:$i+2] '' using (100.*column(i)/column(2)) title column(i) 
 " > plot
-   gnuplot plot 
+   gnuplot plot || exit -1
 done
 awk '/#include / {system("cat "$2)} !/#include / {print $0}' src.prm > tmp
 mv -f tmp src.prm

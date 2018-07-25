@@ -1,4 +1,4 @@
-gunzip -c conic_Pb1.geom.gz > conic_Pb1.geom
+gunzip -c conic_Pb1.geom.gz > conic_Pb1.geom || exit -1
 # Generate VEF files from the VDF files
 for VDF in *VDF.data
 do

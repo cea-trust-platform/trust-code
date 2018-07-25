@@ -1,9 +1,11 @@
-[ "$TRUST_DISABLE_MPI" != 1 ] && make_PAR.data prepare
-trust prepare
-mv prepare.dt_ev Reprise_impl.dt_ev
 if [ "$TRUST_DISABLE_MPI" != 1 ]
 then
+   trust prepare || exit -1
+   mv prepare.dt_ev Reprise_impl.dt_ev
+   make_PAR.data prepare
    trust PAR_prepare 2
    mv PAR_prepare.dt_ev PAR_Reprise_impl.dt_ev
+else
+   trust prepare || exit -1
+   mv prepare.dt_ev Reprise_impl.dt_ev
 fi
-exit 0

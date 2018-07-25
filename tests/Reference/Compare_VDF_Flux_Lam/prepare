@@ -1,5 +1,10 @@
 jdd=`pwd`;jdd=IC_`basename $jdd`
-[ "$TRUST_DISABLE_MPI" != 1 ] && make_PAR.data $jdd
-trust $jdd
-[ "$TRUST_DISABLE_MPI" != 1 ] && trust PAR_$jdd 2
-exit 0
+
+if [ "$TRUST_DISABLE_MPI" != 1 ] 
+then
+   trust $jdd || exit -1
+   make_PAR.data $jdd
+   trust PAR_$jdd 2
+else
+   trust $jdd || exit -1
+fi

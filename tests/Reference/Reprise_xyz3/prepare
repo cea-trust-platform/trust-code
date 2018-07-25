@@ -6,4 +6,3 @@ else
    make_PAR.data prepare
    trust PAR_prepare 2 || exit -1
 fi
-exit 0

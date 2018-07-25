@@ -1,5 +1,5 @@
 #!/bin/bash
-trust geom 1> geom.out 2>geom.err
+trust geom 1> geom.out 2>geom.err || exit -1
 for dir in `find . -mindepth 1 -type d`
 do
    ( cd $dir;rm -f dom.geom;ln -sf ../dom.geom .;cp ../pre_run ../post_run .)

@@ -1,4 +1,4 @@
-gunzip -c cylindre.geom.gz > cylindre.geom
+gunzip -c cylindre.geom.gz > cylindre.geom || exit -1
 # Preparation du calcul P1
 jdd=`pwd`
 jdd=`basename $jdd`

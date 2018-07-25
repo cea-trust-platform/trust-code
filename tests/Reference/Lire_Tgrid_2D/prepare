@@ -1,2 +1,2 @@
-gunzip -c Test_2D_QUAD.msh.gz > Test_2D_QUAD.msh
+gunzip -c Test_2D_QUAD.msh.gz > Test_2D_QUAD.msh || exit -1
 gunzip -c Test_2D_TRI.msh.gz > Test_2D_TRI.msh

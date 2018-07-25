@@ -1,7 +1,8 @@
-trust test
 if [ "$TRUST_DISABLE_MPI" != 1 ]
 then
+   trust test || exit -1
    make_PAR.data test
    trust PAR_test 2
+else
+   trust test || exit -1
 fi
-exit 0

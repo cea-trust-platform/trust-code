@@ -1,3 +1,2 @@
 #!/bin/bash
 gunzip -c collecteur_chaud.geom.gz > collecteur_chaud.geom
-exit 0

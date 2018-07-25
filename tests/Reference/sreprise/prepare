@@ -5,14 +5,18 @@ cp -f $jdd.data sauve.data
 echo $ECHO_OPTS "1,$ s?tinit 0.2?tinit 0.?g\nw" | ed sauve.data
 echo $ECHO_OPTS "1,$ s?tmax 1.2?tmax 0.2?g\nw" | ed sauve.data
 echo $ECHO_OPTS "1,$ s?reprise ?sauvegarde ?g\nw" | ed sauve.data
+
+rm -f *out *son
 if [ "$TRUST_DISABLE_MPI" != 1 ]
 then
+   trust sauve || exit -1
    make_PAR.data sauve
    echo $ECHO_OPTS "1,$ s?sreprise?PAR_sreprise?g\nw" | ed PAR_sauve.data
+   trust PAR_sauve 2 || exit -1
+else
+   trust sauve || exit -1
 fi
-rm -f *out *son
-trust sauve
-[ "$TRUST_DISABLE_MPI" != 1 ] && trust PAR_sauve 2
+
 # On renomme certains fichiers
 for file in *out *son
 do

@@ -530,6 +530,9 @@ then
       echo "Directory `pwd`/$NOM created with files inside:" && ls $NOM
    else
       echo "ERROR: Directory `pwd`/$NOM NOT created !!!"
+      fold="`pwd`/$NOM"
+      [ -f $fold/prepare.log ] && cp -f $fold/prepare.log `pwd` && echo "" && echo "See `pwd`/prepare.log for further details."
+      [ -d $fold ] && rm -r $fold
    fi
    exit $err
 fi
