@@ -154,7 +154,6 @@ Read pb
 			
 			espece {
 			  mu Champ_Uniforme 1 1.85e-5
-			  lambda Champ_Uniforme 1 0.0262
 			  Cp Champ_Uniforme 1 1006
 			  Masse_molaire 0.02892544732		  
 			}
@@ -182,12 +181,9 @@ Read pb
 			
 			espece {
 			  mu Champ_Uniforme 1 1.4e-5
-			  lambda Champ_Uniforme 1 0.029
 			  Cp Champ_Uniforme 1 1000
 			  Masse_molaire 0.029099		  
 			}
-			
-			
 		}	
 	}
 

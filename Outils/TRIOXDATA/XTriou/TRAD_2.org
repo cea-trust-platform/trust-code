@@ -1307,7 +1307,6 @@ pb_thermohydraulique_turbulent_qc_fraction_massique pb_avec_passif pb_thermohydr
   attr convection_diffusion_chaleur_turbulent_qc convection_diffusion_chaleur_turbulent_qc convection_diffusion_chaleur_turbulent_qc 0 Energy equation under low Mach number as well as the associated turbulence model equations.
 espece objet_u nul -1 not_set
   attr cp field_base cp 0 Specific heat value (J.kg-1.K-1).
-  attr lambda field_base lambda_u 0 Conductivity value (W.m-1.K-1).
   attr mu field_base mu 0 Dynamic viscosity value (kg.m-1.s-1).
   attr masse_molaire floattant masse_molaire 0 Gas molar mass.
 convection_diffusion_fraction_massique_qc eqn_base convection_diffusion_fraction_massique_qc -1 not_set
