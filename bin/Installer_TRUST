@@ -4,17 +4,73 @@
 ########################################################
 check_prerequis()
 {
-list_prerequis="bc lzip ed sed awk unzip"
-prerequis=1
+###########################################################
+# Les outils indispensables parfois pas installes sur Linux
+###########################################################
+# Archive linux_install_tools_`uname -m`.tgz contains binaries for bc, ed, uuencode and uudecode commands.
+[ -f $TRUST_ROOT/bin/linux_install_tools_`uname -m`.tgz ] && echo "linux_install_tools.tgz exists"
+if [ "`uname -s`" = Linux ] && [ -f $TRUST_ROOT/bin/linux_install_tools_`uname -m`.tgz ]
+then
+    export PATH=$PATH:$TRUST_ROOT/bin/bin
+    cd $TRUST_ROOT/bin
+    mkdir -p bin 2>/dev/null
+    (cd bin;tar xfz ../linux_install_tools_`uname -m`.tgz)
+    touch makefile
+    for command in `cd bin;\ls`
+    do
+       $command --help 1>/dev/null 2>&1
+       [ $? = 0 ] && rm -f bin/$command
+    done
+    rm -f makefile
+    # Si toutes les commandes existent on efface le repertoire
+    # sinon on l'ajoute au PATH
+    if [ "`\ls bin`" = "" ]
+    then
+       rmdir bin
+    else
+       export PATH=$PATH:$TRUST_ROOT/bin/bin
+    fi
+fi
+
+# The previous test checks if 'ed' and 'bc' commands exist. if it doesn't, we add its binary to path. Is it still necessay to keep both in list_prerequis?
+list_prerequis="bc ed sed awk unzip"
+
 export PATH=$PATH:$TRUST_ROOT/exec/utils/bin
 for p in $list_prerequis
 do
+  pp=""
   opt="--help"
   [ "$p" = "awk" ] && opt="'BEGIN { print "ok" }'"
   cmd="$p "$opt
   if  [ "`eval $cmd 1>/dev/null 2>&1;echo $?`" != 0 ] || [ "$force_utils" = "1" ]
-  then	
+  then
     echo "You need $p installed. Try to install it"
+    if [ "$p" = "ed" ] ; then # lzip is only needed to unzip ed package. if we do not need ed, we will not install lzip
+      if  [ "`lzip --help 1>/dev/null 2>&1;echo $?`" != 0 ]
+      then
+        pp="lzip"
+        echo "You need $pp installed before installing the provided $p. Try to install it"
+        dest2=tmp_$pp
+        q=$pp
+        rm -rf $dest2
+        mkdir $dest2
+        cd $dest2
+        archive="$TRUST_ROOT/externalpackages/utils/$q*.tar.*"
+        arch=`basename $archive`
+        tar zxf $TRUST_ROOT/externalpackages/utils/$arch
+        cd *$q*
+        ./configure --prefix=$TRUST_ROOT/exec/utils >config.log 2>&1  && make >make.log 2>&1  && make install > install.log 2>&1
+        cd ../..
+        export PATH=$PATH:$TRUST_ROOT/exec/utils/bin
+        if [ "`lzip --help 1>/dev/null 2>&1;echo $?`" != 0 ]
+        then
+           echo "$pp" >> $TRUST_ROOT/NON_INSTALLED
+           echo "Error while installing lzip. See informations in $dest2 directory."
+        else
+          rm -rf $dest2
+        fi
+      fi
+    fi
     dest=tmp_$p
     q=$p
     [ "$p" = "awk" ] && q=gawk
@@ -23,49 +79,33 @@ do
     cd $dest
     archive="$TRUST_ROOT/externalpackages/utils/$q*.tar.*"
     arch=`basename $archive`
-    if [ ${arch##*.} == 'gz' ] 
+    if [ ${arch##*.} == 'gz' ]
     then
         tar zxf $TRUST_ROOT/externalpackages/utils/$arch
-    elif [ ${arch##*.} == 'lz' ] 
+    elif [ ${arch##*.} == 'lz' ]
     then
         tar --lzip -xf $TRUST_ROOT/externalpackages/utils/$arch
-    elif [ ${arch##*.} == 'xz' ] 
+    elif [ ${arch##*.} == 'xz' ]
     then
         tar Jxf $TRUST_ROOT/externalpackages/utils/$arch
     else
-        echo "Error about externsion of the archive $archive"
+        echo "Error about extension of the archive $archive"
     fi
     cd *$q*
     ./configure --prefix=$TRUST_ROOT/exec/utils >config.log 2>&1  && make >make.log 2>&1  && make install > install.log 2>&1
-    if [ $? -eq 0 ]
-	then
-	echo install completed
-	fi
+    [ $? -eq 0 ] && echo "install completed"
     cd ../..
     export PATH=$PATH:$TRUST_ROOT/exec/utils/bin
     if [ "`$p --help 1>/dev/null 2>&1;echo $?`" != 0 ]
-    then 
-       echo `$p --help`
-       prerequis=0
-       echo "See informations in $dest directory."
+    then
+       echo "$p" >> $TRUST_ROOT/NON_INSTALLED
+       echo "Error while installing $p. See informations in $dest directory."
     else
       rm -rf $dest
     fi
   fi
   opt=""
 done
-
-if  [ "`eval pdflatex --version 1>/dev/null 2>&1;echo $?`" != 0 ]
-then
-  echo ""
-  echo "You need install texlive package for the documentation's generation."
-  echo ""
-fi
- 
-   # Vu sur Ubuntu 13.04: Probleme de compilation m4 pour compiler bison -> bison prerequis
-   #[ "`grep 'Ubuntu 13.04' /etc/issue 2>/dev/null`" != "" ] && [ ! -f /usr/bin/bison ] && echo "You need bison installed." 	&& prerequis=0
- 
-   [ $prerequis = 0 ] && echo "Install and restart the operation." && exit -1
 }
 
 ########################################################
@@ -79,7 +119,7 @@ OK()
       at=$TRUST_MAIL && [ ${#at} = 0 ] && at=trust@cea.fr
       echo $ECHO_OPTS "See $LOG and contact support at $at"
       export error_exit=1
-   fi 
+   fi
 }
 
 ########################################################
@@ -194,7 +234,7 @@ cat /dev/null > $LOG
 ############################################
 # Debut du script d'installation de TRUST #
 ############################################
-echo "Usage: `basename $0` [options]" | tee -a $LOG 
+echo "Usage: `basename $0` [options]" | tee -a $LOG
 echo "Options:" | tee -a $LOG
    echo "  -help                 List options" | tee -a $LOG
 if [ -f KSH/wget_ ] || [ -f TRUST-$TRUST_VERSION/bin/KSH/wget_ ]
@@ -204,7 +244,7 @@ then
    echo "  -configure-options \"OPT1 OPT2 ..\"           (For advanced users) The installation is made with ./configure OPT1 OPT2 " | tee -a $LOG
 else
    # First install
-   echo "  -configure            (For advanced users) The installation will stop at one moment and should be finished by configure/make" | tee -a $LOG  
+   echo "  -configure            (For advanced users) The installation will stop at one moment and should be finished by configure/make" | tee -a $LOG
 fi
 echo "====================================================================="
 
@@ -227,7 +267,7 @@ do
    [ "$1" = -help ] && exit 6 # error not installed
    [ "$1" = -configure ] && configure=1 && shift && continue
    [ "$1" = -configure-options ] && opt="$2" && shift && shift && continue
-   
+
    if [ "$1" = -patch ]
    then
       echo>$LOG
@@ -398,7 +438,7 @@ then
    done
 fi
 cd $TRUST_ROOT
-  
+
 ##################################################
 # Regarde s'il y'a un patch disponible a appliquer
 ##################################################
@@ -430,7 +470,7 @@ then
    echo "Compile the code:" | tee -a $LOG
    echo "make" | tee -a $LOG
    exit 0
-fi 
+fi
 
 ########################
 # Configuration du Noyau
@@ -445,7 +485,7 @@ then
        echo "re-configure with old options" | tee -a $LOG
        cat configure.log >> $LOG
        chmod +x configure.log
-       
+
        ./configure.log $opt >> $LOG 2>&1
       configure_err=$?
    else
@@ -468,57 +508,57 @@ mklibs >> $LOG
 [ ${#TRUST_MD} = 0 ] && echo "Warning : this script did not find the command makedepend : you CANNOT modify TRUST" | tee -a $LOG
 
 ########################
-# Installe le Diphasique 
+# Installe le Diphasique
 ########################
 # Dossier Diphasique ???
-if [ ${#DIPHA_ROOT} != 0 ] && [ -d $DIPHA_ROOT ]
-then
-   echo | tee -a $LOG
-   cd $DIPHA_ROOT
-   echo "DIPHA_ROOT="$DIPHA_ROOT
-   if [ -f Diphasique.tar.gz ]
-   then
-      echo $ECHO_OPTS "\nInstallation of Diphasique module under $ROOT ? (y/n) : \c" | tee -a $LOG
-      read choix
-      if [ ${#choix} != 0 ] && [ $choix != "Y" ] && [ $choix != "y" ]
-      then
-         cd ..
-         rm -r -f Diphasique
-         DIPHA_ROOT=""
-         export DIPHA_ROOT
-      else
-         echo
-         echo "Please wait now ..." | tee -a $LOG
-         echo
-         gunzip_ Diphasique.tar.gz
-         echo $ECHO_OPTS "Extract Diphasique source files ...\c" | tee -a $LOG
-         tar xf Diphasique.tar 1>>$LOG 2>&1
-         OK $? | tee -a $LOG
-         rm -f Diphasique.tar
-         liste=`ls *.tar.gz 2>/dev/null`
-         if [ ${#liste} != 0 ]
-         then
-            #####################
-            # Installe les autres
-            # modules du Diphasique
-            #####################
-            for rep in $liste
-            do
-               rep=${rep%.tar.gz}
-               echo $ECHO_OPTS "Installation of $rep ...\c" | tee -a $LOG
-               gunzip_ $rep.tar.gz
-               tar xf $rep.tar 1>>$LOG 2>&1
-               OK $? | tee -a $LOG
-               rm -f $rep.tar
-            done
-         fi
-      fi
-   fi
-   ###############################################
-   # On met les droits d'ecriture a l'admin TRUST
-   ###############################################
-   cd $DIPHA_ROOT && chmod -R u+w . 1>/dev/null 2>&1
-fi
+#if [ ${#DIPHA_ROOT} != 0 ] && [ -d $DIPHA_ROOT ]
+#then
+#   echo | tee -a $LOG
+#   cd $DIPHA_ROOT
+#   echo "DIPHA_ROOT="$DIPHA_ROOT
+#   if [ -f Diphasique.tar.gz ]
+#   then
+#      echo $ECHO_OPTS "\nInstallation of Diphasique module under $ROOT ? (y/n) : \c" | tee -a $LOG
+#      read choix
+#      if [ ${#choix} != 0 ] && [ $choix != "Y" ] && [ $choix != "y" ]
+#      then
+#         cd ..
+#         rm -r -f Diphasique
+#         DIPHA_ROOT=""
+#         export DIPHA_ROOT
+#      else
+#         echo
+#         echo "Please wait now ..." | tee -a $LOG
+#         echo
+#         gunzip_ Diphasique.tar.gz
+#         echo $ECHO_OPTS "Extract Diphasique source files ...\c" | tee -a $LOG
+#         tar xf Diphasique.tar 1>>$LOG 2>&1
+#         OK $? | tee -a $LOG
+#         rm -f Diphasique.tar
+#         liste=`ls *.tar.gz 2>/dev/null`
+#         if [ ${#liste} != 0 ]
+#         then
+#            #####################
+#            # Installe les autres
+#            # modules du Diphasique
+#            #####################
+#            for rep in $liste
+#            do
+#               rep=${rep%.tar.gz}
+#               echo $ECHO_OPTS "Installation of $rep ...\c" | tee -a $LOG
+#               gunzip_ $rep.tar.gz
+#               tar xf $rep.tar 1>>$LOG 2>&1
+#               OK $? | tee -a $LOG
+#               rm -f $rep.tar
+#            done
+#         fi
+#      fi
+#   fi
+#   ###############################################
+#   # On met les droits d'ecriture a l'admin TRUST
+#   ###############################################
+#   cd $DIPHA_ROOT && chmod -R u+w . 1>/dev/null 2>&1
+#fi
 
 ################################################
 # Tests des executables TRUST et Dipha livres #
@@ -538,7 +578,7 @@ do
    if [ ${#liste} != 0 ]
    then
       for rep in $liste
-      do 
+      do
          rep=${rep%.tar.gz}
          echo $ECHO_OPTS "Installation of $rep ...\c" | tee -a $LOG
          gunzip_ $rep.tar.gz
@@ -563,12 +603,12 @@ do
    else
       teste_binaries
    fi
-   
+
    ##############################################
    # Test des librairies livrees par un atelier #
-   ############################################## 
+   ##############################################
    teste_atelier
-      
+
    ########################################################
    # Recompilation eventuelle si la version a des sources #
    ########################################################
@@ -576,7 +616,7 @@ do
    then
       echo $ECHO_OPTS "\nCode recompilation..." | tee -a $LOG
       echo $ECHO_OPTS "`basename $code` application must be recompiled according to the previous tests." | tee -a $LOG
-      
+
       [ ${#TRUST_CC} = 0 ] && echo "Warning : this script did not find C++ compiler : you CANNOT compile TRUST. Please install a C++ compiler." | tee -a $LOG && exit -1
       [ ${#TRUST_F77} = 0 ] && echo "Warning : this script did not find fortran compiler : you CANNOT compile TRUST. Please install a F77 compiler." | tee -a $LOG && exit -1
       OPT="_opt"
@@ -596,7 +636,7 @@ do
           echo $ECHO_OPTS "Please contact TRUST support at $TRUST_MAIL" | tee -a $LOG
       else
           err=0
-          teste_binaries -print         
+          teste_binaries -print
           teste_atelier -print
       fi
       echo | tee -a $LOG
@@ -608,7 +648,7 @@ do
       ##################################################################
       cd $TRUST_ROOT
       echo $ECHO_OPTS "\nRecompilation..." | tee -a $LOG
-     
+
       make  >> $LOG  2>&1
       echo $ECHO_OPTS "End of recompilation." | tee -a $LOG
    fi
@@ -617,7 +657,7 @@ done
 ##################
 # End of install #
 ##################
-clear 
+clear
 echo | tee -a $LOG
 grep BUILD_ $LOG
 echo "***************" | tee -a $LOG
@@ -651,7 +691,7 @@ echo "HOW TO RE-BUILD TRUST ?" | tee -a $LOG
 echo "************************" | tee -a $LOG
 echo $ECHO_OPTS "If you want to build again TRUST, run:" | tee -a $LOG
 echo $ECHO_OPTS "cd $TRUST_ROOT" | tee -a $LOG
-echo $ECHO_OPTS "./configure -help   # Than check and/or change the detected values into the \$TRUST_ROOT/env/machine.env file" | tee -a $LOG
+echo $ECHO_OPTS "./configure -help   # Then check and/or change the detected values into the \$TRUST_ROOT/env/machine.env file" | tee -a $LOG
 echo $ECHO_OPTS "source env_TRUST.sh # Initialize the new environment" | tee -a $LOG
 echo $ECHO_OPTS "make clean;make     # Then clean and rebuild TRUST" | tee -a $LOG
 echo | tee -a $LOG

@@ -9,7 +9,7 @@ diff md5.ref md5.check
 ko=$?
 #echo
 echo Control of liste_dep.csv
-# on verifie que les fichiers sont bien indiqus dans liste_dep.csv
+# on verifie que les fichiers sont bien indiques dans liste_dep.csv
 for f in `awk '{print $2}' md5.check`
  do
  [ "`grep $(basename $f) liste_dep.csv`" = "" ] && echo $f not in  liste_dep.csv
