@@ -360,42 +360,11 @@ fi
 
 echo "If install fails, please send the $LOG file to TRUST support." | tee -a $LOG
 
-###################
-# Installe le Noyau
-###################
-cd $TRUST_ROOT
-if [ -f TRUST.tar.gz ]
-then
-   echo | tee -a $LOG
-   echo "Please wait now ..." | tee -a $LOG
-   echo | tee -a $LOG
-   echo $ECHO_OPTS "Extract TRUST source files ...\c" | tee -a $LOG
-   tar xfz TRUST.tar.gz 1>>$LOG 2>&1
-   OK $? | tee -a $LOG
-   rm -f TRUST.tar.gz
-   ##################################
-   # Acceptation de la licence TRUST
-   ##################################
-   echo | tee -a $LOG
-   echo "Please, read carefully:" | tee -a $LOG
-   echo  | tee -a $LOG
-   cat $TRUST_ROOT/license
-   echo | tee -a $LOG
-   echo "Do you agree (y/Y) or not ?" | tee -a $LOG
-   read choix
-   if [ "$choix" != y ] && [ "$choix" != Y ]
-   then
-      cd ..
-      echo "OK, you refused the TRUST license." | tee -a $LOG
-      echo "Please delete the TRUST distribution." | tee -a $LOG
-      \rm -r -f $TRUST_ROOT
-      exit -1
-   fi
-fi
 
 #########################################
 # Regarde la place disponible et previent
 #########################################
+cd $TRUST_ROOT
 if [ "$TRUST_DISABLE_CHECKS" = 0 ]
 then
    echo | tee -a $LOG
