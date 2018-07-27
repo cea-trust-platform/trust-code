@@ -57,6 +57,12 @@ Chapitre {
 			Fichier cobalt.cpu
 			colonnes $1 $3
 		}	
+		Courbe { 
+			Legende "irene-ccrt"
+			Style points
+			Fichier irene-ccrt.cpu
+			colonnes $1 $3
+		}
 		Courbe {
 			Legende "Acceptance limit"
 			Style lines
@@ -110,6 +116,12 @@ Chapitre {
 			Legende "cobalt"
 			Style points
 			Fichier cobalt.cpu
+			colonnes $1 $8
+		}
+		Courbe { 
+			Legende "irene-ccrt"
+			Style points
+			Fichier irene-ccrt.cpu
 			colonnes $1 $8
 		}
 		Courbe {
@@ -170,7 +182,13 @@ Chapitre {
 			Style points
 			Fichier cobalt.cpu
 			colonnes $1 $9
-		}		
+		}
+		Courbe { 
+			Legende "irene-ccrt"
+			Style points
+			Fichier irene-ccrt.cpu
+			colonnes $1 $9
+		}
 		Courbe {
 			Legende "Acceptance limit"
 			Style lines
@@ -224,6 +242,12 @@ Chapitre {
 			Legende "cobalt"
 			Style points
 			Fichier cobalt.cpu
+			colonnes $1 $14
+		}
+		Courbe { 
+			Legende "irene-ccrt"
+			Style points
+			Fichier irene-ccrt.cpu
 			colonnes $1 $14
 		}
 		Courbe {

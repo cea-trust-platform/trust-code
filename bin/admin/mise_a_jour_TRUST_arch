@@ -98,10 +98,12 @@ then
    [ "${HOST#ceres2}"   != $HOST ] && HOST=ceres2
    [ "${HOST#mezel}"    != $HOST ] && HOST=mezel
    [ "${HOST#cobalt}"   != $HOST ] && HOST=cobalt
+   [ "${HOST#irene}"    != $HOST ] && HOST=irene-ccrt
+
 fi
 
 WHERE=$HOME && [ "$WORKDIR" != "" ] && WHERE=$WORKDIR
-QUI=triou@cea.fr
+QUI=trust@cea.fr
 export version=$WHERE/$WORKBASE$HOST
 
 [ "$git" = 1 ]&& echo "-git mode no supported with TRUST for the moment!" && exit -1
@@ -158,7 +160,7 @@ then
    # List branchs:
    git branch -a
    git checkout -b $git_branch origin/master 1>/dev/null 2>&1
-   git config --global user.email "triou@cea.fr"
+   git config --global user.email "trust@cea.fr"
    git config --global user.name `whoami`
    git fetch origin || exit -1
    git rebase origin/master || exit -1
@@ -202,7 +204,7 @@ then
    # si l'on n'est pas sur une virtual box
    if [ "$err" != 0 ] && [ "$git" = 0 ]
    then
-      $TRUST_ROOT/bin/KSH/dd.ksh -space_need $space_need | $TRUST_ROOT/bin/admin/mail_ -s\"[mise_a_jour_TRUST_arch] Disk full $space_need Go sur $HOST\" triou@cea.fr
+      $TRUST_ROOT/bin/KSH/dd.ksh -space_need $space_need | $TRUST_ROOT/bin/admin/mail_ -s\"[mise_a_jour_TRUST_arch] Disk full $space_need Go sur $HOST\" trust@cea.fr
       echo "Disk full $space_need Go on $HOST : we leave mise_a_jour_TRUST_arch."
       exit_ -1
    fi

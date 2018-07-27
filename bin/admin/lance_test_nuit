@@ -348,7 +348,7 @@ check_components()
                            elif  [ "${machine:0:9}" = "callisto-" ] || [ "${machine:0:11}" = "curie-ccrt-" ] || [ "${machine:0:7}" = "cobalt-" ]
                            then
                               WORKBETA=""
-                           elif [ "${machine:0:10}" = "curie-ccrt" ] || [ "${machine:0:6}" = "cobalt" ]
+                           elif [ "${machine:0:10}" = "curie-ccrt" ] || [ "${machine:0:6}" = "cobalt" ] || [ "${machine:0:10}" = "irene-ccrt" ]
                            then
 		              [ $TRUST_VERSION = 1.7.7 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /ccc/cont002/home/den/triou/env_TRUST-1.7.7.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            elif [ "${machine:0:7}" = "cezanne" ]
@@ -825,10 +825,11 @@ fi
       cd $WORKDIR/tuleap/Livraison/Composants/$Composant
       BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
       echo " git push origin TMA in `pwd`"
-      if [ $Composant != "flica5" ]
+      if [[ "$Composant" != "flica5" && "$Composant" != "genepi3" ]]
       then
          git push --tags origin Livraison:triou/TMA 1>tmp.log 2>&1
       else
+         git pull origin portage_178
          git push origin Livraison:triou/TMA 1>tmp.log 2>&1
       fi
       cat tmp.log
@@ -4010,7 +4011,7 @@ source /soft/mezel/TRIO/env_TRUST-$new.sh
 # for CEA Marcoule cluster (ceres2):
 source /softs/trio_u/env_TRUST-$new.sh
 
-# for CCRT-TGCC supercomputers (cobalt & curie-ccrt):
+# for CCRT-TGCC supercomputers (cobalt & curie-ccrt & irene-ccrt):
 source /ccc/cont002/home/den/triou/env_TRUST-$new.sh
 
 # for CINES supercomputer (occigen):
@@ -4109,7 +4110,7 @@ source /soft/mezel/TRIO/env_TrioCFD-$new.sh
 # for CEA Marcoule cluster (ceres2):
 source /softs/trio_u/env_TrioCFD-$new.sh
 
-# for CCRT-TGCC supercomputers (cobalt & curie-ccrt):
+# for CCRT-TGCC supercomputers (cobalt & curie-ccrt & irene-ccrt):
 source /ccc/cont002/home/den/triou/env_TrioCFD-$new.sh
 
 # for CINES supercomputer (occigen):
