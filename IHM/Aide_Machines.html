@@ -30,7 +30,7 @@ Comparaison temps calcul (donne par la balise clock: Total execution) sur test c
 -------------------------------------------------------------------------------------------------------
 Arch  Model  PhysicalCores@frequency	 RAM:Cache  	Processor Model CPU	Machine			(Compiler version) 	SpeedUp(n=2) 	TestCase version
 Linux x86_64		1*68@1.4Ghz	96Go:		KNL 7250		irene.ccc.cea.fr
-Linux x86_64		2*24@2.7Ghz	96Go:33Mo	Xeon 8168 	2.3s    irene.ccc.cea.fr	(icpc 17.0.4, OpenMPI 2.0.2)		cpu_3D	 v1.7.6
+Linux x86_64		2*24@2.7Ghz	96Go:33Mo	Xeon 8168 	2.3s    irene.ccc.cea.fr	(icpc 17.0.4, OpenMPI 2.0.2)	1.59	cpu_3D	 v1.7.7
 Linux x86_64		2*14@2.4Ghz	64Go:35Mo	Xeon E5-2680 v4	2.4s	cobalt.ccc.cea.fr	(icpc 16.0.3, OpenMPI 1.8.8)		cpu_3D	 v1.7.7
 Linux x86_64		1*4@3.00Ghz	16Go:8Mo	Xeon E3-1220 v5	2.4s	is231771.intra.cea.fr   (g++ 4.8.5, MPICH 3.2)		1.56	cpu_3D	 v1.7.7
 Linux x86_64		1*4@3.20Ghz	 8Go:8Mo	Xeon E3-1225	2.9s	malrif.intra.cea.fr	(g++ 4.4.1)		1.49		cpu_3D	 v1.6.8
@@ -123,7 +123,7 @@ SGI IRIX6.5 IP35 500Mhz         	1Go: 			86s		teras.sara.nl		(CC)
 HP-UX 11.11 9000/800/A400-6X 	   	:			94s		dibona.alpes.cea.fr	(aCC)
 SGI IRIX6.5 IP35 500Mhz	      		512Mo: 			101s		minerve.cines.fr	(CC)
 IBM AIX4.3  RS6000		   	:			111s		sge.hmg.inpg.fr		(xlC)
-Linux    i686   	1Ghz         	1Go: 			118s 	 	Greth                (g++)
+Linux    i686   	1Ghz         	1Go: 			118s 	 	Greth                	(g++)
 Linux    i686   	     		256Mo: 			119s		cornier.alpes.cea.fr	(Dynamique g++)
 Linux    i686 	7	33MHz       	128Mo: 			144s 	 	jasse.alpes.cea.fr	(Dynamique g++ Swap ralentit)
 SGI IRIX6.4 IP30 	250Mhz      	1024Mo:  		157s	130s	picasso.cad.cea.fr	(Dynamique CC)
@@ -180,18 +180,6 @@ nb_proc | cpu(s) dt     | ngcp  	| cpu(s) igcp   | speed up      | efficacite   
 16      | 6.10632       | 196.35        | 0.0274694     | 6.447         | .402          |                                                                                      
 32      | 3.10877       | 196.6 	| 0.0138006     | 12.664        | .395          |                                                                                      
 64      | 1.46279       | 196.75        | 0.00641931    | 26.914        | .420          | 
-------------------------------------------------------------------------------------
-Calcul parallele TRUST 1.7.6 Tue Jun 26 17:09:31 CEST 2018 sur irene (Skylake, Intel 17.0.4, Intelmpi/2017.0.4.196):
-------------------------------------------------------------------------------------
-nb_proc | cpu(s) dt     | ngcp  	| cpu(s) igcp   | speed up      | efficacite    |
-------------------------------------------------------------------------------------
-1       | 49.1002       | 195.65        | 0.204254      | 1.000         | 1.000         |
-2       | 31.346        | 195.65        | 0.133087      | 1.566         | .783          |
-4       | 15.3222       | 196.15        | 0.0631043     | 3.204         | .801          |
-8       | 7.80378       | 196.35        | 0.0326194     | 6.291         | .786          |
-16      | 6.15806       | 196.35        | 0.0266432     | 7.973         | .498          |
-32      | 3.2772        | 196.6 	| 0.0143382     | 14.982        | .468          |
-64      | 1.47931       | 196.75        | 0.00631334    | 33.191        | .518          |
 ========================================================================
 Attention: le solveur a ete change depuis (passage a PETSc GCP/Spai pour 
 un preconditionnement parallele avec convergence identique)
@@ -371,16 +359,6 @@ nb_proc | cpu(s) dt     | ngcp  	| cpu(s) igcp   | speed up      | efficacite   
 8       | 0.889491      | 110.25        | 0.00608335    | 4.758         | .594          |
 16      | 0.421379      | 110.3 	| 0.00275734    | 10.045        | .627          |
 ------------------------------------------------------------------------------------
-Calcul parallele TRUST 1.7.6 Tue Jun 26 15:50:06 CEST 2018 sur cobalt (Broadwell, Intel 16.0.3, OpenMPI 1.8.8):
-------------------------------------------------------------------------------------
-nb_proc | cpu(s) dt     | ngcp  	| cpu(s) igcp   | speed up      | efficacite    |
-------------------------------------------------------------------------------------
-1       | 2.97986       | 110.25        | 0.0200472     | 1.000         | 1.000         |
-2       | 1.75705       | 110.25        | 0.012059      | 1.695         | .847          |
-4       | 1.27166       | 110.25        | 0.00896221    | 2.343         | .585          |
-8       | 0.698446      | 110.25        | 0.00483256    | 4.266         | .533          |
-16      | 0.33522       | 110.3 	| 0.00223043    | 8.889         | .555          |
-------------------------------------------------------------------------------------
 Calcul parallele TRUST 1.7.7 Tue Jun 26 14:06:19 CEST 2018 sur cobalt (Broadwell, Intel 16.0.3, OpenMPI 1.8.8):
 ------------------------------------------------------------------------------------
 nb_proc | cpu(s) dt     | ngcp  	| cpu(s) igcp   | speed up      | efficacite    |
@@ -391,15 +369,15 @@ nb_proc | cpu(s) dt     | ngcp  	| cpu(s) igcp   | speed up      | efficacite   
 8       | 0.817087      | 110.25        | 0.0055833     | 3.397         | .424          |
 16      | 0.340107      | 110.3 	| 0.0022599     | 8.162         | .510          |
 ------------------------------------------------------------------------------------
-Calcul parallele TRUST 1.7.6 Tue Jun 26 15:05:32 CEST 2018 sur irene (Skylake, Intel 17.0.4, Intelmpi/2017.0.4.196):
+Calcul parallele TRUST 1.7.7 Thu Jul 26 19:06:25 CEST 2018 sur irene-ccrt : (Skylake, Intel 17.0.4, Intelmpi/2017.0.4.196):
 ------------------------------------------------------------------------------------
-nb_proc | cpu(s) dt     | ngcp  	| cpu(s) igcp   | speed up      | efficacite    |
+nb_proc	| cpu(s) dt	| ngcp 		| cpu(s) igcp	| speed up	| efficacite	|
 ------------------------------------------------------------------------------------
-1       | 4.58058       | 110.25        | 0.0284755     | 1.000         | 1.000         |
-2       | 1.74825       | 110.25        | 0.0108863     | 2.620         | 1.310         |
-4       | 1.03445       | 110.25        | 0.0065739     | 4.428         | 1.107         |
-8       | 0.847783      | 110.25        | 0.0056087     | 5.403         | .675          |
-16      | 0.318644      | 110.3 	| 0.00200129    | 14.375        | .898          |
+1	| 2.42791	| 110.25	| 0.0154309	| 1.000		| 1.000		|
+2	| 1.45644	| 110.25	| 0.00950558	| 1.667		| .833		|
+4	| 0.809307	| 110.25	| 0.00529126	| 2.999		| .749		|
+8	| 0.455454	| 110.25	| 0.00303855	| 5.330		| .666		|
+16	| 0.2852	| 110.3		| 0.00185348	| 8.513		| .532		|
 ========================================================================
 Attention: le solveur a ete change depuis (passage a PETSc GCP/Spai pour 
 un preconditionnement parallele avec convergence identique)
