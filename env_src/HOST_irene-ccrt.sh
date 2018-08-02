@@ -110,7 +110,6 @@ define_soumission_batch()
    mpirun="ccc_mprun -n \$BRIDGE_MSUB_NPROC"
    sub=CCC
    espacedir="work,scratch"
-   project="gen7571"
-   #Your account : 'user' is not attached to an existant project
-   #[ "$project" = "" ] && project=`ccc_myproject 2>/dev/null | $TRUST_Awk '/project/ {print $4;exit}'` # Add project
+   #project="genden"
+   [ "$project" = "" ] && project=`ccc_myproject 2>/dev/null | $TRUST_Awk '/project/ {print $4;exit}'` # Add project
 }
