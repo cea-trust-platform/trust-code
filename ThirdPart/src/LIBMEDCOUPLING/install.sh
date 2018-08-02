@@ -55,6 +55,11 @@ cp $org/Interpolation1D0D.txx $(find $medcoupling -name Interpolation1D0D.txx )
 
 echo patching MEDCouplingSkyLineArray.cxx 
 cp $org/MEDCouplingSkyLineArray.cxx $(find $medcoupling -name  MEDCouplingSkyLineArray.cxx )
+
+# for swig_import_helper error with icpc 17
+echo patching MEDCouplingMemArray.cxx 
+cp $org/MEDCouplingMemArray.cxx $(find $medcoupling -name  MEDCouplingMemArray.cxx )
+
 mkdir build
 cd build
 
@@ -85,9 +90,9 @@ status=$?
 
 if [ $status -ne 0 ] && [ "$MED_COUPLING_PYTHON" = "ON" ]
 then
-   echo "we tried to compile without python"
-   cmake ../$medcoupling $OPTIONS -DMEDCOUPLING_ENABLE_PYTHON=OFF
-   MED_COUPLING_PYTHON="OFF"
+  echo "we tried to compile without python"
+  cmake ../$medcoupling $OPTIONS -DMEDCOUPLING_ENABLE_PYTHON=OFF
+  MED_COUPLING_PYTHON="OFF"
 fi
 
 
@@ -95,13 +100,14 @@ make -j $TRUST_NB_PROCS
 # si make install fonctionne coorectement ce fichier sera ecrase
 # echo "#define NO_MEDFIELD " > $DEST/include/ICoCoMEDField.hxx
 make install
+make install
 status=$?
 if [ $status -ne 0 ]
 then
-echo "we tried to compile without python"
-cmake ../$medcoupling $OPTIONS -DMEDCOUPLING_ENABLE_PYTHON=OFF
-MED_COUPLING_PYTHON="OFF"
-make install
+  echo "we tried to compile without python"
+  cmake ../$medcoupling $OPTIONS -DMEDCOUPLING_ENABLE_PYTHON=OFF
+  MED_COUPLING_PYTHON="OFF"
+  make install
 fi
 status=$?
 
@@ -109,8 +115,11 @@ status=$?
 
 if [ $status -eq 0 ]
 then
-cd ..
+  cd ..
   rm -rf build $medcoupling
+  # test de fonctionnement
+  python -c "import MEDCoupling" && echo "MEDCoupling OK" || echo "MEDCoupling KO"
+  python -c "import LataLoader"  && echo "LataLoader OK"  || echo "LataLoader  KO"
 fi
 
 cd $DEST
